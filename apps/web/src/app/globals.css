@@ -1,3 +1,20 @@
+/*
+ * Globale Grundstile der Website. Farben, Abstände und Schrift kommen ausschließlich als Variablen
+ * aus packages/ui/theme.css (wird in layout.tsx eingebunden) – hier keine festen Farbwerte eintragen.
+ */
+
+:root {
+  color-scheme: light dark;
+}
+
+:root[data-theme='light'] {
+  color-scheme: light;
+}
+
+:root[data-theme='dark'] {
+  color-scheme: dark;
+}
+
 * {
   box-sizing: border-box;
 }
@@ -13,4 +30,9 @@ body {
     Roboto,
     sans-serif;
   -webkit-font-smoothing: antialiased;
+}
+
+body {
+  background: var(--color-background);
+  color: var(--color-text);
 }

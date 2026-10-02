@@ -1,10 +1,14 @@
 import Link from 'next/link';
 
+import styles from './not-found.module.css';
+
 export default function NotFound() {
   return (
-    <main style={{ padding: 24, textAlign: 'center' }}>
+    <main className={styles.main}>
       <h1>Diese Seite gibt es nicht.</h1>
-      <Link href="/">Zur Startseite</Link>
+      <Link href="/" className={styles.link}>
+        Zur Startseite
+      </Link>
     </main>
   );
 }
