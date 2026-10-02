@@ -1,7 +1,7 @@
 # Umsetzungsplan für Claude Code – Prompts zum Kopieren
 
 ## So arbeitet ihr damit (nur Handy)
-Die Einrichtung steht Schritt für Schritt in `HANDY-ANLEITUNG.md`. Kurzfassung:
+Die Einrichtung steht Schritt für Schritt in `docs/HANDY-ANLEITUNG.md`, die Verbindung der Dienste in `docs/SETUP.md`. Kurzfassung:
 1. Pro Phase eine **neue Sitzung** im Code-Tab der Claude-App starten (Repo auswählen, Prompt einfügen).
 2. Jeden Prompt beginnt Claude Code mit einem Plan. Lest ihn, antwortet „Passt, umsetzen“ oder mit Änderungswünschen.
 3. Claude Code liefert einen Pull Request. Im PR steht ein Vorschau-Link → am Handy testen.

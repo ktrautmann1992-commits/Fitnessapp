@@ -36,7 +36,7 @@ Vercel zeigt die App im Handy-Browser, Expo baut die echten Apps in der Cloud.
 ## Teil 2 – Der Arbeitsablauf pro Phase
 
 1. **Neue Sitzung** im Code-Tab starten, Repository wählen.
-2. Den Prompt der Phase aus `PROMPTS.md` kopieren und einfügen.
+2. Den Prompt der Phase aus `docs/PROMPTS.md` kopieren und einfügen.
 3. Claude Code zeigt zuerst einen **Plan** → lesen → „Passt, umsetzen“ oder Änderungswünsche schreiben.
 4. Ihr könnt das Handy weglegen – die Sitzung läuft in der Cloud weiter.
 5. Fertig: Es gibt einen **Pull Request**. In der GitHub-App öffnen → dort steht „So testest du es am Handy“ mit Vorschau-Link.
