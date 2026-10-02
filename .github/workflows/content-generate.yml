@@ -1,0 +1,56 @@
+name: content-generate
+
+# Manuell startbar (GitHub-App → Actions → content-generate → Run workflow).
+# Erzeugt Inhalte per Claude Batch-API und speichert sie als Entwurf (ab Phase 2).
+on:
+  workflow_dispatch:
+    inputs:
+      kind:
+        description: 'Welche Inhalte erzeugen?'
+        type: choice
+        options:
+          - plan-templates
+          - exercises
+          - recipes
+        default: plan-templates
+
+jobs:
+  generate:
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+    env:
+      ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+      SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
+      SUPABASE_SECRET_KEY: ${{ secrets.SUPABASE_SECRET_KEY }}
+      CONTENT_KIND: ${{ inputs.kind }}
+    steps:
+      - name: Secrets prüfen
+        id: secrets
+        run: |
+          missing=""
+          [ -z "$ANTHROPIC_API_KEY" ] && missing="$missing ANTHROPIC_API_KEY"
+          [ -z "$SUPABASE_URL" ] && missing="$missing SUPABASE_URL"
+          [ -z "$SUPABASE_SECRET_KEY" ] && missing="$missing SUPABASE_SECRET_KEY"
+          if [ -n "$missing" ]; then
+            echo "::notice title=content-generate übersprungen::Es fehlen GitHub-Secrets:$missing – siehe docs/SETUP.md"
+            echo "### ⏭️ content-generate übersprungen" >> "$GITHUB_STEP_SUMMARY"
+            echo "Es fehlen GitHub-Secrets:$missing. Anleitung: docs/SETUP.md" >> "$GITHUB_STEP_SUMMARY"
+            echo "ready=false" >> "$GITHUB_OUTPUT"
+          else
+            echo "ready=true" >> "$GITHUB_OUTPUT"
+          fi
+
+      - uses: actions/checkout@v4
+        if: steps.secrets.outputs.ready == 'true'
+      - uses: pnpm/action-setup@v4
+        if: steps.secrets.outputs.ready == 'true'
+      - uses: actions/setup-node@v4
+        if: steps.secrets.outputs.ready == 'true'
+        with:
+          node-version: 22
+          cache: pnpm
+      - run: pnpm install --frozen-lockfile
+        if: steps.secrets.outputs.ready == 'true'
+      - name: Inhalte erzeugen
+        if: steps.secrets.outputs.ready == 'true'
+        run: pnpm --filter @fitnessapp/content generate
