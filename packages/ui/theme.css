@@ -1,0 +1,98 @@
+/*
+ * Farbschema und Design-Werte – EINZIGE Quelle für Website UND App.
+ *
+ * PLATZHALTER: Dieses Farbschema ist vorläufig. Es wird durch die finale style.css der Gründer ersetzt
+ * (Anleitung: docs/DESIGN.md).
+ *
+ * So wird die Datei verwendet:
+ * - Website (apps/web) bindet diese Datei direkt ein und nutzt die Variablen per var(--…).
+ * - Die App (iPhone, Android, App im Browser) kann kein CSS lesen. Daraus wird automatisch
+ *   packages/ui/src/tokens.generated.ts erzeugt: pnpm --filter @fitnessapp/ui tokens
+ *   Die Prüfung (ci) schlägt fehl, wenn diese Datei und tokens.generated.ts nicht zusammenpassen.
+ *
+ * Pflicht-Variablen (alle müssen im :root-Block stehen):
+ * - Farben (hell im :root-Block, dunkel im Dunkel-Block):
+ *   --color-background, --color-surface, --color-text, --color-text-muted, --color-primary,
+ *   --color-primary-text, --color-border, --color-success, --color-warning, --color-danger
+ *   Erlaubt: #RGB, #RRGGBB, #RRGGBBAA, rgb()/rgba(), hsl()/hsla().
+ * - Abstände: --space-xs, --space-sm, --space-md, --space-lg, --space-xl, --space-xxl (in px)
+ * - Ecken-Rundung: --radius-sm, --radius-md, --radius-lg, --radius-pill (in px)
+ * - Schriftgrößen: --font-size-sm, --font-size-md, --font-size-lg, --font-size-xl, --font-size-xxl (in px)
+ * - Schriftstärken: --font-weight-regular, --font-weight-semibold, --font-weight-bold (100–900)
+ * - Inhaltsbreite: --max-content-width (in px)
+ *
+ * Dunkelmodus: Der Block in @media (prefers-color-scheme: dark) folgt der Geräteeinstellung.
+ * [data-theme='dark'] erzwingt dunkel, [data-theme='light'] erzwingt hell (für einen späteren Umschalter).
+ * Beide Dunkel-Blöcke müssen dieselben Werte haben. Fehlt dort eine Farbe, gilt der helle Wert.
+ */
+
+:root {
+  /* Farben – hell */
+  --color-background: #f7f8fa;
+  --color-surface: #ffffff;
+  --color-text: #111827;
+  --color-text-muted: #4b5563;
+  --color-primary: #0f9d58;
+  --color-primary-text: #ffffff;
+  --color-border: #e5e7eb;
+  --color-success: #15803d;
+  --color-warning: #b45309;
+  --color-danger: #b91c1c;
+
+  /* Abstände (4er-Raster) */
+  --space-xs: 4px;
+  --space-sm: 8px;
+  --space-md: 16px;
+  --space-lg: 24px;
+  --space-xl: 32px;
+  --space-xxl: 48px;
+
+  /* Ecken-Rundung */
+  --radius-sm: 6px;
+  --radius-md: 12px;
+  --radius-lg: 20px;
+  --radius-pill: 999px;
+
+  /* Schrift */
+  --font-size-sm: 14px;
+  --font-size-md: 16px;
+  --font-size-lg: 20px;
+  --font-size-xl: 28px;
+  --font-size-xxl: 36px;
+  --font-weight-regular: 400;
+  --font-weight-semibold: 600;
+  --font-weight-bold: 700;
+
+  /* Maximale Inhaltsbreite, damit die Web-Version auf Tablet/Desktop nicht zu breit wird */
+  --max-content-width: 560px;
+}
+
+/* Farben – dunkel (folgt der Geräteeinstellung, außer data-theme='light' ist gesetzt) */
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme='light']) {
+    --color-background: #0b0f14;
+    --color-surface: #151b23;
+    --color-text: #f3f4f6;
+    --color-text-muted: #9ca3af;
+    --color-primary: #34d399;
+    --color-primary-text: #04130c;
+    --color-border: #253041;
+    --color-success: #4ade80;
+    --color-warning: #fbbf24;
+    --color-danger: #f87171;
+  }
+}
+
+/* Farben – dunkel, manuell erzwungen */
+:root[data-theme='dark'] {
+  --color-background: #0b0f14;
+  --color-surface: #151b23;
+  --color-text: #f3f4f6;
+  --color-text-muted: #9ca3af;
+  --color-primary: #34d399;
+  --color-primary-text: #04130c;
+  --color-border: #253041;
+  --color-success: #4ade80;
+  --color-warning: #fbbf24;
+  --color-danger: #f87171;
+}

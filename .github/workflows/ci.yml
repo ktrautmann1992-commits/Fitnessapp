@@ -26,6 +26,9 @@ jobs:
       - run: pnpm install --frozen-lockfile
       - name: Formatierung prüfen
         run: pnpm format:check
+      # Passt die App (tokens.generated.ts) noch zum Farbschema der Website (theme.css)? Siehe docs/DESIGN.md.
+      - name: Farbschema prüfen (theme.css → App-Tokens)
+        run: pnpm --filter @fitnessapp/ui tokens:check
       - name: Lint, Typen, Tests
         run: pnpm check
       - name: Apps bauen

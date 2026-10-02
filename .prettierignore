@@ -12,3 +12,6 @@ docs/KONZEPT.md
 docs/PROMPTS.md
 docs/HANDY-ANLEITUNG.md
 AGENTS.md
+
+# Automatisch erzeugt aus packages/ui/theme.css
+packages/ui/src/tokens.generated.ts
