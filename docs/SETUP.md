@@ -88,6 +88,7 @@ Aus **einem** Repository entstehen **zwei** Vercel-Projekte:
    und gib Vercel Zugriff auf das Repository.
 4. **Project Name:** `fitnessapp-app`.
 5. **Root Directory:** **Edit** tippen → Ordner **`apps/mobile`** wählen → **Continue**.
+   (Lässt du das Feld leer, baut Vercel über die `vercel.json` im Hauptordner ebenfalls die App – beides funktioniert.)
 6. **Framework Preset:** **Other**. Build-Einstellungen **nicht** ändern, sie kommen aus `apps/mobile/vercel.json`.
 7. **Environment Variables** aufklappen (optional, geht auch später):
    - `EXPO_PUBLIC_SUPABASE_URL` = Wert aus A5
