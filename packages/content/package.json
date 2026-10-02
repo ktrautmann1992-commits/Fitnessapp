@@ -1,0 +1,14 @@
+{
+  "name": "@fitnessapp/content",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "description": "Skripte für die Offline-Content-Generierung (Claude Batch-API) und Seeds.",
+  "scripts": {
+    "generate": "node --experimental-strip-types src/generate.ts",
+    "seed": "node --experimental-strip-types src/seed.ts",
+    "lint": "eslint .",
+    "typecheck": "tsc --noEmit",
+    "test": "vitest run --passWithNoTests"
+  }
+}
