@@ -9,6 +9,7 @@ import type Anthropic from '@anthropic-ai/sdk';
 import type { z } from 'zod';
 
 import type { BatchRecord } from './batch-record';
+import { DRY_RUN_MODEL } from './dry-run';
 import type { ContentKindDefinition, GenerationCell, LibraryContext } from './kinds';
 import { addUsage, emptyUsage, type UsageTotals } from './pricing';
 
@@ -92,7 +93,7 @@ export interface ProcessInput {
 export function draftMeta(record: BatchRecord, today: string): Record<string, unknown> {
   return {
     origin: 'batch',
-    model: record.dry_run ? 'probelauf-ohne-ki' : record.model,
+    model: record.dry_run ? DRY_RUN_MODEL : record.model,
     batch_id: record.batch_id,
     created_on: today,
     expert_reviewed: false,

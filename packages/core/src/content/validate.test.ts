@@ -1,7 +1,14 @@
 import { describe, expect, it } from 'vitest';
 
 import type { ContentFile } from './validate';
-import { canonicalJson, checkVersionChange, validateContent } from './validate';
+import {
+  canonicalJson,
+  checkDryRunNotPublished,
+  checkVersionChange,
+  DRY_RUN_MODEL_ID,
+  isDryRunContent,
+  validateContent,
+} from './validate';
 import { LIBRARY, makeExercise, makeTemplate, META } from './test-fixtures';
 
 const exerciseFiles = (): ContentFile[] =>
@@ -107,6 +114,71 @@ describe('validateContent', () => {
       { kind: 'exercise', fileName: 'kniebeuge-test.json', data: changed, previous },
     ]);
     expect(result.blocking.map((i) => i.rule)).toEqual(['VERSION']);
+  });
+});
+
+describe('Regel PROBELAUF: Probelauf-Inhalte nie freigeben', () => {
+  const dryMeta = {
+    ...META,
+    origin: 'batch' as const,
+    model: DRY_RUN_MODEL_ID,
+    batch_id: 'probelauf_abc123',
+  };
+
+  it('erkennt Probelauf über Modell, ID-Präfix oder Batch-Nummer', () => {
+    expect(isDryRunContent(makeExercise({ meta: dryMeta }))).toBe(true);
+    expect(isDryRunContent(makeExercise({ id: 'probelauf-wandsitzen' }))).toBe(true);
+    expect(
+      isDryRunContent(
+        makeExercise({ meta: { ...META, origin: 'batch', batch_id: 'probelauf_x1' } }),
+      ),
+    ).toBe(true);
+    expect(isDryRunContent(makeExercise())).toBe(false);
+    // „probelauf“ mitten im Namen zählt nicht.
+    expect(isDryRunContent(makeExercise({ id: 'kniebeuge-probelauf' }))).toBe(false);
+  });
+
+  it('Entwurf und zurückgezogen: erlaubt', () => {
+    for (const status of ['draft', 'archived'] as const) {
+      expect(checkDryRunNotPublished('exercise', makeExercise({ status, meta: dryMeta }))).toEqual(
+        [],
+      );
+    }
+  });
+
+  it('freigegebene Probelauf-Übung (Modell) → rot und blockiert', () => {
+    const data = makeExercise({
+      status: 'published',
+      meta: { ...dryMeta, reviewed_by: 'KT', reviewed_at: '2026-10-03' },
+    });
+    const result = validateContent([{ kind: 'exercise', fileName: 'kniebeuge-test.json', data }]);
+    expect(result.blocking.map((i) => i.rule)).toContain('PROBELAUF');
+    expect(result.issues.find((i) => i.rule === 'PROBELAUF')).toMatchObject({
+      severity: 'error',
+      kind: 'exercise',
+      id: 'kniebeuge-test',
+      status: 'published',
+      path: 'status',
+    });
+  });
+
+  it('freigegebene Probelauf-Übung nur am ID-Präfix erkannt → blockiert', () => {
+    const data = makeExercise({ id: 'probelauf-seitstuetz', status: 'published', meta: reviewed });
+    const result = validateContent([
+      { kind: 'exercise', fileName: 'probelauf-seitstuetz.json', data },
+    ]);
+    expect(result.blocking.map((i) => i.rule)).toContain('PROBELAUF');
+  });
+
+  it('freigegebene Probelauf-Vorlage → blockiert', () => {
+    const data = makeTemplate({
+      status: 'published',
+      meta: { ...dryMeta, reviewed_by: 'KT', reviewed_at: '2026-10-03' },
+    });
+    const result = validateContent([...exerciseFiles(), templateFile(data)]);
+    expect(result.blocking.filter((i) => i.rule === 'PROBELAUF')).toMatchObject([
+      { kind: 'plan_template', id: 'fitness-einsteiger-3t-test' },
+    ]);
   });
 });
 

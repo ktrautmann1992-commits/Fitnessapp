@@ -4,11 +4,13 @@
  * Die Ergebnisse kommen absichtlich in umgekehrter Reihenfolge (Zuordnung nur über `custom_id`).
  */
 import type Anthropic from '@anthropic-ai/sdk';
+import { DRY_RUN_MODEL_ID } from '@fitnessapp/core';
 
 import type { DryRunFixture, DryRunResponse } from './kinds';
 import type { BatchResult } from './results';
 
-export const DRY_RUN_MODEL = 'probelauf-ohne-ki';
+/** Modell-Kennung der Probelauf-Entwürfe – content:validate lehnt sie als „published“ ab (Regel PROBELAUF). */
+export const DRY_RUN_MODEL = DRY_RUN_MODEL_ID;
 
 function message(
   response: Exclude<DryRunResponse, { kind: 'errored' }>,

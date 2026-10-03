@@ -7,6 +7,8 @@
  */
 import { randomBytes } from 'node:crypto';
 
+import { DRY_RUN_BATCH_PREFIX } from '@fitnessapp/core';
+
 import {
   batchBranch,
   batchRecordPath,
@@ -16,6 +18,7 @@ import {
   shortId,
 } from './batch-record';
 import { BASE_BRANCH, isoDateBerlin, MAX_REQUESTS_PER_RUN, type PipelineSettings } from './config';
+import { DRY_RUN_MODEL } from './dry-run';
 import { loadLibrary, writeJsonFile } from './files';
 import { type ContentKindDefinition, findKind, type GenerationCell } from './kinds';
 import { type CostEstimate, formatUsd } from './pricing';
@@ -160,7 +163,7 @@ export async function runGenerate(
           '',
           ...describeEstimate(estimate),
           '',
-          'Weniger Anfragen wählen (Eingabe „Anzahl“ oder „Auswahl“) oder den Deckel über die GitHub-Variable `CONTENT_MAX_USD` anheben (docs/SETUP.md Teil E).',
+          'Weniger Anfragen wählen (Eingabe „Anzahl“ oder „Auswahl“) oder den Deckel über die GitHub-Variable `CONTENT_MAX_USD` anheben (höchstens 100 $, docs/SETUP.md Teil E).',
           '',
         ].join('\n'),
       };
@@ -173,7 +176,7 @@ export async function runGenerate(
   let batchId: string;
   if (dryRun) {
     const random = deps.randomShort?.() ?? randomBytes(3).toString('hex');
-    batchId = `probelauf_${random}`;
+    batchId = `${DRY_RUN_BATCH_PREFIX}${random}`;
   } else {
     // Ab hier entstehen Kosten. Die Batch-ID steht sofort im Protokoll, falls danach etwas schiefgeht.
     const batch = await deps.client!.messages.batches.create({ requests });
@@ -189,7 +192,7 @@ export async function runGenerate(
     dry_run: dryRun,
     batch_id: batchId,
     kind: kind.kind,
-    model: dryRun ? 'probelauf-ohne-ki' : settings.model,
+    model: dryRun ? DRY_RUN_MODEL : settings.model,
     effort: settings.effort,
     selection: options.selection.trim() || 'alle',
     count,

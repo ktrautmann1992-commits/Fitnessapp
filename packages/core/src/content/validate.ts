@@ -133,6 +133,43 @@ function schemaIssues(file: ContentFile, error: z.ZodError): ContentIssue[] {
   );
 }
 
+/** Modell-Kennung der Beispiel-Inhalte aus dem Probelauf ohne KI (content-generate, Option „Probelauf“). */
+export const DRY_RUN_MODEL_ID = 'probelauf-ohne-ki';
+/** ID-Präfix der Beispiel-Übungen aus dem Probelauf. */
+export const DRY_RUN_ID_PREFIX = 'probelauf-';
+/** Präfix der Batch-Nummer eines Probelaufs (statt einer echten Batch-ID). */
+export const DRY_RUN_BATCH_PREFIX = 'probelauf_';
+
+/** true = Inhalt stammt aus einem Probelauf (Modell, ID-Präfix oder Batch-Nummer). */
+export function isDryRunContent(content: Pick<Exercise, 'id' | 'meta'>): boolean {
+  return (
+    content.meta.model === DRY_RUN_MODEL_ID ||
+    content.id.startsWith(DRY_RUN_ID_PREFIX) ||
+    (content.meta.batch_id?.startsWith(DRY_RUN_BATCH_PREFIX) ?? false)
+  );
+}
+
+/**
+ * Regel PROBELAUF (rot): Probelauf-Inhalte sind Beispiele zum Testen der Pipeline und dürfen nie freigegeben
+ * werden – weder per content-review noch von Hand. Entwürfe und zurückgezogene Probelauf-Inhalte sind erlaubt.
+ */
+export function checkDryRunNotPublished(
+  kind: ContentFileKind,
+  content: Pick<Exercise, 'id' | 'status' | 'meta'>,
+): ContentIssue[] {
+  if (content.status !== 'published' || !isDryRunContent(content)) {
+    return [];
+  }
+  return [
+    makeIssue(
+      'PROBELAUF',
+      { kind, id: content.id, status: content.status },
+      'Probelauf-Inhalt (ohne KI, nur zum Testen) darf nie freigegeben werden – bitte löschen oder auf „draft“/„archived“ setzen.',
+      'status',
+    ),
+  ];
+}
+
 /** Prüft alle Inhaltsdateien gemeinsam. */
 export function validateContent(files: readonly ContentFile[]): ContentValidationResult {
   const issues: ContentIssue[] = [];
@@ -175,6 +212,7 @@ export function validateContent(files: readonly ContentFile[]): ContentValidatio
     }
     seenIds.set(key, file.fileName);
     issues.push(...checkVersionChange(file.kind, file.previous, content));
+    issues.push(...checkDryRunNotPublished(file.kind, content));
     if (file.kind === 'exercise') {
       exercises.push(content as Exercise);
     } else {

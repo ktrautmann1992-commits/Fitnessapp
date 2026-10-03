@@ -13,6 +13,7 @@ describe('Regeltabelle (Plan Abschnitt 7)', () => {
     expect(red).toEqual([
       'DATEI',
       'VERSION',
+      'PROBELAUF',
       'Ü1',
       'Ü2',
       'Ü3',

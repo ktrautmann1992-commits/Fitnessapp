@@ -5,10 +5,15 @@ import type { ContentStatus } from '../enums';
  * Rot (`error`) = Fehler, blockiert Freigabe und Einspielen. Gelb (`warning`) = Hinweis, blockiert nichts.
  * Zusätzlich zwei Datei-Regeln ohne Nummer im Plan: DATEI (Dateiname = ID, ID eindeutig, gültiges JSON) und
  * VERSION (Abschnitt 5, Punkt 6: Ändert sich ein freigegebener Inhalt, steigt `version`).
+ * Dazu PROBELAUF (Wächter-Hinweis Etappe B): Beispiel-Inhalte aus dem Probelauf dürfen nie `published` sein.
  */
 export const CONTENT_RULES = {
   DATEI: { severity: 'error', title: 'Datei: gültiges JSON, Dateiname = ID, ID eindeutig' },
   VERSION: { severity: 'error', title: 'Geänderter freigegebener Inhalt hat eine höhere Version' },
+  PROBELAUF: {
+    severity: 'error',
+    title: 'Probelauf-Inhalte (ohne KI, nur zum Testen der Pipeline) werden nie freigegeben',
+  },
   Ü1: {
     severity: 'error',
     title: 'Schema korrekt (Pflichtfelder, Mindest-/Höchstwerte, Textlängen)',

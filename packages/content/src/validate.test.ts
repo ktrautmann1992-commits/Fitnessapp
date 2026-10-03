@@ -152,6 +152,34 @@ describe('runValidate', () => {
     expect(result.output).toContain('✘ Nicht bestanden');
   });
 
+  it('Probelauf-Inhalt als Entwurf: Exit 0; freigegeben: Exit 1 (Regel PROBELAUF)', () => {
+    const dryMeta = {
+      ...META,
+      origin: 'batch',
+      model: 'probelauf-ohne-ki',
+      batch_id: 'probelauf_a1b2c3',
+    };
+    const draftDir = contentDir({
+      'exercises/probelauf-wandsitzen.json': exercise({
+        id: 'probelauf-wandsitzen',
+        meta: dryMeta,
+      }),
+    });
+    expect(runValidate(['--content', draftDir], draftDir).exitCode).toBe(0);
+
+    const publishedDir = contentDir({
+      'exercises/probelauf-wandsitzen.json': exercise({
+        id: 'probelauf-wandsitzen',
+        status: 'published',
+        meta: { ...dryMeta, reviewed_by: 'KT', reviewed_at: '2026-10-03' },
+      }),
+    });
+    const result = runValidate(['--content', publishedDir], publishedDir);
+    expect(result.exitCode).toBe(1);
+    expect(result.output).toContain('ROT  PROBELAUF');
+    expect(result.output).toContain('[blockiert]');
+  });
+
   it('Schemafehler auch bei Entwürfen: Exit 1', () => {
     const dir = contentDir({ 'exercises/kniebeuge-test.json': exercise({ difficulty: 5 }) });
     expect(runValidate(['--content', dir], dir).exitCode).toBe(1);

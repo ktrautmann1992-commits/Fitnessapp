@@ -1,6 +1,7 @@
 import { describe, expect, it } from 'vitest';
 
 import {
+  CONTENT_MAX_USD_LIMIT,
   DEFAULT_CONTENT_MAX_USD,
   DEFAULT_CONTENT_MODEL,
   parseBooleanFlag,
@@ -39,6 +40,11 @@ describe('Einstellungen', () => {
     ).toEqual({ model: 'claude-sonnet-5-5', effort: 'max', maxUsd: 7.5 });
     expect(() => readPipelineSettings({ CONTENT_MAX_USD: 'zehn' })).toThrow();
     expect(() => readPipelineSettings({ CONTENT_MAX_USD: '0' })).toThrow(/größer als 0/);
+    // Harte Obergrenze 100 $ pro Lauf: genau 100 geht, alles darüber bricht ab.
+    expect(CONTENT_MAX_USD_LIMIT).toBe(100);
+    expect(readPipelineSettings({ CONTENT_MAX_USD: '100' }).maxUsd).toBe(100);
+    expect(() => readPipelineSettings({ CONTENT_MAX_USD: '100.01' })).toThrow(/höchstens 100/);
+    expect(() => readPipelineSettings({ CONTENT_MAX_USD: '1000' })).toThrow(/höchstens 100/);
     expect(() => readPipelineSettings({ CONTENT_EFFORT: 'turbo' })).toThrow(/CONTENT_EFFORT/);
     expect(() => readPipelineSettings({ CONTENT_MODEL: 'Claude Opus; rm -rf' })).toThrow();
   });
