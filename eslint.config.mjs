@@ -15,6 +15,7 @@ export default tseslint.config(
       '**/coverage/**',
       '**/expo-env.d.ts',
       '**/next-env.d.ts',
+      'apps/web/src/generated/**',
     ],
   },
   js.configs.recommended,

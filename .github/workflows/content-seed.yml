@@ -7,6 +7,9 @@ name: content-seed
 #    NICHTS eingespielt.
 # 2. Baut das Einspiel-Paket (nur published, geschätzte Dauer je Einheit) und ruft seed_content auf –
 #    eine Transaktion, mehrfaches Ausführen ändert nichts.
+# 3. Schutz: Würde ein Lauf mehr als 50 % der bisher freigegebenen Übungen oder Vorlagen (je Art) auf
+#    „archived“ setzen, bricht er ab (rot, nichts eingespielt). Nur per Hand mit Häkchen allow_mass_archive
+#    lässt sich das ausdrücklich erlauben – automatische Läufe (Push, db-migrate) nie.
 # Ohne SUPABASE_URL/SUPABASE_SECRET_KEY endet der Workflow nach der Prüfung grün mit Hinweis.
 on:
   push:
@@ -18,6 +21,11 @@ on:
     workflows: [db-migrate]
     types: [completed]
   workflow_dispatch:
+    inputs:
+      allow_mass_archive:
+        description: 'Ausdrücklich erlauben, dass mehr als die Hälfte der freigegebenen Inhalte zurückgezogen wird'
+        type: boolean
+        default: false
 
 permissions:
   contents: read
@@ -58,4 +66,6 @@ jobs:
         env:
           SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
           SUPABASE_SECRET_KEY: ${{ secrets.SUPABASE_SECRET_KEY }}
+          # Nur bei „Run workflow“ per Hand kann das true sein; Push/db-migrate liefern immer false.
+          ALLOW_MASS_ARCHIVE: ${{ github.event_name == 'workflow_dispatch' && inputs.allow_mass_archive == true }}
         run: pnpm --filter @fitnessapp/content seed

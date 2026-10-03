@@ -3,7 +3,8 @@
 Diese Anleitung verbindet das Repository mit **Supabase** (Datenbank), **Vercel** (Vorschau-Links im Browser),
 **Expo** (echte App-Builds) und **Anthropic** (Inhalts-Erzeugung). Alles geht im Handy-Browser.
 
-**Reihenfolge:** Teil A → B → C → D → E → F → H. Für den ersten Vorschau-Link reicht **Teil C**.
+**Reihenfolge:** Teil A → B → C → D → E → F → G → H. Für den ersten Vorschau-Link reicht **Teil C**.
+Für den Redaktionsbereich `/admin` der Website brauchst du **Teil G**.
 Für die Content-Pipeline (Übungen und Plan-Vorlagen) brauchst du **Teil H**, für echte KI-Entwürfe zusätzlich
 **Teil E**. Die Bedienung steht am Ende unter **„Inhalte erzeugen und freigeben am Handy“**.
 Die anderen Teile kannst du später nachholen. Bis dahin überspringen die GitHub Actions ihre Arbeit mit einem Hinweis.
@@ -36,7 +37,9 @@ Sie werden nicht rot.
 | `ANTHROPIC_API_KEY`                    | Anthropic (E) | GitHub Secret (B)                                                         | **JA**  |
 | `CONTENT_MODEL` (optional)             | selbst (E5)   | GitHub **Variable** (E5), Standard `claude-opus-5-5`                      | nein    |
 | `CONTENT_EFFORT` (optional)            | selbst (E5)   | GitHub **Variable** (E5), Standard `high`                                 | nein    |
-| `CONTENT_MAX_USD` (optional)           | selbst (E5)   | GitHub **Variable** (E5), Standard `15`                                   | nein    |
+| `CONTENT_MAX_USD` (optional)           | selbst (E5)   | GitHub **Variable** (E5), Standard `15`, höchstens `100`                  | nein    |
+| `ADMIN_PASSWORD`                       | selbst (G1)   | Vercel-Projekt **Web**, Production + Preview (G2)                         | **JA**  |
+| `ADMIN_SESSION_SECRET`                 | selbst (G1)   | Vercel-Projekt **Web**, Production + Preview (G2)                         | **JA**  |
 
 \* Der „Publishable Key“ darf öffentlich in App und Website stehen. Die Daten schützt die Datenbank selbst
 (Row Level Security). Der **Secret Key** dagegen darf **nie** in Vercel-Variablen mit `EXPO_PUBLIC_` oder
@@ -169,7 +172,8 @@ ohne Schlüssel machen.
      ausdrücklich wollt (z. B. `claude-sonnet-5-5`, günstiger).
    - `CONTENT_EFFORT` – Denktiefe `low`, `medium`, `high` (Standard), `xhigh` oder `max`.
    - `CONTENT_MAX_USD` – Kostendeckel pro Lauf in Dollar, Standard `15`. Liegt die Schätzung (schlimmster Fall)
-     darüber, wird **nichts** gesendet.
+     darüber, wird **nichts** gesendet. Höchstens **100** möglich (harte Obergrenze im Code) – ein größerer Wert
+     bricht den Lauf mit Hinweis ab.
 
 ---
 
@@ -216,6 +220,56 @@ Einmalig in Supabase einrichten (Handy-Browser, ggf. „Desktop-Website anforder
 
 ---
 
+## Teil G – Redaktionsbereich `/admin` (Passwort, Stufe A)
+
+Der Redaktionsbereich der Website zeigt alle Übungen und Plan-Vorlagen aus dem Repository mit Prüfbericht – auch
+die Entwürfe eines Pull Requests in dessen Vercel-Vorschau. Er ist **gesperrt**, bis zwei geheime Werte im
+Vercel-Projekt **Web** stehen („Redaktionsbereich nicht eingerichtet“). Nichts davon steht im Code.
+
+### G1 – Zwei lange Zufallswerte im Passwort-Manager erzeugen
+
+1. Passwort-Manager öffnen (z. B. iCloud-Schlüsselbund/Passwörter-App, Bitwarden, 1Password).
+2. Neuen Eintrag anlegen, Name `Fitnessapp Admin`.
+3. **Passwort generieren** – Länge mindestens **24 Zeichen** (Pflicht: mindestens 20), Buchstaben + Ziffern.
+   Das ist `ADMIN_PASSWORD` – damit meldet ihr euch an.
+4. Im selben Eintrag ein Notizfeld bzw. zweites Feld anlegen und noch einmal generieren – Länge mindestens
+   **40 Zeichen** (Pflicht: mindestens 32). Das ist `ADMIN_SESSION_SECRET` – damit werden die Anmeldungen signiert.
+   Ihr braucht es nie einzutippen.
+5. Speichern. Beide Werte müssen **verschieden** sein. Nicht in den Chat mit Claude kopieren.
+
+### G2 – In Vercel eintragen
+
+1. **vercel.com** → Projekt **fitnessapp-web** → **Settings** → **Environment Variables**.
+2. **Key** `ADMIN_PASSWORD`, **Value** = Passwort aus G1, Schalter **Sensitive** einschalten.
+3. Bei **Environments** **Production** und **Preview** anhaken (Development nicht nötig) → **Save**.
+4. Dasselbe für **Key** `ADMIN_SESSION_SECRET` mit dem zweiten Wert.
+5. **Deployments** → oberster Eintrag **⋯** → **Redeploy** → **Redeploy**. Werte wirken erst nach einem neuen
+   Build; neue Pull-Request-Vorschauen haben sie automatisch.
+6. Testen: Website-Adresse + `/admin` öffnen → Passwort einfügen → **Anmelden**. Die Anmeldung gilt **8 Stunden**
+   auf diesem Gerät; **Abmelden** oben rechts.
+
+### G3 – Alle abmelden / Passwort wechseln
+
+- **Alle Geräte abmelden:** in G2 bei `ADMIN_SESSION_SECRET` **⋯ → Edit** → neuen Zufallswert aus dem
+  Passwort-Manager → **Save** → **Redeploy**. Alle bisherigen Anmeldungen sind sofort ungültig.
+- **Passwort wechseln** (z. B. wenn es jemand Unbefugtes kennen könnte): `ADMIN_PASSWORD` genauso ändern →
+  **Redeploy**. Auch das meldet alle ab.
+- Wert gelöscht oder zu kurz → `/admin` ist wieder gesperrt (sicherer Standard).
+
+### G4 – Schutz, der eingeschaltet bleibt
+
+- **Deployment Protection** für Vorschau-Links: **Settings → Deployment Protection** → **Vercel Authentication**
+  bleibt **an** (Standard). Dann sehen nur Mitglieder eures Vercel-Teams die Vorschauen.
+- Fehlversuche: Jeder falsche Versuch dauert ca. 1 Sekunde; das lange Zufallspasswort ist praktisch nicht zu
+  erraten. **Optional** zusätzlich: **Firewall** → **Configure** → **New Rule** → Name `admin-login`, **If**
+  _Request Path_ _starts with_ `/admin/api/login` → **Then** **Rate Limit** (z. B. 10 Anfragen pro 60 Sekunden je
+  IP) → **Save** → **Publish**.
+- Der Bereich ist für Suchmaschinen gesperrt (`noindex`) und wird nicht zwischengespeichert. Er zeigt nur
+  Inhalte, keine Nutzerdaten, und ändert nichts: **Freigeben** geht weiter per Workflow `content-review`
+  (unten, „Inhalte erzeugen und freigeben am Handy“, Schritt 3). Dafür gibt es im Bereich „IDs kopieren“.
+
+---
+
 ## Teil H – GitHub: Workflows dürfen Pull Requests öffnen
 
 Nötig für `content-collect` und `content-review`. Handy-Browser, ggf. „Desktop-Website anfordern“.
@@ -256,7 +310,9 @@ Voraussetzung: Teil H. Wo du die Workflows findest: GitHub-App → Repository �
 5. Unter **Pull requests** erscheint **„Probelauf: Neue Entwürfe … – nicht mergen“**. Im Text steht der
    Prüfbericht: zwei gespeicherte Beispiele, eines absichtlich **ungültig**, eines **abgelehnt**. Darunter läuft
    `ci`.
-6. Ansehen, dann den Pull Request **schließen** (nicht mergen) und unten **Delete branch** tippen.
+6. Ansehen – am schönsten in der Vercel-Vorschau der **Website** unter `/admin` (Teil G) –, dann den Pull
+   Request **schließen** (nicht mergen) und unten **Delete branch** tippen. Probelauf-Inhalte lassen sich nie
+   freigeben (`content:validate` meldet sie als rot, Regel PROBELAUF).
 
 ### 2. Echte Entwürfe erzeugen (mit Schlüssel aus Teil E)
 
@@ -282,6 +338,7 @@ Voraussetzung: Teil H. Wo du die Workflows findest: GitHub-App → Repository �
 
 1. **Actions → content-review → Run workflow**.
 2. **IDs**: eine oder mehrere IDs, z. B. `goblet-kniebeuge, liegestuetz` (die ID ist der Dateiname ohne `.json`).
+   Am einfachsten im Redaktionsbereich `/admin` filtern und **IDs kopieren** tippen.
 3. **Neuer Status**: `published` (freigeben), `archived` (zurückziehen) oder `draft` (zurück auf Entwurf).
 4. **Wer hat geprüft?** Name oder Kürzel → **Run workflow**.
 5. Es erscheint ein Pull Request **„Freigabe: …“**. Hat ein Inhalt einen roten Fehler, gibt es **keinen** Pull
@@ -294,20 +351,26 @@ Voraussetzung: Teil H. Wo du die Workflows findest: GitHub-App → Repository �
 Nach jedem Merge, der Inhalte ändert, läuft **content-seed** von selbst: Es prüft alle Inhalte und spielt nur
 freigegebene ein. Ohne Supabase endet es grün mit „übersprungen – Supabase fehlt“.
 
+**Schutz vor Massen-Archivierung:** Würde ein Lauf mehr als **die Hälfte** der bisher in der Datenbank
+freigegebenen Übungen oder Vorlagen (je Art) auf „zurückgezogen“ setzen – z. B. weil Dateien versehentlich gelöscht
+wurden –, bricht content-seed **rot** ab und spielt **nichts** ein. Die Summary nennt die betroffenen IDs. Ist das
+wirklich gewollt: **Actions → content-seed → Run workflow** → Häkchen **allow_mass_archive** → **Run workflow**.
+Automatische Läufe (nach Merge, nach `db-migrate`) erlauben das nie.
+
 ---
 
 ## Überblick: Was passiert automatisch?
 
-| Workflow           | Wann                                                                 | Braucht                                                                 |
-| ------------------ | -------------------------------------------------------------------- | ----------------------------------------------------------------------- |
-| `ci`               | bei jedem Push und Pull Request (inkl. Klick-Test der App), per Hand | nichts                                                                  |
-| `db-migrate`       | nach Merge in `main`, wenn sich Migrationen ändern, oder per Hand    | `SUPABASE_ACCESS_TOKEN`, `SUPABASE_DB_PASSWORD`, `SUPABASE_PROJECT_REF` |
-| `content-generate` | per Hand (Actions → Run workflow)                                    | `ANTHROPIC_API_KEY` (Probelauf: nichts)                                 |
-| `content-collect`  | alle 3 Stunden und per Hand                                          | Teil H; `ANTHROPIC_API_KEY` nur für echte Läufe                         |
-| `content-review`   | per Hand                                                             | Teil H                                                                  |
-| `content-seed`     | nach Merge in `main` (Inhalte), nach `db-migrate` und per Hand       | `SUPABASE_URL`, `SUPABASE_SECRET_KEY` (ohne: nur Prüfung)               |
-| `eas-build`        | per Hand                                                             | `EXPO_TOKEN` + Expo-Projekt-ID                                          |
-| Vercel             | bei jedem Push automatisch                                           | Teil C                                                                  |
+| Workflow           | Wann                                                              | Braucht                                                                 |
+| ------------------ | ----------------------------------------------------------------- | ----------------------------------------------------------------------- |
+| `ci`               | bei jedem Push und Pull Request (inkl. Klick-Tests), per Hand     | nichts                                                                  |
+| `db-migrate`       | nach Merge in `main`, wenn sich Migrationen ändern, oder per Hand | `SUPABASE_ACCESS_TOKEN`, `SUPABASE_DB_PASSWORD`, `SUPABASE_PROJECT_REF` |
+| `content-generate` | per Hand (Actions → Run workflow)                                 | `ANTHROPIC_API_KEY` (Probelauf: nichts)                                 |
+| `content-collect`  | alle 3 Stunden und per Hand                                       | Teil H; `ANTHROPIC_API_KEY` nur für echte Läufe                         |
+| `content-review`   | per Hand                                                          | Teil H                                                                  |
+| `content-seed`     | nach Merge in `main` (Inhalte), nach `db-migrate` und per Hand    | `SUPABASE_URL`, `SUPABASE_SECRET_KEY` (ohne: nur Prüfung)               |
+| `eas-build`        | per Hand                                                          | `EXPO_TOKEN` + Expo-Projekt-ID                                          |
+| Vercel             | bei jedem Push automatisch                                        | Teil C                                                                  |
 
 Fehlt etwas, endet der Workflow **grün** mit dem Hinweis „übersprungen“. Den Hinweis siehst du in der GitHub-App
 unter **Actions** → Lauf antippen → **Summary**.
