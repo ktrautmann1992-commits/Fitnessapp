@@ -49,6 +49,25 @@
   margin: var(--space-xs) 0 0;
 }
 
+.appButton {
+  display: block;
+  margin-top: var(--space-sm);
+  padding: var(--space-md) var(--space-lg);
+  min-height: 48px;
+  border-radius: var(--radius-pill);
+  background: var(--color-primary);
+  color: var(--color-primary-text);
+  font-size: var(--font-size-lg);
+  font-weight: var(--font-weight-bold);
+  text-align: center;
+  text-decoration: none;
+}
+
+.appButton:focus-visible {
+  outline: 3px solid var(--color-text);
+  outline-offset: 3px;
+}
+
 .note {
   font-size: var(--font-size-sm);
   color: var(--color-text-muted);
