@@ -3,12 +3,15 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "dev": "next dev",
-    "build": "next build",
+    "content:bundle": "node scripts/bundle-content.mjs",
+    "dev": "node scripts/bundle-content.mjs && next dev",
+    "build": "node scripts/bundle-content.mjs && next build",
     "start": "next start",
     "lint": "eslint .",
-    "typecheck": "next typegen && tsc --noEmit",
-    "test": "vitest run --passWithNoTests"
+    "typecheck": "node scripts/bundle-content.mjs && next typegen && tsc --noEmit",
+    "test": "node scripts/bundle-content.mjs && vitest run",
+    "test:e2e": "playwright test",
+    "screenshots": "SCREENSHOT_DIR=${SCREENSHOT_DIR:-screenshots} playwright test e2e/screenshots.spec.ts"
   },
   "dependencies": {
     "@fitnessapp/core": "workspace:*",
@@ -16,9 +19,11 @@
     "@fitnessapp/ui": "workspace:*",
     "next": "^16.3.8",
     "react": "19.2.3",
-    "react-dom": "19.2.3"
+    "react-dom": "19.2.3",
+    "zod": "^4.6.5"
   },
   "devDependencies": {
+    "@playwright/test": "1.63.0",
     "@types/react": "~19.2.2",
     "@types/react-dom": "~19.2.2"
   }
