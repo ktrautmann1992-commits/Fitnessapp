@@ -86,7 +86,11 @@ export function loadContentFiles(
 /** Repository-Wurzel per git (undefined ohne git). */
 export function gitRepoRoot(cwd: string): string | undefined {
   try {
-    return execFileSync('git', ['rev-parse', '--show-toplevel'], { cwd, encoding: 'utf8' }).trim();
+    return execFileSync('git', ['rev-parse', '--show-toplevel'], {
+      cwd,
+      encoding: 'utf8',
+      stdio: ['ignore', 'pipe', 'ignore'],
+    }).trim();
   } catch {
     return undefined;
   }
@@ -238,30 +242,49 @@ export function parseArgs(argv: readonly string[]): { contentDir?: string; base?
   return result;
 }
 
-/** Führt die Prüfung aus (ohne Prozess-Ende) – testbar. */
-export function runValidate(argv: readonly string[], cwd: string): CliResult {
-  const args = parseArgs(argv);
-  const repoRoot = gitRepoRoot(cwd);
-  const contentDir = resolve(cwd, args.contentDir ?? join(repoRoot ?? cwd, 'content'));
+/**
+ * Prüft den Inhaltsstand eines Repositorys (strukturiertes Ergebnis). Wird von `content:validate` und von
+ * den Workflows der Pipeline (content-collect, content-review, content-seed) genutzt.
+ */
+export function validateRepository(options: {
+  cwd: string;
+  contentDir?: string;
+  base?: string;
+}): ReportInput {
+  const repoRoot = gitRepoRoot(options.cwd);
+  const contentDir = resolve(
+    options.cwd,
+    options.contentDir ?? join(repoRoot ?? options.cwd, 'content'),
+  );
 
   let readPrevious: PreviousReader | undefined;
   let versionNote = 'nicht geprüft (kein Vergleichsstand angegeben, Option --base)';
-  if (args.base !== undefined) {
-    readPrevious = repoRoot ? gitPreviousReader(repoRoot, args.base) : undefined;
+  if (options.base !== undefined) {
+    readPrevious = repoRoot ? gitPreviousReader(repoRoot, options.base) : undefined;
     versionNote = readPrevious
-      ? `Vergleich mit ${args.base}`
-      : `nicht geprüft – Vergleichsstand „${args.base}“ nicht verfügbar`;
+      ? `Vergleich mit ${options.base}`
+      : `nicht geprüft – Vergleichsstand „${options.base}“ nicht verfügbar`;
   }
 
   const loaded = loadContentFiles(contentDir, {
     ...(repoRoot === undefined ? {} : { repoRoot }),
     ...(readPrevious === undefined ? {} : { readPrevious }),
   });
-  const input: ReportInput = {
+  return {
     result: validateContent(loaded.files),
     strayFiles: loaded.strayFiles,
     versionNote,
   };
+}
+
+/** Führt die Prüfung aus (ohne Prozess-Ende) – testbar. */
+export function runValidate(argv: readonly string[], cwd: string): CliResult {
+  const args = parseArgs(argv);
+  const input = validateRepository({
+    cwd,
+    ...(args.contentDir === undefined ? {} : { contentDir: args.contentDir }),
+    ...(args.base === undefined ? {} : { base: args.base }),
+  });
   return {
     exitCode: blockingCount(input) > 0 ? 1 : 0,
     output: formatReport(input),
