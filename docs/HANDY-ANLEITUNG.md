@@ -46,8 +46,11 @@ Vercel zeigt die App im Handy-Browser, Expo baut die echten Apps in der Cloud.
 ## Teil 3 – Was ihr im Alltag in der GitHub-App macht
 - **Pull Requests** prüfen und mergen
 - **Actions** → Workflow auswählen → „Run workflow“ für:
-  - `content-generate` – neue Trainingspläne/Rezepte erzeugen lassen
-  - `content-seed` – freigegebene Inhalte einspielen
+  - `content-generate` – neue Übungen/Plan-Vorlagen als Entwurf erzeugen lassen (auch als kostenloser Probelauf)
+  - `content-collect` – fertige Entwürfe abholen (läuft auch alle 3 Stunden von selbst) → Pull Request
+  - `content-review` – Inhalte freigeben oder zurückziehen → Pull Request (Merge = Freigabe)
+  - `content-seed` – freigegebene Inhalte einspielen (läuft nach jedem Merge von selbst)
+  - Schritt für Schritt: `docs/SETUP.md` → „Inhalte erzeugen und freigeben am Handy“
   - `eas-build` – neue Android-APK / iOS-TestFlight-Version bauen
 - Rote Kreuze bei Actions = Fehler → Link kopieren und Claude Code in einer Sitzung geben: „Diese Action schlägt fehl, bitte beheben.“
 

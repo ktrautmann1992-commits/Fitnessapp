@@ -70,7 +70,7 @@ später mit Supabase.
 ```
  ① Auftrag            ② Abholen + Prüfen       ③ Freigeben            ④ Einspielen
  content-generate  →  content-collect      →   Vorschau ansehen,  →   content-seed
- (Batch absenden,     (stündlich; prüft,       Status „published“,    (prüft erneut,
+ (Batch absenden,     (alle 3 Std.; prüft,     Status „published“,    (prüft erneut,
   sofort fertig)       öffnet Pull Request,     Pull Request mergen    nur „published“)
                        startet ci)
 ```
@@ -84,10 +84,10 @@ später mit Supabase.
    3. schickt alles als **einen Batch** an die Claude Message Batches API (halber Preis, Ergebnis meist in unter
       einer Stunde, spätestens nach 24 Stunden) und erzwingt das Antwortformat per **Structured Outputs**
       (JSON-Schema),
-   4. legt einen Arbeits-Branch `content/batch-<Datum>` mit einer kleinen Merkdatei an (Batch-Nummer, Art,
+   4. legt einen Arbeits-Branch `content/batch-<Datum>-<kurz>` mit einer kleinen Merkdatei an (Batch-Nummer, Art,
       Modell, Kostenschätzung) – und **endet sofort**. Es wird nicht stundenlang gewartet (spart
       GitHub-Actions-Minuten).
-2. **Abholen und Prüfen.** `content-collect` läuft **stündlich per Zeitplan** und zusätzlich per Hand. Gibt es
+2. **Abholen und Prüfen.** `content-collect` läuft **alle 3 Stunden per Zeitplan** (statt stündlich: GitHub rundet jeden Lauf auf eine volle Minute auf) und zusätzlich per Hand. Gibt es
    keinen offenen Batch-Branch, endet es nach wenigen Sekunden, ohne Schlüssel zu brauchen. Ist ein Batch fertig:
    1. Ergebnisse werden **nur über die `custom_id`** zugeordnet, nie über die Reihenfolge.
    2. Jede Antwort wird geprüft: Ergebnis-Art `succeeded` → weiter; `errored`, `expired`, `canceled` → nicht
@@ -388,7 +388,7 @@ unter dem Deckel.
 
 Nach jedem Lauf stehen die **tatsächlichen** Token und Kosten in der Zusammenfassung und im Pull-Request-Text.
 Diese Kosten sind Betriebskosten der Redaktion, keine Nutzer-KI – `ai_usage` (Phase 7) bleibt dafür unberührt.
-Der stündliche `content-collect` kostet ohne offenen Batch nur wenige Sekunden Actions-Zeit.
+Der regelmäßige `content-collect` (alle 3 Stunden) kostet ohne offenen Batch nur wenige Sekunden Actions-Zeit.
 
 ---
 
@@ -429,7 +429,7 @@ Klick-Schritte für den Handy-Browser ergänzt Claude in `docs/SETUP.md`.
 4. Eine Plan-Vorlage öffnen: Passt die Woche? Balken „Sätze pro Muskelgruppe“ im grünen Bereich?
 5. Falsches Passwort eingeben → Zugang verweigert. Im privaten Tab ohne Login `/admin/...` öffnen → Login-Seite.
 6. **Actions → content-generate → Run workflow → Probelauf** → kurz darauf **content-collect → Run workflow**
-   (oder bis zu einer Stunde warten) → neuer Pull Request mit Beispiel-Entwürfen. Im Text steht der Prüfbericht
+   (oder bis zu 3 Stunden warten) → neuer Pull Request mit Beispiel-Entwürfen. Im Text steht der Prüfbericht
    (eine Antwort absichtlich ungültig, eine „abgelehnt“), darunter läuft `ci`; die Vercel-Vorschau zeigt die
    Entwürfe im Admin-Bereich.
 7. **Actions → content-review → Run workflow** mit einer Übungs-ID und Aktion `freigeben` → Pull Request prüfen
@@ -468,7 +468,7 @@ nächste beginnt. Innerhalb einer Etappe kleine, nachvollziehbare Commits.
    entfernt, Grenzen danach per Zod geprüft), Batch absenden, Ergebnisse über `custom_id` abholen und alle
    Ergebnis-Arten behandeln, Kostenschätzung und -deckel, Probelauf, Freigabe-Skript, Seed – mit Tests (API
    dabei simuliert).
-2. Workflows: `content-generate` (absenden, sofort fertig), `content-collect` (stündlich + per Hand, prüft,
+2. Workflows: `content-generate` (absenden, sofort fertig), `content-collect` (alle 3 Stunden + per Hand, prüft,
    öffnet PR, startet `ci`), `content-review` (prüft, öffnet PR, startet `ci`), `content-seed` (prüft erst,
    automatisch nach Merge und nach `db-migrate`); `ci` bekommt „Run workflow“. Alle enden ohne Secrets grün
    mit Hinweis.
@@ -531,7 +531,7 @@ Die Gründer haben vorab erlaubt, dass Claude mit den Empfehlungen aus Abschnitt
    durch einen Menschen, Datenbank enthält nur Freigegebenes (Abschnitte 3 und 5).
 2. Prüfung an vier Stellen (ci, vor jedem Bot-Pull-Request, Admin-Bereich, vor dem Einspielen); Bot-Pull-Requests
    starten `ci` ausdrücklich (Abschnitte 4 und 7).
-3. Batch absenden und sofort beenden, Abholen stündlich per `content-collect` (Abschnitt 4).
+3. Batch absenden und sofort beenden, Abholen alle 3 Stunden per `content-collect` (Abschnitt 4; angepasst in Etappe B).
 4. Redaktionsbereich mit Passwort-Zugang (Stufe A) jetzt; Supabase-Login und Bearbeiten über GitHub App erst bei
    Bedarf (Abschnitt 6).
 5. Startbestand (ca. 50 Übungen, 24 Vorlagen) von Claude in der Umsetzungs-Sitzung als `draft` (Abschnitt 9).
@@ -611,5 +611,81 @@ Wächter-Prüfung ab, wird dieser Abschnitt angepasst, bevor die betroffene Etap
   4 Tage Zuhause: seitliche Schulter 9,5. Mehr Sätze würden die Einheiten über 60 Minuten verlängern.
 - V6 bei Allgemeine Fitness · Einsteiger · 4 Tage · Zuhause, „Unterkörper B“: geschätzt 37 min (Fenster 38,25–69).
 
-**Noch offen (Etappe B und C):** Batch-Pipeline und Workflows `content-generate`/`content-collect`/`content-review`,
-`content-seed` mit Prüfung vor dem Einspielen, Redaktionsbereich `/admin`, SETUP-Teile G und H.
+**Etappe B – Pipeline und Workflows (mit Probelauf): erledigt** (wartet auf Wächter-Prüfung).
+
+1. **`packages/content/src/pipeline/`**
+   - **Inhaltsarten** (`kinds/`): `exercise` und `plan_template` mit Ordner, `max_tokens` (12.000 / 24.000), Auswahl-
+     Matrix, Anfrage-Texten, Antwort-Schema (Zod), Datei-Schema (Ü1) und Abbildung „Antwort → Datei“. Rezepte werden in
+     Phase 5 ein weiterer Eintrag in `CONTENT_KINDS` – generate/collect/review bleiben unverändert.
+   - **Matrix:** Vorlagen = Ziel × Level × 3/4 Tage × Studio/Zuhause × Minuten `30-45`/`45-60`/`60-75` (72 Zellen; die
+     24 Vorlagen des Startbestands = `45-60` werden übersprungen). Übungen = Bewegungsmuster × Geräte-Schwerpunkt
+     (Langhantel, Kurzhantel, Kettlebell, Kabel/Maschine, Band, Körpergewicht; 120 Zellen). Auswahl per Begriffen
+     (z. B. `muskelaufbau 30-45`), Anzahl 1–200.
+   - **Anfrage-Texte** deutsch mit den Regeln aus Abschnitt 7/8 (Dosierung, Pausen, Dauer-Formel, Wochensätze je Ziel
+     und Level, Drücken/Ziehen, keine Maximaltests), Textregeln Ü6 mit denselben Begriffslisten wie die Prüfung, keine
+     Marken. **Katalog-IDs als erlaubte Werte:** Übungs-IDs (Vorlagen; zu Hause nur mit Heim-Geräten machbare),
+     Alternativen nur mit gleichem Bewegungsmuster, Geräte aus dem Katalog (ohne „Sonstiges“); Matrix-Werte als feste
+     Konstanten.
+   - **JSON-Schema aus Zod** (`json-schema.ts`): nicht unterstützte Angaben (minimum/maximum/multipleOf, minLength/
+     maxLength, pattern, minItems/maxItems/uniqueItems, nicht unterstützte Formate) werden entfernt, Typ-Listen werden
+     `anyOf`; danach prüft Zod alle Grenzen (Antwort-Schema und Datei-Schema Ü1).
+   - **Kosten** (`pricing.ts`, `requests.ts`): Eingabe-Token per `count_tokens` (je Anfrage), schlimmster Fall =
+     Eingabe + Anfragen × `max_tokens` × Ausgabepreis (Batch-Preis Opus 5.5: 2 $ / 10 $ je Mio.). Über
+     `CONTENT_MAX_USD` (Standard 15) → Abbruch, **bevor** etwas gesendet wird. Unbekanntes Modell → Abbruch (kein Preis
+     hinterlegt). Tatsächliche Kosten aus den gemeldeten Token im Pull-Request-Text und in der Merkdatei.
+   - **Anfragen:** Modell `CONTENT_MODEL` (Standard `claude-opus-5-5`), Denktiefe `CONTENT_EFFORT` (Standard `high`),
+     Structured Outputs über `output_config.format`, adaptives Denken (Standard bei Opus 5.5), keine `fallbacks`
+     (gibt es im Batch nicht).
+   - **`content-generate`** (`generate.ts`): setzt immer auf `origin/main` auf, sendet EINEN Batch, legt
+     `content/batch-<Datum>-<kurz>` mit Merkdatei `content/batches/<Datum>-<kurz>.json` an (Batch-ID, Art, Modell,
+     Denktiefe, Auswahl, Anzahl, Kostenschätzung, Liste der Anfragen) und endet. Probelauf: feste Anfragen, keine API.
+   - **`content-collect`** (`collect.ts`, `results.ts`): findet Branches über die Merkdatei (`status: submitted`),
+     Zuordnung nur per `custom_id`; `succeeded` + `end_turn` → JSON → Antwort-Schema → Datei-Schema → Entwurf
+     (`origin: batch`, `expert_reviewed: false`); `errored`/`expired`/`canceled`, `refusal`, `max_tokens`, anderer
+     Stopp-Grund, kein JSON, ungültig, ID schon vergeben/doppelt, unbekannte oder fehlende `custom_id` → nicht
+     gespeichert, im Bericht. Danach `content:validate` (alle Inhalte, Versionsregel gegen `origin/main`), Prettier der
+     geänderten Dateien und Typprüfung; rot → kein Pull Request (Branch bleibt unverändert). Sonst Pull Request mit
+     Prüfbericht, Kosten und „So testest du es am Handy“, danach `gh workflow run ci.yml --ref <branch>`. Fehlt ein
+     Pull Request (z. B. gh-Fehler), holt der nächste Lauf ihn nach.
+   - **`content-review`** (`review.ts`): IDs, Zielstatus `published`/`archived`/`draft`, Prüfer → Status,
+     `reviewed_by`/`reviewed_at` (bei `draft` geleert), eigene Prüfung wie oben, Pull Request, `ci` starten.
+   - **`content-seed`** (`seed.ts`): prüft ALLES, bei einem blockierenden Fehler nichts; Paket nur `published`, je Einheit
+     `estimated_minutes` (`estimateSessionMinutes`); Aufruf `rpc/seed_content` mit `SUPABASE_URL` + `SUPABASE_SECRET_KEY`
+     (neuer Secret Key nur im `apikey`-Header, alter `service_role`-JWT zusätzlich als Bearer); ohne Secrets grün mit
+     Hinweis.
+   - git/gh laufen ohne Shell (Argument-Listen); Workflow-Eingaben kommen nur über Umgebungsvariablen in die Skripte.
+2. **Workflows:** `content-generate` (Eingaben Art, Auswahl, Anzahl, Probelauf; ohne Schlüssel und ohne Probelauf grün
+   übersprungen), `content-collect` (alle 3 Stunden + per Hand; Vorprüfung per `git ls-remote` + `jq` ohne Installation
+   und ohne Schlüssel; Rechte `contents`, `pull-requests`, `actions: write`), `content-review` (manuell),
+   `content-seed` (Push auf `main` mit `content/**`, nach erfolgreichem `db-migrate` per `workflow_run`, per Hand).
+   `ci` behält „Run workflow“. Secrets stehen jeweils nur im ausführenden Schritt. Kein Workflow genehmigt Pull
+   Requests.
+3. **Tests** (Vitest, ohne Netz und ohne Schlüssel): Schema-Bau und Anfrage-Texte, Kosten und Deckel, Auswahl, alle
+   Ergebnis-Arten und Stopp-Gründe, `custom_id`-Zuordnung bei vertauschter Reihenfolge, Probelauf Ende-zu-Ende
+   (generate → collect im temporären git-Repository mit lokalem origin, gh gefälscht), echter Lauf mit gemocktem Client
+   (läuft noch / kein Schlüssel / fertig), Abbruch bei roter Prüfung, Nachholen eines fehlenden Pull Requests,
+   content-review (Freigabe, V3-Blockade, ungültige Eingaben), Seed-Paket und -Aufruf (nur published, Abbruch bei Rot).
+4. **Doku:** `docs/SETUP.md` Teil E (Monatslimit 30 $, Variablen), Teil H (Pull Requests durch Workflows, Schutzregel
+   `main`), „Inhalte erzeugen und freigeben am Handy“ (inkl. Probelauf); `.env.example`.
+
+**Entscheidungen beim Umsetzen (zur Wächter-Prüfung):**
+
+1. `content-collect` läuft **alle 3 Stunden** (Minute 17) statt stündlich – GitHub rechnet jeden Lauf mit mindestens
+   einer Minute ab. Per Hand geht es jederzeit sofort. Abschnitte 4, 10, 12, 13 und 15 sind entsprechend angepasst.
+2. Herkunft der Batch-Entwürfe: `meta.origin = "batch"` (vorhandener Enum-Wert aus Etappe A, auch in der Datenbank),
+   `meta.batch_id` = Batch-ID. Probelauf: `model = "probelauf-ohne-ki"`, `batch_id = "probelauf_…"`, Prüfnotiz
+   „Probelauf – … nicht freigeben“; der Pull Request heißt „Probelauf: … – nicht mergen“.
+3. Die Merkdatei bleibt nach dem Merge als Protokoll unter `content/batches/` (nicht Teil von content:validate).
+4. Übungs-Zellen werden nie übersprungen (pro Bewegungsmuster/Gerät gibt es mehrere sinnvolle Übungen); das Modell
+   wählt die ID, Kollisionen mit vorhandenen IDs werden nicht gespeichert. Vorlagen-IDs ergeben sich aus der Zelle
+   (`…-30-45min`; `45-60` ohne Zusatz wie im Startbestand).
+5. „Typprüfung der geänderten Dateien“: Die geänderten Dateien sind JSON – ihre Typprüfung ist das Datei-Schema (Ü1)
+   in content:validate. Zusätzlich läuft `tsc` für `packages/content`.
+6. `content-review` kann auch „zurück auf Entwurf“ (`draft`, Abschnitt 6). Die Version bleibt bei Statuswechseln
+   gleich (Etappe A, Entscheidung 4).
+7. `content-seed` prüft auch ohne Supabase-Secrets alle Inhalte (Plan Abschnitt 12, Schritt 8) und endet dann grün mit
+   Hinweis; bei roten Fehlern wird er rot.
+8. Modelle mit hinterlegtem Batch-Preis: Opus 5.5, Sonnet 5.5, Opus 5, Fable 5.1. Ein anderes `CONTENT_MODEL` bricht
+   ab, bis ein Preis in `pricing.ts` steht – der Deckel fällt nie stillschweigend aus.
+
+**Noch offen (Etappe C):** Redaktionsbereich `/admin`, SETUP-Teil G.
