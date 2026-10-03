@@ -11,7 +11,11 @@
     "lint": {},
     "typecheck": {},
     "test": {
-      "inputs": ["$TURBO_DEFAULT$", "$TURBO_ROOT$/supabase/migrations/**"],
+      "inputs": [
+        "$TURBO_DEFAULT$",
+        "$TURBO_ROOT$/supabase/migrations/**",
+        "$TURBO_ROOT$/content/**"
+      ],
       "outputs": []
     },
     "dev": {

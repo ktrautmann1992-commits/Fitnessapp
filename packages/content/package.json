@@ -3,12 +3,19 @@
   "version": "0.0.0",
   "private": true,
   "type": "module",
-  "description": "Skripte für die Offline-Content-Generierung (Claude Batch-API) und Seeds.",
+  "description": "Inhalte prüfen (content:validate), Offline-Content-Generierung (Claude Batch-API) und Seeds.",
   "scripts": {
+    "validate": "tsx src/validate-cli.ts",
     "generate": "node --experimental-strip-types src/generate.ts",
     "seed": "node --experimental-strip-types src/seed.ts",
     "lint": "eslint .",
     "typecheck": "tsc --noEmit",
     "test": "vitest run --passWithNoTests"
+  },
+  "dependencies": {
+    "@fitnessapp/core": "workspace:*"
+  },
+  "devDependencies": {
+    "tsx": "^4.23.15"
   }
 }

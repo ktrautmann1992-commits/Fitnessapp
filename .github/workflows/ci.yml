@@ -1,6 +1,7 @@
 name: ci
 
-# Prüft bei jeder Änderung: Formatierung, Lint, Typen, Tests und ob beide Apps bauen.
+# Prüft bei jeder Änderung: Formatierung, Inhalte (content:validate), Lint, Typen, Tests und ob beide Apps bauen.
+# „Run workflow“ (workflow_dispatch) startet die Prüfung auch von Hand bzw. für Pull Requests von Workflows.
 on:
   push:
     branches: [main]
@@ -29,6 +30,16 @@ jobs:
       # Passt die App (tokens.generated.ts) noch zum Farbschema der Website (theme.css)? Siehe docs/DESIGN.md.
       - name: Farbschema prüfen (theme.css → App-Tokens)
         run: pnpm --filter @fitnessapp/ui tokens:check
+      # Prüft alle Inhalte unter content/ (Übungen, Plan-Vorlagen) mit den Regeln aus docs/PLAN-PHASE-2.md
+      # Abschnitt 7. Schlägt fehl bei Schema-/Dateifehlern und bei roten Fehlern an FREIGEGEBENEN Inhalten;
+      # der Bericht steht zusätzlich in der Zusammenfassung des Laufs. Der Vergleich mit main prüft, ob
+      # geänderte freigegebene Inhalte eine höhere Version haben.
+      - name: Vergleichsstand main holen (für die Versionsregel)
+        run: >
+          git fetch --no-tags --depth=1 origin +refs/heads/main:refs/remotes/origin/main
+          || echo "::notice::main nicht abrufbar – die Versionsregel wird übersprungen."
+      - name: Inhalte prüfen (content:validate)
+        run: pnpm content:validate --base origin/main
       - name: Lint, Typen, Tests
         run: pnpm check
       - name: Apps bauen
