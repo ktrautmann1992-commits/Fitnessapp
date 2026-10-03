@@ -188,6 +188,9 @@ test('mit Einwilligung: Körperdaten, Umfänge, Gesundheits-Check mit Arzt-Hinwe
   await next(page);
 
   await expect(page.getByRole('heading', { name: 'Einwilligung Gesundheitsdaten' })).toBeVisible();
+  await expect(
+    page.getByText(/Im Testmodus werden deine Angaben nur in diesem Browser/),
+  ).toBeVisible();
   const consentBox = page.getByRole('checkbox', {
     name: 'Ich willige in die Verarbeitung meiner Gesundheitsdaten wie beschrieben ein.',
   });

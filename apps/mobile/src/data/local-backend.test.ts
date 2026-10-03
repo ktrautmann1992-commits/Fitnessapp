@@ -259,3 +259,29 @@ describe('Testmodus: Konto und Gerät', () => {
     expect(store.dump()).toEqual({});
   });
 });
+
+describe('Testmodus: Wertebereiche wie in der Datenbank', () => {
+  it('lehnt Größe außerhalb 100–250 cm und Messdatum übermorgen ab – nichts wird gespeichert', async () => {
+    const { backend } = await signedInWithProfile();
+    await save(backend, { step: 'health_consent', granted: true });
+    await expectCode(
+      save(backend, {
+        step: 'body_metrics',
+        value: { heightCm: 500, weightKg: 70 },
+        measuredOn: TODAY,
+      }),
+      'unknown',
+    );
+    await expectCode(
+      save(backend, {
+        step: 'body_metrics',
+        value: { heightCm: 170, weightKg: 70 },
+        measuredOn: '2026-10-05',
+      }),
+      'unknown',
+    );
+    const { rows } = await backend.loadRows();
+    expect(rows.bodyMetrics).toEqual([]);
+    expect(rows.profile?.onboarding_step).toBe('body_metrics');
+  });
+});

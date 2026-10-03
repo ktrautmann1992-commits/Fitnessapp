@@ -48,6 +48,8 @@ export const STORAGE_KEYS = {
   syncQueue: 'fitnessapp.queue.v1',
   /** Supabase-Modus: zwischengespeicherte Nicht-Gesundheitsdaten (für offline). */
   rowsCache: 'fitnessapp.cache.v1',
+  /** Supabase-Modus: zuletzt geladene Einwilligungstexte und -versionen (keine Nutzerdaten, für offline). */
+  documentsCache: 'fitnessapp.documents.v1',
   /** Geburtsdatum aus Schritt „Alter“ bis zum Login (nur wenn ≥ 16, keine Gesundheitsdaten). */
   pendingBirthDate: 'fitnessapp.pending-birth-date.v1',
 } as const;

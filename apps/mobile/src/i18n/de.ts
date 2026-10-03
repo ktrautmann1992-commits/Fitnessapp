@@ -148,6 +148,8 @@ export const de = {
       decline: 'Ohne Einwilligung fortfahren',
       declineHint:
         'Ohne Einwilligung kannst du die App nutzen, bekommst aber nur allgemeine Pläne – ohne Körperdaten, ohne Körperumfänge, ohne Gesundheits-Check und ohne Unverträglichkeiten.',
+      testModeNote:
+        'Im Testmodus werden deine Angaben nur in diesem Browser/auf diesem Gerät gespeichert, nicht auf einem Server.',
       reconsentTitle: 'Neue Fassung der Einwilligung',
       reconsentIntro:
         'Wir haben den Text geändert. Bis du neu zustimmst, bleiben deine bisherigen Daten sichtbar, können aber nicht ergänzt werden.',

@@ -170,7 +170,8 @@ Einmalig in Supabase einrichten (Handy-Browser, ggf. „Desktop-Website anforder
 
 1. **supabase.com** → euer Projekt öffnen → links **Authentication**.
 2. **Sign In / Providers** → **Email** antippen → **Enable Email provider** eingeschaltet lassen.
-   **Confirm email** eingeschaltet lassen → **Save**.
+   **Confirm email** eingeschaltet lassen. Prüfen, dass **Email OTP Length** auf **6** steht (die App
+   erwartet genau 6 Ziffern) → **Save**.
 3. **Emails** (bzw. **Email Templates**) → Vorlage **Magic Link** öffnen.
    - **Subject:** `Dein Anmeldecode für Fitnessapp`
    - **Body** komplett ersetzen durch:
@@ -193,8 +194,8 @@ Einmalig in Supabase einrichten (Handy-Browser, ggf. „Desktop-Website anforder
    Code aus der Mail eintippen → **Anmelden**. In **Table Editor → profiles** steht danach eure Zeile.
 
 **Hinweis:** Ohne eigenen Mail-Dienst verschickt Supabase nur wenige Mails pro Stunde (Meldung
-„Zu viele Versuche“). Für den Start einen EU-Mail-Dienst unter **Project Settings → Authentication → SMTP**
-eintragen (siehe docs/PLAN-PHASE-1.md Abschnitt 4).
+„Zu viele Versuche“). Für den Start einen EU-Mail-Dienst eintragen – je nach Supabase-Version unter
+**Authentication → Emails → SMTP Settings** (siehe docs/PLAN-PHASE-1.md Abschnitt 4).
 
 ---
 

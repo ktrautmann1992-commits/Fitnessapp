@@ -68,6 +68,7 @@ export default function HealthConsentScreen() {
         status={status}
         checked={checked}
         onCheck={setChecked}
+        testMode={app.backend.mode === 'local'}
       />
     </Screen>
   );

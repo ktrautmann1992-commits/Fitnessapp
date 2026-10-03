@@ -108,18 +108,38 @@ describe('executeWriteOp', () => {
     expect(calls[0]?.args[0]?.[1]).toEqual({ onConflict: 'user_id,measured_on' });
   });
 
-  it('Ersetzen der Vorlieben: erst eigene Zeilen des Bereichs löschen, dann einfügen', async () => {
+  it('Ersetzen von Vorlieben und Geräten: atomar über Datenbank-Funktionen (RPC)', async () => {
     const { client, calls } = fakeClient();
     await executeWriteOp(client, USER_ID, {
       kind: 'replace_food_preferences',
       scope: 'taste',
       rows: [{ user_id: USER_ID, food_group: 'fish', kind: 'like' }],
     });
-    expect(calls.map((c) => c.chain[0])).toEqual(['delete', 'insert']);
-    expect(calls[0]?.args.slice(1)).toEqual([
-      ['user_id', USER_ID],
-      ['kind', ['like', 'dislike']],
+    await executeWriteOp(client, USER_ID, {
+      kind: 'replace_user_equipment',
+      location: 'home',
+      rows: [
+        {
+          user_id: USER_ID,
+          equipment_id: 'dumbbells',
+          location: 'home',
+          weights_kg: [2],
+          note: null,
+        },
+      ],
+    });
+    expect(calls.map((c) => c.table)).toEqual([
+      'rpc:replace_food_preferences',
+      'rpc:replace_user_equipment',
     ]);
+    expect(calls[0]?.args[0]?.[0]).toEqual({
+      p_scope: 'taste',
+      p_items: [{ food_group: 'fish', kind: 'like' }],
+    });
+    expect(calls[1]?.args[0]?.[0]).toEqual({
+      p_location: 'home',
+      p_items: [{ equipment_id: 'dumbbells', weights_kg: [2], note: null }],
+    });
   });
 
   it('doppelte Einwilligung (unique index) ist kein Fehler, andere Fehler schon', async () => {
@@ -220,6 +240,27 @@ describe('Supabase-Modus: Speichern', () => {
     await backend.deleteAccount();
     expect(calls.some((c) => c.table === 'rpc:delete_my_account')).toBe(true);
     expect(store.dump()).toEqual({});
+  });
+
+  it('Einwilligungstexte: online zwischengespeichert, offline der letzte Stand', async () => {
+    let online = true;
+    const { client } = fakeClient((call) => {
+      if (!online) {
+        return { error: networkError };
+      }
+      return call.table.startsWith('rpc:')
+        ? { data: 1 }
+        : { data: { consent_type: 'terms', version: 1, title_de: 'Titel', body_de: 'Text' } };
+    });
+    const store = createMemoryStore();
+    const backend = createSupabaseBackend(options(client, store));
+    const docs = await backend.loadConsentDocuments();
+    expect(docs).toHaveLength(3);
+    online = false;
+    expect(await backend.loadConsentDocuments()).toEqual(docs);
+    // Ohne gespeicherten Stand bleibt es beim Fehler (Bildschirm zeigt „Erneut versuchen“).
+    const empty = createSupabaseBackend(options(client, createMemoryStore()));
+    await expect(empty.loadConsentDocuments()).rejects.toMatchObject({ code: 'network' });
   });
 
   it('Laden offline → zwischengespeicherter Stand ohne Gesundheitsdaten', async () => {

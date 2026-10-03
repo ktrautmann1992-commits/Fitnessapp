@@ -81,7 +81,9 @@ export function HealthConsentContent({
   checked,
   onCheck,
   checkError,
+  testMode = false,
 }: {
+  testMode?: boolean;
   document: ConsentDocument | undefined;
   status: HealthConsentStatus;
   checked: boolean;
@@ -95,6 +97,7 @@ export function HealthConsentContent({
           {t.steps.healthConsent.reconsentIntro}
         </Notice>
       ) : null}
+      {testMode ? <Notice tone="warning">{t.steps.healthConsent.testModeNote}</Notice> : null}
       <Card>
         {document ? (
           <>
@@ -172,6 +175,7 @@ export function HealthConsentStep({ ctl }: { ctl: StepController }) {
           setCheckError(undefined);
         }}
         checkError={checkError}
+        testMode={app.backend.mode === 'local'}
       />
       {status === 'valid' ? null : <Notice tone="info">{t.steps.healthConsent.declineHint}</Notice>}
     </Screen>

@@ -14,6 +14,7 @@ import {
 import { healthConsentStatus } from '../state/flow';
 import { BackendError, type Backend } from './backend';
 import { LOCAL_CONSENT_DOCUMENTS } from './consent-texts';
+import { isValidOp } from './local-rules';
 import { readJson, STORAGE_KEYS, writeJson, type KeyValueStore } from './kv';
 import { type ConsentVersions, versionsFromDocuments } from './mapping';
 import { planSave } from './plan-save';
@@ -38,6 +39,7 @@ import {
  * - ohne Profil keine Einwilligungen und keine Daten,
  * - Einwilligung nur in der aktuellen Textversion,
  * - Gesundheitsdaten (inkl. Unverträglichkeiten) nur mit gültiger Einwilligung health_data,
+ * - Wertebereiche und Messdatum wie die CHECK-Bedingungen (local-rules.ts, Schemas aus packages/core),
  * - Gesundheits-Check: Flags werden hier neu berechnet (evaluateHealthScreening), bei Flags muss der
  *   Arzt-Hinweis bestätigt sein,
  * - Widerruf von health_data löscht alle Gesundheitsdaten.
@@ -94,6 +96,10 @@ export function createLocalBackend(store: KeyValueStore, options: LocalBackendOp
   function applyChecked(rows: UserRows, op: WriteOp): UserRows {
     if (isSensitiveOp(op) && healthConsentStatus(rows, LOCAL_VERSIONS) !== 'valid') {
       throw new BackendError('consent_required', { sensitive: true });
+    }
+    // Wertebereiche, Messdatum (höchstens heute + 1 Tag) usw. wie die CHECK-Bedingungen der Datenbank.
+    if (!rows.profile || !isValidOp(op, { today: options.today(), profile: rows.profile })) {
+      throw new BackendError('unknown', { sensitive: isSensitiveOp(op) });
     }
     if (op.kind === 'grant_consent' && op.version !== CURRENT_CONSENT_VERSIONS[op.consentType]) {
       throw new BackendError('unknown');

@@ -19,7 +19,6 @@ import {
   applyWriteOps,
   isDirectOp,
   isSensitiveOp,
-  kindsForScope,
   withoutHealthData,
   type ApplyContext,
   type WriteOp,
@@ -131,32 +130,29 @@ export async function executeWriteOp(
     case 'upsert_goals':
       check(await client.from('goals').upsert(op.row, { onConflict: 'user_id' }));
       return;
+    // Löschen + Einfügen atomar in einer Datenbank-Funktion (Migration 20261003120900_replace_rpcs.sql).
     case 'replace_user_equipment':
       check(
-        await client
-          .from('user_equipment')
-          .delete()
-          .eq('user_id', userId)
-          .eq('location', op.location),
+        await client.rpc('replace_user_equipment', {
+          p_location: op.location,
+          p_items: op.rows.map((row) => ({
+            equipment_id: row.equipment_id,
+            weights_kg: row.weights_kg,
+            note: row.note,
+          })),
+        }),
       );
-      if (op.rows.length > 0) {
-        check(await client.from('user_equipment').insert(op.rows));
-      }
       return;
     case 'upsert_nutrition_prefs':
       check(await client.from('nutrition_prefs').upsert(op.row, { onConflict: 'user_id' }));
       return;
     case 'replace_food_preferences':
       check(
-        await client
-          .from('food_preferences')
-          .delete()
-          .eq('user_id', userId)
-          .in('kind', kindsForScope(op.scope)),
+        await client.rpc('replace_food_preferences', {
+          p_scope: op.scope,
+          p_items: op.rows.map((row) => ({ food_group: row.food_group, kind: row.kind })),
+        }),
       );
-      if (op.rows.length > 0) {
-        check(await client.from('food_preferences').insert(op.rows));
-      }
       return;
     case 'upsert_body_metrics':
       check(
@@ -320,6 +316,35 @@ export function createSupabaseBackend(options: SupabaseBackendOptions): Backend 
     };
   }
 
+  async function fetchConsentDocuments(): Promise<ConsentDocument[]> {
+    const versions = await Promise.all(
+      CONSENT_TYPES_WITH_TEXT.map(async (type) => {
+        const { data, error } = await client.rpc('current_consent_version', { p_type: type });
+        if (error) {
+          throw error;
+        }
+        return { type, version: data as number | null };
+      }),
+    );
+    const documents: ConsentDocument[] = [];
+    for (const { type, version } of versions) {
+      if (version === null) {
+        continue;
+      }
+      const { data, error } = await client
+        .from('consent_documents')
+        .select('consent_type, version, title_de, body_de')
+        .eq('consent_type', type)
+        .eq('version', version)
+        .single();
+      if (error) {
+        throw error;
+      }
+      documents.push({ type, version, title: data.title_de, body: data.body_de });
+    }
+    return documents;
+  }
+
   const backend: Backend = {
     mode: 'supabase',
     signIn: {
@@ -361,32 +386,20 @@ export function createSupabaseBackend(options: SupabaseBackendOptions): Backend 
     },
 
     loadConsentDocuments: async () => {
-      const versions = await Promise.all(
-        CONSENT_TYPES_WITH_TEXT.map(async (type) => {
-          const { data, error } = await client.rpc('current_consent_version', { p_type: type });
-          if (error) {
-            throw toBackendError(error);
+      try {
+        const documents = await fetchConsentDocuments();
+        await writeJson(store, STORAGE_KEYS.documentsCache, documents);
+        return documents;
+      } catch (error) {
+        // Offline: zuletzt geladene Texte und Versionen nutzen statt „Laden fehlgeschlagen“.
+        if (classifySupabaseError(error) === 'network') {
+          const cached = await readJson<ConsentDocument[]>(store, STORAGE_KEYS.documentsCache);
+          if (cached && cached.length > 0) {
+            return cached;
           }
-          return { type, version: data as number | null };
-        }),
-      );
-      const documents: ConsentDocument[] = [];
-      for (const { type, version } of versions) {
-        if (version === null) {
-          continue;
         }
-        const { data, error } = await client
-          .from('consent_documents')
-          .select('consent_type, version, title_de, body_de')
-          .eq('consent_type', type)
-          .eq('version', version)
-          .single();
-        if (error) {
-          throw toBackendError(error);
-        }
-        documents.push({ type, version, title: data.title_de, body: data.body_de });
+        throw toBackendError(error);
       }
-      return documents;
     },
 
     createProfile: async (birthDate) => {

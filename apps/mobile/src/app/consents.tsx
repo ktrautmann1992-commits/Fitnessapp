@@ -1,10 +1,10 @@
 import { activeConsentVersion, type ConsentType } from '@fitnessapp/core';
-import { useRouter, type Href } from 'expo-router';
+import { Redirect, useRouter, type Href } from 'expo-router';
 import { useState } from 'react';
 import { View } from 'react-native';
 
 import { Screen, StepFooter } from '@/components/screen';
-import { Body, Button, Checkbox, ErrorState, LoadingState } from '@/components/ui';
+import { Body, Button, Checkbox, LoadingState } from '@/components/ui';
 import { consentRecordsFromRows } from '@/data/mapping';
 import { t } from '@/i18n';
 import { errorText } from '@/lib/error-text';
@@ -26,11 +26,7 @@ export default function BaseConsentsScreen() {
     );
   }
   if (!app.session || !app.rows?.profile) {
-    return (
-      <Screen>
-        <ErrorState message={t.errors.notSignedIn} onRetry={() => router.replace('/')} />
-      </Screen>
-    );
+    return <Redirect href="/" />;
   }
 
   const records = consentRecordsFromRows(app.rows.consents);
