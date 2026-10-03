@@ -15,7 +15,7 @@ jobs:
   check:
     name: Lint, Typen, Tests, Build
     runs-on: ubuntu-latest
-    timeout-minutes: 20
+    timeout-minutes: 30
     steps:
       - uses: actions/checkout@v4
       - uses: pnpm/action-setup@v4
@@ -33,3 +33,17 @@ jobs:
         run: pnpm check
       - name: Apps bauen
         run: pnpm build
+      # Klickt die Web-Version der App (Testmodus, Handy-Ansicht) einmal komplett durch.
+      - name: Browser für E2E-Tests installieren
+        run: pnpm --filter @fitnessapp/mobile exec playwright install --with-deps chromium
+      - name: E2E-Tests (App im Browser, Testmodus)
+        run: pnpm --filter @fitnessapp/mobile test:e2e
+      - name: E2E-Bericht hochladen (nur bei Fehlern)
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: playwright-report
+          path: |
+            apps/mobile/playwright-report
+            apps/mobile/test-results
+          retention-days: 7

@@ -35,3 +35,8 @@ supabase/.branches/
 *.log
 .vercel
 coverage/
+
+# Playwright (E2E-Tests apps/mobile)
+test-results/
+playwright-report/
+apps/mobile/screenshots/
