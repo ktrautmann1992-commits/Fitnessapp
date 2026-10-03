@@ -1,40 +1,56 @@
 name: content-generate
 
 # Manuell startbar (GitHub-App → Actions → content-generate → Run workflow).
-# Erzeugt Inhalte per Claude Batch-API und speichert sie als Entwurf (ab Phase 2).
+# Schickt neue Aufträge als EINEN Batch an die Claude Message Batches API, legt den Arbeits-Branch
+# content/batch-<Datum>-<kurz> mit einer Merkdatei an und ENDET sofort (kein Warten). Die Ergebnisse holt
+# content-collect ab. Vorher: Kostenschätzung (schlimmster Fall) gegen CONTENT_MAX_USD – bei Überschreitung
+# wird nichts gesendet. „Probelauf“ geht ohne Schlüssel und ohne Kosten. Details: docs/PLAN-PHASE-2.md
+# Abschnitte 4 und 10, Anleitung: docs/SETUP.md „Inhalte erzeugen und freigeben am Handy“.
 on:
   workflow_dispatch:
     inputs:
-      kind:
+      art:
         description: 'Welche Inhalte erzeugen?'
         type: choice
         options:
           - plan-templates
           - exercises
-          - recipes
         default: plan-templates
+      auswahl:
+        description: 'Auswahl aus der Matrix, z. B. „alle“, „muskelaufbau 30-45“ oder „squat band“'
+        type: string
+        default: alle
+      anzahl:
+        description: 'Höchstens so viele Anfragen (1–200)'
+        type: number
+        default: 10
+      probelauf:
+        description: 'Probelauf (ohne KI, kostenlos)'
+        type: boolean
+        default: false
+
+permissions:
+  contents: write
+
+concurrency:
+  group: content-generate
+  cancel-in-progress: false
 
 jobs:
   generate:
     runs-on: ubuntu-latest
-    timeout-minutes: 60
-    env:
-      ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
-      SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
-      SUPABASE_SECRET_KEY: ${{ secrets.SUPABASE_SECRET_KEY }}
-      CONTENT_KIND: ${{ inputs.kind }}
+    timeout-minutes: 15
     steps:
-      - name: Secrets prüfen
+      - name: Voraussetzungen prüfen
         id: secrets
+        env:
+          HAS_KEY: ${{ secrets.ANTHROPIC_API_KEY != '' }}
+          DRY_RUN: ${{ inputs.probelauf }}
         run: |
-          missing=""
-          [ -z "$ANTHROPIC_API_KEY" ] && missing="$missing ANTHROPIC_API_KEY"
-          [ -z "$SUPABASE_URL" ] && missing="$missing SUPABASE_URL"
-          [ -z "$SUPABASE_SECRET_KEY" ] && missing="$missing SUPABASE_SECRET_KEY"
-          if [ -n "$missing" ]; then
-            echo "::notice title=content-generate übersprungen::Es fehlen GitHub-Secrets:$missing – siehe docs/SETUP.md"
+          if [ "$DRY_RUN" != "true" ] && [ "$HAS_KEY" != "true" ]; then
+            echo "::notice title=content-generate übersprungen::Es fehlt das GitHub-Secret ANTHROPIC_API_KEY – siehe docs/SETUP.md Teil E. Ohne Schlüssel geht nur der Probelauf."
             echo "### ⏭️ content-generate übersprungen" >> "$GITHUB_STEP_SUMMARY"
-            echo "Es fehlen GitHub-Secrets:$missing. Anleitung: docs/SETUP.md" >> "$GITHUB_STEP_SUMMARY"
+            echo "Es fehlt das GitHub-Secret ANTHROPIC_API_KEY (docs/SETUP.md Teil E). Ohne Schlüssel geht nur der **Probelauf**." >> "$GITHUB_STEP_SUMMARY"
             echo "ready=false" >> "$GITHUB_OUTPUT"
           else
             echo "ready=true" >> "$GITHUB_OUTPUT"
@@ -42,6 +58,8 @@ jobs:
 
       - uses: actions/checkout@v4
         if: steps.secrets.outputs.ready == 'true'
+        with:
+          fetch-depth: 0
       - uses: pnpm/action-setup@v4
         if: steps.secrets.outputs.ready == 'true'
       - uses: actions/setup-node@v4
@@ -51,6 +69,17 @@ jobs:
           cache: pnpm
       - run: pnpm install --frozen-lockfile
         if: steps.secrets.outputs.ready == 'true'
-      - name: Inhalte erzeugen
+      # Eingaben nur über Umgebungsvariablen (nie direkt im Skript-Text) – so können sie keine Befehle einschleusen.
+      # Der Schlüssel steht nur in diesem Schritt zur Verfügung.
+      - name: Batch absenden
         if: steps.secrets.outputs.ready == 'true'
+        env:
+          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+          CONTENT_KIND: ${{ inputs.art }}
+          CONTENT_SELECTION: ${{ inputs.auswahl }}
+          CONTENT_COUNT: ${{ inputs.anzahl }}
+          CONTENT_DRY_RUN: ${{ inputs.probelauf }}
+          CONTENT_MODEL: ${{ vars.CONTENT_MODEL }}
+          CONTENT_EFFORT: ${{ vars.CONTENT_EFFORT }}
+          CONTENT_MAX_USD: ${{ vars.CONTENT_MAX_USD }}
         run: pnpm --filter @fitnessapp/content generate

@@ -61,6 +61,12 @@ Verbindlich ist der freigegebene Ablauf in `docs/PLAN-PHASE-1.md` Abschnitt 3 (S
 - **Einspielen:** Nur Freigegebenes kommt per `seed_content()` (eine Transaktion, nur `service_role`) in die
   Datenbank; nicht mehr Freigegebenes wird archiviert statt gelöscht. Entwürfe liegen nie in Supabase.
 - Startbestand (Phase 2, Etappe A): 52 Übungen und 24 Plan-Vorlagen als KI-Entwurf (`origin: claude_session`).
+- **Pipeline (Phase 2, Etappe B, `packages/content/src/pipeline`):** `content-generate` schickt einen Batch an die
+  Claude Message Batches API (Structured Outputs, Kostenschätzung vorab, Deckel `CONTENT_MAX_USD`, höchstens 200
+  Anfragen) und endet; `content-collect` (alle 3 Stunden + per Hand) holt die Ergebnisse über `custom_id` ab, speichert
+  gültige Antworten als `draft` (`origin: batch`), prüft alles und öffnet einen Pull Request; `content-review` setzt den
+  Status per Pull Request; `content-seed` prüft alles und spielt nur `published` ein. Inhaltsarten (`exercise`,
+  `plan_template`) sind austauschbar – Rezepte kommen in Phase 5 als weitere Art dazu. Probelauf ohne Schlüssel.
 
 ## 4. Trainingsplan-Engine (`packages/core/plan`)
 1. **Matching:** passende Vorlage nach Ziel, Level, Tagen, Dauer, Equipment-Profil (Scoring, beste Übereinstimmung)

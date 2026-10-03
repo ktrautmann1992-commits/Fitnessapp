@@ -3,17 +3,22 @@
   "version": "0.0.0",
   "private": true,
   "type": "module",
-  "description": "Inhalte prüfen (content:validate), Offline-Content-Generierung (Claude Batch-API) und Seeds.",
+  "description": "Inhalte prüfen (content:validate), Content-Pipeline (Claude Batch-API: generate, collect, review) und Seed.",
   "scripts": {
     "validate": "tsx src/validate-cli.ts",
-    "generate": "node --experimental-strip-types src/generate.ts",
-    "seed": "node --experimental-strip-types src/seed.ts",
+    "generate": "tsx src/generate-cli.ts",
+    "collect": "tsx src/collect-cli.ts",
+    "review": "tsx src/review-cli.ts",
+    "seed": "tsx src/seed-cli.ts",
     "lint": "eslint .",
     "typecheck": "tsc --noEmit",
     "test": "vitest run --passWithNoTests"
   },
   "dependencies": {
-    "@fitnessapp/core": "workspace:*"
+    "@anthropic-ai/sdk": "^0.131.0",
+    "@fitnessapp/core": "workspace:*",
+    "prettier": "^3.9.9",
+    "zod": "^4.6.5"
   },
   "devDependencies": {
     "tsx": "^4.23.15"

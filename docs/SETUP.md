@@ -3,7 +3,9 @@
 Diese Anleitung verbindet das Repository mit **Supabase** (Datenbank), **Vercel** (Vorschau-Links im Browser),
 **Expo** (echte App-Builds) und **Anthropic** (Inhalts-Erzeugung). Alles geht im Handy-Browser.
 
-**Reihenfolge:** Teil A → B → C → D → E → F. Für den ersten Vorschau-Link reicht **Teil C**.
+**Reihenfolge:** Teil A → B → C → D → E → F → H. Für den ersten Vorschau-Link reicht **Teil C**.
+Für die Content-Pipeline (Übungen und Plan-Vorlagen) brauchst du **Teil H**, für echte KI-Entwürfe zusätzlich
+**Teil E**. Die Bedienung steht am Ende unter **„Inhalte erzeugen und freigeben am Handy“**.
 Die anderen Teile kannst du später nachholen. Bis dahin überspringen die GitHub Actions ihre Arbeit mit einem Hinweis.
 Sie werden nicht rot.
 
@@ -32,6 +34,9 @@ Sie werden nicht rot.
 | `EXPO_TOKEN`                           | Expo (D4)     | GitHub Secret (B)                                                         | **JA**  |
 | Expo-Projekt-ID                        | Expo (D3)     | Claude in einer Sitzung nennen (D5), kommt in `apps/mobile/app.config.ts` | nein    |
 | `ANTHROPIC_API_KEY`                    | Anthropic (E) | GitHub Secret (B)                                                         | **JA**  |
+| `CONTENT_MODEL` (optional)             | selbst (E5)   | GitHub **Variable** (E5), Standard `claude-opus-5-5`                      | nein    |
+| `CONTENT_EFFORT` (optional)            | selbst (E5)   | GitHub **Variable** (E5), Standard `high`                                 | nein    |
+| `CONTENT_MAX_USD` (optional)           | selbst (E5)   | GitHub **Variable** (E5), Standard `15`                                   | nein    |
 
 \* Der „Publishable Key“ darf öffentlich in App und Website stehen. Die Daten schützt die Datenbank selbst
 (Row Level Security). Der **Secret Key** dagegen darf **nie** in Vercel-Variablen mit `EXPO_PUBLIC_` oder
@@ -149,10 +154,22 @@ in **Phase 4** eingerichtet. Bis dahin endet der Workflow `eas-build` mit einem 
 
 ## Teil E – Anthropic (Inhalts-Erzeugung, ab Phase 2)
 
+Nur nötig für **echte** KI-Entwürfe. Den Probelauf (siehe „Inhalte erzeugen und freigeben am Handy“) kannst du
+ohne Schlüssel machen.
+
 1. **console.anthropic.com** öffnen → anmelden.
-2. **Settings → Limits**: ein monatliches **Ausgabenlimit** festlegen (Kostenschutz).
+2. **Settings → Limits**: ein monatliches **Ausgabenlimit** festlegen – Empfehlung **30 $**. Das ist der dritte
+   Kostenschutz neben dem Deckel pro Lauf (15 $) und höchstens 200 Anfragen pro Lauf.
 3. **API Keys → Create Key** → Name `github-actions` → kopieren.
-4. Als GitHub Secret `ANTHROPIC_API_KEY` eintragen (Teil B).
+4. Als GitHub Secret `ANTHROPIC_API_KEY` eintragen (Teil B). `content-generate` und `content-collect` brauchen
+   **nur** diesen Schlüssel.
+5. Optional, nicht geheim: GitHub → Repository → **Settings → Secrets and variables → Actions** → Reiter
+   **Variables** → **New repository variable**:
+   - `CONTENT_MODEL` – Modell, Standard `claude-opus-5-5` (Claude Opus 5.5). Nur ändern, wenn ihr das
+     ausdrücklich wollt (z. B. `claude-sonnet-5-5`, günstiger).
+   - `CONTENT_EFFORT` – Denktiefe `low`, `medium`, `high` (Standard), `xhigh` oder `max`.
+   - `CONTENT_MAX_USD` – Kostendeckel pro Lauf in Dollar, Standard `15`. Liegt die Schätzung (schlimmster Fall)
+     darüber, wird **nichts** gesendet.
 
 ---
 
@@ -199,16 +216,98 @@ Einmalig in Supabase einrichten (Handy-Browser, ggf. „Desktop-Website anforder
 
 ---
 
+## Teil H – GitHub: Workflows dürfen Pull Requests öffnen
+
+Nötig für `content-collect` und `content-review`. Handy-Browser, ggf. „Desktop-Website anfordern“.
+
+1. **github.com** → euer Repository → **Settings**.
+2. Links **Actions → General**.
+3. Ganz unten bei **Workflow permissions**: **Read and write permissions** wählen.
+4. Den Haken **Allow GitHub Actions to create and approve pull requests** setzen → **Save**.
+
+> **Wichtig:** Unsere Workflows **öffnen** nur Pull Requests – sie **genehmigen nie** einen. Die Freigabe ist
+> immer der **Merge durch einen Menschen**. Schaltet ihr später Pflicht-Genehmigungen ein, darf eine Bot-Genehmigung
+> nicht als Freigabe zählen.
+
+**Optional: Schutzregel für `main`** (empfohlen, Pflicht bevor der Admin-Bereich je Schreibzugriff bekommt):
+
+1. **Settings → Branches** (bzw. **Rules → Rulesets**) → **Add branch protection rule** bzw. **New ruleset**.
+2. Branch: `main`.
+3. **Require a pull request before merging** anhaken. Die Zahl der nötigen Genehmigungen auf **0** lassen –
+   ihr könnt weiter selbst mergen.
+4. **Create** bzw. **Save changes**.
+
+---
+
+## Inhalte erzeugen und freigeben am Handy
+
+Alle Inhalte (Übungen, Plan-Vorlagen) liegen als Dateien im Repository. Der Weg ist immer:
+**erzeugen → abholen (Pull Request) → ansehen und mergen → freigeben (Pull Request) → mergen → einspielen**.
+Voraussetzung: Teil H. Wo du die Workflows findest: GitHub-App → Repository → **Actions** → Workflow antippen →
+**Run workflow** (oben rechts bzw. unten).
+
+### 1. Probelauf (ohne Schlüssel, kostenlos) – zuerst ausprobieren
+
+1. **Actions → content-generate → Run workflow**.
+2. **Welche Inhalte erzeugen?** `exercises` (oder `plan-templates`), **Probelauf** anhaken → **Run workflow**.
+3. Nach ca. 1 Minute ist der Lauf grün. In der **Summary** steht der Arbeits-Branch `content/batch-…`.
+4. **Actions → content-collect → Run workflow → Run workflow** (oder bis zu 3 Stunden warten – er läuft auch
+   automatisch).
+5. Unter **Pull requests** erscheint **„Probelauf: Neue Entwürfe … – nicht mergen“**. Im Text steht der
+   Prüfbericht: zwei gespeicherte Beispiele, eines absichtlich **ungültig**, eines **abgelehnt**. Darunter läuft
+   `ci`.
+6. Ansehen, dann den Pull Request **schließen** (nicht mergen) und unten **Delete branch** tippen.
+
+### 2. Echte Entwürfe erzeugen (mit Schlüssel aus Teil E)
+
+1. **Actions → content-generate → Run workflow**.
+2. **Welche Inhalte?** `plan-templates` oder `exercises`.
+3. **Auswahl** (optional): `alle` oder Begriffe aus der Matrix, getrennt mit Leerzeichen oder Komma:
+   - Vorlagen: Ziel `muskelaufbau`/`fettverlust`/`fitness`, Level `einsteiger`/`fortgeschritten`, Tage `3t`/`4t`,
+     Ort `studio`/`zuhause`, Minuten `30-45`/`45-60`/`60-75` – z. B. `muskelaufbau 30-45`.
+     Vorhandene Vorlagen werden übersprungen.
+   - Übungen: Bewegungsmuster (z. B. `squat`, `hinge`) und/oder Geräte `langhantel`, `kurzhantel`,
+     `kettlebell`, `kabel_maschine`, `band`, `koerpergewicht` – z. B. `squat band`.
+4. **Anzahl**: höchstens so viele Anfragen (1–200, Standard 10). **Probelauf** nicht anhaken → **Run workflow**.
+5. Die **Summary** zeigt die **Kostenschätzung** (schlimmster Fall) und endet sofort. Liegt die Schätzung über
+   dem Deckel, steht dort „abgebrochen – nichts gesendet“.
+6. Meist innerhalb einer Stunde ist der Batch fertig. `content-collect` öffnet dann automatisch (spätestens nach
+   3 Stunden) den Pull Request **„Neue Entwürfe: …“** – mit Prüfbericht und tatsächlichen Kosten. Schneller:
+   **content-collect → Run workflow**.
+7. Pull Request ansehen (Tab **Files changed** bzw. die Vercel-Vorschau der Website), auf grünes `ci` warten,
+   **Merge pull request** → danach **Delete branch**. Die Inhalte sind jetzt **Entwürfe** in `main` – noch nicht
+   freigegeben. Abgelehnte oder ungültige Antworten stehen nur im Bericht; ein neuer Lauf wiederholt sie.
+
+### 3. Freigeben (oder zurückziehen)
+
+1. **Actions → content-review → Run workflow**.
+2. **IDs**: eine oder mehrere IDs, z. B. `goblet-kniebeuge, liegestuetz` (die ID ist der Dateiname ohne `.json`).
+3. **Neuer Status**: `published` (freigeben), `archived` (zurückziehen) oder `draft` (zurück auf Entwurf).
+4. **Wer hat geprüft?** Name oder Kürzel → **Run workflow**.
+5. Es erscheint ein Pull Request **„Freigabe: …“**. Hat ein Inhalt einen roten Fehler, gibt es **keinen** Pull
+   Request; der Grund steht in der Summary. Tipp: Eine Vorlage lässt sich nur zusammen mit ihren Übungen
+   freigeben – dann alle IDs in einem Lauf angeben.
+6. Auf grünes `ci` warten → **Merge pull request**. **Merge = Freigabe.**
+
+### 4. Einspielen in die Datenbank (automatisch)
+
+Nach jedem Merge, der Inhalte ändert, läuft **content-seed** von selbst: Es prüft alle Inhalte und spielt nur
+freigegebene ein. Ohne Supabase endet es grün mit „übersprungen – Supabase fehlt“.
+
+---
+
 ## Überblick: Was passiert automatisch?
 
-| Workflow           | Wann                                                              | Braucht                                                                 |
-| ------------------ | ----------------------------------------------------------------- | ----------------------------------------------------------------------- |
-| `ci`               | bei jedem Push und Pull Request (inkl. Klick-Test der App)        | nichts                                                                  |
-| `db-migrate`       | nach Merge in `main`, wenn sich Migrationen ändern, oder per Hand | `SUPABASE_ACCESS_TOKEN`, `SUPABASE_DB_PASSWORD`, `SUPABASE_PROJECT_REF` |
-| `content-generate` | per Hand (Actions → Run workflow)                                 | `ANTHROPIC_API_KEY`, `SUPABASE_URL`, `SUPABASE_SECRET_KEY`              |
-| `content-seed`     | per Hand                                                          | `SUPABASE_URL`, `SUPABASE_SECRET_KEY`                                   |
-| `eas-build`        | per Hand                                                          | `EXPO_TOKEN` + Expo-Projekt-ID                                          |
-| Vercel             | bei jedem Push automatisch                                        | Teil C                                                                  |
+| Workflow           | Wann                                                                 | Braucht                                                                 |
+| ------------------ | -------------------------------------------------------------------- | ----------------------------------------------------------------------- |
+| `ci`               | bei jedem Push und Pull Request (inkl. Klick-Test der App), per Hand | nichts                                                                  |
+| `db-migrate`       | nach Merge in `main`, wenn sich Migrationen ändern, oder per Hand    | `SUPABASE_ACCESS_TOKEN`, `SUPABASE_DB_PASSWORD`, `SUPABASE_PROJECT_REF` |
+| `content-generate` | per Hand (Actions → Run workflow)                                    | `ANTHROPIC_API_KEY` (Probelauf: nichts)                                 |
+| `content-collect`  | alle 3 Stunden und per Hand                                          | Teil H; `ANTHROPIC_API_KEY` nur für echte Läufe                         |
+| `content-review`   | per Hand                                                             | Teil H                                                                  |
+| `content-seed`     | nach Merge in `main` (Inhalte), nach `db-migrate` und per Hand       | `SUPABASE_URL`, `SUPABASE_SECRET_KEY` (ohne: nur Prüfung)               |
+| `eas-build`        | per Hand                                                             | `EXPO_TOKEN` + Expo-Projekt-ID                                          |
+| Vercel             | bei jedem Push automatisch                                           | Teil C                                                                  |
 
 Fehlt etwas, endet der Workflow **grün** mit dem Hinweis „übersprungen“. Den Hinweis siehst du in der GitHub-App
 unter **Actions** → Lauf antippen → **Summary**.

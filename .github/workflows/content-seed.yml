@@ -1,43 +1,61 @@
 name: content-seed
 
-# Manuell startbar: spielt freigegebene Inhalte (status = published) in die Datenbank ein (ab Phase 2).
+# Spielt freigegebene Inhalte (status = published) in Supabase ein (docs/PLAN-PHASE-2.md Abschnitt 4,
+# Schritt 4): automatisch nach jedem Merge in main, der content/ ändert, nach jeder erfolgreichen
+# Migration (db-migrate) und per Hand.
+# 1. Prüft vorher selbst ALLE Inhalte (content:validate) – bei einem einzigen blockierenden Fehler wird
+#    NICHTS eingespielt.
+# 2. Baut das Einspiel-Paket (nur published, geschätzte Dauer je Einheit) und ruft seed_content auf –
+#    eine Transaktion, mehrfaches Ausführen ändert nichts.
+# Ohne SUPABASE_URL/SUPABASE_SECRET_KEY endet der Workflow nach der Prüfung grün mit Hinweis.
 on:
+  push:
+    branches: [main]
+    paths:
+      - 'content/**'
+      - '.github/workflows/content-seed.yml'
+  workflow_run:
+    workflows: [db-migrate]
+    types: [completed]
   workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: content-seed
+  cancel-in-progress: false
 
 jobs:
   seed:
+    # Nach db-migrate nur, wenn die Migration geklappt hat.
+    if: github.event_name != 'workflow_run' || github.event.workflow_run.conclusion == 'success'
     runs-on: ubuntu-latest
-    timeout-minutes: 30
-    env:
-      SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
-      SUPABASE_SECRET_KEY: ${{ secrets.SUPABASE_SECRET_KEY }}
+    timeout-minutes: 15
     steps:
       - name: Secrets prüfen
         id: secrets
+        env:
+          HAS_URL: ${{ secrets.SUPABASE_URL != '' }}
+          HAS_KEY: ${{ secrets.SUPABASE_SECRET_KEY != '' }}
         run: |
           missing=""
-          [ -z "$SUPABASE_URL" ] && missing="$missing SUPABASE_URL"
-          [ -z "$SUPABASE_SECRET_KEY" ] && missing="$missing SUPABASE_SECRET_KEY"
+          [ "$HAS_URL" != "true" ] && missing="$missing SUPABASE_URL"
+          [ "$HAS_KEY" != "true" ] && missing="$missing SUPABASE_SECRET_KEY"
           if [ -n "$missing" ]; then
-            echo "::notice title=content-seed übersprungen::Es fehlen GitHub-Secrets:$missing – siehe docs/SETUP.md"
-            echo "### ⏭️ content-seed übersprungen" >> "$GITHUB_STEP_SUMMARY"
-            echo "Es fehlen GitHub-Secrets:$missing. Anleitung: docs/SETUP.md" >> "$GITHUB_STEP_SUMMARY"
-            echo "ready=false" >> "$GITHUB_OUTPUT"
-          else
-            echo "ready=true" >> "$GITHUB_OUTPUT"
+            echo "::notice title=content-seed übersprungen::Es fehlen GitHub-Secrets:$missing – Inhalte werden nur geprüft, nicht eingespielt. Siehe docs/SETUP.md"
           fi
 
       - uses: actions/checkout@v4
-        if: steps.secrets.outputs.ready == 'true'
       - uses: pnpm/action-setup@v4
-        if: steps.secrets.outputs.ready == 'true'
       - uses: actions/setup-node@v4
-        if: steps.secrets.outputs.ready == 'true'
         with:
           node-version: 22
           cache: pnpm
       - run: pnpm install --frozen-lockfile
-        if: steps.secrets.outputs.ready == 'true'
-      - name: Inhalte einspielen
-        if: steps.secrets.outputs.ready == 'true'
+      # Secrets nur in diesem Schritt. Das Skript prüft zuerst alles und spielt nur ohne Fehler ein.
+      - name: Inhalte prüfen und einspielen
+        env:
+          SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
+          SUPABASE_SECRET_KEY: ${{ secrets.SUPABASE_SECRET_KEY }}
         run: pnpm --filter @fitnessapp/content seed

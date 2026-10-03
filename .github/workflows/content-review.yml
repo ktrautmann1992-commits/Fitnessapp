@@ -1,0 +1,58 @@
+name: content-review
+
+# Manuell startbar (GitHub-App → Actions → content-review → Run workflow): setzt den Status von Inhalten
+# (freigeben = published, zurückziehen = archived, zurück auf Entwurf = draft), trägt Prüfer und Datum ein,
+# prüft ALLE Inhalte (content:validate, Prettier, Typprüfung) und öffnet einen Pull Request. Danach wird
+# ci für den Branch gestartet. Freigabe ist erst der MERGE durch einen Menschen – der Workflow genehmigt nie.
+# Details: docs/PLAN-PHASE-2.md Abschnitte 4 und 6.
+on:
+  workflow_dispatch:
+    inputs:
+      ids:
+        description: 'IDs (mit Komma oder Leerzeichen getrennt), z. B. „goblet-kniebeuge, liegestuetz“'
+        type: string
+        required: true
+      status:
+        description: 'Neuer Status'
+        type: choice
+        options:
+          - published
+          - archived
+          - draft
+        default: published
+      pruefer:
+        description: 'Wer hat geprüft? (Name oder Kürzel)'
+        type: string
+        required: true
+
+permissions:
+  contents: write
+  pull-requests: write
+  actions: write
+
+concurrency:
+  group: content-review
+  cancel-in-progress: false
+
+jobs:
+  review:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: pnpm/action-setup@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: pnpm
+      - run: pnpm install --frozen-lockfile
+      # Eingaben nur über Umgebungsvariablen (nie direkt im Skript-Text).
+      - name: Status setzen, prüfen, Pull Request öffnen
+        env:
+          REVIEW_IDS: ${{ inputs.ids }}
+          REVIEW_STATUS: ${{ inputs.status }}
+          REVIEW_REVIEWER: ${{ inputs.pruefer }}
+          GH_TOKEN: ${{ github.token }}
+        run: pnpm --filter @fitnessapp/content review

@@ -24,6 +24,6 @@ Supplementplan und Trainingstagebuch.
 | `packages/content`  | Prüfskript `content:validate`, Content-Generierung (Batch-API) und Seeds                    |
 | `content/`          | Inhalte als JSON (Übungen, Plan-Vorlagen) – die einzige Wahrheit, Freigabe per Pull Request |
 | `supabase/`         | Datenbank-Migrationen (Region EU/Frankfurt)                                                 |
-| `.github/workflows` | Automatisierung: ci, db-migrate, content-generate, content-seed, eas-build                  |
+| `.github/workflows` | Automatisierung: ci, db-migrate, content-generate/-collect/-review/-seed, eas-build         |
 
 Tests, Builds und Migrationen laufen als GitHub Actions – lokal muss nichts ausgeführt werden.

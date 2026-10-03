@@ -1,0 +1,82 @@
+name: content-collect
+
+# Holt fertige Batch-Ergebnisse ab (docs/PLAN-PHASE-2.md Abschnitt 4, Schritt 2): alle 3 Stunden per
+# Zeitplan und per Hand (Actions → content-collect → Run workflow).
+# - Kein offener Batch-Branch (content/batch-*, Merkdatei mit status „submitted“) → Ende nach wenigen
+#   Sekunden, ohne Installation und ohne Schlüssel. (Alle 3 statt jede Stunde: GitHub rundet jeden Lauf auf
+#   eine volle Minute auf.)
+# - Probeläufe gehen ohne Schlüssel; echte Läufe brauchen ANTHROPIC_API_KEY.
+# - Zuordnung nur über custom_id; gültige Antworten werden Entwürfe, alles andere steht im Bericht.
+# - Vor dem Pull Request: content:validate (alle Inhalte), Prettier und Typprüfung. Rot → kein Pull Request.
+# - Danach wird ci für den Branch gestartet (Pull Requests des GITHUB_TOKEN starten ci nicht von selbst).
+# Der Workflow öffnet nur Pull Requests – er genehmigt NIE.
+on:
+  schedule:
+    - cron: '17 */3 * * *'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+  pull-requests: write
+  actions: write
+
+concurrency:
+  group: content-collect
+  cancel-in-progress: false
+
+jobs:
+  collect:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: Offene Batch-Läufe suchen
+        id: open
+        env:
+          EVENT: ${{ github.event_name }}
+        run: |
+          refs=$(git ls-remote --heads origin 'refs/heads/content/batch-*' | awk '{print $2}')
+          if [ -z "$refs" ]; then
+            echo "### ⏭️ content-collect: keine offenen Batch-Läufe" >> "$GITHUB_STEP_SUMMARY"
+            echo "run=false" >> "$GITHUB_OUTPUT"
+            exit 0
+          fi
+          # Per Hand gestartet: immer prüfen (holt z. B. einen fehlenden Pull Request nach).
+          if [ "$EVENT" = "workflow_dispatch" ]; then
+            echo "run=true" >> "$GITHUB_OUTPUT"
+            exit 0
+          fi
+          open=false
+          for ref in $refs; do
+            name="${ref#refs/heads/content/batch-}"
+            git fetch --quiet --no-tags origin "$ref"
+            status=$(git show "FETCH_HEAD:content/batches/${name}.json" 2>/dev/null | jq -r '.status // empty' || true)
+            if [ "$status" = "submitted" ]; then
+              open=true
+            fi
+          done
+          if [ "$open" = "true" ]; then
+            echo "run=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "### ⏭️ content-collect: keine offenen Batch-Läufe (alle schon abgeholt)" >> "$GITHUB_STEP_SUMMARY"
+            echo "run=false" >> "$GITHUB_OUTPUT"
+          fi
+
+      - uses: pnpm/action-setup@v4
+        if: steps.open.outputs.run == 'true'
+      - uses: actions/setup-node@v4
+        if: steps.open.outputs.run == 'true'
+        with:
+          node-version: 22
+          cache: pnpm
+      - run: pnpm install --frozen-lockfile
+        if: steps.open.outputs.run == 'true'
+      # Schlüssel und Token nur in diesem Schritt.
+      - name: Ergebnisse abholen, prüfen, Pull Request öffnen
+        if: steps.open.outputs.run == 'true'
+        env:
+          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+          GH_TOKEN: ${{ github.token }}
+        run: pnpm --filter @fitnessapp/content collect
