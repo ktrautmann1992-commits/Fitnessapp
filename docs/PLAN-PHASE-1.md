@@ -288,3 +288,38 @@ nacheinander als Pull Requests um (Etappe A: Datenbank + Fachlogik, Etappe B: Bi
    `measurement_reminders` (Erinnerung zum Nachmessen, Standard alle 28 Tage, einstellbar 7–90 Tage).
 3. Grenzen und Messstellen zentral in `packages/core` (`constants.ts`, `body-measurements.ts`),
    nächster Termin über `nextMeasurementDue()`.
+
+## Umsetzungsstand (03.10.2026)
+
+**Etappe A – Datenbank + Fachlogik: erledigt.** Migrationen mit RLS, Mindestalter, versionierte
+Einwilligungen, Gesundheits-Check mit Flags, Körperumfänge und Mess-Erinnerung, pgTAP-Tests;
+Fachlogik in `packages/core` mit Unit-Tests.
+
+**Etappe B – Bildschirme: erledigt** (`apps/mobile`, läuft auf iPhone, Android und als Web-App auf Vercel).
+
+1. Kompletter Ablauf laut Abschnitt 3: Willkommen → Alter (unter 16: Stopp, nichts gespeichert) → Konto →
+   Grund-Einwilligungen → Schritte 1–11 → Fertig, mit „Schritt X von Y“, Zurück/Weiter und Fortsetzen nach
+   Neustart.
+2. **Zwei Betriebsarten** hinter einer Schnittstelle (`apps/mobile/src/data/backend.ts`):
+   - **Testmodus** (automatisch ohne Supabase-Werte): Hinweis oben, Knopf „Testmodus starten“, alle Daten nur
+     auf dem Gerät, dieselben Regeln wie die Datenbank. Bewusste Ausnahme für den Gründer-Test: Gesundheitsdaten
+     liegen hier dauerhaft auf dem Gerät. „Testdaten löschen“ in den Einstellungen.
+   - **Supabase-Modus**: Login per 6-stelligem E-Mail-Code, Profil direkt nach dem Login, Einwilligungen in der
+     aktuellen Textversion, Daten per Upsert. Offline: Nicht-Gesundheitsdaten in einer Warteschlange auf dem
+     Gerät; Gesundheitsdaten nur im Arbeitsspeicher und direkt gesendet („Erneut versuchen“).
+3. Einstellungen: Einwilligungen ansehen/widerrufen (Widerruf Gesundheitsdaten löscht alle Körper- und
+   Gesundheitsdaten), Neu-Einwilligung bei neuer Textversion, Mess-Erinnerung (7–90 Tage), Konto löschen,
+   Abmelden.
+4. Website: Knopf „App im Browser öffnen“ (`NEXT_PUBLIC_APP_URL`).
+5. Tests: Unit-Tests für Abbildung, Testmodus-Regeln, Warteschlange und Supabase-Anbindung (Vitest);
+   Klick-Test der Web-App im Testmodus (Playwright, läuft in `ci`).
+
+**Noch offen:**
+
+- **Echtes Supabase-Projekt** anlegen und verbinden (docs/SETUP.md Teil A–C und F). Der Supabase-Modus ist
+  nur per Unit-Test geprüft, noch nicht live.
+- **Apple- und Google-Login** (Frage 2) – sobald die Konten eingerichtet sind.
+- **Juristische Prüfung** der Einwilligungstexte, Nutzungsbedingungen und Datenschutzerklärung (Frage 6).
+- Mess-Erinnerung als **Push-Benachrichtigung** (bisher nur Hinweis in der App, „Heute“-Seite).
+- Körperdaten **nachträglich** eintragen, wenn die Gesundheits-Einwilligung erst später erteilt wird.
+- EU-Mail-Dienst vor dem Start (Abschnitt 4).
