@@ -110,6 +110,19 @@
 - `subscriptions` / Entitlements (über RevenueCat-Webhook)
 - `partner_links`, später `organizations` (Fitnessstudios), `org_memberships`
 
+### Abweichungen ab Phase 1 (umgesetzt, siehe `docs/PLAN-PHASE-1.md` und `supabase/migrations`)
+- **Körpergröße** steht nicht in `profiles`, sondern in `body_metrics` (Gesundheitsdatum → nur mit Einwilligung `health_data`). `profiles` enthält keine Körper- oder Gesundheitswerte.
+- **Geschlecht** (`sex`): männlich / weiblich / divers / keine Angabe (`male|female|diverse|unspecified`); bei divers/keine Angabe nimmt die Kalorienformel später den Mittelwert. Zusätzlich `cycle_module_interest` (nur Ja/Nein-Wunsch, keine Zyklusdaten).
+- **`consent_documents`** (consent_type, version, title_de, body_de, published_at): versionierte Einwilligungstexte; gültig ist die höchste veröffentlichte Version. `consents` ist nur ergänzbar (Einfügen + Widerruf), Widerruf von `health_data` löscht alle Körper-/Gesundheitsdaten.
+- **`body_measurements`** (Körperumfänge in cm, optionaler Onboarding-Schritt) und **`measurement_reminders`** (Mess-Erinnerung, Standard alle 28 Tage) – Erweiterungsbeschluss der Gründer (`docs/ERWEITERUNGEN.md`).
+- **`food_preferences`** nutzt bis Phase 5 feste Lebensmittel-Gruppen (`food_group`, Liste in `packages/core/src/food-groups.ts`) statt `food_id`.
+- **`user_equipment`**: „Sonstiges“ = Katalog-Eintrag `other` mit Freitext `note`.
+- **Profil zuerst:** Ein Profil mit geprüftem Geburtsdatum (Mindestalter 16, serverseitig) ist Voraussetzung für alle Einwilligungen und Nutzerdaten (RLS).
+- **Neue Textversion einer Einwilligung:** bisherige Gesundheitsdaten bleiben lesbar, sind aber nicht änderbar/ergänzbar, bis neu eingewilligt wird. Der Widerruf in den Einstellungen gilt der aktuellen Einwilligung und löscht alle Gesundheitsdaten (Körperdaten, Körperumfänge, Gesundheits-Checks, Unverträglichkeiten).
+- **Gesundheits-Check:** Flags (`conservative_plan` usw.) berechnet die Datenbank selbst aus den Antworten; Zeitstempel serverseitig.
+- **Login** per E-Mail mit 6-stelligem Code (OTP, ohne Passwort); Apple/Google folgen.
+- Onboarding **ohne Wearable-Schritt** (kommt mit Phase 8); Einwilligung Gesundheitsdaten **vor** den Körperdaten.
+
 ## 13. Monetarisierung
 - **Gratis:** Onboarding, Standard-Plan aus Vorlagen, Trainingstagebuch, Grundberechnung Kalorien/Makros, Supplement-Übersicht
 - **Premium (Abo monatlich/jährlich):** individuell angepasster Plan mit Progression, Ernährungsplan + Einkaufsliste, Vor-/Nach-Training-Mahlzeiten, Wettkampfvorbereitung, Zyklus-Anpassung, Wearables & Readiness, Strecken, Partner-Modus, KI-Coach
