@@ -433,6 +433,17 @@ export type Database = {
         Args: { p_type: Database['public']['Enums']['consent_type'] };
         Returns: boolean;
       };
+      replace_food_preferences: {
+        Args: { p_items: Json; p_scope: string };
+        Returns: undefined;
+      };
+      replace_user_equipment: {
+        Args: {
+          p_items: Json;
+          p_location: Database['public']['Enums']['equipment_location'];
+        };
+        Returns: undefined;
+      };
     };
     Enums: {
       app_locale: 'de-DE' | 'de-AT' | 'de-CH';
