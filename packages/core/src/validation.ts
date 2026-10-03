@@ -22,7 +22,12 @@ import {
   SEX_OPTIONS,
   TRAINING_LOCATIONS,
 } from './enums';
-import { equipmentIdSchema, findEquipment, OTHER_EQUIPMENT_ID } from './equipment';
+import {
+  equipmentIdSchema,
+  findEquipment,
+  isHomeSelectable,
+  OTHER_EQUIPMENT_ID,
+} from './equipment';
 import { foodGroupSchema } from './food-groups';
 
 /**
@@ -182,6 +187,15 @@ export const equipmentItemSchema = z
     }
     if (!isOther && item.note != null) {
       ctx.addIssue({ code: 'custom', path: ['note'], message: 'Freitext nur bei „Sonstiges“.' });
+    }
+    // Studio-Geräte (Kabelzug, Maschinen …) gibt es nicht „zu Hause“ – gleiche Regel wie der Trigger
+    // private.check_user_equipment_home_selectable() in der Datenbank.
+    if (item.location === 'home' && !isHomeSelectable(item.equipmentId)) {
+      ctx.addIssue({
+        code: 'custom',
+        path: ['equipmentId'],
+        message: 'Dieses Gerät gibt es nur im Studio.',
+      });
     }
     if (item.weightsKg.length > 0 && findEquipment(item.equipmentId)?.hasWeights !== true) {
       ctx.addIssue({

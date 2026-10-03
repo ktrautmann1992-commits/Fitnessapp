@@ -9,3 +9,4 @@ export * from './health-screening';
 export * from './body-measurements';
 export * from './onboarding';
 export * from './validation';
+export * from './content';

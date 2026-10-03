@@ -4,6 +4,7 @@
  * Regel aus CLAUDE.md: ALLE Rechenformeln und Schutzgrenzen stehen hier, jeweils mit Quelle.
  * Die Schutzgrenzen sind fest im Code und NICHT durch Nutzer abschaltbar.
  */
+import type { MuscleGroup } from './enums';
 
 /**
  * Mindestalter für die Nutzung der App (Jahre).
@@ -159,3 +160,127 @@ export const MEASURED_ON_MAX_DAYS_AHEAD = 1;
  * Zod lehnt feinere Angaben ab, damit App und Datenbank gleich entscheiden.
  */
 export const EQUIPMENT_WEIGHT_DECIMALS = 2;
+
+// ---------------------------------------------------------------------------------------------------------
+// Phase 2 · Inhalte: Grenzen der Schemas und Plausibilitäts-Checks (docs/PLAN-PHASE-2.md Abschnitt 7)
+// ---------------------------------------------------------------------------------------------------------
+
+/**
+ * Harte Schema-Grenzen für Inhalte (Regel Ü1, „rot – auch bei Entwürfen“). Bewusst WEITER als die fachlichen
+ * Regeln V4/V8, damit ein Entwurf mit z. B. RPE 10 noch als Datei liegen und korrigiert werden kann; die
+ * fachlichen Grenzen prüfen V4/V8 (rot, blockieren Freigabe und Einspielen).
+ * Dieselben Werte stehen als CHECK-Bedingungen in supabase/migrations/20261003130300_exercises.sql und
+ * 20261003130400_plan_templates.sql (geprüft in db-sync.test.ts).
+ * Quelle: Produktentscheidung Phase 2 (Plausibilitätsgrenzen gegen Tipp- und KI-Fehler, keine Fachwerte).
+ */
+export const CONTENT_SCHEMA_LIMITS = {
+  version: { min: 1, max: 1000 },
+  difficulty: { min: 1, max: 3 },
+  alternativePriority: { min: 1, max: 20 },
+  sets: { min: 1, max: 10 },
+  reps: { min: 1, max: 100 },
+  durationS: { min: 5, max: 600 },
+  restS: { min: 0, max: 600 },
+  rpe: { min: 1, max: 10 },
+  orderNo: { min: 1, max: 20 },
+  exercisesPerSession: { min: 1, max: 12 },
+} as const;
+
+/**
+ * Fachliche Grenzen je Übung in einer Plan-Vorlage (Regel V4, rot) und je Einheit (Regel V8, rot).
+ * - Wiederholungen 3–30: Muskelzuwachs ist über einen weiten Lastbereich ähnlich (Schoenfeld BJ et al. (2017),
+ *   J Strength Cond Res 31(12):3508–3523); unter 3 Wdh. = Maximalkraft-/Testbereich, über 30 Wdh. = kaum noch
+ *   Krafttraining. Wdh.-Ober-/Untergrenze als Produktentscheidung.
+ * - Sätze 1–6 je Übung: ACSM Position Stand (2009), „Progression models in resistance training for healthy
+ *   adults“, Med Sci Sports Exerc 41(3):687–708 (1–3 Sätze für Einsteiger, mehrere Sätze für Fortgeschrittene);
+ *   Obergrenze 6 als Produktentscheidung.
+ * - RPE 5–9, Einsteiger höchstens 8, keine Maximaltests (RPE 10, 1RM): RPE-Skala nach Wiederholungen in
+ *   Reserve, Helms ER et al. (2016), Strength Cond J 38(4):42–49. Produktentscheidung: Vorlagen planen nie bis
+ *   zum Muskelversagen; Einsteiger behalten mindestens 2 Wiederholungen in Reserve.
+ * - Halteübungen 10–120 s: Produktentscheidung (kürzer ist kaum wirksam, länger wird Ausdauer statt Kraft).
+ * - Höchstens 8 Übungen je Einheit: Produktentscheidung, passend zur Einheitendauer von 45–60 Minuten.
+ */
+export const TEMPLATE_DOSAGE_LIMITS = {
+  reps: { min: 3, max: 30 },
+  sets: { min: 1, max: 6 },
+  rpe: { min: 5, max: 9 },
+  beginnerRpeMax: 8,
+  durationS: { min: 10, max: 120 },
+  maxExercisesPerSession: 8,
+} as const;
+
+/**
+ * Pausen zwischen Sätzen in Sekunden (Regel V5, gelb).
+ * Quelle: ACSM Position Stand (2009), Med Sci Sports Exerc 41(3):687–708 (2–3 min bei Grundübungen mit
+ * hoher Last, 1–2 min bei leichteren Übungen); Schoenfeld BJ et al. (2016), J Strength Cond Res
+ * 30(7):1805–1812 (längere Pausen bei Grundübungen vorteilhaft). Bereiche als Produktentscheidung.
+ */
+export const REST_RANGES_S = {
+  compound: { min: 90, max: 240 },
+  isolation: { min: 45, max: 120 },
+} as const;
+
+/**
+ * Schätzung der Dauer einer Einheit (Regel V6, gelb): Aufwärmen + Sätze + Pausen + Wechsel.
+ * - Aufwärmen 8 min, ca. 4 s je Wiederholung, 60 s Wechsel/Einrichten je Übung.
+ * - Pause zählt zwischen den Sätzen einer Übung (Sätze − 1); bei Supersätzen (gleiche `superset_group`)
+ *   zählt je Runde die Summe der Pausen der Gruppe.
+ * - Toleranz: geschätzte Dauer darf die Minuten-Spanne der Vorlage um höchstens 15 % unter-/überschreiten.
+ * Quelle: Produktentscheidung (Schätzwerte für eine gleichmäßige Ausführung, keine Messung).
+ */
+export const SESSION_DURATION_ESTIMATE = {
+  warmupMinutes: 8,
+  secondsPerRep: 4,
+  transitionSecondsPerExercise: 60,
+  tolerance: 0.15,
+} as const;
+
+/**
+ * Drücken : Ziehen pro Woche etwa 1 : 1 (Regel V7, gelb): Hinweis, wenn eine Seite mehr als 30 % über der
+ * anderen liegt. Gezählt werden Sätze der Bewegungsmuster horizontal/vertikal drücken bzw. ziehen.
+ * Quelle: Produktentscheidung (ausgewogene Schulterbelastung; übliche Praxis der Trainingsplanung).
+ */
+export const PUSH_PULL_TOLERANCE = 0.3;
+
+/**
+ * Wochensätze pro Muskelgruppe (Regeln V9–V11): Ein Satz zählt für jeden Hauptmuskel 1,0 und für jeden
+ * Nebenmuskel 0,5.
+ */
+export const WEEKLY_SET_CONTRIBUTION = { primary: 1, secondary: 0.5 } as const;
+
+/**
+ * Startwerte Wochensätze pro Muskelgruppe je Ziel und Level (min–max, fachlich zu prüfen, Plan Frage 5).
+ * Quelle der Untergrenzen: Schoenfeld BJ, Ogborn D, Krieger JW (2017), „Dose-response relationship between
+ * weekly resistance training volume and increases in muscle mass: A systematic review and meta-analysis“,
+ * J Sports Sci 35(11):1073–1082 – mehr Wochensätze → mehr Muskelzuwachs, deutlicher Effekt ab ca. 10 Sätzen.
+ * Die OBERGRENZEN sind eine Produktentscheidung gegen zu viel Umfang (Erholung, Einheitendauer) und werden
+ * mit der fachlichen Prüfung bestätigt.
+ */
+export const WEEKLY_SETS_PER_MUSCLE = {
+  muscle_gain: { beginner: { min: 6, max: 14 }, advanced: { min: 10, max: 22 } },
+  fat_loss: { beginner: { min: 6, max: 14 }, advanced: { min: 8, max: 20 } },
+  general_fitness: { beginner: { min: 4, max: 12 }, advanced: { min: 6, max: 16 } },
+} as const;
+
+/**
+ * Große Muskelgruppen: Untergrenze unterschritten = rot (V10). Kleine Muskelgruppen: Untergrenze
+ * unterschritten = gelb (V11). Für alle übrigen Gruppen (vordere Schulter, Unterarme, schräge Bauchmuskeln,
+ * unterer Rücken, Adduktoren) gilt nur die Obergrenze (V9) – sie werden über Grundübungen mittrainiert.
+ * Quelle: docs/PLAN-PHASE-2.md Abschnitt 7 (Einteilung als Produktentscheidung).
+ */
+export const LARGE_MUSCLE_GROUPS = [
+  'chest',
+  'lats',
+  'upper_back',
+  'quadriceps',
+  'hamstrings',
+  'glutes',
+] as const satisfies readonly MuscleGroup[];
+export const SMALL_MUSCLE_GROUPS = [
+  'biceps',
+  'triceps',
+  'calves',
+  'side_delts',
+  'rear_delts',
+  'abs',
+] as const satisfies readonly MuscleGroup[];

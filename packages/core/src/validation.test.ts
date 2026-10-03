@@ -244,6 +244,23 @@ describe('Equipment', () => {
     );
     ok(equipmentStepSchema.safeParse({ items: [] }));
   });
+
+  it('Studio-Geräte nur beim Ort „gym“, nicht „zu Hause“', () => {
+    for (const equipmentId of ['cable_station', 'lat_pulldown', 'leg_press', 'power_rack']) {
+      const home = equipmentItemSchema.safeParse({ equipmentId, location: 'home' });
+      expect(home.success).toBe(false);
+      expect(home.error?.issues[0]?.message).toBe('Dieses Gerät gibt es nur im Studio.');
+      ok(equipmentItemSchema.safeParse({ equipmentId, location: 'gym' }));
+    }
+    // Heim-Geräte bleiben an beiden Orten erlaubt.
+    ok(equipmentItemSchema.safeParse({ equipmentId: 'resistance_bands', location: 'home' }));
+    ok(equipmentItemSchema.safeParse({ equipmentId: 'resistance_bands', location: 'gym' }));
+    fail(
+      equipmentStepSchema.safeParse({
+        items: [{ equipmentId: 'leg_curl_machine', location: 'home' }],
+      }),
+    );
+  });
 });
 
 describe('Ernährung', () => {
