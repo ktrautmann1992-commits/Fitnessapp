@@ -1,0 +1,54 @@
+name: db-types
+
+# Manuell startbar (GitHub-App → Actions → db-types → Run workflow).
+# Erzeugt die Datenbank-Typen aus einer Test-Datenbank mit allen Migrationen (`supabase gen types`) und
+# vergleicht sie mit packages/db/src/database.types.ts. Das Ergebnis steht in der Zusammenfassung und als
+# Datei zum Herunterladen („database-types“). Berührt NICHT die echte Datenbank, braucht keine Secrets.
+on:
+  workflow_dispatch:
+
+jobs:
+  generate:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+      - uses: pnpm/action-setup@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: pnpm
+      - run: pnpm install --frozen-lockfile
+      - uses: supabase/setup-cli@v1
+        with:
+          version: latest
+      - name: Test-Datenbank starten und Migrationen einspielen
+        run: supabase db start
+      - name: Typen erzeugen
+        run: |
+          target=packages/db/src/database.types.ts
+          # Kopfkommentar der bestehenden Datei übernehmen (alles vor „export type Json“).
+          awk '/^export type Json/ {exit} {print}' "$target" > generated.ts
+          supabase gen types typescript --local --schema public | sed '/^export type Json/,$!d' >> generated.ts
+          pnpm exec prettier --write generated.ts
+      - name: Vergleichen
+        run: |
+          if diff -u packages/db/src/database.types.ts generated.ts > types.diff; then
+            echo "### ✅ database.types.ts ist aktuell" >> "$GITHUB_STEP_SUMMARY"
+          else
+            echo "### ⚠️ database.types.ts weicht von der Datenbank ab" >> "$GITHUB_STEP_SUMMARY"
+            echo "Die erzeugte Datei liegt unter „Artifacts → database-types“. Unterschied:" >> "$GITHUB_STEP_SUMMARY"
+            echo '```diff' >> "$GITHUB_STEP_SUMMARY"
+            head -n 300 types.diff >> "$GITHUB_STEP_SUMMARY"
+            echo '```' >> "$GITHUB_STEP_SUMMARY"
+          fi
+      - uses: actions/upload-artifact@v4
+        with:
+          name: database-types
+          path: |
+            generated.ts
+            types.diff
+          if-no-files-found: ignore
+      - name: Test-Datenbank stoppen
+        if: always()
+        run: supabase stop --no-backup
