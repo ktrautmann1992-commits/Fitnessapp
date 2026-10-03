@@ -1,0 +1,50 @@
+{
+  "id": "beinbeuger-maschine",
+  "version": 1,
+  "status": "draft",
+  "name_de": "Beinbeuger an der Maschine",
+  "name_en": "Machine Leg Curl",
+  "aliases_de": ["Leg Curl"],
+  "movement_pattern": "knee_flexion",
+  "primary_muscles": ["hamstrings"],
+  "secondary_muscles": ["calves"],
+  "equipment_ids": ["leg_curl_machine"],
+  "mechanics": "isolation",
+  "load_type": "weight",
+  "unilateral": false,
+  "difficulty": 1,
+  "caution_tags": [],
+  "description_de": "Isolationsübung für die Rückseite der Oberschenkel an der Maschine (sitzend oder liegend).",
+  "steps_de": [
+    "Maschine so einstellen, dass die Knie auf Höhe der Drehachse liegen und das Polster über den Fersen anliegt.",
+    "Griffe fassen, Rumpf leicht anspannen.",
+    "Beine kontrolliert beugen, kurz halten.",
+    "Langsam zurück in die Ausgangsstellung führen."
+  ],
+  "tips_de": [
+    "Hüfte bleibt am Polster.",
+    "Das Zurückführen dauert etwa doppelt so lange wie das Beugen."
+  ],
+  "common_mistakes_de": [
+    "Hüfte hebt sich vom Polster.",
+    "Gewicht fällt am Ende ungebremst zurück."
+  ],
+  "safety_note_de": "Sitz und Polster vor dem ersten Satz auf die eigene Körpergröße einstellen und das Gewicht kontrolliert ablassen. Bei Schmerzen, Schwindel oder ungewohnten Beschwerden die Übung beenden.",
+  "alternatives": [
+    {
+      "alternative_id": "beinbeuger-band",
+      "reason": "home",
+      "priority": 1
+    }
+  ],
+  "meta": {
+    "origin": "claude_session",
+    "model": "claude-opus-5-5",
+    "batch_id": null,
+    "created_on": "2026-10-03",
+    "expert_reviewed": false,
+    "reviewed_by": null,
+    "reviewed_at": null,
+    "review_note": null
+  }
+}

@@ -1,0 +1,56 @@
+{
+  "id": "rumaenisches-kreuzheben-langhantel",
+  "version": 1,
+  "status": "draft",
+  "name_de": "Rumänisches Kreuzheben mit Langhantel",
+  "name_en": "Barbell Romanian Deadlift",
+  "aliases_de": ["RDL"],
+  "movement_pattern": "hinge",
+  "primary_muscles": ["hamstrings", "glutes"],
+  "secondary_muscles": ["lower_back", "forearms"],
+  "equipment_ids": ["barbell"],
+  "mechanics": "compound",
+  "load_type": "weight",
+  "unilateral": false,
+  "difficulty": 2,
+  "caution_tags": ["spinal_loading"],
+  "description_de": "Übung für Beinrückseite und Gesäß: Mit fast gestreckten Beinen wird die Hüfte nach hinten geschoben und die Hantel nah an den Beinen abgesenkt.",
+  "steps_de": [
+    "Hantel schulterbreit greifen und aufrecht stehen, Füße hüftbreit.",
+    "Knie leicht beugen und diese Stellung halten.",
+    "Hüfte nach hinten schieben und die Hantel nah an den Oberschenkeln bis knapp unter die Knie absenken.",
+    "Gesäß anspannen und die Hüfte nach vorn bringen, bis du wieder aufrecht stehst."
+  ],
+  "tips_de": [
+    "Der Rücken bleibt die ganze Zeit gerade, die Schultern bleiben hinten.",
+    "Nur so tief gehen, wie der Rücken gerade bleibt – meist bis knapp unter die Knie."
+  ],
+  "common_mistakes_de": [
+    "Rücken rundet sich.",
+    "Knie werden zu stark gebeugt, sodass eine Kniebeuge entsteht.",
+    "Hantel entfernt sich von den Beinen."
+  ],
+  "safety_note_de": "Gewicht so wählen, dass alle Wiederholungen technisch sauber gelingen. Bei Schmerzen, Schwindel oder ungewohnten Beschwerden die Übung beenden.",
+  "alternatives": [
+    {
+      "alternative_id": "rumaenisches-kreuzheben-kurzhantel",
+      "reason": "other_equipment",
+      "priority": 1
+    },
+    {
+      "alternative_id": "good-morning-band",
+      "reason": "home",
+      "priority": 2
+    }
+  ],
+  "meta": {
+    "origin": "claude_session",
+    "model": "claude-opus-5-5",
+    "batch_id": null,
+    "created_on": "2026-10-03",
+    "expert_reviewed": false,
+    "reviewed_by": null,
+    "reviewed_at": null,
+    "review_note": null
+  }
+}

@@ -1,0 +1,44 @@
+{
+  "id": "unterarmstuetz",
+  "version": 1,
+  "status": "draft",
+  "name_de": "Unterarmstütz",
+  "name_en": "Plank",
+  "aliases_de": ["Plank"],
+  "movement_pattern": "core_anti_extension",
+  "primary_muscles": ["abs"],
+  "secondary_muscles": ["obliques"],
+  "equipment_ids": [],
+  "mechanics": "isolation",
+  "load_type": "time",
+  "unilateral": false,
+  "difficulty": 1,
+  "caution_tags": [],
+  "description_de": "Halteübung für die Rumpfmuskulatur: Der Körper bleibt auf Unterarmen und Fußspitzen in einer geraden Linie.",
+  "steps_de": [
+    "Unterarme schulterbreit aufsetzen, Ellbogen unter den Schultern.",
+    "Beine nach hinten strecken und auf die Fußspitzen kommen.",
+    "Bauch und Gesäß anspannen, sodass der Körper vom Kopf bis zu den Fersen eine Linie bildet.",
+    "Position ruhig atmend halten."
+  ],
+  "tips_de": ["Lieber kürzer halten und dafür sauber.", "Leichter: Knie am Boden lassen."],
+  "common_mistakes_de": ["Hüfte hängt durch.", "Gesäß ragt nach oben.", "Luft anhalten."],
+  "safety_note_de": "Nur so weit und so oft bewegen, wie die Technik sauber bleibt. Bei Schmerzen, Schwindel oder ungewohnten Beschwerden die Übung beenden.",
+  "alternatives": [
+    {
+      "alternative_id": "dead-bug",
+      "reason": "easier",
+      "priority": 1
+    }
+  ],
+  "meta": {
+    "origin": "claude_session",
+    "model": "claude-opus-5-5",
+    "batch_id": null,
+    "created_on": "2026-10-03",
+    "expert_reviewed": false,
+    "reviewed_by": null,
+    "reviewed_at": null,
+    "review_note": null
+  }
+}

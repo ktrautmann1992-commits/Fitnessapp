@@ -1,0 +1,52 @@
+{
+  "id": "schraegbankdruecken-kurzhantel",
+  "version": 1,
+  "status": "draft",
+  "name_de": "Schrägbankdrücken mit Kurzhanteln",
+  "name_en": "Incline Dumbbell Press",
+  "aliases_de": [],
+  "movement_pattern": "horizontal_push",
+  "primary_muscles": ["chest"],
+  "secondary_muscles": ["front_delts", "triceps"],
+  "equipment_ids": ["dumbbells", "incline_bench"],
+  "mechanics": "compound",
+  "load_type": "weight",
+  "unilateral": false,
+  "difficulty": 1,
+  "caution_tags": [],
+  "description_de": "Drückübung auf der Schrägbank mit Schwerpunkt auf der oberen Brust.",
+  "steps_de": [
+    "Schrägbank auf etwa 30 Grad einstellen.",
+    "Mit den Kurzhanteln zurücklegen, Hanteln seitlich der oberen Brust halten.",
+    "Hanteln schräg nach oben über die Schultern drücken.",
+    "Langsam wieder absenken."
+  ],
+  "tips_de": [
+    "Eine flache Neigung betont die Brust mehr als eine steile.",
+    "Schulterblätter bleiben zusammengezogen."
+  ],
+  "common_mistakes_de": ["Bank zu steil eingestellt.", "Ellbogen zeigen weit zur Seite."],
+  "safety_note_de": "Gewicht so wählen, dass alle Wiederholungen technisch sauber gelingen. Bei Schmerzen, Schwindel oder ungewohnten Beschwerden die Übung beenden.",
+  "alternatives": [
+    {
+      "alternative_id": "bankdruecken-kurzhantel",
+      "reason": "other_equipment",
+      "priority": 1
+    },
+    {
+      "alternative_id": "liegestuetz",
+      "reason": "home",
+      "priority": 2
+    }
+  ],
+  "meta": {
+    "origin": "claude_session",
+    "model": "claude-opus-5-5",
+    "batch_id": null,
+    "created_on": "2026-10-03",
+    "expert_reviewed": false,
+    "reviewed_by": null,
+    "reviewed_at": null,
+    "review_note": null
+  }
+}

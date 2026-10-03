@@ -1,0 +1,57 @@
+{
+  "id": "kurzhantelrudern-einarmig",
+  "version": 1,
+  "status": "draft",
+  "name_de": "Einarmiges Kurzhantelrudern",
+  "name_en": "One-Arm Dumbbell Row",
+  "aliases_de": [],
+  "movement_pattern": "horizontal_pull",
+  "primary_muscles": ["lats", "upper_back"],
+  "secondary_muscles": ["rear_delts", "biceps"],
+  "equipment_ids": ["dumbbells", "flat_bench"],
+  "mechanics": "compound",
+  "load_type": "weight",
+  "unilateral": true,
+  "difficulty": 1,
+  "caution_tags": [],
+  "description_de": "Zugübung für den Rücken mit einer Hand auf der Bank. Die Abstützung entlastet den unteren Rücken.",
+  "steps_de": [
+    "Eine Hand und ein Knie auf die Flachbank stützen, der andere Fuß steht seitlich am Boden.",
+    "Kurzhantel mit gestrecktem Arm unter der Schulter halten, Rücken gerade.",
+    "Hantel Richtung Hüfte ziehen, Ellbogen nah am Körper.",
+    "Langsam absenken; nach allen Wiederholungen Seite wechseln."
+  ],
+  "tips_de": [
+    "Den Ellbogen zur Hüfte führen, nicht zur Schulter.",
+    "Schultern bleiben parallel zum Boden."
+  ],
+  "common_mistakes_de": ["Oberkörper dreht sich auf.", "Schwung aus dem Rumpf."],
+  "safety_note_de": "Gewicht so wählen, dass alle Wiederholungen technisch sauber gelingen. Bei Schmerzen, Schwindel oder ungewohnten Beschwerden die Übung beenden.",
+  "alternatives": [
+    {
+      "alternative_id": "vorgebeugtes-rudern-kurzhantel",
+      "reason": "home",
+      "priority": 1
+    },
+    {
+      "alternative_id": "rudern-band",
+      "reason": "home",
+      "priority": 2
+    },
+    {
+      "alternative_id": "kabelrudern",
+      "reason": "other_equipment",
+      "priority": 3
+    }
+  ],
+  "meta": {
+    "origin": "claude_session",
+    "model": "claude-opus-5-5",
+    "batch_id": null,
+    "created_on": "2026-10-03",
+    "expert_reviewed": false,
+    "reviewed_by": null,
+    "reviewed_at": null,
+    "review_note": null
+  }
+}

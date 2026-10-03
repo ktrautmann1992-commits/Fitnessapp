@@ -1,0 +1,49 @@
+{
+  "id": "trizepsdruecken-kabel",
+  "version": 1,
+  "status": "draft",
+  "name_de": "Trizepsdrücken am Kabelzug",
+  "name_en": "Cable Triceps Pushdown",
+  "aliases_de": ["Pushdown"],
+  "movement_pattern": "elbow_extension",
+  "primary_muscles": ["triceps"],
+  "secondary_muscles": [],
+  "equipment_ids": ["cable_station"],
+  "mechanics": "isolation",
+  "load_type": "weight",
+  "unilateral": false,
+  "difficulty": 1,
+  "caution_tags": [],
+  "description_de": "Isolationsübung für den Trizeps: Ein Seil oder eine Stange wird am oberen Kabelzug nach unten gedrückt.",
+  "steps_de": [
+    "Kabelrolle ganz oben einstellen, Seil oder Stange greifen.",
+    "Aufrecht stehen, Ellbogen seitlich am Körper.",
+    "Unterarme nach unten strecken, bis die Arme gestreckt sind.",
+    "Langsam zurückführen, die Ellbogen bleiben an Ort und Stelle."
+  ],
+  "tips_de": ["Nur die Unterarme bewegen sich.", "Schultern bleiben unten."],
+  "common_mistakes_de": ["Ellbogen wandern nach vorn und hinten.", "Oberkörper drückt mit."],
+  "safety_note_de": "Sitz und Polster vor dem ersten Satz auf die eigene Körpergröße einstellen und das Gewicht kontrolliert ablassen. Bei Schmerzen, Schwindel oder ungewohnten Beschwerden die Übung beenden.",
+  "alternatives": [
+    {
+      "alternative_id": "trizepsdruecken-band",
+      "reason": "home",
+      "priority": 1
+    },
+    {
+      "alternative_id": "trizepsstrecken-kurzhantel",
+      "reason": "other_equipment",
+      "priority": 2
+    }
+  ],
+  "meta": {
+    "origin": "claude_session",
+    "model": "claude-opus-5-5",
+    "batch_id": null,
+    "created_on": "2026-10-03",
+    "expert_reviewed": false,
+    "reviewed_by": null,
+    "reviewed_at": null,
+    "review_note": null
+  }
+}

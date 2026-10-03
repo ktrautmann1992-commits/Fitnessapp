@@ -1,0 +1,43 @@
+{
+  "id": "seitheben-band",
+  "version": 1,
+  "status": "draft",
+  "name_de": "Seitheben mit Widerstandsband",
+  "name_en": "Banded Lateral Raise",
+  "aliases_de": [],
+  "movement_pattern": "shoulder_isolation",
+  "primary_muscles": ["side_delts"],
+  "secondary_muscles": [],
+  "equipment_ids": ["resistance_bands"],
+  "mechanics": "isolation",
+  "load_type": "band",
+  "unilateral": false,
+  "difficulty": 1,
+  "caution_tags": [],
+  "description_de": "Seitheben mit einem Band unter den Füßen – die Variante für zu Hause.",
+  "steps_de": [
+    "Mit beiden Füßen auf die Mitte des Bandes stellen und die Enden seitlich greifen.",
+    "Arme leicht gebeugt seitlich bis auf Schulterhöhe heben.",
+    "Langsam absenken."
+  ],
+  "tips_de": ["Ein leichtes Band wählen.", "Oben kurz halten."],
+  "common_mistakes_de": ["Schultern ziehen nach oben.", "Arme werden über Schulterhöhe gerissen."],
+  "safety_note_de": "Band vor dem Training auf Risse prüfen und sicher befestigen bzw. festhalten. Bei Schmerzen, Schwindel oder ungewohnten Beschwerden die Übung beenden.",
+  "alternatives": [
+    {
+      "alternative_id": "seitheben-kurzhantel",
+      "reason": "other_equipment",
+      "priority": 1
+    }
+  ],
+  "meta": {
+    "origin": "claude_session",
+    "model": "claude-opus-5-5",
+    "batch_id": null,
+    "created_on": "2026-10-03",
+    "expert_reviewed": false,
+    "reviewed_by": null,
+    "reviewed_at": null,
+    "review_note": null
+  }
+}

@@ -1,0 +1,47 @@
+{
+  "id": "beinstrecker",
+  "version": 1,
+  "status": "draft",
+  "name_de": "Beinstrecker an der Maschine",
+  "name_en": "Leg Extension",
+  "aliases_de": [],
+  "movement_pattern": "knee_extension",
+  "primary_muscles": ["quadriceps"],
+  "secondary_muscles": [],
+  "equipment_ids": ["leg_extension_machine"],
+  "mechanics": "isolation",
+  "load_type": "weight",
+  "unilateral": false,
+  "difficulty": 1,
+  "caution_tags": [],
+  "description_de": "Isolationsübung für die Vorderseite der Oberschenkel an der Maschine.",
+  "steps_de": [
+    "Rückenlehne so einstellen, dass die Knie auf Höhe der Drehachse der Maschine liegen.",
+    "Fußpolster vorn knapp über den Fußgelenken anlegen, Griffe fassen.",
+    "Beine kontrolliert strecken und oben kurz halten.",
+    "Langsam wieder absenken, ohne das Gewicht abzulegen."
+  ],
+  "tips_de": ["Gesäß bleibt auf dem Sitz.", "Gleichmäßiges Tempo statt Schwung."],
+  "common_mistakes_de": [
+    "Schwung holen oder das Gewicht fallen lassen.",
+    "Drehachse und Knie passen nicht zueinander."
+  ],
+  "safety_note_de": "Sitz und Polster vor dem ersten Satz auf die eigene Körpergröße einstellen und das Gewicht kontrolliert ablassen. Bei Schmerzen, Schwindel oder ungewohnten Beschwerden die Übung beenden.",
+  "alternatives": [
+    {
+      "alternative_id": "beinstrecker-band",
+      "reason": "home",
+      "priority": 1
+    }
+  ],
+  "meta": {
+    "origin": "claude_session",
+    "model": "claude-opus-5-5",
+    "batch_id": null,
+    "created_on": "2026-10-03",
+    "expert_reviewed": false,
+    "reviewed_by": null,
+    "reviewed_at": null,
+    "review_note": null
+  }
+}

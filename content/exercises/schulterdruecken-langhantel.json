@@ -1,0 +1,51 @@
+{
+  "id": "schulterdruecken-langhantel",
+  "version": 1,
+  "status": "draft",
+  "name_de": "Schulterdrücken stehend mit Langhantel",
+  "name_en": "Barbell Overhead Press",
+  "aliases_de": ["Overhead Press", "Military Press"],
+  "movement_pattern": "vertical_push",
+  "primary_muscles": ["front_delts"],
+  "secondary_muscles": ["triceps", "side_delts", "upper_back"],
+  "equipment_ids": ["barbell", "power_rack"],
+  "mechanics": "compound",
+  "load_type": "weight",
+  "unilateral": false,
+  "difficulty": 2,
+  "caution_tags": ["overhead", "spinal_loading"],
+  "description_de": "Grundübung über Kopf im Stand: Die Langhantel wird von den Schultern senkrecht nach oben gedrückt.",
+  "steps_de": [
+    "Hantel im Rack etwa auf Schulterhöhe einhängen und schulterbreit greifen.",
+    "Hantel auf die vorderen Schultern nehmen, einen Schritt zurück, Füße hüftbreit.",
+    "Bauch und Gesäß anspannen, Hantel senkrecht nach oben drücken und den Kopf kurz nach hinten nehmen.",
+    "Oben ist die Hantel über der Fußmitte; kontrolliert zurück zu den Schultern senken."
+  ],
+  "tips_de": [
+    "Die Hantel bewegt sich auf einer geraden Linie.",
+    "Ganzkörperspannung: Beine, Gesäß und Bauch fest."
+  ],
+  "common_mistakes_de": [
+    "Starkes Hohlkreuz.",
+    "Schwung aus den Beinen.",
+    "Hantel landet vor dem Körper statt über der Fußmitte."
+  ],
+  "safety_note_de": "Gewicht so wählen, dass alle Wiederholungen technisch sauber gelingen. Bei Schmerzen, Schwindel oder ungewohnten Beschwerden die Übung beenden.",
+  "alternatives": [
+    {
+      "alternative_id": "schulterdruecken-kurzhantel",
+      "reason": "other_equipment",
+      "priority": 1
+    }
+  ],
+  "meta": {
+    "origin": "claude_session",
+    "model": "claude-opus-5-5",
+    "batch_id": null,
+    "created_on": "2026-10-03",
+    "expert_reviewed": false,
+    "reviewed_by": null,
+    "reviewed_at": null,
+    "review_note": null
+  }
+}

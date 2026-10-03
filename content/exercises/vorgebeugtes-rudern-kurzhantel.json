@@ -1,0 +1,49 @@
+{
+  "id": "vorgebeugtes-rudern-kurzhantel",
+  "version": 1,
+  "status": "draft",
+  "name_de": "Vorgebeugtes Rudern mit Kurzhanteln",
+  "name_en": "Dumbbell Bent-over Row",
+  "aliases_de": [],
+  "movement_pattern": "horizontal_pull",
+  "primary_muscles": ["upper_back", "lats"],
+  "secondary_muscles": ["rear_delts", "biceps", "lower_back"],
+  "equipment_ids": ["dumbbells"],
+  "mechanics": "compound",
+  "load_type": "weight",
+  "unilateral": false,
+  "difficulty": 1,
+  "caution_tags": [],
+  "description_de": "Zugübung für den Rücken mit zwei Kurzhanteln im vorgebeugten Stand – ohne Bank machbar.",
+  "steps_de": [
+    "Je eine Kurzhantel halten, Knie leicht beugen.",
+    "Hüfte nach hinten schieben, Oberkörper etwa 45 Grad nach vorn neigen, Rücken gerade.",
+    "Hanteln Richtung Hüfte ziehen und die Schulterblätter zusammenführen.",
+    "Kontrolliert absenken."
+  ],
+  "tips_de": ["Handflächen zeigen zueinander.", "Nacken bleibt lang, Blick schräg nach unten."],
+  "common_mistakes_de": ["Rücken rundet sich.", "Oberkörper richtet sich auf."],
+  "safety_note_de": "Gewicht so wählen, dass alle Wiederholungen technisch sauber gelingen. Bei Schmerzen, Schwindel oder ungewohnten Beschwerden die Übung beenden.",
+  "alternatives": [
+    {
+      "alternative_id": "rudern-band",
+      "reason": "easier",
+      "priority": 1
+    },
+    {
+      "alternative_id": "kurzhantelrudern-einarmig",
+      "reason": "other_equipment",
+      "priority": 2
+    }
+  ],
+  "meta": {
+    "origin": "claude_session",
+    "model": "claude-opus-5-5",
+    "batch_id": null,
+    "created_on": "2026-10-03",
+    "expert_reviewed": false,
+    "reviewed_by": null,
+    "reviewed_at": null,
+    "review_note": null
+  }
+}

@@ -1,0 +1,52 @@
+{
+  "id": "trizepsstrecken-kurzhantel",
+  "version": 1,
+  "status": "draft",
+  "name_de": "Trizepsstrecken über Kopf mit Kurzhantel",
+  "name_en": "Overhead Dumbbell Triceps Extension",
+  "aliases_de": [],
+  "movement_pattern": "elbow_extension",
+  "primary_muscles": ["triceps"],
+  "secondary_muscles": [],
+  "equipment_ids": ["dumbbells"],
+  "mechanics": "isolation",
+  "load_type": "weight",
+  "unilateral": false,
+  "difficulty": 1,
+  "caution_tags": ["overhead"],
+  "description_de": "Isolationsübung für den Trizeps: Eine Kurzhantel wird mit beiden Händen hinter dem Kopf gebeugt und über Kopf gestreckt.",
+  "steps_de": [
+    "Kurzhantel mit beiden Händen an einem Ende greifen und über den Kopf strecken.",
+    "Oberarme bleiben nah am Kopf, Bauch angespannt.",
+    "Hantel hinter dem Kopf kontrolliert absenken.",
+    "Arme wieder nach oben strecken."
+  ],
+  "tips_de": [
+    "Im Sitzen mit Rückenlehne fällt die Kontrolle leichter.",
+    "Ellbogen zeigen nach vorn, nicht zur Seite."
+  ],
+  "common_mistakes_de": ["Ellbogen öffnen sich weit nach außen.", "Hohlkreuz."],
+  "safety_note_de": "Gewicht so wählen, dass alle Wiederholungen technisch sauber gelingen. Bei Schmerzen, Schwindel oder ungewohnten Beschwerden die Übung beenden.",
+  "alternatives": [
+    {
+      "alternative_id": "trizepsdruecken-band",
+      "reason": "other_equipment",
+      "priority": 1
+    },
+    {
+      "alternative_id": "trizepsdruecken-kabel",
+      "reason": "other_equipment",
+      "priority": 2
+    }
+  ],
+  "meta": {
+    "origin": "claude_session",
+    "model": "claude-opus-5-5",
+    "batch_id": null,
+    "created_on": "2026-10-03",
+    "expert_reviewed": false,
+    "reviewed_by": null,
+    "reviewed_at": null,
+    "review_note": null
+  }
+}

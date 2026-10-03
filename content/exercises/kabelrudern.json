@@ -1,0 +1,49 @@
+{
+  "id": "kabelrudern",
+  "version": 1,
+  "status": "draft",
+  "name_de": "Rudern am Kabelzug sitzend",
+  "name_en": "Seated Cable Row",
+  "aliases_de": [],
+  "movement_pattern": "horizontal_pull",
+  "primary_muscles": ["upper_back", "lats"],
+  "secondary_muscles": ["rear_delts", "biceps"],
+  "equipment_ids": ["cable_station"],
+  "mechanics": "compound",
+  "load_type": "weight",
+  "unilateral": false,
+  "difficulty": 1,
+  "caution_tags": [],
+  "description_de": "Geführte Zugübung für den Rücken im Sitzen am Kabelzug.",
+  "steps_de": [
+    "Aufrecht hinsetzen, Füße gegen die Fußstützen, Knie leicht gebeugt.",
+    "Griff mit gestreckten Armen fassen, Oberkörper aufrecht.",
+    "Griff zum Bauch ziehen und die Schulterblätter zusammenführen.",
+    "Langsam nach vorn zurückführen, bis die Arme gestreckt sind."
+  ],
+  "tips_de": ["Oberkörper bleibt fast ruhig.", "Brust heraus, Schultern weg von den Ohren."],
+  "common_mistakes_de": ["Zurücklehnen mit Schwung.", "Schultern ziehen nach oben."],
+  "safety_note_de": "Sitz und Polster vor dem ersten Satz auf die eigene Körpergröße einstellen und das Gewicht kontrolliert ablassen. Bei Schmerzen, Schwindel oder ungewohnten Beschwerden die Übung beenden.",
+  "alternatives": [
+    {
+      "alternative_id": "kurzhantelrudern-einarmig",
+      "reason": "other_equipment",
+      "priority": 1
+    },
+    {
+      "alternative_id": "rudern-band",
+      "reason": "home",
+      "priority": 2
+    }
+  ],
+  "meta": {
+    "origin": "claude_session",
+    "model": "claude-opus-5-5",
+    "batch_id": null,
+    "created_on": "2026-10-03",
+    "expert_reviewed": false,
+    "reviewed_by": null,
+    "reviewed_at": null,
+    "review_note": null
+  }
+}

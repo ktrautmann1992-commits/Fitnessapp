@@ -1,0 +1,41 @@
+{
+  "id": "hampelmann",
+  "version": 1,
+  "status": "draft",
+  "name_de": "Hampelmann",
+  "name_en": "Jumping Jack",
+  "aliases_de": ["Jumping Jacks"],
+  "movement_pattern": "conditioning",
+  "primary_muscles": ["calves"],
+  "secondary_muscles": ["glutes", "side_delts"],
+  "equipment_ids": [],
+  "mechanics": "compound",
+  "load_type": "time",
+  "unilateral": false,
+  "difficulty": 1,
+  "caution_tags": ["high_impact"],
+  "description_de": "Einfache Sprungübung zum Aufwärmen und für kurze Ausdauer-Intervalle.",
+  "steps_de": [
+    "Aufrecht stehen, Füße zusammen, Arme seitlich am Körper.",
+    "Mit einem kleinen Sprung die Beine grätschen und gleichzeitig die Arme seitlich über den Kopf führen.",
+    "Mit einem Sprung zurück in die Ausgangsposition.",
+    "Locker und gleichmäßig wiederholen."
+  ],
+  "tips_de": [
+    "Leise landen, über die Fußballen abfedern.",
+    "Ohne Sprung: abwechselnd einen Fuß zur Seite setzen."
+  ],
+  "common_mistakes_de": ["Hart auf den Fersen landen.", "Zu schnelles Tempo zu Beginn."],
+  "safety_note_de": "Auf rutschfestem Boden und in festen Schuhen springen. Bei Schmerzen, Schwindel oder ungewohnten Beschwerden die Übung beenden.",
+  "alternatives": [],
+  "meta": {
+    "origin": "claude_session",
+    "model": "claude-opus-5-5",
+    "batch_id": null,
+    "created_on": "2026-10-03",
+    "expert_reviewed": false,
+    "reviewed_by": null,
+    "reviewed_at": null,
+    "review_note": null
+  }
+}

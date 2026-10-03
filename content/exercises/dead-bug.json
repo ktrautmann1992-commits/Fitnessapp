@@ -1,0 +1,47 @@
+{
+  "id": "dead-bug",
+  "version": 1,
+  "status": "draft",
+  "name_de": "Dead Bug",
+  "name_en": "Dead Bug",
+  "aliases_de": [],
+  "movement_pattern": "core_anti_extension",
+  "primary_muscles": ["abs"],
+  "secondary_muscles": ["obliques"],
+  "equipment_ids": [],
+  "mechanics": "isolation",
+  "load_type": "bodyweight",
+  "unilateral": false,
+  "difficulty": 1,
+  "caution_tags": ["long_supine"],
+  "description_de": "Rumpfübung in Rückenlage: Arme und Beine bewegen sich abwechselnd, während der untere Rücken am Boden bleibt.",
+  "steps_de": [
+    "Auf den Rücken legen, Arme senkrecht nach oben, Hüfte und Knie im rechten Winkel.",
+    "Unteren Rücken sanft in den Boden drücken.",
+    "Einen Arm nach hinten und das gegenüberliegende Bein nach vorn strecken.",
+    "Zurück in die Ausgangsposition und Seite wechseln."
+  ],
+  "tips_de": [
+    "Langsam bewegen und ruhig ausatmen beim Strecken.",
+    "Nur so weit strecken, wie der untere Rücken am Boden bleibt."
+  ],
+  "common_mistakes_de": ["Hohlkreuz beim Strecken.", "Zu schnell."],
+  "safety_note_de": "Nur so weit und so oft bewegen, wie die Technik sauber bleibt. Bei Schmerzen, Schwindel oder ungewohnten Beschwerden die Übung beenden.",
+  "alternatives": [
+    {
+      "alternative_id": "unterarmstuetz",
+      "reason": "harder",
+      "priority": 1
+    }
+  ],
+  "meta": {
+    "origin": "claude_session",
+    "model": "claude-opus-5-5",
+    "batch_id": null,
+    "created_on": "2026-10-03",
+    "expert_reviewed": false,
+    "reviewed_by": null,
+    "reviewed_at": null,
+    "review_note": null
+  }
+}

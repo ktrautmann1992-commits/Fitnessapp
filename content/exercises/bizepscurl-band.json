@@ -1,0 +1,43 @@
+{
+  "id": "bizepscurl-band",
+  "version": 1,
+  "status": "draft",
+  "name_de": "Bizepscurls mit Widerstandsband",
+  "name_en": "Banded Biceps Curl",
+  "aliases_de": [],
+  "movement_pattern": "elbow_flexion",
+  "primary_muscles": ["biceps"],
+  "secondary_muscles": ["forearms"],
+  "equipment_ids": ["resistance_bands"],
+  "mechanics": "isolation",
+  "load_type": "band",
+  "unilateral": false,
+  "difficulty": 1,
+  "caution_tags": [],
+  "description_de": "Bizepscurls mit einem Band, das unter den Füßen liegt.",
+  "steps_de": [
+    "Mit beiden Füßen auf das Band stellen, Enden mit gestreckten Armen greifen.",
+    "Ellbogen am Körper lassen und die Hände zu den Schultern beugen.",
+    "Oben kurz halten und langsam wieder strecken."
+  ],
+  "tips_de": ["Breiter stehen erhöht den Widerstand.", "Gleichmäßiges Tempo."],
+  "common_mistakes_de": ["Ellbogen wandern nach vorn.", "Schwung aus dem Oberkörper."],
+  "safety_note_de": "Band vor dem Training auf Risse prüfen und sicher befestigen bzw. festhalten. Bei Schmerzen, Schwindel oder ungewohnten Beschwerden die Übung beenden.",
+  "alternatives": [
+    {
+      "alternative_id": "bizepscurl-kurzhantel",
+      "reason": "other_equipment",
+      "priority": 1
+    }
+  ],
+  "meta": {
+    "origin": "claude_session",
+    "model": "claude-opus-5-5",
+    "batch_id": null,
+    "created_on": "2026-10-03",
+    "expert_reviewed": false,
+    "reviewed_by": null,
+    "reviewed_at": null,
+    "review_note": null
+  }
+}

@@ -1,0 +1,57 @@
+{
+  "id": "langhantelrudern",
+  "version": 1,
+  "status": "draft",
+  "name_de": "Langhantelrudern vorgebeugt",
+  "name_en": "Barbell Bent-over Row",
+  "aliases_de": [],
+  "movement_pattern": "horizontal_pull",
+  "primary_muscles": ["upper_back", "lats"],
+  "secondary_muscles": ["rear_delts", "biceps", "lower_back"],
+  "equipment_ids": ["barbell"],
+  "mechanics": "compound",
+  "load_type": "weight",
+  "unilateral": false,
+  "difficulty": 2,
+  "caution_tags": ["spinal_loading"],
+  "description_de": "Zugübung für den Rücken mit vorgebeugtem Oberkörper: Die Langhantel wird zum Bauch gezogen.",
+  "steps_de": [
+    "Hantel schulterbreit greifen, Knie leicht beugen.",
+    "Hüfte nach hinten schieben, bis der Oberkörper etwa 45 Grad nach vorn geneigt ist; Rücken gerade.",
+    "Hantel zum Bauchnabel ziehen und die Schulterblätter zusammenführen.",
+    "Kontrolliert absenken, die Oberkörperneigung bleibt gleich."
+  ],
+  "tips_de": ["Ellbogen ziehen nah am Körper nach hinten.", "Kein Schwung aus dem Oberkörper."],
+  "common_mistakes_de": [
+    "Rücken rundet sich.",
+    "Oberkörper richtet sich bei jeder Wiederholung auf."
+  ],
+  "safety_note_de": "Gewicht so wählen, dass alle Wiederholungen technisch sauber gelingen. Bei Schmerzen, Schwindel oder ungewohnten Beschwerden die Übung beenden.",
+  "alternatives": [
+    {
+      "alternative_id": "kabelrudern",
+      "reason": "easier",
+      "priority": 1
+    },
+    {
+      "alternative_id": "kurzhantelrudern-einarmig",
+      "reason": "other_equipment",
+      "priority": 2
+    },
+    {
+      "alternative_id": "rudern-band",
+      "reason": "home",
+      "priority": 3
+    }
+  ],
+  "meta": {
+    "origin": "claude_session",
+    "model": "claude-opus-5-5",
+    "batch_id": null,
+    "created_on": "2026-10-03",
+    "expert_reviewed": false,
+    "reviewed_by": null,
+    "reviewed_at": null,
+    "review_note": null
+  }
+}

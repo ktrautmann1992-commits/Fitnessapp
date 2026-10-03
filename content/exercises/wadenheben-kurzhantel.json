@@ -1,0 +1,50 @@
+{
+  "id": "wadenheben-kurzhantel",
+  "version": 1,
+  "status": "draft",
+  "name_de": "Wadenheben stehend mit Kurzhantel",
+  "name_en": "Standing Dumbbell Calf Raise",
+  "aliases_de": [],
+  "movement_pattern": "calf_raise",
+  "primary_muscles": ["calves"],
+  "secondary_muscles": [],
+  "equipment_ids": ["dumbbells"],
+  "mechanics": "isolation",
+  "load_type": "weight",
+  "unilateral": false,
+  "difficulty": 1,
+  "caution_tags": [],
+  "description_de": "Fersenheben im Stand mit Zusatzgewicht für die Wadenmuskulatur.",
+  "steps_de": [
+    "Mit den Fußballen auf eine Stufe oder Hantelscheibe stellen, Fersen frei.",
+    "Eine Kurzhantel seitlich halten, mit der anderen Hand an einer Wand festhalten.",
+    "Fersen so hoch wie möglich heben, oben kurz halten.",
+    "Fersen langsam unter die Stufenkante absenken."
+  ],
+  "tips_de": [
+    "Volle Bewegung: unten dehnen, oben ganz hochdrücken.",
+    "Knie bleiben fast gestreckt."
+  ],
+  "common_mistakes_de": [
+    "Wippen mit Schwung statt kontrollierter Bewegung.",
+    "Nur halbe Bewegung."
+  ],
+  "safety_note_de": "Gewicht so wählen, dass alle Wiederholungen technisch sauber gelingen. Bei Schmerzen, Schwindel oder ungewohnten Beschwerden die Übung beenden.",
+  "alternatives": [
+    {
+      "alternative_id": "wadenheben-koerpergewicht",
+      "reason": "easier",
+      "priority": 1
+    }
+  ],
+  "meta": {
+    "origin": "claude_session",
+    "model": "claude-opus-5-5",
+    "batch_id": null,
+    "created_on": "2026-10-03",
+    "expert_reviewed": false,
+    "reviewed_by": null,
+    "reviewed_at": null,
+    "review_note": null
+  }
+}
