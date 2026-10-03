@@ -1,0 +1,16 @@
+# Supabase-Konfiguration für dieses Repository.
+# Das echte Projekt läuft in der Region EU (Frankfurt, eu-central-1) – die Region wird beim Anlegen
+# des Projekts auf supabase.com gewählt (siehe docs/SETUP.md Teil A).
+# Migrationen liegen in supabase/migrations und werden per GitHub Action db-migrate eingespielt.
+project_id = "fitnessapp"
+
+[api]
+schemas = ["public", "graphql_public"]
+extra_search_path = ["public", "extensions"]
+max_rows = 1000
+
+[db]
+major_version = 17
+
+[auth]
+site_url = "http://localhost:8081"

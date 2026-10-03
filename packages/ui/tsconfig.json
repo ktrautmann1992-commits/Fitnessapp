@@ -1,0 +1,10 @@
+{
+  "extends": "../../tsconfig.base.json",
+  "compilerOptions": {
+    "types": ["node"],
+    // Die Generator-Skripte (scripts/*.mjs) sind JavaScript mit JSDoc-Typen und werden mitgeprüft.
+    "allowJs": true,
+    "checkJs": true
+  },
+  "include": ["src", "scripts"]
+}

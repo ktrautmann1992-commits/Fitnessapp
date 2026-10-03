@@ -1,0 +1,37 @@
+# Abhängigkeiten
+node_modules/
+
+# Build-Ausgaben
+dist/
+.next/
+out/
+web-build/
+.turbo/
+*.tsbuildinfo
+next-env.d.ts
+
+# Expo
+.expo/
+expo-env.d.ts
+ios/
+android/
+*.jks
+*.p8
+*.p12
+*.key
+*.mobileprovision
+
+# Umgebungsvariablen (nur .env.example wird eingecheckt)
+.env
+.env.*
+!.env.example
+
+# Supabase
+supabase/.temp/
+supabase/.branches/
+
+# Sonstiges
+.DS_Store
+*.log
+.vercel
+coverage/

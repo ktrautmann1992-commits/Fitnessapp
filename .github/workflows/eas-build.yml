@@ -1,0 +1,74 @@
+name: eas-build
+
+# Manuell startbar: baut die native App in der Expo-Cloud (EAS Build).
+# Android „preview“ = APK zum direkten Installieren. iOS braucht zusätzlich den Apple-Account (Phase 4).
+on:
+  workflow_dispatch:
+    inputs:
+      platform:
+        description: 'Plattform'
+        type: choice
+        options:
+          - android
+          - ios
+          - all
+        default: android
+      profile:
+        description: 'Build-Profil (preview = Test-APK, production = Store)'
+        type: choice
+        options:
+          - preview
+          - production
+        default: preview
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    env:
+      EXPO_TOKEN: ${{ secrets.EXPO_TOKEN }}
+    steps:
+      - uses: actions/checkout@v4
+      - name: Voraussetzungen prüfen
+        id: secrets
+        run: |
+          missing=""
+          [ -z "$EXPO_TOKEN" ] && missing="$missing GitHub-Secret EXPO_TOKEN,"
+          if grep -q "EAS_PROJECT_ID = ''" apps/mobile/app.config.ts; then
+            missing="$missing Expo-Projekt-ID in apps/mobile/app.config.ts,"
+          fi
+          if [ -n "$missing" ]; then
+            echo "::notice title=eas-build übersprungen::Es fehlt:${missing%,} – siehe docs/SETUP.md Teil D"
+            echo "### ⏭️ eas-build übersprungen" >> "$GITHUB_STEP_SUMMARY"
+            echo "Es fehlt:${missing%,}. Anleitung: docs/SETUP.md Teil D" >> "$GITHUB_STEP_SUMMARY"
+            echo "ready=false" >> "$GITHUB_OUTPUT"
+          else
+            echo "ready=true" >> "$GITHUB_OUTPUT"
+          fi
+
+      - uses: pnpm/action-setup@v4
+        if: steps.secrets.outputs.ready == 'true'
+      - uses: actions/setup-node@v4
+        if: steps.secrets.outputs.ready == 'true'
+        with:
+          node-version: 22
+          cache: pnpm
+      - uses: expo/expo-github-action@v8
+        if: steps.secrets.outputs.ready == 'true'
+        with:
+          eas-version: latest
+          token: ${{ secrets.EXPO_TOKEN }}
+      - run: pnpm install --frozen-lockfile
+        if: steps.secrets.outputs.ready == 'true'
+      - name: Build in der Expo-Cloud starten
+        if: steps.secrets.outputs.ready == 'true'
+        working-directory: apps/mobile
+        env:
+          PLATFORM: ${{ inputs.platform }}
+          PROFILE: ${{ inputs.profile }}
+        run: eas build --platform "$PLATFORM" --profile "$PROFILE" --non-interactive --no-wait
+      - name: Zusammenfassung
+        if: steps.secrets.outputs.ready == 'true'
+        run: |
+          echo "### ✅ Build gestartet" >> "$GITHUB_STEP_SUMMARY"
+          echo "Den Fortschritt und den Download-Link findest du auf expo.dev → dein Projekt → Builds." >> "$GITHUB_STEP_SUMMARY"

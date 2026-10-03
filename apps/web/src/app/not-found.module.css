@@ -1,0 +1,13 @@
+/* Fehlerseite – Werte aus packages/ui/theme.css. */
+
+.main {
+  padding: var(--space-lg);
+  text-align: center;
+}
+
+/* Normale Textfarbe + Unterstreichung: Kontrast ≥ 4,5 : 1 in hell und dunkel. */
+.link {
+  color: var(--color-text);
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}

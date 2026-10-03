@@ -1,0 +1,85 @@
+/* Startseite – alle Werte als Variablen aus packages/ui/theme.css, damit hell/dunkel automatisch passt. */
+
+.main {
+  max-width: var(--max-content-width);
+  margin: 0 auto;
+  padding: var(--space-lg);
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-md);
+  min-height: 100dvh;
+  justify-content: center;
+}
+
+.title {
+  font-size: var(--font-size-xxl);
+  font-weight: var(--font-weight-bold);
+  text-align: center;
+  margin: 0;
+}
+
+.tagline {
+  font-size: var(--font-size-md);
+  color: var(--color-text-muted);
+  text-align: center;
+  margin: 0;
+}
+
+.features {
+  display: grid;
+  gap: var(--space-sm);
+  margin-top: var(--space-sm);
+}
+
+.card {
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  padding: var(--space-md);
+}
+
+.cardTitle {
+  font-size: var(--font-size-lg);
+  font-weight: var(--font-weight-bold);
+  margin: 0;
+}
+
+.cardText {
+  color: var(--color-text-muted);
+  margin: var(--space-xs) 0 0;
+}
+
+.note {
+  font-size: var(--font-size-sm);
+  color: var(--color-text-muted);
+  text-align: center;
+}
+
+.status {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-sm);
+  font-size: var(--font-size-sm);
+  color: var(--color-text-muted);
+  margin: 0;
+}
+
+.statusDot {
+  width: 10px;
+  height: 10px;
+  border-radius: var(--radius-pill);
+  display: inline-block;
+}
+
+.statusOk {
+  background: var(--color-success);
+}
+
+.statusInvalid {
+  background: var(--color-danger);
+}
+
+.statusMissing {
+  background: var(--color-warning);
+}
