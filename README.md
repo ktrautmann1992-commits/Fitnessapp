@@ -6,6 +6,7 @@ Supplementplan und Trainingstagebuch.
 - Regeln und Architektur: [`CLAUDE.md`](CLAUDE.md)
 - Fachkonzept: [`docs/KONZEPT.md`](docs/KONZEPT.md)
 - Umsetzungsphasen: [`docs/PROMPTS.md`](docs/PROMPTS.md)
+- Erweiterungen aus dem Brainstorming (eingearbeitet ins Fachkonzept): [`docs/ERWEITERUNGEN.md`](docs/ERWEITERUNGEN.md)
 - Arbeiten nur mit dem Handy: [`docs/HANDY-ANLEITUNG.md`](docs/HANDY-ANLEITUNG.md)
 - Supabase, Vercel und Expo verbinden: [`docs/SETUP.md`](docs/SETUP.md)
 - Farben und Design (eine `theme.css` für App und Website): [`docs/DESIGN.md`](docs/DESIGN.md)

@@ -23,13 +23,23 @@ Supplementplan und ein Trainingstagebuch erzeugt – inkl. Zyklus-Berücksichtig
   und als Inhalte in der Datenbank gespeichert.
 - Zur Laufzeit wählt eine **deterministische Regel-Engine** (`packages/core`) passende Vorlagen aus und
   personalisiert sie (Equipment-Tausch, Lasten, Kalorien, Makros, Wochenplanung).
-- Echtzeit-KI nur für: (a) optionalen Premium-KI-Coach-Chat, (b) Fallback, wenn keine Vorlage passt.
-  Beides hinter Feature-Flag, rate-limitiert, Kosten pro Nutzer geloggt.
+- Echtzeit-KI nur für: (a) Premium-KI-Funktionen (KI-Coach-Chat, Kalorien per Foto, Körperfoto-Analyse,
+  KI-Erklärungen in Worten), (b) Fallback, wenn keine Vorlage passt. Alles hinter Feature-Flag und
+  Monatslimit, Kosten pro Nutzer geloggt (siehe „KI-Grenze“).
+
+## KI-Grenze: Gratis ohne KI, Premium mit KI
+- Alle Funktionen mit Echtzeit-KI sind **ausschließlich Premium**. Gratis läuft komplett über feste Regeln und Datenbank.
+- Premium-Prüfung **immer serverseitig** (nie nur in der App).
+- Jede KI-Funktion hat ein eigenes, konfigurierbares **Monatslimit pro Nutzer**. Tabelle `ai_usage` protokolliert
+  Funktion, Tokens, Kosten und Zeitpunkt.
+- Limit erreicht → klare, verständliche Meldung in der App, keine stille Fehlfunktion.
+- Details: `docs/KONZEPT.md` Abschnitt 15, Herkunft: `docs/ERWEITERUNGEN.md`.
 
 ## Tech-Stack
 - Monorepo: **Turborepo + pnpm**, TypeScript strict überall
 - `apps/mobile`: **Expo (React Native) + Expo Router**, zusätzlich als **Web-Export auf Vercel** (damit jede Änderung sofort im Handy-Browser testbar ist). Native Builds über **EAS Build in der Cloud** (Android-APK, iOS via EAS Submit → TestFlight). Ab Wearables/Abos: Development Build statt Expo Go.
-- `apps/web`: **Next.js (App Router)** auf **Vercel** – Landingpage, Web-App-Version, Admin-/Redaktionsbereich, API-Routen/Webhooks
+- Die **Web-App-Version** der App ist der Expo-Web-Export von `apps/mobile` (Vercel-Projekt „fitnessapp“ baut ihn über `vercel.json` im Hauptordner).
+- `apps/web`: **Next.js (App Router)** auf **Vercel** – Landingpage, Admin-/Redaktionsbereich, API-Routen/Webhooks
 - `packages/core`: reine TypeScript-Logik ohne UI (Berechnungen, Plan-Engine, Ernährungs-Engine) – 100 % testbar
 - `packages/db`: Datenbanktypen (generiert aus Supabase), Zod-Schemas
 - `packages/ui`: geteilte Design-Tokens
@@ -64,6 +74,10 @@ Supplementplan und ein Trainingstagebuch erzeugt – inkl. Zyklus-Berücksichtig
 - Offline-first im Trainingsmodus (lokaler Speicher, Sync bei Verbindung).
 - Keine Secrets im Code; `.env.example` pflegen.
 - Kleine, nachvollziehbare Commits; vor jedem größeren Feature erst einen Plan vorlegen und auf Freigabe warten.
+
+### Kein Teilen, keine Community
+- Kein Teilen, keine Community, keine Ranglisten, keine öffentlichen Profile. Strecken, Fotos, Abzeichen und Challenges bleiben privat.
+- Erlaubt bleibt nur der Partner-Modus (zwei Personen, beidseitige Zustimmung, nur freigegebene Bereiche) – das ist kein öffentliches Teilen.
 
 ### Affiliate & Werbung
 - Affiliate-Links immer sichtbar als „Anzeige“/„Werbung“ kennzeichnen.
