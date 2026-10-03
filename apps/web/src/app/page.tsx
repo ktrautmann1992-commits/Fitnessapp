@@ -5,6 +5,10 @@ import { supabaseConfig } from '@/lib/supabase';
 
 import styles from './page.module.css';
 
+/** Web-Version der App (Expo-Web-Export, Vercel-Projekt „App“). Kein Login auf der Website selbst. */
+const DEFAULT_APP_URL = 'https://fitnessapp-alpha-five.vercel.app';
+const appUrl = process.env.NEXT_PUBLIC_APP_URL?.trim() || DEFAULT_APP_URL;
+
 const FEATURES = [
   { title: 'Trainingsplan', text: 'Passend zu Ziel, Zeitbudget und deinem Equipment.' },
   { title: 'Ernährung', text: 'Wochenplan mit Rezepten und Einkaufsliste.' },
@@ -34,8 +38,12 @@ export default function HomePage() {
         ))}
       </section>
 
+      <a className={styles.appButton} href={appUrl}>
+        App im Browser öffnen
+      </a>
+
       <p className={styles.note}>
-        Bald verfügbar für iPhone, Android und im Browser. Nutzung ab {MIN_AGE_YEARS} Jahren.
+        Bald auch für iPhone und Android. Nutzung ab {MIN_AGE_YEARS} Jahren.
       </p>
 
       <p className={styles.status}>

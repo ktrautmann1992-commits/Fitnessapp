@@ -1,33 +1,14 @@
-import { fontSize, spacing } from '@fitnessapp/ui';
-import { Link } from 'expo-router';
-import { StyleSheet, Text, View } from 'react-native';
+import { useRouter } from 'expo-router';
 
-import { useThemeColors } from '@/lib/theme';
+import { Screen } from '@/components/screen';
+import { Button } from '@/components/ui';
+import { t } from '@/i18n';
 
 export default function NotFoundScreen() {
-  const theme = useThemeColors();
+  const router = useRouter();
   return (
-    <View style={[styles.container, { backgroundColor: theme.background }]}>
-      <Text style={[styles.title, { color: theme.text }]}>Diese Seite gibt es nicht.</Text>
-      <Link href="/" style={[styles.link, { color: theme.primary }]}>
-        Zur Startseite
-      </Link>
-    </View>
+    <Screen title={t.notFound.title}>
+      <Button label={t.common.toStart} onPress={() => router.replace('/')} />
+    </Screen>
   );
 }
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    alignItems: 'center',
-    justifyContent: 'center',
-    gap: spacing.md,
-    padding: spacing.lg,
-  },
-  title: {
-    fontSize: fontSize.lg,
-  },
-  link: {
-    fontSize: fontSize.md,
-  },
-});

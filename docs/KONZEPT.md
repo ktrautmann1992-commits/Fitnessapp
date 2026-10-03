@@ -1,5 +1,13 @@
 # Fachkonzept – [APP-NAME]
 
+Eingearbeitet: Erweiterungen aus dem Brainstorming der Gründer (`docs/ERWEITERUNGEN.md`). Die Abschnittsnummern 1–14
+bleiben stabil, weil andere Dokumente darauf verweisen; neue Themen stehen als Unterabschnitte (z. B. 4.1, 6.1) oder
+in den neuen Abschnitten 15 und 16.
+
+**Grundregeln für alle Erweiterungen:** Echtzeit-KI nur für Premium (Abschnitt 15). Kein Teilen, keine Community,
+keine Ranglisten, keine öffentlichen Profile – Strecken, Fotos, Abzeichen und Challenges bleiben privat
+(Ausnahme nur Partner-Modus, Abschnitt 11).
+
 ## 1. Zielgruppe & Ziele
 - DACH, Einsteiger, Fortgeschrittene, ambitionierte/professionelle Ausdauersportler
 - Ziele: Fettverlust, Definition, Muskelaufbau, Allgemeine Fitness, Ausdauer
@@ -7,23 +15,33 @@
 - Optional Wettkampfdatum → Periodisierung rückwärts vom Wettkampf
 
 ## 2. Onboarding (Reihenfolge)
-1. Geschlecht (männlich/weiblich) → bei weiblich: Zyklusmodul anbieten (opt-in)
-2. Alter (min. 16), Größe, Gewicht, optional Körperfett, Ruhepuls
-3. Gesundheits-Check (Herz-Kreislauf, Schwangerschaft, Verletzungen/Beschwerden, Medikamente ja/nein) + Einwilligungen
-4. Trainingserfahrung (Einsteiger / Fortgeschritten / Leistungssport)
-5. Ziel + ggf. Disziplin + Wettkampfdatum
-6. Zeitbudget: Trainingstage/Woche, Minuten/Einheit, bevorzugte Wochentage
-7. Trainingsort: Studio / Zuhause / beides
-8. Equipment zu Hause: Kurzhanteln (Gewichtsstufen), Langhantel + Scheiben, Kettlebells (kg), Flachbank, Schrägbank, Klimmzugstange, Widerstandsbänder, Rudergerät, Ergometer, Laufband, Sonstiges (Freitext)
-9. Ernährung: omnivor / vegetarisch / vegan; Schwein ja/nein; mag / mag nicht (Lebensmittel-Auswahl); Unverträglichkeiten; Mahlzeiten pro Tag
-10. Kochmodus: täglich frisch / Meal-Prep (wie oft pro Woche)
-11. Wearable verbinden (optional, überspringbar)
+Verbindlich ist der freigegebene Ablauf in `docs/PLAN-PHASE-1.md` Abschnitt 3 (Stand Phase 1):
+- A. Willkommen
+- B. **Geburtsdatum** (min. 16) – **vor** dem Konto; unter 16 freundlicher Stopp, nichts wird gespeichert
+- C. Konto anlegen: Login per **E-Mail-Code** (6-stellig, ohne Passwort); Apple/Google folgen. Direkt danach wird das
+  **Profil zuerst** angelegt (geprüftes Geburtsdatum = Voraussetzung für alle Einwilligungen und Daten)
+- D. Grund-Einwilligungen: Nutzungsbedingungen und Datenschutzerklärung (getrennt, nicht vorausgewählt)
+
+1. Geschlecht (männlich / weiblich / divers / keine Angabe) → bei weiblich: Interesse am Zyklusmodul ja/nein (Modul und eigene Einwilligung in Phase 9)
+2. Einwilligung Gesundheitsdaten (`health_data`) – **vor** den Körperdaten; ohne Einwilligung geht es weiter, aber ohne Körperdaten und Gesundheits-Check (mit Hinweis)
+3. Körperdaten: Größe, Gewicht, optional Körperfett, Ruhepuls; danach **optional** Körperumfänge mit Mess-Anleitung (Abschnitt 11.1)
+4. Gesundheits-Check (Herz-Kreislauf, Schwangerschaft, Verletzungen/Beschwerden, Medikamente ja/nein)
+5. Trainingserfahrung (Einsteiger / Fortgeschritten / Leistungssport)
+6. Ziel + ggf. Disziplin + Wettkampfdatum
+7. Zeitbudget: Trainingstage/Woche, Minuten/Einheit, bevorzugte Wochentage
+8. Trainingsort: Studio / Zuhause / beides
+9. Equipment zu Hause: Kurzhanteln (Gewichtsstufen), Langhantel + Scheiben, Kettlebells (kg), Flachbank, Schrägbank, Klimmzugstange, Widerstandsbänder, Rudergerät, Ergometer, Laufband, Sonstiges (Freitext)
+10. Ernährung: omnivor / vegetarisch / vegan; Schwein ja/nein; mag / mag nicht (Lebensmittel-Auswahl); Unverträglichkeiten; Mahlzeiten pro Tag
+11. Kochmodus: täglich frisch / Meal-Prep (wie oft pro Woche)
+- E. Fertig: Zusammenfassung
+- Wearable verbinden: **in Phase 1 entfallen**, kommt mit Phase 8 (optional, überspringbar)
 
 ## 3. Content-Pipeline (Offline-KI)
 - Skripte in `packages/content` erzeugen per Claude Message Batches API (kostengünstig, asynchron):
   - Plan-Vorlagen (Matrix: Ziel × Level × Tage/Woche × Minuten × Equipment-Profil × Geschlecht wo sinnvoll)
   - Ausdauer-Blöcke (Basis, Aufbau, Spitze, Tapering) je Disziplin und Level
-  - Rezepte (getaggt: Ernährungsform, Schwein, Kochmodus, Zubereitungszeit, Makros pro Portion, Haltbarkeit für Meal-Prep)
+  - Rezepte (getaggt: Ernährungsform, Schwein, Kochmodus, Zubereitungszeit, Makros pro Portion, Haltbarkeit für Meal-Prep;
+    zusätzlich Trainings-Tags `vor_training` / `waehrend` / `nach_training` für Abschnitt 6.3, inkl. schneller Varianten ohne Kochen)
   - Übungsbeschreibungen, Technik-Hinweise, Alternativen
 - Jede Ausgabe: JSON-Schema-Validierung → Status `draft` → Review im Admin-Bereich → `published`
 - Plausibilitäts-Checks automatisch (z. B. Makros eines Rezepts rechnerisch prüfen, Wochenvolumen innerhalb Grenzen)
@@ -37,7 +55,31 @@
 5. **Deload:** alle 4–6 Wochen bzw. bei sinkender Leistung/hoher Belastungsempfindung
 6. **Ausdauer:** Intensitätsverteilung ca. 80/20, Zonen aus Testlauf/Herzfrequenz, Umfangsteigerung ≤10 %/Woche, Tapering vor Wettkampf
 7. **Neuplanung:** verpasste Einheiten sinnvoll verschieben oder streichen, nie stapeln
-8. **Fallback:** keine Vorlage passt → Echtzeit-KI-Generierung mit gleichem Schema + Validierung (Premium, rate-limitiert)
+8. **Fallback:** keine Vorlage passt → Echtzeit-KI-Generierung mit gleichem Schema + Validierung (Premium, Limit über `ai_usage`, Abschnitt 15).
+   Gratis (Vorschlag, **offene Gründer-Entscheidung**): nächstbeste Vorlage mit Hinweis, was nicht ganz passt
+9. **Equipment aus „Mein Studio“:** Hat das gespeicherte Studio eine Geräteliste, dient sie als Equipment-Profil (Abschnitt 16)
+
+### 4.1 Live-Anpassung des Plans (Premium, ohne KI)
+- **Gratis:** nur die doppelte Progression aus Punkt 4 oben (alle Wiederholungen geschafft → Gewicht steigt) – **ohne** die
+  Regeln dieses Abschnitts. Mess-Erinnerungen (Abschnitt 11.1) bleiben ebenfalls gratis.
+- **Premium:** Plan passt sich **sofort** an, sobald neue Daten eingehen – über feste Regeln in `packages/core`, nicht über KI.
+- **Auslöser:** Einheit eingetragen, Einheit verpasst, Mess-Update (Abschnitt 11.1), neue Wearable-Daten, Ziel oder Wettkampfdatum geändert.
+- **Regeln** (Startwerte zentral in `constants.ts`, mit Quellenkommentar und Tests):
+  - Alle Wiederholungen geschafft und Belastung niedrig → Last steigt
+  - Belastung über mehrere Einheiten sehr hoch → Last oder Umfang sinkt
+  - Keine Steigerung bei einer Übung über ca. 3 Wochen → Variation oder Erholungswoche
+  - Weniger als ca. 70 % der Einheiten geschafft über 3 Wochen → Vorschlag, auf weniger Trainingstage umzustellen (Nutzer bestätigt)
+  - Fettverlust: Taille/Bauch und Gewicht stagnieren über ca. 4 Wochen → Kalorien leicht anpassen, **immer innerhalb der Schutzgrenzen aus CLAUDE.md**
+  - Muskelaufbau: Gewicht und Umfänge stagnieren, Kraft steigt nicht → Kalorien leicht erhöhen oder Volumen anpassen
+  - Schlechte Tagesform aus Wearable (Readiness, Abschnitt 9) → leichtere Einheit für heute vorschlagen
+- **Transparenz:** Jede Anpassung landet in `plan_adjustments` (Auslöser, Regel, vorher, nachher, bestätigt). Ansicht
+  „Warum hat sich mein Plan geändert?“ in einfachen Worten aus festen Textbausteinen (keine KI). Optional (Premium-KI,
+  Abschnitt 15): ausführlichere Erklärung in Worten.
+- **Kleine Anpassungen automatisch**, große (weniger Trainingstage, Kalorienänderung) nur nach Bestätigung.
+- Sicherheitsgrenzen (Deload, ≤10 %/Woche Ausdauer, Gesundheits-Check-Flags) gelten unverändert; Regeln, die
+  Körperdaten nutzen, greifen nur mit gültiger `health_data`-Einwilligung.
+- **Technik:** Neuberechnung ereignisgesteuert auf dem Server (Datenbank-Trigger bzw. Server-Funktion), Ergebnis sofort
+  in der App sichtbar; offline eingetragene Daten lösen die Neuberechnung beim nächsten Sync aus. Premium-Prüfung serverseitig.
 
 ## 5. Tagesansicht & Trainingstagebuch
 - Heute: geplante Einheit mit allen Übungen, Sätzen, Wiederholungen, Zielgewicht, Pause
@@ -46,6 +88,7 @@
 - Ausdauer: Distanz, Zeit, Pace/Geschwindigkeit, Höhenmeter, Herzfrequenz (manuell oder aus Wearable)
 - Belastungsempfinden der Einheit: Schieberegler 0–10
 - Notizen, Pausentimer, Aufwärm- und Mobility-Block, Übungsvideos/Animationen
+- In der App aufgezeichnete Strecken (Abschnitt 10.1) landen automatisch als Ausdauer-Eintrag im Tagebuch
 - Offline-fähig, Sync später
 
 ## 6. Ernährungs-Engine (`packages/core/nutrition`)
@@ -57,7 +100,45 @@
 - Wettkampf: Carb-Loading-Tage, Frühstück am Wettkampftag, Gel-/Trinkplan
 - Plan-Erzeugung: Rezepte aus Datenbank filtern (Vorlieben, Ernährungsform, Kochmodus) → Optimierung auf Tagesmakros (Portionsgrößen skalieren) → Wochenplan
 - Einkaufsliste: aggregiert, nach Supermarkt-Abteilung sortiert, abhakbar, Meal-Prep-Mengen
-- Lebensmittel tauschen, Barcode-Scanner (Open Food Facts; Lizenz beachten)
+- Lebensmittel tauschen, Barcode-Scanner (Open Food Facts; Lizenz beachten, Abschnitt 6.1)
+
+### 6.1 Lebensmittel-Tracker mit Barcode-Scan (Gratis)
+- Scan über die Handykamera, Abfrage bei **Open Food Facts**; Ergebnis in `food_products` zwischenspeichern
+- **Lizenz ODbL:** Quellenangabe „Daten von Open Food Facts (ODbL)“ sichtbar in der App (Produktansicht und Impressum/Lizenzen)
+- Nicht gefunden: manuell anlegen (Name, Marke, kcal, Eiweiß, Kohlenhydrate, Fett pro 100 g) – nur für den eigenen Nutzer sichtbar
+- Menge eingeben (g, Stück, Portion), Zuordnung zu Mahlzeit: Frühstück, Mittag, Abend, Snack, vor/nach Training
+- Tagesübersicht: Ziel aus der Ernährungs-Engine gegen tatsächlich Gegessenes
+- „Zuletzt gegessen“ und Favoriten für schnelles Eintragen
+
+### 6.2 Standardgerichte (Gratis)
+- Eigene Gerichte anlegen („Mein Porridge“, „Shake nach dem Training“) mit kcal und Makros – direkt eingegeben oder aus Zutaten berechnet
+- Mit einem Tipp ins Tagebuch, Portion anpassbar
+
+### 6.3 Gerichte vor, während und nach dem Training (Premium, ohne KI)
+- Für **jede geplante Einheit** berechnet die Ernährungs-Engine **Zielmengen** (kcal, Eiweiß, Kohlenhydrate, Fett, bei
+  langen Einheiten Flüssigkeit) und Zeitfenster – abhängig von Art, Dauer und Intensität der Einheit sowie Körpergewicht und Ziel:
+  - größere Mahlzeit ca. 2–3 Stunden vorher
+  - kleiner Snack ca. 30–60 Minuten vorher (optional)
+  - Mahlzeit nach dem Training innerhalb von ca. 1–2 Stunden
+  - bei langen Ausdauereinheiten zusätzlich Verpflegung **während** der Einheit
+- Pro Zeitfenster **2–3 konkrete Vorschläge** aus der freigegebenen Rezeptdatenbank, jeweils mit Mengen und Nährwerten.
+  Die Portion wird auf die Zielmenge skaliert (Abweichung höchstens **±10 %**, Toleranz in `constants.ts`).
+- Gefiltert nach Ernährungsform, Schwein ja/nein, Vorlieben, Abneigungen, Unverträglichkeiten und Kochmodus.
+- Immer eine **schnelle Alternative ohne Kochen** (z. B. Shake, Banane mit Quark).
+- Sonderfall **Training früh morgens**: kleiner, leicht verdaulicher Vorschlag oder Fokus auf die Mahlzeit danach.
+- **Push-Erinnerung** zum richtigen Zeitpunkt („In 2 Stunden ist Training – Zeit für …“), abschaltbar.
+- **„Gegessen“ per Tipp** trägt den Vorschlag direkt ins Ernährungstagebuch (`food_log_entries`) ein.
+- Rezepte kommen aus der Content-Pipeline (Abschnitt 3) mit Tag `vor_training` / `waehrend` / `nach_training`.
+- **Offene Entscheidung (in Phase 5 treffen):** Vorschläge mit konkreten Marken (z. B. bestimmter Riegel) oder nur mit
+  Produktarten („Haferriegel“)? Marken wären werbeähnlich und müssten herstellerneutral bzw. gekennzeichnet sein.
+
+### 6.4 Kalorien per Foto (Premium, KI)
+- Foto der Mahlzeit → Claude-API mit Bildeingabe schätzt Lebensmittel und Portionen → Abgleich mit Lebensmitteldatenbank
+- Ergebnis immer als **Vorschlag**: Nutzer bestätigt oder korrigiert Lebensmittel und Mengen, erst dann wird eingetragen
+- Sichtbarer Hinweis, dass es sich um eine **Schätzung** handelt
+- Foto standardmäßig **nach der Auswertung löschen**; speichern nur, wenn der Nutzer es aktiv möchte
+- Foto und Schätzung gelten als Gesundheitsdaten → **eigene Einwilligung** (inkl. Hinweis auf Verarbeitung durch den KI-Anbieter)
+- Tages- und Monatslimit über `ai_usage` (Abschnitt 15)
 
 ## 7. Supplement-Modul
 - Nur evidenzbasiert: Proteinpulver (wenn Eiweißziel über Ernährung schwer erreichbar), Kreatin-Monohydrat, Koffein (vor Training, mit Tageslimit und Hinweis auf Schlaf), Vitamin D (Hinweis: Spiegel ärztlich prüfen lassen), bei Ausdauer: Kohlenhydrat-Gels/Elektrolyte; Omega-3 optional
@@ -76,20 +157,63 @@
 - HealthKit (iOS), Health Connect (Android), Strava, Garmin; später Polar, Fitbit, Suunto
 - Import: Workouts, Herzfrequenz, Ruhepuls, HRV, Schlaf, Schritte
 - Readiness-Score aus Schlaf, Ruhepuls, HRV, letzter Belastung → Vorschlag „Einheit wie geplant / leichter / Ruhetag“
+- Neue Wearable-Daten sind Auslöser der Live-Anpassung (Abschnitt 4.1) und liefern Fortschritt für Challenges (Abschnitt 11.3)
 
 ## 10. Strecken
 - Vorschläge im Umkreis des Standorts nach Disziplin, Distanz, Höhenmetern, Untergrund
 - Quellen: OpenStreetMap, eigene kuratierte Strecken, Nutzer-GPX; Strava/Komoot nur nach Lizenzprüfung
 - Kartenanzeige, Navigation per Export (GPX) an Uhr
+- **Kein Teilen:** keine öffentlichen Strecken, keine Ranglisten/Segmente, keine Strecken anderer Nutzer.
+  „Nutzer-GPX“ heißt: eigene Datei, nur für den eigenen Nutzer sichtbar.
+
+### 10.1 Strecken aufzeichnen (Gratis, privat)
+- GPS-Aufzeichnung in der App für Laufen und Radfahren: Distanz, Höhenmeter, Dauer, Pace bzw. Geschwindigkeit, Strecke auf der Karte
+- Aufzeichnung im Hintergrund (Standortberechtigung mit verständlicher Begründung für App Store und Play Store)
+- Speichern mit Name, **Favorit**, Schwierigkeit **leicht / mittel / schwer**, Notiz
+- Favoriten erneut laufen/fahren und Zeiten vergleichen; Aufzeichnung landet automatisch im Trainingstagebuch (Abschnitt 5)
+- GPX-Export für die Uhr
+- Alles privat, kein Teilen. Standortverläufe nie an Analytics, Werbung oder Dritte
 
 ## 11. Fortschritt & Motivation
 - Gewicht, Körperumfänge, Fotos (privat), persönliche Rekorde, Wochenumfang, Konsistenz
-- Partner-Modus: gemeinsame Einkaufsliste/Wochenplan, gegenseitige Freigaben
+- Partner-Modus: gemeinsame Einkaufsliste/Wochenplan, gegenseitige Freigaben. Das ist **kein öffentliches Teilen**:
+  genau zwei Personen, beidseitige Zustimmung, nur ausdrücklich freigegebene Bereiche, jederzeit beendbar. Körperfotos,
+  Gesundheits- und Zyklusdaten sind davon ausgeschlossen, solange nicht ausdrücklich anders beschlossen.
 - Wettkampf-Countdown, Erfolge (dezent, nicht ans Gewicht gekoppelt)
 
+### 11.1 Körperumfänge mit Mess-Erinnerung (Gratis) – Grundlage in Phase 1 umgesetzt
+- Erfassung: Oberarm, Brust, Schulter, Taille, Bauch, Oberschenkel, optional Hüfte, Wade; links/rechts wo sinnvoll
+- Im Onboarding als **optionaler** Schritt mit kurzer Mess-Anleitung pro Stelle (Bild/Animation)
+- **Mess-Update:** Erinnerung in festem Abstand (Standard alle 4 Wochen = 28 Tage, einstellbar 7–90) zum Nachmessen, zusammen mit Gewicht
+- Verlaufsdiagramme pro Umfang; Werte fließen in die Live-Anpassung (Abschnitt 4.1)
+- Umgesetzt in Phase 1 (Etappe A): Tabellen `body_measurements` und `measurement_reminders`, an die `health_data`-Einwilligung
+  gebunden (siehe Abschnitt 12, Abweichungen). Push-Erinnerung, Verlaufsdiagramme und Anleitungsbilder folgen später.
+
+### 11.2 Körperfoto-Analyse (Premium, KI)
+- Fotos in festen Posen (vorne, seitlich, hinten) mit Umriss-Hilfe auf dem Kamerabild; Erinnerung zusammen mit dem Mess-Update
+- KI vergleicht zwei Zeitpunkte und beschreibt **sichtbare Veränderungen** sachlich und ermutigend
+- **Formulierungsregeln:** keine Körperfett-Prozentzahl aus Fotos, keine Bewertung von Aussehen oder Attraktivität,
+  keine abwertenden Aussagen, keine medizinischen Aussagen
+- **Eigene Einwilligung** (getrennt von `health_data`), verschlüsselte Speicherung im privaten Storage-Bucket, jederzeit
+  löschbar, keine Nutzung für andere Zwecke (kein Training von Modellen, keine Weitergabe)
+- Monatslimit über `ai_usage` (Abschnitt 15)
+
+### 11.3 Monats-Challenges (Gratis, privat)
+- Jeden Monat eine Auswahl an Challenges, im Admin-Bereich angelegt; Nutzer tippt „Ich mache mit“
+- Arten: Anzahl Einheiten, Lauf-/Raddistanz, Schritte, Mobility-Minuten, Wasser trinken, regelmäßiges Messen.
+  Dauer: Woche oder Monat, Ziel täglich oder gesamt
+- **Fortschritt automatisch** aus Tagebuch, Strecken und Wearables; manuelles Abhaken nur, wo nötig
+- Nur passende Challenges anzeigen: keine Konflikte mit Erholungswoche, Tapering oder Gesundheits-Check-Flags;
+  Umfang innerhalb der Sicherheitsgrenzen (z. B. ≤10 %/Woche Ausdauer)
+- **Verboten:** Essens-, Fasten- oder Abnehm-Challenges sowie Challenges, die zu Übertraining verleiten
+- Ein **Joker pro Monat** für einen verpassten Tag; Serien springen nicht hart auf null
+- Abzeichen nach Abschluss, **privat** – keine Ranglisten, kein Vergleich mit anderen
+- Optional Sponsor (Supplement-Hersteller, Partnerstudio) mit Rabattcode – klar als „Werbung“ gekennzeichnet; Sponsor
+  sieht keine Teilnehmer- oder Gesundheitsdaten
+
 ## 12. Datenmodell (Kern, Postgres)
-- `profiles` (user_id, sex, birth_date, height_cm, experience_level, locale)
-- `body_metrics` (user_id, date, weight_kg, body_fat_pct, waist_cm …)
+- `profiles` (user_id, sex, birth_date, height_cm, experience_level, locale) – `height_cm` **geändert, siehe Abweichungen** (steht in `body_metrics`)
+- `body_metrics` (user_id, date, weight_kg, body_fat_pct, waist_cm …) – **geändert, siehe Abweichungen** (Größe hier; Umfänge wie `waist_cm` in `body_measurements`)
 - `consents` (user_id, type, version, granted_at, revoked_at)
 - `health_screening` (user_id, answers jsonb, flags, created_at) – sensibel
 - `goals` (user_id, goal_type, discipline, target_date, sessions_per_week, minutes_per_session, preferred_days)
@@ -110,11 +234,78 @@
 - `subscriptions` / Entitlements (über RevenueCat-Webhook)
 - `partner_links`, später `organizations` (Fitnessstudios), `org_memberships`
 
+### Abweichungen ab Phase 1 (umgesetzt, siehe `docs/PLAN-PHASE-1.md` und `supabase/migrations`)
+- **Körpergröße** steht nicht in `profiles`, sondern in `body_metrics` (Gesundheitsdatum → nur mit Einwilligung `health_data`). `profiles` enthält keine Körper- oder Gesundheitswerte.
+- **Geschlecht** (`sex`): männlich / weiblich / divers / keine Angabe (`male|female|diverse|unspecified`); bei divers/keine Angabe nimmt die Kalorienformel später den Mittelwert. Zusätzlich `cycle_module_interest` (nur Ja/Nein-Wunsch, keine Zyklusdaten).
+- **`consent_documents`** (consent_type, version, title_de, body_de, published_at): versionierte Einwilligungstexte; gültig ist die höchste veröffentlichte Version. `consents` ist nur ergänzbar (Einfügen + Widerruf), Widerruf von `health_data` löscht alle Körper-/Gesundheitsdaten.
+- **`body_measurements`** (Körperumfänge in cm, optionaler Onboarding-Schritt) und **`measurement_reminders`** (Mess-Erinnerung, Standard alle 28 Tage) – Erweiterungsbeschluss der Gründer (`docs/ERWEITERUNGEN.md`).
+- **`food_preferences`** nutzt bis Phase 5 feste Lebensmittel-Gruppen (`food_group`, Liste in `packages/core/src/food-groups.ts`) statt `food_id`.
+- **`user_equipment`**: „Sonstiges“ = Katalog-Eintrag `other` mit Freitext `note`.
+- **Profil zuerst:** Ein Profil mit geprüftem Geburtsdatum (Mindestalter 16, serverseitig) ist Voraussetzung für alle Einwilligungen und Nutzerdaten (RLS).
+- **Neue Textversion einer Einwilligung:** bisherige Gesundheitsdaten bleiben lesbar, sind aber nicht änderbar/ergänzbar, bis neu eingewilligt wird. Der Widerruf in den Einstellungen gilt der aktuellen Einwilligung und löscht alle Gesundheitsdaten (Körperdaten, Körperumfänge, Gesundheits-Checks, Unverträglichkeiten).
+- **Gesundheits-Check:** Flags (`conservative_plan` usw.) berechnet die Datenbank selbst aus den Antworten; Zeitstempel serverseitig.
+- **Login** per E-Mail mit 6-stelligem Code (OTP, ohne Passwort); Apple/Google folgen.
+- Onboarding **ohne Wearable-Schritt** (kommt mit Phase 8); Einwilligung Gesundheitsdaten **vor** den Körperdaten.
+
+### Erweiterungen (geplant, `docs/ERWEITERUNGEN.md`)
+Alle Tabellen mit RLS (jeder sieht nur eigene Zeilen; Ausnahmen: Katalog-/Inhaltstabellen für alle lesbar, Pflege nur
+durch Admin). **sensibel** = Gesundheitsdaten nach DSGVO Art. 9: nur mit gültiger Einwilligung speichern, beim Widerruf
+löschen, nie in Logs/Analytics.
+- `food_products` (barcode, name, brand, Nährwerte pro 100 g, source `off|user`, user_id nur bei eigenen Produkten) –
+  Open-Food-Facts-Einträge für alle lesbar, eigene nur für den Nutzer (Phase 5)
+- `food_log_entries` (user_id, date, meal_slot, product_id oder custom_meal_id, amount, unit, Nährwerte) – Ernährungstagebuch;
+  enthält ggf. Unverträglichkeits-Bezüge, daher nie an Analytics/Werbung; ob eine `health_data`-Einwilligung nötig ist,
+  in Phase 5 juristisch klären (Phase 5)
+- `custom_meals`, `custom_meal_items` – Standardgerichte (Phase 5)
+- `meal_photo_estimates` (user_id, result jsonb, confirmed, photo_saved, photo_path) – **sensibel**, eigene Einwilligung
+  „Fotoauswertung Mahlzeiten“; Foto standardmäßig nach Auswertung gelöscht (Phase 7b)
+- `gyms` (osm_id, name, address, lat, lng, equipment jsonb, is_partner) – Studio-Katalog aus OpenStreetMap; `is_partner`
+  bereitet B2B (`organizations`) vor (Phase 9b)
+- `user_gyms` (user_id, gym_id, is_home_gym), `gym_memberships` (user_id, gym_id, start_date, min_term_months,
+  notice_period_days, monthly_fee, notes) (Phase 9b)
+- `tracked_routes` (user_id, name, sport, geometry, distance_m, elevation_m, duration_s, difficulty `easy|medium|hard`,
+  is_favorite, note) – eigene Aufzeichnungen, streng privat (Standortverlauf); getrennt von `routes` (vorgeschlagene
+  Strecken) (Phase 10)
+- `body_measurements`, `measurement_reminders` – **bereits in Phase 1 umgesetzt** (siehe Abweichungen oben);
+  `body_measurements` ist **sensibel** (`health_data`)
+- `progress_photos` (user_id, date, pose `front|side|back`, storage_path) – **sensibel**, eigene Einwilligung
+  „Körperfotos“, privater Storage-Bucket, verschlüsselt (angelegt in Phase 7b; die Fortschrittsansicht in Phase 11 nutzt sie)
+- `photo_analyses` (user_id, photo_a_id, photo_b_id, result_text) – **sensibel**, gleiche Einwilligung wie Körperfotos (Phase 7b)
+- `plan_adjustments` (user_id, created_at, trigger, rule, before jsonb, after jsonb, confirmed) – enthält bei Kalorien-
+  und Umfangsregeln Gesundheitsbezüge, daher wie Gesundheitsdaten behandeln (Phase 4b)
+- `ai_usage` (user_id, feature, tokens, cost, created_at) – nur Nutzungs-/Kostendaten, **keine Inhalte** (keine Fotos,
+  Prompts oder Gesundheitswerte) (Phase 7)
+- `challenges` (inkl. optionalem Sponsor + Rabattcode), `challenge_participations`, `challenge_progress` (Phase 11b)
+- Neue Einwilligungsarten (`consent_documents`) für Körperfotos und für Mahlzeiten-Fotos; Namen beim Umsetzen festlegen.
+- Spaltennamen in Englisch wie die bestehenden Tabellen; die deutschen Feldnamen aus `docs/ERWEITERUNGEN.md` sind nur Beschreibung.
+
 ## 13. Monetarisierung
-- **Gratis:** Onboarding, Standard-Plan aus Vorlagen, Trainingstagebuch, Grundberechnung Kalorien/Makros, Supplement-Übersicht
-- **Premium (Abo monatlich/jährlich):** individuell angepasster Plan mit Progression, Ernährungsplan + Einkaufsliste, Vor-/Nach-Training-Mahlzeiten, Wettkampfvorbereitung, Zyklus-Anpassung, Wearables & Readiness, Strecken, Partner-Modus, KI-Coach
+- **Gratis:** Onboarding, Standard-Plan aus Vorlagen mit einfacher Progression (Gewicht steigt bei geschafften
+  Wiederholungen), Trainingstagebuch, Grundberechnung Kalorien/Makros, Supplement-Übersicht, außerdem alles aus der
+  Tabelle unten mit „Ja“ bei Gratis
+- **Premium (Abo monatlich/jährlich):** Live-Anpassung des Plans, Ernährungsplan + Einkaufsliste, Gerichte vor/während/nach
+  dem Training, Wettkampfvorbereitung, Zyklus-Anpassung, Wearables & Readiness, Strecken-Vorschläge (Abschnitt 10),
+  Partner-Modus, **alle KI-Funktionen** (KI-Coach, Kalorien per Foto, Körperfoto-Analyse, KI-Erklärungen) – siehe Abschnitt 15
 - **Affiliate:** Supplement-Shops (gekennzeichnet, neutral)
+- **Sponsoring:** optional bei Monats-Challenges (Rabattcode, als „Werbung“ gekennzeichnet, ohne Datenweitergabe)
 - **B2B Fitnessstudios (später):** Studio-Branding, Geräteliste des Studios als Equipment-Profil, Trainer-Dashboard, Lizenz pro Mitglied
+
+**Gratis / Premium für die Erweiterungen** (Vorschlag der Gründer, `docs/ERWEITERUNGEN.md`):
+
+| Funktion | Gratis | Premium |
+|---|---|---|
+| Lebensmittel-Tracker mit Barcode | Ja | Ja |
+| Standardgerichte | Ja | Ja |
+| Fitnessstudio suchen und im Profil anlegen | Ja | Ja |
+| Mitgliedschaft mit Laufzeit, Preis, Kündigungserinnerung | Ja | Ja |
+| Strecken aufzeichnen, Favoriten, Schwierigkeit | Ja | Ja |
+| Körperumfänge und Mess-Erinnerungen | Ja | Ja |
+| Monats-Challenges | Ja | Ja |
+| Einfache Progression (Gewicht steigt bei geschafften Wdh.) | Ja | Ja |
+| Live-Anpassung des Plans (alle Regeln aus Abschnitt 4.1) | Nein | Ja |
+| Gerichte vor, während und nach dem Training | Nein | Ja |
+| Kalorien per Foto (KI) | Nein | Ja |
+| Körperfoto-Analyse (KI) | Nein | Ja |
 
 ## 14. Rechtliches (vor Launch prüfen lassen)
 - DSGVO Art. 9 Einwilligung, Datenschutzfolgenabschätzung, AV-Verträge (Supabase, Vercel, RevenueCat, Stripe)
@@ -123,3 +314,29 @@
 - App-Store-Richtlinien: In-App-Kauf für digitale Abos, HealthKit-Daten nicht für Werbung
 - Impressum, AGB, Widerrufsbelehrung, Haftungsausschluss
 - Schweiz (revDSG) und Österreich mitprüfen
+- KI-Funktionen mit Fotos: Verarbeitung durch den KI-Anbieter (AV-Vertrag, Datenübermittlung, keine Nutzung zum Training) prüfen
+- Lizenzen: Open Food Facts und OpenStreetMap (ODbL) mit Quellenangabe in der App
+- Standortberechtigung im Hintergrund (Strecken): Begründungstexte für App Store und Play Store
+- Mitgliedschafts-Erinnerung: nur Erinnerung an selbst eingetragene Fristen, keine Rechtsberatung zur Kündigung
+
+## 15. KI-Grenze & Premium-Prüfung
+- **Gratis ohne KI, Premium mit KI:** Alle Funktionen mit Echtzeit-KI sind ausschließlich Premium – KI-Coach (Abschnitt 11),
+  Kalorien per Foto (6.4), Körperfoto-Analyse (11.2), KI-Erklärungen in Worten (4.1) sowie der Plan-Fallback (4, Punkt 8).
+- Alles andere läuft über feste Regeln und Datenbank, ohne laufende KI-Kosten.
+- **Premium-Prüfung immer auf dem Server** (zentrale Funktion `hasEntitlement()`, Phase 7), nie nur in der App.
+- **Monatslimit pro Nutzer und Funktion**, konfigurierbar; bei Kalorien per Foto zusätzlich ein Tageslimit.
+  `ai_usage` protokolliert Funktion, Tokens, Kosten und Zeitpunkt – keine Inhalte.
+- **Limit erreicht:** klare Meldung („Dein Kontingent für … ist diesen Monat aufgebraucht, ab … wieder verfügbar“),
+  keine stille Fehlfunktion. Die Grundfunktion ohne KI (z. B. manuelles Eintragen) bleibt nutzbar.
+- Alle KI-Funktionen hinter Feature-Flag; Kostenübersicht im Admin-Bereich.
+
+## 16. Fitnessstudio & Mitgliedschaft (Gratis)
+- **Studio in der Nähe:** Suche im Umkreis des Standorts über **OpenStreetMap** (kostenlos; andere Anbieter nur nach
+  Kostenprüfung). Quellenangabe nach ODbL.
+- Studio im Profil als **„Mein Studio“** speichern.
+- Hat das Studio eine hinterlegte Geräteliste (Partnerstudio oder vom Nutzer gepflegt), nutzt die Plan-Engine sie
+  automatisch als **Equipment-Profil** für den Ort „Studio“ (Abschnitt 4).
+- Vorbereitung für B2B: Feld „Partnerstudio“, später eigene Geräteliste und Branding (`organizations`).
+- **Mitgliedschaft:** Studio, Vertragsbeginn, Mindestlaufzeit, Kündigungsfrist, Monatsbeitrag, Notizen.
+- **Erinnerung vor Ablauf der Kündigungsfrist** (z. B. 4 Wochen und 1 Woche vorher).
+- Kennzahl **„Kosten pro Trainingsbesuch“** aus Beitrag und protokollierten Studio-Einheiten.

@@ -3,7 +3,7 @@
 Diese Anleitung verbindet das Repository mit **Supabase** (Datenbank), **Vercel** (Vorschau-Links im Browser),
 **Expo** (echte App-Builds) und **Anthropic** (Inhalts-Erzeugung). Alles geht im Handy-Browser.
 
-**Reihenfolge:** Teil A → B → C → D → E. Für den ersten Vorschau-Link reicht **Teil C**.
+**Reihenfolge:** Teil A → B → C → D → E → F. Für den ersten Vorschau-Link reicht **Teil C**.
 Die anderen Teile kannst du später nachholen. Bis dahin überspringen die GitHub Actions ihre Arbeit mit einem Hinweis.
 Sie werden nicht rot.
 
@@ -23,6 +23,7 @@ Sie werden nicht rot.
 | `EXPO_PUBLIC_SUPABASE_PUBLISHABLE_KEY` | Supabase (A6) | Vercel-Projekt **App** (C) + Expo (D6)                                    | nein\*  |
 | `NEXT_PUBLIC_SUPABASE_URL`             | Supabase (A5) | Vercel-Projekt **Web** (C)                                                | nein    |
 | `NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY` | Supabase (A6) | Vercel-Projekt **Web** (C)                                                | nein\*  |
+| `NEXT_PUBLIC_APP_URL`                  | Vercel (C1)   | Vercel-Projekt **Web** (C), optional                                      | nein    |
 | `SUPABASE_URL`                         | Supabase (A5) | GitHub Secret (B)                                                         | nein    |
 | `SUPABASE_SECRET_KEY`                  | Supabase (A7) | GitHub Secret (B)                                                         | **JA**  |
 | `SUPABASE_PROJECT_REF`                 | Supabase (A4) | GitHub Secret (B)                                                         | nein    |
@@ -115,6 +116,16 @@ Aus **einem** Repository entstehen **zwei** Vercel-Projekte:
 
 Danach steht in jedem Pull Request automatisch ein Kommentar von Vercel mit zwei Vorschau-Links (App und Web).
 
+### C3 – Knopf „App im Browser öffnen“ auf der Website
+
+Die Landingpage verlinkt auf die Web-Version der App. Ohne Eintrag zeigt der Knopf auf
+`https://fitnessapp-alpha-five.vercel.app`. Hat euer Projekt „App“ eine andere Adresse:
+
+1. vercel.com → Projekt **fitnessapp-app** öffnen → oben die Adresse unter **Domains** kopieren.
+2. Projekt **fitnessapp-web** → **Settings** → **Environment Variables**.
+3. Name `NEXT_PUBLIC_APP_URL`, Wert = kopierte Adresse mit `https://` → alle drei Environments → **Save**.
+4. **Deployments** → oberster Eintrag **⋯** → **Redeploy**.
+
 ---
 
 ## Teil D – Expo (echte Apps für Android und iPhone)
@@ -145,11 +156,54 @@ in **Phase 4** eingerichtet. Bis dahin endet der Workflow `eas-build` mit einem 
 
 ---
 
+## Teil F – Supabase-Anmeldung per E-Mail-Code
+
+> **Ohne Supabase läuft die App im Testmodus:** Fehlen `EXPO_PUBLIC_SUPABASE_URL` und
+> `EXPO_PUBLIC_SUPABASE_PUBLISHABLE_KEY` im Vercel-Projekt **App**, zeigt die App oben
+> „Testmodus – Daten bleiben nur auf diesem Gerät“. Statt der Anmeldung gibt es den Knopf
+> **„Testmodus starten“**. Alles (auch Einwilligungen und Gesundheitsdaten) bleibt dann nur im Browser
+> bzw. auf dem Handy. In den Einstellungen löscht **„Testdaten löschen“** alles wieder.
+> Sobald die Supabase-Werte eingetragen sind (Teil C, danach **Redeploy**), meldet man sich mit einem
+> 6-stelligen Code per E-Mail an.
+
+Einmalig in Supabase einrichten (Handy-Browser, ggf. „Desktop-Website anfordern“):
+
+1. **supabase.com** → euer Projekt öffnen → links **Authentication**.
+2. **Sign In / Providers** → **Email** antippen → **Enable Email provider** eingeschaltet lassen.
+   **Confirm email** eingeschaltet lassen. Prüfen, dass **Email OTP Length** auf **6** steht (die App
+   erwartet genau 6 Ziffern) → **Save**.
+3. **Emails** (bzw. **Email Templates**) → Vorlage **Magic Link** öffnen.
+   - **Subject:** `Dein Anmeldecode für Fitnessapp`
+   - **Body** komplett ersetzen durch:
+     ```html
+     <h2>Dein Anmeldecode</h2>
+     <p>Gib diesen Code in der App ein:</p>
+     <p style="font-size:28px;font-weight:bold;letter-spacing:4px">{{ .Token }}</p>
+     <p>
+       Der Code ist eine Stunde gültig. Wenn du dich nicht anmelden wolltest, ignoriere diese
+       E-Mail.
+     </p>
+     ```
+   - **Save changes**.
+4. Dieselbe Vorlage auch bei **Confirm signup** eintragen (Subject `Dein Bestätigungscode für Fitnessapp`,
+   gleicher Body mit `{{ .Token }}`) → **Save changes**. Neue Konten bekommen beim ersten Mal diese Mail.
+5. **URL Configuration** → **Site URL** = Adresse eures Vercel-Projekts **App**
+   (z. B. `https://fitnessapp-alpha-five.vercel.app`) → **Save**.
+   Unter **Redirect URLs** → **Add URL** → `https://*-DEIN-VERCEL-TEAM.vercel.app/**` (für Vorschau-Links) → **Save**.
+6. Testen: Vorschau-Link öffnen → **Los geht's** → Geburtsdatum → E-Mail eingeben → **Code senden** →
+   Code aus der Mail eintippen → **Anmelden**. In **Table Editor → profiles** steht danach eure Zeile.
+
+**Hinweis:** Ohne eigenen Mail-Dienst verschickt Supabase nur wenige Mails pro Stunde (Meldung
+„Zu viele Versuche“). Für den Start einen EU-Mail-Dienst eintragen – je nach Supabase-Version unter
+**Authentication → Emails → SMTP Settings** (siehe docs/PLAN-PHASE-1.md Abschnitt 4).
+
+---
+
 ## Überblick: Was passiert automatisch?
 
 | Workflow           | Wann                                                              | Braucht                                                                 |
 | ------------------ | ----------------------------------------------------------------- | ----------------------------------------------------------------------- |
-| `ci`               | bei jedem Push und Pull Request                                   | nichts                                                                  |
+| `ci`               | bei jedem Push und Pull Request (inkl. Klick-Test der App)        | nichts                                                                  |
 | `db-migrate`       | nach Merge in `main`, wenn sich Migrationen ändern, oder per Hand | `SUPABASE_ACCESS_TOKEN`, `SUPABASE_DB_PASSWORD`, `SUPABASE_PROJECT_REF` |
 | `content-generate` | per Hand (Actions → Run workflow)                                 | `ANTHROPIC_API_KEY`, `SUPABASE_URL`, `SUPABASE_SECRET_KEY`              |
 | `content-seed`     | per Hand                                                          | `SUPABASE_URL`, `SUPABASE_SECRET_KEY`                                   |

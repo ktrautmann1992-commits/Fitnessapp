@@ -1,0 +1,52 @@
+name: db-test
+
+# Startet eine Test-Datenbank (Supabase lokal im GitHub-Runner), spielt alle Migrationen ein und prüft mit
+# pgTAP (supabase/tests): Row Level Security (Nutzer A sieht nichts von Nutzer B), Einwilligungen,
+# Mindestalter, Wertebereiche und Konto-Löschung. Braucht keine Secrets und berührt NICHT die echte Datenbank.
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'supabase/**'
+      - '.github/workflows/db-test.yml'
+  pull_request:
+    paths:
+      - 'supabase/**'
+      - '.github/workflows/db-test.yml'
+  workflow_dispatch:
+
+concurrency:
+  group: db-test-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  test:
+    name: Migrationen + RLS-Tests (pgTAP)
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+      - uses: supabase/setup-cli@v1
+        with:
+          version: latest
+      # Startet Postgres, Auth (gotrue), PostgREST und Kong; der Rest wird für die Tests nicht gebraucht.
+      # Beim Start werden alle Migrationen aus supabase/migrations eingespielt – ein Fehler bricht hier ab.
+      - name: Test-Datenbank starten und Migrationen einspielen
+        run: >
+          supabase start
+          -x realtime,storage-api,imgproxy,mailpit,postgres-meta,studio,edge-runtime,logflare,vector,supavisor
+      - name: Datenbank-Tests (pgTAP)
+        run: supabase test db
+      - name: Zusammenfassung
+        if: always()
+        run: |
+          if [ "${{ job.status }}" = "success" ]; then
+            echo "### ✅ Datenbank-Tests bestanden" >> "$GITHUB_STEP_SUMMARY"
+            echo "Migrationen laufen durch, RLS und Einwilligungs-Regeln greifen." >> "$GITHUB_STEP_SUMMARY"
+          else
+            echo "### ❌ Datenbank-Tests fehlgeschlagen" >> "$GITHUB_STEP_SUMMARY"
+            echo "Details im Log der Schritte oben. Claude kann den Fehler im PR beheben." >> "$GITHUB_STEP_SUMMARY"
+          fi
+      - name: Test-Datenbank stoppen
+        if: always()
+        run: supabase stop --no-backup
