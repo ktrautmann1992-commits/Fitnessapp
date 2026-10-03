@@ -95,6 +95,10 @@ async function finishTrainingAndNutrition(page: Page, options: { intolerance: bo
 
   await expect(page.getByRole('heading', { name: 'Equipment zu Hause' })).toBeVisible();
   await expect(page.getByText(/Noch nichts ausgewählt/)).toBeVisible();
+  // Studio-Geräte (Phase 2) werden zu Hause nicht angeboten.
+  await expect(page.getByRole('checkbox', { name: 'Widerstandsbänder' })).toBeVisible();
+  await expect(page.getByRole('checkbox', { name: 'Kabelzug' })).toHaveCount(0);
+  await expect(page.getByRole('checkbox', { name: 'Beinpresse' })).toHaveCount(0);
   await page.getByRole('checkbox', { name: 'Kurzhanteln' }).click();
   await page.getByLabel('Kurzhanteln: Gewicht in kg').fill('2,5');
   await page.getByRole('button', { name: 'Kurzhanteln: Hinzufügen' }).click();

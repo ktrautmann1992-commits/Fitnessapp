@@ -14,15 +14,16 @@ Supplementplan und Trainingstagebuch.
 
 ## Aufbau
 
-| Ordner              | Inhalt                                                                     |
-| ------------------- | -------------------------------------------------------------------------- |
-| `apps/mobile`       | App (Expo + Expo Router) für iOS, Android und Web-Export (Vercel)          |
-| `apps/web`          | Website (Next.js): Landingpage, später Web-App, Admin, API/Webhooks        |
-| `packages/core`     | Fachlogik ohne UI – Berechnungen, Plan- und Ernährungs-Engine, Grenzwerte  |
-| `packages/db`       | Datenbank-Typen, Zod-Schemas, Supabase-Client                              |
-| `packages/ui`       | Farbschema `theme.css` (einzige Quelle) + daraus erzeugte App-Tokens       |
-| `packages/content`  | Offline-Content-Generierung (Claude Batch-API) und Seeds                   |
-| `supabase/`         | Datenbank-Migrationen (Region EU/Frankfurt)                                |
-| `.github/workflows` | Automatisierung: ci, db-migrate, content-generate, content-seed, eas-build |
+| Ordner              | Inhalt                                                                                      |
+| ------------------- | ------------------------------------------------------------------------------------------- |
+| `apps/mobile`       | App (Expo + Expo Router) für iOS, Android und Web-Export (Vercel)                           |
+| `apps/web`          | Website (Next.js): Landingpage, später Web-App, Admin, API/Webhooks                         |
+| `packages/core`     | Fachlogik ohne UI – Berechnungen, Plan- und Ernährungs-Engine, Grenzwerte                   |
+| `packages/db`       | Datenbank-Typen, Zod-Schemas, Supabase-Client                                               |
+| `packages/ui`       | Farbschema `theme.css` (einzige Quelle) + daraus erzeugte App-Tokens                        |
+| `packages/content`  | Prüfskript `content:validate`, Content-Generierung (Batch-API) und Seeds                    |
+| `content/`          | Inhalte als JSON (Übungen, Plan-Vorlagen) – die einzige Wahrheit, Freigabe per Pull Request |
+| `supabase/`         | Datenbank-Migrationen (Region EU/Frankfurt)                                                 |
+| `.github/workflows` | Automatisierung: ci, db-migrate, content-generate, content-seed, eas-build                  |
 
 Tests, Builds und Migrationen laufen als GitHub Actions – lokal muss nichts ausgeführt werden.

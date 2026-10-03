@@ -112,6 +112,18 @@ describe('Testmodus spiegelt die Wertebereiche der Datenbank (packages/core)', (
     expect(isValidOp(op([{ equipment_id: 'other', weights_kg: [], note: null }]), ctx)).toBe(false);
   });
 
+  it('Equipment: Studio-Geräte nicht „zu Hause“ (wie der Datenbank-Trigger)', () => {
+    const op = (location: 'home' | 'gym'): WriteOp => ({
+      kind: 'replace_user_equipment',
+      location,
+      rows: [
+        { user_id: USER_ID, location, equipment_id: 'cable_station', weights_kg: [], note: null },
+      ],
+    });
+    expect(isValidOp(op('home'), ctx)).toBe(false);
+    expect(isValidOp(op('gym'), ctx)).toBe(true);
+  });
+
   it('Ernährung: Mahlzeiten 1–8, kein Schwein bei vegan, Meal-Prep-Tage nur bei Meal-Prep', () => {
     const op = (patch: Record<string, unknown>): WriteOp => ({
       kind: 'upsert_nutrition_prefs',

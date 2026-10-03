@@ -542,3 +542,74 @@ Die Gründer haben vorab erlaubt, dass Claude mit den Empfehlungen aus Abschnitt
 
 Claude setzt die Etappen A bis C aus Abschnitt 13 nacheinander um, jede mit Wächter-Prüfung. Weicht eine
 Wächter-Prüfung ab, wird dieser Abschnitt angepasst, bevor die betroffene Etappe beginnt.
+
+---
+
+## Umsetzungsstand (03.10.2026)
+
+**Etappe A – Fundament: Fachlogik, Datenbank, Startbestand: erledigt** (wartet auf Wächter-Prüfung).
+
+1. **`packages/core`**
+   - Neue Aufzählungen (`enums.ts`): `content_status`, `movement_pattern`, `muscle_group`, `exercise_mechanics`,
+     `load_type`, `caution_tag`, `alternative_reason`, `session_focus`, `admin_role`, dazu `CONTENT_ORIGINS` und die
+     Vorlagen-Matrix (`TEMPLATE_GOAL_TYPES`, `TEMPLATE_EXPERIENCE_LEVELS`).
+   - Geräte-Katalog: Feld `homeSelectable`, 8 Studio-Geräte (`power_rack`, `cable_station`, `lat_pulldown`,
+     `leg_press`, `machine_chest_press`, `leg_curl_machine`, `leg_extension_machine`, `dip_station`), neue Kategorie
+     `machines`; `equipmentItemSchema` lehnt Studio-Geräte beim Ort „home“ ab.
+   - `src/content/`: Zod-Schemas für Übungen und Vorlagen (Ü1), Textregeln (Ü6), Wochensätze/Dauer/Drücken-Ziehen,
+     Checks Ü2–Ü6 und V1–V11 mit Stufen exakt laut Regeltabelle, `validateContent()` für einen ganzen Inhaltsstand.
+   - Grenzwerte mit Quellen in `constants.ts` (`CONTENT_SCHEMA_LIMITS`, `TEMPLATE_DOSAGE_LIMITS`, `REST_RANGES_S`,
+     `SESSION_DURATION_ESTIMATE`, `PUSH_PULL_TOLERANCE`, `WEEKLY_SETS_PER_MUSCLE`, große/kleine Muskelgruppen).
+2. **Datenbank** (neue Migrationen `20261003130000`–`20261003130600`, die Phase-1-Migrationen bleiben unverändert):
+   Kategorie `machines`, Spalte `equipment.home_selectable` + Studio-Geräte + Trigger gegen Studio-Geräte „zu Hause“,
+   Inhalts-Enums, `exercises`, `exercise_alternatives`, `plan_templates`, `template_sessions`, `template_exercises`,
+   `admin_users`, `seed_content()`. pgTAP: `09_equipment_home_selectable`, `10_content_rls`, `11_seed_content`
+   (Entwürfe unsichtbar, Alternativen nur bei zwei freigegebenen Übungen, Schreiben als Nutzer verboten,
+   `seed_content` für Nutzer gesperrt, zweimal einspielen = derselbe Stand, Vorlage mit unveröffentlichter Übung und
+   Studio-Gerät „Zuhause“ abgelehnt, Archivieren statt Löschen). `packages/db/src/database.types.ts` ergänzt.
+3. **Startbestand** unter `content/`: 52 Übungen (17 Bewegungsmuster, jedes mit einer Variante ohne Geräte oder nur
+   mit Band) und alle 24 Plan-Vorlagen der Matrix, alle `draft`, `meta.origin = claude_session`,
+   `expert_reviewed = false`. Keine roten Fehler (geprüft durch `packages/content/src/startbestand.test.ts`).
+4. **`pnpm content:validate`** (`packages/content/src/validate.ts`): Bericht auf Deutsch (ROT/GELB), Exit 1 bei
+   Schema-/Dateifehlern und roten Fehlern an freigegebenen Inhalten, Zusammenfassung in GitHub Actions. Neuer Schritt
+   in `ci` (mit `--base origin/main` für die Versionsregel); `ci` hatte „Run workflow“ bereits.
+5. **App:** Der Onboarding-Schritt „Equipment zu Hause“ zeigt nur `homeSelectable`-Geräte; der Testmodus lehnt
+   Studio-Geräte „zu Hause“ ab wie die Datenbank. Klick-Test prüft, dass „Kabelzug“ und „Beinpresse“ fehlen.
+
+**Entscheidungen beim Umsetzen (zur Wächter-Prüfung):**
+
+1. Dateiformat = Spaltennamen (snake_case); ID = Dateiname (Kleinbuchstaben, Ziffern, Bindestriche). Englischer
+   Zweitname als eigenes Feld `name_en` (Frage 11). Alternativen stehen in der Übungsdatei (`alternatives`).
+2. Kennzeichnung KI-Entwurf über `meta.origin` (`claude_session`/`batch`) + `meta.expert_reviewed` – kein zusätzliches
+   Feld `ai_generated`. `published` verlangt `meta.reviewed_by` und `meta.reviewed_at` (Schema, Ü1).
+3. Schema-Grenzen (Ü1) sind bewusst weiter als die fachlichen Regeln (z. B. RPE 1–10 im Schema, 5–9 in V4), damit ein
+   fehlerhafter Entwurf als Datei liegen und korrigiert werden kann. Dieselben Schema-Grenzen stehen als CHECK in der
+   Datenbank (`db-sync.test.ts`).
+4. Zusätzliche Datei-Regeln ohne Nummer im Plan: **DATEI** (gültiges JSON, Dateiname = ID, ID eindeutig, nur
+   `.json`) und **VERSION** (Abschnitt 5, Punkt 6) – beide blockieren immer. Die Versionsregel vergleicht den
+   fachlichen Inhalt ohne `status`/`version`/`meta`; Zurückziehen braucht also keine neue Version.
+5. Ü6 (Textregeln) gilt auch für die Texte der Vorlagen. V2 gilt für Zuhause-Vorlagen: eine Übung ist erlaubt, wenn
+   ihre Geräte in Pflicht/Optional stehen **oder** eine Alternative damit machbar ist; Studio-Geräte in den Gerätelisten
+   einer Zuhause-Vorlage und unbekannte Geräte (alle Vorlagen) sind rot.
+6. Wochensätze: kleine Muskelgruppen (V11, gelb) = Bizeps, Trizeps, Waden, seitliche und hintere Schulter, gerade
+   Bauchmuskeln; für vordere Schulter, Unterarme, schräge Bauchmuskeln, unteren Rücken und Adduktoren gilt nur die
+   Obergrenze (V9).
+7. Dauer-Schätzung (V6): 8 min Aufwärmen + Sätze (4 s je Wiederholung bzw. Haltedauer) + Pausen zwischen den Sätzen
+   - 60 s Wechsel je Übung (`SESSION_DURATION_ESTIMATE`). Die Datenbank speichert die Schätzung je Einheit
+     (`estimated_minutes`); das Einspiel-Skript (Etappe B) berechnet sie mit `estimateSessionMinutes()`.
+8. `template_sessions`/`template_exercises` haben stabile zusammengesetzte Schlüssel statt `session_id` (siehe
+   `docs/KONZEPT.md` Abschnitt 12).
+9. Kniebeuge/Bankdrücken/Schulterdrücken mit Langhantel brauchen das Studio-Gerät `power_rack`
+   (`home_selectable = false`). Zu Hause tauscht die Plan-Engine über Alternativen (z. B. Goblet-Kniebeuge). Ob ein
+   Rack später unter „Equipment zu Hause“ auswählbar sein soll, ist eine offene Produktfrage.
+
+**Gelbe Hinweise im Startbestand (10, blockieren nicht):**
+
+- V11 bei Muskelaufbau · Fortgeschritten (Untergrenze 10 Wochensätze auch für kleine Muskelgruppen):
+  3 Tage Studio: seitliche Schulter 7,5 · Trizeps 9,5 · gerade Bauchmuskeln 8,5 · Waden 9,5;
+  3 Tage Zuhause: seitliche Schulter 8,5 · Waden 9,5; 4 Tage Studio: seitliche Schulter 9,5 · gerade Bauchmuskeln 9,5;
+  4 Tage Zuhause: seitliche Schulter 9,5. Mehr Sätze würden die Einheiten über 60 Minuten verlängern.
+- V6 bei Allgemeine Fitness · Einsteiger · 4 Tage · Zuhause, „Unterkörper B“: geschätzt 37 min (Fenster 38,25–69).
+
+**Noch offen (Etappe B und C):** Batch-Pipeline und Workflows `content-generate`/`content-collect`/`content-review`,
+`content-seed` mit Prüfung vor dem Einspielen, Redaktionsbereich `/admin`, SETUP-Teile G und H.

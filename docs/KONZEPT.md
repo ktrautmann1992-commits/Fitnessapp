@@ -47,6 +47,21 @@ Verbindlich ist der freigegebene Ablauf in `docs/PLAN-PHASE-1.md` Abschnitt 3 (S
 - Plausibilitäts-Checks automatisch (z. B. Makros eines Rezepts rechnerisch prüfen, Wochenvolumen innerhalb Grenzen)
 - Fachliche Freigabe durch qualifizierte Person (Trainer/Ernährungsfachkraft) vor Veröffentlichung empfohlen
 
+**Umsetzung ab Phase 2 (`docs/PLAN-PHASE-2.md` Abschnitte 3–5 und 7):**
+- **Das Repository ist die einzige Wahrheit:** Jeder Inhalt ist eine JSON-Datei unter `content/`
+  (`content/exercises/<id>.json`, `content/plan-templates/<id>.json`) mit Status `draft` / `published` / `archived`.
+  Inhalte fließen nur in eine Richtung: Repository → Datenbank. Auch der Admin-Bereich schreibt nicht in die Datenbank.
+- **Freigabe = Merge eines Pull Requests durch einen Menschen** (Status `published`, Prüfer in `meta.reviewed_by`).
+  Workflows öffnen Pull Requests, genehmigen aber nie. Herkunft und Prüfvermerk stehen in `meta`
+  (`origin` = `claude_session` / `batch` / `manual`, `expert_reviewed` = fachlich geprüft ja/nein); KI-Entwürfe ohne
+  fachliche Prüfung werden als „KI-Entwurf – fachlich prüfen“ gekennzeichnet.
+- **Prüfung `pnpm content:validate`** (Regeln Ü1–Ü6, V1–V11 aus `packages/core/src/content`, Grenzwerte in
+  `constants.ts`): läuft in `ci` bei jedem Push. Schema-Fehler blockieren immer, andere rote Fehler nur bei
+  freigegebenen Inhalten; gelbe Hinweise blockieren nie. Ändert sich ein freigegebener Inhalt, muss `version` steigen.
+- **Einspielen:** Nur Freigegebenes kommt per `seed_content()` (eine Transaktion, nur `service_role`) in die
+  Datenbank; nicht mehr Freigegebenes wird archiviert statt gelöscht. Entwürfe liegen nie in Supabase.
+- Startbestand (Phase 2, Etappe A): 52 Übungen und 24 Plan-Vorlagen als KI-Entwurf (`origin: claude_session`).
+
 ## 4. Trainingsplan-Engine (`packages/core/plan`)
 1. **Matching:** passende Vorlage nach Ziel, Level, Tagen, Dauer, Equipment-Profil (Scoring, beste Übereinstimmung)
 2. **Equipment-Anpassung:** Übung nicht machbar → Alternative aus Bibliothek mit gleichem Bewegungsmuster/Muskelgruppe
@@ -220,8 +235,9 @@ Verbindlich ist der freigegebene Ablauf in `docs/PLAN-PHASE-1.md` Abschnitt 3 (S
 - `user_equipment` (user_id, location, equipment_id, weights_kg numeric[])
 - `nutrition_prefs` (user_id, diet_type, eats_pork, cooking_mode, mealprep_days, meals_per_day)
 - `food_preferences` (user_id, food_id, like/dislike/intolerance)
-- `exercises`, `exercise_alternatives`, `equipment`
-- `plan_templates`, `template_sessions`, `template_exercises` (Inhalte, status draft/published)
+- `exercises`, `exercise_alternatives`, `equipment` – **umgesetzt in Phase 2, siehe Abweichungen ab Phase 2**
+- `plan_templates`, `template_sessions`, `template_exercises` (Inhalte, status draft/published) – **umgesetzt in Phase 2,
+  siehe Abweichungen ab Phase 2**
 - `user_plans`, `planned_sessions`, `planned_exercises`
 - `session_logs` (planned_session_id, status, rpe_0_10, notes, source)
 - `set_logs` (session_log_id, planned_exercise_id, performed_exercise_id, set_no, reps, weight_kg, rpe, done)
@@ -246,6 +262,29 @@ Verbindlich ist der freigegebene Ablauf in `docs/PLAN-PHASE-1.md` Abschnitt 3 (S
 - **Gesundheits-Check:** Flags (`conservative_plan` usw.) berechnet die Datenbank selbst aus den Antworten; Zeitstempel serverseitig.
 - **Login** per E-Mail mit 6-stelligem Code (OTP, ohne Passwort); Apple/Google folgen.
 - Onboarding **ohne Wearable-Schritt** (kommt mit Phase 8); Einwilligung Gesundheitsdaten **vor** den Körperdaten.
+
+### Abweichungen ab Phase 2 (umgesetzt, siehe `docs/PLAN-PHASE-2.md` und `supabase/migrations`)
+- **Inhaltstabellen enthalten nur Freigegebenes:** `status` ist `published` oder `archived` (CHECK: nie `draft`).
+  RLS: `anon` sieht nichts, `authenticated` liest nur `published`, Schreiben nur `service_role` über
+  `seed_content(p_content jsonb)` (eine Transaktion, idempotent, archivieren statt löschen, nicht für Nutzer ausführbar).
+- **`exercises`** (id = lesbarer Schlüssel, version, status, name_de, **name_en** als englischer Zweitname, aliases_de,
+  movement_pattern, primary_muscles/secondary_muscles (`muscle_group[]`), equipment_ids, mechanics, load_type,
+  unilateral, difficulty 1–3, caution_tags, Texte: description_de, steps_de, tips_de, common_mistakes_de,
+  safety_note_de, meta).
+- **`exercise_alternatives`** (exercise_id, alternative_id, reason, priority): gleiches Bewegungsmuster; sichtbar nur,
+  wenn beide Übungen freigegeben sind.
+- **`plan_templates`** (Matrix Phase 2: goal_type `muscle_gain|fat_loss|general_fitness`, experience_level
+  `beginner|advanced`, sessions_per_week, minutes_min/max, location `gym|home`, required/optional_equipment_ids, sex,
+  meta). **`template_sessions`** mit Schlüssel (template_id, day_index) statt eigener ID, dazu focus,
+  estimated_minutes, warmup_de, cooldown_de. **`template_exercises`** mit Schlüssel (template_id, day_index, order_no)
+  statt `session_id`; sets, reps_min/max **oder** duration_s, rest_s, rpe_target (0,5er-Schritte), superset_group,
+  notes_de. Stabile Schlüssel, damit erneutes Einspielen denselben Stand ergibt.
+- **`admin_users`** (user_id, role `content_admin`, created_at): nur die eigene Zeile lesbar; erst ab Login Stufe B.
+- **`equipment.home_selectable`** (Standard true) und Studio-Geräte (Rack, Kabelzug, Latzug, Beinpresse, Brustpresse,
+  Beinbeuger-/Beinstrecker-Maschine, Dip-Station) mit `false`; neue Kategorie `machines`. Datenbank und App lehnen
+  Studio-Geräte beim Ort „Zuhause“ ab; das Onboarding zeigt sie dort nicht.
+- Neue Enums: `content_status`, `movement_pattern`, `muscle_group`, `exercise_mechanics`, `load_type`, `caution_tag`,
+  `alternative_reason`, `session_focus`, `admin_role` (abgeglichen mit `packages/core` durch `db-sync.test.ts`).
 
 ### Erweiterungen (geplant, `docs/ERWEITERUNGEN.md`)
 Alle Tabellen mit RLS (jeder sieht nur eigene Zeilen; Ausnahmen: Katalog-/Inhaltstabellen für alle lesbar, Pflege nur
