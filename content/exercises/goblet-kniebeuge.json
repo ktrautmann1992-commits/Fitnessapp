@@ -1,0 +1,60 @@
+{
+  "id": "goblet-kniebeuge",
+  "version": 1,
+  "status": "draft",
+  "name_de": "Goblet-Kniebeuge",
+  "name_en": "Goblet Squat",
+  "aliases_de": ["Kurzhantel-Kniebeuge"],
+  "movement_pattern": "squat",
+  "primary_muscles": ["quadriceps", "glutes"],
+  "secondary_muscles": ["adductors", "abs"],
+  "equipment_ids": ["dumbbells"],
+  "mechanics": "compound",
+  "load_type": "weight",
+  "unilateral": false,
+  "difficulty": 1,
+  "caution_tags": [],
+  "description_de": "Kniebeuge mit einer Kurzhantel vor der Brust. Das Gewicht vorn hilft, aufrecht zu bleiben – ideal zum Lernen der Kniebeuge.",
+  "steps_de": [
+    "Kurzhantel senkrecht an einem Ende greifen und dicht vor der Brust halten.",
+    "Füße etwas weiter als hüftbreit, Fußspitzen leicht nach außen.",
+    "Hüfte und Knie beugen und zwischen die Knie absenken, Ellbogen zeigen nach unten.",
+    "Über die ganze Fußsohle wieder aufstehen."
+  ],
+  "tips_de": [
+    "Oberkörper bleibt aufrecht, die Hantel bleibt nah am Körper.",
+    "So tief gehen, wie der Rücken gerade bleibt."
+  ],
+  "common_mistakes_de": [
+    "Hantel entfernt sich vom Körper und zieht nach vorn.",
+    "Knie fallen nach innen."
+  ],
+  "safety_note_de": "Gewicht so wählen, dass alle Wiederholungen technisch sauber gelingen. Bei Schmerzen, Schwindel oder ungewohnten Beschwerden die Übung beenden.",
+  "alternatives": [
+    {
+      "alternative_id": "kniebeuge-koerpergewicht",
+      "reason": "easier",
+      "priority": 1
+    },
+    {
+      "alternative_id": "kniebeuge-langhantel",
+      "reason": "harder",
+      "priority": 2
+    },
+    {
+      "alternative_id": "beinpresse",
+      "reason": "other_equipment",
+      "priority": 3
+    }
+  ],
+  "meta": {
+    "origin": "claude_session",
+    "model": "claude-opus-5-5",
+    "batch_id": null,
+    "created_on": "2026-10-03",
+    "expert_reviewed": false,
+    "reviewed_by": null,
+    "reviewed_at": null,
+    "review_note": null
+  }
+}

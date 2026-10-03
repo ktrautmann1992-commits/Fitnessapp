@@ -1,0 +1,55 @@
+{
+  "id": "ausfallschritt-rueckwaerts-kurzhantel",
+  "version": 1,
+  "status": "draft",
+  "name_de": "Ausfallschritt rückwärts mit Kurzhanteln",
+  "name_en": "Dumbbell Reverse Lunge",
+  "aliases_de": [],
+  "movement_pattern": "lunge",
+  "primary_muscles": ["quadriceps", "glutes"],
+  "secondary_muscles": ["adductors"],
+  "equipment_ids": ["dumbbells"],
+  "mechanics": "compound",
+  "load_type": "weight",
+  "unilateral": true,
+  "difficulty": 1,
+  "caution_tags": [],
+  "description_de": "Ausfallschritt nach hinten mit Kurzhanteln. Der Schritt nach hinten ist für die meisten leichter zu kontrollieren als nach vorn.",
+  "steps_de": [
+    "Aufrecht stehen, je eine Kurzhantel seitlich halten.",
+    "Mit einem Bein einen großen Schritt nach hinten machen und das hintere Knie Richtung Boden absenken.",
+    "Über die Ferse des vorderen Fußes zurück in den Stand drücken.",
+    "Seiten abwechseln oder alle Wiederholungen auf einer Seite machen."
+  ],
+  "tips_de": [
+    "Oberkörper bleibt aufrecht.",
+    "Beide Knie sind in der tiefen Position etwa im rechten Winkel."
+  ],
+  "common_mistakes_de": [
+    "Schritt zu kurz, sodass das vordere Knie weit über die Zehen schiebt.",
+    "Hinteres Knie prallt auf den Boden."
+  ],
+  "safety_note_de": "Gewicht so wählen, dass alle Wiederholungen technisch sauber gelingen. Bei Schmerzen, Schwindel oder ungewohnten Beschwerden die Übung beenden.",
+  "alternatives": [
+    {
+      "alternative_id": "split-kniebeuge",
+      "reason": "easier",
+      "priority": 1
+    },
+    {
+      "alternative_id": "bulgarische-split-kniebeuge",
+      "reason": "harder",
+      "priority": 2
+    }
+  ],
+  "meta": {
+    "origin": "claude_session",
+    "model": "claude-opus-5-5",
+    "batch_id": null,
+    "created_on": "2026-10-03",
+    "expert_reviewed": false,
+    "reviewed_by": null,
+    "reviewed_at": null,
+    "review_note": null
+  }
+}

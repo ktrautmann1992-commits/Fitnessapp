@@ -1,0 +1,47 @@
+{
+  "id": "good-morning-band",
+  "version": 1,
+  "status": "draft",
+  "name_de": "Good Morning mit Widerstandsband",
+  "name_en": "Banded Good Morning",
+  "aliases_de": [],
+  "movement_pattern": "hinge",
+  "primary_muscles": ["hamstrings"],
+  "secondary_muscles": ["glutes", "lower_back"],
+  "equipment_ids": ["resistance_bands"],
+  "mechanics": "compound",
+  "load_type": "band",
+  "unilateral": false,
+  "difficulty": 1,
+  "caution_tags": [],
+  "description_de": "Hüftbeuge mit Band für Beinrückseite und Gesäß. Das Band liegt unter den Füßen und hinter dem Nacken – ideal zum Lernen der Hüftbewegung.",
+  "steps_de": [
+    "Mit beiden Füßen hüftbreit auf das Band stellen und die Schlaufe hinter den Nacken auf die Schultern legen.",
+    "Knie leicht beugen, Hände halten das Band vor der Brust.",
+    "Hüfte nach hinten schieben und den Oberkörper mit geradem Rücken nach vorn neigen.",
+    "Gesäß anspannen und wieder aufrichten."
+  ],
+  "tips_de": [
+    "Rücken bleibt gerade, die Bewegung kommt aus der Hüfte.",
+    "Mit einem leichteren Band beginnen."
+  ],
+  "common_mistakes_de": ["Rücken rundet sich.", "Knie werden stark gebeugt."],
+  "safety_note_de": "Band vor dem Training auf Risse prüfen und sicher befestigen bzw. festhalten. Bei Schmerzen, Schwindel oder ungewohnten Beschwerden die Übung beenden.",
+  "alternatives": [
+    {
+      "alternative_id": "rumaenisches-kreuzheben-kurzhantel",
+      "reason": "harder",
+      "priority": 1
+    }
+  ],
+  "meta": {
+    "origin": "claude_session",
+    "model": "claude-opus-5-5",
+    "batch_id": null,
+    "created_on": "2026-10-03",
+    "expert_reviewed": false,
+    "reviewed_by": null,
+    "reviewed_at": null,
+    "review_note": null
+  }
+}

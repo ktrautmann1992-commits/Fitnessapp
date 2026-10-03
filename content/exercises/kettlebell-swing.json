@@ -1,0 +1,57 @@
+{
+  "id": "kettlebell-swing",
+  "version": 1,
+  "status": "draft",
+  "name_de": "Kettlebell-Swing",
+  "name_en": "Kettlebell Swing",
+  "aliases_de": [],
+  "movement_pattern": "hinge",
+  "primary_muscles": ["glutes", "hamstrings"],
+  "secondary_muscles": ["lower_back", "forearms"],
+  "equipment_ids": ["kettlebells"],
+  "mechanics": "compound",
+  "load_type": "weight",
+  "unilateral": false,
+  "difficulty": 2,
+  "caution_tags": ["high_skill"],
+  "description_de": "Schwungvolle Hüftstreckung mit der Kettlebell. Die Kraft kommt aus Gesäß und Beinrückseite, die Arme führen nur.",
+  "steps_de": [
+    "Kettlebell etwa 30 cm vor den Füßen abstellen, Füße etwas weiter als hüftbreit.",
+    "Hüfte nach hinten schieben, Kettlebell mit beiden Händen greifen und zwischen die Beine zurückschwingen.",
+    "Hüfte kräftig nach vorn strecken, sodass die Kettlebell etwa bis Brusthöhe schwingt.",
+    "Kettlebell zurückfallen lassen und die Hüfte wieder nach hinten schieben.",
+    "Nach dem letzten Schwung kontrolliert vor den Füßen abstellen."
+  ],
+  "tips_de": [
+    "Oben Gesäß und Bauch fest anspannen und aufrecht stehen.",
+    "Die Arme bleiben locker – nicht mit den Schultern heben."
+  ],
+  "common_mistakes_de": [
+    "Bewegung wird zur Kniebeuge.",
+    "Kettlebell wird mit den Armen nach oben gezogen.",
+    "Rücken rundet sich am Umkehrpunkt."
+  ],
+  "safety_note_de": "Erst mit leichtem Gewicht die Technik lernen und genug Platz um dich herum lassen. Bei Schmerzen, Schwindel oder ungewohnten Beschwerden die Übung beenden.",
+  "alternatives": [
+    {
+      "alternative_id": "rumaenisches-kreuzheben-kurzhantel",
+      "reason": "easier",
+      "priority": 1
+    },
+    {
+      "alternative_id": "good-morning-band",
+      "reason": "home",
+      "priority": 2
+    }
+  ],
+  "meta": {
+    "origin": "claude_session",
+    "model": "claude-opus-5-5",
+    "batch_id": null,
+    "created_on": "2026-10-03",
+    "expert_reviewed": false,
+    "reviewed_by": null,
+    "reviewed_at": null,
+    "review_note": null
+  }
+}

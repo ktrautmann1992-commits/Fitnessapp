@@ -2,6 +2,7 @@ import {
   createGoalStepSchema,
   ENDURANCE_DISCIPLINES,
   EQUIPMENT,
+  HOME_SELECTABLE_EQUIPMENT,
   equipmentItemSchema,
   GOAL_TYPES,
   OTHER_EQUIPMENT_ID,
@@ -310,7 +311,7 @@ export function EquipmentStep({ ctl }: { ctl: StepController }) {
   function next() {
     const items: EquipmentItemInput[] = [];
     const nextErrors: FieldErrors = {};
-    for (const item of EQUIPMENT) {
+    for (const item of HOME_SELECTABLE_EQUIPMENT) {
       const draft = drafts[item.id];
       if (!draft.selected) {
         continue;
@@ -337,7 +338,7 @@ export function EquipmentStep({ ctl }: { ctl: StepController }) {
     void ctl.submit({ step: 'equipment', items });
   }
 
-  const nothingSelected = EQUIPMENT.every((item) => !drafts[item.id].selected);
+  const nothingSelected = HOME_SELECTABLE_EQUIPMENT.every((item) => !drafts[item.id].selected);
 
   return (
     <Screen
@@ -348,7 +349,8 @@ export function EquipmentStep({ ctl }: { ctl: StepController }) {
         <StepFooter onBack={ctl.goBack} onNext={next} loading={ctl.saving} error={ctl.error} />
       }
     >
-      {EQUIPMENT.map((item) => {
+      {/* Nur Geräte für zu Hause – Studio-Geräte (Kabelzug, Maschinen …) erscheinen hier nicht. */}
+      {HOME_SELECTABLE_EQUIPMENT.map((item) => {
         const draft = drafts[item.id];
         return (
           <View key={item.id} style={{ gap: spacing.sm }}>

@@ -1,0 +1,52 @@
+{
+  "id": "latziehen-band",
+  "version": 1,
+  "status": "draft",
+  "name_de": "Latziehen mit Widerstandsband",
+  "name_en": "Banded Lat Pulldown",
+  "aliases_de": [],
+  "movement_pattern": "vertical_pull",
+  "primary_muscles": ["lats"],
+  "secondary_muscles": ["biceps", "upper_back"],
+  "equipment_ids": ["resistance_bands"],
+  "mechanics": "compound",
+  "load_type": "band",
+  "unilateral": false,
+  "difficulty": 1,
+  "caution_tags": [],
+  "description_de": "Zugübung von oben nach unten mit einem hoch befestigten Band – die Variante für zu Hause.",
+  "steps_de": [
+    "Band oben an einem Türanker oder einer stabilen Stange befestigen.",
+    "Kniend oder sitzend die Enden mit gestreckten Armen über dem Kopf greifen.",
+    "Ellbogen nach unten zur Hüfte ziehen, Schulterblätter nach unten führen.",
+    "Langsam wieder nach oben lassen."
+  ],
+  "tips_de": [
+    "Abstand so wählen, dass das Band oben schon leicht gespannt ist.",
+    "Oberkörper bleibt aufrecht."
+  ],
+  "common_mistakes_de": ["Schultern ziehen nach oben.", "Arme ziehen nur halb."],
+  "safety_note_de": "Band vor dem Training auf Risse prüfen und sicher befestigen bzw. festhalten. Bei Schmerzen, Schwindel oder ungewohnten Beschwerden die Übung beenden.",
+  "alternatives": [
+    {
+      "alternative_id": "klimmzug-band-unterstuetzt",
+      "reason": "harder",
+      "priority": 1
+    },
+    {
+      "alternative_id": "latziehen",
+      "reason": "other_equipment",
+      "priority": 2
+    }
+  ],
+  "meta": {
+    "origin": "claude_session",
+    "model": "claude-opus-5-5",
+    "batch_id": null,
+    "created_on": "2026-10-03",
+    "expert_reviewed": false,
+    "reviewed_by": null,
+    "reviewed_at": null,
+    "review_note": null
+  }
+}

@@ -1,0 +1,47 @@
+{
+  "id": "reverse-fly-kurzhantel",
+  "version": 1,
+  "status": "draft",
+  "name_de": "Vorgebeugtes Seitheben mit Kurzhanteln",
+  "name_en": "Dumbbell Reverse Fly",
+  "aliases_de": ["Reverse Fly"],
+  "movement_pattern": "shoulder_isolation",
+  "primary_muscles": ["rear_delts"],
+  "secondary_muscles": ["upper_back"],
+  "equipment_ids": ["dumbbells"],
+  "mechanics": "isolation",
+  "load_type": "weight",
+  "unilateral": false,
+  "difficulty": 1,
+  "caution_tags": [],
+  "description_de": "Isolationsübung für die hintere Schulter im vorgebeugten Stand.",
+  "steps_de": [
+    "Je eine leichte Kurzhantel halten, Oberkörper mit geradem Rücken weit nach vorn neigen.",
+    "Arme hängen leicht gebeugt unter den Schultern.",
+    "Arme seitlich bis etwa auf Schulterhöhe öffnen.",
+    "Langsam wieder absenken."
+  ],
+  "tips_de": [
+    "Leichtes Gewicht, ruhiges Tempo.",
+    "Im Sitzen auf einer Bank kann der Oberkörper auf den Oberschenkeln ruhen."
+  ],
+  "common_mistakes_de": ["Schwung aus dem Oberkörper.", "Schultern ziehen zu den Ohren."],
+  "safety_note_de": "Gewicht so wählen, dass alle Wiederholungen technisch sauber gelingen. Bei Schmerzen, Schwindel oder ungewohnten Beschwerden die Übung beenden.",
+  "alternatives": [
+    {
+      "alternative_id": "face-pull-kabel",
+      "reason": "other_equipment",
+      "priority": 1
+    }
+  ],
+  "meta": {
+    "origin": "claude_session",
+    "model": "claude-opus-5-5",
+    "batch_id": null,
+    "created_on": "2026-10-03",
+    "expert_reviewed": false,
+    "reviewed_by": null,
+    "reviewed_at": null,
+    "review_note": null
+  }
+}

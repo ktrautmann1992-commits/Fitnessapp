@@ -1,0 +1,50 @@
+{
+  "id": "hip-thrust-langhantel",
+  "version": 1,
+  "status": "draft",
+  "name_de": "Hip Thrust mit Langhantel",
+  "name_en": "Barbell Hip Thrust",
+  "aliases_de": [],
+  "movement_pattern": "hip_extension",
+  "primary_muscles": ["glutes"],
+  "secondary_muscles": ["hamstrings"],
+  "equipment_ids": ["barbell", "flat_bench"],
+  "mechanics": "compound",
+  "load_type": "weight",
+  "unilateral": false,
+  "difficulty": 2,
+  "caution_tags": [],
+  "description_de": "Übung für das Gesäß: Der obere Rücken liegt auf der Bank, die Langhantel auf der Hüfte. Die Hüfte wird bis zur geraden Linie angehoben.",
+  "steps_de": [
+    "Mit dem Rücken quer vor eine Flachbank setzen, Schulterblätter an die Bankkante legen.",
+    "Hantel (mit Polster) über die Hüfte rollen und mit beiden Händen festhalten, Füße hüftbreit aufstellen.",
+    "Hüfte anheben, bis Schultern, Hüfte und Knie eine Linie bilden; oben das Gesäß anspannen.",
+    "Hüfte kontrolliert absenken, ohne die Hantel abzulegen."
+  ],
+  "tips_de": [
+    "Kinn leicht zur Brust, der Blick folgt der Bewegung.",
+    "Unterschenkel stehen oben etwa senkrecht."
+  ],
+  "common_mistakes_de": [
+    "Hohlkreuz statt Hüftstreckung.",
+    "Füße stehen zu weit vorn oder zu nah am Gesäß."
+  ],
+  "safety_note_de": "Ein Polster um die Hantel legen und die Bank gegen Wegrutschen sichern. Bei Schmerzen, Schwindel oder ungewohnten Beschwerden die Übung beenden.",
+  "alternatives": [
+    {
+      "alternative_id": "glute-bridge",
+      "reason": "home",
+      "priority": 1
+    }
+  ],
+  "meta": {
+    "origin": "claude_session",
+    "model": "claude-opus-5-5",
+    "batch_id": null,
+    "created_on": "2026-10-03",
+    "expert_reviewed": false,
+    "reviewed_by": null,
+    "reviewed_at": null,
+    "review_note": null
+  }
+}

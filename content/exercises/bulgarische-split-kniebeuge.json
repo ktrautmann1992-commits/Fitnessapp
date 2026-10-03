@@ -1,0 +1,56 @@
+{
+  "id": "bulgarische-split-kniebeuge",
+  "version": 1,
+  "status": "draft",
+  "name_de": "Bulgarische Split-Kniebeuge mit Kurzhanteln",
+  "name_en": "Dumbbell Bulgarian Split Squat",
+  "aliases_de": [],
+  "movement_pattern": "lunge",
+  "primary_muscles": ["quadriceps", "glutes"],
+  "secondary_muscles": ["adductors", "hamstrings"],
+  "equipment_ids": ["dumbbells", "flat_bench"],
+  "mechanics": "compound",
+  "load_type": "weight",
+  "unilateral": true,
+  "difficulty": 2,
+  "caution_tags": [],
+  "description_de": "Einbeinige Kniebeuge mit erhöhtem hinteren Fuß. Trainiert Oberschenkel und Gesäß und fordert das Gleichgewicht.",
+  "steps_de": [
+    "Mit dem Rücken zu einer Flachbank stellen, den Spann eines Fußes hinten auf die Bank legen.",
+    "Je eine Kurzhantel seitlich halten, der vordere Fuß steht etwa eine Beinlänge vor der Bank.",
+    "Das hintere Knie Richtung Boden absenken, bis der vordere Oberschenkel etwa waagerecht ist.",
+    "Über die ganze Sohle des vorderen Fußes wieder hochdrücken.",
+    "Alle Wiederholungen auf einer Seite, dann Seite wechseln."
+  ],
+  "tips_de": [
+    "Erst ohne Gewicht die passende Fußposition finden.",
+    "Das vordere Knie zeigt in Richtung der Fußspitze."
+  ],
+  "common_mistakes_de": [
+    "Vorderer Fuß steht zu nah an der Bank.",
+    "Oberkörper fällt stark nach vorn."
+  ],
+  "safety_note_de": "Gewicht so wählen, dass alle Wiederholungen technisch sauber gelingen. Bei Schmerzen, Schwindel oder ungewohnten Beschwerden die Übung beenden.",
+  "alternatives": [
+    {
+      "alternative_id": "ausfallschritt-rueckwaerts-kurzhantel",
+      "reason": "easier",
+      "priority": 1
+    },
+    {
+      "alternative_id": "split-kniebeuge",
+      "reason": "home",
+      "priority": 2
+    }
+  ],
+  "meta": {
+    "origin": "claude_session",
+    "model": "claude-opus-5-5",
+    "batch_id": null,
+    "created_on": "2026-10-03",
+    "expert_reviewed": false,
+    "reviewed_by": null,
+    "reviewed_at": null,
+    "review_note": null
+  }
+}

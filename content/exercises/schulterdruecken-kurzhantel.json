@@ -1,0 +1,52 @@
+{
+  "id": "schulterdruecken-kurzhantel",
+  "version": 1,
+  "status": "draft",
+  "name_de": "Schulterdrücken mit Kurzhanteln",
+  "name_en": "Dumbbell Shoulder Press",
+  "aliases_de": [],
+  "movement_pattern": "vertical_push",
+  "primary_muscles": ["front_delts"],
+  "secondary_muscles": ["triceps", "side_delts"],
+  "equipment_ids": ["dumbbells"],
+  "mechanics": "compound",
+  "load_type": "weight",
+  "unilateral": false,
+  "difficulty": 1,
+  "caution_tags": ["overhead"],
+  "description_de": "Drückübung über Kopf für die Schultern, im Stand oder im Sitzen.",
+  "steps_de": [
+    "Je eine Kurzhantel auf Schulterhöhe halten, Handflächen nach vorn oder zueinander.",
+    "Bauch und Gesäß anspannen.",
+    "Hanteln nach oben drücken, bis die Arme fast gestreckt sind.",
+    "Kontrolliert zurück auf Schulterhöhe senken."
+  ],
+  "tips_de": [
+    "Im Sitzen mit Rückenlehne ist die Übung leichter zu kontrollieren.",
+    "Rippen unten halten, kein Hohlkreuz."
+  ],
+  "common_mistakes_de": ["Starkes Hohlkreuz beim Drücken.", "Hanteln werden nur halb abgesenkt."],
+  "safety_note_de": "Gewicht so wählen, dass alle Wiederholungen technisch sauber gelingen. Bei Schmerzen, Schwindel oder ungewohnten Beschwerden die Übung beenden.",
+  "alternatives": [
+    {
+      "alternative_id": "schulterdruecken-band",
+      "reason": "easier",
+      "priority": 1
+    },
+    {
+      "alternative_id": "schulterdruecken-langhantel",
+      "reason": "harder",
+      "priority": 2
+    }
+  ],
+  "meta": {
+    "origin": "claude_session",
+    "model": "claude-opus-5-5",
+    "batch_id": null,
+    "created_on": "2026-10-03",
+    "expert_reviewed": false,
+    "reviewed_by": null,
+    "reviewed_at": null,
+    "review_note": null
+  }
+}

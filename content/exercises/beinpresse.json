@@ -1,0 +1,55 @@
+{
+  "id": "beinpresse",
+  "version": 1,
+  "status": "draft",
+  "name_de": "Beinpresse",
+  "name_en": "Leg Press",
+  "aliases_de": [],
+  "movement_pattern": "squat",
+  "primary_muscles": ["quadriceps"],
+  "secondary_muscles": ["glutes", "adductors"],
+  "equipment_ids": ["leg_press"],
+  "mechanics": "compound",
+  "load_type": "weight",
+  "unilateral": false,
+  "difficulty": 1,
+  "caution_tags": [],
+  "description_de": "Geführte Übung für die Oberschenkel an der Maschine. Der Rücken liegt am Polster an, dadurch ist die Bewegung leicht zu lernen.",
+  "steps_de": [
+    "Rücken und Gesäß fest an das Polster legen, Füße etwa hüftbreit mittig auf die Plattform stellen.",
+    "Sicherung lösen und die Plattform kontrolliert ablassen, bis die Knie etwa im rechten Winkel stehen.",
+    "Über die ganze Fußsohle zurückdrücken, ohne die Knie oben ganz durchzustrecken.",
+    "Nach dem letzten Satz die Sicherung wieder einrasten lassen."
+  ],
+  "tips_de": [
+    "Gesäß bleibt in der tiefen Position am Polster.",
+    "Knie zeigen in Richtung der Fußspitzen."
+  ],
+  "common_mistakes_de": [
+    "Knie werden oben ruckartig durchgestreckt.",
+    "Gesäß hebt sich in der tiefen Position vom Polster ab."
+  ],
+  "safety_note_de": "Sitz und Polster vor dem ersten Satz auf die eigene Körpergröße einstellen und das Gewicht kontrolliert ablassen. Bei Schmerzen, Schwindel oder ungewohnten Beschwerden die Übung beenden.",
+  "alternatives": [
+    {
+      "alternative_id": "goblet-kniebeuge",
+      "reason": "home",
+      "priority": 1
+    },
+    {
+      "alternative_id": "kniebeuge-langhantel",
+      "reason": "other_equipment",
+      "priority": 2
+    }
+  ],
+  "meta": {
+    "origin": "claude_session",
+    "model": "claude-opus-5-5",
+    "batch_id": null,
+    "created_on": "2026-10-03",
+    "expert_reviewed": false,
+    "reviewed_by": null,
+    "reviewed_at": null,
+    "review_note": null
+  }
+}

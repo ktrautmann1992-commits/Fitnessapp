@@ -1,0 +1,47 @@
+{
+  "id": "schulterdruecken-band",
+  "version": 1,
+  "status": "draft",
+  "name_de": "Schulterdrücken mit Widerstandsband",
+  "name_en": "Banded Overhead Press",
+  "aliases_de": [],
+  "movement_pattern": "vertical_push",
+  "primary_muscles": ["front_delts"],
+  "secondary_muscles": ["triceps", "side_delts"],
+  "equipment_ids": ["resistance_bands"],
+  "mechanics": "compound",
+  "load_type": "band",
+  "unilateral": false,
+  "difficulty": 1,
+  "caution_tags": ["overhead"],
+  "description_de": "Drückübung über Kopf mit einem Band, das unter den Füßen liegt.",
+  "steps_de": [
+    "Mit beiden Füßen hüftbreit auf das Band stellen und die Enden auf Schulterhöhe halten.",
+    "Bauch und Gesäß anspannen.",
+    "Hände senkrecht nach oben drücken, bis die Arme fast gestreckt sind.",
+    "Langsam auf Schulterhöhe zurückführen."
+  ],
+  "tips_de": [
+    "Für mehr Widerstand breiter auf das Band stellen.",
+    "Kopf bleibt in Verlängerung der Wirbelsäule."
+  ],
+  "common_mistakes_de": ["Hohlkreuz beim Drücken.", "Band rutscht unter den Füßen weg."],
+  "safety_note_de": "Band vor dem Training auf Risse prüfen und sicher befestigen bzw. festhalten. Bei Schmerzen, Schwindel oder ungewohnten Beschwerden die Übung beenden.",
+  "alternatives": [
+    {
+      "alternative_id": "schulterdruecken-kurzhantel",
+      "reason": "harder",
+      "priority": 1
+    }
+  ],
+  "meta": {
+    "origin": "claude_session",
+    "model": "claude-opus-5-5",
+    "batch_id": null,
+    "created_on": "2026-10-03",
+    "expert_reviewed": false,
+    "reviewed_by": null,
+    "reviewed_at": null,
+    "review_note": null
+  }
+}

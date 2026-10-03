@@ -1,0 +1,50 @@
+{
+  "id": "fliegende-kabel",
+  "version": 1,
+  "status": "draft",
+  "name_de": "Fliegende am Kabelzug",
+  "name_en": "Cable Fly",
+  "aliases_de": ["Cable Crossover"],
+  "movement_pattern": "horizontal_push",
+  "primary_muscles": ["chest"],
+  "secondary_muscles": ["front_delts"],
+  "equipment_ids": ["cable_station"],
+  "mechanics": "isolation",
+  "load_type": "weight",
+  "unilateral": false,
+  "difficulty": 1,
+  "caution_tags": [],
+  "description_de": "Isolationsübung für die Brust am Kabelzug: Die Arme bewegen sich in einem weiten Bogen vor dem Körper zusammen.",
+  "steps_de": [
+    "Beide Kabelrollen etwa auf Schulterhöhe einstellen, Griffe fassen und einen Schritt nach vorn gehen.",
+    "Arme leicht gebeugt seitlich öffnen, Brust heraus.",
+    "Hände in einem Bogen vor der Brust zusammenführen.",
+    "Langsam wieder öffnen, bis ein leichtes Ziehen in der Brust zu spüren ist."
+  ],
+  "tips_de": [
+    "Der Ellbogenwinkel bleibt während der Bewegung gleich.",
+    "Bewegung kommt aus der Schulter, nicht aus den Ellbogen."
+  ],
+  "common_mistakes_de": [
+    "Arme werden gebeugt und gestreckt wie beim Drücken.",
+    "Zu weit nach hinten öffnen."
+  ],
+  "safety_note_de": "Sitz und Polster vor dem ersten Satz auf die eigene Körpergröße einstellen und das Gewicht kontrolliert ablassen. Bei Schmerzen, Schwindel oder ungewohnten Beschwerden die Übung beenden.",
+  "alternatives": [
+    {
+      "alternative_id": "brustdruecken-band",
+      "reason": "home",
+      "priority": 1
+    }
+  ],
+  "meta": {
+    "origin": "claude_session",
+    "model": "claude-opus-5-5",
+    "batch_id": null,
+    "created_on": "2026-10-03",
+    "expert_reviewed": false,
+    "reviewed_by": null,
+    "reviewed_at": null,
+    "review_note": null
+  }
+}

@@ -1,0 +1,60 @@
+{
+  "id": "bankdruecken-kurzhantel",
+  "version": 1,
+  "status": "draft",
+  "name_de": "Bankdrücken mit Kurzhanteln",
+  "name_en": "Dumbbell Bench Press",
+  "aliases_de": [],
+  "movement_pattern": "horizontal_push",
+  "primary_muscles": ["chest"],
+  "secondary_muscles": ["triceps", "front_delts"],
+  "equipment_ids": ["dumbbells", "flat_bench"],
+  "mechanics": "compound",
+  "load_type": "weight",
+  "unilateral": false,
+  "difficulty": 1,
+  "caution_tags": ["long_supine"],
+  "description_de": "Drückübung für die Brust mit zwei Kurzhanteln auf der Flachbank. Jede Seite arbeitet für sich.",
+  "steps_de": [
+    "Mit den Kurzhanteln auf den Oberschenkeln auf die Bank setzen und sich kontrolliert zurücklegen.",
+    "Hanteln seitlich der Brust halten, Schulterblätter zusammenziehen, Füße fest am Boden.",
+    "Hanteln nach oben drücken, bis die Arme fast gestreckt sind.",
+    "Langsam wieder bis auf Brusthöhe absenken."
+  ],
+  "tips_de": [
+    "Ellbogen etwa 45 Grad vom Körper.",
+    "Zum Ablegen die Hanteln auf die Oberschenkel führen und sich aufsetzen."
+  ],
+  "common_mistakes_de": [
+    "Hanteln schlagen oben gegeneinander.",
+    "Zu tief absenken, sodass die Schultern nach vorn rollen."
+  ],
+  "safety_note_de": "Gewicht so wählen, dass alle Wiederholungen technisch sauber gelingen. Bei Schmerzen, Schwindel oder ungewohnten Beschwerden die Übung beenden.",
+  "alternatives": [
+    {
+      "alternative_id": "bodendruecken-kurzhantel",
+      "reason": "home",
+      "priority": 1
+    },
+    {
+      "alternative_id": "liegestuetz",
+      "reason": "home",
+      "priority": 2
+    },
+    {
+      "alternative_id": "bankdruecken-langhantel",
+      "reason": "harder",
+      "priority": 3
+    }
+  ],
+  "meta": {
+    "origin": "claude_session",
+    "model": "claude-opus-5-5",
+    "batch_id": null,
+    "created_on": "2026-10-03",
+    "expert_reviewed": false,
+    "reviewed_by": null,
+    "reviewed_at": null,
+    "review_note": null
+  }
+}

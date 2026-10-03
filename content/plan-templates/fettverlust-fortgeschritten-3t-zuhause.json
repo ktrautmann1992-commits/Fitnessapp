@@ -1,0 +1,343 @@
+{
+  "id": "fettverlust-fortgeschritten-3t-zuhause",
+  "version": 1,
+  "status": "draft",
+  "title_de": "Fettverlust · Fortgeschritten · 3 Tage · Zuhause",
+  "description_de": "Pro Woche drei Ganzkörper-Einheiten zu Hause mit Kurzhanteln und Widerstandsbändern (optional Flachbank und Klimmzugstange), je 45–60 Minuten. Ziel Fettverlust: Krafttraining erhält die Muskulatur, während die Ernährung für das Kaloriendefizit sorgt; kürzere Pausen halten die Einheit kompakt. Für Fortgeschrittene: mehr Sätze und höhere Intensität bei weiterhin sauberer Technik, ohne Maximalversuche. Zwischen zwei Einheiten möglichst einen Ruhetag einplanen.",
+  "goal_type": "fat_loss",
+  "experience_level": "advanced",
+  "sessions_per_week": 3,
+  "minutes_min": 45,
+  "minutes_max": 60,
+  "location": "home",
+  "required_equipment_ids": ["dumbbells", "resistance_bands"],
+  "optional_equipment_ids": ["flat_bench", "pull_up_bar"],
+  "sex": null,
+  "sessions": [
+    {
+      "day_index": 1,
+      "name_de": "Ganzkörper A",
+      "focus": "full_body",
+      "warmup_de": "5 Minuten locker aufwärmen (z. B. zügiges Gehen oder Rad), dann Hüft-, Schulter- und Armkreisen und 1–2 leichte Aufwärmsätze der ersten Übung.",
+      "cooldown_de": "3–5 Minuten locker ausklingen lassen und ruhig atmen; optional die trainierten Muskeln leicht dehnen.",
+      "exercises": [
+        {
+          "order_no": 1,
+          "exercise_id": "goblet-kniebeuge",
+          "sets": 3,
+          "reps_min": 8,
+          "reps_max": 12,
+          "duration_s": null,
+          "rest_s": 120,
+          "rpe_target": 8,
+          "superset_group": null,
+          "notes_de": "Gewicht erhöhen, wenn alle Sätze am oberen Ende des Wiederholungsbereichs sauber gelingen."
+        },
+        {
+          "order_no": 2,
+          "exercise_id": "bankdruecken-kurzhantel",
+          "sets": 3,
+          "reps_min": 8,
+          "reps_max": 12,
+          "duration_s": null,
+          "rest_s": 120,
+          "rpe_target": 8,
+          "superset_group": null,
+          "notes_de": "Gewicht erhöhen, wenn alle Sätze am oberen Ende des Wiederholungsbereichs sauber gelingen."
+        },
+        {
+          "order_no": 3,
+          "exercise_id": "latziehen-band",
+          "sets": 4,
+          "reps_min": 8,
+          "reps_max": 12,
+          "duration_s": null,
+          "rest_s": 120,
+          "rpe_target": 8,
+          "superset_group": null,
+          "notes_de": "Stärkeres Band oder mehr Abstand wählen, wenn alle Sätze am oberen Ende sauber gelingen."
+        },
+        {
+          "order_no": 4,
+          "exercise_id": "beinbeuger-band",
+          "sets": 3,
+          "reps_min": 12,
+          "reps_max": 15,
+          "duration_s": null,
+          "rest_s": 60,
+          "rpe_target": 8,
+          "superset_group": null,
+          "notes_de": "Wiederholungen je Seite."
+        },
+        {
+          "order_no": 5,
+          "exercise_id": "seitheben-kurzhantel",
+          "sets": 4,
+          "reps_min": 12,
+          "reps_max": 15,
+          "duration_s": null,
+          "rest_s": 60,
+          "rpe_target": 8,
+          "superset_group": null,
+          "notes_de": null
+        },
+        {
+          "order_no": 6,
+          "exercise_id": "trizepsdruecken-band",
+          "sets": 3,
+          "reps_min": 12,
+          "reps_max": 15,
+          "duration_s": null,
+          "rest_s": 60,
+          "rpe_target": 8,
+          "superset_group": null,
+          "notes_de": null
+        },
+        {
+          "order_no": 7,
+          "exercise_id": "wadenheben-kurzhantel",
+          "sets": 4,
+          "reps_min": 12,
+          "reps_max": 15,
+          "duration_s": null,
+          "rest_s": 60,
+          "rpe_target": 8,
+          "superset_group": null,
+          "notes_de": null
+        },
+        {
+          "order_no": 8,
+          "exercise_id": "unterarmstuetz",
+          "sets": 3,
+          "reps_min": null,
+          "reps_max": null,
+          "duration_s": 40,
+          "rest_s": 45,
+          "rpe_target": 7,
+          "superset_group": null,
+          "notes_de": null
+        }
+      ]
+    },
+    {
+      "day_index": 2,
+      "name_de": "Ganzkörper B",
+      "focus": "full_body",
+      "warmup_de": "5 Minuten locker aufwärmen (z. B. zügiges Gehen oder Rad), dann Hüft-, Schulter- und Armkreisen und 1–2 leichte Aufwärmsätze der ersten Übung.",
+      "cooldown_de": "3–5 Minuten locker ausklingen lassen und ruhig atmen; optional die trainierten Muskeln leicht dehnen.",
+      "exercises": [
+        {
+          "order_no": 1,
+          "exercise_id": "rumaenisches-kreuzheben-kurzhantel",
+          "sets": 3,
+          "reps_min": 8,
+          "reps_max": 12,
+          "duration_s": null,
+          "rest_s": 120,
+          "rpe_target": 8,
+          "superset_group": null,
+          "notes_de": "Gewicht erhöhen, wenn alle Sätze am oberen Ende des Wiederholungsbereichs sauber gelingen."
+        },
+        {
+          "order_no": 2,
+          "exercise_id": "vorgebeugtes-rudern-kurzhantel",
+          "sets": 3,
+          "reps_min": 8,
+          "reps_max": 12,
+          "duration_s": null,
+          "rest_s": 120,
+          "rpe_target": 8,
+          "superset_group": null,
+          "notes_de": "Gewicht erhöhen, wenn alle Sätze am oberen Ende des Wiederholungsbereichs sauber gelingen."
+        },
+        {
+          "order_no": 3,
+          "exercise_id": "schulterdruecken-kurzhantel",
+          "sets": 3,
+          "reps_min": 10,
+          "reps_max": 15,
+          "duration_s": null,
+          "rest_s": 90,
+          "rpe_target": 8,
+          "superset_group": null,
+          "notes_de": null
+        },
+        {
+          "order_no": 4,
+          "exercise_id": "ausfallschritt-rueckwaerts-kurzhantel",
+          "sets": 3,
+          "reps_min": 10,
+          "reps_max": 15,
+          "duration_s": null,
+          "rest_s": 90,
+          "rpe_target": 8,
+          "superset_group": null,
+          "notes_de": "Wiederholungen je Seite."
+        },
+        {
+          "order_no": 5,
+          "exercise_id": "liegestuetz",
+          "sets": 3,
+          "reps_min": 10,
+          "reps_max": 15,
+          "duration_s": null,
+          "rest_s": 90,
+          "rpe_target": 8,
+          "superset_group": null,
+          "notes_de": "Bei Bedarf schwerer machen (z. B. Kurzhantel als Zusatzgewicht oder langsameres Tempo), damit das RPE-Ziel erreicht wird."
+        },
+        {
+          "order_no": 6,
+          "exercise_id": "reverse-fly-kurzhantel",
+          "sets": 3,
+          "reps_min": 12,
+          "reps_max": 15,
+          "duration_s": null,
+          "rest_s": 60,
+          "rpe_target": 8,
+          "superset_group": null,
+          "notes_de": null
+        },
+        {
+          "order_no": 7,
+          "exercise_id": "bizepscurl-kurzhantel",
+          "sets": 4,
+          "reps_min": 12,
+          "reps_max": 15,
+          "duration_s": null,
+          "rest_s": 60,
+          "rpe_target": 8,
+          "superset_group": null,
+          "notes_de": null
+        },
+        {
+          "order_no": 8,
+          "exercise_id": "dead-bug",
+          "sets": 3,
+          "reps_min": 8,
+          "reps_max": 12,
+          "duration_s": null,
+          "rest_s": 60,
+          "rpe_target": 7,
+          "superset_group": null,
+          "notes_de": null
+        }
+      ]
+    },
+    {
+      "day_index": 3,
+      "name_de": "Ganzkörper C",
+      "focus": "full_body",
+      "warmup_de": "5 Minuten locker aufwärmen (z. B. zügiges Gehen oder Rad), dann Hüft-, Schulter- und Armkreisen und 1–2 leichte Aufwärmsätze der ersten Übung.",
+      "cooldown_de": "3–5 Minuten locker ausklingen lassen und ruhig atmen; optional die trainierten Muskeln leicht dehnen.",
+      "exercises": [
+        {
+          "order_no": 1,
+          "exercise_id": "bulgarische-split-kniebeuge",
+          "sets": 3,
+          "reps_min": 8,
+          "reps_max": 12,
+          "duration_s": null,
+          "rest_s": 120,
+          "rpe_target": 8,
+          "superset_group": null,
+          "notes_de": "Gewicht erhöhen, wenn alle Sätze am oberen Ende des Wiederholungsbereichs sauber gelingen. Wiederholungen je Seite."
+        },
+        {
+          "order_no": 2,
+          "exercise_id": "bodendruecken-kurzhantel",
+          "sets": 3,
+          "reps_min": 8,
+          "reps_max": 12,
+          "duration_s": null,
+          "rest_s": 120,
+          "rpe_target": 8,
+          "superset_group": null,
+          "notes_de": "Gewicht erhöhen, wenn alle Sätze am oberen Ende des Wiederholungsbereichs sauber gelingen."
+        },
+        {
+          "order_no": 3,
+          "exercise_id": "kurzhantelrudern-einarmig",
+          "sets": 3,
+          "reps_min": 8,
+          "reps_max": 12,
+          "duration_s": null,
+          "rest_s": 120,
+          "rpe_target": 8,
+          "superset_group": null,
+          "notes_de": "Gewicht erhöhen, wenn alle Sätze am oberen Ende des Wiederholungsbereichs sauber gelingen. Wiederholungen je Seite."
+        },
+        {
+          "order_no": 4,
+          "exercise_id": "glute-bridge",
+          "sets": 3,
+          "reps_min": 10,
+          "reps_max": 15,
+          "duration_s": null,
+          "rest_s": 90,
+          "rpe_target": 8,
+          "superset_group": null,
+          "notes_de": "Bei Bedarf schwerer machen (z. B. Kurzhantel als Zusatzgewicht oder langsameres Tempo), damit das RPE-Ziel erreicht wird."
+        },
+        {
+          "order_no": 5,
+          "exercise_id": "seitheben-band",
+          "sets": 3,
+          "reps_min": 12,
+          "reps_max": 15,
+          "duration_s": null,
+          "rest_s": 60,
+          "rpe_target": 8,
+          "superset_group": null,
+          "notes_de": null
+        },
+        {
+          "order_no": 6,
+          "exercise_id": "reverse-fly-kurzhantel",
+          "sets": 3,
+          "reps_min": 12,
+          "reps_max": 15,
+          "duration_s": null,
+          "rest_s": 60,
+          "rpe_target": 8,
+          "superset_group": null,
+          "notes_de": null
+        },
+        {
+          "order_no": 7,
+          "exercise_id": "wadenheben-kurzhantel",
+          "sets": 3,
+          "reps_min": 12,
+          "reps_max": 15,
+          "duration_s": null,
+          "rest_s": 60,
+          "rpe_target": 8,
+          "superset_group": null,
+          "notes_de": null
+        },
+        {
+          "order_no": 8,
+          "exercise_id": "pallof-press-band",
+          "sets": 3,
+          "reps_min": 8,
+          "reps_max": 12,
+          "duration_s": null,
+          "rest_s": 60,
+          "rpe_target": 7,
+          "superset_group": null,
+          "notes_de": "Wiederholungen je Seite."
+        }
+      ]
+    }
+  ],
+  "meta": {
+    "origin": "claude_session",
+    "model": "claude-opus-5-5",
+    "batch_id": null,
+    "created_on": "2026-10-03",
+    "expert_reviewed": false,
+    "reviewed_by": null,
+    "reviewed_at": null,
+    "review_note": null
+  }
+}

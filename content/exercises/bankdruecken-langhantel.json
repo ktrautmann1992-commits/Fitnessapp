@@ -1,0 +1,62 @@
+{
+  "id": "bankdruecken-langhantel",
+  "version": 1,
+  "status": "draft",
+  "name_de": "Bankdrücken mit Langhantel",
+  "name_en": "Barbell Bench Press",
+  "aliases_de": ["Bench Press"],
+  "movement_pattern": "horizontal_push",
+  "primary_muscles": ["chest"],
+  "secondary_muscles": ["triceps", "front_delts"],
+  "equipment_ids": ["barbell", "flat_bench", "power_rack"],
+  "mechanics": "compound",
+  "load_type": "weight",
+  "unilateral": false,
+  "difficulty": 2,
+  "caution_tags": ["long_supine"],
+  "description_de": "Grundübung für Brust, Trizeps und vordere Schulter: Die Langhantel wird in Rückenlage zur Brust gesenkt und wieder nach oben gedrückt.",
+  "steps_de": [
+    "Auf die Bank legen, die Augen liegen etwa unter der Hantel, Füße fest am Boden.",
+    "Hantel etwas weiter als schulterbreit greifen, Schulterblätter zusammen und nach unten ziehen.",
+    "Hantel aus der Ablage heben und über die Schultern bringen.",
+    "Kontrolliert bis auf die untere Brust absenken, Ellbogen etwa 45 Grad vom Körper.",
+    "Hantel kraftvoll nach oben drücken und nach dem letzten Satz sicher ablegen."
+  ],
+  "tips_de": [
+    "Sicherheitsablagen auf Brusthöhe einstellen oder mit Hilfestellung trainieren.",
+    "Gesäß bleibt auf der Bank."
+  ],
+  "common_mistakes_de": [
+    "Hantel prallt von der Brust ab.",
+    "Ellbogen zeigen weit zur Seite.",
+    "Gesäß hebt sich von der Bank."
+  ],
+  "safety_note_de": "Bei schweren Sätzen Sicherheitsablagen nutzen oder um Hilfestellung bitten. Bei Schmerzen, Schwindel oder ungewohnten Beschwerden die Übung beenden.",
+  "alternatives": [
+    {
+      "alternative_id": "bankdruecken-kurzhantel",
+      "reason": "other_equipment",
+      "priority": 1
+    },
+    {
+      "alternative_id": "brustpresse",
+      "reason": "other_equipment",
+      "priority": 2
+    },
+    {
+      "alternative_id": "liegestuetz",
+      "reason": "home",
+      "priority": 3
+    }
+  ],
+  "meta": {
+    "origin": "claude_session",
+    "model": "claude-opus-5-5",
+    "batch_id": null,
+    "created_on": "2026-10-03",
+    "expert_reviewed": false,
+    "reviewed_by": null,
+    "reviewed_at": null,
+    "review_note": null
+  }
+}

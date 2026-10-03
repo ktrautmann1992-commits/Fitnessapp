@@ -1,0 +1,52 @@
+{
+  "id": "trizepsdruecken-band",
+  "version": 1,
+  "status": "draft",
+  "name_de": "Trizepsdrücken mit Widerstandsband",
+  "name_en": "Banded Triceps Pushdown",
+  "aliases_de": [],
+  "movement_pattern": "elbow_extension",
+  "primary_muscles": ["triceps"],
+  "secondary_muscles": [],
+  "equipment_ids": ["resistance_bands"],
+  "mechanics": "isolation",
+  "load_type": "band",
+  "unilateral": false,
+  "difficulty": 1,
+  "caution_tags": [],
+  "description_de": "Trizepsdrücken mit einem hoch befestigten Band – die Variante für zu Hause.",
+  "steps_de": [
+    "Band oben an einem Türanker befestigen und die Enden greifen.",
+    "Aufrecht stehen, Ellbogen seitlich am Körper.",
+    "Unterarme nach unten strecken.",
+    "Langsam zurückführen."
+  ],
+  "tips_de": [
+    "Oben in der Ausgangsposition sollte das Band leicht gespannt sein.",
+    "Ellbogen bleiben ruhig."
+  ],
+  "common_mistakes_de": ["Ellbogen wandern nach vorn.", "Schultern ziehen nach oben."],
+  "safety_note_de": "Band vor dem Training auf Risse prüfen und sicher befestigen bzw. festhalten. Bei Schmerzen, Schwindel oder ungewohnten Beschwerden die Übung beenden.",
+  "alternatives": [
+    {
+      "alternative_id": "trizepsdruecken-kabel",
+      "reason": "other_equipment",
+      "priority": 1
+    },
+    {
+      "alternative_id": "trizepsstrecken-kurzhantel",
+      "reason": "other_equipment",
+      "priority": 2
+    }
+  ],
+  "meta": {
+    "origin": "claude_session",
+    "model": "claude-opus-5-5",
+    "batch_id": null,
+    "created_on": "2026-10-03",
+    "expert_reviewed": false,
+    "reviewed_by": null,
+    "reviewed_at": null,
+    "review_note": null
+  }
+}

@@ -1,0 +1,50 @@
+{
+  "id": "beinstrecker-band",
+  "version": 1,
+  "status": "draft",
+  "name_de": "Beinstrecker mit Widerstandsband",
+  "name_en": "Banded Leg Extension",
+  "aliases_de": [],
+  "movement_pattern": "knee_extension",
+  "primary_muscles": ["quadriceps"],
+  "secondary_muscles": [],
+  "equipment_ids": ["resistance_bands"],
+  "mechanics": "isolation",
+  "load_type": "band",
+  "unilateral": true,
+  "difficulty": 1,
+  "caution_tags": [],
+  "description_de": "Kniestreckung im Sitzen gegen ein Band – die Variante für zu Hause.",
+  "steps_de": [
+    "Band hinter einem stabilen Stuhlbein oder Tischbein befestigen und mit der Schlaufe um das Fußgelenk legen.",
+    "Aufrecht auf einen Stuhl setzen, Hände halten sich seitlich fest.",
+    "Unterschenkel gegen den Bandzug nach vorn strecken, oben kurz halten.",
+    "Langsam zurückführen, dann Seite wechseln."
+  ],
+  "tips_de": [
+    "Das Band sollte schon in der Ausgangsposition leicht gespannt sein.",
+    "Oberschenkel bleibt auf dem Stuhl liegen."
+  ],
+  "common_mistakes_de": [
+    "Band rutscht, weil es nicht sicher befestigt ist.",
+    "Bewegung zu schnell."
+  ],
+  "safety_note_de": "Band vor dem Training auf Risse prüfen und sicher befestigen bzw. festhalten. Bei Schmerzen, Schwindel oder ungewohnten Beschwerden die Übung beenden.",
+  "alternatives": [
+    {
+      "alternative_id": "beinstrecker",
+      "reason": "other_equipment",
+      "priority": 1
+    }
+  ],
+  "meta": {
+    "origin": "claude_session",
+    "model": "claude-opus-5-5",
+    "batch_id": null,
+    "created_on": "2026-10-03",
+    "expert_reviewed": false,
+    "reviewed_by": null,
+    "reviewed_at": null,
+    "review_note": null
+  }
+}

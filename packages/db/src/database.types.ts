@@ -10,6 +10,24 @@ export type Json = string | number | boolean | null | { [key: string]: Json | un
 export type Database = {
   public: {
     Tables: {
+      admin_users: {
+        Row: {
+          created_at: string;
+          role: Database['public']['Enums']['admin_role'];
+          user_id: string;
+        };
+        Insert: {
+          created_at?: string;
+          role?: Database['public']['Enums']['admin_role'];
+          user_id: string;
+        };
+        Update: {
+          created_at?: string;
+          role?: Database['public']['Enums']['admin_role'];
+          user_id?: string;
+        };
+        Relationships: [];
+      };
       body_measurements: {
         Row: {
           abdomen_cm: number | null;
@@ -173,6 +191,7 @@ export type Database = {
           category: Database['public']['Enums']['equipment_category'];
           created_at: string;
           has_weights: boolean;
+          home_selectable: boolean;
           id: string;
           name_de: string;
           sort_order: number;
@@ -181,6 +200,7 @@ export type Database = {
           category: Database['public']['Enums']['equipment_category'];
           created_at?: string;
           has_weights?: boolean;
+          home_selectable?: boolean;
           id: string;
           name_de: string;
           sort_order?: number;
@@ -189,9 +209,124 @@ export type Database = {
           category?: Database['public']['Enums']['equipment_category'];
           created_at?: string;
           has_weights?: boolean;
+          home_selectable?: boolean;
           id?: string;
           name_de?: string;
           sort_order?: number;
+        };
+        Relationships: [];
+      };
+      exercise_alternatives: {
+        Row: {
+          alternative_id: string;
+          exercise_id: string;
+          priority: number;
+          reason: Database['public']['Enums']['alternative_reason'];
+        };
+        Insert: {
+          alternative_id: string;
+          exercise_id: string;
+          priority: number;
+          reason: Database['public']['Enums']['alternative_reason'];
+        };
+        Update: {
+          alternative_id?: string;
+          exercise_id?: string;
+          priority?: number;
+          reason?: Database['public']['Enums']['alternative_reason'];
+        };
+        Relationships: [
+          {
+            foreignKeyName: 'exercise_alternatives_alternative_id_fkey';
+            columns: ['alternative_id'];
+            isOneToOne: false;
+            referencedRelation: 'exercises';
+            referencedColumns: ['id'];
+          },
+          {
+            foreignKeyName: 'exercise_alternatives_exercise_id_fkey';
+            columns: ['exercise_id'];
+            isOneToOne: false;
+            referencedRelation: 'exercises';
+            referencedColumns: ['id'];
+          },
+        ];
+      };
+      exercises: {
+        Row: {
+          aliases_de: string[];
+          caution_tags: Database['public']['Enums']['caution_tag'][];
+          common_mistakes_de: string[];
+          created_at: string;
+          description_de: string;
+          difficulty: number;
+          equipment_ids: string[];
+          id: string;
+          load_type: Database['public']['Enums']['load_type'];
+          mechanics: Database['public']['Enums']['exercise_mechanics'];
+          meta: Json;
+          movement_pattern: Database['public']['Enums']['movement_pattern'];
+          name_de: string;
+          name_en: string;
+          primary_muscles: Database['public']['Enums']['muscle_group'][];
+          safety_note_de: string;
+          secondary_muscles: Database['public']['Enums']['muscle_group'][];
+          status: Database['public']['Enums']['content_status'];
+          steps_de: string[];
+          tips_de: string[];
+          unilateral: boolean;
+          updated_at: string;
+          version: number;
+        };
+        Insert: {
+          aliases_de?: string[];
+          caution_tags?: Database['public']['Enums']['caution_tag'][];
+          common_mistakes_de: string[];
+          created_at?: string;
+          description_de: string;
+          difficulty: number;
+          equipment_ids?: string[];
+          id: string;
+          load_type: Database['public']['Enums']['load_type'];
+          mechanics: Database['public']['Enums']['exercise_mechanics'];
+          meta?: Json;
+          movement_pattern: Database['public']['Enums']['movement_pattern'];
+          name_de: string;
+          name_en: string;
+          primary_muscles: Database['public']['Enums']['muscle_group'][];
+          safety_note_de: string;
+          secondary_muscles?: Database['public']['Enums']['muscle_group'][];
+          status: Database['public']['Enums']['content_status'];
+          steps_de: string[];
+          tips_de: string[];
+          unilateral?: boolean;
+          updated_at?: string;
+          version: number;
+        };
+        Update: {
+          aliases_de?: string[];
+          caution_tags?: Database['public']['Enums']['caution_tag'][];
+          common_mistakes_de?: string[];
+          created_at?: string;
+          description_de?: string;
+          difficulty?: number;
+          equipment_ids?: string[];
+          id?: string;
+          load_type?: Database['public']['Enums']['load_type'];
+          mechanics?: Database['public']['Enums']['exercise_mechanics'];
+          meta?: Json;
+          movement_pattern?: Database['public']['Enums']['movement_pattern'];
+          name_de?: string;
+          name_en?: string;
+          primary_muscles?: Database['public']['Enums']['muscle_group'][];
+          safety_note_de?: string;
+          secondary_muscles?: Database['public']['Enums']['muscle_group'][];
+          status?: Database['public']['Enums']['content_status'];
+          steps_de?: string[];
+          tips_de?: string[];
+          unilateral?: boolean;
+          updated_at?: string;
+          version?: number;
         };
         Relationships: [];
       };
@@ -342,6 +477,66 @@ export type Database = {
         };
         Relationships: [];
       };
+      plan_templates: {
+        Row: {
+          created_at: string;
+          description_de: string;
+          experience_level: Database['public']['Enums']['experience_level'];
+          goal_type: Database['public']['Enums']['goal_type'];
+          id: string;
+          location: Database['public']['Enums']['equipment_location'];
+          meta: Json;
+          minutes_max: number;
+          minutes_min: number;
+          optional_equipment_ids: string[];
+          required_equipment_ids: string[];
+          sessions_per_week: number;
+          sex: Database['public']['Enums']['sex'] | null;
+          status: Database['public']['Enums']['content_status'];
+          title_de: string;
+          updated_at: string;
+          version: number;
+        };
+        Insert: {
+          created_at?: string;
+          description_de: string;
+          experience_level: Database['public']['Enums']['experience_level'];
+          goal_type: Database['public']['Enums']['goal_type'];
+          id: string;
+          location: Database['public']['Enums']['equipment_location'];
+          meta?: Json;
+          minutes_max: number;
+          minutes_min: number;
+          optional_equipment_ids?: string[];
+          required_equipment_ids?: string[];
+          sessions_per_week: number;
+          sex?: Database['public']['Enums']['sex'] | null;
+          status: Database['public']['Enums']['content_status'];
+          title_de: string;
+          updated_at?: string;
+          version: number;
+        };
+        Update: {
+          created_at?: string;
+          description_de?: string;
+          experience_level?: Database['public']['Enums']['experience_level'];
+          goal_type?: Database['public']['Enums']['goal_type'];
+          id?: string;
+          location?: Database['public']['Enums']['equipment_location'];
+          meta?: Json;
+          minutes_max?: number;
+          minutes_min?: number;
+          optional_equipment_ids?: string[];
+          required_equipment_ids?: string[];
+          sessions_per_week?: number;
+          sex?: Database['public']['Enums']['sex'] | null;
+          status?: Database['public']['Enums']['content_status'];
+          title_de?: string;
+          updated_at?: string;
+          version?: number;
+        };
+        Relationships: [];
+      };
       profiles: {
         Row: {
           birth_date: string;
@@ -380,6 +575,104 @@ export type Database = {
           user_id?: string;
         };
         Relationships: [];
+      };
+      template_exercises: {
+        Row: {
+          day_index: number;
+          duration_s: number | null;
+          exercise_id: string;
+          notes_de: string | null;
+          order_no: number;
+          reps_max: number | null;
+          reps_min: number | null;
+          rest_s: number;
+          rpe_target: number;
+          sets: number;
+          superset_group: string | null;
+          template_id: string;
+        };
+        Insert: {
+          day_index: number;
+          duration_s?: number | null;
+          exercise_id: string;
+          notes_de?: string | null;
+          order_no: number;
+          reps_max?: number | null;
+          reps_min?: number | null;
+          rest_s: number;
+          rpe_target: number;
+          sets: number;
+          superset_group?: string | null;
+          template_id: string;
+        };
+        Update: {
+          day_index?: number;
+          duration_s?: number | null;
+          exercise_id?: string;
+          notes_de?: string | null;
+          order_no?: number;
+          reps_max?: number | null;
+          reps_min?: number | null;
+          rest_s?: number;
+          rpe_target?: number;
+          sets?: number;
+          superset_group?: string | null;
+          template_id?: string;
+        };
+        Relationships: [
+          {
+            foreignKeyName: 'template_exercises_exercise_id_fkey';
+            columns: ['exercise_id'];
+            isOneToOne: false;
+            referencedRelation: 'exercises';
+            referencedColumns: ['id'];
+          },
+          {
+            foreignKeyName: 'template_exercises_template_id_day_index_fkey';
+            columns: ['template_id', 'day_index'];
+            isOneToOne: false;
+            referencedRelation: 'template_sessions';
+            referencedColumns: ['template_id', 'day_index'];
+          },
+        ];
+      };
+      template_sessions: {
+        Row: {
+          cooldown_de: string;
+          day_index: number;
+          estimated_minutes: number;
+          focus: Database['public']['Enums']['session_focus'];
+          name_de: string;
+          template_id: string;
+          warmup_de: string;
+        };
+        Insert: {
+          cooldown_de: string;
+          day_index: number;
+          estimated_minutes: number;
+          focus: Database['public']['Enums']['session_focus'];
+          name_de: string;
+          template_id: string;
+          warmup_de: string;
+        };
+        Update: {
+          cooldown_de?: string;
+          day_index?: number;
+          estimated_minutes?: number;
+          focus?: Database['public']['Enums']['session_focus'];
+          name_de?: string;
+          template_id?: string;
+          warmup_de?: string;
+        };
+        Relationships: [
+          {
+            foreignKeyName: 'template_sessions_template_id_fkey';
+            columns: ['template_id'];
+            isOneToOne: false;
+            referencedRelation: 'plan_templates';
+            referencedColumns: ['id'];
+          },
+        ];
       };
       user_equipment: {
         Row: {
@@ -444,11 +737,16 @@ export type Database = {
         };
         Returns: undefined;
       };
+      seed_content: { Args: { p_content: Json }; Returns: Json };
     };
     Enums: {
+      admin_role: 'content_admin';
+      alternative_reason: 'other_equipment' | 'easier' | 'harder' | 'home';
       app_locale: 'de-DE' | 'de-AT' | 'de-CH';
+      caution_tag: 'high_impact' | 'spinal_loading' | 'overhead' | 'long_supine' | 'high_skill';
       consent_platform: 'ios' | 'android' | 'web';
       consent_type: 'terms' | 'privacy' | 'health_data' | 'cycle_data';
+      content_status: 'draft' | 'published' | 'archived';
       cooking_mode: 'daily' | 'meal_prep';
       diet_type: 'omnivore' | 'vegetarian' | 'vegan';
       endurance_discipline:
@@ -462,11 +760,54 @@ export type Database = {
         | 'triathlon_long'
         | 'cycling'
         | 'swimming';
-      equipment_category: 'free_weights' | 'bench' | 'bodyweight' | 'bands' | 'cardio' | 'other';
+      equipment_category:
+        'free_weights' | 'bench' | 'bodyweight' | 'bands' | 'cardio' | 'other' | 'machines';
       equipment_location: 'home' | 'gym';
+      exercise_mechanics: 'compound' | 'isolation';
       experience_level: 'beginner' | 'advanced' | 'competitive';
       food_preference_kind: 'like' | 'dislike' | 'intolerance';
       goal_type: 'fat_loss' | 'definition' | 'muscle_gain' | 'general_fitness' | 'endurance';
+      load_type: 'weight' | 'bodyweight' | 'band' | 'time';
+      movement_pattern:
+        | 'squat'
+        | 'hinge'
+        | 'lunge'
+        | 'horizontal_push'
+        | 'vertical_push'
+        | 'horizontal_pull'
+        | 'vertical_pull'
+        | 'elbow_flexion'
+        | 'elbow_extension'
+        | 'shoulder_isolation'
+        | 'knee_flexion'
+        | 'knee_extension'
+        | 'hip_extension'
+        | 'calf_raise'
+        | 'core_anti_extension'
+        | 'core_anti_rotation'
+        | 'core_flexion'
+        | 'carry'
+        | 'conditioning'
+        | 'mobility';
+      muscle_group:
+        | 'chest'
+        | 'lats'
+        | 'upper_back'
+        | 'front_delts'
+        | 'side_delts'
+        | 'rear_delts'
+        | 'biceps'
+        | 'triceps'
+        | 'forearms'
+        | 'abs'
+        | 'obliques'
+        | 'lower_back'
+        | 'glutes'
+        | 'quadriceps'
+        | 'hamstrings'
+        | 'adductors'
+        | 'calves';
+      session_focus: 'full_body' | 'upper' | 'lower';
       sex: 'male' | 'female' | 'diverse' | 'unspecified';
       training_location: 'gym' | 'home' | 'both';
     };
@@ -574,9 +915,13 @@ export type Enums<
 export const Constants = {
   public: {
     Enums: {
+      admin_role: ['content_admin'],
+      alternative_reason: ['other_equipment', 'easier', 'harder', 'home'],
       app_locale: ['de-DE', 'de-AT', 'de-CH'],
+      caution_tag: ['high_impact', 'spinal_loading', 'overhead', 'long_supine', 'high_skill'],
       consent_platform: ['ios', 'android', 'web'],
       consent_type: ['terms', 'privacy', 'health_data', 'cycle_data'],
+      content_status: ['draft', 'published', 'archived'],
       cooking_mode: ['daily', 'meal_prep'],
       diet_type: ['omnivore', 'vegetarian', 'vegan'],
       endurance_discipline: [
@@ -591,11 +936,63 @@ export const Constants = {
         'cycling',
         'swimming',
       ],
-      equipment_category: ['free_weights', 'bench', 'bodyweight', 'bands', 'cardio', 'other'],
+      equipment_category: [
+        'free_weights',
+        'bench',
+        'bodyweight',
+        'bands',
+        'cardio',
+        'other',
+        'machines',
+      ],
       equipment_location: ['home', 'gym'],
+      exercise_mechanics: ['compound', 'isolation'],
       experience_level: ['beginner', 'advanced', 'competitive'],
       food_preference_kind: ['like', 'dislike', 'intolerance'],
       goal_type: ['fat_loss', 'definition', 'muscle_gain', 'general_fitness', 'endurance'],
+      load_type: ['weight', 'bodyweight', 'band', 'time'],
+      movement_pattern: [
+        'squat',
+        'hinge',
+        'lunge',
+        'horizontal_push',
+        'vertical_push',
+        'horizontal_pull',
+        'vertical_pull',
+        'elbow_flexion',
+        'elbow_extension',
+        'shoulder_isolation',
+        'knee_flexion',
+        'knee_extension',
+        'hip_extension',
+        'calf_raise',
+        'core_anti_extension',
+        'core_anti_rotation',
+        'core_flexion',
+        'carry',
+        'conditioning',
+        'mobility',
+      ],
+      muscle_group: [
+        'chest',
+        'lats',
+        'upper_back',
+        'front_delts',
+        'side_delts',
+        'rear_delts',
+        'biceps',
+        'triceps',
+        'forearms',
+        'abs',
+        'obliques',
+        'lower_back',
+        'glutes',
+        'quadriceps',
+        'hamstrings',
+        'adductors',
+        'calves',
+      ],
+      session_focus: ['full_body', 'upper', 'lower'],
       sex: ['male', 'female', 'diverse', 'unspecified'],
       training_location: ['gym', 'home', 'both'],
     },

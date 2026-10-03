@@ -1,0 +1,52 @@
+{
+  "id": "brustpresse",
+  "version": 1,
+  "status": "draft",
+  "name_de": "Brustpresse an der Maschine",
+  "name_en": "Machine Chest Press",
+  "aliases_de": [],
+  "movement_pattern": "horizontal_push",
+  "primary_muscles": ["chest"],
+  "secondary_muscles": ["triceps", "front_delts"],
+  "equipment_ids": ["machine_chest_press"],
+  "mechanics": "compound",
+  "load_type": "weight",
+  "unilateral": false,
+  "difficulty": 1,
+  "caution_tags": [],
+  "description_de": "Geführte Drückübung für die Brust an der Maschine – leicht zu lernen und gut dosierbar.",
+  "steps_de": [
+    "Sitz so einstellen, dass die Griffe etwa auf Höhe der Brustmitte liegen.",
+    "Rücken an die Lehne, Schulterblätter zusammen, Griffe fassen.",
+    "Griffe nach vorn drücken, bis die Arme fast gestreckt sind.",
+    "Kontrolliert zurückführen, ohne das Gewicht abzulegen."
+  ],
+  "tips_de": ["Ellbogen leicht unterhalb der Schulterhöhe.", "Gleichmäßiges Tempo."],
+  "common_mistakes_de": [
+    "Schultern rollen nach vorn.",
+    "Gewichtsblock schlägt zwischen den Wiederholungen auf."
+  ],
+  "safety_note_de": "Sitz und Polster vor dem ersten Satz auf die eigene Körpergröße einstellen und das Gewicht kontrolliert ablassen. Bei Schmerzen, Schwindel oder ungewohnten Beschwerden die Übung beenden.",
+  "alternatives": [
+    {
+      "alternative_id": "bankdruecken-kurzhantel",
+      "reason": "other_equipment",
+      "priority": 1
+    },
+    {
+      "alternative_id": "liegestuetz",
+      "reason": "home",
+      "priority": 2
+    }
+  ],
+  "meta": {
+    "origin": "claude_session",
+    "model": "claude-opus-5-5",
+    "batch_id": null,
+    "created_on": "2026-10-03",
+    "expert_reviewed": false,
+    "reviewed_by": null,
+    "reviewed_at": null,
+    "review_note": null
+  }
+}

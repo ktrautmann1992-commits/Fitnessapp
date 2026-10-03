@@ -1,0 +1,57 @@
+{
+  "id": "latziehen",
+  "version": 1,
+  "status": "draft",
+  "name_de": "Latziehen",
+  "name_en": "Lat Pulldown",
+  "aliases_de": ["Latzug"],
+  "movement_pattern": "vertical_pull",
+  "primary_muscles": ["lats"],
+  "secondary_muscles": ["biceps", "upper_back"],
+  "equipment_ids": ["lat_pulldown"],
+  "mechanics": "compound",
+  "load_type": "weight",
+  "unilateral": false,
+  "difficulty": 1,
+  "caution_tags": [],
+  "description_de": "Zugübung am Latzug für den breiten Rückenmuskel – die geführte Variante des Klimmzugs.",
+  "steps_de": [
+    "Oberschenkelpolster so einstellen, dass die Beine fest darunter liegen.",
+    "Stange etwas weiter als schulterbreit greifen, Oberkörper leicht nach hinten neigen.",
+    "Stange zur oberen Brust ziehen, Ellbogen Richtung Hüfte.",
+    "Kontrolliert nach oben zurückführen, bis die Arme gestreckt sind."
+  ],
+  "tips_de": [
+    "Brust heraus, Schultern weg von den Ohren.",
+    "Bewegung beginnt mit dem Herunterziehen der Schulterblätter."
+  ],
+  "common_mistakes_de": ["Stange hinter den Kopf ziehen.", "Starkes Zurücklehnen mit Schwung."],
+  "safety_note_de": "Sitz und Polster vor dem ersten Satz auf die eigene Körpergröße einstellen und das Gewicht kontrolliert ablassen. Bei Schmerzen, Schwindel oder ungewohnten Beschwerden die Übung beenden.",
+  "alternatives": [
+    {
+      "alternative_id": "klimmzug-band-unterstuetzt",
+      "reason": "other_equipment",
+      "priority": 1
+    },
+    {
+      "alternative_id": "latziehen-band",
+      "reason": "home",
+      "priority": 2
+    },
+    {
+      "alternative_id": "klimmzug",
+      "reason": "harder",
+      "priority": 3
+    }
+  ],
+  "meta": {
+    "origin": "claude_session",
+    "model": "claude-opus-5-5",
+    "batch_id": null,
+    "created_on": "2026-10-03",
+    "expert_reviewed": false,
+    "reviewed_by": null,
+    "reviewed_at": null,
+    "review_note": null
+  }
+}

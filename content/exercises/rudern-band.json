@@ -1,0 +1,52 @@
+{
+  "id": "rudern-band",
+  "version": 1,
+  "status": "draft",
+  "name_de": "Rudern mit Widerstandsband",
+  "name_en": "Banded Row",
+  "aliases_de": [],
+  "movement_pattern": "horizontal_pull",
+  "primary_muscles": ["upper_back", "lats"],
+  "secondary_muscles": ["rear_delts", "biceps"],
+  "equipment_ids": ["resistance_bands"],
+  "mechanics": "compound",
+  "load_type": "band",
+  "unilateral": false,
+  "difficulty": 1,
+  "caution_tags": [],
+  "description_de": "Zugübung für den Rücken mit einem Band, das an einer Tür befestigt oder um die Füße gelegt ist.",
+  "steps_de": [
+    "Band auf Brusthöhe an einem Türanker befestigen oder im Sitzen um die Füße legen.",
+    "Enden greifen, aufrecht stehen oder sitzen, Arme gestreckt.",
+    "Ellbogen nah am Körper nach hinten ziehen, Schulterblätter zusammenführen.",
+    "Langsam wieder nach vorn lassen."
+  ],
+  "tips_de": [
+    "Abstand so wählen, dass das Band schon am Anfang leicht gespannt ist.",
+    "Oben kurz halten."
+  ],
+  "common_mistakes_de": ["Schultern ziehen nach oben.", "Oberkörper lehnt sich nach hinten."],
+  "safety_note_de": "Band vor dem Training auf Risse prüfen und sicher befestigen bzw. festhalten. Bei Schmerzen, Schwindel oder ungewohnten Beschwerden die Übung beenden.",
+  "alternatives": [
+    {
+      "alternative_id": "vorgebeugtes-rudern-kurzhantel",
+      "reason": "harder",
+      "priority": 1
+    },
+    {
+      "alternative_id": "kabelrudern",
+      "reason": "other_equipment",
+      "priority": 2
+    }
+  ],
+  "meta": {
+    "origin": "claude_session",
+    "model": "claude-opus-5-5",
+    "batch_id": null,
+    "created_on": "2026-10-03",
+    "expert_reviewed": false,
+    "reviewed_by": null,
+    "reviewed_at": null,
+    "review_note": null
+  }
+}

@@ -1,0 +1,47 @@
+{
+  "id": "beinbeuger-band",
+  "version": 1,
+  "status": "draft",
+  "name_de": "Beinbeuger mit Widerstandsband",
+  "name_en": "Banded Leg Curl",
+  "aliases_de": [],
+  "movement_pattern": "knee_flexion",
+  "primary_muscles": ["hamstrings"],
+  "secondary_muscles": ["calves"],
+  "equipment_ids": ["resistance_bands"],
+  "mechanics": "isolation",
+  "load_type": "band",
+  "unilateral": true,
+  "difficulty": 1,
+  "caution_tags": [],
+  "description_de": "Kniebeugung in Bauchlage gegen ein Band – trainiert die Rückseite der Oberschenkel zu Hause.",
+  "steps_de": [
+    "Band an einem stabilen, bodennahen Punkt (z. B. Schrank- oder Tischbein) befestigen.",
+    "Auf den Bauch legen, Schlaufe um ein Fußgelenk legen, sodass das Band leicht gespannt ist.",
+    "Ferse Richtung Gesäß ziehen, kurz halten.",
+    "Langsam wieder strecken; nach allen Wiederholungen Seite wechseln."
+  ],
+  "tips_de": [
+    "Hüfte bleibt am Boden liegen.",
+    "Abstand zum Befestigungspunkt so wählen, dass das Band über die ganze Bewegung zieht."
+  ],
+  "common_mistakes_de": ["Hüfte hebt sich beim Ziehen.", "Band schnalzt unkontrolliert zurück."],
+  "safety_note_de": "Band vor dem Training auf Risse prüfen und sicher befestigen bzw. festhalten. Bei Schmerzen, Schwindel oder ungewohnten Beschwerden die Übung beenden.",
+  "alternatives": [
+    {
+      "alternative_id": "beinbeuger-maschine",
+      "reason": "other_equipment",
+      "priority": 1
+    }
+  ],
+  "meta": {
+    "origin": "claude_session",
+    "model": "claude-opus-5-5",
+    "batch_id": null,
+    "created_on": "2026-10-03",
+    "expert_reviewed": false,
+    "reviewed_by": null,
+    "reviewed_at": null,
+    "review_note": null
+  }
+}

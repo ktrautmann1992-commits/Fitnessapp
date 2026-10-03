@@ -1,0 +1,47 @@
+{
+  "id": "face-pull-kabel",
+  "version": 1,
+  "status": "draft",
+  "name_de": "Face Pull am Kabelzug",
+  "name_en": "Cable Face Pull",
+  "aliases_de": [],
+  "movement_pattern": "shoulder_isolation",
+  "primary_muscles": ["rear_delts"],
+  "secondary_muscles": ["upper_back"],
+  "equipment_ids": ["cable_station"],
+  "mechanics": "isolation",
+  "load_type": "weight",
+  "unilateral": false,
+  "difficulty": 1,
+  "caution_tags": [],
+  "description_de": "Zugübung mit dem Seil Richtung Gesicht für die hintere Schulter und den oberen Rücken.",
+  "steps_de": [
+    "Kabelrolle etwa auf Kopfhöhe einstellen, Seil mit beiden Händen greifen.",
+    "Einen Schritt zurück, Arme gestreckt, aufrecht stehen.",
+    "Seil Richtung Stirn ziehen und dabei die Hände nach außen führen.",
+    "Kurz halten und langsam zurück."
+  ],
+  "tips_de": ["Ellbogen bleiben etwa auf Schulterhöhe.", "Schulterblätter zusammenführen."],
+  "common_mistakes_de": [
+    "Zu schweres Gewicht, sodass der Oberkörper nach hinten kippt.",
+    "Ellbogen sinken nach unten."
+  ],
+  "safety_note_de": "Sitz und Polster vor dem ersten Satz auf die eigene Körpergröße einstellen und das Gewicht kontrolliert ablassen. Bei Schmerzen, Schwindel oder ungewohnten Beschwerden die Übung beenden.",
+  "alternatives": [
+    {
+      "alternative_id": "reverse-fly-kurzhantel",
+      "reason": "home",
+      "priority": 1
+    }
+  ],
+  "meta": {
+    "origin": "claude_session",
+    "model": "claude-opus-5-5",
+    "batch_id": null,
+    "created_on": "2026-10-03",
+    "expert_reviewed": false,
+    "reviewed_by": null,
+    "reviewed_at": null,
+    "review_note": null
+  }
+}

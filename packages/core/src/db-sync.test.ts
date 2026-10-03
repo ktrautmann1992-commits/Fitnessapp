@@ -11,6 +11,7 @@ import { CURRENT_CONSENT_VERSIONS } from './consent';
 import {
   BIRTH_DATE_MIN,
   BODY_MEASUREMENT_LIMITS,
+  CONTENT_SCHEMA_LIMITS,
   BODY_METRIC_LIMITS,
   EQUIPMENT_LIMITS,
   MEASURED_ON_MAX_DAYS_AHEAD,
@@ -53,6 +54,16 @@ function quotedListAfter(sql: string, marker: string): string[] {
   return [...sql.slice(open, close).matchAll(/'([^']+)'/g)].map((match) => match[1] as string);
 }
 
+/** Werte eines Postgres-Enums: `create type … as enum (…)` plus spätere `alter type … add value '…'`. */
+function enumValues(name: string): string[] {
+  const added = [
+    ...allSql.matchAll(
+      new RegExp(`alter type public\\.${name} add value (?:if not exists )?'([^']+)'`, 'g'),
+    ),
+  ].map((match) => match[1] as string);
+  return [...quotedListAfter(allSql, `create type public.${name} as enum (`), ...added];
+}
+
 describe('Migrationen', () => {
   it('folgen dem Namensschema JJJJMMTTHHMMSS_name.sql', () => {
     for (const name of migrationFiles) {
@@ -76,24 +87,59 @@ describe('Enums', () => {
     ['diet_type', enums.DIET_TYPES],
     ['cooking_mode', enums.COOKING_MODES],
     ['food_preference_kind', enums.FOOD_PREFERENCE_KINDS],
+    ['content_status', enums.CONTENT_STATUSES],
+    ['movement_pattern', enums.MOVEMENT_PATTERNS],
+    ['muscle_group', enums.MUSCLE_GROUPS],
+    ['exercise_mechanics', enums.EXERCISE_MECHANICS],
+    ['load_type', enums.LOAD_TYPES],
+    ['caution_tag', enums.CAUTION_TAGS],
+    ['alternative_reason', enums.ALTERNATIVE_REASONS],
+    ['session_focus', enums.SESSION_FOCUSES],
+    ['admin_role', enums.ADMIN_ROLES],
   ] as const)('public.%s entspricht packages/core', (name, values) => {
-    expect(quotedListAfter(allSql, `create type public.${name} as enum (`)).toEqual([...values]);
+    expect(enumValues(name)).toEqual([...values]);
+  });
+
+  it('Vorlagen-Matrix (Ziele, Level) entspricht packages/core', () => {
+    expect(quotedListAfter(allSql, 'check (goal_type in (')).toEqual([
+      ...enums.TEMPLATE_GOAL_TYPES,
+    ]);
+    expect(quotedListAfter(allSql, 'check (experience_level in (')).toEqual([
+      ...enums.TEMPLATE_EXPERIENCE_LEVELS,
+    ]);
   });
 });
 
 describe('Listen', () => {
-  it('Geräte-Katalog (Seed) entspricht EQUIPMENT', () => {
-    const seed = readMigration('_seed_equipment.sql');
-    const rows = [
-      ...seed.matchAll(/\('([a-z_]+)', '([^']+)', '([a-z_]+)', (true|false), (\d+)\)/g),
-    ].map((m) => ({
-      id: m[1],
-      nameDe: m[2],
-      category: m[3],
-      hasWeights: m[4] === 'true',
-      sortOrder: Number(m[5]),
-    }));
-    expect(rows).toEqual(EQUIPMENT.map((item) => ({ ...item })));
+  it('Geräte-Katalog (Seeds Phase 1 + 2) entspricht EQUIPMENT', () => {
+    // Phase 1: ('id', 'name_de', 'category', has_weights, sort_order) – home_selectable = Standard true.
+    // Phase 2: zusätzlich home_selectable; spätere Zeilen überschreiben frühere (on conflict do update).
+    const catalog = new Map<string, Record<string, unknown>>();
+    const rowPattern =
+      /\('([a-z_]+)', '([^']+)', '([a-z_]+)', (true|false), (\d+)(?:, (true|false))?\)/g;
+    for (const suffix of ['_seed_equipment.sql', '_equipment_home_selectable.sql']) {
+      for (const m of readMigration(suffix).matchAll(rowPattern)) {
+        catalog.set(m[1] as string, {
+          id: m[1],
+          nameDe: m[2],
+          category: m[3],
+          hasWeights: m[4] === 'true',
+          sortOrder: Number(m[5]),
+          homeSelectable: m[6] === undefined ? true : m[6] === 'true',
+        });
+      }
+    }
+    const bySortOrder = (a: Record<string, unknown>, b: Record<string, unknown>) =>
+      Number(a.sortOrder) - Number(b.sortOrder);
+    expect([...catalog.values()].sort(bySortOrder)).toEqual(
+      EQUIPMENT.map((item) => ({ ...item })).sort(bySortOrder),
+    );
+  });
+
+  it('Spalte home_selectable hat den Standard true', () => {
+    expect(readMigration('_equipment_home_selectable.sql')).toContain(
+      'add column home_selectable boolean not null default true',
+    );
   });
 
   it('Lebensmittel-Gruppen entsprechen FOOD_GROUPS', () => {
@@ -167,6 +213,19 @@ describe('Grenzwerte', () => {
     `birth_date >= date '${BIRTH_DATE_MIN}'`,
     `min_age_years constant integer := ${MIN_AGE_YEARS}`,
     `max_days_ahead constant integer := ${MEASURED_ON_MAX_DAYS_AHEAD}`,
+    // Inhalte (Phase 2): Schema-Grenzen = CONTENT_SCHEMA_LIMITS
+    between('version', CONTENT_SCHEMA_LIMITS.version),
+    between('difficulty', CONTENT_SCHEMA_LIMITS.difficulty),
+    between('priority', CONTENT_SCHEMA_LIMITS.alternativePriority),
+    between('sets', CONTENT_SCHEMA_LIMITS.sets),
+    between('reps_min', CONTENT_SCHEMA_LIMITS.reps),
+    between('reps_max', CONTENT_SCHEMA_LIMITS.reps),
+    between('duration_s', CONTENT_SCHEMA_LIMITS.durationS),
+    between('rest_s', CONTENT_SCHEMA_LIMITS.restS),
+    between('rpe_target', CONTENT_SCHEMA_LIMITS.rpe),
+    between('order_no', CONTENT_SCHEMA_LIMITS.orderNo),
+    between('minutes_min', TRAINING_LIMITS.minutesPerSession),
+    between('minutes_max', TRAINING_LIMITS.minutesPerSession),
   ])('SQL enthält „%s“', (expected) => {
     expect(allSql).toContain(expected);
   });

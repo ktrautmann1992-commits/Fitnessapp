@@ -1,0 +1,57 @@
+{
+  "id": "klimmzug",
+  "version": 1,
+  "status": "draft",
+  "name_de": "Klimmzug",
+  "name_en": "Pull-up",
+  "aliases_de": ["Pull-up"],
+  "movement_pattern": "vertical_pull",
+  "primary_muscles": ["lats"],
+  "secondary_muscles": ["biceps", "upper_back"],
+  "equipment_ids": ["pull_up_bar"],
+  "mechanics": "compound",
+  "load_type": "bodyweight",
+  "unilateral": false,
+  "difficulty": 3,
+  "caution_tags": [],
+  "description_de": "Zugübung mit dem eigenen Körpergewicht an der Stange für den breiten Rückenmuskel und die Arme.",
+  "steps_de": [
+    "Stange etwas weiter als schulterbreit greifen, Handflächen zeigen nach vorn.",
+    "Aus dem gestreckten Hang die Schulterblätter nach unten ziehen.",
+    "Körper nach oben ziehen, bis das Kinn über der Stange ist.",
+    "Langsam wieder in den gestreckten Hang absenken."
+  ],
+  "tips_de": [
+    "Beine ruhig halten, kein Schwung.",
+    "Wer noch keinen Klimmzug schafft, beginnt mit Bandunterstützung."
+  ],
+  "common_mistakes_de": ["Schwung aus den Beinen.", "Nur halbe Bewegung oben oder unten."],
+  "safety_note_de": "Stange vor dem Training auf festen Sitz prüfen und kontrolliert abspringen. Bei Schmerzen, Schwindel oder ungewohnten Beschwerden die Übung beenden.",
+  "alternatives": [
+    {
+      "alternative_id": "klimmzug-band-unterstuetzt",
+      "reason": "easier",
+      "priority": 1
+    },
+    {
+      "alternative_id": "latziehen",
+      "reason": "other_equipment",
+      "priority": 2
+    },
+    {
+      "alternative_id": "latziehen-band",
+      "reason": "home",
+      "priority": 3
+    }
+  ],
+  "meta": {
+    "origin": "claude_session",
+    "model": "claude-opus-5-5",
+    "batch_id": null,
+    "created_on": "2026-10-03",
+    "expert_reviewed": false,
+    "reviewed_by": null,
+    "reviewed_at": null,
+    "review_note": null
+  }
+}

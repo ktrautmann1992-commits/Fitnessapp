@@ -1,0 +1,50 @@
+{
+  "id": "kniebeuge-koerpergewicht",
+  "version": 1,
+  "status": "draft",
+  "name_de": "Kniebeuge mit Körpergewicht",
+  "name_en": "Bodyweight Squat",
+  "aliases_de": ["Air Squat"],
+  "movement_pattern": "squat",
+  "primary_muscles": ["quadriceps", "glutes"],
+  "secondary_muscles": ["adductors"],
+  "equipment_ids": [],
+  "mechanics": "compound",
+  "load_type": "bodyweight",
+  "unilateral": false,
+  "difficulty": 1,
+  "caution_tags": [],
+  "description_de": "Kniebeuge ohne Zusatzgewicht. Gut zum Aufwärmen, zum Lernen der Bewegung und für das Training ohne Geräte.",
+  "steps_de": [
+    "Füße etwa schulterbreit aufstellen, Arme nach vorn strecken.",
+    "Hüfte nach hinten schieben und die Knie beugen, bis die Oberschenkel etwa waagerecht sind.",
+    "Kurz unten halten und über die ganze Fußsohle wieder aufstehen."
+  ],
+  "tips_de": [
+    "Gewicht gleichmäßig auf Ferse und Fußballen verteilen.",
+    "Langsam absenken (etwa 2–3 Sekunden), zügig aufstehen."
+  ],
+  "common_mistakes_de": [
+    "Fersen heben ab.",
+    "Knie fallen nach innen.",
+    "Nur halb tief beugen, obwohl mehr möglich wäre."
+  ],
+  "safety_note_de": "Nur so weit und so oft bewegen, wie die Technik sauber bleibt. Bei Schmerzen, Schwindel oder ungewohnten Beschwerden die Übung beenden.",
+  "alternatives": [
+    {
+      "alternative_id": "goblet-kniebeuge",
+      "reason": "harder",
+      "priority": 1
+    }
+  ],
+  "meta": {
+    "origin": "claude_session",
+    "model": "claude-opus-5-5",
+    "batch_id": null,
+    "created_on": "2026-10-03",
+    "expert_reviewed": false,
+    "reviewed_by": null,
+    "reviewed_at": null,
+    "review_note": null
+  }
+}

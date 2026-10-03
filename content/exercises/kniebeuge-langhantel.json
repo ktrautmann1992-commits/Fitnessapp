@@ -1,0 +1,63 @@
+{
+  "id": "kniebeuge-langhantel",
+  "version": 1,
+  "status": "draft",
+  "name_de": "Kniebeuge mit Langhantel",
+  "name_en": "Barbell Back Squat",
+  "aliases_de": ["Back Squat"],
+  "movement_pattern": "squat",
+  "primary_muscles": ["quadriceps", "glutes"],
+  "secondary_muscles": ["adductors", "lower_back"],
+  "equipment_ids": ["barbell", "power_rack"],
+  "mechanics": "compound",
+  "load_type": "weight",
+  "unilateral": false,
+  "difficulty": 2,
+  "caution_tags": ["spinal_loading"],
+  "description_de": "Grundübung für Oberschenkel und Gesäß: Die Langhantel liegt auf dem oberen Rücken, Hüfte und Knie beugen gleichzeitig bis mindestens Parallelstellung und strecken sich wieder.",
+  "steps_de": [
+    "Hantel im Rack etwa auf Höhe der Achseln einhängen, darunter treten und auf dem oberen Rücken ablegen.",
+    "Hantel aus dem Rack heben, zwei kleine Schritte zurückgehen, Füße etwa schulterbreit, Fußspitzen leicht nach außen.",
+    "Einatmen, Rumpf fest anspannen und Hüfte und Knie gleichzeitig beugen, bis die Oberschenkel mindestens waagerecht sind.",
+    "Über die ganze Fußsohle kraftvoll aufstehen, oben ausatmen.",
+    "Nach dem letzten Satz nach vorn ins Rack gehen und die Hantel sicher einhängen."
+  ],
+  "tips_de": [
+    "Sicherheitsablagen des Racks knapp unter die tiefste Position einstellen.",
+    "Knie zeigen in dieselbe Richtung wie die Fußspitzen.",
+    "Blick geradeaus, der Rücken bleibt die ganze Zeit gerade."
+  ],
+  "common_mistakes_de": [
+    "Knie knicken beim Aufstehen nach innen.",
+    "Fersen heben vom Boden ab.",
+    "Rücken rundet sich in der tiefen Position."
+  ],
+  "safety_note_de": "Gewicht so wählen, dass alle Wiederholungen technisch sauber gelingen. Bei Schmerzen, Schwindel oder ungewohnten Beschwerden die Übung beenden.",
+  "alternatives": [
+    {
+      "alternative_id": "goblet-kniebeuge",
+      "reason": "easier",
+      "priority": 1
+    },
+    {
+      "alternative_id": "beinpresse",
+      "reason": "other_equipment",
+      "priority": 2
+    },
+    {
+      "alternative_id": "kniebeuge-koerpergewicht",
+      "reason": "home",
+      "priority": 3
+    }
+  ],
+  "meta": {
+    "origin": "claude_session",
+    "model": "claude-opus-5-5",
+    "batch_id": null,
+    "created_on": "2026-10-03",
+    "expert_reviewed": false,
+    "reviewed_by": null,
+    "reviewed_at": null,
+    "review_note": null
+  }
+}

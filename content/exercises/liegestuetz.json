@@ -1,0 +1,52 @@
+{
+  "id": "liegestuetz",
+  "version": 1,
+  "status": "draft",
+  "name_de": "Liegestütz",
+  "name_en": "Push-up",
+  "aliases_de": ["Liegestütze"],
+  "movement_pattern": "horizontal_push",
+  "primary_muscles": ["chest"],
+  "secondary_muscles": ["triceps", "front_delts", "abs"],
+  "equipment_ids": [],
+  "mechanics": "compound",
+  "load_type": "bodyweight",
+  "unilateral": false,
+  "difficulty": 1,
+  "caution_tags": [],
+  "description_de": "Drückübung mit dem eigenen Körpergewicht für Brust, Trizeps und Schultern. Mit erhöhten Händen leichter, mit erhöhten Füßen schwerer.",
+  "steps_de": [
+    "Hände etwas weiter als schulterbreit aufsetzen, Körper vom Kopf bis zu den Fersen gerade.",
+    "Bauch und Gesäß anspannen.",
+    "Brust kontrolliert Richtung Boden absenken, Ellbogen etwa 45 Grad vom Körper.",
+    "Kräftig zurück nach oben drücken."
+  ],
+  "tips_de": [
+    "Leichter: Hände auf eine Bank oder einen Tisch stellen.",
+    "Der Körper bleibt in jeder Wiederholung eine Linie."
+  ],
+  "common_mistakes_de": ["Hüfte hängt durch.", "Nur halbe Bewegung.", "Kopf hängt nach unten."],
+  "safety_note_de": "Nur so weit und so oft bewegen, wie die Technik sauber bleibt. Bei Schmerzen, Schwindel oder ungewohnten Beschwerden die Übung beenden.",
+  "alternatives": [
+    {
+      "alternative_id": "brustdruecken-band",
+      "reason": "other_equipment",
+      "priority": 1
+    },
+    {
+      "alternative_id": "bankdruecken-kurzhantel",
+      "reason": "other_equipment",
+      "priority": 2
+    }
+  ],
+  "meta": {
+    "origin": "claude_session",
+    "model": "claude-opus-5-5",
+    "batch_id": null,
+    "created_on": "2026-10-03",
+    "expert_reviewed": false,
+    "reviewed_by": null,
+    "reviewed_at": null,
+    "review_note": null
+  }
+}

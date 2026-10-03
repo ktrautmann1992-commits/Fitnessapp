@@ -1,0 +1,52 @@
+{
+  "id": "brustdruecken-band",
+  "version": 1,
+  "status": "draft",
+  "name_de": "Brustdrücken mit Widerstandsband",
+  "name_en": "Banded Chest Press",
+  "aliases_de": [],
+  "movement_pattern": "horizontal_push",
+  "primary_muscles": ["chest"],
+  "secondary_muscles": ["triceps", "front_delts"],
+  "equipment_ids": ["resistance_bands"],
+  "mechanics": "compound",
+  "load_type": "band",
+  "unilateral": false,
+  "difficulty": 1,
+  "caution_tags": [],
+  "description_de": "Drückübung im Stand mit einem Band, das hinter dem Rücken liegt oder an einer Tür befestigt ist.",
+  "steps_de": [
+    "Band auf Brusthöhe hinter dem Rücken entlangführen oder an einem Türanker befestigen.",
+    "Enden greifen, Schrittstellung einnehmen, Hände seitlich der Brust.",
+    "Hände nach vorn drücken, bis die Arme fast gestreckt sind.",
+    "Langsam zurückführen."
+  ],
+  "tips_de": [
+    "Rumpf anspannen, damit der Oberkörper nicht nach hinten gezogen wird.",
+    "Mehr Abstand zum Befestigungspunkt erhöht den Widerstand."
+  ],
+  "common_mistakes_de": ["Schultern ziehen nach oben.", "Hohlkreuz beim Drücken."],
+  "safety_note_de": "Band vor dem Training auf Risse prüfen und sicher befestigen bzw. festhalten. Bei Schmerzen, Schwindel oder ungewohnten Beschwerden die Übung beenden.",
+  "alternatives": [
+    {
+      "alternative_id": "liegestuetz",
+      "reason": "other_equipment",
+      "priority": 1
+    },
+    {
+      "alternative_id": "bodendruecken-kurzhantel",
+      "reason": "other_equipment",
+      "priority": 2
+    }
+  ],
+  "meta": {
+    "origin": "claude_session",
+    "model": "claude-opus-5-5",
+    "batch_id": null,
+    "created_on": "2026-10-03",
+    "expert_reviewed": false,
+    "reviewed_by": null,
+    "reviewed_at": null,
+    "review_note": null
+  }
+}

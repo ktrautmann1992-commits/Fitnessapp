@@ -1,0 +1,55 @@
+{
+  "id": "rumaenisches-kreuzheben-kurzhantel",
+  "version": 1,
+  "status": "draft",
+  "name_de": "Rumänisches Kreuzheben mit Kurzhanteln",
+  "name_en": "Dumbbell Romanian Deadlift",
+  "aliases_de": ["Kurzhantel-RDL"],
+  "movement_pattern": "hinge",
+  "primary_muscles": ["hamstrings", "glutes"],
+  "secondary_muscles": ["lower_back", "forearms"],
+  "equipment_ids": ["dumbbells"],
+  "mechanics": "compound",
+  "load_type": "weight",
+  "unilateral": false,
+  "difficulty": 1,
+  "caution_tags": [],
+  "description_de": "Übung für Beinrückseite und Gesäß mit zwei Kurzhanteln. Die Hanteln gleiten nah an den Beinen nach unten, die Hüfte bewegt sich nach hinten.",
+  "steps_de": [
+    "Je eine Kurzhantel vor den Oberschenkeln halten, Füße hüftbreit.",
+    "Knie leicht beugen und diese Stellung halten.",
+    "Hüfte nach hinten schieben und die Hanteln an den Beinen entlang bis etwa zur Mitte der Unterschenkel absenken.",
+    "Gesäß anspannen und wieder aufrichten."
+  ],
+  "tips_de": [
+    "Rücken gerade, Blick schräg nach unten.",
+    "Die Dehnung in der Beinrückseite zeigt, dass die Hüfte richtig arbeitet."
+  ],
+  "common_mistakes_de": [
+    "Rücken rundet sich.",
+    "Bewegung kommt aus dem Rücken statt aus der Hüfte."
+  ],
+  "safety_note_de": "Gewicht so wählen, dass alle Wiederholungen technisch sauber gelingen. Bei Schmerzen, Schwindel oder ungewohnten Beschwerden die Übung beenden.",
+  "alternatives": [
+    {
+      "alternative_id": "good-morning-band",
+      "reason": "easier",
+      "priority": 1
+    },
+    {
+      "alternative_id": "rumaenisches-kreuzheben-langhantel",
+      "reason": "harder",
+      "priority": 2
+    }
+  ],
+  "meta": {
+    "origin": "claude_session",
+    "model": "claude-opus-5-5",
+    "batch_id": null,
+    "created_on": "2026-10-03",
+    "expert_reviewed": false,
+    "reviewed_by": null,
+    "reviewed_at": null,
+    "review_note": null
+  }
+}

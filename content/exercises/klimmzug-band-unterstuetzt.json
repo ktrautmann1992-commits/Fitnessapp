@@ -1,0 +1,57 @@
+{
+  "id": "klimmzug-band-unterstuetzt",
+  "version": 1,
+  "status": "draft",
+  "name_de": "Klimmzug mit Bandunterstützung",
+  "name_en": "Band-assisted Pull-up",
+  "aliases_de": [],
+  "movement_pattern": "vertical_pull",
+  "primary_muscles": ["lats"],
+  "secondary_muscles": ["biceps", "upper_back"],
+  "equipment_ids": ["pull_up_bar", "resistance_bands"],
+  "mechanics": "compound",
+  "load_type": "bodyweight",
+  "unilateral": false,
+  "difficulty": 2,
+  "caution_tags": [],
+  "description_de": "Klimmzug, bei dem ein Band unter Knie oder Füßen einen Teil des Körpergewichts trägt. Dickere Bänder helfen mehr.",
+  "steps_de": [
+    "Band an der Stange befestigen und ein Knie oder einen Fuß in die Schlaufe stellen.",
+    "Stange etwas weiter als schulterbreit greifen.",
+    "Schulterblätter nach unten ziehen und den Körper hochziehen, bis das Kinn über der Stange ist.",
+    "Langsam wieder absenken."
+  ],
+  "tips_de": [
+    "Mit der Zeit dünnere Bänder verwenden.",
+    "Langsames Absenken baut Kraft für den freien Klimmzug auf."
+  ],
+  "common_mistakes_de": ["Band rutscht vom Fuß.", "Schwung aus den Beinen."],
+  "safety_note_de": "Band sicher an der Stange befestigen und kontrolliert aus der Schlaufe steigen. Bei Schmerzen, Schwindel oder ungewohnten Beschwerden die Übung beenden.",
+  "alternatives": [
+    {
+      "alternative_id": "latziehen-band",
+      "reason": "easier",
+      "priority": 1
+    },
+    {
+      "alternative_id": "klimmzug",
+      "reason": "harder",
+      "priority": 2
+    },
+    {
+      "alternative_id": "latziehen",
+      "reason": "other_equipment",
+      "priority": 3
+    }
+  ],
+  "meta": {
+    "origin": "claude_session",
+    "model": "claude-opus-5-5",
+    "batch_id": null,
+    "created_on": "2026-10-03",
+    "expert_reviewed": false,
+    "reviewed_by": null,
+    "reviewed_at": null,
+    "review_note": null
+  }
+}

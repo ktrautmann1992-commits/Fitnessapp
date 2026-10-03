@@ -1,0 +1,38 @@
+{
+  "id": "pallof-press-band",
+  "version": 1,
+  "status": "draft",
+  "name_de": "Pallof Press mit Widerstandsband",
+  "name_en": "Banded Pallof Press",
+  "aliases_de": [],
+  "movement_pattern": "core_anti_rotation",
+  "primary_muscles": ["obliques"],
+  "secondary_muscles": ["abs"],
+  "equipment_ids": ["resistance_bands"],
+  "mechanics": "isolation",
+  "load_type": "band",
+  "unilateral": true,
+  "difficulty": 1,
+  "caution_tags": [],
+  "description_de": "Rumpfübung gegen Drehung: Das Band zieht seitlich, der Oberkörper bleibt beim Drücken ruhig.",
+  "steps_de": [
+    "Band auf Brusthöhe seitlich befestigen und mit beiden Händen vor der Brust halten.",
+    "Seitlich zum Befestigungspunkt stehen, Füße hüftbreit, Knie leicht gebeugt.",
+    "Hände gerade nach vorn drücken, ohne dass sich der Oberkörper dreht.",
+    "Kurz halten und zur Brust zurückführen; danach Seite wechseln."
+  ],
+  "tips_de": ["Je weiter vom Befestigungspunkt, desto schwerer.", "Bauch und Gesäß anspannen."],
+  "common_mistakes_de": ["Oberkörper dreht sich zum Band.", "Schultern ziehen nach oben."],
+  "safety_note_de": "Band vor dem Training auf Risse prüfen und sicher befestigen bzw. festhalten. Bei Schmerzen, Schwindel oder ungewohnten Beschwerden die Übung beenden.",
+  "alternatives": [],
+  "meta": {
+    "origin": "claude_session",
+    "model": "claude-opus-5-5",
+    "batch_id": null,
+    "created_on": "2026-10-03",
+    "expert_reviewed": false,
+    "reviewed_by": null,
+    "reviewed_at": null,
+    "review_note": null
+  }
+}
