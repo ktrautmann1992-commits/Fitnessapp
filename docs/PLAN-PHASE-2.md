@@ -688,4 +688,64 @@ Wächter-Prüfung ab, wird dieser Abschnitt angepasst, bevor die betroffene Etap
 8. Modelle mit hinterlegtem Batch-Preis: Opus 5.5, Sonnet 5.5, Opus 5, Fable 5.1. Ein anderes `CONTENT_MODEL` bricht
    ab, bis ein Preis in `pricing.ts` steht – der Deckel fällt nie stillschweigend aus.
 
-**Noch offen (Etappe C):** Redaktionsbereich `/admin`, SETUP-Teil G.
+**Nachträge aus der Wächter-Prüfung von Etappe B (umgesetzt mit Etappe C):**
+
+1. **Neue rote Regel PROBELAUF** (`packages/core`, `validateContent`): Inhalte aus einem Probelauf
+   (`meta.model = "probelauf-ohne-ki"`, Batch-Nummer `probelauf_…` oder ID-Präfix `probelauf-`) dürfen nie
+   `published` sein – rot und blockierend (ci, content-review, content-collect, content-seed). Entwurf/zurückgezogen
+   bleiben erlaubt. Tests in core und content.
+2. **`CONTENT_MAX_USD` höchstens 100 $** (harte Obergrenze statt 1000, `CONTENT_MAX_USD_LIMIT`); größere Werte
+   brechen den Lauf ab. Test + SETUP Teil E + `.env.example`.
+3. **content-seed: Schutz vor Massen-Archivierung.** Vor `seed_content` liest das Skript die IDs der derzeit
+   freigegebenen Übungen und Vorlagen (nur IDs). Würde der Lauf **je Inhaltsart mehr als 50 %** davon archivieren,
+   endet es rot mit Warnung und IDs – **nichts** wird eingespielt. Ausnahme nur per Hand: Workflow-Eingabe
+   `allow_mass_archive: true` (bei Push/`db-migrate` immer `false`). Ist der Bestand nicht lesbar, wird ebenfalls
+   nichts eingespielt. Leere Datenbank (erster Lauf) zählt nie. Tests + SETUP „Einspielen“.
+
+**Etappe C – Redaktionsbereich Stufe A: erledigt** (wartet auf Wächter-Prüfung).
+
+1. **Daten:** `apps/web/scripts/bundle-content.mjs` bündelt `content/exercises` und `content/plan-templates` vor
+   `build`/`typecheck`/`test`/`dev` in `src/generated/content-files.ts` (nicht eingecheckt). Der Server prüft sie mit
+   `validateContent` aus `packages/core` (dieselben Regeln wie `content:validate`, ohne Versionsvergleich). Jede
+   Vercel-Vorschau zeigt also genau die Inhalte ihres Branches. Turbo-Eingaben von `apps/web` enthalten `content/**`.
+2. **Seiten** (`apps/web/src/app/admin`): Übersicht mit Reitern Übungen/Plan-Vorlagen, Zählern je Status, Suche
+   (ohne Groß-/Kleinschreibung und Akzente) und Filtern (Status, Bewegungsmuster, Gerät, Ziel, Level, Tage, Ort,
+   Prüfergebnis rot/gelb/ohne, fachliche Prüfung) als normales GET-Formular; Detail Übung (Ansicht wie später in der
+   App, Steckbrief, Alternativen verlinkt, „verwendet in Vorlagen“, Herkunft); Detail Vorlage (Wochenübersicht mit
+   Sätzen × Wiederholungen, Pause, RPE, Supersatz, geschätzte Dauer je Einheit mit Fenster, Wochensätze pro
+   Muskelgruppe als Balken mit Zielbereich, Drücken : Ziehen); Prüfbericht rot/gelb oben in jeder Detailansicht;
+   „KI-Entwurf – fachlich prüfen“ bzw. „fachlich geprüft“ (`expert_reviewed`); „Freigeben“-Kasten mit Kurzanleitung
+   content-review und „IDs kopieren“ (Trefferliste bzw. einzelne ID). Kasten „Dateien mit Fehlern“ für Dateien, die
+   nicht gelesen werden konnten. Lade-, Leer- („Keine Treffer“, „Noch keine Inhalte“), Fehler- und
+   Nicht-gefunden-Zustand. Hinweis „Testansicht – Inhalte aus dem Repository“. Hell/dunkel über `theme.css`.
+3. **Zugang Stufe A** (`apps/web/src/lib/admin`): gesperrt ohne `ADMIN_PASSWORD` (≥ 20) und `ADMIN_SESSION_SECRET`
+   (≥ 32, verschieden) – Seite „Redaktionsbereich nicht eingerichtet“ mit Verweis auf SETUP Teil G. Login per
+   HTML-Formular an den Route Handler `POST /admin/api/login`: Origin/Host-Prüfung (dazu `Sec-Fetch-Site`, falls
+   vorhanden), Passwortvergleich per HMAC-Digest + `timingSafeEqual`, ca. 1 s Verzögerung bei Fehlversuch, 303.
+   Cookie `__Secure-fitnessapp-admin`: `v1.<Ablauf>.<Zufall>.<HMAC>` mit Ablauf (8 h) im signierten Inhalt,
+   `HttpOnly; Secure; SameSite=Strict; Path=/admin`. Abmelden per `POST /admin/api/logout` (ebenfalls
+   Origin-Prüfung). Prüfung serverseitig doppelt: `src/proxy.ts` (Next 16, früher „middleware“) für alle
+   `/admin`-Pfade **und** in jeder Seite selbst (`getAdminAccess`/`requireAdmin`). `noindex` (Metadaten +
+   `X-Robots-Tag`), `Cache-Control: no-store`. Kein Schreiben in Stufe A.
+4. **Tests:** Vitest in `apps/web` (Konfiguration, Token signieren/prüfen, Ablauf, Manipulation, falsches Secret,
+   geändertes Passwort, zu kurze Secrets, Cookie-Flags, Passwortprüfung, Origin-Prüfung, Login/Logout-Ablauf,
+   Katalog, Filter, Suche, Kennzahlen). Playwright `apps/web/e2e/admin.spec.ts` gegen `next build` + `next start`
+   (zwei Server: mit Test-Zugang / ohne): gesperrt ohne Env, Login falsch (Verzögerung, kein Cookie)/richtig,
+   gefälschtes Cookie, fremde Herkunft → 403, Cookie-Flags, 52 Übungen/24 Vorlagen, Filter, Leerzustand, Details,
+   Nicht gefunden, Abmelden. In `ci` nach dem Klick-Test der App.
+5. **Doku:** SETUP Teil G (Werte erzeugen, in Vercel eintragen, Redeploy, alle abmelden, Deployment Protection,
+   optional Firewall-Regel), Schlüssel-Tabelle, `.env.example`.
+
+**Entscheidungen beim Umsetzen (zur Wächter-Prüfung):**
+
+1. Route Handler statt Server Action für Login/Logout: funktioniert ohne JavaScript, Herkunftsprüfung und
+   Set-Cookie sind explizit und im Unit-Test vollständig prüfbar (`lib/admin/login.ts`).
+2. Der Signatur-Schlüssel wird aus `ADMIN_SESSION_SECRET` **und** `ADMIN_PASSWORD` abgeleitet: Wechsel eines der
+   beiden Werte meldet alle ab. Ein Token gilt nie länger als 8 h (+ 1 min Uhren-Abweichung), auch wenn korrekt
+   signiert.
+3. Cookie-Präfix `__Secure-` (Browser akzeptieren es nur mit `Secure`); `__Host-` geht nicht, weil es `Path=/`
+   verlangt. `Referrer-Policy: same-origin` statt `no-referrer`, weil Browser bei `no-referrer` für Formulare
+   `Origin: null` senden und die Herkunftsprüfung dann jeden Login ablehnen würde.
+4. Die E2E-Tests laufen über `http://localhost` (Chromium speichert `Secure`-Cookies ohne https nur dort). Die
+   Test-Zugangsdaten stehen in `apps/web/e2e/test-env.ts` und sind ausdrücklich keine echten Secrets.
+5. Filter „fachliche Prüfung“ (KI-Entwurf offen/geprüft) zusätzlich zu den Filtern aus Abschnitt 6.

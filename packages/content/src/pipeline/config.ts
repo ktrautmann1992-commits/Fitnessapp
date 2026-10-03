@@ -17,6 +17,12 @@ export type ContentEffort = (typeof CONTENT_EFFORTS)[number];
 /** Kostendeckel pro Lauf in US-Dollar (Plan Abschnitt 10, Punkt 1). */
 export const DEFAULT_CONTENT_MAX_USD = 15;
 
+/**
+ * Harte Obergrenze für CONTENT_MAX_USD (Wächter-Hinweis Etappe B): Auch per GitHub-Variable lässt sich der
+ * Deckel pro Lauf nicht über 100 $ heben – ein Tippfehler (z. B. „1500“) bricht ab, statt teuer zu werden.
+ */
+export const CONTENT_MAX_USD_LIMIT = 100;
+
 /** Höchstens so viele Anfragen pro Lauf (Plan Abschnitt 10, Punkt 2). */
 export const MAX_REQUESTS_PER_RUN = 200;
 
@@ -40,7 +46,10 @@ const modelSchema = z
 const maxUsdSchema = z.coerce
   .number({ error: 'CONTENT_MAX_USD: Zahl erwartet (z. B. 15).' })
   .positive('CONTENT_MAX_USD: muss größer als 0 sein.')
-  .max(1000, 'CONTENT_MAX_USD: höchstens 1000.');
+  .max(
+    CONTENT_MAX_USD_LIMIT,
+    `CONTENT_MAX_USD: höchstens ${CONTENT_MAX_USD_LIMIT} (harte Obergrenze pro Lauf).`,
+  );
 
 export interface PipelineSettings {
   readonly model: string;

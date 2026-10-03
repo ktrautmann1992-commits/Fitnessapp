@@ -17,7 +17,7 @@ Supplementplan und Trainingstagebuch.
 | Ordner              | Inhalt                                                                                      |
 | ------------------- | ------------------------------------------------------------------------------------------- |
 | `apps/mobile`       | App (Expo + Expo Router) für iOS, Android und Web-Export (Vercel)                           |
-| `apps/web`          | Website (Next.js): Landingpage, später Web-App, Admin, API/Webhooks                         |
+| `apps/web`          | Website (Next.js): Landingpage, Redaktionsbereich `/admin`, später API/Webhooks             |
 | `packages/core`     | Fachlogik ohne UI – Berechnungen, Plan- und Ernährungs-Engine, Grenzwerte                   |
 | `packages/db`       | Datenbank-Typen, Zod-Schemas, Supabase-Client                                               |
 | `packages/ui`       | Farbschema `theme.css` (einzige Quelle) + daraus erzeugte App-Tokens                        |

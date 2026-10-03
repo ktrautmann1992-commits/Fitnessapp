@@ -5,7 +5,14 @@ import { estimateSessionMinutes } from '@fitnessapp/core';
 import { afterEach, describe, expect, it, vi } from 'vitest';
 
 import { validateRepository } from '../validate';
-import { buildSeedPackage, runSeed, type SeedFetch } from './seed';
+import {
+  buildSeedPackage,
+  findMassArchive,
+  type PublishedIds,
+  runSeed,
+  type SeedFetch,
+  type SeedPackage,
+} from './seed';
 import { createTempRepo, type TempRepo } from './test-helpers';
 
 const repos: TempRepo[] = [];
@@ -33,9 +40,32 @@ function publish(data: Record<string, unknown>) {
   data.meta = { ...(data.meta as object), reviewed_by: 'KT', reviewed_at: '2026-10-03' };
 }
 
-function okFetch(body: unknown = { exercises: 1, plan_templates: 0 }) {
-  return vi.fn<SeedFetch>(async () => new Response(JSON.stringify(body), { status: 200 }));
+/**
+ * Gefälschte Supabase-REST-Schnittstelle: GET exercises/plan_templates liefert den freigegebenen Bestand,
+ * POST rpc/seed_content die Antwort der Datenbank-Funktion.
+ */
+function okFetch(
+  body: unknown = { exercises: 1, plan_templates: 0 },
+  published: Partial<PublishedIds> = {},
+  seedStatus = 200,
+) {
+  return vi.fn<SeedFetch>(async (url) => {
+    const path = new URL(url).pathname;
+    if (path.endsWith('/rpc/seed_content')) {
+      return new Response(JSON.stringify(body), { status: seedStatus });
+    }
+    const table = path.endsWith('/plan_templates') ? 'plan_templates' : 'exercises';
+    return new Response(JSON.stringify((published[table] ?? []).map((id) => ({ id }))), {
+      status: 200,
+    });
+  });
 }
+
+function seedCalls(fetchImpl: ReturnType<typeof okFetch>) {
+  return fetchImpl.mock.calls.filter(([url]) => url.endsWith('/rpc/seed_content'));
+}
+
+const SUPABASE = { url: 'https://abc.supabase.co', secretKey: 'sb_secret_test' };
 
 describe('Einspiel-Paket', () => {
   it('enthält nur freigegebene Inhalte; Einheiten bekommen estimated_minutes', () => {
@@ -128,7 +158,12 @@ describe('content-seed', () => {
     expect(result.status).toBe('seeded');
     expect(result.markdown).toContain('Eingespielt: 1 Übungen, 0 Plan-Vorlagen');
     expect(result.markdown).toContain('Zurückgezogen (archived): 2 Übungen');
-    const [url, init] = fetchImpl.mock.calls[0]!;
+    // Vorher wird der freigegebene Bestand gelesen (nur IDs), dann genau einmal seed_content.
+    const [readUrl, readInit] = fetchImpl.mock.calls[0]!;
+    expect(readUrl).toBe('https://abc.supabase.co/rest/v1/exercises?select=id&status=eq.published');
+    expect(readInit.method).toBe('GET');
+    expect(seedCalls(fetchImpl)).toHaveLength(1);
+    const [url, init] = seedCalls(fetchImpl)[0]!;
     expect(url).toBe('https://abc.supabase.co/rest/v1/rpc/seed_content');
     expect(init.method).toBe('POST');
     const headers = init.headers as Record<string, string>;
@@ -152,14 +187,10 @@ describe('content-seed', () => {
 
   it('Fehler der Datenbank → rot, mit Meldung (nur Inhalts-IDs)', async () => {
     const r = repo();
-    const fetchImpl = vi.fn<SeedFetch>(
-      async () =>
-        new Response(
-          JSON.stringify({ message: 'Vorlage x enthält eine nicht freigegebene Übung.' }),
-          {
-            status: 400,
-          },
-        ),
+    const fetchImpl = okFetch(
+      { message: 'Vorlage x enthält eine nicht freigegebene Übung.' },
+      {},
+      400,
     );
     const result = await runSeed({
       repoRoot: r.root,
@@ -182,5 +213,84 @@ describe('content-seed', () => {
     });
     expect(result.status).toBe('failed');
     expect(fetchImpl).not.toHaveBeenCalled();
+  });
+});
+
+describe('content-seed: Schutz vor Massen-Archivierung', () => {
+  const pkg = (exercises: string[], templates: string[] = []): SeedPackage =>
+    ({
+      exercises: exercises.map((id) => ({ id })),
+      plan_templates: templates.map((id) => ({ id })),
+    }) as unknown as SeedPackage;
+
+  it('findMassArchive: über 50 % je Inhaltsart → Befund, genau 50 % noch erlaubt', () => {
+    const current = { exercises: ['a', 'b', 'c', 'd'], plan_templates: ['t1', 't2'] };
+    // 2 von 4 Übungen (50 %) und 1 von 2 Vorlagen (50 %) → erlaubt.
+    expect(findMassArchive(current, pkg(['a', 'b'], ['t1']))).toEqual([]);
+    // 3 von 4 Übungen → Befund; Vorlagen unverändert.
+    expect(findMassArchive(current, pkg(['a'], ['t1', 't2']))).toEqual([
+      { table: 'exercises', published: 4, wouldArchive: ['b', 'c', 'd'] },
+    ]);
+    // Alle Vorlagen weg → Befund auch bei vollständigen Übungen.
+    expect(findMassArchive(current, pkg(['a', 'b', 'c', 'd'], []))).toMatchObject([
+      { table: 'plan_templates', published: 2, wouldArchive: ['t1', 't2'] },
+    ]);
+    // Leere Datenbank (erster Lauf) → nie ein Befund.
+    expect(findMassArchive({ exercises: [], plan_templates: [] }, pkg([]))).toEqual([]);
+    // Neue Inhalte zählen nicht als Archivierung.
+    expect(findMassArchive({ exercises: ['a'], plan_templates: [] }, pkg(['a', 'x']))).toEqual([]);
+  });
+
+  it('würde mehr als die Hälfte archivieren → Exit 1, Warnung, seed_content wird NICHT aufgerufen', async () => {
+    const r = repo();
+    edit(r, 'content/exercises/goblet-kniebeuge.json', publish);
+    const fetchImpl = okFetch(undefined, {
+      exercises: ['goblet-kniebeuge', 'liegestuetz', 'dead-bug'],
+    });
+    const result = await runSeed({ repoRoot: r.root, env: SUPABASE, fetchImpl });
+    expect(result.exitCode).toBe(1);
+    expect(result.status).toBe('mass_archive_blocked');
+    expect(result.markdown).toContain('nichts eingespielt');
+    expect(result.markdown).toContain('2 von 3');
+    expect(result.markdown).toContain('`dead-bug`, `liegestuetz`');
+    expect(result.markdown).toContain('allow_mass_archive');
+    expect(seedCalls(fetchImpl)).toHaveLength(0);
+  });
+
+  it('mit allow_mass_archive (nur per Hand) wird trotzdem eingespielt', async () => {
+    const r = repo();
+    const fetchImpl = okFetch(
+      { exercises: 0, plan_templates: 0, archived_exercises: 2 },
+      { exercises: ['liegestuetz', 'dead-bug'] },
+    );
+    const warn = vi.spyOn(console, 'warn').mockImplementation(() => undefined);
+    const result = await runSeed({
+      repoRoot: r.root,
+      env: { ...SUPABASE, allowMassArchive: true },
+      fetchImpl,
+    });
+    warn.mockRestore();
+    expect(result.exitCode).toBe(0);
+    expect(result.status).toBe('seeded');
+    expect(seedCalls(fetchImpl)).toHaveLength(1);
+  });
+
+  it('höchstens die Hälfte → normal einspielen', async () => {
+    const r = repo();
+    edit(r, 'content/exercises/goblet-kniebeuge.json', publish);
+    const fetchImpl = okFetch(undefined, { exercises: ['goblet-kniebeuge', 'liegestuetz'] });
+    const result = await runSeed({ repoRoot: r.root, env: SUPABASE, fetchImpl });
+    expect(result.status).toBe('seeded');
+    expect(seedCalls(fetchImpl)).toHaveLength(1);
+  });
+
+  it('Bestand nicht lesbar → rot, nichts eingespielt', async () => {
+    const r = repo();
+    const fetchImpl = vi.fn<SeedFetch>(async () => new Response('kaputt', { status: 500 }));
+    const result = await runSeed({ repoRoot: r.root, env: SUPABASE, fetchImpl });
+    expect(result.exitCode).toBe(1);
+    expect(result.status).toBe('failed');
+    expect(result.markdown).toContain('nicht lesbar');
+    expect(fetchImpl.mock.calls.every(([url]) => !url.endsWith('/rpc/seed_content'))).toBe(true);
   });
 });

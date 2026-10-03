@@ -36,7 +36,11 @@ supabase/.branches/
 .vercel
 coverage/
 
-# Playwright (E2E-Tests apps/mobile)
+# Playwright (E2E-Tests apps/mobile, apps/web)
 test-results/
 playwright-report/
 apps/mobile/screenshots/
+apps/web/screenshots/
+
+# Website: beim Bauen aus content/ erzeugt (apps/web/scripts/bundle-content.mjs)
+apps/web/src/generated/

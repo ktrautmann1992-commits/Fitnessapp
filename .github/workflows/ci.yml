@@ -49,6 +49,11 @@ jobs:
         run: pnpm --filter @fitnessapp/mobile exec playwright install --with-deps chromium
       - name: E2E-Tests (App im Browser, Testmodus)
         run: pnpm --filter @fitnessapp/mobile test:e2e
+      # Klickt den Redaktionsbereich (/admin) der Website durch: gesperrt ohne Zugangsdaten, Login falsch/richtig,
+      # Cookie-Flags, Übersicht (52 Übungen, 24 Vorlagen), Filter, Details, Abmelden. Läuft gegen den gebauten
+      # Stand (next start) mit Test-Zugangsdaten aus apps/web/e2e/test-env.ts (keine echten Secrets).
+      - name: E2E-Tests (Website, Redaktionsbereich)
+        run: pnpm --filter @fitnessapp/web test:e2e
       - name: E2E-Bericht hochladen (nur bei Fehlern)
         if: failure()
         uses: actions/upload-artifact@v4
@@ -57,4 +62,6 @@ jobs:
           path: |
             apps/mobile/playwright-report
             apps/mobile/test-results
+            apps/web/playwright-report
+            apps/web/test-results
           retention-days: 7
