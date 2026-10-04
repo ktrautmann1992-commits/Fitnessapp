@@ -8,27 +8,29 @@
 
 export const colors = {
   light: {
-    background: '#F7F8FA',
+    background: '#F4F6FA',
     surface: '#FFFFFF',
-    text: '#111827',
-    textMuted: '#4B5563',
-    primary: '#0F9D58',
+    text: '#0A0C10',
+    textMuted: '#586173',
+    primary: '#1F5BFF',
     primaryText: '#FFFFFF',
-    border: '#E5E7EB',
+    link: '#1747CC',
+    border: '#B4BDD0',
     success: '#15803D',
-    warning: '#B45309',
+    warning: '#A15C00',
     danger: '#B91C1C',
   },
   dark: {
-    background: '#0B0F14',
-    surface: '#151B23',
-    text: '#F3F4F6',
-    textMuted: '#9CA3AF',
-    primary: '#34D399',
-    primaryText: '#04130C',
-    border: '#253041',
+    background: '#0A0C10',
+    surface: '#151922',
+    text: '#F4F6FA',
+    textMuted: '#B4BDD0',
+    primary: '#1F5BFF',
+    primaryText: '#FFFFFF',
+    link: '#8DB0FF',
+    border: '#262C3A',
     success: '#4ADE80',
-    warning: '#FBBF24',
+    warning: '#FFB020',
     danger: '#F87171',
   },
 } as const;
@@ -72,3 +74,21 @@ export const fontWeight = {
 
 /** Maximale Inhaltsbreite in Pixeln, damit die Web-Version auf Tablets/Desktop nicht zu breit wird. */
 export const maxContentWidth = 560;
+
+/** Markenfarben (Palette aus theme.css, --brand-…). Gelten hell und dunkel gleich. */
+export const brandColors = {
+  schwarz: '#0A0C10',
+  graphit: '#151922',
+  graphitHell: '#262C3A',
+  blau: '#1F5BFF',
+  blauDunkel: '#1747CC',
+  himmel: '#8DB0FF',
+  eisblau: '#E3EBFF',
+  hell: '#F4F6FA',
+  grau: '#586173',
+  grauDunkel: '#B4BDD0',
+  signal: '#FFB020',
+  weiss: '#FFFFFF',
+} as const;
+
+export type BrandColor = keyof typeof brandColors;

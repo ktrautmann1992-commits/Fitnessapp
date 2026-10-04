@@ -1,4 +1,4 @@
-# Fachkonzept – [APP-NAME]
+# Fachkonzept – Alpha5
 
 Eingearbeitet: Erweiterungen aus dem Brainstorming der Gründer (`docs/ERWEITERUNGEN.md`). Die Abschnittsnummern 1–14
 bleiben stabil, weil andere Dokumente darauf verweisen; neue Themen stehen als Unterabschnitte (z. B. 4.1, 6.1) oder

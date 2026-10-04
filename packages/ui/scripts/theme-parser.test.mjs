@@ -48,6 +48,7 @@ function makeCss({ omit = [], extraRoot = '', dark = null } = {}) {
     '--color-text-muted': 'rgb(75, 85, 99)',
     '--color-primary': '#0f9d58',
     '--color-primary-text': '#FFFFFF',
+    '--color-link': '#1747cc',
     '--color-border': 'hsl(220, 13%, 91%)',
     '--color-success': '#15803d',
     '--color-warning': '#b45309',
@@ -162,6 +163,39 @@ describe('buildTokens', () => {
       extraRoot: '  --brand-green: #00AA55;\n  --color-primary: var(--brand-green);',
     });
     expect(buildTokens(css).tokens.colors.light.primary).toBe('#00AA55');
+  });
+
+  it('liest Markenfarben (--brand-…) als brandColors mit camelCase-Schlüsseln', () => {
+    const css = makeCss({
+      extraRoot: '  --brand-blau: #1f5bff;\n  --brand-graphit-hell: rgb(38, 44, 58);',
+    });
+    const { tokens, warnings } = buildTokens(css);
+    expect(tokens.brandColors).toEqual({ blau: '#1F5BFF', graphitHell: 'rgb(38, 44, 58)' });
+    expect(warnings).not.toContainEqual(expect.stringContaining('--brand-'));
+  });
+
+  it('liefert leere brandColors ohne Markenfarben', () => {
+    expect(buildTokens(makeCss()).tokens.brandColors).toEqual({});
+  });
+
+  it('meldet ungültige Namen und Werte von Markenfarben', () => {
+    const error = catchThemeError(() =>
+      buildTokens(makeCss({ extraRoot: '  --brand-Blau: #1f5bff;\n  --brand-rot: red;' })),
+    );
+    expect(error.problems).toEqual([
+      expect.stringContaining('--brand-Blau'),
+      expect.stringContaining('--brand-rot'),
+    ]);
+  });
+
+  it('ignoriert Markenfarben im Dunkelmodus mit Hinweis', () => {
+    const css = makeCss({
+      extraRoot: '  --brand-blau: #1f5bff;',
+      dark: `:root[data-theme='dark'] { --color-text: #fff; --brand-blau: #000000; }`,
+    });
+    const { tokens, warnings } = buildTokens(css);
+    expect(tokens.brandColors.blau).toBe('#1F5BFF');
+    expect(warnings).toContainEqual(expect.stringContaining('--brand-blau im Dunkelmodus'));
   });
 
   it('ignoriert andere Selektoren und Media-Queries', () => {

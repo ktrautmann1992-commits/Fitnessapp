@@ -11,8 +11,12 @@
   "scripts": {
     "tokens": "node scripts/generate-tokens.mjs",
     "tokens:check": "node scripts/generate-tokens.mjs --check",
+    "icons": "node brand/generate-icons.mjs",
     "lint": "eslint .",
     "typecheck": "tsc --noEmit",
     "test": "vitest run"
+  },
+  "devDependencies": {
+    "sharp": "^0.35.5"
   }
 }
