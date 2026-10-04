@@ -272,6 +272,7 @@ export function OptionButton({
   selected,
   onPress,
   compact = false,
+  filled = false,
   accessibilityLabel,
   disabled = false,
 }: {
@@ -281,10 +282,13 @@ export function OptionButton({
   selected: boolean;
   onPress: () => void;
   compact?: boolean;
+  /** Ausgewählt = gefüllt in der Hauptfarbe (zusätzlich zum Häkchen), z. B. Gewichte zum Antippen. */
+  filled?: boolean;
   accessibilityLabel?: string;
   disabled?: boolean;
 }) {
   const theme = useThemeColors();
+  const solid = filled && selected;
   return (
     <Pressable
       accessibilityRole={role}
@@ -297,7 +301,7 @@ export function OptionButton({
         compact ? styles.chip : styles.option,
         {
           // Ausgewählt: kräftiger Rahmen in der Hauptfarbe; Text bleibt in Textfarbe (Kontrast, WCAG AA).
-          backgroundColor: theme.surface,
+          backgroundColor: solid ? theme.primary : theme.surface,
           borderColor: selected ? theme.primary : theme.border,
           borderWidth: selected ? 3 : 1,
           opacity: disabled ? 0.5 : pressed ? 0.85 : 1,
@@ -325,14 +329,22 @@ export function OptionButton({
         <Text
           style={[
             compact ? styles.chipText : styles.optionLabel,
-            { color: theme.text },
+            { color: solid ? theme.primaryText : theme.text },
             selected && { fontWeight: fontWeight.bold },
           ]}
         >
           {compact && selected ? `✓ ${label}` : label}
         </Text>
         {description ? (
-          <Text style={[styles.optionDescription, { color: theme.textMuted }]}>{description}</Text>
+          <Text
+            style={[
+              styles.optionDescription,
+              { color: solid ? theme.primaryText : theme.textMuted },
+              compact && styles.chipDescription,
+            ]}
+          >
+            {description}
+          </Text>
         ) : null}
       </View>
     </Pressable>
@@ -525,7 +537,8 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
   },
-  chipText: { fontSize: fontSize.md, fontWeight: fontWeight.semibold },
+  chipText: { fontSize: fontSize.md, fontWeight: fontWeight.semibold, textAlign: 'center' },
+  chipDescription: { textAlign: 'center' },
   radioDot: {
     width: 22,
     height: 22,

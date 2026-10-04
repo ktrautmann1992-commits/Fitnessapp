@@ -13,7 +13,7 @@ import type {
   NutritionStep,
   OnboardingStep,
   Sex,
-  TrainingLocation,
+  TrainingSchedule,
 } from '@fitnessapp/core';
 import type { Tables } from '@fitnessapp/db';
 
@@ -29,6 +29,7 @@ export type ProfileRow = WithoutTimestamps<Tables<'profiles'>>;
 export type ConsentRow = Tables<'consents'>;
 export type GoalsRow = WithoutTimestamps<Tables<'goals'>>;
 export type UserEquipmentRow = WithoutTimestamps<Tables<'user_equipment'>>;
+export type TrainingSlotRow = WithoutTimestamps<Tables<'training_slots'>>;
 export type NutritionPrefsRow = WithoutTimestamps<Tables<'nutrition_prefs'>>;
 export type FoodPreferenceRow = WithoutTimestamps<Tables<'food_preferences'>>;
 export type BodyMetricsRow = WithoutTimestamps<Tables<'body_metrics'>>;
@@ -41,6 +42,8 @@ export interface UserRows {
   profile: ProfileRow | null;
   consents: ConsentRow[];
   goals: GoalsRow | null;
+  /** Trainingstage (Art + Dauer, optional Wochentag) – kein Gesundheitsdatum. */
+  trainingSlots: TrainingSlotRow[];
   userEquipment: UserEquipmentRow[];
   nutritionPrefs: NutritionPrefsRow | null;
   foodPreferences: FoodPreferenceRow[];
@@ -58,6 +61,7 @@ export function emptyUserRows(): UserRows {
     profile: null,
     consents: [],
     goals: null,
+    trainingSlots: [],
     userEquipment: [],
     nutritionPrefs: null,
     foodPreferences: [],
@@ -88,11 +92,8 @@ export interface GoalAnswer {
   targetDate: string | null;
 }
 
-export interface TimeBudgetAnswer {
-  sessionsPerWeek: number;
-  minutesPerSession: number;
-  preferredDays: number[];
-}
+/** Schritt „Deine Trainingstage“: feste Wochentage oder „Tage egal“, je Eintrag Art + Dauer. */
+export type TrainingScheduleAnswer = TrainingSchedule;
 
 export interface HealthScreeningAnswer {
   answers: HealthScreeningAnswers;
@@ -114,8 +115,8 @@ export interface OnboardingAnswers {
   healthScreening?: HealthScreeningAnswer;
   experienceLevel?: ExperienceLevel;
   goal?: GoalAnswer;
-  timeBudget?: TimeBudgetAnswer;
-  trainingLocation?: TrainingLocation;
+  /** Der Trainingsort wird daraus abgeleitet (deriveTrainingLocation). */
+  trainingSchedule?: TrainingScheduleAnswer;
   equipment?: EquipmentItemInput[];
   nutrition?: NutritionStep;
   cooking?: CookingStep;
@@ -136,8 +137,7 @@ export type StepSave =
   | { step: 'health_screening'; answers: HealthScreeningAnswers; acknowledgedAt: string | null }
   | { step: 'experience'; experienceLevel: ExperienceLevel }
   | { step: 'goal'; goal: GoalAnswer }
-  | { step: 'time_budget'; timeBudget: TimeBudgetAnswer }
-  | { step: 'training_location'; trainingLocation: TrainingLocation }
+  | { step: 'time_budget'; schedule: TrainingScheduleAnswer }
   | { step: 'equipment'; items: EquipmentItemInput[] }
   | { step: 'nutrition'; nutrition: NutritionStep }
   | { step: 'cooking'; cooking: CookingStep };

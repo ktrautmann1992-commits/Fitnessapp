@@ -16,6 +16,7 @@ import { BackendError, type Backend } from './backend';
 import { LOCAL_CONSENT_DOCUMENTS } from './consent-texts';
 import { isValidOp } from './local-rules';
 import { readJson, STORAGE_KEYS, writeJson, type KeyValueStore } from './kv';
+import { upgradeStoredRows } from './legacy-rows';
 import { type ConsentVersions, versionsFromDocuments } from './mapping';
 import { planSave } from './plan-save';
 import { emptyUserRows, type AuthSession, type ConsentPlatform, type UserRows } from './types';
@@ -61,7 +62,11 @@ const LOCAL_VERSIONS: ConsentVersions = versionsFromDocuments(LOCAL_CONSENT_DOCU
 
 export function createLocalBackend(store: KeyValueStore, options: LocalBackendOptions): Backend {
   async function load(): Promise<LocalDb> {
-    return (await readJson<LocalDb>(store, STORAGE_KEYS.localDb)) ?? { session: null, rows: null };
+    const db = (await readJson<LocalDb>(store, STORAGE_KEYS.localDb)) ?? {
+      session: null,
+      rows: null,
+    };
+    return db.rows ? { ...db, rows: upgradeStoredRows(db.rows) } : db;
   }
 
   async function save(db: LocalDb): Promise<void> {

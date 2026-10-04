@@ -15,10 +15,9 @@ import {
   nutritionStepSchema,
   onboardingStepSchema,
   sexSchema,
-  timeBudgetStepSchema,
   trainingLocationSchema,
+  trainingSlotsSchema,
 } from '@fitnessapp/core';
-import { z } from 'zod';
 
 import type { ProfileRow } from './types';
 import { kindsForScope, type WriteOp } from './write-ops';
@@ -52,14 +51,6 @@ export function isValidOp(op: WriteOp, context: { today: string; profile: Profil
       return true;
     case 'upsert_goals': {
       const row = op.row;
-      const timeOk =
-        row.sessions_per_week === null && row.minutes_per_session === null
-          ? z.array(z.number().int().min(1).max(7)).safeParse(row.preferred_days).success
-          : timeBudgetStepSchema.safeParse({
-              sessionsPerWeek: row.sessions_per_week,
-              minutesPerSession: row.minutes_per_session,
-              preferredDays: row.preferred_days,
-            }).success;
       return (
         goalTypeSchema.safeParse(row.goal_type).success &&
         (row.discipline === null ||
@@ -68,10 +59,22 @@ export function isValidOp(op: WriteOp, context: { today: string; profile: Profil
         (row.target_date === null ||
           (isoDateSchema.safeParse(row.target_date).success && row.target_date >= '2000-01-01')) &&
         (row.training_location === null ||
-          trainingLocationSchema.safeParse(row.training_location).success) &&
-        timeOk
+          trainingLocationSchema.safeParse(row.training_location).success)
       );
     }
+    // Gleiche Regeln wie public.replace_training_slots (1–7, lückenlos, fest ODER „Tag egal“, Grenzen).
+    case 'replace_training_slots':
+      return (
+        op.rows.every((row) => row.user_id === context.profile.user_id) &&
+        trainingSlotsSchema.safeParse(
+          op.rows.map(({ slot_no, weekday, kind, minutes }) => ({
+            slot_no,
+            weekday,
+            kind,
+            minutes,
+          })),
+        ).success
+      );
     case 'replace_user_equipment':
       return (
         op.rows.every((row) => row.location === op.location) &&
@@ -81,6 +84,7 @@ export function isValidOp(op: WriteOp, context: { today: string; profile: Profil
             location: row.location,
             weightsKg: row.weights_kg,
             note: row.note,
+            barKg: row.bar_kg,
           })),
         }).success
       );

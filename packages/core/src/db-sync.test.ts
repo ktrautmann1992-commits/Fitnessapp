@@ -9,6 +9,8 @@ import { describe, expect, it } from 'vitest';
 import { MEASUREMENT_SITES } from './body-measurements';
 import { CURRENT_CONSENT_VERSIONS } from './consent';
 import {
+  BARBELL_BAR_KG,
+  BARBELL_PLATE_MAX_KG,
   BIRTH_DATE_MIN,
   PLAN_BLOCK_LIMITS,
   PLAN_SAVE_LIMITS,
@@ -36,6 +38,7 @@ import {
   savePlanPayloadSchema,
   savePlanSessionSchema,
 } from './plan/payload';
+import { trainingSlotItemSchema } from './training-schedule';
 
 const migrationsDir = new URL('../../../supabase/migrations/', import.meta.url);
 const migrationFiles = readdirSync(migrationsDir)
@@ -93,6 +96,7 @@ describe('Enums', () => {
     ['goal_type', enums.GOAL_TYPES],
     ['endurance_discipline', enums.ENDURANCE_DISCIPLINES],
     ['training_location', enums.TRAINING_LOCATIONS],
+    ['training_slot_kind', enums.TRAINING_SLOT_KINDS],
     ['equipment_location', enums.EQUIPMENT_LOCATIONS],
     ['equipment_category', enums.EQUIPMENT_CATEGORIES],
     ['diet_type', enums.DIET_TYPES],
@@ -146,8 +150,16 @@ describe('Listen', () => {
     }
     const bySortOrder = (a: Record<string, unknown>, b: Record<string, unknown>) =>
       Number(a.sortOrder) - Number(b.sortOrder);
+    // weightPresetsKg (Gewichte zum Antippen) sind reine App-Daten, nicht in der Datenbank.
     expect([...catalog.values()].sort(bySortOrder)).toEqual(
-      EQUIPMENT.map((item) => ({ ...item })).sort(bySortOrder),
+      EQUIPMENT.map(({ id, nameDe, category, hasWeights, sortOrder, homeSelectable }) => ({
+        id,
+        nameDe,
+        category,
+        hasWeights,
+        sortOrder,
+        homeSelectable,
+      })).sort(bySortOrder),
     );
   });
 
@@ -215,8 +227,14 @@ describe('Grenzwerte', () => {
     between('weight_kg', BODY_METRIC_LIMITS.weightKg),
     between('body_fat_pct', BODY_METRIC_LIMITS.bodyFatPct),
     between('resting_heart_rate_bpm', BODY_METRIC_LIMITS.restingHeartRateBpm),
-    between('sessions_per_week', TRAINING_LIMITS.sessionsPerWeek),
-    between('minutes_per_session', TRAINING_LIMITS.minutesPerSession),
+    // Trainingstage (Etappe B2): training_slots
+    between('slot_no', TRAINING_LIMITS.sessionsPerWeek),
+    between('weekday', { min: 1, max: 7 }),
+    between('minutes', TRAINING_LIMITS.minutesPerSession),
+    `jsonb_array_length(p_items) not between ${TRAINING_LIMITS.sessionsPerWeek.min} and ${TRAINING_LIMITS.sessionsPerWeek.max}`,
+    // Langhantel (Etappe B2): Stange getrennt, Scheiben höchstens 25 kg
+    between('bar_kg', BARBELL_BAR_KG),
+    `${BARBELL_PLATE_MAX_KG} >= all (weights_kg)`,
     between('meals_per_day', NUTRITION_LIMITS.mealsPerDay),
     between('mealprep_days', NUTRITION_LIMITS.mealPrepDaysPerWeek),
     between('interval_days', MEASUREMENT_REMINDER_INTERVAL_DAYS),
@@ -293,5 +311,31 @@ describe('Eingabe der Plan-Funktionen (save_training_plan / append_plan_block)',
     ['exercise_keys', savePlanExerciseSchema],
   ] as const)('%s = Felder des strikten Zod-Schemas', (name, schema) => {
     expect(keysOf(name)).toEqual(Object.keys(schema.shape).sort());
+  });
+});
+
+describe('Trainingstage (Etappe B2)', () => {
+  const sql = readMigration('_training_slots.sql');
+
+  it('replace_training_slots: Feldliste = trainingSlotItemSchema', () => {
+    expect(quotedListAfter(sql, 'item_keys constant text[] := array[').sort()).toEqual(
+      Object.keys(trainingSlotItemSchema.shape).sort(),
+    );
+  });
+
+  it('alte Zeitbudget-Spalten in goals werden nach der Übernahme entfernt', () => {
+    const insert = sql.indexOf('insert into public.training_slots');
+    const drop = sql.indexOf('drop column sessions_per_week');
+    expect(insert).toBeGreaterThan(0);
+    expect(drop).toBeGreaterThan(insert);
+    expect(sql).toContain('drop column minutes_per_session');
+    expect(sql).toContain('drop column preferred_days');
+  });
+
+  it('Langhantel-Werte über 25 kg werden VOR dem neuen CHECK entfernt', () => {
+    const cleanup = sql.indexOf(`where w <= ${BARBELL_PLATE_MAX_KG}`);
+    const check = sql.indexOf(`${BARBELL_PLATE_MAX_KG} >= all (weights_kg)`);
+    expect(cleanup).toBeGreaterThan(0);
+    expect(check).toBeGreaterThan(cleanup);
   });
 });

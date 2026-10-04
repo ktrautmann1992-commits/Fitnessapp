@@ -1,7 +1,7 @@
 -- Mindestalter 16 (serverseitig) und Wertebereiche (identisch zu packages/core/src/constants.ts).
 begin;
 create extension if not exists pgtap with schema extensions;
-select plan(66);
+select plan(68);
 
 insert into auth.users (id, email) values
   ('11111111-1111-4111-8111-111111111111', 'nutzer-a@example.test');
@@ -102,22 +102,14 @@ select throws_ok(
 -- ---------------------------------------------------------------------------------------------------------
 -- goals
 -- ---------------------------------------------------------------------------------------------------------
+-- Zeitbudget-Grenzen stehen seit Etappe B2 in training_slots (15_training_slots.test.sql).
 select lives_ok(
-  $$ insert into public.goals (goal_type, sessions_per_week, minutes_per_session, preferred_days)
-     values ('muscle_gain', 1, 10, '{1}') $$,
-  'Ziel mit Untergrenzen (1 Tag, 10 Minuten)'
+  $$ insert into public.goals (goal_type, training_location) values ('muscle_gain', 'home') $$,
+  'Ziel anlegen'
 );
-select lives_ok(
-  $$ update public.goals set sessions_per_week = 7, minutes_per_session = 240, preferred_days = '{1,2,3,4,5,6,7}' $$,
-  'Obergrenzen (7 Tage, 240 Minuten, alle Wochentage)'
-);
-select throws_ok($$ update public.goals set sessions_per_week = 0 $$, '23514', null, '0 Tage pro Woche');
-select throws_ok($$ update public.goals set sessions_per_week = 8 $$, '23514', null, '8 Tage pro Woche');
-select throws_ok($$ update public.goals set minutes_per_session = 9 $$, '23514', null, '9 Minuten');
-select throws_ok($$ update public.goals set minutes_per_session = 241 $$, '23514', null, '241 Minuten');
-select throws_ok($$ update public.goals set preferred_days = '{0}' $$, '23514', null, 'Wochentag 0');
-select throws_ok($$ update public.goals set preferred_days = '{8}' $$, '23514', null, 'Wochentag 8');
-select throws_ok($$ update public.goals set preferred_days = '{2,2}' $$, '23514', null, 'doppelter Wochentag');
+select hasnt_column('public', 'goals', 'sessions_per_week', 'goals ohne sessions_per_week');
+select hasnt_column('public', 'goals', 'minutes_per_session', 'goals ohne minutes_per_session');
+select hasnt_column('public', 'goals', 'preferred_days', 'goals ohne preferred_days');
 select throws_ok($$ update public.goals set discipline = 'marathon' $$, '23514', null, 'Disziplin nur beim Ziel Ausdauer');
 select lives_ok(
   $$ update public.goals set goal_type = 'endurance', discipline = 'triathlon_long', target_date = '2027-06-01' $$,
@@ -162,6 +154,30 @@ select throws_ok(
 select lives_ok(
   $$ insert into public.user_equipment (equipment_id, location) values ('kettlebells', 'gym') $$,
   'dasselbe Gerät im Studio'
+);
+-- Langhantel (Etappe B2): Stange 5–25 kg nur bei der Langhantel, Scheiben höchstens 25 kg je Scheibe.
+select lives_ok(
+  $$ insert into public.user_equipment (equipment_id, location, weights_kg, bar_kg) values ('barbell', 'home', '{1.25,25}', 5) $$,
+  'Langhantel: Stange 5 kg, Scheibe 25 kg'
+);
+select lives_ok($$ update public.user_equipment set bar_kg = 25 where equipment_id = 'barbell' $$, 'Stange 25 kg');
+select throws_ok(
+  $$ update public.user_equipment set bar_kg = 4.99 where equipment_id = 'barbell' $$, '23514', null, 'Stange unter 5 kg'
+);
+select throws_ok(
+  $$ update public.user_equipment set bar_kg = 25.01 where equipment_id = 'barbell' $$, '23514', null, 'Stange über 25 kg'
+);
+select throws_ok(
+  $$ update public.user_equipment set weights_kg = '{27.5}' where equipment_id = 'barbell' $$,
+  '23514', null, 'Langhantel-Scheibe 27,5 kg abgelehnt'
+);
+select throws_ok(
+  $$ update public.user_equipment set bar_kg = 20 where equipment_id = 'kettlebells' $$,
+  '23514', null, 'Stange nur bei der Langhantel'
+);
+select lives_ok(
+  $$ insert into public.user_equipment (equipment_id, location, weights_kg) values ('dumbbells', 'home', '{40}') $$,
+  'Kurzhantel 40 kg je Hantel bleibt erlaubt'
 );
 
 -- ---------------------------------------------------------------------------------------------------------

@@ -43,13 +43,18 @@ const goals = (patch: Record<string, unknown> = {}): WriteOp => ({
     goal_type: 'endurance',
     discipline: 'marathon',
     target_date: null,
-    sessions_per_week: 7,
-    minutes_per_session: 240,
-    preferred_days: [1, 7],
     training_location: 'gym',
     ...patch,
   },
 });
+const slots = (
+  rows: { slot_no: number; weekday: number | null; kind?: string; minutes?: number }[],
+  userId = USER_ID,
+): WriteOp =>
+  ({
+    kind: 'replace_training_slots',
+    rows: rows.map((row) => ({ user_id: userId, kind: 'endurance', minutes: 30, ...row })),
+  }) as WriteOp;
 
 describe('Testmodus spiegelt die Wertebereiche der Datenbank (packages/core)', () => {
   it('Körperdaten: Grenzen genau erlaubt, knapp daneben abgelehnt', () => {
@@ -78,18 +83,50 @@ describe('Testmodus spiegelt die Wertebereiche der Datenbank (packages/core)', (
     expect(isValidOp(measurements({ waist_cm: null }), ctx)).toBe(false);
   });
 
-  it('Ziel und Zeitbudget: 1–7 Tage, 10–240 Minuten, Disziplin nur bei Ausdauer', () => {
+  it('Ziel: Disziplin nur bei Ausdauer, Ort darf leer sein (nur Ausdauer)', () => {
     expect(isValidOp(goals(), ctx)).toBe(true);
-    expect(isValidOp(goals({ sessions_per_week: 8 }), ctx)).toBe(false);
-    expect(isValidOp(goals({ minutes_per_session: 9 }), ctx)).toBe(false);
-    expect(isValidOp(goals({ preferred_days: [1, 1] }), ctx)).toBe(false);
+    expect(isValidOp(goals({ training_location: null }), ctx)).toBe(true);
+    expect(isValidOp(goals({ training_location: 'garden' }), ctx)).toBe(false);
     expect(isValidOp(goals({ goal_type: 'fat_loss' }), ctx)).toBe(false);
+  });
+
+  it('Trainingstage: wie replace_training_slots (1–7, lückenlos, fest ODER „Tag egal“, 10–240 min)', () => {
+    expect(isValidOp(slots([{ slot_no: 1, weekday: 1 }]), ctx)).toBe(true);
     expect(
       isValidOp(
-        goals({ sessions_per_week: null, minutes_per_session: null, preferred_days: [] }),
+        slots([1, 2, 3, 4, 5, 6, 7].map((d) => ({ slot_no: d, weekday: d, minutes: 240 }))),
         ctx,
       ),
     ).toBe(true);
+    expect(isValidOp(slots([{ slot_no: 1, weekday: null, minutes: 10 }]), ctx)).toBe(true);
+    expect(isValidOp(slots([]), ctx)).toBe(false);
+    expect(
+      isValidOp(slots([1, 2, 3, 4, 5, 6, 7, 8].map((d) => ({ slot_no: d, weekday: null }))), ctx),
+    ).toBe(false);
+    expect(isValidOp(slots([{ slot_no: 1, weekday: 1, minutes: 9 }]), ctx)).toBe(false);
+    expect(isValidOp(slots([{ slot_no: 1, weekday: 1, minutes: 241 }]), ctx)).toBe(false);
+    expect(isValidOp(slots([{ slot_no: 1, weekday: 1, minutes: 45.5 }]), ctx)).toBe(false);
+    expect(
+      isValidOp(
+        slots([
+          { slot_no: 1, weekday: 1 },
+          { slot_no: 2, weekday: null },
+        ]),
+        ctx,
+      ),
+    ).toBe(false);
+    expect(
+      isValidOp(
+        slots([
+          { slot_no: 1, weekday: 2 },
+          { slot_no: 2, weekday: 2 },
+        ]),
+        ctx,
+      ),
+    ).toBe(false);
+    expect(isValidOp(slots([{ slot_no: 2, weekday: 2 }]), ctx)).toBe(false);
+    expect(isValidOp(slots([{ slot_no: 1, weekday: 2, kind: 'yoga' }]), ctx)).toBe(false);
+    expect(isValidOp(slots([{ slot_no: 1, weekday: 2 }], 'fremde-id'), ctx)).toBe(false);
   });
 
   it('Equipment: Gewichtsstufen 0,25–200 kg, Freitext nur bei „Sonstiges“', () => {
@@ -98,7 +135,7 @@ describe('Testmodus spiegelt die Wertebereiche der Datenbank (packages/core)', (
     ): WriteOp => ({
       kind: 'replace_user_equipment',
       location: 'home',
-      rows: rows.map((row) => ({ user_id: USER_ID, location: 'home', ...row })),
+      rows: rows.map((row) => ({ user_id: USER_ID, location: 'home', bar_kg: null, ...row })),
     });
     expect(
       isValidOp(op([{ equipment_id: 'dumbbells', weights_kg: [0.25, 200], note: null }]), ctx),
@@ -112,12 +149,39 @@ describe('Testmodus spiegelt die Wertebereiche der Datenbank (packages/core)', (
     expect(isValidOp(op([{ equipment_id: 'other', weights_kg: [], note: null }]), ctx)).toBe(false);
   });
 
+  it('Langhantel: Stange 5–25 kg nur bei der Langhantel, Scheiben höchstens 25 kg', () => {
+    const op = (row: { equipment_id: string; weights_kg: number[]; bar_kg: number | null }) =>
+      ({
+        kind: 'replace_user_equipment',
+        location: 'home',
+        rows: [{ user_id: USER_ID, location: 'home', note: null, ...row }],
+      }) as WriteOp;
+    expect(isValidOp(op({ equipment_id: 'barbell', weights_kg: [25], bar_kg: 5 }), ctx)).toBe(true);
+    expect(isValidOp(op({ equipment_id: 'barbell', weights_kg: [], bar_kg: 25 }), ctx)).toBe(true);
+    expect(isValidOp(op({ equipment_id: 'barbell', weights_kg: [27.5], bar_kg: 20 }), ctx)).toBe(
+      false,
+    );
+    expect(isValidOp(op({ equipment_id: 'barbell', weights_kg: [], bar_kg: 4.5 }), ctx)).toBe(
+      false,
+    );
+    expect(isValidOp(op({ equipment_id: 'dumbbells', weights_kg: [30], bar_kg: 20 }), ctx)).toBe(
+      false,
+    );
+  });
+
   it('Equipment: Studio-Geräte nicht „zu Hause“ (wie der Datenbank-Trigger)', () => {
     const op = (location: 'home' | 'gym'): WriteOp => ({
       kind: 'replace_user_equipment',
       location,
       rows: [
-        { user_id: USER_ID, location, equipment_id: 'cable_station', weights_kg: [], note: null },
+        {
+          user_id: USER_ID,
+          location,
+          equipment_id: 'cable_station',
+          weights_kg: [],
+          note: null,
+          bar_kg: null,
+        },
       ],
     });
     expect(isValidOp(op('home'), ctx)).toBe(false);

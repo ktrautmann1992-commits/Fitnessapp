@@ -12,12 +12,13 @@ const goals = (goal_type: 'fat_loss' | 'muscle_gain'): WriteOp => ({
     goal_type,
     discipline: null,
     target_date: null,
-    sessions_per_week: null,
-    minutes_per_session: null,
-    preferred_days: [],
     training_location: null,
   },
 });
+const slots: WriteOp = {
+  kind: 'replace_training_slots',
+  rows: [{ user_id: 'u', slot_no: 1, weekday: 1, kind: 'endurance', minutes: 30 }],
+};
 const step = (onboarding_step: string): WriteOp => ({
   kind: 'update_profile',
   patch: { onboarding_step },
@@ -30,13 +31,22 @@ describe('enqueue', () => {
     entries = enqueue(entries, [
       { kind: 'update_profile', patch: { experience_level: 'beginner' } },
     ]);
-    entries = enqueue(entries, [goals('muscle_gain'), step('training_location')]);
-    expect(entries.map((e) => e.key)).toEqual(['upsert_goals', 'update_profile']);
-    expect(entries[0]?.op).toEqual(goals('muscle_gain'));
-    expect(entries[1]?.op).toEqual({
+    entries = enqueue(entries, [slots, goals('muscle_gain'), step('equipment')]);
+    expect(entries.map((e) => e.key)).toEqual([
+      'replace_training_slots',
+      'upsert_goals',
+      'update_profile',
+    ]);
+    expect(entries[1]?.op).toEqual(goals('muscle_gain'));
+    expect(entries[2]?.op).toEqual({
       kind: 'update_profile',
-      patch: { onboarding_step: 'training_location', experience_level: 'beginner' },
+      patch: { onboarding_step: 'equipment', experience_level: 'beginner' },
     });
+    // Trainingstage: neuester Stand gewinnt.
+    const newer: WriteOp = { ...slots, rows: [] };
+    expect(enqueue(entries, [newer]).filter((e) => e.key === 'replace_training_slots')).toEqual([
+      { key: 'replace_training_slots', op: newer },
+    ]);
   });
 
   it('Gesundheitsdaten und Einwilligungen kommen nie in die Warteschlange', () => {
@@ -125,5 +135,51 @@ describe('SyncQueue', () => {
     await queue.flush();
     expect(execute).toHaveBeenCalledTimes(1);
     expect(execute).toHaveBeenCalledWith(step('goal'));
+  });
+
+  it('verwirft beim Laden still alte Ziel-Vorgänge mit Zeitbudget-Spalten (vor Etappe B2)', async () => {
+    const legacy = {
+      kind: 'upsert_goals',
+      row: {
+        ...(goals('fat_loss') as Extract<WriteOp, { kind: 'upsert_goals' }>).row,
+        sessions_per_week: 3,
+        minutes_per_session: 45,
+        preferred_days: [1, 3, 5],
+      },
+    };
+    const store = createMemoryStore({
+      [KEY]: JSON.stringify([
+        { key: 'upsert_goals', op: legacy },
+        { key: 'replace_training_slots', op: slots },
+        { key: 'update_profile', op: step('time_budget') },
+      ]),
+    });
+    const execute = vi.fn(async (_op: WriteOp) => undefined);
+    const dropped = vi.fn();
+    const queue = new SyncQueue({
+      store,
+      storageKey: KEY,
+      execute,
+      isNetworkError: () => false,
+      onDropped: dropped,
+    });
+    await queue.load();
+    expect(queue.size()).toBe(2);
+    await queue.flush();
+    expect(execute.mock.calls.map(([op]) => op.kind)).toEqual([
+      'replace_training_slots',
+      'update_profile',
+    ]);
+    expect(dropped).not.toHaveBeenCalled();
+  });
+
+  it('ein neuer Ziel-Vorgang ohne die alten Spalten bleibt erhalten', async () => {
+    const store = createMemoryStore({
+      [KEY]: JSON.stringify([{ key: 'upsert_goals', op: goals('muscle_gain') }]),
+    });
+    const execute = vi.fn(async () => undefined);
+    const queue = new SyncQueue({ store, storageKey: KEY, execute, isNetworkError: () => false });
+    await queue.flush();
+    expect(execute).toHaveBeenCalledWith(goals('muscle_gain'));
   });
 });

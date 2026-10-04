@@ -1,7 +1,5 @@
 import { z } from 'zod';
 
-import type { TrainingLocation } from './enums';
-
 /**
  * Onboarding-Ablauf nach der Anmeldung (docs/PLAN-PHASE-1.md Abschnitt 3, ohne Wearable-Schritt – Frage 8).
  *
@@ -19,7 +17,9 @@ export const ONBOARDING_STEPS = [
   'health_screening',
   'experience',
   'goal',
+  // „Deine Trainingstage“ (Art + Dauer je Tag, Erweiterungsplan 3.2); Name bleibt wegen der CHECK-Bedingung.
   'time_budget',
+  // Nie anwendbar seit Etappe B2 (Ort abgeleitet), siehe isStepApplicable().
   'training_location',
   'equipment',
   'nutrition',
@@ -57,8 +57,10 @@ export const HEALTH_DATA_STEPS = [
 export interface OnboardingState {
   /** Einwilligung health_data erteilt? Ohne sie: keine Körperdaten, keine Umfänge, kein Gesundheits-Check. */
   healthDataConsent?: boolean | undefined;
-  /** Trainingsort. Equipment-Schritt nur bei „home“ oder „both“. */
-  trainingLocation?: TrainingLocation | undefined;
+  /**
+   * Mindestens ein Trainingstag „Kraft zu Hause“ (hasHomeStrength)? Nur dann folgt der Schritt „Equipment“.
+   */
+  hasHomeStrength?: boolean | undefined;
 }
 
 export function isOnboardingStep(value: unknown): value is OnboardingStep {
@@ -74,8 +76,14 @@ export function isStepApplicable(step: OnboardingStep, state: OnboardingState): 
   if ((HEALTH_DATA_STEPS as readonly OnboardingStep[]).includes(step)) {
     return state.healthDataConsent !== false;
   }
+  // Der Trainingsort wird seit Etappe B2 aus den Trainingstagen abgeleitet (deriveTrainingLocation). Der Schritt
+  // bleibt in der Liste (CHECK von profiles.onboarding_step), ist aber nie anwendbar – resumeStep() springt bei
+  // alten Ständen zum nächsten Schritt.
+  if (step === 'training_location') {
+    return false;
+  }
   if (step === 'equipment') {
-    return state.trainingLocation !== 'gym';
+    return state.hasHomeStrength !== false;
   }
   return true;
 }
@@ -109,7 +117,7 @@ export function previousStep(step: OnboardingStep, state: OnboardingState): Onbo
 /**
  * Schritt, an dem nach einer Unterbrechung weitergemacht wird (profiles.onboarding_step).
  * Unbekannter/leerer Wert → erster Schritt. Ist der gespeicherte Schritt inzwischen nicht mehr anwendbar
- * (z. B. Equipment, aber Ort jetzt „Studio“), geht es beim nächsten anwendbaren weiter; null = fertig.
+ * (z. B. Equipment, aber kein Tag „Kraft zu Hause“ mehr), geht es beim nächsten anwendbaren weiter; null = fertig.
  */
 export function resumeStep(
   saved: string | null | undefined,

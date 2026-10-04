@@ -10,15 +10,13 @@ import { deriveOnboardingState } from '@/state/flow';
 import { BodyMeasurementsStep, BodyMetricsStep, HealthScreeningStep } from '@/steps/health-steps';
 import { CookingStep, NutritionStep } from '@/steps/nutrition-steps';
 import { ExperienceStep, HealthConsentStep, SexStep } from '@/steps/profile-steps';
-import {
-  EquipmentStep,
-  GoalStep,
-  TimeBudgetStep,
-  TrainingLocationStep,
-} from '@/steps/training-steps';
+import { EquipmentStep, GoalStep, TrainingScheduleStep } from '@/steps/training-steps';
 import { useStep, type StepController } from '@/steps/use-step';
 
-const STEP_SCREENS: Record<OnboardingStep, ComponentType<{ ctl: StepController }>> = {
+/** „training_location“ ist seit Etappe B2 nie anwendbar (Ort aus den Trainingstagen abgeleitet). */
+type ShownStep = Exclude<OnboardingStep, 'training_location'>;
+
+const STEP_SCREENS: Record<ShownStep, ComponentType<{ ctl: StepController }>> = {
   sex: SexStep,
   health_consent: HealthConsentStep,
   body_metrics: BodyMetricsStep,
@@ -26,8 +24,7 @@ const STEP_SCREENS: Record<OnboardingStep, ComponentType<{ ctl: StepController }
   health_screening: HealthScreeningStep,
   experience: ExperienceStep,
   goal: GoalStep,
-  time_budget: TimeBudgetStep,
-  training_location: TrainingLocationStep,
+  time_budget: TrainingScheduleStep,
   equipment: EquipmentStep,
   nutrition: NutritionStep,
   cooking: CookingStep,
@@ -56,13 +53,16 @@ export default function OnboardingStepRoute() {
     return <Redirect href="/" />;
   }
   // Nicht anwendbare Schritte (z. B. Körperdaten ohne Einwilligung) gibt es nicht – zurück zum Startpunkt.
-  if (!isStepApplicable(step, deriveOnboardingState(app.rows, app.versions))) {
+  if (
+    step === 'training_location' ||
+    !isStepApplicable(step, deriveOnboardingState(app.rows, app.versions))
+  ) {
     return <Redirect href={app.entryRoute() as Href} />;
   }
   return <StepHost key={step} step={step} />;
 }
 
-function StepHost({ step }: { step: OnboardingStep }) {
+function StepHost({ step }: { step: ShownStep }) {
   const ctl = useStep(step);
   const StepScreen = STEP_SCREENS[step];
   return <StepScreen ctl={ctl} />;

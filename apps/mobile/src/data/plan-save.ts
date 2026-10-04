@@ -1,4 +1,4 @@
-import { nextStep, type OnboardingState } from '@fitnessapp/core';
+import { hasHomeStrength, nextStep, type OnboardingState } from '@fitnessapp/core';
 
 import { deriveOnboardingState, healthConsentStatus } from '../state/flow';
 import { applyStepToAnswers, planStepWrites, type ConsentVersions } from './mapping';
@@ -33,8 +33,8 @@ export function planSave(
   const after: OnboardingState = {
     healthDataConsent:
       save.step === 'health_consent' ? save.granted || hasHealthConsent : before.healthDataConsent,
-    trainingLocation:
-      save.step === 'training_location' ? save.trainingLocation : before.trainingLocation,
+    hasHomeStrength:
+      save.step === 'time_budget' ? hasHomeStrength(save.schedule) : before.hasHomeStrength,
   };
   const next = nextStep(save.step, after);
   const ops = planStepWrites(save, {

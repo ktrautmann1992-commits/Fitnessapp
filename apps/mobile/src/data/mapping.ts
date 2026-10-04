@@ -1,7 +1,9 @@
 import {
+  BARBELL_ID,
   type ConsentPlatform,
   type ConsentRecord,
   type ConsentType,
+  deriveTrainingLocation,
   equipmentIdSchema,
   foodGroupSchema,
   healthScreeningAnswersSchema,
@@ -14,6 +16,9 @@ import {
   nextMeasurementDue,
   ONBOARDING_STEPS,
   type OnboardingStep,
+  scheduleFromSlots,
+  scheduleToSlots,
+  type TrainingSchedule,
 } from '@fitnessapp/core';
 import type { Json } from '@fitnessapp/db';
 
@@ -31,6 +36,7 @@ import type {
   NutritionPrefsRow,
   OnboardingAnswers,
   StepSave,
+  TrainingSlotRow,
   UserEquipmentRow,
   UserRows,
 } from './types';
@@ -90,9 +96,7 @@ export function applyStepToAnswers(answers: OnboardingAnswers, save: StepSave): 
     case 'goal':
       return { ...answers, goal: save.goal };
     case 'time_budget':
-      return { ...answers, timeBudget: save.timeBudget };
-    case 'training_location':
-      return { ...answers, trainingLocation: save.trainingLocation };
+      return { ...answers, trainingSchedule: save.schedule };
     case 'equipment':
       return { ...answers, equipment: save.items };
     case 'nutrition':
@@ -115,18 +119,23 @@ export function progressPatch(
 
 export function toGoalsRow(userId: string, answers: OnboardingAnswers): GoalsRow {
   if (!answers.goal) {
-    throw new Error('Ziel fehlt – Ziel wird vor Zeitbudget und Trainingsort gespeichert.');
+    throw new Error('Ziel fehlt – Ziel wird vor den Trainingstagen gespeichert.');
   }
   return {
     user_id: userId,
     goal_type: answers.goal.goalType,
     discipline: answers.goal.goalType === 'endurance' ? answers.goal.discipline : null,
     target_date: answers.goal.targetDate,
-    sessions_per_week: answers.timeBudget?.sessionsPerWeek ?? null,
-    minutes_per_session: answers.timeBudget?.minutesPerSession ?? null,
-    preferred_days: [...(answers.timeBudget?.preferredDays ?? [])].sort((a, b) => a - b),
-    training_location: answers.trainingLocation ?? null,
+    // Abgeleitet aus den Trainingstagen (Erweiterungsplan 3.1); null = nur Ausdauer bzw. noch offen.
+    training_location: answers.trainingSchedule
+      ? deriveTrainingLocation(answers.trainingSchedule)
+      : null,
   };
+}
+
+/** Trainingstage → Zeilen von training_slots (slot_no 1…n, wie replace_training_slots). */
+export function toTrainingSlotRows(userId: string, schedule: TrainingSchedule): TrainingSlotRow[] {
+  return scheduleToSlots(schedule).map((slot) => ({ user_id: userId, ...slot }));
 }
 
 export function toNutritionPrefsRow(userId: string, answers: OnboardingAnswers): NutritionPrefsRow {
@@ -165,6 +174,7 @@ export function toUserEquipmentRows(
     location: item.location,
     weights_kg: [...item.weightsKg].sort((a, b) => a - b),
     note: item.note ?? null,
+    bar_kg: item.equipmentId === BARBELL_ID ? (item.barKg ?? null) : null,
   }));
 }
 
@@ -280,9 +290,14 @@ export function planStepWrites(save: StepSave, ctx: PlanContext): WriteOp[] {
         },
       ];
     case 'goal':
-    case 'time_budget':
-    case 'training_location':
       return [{ kind: 'upsert_goals', row: toGoalsRow(userId, answers) }, progressOp];
+    case 'time_budget':
+      // Trainingstage + abgeleiteter Ort in goals (der Schritt „Trainingsort“ entfällt).
+      return [
+        { kind: 'replace_training_slots', rows: toTrainingSlotRows(userId, save.schedule) },
+        { kind: 'upsert_goals', row: toGoalsRow(userId, answers) },
+        progressOp,
+      ];
     case 'equipment':
       return [
         {
@@ -387,16 +402,10 @@ export function answersFromRows(rows: UserRows): OnboardingAnswers {
       discipline: goals.discipline,
       targetDate: goals.target_date,
     };
-    if (goals.sessions_per_week !== null && goals.minutes_per_session !== null) {
-      answers.timeBudget = {
-        sessionsPerWeek: goals.sessions_per_week,
-        minutesPerSession: goals.minutes_per_session,
-        preferredDays: [...goals.preferred_days],
-      };
-    }
-    if (goals.training_location) {
-      answers.trainingLocation = goals.training_location;
-    }
+  }
+  const schedule = scheduleFromSlots(rows.trainingSlots);
+  if (schedule) {
+    answers.trainingSchedule = schedule;
   }
 
   const equipment = rows.userEquipment.flatMap((row) => {
@@ -408,6 +417,7 @@ export function answersFromRows(rows: UserRows): OnboardingAnswers {
             location: row.location,
             weightsKg: [...row.weights_kg],
             note: row.note,
+            barKg: row.bar_kg,
           },
         ]
       : [];

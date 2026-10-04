@@ -4,7 +4,7 @@ import { isDirectOp, type WriteOp } from './write-ops';
 /**
  * Einfache Offline-Warteschlange für den Supabase-Modus.
  *
- * Nur NICHT-Gesundheitsdaten (Profil-Fortschritt, Ziel, Equipment, Ernährung, Vorlieben, Mess-Erinnerung)
+ * Nur NICHT-Gesundheitsdaten (Profil-Fortschritt, Ziel, Trainingstage, Equipment, Ernährung, Vorlieben, Mess-Erinnerung)
  * landen hier und damit auf dem Gerät. Gesundheitsdaten und Einwilligungen werden nie eingereiht, sondern
  * sofort gesendet (isDirectOp) – scheitert das, zeigt der Bildschirm „Erneut versuchen“.
  *
@@ -16,6 +16,21 @@ import { isDirectOp, type WriteOp } from './write-ops';
 export interface QueueEntry {
   key: string;
   op: WriteOp;
+}
+
+/** Spalten, die es in goals seit Etappe B2 nicht mehr gibt (jetzt Tabelle training_slots). */
+const LEGACY_GOALS_COLUMNS = ['sessions_per_week', 'minutes_per_session', 'preferred_days'];
+
+/**
+ * Wartender upsert_goals-Vorgang einer App-Version vor Etappe B2? Er wird beim Laden still verworfen, NICHT
+ * umgewandelt (Erweiterungsplan 4.5): Die Trainingstage werden mit dem neuen Schritt ohnehin neu erfasst, und eine
+ * Umwandlung könnte einen neueren Stand überschreiben. Ziel und Ort schreibt der nächste Schritt erneut.
+ */
+export function isLegacyGoalsOp(op: WriteOp): boolean {
+  return (
+    op.kind === 'upsert_goals' &&
+    LEGACY_GOALS_COLUMNS.some((column) => Object.hasOwn(op.row, column))
+  );
 }
 
 /** Schlüssel, unter dem ein Vorgang ältere Vorgänge derselben Art ersetzt. */
@@ -82,7 +97,10 @@ export class SyncQueue {
     }
     const stored = await readJson<QueueEntry[]>(this.options.store, this.options.storageKey);
     // Sicherheitsnetz: falls je ein Gesundheitsdatum hineingeraten wäre, nicht senden und verwerfen.
-    this.entries = (stored ?? []).filter((entry) => !isDirectOp(entry.op));
+    // Alte Ziel-Vorgänge mit Zeitbudget-Spalten (vor Etappe B2) würden am Server scheitern → still verwerfen.
+    this.entries = (stored ?? []).filter(
+      (entry) => !isDirectOp(entry.op) && !isLegacyGoalsOp(entry.op),
+    );
     this.loaded = true;
   }
 

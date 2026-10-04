@@ -5,6 +5,7 @@ import {
   firstStep,
   formatProgressDe,
   isOnboardingStep,
+  isStepApplicable,
   isStepSkippable,
   nextStep,
   ONBOARDING_STEPS,
@@ -14,8 +15,10 @@ import {
   resumeStep,
 } from './onboarding';
 
-const full: OnboardingState = { healthDataConsent: true, trainingLocation: 'both' };
-const noConsentGym: OnboardingState = { healthDataConsent: false, trainingLocation: 'gym' };
+const full: OnboardingState = { healthDataConsent: true, hasHomeStrength: true };
+const noConsentGym: OnboardingState = { healthDataConsent: false, hasHomeStrength: false };
+/** Alle Schritte außer dem seit Etappe B2 nie anwendbaren Trainingsort. */
+const ALL_SHOWN = ONBOARDING_STEPS.filter((step) => step !== 'training_location');
 
 describe('Schritt-Reihenfolge', () => {
   it('enthält keinen Wearable-Schritt (Frage 8)', () => {
@@ -30,41 +33,47 @@ describe('Schritt-Reihenfolge', () => {
     expect(isStepSkippable('body_metrics')).toBe(false);
   });
 
-  it('mit Einwilligung und Zuhause/beides: alle 12 Schritte', () => {
-    expect(applicableSteps(full)).toEqual([...ONBOARDING_STEPS]);
-    expect(applicableSteps({ healthDataConsent: true, trainingLocation: 'home' })).toHaveLength(12);
+  it('mit Einwilligung und Kraft zu Hause: alle 11 gezeigten Schritte', () => {
+    expect(applicableSteps(full)).toEqual(ALL_SHOWN);
+    expect(applicableSteps(full)).toHaveLength(11);
+  });
+
+  it('Trainingsort ist nie anwendbar (aus den Trainingstagen abgeleitet), bleibt aber in der Liste', () => {
+    expect(ONBOARDING_STEPS).toContain('training_location');
+    for (const state of [full, noConsentGym, {}]) {
+      expect(isStepApplicable('training_location', state)).toBe(false);
+    }
   });
 
   it('ohne Einwilligung: keine Körperdaten, keine Umfänge, kein Gesundheits-Check', () => {
-    const steps = applicableSteps({ healthDataConsent: false, trainingLocation: 'home' });
+    const steps = applicableSteps({ healthDataConsent: false, hasHomeStrength: true });
     expect(steps).not.toContain('body_metrics');
     expect(steps).not.toContain('body_measurements');
     expect(steps).not.toContain('health_screening');
     expect(steps).toContain('health_consent');
-    expect(steps).toHaveLength(9);
+    expect(steps).toHaveLength(8);
   });
 
-  it('nur Studio: kein Equipment-Schritt', () => {
-    expect(applicableSteps({ healthDataConsent: true, trainingLocation: 'gym' })).not.toContain(
+  it('kein Tag „Kraft zu Hause“: kein Equipment-Schritt', () => {
+    expect(applicableSteps({ healthDataConsent: true, hasHomeStrength: false })).not.toContain(
       'equipment',
     );
   });
 
-  it('kürzester Ablauf (ohne Einwilligung, nur Studio): 8 Schritte', () => {
+  it('kürzester Ablauf (ohne Einwilligung, ohne Kraft zu Hause): 7 Schritte', () => {
     expect(applicableSteps(noConsentGym)).toEqual([
       'sex',
       'health_consent',
       'experience',
       'goal',
       'time_budget',
-      'training_location',
       'nutrition',
       'cooking',
     ]);
   });
 
   it('noch unbeantwortete Fragen zählen die abhängigen Schritte mit', () => {
-    expect(applicableSteps({})).toHaveLength(12);
+    expect(applicableSteps({})).toHaveLength(11);
   });
 });
 
@@ -78,7 +87,7 @@ describe('nextStep / previousStep', () => {
       visited.push(next);
       step = next;
     }
-    expect(visited).toEqual([...ONBOARDING_STEPS]);
+    expect(visited).toEqual(ALL_SHOWN);
   });
 
   it('überspringt Gesundheits-Schritte ohne Einwilligung', () => {
@@ -86,10 +95,12 @@ describe('nextStep / previousStep', () => {
     expect(previousStep('experience', noConsentGym)).toBe('health_consent');
   });
 
-  it('überspringt Equipment bei „nur Studio“', () => {
-    expect(nextStep('training_location', noConsentGym)).toBe('nutrition');
-    expect(previousStep('nutrition', noConsentGym)).toBe('training_location');
-    expect(nextStep('training_location', full)).toBe('equipment');
+  it('überspringt Trainingsort immer und Equipment ohne Kraft zu Hause', () => {
+    expect(nextStep('time_budget', noConsentGym)).toBe('nutrition');
+    expect(previousStep('nutrition', noConsentGym)).toBe('time_budget');
+    expect(nextStep('time_budget', full)).toBe('equipment');
+    expect(previousStep('equipment', full)).toBe('time_budget');
+    expect(nextStep('time_budget', {})).toBe('equipment');
   });
 
   it('Rand: vor dem ersten und nach dem letzten Schritt gibt es nichts', () => {
@@ -105,13 +116,13 @@ describe('nextStep / previousStep', () => {
 });
 
 describe('progress', () => {
-  it('Schritt 1 von 12 und 12 von 12 im vollen Ablauf', () => {
-    expect(progress('sex', full)).toEqual({ current: 1, total: 12, fraction: 1 / 12 });
-    expect(progress('cooking', full)).toEqual({ current: 12, total: 12, fraction: 1 });
+  it('Schritt 1 von 11 und 11 von 11 im vollen Ablauf', () => {
+    expect(progress('sex', full)).toEqual({ current: 1, total: 11, fraction: 1 / 11 });
+    expect(progress('cooking', full)).toEqual({ current: 11, total: 11, fraction: 1 });
   });
 
   it('zählt im kürzesten Ablauf nur anwendbare Schritte', () => {
-    expect(progress('experience', noConsentGym)).toEqual({ current: 3, total: 8, fraction: 3 / 8 });
+    expect(progress('experience', noConsentGym)).toEqual({ current: 3, total: 7, fraction: 3 / 7 });
   });
 
   it('ein nicht anwendbarer Schritt zählt wie der nächste anwendbare', () => {
@@ -119,7 +130,7 @@ describe('progress', () => {
   });
 
   it('formatiert „Schritt X von Y“', () => {
-    expect(formatProgressDe(progress('goal', full))).toBe('Schritt 7 von 12');
+    expect(formatProgressDe(progress('goal', full))).toBe('Schritt 7 von 11');
   });
 });
 
@@ -137,6 +148,9 @@ describe('resumeStep', () => {
   it('springt weiter, wenn der gespeicherte Schritt nicht mehr passt', () => {
     expect(resumeStep('equipment', noConsentGym)).toBe('nutrition');
     expect(resumeStep('body_metrics', noConsentGym)).toBe('experience');
+    // Alter Stand vor Etappe B2: „Trainingsort“ gespeichert → weiter beim nächsten anwendbaren Schritt.
+    expect(resumeStep('training_location', full)).toBe('equipment');
+    expect(resumeStep('training_location', noConsentGym)).toBe('nutrition');
   });
 
   it('erkennt Schritt-IDs', () => {

@@ -37,9 +37,8 @@ select lives_ok(
   'A: Gesundheits-Check mit Einwilligung speichern'
 );
 select lives_ok(
-  $$ insert into public.goals (user_id, goal_type, discipline, sessions_per_week, minutes_per_session,
-       preferred_days, training_location)
-     values ('11111111-1111-4111-8111-111111111111', 'endurance', 'half_marathon', 4, 60, '{1,3,5,6}', 'both') $$,
+  $$ insert into public.goals (user_id, goal_type, discipline, training_location)
+     values ('11111111-1111-4111-8111-111111111111', 'endurance', 'half_marathon', 'both') $$,
   'A: Ziel anlegen'
 );
 select lives_ok(
@@ -93,7 +92,7 @@ select is_empty(
   'B kann A''s Körperdaten nicht ändern'
 );
 select is_empty(
-  $$ update public.goals set sessions_per_week = 7 returning 1 $$,
+  $$ update public.goals set training_location = 'gym' returning 1 $$,
   'B kann A''s Ziele nicht ändern'
 );
 select is_empty(
@@ -195,8 +194,8 @@ select is(
   62.3::numeric, 'A''s Körperdaten unverändert'
 );
 select is(
-  (select sessions_per_week from public.goals where user_id = '11111111-1111-4111-8111-111111111111'),
-  4::smallint, 'A''s Ziel unverändert'
+  (select training_location::text from public.goals where user_id = '11111111-1111-4111-8111-111111111111'),
+  'both', 'A''s Ziel unverändert'
 );
 select is(
   (select count(*) from public.user_equipment where user_id = '11111111-1111-4111-8111-111111111111'),

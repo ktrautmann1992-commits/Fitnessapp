@@ -33,7 +33,7 @@ export function useStep(step: OnboardingStep): StepController {
   const [error, setError] = useState<string>();
   const state = app.rows
     ? deriveOnboardingState(app.rows, app.versions)
-    : { healthDataConsent: undefined, trainingLocation: undefined };
+    : { healthDataConsent: undefined, hasHomeStrength: undefined };
   const previous = previousStep(step, state);
 
   async function submit(save: StepSave) {

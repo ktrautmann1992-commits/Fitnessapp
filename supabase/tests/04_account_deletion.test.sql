@@ -1,7 +1,7 @@
 -- Konto löschen (delete_my_account): löscht alle Daten des Aufrufers per Kaskade, fremde Daten bleiben.
 begin;
 create extension if not exists pgtap with schema extensions;
-select plan(21);
+select plan(22);
 
 insert into auth.users (id, email) values
   ('11111111-1111-4111-8111-111111111111', 'nutzer-a@example.test'),
@@ -36,6 +36,9 @@ select u, 'general_fitness'
 from unnest(array['11111111-1111-4111-8111-111111111111', '22222222-2222-4222-8222-222222222222']::uuid[]) as u;
 insert into public.user_equipment (user_id, equipment_id, location)
 select u, 'pull_up_bar', 'home'
+from unnest(array['11111111-1111-4111-8111-111111111111', '22222222-2222-4222-8222-222222222222']::uuid[]) as u;
+insert into public.training_slots (user_id, slot_no, weekday, kind, minutes)
+select u, 1, 3, 'endurance', 30
 from unnest(array['11111111-1111-4111-8111-111111111111', '22222222-2222-4222-8222-222222222222']::uuid[]) as u;
 insert into public.nutrition_prefs (user_id, diet_type)
 select u, 'vegan'
@@ -78,6 +81,7 @@ select is_empty($$ select 1 from public.measurement_reminders where user_id = '1
 select is_empty($$ select 1 from public.health_screening where user_id = '11111111-1111-4111-8111-111111111111' $$, 'A: health_screening leer');
 select is_empty($$ select 1 from public.goals where user_id = '11111111-1111-4111-8111-111111111111' $$, 'A: goals leer');
 select is_empty($$ select 1 from public.user_equipment where user_id = '11111111-1111-4111-8111-111111111111' $$, 'A: user_equipment leer');
+select is_empty($$ select 1 from public.training_slots where user_id = '11111111-1111-4111-8111-111111111111' $$, 'A: training_slots leer');
 select is_empty($$ select 1 from public.nutrition_prefs where user_id = '11111111-1111-4111-8111-111111111111' $$, 'A: nutrition_prefs leer');
 select is_empty($$ select 1 from public.food_preferences where user_id = '11111111-1111-4111-8111-111111111111' $$, 'A: food_preferences leer');
 

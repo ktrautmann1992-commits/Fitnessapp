@@ -4,7 +4,7 @@
  * Regel aus CLAUDE.md: ALLE Rechenformeln und Schutzgrenzen stehen hier, jeweils mit Quelle.
  * Die Schutzgrenzen sind fest im Code und NICHT durch Nutzer abschaltbar.
  */
-import type { CautionTag, MuscleGroup } from './enums';
+import type { CautionTag, MuscleGroup, TrainingSlotKind } from './enums';
 
 /**
  * Mindestalter für die Nutzung der App (Jahre).
@@ -90,13 +90,56 @@ export const BODY_METRIC_LIMITS = {
 } as const;
 
 /**
- * Zeitbudget (Tabelle `goals`).
- * - 1–7 Trainingstage pro Woche: CLAUDE.md („1 vs. 7 Trainingstage“ als Grenzfälle).
- * - 10–240 Minuten pro Einheit: kürzere Einheiten sind kaum planbar; 4 h deckt lange Ausdauereinheiten ab.
+ * Trainingstage (Tabelle `training_slots`, Etappe B2 – docs/PLAN-PHASE-3-ERWEITERUNG.md Abschnitt 4.1) und
+ * Plan-Angaben/Vorlagen.
+ * - 1–7 Trainingstage pro Woche: CLAUDE.md („1 vs. 7 Trainingstage“ als Grenzfälle); identisch als
+ *   `slot_no between 1 and 7` (höchstens 7 Einträge je Person).
+ * - 10–240 Minuten pro Einheit: kürzere Einheiten sind kaum planbar; 4 h deckt lange Ausdauereinheiten ab;
+ *   identisch als `minutes between 10 and 240`.
  */
 export const TRAINING_LIMITS = {
   sessionsPerWeek: { min: 1, max: 7 },
   minutesPerSession: { min: 10, max: 240 },
+} as const;
+
+/**
+ * Minuten-Vorschläge zum Antippen im Schritt „Deine Trainingstage“ (die UI liest sie nur; „Eigene“ erlaubt jeden
+ * Wert aus TRAINING_LIMITS.minutesPerSession). Quelle: PRODUKTENTSCHEIDUNG (übliche Einheiten-Längen).
+ */
+export const MINUTE_PRESETS = [20, 30, 45, 60, 90] as const;
+
+/**
+ * Vorbelegte Dauer je Trainingsart, solange noch kein Tag bearbeitet wurde (Kraft 60, Ausdauer 30 Minuten).
+ * Quelle: PRODUKTENTSCHEIDUNG (Erweiterungsplan Abschnitt 3.2); Ausdauer bewusst kurz – ein lockerer Einstieg.
+ */
+export const DEFAULT_SLOT_MINUTES = {
+  strength_gym: 60,
+  strength_home: 60,
+  endurance: 30,
+} as const satisfies Record<TrainingSlotKind, number>;
+
+/**
+ * Schwellen der freundlichen, NICHT blockierenden Hinweise im Schritt „Deine Trainingstage“ (scheduleHints()).
+ * Quelle: PRODUKTENTSCHEIDUNG. Orientierung: ACSM Position Stand (2009), Med Sci Sports Exerc 41(3):687–708
+ * (Kraft mindestens 2 Tage pro Woche je Muskelgruppe); Garber CE et al. (2011), Med Sci Sports Exerc
+ * 43(7):1334–1359 (Ausdauer an mehreren Tagen pro Woche). Fachlich zu bestätigen.
+ */
+export const SCHEDULE_HINT_LIMITS = {
+  recommendedMinEnduranceDays: 2,
+  recommendedMinStrengthDays: 2,
+} as const;
+
+/**
+ * Gesamt-Deckel Einheiten pro Woche (Erweiterungsplan 5.2 Punkt 3, Wächter-Befund 6): Einsteiger, vorsichtige
+ * Pläne (jedes Gesundheits-Flag oder ohne Gesundheits-Check), unter 18 und ab 65 höchstens 5 Einheiten, also
+ * mindestens 2 Ruhetage. Für alle anderen kein Deckel (nur Hinweis bei 7 Tagen).
+ * Quelle: PRODUKTENTSCHEIDUNG – fachlich zu bestätigen. In Etappe B2 nur für den Hinweis `week_total_capped`
+ * im Onboarding genutzt; die Plan-Engine wendet den Deckel ab Etappe B3 an.
+ */
+export const WEEKLY_SESSION_LIMITS = {
+  cautiousMaxSessions: 5,
+  minorBelowAge: 18,
+  seniorFromAge: 65,
 } as const;
 
 /**
@@ -119,6 +162,21 @@ export const EQUIPMENT_LIMITS = {
   maxWeightSteps: 40,
   noteMaxLength: 200,
 } as const;
+
+/**
+ * Langhantel (Erweiterungsplan Abschnitt 4.3): `user_equipment.weights_kg` der Langhantel sind SCHEIBEN je Paar,
+ * die Stange steht getrennt in `user_equipment.bar_kg`.
+ * - Stange 5–25 kg (identisch als CHECK `bar_kg between 5 and 25`): von der leichten SZ-/Technikstange bis zur
+ *   schweren Spezialstange; übliche Stangen 10, 15 (Damen-Olympiastange) und 20 kg (Herren-Olympiastange,
+ *   IWF-Norm) als Vorschläge. Ohne Angabe gilt die 20-kg-Stange (Frage 9).
+ * - Scheiben höchstens 25 kg (größte übliche Hantelscheibe, IWF-Norm; identisch als CHECK
+ *   `25 >= all (weights_kg)` nur für die Langhantel).
+ * Quelle: übliche Handelsgrößen / IWF Technical and Competition Rules; Auswahl = PRODUKTENTSCHEIDUNG.
+ */
+export const BARBELL_BAR_KG = { min: 5, max: 25 } as const;
+export const BARBELL_BAR_PRESETS_KG = [10, 15, 20] as const;
+export const BARBELL_DEFAULT_BAR_KG = 20;
+export const BARBELL_PLATE_MAX_KG = 25;
 
 /**
  * Körperumfänge in cm (Tabelle `body_measurements`, optionaler Onboarding-Schritt „Körperumfänge“).
@@ -472,6 +530,8 @@ export const PLAN_BLOCK_LIMITS = {
 /**
  * Zielgewicht einer geplanten Übung in kg: Plausibilitätsgrenze (Langhantel + Scheiben), identisch als CHECK.
  * Quelle: PRODUKTENTSCHEIDUNG.
+ * Bei Kurzhanteln und Kettlebells bedeutet target_weight_kg das Gewicht JE HANTEL bzw. JE KUGEL; bei der
+ * Langhantel das Gesamtgewicht (Stange + Scheiben, barbellLoadSteps()). Erweiterungsplan Abschnitt 4.3.
  */
 export const PLANNED_LOAD_LIMITS = { targetWeightKg: { min: 0.5, max: 500 } } as const;
 

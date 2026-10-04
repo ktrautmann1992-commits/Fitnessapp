@@ -29,8 +29,14 @@ function ctx(patch: Partial<PlanContext> = {}): PlanContext {
 
 const fullAnswers: OnboardingAnswers = {
   goal: { goalType: 'endurance', discipline: 'marathon', targetDate: '2027-04-01' },
-  timeBudget: { sessionsPerWeek: 4, minutesPerSession: 60, preferredDays: [5, 1, 3] },
-  trainingLocation: 'both',
+  trainingSchedule: {
+    mode: 'fixed',
+    slots: [
+      { weekday: 1, kind: 'endurance', minutes: 30 },
+      { weekday: 3, kind: 'strength_gym', minutes: 60 },
+      { weekday: 6, kind: 'strength_home', minutes: 90 },
+    ],
+  },
   nutrition: {
     dietType: 'omnivore',
     eatsPork: false,
@@ -133,18 +139,78 @@ describe('Onboarding → Tabellenzeilen', () => {
     ]);
   });
 
-  it('Ziel/Zeitbudget/Ort: immer die vollständige goals-Zeile (goal_type ist Pflicht)', () => {
+  it('Ziel: immer die vollständige goals-Zeile, Ort aus den Trainingstagen abgeleitet', () => {
     expect(toGoalsRow(USER_ID, fullAnswers)).toEqual({
       user_id: USER_ID,
       goal_type: 'endurance',
       discipline: 'marathon',
       target_date: '2027-04-01',
-      sessions_per_week: 4,
-      minutes_per_session: 60,
-      preferred_days: [1, 3, 5],
       training_location: 'both',
     });
+    expect(toGoalsRow(USER_ID, { goal: fullAnswers.goal! }).training_location).toBeNull();
+    expect(
+      toGoalsRow(USER_ID, {
+        goal: fullAnswers.goal!,
+        trainingSchedule: { mode: 'flex', slots: [{ kind: 'endurance', minutes: 30 }] },
+      }).training_location,
+    ).toBeNull();
     expect(() => toGoalsRow(USER_ID, {})).toThrow();
+  });
+
+  it('Trainingstage: replace_training_slots + goals (abgeleiteter Ort), dann Fortschritt', () => {
+    const save: StepSave = { step: 'time_budget', schedule: fullAnswers.trainingSchedule! };
+    const ops = planStepWrites(
+      save,
+      ctx({ answers: applyStepToAnswers(fullAnswers, save), nextStep: 'equipment' }),
+    );
+    expect(ops).toEqual([
+      {
+        kind: 'replace_training_slots',
+        rows: [
+          { user_id: USER_ID, slot_no: 1, weekday: 1, kind: 'endurance', minutes: 30 },
+          { user_id: USER_ID, slot_no: 2, weekday: 3, kind: 'strength_gym', minutes: 60 },
+          { user_id: USER_ID, slot_no: 3, weekday: 6, kind: 'strength_home', minutes: 90 },
+        ],
+      },
+      { kind: 'upsert_goals', row: expect.objectContaining({ training_location: 'both' }) },
+      { kind: 'update_profile', patch: { onboarding_step: 'equipment' } },
+    ]);
+    expect(ops.every((op) => !isSensitiveOp(op) && !isDirectOp(op))).toBe(true);
+  });
+
+  it('Langhantel: Stange nur bei der Langhantel gespeichert', () => {
+    const ops = planStepWrites(
+      {
+        step: 'equipment',
+        items: [
+          { equipmentId: 'barbell', location: 'home', weightsKg: [5, 1.25], barKg: 15, note: null },
+          { equipmentId: 'dumbbells', location: 'home', weightsKg: [2], barKg: 20, note: null },
+        ],
+      },
+      ctx({ nextStep: 'nutrition' }),
+    );
+    expect(ops[0]).toEqual({
+      kind: 'replace_user_equipment',
+      location: 'home',
+      rows: [
+        {
+          user_id: USER_ID,
+          equipment_id: 'barbell',
+          location: 'home',
+          weights_kg: [1.25, 5],
+          note: null,
+          bar_kg: 15,
+        },
+        {
+          user_id: USER_ID,
+          equipment_id: 'dumbbells',
+          location: 'home',
+          weights_kg: [2],
+          note: null,
+          bar_kg: null,
+        },
+      ],
+    });
   });
 
   it('Disziplin wird außerhalb von Ausdauer nie gespeichert', () => {
@@ -248,9 +314,18 @@ describe('planSave: nächster Schritt nach packages/core', () => {
     expect(planned.next).toBe('body_metrics');
   });
 
-  it('Trainingsort „Studio“ überspringt Equipment', () => {
+  it('ohne Tag „Kraft zu Hause“ wird Equipment übersprungen – nie ein Trainingsort-Schritt', () => {
     const planned = planSave(
-      { step: 'training_location', trainingLocation: 'gym' },
+      {
+        step: 'time_budget',
+        schedule: {
+          mode: 'fixed',
+          slots: [
+            { weekday: 1, kind: 'strength_gym', minutes: 60 },
+            { weekday: 4, kind: 'endurance', minutes: 30 },
+          ],
+        },
+      },
       {
         userId: USER_ID,
         answers: { goal: { goalType: 'muscle_gain', discipline: null, targetDate: null } },
@@ -261,6 +336,23 @@ describe('planSave: nächster Schritt nach packages/core', () => {
       },
     );
     expect(planned.next).toBe('nutrition');
+    expect(planned.ops[0]?.kind).toBe('replace_training_slots');
+
+    const home = planSave(
+      {
+        step: 'time_budget',
+        schedule: { mode: 'flex', slots: [{ kind: 'strength_home', minutes: 45 }] },
+      },
+      {
+        userId: USER_ID,
+        answers: { goal: { goalType: 'muscle_gain', discipline: null, targetDate: null } },
+        rows: base,
+        versions: VERSIONS,
+        platform: 'web',
+        now: NOW,
+      },
+    );
+    expect(home.next).toBe('equipment');
   });
 });
 
@@ -272,11 +364,13 @@ describe('Tabellenzeilen → Antworten (Fortsetzen)', () => {
       { step: 'sex', sex: 'female', cycleModuleInterest: true },
       { step: 'experience', experienceLevel: 'advanced' },
       { step: 'goal', goal: fullAnswers.goal! },
-      { step: 'time_budget', timeBudget: { ...fullAnswers.timeBudget!, preferredDays: [1, 3, 5] } },
-      { step: 'training_location', trainingLocation: 'both' },
+      { step: 'time_budget', schedule: fullAnswers.trainingSchedule! },
       {
         step: 'equipment',
-        items: [{ equipmentId: 'dumbbells', location: 'home', weightsKg: [2, 4], note: null }],
+        items: [
+          { equipmentId: 'dumbbells', location: 'home', weightsKg: [2, 4], note: null },
+          { equipmentId: 'barbell', location: 'home', weightsKg: [2.5], barKg: 7, note: null },
+        ],
       },
       { step: 'nutrition', nutrition: fullAnswers.nutrition! },
       { step: 'cooking', cooking: fullAnswers.cooking! },
@@ -291,10 +385,11 @@ describe('Tabellenzeilen → Antworten (Fortsetzen)', () => {
     expect(restored.cycleModuleInterest).toBe(true);
     expect(restored.experienceLevel).toBe('advanced');
     expect(restored.goal).toEqual(fullAnswers.goal);
-    expect(restored.timeBudget).toEqual({ ...fullAnswers.timeBudget, preferredDays: [1, 3, 5] });
-    expect(restored.trainingLocation).toBe('both');
+    expect(restored.trainingSchedule).toEqual(fullAnswers.trainingSchedule);
+    expect(rows.goals?.training_location).toBe('both');
     expect(restored.equipment).toEqual([
-      { equipmentId: 'dumbbells', location: 'home', weightsKg: [2, 4], note: null },
+      { equipmentId: 'dumbbells', location: 'home', weightsKg: [2, 4], note: null, barKg: null },
+      { equipmentId: 'barbell', location: 'home', weightsKg: [2.5], note: null, barKg: 7 },
     ]);
     expect(restored.nutrition).toEqual(fullAnswers.nutrition);
     expect(restored.cooking).toEqual(fullAnswers.cooking);
@@ -310,6 +405,7 @@ describe('Tabellenzeilen → Antworten (Fortsetzen)', () => {
             location: 'home',
             weights_kg: [],
             note: null,
+            bar_kg: null,
           },
         ],
         nutritionPrefs: {

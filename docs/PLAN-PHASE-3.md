@@ -57,8 +57,10 @@ ruft keine KI-Schnittstelle auf und braucht keinen Schlüssel.
 
 ## 4. Worauf wir aufbauen (Ist-Stand, geprüft am 04.10.2026)
 
-1. **Angaben aus dem Onboarding** (Phase 1): `goals` (Ziel, Disziplin, Tage/Woche 1–7, Minuten 10–240,
-   `preferred_days` ISO 1 = Montag … 7 = Sonntag, Ort `gym|home|both`), `profiles.experience_level`
+1. **Angaben aus dem Onboarding** (Phase 1; **seit Etappe B2** geändert, siehe `docs/PLAN-PHASE-3-ERWEITERUNG.md`):
+   `goals` (Ziel, Disziplin, Ort `gym|home|both` – jetzt aus den Trainingstagen abgeleitet), **`training_slots`**
+   (je Eintrag Art `strength_gym|strength_home|endurance`, Minuten 10–240, Wochentag ISO 1–7 oder „Tag egal“; ersetzt
+   Tage/Woche, Minuten und `preferred_days` in `goals`), `profiles.experience_level`
    (`beginner|advanced|competitive`), `profiles.birth_date`, `user_equipment` (Ort, Geräte, `weights_kg`),
    `health_screening.flags` mit `medical_clearance_recommended`, `pregnancy`, `injury`, `medication`,
    `conservative_plan` (berechnet in `evaluateHealthScreening()` bzw. per Datenbank-Trigger).
@@ -662,6 +664,9 @@ aber **kein Blocker** mehr.
    (Laden) → „Dein Plan ist fertig“ mit Vorlagen-Titel, Güte-Hinweis und Knopf **„Zum Plan“**.
 2. Gemeinsamer Ablauf für beide Betriebsarten (`src/data/training-plan.ts`): Angaben aus `UserRows` →
    `planInputsFromRows()` → Inhalte laden → `generateTrainingPlan()` → `generatedPlanSchema` prüfen → speichern.
+   **Seit Etappe B2:** `planInputsFromRows()` liest den Zeitplan aus `UserRows.trainingSlots` (`scheduleFromSlots()`)
+   und `user_equipment.bar_kg`, nicht mehr aus `goals`. **Etappe C startet erst nach Etappe B3** (neues
+   Angaben-Format `schedule`, Ausdauer-Einheiten – `docs/PLAN-PHASE-3-ERWEITERUNG.md` Abschnitt 9).
 3. **Testmodus (ohne Supabase):** Inhalte kommen gebündelt aus dem Repository (Skript wie
    `apps/web/scripts/bundle-content.mjs`, am besten gemeinsam genutzt; Ausgabe `src/generated/content-files.ts`,
    nicht eingecheckt, erst bei Bedarf nachgeladen). Nur `createLocalBackend()` übergibt `allowDrafts: true` (5.2).
@@ -1156,3 +1161,6 @@ App-Änderung (Etappen B/C).
 13. `db-sync.test.ts` gleicht zusätzlich `between 1 and 49` (= 7 × 7 aus `PLAN_BLOCK_LIMITS`), die Werte-Grenzen der
     Angaben, `equipment_keys` und `PLAN_SAVE_LIMITS` ab; Abschnitt 8.4 Punkt 6 an „fremde `user_id` wird abgelehnt“
     angepasst. Öffentliche Funktions-Signaturen und Spalten unverändert – `database.types.ts` bleibt gleich.
+
+**Etappe B2 – Trainingstage + Gewichte: erledigt** (wartet auf Wächter-Prüfung). Plan und Umsetzungsstand:
+`docs/PLAN-PHASE-3-ERWEITERUNG.md` (Abschnitt 14). Danach Etappe B3 (Plan-Engine mit Art je Einheit), dann Etappe C.
