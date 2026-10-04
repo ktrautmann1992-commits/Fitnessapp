@@ -98,7 +98,7 @@ describe('Tage pro Woche 1–7', () => {
   it.each([1, 2, 3, 4, 5, 6, 7])('%i Tage', (days) => {
     const p = plan({ sessionsPerWeek: days, preferredDays: [] });
     const perWeek = Math.min(days, 4);
-    expect(p.training_days).toHaveLength(perWeek);
+    expect(p.training_week.map((d) => d.weekday)).toHaveLength(perWeek);
     const week2 = p.sessions.filter((s) => s.week_no === 2);
     expect(week2).toHaveLength(perWeek);
     if (days <= 2) expect(p.notes).toContain('days_rotated');
@@ -106,8 +106,10 @@ describe('Tage pro Woche 1–7', () => {
     expect(isPlanWithinLimits(p)).toBe(true);
   });
 
-  it('zu wenige Wunsch-Tage → ergänzt mit Hinweis', () => {
-    expect(plan({ sessionsPerWeek: 3, preferredDays: [2] }).notes).toContain('days_added');
+  it('„Tage egal“: Standardmuster, keine Wunsch-Tage mehr (days_added entfällt)', () => {
+    const p = plan({ sessionsPerWeek: 3, preferredDays: [] });
+    expect(p.training_week.map((d) => d.weekday)).toEqual([1, 3, 5]);
+    expect(p.notes).not.toContain('days_added');
   });
 
   it('2 Tage Ganzkörper Sa + So → Hinweis back_to_back_sessions', () => {
@@ -254,9 +256,11 @@ describe('Zeit und Startwoche', () => {
       const today = addDays(MONDAY, offset);
       const p = plan({}, today);
       expect(p.sessions.every((s) => s.scheduled_on >= today)).toBe(true);
-      expect(p.sessions.every((s) => p.training_days.includes(isoWeekday(s.scheduled_on)))).toBe(
-        true,
-      );
+      expect(
+        p.sessions.every((s) =>
+          p.training_week.map((d) => d.weekday).includes(isoWeekday(s.scheduled_on)),
+        ),
+      ).toBe(true);
     },
   );
 });
@@ -379,7 +383,7 @@ describe('Eigenschaften über viele Personen (unabhängige Erwartung)', () => {
                   violations.push(`${label}: medical_notice`);
                 if (
                   (experienceLevel === 'beginner' || expected.cautious) &&
-                  !p.template_id.includes('einsteiger')
+                  !(p.template_id ?? '').includes('einsteiger')
                 ) {
                   violations.push(`${label}: Vorlage ${p.template_id}`);
                 }
@@ -438,7 +442,7 @@ describe('generateTrainingPlan mit kleinen festen Testdaten', () => {
     if (!result.ok) throw new Error(result.error);
     const p = result.plan;
     expect(p.template_id).toBe('fitness-einsteiger-3t-test');
-    expect(p.training_days).toEqual([1, 4]);
+    expect(p.training_week.map((d) => d.weekday)).toEqual([1, 4]);
     expect(p.sessions.slice(0, 6).map((s) => s.template_day_index)).toEqual([1, 2, 3, 1, 2, 3]);
     const all = p.sessions.flatMap((s) => s.exercises.map((e) => e.exercise_id));
     expect(all).not.toContain('kreuzheben');

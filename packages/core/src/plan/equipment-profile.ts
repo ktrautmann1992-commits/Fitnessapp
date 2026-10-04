@@ -1,6 +1,7 @@
 import type { Exercise } from '../content/schemas';
 import type { EquipmentLocation, TrainingLocation } from '../enums';
-import { EQUIPMENT, OTHER_EQUIPMENT_ID } from '../equipment';
+import { BARBELL_DEFAULT_BAR_KG } from '../constants';
+import { BARBELL_ID, barbellLoadSteps, EQUIPMENT, OTHER_EQUIPMENT_ID } from '../equipment';
 import { isExerciseAllowed, type PlanSafetyRules } from './safety';
 
 /**
@@ -15,19 +16,42 @@ export interface EquipmentProfile {
   readonly weights: ReadonlyMap<string, readonly number[]>;
 }
 
+/** Ein Gerät zu Hause, wie in den Angaben (barKg nur bei der Langhantel). */
+export interface HomeEquipmentForProfile {
+  readonly equipmentId: string;
+  readonly weightsKg: readonly number[];
+  readonly barKg?: number | null;
+}
+
+/**
+ * Bekannte Gewichtsstufen je Gerät. Langhantel: die eingetragenen Werte sind SCHEIBEN je Paar – die Stufen sind
+ * die ladbaren GESAMTgewichte barbellLoadSteps(Stange, Scheiben) (Erweiterungsplan 4.3, B3-Pflichtpunkt), ohne
+ * Stangen-Angabe mit BARBELL_DEFAULT_BAR_KG. Ohne eingetragene Scheiben bleibt die Liste leer (unbekannt →
+ * snapToAvailableWeight rundet auf 0,5 kg). Kurzhanteln/Kettlebells: je Hantel bzw. Kugel.
+ */
+export function equipmentWeightSteps(
+  homeEquipment: readonly HomeEquipmentForProfile[],
+): Map<string, readonly number[]> {
+  return new Map(
+    homeEquipment.map((item) => {
+      const sorted = [...item.weightsKg].sort((a, b) => a - b);
+      if (item.equipmentId === BARBELL_ID && sorted.length > 0) {
+        return [item.equipmentId, barbellLoadSteps(item.barKg ?? BARBELL_DEFAULT_BAR_KG, sorted)];
+      }
+      return [item.equipmentId, sorted] as const;
+    }),
+  );
+}
+
 /**
  * Studio = alle Katalog-Geräte außer „Sonstiges“ (Annahme bis Phase 9b); Zuhause = eigene Heim-Geräte;
  * „beides“ = Studio, Gewichtsstufen der Heim-Geräte bleiben bekannt.
  */
 export function equipmentProfile(
-  trainingLocation: TrainingLocation,
-  homeEquipment: readonly { equipmentId: string; weightsKg: readonly number[] }[],
+  trainingLocation: TrainingLocation | EquipmentLocation,
+  homeEquipment: readonly HomeEquipmentForProfile[],
 ): EquipmentProfile {
-  const weights = new Map(
-    homeEquipment.map(
-      (item) => [item.equipmentId, [...item.weightsKg].sort((a, b) => a - b)] as const,
-    ),
-  );
+  const weights = equipmentWeightSteps(homeEquipment);
   if (trainingLocation === 'home') {
     return {
       location: 'home',

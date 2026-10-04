@@ -9,6 +9,8 @@ import {
   isExerciseFeasible,
 } from './equipment-profile';
 import { isExerciseAllowed, planSafetyRules } from './safety';
+import { barbellLoadSteps } from '../equipment';
+import { snapToAvailableWeight } from './loads';
 import { repoLibrary } from './test-library';
 
 const lib = repoLibrary().exercises;
@@ -256,5 +258,36 @@ describe('findHarderVariant', () => {
         rules: healthy,
       }),
     ).toBeNull();
+  });
+});
+
+describe('Langhantel: ladbare Gesamtgewichte (B3-Pflichtpunkt, Erweiterungsplan 4.3)', () => {
+  it('Ziel 40 kg mit Stange 20 + {2,5; 5; 10} → 40 (nicht „Scheibe 20“)', () => {
+    const profile = equipmentProfile('home', [
+      { equipmentId: 'barbell', weightsKg: [10, 2.5, 5], barKg: 20 },
+    ]);
+    const steps = profile.weights.get('barbell') ?? [];
+    expect(steps).toEqual(barbellLoadSteps(20, [2.5, 5, 10]));
+    expect(snapToAvailableWeight(40, steps)).toBe(40);
+    expect(snapToAvailableWeight(39, steps)).toBe(35);
+    expect(snapToAvailableWeight(19, steps)).toBeNull();
+  });
+
+  it('ohne Stangen-Angabe gilt 20 kg; SZ-Stange 7 kg', () => {
+    const steps = (barKg: number | null) =>
+      equipmentProfile('gym', [{ equipmentId: 'barbell', weightsKg: [1.25], barKg }]).weights.get(
+        'barbell',
+      );
+    expect(steps(null)).toEqual([20, 22.5]);
+    expect(steps(7)).toEqual([7, 9.5]);
+  });
+
+  it('ohne Scheiben: unbekannt (leer); Kurzhanteln je Hantel unverändert', () => {
+    const profile = equipmentProfile('home', [
+      { equipmentId: 'barbell', weightsKg: [], barKg: 15 },
+      { equipmentId: 'dumbbells', weightsKg: [10, 2] },
+    ]);
+    expect(profile.weights.get('barbell')).toEqual([]);
+    expect(profile.weights.get('dumbbells')).toEqual([2, 10]);
   });
 });

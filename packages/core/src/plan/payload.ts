@@ -1,14 +1,24 @@
 import { z } from 'zod';
 
 import {
+  BARBELL_PLATE_MAX_KG,
   EQUIPMENT_LIMITS,
   PLAN_BLOCK_LIMITS,
   PLAN_SAVE_LIMITS,
   TRAINING_LIMITS,
 } from '../constants';
-import { PLAN_MATCH_QUALITIES, PLAN_NOTES, SESSION_FOCUSES } from '../enums';
-import { equipmentIdSchema } from '../equipment';
 import {
+  ENDURANCE_MODALITIES,
+  PLAN_MATCH_QUALITIES,
+  PLAN_NOTES,
+  PLANNED_SESSION_KINDS,
+  SESSION_FOCUSES,
+  TRAINING_SLOT_KINDS,
+} from '../enums';
+import { BARBELL_ID, equipmentIdSchema } from '../equipment';
+import { ENDURANCE_EFFORT_LIMITS } from './generate';
+import {
+  barbellBarKgSchema,
   enduranceDisciplineSchema,
   experienceLevelSchema,
   goalTypeSchema,
@@ -46,10 +56,13 @@ export interface SavePlanSession {
   readonly week_no: number;
   readonly is_intro_week: boolean;
   readonly is_deload: boolean;
-  readonly template_day_index: number;
+  readonly kind: string;
+  readonly template_day_index: number | null;
   readonly scheduled_on: string;
   readonly name_de: string;
-  readonly focus: string;
+  readonly focus: string | null;
+  readonly endurance_modality: string | null;
+  readonly effort_target: number | null;
   readonly estimated_minutes: number;
   readonly warmup_de: string;
   readonly cooldown_de: string;
@@ -57,9 +70,10 @@ export interface SavePlanSession {
 }
 
 export interface SavePlanPayload {
-  readonly template_id: string;
-  readonly template_title_de: string;
-  readonly template_version: number;
+  /** null = reiner Ausdauer-Plan (alle drei leer). */
+  readonly template_id: string | null;
+  readonly template_title_de: string | null;
+  readonly template_version: number | null;
   readonly engine_version: number;
   readonly match_quality: string;
   readonly notes: readonly string[];
@@ -77,10 +91,13 @@ export function toSavePlanSession(s: GeneratedSession): SavePlanSession {
     week_no: s.week_no,
     is_intro_week: s.is_intro_week,
     is_deload: s.is_deload,
+    kind: s.kind,
     template_day_index: s.template_day_index,
     scheduled_on: s.scheduled_on,
     name_de: s.name_de,
     focus: s.focus,
+    endurance_modality: s.endurance_modality,
+    effort_target: s.effort_target,
     estimated_minutes: s.estimated_minutes,
     warmup_de: s.warmup_de,
     cooldown_de: s.cooldown_de,
@@ -116,13 +133,28 @@ export function toSavePlanPayload(plan: GeneratedPlan): SavePlanPayload {
       goalType: plan.inputs.goalType,
       discipline: plan.inputs.discipline,
       experienceLevel: plan.inputs.experienceLevel,
-      sessionsPerWeek: plan.inputs.sessionsPerWeek,
-      minutesPerSession: plan.inputs.minutesPerSession,
-      preferredDays: [...plan.inputs.preferredDays],
+      schedule:
+        plan.inputs.schedule.mode === 'fixed'
+          ? {
+              mode: 'fixed',
+              slots: plan.inputs.schedule.slots.map((slot) => ({
+                weekday: slot.weekday,
+                kind: slot.kind,
+                minutes: slot.minutes,
+              })),
+            }
+          : {
+              mode: 'flex',
+              slots: plan.inputs.schedule.slots.map((slot) => ({
+                kind: slot.kind,
+                minutes: slot.minutes,
+              })),
+            },
       trainingLocation: plan.inputs.trainingLocation,
       homeEquipment: plan.inputs.homeEquipment.map((e) => ({
         equipmentId: e.equipmentId,
         weightsKg: [...e.weightsKg],
+        barKg: e.barKg,
       })),
     },
     start_date: plan.start_date,
@@ -188,26 +220,104 @@ export const savePlanExerciseSchema = z.strictObject({
   target_weight_kg: z.number().nullable(),
 });
 
-export const savePlanSessionSchema = z.strictObject({
-  block_no: z.number().int().min(1),
-  week_no: z.number().int(),
-  is_intro_week: z.boolean(),
-  is_deload: z.boolean(),
-  template_day_index: z.number().int(),
-  scheduled_on: isoDate,
-  name_de: z.string().min(1),
-  focus: z.enum(SESSION_FOCUSES),
-  estimated_minutes: z.number().int(),
-  warmup_de: z.string(),
-  cooldown_de: z.string(),
-  exercises: z.array(savePlanExerciseSchema).min(1).max(PLAN_BLOCK_LIMITS.exercisesPerSession),
-});
+/**
+ * Eine Einheit: Kraft mit Schwerpunkt, Vorlagen-Einheit und 1–8 Übungen; Ausdauer mit Modalität und Anstrengung,
+ * ohne Übungen (gleiche Regeln wie die CHECKs von planned_sessions und private.insert_plan_sessions()).
+ */
+export const savePlanSessionSchema = z
+  .strictObject({
+    block_no: z.number().int().min(1),
+    week_no: z.number().int(),
+    is_intro_week: z.boolean(),
+    is_deload: z.boolean(),
+    kind: z.enum(PLANNED_SESSION_KINDS),
+    template_day_index: z.number().int().nullable(),
+    scheduled_on: isoDate,
+    name_de: z.string().min(1),
+    focus: z.enum(SESSION_FOCUSES).nullable(),
+    endurance_modality: z.enum(ENDURANCE_MODALITIES).nullable(),
+    effort_target: z
+      .number()
+      .int()
+      .min(ENDURANCE_EFFORT_LIMITS.min)
+      .max(ENDURANCE_EFFORT_LIMITS.max)
+      .nullable(),
+    estimated_minutes: z.number().int(),
+    warmup_de: z.string(),
+    cooldown_de: z.string(),
+    exercises: z.array(savePlanExerciseSchema).max(PLAN_BLOCK_LIMITS.exercisesPerSession),
+  })
+  .refine(
+    (s) =>
+      s.kind === 'strength'
+        ? s.focus !== null &&
+          s.template_day_index !== null &&
+          s.exercises.length >= 1 &&
+          s.endurance_modality === null &&
+          s.effort_target === null
+        : s.focus === null &&
+          s.template_day_index === null &&
+          s.exercises.length === 0 &&
+          s.endurance_modality !== null &&
+          s.effort_target !== null,
+    'Kraft: Schwerpunkt und Übungen; Ausdauer: Modalität und Anstrengung, keine Übungen.',
+  );
 
 /** Ein Gerät zu Hause in den Angaben (= equipment_keys in private.assert_plan_inputs()). */
-export const savePlanHomeEquipmentSchema = z.strictObject({
-  equipmentId: equipmentIdSchema,
-  weightsKg: z.array(weightStepKgSchema).max(EQUIPMENT_LIMITS.maxWeightSteps),
+export const savePlanHomeEquipmentSchema = z
+  .strictObject({
+    equipmentId: equipmentIdSchema,
+    weightsKg: z.array(weightStepKgSchema).max(EQUIPMENT_LIMITS.maxWeightSteps),
+    barKg: barbellBarKgSchema.nullable(),
+  })
+  .refine((item) => item.barKg === null || item.equipmentId === BARBELL_ID, {
+    path: ['barKg'],
+    message: 'Eine Stange gibt es nur bei der Langhantel.',
+  })
+  .refine(
+    (item) =>
+      item.equipmentId !== BARBELL_ID || item.weightsKg.every((kg) => kg <= BARBELL_PLATE_MAX_KG),
+    { path: ['weightsKg'], message: 'Hantelscheiben höchstens 25 kg.' },
+  );
+
+const slotMinutes = z
+  .number()
+  .int()
+  .min(TRAINING_LIMITS.minutesPerSession.min)
+  .max(TRAINING_LIMITS.minutesPerSession.max);
+
+/** Trainingstag mit festem Wochentag (= fixed_slot_keys in private.assert_plan_inputs()). */
+export const savePlanFixedSlotSchema = z.strictObject({
+  weekday: weekdaySchema,
+  kind: z.enum(TRAINING_SLOT_KINDS),
+  minutes: slotMinutes,
 });
+
+/** Trainingstag „Tag egal“ (= flex_slot_keys). */
+export const savePlanFlexSlotSchema = z.strictObject({
+  kind: z.enum(TRAINING_SLOT_KINDS),
+  minutes: slotMinutes,
+});
+
+const slotCount = (schema: z.ZodType) =>
+  z.array(schema).min(TRAINING_LIMITS.sessionsPerWeek.min).max(TRAINING_LIMITS.sessionsPerWeek.max);
+
+/** Zeitplan in den Angaben (= schedule_keys): genau `mode` und `slots`. */
+export const savePlanScheduleFixedSchema = z.strictObject({
+  mode: z.literal('fixed'),
+  slots: slotCount(savePlanFixedSlotSchema).refine(
+    (slots) => distinct(slots.map((s) => (s as { weekday: number }).weekday)),
+    'Jeder Wochentag nur einmal.',
+  ),
+});
+export const savePlanScheduleFlexSchema = z.strictObject({
+  mode: z.literal('flex'),
+  slots: slotCount(savePlanFlexSlotSchema),
+});
+export const savePlanScheduleSchema = z.discriminatedUnion('mode', [
+  savePlanScheduleFixedSchema,
+  savePlanScheduleFlexSchema,
+]);
 
 /** Angaben ohne Gesundheitsdaten – dieselben Werte prüft private.assert_plan_inputs() in der Datenbank. */
 export const savePlanInputsSchema = z
@@ -215,18 +325,9 @@ export const savePlanInputsSchema = z
     goalType: goalTypeSchema,
     discipline: enduranceDisciplineSchema.nullable(),
     experienceLevel: experienceLevelSchema,
-    sessionsPerWeek: z
-      .number()
-      .int()
-      .min(TRAINING_LIMITS.sessionsPerWeek.min)
-      .max(TRAINING_LIMITS.sessionsPerWeek.max),
-    minutesPerSession: z
-      .number()
-      .int()
-      .min(TRAINING_LIMITS.minutesPerSession.min)
-      .max(TRAINING_LIMITS.minutesPerSession.max),
-    preferredDays: z.array(weekdaySchema).max(7).refine(distinct, 'Jeder Wochentag nur einmal.'),
-    trainingLocation: trainingLocationSchema,
+    schedule: savePlanScheduleSchema,
+    /** Abgeleitet (deriveTrainingLocation); null = nur Ausdauer. */
+    trainingLocation: trainingLocationSchema.nullable(),
     homeEquipment: z
       .array(savePlanHomeEquipmentSchema)
       .refine((items) => distinct(items.map((i) => i.equipmentId)), 'Jedes Gerät nur einmal.'),
@@ -238,9 +339,9 @@ export const savePlanInputsSchema = z
 
 /** Eingabe von save_training_plan. */
 export const savePlanPayloadSchema = z.strictObject({
-  template_id: z.string().min(1),
-  template_title_de: z.string().min(1),
-  template_version: z.number().int().min(1),
+  template_id: z.string().min(1).nullable(),
+  template_title_de: z.string().min(1).nullable(),
+  template_version: z.number().int().min(1).nullable(),
   engine_version: z.number().int().min(1),
   match_quality: z.enum(PLAN_MATCH_QUALITIES),
   notes: z.array(z.enum(PLAN_NOTES)),

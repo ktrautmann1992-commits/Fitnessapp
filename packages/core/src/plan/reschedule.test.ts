@@ -108,3 +108,41 @@ describe('rescheduleSession', () => {
     expect(isSameIsoWeek('2026-10-12', '2026-10-05')).toBe(false);
   });
 });
+
+describe('rescheduleSession mit gemischten Arten (Erweiterungsplan 5.4)', () => {
+  const run = (id: string, date: string) => s(id, date, { kind: 'endurance', focus: null });
+
+  it('Ausdauer darf auf jeden freien Tag ab heute (auch neben Kraft-Tagen)', () => {
+    const week = [...WEEK, run('lauf', '2026-10-06')];
+    expect(rescheduleSession(week, 'lauf', '2026-10-06')).toEqual({
+      kind: 'moved',
+      date: '2026-10-08',
+      originalDate: '2026-10-06',
+    });
+  });
+
+  it('Kraft prüft nur Kraft-Nachbarn: lockere Ausdauer daneben ist kein Konflikt', () => {
+    const week = [
+      s('mo', '2026-10-05'),
+      run('di', '2026-10-06'),
+      run('do', '2026-10-08'),
+      s('sa', '2026-10-10'),
+    ];
+    // Montag verpasst, heute Dienstag: Mi liegt zwischen zwei Ausdauer-Tagen → erlaubt.
+    expect(rescheduleSession(week, 'mo', '2026-10-06')).toEqual({
+      kind: 'moved',
+      date: '2026-10-07',
+      originalDate: '2026-10-05',
+    });
+  });
+
+  it('nie zwei Einheiten am Tag; Erholungswoche → streichen', () => {
+    const full = ['05', '06', '07', '08', '09', '10', '11'].map((d, i) =>
+      i === 0 ? run('x', `2026-10-${d}`) : s(`k${d}`, `2026-10-${d}`),
+    );
+    expect(rescheduleSession(full, 'x', '2026-10-05')).toEqual({ kind: 'skipped' });
+    expect(
+      rescheduleSession([{ ...run('x', '2026-10-05'), is_deload: true }], 'x', '2026-10-05'),
+    ).toEqual({ kind: 'skipped' });
+  });
+});

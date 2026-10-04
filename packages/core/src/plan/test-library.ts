@@ -41,20 +41,48 @@ export function repoLibrary(): PlanLibrary {
 /** Montag, 05.10.2026 – fester Stichtag für die Tests. */
 export const MONDAY = '2026-10-05';
 
+/** Kurzform für Tests: altes Zeitbudget (alle Tage Kraft am selben Ort) → Zeitplan. */
+export interface LegacyBudget {
+  sessionsPerWeek?: number;
+  minutesPerSession?: number;
+  preferredDays?: number[];
+  trainingLocation?: 'gym' | 'home' | 'both';
+}
+
+/**
+ * Zeitplan aus dem alten Zeitbudget: Anzahl Wunsch-Tage = Tage pro Woche → feste Tage, sonst „Tage egal“; Ort
+ * zu Hause → Kraft zu Hause, sonst Kraft im Studio (wie scheduleFromLegacyGoals).
+ */
+export function legacySchedule(budget: LegacyBudget = {}): TrainingScheduleInput {
+  const sessions = budget.sessionsPerWeek ?? 3;
+  const minutes = budget.minutesPerSession ?? 60;
+  const days = budget.preferredDays ?? [1, 3, 5];
+  const kind = budget.trainingLocation === 'home' ? 'strength_home' : 'strength_gym';
+  return days.length === sessions
+    ? { mode: 'fixed', slots: days.map((weekday) => ({ weekday, kind, minutes })) }
+    : { mode: 'flex', slots: Array.from({ length: sessions }, () => ({ kind, minutes })) };
+}
+
+type TrainingScheduleInput = PlanInputsInput['schedule'];
+
 /** Standard-Person: 30 Jahre, Gesundheits-Check ohne Auffälligkeit, Studio, Muskelaufbau, Einsteiger, 3 Tage. */
-export function person(overrides: Partial<PlanInputsInput> = {}): PlanInputsInput {
+export function person(overrides: Partial<PlanInputsInput> & LegacyBudget = {}): PlanInputsInput {
+  const { sessionsPerWeek, minutesPerSession, preferredDays, trainingLocation, ...rest } =
+    overrides;
   return {
     goalType: 'muscle_gain',
     experienceLevel: 'beginner',
-    sessionsPerWeek: 3,
-    minutesPerSession: 60,
-    preferredDays: [1, 3, 5],
-    trainingLocation: 'gym',
+    schedule: legacySchedule({
+      sessionsPerWeek,
+      minutesPerSession,
+      preferredDays,
+      trainingLocation,
+    }),
     homeEquipment: [],
     birthDate: '1996-01-15',
     sex: 'female',
     healthScreening: { flags: [] },
-    ...overrides,
+    ...rest,
   };
 }
 

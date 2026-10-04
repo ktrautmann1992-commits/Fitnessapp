@@ -226,8 +226,26 @@ export const PLAN_NOTES = [
   'exercises_removed',
   'no_pull_exercise',
   'location_mismatch',
+  // Etappe B3 (per `alter type … add value`, Erweiterungsplan 5.8)
+  'endurance_days_capped',
+  'endurance_volume_ramped',
+  'endurance_walk',
+  'rest_day_added',
+  'week_total_capped',
+  'endurance_basic_only',
 ] as const;
 export type PlanNote = (typeof PLAN_NOTES)[number];
+
+/** Art einer geplanten Einheit (planned_sessions.kind, Etappe B3). */
+export const PLANNED_SESSION_KINDS = ['strength', 'endurance'] as const;
+export type PlannedSessionKind = (typeof PLANNED_SESSION_KINDS)[number];
+
+/**
+ * Modalität einer Ausdauer-Einheit: Laufen (auch Geh-Lauf-Wechsel), zügiges Gehen, Rad (auch Ergometer),
+ * Schwimmen (nur Dauer + Anstrengung, keine Technik – Frage 3).
+ */
+export const ENDURANCE_MODALITIES = ['run', 'walk', 'bike', 'swim'] as const;
+export type EnduranceModality = (typeof ENDURANCE_MODALITIES)[number];
 
 /**
  * Ziel → Ziel der Vorlagen (PLAN-PHASE-2 Frage 1): Definition nutzt Muskelaufbau (beschlossen, gilt als

@@ -248,6 +248,9 @@ ein Widerstandsband“, herstellerneutral, ohne Link).
 
 ### 5.7 Tage pro Woche und Wochenplanung (1 bis 7 Tage)
 
+> **Seit Etappe B3 (Engine-Version 2):** Tage mit Art und Dauer je Tag, Kürzen je Termin, Ausdauer-Tage –
+> siehe `docs/PLAN-PHASE-3-ERWEITERUNG.md` Abschnitte 5.2–5.7. Die Tabelle unten gilt für reine Kraft-Wochen weiter.
+
 | Wunsch   | Plan                                                                                                                                           |
 | -------- | ---------------------------------------------------------------------------------------------------------------------------------------------- |
 | 1 Tag    | 3-Tage-Ganzkörper-Vorlage, **Rotation**: Woche 1 = A, Woche 2 = B, Woche 3 = C … · Hinweis „geringer Umfang“                                   |
@@ -354,6 +357,9 @@ Dieselben Regeln (gleiche ISO-Woche, nicht vor heute, nur `planned` → `skipped
 eingetragen“) erst mit dem Tagebuch in Phase 4.
 
 ### 5.12 Ausdauer-Grenze 10 % pro Woche
+
+> **Seit Etappe B3:** angewendet auf Ausdauer-Tage (prüfbar: Bezug letzte Belastungswoche, `Math.floor`, ohne Bezug
+> der Startumfang) – siehe `docs/PLAN-PHASE-3-ERWEITERUNG.md` Abschnitt 5.5.
 
 Die Vorlagen enthalten derzeit **keine** Ausdauer-Einheiten; Ausdauer-Blöcke kommen in Phase 10. Phase 3 baut
 trotzdem die gemeinsame Schutzfunktion `capWeeklyIncrease(previous, planned)` mit
@@ -1164,3 +1170,6 @@ App-Änderung (Etappen B/C).
 
 **Etappe B2 – Trainingstage + Gewichte: erledigt** (wartet auf Wächter-Prüfung). Plan und Umsetzungsstand:
 `docs/PLAN-PHASE-3-ERWEITERUNG.md` (Abschnitt 14). Danach Etappe B3 (Plan-Engine mit Art je Einheit), dann Etappe C.
+
+**Etappe B3 – Plan-Engine mit Arten + Plan-Migration: erledigt** (wartet auf Wächter-Prüfung). Umsetzungsstand:
+`docs/PLAN-PHASE-3-ERWEITERUNG.md` Abschnitt 14. Etappe C (App: Plan erzeugen, „Heute“) kann jetzt starten.

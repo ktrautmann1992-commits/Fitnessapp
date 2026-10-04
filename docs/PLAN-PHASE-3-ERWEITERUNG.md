@@ -1,7 +1,7 @@
 # Plan Phase 3 – Erweiterung: Trainingstage mit Art und Dauer, Gewichte zum Antippen
 
 **Status:** Vom Gründer beauftragt; vom Wächter **freigegeben** (Runde 1 und Runde 2 mit Auflagen, 04.10.2026) – alle
-Befunde eingearbeitet (Abschnitte 12 und 13). Etappe B ist gemergt (PR #7, `main` ff3c821); **Etappe B2 umgesetzt** (Abschnitt 14), B3 offen.
+Befunde eingearbeitet (Abschnitte 12 und 13). Etappe B ist gemergt (PR #7, `main` ff3c821); **Etappen B2 und B3 umgesetzt** (Abschnitt 14).
 Grundlage: `CLAUDE.md`, `docs/PLAN-PHASE-3.md` (freigegeben; Abschnitte 5–10, Etappen A/B), `docs/KONZEPT.md`
 (Abschnitte 2, 4, 10, 12), `docs/PROMPTS.md` (Phase 10 – Ausdauer & Strecken).
 
@@ -717,3 +717,70 @@ bisheriges Angaben-Format (keine App-Plan-Erzeugung vor Etappe C).
 - `WEEKLY_SESSION_LIMITS` steht schon jetzt in `constants.ts` (für den Hinweis `week_total_capped`); angewendet wird
   der Deckel ab B3.
 - „Tage egal“ erlaubt je Art **eine** Dauer (UI wie 3.2); das Datenmodell erlaubt verschiedene.
+
+**Etappe B3 – Plan-Engine mit Arten + Plan-Migration: erledigt** (05.10.2026, wartet auf Wächter-Prüfung).
+
+1. **Core (`packages/core/src/plan`), `PLAN_ENGINE_VERSION = 2`:**
+   - `inputs.ts`: `schedule` statt Tage/Minuten/Wunsch-Tage, `homeEquipment[].barKg`, Snapshot mit abgeleitetem Ort
+     (null = nur Ausdauer); `safety.ts`: `enduranceEffortMax`, `enduranceWalkOnly`, `enduranceStartGroup` (auch in
+     `isStricter`/`strictestRules`).
+   - `schedule.ts`: `resolveTrainingWeek()` (Kraft-Deckel 4, Ausdauer-Deckel je Gruppe, Gesamt-Deckel 5, „Tage egal“
+     verteilt), `buildPlanBlock()` mit gemischten Tagen (Kraft-Rotation nur über Kraft-Tage, Fassung je Ort, Kürzen je
+     Termin), `nextPlanBlock()` (Tage/Arten aus der letzten Belastungswoche inkl. `original_date`, Minuten/Ort aus
+     `schedule`, Ausdauer-Bezug ohne `skipped`), `hasBackToBackSessions()` nur Kraft; `reschedule.ts` mit `kind`.
+   - `endurance.ts`: `enduranceVariant()` (Tabelle 5.5), `enduranceWeekVolumes()`/`distributeEnduranceMinutes()`
+     (Start, 10 %, Deload 0,6, 50 %/90 min, Start-Deckel 30/20, 10-Minuten-Grenze), `ENDURANCE_TEXTS_DE`;
+     `volume.ts`: `capWeeklyIncrease(previous, planned, start)` mit `Math.floor`.
+   - `generate.ts`: Vorlage nach Zahl der Kraft-Tage und längster Dauer, Mehrheits-Ort, `location_mismatch`; nur Ausdauer →
+     ohne Vorlage, `exact`; neue Hinweise; `generatedSessionSchema`/`generatedPlanSchema` mit `kind`, Modalität,
+     Anstrengung; `training_week`. `payload.ts` strikt inkl. verschachteltem `schedule` und `barKg`.
+   - **Pflichtpunkt:** `equipmentProfile()` liefert für die Langhantel `barbellLoadSteps(barKg ?? 20, Scheiben)` →
+     `snapToAvailableWeight()` rundet auf ladbare Gesamtgewichte (Test: Ziel 40 kg → 40).
+   - Konstanten mit Quellen/PRODUKTENTSCHEIDUNG: `ENDURANCE_START_RULES`, `ENDURANCE_SESSION_LIMITS`,
+     `ENDURANCE_DELOAD_VOLUME_FACTOR`, `ENDURANCE_EFFORT`, `ENDURANCE_BEGINNER_WALK_RUN_WEEKS`; Kommentar zur 10-%-Regel
+     (Buist 2008). Neue Enums `PLANNED_SESSION_KINDS`, `ENDURANCE_MODALITIES`, 6 neue `PLAN_NOTES`.
+   - Tests: `endurance.test.ts`, `generate-endurance.test.ts` (nur Laufen, Regression nur Kraft, gemischt, Mo 20/Sa 90,
+     10/240 min, 16–95 Jahre, Schwangerschaft, ohne Check, Flags, Gesamt-Deckel, Eigenschaftstest über 2 400
+     Kombinationen mit unabhängig hergeleiteter 10-%-Prüfung), Ergänzungen in schedule/reschedule/safety/update/
+     equipment-profile/payload/inputs/volume; `db-sync` inkl. verschachtelter Schlüssel.
+2. **Migrationen** `20261005130000_plan_session_kinds_enums.sql` (Enums, `add value`) und
+   `20261005130100_plan_session_kinds.sql` (Spalten + CHECK je Art, Vorlage nullable „alle oder keine“,
+   `insert_plan_sessions`, `save_training_plan`, `append_plan_block`, `assert_plan_inputs` verschachtelt). pgTAP: neu
+   `16_plan_session_kinds` (38 Tests), `13_training_plan_rpcs` auf das neue Format; lokal 16 Dateien, 626 Tests grün.
+   `database.types.ts` ergänzt.
+3. **CI-Beispielpläne** (`packages/content/src/plan-examples.ts`): Personen im neuen Format plus Ida (nur Laufen), Jonas
+   (gemischt), Klara (Mo 20 / Sa 90), Lena (Schwangerschaft), Max (68, Laufen → Gehen), Nora (ohne Check); Ausdauer-Minuten
+   je Woche in der Zusammenfassung.
+
+**Abweichungen/Entscheidungen beim Umsetzen (zur Wächter-Prüfung):**
+
+- Was ein Einheiten-Deckel abschneidet, geht an Ausdauer-Tage mit Luft (nie über deren Wunsch/Deckel), erst der Rest
+  verfällt – sonst würde der 50-%-Deckel bei ungleichen Wunsch-Minuten den Umfang Woche für Woche senken.
+- Der 50-%-Deckel gilt nur, solange mindestens 2 Ausdauer-Einheiten übrig sind (nach dem Streichen < 10 min).
+- `rest_day_added` steht für „Ausdauer-Einheit unter 10 Minuten gestrichen“; `days_added` wird nicht mehr erzeugt (es gibt
+  keine Wunsch-Tage mehr), bleibt aber als Enum-Wert.
+- Mehr Kraft-Tage als Einheiten der Vorlage → übrige Tage werden Ruhetage (`days_capped`), wie bisher.
+- Folgeblock: Kraft-Basis je Vorlagen-Einheit ist die **längste** Fassung (meiste Sätze) der Belastungswochen; sie wird je
+  Termin neu gekürzt und für den Ort des Tages getauscht (`reAdaptExercises`).
+- Triathlon wechselt Laufen/Rad je Ausdauer-Einheit; in der Schwangerschaft Gehen/Ergometer.
+- Keine App-Änderung (Etappe C).
+
+**Wächter-Prüfung B3 – Auflagen umgesetzt (05.10.2026):**
+
+1. Folgeblock: Nach dem Tagesmuster gelten dieselben Deckel wie im ersten Block (`capTrainingDays()`: Kraft 4,
+   Ausdauer je Gruppe, gesamt 5, kürzeste Ausdauer zuerst weg) – mit der Gruppe nach den AKTUELLEN Regeln. Ist die
+   Startgruppe strenger als beim Erstellen (`previousStartGroup`, z. B. 65. Geburtstag, neues Flag, Schwangerschaft):
+   Bezug = min(Bezug, Startumfang der neuen Gruppe), Deckel je Einheit beginnt wieder beim Start-Deckel (und 90 min).
+   Test mit der Probe des Wächters (Leistungssport 7 × 60 → 76 Jahre + schwanger: höchstens 3 Einheiten, Gehen, ≤ 49 min).
+2. `applyCurrentEnduranceRules(session, rules, { previousStartGroup })` in `plan/apply-safety.ts`: Anstrengung ≤ Deckel,
+   bei „nur Gehen“/Schwangerschaft Laufen → zügiges Gehen und Rad → Ergometer, ohne Check Dauerlauf → Geh-Lauf-Wechsel,
+   bei strengerer Gruppe Minuten ≤ Start-Deckel; Name/Texte aus `ENDURANCE_TEXTS_DE`. **Etappe C: Pflichtaufruf beim
+   Anzeigen jeder Einheit** (zusammen mit `applyCurrentSafetyRules` für Kraft).
+3. Datenbank: `effort_target between 1 and 4` (Phase 3 nur locker, `ENDURANCE_EFFORT_LIMITS`), Ausdauer
+   `estimated_minutes between 10 and 240`; Zod und `db-sync` gleich.
+4. Neuer Eigenschaftstest `generate-properties.test.ts` mit Erwartungen aus den Eingaben und einer festen Tabelle
+   (Gesamt-/Ausdauer-/Kraft-Deckel, Deckel je Einheit 30/20/90/50 %, Anstrengung, Gehen, Altersgruppen mit echtem Alter,
+   10-%-Regel über die Blockgrenze inkl. strengerer Regeln).
+5. Langhantel-Scheiben ≤ 25 kg auch in `private.assert_plan_inputs` und `savePlanHomeEquipmentSchema` (Tests).
+6. Folgeblock: Kraft-Basis je Ort aus der Fassung desselben Orts, sonst aus der Hauptfassung (Test Mo Studio / Sa
+   zu Hause).

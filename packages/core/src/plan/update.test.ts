@@ -108,3 +108,28 @@ describe('planNeedsUpdate', () => {
     expect(crossedAgeThreshold('1990-01-01', '2026-10-05', '2026-10-05')).toBe(false);
   });
 });
+
+describe('planNeedsUpdate – Engine-Version 2', () => {
+  it('Plan der Engine-Version 1 → „Plan neu erstellen?“ (engine_version), nie stilles Ersetzen', () => {
+    expect(
+      planNeedsUpdate({ ...plan, engine_version: 1 }, current, '2026-10-20').reasons,
+    ).toContain('engine_version');
+  });
+
+  it('reiner Ausdauer-Plan ohne Vorlage: keine Vorlagen-Version zu vergleichen', () => {
+    const endurancePlan = { ...plan, template_id: null, template_version: null };
+    expect(
+      planNeedsUpdate(endurancePlan, { ...current, currentTemplateVersion: 5 }, '2026-10-20'),
+    ).toEqual({
+      needsUpdate: false,
+      reasons: [],
+    });
+  });
+
+  it('geänderte Trainingstage (Art oder Dauer) → inputs_changed', () => {
+    const changed = planInputsSnapshot(planInputsSchema.parse(person({ minutesPerSession: 45 })));
+    expect(planNeedsUpdate(plan, { ...current, inputs: changed }, '2026-10-20').reasons).toContain(
+      'inputs_changed',
+    );
+  });
+});

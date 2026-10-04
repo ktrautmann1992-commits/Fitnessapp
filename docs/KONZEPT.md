@@ -102,6 +102,19 @@ Verbindlich ist der freigegebene Ablauf in `docs/PLAN-PHASE-1.md` Abschnitt 3 (S
 - **Verpasste Einheiten:** nächster freier Tag ab heute in derselben Kalenderwoche mit 48 h Erholung, sonst streichen.
 - Pläne, in die der Gesundheits-Check eingeht, gelten vorsorglich als Gesundheitsdaten (`docs/PLAN-PHASE-3.md` Abschnitt 9).
 
+**Umsetzung Ausdauer-Basis (Engine-Version 2, `docs/PLAN-PHASE-3-ERWEITERUNG.md`, Etappe B3):**
+- Angaben = Trainingstage mit Art (Kraft im Studio / zu Hause / Ausdauer) und Dauer, fest oder „Tage egal“; je Tag höchstens
+  eine Einheit; höchstens 4 Kraft-Tage, Ausdauer-Deckel je Gruppe (4/5/6, vorsichtig 3), Einsteiger/vorsichtig/unter 18/ab 65
+  höchstens 5 Einheiten pro Woche.
+- Kraft: Vorlage nach der Zahl der Kraft-Tage und der **längsten** Kraft-Dauer, Ort = Mehrheit; jede Einheit in der Fassung
+  ihres Orts und **je Termin** auf die Minuten des Tages gekürzt; 48-h-Regel nur Kraft gegen Kraft.
+- Ausdauer ohne KI: lockere Einheiten (Anstrengung 3–4 von 10, Gesprächstest) – Dauerlauf, Geh-Lauf-Wechsel (Einsteiger
+  anfangs, ohne Check immer), zügiges Gehen (Flag, ab 65), Schwangerschaft nur Gehen/Ergometer/lockeres Schwimmen (nie Rad
+  im Freien), Rad/Schwimmen nach Disziplin. Startumfang 60/120/150 min (vorsichtig 45), +10 % je Woche gegen die letzte
+  Belastungswoche (`Math.floor`), Erholungswoche 60 %, je Einheit höchstens 50 % der Woche, am Start höchstens 90 min,
+  Start-Deckel je Einheit 30/20 min, Einheiten unter 10 min entfallen. Reine Ausdauer-Pläne haben keine Vorlage.
+- Wettkampf-Periodisierung, Intervalle, Zonen, Strecken bleiben Phase 10.
+
 ### 4.1 Live-Anpassung des Plans (Premium, ohne KI)
 - **Gratis:** nur die doppelte Progression aus Punkt 4 oben (alle Wiederholungen geschafft → Gewicht steigt) – **ohne** die
   Regeln dieses Abschnitts. Mess-Erinnerungen (Abschnitt 11.1) bleiben ebenfalls gratis.
