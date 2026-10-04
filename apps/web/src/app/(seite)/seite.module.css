@@ -1,0 +1,693 @@
+/*
+ * Alpha5 – Landingpage und Rechtsseiten. Umsetzung von styles.css aus docs/ALPHA5-PAKET.md (Farbschema
+ * „Nacht & Kobalt“). Werte exakt wie im Entwurf; Farben kommen aus den Markenfarben in packages/ui/theme.css
+ * (--brand-…). Klassen aus dem Entwurf bleiben erhalten (als CSS-Modul, nur auf diesen Seiten gültig).
+ * Die Seite hat bewusst ein festes Design (kein eigener Dunkelmodus) – wie im Entwurf.
+ */
+
+.seite {
+  /* Grundfarben (Markenfarben aus packages/ui/theme.css) */
+  --schwarz: var(--brand-schwarz);
+  --graphit: var(--brand-graphit);
+  --graphit-hell: var(--brand-graphit-hell);
+  --blau: var(--brand-blau);
+  --blau-dunkel: var(--brand-blau-dunkel);
+  --himmel: var(--brand-himmel);
+  --eisblau: var(--brand-eisblau);
+  --hell: var(--brand-hell);
+  --grau: var(--brand-grau);
+  --grau-dunkel: var(--brand-grau-dunkel);
+  --signal: var(--brand-signal);
+  --weiss: var(--brand-weiss);
+
+  /* Typografie – Archivo selbst gehostet (next/font/local), keine Verbindung zu Google */
+  --schrift: var(--font-archivo), system-ui, -apple-system, 'Segoe UI', sans-serif;
+  --text-s: 0.875rem;
+  --text-m: 1.0625rem;
+  --text-l: 1.25rem;
+  --text-xl: clamp(1.75rem, 5vw, 2.5rem);
+  --text-xxl: clamp(2.75rem, 11vw, 5.5rem);
+
+  /* Abstände & Form */
+  --raum-s: 0.75rem;
+  --raum-m: 1.25rem;
+  --raum-l: 2.5rem;
+  --raum-xl: clamp(4rem, 12vw, 7.5rem);
+  --rund-klein: 6px;
+  --rund-gross: 20px;
+  --breite: 72rem;
+
+  /* entspricht body im Entwurf */
+  color-scheme: light;
+  min-height: 100dvh;
+  font-family: var(--schrift);
+  font-size: var(--text-m);
+  line-height: 1.55;
+  color: var(--schwarz);
+  background: var(--hell);
+  -webkit-font-smoothing: antialiased;
+}
+
+.seite *,
+.seite *::before,
+.seite *::after {
+  box-sizing: border-box;
+}
+
+/* :where() hält die Spezifität so niedrig wie im Entwurf (a / :focus-visible ohne Klasse) */
+:where(.seite) a {
+  color: inherit;
+}
+
+:where(.seite) :focus-visible {
+  outline: 3px solid var(--blau);
+  outline-offset: 3px;
+  border-radius: var(--rund-klein);
+}
+
+.huelle {
+  width: min(100% - 2.5rem, var(--breite));
+  margin-inline: auto;
+}
+
+/* ---------- Überschriften ---------- */
+.titel-gross,
+.titel {
+  font-variation-settings: 'wdth' 75;
+  font-weight: 800;
+  line-height: 0.95;
+  letter-spacing: -0.01em;
+  margin: 0;
+}
+.titel-gross {
+  font-size: var(--text-xxl);
+}
+.titel {
+  font-size: var(--text-xl);
+  line-height: 1.05;
+}
+
+.einleitung {
+  font-size: var(--text-l);
+  color: var(--grau);
+  max-width: 38rem;
+  margin: var(--raum-m) 0 0;
+}
+
+/* ---------- Buttons ---------- */
+.knopf {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 3rem;
+  padding: 0 1.4rem;
+  border-radius: 999px;
+  border: 2px solid transparent;
+  font: inherit;
+  font-weight: 700;
+  text-decoration: none;
+  cursor: pointer;
+  transition:
+    background-color 0.15s,
+    color 0.15s,
+    border-color 0.15s;
+}
+.knopf--primaer {
+  background: var(--blau);
+  color: var(--weiss);
+}
+.knopf--primaer:hover {
+  background: var(--blau-dunkel);
+}
+.knopf--primaer:disabled {
+  cursor: progress;
+  opacity: 0.75;
+}
+.knopf--leise {
+  border-color: var(--schwarz);
+  color: var(--schwarz);
+  background: transparent;
+}
+.knopf--leise:hover {
+  background: var(--schwarz);
+  color: var(--weiss);
+}
+
+/* ---------- Kopfzeile (dunkel) ---------- */
+.kopf {
+  position: sticky;
+  top: 0;
+  z-index: 10;
+  background: rgb(10 12 16 / 0.92);
+  backdrop-filter: blur(8px);
+  border-bottom: 1px solid var(--graphit-hell);
+  color: var(--weiss);
+}
+.kopf__innen {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  min-height: 4rem;
+}
+.logo {
+  font-size: 1.5rem;
+  font-weight: 900;
+  font-variation-settings: 'wdth' 70;
+  text-decoration: none;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+.logo__alpha {
+  height: 1.35rem;
+  width: auto;
+  aspect-ratio: 1133 / 697;
+  display: block;
+}
+.kopf .knopf {
+  min-height: 2.5rem;
+  padding: 0 1rem;
+  font-size: var(--text-s);
+}
+
+/* ---------- Hero (dunkel) ---------- */
+.hero {
+  background: var(--schwarz);
+  color: var(--weiss);
+  padding-block: var(--raum-l) var(--raum-xl);
+}
+.hero .einleitung {
+  color: var(--grau-dunkel);
+}
+.hero .knopf--leise {
+  border-color: var(--weiss);
+  color: var(--weiss);
+}
+.hero .knopf--leise:hover {
+  background: var(--weiss);
+  color: var(--schwarz);
+}
+.hero__raster {
+  display: grid;
+  gap: var(--raum-l);
+  align-items: center;
+}
+.hero__knoepfe {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--raum-s);
+  margin-top: var(--raum-l);
+}
+
+/* Interaktive Beispiel-Einheit */
+.einheit {
+  background: var(--graphit);
+  color: var(--weiss);
+  border: 1px solid var(--graphit-hell);
+  border-radius: var(--rund-gross);
+  padding: var(--raum-m);
+  box-shadow: 0 30px 80px -30px rgb(31 91 255 / 0.45);
+}
+.einheit__kopf {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  gap: var(--raum-s);
+  margin-bottom: var(--raum-m);
+}
+.einheit__name {
+  font-size: 1.6rem;
+  font-weight: 800;
+  font-variation-settings: 'wdth' 75;
+  margin: 0;
+}
+.einheit__hinweis {
+  font-size: var(--text-s);
+  color: var(--himmel);
+  margin: 0.2rem 0 0;
+}
+.einheit__stand {
+  font-variant-numeric: tabular-nums;
+  font-weight: 700;
+  background: var(--blau);
+  border-radius: 999px;
+  padding: 0.25rem 0.75rem;
+  white-space: nowrap;
+  font-size: var(--text-s);
+}
+
+.uebungen {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+.uebung {
+  display: grid;
+  grid-template-columns: auto 1fr auto;
+  gap: var(--raum-s);
+  align-items: center;
+  padding: 0.8rem 0;
+  border-top: 1px solid var(--graphit-hell);
+}
+.uebung__haken {
+  width: 2.25rem;
+  height: 2.25rem;
+  border-radius: 50%;
+  border: 2px solid var(--himmel);
+  background: transparent;
+  color: var(--weiss);
+  cursor: pointer;
+  display: grid;
+  place-items: center;
+  padding: 0;
+  transition:
+    background-color 0.15s,
+    border-color 0.15s;
+}
+.uebung__haken svg {
+  opacity: 0;
+  transition: opacity 0.15s;
+}
+.uebung[data-erledigt='true'] .uebung__haken {
+  background: var(--blau);
+  border-color: var(--blau);
+}
+.uebung[data-erledigt='true'] .uebung__haken svg {
+  opacity: 1;
+}
+.uebung[data-erledigt='true'] .uebung__name {
+  text-decoration: line-through;
+  text-decoration-thickness: 2px;
+  opacity: 0.7;
+}
+.uebung__name {
+  font-weight: 700;
+  display: block;
+}
+.uebung__daten {
+  font-size: var(--text-s);
+  color: var(--grau-dunkel);
+  font-variant-numeric: tabular-nums;
+}
+.uebung__alt {
+  font: inherit;
+  font-size: var(--text-s);
+  color: var(--weiss);
+  background: none;
+  border: 1px solid var(--graphit-hell);
+  border-radius: 999px;
+  padding: 0.35rem 0.75rem;
+  cursor: pointer;
+}
+.uebung__alt:hover {
+  border-color: var(--himmel);
+}
+
+.empfinden {
+  margin-top: var(--raum-m);
+  padding-top: var(--raum-m);
+  border-top: 1px solid var(--graphit-hell);
+}
+.empfinden label {
+  display: flex;
+  justify-content: space-between;
+  font-weight: 700;
+}
+.empfinden__wert {
+  font-variant-numeric: tabular-nums;
+  color: var(--himmel);
+}
+.empfinden__text {
+  font-size: var(--text-s);
+  color: var(--grau-dunkel);
+  margin: 0.4rem 0 0;
+  min-height: 1.3em;
+}
+
+.seite input[type='range'] {
+  width: 100%;
+  margin-top: 0.75rem;
+  appearance: none;
+  height: 0.6rem;
+  border-radius: 999px;
+  background: linear-gradient(90deg, var(--himmel), var(--blau) 60%, var(--signal));
+}
+.seite input[type='range']::-webkit-slider-thumb {
+  appearance: none;
+  width: 1.6rem;
+  height: 1.6rem;
+  border-radius: 50%;
+  background: var(--weiss);
+  border: 3px solid var(--schwarz);
+  cursor: pointer;
+}
+.seite input[type='range']::-moz-range-thumb {
+  width: 1.4rem;
+  height: 1.4rem;
+  border-radius: 50%;
+  background: var(--weiss);
+  border: 3px solid var(--schwarz);
+  cursor: pointer;
+}
+
+/* ---------- Abschnitte ----------
+   .abschnitt--minze = helle blaue Fläche
+   .abschnitt--tanne = schwarze Fläche */
+.abschnitt {
+  padding-block: var(--raum-xl);
+}
+.abschnitt--minze {
+  background: var(--eisblau);
+}
+.abschnitt--tanne {
+  background: var(--schwarz);
+  color: var(--weiss);
+}
+.abschnitt--tanne .einleitung {
+  color: var(--grau-dunkel);
+}
+
+/* Ablauf */
+.ablauf {
+  list-style: none;
+  counter-reset: schritt;
+  margin: var(--raum-l) 0 0;
+  padding: 0;
+  display: grid;
+  gap: var(--raum-l);
+}
+.ablauf li {
+  counter-increment: schritt;
+  max-width: 34rem;
+}
+.ablauf li::before {
+  content: counter(schritt);
+  display: block;
+  font-size: 3.5rem;
+  font-weight: 900;
+  font-variation-settings: 'wdth' 62;
+  line-height: 1;
+  color: var(--blau);
+  margin-bottom: 0.4rem;
+}
+.ablauf h3 {
+  margin: 0 0 0.3rem;
+  font-size: var(--text-l);
+}
+.ablauf p {
+  margin: 0;
+  color: var(--grau);
+}
+
+/* MVP-Funktionen */
+.start {
+  display: grid;
+  gap: var(--raum-l);
+  margin-top: var(--raum-l);
+}
+.funktion {
+  border-top: 3px solid var(--schwarz);
+  padding-top: var(--raum-m);
+}
+.funktion h3 {
+  margin: 0 0 0.5rem;
+  font-size: 1.6rem;
+  font-weight: 800;
+  font-variation-settings: 'wdth' 75;
+  line-height: 1.05;
+}
+.funktion p {
+  margin: 0;
+  color: var(--grau);
+  max-width: 34rem;
+}
+
+.ziele {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  margin: var(--raum-m) 0 0;
+  padding: 0;
+  list-style: none;
+}
+.ziele li {
+  background: var(--eisblau);
+  color: var(--blau-dunkel);
+  border-radius: 999px;
+  padding: 0.35rem 0.85rem;
+  font-size: var(--text-s);
+  font-weight: 700;
+}
+
+/* Fahrplan */
+.fahrplan {
+  list-style: none;
+  margin: var(--raum-l) 0 0;
+  padding: 0;
+}
+.fahrplan li {
+  position: relative;
+  padding: 0 0 var(--raum-l) 2rem;
+  border-left: 2px solid var(--graphit-hell);
+  margin-left: 0.5rem;
+  max-width: 40rem;
+}
+.fahrplan li:last-child {
+  padding-bottom: 0;
+  border-left-color: transparent;
+}
+.fahrplan li::before {
+  content: '';
+  position: absolute;
+  left: -0.6rem;
+  top: 0.2rem;
+  width: 1rem;
+  height: 1rem;
+  border-radius: 50%;
+  background: var(--blau);
+  border: 2px solid var(--schwarz);
+}
+.fahrplan__phase {
+  font-size: var(--text-s);
+  color: var(--himmel);
+  font-weight: 700;
+}
+.fahrplan h3 {
+  margin: 0.1rem 0 0.3rem;
+  font-size: var(--text-l);
+}
+.fahrplan p {
+  margin: 0;
+  color: var(--grau-dunkel);
+}
+
+/* Preisvergleich */
+.vergleich-rahmen {
+  overflow-x: auto;
+  margin-top: var(--raum-l);
+}
+.vergleich {
+  width: 100%;
+  min-width: 20rem;
+  border-collapse: collapse;
+  background: var(--weiss);
+  border-radius: var(--rund-gross);
+  overflow: hidden;
+}
+.vergleich th,
+.vergleich td {
+  padding: 0.85rem 1rem;
+  text-align: left;
+  border-bottom: 1px solid var(--hell);
+}
+.vergleich thead th {
+  background: var(--schwarz);
+  color: var(--weiss);
+  font-size: var(--text-l);
+}
+.vergleich td:not(:first-child),
+.vergleich th:not(:first-child) {
+  text-align: center;
+  width: 6.5rem;
+}
+.ja {
+  color: var(--blau);
+  font-weight: 800;
+}
+.nein {
+  color: #9aa3b5;
+}
+.fussnote {
+  font-size: var(--text-s);
+  color: var(--grau);
+  margin-top: var(--raum-s);
+}
+
+/* Datenschutz */
+.schutz {
+  display: grid;
+  gap: var(--raum-m);
+  margin: var(--raum-l) 0 0;
+  padding: 0;
+  list-style: none;
+}
+.schutz li {
+  border-left: 3px solid var(--blau);
+  padding-left: var(--raum-m);
+  max-width: 32rem;
+}
+.schutz strong {
+  display: block;
+  font-size: var(--text-l);
+}
+
+/* Warteliste */
+.warteliste {
+  max-width: 34rem;
+}
+.feld {
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+  margin-top: var(--raum-l);
+}
+.feld label {
+  font-weight: 700;
+}
+.feld input[type='email'] {
+  font: inherit;
+  min-height: 3.25rem;
+  padding: 0 1rem;
+  border-radius: var(--rund-klein);
+  border: 2px solid var(--graphit-hell);
+  background: var(--graphit);
+  color: var(--weiss);
+}
+.feld input[type='email']::placeholder {
+  color: #7d869a;
+}
+.feld input[type='email']:focus {
+  border-color: var(--blau);
+}
+.zustimmung {
+  display: flex;
+  gap: 0.6rem;
+  align-items: flex-start;
+  margin-top: var(--raum-m);
+  font-size: var(--text-s);
+  color: var(--grau-dunkel);
+}
+.zustimmung input {
+  width: 1.25rem;
+  height: 1.25rem;
+  margin-top: 0.1rem;
+  accent-color: var(--blau);
+  flex-shrink: 0;
+}
+.warteliste .knopf {
+  margin-top: var(--raum-m);
+  width: 100%;
+}
+.meldung {
+  margin-top: var(--raum-m);
+  font-weight: 700;
+  min-height: 1.5em;
+  color: var(--himmel);
+}
+.meldung--fehler {
+  color: var(--signal);
+}
+/* Honeypot gegen Bots: für Menschen unsichtbar, nicht per Tab erreichbar */
+.honig {
+  position: absolute;
+  left: -10000px;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+}
+
+/* Fuß */
+.fuss {
+  padding-block: var(--raum-l);
+  font-size: var(--text-s);
+  color: var(--grau);
+}
+.fuss__innen {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  gap: var(--raum-m);
+}
+.fuss nav {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--raum-m);
+}
+
+/* ---------- Rechtsseiten und Warteliste-Seiten (Ergänzung, Stil wie Abschnitte) ---------- */
+.text {
+  max-width: 44rem;
+}
+.text h2 {
+  font-size: var(--text-l);
+  margin: var(--raum-l) 0 0.4rem;
+}
+.text h3 {
+  font-size: var(--text-m);
+  margin: var(--raum-m) 0 0.3rem;
+}
+.text p,
+.text li {
+  color: var(--schwarz);
+}
+.text p {
+  margin: 0 0 0.6rem;
+}
+.text ul,
+.text ol {
+  margin: 0 0 0.6rem;
+  padding-left: 1.25rem;
+}
+.platzhalter {
+  background: var(--signal);
+  color: var(--schwarz);
+  font-weight: 700;
+  padding: 0.05rem 0.35rem;
+  border-radius: 4px;
+}
+.platzhalter-hinweis {
+  border: 3px dashed var(--signal);
+  background: #fff6e0;
+  border-radius: var(--rund-klein);
+  padding: var(--raum-s) var(--raum-m);
+  margin: var(--raum-m) 0 0;
+  font-weight: 700;
+}
+.stand {
+  font-size: var(--text-s);
+  color: var(--grau);
+  margin-top: var(--raum-l);
+}
+
+/* ---------- Größere Bildschirme ---------- */
+@media (min-width: 900px) {
+  .hero__raster {
+    grid-template-columns: 1.15fr 1fr;
+  }
+  .ablauf {
+    grid-template-columns: repeat(4, 1fr);
+  }
+  .start {
+    grid-template-columns: repeat(2, 1fr);
+    gap: var(--raum-l) var(--raum-xl);
+  }
+  .schutz {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .seite * {
+    transition: none !important;
+  }
+}

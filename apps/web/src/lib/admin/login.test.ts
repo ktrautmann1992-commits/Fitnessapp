@@ -44,7 +44,9 @@ describe('Herkunftsprüfung (Origin/Host)', () => {
         }),
       ),
     ).toBe(true);
-    // Hinter einem Proxy zählt auch X-Forwarded-Host (erster Wert).
+  });
+
+  it('X-Forwarded-Host wird nicht vertraut', () => {
     expect(
       isSameOriginRequest(
         headers({
@@ -53,6 +55,24 @@ describe('Herkunftsprüfung (Origin/Host)', () => {
           'x-forwarded-host': 'web.vercel.app, intern',
         }),
       ),
+    ).toBe(false);
+    // Angreifer setzt Origin UND X-Forwarded-Host auf seine Adresse → abgelehnt
+    expect(
+      isSameOriginRequest(
+        headers({
+          origin: 'https://boese.example',
+          host: 'admin.example.de',
+          'x-forwarded-host': 'boese.example',
+        }),
+      ),
+    ).toBe(false);
+  });
+
+  it('mit Allowlist: Origin muss zusätzlich darin stehen (lokal ausgenommen)', () => {
+    expect(isSameOriginRequest(sameOrigin, ['https://admin.example.de'])).toBe(true);
+    expect(isSameOriginRequest(sameOrigin, ['https://andere.example'])).toBe(false);
+    expect(
+      isSameOriginRequest(headers({ origin: 'http://localhost:3100', host: 'localhost:3100' }), []),
     ).toBe(true);
   });
 

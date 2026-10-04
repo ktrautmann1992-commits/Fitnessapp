@@ -83,7 +83,7 @@ Alle Icons werden aus dem Logo erzeugt – nie von Hand zeichnen:
 | `favicon.svg`          | 64 × 64     | schwarz                             | 84 %        | `apps/web/src/app/icon.svg`                                   |
 | `favicon.png`          | 48 × 48     | schwarz                             | 84 %        | `apps/web/src/app/icon.png`, App im Browser (`web.favicon`)   |
 | `apple-touch-icon.png` | 180 × 180   | schwarz                             | 70 %        | `apps/web/src/app/apple-icon.png`, `apps/mobile/public/`      |
-| `og-image.png`         | 1200 × 630  | schwarz + Schein, Text in Weiß      | 30 % + Text | noch nicht eingebunden (kommt mit Landingpage/SEO)            |
+| `og-image.png`         | 1200 × 630  | schwarz + Schein, Text in Weiß      | 30 % + Text | `apps/web/src/app/opengraph-image.png`, `twitter-image.png`   |
 
 Logo immer waagerecht und senkrecht zentriert; beim Open-Graph-Bild ist Logo + Text zusammen mittig.
 Zusätzlich (nicht in der Paket-Tabelle): `android-icon-monochrome.png` (1024 × 1024, transparent, Logo einfarbig
@@ -316,9 +316,9 @@ Claude ergänzt den Pull Request, `ci` wird grün, die Vorschau-Links zeigen die
   _Beispiel Alpha5:_ Weiß auf Blau `#1f5bff` erreicht 5,3 : 1 (gut), Blau als Text auf Schwarz nur 3,7 : 1 –
   deshalb haben Links eine eigene Farbe `--color-link` (dunkel himmel `#8db0ff`, siehe „Marke Alpha5“).
 - **Immer hell und dunkel festlegen.** Viele Menschen nutzen den Dunkelmodus, gerade abends beim Training.
-- **Schriften:** App und Website nutzen derzeit die Systemschrift des Geräts. Die Marken-Schrift **Archivo** kommt
-  mit der Landingpage – **selbst gehostet** (kein Nachladen von Google Fonts o. Ä. wegen DSGVO), für App und Website
-  getrennt eingebunden.
+- **Schriften:** Die Landingpage und die Rechtsseiten nutzen **Archivo** (variabel, mit Breiten-Achse),
+  **selbst gehostet** über `next/font/local` (`apps/web/src/app/fonts/`, OFL) – kein Nachladen von Google Fonts
+  (DSGVO). App und Redaktionsbereich nutzen weiter die Systemschrift.
 - **Signalfarben** (`success`, `warning`, `danger`) sollten klar unterscheidbar bleiben – auch für Menschen mit
   Rot-Grün-Schwäche. Nie nur über die Farbe informieren, immer auch mit Text oder Symbol.
 

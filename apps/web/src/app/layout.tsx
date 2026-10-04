@@ -1,4 +1,4 @@
-import { APP_NAME, APP_TAGLINE, brandColors } from '@fitnessapp/ui';
+import { APP_NAME, brandColors } from '@fitnessapp/ui';
 import type { Metadata, Viewport } from 'next';
 import type { ReactNode } from 'react';
 
@@ -6,11 +6,28 @@ import type { ReactNode } from 'react';
 import '@fitnessapp/ui/theme.css';
 import './globals.css';
 
-// Favicon und Apple-Touch-Icon: src/app/icon.svg, icon.png, apple-icon.png (Next.js setzt die <link>-Tags selbst).
-// Erzeugt aus packages/ui/brand/alpha5-mark.svg: pnpm --filter @fitnessapp/ui icons
+import { SITE_DESCRIPTION, SITE_TITLE, siteUrl } from '@/lib/site';
+
+// Favicon und Apple-Touch-Icon: src/app/icon.svg, icon.png, apple-icon.png; Vorschaubild beim Teilen:
+// src/app/opengraph-image.png, twitter-image.png (Next.js setzt die Tags selbst).
+// Alle erzeugt aus packages/ui/brand/alpha5-mark.svg: pnpm --filter @fitnessapp/ui icons
 export const metadata: Metadata = {
-  title: APP_NAME,
-  description: APP_TAGLINE,
+  metadataBase: new URL(siteUrl),
+  title: { default: SITE_TITLE, template: `%s – ${APP_NAME}` },
+  description: SITE_DESCRIPTION,
+  applicationName: APP_NAME,
+  openGraph: {
+    type: 'website',
+    locale: 'de_DE',
+    siteName: APP_NAME,
+    title: SITE_TITLE,
+    description: SITE_DESCRIPTION,
+  },
+  twitter: {
+    card: 'summary_large_image',
+    title: SITE_TITLE,
+    description: SITE_DESCRIPTION,
+  },
 };
 
 export const viewport: Viewport = {

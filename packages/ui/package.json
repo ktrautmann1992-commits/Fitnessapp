@@ -6,7 +6,8 @@
   "description": "Geteilte Design-Tokens (Farben, Abstände, Schrift) für Mobile und Web. Quelle: theme.css.",
   "exports": {
     ".": "./src/index.ts",
-    "./theme.css": "./theme.css"
+    "./theme.css": "./theme.css",
+    "./brand/alpha5-mark.svg": "./brand/alpha5-mark.svg"
   },
   "scripts": {
     "tokens": "node scripts/generate-tokens.mjs",

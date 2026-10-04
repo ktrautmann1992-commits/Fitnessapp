@@ -924,6 +924,60 @@ export type Database = {
           },
         ];
       };
+      waitlist: {
+        Row: {
+          confirmed_at: string | null;
+          consent_given_at: string;
+          consent_text_version: number;
+          created_at: string;
+          email: string;
+          id: string;
+          token_expires_at: string | null;
+          token_hash: string | null;
+          unsubscribe_token_hash: string;
+        };
+        Insert: {
+          confirmed_at?: string | null;
+          consent_given_at?: string;
+          consent_text_version: number;
+          created_at?: string;
+          email: string;
+          id?: string;
+          token_expires_at?: string | null;
+          token_hash?: string | null;
+          unsubscribe_token_hash: string;
+        };
+        Update: {
+          confirmed_at?: string | null;
+          consent_given_at?: string;
+          consent_text_version?: number;
+          created_at?: string;
+          email?: string;
+          id?: string;
+          token_expires_at?: string | null;
+          token_hash?: string | null;
+          unsubscribe_token_hash?: string;
+        };
+        Relationships: [];
+      };
+      waitlist_attempts: {
+        Row: {
+          created_at: string;
+          id: number;
+          key_hash: string;
+        };
+        Insert: {
+          created_at?: string;
+          id?: never;
+          key_hash: string;
+        };
+        Update: {
+          created_at?: string;
+          id?: never;
+          key_hash?: string;
+        };
+        Relationships: [];
+      };
     };
     Views: {
       [_ in never]: never;
@@ -952,6 +1006,21 @@ export type Database = {
       };
       save_training_plan: { Args: { p_plan: Json }; Returns: string };
       seed_content: { Args: { p_content: Json }; Returns: Json };
+      waitlist_cleanup: { Args: never; Returns: number };
+      waitlist_confirm: { Args: { p_token_hash: string }; Returns: string };
+      waitlist_signup: {
+        Args: {
+          p_consent_text_version: number;
+          p_email: string;
+          p_email_hash: string;
+          p_ip_hash: string;
+          p_token_expires_at: string;
+          p_token_hash: string;
+          p_unsubscribe_token_hash: string;
+        };
+        Returns: string;
+      };
+      waitlist_unsubscribe: { Args: { p_unsubscribe_token_hash: string }; Returns: boolean };
     };
     Enums: {
       admin_role: 'content_admin';

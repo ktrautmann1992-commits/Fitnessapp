@@ -195,6 +195,9 @@ const COPIES = [
   ['favicon.svg', 'apps/web/src/app/icon.svg'],
   ['favicon.png', 'apps/web/src/app/icon.png'],
   ['apple-touch-icon.png', 'apps/web/src/app/apple-icon.png'],
+  // Vorschaubild beim Teilen (Open Graph / X). Alt-Text: opengraph-image.alt.txt / twitter-image.alt.txt.
+  ['og-image.png', 'apps/web/src/app/opengraph-image.png'],
+  ['og-image.png', 'apps/web/src/app/twitter-image.png'],
 ];
 
 async function main() {

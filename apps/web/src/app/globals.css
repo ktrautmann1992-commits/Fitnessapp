@@ -36,3 +36,14 @@ body {
   background: var(--color-background);
   color: var(--color-text);
 }
+
+/* Sprungmarken der Startseite (#warteliste, #ablauf) weich anscrollen – außer bei „Bewegung reduzieren“. */
+html {
+  scroll-behavior: smooth;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+}
