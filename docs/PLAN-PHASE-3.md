@@ -308,7 +308,9 @@ Erholungswoche (5.10). Einheiten vor „heute“ entfallen.
 (`reps_max` bzw. die erhöhte Zielzahl unten) bei RPE ≤ Ziel (oder ohne Angabe). Sonst bleibt alles gleich, Ziel
 +1 Wiederholung bis `reps_max`.
 
-**10-%-Deckel hart:** Ein Gewichtssprung über 10 % wird nie direkt genommen.
+**Gewichtssprung über 10 % nie direkt, erst nach dem Puffer.** Ist der Sprung danach größer als 25 %, liegt das
+RPE-Ziel der ersten Einheit mit dem neuen Gewicht 1 Punkt niedriger. Gibt es keine höhere eigene Gewichtsstufe,
+kommt nach dem Puffer der Hinweis „schwerere Gewichtsstufe eintragen oder schwerere Variante wählen“.
 
 | Belastungstyp     | Regel                                                                                                                                                                                                                                                                                                                                                                                                                             |
 | ----------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
@@ -373,25 +375,25 @@ aus dem Gesundheits-Check bzw. aus `medical_notice` ab (Abschnitt 9).
 Die Quellenangaben werden beim Umsetzen gegen das Original geprüft und genau zitiert. Was keine Studie belegt, ist
 ausdrücklich als **Produktentscheidung** gekennzeichnet.
 
-| Konstante                         | Startwert                                                                                                                                                                                                          | Quelle / Begründung                                                                                                                                                                                                                                                                                                                     |
-| --------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `PLAN_MATCH_WEIGHTS`              | Ziel 35, Level 25, Tage 15, Ort 10, Geräte 10, Dauer 5                                                                                                                                                             | Produktentscheidung (Abschnitt 5.3)                                                                                                                                                                                                                                                                                                     |
-| `MAX_STRENGTH_SESSIONS_PER_WEEK`  | 4                                                                                                                                                                                                                  | **Produktentscheidung** (es gibt nur 3-/4-Tage-Vorlagen); als Orientierung ACSM Position Stand (2009), Med Sci Sports Exerc 41(3):687–708 (Trainingshäufigkeit je Level)                                                                                                                                                                |
-| `MIN_RECOVERY_HOURS_SAME_MUSCLES` | 48 (Spanne 48–72)                                                                                                                                                                                                  | Garber CE et al. (2011), ACSM Position Stand „Quantity and Quality of Exercise …“, Med Sci Sports Exerc 43(7):1334–1359 (mind. 48 h zwischen Krafteinheiten derselben Muskelgruppe); gegen ACSM 2009 abgleichen                                                                                                                         |
-| `DEFAULT_TRAINING_DAYS`           | 1: Mi · 2: Mo, Do · 3: Mo, Mi, Fr · 4: Mo, Di, Do, Fr                                                                                                                                                              | Produktentscheidung (größte Abstände)                                                                                                                                                                                                                                                                                                   |
-| `CONSERVATIVE_PLAN_RULES`         | RPE ≤ 7; ausgeschlossen `high_impact`, `spinal_loading`, `high_skill`; bei `injury`/`medical_clearance_recommended` und ohne Check auch `overhead`; Einsteiger-Vorlage                                             | PAR-Q+ (Warburton DER et al., 2011) begründet nur die **Flags**; RPE-Deckel und Ausschluss-Merkmale sind **Produktentscheidung** (PLAN-PHASE-2 Abschnitt 8), fachlich zu prüfen                                                                                                                                                         |
-| `PREGNANCY_EXCLUDED_CAUTION_TAGS` | `long_supine` (zusätzlich)                                                                                                                                                                                         | ACOG Committee Opinion Nr. 804 (2020), „Physical Activity and Exercise During Pregnancy and the Postpartum Period“                                                                                                                                                                                                                      |
-| `AGE_PLAN_RULES`                  | unter 18: RPE ≤ 8, ohne `high_skill` · ab 65: RPE ≤ 7, ohne `high_impact`/`high_skill`                                                                                                                             | unter 18: Faigenbaum AD et al. (2009), NSCA-Positionspapier, J Strength Cond Res 23(5 Suppl 5) (Technik unter qualifizierter Aufsicht – die App bietet keine); ab 65: **Produktentscheidung** (Chodzko-Zajko WJ et al. (2009), Med Sci Sports Exerc 41(7):1510–1530, nutzt eine 0–10-Anstrengungsskala, nicht RPE nach Wdh. in Reserve) |
-| `INTRO_WEEK_RPE_REDUCTION`        | 1                                                                                                                                                                                                                  | Helms ER et al. (2016), Strength Cond J 38(4):42–49 (RPE nach Wdh. in Reserve); Produktentscheidung                                                                                                                                                                                                                                     |
-| `PARTIAL_START_WEEK_MIN_SHARE`    | 0,5 (darunter „Woche 0“)                                                                                                                                                                                           | Produktentscheidung (Abschnitt 5.7)                                                                                                                                                                                                                                                                                                     |
-| `E1RM_ESTIMATE`                   | Epley, höchstens 12 Wdh. + Reserve                                                                                                                                                                                 | Epley B (1985), Poundage Chart; Zourdos MC et al. (2016), J Strength Cond Res 30(1):267–275 (RIR-basierte RPE-Skala)                                                                                                                                                                                                                    |
-| `LOAD_PROGRESSION`                | Deckel 10 % (hart) · +2,5 kg Langhantel/Maschine, nächste Stufe bzw. +2 kg Kurzhantel · Puffer `reps_max + 2` (≤ 30), +1 Satz (≤ 6) · Auslöser 2 Einheiten in Folge · Halteübung `min(5 s, max(1 s, floor(10 %)))` | ACSM Position Stand (2009): Laststeigerung 2–10 %, wenn 1–2 Wdh. über dem Ziel gelingen; „2-für-2-Regel“ (zwei Einheiten in Folge, NSCA, Baechle/Earle „Essentials of Strength Training and Conditioning“) – beim Umsetzen genau zitieren                                                                                               |
-| `DELOAD_SCHEDULE`                 | Belastungswochen: Einsteiger 5, Fortgeschrittene 4, vorsichtig 4                                                                                                                                                   | KONZEPT 4.5 („alle 4–6 Wochen“), `DELOAD_INTERVAL_WEEKS`; Bell L et al. (2023), Delphi-Konsens zum Deloading, Sports Med Open                                                                                                                                                                                                           |
-| `DELOAD_DOSAGE`                   | Sätze ×0,5 (aufgerundet, mind. 1), RPE −2, Gewicht ×0,9                                                                                                                                                            | Bell L et al. (2023); Produktentscheidung                                                                                                                                                                                                                                                                                               |
-| `SESSION_FIT`                     | mind. 3 Übungen, mind. 2 Sätze Grund- / 1 Satz Isolationsübung                                                                                                                                                     | Produktentscheidung (Abschnitt 5.6)                                                                                                                                                                                                                                                                                                     |
-| `PLAN_BLOCK_LIMITS`               | Woche 0–6 (Woche 0 + höchstens 5 + 1), höchstens 7 Einheiten/Woche, höchstens 8 Übungen/Einheit                                                                                                                    | Produktentscheidung bzw. Regel V8; identisch als CHECK in der Datenbank                                                                                                                                                                                                                                                                 |
-| `PLANNED_LOAD_LIMITS`             | Zielgewicht 0,5–500 kg                                                                                                                                                                                             | Plausibilitätsgrenze (Langhantel + Scheiben); identisch als CHECK                                                                                                                                                                                                                                                                       |
-| `PLAN_ENGINE_VERSION`             | 1                                                                                                                                                                                                                  | Regeländerung → Hinweis „Plan neu erstellen“                                                                                                                                                                                                                                                                                            |
+| Konstante                         | Startwert                                                                                                                                                                                                                                                                                    | Quelle / Begründung                                                                                                                                                                                                                                                                                                                     |
+| --------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `PLAN_MATCH_WEIGHTS`              | Ziel 35, Level 25, Tage 15, Ort 10, Geräte 10, Dauer 5                                                                                                                                                                                                                                       | Produktentscheidung (Abschnitt 5.3)                                                                                                                                                                                                                                                                                                     |
+| `MAX_STRENGTH_SESSIONS_PER_WEEK`  | 4                                                                                                                                                                                                                                                                                            | **Produktentscheidung** (es gibt nur 3-/4-Tage-Vorlagen); als Orientierung ACSM Position Stand (2009), Med Sci Sports Exerc 41(3):687–708 (Trainingshäufigkeit je Level)                                                                                                                                                                |
+| `MIN_RECOVERY_HOURS_SAME_MUSCLES` | 48 (Spanne 48–72)                                                                                                                                                                                                                                                                            | Garber CE et al. (2011), ACSM Position Stand „Quantity and Quality of Exercise …“, Med Sci Sports Exerc 43(7):1334–1359 (mind. 48 h zwischen Krafteinheiten derselben Muskelgruppe); gegen ACSM 2009 abgleichen                                                                                                                         |
+| `DEFAULT_TRAINING_DAYS`           | 1: Mi · 2: Mo, Do · 3: Mo, Mi, Fr · 4: Mo, Di, Do, Fr                                                                                                                                                                                                                                        | Produktentscheidung (größte Abstände)                                                                                                                                                                                                                                                                                                   |
+| `CONSERVATIVE_PLAN_RULES`         | RPE ≤ 7; ausgeschlossen `high_impact`, `spinal_loading`, `high_skill`; bei `injury`/`medical_clearance_recommended` und ohne Check auch `overhead`; Einsteiger-Vorlage                                                                                                                       | PAR-Q+ (Warburton DER et al., 2011) begründet nur die **Flags**; RPE-Deckel und Ausschluss-Merkmale sind **Produktentscheidung** (PLAN-PHASE-2 Abschnitt 8), fachlich zu prüfen                                                                                                                                                         |
+| `PREGNANCY_EXCLUDED_CAUTION_TAGS` | `long_supine` (zusätzlich)                                                                                                                                                                                                                                                                   | ACOG Committee Opinion Nr. 804 (2020), „Physical Activity and Exercise During Pregnancy and the Postpartum Period“                                                                                                                                                                                                                      |
+| `AGE_PLAN_RULES`                  | unter 18: RPE ≤ 8, ohne `high_skill` · ab 65: RPE ≤ 7, ohne `high_impact`/`high_skill`                                                                                                                                                                                                       | unter 18: Faigenbaum AD et al. (2009), NSCA-Positionspapier, J Strength Cond Res 23(5 Suppl 5) (Technik unter qualifizierter Aufsicht – die App bietet keine); ab 65: **Produktentscheidung** (Chodzko-Zajko WJ et al. (2009), Med Sci Sports Exerc 41(7):1510–1530, nutzt eine 0–10-Anstrengungsskala, nicht RPE nach Wdh. in Reserve) |
+| `INTRO_WEEK_RPE_REDUCTION`        | 1                                                                                                                                                                                                                                                                                            | Helms ER et al. (2016), Strength Cond J 38(4):42–49 (RPE nach Wdh. in Reserve); Produktentscheidung                                                                                                                                                                                                                                     |
+| `PARTIAL_START_WEEK_MIN_SHARE`    | 0,5 (darunter „Woche 0“)                                                                                                                                                                                                                                                                     | Produktentscheidung (Abschnitt 5.7)                                                                                                                                                                                                                                                                                                     |
+| `E1RM_ESTIMATE`                   | Epley, höchstens 12 Wdh. + Reserve                                                                                                                                                                                                                                                           | Epley B (1985), Poundage Chart; Zourdos MC et al. (2016), J Strength Cond Res 30(1):267–275 (RIR-basierte RPE-Skala)                                                                                                                                                                                                                    |
+| `LOAD_PROGRESSION`                | Schritt bis 10 % direkt, größerer Sprung erst nach dem Puffer (> 25 %: erste Einheit RPE −1) · +2,5 kg Langhantel/Maschine, nächste Stufe bzw. +2 kg Kurzhantel · Puffer `reps_max + 2` (≤ 30), +1 Satz (≤ 6) · Auslöser 2 Einheiten in Folge · Halteübung `min(5 s, max(1 s, floor(10 %)))` | ACSM Position Stand (2009): Laststeigerung 2–10 %, wenn 1–2 Wdh. über dem Ziel gelingen; „2-für-2-Regel“ (zwei Einheiten in Folge, NSCA, Baechle/Earle „Essentials of Strength Training and Conditioning“) – beim Umsetzen genau zitieren                                                                                               |
+| `DELOAD_SCHEDULE`                 | Belastungswochen: Einsteiger 5, Fortgeschrittene 4, vorsichtig 4                                                                                                                                                                                                                             | KONZEPT 4.5 („alle 4–6 Wochen“), `DELOAD_INTERVAL_WEEKS`; Bell L et al. (2023), Delphi-Konsens zum Deloading, Sports Med Open                                                                                                                                                                                                           |
+| `DELOAD_DOSAGE`                   | Sätze ×0,5 (aufgerundet, mind. 1), RPE −2, Gewicht ×0,9                                                                                                                                                                                                                                      | Bell L et al. (2023); Produktentscheidung                                                                                                                                                                                                                                                                                               |
+| `SESSION_FIT`                     | mind. 3 Übungen, mind. 2 Sätze Grund- / 1 Satz Isolationsübung                                                                                                                                                                                                                               | Produktentscheidung (Abschnitt 5.6)                                                                                                                                                                                                                                                                                                     |
+| `PLAN_BLOCK_LIMITS`               | Woche 0–6 (Woche 0 + höchstens 5 + 1), höchstens 7 Einheiten/Woche, höchstens 8 Übungen/Einheit                                                                                                                                                                                              | Produktentscheidung bzw. Regel V8; identisch als CHECK in der Datenbank                                                                                                                                                                                                                                                                 |
+| `PLANNED_LOAD_LIMITS`             | Zielgewicht 0,5–500 kg                                                                                                                                                                                                                                                                       | Plausibilitätsgrenze (Langhantel + Scheiben); identisch als CHECK                                                                                                                                                                                                                                                                       |
+| `PLAN_ENGINE_VERSION`             | 1                                                                                                                                                                                                                                                                                            | Regeländerung → Hinweis „Plan neu erstellen“                                                                                                                                                                                                                                                                                            |
 
 Bereits vorhanden und genutzt: `DELOAD_INTERVAL_WEEKS`, `MAX_WEEKLY_ENDURANCE_VOLUME_INCREASE_FRACTION`,
 `TEMPLATE_DOSAGE_LIMITS`, `REST_RANGES_S`, `SESSION_DURATION_ESTIMATE`, `WEEKLY_SETS_PER_MUSCLE`,
@@ -497,12 +499,14 @@ anlegen und dabei Prüfungen der App umgehen. Darum:
 2. **`planned_sessions`:** lesen (eigene Zeilen) und **`update` nur für Datum und Status**, kein `insert`/`delete`
    für Nutzer. Ein Trigger
    (`private.planned_sessions_before_update`) lehnt jede andere Änderung ab und erlaubt nur:
-   - neues `scheduled_on` in **derselben ISO-Woche** wie `coalesce(original_date, scheduled_on)` (also immer die
-     Woche des ursprünglich geplanten Tages, auch nach mehrfachem Verschieben) und **nicht vor heute**
-     (Europe/Berlin, `AGE_CHECK_TIME_ZONE`); `original_date` setzt der Trigger **nur beim ersten Verschieben**
-     (`original_date = coalesce(old.original_date, old.scheduled_on)`), danach bleibt es unverändert,
+   - der **alte** Termin darf in der Vergangenheit liegen (verpasste Einheit derselben ISO-Woche),
+   - der **neue** Termin `scheduled_on` liegt **nicht vor heute** (Europe/Berlin, `AGE_CHECK_TIME_ZONE`) und in
+     **derselben ISO-Woche** wie `coalesce(original_date, scheduled_on)` (also immer die Woche des ursprünglich
+     geplanten Tages, auch nach mehrfachem Verschieben); `original_date` setzt der Trigger **nur beim ersten
+     Verschieben** (`original_date = coalesce(old.original_date, old.scheduled_on)`), danach bleibt es unverändert,
    - Status nur **`planned` → `skipped`** (nicht zurück),
-   - nur Einheiten des **aktiven** Plans, keine Änderung in der Vergangenheit.
+   - nur Einheiten des **aktiven** Plans; der Status einer Einheit, deren ISO-Woche vorbei ist, ändert sich nicht
+     mehr.
 3. **`public.save_training_plan(p_plan jsonb) returns uuid`** – `security definer`, `set search_path = ''`,
    `revoke … from public, anon`, `grant execute … to authenticated` (Muster `delete_my_account()`). Prüft selbst,
    weil RLS hier nicht greift: angemeldet (`auth.uid()`), Profil vorhanden, Vorlage und alle Übungen
@@ -700,13 +704,14 @@ aber **kein Blocker** mehr.
 
 ### 10.3 Zustände
 
-| Zustand       | Anzeige                                                                                                                |
-| ------------- | ---------------------------------------------------------------------------------------------------------------------- |
-| Laden         | `LoadingState` beim Erzeugen und Laden                                                                                 |
-| Leer          | kein Plan → „Noch kein Plan“ + Knopf „Plan erstellen“ (auch nach Widerruf: „Neuen Plan erstellen“)                     |
-| Keine Inhalte | `no_template` → „Für deine Angaben gibt es gerade keinen freigegebenen Plan. Wir arbeiten daran.“ + „Erneut versuchen“ |
-| Fehler        | Netz/Speichern → bekannte Texte aus `t.errors` + „Erneut versuchen“; Angaben bleiben erhalten                          |
-| Offline       | zwischengespeicherter Plan + Hinweis; Verschieben je nach Plan nachgereicht oder „Erneut versuchen“ (Abschnitt 9)      |
+| Zustand         | Anzeige                                                                                                                                                                                                                                    |
+| --------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| Laden           | `LoadingState` beim Erzeugen und Laden                                                                                                                                                                                                     |
+| Leer            | kein Plan → „Noch kein Plan“ + Knopf „Plan erstellen“ (auch nach Widerruf: „Neuen Plan erstellen“)                                                                                                                                         |
+| Keine Inhalte   | `no_template` → „Für deine Angaben gibt es gerade keinen freigegebenen Plan. Wir arbeiten daran.“ + „Erneut versuchen“                                                                                                                     |
+| Fehler          | Netz/Speichern → bekannte Texte aus `t.errors` + „Erneut versuchen“; Angaben bleiben erhalten                                                                                                                                              |
+| Offline         | zwischengespeicherter Plan + Hinweis; Verschieben je nach Plan nachgereicht oder „Erneut versuchen“ (Abschnitt 9)                                                                                                                          |
+| Ohne Bibliothek | Übungs-Bibliothek offline nicht geladen → `applyCurrentSafetyRules()` blendet alle Übungen aus (Merkmale nicht prüfbar): eigener Zustand „Übungen können gerade nicht geprüft werden – bitte kurz online gehen“ statt einer leeren Einheit |
 
 ### 10.4 Neu erzeugen bei geänderten Angaben
 
@@ -781,7 +786,10 @@ _Definition of Done:_ (1) Typen + Zod ✔ · (2) Migration: entfällt (Etappe B)
    Datum/Status-Update), Trigger, `save_training_plan`, `append_plan_block` (`security definer`), erweiterter
    `private.consents_after_revoke()`, zusätzliche Lese-Regel für archivierte Übungen.
 2. pgTAP-Tests (8.4), `db-sync.test.ts`, `database.types.ts` + Test.
-3. Doku: KONZEPT Abschnitt 12 „Abweichungen ab Phase 3“: Tabellen, Einordnung als Gesundheitsdaten bei
+3. **Eingabe der Funktionen:** Die App schickt `toSavePlanPayload()` aus `packages/core` (nur die Spalten aus
+   Abschnitt 8). Das Zod-Schema der Funktions-Eingabe ist `.strict()` – unbekannte Felder (z. B. Sicherheitsregeln,
+   Gesundheits-Check) werden abgelehnt; die Funktion in der Datenbank ignoriert sie ohnehin.
+4. Doku: KONZEPT Abschnitt 12 „Abweichungen ab Phase 3“: Tabellen, Einordnung als Gesundheitsdaten bei
    `uses_health_data` (Abschnitt 9), Ausnahme Gerätespeicher, Vormerkung „eigenes Startgewicht“ für Phase 4 (5.8),
    Hinweis Tagebuch-Kaskade für Phase 4 (8.2).
 
@@ -878,7 +886,7 @@ den Inhalten des Branches), hilfreich für die fachliche Prüfung.
 1. **Inhalte sind KI-Entwürfe** und fachlich ungeprüft → Kennzeichnung in der App; vor dem öffentlichen Start
    fachliche Prüfung (`expert_reviewed`).
 2. **Startgewicht falsch gewählt** (zu schwer) → Einstiegswoche mit mehr Reserve, klare Anleitung, vorsichtige
-   Regeln, keine Maximaltests, harter 10-%-Deckel bei Steigerungen.
+   Regeln, keine Maximaltests, Gewichtssprünge über 10 % nie direkt, erst nach dem Puffer.
 3. **Lücken ohne Geräte / ohne Über-Kopf-Übung** → Ersatz über Hauptmuskel, Hinweis, Inhalte nachliefern
    (Frage 12).
 4. **Geringer Umfang bei 1–2 Tagen oder sehr kurzen Einheiten** → ehrlicher Hinweis statt verdeckter Mängel.
@@ -924,7 +932,7 @@ Frage 14**, die vor Etappe C ausdrücklich entschieden werden muss. Damit gilt:
    Löschen aller solchen Pläne beim Widerruf). Gerätespeicher: offen bis zur Gründer-Entscheidung zu Frage 14.
 8. Schreiben nur über geprüfte `security definer`-Funktionen; Nutzer dürfen direkt nur Datum/Status einer Einheit
    ändern.
-9. Doppelte Progression mit hartem 10-%-Deckel und Auslöser „zwei Einheiten in Folge“.
+9. Doppelte Progression: Gewichtssprung über 10 % nie direkt, erst nach dem Puffer; Auslöser „zwei Einheiten in Folge“.
 
 Claude setzt die Etappen A bis C aus Abschnitt 12 nacheinander um, jede mit Wächter-Prüfung. Weicht eine
 Wächter-Prüfung ab, wird dieser Abschnitt angepasst, bevor die betroffene Etappe beginnt.
@@ -974,4 +982,82 @@ Befund 1 verschärft (vollständiges Löschen).
 
 ## Umsetzungsstand (04.10.2026)
 
-Noch nicht begonnen. Nächster Schritt: Etappe A (Plan-Engine in `packages/core`).
+**Etappe A – Plan-Engine in `packages/core`: erledigt** (wartet auf Wächter-Prüfung). Keine Migration, keine
+App-Änderung (Etappen B/C).
+
+1. **`packages/core/src/plan/`** (Export über `src/index.ts`):
+   - `inputs.ts` – `planInputsSchema` (Zod, ohne Körperdaten), `planInputsSnapshot()` (Angaben ohne
+     Gesundheitsdaten/Geburtsdatum, sortiert).
+   - `safety.ts` – `planSafetyRules()` (Flags, ohne Check, unter 18, ab 65, Einsteiger; strengste Regel gilt),
+     `isExerciseAllowed()`, `isStricter()`, `strictestRules()`; `apply-safety.ts` – `applyCurrentSafetyRules()`.
+   - `content-pool.ts` – `selectPlanContent()` (live nur `published`; `allowDrafts` nur ohne roten Befund, nie
+     Probelauf), `planLibraryFromContent()`.
+   - `equipment-profile.ts` – `equipmentProfile()`, `isExerciseFeasible()`, `findSubstitute()` (Schritte 1–6,
+     jeder Ersatz sicher und nicht schwerer, `easier` zuerst bei Vorsicht), `findHarderVariant()`.
+   - `match.ts` – `scoreTemplate()`, `matchTemplate()`, `isTemplateEligible()`, `plannedSessionsPerWeek()`.
+   - `adapt.ts` – `adaptTemplate()` (Tausch, RPE-Deckel, Pause bei Muster-/Mechanikwechsel, Hinweis-Codes nur aus
+     Gerätegründen, `volume_reduced`, `no_pull_exercise`), `fitSessionToMinutes()`.
+   - `schedule.ts` – `chooseTrainingDays()`, `buildPlanBlock()` (Woche 0/Einstiegswoche, Rotation, Erholungswoche),
+     `nextPlanBlock()` (Schnappschuss + aktuelle Regeln), `baseSessionsFromBlock()`, `hasBackToBackSessions()`,
+     `dosageForWeek()`.
+   - `loads.ts` – `snapToAvailableWeight()`, `estimateWorkingWeight()`, `nextWeightStep()`,
+     `holdIncrementSeconds()`, `nextLoad()` (doppelte Progression; Gewichtssprung über 10 % nie direkt, erst nach
+     dem Puffer; Sprung > 25 % → erste Einheit RPE −1; ohne höhere Stufe Hinweis `no_heavier_weight`).
+   - `deload.ts`, `reschedule.ts` (`rescheduleSession()`), `volume.ts` (`capWeeklyIncrease()`), `update.ts`
+     (`planNeedsUpdate()`, `crossedAgeThreshold()`), `generate.ts` (`generateTrainingPlan()`,
+     `generatedPlanSchema` = Datenbank-Grenzen aus Abschnitt 8).
+2. **Konstanten** in `constants.ts` mit Quellen bzw. Kennzeichnung PRODUKTENTSCHEIDUNG (Abschnitt 6), neue
+   Aufzählungen und Ziel-/Level-Zuordnung in `enums.ts`, Datums-Helfer `isoWeekday()`, `startOfIsoWeek()`,
+   `daysBetween()` in `dates.ts`.
+3. **Tests:** 243 Tests in `src/plan/*.test.ts` gegen den echten Startbestand und kleine feste Testdaten (alle 24
+   Vorlagen werden für „ihre“ Person mit `exact` gefunden; Eigenschaftstest über 10.800 Personen mit **unabhängig
+   aus den Eingaben hergeleiteten** Erwartungen: Datenbank-Grenzen, RPE-Deckel, ausgeschlossene Merkmale,
+   Einsteiger-Vorlagen, `uses_health_data`/`medical_notice`, keine `conditioning`-Übungen) sowie Ergänzungen in
+   `dates.test.ts` und `constants.test.ts`.
+4. **Beispielpläne:** `packages/content/src/plan-examples.ts` (+ CLI, Tests), Aufruf `pnpm plan:examples`, neuer
+   Schritt „Beispielpläne (Plan-Engine)“ in `ci` nach `content:validate` → 8 ausgedachte Test-Personen in der
+   Summary.
+
+**Entscheidungen beim Umsetzen (zur Wächter-Prüfung):**
+
+1. Dateinamen: `equipment-profile.ts` statt `equipment.ts` (Verwechslung mit `src/equipment.ts`);
+   `applyCurrentSafetyRules()` in eigener Datei `apply-safety.ts` (sonst zirkulärer Import); `update.ts` zusätzlich;
+   die Hinweis-Codes `PLAN_NOTES` stehen in `enums.ts` (wie die übrigen späteren Postgres-Enums), `notes.ts` entfällt.
+2. `chooseTrainingDays()`: bei gleichem Mindestabstand zuerst weniger Tage direkt hintereinander, dann die
+   lexikografisch kleinste Auswahl (z. B. 4 Einheiten bei Wunsch Mo/Mi/Fr → Mo, Mi, Fr, Sa).
+3. `fitSessionToMinutes()`: auch Schritt 1 (Isolationsübungen entfernen) hält mindestens 3 Übungen.
+4. Doppelte Progression: Innerhalb des Wiederholungsbereichs genügt **eine** geschaffte Einheit für +1 Wdh.; jede
+   Stufe ab `reps_max` (Puffer-Wdh., Zusatzsatz, Gewicht) braucht **zwei** in Folge. Ohne höhere eigene
+   Gewichtsstufe folgt nach dem Puffer der Hinweis `no_heavier_weight`.
+5. `generateTrainingPlan()` liefert zusätzlich `training_days`, `load_weeks` (für den Folgeblock), `safety_rules`
+   (nur Zwischenspeicher, Abschnitt 9) und `uses_draft_content` – diese Felder werden nicht in `user_plans`
+   gespeichert.
+6. `applyCurrentSafetyRules()` blendet Übungen aus, deren Merkmale nicht prüfbar sind (Bibliothek fehlt).
+7. `capWeeklyIncrease()` ist gebaut und getestet; da keine Vorlage `conditioning`-Übungen enthält und der Umfang
+   innerhalb eines Blocks konstant bleibt, wird sie in Phase 3 noch nicht im Block-Bau angewendet (Phase 10).
+8. `planNeedsUpdate()` vergleicht Zeitstempel (`user_plans.created_at` gegen `health_screening.created_at`), die
+   Altersgrenzen über das Erstellungsdatum (Europe/Berlin); keine Flags nötig.
+
+**Nachträge aus der Wächter-Prüfung von Etappe A (umgesetzt):**
+
+1. Eigenschaftstest prüft gegen eine **feste, unabhängige Erwartungstabelle** (nicht gegen die `safety_rules` der
+   Engine) und deckt zusätzlich Geburtstage (16, 17, 18, 64, 65, 95 Jahre), Schwangerschaft und Wunsch-Tage
+   (`[1]`, `[6, 7]`, alle 7) ab; `adapt.test.ts` nutzt ebenfalls feste Ausschlüsse.
+2. KONZEPT Abschnitt 4: Gratis-Fallback beschlossen, „Umsetzung ab Phase 3“ ergänzt.
+3. Abschnitt 8.1 Punkt 2 präzisiert (alter Termin darf in der Vergangenheit liegen, neuer ≥ heute in derselben
+   ISO-Woche wie `coalesce(original_date, scheduled_on)`); Tests mit Kollision am Montag der Folgewoche und mit
+   fest erwartetem Ergebnis.
+4. `toSavePlanPayload()` (`plan/payload.ts`) mit nur den Spalten aus Abschnitt 8; Test: nie Sicherheitsregeln,
+   Schwangerschafts-Hinweis, Gesundheits-Check, Geburtsdatum. Etappe B: Eingabe-Schema `.strict()`.
+5. Formulierung „harter Deckel“ ersetzt durch „Gewichtssprung über 10 % nie direkt, erst nach dem Puffer“; bei
+   einem Sprung über 25 % erste Einheit RPE −1 (`firstSessionRpeTarget`); ohne höhere Stufe `no_heavier_weight`
+   statt dauerhaft „gleich“ – mit Tests.
+6. `generateTrainingPlan()`: unter `MIN_AGE_YEARS` → `invalid_inputs` (Test mit 15 Jahren und am 16. Geburtstag).
+7. Eigenschaftstest: kein Plan enthält `conditioning`-Übungen (Erinnerung an `capWeeklyIncrease()`).
+8. `planNeedsUpdate()` mit Zeitstempeln; Test „neuer Check am selben Tag“.
+9. Folgeblock zählt die Rotation ab der Vorlagen-Einheit nach der letzten geplanten weiter (Test); Zustand „ohne
+   Bibliothek alles ausgeblendet“ als eigener Zustand für Etappe C in 10.3 vermerkt.
+10. Zusätzliche Tests mit kleinen festen Testdaten (Fixture-Bibliothek aus `content/test-fixtures.ts`) für
+    Sicherheitsregeln, Ersatz und Rotation.
+
+**Nächster Schritt:** Etappe B (Datenbank).

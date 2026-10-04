@@ -4,7 +4,7 @@
  * Regel aus CLAUDE.md: ALLE Rechenformeln und Schutzgrenzen stehen hier, jeweils mit Quelle.
  * Die Schutzgrenzen sind fest im Code und NICHT durch Nutzer abschaltbar.
  */
-import type { MuscleGroup } from './enums';
+import type { CautionTag, MuscleGroup } from './enums';
 
 /**
  * Mindestalter für die Nutzung der App (Jahre).
@@ -284,3 +284,193 @@ export const SMALL_MUSCLE_GROUPS = [
   'rear_delts',
   'abs',
 ] as const satisfies readonly MuscleGroup[];
+
+// ---------------------------------------------------------------------------------------------------------
+// Phase 3 · Plan-Engine (docs/PLAN-PHASE-3.md Abschnitte 5 und 6)
+//
+// Was keine Studie belegt, ist ausdrücklich als PRODUKTENTSCHEIDUNG gekennzeichnet und wird mit der fachlichen
+// Prüfung (PLAN-PHASE-2 Frage 5) bestätigt. Die Quellen werden beim Zitieren gegen das Original geprüft.
+// ---------------------------------------------------------------------------------------------------------
+
+/**
+ * Version der Regeln der Plan-Engine. Steigt bei jeder Regeländerung → die App bietet „Plan neu erstellen“ an.
+ * Quelle: Produktentscheidung (PLAN-PHASE-3 Abschnitt 10.4).
+ */
+export const PLAN_ENGINE_VERSION = 1;
+
+/**
+ * Punkte für das Vorlagen-Matching (Summe 100), Abschnitt 5.3.
+ * Quelle: PRODUKTENTSCHEIDUNG (Ziel wichtiger als Level, Level wichtiger als Tage usw.).
+ */
+export const PLAN_MATCH_WEIGHTS = {
+  goal: 35,
+  level: 25,
+  days: 15,
+  location: 10,
+  equipment: 10,
+  duration: 5,
+} as const;
+
+/**
+ * Höchstens so viele Krafteinheiten pro Woche; weitere Wunsch-Tage werden Ruhetage.
+ * Quelle: PRODUKTENTSCHEIDUNG (es gibt nur 3- und 4-Tage-Vorlagen). Orientierung: ACSM Position Stand (2009),
+ * „Progression models in resistance training for healthy adults“, Med Sci Sports Exerc 41(3):687–708
+ * (Trainingshäufigkeit je Level: Einsteiger 2–3, Fortgeschrittene 3–4 Tage pro Woche).
+ */
+export const MAX_STRENGTH_SESSIONS_PER_WEEK = 4;
+
+/**
+ * Erholung zwischen zwei Krafteinheiten derselben Muskelgruppen in Stunden (Planung nutzt die Untergrenze:
+ * Ganzkörper-Einheiten möglichst nicht an zwei Tagen hintereinander).
+ * Quelle: Garber CE et al. (2011), ACSM Position Stand „Quantity and Quality of Exercise for Developing and
+ * Maintaining Cardiorespiratory, Musculoskeletal, and Neuromotor Fitness in Apparently Healthy Adults“,
+ * Med Sci Sports Exerc 43(7):1334–1359 (mind. 48 h); abgeglichen mit ACSM Position Stand (2009), 48–72 h.
+ */
+export const MIN_RECOVERY_HOURS_SAME_MUSCLES = { min: 48, max: 72 } as const;
+
+/**
+ * Standard-Trainingstage ohne Wunsch-Tage (ISO 1 = Montag … 7 = Sonntag), je Anzahl Einheiten.
+ * Quelle: PRODUKTENTSCHEIDUNG (größtmögliche Abstände, Wochenende frei).
+ */
+export const DEFAULT_TRAINING_DAYS: Readonly<Record<number, readonly number[]>> = {
+  1: [3],
+  2: [1, 4],
+  3: [1, 3, 5],
+  4: [1, 2, 4, 5],
+};
+
+/**
+ * Vorsichtiger Plan (Gesundheits-Flag `conservative_plan` bzw. jedes Flag, und ohne Gesundheits-Check).
+ * Quelle: Die FLAGS begründet der PAR-Q+ (Warburton DER et al., 2011, Health Fit J Can 4(2):3–23). RPE-Deckel,
+ * nur Einsteiger-Vorlagen und die ausgeschlossenen Übungs-Merkmale sind PRODUKTENTSCHEIDUNG
+ * (docs/PLAN-PHASE-2.md Abschnitt 8, docs/PLAN-PHASE-3.md Abschnitt 5.4).
+ * - `overheadFlags`: bei diesen Flags (und ohne Check) zusätzlich keine Über-Kopf-Übungen.
+ */
+export const CONSERVATIVE_PLAN_RULES = {
+  rpeMax: 7,
+  beginnerTemplatesOnly: true,
+  excludedCautionTags: ['high_impact', 'spinal_loading', 'high_skill'],
+  overheadFlags: ['injury', 'medical_clearance_recommended'],
+} as const satisfies {
+  rpeMax: number;
+  beginnerTemplatesOnly: boolean;
+  excludedCautionTags: readonly CautionTag[];
+  overheadFlags: readonly string[];
+};
+
+/**
+ * Schwangerschaft: zusätzlich keine Übungen in langer Rückenlage.
+ * Quelle: ACOG Committee Opinion Nr. 804 (2020), „Physical Activity and Exercise During Pregnancy and the
+ * Postpartum Period“, Obstet Gynecol 135(4):e178–e188.
+ */
+export const PREGNANCY_EXCLUDED_CAUTION_TAGS = [
+  'long_supine',
+] as const satisfies readonly CautionTag[];
+
+/**
+ * Altersregeln (Stichtag = Datum der Planung bzw. Anzeige).
+ * - Unter 18: RPE ≤ 8, keine Technik-Übungen (`high_skill`). Quelle: Faigenbaum AD et al. (2009), „Youth
+ *   resistance training: updated position statement paper from the NSCA“, J Strength Cond Res 23(5 Suppl):S60–S79
+ *   (Krafttraining Jugendlicher sicher unter qualifizierter Aufsicht – die App bietet keine Aufsicht).
+ * - Ab 65: RPE ≤ 7, keine Sprünge und Technik-Übungen. PRODUKTENTSCHEIDUNG: Chodzko-Zajko WJ et al. (2009),
+ *   ACSM Position Stand „Exercise and physical activity for older adults“, Med Sci Sports Exerc 41(7):1510–1530,
+ *   nutzt eine 0–10-Anstrengungsskala, keine RPE nach Wiederholungen in Reserve.
+ */
+export const AGE_PLAN_RULES = {
+  minor: { belowAge: 18, rpeMax: 8, excludedCautionTags: ['high_skill'] },
+  senior: { fromAge: 65, rpeMax: 7, excludedCautionTags: ['high_impact', 'high_skill'] },
+} as const satisfies {
+  minor: { belowAge: number; rpeMax: number; excludedCautionTags: readonly CautionTag[] };
+  senior: { fromAge: number; rpeMax: number; excludedCautionTags: readonly CautionTag[] };
+};
+
+/**
+ * Einstiegswoche: RPE-Ziel 1 Punkt unter der Vorlage (nie unter TEMPLATE_DOSAGE_LIMITS.rpe.min).
+ * Quelle: Helms ER et al. (2016), „Application of the repetitions in reserve-based rating of perceived exertion
+ * scale for resistance training“, Strength Cond J 38(4):42–49; Höhe der Absenkung: PRODUKTENTSCHEIDUNG.
+ */
+export const INTRO_WEEK_RPE_REDUCTION = 1;
+
+/**
+ * Angebrochene Startwoche: Passt weniger als dieser Anteil der Wochen-Einheiten in den Rest der Woche, laufen
+ * diese Einheiten als „Woche 0“ (Einstiegswoche außerhalb des Belastungsblocks).
+ * Quelle: PRODUKTENTSCHEIDUNG (PLAN-PHASE-3 Abschnitt 5.7).
+ */
+export const PARTIAL_START_WEEK_MIN_SHARE = 0.5;
+
+/**
+ * Arbeitsgewicht aus einem Eintrag (ab Phase 4): Epley-Formel e1RM = Gewicht × (1 + (Wdh. + Reserve) / 30),
+ * nur bis 12 Wdh. + Reserve (darüber wird nicht hochgerechnet).
+ * Quellen: Epley B (1985), „Poundage Chart“, Boyd Epley Workout; Zourdos MC et al. (2016), „Novel resistance
+ * training-specific rating of perceived exertion scale measuring repetitions in reserve“, J Strength Cond Res
+ * 30(1):267–275. Grenze 12: PRODUKTENTSCHEIDUNG (Schätzformeln werden mit vielen Wdh. ungenau).
+ */
+export const E1RM_ESTIMATE = { epleyDivisor: 30, maxRepsPlusReserve: 12 } as const;
+
+/**
+ * Doppelte Progression (PLAN-PHASE-3 Abschnitt 5.9).
+ * - Gewichtsschritt bis 10 % direkt; Langhantel und Maschine/Kabel +2,5 kg, Kurzhantel/Kettlebell nächste eigene
+ *   Gewichtsstufe (ohne Angabe +2 kg).
+ * - Ein größerer Gewichtssprung wird nie direkt genommen, sondern erst nach dem Puffer: Zielwiederholungen bis
+ *   reps_max + 2 (höchstens 30), dann +1 Satz (höchstens 6), dann der Gewichtsschritt. Ist dieser Sprung größer als
+ *   25 %, liegt das RPE-Ziel der ersten Einheit danach 1 Punkt niedriger.
+ * - Gibt es keine höhere eigene Gewichtsstufe: nach dem Puffer Hinweis „schwerere Gewichtsstufe eintragen oder
+ *   schwerere Variante wählen“.
+ * - Auslöser für eine Stufe über reps_max hinaus: zwei Einheiten in Folge geschafft.
+ * - Halteübungen: Steigerung min(5 s, max(1 s, floor(10 % der Dauer))), höchstens 120 s.
+ * Quellen: ACSM Position Stand (2009), Med Sci Sports Exerc 41(3):687–708 (2–10 % Laststeigerung, wenn 1–2 Wdh.
+ * über dem Ziel gelingen); „2-für-2-Regel“ (zwei Einheiten in Folge): Baechle TR, Earle RW (Hrsg.), „Essentials of
+ * Strength Training and Conditioning“, NSCA. Puffer, Kurzhantel-Standard und Halteübungs-Schritte:
+ * PRODUKTENTSCHEIDUNG.
+ */
+export const LOAD_PROGRESSION = {
+  maxIncreaseFraction: 0.1,
+  largeJumpFraction: 0.25,
+  largeJumpRpeReduction: 1,
+  barbellIncrementKg: 2.5,
+  machineIncrementKg: 2.5,
+  defaultFreeWeightIncrementKg: 2,
+  extraRepsBuffer: 2,
+  extraSets: 1,
+  consecutiveSessionsForStep: 2,
+  holdIncrementS: { min: 1, max: 5, fraction: 0.1 },
+} as const;
+
+/**
+ * Belastungswochen vor der festen Erholungswoche (Deload). Liegt im Rahmen DELOAD_INTERVAL_WEEKS.
+ * Quellen: docs/KONZEPT.md Abschnitt 4.5 („alle 4–6 Wochen“); Bell L et al. (2023), „Integrating Deloading into
+ * Strength and Physique Sports Training Programmes: An International Delphi Consensus Approach“, Sports Med
+ * Open 9:87. Aufteilung nach Level: PRODUKTENTSCHEIDUNG.
+ */
+export const DELOAD_SCHEDULE = { beginner: 5, advanced: 4, cautious: 4 } as const;
+
+/**
+ * Erholungswoche: Sätze halbiert (aufgerundet, mind. 1), RPE −2 (nie unter 5), Gewicht ×0,9.
+ * Quelle: Bell L et al. (2023), Sports Med Open 9:87 (Umfang und Anstrengung senken); Werte: PRODUKTENTSCHEIDUNG.
+ */
+export const DELOAD_DOSAGE = { setsFactor: 0.5, rpeReduction: 2, loadFactor: 0.9 } as const;
+
+/**
+ * Kürzen auf das Zeitbudget: mindestens 3 Übungen, Grundübungen mind. 2 Sätze, Isolationsübungen mind. 1 Satz.
+ * Quelle: PRODUKTENTSCHEIDUNG (PLAN-PHASE-3 Abschnitt 5.6).
+ */
+export const SESSION_FIT = { minExercises: 3, minSetsCompound: 2, minSetsIsolation: 1 } as const;
+
+/**
+ * Grenzen eines erzeugten Plans – identisch als CHECK in der Datenbank (Etappe B, db-sync.test.ts).
+ * - Woche 0–6: Woche 0 + längster Block (5 Belastungswochen + 1 Erholungswoche).
+ * - Höchstens 7 Einheiten pro Woche, höchstens 8 Übungen pro Einheit (Regel V8).
+ * Quelle: PRODUKTENTSCHEIDUNG bzw. TEMPLATE_DOSAGE_LIMITS.maxExercisesPerSession.
+ */
+export const PLAN_BLOCK_LIMITS = {
+  weekNo: { min: 0, max: 6 },
+  sessionsPerWeek: 7,
+  exercisesPerSession: 8,
+  blockNo: { min: 1, max: 1000 },
+} as const;
+
+/**
+ * Zielgewicht einer geplanten Übung in kg: Plausibilitätsgrenze (Langhantel + Scheiben), identisch als CHECK.
+ * Quelle: PRODUKTENTSCHEIDUNG.
+ */
+export const PLANNED_LOAD_LIMITS = { targetWeightKg: { min: 0.5, max: 500 } } as const;

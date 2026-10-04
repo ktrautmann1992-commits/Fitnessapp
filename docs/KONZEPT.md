@@ -77,8 +77,30 @@ Verbindlich ist der freigegebene Ablauf in `docs/PLAN-PHASE-1.md` Abschnitt 3 (S
 6. **Ausdauer:** Intensitätsverteilung ca. 80/20, Zonen aus Testlauf/Herzfrequenz, Umfangsteigerung ≤10 %/Woche, Tapering vor Wettkampf
 7. **Neuplanung:** verpasste Einheiten sinnvoll verschieben oder streichen, nie stapeln
 8. **Fallback:** keine Vorlage passt → Echtzeit-KI-Generierung mit gleichem Schema + Validierung (Premium, Limit über `ai_usage`, Abschnitt 15).
-   Gratis (Vorschlag, **offene Gründer-Entscheidung**): nächstbeste Vorlage mit Hinweis, was nicht ganz passt
+   Gratis (**beschlossen 04.10.2026**, `docs/PLAN-PHASE-3.md` Frage 1): nächstbeste Vorlage mit Hinweis, was nicht ganz passt.
+   Fehlen freigegebene Inhalte ganz: klarer Fehlerzustand, kein Ersatz
 9. **Equipment aus „Mein Studio“:** Hat das gespeicherte Studio eine Geräteliste, dient sie als Equipment-Profil (Abschnitt 16)
+
+**Umsetzung ab Phase 3 (`docs/PLAN-PHASE-3.md`, Etappe A: Plan-Engine in `packages/core/src/plan`):**
+- Reine, deterministische Funktionen ohne KI: `generateTrainingPlan(inputs, library, today)` = Angaben prüfen (Zod, **ohne
+  Körperdaten**, Mindestalter 16) → Sicherheitsregeln → Vorlage wählen (Punkte: Ziel 35, Level 25, Tage 15, Ort 10, Geräte 10,
+  Dauer 5; Güte „passt genau / mit Anpassungen / nächstbeste Vorlage“) → anpassen → Wochentage → erster Plan-Block.
+- **Inhalte:** live nur `published`; Entwürfe nur im Testmodus der App (ohne roten Befund, nie Probelauf, gekennzeichnet).
+- **Sicherheitsregeln (strengste gilt):** Gesundheits-Flag oder **kein Gesundheits-Check** → nur Einsteiger-Vorlagen, RPE ≤ 7,
+  keine Übungen mit Sprüngen, schwerer Wirbelsäulenlast oder hoher Technik; bei Verletzung/Herz-Kreislauf und ohne Check auch
+  kein Über-Kopf; Schwangerschaft zusätzlich keine lange Rückenlage; unter 18 RPE ≤ 8 ohne Technik-Übungen; ab 65 RPE ≤ 7
+  ohne Sprünge/Technik; Einsteiger RPE ≤ 8. Nie Maximaltests. Strengere Regeln wirken sofort (Anzeige, Folgeblock),
+  Lockerungen nur nach Bestätigung.
+- **Ersatz** bei fehlendem Gerät oder Sicherheitsregel: Alternativen → Alternativen der Alternativen → gleiches Muster →
+  gemeinsamer Hauptmuskel; nie schwerer, immer erlaubt; sonst entfällt die Übung.
+- **Tage:** 1–2 Tage per Rotation der 3-Tage-Ganzkörper-Vorlage, höchstens 4 Krafteinheiten/Woche, Wunsch-Tage haben Vorrang.
+- **Block:** Einstiegswoche (RPE −1, „Startgewicht finden“ statt vorab gerechnetem Gewicht), Einsteiger 5, sonst 4
+  Belastungswochen, dann feste Erholungswoche (Sätze halbiert, RPE −2); angebrochene Startwoche mit weniger als der Hälfte der
+  Einheiten = „Woche 0“; Folgeblock aus dem Schnappschuss mit aktuellen Sicherheitsregeln.
+- **Doppelte Progression:** erst Wiederholungen, dann Gewicht (Gewichtsschritt bis 10 % direkt; größere Sprünge nie direkt,
+  erst nach Puffer aus Zusatz-Wiederholungen und einem Zusatzsatz); Halteübungen +1–5 s; nie Last senken (das ist 4.1).
+- **Verpasste Einheiten:** nächster freier Tag ab heute in derselben Kalenderwoche mit 48 h Erholung, sonst streichen.
+- Pläne, in die der Gesundheits-Check eingeht, gelten vorsorglich als Gesundheitsdaten (`docs/PLAN-PHASE-3.md` Abschnitt 9).
 
 ### 4.1 Live-Anpassung des Plans (Premium, ohne KI)
 - **Gratis:** nur die doppelte Progression aus Punkt 4 oben (alle Wiederholungen geschafft → Gewicht steigt) – **ohne** die

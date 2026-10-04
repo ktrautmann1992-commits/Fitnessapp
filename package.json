@@ -13,7 +13,8 @@
     "check": "turbo run lint typecheck test",
     "format": "prettier --write .",
     "format:check": "prettier --check .",
-    "content:validate": "pnpm --filter @fitnessapp/content validate"
+    "content:validate": "pnpm --filter @fitnessapp/content validate",
+    "plan:examples": "pnpm --filter @fitnessapp/content plan:examples"
   },
   "devDependencies": {
     "@eslint/js": "^10.0.1",

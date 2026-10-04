@@ -10,3 +10,4 @@ export * from './body-measurements';
 export * from './onboarding';
 export * from './validation';
 export * from './content';
+export * from './plan';
