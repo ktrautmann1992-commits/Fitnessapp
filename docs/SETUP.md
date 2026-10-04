@@ -20,26 +20,31 @@ Sie werden nicht rot.
 
 ## Welcher Schlüssel wohin?
 
-| Name                                   | Woher         | Wohin                                                                     | Geheim? |
-| -------------------------------------- | ------------- | ------------------------------------------------------------------------- | ------- |
-| `EXPO_PUBLIC_SUPABASE_URL`             | Supabase (A5) | Vercel-Projekt **App** (C) + Expo (D6)                                    | nein    |
-| `EXPO_PUBLIC_SUPABASE_PUBLISHABLE_KEY` | Supabase (A6) | Vercel-Projekt **App** (C) + Expo (D6)                                    | nein\*  |
-| `NEXT_PUBLIC_SUPABASE_URL`             | Supabase (A5) | Vercel-Projekt **Web** (C)                                                | nein    |
-| `NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY` | Supabase (A6) | Vercel-Projekt **Web** (C)                                                | nein\*  |
-| `NEXT_PUBLIC_APP_URL`                  | Vercel (C1)   | Vercel-Projekt **Web** (C), optional                                      | nein    |
-| `SUPABASE_URL`                         | Supabase (A5) | GitHub Secret (B)                                                         | nein    |
-| `SUPABASE_SECRET_KEY`                  | Supabase (A7) | GitHub Secret (B)                                                         | **JA**  |
-| `SUPABASE_PROJECT_REF`                 | Supabase (A4) | GitHub Secret (B)                                                         | nein    |
-| `SUPABASE_DB_PASSWORD`                 | Supabase (A3) | GitHub Secret (B)                                                         | **JA**  |
-| `SUPABASE_ACCESS_TOKEN`                | Supabase (A8) | GitHub Secret (B)                                                         | **JA**  |
-| `EXPO_TOKEN`                           | Expo (D4)     | GitHub Secret (B)                                                         | **JA**  |
-| Expo-Projekt-ID                        | Expo (D3)     | Claude in einer Sitzung nennen (D5), kommt in `apps/mobile/app.config.ts` | nein    |
-| `ANTHROPIC_API_KEY`                    | Anthropic (E) | GitHub Secret (B)                                                         | **JA**  |
-| `CONTENT_MODEL` (optional)             | selbst (E5)   | GitHub **Variable** (E5), Standard `claude-opus-5-5`                      | nein    |
-| `CONTENT_EFFORT` (optional)            | selbst (E5)   | GitHub **Variable** (E5), Standard `high`                                 | nein    |
-| `CONTENT_MAX_USD` (optional)           | selbst (E5)   | GitHub **Variable** (E5), Standard `15`, höchstens `100`                  | nein    |
-| `ADMIN_PASSWORD`                       | selbst (G1)   | Vercel-Projekt **Web**, Production + Preview (G2)                         | **JA**  |
-| `ADMIN_SESSION_SECRET`                 | selbst (G1)   | Vercel-Projekt **Web**, Production + Preview (G2)                         | **JA**  |
+| Name                                   | Woher         | Wohin                                                                      | Geheim? |
+| -------------------------------------- | ------------- | -------------------------------------------------------------------------- | ------- |
+| `EXPO_PUBLIC_SUPABASE_URL`             | Supabase (A5) | Vercel-Projekt **App** (C) + Expo (D6)                                     | nein    |
+| `EXPO_PUBLIC_SUPABASE_PUBLISHABLE_KEY` | Supabase (A6) | Vercel-Projekt **App** (C) + Expo (D6)                                     | nein\*  |
+| `NEXT_PUBLIC_SUPABASE_URL`             | Supabase (A5) | Vercel-Projekt **Web** (C)                                                 | nein    |
+| `NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY` | Supabase (A6) | Vercel-Projekt **Web** (C)                                                 | nein\*  |
+| `NEXT_PUBLIC_APP_URL`                  | Vercel (C1)   | Vercel-Projekt **Web** (C), optional                                       | nein    |
+| `SUPABASE_URL`                         | Supabase (A5) | GitHub Secret (B)                                                          | nein    |
+| `SUPABASE_SECRET_KEY`                  | Supabase (A7) | GitHub Secret (B)                                                          | **JA**  |
+| `SUPABASE_PROJECT_REF`                 | Supabase (A4) | GitHub Secret (B)                                                          | nein    |
+| `SUPABASE_DB_PASSWORD`                 | Supabase (A3) | GitHub Secret (B)                                                          | **JA**  |
+| `SUPABASE_ACCESS_TOKEN`                | Supabase (A8) | GitHub Secret (B)                                                          | **JA**  |
+| `EXPO_TOKEN`                           | Expo (D4)     | GitHub Secret (B)                                                          | **JA**  |
+| Expo-Projekt-ID                        | Expo (D3)     | Claude in einer Sitzung nennen (D5), kommt in `apps/mobile/app.config.ts`  | nein    |
+| `ANTHROPIC_API_KEY`                    | Anthropic (E) | GitHub Secret (B)                                                          | **JA**  |
+| `CONTENT_MODEL` (optional)             | selbst (E5)   | GitHub **Variable** (E5), Standard `claude-opus-5-5`                       | nein    |
+| `CONTENT_EFFORT` (optional)            | selbst (E5)   | GitHub **Variable** (E5), Standard `high`                                  | nein    |
+| `CONTENT_MAX_USD` (optional)           | selbst (E5)   | GitHub **Variable** (E5), Standard `15`, höchstens `100`                   | nein    |
+| `ADMIN_PASSWORD`                       | selbst (G1)   | Vercel-Projekt **Web**, Production + Preview (G2)                          | **JA**  |
+| `ADMIN_SESSION_SECRET`                 | selbst (G1)   | Vercel-Projekt **Web**, Production + Preview (G2)                          | **JA**  |
+| `RESEND_API_KEY`                       | Resend (I3)   | Vercel-Projekt **Web**, Production + Preview (I5)                          | **JA**  |
+| `WAITLIST_FROM_EMAIL`                  | Resend (I2)   | Vercel-Projekt **Web**, Production + Preview (I5)                          | nein    |
+| `WAITLIST_TOKEN_SECRET`                | selbst (I4)   | Vercel-Projekt **Web**, Production + Preview (I5)                          | **JA**  |
+| `SUPABASE_SERVICE_ROLE_KEY`            | Supabase (A7) | Vercel-Projekt **Web**, Production + Preview (I5) – nur für die Warteliste | **JA**  |
+| `NEXT_PUBLIC_SITE_URL` (optional)      | Vercel (C2)   | Vercel-Projekt **Web**, nur bei eigener Domain (I6)                        | nein    |
 
 \* Der „Publishable Key“ darf öffentlich in App und Website stehen. Die Daten schützt die Datenbank selbst
 (Row Level Security). Der **Secret Key** dagegen darf **nie** in Vercel-Variablen mit `EXPO_PUBLIC_` oder
@@ -293,6 +298,110 @@ Nötig für `content-collect` und `content-review`. Handy-Browser, ggf. „Deskt
 
 ---
 
+## Teil I – Warteliste der Landingpage (E-Mail-Dienst Resend)
+
+Die Warteliste auf der Startseite verschickt eine Bestätigungs-Mail (Double-Opt-in). Dafür braucht es einen
+E-Mail-Dienst: **Resend**. Solange die Werte unten fehlen, zeigt das Formular freundlich „Die Warteliste ist bald
+aktiv“ – kaputt geht nichts. Handy-Browser, ggf. „Desktop-Website anfordern“.
+
+> **Datenschutz:** Resend ist ein Anbieter aus den **USA**. Vor dem Livegang: in Resend den
+> **Auftragsverarbeitungsvertrag (DPA)** abschließen (auf der Resend-Website unter „Legal“ → „DPA“; Menüname kann sich ändern),
+> als Versandregion **EU (eu-west-1, Irland)** wählen und Resend in der Datenschutzerklärung (`/datenschutz`,
+> Abschnitt 4) mit Firma und Anschrift eintragen. Die Datenbank (Supabase) steht weiter in Frankfurt.
+
+### I1 – Konto anlegen
+
+1. **resend.com** öffnen → **Get started** → mit E-Mail registrieren und die Bestätigungs-Mail anklicken.
+2. Team-Name z. B. `Alpha5`.
+
+### I2 – Eigene Domain verifizieren (Absender-Adresse)
+
+Ohne eigene Domain verschickt Resend nur an eure eigene Adresse. Ihr braucht eine Domain (z. B. `alpha5.de`).
+
+1. In Resend links **Domains → Add Domain**.
+2. **Name:** eine Subdomain nur für Mails, z. B. `mail.alpha5.de`. **Region:** **Ireland (eu-west-1)** →
+   **Add**.
+3. Resend zeigt 3–4 **DNS-Einträge** (Typ **MX** und **TXT**, ggf. **CNAME**) mit **Name** und **Value**.
+4. In einem zweiten Tab beim **Domain-Anbieter** anmelden (z. B. IONOS, Strato, All-Inkl, Cloudflare) →
+   Domain → **DNS-Einstellungen** → für jeden Eintrag **Eintrag hinzufügen**: Typ, Name und Wert genau
+   übernehmen (Wert per Kopieren, nicht abtippen) → **Speichern**.
+5. Zurück in Resend → **Verify DNS Records**. Grün „Verified“ kann einige Minuten bis wenige Stunden dauern.
+6. Die Absender-Adresse ist dann z. B. `Alpha5 <warteliste@mail.alpha5.de>`. Das ist `WAITLIST_FROM_EMAIL`.
+
+### I3 – API-Schlüssel erstellen
+
+1. Resend → **API Keys → Create API Key**.
+2. **Name:** `alpha5-web`. **Permission:** **Sending access**. **Domain:** eure Domain aus I2 → **Add**.
+3. Den Schlüssel (`re_…`) **sofort kopieren** – er wird nur einmal angezeigt. Das ist `RESEND_API_KEY`.
+   Nicht in den Chat mit Claude kopieren.
+
+### I4 – Token-Schlüssel erzeugen
+
+1. Im Passwort-Manager einen neuen Eintrag `Alpha5 Warteliste` anlegen.
+2. **Passwort generieren** – Länge mindestens **40 Zeichen**. Das ist `WAITLIST_TOKEN_SECRET` (damit werden
+   Bestätigungs-Links und IP-Prüfwerte gesichert). Wird er geändert, gelten offene Bestätigungs-Links nicht mehr.
+
+### I5 – In Vercel eintragen
+
+1. **vercel.com** → Projekt **fitnessapp-web** → **Settings** → **Environment Variables**.
+2. Für jede Zeile **Key** und **Value** eintragen, Schalter **Sensitive** einschalten (außer bei
+   `WAITLIST_FROM_EMAIL`) → **Save**:
+   - `RESEND_API_KEY` = Schlüssel aus I3 – Environments **Production** und **Preview**
+   - `WAITLIST_FROM_EMAIL` = Absender aus I2, z. B. `Alpha5 <warteliste@mail.alpha5.de>` – **Production** und
+     **Preview**
+   - `WAITLIST_TOKEN_SECRET` = Wert aus I4 – **Production** und **Preview**
+   - `SUPABASE_SERVICE_ROLE_KEY` = **Secret key** aus Supabase (Teil A, Schritt 7, `sb_secret_…`) – **nur
+     Production**! Vorschau-Links (Preview) bekommen den Schlüssel nicht; dort zeigt die Warteliste „Die
+     Warteliste ist bald aktiv“. So kann Code aus einem Pull Request nie mit vollen Datenbank-Rechten laufen.
+     Die Vorschauen bleiben zusätzlich durch **Deployment Protection** (Teil G4) geschützt.
+3. `NEXT_PUBLIC_SUPABASE_URL` steht schon aus Teil C2 dort – sonst ergänzen.
+4. **Deployments** → oberster Eintrag **⋯** → **Redeploy** → **Redeploy**.
+5. Testen: Website öffnen → ganz unten E-Mail eintragen, Haken setzen → **Auf die Warteliste** → Mail öffnen →
+   **Anmeldung bestätigen** → auf der Seite noch einmal **Anmeldung bestätigen** tippen.
+   In Supabase → **Table Editor → waitlist** steht die Adresse mit `confirmed_at`. (Nur auf der
+   Produktions-Adresse – Vorschau-Links zeigen „bald aktiv“, siehe Schritt 2.)
+
+> **Warum der geheime Supabase-Schlüssel?** Die Tabelle `waitlist` ist für die Öffentlichkeit komplett
+> gesperrt – auch Einfügen (strenger als „öffentlich nur Einfügen“). Sonst könnte jemand an Rate-Limit und
+> Bestätigungs-Mail vorbei fremde Adressen eintragen. Nur der Server der Website schreibt, über drei
+> Datenbank-Funktionen. Der Schlüssel darf **nie** mit `NEXT_PUBLIC_` beginnen.
+
+### I6 – Eigene Domain der Website (später, optional)
+
+Die Website meldet Suchmaschinen und Vorschaubildern als Adresse `https://fitnessapp-web-eight.vercel.app`.
+Mit eigener Domain: Variable **`NEXT_PUBLIC_SITE_URL`** = `https://www.alpha5.de` (ohne `/` am Ende) wie in I5
+eintragen → **Redeploy**. **Pflicht**, sobald die Domain aktiv ist: Die Links in den Mails werden nur aus dieser
+Adresse gebaut, und das Formular nimmt Anfragen nur von bekannten Adressen an (sonst „Anfrage abgelehnt“).
+
+### Was die Warteliste speichert
+
+- E-Mail-Adresse, Version des Einwilligungstexts, Zeitpunkte von Eintragung und Bestätigung.
+- Bestätigungs- und Abmelde-Link nur als pseudonymisierter Prüfwert (HMAC-Hash). Das Token steht im Link
+  hinter `#` – es wird nie an einen Server geschickt, landet also in keinem Log.
+- Gegen Missbrauch: je IP höchstens 10 Versuche pro Stunde (IPv6: je /64-Netz), je E-Mail höchstens 3 pro Tag
+  (nur pseudonymisierte Prüfwerte/HMAC-Hashes,
+  spätestens nach 2 Tagen gelöscht). Ein für Menschen unsichtbares Feld fängt Bots ab.
+- Nicht bestätigte Einträge werden spätestens nach 3 Tagen gelöscht (Link gilt 48 Stunden, Löschung täglich); **Abmelden** (Link in jeder Mail) löscht den
+  Eintrag ganz.
+- Liste exportieren: Supabase → **Table Editor → waitlist** → **Export → CSV** (nur Zeilen mit `confirmed_at`
+  anschreiben).
+- **Löschfristen automatisch:** Workflow **waitlist-cleanup** läuft täglich (GitHub → **Actions** →
+  **waitlist-cleanup**; per **Run workflow** auch sofort). Er nutzt die GitHub-Secrets `SUPABASE_URL` und
+  `SUPABASE_SECRET_KEY` aus Teil B; fehlen sie, endet er grün mit Hinweis. Zusätzlich wird bei jedem Eintragen,
+  Bestätigen und Abmelden aufgeräumt. Achtung: Ist das Repository öffentlich, schaltet GitHub zeitgesteuerte
+  Workflows nach 60 Tagen ohne Aktivität ab – dann unter **Actions → waitlist-cleanup → Enable workflow** wieder
+  einschalten.
+- Bestätigte Einträge bleiben bis zum Start bzw. bis zur Abmeldung (Frist in der Datenschutzerklärung festlegen).
+- Trägt sich eine noch unbestätigte Adresse erneut ein, wird der alte Link ungültig und eine neue Mail geht raus
+  (das alte Token liegt nur als Hash vor). Das Limit von 3 Mails pro Adresse und Tag begrenzt Missbrauch.
+
+> **Vorgemerkt für die Start-Mail an alle:** Jede Mail braucht pro Empfänger ein **neues Abmelde-Token** (das
+> alte liegt nur als Hash vor) und die Kopfzeilen `List-Unsubscribe` + `List-Unsubscribe-Post:
+List-Unsubscribe=One-Click` (RFC 8058, Ein-Klick-Abmelden – Pflicht bei Gmail/Yahoo für Massen-Mails). Dafür
+> braucht es dann einen POST-Endpunkt ohne Zwischenseite.
+
+---
+
 ## Inhalte erzeugen und freigeben am Handy
 
 Alle Inhalte (Übungen, Plan-Vorlagen) liegen als Dateien im Repository. Der Weg ist immer:
@@ -369,6 +478,7 @@ Automatische Läufe (nach Merge, nach `db-migrate`) erlauben das nie.
 | `content-collect`  | alle 3 Stunden und per Hand                                       | Teil H; `ANTHROPIC_API_KEY` nur für echte Läufe                         |
 | `content-review`   | per Hand                                                          | Teil H                                                                  |
 | `content-seed`     | nach Merge in `main` (Inhalte), nach `db-migrate` und per Hand    | `SUPABASE_URL`, `SUPABASE_SECRET_KEY` (ohne: nur Prüfung)               |
+| `waitlist-cleanup` | täglich 03:17 UTC und per Hand (Löschfristen der Warteliste)      | `SUPABASE_URL`, `SUPABASE_SECRET_KEY`                                   |
 | `eas-build`        | per Hand                                                          | `EXPO_TOKEN` + Expo-Projekt-ID                                          |
 | Vercel             | bei jedem Push automatisch                                        | Teil C                                                                  |
 

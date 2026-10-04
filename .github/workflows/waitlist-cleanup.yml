@@ -1,0 +1,50 @@
+name: waitlist-cleanup
+
+# Löschfristen der Warteliste (Migration 20261004130000_waitlist.sql, docs/SETUP.md Teil I):
+# Täglich die Datenbank-Funktion waitlist_cleanup() aufrufen – löscht nie bestätigte Einträge nach Ablauf des
+# Links (48 h) und Rate-Limit-Prüfwerte nach 24 h, auch wenn niemand die Website besucht.
+# Ohne die GitHub-Secrets SUPABASE_URL/SUPABASE_SECRET_KEY endet der Workflow grün mit Hinweis.
+# Der Schlüssel wird nie ausgegeben (nur in einer Datei für curl, GitHub maskiert ihn zusätzlich).
+on:
+  schedule:
+    # täglich 03:17 UTC
+    - cron: '17 3 * * *'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: waitlist-cleanup
+  cancel-in-progress: false
+
+jobs:
+  cleanup:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - name: Aufräumen (waitlist_cleanup)
+        env:
+          SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
+          SUPABASE_SECRET_KEY: ${{ secrets.SUPABASE_SECRET_KEY }}
+        run: |
+          if [ -z "$SUPABASE_URL" ] || [ -z "$SUPABASE_SECRET_KEY" ]; then
+            echo "::notice title=waitlist-cleanup übersprungen::Es fehlen die GitHub-Secrets SUPABASE_URL und/oder SUPABASE_SECRET_KEY. Siehe docs/SETUP.md Teil B."
+            exit 0
+          fi
+          umask 077
+          headers="$RUNNER_TEMP/headers.txt"
+          {
+            echo "apikey: $SUPABASE_SECRET_KEY"
+            echo "Content-Type: application/json"
+            # Alter service_role-Schlüssel (JWT) gehört zusätzlich in Authorization.
+            case "$SUPABASE_SECRET_KEY" in eyJ*) echo "Authorization: Bearer $SUPABASE_SECRET_KEY" ;; esac
+          } > "$headers"
+          status=$(curl -sS -o "$RUNNER_TEMP/antwort.txt" -w '%{http_code}' -X POST \
+            -H @"$headers" --data '{}' "${SUPABASE_URL%/}/rest/v1/rpc/waitlist_cleanup")
+          rm -f "$headers"
+          if [ "$status" != "200" ]; then
+            echo "::error title=waitlist-cleanup fehlgeschlagen::HTTP $status – ist die Migration eingespielt (db-migrate)?"
+            exit 1
+          fi
+          echo "Gelöschte Zeilen: $(cat "$RUNNER_TEMP/antwort.txt")"
