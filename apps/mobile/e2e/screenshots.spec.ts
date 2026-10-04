@@ -92,18 +92,40 @@ for (const scheme of ['light', 'dark'] as const) {
     await page.getByRole('radio', { name: 'Marathon', exact: true }).click();
     await shot('ziel');
     await next();
-    await page.getByRole('radio', { name: '4', exact: true }).click();
-    await page.getByRole('radio', { name: '60 Minuten' }).click();
-    await page.getByRole('checkbox', { name: 'Dienstag' }).click();
-    await shot('zeitbudget');
+    await page.getByRole('radio', { name: 'Tage egal – verteilt für mich' }).click();
+    await page.getByRole('button', { name: 'Kraft im Studio: eine Einheit mehr' }).click();
+    await page.getByRole('button', { name: 'Ausdauer – Laufen: eine Einheit mehr' }).click();
+    await page.getByRole('button', { name: 'Ausdauer – Laufen: eine Einheit mehr' }).click();
+    await shot('trainingstage-flex');
+    await page.getByRole('radio', { name: 'Feste Wochentage' }).click();
+    await page.getByRole('checkbox', { name: 'Montag' }).click();
+    await page.getByRole('checkbox', { name: 'Mittwoch' }).click();
+    await page.getByRole('radio', { name: 'Mittwoch: Kraft im Studio' }).click();
+    await page.getByRole('radio', { name: 'Mittwoch: 60 Minuten' }).click();
+    await page.getByRole('checkbox', { name: 'Samstag' }).click();
+    await page.getByRole('radio', { name: 'Samstag: Kraft zu Hause' }).click();
+    await page.getByRole('radio', { name: 'Samstag: Eigene' }).click();
+    await page.getByLabel('Samstag: Minuten (10–240)').fill('90');
+    await shot('trainingstage');
+    await page.getByTestId('schedule-summary').scrollIntoViewIfNeeded();
+    await shot('trainingstage-zusammenfassung');
     await next();
-    await page.getByRole('radio', { name: 'Zuhause' }).click();
-    await shot('trainingsort');
-    await next();
-    await page.getByRole('checkbox', { name: 'Kurzhanteln' }).click();
-    await page.getByLabel('Kurzhanteln: Gewicht in kg').fill('5');
+    await page.getByRole('checkbox', { name: 'Kurzhanteln', exact: true }).click();
+    await page.getByRole('checkbox', { name: 'Kurzhanteln: 2 kg', exact: true }).click();
+    await page.getByRole('checkbox', { name: 'Kurzhanteln: 4 kg', exact: true }).click();
+    await page.getByLabel('Kurzhanteln: Gewicht in kg').fill('5,5');
     await page.getByRole('button', { name: 'Kurzhanteln: Hinzufügen' }).click();
     await shot('equipment');
+    await page.getByRole('checkbox', { name: 'Kurzhanteln', exact: true }).click();
+    await page.getByRole('checkbox', { name: 'Langhantel mit Scheiben' }).click();
+    await page
+      .getByRole('checkbox', { name: 'Langhantel mit Scheiben: 2,5 kg', exact: true })
+      .click();
+    await page
+      .getByRole('checkbox', { name: 'Langhantel mit Scheiben: 10 kg', exact: true })
+      .click();
+    await shot('equipment-langhantel');
+    await page.getByRole('checkbox', { name: 'Kurzhanteln', exact: true }).click();
     await next();
     await page.getByRole('radio', { name: 'Alles (omnivor)' }).click();
     await page

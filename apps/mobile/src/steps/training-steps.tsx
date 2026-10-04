@@ -1,23 +1,35 @@
 import {
+  ageInYears,
+  BARBELL_BAR_PRESETS_KG,
+  BARBELL_DEFAULT_BAR_KG,
+  BARBELL_ID,
   createGoalStepSchema,
+  DEFAULT_SLOT_MINUTES,
   ENDURANCE_DISCIPLINES,
   EQUIPMENT,
+  EQUIPMENT_LIMITS,
   HOME_SELECTABLE_EQUIPMENT,
   equipmentItemSchema,
   GOAL_TYPES,
+  MINUTE_PRESETS,
   OTHER_EQUIPMENT_ID,
+  scheduleHints,
+  slotMinutesSchema,
+  suggestedSlotKind,
   TRAINING_LIMITS,
-  TRAINING_LOCATIONS,
-  timeBudgetStepSchema,
-  trainingLocationStepSchema,
+  TRAINING_SLOT_KINDS,
+  trainingScheduleSchema,
+  weeklySessionCap,
+  weightPresetsFor,
   weightStepKgSchema,
   type EnduranceDiscipline,
   type EquipmentId,
   type EquipmentItemInput,
   type GoalType,
-  type TrainingLocation,
+  type TrainingScheduleMode,
+  type TrainingSlotKind,
 } from '@fitnessapp/core';
-import { fontSize, radius, spacing } from '@fitnessapp/ui';
+import { fontSize, fontWeight, radius, spacing } from '@fitnessapp/ui';
 import { useState } from 'react';
 import { Pressable, StyleSheet, Text, View } from 'react-native';
 
@@ -28,12 +40,14 @@ import {
   Card,
   ChoiceList,
   FieldError,
+  Heading,
   Notice,
   OptionButton,
   TextField,
 } from '@/components/ui';
 import { t } from '@/i18n';
 import { datePartsFromIso, formatKg, isoFromDateParts, parseDecimal } from '@/lib/format';
+import { scheduleSummaryText, slotKindLabel } from '@/lib/summary';
 import { useThemeColors } from '@/lib/theme';
 import { fieldErrorsFromIssues, type FieldErrors } from '@/lib/validation-errors';
 
@@ -121,152 +135,468 @@ export function GoalStep({ ctl }: { ctl: StepController }) {
   );
 }
 
-const SESSION_OPTIONS = Array.from(
-  { length: TRAINING_LIMITS.sessionsPerWeek.max - TRAINING_LIMITS.sessionsPerWeek.min + 1 },
-  (_, index) => TRAINING_LIMITS.sessionsPerWeek.min + index,
-);
-const MINUTE_PRESETS = [20, 30, 45, 60, 90];
+// ---------------------------------------------------------------------------------------------------------
+// Schritt „Deine Trainingstage“ (ersetzt Zeitbudget + Trainingsort; Erweiterungsplan Abschnitt 3.2)
+// ---------------------------------------------------------------------------------------------------------
 
-export function TimeBudgetStep({ ctl }: { ctl: StepController }) {
-  const saved = ctl.app.answers.timeBudget;
-  const [sessions, setSessions] = useState<number | undefined>(saved?.sessionsPerWeek);
-  const [minutes, setMinutes] = useState(saved ? String(saved.minutesPerSession) : '');
-  const [days, setDays] = useState<number[]>(saved?.preferredDays ?? []);
-  const [errors, setErrors] = useState<FieldErrors>({});
+const WEEKDAYS = [1, 2, 3, 4, 5, 6, 7] as const;
+const MAX_SESSIONS = TRAINING_LIMITS.sessionsPerWeek.max;
 
-  function toggleDay(day: number) {
-    setDays((prev) => (prev.includes(day) ? prev.filter((d) => d !== day) : [...prev, day]));
-  }
+/** Dauer als Eingabe: Vorschlag angetippt oder „Eigene“ mit Textfeld. */
+interface MinutesDraft {
+  text: string;
+  custom: boolean;
+}
 
-  function next() {
-    const parsed = timeBudgetStepSchema.safeParse({
-      sessionsPerWeek: sessions,
-      minutesPerSession: parseDecimal(minutes) ?? undefined,
-      preferredDays: [...days].sort((a, b) => a - b),
-    });
-    if (!parsed.success) {
-      setErrors(
-        fieldErrorsFromIssues(parsed.error.issues, {
-          sessionsPerWeek: t.steps.timeBudget.sessionsRequired,
-          minutesPerSession: 'Minuten pro Einheit: bitte eine Zahl eingeben.',
-        }),
-      );
-      return;
-    }
-    setErrors({});
-    void ctl.submit({ step: 'time_budget', timeBudget: parsed.data });
-  }
+interface DayDraft {
+  kind: TrainingSlotKind;
+  minutes: MinutesDraft;
+}
 
+interface FlexDraft {
+  count: number;
+  minutes: MinutesDraft;
+}
+
+function minutesDraft(minutes: number): MinutesDraft {
+  return {
+    text: String(minutes),
+    custom: !(MINUTE_PRESETS as readonly number[]).includes(minutes),
+  };
+}
+
+function minutesValue(draft: MinutesDraft): number | undefined {
+  return parseDecimal(draft.text) ?? undefined;
+}
+
+function MinutesPicker({
+  label,
+  value,
+  onChange,
+  error,
+}: {
+  /** Bezug für Screenreader, z. B. „Montag“ oder „Kraft im Studio“. */
+  label: string;
+  value: MinutesDraft;
+  onChange: (value: MinutesDraft) => void;
+  error?: string | undefined;
+}) {
+  const ts = t.steps.trainingSchedule;
   return (
-    <Screen
-      title={t.steps.timeBudget.title}
-      progress={ctl.progress}
-      footer={
-        <StepFooter onBack={ctl.goBack} onNext={next} loading={ctl.saving} error={ctl.error} />
-      }
-    >
-      <ChoiceList
-        label={t.steps.timeBudget.sessions}
-        horizontal
-        options={SESSION_OPTIONS.map((value) => ({ value, label: String(value) }))}
-        value={sessions}
-        onChange={setSessions}
-        error={errors.sessionsPerWeek}
-      />
-      <TextField
-        label={t.steps.timeBudget.minutes}
-        hint={t.steps.timeBudget.minutesHint}
-        value={minutes}
-        onChangeText={(text) => setMinutes(text.replace(/\D/g, '').slice(0, 3))}
-        keyboardType="number-pad"
-        error={errors.minutesPerSession}
-      />
-      <View style={styles.chipRow}>
+    <View style={{ gap: spacing.sm }}>
+      <View style={styles.chipRow} accessibilityRole="radiogroup" accessibilityLabel={label}>
         {MINUTE_PRESETS.map((preset) => (
           <OptionButton
             key={preset}
             role="radio"
             compact
-            label={`${preset} min`}
-            accessibilityLabel={`${preset} Minuten`}
-            selected={minutes === String(preset)}
-            onPress={() => setMinutes(String(preset))}
+            label={ts.minutesShort(preset)}
+            accessibilityLabel={`${label}: ${ts.minutesLong(preset)}`}
+            selected={!value.custom && value.text === String(preset)}
+            onPress={() => onChange({ text: String(preset), custom: false })}
           />
         ))}
+        <OptionButton
+          role="radio"
+          compact
+          label={ts.ownMinutes}
+          accessibilityLabel={`${label}: ${ts.ownMinutes}`}
+          selected={value.custom}
+          onPress={() => onChange({ text: value.custom ? value.text : '', custom: true })}
+        />
       </View>
-      <View style={{ gap: spacing.xs }}>
-        <Body>{t.steps.timeBudget.days}</Body>
-        <Body muted>{t.steps.timeBudget.daysHint}</Body>
-        <View style={styles.chipRow}>
-          {t.steps.timeBudget.weekdays.map((short, index) => (
-            <OptionButton
-              key={short}
-              role="checkbox"
-              compact
-              label={short}
-              accessibilityLabel={t.steps.timeBudget.weekdaysLong[index]}
-              selected={days.includes(index + 1)}
-              onPress={() => toggleDay(index + 1)}
-            />
-          ))}
-        </View>
-        <FieldError message={errors.preferredDays} />
-      </View>
-    </Screen>
+      {value.custom ? (
+        <TextField
+          label={`${label}: ${ts.ownMinutesField}`}
+          value={value.text}
+          onChangeText={(text) =>
+            onChange({ text: text.replace(/\D/g, '').slice(0, 3), custom: true })
+          }
+          keyboardType="number-pad"
+        />
+      ) : null}
+      <FieldError message={error} />
+    </View>
   );
 }
 
-export function TrainingLocationStep({ ctl }: { ctl: StepController }) {
-  const [location, setLocation] = useState<TrainingLocation | undefined>(
-    ctl.app.answers.trainingLocation,
+function CounterButton({
+  symbol,
+  accessibilityLabel,
+  disabled,
+  onPress,
+}: {
+  symbol: string;
+  accessibilityLabel: string;
+  disabled: boolean;
+  onPress: () => void;
+}) {
+  const theme = useThemeColors();
+  return (
+    <Pressable
+      accessibilityRole="button"
+      accessibilityLabel={accessibilityLabel}
+      accessibilityState={{ disabled }}
+      disabled={disabled}
+      onPress={onPress}
+      style={({ pressed }) => [
+        styles.counterButton,
+        {
+          borderColor: theme.border,
+          backgroundColor: theme.surface,
+          opacity: disabled ? 0.4 : pressed ? 0.85 : 1,
+        },
+      ]}
+    >
+      <Text style={[styles.counterSymbol, { color: theme.text }]}>{symbol}</Text>
+    </Pressable>
   );
-  const [fieldError, setFieldError] = useState<string>();
+}
 
-  function next() {
-    const parsed = trainingLocationStepSchema.safeParse({ trainingLocation: location });
-    if (!parsed.success) {
-      setFieldError(t.steps.trainingLocation.required);
+function KindPicker({
+  label,
+  value,
+  discipline,
+  onChange,
+}: {
+  label: string;
+  value: TrainingSlotKind;
+  discipline: EnduranceDiscipline | null;
+  onChange: (kind: TrainingSlotKind) => void;
+}) {
+  const ts = t.steps.trainingSchedule;
+  return (
+    <View style={styles.chipRow} accessibilityRole="radiogroup" accessibilityLabel={label}>
+      {TRAINING_SLOT_KINDS.map((kind) => (
+        <OptionButton
+          key={kind}
+          role="radio"
+          compact
+          label={ts.kinds[kind]}
+          description={kind === 'endurance' ? slotKindLabel(kind, discipline, 'short') : undefined}
+          accessibilityLabel={`${label}: ${slotKindLabel(kind, discipline, 'long')}`}
+          selected={value === kind}
+          onPress={() => onChange(kind)}
+        />
+      ))}
+    </View>
+  );
+}
+
+export function TrainingScheduleStep({ ctl }: { ctl: StepController }) {
+  const theme = useThemeColors();
+  const ts = t.steps.trainingSchedule;
+  const { answers } = ctl.app;
+  const saved = answers.trainingSchedule;
+  const goalType = answers.goal?.goalType;
+  const discipline = answers.goal?.goalType === 'endurance' ? answers.goal.discipline : null;
+
+  const [mode, setMode] = useState<TrainingScheduleMode>(saved?.mode ?? 'fixed');
+  const [days, setDays] = useState<number[]>(() =>
+    saved?.mode === 'fixed' ? saved.slots.map((slot) => slot.weekday) : [],
+  );
+  // Eingaben je Tag bleiben gemerkt, auch wenn der Tag abgewählt wird (bis zum Verlassen des Bildschirms).
+  const [dayDrafts, setDayDrafts] = useState<Record<number, DayDraft>>(() =>
+    saved?.mode === 'fixed'
+      ? Object.fromEntries(
+          saved.slots.map((slot) => [
+            slot.weekday,
+            { kind: slot.kind, minutes: minutesDraft(slot.minutes) },
+          ]),
+        )
+      : {},
+  );
+  const [lastEdited, setLastEdited] = useState<DayDraft | null>(null);
+  const [flex, setFlex] = useState<Record<TrainingSlotKind, FlexDraft>>(() => {
+    const drafts = Object.fromEntries(
+      TRAINING_SLOT_KINDS.map((kind) => [
+        kind,
+        { count: 0, minutes: minutesDraft(DEFAULT_SLOT_MINUTES[kind]) },
+      ]),
+    ) as Record<TrainingSlotKind, FlexDraft>;
+    if (saved?.mode === 'flex') {
+      for (const kind of TRAINING_SLOT_KINDS) {
+        const ofKind = saved.slots.filter((slot) => slot.kind === kind);
+        const first = ofKind[0];
+        if (first) {
+          drafts[kind] = { count: ofKind.length, minutes: minutesDraft(first.minutes) };
+        }
+      }
+    }
+    return drafts;
+  });
+  const [errors, setErrors] = useState<FieldErrors>({});
+
+  const sortedDays = [...days].sort((a, b) => a - b);
+
+  function draftFor(day: number): DayDraft {
+    const existing = dayDrafts[day];
+    if (existing) {
+      return existing;
+    }
+    if (lastEdited) {
+      return lastEdited;
+    }
+    const kind = suggestedSlotKind(goalType);
+    return { kind, minutes: minutesDraft(DEFAULT_SLOT_MINUTES[kind]) };
+  }
+
+  function toggleDay(day: number) {
+    if (days.includes(day)) {
+      setDays(days.filter((d) => d !== day));
       return;
     }
-    void ctl.submit({ step: 'training_location', trainingLocation: parsed.data.trainingLocation });
+    setDayDrafts((prev) => ({ ...prev, [day]: draftFor(day) }));
+    setDays([...days, day]);
+  }
+
+  function updateDay(day: number, patch: Partial<DayDraft>) {
+    const next = { ...draftFor(day), ...patch };
+    setDayDrafts((prev) => ({ ...prev, [day]: next }));
+    setLastEdited(next);
+  }
+
+  function applyToAll(source: number) {
+    const draft = draftFor(source);
+    setDayDrafts((prev) => ({
+      ...prev,
+      ...Object.fromEntries(days.map((day) => [day, { ...draft }])),
+    }));
+  }
+
+  function changeCount(kind: TrainingSlotKind, delta: number) {
+    setFlex((prev) => ({
+      ...prev,
+      [kind]: { ...prev[kind], count: Math.max(0, prev[kind].count + delta) },
+    }));
+  }
+
+  /** Eingaben → Wochenplan (noch ungeprüft) und Zuordnung Index → Feld für Fehlermeldungen. */
+  function buildInput() {
+    if (mode === 'fixed') {
+      return {
+        keys: sortedDays.map((day) => `day.${day}`),
+        input: {
+          mode,
+          slots: sortedDays.map((day) => {
+            const draft = draftFor(day);
+            return { weekday: day, kind: draft.kind, minutes: minutesValue(draft.minutes) };
+          }),
+        },
+      };
+    }
+    const kinds = TRAINING_SLOT_KINDS.flatMap((kind) =>
+      Array.from({ length: flex[kind].count }, () => kind),
+    );
+    return {
+      keys: kinds.map((kind) => `flex.${kind}`),
+      input: {
+        mode,
+        slots: kinds.map((kind) => ({ kind, minutes: minutesValue(flex[kind].minutes) })),
+      },
+    };
+  }
+
+  const { keys, input } = buildInput();
+  const parsed = trainingScheduleSchema.safeParse(input);
+  const validSlots = input.slots.flatMap((slot) => {
+    const minutes = slotMinutesSchema.safeParse(slot.minutes);
+    return minutes.success ? [{ ...slot, minutes: minutes.data }] : [];
+  });
+  const flexTotal = TRAINING_SLOT_KINDS.reduce((sum, kind) => sum + flex[kind].count, 0);
+  const screening = answers.healthScreening;
+  const hints = parsed.success
+    ? scheduleHints(parsed.data, {
+        goalType,
+        weeklySessionCap: weeklySessionCap({
+          experienceLevel: answers.experienceLevel,
+          ageYears: answers.birthDate ? ageInYears(answers.birthDate, ctl.today) : null,
+          // Vorsichtig = ohne Gesundheits-Check oder mit Flag (wie die Plan-Engine).
+          cautious: !screening || screening.flags.length > 0,
+        }),
+      })
+    : [];
+
+  function next() {
+    if (!parsed.success) {
+      const nextErrors: FieldErrors = {};
+      for (const issue of parsed.error.issues) {
+        const [, index] = issue.path;
+        const key = typeof index === 'number' ? (keys[index] ?? 'form') : 'form';
+        nextErrors[key] ??= issue.message;
+      }
+      setErrors(nextErrors);
+      return;
+    }
+    setErrors({});
+    void ctl.submit({ step: 'time_budget', schedule: parsed.data });
   }
 
   return (
     <Screen
-      title={t.steps.trainingLocation.title}
+      title={ts.title}
+      intro={ts.intro}
       progress={ctl.progress}
       footer={
         <StepFooter onBack={ctl.goBack} onNext={next} loading={ctl.saving} error={ctl.error} />
       }
     >
       <ChoiceList
-        options={TRAINING_LOCATIONS.map((value) => ({
+        label={ts.modeLabel}
+        options={(['fixed', 'flex'] as const).map((value) => ({
           value,
-          label: t.steps.trainingLocation.options[value],
+          label: ts.modes[value],
         }))}
-        value={location}
-        onChange={setLocation}
-        error={fieldError}
+        value={mode}
+        onChange={(value) => {
+          setMode(value);
+          setErrors({});
+        }}
       />
+
+      {mode === 'fixed' ? (
+        <>
+          <View style={{ gap: spacing.xs }}>
+            <Body>{ts.days}</Body>
+            <View style={styles.chipRow}>
+              {WEEKDAYS.map((day) => (
+                <OptionButton
+                  key={day}
+                  role="checkbox"
+                  compact
+                  label={ts.weekdays[day - 1] ?? ''}
+                  accessibilityLabel={ts.weekdaysLong[day - 1]}
+                  selected={days.includes(day)}
+                  onPress={() => toggleDay(day)}
+                />
+              ))}
+            </View>
+            {days.length === 0 ? <Body muted>{ts.noDays}</Body> : null}
+          </View>
+          {sortedDays.map((day, index) => {
+            const draft = draftFor(day);
+            const name = ts.weekdaysLong[day - 1] ?? '';
+            return (
+              <Card key={day}>
+                <Heading level={2}>{name}</Heading>
+                <Body muted>{ts.what}</Body>
+                <KindPicker
+                  label={name}
+                  value={draft.kind}
+                  discipline={discipline}
+                  onChange={(kind) => updateDay(day, { kind })}
+                />
+                <Body muted>{ts.howLong}</Body>
+                <MinutesPicker
+                  label={name}
+                  value={draft.minutes}
+                  onChange={(minutes) => updateDay(day, { minutes })}
+                  error={errors[`day.${day}`]}
+                />
+                {index === 0 && days.length > 1 ? (
+                  <Button
+                    label={ts.applyToAll}
+                    variant="secondary"
+                    onPress={() => applyToAll(day)}
+                  />
+                ) : null}
+              </Card>
+            );
+          })}
+        </>
+      ) : (
+        <>
+          <Body muted>{ts.flexIntro}</Body>
+          {TRAINING_SLOT_KINDS.map((kind) => {
+            const draft = flex[kind];
+            const name = slotKindLabel(kind, discipline, 'long');
+            return (
+              <Card key={kind}>
+                <View style={styles.counterRow}>
+                  <Text style={[styles.counterLabel, { color: theme.text }]}>{name}</Text>
+                  <View style={styles.counter}>
+                    <CounterButton
+                      symbol="−"
+                      accessibilityLabel={ts.decrease(name)}
+                      disabled={draft.count === 0}
+                      onPress={() => changeCount(kind, -1)}
+                    />
+                    <Text
+                      style={[styles.counterValue, { color: theme.text }]}
+                      accessibilityLabel={`${name}: ${ts.countValue(draft.count)}`}
+                    >
+                      {ts.countValue(draft.count)}
+                    </Text>
+                    <CounterButton
+                      symbol="+"
+                      accessibilityLabel={ts.increase(name)}
+                      disabled={flexTotal >= MAX_SESSIONS}
+                      onPress={() => changeCount(kind, 1)}
+                    />
+                  </View>
+                </View>
+                {draft.count > 0 ? (
+                  <>
+                    <Body muted>{ts.perSession}</Body>
+                    <MinutesPicker
+                      label={name}
+                      value={draft.minutes}
+                      onChange={(minutes) =>
+                        setFlex((prev) => ({ ...prev, [kind]: { ...prev[kind], minutes } }))
+                      }
+                      error={errors[`flex.${kind}`]}
+                    />
+                  </>
+                ) : null}
+              </Card>
+            );
+          })}
+        </>
+      )}
+      <FieldError message={errors.form} />
+
+      <Notice tone="success" title={ts.summaryTitle} testID="schedule-summary">
+        {scheduleSummaryText(validSlots, discipline)}
+      </Notice>
+      {hints.length > 0 ? (
+        <Notice tone="info" title={ts.hintsTitle} testID="schedule-hints">
+          {hints.map((hint) => (
+            <Body key={hint}>{`• ${ts.hints[hint]}`}</Body>
+          ))}
+        </Notice>
+      ) : null}
     </Screen>
   );
 }
+
+// ---------------------------------------------------------------------------------------------------------
+// Equipment zu Hause: Gewichte zum Antippen + eigene Werte (Erweiterungsplan Abschnitt 3.3)
+// ---------------------------------------------------------------------------------------------------------
 
 interface EquipmentDraft {
   selected: boolean;
   weights: number[];
   weightInput: string;
   note: string;
+  /** Nur Langhantel: Stange als Vorschlag (barCustom false) oder eigene Eingabe. */
+  barKg: number;
+  barCustom: boolean;
+  barInput: string;
 }
+
+const MAX_STEPS_MESSAGE = t.steps.equipment.tooMany(EQUIPMENT_LIMITS.maxWeightSteps);
 
 export function EquipmentStep({ ctl }: { ctl: StepController }) {
   const theme = useThemeColors();
+  const te = t.steps.equipment;
   const saved = ctl.app.answers.equipment ?? [];
   const [drafts, setDrafts] = useState<Record<EquipmentId, EquipmentDraft>>(
     () =>
       Object.fromEntries(
         EQUIPMENT.map((item) => {
           const existing = saved.find((s) => s.equipmentId === item.id && s.location === 'home');
+          const barKg = existing?.barKg ?? BARBELL_DEFAULT_BAR_KG;
+          const barCustom = !(BARBELL_BAR_PRESETS_KG as readonly number[]).includes(barKg);
           return [
             item.id,
             {
@@ -274,6 +604,9 @@ export function EquipmentStep({ ctl }: { ctl: StepController }) {
               weights: existing?.weightsKg ?? [],
               weightInput: '',
               note: existing?.note ?? '',
+              barKg,
+              barCustom,
+              barInput: barCustom ? formatKg(barKg) : '',
             },
           ];
         }),
@@ -283,6 +616,35 @@ export function EquipmentStep({ ctl }: { ctl: StepController }) {
 
   const update = (id: EquipmentId, patch: Partial<EquipmentDraft>) =>
     setDrafts((prev) => ({ ...prev, [id]: { ...prev[id], ...patch } }));
+
+  /** Prüft eine neue Gewichtsliste mit dem Schema aus packages/core (Anzahl, Scheiben ≤ 25 kg …). */
+  function weightsError(id: EquipmentId, weights: number[]): string | undefined {
+    if (weights.length > EQUIPMENT_LIMITS.maxWeightSteps) {
+      return MAX_STEPS_MESSAGE;
+    }
+    const parsed = equipmentItemSchema.safeParse({
+      equipmentId: id,
+      location: 'home',
+      weightsKg: weights,
+    });
+    return parsed.success ? undefined : fieldErrorsFromIssues(parsed.error.issues).weightsKg;
+  }
+
+  function setWeights(id: EquipmentId, weights: number[], patch: Partial<EquipmentDraft> = {}) {
+    const sorted = [...weights].sort((a, b) => a - b);
+    const error = weightsError(id, sorted);
+    if (error) {
+      setErrors((prev) => ({ ...prev, [`${id}.weight`]: error }));
+      return;
+    }
+    setErrors((prev) => ({ ...prev, [`${id}.weight`]: '' }));
+    update(id, { weights: sorted, ...patch });
+  }
+
+  function toggleWeight(id: EquipmentId, kg: number) {
+    const current = drafts[id].weights;
+    setWeights(id, current.includes(kg) ? current.filter((w) => w !== kg) : [...current, kg]);
+  }
 
   function addWeight(id: EquipmentId) {
     const draft = drafts[id];
@@ -297,15 +659,11 @@ export function EquipmentStep({ ctl }: { ctl: StepController }) {
       }));
       return;
     }
-    setErrors((prev) => ({ ...prev, [`${id}.weight`]: '' }));
-    if (!draft.weights.includes(parsed.data)) {
-      update(id, {
-        weights: [...draft.weights, parsed.data].sort((a, b) => a - b),
-        weightInput: '',
-      });
-    } else {
+    if (draft.weights.includes(parsed.data)) {
       update(id, { weightInput: '' });
+      return;
     }
+    setWeights(id, [...draft.weights, parsed.data], { weightInput: '' });
   }
 
   function next() {
@@ -316,18 +674,24 @@ export function EquipmentStep({ ctl }: { ctl: StepController }) {
       if (!draft.selected) {
         continue;
       }
+      const isBarbell = item.id === BARBELL_ID;
+      const barKg = draft.barCustom ? (parseDecimal(draft.barInput) ?? undefined) : draft.barKg;
       const parsed = equipmentItemSchema.safeParse({
         equipmentId: item.id,
         location: 'home',
         weightsKg: item.hasWeights ? draft.weights : [],
         note: item.id === OTHER_EQUIPMENT_ID ? draft.note.trim() || null : null,
+        ...(isBarbell ? { barKg } : {}),
       });
       if (parsed.success) {
         items.push(parsed.data);
       } else {
-        const fieldErrors = fieldErrorsFromIssues(parsed.error.issues);
+        const fieldErrors = fieldErrorsFromIssues(parsed.error.issues, {
+          barKg: 'Stange: bitte eine Zahl eingeben.',
+        });
         nextErrors[`${item.id}.note`] = fieldErrors.note ?? '';
         nextErrors[`${item.id}.weight`] = fieldErrors.weightsKg ?? '';
+        nextErrors[`${item.id}.bar`] = fieldErrors.barKg ?? '';
       }
     }
     if (Object.values(nextErrors).some(Boolean)) {
@@ -342,8 +706,8 @@ export function EquipmentStep({ ctl }: { ctl: StepController }) {
 
   return (
     <Screen
-      title={t.steps.equipment.title}
-      intro={t.steps.equipment.intro}
+      title={te.title}
+      intro={te.intro}
       progress={ctl.progress}
       footer={
         <StepFooter onBack={ctl.goBack} onNext={next} loading={ctl.saving} error={ctl.error} />
@@ -352,6 +716,10 @@ export function EquipmentStep({ ctl }: { ctl: StepController }) {
       {/* Nur Geräte für zu Hause – Studio-Geräte (Kabelzug, Maschinen …) erscheinen hier nicht. */}
       {HOME_SELECTABLE_EQUIPMENT.map((item) => {
         const draft = drafts[item.id];
+        const presets = weightPresetsFor(item.id);
+        const custom = draft.weights.filter((kg) => !presets.includes(kg));
+        const isBarbell = item.id === BARBELL_ID;
+        const hint = (te.weightsHint as Partial<Record<string, string>>)[item.id];
         return (
           <View key={item.id} style={{ gap: spacing.sm }}>
             <OptionButton
@@ -362,31 +730,98 @@ export function EquipmentStep({ ctl }: { ctl: StepController }) {
             />
             {draft.selected && item.hasWeights ? (
               <Card>
-                <Body>{`${item.nameDe}: ${t.steps.equipment.weights}`}</Body>
-                {draft.weights.length === 0 ? (
-                  <Body muted>{t.steps.equipment.noWeights}</Body>
-                ) : (
-                  <View style={styles.chipRow}>
-                    {draft.weights.map((kg) => (
-                      <Pressable
-                        key={kg}
-                        accessibilityRole="button"
-                        accessibilityLabel={t.steps.equipment.removeWeight(formatKg(kg))}
-                        onPress={() =>
-                          update(item.id, { weights: draft.weights.filter((w) => w !== kg) })
-                        }
-                        style={[styles.weightChip, { borderColor: theme.primary }]}
-                      >
-                        <Text style={[styles.weightText, { color: theme.text }]}>
-                          {`${formatKg(kg)} kg  ✕`}
-                        </Text>
-                      </Pressable>
-                    ))}
+                {isBarbell ? (
+                  <View style={{ gap: spacing.sm }}>
+                    <Text style={[styles.sectionLabel, { color: theme.text }]}>{te.bar}</Text>
+                    <Body muted>{te.barHint}</Body>
+                    <View
+                      style={styles.chipRow}
+                      accessibilityRole="radiogroup"
+                      accessibilityLabel={`${item.nameDe}: ${te.bar}`}
+                    >
+                      {BARBELL_BAR_PRESETS_KG.map((kg) => (
+                        <OptionButton
+                          key={kg}
+                          role="radio"
+                          compact
+                          label={te.weightChip(formatKg(kg))}
+                          accessibilityLabel={`${te.bar}: ${formatKg(kg)} kg`}
+                          selected={!draft.barCustom && draft.barKg === kg}
+                          onPress={() => update(item.id, { barKg: kg, barCustom: false })}
+                        />
+                      ))}
+                      <OptionButton
+                        role="radio"
+                        compact
+                        label={te.ownBar}
+                        accessibilityLabel={`${te.bar}: ${te.ownBar}`}
+                        selected={draft.barCustom}
+                        onPress={() => update(item.id, { barCustom: true })}
+                      />
+                    </View>
+                    {draft.barCustom ? (
+                      <TextField
+                        label={te.ownBarField}
+                        value={draft.barInput}
+                        onChangeText={(text) => update(item.id, { barInput: text })}
+                        keyboardType="decimal-pad"
+                      />
+                    ) : null}
+                    <FieldError message={errors[`${item.id}.bar`] || undefined} />
+                    <Text style={[styles.sectionLabel, { color: theme.text }]}>{te.plates}</Text>
                   </View>
+                ) : (
+                  <Text style={[styles.sectionLabel, { color: theme.text }]}>
+                    {`${item.nameDe}: ${te.weights}`}
+                  </Text>
                 )}
+                {hint ? <Body muted>{hint}</Body> : null}
+                <View style={styles.chipRow}>
+                  {presets.map((kg) => (
+                    <OptionButton
+                      key={kg}
+                      role="checkbox"
+                      compact
+                      filled
+                      label={te.weightChip(formatKg(kg))}
+                      accessibilityLabel={te.weightChipLabel(item.nameDe, formatKg(kg))}
+                      selected={draft.weights.includes(kg)}
+                      onPress={() => toggleWeight(item.id, kg)}
+                    />
+                  ))}
+                  {/* Eigene Werte: zusätzliche, ausgewählte Chips mit „✕“ zum Entfernen. */}
+                  {custom.map((kg) => (
+                    <Pressable
+                      key={kg}
+                      accessibilityRole="button"
+                      accessibilityLabel={te.removeWeight(formatKg(kg))}
+                      onPress={() => toggleWeight(item.id, kg)}
+                      style={[
+                        styles.weightChip,
+                        { borderColor: theme.primary, backgroundColor: theme.primary },
+                      ]}
+                    >
+                      <Text style={[styles.weightText, { color: theme.primaryText }]}>
+                        {`✓ ${formatKg(kg)} kg  ✕`}
+                      </Text>
+                    </Pressable>
+                  ))}
+                </View>
+                <View style={styles.selectedRow}>
+                  <Body muted>{te.selectedCount(draft.weights.length)}</Body>
+                  {draft.weights.length > 0 ? (
+                    <Button
+                      label={te.clearAll}
+                      variant="secondary"
+                      accessibilityLabel={te.clearAllLabel(item.nameDe)}
+                      onPress={() => setWeights(item.id, [])}
+                    />
+                  ) : null}
+                </View>
                 <View style={styles.addRow}>
                   <TextField
-                    label={`${item.nameDe}: ${t.steps.equipment.weightInput}`}
+                    label={`${item.nameDe}: ${te.weightInput}`}
+                    hint={te.ownWeights}
                     value={draft.weightInput}
                     onChangeText={(text) => update(item.id, { weightInput: text })}
                     keyboardType="decimal-pad"
@@ -395,9 +830,9 @@ export function EquipmentStep({ ctl }: { ctl: StepController }) {
                   />
                   <View style={styles.addButton}>
                     <Button
-                      label={t.steps.equipment.addWeight}
+                      label={te.addWeight}
                       variant="secondary"
-                      accessibilityLabel={`${item.nameDe}: ${t.steps.equipment.addWeight}`}
+                      accessibilityLabel={`${item.nameDe}: ${te.addWeight}`}
                       onPress={() => addWeight(item.id)}
                     />
                   </View>
@@ -407,8 +842,8 @@ export function EquipmentStep({ ctl }: { ctl: StepController }) {
             ) : null}
             {draft.selected && item.id === OTHER_EQUIPMENT_ID ? (
               <TextField
-                label={t.steps.equipment.otherNote}
-                placeholder={t.steps.equipment.otherNotePlaceholder}
+                label={te.otherNote}
+                placeholder={te.otherNotePlaceholder}
                 value={draft.note}
                 onChangeText={(text) => update(item.id, { note: text })}
                 maxLength={200}
@@ -418,7 +853,7 @@ export function EquipmentStep({ ctl }: { ctl: StepController }) {
           </View>
         );
       })}
-      {nothingSelected ? <Notice tone="info">{t.steps.equipment.empty}</Notice> : null}
+      {nothingSelected ? <Notice tone="info">{te.empty}</Notice> : null}
     </Screen>
   );
 }
@@ -432,7 +867,39 @@ const styles = StyleSheet.create({
     paddingHorizontal: spacing.md,
     justifyContent: 'center',
   },
-  weightText: { fontSize: fontSize.md },
+  weightText: { fontSize: fontSize.md, fontWeight: fontWeight.semibold },
+  sectionLabel: { fontSize: fontSize.md, fontWeight: fontWeight.bold },
+  selectedRow: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    gap: spacing.sm,
+  },
   addRow: { flexDirection: 'row', alignItems: 'flex-end', gap: spacing.sm },
   addButton: { paddingBottom: 2 },
+  counterRow: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    gap: spacing.sm,
+  },
+  counterLabel: { flexShrink: 1, fontSize: fontSize.md, fontWeight: fontWeight.bold },
+  counter: { flexDirection: 'row', alignItems: 'center', gap: spacing.sm },
+  counterButton: {
+    width: 48,
+    height: 48,
+    borderWidth: 1,
+    borderRadius: radius.pill,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  counterSymbol: { fontSize: fontSize.lg, fontWeight: fontWeight.bold },
+  counterValue: {
+    minWidth: 36,
+    textAlign: 'center',
+    fontSize: fontSize.lg,
+    fontWeight: fontWeight.bold,
+  },
 });

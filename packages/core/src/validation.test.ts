@@ -9,7 +9,6 @@ import {
   equipmentStepSchema,
   nutritionStepSchema,
   sexStepSchema,
-  timeBudgetStepSchema,
 } from './validation';
 
 const today = '2026-10-03';
@@ -117,31 +116,6 @@ describe('Ziel', () => {
   });
 });
 
-describe('Zeitbudget', () => {
-  it('1 und 7 Tage erlaubt, 0 und 8 nicht', () => {
-    ok(timeBudgetStepSchema.safeParse({ sessionsPerWeek: 1, minutesPerSession: 30 }));
-    ok(timeBudgetStepSchema.safeParse({ sessionsPerWeek: 7, minutesPerSession: 30 }));
-    fail(timeBudgetStepSchema.safeParse({ sessionsPerWeek: 0, minutesPerSession: 30 }));
-    fail(timeBudgetStepSchema.safeParse({ sessionsPerWeek: 8, minutesPerSession: 30 }));
-  });
-
-  it('10 und 240 Minuten erlaubt, 9 und 241 nicht', () => {
-    ok(timeBudgetStepSchema.safeParse({ sessionsPerWeek: 3, minutesPerSession: 10 }));
-    ok(timeBudgetStepSchema.safeParse({ sessionsPerWeek: 3, minutesPerSession: 240 }));
-    fail(timeBudgetStepSchema.safeParse({ sessionsPerWeek: 3, minutesPerSession: 9 }));
-    fail(timeBudgetStepSchema.safeParse({ sessionsPerWeek: 3, minutesPerSession: 241 }));
-  });
-
-  it('Wochentage 1–7, ohne Doppelungen, Standard leer', () => {
-    const base = { sessionsPerWeek: 3, minutesPerSession: 45 };
-    expect(timeBudgetStepSchema.parse(base).preferredDays).toEqual([]);
-    ok(timeBudgetStepSchema.safeParse({ ...base, preferredDays: [1, 2, 3, 4, 5, 6, 7] }));
-    fail(timeBudgetStepSchema.safeParse({ ...base, preferredDays: [0] }));
-    fail(timeBudgetStepSchema.safeParse({ ...base, preferredDays: [8] }));
-    fail(timeBudgetStepSchema.safeParse({ ...base, preferredDays: [2, 2] }));
-  });
-});
-
 describe('Equipment', () => {
   it('Gewichtsstufen nur bei Geräten mit Gewichten, Grenzen 0,25–200 kg', () => {
     ok(
@@ -200,6 +174,30 @@ describe('Equipment', () => {
         equipmentId: 'kettlebells',
         location: 'home',
         weightsKg: weights(41),
+      }),
+    );
+  });
+
+  it('Langhantel: Stange 5–25 kg nur bei der Langhantel, Scheiben höchstens 25 kg', () => {
+    const barbell = (extra: Record<string, unknown>) =>
+      equipmentItemSchema.safeParse({ equipmentId: 'barbell', location: 'home', ...extra });
+    ok(barbell({ barKg: 5, weightsKg: [25] }));
+    ok(barbell({ barKg: 25 }));
+    ok(barbell({ barKg: 7.25 }));
+    ok(barbell({ barKg: null }));
+    expect(barbell({ barKg: 0.1 + 6.9 }).data?.barKg).toBe(7);
+    fail(barbell({ barKg: 4.99 }));
+    fail(barbell({ barKg: 25.01 }));
+    fail(barbell({ barKg: 7.255 }));
+    fail(barbell({ weightsKg: [25.25] }));
+    fail(barbell({ weightsKg: [27.5] }));
+    // Andere Geräte: keine Stange; Kurzhanteln über 25 kg je Hantel bleiben erlaubt.
+    fail(equipmentItemSchema.safeParse({ equipmentId: 'dumbbells', location: 'home', barKg: 20 }));
+    ok(
+      equipmentItemSchema.safeParse({
+        equipmentId: 'dumbbells',
+        location: 'home',
+        weightsKg: [40],
       }),
     );
   });

@@ -125,12 +125,29 @@ describe('executeWriteOp', () => {
           location: 'home',
           weights_kg: [2],
           note: null,
+          bar_kg: null,
         },
+        {
+          user_id: USER_ID,
+          equipment_id: 'barbell',
+          location: 'home',
+          weights_kg: [1.25, 2.5],
+          note: null,
+          bar_kg: 15,
+        },
+      ],
+    });
+    await executeWriteOp(client, USER_ID, {
+      kind: 'replace_training_slots',
+      rows: [
+        { user_id: USER_ID, slot_no: 1, weekday: 1, kind: 'endurance', minutes: 30 },
+        { user_id: USER_ID, slot_no: 2, weekday: 6, kind: 'strength_home', minutes: 90 },
       ],
     });
     expect(calls.map((c) => c.table)).toEqual([
       'rpc:replace_food_preferences',
       'rpc:replace_user_equipment',
+      'rpc:replace_training_slots',
     ]);
     expect(calls[0]?.args[0]?.[0]).toEqual({
       p_scope: 'taste',
@@ -138,7 +155,17 @@ describe('executeWriteOp', () => {
     });
     expect(calls[1]?.args[0]?.[0]).toEqual({
       p_location: 'home',
-      p_items: [{ equipment_id: 'dumbbells', weights_kg: [2], note: null }],
+      p_items: [
+        { equipment_id: 'dumbbells', weights_kg: [2], note: null, bar_kg: null },
+        { equipment_id: 'barbell', weights_kg: [1.25, 2.5], note: null, bar_kg: 15 },
+      ],
+    });
+    // Ohne user_id: die Datenbank-Funktion nimmt immer den angemeldeten Nutzer.
+    expect(calls[2]?.args[0]?.[0]).toEqual({
+      p_items: [
+        { slot_no: 1, weekday: 1, kind: 'endurance', minutes: 30 },
+        { slot_no: 2, weekday: 6, kind: 'strength_home', minutes: 90 },
+      ],
     });
   });
 
@@ -272,5 +299,44 @@ describe('Supabase-Modus: Speichern', () => {
     const result = await backend.loadRows();
     expect(result.offline).toBe(true);
     expect(result.rows.consents).toHaveLength(3);
+  });
+
+  it('Laden offline: Zwischenspeicher älterer App-Versionen wird umgewandelt (upgradeStoredRows)', async () => {
+    const { client } = fakeClient(() => ({ error: networkError }));
+    const legacy = {
+      ...rows,
+      trainingSlots: undefined,
+      goals: {
+        user_id: USER_ID,
+        goal_type: 'fat_loss',
+        discipline: null,
+        target_date: null,
+        sessions_per_week: 2,
+        minutes_per_session: 30,
+        preferred_days: [],
+        training_location: 'gym',
+      },
+      userEquipment: [
+        {
+          user_id: USER_ID,
+          equipment_id: 'barbell',
+          location: 'home',
+          weights_kg: [5, 50],
+          note: null,
+        },
+      ],
+    };
+    const store = createMemoryStore({
+      [STORAGE_KEYS.rowsCache]: JSON.stringify({ userId: USER_ID, rows: legacy }),
+    });
+    const backend = createSupabaseBackend(options(client, store));
+    const result = await backend.loadRows();
+    expect(result.offline).toBe(true);
+    expect(result.rows.goals).not.toHaveProperty('sessions_per_week');
+    expect(result.rows.trainingSlots.map((slot) => [slot.weekday, slot.kind])).toEqual([
+      [null, 'strength_gym'],
+      [null, 'strength_gym'],
+    ]);
+    expect(result.rows.userEquipment[0]).toMatchObject({ weights_kg: [5], bar_kg: null });
   });
 });

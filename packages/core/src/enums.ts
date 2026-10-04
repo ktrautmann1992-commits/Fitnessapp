@@ -54,6 +54,13 @@ export type EnduranceDiscipline = (typeof ENDURANCE_DISCIPLINES)[number];
 export const TRAINING_LOCATIONS = ['gym', 'home', 'both'] as const;
 export type TrainingLocation = (typeof TRAINING_LOCATIONS)[number];
 
+/**
+ * Trainingsart eines Trainingstags (Tabelle `training_slots`, Erweiterungsplan Abschnitt 4.1): Kraft im Studio,
+ * Kraft zu Hause, Ausdauer (Disziplin aus dem Ziel). Reihenfolge = Anzeige-Reihenfolge.
+ */
+export const TRAINING_SLOT_KINDS = ['strength_gym', 'strength_home', 'endurance'] as const;
+export type TrainingSlotKind = (typeof TRAINING_SLOT_KINDS)[number];
+
 /** Ort eines Geräts. */
 export const EQUIPMENT_LOCATIONS = ['home', 'gym'] as const;
 export type EquipmentLocation = (typeof EQUIPMENT_LOCATIONS)[number];

@@ -9,5 +9,6 @@ export * from './health-screening';
 export * from './body-measurements';
 export * from './onboarding';
 export * from './validation';
+export * from './training-schedule';
 export * from './content';
 export * from './plan';

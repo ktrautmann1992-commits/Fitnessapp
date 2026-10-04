@@ -28,9 +28,9 @@ Verbindlich ist der freigegebene Ablauf in `docs/PLAN-PHASE-1.md` Abschnitt 3 (S
 4. Gesundheits-Check (Herz-Kreislauf, Schwangerschaft, Verletzungen/Beschwerden, Medikamente ja/nein)
 5. Trainingserfahrung (Einsteiger / Fortgeschritten / Leistungssport)
 6. Ziel + ggf. Disziplin + Wettkampfdatum
-7. Zeitbudget: Trainingstage/Woche, Minuten/Einheit, bevorzugte Wochentage
-8. Trainingsort: Studio / Zuhause / beides
-9. Equipment zu Hause: Kurzhanteln (Gewichtsstufen), Langhantel + Scheiben, Kettlebells (kg), Flachbank, Schrägbank, Klimmzugstange, Widerstandsbänder, Rudergerät, Ergometer, Laufband, Sonstiges (Freitext)
+7. Trainingstage (seit Phase 3, Etappe B2 – `docs/PLAN-PHASE-3-ERWEITERUNG.md`): je Wochentag Trainingsart (Kraft im Studio / Kraft zu Hause / Ausdauer mit Untertitel nach Disziplin) und Dauer (20/30/45/60/90 min oder eigene 10–240) – oder „Tage egal“ mit Anzahl je Art und Dauer; Live-Zusammenfassung und freundliche Hinweise (nie blockierend)
+8. Trainingsort: **entfällt als eigener Schritt** – abgeleitet aus den Trainingstagen (nur Studio / nur zu Hause / beides / nur Ausdauer)
+9. Equipment zu Hause (nur bei mindestens einem Tag „Kraft zu Hause“): Gewichte zum Antippen (Mehrfachauswahl) + eigene Werte – Kurzhanteln (je Hantel), Langhantel = Stange (10/15/20 kg oder eigene 5–25) + Scheiben je Paar (≤ 25 kg), Kettlebells (kg), Flachbank, Schrägbank, Klimmzugstange, Widerstandsbänder, Rudergerät, Ergometer, Laufband, Sonstiges (Freitext)
 10. Ernährung: omnivor / vegetarisch / vegan; Schwein ja/nein; mag / mag nicht (Lebensmittel-Auswahl); Unverträglichkeiten; Mahlzeiten pro Tag
 11. Kochmodus: täglich frisch / Meal-Prep (wie oft pro Woche)
 - E. Fertig: Zusammenfassung
@@ -259,8 +259,8 @@ Verbindlich ist der freigegebene Ablauf in `docs/PLAN-PHASE-1.md` Abschnitt 3 (S
 - `body_metrics` (user_id, date, weight_kg, body_fat_pct, waist_cm …) – **geändert, siehe Abweichungen** (Größe hier; Umfänge wie `waist_cm` in `body_measurements`)
 - `consents` (user_id, type, version, granted_at, revoked_at)
 - `health_screening` (user_id, answers jsonb, flags, created_at) – sensibel
-- `goals` (user_id, goal_type, discipline, target_date, sessions_per_week, minutes_per_session, preferred_days)
-- `user_equipment` (user_id, location, equipment_id, weights_kg numeric[])
+- `goals` (user_id, goal_type, discipline, target_date, sessions_per_week, minutes_per_session, preferred_days) – **geändert in Etappe B2, siehe Abweichungen ab Phase 3**
+- `user_equipment` (user_id, location, equipment_id, weights_kg numeric[]) – **ergänzt um `bar_kg` (Etappe B2)**
 - `nutrition_prefs` (user_id, diet_type, eats_pork, cooking_mode, mealprep_days, meals_per_day)
 - `food_preferences` (user_id, food_id, like/dislike/intolerance)
 - `exercises`, `exercise_alternatives`, `equipment` – **umgesetzt in Phase 2, siehe Abweichungen ab Phase 2**
@@ -290,6 +290,12 @@ Verbindlich ist der freigegebene Ablauf in `docs/PLAN-PHASE-1.md` Abschnitt 3 (S
 - **Gesundheits-Check:** Flags (`conservative_plan` usw.) berechnet die Datenbank selbst aus den Antworten; Zeitstempel serverseitig.
 - **Login** per E-Mail mit 6-stelligem Code (OTP, ohne Passwort); Apple/Google folgen.
 - Onboarding **ohne Wearable-Schritt** (kommt mit Phase 8); Einwilligung Gesundheitsdaten **vor** den Körperdaten.
+
+### Abweichungen ab Phase 3, Etappe B2 (umgesetzt, siehe `docs/PLAN-PHASE-3-ERWEITERUNG.md` und `supabase/migrations/20261005120000_training_slots.sql`)
+- **`training_slots`** (user_id, slot_no 1–7, weekday 1–7 oder null = „Tag egal“, kind `strength_gym|strength_home|endurance`, minutes 10–240) ersetzt das Zeitbudget in `goals`; entweder alle Einträge mit Wochentag oder keiner. Schreiben nur über `replace_training_slots(p_items)` (Login, Profil, alle Regeln, atomar); kein Gesundheitsdatum.
+- **`goals`** ohne `sessions_per_week`, `minutes_per_session`, `preferred_days` (bei der Migration in `training_slots` übernommen: Anzahl Wunsch-Tage = Tage pro Woche → feste Tage, sonst „Tag egal“). `training_location` bleibt, wird aus den Trainingstagen abgeleitet.
+- **`user_equipment.bar_kg`** (5–25 kg, nur Langhantel); `weights_kg` der Langhantel = Scheiben je Paar (≤ 25 kg; ältere Werte > 25 kg wurden entfernt). Kurzhanteln/Kettlebells: Gewicht je Hantel bzw. Kugel.
+- Onboarding-Schritt „Trainingsort“ ist nie mehr anwendbar (bleibt nur wegen der CHECK-Liste von `profiles.onboarding_step`).
 
 ### Abweichungen ab Phase 2 (umgesetzt, siehe `docs/PLAN-PHASE-2.md` und `supabase/migrations`)
 - **Inhaltstabellen enthalten nur Freigegebenes:** `status` ist `published` oder `archived` (CHECK: nie `draft`).

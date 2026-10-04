@@ -7,6 +7,7 @@ import type { AppSupabaseClient } from '@fitnessapp/db';
 
 import { BackendError, type Backend, type BackendErrorCode } from './backend';
 import { readJson, STORAGE_KEYS, writeJson, type KeyValueStore } from './kv';
+import { upgradeStoredRows } from './legacy-rows';
 import { planSave } from './plan-save';
 import { SyncQueue } from './sync-queue';
 import {
@@ -130,6 +131,20 @@ export async function executeWriteOp(
     case 'upsert_goals':
       check(await client.from('goals').upsert(op.row, { onConflict: 'user_id' }));
       return;
+    // Löschen + Einfügen atomar und mit allen Regeln (fest ODER „Tag egal“, lückenlos) in der Datenbank-Funktion
+    // (Migration 20261005120000_training_slots.sql).
+    case 'replace_training_slots':
+      check(
+        await client.rpc('replace_training_slots', {
+          p_items: op.rows.map((row) => ({
+            slot_no: row.slot_no,
+            weekday: row.weekday,
+            kind: row.kind,
+            minutes: row.minutes,
+          })),
+        }),
+      );
+      return;
     // Löschen + Einfügen atomar in einer Datenbank-Funktion (Migration 20261003120900_replace_rpcs.sql).
     case 'replace_user_equipment':
       check(
@@ -139,6 +154,7 @@ export async function executeWriteOp(
             equipment_id: row.equipment_id,
             weights_kg: row.weights_kg,
             note: row.note,
+            bar_kg: row.bar_kg,
           })),
         }),
       );
@@ -251,6 +267,7 @@ export function createSupabaseBackend(options: SupabaseBackendOptions): Backend 
       profile,
       consents,
       goals,
+      slots,
       equipment,
       prefs,
       food,
@@ -262,6 +279,7 @@ export function createSupabaseBackend(options: SupabaseBackendOptions): Backend 
       client.from('profiles').select('*').eq('user_id', userId).maybeSingle(),
       client.from('consents').select('*').eq('user_id', userId),
       client.from('goals').select('*').eq('user_id', userId).maybeSingle(),
+      client.from('training_slots').select('*').eq('user_id', userId).order('slot_no'),
       client.from('user_equipment').select('*').eq('user_id', userId),
       client.from('nutrition_prefs').select('*').eq('user_id', userId).maybeSingle(),
       client.from('food_preferences').select('*').eq('user_id', userId),
@@ -290,6 +308,7 @@ export function createSupabaseBackend(options: SupabaseBackendOptions): Backend 
       profile,
       consents,
       goals,
+      slots,
       equipment,
       prefs,
       food,
@@ -306,6 +325,7 @@ export function createSupabaseBackend(options: SupabaseBackendOptions): Backend 
       profile: profile.data,
       consents: consents.data ?? [],
       goals: goals.data,
+      trainingSlots: slots.data ?? [],
       userEquipment: equipment.data ?? [],
       nutritionPrefs: prefs.data,
       foodPreferences: food.data ?? [],
@@ -431,7 +451,7 @@ export function createSupabaseBackend(options: SupabaseBackendOptions): Backend 
         if (cache?.userId !== session.userId) {
           throw new BackendError('network', { cause: error });
         }
-        return { rows: cache.rows, offline: true };
+        return { rows: upgradeStoredRows(cache.rows), offline: true };
       }
     },
 

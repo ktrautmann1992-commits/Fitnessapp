@@ -56,9 +56,12 @@ export function deriveOnboardingState(rows: UserRows, versions: ConsentVersions)
       ONBOARDING_STEPS.indexOf(saved as OnboardingStep) >
         ONBOARDING_STEPS.indexOf('health_consent'));
   const healthDataConsent = status === 'valid' ? true : pastConsentStep ? false : undefined;
+  // Equipment-Schritt nur mit mindestens einem Tag „Kraft zu Hause“; noch keine Trainingstage = offen.
+  const slots = rows.trainingSlots;
   return {
     healthDataConsent,
-    trainingLocation: rows.goals?.training_location ?? undefined,
+    hasHomeStrength:
+      slots.length > 0 ? slots.some((slot) => slot.kind === 'strength_home') : undefined,
   };
 }
 

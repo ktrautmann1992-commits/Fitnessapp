@@ -2,13 +2,14 @@ import { z } from 'zod';
 
 import { ageInYears, isoDateSchema } from './age';
 import {
+  BARBELL_BAR_KG,
+  BARBELL_PLATE_MAX_KG,
   BIRTH_DATE_MIN,
   BODY_METRIC_LIMITS,
   EQUIPMENT_LIMITS,
   EQUIPMENT_WEIGHT_DECIMALS,
   MIN_AGE_YEARS,
   NUTRITION_LIMITS,
-  TRAINING_LIMITS,
 } from './constants';
 import {
   APP_LOCALES,
@@ -23,6 +24,7 @@ import {
   TRAINING_LOCATIONS,
 } from './enums';
 import {
+  BARBELL_ID,
   equipmentIdSchema,
   findEquipment,
   isHomeSelectable,
@@ -103,7 +105,7 @@ export const bodyMetricsStepSchema = z.strictObject({
 export type BodyMetricsStep = z.infer<typeof bodyMetricsStepSchema>;
 
 // ---------------------------------------------------------------------------------------------------------
-// Ziel, Zeitbudget, Trainingsort
+// Ziel, Trainingsort (abgeleitet, training-schedule.ts)
 // ---------------------------------------------------------------------------------------------------------
 export const goalTypeSchema = z.enum(GOAL_TYPES);
 export const enduranceDisciplineSchema = z.enum(ENDURANCE_DISCIPLINES);
@@ -129,21 +131,7 @@ export function createGoalStepSchema(today: string) {
 /** Wochentag nach ISO 8601: 1 = Montag … 7 = Sonntag. */
 export const weekdaySchema = z.number().int().min(1).max(7);
 
-/** Schritt „Zeitbudget“. */
-export const timeBudgetStepSchema = z.strictObject({
-  sessionsPerWeek: intRange(TRAINING_LIMITS.sessionsPerWeek, 'Trainingstage pro Woche', ''),
-  minutesPerSession: intRange(TRAINING_LIMITS.minutesPerSession, 'Minuten pro Einheit', ''),
-  preferredDays: z
-    .array(weekdaySchema)
-    .max(7)
-    .refine((days) => new Set(days).size === days.length, 'Jeder Wochentag nur einmal.')
-    .default([]),
-});
-
-/** Schritt „Trainingsort“. */
-export const trainingLocationStepSchema = z.strictObject({
-  trainingLocation: trainingLocationSchema,
-});
+// Der Schritt „Deine Trainingstage“ (ersetzt Zeitbudget + Trainingsort) steht in training-schedule.ts.
 
 // ---------------------------------------------------------------------------------------------------------
 // Equipment
@@ -163,6 +151,11 @@ export const weightStepKgSchema = range(EQUIPMENT_LIMITS.weightStepKg, 'Gewichts
 
 export const equipmentLocationSchema = z.enum(EQUIPMENT_LOCATIONS);
 
+/** Langhantel-Stange in kg: 5–25, höchstens 2 Nachkommastellen (numeric(4,2) in der Datenbank). */
+export const barbellBarKgSchema = range(BARBELL_BAR_KG, 'Stange', ' kg')
+  .refine(hasAtMostWeightDecimals, 'Stange: höchstens 2 Nachkommastellen.')
+  .transform((value) => Math.round(value * WEIGHT_FACTOR) / WEIGHT_FACTOR);
+
 export const equipmentItemSchema = z
   .strictObject({
     equipmentId: equipmentIdSchema,
@@ -179,6 +172,8 @@ export const equipmentItemSchema = z
       )
       .default([]),
     note: z.string().trim().min(1).max(EQUIPMENT_LIMITS.noteMaxLength).nullable().optional(),
+    /** Nur Langhantel: Gewicht der Stange (weightsKg sind dann die Scheiben je Paar). */
+    barKg: barbellBarKgSchema.nullable().optional(),
   })
   .superRefine((item, ctx) => {
     const isOther = item.equipmentId === OTHER_EQUIPMENT_ID;
@@ -202,6 +197,24 @@ export const equipmentItemSchema = z
         code: 'custom',
         path: ['weightsKg'],
         message: 'Für dieses Gerät gibt es keine Gewichtsstufen.',
+      });
+    }
+    // Langhantel: Stange getrennt, Scheiben höchstens 25 kg (gleiche Regel wie die CHECKs in user_equipment).
+    if (item.barKg != null && item.equipmentId !== BARBELL_ID) {
+      ctx.addIssue({
+        code: 'custom',
+        path: ['barKg'],
+        message: 'Eine Stange gibt es nur bei der Langhantel.',
+      });
+    }
+    if (
+      item.equipmentId === BARBELL_ID &&
+      item.weightsKg.some((weight) => weight > BARBELL_PLATE_MAX_KG)
+    ) {
+      ctx.addIssue({
+        code: 'custom',
+        path: ['weightsKg'],
+        message: `Hantelscheiben: höchstens ${BARBELL_PLATE_MAX_KG} kg je Scheibe.`,
       });
     }
   });

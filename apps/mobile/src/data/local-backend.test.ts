@@ -173,9 +173,15 @@ describe('Testmodus: Gesundheitsdaten nur mit Einwilligung', () => {
     });
     await save(backend, {
       step: 'time_budget',
-      timeBudget: { sessionsPerWeek: 3, minutesPerSession: 45, preferredDays: [] },
+      schedule: {
+        mode: 'flex',
+        slots: [
+          { kind: 'strength_gym', minutes: 45 },
+          { kind: 'strength_gym', minutes: 45 },
+          { kind: 'endurance', minutes: 30 },
+        ],
+      },
     });
-    await save(backend, { step: 'training_location', trainingLocation: 'gym' });
     const afterNutrition = await save(backend, {
       step: 'nutrition',
       nutrition: {
@@ -189,9 +195,11 @@ describe('Testmodus: Gesundheitsdaten nur mit Einwilligung', () => {
       },
     });
     expect(afterNutrition.foodPreferences).toHaveLength(2);
-    // Studio → Equipment übersprungen.
+    // Kein Tag „Kraft zu Hause“ → Equipment übersprungen.
     expect(afterNutrition.profile?.onboarding_step).toBe('cooking');
 
+    expect(afterNutrition.trainingSlots).toHaveLength(3);
+    expect(afterNutrition.goals?.training_location).toBe('gym');
     await backend.revokeConsent('health_data');
     const { rows } = await backend.loadRows();
     expect(rows.bodyMetrics).toEqual([]);
@@ -200,6 +208,8 @@ describe('Testmodus: Gesundheitsdaten nur mit Einwilligung', () => {
       { user_id: rows.profile?.user_id, food_group: 'fish', kind: 'like' },
     ]);
     expect(rows.goals?.goal_type).toBe('fat_loss');
+    // Trainingstage sind kein Gesundheitsdatum und bleiben.
+    expect(rows.trainingSlots).toHaveLength(3);
     expect(rows.consents.find((c) => c.consent_type === 'health_data')?.revoked_at).toBe(NOW);
   });
 
@@ -283,5 +293,60 @@ describe('Testmodus: Wertebereiche wie in der Datenbank', () => {
     const { rows } = await backend.loadRows();
     expect(rows.bodyMetrics).toEqual([]);
     expect(rows.profile?.onboarding_step).toBe('body_metrics');
+  });
+});
+
+describe('Testmodus: Gerätespeicher älterer App-Versionen (vor Etappe B2)', () => {
+  it('wandelt altes Zeitbudget in Trainingstage um und entfernt Langhantel-Werte über 25 kg', async () => {
+    const { store, backend } = await signedInWithProfile();
+    const raw = JSON.parse((await store.getItem(STORAGE_KEYS.localDb)) ?? '{}');
+    const userId = raw.session.userId as string;
+    // So sah der Gerätespeicher bis Etappe B2 aus: Zeitbudget in goals, keine trainingSlots, kein bar_kg.
+    delete raw.rows.trainingSlots;
+    raw.rows.profile.onboarding_step = 'training_location';
+    raw.rows.goals = {
+      user_id: userId,
+      goal_type: 'muscle_gain',
+      discipline: null,
+      target_date: null,
+      sessions_per_week: 2,
+      minutes_per_session: 45,
+      preferred_days: [4, 1],
+      training_location: 'home',
+    };
+    raw.rows.userEquipment = [
+      {
+        user_id: userId,
+        equipment_id: 'barbell',
+        location: 'home',
+        weights_kg: [2.5, 40],
+        note: null,
+      },
+    ];
+    await store.setItem(STORAGE_KEYS.localDb, JSON.stringify(raw));
+
+    const { rows } = await backend.loadRows();
+    expect(rows.goals).toEqual({
+      user_id: userId,
+      goal_type: 'muscle_gain',
+      discipline: null,
+      target_date: null,
+      training_location: 'home',
+    });
+    expect(rows.trainingSlots).toEqual([
+      { user_id: userId, slot_no: 1, weekday: 1, kind: 'strength_home', minutes: 45 },
+      { user_id: userId, slot_no: 2, weekday: 4, kind: 'strength_home', minutes: 45 },
+    ]);
+    expect(rows.userEquipment[0]).toMatchObject({ weights_kg: [2.5], bar_kg: null });
+
+    // Weiter im Onboarding: der alte Schritt „Trainingsort“ wird übersprungen, Speichern klappt.
+    const saved = await save(backend, {
+      step: 'equipment',
+      items: [
+        { equipmentId: 'barbell', location: 'home', weightsKg: [2.5], barKg: 20, note: null },
+      ],
+    });
+    expect(saved.userEquipment[0]?.bar_kg).toBe(20);
+    expect(saved.profile?.onboarding_step).toBe('nutrition');
   });
 });

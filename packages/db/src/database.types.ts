@@ -356,9 +356,6 @@ export type Database = {
           created_at: string;
           discipline: Database['public']['Enums']['endurance_discipline'] | null;
           goal_type: Database['public']['Enums']['goal_type'];
-          minutes_per_session: number | null;
-          preferred_days: number[];
-          sessions_per_week: number | null;
           target_date: string | null;
           training_location: Database['public']['Enums']['training_location'] | null;
           updated_at: string;
@@ -368,9 +365,6 @@ export type Database = {
           created_at?: string;
           discipline?: Database['public']['Enums']['endurance_discipline'] | null;
           goal_type: Database['public']['Enums']['goal_type'];
-          minutes_per_session?: number | null;
-          preferred_days?: number[];
-          sessions_per_week?: number | null;
           target_date?: string | null;
           training_location?: Database['public']['Enums']['training_location'] | null;
           updated_at?: string;
@@ -380,9 +374,6 @@ export type Database = {
           created_at?: string;
           discipline?: Database['public']['Enums']['endurance_discipline'] | null;
           goal_type?: Database['public']['Enums']['goal_type'];
-          minutes_per_session?: number | null;
-          preferred_days?: number[];
-          sessions_per_week?: number | null;
           target_date?: string | null;
           training_location?: Database['public']['Enums']['training_location'] | null;
           updated_at?: string;
@@ -824,8 +815,39 @@ export type Database = {
           },
         ];
       };
+      training_slots: {
+        Row: {
+          created_at: string;
+          kind: Database['public']['Enums']['training_slot_kind'];
+          minutes: number;
+          slot_no: number;
+          updated_at: string;
+          user_id: string;
+          weekday: number | null;
+        };
+        Insert: {
+          created_at?: string;
+          kind: Database['public']['Enums']['training_slot_kind'];
+          minutes: number;
+          slot_no: number;
+          updated_at?: string;
+          user_id?: string;
+          weekday?: number | null;
+        };
+        Update: {
+          created_at?: string;
+          kind?: Database['public']['Enums']['training_slot_kind'];
+          minutes?: number;
+          slot_no?: number;
+          updated_at?: string;
+          user_id?: string;
+          weekday?: number | null;
+        };
+        Relationships: [];
+      };
       user_equipment: {
         Row: {
+          bar_kg: number | null;
           created_at: string;
           equipment_id: string;
           location: Database['public']['Enums']['equipment_location'];
@@ -835,6 +857,7 @@ export type Database = {
           weights_kg: number[];
         };
         Insert: {
+          bar_kg?: number | null;
           created_at?: string;
           equipment_id: string;
           location: Database['public']['Enums']['equipment_location'];
@@ -844,6 +867,7 @@ export type Database = {
           weights_kg?: number[];
         };
         Update: {
+          bar_kg?: number | null;
           created_at?: string;
           equipment_id?: string;
           location?: Database['public']['Enums']['equipment_location'];
@@ -997,6 +1021,7 @@ export type Database = {
         Args: { p_items: Json; p_scope: string };
         Returns: undefined;
       };
+      replace_training_slots: { Args: { p_items: Json }; Returns: undefined };
       replace_user_equipment: {
         Args: {
           p_items: Json;
@@ -1109,6 +1134,7 @@ export type Database = {
       session_focus: 'full_body' | 'upper' | 'lower';
       sex: 'male' | 'female' | 'diverse' | 'unspecified';
       training_location: 'gym' | 'home' | 'both';
+      training_slot_kind: 'strength_gym' | 'strength_home' | 'endurance';
     };
     CompositeTypes: {
       [_ in never]: never;
@@ -1311,6 +1337,7 @@ export const Constants = {
       session_focus: ['full_body', 'upper', 'lower'],
       sex: ['male', 'female', 'diverse', 'unspecified'],
       training_location: ['gym', 'home', 'both'],
+      training_slot_kind: ['strength_gym', 'strength_home', 'endurance'],
     },
   },
 } as const;

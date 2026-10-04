@@ -96,7 +96,7 @@ describe('Einwilligung health_data', () => {
         rowsWith({ profile: profile({ onboarding_step: 'health_consent' }) }),
         VERSIONS,
       ),
-    ).toEqual({ healthDataConsent: undefined, trainingLocation: undefined });
+    ).toEqual({ healthDataConsent: undefined, hasHomeStrength: undefined });
     expect(
       deriveOnboardingState(
         rowsWith({ profile: profile({ onboarding_step: 'experience' }) }),
@@ -112,6 +112,50 @@ describe('Einwilligung health_data', () => {
         VERSIONS,
       ).healthDataConsent,
     ).toBe(true);
+  });
+});
+
+describe('Equipment-Schritt nach den Trainingstagen', () => {
+  const slot = (kind: 'strength_gym' | 'strength_home' | 'endurance', slot_no = 1) => ({
+    user_id: 'u',
+    slot_no,
+    weekday: null,
+    kind,
+    minutes: 30,
+  });
+
+  it('nur mit mindestens einem Tag „Kraft zu Hause“; ohne Trainingstage noch offen', () => {
+    const state = (trainingSlots: ReturnType<typeof slot>[]) =>
+      deriveOnboardingState(rowsWith({ trainingSlots }), VERSIONS).hasHomeStrength;
+    expect(state([])).toBeUndefined();
+    expect(state([slot('strength_gym'), slot('endurance', 2)])).toBe(false);
+    expect(state([slot('endurance'), slot('strength_home', 2)])).toBe(true);
+  });
+
+  it('alter Stand „Trainingsort“ springt weiter (Equipment bzw. Ernährung)', () => {
+    const base = { profile: profile({ onboarding_step: 'training_location' }) };
+    expect(
+      resolveEntryRoute({
+        session: { userId: 'u', email: null },
+        rows: rowsWith({
+          ...base,
+          consents: [consent('terms'), consent('privacy')],
+          trainingSlots: [slot('strength_home')],
+        }),
+        versions: VERSIONS,
+      }),
+    ).toBe('/onboarding/equipment');
+    expect(
+      resolveEntryRoute({
+        session: { userId: 'u', email: null },
+        rows: rowsWith({
+          ...base,
+          consents: [consent('terms'), consent('privacy')],
+          trainingSlots: [slot('endurance')],
+        }),
+        versions: VERSIONS,
+      }),
+    ).toBe('/onboarding/nutrition');
   });
 });
 

@@ -8,6 +8,7 @@ import type {
   GoalsRow,
   MeasurementReminderRow,
   NutritionPrefsRow,
+  TrainingSlotRow,
   UserEquipmentRow,
   UserRows,
 } from './types';
@@ -23,6 +24,8 @@ export type WriteOp =
   | { kind: 'update_profile'; patch: ProfilePatch }
   | { kind: 'grant_consent'; consentType: ConsentType; version: number; platform: ConsentPlatform }
   | { kind: 'upsert_goals'; row: GoalsRow }
+  /** Alle Trainingstage ersetzen (public.replace_training_slots) – kein Gesundheitsdatum. */
+  | { kind: 'replace_training_slots'; rows: TrainingSlotRow[] }
   | { kind: 'replace_user_equipment'; location: 'home' | 'gym'; rows: UserEquipmentRow[] }
   | { kind: 'upsert_nutrition_prefs'; row: NutritionPrefsRow }
   | { kind: 'replace_food_preferences'; scope: FoodPreferenceScope; rows: FoodPreferenceRow[] }
@@ -134,6 +137,8 @@ function applyOne(rows: UserRows, op: WriteOp, ctx: ApplyContext): UserRows {
     }
     case 'upsert_goals':
       return { ...rows, goals: op.row };
+    case 'replace_training_slots':
+      return { ...rows, trainingSlots: [...op.rows] };
     case 'replace_user_equipment':
       return {
         ...rows,
