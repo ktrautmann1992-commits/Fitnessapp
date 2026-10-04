@@ -10,6 +10,7 @@
     "collect": "tsx src/collect-cli.ts",
     "review": "tsx src/review-cli.ts",
     "seed": "tsx src/seed-cli.ts",
+    "plan:examples": "tsx src/plan-examples-cli.ts",
     "lint": "eslint .",
     "typecheck": "tsc --noEmit",
     "test": "vitest run --passWithNoTests"

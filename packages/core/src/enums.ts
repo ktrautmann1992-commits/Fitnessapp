@@ -185,3 +185,61 @@ export type TemplateGoalType = (typeof TEMPLATE_GOAL_TYPES)[number];
 /** Level mit Plan-Vorlagen (Abschnitt 14 Frage 2). „competitive“ nutzt vorerst „advanced“. */
 export const TEMPLATE_EXPERIENCE_LEVELS = ['beginner', 'advanced'] as const;
 export type TemplateExperienceLevel = (typeof TEMPLATE_EXPERIENCE_LEVELS)[number];
+
+// ---------------------------------------------------------------------------------------------------------
+// Phase 3 · Plan-Engine (docs/PLAN-PHASE-3.md Abschnitt 8). Postgres-Enums folgen in Etappe B (db-sync.test.ts).
+// ---------------------------------------------------------------------------------------------------------
+
+/** Status eines Nutzerplans: aktiv oder ersetzt. */
+export const PLAN_STATUSES = ['active', 'replaced'] as const;
+export type PlanStatus = (typeof PLAN_STATUSES)[number];
+
+/** Status einer geplanten Einheit (Phase 4 ergänzt `completed`). */
+export const PLANNED_SESSION_STATUSES = ['planned', 'skipped'] as const;
+export type PlannedSessionStatus = (typeof PLANNED_SESSION_STATUSES)[number];
+
+/** Güte des Vorlagen-Matchings: passt genau / mit Anpassungen / nächstbeste Vorlage. */
+export const PLAN_MATCH_QUALITIES = ['exact', 'close', 'fallback'] as const;
+export type PlanMatchQuality = (typeof PLAN_MATCH_QUALITIES)[number];
+
+/**
+ * Hinweis-Codes eines Plans (gespeichert in user_plans.notes). Bewusst OHNE Gesundheitsbezug: Tausch-Codes nur
+ * aus Gerätegründen; Hinweise zum vorsichtigen Plan leitet die App aus dem Gesundheits-Check ab (Abschnitt 9).
+ */
+export const PLAN_NOTES = [
+  'goal_endurance_not_yet',
+  'days_rotated',
+  'days_capped',
+  'days_added',
+  'back_to_back_sessions',
+  'minutes_shortened',
+  'minutes_below_minimum',
+  'volume_reduced',
+  'exercises_substituted',
+  'exercises_removed',
+  'no_pull_exercise',
+  'location_mismatch',
+] as const;
+export type PlanNote = (typeof PLAN_NOTES)[number];
+
+/**
+ * Ziel → Ziel der Vorlagen (PLAN-PHASE-2 Frage 1): Definition nutzt Muskelaufbau (beschlossen, gilt als
+ * passend); Ausdauer nutzt bis Phase 10 Allgemeine Fitness (nächstbeste Vorlage).
+ */
+export const GOAL_TEMPLATE_MAPPING = {
+  muscle_gain: { goal: 'muscle_gain', kind: 'same' },
+  fat_loss: { goal: 'fat_loss', kind: 'same' },
+  general_fitness: { goal: 'general_fitness', kind: 'same' },
+  definition: { goal: 'muscle_gain', kind: 'mapped' },
+  endurance: { goal: 'general_fitness', kind: 'fallback' },
+} as const satisfies Record<
+  GoalType,
+  { goal: TemplateGoalType; kind: 'same' | 'mapped' | 'fallback' }
+>;
+
+/** Level → Level der Vorlagen (PLAN-PHASE-2 Frage 2): Leistungssport nutzt Fortgeschritten (beschlossen). */
+export const LEVEL_TEMPLATE_MAPPING = {
+  beginner: 'beginner',
+  advanced: 'advanced',
+  competitive: 'advanced',
+} as const satisfies Record<ExperienceLevel, TemplateExperienceLevel>;

@@ -40,6 +40,10 @@ jobs:
           || echo "::notice::main nicht abrufbar – die Versionsregel wird übersprungen."
       - name: Inhalte prüfen (content:validate)
         run: pnpm content:validate --base origin/main
+      # Plan-Engine (docs/PLAN-PHASE-3.md): erzeugt für feste, ausgedachte Test-Personen Beispielpläne aus dem
+      # aktuellen Inhaltsstand und schreibt sie lesbar in die Zusammenfassung des Laufs (Summary).
+      - name: Beispielpläne (Plan-Engine)
+        run: pnpm plan:examples
       - name: Lint, Typen, Tests
         run: pnpm check
       - name: Apps bauen

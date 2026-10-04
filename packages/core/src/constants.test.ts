@@ -1,7 +1,13 @@
 import { describe, expect, it } from 'vitest';
 
 import {
+  AGE_PLAN_RULES,
+  CONSERVATIVE_PLAN_RULES,
   CONTENT_SCHEMA_LIMITS,
+  DELOAD_SCHEDULE,
+  LOAD_PROGRESSION,
+  PLAN_BLOCK_LIMITS,
+  PLAN_MATCH_WEIGHTS,
   DELOAD_INTERVAL_WEEKS,
   ENDURANCE_HIGH_INTENSITY_SHARE,
   MAX_CALORIE_DEFICIT_FRACTION,
@@ -96,5 +102,41 @@ describe('Inhalte (Phase 2)', () => {
     });
     expect(SESSION_DURATION_ESTIMATE.tolerance).toBe(0.15);
     expect(PUSH_PULL_TOLERANCE).toBe(0.3);
+  });
+});
+
+describe('Plan-Engine (Phase 3)', () => {
+  it('Punkte des Matchings ergeben 100', () => {
+    expect(Object.values(PLAN_MATCH_WEIGHTS).reduce((a, b) => a + b, 0)).toBe(100);
+  });
+
+  it('Deload-Abstände liegen im Rahmen DELOAD_INTERVAL_WEEKS', () => {
+    for (const weeks of Object.values(DELOAD_SCHEDULE)) {
+      expect(weeks).toBeGreaterThanOrEqual(DELOAD_INTERVAL_WEEKS.min);
+      expect(weeks).toBeLessThanOrEqual(DELOAD_INTERVAL_WEEKS.max);
+      // Woche 0 + Belastungswochen + Erholungswoche passt in week_no.
+      expect(weeks + 1).toBeLessThanOrEqual(PLAN_BLOCK_LIMITS.weekNo.max);
+    }
+  });
+
+  it('Laststeigerung höchstens 10 %, Puffer innerhalb V4', () => {
+    expect(LOAD_PROGRESSION.maxIncreaseFraction).toBeLessThanOrEqual(0.1);
+    expect(LOAD_PROGRESSION.holdIncrementS.max).toBeLessThanOrEqual(5);
+    expect(LOAD_PROGRESSION.consecutiveSessionsForStep).toBeGreaterThanOrEqual(2);
+  });
+
+  it('Vorsichtiger Plan: RPE höchstens 7, keine Sprünge/Wirbelsäulenlast/Technik', () => {
+    expect(CONSERVATIVE_PLAN_RULES.rpeMax).toBeLessThanOrEqual(7);
+    expect(CONSERVATIVE_PLAN_RULES.excludedCautionTags).toEqual(
+      expect.arrayContaining(['high_impact', 'spinal_loading', 'high_skill']),
+    );
+    expect(AGE_PLAN_RULES.minor.rpeMax).toBeLessThanOrEqual(TEMPLATE_DOSAGE_LIMITS.beginnerRpeMax);
+    expect(AGE_PLAN_RULES.senior.rpeMax).toBeLessThanOrEqual(7);
+  });
+
+  it('Höchstens 8 Übungen je Einheit wie Regel V8', () => {
+    expect(PLAN_BLOCK_LIMITS.exercisesPerSession).toBe(
+      TEMPLATE_DOSAGE_LIMITS.maxExercisesPerSession,
+    );
   });
 });

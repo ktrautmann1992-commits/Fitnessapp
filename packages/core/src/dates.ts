@@ -19,3 +19,21 @@ export function createMeasuredOnSchema(today: string) {
     .refine((date) => date >= BIRTH_DATE_MIN, 'Bitte ein gültiges Datum eingeben.')
     .refine((date) => date <= latest, 'Das Messdatum liegt in der Zukunft.');
 }
+
+/** Wochentag nach ISO 8601: 1 = Montag … 7 = Sonntag. */
+export function isoWeekday(date: string): number {
+  const day = new Date(`${isoDateSchema.parse(date)}T00:00:00Z`).getUTCDay();
+  return day === 0 ? 7 : day;
+}
+
+/** Montag der ISO-Woche, in der `date` liegt. */
+export function startOfIsoWeek(date: string): string {
+  return addDays(date, 1 - isoWeekday(date));
+}
+
+/** Tage von `from` bis `to` (negativ, wenn `to` davor liegt). */
+export function daysBetween(from: string, to: string): number {
+  const a = Date.parse(`${isoDateSchema.parse(from)}T00:00:00Z`);
+  const b = Date.parse(`${isoDateSchema.parse(to)}T00:00:00Z`);
+  return Math.round((b - a) / MS_PER_DAY);
+}

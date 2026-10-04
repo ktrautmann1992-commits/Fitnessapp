@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 
-import { addDays, createMeasuredOnSchema } from './dates';
+import { addDays, createMeasuredOnSchema, daysBetween, isoWeekday, startOfIsoWeek } from './dates';
 
 describe('addDays', () => {
   it('über Monats-, Jahres- und Schaltjahresgrenzen', () => {
@@ -28,5 +28,27 @@ describe('createMeasuredOnSchema', () => {
   it('erlaubt die Vergangenheit ab 1900', () => {
     expect(schema.safeParse('1900-01-01').success).toBe(true);
     expect(schema.safeParse('1899-12-31').success).toBe(false);
+  });
+});
+
+describe('ISO-Woche (Plan-Engine)', () => {
+  it('isoWeekday: Montag = 1, Sonntag = 7', () => {
+    expect(isoWeekday('2026-10-05')).toBe(1);
+    expect(isoWeekday('2026-10-11')).toBe(7);
+    expect(isoWeekday('2024-02-29')).toBe(4);
+  });
+
+  it('startOfIsoWeek über Monats- und Jahreswechsel', () => {
+    expect(startOfIsoWeek('2026-10-11')).toBe('2026-10-05');
+    expect(startOfIsoWeek('2026-10-05')).toBe('2026-10-05');
+    expect(startOfIsoWeek('2027-01-01')).toBe('2026-12-28');
+    // Sommerzeit-Ende (25.10.2026) ändert nichts an der Kalenderrechnung.
+    expect(startOfIsoWeek('2026-10-27')).toBe('2026-10-26');
+  });
+
+  it('daysBetween', () => {
+    expect(daysBetween('2026-10-05', '2026-10-12')).toBe(7);
+    expect(daysBetween('2026-10-12', '2026-10-05')).toBe(-7);
+    expect(daysBetween('2026-03-28', '2026-03-30')).toBe(2);
   });
 });
