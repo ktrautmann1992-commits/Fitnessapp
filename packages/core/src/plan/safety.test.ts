@@ -154,3 +154,30 @@ describe('isExerciseAllowed, isStricter, strictestRules', () => {
     expect(isStricter(healthy, combined)).toBe(false);
   });
 });
+
+describe('Ausdauer-Regeln (Erweiterungsplan 5.6)', () => {
+  it('Fortgeschritten, ohne Flag: Anstrengung bis 4, Laufen, Startgruppe = Level', () => {
+    const rules = planSafetyRules(base, DAY);
+    expect(rules.enduranceEffortMax).toBe(4);
+    expect(rules.enduranceWalkOnly).toBe(false);
+    expect(rules.enduranceStartGroup).toBe('advanced');
+  });
+
+  it.each(HEALTH_FLAGS)('Flag %s: Gehen, Anstrengung ≤ 3, vorsichtig', (flag) => {
+    const rules = planSafetyRules({ ...base, healthScreening: { flags: [flag] } }, DAY);
+    expect(rules.enduranceWalkOnly).toBe(true);
+    expect(rules.enduranceEffortMax).toBe(3);
+    expect(rules.enduranceStartGroup).toBe('cautious');
+  });
+
+  it('strenger: niedrigere Anstrengung oder neu nur Gehen; strengste Kombination', () => {
+    const healthy = planSafetyRules(base, DAY);
+    const senior = planSafetyRules({ ...base, birthDate: '1950-01-01' }, DAY);
+    expect(isStricter(senior, healthy)).toBe(true);
+    expect(isStricter(healthy, senior)).toBe(false);
+    const both = strictestRules(healthy, senior);
+    expect(both.enduranceEffortMax).toBe(3);
+    expect(both.enduranceWalkOnly).toBe(true);
+    expect(both.enduranceStartGroup).toBe('cautious');
+  });
+});

@@ -3,17 +3,36 @@ import { describe, expect, it } from 'vitest';
 import { makeTemplate } from '../content/test-fixtures';
 import { equipmentProfile } from './equipment-profile';
 import { planInputsSchema } from './inputs';
-import { isTemplateEligible, matchTemplate, plannedSessionsPerWeek, scoreTemplate } from './match';
+import {
+  isTemplateEligible,
+  type MatchInputs,
+  matchTemplate,
+  plannedSessionsPerWeek,
+  scoreTemplate,
+} from './match';
 import { planSafetyRules } from './safety';
 import { FULL_HOME, MONDAY, person, repoLibrary } from './test-library';
 
 const library = repoLibrary();
 
+/** Eingaben des Matchings wie generateTrainingPlan sie bildet (Kraft-Tage, längste Dauer, Ort). */
+function matchInputs(overrides: Parameters<typeof person>[0] = {}): MatchInputs {
+  const inputs = planInputsSchema.parse(person(overrides));
+  return {
+    goalType: inputs.goalType,
+    experienceLevel: inputs.experienceLevel,
+    sex: inputs.sex,
+    sessionsPerWeek: overrides.sessionsPerWeek ?? 3,
+    minutesPerSession: overrides.minutesPerSession ?? 60,
+    trainingLocation: overrides.trainingLocation ?? 'gym',
+  };
+}
+
 function run(overrides: Parameters<typeof person>[0] = {}) {
   const inputs = planInputsSchema.parse(person(overrides));
   const rules = planSafetyRules(inputs, MONDAY);
-  const profile = equipmentProfile(inputs.trainingLocation, inputs.homeEquipment);
-  return matchTemplate(inputs, { library, profile, rules });
+  const profile = equipmentProfile(overrides.trainingLocation ?? 'gym', inputs.homeEquipment);
+  return matchTemplate(matchInputs(overrides), { library, profile, rules });
 }
 
 describe('plannedSessionsPerWeek', () => {
@@ -85,12 +104,13 @@ describe('matchTemplate mit dem Startbestand', () => {
     expect(result?.quality).toBe('exact');
   });
 
-  it('Definition → Muskelaufbau (beschlossen), Ausdauer → Allgemeine Fitness mit Hinweis', () => {
+  it('Definition → Muskelaufbau (beschlossen), Ausdauer → Allgemeine Fitness (nächstbeste)', () => {
     expect(run({ goalType: 'definition' })?.template.goal_type).toBe('muscle_gain');
     const endurance = run({ goalType: 'endurance', discipline: '10k' });
     expect(endurance?.template.goal_type).toBe('general_fitness');
     expect(endurance?.quality).toBe('fallback');
-    expect(endurance?.notes.has('goal_endurance_not_yet')).toBe(true);
+    // Ausdauer-Hinweise setzt seit Engine-Version 2 generateTrainingPlan (je nach Ausdauer-Tagen).
+    expect(endurance?.notes.has('goal_endurance_not_yet')).toBe(false);
   });
 
   it('1–2 Tage → 3-Tage-Ganzkörper (Rotation), 5–7 Tage → 4-Tage (gekappt)', () => {
@@ -119,7 +139,7 @@ describe('matchTemplate mit dem Startbestand', () => {
     const inputs = planInputsSchema.parse(person());
     const empty = { exercises: new Map(), templates: [], containsDrafts: false };
     expect(
-      matchTemplate(inputs, {
+      matchTemplate(matchInputs(), {
         library: empty,
         profile: equipmentProfile('gym', []),
         rules: planSafetyRules(inputs, MONDAY),
@@ -151,7 +171,7 @@ describe('matchTemplate mit dem Startbestand', () => {
     };
     const template = library.templates.find((t) => t.id === 'muskelaufbau-einsteiger-3t-studio');
     if (!template) throw new Error('Vorlage fehlt');
-    const score = scoreTemplate(template, inputs, ctx);
+    const score = scoreTemplate(template, matchInputs({ minutesPerSession: 20 }), ctx);
     expect(score.breakdown.duration).toBeCloseTo((5 * 20) / 45);
     expect(score.coverage).toBe(1);
   });

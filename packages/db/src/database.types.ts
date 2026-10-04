@@ -612,17 +612,20 @@ export type Database = {
           block_no: number;
           cooldown_de: string;
           created_at: string;
+          effort_target: number | null;
+          endurance_modality: Database['public']['Enums']['endurance_modality'] | null;
           estimated_minutes: number;
-          focus: Database['public']['Enums']['session_focus'];
+          focus: Database['public']['Enums']['session_focus'] | null;
           id: string;
           is_deload: boolean;
           is_intro_week: boolean;
+          kind: Database['public']['Enums']['planned_session_kind'];
           name_de: string;
           original_date: string | null;
           plan_id: string;
           scheduled_on: string;
           status: Database['public']['Enums']['planned_session_status'];
-          template_day_index: number;
+          template_day_index: number | null;
           updated_at: string;
           user_id: string;
           warmup_de: string;
@@ -632,17 +635,20 @@ export type Database = {
           block_no: number;
           cooldown_de: string;
           created_at?: string;
+          effort_target?: number | null;
+          endurance_modality?: Database['public']['Enums']['endurance_modality'] | null;
           estimated_minutes: number;
-          focus: Database['public']['Enums']['session_focus'];
+          focus?: Database['public']['Enums']['session_focus'] | null;
           id?: string;
           is_deload?: boolean;
           is_intro_week?: boolean;
+          kind?: Database['public']['Enums']['planned_session_kind'];
           name_de: string;
           original_date?: string | null;
           plan_id: string;
           scheduled_on: string;
           status?: Database['public']['Enums']['planned_session_status'];
-          template_day_index: number;
+          template_day_index?: number | null;
           updated_at?: string;
           user_id: string;
           warmup_de: string;
@@ -652,17 +658,20 @@ export type Database = {
           block_no?: number;
           cooldown_de?: string;
           created_at?: string;
+          effort_target?: number | null;
+          endurance_modality?: Database['public']['Enums']['endurance_modality'] | null;
           estimated_minutes?: number;
-          focus?: Database['public']['Enums']['session_focus'];
+          focus?: Database['public']['Enums']['session_focus'] | null;
           id?: string;
           is_deload?: boolean;
           is_intro_week?: boolean;
+          kind?: Database['public']['Enums']['planned_session_kind'];
           name_de?: string;
           original_date?: string | null;
           plan_id?: string;
           scheduled_on?: string;
           status?: Database['public']['Enums']['planned_session_status'];
-          template_day_index?: number;
+          template_day_index?: number | null;
           updated_at?: string;
           user_id?: string;
           warmup_de?: string;
@@ -898,9 +907,9 @@ export type Database = {
           replaced_at: string | null;
           start_date: string;
           status: Database['public']['Enums']['plan_status'];
-          template_id: string;
-          template_title_de: string;
-          template_version: number;
+          template_id: string | null;
+          template_title_de: string | null;
+          template_version: number | null;
           user_id: string;
           uses_health_data: boolean;
         };
@@ -915,9 +924,9 @@ export type Database = {
           replaced_at?: string | null;
           start_date: string;
           status?: Database['public']['Enums']['plan_status'];
-          template_id: string;
-          template_title_de: string;
-          template_version: number;
+          template_id?: string | null;
+          template_title_de?: string | null;
+          template_version?: number | null;
           user_id?: string;
           uses_health_data?: boolean;
         };
@@ -932,9 +941,9 @@ export type Database = {
           replaced_at?: string | null;
           start_date?: string;
           status?: Database['public']['Enums']['plan_status'];
-          template_id?: string;
-          template_title_de?: string;
-          template_version?: number;
+          template_id?: string | null;
+          template_title_de?: string | null;
+          template_version?: number | null;
           user_id?: string;
           uses_health_data?: boolean;
         };
@@ -1068,6 +1077,7 @@ export type Database = {
         | 'triathlon_long'
         | 'cycling'
         | 'swimming';
+      endurance_modality: 'run' | 'walk' | 'bike' | 'swim';
       equipment_category:
         'free_weights' | 'bench' | 'bodyweight' | 'bands' | 'cardio' | 'other' | 'machines';
       equipment_location: 'home' | 'gym';
@@ -1128,8 +1138,15 @@ export type Database = {
         | 'exercises_substituted'
         | 'exercises_removed'
         | 'no_pull_exercise'
-        | 'location_mismatch';
+        | 'location_mismatch'
+        | 'endurance_days_capped'
+        | 'endurance_volume_ramped'
+        | 'endurance_walk'
+        | 'rest_day_added'
+        | 'week_total_capped'
+        | 'endurance_basic_only';
       plan_status: 'active' | 'replaced';
+      planned_session_kind: 'strength' | 'endurance';
       planned_session_status: 'planned' | 'skipped';
       session_focus: 'full_body' | 'upper' | 'lower';
       sex: 'male' | 'female' | 'diverse' | 'unspecified';
@@ -1261,6 +1278,7 @@ export const Constants = {
         'cycling',
         'swimming',
       ],
+      endurance_modality: ['run', 'walk', 'bike', 'swim'],
       equipment_category: [
         'free_weights',
         'bench',
@@ -1331,8 +1349,15 @@ export const Constants = {
         'exercises_removed',
         'no_pull_exercise',
         'location_mismatch',
+        'endurance_days_capped',
+        'endurance_volume_ramped',
+        'endurance_walk',
+        'rest_day_added',
+        'week_total_capped',
+        'endurance_basic_only',
       ],
       plan_status: ['active', 'replaced'],
+      planned_session_kind: ['strength', 'endurance'],
       planned_session_status: ['planned', 'skipped'],
       session_focus: ['full_body', 'upper', 'lower'],
       sex: ['male', 'female', 'diverse', 'unspecified'],

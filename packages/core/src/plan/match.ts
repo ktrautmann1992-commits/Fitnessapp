@@ -5,6 +5,7 @@ import {
   LEVEL_TEMPLATE_MAPPING,
   type PlanMatchQuality,
   type PlanNote,
+  type TrainingLocation,
 } from '../enums';
 import type { PlanLibrary } from './content-pool';
 import { type EquipmentProfile, findSubstitute } from './equipment-profile';
@@ -28,15 +29,19 @@ export interface TemplateScore {
   readonly coverage: number;
 }
 
-export type MatchInputs = Pick<
-  PlanInputs,
-  | 'goalType'
-  | 'experienceLevel'
-  | 'sessionsPerWeek'
-  | 'minutesPerSession'
-  | 'trainingLocation'
-  | 'sex'
->;
+/**
+ * Eingaben des Matchings (Erweiterungsplan 5.3): `sessionsPerWeek` = Zahl der gewünschten Kraft-Tage,
+ * `minutesPerSession` = LÄNGSTE Kraft-Dauer der Woche (lange Tage bekommen die volle Vorlage, kürzere werden je
+ * Termin gekürzt), `trainingLocation` = abgeleiteter Ort der Kraft-Tage.
+ */
+export interface MatchInputs {
+  readonly goalType: PlanInputs['goalType'];
+  readonly experienceLevel: PlanInputs['experienceLevel'];
+  readonly sessionsPerWeek: number;
+  readonly minutesPerSession: number;
+  readonly trainingLocation: TrainingLocation;
+  readonly sex: PlanInputs['sex'];
+}
 
 export interface MatchContext {
   readonly library: PlanLibrary;
@@ -145,9 +150,7 @@ export function matchTemplate(inputs: MatchInputs, ctx: MatchContext): MatchResu
   const template = best.template;
   const notes = new Set<PlanNote>();
   const goalMap = GOAL_TEMPLATE_MAPPING[inputs.goalType];
-  if (inputs.goalType === 'endurance') {
-    notes.add('goal_endurance_not_yet');
-  }
+  // Ausdauer-Hinweise (goal_endurance_not_yet / endurance_basic_only) setzt generateTrainingPlan.
   const goalOk = template.goal_type === goalMap.goal && goalMap.kind !== 'fallback';
   const locationOk = template.location === ctx.profile.location;
   if (!locationOk) {

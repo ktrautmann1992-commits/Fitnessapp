@@ -1,5 +1,5 @@
 import { addDays, startOfIsoWeek } from '../dates';
-import type { PlannedSessionStatus, SessionFocus } from '../enums';
+import type { PlannedSessionKind, PlannedSessionStatus, SessionFocus } from '../enums';
 
 /**
  * Verpasste Einheiten neu planen – „verschieben oder streichen, nie stapeln“ (docs/PLAN-PHASE-3.md 5.11).
@@ -13,7 +13,10 @@ export interface ReschedulableSession {
   /** Ursprünglicher Tag, gesetzt beim ersten Verschieben. */
   readonly original_date: string | null;
   readonly status: PlannedSessionStatus;
-  readonly focus: SessionFocus;
+  /** Kraft oder Ausdauer (Erweiterungsplan 5.4); fehlt = Kraft (Pläne der Engine-Version 1). */
+  readonly kind?: PlannedSessionKind;
+  /** Kraft: Schwerpunkt; Ausdauer: null. */
+  readonly focus: SessionFocus | null;
   readonly is_deload: boolean;
 }
 
@@ -22,14 +25,19 @@ export type RescheduleResult =
   | { readonly kind: 'skipped' }
   | { readonly kind: 'not_allowed'; readonly reason: 'not_found' | 'not_planned' };
 
-/** Würden zwei Einheiten an Nachbartagen dieselben Muskeln ohne 48 h Pause treffen? */
-function conflicts(a: SessionFocus, b: SessionFocus): boolean {
+/**
+ * Würden zwei Einheiten an Nachbartagen dieselben Muskeln ohne 48 h Pause treffen? Nur Kraft gegen Kraft – lockere
+ * Ausdauer ist nie ein Konflikt (PRODUKTENTSCHEIDUNG, Erweiterungsplan 5.4).
+ */
+function conflicts(a: SessionFocus | null, b: SessionFocus | null): boolean {
+  if (a === null || b === null) return false;
   return a === 'full_body' || b === 'full_body' || a === b;
 }
 
 /**
  * Sucht den nächsten freien Tag ab heute in derselben ISO-Woche wie der ursprünglich geplante Tag
- * (`coalesce(original_date, scheduled_on)`), der die Erholungsregel einhält; sonst streichen.
+ * (`coalesce(original_date, scheduled_on)`), der die Erholungsregel einhält (Kraft nur gegen Kraft-Nachbarn;
+ * Ausdauer darf auf jeden freien Tag); sonst streichen. Nie zwei Einheiten am Tag.
  * In der Erholungswoche wird immer gestrichen. `sessions` = alle Einheiten der Person (auch anderer Pläne).
  */
 export function rescheduleSession(
@@ -45,16 +53,16 @@ export function rescheduleSession(
   const weekStart = startOfIsoWeek(originalDate);
   const sunday = addDays(weekStart, 6);
   const others = sessions.filter((s) => s.id !== session.id && s.status !== 'skipped');
-  const occupied = new Map(others.map((s) => [s.scheduled_on, s.focus] as const));
+  const focusOf = (s: ReschedulableSession) =>
+    (s.kind ?? 'strength') === 'strength' ? s.focus : null;
+  const occupied = new Map(others.map((s) => [s.scheduled_on, focusOf(s)] as const));
+  const own = focusOf(session);
   const start = today > weekStart ? today : weekStart;
   for (let date = start; date <= sunday; date = addDays(date, 1)) {
     if (date === session.scheduled_on || occupied.has(date)) continue;
     const before = occupied.get(addDays(date, -1));
     const after = occupied.get(addDays(date, 1));
-    if (
-      (before && conflicts(before, session.focus)) ||
-      (after && conflicts(after, session.focus))
-    ) {
+    if (conflicts(before ?? null, own) || conflicts(after ?? null, own)) {
       continue;
     }
     return { kind: 'moved', date, originalDate };

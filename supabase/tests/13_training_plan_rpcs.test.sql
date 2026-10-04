@@ -58,9 +58,10 @@ create function pg_temp.session(
 )
 returns jsonb language sql as $$
   select jsonb_build_object(
-    'block_no', p_block, 'week_no', p_week, 'is_intro_week', p_intro, 'is_deload', false, 'template_day_index', 1,
-    'scheduled_on', date '2026-10-12' + p_day,
-    'name_de', 'Ganzkörper A', 'focus', 'full_body', 'estimated_minutes', 50,
+    'block_no', p_block, 'week_no', p_week, 'is_intro_week', p_intro, 'is_deload', false, 'kind', 'strength',
+    'template_day_index', 1, 'scheduled_on', date '2026-10-12' + p_day,
+    'name_de', 'Ganzkörper A', 'focus', 'full_body', 'endurance_modality', null, 'effort_target', null,
+    'estimated_minutes', 50,
     'warmup_de', 'Aufwärmen.', 'cooldown_de', 'Ausklingen.',
     'exercises', jsonb_build_array(jsonb_build_object(
       'order_no', 1, 'exercise_id', p_exercise, 'source_exercise_id', p_exercise, 'exercise_name_de', 'Übung A',
@@ -76,11 +77,15 @@ create function pg_temp.payload(
 returns jsonb language sql as $$
   select jsonb_build_object(
     'template_id', p_template, 'template_title_de', 'Vorlage A für Tests', 'template_version', p_version,
-    'engine_version', 1, 'match_quality', 'exact', 'notes', '["days_added"]'::jsonb,
+    'engine_version', 2, 'match_quality', 'exact', 'notes', '["days_added"]'::jsonb,
     'uses_health_data', p_uses, 'medical_notice', p_notice,
     'inputs', '{"goalType": "muscle_gain", "discipline": null, "experienceLevel": "beginner",
-                "sessionsPerWeek": 3, "minutesPerSession": 45, "preferredDays": [1, 3, 5],
-                "trainingLocation": "both", "homeEquipment": [{"equipmentId": "dumbbells", "weightsKg": [2, 4, 6.25]}]}'::jsonb,
+                "schedule": {"mode": "fixed", "slots": [
+                  {"weekday": 1, "kind": "strength_gym", "minutes": 45},
+                  {"weekday": 3, "kind": "strength_home", "minutes": 45},
+                  {"weekday": 5, "kind": "endurance", "minutes": 30}]},
+                "trainingLocation": "both",
+                "homeEquipment": [{"equipmentId": "dumbbells", "weightsKg": [2, 4, 6.25], "barKg": null}]}'::jsonb,
     'start_date', p_start,
     'sessions', coalesce(p_sessions, jsonb_build_array(pg_temp.session(0), pg_temp.session(2)))
   )
@@ -180,40 +185,41 @@ select throws_ok(
   '22023', 'Ungültige Angaben im Plan.', 'unbekannte Disziplin wird abgelehnt'
 );
 select throws_ok(
-  $$ select public.save_training_plan(pg_temp.with_input('{sessionsPerWeek}', '8')) $$,
-  '22023', 'Ungültige Angaben im Plan.', 'sessionsPerWeek 8 wird abgelehnt'
+  $$ select public.save_training_plan(pg_temp.with_input('{schedule,slots,0,minutes}', '241')) $$,
+  '22023', 'Ungültige Angaben im Plan.', 'Minuten 241 im Zeitplan werden abgelehnt'
 );
 select throws_ok(
-  $$ select public.save_training_plan(pg_temp.with_input('{sessionsPerWeek}', '3.5')) $$,
-  '22023', 'Ungültige Angaben im Plan.', 'sessionsPerWeek muss ganzzahlig sein'
+  $$ select public.save_training_plan(pg_temp.with_input('{schedule,slots,0,minutes}', '45.5')) $$,
+  '22023', 'Ungültige Angaben im Plan.', 'Minuten müssen ganzzahlig sein'
 );
 select throws_ok(
-  $$ select public.save_training_plan(pg_temp.with_input('{minutesPerSession}', '"45"')) $$,
-  '22023', 'Ungültige Angaben im Plan.', 'minutesPerSession als Text wird abgelehnt'
+  $$ select public.save_training_plan(pg_temp.with_input('{schedule,slots,0,minutes}', '"45"')) $$,
+  '22023', 'Ungültige Angaben im Plan.', 'Minuten als Text werden abgelehnt'
 );
 select throws_ok(
-  $$ select public.save_training_plan(pg_temp.with_input('{preferredDays}', '[1, 1]')) $$,
-  '22023', 'Ungültige Angaben im Plan.', 'Wunsch-Tag doppelt wird abgelehnt'
+  $$ select public.save_training_plan(pg_temp.with_input('{schedule,slots,1,weekday}', '1')) $$,
+  '22023', 'Ungültige Angaben im Plan.', 'Wochentag doppelt wird abgelehnt'
 );
 select throws_ok(
-  $$ select public.save_training_plan(pg_temp.with_input('{preferredDays}', '[0]')) $$,
-  '22023', 'Ungültige Angaben im Plan.', 'Wunsch-Tag 0 wird abgelehnt'
+  $$ select public.save_training_plan(pg_temp.with_input('{schedule,slots,0,weekday}', '0')) $$,
+  '22023', 'Ungültige Angaben im Plan.', 'Wochentag 0 wird abgelehnt'
 );
 select throws_ok(
-  $$ select public.save_training_plan(pg_temp.with_input('{preferredDays}', '[1, 2, 3, 4, 5, 6, 7, 1]')) $$,
-  '22023', 'Ungültige Angaben im Plan.', 'mehr als 7 Wunsch-Tage werden abgelehnt'
+  $$ select public.save_training_plan(pg_temp.with_input('{schedule,slots}',
+       (select jsonb_agg(jsonb_build_object('kind', 'endurance', 'minutes', 30)) from generate_series(1, 8)))) $$,
+  '22023', 'Ungültige Angaben im Plan.', 'mehr als 7 Trainingstage werden abgelehnt'
 );
 select throws_ok(
-  $$ select public.save_training_plan(pg_temp.with_input('{homeEquipment}', '[{"equipmentId": "zauberstab", "weightsKg": []}]')) $$,
+  $$ select public.save_training_plan(pg_temp.with_input('{homeEquipment}', '[{"equipmentId": "zauberstab", "weightsKg": [], "barKg": null}]')) $$,
   '22023', 'Ungültige Angaben im Plan.', 'unbekanntes Gerät wird abgelehnt'
 );
 select throws_ok(
-  $$ select public.save_training_plan(pg_temp.with_input('{homeEquipment}', '[{"equipmentId": "dumbbells", "weightsKg": [], "note": "x"}]')) $$,
+  $$ select public.save_training_plan(pg_temp.with_input('{homeEquipment}', '[{"equipmentId": "dumbbells", "weightsKg": [], "barKg": null, "note": "x"}]')) $$,
   '22023', 'Unbekanntes Feld in der Eingabe (Geräte).', 'zusätzliches Feld bei einem Gerät wird abgelehnt'
 );
 select throws_ok(
   $$ select public.save_training_plan(pg_temp.with_input('{homeEquipment}',
-       jsonb_build_array(jsonb_build_object('equipmentId', 'dumbbells', 'weightsKg', (select jsonb_agg(g) from generate_series(1, 41) g))))) $$,
+       jsonb_build_array(jsonb_build_object('equipmentId', 'dumbbells', 'barKg', null, 'weightsKg', (select jsonb_agg(g) from generate_series(1, 41) g))))) $$,
   '22023', 'Ungültige Angaben im Plan.', '41 Gewichtsstufen werden abgelehnt'
 );
 select throws_ok(

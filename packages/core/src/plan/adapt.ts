@@ -43,7 +43,11 @@ export interface AdaptContext {
   readonly library: ReadonlyMap<string, Exercise>;
   readonly profile: Pick<EquipmentProfile, 'available'>;
   readonly rules: Pick<PlanSafetyRules, 'excludedCautionTags' | 'cautious' | 'rpeMax'>;
-  readonly minutesPerSession: number;
+  /**
+   * Zeitbudget je Einheit. Seit Engine-Version 2 meist weggelassen: Gekürzt wird erst beim Platzieren je Termin
+   * (schedule.ts, Erweiterungsplan 5.3), weil derselbe Vorlagen-Tag an verschiedenen Tagen verschieden lang ist.
+   */
+  readonly minutesPerSession?: number;
 }
 
 const PULL_PATTERNS: readonly MovementPattern[] = ['horizontal_pull', 'vertical_pull'];
@@ -180,7 +184,10 @@ export function adaptTemplate(template: PlanTemplate, ctx: AdaptContext): AdaptR
   for (const session of [...template.sessions].sort((a, b) => a.day_index - b.day_index)) {
     const adapted = adaptSessionExercises(session.exercises, ctx, notes);
     if (adapted.changed) unchanged = false;
-    const fitted = fitSessionToMinutes(adapted.exercises, ctx.minutesPerSession, ctx.library);
+    const fitted =
+      ctx.minutesPerSession === undefined
+        ? { exercises: adapted.exercises, shortened: false, belowMinimum: false }
+        : fitSessionToMinutes(adapted.exercises, ctx.minutesPerSession, ctx.library);
     if (fitted.shortened) notes.add('minutes_shortened');
     if (fitted.belowMinimum) notes.add('minutes_below_minimum');
     if (fitted.exercises.length === 0) {
@@ -197,11 +204,7 @@ export function adaptTemplate(template: PlanTemplate, ctx: AdaptContext): AdaptR
     });
   }
 
-  // Wochenumfang großer Muskelgruppen unter die Untergrenze gefallen (V10)?
-  const range = weeklySetRange(template);
-  const before = weeklySetsByMuscle(template, ctx.library);
-  const after = weeklySetsByMuscle({ sessions: sessions.map(toTemplateSession) }, ctx.library);
-  if (LARGE_MUSCLE_GROUPS.some((m) => before[m] >= range.min && after[m] < range.min)) {
+  if (isVolumeReduced(template, sessions, ctx.library)) {
     notes.add('volume_reduced');
   }
 
@@ -217,6 +220,37 @@ export function adaptTemplate(template: PlanTemplate, ctx: AdaptContext): AdaptR
     notes.add('no_pull_exercise');
   }
   return { sessions, notes, unchanged };
+}
+
+/**
+ * Wochenumfang großer Muskelgruppen unter die Untergrenze gefallen (V10)? `sessions` = je Vorlagen-Einheit eine
+ * Fassung (bei Kürzen je Termin die kürzeste – die vorsichtige Schätzung).
+ */
+export function isVolumeReduced(
+  template: PlanTemplate,
+  sessions: readonly AdaptedSession[],
+  library: ReadonlyMap<string, Exercise>,
+): boolean {
+  const range = weeklySetRange(template);
+  const before = weeklySetsByMuscle(template, library);
+  const after = weeklySetsByMuscle({ sessions: sessions.map(toTemplateSession) }, library);
+  return LARGE_MUSCLE_GROUPS.some((m) => before[m] >= range.min && after[m] < range.min);
+}
+
+/**
+ * Bereits geplante Übungen erneut an Geräte und Regeln anpassen (Folgeblock in der Fassung eines anderen Orts):
+ * wie adaptTemplate, aber die Vorlagen-Übung (`source_exercise_id`) bleibt erhalten.
+ */
+export function reAdaptExercises(
+  exercises: readonly PlannedExerciseDraft[],
+  ctx: Omit<AdaptContext, 'minutesPerSession'>,
+): PlannedExerciseDraft[] {
+  const sources = new Map(exercises.map((e) => [e.exercise_id, e.source_exercise_id] as const));
+  const adapted = adaptSessionExercises(exercises, ctx, new Set());
+  return adapted.exercises.map((e) => ({
+    ...e,
+    source_exercise_id: sources.get(e.source_exercise_id) ?? e.source_exercise_id,
+  }));
 }
 
 /** Angepasste Einheit im Format einer Vorlagen-Einheit (für die Kennzahlen aus content/analysis.ts). */

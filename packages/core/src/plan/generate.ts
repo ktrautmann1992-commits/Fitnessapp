@@ -3,6 +3,9 @@ import { z } from 'zod';
 import { ageInYears, isoDateSchema } from '../age';
 import {
   CONTENT_SCHEMA_LIMITS,
+  ENDURANCE_EFFORT,
+  ENDURANCE_SESSION_LIMITS,
+  TRAINING_LIMITS,
   MIN_AGE_YEARS,
   PLAN_BLOCK_LIMITS,
   PLAN_ENGINE_VERSION,
@@ -11,13 +14,17 @@ import {
 } from '../constants';
 import { startOfIsoWeek } from '../dates';
 import {
+  ENDURANCE_MODALITIES,
+  type EquipmentLocation,
   PLAN_MATCH_QUALITIES,
   PLAN_NOTES,
+  PLANNED_SESSION_KINDS,
   type PlanMatchQuality,
   type PlanNote,
   SESSION_FOCUSES,
+  type TrainingLocation,
 } from '../enums';
-import { adaptTemplate } from './adapt';
+import { adaptTemplate, type AdaptedSession, isVolumeReduced } from './adapt';
 import type { PlanLibrary } from './content-pool';
 import { loadWeeksBeforeDeload } from './deload';
 import { equipmentProfile } from './equipment-profile';
@@ -27,22 +34,32 @@ import {
   planInputsSchema,
   planInputsSnapshot,
 } from './inputs';
-import { matchTemplate, plannedSessionsPerWeek } from './match';
+import { matchTemplate } from './match';
 import { type PlanSafetyRules, planSafetyRules } from './safety';
 import {
   buildPlanBlock,
-  chooseTrainingDays,
   type GeneratedSession,
   hasBackToBackSessions,
+  isStrengthKind,
+  locationOfKind,
+  type PlannedDay,
+  resolveTrainingWeek,
+  spreadSubset,
 } from './schedule';
 
 /**
- * Hauptfunktion der Plan-Engine (docs/PLAN-PHASE-3.md Abschnitt 5): Angaben prüfen → Sicherheitsregeln →
- * Vorlage wählen → anpassen → Tage wählen → ersten Plan-Block bauen. Rein und deterministisch; das Datum wird
- * übergeben. Keine KI.
+ * Hauptfunktion der Plan-Engine (docs/PLAN-PHASE-3.md Abschnitt 5, Engine-Version 2:
+ * docs/PLAN-PHASE-3-ERWEITERUNG.md Abschnitt 5): Angaben prüfen → Sicherheitsregeln → Woche auflösen → bei
+ * Kraft-Tagen Vorlage + Anpassung je Ort → Plan-Block mit gemischten Tagen (Kraft je Termin gekürzt, Ausdauer nach
+ * 10-%-Regel) → Hinweise. Rein und deterministisch; das Datum wird übergeben. Keine KI.
  */
 
 const D = TEMPLATE_DOSAGE_LIMITS;
+
+/**
+ * Anstrengung einer Ausdauer-Einheit (= CHECK effort_target): in Phase 3 nur locker, 1 bis ENDURANCE_EFFORT.easyMax.
+ */
+export const ENDURANCE_EFFORT_LIMITS = { min: 1, max: ENDURANCE_EFFORT.easyMax } as const;
 
 const rpeSchema = z
   .number()
@@ -98,14 +115,22 @@ export const generatedSessionSchema = z
     week_no: z.number().int().min(PLAN_BLOCK_LIMITS.weekNo.min).max(PLAN_BLOCK_LIMITS.weekNo.max),
     is_intro_week: z.boolean(),
     is_deload: z.boolean(),
-    template_day_index: z.number().int().min(1).max(7),
+    kind: z.enum(PLANNED_SESSION_KINDS),
+    template_day_index: z.number().int().min(1).max(7).nullable(),
     scheduled_on: isoDateSchema,
     name_de: z.string().min(2).max(60),
-    focus: z.enum(SESSION_FOCUSES),
+    focus: z.enum(SESSION_FOCUSES).nullable(),
+    endurance_modality: z.enum(ENDURANCE_MODALITIES).nullable(),
+    effort_target: z
+      .number()
+      .int()
+      .min(ENDURANCE_EFFORT_LIMITS.min)
+      .max(ENDURANCE_EFFORT_LIMITS.max)
+      .nullable(),
     estimated_minutes: z.number().int().min(1).max(600),
     warmup_de: z.string(),
     cooldown_de: z.string(),
-    exercises: z.array(generatedExerciseSchema).min(1).max(PLAN_BLOCK_LIMITS.exercisesPerSession),
+    exercises: z.array(generatedExerciseSchema).max(PLAN_BLOCK_LIMITS.exercisesPerSession),
   })
   .refine(
     (s) => !(s.is_intro_week && s.is_deload),
@@ -114,13 +139,30 @@ export const generatedSessionSchema = z
   .refine(
     (s) => new Set(s.exercises.map((e) => e.order_no)).size === s.exercises.length,
     'order_no doppelt.',
+  )
+  .refine(
+    (s) =>
+      s.kind === 'strength'
+        ? s.focus !== null &&
+          s.template_day_index !== null &&
+          s.exercises.length >= 1 &&
+          s.endurance_modality === null &&
+          s.effort_target === null
+        : s.focus === null &&
+          s.template_day_index === null &&
+          s.exercises.length === 0 &&
+          s.endurance_modality !== null &&
+          s.effort_target !== null &&
+          s.estimated_minutes >= ENDURANCE_SESSION_LIMITS.minSessionMinutes &&
+          s.estimated_minutes <= TRAINING_LIMITS.minutesPerSession.max,
+    'Kraft: Schwerpunkt und 1–8 Übungen; Ausdauer: Modalität, Anstrengung, keine Übungen.',
   );
 
 export const generatedPlanSchema = z
   .object({
-    template_id: z.string().min(3),
-    template_title_de: z.string().min(5).max(100),
-    template_version: z.number().int().min(1),
+    template_id: z.string().min(3).nullable(),
+    template_title_de: z.string().min(5).max(100).nullable(),
+    template_version: z.number().int().min(1).nullable(),
     engine_version: z.literal(PLAN_ENGINE_VERSION),
     match_quality: z.enum(PLAN_MATCH_QUALITIES),
     notes: z.array(z.enum(PLAN_NOTES)),
@@ -133,6 +175,16 @@ export const generatedPlanSchema = z
     path: ['medical_notice'],
     message: 'Arzt-Hinweis nur zusammen mit Gesundheitsdaten.',
   })
+  .refine(
+    (p) =>
+      (p.template_id === null) === (p.template_title_de === null) &&
+      (p.template_id === null) === (p.template_version === null),
+    'Vorlage: alle drei Angaben oder keine.',
+  )
+  .refine(
+    (p) => p.template_id !== null || p.sessions.every((s) => s.kind === 'endurance'),
+    'Ohne Vorlage keine Kraft-Einheit.',
+  )
   .refine(
     (p) => new Set(p.sessions.map((s) => s.scheduled_on)).size === p.sessions.length,
     'Nie zwei Einheiten an einem Tag.',
@@ -147,9 +199,10 @@ export const generatedPlanSchema = z
   }, 'Zu viele Einheiten in einer Woche.');
 
 export interface GeneratedPlan {
-  readonly template_id: string;
-  readonly template_title_de: string;
-  readonly template_version: number;
+  /** null = reiner Ausdauer-Plan (keine Vorlage). */
+  readonly template_id: string | null;
+  readonly template_title_de: string | null;
+  readonly template_version: number | null;
   readonly engine_version: number;
   readonly match_quality: PlanMatchQuality;
   /** Hinweis-Codes ohne Gesundheitsbezug (sortiert wie PLAN_NOTES). */
@@ -161,8 +214,8 @@ export interface GeneratedPlan {
   readonly inputs: ReturnType<typeof planInputsSnapshot>;
   readonly start_date: string;
   readonly sessions: readonly GeneratedSession[];
-  /** Gewählte Trainingstage (für den Folgeblock). */
-  readonly training_days: readonly number[];
+  /** Geplante Woche (Anzeige); der Folgeblock liest Tage und Arten aus den gespeicherten Einheiten. */
+  readonly training_week: readonly PlannedDay[];
   /** Belastungswochen je Block (für den Folgeblock). */
   readonly load_weeks: number;
   /** Wirksame Sicherheitsregeln – NICHT speichern (nur Zwischenspeicher nach Frage 14). */
@@ -174,6 +227,12 @@ export interface GeneratedPlan {
 export type GeneratePlanResult =
   | { readonly ok: true; readonly plan: GeneratedPlan }
   | { readonly ok: false; readonly error: 'invalid_inputs' | 'no_template' };
+
+/** Abgeleiteter Ort der Kraft-Tage (beide Orte → „beides“). */
+function strengthLocation(days: readonly PlannedDay[]): TrainingLocation {
+  const locations = new Set(days.map((d) => locationOfKind(d.kind)));
+  return locations.size > 1 ? 'both' : locations.has('home') ? 'home' : 'gym';
+}
 
 /** Erzeugt den ersten Plan-Block. `today` = ISO-Datum (Europe/Berlin), `library` aus selectPlanContent(). */
 export function generateTrainingPlan(
@@ -191,44 +250,132 @@ export function generateTrainingPlan(
     return { ok: false, error: 'invalid_inputs' };
   }
   const rules = planSafetyRules(inputs, today);
-  const profile = equipmentProfile(inputs.trainingLocation, inputs.homeEquipment);
-  const match = matchTemplate(inputs, { library, profile, rules });
-  if (!match) {
-    return { ok: false, error: 'no_template' };
+  const resolved = resolveTrainingWeek(inputs.schedule, rules.enduranceStartGroup);
+  const notes = new Set<PlanNote>(resolved.notes);
+  let days = [...resolved.days];
+  const strengthDays = days.filter((d) => isStrengthKind(d.kind));
+
+  let template: GeneratedPlan['template_id'] = null;
+  let templateMeta: { title: string; version: number; status: string } | null = null;
+  let quality: PlanMatchQuality = 'exact';
+  let strength: Parameters<typeof buildPlanBlock>[0]['context']['strength'] = null;
+  let templateForVolume: Parameters<typeof isVolumeReduced>[0] | null = null;
+
+  if (strengthDays.length > 0) {
+    const locations = strengthDays.map((d) => locationOfKind(d.kind));
+    const homeCount = locations.filter((l) => l === 'home').length;
+    // Vorlagen-Ort = Mehrheit der Kraft-Tage, Gleichstand Studio (Frage 5).
+    const primary: EquipmentLocation = homeCount > locations.length - homeCount ? 'home' : 'gym';
+    const wishedStrength = inputs.schedule.slots.filter((s) => isStrengthKind(s.kind));
+    const match = matchTemplate(
+      {
+        goalType: inputs.goalType,
+        experienceLevel: inputs.experienceLevel,
+        sessionsPerWeek: wishedStrength.length,
+        minutesPerSession: Math.max(...strengthDays.map((d) => d.minutes)),
+        trainingLocation: strengthLocation(strengthDays),
+        sex: inputs.sex,
+      },
+      { library, profile: equipmentProfile(primary, inputs.homeEquipment), rules },
+    );
+    if (!match) {
+      return { ok: false, error: 'no_template' };
+    }
+    match.notes.forEach((note) => notes.add(note));
+    const versions = new Map<EquipmentLocation, readonly AdaptedSession[]>();
+    let unchanged = true;
+    for (const location of new Set<EquipmentLocation>([primary, ...locations])) {
+      const adapted = adaptTemplate(match.template, {
+        library: library.exercises,
+        profile: equipmentProfile(location, inputs.homeEquipment),
+        rules,
+      });
+      if (location !== match.template.location) notes.add('location_mismatch');
+      if (locations.includes(location)) {
+        adapted.notes.forEach((note) => notes.add(note));
+        if (!adapted.unchanged) unchanged = false;
+      }
+      versions.set(location, adapted.sessions);
+    }
+    const primarySessions = versions.get(primary) ?? [];
+    if (primarySessions.length === 0) {
+      return { ok: false, error: 'no_template' };
+    }
+    // Mehr Kraft-Tage als Vorlagen-Einheiten → übrige Tage werden Ruhetage (größter Abstand bleibt).
+    if (strengthDays.length > primarySessions.length) {
+      const keep = spreadSubset(
+        strengthDays.map((d) => d.weekday),
+        primarySessions.length,
+      );
+      days = days.filter((d) => !isStrengthKind(d.kind) || keep.includes(d.weekday));
+      notes.add('days_capped');
+    }
+    template = match.template.id;
+    templateMeta = {
+      title: match.template.title_de,
+      version: match.template.version,
+      status: match.template.status,
+    };
+    quality = match.quality === 'exact' && !unchanged ? 'close' : match.quality;
+    strength = { primary, versions, library: library.exercises };
+    templateForVolume = match.template;
   }
-  const adapted = adaptTemplate(match.template, {
-    library: library.exercises,
-    profile,
-    rules,
-    minutesPerSession: inputs.minutesPerSession,
-  });
-  if (adapted.sessions.length === 0) {
-    return { ok: false, error: 'no_template' };
+
+  const enduranceDays = days.filter((d) => d.kind === 'endurance');
+  if (inputs.goalType === 'endurance') {
+    notes.add(enduranceDays.length > 0 ? 'endurance_basic_only' : 'goal_endurance_not_yet');
   }
-  const notes = new Set<PlanNote>([...match.notes, ...adapted.notes]);
-  const perWeek = Math.min(plannedSessionsPerWeek(inputs.sessionsPerWeek), adapted.sessions.length);
-  const chosen = chooseTrainingDays(perWeek, inputs.preferredDays);
-  if (chosen.added) notes.add('days_added');
   const loadWeeks = loadWeeksBeforeDeload(inputs.experienceLevel, rules.cautious);
-  const sessions = buildPlanBlock({
-    sessions: adapted.sessions,
-    trainingDays: chosen.days,
+  const block = buildPlanBlock({
+    days,
     today,
     loadWeeks,
-    rules,
+    context: {
+      strength,
+      endurance: {
+        goalType: inputs.goalType,
+        discipline: inputs.discipline,
+        experienceLevel: inputs.experienceLevel,
+        rules,
+      },
+      rules,
+      enduranceWishWeekly: enduranceDays.reduce((sum, d) => sum + d.minutes, 0),
+    },
   });
+  block.notes.forEach((note) => notes.add(note));
+  const sessions = block.sessions;
+  if (sessions.length === 0) {
+    return { ok: false, error: 'no_template' };
+  }
   if (hasBackToBackSessions(sessions)) notes.add('back_to_back_sessions');
-  const quality: PlanMatchQuality =
-    match.quality === 'exact' && !adapted.unchanged ? 'close' : match.quality;
+  if (templateForVolume) {
+    // Kürzeste Fassung je Vorlagen-Einheit aus den Belastungswochen (vorsichtige Schätzung des Wochenumfangs).
+    const shortest = new Map<number, GeneratedSession>();
+    const sets = (s: GeneratedSession) => s.exercises.reduce((sum, e) => sum + e.sets, 0);
+    for (const s of sessions) {
+      if (s.kind !== 'strength' || s.is_deload || s.template_day_index === null) continue;
+      const current = shortest.get(s.template_day_index);
+      if (!current || sets(s) < sets(current)) shortest.set(s.template_day_index, s);
+    }
+    const picked = [...shortest.values()].map((s) => ({
+      template_day_index: s.template_day_index as number,
+      name_de: s.name_de,
+      focus: s.focus ?? 'full_body',
+      warmup_de: s.warmup_de,
+      cooldown_de: s.cooldown_de,
+      exercises: s.exercises,
+    }));
+    if (isVolumeReduced(templateForVolume, picked, library.exercises)) notes.add('volume_reduced');
+  }
   const usesDrafts =
-    match.template.status === 'draft' ||
+    templateMeta?.status === 'draft' ||
     sessions.some((s) =>
       s.exercises.some((e) => library.exercises.get(e.exercise_id)?.status === 'draft'),
     );
   const plan: GeneratedPlan = {
-    template_id: match.template.id,
-    template_title_de: match.template.title_de,
-    template_version: match.template.version,
+    template_id: template,
+    template_title_de: templateMeta?.title ?? null,
+    template_version: templateMeta?.version ?? null,
     engine_version: PLAN_ENGINE_VERSION,
     match_quality: quality,
     notes: PLAN_NOTES.filter((note) => notes.has(note)),
@@ -237,7 +384,7 @@ export function generateTrainingPlan(
     inputs: planInputsSnapshot(inputs),
     start_date: today,
     sessions,
-    training_days: chosen.days,
+    training_week: days,
     load_weeks: loadWeeks,
     safety_rules: rules,
     uses_draft_content: usesDrafts,

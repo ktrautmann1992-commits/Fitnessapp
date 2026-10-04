@@ -9,6 +9,8 @@ import { describe, expect, it } from 'vitest';
 import { MEASUREMENT_SITES } from './body-measurements';
 import { CURRENT_CONSENT_VERSIONS } from './consent';
 import {
+  ENDURANCE_SESSION_LIMITS,
+  EQUIPMENT_WEIGHT_DECIMALS,
   BARBELL_BAR_KG,
   BARBELL_PLATE_MAX_KG,
   BIRTH_DATE_MIN,
@@ -31,11 +33,16 @@ import { EQUIPMENT } from './equipment';
 import { FOOD_GROUPS } from './food-groups';
 import { HEALTH_FLAGS, HEALTH_SCREENING_QUESTIONS } from './health-screening';
 import { ONBOARDING_STEPS } from './onboarding';
+import { ENDURANCE_EFFORT_LIMITS } from './plan/generate';
 import {
   savePlanExerciseSchema,
+  savePlanFixedSlotSchema,
+  savePlanFlexSlotSchema,
   savePlanHomeEquipmentSchema,
   savePlanInputsSchema,
   savePlanPayloadSchema,
+  savePlanScheduleFixedSchema,
+  savePlanScheduleFlexSchema,
   savePlanSessionSchema,
 } from './plan/payload';
 import { trainingSlotItemSchema } from './training-schedule';
@@ -115,6 +122,8 @@ describe('Enums', () => {
     ['planned_session_status', enums.PLANNED_SESSION_STATUSES],
     ['plan_match_quality', enums.PLAN_MATCH_QUALITIES],
     ['plan_note', enums.PLAN_NOTES],
+    ['planned_session_kind', enums.PLANNED_SESSION_KINDS],
+    ['endurance_modality', enums.ENDURANCE_MODALITIES],
   ] as const)('public.%s entspricht packages/core', (name, values) => {
     expect(enumValues(name)).toEqual([...values]);
   });
@@ -274,11 +283,15 @@ describe('Grenzwerte', () => {
     `jsonb_array_length(p_sessions) not between 1 and ${
       PLAN_BLOCK_LIMITS.sessionsPerWeek * (PLAN_BLOCK_LIMITS.weekNo.max + 1)
     }`,
-    // Angaben (savePlanInputsSchema) = private.assert_plan_inputs()
-    `p_inputs -> 'sessionsPerWeek', ${TRAINING_LIMITS.sessionsPerWeek.min}, ${TRAINING_LIMITS.sessionsPerWeek.max}, 0)`,
-    `p_inputs -> 'minutesPerSession', ${TRAINING_LIMITS.minutesPerSession.min}, ${TRAINING_LIMITS.minutesPerSession.max}, 0)`,
-    `jsonb_array_length(p_inputs -> 'preferredDays') > 7`,
-    `where not private.jsonb_number_between(d, 1, 7, 0)`,
+    // Angaben (savePlanInputsSchema, Engine-Version 2) = private.assert_plan_inputs() in *_plan_session_kinds.sql
+    `jsonb_array_length(schedule -> 'slots') not between ${TRAINING_LIMITS.sessionsPerWeek.min} and ${TRAINING_LIMITS.sessionsPerWeek.max}`,
+    `private.jsonb_number_between(item -> 'minutes', ${TRAINING_LIMITS.minutesPerSession.min}, ${TRAINING_LIMITS.minutesPerSession.max}, 0)`,
+    `private.jsonb_number_between(item -> 'weekday', 1, 7, 0)`,
+    `private.jsonb_number_between(item -> 'barKg', ${BARBELL_BAR_KG.min}, ${BARBELL_BAR_KG.max}, ${EQUIPMENT_WEIGHT_DECIMALS})`,
+    // Ausdauer-Einheiten (planned_sessions)
+    between('effort_target', ENDURANCE_EFFORT_LIMITS),
+    `estimated_minutes between ${ENDURANCE_SESSION_LIMITS.minSessionMinutes} and ${TRAINING_LIMITS.minutesPerSession.max}`,
+    `w::numeric > ${BARBELL_PLATE_MAX_KG}`,
     `jsonb_array_length(item -> 'weightsKg') > ${EQUIPMENT_LIMITS.maxWeightSteps}`,
     `private.jsonb_number_between(w, ${EQUIPMENT_LIMITS.weightStepKg.min}, ${EQUIPMENT_LIMITS.weightStepKg.max}, 2)`,
     `octet_length(inputs::text) <= ${PLAN_SAVE_LIMITS.inputsMaxBytes}`,
@@ -299,18 +312,29 @@ describe('Grenzwerte', () => {
 });
 
 describe('Eingabe der Plan-Funktionen (save_training_plan / append_plan_block)', () => {
+  // Jeweils die NEUESTE Fassung der Funktion (create or replace in einer späteren Migration).
   const rpcSql = readMigration('_training_plan_rpcs.sql');
-  const keysOf = (name: string) =>
-    quotedListAfter(rpcSql, `${name} constant text[] := array[`).sort();
+  const kindsSql = readMigration('_plan_session_kinds.sql');
+  const keysOf = (sql: string, name: string) =>
+    quotedListAfter(sql, `${name} constant text[] := array[`).sort();
 
   it.each([
-    ['plan_keys', savePlanPayloadSchema],
-    ['input_keys', savePlanInputsSchema],
-    ['equipment_keys', savePlanHomeEquipmentSchema],
-    ['session_keys', savePlanSessionSchema],
-    ['exercise_keys', savePlanExerciseSchema],
-  ] as const)('%s = Felder des strikten Zod-Schemas', (name, schema) => {
-    expect(keysOf(name)).toEqual(Object.keys(schema.shape).sort());
+    ['plan_keys', rpcSql, savePlanPayloadSchema],
+    ['input_keys', kindsSql, savePlanInputsSchema],
+    ['equipment_keys', kindsSql, savePlanHomeEquipmentSchema],
+    ['session_keys', kindsSql, savePlanSessionSchema],
+    ['exercise_keys', kindsSql, savePlanExerciseSchema],
+    // verschachtelt: schedule → mode/slots; slots[] → weekday/kind/minutes bzw. kind/minutes
+    ['schedule_keys', kindsSql, savePlanScheduleFixedSchema],
+    ['schedule_keys', kindsSql, savePlanScheduleFlexSchema],
+    ['fixed_slot_keys', kindsSql, savePlanFixedSlotSchema],
+    ['flex_slot_keys', kindsSql, savePlanFlexSlotSchema],
+  ] as const)('%s = Felder des strikten Zod-Schemas', (name, sql, schema) => {
+    expect(keysOf(sql, name)).toEqual(Object.keys(schema.shape).sort());
+  });
+
+  it('plan_keys der neuesten save_training_plan-Fassung unverändert', () => {
+    expect(keysOf(kindsSql, 'plan_keys')).toEqual(Object.keys(savePlanPayloadSchema.shape).sort());
   });
 });
 

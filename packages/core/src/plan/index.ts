@@ -2,6 +2,7 @@ export * from './adapt';
 export * from './apply-safety';
 export * from './content-pool';
 export * from './deload';
+export * from './endurance';
 export * from './equipment-profile';
 export * from './generate';
 export * from './inputs';

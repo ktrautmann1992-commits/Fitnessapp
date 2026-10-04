@@ -34,7 +34,12 @@ export const MAX_WEEKLY_WEIGHT_LOSS_FRACTION = 0.01;
 
 /**
  * Maximale Steigerung des Ausdauer-Wochenumfangs gegenüber der Vorwoche (0.10 = 10 %).
- * Quelle: CLAUDE.md; „10-%-Regel“, u. a. ACSM's Guidelines for Exercise Testing and Prescription.
+ * Quelle: CLAUDE.md (Pflicht); „10-%-Regel“, u. a. ACSM's Guidelines for Exercise Testing and Prescription.
+ * Ehrlich: wissenschaftlich SCHWACH belegt – Buist I et al. (2008), Am J Sports Med 36(1):33–39 fand bei
+ * Laufanfängern keinen Unterschied in der Verletzungsrate gegenüber schnellerer Steigerung. Wir behalten sie als
+ * vorsichtige Obergrenze. Prüfbar umgesetzt (docs/PLAN-PHASE-3-ERWEITERUNG.md 5.5): Bezug ist immer die LETZTE
+ * BELASTUNGSWOCHE (nie Woche 0, nie eine Erholungswoche), Ergebnis mit Math.floor auf ganze Minuten; ohne
+ * Bezugswoche gilt der Startumfang (ENDURANCE_START_RULES), nie der Wunsch.
  */
 export const MAX_WEEKLY_ENDURANCE_VOLUME_INCREASE_FRACTION = 0.1;
 
@@ -354,7 +359,7 @@ export const SMALL_MUSCLE_GROUPS = [
  * Version der Regeln der Plan-Engine. Steigt bei jeder Regeländerung → die App bietet „Plan neu erstellen“ an.
  * Quelle: Produktentscheidung (PLAN-PHASE-3 Abschnitt 10.4).
  */
-export const PLAN_ENGINE_VERSION = 1;
+export const PLAN_ENGINE_VERSION = 2;
 
 /**
  * Punkte für das Vorlagen-Matching (Summe 100), Abschnitt 5.3.
@@ -513,6 +518,63 @@ export const DELOAD_DOSAGE = { setsFactor: 0.5, rpeReduction: 2, loadFactor: 0.9
  * Quelle: PRODUKTENTSCHEIDUNG (PLAN-PHASE-3 Abschnitt 5.6).
  */
 export const SESSION_FIT = { minExercises: 3, minSetsCompound: 2, minSetsIsolation: 1 } as const;
+
+// ---------------------------------------------------------------------------------------------------------
+// Etappe B3 · Ausdauer-Tage ohne KI (docs/PLAN-PHASE-3-ERWEITERUNG.md Abschnitte 5.2, 5.5, 5.6)
+// Werte ohne Studienbeleg sind PRODUKTENTSCHEIDUNG und gehen in die fachliche Prüfung.
+// ---------------------------------------------------------------------------------------------------------
+
+/**
+ * Startgruppe Ausdauer: „cautious“ = jedes Gesundheits-Flag, ohne Gesundheits-Check, Schwangerschaft, unter 18
+ * oder ab 65; sonst das Trainings-Level.
+ * - startWeeklyMinutes: Startumfang je Woche (Einsteiger 60, Fortgeschritten 120, Leistungssport 150, vorsichtig
+ *   45). Orientierung: WHO-Leitlinie 2020 (Bull FC et al., Br J Sports Med 54:1451–1462: 150–300 min moderat pro
+ *   Woche als Ziel – der Start liegt bewusst darunter). Werte: PRODUKTENTSCHEIDUNG.
+ * - maxSessionsPerWeek: Ausdauer-Einheiten je Woche höchstens (4/5/6, vorsichtig 3). PRODUKTENTSCHEIDUNG.
+ */
+export const ENDURANCE_START_RULES = {
+  startWeeklyMinutes: { beginner: 60, advanced: 120, competitive: 150, cautious: 45 },
+  maxSessionsPerWeek: { beginner: 4, advanced: 5, competitive: 6, cautious: 3 },
+} as const;
+
+/**
+ * Deckel je Ausdauer-Einheit (Wächter-Befunde 10 und Runde 2 Nr. 1), PRODUKTENTSCHEIDUNG:
+ * - maxShareOfWeek: bei ≥ 2 Ausdauer-Einheiten höchstens 50 % des Wochenumfangs je Einheit,
+ * - firstLoadWeekMaxMinutes: in der ersten Belastungswoche höchstens 90 Minuten je Einheit,
+ * - startSessionMinutes: Start-Deckel je Einheit (Einsteiger 30, vorsichtig 20; sonst keiner), wächst je
+ *   Belastungswoche mit floor(1,1 × Vorwoche) – Woche 0 und Erholungswochen zählen nicht,
+ * - minSessionMinutes: kürzere Einheiten werden gestrichen (Minuten gehen an die übrigen, bis zu deren Deckel).
+ */
+export const ENDURANCE_SESSION_LIMITS = {
+  maxShareOfWeek: 0.5,
+  firstLoadWeekMaxMinutes: 90,
+  startSessionMinutes: { beginner: 30, cautious: 20 },
+  minSessionMinutes: 10,
+} as const;
+
+/**
+ * Erholungswoche Ausdauer: Umfang = floor(0,6 × letzte Belastungswoche). Nur in ANLEHNUNG an Bosquet L et al.
+ * (2007), Med Sci Sports Exerc 39(8):1358–1365 (Tapering vor Wettkämpfen: Umfang −41–60 %; keine Studie zu
+ * Erholungswochen). PRODUKTENTSCHEIDUNG.
+ */
+export const ENDURANCE_DELOAD_VOLUME_FACTOR = 0.6;
+
+/**
+ * Anstrengung (0–10, Borg-CR10) lockerer Ausdauer-Einheiten mit Gesprächstest.
+ * Quellen: Borg GA (1982), Med Sci Sports Exerc 14(5):377–381 (CR10-Skala); Foster C et al. (2008), J Cardiopulm
+ * Rehabil Prev 28(1):24–30 (Talk-Test); Seiler S (2010) – ENDURANCE_HIGH_INTENSITY_SHARE.
+ * - easy 3–4 („locker“), Einstiegs-/Erholungswochen 3,
+ * - cautiousMax 3: Gesundheits-Flag, ab 65, ohne Check, Schwangerschaft (ACOG Committee Opinion No. 804 (2020),
+ *   Obstet Gynecol 135(4):e178–e188: moderate Aktivität, Talk-Test) – Höhe: PRODUKTENTSCHEIDUNG,
+ * - minorMax 4: unter 18 (PRODUKTENTSCHEIDUNG).
+ */
+export const ENDURANCE_EFFORT = { easyMin: 3, easyMax: 4, cautiousMax: 3, minorMax: 4 } as const;
+
+/**
+ * Einsteiger laufen in den ersten Belastungswochen im Geh-Lauf-Wechsel (PRODUKTENTSCHEIDUNG, Erweiterungsplan
+ * 5.5); ohne Gesundheits-Check immer (Frage 14, offen mit Empfehlung des Wächters).
+ */
+export const ENDURANCE_BEGINNER_WALK_RUN_WEEKS = 4;
 
 /**
  * Grenzen eines erzeugten Plans – identisch als CHECK in der Datenbank (Etappe B, db-sync.test.ts).

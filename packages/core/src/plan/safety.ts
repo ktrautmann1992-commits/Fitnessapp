@@ -2,6 +2,7 @@ import { ageInYears } from '../age';
 import {
   AGE_PLAN_RULES,
   CONSERVATIVE_PLAN_RULES,
+  ENDURANCE_EFFORT,
   PREGNANCY_EXCLUDED_CAUTION_TAGS,
   TEMPLATE_DOSAGE_LIMITS,
 } from '../constants';
@@ -29,6 +30,28 @@ export interface PlanSafetyRules {
   readonly pregnancyNotice: boolean;
   /** Kein Gesundheits-Check vorhanden – nur zur Anzeige. */
   readonly noHealthCheck: boolean;
+  /** Höchste Anstrengung (0–10) einer Ausdauer-Einheit (Erweiterungsplan 5.6). */
+  readonly enduranceEffortMax: number;
+  /** Ausdauer nur als zügiges Gehen / Ergometer / lockeres Schwimmen (Flag, ab 65, Schwangerschaft). */
+  readonly enduranceWalkOnly: boolean;
+  /** Startgruppe für Umfang und Deckel der Ausdauer (ENDURANCE_START_RULES). */
+  readonly enduranceStartGroup: EnduranceStartGroup;
+}
+
+/** Startgruppe Ausdauer: vorsichtig (Flag, ohne Check, Schwangerschaft, unter 18, ab 65) oder Level. */
+export type EnduranceStartGroup = 'cautious' | ExperienceLevel;
+
+/** Reihenfolge von streng nach locker (kleinerer Startumfang = strenger). */
+const START_GROUP_ORDER: readonly EnduranceStartGroup[] = [
+  'cautious',
+  'beginner',
+  'advanced',
+  'competitive',
+];
+
+/** Ist `next` eine strengere Startgruppe als `previous`? */
+export function isStricterGroup(next: EnduranceStartGroup, previous: EnduranceStartGroup): boolean {
+  return START_GROUP_ORDER.indexOf(next) < START_GROUP_ORDER.indexOf(previous);
 }
 
 export interface SafetyInputs {
@@ -75,6 +98,14 @@ export function planSafetyRules(inputs: SafetyInputs, onDate: string): PlanSafet
     rpeMax = Math.min(rpeMax, AGE_PLAN_RULES.senior.rpeMax);
     AGE_PLAN_RULES.senior.excludedCautionTags.forEach((tag) => excluded.add(tag));
   }
+  const senior = age >= AGE_PLAN_RULES.senior.fromAge;
+  const minor = age < AGE_PLAN_RULES.minor.belowAge;
+  const pregnancy = flags.includes('pregnancy');
+  let enduranceEffortMax: number = ENDURANCE_EFFORT.easyMax;
+  if (minor) enduranceEffortMax = Math.min(enduranceEffortMax, ENDURANCE_EFFORT.minorMax);
+  if (cautious || senior || pregnancy) {
+    enduranceEffortMax = Math.min(enduranceEffortMax, ENDURANCE_EFFORT.cautiousMax);
+  }
   return {
     rpeMax: Math.max(rpeMax, TEMPLATE_DOSAGE_LIMITS.rpe.min),
     excludedCautionTags: sortTags(excluded),
@@ -84,8 +115,12 @@ export function planSafetyRules(inputs: SafetyInputs, onDate: string): PlanSafet
     cautious,
     usesHealthData: !noHealthCheck,
     medicalNotice: !noHealthCheck && flagged,
-    pregnancyNotice: flags.includes('pregnancy'),
+    pregnancyNotice: pregnancy,
     noHealthCheck,
+    enduranceEffortMax,
+    enduranceWalkOnly: flagged || senior || pregnancy,
+    enduranceStartGroup:
+      cautious || senior || minor || pregnancy ? 'cautious' : inputs.experienceLevel,
   };
 }
 
@@ -107,7 +142,11 @@ export function isStricter(next: PlanSafetyRules, previous: PlanSafetyRules): bo
     next.rpeMax < previous.rpeMax ||
     next.excludedCautionTags.some((tag) => !previous.excludedCautionTags.includes(tag)) ||
     (next.beginnerTemplatesOnly && !previous.beginnerTemplatesOnly) ||
-    (next.medicalNotice && !previous.medicalNotice)
+    (next.medicalNotice && !previous.medicalNotice) ||
+    next.enduranceEffortMax < previous.enduranceEffortMax ||
+    (next.enduranceWalkOnly && !previous.enduranceWalkOnly) ||
+    START_GROUP_ORDER.indexOf(next.enduranceStartGroup) <
+      START_GROUP_ORDER.indexOf(previous.enduranceStartGroup)
   );
 }
 
@@ -125,5 +164,14 @@ export function strictestRules(a: PlanSafetyRules, b: PlanSafetyRules): PlanSafe
     medicalNotice: a.medicalNotice || b.medicalNotice,
     pregnancyNotice: a.pregnancyNotice || b.pregnancyNotice,
     noHealthCheck: a.noHealthCheck || b.noHealthCheck,
+    enduranceEffortMax: Math.min(a.enduranceEffortMax, b.enduranceEffortMax),
+    enduranceWalkOnly: a.enduranceWalkOnly || b.enduranceWalkOnly,
+    enduranceStartGroup:
+      START_GROUP_ORDER[
+        Math.min(
+          START_GROUP_ORDER.indexOf(a.enduranceStartGroup),
+          START_GROUP_ORDER.indexOf(b.enduranceStartGroup),
+        )
+      ] ?? 'cautious',
   };
 }

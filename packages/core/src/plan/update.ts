@@ -18,8 +18,9 @@ export type PlanUpdateReason =
 export interface PlanForUpdate {
   readonly inputs: PlanInputsSnapshot;
   readonly engine_version: number;
-  readonly template_id: string;
-  readonly template_version: number;
+  /** null = reiner Ausdauer-Plan. */
+  readonly template_id: string | null;
+  readonly template_version: number | null;
   /** Erstellungszeitpunkt (ISO-Zeitstempel, user_plans.created_at). */
   readonly created_at: string;
   /** Erstellungsdatum in Europe/Berlin (für die Altersgrenzen). */
@@ -58,6 +59,7 @@ export function planNeedsUpdate(
   if (plan.engine_version !== PLAN_ENGINE_VERSION) reasons.push('engine_version');
   if (
     current.currentTemplateVersion !== undefined &&
+    plan.template_version !== null &&
     current.currentTemplateVersion > plan.template_version
   ) {
     reasons.push('template_version');
