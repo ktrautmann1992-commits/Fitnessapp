@@ -1,4 +1,4 @@
-# CLAUDE.md – [APP-NAME] Fitness-App
+# CLAUDE.md – Alpha5 Fitness-App
 
 Diese Datei liest Claude Code bei jeder Sitzung. Sie beschreibt Ziel, Architektur und verbindliche Regeln.
 Ausführliche Fachlogik: `docs/KONZEPT.md`. Umsetzungsreihenfolge: `docs/PROMPTS.md`.

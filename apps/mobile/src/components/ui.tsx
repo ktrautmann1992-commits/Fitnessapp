@@ -130,7 +130,7 @@ export function Button({
         <Text
           style={[
             variant === 'link' ? styles.linkText : styles.buttonText,
-            { color: variant === 'link' ? theme.primary : textColor },
+            { color: variant === 'link' ? theme.link : textColor },
             variant === 'link' && { textDecorationLine: 'underline' },
           ]}
         >

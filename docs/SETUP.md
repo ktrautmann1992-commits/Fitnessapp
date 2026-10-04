@@ -194,7 +194,7 @@ Einmalig in Supabase einrichten (Handy-Browser, ggf. „Desktop-Website anforder
    **Confirm email** eingeschaltet lassen. Prüfen, dass **Email OTP Length** auf **6** steht (die App
    erwartet genau 6 Ziffern) → **Save**.
 3. **Emails** (bzw. **Email Templates**) → Vorlage **Magic Link** öffnen.
-   - **Subject:** `Dein Anmeldecode für Fitnessapp`
+   - **Subject:** `Dein Anmeldecode für Alpha5`
    - **Body** komplett ersetzen durch:
      ```html
      <h2>Dein Anmeldecode</h2>
@@ -206,7 +206,7 @@ Einmalig in Supabase einrichten (Handy-Browser, ggf. „Desktop-Website anforder
      </p>
      ```
    - **Save changes**.
-4. Dieselbe Vorlage auch bei **Confirm signup** eintragen (Subject `Dein Bestätigungscode für Fitnessapp`,
+4. Dieselbe Vorlage auch bei **Confirm signup** eintragen (Subject `Dein Bestätigungscode für Alpha5`,
    gleicher Body mit `{{ .Token }}`) → **Save changes**. Neue Konten bekommen beim ersten Mal diese Mail.
 5. **URL Configuration** → **Site URL** = Adresse eures Vercel-Projekts **App**
    (z. B. `https://fitnessapp-alpha-five.vercel.app`) → **Save**.
@@ -229,7 +229,7 @@ Vercel-Projekt **Web** stehen („Redaktionsbereich nicht eingerichtet“). Nich
 ### G1 – Zwei lange Zufallswerte im Passwort-Manager erzeugen
 
 1. Passwort-Manager öffnen (z. B. iCloud-Schlüsselbund/Passwörter-App, Bitwarden, 1Password).
-2. Neuen Eintrag anlegen, Name `Fitnessapp Admin`.
+2. Neuen Eintrag anlegen, Name `Alpha5 Admin`.
 3. **Passwort generieren** – Länge mindestens **24 Zeichen** (Pflicht: mindestens 20), Buchstaben + Ziffern.
    Das ist `ADMIN_PASSWORD` – damit meldet ihr euch an.
 4. Im selben Eintrag ein Notizfeld bzw. zweites Feld anlegen und noch einmal generieren – Länge mindestens

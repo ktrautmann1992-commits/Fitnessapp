@@ -35,7 +35,7 @@ export default tseslint.config(
     ...reactHooks.configs.flat.recommended,
   },
   {
-    files: ['**/*.config.{js,cjs,mjs}', '**/scripts/**/*.{js,mjs}'],
+    files: ['**/*.config.{js,cjs,mjs}', '**/scripts/**/*.{js,mjs}', 'packages/ui/brand/**/*.mjs'],
     rules: { '@typescript-eslint/no-require-imports': 'off', 'no-console': 'off' },
   },
 );

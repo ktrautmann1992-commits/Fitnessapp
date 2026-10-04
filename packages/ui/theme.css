@@ -1,8 +1,8 @@
 /*
  * Farbschema und Design-Werte – EINZIGE Quelle für Website UND App.
  *
- * PLATZHALTER: Dieses Farbschema ist vorläufig. Es wird durch die finale style.css der Gründer ersetzt
- * (Anleitung: docs/DESIGN.md).
+ * Farbschema der Marke Alpha5 „Nacht & Kobalt“ (Blau und Schwarz), Quelle: docs/ALPHA5-PAKET.md.
+ * Zuordnung und Kontraste: docs/DESIGN.md.
  *
  * So wird die Datei verwendet:
  * - Website (apps/web) bindet diese Datei direkt ein und nutzt die Variablen per var(--…).
@@ -13,7 +13,7 @@
  * Pflicht-Variablen (alle müssen im :root-Block stehen):
  * - Farben (hell im :root-Block, dunkel im Dunkel-Block):
  *   --color-background, --color-surface, --color-text, --color-text-muted, --color-primary,
- *   --color-primary-text, --color-border, --color-success, --color-warning, --color-danger
+ *   --color-primary-text, --color-link, --color-border, --color-success, --color-warning, --color-danger
  *   Erlaubt: #RGB, #RRGGBB, #RRGGBBAA, rgb()/rgba(), hsl()/hsla().
  * - Abstände: --space-xs, --space-sm, --space-md, --space-lg, --space-xl, --space-xxl (in px)
  * - Ecken-Rundung: --radius-sm, --radius-md, --radius-lg, --radius-pill (in px)
@@ -21,23 +21,41 @@
  * - Schriftstärken: --font-weight-regular, --font-weight-semibold, --font-weight-bold (100–900)
  * - Inhaltsbreite: --max-content-width (in px)
  *
+ * Markenfarben: --brand-… (Palette aus docs/ALPHA5-PAKET.md). Die Pflicht-Farben verweisen per var() darauf.
+ *   Die App bekommt die Palette zusätzlich als `brandColors` (z. B. für Logo-Flächen).
+ *
  * Dunkelmodus: Der Block in @media (prefers-color-scheme: dark) folgt der Geräteeinstellung.
  * [data-theme='dark'] erzwingt dunkel, [data-theme='light'] erzwingt hell (für einen späteren Umschalter).
  * Beide Dunkel-Blöcke müssen dieselben Werte haben. Fehlt dort eine Farbe, gilt der helle Wert.
  */
 
 :root {
+  /* Markenfarben Alpha5 (Palette, gilt hell und dunkel) */
+  --brand-schwarz: #0a0c10; /* Text, Kopfzeile, dunkle Flächen, Icon-Hintergrund */
+  --brand-graphit: #151922; /* Karten auf Schwarz */
+  --brand-graphit-hell: #262c3a; /* Linien auf Dunkel */
+  --brand-blau: #1f5bff; /* Logo, Buttons, Akzente */
+  --brand-blau-dunkel: #1747cc; /* Hover */
+  --brand-himmel: #8db0ff; /* heller Text auf Schwarz */
+  --brand-eisblau: #e3ebff; /* helle Flächen */
+  --brand-hell: #f4f6fa; /* Seitenhintergrund */
+  --brand-grau: #586173; /* Nebentext auf Hell */
+  --brand-grau-dunkel: #b4bdd0; /* Nebentext auf Dunkel */
+  --brand-signal: #ffb020; /* nur hohe Belastung und Fehlermeldungen */
+  --brand-weiss: #ffffff;
+
   /* Farben – hell */
-  --color-background: #f7f8fa;
-  --color-surface: #ffffff;
-  --color-text: #111827;
-  --color-text-muted: #4b5563;
-  --color-primary: #0f9d58;
-  --color-primary-text: #ffffff;
-  --color-border: #e5e7eb;
-  --color-success: #15803d;
-  --color-warning: #b45309;
-  --color-danger: #b91c1c;
+  --color-background: var(--brand-hell);
+  --color-surface: var(--brand-weiss);
+  --color-text: var(--brand-schwarz);
+  --color-text-muted: var(--brand-grau);
+  --color-primary: var(--brand-blau);
+  --color-primary-text: var(--brand-weiss);
+  --color-link: var(--brand-blau-dunkel); /* Links und Text in Hauptfarbe (7,5 : 1 auf Weiß) */
+  --color-border: var(--brand-grau-dunkel);
+  --color-success: #15803d; /* keine Markenfarbe – bleibt grün, damit „erledigt“ eindeutig ist */
+  --color-warning: #a15c00; /* Signal-Orange abgedunkelt, damit es als Text auf Hell lesbar ist */
+  --color-danger: #b91c1c; /* keine Markenfarbe – Rot für Fehler und „löschen“ */
 
   /* Abstände (4er-Raster) */
   --space-xs: 4px;
@@ -67,32 +85,38 @@
   --max-content-width: 560px;
 }
 
-/* Farben – dunkel (folgt der Geräteeinstellung, außer data-theme='light' ist gesetzt) */
+/*
+ * Farben – dunkel (folgt der Geräteeinstellung, außer data-theme='light' ist gesetzt).
+ * Primär bleibt Blau mit weißer Schrift (5,3 : 1; Fläche auf Schwarz 3,7 : 1). Als Text auf Schwarz reicht Blau
+ * nicht (3,7 : 1) – Links nutzen deshalb --color-link = himmel.
+ */
 @media (prefers-color-scheme: dark) {
   :root:not([data-theme='light']) {
-    --color-background: #0b0f14;
-    --color-surface: #151b23;
-    --color-text: #f3f4f6;
-    --color-text-muted: #9ca3af;
-    --color-primary: #34d399;
-    --color-primary-text: #04130c;
-    --color-border: #253041;
+    --color-background: var(--brand-schwarz);
+    --color-surface: var(--brand-graphit);
+    --color-text: var(--brand-hell);
+    --color-text-muted: var(--brand-grau-dunkel);
+    --color-primary: var(--brand-blau);
+    --color-primary-text: var(--brand-weiss);
+    --color-link: var(--brand-himmel);
+    --color-border: var(--brand-graphit-hell);
     --color-success: #4ade80;
-    --color-warning: #fbbf24;
+    --color-warning: var(--brand-signal);
     --color-danger: #f87171;
   }
 }
 
-/* Farben – dunkel, manuell erzwungen */
+/* Farben – dunkel, manuell erzwungen (gleiche Werte wie oben) */
 :root[data-theme='dark'] {
-  --color-background: #0b0f14;
-  --color-surface: #151b23;
-  --color-text: #f3f4f6;
-  --color-text-muted: #9ca3af;
-  --color-primary: #34d399;
-  --color-primary-text: #04130c;
-  --color-border: #253041;
+  --color-background: var(--brand-schwarz);
+  --color-surface: var(--brand-graphit);
+  --color-text: var(--brand-hell);
+  --color-text-muted: var(--brand-grau-dunkel);
+  --color-primary: var(--brand-blau);
+  --color-primary-text: var(--brand-weiss);
+  --color-link: var(--brand-himmel);
+  --color-border: var(--brand-graphit-hell);
   --color-success: #4ade80;
-  --color-warning: #fbbf24;
+  --color-warning: var(--brand-signal);
   --color-danger: #f87171;
 }

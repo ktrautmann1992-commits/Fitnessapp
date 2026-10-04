@@ -1,4 +1,4 @@
-# Fitnessapp (Arbeitstitel)
+# Alpha5
 
 Personalisierte Fitness-App für den DACH-Raum: Trainingsplan, Ernährungsplan mit Einkaufsliste,
 Supplementplan und Trainingstagebuch.
@@ -10,6 +10,7 @@ Supplementplan und Trainingstagebuch.
 - Arbeiten nur mit dem Handy: [`docs/HANDY-ANLEITUNG.md`](docs/HANDY-ANLEITUNG.md)
 - Supabase, Vercel und Expo verbinden: [`docs/SETUP.md`](docs/SETUP.md)
 - Farben und Design (eine `theme.css` für App und Website): [`docs/DESIGN.md`](docs/DESIGN.md)
+- Marke Alpha5 (Logo, Farben, Icons, Landingpage-Entwurf): [`docs/ALPHA5-PAKET.md`](docs/ALPHA5-PAKET.md)
 - Plan für Phase 1 (Anmeldung, Einwilligungen, Onboarding): [`docs/PLAN-PHASE-1.md`](docs/PLAN-PHASE-1.md)
 
 ## Aufbau
@@ -20,7 +21,7 @@ Supplementplan und Trainingstagebuch.
 | `apps/web`          | Website (Next.js): Landingpage, Redaktionsbereich `/admin`, später API/Webhooks             |
 | `packages/core`     | Fachlogik ohne UI – Berechnungen, Plan- und Ernährungs-Engine, Grenzwerte                   |
 | `packages/db`       | Datenbank-Typen, Zod-Schemas, Supabase-Client                                               |
-| `packages/ui`       | Farbschema `theme.css` (einzige Quelle) + daraus erzeugte App-Tokens                        |
+| `packages/ui`       | Farbschema `theme.css` (einzige Quelle), App-Tokens, Marke (`brand/`: Logo, Icon-Skript)    |
 | `packages/content`  | Prüfskript `content:validate`, Content-Generierung (Batch-API) und Seeds                    |
 | `content/`          | Inhalte als JSON (Übungen, Plan-Vorlagen) – die einzige Wahrheit, Freigabe per Pull Request |
 | `supabase/`         | Datenbank-Migrationen (Region EU/Frankfurt)                                                 |

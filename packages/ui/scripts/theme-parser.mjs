@@ -22,6 +22,7 @@ export const COLOR_VARS = /** @type {const} */ ({
   textMuted: '--color-text-muted',
   primary: '--color-primary',
   primaryText: '--color-primary-text',
+  link: '--color-link',
   border: '--color-border',
   success: '--color-success',
   warning: '--color-warning',
@@ -60,6 +61,20 @@ export const FONT_WEIGHT_VARS = /** @type {const} */ ({
 });
 
 export const MAX_CONTENT_WIDTH_VAR = '--max-content-width';
+
+/** Markenfarben (Palette): alle Variablen mit diesem Präfix im :root-Block → `brandColors` in der App. */
+export const BRAND_PREFIX = '--brand-';
+
+/**
+ * Wandelt den Namen einer Markenfarbe in einen Schlüssel für die App um: --brand-graphit-hell → graphitHell.
+ * Liefert null, wenn der Name keine reinen Kleinbuchstaben/Ziffern mit Bindestrichen enthält.
+ * @param {string} prop
+ */
+export function brandKey(prop) {
+  const rest = prop.slice(BRAND_PREFIX.length);
+  if (!/^[a-z][a-z0-9]*(-[a-z0-9]+)*$/.test(rest)) return null;
+  return rest.replace(/-([a-z0-9])/g, (_, ch) => ch.toUpperCase());
+}
 
 /** Alle Pflicht-Variablen in einer Liste (für Doku und Fehlermeldungen). */
 export const REQUIRED_VARS = [
@@ -453,6 +468,7 @@ function resolveVar(value, lookup, name) {
  *   fontSize: Record<string, number>,
  *   fontWeight: Record<string, string>,
  *   maxContentWidth: number,
+ *   brandColors: Record<string, string>,
  * }} ThemeTokens
  */
 
@@ -555,6 +571,28 @@ export function buildTokens(css) {
     }
   }
 
+  /** @type {Record<string, string>} */
+  const brandColors = {};
+  for (const prop of vars.light.keys()) {
+    if (!prop.startsWith(BRAND_PREFIX)) continue;
+    const key = brandKey(prop);
+    if (key === null) {
+      problems.push(
+        `${prop}: Name einer Markenfarbe nur aus Kleinbuchstaben, Ziffern und Bindestrichen (z. B. --brand-blau-dunkel).`,
+      );
+      continue;
+    }
+    const value = read('light', prop, parseColor);
+    if (value !== undefined) brandColors[key] = value;
+  }
+  for (const prop of vars.dark.keys()) {
+    if (prop.startsWith(BRAND_PREFIX)) {
+      warnings.push(
+        `${prop} im Dunkelmodus wird ignoriert – Markenfarben gelten hell und dunkel gleich.`,
+      );
+    }
+  }
+
   /** @param {Record<string, string>} group */
   const pixelGroup = (group) =>
     Object.fromEntries(
@@ -574,6 +612,7 @@ export function buildTokens(css) {
       ]),
     ),
     maxContentWidth: required(MAX_CONTENT_WIDTH_VAR, parsePixels, 0),
+    brandColors,
   };
 
   if (problems.length > 0) throw new ThemeError(problems);
@@ -635,5 +674,12 @@ ${body(tokens.fontWeight, '  ')}
 
 /** Maximale Inhaltsbreite in Pixeln, damit die Web-Version auf Tablets/Desktop nicht zu breit wird. */
 export const maxContentWidth = ${tokens.maxContentWidth};
+
+/** Markenfarben (Palette aus theme.css, --brand-…). Gelten hell und dunkel gleich. */
+export const brandColors = {
+${body(tokens.brandColors, '  ')}
+} as const;
+
+export type BrandColor = keyof typeof brandColors;
 `;
 }

@@ -5,12 +5,14 @@
  * Daraus wird tokens.generated.ts automatisch erzeugt – siehe docs/DESIGN.md.
  */
 export {
+  brandColors,
   colors,
   fontSize,
   fontWeight,
   maxContentWidth,
   radius,
   spacing,
+  type BrandColor,
   type ColorScheme,
   type ColorToken,
 } from './tokens.generated';
