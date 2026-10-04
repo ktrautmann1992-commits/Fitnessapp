@@ -33,7 +33,10 @@ export function applyCurrentSafetyRules<T extends { exercises: readonly PlannedE
   session: T,
   rules: Pick<PlanSafetyRules, 'rpeMax' | 'excludedCautionTags' | 'cautious'>,
   ctx: {
+    /** Merkmale der Übungen nachschlagen (Anzeige: auch archivierte Übungen eines laufenden Plans). */
     readonly library: ReadonlyMap<string, Exercise>;
+    /** Woraus ein Ersatz gewählt werden darf (nur freigegebene Inhalte); Standard: `library`. */
+    readonly substituteLibrary?: ReadonlyMap<string, Exercise>;
     readonly profile?: Pick<EquipmentProfile, 'available'>;
   },
 ): ApplySafetyResult<T> {
@@ -55,7 +58,7 @@ export function applyCurrentSafetyRules<T extends { exercises: readonly PlannedE
     if (!isExerciseAllowed(exercise, rules)) {
       const substitute = ctx.profile
         ? findSubstitute(exercise, {
-            library: ctx.library,
+            library: ctx.substituteLibrary ?? ctx.library,
             profile: ctx.profile,
             rules,
             exclude: new Set([...used].filter((id) => id !== item.exercise_id)),
@@ -134,7 +137,13 @@ export function applyCurrentEnduranceRules<T extends EnduranceSessionLike>(
     | 'noHealthCheck'
     | 'enduranceStartGroup'
   >,
-  ctx: { readonly previousStartGroup: EnduranceStartGroup },
+  ctx: {
+    /**
+     * Startgruppe beim Erstellen des Plans. Bei einem gespeicherten Plan IMMER `planStartGroup(plan, birthDate)`
+     * aus start-group.ts (die safety_rules des Erzeugens werden nie gespeichert).
+     */
+    readonly previousStartGroup: EnduranceStartGroup;
+  },
 ): T {
   if (session.kind !== 'endurance') return session;
   let variant = enduranceVariantOf(session);

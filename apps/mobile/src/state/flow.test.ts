@@ -2,6 +2,7 @@ import { describe, expect, it } from 'vitest';
 
 import { consent, NOW, profile, rowsWith, VERSIONS } from '../test/fixtures';
 import {
+  nextEditRoute,
   deriveOnboardingState,
   healthConsentStatus,
   isReminderDue,
@@ -193,5 +194,30 @@ describe('Mess-Erinnerung', () => {
     expect(
       lastMeasurementDate(rowsWith({ bodyMeasurements: [m('2026-09-01'), m('2026-10-01')] })),
     ).toBe('2026-10-01');
+  });
+});
+
+describe('nextEditRoute („Angaben ändern“ aus den Einstellungen)', () => {
+  it('Erfahrung → Ziel → Trainingstage → (Equipment nur mit Kraft zu Hause) → Heute', () => {
+    expect(nextEditRoute('experience', { step: 'experience', experienceLevel: 'beginner' })).toBe(
+      '/onboarding/goal?edit=1',
+    );
+    const gym = { mode: 'flex' as const, slots: [{ kind: 'strength_gym' as const, minutes: 45 }] };
+    const home = {
+      mode: 'flex' as const,
+      slots: [{ kind: 'strength_home' as const, minutes: 45 }],
+    };
+    expect(nextEditRoute('time_budget', { step: 'time_budget', schedule: gym })).toBe('/today');
+    expect(nextEditRoute('time_budget', { step: 'time_budget', schedule: home })).toBe(
+      '/onboarding/equipment?edit=1',
+    );
+    expect(nextEditRoute('equipment', { step: 'equipment', items: [] })).toBe('/today');
+    expect(
+      nextEditRoute('health_screening', {
+        step: 'health_screening',
+        answers: {} as never,
+        acknowledgedAt: null,
+      }),
+    ).toBe('/today');
   });
 });

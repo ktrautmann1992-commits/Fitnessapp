@@ -4,14 +4,14 @@ import {
   type OnboardingProgress,
   type OnboardingStep,
 } from '@fitnessapp/core';
-import { useRouter, type Href } from 'expo-router';
+import { useLocalSearchParams, useRouter, type Href } from 'expo-router';
 import { useState } from 'react';
 
 import type { StepSave } from '@/data/types';
 import { errorText } from '@/lib/error-text';
 import { todayIso } from '@/lib/format';
 import { useApp, type AppContextValue } from '@/state/app-state';
-import { deriveOnboardingState, stepRoute } from '@/state/flow';
+import { deriveOnboardingState, nextEditRoute, stepRoute } from '@/state/flow';
 
 export interface StepController {
   app: AppContextValue;
@@ -29,6 +29,8 @@ export interface StepController {
 export function useStep(step: OnboardingStep): StepController {
   const app = useApp();
   const router = useRouter();
+  const { edit } = useLocalSearchParams<{ edit?: string }>();
+  const editing = edit === '1' && app.rows?.profile?.onboarding_completed_at != null;
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState<string>();
   const state = app.rows
@@ -41,7 +43,17 @@ export function useStep(step: OnboardingStep): StepController {
     setError(undefined);
     try {
       const route = await app.saveStep(save);
-      router.replace(route as Href);
+      if (editing) {
+        const target = nextEditRoute(step, save);
+        // Zurück zum vorhandenen „Heute“ (nicht ein zweites darüberlegen); sonst nächster Schritt.
+        if (target === '/today') {
+          router.dismissTo('/today');
+        } else {
+          router.replace(target as Href);
+        }
+      } else {
+        router.replace(route as Href);
+      }
     } catch (caught) {
       setError(errorText(caught));
     } finally {
@@ -57,7 +69,11 @@ export function useStep(step: OnboardingStep): StepController {
     saving,
     error,
     setError,
-    goBack: previous ? () => router.replace(stepRoute(previous) as Href) : undefined,
+    goBack: editing
+      ? () => (router.canGoBack() ? router.back() : router.replace('/settings'))
+      : previous
+        ? () => router.replace(stepRoute(previous) as Href)
+        : undefined,
     submit,
   };
 }

@@ -148,11 +148,14 @@ export function ConfirmDialog({
   onCancel,
   loading = false,
   error,
+  confirmVariant = 'danger',
 }: {
   visible: boolean;
   title: string;
   message: string;
   confirmLabel: string;
+  /** Nicht zerstörende Bestätigung (z. B. „Neu erstellen“) als Hauptknopf. */
+  confirmVariant?: 'danger' | 'primary';
   onConfirm: () => void;
   onCancel: () => void;
   loading?: boolean;
@@ -170,7 +173,12 @@ export function ConfirmDialog({
           <Heading level={2}>{title}</Heading>
           <Body>{message}</Body>
           <FieldError message={error} />
-          <Button label={confirmLabel} variant="danger" onPress={onConfirm} loading={loading} />
+          <Button
+            label={confirmLabel}
+            variant={confirmVariant}
+            onPress={onConfirm}
+            loading={loading}
+          />
           <Button
             label={t.common.cancel}
             variant="secondary"

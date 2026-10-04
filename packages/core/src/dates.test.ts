@@ -1,6 +1,13 @@
 import { describe, expect, it } from 'vitest';
 
-import { addDays, createMeasuredOnSchema, daysBetween, isoWeekday, startOfIsoWeek } from './dates';
+import {
+  addDays,
+  createMeasuredOnSchema,
+  daysBetween,
+  isoDateInTimeZone,
+  isoWeekday,
+  startOfIsoWeek,
+} from './dates';
 
 describe('addDays', () => {
   it('über Monats-, Jahres- und Schaltjahresgrenzen', () => {
@@ -50,5 +57,20 @@ describe('ISO-Woche (Plan-Engine)', () => {
     expect(daysBetween('2026-10-05', '2026-10-12')).toBe(7);
     expect(daysBetween('2026-10-12', '2026-10-05')).toBe(-7);
     expect(daysBetween('2026-03-28', '2026-03-30')).toBe(2);
+  });
+});
+
+describe('isoDateInTimeZone', () => {
+  it('rechnet Zeitstempel in das Berliner Kalenderdatum um (Sommer- und Winterzeit)', () => {
+    expect(isoDateInTimeZone('2026-10-04T21:59:59.000Z')).toBe('2026-10-04');
+    expect(isoDateInTimeZone('2026-10-04T22:00:00.000Z')).toBe('2026-10-05');
+    expect(isoDateInTimeZone('2026-12-31T22:59:00.000Z')).toBe('2026-12-31');
+    expect(isoDateInTimeZone('2026-12-31T23:00:00.000Z')).toBe('2027-01-01');
+    expect(isoDateInTimeZone('2026-10-05T10:00:00+02:00')).toBe('2026-10-05');
+  });
+
+  it('andere Zeitzone und ungültiger Zeitstempel', () => {
+    expect(isoDateInTimeZone('2026-10-04T23:30:00.000Z', 'UTC')).toBe('2026-10-04');
+    expect(() => isoDateInTimeZone('kein Datum')).toThrow(RangeError);
   });
 });

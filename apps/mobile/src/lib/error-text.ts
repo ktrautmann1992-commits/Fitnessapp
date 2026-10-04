@@ -1,4 +1,4 @@
-import { BackendError } from '@/data/backend';
+import { BackendError, type BackendErrorCode } from '@/data/backend';
 import { t } from '@/i18n';
 
 /** Fehler → verständlicher deutscher Text (ohne technische Details, ohne Nutzerdaten). */
@@ -21,7 +21,25 @@ export function errorText(error: unknown): string {
       return t.errors.invalidCode;
     case 'rate_limited':
       return t.errors.rateLimited;
+    case 'plan_rejected':
+      return t.errors.planRejected;
+    case 'no_template':
+      return t.errors.noTemplate;
     case 'unknown':
       return t.errors.generic;
+  }
+}
+
+/** Text zu einem fehlgeschlagenen „Plan erstellen“ (Codes aus createPlan in state/app-state.tsx). */
+export function createPlanErrorText(
+  code: BackendErrorCode | 'incomplete' | 'invalid_inputs',
+): string {
+  switch (code) {
+    case 'incomplete':
+      return t.plan.incomplete;
+    case 'invalid_inputs':
+      return t.plan.invalidInputs;
+    default:
+      return errorText(new BackendError(code));
   }
 }

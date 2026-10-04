@@ -1,9 +1,13 @@
+import { readFileSync } from 'node:fs';
+
+import type { SavePlanPayload } from '@fitnessapp/core';
 import type { AppSupabaseClient } from '@fitnessapp/db';
 import { describe, expect, it } from 'vitest';
 
 import { consent, NOW, rowsWith, TODAY, USER_ID, VERSIONS } from '../test/fixtures';
 import { createMemoryStore, STORAGE_KEYS } from './kv';
 import { answersFromRows } from './mapping';
+import { createMemoryProtectedStore } from './protected-store';
 import { classifySupabaseError, createSupabaseBackend, executeWriteOp } from './supabase-backend';
 import type { StepSave } from './types';
 
@@ -338,5 +342,324 @@ describe('Supabase-Modus: Speichern', () => {
       [null, 'strength_gym'],
     ]);
     expect(result.rows.userEquipment[0]).toMatchObject({ weights_kg: [5], bar_kg: null });
+  });
+});
+
+describe('Supabase-Modus: Trainingsplan', () => {
+  const planRow = (uses: boolean) => ({
+    id: 'plan-1',
+    user_id: USER_ID,
+    status: 'active',
+    template_id: 't',
+    template_title_de: 'Vorlage',
+    template_version: 1,
+    engine_version: 2,
+    match_quality: 'exact',
+    notes: [],
+    uses_health_data: uses,
+    medical_notice: false,
+    inputs: { experienceLevel: 'beginner' },
+    start_date: TODAY,
+    created_at: NOW,
+    replaced_at: null,
+  });
+  const sessionRow = {
+    id: 'sess-1',
+    plan_id: 'plan-1',
+    user_id: USER_ID,
+    block_no: 1,
+    week_no: 1,
+    is_intro_week: true,
+    is_deload: false,
+    kind: 'strength',
+    template_day_index: 1,
+    scheduled_on: TODAY,
+    original_date: null,
+    status: 'planned',
+    name_de: 'Ganzkörper A',
+    focus: 'full_body',
+    endurance_modality: null,
+    effort_target: null,
+    estimated_minutes: 50,
+    warmup_de: 'Aufwärmen',
+    cooldown_de: 'Cool-down',
+    created_at: NOW,
+    updated_at: NOW,
+  };
+  const exerciseRow = {
+    id: 'ex-1',
+    session_id: 'sess-1',
+    user_id: USER_ID,
+    order_no: 1,
+    exercise_id: 'goblet-kniebeuge',
+    source_exercise_id: 'goblet-kniebeuge',
+    exercise_name_de: 'Goblet-Kniebeuge',
+    sets: 3,
+    reps_min: 8,
+    reps_max: 12,
+    duration_s: null,
+    rest_s: 90,
+    rpe_target: 7,
+    superset_group: null,
+    notes_de: null,
+    target_weight_kg: null,
+  };
+
+  /** Server mit Einwilligung, Gesundheits-Check und aktivem Plan. */
+  function server(options: { uses: boolean; online: () => boolean; withPlan?: () => boolean }) {
+    return fakeClient((call) => {
+      if (!options.online()) return { error: networkError };
+      const single = call.chain.includes('maybeSingle') || call.chain.includes('single');
+      switch (call.table) {
+        case 'rpc:current_consent_version':
+          return { data: 1 };
+        case 'consent_documents':
+          return { data: { consent_type: 'terms', version: 1, title_de: 'T', body_de: 'B' } };
+        case 'profiles':
+          return { data: { ...rowsWith().profile, experience_level: 'beginner' } };
+        case 'consents':
+          return { data: [consent('terms'), consent('privacy'), consent('health_data')] };
+        case 'health_screening':
+          return {
+            data: [
+              {
+                id: 'h',
+                user_id: USER_ID,
+                answers: {},
+                flags: [],
+                medical_notice_acknowledged_at: null,
+                created_at: NOW,
+              },
+            ],
+          };
+        case 'user_plans':
+          return { data: (options.withPlan?.() ?? true) ? planRow(options.uses) : null };
+        case 'planned_sessions':
+          return call.chain.includes('update') ? { data: [] } : { data: [sessionRow] };
+        case 'planned_exercises':
+          return { data: [exerciseRow] };
+        default:
+          return { data: single ? null : [] };
+      }
+    });
+  }
+
+  const options = (client: AppSupabaseClient, store = createMemoryStore()) => ({
+    client,
+    store,
+    platform: 'web' as const,
+    now: () => NOW,
+    newId: () => 'id',
+  });
+
+  it('Plan mit Gesundheitsbezug: nur im geschützten Zwischenspeicher; offline wieder da (mit Regeln)', async () => {
+    let online = true;
+    const { client } = server({ uses: true, online: () => online });
+    const store = createMemoryStore();
+    const protectedStore = createMemoryProtectedStore();
+    const backend = createSupabaseBackend({ ...options(client, store), protectedStore });
+    await backend.loadConsentDocuments();
+    const loaded = await backend.loadRows();
+    expect(loaded.rows.plans).toHaveLength(1);
+    expect(loaded.rows.plannedExercises).toHaveLength(1);
+    // Normaler Zwischenspeicher ohne den Plan mit Gesundheitsbezug.
+    expect(store.dump()[STORAGE_KEYS.rowsCache]).not.toContain('plan-1');
+    expect(store.dump()[STORAGE_KEYS.rowsCache]).not.toContain('Goblet');
+    const cached = JSON.parse(protectedStore.peek() ?? '{}');
+    expect(cached.plans.plans[0].id).toBe('plan-1');
+    expect(cached.safetyRules.usesHealthData).toBe(true);
+    // Offline: Plan + wirksame Regeln aus dem geschützten Zwischenspeicher, nie Gesundheits-Checks.
+    online = false;
+    const offline = await backend.loadRows();
+    expect(offline.offline).toBe(true);
+    expect(offline.rows.plans[0]?.id).toBe('plan-1');
+    expect(offline.rows.plannedExercises).toHaveLength(1);
+    expect(offline.rows.healthScreenings).toEqual([]);
+    expect(offline.cachedSafetyRules?.rpeMax).toBeLessThanOrEqual(8);
+  });
+
+  it('geschützter Zwischenspeicher: nach 14 Tagen ohne Server-Kontakt verworfen', async () => {
+    let online = true;
+    let now = NOW;
+    const { client } = server({ uses: true, online: () => online });
+    const protectedStore = createMemoryProtectedStore();
+    const backend = createSupabaseBackend({ ...options(client), now: () => now, protectedStore });
+    await backend.loadConsentDocuments();
+    await backend.loadRows();
+    online = false;
+    now = '2026-10-17T10:00:00.000Z'; // 14 Tage: noch da
+    expect((await backend.loadRows()).rows.plans).toHaveLength(1);
+    now = '2026-10-17T10:00:01.000Z'; // länger: verworfen
+    const stale = await backend.loadRows();
+    expect(stale.rows.plans).toHaveLength(0);
+    expect(stale.cachedSafetyRules).toBeNull();
+    expect(protectedStore.peek()).toBeNull();
+  });
+
+  it('geschützter Zwischenspeicher wird gelöscht: Plan fehlt/ersetzt, Widerruf, Abmelden, Konto löschen', async () => {
+    let withPlan = true;
+    const { client } = server({ uses: true, online: () => true, withPlan: () => withPlan });
+    const protectedStore = createMemoryProtectedStore();
+    const backend = createSupabaseBackend({ ...options(client), protectedStore });
+    await backend.loadConsentDocuments();
+    await backend.loadRows();
+    expect(protectedStore.peek()).toContain('plan-1');
+    // Server meldet keinen aktiven Plan mehr (ersetzt/fehlt) → Plan aus dem Zwischenspeicher weg.
+    withPlan = false;
+    await backend.loadRows();
+    expect(protectedStore.peek() ?? '').not.toContain('plan-1');
+    withPlan = true;
+    for (const action of [
+      () => backend.revokeConsent('health_data'),
+      () => backend.signOut(),
+      () => backend.deleteAccount(),
+    ]) {
+      await backend.loadRows();
+      expect(protectedStore.peek()).not.toBeNull();
+      await action();
+      expect(protectedStore.peek()).toBeNull();
+    }
+  });
+
+  it('Plan ohne Gesundheitsbezug bleibt im normalen Zwischenspeicher', async () => {
+    const { client } = server({ uses: false, online: () => true });
+    const store = createMemoryStore();
+    const protectedStore = createMemoryProtectedStore();
+    const backend = createSupabaseBackend({ ...options(client, store), protectedStore });
+    await backend.loadRows();
+    expect(store.dump()[STORAGE_KEYS.rowsCache]).toContain('plan-1');
+  });
+
+  it('Speichern über save_training_plan; neuer Plan entfernt wartende Verschiebungen', async () => {
+    let online = false;
+    const { client, calls } = server({ uses: false, online: () => online });
+    const store = createMemoryStore();
+    const backend = createSupabaseBackend(options(client, store));
+    const rows = rowsWith();
+    await backend.updatePlannedSession(
+      {
+        sessionId: 'sess-1',
+        planId: 'plan-1',
+        usesHealthData: false,
+        scheduledOn: TODAY,
+        status: 'skipped',
+      },
+      rows,
+    );
+    await backend.flush();
+    expect(backend.pendingChanges()).toBe(1);
+    expect(store.dump()[STORAGE_KEYS.syncQueue]).toContain('update_planned_session:sess-1');
+    online = true;
+    const before = calls.length;
+    const payload = { uses_health_data: false } as unknown as SavePlanPayload;
+    await backend.savePlan(payload, rows);
+    await backend.flush();
+    expect(calls.find((c) => c.table === 'rpc:save_training_plan')?.args[0]?.[0]).toEqual({
+      p_plan: payload,
+    });
+    expect(backend.pendingChanges()).toBe(0);
+    expect(
+      calls.slice(before).some((c) => c.table === 'planned_sessions' && c.chain.includes('update')),
+    ).toBe(false);
+  });
+
+  it('Verschieben (Plan mit Gesundheitsbezug) offline → Fehler, nie Warteschlange', async () => {
+    const { client } = server({ uses: true, online: () => false });
+    const store = createMemoryStore();
+    const backend = createSupabaseBackend(options(client, store));
+    await expect(
+      backend.updatePlannedSession(
+        {
+          sessionId: 'sess-1',
+          planId: 'plan-1',
+          usesHealthData: true,
+          scheduledOn: TODAY,
+          status: 'skipped',
+        },
+        rowsWith(),
+      ),
+    ).rejects.toMatchObject({ code: 'network', sensitive: true });
+    expect(store.dump()[STORAGE_KEYS.syncQueue]).toBeUndefined();
+  });
+
+  it('vom Server abgelehnte Verschiebung → verworfen + Ereignis „Plan neu laden“', async () => {
+    const { client } = server({ uses: false, online: () => true });
+    const backend = createSupabaseBackend(options(client));
+    const events: string[] = [];
+    backend.subscribe((event) => events.push(event.kind));
+    await backend.updatePlannedSession(
+      {
+        sessionId: 'weg',
+        planId: 'plan-1',
+        usesHealthData: false,
+        scheduledOn: TODAY,
+        status: 'skipped',
+      },
+      rowsWith(),
+    );
+    await backend.flush();
+    // Update ohne betroffene Zeile (Einheit ersetzt) gilt als abgelehnt.
+    expect(events).toEqual(['plan_change_dropped']);
+    expect(backend.pendingChanges()).toBe(0);
+  });
+
+  it('Bibliothek: nur freigegebene Inhalte (allowDrafts nie true), offline aus dem Zwischenspeicher', async () => {
+    let online = true;
+    const exercise = JSON.parse(
+      readFileSync(
+        new URL('../../../../content/exercises/goblet-kniebeuge.json', import.meta.url),
+        'utf8',
+      ),
+    );
+    const { alternatives, ...exerciseRowData } = exercise;
+    const { client, calls } = fakeClient((call) => {
+      if (!online) return { error: networkError };
+      if (call.table === 'exercises') {
+        return {
+          data: [
+            { ...exerciseRowData, status: 'draft' },
+            {
+              ...exerciseRowData,
+              id: 'goblet-kniebeuge-frei',
+              status: 'published',
+              meta: {
+                ...exercise.meta,
+                expert_reviewed: true,
+                reviewed_by: 'X',
+                reviewed_at: TODAY,
+              },
+            },
+            { ...exerciseRowData, id: 'goblet-kniebeuge-alt', status: 'archived' },
+          ],
+        };
+      }
+      return {
+        data:
+          call.table === 'exercise_alternatives'
+            ? alternatives.map(() => null).filter(Boolean)
+            : [],
+      };
+    });
+    const store = createMemoryStore();
+    const backend = createSupabaseBackend(options(client, store));
+    const library = await backend.loadPlanLibrary({ allowCached: false });
+    expect([...(library?.exercises.keys() ?? [])]).toEqual(['goblet-kniebeuge-frei']);
+    // Engine (Erzeugen, Ersatz, Folgeblock): nur freigegeben; archivierte nur zur Anzeige laufender Pläne.
+    expect([...(library?.displayExercises?.keys() ?? [])].sort()).toEqual([
+      'goblet-kniebeuge-alt',
+      'goblet-kniebeuge-frei',
+    ]);
+    expect(library?.containsDrafts).toBe(false);
+    expect(calls.find((c) => c.table === 'exercises')?.args).toContainEqual([
+      'status',
+      ['published', 'archived'],
+    ]);
+    online = false;
+    const cached = await backend.loadPlanLibrary({ allowCached: true });
+    expect([...(cached?.exercises.keys() ?? [])]).toEqual(['goblet-kniebeuge-frei']);
+    expect(cached?.displayExercises?.has('goblet-kniebeuge-alt')).toBe(true);
+    await expect(backend.loadPlanLibrary({ allowCached: false })).rejects.toMatchObject({
+      code: 'network',
+    });
   });
 });

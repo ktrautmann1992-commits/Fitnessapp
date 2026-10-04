@@ -3,13 +3,11 @@
   "extends": ["//"],
   "tasks": {
     "build": {
-      "dependsOn": ["^build", "typecheck"],
       "inputs": [
         "$TURBO_DEFAULT$",
         "$TURBO_ROOT$/content/**",
         "$TURBO_ROOT$/scripts/bundle-content.mjs"
-      ],
-      "env": ["NEXT_PUBLIC_*"]
+      ]
     },
     "typecheck": {
       "inputs": [

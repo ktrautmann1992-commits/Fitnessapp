@@ -1,10 +1,21 @@
-import { REQUIRED_CONSENT_TYPES, type ConsentType } from '@fitnessapp/core';
+import {
+  followUpBlockState,
+  type GeneratedPlan,
+  type PlanLibrary,
+  type PlanSafetyRules,
+  REQUIRED_CONSENT_TYPES,
+  type ConsentType,
+  type RescheduleResult,
+  toSavePlanPayload,
+  generatedPlanSchema,
+} from '@fitnessapp/core';
 import {
   createContext,
   useCallback,
   useContext,
   useEffect,
   useMemo,
+  useRef,
   useState,
   type ReactNode,
 } from 'react';
@@ -12,6 +23,13 @@ import { AppState, Platform } from 'react-native';
 
 import { BackendError, errorCode, type Backend, type BackendErrorCode } from '@/data/backend';
 import { createBackend, deviceStore } from '@/data/create-backend';
+import {
+  activePlan,
+  effectiveSafetyRules,
+  generatePlanFromRows,
+  nextBlockFromRows,
+  rescheduleInRows,
+} from '@/data/training-plan';
 import { readJson, STORAGE_KEYS, writeJson } from '@/data/kv';
 import { answersFromRows, versionsFromDocuments, type ConsentVersions } from '@/data/mapping';
 import type {
@@ -22,6 +40,7 @@ import type {
   StepSave,
   UserRows,
 } from '@/data/types';
+import { todayIso } from '@/lib/format';
 import { supabaseConfig } from '@/lib/supabase';
 
 import { resolveEntryRoute, type EntryRoute } from './flow';
@@ -34,6 +53,18 @@ import { resolveEntryRoute, type EntryRoute } from './flow';
 
 type LoadStatus =
   { kind: 'loading' } | { kind: 'ready' } | { kind: 'error'; code: BackendErrorCode };
+
+/** Ergebnis von „Plan erstellen“ (Fehler als fester Code, Texte in i18n). */
+export type CreatePlanOutcome =
+  | { ok: true; plan: GeneratedPlan }
+  | { ok: false; code: BackendErrorCode | 'incomplete' | 'invalid_inputs' };
+
+/** Bibliothek der Plan-Engine (für Anzeige und Folgeblock). */
+type LibraryState =
+  | { kind: 'idle' }
+  | { kind: 'loading' }
+  | { kind: 'ready'; library: PlanLibrary }
+  | { kind: 'missing' };
 
 export interface AppContextValue {
   backend: Backend;
@@ -62,7 +93,29 @@ export interface AppContextValue {
   deleteAccount: () => Promise<void>;
   signOut: () => Promise<void>;
   clearDeviceData: () => Promise<void>;
+
+  // --- Trainingsplan (Phase 3) ---
+  /** Übungs-Bibliothek (null = nicht geladen/fehlt → Zustand „Übungen können nicht geprüft werden“). */
+  library: LibraryState;
+  /** Bibliothek laden (offline: Zwischenspeicher). */
+  ensureLibrary: () => Promise<void>;
+  /** Wirksame AKTUELLE Sicherheitsregeln (offline: geschützter Zwischenspeicher, Frage 14). */
+  safetyRules: PlanSafetyRules | null;
+  /** Einmalige Meldung (z. B. verworfene Verschiebung). */
+  planMessage: string | null;
+  clearPlanMessage: () => void;
+  /** Plan nach den aktuellen Angaben erzeugen und speichern (ersetzt den aktiven Plan). */
+  createPlan: () => Promise<CreatePlanOutcome>;
+  /** Einheit verschieben (5.11): freier Tag dieser Woche, sonst streichen. */
+  moveSession: (sessionId: string) => Promise<RescheduleResult>;
+  /** Folgeblock anhängen, wenn fällig (automatisch beim Anzeigen von „Heute“). */
+  appendNextBlockIfDue: () => Promise<void>;
 }
+
+/** Meldung nach verworfener Verschiebung (Text in i18n, hier nur der Schlüssel). */
+export const PLAN_CHANGE_DROPPED = 'plan_change_dropped' as const;
+/** Meldung: Folgeblock ließ sich nicht anhängen → Plan neu erstellen. */
+export const PLAN_RECREATE_NEEDED = 'plan_recreate_needed' as const;
 
 const AppContext = createContext<AppContextValue | null>(null);
 
@@ -77,6 +130,12 @@ export function AppStateProvider({ children }: { children: ReactNode }) {
   const [pendingBirthDate, setPendingBirthDateState] = useState<string | null>(null);
   const [offline, setOffline] = useState(false);
   const [pendingChanges, setPendingChanges] = useState(0);
+  const [library, setLibrary] = useState<LibraryState>({ kind: 'idle' });
+  const [cachedRules, setCachedRules] = useState<PlanSafetyRules | null>(null);
+  const [planMessage, setPlanMessage] = useState<string | null>(null);
+  const appendingRef = useRef(false);
+  /** Plan, für den das Anhängen gescheitert ist (kein erneuter Versuch bis zum neuen Plan). */
+  const appendFailedRef = useRef<string | null>(null);
 
   const versions = useMemo(() => versionsFromDocuments(documents), [documents]);
   const answers = useMemo(() => (rows ? answersFromRows(rows) : {}), [rows]);
@@ -89,6 +148,7 @@ export function AppStateProvider({ children }: { children: ReactNode }) {
     const result = await backend.loadRows();
     setRows(result.rows);
     setOffline(result.offline);
+    setCachedRules(result.offline ? (result.cachedSafetyRules ?? null) : null);
     refreshPending();
     return result.rows;
   }, [backend, refreshPending]);
@@ -158,6 +218,16 @@ export function AppStateProvider({ children }: { children: ReactNode }) {
       }
     };
   }, [backend, refreshPending]);
+
+  // Verworfene Verschiebung (Warteschlange) → Plan neu laden + Meldung (PLAN-PHASE-3 10.1 Punkt 5).
+  useEffect(() => {
+    return backend.subscribe((event) => {
+      if (event.kind === 'plan_change_dropped') {
+        setPlanMessage(PLAN_CHANGE_DROPPED);
+        void loadUser().catch(() => undefined);
+      }
+    });
+  }, [backend, loadUser]);
 
   const setPendingBirthDate = useCallback(async (birthDate: string | null) => {
     setPendingBirthDateState(birthDate);
@@ -250,7 +320,118 @@ export function AppStateProvider({ children }: { children: ReactNode }) {
     setRows(null);
     setOffline(false);
     setPendingChanges(0);
+    setCachedRules(null);
+    setPlanMessage(null);
   }, []);
+
+  const ensureLibrary = useCallback(async () => {
+    if (library.kind === 'loading' || library.kind === 'ready') return;
+    setLibrary({ kind: 'loading' });
+    try {
+      const loaded = await backend.loadPlanLibrary({ allowCached: true });
+      setLibrary(loaded ? { kind: 'ready', library: loaded } : { kind: 'missing' });
+    } catch {
+      setLibrary({ kind: 'missing' });
+    }
+  }, [backend, library.kind]);
+
+  const safetyRules = useMemo(() => {
+    if (!rows) return null;
+    // Offline fehlen die Gesundheits-Checks (nie auf dem Gerät) → zuletzt wirksame Regeln aus dem geschützten
+    // Zwischenspeicher; sonst aus Check + Alter heute berechnet.
+    return cachedRules ?? effectiveSafetyRules(rows, versions, todayIso());
+  }, [cachedRules, rows, versions]);
+
+  const createPlan = useCallback(async (): Promise<CreatePlanOutcome> => {
+    if (!rows) return { ok: false, code: 'not_signed_in' };
+    try {
+      // Erzeugen braucht die vollständige Bibliothek (Vorlagen) – offline nicht möglich.
+      const loaded = await backend.loadPlanLibrary({ allowCached: false });
+      if (!loaded) return { ok: false, code: 'network' };
+      setLibrary({ kind: 'ready', library: loaded });
+      const result = generatePlanFromRows(rows, versions, loaded, todayIso());
+      if (!result.ok) {
+        return {
+          ok: false,
+          code: result.error === 'no_template' ? 'no_template' : result.error,
+        };
+      }
+      // Zod an der Grenze: Datenbank-Grenzen prüfen, bevor gespeichert wird.
+      if (!generatedPlanSchema.safeParse(result.plan).success) {
+        return { ok: false, code: 'invalid_inputs' };
+      }
+      const next = await backend.savePlan(toSavePlanPayload(result.plan), rows);
+      setRows(next);
+      setPlanMessage(null);
+      refreshPending();
+      return { ok: true, plan: result.plan };
+    } catch (error) {
+      return { ok: false, code: errorCode(error) };
+    }
+  }, [backend, refreshPending, rows, versions]);
+
+  const moveSession = useCallback(
+    async (sessionId: string): Promise<RescheduleResult> => {
+      if (!rows) throw new BackendError('not_signed_in');
+      const active = activePlan(rows);
+      const result = rescheduleInRows(rows, sessionId, todayIso());
+      if (!active || result.kind === 'not_allowed') return result;
+      const session = rows.plannedSessions.find((s) => s.id === sessionId);
+      if (!session) return { kind: 'not_allowed', reason: 'not_found' };
+      const next = await backend.updatePlannedSession(
+        {
+          sessionId,
+          planId: active.plan.id,
+          usesHealthData: active.plan.uses_health_data,
+          scheduledOn: result.kind === 'moved' ? result.date : session.scheduled_on,
+          status: result.kind === 'moved' ? 'planned' : 'skipped',
+        },
+        rows,
+      );
+      setRows(next);
+      refreshPending();
+      return result;
+    },
+    [backend, refreshPending, rows],
+  );
+
+  const appendNextBlockIfDue = useCallback(async () => {
+    if (!rows || offline || appendingRef.current || library.kind !== 'ready' || !safetyRules) {
+      return;
+    }
+    const active = activePlan(rows);
+    const today = todayIso();
+    if (
+      !active ||
+      appendFailedRef.current === active.plan.id ||
+      followUpBlockState(active.sessions, today) !== 'due'
+    ) {
+      return;
+    }
+    const sessions = nextBlockFromRows(rows, active, safetyRules, library.library, today);
+    if (!sessions) return;
+    appendingRef.current = true;
+    try {
+      setRows(
+        await backend.appendPlanBlock(active.plan.id, active.plan.uses_health_data, sessions, rows),
+      );
+    } catch {
+      // Abgelehnt (z. B. Gesundheits-Check geändert, inzwischen angehängt) oder offline: neu laden. Ist der
+      // Folgeblock danach weiter fällig, nicht endlos erneut versuchen, sondern „Plan neu erstellen“ melden.
+      appendFailedRef.current = active.plan.id;
+      try {
+        const fresh = await loadUser();
+        const reloaded = activePlan(fresh);
+        if (reloaded && followUpBlockState(reloaded.sessions, today) === 'due') {
+          setPlanMessage(PLAN_RECREATE_NEEDED);
+        }
+      } catch {
+        // offline – der Hinweis „Offline“ steht schon auf „Heute“.
+      }
+    } finally {
+      appendingRef.current = false;
+    }
+  }, [backend, library, loadUser, offline, rows, safetyRules]);
 
   const deleteAccount = useCallback(async () => {
     await backend.deleteAccount();
@@ -293,6 +474,14 @@ export function AppStateProvider({ children }: { children: ReactNode }) {
       deleteAccount,
       signOut,
       clearDeviceData,
+      library,
+      ensureLibrary,
+      safetyRules,
+      planMessage,
+      clearPlanMessage: () => setPlanMessage(null),
+      createPlan,
+      moveSession,
+      appendNextBlockIfDue,
     }),
     [
       backend,
@@ -317,6 +506,13 @@ export function AppStateProvider({ children }: { children: ReactNode }) {
       deleteAccount,
       signOut,
       clearDeviceData,
+      library,
+      ensureLibrary,
+      safetyRules,
+      planMessage,
+      createPlan,
+      moveSession,
+      appendNextBlockIfDue,
     ],
   );
 

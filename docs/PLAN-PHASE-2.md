@@ -704,7 +704,7 @@ Wächter-Prüfung ab, wird dieser Abschnitt angepasst, bevor die betroffene Etap
 
 **Etappe C – Redaktionsbereich Stufe A: erledigt** (wartet auf Wächter-Prüfung).
 
-1. **Daten:** `apps/web/scripts/bundle-content.mjs` bündelt `content/exercises` und `content/plan-templates` vor
+1. **Daten:** `scripts/bundle-content.mjs` (früher `apps/web/scripts/`) bündelt `content/exercises` und `content/plan-templates` vor
    `build`/`typecheck`/`test`/`dev` in `src/generated/content-files.ts` (nicht eingecheckt). Der Server prüft sie mit
    `validateContent` aus `packages/core` (dieselben Regeln wie `content:validate`, ohne Versionsvergleich). Jede
    Vercel-Vorschau zeigt also genau die Inhalte ihres Branches. Turbo-Eingaben von `apps/web` enthalten `content/**`.

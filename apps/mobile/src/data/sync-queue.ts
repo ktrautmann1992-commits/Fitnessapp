@@ -4,7 +4,8 @@ import { isDirectOp, type WriteOp } from './write-ops';
 /**
  * Einfache Offline-Warteschlange für den Supabase-Modus.
  *
- * Nur NICHT-Gesundheitsdaten (Profil-Fortschritt, Ziel, Trainingstage, Equipment, Ernährung, Vorlieben, Mess-Erinnerung)
+ * Nur NICHT-Gesundheitsdaten (Profil-Fortschritt, Ziel, Trainingstage, Equipment, Ernährung, Vorlieben, Mess-Erinnerung,
+ * Verschieben einer Einheit eines Plans OHNE Gesundheitsbezug)
  * landen hier und damit auf dem Gerät. Gesundheitsdaten und Einwilligungen werden nie eingereiht, sondern
  * sofort gesendet (isDirectOp) – scheitert das, zeigt der Bildschirm „Erneut versuchen“.
  *
@@ -40,6 +41,9 @@ export function queueKey(op: WriteOp): string {
       return `${op.kind}:${op.location}`;
     case 'replace_food_preferences':
       return `${op.kind}:${op.scope}`;
+    // Neuere Änderung derselben Einheit ersetzt die ältere (PLAN-PHASE-3 10.1 Punkt 5).
+    case 'update_planned_session':
+      return `${op.kind}:${op.sessionId}`;
     default:
       return op.kind;
   }
@@ -124,6 +128,16 @@ export class SyncQueue {
       this.flushing = null;
     });
     return this.flushing;
+  }
+
+  /**
+   * Entfernt wartende Vorgänge, z. B. alle Verschiebungen des alten Plans, sobald ein neuer Plan gespeichert ist
+   * (save_training_plan ersetzt ältere Änderungen ausdrücklich, PLAN-PHASE-3 10.1 Punkt 5).
+   */
+  async remove(predicate: (op: WriteOp) => boolean): Promise<void> {
+    await this.load();
+    this.entries = this.entries.filter((entry) => !predicate(entry.op));
+    await this.persist();
   }
 
   async clear(): Promise<void> {

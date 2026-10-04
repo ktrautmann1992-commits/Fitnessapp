@@ -52,4 +52,16 @@ export const STORAGE_KEYS = {
   documentsCache: 'fitnessapp.documents.v1',
   /** Geburtsdatum aus Schritt „Alter“ bis zum Login (nur wenn ≥ 16, keine Gesundheitsdaten). */
   pendingBirthDate: 'fitnessapp.pending-birth-date.v1',
+  /**
+   * Supabase-Modus: Übungs-Bibliothek (nur Inhalte, keine Nutzerdaten) – damit die Sicherheitsregeln beim Anzeigen
+   * auch offline prüfbar sind.
+   */
+  planLibrary: 'fitnessapp.plan-library.v1',
+  /**
+   * Supabase-Modus: Plan mit Gesundheitsbezug + wirksame Sicherheitsregeln (Frage 14) – App: verschlüsselt in
+   * AsyncStorage, Browser: NUR sessionStorage (protected-store.ts).
+   */
+  healthPlanCache: 'fitnessapp.health-plan.v1',
+  /** App: Name des Schlüssels im sicheren Schlüsselspeicher (expo-secure-store), nicht in AsyncStorage. */
+  healthPlanKey: 'fitnessapp.health-plan-key.v1',
 } as const;

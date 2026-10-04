@@ -8,22 +8,27 @@ import {
   measurementReminderIntervalSchema,
   MIN_AGE_YEARS,
   requiresMedicalNotice,
+  selectPlanContent,
+  validateContent,
   type ConsentType,
+  type ContentFile,
+  type PlanLibrary,
 } from '@fitnessapp/core';
 
 import { healthConsentStatus } from '../state/flow';
 import { BackendError, type Backend } from './backend';
 import { LOCAL_CONSENT_DOCUMENTS } from './consent-texts';
-import { isValidOp } from './local-rules';
+import { isValidOp, isValidPlanOp } from './local-rules';
 import { readJson, STORAGE_KEYS, writeJson, type KeyValueStore } from './kv';
 import { upgradeStoredRows } from './legacy-rows';
 import { type ConsentVersions, versionsFromDocuments } from './mapping';
 import { planSave } from './plan-save';
 import { emptyUserRows, type AuthSession, type ConsentPlatform, type UserRows } from './types';
 import {
+  applyHealthDataRevocation,
   applyWriteOps,
   isSensitiveOp,
-  withoutHealthData,
+  needsHealthConsent,
   type ApplyContext,
   type WriteOp,
 } from './write-ops';
@@ -43,7 +48,10 @@ import {
  * - Wertebereiche und Messdatum wie die CHECK-Bedingungen (local-rules.ts, Schemas aus packages/core),
  * - Gesundheits-Check: Flags werden hier neu berechnet (evaluateHealthScreening), bei Flags muss der
  *   Arzt-Hinweis bestätigt sein,
- * - Widerruf von health_data löscht alle Gesundheitsdaten.
+ * - Widerruf von health_data löscht alle Gesundheitsdaten – auch alle Pläne mit Gesundheitsbezug,
+ * - Trainingspläne: dieselben Regeln wie save_training_plan, append_plan_block und der Verschiebe-Trigger
+ *   (local-rules.ts isValidPlanOp); Inhalte aus dem Repository gebündelt (scripts/bundle-content.mjs), erst bei
+ *   Bedarf nachgeladen.
  */
 
 interface LocalDb {
@@ -56,11 +64,32 @@ export interface LocalBackendOptions {
   today: () => string;
   now: () => string;
   newId: () => string;
+  /** Inhaltsdateien für den Testmodus (Standard: gebündelt aus content/, erst bei Bedarf geladen). */
+  loadContent?: () => Promise<readonly ContentFile[]>;
+}
+
+async function bundledContent(): Promise<readonly ContentFile[]> {
+  const { CONTENT_BUNDLE } = await import('../generated/content-files');
+  return CONTENT_BUNDLE.files;
 }
 
 const LOCAL_VERSIONS: ConsentVersions = versionsFromDocuments(LOCAL_CONSENT_DOCUMENTS);
 
 export function createLocalBackend(store: KeyValueStore, options: LocalBackendOptions): Backend {
+  let library: PlanLibrary | null = null;
+
+  /**
+   * Bibliothek des Testmodus. EINZIGE Stelle mit allowDrafts: true (PLAN-PHASE-3 5.2): Entwürfe ohne roten
+   * Befund, nie Probelauf-Inhalte, nie archiviert. Der Supabase-Modus nutzt immer nur freigegebene Inhalte.
+   */
+  async function planLibrary(): Promise<PlanLibrary> {
+    if (!library) {
+      const files = await (options.loadContent ?? bundledContent)();
+      library = selectPlanContent(validateContent(files), { allowDrafts: true });
+    }
+    return library;
+  }
+
   async function load(): Promise<LocalDb> {
     const db = (await readJson<LocalDb>(store, STORAGE_KEYS.localDb)) ?? {
       session: null,
@@ -94,12 +123,33 @@ export function createLocalBackend(store: KeyValueStore, options: LocalBackendOp
       now: options.now(),
       newId: options.newId,
       flagsFor: (answers) => evaluateHealthScreening(healthScreeningAnswersSchema.parse(answers)),
+      today: options.today(),
     };
+  }
+
+  /** Plan-Vorgang prüfen (wie die Datenbank-Funktionen bzw. der Trigger) und anwenden, dann speichern. */
+  async function applyPlanOp(op: WriteOp): Promise<UserRows> {
+    const { db, rows } = await requireProfile();
+    if (needsHealthConsent(op) && healthConsentStatus(rows, LOCAL_VERSIONS) !== 'valid') {
+      throw new BackendError('consent_required', { sensitive: true });
+    }
+    const ok = isValidPlanOp(op, {
+      today: options.today(),
+      rows,
+      versions: LOCAL_VERSIONS,
+      library: await planLibrary(),
+    });
+    if (!ok) {
+      throw new BackendError('plan_rejected', { sensitive: isSensitiveOp(op) });
+    }
+    const next = applyWriteOps(rows, [op], applyContext());
+    await save({ ...db, rows: next });
+    return next;
   }
 
   /** Prüft einen Vorgang wie die RLS-Policies/Trigger der Datenbank und wendet ihn an. */
   function applyChecked(rows: UserRows, op: WriteOp): UserRows {
-    if (isSensitiveOp(op) && healthConsentStatus(rows, LOCAL_VERSIONS) !== 'valid') {
+    if (needsHealthConsent(op) && healthConsentStatus(rows, LOCAL_VERSIONS) !== 'valid') {
       throw new BackendError('consent_required', { sensitive: true });
     }
     // Wertebereiche, Messdatum (höchstens heute + 1 Tag) usw. wie die CHECK-Bedingungen der Datenbank.
@@ -212,7 +262,7 @@ export function createLocalBackend(store: KeyValueStore, options: LocalBackendOp
         ),
       };
       if (type === 'health_data') {
-        next = withoutHealthData(next);
+        next = applyHealthDataRevocation(next);
       }
       await save({ ...db, rows: next });
     },
@@ -262,6 +312,15 @@ export function createLocalBackend(store: KeyValueStore, options: LocalBackendOp
 
     pendingChanges: () => 0,
     flush: async () => true,
+
+    loadPlanLibrary: async () => planLibrary(),
+    savePlan: async (payload) => applyPlanOp({ kind: 'save_training_plan', payload }),
+    appendPlanBlock: async (planId, usesHealthData, sessions) =>
+      applyPlanOp({ kind: 'append_plan_block', planId, usesHealthData, sessions }),
+    updatePlannedSession: async (update) =>
+      applyPlanOp({ kind: 'update_planned_session', ...update }),
+    // Keine Warteschlange im Testmodus → keine Hintergrund-Ereignisse.
+    subscribe: () => () => undefined,
 
     clearDeviceData: async () => {
       for (const key of Object.values(STORAGE_KEYS)) {

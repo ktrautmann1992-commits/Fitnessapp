@@ -617,3 +617,11 @@ export const PLAN_SAVE_LIMITS = {
   keptReplacedPlans: 20,
   inputsMaxBytes: 4096,
 } as const;
+
+/**
+ * Geschützter Zwischenspeicher für Pläne mit Gesundheitsbezug (Gründer-Entscheidung Frage 14, PLAN-PHASE-3
+ * Abschnitt 9): Ohne Server-Kontakt wird er nach höchstens so vielen Tagen verworfen. Grund: Ein Widerruf auf einem
+ * anderen Gerät erreicht ein Offline-Gerät erst beim nächsten Online-Laden – die Frist begrenzt, wie lange ein
+ * dort gelöschter Plan noch angezeigt werden kann. Quelle: PRODUKTENTSCHEIDUNG (Wächter-Auflage Etappe C).
+ */
+export const HEALTH_PLAN_CACHE_MAX_AGE_DAYS = 14;

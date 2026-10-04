@@ -12,5 +12,7 @@ export * from './payload';
 export * from './reschedule';
 export * from './safety';
 export * from './schedule';
+export * from './start-group';
 export * from './update';
+export * from './view';
 export * from './volume';
