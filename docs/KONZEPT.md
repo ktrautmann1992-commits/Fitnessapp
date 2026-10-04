@@ -314,6 +314,32 @@ Verbindlich ist der freigegebene Ablauf in `docs/PLAN-PHASE-1.md` Abschnitt 3 (S
 - Neue Enums: `content_status`, `movement_pattern`, `muscle_group`, `exercise_mechanics`, `load_type`, `caution_tag`,
   `alternative_reason`, `session_focus`, `admin_role` (abgeglichen mit `packages/core` durch `db-sync.test.ts`).
 
+### Abweichungen ab Phase 3 (umgesetzt, siehe `docs/PLAN-PHASE-3.md` und `supabase/migrations`)
+- **`user_plans`** (id, user_id, status `active|replaced`, template_id → `plan_templates` (`on delete restrict`), Schnappschuss
+  template_title_de, template_version, engine_version, match_quality, notes `plan_note[]` (nur Codes ohne Gesundheitsbezug),
+  **uses_health_data**, **medical_notice**, inputs jsonb (Angaben **ohne** Gesundheitsdaten), start_date, created_at,
+  replaced_at): höchstens ein aktiver Plan je Person.
+- **`planned_sessions`** (plan_id + user_id als gemeinsamer Fremdschlüssel, block_no, week_no 0–6, is_intro_week, is_deload,
+  template_day_index, scheduled_on, original_date, status `planned|skipped`, Schnappschuss Name/Schwerpunkt/Dauer/Texte):
+  nie zwei nicht gestrichene Einheiten am selben Tag (eindeutiger Index je Person und Datum).
+- **`planned_exercises`** (session_id + user_id, order_no 1–8, exercise_id und source_exercise_id → `exercises`
+  (`on delete restrict`), Schnappschuss Name, Dosierung mit den fachlichen Grenzen V4 als CHECK, target_weight_kg).
+- **Rechte:** Nutzer dürfen Pläne und geplante Übungen nur **lesen**; an Einheiten nur Datum und Status ändern (Trigger:
+  ab heute, gleiche ISO-Woche wie der ursprüngliche Tag, Erholungseinheiten nur streichen, nur `planned → skipped`, nur
+  aktiver Plan; die 48-h-Regel bleibt eine App-Regel). Anlegen nur über `save_training_plan(p_plan)` und
+  `append_plan_block(p_plan_id, p_sessions)` (`security definer`, prüfen Login, Profil, Besitz, nur bekannte Felder, Werte
+  der Angaben, nur freigegebene Inhalte, Datumsrahmen `PLAN_SAVE_LIMITS`; `uses_health_data`/`medical_notice` bestimmt
+  die Datenbank selbst aus dem neuesten Gesundheits-Check und der Einwilligung; Fehler ohne Zeilen-Details). Ersetzte
+  Pläne ohne Einheiten werden jenseits der neuesten 20 aufgeräumt.
+- **Gesundheitsdaten:** Pläne, in die der Gesundheits-Check eingeht (`uses_health_data`), gelten vorsorglich als
+  Gesundheitsdaten (EuGH C-184/20): nur mit gültiger Einwilligung, beim Widerruf werden **alle** solchen Pläne vollständig
+  gelöscht. Archivierte Übungen bleiben über eigene Pläne lesbar.
+- **Gerätespeicher** solcher Pläne (Offline-Training): Ausnahme zur Phase-1-Regel, **Gründer-Entscheidung vor Etappe C**
+  (`docs/PLAN-PHASE-3.md` Frage 14).
+- **Vorgemerkt für Phase 4:** optionales Feld „eigenes Startgewicht“ (Selbsteinschätzung); Tagebuch-Einträge
+  (`set_logs.planned_exercise_id`) mit `on delete set null` und eigener Kopie, damit der Widerruf kein Tagebuch mitlöscht;
+  „gestern verpasst → skipped“ und Progressions-Änderungen an `planned_exercises` über eigene `security definer`-Funktionen.
+
 ### Erweiterungen (geplant, `docs/ERWEITERUNGEN.md`)
 Alle Tabellen mit RLS (jeder sieht nur eigene Zeilen; Ausnahmen: Katalog-/Inhaltstabellen für alle lesbar, Pflege nur
 durch Admin). **sensibel** = Gesundheitsdaten nach DSGVO Art. 9: nur mit gültiger Einwilligung speichern, beim Widerruf

@@ -2,7 +2,7 @@
 -- Nutzerdaten. Verhindert, dass das Mindestalter 16 durch Weglassen des Profils umgangen wird.
 begin;
 create extension if not exists pgtap with schema extensions;
-select plan(13);
+select plan(14);
 
 insert into auth.users (id, email) values
   ('11111111-1111-4111-8111-111111111111', 'nutzer-a@example.test');
@@ -59,6 +59,11 @@ select throws_ok(
     ((now() at time zone 'Europe/Berlin')::date - interval '15 years')::date
   ),
   '23514', null, 'unter 16: kein Profil'
+);
+
+select throws_ok(
+  $$ select public.save_training_plan('{}'::jsonb) $$,
+  '42501', 'Profil fehlt.', 'ohne Profil: kein Trainingsplan'
 );
 
 -- Mit Profil geht es.

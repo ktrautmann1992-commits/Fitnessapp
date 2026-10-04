@@ -16,6 +16,8 @@ AGENTS.md
 # Automatisch erzeugt aus packages/ui/theme.css
 packages/ui/src/tokens.generated.ts
 docs/ERWEITERUNGEN.md
+ALPHA5-PAKET.md
+docs/ALPHA5-PAKET.md
 test-results
 playwright-report
 

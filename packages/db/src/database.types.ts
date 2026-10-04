@@ -537,6 +537,156 @@ export type Database = {
         };
         Relationships: [];
       };
+      planned_exercises: {
+        Row: {
+          duration_s: number | null;
+          exercise_id: string;
+          exercise_name_de: string;
+          id: string;
+          notes_de: string | null;
+          order_no: number;
+          reps_max: number | null;
+          reps_min: number | null;
+          rest_s: number;
+          rpe_target: number;
+          session_id: string;
+          sets: number;
+          source_exercise_id: string;
+          superset_group: string | null;
+          target_weight_kg: number | null;
+          user_id: string;
+        };
+        Insert: {
+          duration_s?: number | null;
+          exercise_id: string;
+          exercise_name_de: string;
+          id?: string;
+          notes_de?: string | null;
+          order_no: number;
+          reps_max?: number | null;
+          reps_min?: number | null;
+          rest_s: number;
+          rpe_target: number;
+          session_id: string;
+          sets: number;
+          source_exercise_id: string;
+          superset_group?: string | null;
+          target_weight_kg?: number | null;
+          user_id: string;
+        };
+        Update: {
+          duration_s?: number | null;
+          exercise_id?: string;
+          exercise_name_de?: string;
+          id?: string;
+          notes_de?: string | null;
+          order_no?: number;
+          reps_max?: number | null;
+          reps_min?: number | null;
+          rest_s?: number;
+          rpe_target?: number;
+          session_id?: string;
+          sets?: number;
+          source_exercise_id?: string;
+          superset_group?: string | null;
+          target_weight_kg?: number | null;
+          user_id?: string;
+        };
+        Relationships: [
+          {
+            foreignKeyName: 'planned_exercises_exercise_id_fkey';
+            columns: ['exercise_id'];
+            isOneToOne: false;
+            referencedRelation: 'exercises';
+            referencedColumns: ['id'];
+          },
+          {
+            foreignKeyName: 'planned_exercises_session_id_user_id_fkey';
+            columns: ['session_id', 'user_id'];
+            isOneToOne: false;
+            referencedRelation: 'planned_sessions';
+            referencedColumns: ['id', 'user_id'];
+          },
+          {
+            foreignKeyName: 'planned_exercises_source_exercise_id_fkey';
+            columns: ['source_exercise_id'];
+            isOneToOne: false;
+            referencedRelation: 'exercises';
+            referencedColumns: ['id'];
+          },
+        ];
+      };
+      planned_sessions: {
+        Row: {
+          block_no: number;
+          cooldown_de: string;
+          created_at: string;
+          estimated_minutes: number;
+          focus: Database['public']['Enums']['session_focus'];
+          id: string;
+          is_deload: boolean;
+          is_intro_week: boolean;
+          name_de: string;
+          original_date: string | null;
+          plan_id: string;
+          scheduled_on: string;
+          status: Database['public']['Enums']['planned_session_status'];
+          template_day_index: number;
+          updated_at: string;
+          user_id: string;
+          warmup_de: string;
+          week_no: number;
+        };
+        Insert: {
+          block_no: number;
+          cooldown_de: string;
+          created_at?: string;
+          estimated_minutes: number;
+          focus: Database['public']['Enums']['session_focus'];
+          id?: string;
+          is_deload?: boolean;
+          is_intro_week?: boolean;
+          name_de: string;
+          original_date?: string | null;
+          plan_id: string;
+          scheduled_on: string;
+          status?: Database['public']['Enums']['planned_session_status'];
+          template_day_index: number;
+          updated_at?: string;
+          user_id: string;
+          warmup_de: string;
+          week_no: number;
+        };
+        Update: {
+          block_no?: number;
+          cooldown_de?: string;
+          created_at?: string;
+          estimated_minutes?: number;
+          focus?: Database['public']['Enums']['session_focus'];
+          id?: string;
+          is_deload?: boolean;
+          is_intro_week?: boolean;
+          name_de?: string;
+          original_date?: string | null;
+          plan_id?: string;
+          scheduled_on?: string;
+          status?: Database['public']['Enums']['planned_session_status'];
+          template_day_index?: number;
+          updated_at?: string;
+          user_id?: string;
+          warmup_de?: string;
+          week_no?: number;
+        };
+        Relationships: [
+          {
+            foreignKeyName: 'planned_sessions_plan_id_user_id_fkey';
+            columns: ['plan_id', 'user_id'];
+            isOneToOne: false;
+            referencedRelation: 'user_plans';
+            referencedColumns: ['id', 'user_id'];
+          },
+        ];
+      };
       profiles: {
         Row: {
           birth_date: string;
@@ -712,11 +862,74 @@ export type Database = {
           },
         ];
       };
+      user_plans: {
+        Row: {
+          created_at: string;
+          engine_version: number;
+          id: string;
+          inputs: Json;
+          match_quality: Database['public']['Enums']['plan_match_quality'];
+          medical_notice: boolean;
+          notes: Database['public']['Enums']['plan_note'][];
+          replaced_at: string | null;
+          start_date: string;
+          status: Database['public']['Enums']['plan_status'];
+          template_id: string;
+          template_title_de: string;
+          template_version: number;
+          user_id: string;
+          uses_health_data: boolean;
+        };
+        Insert: {
+          created_at?: string;
+          engine_version: number;
+          id?: string;
+          inputs: Json;
+          match_quality: Database['public']['Enums']['plan_match_quality'];
+          medical_notice?: boolean;
+          notes?: Database['public']['Enums']['plan_note'][];
+          replaced_at?: string | null;
+          start_date: string;
+          status?: Database['public']['Enums']['plan_status'];
+          template_id: string;
+          template_title_de: string;
+          template_version: number;
+          user_id?: string;
+          uses_health_data?: boolean;
+        };
+        Update: {
+          created_at?: string;
+          engine_version?: number;
+          id?: string;
+          inputs?: Json;
+          match_quality?: Database['public']['Enums']['plan_match_quality'];
+          medical_notice?: boolean;
+          notes?: Database['public']['Enums']['plan_note'][];
+          replaced_at?: string | null;
+          start_date?: string;
+          status?: Database['public']['Enums']['plan_status'];
+          template_id?: string;
+          template_title_de?: string;
+          template_version?: number;
+          user_id?: string;
+          uses_health_data?: boolean;
+        };
+        Relationships: [
+          {
+            foreignKeyName: 'user_plans_template_id_fkey';
+            columns: ['template_id'];
+            isOneToOne: false;
+            referencedRelation: 'plan_templates';
+            referencedColumns: ['id'];
+          },
+        ];
+      };
     };
     Views: {
       [_ in never]: never;
     };
     Functions: {
+      append_plan_block: { Args: { p_plan_id: string; p_sessions: Json }; Returns: number };
       current_consent_version: {
         Args: { p_type: Database['public']['Enums']['consent_type'] };
         Returns: number;
@@ -737,6 +950,7 @@ export type Database = {
         };
         Returns: undefined;
       };
+      save_training_plan: { Args: { p_plan: Json }; Returns: string };
       seed_content: { Args: { p_content: Json }; Returns: Json };
     };
     Enums: {
@@ -807,6 +1021,22 @@ export type Database = {
         | 'hamstrings'
         | 'adductors'
         | 'calves';
+      plan_match_quality: 'exact' | 'close' | 'fallback';
+      plan_note:
+        | 'goal_endurance_not_yet'
+        | 'days_rotated'
+        | 'days_capped'
+        | 'days_added'
+        | 'back_to_back_sessions'
+        | 'minutes_shortened'
+        | 'minutes_below_minimum'
+        | 'volume_reduced'
+        | 'exercises_substituted'
+        | 'exercises_removed'
+        | 'no_pull_exercise'
+        | 'location_mismatch';
+      plan_status: 'active' | 'replaced';
+      planned_session_status: 'planned' | 'skipped';
       session_focus: 'full_body' | 'upper' | 'lower';
       sex: 'male' | 'female' | 'diverse' | 'unspecified';
       training_location: 'gym' | 'home' | 'both';
@@ -992,6 +1222,23 @@ export const Constants = {
         'adductors',
         'calves',
       ],
+      plan_match_quality: ['exact', 'close', 'fallback'],
+      plan_note: [
+        'goal_endurance_not_yet',
+        'days_rotated',
+        'days_capped',
+        'days_added',
+        'back_to_back_sessions',
+        'minutes_shortened',
+        'minutes_below_minimum',
+        'volume_reduced',
+        'exercises_substituted',
+        'exercises_removed',
+        'no_pull_exercise',
+        'location_mismatch',
+      ],
+      plan_status: ['active', 'replaced'],
+      planned_session_status: ['planned', 'skipped'],
       session_focus: ['full_body', 'upper', 'lower'],
       sex: ['male', 'female', 'diverse', 'unspecified'],
       training_location: ['gym', 'home', 'both'],

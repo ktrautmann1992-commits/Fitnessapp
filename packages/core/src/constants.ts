@@ -474,3 +474,24 @@ export const PLAN_BLOCK_LIMITS = {
  * Quelle: PRODUKTENTSCHEIDUNG.
  */
 export const PLANNED_LOAD_LIMITS = { targetWeightKg: { min: 0.5, max: 500 } } as const;
+
+/**
+ * Rahmen beim Speichern eines Plans (save_training_plan / append_plan_block), identisch als Konstanten in
+ * supabase/migrations/20261004120100_training_plan_rpcs.sql bzw. als CHECK auf user_plans.inputs
+ * (db-sync.test.ts). „Heute“ = Europe/Berlin. Quelle: PRODUKTENTSCHEIDUNG (Wächter-Prüfung Etappe B).
+ * - pastToleranceDays 1: Plan-Start und Einheiten frühestens gestern (Zeitzonen-Toleranz wie
+ *   MEASURED_ON_MAX_DAYS_AHEAD); beim Ersetzen entfallen die geplanten Einheiten des alten Plans ab gestern.
+ * - startDateMaxDaysAhead 7: ein neuer Plan beginnt spätestens in einer Woche (und nie nach der ersten Einheit).
+ * - scheduleMaxDaysAhead 56 = 7 × 7 + 7: Woche 0 bis Woche 6 (PLAN_BLOCK_LIMITS.weekNo) ab dem spätesten Start;
+ *   beim Folgeblock ab der letzten Einheit des Plans bzw. ab heute gerechnet.
+ * - keptReplacedPlans 20: ersetzte Pläne ohne verbleibende Einheiten jenseits der neuesten 20 werden beim
+ *   Speichern gelöscht (Pläne mit vergangenen Einheiten bleiben als Verlauf).
+ * - inputsMaxBytes 4096: Größe von user_plans.inputs als Text in Postgres-Schreibweise (jsonbTextBytes()).
+ */
+export const PLAN_SAVE_LIMITS = {
+  pastToleranceDays: 1,
+  startDateMaxDaysAhead: 7,
+  scheduleMaxDaysAhead: 7 * 7 + 7,
+  keptReplacedPlans: 20,
+  inputsMaxBytes: 4096,
+} as const;
