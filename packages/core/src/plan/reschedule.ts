@@ -3,7 +3,9 @@ import type { PlannedSessionStatus, SessionFocus } from '../enums';
 
 /**
  * Verpasste Einheiten neu planen – „verschieben oder streichen, nie stapeln“ (docs/PLAN-PHASE-3.md 5.11).
- * Dieselben Regeln prüft die Datenbank zusätzlich (Trigger, Etappe B).
+ * Die Datenbank prüft zusätzlich die Grundregeln als harte Grenze (Trigger private.planned_sessions_before_update:
+ * ab heute, dieselbe ISO-Woche, Erholungseinheiten nur streichen, nie stapeln); die 48-h-Erholungsregel
+ * zwischen Nachbartagen prüft nur diese Funktion.
  */
 export interface ReschedulableSession {
   readonly id: string;

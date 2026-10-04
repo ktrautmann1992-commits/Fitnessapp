@@ -10,6 +10,10 @@ import { MEASUREMENT_SITES } from './body-measurements';
 import { CURRENT_CONSENT_VERSIONS } from './consent';
 import {
   BIRTH_DATE_MIN,
+  PLAN_BLOCK_LIMITS,
+  PLAN_SAVE_LIMITS,
+  PLANNED_LOAD_LIMITS,
+  TEMPLATE_DOSAGE_LIMITS,
   BODY_MEASUREMENT_LIMITS,
   CONTENT_SCHEMA_LIMITS,
   BODY_METRIC_LIMITS,
@@ -25,6 +29,13 @@ import { EQUIPMENT } from './equipment';
 import { FOOD_GROUPS } from './food-groups';
 import { HEALTH_FLAGS, HEALTH_SCREENING_QUESTIONS } from './health-screening';
 import { ONBOARDING_STEPS } from './onboarding';
+import {
+  savePlanExerciseSchema,
+  savePlanHomeEquipmentSchema,
+  savePlanInputsSchema,
+  savePlanPayloadSchema,
+  savePlanSessionSchema,
+} from './plan/payload';
 
 const migrationsDir = new URL('../../../supabase/migrations/', import.meta.url);
 const migrationFiles = readdirSync(migrationsDir)
@@ -96,6 +107,10 @@ describe('Enums', () => {
     ['alternative_reason', enums.ALTERNATIVE_REASONS],
     ['session_focus', enums.SESSION_FOCUSES],
     ['admin_role', enums.ADMIN_ROLES],
+    ['plan_status', enums.PLAN_STATUSES],
+    ['planned_session_status', enums.PLANNED_SESSION_STATUSES],
+    ['plan_match_quality', enums.PLAN_MATCH_QUALITIES],
+    ['plan_note', enums.PLAN_NOTES],
   ] as const)('public.%s entspricht packages/core', (name, values) => {
     expect(enumValues(name)).toEqual([...values]);
   });
@@ -226,6 +241,34 @@ describe('Grenzwerte', () => {
     between('order_no', CONTENT_SCHEMA_LIMITS.orderNo),
     between('minutes_min', TRAINING_LIMITS.minutesPerSession),
     between('minutes_max', TRAINING_LIMITS.minutesPerSession),
+    // Nutzerpläne (Phase 3): fachliche Grenzen = TEMPLATE_DOSAGE_LIMITS, PLAN_BLOCK_LIMITS, PLANNED_LOAD_LIMITS
+    between('sets', TEMPLATE_DOSAGE_LIMITS.sets),
+    between('reps_min', TEMPLATE_DOSAGE_LIMITS.reps),
+    between('reps_max', TEMPLATE_DOSAGE_LIMITS.reps),
+    between('duration_s', TEMPLATE_DOSAGE_LIMITS.durationS),
+    between('rpe_target', TEMPLATE_DOSAGE_LIMITS.rpe),
+    `order_no between 1 and ${PLAN_BLOCK_LIMITS.exercisesPerSession}`,
+    between('week_no', PLAN_BLOCK_LIMITS.weekNo),
+    between('block_no', PLAN_BLOCK_LIMITS.blockNo),
+    between('target_weight_kg', PLANNED_LOAD_LIMITS.targetWeightKg),
+    `jsonb_array_length(s -> 'exercises') not between 1 and ${PLAN_BLOCK_LIMITS.exercisesPerSession}`,
+    // Höchstens 7 Einheiten je Woche × Woche 0–6 (= savePlanPayloadSchema/appendPlanBlockSchema).
+    `jsonb_array_length(p_sessions) not between 1 and ${
+      PLAN_BLOCK_LIMITS.sessionsPerWeek * (PLAN_BLOCK_LIMITS.weekNo.max + 1)
+    }`,
+    // Angaben (savePlanInputsSchema) = private.assert_plan_inputs()
+    `p_inputs -> 'sessionsPerWeek', ${TRAINING_LIMITS.sessionsPerWeek.min}, ${TRAINING_LIMITS.sessionsPerWeek.max}, 0)`,
+    `p_inputs -> 'minutesPerSession', ${TRAINING_LIMITS.minutesPerSession.min}, ${TRAINING_LIMITS.minutesPerSession.max}, 0)`,
+    `jsonb_array_length(p_inputs -> 'preferredDays') > 7`,
+    `where not private.jsonb_number_between(d, 1, 7, 0)`,
+    `jsonb_array_length(item -> 'weightsKg') > ${EQUIPMENT_LIMITS.maxWeightSteps}`,
+    `private.jsonb_number_between(w, ${EQUIPMENT_LIMITS.weightStepKg.min}, ${EQUIPMENT_LIMITS.weightStepKg.max}, 2)`,
+    `octet_length(inputs::text) <= ${PLAN_SAVE_LIMITS.inputsMaxBytes}`,
+    // Datumsrahmen und Aufräumen beim Speichern (PLAN_SAVE_LIMITS)
+    `past_tolerance_days constant integer := ${PLAN_SAVE_LIMITS.pastToleranceDays}`,
+    `start_date_max_days_ahead constant integer := ${PLAN_SAVE_LIMITS.startDateMaxDaysAhead}`,
+    `schedule_max_days_ahead constant integer := ${PLAN_SAVE_LIMITS.scheduleMaxDaysAhead}`,
+    `kept_replaced_plans constant integer := ${PLAN_SAVE_LIMITS.keptReplacedPlans}`,
   ])('SQL enthält „%s“', (expected) => {
     expect(allSql).toContain(expected);
   });
@@ -234,5 +277,21 @@ describe('Grenzwerte', () => {
     MEASUREMENT_SITES.map((site) => [site.column, BODY_MEASUREMENT_LIMITS[site.limitKey]] as const),
   )('body_measurements.%s hat dieselben Grenzen', (column, limits) => {
     expect(allSql).toContain(between(column, limits));
+  });
+});
+
+describe('Eingabe der Plan-Funktionen (save_training_plan / append_plan_block)', () => {
+  const rpcSql = readMigration('_training_plan_rpcs.sql');
+  const keysOf = (name: string) =>
+    quotedListAfter(rpcSql, `${name} constant text[] := array[`).sort();
+
+  it.each([
+    ['plan_keys', savePlanPayloadSchema],
+    ['input_keys', savePlanInputsSchema],
+    ['equipment_keys', savePlanHomeEquipmentSchema],
+    ['session_keys', savePlanSessionSchema],
+    ['exercise_keys', savePlanExerciseSchema],
+  ] as const)('%s = Felder des strikten Zod-Schemas', (name, schema) => {
+    expect(keysOf(name)).toEqual(Object.keys(schema.shape).sort());
   });
 });

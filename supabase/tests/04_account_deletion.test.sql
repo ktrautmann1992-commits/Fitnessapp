@@ -1,7 +1,7 @@
 -- Konto löschen (delete_my_account): löscht alle Daten des Aufrufers per Kaskade, fremde Daten bleiben.
 begin;
 create extension if not exists pgtap with schema extensions;
-select plan(19);
+select plan(21);
 
 insert into auth.users (id, email) values
   ('11111111-1111-4111-8111-111111111111', 'nutzer-a@example.test'),
@@ -43,6 +43,18 @@ from unnest(array['11111111-1111-4111-8111-111111111111', '22222222-2222-4222-82
 insert into public.food_preferences (user_id, food_group, kind)
 select u, 'soy', 'intolerance'
 from unnest(array['11111111-1111-4111-8111-111111111111', '22222222-2222-4222-8222-222222222222']::uuid[]) as u;
+-- Phase 3: Trainingspläne (Vorlage als Eigentümer, Pläne beider Nutzer).
+insert into public.plan_templates (id, version, status, title_de, description_de, goal_type, experience_level,
+  sessions_per_week, minutes_min, minutes_max, location)
+values ('vorlage-test', 1, 'published', 'Vorlage für Tests', 'Beschreibung der Vorlage mit genügend Zeichen.',
+  'muscle_gain', 'beginner', 3, 45, 60, 'gym');
+insert into public.user_plans (user_id, template_id, template_title_de, template_version, engine_version,
+  match_quality, inputs, start_date, uses_health_data)
+select u, 'vorlage-test', 'Vorlage für Tests', 1, 1, 'exact', '{}', current_date, true
+from unnest(array['11111111-1111-4111-8111-111111111111', '22222222-2222-4222-8222-222222222222']::uuid[]) as u;
+insert into public.planned_sessions (plan_id, user_id, block_no, week_no, template_day_index, scheduled_on,
+  name_de, focus, estimated_minutes, warmup_de, cooldown_de)
+select id, user_id, 1, 1, 1, current_date + 1, 'Ganzkörper', 'full_body', 50, 'A.', 'B.' from public.user_plans;
 
 -- Ohne Anmeldung (authenticated ohne Nutzer-ID) passiert nichts.
 set local role authenticated;
@@ -69,7 +81,13 @@ select is_empty($$ select 1 from public.user_equipment where user_id = '11111111
 select is_empty($$ select 1 from public.nutrition_prefs where user_id = '11111111-1111-4111-8111-111111111111' $$, 'A: nutrition_prefs leer');
 select is_empty($$ select 1 from public.food_preferences where user_id = '11111111-1111-4111-8111-111111111111' $$, 'A: food_preferences leer');
 
+select is_empty($$ select 1 from public.user_plans where user_id = '11111111-1111-4111-8111-111111111111' $$, 'A: user_plans leer');
+
 -- B ist unberührt.
+select is(
+  (select count(*) from public.planned_sessions where user_id = '22222222-2222-4222-8222-222222222222'),
+  1::bigint, 'B: Trainingsplan unverändert'
+);
 select is(
   (select count(*) from auth.users where id = '22222222-2222-4222-8222-222222222222'),
   1::bigint, 'B existiert weiter'

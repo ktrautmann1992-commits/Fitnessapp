@@ -505,14 +505,17 @@ anlegen und dabei Prüfungen der App umgehen. Darum:
      geplanten Tages, auch nach mehrfachem Verschieben); `original_date` setzt der Trigger **nur beim ersten
      Verschieben** (`original_date = coalesce(old.original_date, old.scheduled_on)`), danach bleibt es unverändert,
    - Status nur **`planned` → `skipped`** (nicht zurück),
+   - Einheiten der Erholungswoche (`is_deload`) werden **nur gestrichen, nie verschoben**; die 48-h-Erholungsregel
+     zwischen Nachbartagen bleibt eine Regel der App (`rescheduleSession()`),
    - nur Einheiten des **aktiven** Plans; der Status einer Einheit, deren ISO-Woche vorbei ist, ändert sich nicht
      mehr.
 3. **`public.save_training_plan(p_plan jsonb) returns uuid`** – `security definer`, `set search_path = ''`,
    `revoke … from public, anon`, `grant execute … to authenticated` (Muster `delete_my_account()`). Prüft selbst,
    weil RLS hier nicht greift: angemeldet (`auth.uid()`), Profil vorhanden, Vorlage und alle Übungen
    existieren und sind `published`, `template_version` stimmt, alle Grenzen aus `PLAN_BLOCK_LIMITS`. Dann in
-   **einer** Transaktion: bisherigen aktiven Plan auf `replaced` setzen, dessen **zukünftige** Einheiten mit
-   Status `planned` löschen (ab heute, Europe/Berlin), neuen Plan mit Einheiten und Übungen anlegen – `user_id`
+   **einer** Transaktion: bisherigen aktiven Plan auf `replaced` setzen, dessen Einheiten mit
+   Status `planned` ab **gestern** löschen (frühestes zulässiges Datum eines neuen Plans, Europe/Berlin; ältere
+   bleiben als Verlauf), neuen Plan mit Einheiten und Übungen anlegen – `user_id`
    immer aus `auth.uid()`, nie aus der Eingabe.
    **`uses_health_data` und `medical_notice` bestimmt die Funktion selbst** aus dem neuesten
    `health_screening`-Eintrag des Aufrufers: Check vorhanden **und** `public.has_valid_consent('health_data')` →
@@ -578,7 +581,8 @@ Lese-Regel**: „archivierte Übung lesbar, wenn sie in einem eigenen `planned_e
 6. `save_training_plan`: ersetzt atomar (Fehler mitten drin → alter Plan bleibt); lehnt unveröffentlichte
    Vorlage/Übung ab; lehnt `uses_health_data = true` ohne gültige Einwilligung ab; **lehnt `uses_health_data =
 false` trotz vorhandenem Check und gültiger Einwilligung ab**; `medical_notice` passend zum neuesten Check (Flag
-   vorhanden ↔ `true`), sonst Fehler; ignoriert eine fremde `user_id` in der Eingabe; `anon` darf nicht ausführen.
+   vorhanden ↔ `true`), sonst Fehler; **lehnt eine fremde `user_id` in der Eingabe ab** (unbekanntes Feld, wie
+   `.strict()`; `user_id` kommt immer aus dem Login); `anon` darf nicht ausführen.
 7. `append_plan_block`: nur eigener aktiver Plan, nur `max + 1`, gleiche Prüfung von `uses_health_data`.
 8. **Widerruf `health_data`:** **alle** Pläne mit `uses_health_data` (aktiv und `replaced`) samt **allen**
    Einheiten und Übungen gelöscht; Plan ohne Gesundheitsdaten bleibt unverändert aktiv.
@@ -1060,4 +1064,95 @@ App-Änderung (Etappen B/C).
 10. Zusätzliche Tests mit kleinen festen Testdaten (Fixture-Bibliothek aus `content/test-fixtures.ts`) für
     Sicherheitsregeln, Ersatz und Rotation.
 
-**Nächster Schritt:** Etappe B (Datenbank).
+**Etappe B – Datenbank: erledigt** (wartet auf Wächter-Prüfung). Keine App-Änderung (Etappe C).
+
+1. **Migrationen** `20261004120000_training_plans.sql` und `20261004120100_training_plan_rpcs.sql` (frühere bleiben
+   unverändert):
+   - Enums `plan_status`, `planned_session_status`, `plan_match_quality`, `plan_note`; Tabellen `user_plans`,
+     `planned_sessions`, `planned_exercises` mit allen Grenzen aus Abschnitt 8 (Dosierung V4 als CHECK, `order_no` 1–8
+     eindeutig je Einheit, `week_no` 0–6, Zielgewicht 0,5–500 kg, `medical_notice` nur mit `uses_health_data`, keine
+     Gesundheitsschlüssel in `inputs`), eindeutiger aktiver Plan, eindeutig `(user_id, scheduled_on)` für nicht
+     gestrichene Einheiten, gemeinsame Fremdschlüssel `(plan_id, user_id)` / `(session_id, user_id)`, Fremdschlüssel auf
+     Vorlagen und Übungen `on delete restrict`.
+   - Rechte nach 8.1: `authenticated` nur `select` auf `user_plans`/`planned_exercises`; auf `planned_sessions` `select`
+     und `update (scheduled_on, status)`; Trigger `private.planned_sessions_before_update` mit allen Regeln (andere
+     Spalten, gestrichen, ersetzter Plan, vergangene Woche, nicht vor heute, gleiche ISO-Woche wie
+     `coalesce(original_date, scheduled_on)`, `original_date` nur beim ersten Verschieben).
+   - `save_training_plan` / `append_plan_block`: `security definer`, `search_path = ''`, `revoke … from public, anon`;
+     Login, Profil, Besitz, nur bekannte Felder (`private.assert_json_keys`, entspricht `.strict()`), Vorlage/Übungen
+     freigegeben und Version passend, Einheiten ab gestern (1 Tag Zeitzonen-Toleranz), neuer Plan mit `block_no` 1,
+     Folgeblock nur `max + 1`; `uses_health_data`/`medical_notice` bestimmt `private.plan_health_basis()` aus dem neuesten
+     Check und `has_valid_consent('health_data')` – abweichende Eingabe wird abgelehnt.
+   - `private.consents_after_revoke()` löscht zusätzlich alle Pläne mit `uses_health_data` vollständig.
+   - Zusätzliche Lese-Regel auf `exercises`: archivierte Übungen über eigene `planned_exercises` lesbar.
+2. **pgTAP:** `12_training_plans.test.sql` (52 Tests) und `13_training_plan_rpcs.test.sql` (69 Tests) mit allen Fällen
+   aus 8.4, Ergänzungen in `04_account_deletion` (Pläne werden mitgelöscht, B unberührt) und `06_profile_required`
+   (kein Plan ohne Profil). **Lokal geprüft** mit Postgres 16 + pgTAP und einem kleinen Supabase-Ersatz (Rollen, `auth`,
+   `auth.uid()`; Skript `/var/tmp/fitness-pg/run.sh`): alle 13 Dateien, 502 Tests bestanden (Stand nach den
+   Nachträgen unten).
+3. **`packages/core`:** strikte Zod-Schemas `savePlanPayloadSchema`, `savePlanSessionSchema`, `savePlanInputsSchema`,
+   `savePlanExerciseSchema`, `appendPlanBlockSchema` und `toAppendBlockPayload()` in `plan/payload.ts` (mit Tests);
+   `db-sync.test.ts` prüft die neuen Enums, die Grenzen und dass die Feldlisten der SQL-Funktionen genau den
+   Zod-Schemas entsprechen.
+4. **`packages/db/src/database.types.ts`:** 3 Tabellen, 4 Enums, 2 Funktionen im gen-types-Format.
+5. **Doku:** KONZEPT Abschnitt 12 „Abweichungen ab Phase 3“.
+
+**Entscheidungen beim Umsetzen (zur Wächter-Prüfung):**
+
+1. Statt „ignoriert eine fremde `user_id`“ lehnt `save_training_plan` jedes unbekannte Feld ab (auch `user_id`) –
+   strenger und gleichbedeutend mit `.strict()`; `user_id` kommt immer aus dem Login.
+2. Der Verschiebe-Trigger greift nur für die Rolle `authenticated`; geprüfte Server-Funktionen (Eigentümer) sind
+   ausgenommen (Phase 4: „gestern verpasst“).
+3. Einheiten dürfen beim Speichern ab gestern liegen (1 Tag Toleranz für Zeitzonen, wie `MEASURED_ON_MAX_DAYS_AHEAD`).
+4. `append_plan_block` lehnt auch ab, wenn sich nur der Arzt-Hinweis geändert hat (neuer Check mit/ohne Flag) – dann
+   ist ein neuer Plan nötig (strengere Regeln wirken über die Anzeige ohnehin sofort).
+5. Der Test „alter Termin in der Vergangenheit“ hängt vom Wochentag ab und wird montags per `skip()` übersprungen.
+
+**Nächster Schritt:** Gründer-Entscheidung zu Frage 14, dann Etappe C (App).
+
+**Nachträge aus der Wächter-Prüfung von Etappe B (umgesetzt, direkt in den noch nicht gemergten Migrationen):**
+
+1. **Kein Gesundheitsbezug in Fehlerdetails:** Die Einfüge-Schritte in `save_training_plan` und
+   `private.insert_plan_sessions` (auch für `append_plan_block`) fangen CHECK-, Eindeutigkeits-, NOT-NULL-, Format- und
+   Zahlenbereichs-Fehler ab und melden nur „Ungültige Werte im Plan.“ mit demselben Fehlercode, **ohne Detail**
+   („Failing row contains (…)“ mit `user_id`, `uses_health_data` usw. erreicht weder App noch Log). pgTAP prüft
+   Meldung und fehlendes Detail für CHECK und Index.
+2. **Angaben nach Werten geprüft:** `private.assert_plan_inputs()` = `savePlanInputsSchema` (alle Felder Pflicht,
+   Aufzählungen `goal_type`/`endurance_discipline`/`experience_level`/`training_location`, Tage 1–7 und Minuten 10–240
+   ganzzahlig, Wunsch-Tage 1–7 höchstens 7 und eindeutig, Geräte aus dem Katalog mit höchstens 40 Gewichtsstufen
+   0,25–200 kg, jedes Gerät einmal). Zusätzlich CHECK `octet_length(inputs::text) <= 4096`; Zod prüft dieselbe Grenze
+   mit `jsonbTextBytes()` (Postgres-Schreibweise). Neue Konstante `PLAN_SAVE_LIMITS` in `constants.ts`.
+3. **Obergrenzen:** Einheiten eines neuen Plans zwischen gestern und heute + 7 × 7 + 7 Tagen, Plan-Start zwischen
+   gestern und heute + 7 und nie nach der ersten Einheit; Folgeblock nur nach der letzten Einheit des Plans (frühestens
+   gestern) und höchstens 56 Tage nach der letzten Einheit bzw. nach heute. **Ersetzte Pläne:** Beim Speichern werden
+   ersetzte Pläne **ohne verbleibende Einheiten** jenseits der neuesten 20 gelöscht (älteste zuerst). Pläne mit
+   vergangenen Einheiten bleiben als Verlauf; weil beim Ersetzen alle Einheiten ab gestern entfallen, entsteht so
+   höchstens etwa alle zwei Tage ein bleibender Eintrag – häufiges Neu-Erzeugen lässt die Tabelle nicht wachsen. Bewusst
+   keine harte Sperre (sie würde Nutzer dauerhaft aussperren). Für Phase 4 vermerkt: Tagebuch-Einträge verweisen mit
+   `on delete set null`, damit das Aufräumen nie Einträge mitlöscht.
+4. **Deterministische Datumstests:** `private.berlin_today()` (stable, `search_path = ''`) ist die einzige Quelle für
+   „heute“ in Trigger, `insert_plan_sessions`, `save_training_plan` und `append_plan_block`. Ausführbar nur für
+   `authenticated` (der Verschiebe-Trigger läuft mit den Rechten des Nutzers) und `service_role`, nicht für `anon`.
+   Die Tests 12/13 setzen sie innerhalb der Transaktion auf Mittwoch, 07.10.2026 (Rollback stellt das Original her);
+   das `skip()` am Montag entfällt. Neue Tests: Mi → Di abgelehnt, Montags-Einheit auf heute, Sonntag als Grenze,
+   „nie vor heute“ isoliert (Do → Di, Tag frei), vorgestern beim Speichern abgelehnt, gestern angenommen.
+5. **Indizes** `user_plans (user_id)` und `planned_sessions (user_id, scheduled_on)`.
+6. **Trigger:** Erholungseinheiten nur streichen (Test); Kommentar richtiggestellt (48 h bleibt App-Regel) und
+   Ausnahmen Eigentümer/`service_role` beschrieben.
+7. **RPE vor der Spaltenrundung:** `rpe_target × 2` muss ganzzahlig sein, Zielgewicht höchstens 2 Nachkommastellen –
+   geprüft, bevor `numeric(3, 1)`/`numeric(5, 2)` rundet (Test: 7,49 abgelehnt).
+8. **Folgeblock:** `week_no >= 1` und keine Einstiegswoche (Tests).
+9. **Ersetzen:** geplante Einheiten des alten Plans ab gestern gelöscht (statt ab heute) – der neue Plan darf gestern
+   belegen, ohne Kollision; ältere bleiben (Test).
+10. **Lese-Regel** für Übungen über eigene Pläne gilt nur für `status = 'archived'`.
+11. `private.plan_health_basis()` und `private.insert_plan_sessions()` sind **kein** `security definer` mehr (laufen
+    mit den Rechten der aufrufenden Definer-Funktion); `plan_health_basis()` hat keinen Nutzer-Parameter und nutzt
+    `auth.uid()` für Check **und** Einwilligung.
+12. **Weitere Tests:** `medical_notice = true` ohne Flag abgelehnt; Folgeblock nach neuem Check mit bzw. ohne Flag
+    abgelehnt; `anon` darf `append_plan_block` nicht ausführen; vergangene Einheiten des alten Plans bleiben beim
+    Ersetzen; Löschen einer Vorlage mit Plan-Bezug scheitert; `seed_content` archiviert eine Übung aus einem
+    Nutzerplan (gelingt, Übung bleibt über den Plan lesbar, andere archivierte Übungen nicht); Aufräumen ersetzter
+    Pläne.
+13. `db-sync.test.ts` gleicht zusätzlich `between 1 and 49` (= 7 × 7 aus `PLAN_BLOCK_LIMITS`), die Werte-Grenzen der
+    Angaben, `equipment_keys` und `PLAN_SAVE_LIMITS` ab; Abschnitt 8.4 Punkt 6 an „fremde `user_id` wird abgelehnt“
+    angepasst. Öffentliche Funktions-Signaturen und Spalten unverändert – `database.types.ts` bleibt gleich.
