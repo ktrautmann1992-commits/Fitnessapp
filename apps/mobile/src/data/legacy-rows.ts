@@ -24,7 +24,14 @@ interface LegacyGoalsFields {
  * Rein und getestet (legacy-rows.test.ts); bereits neue Stände bleiben unverändert.
  */
 export function upgradeStoredRows(stored: UserRows): UserRows {
-  const rows: UserRows = { ...stored, trainingSlots: stored.trainingSlots ?? [] };
+  const rows: UserRows = {
+    ...stored,
+    trainingSlots: stored.trainingSlots ?? [],
+    // Vor Etappe C gab es keine Pläne im Gerätespeicher.
+    plans: stored.plans ?? [],
+    plannedSessions: stored.plannedSessions ?? [],
+    plannedExercises: stored.plannedExercises ?? [],
+  };
   const goals = stored.goals as (GoalsRow & LegacyGoalsFields) | null;
   if (
     goals &&

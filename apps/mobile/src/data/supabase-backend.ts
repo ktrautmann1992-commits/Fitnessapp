@@ -1,27 +1,44 @@
 import {
   evaluateHealthScreening,
+  HEALTH_PLAN_CACHE_MAX_AGE_DAYS,
   healthScreeningAnswersSchema,
+  isoDateInTimeZone,
   type ConsentType,
+  type PlanLibrary,
+  type PlanSafetyRules,
 } from '@fitnessapp/core';
-import type { AppSupabaseClient } from '@fitnessapp/db';
+import type { AppSupabaseClient, Json } from '@fitnessapp/db';
 
-import { BackendError, type Backend, type BackendErrorCode } from './backend';
+import { BackendError, type Backend, type BackendErrorCode, type BackendEvent } from './backend';
 import { readJson, STORAGE_KEYS, writeJson, type KeyValueStore } from './kv';
 import { upgradeStoredRows } from './legacy-rows';
+import { type ConsentVersions, versionsFromDocuments } from './mapping';
+import {
+  type CachedLibrary,
+  libraryFromCache,
+  libraryFromDbRows,
+  libraryToCache,
+} from './plan-library';
 import { planSave } from './plan-save';
+import { createMemoryProtectedStore, type ProtectedStore } from './protected-store';
 import { SyncQueue } from './sync-queue';
+import { effectiveSafetyRules } from './training-plan';
 import {
   type AuthSession,
   type ConsentDocument,
   type ConsentPlatform,
+  type PlannedExerciseRow,
+  type PlannedSessionRow,
+  type UserPlanRow,
   type UserRows,
 } from './types';
 import {
   applyWriteOps,
+  cacheableRows,
   isDirectOp,
   isSensitiveOp,
-  withoutHealthData,
   type ApplyContext,
+  type PlanRows,
   type WriteOp,
 } from './write-ops';
 
@@ -33,6 +50,12 @@ import {
  *   Warteschlange (sync-queue.ts) gesendet, sobald wieder Verbindung besteht.
  * - Gesundheitsdaten (Körperdaten, Umfänge, Gesundheits-Check, Unverträglichkeiten) und Einwilligungen:
  *   nur im Arbeitsspeicher, direkt gesendet. Ohne Verbindung → Fehler mit „Erneut versuchen“.
+ * - Trainingspläne (Phase 3): Pläne OHNE Gesundheitsbezug wie Nicht-Gesundheitsdaten (Zwischenspeicher,
+ *   Verschieben über die Warteschlange mit Schlüssel update_planned_session:<id>). Pläne MIT Gesundheitsbezug und die
+ *   wirksamen Sicherheitsregeln nur im geschützten Zwischenspeicher (Gründer-Entscheidung Frage 14:
+ *   protected-store.ts – App verschlüsselt, Browser sessionStorage), Verschieben sofort gesendet. Gelöscht bei
+ *   Widerruf, Abmelden, Konto löschen und sobald der Server keinen solchen aktiven Plan mehr liefert.
+ * - Bibliothek: nur freigegebene Inhalte (allowDrafts nie true), offline der zwischengespeicherte Stand.
  *
  * Kann ohne Supabase-Projekt nicht live getestet werden; Abbildung und Fehlerbehandlung sind per Unit-Test
  * abgesichert (mapping.test.ts, supabase-backend.test.ts).
@@ -96,6 +119,23 @@ function toBackendError(error: unknown, sensitive = false): BackendError {
     ? error
     : new BackendError(classifySupabaseError(error, sensitive), { sensitive, cause: error });
 }
+
+/**
+ * Fehler beim Speichern/Ändern eines Plans: Netz und Anmeldung wie sonst, alles andere (Plan passt nicht zum
+ * Gesundheits-Check, Tag belegt, Einheit ersetzt …) = „plan_rejected“ – die App lädt neu bzw. bietet „Plan neu
+ * erstellen“ an. Die Meldungen der Datenbank enthalten keine Nutzerdaten.
+ */
+function toPlanError(error: unknown, sensitive: boolean): BackendError {
+  if (error instanceof BackendError) return error;
+  const code = classifySupabaseError(error, sensitive);
+  return new BackendError(code === 'network' || code === 'not_signed_in' ? code : 'plan_rejected', {
+    sensitive,
+    cause: error,
+  });
+}
+
+/** Update ohne betroffene Zeile (Einheit gibt es nicht mehr, z. B. Plan ersetzt) – vom Server abgelehnt. */
+const PLAN_ROW_MISSING = { code: 'plan_row_missing', message: 'Einheit nicht gefunden.' };
 
 /** Doppelte aktive Einwilligung (unique index) – beim erneuten Senden kein Fehler. */
 function isDuplicate(error: ErrorLike | null): boolean {
@@ -189,12 +229,51 @@ export async function executeWriteOp(
     case 'upsert_measurement_reminder':
       check(await client.from('measurement_reminders').upsert(op.row, { onConflict: 'user_id' }));
       return;
+    // Pläne nur über die geprüften Datenbank-Funktionen (security definer, PLAN-PHASE-3 8.1).
+    case 'save_training_plan':
+      check(await client.rpc('save_training_plan', { p_plan: toJson(op.payload) }));
+      return;
+    case 'append_plan_block':
+      check(
+        await client.rpc('append_plan_block', {
+          p_plan_id: op.planId,
+          p_sessions: toJson(op.sessions),
+        }),
+      );
+      return;
+    // Nur Datum und Status (Trigger private.planned_sessions_before_update prüft den Rest).
+    case 'update_planned_session': {
+      const result = await client
+        .from('planned_sessions')
+        .update({ scheduled_on: op.scheduledOn, status: op.status })
+        .eq('id', op.sessionId)
+        .eq('user_id', userId)
+        .select('id');
+      check(result);
+      if (!result.data || result.data.length === 0) {
+        throw PLAN_ROW_MISSING;
+      }
+      return;
+    }
   }
+}
+
+function toJson<T>(value: T): Json {
+  return value as unknown as Json;
 }
 
 interface RowsCache {
   userId: string;
   rows: UserRows;
+}
+
+/** Inhalt des geschützten Zwischenspeichers (Frage 14). */
+interface HealthPlanCache {
+  userId: string;
+  /** Letzter Server-Kontakt (ISO-Zeitstempel); älter als HEALTH_PLAN_CACHE_MAX_AGE_DAYS → verworfen. */
+  savedAt: string;
+  plans: PlanRows | null;
+  safetyRules: PlanSafetyRules | null;
 }
 
 export interface SupabaseBackendOptions {
@@ -203,13 +282,23 @@ export interface SupabaseBackendOptions {
   platform: ConsentPlatform;
   now: () => string;
   newId: () => string;
+  /**
+   * Geschützter Zwischenspeicher für Pläne mit Gesundheitsbezug (App: verschlüsselt, Browser: sessionStorage).
+   * Standard (Tests): nur Arbeitsspeicher.
+   */
+  protectedStore?: ProtectedStore;
 }
 
 const CONSENT_TYPES_WITH_TEXT = ['terms', 'privacy', 'health_data'] as const;
 
 export function createSupabaseBackend(options: SupabaseBackendOptions): Backend {
   const { client, store } = options;
+  const protectedStore = options.protectedStore ?? createMemoryProtectedStore();
   let currentUserId: string | null = null;
+  /** Zuletzt geladene Einwilligungs-Versionen (für die wirksamen Sicherheitsregeln im Zwischenspeicher). */
+  let versions: ConsentVersions | null = null;
+  const listeners = new Set<(event: BackendEvent) => void>();
+  const today = () => isoDateInTimeZone(options.now());
 
   const queue = new SyncQueue({
     store,
@@ -227,11 +316,15 @@ export function createSupabaseBackend(options: SupabaseBackendOptions): Backend 
     onDropped: (op) => {
       // Nur die Art des Vorgangs – nie Inhalte (keine Nutzerdaten in Logs).
       console.warn(`Änderung verworfen (${op.kind}): vom Server abgelehnt.`);
+      if (op.kind === 'update_planned_session') {
+        // Verschiebung abgelehnt (Einheit ersetzt, Tag belegt …) → App lädt den Plan neu und meldet es.
+        for (const listener of listeners) listener({ kind: 'plan_change_dropped' });
+      }
     },
   });
 
   function applyContext(): ApplyContext {
-    return { now: options.now(), newId: options.newId, flagsFor: () => [] };
+    return { now: options.now(), newId: options.newId, flagsFor: () => [], today: today() };
   }
 
   /** Wie applyContext, aber mit Flags für die Anzeige (die Datenbank berechnet sie beim Speichern selbst). */
@@ -254,12 +347,129 @@ export function createSupabaseBackend(options: SupabaseBackendOptions): Backend 
     return { userId: data.session.user.id, email: data.session.user.email ?? null };
   }
 
-  /** Zwischenspeicher für offline – immer OHNE Gesundheitsdaten. */
+  async function knownVersions(): Promise<ConsentVersions | null> {
+    if (versions) return versions;
+    const cached = await readJson<ConsentDocument[]>(store, STORAGE_KEYS.documentsCache);
+    return cached && cached.length > 0 ? versionsFromDocuments(cached) : null;
+  }
+
+  /**
+   * Zwischenspeicher für offline: normale Zeilen IMMER ohne Gesundheitsdaten und ohne Pläne mit Gesundheitsbezug
+   * (cacheableRows); Pläne mit Gesundheitsbezug und gesundheitsbezogene Sicherheitsregeln nur in den geschützten
+   * Zwischenspeicher. Liefert der Server keinen solchen Plan mehr (ersetzt/fehlt/Widerruf), wird er gelöscht.
+   */
   async function writeCache(userId: string, rows: UserRows): Promise<void> {
+    const split = cacheableRows(rows, { allowHealthPlanCache: true });
     await writeJson(store, STORAGE_KEYS.rowsCache, {
       userId,
-      rows: withoutHealthData(rows),
+      rows: split.rows,
     } satisfies RowsCache);
+    const known = await knownVersions();
+    const rules = known ? effectiveSafetyRules(rows, known, today()) : null;
+    const healthRules = rules?.usesHealthData ? rules : null;
+    if (split.healthPlans || healthRules) {
+      await protectedStore.write(
+        JSON.stringify({
+          userId,
+          savedAt: options.now(),
+          plans: split.healthPlans,
+          safetyRules: healthRules,
+        } satisfies HealthPlanCache),
+      );
+    } else {
+      await protectedStore.clear();
+    }
+  }
+
+  async function readHealthCache(userId: string): Promise<HealthPlanCache | null> {
+    const raw = await protectedStore.read();
+    if (!raw) return null;
+    try {
+      const parsed = JSON.parse(raw) as HealthPlanCache;
+      const age = Date.parse(options.now()) - Date.parse(parsed.savedAt);
+      if (!(age <= HEALTH_PLAN_CACHE_MAX_AGE_DAYS * 24 * 60 * 60 * 1000)) {
+        // Zu lange ohne Server-Kontakt (oder ohne Zeitstempel): verwerfen – ein Widerruf auf einem anderen Gerät
+        // soll hier nicht unbegrenzt unbemerkt bleiben.
+        await protectedStore.clear();
+        return null;
+      }
+      return parsed.userId === userId ? parsed : null;
+    } catch {
+      return null;
+    }
+  }
+
+  /** Aktiver Plan mit Einheiten und Übungen (RLS: nur eigene Zeilen). */
+  async function fetchActivePlan(userId: string): Promise<PlanRows> {
+    const plan = await client
+      .from('user_plans')
+      .select('*')
+      .eq('user_id', userId)
+      .eq('status', 'active')
+      .maybeSingle();
+    if (plan.error) throw plan.error;
+    if (!plan.data) return { plans: [], plannedSessions: [], plannedExercises: [] };
+    const sessions = await client
+      .from('planned_sessions')
+      .select('*')
+      .eq('plan_id', plan.data.id)
+      .order('scheduled_on');
+    if (sessions.error) throw sessions.error;
+    const sessionRows = (sessions.data ?? []).map(
+      ({ created_at: _created, updated_at: _updated, ...row }) => row as PlannedSessionRow,
+    );
+    let exercises: PlannedExerciseRow[] = [];
+    if (sessionRows.length > 0) {
+      const result = await client
+        .from('planned_exercises')
+        .select('*')
+        .in(
+          'session_id',
+          sessionRows.map((row) => row.id),
+        )
+        .order('order_no');
+      if (result.error) throw result.error;
+      exercises = result.data ?? [];
+    }
+    return {
+      plans: [plan.data as UserPlanRow],
+      plannedSessions: sessionRows,
+      plannedExercises: exercises,
+    };
+  }
+
+  /** Server-Stand + noch nicht gesendete Änderungen, danach Zwischenspeicher aktualisieren. */
+  async function refreshRows(userId: string): Promise<UserRows> {
+    const serverRows = await fetchRows(userId);
+    const rows = applyWriteOps(
+      serverRows,
+      queue.snapshot().map((entry) => entry.op),
+      applyContext(),
+    );
+    await writeCache(userId, rows);
+    return rows;
+  }
+
+  async function fetchLibrary(): Promise<PlanLibrary> {
+    const [exercises, alternatives, templates, sessions, templateExercises] = await Promise.all([
+      // Archivierte Übungen nur für die Anzeige laufender Pläne (libraryFromDbRows trennt sie von der Engine).
+      client.from('exercises').select('*').in('status', ['published', 'archived']),
+      client.from('exercise_alternatives').select('*'),
+      client.from('plan_templates').select('*').eq('status', 'published'),
+      client.from('template_sessions').select('*'),
+      client.from('template_exercises').select('*'),
+    ]);
+    for (const result of [exercises, alternatives, templates, sessions, templateExercises]) {
+      if (result.error) throw result.error;
+    }
+    // Engine immer nur mit freigegebenen Inhalten – planLibraryFromContent, allowDrafts: false.
+    return libraryFromDbRows({
+      exercises: exercises.data ?? [],
+      alternatives: alternatives.data ?? [],
+      templates: templates.data ?? [],
+      sessions: sessions.data ?? [],
+      templateExercises: templateExercises.data ?? [],
+    });
   }
 
   async function fetchRows(userId: string): Promise<UserRows> {
@@ -304,6 +514,7 @@ export function createSupabaseBackend(options: SupabaseBackendOptions): Backend 
         .limit(1),
       client.from('measurement_reminders').select('*').eq('user_id', userId).maybeSingle(),
     ]);
+    const plan = await fetchActivePlan(userId);
     for (const result of [
       profile,
       consents,
@@ -333,6 +544,7 @@ export function createSupabaseBackend(options: SupabaseBackendOptions): Backend 
       bodyMeasurements: measurements.data ?? [],
       healthScreenings: screening.data ?? [],
       reminder: reminder.data,
+      ...plan,
     };
   }
 
@@ -402,6 +614,7 @@ export function createSupabaseBackend(options: SupabaseBackendOptions): Backend 
       await client.auth.signOut();
       await queue.clear();
       await store.removeItem(STORAGE_KEYS.rowsCache);
+      await protectedStore.clear();
       currentUserId = null;
     },
 
@@ -409,6 +622,7 @@ export function createSupabaseBackend(options: SupabaseBackendOptions): Backend 
       try {
         const documents = await fetchConsentDocuments();
         await writeJson(store, STORAGE_KEYS.documentsCache, documents);
+        versions = versionsFromDocuments(documents);
         return documents;
       } catch (error) {
         // Offline: zuletzt geladene Texte und Versionen nutzen statt „Laden fehlgeschlagen“.
@@ -434,14 +648,8 @@ export function createSupabaseBackend(options: SupabaseBackendOptions): Backend 
       const session = await requireSession();
       await queue.flush();
       try {
-        const serverRows = await fetchRows(session.userId);
         // Noch nicht gesendete Änderungen darüberlegen, damit die Anzeige zum Gerät passt.
-        const rows = applyWriteOps(
-          serverRows,
-          queue.snapshot().map((entry) => entry.op),
-          applyContext(),
-        );
-        await writeCache(session.userId, rows);
+        const rows = await refreshRows(session.userId);
         return { rows, offline: false };
       } catch (error) {
         if (classifySupabaseError(error) !== 'network') {
@@ -451,7 +659,20 @@ export function createSupabaseBackend(options: SupabaseBackendOptions): Backend 
         if (cache?.userId !== session.userId) {
           throw new BackendError('network', { cause: error });
         }
-        return { rows: upgradeStoredRows(cache.rows), offline: true };
+        const rows = upgradeStoredRows(cache.rows);
+        const health = await readHealthCache(session.userId);
+        return {
+          rows: health?.plans
+            ? {
+                ...rows,
+                plans: [...rows.plans, ...health.plans.plans],
+                plannedSessions: [...rows.plannedSessions, ...health.plans.plannedSessions],
+                plannedExercises: [...rows.plannedExercises, ...health.plans.plannedExercises],
+              }
+            : rows,
+          offline: true,
+          cachedSafetyRules: health?.safetyRules ?? null,
+        };
       }
     },
 
@@ -485,6 +706,10 @@ export function createSupabaseBackend(options: SupabaseBackendOptions): Backend 
         .is('revoked_at', null);
       if (error) {
         throw toBackendError(error);
+      }
+      if (type === 'health_data') {
+        // Die Datenbank löscht alle Pläne mit Gesundheitsbezug – der geschützte Zwischenspeicher sofort auch.
+        await protectedStore.clear();
       }
     },
 
@@ -542,6 +767,7 @@ export function createSupabaseBackend(options: SupabaseBackendOptions): Backend 
       }
       await queue.clear();
       await store.removeItem(STORAGE_KEYS.rowsCache);
+      await protectedStore.clear();
       // Die Sitzung gehört zu einem gelöschten Konto – nur lokal abmelden.
       await client.auth.signOut({ scope: 'local' });
       currentUserId = null;
@@ -555,6 +781,76 @@ export function createSupabaseBackend(options: SupabaseBackendOptions): Backend 
       for (const key of Object.values(STORAGE_KEYS)) {
         await store.removeItem(key);
       }
+      await protectedStore.clear();
+    },
+
+    loadPlanLibrary: async ({ allowCached }) => {
+      try {
+        const library = await fetchLibrary();
+        // Nur Inhalte (keine Nutzerdaten) – für die Prüfung der Sicherheitsregeln offline.
+        await writeJson(store, STORAGE_KEYS.planLibrary, libraryToCache(library));
+        return library;
+      } catch (error) {
+        if (allowCached && classifySupabaseError(error) === 'network') {
+          return libraryFromCache(await readJson<CachedLibrary>(store, STORAGE_KEYS.planLibrary));
+        }
+        throw toBackendError(error);
+      }
+    },
+
+    savePlan: async (payload) => {
+      const session = await requireSession();
+      try {
+        await executeWriteOp(client, session.userId, { kind: 'save_training_plan', payload });
+      } catch (error) {
+        throw toPlanError(error, payload.uses_health_data);
+      }
+      // Ein neuer Plan ersetzt ausdrücklich alle wartenden Verschiebungen des alten Plans.
+      await queue.remove((op) => op.kind === 'update_planned_session');
+      return refreshRows(session.userId);
+    },
+
+    appendPlanBlock: async (planId, usesHealthData, sessions) => {
+      const session = await requireSession();
+      try {
+        await executeWriteOp(client, session.userId, {
+          kind: 'append_plan_block',
+          planId,
+          usesHealthData,
+          sessions,
+        });
+      } catch (error) {
+        throw toPlanError(error, usesHealthData);
+      }
+      return refreshRows(session.userId);
+    },
+
+    updatePlannedSession: async (update, rows) => {
+      const session = await requireSession();
+      const op: WriteOp = { kind: 'update_planned_session', ...update };
+      if (isDirectOp(op)) {
+        // Plan mit Gesundheitsbezug: sofort senden, nie in die Warteschlange (Abschnitt 9).
+        try {
+          await executeWriteOp(client, session.userId, op);
+        } catch (error) {
+          throw toPlanError(error, true);
+        }
+        const next = applyWriteOps(rows, [op], displayContext());
+        await writeCache(session.userId, next);
+        return next;
+      }
+      const next = applyWriteOps(rows, [op], displayContext());
+      await writeCache(session.userId, next);
+      await queue.add([op]);
+      void queue.flush();
+      return next;
+    },
+
+    subscribe: (listener) => {
+      listeners.add(listener);
+      return () => {
+        listeners.delete(listener);
+      };
     },
   };
 

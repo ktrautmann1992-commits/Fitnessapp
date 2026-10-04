@@ -3,13 +3,13 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "content:bundle": "node scripts/bundle-content.mjs",
-    "dev": "node scripts/bundle-content.mjs && next dev",
-    "build": "node scripts/bundle-content.mjs && next build",
+    "content:bundle": "node ../../scripts/bundle-content.mjs src/generated/content-files.ts",
+    "dev": "node ../../scripts/bundle-content.mjs src/generated/content-files.ts && next dev",
+    "build": "node ../../scripts/bundle-content.mjs src/generated/content-files.ts && next build",
     "start": "next start",
     "lint": "eslint .",
-    "typecheck": "node scripts/bundle-content.mjs && next typegen && tsc --noEmit",
-    "test": "node scripts/bundle-content.mjs && vitest run",
+    "typecheck": "node ../../scripts/bundle-content.mjs src/generated/content-files.ts && next typegen && tsc --noEmit",
+    "test": "node ../../scripts/bundle-content.mjs src/generated/content-files.ts && vitest run",
     "test:e2e": "playwright test",
     "screenshots": "SCREENSHOT_DIR=${SCREENSHOT_DIR:-screenshots} playwright test e2e/screenshots.spec.ts"
   },

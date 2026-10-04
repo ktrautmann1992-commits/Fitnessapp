@@ -45,6 +45,11 @@ export const de = {
     rateLimited: 'Zu viele Versuche. Bitte warte ein paar Minuten und versuche es dann erneut.',
     profileMissing: 'Bitte gib zuerst dein Geburtsdatum an.',
     loadFailed: 'Deine Daten konnten nicht geladen werden.',
+    planRejected:
+      'Das hat nicht geklappt: Dein Plan passt nicht mehr zum aktuellen Stand. Bitte lade neu oder erstelle den Plan neu.',
+    networkPlan:
+      'Keine Verbindung. Änderungen an diesem Plan senden wir sofort – bitte versuche es erneut, sobald du online bist.',
+    noTemplate: 'Für deine Angaben gibt es gerade keinen freigegebenen Plan. Wir arbeiten daran.',
   },
   welcome: {
     title: 'Willkommen!',
@@ -346,7 +351,9 @@ export const de = {
   },
   done: {
     title: 'Geschafft!',
-    preparing: 'Dein Plan wird vorbereitet – kommt in Phase 3.',
+    creating: 'Dein Plan wird erstellt …',
+    ready: 'Dein Plan ist fertig',
+    toPlan: 'Zum Plan',
     summary: 'Deine Angaben',
     noHealthConsent: 'Ohne Einwilligung Gesundheitsdaten – allgemeine Pläne ohne Körperdaten.',
     conservative: 'Vorsichtiger Plan (Gesundheits-Check)',
@@ -377,14 +384,154 @@ export const de = {
   today: {
     title: 'Heute',
     greeting: 'Schön, dass du da bist!',
-    placeholderTitle: 'Dein Plan wird vorbereitet',
-    placeholderText:
-      'Hier siehst du bald dein Training und deine Mahlzeiten für heute. Der Trainingsplan kommt in Phase 3.',
     measurementDue: 'Zeit zum Nachmessen: Deine Körperumfänge sind fällig.',
     healthReconsent:
       'Die Einwilligung Gesundheitsdaten gibt es in einer neuen Fassung. Bitte stimme erneut zu, damit wir deine Daten weiter ergänzen dürfen.',
     reconsentButton: 'Neue Fassung lesen',
+    reconsentDecline: 'Ablehnen – Plan ohne Gesundheits-Check',
+    reconsentDeclineTitle: 'Plan ohne Gesundheits-Check erstellen?',
+    reconsentDeclineText:
+      'Dein bisheriger Plan beruht auf dem Gesundheits-Check und wird durch einen neuen Plan ersetzt. Ohne Gesundheits-Check planen wir vorsichtig. Du kannst später jederzeit neu einwilligen.',
+    reconsentDeclineConfirm: 'Neuen Plan erstellen',
     settings: 'Einstellungen',
+  },
+  plan: {
+    emptyTitle: 'Noch kein Plan',
+    emptyText:
+      'Aus deinen Angaben erstellen wir dir einen Trainingsplan – nach festen Regeln, ohne KI.',
+    emptyAfterRevoke:
+      'Pläne, die auf deinem Gesundheits-Check beruhten, wurden mit dem Widerruf gelöscht. Erstelle einen neuen Plan – ohne Gesundheits-Check planen wir vorsichtig.',
+    create: 'Plan erstellen',
+    createNew: 'Neuen Plan erstellen',
+    recreate: 'Plan neu erstellen',
+    creating: 'Dein Plan wird erstellt …',
+    created: 'Dein neuer Plan ist fertig.',
+    incomplete:
+      'Für einen Plan fehlen noch Angaben (Erfahrung, Ziel oder Trainingstage). Ergänze sie unter Einstellungen → Training.',
+    invalidInputs: 'Deine Angaben passen nicht zu den Regeln für einen Plan. Bitte prüfe sie.',
+    loading: 'Dein Plan wird geladen …',
+    testContent: 'Testinhalte – KI-Entwurf, nicht fachlich geprüft',
+    notReviewed: 'Die Inhalte sind noch nicht fachlich geprüft.',
+    offline: 'Offline – du siehst den zuletzt geladenen Plan.',
+    droppedChange:
+      'Eine Verschiebung konnte nicht übernommen werden – dein Plan wurde neu geladen.',
+    templateLine: (title: string) => `Vorlage: ${title}`,
+    enduranceOnly: 'Ausdauer-Plan',
+    quality: {
+      exact: 'Passt genau zu deinen Angaben.',
+      close: 'Passt mit Anpassungen an deine Angaben.',
+      fallback:
+        'Für deine Angaben gibt es noch keinen genau passenden Plan. Wir haben den nächstbesten gewählt.',
+    },
+    notesTitle: 'Gut zu wissen',
+    notes: {
+      goal_endurance_not_yet:
+        'Ausdauer-Pläne mit Lauftagen bekommst du, wenn du Ausdauer-Tage einplanst. Bis dahin trainierst du Kraft und Fitness.',
+      days_rotated:
+        'Bei 1–2 Kraft-Tagen wechseln die Einheiten von Woche zu Woche – so kommt jede Muskelgruppe dran. Der Umfang ist geringer.',
+      days_capped:
+        'Mehr als 4 Kraft-Einheiten planen wir nicht – an den übrigen Tagen ist Ruhetag. Lockere Bewegung (Spazieren, Rad) ist dann gut.',
+      days_added: 'Wir haben Trainingstage ergänzt, damit die Woche gut verteilt ist.',
+      back_to_back_sessions:
+        'Zwei Kraft-Einheiten liegen direkt hintereinander. Deine Wunsch-Tage haben Vorrang – achte auf gute Erholung.',
+      minutes_shortened:
+        'Einige Einheiten sind gekürzt, damit sie in deine Zeit passen (weniger Übungen oder Sätze).',
+      minutes_below_minimum:
+        'Für so wenig Zeit ist selbst die kürzeste Fassung etwas länger. Plane wenn möglich ein paar Minuten mehr ein.',
+      volume_reduced:
+        'Der Trainingsumfang ist geringer als empfohlen. Mehr Zeit oder mehr Tage bringen mehr Fortschritt.',
+      exercises_substituted:
+        'Einige Übungen sind ersetzt, weil ein Gerät fehlt. Sie sind mit „ersetzt (Gerät fehlt)“ gekennzeichnet.',
+      exercises_removed:
+        'Einzelne Übungen entfallen, weil Geräte fehlen und es keinen passenden Ersatz gibt.',
+      no_pull_exercise:
+        'Für Rücken-Übungen (Ziehen) fehlt ein Gerät. Dafür reicht schon ein Widerstandsband.',
+      location_mismatch:
+        'Für deinen Trainingsort gibt es noch keine eigene Vorlage – wir haben eine passende angepasst.',
+      endurance_days_capped:
+        'Wir planen weniger Ausdauer-Tage als gewünscht, damit genug Erholung bleibt.',
+      endurance_volume_ramped:
+        'Wir starten mit weniger Ausdauer-Minuten und steigern jede Woche höchstens um 10 %.',
+      endurance_walk: 'Wir starten mit zügigem Gehen.',
+      rest_day_added:
+        'Eine sehr kurze Ausdauer-Einheit haben wir gestrichen – der Tag ist Ruhetag.',
+      week_total_capped:
+        'Mehr als 5 Einheiten pro Woche planen wir für dich noch nicht – mindestens 2 Ruhetage helfen beim Erholen.',
+      endurance_basic_only:
+        'Wir planen lockere Ausdauer-Einheiten. Wettkampfpläne und Tempo-Training kommen später.',
+    },
+    medicalNoticeTitle: 'Vor dem Training',
+    medicalNotice:
+      'Bitte kläre vor dem Training ärztlich ab, ob es für dich passt. Bei Brustschmerz, Schwindel oder Atemnot sofort aufhören.',
+    cautious: 'Dein Plan ist bewusst vorsichtig aufgebaut.',
+    noCheck: 'Ohne Gesundheits-Check planen wir vorsichtig.',
+    pregnancy:
+      'Dieser Plan ist nicht für die Schwangerschaft entwickelt. Bitte stimme dein Training mit deiner Ärztin oder deinem Arzt ab.',
+    weekHeader: (week: number, total: number) => `Woche ${week} von ${total}`,
+    week0: 'Woche 0 – zum Reinschnuppern',
+    introWeek: 'Einstiegswoche',
+    introWeekText:
+      'Wähle Gewichte, mit denen du alle Wiederholungen sauber schaffst und noch etwa 3 übrig hättest. Lieber zu leicht als zu schwer.',
+    deloadWeek: 'Erholungswoche',
+    deloadWeekText:
+      'Weniger Sätze und etwas leichter – so erholt sich dein Körper und wird danach stärker.',
+    restDay: 'Heute ist Ruhetag',
+    restDayTip: 'Lockere Bewegung wie Spazierengehen oder Radfahren tut an Ruhetagen gut.',
+    nextSession: (day: string, name: string) => `Nächste Einheit: ${day} – ${name}`,
+    firstSession: (day: string) => `Dein erstes Training: ${day}`,
+    noUpcoming: 'In diesem Plan sind keine Einheiten mehr geplant.',
+    sessionOn: (day: string) => `Einheit am ${day}`,
+    todaySession: 'Deine Einheit heute',
+    duration: (minutes: number) => `ca. ${minutes} Minuten`,
+    warmup: 'Aufwärmen',
+    cooldown: 'Cool-down',
+    exercises: 'Übungen',
+    setsReps: (sets: number, reps: string) => `${sets} × ${reps} Wiederholungen`,
+    setsHold: (sets: number, seconds: number) => `${sets} × ${seconds} Sekunden halten`,
+    rest: (pause: string) => `Pause ${pause}`,
+    reserve: (reps: string) => `ca. ${reps} Wiederholungen in Reserve`,
+    startWeight: 'Startgewicht finden',
+    targetWeight: (kg: string) => `Zielgewicht ${kg} kg`,
+    substituted: 'ersetzt (Gerät fehlt)',
+    adjusted: 'angepasst an deine aktuellen Angaben',
+    hiddenExercises:
+      'Mindestens eine Übung wurde ausgelassen, weil sie nach deinen aktuellen Angaben nicht passt. Bitte erstelle den Plan neu.',
+    libraryMissingTitle: 'Übungen können gerade nicht geprüft werden',
+    libraryMissingText: 'Bitte kurz online gehen – dann zeigen wir dir die Übungen dieser Einheit.',
+    enduranceDuration: (minutes: number) => `${minutes} Minuten`,
+    weekTitle: 'Deine Woche',
+    restShort: 'Ruhetag',
+    todayBadge: 'heute',
+    skipped: 'entfällt',
+    deloadBadge: 'Erholung',
+    movedFrom: (day: string) => `verschoben von ${day}`,
+    movedAway: (day: string) => `verschoben auf ${day}`,
+    showDay: (day: string) => `${day} anzeigen`,
+    move: 'Einheit verschieben',
+    missed: 'Verpasst – auf einen freien Tag dieser Woche verschieben?',
+    recreateNeeded:
+      'Der nächste Abschnitt deines Plans konnte nicht angelegt werden. Bitte erstelle deinen Plan neu.',
+    moved: (day: string) => `Auf ${day} verschoben.`,
+    skippedResult: 'Diese Woche ist kein Tag mehr frei – die Einheit entfällt.',
+    skipTitle: 'Einheit streichen?',
+    skipText:
+      'Diese Woche ist kein passender Tag mehr frei (Erholung zwischen den Einheiten, Erholungswoche). Die Einheit entfällt – sie wandert nicht in die nächste Woche.',
+    skipConfirm: 'Einheit streichen',
+    offerTitle: 'Deine Angaben haben sich geändert',
+    offerText: 'Plan neu erstellen? Dein jetziger Plan bleibt, bis du einen neuen erstellst.',
+    offerStricterTitle: 'Bitte Plan neu erstellen',
+    offerStricterText:
+      'Für dich gelten jetzt strengere Sicherheitsregeln (z. B. neuer Gesundheits-Check oder Geburtstag). Wir zeigen deinen Plan schon vorsichtiger an – erstelle ihn bitte neu.',
+    offerVersion: 'Es gibt eine neue Version deines Plans.',
+    endedTitle: 'Dein Plan ist abgelaufen',
+    endedText: 'Erstelle einen neuen Plan, um weiterzutrainieren.',
+    recreateTitle: 'Plan neu erstellen?',
+    recreateText:
+      'Wir erstellen einen neuen Plan aus deinen aktuellen Angaben. Vergangene Einheiten bleiben erhalten, alle kommenden werden ersetzt.',
+    recreateConfirm: 'Neu erstellen',
+    endurance: {
+      walkRun: 'Geh-Lauf-Wechsel',
+    },
   },
   settings: {
     title: 'Einstellungen',
@@ -398,7 +545,7 @@ export const de = {
     reconsent: 'Neu einwilligen',
     revokeTitle: 'Einwilligung widerrufen?',
     revokeText:
-      'Der Widerruf löscht alle Körper- und Gesundheitsdaten: Körperdaten, Körperumfänge, alle Gesundheits-Checks und Unverträglichkeiten. Deine übrigen Angaben bleiben erhalten.',
+      'Der Widerruf löscht alle Körper- und Gesundheitsdaten: Körperdaten, Körperumfänge, alle Gesundheits-Checks, Unverträglichkeiten und alle Trainingspläne, die auf dem Gesundheits-Check beruhen. Deine übrigen Angaben bleiben erhalten.',
     revokeConfirm: 'Widerrufen und löschen',
     revokeDone: 'Einwilligung widerrufen. Deine Gesundheitsdaten wurden gelöscht.',
     baseConsentNote:
@@ -426,6 +573,14 @@ export const de = {
       'Alle Angaben auf diesem Gerät werden gelöscht. Danach startest du wieder ganz von vorn.',
     clearConfirm: 'Alles löschen',
     back: 'Zurück zu Heute',
+    training: 'Training',
+    trainingText: 'Ändere deine Angaben oder erstelle deinen Plan neu.',
+    editInputs: 'Angaben ändern',
+    repeatScreening: 'Gesundheits-Check wiederholen',
+    repeatScreeningNeedsConsent:
+      'Den Gesundheits-Check kannst du nur mit Einwilligung Gesundheitsdaten wiederholen.',
+    recreatePlan: 'Plan neu erstellen',
+    planCreated: 'Dein neuer Plan ist fertig.',
   },
   notFound: {
     title: 'Diese Seite gibt es nicht.',

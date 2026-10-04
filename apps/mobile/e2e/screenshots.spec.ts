@@ -16,15 +16,21 @@ for (const scheme of ['light', 'dark'] as const) {
     await page.emulateMedia({ colorScheme: scheme });
     mkdirSync(`${dir}/${scheme}`, { recursive: true });
     let n = 0;
+    const names = new Set<string>();
     const shot = async (name: string) => {
+      // Eindeutige Namen und fortlaufende Nummern (keine Datei wird überschrieben).
+      if (names.has(name)) throw new Error(`Screenshot-Name doppelt: ${name}`);
+      names.add(name);
       n += 1;
       await page.waitForTimeout(250);
       await page.screenshot({ path: `${dir}/${scheme}/${String(n).padStart(2, '0')}-${name}.png` });
     };
     const next = () => page.getByRole('button', { name: 'Weiter', exact: true }).click();
     const heading = (name: string | RegExp) =>
-      expect(page.getByRole('heading', { name })).toBeVisible();
+      expect(page.getByRole('heading', { name, exact: typeof name === 'string' })).toBeVisible();
 
+    // Fester Tag (Montag, 05.10.2026), damit die Bilder vergleichbar bleiben.
+    await page.clock.setFixedTime(new Date('2026-10-05T09:00:00+02:00'));
     await page.goto('/');
     await page.evaluate(() => window.localStorage.clear());
     await page.goto('/');
@@ -143,10 +149,28 @@ for (const scheme of ['light', 'dark'] as const) {
     await shot('kochmodus');
     await next();
     await heading('Geschafft!');
+    await expect(page.getByTestId('done-plan')).toBeVisible();
     await shot('fertig');
-    await page.getByRole('button', { name: 'Zur Startseite' }).click();
+    await page.getByRole('button', { name: 'Zum Plan' }).click();
     await heading('Heute');
     await shot('heute');
+    await page.getByTestId('plan-week').scrollIntoViewIfNeeded();
+    await shot('heute-woche');
+    // Ausdauer-Tag (Montag) und Kraft-Tag (Mittwoch) antippen.
+    await page
+      .getByTestId('plan-week')
+      .getByRole('button', { name: /^Montag/ })
+      .click();
+    await page.getByTestId('plan-medical-notice').scrollIntoViewIfNeeded();
+    await shot('heute-ausdauer');
+    await page
+      .getByTestId('plan-week')
+      .getByRole('button', { name: /^Mittwoch/ })
+      .click();
+    await page.getByTestId('plan-medical-notice').scrollIntoViewIfNeeded();
+    await shot('heute-kraft');
+    await page.getByTestId('plan-notes').scrollIntoViewIfNeeded();
+    await shot('heute-hinweise');
     await page.getByRole('button', { name: 'Einstellungen' }).click();
     await heading('Einstellungen');
     await shot('einstellungen');

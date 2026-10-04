@@ -15,6 +15,11 @@ export interface PlanLibrary {
   readonly templates: readonly PlanTemplate[];
   /** true = enthält Entwürfe (Kennzeichnung „Testinhalte“ in der App). */
   readonly containsDrafts: boolean;
+  /**
+   * Nur zur ANZEIGE laufender Pläne: zusätzlich archivierte Übungen (Merkmale prüfbar). Nie für Erzeugen, Ersatz
+   * oder Folgeblock – dafür gilt ausschließlich `exercises`.
+   */
+  readonly displayExercises?: ReadonlyMap<string, Exercise>;
 }
 
 export interface SelectPlanContentOptions {

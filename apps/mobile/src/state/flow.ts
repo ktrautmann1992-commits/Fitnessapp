@@ -1,5 +1,6 @@
 import {
   activeConsentVersion,
+  hasHomeStrength,
   hasValidConsent,
   isMeasurementDue,
   missingRequiredConsents,
@@ -11,7 +12,7 @@ import {
 } from '@fitnessapp/core';
 
 import { consentRecordsFromRows, type ConsentVersions } from '../data/mapping';
-import type { AuthSession, UserRows } from '../data/types';
+import type { AuthSession, StepSave, UserRows } from '../data/types';
 
 /**
  * Ablaufsteuerung der App (welcher Bildschirm als Nächstes). Reine Funktionen auf Basis der Regeln aus
@@ -107,4 +108,24 @@ export function isReminderDue(rows: UserRows, today: string): boolean {
 export function lastMeasurementDate(rows: UserRows): string | null {
   const dates = rows.bodyMeasurements.map((row) => row.measured_on).sort();
   return dates.at(-1) ?? null;
+}
+
+/**
+ * „Angaben ändern“ aus den Einstellungen (docs/PLAN-PHASE-3.md 10.4): dieselben Schritte nacheinander, danach
+ * zurück zu „Heute“ (dort „Plan neu erstellen?“). Equipment nur mit „Kraft zu Hause“; der Gesundheits-Check
+ * („wiederholen“) führt direkt zurück.
+ */
+const EDIT_CHAIN = ['experience', 'goal', 'time_budget', 'equipment'] as const;
+
+export function nextEditRoute(
+  step: OnboardingStep,
+  save: StepSave,
+): EntryRoute | `${EntryRoute}?edit=1` {
+  const index = (EDIT_CHAIN as readonly string[]).indexOf(step);
+  if (index < 0 || index === EDIT_CHAIN.length - 1) return '/today';
+  const next = EDIT_CHAIN[index + 1];
+  if (next === 'equipment' && !(save.step === 'time_budget' && hasHomeStrength(save.schedule))) {
+    return '/today';
+  }
+  return `${stepRoute(next as OnboardingStep)}?edit=1`;
 }

@@ -1,6 +1,6 @@
 # Plan Phase 3 – Plan-Engine (persönlicher Trainingsplan aus Vorlagen)
 
-**Status:** Vom Wächter freigegeben (Runde 2 mit Auflagen, alle eingearbeitet), 04.10.2026. Offen vor Etappe C: Gründer-Entscheidung Frage 14 (siehe Abschnitt 15).
+**Status:** Vom Wächter freigegeben (Runde 2 mit Auflagen, alle eingearbeitet), 04.10.2026. Gründer-Entscheidung Frage 14: **JA** (Gerätespeicher als geschützter Zwischenspeicher, siehe Abschnitt 15); Etappe C umgesetzt.
 Überarbeitet nach den Wächter-Prüfungen Runde 1 und Runde 2 (jeweils „freigegeben mit Auflagen“) am selben Tag –
 alle Befunde sind eingearbeitet (Abschnitte 16 und 17).
 Grundlage: `CLAUDE.md`, `docs/KONZEPT.md` (Abschnitte 4, 4.1, 12, 13, 15, 16), `docs/PROMPTS.md` (Phase 3),
@@ -944,7 +944,7 @@ Frage 14**, die vor Etappe C ausdrücklich entschieden werden muss. Damit gilt:
    ohne Gesundheits-Check, unter 18 und ab 65 Jahren; strengere Regeln sofort, Lockerungen nur nach Bestätigung.
 7. Pläne, in die der Gesundheits-Check eingeht, werden **vorsorglich als Gesundheitsdaten** behandelt
    (`uses_health_data` und `medical_notice` von der Datenbank selbst bestimmt, Einwilligung nötig, vollständiges
-   Löschen aller solchen Pläne beim Widerruf). Gerätespeicher: offen bis zur Gründer-Entscheidung zu Frage 14.
+   Löschen aller solchen Pläne beim Widerruf). Gerätespeicher: Gründer-Entscheidung Frage 14 = JA (verschlüsselter bzw. Tab-Zwischenspeicher, Abschnitt 9).
 8. Schreiben nur über geprüfte `security definer`-Funktionen; Nutzer dürfen direkt nur Datum/Status einer Einheit
    ändern.
 9. Doppelte Progression: Gewichtssprung über 10 % nie direkt, erst nach dem Puffer; Auslöser „zwei Einheiten in Folge“.
@@ -1173,3 +1173,88 @@ App-Änderung (Etappen B/C).
 
 **Etappe B3 – Plan-Engine mit Arten + Plan-Migration: erledigt** (wartet auf Wächter-Prüfung). Umsetzungsstand:
 `docs/PLAN-PHASE-3-ERWEITERUNG.md` Abschnitt 14. Etappe C (App: Plan erzeugen, „Heute“) kann jetzt starten.
+
+**Etappe C – App: Erzeugen, „Heute“, Testmodus + Supabase: erledigt** (wartet auf Wächter-Prüfung). Gründer-Entscheidung
+Frage 14 = **JA**. Keine neue Migration.
+
+1. **Core:** `plan/start-group.ts` – `planStartGroup(plan, birthDate)` (ohne Check → vorsichtig, `medical_notice` → vorsichtig,
+   Alter am Erstellungstag Europe/Berlin < 18 / ≥ 65 → vorsichtig, sonst `inputs.experienceLevel`); Kommentare an
+   `NextPlanBlockOptions.previousStartGroup` und `applyCurrentEnduranceRules` verweisen darauf. `plan/view.ts` –
+   `prepareSessionForDisplay()` (ruft IMMER `applyCurrentEnduranceRules` UND `applyCurrentSafetyRules`, eigener Zustand
+   `libraryMissing`), `exerciseMark()` („ersetzt (Gerät fehlt)“ nur, wenn die Vorlagen-Übung am Ort nicht machbar ist),
+   `sessionLocation()`, `weekOverview()`, `sessionOn()`, `nextPlannedSession()`, `blockWeekFor()`,
+   `followUpBlockState()` (fällig ab Montag der letzten Woche, „abgelaufen“ nach der ersten Woche des Folgeblocks),
+   `dropPastSessions()`, `planUpdateOffer()` (planNeedsUpdate + strengere Startgruppe bzw. neuer Check mit Flag =
+   „deutlich“). `dates.ts`: `isoDateInTimeZone()`. Tests: `start-group.test.ts` (ohne Check, Flag, Schwangerschaft,
+   17/18 und 64/65 am Erstellungstag, Level, Abgleich mit der Startgruppe beim Erzeugen), `view.test.ts`.
+2. **Inhalts-Bündel:** `scripts/bundle-content.mjs` (vorher `apps/web/scripts/`) wird von Web und App genutzt; App-Ausgabe
+   `apps/mobile/src/generated/content-files.ts` (nicht eingecheckt), im Web-Export als eigenes Paket erst bei Bedarf
+   geladen (`import()`); EAS: `eas-build-post-install`.
+3. **Datenebene (`apps/mobile/src/data`):** `UserRows` um `plans`, `plannedSessions`, `plannedExercises`; neue `WriteOp`s
+   `save_training_plan`, `append_plan_block`, `update_planned_session` (`isSensitiveOp` bei `uses_health_data`, Speichern
+   und Folgeblock immer direkt); `applyHealthDataRevocation()` und `cacheableRows(rows, { allowHealthPlanCache })`
+   ersetzen `withoutHealthData()`; `local-rules.ts` `isValidPlanOp()` = Regeln von `save_training_plan`,
+   `append_plan_block` und Verschiebe-Trigger (u. a. `uses_health_data`/`medical_notice` selbst bestimmt, abweichend →
+   abgelehnt); `training-plan.ts` (Angaben aus Zeilen, Gesundheitsbezug wie `plan_health_basis()`, wirksame Regeln,
+   Folgeblock mit `planStartGroup()`, Verschieben); `plan-library.ts` (Datenbank-Zeilen → Bibliothek, immer
+   `allowDrafts: false`; Übungen zwischengespeichert für die Anzeige offline). `allowDrafts: true` nur in
+   `createLocalBackend()` (Quelltext-Test). Warteschlange: Schlüssel `update_planned_session:<id>`, `remove()` beim
+   neuen Plan, `onDropped` → Ereignis → Plan neu laden + Meldung.
+4. **Gerätespeicher (Frage 14):** `protected-store.ts` – App: AES-256-GCM (expo-crypto), Schlüssel in expo-secure-store
+   (`WHEN_UNLOCKED_THIS_DEVICE_ONLY`), Daten verschlüsselt in AsyncStorage; Browser: nur sessionStorage. Inhalt: Pläne mit
+   Gesundheitsbezug + gesundheitsbezogene wirksame Regeln. Gelöscht bei Widerruf, Abmelden, Konto löschen, Testdaten
+   löschen und sobald der Server keinen solchen aktiven Plan mehr liefert. Verschieben solcher Pläne sofort, nie
+   Warteschlange.
+5. **Bildschirme:** „Geschafft!“ erzeugt den Plan einmal (Laden/Fehler/„Zum Plan“); „Heute“ mit Neu-Einwilligung ganz
+   oben (Ablehnen → Plan ohne Check), Testinhalte, Woche x von y, Einstiegs-/Erholungswoche, Arzt-Hinweis vor jeder
+   Einheit, Einheit (Kraft/Ausdauer), Ruhetag + nächste Einheit, Wochenübersicht, Verschieben (Streichen mit Nachfrage),
+   „Plan neu erstellen?“ (deutlich bei strengeren Regeln), Plan abgelaufen, Hinweise in Worten, alle Zustände aus 10.3;
+   Einstellungen „Training“ (Angaben ändern → Schritte mit `?edit=1` → zurück zu „Heute“, Gesundheits-Check wiederholen,
+   Plan neu erstellen). Folgeblock automatisch beim Anzeigen von „Heute“.
+6. **Tests:** Vitest u. a. `training-plan.test.ts` (inkl. „Folgeblock nach Neuladen (ohne safety_rules) setzt zurück“),
+   `plan-data.test.ts`, `protected-store.test.ts`, `plan-library.test.ts`, Ergänzungen in `supabase-backend.test.ts`,
+   `sync-queue.test.ts`, `flow.test.ts`, `plan-format.test.ts`; Playwright `e2e/training-plan.spec.ts` mit festem Datum
+   (Studio 3 Tage, Ausdauer ohne Check, vorsichtig mit Arzt-Hinweis + Widerruf, veraltete Einwilligung + Ablehnen,
+   Zuhause ohne Geräte 7 Tage, Verschieben/Streichen, Angaben ändern, neu erstellen, Testdaten löschen); Screenshots
+   „Heute“ hell/dunkel.
+7. **`turbo.json`:** `@fitnessapp/web#build` hängt von `typecheck` ab – `next typegen` (typecheck) und `next build`
+   schreiben beide `.next/types`; parallel liefen sie bei `turbo run typecheck build` gegeneinander.
+
+**Abweichungen/Entscheidungen beim Umsetzen (zur Wächter-Prüfung):**
+
+- Supabase lädt nur den **aktiven** Plan; „nie stapeln“ prüft beim Verschieben die Datenbank zusätzlich (frühere
+  Pläne haben ab gestern keine geplanten Einheiten mehr).
+- Ein Folgeblock wird nur mit Einheiten ab heute angehängt; ist auch die erste Woche des Folgeblocks vorbei, zeigt
+  „Heute“ „Dein Plan ist abgelaufen“ + „Plan neu erstellen“.
+- Hinweis „vorsichtig“ nur bei Arzt-Hinweis (aus dem Check); Altersregeln wirken still in der Dosierung.
+- Kennzeichen „angepasst an deine aktuellen Angaben“ für Tausch aus anderen Gründen (ohne Grund zu nennen).
+- Ort einer Kraft-Einheit für den Ersatz in der Anzeige: bei „Tage egal“ mit beiden Orten „zu Hause“ (Heim-Geräte sind
+  auch im Studio vorhanden).
+- „Angaben ändern“ führt nach dem letzten Schritt zu „Heute“ (nicht zu den Einstellungen) – dort steht die Frage.
+
+**Nachträge aus der Wächter-Prüfung von Etappe C (umgesetzt):**
+
+1. **Verpasste Einheiten:** „Einheit verschieben“ gibt es, solange die Woche des ursprünglichen Termins
+   (`original_date ?? scheduled_on`) nicht vorbei ist – auch für vergangene Tage dieser Woche, mit Hinweis „Verpasst – auf
+   einen freien Tag dieser Woche verschieben?“ (Ziel ab heute, sonst streichen; E2E: Plan Montag, Uhr Mittwoch).
+2. **Archivierte Übungen:** Supabase lädt Übungen mit `published` und `archived`; die Engine (Erzeugen, Ersatz,
+   Folgeblock) bekommt nur `published` (`planLibraryFromContent`), archivierte stehen nur in
+   `PlanLibrary.displayExercises` zur Anzeige laufender Pläne. `applyCurrentSafetyRules`/`prepareSessionForDisplay`
+   haben dafür `substituteLibrary` (Ersatz nur daraus). Tests: angezeigt, nie als Ersatz gewählt.
+3. **`planStartGroup()` bei unlesbaren Angaben/Datum = `competitive`** (lockerster Wert), damit jede strengere aktuelle
+   Gruppe den Ausdauer-Umfang zurücksetzt; ohne Check bzw. mit Arzt-Hinweis bleibt es `cautious`.
+4. **Folgeblock abgelehnt:** Plan neu laden; ist er danach weiter fällig, kein erneuter Versuch für diesen Plan,
+   sondern Hinweis „Bitte erstelle deinen Plan neu“ mit Knopf.
+5. **Geschützter Zwischenspeicher:** Ein Gerät, das offline ist, zeigt einen Plan mit Gesundheitsbezug nach einem
+   Widerruf auf einem ANDEREN Gerät noch bis zum nächsten Online-Laden (dann wird er gelöscht). Zusätzlich wird der
+   Zwischenspeicher nach `HEALTH_PLAN_CACHE_MAX_AGE_DAYS` = 14 Tagen ohne Server-Kontakt verworfen (`constants.ts`, Test).
+   Gleichzeitige erste Schreibvorgänge erzeugen dank Sperre nur einen Schlüssel (Test).
+6. **Supabase-Build ohne Entwürfe:** `scripts/bundle-content.mjs … --empty-if-supabase` (App) bündelt nur ein leeres
+   Inhalts-Paket, wenn `EXPO_PUBLIC_SUPABASE_URL` gesetzt ist – im Supabase-Build landen keine Entwürfe; die Website
+   bündelt weiterhin alles (Redaktionsbereich). Test `content-bundle.test.ts`. Fällt ein solcher Build wegen fehlerhafter
+   Werte in den Testmodus zurück, zeigt „Heute“ „kein freigegebener Plan“.
+7. **Folgeblöcke nach strengerer Gruppe:** Da `previousStartGroup` immer aus den Spalten des Plans kommt (Startgruppe beim
+   ERSTELLEN), setzt **jeder** Folgeblock eines Plans, dessen aktuelle Gruppe strenger ist, wieder auf Startumfang und
+   Start-Deckel zurück (nicht nur der erste) – bewusst vorsichtig. „Heute“ bietet dabei deutlich „Plan neu erstellen“ an;
+   ein neuer Plan hat die aktuelle Gruppe als Ausgangspunkt und steigert danach wieder normal.
+8. Screenshot-Namen werden auf Eindeutigkeit geprüft.

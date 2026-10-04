@@ -353,8 +353,10 @@ Verbindlich ist der freigegebene Ablauf in `docs/PLAN-PHASE-1.md` Abschnitt 3 (S
 - **Gesundheitsdaten:** Pläne, in die der Gesundheits-Check eingeht (`uses_health_data`), gelten vorsorglich als
   Gesundheitsdaten (EuGH C-184/20): nur mit gültiger Einwilligung, beim Widerruf werden **alle** solchen Pläne vollständig
   gelöscht. Archivierte Übungen bleiben über eigene Pläne lesbar.
-- **Gerätespeicher** solcher Pläne (Offline-Training): Ausnahme zur Phase-1-Regel, **Gründer-Entscheidung vor Etappe C**
-  (`docs/PLAN-PHASE-3.md` Frage 14).
+- **Gerätespeicher** solcher Pläne (Offline-Training): Ausnahme zur Phase-1-Regel, **Gründer-Entscheidung Frage 14 = JA**
+  (`docs/PLAN-PHASE-3.md`): App verschlüsselt (Schlüssel im sicheren Schlüsselspeicher), Browser nur sessionStorage;
+  gelöscht bei Widerruf, Abmelden, Konto löschen, „Plan ersetzt/fehlt“ und nach 14 Tagen ohne Server-Kontakt. Ein
+  offline liegendes Gerät zeigt einen Plan nach Widerruf auf einem anderen Gerät bis zum nächsten Online-Laden.
 - **Vorgemerkt für Phase 4:** optionales Feld „eigenes Startgewicht“ (Selbsteinschätzung); Tagebuch-Einträge
   (`set_logs.planned_exercise_id`) mit `on delete set null` und eigener Kopie, damit der Widerruf kein Tagebuch mitlöscht;
   „gestern verpasst → skipped“ und Progressions-Änderungen an `planned_exercises` über eigene `security definer`-Funktionen.

@@ -23,12 +23,12 @@ import {
 import { consentRecordsFromRows } from '@/data/mapping';
 import type { ConsentRow } from '@/data/types';
 import { t } from '@/i18n';
-import { errorText } from '@/lib/error-text';
+import { createPlanErrorText, errorText } from '@/lib/error-text';
 import { formatDateDe, formatTimestampDe } from '@/lib/format';
 import { useApp } from '@/state/app-state';
 import { healthConsentStatus, lastMeasurementDate } from '@/state/flow';
 
-type DialogKind = 'revoke' | 'delete' | 'clear' | null;
+type DialogKind = 'revoke' | 'delete' | 'clear' | 'recreate' | null;
 
 const LISTED_CONSENTS = [
   'terms',
@@ -97,6 +97,14 @@ export default function SettingsScreen() {
         await app.clearDeviceData();
         setDialog(null);
         router.replace('/welcome');
+      } else if (dialog === 'recreate') {
+        const outcome = await app.createPlan();
+        if (outcome.ok) {
+          setMessage(t.settings.planCreated);
+          setDialog(null);
+        } else {
+          setDialogError(createPlanErrorText(outcome.code));
+        }
       }
     } catch (caught) {
       setDialogError(errorText(caught));
@@ -156,11 +164,17 @@ export default function SettingsScreen() {
             text: t.settings.deleteText,
             confirm: t.settings.deleteConfirm,
           }
-        : {
-            title: t.settings.clearTitle,
-            text: t.settings.clearText,
-            confirm: t.settings.clearConfirm,
-          };
+        : dialog === 'recreate'
+          ? {
+              title: t.plan.recreateTitle,
+              text: t.plan.recreateText,
+              confirm: t.plan.recreateConfirm,
+            }
+          : {
+              title: t.settings.clearTitle,
+              text: t.settings.clearText,
+              confirm: t.settings.clearConfirm,
+            };
 
   return (
     <Screen
@@ -175,6 +189,34 @@ export default function SettingsScreen() {
       }
     >
       {message ? <Notice tone="success">{message}</Notice> : null}
+
+      <Heading level={2}>{t.settings.training}</Heading>
+      <Card>
+        <Body muted>{t.settings.trainingText}</Body>
+        {/* Öffnet die vorhandenen Onboarding-Schritte und kehrt danach zu „Heute“ zurück (Plan neu erstellen?). */}
+        <Button
+          label={t.settings.editInputs}
+          variant="secondary"
+          onPress={() => router.push('/onboarding/experience?edit=1')}
+        />
+        {healthStatus === 'valid' ? (
+          <Button
+            label={t.settings.repeatScreening}
+            variant="secondary"
+            onPress={() => router.push('/onboarding/health_screening?edit=1')}
+          />
+        ) : (
+          <Body muted>{t.settings.repeatScreeningNeedsConsent}</Body>
+        )}
+        <Button
+          label={t.settings.recreatePlan}
+          variant="secondary"
+          onPress={() => {
+            setDialogError(undefined);
+            setDialog('recreate');
+          }}
+        />
+      </Card>
 
       <Heading level={2}>{t.settings.consents}</Heading>
       {LISTED_CONSENTS.map((type) => (
@@ -293,6 +335,7 @@ export default function SettingsScreen() {
         title={dialogTexts.title}
         message={dialogTexts.text}
         confirmLabel={dialogTexts.confirm}
+        confirmVariant={dialog === 'recreate' ? 'primary' : 'danger'}
         onConfirm={() => void confirm()}
         onCancel={() => setDialog(null)}
         loading={busy}

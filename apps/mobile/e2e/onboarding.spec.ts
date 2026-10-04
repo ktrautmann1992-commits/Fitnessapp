@@ -235,7 +235,7 @@ async function finishNutrition(page: Page, options: { intolerance: boolean }) {
   await next(page);
 
   await expect(page.getByRole('heading', { name: 'Geschafft!' })).toBeVisible();
-  await expect(page.getByText('Dein Plan wird vorbereitet – kommt in Phase 3.')).toBeVisible();
+  await expect(page.getByTestId('done-plan')).toContainText('Dein Plan ist fertig');
 }
 
 test.beforeEach(async ({ page }) => {
@@ -376,11 +376,11 @@ test('mit Einwilligung: Körperdaten, Umfänge, Gesundheits-Check mit Arzt-Hinwe
   expect(rows?.goals?.training_location).toBe('both');
   expect(rows?.reminder?.enabled).toBe(true);
 
-  await page.getByRole('button', { name: 'Zur Startseite' }).click();
-  await expect(page.getByRole('heading', { name: 'Heute' })).toBeVisible();
+  await page.getByRole('button', { name: 'Zum Plan' }).click();
+  await expect(page.getByRole('heading', { name: 'Heute', exact: true })).toBeVisible();
   // Neustart nach dem Onboarding → direkt „Heute“.
   await page.goto('/');
-  await expect(page.getByRole('heading', { name: 'Heute' })).toBeVisible();
+  await expect(page.getByRole('heading', { name: 'Heute', exact: true })).toBeVisible();
 
   await page.getByRole('button', { name: 'Einstellungen' }).click();
   await expect(page.getByRole('heading', { name: 'Einstellungen' })).toBeVisible();
@@ -455,7 +455,7 @@ test('ohne Einwilligung Gesundheitsdaten: keine Körperdaten, kein Gesundheits-C
 
   // Direkter Aufruf eines Gesundheits-Schritts ist nicht möglich.
   await page.goto('/onboarding/body_metrics');
-  await expect(page.getByRole('heading', { name: 'Heute' })).toBeVisible();
+  await expect(page.getByRole('heading', { name: 'Heute', exact: true })).toBeVisible();
   await page.getByRole('button', { name: 'Einstellungen' }).click();
   await expect(page.getByText('Nicht erteilt')).toBeVisible();
   await expect(page.getByRole('button', { name: 'Gesundheitsdaten: Einwilligen' })).toBeVisible();

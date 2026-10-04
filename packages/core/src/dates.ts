@@ -1,5 +1,5 @@
 import { isoDateSchema } from './age';
-import { BIRTH_DATE_MIN, MEASURED_ON_MAX_DAYS_AHEAD } from './constants';
+import { AGE_CHECK_TIME_ZONE, BIRTH_DATE_MIN, MEASURED_ON_MAX_DAYS_AHEAD } from './constants';
 
 const MS_PER_DAY = 24 * 60 * 60 * 1000;
 
@@ -36,4 +36,26 @@ export function daysBetween(from: string, to: string): number {
   const a = Date.parse(`${isoDateSchema.parse(from)}T00:00:00Z`);
   const b = Date.parse(`${isoDateSchema.parse(to)}T00:00:00Z`);
   return Math.round((b - a) / MS_PER_DAY);
+}
+
+/**
+ * Kalenderdatum (JJJJ-MM-TT) eines Zeitstempels in einer Zeitzone – Standard Europe/Berlin
+ * (AGE_CHECK_TIME_ZONE, wie der Stichtag der Datenbank). Ungültige Zeitstempel → RangeError.
+ */
+export function isoDateInTimeZone(
+  timestamp: string,
+  timeZone: string = AGE_CHECK_TIME_ZONE,
+): string {
+  const time = Date.parse(timestamp);
+  if (Number.isNaN(time)) {
+    throw new RangeError('Ungültiger Zeitstempel.');
+  }
+  const parts = new Intl.DateTimeFormat('en-CA', {
+    timeZone,
+    year: 'numeric',
+    month: '2-digit',
+    day: '2-digit',
+  }).formatToParts(new Date(time));
+  const part = (type: 'year' | 'month' | 'day') => parts.find((p) => p.type === type)?.value ?? '';
+  return `${part('year')}-${part('month')}-${part('day')}`;
 }

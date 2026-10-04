@@ -183,3 +183,46 @@ describe('SyncQueue', () => {
     expect(execute).toHaveBeenCalledWith(goals('muscle_gain'));
   });
 });
+
+describe('Verschieben einer Einheit (Plan ohne Gesundheitsbezug)', () => {
+  const move = (sessionId: string, scheduledOn: string): WriteOp => ({
+    kind: 'update_planned_session',
+    sessionId,
+    planId: 'p',
+    usesHealthData: false,
+    scheduledOn,
+    status: 'planned',
+  });
+
+  it('Schlüssel update_planned_session:<id> – neuere Änderung derselben Einheit ersetzt die ältere', () => {
+    const entries = enqueue(
+      [],
+      [move('a', '2026-10-06'), move('b', '2026-10-07'), move('a', '2026-10-08')],
+    );
+    expect(entries.map((e) => e.key)).toEqual([
+      'update_planned_session:b',
+      'update_planned_session:a',
+    ]);
+    expect(entries[1]?.op).toEqual(move('a', '2026-10-08'));
+  });
+
+  it('Plan mit Gesundheitsbezug kommt nie in die Warteschlange', () => {
+    expect(() =>
+      enqueue([], [{ ...move('a', '2026-10-06'), usesHealthData: true } as WriteOp]),
+    ).toThrow();
+  });
+
+  it('neuer Plan entfernt wartende Verschiebungen ausdrücklich (remove)', async () => {
+    const store = createMemoryStore();
+    const queue = new SyncQueue({
+      store,
+      storageKey: KEY,
+      execute: () => Promise.reject(network),
+      isNetworkError: () => true,
+    });
+    await queue.add([move('a', '2026-10-06'), goals('fat_loss')]);
+    await queue.remove((op) => op.kind === 'update_planned_session');
+    expect(queue.snapshot().map((e) => e.key)).toEqual(['upsert_goals']);
+    expect(store.dump()[KEY]).not.toContain('update_planned_session');
+  });
+});

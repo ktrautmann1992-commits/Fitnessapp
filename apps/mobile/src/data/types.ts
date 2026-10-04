@@ -36,6 +36,10 @@ export type BodyMetricsRow = WithoutTimestamps<Tables<'body_metrics'>>;
 export type BodyMeasurementsRow = WithoutTimestamps<Tables<'body_measurements'>>;
 export type HealthScreeningRow = Tables<'health_screening'>;
 export type MeasurementReminderRow = WithoutTimestamps<Tables<'measurement_reminders'>>;
+/** Trainingsplan (Phase 3). Mit uses_health_data = true SENSIBEL (Art. 9 DSGVO, PLAN-PHASE-3 Abschnitt 9). */
+export type UserPlanRow = Tables<'user_plans'>;
+export type PlannedSessionRow = Omit<Tables<'planned_sessions'>, 'created_at' | 'updated_at'>;
+export type PlannedExerciseRow = Tables<'planned_exercises'>;
 
 /** Alle Zeilen eines Nutzers – im Testmodus der komplette Gerätespeicher, im Supabase-Modus ein Abbild. */
 export interface UserRows {
@@ -54,6 +58,14 @@ export interface UserRows {
   /** SENSIBEL (Art. 9 DSGVO) */
   healthScreenings: HealthScreeningRow[];
   reminder: MeasurementReminderRow | null;
+  /**
+   * Trainingspläne (aktiv und ersetzt), Einheiten und Übungen – wie die Tabellen user_plans, planned_sessions,
+   * planned_exercises. Supabase-Modus: nur der aktive Plan. Pläne mit uses_health_data sind Gesundheitsdaten
+   * (nur im geschützten Zwischenspeicher, Gründer-Entscheidung Frage 14).
+   */
+  plans: UserPlanRow[];
+  plannedSessions: PlannedSessionRow[];
+  plannedExercises: PlannedExerciseRow[];
 }
 
 export function emptyUserRows(): UserRows {
@@ -69,6 +81,9 @@ export function emptyUserRows(): UserRows {
     bodyMeasurements: [],
     healthScreenings: [],
     reminder: null,
+    plans: [],
+    plannedSessions: [],
+    plannedExercises: [],
   };
 }
 

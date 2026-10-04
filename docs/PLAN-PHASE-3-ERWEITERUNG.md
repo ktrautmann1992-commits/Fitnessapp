@@ -784,3 +784,13 @@ bisheriges Angaben-Format (keine App-Plan-Erzeugung vor Etappe C).
 5. Langhantel-Scheiben ≤ 25 kg auch in `private.assert_plan_inputs` und `savePlanHomeEquipmentSchema` (Tests).
 6. Folgeblock: Kraft-Basis je Ort aus der Fassung desselben Orts, sonst aus der Hauptfassung (Test Mo Studio / Sa
    zu Hause).
+
+**Etappe C – App (PLAN-PHASE-3 Abschnitt 12): erledigt** (wartet auf Wächter-Prüfung). Umsetzungsstand im Detail:
+`docs/PLAN-PHASE-3.md` → „Etappe C“. Pflichtaufrufe aus diesem Plan:
+
+1. `applyCurrentEnduranceRules` UND `applyCurrentSafetyRules` beim Anzeigen JEDER Einheit – gebündelt in
+   `prepareSessionForDisplay()` (`packages/core/src/plan/view.ts`), einzige Anzeige-Stelle in „Heute“.
+2. `previousStartGroup` für gespeicherte Pläne ausschließlich aus `planStartGroup(plan, birthDate)`
+   (`plan/start-group.ts`) – Folgeblock (`nextBlockFromRows`) und Anzeige; App-Test „Folgeblock nach Neuladen (ohne
+   safety_rules) setzt zurück“ (65. Geburtstag zwischen Erstellen und Folgeblock: Gehen, ≤ 20 min je Einheit).
+3. Strengere Startgruppe bzw. neuer Check mit Flag → „Bitte Plan neu erstellen“ deutlich (`planUpdateOffer().stricter`).

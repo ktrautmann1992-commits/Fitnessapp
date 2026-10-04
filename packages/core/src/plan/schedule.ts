@@ -652,6 +652,8 @@ export interface NextPlanBlockOptions {
    * Startgruppe Ausdauer, mit der der bisherige Plan erstellt wurde (GeneratedPlan.safety_rules). Ist die aktuelle
    * strenger (z. B. 65. Geburtstag, neues Flag, Schwangerschaft), wird der Ausdauer-Bezug auf den Startumfang der
    * neuen Gruppe begrenzt und der Deckel je Einheit beginnt wieder beim Start-Deckel.
+   * Bei einem GESPEICHERTEN Plan (nach dem Neuladen gibt es keine safety_rules) immer
+   * `planStartGroup(plan, birthDate)` aus start-group.ts verwenden – nie selbst herleiten.
    */
   readonly previousStartGroup: EnduranceStartGroup;
 }

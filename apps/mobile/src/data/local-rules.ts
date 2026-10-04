@@ -17,9 +17,19 @@ import {
   sexSchema,
   trainingLocationSchema,
   trainingSlotsSchema,
+  addDays,
+  appendPlanBlockSchema,
+  generatedSessionSchema,
+  PLAN_SAVE_LIMITS,
+  type PlanLibrary,
+  type SavePlanSession,
+  savePlanPayloadSchema,
+  startOfIsoWeek,
 } from '@fitnessapp/core';
 
-import type { ProfileRow } from './types';
+import type { ConsentVersions } from './mapping';
+import { healthPlanBasis } from './training-plan';
+import type { PlannedSessionRow, ProfileRow, UserRows } from './types';
 import { kindsForScope, type WriteOp } from './write-ops';
 
 /**
@@ -152,5 +162,163 @@ export function isValidOp(op: WriteOp, context: { today: string; profile: Profil
         measurementReminderIntervalSchema.safeParse(op.row.interval_days).success &&
         (op.row.next_due_on === null || isoDateSchema.safeParse(op.row.next_due_on).success)
       );
+    // Pläne brauchen mehr Zusammenhang (Bibliothek, alle Zeilen) → isValidPlanOp.
+    case 'save_training_plan':
+    case 'append_plan_block':
+    case 'update_planned_session':
+      return false;
+  }
+}
+
+// ---------------------------------------------------------------------------------------------------------
+// Trainingspläne (Testmodus): dieselben Regeln wie save_training_plan, append_plan_block und der Trigger
+// private.planned_sessions_before_update (supabase/migrations/2026100412*, 20261005130100_plan_session_kinds.sql).
+// ---------------------------------------------------------------------------------------------------------
+
+export interface PlanRuleContext {
+  /** Heute (Europe/Berlin). */
+  today: string;
+  rows: UserRows;
+  versions: ConsentVersions;
+  /** Inhalte, die der Testmodus nutzen darf (statt „published“ in der Datenbank). */
+  library: Pick<PlanLibrary, 'exercises' | 'templates'>;
+}
+
+/** Datenbank-Grenzen der Einheiten: generatedSessionSchema (= CHECKs) + Übungen aus der Bibliothek. */
+function sessionsValid(
+  sessions: readonly SavePlanSession[],
+  ctx: PlanRuleContext,
+  frame: { blockNo: number; earliest: string; latest: string },
+): boolean {
+  return sessions.every(
+    (s) =>
+      generatedSessionSchema.safeParse(s).success &&
+      s.block_no === frame.blockNo &&
+      s.scheduled_on >= frame.earliest &&
+      s.scheduled_on <= frame.latest &&
+      (frame.blockNo === 1 || (s.week_no >= 1 && !s.is_intro_week)) &&
+      s.exercises.every(
+        (e) =>
+          ctx.library.exercises.has(e.exercise_id) &&
+          ctx.library.exercises.has(e.source_exercise_id),
+      ),
+  );
+}
+
+/** Nie zwei nicht gestrichene Einheiten an einem Tag – auch über Pläne hinweg (eindeutiger Index). */
+function noCollisions(existing: readonly PlannedSessionRow[], dates: readonly string[]): boolean {
+  const taken = new Set(existing.filter((s) => s.status !== 'skipped').map((s) => s.scheduled_on));
+  return new Set(dates).size === dates.length && dates.every((d) => !taken.has(d));
+}
+
+export function isValidPlanOp(op: WriteOp, ctx: PlanRuleContext): boolean {
+  const { rows, today } = ctx;
+  if (!rows.profile) return false;
+  const yesterday = addDays(today, -PLAN_SAVE_LIMITS.pastToleranceDays);
+  switch (op.kind) {
+    case 'save_training_plan': {
+      const parsed = savePlanPayloadSchema.safeParse(op.payload);
+      if (!parsed.success) return false;
+      const plan = op.payload;
+      if (plan.template_id === null) {
+        if (plan.sessions.some((s) => s.kind !== 'endurance')) return false;
+      } else if (
+        !ctx.library.templates.some(
+          (t) => t.id === plan.template_id && t.version === plan.template_version,
+        )
+      ) {
+        return false;
+      }
+      // uses_health_data / medical_notice bestimmt die Regel selbst – abweichende Eingabe wird abgelehnt.
+      const basis = healthPlanBasis(rows, ctx.versions);
+      if (
+        plan.uses_health_data !== basis.usesHealthData ||
+        plan.medical_notice !== basis.medicalNotice
+      ) {
+        return false;
+      }
+      if (
+        plan.start_date < yesterday ||
+        plan.start_date > addDays(today, PLAN_SAVE_LIMITS.startDateMaxDaysAhead) ||
+        plan.sessions.some((s) => s.scheduled_on < plan.start_date)
+      ) {
+        return false;
+      }
+      if (
+        !sessionsValid(plan.sessions, ctx, {
+          blockNo: 1,
+          earliest: yesterday,
+          latest: addDays(today, PLAN_SAVE_LIMITS.scheduleMaxDaysAhead),
+        })
+      ) {
+        return false;
+      }
+      // Der bisherige aktive Plan verliert seine geplanten Einheiten ab gestern.
+      const old = rows.plans.find((p) => p.status === 'active');
+      const remaining = rows.plannedSessions.filter(
+        (s) => !(s.plan_id === old?.id && s.status === 'planned' && s.scheduled_on >= yesterday),
+      );
+      return noCollisions(
+        remaining,
+        plan.sessions.map((s) => s.scheduled_on),
+      );
+    }
+    case 'append_plan_block': {
+      const plan = rows.plans.find((p) => p.id === op.planId && p.status === 'active');
+      if (!plan || !appendPlanBlockSchema.safeParse(op.sessions).success) return false;
+      if (plan.template_id === null && op.sessions.some((s) => s.kind !== 'endurance')) {
+        return false;
+      }
+      const basis = healthPlanBasis(rows, ctx.versions);
+      if (
+        basis.usesHealthData !== plan.uses_health_data ||
+        basis.medicalNotice !== plan.medical_notice ||
+        op.usesHealthData !== plan.uses_health_data
+      ) {
+        return false;
+      }
+      const own = rows.plannedSessions.filter((s) => s.plan_id === plan.id);
+      const lastBlock = Math.max(0, ...own.map((s) => s.block_no));
+      const lastDate =
+        own
+          .map((s) => s.scheduled_on)
+          .sort()
+          .at(-1) ?? today;
+      const earliest = [yesterday, addDays(lastDate, 1)].sort().at(-1) as string;
+      const latest = addDays(
+        [lastDate, today].sort().at(-1) as string,
+        PLAN_SAVE_LIMITS.scheduleMaxDaysAhead,
+      );
+      return (
+        sessionsValid(op.sessions, ctx, { blockNo: lastBlock + 1, earliest, latest }) &&
+        noCollisions(
+          rows.plannedSessions,
+          op.sessions.map((s) => s.scheduled_on),
+        )
+      );
+    }
+    case 'update_planned_session': {
+      const session = rows.plannedSessions.find((s) => s.id === op.sessionId);
+      if (!session || session.plan_id !== op.planId) return false;
+      const plan = rows.plans.find((p) => p.id === session.plan_id);
+      if (!plan || plan.status !== 'active' || plan.uses_health_data !== op.usesHealthData) {
+        return false;
+      }
+      if (session.status !== 'planned') return false;
+      const reference = session.original_date ?? session.scheduled_on;
+      const weekStart = startOfIsoWeek(reference);
+      if (addDays(weekStart, 6) < today) return false;
+      if (op.scheduledOn !== session.scheduled_on) {
+        if (session.is_deload) return false;
+        if (op.scheduledOn < today || startOfIsoWeek(op.scheduledOn) !== weekStart) return false;
+      }
+      if (op.status === 'skipped') return true;
+      return noCollisions(
+        rows.plannedSessions.filter((s) => s.id !== session.id),
+        [op.scheduledOn],
+      );
+    }
+    default:
+      return false;
   }
 }

@@ -42,5 +42,6 @@ playwright-report/
 apps/mobile/screenshots/
 apps/web/screenshots/
 
-# Website: beim Bauen aus content/ erzeugt (apps/web/scripts/bundle-content.mjs)
+# Website und App-Testmodus: beim Bauen aus content/ erzeugt (scripts/bundle-content.mjs)
 apps/web/src/generated/
+apps/mobile/src/generated/

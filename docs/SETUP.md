@@ -466,6 +466,10 @@ wurden –, bricht content-seed **rot** ab und spielt **nichts** ein. Die Summar
 wirklich gewollt: **Actions → content-seed → Run workflow** → Häkchen **allow_mass_archive** → **Run workflow**.
 Automatische Läufe (nach Merge, nach `db-migrate`) erlauben das nie.
 
+**Trainingsplan mit Supabase testen (ab Phase 3, Etappe C):** Die App nutzt live **nur freigegebene** Vorlagen und
+Übungen. Vor dem ersten Test mit Supabase deshalb erst Inhalte freigeben (Schritte oben, `content-seed` grün) – sonst
+zeigt „Heute“ richtigerweise „Für deine Angaben gibt es gerade keinen freigegebenen Plan“.
+
 ---
 
 ## Überblick: Was passiert automatisch?

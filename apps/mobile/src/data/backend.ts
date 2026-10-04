@@ -1,4 +1,10 @@
-import type { ConsentType } from '@fitnessapp/core';
+import type {
+  ConsentType,
+  PlanLibrary,
+  PlanSafetyRules,
+  SavePlanPayload,
+  SavePlanSession,
+} from '@fitnessapp/core';
 
 import type { ConsentVersions } from './mapping';
 import type {
@@ -30,7 +36,27 @@ export interface SnapshotResult {
   rows: UserRows;
   /** true = Server nicht erreichbar, angezeigt wird der zwischengespeicherte Stand (ohne Gesundheitsdaten). */
   offline: boolean;
+  /**
+   * Nur offline: zuletzt wirksame Sicherheitsregeln aus dem geschützten Zwischenspeicher (Frage 14), damit strengere
+   * Deckel auch ohne Netz greifen (die Gesundheits-Checks selbst liegen nie auf dem Gerät).
+   */
+  cachedSafetyRules?: PlanSafetyRules | null;
 }
+
+/** Einheit verschieben oder streichen (nur Datum und Status, wie der Datenbank-Trigger es erlaubt). */
+export interface SessionUpdate {
+  sessionId: string;
+  planId: string;
+  /** Plan mit Gesundheitsbezug → sofort senden, nie Warteschlange. */
+  usesHealthData: boolean;
+  scheduledOn: string;
+  status: 'planned' | 'skipped';
+}
+
+/** Ereignisse aus dem Hintergrund (Warteschlange). */
+export type BackendEvent =
+  /** Eine wartende Verschiebung wurde vom Server abgelehnt und verworfen → Plan neu laden + Meldung. */
+  { kind: 'plan_change_dropped' };
 
 export interface Backend {
   readonly mode: BackendMode;
@@ -59,6 +85,30 @@ export interface Backend {
   flush(): Promise<boolean>;
   /** Testmodus: alles auf dem Gerät löschen. Supabase-Modus: lokale Zwischenspeicher löschen. */
   clearDeviceData(): Promise<void>;
+
+  // --- Trainingsplan (Phase 3) ---------------------------------------------------------------------------
+  /**
+   * Inhalte für die Plan-Engine. Testmodus: gebündelte Entwürfe (allowDrafts nur hier); Supabase: nur
+   * freigegebene Inhalte. `allowCached` = offline den zwischengespeicherten Stand (nur Übungen, für die Anzeige)
+   * zulassen; null = nichts vorhanden.
+   */
+  loadPlanLibrary(options: { allowCached: boolean }): Promise<PlanLibrary | null>;
+  /** Neuen Plan speichern (ersetzt den aktiven). Braucht Verbindung. Liefert den neuen Stand. */
+  savePlan(payload: SavePlanPayload, rows: UserRows): Promise<UserRows>;
+  /** Folgeblock anhängen. Braucht Verbindung. */
+  appendPlanBlock(
+    planId: string,
+    usesHealthData: boolean,
+    sessions: SavePlanSession[],
+    rows: UserRows,
+  ): Promise<UserRows>;
+  /**
+   * Einheit verschieben/streichen. Pläne ohne Gesundheitsbezug offline über die Warteschlange, mit
+   * Gesundheitsbezug sofort (ohne Netz → Fehler „Erneut versuchen“).
+   */
+  updatePlannedSession(update: SessionUpdate, rows: UserRows): Promise<UserRows>;
+  /** Hintergrund-Ereignisse abonnieren; Rückgabe = abbestellen. */
+  subscribe(listener: (event: BackendEvent) => void): () => void;
 }
 
 export interface SaveContext {
@@ -76,6 +126,10 @@ export type BackendErrorCode =
   | 'profile_missing'
   | 'invalid_code'
   | 'rate_limited'
+  /** Plan vom Server/den Regeln abgelehnt (z. B. Gesundheits-Check geändert, Tag belegt) → neu laden/erstellen. */
+  | 'plan_rejected'
+  /** Keine passende freigegebene Vorlage (no_template). */
+  | 'no_template'
   | 'unknown';
 
 /** Fehler mit festem Code – die Bildschirme zeigen dazu einen deutschen Text (i18n errors.*). */

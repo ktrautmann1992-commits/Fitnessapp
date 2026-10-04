@@ -20,5 +20,6 @@ docs/ALPHA5-PAKET.md
 test-results
 playwright-report
 
-# Automatisch erzeugt beim Bauen der Website (apps/web/scripts/bundle-content.mjs)
+# Automatisch erzeugt beim Bauen (scripts/bundle-content.mjs)
 apps/web/src/generated
+apps/mobile/src/generated
