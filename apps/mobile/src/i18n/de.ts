@@ -52,17 +52,35 @@ export const de = {
     noTemplate: 'Für deine Angaben gibt es gerade keinen freigegebenen Plan. Wir arbeiten daran.',
   },
   welcome: {
-    title: 'Willkommen!',
-    intro:
-      'Beantworte ein paar Fragen zu dir, deinem Ziel und deinem Alltag. Daraus entsteht dein persönlicher Plan.',
-    features: [
-      { title: 'Trainingsplan', text: 'Passend zu Ziel, Zeitbudget und deinem Equipment.' },
-      { title: 'Ernährung', text: 'Wochenplan mit Rezepten und Einkaufsliste.' },
-      { title: 'Tagebuch', text: 'Sätze, Gewichte und Läufe festhalten – auch offline.' },
+    logoLabel: 'Alpha5',
+    eyebrow: 'Willkommen bei Alpha5',
+    title: 'Training und Ernährung, die zu dir passen.',
+    intro: 'Ein paar Fragen zu Ziel, Zeit und Equipment – daraus entsteht dein persönlicher Plan.',
+    benefitsLabel: 'Das bekommst du',
+    benefits: [
+      {
+        title: 'Plan für dein Ziel',
+        text: 'Kraft, Fitness oder lockere Ausdauer – im Studio oder zu Hause, mit deinem Equipment.',
+      },
+      {
+        title: 'Jede Woche klar geplant',
+        text: 'Übungen, Sätze und Pausen für jede Einheit. Erholungswochen sind fest eingeplant.',
+      },
+      {
+        title: 'Sicher von Anfang an',
+        text: 'Ein kurzer Gesundheits-Check sorgt dafür, dass dein Plan zu dir passt.',
+      },
     ],
+    soon: {
+      badge: 'Bald',
+      title: 'Ernährung und Tagebuch',
+      text: 'Wochenplan mit Rezepten und Einkaufsliste, dazu Sätze und Gewichte festhalten.',
+      label: 'Bald verfügbar: Ernährungsplan und Trainingstagebuch',
+    },
     start: "Los geht's",
-    haveAccount: 'Ich habe schon ein Konto',
-    minAgeNote: 'Nutzung ab 16 Jahren.',
+    startHint: 'Startet die Fragen zu deinem Plan',
+    haveAccount: 'Ich habe schon ein Konto – Anmelden',
+    minAgeNote: 'Nutzung ab 16 Jahren',
   },
   age: {
     title: 'Wann bist du geboren?',
