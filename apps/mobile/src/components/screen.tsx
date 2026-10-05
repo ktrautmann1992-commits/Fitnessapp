@@ -1,4 +1,11 @@
-import { fontSize, fontWeight, maxContentWidth, radius, spacing } from '@fitnessapp/ui';
+import {
+  brandColors,
+  fontSize,
+  fontWeight,
+  maxContentWidth,
+  radius,
+  spacing,
+} from '@fitnessapp/ui';
 import { useRef, type ReactNode } from 'react';
 import {
   KeyboardAvoidingView,
@@ -8,6 +15,7 @@ import {
   StyleSheet,
   Text,
   TextInput,
+  useColorScheme,
   View,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
@@ -109,30 +117,54 @@ export function StepFooter({
   );
 }
 
-/** Hinweisleiste oben: Testmodus bzw. wartende Änderungen. */
-export function TopBanner() {
+/**
+ * Hinweis oben: Testmodus bzw. wartende Änderungen – als dezente Plakette in Markenfarben.
+ * `onDark`: auf der immer dunklen Willkommensseite (unabhängig vom Hell-/Dunkelmodus).
+ */
+export function TopBanner({ onDark = false }: { onDark?: boolean }) {
   const theme = useThemeColors();
+  const scheme = useColorScheme();
   const { backend, invalidConfig, pendingChanges } = useApp();
-  const messages: string[] = [];
+  const messages: { text: string; warn: boolean }[] = [];
   if (backend.mode === 'local') {
-    messages.push(invalidConfig ? t.banner.invalidConfig : t.banner.testMode);
+    messages.push({
+      text: invalidConfig ? t.banner.invalidConfig : t.banner.testMode,
+      warn: invalidConfig,
+    });
   }
   if (pendingChanges > 0) {
-    messages.push(t.banner.pendingSync(pendingChanges));
+    messages.push({ text: t.banner.pendingSync(pendingChanges), warn: true });
   }
   if (messages.length === 0) {
     return null;
   }
+  const dark = onDark || scheme === 'dark';
+  const pill = dark
+    ? { backgroundColor: brandColors.graphit, borderColor: brandColors.graphitHell }
+    : { backgroundColor: brandColors.eisblau, borderColor: brandColors.eisblau };
+  const textColor = dark ? brandColors.hell : brandColors.schwarz;
+  const dotColor = (warn: boolean) =>
+    warn
+      ? dark
+        ? brandColors.signal
+        : theme.warning
+      : dark
+        ? brandColors.himmel
+        : brandColors.blau;
   return (
     <View
       accessibilityRole="summary"
       testID="top-banner"
-      style={[styles.banner, { backgroundColor: theme.surface, borderBottomColor: theme.warning }]}
+      style={[styles.banner, { backgroundColor: onDark ? 'transparent' : theme.background }]}
     >
       {messages.map((message) => (
-        <Text key={message} style={[styles.bannerText, { color: theme.text }]}>
-          {message}
-        </Text>
+        <View key={message.text} style={[styles.bannerPill, pill]}>
+          <View
+            aria-hidden
+            style={[styles.bannerDot, { backgroundColor: dotColor(message.warn) }]}
+          />
+          <Text style={[styles.bannerText, { color: textColor }]}>{message.text}</Text>
+        </View>
       ))}
     </View>
   );
@@ -297,11 +329,23 @@ const styles = StyleSheet.create({
   backWrap: { minWidth: 120 },
   banner: {
     paddingHorizontal: spacing.md,
-    paddingVertical: spacing.sm,
-    borderBottomWidth: 3,
+    paddingTop: spacing.sm,
+    paddingBottom: spacing.xs,
     alignItems: 'center',
+    gap: spacing.xs,
   },
-  bannerText: { fontSize: fontSize.sm, fontWeight: fontWeight.semibold, textAlign: 'center' },
+  bannerPill: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: spacing.sm,
+    maxWidth: maxContentWidth,
+    borderWidth: 1,
+    borderRadius: radius.pill,
+    paddingHorizontal: spacing.md,
+    paddingVertical: spacing.xs + 2,
+  },
+  bannerDot: { width: 8, height: 8, borderRadius: 4 },
+  bannerText: { flexShrink: 1, fontSize: fontSize.sm - 1, fontWeight: fontWeight.semibold },
   backdrop: {
     flex: 1,
     backgroundColor: 'rgba(0,0,0,0.55)',

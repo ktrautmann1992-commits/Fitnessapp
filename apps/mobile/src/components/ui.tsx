@@ -1,4 +1,4 @@
-import { fontSize, fontWeight, radius, spacing } from '@fitnessapp/ui';
+import { brandColors, fontSize, fontWeight, radius, spacing } from '@fitnessapp/ui';
 import type { ReactNode, Ref } from 'react';
 import {
   ActivityIndicator,
@@ -14,6 +14,7 @@ import {
 } from 'react-native';
 
 import { t } from '@/i18n';
+import { displayFont } from '@/lib/fonts';
 import { useThemeColors } from '@/lib/theme';
 
 /**
@@ -31,7 +32,7 @@ export function Heading({ children, level = 1 }: { children: ReactNode; level?: 
   return (
     <Text
       accessibilityRole="header"
-      style={[level === 1 ? styles.h1 : styles.h2, { color: theme.text }]}
+      style={[level === 1 ? [styles.h1, displayFont()] : styles.h2, { color: theme.text }]}
     >
       {children}
     </Text>
@@ -75,7 +76,8 @@ export function FieldError({ message, testID }: { message?: string | undefined; 
 // ---------------------------------------------------------------------------------------------------------
 // Knöpfe
 // ---------------------------------------------------------------------------------------------------------
-type ButtonVariant = 'primary' | 'secondary' | 'danger' | 'link';
+/** onDark: Umriss-Knopf in Weiß auf dunklen Markenflächen (Willkommensseite), wie `.knopf--leise` im Hero. */
+type ButtonVariant = 'primary' | 'secondary' | 'danger' | 'link' | 'onDark';
 
 export function Button({
   label,
@@ -105,9 +107,17 @@ export function Button({
         ? { backgroundColor: theme.surface, borderColor: theme.danger, borderWidth: 2 }
         : variant === 'secondary'
           ? { backgroundColor: theme.surface, borderColor: theme.border, borderWidth: 1 }
-          : { backgroundColor: 'transparent' };
+          : variant === 'onDark'
+            ? { backgroundColor: 'transparent', borderColor: brandColors.weiss, borderWidth: 2 }
+            : { backgroundColor: 'transparent' };
   const textColor =
-    variant === 'primary' ? theme.primaryText : variant === 'danger' ? theme.danger : theme.text;
+    variant === 'primary'
+      ? theme.primaryText
+      : variant === 'danger'
+        ? theme.danger
+        : variant === 'onDark'
+          ? brandColors.weiss
+          : theme.text;
   return (
     <Pressable
       accessibilityRole={variant === 'link' ? 'link' : 'button'}
@@ -130,6 +140,7 @@ export function Button({
         <Text
           style={[
             variant === 'link' ? styles.linkText : styles.buttonText,
+            variant === 'onDark' && styles.onDarkText,
             { color: variant === 'link' ? theme.link : textColor },
             variant === 'link' && { textDecorationLine: 'underline' },
           ]}
@@ -487,7 +498,7 @@ export function ProgressBar({ current, total }: { current: number; total: number
 }
 
 const styles = StyleSheet.create({
-  h1: { fontSize: fontSize.xl, fontWeight: fontWeight.bold, lineHeight: 34 },
+  h1: { fontSize: fontSize.xl + 2, fontWeight: fontWeight.bold, lineHeight: 34 },
   h2: { fontSize: fontSize.lg, fontWeight: fontWeight.semibold, lineHeight: 26 },
   body: { fontSize: fontSize.md, lineHeight: 24 },
   error: { fontSize: fontSize.sm, lineHeight: 20, fontWeight: fontWeight.semibold },
@@ -502,6 +513,7 @@ const styles = StyleSheet.create({
   linkButton: { paddingHorizontal: spacing.sm, minHeight: 44 },
   buttonText: { fontSize: fontSize.lg, fontWeight: fontWeight.bold, textAlign: 'center' },
   linkText: { fontSize: fontSize.md, fontWeight: fontWeight.semibold, textAlign: 'center' },
+  onDarkText: { fontSize: fontSize.md },
   field: { gap: spacing.xs },
   label: { fontSize: fontSize.md, fontWeight: fontWeight.semibold },
   hint: { fontSize: fontSize.sm, lineHeight: 20 },

@@ -337,3 +337,19 @@ Claude ergänzt den Pull Request, `ci` wird grün, die Vorschau-Links zeigen die
 - In der App landen die Pflicht-Variablen (`colors`, …) und die Markenfarben `--brand-…` (`brandColors`).
   Weitere Variablen kann nur die Website nutzen.
 - `pnpm --filter @fitnessapp/ui icons` erzeugt alle Icons aus `packages/ui/brand/alpha5-mark.svg` (siehe oben).
+
+---
+
+## App: Schrift und Willkommensseite
+
+- **Schrift Archivo** (OFL) wie auf der Landingpage, ohne Verbindung zu Google:
+  - App im Browser: `apps/mobile/public/fonts/archivo-latin-wdth-normal.woff2`, eingebunden in
+    `apps/mobile/public/index.html` (gilt für alle Texte). Große Überschriften schmal (Breite 75, Stärke 800).
+  - iPhone/Android: `apps/mobile/assets/fonts/Archivo-Bold.ttf` über `expo-font`, nur für Überschriften.
+  - Stile: `apps/mobile/src/lib/fonts.ts`.
+- **Logo in der App:** `apps/mobile/src/components/brand.tsx` (`Alpha5Mark`, Pfade aus `alpha5-mark.svg`,
+  über `react-native-svg`).
+- **Willkommensseite** (`apps/mobile/src/app/welcome.tsx`): immer dunkel (Schwarz mit blauem Schein, wie
+  Startbildschirm und Landingpage-Hero). Nutzenpunkte sind eine Liste mit Häkchen – bewusst keine Karten mit
+  Rahmen, damit nichts wie ein Knopf aussieht. Noch nicht verfügbare Funktionen tragen die Plakette „Bald“.
+- **Testmodus-Hinweis:** dezente Plakette (hell: Eisblau, dunkel: Graphit) statt Leiste mit Signal-Linie.
