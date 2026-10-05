@@ -625,3 +625,98 @@ export const PLAN_SAVE_LIMITS = {
  * dort gelöschter Plan noch angezeigt werden kann. Quelle: PRODUKTENTSCHEIDUNG (Wächter-Auflage Etappe C).
  */
 export const HEALTH_PLAN_CACHE_MAX_AGE_DAYS = 14;
+
+// ---------------------------------------------------------------------------------------------------------
+// Phase 4 · Trainingstagebuch (docs/PLAN-PHASE-4.md Abschnitt 3.8). Ab Etappe B identisch als CHECK in der
+// Datenbank (db-sync.test.ts). Werte ohne Studienbeleg sind PRODUKTENTSCHEIDUNG und gehen in die fachliche Prüfung.
+// ---------------------------------------------------------------------------------------------------------
+
+/**
+ * Grenzen eines Tagebuch-Eintrags (harte Grenzen, großzügig). Quelle: PRODUKTENTSCHEIDUNG.
+ * - Gewicht = PLANNED_LOAD_LIMITS.targetWeightKg.max (je Hantel bzw. Kugel, Langhantel gesamt), 0 = ohne Zusatzlast.
+ * - Notiz 280 Zeichen, gezählt in Code-Points (wie char_length in Postgres, nicht UTF-16-Einheiten).
+ * - Nachtragen höchstens 14 Tage zurück, höchstens 1 Tag in der Zukunft (Zeitzonen-Toleranz wie
+ *   MEASURED_ON_MAX_DAYS_AHEAD); Nachholen nur in der ISO-Woche des ursprünglichen Termins ± 1 Tag (W2).
+ * - Höchstens 10 neue Einträge je Kalendertag (Schutz gegen Missbrauch).
+ */
+export const SESSION_LOG_LIMITS = {
+  exercisesPerSession: { min: 1, max: 12 },
+  setsPerExercise: { min: 1, max: 10 },
+  reps: { min: 0, max: 100 },
+  weightKg: { min: 0, max: PLANNED_LOAD_LIMITS.targetWeightKg.max },
+  durationS: { min: 1, max: 600 },
+  notesMaxChars: 280,
+  backdateDays: 14,
+  futureDays: 1,
+  weekToleranceDays: 1,
+  maxLogsPerDay: 10,
+} as const;
+
+/**
+ * RPE je Satz 5–10 in 0,5er-Schritten, eingegeben als „Wiederholungen in Reserve“ (0 / 1 / 2 / 3 / 4 / 5+).
+ * Quelle: Zourdos MC et al. (2016), „Novel resistance training-specific rating of perceived exertion scale
+ * measuring repetitions in reserve“, J Strength Cond Res 30(1):267–275.
+ */
+export const SET_RPE_LIMITS = { min: 5, max: 10, step: 0.5 } as const;
+
+/**
+ * Belastungsempfinden der ganzen Einheit 0–10, ganzzahlig.
+ * Quellen: Borg GA (1982), Med Sci Sports Exerc 14(5):377–381 (CR10-Skala); Foster C et al. (2001), „A new approach
+ * to monitoring exercise training“, J Strength Cond Res 15(1):109–115 (Session-RPE).
+ */
+export const SESSION_RPE_LIMITS = { min: 0, max: 10 } as const;
+
+/** Ausdauer-Eintrag: Dauer 1 min–12 h, Distanz 0–500 km, Höhenmeter 0–10 000 m. Quelle: PRODUKTENTSCHEIDUNG. */
+export const CARDIO_LOG_LIMITS = {
+  durationS: { min: 60, max: 12 * 60 * 60 },
+  distanceM: { min: 0, max: 500_000 },
+  elevationM: { min: 0, max: 10_000 },
+} as const;
+
+/**
+ * Plausibilität der Geschwindigkeit je Art in km/h – darüber nur WARNUNG „Bitte prüfen“, kein Fehler.
+ * Quelle: PRODUKTENTSCHEIDUNG, orientiert an Weltrekord-Durchschnitten: Laufen 25 (Marathon-Weltrekord ≈ 21 km/h),
+ * Rad 70 (Stunden-Weltrekord ≈ 56 km/h, bergab mehr), Schwimmen 8 (Langstrecken-Weltrekorde ≈ 6–7 km/h);
+ * Gehen 10 (zügiges Freizeit-Gehen ≈ 5–7 km/h – schneller ist meist schon Laufen).
+ */
+export const CARDIO_PLAUSIBILITY_KMH = { walk: 10, run: 25, bike: 70, swim: 8 } as const;
+
+/**
+ * Kalibrierung ohne RPE-Angabe: RPE 10 annehmen („keine Reserve“ = vorsichtigste Schätzung des Arbeitsgewichts).
+ * Quelle: PRODUKTENTSCHEIDUNG.
+ */
+export const CALIBRATION_MISSING_RPE = 10;
+
+/** Pausentimer: Anpassen in 15-s-Schritten, 0–600 s. Quelle: PRODUKTENTSCHEIDUNG; Pausen selbst aus REST_RANGES_S. */
+export const REST_TIMER = { stepS: 15, minS: 0, maxS: 600 } as const;
+
+/** So viele Wochen Einträge liegen im (geschützten) Gerätespeicher. Quelle: PRODUKTENTSCHEIDUNG. */
+export const LOG_CACHE_WEEKS = 12;
+
+/**
+ * Plausibilitäts-Bestätigung beim Gewicht (W5): Mehr als 10 % über dem Progressions-Zustand zählt für die
+ * Progression nur nach ausdrücklicher Bestätigung (gleiche Grenze wie LOAD_PROGRESSION.maxIncreaseFraction).
+ * Ohne Zustand (erster Eintrag, eigenes Startgewicht) gelten absolute Schwellen je Geräte-Art: Kurzhantel/Kettlebell
+ * 50 kg je Stück, Langhantel und Maschine 200 kg. Mehr als 3-mal so viele Wiederholungen wie geplant → Hinweis
+ * „Tippfehler?“. Deutlich leichter (unter 50 % des Zustands oder unter der kleinsten eigenen Stufe, z. B. 2 statt
+ * 20 kg) wird als neuer Ausgangspunkt ebenfalls nur nach Bestätigung übernommen.
+ * Quelle: PRODUKTENTSCHEIDUNG (Schutz vor Tippfehlern wie 225 statt 22,5 kg).
+ */
+export const WEIGHT_CONFIRM_LIMITS = {
+  relativeIncrease: LOAD_PROGRESSION.maxIncreaseFraction,
+  relativeDecrease: 0.5,
+  absoluteKg: { free_weight: 50, barbell: 200, machine: 200 },
+  repsTypoFactor: 3,
+} as const;
+
+/**
+ * Wiedereinstieg nach Pause (Gratis-Schutzregel, nur Anzeige – der Rohwert bleibt): Pause = mehr als 4 Wochen
+ * (28 Tage) ohne Training dieser Übung an mindestens dem heute gezeigten Gewicht; dann zeigt die erste Einheit Gewicht ×0,9,
+ * Ziel-Wdh. = reps_min, keinen Zusatzsatz und RPE −1 (nie unter 5). Diese Einheit zählt nicht für die Progression;
+ * danach geht es mit dem Rohwert weiter. Fällt sie in eine Erholungswoche, gewinnt jeweils die strengere Regel
+ * (kein doppeltes ×0,9).
+ * Quelle: Mujika I, Padilla S (2000), „Detraining: loss of training-induced physiological and performance
+ * adaptations. Part I“, Sports Med 30(2):79–87 (Kraftverlust nach mehrwöchiger Pause). Schwelle und Faktoren:
+ * PRODUKTENTSCHEIDUNG, fachliche Prüfung vor Veröffentlichung.
+ */
+export const RETURN_AFTER_PAUSE = { pauseDays: 28, loadFactor: 0.9, rpeReduction: 1 } as const;

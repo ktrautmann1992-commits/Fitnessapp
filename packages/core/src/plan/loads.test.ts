@@ -284,4 +284,44 @@ describe('nextLoad (doppelte Progression)', () => {
       nextLoad({ ...weight, weightKg: null }, [done(12), done(12)], { incrementKind: 'barbell' }),
     ).toEqual({ kind: 'keep' });
   });
+
+  it('Phase 4: jede Einheit gegen ihre eigene Satzzahl (kurze Fassung mit 2 Sätzen)', () => {
+    const short: PerformedSession = { plannedSets: 2, sets: [{ reps: 12 }, { reps: 12 }] };
+    expect(sessionAchieved(weight, short)).toBe(true);
+    expect(sessionAchieved(weight, { ...short, plannedSets: 3 })).toBe(false);
+    expect(
+      sessionAchieved(weight, {
+        ...short,
+        rpeTarget: 6,
+        sets: [{ reps: 12, rpe: 7 }, { reps: 12 }],
+      }),
+    ).toBe(false);
+  });
+
+  it('W7: Gewichtssprung nur, wenn eine der zwei Einheiten die Vorlagen-Satzzahl hatte', () => {
+    const state = { ...weight, templateSets: 4, sets: 4 };
+    const short: PerformedSession = { plannedSets: 2, sets: [{ reps: 12 }, { reps: 12 }] };
+    const full: PerformedSession = { plannedSets: 4, sets: Array(4).fill({ reps: 12 }) };
+    // direkter Schritt ≤ 10 % möglich (Langhantel +2,5 kg): Wdh. nur bis reps_max → bleibt
+    expect(nextLoad(state, [short, short], { incrementKind: 'barbell' })).toEqual({ kind: 'keep' });
+    // großer Sprung (Kurzhantel 20 → 25 kg): Puffer-Wdh. auch mit kurzen Fassungen, aber kein Sprung
+    const big = { ...state, weightKg: 20 };
+    const db = { incrementKind: 'free_weight' as const, steps: [20, 25] };
+    expect(nextLoad(big, [short, short], db)).toEqual({ kind: 'add_rep', targetReps: 13 });
+    expect(nextLoad({ ...big, targetReps: 14 }, [short, short], db)).toEqual({ kind: 'keep' });
+    expect(nextLoad(state, [short, full], { incrementKind: 'barbell' })).toMatchObject({
+      kind: 'increase_weight',
+      weightKg: 52.5,
+    });
+  });
+
+  it('keine Stufe über 500 kg → no_heavier_weight statt Sprung auf dasselbe Gewicht', () => {
+    const top = { ...weight, weightKg: 500, targetReps: 14, sets: 4 };
+    expect(nextLoad(top, [done(14, 4), done(14, 4)], { incrementKind: 'barbell' })).toEqual({
+      kind: 'no_heavier_weight',
+    });
+    expect(
+      nextLoad({ ...weight, weightKg: 497.5 }, [done(12), done(12)], { incrementKind: 'barbell' }),
+    ).toMatchObject({ kind: 'increase_weight', weightKg: 500 });
+  });
 });

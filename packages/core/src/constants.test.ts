@@ -140,3 +140,34 @@ describe('Plan-Engine (Phase 3)', () => {
     );
   });
 });
+
+describe('Trainingstagebuch (Phase 4)', () => {
+  it('Tippfehler-Schutz nie lockerer als der direkte Gewichtsschritt', async () => {
+    const c = await import('./constants');
+    expect(c.WEIGHT_CONFIRM_LIMITS.relativeIncrease).toBeLessThanOrEqual(
+      c.LOAD_PROGRESSION.maxIncreaseFraction,
+    );
+    expect(c.WEIGHT_CONFIRM_LIMITS.absoluteKg.free_weight).toBeLessThan(
+      c.WEIGHT_CONFIRM_LIMITS.absoluteKg.barbell,
+    );
+  });
+
+  it('Kalibrierung ohne RPE = keine Reserve (vorsichtigste Schätzung)', async () => {
+    const c = await import('./constants');
+    expect(c.CALIBRATION_MISSING_RPE).toBe(c.SET_RPE_LIMITS.max);
+  });
+
+  it('Gewicht im Tagebuch = Plausibilitätsgrenze geplanter Lasten', async () => {
+    const c = await import('./constants');
+    expect(c.SESSION_LOG_LIMITS.weightKg.max).toBe(c.PLANNED_LOAD_LIMITS.targetWeightKg.max);
+  });
+});
+
+describe('Wiedereinstieg nach Pause (Phase 4, C1)', () => {
+  it('nur Senkung in der Anzeige, nie Steigerung; Schwelle 4 Wochen', async () => {
+    const c = await import('./constants');
+    expect(c.RETURN_AFTER_PAUSE.pauseDays).toBe(28);
+    expect(c.RETURN_AFTER_PAUSE.loadFactor).toBeLessThan(1);
+    expect(c.RETURN_AFTER_PAUSE.rpeReduction).toBeGreaterThanOrEqual(1);
+  });
+});

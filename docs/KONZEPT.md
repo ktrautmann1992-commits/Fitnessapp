@@ -115,6 +115,34 @@ Verbindlich ist der freigegebene Ablauf in `docs/PLAN-PHASE-1.md` Abschnitt 3 (S
   Start-Deckel je Einheit 30/20 min, Einheiten unter 10 min entfallen. Reine Ausdauer-Pläne haben keine Vorlage.
 - Wettkampf-Periodisierung, Intervalle, Zonen, Strecken bleiben Phase 10.
 
+**Umsetzung ab Phase 4 (`docs/PLAN-PHASE-4.md`, Etappe A: Core in `packages/core/src/log`):**
+- **Progression aus dem Tagebuch, nicht in den Plan geschrieben:** Grundlage ist der gespeicherte, ortsunabhängige
+  Zustand `state_*` (Gewicht, Ziel-Wdh., Zusatzsatz, Dauer) des neuesten zählenden Eintrags – nie die angezeigte Vorgabe.
+  `nextLoad()` bekommt diesen und den Eintrag davor (nur bei gleichem Zustand = „zweimal in Folge“). Jede Einheit zählt
+  gegen ihre eigene Satzzahl (kurze Fassungen); Gewichtssprung und Zusatzsatz nur, wenn eine der beiden Einheiten die
+  Vorlagen-Satzzahl hatte. Der gespeicherte Rohwert wird nie auf ein gerundetes Gewicht gesenkt; heute
+  wirksam ist die abgerundete Stufe des Orts. Kann der Ort den Rohwert nicht zeigen (z. B. zu Hause), gilt der
+  Wdh.-Fortschritt dort nur für diesen Ort; zurück im Studio geht es mit dem Studio-Stand weiter.
+- **Einstiegswoche/Woche 0** zählt nicht für „zweimal in Folge“, kalibriert aber das erste Arbeitsgewicht
+  (`estimateWorkingWeight()`, ohne RPE „keine Reserve“); **Erholungswoche** ändert den Zustand nie (Anzeige ×0,9).
+- **Alternative** hat ihren eigenen Verlauf und ihre eigene angezeigte Vorgabe; die geplante Übung bleibt unverändert.
+- **Wiedereinstieg nach Pause (Gratis-Schutzregel):** Pause = 28 Tage ohne Training an mindestens dem heute gezeigten
+  Gewicht (gilt je Ort, auch am gerundeten Ort; gestemmt zählt nur bestätigtes bzw. plausibles, einheitliches Gewicht,
+  keine Tippfehler; jede Wiedereinstiegs-Einheit setzt die Uhr zurück; nur Einstiegswoche
+  zählt auch; ganz ohne Eintrag kein Wiedereinstieg) → erste Einheit mit Gewicht ×0,9, reps_min, ohne Zusatzsatz, RPE −1 (nur Anzeige, zählt nicht; Rohwert bleibt);
+  in der Erholungswoche gewinnt das Strengere (Mujika & Padilla 2000, Werte PRODUKTENTSCHEIDUNG).
+- **Eigenes Gewicht:** alle Arbeitssätze gleich und anders als die Vorgabe → neuer Ausgangspunkt ohne Sprung; leichter
+  bis 50 % des Zustands, schwerer bis 10 % immer, sonst nur nach bestätigter Warnung (Orts-Rundung zählt nie als eigene
+  Wahl); erster Eintrag/Startgewicht über 50 kg je
+  Kurzhantel bzw. 200 kg Langhantel/Maschine nur mit Bestätigung. Nie automatisch weniger Gewicht (das ist 4.1).
+- **Anzeige** (`prescriptionForDisplay()`): Gewicht auf die Stufen des Orts abgerundet, Wdh.-Ziel in reps_min…reps_max + 2,
+  Zusatzsatz nur außerhalb der Erholungswoche und im Rahmen der Wochensätze, erste Einheit nach großem Sprung RPE −1;
+  danach die aktuellen Sicherheitsregeln (strengste gewinnt).
+- **Ausdauer:** Pace/Geschwindigkeit berechnet, Plausibilitätswarnung je Art; der 10-%-Bezug des Folgeblocks zählt mit
+  Tagebuch nur `min(geplant, eingetragen)` je Einheit (verwaiste Einträge nie).
+- Pausentimer mit Zeitstempeln, Woche/Verlauf und Nachhol-Regel (`canCatchUp()`, Datumsfenster gleiche ISO-Woche ± 1 Tag,
+  höchstens heute + 1 und heute − 14) sowie das strikte Zod-Schema für `save_session_log` liegen ebenfalls in `log/`.
+
 ### 4.1 Live-Anpassung des Plans (Premium, ohne KI)
 - **Gratis:** nur die doppelte Progression aus Punkt 4 oben (alle Wiederholungen geschafft → Gewicht steigt) – **ohne** die
   Regeln dieses Abschnitts. Mess-Erinnerungen (Abschnitt 11.1) bleiben ebenfalls gratis.

@@ -116,13 +116,13 @@ public.planned_sessions (id, user_id) on delete set null (planned_session_id)`, 
 `log_source` (`manual`; später `route`, `wearable`), dazu `planned_session_status` + `completed` (eigene
 Migrationsdatei **vor** der Funktions-Migration, weil neue Enum-Werte nicht in derselben Transaktion nutzbar sind).
 
-| Tabelle                  | Spalten (Kurzform)                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                  | Regeln                                                                                                                                                                                                                                                                                                                                            |
-| ------------------------ | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `session_logs`           | `id` (vom Gerät erzeugt; beim Ersetzen behält der Server die bestehende `id`), `user_id`, `planned_session_id` (→ `planned_sessions`, **`on delete set null (planned_session_id)`**), `kind` (`planned_session_kind`), `performed_on` (date), `started_at`/`finished_at` (optional), `status`, `session_rpe` (0–10, ganzzahlig, optional), `notes` (≤ 280 Zeichen = Code-Points, optional), Schnappschuss `name_de`, `is_intro_week`, `is_deload`, **`from_health_plan`** (boolean not null, setzt nur der Server aus `user_plans.uses_health_data`, B1), **`revision`** (int not null, je Ersetzen +1, W3), **`last_write_id`** (uuid, Idempotenz-Schlüssel der zuletzt angewendeten Fassung, R4), `source`, `client_updated_at` (auf `now()` gekappt), `created_at`, `updated_at` | eindeutig `planned_session_id` (wenn gesetzt) = eine Einheit wird nur einmal eingetragen; eindeutig `(user_id, performed_on) where planned_session_id is not null` = nie zwei geplante Einheiten an einem Tag nachholen („nie stapeln“); Index `(user_id, performed_on desc)`                                                                     |
-| `exercise_logs`          | `id`, `session_log_id` + `user_id` (**`on delete cascade`** zum eigenen Eintrag), `order_no` 1–12, `planned_exercise_id` (→ `planned_exercises`, **`on delete set null (planned_exercise_id)`**), `exercise_id` = **tatsächlich gemachte** Übung (→ `exercises`, `on delete restrict`), Schnappschuss `exercise_name_de`, `load_type` (der tatsächlich gemachten Übung), `status`, **Vorgabe beim Training** (Abschnitt 3.3), **Progressions-Zustand** `state_weight_kg`, `state_target_reps`, `state_extra_set` (boolean), `state_duration_s` (roh, ortsunabhängig, W4), `weight_confirmed` (boolean, bestätigte Plausibilitäts-Warnung, W5)                                                                                                                                       | `unique (session_log_id, order_no)`; Status `skipped` ⇒ keine Sätze; Status `alternative` ⇒ `planned_exercise_id` verweist auf die geplante Übung, `exercise_id` ist eine andere; CHECK `target_weight_kg is null` (keine Übernahme der Vorgabe der geplanten Übung); `state_*` = Zustand der **Alternativ-Übung** aus deren eigenem Verlauf (R2) |
-| `set_logs`               | `exercise_log_id` + `user_id` (cascade), `set_no` 1–10, `reps` 0–100, `weight_kg` 0–500 (2 Nachkommastellen; je Hantel bzw. Kugel, Langhantel gesamt), `duration_s` 1–600, `rpe` 5–10 in 0,5er-Schritten, `done`                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    | `primary key (exercise_log_id, set_no)`; Gewicht nur bei `load_type = 'weight'`, Dauer nur bei `time`                                                                                                                                                                                                                                             |
-| `cardio_logs`            | `session_log_id` (Primärschlüssel, 1:1) + `user_id` (cascade), `modality` (`endurance_modality`), `duration_s` 60–43 200, `distance_m` 0–500 000, `elevation_m` 0–10 000                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                            | nur bei `kind = 'endurance'`; **keine Herzfrequenz** (Phase 8)                                                                                                                                                                                                                                                                                    |
-| `exercise_start_weights` | `user_id`, `exercise_id`, `weight_kg` (CHECK 0,5–500), `updated_at`                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                 | `primary key (user_id, exercise_id)`; „eigenes Startgewicht“ (Phase-3-Vormerkung 5.8 Punkt 4); **bewusste Ausnahme**: direkt per PostgREST schreibbar (3.5, W14)                                                                                                                                                                                  |
+| Tabelle                  | Spalten (Kurzform)                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                  | Regeln                                                                                                                                                                                                                                                                                                                                                                                                                               |
+| ------------------------ | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| `session_logs`           | `id` (vom Gerät erzeugt; beim Ersetzen behält der Server die bestehende `id`), `user_id`, `planned_session_id` (→ `planned_sessions`, **`on delete set null (planned_session_id)`**), `kind` (`planned_session_kind`), `performed_on` (date), `started_at`/`finished_at` (optional), `status`, `session_rpe` (0–10, ganzzahlig, optional), `notes` (≤ 280 Zeichen = Code-Points, optional), Schnappschuss `name_de`, `is_intro_week`, `is_deload`, **`from_health_plan`** (boolean not null, setzt nur der Server aus `user_plans.uses_health_data`, B1), **`revision`** (int not null, je Ersetzen +1, W3), **`last_write_id`** (uuid, Idempotenz-Schlüssel der zuletzt angewendeten Fassung, R4), `source`, `client_updated_at` (auf `now()` gekappt), `created_at`, `updated_at` | eindeutig `planned_session_id` (wenn gesetzt) = eine Einheit wird nur einmal eingetragen; eindeutig `(user_id, performed_on) where planned_session_id is not null` = nie zwei geplante Einheiten an einem Tag nachholen („nie stapeln“); Index `(user_id, performed_on desc)`                                                                                                                                                        |
+| `exercise_logs`          | `id`, `session_log_id` + `user_id` (**`on delete cascade`** zum eigenen Eintrag), `order_no` 1–12, `planned_exercise_id` (→ `planned_exercises`, **`on delete set null (planned_exercise_id)`**), `exercise_id` = **tatsächlich gemachte** Übung (→ `exercises`, `on delete restrict`), Schnappschuss `exercise_name_de`, `load_type` (der tatsächlich gemachten Übung), `status`, **Vorgabe beim Training** (Abschnitt 3.3), **Progressions-Zustand** `state_weight_kg`, `state_target_reps`, `state_extra_set` (boolean), `state_duration_s` (roh, ortsunabhängig, W4), `weight_confirmed` (boolean, bestätigte Plausibilitäts-Warnung, W5), `target_extra_set` (boolean, angezeigter Zusatzsatz, Etappe A B1), `is_return` (boolean, Wiedereinstieg nach Pause, Etappe A C1)     | `unique (session_log_id, order_no)`; Status `skipped` ⇒ keine Sätze; Status `alternative` ⇒ `planned_exercise_id` verweist auf die geplante Übung, `exercise_id` ist eine andere; Vorgabe (`target_*`) und `state_*` sind die der **Alternativ-Übung** (deren angezeigte Vorgabe, deren eigener Verlauf); verboten ist nur die Übernahme von Vorgabe oder Zustand der geplanten Übung (R2, prüft der Client beim Bauen des Eintrags) |
+| `set_logs`               | `exercise_log_id` + `user_id` (cascade), `set_no` 1–10, `reps` 0–100, `weight_kg` 0–500 (2 Nachkommastellen; je Hantel bzw. Kugel, Langhantel gesamt), `duration_s` 1–600, `rpe` 5–10 in 0,5er-Schritten, `done`                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    | `primary key (exercise_log_id, set_no)`; Gewicht nur bei `load_type = 'weight'`, Dauer nur bei `time`                                                                                                                                                                                                                                                                                                                                |
+| `cardio_logs`            | `session_log_id` (Primärschlüssel, 1:1) + `user_id` (cascade), `modality` (`endurance_modality`), `duration_s` 60–43 200, `distance_m` 0–500 000, `elevation_m` 0–10 000                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                            | nur bei `kind = 'endurance'`; **keine Herzfrequenz** (Phase 8)                                                                                                                                                                                                                                                                                                                                                                       |
+| `exercise_start_weights` | `user_id`, `exercise_id`, `weight_kg` (CHECK 0,5–500), `updated_at`                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                 | `primary key (user_id, exercise_id)`; „eigenes Startgewicht“ (Phase-3-Vormerkung 5.8 Punkt 4); **bewusste Ausnahme**: direkt per PostgREST schreibbar (3.5, W14)                                                                                                                                                                                                                                                                     |
 
 Abweichung von KONZEPT Abschnitt 12 (wird in Etappe B dort eingetragen): Zwischen `session_logs` und `set_logs`
 liegt `exercise_logs`, weil „nicht gemacht“ eine Übung **ohne** Sätze ist und die Vorgabe je Übung einmal
@@ -137,8 +137,9 @@ Damit er dann noch lesbar ist und die Progression weiterrechnen kann, kopiert je
 - Einheit: `name_de`, `kind`, `is_intro_week`, `is_deload`, `performed_on`.
 - Übung: tatsächliche `exercise_id`, `exercise_name_de`, `load_type`.
 - **Vorgabe beim Training** (genau der Stand, den die Person **gesehen** hat – nach Orts-Rundung, Erholungswoche,
-  Einstiegswoche und Sicherheitsregeln): `target_sets`, `reps_min`, `reps_max`, `target_reps`, `target_weight_kg`,
-  `target_duration_s`, `target_rpe`. Nur zum Anzeigen im Verlauf.
+  Einstiegswoche und Sicherheitsregeln): `target_sets`, `reps_min`, `reps_max`, `target_reps`, `target_extra_set`,
+  `target_weight_kg`, `target_duration_s`, `target_rpe`. Für den Verlauf und den Fortschritt an einem gerundeten
+  Gewicht (Umsetzungsstand, Festlegung 1).
 - **Progressions-Zustand** (W4) getrennt davon: `state_weight_kg`, `state_target_reps`, `state_extra_set`,
   `state_duration_s` = roher, ortsunabhängiger Zustand **vor** dieser Einheit (ohne Abrunden auf Stufen des Orts,
   ohne Deload-Faktor 0,9, ohne RPE −1 der Einstiegswoche, ohne Klemmen auf den Wdh.-Bereich des Plans). Daraus –
@@ -494,12 +495,22 @@ context)` (Vorgabe für heute: Gewicht auf Stufen des Orts **abgerundet**, Wdh.-
   erste Eintrag einer Übung ohne Zustand setzt `state_*` über `estimateWorkingWeight()` (5.2) – auch in der
   Einstiegswoche. `recent_exercise_logs()` liefert dafür den neuesten Einstiegswochen-Eintrag, solange es keinen
   zählenden gibt. Die Anzeige rechnet RPE −1 nur in die Vorgabe.
+- **Wiedereinstieg nach Pause (Gratis-Schutzregel, Etappe A C1, `RETURN_AFTER_PAUSE`):** Pause = mehr als 28 Tage ohne
+  Training dieser Übung an mindestens dem heute gezeigten Gewicht (Uhr setzen zurück: jede Wiedereinstiegs-Einheit
+  und jeder zählende Eintrag, der an mindestens W trainiert hat – angezeigtes Gewicht, ein anderes gestemmtes nur als
+  bestätigtes bzw. plausibles, einheitliches Gewicht aller Arbeitssätze (Tippfehler und einzelne schwerere Sätze
+  zählen nicht); ohne angezeigtes Gewicht der schwerste Satz, wenn die Kalibrierung ihn annimmt; nach einem
+  Gewichtsschritt gilt das Gewicht davor (auch das Heimgewicht); ohne zählenden Eintrag der neueste
+  überhaupt, z. B. Einstiegswoche; ganz ohne Eintrag kein Wiedereinstieg; gilt auch am gerundeten Ort) → die erste Einheit danach zeigt das heute wirksame Gewicht W ×0,9, Ziel-Wdh. =
+  reps_min, keinen Zusatzsatz und RPE −1 (nie unter 5); nur Anzeige, der Rohwert bleibt. Diese Einheit (`is_return`)
+  zählt nicht; danach geht es mit dem Rohwert weiter. In einer Erholungswoche gewinnt je Größe das Strengere (nie
+  doppelt ×0,9). Quelle: Mujika I, Padilla S (2000), Sports Med 30(2):79–87; Werte PRODUKTENTSCHEIDUNG.
 - **Erholungswoche:** Einträge ändern den Zustand **nicht** (kopieren ihn unverändert in `state_*`) und zählen nicht
   für „zweimal in Folge“; die Anzeige rechnet Gewicht × 0,9 (`DELOAD_DOSAGE.loadFactor`) nur in die Vorgabe.
 - **Alternative (W6, R2):** Bei `status = 'alternative'` ist `state_*` der Zustand der **Alternativ-Übung** aus
   deren **eigenem** Verlauf (unter ihrer `exercise_id`); nur ohne eigenen Verlauf bleibt er leer und sie wird über
   `estimateWorkingWeight()` kalibriert (5.2). Verboten ist nur die Übernahme von Vorgabe oder Zustand der
-  **geplanten** Übung (CHECK: `target_weight_kg is null` bei `alternative`). `load_type` ist der der tatsächlich
+  **geplanten** Übung; gespeichert wird die eigene angezeigte Vorgabe der Alternativ-Übung. `load_type` ist der der tatsächlich
   gemachten Übung. Die geplante Übung behält ihren Zustand (die Einheit zählt für sie nicht). Tests: erste
   Alternative → Kalibrierung; **Alternative zweimal → +Wdh.**
 - **Reihenfolge in der Anzeige:** Progression zuerst, **danach** `prepareSessionForDisplay()` mit den aktuellen
@@ -593,6 +604,18 @@ letzten Übung der Gruppe.
 - **Eigenschaftstest:** über viele zufällige Eintragsfolgen – **auch mit eingestreuten Ausreißern** (Tippfehler
   × 10, unbestätigt) – nie ein Gewichtssprung > 10 % ohne vorherigen Puffer oder Bestätigung, nie ein Gewicht über
   500 kg, nie RPE über dem Deckel, nie automatisch weniger Gewicht.
+- **Wiedereinstieg (C1):** genau 4 Wochen (noch normal) und 4 Wochen + 1 Tag, Pause im Studio, lange Phase zu Hause
+  und dann Studio, Erholungswoche direkt nach der Pause (nicht doppelt ×0,9), Übung erstmals nach Pause im neuen Plan;
+  Eigenschaftstest: nach Ortswechsel gegen den schwersten gestemmten Satz der letzten 4 Wochen, älter →
+  Wiedereinstiegs-Anzeige, gleicher Ort strenge Regel.
+- **Pause = 28 Tage ohne Training an mindestens dem heute gezeigten Gewicht (D1):** nur zu Hause + 3 Monate →
+  Wiedereinstieg zu Hause; Rohwert 21/angezeigt 20 + Pause → Wiedereinstieg; Studio kürzlich, zu Hause nach 5 Wochen
+  → kein Wiedereinstieg; zu Hause kürzlich, Studio nach 5 Wochen → Wiedereinstieg im Studio; nur Einstiegswoche +
+  5 Wochen → Wiedereinstieg; erster Tag nach Gewichtsschritt keine Pause (auch Anheben vom gerundeten Ort 20 →
+  22,5); Tippfehler-Satz (200 kg unbestätigt, 1 × 22,5, 10 × 22,5 statt 20) setzt die Uhr nicht zurück; Eintrag ohne
+  angezeigtes Gewicht nur bei gestemmtem Gewicht ≥ W. Eigenschaftstest „gemessen am Gestemmten“ (nur bestätigtes
+  bzw. plausibles, einheitliches Gewicht): Wiedereinstieg nur ohne solches Training ≥ W in den letzten 28 Tagen,
+  sonst W ≤ dessen Gewicht + 10 %.
 - **Datumsfenster (W2):** `canCatchUp()` an den Rändern (Sonntag/Montag ± 1 Tag, heute − 14/− 15, heute + 1/+ 2).
 - **CI-Zusammenfassung:** `packages/content/src/plan-examples.ts` bekommt „Beispiel-Progression“: für drei
   Test-Personen 8 ausgedachte Einheiten und die jeweils nächste Vorgabe – so seht ihr Etappe A am Handy.
@@ -761,11 +784,13 @@ zulassen“ einmal erlauben); iPhone: TestFlight-App → Alpha5 → Installieren
 `sessionAchieved()`/`nextLoad()` (Sätze je Fassung), `enduranceReferenceFromBlock()` mit Einträgen, neue
 Konstanten mit Quellen, Zod-Schemas, Beispiel-Progression in der CI-Zusammenfassung.
 _DoD:_ alle Tests aus 5.7 grün inkl. Eigenschaftstest mit Ausreißern; Progression nur aus `state_*` (W4), Sprung nur
-mit voller Satzzahl (W7), Bestätigungsregel (W5), Alternative (W6), `canCatchUp()` mit Datumsfenster (W2); keine
+mit voller Satzzahl (W7), Bestätigungsregel (W5), Alternative (W6), `canCatchUp()` mit Datumsfenster (W2),
+Orts-Rundung nur in der Rechnung (B1), Wiedereinstieg nach Pause (C1); keine
 Migration, keine App-Änderung; `docs/` nachgezogen (H5): KONZEPT 4 „Umsetzung ab Phase 4“, Umsetzungsstand hier.
 
 **B – Datenbank.** Migrationen (Enums inkl. `completed` in eigener Datei; Tabellen, RLS, CHECKs, Indizes;
-Funktionen aus 3.6 inkl. `revoke_health_data()` und `private.neutralize_health_plan_logs()`;
+Spalten aus Etappe A vormerken: `exercise_logs.target_extra_set` und `exercise_logs.is_return` (beide in
+`sessionLogPayloadSchema`, Abgleich der Feldliste in `db-sync.test.ts`); Funktionen aus 3.6 inkl. `revoke_health_data()` und `private.neutralize_health_plan_logs()`;
 `consents_after_revoke()` erweitert; Phase-3-Nachtrag `save_training_plan` (H-c); Verschiebe-Trigger ergänzt (W1); Lese-Regel archivierter Übungen), pgTAP
 `17_training_logs.test.sql` und `18_training_log_rpcs.test.sql` plus Ergänzungen in `04_account_deletion`,
 `06_profile_required`, Widerrufs- und Plan-Tests; `database.types.ts`; `db-sync.test.ts`.
@@ -947,10 +972,80 @@ dem Server** (auch nach unten), protokolliert jede Änderung in `plan_adjustment
 
 ## Umsetzungsstand
 
-Noch nicht begonnen. Wächter-Prüfung Runde 1 und Auflagen aus Runde 2 eingearbeitet (Tabellen unten). Nächster
-Schritt: Etappe A.
+**Etappe A – umgesetzt (05.10.2026, Pull Request folgt):** neuer Ordner `packages/core/src/log/`:
 
----
+- `progression.ts` – `progressFromLogs()` (Zustand aus `state_*`, zwei neueste zählende Einträge, Einstiegswoche als
+  Kalibrierungsquelle, Erholungswoche ohne Änderung, Alternative mit eigenem Verlauf, eigenes Gewicht mit
+  Bestätigungsregel), `prescriptionForDisplay()`, `buildExerciseLogEntry()`/`stateToStore()` für Etappe C.
+- `calibration.ts` (Arbeitsgewicht, eigenes Startgewicht), `plausibility.ts` (`setEntryWarnings()`, absolute
+  Schwellen), `cardio.ts` (Pace, km/h, Plausibilität, `loggedEnduranceMinutes()`), `rest-timer.ts`, `summary.ts`
+  (`weekLogSummary()`, `historyByWeek()`, `exerciseHistory()`, `canCatchUp()`, `isWithinLogDateWindow()`),
+  `schemas.ts` (`sessionLogPayloadSchema` strikt inkl. `write_id`, `base_revision`, `planned_date`;
+  `exerciseStartWeightSchema`).
+- `plan/loads.ts`: `sessionAchieved()` gegen die Satzzahl der Fassung, W7 in `nextLoad()`, keine Stufe über 500 kg
+  (→ `no_heavier_weight` statt „Sprung“ auf dasselbe Gewicht). `plan/schedule.ts`: `enduranceReferenceFromBlock()` und
+  `nextPlanBlock()` optional mit eingetragenen Minuten (`loggedEnduranceMinutes`); ohne Angabe Phase-3-Verhalten.
+- Neue Konstanten mit Quelle bzw. PRODUKTENTSCHEIDUNG (3.8) und Enums `SESSION_LOG_STATUSES`,
+  `EXERCISE_LOG_STATUSES`, `LOG_SOURCES` (Postgres-Abgleich ab Etappe B). `planned_session_status` bekommt `completed`
+  erst mit der Migration in Etappe B.
+- Tests: alle Fälle aus 5.7 plus Eigenschaftstest über 300 zufällige Folgen mit Ausreißern (unabhängige Erwartungen);
+  CI-Zusammenfassung „Beispiel-Progression“ (Anna, Ben, Clara; `packages/content/src/plan-examples.ts`); KONZEPT 4
+  „Umsetzung ab Phase 4“ ergänzt.
+
+Festlegungen bei der Umsetzung (Wächter-Prüfung Etappe A eingearbeitet):
+
+1. **Orts-Rundung nur in der Rechnung, nie im Rohwert (Wächter Etappe A, Runden 2–3, B1):** `state_*` bleibt roh und
+   wird nie auf ein angezeigtes Gewicht gesenkt; nur ein Gewichtsschritt (`increase_weight`) setzt einen neuen Rohwert.
+   Wirksam ist heute W = `snapToAvailableWeight(Rohwert, Stufen am heutigen Ort)` (`ProgressResult.effective`).
+   - W = Rohwert: Es zählen nur Einträge, deren angezeigtes Gewicht den Rohwert erreichte; leichtere (z. B. zu Hause)
+     werden übersprungen wie eine Erholungswoche → weiter mit dem letzten Stand am vollen Gewicht.
+   - W < Rohwert: gerechnet wird mit Basis W und nur den Einträgen mit angezeigtem Gewicht W (dafür speichert jeder
+     Eintrag zusätzlich das angezeigte Wdh.-Ziel und den Zusatzsatz: `target_reps`, neu `target_extra_set`). Dieser
+     Wdh./Zusatzsatz-Fortschritt gilt nur für diesen Ort und wandert nicht ins Studio. Ein Gewichtsschritt von W
+     läuft normal über den Puffer; liegt das neue Gewicht über dem Rohwert, wird es neuer Rohwert (kalibriert 21 →
+     angezeigt 20 → mit Puffer 22,5 → Rohwert 22,5; Langhantel 61 → W 60 → 62,5).
+   - Beispiele/Tests: Studio → eine verpatzte Einheit zu Hause → Studio zeigt wieder 22,5 mit Studio-Stand; Studio →
+     viele Einheiten zu Hause → Studio höchstens 22,5 mit gleichem Wdh.-Stand; Eigenschaftstests „gemessen am
+     Gestemmten“ (zufällige Stufen-Raster je Ort, Ortswechsel; am gleichen Ort nie > 10 % über dem schwersten Satz
+     der letzten zählenden Einheit, nach Ortswechsel nie > 10 % über dem schwersten je gestemmten Satz bzw. dem
+     eigenen Startgewicht – Ausnahmen: geschaffter Puffer, bestätigtes eigenes Gewicht) und „es geht weiter“;
+     CI-Beispiel „Dana“.
+2. Ein eigenes Gewicht wird gegen das ANGEZEIGTE Gewicht erkannt (Orts-Rundung ist kein eigener Wunsch): schwerer
+   über 10 % von max(Zustand, Anzeige) nur mit Bestätigung, deutlich leichter (unter 50 % des Zustands oder unter
+   der kleinsten eigenen Stufe, `WEIGHT_CONFIRM_LIMITS.relativeDecrease`) ebenfalls nur mit Bestätigung
+   („Absichtlich deutlich leichter?“, Warnung `confirm_lighter`).
+3. „Zweimal in Folge“ verlangt zwei zählende Einträge mit **demselben** Zustand (nach +1 Wdh. oder Zusatzsatz beginnt
+   die Zählung neu – wie in Phase 3 gegen `state.sets`).
+4. Das Ziel-Wdh. wird für die Bewertung auf den Wdh.-Bereich des aktuellen Plans geklemmt; der Zustand bleibt roh.
+   Kalibrierung und Startgewicht runden nur auf 0,5 kg, die Stufen des Orts kommen erst in der Anzeige – Punkt 1
+   sorgt dafür, dass das trotzdem vorangeht (Eigenschaftstest „es geht weiter“ über 200 zufällige Stufen-Raster).
+5. W7 mit nur kurzen Fassungen: +Wdh. bis `reps_max`; über `reps_max` hinaus (Puffer) nur, wenn kein direkter
+   Gewichtsschritt ≤ 10 % möglich ist.
+6. 5.3 „nie unter den Startumfang“ gilt nur ohne Bezug. Mit eingetragenen Minuten bleibt es bei höchstens +10 % auf
+   das tatsächlich Trainierte (wie Phase 3 bei gestrichenen Einheiten); ein Bezug bzw. Deckel je Einheit unter dem
+   Einheiten-Minimum (10 min) gilt wie „ohne Bezug“ (sonst fielen alle Einheiten dauerhaft weg).
+7. Alternative: Vorgabe (`target_*`) und Zustand der Alternativ-Übung werden gespeichert; die frühere Regel „Alternative
+   ohne Vorgabe-Gewicht“ entfällt (Prüfregel R2 = keine Übernahme von der geplanten Übung).
+8. `canCatchUp()` nutzt `rescheduleSession()` (früheste erlaubte Tag ab heute muss heute sein, keine Erholungseinheit)
+   plus das Datumsfenster.
+9. Schema: `exercise_id` höchstens 100 Zeichen; Gewichtsübung mit abgehaktem Satz braucht Wiederholungen.
+10. **Wiedereinstieg nach Pause (C1):** `RETURN_AFTER_PAUSE` (28 Tage, ×0,9, RPE −1; Mujika & Padilla 2000,
+    PRODUKTENTSCHEIDUNG, fachliche Prüfung) – Anzeige-Regel in `progressFromLogs()` (`returnAfterPause`, braucht
+    `options.today`) und `prescriptionForDisplay()`; die Einheit wird mit `is_return` gespeichert und zählt nicht
+    (`isCountingEntry`). Wächter-Auflage D1 umgesetzt: Pause = 28 Tage ohne Training an mindestens dem heute
+    gezeigten Gewicht W (`effective`, am gerundeten Ort die abgerundete Stufe); Uhr = letzte Wiedereinstiegs-Einheit
+    oder letzter zählender Eintrag mit trainiertem Gewicht ≥ W (angezeigt; gestemmt nur als bestätigtes bzw.
+    plausibles, einheitliches Gewicht; ohne Anzeige der von der Kalibrierung angenommene schwerste Satz; ohne zählenden Eintrag der neueste
+    überhaupt); auch am gerundeten Ort, ×0,9 auf `effective`; `options.today` ist Pflicht.
+11. **Für Etappe B vorgemerkt (C3):** neue Spalten `exercise_logs.target_extra_set` (boolean, nullable) und
+    `exercise_logs.is_return` (boolean not null default false) in der Migration, in `save_session_log`
+    (`assert_json_keys`) und im Feldlisten-Abgleich von `db-sync.test.ts`.
+
+**Für Etappe C festgehalten:** Die 10-%-Warnung im Trainingsmodus vergleicht gegen max(Zustand, angezeigtes Gewicht);
+bei einer Alternative ist `stateWeightKg` der Zustand der Alternativ-Übung (deren eigener Verlauf), nie der der
+geplanten Übung. Die Leichter-Warnung vergleicht gegen den Zustand und die Stufen des Orts.
+
+Nächster Schritt: Wächter-Prüfung von Etappe A, dann Etappe B.
 
 ## Wächter-Prüfung (Runde 1) – wie die Befunde gelöst sind
 
@@ -987,7 +1082,7 @@ Schritt: Etappe A.
 | Befund                                    | Lösung                                                                                                                                                                                                                                                                                      | Abschnitt                                             |
 | ----------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ----------------------------------------------------- |
 | R1 Einstiegswoche als Kalibrierungsquelle | zählt nicht für „zweimal in Folge“, setzt aber beim ersten Eintrag `state_*` über `estimateWorkingWeight()`; `recent_exercise_logs` liefert den neuesten Einstiegswochen-Eintrag, solange kein zählender existiert; nur Erholungswoche ohne Zustandsänderung; Test Woche 0 → Woche 1        | 3.6 Punkt 4, 5.1, 5.7                                 |
-| R2 Alternative mit eigenem Zustand        | `state_*` = Zustand der Alternativ-Übung aus eigenem Verlauf, leer nur ohne Verlauf (dann Kalibrierung); verboten nur Übernahme aus der geplanten Übung (CHECK `target_weight_kg is null`); Test „Alternative zweimal → +Wdh.“                                                              | 3.2, 5.1, 5.7                                         |
+| R2 Alternative mit eigenem Zustand        | `state_*` = Zustand der Alternativ-Übung aus eigenem Verlauf, leer nur ohne Verlauf (dann Kalibrierung); verboten nur Übernahme aus der geplanten Übung (eigene Vorgabe der Alternative wird gespeichert, Nachtrag Etappe A); Test „Alternative zweimal → +Wdh.“                            | 3.2, 5.1, 5.7                                         |
 | R3 Widerruf als eine Transaktion          | `revoke_health_data(p_delete_logs)` (`security definer`, `search_path = ''`, `auth.uid()`, nur `authenticated`); vorher `LogQueue` sperren und `fromHealthPlan`-Einträge bereinigen; Bereinigung auf anderen Geräten beim Laden; Restrisiko + Dialog-Hinweis; pgTAP `anon`, fremde Einträge | 3.4 S1, 3.6 Punkt 6, 3.7, 4.3, 4.5, 8 B/C, 13 Punkt 5 |
 | R4 Idempotenz                             | `write_id` je Fassung, `last_write_id`; gleicher Wert → `ok` mit aktueller `revision`; pgTAP „Antwort verloren“; `delete_session_log(p_id, p_base_revision)`                                                                                                                                | 3.2, 3.6, 4.3, 4.5, 8 B/C, 13                         |
 | R5 Konto-Bindung                          | `owner_user_id` in Entwurf, `LogQueue`, `logCache`, `SyncQueue`; nur passendes Konto sendet, sonst Nachfrage „löschen?“; Sitzungsablauf → erneut anmelden, nichts leeren; Test                                                                                                              | 4.1, 6.3, 8 C                                         |

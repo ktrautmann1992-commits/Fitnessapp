@@ -439,6 +439,72 @@ describe('Folgeblock mit Ausdauer und „Tage egal“', () => {
     expect(firstWeek.reduce((sum, s) => sum + s.estimated_minutes, 0)).toBeLessThanOrEqual(99);
   });
 
+  it('Phase 4: mit Tagebuch zählt je Einheit min(geplant, eingetragen); ohne Eintrag und verwaist nie', () => {
+    const previous = [
+      { ...run(1, 4, 30), id: 'a' },
+      { ...run(3, 4, 30), id: 'b' },
+      { ...run(5, 4, 30), id: 'c' },
+    ];
+    // a: 45 eingetragen → 30 (nie mehr als geplant), b: 15 (halb geschafft), c: kein Eintrag
+    const logged = new Map([
+      ['a', 45],
+      ['b', 15],
+    ]);
+    expect(enduranceReferenceFromBlock(previous, logged)).toEqual({ volume: 45, sessionCap: 30 });
+    expect(enduranceReferenceFromBlock(previous, new Map())).toEqual({
+      volume: 0,
+      sessionCap: null,
+    });
+    expect(enduranceReferenceFromBlock(previous)).toEqual({ volume: 90, sessionCap: 30 });
+    const next = nextPlanBlock(previous, { ...options(), loggedEnduranceMinutes: logged });
+    const firstWeek = next.filter((s) => s.week_no === 1);
+    // floor(1,1 × 45) = 49 – wie bei gestrichenen Einheiten: 10 % über dem tatsächlich Trainierten
+    const total = firstWeek.reduce((sum, s) => sum + s.estimated_minutes, 0);
+    expect(total).toBeLessThanOrEqual(49);
+    expect(total).toBeGreaterThan(0);
+    // ganz ohne Einträge: Bezug 0 → Startumfang der Gruppe (Fortgeschritten 120, Wunsch 3 × 40)
+    const none = nextPlanBlock(previous, { ...options(), loggedEnduranceMinutes: new Map() });
+    expect(
+      none.filter((s) => s.week_no === 1).reduce((sum, s) => sum + s.estimated_minutes, 0),
+    ).toBe(120);
+  });
+
+  it('Bezug unter dem Einheiten-Minimum (10 min) gilt wie „ohne Bezug“', () => {
+    const previous = [
+      { ...run(1, 4, 30), id: 'a' },
+      { ...run(3, 4, 30), id: 'b' },
+    ];
+    expect(
+      enduranceReferenceFromBlock(
+        previous,
+        new Map([
+          ['a', 5],
+          ['b', 4],
+        ]),
+      ),
+    ).toEqual({
+      volume: 0,
+      sessionCap: null,
+    });
+    expect(
+      enduranceReferenceFromBlock(
+        previous,
+        new Map([
+          ['a', 9],
+          ['b', 9],
+        ]),
+      ),
+    ).toEqual({
+      volume: 18,
+      sessionCap: null,
+    });
+    const next = nextPlanBlock(previous, {
+      ...options(),
+      loggedEnduranceMinutes: new Map([['a', 5]]),
+    });
+    expect(next.filter((s) => s.week_no === 1).length).toBeGreaterThan(0);
+  });
+
   it('gestrichene Einheiten zählen nicht: eine von drei gestrichen → Bezug nur aus zwei', () => {
     const previous = [run(1, 4, 30), run(3, 4, 30, 'skipped'), run(5, 4, 30)];
     expect(enduranceReferenceFromBlock(previous)).toEqual({ volume: 60, sessionCap: 30 });
