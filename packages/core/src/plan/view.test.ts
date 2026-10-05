@@ -1,6 +1,7 @@
 import { describe, expect, it } from 'vitest';
 
 import { addDays } from '../dates';
+import { equipmentProfile } from './equipment-profile';
 import { generateTrainingPlan } from './generate';
 import { planInputsSchema, planInputsSnapshot } from './inputs';
 import { planSafetyRules } from './safety';
@@ -207,6 +208,44 @@ describe('sessionLocation', () => {
     };
     expect(sessionLocation(at('2026-10-08'), flexGym)).toBe('gym');
     expect(sessionLocation(at('2026-10-08'), null)).toBe('home');
+  });
+
+  it('mehrdeutig (Tage egal mit Studio und Zuhause): Ort aus der Fassung (PDF-Wächter S1)', () => {
+    const exercises = library.exercises;
+    const homeProfile = equipmentProfile('home', [{ equipmentId: 'dumbbells', weightsKg: [4, 8] }]);
+    const flexBoth = {
+      mode: 'flex' as const,
+      slots: [
+        { kind: 'strength_gym' as const, minutes: 60 },
+        { kind: 'strength_home' as const, minutes: 45 },
+      ],
+    };
+    const withExercises = (ids: string[]) => ({
+      ...at('2026-10-08'),
+      exercises: ids.map((id) => ({ exercise_id: id }) as StoredSession['exercises'][number]),
+    });
+    const gym = withExercises(['kniebeuge-langhantel', 'kniebeuge-koerpergewicht']);
+    const home = withExercises(['kniebeuge-koerpergewicht']);
+    expect(sessionLocation(gym, flexBoth, { library: exercises, homeProfile })).toBe('gym');
+    expect(sessionLocation(home, flexBoth, { library: exercises, homeProfile })).toBe('home');
+    // Ohne Kontext wie bisher „zu Hause“; feste Tage bleiben beim Wochentag.
+    expect(sessionLocation(gym, flexBoth)).toBe('home');
+    expect(sessionLocation(gym, flexBoth, { library: null, homeProfile })).toBe('home');
+    const fixedBoth = {
+      mode: 'fixed' as const,
+      slots: [
+        { weekday: 1, kind: 'strength_gym' as const, minutes: 60 },
+        { weekday: 3, kind: 'strength_home' as const, minutes: 30 },
+      ],
+    };
+    expect(
+      sessionLocation({ ...home, scheduled_on: '2026-10-05' }, fixedBoth, {
+        library: exercises,
+        homeProfile,
+      }),
+    ).toBe('gym');
+    // Verschoben auf einen Tag ohne Eintrag: aus der Fassung.
+    expect(sessionLocation(gym, fixedBoth, { library: exercises, homeProfile })).toBe('gym');
   });
 });
 

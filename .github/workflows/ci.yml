@@ -30,6 +30,10 @@ jobs:
       # Passt die App (tokens.generated.ts) noch zum Farbschema der Website (theme.css)? Siehe docs/DESIGN.md.
       - name: Farbschema prüfen (theme.css → App-Tokens)
         run: pnpm --filter @fitnessapp/ui tokens:check
+      # Schrift (Archivo) und Logo für den PDF-Export als eingebettetes Modul – passt es noch zu den Dateien?
+      # Siehe docs/PLAN-PDF-EXPORT.md §5 (B6).
+      - name: Druck-Assets prüfen (Schrift + Logo → assets.generated.ts)
+        run: pnpm --filter @fitnessapp/ui print-assets:check
       # Prüft alle Inhalte unter content/ (Übungen, Plan-Vorlagen) mit den Regeln aus docs/PLAN-PHASE-2.md
       # Abschnitt 7. Schlägt fehl bei Schema-/Dateifehlern und bei roten Fehlern an FREIGEGEBENEN Inhalten;
       # der Bericht steht zusätzlich in der Zusammenfassung des Laufs. Der Vergleich mit main prüft, ob
@@ -46,6 +50,16 @@ jobs:
         run: pnpm plan:examples
       - name: Lint, Typen, Tests
         run: pnpm check
+      # PDF-Export (docs/PLAN-PDF-EXPORT.md §8 P1+P2): Trainingsplan für ausgedachte Beispiel-Personen als Druck-HTML.
+      # Am Handy: Actions → ci-Lauf → Artefakt „pdf-vorschau“ → HTML öffnen → Drucken → „Als PDF sichern“.
+      - name: PDF-Vorschau erzeugen
+        run: pnpm --filter @fitnessapp/mobile pdf:preview
+      - name: PDF-Vorschau hochladen
+        uses: actions/upload-artifact@v4
+        with:
+          name: pdf-vorschau
+          path: apps/mobile/pdf-vorschau
+          retention-days: 14
       - name: Apps bauen
         run: pnpm build
       # Klickt die Web-Version der App (Testmodus, Handy-Ansicht) einmal komplett durch.

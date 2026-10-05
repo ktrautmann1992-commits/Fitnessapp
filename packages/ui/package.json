@@ -7,11 +7,14 @@
   "exports": {
     ".": "./src/index.ts",
     "./theme.css": "./theme.css",
-    "./brand/alpha5-mark.svg": "./brand/alpha5-mark.svg"
+    "./brand/alpha5-mark.svg": "./brand/alpha5-mark.svg",
+    "./print": "./src/print/index.ts"
   },
   "scripts": {
     "tokens": "node scripts/generate-tokens.mjs",
     "tokens:check": "node scripts/generate-tokens.mjs --check",
+    "print-assets": "node scripts/generate-print-assets.mjs",
+    "print-assets:check": "node scripts/generate-print-assets.mjs --check",
     "icons": "node brand/generate-icons.mjs",
     "lint": "eslint .",
     "typecheck": "tsc --noEmit",
