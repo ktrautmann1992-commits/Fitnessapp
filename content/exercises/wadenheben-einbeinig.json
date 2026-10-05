@@ -1,0 +1,49 @@
+{
+  "id": "wadenheben-einbeinig",
+  "version": 1,
+  "status": "draft",
+  "name_de": "Wadenheben einbeinig",
+  "name_en": "Single-leg Calf Raise",
+  "aliases_de": ["Einbeiniges Wadenheben"],
+  "movement_pattern": "calf_raise",
+  "primary_muscles": ["calves"],
+  "secondary_muscles": [],
+  "equipment_ids": [],
+  "mechanics": "isolation",
+  "load_type": "bodyweight",
+  "unilateral": true,
+  "difficulty": 2,
+  "caution_tags": [],
+  "description_de": "Wadenheben auf einem Bein, optional auf einer Treppenstufe für mehr Bewegungsweg. Schwerere Variante ohne Gewicht.",
+  "steps_de": [
+    "Auf ein Bein stellen und eine Hand an Wand oder Geländer legen – der Halt ist Pflicht.",
+    "Optional: Fußballen auf die Kante einer Treppenstufe, Ferse frei.",
+    "Ferse so hoch wie möglich anheben, oben kurz halten.",
+    "Langsam absenken, nach allen Wiederholungen Seite wechseln."
+  ],
+  "tips_de": ["Langsames Absenken (3 Sekunden) macht die Übung schwerer."],
+  "common_mistakes_de": ["Wippen statt kontrollierter Bewegung.", "Knie beugt sich."],
+  "safety_note_de": "Nur so weit und so oft bewegen, wie die Technik sauber bleibt. Bei Schmerzen, Schwindel oder ungewohnten Beschwerden die Übung beenden.",
+  "alternatives": [
+    {
+      "alternative_id": "wadenheben-koerpergewicht",
+      "reason": "easier",
+      "priority": 1
+    },
+    {
+      "alternative_id": "wadenheben-kurzhantel",
+      "reason": "other_equipment",
+      "priority": 2
+    }
+  ],
+  "meta": {
+    "origin": "claude_session",
+    "model": "claude-opus-5-5",
+    "batch_id": null,
+    "created_on": "2026-10-05",
+    "expert_reviewed": false,
+    "reviewed_by": null,
+    "reviewed_at": null,
+    "review_note": null
+  }
+}

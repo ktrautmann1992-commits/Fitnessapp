@@ -1,0 +1,49 @@
+{
+  "id": "liegestuetz-erhoeht",
+  "version": 1,
+  "status": "draft",
+  "name_de": "Liegestütz mit erhöhten Händen",
+  "name_en": "Incline Push-up",
+  "aliases_de": ["Liegestütz an der Wand", "Liegestütz am Tisch"],
+  "movement_pattern": "horizontal_push",
+  "primary_muscles": ["chest"],
+  "secondary_muscles": ["triceps", "front_delts", "abs"],
+  "equipment_ids": [],
+  "mechanics": "compound",
+  "load_type": "bodyweight",
+  "unilateral": false,
+  "difficulty": 1,
+  "caution_tags": [],
+  "description_de": "Leichtere Liegestütz-Variante mit den Händen an der Wand, auf einem Tisch oder einer Arbeitsplatte. Je höher die Hände, desto leichter.",
+  "steps_de": [
+    "Hände etwas weiter als schulterbreit auf eine stabile Erhöhung legen (Wand, Arbeitsplatte, schwerer Tisch).",
+    "Füße zurücksetzen, bis der Körper vom Kopf bis zu den Fersen eine schräge Linie bildet.",
+    "Brust kontrolliert zur Kante absenken, Ellbogen etwa 45 Grad vom Körper.",
+    "Zurück nach oben drücken."
+  ],
+  "tips_de": ["Steigerung: tiefere Erhöhung wählen, bis die Liegestütze am Boden klappen."],
+  "common_mistakes_de": ["Hüfte hängt durch.", "Erhöhung rutscht oder wackelt."],
+  "safety_note_de": "Nur auf einer Erhöhung, die nicht kippt oder rutscht. Nur so weit und so oft bewegen, wie die Technik sauber bleibt. Bei Schmerzen, Schwindel oder ungewohnten Beschwerden die Übung beenden.",
+  "alternatives": [
+    {
+      "alternative_id": "liegestuetz",
+      "reason": "harder",
+      "priority": 1
+    },
+    {
+      "alternative_id": "brustdruecken-band",
+      "reason": "other_equipment",
+      "priority": 2
+    }
+  ],
+  "meta": {
+    "origin": "claude_session",
+    "model": "claude-opus-5-5",
+    "batch_id": null,
+    "created_on": "2026-10-05",
+    "expert_reviewed": false,
+    "reviewed_by": null,
+    "reviewed_at": null,
+    "review_note": null
+  }
+}

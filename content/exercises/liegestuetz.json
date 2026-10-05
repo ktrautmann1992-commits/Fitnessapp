@@ -37,6 +37,16 @@
       "alternative_id": "bankdruecken-kurzhantel",
       "reason": "other_equipment",
       "priority": 2
+    },
+    {
+      "alternative_id": "liegestuetz-erhoeht",
+      "reason": "easier",
+      "priority": 3
+    },
+    {
+      "alternative_id": "liegestuetz-fuesse-erhoeht",
+      "reason": "harder",
+      "priority": 4
     }
   ],
   "meta": {

@@ -77,6 +77,11 @@ async function finishTrainingAndNutrition(page: Page, options: { intolerance: bo
 
   // „Deine Trainingstage“ ersetzt Zeitbudget und Trainingsort (Etappe B2).
   await expect(page.getByRole('heading', { name: 'Deine Trainingstage' })).toBeVisible();
+  // Ziel Ausdauer → Ausdauer-Tage vorbelegt (Einsteiger ≤ 5 Einheiten); hier eigene Tage planen.
+  await expect(page.getByTestId('schedule-suggestion')).toBeVisible();
+  await expect(page.getByTestId('schedule-summary')).toContainText(/\d× Laufen/);
+  await page.getByRole('button', { name: 'Ohne Vorschlag planen' }).click();
+  await expect(page.getByTestId('schedule-suggestion')).toHaveCount(0);
   if (options.intolerance) {
     await planFixedDays(page);
   } else {

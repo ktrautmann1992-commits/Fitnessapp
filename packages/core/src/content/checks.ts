@@ -171,6 +171,19 @@ export function isBodyweightOrBandOnly(exercise: Pick<Exercise, 'equipment_ids'>
 }
 
 /**
+ * true = Körpergewicht-Vorlage: Zuhause und weder Pflicht- noch Optional-Geräte (docs/PLAN-KOERPERGEWICHT.md §4).
+ */
+export function isBodyweightTemplate(
+  template: Pick<PlanTemplate, 'location' | 'required_equipment_ids' | 'optional_equipment_ids'>,
+): boolean {
+  return (
+    template.location === 'home' &&
+    template.required_equipment_ids.length === 0 &&
+    template.optional_equipment_ids.length === 0
+  );
+}
+
+/**
  * Ü5 (gelb): Jedes Bewegungsmuster, das in der Bibliothek vorkommt, braucht mindestens eine Variante ohne
  * Geräte oder nur mit Band. Zurückgezogene Übungen zählen nicht.
  */
@@ -336,6 +349,10 @@ export function checkPlanTemplate(
     });
   }
 
+  // V12 – Körpergewicht-Vorlage: Zuhause ohne Pflicht- und Optional-Geräte → nur Übungen ohne Geräte
+  // (V2 allein lässt Übungen mit Geräten durch, wenn eine Alternative machbar ist; docs/PLAN-KOERPERGEWICHT.md A1).
+  const bodyweightTemplate = isBodyweightTemplate(template);
+
   template.sessions.forEach((session, s) => {
     const sessionPath = `sessions.${s}`;
     if (session.exercises.length > TEMPLATE_DOSAGE_LIMITS.maxExercisesPerSession) {
@@ -369,6 +386,16 @@ export function checkPlanTemplate(
               'V3',
               target,
               `Übung „${item.exercise_id}“ ist nicht freigegeben (Status ${exercise.status}).`,
+              `${path}.exercise_id`,
+            ),
+          );
+        }
+        if (bodyweightTemplate && exercise.equipment_ids.length > 0) {
+          issues.push(
+            makeIssue(
+              'V12',
+              target,
+              `Übung „${item.exercise_id}“ braucht Geräte (${exercise.equipment_ids.join(', ')}) – eine Körpergewicht-Vorlage darf nur Übungen ohne Geräte enthalten.`,
               `${path}.exercise_id`,
             ),
           );

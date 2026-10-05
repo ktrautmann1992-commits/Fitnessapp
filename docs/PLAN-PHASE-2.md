@@ -299,6 +299,7 @@ Stellen**: in `ci` bei jedem Push, in jedem Workflow **vor** dem Öffnen eines P
 | V9  | **Wochensätze pro Muskelgruppe** (siehe unten): Obergrenze überschritten                                                                                 | rot                      |
 | V10 | Wochensätze unter der Untergrenze – **große** Muskelgruppen (Brust, Latissimus, oberer Rücken, Quadrizeps, Beinbeuger, Gesäß)                            | rot                      |
 | V11 | Wochensätze unter der Untergrenze – **kleine** Muskelgruppen (z. B. Bizeps, Trizeps, Waden, seitliche Schulter)                                          | gelb                     |
+| V12 | Körpergewicht-Vorlage (Zuhause, keine Pflicht- und Optional-Geräte) enthält nur Übungen ohne Geräte (ergänzt mit Etappe K1, docs/PLAN-KOERPERGEWICHT.md) | rot                      |
 
 **Wochensätze zählen:** Ein Satz zählt für jeden **Hauptmuskel 1,0** und für jeden **Nebenmuskel 0,5**.
 **Startwerte** (Sätze pro Muskelgruppe und Woche, fachlich zu prüfen):

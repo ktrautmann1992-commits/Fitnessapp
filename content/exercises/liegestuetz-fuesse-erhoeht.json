@@ -1,0 +1,52 @@
+{
+  "id": "liegestuetz-fuesse-erhoeht",
+  "version": 1,
+  "status": "draft",
+  "name_de": "Liegestütz mit erhöhten Füßen",
+  "name_en": "Decline Push-up",
+  "aliases_de": ["Decline-Liegestütz"],
+  "movement_pattern": "horizontal_push",
+  "primary_muscles": ["chest"],
+  "secondary_muscles": ["triceps", "front_delts", "abs"],
+  "equipment_ids": [],
+  "mechanics": "compound",
+  "load_type": "bodyweight",
+  "unilateral": false,
+  "difficulty": 2,
+  "caution_tags": [],
+  "description_de": "Schwerere Liegestütz-Variante mit den Füßen auf einer Treppenstufe oder einem stabilen Stuhl. Mehr Gewicht liegt auf Armen und Brust.",
+  "steps_de": [
+    "Füße auf eine Treppenstufe oder einen stabilen Stuhl legen, Hände schulterbreit am Boden.",
+    "Körper vom Kopf bis zu den Fersen gerade, Bauch und Gesäß fest.",
+    "Brust kontrolliert zum Boden absenken.",
+    "Kräftig zurück nach oben drücken."
+  ],
+  "tips_de": [
+    "Je höher die Füße, desto schwerer.",
+    "Erst beginnen, wenn normale Liegestütze im ganzen Wiederholungsbereich sauber klappen."
+  ],
+  "common_mistakes_de": ["Hüfte knickt nach oben oder hängt durch.", "Kopf hängt nach unten."],
+  "safety_note_de": "Nur so weit und so oft bewegen, wie die Technik sauber bleibt. Bei Schmerzen, Schwindel oder ungewohnten Beschwerden die Übung beenden.",
+  "alternatives": [
+    {
+      "alternative_id": "liegestuetz",
+      "reason": "easier",
+      "priority": 1
+    },
+    {
+      "alternative_id": "archer-liegestuetz",
+      "reason": "harder",
+      "priority": 2
+    }
+  ],
+  "meta": {
+    "origin": "claude_session",
+    "model": "claude-opus-5-5",
+    "batch_id": null,
+    "created_on": "2026-10-05",
+    "expert_reviewed": false,
+    "reviewed_by": null,
+    "reviewed_at": null,
+    "review_note": null
+  }
+}

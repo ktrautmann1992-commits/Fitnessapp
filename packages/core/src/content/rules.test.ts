@@ -26,6 +26,7 @@ describe('Regeltabelle (Plan Abschnitt 7)', () => {
       'V8',
       'V9',
       'V10',
+      'V12',
     ]);
     expect(yellow).toEqual(['Ü5', 'V5', 'V6', 'V7', 'V11']);
   });

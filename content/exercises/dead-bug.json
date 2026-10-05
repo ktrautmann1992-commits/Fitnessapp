@@ -32,6 +32,11 @@
       "alternative_id": "unterarmstuetz",
       "reason": "harder",
       "priority": 1
+    },
+    {
+      "alternative_id": "bird-dog",
+      "reason": "easier",
+      "priority": 2
     }
   ],
   "meta": {

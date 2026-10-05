@@ -4,7 +4,7 @@
  * Regel aus CLAUDE.md: ALLE Rechenformeln und Schutzgrenzen stehen hier, jeweils mit Quelle.
  * Die Schutzgrenzen sind fest im Code und NICHT durch Nutzer abschaltbar.
  */
-import type { CautionTag, MuscleGroup, TrainingSlotKind } from './enums';
+import type { CautionTag, ExperienceLevel, MuscleGroup, TrainingSlotKind } from './enums';
 
 /**
  * Mindestalter für die Nutzung der App (Jahre).
@@ -122,6 +122,48 @@ export const DEFAULT_SLOT_MINUTES = {
   strength_home: 60,
   endurance: 30,
 } as const satisfies Record<TrainingSlotKind, number>;
+
+/**
+ * Vorbelegung des Schritts „Deine Trainingstage“ beim Ziel Ausdauer (suggestedTrainingSlots, Gründer-Feedback
+ * „Ziel Marathon → Plan für allgemeine Fitness“). Nur ein Vorschlag, frei änderbar; gilt nur, solange noch keine
+ * Trainingstage gewählt sind.
+ * - perGroup: Ausdauer- und Kraft-Einheiten je Woche nach Startgruppe (Einsteiger 3 + 2, Fortgeschritten 3 + 2,
+ *   Leistungssport 4 + 2, vorsichtig 2 + 1). Triathlon (drei Sportarten): ab Fortgeschritten eine Ausdauer-Einheit
+ *   mehr, im Leistungssport dafür nur 1 Kraft-Einheit (höchstens 6 Einheiten, mindestens 1 Ruhetag).
+ * - Danach greifen die bestehenden Deckel: WEEKLY_SESSION_LIMITS (vorsichtig/Einsteiger ≤ 5 gesamt) und
+ *   ENDURANCE_START_RULES.maxSessionsPerWeek; gekürzt wird zuerst Kraft (bis 1), dann Ausdauer (bis
+ *   SCHEDULE_HINT_LIMITS.recommendedMinEnduranceDays), dann die letzte Kraft-Einheit.
+ * - weekdays: Wochentage je Anzahl Einheiten (ISO 1 = Montag), längere Einheit eher am Wochenende.
+ * Orientierung: ACSM Position Stand (Garber CE et al., 2011, Med Sci Sports Exerc 43(7):1334–1359 – Ausdauer an
+ * 3–5 Tagen, Kraft an 2–3 Tagen pro Woche). Werte: PRODUKTENTSCHEIDUNG, fachlich zu bestätigen.
+ */
+export const ENDURANCE_GOAL_SUGGESTION = {
+  perGroup: {
+    cautious: { endurance: 2, strength: 1 },
+    beginner: { endurance: 3, strength: 2 },
+    advanced: { endurance: 3, strength: 2 },
+    competitive: { endurance: 4, strength: 2 },
+  },
+  triathlonExtraEndurance: { advanced: 1, competitive: 1 },
+  triathlonStrength: { competitive: 1 },
+  weekdays: {
+    1: [6],
+    2: [2, 6],
+    3: [2, 4, 6],
+    4: [1, 3, 5, 6],
+    5: [1, 2, 4, 5, 6],
+    6: [1, 2, 3, 5, 6, 7],
+    7: [1, 2, 3, 4, 5, 6, 7],
+  },
+} as const satisfies {
+  perGroup: Record<
+    'cautious' | ExperienceLevel,
+    { readonly endurance: number; readonly strength: number }
+  >;
+  triathlonExtraEndurance: Partial<Record<ExperienceLevel, number>>;
+  triathlonStrength: Partial<Record<ExperienceLevel, number>>;
+  weekdays: Readonly<Record<1 | 2 | 3 | 4 | 5 | 6 | 7, readonly number[]>>;
+};
 
 /**
  * Schwellen der freundlichen, NICHT blockierenden Hinweise im Schritt „Deine Trainingstage“ (scheduleHints()).

@@ -39,7 +39,7 @@ interface Person {
   level: RegExp;
   goal: string;
   discipline?: string;
-  /** Feste Tage: [Wochentag, Art, Minuten]. */
+  /** Feste Tage: [Wochentag, Art, Minuten]; leer = Vorschlag (Ziel Ausdauer) übernehmen. */
   days: [string, string, number][];
 }
 
@@ -93,6 +93,20 @@ async function onboard(page: Page, person: Person) {
   }
   await next(page);
   await heading(page, 'Deine Trainingstage');
+  if (person.goal === 'Ausdauer' && person.days.length > 0) {
+    // Ziel Ausdauer belegt Tage vor – hier eigene Tage planen.
+    await page.getByRole('button', { name: 'Ohne Vorschlag planen' }).click();
+  } else if (person.goal === 'Ausdauer') {
+    // Vorbelegung (Fortgeschritten): Mo Kraft, Di Ausdauer, Do Kraft, Fr + Sa Ausdauer.
+    await expect(page.getByTestId('schedule-suggestion')).toBeVisible();
+    await expect(page.getByRole('radio', { name: /^Dienstag: Ausdauer/ })).toHaveAttribute(
+      'aria-checked',
+      'true',
+    );
+    await expect(page.getByTestId('schedule-summary')).toContainText(
+      '5 Tage: 2× Kraft im Studio, 3× Laufen',
+    );
+  }
   await planDays(page, person.days);
   await next(page);
   if (person.days.some(([, kind]) => kind === 'Kraft zu Hause')) {
@@ -264,7 +278,7 @@ test('Ausdauer ohne Gesundheits-Check: Geh-Lauf-Wechsel, Anstrengung, vorsichtig
       ['Samstag', 'Ausdauer', 60],
     ],
   });
-  await expect(page.getByTestId('done-plan')).toContainText('Ausdauer-Plan');
+  await expect(page.getByTestId('done-plan')).toContainText('Ausdauer-Grundlage – 10 km');
   await page.getByRole('button', { name: 'Zum Plan' }).click();
   await heading(page, 'Heute');
   await expect(page.getByRole('heading', { name: 'Geh-Lauf-Wechsel' })).toBeVisible();
@@ -276,10 +290,73 @@ test('Ausdauer ohne Gesundheits-Check: Geh-Lauf-Wechsel, Anstrengung, vorsichtig
   await expect(
     page.getByText('Ohne Gesundheits-Check planen wir vorsichtig.', { exact: true }),
   ).toBeVisible();
-  await expect(page.getByTestId('plan-notes')).toContainText('Wettkampfpläne und Tempo-Training');
+  await expect(page.getByTestId('plan-notes')).toContainText(
+    'Dein Wettkampfplan rückwärts ab Renndatum (lange Läufe, Tempo, Tapering) kommt in einem späteren Update.',
+  );
   await expect(page.getByTestId('plan-exercise')).toHaveCount(0);
   const rows = await storedRows(page);
   expect(rows.plans[0]?.uses_health_data).toBe(false);
+});
+
+test('Ziel Marathon: Trainingstage mit Ausdauer vorbelegt → „Ausdauer-Grundlage – Marathon“', async ({
+  page,
+}) => {
+  await onboard(page, {
+    consent: true,
+    yesQuestion: null,
+    level: /^Fortgeschritten/,
+    goal: 'Ausdauer',
+    discipline: 'Marathon',
+    // Vorschlag übernehmen (nichts antippen); geprüft unten über den gespeicherten Plan.
+    days: [],
+  });
+  await expect(page.getByTestId('done-plan')).toContainText('Ausdauer-Grundlage – Marathon');
+  await expect(page.getByTestId('done-plan')).not.toContainText('Allgemeine Fitness');
+  await page.getByRole('button', { name: 'Zum Plan' }).click();
+  await heading(page, 'Heute');
+  await expect(page.getByText('Ausdauer-Grundlage – Marathon', { exact: true })).toBeVisible();
+  await expect(page.getByTestId('plan-notes')).toContainText(
+    'Dein Wettkampfplan rückwärts ab Renndatum (lange Läufe, Tempo, Tapering) kommt in einem späteren Update.',
+  );
+  // Woche: Ausdauer-Einheit am Freitag (Vorschlag Mo Kraft, Di Ausdauer, Do Kraft, Fr + Sa Ausdauer).
+  const week = page.getByTestId('plan-week');
+  await expect(week.getByRole('button', { name: /^Freitag, 09\.10\.: / })).not.toContainText(
+    'Ruhetag',
+  );
+  await week.getByRole('button', { name: /^Freitag, 09\.10\.: / }).click();
+  await expect(page.getByTestId('plan-endurance')).toContainText('Anstrengung');
+  const rows = await storedRows(page);
+  const kinds = rows.plannedSessions.map((s) => s.kind);
+  expect(kinds).toContain('endurance');
+  expect(kinds.some((k) => k !== 'endurance')).toBe(true);
+  // Einstellungen zeigen denselben Titel.
+  await page.getByRole('button', { name: 'Einstellungen' }).click();
+  await expect(
+    page.getByTestId('settings').getByText('Ausdauer-Grundlage – Marathon', { exact: true }),
+  ).toBeVisible();
+
+  // Angaben ändern: gespeicherte Trainingstage werden nie durch den Vorschlag überschrieben (Wächter 8a).
+  await page.getByRole('button', { name: 'Angaben ändern' }).click();
+  await heading(page, 'Deine Trainingserfahrung');
+  await next(page);
+  await heading(page, 'Dein Ziel');
+  await next(page);
+  await heading(page, 'Deine Trainingstage');
+  await expect(page.getByTestId('schedule-suggestion')).toHaveCount(0);
+  // Eigene Änderung: Samstag abwählen und speichern.
+  await page.getByRole('checkbox', { name: 'Samstag' }).click();
+  await next(page);
+  await heading(page, 'Heute');
+  await page.getByRole('button', { name: 'Einstellungen' }).click();
+  await page.getByRole('button', { name: 'Angaben ändern' }).click();
+  await heading(page, 'Deine Trainingserfahrung');
+  await next(page);
+  await heading(page, 'Dein Ziel');
+  await next(page);
+  await heading(page, 'Deine Trainingstage');
+  await expect(page.getByTestId('schedule-suggestion')).toHaveCount(0);
+  await expect(page.getByRole('checkbox', { name: 'Samstag' })).not.toBeChecked();
+  await expect(page.getByRole('checkbox', { name: 'Freitag' })).toBeChecked();
 });
 
 test('vorsichtiger Plan mit Arzt-Hinweis; Widerruf löscht den Plan vollständig', async ({
@@ -391,7 +468,8 @@ test('Zuhause ohne Geräte, 7 Tage: Deckel, Ruhetage und verständliche Hinweise
   await heading(page, 'Heute');
   const notes = page.getByTestId('plan-notes');
   await expect(notes).toContainText('Mehr als 4 Kraft-Einheiten planen wir nicht');
-  await expect(notes).toContainText('Für Rücken-Übungen (Ziehen) fehlt ein Gerät');
+  // Etappe K1: ohne Geräte gibt es jetzt Türrahmen-Rudern – kein Hinweis „Ziehen fehlt“ mehr.
+  await expect(notes).not.toContainText('Für Rücken-Übungen (Ziehen) fehlt ein Gerät');
   const rows = await storedRows(page);
   const perWeek = new Map<string, number>();
   for (const s of rows.plannedSessions) {

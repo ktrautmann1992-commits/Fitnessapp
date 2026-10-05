@@ -1,5 +1,8 @@
 import { describe, expect, it } from 'vitest';
 
+import { ENDURANCE_START_RULES } from './constants';
+import { ENDURANCE_DISCIPLINES, EXPERIENCE_LEVELS, GOAL_TYPES } from './enums';
+
 import {
   deriveTrainingLocation,
   enduranceSlotSubtitle,
@@ -11,6 +14,8 @@ import {
   scheduleToSlots,
   scheduleTotals,
   suggestedSlotKind,
+  suggestedTrainingSlots,
+  suggestedWeekSlots,
   trainingScheduleSchema,
   trainingSlotsSchema,
   weeklySessionCap,
@@ -330,5 +335,126 @@ describe('scheduleFromLegacyGoals (nur Gerätespeicher des Testmodus)', () => {
         preferred_days: [1, 2, 3, 4, 5, 6, 7],
       })?.mode,
     ).toBe('fixed');
+  });
+});
+
+describe('suggestedTrainingSlots (Ziel Ausdauer → Ausdauer-Tage vorbelegt)', () => {
+  const base = {
+    goalType: 'endurance' as const,
+    discipline: 'marathon' as const,
+    experienceLevel: 'advanced' as const,
+    ageYears: 35,
+    cautious: false,
+  };
+  const count = (s: TrainingSchedule | null) => scheduleTotals(s ?? { slots: [] }).byKind;
+
+  it('andere Ziele → keine Vorbelegung', () => {
+    for (const goalType of GOAL_TYPES.filter((g) => g !== 'endurance')) {
+      expect(suggestedTrainingSlots({ ...base, goalType })).toBeNull();
+    }
+    expect(suggestedTrainingSlots({ ...base, goalType: undefined })).toBeNull();
+  });
+
+  it('Marathon, Fortgeschritten: 3× Ausdauer + 2× Kraft im Studio, feste Tage, kein Kraft-Tag hintereinander', () => {
+    const s = suggestedTrainingSlots(base);
+    expect(s?.mode).toBe('fixed');
+    expect(count(s)).toEqual({ strength_gym: 2, strength_home: 0, endurance: 3 });
+    expect(s?.slots).toEqual([
+      { weekday: 1, kind: 'strength_gym', minutes: 60 },
+      { weekday: 2, kind: 'endurance', minutes: 30 },
+      { weekday: 4, kind: 'strength_gym', minutes: 60 },
+      { weekday: 5, kind: 'endurance', minutes: 30 },
+      { weekday: 6, kind: 'endurance', minutes: 30 },
+    ]);
+    expect(scheduleHints(s!, { goalType: 'endurance', weeklySessionCap: null })).toEqual([]);
+  });
+
+  it('Kraft-Ort aus bisheriger Auswahl (zu Hause)', () => {
+    const s = suggestedTrainingSlots({ ...base, strengthKind: 'strength_home' });
+    expect(count(s)).toEqual({ strength_gym: 0, strength_home: 2, endurance: 3 });
+  });
+
+  it('Einsteiger und vorsichtig: höchstens 5 Einheiten, Ausdauer im Deckel der Startgruppe', () => {
+    const beginner = suggestedTrainingSlots({ ...base, experienceLevel: 'beginner' });
+    expect(beginner?.slots).toHaveLength(5);
+    expect(count(beginner).endurance).toBe(3);
+    const cautious = suggestedTrainingSlots({ ...base, cautious: true });
+    expect(count(cautious)).toEqual({ strength_gym: 1, strength_home: 0, endurance: 2 });
+    expect(count(cautious).endurance).toBeLessThanOrEqual(
+      ENDURANCE_START_RULES.maxSessionsPerWeek.cautious,
+    );
+    // unter 18, ab 65, Alter unbekannt, ohne Level → vorsichtig bzw. Deckel 5
+    for (const ageYears of [16, 17, 65, 90, null]) {
+      expect(count(suggestedTrainingSlots({ ...base, ageYears })).endurance).toBe(2);
+    }
+    const noLevel = suggestedTrainingSlots({ ...base, experienceLevel: null });
+    expect(noLevel?.slots.length).toBeLessThanOrEqual(5);
+  });
+
+  it('Leistungssport: 4× Ausdauer + 2× Kraft (6 Tage, 1 Ruhetag); Triathlon 5 + 1', () => {
+    const competitive = suggestedTrainingSlots({ ...base, experienceLevel: 'competitive' });
+    expect(count(competitive)).toEqual({ strength_gym: 2, strength_home: 0, endurance: 4 });
+    const tri = suggestedTrainingSlots({
+      ...base,
+      experienceLevel: 'competitive',
+      discipline: 'triathlon_long',
+    });
+    expect(count(tri)).toEqual({ strength_gym: 1, strength_home: 0, endurance: 5 });
+    const triAdvanced = suggestedTrainingSlots({ ...base, discipline: 'triathlon_sprint' });
+    expect(count(triAdvanced)).toEqual({ strength_gym: 2, strength_home: 0, endurance: 4 });
+  });
+
+  it('alle Disziplinen × Level × vorsichtig: gültig, Deckel eingehalten, mind. 2 Ausdauer-Tage, ≥ 1 Ruhetag', () => {
+    for (const discipline of [...ENDURANCE_DISCIPLINES, null]) {
+      for (const experienceLevel of EXPERIENCE_LEVELS) {
+        for (const cautious of [false, true]) {
+          const input = { ...base, discipline, experienceLevel, cautious };
+          const s = suggestedTrainingSlots(input);
+          expect(s).not.toBeNull();
+          expect(trainingScheduleSchema.safeParse(s).success).toBe(true);
+          const cap = weeklySessionCap(input);
+          const byKind = count(s);
+          expect(s!.slots.length).toBeLessThanOrEqual(cap ?? 6);
+          expect(byKind.endurance).toBeGreaterThanOrEqual(2);
+          expect(byKind.endurance).toBeGreaterThan(byKind.strength_gym);
+          expect(byKind.endurance).toBeLessThanOrEqual(
+            ENDURANCE_START_RULES.maxSessionsPerWeek[cautious ? 'cautious' : experienceLevel],
+          );
+          const hints = scheduleHints(s!, { goalType: 'endurance', weeklySessionCap: cap });
+          expect(hints).not.toContain('endurance_goal_no_endurance');
+          expect(hints).not.toContain('week_total_capped');
+          expect(hints).not.toContain('strength_back_to_back');
+        }
+      }
+    }
+  });
+});
+
+describe('suggestedWeekSlots (1–7 Tage)', () => {
+  it('jede Kombination mit 1–7 Einheiten: richtige Anzahl je Art, gültig, Kraft nie direkt hintereinander, wenn möglich', () => {
+    for (let total = 1; total <= 7; total += 1) {
+      for (let strength = 0; strength <= Math.min(2, total); strength += 1) {
+        const slots = suggestedWeekSlots(total - strength, strength);
+        expect(slots).toHaveLength(total);
+        expect(slots.filter((s) => s.kind === 'strength_gym')).toHaveLength(strength);
+        const schedule = trainingScheduleSchema.parse({ mode: 'fixed', slots });
+        if (total <= 6) {
+          expect(scheduleHints(schedule, { goalType: null, weeklySessionCap: null })).not.toContain(
+            'strength_back_to_back',
+          );
+        }
+      }
+    }
+  });
+
+  it('1 Tag → Samstag Ausdauer; 7 Tage → jeder Tag', () => {
+    expect(suggestedWeekSlots(1, 0)).toEqual([{ weekday: 6, kind: 'endurance', minutes: 30 }]);
+    expect(suggestedWeekSlots(5, 2).map((s) => s.weekday)).toEqual([1, 2, 3, 4, 5, 6, 7]);
+  });
+
+  it('ungültige Anzahl → leer', () => {
+    expect(suggestedWeekSlots(0, 0)).toEqual([]);
+    expect(suggestedWeekSlots(6, 2)).toEqual([]);
+    expect(suggestedWeekSlots(-1, 2)).toEqual([]);
   });
 });

@@ -70,7 +70,7 @@ describe('adaptTemplate', () => {
     expect(result.unchanged).toBe(false);
   });
 
-  it('Zuhause ohne Geräte: Tausch und Entfernen aus Gerätegründen, keine Zug-Übung', () => {
+  it('Zuhause ohne Geräte: Tausch aus Gerätegründen, Zug-Übung ohne Geräte (Etappe K1)', () => {
     const result = adaptTemplate(template('muskelaufbau-einsteiger-3t-zuhause'), {
       library: lib.exercises,
       profile: equipmentProfile('home', []),
@@ -78,13 +78,34 @@ describe('adaptTemplate', () => {
       minutesPerSession: 60,
     });
     expect(result.notes.has('exercises_substituted')).toBe(true);
-    expect(result.notes.has('exercises_removed')).toBe(true);
-    expect(result.notes.has('no_pull_exercise')).toBe(true);
+    expect(result.notes.has('no_pull_exercise')).toBe(false);
+    expect(result.sessions.flatMap((s) => s.exercises.map((e) => e.exercise_id))).toContain(
+      'tuerrahmen-rudern',
+    );
     expect(
       result.sessions
         .flatMap((s) => s.exercises)
         .every((e) => lib.exercises.get(e.exercise_id)?.equipment_ids.length === 0),
     ).toBe(true);
+  });
+
+  it('Bibliothek ohne Zug-Übungen ohne Geräte: Entfernen und Hinweis no_pull_exercise', () => {
+    // Positive Abdeckung des Hinweises (Wächter-Auflage 2): die K1-Zugübungen herausfiltern.
+    const withoutBodyweightPull = new Map(
+      [...lib.exercises].filter(
+        ([id]) =>
+          !['tuerrahmen-rudern', 'handtuch-rudern-isometrisch', 'tisch-rudern'].includes(id),
+      ),
+    );
+    const result = adaptTemplate(template('muskelaufbau-einsteiger-3t-zuhause'), {
+      library: withoutBodyweightPull,
+      profile: equipmentProfile('home', []),
+      rules: healthy,
+      minutesPerSession: 60,
+    });
+    expect(result.notes.has('exercises_substituted')).toBe(true);
+    expect(result.notes.has('exercises_removed')).toBe(true);
+    expect(result.notes.has('no_pull_exercise')).toBe(true);
   });
 
   it('nur ein Band: Zug-Übungen bleiben möglich', () => {

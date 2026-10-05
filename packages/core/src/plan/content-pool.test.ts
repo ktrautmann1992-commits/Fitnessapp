@@ -13,7 +13,7 @@ describe('selectPlanContent', () => {
     expect(live.exercises.size).toBe(0);
     const test = repoLibrary();
     expect(test.templates).toHaveLength(24);
-    expect(test.exercises.size).toBe(52);
+    expect(test.exercises.size).toBe(79); // 52 Startbestand + 27 Körpergewicht (K1)
     expect(test.containsDrafts).toBe(true);
   });
 

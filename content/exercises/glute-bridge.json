@@ -35,6 +35,16 @@
       "alternative_id": "hip-thrust-langhantel",
       "reason": "harder",
       "priority": 1
+    },
+    {
+      "alternative_id": "hueftstrecken-vierfuessler",
+      "reason": "easier",
+      "priority": 2
+    },
+    {
+      "alternative_id": "glute-bridge-einbeinig",
+      "reason": "harder",
+      "priority": 3
     }
   ],
   "meta": {

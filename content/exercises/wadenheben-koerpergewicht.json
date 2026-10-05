@@ -28,6 +28,11 @@
       "alternative_id": "wadenheben-kurzhantel",
       "reason": "harder",
       "priority": 1
+    },
+    {
+      "alternative_id": "wadenheben-einbeinig",
+      "reason": "harder",
+      "priority": 2
     }
   ],
   "meta": {

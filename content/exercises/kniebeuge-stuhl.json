@@ -1,0 +1,47 @@
+{
+  "id": "kniebeuge-stuhl",
+  "version": 1,
+  "status": "draft",
+  "name_de": "Kniebeuge zum Stuhl",
+  "name_en": "Box Squat to Chair",
+  "aliases_de": ["Hinsetzen und Aufstehen"],
+  "movement_pattern": "squat",
+  "primary_muscles": ["quadriceps", "glutes"],
+  "secondary_muscles": ["hamstrings", "adductors"],
+  "equipment_ids": [],
+  "mechanics": "compound",
+  "load_type": "bodyweight",
+  "unilateral": false,
+  "difficulty": 1,
+  "caution_tags": [],
+  "description_de": "Leichteste Kniebeuge-Variante: kontrolliert auf einen stabilen Stuhl setzen und wieder aufstehen. Gibt Sicherheit und Orientierung für die Tiefe.",
+  "steps_de": [
+    "Stabilen Stuhl ohne Rollen hinter dich stellen, Füße etwa schulterbreit.",
+    "Hüfte nach hinten schieben und langsam absenken, bis das Gesäß die Sitzfläche berührt.",
+    "Kurz antippen, nicht ganz ablegen.",
+    "Über die ganze Fußsohle zurück in den Stand drücken."
+  ],
+  "tips_de": [
+    "Arme dürfen zum Ausbalancieren nach vorn.",
+    "Steigerung: niedrigere Sitzfläche, dann freie Kniebeuge."
+  ],
+  "common_mistakes_de": ["Plumpsen auf den Stuhl.", "Knie fallen nach innen."],
+  "safety_note_de": "Nur so weit und so oft bewegen, wie die Technik sauber bleibt. Bei Schmerzen, Schwindel oder ungewohnten Beschwerden die Übung beenden.",
+  "alternatives": [
+    {
+      "alternative_id": "kniebeuge-koerpergewicht",
+      "reason": "harder",
+      "priority": 1
+    }
+  ],
+  "meta": {
+    "origin": "claude_session",
+    "model": "claude-opus-5-5",
+    "batch_id": null,
+    "created_on": "2026-10-05",
+    "expert_reviewed": false,
+    "reviewed_by": null,
+    "reviewed_at": null,
+    "review_note": null
+  }
+}

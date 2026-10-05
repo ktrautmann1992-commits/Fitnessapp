@@ -1,0 +1,53 @@
+{
+  "id": "rdl-einbeinig-koerpergewicht",
+  "version": 1,
+  "status": "draft",
+  "name_de": "Einbeiniges Kreuzheben ohne Gewicht",
+  "name_en": "Single-leg Romanian Deadlift",
+  "aliases_de": ["Einbeinige RDL"],
+  "movement_pattern": "hinge",
+  "primary_muscles": ["hamstrings", "glutes"],
+  "secondary_muscles": ["lower_back", "abs"],
+  "equipment_ids": [],
+  "mechanics": "compound",
+  "load_type": "bodyweight",
+  "unilateral": true,
+  "difficulty": 2,
+  "caution_tags": [],
+  "description_de": "Hüftbeugen auf einem Bein ohne Gewicht für Beinbeuger, Gesäß und Gleichgewicht. Mit einer Hand an der Wand bleibt die Übung sicher.",
+  "steps_de": [
+    "Seitlich neben eine Wand stellen und eine Hand an die Wand legen – der Halt ist Pflicht, nicht nur für Anfänger.",
+    "Auf das wandnahe Bein stellen, Knie leicht gebeugt.",
+    "Oberkörper mit geradem Rücken nach vorn neigen, das freie Bein gestreckt nach hinten führen.",
+    "So weit gehen, bis Oberkörper und hinteres Bein fast waagerecht sind oder die Dehnung deutlich wird.",
+    "Gesäß anspannen und zurück in den Stand, dann Seite wechseln."
+  ],
+  "tips_de": [
+    "Becken bleibt gerade, die Hüfte des freien Beins dreht nicht nach oben auf.",
+    "Lieber kleinere Bewegung als Wackeln."
+  ],
+  "common_mistakes_de": ["Rundrücken.", "Hüfte dreht auf.", "Ohne Halt freihändig balancieren."],
+  "safety_note_de": "Sturzgefahr: immer mit einer Hand an der Wand oder einer stabilen Stuhllehne. Nur so weit und so oft bewegen, wie die Technik sauber bleibt. Bei Schmerzen, Schwindel oder ungewohnten Beschwerden die Übung beenden.",
+  "alternatives": [
+    {
+      "alternative_id": "good-morning-koerpergewicht",
+      "reason": "easier",
+      "priority": 1
+    },
+    {
+      "alternative_id": "rumaenisches-kreuzheben-kurzhantel",
+      "reason": "other_equipment",
+      "priority": 2
+    }
+  ],
+  "meta": {
+    "origin": "claude_session",
+    "model": "claude-opus-5-5",
+    "batch_id": null,
+    "created_on": "2026-10-05",
+    "expert_reviewed": false,
+    "reviewed_by": null,
+    "reviewed_at": null,
+    "review_note": null
+  }
+}

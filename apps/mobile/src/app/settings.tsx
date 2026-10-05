@@ -21,10 +21,12 @@ import {
   TextField,
 } from '@/components/ui';
 import { consentRecordsFromRows } from '@/data/mapping';
+import { activePlan } from '@/data/training-plan';
 import type { ConsentRow } from '@/data/types';
 import { t } from '@/i18n';
 import { createPlanErrorText, errorText } from '@/lib/error-text';
 import { formatDateDe, formatTimestampDe } from '@/lib/format';
+import { planTitleText } from '@/lib/plan-title';
 import { useApp } from '@/state/app-state';
 import { healthConsentStatus, lastMeasurementDate } from '@/state/flow';
 
@@ -80,6 +82,7 @@ export default function SettingsScreen() {
   const rows = app.rows;
   const healthStatus = healthConsentStatus(rows, app.versions);
   const records = consentRecordsFromRows(rows.consents);
+  const currentPlan = activePlan(rows)?.plan ?? null;
 
   async function confirm() {
     setBusy(true);
@@ -192,6 +195,7 @@ export default function SettingsScreen() {
 
       <Heading level={2}>{t.settings.training}</Heading>
       <Card>
+        {currentPlan ? <Body>{planTitleText(currentPlan)}</Body> : null}
         <Body muted>{t.settings.trainingText}</Body>
         {/* Öffnet die vorhandenen Onboarding-Schritte und kehrt danach zu „Heute“ zurück (Plan neu erstellen?). */}
         <Button

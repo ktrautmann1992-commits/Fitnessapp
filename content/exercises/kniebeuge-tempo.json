@@ -1,0 +1,49 @@
+{
+  "id": "kniebeuge-tempo",
+  "version": 1,
+  "status": "draft",
+  "name_de": "Tempo-Kniebeuge 3-1-3",
+  "name_en": "Tempo Squat",
+  "aliases_de": ["Langsame Kniebeuge"],
+  "movement_pattern": "squat",
+  "primary_muscles": ["quadriceps", "glutes"],
+  "secondary_muscles": ["hamstrings", "adductors", "abs"],
+  "equipment_ids": [],
+  "mechanics": "compound",
+  "load_type": "bodyweight",
+  "unilateral": false,
+  "difficulty": 2,
+  "caution_tags": [],
+  "description_de": "Kniebeuge ohne Gewicht im langsamen Tempo: drei Sekunden ab, eine Sekunde halten, drei Sekunden auf. Mehr Zeit unter Spannung statt mehr Gewicht.",
+  "steps_de": [
+    "Füße etwa schulterbreit, Zehen leicht nach außen.",
+    "In drei Sekunden absenken, so tief es sauber geht.",
+    "Unten eine Sekunde halten.",
+    "In drei Sekunden zurück in den Stand, oben nicht ganz entspannen."
+  ],
+  "tips_de": ["Leise mitzählen hilft beim Tempo."],
+  "common_mistakes_de": ["Tempo wird mit der Zeit schneller.", "Knie fallen nach innen."],
+  "safety_note_de": "Nur so weit und so oft bewegen, wie die Technik sauber bleibt. Bei Schmerzen, Schwindel oder ungewohnten Beschwerden die Übung beenden.",
+  "alternatives": [
+    {
+      "alternative_id": "kniebeuge-pause",
+      "reason": "easier",
+      "priority": 1
+    },
+    {
+      "alternative_id": "goblet-kniebeuge",
+      "reason": "other_equipment",
+      "priority": 2
+    }
+  ],
+  "meta": {
+    "origin": "claude_session",
+    "model": "claude-opus-5-5",
+    "batch_id": null,
+    "created_on": "2026-10-05",
+    "expert_reviewed": false,
+    "reviewed_by": null,
+    "reviewed_at": null,
+    "review_note": null
+  }
+}

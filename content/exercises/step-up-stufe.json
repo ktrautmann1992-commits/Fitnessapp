@@ -1,0 +1,44 @@
+{
+  "id": "step-up-stufe",
+  "version": 1,
+  "status": "draft",
+  "name_de": "Step-up auf die Treppenstufe",
+  "name_en": "Step-up",
+  "aliases_de": ["Aufsteiger"],
+  "movement_pattern": "lunge",
+  "primary_muscles": ["quadriceps", "glutes"],
+  "secondary_muscles": ["hamstrings", "calves"],
+  "equipment_ids": [],
+  "mechanics": "compound",
+  "load_type": "bodyweight",
+  "unilateral": true,
+  "difficulty": 1,
+  "caution_tags": [],
+  "description_de": "Einbeiniges Aufsteigen auf eine Treppenstufe für Oberschenkel und Gesäß. Mit einer Hand am Geländer sicher und gelenkschonend.",
+  "steps_de": [
+    "Vor die unterste Treppenstufe stellen und eine Hand ans Geländer legen – der Halt ist Pflicht.",
+    "Einen Fuß komplett auf die Stufe setzen.",
+    "Über das vordere Bein hochdrücken, bis du oben stehst; das hintere Bein nur nachziehen.",
+    "Langsam mit demselben Bein bremsend zurück nach unten, nach allen Wiederholungen Seite wechseln."
+  ],
+  "tips_de": ["Schwerer: höhere Stufe oder langsamer absenken."],
+  "common_mistakes_de": ["Abstoßen mit dem hinteren Bein.", "Knie fällt nach innen."],
+  "safety_note_de": "Sturzgefahr: nur an einer festen Stufe mit Geländer oder Wand zum Festhalten. Nur so weit und so oft bewegen, wie die Technik sauber bleibt. Bei Schmerzen, Schwindel oder ungewohnten Beschwerden die Übung beenden.",
+  "alternatives": [
+    {
+      "alternative_id": "split-kniebeuge",
+      "reason": "harder",
+      "priority": 1
+    }
+  ],
+  "meta": {
+    "origin": "claude_session",
+    "model": "claude-opus-5-5",
+    "batch_id": null,
+    "created_on": "2026-10-05",
+    "expert_reviewed": false,
+    "reviewed_by": null,
+    "reviewed_at": null,
+    "review_note": null
+  }
+}

@@ -1,0 +1,827 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`Regression K1: bestehende Vorlagen × typische Profile > bewusst ausgewiesene Änderungen (Snapshot – bei Inhaltsänderung prüfen und im PR nennen) 1`] = `
+{
+  "studio_schwanger/fat_loss/advanced/3t": {
+    "entfaellt": [],
+    "neu": [
+      "bird-dog",
+    ],
+  },
+  "studio_schwanger/fat_loss/advanced/4t": {
+    "entfaellt": [],
+    "neu": [
+      "bird-dog",
+    ],
+  },
+  "studio_schwanger/fat_loss/beginner/3t": {
+    "entfaellt": [],
+    "neu": [
+      "bird-dog",
+    ],
+  },
+  "studio_schwanger/fat_loss/beginner/4t": {
+    "entfaellt": [],
+    "neu": [
+      "bird-dog",
+    ],
+  },
+  "studio_schwanger/general_fitness/advanced/3t": {
+    "entfaellt": [],
+    "neu": [
+      "bird-dog",
+    ],
+  },
+  "studio_schwanger/general_fitness/advanced/4t": {
+    "entfaellt": [],
+    "neu": [
+      "bird-dog",
+    ],
+  },
+  "studio_schwanger/general_fitness/beginner/3t": {
+    "entfaellt": [],
+    "neu": [
+      "bird-dog",
+    ],
+  },
+  "studio_schwanger/general_fitness/beginner/4t": {
+    "entfaellt": [],
+    "neu": [
+      "bird-dog",
+    ],
+  },
+  "studio_schwanger/muscle_gain/advanced/3t": {
+    "entfaellt": [],
+    "neu": [
+      "bird-dog",
+    ],
+  },
+  "studio_schwanger/muscle_gain/advanced/4t": {
+    "entfaellt": [],
+    "neu": [
+      "bird-dog",
+    ],
+  },
+  "studio_schwanger/muscle_gain/beginner/3t": {
+    "entfaellt": [],
+    "neu": [
+      "bird-dog",
+    ],
+  },
+  "studio_schwanger/muscle_gain/beginner/4t": {
+    "entfaellt": [],
+    "neu": [
+      "bird-dog",
+    ],
+  },
+  "zuhause_nur_band/fat_loss/advanced/3t": {
+    "entfaellt": [],
+    "neu": [
+      "y-t-w-vorgebeugt",
+    ],
+  },
+  "zuhause_nur_band/fat_loss/advanced/4t": {
+    "entfaellt": [],
+    "neu": [
+      "y-t-w-vorgebeugt",
+    ],
+  },
+  "zuhause_nur_band/fat_loss/beginner/3t": {
+    "entfaellt": [],
+    "neu": [
+      "y-t-w-vorgebeugt",
+    ],
+  },
+  "zuhause_nur_band/fat_loss/beginner/4t": {
+    "entfaellt": [],
+    "neu": [
+      "y-t-w-vorgebeugt",
+    ],
+  },
+  "zuhause_nur_band/general_fitness/advanced/3t": {
+    "entfaellt": [],
+    "neu": [
+      "y-t-w-vorgebeugt",
+    ],
+  },
+  "zuhause_nur_band/general_fitness/advanced/4t": {
+    "entfaellt": [],
+    "neu": [
+      "y-t-w-vorgebeugt",
+    ],
+  },
+  "zuhause_nur_band/general_fitness/beginner/3t": {
+    "entfaellt": [],
+    "neu": [
+      "y-t-w-vorgebeugt",
+    ],
+  },
+  "zuhause_nur_band/general_fitness/beginner/4t": {
+    "entfaellt": [],
+    "neu": [
+      "y-t-w-vorgebeugt",
+    ],
+  },
+  "zuhause_nur_band/muscle_gain/advanced/3t": {
+    "entfaellt": [
+      "dead-bug",
+      "pallof-press-band",
+    ],
+    "neu": [
+      "y-t-w-vorgebeugt",
+    ],
+  },
+  "zuhause_nur_band/muscle_gain/advanced/4t": {
+    "entfaellt": [
+      "bizepscurl-band",
+    ],
+    "neu": [
+      "y-t-w-vorgebeugt",
+    ],
+  },
+  "zuhause_nur_band/muscle_gain/beginner/3t": {
+    "entfaellt": [],
+    "neu": [
+      "y-t-w-vorgebeugt",
+    ],
+  },
+  "zuhause_nur_band/muscle_gain/beginner/4t": {
+    "entfaellt": [],
+    "neu": [
+      "y-t-w-vorgebeugt",
+    ],
+  },
+  "zuhause_ohne_geraete/fat_loss/advanced/3t": {
+    "entfaellt": [
+      "glute-bridge",
+    ],
+    "neu": [
+      "good-morning-koerpergewicht",
+      "tuerrahmen-rudern",
+      "y-t-w-vorgebeugt",
+    ],
+  },
+  "zuhause_ohne_geraete/fat_loss/advanced/4t": {
+    "entfaellt": [
+      "glute-bridge",
+    ],
+    "neu": [
+      "good-morning-koerpergewicht",
+      "kniebeuge-stuhl",
+      "liegestuetz-erhoeht",
+      "tuerrahmen-rudern",
+      "y-t-w-vorgebeugt",
+    ],
+  },
+  "zuhause_ohne_geraete/fat_loss/beginner/3t": {
+    "entfaellt": [
+      "glute-bridge",
+    ],
+    "neu": [
+      "good-morning-koerpergewicht",
+      "tuerrahmen-rudern",
+      "y-t-w-vorgebeugt",
+    ],
+  },
+  "zuhause_ohne_geraete/fat_loss/beginner/4t": {
+    "entfaellt": [
+      "glute-bridge",
+    ],
+    "neu": [
+      "good-morning-koerpergewicht",
+      "kniebeuge-stuhl",
+      "liegestuetz-erhoeht",
+      "tuerrahmen-rudern",
+      "y-t-w-vorgebeugt",
+    ],
+  },
+  "zuhause_ohne_geraete/general_fitness/advanced/3t": {
+    "entfaellt": [
+      "glute-bridge",
+    ],
+    "neu": [
+      "good-morning-koerpergewicht",
+      "tuerrahmen-rudern",
+      "y-t-w-vorgebeugt",
+    ],
+  },
+  "zuhause_ohne_geraete/general_fitness/advanced/4t": {
+    "entfaellt": [
+      "glute-bridge",
+    ],
+    "neu": [
+      "good-morning-koerpergewicht",
+      "kniebeuge-stuhl",
+      "liegestuetz-erhoeht",
+      "tuerrahmen-rudern",
+      "y-t-w-vorgebeugt",
+    ],
+  },
+  "zuhause_ohne_geraete/general_fitness/beginner/3t": {
+    "entfaellt": [
+      "glute-bridge",
+    ],
+    "neu": [
+      "good-morning-koerpergewicht",
+      "tuerrahmen-rudern",
+      "y-t-w-vorgebeugt",
+    ],
+  },
+  "zuhause_ohne_geraete/general_fitness/beginner/4t": {
+    "entfaellt": [
+      "glute-bridge",
+    ],
+    "neu": [
+      "good-morning-koerpergewicht",
+      "kniebeuge-stuhl",
+      "liegestuetz-erhoeht",
+      "tuerrahmen-rudern",
+      "y-t-w-vorgebeugt",
+    ],
+  },
+  "zuhause_ohne_geraete/muscle_gain/advanced/3t": {
+    "entfaellt": [
+      "glute-bridge",
+    ],
+    "neu": [
+      "good-morning-koerpergewicht",
+      "tuerrahmen-rudern",
+      "y-t-w-vorgebeugt",
+    ],
+  },
+  "zuhause_ohne_geraete/muscle_gain/advanced/4t": {
+    "entfaellt": [
+      "glute-bridge",
+    ],
+    "neu": [
+      "good-morning-koerpergewicht",
+      "kniebeuge-stuhl",
+      "liegestuetz-erhoeht",
+      "tuerrahmen-rudern",
+      "y-t-w-vorgebeugt",
+    ],
+  },
+  "zuhause_ohne_geraete/muscle_gain/beginner/3t": {
+    "entfaellt": [
+      "glute-bridge",
+    ],
+    "neu": [
+      "good-morning-koerpergewicht",
+      "tuerrahmen-rudern",
+      "y-t-w-vorgebeugt",
+    ],
+  },
+  "zuhause_ohne_geraete/muscle_gain/beginner/4t": {
+    "entfaellt": [
+      "glute-bridge",
+    ],
+    "neu": [
+      "good-morning-koerpergewicht",
+      "kniebeuge-stuhl",
+      "liegestuetz-erhoeht",
+      "tuerrahmen-rudern",
+      "y-t-w-vorgebeugt",
+    ],
+  },
+  "zuhause_ohne_geraete_ab_65/fat_loss/advanced/3t": {
+    "entfaellt": [
+      "glute-bridge",
+    ],
+    "neu": [
+      "good-morning-koerpergewicht",
+      "tuerrahmen-rudern",
+      "y-t-w-vorgebeugt",
+    ],
+  },
+  "zuhause_ohne_geraete_ab_65/fat_loss/advanced/4t": {
+    "entfaellt": [
+      "glute-bridge",
+    ],
+    "neu": [
+      "good-morning-koerpergewicht",
+      "kniebeuge-stuhl",
+      "liegestuetz-erhoeht",
+      "tuerrahmen-rudern",
+      "y-t-w-vorgebeugt",
+    ],
+  },
+  "zuhause_ohne_geraete_ab_65/fat_loss/beginner/3t": {
+    "entfaellt": [
+      "glute-bridge",
+    ],
+    "neu": [
+      "good-morning-koerpergewicht",
+      "tuerrahmen-rudern",
+      "y-t-w-vorgebeugt",
+    ],
+  },
+  "zuhause_ohne_geraete_ab_65/fat_loss/beginner/4t": {
+    "entfaellt": [
+      "glute-bridge",
+    ],
+    "neu": [
+      "good-morning-koerpergewicht",
+      "kniebeuge-stuhl",
+      "liegestuetz-erhoeht",
+      "tuerrahmen-rudern",
+      "y-t-w-vorgebeugt",
+    ],
+  },
+  "zuhause_ohne_geraete_ab_65/general_fitness/advanced/3t": {
+    "entfaellt": [
+      "glute-bridge",
+    ],
+    "neu": [
+      "good-morning-koerpergewicht",
+      "tuerrahmen-rudern",
+      "y-t-w-vorgebeugt",
+    ],
+  },
+  "zuhause_ohne_geraete_ab_65/general_fitness/advanced/4t": {
+    "entfaellt": [
+      "glute-bridge",
+    ],
+    "neu": [
+      "good-morning-koerpergewicht",
+      "kniebeuge-stuhl",
+      "liegestuetz-erhoeht",
+      "tuerrahmen-rudern",
+      "y-t-w-vorgebeugt",
+    ],
+  },
+  "zuhause_ohne_geraete_ab_65/general_fitness/beginner/3t": {
+    "entfaellt": [
+      "glute-bridge",
+    ],
+    "neu": [
+      "good-morning-koerpergewicht",
+      "tuerrahmen-rudern",
+      "y-t-w-vorgebeugt",
+    ],
+  },
+  "zuhause_ohne_geraete_ab_65/general_fitness/beginner/4t": {
+    "entfaellt": [
+      "glute-bridge",
+    ],
+    "neu": [
+      "good-morning-koerpergewicht",
+      "kniebeuge-stuhl",
+      "liegestuetz-erhoeht",
+      "tuerrahmen-rudern",
+      "y-t-w-vorgebeugt",
+    ],
+  },
+  "zuhause_ohne_geraete_ab_65/muscle_gain/advanced/3t": {
+    "entfaellt": [
+      "glute-bridge",
+    ],
+    "neu": [
+      "good-morning-koerpergewicht",
+      "tuerrahmen-rudern",
+      "y-t-w-vorgebeugt",
+    ],
+  },
+  "zuhause_ohne_geraete_ab_65/muscle_gain/advanced/4t": {
+    "entfaellt": [
+      "glute-bridge",
+    ],
+    "neu": [
+      "good-morning-koerpergewicht",
+      "kniebeuge-stuhl",
+      "liegestuetz-erhoeht",
+      "tuerrahmen-rudern",
+      "y-t-w-vorgebeugt",
+    ],
+  },
+  "zuhause_ohne_geraete_ab_65/muscle_gain/beginner/3t": {
+    "entfaellt": [
+      "glute-bridge",
+    ],
+    "neu": [
+      "good-morning-koerpergewicht",
+      "tuerrahmen-rudern",
+      "y-t-w-vorgebeugt",
+    ],
+  },
+  "zuhause_ohne_geraete_ab_65/muscle_gain/beginner/4t": {
+    "entfaellt": [
+      "glute-bridge",
+    ],
+    "neu": [
+      "good-morning-koerpergewicht",
+      "kniebeuge-stuhl",
+      "liegestuetz-erhoeht",
+      "tuerrahmen-rudern",
+      "y-t-w-vorgebeugt",
+    ],
+  },
+  "zuhause_ohne_geraete_schwanger/fat_loss/advanced/3t": {
+    "entfaellt": [
+      "kniebeuge-koerpergewicht",
+    ],
+    "neu": [
+      "bird-dog",
+      "good-morning-koerpergewicht",
+      "hueftstrecken-vierfuessler",
+      "tuerrahmen-rudern",
+      "y-t-w-vorgebeugt",
+    ],
+  },
+  "zuhause_ohne_geraete_schwanger/fat_loss/advanced/4t": {
+    "entfaellt": [],
+    "neu": [
+      "bird-dog",
+      "good-morning-koerpergewicht",
+      "hueftstrecken-vierfuessler",
+      "kniebeuge-stuhl",
+      "liegestuetz-erhoeht",
+      "tuerrahmen-rudern",
+      "y-t-w-vorgebeugt",
+    ],
+  },
+  "zuhause_ohne_geraete_schwanger/fat_loss/beginner/3t": {
+    "entfaellt": [
+      "kniebeuge-koerpergewicht",
+    ],
+    "neu": [
+      "bird-dog",
+      "good-morning-koerpergewicht",
+      "hueftstrecken-vierfuessler",
+      "tuerrahmen-rudern",
+      "y-t-w-vorgebeugt",
+    ],
+  },
+  "zuhause_ohne_geraete_schwanger/fat_loss/beginner/4t": {
+    "entfaellt": [],
+    "neu": [
+      "bird-dog",
+      "good-morning-koerpergewicht",
+      "hueftstrecken-vierfuessler",
+      "kniebeuge-stuhl",
+      "liegestuetz-erhoeht",
+      "tuerrahmen-rudern",
+      "y-t-w-vorgebeugt",
+    ],
+  },
+  "zuhause_ohne_geraete_schwanger/general_fitness/advanced/3t": {
+    "entfaellt": [
+      "kniebeuge-koerpergewicht",
+    ],
+    "neu": [
+      "bird-dog",
+      "good-morning-koerpergewicht",
+      "hueftstrecken-vierfuessler",
+      "tuerrahmen-rudern",
+      "y-t-w-vorgebeugt",
+    ],
+  },
+  "zuhause_ohne_geraete_schwanger/general_fitness/advanced/4t": {
+    "entfaellt": [],
+    "neu": [
+      "bird-dog",
+      "good-morning-koerpergewicht",
+      "hueftstrecken-vierfuessler",
+      "kniebeuge-stuhl",
+      "liegestuetz-erhoeht",
+      "tuerrahmen-rudern",
+      "y-t-w-vorgebeugt",
+    ],
+  },
+  "zuhause_ohne_geraete_schwanger/general_fitness/beginner/3t": {
+    "entfaellt": [
+      "kniebeuge-koerpergewicht",
+    ],
+    "neu": [
+      "bird-dog",
+      "good-morning-koerpergewicht",
+      "hueftstrecken-vierfuessler",
+      "tuerrahmen-rudern",
+      "y-t-w-vorgebeugt",
+    ],
+  },
+  "zuhause_ohne_geraete_schwanger/general_fitness/beginner/4t": {
+    "entfaellt": [],
+    "neu": [
+      "bird-dog",
+      "good-morning-koerpergewicht",
+      "hueftstrecken-vierfuessler",
+      "kniebeuge-stuhl",
+      "liegestuetz-erhoeht",
+      "tuerrahmen-rudern",
+      "y-t-w-vorgebeugt",
+    ],
+  },
+  "zuhause_ohne_geraete_schwanger/muscle_gain/advanced/3t": {
+    "entfaellt": [
+      "kniebeuge-koerpergewicht",
+    ],
+    "neu": [
+      "bird-dog",
+      "good-morning-koerpergewicht",
+      "hueftstrecken-vierfuessler",
+      "tuerrahmen-rudern",
+      "y-t-w-vorgebeugt",
+    ],
+  },
+  "zuhause_ohne_geraete_schwanger/muscle_gain/advanced/4t": {
+    "entfaellt": [],
+    "neu": [
+      "bird-dog",
+      "good-morning-koerpergewicht",
+      "hueftstrecken-vierfuessler",
+      "kniebeuge-stuhl",
+      "liegestuetz-erhoeht",
+      "tuerrahmen-rudern",
+      "y-t-w-vorgebeugt",
+    ],
+  },
+  "zuhause_ohne_geraete_schwanger/muscle_gain/beginner/3t": {
+    "entfaellt": [
+      "kniebeuge-koerpergewicht",
+    ],
+    "neu": [
+      "bird-dog",
+      "good-morning-koerpergewicht",
+      "hueftstrecken-vierfuessler",
+      "tuerrahmen-rudern",
+      "y-t-w-vorgebeugt",
+    ],
+  },
+  "zuhause_ohne_geraete_schwanger/muscle_gain/beginner/4t": {
+    "entfaellt": [],
+    "neu": [
+      "bird-dog",
+      "good-morning-koerpergewicht",
+      "hueftstrecken-vierfuessler",
+      "kniebeuge-stuhl",
+      "liegestuetz-erhoeht",
+      "tuerrahmen-rudern",
+      "y-t-w-vorgebeugt",
+    ],
+  },
+  "zuhause_ohne_geraete_unter_18/fat_loss/advanced/3t": {
+    "entfaellt": [
+      "glute-bridge",
+    ],
+    "neu": [
+      "good-morning-koerpergewicht",
+      "tuerrahmen-rudern",
+      "y-t-w-vorgebeugt",
+    ],
+  },
+  "zuhause_ohne_geraete_unter_18/fat_loss/advanced/4t": {
+    "entfaellt": [
+      "glute-bridge",
+    ],
+    "neu": [
+      "good-morning-koerpergewicht",
+      "kniebeuge-stuhl",
+      "liegestuetz-erhoeht",
+      "tuerrahmen-rudern",
+      "y-t-w-vorgebeugt",
+    ],
+  },
+  "zuhause_ohne_geraete_unter_18/fat_loss/beginner/3t": {
+    "entfaellt": [
+      "glute-bridge",
+    ],
+    "neu": [
+      "good-morning-koerpergewicht",
+      "tuerrahmen-rudern",
+      "y-t-w-vorgebeugt",
+    ],
+  },
+  "zuhause_ohne_geraete_unter_18/fat_loss/beginner/4t": {
+    "entfaellt": [
+      "glute-bridge",
+    ],
+    "neu": [
+      "good-morning-koerpergewicht",
+      "kniebeuge-stuhl",
+      "liegestuetz-erhoeht",
+      "tuerrahmen-rudern",
+      "y-t-w-vorgebeugt",
+    ],
+  },
+  "zuhause_ohne_geraete_unter_18/general_fitness/advanced/3t": {
+    "entfaellt": [
+      "glute-bridge",
+    ],
+    "neu": [
+      "good-morning-koerpergewicht",
+      "tuerrahmen-rudern",
+      "y-t-w-vorgebeugt",
+    ],
+  },
+  "zuhause_ohne_geraete_unter_18/general_fitness/advanced/4t": {
+    "entfaellt": [
+      "glute-bridge",
+    ],
+    "neu": [
+      "good-morning-koerpergewicht",
+      "kniebeuge-stuhl",
+      "liegestuetz-erhoeht",
+      "tuerrahmen-rudern",
+      "y-t-w-vorgebeugt",
+    ],
+  },
+  "zuhause_ohne_geraete_unter_18/general_fitness/beginner/3t": {
+    "entfaellt": [
+      "glute-bridge",
+    ],
+    "neu": [
+      "good-morning-koerpergewicht",
+      "tuerrahmen-rudern",
+      "y-t-w-vorgebeugt",
+    ],
+  },
+  "zuhause_ohne_geraete_unter_18/general_fitness/beginner/4t": {
+    "entfaellt": [
+      "glute-bridge",
+    ],
+    "neu": [
+      "good-morning-koerpergewicht",
+      "kniebeuge-stuhl",
+      "liegestuetz-erhoeht",
+      "tuerrahmen-rudern",
+      "y-t-w-vorgebeugt",
+    ],
+  },
+  "zuhause_ohne_geraete_unter_18/muscle_gain/advanced/3t": {
+    "entfaellt": [
+      "glute-bridge",
+    ],
+    "neu": [
+      "good-morning-koerpergewicht",
+      "tuerrahmen-rudern",
+      "y-t-w-vorgebeugt",
+    ],
+  },
+  "zuhause_ohne_geraete_unter_18/muscle_gain/advanced/4t": {
+    "entfaellt": [
+      "glute-bridge",
+    ],
+    "neu": [
+      "good-morning-koerpergewicht",
+      "kniebeuge-stuhl",
+      "liegestuetz-erhoeht",
+      "tuerrahmen-rudern",
+      "y-t-w-vorgebeugt",
+    ],
+  },
+  "zuhause_ohne_geraete_unter_18/muscle_gain/beginner/3t": {
+    "entfaellt": [
+      "glute-bridge",
+    ],
+    "neu": [
+      "good-morning-koerpergewicht",
+      "tuerrahmen-rudern",
+      "y-t-w-vorgebeugt",
+    ],
+  },
+  "zuhause_ohne_geraete_unter_18/muscle_gain/beginner/4t": {
+    "entfaellt": [
+      "glute-bridge",
+    ],
+    "neu": [
+      "good-morning-koerpergewicht",
+      "kniebeuge-stuhl",
+      "liegestuetz-erhoeht",
+      "tuerrahmen-rudern",
+      "y-t-w-vorgebeugt",
+    ],
+  },
+  "zuhause_ohne_geraete_vorsichtig/fat_loss/advanced/3t": {
+    "entfaellt": [
+      "glute-bridge",
+    ],
+    "neu": [
+      "good-morning-koerpergewicht",
+      "tuerrahmen-rudern",
+      "y-t-w-vorgebeugt",
+    ],
+  },
+  "zuhause_ohne_geraete_vorsichtig/fat_loss/advanced/4t": {
+    "entfaellt": [
+      "glute-bridge",
+    ],
+    "neu": [
+      "good-morning-koerpergewicht",
+      "kniebeuge-stuhl",
+      "liegestuetz-erhoeht",
+      "tuerrahmen-rudern",
+      "y-t-w-vorgebeugt",
+    ],
+  },
+  "zuhause_ohne_geraete_vorsichtig/fat_loss/beginner/3t": {
+    "entfaellt": [
+      "glute-bridge",
+    ],
+    "neu": [
+      "good-morning-koerpergewicht",
+      "tuerrahmen-rudern",
+      "y-t-w-vorgebeugt",
+    ],
+  },
+  "zuhause_ohne_geraete_vorsichtig/fat_loss/beginner/4t": {
+    "entfaellt": [
+      "glute-bridge",
+    ],
+    "neu": [
+      "good-morning-koerpergewicht",
+      "kniebeuge-stuhl",
+      "liegestuetz-erhoeht",
+      "tuerrahmen-rudern",
+      "y-t-w-vorgebeugt",
+    ],
+  },
+  "zuhause_ohne_geraete_vorsichtig/general_fitness/advanced/3t": {
+    "entfaellt": [
+      "glute-bridge",
+    ],
+    "neu": [
+      "good-morning-koerpergewicht",
+      "tuerrahmen-rudern",
+      "y-t-w-vorgebeugt",
+    ],
+  },
+  "zuhause_ohne_geraete_vorsichtig/general_fitness/advanced/4t": {
+    "entfaellt": [
+      "glute-bridge",
+    ],
+    "neu": [
+      "good-morning-koerpergewicht",
+      "kniebeuge-stuhl",
+      "liegestuetz-erhoeht",
+      "tuerrahmen-rudern",
+      "y-t-w-vorgebeugt",
+    ],
+  },
+  "zuhause_ohne_geraete_vorsichtig/general_fitness/beginner/3t": {
+    "entfaellt": [
+      "glute-bridge",
+    ],
+    "neu": [
+      "good-morning-koerpergewicht",
+      "tuerrahmen-rudern",
+      "y-t-w-vorgebeugt",
+    ],
+  },
+  "zuhause_ohne_geraete_vorsichtig/general_fitness/beginner/4t": {
+    "entfaellt": [
+      "glute-bridge",
+    ],
+    "neu": [
+      "good-morning-koerpergewicht",
+      "kniebeuge-stuhl",
+      "liegestuetz-erhoeht",
+      "tuerrahmen-rudern",
+      "y-t-w-vorgebeugt",
+    ],
+  },
+  "zuhause_ohne_geraete_vorsichtig/muscle_gain/advanced/3t": {
+    "entfaellt": [
+      "glute-bridge",
+    ],
+    "neu": [
+      "good-morning-koerpergewicht",
+      "tuerrahmen-rudern",
+      "y-t-w-vorgebeugt",
+    ],
+  },
+  "zuhause_ohne_geraete_vorsichtig/muscle_gain/advanced/4t": {
+    "entfaellt": [
+      "glute-bridge",
+    ],
+    "neu": [
+      "good-morning-koerpergewicht",
+      "kniebeuge-stuhl",
+      "liegestuetz-erhoeht",
+      "tuerrahmen-rudern",
+      "y-t-w-vorgebeugt",
+    ],
+  },
+  "zuhause_ohne_geraete_vorsichtig/muscle_gain/beginner/3t": {
+    "entfaellt": [
+      "glute-bridge",
+    ],
+    "neu": [
+      "good-morning-koerpergewicht",
+      "tuerrahmen-rudern",
+      "y-t-w-vorgebeugt",
+    ],
+  },
+  "zuhause_ohne_geraete_vorsichtig/muscle_gain/beginner/4t": {
+    "entfaellt": [
+      "glute-bridge",
+    ],
+    "neu": [
+      "good-morning-koerpergewicht",
+      "kniebeuge-stuhl",
+      "liegestuetz-erhoeht",
+      "tuerrahmen-rudern",
+      "y-t-w-vorgebeugt",
+    ],
+  },
+}
+`;
