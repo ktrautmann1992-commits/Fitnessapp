@@ -129,20 +129,20 @@ test.describe('mit Zugangsdaten', () => {
     // Das Cookie gilt nur unter /admin.
     expect(await context.cookies(`${CONFIGURED_URL}/`)).toEqual([]);
 
-    // Übersicht: 79 Übungen (Startbestand + Körpergewicht K1), 24 Vorlagen.
+    // Übersicht: 80 Übungen (Startbestand + Körpergewicht K1 + Handtuch-Latziehen), 42 Vorlagen (inkl. 18 Körpergewicht).
     await expect(page.getByRole('heading', { name: 'Inhalte prüfen' })).toBeVisible();
-    await expect(page.getByText('79 Übungen · 24 Vorlagen')).toBeVisible();
+    await expect(page.getByText('80 Übungen · 42 Vorlagen')).toBeVisible();
     await expect(page.getByText('Testansicht – Inhalte aus dem Repository')).toBeVisible();
     const exerciseCards = page.getByRole('list', { name: 'Übungen' }).getByRole('listitem');
-    await expect(exerciseCards).toHaveCount(79);
+    await expect(exerciseCards).toHaveCount(80);
     await expect(exerciseCards.first().getByText('KI-Entwurf – fachlich prüfen')).toBeVisible();
-    await expect(page.getByText('79 Entwürfe · 0 freigegeben · 0 zurückgezogen')).toBeVisible();
+    await expect(page.getByText('80 Entwürfe · 0 freigegeben · 0 zurückgezogen')).toBeVisible();
 
     // Filter: Bewegungsmuster Kniebeuge.
     await page.getByText('Suche und Filter').click();
     await page.getByLabel('Bewegungsmuster').selectOption('squat');
     await page.getByRole('button', { name: 'Anwenden' }).click();
-    await expect(page.getByTestId('trefferzahl')).toHaveText('7 von 79 Treffern');
+    await expect(page.getByTestId('trefferzahl')).toHaveText('7 von 80 Treffern');
     await expect(exerciseCards).toHaveCount(7);
     await expect(page.getByLabel(/IDs dieser Trefferliste/)).toHaveValue(/kniebeuge-langhantel/);
 
@@ -150,7 +150,7 @@ test.describe('mit Zugangsdaten', () => {
     await page.goto('/admin?q=gibtsnicht');
     await expect(page.getByRole('heading', { name: 'Keine Treffer' })).toBeVisible();
     await page.getByRole('link', { name: 'Filter zurücksetzen' }).click();
-    await expect(exerciseCards).toHaveCount(79);
+    await expect(exerciseCards).toHaveCount(80);
 
     // Detail Übung mit Alternativen (verlinkt).
     await page.getByRole('link', { name: /Kniebeuge mit Langhantel/ }).click();
@@ -174,9 +174,9 @@ test.describe('mit Zugangsdaten', () => {
     // Vorlagen: 24, Filter Ziel/Ort, Detail mit Woche und Wochensätzen.
     await page.goto('/admin?tab=vorlagen');
     const templateCards = page.getByRole('list', { name: 'Plan-Vorlagen' }).getByRole('listitem');
-    await expect(templateCards).toHaveCount(24);
+    await expect(templateCards).toHaveCount(42);
     await page.goto('/admin?tab=vorlagen&ziel=muscle_gain&ort=home');
-    await expect(templateCards).toHaveCount(4);
+    await expect(templateCards).toHaveCount(10);
     await page.goto('/admin/vorlagen/muskelaufbau-fortgeschritten-3t-studio');
     await expect(page.getByRole('heading', { name: 'Wochenübersicht' })).toBeVisible();
     await expect(page.getByRole('heading', { name: 'Wochensätze pro Muskelgruppe' })).toBeVisible();
