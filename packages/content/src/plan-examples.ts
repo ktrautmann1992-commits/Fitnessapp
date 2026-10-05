@@ -5,6 +5,16 @@
  * Keine echten Nutzerdaten. Entwürfe sind erlaubt (wie im Testmodus der App).
  */
 import {
+  barbellLoadSteps,
+  buildExerciseLogEntry,
+  type ExerciseLogEntry,
+  type LoggedSet,
+  type PlannedDosage,
+  type Prescription,
+  prescriptionForDisplay,
+  type ProgressionContext,
+  progressFromLogs,
+  type ProgressResult,
   ENDURANCE_TEXTS_DE,
   type GeneratedPlan,
   generateTrainingPlan,
@@ -346,6 +356,291 @@ function renderPlan(plan: GeneratedPlan): string[] {
   return lines;
 }
 
+// ---------------------------------------------------------------------------------------------------------
+// Beispiel-Progression (docs/PLAN-PHASE-4.md Abschnitt 5.7): vier ausgedachte Personen, je 8 Einheiten einer
+// Übung – so sehen die Gründer die Progression aus dem Tagebuch am Handy, bevor die App sie zeigt.
+// ---------------------------------------------------------------------------------------------------------
+
+interface ProgressionSession {
+  readonly plannedSets?: number;
+  readonly isDeload?: boolean;
+  readonly isIntroWeek?: boolean;
+  readonly steps?: readonly number[];
+  /** Was die Person macht (aus der Vorgabe). */
+  readonly perform: (p: Prescription) => LoggedSet[];
+  readonly weightConfirmed?: boolean;
+  readonly note?: string;
+}
+
+export interface ProgressionExample {
+  readonly name: string;
+  readonly description: string;
+  readonly exercise: string;
+  readonly ctx: ProgressionContext;
+  readonly planned: PlannedDosage;
+  readonly startWeightKg?: number;
+  readonly sessions: readonly ProgressionSession[];
+}
+
+const sets = (count: number, reps: number, weightKg: number | null, rpe: number | null = null) =>
+  Array.from({ length: count }, () => ({ reps, weightKg, durationS: null, rpe, done: true }));
+const shown = (p: Prescription) => sets(p.sets, p.targetReps ?? 0, p.weightKg);
+
+const HOME_DUMBBELLS = [4, 6, 8, 10, 12];
+const HOME_DUMBBELLS_20 = [4, 6, 8, 10, 12, 14, 16, 18, 20];
+const GYM_DUMBBELLS = [4, 6, 8, 10, 12, 14, 16, 18, 20, 22.5, 25, 27.5, 30];
+const GYM_BARBELL = barbellLoadSteps(20, [1.25, 2.5, 5, 10, 15, 20, 25]);
+
+export const PROGRESSION_EXAMPLES: readonly ProgressionExample[] = [
+  {
+    name: 'Anna',
+    description: 'Einsteigerin zuhause, Kurzhanteln 4/6/8/10/12 kg, 3 × 8–12',
+    exercise: 'Kurzhantel-Bankdrücken',
+    ctx: {
+      loadType: 'weight',
+      repsMin: 8,
+      repsMax: 12,
+      durationS: null,
+      templateSets: 3,
+      rpeTarget: 8,
+      incrementKind: 'free_weight',
+      steps: HOME_DUMBBELLS,
+    },
+    planned: { sets: 3, reps_min: 8, reps_max: 12, duration_s: null, rpe_target: 8 },
+    sessions: [
+      {
+        isIntroWeek: true,
+        perform: () => sets(3, 10, 8, 8),
+        note: 'erster Eintrag (Einstiegswoche) → Arbeitsgewicht geschätzt',
+      },
+      { perform: shown },
+      { perform: shown },
+      {
+        perform: (p) => sets(p.sets, (p.targetReps ?? 0) - 2, p.weightKg),
+        note: 'nicht geschafft',
+      },
+      { perform: shown },
+      { perform: shown },
+      { perform: shown },
+      { perform: shown },
+    ],
+  },
+  {
+    name: 'Ben',
+    description:
+      'Fortgeschritten im Studio, Langhantel-Kniebeuge 4 × 5–8, mit Tippfehler und Erholungswoche',
+    exercise: 'Kniebeuge',
+    ctx: {
+      loadType: 'weight',
+      repsMin: 5,
+      repsMax: 8,
+      durationS: null,
+      templateSets: 4,
+      rpeTarget: 8,
+      incrementKind: 'barbell',
+      steps: GYM_BARBELL,
+    },
+    planned: { sets: 4, reps_min: 5, reps_max: 8, duration_s: null, rpe_target: 8 },
+    startWeightKg: 80,
+    sessions: [
+      { perform: shown, note: 'eigenes Startgewicht 80 kg' },
+      { perform: shown },
+      {
+        perform: (p) => sets(p.sets, p.targetReps ?? 0, 180),
+        note: 'Tippfehler 180 statt 80 kg, nicht bestätigt → zählt nicht als neues Gewicht',
+      },
+      { perform: shown },
+      { perform: shown },
+      { perform: shown },
+      { isDeload: true, perform: shown, note: 'Erholungswoche: Gewicht × 0,9, Zustand bleibt' },
+      { perform: shown },
+    ],
+  },
+  {
+    name: 'Clara',
+    description: 'Mo 20 min / Sa 90 min – Langhantel-Rudern 2 bzw. 4 Sätze, 4 × 8–10 laut Vorlage',
+    exercise: 'Langhantel-Rudern',
+    ctx: {
+      loadType: 'weight',
+      repsMin: 8,
+      repsMax: 10,
+      durationS: null,
+      templateSets: 4,
+      rpeTarget: 8,
+      incrementKind: 'barbell',
+      steps: GYM_BARBELL,
+    },
+    planned: { sets: 4, reps_min: 8, reps_max: 10, duration_s: null, rpe_target: 8 },
+    startWeightKg: 40,
+    sessions: [
+      { plannedSets: 2, perform: shown, note: 'Mo (kurz)' },
+      { plannedSets: 4, perform: shown, note: 'Sa (lang)' },
+      { plannedSets: 2, perform: shown, note: 'Mo' },
+      {
+        plannedSets: 2,
+        perform: shown,
+        note: 'Mo (Sa ausgefallen) – zweimal kurz hintereinander: kein Gewichtssprung, Ziel bleibt',
+      },
+      { plannedSets: 2, perform: shown, note: 'Mo' },
+      { plannedSets: 4, perform: shown, note: 'Sa – kurz + lang geschafft: Gewichtssprung' },
+      { plannedSets: 2, perform: shown, note: 'Mo' },
+      { plannedSets: 4, perform: shown, note: 'Sa' },
+    ],
+  },
+  {
+    name: 'Dana',
+    description:
+      'Studio (Kurzhanteln bis 30 kg) und zu Hause (bis 20 kg), 3 × 8–12 – gespeicherter Stand bleibt, Fortschritt zu Hause gilt nur dort',
+    exercise: 'Kurzhantel-Schulterdrücken',
+    ctx: {
+      loadType: 'weight',
+      repsMin: 8,
+      repsMax: 12,
+      durationS: null,
+      templateSets: 3,
+      rpeTarget: 8,
+      incrementKind: 'free_weight',
+      steps: GYM_DUMBBELLS,
+    },
+    planned: { sets: 3, reps_min: 8, reps_max: 12, duration_s: null, rpe_target: 8 },
+    startWeightKg: 22.5,
+    sessions: [
+      { perform: shown, note: 'Studio, eigenes Startgewicht 22,5 kg' },
+      { perform: shown, note: 'Studio' },
+      {
+        steps: HOME_DUMBBELLS_20,
+        perform: (p) => sets(p.sets, (p.targetReps ?? 0) - 3, p.weightKg),
+        note: 'zu Hause (schwerste Hantel 20 kg), verpatzt – Studio-Stand bleibt 22,5 kg',
+      },
+      {
+        steps: HOME_DUMBBELLS_20,
+        perform: shown,
+        note: 'zu Hause: Fortschritt an 20 kg gilt nur dort',
+      },
+      { steps: HOME_DUMBBELLS_20, perform: shown, note: 'zu Hause' },
+      { perform: shown, note: 'wieder Studio: weiter mit 22,5 kg und dem Studio-Stand' },
+      { perform: shown, note: 'Studio' },
+      { perform: shown, note: 'Studio – 22,5 → 25 kg wären 11 %: erst Puffer' },
+    ],
+  },
+];
+
+export interface ProgressionRow {
+  readonly no: number;
+  readonly prescription: Prescription;
+  readonly performed: readonly LoggedSet[];
+  readonly after: ProgressResult;
+  readonly note: string;
+}
+
+/** Simuliert die App: Vorgabe anzeigen → trainieren → Eintrag speichern → nächstes Ziel. */
+export function simulateProgression(example: ProgressionExample, today: string): ProgressionRow[] {
+  const entries: ExerciseLogEntry[] = [];
+  const rows: ProgressionRow[] = [];
+  const options = { startWeightKg: example.startWeightKg ?? null };
+  const base = Date.parse(`${today}T00:00:00Z`);
+  example.sessions.forEach((session, index) => {
+    const steps = session.steps ?? example.ctx.steps ?? [];
+    const ctx = { ...example.ctx, steps };
+    const performedOn = new Date(base + index * 3 * 86_400_000).toISOString().slice(0, 10);
+    const result = progressFromLogs('example', entries, ctx, { ...options, today: performedOn });
+    const rpe =
+      example.planned.rpe_target - (session.isIntroWeek ? 1 : 0) - (session.isDeload ? 2 : 0);
+    const prescription = prescriptionForDisplay(
+      {
+        ...example.planned,
+        sets: session.isDeload
+          ? Math.ceil((session.plannedSets ?? example.planned.sets) / 2)
+          : (session.plannedSets ?? example.planned.sets),
+        rpe_target: rpe,
+      },
+      result,
+      { isDeload: session.isDeload ?? false, steps },
+    );
+    const performed = session.perform(prescription);
+    entries.push(
+      buildExerciseLogEntry({
+        exerciseId: 'example',
+        performedOn,
+        loggedAt: `${performedOn}T18:00:00Z`,
+        status: 'done',
+        loadType: example.ctx.loadType,
+        isIntroWeek: session.isIntroWeek ?? false,
+        isDeload: session.isDeload ?? false,
+        progress: result,
+        prescription,
+        weightConfirmed: session.weightConfirmed ?? false,
+        sets: performed,
+      }),
+    );
+    rows.push({
+      no: index + 1,
+      prescription,
+      performed,
+      after: progressFromLogs('example', entries, ctx, { ...options, today: performedOn }),
+      note: session.note ?? '',
+    });
+  });
+  return rows;
+}
+
+const kg = (value: number | null) => (value === null ? 'Gewicht finden' : `${decimalDe(value)} kg`);
+
+function describePrescription(p: Prescription): string {
+  return `${p.sets} × ${p.targetReps ?? '–'} mit ${kg(p.weightKg)}, RPE ${decimalDe(p.rpeTarget)}`;
+}
+
+function describePerformed(performed: readonly LoggedSet[]): string {
+  const first = performed[0];
+  if (!first) return '–';
+  const same = performed.every((s) => s.reps === first.reps && s.weightKg === first.weightKg);
+  return same
+    ? `${performed.length} × ${first.reps ?? '–'} mit ${kg(first.weightKg)}`
+    : performed.map((s) => `${s.reps ?? '–'}@${kg(s.weightKg)}`).join(', ');
+}
+
+function describeNext(r: ProgressResult): string {
+  const p = r.progress;
+  const parts = [`${kg(p.weightKg)} × ${p.targetReps ?? '–'}`];
+  if (p.extraSet) parts.push('+1 Satz');
+  const e = r.effective;
+  if (e.weightKg !== p.weightKg || e.targetReps !== p.targetReps || e.extraSet !== p.extraSet) {
+    parts.push(
+      `an diesem Ort ${kg(e.weightKg)} × ${e.targetReps ?? '–'}${e.extraSet ? ' +1 Satz' : ''}`,
+    );
+  }
+  if (r.firstSessionRpeTarget !== null) parts.push(`erste Einheit RPE ${r.firstSessionRpeTarget}`);
+  if (r.hint) parts.push(PROGRESSION_HINT_TEXTS_DE[r.hint]);
+  return parts.join(', ');
+}
+
+export const PROGRESSION_HINT_TEXTS_DE: Record<NonNullable<ProgressResult['hint']>, string> = {
+  harder_variant: 'Zeit für eine schwerere Variante',
+  stronger_band: 'Zeit für ein stärkeres Band',
+  no_heavier_weight: 'schwerere Gewichtsstufe eintragen oder schwerere Variante wählen',
+  confirm_weight: 'Gewicht bitte bestätigen',
+};
+
+export function renderProgressionExamples(today: string): string[] {
+  const lines = [
+    '## Beispiel-Progression aus dem Trainingstagebuch',
+    '',
+    'Ausgedachte Einträge. „Vorgabe“ = was die App an diesem Tag zeigt (auf die eigenen Gewichtsstufen abgerundet), „danach“ = gespeicherter Zustand für die nächste Einheit (ohne Orts-Rundung).',
+    '',
+  ];
+  for (const example of PROGRESSION_EXAMPLES) {
+    lines.push(`### ${example.name} – ${example.exercise}: ${example.description}`, '');
+    lines.push('| Nr. | Vorgabe | gemacht | danach | Hinweis |', '| --- | --- | --- | --- | --- |');
+    for (const row of simulateProgression(example, today)) {
+      lines.push(
+        `| ${row.no} | ${describePrescription(row.prescription)} | ${describePerformed(row.performed)} | ${describeNext(row.after)} | ${row.note} |`,
+      );
+    }
+    lines.push('');
+  }
+  return lines;
+}
+
 /** Markdown für GITHUB_STEP_SUMMARY. `today` = ISO-Datum. */
 export function renderPlanExamples(library: PlanLibrary, today: string): string {
   const lines = [
@@ -366,6 +661,7 @@ export function renderPlanExamples(library: PlanLibrary, today: string): string 
     }
     lines.push(...renderPlan(result.plan), '');
   }
+  lines.push(...renderProgressionExamples(today));
   return `${lines.join('\n')}\n`;
 }
 

@@ -268,3 +268,20 @@ export const LEVEL_TEMPLATE_MAPPING = {
   advanced: 'advanced',
   competitive: 'advanced',
 } as const satisfies Record<ExperienceLevel, TemplateExperienceLevel>;
+
+// ---------------------------------------------------------------------------------------------------------
+// Phase 4 · Trainingstagebuch (docs/PLAN-PHASE-4.md Abschnitt 3.2). Postgres-Enums folgen in Etappe B
+// (dann Abgleich in db-sync.test.ts).
+// ---------------------------------------------------------------------------------------------------------
+
+/** Status eines Tagebuch-Eintrags: ganz oder teilweise geschafft. */
+export const SESSION_LOG_STATUSES = ['completed', 'partial'] as const;
+export type SessionLogStatus = (typeof SESSION_LOG_STATUSES)[number];
+
+/** Status einer Übung im Eintrag: gemacht, nicht gemacht (ohne Grund), Alternative durchgeführt. */
+export const EXERCISE_LOG_STATUSES = ['done', 'skipped', 'alternative'] as const;
+export type ExerciseLogStatus = (typeof EXERCISE_LOG_STATUSES)[number];
+
+/** Herkunft eines Eintrags (später `route`, `wearable`). */
+export const LOG_SOURCES = ['manual'] as const;
+export type LogSource = (typeof LOG_SOURCES)[number];

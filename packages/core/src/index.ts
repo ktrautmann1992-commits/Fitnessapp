@@ -12,3 +12,4 @@ export * from './validation';
 export * from './training-schedule';
 export * from './content';
 export * from './plan';
+export * from './log';

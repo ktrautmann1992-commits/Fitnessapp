@@ -12,7 +12,8 @@ export interface ReschedulableSession {
   readonly scheduled_on: string;
   /** Ursprünglicher Tag, gesetzt beim ersten Verschieben. */
   readonly original_date: string | null;
-  readonly status: PlannedSessionStatus;
+  /** `completed` (Phase 4, ab Etappe B in der Datenbank) belegt den Tag wie `planned`. */
+  readonly status: PlannedSessionStatus | 'completed';
   /** Kraft oder Ausdauer (Erweiterungsplan 5.4); fehlt = Kraft (Pläne der Engine-Version 1). */
   readonly kind?: PlannedSessionKind;
   /** Kraft: Schwerpunkt; Ausdauer: null. */

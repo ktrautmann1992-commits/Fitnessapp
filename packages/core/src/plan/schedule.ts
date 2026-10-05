@@ -1,5 +1,6 @@
 import {
   DEFAULT_TRAINING_DAYS,
+  ENDURANCE_SESSION_LIMITS,
   INTRO_WEEK_RPE_REDUCTION,
   MAX_STRENGTH_SESSIONS_PER_WEEK,
   PARTIAL_START_WEEK_MIN_SHARE,
@@ -563,6 +564,8 @@ export function buildPlanBlock(options: BuildPlanBlockOptions): PlacedBlock {
 
 /** Eine bisher geplante Einheit (aus planned_sessions; Status/Ursprungstag optional). */
 export type PreviousSession = GeneratedSession & {
+  /** ID der gespeicherten Einheit (für die eingetragenen Minuten, Phase 4). */
+  readonly id?: string;
   readonly status?: PlannedSessionStatus;
   readonly original_date?: string | null;
 };
@@ -580,16 +583,32 @@ export function lastLoadWeekSessions(previous: readonly PreviousSession[]): Prev
  * Bezug der 10-%-Regel für den Folgeblock: Summe der Ausdauer-Minuten der letzten Belastungswoche OHNE gestrichene
  * Einheiten (wer weniger geschafft hat, steigert nicht von einem Umfang, den es nie gab); Deckel je Einheit =
  * längste nicht gestrichene Ausdauer-Einheit dieser Woche.
+ * Phase 4 (PLAN-PHASE-4 Abschnitt 5.3): Mit `loggedMinutes` (Minuten aus dem Tagebuch je ID der geplanten Einheit)
+ * zählt je Einheit nur `min(geplant, eingetragen)`; ohne Eintrag zählt sie nicht. Verwaiste Einträge (ohne
+ * geplante Einheit) stehen nicht in der Liste und zählen damit nie. Schutzregel, keine Live-Anpassung.
  */
 export function enduranceReferenceFromBlock(
   previous: readonly PreviousSession[],
+  loggedMinutes?: ReadonlyMap<string, number>,
 ): EnduranceReference {
-  const done = lastLoadWeekSessions(previous).filter(
-    (s) => s.kind === 'endurance' && s.status !== 'skipped',
-  );
+  const minutes = lastLoadWeekSessions(previous)
+    .filter((s) => s.kind === 'endurance' && s.status !== 'skipped')
+    .map((s) => {
+      if (!loggedMinutes) return s.estimated_minutes;
+      const logged = s.id === undefined ? undefined : loggedMinutes.get(s.id);
+      return logged === undefined
+        ? 0
+        : Math.max(0, Math.min(s.estimated_minutes, Math.floor(logged)));
+    })
+    .filter((m) => m > 0);
+  const volume = minutes.reduce((sum, m) => sum + m, 0);
+  const cap = minutes.length > 0 ? Math.max(...minutes) : null;
+  // Unter dem Einheiten-Minimum (10 min) wie „ohne Bezug“: sonst würden alle Einheiten des Folgeblocks unter die
+  // Mindestdauer fallen und gestrichen – für immer.
+  const min = ENDURANCE_SESSION_LIMITS.minSessionMinutes;
   return {
-    volume: done.reduce((sum, s) => sum + s.estimated_minutes, 0),
-    sessionCap: done.length > 0 ? Math.max(...done.map((s) => s.estimated_minutes)) : null,
+    volume: volume < min ? 0 : volume,
+    sessionCap: cap === null || cap < min ? null : cap,
   };
 }
 
@@ -656,6 +675,11 @@ export interface NextPlanBlockOptions {
    * `planStartGroup(plan, birthDate)` aus start-group.ts verwenden – nie selbst herleiten.
    */
   readonly previousStartGroup: EnduranceStartGroup;
+  /**
+   * Phase 4: eingetragene Ausdauer-Minuten je ID der geplanten Einheit (Tagebuch). Gesetzt → der 10-%-Bezug zählt
+   * nur tatsächlich Trainiertes (enduranceReferenceFromBlock); weggelassen → geplante Minuten (Phase-3-Verhalten).
+   */
+  readonly loggedEnduranceMinutes?: ReadonlyMap<string, number>;
 }
 
 /**
@@ -794,7 +818,7 @@ export function nextPlanBlock(
       endurance: { ...options.endurance, rules: options.rules },
       rules: options.rules,
       enduranceWishWeekly: enduranceWish,
-      enduranceReference: enduranceReferenceFromBlock(previous),
+      enduranceReference: enduranceReferenceFromBlock(previous, options.loggedEnduranceMinutes),
       enduranceStricterGroup: isStricterGroup(group, options.previousStartGroup),
       loadWeeksBefore: options.loadWeeksBefore ?? 0,
     },

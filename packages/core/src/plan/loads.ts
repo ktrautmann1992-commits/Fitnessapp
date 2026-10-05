@@ -126,6 +126,13 @@ export interface ProgressionState {
 
 /** Eine eingetragene Einheit dieser Übung. */
 export interface PerformedSession {
+  /**
+   * Geplante Satzzahl DIESER Fassung (Phase 4, PLAN-PHASE-4 Abschnitt 5.1): Ein kurzer Termin mit 2 Sätzen zählt
+   * als geschafft, wenn beide Sätze das Ziel erreichen. Fehlt sie, gilt `state.sets` (Phase-3-Verhalten).
+   */
+  readonly plannedSets?: number;
+  /** RPE-Ziel, das bei DIESER Einheit galt (z. B. RPE −1 nach großem Sprung); fehlt es, gilt `state.rpeTarget`. */
+  readonly rpeTarget?: number;
   readonly sets: readonly {
     readonly reps?: number | null;
     readonly durationS?: number | null;
@@ -162,9 +169,11 @@ export interface NextLoadOptions {
 
 /** Hat die Einheit das Ziel erreicht (alle Sätze, RPE ≤ Ziel oder ohne Angabe)? */
 export function sessionAchieved(state: ProgressionState, performed: PerformedSession): boolean {
-  if (performed.sets.length < state.sets) return false;
+  const required = Math.max(1, performed.plannedSets ?? state.sets);
+  if (performed.sets.length < required) return false;
+  const rpeTarget = performed.rpeTarget ?? state.rpeTarget;
   return performed.sets.every((set) => {
-    const rpeOk = set.rpe == null || set.rpe <= state.rpeTarget;
+    const rpeOk = set.rpe == null || set.rpe <= rpeTarget;
     if (state.loadType === 'time') {
       return rpeOk && (set.durationS ?? 0) >= (state.durationS ?? Number.POSITIVE_INFINITY);
     }
@@ -181,6 +190,8 @@ export function sessionAchieved(state: ProgressionState, performed: PerformedSes
  *   Sprung > 25 % erste Einheit RPE −1). Keine höhere Stufe → nach dem Puffer Hinweis `no_heavier_weight`.
  *   Körpergewicht → schwerere Variante; Band → stärkeres Band; Halteübung → +min(5, max(1, 10 %)) s bis 120 s.
  * Nie Last senken (Live-Anpassung, Phase 4b). `history`: älteste zuerst.
+ * Phase 4 (W7): Gewichtssprung und Zusatzsatz nur, wenn mindestens eine der zwei Einheiten mindestens die
+ * Vorlagen-Satzzahl hatte (`plannedSets ≥ templateSets`); zwei kurze Fassungen bringen nur +1 Wdh. (bis zum Puffer).
  */
 export function nextLoad(
   state: ProgressionState,
@@ -222,9 +233,25 @@ export function nextLoad(
 
   // Gewicht
   if (state.weightKg === null) return { kind: 'keep' };
-  const next = nextWeightStep(state.weightKg, options.incrementKind, options.steps);
+  const repsCap = Math.min(
+    repsMax + LOAD_PROGRESSION.extraRepsBuffer,
+    TEMPLATE_DOSAGE_LIMITS.reps.max,
+  );
+  const fullVersion = history
+    .slice(-LOAD_PROGRESSION.consecutiveSessionsForStep)
+    .some((h) => (h.plannedSets ?? state.sets) >= state.templateSets);
+  // Eine Stufe über der Plausibilitätsgrenze (500 kg) gibt es nicht → wie „keine höhere Stufe“.
+  const step = nextWeightStep(state.weightKg, options.incrementKind, options.steps);
+  const next = step !== null && step <= PLANNED_LOAD_LIMITS.targetWeightKg.max + 1e-9 ? step : null;
   const increase =
     next === null ? null : state.weightKg > 0 ? (next - state.weightKg) / state.weightKg : Infinity;
+  if (!fullVersion) {
+    // Nur kurze Fassungen: +Wdh. – über reps_max hinaus (Puffer) nur, wenn ohnehin kein direkter Schritt ≤ 10 %
+    // möglich ist (der Puffer ist für große Sprünge da).
+    const direct = increase !== null && increase <= LOAD_PROGRESSION.maxIncreaseFraction + 1e-9;
+    const limit = direct ? repsMax : repsCap;
+    return target < limit ? { kind: 'add_rep', targetReps: target + 1 } : { kind: 'keep' };
+  }
   if (
     next !== null &&
     increase !== null &&
@@ -232,16 +259,12 @@ export function nextLoad(
   ) {
     return {
       kind: 'increase_weight',
-      weightKg: Math.min(next, PLANNED_LOAD_LIMITS.targetWeightKg.max),
+      weightKg: next,
       targetReps: repsMin,
       sets: state.templateSets,
       firstSessionRpeTarget: state.rpeTarget,
     };
   }
-  const repsCap = Math.min(
-    repsMax + LOAD_PROGRESSION.extraRepsBuffer,
-    TEMPLATE_DOSAGE_LIMITS.reps.max,
-  );
   if (target < repsCap) {
     return { kind: 'add_rep', targetReps: target + 1 };
   }
@@ -258,7 +281,7 @@ export function nextLoad(
   const largeJump = increase > LOAD_PROGRESSION.largeJumpFraction + 1e-9;
   return {
     kind: 'increase_weight',
-    weightKg: Math.min(next, PLANNED_LOAD_LIMITS.targetWeightKg.max),
+    weightKg: next,
     targetReps: repsMin,
     sets: state.templateSets,
     firstSessionRpeTarget: largeJump
