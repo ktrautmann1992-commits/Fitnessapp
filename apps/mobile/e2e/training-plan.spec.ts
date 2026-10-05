@@ -470,6 +470,12 @@ test('Zuhause ohne Geräte, 7 Tage: Deckel, Ruhetage und verständliche Hinweise
   await expect(notes).toContainText('Mehr als 4 Kraft-Einheiten planen wir nicht');
   // Etappe K1: ohne Geräte gibt es jetzt Türrahmen-Rudern – kein Hinweis „Ziehen fehlt“ mehr.
   await expect(notes).not.toContainText('Für Rücken-Übungen (Ziehen) fehlt ein Gerät');
+  // Etappe K2+K3: eigene Körpergewicht-Vorlage statt angepasster Hantel-Vorlage – nichts getauscht.
+  await expect(
+    page.getByText('Allgemeine Fitness · Einsteiger · 4 Tage · Körpergewicht'),
+  ).toBeVisible();
+  await expect(notes).not.toContainText('Einige Übungen sind ersetzt');
+  await expect(notes).not.toContainText('Die Vorlage passt nicht ganz zu deinem Trainingsort');
   const rows = await storedRows(page);
   const perWeek = new Map<string, number>();
   for (const s of rows.plannedSessions) {

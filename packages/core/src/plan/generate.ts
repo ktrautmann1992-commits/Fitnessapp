@@ -24,10 +24,11 @@ import {
   SESSION_FOCUSES,
   type TrainingLocation,
 } from '../enums';
+import { isBodyweightTemplate } from '../content/checks';
 import { adaptTemplate, type AdaptedSession, isVolumeReduced } from './adapt';
 import type { PlanLibrary } from './content-pool';
 import { loadWeeksBeforeDeload } from './deload';
-import { equipmentProfile } from './equipment-profile';
+import { equipmentProfile, isBodyweightOnly } from './equipment-profile';
 import {
   type PlanInputs,
   type PlanInputsInput,
@@ -48,9 +49,9 @@ import {
 } from './schedule';
 
 /**
- * Hauptfunktion der Plan-Engine (docs/PLAN-PHASE-3.md Abschnitt 5, Engine-Version 2:
- * docs/PLAN-PHASE-3-ERWEITERUNG.md Abschnitt 5): Angaben prüfen → Sicherheitsregeln → Woche auflösen → bei
- * Kraft-Tagen Vorlage + Anpassung je Ort → Plan-Block mit gemischten Tagen (Kraft je Termin gekürzt, Ausdauer nach
+ * Hauptfunktion der Plan-Engine (docs/PLAN-PHASE-3.md Abschnitt 5; Engine-Version 2: docs/PLAN-PHASE-3-ERWEITERUNG.md
+ * Abschnitt 5; Engine-Version 3 – aktuell, PLAN_ENGINE_VERSION: docs/PLAN-KOERPERGEWICHT.md §5): Angaben prüfen →
+ * Sicherheitsregeln → Woche auflösen → bei Kraft-Tagen Vorlage + Anpassung je Ort → Plan-Block mit gemischten Tagen (Kraft je Termin gekürzt, Ausdauer nach
  * 10-%-Regel) → Hinweise. Rein und deterministisch; das Datum wird übergeben. Keine KI.
  */
 
@@ -264,8 +265,15 @@ export function generateTrainingPlan(
   if (strengthDays.length > 0) {
     const locations = strengthDays.map((d) => locationOfKind(d.kind));
     const homeCount = locations.filter((l) => l === 'home').length;
-    // Vorlagen-Ort = Mehrheit der Kraft-Tage, Gleichstand Studio (Frage 5).
-    const primary: EquipmentLocation = homeCount > locations.length - homeCount ? 'home' : 'gym';
+    // Vorlagen-Ort = Mehrheit der Kraft-Tage, Gleichstand Studio (Frage 5). Gemischte Woche mit Zuhause OHNE
+    // Kraft-Geräte → immer Studio-Vorlage; die Zuhause-Tage tauschen auf Übungen ohne Geräte (Hinweis
+    // `location_mismatch`). Eigenes Matching je Ort ist eine offene Verbesserung (PLAN-KOERPERGEWICHT A2, Frage 7).
+    const mixedWithoutHomeEquipment =
+      homeCount > 0 &&
+      homeCount < locations.length &&
+      isBodyweightOnly(equipmentProfile('home', inputs.homeEquipment));
+    const primary: EquipmentLocation =
+      !mixedWithoutHomeEquipment && homeCount > locations.length - homeCount ? 'home' : 'gym';
     const wishedStrength = inputs.schedule.slots.filter((s) => isStrengthKind(s.kind));
     const match = matchTemplate(
       {
@@ -317,7 +325,12 @@ export function generateTrainingPlan(
       status: match.template.status,
     };
     quality = match.quality === 'exact' && !unchanged ? 'close' : match.quality;
-    strength = { primary, versions, library: library.exercises };
+    strength = {
+      primary,
+      versions,
+      library: library.exercises,
+      protectLastCore: isBodyweightTemplate(match.template),
+    };
     templateForVolume = match.template;
   }
 

@@ -1,5 +1,6 @@
 export * from './calibration';
 export * from './cardio';
+export * from './harder-variant';
 export * from './plausibility';
 export * from './progression';
 export * from './rest-timer';

@@ -5,6 +5,7 @@ import {
   TEMPLATE_DOSAGE_LIMITS,
 } from '../constants';
 import { estimateSessionMinutes, weeklySetRange, weeklySetsByMuscle } from '../content/analysis';
+import { isBodyweightTemplate } from '../content/checks';
 import type { Exercise, PlanTemplate, TemplateExercise, TemplateSession } from '../content/schemas';
 import type { MovementPattern, PlanNote, SessionFocus } from '../enums';
 import { type EquipmentProfile, findSubstitute } from './equipment-profile';
@@ -136,12 +137,17 @@ export interface FitResult {
 /**
  * Kürzt eine Einheit auf das Zeitbudget (Abschnitt 5.6) mit estimateSessionMinutes():
  * (1) Isolationsübungen vom Ende entfernen, (2) Sätze auf 2 (Grund-) bzw. 1 (Isolationsübung) senken,
- * (3) Grundübungen vom Ende entfernen bis mindestens 3 Übungen. Längeres Budget: nichts hinzufügen.
+ * (3) Übungen vom Ende entfernen bis mindestens 3 Übungen. Längeres Budget: nichts hinzufügen.
+ * `protectLastCore` (nur Körpergewicht-Vorlagen, Engine-Version 3, PLAN-KOERPERGEWICHT Wächter W1/N1): In Schritt (1)
+ * bleibt die LETZTE verbleibende Rumpf-Übung (SESSION_FIT.corePatterns) der Einheit stehen (weitere Rumpf-Übungen
+ * fallen wie bisher); in Schritt (3) fällt bis hinunter zu 4 Übungen die letzte Nicht-Rumpf-Übung, darunter wie
+ * bisher die letzte. Ohne die Option ist das Ergebnis identisch zur Engine-Version 2.
  */
 export function fitSessionToMinutes(
   exercises: readonly PlannedExerciseDraft[],
   minutes: number,
   library: ReadonlyMap<string, Exercise>,
+  options: { readonly protectLastCore?: boolean } = {},
 ): FitResult {
   let current = normalize(exercises);
   const fits = () => estimateSessionMinutes({ exercises: current }) <= minutes;
@@ -150,9 +156,15 @@ export function fitSessionToMinutes(
   }
   const isIsolation = (e: PlannedExerciseDraft) =>
     library.get(e.exercise_id)?.mechanics === 'isolation';
-  // (1) Isolationsübungen vom Ende
+  const corePatterns: readonly MovementPattern[] = SESSION_FIT.corePatterns;
+  const isCore = (e: PlannedExerciseDraft) => {
+    const pattern = library.get(e.exercise_id)?.movement_pattern;
+    return pattern !== undefined && corePatterns.includes(pattern);
+  };
+  // (1) Isolationsübungen vom Ende (Körpergewicht-Vorlage: die letzte Rumpf-Übung bleibt)
   while (!fits() && current.length > SESSION_FIT.minExercises) {
-    const index = current.map(isIsolation).lastIndexOf(true);
+    const lastCore = options.protectLastCore === true && current.filter(isCore).length === 1;
+    const index = current.map((e) => isIsolation(e) && !(lastCore && isCore(e))).lastIndexOf(true);
     if (index < 0) break;
     current = normalize(current.filter((_, i) => i !== index));
   }
@@ -169,9 +181,14 @@ export function fitSessionToMinutes(
       }
     }
   }
-  // (3) Grundübungen vom Ende bis mindestens 3 Übungen
+  // (3) Übungen vom Ende bis mindestens 3 Übungen. Körpergewicht-Vorlage (N1): solange mehr als 4 Übungen da sind,
+  // fällt die letzte NICHT-Rumpf-Übung (3 Grundübungen + Rumpf bleiben); darunter wie bisher vom Ende, damit die
+  // drei ersten Grundübungen (Bein, Drücken bzw. Hüftbeugen, Rudern) bleiben.
   while (!fits() && current.length > SESSION_FIT.minExercises) {
-    current = normalize(current.slice(0, -1));
+    const keepCore =
+      options.protectLastCore === true && current.length > SESSION_FIT.minExercises + 1;
+    const index = keepCore ? current.map((e) => !isCore(e)).lastIndexOf(true) : -1;
+    current = normalize(current.filter((_, i) => i !== (index < 0 ? current.length - 1 : index)));
   }
   return { exercises: current, shortened: true, belowMinimum: !fits() };
 }
@@ -187,7 +204,9 @@ export function adaptTemplate(template: PlanTemplate, ctx: AdaptContext): AdaptR
     const fitted =
       ctx.minutesPerSession === undefined
         ? { exercises: adapted.exercises, shortened: false, belowMinimum: false }
-        : fitSessionToMinutes(adapted.exercises, ctx.minutesPerSession, ctx.library);
+        : fitSessionToMinutes(adapted.exercises, ctx.minutesPerSession, ctx.library, {
+            protectLastCore: isBodyweightTemplate(template),
+          });
     if (fitted.shortened) notes.add('minutes_shortened');
     if (fitted.belowMinimum) notes.add('minutes_below_minimum');
     if (fitted.exercises.length === 0) {

@@ -33,13 +33,13 @@ function withData(file: ContentFile, change: (data: Record<string, unknown>) => 
 }
 
 describe('Katalog aus den Repository-Dateien', () => {
-  it('Startbestand + Körpergewicht (K1): 79 Übungen, 24 Vorlagen, keine kaputten Dateien, nichts blockiert', () => {
-    expect(catalog.exercises).toHaveLength(79);
-    expect(catalog.templates).toHaveLength(24);
+  it('Startbestand + Körpergewicht (K1/K2): 80 Übungen, 24 + 18 Vorlagen, keine kaputten Dateien, nichts blockiert', () => {
+    expect(catalog.exercises).toHaveLength(80);
+    expect(catalog.templates).toHaveLength(42);
     expect(catalog.brokenFiles).toEqual([]);
     expect(catalog.blockingTotal).toBe(0);
     expect(countByStatus(catalog.exercises.map((e) => e.exercise.status))).toEqual({
-      draft: 79,
+      draft: 80,
       published: 0,
       archived: 0,
     });
@@ -154,23 +154,27 @@ describe('Filter und Suche', () => {
     expect(none.every((e) => e.exercise.equipment_ids.length === 0)).toBe(true);
   });
 
-  it('Vorlagen nach Ziel, Level, Tagen und Ort (Matrix 3 × 2 × 2 × 2)', () => {
+  it('Vorlagen nach Ziel, Level, Tagen und Ort (Matrix 3 × 2 × 2 × 2 + Körpergewicht 3 × 2 × 3)', () => {
     const one = filterTemplates(
       catalog.templates,
       parseFilters({ ziel: 'fat_loss', level: 'beginner', tage: '3', ort: 'gym' }),
     );
     expect(one.map((t) => t.template.id)).toEqual(['fettverlust-einsteiger-3t-studio']);
-    expect(filterTemplates(catalog.templates, parseFilters({ ort: 'home' }))).toHaveLength(12);
-    expect(filterTemplates(catalog.templates, parseFilters({ tage: '4' }))).toHaveLength(12);
+    // Zuhause: 12 mit Kurzhanteln/Bändern + 18 Körpergewicht; 4 Tage: 12 + 6 Körpergewicht; 2 Tage nur Körpergewicht.
+    expect(filterTemplates(catalog.templates, parseFilters({ ort: 'home' }))).toHaveLength(30);
+    expect(filterTemplates(catalog.templates, parseFilters({ tage: '4' }))).toHaveLength(18);
+    const two = filterTemplates(catalog.templates, parseFilters({ tage: '2' }));
+    expect(two).toHaveLength(6);
+    expect(two.every((t) => t.template.id.endsWith('-koerpergewicht'))).toBe(true);
   });
 
   it('Status, Prüfergebnis und KI-Kennzeichnung', () => {
     expect(filterTemplates(catalog.templates, parseFilters({ status: 'published' }))).toEqual([]);
     const warned = filterTemplates(catalog.templates, parseFilters({ fehler: 'gelb' }));
     const clean = filterTemplates(catalog.templates, parseFilters({ fehler: 'ohne' }));
-    expect(warned.length + clean.length).toBe(24);
+    expect(warned.length + clean.length).toBe(42);
     expect(filterTemplates(catalog.templates, parseFilters({ fehler: 'rot' }))).toEqual([]);
-    expect(filterExercises(catalog.exercises, parseFilters({ ki: 'offen' }))).toHaveLength(79);
+    expect(filterExercises(catalog.exercises, parseFilters({ ki: 'offen' }))).toHaveLength(80);
     expect(filterExercises(catalog.exercises, parseFilters({ ki: 'geprueft' }))).toEqual([]);
   });
 

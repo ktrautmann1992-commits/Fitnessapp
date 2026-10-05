@@ -77,9 +77,9 @@ describe('Beispielpläne', () => {
 });
 
 describe('Beispiel-Progression (Phase 4, Etappe A)', () => {
-  it('vier Personen mit je 8 Einheiten in der Zusammenfassung', () => {
-    expect(PROGRESSION_EXAMPLES).toHaveLength(4);
-    for (const example of PROGRESSION_EXAMPLES) {
+  it('vier Personen mit je 8 Einheiten plus Körpergewicht-Beispiel in der Zusammenfassung', () => {
+    expect(PROGRESSION_EXAMPLES).toHaveLength(5);
+    for (const example of PROGRESSION_EXAMPLES.slice(0, 4)) {
       expect(example.sessions).toHaveLength(8);
     }
     const markdown = renderProgressionExamples('2026-10-05').join('\n');
@@ -114,6 +114,21 @@ describe('Beispiel-Progression (Phase 4, Etappe A)', () => {
     expect(rows.slice(2, 5).every((r) => r.after.progress.weightKg === 22.5)).toBe(true);
     expect(rows[5]?.prescription).toMatchObject({ weightKg: 22.5, targetReps: 10 });
     expect(rows.every((r) => (r.prescription.weightKg ?? 0) <= 22.5)).toBe(true);
+  });
+
+  it('Emil (Körpergewicht): Puffer bis 17, Zusatzsatz, dann Hinweis mit Variante (W6)', () => {
+    const example = PROGRESSION_EXAMPLES[4] as ProgressionExample;
+    const rows = simulateProgression(example, '2026-10-05');
+    expect(rows.some((r) => r.prescription.targetReps === 17)).toBe(true);
+    expect(rows.some((r) => r.prescription.sets === 4)).toBe(true);
+    expect(rows.at(-1)?.after.hint).toBe('harder_variant');
+    const library = exampleLibrary(loadContentFiles(contentDir).files);
+    const markdown = renderProgressionExamples('2026-10-05', library).join('\n');
+    expect(markdown).toContain('Zeit für eine schwerere Variante: Kniebeuge mit Pause');
+    // Ohne Bibliothek nie der rohe Hinweis ohne Variante.
+    expect(renderProgressionExamples('2026-10-05').join('\n')).not.toContain(
+      'Zeit für eine schwerere Variante',
+    );
   });
 
   it('erscheint in renderPlanExamples', () => {

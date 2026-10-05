@@ -57,6 +57,11 @@ export const CONTENT_RULES = {
     severity: 'error',
     title: 'Körpergewicht-Vorlage (Zuhause ohne Geräte) enthält nur Übungen ohne Geräte',
   },
+  V13: {
+    severity: 'warning',
+    title:
+      'Jede Einheit passt gekürzt in minutes_min (Körpergewicht: mit Rumpf, Ziehen und Hüftbeugen)',
+  },
 } as const satisfies Record<string, { severity: IssueSeverity; title: string }>;
 
 export type ContentRuleId = keyof typeof CONTENT_RULES;

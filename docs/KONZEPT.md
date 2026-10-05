@@ -55,7 +55,7 @@ Verbindlich ist der freigegebene Ablauf in `docs/PLAN-PHASE-1.md` Abschnitt 3 (S
   Workflows öffnen Pull Requests, genehmigen aber nie. Herkunft und Prüfvermerk stehen in `meta`
   (`origin` = `claude_session` / `batch` / `manual`, `expert_reviewed` = fachlich geprüft ja/nein); KI-Entwürfe ohne
   fachliche Prüfung werden als „KI-Entwurf – fachlich prüfen“ gekennzeichnet.
-- **Prüfung `pnpm content:validate`** (Regeln Ü1–Ü6, V1–V12 aus `packages/core/src/content`, Grenzwerte in
+- **Prüfung `pnpm content:validate`** (Regeln Ü1–Ü6, V1–V13 aus `packages/core/src/content`, Grenzwerte in
   `constants.ts`): läuft in `ci` bei jedem Push. Schema-Fehler blockieren immer, andere rote Fehler nur bei
   freigegebenen Inhalten; gelbe Hinweise blockieren nie. Ändert sich ein freigegebener Inhalt, muss `version` steigen.
 - **Einspielen:** Nur Freigegebenes kommt per `seed_content()` (eine Transaktion, nur `service_role`) in die

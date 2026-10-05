@@ -7,6 +7,7 @@ import { join } from 'node:path';
 
 import {
   isBodyweightOrBandOnly,
+  isBodyweightTemplate,
   TEMPLATE_EXPERIENCE_LEVELS,
   TEMPLATE_GOAL_TYPES,
   validateContent,
@@ -18,13 +19,15 @@ import { loadContentFiles } from './validate';
 const contentDir = join(import.meta.dirname, '..', '..', '..', 'content');
 const { files, strayFiles } = loadContentFiles(contentDir);
 const result = validateContent(files);
+const bodyweight = result.templates.filter((t) => isBodyweightTemplate(t));
+const standard = result.templates.filter((t) => !isBodyweightTemplate(t));
 
 describe('Startbestand (content/)', () => {
-  it('ca. 80 Übungen (Startbestand + Körpergewicht K1) und 24 Plan-Vorlagen, alle mit gültigem Schema', () => {
+  it('ca. 80 Übungen (Startbestand + Körpergewicht K1/K2) und 24 + 18 Plan-Vorlagen, alle mit gültigem Schema', () => {
     expect(strayFiles).toEqual([]);
     expect(result.exercises.length).toBeGreaterThanOrEqual(45);
     expect(result.exercises.length).toBeLessThanOrEqual(90);
-    expect(result.templates).toHaveLength(24);
+    expect(result.templates).toHaveLength(42);
     expect(result.exercises.length + result.templates.length).toBe(files.length);
   });
 
@@ -34,7 +37,7 @@ describe('Startbestand (content/)', () => {
   });
 
   it('Matrix vollständig: 3 Ziele × 2 Level × 3/4 Tage × Studio/Zuhause, 45–60 Minuten', () => {
-    const keys = result.templates.map(
+    const keys = standard.map(
       (t) => `${t.goal_type}/${t.experience_level}/${t.sessions_per_week}/${t.location}`,
     );
     const expected = TEMPLATE_GOAL_TYPES.flatMap((goal) =>
@@ -43,13 +46,29 @@ describe('Startbestand (content/)', () => {
       ),
     );
     expect([...keys].sort()).toEqual([...expected].sort());
-    for (const template of result.templates) {
+    for (const template of standard) {
       expect([template.minutes_min, template.minutes_max]).toEqual([45, 60]);
     }
   });
 
+  it('Körpergewicht (K2): 3 Ziele × 2 Level × 2/3/4 Tage, Zuhause ohne Geräte, 30–45 Minuten', () => {
+    const keys = bodyweight.map(
+      (t) => `${t.goal_type}/${t.experience_level}/${t.sessions_per_week}`,
+    );
+    const expected = TEMPLATE_GOAL_TYPES.flatMap((goal) =>
+      TEMPLATE_EXPERIENCE_LEVELS.flatMap((level) => [2, 3, 4].map((d) => `${goal}/${level}/${d}`)),
+    );
+    expect([...keys].sort()).toEqual([...expected].sort());
+    for (const template of bodyweight) {
+      expect(template.id).toMatch(/-koerpergewicht$/);
+      // Ausnahme A9: Muskelaufbau · Fortgeschritten · 2 Tage bis 60 Minuten.
+      const max = template.id === 'muskelaufbau-fortgeschritten-2t-koerpergewicht' ? 60 : 45;
+      expect([template.minutes_min, template.minutes_max]).toEqual([30, max]);
+    }
+  });
+
   it('Zuhause: Pflicht Kurzhanteln + Bänder, optional Flachbank + Klimmzugstange', () => {
-    for (const template of result.templates.filter((t) => t.location === 'home')) {
+    for (const template of standard.filter((t) => t.location === 'home')) {
       expect(template.required_equipment_ids).toEqual(['dumbbells', 'resistance_bands']);
       expect(template.optional_equipment_ids).toEqual(['flat_bench', 'pull_up_bar']);
     }

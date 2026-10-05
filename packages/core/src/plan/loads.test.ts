@@ -233,12 +233,72 @@ describe('nextLoad (doppelte Progression)', () => {
     ).toEqual({ kind: 'no_heavier_weight' });
   });
 
-  it('Körpergewicht → schwerere Variante, Band → stärkeres Band', () => {
+  it('Körpergewicht (Engine 3): Puffer bis reps_max + 2 → +1 Satz → erst dann schwerere Variante', () => {
+    const bw: ProgressionState = { ...weight, loadType: 'bodyweight', weightKg: null };
+    const none = { incrementKind: 'none' } as const;
+    // Unter reps_max: eine geschaffte Einheit reicht für +1 Wdh.
+    expect(nextLoad({ ...bw, targetReps: 10 }, [done(10)], none)).toEqual({
+      kind: 'add_rep',
+      targetReps: 11,
+    });
+    // Ab reps_max: zwei in Folge nötig.
+    expect(nextLoad(bw, [done(12)], none)).toEqual({ kind: 'keep' });
+    expect(nextLoad(bw, [done(12), done(12)], none)).toEqual({ kind: 'add_rep', targetReps: 13 });
+    expect(nextLoad({ ...bw, targetReps: 13 }, [done(13), done(13)], none)).toEqual({
+      kind: 'add_rep',
+      targetReps: 14,
+    });
+    // Puffer-Ende (reps_max + LOAD_PROGRESSION.extraRepsBuffer) → Zusatzsatz.
+    expect(nextLoad({ ...bw, targetReps: 14 }, [done(14), done(14)], none)).toEqual({
+      kind: 'add_set',
+      sets: 4,
+    });
+    // Mit Zusatzsatz geschafft → Hinweis schwerere Variante.
+    expect(nextLoad({ ...bw, targetReps: 14, sets: 4 }, [done(14, 4), done(14, 4)], none)).toEqual({
+      kind: 'harder_variant',
+    });
+  });
+
+  it('Körpergewicht: Puffer höchstens 30 Wdh., Zusatzsatz nur im Rahmen von V9 und höchstens 6 Sätze', () => {
+    const bw: ProgressionState = {
+      ...weight,
+      loadType: 'bodyweight',
+      weightKg: null,
+      repsMin: 20,
+      repsMax: 29,
+      targetReps: 29,
+    };
+    const none = { incrementKind: 'none' } as const;
+    expect(nextLoad(bw, [done(29), done(29)], none)).toEqual({ kind: 'add_rep', targetReps: 30 });
+    expect(nextLoad({ ...bw, targetReps: 30 }, [done(30), done(30)], none)).toEqual({
+      kind: 'add_set',
+      sets: 4,
+    });
     expect(
-      nextLoad({ ...weight, loadType: 'bodyweight', weightKg: null }, [done(12), done(12)], {
-        incrementKind: 'none',
-      }),
+      nextLoad({ ...bw, targetReps: 30 }, [done(30), done(30)], { ...none, allowExtraSet: false }),
     ).toEqual({ kind: 'harder_variant' });
+    const six = { ...bw, targetReps: 30, templateSets: 6, sets: 6 };
+    expect(nextLoad(six, [done(30, 6), done(30, 6)], none)).toEqual({ kind: 'harder_variant' });
+  });
+
+  it('Körpergewicht: nur kurze Fassungen (W7) → +Wdh. bis zum Puffer, kein Zusatzsatz, keine Variante', () => {
+    const bw: ProgressionState = { ...weight, loadType: 'bodyweight', weightKg: null };
+    const short = (reps: number): PerformedSession => ({ ...done(reps, 2), plannedSets: 2 });
+    const none = { incrementKind: 'none' } as const;
+    expect(nextLoad(bw, [short(12), short(12)], none)).toEqual({ kind: 'add_rep', targetReps: 13 });
+    expect(nextLoad({ ...bw, targetReps: 14 }, [short(14), short(14)], none)).toEqual({
+      kind: 'keep',
+    });
+  });
+
+  it('Körpergewicht in der Erholungswoche: kein Schritt', () => {
+    const bw: ProgressionState = { ...weight, loadType: 'bodyweight', weightKg: null };
+    expect(nextLoad(bw, [done(12), done(12)], { incrementKind: 'none', isDeload: true })).toEqual({
+      kind: 'keep',
+    });
+  });
+
+  it('Band → stärkeres Band', () => {
     expect(
       nextLoad({ ...weight, loadType: 'band', weightKg: null }, [done(12), done(12)], {
         incrementKind: 'none',

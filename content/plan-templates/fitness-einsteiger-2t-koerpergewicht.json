@@ -1,0 +1,190 @@
+{
+  "id": "fitness-einsteiger-2t-koerpergewicht",
+  "version": 1,
+  "status": "draft",
+  "title_de": "Allgemeine Fitness · Einsteiger · 2 Tage · Körpergewicht",
+  "description_de": "Pro Woche zwei Ganzkörper-Einheiten zu Hause ohne Geräte – nur mit dem eigenen Körpergewicht und Alltagsdingen wie Wand, Türrahmen, Stuhl oder Handtuch, je 30–45 Minuten. Ziel allgemeine Fitness: alle großen Bewegungsmuster in moderatem Umfang, damit Kraft und Belastbarkeit im Alltag zunehmen. Für Einsteiger: einfache Übungen mit mindestens zwei Wiederholungen Reserve, ohne Sprünge und ohne Übungen über Kopf. Zwischen zwei Einheiten möglichst einen Ruhetag einplanen. Ehrlich gesagt: Ohne Geräte ist der Trainingsreiz begrenzt, vor allem für Rücken und Beinrückseite. Der Plan hält fit und baut Kraft auf; für maximalen Muskelaufbau sind Geräte besser – schon ein Band oder eine Klimmzugstange hilft.",
+  "goal_type": "general_fitness",
+  "experience_level": "beginner",
+  "sessions_per_week": 2,
+  "minutes_min": 30,
+  "minutes_max": 45,
+  "location": "home",
+  "required_equipment_ids": [],
+  "optional_equipment_ids": [],
+  "sex": null,
+  "sessions": [
+    {
+      "day_index": 1,
+      "name_de": "Ganzkörper A",
+      "focus": "full_body",
+      "warmup_de": "5 Minuten locker aufwärmen (z. B. Gehen auf der Stelle oder Step-Jacks), dann Hüft-, Schulter- und Armkreisen und eine leichte Runde der ersten Übung.",
+      "cooldown_de": "3–5 Minuten locker ausklingen lassen und ruhig atmen; optional die trainierten Muskeln leicht dehnen.",
+      "exercises": [
+        {
+          "order_no": 1,
+          "exercise_id": "kniebeuge-koerpergewicht",
+          "sets": 3,
+          "reps_min": 10,
+          "reps_max": 15,
+          "duration_s": null,
+          "rest_s": 90,
+          "rpe_target": 6.5,
+          "superset_group": null,
+          "notes_de": "Gelingen alle Sätze am oberen Ende sauber, steigen erst die Wiederholungen, dann kommt ein Satz dazu; gibt es eine passende schwerere Variante, schlägt die App sie vor."
+        },
+        {
+          "order_no": 2,
+          "exercise_id": "good-morning-koerpergewicht",
+          "sets": 2,
+          "reps_min": 10,
+          "reps_max": 15,
+          "duration_s": null,
+          "rest_s": 90,
+          "rpe_target": 6,
+          "superset_group": null,
+          "notes_de": null
+        },
+        {
+          "order_no": 3,
+          "exercise_id": "liegestuetz-erhoeht",
+          "sets": 3,
+          "reps_min": 8,
+          "reps_max": 12,
+          "duration_s": null,
+          "rest_s": 90,
+          "rpe_target": 6.5,
+          "superset_group": null,
+          "notes_de": "Gelingen alle Sätze am oberen Ende sauber, steigen erst die Wiederholungen, dann kommt ein Satz dazu; gibt es eine passende schwerere Variante, schlägt die App sie vor."
+        },
+        {
+          "order_no": 4,
+          "exercise_id": "tuerrahmen-rudern",
+          "sets": 3,
+          "reps_min": 8,
+          "reps_max": 12,
+          "duration_s": null,
+          "rest_s": 90,
+          "rpe_target": 6.5,
+          "superset_group": null,
+          "notes_de": "Je weiter die Füße vor dem Türrahmen stehen, desto schwerer. Wiederholungen je Seite."
+        },
+        {
+          "order_no": 5,
+          "exercise_id": "y-t-w-vorgebeugt",
+          "sets": 2,
+          "reps_min": 8,
+          "reps_max": 12,
+          "duration_s": null,
+          "rest_s": 60,
+          "rpe_target": 6,
+          "superset_group": null,
+          "notes_de": null
+        },
+        {
+          "order_no": 6,
+          "exercise_id": "unterarmstuetz",
+          "sets": 2,
+          "reps_min": null,
+          "reps_max": null,
+          "duration_s": 20,
+          "rest_s": 45,
+          "rpe_target": 6,
+          "superset_group": null,
+          "notes_de": null
+        }
+      ]
+    },
+    {
+      "day_index": 2,
+      "name_de": "Ganzkörper B",
+      "focus": "full_body",
+      "warmup_de": "5 Minuten locker aufwärmen (z. B. Gehen auf der Stelle oder Step-Jacks), dann Hüft-, Schulter- und Armkreisen und eine leichte Runde der ersten Übung.",
+      "cooldown_de": "3–5 Minuten locker ausklingen lassen und ruhig atmen; optional die trainierten Muskeln leicht dehnen.",
+      "exercises": [
+        {
+          "order_no": 1,
+          "exercise_id": "kniebeuge-stuhl",
+          "sets": 3,
+          "reps_min": 10,
+          "reps_max": 15,
+          "duration_s": null,
+          "rest_s": 90,
+          "rpe_target": 6.5,
+          "superset_group": null,
+          "notes_de": null
+        },
+        {
+          "order_no": 2,
+          "exercise_id": "liegestuetz-erhoeht",
+          "sets": 3,
+          "reps_min": 8,
+          "reps_max": 12,
+          "duration_s": null,
+          "rest_s": 90,
+          "rpe_target": 6.5,
+          "superset_group": null,
+          "notes_de": "Gelingen alle Sätze am oberen Ende sauber, steigen erst die Wiederholungen, dann kommt ein Satz dazu; gibt es eine passende schwerere Variante, schlägt die App sie vor."
+        },
+        {
+          "order_no": 3,
+          "exercise_id": "handtuch-rudern-isometrisch",
+          "sets": 3,
+          "reps_min": null,
+          "reps_max": null,
+          "duration_s": 20,
+          "rest_s": 90,
+          "rpe_target": 6.5,
+          "superset_group": null,
+          "notes_de": "Spannung selbst dosieren: anstrengend, aber gut haltbar."
+        },
+        {
+          "order_no": 4,
+          "exercise_id": "good-morning-koerpergewicht",
+          "sets": 2,
+          "reps_min": 12,
+          "reps_max": 15,
+          "duration_s": null,
+          "rest_s": 90,
+          "rpe_target": 6,
+          "superset_group": null,
+          "notes_de": null
+        },
+        {
+          "order_no": 5,
+          "exercise_id": "wadenheben-koerpergewicht",
+          "sets": 2,
+          "reps_min": 12,
+          "reps_max": 15,
+          "duration_s": null,
+          "rest_s": 60,
+          "rpe_target": 6,
+          "superset_group": null,
+          "notes_de": null
+        },
+        {
+          "order_no": 6,
+          "exercise_id": "dead-bug",
+          "sets": 2,
+          "reps_min": 8,
+          "reps_max": 12,
+          "duration_s": null,
+          "rest_s": 45,
+          "rpe_target": 6,
+          "superset_group": null,
+          "notes_de": null
+        }
+      ]
+    }
+  ],
+  "meta": {
+    "origin": "claude_session",
+    "model": "claude-opus-5-5",
+    "batch_id": null,
+    "created_on": "2026-10-05",
+    "expert_reviewed": false,
+    "reviewed_by": null,
+    "reviewed_at": null,
+    "review_note": null
+  }
+}

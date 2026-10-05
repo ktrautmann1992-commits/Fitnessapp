@@ -7,6 +7,7 @@ import {
   generateTrainingPlan,
   HEALTH_FLAGS,
   type HealthFlag,
+  isBodyweightTemplateId,
   isoDateInTimeZone,
   loadWeeksBeforeDeload,
   nextPlanBlock,
@@ -311,6 +312,8 @@ export function nextBlockFromRows(
     },
     loadWeeksBefore,
     previousStartGroup: startGroupOf(active, rows.profile.birth_date),
+    // Körpergewicht-Vorlage: beim Kürzen bleibt die letzte Rumpf-Übung (wie beim Erstellen, Engine-Version 3).
+    protectLastCore: isBodyweightTemplateId(library, active.plan.template_id),
   });
   const upcoming = dropPastSessions(sessions, today);
   return upcoming.length > 0 ? toAppendBlockPayload(upcoming) : null;

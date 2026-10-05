@@ -120,26 +120,32 @@ describe('Tage pro Woche 1–7', () => {
 });
 
 describe('Geräte', () => {
-  it('Zuhause ohne Geräte: Hinweise Tausch, Zug-Übung ohne Geräte (K1); alles ohne Geräte machbar', () => {
+  it('Zuhause ohne Geräte: Körpergewicht-Vorlage (K2+K3), nichts getauscht, Zug-Übung ohne Geräte', () => {
     const p = plan({
       trainingLocation: 'home',
       homeEquipment: [],
       sessionsPerWeek: 2,
+      minutesPerSession: 40,
       preferredDays: [],
     });
-    expect(p.notes).toEqual(expect.arrayContaining(['days_rotated', 'exercises_substituted']));
+    expect(p.template_id).toBe('muskelaufbau-einsteiger-2t-koerpergewicht');
+    expect(p.template_title_de).toContain('Körpergewicht');
+    expect(p.notes).not.toContain('exercises_substituted');
     expect(p.notes).not.toContain('no_pull_exercise');
-    expect(p.match_quality).toBe('close');
+    expect(p.notes).not.toContain('location_mismatch');
+    expect(p.match_quality).toBe('exact');
+    expect(ids(p)).toContain('tuerrahmen-rudern');
     for (const id of ids(p)) {
       expect(library.exercises.get(id)?.equipment_ids).toEqual([]);
     }
   });
 
-  it('Bibliothek ohne Zug-Übungen ohne Geräte: Hinweise Entfernen und no_pull_exercise', () => {
+  it('Bibliothek ohne Körpergewicht-Vorlagen und ohne Zug-Übungen ohne Geräte: Rückfall mit Hinweisen', () => {
     const pull = ['tuerrahmen-rudern', 'handtuch-rudern-isometrisch', 'tisch-rudern'];
     const reduced = {
       ...library,
       exercises: new Map([...library.exercises].filter(([id]) => !pull.includes(id))),
+      templates: library.templates.filter((t) => !t.id.endsWith('-koerpergewicht')),
     };
     const result = generateTrainingPlan(
       person({
@@ -154,8 +160,9 @@ describe('Geräte', () => {
     expect(result.ok).toBe(true);
     if (result.ok) {
       expect(result.plan.notes).toEqual(
-        expect.arrayContaining(['exercises_removed', 'no_pull_exercise']),
+        expect.arrayContaining(['exercises_removed', 'no_pull_exercise', 'location_mismatch']),
       );
+      expect(result.plan.match_quality).toBe('fallback');
     }
   });
 

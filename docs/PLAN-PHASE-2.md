@@ -280,26 +280,27 @@ Stellen**: in `ci` bei jedem Push, in jedem Workflow **vor** dem Öffnen eines P
 
 **Rot** = Fehler, blockiert Freigabe und Einspielen. **Gelb** = Hinweis, wird angezeigt, blockiert nichts.
 
-| Nr. | Regel                                                                                                                                                    | Stufe                    |
-| --- | -------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------ |
-| Ü1  | Schema korrekt (Zod, inkl. Mindest-/Höchstwerte und Textlängen)                                                                                          | rot (auch bei Entwürfen) |
-| Ü2  | Alle `equipment_ids` existieren im Katalog                                                                                                               | rot                      |
-| Ü3  | Alternative existiert, ist nicht die Übung selbst, kein Doppel                                                                                           | rot                      |
-| Ü4  | Alternative hat **dasselbe Bewegungsmuster**                                                                                                             | rot                      |
-| Ü5  | Jedes Bewegungsmuster hat eine Variante **ohne Geräte oder nur mit Band**                                                                                | gelb                     |
-| Ü6  | **Textregeln:** keine Heilversprechen oder medizinischen Aussagen („heilt“, „Therapie“, „Diagnose“, „garantiert“, „schmerzfrei“, „Reha“ …), keine Marken | rot                      |
-| V1  | Anzahl Einheiten = Tage pro Woche, `day_index` eindeutig, jede Übung existiert                                                                           | rot                      |
-| V2  | Zuhause-Vorlage nutzt nur ihre Pflicht-/Optional-Geräte (bzw. Alternativen dazu)                                                                         | rot                      |
-| V3  | Freigegebene Vorlage enthält nur freigegebene Übungen                                                                                                    | rot                      |
-| V4  | Wiederholungen 3–30, Sätze 1–6 pro Übung, RPE 5–9 (Einsteiger höchstens 8); **keine Maximaltests** (RPE 10, 1RM)                                         | rot                      |
-| V5  | Pausen: Grundübungen 90–240 s, Isolationsübungen 45–120 s                                                                                                | gelb                     |
-| V6  | Geschätzte Dauer je Einheit (Aufwärmen + Sätze + Pausen) in der Minuten-Spanne ±15 %                                                                     | gelb                     |
-| V7  | Drücken : Ziehen pro Woche etwa 1 : 1 (mehr als ±30 % Abweichung)                                                                                        | gelb                     |
-| V8  | Höchstens 8 Übungen pro Einheit                                                                                                                          | rot                      |
-| V9  | **Wochensätze pro Muskelgruppe** (siehe unten): Obergrenze überschritten                                                                                 | rot                      |
-| V10 | Wochensätze unter der Untergrenze – **große** Muskelgruppen (Brust, Latissimus, oberer Rücken, Quadrizeps, Beinbeuger, Gesäß)                            | rot                      |
-| V11 | Wochensätze unter der Untergrenze – **kleine** Muskelgruppen (z. B. Bizeps, Trizeps, Waden, seitliche Schulter)                                          | gelb                     |
-| V12 | Körpergewicht-Vorlage (Zuhause, keine Pflicht- und Optional-Geräte) enthält nur Übungen ohne Geräte (ergänzt mit Etappe K1, docs/PLAN-KOERPERGEWICHT.md) | rot                      |
+| Nr. | Regel                                                                                                                                                                        | Stufe                    |
+| --- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------ |
+| Ü1  | Schema korrekt (Zod, inkl. Mindest-/Höchstwerte und Textlängen)                                                                                                              | rot (auch bei Entwürfen) |
+| Ü2  | Alle `equipment_ids` existieren im Katalog                                                                                                                                   | rot                      |
+| Ü3  | Alternative existiert, ist nicht die Übung selbst, kein Doppel                                                                                                               | rot                      |
+| Ü4  | Alternative hat **dasselbe Bewegungsmuster**                                                                                                                                 | rot                      |
+| Ü5  | Jedes Bewegungsmuster hat eine Variante **ohne Geräte oder nur mit Band**                                                                                                    | gelb                     |
+| Ü6  | **Textregeln:** keine Heilversprechen oder medizinischen Aussagen („heilt“, „Therapie“, „Diagnose“, „garantiert“, „schmerzfrei“, „Reha“ …), keine Marken                     | rot                      |
+| V1  | Anzahl Einheiten = Tage pro Woche, `day_index` eindeutig, jede Übung existiert                                                                                               | rot                      |
+| V2  | Zuhause-Vorlage nutzt nur ihre Pflicht-/Optional-Geräte (bzw. Alternativen dazu)                                                                                             | rot                      |
+| V3  | Freigegebene Vorlage enthält nur freigegebene Übungen                                                                                                                        | rot                      |
+| V4  | Wiederholungen 3–30, Sätze 1–6 pro Übung, RPE 5–9 (Einsteiger höchstens 8); **keine Maximaltests** (RPE 10, 1RM)                                                             | rot                      |
+| V5  | Pausen: Grundübungen 90–240 s, Isolationsübungen 45–120 s                                                                                                                    | gelb                     |
+| V6  | Geschätzte Dauer je Einheit (Aufwärmen + Sätze + Pausen) in der Minuten-Spanne ±15 %                                                                                         | gelb                     |
+| V7  | Drücken : Ziehen pro Woche etwa 1 : 1 (mehr als ±30 % Abweichung)                                                                                                            | gelb                     |
+| V8  | Höchstens 8 Übungen pro Einheit                                                                                                                                              | rot                      |
+| V9  | **Wochensätze pro Muskelgruppe** (siehe unten): Obergrenze überschritten                                                                                                     | rot                      |
+| V10 | Wochensätze unter der Untergrenze – **große** Muskelgruppen (Brust, Latissimus, oberer Rücken, Quadrizeps, Beinbeuger, Gesäß)                                                | rot                      |
+| V11 | Wochensätze unter der Untergrenze – **kleine** Muskelgruppen (z. B. Bizeps, Trizeps, Waden, seitliche Schulter)                                                              | gelb                     |
+| V12 | Körpergewicht-Vorlage (Zuhause, keine Pflicht- und Optional-Geräte) enthält nur Übungen ohne Geräte (ergänzt mit Etappe K1, docs/PLAN-KOERPERGEWICHT.md)                     | rot                      |
+| V13 | Jede Einheit passt gekürzt (wie die Plan-Engine) in `minutes_min`; Körpergewicht-Vorlagen behalten dabei Rumpf, Ziehen und Hüftbeugen (ergänzt mit Etappe K2+K3, Wächter N6) | gelb                     |
 
 **Wochensätze zählen:** Ein Satz zählt für jeden **Hauptmuskel 1,0** und für jeden **Nebenmuskel 0,5**.
 **Startwerte** (Sätze pro Muskelgruppe und Woche, fachlich zu prüfen):

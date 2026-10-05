@@ -518,6 +518,17 @@ context)` (Vorgabe für heute: Gewicht auf Stufen des Orts **abgerundet**, Wdh.-
 - **Ohne Zustand und Vorgabe** (nach Widerruf, S1): neu kalibrieren aus den Ist-Werten (5.2), Vergleich mit
   `CONSERVATIVE_PLAN_RULES.rpeMax`.
 - Hinweise statt Automatik: `harder_variant`, `stronger_band`, `no_heavier_weight` → feste deutsche Sätze.
+- **Körpergewicht (ab Engine-Version 3, `docs/PLAN-KOERPERGEWICHT.md` §5.5, A10):** wie der Puffer beim großen
+  Gewichtssprung – Wdh. bis `reps_max + 2` (≤ 30, `LOAD_PROGRESSION.extraRepsBuffer`), dann +1 Satz
+  (`LOAD_PROGRESSION.extraSets`, ≤ 6, V9), erst dann `harder_variant`; nur kurze Fassungen (W7) bringen nur +Wdh. bis
+  zum Puffer. Den Hinweis zeigt die App über `progressHintForDisplay(exerciseId, result, { library, profile, rules })`
+  (`log/harder-variant.ts`) mit dem **Namen der Variante**: `findHarderVariant()` mit den HEUTE wirksamen
+  Sicherheitsregeln und dem Geräte-Profil des Orts der Einheit – gesperrte (z. B. ab 65 Tisch-Rudern) oder nicht
+  machbare Varianten werden nie vorgeschlagen; Einsteiger und vorsichtige Pläne höchstens eine Schwierigkeitsstufe
+  schwerer (`HARDER_VARIANT_RULES`); gibt es keine, entfällt der Hinweis. Kein automatischer Tausch: Wer die Variante
+  macht, trägt sie als Alternative ein (eigener Verlauf, R2). **Pflichtpunkt der UI-Etappe:** Der rohe Hinweis
+  `harder_variant` wird in der App NIE ohne `progressHintForDisplay()` angezeigt (Test in der UI-Etappe: Hinweis mit
+  Variantenname bzw. kein Hinweis bei gesperrter/nicht machbarer Variante).
 - Gratis-Grenze: **nie automatisch senken**. Trainiert jemand selbst mit anderem Gewicht (alle Arbeitssätze
   gleich), wird das der neue Ausgangspunkt ohne zusätzlichen Sprung (Frage 5) – **leichter immer, schwerer nur
   begrenzt (W5):** Liegt das selbst gewählte Gewicht mehr als 10 % (`LOAD_PROGRESSION.maxIncreaseFraction`) über dem
@@ -582,7 +593,8 @@ letzten Übung der Gruppe.
 - **Progression:** erste Einheit ohne Verlauf; „eine geschafft“ → +1 Wdh.; „zweimal ab `reps_max`“ → Gewicht;
   Kurzhantel 4 → 6 kg (> 10 %) → Puffer-Wdh. → Zusatzsatz → Sprung mit `firstSessionRpeTarget` −1; keine höhere
   Stufe → `no_heavier_weight`; Langhantel über `barbellLoadSteps()`; Halteübung 20 s/50 s/120 s;
-  Körpergewicht/Band → Hinweis; Erholungswoche ohne Schritt; **zwei Erholungs-Einheiten in Folge** (Zustand
+  Körpergewicht → Puffer, Zusatzsatz, dann Hinweis mit Variante (Engine 3; UI zeigt ihn nur über
+  `progressHintForDisplay()`); Band → Hinweis; Erholungswoche ohne Schritt; **zwei Erholungs-Einheiten in Folge** (Zustand
   unverändert, W4); **Studio → Zuhause → Studio** (Orts-Rundung verfälscht den Zustand nicht, W4); **Mo 20 / Sa 90**
   (2 bzw. 4 Sätze im Wechsel) **erweitert (W7):** zweimal Mo 20 hintereinander → nur +Wdh., kein Gewichtssprung;
   Mo 20 + Sa 90 → Sprung möglich; Wechsel auf neuen Plan mit anderem Wdh.-Bereich (Klemmen); Einträge in falscher

@@ -19,12 +19,13 @@ function bundle(args: string[], env: Record<string, string>): number {
 }
 
 describe('Inhalts-Bündel der App (scripts/bundle-content.mjs)', () => {
+  // 80 Übungen + 42 Vorlagen (Körpergewicht K1/K2).
   it('Testmodus-Build: alle Inhalte; mit Supabase-Werten und --empty-if-supabase: leer (keine Entwürfe im Build)', () => {
-    expect(bundle(['--empty-if-supabase'], {})).toBe(103);
+    expect(bundle(['--empty-if-supabase'], {})).toBe(122);
     expect(
       bundle(['--empty-if-supabase'], { EXPO_PUBLIC_SUPABASE_URL: 'https://x.supabase.co' }),
     ).toBe(0);
     // Website (ohne Schalter) bündelt immer alles – der Redaktionsbereich braucht die Entwürfe.
-    expect(bundle([], { EXPO_PUBLIC_SUPABASE_URL: 'https://x.supabase.co' })).toBe(103);
+    expect(bundle([], { EXPO_PUBLIC_SUPABASE_URL: 'https://x.supabase.co' })).toBe(122);
   });
 });

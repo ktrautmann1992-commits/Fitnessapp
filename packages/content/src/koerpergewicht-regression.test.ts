@@ -1,13 +1,17 @@
 /**
- * Regressionstest Etappe K1 (docs/PLAN-KOERPERGEWICHT.md, Wächter A11): Die neuen Körpergewicht-Übungen ändern den
- * Übungs-Tausch für ALLE. Wir vergleichen die 24 bestehenden Vorlagen × typische Profile mit der Bibliothek von
+ * Regressionstest Etappen K1–K3 (docs/PLAN-KOERPERGEWICHT.md, Wächter A11): Die neuen Körpergewicht-Übungen ändern
+ * den Übungs-Tausch für ALLE. Wir vergleichen die 24 bestehenden Vorlagen × typische Profile mit der Bibliothek von
  * vorher (= ohne die neuen IDs und ohne die neu eingetragenen Alternativen) und weisen jede Änderung bewusst aus.
+ * Die 18 Körpergewicht-Vorlagen (K2) sind in beiden Vergleichs-Bibliotheken ausgeblendet – sonst bekämen Profile
+ * ohne Geräte gar keine der 24 Vorlagen mehr; ihr Matching prüfen bodyweight.test.ts und match.test.ts (core).
+ * Beide Seiten laufen mit derselben Engine (Version 3), Unterschiede kommen also nur aus den Inhalten.
  */
 import { join } from 'node:path';
 
 import {
   type ContentFile,
   generateTrainingPlan,
+  isBodyweightTemplate,
   type PlanInputsInput,
   type PlanLibrary,
   selectPlanContent,
@@ -23,8 +27,8 @@ const contentDir = join(import.meta.dirname, '..', '..', '..', 'content');
 const { files } = loadContentFiles(contentDir);
 const TODAY = '2026-10-05';
 
-/** Neue Übungen aus Etappe K1. */
-const K1_EXERCISE_IDS = [
+/** Neue Übungen aus Etappe K1 (27) und K2 (Handtuch-Latziehen). */
+const NEW_EXERCISE_IDS = [
   'archer-liegestuetz',
   'beinbeuger-handtuch',
   'bird-dog',
@@ -32,6 +36,7 @@ const K1_EXERCISE_IDS = [
   'dips-stuhl',
   'glute-bridge-einbeinig',
   'good-morning-koerpergewicht',
+  'handtuch-latziehen',
   'handtuch-rudern-isometrisch',
   'hip-thrust-sofa',
   'hueftstrecken-vierfuessler',
@@ -53,7 +58,7 @@ const K1_EXERCISE_IDS = [
   'wadenheben-einbeinig',
   'y-t-w-vorgebeugt',
 ] as const;
-const NEW = new Set<string>(K1_EXERCISE_IDS);
+const NEW = new Set<string>(NEW_EXERCISE_IDS);
 
 /** Inhaltsstand vor K1: neue Übungen weg, Alternativen auf neue Übungen weg. */
 function filesBeforeK1(all: readonly ContentFile[]): ContentFile[] {
@@ -76,11 +81,18 @@ function filesBeforeK1(all: readonly ContentFile[]): ContentFile[] {
     });
 }
 
-const library = (all: readonly ContentFile[]): PlanLibrary =>
-  selectPlanContent(validateContent(all), { allowDrafts: true });
+/** Bibliothek wie in der App (Testmodus), auf Wunsch ohne Körpergewicht-Vorlagen. */
+const library = (all: readonly ContentFile[], withBodyweight = false): PlanLibrary => {
+  const lib = selectPlanContent(validateContent(all), { allowDrafts: true });
+  return withBodyweight
+    ? lib
+    : { ...lib, templates: lib.templates.filter((t) => !isBodyweightTemplate(t)) };
+};
 
 const before = library(filesBeforeK1(files));
 const after = library(files);
+/** Voller Inhaltsstand inkl. Körpergewicht-Vorlagen (so plant die App). */
+const full = library(files, true);
 
 type Profile = Pick<PlanInputsInput, 'sex' | 'homeEquipment' | 'healthScreening' | 'birthDate'> & {
   readonly kind: 'strength_gym' | 'strength_home';
@@ -181,7 +193,13 @@ function planExercises(lib: PlanLibrary, inputs: PlanInputsInput): string[] {
   );
 }
 
-function inputsFor(profile: Profile, goal: string, level: string, days: number): PlanInputsInput {
+function inputsFor(
+  profile: Profile,
+  goal: string,
+  level: string,
+  days: number,
+  minutes = 60,
+): PlanInputsInput {
   const { kind, ...rest } = profile;
   return {
     ...rest,
@@ -190,12 +208,15 @@ function inputsFor(profile: Profile, goal: string, level: string, days: number):
     experienceLevel: level as PlanInputsInput['experienceLevel'],
     schedule: {
       mode: 'flex',
-      slots: Array.from({ length: days }, () => ({ kind, minutes: 60 })),
+      slots: Array.from({ length: days }, () => ({ kind, minutes })),
     },
   };
 }
 
-/** Alle Kombinationen, die die 24 Vorlagen abdecken (Ziel × Level × 3/4 Tage × Profil). */
+/** Budgets: 60 min (volle Vorlage) und 20/30/45 min (Zeitschnitt, Wächter W1). */
+const MINUTES = [20, 30, 45, 60] as const;
+
+/** Alle Kombinationen, die die 24 Vorlagen abdecken (Ziel × Level × 3/4 Tage × Profil × Budget). */
 function compare() {
   const changed: Record<string, { before: string[]; after: string[] }> = {};
   let count = 0;
@@ -203,12 +224,14 @@ function compare() {
     for (const goal of TEMPLATE_GOAL_TYPES) {
       for (const level of TEMPLATE_EXPERIENCE_LEVELS) {
         for (const days of [3, 4]) {
-          const inputs = inputsFor(profile, goal, level, days);
-          const a = planExercises(before, inputs);
-          const b = planExercises(after, inputs);
-          count += 1;
-          if (JSON.stringify(a) !== JSON.stringify(b)) {
-            changed[`${name}/${goal}/${level}/${days}t`] = { before: a, after: b };
+          for (const minutes of MINUTES) {
+            const inputs = inputsFor(profile, goal, level, days, minutes);
+            const a = planExercises(before, inputs);
+            const b = planExercises(after, inputs);
+            count += 1;
+            if (JSON.stringify(a) !== JSON.stringify(b)) {
+              changed[`${name}/${goal}/${level}/${days}t/${minutes}min`] = { before: a, after: b };
+            }
           }
         }
       }
@@ -217,12 +240,14 @@ function compare() {
   return { changed, count };
 }
 
-describe('Regression K1: bestehende Vorlagen × typische Profile', () => {
+describe('Regression K1–K3: bestehende Vorlagen × typische Profile', () => {
   const { changed, count } = compare();
 
   it('vergleicht alle 24 Vorlagen-Kombinationen je Profil', () => {
-    expect(count).toBe(Object.keys(PROFILES).length * 12);
-    expect(before.exercises.size).toBe(after.exercises.size - K1_EXERCISE_IDS.length);
+    expect(count).toBe(Object.keys(PROFILES).length * 12 * MINUTES.length);
+    expect(before.exercises.size).toBe(after.exercises.size - NEW_EXERCISE_IDS.length);
+    expect(after.templates).toHaveLength(24);
+    expect(full.templates).toHaveLength(42);
   });
 
   it('Studio und Zuhause mit allen Geräten: unverändert', () => {
@@ -245,7 +270,7 @@ describe('Regression K1: bestehende Vorlagen × typische Profile', () => {
     }
   });
 
-  it('ohne Geräte gibt es jetzt immer eine Zug-Übung (Hinweis no_pull_exercise entfällt)', () => {
+  it('ohne Geräte gibt es jetzt immer eine Zug-Übung – mit und ohne Körpergewicht-Vorlagen', () => {
     for (const goal of TEMPLATE_GOAL_TYPES) {
       for (const level of TEMPLATE_EXPERIENCE_LEVELS) {
         for (const days of [2, 3, 4]) {
@@ -256,13 +281,21 @@ describe('Regression K1: bestehende Vorlagen × typische Profile', () => {
             PROFILES.zuhause_ohne_geraete_ab_65,
             PROFILES.zuhause_ohne_geraete_unter_18,
           ]) {
-            const result = generateTrainingPlan(
+            for (const lib of [after, full]) {
+              const result = generateTrainingPlan(
+                inputsFor(profile!, goal, level, days),
+                lib,
+                TODAY,
+              );
+              expect(result.ok).toBe(true);
+              if (result.ok) expect(result.plan.notes).not.toContain('no_pull_exercise');
+            }
+            const planned = generateTrainingPlan(
               inputsFor(profile!, goal, level, days),
-              after,
+              full,
               TODAY,
             );
-            expect(result.ok).toBe(true);
-            if (result.ok) expect(result.plan.notes).not.toContain('no_pull_exercise');
+            expect(planned.ok && planned.plan.template_id).toMatch(/-koerpergewicht$/);
           }
         }
       }

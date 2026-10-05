@@ -1,7 +1,13 @@
 import type { Exercise } from '../content/schemas';
 import type { EquipmentLocation, TrainingLocation } from '../enums';
-import { BARBELL_DEFAULT_BAR_KG } from '../constants';
-import { BARBELL_ID, barbellLoadSteps, EQUIPMENT, OTHER_EQUIPMENT_ID } from '../equipment';
+import { BARBELL_DEFAULT_BAR_KG, BODYWEIGHT_PROFILE_RULES } from '../constants';
+import {
+  BARBELL_ID,
+  barbellLoadSteps,
+  EQUIPMENT,
+  findEquipment,
+  OTHER_EQUIPMENT_ID,
+} from '../equipment';
 import { isExerciseAllowed, type PlanSafetyRules } from './safety';
 
 /**
@@ -66,6 +72,27 @@ export function equipmentProfile(
     available: new Set(EQUIPMENT.map((item) => item.id).filter((id) => id !== OTHER_EQUIPMENT_ID)),
     weights,
   };
+}
+
+/**
+ * Zählt ein Gerät als KRAFT-Gerät (docs/PLAN-KOERPERGEWICHT.md §5.1, A6/W2)? Ja bei freien Gewichten, Bändern und
+ * Maschinen; nein bei Ausdauer-Geräten, Bänken, Klimmzugstange und Dip-Station. Unbekannte IDs zählen vorsichtshalber
+ * als Kraft-Gerät.
+ */
+export function isStrengthEquipment(equipmentId: string): boolean {
+  const item = findEquipment(equipmentId);
+  if (!item) return true;
+  const strength: readonly string[] = BODYWEIGHT_PROFILE_RULES.strengthEquipmentCategories;
+  return strength.includes(item.category);
+}
+
+/**
+ * Körpergewicht-Profil (§5.1): Zuhause und KEINE Kraft-Geräte (isStrengthEquipment). Studio („beides“ eingeschlossen) ist nie ein Körpergewicht-Profil.
+ */
+export function isBodyweightOnly(
+  profile: Pick<EquipmentProfile, 'location' | 'available'>,
+): boolean {
+  return profile.location === 'home' && ![...profile.available].some(isStrengthEquipment);
 }
 
 /** Sind alle nötigen Geräte da? */
@@ -174,19 +201,27 @@ export function findSubstitute(original: Exercise, ctx: SubstituteContext): Subs
 
 /**
  * Schwerere Variante für die Progression (Körpergewicht/Halteübung, Abschnitt 5.9): Alternative mit Grund
- * `harder`, machbar und erlaubt; null = keine.
+ * `harder`, machbar mit dem Geräte-Profil des Orts und erlaubt nach den AKTUELLEN Sicherheitsregeln (z. B. ab 65 kein
+ * Tisch-Rudern, Merkmal `high_skill`); null = keine. Angebunden über progressHintForDisplay() (log/harder-variant.ts).
  */
 export function findHarderVariant(
   exercise: Exercise,
-  ctx: Omit<SubstituteContext, 'exclude'>,
+  ctx: Omit<SubstituteContext, 'exclude'> & {
+    /** Höchstens so viel schwerer (`difficulty`); weggelassen = beliebig (W8: Einsteiger nur +1). */
+    readonly maxDifficultyStep?: number;
+  },
 ): Exercise | null {
+  const maxDifficulty = exercise.difficulty + (ctx.maxDifficultyStep ?? Number.POSITIVE_INFINITY);
   const candidates = exercise.alternatives
     .filter((alt) => alt.reason === 'harder')
     .sort((a, b) => a.priority - b.priority)
     .map((alt) => ctx.library.get(alt.alternative_id))
     .filter(
       (c): c is Exercise =>
-        c !== undefined && isExerciseFeasible(c, ctx.profile) && isExerciseAllowed(c, ctx.rules),
+        c !== undefined &&
+        c.difficulty <= maxDifficulty &&
+        isExerciseFeasible(c, ctx.profile) &&
+        isExerciseAllowed(c, ctx.rules),
     );
   return candidates[0] ?? null;
 }
