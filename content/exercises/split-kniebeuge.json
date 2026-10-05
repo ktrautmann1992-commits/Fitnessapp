@@ -35,6 +35,16 @@
       "alternative_id": "ausfallschritt-rueckwaerts-kurzhantel",
       "reason": "harder",
       "priority": 1
+    },
+    {
+      "alternative_id": "step-up-stufe",
+      "reason": "easier",
+      "priority": 2
+    },
+    {
+      "alternative_id": "bulgarische-split-kniebeuge-stuhl",
+      "reason": "harder",
+      "priority": 3
     }
   ],
   "meta": {

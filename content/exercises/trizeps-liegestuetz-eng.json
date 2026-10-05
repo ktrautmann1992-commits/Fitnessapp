@@ -1,0 +1,49 @@
+{
+  "id": "trizeps-liegestuetz-eng",
+  "version": 1,
+  "status": "draft",
+  "name_de": "Enger Liegestütz",
+  "name_en": "Close-grip Push-up",
+  "aliases_de": ["Trizeps-Liegestütz"],
+  "movement_pattern": "elbow_extension",
+  "primary_muscles": ["triceps"],
+  "secondary_muscles": ["chest", "front_delts"],
+  "equipment_ids": [],
+  "mechanics": "compound",
+  "load_type": "bodyweight",
+  "unilateral": false,
+  "difficulty": 2,
+  "caution_tags": [],
+  "description_de": "Liegestütz mit eng gesetzten Händen und Ellbogen am Körper – betont den Trizeps. Mit erhöhten Händen leichter.",
+  "steps_de": [
+    "Hände knapp schulterbreit unter der Brust aufsetzen.",
+    "Körper vom Kopf bis zu den Fersen gerade.",
+    "Absenken, die Ellbogen streifen eng am Körper nach hinten.",
+    "Zurück nach oben drücken, bis die Arme gestreckt sind."
+  ],
+  "tips_de": ["Leichter: Hände auf einen Tisch oder an die Wand.", "Langsam absenken."],
+  "common_mistakes_de": ["Ellbogen gehen nach außen.", "Hüfte hängt durch."],
+  "safety_note_de": "Nur so weit und so oft bewegen, wie die Technik sauber bleibt. Bei Schmerzen, Schwindel oder ungewohnten Beschwerden die Übung beenden.",
+  "alternatives": [
+    {
+      "alternative_id": "dips-stuhl",
+      "reason": "harder",
+      "priority": 1
+    },
+    {
+      "alternative_id": "trizepsdruecken-band",
+      "reason": "other_equipment",
+      "priority": 2
+    }
+  ],
+  "meta": {
+    "origin": "claude_session",
+    "model": "claude-opus-5-5",
+    "batch_id": null,
+    "created_on": "2026-10-05",
+    "expert_reviewed": false,
+    "reviewed_by": null,
+    "reviewed_at": null,
+    "review_note": null
+  }
+}

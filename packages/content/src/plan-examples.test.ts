@@ -30,8 +30,11 @@ describe('Beispielpläne', () => {
     expect(markdown).not.toContain('Kein Plan');
     expect(markdown).toContain('Muskelaufbau · Einsteiger · 3 Tage · Studio (passt genau)');
     expect(markdown).toContain('Arzt-Hinweis vor jeder Einheit');
-    expect(markdown).toContain(PLAN_NOTE_TEXTS_DE.no_pull_exercise);
+    // Etappe K1 (Körpergewicht): Clara (zu Hause ohne Geräte) bekommt jetzt Türrahmen-Rudern statt des Hinweises.
+    expect(markdown).not.toContain(PLAN_NOTE_TEXTS_DE.no_pull_exercise);
+    expect(markdown).toContain('Türrahmen-Rudern');
     expect(markdown).toContain(PLAN_NOTE_TEXTS_DE.goal_endurance_not_yet);
+    expect(markdown).toContain('**Plan:** Ausdauer-Grundlage – Halbmarathon');
     // Etappe B3: nur Laufen, gemischt, Mo 20 / Sa 90, Schwangerschaft, ab 65, ohne Check
     expect(markdown).toContain('**Vorlage:** keine (nur Ausdauer)');
     expect(markdown).toContain('Ausdauer-Minuten je Woche');

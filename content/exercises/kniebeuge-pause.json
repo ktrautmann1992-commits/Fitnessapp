@@ -1,0 +1,49 @@
+{
+  "id": "kniebeuge-pause",
+  "version": 1,
+  "status": "draft",
+  "name_de": "Kniebeuge mit Pause",
+  "name_en": "Pause Squat",
+  "aliases_de": ["Pausen-Kniebeuge"],
+  "movement_pattern": "squat",
+  "primary_muscles": ["quadriceps", "glutes"],
+  "secondary_muscles": ["hamstrings", "adductors", "abs"],
+  "equipment_ids": [],
+  "mechanics": "compound",
+  "load_type": "bodyweight",
+  "unilateral": false,
+  "difficulty": 2,
+  "caution_tags": [],
+  "description_de": "Kniebeuge ohne Gewicht mit drei Sekunden Pause am tiefsten Punkt. Die Pause macht die Übung ohne Zusatzgewicht deutlich schwerer.",
+  "steps_de": [
+    "Füße etwa schulterbreit, Zehen leicht nach außen.",
+    "Hüfte nach hinten und unten absenken, so tief es sauber geht.",
+    "Unten drei Sekunden ruhig halten, Spannung bleibt.",
+    "Kräftig zurück in den Stand drücken."
+  ],
+  "tips_de": ["Während der Pause weiteratmen.", "Schwerer: Pause auf fünf Sekunden verlängern."],
+  "common_mistakes_de": ["Unten zusammensacken und federn.", "Fersen heben ab."],
+  "safety_note_de": "Nur so weit und so oft bewegen, wie die Technik sauber bleibt. Bei Schmerzen, Schwindel oder ungewohnten Beschwerden die Übung beenden.",
+  "alternatives": [
+    {
+      "alternative_id": "kniebeuge-koerpergewicht",
+      "reason": "easier",
+      "priority": 1
+    },
+    {
+      "alternative_id": "kniebeuge-tempo",
+      "reason": "harder",
+      "priority": 2
+    }
+  ],
+  "meta": {
+    "origin": "claude_session",
+    "model": "claude-opus-5-5",
+    "batch_id": null,
+    "created_on": "2026-10-05",
+    "expert_reviewed": false,
+    "reviewed_by": null,
+    "reviewed_at": null,
+    "review_note": null
+  }
+}

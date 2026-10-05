@@ -29,6 +29,7 @@ import { t } from '@/i18n';
 import { createPlanErrorText, errorText } from '@/lib/error-text';
 import { todayIso } from '@/lib/format';
 import { dayLabel, weekdayName } from '@/lib/plan-format';
+import { planTitleText } from '@/lib/plan-title';
 import { PLAN_CHANGE_DROPPED, PLAN_RECREATE_NEEDED, useApp } from '@/state/app-state';
 import { healthConsentStatus, isReminderDue, resolveEntryRoute } from '@/state/flow';
 
@@ -368,11 +369,7 @@ export default function TodayScreen() {
       <WeekOverview days={days} selected={selected} onSelect={setSelected} />
 
       <Card>
-        <Body muted>
-          {plan.template_title_de
-            ? t.plan.templateLine(plan.template_title_de)
-            : t.plan.enduranceOnly}
-        </Body>
+        <Body muted>{planTitleText(plan)}</Body>
         <Body>{t.plan.quality[plan.match_quality]}</Body>
         {plan.uses_health_data ? (
           plan.medical_notice ? (

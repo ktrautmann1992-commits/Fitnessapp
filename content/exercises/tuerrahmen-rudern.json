@@ -1,0 +1,62 @@
+{
+  "id": "tuerrahmen-rudern",
+  "version": 1,
+  "status": "draft",
+  "name_de": "Türrahmen-Rudern",
+  "name_en": "Door Frame Row",
+  "aliases_de": ["Rudern am Türrahmen"],
+  "movement_pattern": "horizontal_pull",
+  "primary_muscles": ["upper_back", "lats"],
+  "secondary_muscles": ["biceps", "rear_delts", "forearms"],
+  "equipment_ids": [],
+  "mechanics": "compound",
+  "load_type": "bodyweight",
+  "unilateral": true,
+  "difficulty": 1,
+  "caution_tags": [],
+  "description_de": "Einarmiges Rudern im Stand am Türrahmen für oberen Rücken und Latissimus. Ohne Geräte machbar; je weiter die Füße vor dem Türrahmen stehen, desto schwerer wird es.",
+  "steps_de": [
+    "Vor einen offenen Türrahmen stellen und prüfen, dass der Rahmen fest und trocken ist.",
+    "Mit einer Hand den Rahmen auf Brusthöhe greifen, Füße dicht am Rahmen, Körper leicht nach hinten lehnen.",
+    "Arm lang werden lassen, Körper bleibt vom Kopf bis zu den Fersen gerade.",
+    "Ellbogen nah am Körper nach hinten ziehen, bis die Brust nah am Rahmen ist, Schulterblatt nach hinten-unten.",
+    "Langsam zurück in die Ausgangslage, dann Seite wechseln."
+  ],
+  "tips_de": [
+    "Steigerung: Füße weiter nach vorn setzen, sodass du flacher liegst.",
+    "Den Griff fest halten und nur so weit zurücklehnen, wie du sicher hältst."
+  ],
+  "common_mistakes_de": [
+    "Ziehen nur mit dem Arm statt mit dem Rücken.",
+    "Hüfte knickt ein.",
+    "Ruckartiges Zurückfallen in die Ausgangslage."
+  ],
+  "safety_note_de": "Nur an einem stabilen Türrahmen, nie an der Türklinke oder einer Tür. Nur so weit und so oft bewegen, wie die Technik sauber bleibt. Bei Schmerzen, Schwindel oder ungewohnten Beschwerden die Übung beenden.",
+  "alternatives": [
+    {
+      "alternative_id": "handtuch-rudern-isometrisch",
+      "reason": "easier",
+      "priority": 1
+    },
+    {
+      "alternative_id": "tisch-rudern",
+      "reason": "harder",
+      "priority": 2
+    },
+    {
+      "alternative_id": "rudern-band",
+      "reason": "other_equipment",
+      "priority": 3
+    }
+  ],
+  "meta": {
+    "origin": "claude_session",
+    "model": "claude-opus-5-5",
+    "batch_id": null,
+    "created_on": "2026-10-05",
+    "expert_reviewed": false,
+    "reviewed_by": null,
+    "reviewed_at": null,
+    "review_note": null
+  }
+}

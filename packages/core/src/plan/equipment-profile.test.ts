@@ -107,13 +107,19 @@ describe('findSubstitute', () => {
     ).toBeNull();
   });
 
-  it('ohne Geräte gibt es keine Zug-Übung', () => {
+  it('ohne Geräte: Rudern und Latziehen → Türrahmen-Rudern (Etappe K1)', () => {
     expect(
-      findSubstitute(get('rudern-band'), { library: lib, profile: nothing, rules: healthy }),
-    ).toBeNull();
-    expect(
-      findSubstitute(get('latziehen'), { library: lib, profile: nothing, rules: healthy }),
-    ).toBeNull();
+      findSubstitute(get('rudern-band'), { library: lib, profile: nothing, rules: healthy })
+        ?.exercise.id,
+    ).toBe('tuerrahmen-rudern');
+    // Latziehen: kein senkrechtes Ziehen ohne Geräte → Schritt 5 (gemeinsamer Hauptmuskel Latissimus).
+    const lat = findSubstitute(get('latziehen'), {
+      library: lib,
+      profile: nothing,
+      rules: healthy,
+    });
+    expect(lat?.exercise.id).toBe('tuerrahmen-rudern');
+    expect(lat?.step).toBe(5);
     expect(
       findSubstitute(get('latziehen'), { library: lib, profile: bandOnly, rules: healthy })
         ?.exercise.id,
@@ -256,8 +262,8 @@ describe('findHarderVariant', () => {
         library: lib,
         profile: nothing,
         rules: healthy,
-      }),
-    ).toBeNull();
+      })?.id,
+    ).toBe('kniebeuge-pause'); // Etappe K1: Kette innerhalb Körpergewicht
   });
 });
 

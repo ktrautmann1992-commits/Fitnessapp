@@ -7,6 +7,7 @@ import { Body, Button, Card, Heading, LoadingState, Notice } from '@/components/
 import { activePlan } from '@/data/training-plan';
 import { t } from '@/i18n';
 import { createPlanErrorText } from '@/lib/error-text';
+import { planTitleText } from '@/lib/plan-title';
 import { summaryLines } from '@/lib/summary';
 import { useApp } from '@/state/app-state';
 import { healthConsentStatus } from '@/state/flow';
@@ -87,11 +88,7 @@ export default function DoneScreen() {
         </Notice>
       ) : plan ? (
         <Notice tone="success" title={t.done.ready} testID="done-plan">
-          <Body>
-            {plan.template_title_de
-              ? t.plan.templateLine(plan.template_title_de)
-              : t.plan.enduranceOnly}
-          </Body>
+          <Body>{planTitleText(plan)}</Body>
           <Body>{t.plan.quality[plan.match_quality]}</Body>
         </Notice>
       ) : null}

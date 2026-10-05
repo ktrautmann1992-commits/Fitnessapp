@@ -53,6 +53,10 @@ export const CONTENT_RULES = {
   V9: { severity: 'error', title: 'Wochensätze pro Muskelgruppe: Obergrenze' },
   V10: { severity: 'error', title: 'Wochensätze: Untergrenze große Muskelgruppen' },
   V11: { severity: 'warning', title: 'Wochensätze: Untergrenze kleine Muskelgruppen' },
+  V12: {
+    severity: 'error',
+    title: 'Körpergewicht-Vorlage (Zuhause ohne Geräte) enthält nur Übungen ohne Geräte',
+  },
 } as const satisfies Record<string, { severity: IssueSeverity; title: string }>;
 
 export type ContentRuleId = keyof typeof CONTENT_RULES;

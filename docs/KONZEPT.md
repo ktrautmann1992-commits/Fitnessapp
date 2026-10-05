@@ -55,7 +55,7 @@ Verbindlich ist der freigegebene Ablauf in `docs/PLAN-PHASE-1.md` Abschnitt 3 (S
   Workflows öffnen Pull Requests, genehmigen aber nie. Herkunft und Prüfvermerk stehen in `meta`
   (`origin` = `claude_session` / `batch` / `manual`, `expert_reviewed` = fachlich geprüft ja/nein); KI-Entwürfe ohne
   fachliche Prüfung werden als „KI-Entwurf – fachlich prüfen“ gekennzeichnet.
-- **Prüfung `pnpm content:validate`** (Regeln Ü1–Ü6, V1–V11 aus `packages/core/src/content`, Grenzwerte in
+- **Prüfung `pnpm content:validate`** (Regeln Ü1–Ü6, V1–V12 aus `packages/core/src/content`, Grenzwerte in
   `constants.ts`): läuft in `ci` bei jedem Push. Schema-Fehler blockieren immer, andere rote Fehler nur bei
   freigegebenen Inhalten; gelbe Hinweise blockieren nie. Ändert sich ein freigegebener Inhalt, muss `version` steigen.
 - **Einspielen:** Nur Freigegebenes kommt per `seed_content()` (eine Transaktion, nur `service_role`) in die
@@ -114,6 +114,11 @@ Verbindlich ist der freigegebene Ablauf in `docs/PLAN-PHASE-1.md` Abschnitt 3 (S
   Belastungswoche (`Math.floor`), Erholungswoche 60 %, je Einheit höchstens 50 % der Woche, am Start höchstens 90 min,
   Start-Deckel je Einheit 30/20 min, Einheiten unter 10 min entfallen. Reine Ausdauer-Pläne haben keine Vorlage.
 - Wettkampf-Periodisierung, Intervalle, Zonen, Strecken bleiben Phase 10.
+- Ausdauer-Ziel klarer (Gründer-Feedback „Ziel Marathon → Plan für allgemeine Fitness“): Beim Ziel Ausdauer belegt
+  „Deine Trainingstage“ Ausdauer-Tage vor (`suggestedTrainingSlots`, Werte `ENDURANCE_GOAL_SUGGESTION`: 3 Ausdauer + 2 Kraft,
+  Leistungssport 4 + 2, vorsichtig 2 + 1, Triathlon mehr Ausdauer; Deckel wie oben) – nur ohne gewählte Tage, änderbar
+  („Ohne Vorschlag planen“). Der Plan heißt „Ausdauer-Grundlage – <Disziplin>“ (`planTitle`, nur Anzeige; gespeichert bleibt
+  `template_title_de`). Hinweis: Wettkampfplan rückwärts ab Renndatum kommt in Phase 10.
 
 **Umsetzung ab Phase 4 (`docs/PLAN-PHASE-4.md`, Etappe A: Core in `packages/core/src/log`):**
 - **Progression aus dem Tagebuch, nicht in den Plan geschrieben:** Grundlage ist der gespeicherte, ortsunabhängige

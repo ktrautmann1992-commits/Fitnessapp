@@ -20,10 +20,10 @@ const { files, strayFiles } = loadContentFiles(contentDir);
 const result = validateContent(files);
 
 describe('Startbestand (content/)', () => {
-  it('ca. 50 Übungen und 24 Plan-Vorlagen, alle mit gültigem Schema', () => {
+  it('ca. 80 Übungen (Startbestand + Körpergewicht K1) und 24 Plan-Vorlagen, alle mit gültigem Schema', () => {
     expect(strayFiles).toEqual([]);
     expect(result.exercises.length).toBeGreaterThanOrEqual(45);
-    expect(result.exercises.length).toBeLessThanOrEqual(60);
+    expect(result.exercises.length).toBeLessThanOrEqual(90);
     expect(result.templates).toHaveLength(24);
     expect(result.exercises.length + result.templates.length).toBe(files.length);
   });

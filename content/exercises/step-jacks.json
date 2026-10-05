@@ -1,0 +1,44 @@
+{
+  "id": "step-jacks",
+  "version": 1,
+  "status": "draft",
+  "name_de": "Step-Jacks",
+  "name_en": "Step Jacks",
+  "aliases_de": ["Hampelmann ohne Sprung"],
+  "movement_pattern": "conditioning",
+  "primary_muscles": ["calves"],
+  "secondary_muscles": ["glutes", "side_delts"],
+  "equipment_ids": [],
+  "mechanics": "compound",
+  "load_type": "time",
+  "unilateral": false,
+  "difficulty": 1,
+  "caution_tags": [],
+  "description_de": "Hampelmann ohne Sprung: abwechselnd seitlich ausschreiten und die Arme heben. Bringt den Puls hoch, ohne Sprünge und Landungen.",
+  "steps_de": [
+    "Aufrecht stehen, Füße zusammen, Arme seitlich am Körper.",
+    "Einen Fuß zur Seite setzen und gleichzeitig die Arme seitlich nach oben führen.",
+    "Zurück in die Ausgangsposition, dann zur anderen Seite.",
+    "Zügig, aber ohne Sprung im Wechsel weitermachen."
+  ],
+  "tips_de": ["Wer mag, führt die Arme nur bis Schulterhöhe."],
+  "common_mistakes_de": ["Hohlkreuz beim Armheben.", "Unruhiger Oberkörper."],
+  "safety_note_de": "Nur so weit und so oft bewegen, wie die Technik sauber bleibt. Bei Schmerzen, Schwindel oder ungewohnten Beschwerden die Übung beenden.",
+  "alternatives": [
+    {
+      "alternative_id": "hampelmann",
+      "reason": "harder",
+      "priority": 1
+    }
+  ],
+  "meta": {
+    "origin": "claude_session",
+    "model": "claude-opus-5-5",
+    "batch_id": null,
+    "created_on": "2026-10-05",
+    "expert_reviewed": false,
+    "reviewed_by": null,
+    "reviewed_at": null,
+    "review_note": null
+  }
+}

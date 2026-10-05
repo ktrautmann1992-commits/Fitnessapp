@@ -120,24 +120,42 @@ describe('Tage pro Woche 1–7', () => {
 });
 
 describe('Geräte', () => {
-  it('Zuhause ohne Geräte: Hinweise Tausch, Entfernen, keine Zug-Übung; alles ohne Geräte machbar', () => {
+  it('Zuhause ohne Geräte: Hinweise Tausch, Zug-Übung ohne Geräte (K1); alles ohne Geräte machbar', () => {
     const p = plan({
       trainingLocation: 'home',
       homeEquipment: [],
       sessionsPerWeek: 2,
       preferredDays: [],
     });
-    expect(p.notes).toEqual(
-      expect.arrayContaining([
-        'days_rotated',
-        'exercises_substituted',
-        'exercises_removed',
-        'no_pull_exercise',
-      ]),
-    );
+    expect(p.notes).toEqual(expect.arrayContaining(['days_rotated', 'exercises_substituted']));
+    expect(p.notes).not.toContain('no_pull_exercise');
     expect(p.match_quality).toBe('close');
     for (const id of ids(p)) {
       expect(library.exercises.get(id)?.equipment_ids).toEqual([]);
+    }
+  });
+
+  it('Bibliothek ohne Zug-Übungen ohne Geräte: Hinweise Entfernen und no_pull_exercise', () => {
+    const pull = ['tuerrahmen-rudern', 'handtuch-rudern-isometrisch', 'tisch-rudern'];
+    const reduced = {
+      ...library,
+      exercises: new Map([...library.exercises].filter(([id]) => !pull.includes(id))),
+    };
+    const result = generateTrainingPlan(
+      person({
+        trainingLocation: 'home',
+        homeEquipment: [],
+        sessionsPerWeek: 2,
+        preferredDays: [],
+      }),
+      reduced,
+      MONDAY,
+    );
+    expect(result.ok).toBe(true);
+    if (result.ok) {
+      expect(result.plan.notes).toEqual(
+        expect.arrayContaining(['exercises_removed', 'no_pull_exercise']),
+      );
     }
   });
 

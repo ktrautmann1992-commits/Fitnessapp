@@ -794,3 +794,15 @@ bisheriges Angaben-Format (keine App-Plan-Erzeugung vor Etappe C).
    (`plan/start-group.ts`) – Folgeblock (`nextBlockFromRows`) und Anzeige; App-Test „Folgeblock nach Neuladen (ohne
    safety_rules) setzt zurück“ (65. Geburtstag zwischen Erstellen und Folgeblock: Gehen, ≤ 20 min je Einheit).
 3. Strengere Startgruppe bzw. neuer Check mit Flag → „Bitte Plan neu erstellen“ deutlich (`planUpdateOffer().stricter`).
+
+**Nachtrag – Ausdauer-Ziel klarer (05.10.2026, Gründer-Feedback):** echte Wettkampfpläne erst Phase 10, bis dahin:
+
+1. Ziel Ausdauer → „Deine Trainingstage“ ist mit Ausdauer- und Kraft-Tagen vorbelegt (`suggestedTrainingSlots` in
+   `training-schedule.ts`, Werte `ENDURANCE_GOAL_SUGGESTION` in `constants.ts`; Deckel `WEEKLY_SESSION_LIMITS` und
+   `ENDURANCE_START_RULES`). Nur wenn noch keine Tage gewählt sind; „Ohne Vorschlag planen“ verwirft die Vorbelegung.
+2. Plan-Titel bei Ziel Ausdauer „Ausdauer-Grundlage – <Disziplin>“ auf Heute, Fertig und Einstellungen (`planTitle` in
+   `plan/title.ts`, nur Anzeige – `template_title_de` bleibt unverändert, keine Migration).
+3. Hinweise `goal_endurance_not_yet` / `endurance_basic_only` nennen den späteren Wettkampfplan ab Renndatum; ohne
+   Ausdauer-Tage zusätzlich den Weg Einstellungen → Angaben ändern → Trainingstage.
+4. Tests: Core (alle Disziplinen, Einsteiger bis Leistungssport, 1–7 Tage), App (`plan-title.test.ts`), E2E „Ziel
+   Marathon“ (Vorbelegung → Titel → Ausdauer-Einheiten auf Heute/Woche).

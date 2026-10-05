@@ -1,0 +1,49 @@
+{
+  "id": "bird-dog",
+  "version": 1,
+  "status": "draft",
+  "name_de": "Bird-Dog",
+  "name_en": "Bird Dog",
+  "aliases_de": ["Vierfüßler-Diagonale"],
+  "movement_pattern": "core_anti_extension",
+  "primary_muscles": ["abs"],
+  "secondary_muscles": ["lower_back", "glutes"],
+  "equipment_ids": [],
+  "mechanics": "isolation",
+  "load_type": "bodyweight",
+  "unilateral": true,
+  "difficulty": 1,
+  "caution_tags": [],
+  "description_de": "Rumpfübung im Vierfüßlerstand: gegengleich Arm und Bein strecken, ohne dass der Rücken nachgibt. Ohne Rückenlage machbar.",
+  "steps_de": [
+    "In den Vierfüßlerstand gehen, Rücken gerade, Bauch leicht angespannt.",
+    "Rechten Arm nach vorn und linkes Bein nach hinten strecken, bis beide waagerecht sind.",
+    "Zwei Sekunden halten, Becken bleibt ruhig.",
+    "Zurück in den Vierfüßlerstand, dann die andere Diagonale."
+  ],
+  "tips_de": ["Stell dir ein Glas Wasser auf dem unteren Rücken vor, das nicht kippen darf."],
+  "common_mistakes_de": ["Hohlkreuz.", "Becken dreht auf."],
+  "safety_note_de": "Nur so weit und so oft bewegen, wie die Technik sauber bleibt. Bei Schmerzen, Schwindel oder ungewohnten Beschwerden die Übung beenden.",
+  "alternatives": [
+    {
+      "alternative_id": "unterarmstuetz",
+      "reason": "harder",
+      "priority": 1
+    },
+    {
+      "alternative_id": "dead-bug",
+      "reason": "other_equipment",
+      "priority": 2
+    }
+  ],
+  "meta": {
+    "origin": "claude_session",
+    "model": "claude-opus-5-5",
+    "batch_id": null,
+    "created_on": "2026-10-05",
+    "expert_reviewed": false,
+    "reviewed_by": null,
+    "reviewed_at": null,
+    "review_note": null
+  }
+}

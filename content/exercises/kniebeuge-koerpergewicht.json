@@ -35,6 +35,16 @@
       "alternative_id": "goblet-kniebeuge",
       "reason": "harder",
       "priority": 1
+    },
+    {
+      "alternative_id": "kniebeuge-stuhl",
+      "reason": "easier",
+      "priority": 2
+    },
+    {
+      "alternative_id": "kniebeuge-pause",
+      "reason": "harder",
+      "priority": 3
     }
   ],
   "meta": {

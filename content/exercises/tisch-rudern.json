@@ -1,0 +1,56 @@
+{
+  "id": "tisch-rudern",
+  "version": 1,
+  "status": "draft",
+  "name_de": "Tisch-Rudern",
+  "name_en": "Table Inverted Row",
+  "aliases_de": ["Rudern unter dem Tisch"],
+  "movement_pattern": "horizontal_pull",
+  "primary_muscles": ["upper_back", "lats"],
+  "secondary_muscles": ["biceps", "rear_delts", "abs"],
+  "equipment_ids": [],
+  "mechanics": "compound",
+  "load_type": "bodyweight",
+  "unilateral": false,
+  "difficulty": 3,
+  "caution_tags": ["high_skill", "long_supine"],
+  "description_de": "Rudern in Rückenlage unter einem sehr stabilen Tisch – die schwerste Zug-Übung ohne Geräte. Nur für Geübte und nur mit einem Tisch, der sicher nicht kippt oder rutscht.",
+  "steps_de": [
+    "Stabilität prüfen: schwerer Massivholz-Tisch, steht fest, kippt nicht, wenn du an der Kante ziehst. Kein Glastisch, kein Klapptisch.",
+    "Rücklings unter den Tisch legen, Brust unter der Tischkante, Kante schulterbreit greifen.",
+    "Knie beugen, Füße aufstellen, Körper von Schultern bis Knie gerade anspannen.",
+    "Brust zur Tischkante ziehen, Schulterblätter zusammen.",
+    "Kontrolliert absenken, bis die Arme lang sind."
+  ],
+  "tips_de": [
+    "Leichter: Knie stärker beugen. Schwerer: Beine strecken.",
+    "Wenn der Tisch wackelt: sofort aufhören und Türrahmen-Rudern machen."
+  ],
+  "common_mistakes_de": [
+    "Hüfte hängt durch.",
+    "Kinn wird zur Kante gestreckt statt die Brust zu ziehen."
+  ],
+  "safety_note_de": "Kipp- und Sturzrisiko: nur mit sicher stehendem, schwerem Tisch; bei Zweifel die Übung nicht machen. Nur so weit und so oft bewegen, wie die Technik sauber bleibt. Bei Schmerzen, Schwindel oder ungewohnten Beschwerden die Übung beenden.",
+  "alternatives": [
+    {
+      "alternative_id": "tuerrahmen-rudern",
+      "reason": "easier",
+      "priority": 1
+    },
+    {
+      "alternative_id": "kurzhantelrudern-einarmig",
+      "reason": "other_equipment",
+      "priority": 2
+    }
+  ],
+  "meta": {
+    "origin": "claude_session",
+    "model": "claude-opus-5-5",
+    "batch_id": null,
+    "created_on": "2026-10-05",
+    "expert_reviewed": false,
+    "reviewed_by": null,
+    "reviewed_at": null,
+    "review_note": null
+  }
+}

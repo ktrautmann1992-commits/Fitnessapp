@@ -1,6 +1,9 @@
 import { z } from 'zod';
 
 import {
+  DEFAULT_SLOT_MINUTES,
+  ENDURANCE_GOAL_SUGGESTION,
+  ENDURANCE_START_RULES,
   MAX_STRENGTH_SESSIONS_PER_WEEK,
   SCHEDULE_HINT_LIMITS,
   TRAINING_LIMITS,
@@ -189,6 +192,125 @@ export function hasHomeStrength(schedule: TrainingSchedule): boolean {
 /** Vorschlag für die erste Karte: Ziel Ausdauer → Ausdauer, sonst Kraft im Studio. */
 export function suggestedSlotKind(goalType: GoalType | null | undefined): TrainingSlotKind {
   return goalType === 'endurance' ? 'endurance' : 'strength_gym';
+}
+
+const TRIATHLONS: readonly EnduranceDiscipline[] = [
+  'triathlon_sprint',
+  'triathlon_olympic',
+  'triathlon_middle',
+  'triathlon_long',
+];
+
+/** Startgruppe wie die Plan-Engine: vorsichtig, unter 18, ab 65 oder Alter unbekannt → vorsichtig. */
+function suggestionGroup(input: {
+  experienceLevel: ExperienceLevel | null | undefined;
+  ageYears: number | null;
+  cautious: boolean;
+}): 'cautious' | ExperienceLevel {
+  const { ageYears } = input;
+  if (
+    input.cautious ||
+    ageYears === null ||
+    ageYears < WEEKLY_SESSION_LIMITS.minorBelowAge ||
+    ageYears >= WEEKLY_SESSION_LIMITS.seniorFromAge
+  ) {
+    return 'cautious';
+  }
+  return input.experienceLevel ?? 'beginner';
+}
+
+/** Kraft-Tage mit größtmöglichem Abstand (rund um die Woche), lieber unter der Woche, sonst früher. */
+function pickStrengthDays(days: readonly number[], count: number): number[] {
+  if (count <= 0) return [];
+  let best: number[] = [];
+  let bestKey: [number, number] | null = null;
+  const choose = (start: number, picked: number[]) => {
+    if (picked.length === count) {
+      const gaps = picked.map((day, i) => {
+        const nextDay = picked[(i + 1) % picked.length] ?? day;
+        return picked.length === 1 ? 7 : (nextDay - day + 7) % 7 || 7;
+      });
+      const key: [number, number] = [Math.min(...gaps), -picked.filter((day) => day >= 6).length];
+      if (!bestKey || key[0] > bestKey[0] || (key[0] === bestKey[0] && key[1] > bestKey[1])) {
+        best = [...picked];
+        bestKey = key;
+      }
+      return;
+    }
+    for (let i = start; i < days.length; i += 1) {
+      choose(i + 1, [...picked, days[i] as number]);
+    }
+  };
+  choose(0, []);
+  return best;
+}
+
+/**
+ * Feste Wochentage für `endurance` Ausdauer- und `strength` Kraft-Einheiten (zusammen 1–7, sonst leer):
+ * Tage aus ENDURANCE_GOAL_SUGGESTION.weekdays, Kraft mit größtem Abstand, Dauer DEFAULT_SLOT_MINUTES.
+ */
+export function suggestedWeekSlots(
+  endurance: number,
+  strength: number,
+  strengthKind: Exclude<TrainingSlotKind, 'endurance'> = 'strength_gym',
+): FixedSlot[] {
+  const total = endurance + strength;
+  if (endurance < 0 || strength < 0 || total < 1 || total > MAX_SLOTS) {
+    return [];
+  }
+  const days =
+    ENDURANCE_GOAL_SUGGESTION.weekdays[total as keyof typeof ENDURANCE_GOAL_SUGGESTION.weekdays];
+  const strengthDays = new Set(pickStrengthDays(days, strength));
+  return days.map((weekday) => {
+    const kind: TrainingSlotKind = strengthDays.has(weekday) ? strengthKind : 'endurance';
+    return { weekday, kind, minutes: DEFAULT_SLOT_MINUTES[kind] };
+  });
+}
+
+/**
+ * Vorbelegung „Deine Trainingstage“ beim Ziel Ausdauer (ENDURANCE_GOAL_SUGGESTION): Ausdauer- und Kraft-Tage
+ * nach Startgruppe und Disziplin, gekürzt auf den Wochen-Deckel (weeklySessionCap) und den Ausdauer-Deckel der
+ * Startgruppe (ENDURANCE_START_RULES). Andere Ziele → null (keine Vorbelegung). Nur ein Vorschlag – die App
+ * belegt damit nur vor, solange noch keine Trainingstage gewählt sind.
+ */
+export function suggestedTrainingSlots(input: {
+  goalType: GoalType | null | undefined;
+  discipline: EnduranceDiscipline | null | undefined;
+  experienceLevel: ExperienceLevel | null | undefined;
+  ageYears: number | null;
+  cautious: boolean;
+  /** Ort der Kraft-Tage (bisherige Auswahl); ohne Angabe Studio. */
+  strengthKind?: Exclude<TrainingSlotKind, 'endurance'>;
+}): TrainingSchedule | null {
+  if (input.goalType !== 'endurance') {
+    return null;
+  }
+  const group = suggestionGroup(input);
+  const triathlon = input.discipline != null && TRIATHLONS.includes(input.discipline);
+  const base = ENDURANCE_GOAL_SUGGESTION.perGroup[group];
+  let endurance: number = base.endurance;
+  let strength: number = base.strength;
+  if (triathlon && group !== 'cautious') {
+    const extra: Partial<Record<ExperienceLevel, number>> =
+      ENDURANCE_GOAL_SUGGESTION.triathlonExtraEndurance;
+    const strengthOverride: Partial<Record<ExperienceLevel, number>> =
+      ENDURANCE_GOAL_SUGGESTION.triathlonStrength;
+    endurance += extra[group] ?? 0;
+    strength = strengthOverride[group] ?? strength;
+  }
+  endurance = Math.min(endurance, ENDURANCE_START_RULES.maxSessionsPerWeek[group]);
+  const cap = Math.min(weeklySessionCap(input) ?? MAX_SLOTS, MAX_SLOTS);
+  const minEndurance = SCHEDULE_HINT_LIMITS.recommendedMinEnduranceDays;
+  while (endurance + strength > cap) {
+    if (strength > 1) strength -= 1;
+    else if (endurance > minEndurance) endurance -= 1;
+    else if (strength > 0) strength -= 1;
+    else endurance -= 1;
+  }
+  return trainingScheduleSchema.parse({
+    mode: 'fixed',
+    slots: suggestedWeekSlots(endurance, strength, input.strengthKind),
+  });
 }
 
 /** Untertitel der Art „Ausdauer“ (Wunsch-Sportart, Abschnitt 3.2); Texte in der App (i18n). */

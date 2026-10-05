@@ -1,0 +1,49 @@
+{
+  "id": "hip-thrust-sofa",
+  "version": 1,
+  "status": "draft",
+  "name_de": "Hip Thrust am Sofa",
+  "name_en": "Couch Hip Thrust",
+  "aliases_de": ["Hüftheben am Sofa"],
+  "movement_pattern": "hip_extension",
+  "primary_muscles": ["glutes"],
+  "secondary_muscles": ["hamstrings", "quadriceps"],
+  "equipment_ids": [],
+  "mechanics": "compound",
+  "load_type": "bodyweight",
+  "unilateral": false,
+  "difficulty": 2,
+  "caution_tags": ["long_supine"],
+  "description_de": "Hüftheben mit den Schultern auf der Sitzfläche eines Sofas – größerer Bewegungsweg als die Glute Bridge, ohne Geräte.",
+  "steps_de": [
+    "Mit dem Rücken vor ein stabiles Sofa setzen, das nicht wegrutscht; Schulterblätter an die Sitzkante.",
+    "Füße hüftbreit aufstellen, Knie gebeugt.",
+    "Hüfte anheben, bis Oberkörper und Oberschenkel eine Linie bilden, Kinn leicht zur Brust.",
+    "Oben kurz halten, langsam absenken."
+  ],
+  "tips_de": ["Schwerer: einbeinig ausführen.", "Unterschenkel stehen oben etwa senkrecht."],
+  "common_mistakes_de": ["Hohlkreuz statt Gesäßspannung.", "Sofa rutscht weg."],
+  "safety_note_de": "Nur so weit und so oft bewegen, wie die Technik sauber bleibt. Bei Schmerzen, Schwindel oder ungewohnten Beschwerden die Übung beenden.",
+  "alternatives": [
+    {
+      "alternative_id": "glute-bridge",
+      "reason": "easier",
+      "priority": 1
+    },
+    {
+      "alternative_id": "hip-thrust-langhantel",
+      "reason": "other_equipment",
+      "priority": 2
+    }
+  ],
+  "meta": {
+    "origin": "claude_session",
+    "model": "claude-opus-5-5",
+    "batch_id": null,
+    "created_on": "2026-10-05",
+    "expert_reviewed": false,
+    "reviewed_by": null,
+    "reviewed_at": null,
+    "review_note": null
+  }
+}

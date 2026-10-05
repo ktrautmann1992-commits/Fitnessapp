@@ -27,7 +27,13 @@
   ],
   "common_mistakes_de": ["Hart auf den Fersen landen.", "Zu schnelles Tempo zu Beginn."],
   "safety_note_de": "Auf rutschfestem Boden und in festen Schuhen springen. Bei Schmerzen, Schwindel oder ungewohnten Beschwerden die Übung beenden.",
-  "alternatives": [],
+  "alternatives": [
+    {
+      "alternative_id": "step-jacks",
+      "reason": "easier",
+      "priority": 1
+    }
+  ],
   "meta": {
     "origin": "claude_session",
     "model": "claude-opus-5-5",

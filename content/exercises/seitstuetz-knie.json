@@ -1,0 +1,44 @@
+{
+  "id": "seitstuetz-knie",
+  "version": 1,
+  "status": "draft",
+  "name_de": "Seitstütz auf den Knien",
+  "name_en": "Side Plank on Knees",
+  "aliases_de": ["Seitlicher Unterarmstütz kniend"],
+  "movement_pattern": "core_anti_rotation",
+  "primary_muscles": ["obliques"],
+  "secondary_muscles": ["abs", "glutes"],
+  "equipment_ids": [],
+  "mechanics": "isolation",
+  "load_type": "time",
+  "unilateral": false,
+  "difficulty": 1,
+  "caution_tags": [],
+  "description_de": "Leichte Halteübung für die seitliche Rumpfmuskulatur: seitlich auf Unterarm und Knien stützen und die Hüfte oben halten.",
+  "steps_de": [
+    "Seitlich hinlegen, Ellbogen unter der Schulter, Knie gebeugt.",
+    "Hüfte anheben, bis Kopf, Hüfte und Knie eine Linie bilden.",
+    "Position für die vorgegebene Zeit halten, ruhig atmen.",
+    "Absetzen und Seite wechseln."
+  ],
+  "tips_de": ["Die obere Hand darf zur Stabilität auf die Hüfte."],
+  "common_mistakes_de": ["Hüfte sinkt ab.", "Schulter rutscht zum Ohr."],
+  "safety_note_de": "Nur so weit und so oft bewegen, wie die Technik sauber bleibt. Bei Schmerzen, Schwindel oder ungewohnten Beschwerden die Übung beenden.",
+  "alternatives": [
+    {
+      "alternative_id": "seitstuetz",
+      "reason": "harder",
+      "priority": 1
+    }
+  ],
+  "meta": {
+    "origin": "claude_session",
+    "model": "claude-opus-5-5",
+    "batch_id": null,
+    "created_on": "2026-10-05",
+    "expert_reviewed": false,
+    "reviewed_by": null,
+    "reviewed_at": null,
+    "review_note": null
+  }
+}

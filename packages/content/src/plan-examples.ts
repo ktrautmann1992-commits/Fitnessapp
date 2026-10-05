@@ -16,11 +16,13 @@ import {
   progressFromLogs,
   type ProgressResult,
   ENDURANCE_TEXTS_DE,
+  type EnduranceDiscipline,
   type GeneratedPlan,
   generateTrainingPlan,
   type PlanInputsInput,
   type PlanLibrary,
   type PlanNote,
+  planTitle,
   selectPlanContent,
   validateContent,
   type ContentFile,
@@ -255,7 +257,8 @@ export const EXAMPLE_PERSONS: readonly ExamplePerson[] = [
 
 /** Deutsche Kurztexte der Hinweis-Codes (die App bekommt eigene Texte in Etappe C). */
 export const PLAN_NOTE_TEXTS_DE: Record<PlanNote, string> = {
-  goal_endurance_not_yet: 'Ausdauer-Pläne kommen später',
+  goal_endurance_not_yet:
+    'Wettkampfplan ab Renndatum kommt später – Ausdauer-Tage unter Einstellungen → Angaben ändern → Trainingstage einplanen',
   days_rotated: 'weniger Tage als die Vorlage – Einheiten im Wechsel (geringerer Umfang)',
   days_capped: 'höchstens 4 Krafteinheiten, übrige Tage Ruhetage',
   days_added: 'Wunsch-Tage ergänzt',
@@ -272,7 +275,21 @@ export const PLAN_NOTE_TEXTS_DE: Record<PlanNote, string> = {
   endurance_walk: 'Wir starten mit zügigem Gehen',
   rest_day_added: 'Ausdauer-Einheit unter 10 Minuten entfällt – Ruhetag',
   week_total_capped: 'höchstens 5 Einheiten pro Woche – mindestens 2 Ruhetage',
-  endurance_basic_only: 'lockere Ausdauer; Wettkampfpläne und Tempo-Training kommen später',
+  endurance_basic_only:
+    'lockere Ausdauer-Grundlage; Wettkampfplan ab Renndatum (lange Läufe, Tempo, Tapering) kommt später',
+};
+
+const DISCIPLINE_DE: Record<EnduranceDiscipline, string> = {
+  '5k': '5 km',
+  '10k': '10 km',
+  half_marathon: 'Halbmarathon',
+  marathon: 'Marathon',
+  triathlon_sprint: 'Triathlon Sprint',
+  triathlon_olympic: 'Triathlon olympisch',
+  triathlon_middle: 'Triathlon Mitteldistanz',
+  triathlon_long: 'Triathlon Langdistanz',
+  cycling: 'Radfahren',
+  swimming: 'Schwimmen',
 };
 
 const KIND_DE = {
@@ -321,7 +338,13 @@ function renderPlan(plan: GeneratedPlan): string[] {
   const week = plan.training_week
     .map((d) => `${WEEKDAYS_DE[d.weekday]} ${KIND_DE[d.kind]} ${d.minutes} min`)
     .join(', ');
+  const title = planTitle(plan);
   const lines = [
+    ...(title.kind === 'endurance_base'
+      ? [
+          `**Plan:** Ausdauer-Grundlage${title.discipline ? ` – ${DISCIPLINE_DE[title.discipline]}` : ''}  `,
+        ]
+      : []),
     plan.template_title_de
       ? `**Vorlage:** ${plan.template_title_de} (${QUALITY_DE[plan.match_quality]})  `
       : '**Vorlage:** keine (nur Ausdauer)  ',

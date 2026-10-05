@@ -1,0 +1,49 @@
+{
+  "id": "seitstuetz",
+  "version": 1,
+  "status": "draft",
+  "name_de": "Seitstütz",
+  "name_en": "Side Plank",
+  "aliases_de": ["Seitlicher Unterarmstütz"],
+  "movement_pattern": "core_anti_rotation",
+  "primary_muscles": ["obliques"],
+  "secondary_muscles": ["abs", "glutes"],
+  "equipment_ids": [],
+  "mechanics": "isolation",
+  "load_type": "time",
+  "unilateral": false,
+  "difficulty": 2,
+  "caution_tags": [],
+  "description_de": "Halteübung für die seitliche Rumpfmuskulatur: seitlich auf Unterarm und Füßen stützen, Körper in einer Linie.",
+  "steps_de": [
+    "Seitlich hinlegen, Ellbogen unter der Schulter, Beine gestreckt, Füße übereinander oder versetzt.",
+    "Hüfte anheben, bis der Körper vom Kopf bis zu den Füßen eine Linie bildet.",
+    "Position für die vorgegebene Zeit halten.",
+    "Absetzen und Seite wechseln."
+  ],
+  "tips_de": ["Füße versetzt aufstellen ist leichter als übereinander."],
+  "common_mistakes_de": ["Hüfte sinkt ab.", "Oberkörper kippt nach vorn."],
+  "safety_note_de": "Nur so weit und so oft bewegen, wie die Technik sauber bleibt. Bei Schmerzen, Schwindel oder ungewohnten Beschwerden die Übung beenden.",
+  "alternatives": [
+    {
+      "alternative_id": "seitstuetz-knie",
+      "reason": "easier",
+      "priority": 1
+    },
+    {
+      "alternative_id": "pallof-press-band",
+      "reason": "other_equipment",
+      "priority": 2
+    }
+  ],
+  "meta": {
+    "origin": "claude_session",
+    "model": "claude-opus-5-5",
+    "batch_id": null,
+    "created_on": "2026-10-05",
+    "expert_reviewed": false,
+    "reviewed_by": null,
+    "reviewed_at": null,
+    "review_note": null
+  }
+}

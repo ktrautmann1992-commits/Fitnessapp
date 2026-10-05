@@ -1,0 +1,44 @@
+{
+  "id": "dips-stuhl",
+  "version": 1,
+  "status": "draft",
+  "name_de": "Dips am Stuhl",
+  "name_en": "Chair Dip",
+  "aliases_de": ["Trizeps-Dips am Stuhl"],
+  "movement_pattern": "elbow_extension",
+  "primary_muscles": ["triceps"],
+  "secondary_muscles": ["chest", "front_delts"],
+  "equipment_ids": [],
+  "mechanics": "compound",
+  "load_type": "bodyweight",
+  "unilateral": false,
+  "difficulty": 2,
+  "caution_tags": [],
+  "description_de": "Armstrecken mit den Händen auf der Sitzfläche eines stabilen Stuhls. Kurzer Bewegungsweg, damit die Schultern nicht überlastet werden.",
+  "steps_de": [
+    "Einen stabilen Stuhl ohne Rollen mit der Lehne an die Wand stellen, sodass er nicht wegrutschen kann.",
+    "Hände schulterbreit an die vordere Sitzkante, Finger nach vorn, Gesäß vor dem Stuhl, Knie gebeugt.",
+    "Ellbogen nach hinten beugen und den Körper absenken, bis die Oberarme etwa waagerecht sind – nicht tiefer.",
+    "Arme strecken und zurück nach oben drücken."
+  ],
+  "tips_de": ["Leichter: Füße näher heranstellen.", "Schultern bleiben weg von den Ohren."],
+  "common_mistakes_de": ["Zu tief absenken.", "Schultern rollen nach vorn."],
+  "safety_note_de": "Nicht tiefer als bis zur Waagerechten der Oberarme. Bei Druck vorn in der Schulter auf den engen Liegestütz wechseln. Nur so weit und so oft bewegen, wie die Technik sauber bleibt. Bei Schmerzen, Schwindel oder ungewohnten Beschwerden die Übung beenden.",
+  "alternatives": [
+    {
+      "alternative_id": "trizeps-liegestuetz-eng",
+      "reason": "easier",
+      "priority": 1
+    }
+  ],
+  "meta": {
+    "origin": "claude_session",
+    "model": "claude-opus-5-5",
+    "batch_id": null,
+    "created_on": "2026-10-05",
+    "expert_reviewed": false,
+    "reviewed_by": null,
+    "reviewed_at": null,
+    "review_note": null
+  }
+}

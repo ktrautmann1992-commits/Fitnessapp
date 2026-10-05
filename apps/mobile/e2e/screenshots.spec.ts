@@ -98,6 +98,8 @@ for (const scheme of ['light', 'dark'] as const) {
     await page.getByRole('radio', { name: 'Marathon', exact: true }).click();
     await shot('ziel');
     await next();
+    await shot('trainingstage-vorschlag');
+    await page.getByRole('button', { name: 'Ohne Vorschlag planen' }).click();
     await page.getByRole('radio', { name: 'Tage egal – verteilt für mich' }).click();
     await page.getByRole('button', { name: 'Kraft im Studio: eine Einheit mehr' }).click();
     await page.getByRole('button', { name: 'Ausdauer – Laufen: eine Einheit mehr' }).click();

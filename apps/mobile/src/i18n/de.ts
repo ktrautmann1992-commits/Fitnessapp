@@ -256,6 +256,9 @@ export const de = {
       title: 'Deine Trainingstage',
       intro:
         'Was machst du an welchem Tag – und wie lange? Hinweise unten helfen dir, nichts ist Pflicht.',
+      enduranceSuggestion:
+        'Für dein Ausdauer-Ziel haben wir Ausdauer- und Kraft-Tage vorgeschlagen. Du kannst alles ändern. Kraft-Tage sind fürs Studio vorgeschlagen – bei Training zu Hause bitte den Ort ändern.',
+      clearSuggestion: 'Ohne Vorschlag planen',
       modeLabel: 'Wie planst du deine Woche?',
       modes: { fixed: 'Feste Wochentage', flex: 'Tage egal – verteilt für mich' },
       days: 'An welchen Tagen trainierst du?',
@@ -435,6 +438,8 @@ export const de = {
       'Eine Verschiebung konnte nicht übernommen werden – dein Plan wurde neu geladen.',
     templateLine: (title: string) => `Vorlage: ${title}`,
     enduranceOnly: 'Ausdauer-Plan',
+    enduranceBase: (discipline: string | null) =>
+      discipline ? `Ausdauer-Grundlage – ${discipline}` : 'Ausdauer-Grundlage',
     quality: {
       exact: 'Passt genau zu deinen Angaben.',
       close: 'Passt mit Anpassungen an deine Angaben.',
@@ -444,7 +449,7 @@ export const de = {
     notesTitle: 'Gut zu wissen',
     notes: {
       goal_endurance_not_yet:
-        'Ausdauer-Pläne mit Lauftagen bekommst du, wenn du Ausdauer-Tage einplanst. Bis dahin trainierst du Kraft und Fitness.',
+        'Dein Wettkampfplan rückwärts ab Renndatum (lange Läufe, Tempo, Tapering) kommt in einem späteren Update. Ausdauer-Tage planst du unter Einstellungen → Angaben ändern → Trainingstage ein.',
       days_rotated:
         'Bei 1–2 Kraft-Tagen wechseln die Einheiten von Woche zu Woche – so kommt jede Muskelgruppe dran. Der Umfang ist geringer.',
       days_capped:
@@ -476,7 +481,7 @@ export const de = {
       week_total_capped:
         'Mehr als 5 Einheiten pro Woche planen wir für dich noch nicht – mindestens 2 Ruhetage helfen beim Erholen.',
       endurance_basic_only:
-        'Wir planen lockere Ausdauer-Einheiten. Wettkampfpläne und Tempo-Training kommen später.',
+        'Dein Wettkampfplan rückwärts ab Renndatum (lange Läufe, Tempo, Tapering) kommt in einem späteren Update.',
     },
     medicalNoticeTitle: 'Vor dem Training',
     medicalNotice:

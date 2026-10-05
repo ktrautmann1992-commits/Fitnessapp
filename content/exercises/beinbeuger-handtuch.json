@@ -1,0 +1,52 @@
+{
+  "id": "beinbeuger-handtuch",
+  "version": 1,
+  "status": "draft",
+  "name_de": "Beinbeuger mit Handtuch",
+  "name_en": "Towel Slider Leg Curl",
+  "aliases_de": ["Slider Leg Curl"],
+  "movement_pattern": "knee_flexion",
+  "primary_muscles": ["hamstrings"],
+  "secondary_muscles": ["glutes", "calves"],
+  "equipment_ids": [],
+  "mechanics": "isolation",
+  "load_type": "bodyweight",
+  "unilateral": false,
+  "difficulty": 2,
+  "caution_tags": ["long_supine"],
+  "description_de": "Beinbeugen in Rückenlage mit den Fersen auf einem Handtuch auf glattem Boden. Trainiert die Oberschenkel-Rückseite ohne Geräte.",
+  "steps_de": [
+    "Auf glatten Boden (Parkett, Fliesen) in Rückenlage legen, Fersen auf ein gefaltetes Handtuch.",
+    "Becken anheben, bis Schultern, Hüfte und Knie eine Linie bilden.",
+    "Fersen langsam nach vorn wegschieben, bis die Beine fast gestreckt sind, Becken bleibt oben.",
+    "Fersen wieder zum Gesäß ziehen."
+  ],
+  "tips_de": [
+    "Leichter: nur das Wegschieben langsam machen und zum Zurückziehen das Becken ablegen.",
+    "Auf Teppich rutscht das Handtuch nicht – dort eine andere Übung wählen."
+  ],
+  "common_mistakes_de": ["Becken sackt ab.", "Hohlkreuz."],
+  "safety_note_de": "Nur so weit und so oft bewegen, wie die Technik sauber bleibt. Bei Schmerzen, Schwindel oder ungewohnten Beschwerden die Übung beenden.",
+  "alternatives": [
+    {
+      "alternative_id": "nordic-curl-assistiert",
+      "reason": "harder",
+      "priority": 1
+    },
+    {
+      "alternative_id": "beinbeuger-band",
+      "reason": "other_equipment",
+      "priority": 2
+    }
+  ],
+  "meta": {
+    "origin": "claude_session",
+    "model": "claude-opus-5-5",
+    "batch_id": null,
+    "created_on": "2026-10-05",
+    "expert_reviewed": false,
+    "reviewed_by": null,
+    "reviewed_at": null,
+    "review_note": null
+  }
+}

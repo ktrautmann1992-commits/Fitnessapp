@@ -29,6 +29,11 @@
       "alternative_id": "dead-bug",
       "reason": "easier",
       "priority": 1
+    },
+    {
+      "alternative_id": "bird-dog",
+      "reason": "easier",
+      "priority": 2
     }
   ],
   "meta": {

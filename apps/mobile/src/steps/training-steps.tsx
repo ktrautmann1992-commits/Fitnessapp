@@ -16,6 +16,7 @@ import {
   scheduleHints,
   slotMinutesSchema,
   suggestedSlotKind,
+  suggestedTrainingSlots,
   TRAINING_LIMITS,
   TRAINING_SLOT_KINDS,
   trainingScheduleSchema,
@@ -290,16 +291,34 @@ export function TrainingScheduleStep({ ctl }: { ctl: StepController }) {
   const saved = answers.trainingSchedule;
   const goalType = answers.goal?.goalType;
   const discipline = answers.goal?.goalType === 'endurance' ? answers.goal.discipline : null;
+  const screening = answers.healthScreening;
+  const ageYears = answers.birthDate ? ageInYears(answers.birthDate, ctl.today) : null;
+  // Vorsichtig = ohne Gesundheits-Check oder mit Flag (wie die Plan-Engine).
+  const cautious = !screening || screening.flags.length > 0;
 
-  const [mode, setMode] = useState<TrainingScheduleMode>(saved?.mode ?? 'fixed');
+  // Ziel Ausdauer: Ausdauer-Tage vorbelegen – NUR, solange noch keine Trainingstage gewählt sind (nie überschreiben).
+  const [suggestion, setSuggestion] = useState(() =>
+    saved
+      ? null
+      : suggestedTrainingSlots({
+          goalType,
+          discipline,
+          experienceLevel: answers.experienceLevel,
+          ageYears,
+          cautious,
+        }),
+  );
+  const initial = saved ?? suggestion;
+
+  const [mode, setMode] = useState<TrainingScheduleMode>(initial?.mode ?? 'fixed');
   const [days, setDays] = useState<number[]>(() =>
-    saved?.mode === 'fixed' ? saved.slots.map((slot) => slot.weekday) : [],
+    initial?.mode === 'fixed' ? initial.slots.map((slot) => slot.weekday) : [],
   );
   // Eingaben je Tag bleiben gemerkt, auch wenn der Tag abgewählt wird (bis zum Verlassen des Bildschirms).
   const [dayDrafts, setDayDrafts] = useState<Record<number, DayDraft>>(() =>
-    saved?.mode === 'fixed'
+    initial?.mode === 'fixed'
       ? Object.fromEntries(
-          saved.slots.map((slot) => [
+          initial.slots.map((slot) => [
             slot.weekday,
             { kind: slot.kind, minutes: minutesDraft(slot.minutes) },
           ]),
@@ -364,6 +383,15 @@ export function TrainingScheduleStep({ ctl }: { ctl: StepController }) {
     }));
   }
 
+  /** „Ohne Vorschlag planen“: vorbelegte Tage und ihre Eingaben verwerfen. */
+  function clearSuggestion() {
+    setSuggestion(null);
+    setDays([]);
+    setDayDrafts({});
+    setLastEdited(null);
+    setErrors({});
+  }
+
   function changeCount(kind: TrainingSlotKind, delta: number) {
     setFlex((prev) => ({
       ...prev,
@@ -404,15 +432,13 @@ export function TrainingScheduleStep({ ctl }: { ctl: StepController }) {
     return minutes.success ? [{ ...slot, minutes: minutes.data }] : [];
   });
   const flexTotal = TRAINING_SLOT_KINDS.reduce((sum, kind) => sum + flex[kind].count, 0);
-  const screening = answers.healthScreening;
   const hints = parsed.success
     ? scheduleHints(parsed.data, {
         goalType,
         weeklySessionCap: weeklySessionCap({
           experienceLevel: answers.experienceLevel,
-          ageYears: answers.birthDate ? ageInYears(answers.birthDate, ctl.today) : null,
-          // Vorsichtig = ohne Gesundheits-Check oder mit Flag (wie die Plan-Engine).
-          cautious: !screening || screening.flags.length > 0,
+          ageYears,
+          cautious,
         }),
       })
     : [];
@@ -441,6 +467,12 @@ export function TrainingScheduleStep({ ctl }: { ctl: StepController }) {
         <StepFooter onBack={ctl.goBack} onNext={next} loading={ctl.saving} error={ctl.error} />
       }
     >
+      {suggestion ? (
+        <Notice testID="schedule-suggestion">
+          <Body>{ts.enduranceSuggestion}</Body>
+          <Button label={ts.clearSuggestion} variant="secondary" onPress={clearSuggestion} />
+        </Notice>
+      ) : null}
       <ChoiceList
         label={ts.modeLabel}
         options={(['fixed', 'flex'] as const).map((value) => ({

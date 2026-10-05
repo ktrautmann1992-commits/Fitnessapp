@@ -1,0 +1,52 @@
+{
+  "id": "y-t-w-vorgebeugt",
+  "version": 1,
+  "status": "draft",
+  "name_de": "Y-T-W vorgebeugt",
+  "name_en": "Bent-over Y-T-W Raise",
+  "aliases_de": ["YTW im Stand"],
+  "movement_pattern": "shoulder_isolation",
+  "primary_muscles": ["rear_delts", "upper_back"],
+  "secondary_muscles": ["side_delts"],
+  "equipment_ids": [],
+  "mechanics": "isolation",
+  "load_type": "bodyweight",
+  "unilateral": false,
+  "difficulty": 1,
+  "caution_tags": [],
+  "description_de": "Armheben in drei Positionen (Y, T, W) mit vorgebeugtem Oberkörper im Stand für hintere Schulter und oberen Rücken. Ohne Geräte machbar.",
+  "steps_de": [
+    "Hüftbreit stehen, Knie leicht beugen und den Oberkörper mit geradem Rücken nach vorn neigen.",
+    "Arme hängen lassen, Daumen zeigen nach außen.",
+    "Y: Arme schräg nach vorn-oben heben, kurz halten, absenken.",
+    "T: Arme seitlich auf Schulterhöhe heben, kurz halten, absenken.",
+    "W: Ellbogen beugen und nach hinten ziehen, Schulterblätter zusammen, kurz halten, absenken. Y + T + W = eine Wiederholung."
+  ],
+  "tips_de": [
+    "Langsam bewegen und oben jeweils eine Sekunde halten.",
+    "Wer sich nicht vorbeugen mag, macht die Bewegung mit dem Rücken an der Wand."
+  ],
+  "common_mistakes_de": [
+    "Schwung aus dem Oberkörper.",
+    "Rundrücken.",
+    "Schultern zu den Ohren hochziehen."
+  ],
+  "safety_note_de": "Nur so weit und so oft bewegen, wie die Technik sauber bleibt. Bei Schmerzen, Schwindel oder ungewohnten Beschwerden die Übung beenden.",
+  "alternatives": [
+    {
+      "alternative_id": "reverse-fly-kurzhantel",
+      "reason": "other_equipment",
+      "priority": 1
+    }
+  ],
+  "meta": {
+    "origin": "claude_session",
+    "model": "claude-opus-5-5",
+    "batch_id": null,
+    "created_on": "2026-10-05",
+    "expert_reviewed": false,
+    "reviewed_by": null,
+    "reviewed_at": null,
+    "review_note": null
+  }
+}

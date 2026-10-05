@@ -1,0 +1,44 @@
+{
+  "id": "archer-liegestuetz",
+  "version": 1,
+  "status": "draft",
+  "name_de": "Archer-Liegestütz",
+  "name_en": "Archer Push-up",
+  "aliases_de": ["Bogenschützen-Liegestütz"],
+  "movement_pattern": "horizontal_push",
+  "primary_muscles": ["chest"],
+  "secondary_muscles": ["triceps", "front_delts", "abs"],
+  "equipment_ids": [],
+  "mechanics": "compound",
+  "load_type": "bodyweight",
+  "unilateral": false,
+  "difficulty": 3,
+  "caution_tags": [],
+  "description_de": "Sehr schwere Liegestütz-Variante mit weitem Griff: Das Gewicht wandert abwechselnd auf einen Arm, der andere bleibt fast gestreckt.",
+  "steps_de": [
+    "Hände deutlich weiter als schulterbreit aufsetzen, Finger leicht nach außen.",
+    "Körper gerade, Bauch fest.",
+    "Zu einer Seite absenken: dieser Arm beugt sich, der andere bleibt fast gestreckt.",
+    "Zurück nach oben drücken und die Seite wechseln."
+  ],
+  "tips_de": ["Zwischenstufe: Hände etwas erhöht aufsetzen."],
+  "common_mistakes_de": ["Hüfte dreht ein.", "Nur halbe Bewegung."],
+  "safety_note_de": "Nur so weit und so oft bewegen, wie die Technik sauber bleibt. Bei Schmerzen, Schwindel oder ungewohnten Beschwerden die Übung beenden.",
+  "alternatives": [
+    {
+      "alternative_id": "liegestuetz-fuesse-erhoeht",
+      "reason": "easier",
+      "priority": 1
+    }
+  ],
+  "meta": {
+    "origin": "claude_session",
+    "model": "claude-opus-5-5",
+    "batch_id": null,
+    "created_on": "2026-10-05",
+    "expert_reviewed": false,
+    "reviewed_by": null,
+    "reviewed_at": null,
+    "review_note": null
+  }
+}

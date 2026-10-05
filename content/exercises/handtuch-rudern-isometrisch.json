@@ -1,0 +1,47 @@
+{
+  "id": "handtuch-rudern-isometrisch",
+  "version": 1,
+  "status": "draft",
+  "name_de": "Handtuch-Rudern im Sitzen (Halten)",
+  "name_en": "Seated Towel Row Hold",
+  "aliases_de": ["Handtuch-Rudern"],
+  "movement_pattern": "horizontal_pull",
+  "primary_muscles": ["upper_back", "lats"],
+  "secondary_muscles": ["biceps", "rear_delts"],
+  "equipment_ids": [],
+  "mechanics": "compound",
+  "load_type": "time",
+  "unilateral": false,
+  "difficulty": 1,
+  "caution_tags": [],
+  "description_de": "Halteübung für den oberen Rücken: Im Sitzen ziehst du ein Handtuch gegen die eigenen Füße und hältst die Spannung. Ganz ohne Geräte und ohne Sturzrisiko.",
+  "steps_de": [
+    "Auf den Boden setzen, Beine leicht gebeugt, ein Handtuch mittig um beide Fußsohlen legen.",
+    "Handtuch-Enden greifen, aufrecht sitzen, Arme lang.",
+    "Ellbogen nach hinten ziehen, als würdest du rudern, und mit den Füßen dagegen drücken.",
+    "Die Spannung mit zurückgezogenen Schulterblättern für die vorgegebene Zeit halten, ruhig weiteratmen."
+  ],
+  "tips_de": [
+    "Die Stärke bestimmst du selbst: so fest ziehen, dass es anstrengend, aber gut haltbar ist.",
+    "Nicht die Luft anhalten."
+  ],
+  "common_mistakes_de": ["Rundrücken im Sitzen.", "Schultern zu den Ohren hochziehen."],
+  "safety_note_de": "Nur so weit und so oft bewegen, wie die Technik sauber bleibt. Bei Schmerzen, Schwindel oder ungewohnten Beschwerden die Übung beenden.",
+  "alternatives": [
+    {
+      "alternative_id": "tuerrahmen-rudern",
+      "reason": "harder",
+      "priority": 1
+    }
+  ],
+  "meta": {
+    "origin": "claude_session",
+    "model": "claude-opus-5-5",
+    "batch_id": null,
+    "created_on": "2026-10-05",
+    "expert_reviewed": false,
+    "reviewed_by": null,
+    "reviewed_at": null,
+    "review_note": null
+  }
+}

@@ -1,0 +1,50 @@
+{
+  "id": "pike-liegestuetz",
+  "version": 1,
+  "status": "draft",
+  "name_de": "Pike-Liegestütz",
+  "name_en": "Pike Push-up",
+  "aliases_de": ["Hecht-Liegestütz"],
+  "movement_pattern": "vertical_push",
+  "primary_muscles": ["front_delts"],
+  "secondary_muscles": ["triceps", "side_delts", "upper_back"],
+  "equipment_ids": [],
+  "mechanics": "compound",
+  "load_type": "bodyweight",
+  "unilateral": false,
+  "difficulty": 2,
+  "caution_tags": ["overhead"],
+  "description_de": "Drückübung für die Schultern ohne Geräte: Aus der umgedrehten V-Position wird der Kopf zwischen den Händen Richtung Boden gesenkt.",
+  "steps_de": [
+    "In den Liegestütz gehen, dann die Hüfte hoch schieben, bis der Körper ein umgedrehtes V bildet.",
+    "Hände schulterbreit, Füße so nah wie angenehm an die Hände setzen.",
+    "Ellbogen beugen und den Kopf kontrolliert vor den Händen Richtung Boden senken.",
+    "Zurück nach oben drücken, bis die Arme gestreckt sind."
+  ],
+  "tips_de": [
+    "Leichter: Füße weiter weg. Schwerer: Füße auf eine Stufe.",
+    "Kopf nie auf dem Boden ablegen."
+  ],
+  "common_mistakes_de": [
+    "Ellbogen weit nach außen.",
+    "Hüfte sinkt ab – es wird ein normaler Liegestütz."
+  ],
+  "safety_note_de": "Kopf-unten-Position: bei Schwindel sofort aufhören. Nur so weit und so oft bewegen, wie die Technik sauber bleibt. Bei Schmerzen, Schwindel oder ungewohnten Beschwerden die Übung beenden.",
+  "alternatives": [
+    {
+      "alternative_id": "schulterdruecken-band",
+      "reason": "other_equipment",
+      "priority": 1
+    }
+  ],
+  "meta": {
+    "origin": "claude_session",
+    "model": "claude-opus-5-5",
+    "batch_id": null,
+    "created_on": "2026-10-05",
+    "expert_reviewed": false,
+    "reviewed_by": null,
+    "reviewed_at": null,
+    "review_note": null
+  }
+}

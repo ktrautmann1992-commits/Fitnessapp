@@ -1,0 +1,53 @@
+{
+  "id": "bulgarische-split-kniebeuge-stuhl",
+  "version": 1,
+  "status": "draft",
+  "name_de": "Bulgarische Split-Kniebeuge am Stuhl",
+  "name_en": "Bulgarian Split Squat (Chair)",
+  "aliases_de": ["Bulgarian Split Squat ohne Gewicht"],
+  "movement_pattern": "lunge",
+  "primary_muscles": ["quadriceps", "glutes"],
+  "secondary_muscles": ["hamstrings", "adductors"],
+  "equipment_ids": [],
+  "mechanics": "compound",
+  "load_type": "bodyweight",
+  "unilateral": true,
+  "difficulty": 2,
+  "caution_tags": [],
+  "description_de": "Einbeinige Kniebeuge mit dem hinteren Fuß auf einem stabilen Stuhl. Ohne Gewicht schon sehr fordernd; eine Hand an der Wand gibt Halt.",
+  "steps_de": [
+    "Stabilen Stuhl ohne Rollen an die Wand stellen und dich seitlich nah an eine Wand oder einen Türrahmen stellen.",
+    "Eine Hand an die Wand – der Halt ist Pflicht. Den hinteren Fußrücken auf die Sitzfläche legen.",
+    "Vorderen Fuß so weit vorn aufsetzen, dass das Knie beim Absenken über dem Fuß bleibt.",
+    "Gerade nach unten absenken, bis der vordere Oberschenkel etwa waagerecht ist.",
+    "Über das vordere Bein zurück nach oben drücken, nach allen Wiederholungen Seite wechseln."
+  ],
+  "tips_de": [
+    "Leichter: weniger tief gehen.",
+    "Oberkörper leicht nach vorn neigen betont das Gesäß."
+  ],
+  "common_mistakes_de": ["Vorderer Fuß zu nah am Stuhl.", "Abdrücken mit dem hinteren Bein."],
+  "safety_note_de": "Sturzgefahr: immer mit Halt an Wand oder Türrahmen und nur mit einem Stuhl, der nicht rutscht. Nur so weit und so oft bewegen, wie die Technik sauber bleibt. Bei Schmerzen, Schwindel oder ungewohnten Beschwerden die Übung beenden.",
+  "alternatives": [
+    {
+      "alternative_id": "split-kniebeuge",
+      "reason": "easier",
+      "priority": 1
+    },
+    {
+      "alternative_id": "bulgarische-split-kniebeuge",
+      "reason": "other_equipment",
+      "priority": 2
+    }
+  ],
+  "meta": {
+    "origin": "claude_session",
+    "model": "claude-opus-5-5",
+    "batch_id": null,
+    "created_on": "2026-10-05",
+    "expert_reviewed": false,
+    "reviewed_by": null,
+    "reviewed_at": null,
+    "review_note": null
+  }
+}

@@ -6,6 +6,7 @@ import {
   checkLibraryCoverage,
   checkPlanTemplate,
   isBodyweightOrBandOnly,
+  isBodyweightTemplate,
   muscleNameDe,
 } from './checks';
 import type { Exercise, PlanTemplate, TemplateExercise } from './schemas';
@@ -210,6 +211,48 @@ describe('checkPlanTemplate', () => {
       );
       expect(rules(issues)).toEqual(['V2']);
       expect(issues[0]?.path).toBe('optional_equipment_ids.0');
+    });
+
+    it('V12: Körpergewicht-Vorlage nur mit Übungen ohne Geräte (auch wenn eine Alternative machbar ist)', () => {
+      const bodyweightOnly = makeExercise({ id: 'kb-kniebeuge', equipment_ids: [] });
+      const withAlt = makeExercise({
+        id: 'kh-kniebeuge-alt',
+        equipment_ids: ['dumbbells'],
+        alternatives: [{ alternative_id: 'kb-kniebeuge', reason: 'home', priority: 1 }],
+      });
+      const bwLib = libraryMap([...LIBRARY, bodyweightOnly, withAlt]);
+      const bw = home({ required_equipment_ids: [], optional_equipment_ids: [] });
+      expect(isBodyweightTemplate(bw)).toBe(true);
+      expect(checkPlanTemplate(withItem({ exercise_id: 'kb-kniebeuge' }, 0, 0, bw), bwLib)).toEqual(
+        [],
+      );
+      const issues = checkPlanTemplate(
+        withItem({ exercise_id: 'kh-kniebeuge-alt' }, 0, 0, bw),
+        bwLib,
+      );
+      // V2 lässt die Übung wegen der machbaren Alternative durch – V12 nicht.
+      expect(rules(issues)).toEqual(['V12']);
+      expect(issues[0]).toMatchObject({
+        severity: 'error',
+        path: 'sessions.0.exercises.0.exercise_id',
+      });
+      // Gleiche Übung in einer normalen Zuhause-Vorlage (mit Geräten) bzw. im Studio: kein V12.
+      expect(
+        rules(
+          checkPlanTemplate(withItem({ exercise_id: 'kh-kniebeuge-alt' }, 0, 0, home()), bwLib),
+        ),
+      ).not.toContain('V12');
+      expect(isBodyweightTemplate(home())).toBe(false);
+      expect(
+        isBodyweightTemplate(
+          makeTemplate({ location: 'gym', required_equipment_ids: [], optional_equipment_ids: [] }),
+        ),
+      ).toBe(false);
+      expect(
+        isBodyweightTemplate(
+          home({ required_equipment_ids: [], optional_equipment_ids: ['pull_up_bar'] }),
+        ),
+      ).toBe(false);
     });
 
     it('unbekanntes Gerät in der Geräteliste (auch Studio)', () => {

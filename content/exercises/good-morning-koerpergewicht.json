@@ -1,0 +1,52 @@
+{
+  "id": "good-morning-koerpergewicht",
+  "version": 1,
+  "status": "draft",
+  "name_de": "Good Morning ohne Gewicht",
+  "name_en": "Bodyweight Good Morning",
+  "aliases_de": ["Hüftbeugen ohne Gewicht"],
+  "movement_pattern": "hinge",
+  "primary_muscles": ["hamstrings", "glutes"],
+  "secondary_muscles": ["lower_back"],
+  "equipment_ids": [],
+  "mechanics": "compound",
+  "load_type": "bodyweight",
+  "unilateral": false,
+  "difficulty": 1,
+  "caution_tags": [],
+  "description_de": "Hüftbeugen im Stand mit dem eigenen Körpergewicht für Beinbeuger und Gesäß. Lehrt das Beugen aus der Hüfte mit geradem Rücken.",
+  "steps_de": [
+    "Hüftbreit stehen, Knie leicht beugen, Hände an die Schläfen oder vor der Brust kreuzen.",
+    "Hüfte nach hinten schieben und den Oberkörper mit geradem Rücken nach vorn neigen.",
+    "So weit beugen, bis du eine deutliche Dehnung an der Oberschenkel-Rückseite spürst.",
+    "Gesäß anspannen und die Hüfte nach vorn bringen, bis du wieder aufrecht stehst."
+  ],
+  "tips_de": [
+    "Langsam absenken (3 Sekunden) macht die Übung deutlich schwerer.",
+    "Der Blick geht leicht nach vorn-unten."
+  ],
+  "common_mistakes_de": ["Rundrücken.", "Knie beugen sich immer mehr – es wird eine Kniebeuge."],
+  "safety_note_de": "Nur so weit und so oft bewegen, wie die Technik sauber bleibt. Bei Schmerzen, Schwindel oder ungewohnten Beschwerden die Übung beenden.",
+  "alternatives": [
+    {
+      "alternative_id": "rdl-einbeinig-koerpergewicht",
+      "reason": "harder",
+      "priority": 1
+    },
+    {
+      "alternative_id": "good-morning-band",
+      "reason": "other_equipment",
+      "priority": 2
+    }
+  ],
+  "meta": {
+    "origin": "claude_session",
+    "model": "claude-opus-5-5",
+    "batch_id": null,
+    "created_on": "2026-10-05",
+    "expert_reviewed": false,
+    "reviewed_by": null,
+    "reviewed_at": null,
+    "review_note": null
+  }
+}
