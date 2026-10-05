@@ -364,6 +364,8 @@ export interface StrengthVersions {
   readonly primary: EquipmentLocation;
   readonly versions: ReadonlyMap<EquipmentLocation, readonly AdaptedSession[]>;
   readonly library: ReadonlyMap<string, Exercise>;
+  /** Körpergewicht-Vorlage: beim Kürzen bleibt die letzte Rumpf-Übung (fitSessionToMinutes, Engine-Version 3). */
+  readonly protectLastCore?: boolean;
 }
 
 export interface BlockContext {
@@ -484,7 +486,9 @@ function placeWeeks(
       const key = `${location}|${base.template_day_index}|${day.minutes}`;
       let fit = fitted.get(key);
       if (!fit) {
-        fit = fitSessionToMinutes(base.exercises, day.minutes, ctx.strength.library);
+        fit = fitSessionToMinutes(base.exercises, day.minutes, ctx.strength.library, {
+          protectLastCore: ctx.strength.protectLastCore ?? false,
+        });
         fitted.set(key, fit);
       }
       if (fit.shortened) notes.add('minutes_shortened');
@@ -680,6 +684,11 @@ export interface NextPlanBlockOptions {
    * nur tatsächlich Trainiertes (enduranceReferenceFromBlock); weggelassen → geplante Minuten (Phase-3-Verhalten).
    */
   readonly loggedEnduranceMinutes?: ReadonlyMap<string, number>;
+  /**
+   * Plan aus einer Körpergewicht-Vorlage (isBodyweightTemplate der Vorlage des Plans): beim Kürzen bleibt die letzte
+   * Rumpf-Übung. Weggelassen → Kürzen wie Engine-Version 2.
+   */
+  readonly protectLastCore?: boolean;
 }
 
 /**
@@ -813,7 +822,12 @@ export function nextPlanBlock(
     {
       strength:
         strengthLocations.length > 0 && primarySessions.length > 0
-          ? { primary, versions, library: options.library }
+          ? {
+              primary,
+              versions,
+              library: options.library,
+              protectLastCore: options.protectLastCore ?? false,
+            }
           : null,
       endurance: { ...options.endurance, rules: options.rules },
       rules: options.rules,

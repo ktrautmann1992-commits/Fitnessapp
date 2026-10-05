@@ -4,6 +4,7 @@ import { barbellLoadSteps } from '../equipment';
 import {
   buildExerciseLogEntry,
   type PlannedDosage,
+  type Prescription,
   prescriptionForDisplay,
   progressFromLogs,
   type ProgressResult,
@@ -256,21 +257,49 @@ describe('progressFromLogs – Grundfälle', () => {
     expect(run(120)).toMatchObject({ hint: 'harder_variant', progress: { durationS: 120 } });
   });
 
-  it('Körpergewicht → schwerere Variante, Band → stärkeres Band (nur Hinweis)', () => {
-    for (const [loadType, hint] of [
-      ['bodyweight', 'harder_variant'],
-      ['band', 'stronger_band'],
-    ] as const) {
-      const ctx: ProgressionContext = { ...dumbbell, loadType, incrementKind: 'none', steps: [] };
-      const { next } = simulate(
+  it('Band → stärkeres Band (nur Hinweis)', () => {
+    const ctx: ProgressionContext = {
+      ...dumbbell,
+      loadType: 'band',
+      incrementKind: 'none',
+      steps: [],
+    };
+    const { next } = simulate(
+      'band_row',
+      ctx,
+      planned,
+      dates('2026-10-05', 7).map((date) => ({ date, perform: all(12, { weightKg: null }) })),
+    );
+    expect(next.hint).toBe('stronger_band');
+    expect(next.progress.targetReps).toBe(12);
+  });
+
+  it('Körpergewicht (Engine 3): Puffer bis reps_max + 2, dann Zusatzsatz, erst dann schwerere Variante', () => {
+    const ctx: ProgressionContext = {
+      ...dumbbell,
+      loadType: 'bodyweight',
+      incrementKind: 'none',
+      steps: [],
+    };
+    // Immer genau das Ziel geschafft.
+    const asTarget = (p: Prescription) => all(p.targetReps ?? 0, { weightKg: null })(p);
+    const run = (count: number) =>
+      simulate(
         'pushup',
         ctx,
         planned,
-        dates('2026-10-05', 7).map((date) => ({ date, perform: all(12, { weightKg: null }) })),
+        dates('2026-10-05', count).map((date) => ({ date, perform: asTarget })),
       );
-      expect(next.hint).toBe(hint);
-      expect(next.progress.targetReps).toBe(12);
-    }
+    // Bei reps_max (12) ohne Hinweis: weiter mit Puffer-Wdh.
+    const mid = run(7).next;
+    expect(mid.hint).toBeNull();
+    expect(mid.progress.targetReps).toBeGreaterThan(12);
+    const end = run(20);
+    expect(end.next.hint).toBe('harder_variant');
+    expect(end.next.progress).toMatchObject({ targetReps: 14, extraSet: true, weightKg: null });
+    // Der Zusatzsatz wurde wirklich angezeigt, bevor die Variante kam.
+    expect(end.records.some((r) => r.prescription.sets === 4)).toBe(true);
+    expect(end.records.every((r) => (r.prescription.targetReps ?? 0) <= 14)).toBe(true);
   });
 });
 

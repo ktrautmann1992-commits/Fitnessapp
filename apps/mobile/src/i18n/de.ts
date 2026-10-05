@@ -470,7 +470,7 @@ export const de = {
       no_pull_exercise:
         'Für Rücken-Übungen (Ziehen) fehlt ein Gerät. Dafür reicht schon ein Widerstandsband.',
       location_mismatch:
-        'Für deinen Trainingsort gibt es noch keine eigene Vorlage – wir haben eine passende angepasst.',
+        'Die Vorlage passt nicht ganz zu deinem Trainingsort – Übungen, für die dort Geräte fehlen, haben wir getauscht.',
       endurance_days_capped:
         'Wir planen weniger Ausdauer-Tage als gewünscht, damit genug Erholung bleibt.',
       endurance_volume_ramped:

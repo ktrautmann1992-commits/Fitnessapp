@@ -1,0 +1,62 @@
+{
+  "id": "handtuch-latziehen",
+  "version": 1,
+  "status": "draft",
+  "name_de": "Handtuch-Latziehen im Knien (Halten)",
+  "name_en": "Kneeling Towel Lat Pulldown Hold",
+  "aliases_de": ["Handtuch-Latziehen"],
+  "movement_pattern": "vertical_pull",
+  "primary_muscles": ["lats"],
+  "secondary_muscles": ["upper_back", "biceps"],
+  "equipment_ids": [],
+  "mechanics": "compound",
+  "load_type": "time",
+  "unilateral": false,
+  "difficulty": 1,
+  "caution_tags": [],
+  "description_de": "Halteübung für den breiten Rückenmuskel ohne Geräte: Du ziehst ein Handtuch kräftig auseinander und nach unten, als würdest du am Latzug ziehen, und hältst die Spannung.",
+  "steps_de": [
+    "Aufrecht auf eine weiche Unterlage knien oder auf einen stabilen Stuhl setzen, Bauch leicht anspannen.",
+    "Ein Handtuch an den Enden greifen, Hände deutlich weiter als schulterbreit, Arme schräg nach oben vor dem Kopf.",
+    "Das Handtuch kräftig auseinanderziehen, Schulterblätter nach unten ziehen.",
+    "Ellbogen mit dieser Spannung seitlich nach unten ziehen, bis das Handtuch vor der Stirn bis Kinnhöhe ist – nie hinter den Kopf.",
+    "Die Spannung für die vorgegebene Zeit halten, ruhig weiteratmen, dann Arme langsam lösen."
+  ],
+  "tips_de": [
+    "Die Stärke bestimmst du selbst: so fest auseinanderziehen, dass es anstrengend, aber gut haltbar ist.",
+    "Mit einer Klimmzugstange ist der Klimmzug die schwerere Variante."
+  ],
+  "common_mistakes_de": [
+    "Schultern zu den Ohren hochziehen.",
+    "Hohlkreuz statt aufrechtem Oberkörper.",
+    "Luft anhalten."
+  ],
+  "safety_note_de": "Nur so weit und so oft bewegen, wie die Technik sauber bleibt. Bei Schmerzen, Schwindel oder ungewohnten Beschwerden die Übung beenden.",
+  "alternatives": [
+    {
+      "alternative_id": "klimmzug-band-unterstuetzt",
+      "reason": "harder",
+      "priority": 1
+    },
+    {
+      "alternative_id": "klimmzug",
+      "reason": "harder",
+      "priority": 2
+    },
+    {
+      "alternative_id": "latziehen-band",
+      "reason": "other_equipment",
+      "priority": 3
+    }
+  ],
+  "meta": {
+    "origin": "claude_session",
+    "model": "claude-opus-5-5",
+    "batch_id": null,
+    "created_on": "2026-10-05",
+    "expert_reviewed": false,
+    "reviewed_by": null,
+    "reviewed_at": null,
+    "review_note": null
+  }
+}

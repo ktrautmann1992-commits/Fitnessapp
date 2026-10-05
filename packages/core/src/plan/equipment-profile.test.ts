@@ -6,7 +6,9 @@ import {
   equipmentProfile,
   findHarderVariant,
   findSubstitute,
+  isBodyweightOnly,
   isExerciseFeasible,
+  isStrengthEquipment,
 } from './equipment-profile';
 import { isExerciseAllowed, planSafetyRules } from './safety';
 import { barbellLoadSteps } from '../equipment';
@@ -295,5 +297,55 @@ describe('Langhantel: ladbare Gesamtgewichte (B3-Pflichtpunkt, Erweiterungsplan 
     ]);
     expect(profile.weights.get('barbell')).toEqual([]);
     expect(profile.weights.get('dumbbells')).toEqual([2, 10]);
+  });
+});
+
+describe('Körpergewicht-Profil (docs/PLAN-KOERPERGEWICHT.md §5.1, A6)', () => {
+  it('Kraft-Geräte: alles außer Ausdauer-Geräten und Klimmzugstange; Unbekanntes zählt vorsichtig mit', () => {
+    for (const id of [
+      'treadmill',
+      'bike_ergometer',
+      'rowing_machine',
+      'pull_up_bar',
+      'flat_bench',
+      'incline_bench',
+      'dip_station',
+      'other',
+    ]) {
+      expect(isStrengthEquipment(id), id).toBe(false);
+    }
+    for (const id of [
+      'dumbbells',
+      'barbell',
+      'kettlebells',
+      'resistance_bands',
+      'power_rack',
+      'cable_station',
+      'leg_press',
+    ]) {
+      expect(isStrengthEquipment(id), id).toBe(true);
+    }
+    expect(isStrengthEquipment('gibt-es-nicht')).toBe(true);
+  });
+
+  it('isBodyweightOnly: Zuhause ohne Kraft-Geräte; Studio nie', () => {
+    const home = (ids: string[]) =>
+      equipmentProfile(
+        'home',
+        ids.map((equipmentId) => ({ equipmentId, weightsKg: [] })),
+      );
+    expect(isBodyweightOnly(nothing)).toBe(true);
+    expect(isBodyweightOnly(home(['treadmill', 'bike_ergometer', 'rowing_machine']))).toBe(true);
+    expect(isBodyweightOnly(home(['pull_up_bar']))).toBe(true);
+    expect(isBodyweightOnly(home(['other']))).toBe(true);
+    // W2: Bänke sind keine lastgebenden Kraft-Geräte.
+    expect(isBodyweightOnly(home(['flat_bench']))).toBe(true);
+    expect(isBodyweightOnly(home(['incline_bench', 'pull_up_bar']))).toBe(true);
+    expect(isBodyweightOnly(home(['flat_bench', 'dumbbells']))).toBe(false);
+    expect(isBodyweightOnly(home(['pull_up_bar', 'resistance_bands']))).toBe(false);
+    expect(isBodyweightOnly(bandOnly)).toBe(false);
+    expect(isBodyweightOnly(dumbbellsOnly)).toBe(false);
+    expect(isBodyweightOnly(gym)).toBe(false);
+    expect(isBodyweightOnly(equipmentProfile('both', []))).toBe(false);
   });
 });

@@ -188,7 +188,9 @@ export function sessionAchieved(state: ProgressionState, performed: PerformedSes
  *   Gewicht: Schritt ≤ 10 % → Gewicht steigt (Wdh. auf reps_min, Sätze wie Vorlage). Größerer Sprung nie direkt,
  *   erst nach dem Puffer: Wdh. bis reps_max + 2 (≤ 30), dann +1 Satz (≤ 6, V9), danach der Gewichtsschritt (bei
  *   Sprung > 25 % erste Einheit RPE −1). Keine höhere Stufe → nach dem Puffer Hinweis `no_heavier_weight`.
- *   Körpergewicht → schwerere Variante; Band → stärkeres Band; Halteübung → +min(5, max(1, 10 %)) s bis 120 s.
+ *   Körpergewicht (ab Engine-Version 3): derselbe Puffer – Wdh. bis reps_max + 2 (≤ 30), dann +1 Satz (≤ 6, V9),
+ *   danach Hinweis „schwerere Variante“ (findHarderVariant über progressHintForDisplay() in log/harder-variant.ts).
+ *   Band → stärkeres Band; Halteübung → +min(5, max(1, 10 %)) s bis 120 s.
  * Nie Last senken (Live-Anpassung, Phase 4b). `history`: älteste zuerst.
  * Phase 4 (W7): Gewichtssprung und Zusatzsatz nur, wenn mindestens eine der zwei Einheiten mindestens die
  * Vorlagen-Satzzahl hatte (`plannedSets ≥ templateSets`); zwei kurze Fassungen bringen nur +1 Wdh. (bis zum Puffer).
@@ -228,11 +230,8 @@ export function nextLoad(
       : { kind: 'keep' };
   }
   if (!twoInRow) return { kind: 'keep' };
-  if (state.loadType === 'bodyweight') return { kind: 'harder_variant' };
   if (state.loadType === 'band') return { kind: 'stronger_band' };
 
-  // Gewicht
-  if (state.weightKg === null) return { kind: 'keep' };
   const repsCap = Math.min(
     repsMax + LOAD_PROGRESSION.extraRepsBuffer,
     TEMPLATE_DOSAGE_LIMITS.reps.max,
@@ -240,6 +239,25 @@ export function nextLoad(
   const fullVersion = history
     .slice(-LOAD_PROGRESSION.consecutiveSessionsForStep)
     .some((h) => (h.plannedSets ?? state.sets) >= state.templateSets);
+  const setsCap = Math.min(
+    state.templateSets + LOAD_PROGRESSION.extraSets,
+    TEMPLATE_DOSAGE_LIMITS.sets.max,
+  );
+
+  // Körpergewicht (Engine-Version 3, docs/PLAN-KOERPERGEWICHT.md §5.5, A10): derselbe Puffer wie beim großen
+  // Gewichtssprung – Wdh. bis reps_max + 2 (≤ 30), dann +1 Satz (≤ 6, V9), erst dann der Hinweis „schwerere
+  // Variante“. Nur kurze Fassungen (W7): nur +Wdh. bis zum Puffer, kein Zusatzsatz und kein Variantenwechsel.
+  if (state.loadType === 'bodyweight') {
+    if (target < repsCap) return { kind: 'add_rep', targetReps: target + 1 };
+    if (!fullVersion) return { kind: 'keep' };
+    if ((options.allowExtraSet ?? true) && state.sets < setsCap) {
+      return { kind: 'add_set', sets: state.sets + 1 };
+    }
+    return { kind: 'harder_variant' };
+  }
+
+  // Gewicht
+  if (state.weightKg === null) return { kind: 'keep' };
   // Eine Stufe über der Plausibilitätsgrenze (500 kg) gibt es nicht → wie „keine höhere Stufe“.
   const step = nextWeightStep(state.weightKg, options.incrementKind, options.steps);
   const next = step !== null && step <= PLANNED_LOAD_LIMITS.targetWeightKg.max + 1e-9 ? step : null;
@@ -268,10 +286,6 @@ export function nextLoad(
   if (target < repsCap) {
     return { kind: 'add_rep', targetReps: target + 1 };
   }
-  const setsCap = Math.min(
-    state.templateSets + LOAD_PROGRESSION.extraSets,
-    TEMPLATE_DOSAGE_LIMITS.sets.max,
-  );
   if ((options.allowExtraSet ?? true) && state.sets < setsCap) {
     return { kind: 'add_set', sets: state.sets + 1 };
   }

@@ -26,6 +26,11 @@ import {
   selectPlanContent,
   validateContent,
   type ContentFile,
+  equipmentProfile,
+  type ExperienceLevel,
+  type HomeEquipmentForProfile,
+  planSafetyRules,
+  progressHintForDisplay,
 } from '@fitnessapp/core';
 
 export interface ExamplePerson {
@@ -380,7 +385,7 @@ function renderPlan(plan: GeneratedPlan): string[] {
 }
 
 // ---------------------------------------------------------------------------------------------------------
-// Beispiel-Progression (docs/PLAN-PHASE-4.md Abschnitt 5.7): vier ausgedachte Personen, je 8 Einheiten einer
+// Beispiel-Progression (docs/PLAN-PHASE-4.md Abschnitt 5.7): fünf ausgedachte Personen (vier je 8 Einheiten, Emil 16) einer
 // Übung – so sehen die Gründer die Progression aus dem Tagebuch am Handy, bevor die App sie zeigt.
 // ---------------------------------------------------------------------------------------------------------
 
@@ -403,6 +408,15 @@ export interface ProgressionExample {
   readonly planned: PlannedDosage;
   readonly startWeightKg?: number;
   readonly sessions: readonly ProgressionSession[];
+  /**
+   * Für den Hinweis „schwerere Variante“: echte Übung, Geräte und Level der Person (PLAN-KOERPERGEWICHT W6). Der
+   * Hinweis wird – wie in der App – nur über progressHintForDisplay() gezeigt, mit Namen der Variante.
+   */
+  readonly variant?: {
+    readonly exerciseId: string;
+    readonly homeEquipment: readonly HomeEquipmentForProfile[];
+    readonly experienceLevel: ExperienceLevel;
+  };
 }
 
 const sets = (count: number, reps: number, weightKg: number | null, rpe: number | null = null) =>
@@ -546,6 +560,32 @@ export const PROGRESSION_EXAMPLES: readonly ProgressionExample[] = [
       { perform: shown, note: 'Studio – 22,5 → 25 kg wären 11 %: erst Puffer' },
     ],
   },
+  {
+    name: 'Emil',
+    description:
+      'Einsteiger zu Hause ohne Geräte, Körpergewicht 3 × 10–15: Puffer, Zusatzsatz, dann schwerere Variante (Engine 3)',
+    exercise: 'Kniebeuge mit Körpergewicht',
+    ctx: {
+      loadType: 'bodyweight',
+      repsMin: 10,
+      repsMax: 15,
+      durationS: null,
+      templateSets: 3,
+      rpeTarget: 6.5,
+      incrementKind: 'none',
+      steps: [],
+    },
+    planned: { sets: 3, reps_min: 10, reps_max: 15, duration_s: null, rpe_target: 6.5 },
+    variant: {
+      exerciseId: 'kniebeuge-koerpergewicht',
+      homeEquipment: [],
+      experienceLevel: 'beginner',
+    },
+    sessions: Array.from({ length: 16 }, (_, i) => ({
+      perform: shown,
+      note: i === 0 ? 'erster Eintrag → Ziel aus den Wiederholungen' : '',
+    })),
+  },
 ];
 
 export interface ProgressionRow {
@@ -608,23 +648,56 @@ export function simulateProgression(example: ProgressionExample, today: string):
 }
 
 const kg = (value: number | null) => (value === null ? 'Gewicht finden' : `${decimalDe(value)} kg`);
+/** Ohne Zusatzgewicht (Körpergewicht, Band) gibt es kein Gewicht zu finden. */
+const load = (value: number | null, withWeight: boolean) => (withWeight ? ` mit ${kg(value)}` : '');
 
-function describePrescription(p: Prescription): string {
-  return `${p.sets} × ${p.targetReps ?? '–'} mit ${kg(p.weightKg)}, RPE ${decimalDe(p.rpeTarget)}`;
+function describePrescription(p: Prescription, withWeight = true): string {
+  return `${p.sets} × ${p.targetReps ?? '–'}${load(p.weightKg, withWeight)}, RPE ${decimalDe(p.rpeTarget)}`;
 }
 
-function describePerformed(performed: readonly LoggedSet[]): string {
+function describePerformed(performed: readonly LoggedSet[], withWeight = true): string {
   const first = performed[0];
   if (!first) return '–';
   const same = performed.every((s) => s.reps === first.reps && s.weightKg === first.weightKg);
   return same
-    ? `${performed.length} × ${first.reps ?? '–'} mit ${kg(first.weightKg)}`
+    ? `${performed.length} × ${first.reps ?? '–'}${load(first.weightKg, withWeight)}`
     : performed.map((s) => `${s.reps ?? '–'}@${kg(s.weightKg)}`).join(', ');
 }
 
-function describeNext(r: ProgressResult): string {
+/** Hinweis wie in der App: `harder_variant` nur mit konkreter, erlaubter und machbarer Variante (W6). */
+function hintText(
+  r: ProgressResult,
+  example: ProgressionExample,
+  today: string,
+  library: PlanLibrary | undefined,
+): string | null {
+  if (r.hint === null) return null;
+  if (r.hint !== 'harder_variant') return PROGRESSION_HINT_TEXTS_DE[r.hint];
+  const v = example.variant;
+  if (!v || !library) return null;
+  const shown = progressHintForDisplay(v.exerciseId, r, {
+    library: library.exercises,
+    profile: equipmentProfile('home', v.homeEquipment),
+    rules: planSafetyRules(
+      {
+        experienceLevel: v.experienceLevel,
+        birthDate: '1990-01-01',
+        healthScreening: { flags: [] },
+      },
+      today,
+    ),
+    experienceLevel: v.experienceLevel,
+  });
+  return shown.harderVariant
+    ? `${PROGRESSION_HINT_TEXTS_DE.harder_variant}: ${shown.harderVariant.nameDe}`
+    : null;
+}
+
+function describeNext(r: ProgressResult, hint: string | null, withWeight = true): string {
   const p = r.progress;
-  const parts = [`${kg(p.weightKg)} × ${p.targetReps ?? '–'}`];
+  const parts = [
+    withWeight ? `${kg(p.weightKg)} × ${p.targetReps ?? '–'}` : `${p.targetReps ?? '–'} Wdh.`,
+  ];
   if (p.extraSet) parts.push('+1 Satz');
   const e = r.effective;
   if (e.weightKg !== p.weightKg || e.targetReps !== p.targetReps || e.extraSet !== p.extraSet) {
@@ -633,7 +706,7 @@ function describeNext(r: ProgressResult): string {
     );
   }
   if (r.firstSessionRpeTarget !== null) parts.push(`erste Einheit RPE ${r.firstSessionRpeTarget}`);
-  if (r.hint) parts.push(PROGRESSION_HINT_TEXTS_DE[r.hint]);
+  if (hint) parts.push(hint);
   return parts.join(', ');
 }
 
@@ -644,7 +717,7 @@ export const PROGRESSION_HINT_TEXTS_DE: Record<NonNullable<ProgressResult['hint'
   confirm_weight: 'Gewicht bitte bestätigen',
 };
 
-export function renderProgressionExamples(today: string): string[] {
+export function renderProgressionExamples(today: string, library?: PlanLibrary): string[] {
   const lines = [
     '## Beispiel-Progression aus dem Trainingstagebuch',
     '',
@@ -654,9 +727,10 @@ export function renderProgressionExamples(today: string): string[] {
   for (const example of PROGRESSION_EXAMPLES) {
     lines.push(`### ${example.name} – ${example.exercise}: ${example.description}`, '');
     lines.push('| Nr. | Vorgabe | gemacht | danach | Hinweis |', '| --- | --- | --- | --- | --- |');
+    const withWeight = example.ctx.loadType === 'weight';
     for (const row of simulateProgression(example, today)) {
       lines.push(
-        `| ${row.no} | ${describePrescription(row.prescription)} | ${describePerformed(row.performed)} | ${describeNext(row.after)} | ${row.note} |`,
+        `| ${row.no} | ${describePrescription(row.prescription, withWeight)} | ${describePerformed(row.performed, withWeight)} | ${describeNext(row.after, hintText(row.after, example, today, library), withWeight)} | ${row.note} |`,
       );
     }
     lines.push('');
@@ -684,7 +758,7 @@ export function renderPlanExamples(library: PlanLibrary, today: string): string 
     }
     lines.push(...renderPlan(result.plan), '');
   }
-  lines.push(...renderProgressionExamples(today));
+  lines.push(...renderProgressionExamples(today, library));
   return `${lines.join('\n')}\n`;
 }
 

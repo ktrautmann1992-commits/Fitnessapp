@@ -4,7 +4,14 @@
  * Regel aus CLAUDE.md: ALLE Rechenformeln und Schutzgrenzen stehen hier, jeweils mit Quelle.
  * Die Schutzgrenzen sind fest im Code und NICHT durch Nutzer abschaltbar.
  */
-import type { CautionTag, ExperienceLevel, MuscleGroup, TrainingSlotKind } from './enums';
+import type {
+  CautionTag,
+  EquipmentCategory,
+  ExperienceLevel,
+  MovementPattern,
+  MuscleGroup,
+  TrainingSlotKind,
+} from './enums';
 
 /**
  * Mindestalter für die Nutzung der App (Jahre).
@@ -399,9 +406,31 @@ export const SMALL_MUSCLE_GROUPS = [
 
 /**
  * Version der Regeln der Plan-Engine. Steigt bei jeder Regeländerung → die App bietet „Plan neu erstellen“ an.
+ * Version 3 (docs/PLAN-KOERPERGEWICHT.md, Etappe K2+K3): Körpergewicht-Vorlagen als harte Regel, 1 Kraft-Tag →
+ * 2-Tage-Vorlage, NUR bei Körpergewicht-Vorlagen bleibt beim Kürzen die letzte Rumpf-Übung (alle anderen Vorlagen
+ * kürzen wie Version 2), Progression ohne Gewicht mit Puffer und Zusatzsatz.
  * Quelle: Produktentscheidung (PLAN-PHASE-3 Abschnitt 10.4).
  */
-export const PLAN_ENGINE_VERSION = 2;
+export const PLAN_ENGINE_VERSION = 3;
+
+/**
+ * Körpergewicht-Profil (docs/PLAN-KOERPERGEWICHT.md §5.1, Wächter A6 und W2): Alle Kraft-Tage zu Hause und keine
+ * KRAFT-Geräte → nur Körpergewicht-Vorlagen. Als Kraft-Geräte zählen nur lastgebende Geräte: freie Gewichte, Bänder,
+ * Maschinen. NICHT zählen Ausdauer-Geräte (Laufband, Ergometer, Rudergerät), Bänke, Klimmzugstange und Dip-Station
+ * (die Klimmzugstange macht den Klimmzug als schwerere Variante machbar). Unbekannte Geräte zählen vorsichtshalber.
+ * Quelle: PRODUKTENTSCHEIDUNG (Gründer-Wunsch „keine Geräte → nur Körpergewicht-Pläne“).
+ */
+export const BODYWEIGHT_PROFILE_RULES = {
+  strengthEquipmentCategories: ['free_weights', 'bands', 'machines'],
+} as const satisfies {
+  strengthEquipmentCategories: readonly EquipmentCategory[];
+};
+
+/**
+ * ID-Endung der Körpergewicht-Vorlagen (`<ziel>-<level>-<n>t-koerpergewicht`). Rückfall für den Folgeblock, wenn die
+ * Vorlage nicht in der Bibliothek steht (isBodyweightTemplateId, Wächter N3). Quelle: PRODUKTENTSCHEIDUNG (Namensregel).
+ */
+export const BODYWEIGHT_TEMPLATE_ID_SUFFIX = '-koerpergewicht';
 
 /**
  * Punkte für das Vorlagen-Matching (Summe 100), Abschnitt 5.3.
@@ -418,7 +447,9 @@ export const PLAN_MATCH_WEIGHTS = {
 
 /**
  * Höchstens so viele Krafteinheiten pro Woche; weitere Wunsch-Tage werden Ruhetage.
- * Quelle: PRODUKTENTSCHEIDUNG (es gibt nur 3- und 4-Tage-Vorlagen). Orientierung: ACSM Position Stand (2009),
+ * Quelle: PRODUKTENTSCHEIDUNG (Vorlagen gibt es mit 3 und 4 Tagen, Körpergewicht-Vorlagen zusätzlich mit 2 Tagen;
+ * bei 1 Kraft-Tag wird die 2-Tage-Ganzkörper-Vorlage bevorzugt, sonst die 3-Tage-Vorlage – die Einheiten wechseln
+ * dann von Woche zu Woche, Hinweis `days_rotated`). Orientierung: ACSM Position Stand (2009),
  * „Progression models in resistance training for healthy adults“, Med Sci Sports Exerc 41(3):687–708
  * (Trainingshäufigkeit je Level: Einsteiger 2–3, Fortgeschrittene 3–4 Tage pro Woche).
  */
@@ -542,6 +573,14 @@ export const LOAD_PROGRESSION = {
 } as const;
 
 /**
+ * Vorschlag „schwerere Variante“ (docs/PLAN-KOERPERGEWICHT.md §5.5, Wächter W8): Einsteiger und vorsichtige Pläne
+ * bekommen nur Varianten, die höchstens 1 Schwierigkeitsstufe (`difficulty` 1–3) schwerer sind – z. B. nach dem
+ * Handtuch-Latziehen den Klimmzug mit Band, nicht direkt den freien Klimmzug.
+ * Quelle: PRODUKTENTSCHEIDUNG (kleine Schritte; fachliche Prüfung vor Veröffentlichung).
+ */
+export const HARDER_VARIANT_RULES = { cautiousMaxDifficultyStep: 1 } as const;
+
+/**
  * Belastungswochen vor der festen Erholungswoche (Deload). Liegt im Rahmen DELOAD_INTERVAL_WEEKS.
  * Quellen: docs/KONZEPT.md Abschnitt 4.5 („alle 4–6 Wochen“); Bell L et al. (2023), „Integrating Deloading into
  * Strength and Physique Sports Training Programmes: An International Delphi Consensus Approach“, Sports Med
@@ -557,9 +596,21 @@ export const DELOAD_DOSAGE = { setsFactor: 0.5, rpeReduction: 2, loadFactor: 0.9
 
 /**
  * Kürzen auf das Zeitbudget: mindestens 3 Übungen, Grundübungen mind. 2 Sätze, Isolationsübungen mind. 1 Satz.
- * Quelle: PRODUKTENTSCHEIDUNG (PLAN-PHASE-3 Abschnitt 5.6).
+ * Nur bei Körpergewicht-Vorlagen (Engine-Version 3, Wächter W1): Beim Entfernen der Isolationsübungen bleibt die
+ * LETZTE Rumpf-Übung (`corePatterns`) einer Einheit stehen. Alle anderen Vorlagen kürzen unverändert wie Version 2.
+ * Quelle: PRODUKTENTSCHEIDUNG (PLAN-PHASE-3 Abschnitt 5.6; docs/PLAN-KOERPERGEWICHT.md Etappe K3).
  */
-export const SESSION_FIT = { minExercises: 3, minSetsCompound: 2, minSetsIsolation: 1 } as const;
+export const SESSION_FIT = {
+  minExercises: 3,
+  minSetsCompound: 2,
+  minSetsIsolation: 1,
+  corePatterns: ['core_anti_extension', 'core_anti_rotation', 'core_flexion'],
+} as const satisfies {
+  minExercises: number;
+  minSetsCompound: number;
+  minSetsIsolation: number;
+  corePatterns: readonly MovementPattern[];
+};
 
 // ---------------------------------------------------------------------------------------------------------
 // Etappe B3 · Ausdauer-Tage ohne KI (docs/PLAN-PHASE-3-ERWEITERUNG.md Abschnitte 5.2, 5.5, 5.6)

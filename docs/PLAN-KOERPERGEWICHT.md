@@ -1,6 +1,7 @@
 # Plan: Training nur mit dem eigenen Körpergewicht
 
-Stand: 05.10.2026 · Status: **vom Wächter mit Auflagen freigegeben, Auflagen eingearbeitet** (Abschnitt 10)
+Stand: 05.10.2026 · Status: **vom Wächter mit Auflagen freigegeben, Auflagen eingearbeitet** (Abschnitt 10) · K1 und
+K2+K3 umgesetzt (siehe „Umsetzungsstand“), K4 offen
 
 ## 1. Ziel in einfachen Worten
 
@@ -50,28 +51,31 @@ in `steps_de`. Neue IDs dürfen nicht mit bestehenden kollidieren (z. B. **`bulg
 | Muster                | Kette (`easier` → Erstwahl → `harder`)                                                                                                                                  | Merkmale / Sicherheit                                                                                                               |
 | --------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------- |
 | `horizontal_pull`     | **Türrahmen-Rudern einarmig** (stehend) → Handtuch-Rudern im Sitzen (Selbstwiderstand, `load_type: "time"` mit Haltezeit je Wdh. – A14) → _Tisch-Rudern_ (nur `harder`) | Tisch-Rudern bis zur Fachfreigabe **nicht in Vorlagen** (A7), Merkmal `high_skill`; Türrahmen-Rudern ohne Merkmal = Erstwahl        |
-| `vertical_pull`       | bestehend `klimmzug-band-unterstuetzt`, `klimmzug` – nur machbar mit Klimmzugstange (A6)                                                                                | –                                                                                                                                   |
+| `vertical_pull`       | **Handtuch-Latziehen (Halten, K2)** → bestehend `klimmzug-band-unterstuetzt`, `klimmzug` – nur machbar mit Klimmzugstange (A6)                                          | Einsteiger/vorsichtig: Vorschlag nur eine Stufe schwerer (W8)                                                                       |
 | `shoulder_isolation`  | **Y-T-W vorgebeugt im Stand / an der Wand** (Erstwahl) → Y-T-W in Bauchlage (nur Alternative)                                                                           | zählt **nicht** als Ziehen für V7, nur für `upper_back`/`rear_delts` (A8); Bauchlage nie Erstwahl (A4)                              |
 | `hinge`               | **Good Morning ohne Gewicht** → **einbeinige RDL mit Hand an der Wand**                                                                                                 | Halt an der Wand = **Pflichtschritt** in `steps_de` (A7)                                                                            |
 | `knee_flexion`        | Beinbeuger mit Handtuch auf glattem Boden → _Nordic Curl mit Händen abgefangen_ (nur `harder`)                                                                          | Handtuch-Variante `long_supine`; Nordic `high_skill`, nie in 2-Tage- oder Einsteiger-Vorlagen (A7); **Einordnung Fachprüfung** (A9) |
 | `hip_extension`       | **Hüftstrecken im Vierfüßlerstand** (Erstwahl, kein Merkmal) ↔ Glute Bridge → einbeinige Glute Bridge → Hip Thrust Schultern auf Sofa                                   | Bridge-/Thrust-Varianten `long_supine`; Vierfüßler = Ersatz bei Schwangerschaft                                                     |
 | `horizontal_push`     | Liegestütz Hände erhöht (Wand/Tisch) → `liegestuetz` → Füße erhöht → Archer-Liegestütz                                                                                  | –                                                                                                                                   |
-| `vertical_push`       | Pike-Liegestütz                                                                                                                                                         | `overhead`; **nie in Einsteiger-Vorlagen** (A13)                                                                                    |
+| `vertical_push`       | Pike-Liegestütz                                                                                                                                                         | `overhead`; **in K2 in keiner Vorlage** (keine Alternative ohne Gerät und Merkmal)                                                  |
 | `elbow_extension`     | Trizeps-Liegestütz eng (Erstwahl) → _Dips am Stuhl_ (nur Alternative)                                                                                                   | Stuhl-Dips nie Erstwahl, kein `high_skill` (passt nicht, A7); Fachprüfung                                                           |
 | `squat`               | Kniebeuge zum Stuhl → `kniebeuge-koerpergewicht` → Kniebeuge mit Pause unten → Tempo-Kniebeuge 3-1-3                                                                    | Tempo/Pause = eigene IDs (eigener Fortschritt je `exercise_id`)                                                                     |
 | `lunge`               | Step-up auf Treppenstufe → `split-kniebeuge` → `bulgarische-split-kniebeuge-stuhl`                                                                                      | Halt am Geländer bzw. an der Wand = Pflichtschritt (A7)                                                                             |
 | `core_anti_extension` | `unterarmstuetz`, `dead-bug`, Bird-Dog                                                                                                                                  | Bird-Dog = Ersatz für `dead-bug` bei Schwangerschaft                                                                                |
 | `core_anti_rotation`  | Seitstütz (Knie) → Seitstütz                                                                                                                                            | Seitstütz kommt hierhin, es gibt **kein** eigenes Muster für seitliches Stützen (A8)                                                |
 | `calf_raise`          | `wadenheben-koerpergewicht` → einbeiniges Wadenheben (Hand an der Wand)                                                                                                 | –                                                                                                                                   |
-| `conditioning`        | **Step-Jacks** (ohne Sprung) ↔ `hampelmann`                                                                                                                             | Step-Jacks = Alternative ohne Sprünge für Abnehm-Vorlagen (A14)                                                                     |
+| `conditioning`        | **Step-Jacks** (ohne Sprung) ↔ `hampelmann`                                                                                                                             | in K2 in keiner Vorlage (`conditioning` bis Phase 10 ausgeschlossen); Step-Jacks bleiben Alternative (A14)                          |
 
 **Bauchlage und Schwangerschaft (A4, nicht verschoben):** Stehende bzw. vorgebeugte Varianten sind überall
 Erstwahl; Bauchlage-Übungen (Y-T-W, Superman) gibt es nur als Alternative. Damit braucht es **kein** neues Merkmal
 `prone` und keine Migration. Wird bei der Fachprüfung doch ein Merkmal gefordert, kommt es mit Migration und
 Eintrag in `PREGNANCY_EXCLUDED_CAUTION_TAGS` in derselben Etappe.
 
-**Fachprüf-Liste (vor `published`, A7/A9):** Tisch-Rudern, Stuhl-Dips, Nordic Curl, einbeinige RDL, Bulgarische am
-Stuhl, Step-up, Einordnung Beinbeuger mit Handtuch.
+**Fachprüf-Liste (vor `published`, A7/A9, W5):** Tisch-Rudern, Stuhl-Dips, Nordic Curl, einbeinige RDL, Bulgarische
+am Stuhl, Step-up, Einordnung Beinbeuger mit Handtuch, **Handtuch-Latziehen** (Hauptmuskel `lats` bei selbst
+bestimmtem Widerstand, Zählung für V10, Eignung als Erstwahl in 14 Vorlagen) und **Handtuch-Rudern im Sitzen** als
+Erstwahl-Ziehübung, **Good Morning ohne Gewicht** (Reiz und Einordnung – steht nach dem Umbau 33-mal als
+Hüftbeuge-Erstwahl, N5).
 
 ## 4. Neue Vorlagen „Körpergewicht“
 
@@ -88,13 +92,16 @@ Stuhl, Step-up, Einordnung Beinbeuger mit Handtuch.
 - Jede Einheit: Drücken, **Ziehen über `horizontal_pull`** (Türrahmen- bzw. Handtuch-Rudern) – Y-T-W zählt für V7
   **nicht** (A8) –, Kniebeuge/Ausfallschritt, Hüftbeugen bzw. Hüftstrecken, Rumpf.
 - **Sicherheit:** Einsteiger-Vorlagen ohne `high_skill`, `high_impact`, `overhead` als Erstwahl (kein Pike-Liegestütz,
-  A13); Tisch-Rudern, Nordic Curl und Stuhl-Dips nie als Erstwahl (A7). Abnehm-Vorlagen mit `hampelmann` haben
-  Step-Jacks als Alternative (A14). Für jede Übung mit Merkmal gibt es eine erlaubte Alternative ohne Gerät.
+  A13); Tisch-Rudern, Nordic Curl und Stuhl-Dips nie als Erstwahl (A7). **Umgesetzt (K2):** Hampelmann/Step-Jacks
+  und Pike-Liegestütz stehen in keiner Vorlage (Ausdauer-Übungen bis Phase 10 ausgeschlossen; Pike ohne Alternative
+  ohne Gerät und Merkmal); A14 bleibt erfüllt, weil Hampelmann nie Erstwahl ist. Für jede Übung mit Merkmal gibt es
+  eine erlaubte Alternative ohne Gerät.
 
 ## 5. Engine-Anpassung (`packages/core`, Etappe K3)
 
-1. **Körpergewicht-Profil (A6):** `isBodyweightOnly(profile)` = Zuhause **und keine Kraft-Geräte**. Ausdauer-Geräte
-   (Laufband, Ergometer, Rudergerät) zählen nicht. **Nur Klimmzugstange** → trotzdem Körpergewicht-Vorlage; die
+1. **Körpergewicht-Profil (A6, W2):** `isBodyweightOnly(profile)` = Zuhause **und keine Kraft-Geräte**. Kraft-Geräte
+   sind nur lastgebende Geräte (freie Gewichte, Bänder, Maschinen); Ausdauer-Geräte (Laufband, Ergometer,
+   Rudergerät), Bänke und Dip-Station zählen nicht. **Nur Klimmzugstange** → trotzdem Körpergewicht-Vorlage; die
    Stange macht `klimmzug-band-unterstuetzt`/`klimmzug` als Alternative machbar.
 2. `isBodyweightTemplate(template)` = Zuhause, keine Pflicht- und keine Optional-Geräte.
 3. **Harte Regel in `isTemplateEligible` statt Punkte, nur wenn ALLE Kraft-Tage „zu Hause ohne Kraft-Geräte“ sind
@@ -152,8 +159,9 @@ Geräten zugeteilt (A3). Danach: Fachprüfung, Freigabe (`published`) und Einspi
 2. Neues Testkonto → Onboarding: Ort **Zuhause**, Geräte **„Keine Geräte (Körpergewicht)“**, 2 Tage, 30 Minuten.
 3. Plan prüfen: Name enthält „Körpergewicht“, jede Einheit hat eine Rudern-Übung (z. B. Türrahmen-Rudern), kein
    Hinweis „Für Rücken-Übungen …“.
-4. Angaben ändern: Alter ab 65 bzw. Gesundheits-Check mit Auffälligkeit → kein Tisch-Rudern, kein Hampelmann.
-5. Gegenproben: Geräte „Kurzhanteln“ → Hantel-Plan. Nur „Klimmzugstange“ → Körpergewicht-Plan. Eine Woche mit einem
+4. Angaben ändern: Alter ab 65 bzw. Gesundheits-Check mit Auffälligkeit → Einsteiger-Vorlage, kein Tisch-Rudern (Hampelmann
+   steht in keiner Vorlage).
+5. Gegenproben: Geräte „Kurzhanteln“ → Hantel-Plan. Nur „Klimmzugstange“ oder nur „Flachbank“ → Körpergewicht-Plan. Eine Woche mit einem
    Studio- und einem Zuhause-Tag → Studio-Plan mit Hinweis.
 6. GitHub-App → Actions → letzter `ci`-Lauf → Zusammenfassung „Content-Prüfung“ ohne rote Befunde.
 
@@ -217,3 +225,79 @@ Ergebnis: **mit Auflagen freigegeben**, alle Auflagen eingearbeitet.
   Band, Muskelaufbau Fortgeschritten: `dead-bug`/`pallof-press-band` bzw. `bizepscurl-band`). Ohne Geräte gibt es
   den Hinweis `no_pull_exercise` nicht mehr.
 - `content:validate`: 0 rote Befunde (auch an Entwürfen). Beispielpläne: Clara bekommt Türrahmen-Rudern.
+
+**Etappe K2+K3 – umgesetzt (05.10.2026, noch nicht committet, ein Pull Request; Wächter-Auflagen W1–W12 eingearbeitet):**
+
+- **18 Körpergewicht-Vorlagen** in `content/plan-templates/` (`<ziel>-<level>-<n>t-koerpergewicht`, 3 Ziele × 2 Level
+  × 2/3/4 Tage; 2 und 3 Tage Ganzkörper, 4 Tage Ober-/Unterkörper), `location: home`, keine Pflicht- und
+  Optional-Geräte, Entwurf mit `meta.model`. Dauer 30–45 min, **Muskelaufbau · Fortgeschritten · 2 Tage 30–60 min**
+  (A9 – V10 grün erreicht, die Vorlage entfällt also nicht). Beschreibung mit dem ehrlichen Satz „Ohne Geräte ist der
+  Trainingsreiz begrenzt …“ (A9). `content:validate`: **0 rote Befunde, auch an Entwürfen** (A5); gelb nur V11
+  (kleine Muskelgruppen; seitliche Schulter 0–2 Sätze, weil es ohne Pike keine Über-Kopf-Übung gibt).
+- Aufbau: jede Einheit mit Rumpf; Ganzkörper/Oberkörper mit Drücken und Ziehen über **`horizontal_pull`**
+  (Türrahmen- bzw. Handtuch-Rudern, A8); Ganzkörper/Unterkörper mit Kniebeuge/Ausfallschritt und einer
+  **Hüftbeuge-Grundübung** (Good Morning bzw. einbeiniges Kreuzheben – nicht Hüftstrecken als Isolationsübung, die beim
+  Kürzen zuerst wegfiele). Reihenfolge Ganzkörper A: Bein, Hüftbeugen, Drücken, Rudern; B/C: Bein, Drücken, Rudern,
+  Hüftbeugen.
+- **Kürzen je Einheit (W7, ehrlich):** Ab 30 min hat jede Ganzkörper-/Unterkörper-Einheit eine Hüft-Übung und jede
+  Ganzkörper-/Oberkörper-Einheit Rudern (Eigenschaftstest). **Bei 20 min** bleiben nur die ersten drei Übungen:
+  Ganzkörper A behält Hüftbeugen (ohne Rudern), B/C behalten Rudern (ohne Hüftbeugen) – planweit ist beides da. Unter
+  `minutes_min` (20 min) kann auch der Rumpf wegfallen. **W10:** „Muskelaufbau · Fortgeschritten · 2 Tage“ hat bei 45 min die Hinweise `minutes_shortened` und `volume_reduced` (sie liegt
+  genau an der V10-Untergrenze); bewusst so gelassen.
+- **Progressions-Notiz (W3):** „… dann kommt ein Satz dazu; gibt es eine passende schwerere Variante, schlägt die App
+  sie vor.“ nur an Übungen mit `harder`-Alternative, sonst ohne Varianten-Satz (Inhaltstest).
+- **Sicherheit der Erstwahl:** kein `high_skill`, kein `high_impact`, nie Tisch-Rudern, Nordic Curl oder Stuhl-Dips
+  (A7); Einsteiger ohne `overhead` (A13). Jede Übung mit Merkmal hat eine erlaubte Alternative ohne Gerät und ohne
+  Merkmal (Test).
+- **Abweichungen vom Plan (vom Wächter angenommen):**
+  1. **Hampelmann/Step-Jacks nicht in den Vorlagen** (Eigenschaftstest PLAN-PHASE-3, Wächter-Nachtrag Etappe A
+     Nr. 7: keine `conditioning`-Übungen, bis `capWeeklyIncrease()` im Block-Bau greift, Phase 10). Abnehm-Vorlagen
+     nutzen stattdessen Wadenheben.
+  2. **Pike-Liegestütz nicht in den Vorlagen** (keine Alternative ohne Gerät und Merkmal), statt dessen
+     Archer-Liegestütz. Folge: keine Über-Kopf-Übung, V11 seitliche Schulter gelb.
+  3. **Neue Übung `handtuch-latziehen`** (Entwurf, `vertical_pull`, Halteübung, ohne Merkmal; Alternativen
+     `klimmzug-band-unterstuetzt`/`klimmzug` mit Grund `harder`, `latziehen-band`) – macht bei „nur Klimmzugstange“
+     den Klimmzug erreichbar (A6, Ü4). Steht auf der Fachprüf-Liste (W5).
+- **Engine (`packages/core`, `PLAN_ENGINE_VERSION` 2 → 3):**
+  - `isStrengthEquipment()`/`isBodyweightOnly()` (`equipment-profile.ts`, `BODYWEIGHT_PROFILE_RULES`): Kraft-Geräte
+    sind nur freie Gewichte, Bänder, Maschinen; Ausdauer-Geräte, Bänke, Klimmzugstange und Dip-Station zählen nicht
+    (A6, W2); unbekannte IDs zählen vorsichtshalber.
+  - `isTemplateEligible(…, bodyweightOnly)` + `isBodyweightMatch()` (`match.ts`): harte Regel nur, wenn ALLE
+    Kraft-Tage zu Hause ohne Kraft-Geräte sind; alle anderen Profile bekommen nie eine Körpergewicht-Vorlage (A2/A3).
+    Ohne passende Körpergewicht-Vorlage: bisherige Suche mit `location_mismatch` und Güte „nächstbeste“ (A5).
+  - Gemischte Wochen (Studio + Zuhause ohne Kraft-Geräte, `generate.ts`): immer Studio-Vorlage, die Zuhause-Tage
+    tauschen über `findSubstitute()` (`location_mismatch`, `exercises_substituted`); Tests 1:1, 2:1, 1:2 jeweils
+    ohne Geräte, mit Laufband, nur Klimmzugstange, nur Flachbank. **Offene Verbesserung:** Matching je Ort (Frage 7).
+    Hinweistext `location_mismatch` in der App allgemeiner formuliert (W9).
+  - `daysScore()` (A12): 1 Kraft-Tag → 2-Tage-Ganzkörper (14) vor 3-Tage-Ganzkörper (12).
+  - **Zeitschnitt (W1):** `fitSessionToMinutes(…, { protectLastCore })` schützt in Schritt 1 nur die **letzte
+    verbleibende Rumpf-Übung** und nur bei **Körpergewicht-Vorlagen** (beim Erstellen und im Folgeblock über
+    `isBodyweightTemplateId()`). Für alle anderen Vorlagen ist das Ergebnis identisch zur Engine-Version 2: Test gegen
+    die unveränderte V2-Kürzung (24 Vorlagen × 5 Geräte-Profile × gesund/schwanger × 20/30/45/60 min) und Vergleich
+    der ganzen Engine HEAD gegen neu über 960 Profile: **0 Abweichungen, 0 neue `volume_reduced`**. „Nur Band“ ist
+    keine Körpergewicht-Vorlage – dort bleibt es beim alten Verhalten (Rumpf kann beim Kürzen wegfallen).
+  - Progression (A10, `loads.ts`): Körpergewicht nutzt `LOAD_PROGRESSION.extraRepsBuffer`/`extraSets` – Wdh. bis
+    `reps_max + 2` (≤ 30), dann +1 Satz (≤ 6, V9), dann `harder_variant`; Erholungswoche ohne Schritt; nur kurze
+    Fassungen → nur +Wdh. `progressHintForDisplay()` (`log/harder-variant.ts`) bindet `findHarderVariant()` mit
+    aktuellen Sicherheitsregeln und Orts-Profil an: gesperrte oder nicht machbare Varianten → kein Vorschlag.
+    **W8:** Einsteiger und vorsichtige Pläne bekommen nur Varianten höchstens eine Schwierigkeitsstufe schwerer
+    (`HARDER_VARIANT_RULES`) – nach dem Handtuch-Latziehen also den Klimmzug mit Band, nicht direkt den freien
+    Klimmzug (nur Stange → kein Vorschlag). `plan:examples` zeigt den Hinweis nur über `progressHintForDisplay()`
+    (Beispiel „Emil“, W6); die App muss ihn in der UI-Etappe genauso anzeigen (PLAN-PHASE-4 5.1).
+  - **Nachprüfung Runde 2:** Bei Körpergewicht-Vorlagen fällt in Schritt 3 des Kürzens bis hinunter zu 4 Übungen die
+    letzte Nicht-Rumpf-Übung statt der letzten Übung, darunter wie bisher (die drei ersten Grundübungen bleiben, N1) – bei `minutes_min` behält jede Einheit Rumpf, Rudern und Hüftbeugen (Test, neue
+    gelbe Regel **V13** „Einheit passt gekürzt in `minutes_min`“ ohne Befund im Inhaltsstand, N6). Der Folgeblock
+    kürzt wie Block 1 (Core-Test mit Gegenprobe, Mobile-Test für `nextBlockFromRows`, N2). `isBodyweightTemplateId()`
+    fällt ohne Vorlage in der Bibliothek (Zwischenspeicher, archiviert – RLS liefert nur `published`) auf die
+    ID-Endung `-koerpergewicht` zurück; ein Test sichert ID-Endung ⇔ Kennzeichen ab (N3).
+  - Keine neuen Hinweis-Codes, keine Migration.
+- **Tests:** `plan/bodyweight.test.ts` (Inhalte, Notizen, Erstwahl-Sicherheit, gemischte Wochen, Eigenschaftstest
+  über 6 Personengruppen × 5 Ziele inkl. Definition/Ausdauer × 3 Level inkl. Leistungssport × 1/2/3/4/6/7 Tage ×
+  20/30/45/240 min × ohne Geräte/Laufband/Klimmzugstange/Flachbank, je Einheit geprüft), `match.test.ts`,
+  `equipment-profile.test.ts`, `adapt.test.ts` (Rumpf-Schutz, V2-Vergleich), `loads.test.ts`/`progression.test.ts`,
+  `log/harder-variant.test.ts` (inkl. W8), `plan-examples.test.ts` (Emil).
+- **Regression (A11):** `koerpergewicht-regression.test.ts` vergleicht die 24 bestehenden Vorlagen jetzt bei
+  **20/30/45/60 min** (Körpergewicht-Vorlagen ausgeblendet, beide Seiten mit derselben Engine, Unterschiede also nur
+  aus den K1/K2-Übungen). Studio und Zuhause voll ausgestattet: unverändert. Abweichungen nur bei fehlenden Geräten
+  bzw. Schwangerschaft durch neue Übungen (Snapshot). Profile ohne Kraft-Geräte bekommen in der App jetzt die
+  Körpergewicht-Vorlagen.

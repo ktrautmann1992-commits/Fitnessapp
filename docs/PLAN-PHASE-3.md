@@ -149,17 +149,24 @@ Diese Markierungen sind Vorschläge der Engine – **verbindlich bestimmt sie di
 
 **Harte Ausschlüsse** (nie verletzt): Vorlage mit `sex` ≠ Geschlecht der Person; **Einsteiger bekommen nie eine
 Fortgeschrittenen-Vorlage**; bei vorsichtigem Plan (5.4) nur Einsteiger-Vorlagen.
+**Körpergewicht-Regel (Engine-Version 3, `docs/PLAN-KOERPERGEWICHT.md` §5):** Sind ALLE Kraft-Tage zu Hause und
+gibt es dort keine Kraft-Geräte (nur freie Gewichte, Bänder und Maschinen zählen – Ausdauer-Geräte, Bänke,
+Klimmzugstange und Dip-Station nicht), sind NUR
+Körpergewicht-Vorlagen (`*-koerpergewicht`, Zuhause ohne Pflicht- und Optional-Geräte) wählbar; gibt es keine
+passende, greift die bisherige Suche mit Hinweis `location_mismatch`. Alle anderen Profile bekommen nie eine
+Körpergewicht-Vorlage. Gemischte Wochen (Studio + Zuhause ohne Geräte) bekommen vorerst die Studio-Vorlage; die
+Zuhause-Tage tauschen auf Übungen ohne Geräte (Hinweis `location_mismatch`).
 
 **Punkte (100 maximal, Gewichte in `constants.ts`):**
 
-| Kriterium | Punkte | Regel                                                                                                               |
-| --------- | -----: | ------------------------------------------------------------------------------------------------------------------- |
-| Ziel      |     35 | gleiches Ziel 35 · Definition → Muskelaufbau 35 (beschlossen) · Ausdauer → Allgemeine Fitness 15 · anderes Ziel 0   |
-| Level     |     25 | gleich 25 · Leistungssport → Fortgeschritten 25 (beschlossen) · Fortgeschrittene mit Einsteiger-Vorlage 12          |
-| Tage      |     15 | Wunsch 3/4: gleiche Zahl 15, andere 5 · Wunsch 1–2: 3-Tage-Ganzkörper 12, sonst 0 · Wunsch 5–7: 4-Tage 12, 3-Tage 5 |
-| Ort       |     10 | gleich 10 · „beides“ → Studio 10, Zuhause 6 · anderer Ort 0                                                         |
-| Geräte    |     10 | Anteil der Übungen, die direkt oder per Ersatz (5.5) machbar sind × 10                                              |
-| Dauer     |      5 | Minuten im Bereich der Vorlage 5 · darunter anteilig (Budget ÷ `minutes_min` × 5) · darüber 5                       |
+| Kriterium | Punkte | Regel                                                                                                                                                                                          |
+| --------- | -----: | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Ziel      |     35 | gleiches Ziel 35 · Definition → Muskelaufbau 35 (beschlossen) · Ausdauer → Allgemeine Fitness 15 · anderes Ziel 0                                                                              |
+| Level     |     25 | gleich 25 · Leistungssport → Fortgeschritten 25 (beschlossen) · Fortgeschrittene mit Einsteiger-Vorlage 12                                                                                     |
+| Tage      |     15 | Wunsch 3/4: gleiche Zahl 15, andere 5 · Wunsch 2: 2-Tage 15, 3-Tage-Ganzkörper 12 · Wunsch 1: 2-Tage-Ganzkörper 14, 3-Tage-Ganzkörper 12, sonst 0 · Wunsch 5–7: 4-Tage 12, 3-Tage 5 (Engine 3) |
+| Ort       |     10 | gleich 10 · „beides“ → Studio 10, Zuhause 6 · anderer Ort 0                                                                                                                                    |
+| Geräte    |     10 | Anteil der Übungen, die direkt oder per Ersatz (5.5) machbar sind × 10                                                                                                                         |
+| Dauer     |      5 | Minuten im Bereich der Vorlage 5 · darunter anteilig (Budget ÷ `minutes_min` × 5) · darüber 5                                                                                                  |
 
 Bei Gleichstand entscheidet die Vorlagen-ID (alphabetisch) – das Ergebnis ist immer gleich.
 
@@ -241,7 +248,9 @@ ein Widerstandsband“, herstellerneutral, ohne Link).
 `fitSessionToMinutes()` mit der vorhandenen Schätzung `estimateSessionMinutes()`:
 
 - **Budget unter der Vorlage:** schrittweise kürzen, bis die Schätzung passt: (1) Isolationsübungen vom Ende
-  entfernen, (2) Sätze auf 2 (Grundübungen) bzw. 1 (Isolation) senken, (3) Grundübungen vom Ende entfernen bis
+  entfernen – nur bei **Körpergewicht-Vorlagen** (Engine-Version 3) bleibt dabei die letzte verbleibende Rumpf-Übung
+  (`SESSION_FIT.corePatterns`) stehen, auch in Schritt 3 bis hinunter zu 4 Übungen; alle anderen Vorlagen kürzen
+  unverändert wie Version 2, (2) Sätze auf 2 (Grundübungen) bzw. 1 (Isolation) senken, (3) Grundübungen vom Ende entfernen bis
   mindestens 3 Übungen. Passt es dann noch nicht (z. B. 10 Minuten), bleibt die kürzeste Fassung mit Hinweis
   `minutes_below_minimum`. Sinkt der Wochenumfang unter die Untergrenze (V10), Hinweis `volume_reduced`.
 - **Budget über der Vorlage:** nichts hinzufügen (Obergrenzen V9 bleiben eingehalten).
@@ -317,12 +326,12 @@ Erholungswoche (5.10). Einheiten vor „heute“ entfallen.
 RPE-Ziel der ersten Einheit mit dem neuen Gewicht 1 Punkt niedriger. Gibt es keine höhere eigene Gewichtsstufe,
 kommt nach dem Puffer der Hinweis „schwerere Gewichtsstufe eintragen oder schwerere Variante wählen“.
 
-| Belastungstyp     | Regel                                                                                                                                                                                                                                                                                                                                                                                                                             |
-| ----------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| Gewicht           | Nächster Schritt ≤ 10 % → Gewicht steigt, Wiederholungen zurück auf `reps_min`. Nächster Schritt > 10 % (z. B. Kurzhantel 4 → 6 kg) → **zuerst** Zielwiederholungen schrittweise bis `reps_max + 2` (höchstens 30), **dann** +1 Satz (höchstens 6 und innerhalb der Wochensatz-Obergrenze V9); erst wenn auch das zweimal hintereinander geschafft ist, folgt der Gewichtsschritt (Wdh. auf `reps_min`, Sätze wie in der Vorlage) |
-| Körpergewicht     | erst Wiederholungen bis `reps_max`; dann Vorschlag „schwerere Variante“ (Alternative mit Grund `harder`, muss `planSafetyRules()` bestehen)                                                                                                                                                                                                                                                                                       |
-| Band              | erst Wiederholungen; dann Vorschlag „stärkeres Band oder mehr Abstand“                                                                                                                                                                                                                                                                                                                                                            |
-| Zeit (Halteübung) | Steigerung je Auslöser = `min(5 s, max(1 s, floor(10 % der aktuellen Dauer)))` – z. B. 20 s → +2 s, 30 s → +3 s, ab 50 s → +5 s; bis 120 s; dann Vorschlag „schwerere Variante“                                                                                                                                                                                                                                                   |
+| Belastungstyp     | Regel                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                 |
+| ----------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Gewicht           | Nächster Schritt ≤ 10 % → Gewicht steigt, Wiederholungen zurück auf `reps_min`. Nächster Schritt > 10 % (z. B. Kurzhantel 4 → 6 kg) → **zuerst** Zielwiederholungen schrittweise bis `reps_max + 2` (höchstens 30), **dann** +1 Satz (höchstens 6 und innerhalb der Wochensatz-Obergrenze V9); erst wenn auch das zweimal hintereinander geschafft ist, folgt der Gewichtsschritt (Wdh. auf `reps_min`, Sätze wie in der Vorlage)                                                                                                                                     |
+| Körpergewicht     | **ab Engine-Version 3** derselbe Puffer wie beim großen Gewichtssprung (`LOAD_PROGRESSION.extraRepsBuffer`/`extraSets`, keine eigene Konstante): erst Wiederholungen bis `reps_max`, dann bis `reps_max + 2` (höchstens 30), dann +1 Satz (höchstens 6, V9), erst dann Vorschlag „schwerere Variante“ – konkret über `progressHintForDisplay()` → `findHarderVariant()` (Alternative mit Grund `harder`, machbar mit den Geräten des Orts und erlaubt nach den AKTUELLEN `planSafetyRules()`; sonst kein Hinweis). Nur kurze Fassungen (W7): nur +Wdh. bis zum Puffer |
+| Band              | erst Wiederholungen; dann Vorschlag „stärkeres Band oder mehr Abstand“                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                |
+| Zeit (Halteübung) | Steigerung je Auslöser = `min(5 s, max(1 s, floor(10 % der aktuellen Dauer)))` – z. B. 20 s → +2 s, 30 s → +3 s, ab 50 s → +5 s; bis 120 s; dann Vorschlag „schwerere Variante“                                                                                                                                                                                                                                                                                                                                                                                       |
 
 Steigerung: Langhantel und Maschine/Kabel +2,5 kg; Kurzhantel/Kettlebell nächste eigene Gewichtsstufe (ohne
 Angabe +2 kg). **Nicht** in Phase 3/Gratis: Last senken, Variation nach Stillstand, Umfang anpassen – das ist
@@ -1258,3 +1267,17 @@ Frage 14 = **JA**. Keine neue Migration.
    Start-Deckel zurück (nicht nur der erste) – bewusst vorsichtig. „Heute“ bietet dabei deutlich „Plan neu erstellen“ an;
    ein neuer Plan hat die aktuelle Gruppe als Ausgangspunkt und steigert danach wieder normal.
 8. Screenshot-Namen werden auf Eindeutigkeit geprüft.
+
+**Nachtrag Körpergewicht (Etappe K2+K3, 05.10.2026, `docs/PLAN-KOERPERGEWICHT.md`) – Engine-Version 3:**
+
+1. Matching (5.3): harte Körpergewicht-Regel in `isTemplateEligible()` (nur wenn ALLE Kraft-Tage zu Hause ohne
+   Kraft-Geräte; `isBodyweightOnly()`/`isStrengthEquipment()`, `BODYWEIGHT_PROFILE_RULES`), Rückfall mit
+   `location_mismatch`; gemischte Wochen (Studio + Zuhause ohne Geräte) → Studio-Vorlage; `daysScore()` bevorzugt bei
+   1 Kraft-Tag die 2-Tage-Ganzkörper-Vorlage.
+2. Zeitbudget (5.6): nur bei Körpergewicht-Vorlagen bleibt beim Kürzen die letzte Rumpf-Übung
+   (`fitSessionToMinutes(…, { protectLastCore })`: Schritt 1 entfernt sie nicht, Schritt 3 erst unter 4 Übungen);
+   alle anderen Vorlagen kürzen wie Version 2 (Test gegen die V2-Kürzung). Neue gelbe Regel V13: jede Einheit passt
+   gekürzt in `minutes_min`.
+3. Progression (5.9): Körpergewicht mit Puffer und Zusatzsatz, danach konkreter Varianten-Vorschlag
+   (`progressHintForDisplay()` in `packages/core/src/log/harder-variant.ts`).
+4. `PLAN_ENGINE_VERSION` = 3 → die App bietet bestehenden Plänen „Plan neu erstellen“ an.

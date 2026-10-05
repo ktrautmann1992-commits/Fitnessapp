@@ -1,5 +1,7 @@
 import type { Exercise, PlanTemplate } from '../content/schemas';
 import type { ContentValidationResult } from '../content/validate';
+import { BODYWEIGHT_TEMPLATE_ID_SUFFIX } from '../constants';
+import { isBodyweightTemplate } from '../content/checks';
 import { isDryRunContent } from '../content/validate';
 
 /**
@@ -74,4 +76,23 @@ export function planLibraryFromContent(
   templates: readonly PlanTemplate[],
 ): PlanLibrary {
   return selectPlanContent({ exercises, templates, issues: [] }, { allowDrafts: false });
+}
+
+/**
+ * Stammt ein Plan aus einer Körpergewicht-Vorlage (Folgeblock: `NextPlanBlockOptions.protectLastCore`, Wächter N3)?
+ * Steht die Vorlage in der Bibliothek, entscheidet isBodyweightTemplate(). Sonst – Bibliothek aus dem
+ * Zwischenspeicher (ohne Vorlagen), Vorlage inzwischen archiviert (für Nutzer nicht mehr lesbar, RLS nur `published`)
+ * oder nicht mehr ausgeliefert – gilt die ID-Konvention `…-koerpergewicht` (BODYWEIGHT_TEMPLATE_ID_SUFFIX; ein Test
+ * sichert ab, dass ID-Endung und Kennzeichen im Inhaltsstand übereinstimmen). So kürzt Block 2 nie still anders als
+ * Block 1.
+ */
+export function isBodyweightTemplateId(
+  library: Pick<PlanLibrary, 'templates'>,
+  templateId: string | null,
+): boolean {
+  if (templateId === null) return false;
+  const template = library.templates.find((t) => t.id === templateId);
+  return template
+    ? isBodyweightTemplate(template)
+    : templateId.endsWith(BODYWEIGHT_TEMPLATE_ID_SUFFIX);
 }

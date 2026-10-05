@@ -2,11 +2,12 @@ import { describe, expect, it } from 'vitest';
 
 import { REST_RANGES_S } from '../constants';
 import { estimateSessionMinutes } from '../content/analysis';
+import { isBodyweightTemplate } from '../content/checks';
 import { libraryMap, makeExercise, makeTemplate } from '../content/test-fixtures';
 import { adaptTemplate, clampRpe, fitSessionToMinutes, type PlannedExerciseDraft } from './adapt';
 import { equipmentProfile } from './equipment-profile';
 import { planSafetyRules } from './safety';
-import { MONDAY, repoLibrary } from './test-library';
+import { FULL_HOME, MONDAY, repoLibrary } from './test-library';
 
 const lib = repoLibrary();
 const template = (id: string) => {
@@ -208,6 +209,110 @@ describe('fitSessionToMinutes', () => {
 
   it('10 Minuten sind nicht erreichbar → Hinweis minutes_below_minimum', () => {
     expect(fitSessionToMinutes(drafts, 10, lib.exercises).belowMinimum).toBe(true);
+  });
+
+  it('Körpergewicht-Vorlage (protectLastCore): die letzte Rumpf-Übung bleibt; sonst wie Engine-Version 2', () => {
+    const draft = (exercise_id: string, sets: number): PlannedExerciseDraft => {
+      const time = lib.exercises.get(exercise_id)?.load_type === 'time';
+      return {
+        order_no: 1,
+        exercise_id,
+        source_exercise_id: exercise_id,
+        exercise_name_de: 'x',
+        sets,
+        reps_min: time ? null : 10,
+        reps_max: time ? null : 12,
+        duration_s: time ? 30 : null,
+        rest_s: 90,
+        rpe_target: 7,
+        superset_group: null,
+        notes_de: null,
+        target_weight_kg: null,
+      };
+    };
+    const session = [
+      draft('kniebeuge-koerpergewicht', 3),
+      draft('liegestuetz', 3),
+      draft('tuerrahmen-rudern', 3),
+      draft('y-t-w-vorgebeugt', 3),
+      draft('wadenheben-koerpergewicht', 3),
+      draft('unterarmstuetz', 3),
+    ];
+    const full = estimateSessionMinutes({ exercises: session });
+    const ids = (r: ReturnType<typeof fitSessionToMinutes>) =>
+      r.exercises.map((e) => e.exercise_id);
+    // Ohne Option (alle anderen Vorlagen): wie bisher fällt die letzte Isolationsübung – hier der Rumpf – zuerst.
+    const old = fitSessionToMinutes(session, full - 3, lib.exercises);
+    expect(ids(old)).not.toContain('unterarmstuetz');
+    expect(ids(old)).toContain('wadenheben-koerpergewicht');
+    // Mit Option: der Rumpf bleibt, Wadenheben fällt.
+    const kept = fitSessionToMinutes(session, full - 3, lib.exercises, { protectLastCore: true });
+    expect(ids(kept)).toContain('unterarmstuetz');
+    expect(ids(kept)).not.toContain('wadenheben-koerpergewicht');
+    // Zwei Rumpf-Übungen: nur die letzte verbleibende ist geschützt.
+    const twoCore = [...session.slice(0, 5), draft('dead-bug', 3), draft('unterarmstuetz', 3)];
+    const tight = fitSessionToMinutes(twoCore, 26, lib.exercises, { protectLastCore: true });
+    expect(ids(tight).filter((id) => ['dead-bug', 'unterarmstuetz'].includes(id))).toHaveLength(1);
+    // Sehr wenig Zeit: Schritt 3 entfernt auch den Rumpf, mindestens 3 Übungen bleiben.
+    expect(ids(fitSessionToMinutes(session, 15, lib.exercises, { protectLastCore: true }))).toEqual(
+      ['kniebeuge-koerpergewicht', 'liegestuetz', 'tuerrahmen-rudern'],
+    );
+  });
+
+  it('ohne protectLastCore identisch zur Kürzung der Engine-Version 2 (alle 24 bisherigen Vorlagen × Profile × 20/30/45/60 min)', () => {
+    /** Unveränderte Kürzung aus Engine-Version 2 als Referenz (Wächter W1). */
+    function fitV2(exercises: readonly PlannedExerciseDraft[], minutes: number) {
+      const norm = (list: readonly PlannedExerciseDraft[]) =>
+        fitSessionToMinutes(list, 10_000, lib.exercises).exercises;
+      let current = norm(exercises);
+      const fits = () => estimateSessionMinutes({ exercises: [...current] }) <= minutes;
+      if (fits()) return current;
+      const isIsolation = (e: PlannedExerciseDraft) =>
+        lib.exercises.get(e.exercise_id)?.mechanics === 'isolation';
+      while (!fits() && current.length > 3) {
+        const index = current.map(isIsolation).lastIndexOf(true);
+        if (index < 0) break;
+        current = norm(current.filter((_, i) => i !== index));
+      }
+      let reduced = true;
+      while (!fits() && reduced) {
+        reduced = false;
+        for (let i = current.length - 1; i >= 0 && !fits(); i -= 1) {
+          const e = current[i] as PlannedExerciseDraft;
+          const minSets = isIsolation(e) ? 1 : 2;
+          if (e.sets > minSets) {
+            current = current.map((x, j) => (j === i ? { ...x, sets: x.sets - 1 } : x));
+            reduced = true;
+          }
+        }
+      }
+      while (!fits() && current.length > 3) current = norm(current.slice(0, -1));
+      return current;
+    }
+    const profiles = [
+      equipmentProfile('gym', []),
+      equipmentProfile('home', [...FULL_HOME]),
+      equipmentProfile('home', [{ equipmentId: 'resistance_bands', weightsKg: [] }]),
+      equipmentProfile('home', [{ equipmentId: 'dumbbells', weightsKg: [4, 8] }]),
+      equipmentProfile('home', []),
+    ];
+    let compared = 0;
+    for (const t of lib.templates.filter((x) => !isBodyweightTemplate(x))) {
+      for (const profile of profiles) {
+        for (const rules of [healthy, rulesFor({ flags: ['pregnancy'] })]) {
+          const adapted = adaptTemplate(t, { library: lib.exercises, profile, rules });
+          for (const s of adapted.sessions) {
+            for (const minutes of [20, 30, 45, 60]) {
+              compared += 1;
+              expect(fitSessionToMinutes(s.exercises, minutes, lib.exercises).exercises).toEqual(
+                fitV2(s.exercises, minutes),
+              );
+            }
+          }
+        }
+      }
+    }
+    expect(compared).toBeGreaterThan(1000);
   });
 });
 

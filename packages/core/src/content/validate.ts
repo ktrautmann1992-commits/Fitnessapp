@@ -3,6 +3,7 @@ import type { z } from 'zod';
 import { CONTENT_STATUSES, type ContentStatus } from '../enums';
 import type { ExerciseLookup } from './analysis';
 import { checkExercise, checkLibraryCoverage, checkPlanTemplate } from './checks';
+import { checkTemplateFitsMinimum } from './fit-check';
 import { type ContentIssue, isBlockingIssue, makeIssue } from './rules';
 import { type Exercise, exerciseSchema, type PlanTemplate, planTemplateSchema } from './schemas';
 
@@ -227,6 +228,7 @@ export function validateContent(files: readonly ContentFile[]): ContentValidatio
   issues.push(...checkLibraryCoverage(exercises));
   for (const template of templates) {
     issues.push(...checkPlanTemplate(template, library));
+    issues.push(...checkTemplateFitsMinimum(template, library));
   }
 
   return { exercises, templates, issues, blocking: issues.filter(isBlockingIssue) };
