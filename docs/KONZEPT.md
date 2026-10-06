@@ -182,6 +182,16 @@ Verbindlich ist der freigegebene Ablauf in `docs/PLAN-PHASE-1.md` Abschnitt 3 (S
 - In der App aufgezeichnete Strecken (Abschnitt 10.1) landen automatisch als Ausdauer-Eintrag im Tagebuch
 - Offline-fähig, Sync später
 
+**Umsetzung Phase 4 (`docs/PLAN-PHASE-4.md`, Etappen C1–D):** Trainingsmodus Kraft und Ausdauer offline (verschlüsselter
+Entwurf und Tagebuch-Warteschlange), Pausentimer, Bildschirm an; **Woche** (`app/week.tsx`: Mo–So mit Status-Zeichen
+und Wort – erledigt, teilweise, verpasst, gestrichen, geplant, entfallen –, Summen Einheiten/Kraft-Sätze/Ausdauer-Minuten
+und -km, Blättern; nachgeholte Einheiten am tatsächlichen Datum), **Verlauf** (`app/history/`: nach Wochen, je 20 weitere,
+ältere als 12 Wochen online nachladen; Verlauf je Übung mit bestem Satz „Gewicht × Wiederholungen“, keine 1RM),
+**Eintrag** (`app/log/[logId].tsx`: ansehen, ändern im Datumsfenster, löschen nur online) und **Datenexport** „Meine Daten“
+(Einstellungen; JSON aller eigenen Daten inkl. Konto-E-Mail und Einwilligungs-Verlauf; Browser: Download, App: Ordner
+wählen – kein Teilen-Dialog). Regeln in `packages/core/src/log/summary.ts` und `packages/core/src/export/data-export.ts`.
+Übungsvideos/Animationen und automatische Einträge aus Strecken/Wearables kommen später (Phase 8/10).
+
 ## 6. Ernährungs-Engine (`packages/core/nutrition`)
 - Grundumsatz: Mifflin-St Jeor (bzw. Katch-McArdle, wenn Körperfett bekannt)
 - Gesamtumsatz: Grundumsatz × Alltagsfaktor + Trainingsenergie der geplanten Einheiten (tagesgenau)
@@ -489,6 +499,11 @@ löschen, nie in Logs/Analytics.
 - Lizenzen: Open Food Facts und OpenStreetMap (ODbL) mit Quellenangabe in der App
 - Standortberechtigung im Hintergrund (Strecken): Begründungstexte für App Store und Play Store
 - Mitgliedschafts-Erinnerung: nur Erinnerung an selbst eingetragene Fristen, keine Rechtsberatung zur Kündigung
+- Datenschutzerklärung, Abschnitt Auskunft/Datenexport (Phase 12, aus `docs/PLAN-PHASE-4.md` Etappe D): „Meine Daten
+  exportieren“ liefert den Stand **auf dem Server** (alle eigenen Tabellen, Einwilligungs-Verlauf, Konto-E-Mail).
+  Nicht enthalten sind Entwürfe und noch nicht übertragene Trainings auf dem Gerät (die App nennt deren Zahl vor dem
+  Speichern), der interne Tageszähler gegen Missbrauch sowie Wartelisten-Einträge (Auskunft per E-Mail). Die Datei
+  enthält Gesundheitsdaten und wird nur lokal gespeichert (Download bzw. selbst gewählter Ordner, kein Teilen-Dialog).
 
 ## 15. KI-Grenze & Premium-Prüfung
 - **Gratis ohne KI, Premium mit KI:** Alle Funktionen mit Echtzeit-KI sind ausschließlich Premium – KI-Coach (Abschnitt 11),

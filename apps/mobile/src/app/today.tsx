@@ -315,6 +315,15 @@ export default function TodayScreen() {
             loading={busy}
           />
         </Card>
+        {rows.sessionLogs.length > 0 ? (
+          // Das Tagebuch bleibt auch ohne Plan (z. B. nach dem Widerruf) – Verlauf erreichbar.
+          <Button
+            label={t.today.openHistory}
+            variant="secondary"
+            onPress={() => router.push('/history' as Href)}
+            testID="today-history"
+          />
+        ) : null}
         {dialogs}
       </Screen>
     );
@@ -523,6 +532,25 @@ export default function TodayScreen() {
 
       <Heading level={2}>{t.plan.weekTitle}</Heading>
       <WeekOverview days={days} selected={selected} onSelect={setSelected} />
+      {/* Woche und Verlauf (Etappe D) – eine Tab-Leiste kommt mit der Ernährung (Phase 5). */}
+      <View style={{ flexDirection: 'row', gap: 8 }}>
+        <View style={{ flex: 1 }}>
+          <Button
+            label={t.today.openWeek}
+            variant="secondary"
+            onPress={() => router.push('/week' as Href)}
+            testID="today-week"
+          />
+        </View>
+        <View style={{ flex: 1 }}>
+          <Button
+            label={t.today.openHistory}
+            variant="secondary"
+            onPress={() => router.push('/history' as Href)}
+            testID="today-history"
+          />
+        </View>
+      </View>
 
       <Card>
         <Body muted>{planTitleText(plan)}</Body>

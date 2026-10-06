@@ -33,6 +33,7 @@ import {
   TRAINING_LIMITS,
 } from './constants';
 import * as enums from './enums';
+import { DATA_EXPORT_TABLES } from './export/data-export';
 import { EQUIPMENT } from './equipment';
 import { FOOD_GROUPS } from './food-groups';
 import { HEALTH_FLAGS, HEALTH_SCREENING_QUESTIONS } from './health-screening';
@@ -479,5 +480,13 @@ describe('Trainingstagebuch (Phase 4 Etappe B)', () => {
     expect(enumsFile).toBeGreaterThanOrEqual(0);
     expect(tablesFile).toBeGreaterThan(enumsFile);
     expect(rpcsFile).toBeGreaterThan(tablesFile);
+  });
+
+  it('export_my_data(): Schlüssel von „data“ = DATA_EXPORT_TABLES (Datenexport in der App, Etappe D)', () => {
+    const start = sql.indexOf('create or replace function public.export_my_data()');
+    const end = sql.indexOf('$$;', start);
+    const body = sql.slice(start, end);
+    const keys = [...body.matchAll(/'([a-z_]+)', \(select coalesce/g)].map((m) => m[1]);
+    expect(keys).toEqual([...DATA_EXPORT_TABLES]);
   });
 });

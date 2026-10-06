@@ -198,6 +198,11 @@ export interface WeekDay<T extends StoredSession> {
   readonly skipped: readonly T[];
   /** Einheiten, die von diesem Tag weg verschoben wurden. */
   readonly movedAway: readonly T[];
+  /**
+   * Weitere erledigte Einheiten des Tages neben `session` (completedOn(), Wächter B S4 / Etappe D): z. B. das heute
+   * erledigte Training des alten Plans neben der geplanten Einheit eines neuen Plans – „außerdem erledigt“.
+   */
+  readonly alsoCompleted: readonly T[];
 }
 
 /** Wochenübersicht Montag–Sonntag der ISO-Woche von `date` (Standard: heute). */
@@ -209,12 +214,14 @@ export function weekOverview<T extends StoredSession>(
   const monday = startOfIsoWeek(date);
   return Array.from({ length: 7 }, (_, index) => {
     const day = addDays(monday, index);
+    const session = sessionOn(sessions, day);
     return {
       date: day,
       weekday: index + 1,
       isToday: day === today,
       isPast: day < today,
-      session: sessionOn(sessions, day),
+      session,
+      alsoCompleted: completedOn(sessions, day).filter((s) => s.id !== session?.id),
       skipped: sessions.filter((s) => s.scheduled_on === day && s.status === 'skipped'),
       movedAway: sessions.filter(
         (s) => s.original_date === day && s.scheduled_on !== day && s.status !== 'skipped',

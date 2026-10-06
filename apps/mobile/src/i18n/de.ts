@@ -432,6 +432,8 @@ export const de = {
     alreadyTrained: 'Heute ist schon ein Training eingetragen – nie zwei Einheiten an einem Tag.',
     libraryMissingStart:
       'Training starten geht, sobald die Übungen geprüft sind – bitte kurz online gehen.',
+    openWeek: 'Woche',
+    openHistory: 'Verlauf',
   },
   plan: {
     emptyTitle: 'Noch kein Plan',
@@ -544,6 +546,8 @@ export const de = {
     todayBadge: 'heute',
     skipped: 'entfällt',
     deloadBadge: 'Erholung',
+    completedBadge: '✓ erledigt',
+    alsoCompleted: (name: string) => `außerdem erledigt: ${name}`,
     movedFrom: (day: string) => `verschoben von ${day}`,
     movedAway: (day: string) => `verschoben auf ${day}`,
     showDay: (day: string) => `${day} anzeigen`,
@@ -781,6 +785,118 @@ export const de = {
       },
     },
   },
+  /** Wochenansicht (docs/PLAN-PHASE-4.md 6.1 Punkt 4, Etappe D). */
+  week: {
+    title: 'Woche',
+    range: (from: string, to: string) => `${from} bis ${to}`,
+    previous: '‹ Vorwoche',
+    next: 'Nächste Woche ›',
+    previousA11y: 'Vorherige Woche anzeigen',
+    nextA11y: 'Nächste Woche anzeigen',
+    current: 'Diese Woche',
+    // Status immer mit Zeichen UND Wort (nie nur Farbe, 6.4).
+    status: {
+      done: '✓ Erledigt',
+      partial: '◐ Teilweise erledigt',
+      missed: '! Verpasst',
+      skipped: '– Gestrichen',
+      planned: '○ Geplant',
+      dropped: '× Entfallen',
+      rest: 'Ruhetag',
+    },
+    droppedHint: 'gehört zu einem früheren Plan',
+    caughtUpFrom: (date: string) => `nachgeholt vom ${date}`,
+    pending: 'wird noch übertragen',
+    open: 'Ansehen',
+    summaryTitle: 'Summen der Woche',
+    sessions: (done: number, planned: number) => `Einheiten: ${done} geschafft, ${planned} geplant`,
+    sets: (count: number) => (count === 1 ? 'Kraft: 1 Satz' : `Kraft: ${count} Sätze`),
+    endurance: (minutes: number, km: string) => `Ausdauer: ${minutes} min, ${km} km`,
+    enduranceA11y: (minutes: number, km: string) => `Ausdauer: ${minutes} Minuten, ${km} Kilometer`,
+    olderHint: 'Ältere Wochen findest du im Verlauf.',
+    empty: 'In dieser Woche ist nichts geplant und nichts eingetragen.',
+    back: 'Zurück zu Heute',
+  },
+  /** Verlauf (6.1 Punkt 5, Etappe D). */
+  history: {
+    title: 'Verlauf',
+    intro: 'Deine Trainings nach Wochen – antippen zum Ansehen, Ändern oder Löschen.',
+    empty: 'Noch keine Einträge – dein erstes Training erscheint hier.',
+    weekOf: (date: string) => `Woche ab ${date}`,
+    completed: 'vollständig',
+    partial: 'teilweise',
+    sets: (count: number) => (count === 1 ? '1 Satz' : `${count} Sätze`),
+    endurance: (minutes: number, km: string | null) =>
+      km === null ? `${minutes} min` : `${minutes} min · ${km} km`,
+    enduranceA11y: (minutes: number, km: string | null) =>
+      km === null ? `${minutes} Minuten` : `${minutes} Minuten, ${km} Kilometer`,
+    pending: 'wird noch übertragen',
+    showMore: 'Weitere anzeigen',
+    loadOlder: 'Ältere Einträge laden',
+    loadingOlder: 'Ältere Einträge werden geladen …',
+    noOlder: 'Es gibt keine älteren Einträge.',
+    exercisesTitle: 'Verlauf je Übung',
+    exerciseCount: (count: number) => (count === 1 ? '1 Eintrag' : `${count} Einträge`),
+    exerciseEmpty: 'Zu dieser Übung gibt es noch keine Einträge.',
+    exerciseIntro: 'Je Training der beste Satz.',
+    best: {
+      weight: (kg: string, reps: number) => `${kg} kg × ${reps}`,
+      weightA11y: (kg: string, reps: number) => `${kg} Kilogramm mal ${reps} Wiederholungen`,
+      time: (seconds: number) => `${seconds} Sekunden gehalten`,
+      reps: (reps: number) => `${reps} Wiederholungen`,
+      none: 'kein Satz abgehakt',
+    },
+    setsDone: (count: number) => (count === 1 ? '1 Satz abgehakt' : `${count} Sätze abgehakt`),
+    back: 'Zurück',
+  },
+  /** Ein Eintrag im Verlauf: ansehen, ändern, löschen (Etappe D). */
+  logEntry: {
+    title: 'Eintrag',
+    notFound: 'Diesen Eintrag gibt es nicht (mehr).',
+    performedOn: (date: string) => `Trainiert am ${date}`,
+    caughtUpFrom: (date: string) => `Nachgeholt vom ${date}`,
+    completed: 'Vollständig erledigt',
+    partial: 'Teilweise erledigt',
+    effort: (value: number, word: string) => `Belastung: ${value} – ${word}`,
+    notes: 'Notiz',
+    skipped: 'Nicht gemacht',
+    alternative: 'Alternative durchgeführt',
+    setWeight: (no: number, kg: string, reps: number | null) =>
+      `Satz ${no}: ${kg} kg × ${reps ?? 0}`,
+    setWeightA11y: (no: number, kg: string, reps: number | null) =>
+      `Satz ${no}: ${kg} Kilogramm mal ${reps ?? 0} Wiederholungen`,
+    setReps: (no: number, reps: number | null) => `Satz ${no}: ${reps ?? 0} Wiederholungen`,
+    setTime: (no: number, seconds: number | null) => `Satz ${no}: ${seconds ?? 0} Sekunden`,
+    setOpen: 'nicht abgehakt',
+    modality: (name: string) => `Art: ${name}`,
+    duration: (text: string) => `Dauer: ${text}`,
+    durationA11y: (hours: number, minutes: number) =>
+      hours > 0
+        ? `Dauer: ${hours} ${hours === 1 ? 'Stunde' : 'Stunden'} ${minutes} Minuten`
+        : `Dauer: ${minutes} Minuten`,
+    distance: (km: string) => `Distanz: ${km} km`,
+    distanceA11y: (km: string) => `Distanz: ${km} Kilometer`,
+    elevation: (m: number) => `Höhenmeter: ${m}`,
+    exerciseHistory: 'Verlauf dieser Übung',
+    exerciseHistoryA11y: (name: string) => `Verlauf: ${name}`,
+    edit: 'Ändern',
+    delete: 'Eintrag löschen',
+    deleteTitle: 'Eintrag löschen?',
+    deleteText:
+      'Der Eintrag wird endgültig gelöscht – auf allen Geräten. Die Einheit gilt danach wieder als offen bzw. verpasst.',
+    deleteConfirm: 'Endgültig löschen',
+    deleted: 'Eintrag gelöscht.',
+    deleteConflict:
+      'Dieser Eintrag wurde inzwischen auf einem anderen Gerät geändert. Wir haben neu geladen – bitte prüfe ihn und lösche ihn dann erneut.',
+    onlineOnly: 'Löschen geht nur mit Verbindung.',
+    pendingNoDelete: 'Noch nicht übertragen – Löschen geht, sobald der Eintrag übertragen ist.',
+    draftOpen:
+      'Zu diesem Training gibt es einen offenen Entwurf – bitte zuerst auf „Heute“ speichern oder verwerfen.',
+    editUnlinked:
+      'Ändern geht nicht mehr: Die Einheit gehört zu einem früheren Plan. Löschen geht weiterhin.',
+    editTooOld: 'Ändern geht nur bis 14 Tage nach dem Training. Löschen geht weiterhin.',
+    back: 'Zurück zum Verlauf',
+  },
   settings: {
     title: 'Einstellungen',
     consents: 'Einwilligungen',
@@ -855,6 +971,27 @@ export const de = {
       'Den Gesundheits-Check kannst du nur mit Einwilligung Gesundheitsdaten wiederholen.',
     recreatePlan: 'Plan neu erstellen',
     planCreated: 'Dein neuer Plan ist fertig.',
+    // Datenexport (Recht auf Auskunft, 3.7, Etappe D)
+    exportTitle: 'Meine Daten',
+    exportText:
+      'Speichere alle deine Daten als Datei (JSON): Profil, Einwilligungen samt Verlauf, Körper- und Gesundheitsdaten, Pläne, Tagebuch und Startgewichte.',
+    exportButton: 'Meine Daten exportieren',
+    exportDialogTitle: 'Daten exportieren?',
+    exportDialogText:
+      'Diese Datei enthält Gesundheitsdaten – gib sie nur weiter, wenn du das willst.',
+    exportWhereWeb: 'Die Datei landet in deinem Download-Ordner.',
+    exportWhereNative: 'Du wählst gleich einen Ordner, z. B. „Dateien“ oder „Downloads“.',
+    exportConfirmWeb: 'Datei herunterladen',
+    exportConfirmNative: 'Ordner wählen und speichern',
+    exportPending: (count: number) =>
+      count === 1
+        ? '1 Training ist noch nicht übertragen und fehlt in der Datei.'
+        : `${count} Trainings sind noch nicht übertragen und fehlen in der Datei.`,
+    exportTestMode: 'Testmodus: Die Datei enthält die Angaben auf diesem Gerät (ohne E-Mail).',
+    exportSavedWeb: 'Die Datei wurde heruntergeladen.',
+    exportSavedNative: 'Die Datei wurde gespeichert.',
+    exportCancelled: 'Export abgebrochen – es wurde nichts gespeichert.',
+    exportFailed: 'Die Datei konnte nicht gespeichert werden. Bitte versuche es erneut.',
   },
   /** Trainingsplan als PDF (docs/PLAN-PDF-EXPORT.md) – Texte zu den Codes aus packages/core/src/export. */
   print: {

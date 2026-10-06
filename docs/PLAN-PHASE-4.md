@@ -1358,7 +1358,95 @@ Supabase (W13, D).
   kein Verlust.
 
 Offen für D: Woche, Verlauf, Löschen-UI, Export; Live-Test mit Supabase (W13) inkl. der Prüfpunkte aus S5 sowie
-Pausentimer-Vibration und Bildschirm-an auf echten Geräten (Android/iPhone).
+Pausentimer-Vibration und Bildschirm-an auf echten Geräten (Android/iPhone). → D umgesetzt (unten), W13 offen.
+
+**Etappe D umgesetzt (06.10.2026, Pull Request folgt) – ohne Schnitt in D1/D2** (der Umfang passte in einen PR):
+Woche, Verlauf, Eintrag ansehen/ändern/löschen, Verlauf je Übung, Datenexport. **Live-Test W13: offen – braucht
+Gründer** (Klick-Anleitung `docs/HANDY-ANLEITUNG.md` Teil 8 mit allen W13- und S5-Prüfpunkten sowie Vibration,
+Bildschirm-an und Export-Ordner auf echten Geräten). „MVP fertig“ erst nach diesem Test.
+
+- **Core:** `log/summary.ts` ergänzt um `summaryWeekBounds()`/`weekPager()` (Blättern; nicht vor den vollständig
+  geladenen Zeitraum, nie hinter die laufende Woche) und `logEditability()` (Ändern nur mit bekannter Einheit und im
+  Datumsfenster W2 – sonst lehnte `save_session_log` ab; Löschen unabhängig davon). `plan/view.ts`: `weekOverview()`
+  liefert `alsoCompleted` über **`completedOn()`** (Pflichtpunkt aus C1: erledigte Einheit neben einer offenen am selben
+  Tag bleibt in der Woche auf „Heute“ sichtbar, „außerdem erledigt: …“; erledigte Tage tragen „✓ erledigt“).
+  Neu `export/data-export.ts`: `DATA_EXPORT_TABLES` (= Schlüssel von `export_my_data()`, Abgleich in `db-sync.test.ts`),
+  `dataExportSchema` (Zod an der Grenze; unbekannte neue Tabellen bleiben erhalten), `buildDataExportFile()` (plus
+  Konto-E-Mail), `dataExportFileName()`, `dataExportJson()`. Neue Konstante `HISTORY_PAGE_SIZE` = 20
+  (PRODUKTENTSCHEIDUNG). Tests: Woche mit erledigt + geplant am selben Tag, 1 und 7 Tage, Jahreswechsel beim Blättern,
+  Editierbarkeit an den Fenster-Rändern, Export gültig/ungültig.
+- **Daten (App):** `log-summary.ts` (Zeilen → `SummarySession`/`SummaryLog`, Verlauf aus vollständigem Zeitraum +
+  nachgeladenen Einträgen, Eintrag-Details, Übungen im Verlauf), `data-export.ts` (Testmodus in derselben Form wie
+  `export_my_data()`). Backend: `logHistoryStart()` (Supabase: heute − 12 Wochen, Testmodus `null`),
+  `loadOlderLogs(before)` (nur online, je 20 Einheiten plus alle des ältesten Tages, nie im Gerätespeicher – nur im
+  Arbeitsspeicher), `exportMyData()` (RPC `export_my_data` + E-Mail aus der Sitzung; offline `online_only`; ungültige
+  Antwort → Fehler ohne Inhalte). App-Zustand: `olderLogs`, `loadOlderLogs()`, `deleteLog()` (über
+  `deleteSessionLog` mit Revision, danach neu laden; Konflikt → Meldung und neu laden), `exportData()`.
+- **Bildschirme:** `app/week.tsx` (Mo–So mit Zeichen + Wort, „nachgeholt vom …“ am tatsächlichen Datum H2, „×
+  Entfallen“ mit „gehört zu einem früheren Plan“ H1, „wird noch übertragen“, Summen, Blättern, „Ansehen“),
+  `app/history/index.tsx` (nach Wochen, „Weitere anzeigen“ je 20, „Ältere Einträge laden“ nur Supabase/online, Leer-,
+  Lade- und Fehlerzustand, „Verlauf je Übung“), `app/history/[exerciseId].tsx` (bester Satz „Gewicht ×
+  Wiederholungen“, keine 1RM), `app/log/[logId].tsx` (Sätze, Ausdauer mit Pace, Belastung, Notiz; **Ändern** über den
+  Trainingsmodus `?edit=1` bzw. Hinweis „zu alt“/„früherer Plan“/„offener Entwurf“; **Löschen** mit Nachfrage, nicht
+  bei noch nicht übertragenen Einträgen, offline „Dafür brauchst du kurz Verbindung.“). „Heute“: Knöpfe **Woche** und
+  **Verlauf** (ohne Plan, aber mit Tagebuch: Verlauf). Einstellungen: **Meine Daten** mit Hinweis vor dem Speichern
+  (W9) „Diese Datei enthält Gesundheitsdaten – gib sie nur weiter, wenn du das willst.“, Ziel-Ort, Hinweis auf noch
+  nicht übertragene Trainings; Meldungen gespeichert/abgebrochen/gescheitert.
+- **Barrierefreiheit:** Status nie nur über Farbe (Zeichen + Wort), Einheiten im Bildschirmleser ausgeschrieben
+  („Kilogramm“, „Minuten“, „Kilometer“), Einträge als Knöpfe mit vollständiger Ansage, Überschriften-Ebenen, Touch-Ziele
+  ≥ 48 px.
+- **Tests:** Vitest core (`summary.test.ts`, `view.test.ts`, `data-export.test.ts`, `db-sync.test.ts`), App
+  (`log-summary.test.ts`, `data-export.test.ts`, `history-format.test.ts`, `save-file.native.test.ts`,
+  `supabase-backend.test.ts` Export/ältere Einträge/offline, `workout.test.ts` Woche/Löschen/Export im Testmodus);
+  Playwright `e2e/history.spec.ts` (Woche mit Status, Summen, Blättern, nachgeholt, entfallen; Verlauf leer, ansehen,
+  Verlauf je Übung, ändern, löschen; Export mit Hinweis, Datei mit Tagebuch, Konto und Einwilligungen);
+  Bildschirmfotos `woche`, `woche-summen`, `verlauf`, `eintrag`, `eintrag-loeschen`, `export-dialog` (hell/dunkel).
+
+Festlegungen und Abweichungen bei der Umsetzung von D:
+
+1. **Export ohne Teilen-Dialog (Abweichung von 6.1 Punkt 6 / 3.7 „App: Teilen-Dialog, Zwischen-Datei danach
+   gelöscht“):** Browser = Download (Blob im Arbeitsspeicher, Adresse wird freigegeben); App = **Ordner wählen und
+   speichern** über `expo-file-system` (`Directory.pickDirectoryAsync()`, iPhone „Dateien“/Android Speicher-Auswahl),
+   neues direktes Paket `expo-file-system ~57.0.7` (war schon über `expo` installiert, Lockfile nur um den Eintrag
+   ergänzt; läuft in Expo Go und EAS-Build). Begründung: CLAUDE.md „Kein Teilen“ und Gleichstand mit dem PDF-Export
+   (Wächter B2) – der Teilen-Dialog böte Nachrichten-, Mail- und Social-Apps direkt an; außerdem entsteht so **keine
+   Zwischen-Datei** im App-Speicher. Das Recht auf Auskunft/Übertragbarkeit ist erfüllt: Die Person hat die Datei und
+   entscheidet selbst. `expo-sharing` wird nicht gebraucht. Auf echten Geräten zu prüfen (Teil 8 Punkt 14; iOS gewährt
+   den Ordner-Zugriff nur für die laufende Sitzung – passt, die App schreibt sofort).
+2. **Export ohne Wartendes:** Noch nicht übertragene Trainings fehlen in der Datei (der Export ist der Server-Stand);
+   der Dialog sagt das mit Zahl. Im Testmodus enthält die Datei die Angaben auf dem Gerät, `account.email = null`.
+3. **„Löschen/Export nur online“** gilt im Supabase-Modus (Fehler `online_only` → „Dafür brauchst du kurz
+   Verbindung.“; Vitest). Im Testmodus speichert alles lokal – darum prüft die E2E dort Löschen/Export ohne
+   Offline-Fall; der Offline-Fall steht im Live-Test (Teil 8 Punkte 6–7).
+4. **Verlauf in Supabase:** Vollständig sind nur die letzten 12 Wochen (`logHistoryStart()`); ältere Einheiten aus
+   `recent_exercise_logs()` enthalten nur einzelne Übungen und erscheinen im Einheiten-Verlauf erst nach dem Nachladen;
+   der Verlauf **je Übung** nutzt sie dagegen (je Übung vollständig). Die Woche blättert nicht vor den vollständigen
+   Zeitraum („Ältere Wochen findest du im Verlauf.“).
+5. **Ändern aus dem Verlauf** nur, solange `save_session_log` die neue Fassung annimmt (`logEditability()`); verwaiste
+   Einträge und Einheiten ersetzter Pläne (im Supabase-Modus nicht geladen) sind nur noch lösch-, nicht änderbar.
+   Nicht übertragene Einträge lassen sich ändern (wie auf „Heute“), aber erst nach der Übertragung löschen; mit
+   offenem Entwurf weder noch (Hinweis „bitte zuerst auf ‚Heute‘ speichern oder verwerfen“).
+6. Routen: `app/history/index.tsx` statt `app/history.tsx` (gleiche Adresse `/history`), Eintrag unter `/log/[logId]`.
+7. Der Knopf im Trainingsmodus heißt weiter „Zurück zu Heute“, führt beim Ändern aus dem Verlauf aber zurück zum
+   Eintrag (Stapel) – kleiner Schönheitsfehler, bewusst nicht angefasst.
+8. **Smoke-Test-Workflow gegen Supabase:** nur als Vorschlag beschrieben (Teil 8), nicht gebaut – bräuchte ein
+   eigenes Test-Projekt und einen Service-Role-Schlüssel als neues Secret (Gründer-Entscheidung).
+
+**Wächter-Prüfung D: freigegeben – eingearbeitet (06.10.2026):**
+
+- **S1:** Zweiter Export am selben Tag in denselben Ordner: Das iPhone überschreibt nie (`FileAlreadyExists`), darum
+  hängt `save-file.native.ts` bei vorhandenem Namen einen Zähler an (`uniqueFileName()`, `…-2026-10-07-2.json`; Ordner
+  über `directory.list()` geprüft, nicht lesbar → Name wie gewählt). Tests. Live-Test Teil 8 Punkt 15: zweiter Export
+  sowie „Auf meinem iPhone“ und iCloud Drive.
+- **K1:** „Verlauf je Übung“ nutzt dieselbe Grundlage wie der Einheiten-Verlauf (vollständiger Zeitraum plus
+  Nachgeladenes, keine einzelnen älteren Einträge aus `recent_exercise_logs`) und bietet selbst „Ältere Einträge
+  laden“ an; die Übungsliste im Verlauf ebenso.
+- **K2:** Doppel-Tipp beim Export: `singleFlight()` (`lib/single-flight.ts`) – ein zweiter Tipp währenddessen startet
+  keinen zweiten Export; Test.
+- **K3:** Für die Datenschutzerklärung (Phase 12) vermerkt (KONZEPT 14): Der Export ist der Server-Stand; Entwürfe und
+  noch nicht übertragene Trainings fehlen (die App nennt deren Zahl), ebenso der interne Tageszähler und die Warteliste.
+
+Offen nach D: **Live-Test W13 (Gründer)**, danach „MVP fertig“ im Umsetzungsstand; Etappe E (EAS Build und Submit).
 
 ## Wächter-Prüfung (Runde 1) – wie die Befunde gelöst sind
 
