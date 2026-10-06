@@ -50,6 +50,11 @@ export const de = {
     networkPlan:
       'Keine Verbindung. Änderungen an diesem Plan senden wir sofort – bitte versuche es erneut, sobald du online bist.',
     noTemplate: 'Für deine Angaben gibt es gerade keinen freigegebenen Plan. Wir arbeiten daran.',
+    onlineOnly: 'Dafür brauchst du kurz Verbindung.',
+    storageUnavailable:
+      'Offline-Speicher nicht verfügbar (z. B. privates Fenster) – bitte mit Verbindung speichern.',
+    foreignData:
+      'Auf diesem Gerät liegen noch Einträge eines anderen Kontos. Bitte entscheide zuerst, ob sie gelöscht werden sollen.',
   },
   welcome: {
     logoLabel: 'Alpha5',
@@ -415,6 +420,17 @@ export const de = {
       'Dein bisheriger Plan beruht auf dem Gesundheits-Check und wird durch einen neuen Plan ersetzt. Ohne Gesundheits-Check planen wir vorsichtig. Du kannst später jederzeit neu einwilligen.',
     reconsentDeclineConfirm: 'Neuen Plan erstellen',
     settings: 'Einstellungen',
+    startWorkout: 'Training starten',
+    catchUp: 'Heute nachholen',
+    catchUpHint: 'Du trägst die verpasste Einheit mit dem heutigen Datum ein.',
+    completed: '✓ Erledigt',
+    completedPartly: '✓ Erledigt (teilweise)',
+    viewWorkout: 'Ansehen/Ändern',
+    pendingUpload: 'Wird übertragen, sobald du online bist.',
+    enduranceLater: 'Ausdauer eintragen kommt mit dem nächsten Update.',
+    alreadyTrained: 'Heute ist schon ein Training eingetragen – nie zwei Einheiten an einem Tag.',
+    libraryMissingStart:
+      'Training starten geht, sobald die Übungen geprüft sind – bitte kurz online gehen.',
   },
   plan: {
     emptyTitle: 'Noch kein Plan',
@@ -556,6 +572,153 @@ export const de = {
       walkRun: 'Geh-Lauf-Wechsel',
     },
   },
+  /** Trainingsmodus (docs/PLAN-PHASE-4.md 6.1–6.5). */
+  workout: {
+    title: 'Training',
+    exerciseOf: (current: number, total: number) => `Übung ${current} von ${total}`,
+    allDone: 'Alle Übungen erledigt',
+    tabHint: 'Lass diesen Tab offen, bis dein Training übertragen ist.',
+    leaveWarning: 'Dein Training ist noch nicht übertragen. Wirklich verlassen?',
+    loading: 'Dein Training wird vorbereitet …',
+    notFound: 'Diese Einheit gibt es nicht mehr. Dein Plan hat sich vielleicht geändert.',
+    notStartable: 'Diese Einheit kannst du heute nicht eintragen.',
+    libraryMissing:
+      'Die Übungen können gerade nicht geprüft werden. Bitte kurz online gehen – dann kannst du starten.',
+    alternativesLocked: 'Alternativen gehen erst nach kurzem Online-Gehen.',
+    editing: 'Du änderst ein gespeichertes Training. Übungen lassen sich dabei nicht tauschen.',
+    back: 'Zurück zu Heute',
+    // Übung
+    target: (sets: number, reps: string, weight: string | null) =>
+      weight
+        ? `${sets} × ${reps} Wiederholungen mit ${weight}`
+        : `${sets} × ${reps} Wiederholungen`,
+    targetHold: (sets: number, seconds: number) => `${sets} × ${seconds} Sekunden halten`,
+    repsUnit: (reps: number | null) =>
+      reps === null ? 'Wiederholungen' : `${reps} Wiederholungen`,
+    weightKg: (kg: string) => `${kg} kg`,
+    perDumbbell: 'je Hantel',
+    perKettlebell: 'je Kugel',
+    findStartWeight:
+      'Startgewicht finden: Wähle ein Gewicht, mit dem du alle Wiederholungen sauber schaffst und noch etwa 2–3 übrig hättest.',
+    chooseLightest: 'Nimm deine leichteste Stufe – ein passendes Gewicht hast du (noch) nicht.',
+    fromStartWeight: 'Vorschlag aus deinem Startgewicht',
+    returnAfterPause: 'Wiedereinstieg nach Pause: heute etwas leichter.',
+    rpeTarget: (reserve: string) => `Ziel: ca. ${reserve} Wiederholungen in Reserve`,
+    hint: {
+      harder_variant: (name: string) =>
+        `Du schaffst alles sicher – probier als Nächstes „${name}“ (als Alternative eintragen).`,
+      stronger_band: 'Du schaffst alles sicher – nimm beim nächsten Mal ein stärkeres Band.',
+      no_heavier_weight:
+        'Für mehr Fortschritt brauchst du eine schwerere Gewichtsstufe – trag sie in deinen Geräten ein oder wähle eine schwerere Variante.',
+      confirm_weight:
+        'Dein eingetragenes Gewicht wurde nicht übernommen, weil es nicht bestätigt war. Trag es erneut ein und bestätige es.',
+    },
+    alternativeOf: (name: string) => `statt ${name}`,
+    skippedLabel: 'Nicht gemacht',
+    // Sätze
+    setLabel: (no: number) => `Satz ${no}`,
+    weight: 'Gewicht',
+    reps: 'Wiederholungen',
+    seconds: 'Sekunden',
+    decrease: 'verringern',
+    increase: 'erhöhen',
+    stepperLabel: (what: string, value: string, action: string) => `${what} ${value}, ${action}`,
+    weightA11y: (kg: string) => `${kg} Kilogramm`,
+    setDone: 'Satz geschafft',
+    setDoneA11y: (no: number) => `Satz ${no} geschafft`,
+    setOpen: 'Abhaken',
+    addSet: 'Satz hinzufügen',
+    reserveQuestion: 'Wie viele Wiederholungen wären noch gegangen?',
+    reserveOption: (value: number) => (value >= 5 ? '5+' : String(value)),
+    reserveA11y: (value: number) =>
+      value >= 5 ? '5 oder mehr Wiederholungen in Reserve' : `${value} Wiederholungen in Reserve`,
+    // Warnungen
+    confirmHeavierTitle: 'Absichtlich deutlich schwerer als geplant?',
+    confirmAbsoluteTitle: 'Stimmt das Gewicht?',
+    confirmLighterTitle: 'Absichtlich deutlich leichter?',
+    confirmText:
+      'Nur bestätigte Gewichte zählen für deinen nächsten Vorschlag. Ein Tippfehler (z. B. 225 statt 22,5) treibt so nichts hoch.',
+    confirmButton: 'Ja, stimmt so',
+    checkReps: 'Tippfehler? Bitte prüfe die Wiederholungen.',
+    confirmNeeded: 'Bitte bestätige zuerst die markierten Gewichte.',
+    // Menü
+    skip: 'Nicht gemacht',
+    unskip: 'Doch gemacht',
+    alternative: 'Alternative durchgeführt',
+    alternativeTitle: 'Welche Übung hast du gemacht?',
+    alternativeNone: 'Für diese Übung gibt es gerade keine passende Alternative.',
+    backToPlanned: (name: string) => `Doch „${name}“ gemacht`,
+    startWeight: 'Eigenes Startgewicht',
+    startWeightLabel: 'Startgewicht in kg',
+    startWeightHint: 'Gilt nur, solange du diese Übung noch nicht eingetragen hast.',
+    startWeightSave: 'Startgewicht übernehmen',
+    startWeightInvalid: 'Bitte ein Gewicht zwischen 0,5 und 500 kg eingeben.',
+    startWeightConfirm: 'Das ist ungewöhnlich schwer. Stimmt das Gewicht?',
+    startWeightConfirmButton: 'Ja, übernehmen',
+    // Abschluss
+    finishTitle: 'Training beenden',
+    effortLabel: 'Wie anstrengend war das Training insgesamt?',
+    effortValue: (value: number, word: string) => `${value} – ${word}`,
+    effortWords: [
+      'Ruhe',
+      'sehr leicht',
+      'leicht',
+      'locker',
+      'mäßig',
+      'mittel',
+      'etwas schwer',
+      'schwer',
+      'sehr schwer',
+      'extrem schwer',
+      'maximal',
+    ],
+    effortUnset: 'Noch nicht gewählt',
+    effortSkip: 'Ohne Angabe',
+    notesLabel: 'Notiz (optional)',
+    notesHint:
+      'Für Technik, Einstellungen, Gefühl – bitte keine Angaben zu Krankheiten oder Beschwerden.',
+    notesCount: (used: number, max: number) => `${used} von ${max} Zeichen`,
+    notesTooLong: (max: number) => `Höchstens ${max} Zeichen.`,
+    save: 'Training speichern',
+    saveChanges: 'Änderungen speichern',
+    discard: 'Training verwerfen',
+    discardTitle: 'Training verwerfen?',
+    discardText: 'Alle Einträge dieser Einheit auf diesem Gerät gehen verloren.',
+    discardConfirm: 'Verwerfen',
+    invalid: 'Das Training enthält ungültige Werte. Bitte prüfe deine Eingaben.',
+    // Ergebnisse
+    saved: 'Training gespeichert. Stark!',
+    queued:
+      'Noch nicht übertragen – dein Training liegt sicher auf dem Gerät und wird später gesendet.',
+    queuedBrowser:
+      'Noch nicht übertragen – dein Training wird gesendet, sobald es geht. Lass diesen Tab bis dahin offen.',
+    draftSaveFailed:
+      'Dein Zwischenstand konnte auf diesem Gerät nicht gesichert werden. Bitte speichere das Training mit Verbindung.',
+    weightInput: 'Gewicht eingeben',
+    weightInputLabel: 'Gewicht in kg (für alle offenen Sätze)',
+    weightInputApply: 'Übernehmen',
+    weightInputInvalid: 'Bitte ein Gewicht zwischen 0 und 500 kg eingeben.',
+    orphaned: 'Dein Plan hat sich geändert – dein Training wurde trotzdem gespeichert.',
+    conflictTitle: 'Diese Einheit wurde auf einem anderen Gerät geändert.',
+    conflictKeep: 'Meine Fassung behalten',
+    conflictTakeOther: 'Andere übernehmen',
+    rejectedTitle: (date: string) =>
+      `Dein Training vom ${date} konnte nicht gespeichert werden – bitte prüfen.`,
+    rejected: {
+      day_taken: 'An diesem Tag ist schon eine Einheit eingetragen.',
+      date_window: 'Das Datum liegt außerhalb des erlaubten Zeitraums.',
+      daily_limit: 'Heute wurden schon zu viele Trainings gespeichert.',
+      invalid: 'Ungültige Werte im Tagebuch.',
+    },
+    open: 'Öffnen',
+    retry: 'Erneut versuchen',
+    // Entwurf gefunden
+    draftTitle: (date: string) => `Du hast ein Training vom ${date} nicht beendet`,
+    draftText: 'Fortsetzen, speichern oder verwerfen?',
+    draftContinue: 'Fortsetzen',
+    draftSave: 'Speichern',
+    draftDiscard: 'Verwerfen',
+  },
   settings: {
     title: 'Einstellungen',
     consents: 'Einwilligungen',
@@ -569,8 +732,30 @@ export const de = {
     revokeTitle: 'Einwilligung widerrufen?',
     revokeText:
       'Der Widerruf löscht alle Körper- und Gesundheitsdaten: Körperdaten, Körperumfänge, alle Gesundheits-Checks, Unverträglichkeiten und alle Trainingspläne, die auf dem Gesundheits-Check beruhen. Deine übrigen Angaben bleiben erhalten.',
-    revokeConfirm: 'Widerrufen und löschen',
     revokeDone: 'Einwilligung widerrufen. Deine Gesundheitsdaten wurden gelöscht.',
+    revokeLogs:
+      'Dein Tagebuch bleibt; Vorgaben aus dem Gesundheits-Check werden daraus entfernt. Du kannst die Einträge aus Plänen mit Gesundheits-Check aber auch löschen.',
+    revokeKeepLogs: 'Tagebuch behalten (empfohlen)',
+    revokeDeleteLogs: 'Einträge aus Plänen mit Gesundheits-Check auch löschen',
+    revokeOtherDevices:
+      'Öffne die App auf deinen anderen Geräten vorher einmal mit Verbindung – noch nicht übertragene Trainings von dort werden sonst ohne Vorgaben gespeichert.',
+    revokeEarlier:
+      'Einträge aus früheren Widerrufen sind schon ohne Vorgaben und werden nicht mehr erkannt – sie bleiben erhalten.',
+    revokeLogsNote:
+      'Bei einem Widerruf bleibt dein Tagebuch; Vorgaben aus dem Gesundheits-Check werden daraus entfernt.',
+    signOutPendingTitle: 'Noch nicht übertragen',
+    signOutPending: (count: number) =>
+      count === 1
+        ? '1 Training ist noch nicht übertragen.'
+        : `${count} Trainings sind noch nicht übertragen.`,
+    signOutSendNow: 'Jetzt senden',
+    signOutAnyway: 'Trotzdem abmelden (gehen verloren)',
+    signOutStillPending:
+      'Es ist immer noch nicht alles übertragen (offline, Konflikt oder abgelehnt). Bitte prüfe es auf „Heute“ oder melde dich trotzdem ab.',
+    foreignTitle: 'Einträge eines anderen Kontos',
+    foreignText: 'Auf diesem Gerät liegen Einträge eines anderen Kontos – löschen?',
+    foreignConfirm: 'Löschen',
+    sessionExpired: 'Bitte melde dich erneut an – deine Einträge bleiben erhalten.',
     baseConsentNote:
       'Nutzungsbedingungen und Datenschutzerklärung sind Voraussetzung für die Nutzung. Wenn du nicht mehr einverstanden bist, lösche bitte dein Konto.',
     reminder: 'Mess-Erinnerung',

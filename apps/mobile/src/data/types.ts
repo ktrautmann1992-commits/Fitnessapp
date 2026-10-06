@@ -40,6 +40,16 @@ export type MeasurementReminderRow = WithoutTimestamps<Tables<'measurement_remin
 export type UserPlanRow = Tables<'user_plans'>;
 export type PlannedSessionRow = Omit<Tables<'planned_sessions'>, 'created_at' | 'updated_at'>;
 export type PlannedExerciseRow = Tables<'planned_exercises'>;
+/**
+ * Trainingstagebuch (Phase 4). Kein Gesundheitsdatum (PLAN-PHASE-4 3.4), auf dem Gerät aber IMMER nur im geschützten
+ * Tagebuch-Zwischenspeicher (verschlüsselt bzw. Browser sessionStorage, S4) – nie im normalen rowsCache.
+ */
+export type SessionLogRow = Tables<'session_logs'>;
+export type ExerciseLogRow = Tables<'exercise_logs'>;
+export type SetLogRow = Tables<'set_logs'>;
+export type CardioLogRow = Tables<'cardio_logs'>;
+/** Eigenes Startgewicht (kein Tagebuch-Inhalt, darf in den normalen Zwischenspeicher). */
+export type StartWeightRow = Tables<'exercise_start_weights'>;
 
 /** Alle Zeilen eines Nutzers – im Testmodus der komplette Gerätespeicher, im Supabase-Modus ein Abbild. */
 export interface UserRows {
@@ -66,6 +76,15 @@ export interface UserRows {
   plans: UserPlanRow[];
   plannedSessions: PlannedSessionRow[];
   plannedExercises: PlannedExerciseRow[];
+  /**
+   * Tagebuch (Phase 4): Supabase-Modus die letzten LOG_CACHE_WEEKS Wochen plus recent_exercise_logs() (Grundlage der
+   * Progression); Testmodus alles. Nur im geschützten Tagebuch-Zwischenspeicher auf dem Gerät (cacheableRows).
+   */
+  sessionLogs: SessionLogRow[];
+  exerciseLogs: ExerciseLogRow[];
+  setLogs: SetLogRow[];
+  cardioLogs: CardioLogRow[];
+  startWeights: StartWeightRow[];
 }
 
 export function emptyUserRows(): UserRows {
@@ -84,6 +103,11 @@ export function emptyUserRows(): UserRows {
     plans: [],
     plannedSessions: [],
     plannedExercises: [],
+    sessionLogs: [],
+    exerciseLogs: [],
+    setLogs: [],
+    cardioLogs: [],
+    startWeights: [],
   };
 }
 

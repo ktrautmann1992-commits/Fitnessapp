@@ -10,6 +10,14 @@ import {
 } from '@fitnessapp/core';
 import type { TablesInsert, TablesUpdate } from '@fitnessapp/db';
 
+import {
+  deleteHealthPlanLogRows,
+  detachLogs,
+  EMPTY_LOG_ROWS,
+  logRowsOf,
+  type LogRows,
+  neutralizeHealthPlanLogRows,
+} from './log-rows';
 import type {
   BodyMeasurementsRow,
   BodyMetricsRow,
@@ -69,7 +77,12 @@ export type WriteOp =
       usesHealthData: boolean;
       scheduledOn: string;
       status: PlannedSessionRow['status'];
-    };
+    }
+  /**
+   * Eigenes Startgewicht (exercise_start_weights, direkt per PostgREST – bewusste Ausnahme W14); null = entfernen.
+   * Kein Tagebuch-Inhalt: darf über die normale Warteschlange (Schlüssel set_exercise_start_weight:<exercise_id>).
+   */
+  | { kind: 'set_exercise_start_weight'; exerciseId: string; weightKg: number | null };
 
 export type ProfilePatch = Pick<
   TablesUpdate<'profiles'>,
@@ -258,6 +271,24 @@ function applyOne(rows: UserRows, op: WriteOp, ctx: ApplyContext): UserRows {
       return applySavePlan(rows, op.payload, ctx);
     case 'append_plan_block':
       return insertSessions(rows, op.planId, op.sessions, ctx);
+    case 'set_exercise_start_weight': {
+      const others = rows.startWeights.filter((row) => row.exercise_id !== op.exerciseId);
+      return {
+        ...rows,
+        startWeights:
+          op.weightKg === null
+            ? others
+            : [
+                ...others,
+                {
+                  user_id: rows.profile?.user_id ?? '',
+                  exercise_id: op.exerciseId,
+                  weight_kg: op.weightKg,
+                  updated_at: ctx.now,
+                },
+              ],
+      };
+    }
     case 'update_planned_session':
       return {
         ...rows,
@@ -371,12 +402,13 @@ function applySavePlan(rows: UserRows, payload: SavePlanPayload, ctx: ApplyConte
   const remainingPlans = plans.filter(
     (p) => p.status !== 'replaced' || withSessions.has(p.id) || keepReplaced.has(p.id),
   );
-  const next: UserRows = {
+  // Gelöschte Einheiten/Übungen: Tagebuch-Einträge bleiben, nur der Verweis wird leer (on delete set null, B2).
+  const next: UserRows = detachLogs({
     ...rows,
     plans: remainingPlans,
     plannedSessions: sessions,
     plannedExercises: rows.plannedExercises.filter((e) => keptSessions.has(e.session_id)),
-  };
+  });
   return insertSessions(next, planId, payload.sessions, ctx);
 }
 
@@ -412,16 +444,24 @@ function splitPlans(rows: PlanRows): { health: PlanRows; other: PlanRows } {
  * Umfänge, alle Gesundheits-Checks, Unverträglichkeiten und ALLE Pläne mit uses_health_data (aktiv und ersetzt)
  * samt allen Einheiten und Übungen. Pläne ohne Gesundheitsbezug bleiben unverändert (PLAN-PHASE-3 8.2/9).
  */
-export function applyHealthDataRevocation(rows: UserRows): UserRows {
-  const { other } = splitPlans(rows);
-  return {
-    ...rows,
+export function applyHealthDataRevocation(
+  rows: UserRows,
+  options: { deleteLogs?: boolean } = {},
+): UserRows {
+  // Tagebuch (PLAN-PHASE-4 S1, R3): Einträge aus Gesundheits-Plänen auf Wunsch löschen, sonst neutralisieren –
+  // VOR dem Löschen der Pläne; danach werden nur die Verweise leer (on delete set null, B2).
+  const logs = neutralizeHealthPlanLogRows(
+    options.deleteLogs ? deleteHealthPlanLogRows(rows) : rows,
+  );
+  const { other } = splitPlans(logs);
+  return detachLogs({
+    ...logs,
     bodyMetrics: [],
     bodyMeasurements: [],
     healthScreenings: [],
     foodPreferences: rows.foodPreferences.filter((row) => row.kind !== 'intolerance'),
     ...other,
-  };
+  });
 }
 
 export interface CacheableRows {
@@ -432,6 +472,8 @@ export interface CacheableRows {
    * den geschützten Zwischenspeicher (verschlüsselt bzw. im Browser sessionStorage). Sonst null.
    */
   healthPlans: PlanRows | null;
+  /** Tagebuch-Zeilen – NUR für den geschützten Tagebuch-Zwischenspeicher `logCache` (S4, 4.6). */
+  logs: LogRows;
 }
 
 /**
@@ -451,7 +493,10 @@ export function cacheableRows(
       healthScreenings: [],
       foodPreferences: rows.foodPreferences.filter((row) => row.kind !== 'intolerance'),
       ...other,
+      // Tagebuch nie im normalen Zwischenspeicher (S4) – nur getrennt im geschützten logCache.
+      ...EMPTY_LOG_ROWS,
     },
     healthPlans: options.allowHealthPlanCache && health.plans.length > 0 ? health : null,
+    logs: logRowsOf(rows),
   };
 }

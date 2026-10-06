@@ -31,6 +31,12 @@ export function upgradeStoredRows(stored: UserRows): UserRows {
     plans: stored.plans ?? [],
     plannedSessions: stored.plannedSessions ?? [],
     plannedExercises: stored.plannedExercises ?? [],
+    // Vor Phase 4 Etappe C gab es kein Tagebuch.
+    sessionLogs: stored.sessionLogs ?? [],
+    exerciseLogs: stored.exerciseLogs ?? [],
+    setLogs: stored.setLogs ?? [],
+    cardioLogs: stored.cardioLogs ?? [],
+    startWeights: stored.startWeights ?? [],
   };
   const goals = stored.goals as (GoalsRow & LegacyGoalsFields) | null;
   if (

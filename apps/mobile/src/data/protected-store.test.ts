@@ -2,11 +2,12 @@ import { createCipheriv, createDecipheriv, randomBytes } from 'node:crypto';
 
 import { describe, expect, it } from 'vitest';
 
-import { createMemoryStore } from './kv';
+import { createMemoryStore, STORAGE_KEYS } from './kv';
 import {
   base64ToUtf8,
   createEncryptedProtectedStore,
   createSessionProtectedStore,
+  PROTECTED_STORE_KEYS,
   type AeadCipher,
   utf8ToBase64,
 } from './protected-store';
@@ -125,5 +126,128 @@ describe('geschützter Zwischenspeicher (Frage 14)', () => {
     const none = createSessionProtectedStore(null, 'x');
     await none.write('plan');
     expect(await none.read()).toBeNull();
+  });
+});
+
+describe('Vier eigene geschützte Speicher (PLAN-PHASE-4 4.1)', () => {
+  it('eigene Daten- und Schlüssel-Namen; Löschen eines Speichers lässt die anderen (und ihre Schlüssel) stehen', async () => {
+    const names = Object.values(PROTECTED_STORE_KEYS).flatMap((k) => [k.dataKey, k.keyName]);
+    expect(new Set(names).size).toBe(names.length);
+    expect(PROTECTED_STORE_KEYS.workoutDraft).toEqual({
+      dataKey: STORAGE_KEYS.workoutDraft,
+      keyName: STORAGE_KEYS.workoutDraftKey,
+    });
+    const data = createMemoryStore();
+    const keys = secrets();
+    const stores = Object.fromEntries(
+      Object.entries(PROTECTED_STORE_KEYS).map(([name, k]) => [
+        name,
+        createEncryptedProtectedStore({
+          secrets: keys,
+          data,
+          cipher: nodeCipher,
+          keyName: k.keyName,
+          dataKey: k.dataKey,
+        }),
+      ]),
+    );
+    for (const [name, store] of Object.entries(stores)) await store.write(`Inhalt ${name}`);
+    expect(keys.map.size).toBe(4);
+    // Geheimtext – kein Klartext im AsyncStorage.
+    expect(JSON.stringify(data.dump())).not.toContain('Inhalt');
+    // Widerruf/Planwechsel leeren nur den Plan-Cache – das Tagebuch bleibt lesbar.
+    await stores.healthPlan?.clear();
+    expect(await stores.healthPlan?.read()).toBeNull();
+    expect(await stores.workoutDraft?.read()).toBe('Inhalt workoutDraft');
+    expect(await stores.logQueue?.read()).toBe('Inhalt logQueue');
+    expect(await stores.logCache?.read()).toBe('Inhalt logCache');
+    expect(keys.map.has(STORAGE_KEYS.healthPlanKey)).toBe(false);
+    expect(keys.map.has(STORAGE_KEYS.logQueueKey)).toBe(true);
+  });
+
+  it('Browser: sessionStorage je Speicher, nie localStorage', async () => {
+    const session = new Map<string, string>();
+    const storage = {
+      getItem: (k: string) => session.get(k) ?? null,
+      setItem: (k: string, v: string) => void session.set(k, v),
+      removeItem: (k: string) => void session.delete(k),
+    };
+    const draft = createSessionProtectedStore(storage, PROTECTED_STORE_KEYS.workoutDraft.dataKey);
+    await draft.write('x');
+    expect([...session.keys()]).toEqual([STORAGE_KEYS.workoutDraft]);
+  });
+});
+
+describe('Wettlauf clear() ⇄ write() (Wächter C1 B1)', () => {
+  const tick = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms));
+
+  /** Verzögerte Fakes wie im Wächter-Skript race2.ts: Schlüssel-Speicher langsam, Versiegeln noch langsamer. */
+  function slowSetup() {
+    const secretsMap = new Map<string, string>();
+    const dataMap = new Map<string, string>();
+    let n = 0;
+    const options = {
+      secrets: {
+        get: async (k: string) => {
+          await tick(5);
+          return secretsMap.get(k) ?? null;
+        },
+        set: async (k: string, v: string) => {
+          await tick(5);
+          secretsMap.set(k, v);
+        },
+        remove: async (k: string) => {
+          await tick(5);
+          secretsMap.delete(k);
+        },
+      },
+      data: {
+        getItem: async (k: string) => dataMap.get(k) ?? null,
+        setItem: async (k: string, v: string) => {
+          await tick(1);
+          dataMap.set(k, v);
+        },
+        removeItem: async (k: string) => {
+          await tick(1);
+          dataMap.delete(k);
+        },
+      },
+      cipher: {
+        generateKey: async () => `K${++n}`,
+        seal: async (key: string, plain: string) => {
+          await tick(20);
+          return `${key}|${plain}`;
+        },
+        open: async (key: string, sealed: string) => {
+          const [k, plain] = sealed.split('|');
+          if (k !== key) throw new Error('falscher Schlüssel');
+          return plain ?? '';
+        },
+      } satisfies AeadCipher,
+      keyName: 'key',
+      dataKey: 'data',
+    };
+    return { options, secretsMap };
+  }
+
+  it('gleichzeitig clear() und write(), danach weiter schreiben: neue Instanz liest die Daten', async () => {
+    const { options, secretsMap } = slowSetup();
+    const store = createEncryptedProtectedStore(options);
+    await store.write('[A]');
+    await Promise.all([store.clear(), store.write('[B]')]);
+    expect(await createEncryptedProtectedStore(options).read()).toBe('[B]');
+    await store.write('[C]');
+    expect(secretsMap.size).toBe(1);
+    // App-Neustart.
+    expect(await createEncryptedProtectedStore(options).read()).toBe('[C]');
+  });
+
+  it('write() vor clear() veranlasst: danach ist der Speicher leer (Reihenfolge bleibt)', async () => {
+    const { options } = slowSetup();
+    const store = createEncryptedProtectedStore(options);
+    await Promise.all([store.write('[A]'), store.clear()]);
+    expect(await createEncryptedProtectedStore(options).read()).toBeNull();
+    await store.write('[B]');
+    expect(await createEncryptedProtectedStore(options).read()).toBe('[B]');
   });
 });

@@ -403,7 +403,7 @@ test('mit Einwilligung: Körperdaten, Umfänge, Gesundheits-Check mit Arzt-Hinwe
   // Widerruf health_data → Bestätigung → alle Gesundheitsdaten gelöscht.
   await page.getByRole('button', { name: 'Gesundheitsdaten: Widerrufen' }).click();
   await expect(page.getByText(/löscht alle Körper- und Gesundheitsdaten/)).toBeVisible();
-  await page.getByRole('button', { name: 'Widerrufen und löschen' }).click();
+  await page.getByRole('button', { name: 'Tagebuch behalten (empfohlen)' }).click();
   await expect(
     page.getByText('Einwilligung widerrufen. Deine Gesundheitsdaten wurden gelöscht.'),
   ).toBeVisible();

@@ -35,6 +35,7 @@ export function SessionCard({
   rules,
   context,
   heading,
+  targets,
 }: {
   /** Gespeicherte Einheit (vor den aktuellen Sicherheitsregeln). */
   original: StoredSession;
@@ -44,6 +45,11 @@ export function SessionCard({
   /** Bibliothek und Geräte am Ort – für das Kennzeichen „ersetzt (Gerät fehlt)“. */
   context: Pick<DisplayContext, 'library' | 'profile'>;
   heading: string;
+  /**
+   * Phase 4: berechnete Vorgabe je angezeigter Übung (gleiche Reihenfolge wie `shown.session.exercises`) – ersetzt die
+   * Dosierung aus dem Plan („3 × 10 mit 22,5 kg je Hantel“) und zeigt Hinweise der Progression.
+   */
+  targets?: readonly (readonly string[] | null)[];
 }) {
   const theme = useThemeColors();
   const session = shown.session;
@@ -70,8 +76,9 @@ export function SessionCard({
       ) : (
         <View style={styles.block}>
           <Text style={[styles.label, { color: theme.text }]}>{t.plan.exercises}</Text>
-          {session.exercises.map((exercise) => {
+          {session.exercises.map((exercise, index) => {
             const mark = exerciseMark(exercise, original, context);
+            const computed = targets?.[index] ?? null;
             return (
               <View
                 key={`${exercise.order_no}-${exercise.exercise_id}`}
@@ -83,7 +90,7 @@ export function SessionCard({
                 </Text>
                 {mark === 'equipment_swap' ? <Body muted>{t.plan.substituted}</Body> : null}
                 {mark === 'adjusted' ? <Body muted>{t.plan.adjusted}</Body> : null}
-                {exerciseLines(exercise).map((line) => (
+                {(computed ?? exerciseLines(exercise)).map((line) => (
                   <Body key={line} muted>
                     {line}
                   </Body>

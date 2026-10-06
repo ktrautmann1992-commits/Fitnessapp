@@ -11,12 +11,15 @@ import {
 } from '@fitnessapp/core';
 import { Redirect, useRouter, type Href } from 'expo-router';
 import { useEffect, useMemo, useState } from 'react';
-import { View } from 'react-native';
+import { Platform, View } from 'react-native';
 
 import { MedicalNotice, SessionCard, WeekOverview } from '@/components/plan';
 import { ConfirmDialog, Screen } from '@/components/screen';
 import { Body, Button, Card, Heading, LoadingState, Notice } from '@/components/ui';
 import { BackendError } from '@/data/backend';
+import { logForSession } from '@/data/log-rows';
+import type { WorkoutDraft } from '@/data/workout-draft';
+import { startKind, trainedTodayOther, workoutView } from '@/data/workout-session';
 import {
   activePlan,
   planOffer,
@@ -27,7 +30,8 @@ import {
 } from '@/data/training-plan';
 import { t } from '@/i18n';
 import { createPlanErrorText, errorText } from '@/lib/error-text';
-import { todayIso } from '@/lib/format';
+import { formatDateDe, todayIso } from '@/lib/format';
+import { workoutTargetLines } from '@/lib/workout-format';
 import { dayLabel, weekdayName } from '@/lib/plan-format';
 import { planTitleText } from '@/lib/plan-title';
 import { PLAN_CHANGE_DROPPED, PLAN_RECREATE_NEEDED, useApp } from '@/state/app-state';
@@ -47,6 +51,8 @@ export default function TodayScreen() {
   const [message, setMessage] = useState<{ tone: 'success' | 'danger'; text: string }>();
   const [skipDialog, setSkipDialog] = useState<string | null>(null);
   const [declineDialog, setDeclineDialog] = useState(false);
+  const [discardDraftKey, setDiscardDraftKey] = useState<string | null>(null);
+  const [foreignDialog, setForeignDialog] = useState(false);
 
   const { ensureLibrary, appendNextBlockIfDue, library } = app;
   useEffect(() => {
@@ -120,6 +126,28 @@ export default function TodayScreen() {
     }
   }
 
+  async function submitDraft(draft: WorkoutDraft) {
+    setBusy(true);
+    try {
+      await app.submitWorkout({ ...draft, state: 'open', rejectReason: null });
+    } catch (caught) {
+      setMessage({ tone: 'danger', text: errorText(caught) });
+    } finally {
+      setBusy(false);
+    }
+  }
+
+  async function keepDraft(draft: WorkoutDraft) {
+    setBusy(true);
+    try {
+      await app.keepMyVersion(draft);
+    } catch (caught) {
+      setMessage({ tone: 'danger', text: errorText(caught) });
+    } finally {
+      setBusy(false);
+    }
+  }
+
   /** Verschieben antippen: Ergebnis vorab berechnen – wird gestrichen, erst nachfragen. */
   function requestMove(sessionId: string) {
     if (!rows) return;
@@ -170,6 +198,47 @@ export default function TodayScreen() {
           {message.text}
         </Notice>
       ) : null}
+      {app.workoutMessage ? (
+        <Notice
+          tone={
+            app.workoutMessage.kind === 'saved' || app.workoutMessage.kind === 'orphaned'
+              ? 'success'
+              : app.workoutMessage.kind === 'queued'
+                ? 'info'
+                : 'warning'
+          }
+          testID="workout-message"
+        >
+          <Body>{workoutMessageText(app.workoutMessage)}</Body>
+          <Button label={t.common.close} variant="link" onPress={app.clearWorkoutMessage} />
+        </Notice>
+      ) : null}
+      {app.sessionExpired ? (
+        <Notice tone="warning" testID="session-expired">
+          {t.settings.sessionExpired}
+        </Notice>
+      ) : null}
+      {app.foreignData ? (
+        <Notice tone="warning" title={t.settings.foreignTitle} testID="foreign-data">
+          <Body>{t.settings.foreignText}</Body>
+          <Button
+            label={t.settings.foreignConfirm}
+            variant="danger"
+            onPress={() => setForeignDialog(true)}
+          />
+        </Notice>
+      ) : null}
+      {app.drafts.map((draft) => (
+        <DraftNotice
+          key={draft.key}
+          draft={draft}
+          busy={busy}
+          onOpen={() => router.push(`/workout/${draft.key}` as Href)}
+          onSave={() => void submitDraft(draft)}
+          onKeep={() => void keepDraft(draft)}
+          onDiscard={() => setDiscardDraftKey(draft.key)}
+        />
+      ))}
       {app.offline ? <Notice tone="warning">{t.plan.offline}</Notice> : null}
       {isReminderDue(rows, today) ? <Notice tone="info">{t.today.measurementDue}</Notice> : null}
     </>
@@ -189,6 +258,28 @@ export default function TodayScreen() {
         onConfirm={() => (skipDialog ? void move(skipDialog) : undefined)}
         onCancel={() => setSkipDialog(null)}
         loading={busy}
+      />
+      <ConfirmDialog
+        visible={discardDraftKey !== null}
+        title={t.workout.discardTitle}
+        message={t.workout.discardText}
+        confirmLabel={t.workout.discardConfirm}
+        onConfirm={() => {
+          if (discardDraftKey) void app.discardDraft(discardDraftKey);
+          setDiscardDraftKey(null);
+        }}
+        onCancel={() => setDiscardDraftKey(null)}
+      />
+      <ConfirmDialog
+        visible={foreignDialog}
+        title={t.settings.foreignTitle}
+        message={t.settings.foreignText}
+        confirmLabel={t.settings.foreignConfirm}
+        onConfirm={() => {
+          setForeignDialog(false);
+          void app.discardForeignData();
+        }}
+        onCancel={() => setForeignDialog(false)}
       />
       <ConfirmDialog
         visible={declineDialog}
@@ -278,6 +369,19 @@ export default function TodayScreen() {
       today;
   const missed = canMove && selectedSession !== null && selectedSession.scheduled_on < today;
   const firstSession = active.sessions.find((s) => s.status === 'planned');
+  // Phase 4: berechnete Vorgabe aus dem Tagebuch (packages/core planWorkout) – nur Kraft, mit Bibliothek.
+  const view =
+    selectedSession && selectedSession.kind === 'strength' && lib && rules
+      ? workoutView(rows, lib, rules, selectedSession.id, today, {
+          excludeLogId: logForSession(rows, selectedSession.id)?.id ?? null,
+        })
+      : null;
+  const targets = view?.items.map(workoutTargetLines);
+  const start = selectedSession ? startKind(rows, selectedSession, today) : null;
+  const log = selectedSession ? logForSession(rows, selectedSession.id) : null;
+  const hasDraft = selectedSession ? app.drafts.some((d) => d.key === selectedSession.id) : false;
+  const pendingUpload =
+    selectedSession !== null && app.pendingLogSessionIds.includes(selectedSession.id);
 
   return (
     <Screen title={t.today.title} testID="today" footer={footer}>
@@ -337,7 +441,48 @@ export default function TodayScreen() {
             heading={
               selected === today ? t.plan.todaySession : t.plan.sessionOn(dayLabel(selected))
             }
+            {...(targets && selectedSession.status === 'planned' ? { targets } : {})}
           />
+          {selectedSession.status === 'completed' ? (
+            <Notice tone="success" testID="plan-completed">
+              <Body>{log?.status === 'partial' ? t.today.completedPartly : t.today.completed}</Body>
+              {pendingUpload ? <Body muted>{t.today.pendingUpload}</Body> : null}
+              {log && !hasDraft ? (
+                <Button
+                  label={t.today.viewWorkout}
+                  variant="secondary"
+                  onPress={() => router.push(`/workout/${selectedSession.id}?edit=1` as Href)}
+                  testID="workout-view"
+                />
+              ) : null}
+            </Notice>
+          ) : null}
+          {selectedSession.status === 'planned' &&
+          selected === today &&
+          trainedTodayOther(rows, selectedSession, today) ? (
+            <Notice tone="info" testID="plan-trained-today">
+              {t.today.alreadyTrained}
+            </Notice>
+          ) : null}
+          {start && !hasDraft ? (
+            shown.libraryMissing || !view ? (
+              <Notice tone="info">{t.today.libraryMissingStart}</Notice>
+            ) : (
+              <>
+                {start === 'catch_up' ? <Body muted>{t.today.catchUpHint}</Body> : null}
+                <Button
+                  label={start === 'today' ? t.today.startWorkout : t.today.catchUp}
+                  onPress={() => router.push(`/workout/${selectedSession.id}` as Href)}
+                  testID="workout-start"
+                />
+              </>
+            )
+          ) : null}
+          {selectedSession.kind === 'endurance' &&
+          selectedSession.status === 'planned' &&
+          selectedSession.scheduled_on === today ? (
+            <Body muted>{t.today.enduranceLater}</Body>
+          ) : null}
           {missed ? (
             <Notice tone="info" testID="plan-missed">
               {t.plan.missed}
@@ -407,5 +552,80 @@ export default function TodayScreen() {
       />
       {dialogs}
     </Screen>
+  );
+}
+
+function workoutMessageText(message: NonNullable<ReturnType<typeof useApp>['workoutMessage']>) {
+  switch (message.kind) {
+    case 'saved':
+      return t.workout.saved;
+    case 'queued':
+      // Browser: nur bis zum Schließen des Tabs auf dem Gerät (K5).
+      return Platform.OS === 'web' ? t.workout.queuedBrowser : t.workout.queued;
+    case 'orphaned':
+      return t.workout.orphaned;
+    case 'conflict':
+      return t.workout.conflictTitle;
+    case 'rejected':
+      return t.workout.rejected[message.reason];
+    case 'invalid':
+      return t.workout.invalid;
+  }
+}
+
+/** Entwurf gefunden / Konflikt / abgelehnt (6.3) – nie stilles Verwerfen. */
+function DraftNotice({
+  draft,
+  busy,
+  onOpen,
+  onSave,
+  onKeep,
+  onDiscard,
+}: {
+  draft: WorkoutDraft;
+  busy: boolean;
+  onOpen: () => void;
+  onSave: () => void;
+  onKeep: () => void;
+  onDiscard: () => void;
+}) {
+  const date = formatDateDe(draft.performedOn);
+  if (draft.state === 'conflict') {
+    return (
+      <Notice tone="warning" title={t.workout.conflictTitle} testID="workout-conflict">
+        <Body muted>{draft.nameDe}</Body>
+        <Button label={t.workout.conflictKeep} onPress={onKeep} loading={busy} />
+        <Button label={t.workout.conflictTakeOther} variant="secondary" onPress={onDiscard} />
+      </Notice>
+    );
+  }
+  if (draft.state === 'rejected') {
+    return (
+      <Notice tone="danger" title={t.workout.rejectedTitle(date)} testID="workout-rejected">
+        {draft.rejectReason ? <Body>{t.workout.rejected[draft.rejectReason]}</Body> : null}
+        <Button label={t.workout.open} variant="secondary" onPress={onOpen} />
+        <Button label={t.workout.retry} variant="secondary" onPress={onSave} loading={busy} />
+        <Button label={t.workout.draftDiscard} variant="danger" onPress={onDiscard} />
+      </Notice>
+    );
+  }
+  return (
+    <Notice tone="info" title={t.workout.draftTitle(date)} testID="workout-draft">
+      <Body>{t.workout.draftText}</Body>
+      <Button label={t.workout.draftContinue} onPress={onOpen} testID="workout-draft-continue" />
+      <Button
+        label={t.workout.draftSave}
+        variant="secondary"
+        onPress={onSave}
+        loading={busy}
+        testID="workout-draft-save"
+      />
+      <Button
+        label={t.workout.draftDiscard}
+        variant="danger"
+        onPress={onDiscard}
+        testID="workout-draft-discard"
+      />
+    </Notice>
   );
 }

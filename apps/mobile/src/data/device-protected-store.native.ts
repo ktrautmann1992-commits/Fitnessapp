@@ -8,15 +8,18 @@ import {
 } from 'expo-crypto';
 import * as SecureStore from 'expo-secure-store';
 
-import { STORAGE_KEYS } from './kv';
 import {
   type AeadCipher,
   createEncryptedProtectedStore,
+  PROTECTED_STORE_KEYS,
   type ProtectedStore,
+  type ProtectedStoreName,
+  type ProtectedStores,
 } from './protected-store';
 
 /**
- * iPhone/Android: Plan mit Gesundheitsbezug verschlüsselt (AES-256-GCM, expo-crypto). Der Schlüssel liegt im
+ * iPhone/Android: Plan mit Gesundheitsbezug (Frage 14) sowie Entwurf, Tagebuch-Warteschlange und
+ * Tagebuch-Zwischenspeicher (Phase 4 Frage 3) verschlüsselt – je mit EIGENEM Schlüssel (AES-256-GCM, expo-crypto). Der Schlüssel liegt im
  * sicheren Schlüsselspeicher (Keychain/Keystore über expo-secure-store, nur auf diesem Gerät, nicht im Backup),
  * die verschlüsselten Daten in AsyncStorage – SecureStore ist für große Werte nicht gedacht (ca. 2 KB).
  */
@@ -37,7 +40,9 @@ const cipher: AeadCipher = {
   },
 };
 
-export function createDeviceProtectedStore(): ProtectedStore {
+export function createDeviceProtectedStore(
+  name: ProtectedStoreName = 'healthPlan',
+): ProtectedStore {
   return createEncryptedProtectedStore({
     secrets: {
       get: (name) => SecureStore.getItemAsync(name, SECURE_OPTIONS),
@@ -46,7 +51,16 @@ export function createDeviceProtectedStore(): ProtectedStore {
     },
     data: AsyncStorage,
     cipher,
-    keyName: STORAGE_KEYS.healthPlanKey,
-    dataKey: STORAGE_KEYS.healthPlanCache,
+    keyName: PROTECTED_STORE_KEYS[name].keyName,
+    dataKey: PROTECTED_STORE_KEYS[name].dataKey,
   });
+}
+
+export function createDeviceProtectedStores(): ProtectedStores {
+  return {
+    healthPlan: createDeviceProtectedStore('healthPlan'),
+    workoutDraft: createDeviceProtectedStore('workoutDraft'),
+    logQueue: createDeviceProtectedStore('logQueue'),
+    logCache: createDeviceProtectedStore('logCache'),
+  };
 }

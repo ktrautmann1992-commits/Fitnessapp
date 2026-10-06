@@ -12,7 +12,12 @@ export interface ReschedulableSession {
   readonly scheduled_on: string;
   /** Ursprünglicher Tag, gesetzt beim ersten Verschieben. */
   readonly original_date: string | null;
-  /** `completed` (Phase 4, ab Etappe B in der Datenbank) belegt den Tag wie `planned`. */
+  /**
+   * `completed` (Phase 4) belegt den Tag hier wie `planned` – bewusst KONSERVATIV: In der Datenbank belegt eine
+   * erledigte Einheit ihren Tag nicht mehr (PLAN-PHASE-4 Umsetzungsstand B, Festlegung 1; Wächter S4), die App bietet
+   * das Verschieben auf einen Tag mit erledigter Einheit trotzdem nicht an (nie zwei Einheiten an einem Tag
+   * trainieren).
+   */
   readonly status: PlannedSessionStatus | 'completed';
   /** Kraft oder Ausdauer (Erweiterungsplan 5.4); fehlt = Kraft (Pläne der Engine-Version 1). */
   readonly kind?: PlannedSessionKind;

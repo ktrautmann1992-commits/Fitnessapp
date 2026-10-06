@@ -181,11 +181,19 @@ export function ConfirmDialog({
   loading = false,
   error,
   confirmVariant = 'danger',
+  alternative,
+  notes,
+  testID,
 }: {
   visible: boolean;
   title: string;
   message: string;
+  /** Weitere Hinweise unter dem Text (z. B. beim Widerruf). */
+  notes?: readonly string[];
   confirmLabel: string;
+  /** Zweite Wahl neben der Bestätigung (z. B. „Trotzdem abmelden“). */
+  alternative?: { label: string; onPress: () => void; variant?: 'danger' | 'secondary' };
+  testID?: string;
   /** Nicht zerstörende Bestätigung (z. B. „Neu erstellen“) als Hauptknopf. */
   confirmVariant?: 'danger' | 'primary';
   onConfirm: () => void;
@@ -200,10 +208,16 @@ export function ConfirmDialog({
         <View
           accessibilityRole="alert"
           accessibilityViewIsModal
+          testID={testID}
           style={[styles.dialog, { backgroundColor: theme.surface, borderColor: theme.border }]}
         >
           <Heading level={2}>{title}</Heading>
           <Body>{message}</Body>
+          {notes?.map((note) => (
+            <Body key={note} muted>
+              {note}
+            </Body>
+          ))}
           <FieldError message={error} />
           <Button
             label={confirmLabel}
@@ -211,6 +225,14 @@ export function ConfirmDialog({
             onPress={onConfirm}
             loading={loading}
           />
+          {alternative ? (
+            <Button
+              label={alternative.label}
+              variant={alternative.variant ?? 'secondary'}
+              onPress={alternative.onPress}
+              disabled={loading}
+            />
+          ) : null}
           <Button
             label={t.common.cancel}
             variant="secondary"

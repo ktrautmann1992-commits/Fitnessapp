@@ -1,6 +1,6 @@
 import { readFileSync } from 'node:fs';
 
-import type { SavePlanPayload } from '@fitnessapp/core';
+import type { SavePlanPayload, SessionLogPayload } from '@fitnessapp/core';
 import type { AppSupabaseClient } from '@fitnessapp/db';
 import { describe, expect, it } from 'vitest';
 
@@ -8,8 +8,14 @@ import { consent, NOW, rowsWith, TODAY, USER_ID, VERSIONS } from '../test/fixtur
 import { createMemoryStore, STORAGE_KEYS } from './kv';
 import { answersFromRows } from './mapping';
 import { createMemoryProtectedStore } from './protected-store';
-import { classifySupabaseError, createSupabaseBackend, executeWriteOp } from './supabase-backend';
+import {
+  classifyLogError,
+  classifySupabaseError,
+  createSupabaseBackend,
+  executeWriteOp,
+} from './supabase-backend';
 import type { StepSave } from './types';
+import type { WorkoutDraft } from './workout-draft';
 
 interface Call {
   table: string;
@@ -246,20 +252,39 @@ describe('Supabase-Modus: Speichern', () => {
     expect(next.bodyMetrics).toHaveLength(1);
     expect(calls[0]?.table).toBe('body_metrics');
     await backend.flush();
-    expect(calls.map((c) => c.table)).toEqual(['body_metrics', 'profiles']);
+    // Reihenfolge W8: normale Warteschlange → (leere) Tagebuch-Warteschlange → close_missed_sessions().
+    expect(calls.map((c) => c.table)).toEqual([
+      'body_metrics',
+      'profiles',
+      'rpc:close_missed_sessions',
+    ]);
     expect(JSON.stringify(store.dump())).not.toContain('"height_cm":170');
   });
 
-  it('Widerruf: setzt revoked_at nur bei aktiven Einwilligungen dieser Art', async () => {
+  it('Widerruf health_data: über revoke_health_data (eine Transaktion, R3) statt update consents', async () => {
     const { client, calls } = fakeClient();
     const backend = createSupabaseBackend(options(client));
     await backend.revokeConsent('health_data');
+    expect(calls.some((c) => c.table === 'consents')).toBe(false);
+    expect(calls.find((c) => c.table === 'rpc:revoke_health_data')?.args).toEqual([
+      [{ p_delete_logs: false }],
+    ]);
+    await backend.revokeHealthData(true);
+    expect(calls.filter((c) => c.table === 'rpc:revoke_health_data').at(-1)?.args).toEqual([
+      [{ p_delete_logs: true }],
+    ]);
+  });
+
+  it('Widerruf anderer Einwilligungen: setzt revoked_at nur bei aktiven Einwilligungen dieser Art', async () => {
+    const { client, calls } = fakeClient();
+    const backend = createSupabaseBackend(options(client));
+    await backend.revokeConsent('privacy');
     const call = calls.find((c) => c.table === 'consents');
     expect(call?.chain).toEqual(['update', 'eq', 'eq', 'is']);
     expect(call?.args).toEqual([
       [{ revoked_at: NOW }],
       ['user_id', USER_ID],
-      ['consent_type', 'health_data'],
+      ['consent_type', 'privacy'],
       ['revoked_at', null],
     ]);
   });
@@ -661,5 +686,507 @@ describe('Supabase-Modus: Trainingsplan', () => {
     await expect(backend.loadPlanLibrary({ allowCached: false })).rejects.toMatchObject({
       code: 'network',
     });
+  });
+});
+
+// ---------------------------------------------------------------------------------------------------------
+// Trainingstagebuch (docs/PLAN-PHASE-4.md 4.1–4.5, DoD Etappe C)
+// ---------------------------------------------------------------------------------------------------------
+
+describe('Supabase-Modus: Tagebuch-Warteschlange', () => {
+  const LOG_ID = '11111111-1111-4111-8111-111111111111';
+  const SESSION = '33333333-3333-4333-8333-333333333333';
+
+  function logPayload(overrides: Partial<SessionLogPayload> = {}): SessionLogPayload {
+    return {
+      id: LOG_ID,
+      write_id: '22222222-2222-4222-8222-222222222222',
+      base_revision: null,
+      planned_session_id: SESSION,
+      planned_date: TODAY,
+      kind: 'strength',
+      performed_on: TODAY,
+      started_at: null,
+      finished_at: null,
+      status: 'completed',
+      session_rpe: 7,
+      notes: 'Griff eng',
+      name_de: 'Zügiges Gehen',
+      is_intro_week: false,
+      is_deload: false,
+      source: 'manual',
+      client_updated_at: NOW,
+      exercises: [
+        {
+          id: '44444444-4444-4444-8444-444444444444',
+          order_no: 1,
+          planned_exercise_id: null,
+          exercise_id: 'goblet-kniebeuge',
+          exercise_name_de: 'Goblet-Kniebeuge',
+          load_type: 'weight',
+          status: 'done',
+          target_sets: 1,
+          reps_min: 8,
+          reps_max: 12,
+          target_reps: 8,
+          target_extra_set: false,
+          target_weight_kg: 20,
+          target_duration_s: null,
+          target_rpe: 7,
+          state_weight_kg: 20,
+          state_target_reps: 8,
+          state_extra_set: false,
+          state_duration_s: null,
+          weight_confirmed: false,
+          is_return: false,
+          sets: [{ set_no: 1, reps: 8, weight_kg: 20, duration_s: null, rpe: null, done: true }],
+        },
+      ],
+      cardio: null,
+      ...overrides,
+    };
+  }
+
+  function draftOf(health: boolean): WorkoutDraft {
+    return {
+      format: 1,
+      ownerUserId: USER_ID,
+      key: SESSION,
+      state: 'open',
+      rejectReason: null,
+      fromHealthPlan: health,
+      editing: false,
+      logId: LOG_ID,
+      baseRevision: null,
+      serverRevision: null,
+      plannedSessionId: SESSION,
+      plannedDate: TODAY,
+      kind: 'strength',
+      nameDe: 'Zügiges Gehen',
+      isIntroWeek: false,
+      isDeload: false,
+      performedOn: TODAY,
+      startedAt: null,
+      sessionRpe: 7,
+      notes: '',
+      exercises: [],
+      updatedAt: NOW,
+    };
+  }
+
+  function stores() {
+    return {
+      protectedStore: createMemoryProtectedStore(),
+      workoutDraftStore: createMemoryProtectedStore(),
+      logQueueStore: createMemoryProtectedStore(),
+      logCacheStore: createMemoryProtectedStore(),
+    };
+  }
+
+  function make(
+    respond: (call: Call) => { data?: unknown; error?: unknown },
+    store = createMemoryStore(),
+    s = stores(),
+  ) {
+    const { client, calls } = fakeClient(respond);
+    const backend = createSupabaseBackend({
+      client,
+      store,
+      platform: 'web',
+      now: () => NOW,
+      newId: () => 'id',
+      ...s,
+    });
+    const events: string[] = [];
+    backend.subscribe((event) => events.push(event.kind));
+    return { backend, calls, store, s, events };
+  }
+
+  const ok = (call: Call) =>
+    call.table === 'rpc:save_session_log'
+      ? { data: { result: 'ok', id: LOG_ID, revision: 1 } }
+      : call.table === 'rpc:has_valid_consent'
+        ? { data: true }
+        : {};
+
+  it('offline: verschlüsselt in der Warteschlange, Entwurf erst danach weg; nie im rowsCache/localStorage', async () => {
+    let online = false;
+    const { backend, s, store } = make((call) => (online ? ok(call) : { error: networkError }));
+    await backend.saveDraft(draftOf(false));
+    expect(s.workoutDraftStore.peek()).not.toBeNull();
+    expect(await backend.submitWorkout(draftOf(false), logPayload())).toEqual({ kind: 'queued' });
+    expect(s.workoutDraftStore.peek()).toBeNull();
+    expect(s.logQueueStore.peek()).toContain('save_session_log:');
+    expect(backend.pendingChanges()).toBe(1);
+    expect(backend.pendingLogSessionIds()).toEqual([SESSION]);
+    expect(await backend.pendingWorkouts()).toEqual({ queued: 1, drafts: 0 });
+    // Kein Tagebuch-Inhalt im normalen Speicher (AsyncStorage/localStorage).
+    expect(JSON.stringify(store.dump())).not.toContain('Griff eng');
+    online = true;
+    expect(await backend.flush()).toBe(true);
+    expect(backend.pendingChanges()).toBe(0);
+    expect(s.logQueueStore.peek()).toBeNull();
+  });
+
+  it('Reihenfolge (W8): normale Warteschlange → Tagebuch → close_missed_sessions', async () => {
+    let online = false;
+    const { backend, calls } = make((call) => (online ? ok(call) : { error: networkError }));
+    await backend.saveReminder({ enabled: true, intervalDays: 28 }, null, rowsWith());
+    await backend.submitWorkout(draftOf(false), logPayload());
+    online = true;
+    const before = calls.length;
+    await backend.flush();
+    expect(calls.slice(before).map((c) => c.table)).toEqual([
+      'measurement_reminders',
+      'rpc:save_session_log',
+      'rpc:close_missed_sessions',
+    ]);
+  });
+
+  it('H-b: vor save_training_plan wird die Tagebuch-Warteschlange gesendet', async () => {
+    let online = false;
+    const { backend, calls } = make((call) => (online ? ok(call) : { error: networkError }));
+    await backend.submitWorkout(draftOf(false), logPayload());
+    online = true;
+    await backend
+      .savePlan({ uses_health_data: false } as unknown as SavePlanPayload, rowsWith())
+      .catch(() => undefined);
+    const tables = calls.map((c) => c.table);
+    expect(tables.indexOf('rpc:save_session_log')).toBeLessThan(
+      tables.indexOf('rpc:save_training_plan'),
+    );
+  });
+
+  it('Konflikt und Ablehnung → als Entwurf gesichert (nie stilles Verwerfen); orphaned → Meldung', async () => {
+    let answer: { data?: unknown; error?: unknown } = {
+      data: { result: 'conflict', id: LOG_ID, revision: 4 },
+    };
+    const { backend, s, events } = make((call) =>
+      call.table === 'rpc:save_session_log' ? answer : {},
+    );
+    expect(await backend.submitWorkout(draftOf(false), logPayload())).toEqual({
+      kind: 'conflict',
+    });
+    expect((await backend.loadDrafts())[0]).toMatchObject({
+      state: 'conflict',
+      serverRevision: 4,
+    });
+    answer = {
+      error: { code: '23505', message: 'An diesem Tag ist schon eine Einheit eingetragen.' },
+    };
+    expect(await backend.submitWorkout(draftOf(false), logPayload())).toEqual({
+      kind: 'rejected',
+      reason: 'day_taken',
+    });
+    expect((await backend.loadDrafts())[0]).toMatchObject({
+      state: 'rejected',
+      rejectReason: 'day_taken',
+    });
+    answer = { data: { result: 'orphaned', id: LOG_ID, revision: 1 } };
+    expect(await backend.submitWorkout(draftOf(false), logPayload())).toEqual({
+      kind: 'saved',
+      orphaned: true,
+    });
+    expect(events).toEqual(['log_conflict', 'log_rejected', 'log_saved']);
+    expect(s.logQueueStore.peek()).toBeNull();
+  });
+
+  it('401 (abgelaufene Sitzung) = später, Meldung „erneut anmelden“, nichts geleert', async () => {
+    const { backend, s, events } = make((call) =>
+      call.table === 'rpc:save_session_log' ? { error: { code: 'PGRST301', status: 401 } } : {},
+    );
+    expect(await backend.submitWorkout(draftOf(false), logPayload())).toEqual({ kind: 'queued' });
+    expect(events).toContain('session_expired');
+    expect(s.logQueueStore.peek()).not.toBeNull();
+  });
+
+  it('Widerruf (R3): Senden gesperrt, Gesundheits-Einträge VOR revoke_health_data neutralisiert', async () => {
+    let online = false;
+    let queueAtRevoke: string | null = null;
+    const s = stores();
+    const { backend, calls } = make(
+      (call) => {
+        if (call.table === 'rpc:revoke_health_data') queueAtRevoke = s.logQueueStore.peek();
+        return online ? ok(call) : { error: networkError };
+      },
+      createMemoryStore(),
+      s,
+    );
+    await backend.submitWorkout(draftOf(true), logPayload());
+    online = true;
+    await backend.revokeHealthData(false);
+    // Während des Widerrufs wird nichts gesendet (offline vorher: gar nicht).
+    expect(calls.filter((c) => c.table === 'rpc:save_session_log')).toHaveLength(0);
+    expect(queueAtRevoke).toContain('Kraft-Einheit');
+    expect(queueAtRevoke).not.toContain('Zügiges Gehen');
+    expect(queueAtRevoke).not.toContain('"target_weight_kg":20');
+    // Tagebuch-Speicher werden beim Widerruf NICHT geleert (nur bereinigt).
+    expect(s.logQueueStore.peek()).not.toBeNull();
+    // Danach wird (neutral) gesendet.
+    await backend.flush();
+    const sent = calls.filter((c) => c.table === 'rpc:save_session_log').at(-1)?.args[0]?.[0] as {
+      p_log: SessionLogPayload;
+    };
+    expect(sent.p_log.name_de).toBe('Kraft-Einheit');
+    expect(sent.p_log.exercises[0]?.target_weight_kg).toBeNull();
+  });
+
+  it('Widerruf „auch löschen“: Gesundheits-Einträge aus der Warteschlange entfernt', async () => {
+    const s = stores();
+    const { backend } = make(() => ({ error: networkError }), createMemoryStore(), s);
+    await backend.submitWorkout(draftOf(true), logPayload());
+    await backend.revokeHealthData(true).catch(() => undefined);
+    expect(s.logQueueStore.peek()).toBeNull();
+  });
+
+  it('anderes Gerät nach Widerruf: Einwilligung ungültig → vor dem Senden neutralisiert', async () => {
+    let online = false;
+    const { backend, calls } = make((call) => {
+      if (!online) return { error: networkError };
+      if (call.table === 'rpc:has_valid_consent') return { data: false };
+      return ok(call);
+    });
+    await backend.submitWorkout(draftOf(true), logPayload());
+    online = true;
+    await backend.flush();
+    const sent = calls.filter((c) => c.table === 'rpc:save_session_log').at(-1)?.args[0]?.[0] as {
+      p_log: SessionLogPayload;
+    };
+    expect(sent.p_log.name_de).toBe('Kraft-Einheit');
+    expect(sent.p_log.exercises[0]?.state_weight_kg).toBeNull();
+  });
+
+  it('R5: Einträge eines anderen Kontos werden nie gesendet; Nachfrage und Löschen', async () => {
+    const s = stores();
+    const first = make(() => ({ error: networkError }), createMemoryStore(), s);
+    await first.backend.submitWorkout(draftOf(false), logPayload());
+    // Gleiches Gerät, jetzt meldet sich Konto B an (Sitzung von A abgelaufen).
+    const { client, calls } = fakeClient(ok);
+    (client.auth as unknown as { getSession: () => Promise<unknown> }).getSession = async () => ({
+      data: { session: { user: { id: '99999999-9999-4999-8999-999999999999', email: 'b@b.de' } } },
+      error: null,
+    });
+    const other = createSupabaseBackend({
+      client,
+      store: createMemoryStore(),
+      platform: 'web',
+      now: () => NOW,
+      newId: () => 'id',
+      ...s,
+    });
+    await other.getSession();
+    await other.flush();
+    expect(calls.some((c) => c.table === 'rpc:save_session_log')).toBe(false);
+    expect(await other.hasForeignDeviceData()).toBe(true);
+    expect(await other.pendingWorkouts()).toEqual({ queued: 0, drafts: 0 });
+    await other.discardForeignDeviceData();
+    expect(await other.hasForeignDeviceData()).toBe(false);
+    expect(s.logQueueStore.peek()).toBeNull();
+  });
+
+  it('Abmelden und Konto löschen leeren alle Tagebuch-Speicher samt Schlüsseln', async () => {
+    const s = stores();
+    const { backend } = make(() => ({ error: networkError }), createMemoryStore(), s);
+    await backend.submitWorkout(draftOf(false), logPayload());
+    await backend.saveDraft({ ...draftOf(false), key: 'anderer' });
+    await s.logCacheStore.write('{}');
+    await backend.signOut();
+    expect(s.logQueueStore.peek()).toBeNull();
+    expect(s.workoutDraftStore.peek()).toBeNull();
+    expect(s.logCacheStore.peek()).toBeNull();
+  });
+
+  it('Löschen nur online (R4, 4.5): ohne Verbindung „Dafür brauchst du kurz Verbindung“', async () => {
+    const { backend } = make(() => ({ error: networkError }));
+    await expect(backend.deleteSessionLog(LOG_ID, 1)).rejects.toMatchObject({
+      code: 'online_only',
+    });
+    const { backend: online, calls } = make((call) =>
+      call.table === 'rpc:delete_session_log'
+        ? { data: { result: 'conflict', id: LOG_ID, revision: 3 } }
+        : {},
+    );
+    expect(await online.deleteSessionLog(LOG_ID, 1)).toBe('conflict');
+    expect(calls.find((c) => c.table === 'rpc:delete_session_log')?.args).toEqual([
+      [{ p_id: LOG_ID, p_base_revision: 1 }],
+    ]);
+  });
+
+  it('Laden: Tagebuch (12 Wochen + recent_exercise_logs) nur im geschützten logCache, offline wieder da', async () => {
+    let online = true;
+    const s = stores();
+    const logRow = {
+      id: LOG_ID,
+      user_id: USER_ID,
+      planned_session_id: null,
+      kind: 'strength',
+      performed_on: TODAY,
+      status: 'completed',
+      name_de: 'Kraft-Einheit',
+      notes: 'Griff eng',
+      revision: 1,
+    };
+    const { backend, store, calls } = make(
+      (call) => {
+        if (!online) return { error: networkError };
+        if (call.table === 'session_logs') return { data: [logRow] };
+        if (call.table === 'rpc:recent_exercise_logs') {
+          return { data: { session_logs: [logRow], exercise_logs: [], set_logs: [] } };
+        }
+        if (call.table === 'profiles') return { data: rowsWith().profile };
+        return { data: call.chain.includes('maybeSingle') ? null : [] };
+      },
+      createMemoryStore(),
+      s,
+    );
+    const loaded = await backend.loadRows();
+    expect(loaded.rows.sessionLogs).toHaveLength(1);
+    expect(calls.some((c) => c.table === 'rpc:recent_exercise_logs')).toBe(true);
+    expect(s.logCacheStore.peek()).toContain('Griff eng');
+    expect(JSON.stringify(store.dump())).not.toContain('Griff eng');
+    online = false;
+    const offline = await backend.loadRows();
+    expect(offline.offline).toBe(true);
+    expect(offline.rows.sessionLogs.map((l) => l.id)).toEqual([LOG_ID]);
+  });
+
+  it('S1: vorübergehende Fehler (abgelaufenes JWT, 429, 5xx, DB nicht erreichbar, Serialisierung) = später erneut', () => {
+    const transient = [
+      { code: 'PGRST303', message: 'JWT expired', details: null, hint: null },
+      { code: 'PGRST301', message: 'JWSError JWSInvalidSignature', details: null, hint: null },
+      {
+        code: 'PGRST002',
+        message: 'Could not query the database for the schema cache',
+        details: null,
+        hint: null,
+      },
+      { code: '40001', message: 'could not serialize access', details: null, hint: null },
+      { code: '40P01', message: 'deadlock detected', details: null, hint: null },
+      {
+        code: '57014',
+        message: 'canceling statement due to statement timeout',
+        details: null,
+        hint: null,
+      },
+      { code: '08006', message: 'connection failure', details: null, hint: null },
+      { code: '', message: 'Too Many Requests', details: null, hint: null, status: 429 },
+      { code: '', message: 'Bad Gateway', details: null, hint: null, status: 502 },
+      { code: 'invalid_response', message: 'Ungültige Antwort.' },
+      networkError,
+    ];
+    for (const error of transient) expect(classifyLogError(error)).toBe('retry');
+    expect(classifySupabaseError({ code: 'PGRST303', message: 'JWT expired' })).toBe(
+      'not_signed_in',
+    );
+    expect(
+      classifyLogError({
+        code: '23505',
+        message: 'An diesem Tag ist schon eine Einheit eingetragen.',
+      }),
+    ).toBe('day_taken');
+    expect(classifyLogError({ code: '54000', message: 'Heute wurden schon zu viele …' })).toBe(
+      'daily_limit',
+    );
+    expect(
+      classifyLogError({
+        code: '22023',
+        message: 'Das Datum liegt außerhalb des erlaubten Zeitraums.',
+      }),
+    ).toBe('date_window');
+    expect(classifyLogError({ code: '23514', message: 'Ungültige Werte im Tagebuch.' })).toBe(
+      'invalid',
+    );
+  });
+
+  it('S1: abgelaufenes JWT (PGRST303) beim Senden → bleibt in der Warteschlange, Meldung „erneut anmelden“', async () => {
+    const { backend, s, events } = make((call) =>
+      call.table === 'rpc:save_session_log'
+        ? { error: { code: 'PGRST303', message: 'JWT expired', details: null, hint: null } }
+        : {},
+    );
+    expect(await backend.submitWorkout(draftOf(false), logPayload())).toEqual({ kind: 'queued' });
+    expect(events).toContain('session_expired');
+    expect(s.logQueueStore.peek()).not.toBeNull();
+    expect(await backend.loadDrafts()).toEqual([]);
+  });
+
+  it('S2: wartendes Training landet nie im Zwischenspeicher (kein „erledigt“ offline ohne Bestätigung)', async () => {
+    let online = true;
+    const s = stores();
+    const store = createMemoryStore();
+    const planned = {
+      id: SESSION,
+      plan_id: 'plan-1',
+      user_id: USER_ID,
+      scheduled_on: TODAY,
+      original_date: null,
+      status: 'planned',
+      kind: 'strength',
+    };
+    const { backend } = make(
+      (call) => {
+        if (!online || call.table === 'rpc:save_session_log') return { error: networkError };
+        if (call.table === 'user_plans')
+          return { data: { id: 'plan-1', status: 'active', uses_health_data: false } };
+        if (call.table === 'planned_sessions') return { data: [planned] };
+        if (call.table === 'profiles') return { data: rowsWith().profile };
+        return { data: call.chain.includes('maybeSingle') ? null : [] };
+      },
+      store,
+      s,
+    );
+    await backend.submitWorkout(draftOf(false), logPayload());
+    const loaded = await backend.loadRows();
+    // Anzeige: erledigt (wird übertragen).
+    expect(loaded.rows.plannedSessions[0]?.status).toBe('completed');
+    expect(loaded.rows.sessionLogs).toHaveLength(1);
+    // Ein späterer Schreibvorgang mit den Anzeige-Zeilen (z. B. Mess-Erinnerung) cacht trotzdem nur Bestätigtes.
+    await backend.saveReminder({ enabled: true, intervalDays: 28 }, null, loaded.rows);
+    const cache = JSON.parse(store.dump()[STORAGE_KEYS.rowsCache] ?? '{}') as {
+      rows: { plannedSessions: { status: string }[] };
+    };
+    expect(cache.rows.plannedSessions[0]?.status).toBe('planned');
+    expect(s.logCacheStore.peek()).not.toContain(LOG_ID);
+    online = false;
+    const offline = await backend.loadRows();
+    // Offline weiter als wartend überlagert – aus der Warteschlange, nicht aus dem Zwischenspeicher.
+    expect(offline.rows.plannedSessions[0]?.status).toBe('completed');
+  });
+
+  it('S3: Entwurf aus einem Gesundheits-Plan wird beim Laden neutralisiert, wenn die Einwilligung fehlt (R3)', async () => {
+    const s = stores();
+    const { backend, calls } = make(
+      (call) => (call.table === 'rpc:has_valid_consent' ? { data: false } : {}),
+      createMemoryStore(),
+      s,
+    );
+    await backend.saveDraft({ ...draftOf(true), nameDe: 'Zügiges Gehen' });
+    await backend.loadRows().catch(() => undefined);
+    expect(calls.some((c) => c.table === 'rpc:has_valid_consent')).toBe(true);
+    const [draft] = await backend.loadDrafts();
+    expect(draft).toMatchObject({ fromHealthPlan: false, nameDe: 'Kraft-Einheit' });
+    expect(s.workoutDraftStore.peek()).not.toContain('Zügiges Gehen');
+  });
+
+  it('S4: Ergebnis gehört zur eigenen Fassung, nicht zu einer anderen wartenden Einheit', async () => {
+    let online = false;
+    const OTHER_SESSION = '55555555-5555-4555-8555-555555555555';
+    const { backend } = make((call) => {
+      if (!online) return { error: networkError };
+      if (call.table !== 'rpc:save_session_log') return {};
+      const p = (call.args[0]?.[0] as { p_log: SessionLogPayload }).p_log;
+      return p.planned_session_id === OTHER_SESSION
+        ? { data: { result: 'ok', id: p.id, revision: 1 } }
+        : { data: { result: 'conflict', id: LOG_ID, revision: 7 } };
+    });
+    const other = logPayload({
+      id: '66666666-6666-4666-8666-666666666666',
+      write_id: '77777777-7777-4777-8777-777777777777',
+      planned_session_id: OTHER_SESSION,
+    });
+    await backend.submitWorkout({ ...draftOf(false), key: OTHER_SESSION }, other);
+    online = true;
+    // Die eigene Fassung kommt als Konflikt zurück – das „ok“ der anderen Einheit (zuerst gesendet) zählt nicht.
+    expect(await backend.submitWorkout(draftOf(false), logPayload())).toEqual({ kind: 'conflict' });
   });
 });

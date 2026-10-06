@@ -226,3 +226,40 @@ describe('Verschieben einer Einheit (Plan ohne Gesundheitsbezug)', () => {
     expect(store.dump()[KEY]).not.toContain('update_planned_session');
   });
 });
+
+describe('SyncQueue: Konto-Bindung (R5, PLAN-PHASE-4 4.1)', () => {
+  it('sendet nur für das Konto, dem die Änderungen gehören; altes Format (Liste) wird gelesen', async () => {
+    const store = createMemoryStore();
+    let user: string | null = 'a';
+    const execute = vi.fn(async () => undefined);
+    const queue = new SyncQueue({
+      store,
+      storageKey: KEY,
+      execute,
+      isNetworkError: () => false,
+      currentUserId: () => user,
+    });
+    await queue.add([goals('fat_loss')]);
+    expect(JSON.parse(store.dump()[KEY] ?? '{}')).toMatchObject({ ownerUserId: 'a' });
+    user = 'b';
+    expect(await queue.flush()).toBe(false);
+    expect(execute).not.toHaveBeenCalled();
+    expect(await queue.hasForeign('b')).toBe(true);
+    await expect(queue.add([slots])).rejects.toThrow();
+    user = 'a';
+    expect(await queue.flush()).toBe(true);
+    expect(execute).toHaveBeenCalledTimes(1);
+
+    const legacy = createMemoryStore({
+      [KEY]: JSON.stringify([{ key: 'upsert_goals', op: goals('muscle_gain') }]),
+    });
+    const old = new SyncQueue({
+      store: legacy,
+      storageKey: KEY,
+      execute,
+      isNetworkError: () => false,
+    });
+    await old.load();
+    expect(old.size()).toBe(1);
+  });
+});

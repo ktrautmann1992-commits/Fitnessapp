@@ -18,7 +18,15 @@ import {
 import { healthConsentStatus } from '../state/flow';
 import { BackendError, type Backend } from './backend';
 import { LOCAL_CONSENT_DOCUMENTS } from './consent-texts';
-import { isValidOp, isValidPlanOp } from './local-rules';
+import { DraftStore } from './draft-store';
+import { checkSessionLog, isValidOp, isValidPlanOp } from './local-rules';
+import {
+  applySessionLog,
+  closeMissedSessionRows,
+  deleteSessionLogRows,
+  neutralizeHealthPlanLogRows,
+} from './log-rows';
+import { createMemoryProtectedStore, type ProtectedStore } from './protected-store';
 import { readJson, STORAGE_KEYS, writeJson, type KeyValueStore } from './kv';
 import { upgradeStoredRows } from './legacy-rows';
 import { type ConsentVersions, versionsFromDocuments } from './mapping';
@@ -57,6 +65,11 @@ import {
 interface LocalDb {
   session: AuthSession | null;
   rows: UserRows | null;
+  /**
+   * Tageslimit wie private.session_log_daily_counts (Etappe B K1): gezählt werden ERSTELLUNGEN je Tag, auch später
+   * gelöschte. Kein Tagebuch-Inhalt.
+   */
+  logCounter?: { day: string; created: number } | null;
 }
 
 export interface LocalBackendOptions {
@@ -66,6 +79,12 @@ export interface LocalBackendOptions {
   newId: () => string;
   /** Inhaltsdateien für den Testmodus (Standard: gebündelt aus content/, erst bei Bedarf geladen). */
   loadContent?: () => Promise<readonly ContentFile[]>;
+  /**
+   * Geschützter Entwurfs-Speicher (PLAN-PHASE-4 4.1/4.2; App verschlüsselt, Browser sessionStorage). Auch im
+   * Testmodus – die Tagebuch-Einträge selbst liegen dort wie alles andere in `localDb` (dokumentierte Ausnahme).
+   * Standard (Tests): Arbeitsspeicher.
+   */
+  draftStore?: ProtectedStore;
 }
 
 async function bundledContent(): Promise<readonly ContentFile[]> {
@@ -77,6 +96,7 @@ const LOCAL_VERSIONS: ConsentVersions = versionsFromDocuments(LOCAL_CONSENT_DOCU
 
 export function createLocalBackend(store: KeyValueStore, options: LocalBackendOptions): Backend {
   let library: PlanLibrary | null = null;
+  const drafts = new DraftStore(options.draftStore ?? createMemoryProtectedStore());
 
   /**
    * Bibliothek des Testmodus. EINZIGE Stelle mit allowDrafts: true (PLAN-PHASE-3 5.2): Entwürfe ohne roten
@@ -142,9 +162,27 @@ export function createLocalBackend(store: KeyValueStore, options: LocalBackendOp
     if (!ok) {
       throw new BackendError('plan_rejected', { sensitive: isSensitiveOp(op) });
     }
-    const next = applyWriteOps(rows, [op], applyContext());
+    let next = applyWriteOps(rows, [op], applyContext());
+    if (op.kind === 'save_training_plan' && healthConsentStatus(rows, LOCAL_VERSIONS) !== 'valid') {
+      // H-c: Plan ohne gültige Einwilligung → Einträge aus Gesundheits-Plänen neutralisieren (wie der Server).
+      next = neutralizeHealthPlanLogRows(next);
+    }
     await save({ ...db, rows: next });
     return next;
+  }
+
+  /** Widerruf health_data (R3): Entwürfe bereinigen, dann Einwilligung widerrufen und Daten wie der Trigger. */
+  async function revokeHealth(deleteLogs: boolean): Promise<void> {
+    const { db, rows } = await requireProfile();
+    await drafts.cleanHealthPlanDrafts(deleteLogs ? 'delete' : 'neutralize');
+    const now = options.now();
+    const revoked: UserRows = {
+      ...rows,
+      consents: rows.consents.map((c) =>
+        c.consent_type === 'health_data' && c.revoked_at === null ? { ...c, revoked_at: now } : c,
+      ),
+    };
+    await save({ ...db, rows: applyHealthDataRevocation(revoked, { deleteLogs }) });
   }
 
   /** Prüft einen Vorgang wie die RLS-Policies/Trigger der Datenbank und wendet ihn an. */
@@ -195,6 +233,8 @@ export function createLocalBackend(store: KeyValueStore, options: LocalBackendOp
     signOut: async () => {
       const db = await load();
       await save({ ...db, session: null });
+      // Entwürfe samt Schlüssel löschen (4.1) – die App fragt vorher nach (R6).
+      await drafts.clear();
     },
 
     loadConsentDocuments: async () => [...LOCAL_CONSENT_DOCUMENTS],
@@ -231,7 +271,11 @@ export function createLocalBackend(store: KeyValueStore, options: LocalBackendOp
 
     loadRows: async () => {
       const { db } = await requireUser();
-      return { rows: db.rows ?? emptyUserRows(), offline: false };
+      if (!db.rows) return { rows: emptyUserRows(), offline: false };
+      // Wie close_missed_sessions() beim Laden: verpasste Einheiten nach Wochenende → gestrichen.
+      const rows = closeMissedSessionRows(db.rows, options.today());
+      if (rows !== db.rows) await save({ ...db, rows });
+      return { rows, offline: false };
     },
 
     grantConsents: async (types: readonly ConsentType[], versions) => {
@@ -253,17 +297,18 @@ export function createLocalBackend(store: KeyValueStore, options: LocalBackendOp
     },
 
     revokeConsent: async (type) => {
+      if (type === 'health_data') {
+        await revokeHealth(false);
+        return;
+      }
       const { db, rows } = await requireProfile();
       const now = options.now();
-      let next: UserRows = {
+      const next: UserRows = {
         ...rows,
         consents: rows.consents.map((c) =>
           c.consent_type === type && c.revoked_at === null ? { ...c, revoked_at: now } : c,
         ),
       };
-      if (type === 'health_data') {
-        next = applyHealthDataRevocation(next);
-      }
       await save({ ...db, rows: next });
     },
 
@@ -308,6 +353,7 @@ export function createLocalBackend(store: KeyValueStore, options: LocalBackendOp
     deleteAccount: async () => {
       await requireUser();
       await save({ session: null, rows: null });
+      await drafts.clear();
     },
 
     pendingChanges: () => 0,
@@ -326,6 +372,105 @@ export function createLocalBackend(store: KeyValueStore, options: LocalBackendOp
       for (const key of Object.values(STORAGE_KEYS)) {
         await store.removeItem(key);
       }
+      await drafts.clear();
+    },
+
+    // --- Trainingstagebuch: dieselben Regeln wie save_session_log (local-rules.ts checkSessionLog) ----------
+    loadDrafts: async () => {
+      const { session } = await requireUser();
+      return drafts.forOwner(session.userId);
+    },
+    saveDraft: async (draft) => {
+      await drafts.put(draft);
+    },
+    discardDraft: async (key) => {
+      await drafts.remove(key);
+    },
+    submitWorkout: async (draft, payload) => {
+      const { db, rows, session } = await requireProfile();
+      const today = options.today();
+      const check = checkSessionLog(payload, {
+        today,
+        rows,
+        exercises: (await planLibrary()).displayExercises ?? (await planLibrary()).exercises,
+        healthConsentValid: healthConsentStatus(rows, LOCAL_VERSIONS) === 'valid',
+        createdToday: db.logCounter?.day === today ? db.logCounter.created : 0,
+      });
+      switch (check.kind) {
+        case 'repeat':
+          await drafts.remove(draft.key);
+          return { kind: 'saved', orphaned: check.result === 'orphaned' };
+        case 'conflict':
+          await drafts.put({ ...draft, state: 'conflict', serverRevision: check.revision });
+          return { kind: 'conflict' };
+        case 'reject':
+          await drafts.put({ ...draft, state: 'rejected', rejectReason: check.reason });
+          return { kind: 'rejected', reason: check.reason };
+        case 'write': {
+          // Wie der Server (Festlegung 7): schon vergebene ids (Eintrag/Übungen) bekommen eine neue id.
+          const taken = (id: string) => rows.sessionLogs.some((l) => l.id === id);
+          const id = check.isNew && taken(check.id) ? options.newId() : check.id;
+          const otherExercises = new Set(
+            rows.exerciseLogs.filter((e) => e.session_log_id !== id).map((e) => e.id),
+          );
+          const stored = {
+            ...payload,
+            exercises: payload.exercises.map((e) =>
+              otherExercises.has(e.id) ? { ...e, id: options.newId() } : e,
+            ),
+          };
+          const next = applySessionLog(rows, stored, {
+            userId: session.userId,
+            linked: check.linked,
+            keepTargets: check.keepTargets,
+            fromHealthPlan: check.fromHealthPlan,
+            id,
+            revision: check.revision,
+            now: options.now(),
+            isIntroWeek: check.isIntroWeek,
+            isDeload: check.isDeload,
+          });
+          const logCounter = check.isNew
+            ? {
+                day: today,
+                created: (db.logCounter?.day === today ? db.logCounter.created : 0) + 1,
+              }
+            : (db.logCounter ?? null);
+          await save({ ...db, rows: next, logCounter });
+          await drafts.remove(draft.key);
+          return { kind: 'saved', orphaned: check.result === 'orphaned' };
+        }
+      }
+    },
+    deleteSessionLog: async (id, baseRevision) => {
+      const { db, rows } = await requireProfile();
+      const existing = rows.sessionLogs.find((l) => l.id === id);
+      if (!existing) return 'ok';
+      if (existing.revision !== baseRevision) return 'conflict';
+      await save({ ...db, rows: deleteSessionLogRows(rows, id, options.today()) });
+      return 'ok';
+    },
+    setStartWeight: async (exerciseId, weightKg) => {
+      const { db, rows } = await requireProfile();
+      const next = applyChecked(rows, { kind: 'set_exercise_start_weight', exerciseId, weightKg });
+      await save({ ...db, rows: next });
+      return next;
+    },
+    revokeHealthData: revokeHealth,
+    pendingWorkouts: async () => {
+      const db = await load();
+      const owner = db.session?.userId;
+      return { queued: 0, drafts: owner ? (await drafts.forOwner(owner)).length : 0 };
+    },
+    pendingLogSessionIds: () => [],
+    hasForeignDeviceData: async () => {
+      const db = await load();
+      return db.session ? drafts.hasForeign(db.session.userId) : false;
+    },
+    discardForeignDeviceData: async () => {
+      const db = await load();
+      const owner = db.session?.userId;
+      await drafts.removeWhere((d) => d.ownerUserId !== owner);
     },
   };
 }

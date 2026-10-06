@@ -30,7 +30,7 @@ import { planTitleText } from '@/lib/plan-title';
 import { useApp } from '@/state/app-state';
 import { healthConsentStatus, lastMeasurementDate } from '@/state/flow';
 
-type DialogKind = 'revoke' | 'delete' | 'clear' | 'recreate' | null;
+type DialogKind = 'revoke' | 'delete' | 'clear' | 'recreate' | 'signout' | null;
 
 const LISTED_CONSENTS = [
   'terms',
@@ -68,6 +68,9 @@ export default function SettingsScreen() {
   const [reminderError, setReminderError] = useState<string>();
   const [reminderSaved, setReminderSaved] = useState(false);
   const [savingReminder, setSavingReminder] = useState(false);
+  /** Abmelden mit Wartendem (R6): Zahl der noch nicht übertragenen Trainings bzw. Entwürfe. */
+  const [pendingCount, setPendingCount] = useState(0);
+  const [stillPending, setStillPending] = useState(false);
 
   if (app.status.kind === 'loading') {
     return (
@@ -89,9 +92,21 @@ export default function SettingsScreen() {
     setDialogError(undefined);
     try {
       if (dialog === 'revoke') {
-        await app.revokeConsent('health_data');
+        // „Tagebuch behalten (empfohlen)“ – Vorgaben aus Gesundheits-Plänen werden neutralisiert (S1, R3).
+        await app.revokeHealthData(false);
         setMessage(t.settings.revokeDone);
         setDialog(null);
+      } else if (dialog === 'signout') {
+        // „Jetzt senden“ – bleibt danach etwas übrig, wird NICHT abgemeldet, sondern erneut gefragt (R6).
+        const left = await app.sendPending();
+        if (left > 0) {
+          setPendingCount(left);
+          setStillPending(true);
+        } else {
+          setDialog(null);
+          await app.signOut(true);
+          router.replace('/welcome');
+        }
       } else if (dialog === 'delete') {
         await app.deleteAccount();
         setDialog(null);
@@ -141,13 +156,35 @@ export default function SettingsScreen() {
     }
   }
 
-  async function signOut() {
+  async function signOut(force = false) {
     setBusy(true);
     try {
-      await app.signOut();
+      const result = await app.signOut(force);
+      if (result.kind === 'pending') {
+        setPendingCount(result.count);
+        setStillPending(false);
+        setDialogError(undefined);
+        setDialog('signout');
+        return;
+      }
+      setDialog(null);
       router.replace('/welcome');
     } catch (caught) {
       setMessage(errorText(caught));
+    } finally {
+      setBusy(false);
+    }
+  }
+
+  async function revokeDeletingLogs() {
+    setBusy(true);
+    setDialogError(undefined);
+    try {
+      await app.revokeHealthData(true);
+      setMessage(t.settings.revokeDone);
+      setDialog(null);
+    } catch (caught) {
+      setDialogError(errorText(caught));
     } finally {
       setBusy(false);
     }
@@ -159,25 +196,33 @@ export default function SettingsScreen() {
       ? {
           title: t.settings.revokeTitle,
           text: t.settings.revokeText,
-          confirm: t.settings.revokeConfirm,
+          confirm: t.settings.revokeKeepLogs,
         }
-      : dialog === 'delete'
+      : dialog === 'signout'
         ? {
-            title: t.settings.deleteTitle,
-            text: t.settings.deleteText,
-            confirm: t.settings.deleteConfirm,
+            title: t.settings.signOutPendingTitle,
+            text: stillPending
+              ? `${t.settings.signOutPending(pendingCount)} ${t.settings.signOutStillPending}`
+              : t.settings.signOutPending(pendingCount),
+            confirm: t.settings.signOutSendNow,
           }
-        : dialog === 'recreate'
+        : dialog === 'delete'
           ? {
-              title: t.plan.recreateTitle,
-              text: t.plan.recreateText,
-              confirm: t.plan.recreateConfirm,
+              title: t.settings.deleteTitle,
+              text: t.settings.deleteText,
+              confirm: t.settings.deleteConfirm,
             }
-          : {
-              title: t.settings.clearTitle,
-              text: t.settings.clearText,
-              confirm: t.settings.clearConfirm,
-            };
+          : dialog === 'recreate'
+            ? {
+                title: t.plan.recreateTitle,
+                text: t.plan.recreateText,
+                confirm: t.plan.recreateConfirm,
+              }
+            : {
+                title: t.settings.clearTitle,
+                text: t.settings.clearText,
+                confirm: t.settings.clearConfirm,
+              };
 
   return (
     <Screen
@@ -229,15 +274,18 @@ export default function SettingsScreen() {
           <Body muted>{consentLine(rows.consents, type)}</Body>
           {type === 'health_data' ? (
             healthStatus === 'valid' ? (
-              <Button
-                label={t.settings.revoke}
-                variant="danger"
-                accessibilityLabel={`${t.consentTypes.health_data}: ${t.settings.revoke}`}
-                onPress={() => {
-                  setDialogError(undefined);
-                  setDialog('revoke');
-                }}
-              />
+              <>
+                <Body muted>{t.settings.revokeLogsNote}</Body>
+                <Button
+                  label={t.settings.revoke}
+                  variant="danger"
+                  accessibilityLabel={`${t.consentTypes.health_data}: ${t.settings.revoke}`}
+                  onPress={() => {
+                    setDialogError(undefined);
+                    setDialog('revoke');
+                  }}
+                />
+              </>
             ) : (
               <>
                 {healthStatus === 'outdated' ? (
@@ -339,11 +387,35 @@ export default function SettingsScreen() {
         title={dialogTexts.title}
         message={dialogTexts.text}
         confirmLabel={dialogTexts.confirm}
-        confirmVariant={dialog === 'recreate' ? 'primary' : 'danger'}
+        confirmVariant={dialog === 'recreate' || dialog === 'signout' ? 'primary' : 'danger'}
         onConfirm={() => void confirm()}
         onCancel={() => setDialog(null)}
         loading={busy}
         error={dialogError}
+        testID={dialog ? `dialog-${dialog}` : undefined}
+        {...(dialog === 'revoke'
+          ? {
+              // Wahl aus S1 und Hinweise (H6, R3, K4).
+              notes: [
+                t.settings.revokeLogs,
+                t.settings.revokeOtherDevices,
+                t.settings.revokeEarlier,
+              ],
+              alternative: {
+                label: t.settings.revokeDeleteLogs,
+                variant: 'danger' as const,
+                onPress: () => void revokeDeletingLogs(),
+              },
+            }
+          : dialog === 'signout'
+            ? {
+                alternative: {
+                  label: t.settings.signOutAnyway,
+                  variant: 'danger' as const,
+                  onPress: () => void signOut(true),
+                },
+              }
+            : {})}
       />
     </Screen>
   );

@@ -21,8 +21,20 @@ import {
 } from 'react';
 import { AppState, Platform } from 'react-native';
 
-import { BackendError, errorCode, type Backend, type BackendErrorCode } from '@/data/backend';
-import { createBackend, deviceStore } from '@/data/create-backend';
+import {
+  BackendError,
+  errorCode,
+  type Backend,
+  type BackendErrorCode,
+  type LogSaveOutcome,
+} from '@/data/backend';
+import { createBackend, deviceStore, newId } from '@/data/create-backend';
+import {
+  draftToPayload,
+  isValidPayload,
+  type LogRejectReason,
+  type WorkoutDraft,
+} from '@/data/workout-draft';
 import {
   activePlan,
   effectiveSafetyRules,
@@ -59,6 +71,18 @@ export type CreatePlanOutcome =
   | { ok: true; plan: GeneratedPlan }
   | { ok: false; code: BackendErrorCode | 'incomplete' | 'invalid_inputs' };
 
+/** Rückmeldung nach dem Speichern eines Trainings (Texte in i18n workout.*). */
+export type WorkoutMessage =
+  | { kind: 'saved' }
+  | { kind: 'queued' }
+  | { kind: 'orphaned' }
+  | { kind: 'conflict' }
+  | { kind: 'rejected'; reason: LogRejectReason }
+  | { kind: 'invalid' };
+
+/** Abmelden (R6): wartende Trainings/Entwürfe → Nachfrage statt sofort abmelden. */
+export type SignOutResult = { kind: 'signed_out' } | { kind: 'pending'; count: number };
+
 /** Bibliothek der Plan-Engine (für Anzeige und Folgeblock). */
 type LibraryState =
   | { kind: 'idle' }
@@ -91,8 +115,38 @@ export interface AppContextValue {
   saveStep: (save: StepSave) => Promise<EntryRoute>;
   saveReminder: (settings: ReminderSettings, nextDueOn: string | null) => Promise<void>;
   deleteAccount: () => Promise<void>;
-  signOut: () => Promise<void>;
+  /**
+   * Abmelden (R6): Liegen noch nicht übertragene Trainings, offene Entwürfe oder Konflikte vor, wird ohne `force`
+   * nicht abgemeldet, sondern die Zahl gemeldet; „Jetzt senden“ = sendPending() und erneut fragen.
+   */
+  signOut: (force?: boolean) => Promise<SignOutResult>;
+  /** Wartendes senden; Rest = noch offene Trainings (Warteschlange + Entwürfe). */
+  sendPending: () => Promise<number>;
   clearDeviceData: () => Promise<void>;
+
+  // --- Trainingstagebuch (Phase 4, Etappe C) ---
+  /** Entwürfe des Kontos (laufende, abgelehnte, Konflikt-Fassungen). */
+  drafts: WorkoutDraft[];
+  /** Entwurf sofort sichern (jeder Tipp). */
+  saveDraft: (draft: WorkoutDraft) => Promise<void>;
+  discardDraft: (key: string) => Promise<void>;
+  /** Training beenden: Eintrag bauen (Zod), speichern bzw. einreihen; Ergebnis als Meldung. */
+  submitWorkout: (draft: WorkoutDraft) => Promise<LogSaveOutcome | { kind: 'invalid' }>;
+  /** Konflikt: „Meine Fassung behalten“ = erneut senden auf Basis der Server-Revision. */
+  keepMyVersion: (draft: WorkoutDraft) => Promise<LogSaveOutcome | { kind: 'invalid' }>;
+  /** Eigenes Startgewicht speichern; liefert den neuen Stand (für die Neuberechnung der Vorgabe). */
+  setStartWeight: (exerciseId: string, weightKg: number | null) => Promise<UserRows>;
+  /** Widerruf health_data mit Wahl „Tagebuch behalten“ / „auch löschen“ (S1, R3). */
+  revokeHealthData: (deleteLogs: boolean) => Promise<void>;
+  workoutMessage: WorkoutMessage | null;
+  clearWorkoutMessage: () => void;
+  /** Planned-Session-IDs mit noch nicht übertragenem Training. */
+  pendingLogSessionIds: readonly string[];
+  /** Einträge eines anderen Kontos auf dem Gerät (R5) → Nachfrage „löschen?“. */
+  foreignData: boolean;
+  discardForeignData: () => Promise<void>;
+  /** Senden scheiterte an der abgelaufenen Sitzung (R5) → „Bitte melde dich erneut an“. */
+  sessionExpired: boolean;
 
   // --- Trainingsplan (Phase 3) ---
   /** Übungs-Bibliothek (null = nicht geladen/fehlt → Zustand „Übungen können nicht geprüft werden“). */
@@ -133,6 +187,11 @@ export function AppStateProvider({ children }: { children: ReactNode }) {
   const [library, setLibrary] = useState<LibraryState>({ kind: 'idle' });
   const [cachedRules, setCachedRules] = useState<PlanSafetyRules | null>(null);
   const [planMessage, setPlanMessage] = useState<string | null>(null);
+  const [drafts, setDrafts] = useState<WorkoutDraft[]>([]);
+  const [workoutMessage, setWorkoutMessage] = useState<WorkoutMessage | null>(null);
+  const [pendingLogSessionIds, setPendingLogSessionIds] = useState<readonly string[]>([]);
+  const [foreignData, setForeignData] = useState(false);
+  const [sessionExpired, setSessionExpired] = useState(false);
   const appendingRef = useRef(false);
   /** Plan, für den das Anhängen gescheitert ist (kein erneuter Versuch bis zum neuen Plan). */
   const appendFailedRef = useRef<string | null>(null);
@@ -142,6 +201,16 @@ export function AppStateProvider({ children }: { children: ReactNode }) {
 
   const refreshPending = useCallback(() => {
     setPendingChanges(backend.pendingChanges());
+    setPendingLogSessionIds(backend.pendingLogSessionIds());
+  }, [backend]);
+
+  const reloadDrafts = useCallback(async () => {
+    try {
+      setDrafts(await backend.loadDrafts());
+      setForeignData(await backend.hasForeignDeviceData());
+    } catch {
+      setDrafts([]);
+    }
   }, [backend]);
 
   const loadUser = useCallback(async (): Promise<UserRows> => {
@@ -150,8 +219,9 @@ export function AppStateProvider({ children }: { children: ReactNode }) {
     setOffline(result.offline);
     setCachedRules(result.offline ? (result.cachedSafetyRules ?? null) : null);
     refreshPending();
+    await reloadDrafts();
     return result.rows;
-  }, [backend, refreshPending]);
+  }, [backend, refreshPending, reloadDrafts]);
 
   /** Lädt Texte, Sitzung und Daten (Status bleibt bis zum Ende unverändert). */
   const load = useCallback(async () => {
@@ -220,14 +290,42 @@ export function AppStateProvider({ children }: { children: ReactNode }) {
   }, [backend, refreshPending]);
 
   // Verworfene Verschiebung (Warteschlange) → Plan neu laden + Meldung (PLAN-PHASE-3 10.1 Punkt 5).
+  // Tagebuch (4.3): übertragen / Konflikt / abgelehnt → neu laden + Meldung; Sitzung abgelaufen → Hinweis.
   useEffect(() => {
     return backend.subscribe((event) => {
       if (event.kind === 'plan_change_dropped') {
         setPlanMessage(PLAN_CHANGE_DROPPED);
         void loadUser().catch(() => undefined);
+      } else if (event.kind === 'session_expired') {
+        setSessionExpired(true);
+      } else {
+        if (event.kind === 'log_saved') {
+          setSessionExpired(false);
+          if (event.orphaned) setWorkoutMessage({ kind: 'orphaned' });
+        } else if (event.kind === 'log_conflict') {
+          setWorkoutMessage({ kind: 'conflict' });
+        } else if (event.kind === 'log_rejected') {
+          setWorkoutMessage({ kind: 'rejected', reason: event.reason });
+        }
+        refreshPending();
+        void loadUser().catch(() => undefined);
       }
     });
-  }, [backend, loadUser]);
+  }, [backend, loadUser, refreshPending]);
+
+  // Browser: solange ein Entwurf oder wartende Trainings existieren, beim Schließen des Tabs warnen (4.2) –
+  // sessionStorage endet mit dem Tab.
+  const hasUnsent = drafts.length > 0 || pendingLogSessionIds.length > 0;
+  useEffect(() => {
+    if (Platform.OS !== 'web' || typeof window === 'undefined' || !hasUnsent) return;
+    const onBeforeUnload = (event: BeforeUnloadEvent) => {
+      event.preventDefault();
+      // Ältere Browser brauchen einen Rückgabewert (der Text selbst wird nicht mehr angezeigt).
+      event.returnValue = '';
+    };
+    window.addEventListener('beforeunload', onBeforeUnload);
+    return () => window.removeEventListener('beforeunload', onBeforeUnload);
+  }, [hasUnsent]);
 
   const setPendingBirthDate = useCallback(async (birthDate: string | null) => {
     setPendingBirthDateState(birthDate);
@@ -287,6 +385,14 @@ export function AppStateProvider({ children }: { children: ReactNode }) {
     [backend, loadUser],
   );
 
+  const revokeHealthData = useCallback(
+    async (deleteLogs: boolean) => {
+      await backend.revokeHealthData(deleteLogs);
+      await loadUser();
+    },
+    [backend, loadUser],
+  );
+
   const saveStep = useCallback(
     async (save: StepSave) => {
       if (!rows) {
@@ -322,7 +428,84 @@ export function AppStateProvider({ children }: { children: ReactNode }) {
     setPendingChanges(0);
     setCachedRules(null);
     setPlanMessage(null);
+    setDrafts([]);
+    setWorkoutMessage(null);
+    setPendingLogSessionIds([]);
+    setForeignData(false);
+    setSessionExpired(false);
   }, []);
+
+  // --- Trainingstagebuch -----------------------------------------------------------------------------------
+  const saveDraft = useCallback(
+    async (draft: WorkoutDraft) => {
+      setDrafts((current) => [...current.filter((d) => d.key !== draft.key), draft]);
+      await backend.saveDraft(draft);
+    },
+    [backend],
+  );
+
+  const discardDraft = useCallback(
+    async (key: string) => {
+      setDrafts((current) => current.filter((d) => d.key !== key));
+      await backend.discardDraft(key);
+    },
+    [backend],
+  );
+
+  const submit = useCallback(
+    async (draft: WorkoutDraft): Promise<LogSaveOutcome | { kind: 'invalid' }> => {
+      const payload = draftToPayload(draft, { writeId: newId(), now: new Date().toISOString() });
+      // Zod an der Grenze: nur Einträge, die save_session_log annehmen würde.
+      if (!isValidPayload(payload)) {
+        setWorkoutMessage({ kind: 'invalid' });
+        return { kind: 'invalid' };
+      }
+      const outcome = await backend.submitWorkout(draft, payload);
+      setWorkoutMessage(
+        outcome.kind === 'saved'
+          ? { kind: outcome.orphaned ? 'orphaned' : 'saved' }
+          : outcome.kind === 'rejected'
+            ? { kind: 'rejected', reason: outcome.reason }
+            : { kind: outcome.kind },
+      );
+      try {
+        await loadUser();
+      } catch {
+        await reloadDrafts();
+      }
+      return outcome;
+    },
+    [backend, loadUser, reloadDrafts],
+  );
+
+  const keepMyVersion = useCallback(
+    (draft: WorkoutDraft) =>
+      submit({
+        ...draft,
+        state: 'open',
+        rejectReason: null,
+        baseRevision: draft.serverRevision,
+        serverRevision: null,
+      }),
+    [submit],
+  );
+
+  const setStartWeight = useCallback(
+    async (exerciseId: string, weightKg: number | null) => {
+      if (!rows) throw new BackendError('not_signed_in');
+      const next = await backend.setStartWeight(exerciseId, weightKg, rows);
+      setRows(next);
+      refreshPending();
+      return next;
+    },
+    [backend, refreshPending, rows],
+  );
+
+  const discardForeignData = useCallback(async () => {
+    await backend.discardForeignDeviceData();
+    setForeignData(false);
+    await loadUser().catch(() => undefined);
+  }, [backend, loadUser]);
 
   const ensureLibrary = useCallback(async () => {
     if (library.kind === 'loading' || library.kind === 'ready') return;
@@ -438,10 +621,30 @@ export function AppStateProvider({ children }: { children: ReactNode }) {
     resetUser();
   }, [backend, resetUser]);
 
-  const signOut = useCallback(async () => {
-    await backend.signOut();
-    resetUser();
-  }, [backend, resetUser]);
+  const pendingCount = useCallback(async () => {
+    const pending = await backend.pendingWorkouts();
+    return pending.queued + pending.drafts;
+  }, [backend]);
+
+  const signOut = useCallback(
+    async (force = false): Promise<SignOutResult> => {
+      if (!force) {
+        const count = await pendingCount();
+        if (count > 0) return { kind: 'pending', count };
+      }
+      await backend.signOut();
+      resetUser();
+      return { kind: 'signed_out' };
+    },
+    [backend, pendingCount, resetUser],
+  );
+
+  const sendPending = useCallback(async () => {
+    await backend.flush();
+    refreshPending();
+    await reloadDrafts();
+    return pendingCount();
+  }, [backend, pendingCount, refreshPending, reloadDrafts]);
 
   const clearDeviceData = useCallback(async () => {
     await backend.clearDeviceData();
@@ -473,6 +676,7 @@ export function AppStateProvider({ children }: { children: ReactNode }) {
       saveReminder,
       deleteAccount,
       signOut,
+      sendPending,
       clearDeviceData,
       library,
       ensureLibrary,
@@ -482,6 +686,19 @@ export function AppStateProvider({ children }: { children: ReactNode }) {
       createPlan,
       moveSession,
       appendNextBlockIfDue,
+      drafts,
+      saveDraft,
+      discardDraft,
+      submitWorkout: submit,
+      keepMyVersion,
+      setStartWeight,
+      revokeHealthData,
+      workoutMessage,
+      clearWorkoutMessage: () => setWorkoutMessage(null),
+      pendingLogSessionIds,
+      foreignData,
+      discardForeignData,
+      sessionExpired,
     }),
     [
       backend,
@@ -505,6 +722,7 @@ export function AppStateProvider({ children }: { children: ReactNode }) {
       saveReminder,
       deleteAccount,
       signOut,
+      sendPending,
       clearDeviceData,
       library,
       ensureLibrary,
@@ -513,6 +731,18 @@ export function AppStateProvider({ children }: { children: ReactNode }) {
       createPlan,
       moveSession,
       appendNextBlockIfDue,
+      drafts,
+      saveDraft,
+      discardDraft,
+      submit,
+      keepMyVersion,
+      setStartWeight,
+      revokeHealthData,
+      workoutMessage,
+      pendingLogSessionIds,
+      foreignData,
+      discardForeignData,
+      sessionExpired,
     ],
   );
 

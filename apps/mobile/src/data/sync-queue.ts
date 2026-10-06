@@ -44,6 +44,9 @@ export function queueKey(op: WriteOp): string {
     // Neuere Änderung derselben Einheit ersetzt die ältere (PLAN-PHASE-3 10.1 Punkt 5).
     case 'update_planned_session':
       return `${op.kind}:${op.sessionId}`;
+    // Eigenes Startgewicht: neuester Wert je Übung gewinnt (PLAN-PHASE-4 4.3).
+    case 'set_exercise_start_weight':
+      return `${op.kind}:${op.exerciseId}`;
     default:
       return op.kind;
   }
@@ -86,10 +89,22 @@ export interface SyncQueueOptions {
   isNetworkError: (error: unknown) => boolean;
   /** Wird bei verworfenen Vorgängen aufgerufen (ohne Inhalte loggen!). */
   onDropped?: (op: WriteOp, error: unknown) => void;
+  /**
+   * Angemeldetes Konto (R5, PLAN-PHASE-4 4.1): Die Warteschlange merkt sich ihr Konto und sendet nur, wenn es passt –
+   * nie an das falsche Konto. Ohne Angabe (Tests, alte Stände) gilt jedes Konto.
+   */
+  currentUserId?: () => string | null;
+}
+
+/** Gespeichertes Format: seit Phase 4 mit Konto; ältere Stände waren nur die Liste. */
+interface StoredSyncQueue {
+  ownerUserId: string | null;
+  entries: QueueEntry[];
 }
 
 export class SyncQueue {
   private entries: QueueEntry[] = [];
+  private owner: string | null = null;
   private loaded = false;
   private flushing: Promise<boolean> | null = null;
 
@@ -99,12 +114,15 @@ export class SyncQueue {
     if (this.loaded) {
       return;
     }
-    const stored = await readJson<QueueEntry[]>(this.options.store, this.options.storageKey);
+    const raw = await readJson<QueueEntry[] | StoredSyncQueue>(
+      this.options.store,
+      this.options.storageKey,
+    );
+    const stored = Array.isArray(raw) ? raw : (raw?.entries ?? []);
+    this.owner = Array.isArray(raw) ? null : (raw?.ownerUserId ?? null);
     // Sicherheitsnetz: falls je ein Gesundheitsdatum hineingeraten wäre, nicht senden und verwerfen.
     // Alte Ziel-Vorgänge mit Zeitbudget-Spalten (vor Etappe B2) würden am Server scheitern → still verwerfen.
-    this.entries = (stored ?? []).filter(
-      (entry) => !isDirectOp(entry.op) && !isLegacyGoalsOp(entry.op),
-    );
+    this.entries = stored.filter((entry) => !isDirectOp(entry.op) && !isLegacyGoalsOp(entry.op));
     this.loaded = true;
   }
 
@@ -116,8 +134,25 @@ export class SyncQueue {
     return this.entries;
   }
 
+  /** Liegen wartende Änderungen eines ANDEREN Kontos auf dem Gerät (R5)? */
+  async hasForeign(userId: string): Promise<boolean> {
+    await this.load();
+    return this.entries.length > 0 && this.owner !== null && this.owner !== userId;
+  }
+
   async add(ops: readonly WriteOp[]): Promise<void> {
     await this.load();
+    const current = this.options.currentUserId?.() ?? null;
+    if (
+      this.entries.length > 0 &&
+      this.owner !== null &&
+      current !== null &&
+      current !== this.owner
+    ) {
+      // Nie Änderungen zweier Konten mischen – die App fragt vorher („Einträge eines anderen Kontos – löschen?“).
+      throw new Error('SyncQueue: Änderungen eines anderen Kontos.');
+    }
+    if (this.entries.length === 0 || this.owner === null) this.owner = current;
     this.entries = enqueue(this.entries, ops);
     await this.persist();
   }
@@ -142,12 +177,18 @@ export class SyncQueue {
 
   async clear(): Promise<void> {
     this.entries = [];
+    this.owner = null;
     this.loaded = true;
     await this.options.store.removeItem(this.options.storageKey);
   }
 
   private async runFlush(): Promise<boolean> {
     await this.load();
+    if (this.options.currentUserId && this.entries.length > 0 && this.owner !== null) {
+      const current = this.options.currentUserId();
+      // Anderes (oder kein) Konto angemeldet: nichts senden, nichts verwerfen (R5).
+      if (current !== this.owner) return false;
+    }
     while (this.entries.length > 0) {
       const [entry] = this.entries;
       if (!entry) {
@@ -170,9 +211,13 @@ export class SyncQueue {
 
   private async persist(): Promise<void> {
     if (this.entries.length === 0) {
+      this.owner = null;
       await this.options.store.removeItem(this.options.storageKey);
     } else {
-      await writeJson(this.options.store, this.options.storageKey, this.entries);
+      await writeJson(this.options.store, this.options.storageKey, {
+        ownerUserId: this.owner,
+        entries: this.entries,
+      } satisfies StoredSyncQueue);
     }
   }
 }

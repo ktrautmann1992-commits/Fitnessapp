@@ -64,4 +64,17 @@ export const STORAGE_KEYS = {
   healthPlanCache: 'fitnessapp.health-plan.v1',
   /** App: Name des Schlüssels im sicheren Schlüsselspeicher (expo-secure-store), nicht in AsyncStorage. */
   healthPlanKey: 'fitnessapp.health-plan-key.v1',
+  /**
+   * Trainingstagebuch (PLAN-PHASE-4 4.1, Gründer-Entscheidung Frage 3 = verschlüsselt): drei EIGENE geschützte
+   * Speicher (App: AES-256-GCM, Schlüssel im Keychain/Keystore; Browser: nur sessionStorage) – nie mit dem Plan-Cache
+   * geteilt. Entwurf = laufende Einheit(en) und abgelehnte/Konflikt-Fassungen.
+   */
+  workoutDraft: 'fitnessapp.workout-draft.v1',
+  workoutDraftKey: 'fitnessapp.workout-draft-key.v1',
+  /** Wartende save_session_log-Vorgänge (eigene LogQueue, nie die normale SyncQueue). */
+  logQueue: 'fitnessapp.log-queue.v1',
+  logQueueKey: 'fitnessapp.log-queue-key.v1',
+  /** Geladene Tagebuch-Einträge (Supabase-Modus, für offline). */
+  logCache: 'fitnessapp.log-cache.v1',
+  logCacheKey: 'fitnessapp.log-cache-key.v1',
 } as const;

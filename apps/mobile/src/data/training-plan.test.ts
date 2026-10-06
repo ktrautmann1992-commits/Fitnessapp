@@ -201,8 +201,10 @@ describe('Folgeblock', () => {
       expect(s.endurance_modality).toBe('walk');
       expect(s.effort_target).toBeLessThanOrEqual(3);
     }
-    // Gegenprobe: ohne Rücksetzen (falsche Startgruppe) wären die Einheiten länger.
-    const wrong = nextPlanBlock(reActive.sessions, {
+    // Gegenprobe: ohne Rücksetzen (falsche Startgruppe) wären die Einheiten länger. Mit den Einheiten VOR dem Neuladen –
+    // beim Laden streicht der Testmodus (wie close_missed_sessions) verpasste Einheiten vergangener Wochen, die dann
+    // nicht mehr für den 10-%-Bezug zählen.
+    const wrong = nextPlanBlock(active.sessions, {
       schedule: {
         mode: 'fixed',
         slots: slots.map(({ weekday, kind, minutes }) => ({ weekday, kind, minutes })),

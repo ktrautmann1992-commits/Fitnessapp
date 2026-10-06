@@ -7,3 +7,4 @@ export * from './rest-timer';
 export * from './schemas';
 export * from './summary';
 export * from './types';
+export * from './workout';
