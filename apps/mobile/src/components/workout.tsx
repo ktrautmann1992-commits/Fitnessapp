@@ -10,6 +10,7 @@ import { Platform, Pressable, StyleSheet, Text, View } from 'react-native';
 
 import { t } from '@/i18n';
 import { useThemeColors } from '@/lib/theme';
+import { restTexts } from '@/lib/workout-format';
 
 import { MIN_TOUCH } from './ui';
 
@@ -264,7 +265,135 @@ export function EffortSlider({
   );
 }
 
+/**
+ * Ansage des Pausenendes für den Bildschirmleser im Browser (6.4): eine DAUERHAFT vorhandene, unsichtbare
+ * Live-Region – neu eingefügte Regionen samt Inhalt lesen Bildschirmleser oft nicht vor (Wächter C2 S1). In der App
+ * sagt zusätzlich announceForAccessibility an.
+ */
+export function RestAnnouncer({ text }: { text: string }) {
+  return (
+    <Text
+      accessibilityLiveRegion="assertive"
+      aria-live="assertive"
+      aria-atomic
+      testID="rest-announcer"
+      style={styles.visuallyHidden}
+    >
+      {text}
+    </Text>
+  );
+}
+
+/**
+ * Pausentimer als Leiste unten (6.1): Restzeit groß, −15 s / +15 s / Überspringen; am Ende sichtbarer Hinweis
+ * (Status nie nur über Farbe) mit aria-live für den Bildschirmleser im Browser.
+ */
+export function RestTimerBar({
+  remaining,
+  over,
+  onAdjust,
+  onStop,
+}: {
+  remaining: number;
+  over: boolean;
+  onAdjust: (deltaS: number) => void;
+  onStop: () => void;
+}) {
+  const theme = useThemeColors();
+  const time = restTexts(remaining);
+  const small = (label: string, a11y: string, onPress: () => void, testID: string) => (
+    <Pressable
+      accessibilityRole="button"
+      accessibilityLabel={a11y}
+      onPress={onPress}
+      testID={testID}
+      style={({ pressed }) => [
+        styles.restButton,
+        { borderColor: theme.border, backgroundColor: theme.surface, opacity: pressed ? 0.8 : 1 },
+      ]}
+    >
+      <Text style={[styles.restButtonText, { color: theme.text }]}>{label}</Text>
+    </Pressable>
+  );
+  return (
+    <View
+      testID="rest-timer"
+      style={[styles.restBar, { borderColor: over ? theme.primary : theme.border }]}
+    >
+      {over ? (
+        <Text style={[styles.restOver, { color: theme.text }]} testID="rest-timer-over">
+          {`✓ ${t.workout.rest.over}`}
+        </Text>
+      ) : (
+        <View style={styles.restRow}>
+          <Text style={[styles.restLabel, { color: theme.textMuted }]}>{t.workout.rest.label}</Text>
+          <Text
+            style={[styles.restTime, { color: theme.text }]}
+            accessibilityLabel={time.a11y}
+            testID="rest-timer-time"
+          >
+            {time.text}
+          </Text>
+        </View>
+      )}
+      <View style={styles.restRow}>
+        {over ? null : (
+          <>
+            {small(
+              t.workout.rest.minus,
+              t.workout.rest.minusA11y,
+              () => onAdjust(-15),
+              'rest-timer-minus',
+            )}
+            {small(
+              t.workout.rest.plus,
+              t.workout.rest.plusA11y,
+              () => onAdjust(15),
+              'rest-timer-plus',
+            )}
+          </>
+        )}
+        {small(
+          over ? t.workout.rest.close : t.workout.rest.skip,
+          over ? t.workout.rest.close : t.workout.rest.skipA11y,
+          onStop,
+          'rest-timer-skip',
+        )}
+      </View>
+    </View>
+  );
+}
+
 const styles = StyleSheet.create({
+  visuallyHidden: {
+    position: 'absolute',
+    width: 1,
+    height: 1,
+    overflow: 'hidden',
+    opacity: 0,
+  },
+  restBar: { borderWidth: 2, borderRadius: radius.md, padding: spacing.sm, gap: spacing.xs },
+  restRow: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    alignItems: 'center',
+    gap: spacing.xs,
+    justifyContent: 'space-between',
+  },
+  restLabel: { fontSize: fontSize.md, fontWeight: fontWeight.semibold },
+  restTime: { fontSize: fontSize.xxl, fontWeight: fontWeight.bold },
+  restOver: { fontSize: fontSize.lg, fontWeight: fontWeight.bold },
+  restButton: {
+    flexGrow: 1,
+    minWidth: MIN_TOUCH,
+    minHeight: MIN_TOUCH,
+    borderWidth: 1,
+    borderRadius: radius.md,
+    alignItems: 'center',
+    justifyContent: 'center',
+    paddingHorizontal: spacing.sm,
+  },
+  restButtonText: { fontSize: fontSize.md, fontWeight: fontWeight.semibold },
   stepper: { flex: 1, gap: 2, minWidth: 150 },
   stepLabel: { fontSize: fontSize.sm, fontWeight: fontWeight.semibold },
   stepRow: { flexDirection: 'row', alignItems: 'center', gap: spacing.xs },

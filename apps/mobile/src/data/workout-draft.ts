@@ -1,5 +1,9 @@
 import {
+  type CardioInput,
+  type CardioInputResult,
+  cardioLogFromInput,
   CONSERVATIVE_PLAN_RULES,
+  type EnduranceModality,
   exerciseLogStatusFor,
   type ExerciseLogPayload,
   type IncrementKind,
@@ -14,11 +18,13 @@ import {
   sessionLogStatus,
   type SetEntryWarning,
   setEntryWarnings,
+  splitDuration,
   type StoredSession,
   type WorkoutExercisePlan,
   type WorkoutItem,
 } from '@fitnessapp/core';
 
+import { formatDecimal, parseDecimal } from '../lib/format';
 import type { UserRows } from './types';
 
 /**
@@ -32,7 +38,13 @@ import type { UserRows } from './types';
 export const DRAFT_FORMAT = 1;
 
 export type DraftState = 'open' | 'conflict' | 'rejected';
-export type LogRejectReason = 'day_taken' | 'date_window' | 'daily_limit' | 'invalid';
+export type LogRejectReason =
+  | 'day_taken'
+  | 'date_window'
+  | 'daily_limit'
+  | 'invalid'
+  /** Nach mehreren Versuchen bzw. 24 h nicht übertragbar (Nachprüfung C1 N1) – als Entwurf gesichert. */
+  | 'not_transferred';
 
 /** Vorgabe-Felder des Eintrags (Schnappschuss der Anzeige, 3.3). */
 export type DraftTargets = Pick<
@@ -129,7 +141,24 @@ export interface WorkoutDraft {
   sessionRpe: number | null;
   notes: string;
   exercises: DraftExercise[];
+  /**
+   * Ausdauer-Eintrag (Etappe C2); null bei Kraft. Fehlt in Entwürfen aus C1 (nur Kraft) – gilt dann als null.
+   */
+  cardio?: DraftCardio | null;
   updatedAt: string;
+}
+
+/**
+ * Ausdauer-Eingabe, wie getippt (Text – ein halb getipptes „5,“ geht beim Sichern des Entwurfs nicht verloren).
+ * Umwandeln und Prüfen: cardioLogFromInput() in packages/core.
+ */
+export interface DraftCardio {
+  modality: EnduranceModality;
+  hours: string;
+  minutes: string;
+  /** Distanz in km mit Komma. */
+  distanceKm: string;
+  elevationM: string;
 }
 
 // ---------------------------------------------------------------------------------------------------------
@@ -264,6 +293,88 @@ export function createWorkoutDraft(input: CreateDraftInput): WorkoutDraft | null
   };
 }
 
+/** Neuer Ausdauer-Entwurf: Art und Dauer aus der geplanten Einheit vorbelegt (die Person trägt ein, was sie tat). */
+export function createEnduranceDraft(
+  input: Omit<CreateDraftInput, 'items' | 'plannedExerciseIds'>,
+): WorkoutDraft {
+  const { hours, minutes } = splitDuration(input.session.estimated_minutes * 60);
+  return {
+    format: DRAFT_FORMAT,
+    ownerUserId: input.ownerUserId,
+    key: input.session.id,
+    state: 'open',
+    rejectReason: null,
+    fromHealthPlan: input.fromHealthPlan,
+    editing: false,
+    logId: input.newId(),
+    baseRevision: null,
+    serverRevision: null,
+    plannedSessionId: input.session.id,
+    plannedDate: input.session.original_date ?? input.session.scheduled_on,
+    kind: 'endurance',
+    nameDe: input.session.name_de,
+    isIntroWeek: input.session.is_intro_week,
+    isDeload: input.session.is_deload,
+    performedOn: input.performedOn,
+    startedAt: input.now,
+    sessionRpe: null,
+    notes: '',
+    exercises: [],
+    cardio: {
+      modality: input.session.endurance_modality ?? 'run',
+      hours: String(hours),
+      minutes: String(minutes),
+      distanceKm: '',
+      elevationM: '',
+    },
+    updatedAt: input.now,
+  };
+}
+
+/** Gespeicherter Ausdauer-Eintrag → Eingabe-Text. */
+export function draftCardioFromRow(row: {
+  modality: EnduranceModality;
+  duration_s: number;
+  distance_m: number | null;
+  elevation_m: number | null;
+}): DraftCardio {
+  const { hours, minutes } = splitDuration(row.duration_s);
+  return {
+    modality: row.modality,
+    hours: String(hours),
+    minutes: String(minutes),
+    distanceKm: row.distance_m === null ? '' : formatDecimal(row.distance_m / 1000),
+    elevationM: row.elevation_m === null ? '' : String(row.elevation_m),
+  };
+}
+
+/** Eingabe-Text → Zahlen für packages/core (leer = null, unlesbar = NaN). */
+export function cardioInputOf(cardio: DraftCardio): CardioInput {
+  return {
+    modality: cardio.modality,
+    hours: parseDecimal(cardio.hours),
+    minutes: parseDecimal(cardio.minutes),
+    distanceKm: parseDecimal(cardio.distanceKm),
+    elevationM: parseDecimal(cardio.elevationM),
+  };
+}
+
+/** Ausdauer-Teil des Entwurfs geprüft (cardioLogFromInput); null bei Kraft. */
+export function draftCardioResult(draft: WorkoutDraft): CardioInputResult | null {
+  return draft.kind === 'endurance' && draft.cardio
+    ? cardioLogFromInput(cardioInputOf(draft.cardio))
+    : null;
+}
+
+export function setCardioFields(
+  draft: WorkoutDraft,
+  patch: Partial<DraftCardio>,
+  now: string,
+): WorkoutDraft {
+  if (!draft.cardio) return draft;
+  return { ...draft, cardio: { ...draft.cardio, ...patch }, updatedAt: now };
+}
+
 /**
  * Entwurf zum Ändern eines vorhandenen Eintrags (Ansehen/Ändern): Vorgabe und Zustand bleiben der gespeicherte
  * Schnappschuss (das, was die Person damals gesehen hat); Übungen sind nicht tauschbar.
@@ -276,6 +387,8 @@ export function draftFromLog(
   const log = rows.sessionLogs.find((l) => l.id === logId);
   if (!log || !log.planned_session_id) return null;
   const session = rows.plannedSessions.find((s) => s.id === log.planned_session_id);
+  const cardioRow =
+    log.kind === 'endurance' ? rows.cardioLogs.find((c) => c.session_log_id === log.id) : undefined;
   const exercises = rows.exerciseLogs
     .filter((e) => e.session_log_id === log.id)
     .sort((a, b) => a.order_no - b.order_no)
@@ -374,6 +487,7 @@ export function draftFromLog(
     sessionRpe: log.session_rpe,
     notes: log.notes ?? '',
     exercises,
+    cardio: cardioRow ? draftCardioFromRow(cardioRow) : null,
     updatedAt: meta.now,
   };
 }
@@ -599,7 +713,10 @@ export function draftToPayload(
     source: 'manual',
     client_updated_at: options.now,
     exercises,
-    cardio: null,
+    cardio: (() => {
+      const result = draftCardioResult(draft);
+      return result?.ok ? result.cardio : null;
+    })(),
   };
 }
 

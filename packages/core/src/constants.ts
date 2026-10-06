@@ -775,6 +775,20 @@ export const CARDIO_LOG_LIMITS = {
 export const CARDIO_PLAUSIBILITY_KMH = { walk: 10, run: 25, bike: 70, swim: 8 } as const;
 
 /**
+ * Gesprächstest zur Anstrengung 0–10 eines Ausdauer-Eintrags (Erklärung beim Eintragen): bis `fullSentencesMax`
+ * „in ganzen Sätzen unterhalten“ (passt zu ENDURANCE_EFFORT.easyMax = 4), bis `shortSentencesMax` „nur kurze Sätze“,
+ * bis `fewWordsMax` „nur einzelne Wörter“, darüber „Sprechen kaum möglich“; 0 = Ruhe.
+ * Quellen: Foster C et al. (2008), J Cardiopulm Rehabil Prev 28(1):24–30 (Talk-Test); Reed JL, Pipe AL (2014),
+ * „The talk test: a useful tool for prescribing and monitoring exercise intensity“, Curr Opin Cardiol 29(5):475–480;
+ * Borg GA (1982) (CR10). Grenzen der Stufen: PRODUKTENTSCHEIDUNG.
+ */
+export const TALK_TEST_BANDS = {
+  fullSentencesMax: 4,
+  shortSentencesMax: 6,
+  fewWordsMax: 8,
+} as const;
+
+/**
  * Kalibrierung ohne RPE-Angabe: RPE 10 annehmen („keine Reserve“ = vorsichtigste Schätzung des Arbeitsgewichts).
  * Quelle: PRODUKTENTSCHEIDUNG.
  */

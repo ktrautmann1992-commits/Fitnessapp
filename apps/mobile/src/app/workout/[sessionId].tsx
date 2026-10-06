@@ -1,11 +1,17 @@
 import {
   adjustReps,
   adjustWeight,
+  cardioSpeed,
+  cardioDurationS,
   codePointLength,
+  ENDURANCE_MODALITIES,
+  type EnduranceModality,
   isPlausibleTargetWeight,
   isValidSetWeight,
   needsWeightConfirmation as needsStartWeightConfirmation,
+  restAfterCheckedSet,
   SESSION_LOG_LIMITS,
+  talkTestLevel,
 } from '@fitnessapp/core';
 import { Redirect, useLocalSearchParams, useRouter, type Href } from 'expo-router';
 import { useEffect, useMemo, useState } from 'react';
@@ -17,6 +23,7 @@ import {
   Body,
   Button,
   Card,
+  ChoiceList,
   FieldError,
   Heading,
   LoadingState,
@@ -24,19 +31,30 @@ import {
   OptionButton,
   TextField,
 } from '@/components/ui';
-import { EffortSlider, ReserveChoices, SetDoneButton, Stepper } from '@/components/workout';
+import {
+  EffortSlider,
+  ReserveChoices,
+  RestAnnouncer,
+  RestTimerBar,
+  SetDoneButton,
+  Stepper,
+} from '@/components/workout';
 import { newId } from '@/data/create-backend';
 import { logForSession } from '@/data/log-rows';
 import { activePlan } from '@/data/training-plan';
 import {
   addSet,
+  cardioInputOf,
   chooseAlternative,
   confirmWeight,
   currentTarget,
+  draftCardioResult,
+  type DraftCardio,
   draftFromLog,
   type DraftExercise,
   needsWeightConfirmation,
   replacePlanned,
+  setCardioFields,
   setSessionFields,
   setSkipped,
   updateSet,
@@ -45,6 +63,7 @@ import {
 } from '@/data/workout-draft';
 import {
   alternativeTarget,
+  newEnduranceDraft,
   newWorkoutDraft,
   replannedTarget,
   startKind,
@@ -53,16 +72,26 @@ import {
 import { t } from '@/i18n';
 import { errorText } from '@/lib/error-text';
 import { formatDecimal, formatKg, parseDecimal, todayIso } from '@/lib/format';
-import { targetNotes, targetText, weightText, perPieceText } from '@/lib/workout-format';
+import { useKeepAwakeSetting, useScreenAwake } from '@/lib/keep-awake';
+import { useRestTimer } from '@/lib/use-rest-timer';
+import {
+  cardioSpeedTexts,
+  targetNotes,
+  targetText,
+  weightText,
+  perPieceText,
+} from '@/lib/workout-format';
 import { useApp } from '@/state/app-state';
 import { resolveEntryRoute } from '@/state/flow';
 import { useThemeColors } from '@/lib/theme';
 
 /**
- * Trainingsmodus (docs/PLAN-PHASE-4.md 6.1 Punkt 2, Etappe C1 – Kraft): Satz für Satz Gewicht und Wiederholungen,
- * abhaken, „nicht gemacht“ (ohne Grund, S3), „Alternative durchgeführt“, eigenes Startgewicht, Abschluss mit
- * Belastung 0–10 und Notiz. Jeder Tipp landet sofort im geschützten Entwurf (4.2). Vorgaben, Zustände, Warnungen
- * und Status kommen aus packages/core.
+ * Trainingsmodus (docs/PLAN-PHASE-4.md 6.1 Punkte 2 und 3): Kraft (Etappe C1) Satz für Satz Gewicht und
+ * Wiederholungen, abhaken, „nicht gemacht“ (ohne Grund, S3), „Alternative durchgeführt“, eigenes Startgewicht,
+ * Pausentimer-Leiste (C2); Ausdauer (C2) Art, Dauer, Distanz, Höhenmeter mit Pace bzw. km/h live und Anstrengung
+ * mit Gesprächstest. Abschluss mit Belastung 0–10 und Notiz. Jeder Tipp landet sofort im geschützten Entwurf (4.2);
+ * der Bildschirm bleibt an (6.2, abschaltbar). Vorgaben, Zustände, Warnungen, Pausen und Pace kommen aus
+ * packages/core.
  */
 export default function WorkoutScreen() {
   const params = useLocalSearchParams<{ sessionId: string; edit?: string }>();
@@ -82,6 +111,8 @@ export default function WorkoutScreen() {
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState<string>();
   const [discardDialog, setDiscardDialog] = useState(false);
+  const rest = useRestTimer();
+  const keepAwake = useKeepAwakeSetting();
 
   const { ensureLibrary, library } = app;
   useEffect(() => {
@@ -115,15 +146,23 @@ export default function WorkoutScreen() {
           })
         : null;
     }
-    if (!view) return null;
-    return newWorkoutDraft(rows, view, {
+    const meta = {
       ownerUserId: app.session.userId,
       today,
       now: new Date().toISOString(),
       newId,
-    });
+    };
+    // Ausdauer braucht keine Übungs-Bibliothek (C2) – nur heute bzw. „Heute nachholen“ (startKind).
+    const planned = activePlan(rows)?.sessions.find((x) => x.id === sessionId);
+    if (planned?.kind === 'endurance') {
+      return startKind(rows, planned, today) ? newEnduranceDraft(rows, sessionId, meta) : null;
+    }
+    if (!view) return null;
+    return newWorkoutDraft(rows, view, meta);
   }, [app.session, editRequested, rows, sessionId, stored, today, view]);
   const draft = localDraft ?? initialDraft;
+  // Bildschirm an, solange der Trainingsmodus offen ist (6.2) – abschaltbar in den Einstellungen.
+  useScreenAwake(draft !== null && keepAwake.loaded && keepAwake.enabled);
 
   if (app.status.kind === 'loading') {
     return (
@@ -176,6 +215,38 @@ export default function WorkoutScreen() {
     app.saveDraft(next).catch(() => setError(t.workout.draftSaveFailed));
   }
 
+  const isEndurance = current.kind === 'endurance';
+  const cardioResult = draftCardioResult(current);
+
+  /** Satz ändern; beim Abhaken startet die Pause aus packages/core (Supersätze beachtet, 5.5). */
+  function changeSet(
+    index: number,
+    setIndex: number,
+    patch: Partial<DraftExercise['sets'][number]>,
+  ) {
+    const before = current.exercises[index]?.sets[setIndex];
+    const next = updateSet(current, index, setIndex, patch, now());
+    update(next);
+    // Beim nachträglichen Ändern eines gespeicherten Trainings keine Pause.
+    if (patch.done === true && before && !before.done && !current.editing) {
+      const restS = restAfterCheckedSet(
+        next.exercises.map((e) => ({
+          order_no: e.orderNo,
+          rest_s: e.dosage.rest_s,
+          superset_group: e.dosage.superset_group,
+          setCount: e.sets.length,
+          skipped: e.skipped,
+        })),
+        index,
+        setIndex,
+      );
+      if (restS > 0) rest.start(restS);
+      else rest.stop();
+    } else if (patch.done === false) {
+      rest.stop();
+    }
+  }
+
   const finishedCount = current.exercises.filter(
     (e) => e.skipped || e.sets.every((s) => s.done),
   ).length;
@@ -188,6 +259,10 @@ export default function WorkoutScreen() {
   const canSwitch = !current.editing && view !== null;
 
   async function save() {
+    if (cardioResult && !cardioResult.ok) {
+      setError(t.workout.cardio.invalid);
+      return;
+    }
     if (current.exercises.some(needsWeightConfirmation)) {
       setError(t.workout.confirmNeeded);
       return;
@@ -205,6 +280,7 @@ export default function WorkoutScreen() {
         return;
       }
       setLocalDraft(null);
+      rest.stop();
       goToday();
     } catch (caught) {
       setError(errorText(caught));
@@ -253,6 +329,16 @@ export default function WorkoutScreen() {
       testID="workout"
       footer={
         <View style={styles.footer}>
+          {/* Dauerhafte Live-Region (Wächter C2 S1): nur ihr Text ändert sich beim Pausenende. */}
+          {isEndurance ? null : <RestAnnouncer text={rest.over ? t.workout.rest.over : ''} />}
+          {rest.active && !isEndurance ? (
+            <RestTimerBar
+              remaining={rest.remaining}
+              over={rest.over}
+              onAdjust={rest.adjust}
+              onStop={rest.stop}
+            />
+          ) : null}
           <FieldError message={error} testID="workout-error" />
           <Button
             label={current.editing ? t.workout.saveChanges : t.workout.save}
@@ -269,7 +355,7 @@ export default function WorkoutScreen() {
         </View>
       }
     >
-      <Body muted>{progressText}</Body>
+      {isEndurance ? null : <Body muted>{progressText}</Body>}
       {active?.plan.medical_notice ? <MedicalNotice /> : null}
       {Platform.OS === 'web' ? (
         <Notice tone="info" testID="workout-tab-hint">
@@ -288,6 +374,15 @@ export default function WorkoutScreen() {
       ) : null}
       {!canSwitch && !current.editing && library.kind === 'missing' ? (
         <Notice tone="info">{t.workout.alternativesLocked}</Notice>
+      ) : null}
+
+      {isEndurance && current.cardio ? (
+        <EnduranceCard
+          cardio={current.cardio}
+          plannedMinutes={session?.estimated_minutes ?? null}
+          errors={cardioResult && !cardioResult.ok ? cardioResult.errors : {}}
+          onChange={(patch) => update(setCardioFields(current, patch, now()))}
+        />
       ) : null}
 
       {current.exercises.map((exercise, index) => (
@@ -315,7 +410,7 @@ export default function WorkoutScreen() {
             setAlternativesFor(null);
           }}
           onSkip={(skipped) => update(setSkipped(current, index, skipped, now()))}
-          onSet={(setIndex, patch) => update(updateSet(current, index, setIndex, patch, now()))}
+          onSet={(setIndex, patch) => changeSet(index, setIndex, patch)}
           onAddSet={() =>
             update(addSet(current, index, SESSION_LOG_LIMITS.setsPerExercise.max, now()))
           }
@@ -348,12 +443,18 @@ export default function WorkoutScreen() {
 
       <Card>
         <Heading level={2}>{t.workout.finishTitle}</Heading>
+        {isEndurance ? <Body muted>{t.workout.cardio.talkTestIntro}</Body> : null}
         <EffortSlider
-          label={t.workout.effortLabel}
+          label={isEndurance ? t.workout.cardio.effortLabel : t.workout.effortLabel}
           value={current.sessionRpe}
           onChange={(value) => update(setSessionFields(current, { sessionRpe: value }, now()))}
           testID="workout-effort"
         />
+        {isEndurance && current.sessionRpe !== null ? (
+          <Body testID="workout-talk-test">
+            {t.workout.cardio.talkTest[talkTestLevel(current.sessionRpe)]}
+          </Body>
+        ) : null}
         {current.sessionRpe !== null ? (
           <Button
             label={t.workout.effortSkip}
@@ -660,6 +761,117 @@ function ExerciseCard({
   );
 }
 
+/**
+ * Ausdauer-Eintrag (6.1 Punkt 3): tatsächliche Art, Dauer (Std/Min, Pflicht), Distanz in km mit Komma, Höhenmeter;
+ * Pace bzw. km/h erscheint live (packages/core cardioSpeed), zu schnell → nur „Bitte prüfen“.
+ */
+function EnduranceCard({
+  cardio,
+  plannedMinutes,
+  errors,
+  onChange,
+}: {
+  cardio: DraftCardio;
+  plannedMinutes: number | null;
+  errors: Partial<
+    Record<'duration' | 'distance' | 'elevation', keyof typeof t.workout.cardio.errors>
+  >;
+  onChange: (patch: Partial<DraftCardio>) => void;
+}) {
+  const input = cardioInputOf(cardio);
+  const durationS = cardioDurationS(input);
+  const distanceM =
+    input.distanceKm !== null && Number.isFinite(input.distanceKm) && input.distanceKm > 0
+      ? Math.round(input.distanceKm * 1000)
+      : null;
+  const speed = errors.duration ? null : cardioSpeed(cardio.modality, durationS, distanceM);
+  const durationError = errors.duration ? t.workout.cardio.errors[errors.duration] : undefined;
+  return (
+    <Card>
+      <View testID="workout-cardio" style={styles.exercise}>
+        <Heading level={2}>{t.workout.cardio.title}</Heading>
+        <Body muted>{t.workout.cardio.intro}</Body>
+        {plannedMinutes !== null ? (
+          <Body muted>{t.workout.cardio.planned(plannedMinutes)}</Body>
+        ) : null}
+        <ChoiceList<EnduranceModality>
+          label={t.workout.cardio.modality}
+          options={ENDURANCE_MODALITIES.map((value) => ({
+            value,
+            label: t.workout.cardio.modalities[value],
+          }))}
+          value={cardio.modality}
+          onChange={(modality) => onChange({ modality })}
+          horizontal
+        />
+        <Body style={styles.setLabel}>{t.workout.cardio.duration}</Body>
+        <View style={styles.steppers}>
+          <TextField
+            label={t.workout.cardio.hours}
+            value={cardio.hours}
+            onChangeText={(hours) => onChange({ hours })}
+            keyboardType="number-pad"
+            maxLength={2}
+            style={styles.durationField}
+            describedBy={{ id: 'workout-cardio-duration-error', text: durationError }}
+            testID="workout-cardio-hours"
+          />
+          <TextField
+            label={t.workout.cardio.minutes}
+            value={cardio.minutes}
+            onChangeText={(minutes) => onChange({ minutes })}
+            keyboardType="number-pad"
+            maxLength={3}
+            style={styles.durationField}
+            describedBy={{ id: 'workout-cardio-duration-error', text: durationError }}
+            testID="workout-cardio-minutes"
+          />
+        </View>
+        <FieldError
+          message={durationError}
+          testID="workout-cardio-duration-error"
+          nativeID="workout-cardio-duration-error"
+        />
+        <TextField
+          label={t.workout.cardio.distance}
+          hint={t.workout.cardio.distanceHint}
+          value={cardio.distanceKm}
+          onChangeText={(distanceKm) => onChange({ distanceKm })}
+          keyboardType="decimal-pad"
+          maxLength={7}
+          error={errors.distance ? t.workout.cardio.errors[errors.distance] : undefined}
+          testID="workout-cardio-distance"
+        />
+        <View accessibilityLiveRegion="polite" aria-live="polite" testID="workout-cardio-speed">
+          {speed ? (
+            cardioSpeedTexts(speed).map((line) => (
+              <Body key={line.text} style={styles.setLabel} accessibilityLabel={line.a11y}>
+                {line.text}
+              </Body>
+            ))
+          ) : (
+            <Body muted>{t.workout.cardio.noDistance}</Body>
+          )}
+        </View>
+        {speed?.check ? (
+          <Notice tone="warning" testID="workout-cardio-check">
+            {t.workout.cardio.checkSpeed}
+          </Notice>
+        ) : null}
+        <TextField
+          label={t.workout.cardio.elevation}
+          value={cardio.elevationM}
+          onChangeText={(elevationM) => onChange({ elevationM })}
+          keyboardType="number-pad"
+          maxLength={5}
+          error={errors.elevation ? t.workout.cardio.errors[errors.elevation] : undefined}
+          testID="workout-cardio-elevation"
+        />
+      </View>
+    </Card>
+  );
+}
+
 /** Gewicht direkt eingeben (statt vieler „+“-Tipps, K6) – gilt für den ersten offenen und alle folgenden Sätze. */
 function WeightInput({ index, onApply }: { index: number; onApply: (kg: number) => void }) {
   const [open, setOpen] = useState(false);
@@ -713,4 +925,5 @@ const styles = StyleSheet.create({
   steppers: { flexDirection: 'row', flexWrap: 'wrap', gap: 12 },
   actions: { gap: 8 },
   alternatives: { gap: 8 },
+  durationField: { flex: 1, minWidth: 120 },
 });

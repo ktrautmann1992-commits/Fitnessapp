@@ -2,7 +2,9 @@ import { describe, expect, it } from 'vitest';
 
 import type { DraftTarget } from '@/data/workout-draft';
 
-import { hintText, targetNotes, targetText } from './workout-format';
+import { cardioSpeed } from '@fitnessapp/core';
+
+import { cardioSpeedTexts, hintText, restTexts, targetNotes, targetText } from './workout-format';
 
 function target(overrides: Partial<DraftTarget> = {}): DraftTarget {
   return {
@@ -64,5 +66,32 @@ describe('workout-format', () => {
     );
     expect(hintText({ hint: 'no_heavier_weight', harderVariantName: null })).toMatch(/schwerere/);
     expect(hintText({ hint: null, harderVariantName: null })).toBeNull();
+  });
+});
+
+describe('Ausdauer und Pausentimer (Etappe C2)', () => {
+  it('Laufen: Pace je km und km/h mit Komma; Bildschirmleser mit ausgeschriebenen Einheiten', () => {
+    const speed = cardioSpeed('run', 1980, 6000);
+    if (!speed) throw new Error('keine Anzeige');
+    expect(cardioSpeedTexts(speed)).toEqual([
+      { text: 'Pace: 5:30 min/km', a11y: 'Pace: 5 Minuten 30 Sekunden pro Kilometer' },
+      { text: 'Geschwindigkeit: 10,9 km/h', a11y: 'Geschwindigkeit: 10,9 Kilometer pro Stunde' },
+    ]);
+  });
+
+  it('Rad nur km/h, Schwimmen Pace je 100 m', () => {
+    const bike = cardioSpeed('bike', 3600, 25_300);
+    const swim = cardioSpeed('swim', 1500, 1000);
+    if (!bike || !swim) throw new Error('keine Anzeige');
+    expect(cardioSpeedTexts(bike).map((l) => l.text)).toEqual(['Geschwindigkeit: 25,3 km/h']);
+    expect(cardioSpeedTexts(swim)).toEqual([
+      { text: 'Pace: 2:30 min/100 m', a11y: 'Pace: 2 Minuten 30 Sekunden pro 100 Meter' },
+    ]);
+  });
+
+  it('Restzeit der Pause', () => {
+    expect(restTexts(90)).toEqual({ text: '1:30', a11y: 'Pause, noch 1 Minute 30 Sekunden' });
+    expect(restTexts(45)).toEqual({ text: '0:45', a11y: 'Pause, noch 45 Sekunden' });
+    expect(restTexts(125).a11y).toBe('Pause, noch 2 Minuten 5 Sekunden');
   });
 });

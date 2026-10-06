@@ -26,6 +26,7 @@ import type { ConsentRow } from '@/data/types';
 import { t } from '@/i18n';
 import { createPlanErrorText, errorText } from '@/lib/error-text';
 import { formatDateDe, formatTimestampDe } from '@/lib/format';
+import { useKeepAwakeSetting } from '@/lib/keep-awake';
 import { planTitleText } from '@/lib/plan-title';
 import { useApp } from '@/state/app-state';
 import { healthConsentStatus, lastMeasurementDate } from '@/state/flow';
@@ -61,6 +62,7 @@ export default function SettingsScreen() {
   const [busy, setBusy] = useState(false);
   const [dialogError, setDialogError] = useState<string>();
   const [message, setMessage] = useState<string>();
+  const keepAwake = useKeepAwakeSetting();
   const [reminderEnabled, setReminderEnabled] = useState(app.rows?.reminder?.enabled ?? true);
   const [interval, setIntervalText] = useState(
     String(app.rows?.reminder?.interval_days ?? MEASUREMENT_REMINDER_INTERVAL_DAYS.default),
@@ -307,6 +309,17 @@ export default function SettingsScreen() {
         </Card>
       ))}
       <Body muted>{t.settings.baseConsentNote}</Body>
+
+      <Heading level={2}>{t.settings.screen}</Heading>
+      <Card>
+        <Checkbox
+          label={t.settings.keepAwake}
+          checked={keepAwake.enabled}
+          onChange={(value) => void keepAwake.setEnabled(value).catch(() => undefined)}
+          testID="settings-keep-awake"
+        />
+        <Body muted>{t.settings.keepAwakeHint}</Body>
+      </Card>
 
       <Heading level={2}>{t.settings.reminder}</Heading>
       <Card>

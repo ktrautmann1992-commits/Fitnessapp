@@ -1170,7 +1170,7 @@ Ausdauer + Pausentimer“). **C1 ist umgesetzt** (Pull Request folgt): die gesam
 Einträge plus der Trainingsmodus für Kraft. **C2** bringt Ausdauer-Eintrag (6.1 Punkt 3, Pace/km/h live,
 Gesprächstest), Pausentimer-Leiste (5.5, Vibration `expo-haptics`, Bildschirmleser-Ansage), Bildschirm-an
 (`expo-keep-awake`/Wake-Lock, Schalter in den Einstellungen) und die E2E-Abläufe „Ausdauer mit Pace“. Bis dahin zeigt
-„Heute“ an Ausdauer-Tagen „Ausdauer eintragen kommt mit dem nächsten Update.“ – das Datenmodell (`cardio`, Status
+„Heute“ an Ausdauer-Tagen „Ausdauer eintragen kommt mit dem nächsten Update.“ (in C2 ersetzt) – das Datenmodell (`cardio`, Status
 `completed` für Ausdauer) ist in C1 schon durchgängig vorhanden.
 
 Umgesetzt in C1:
@@ -1297,6 +1297,68 @@ Supabase (W13, D).
   Training; erneutes Speichern → Konflikt, kein Verlust).
 - **N3 (kann):** Test für K9 mit einem sessionStorage, der beim Schreiben wirft.
 - **N4 (kann):** „jwt“ im Fehlertext gilt pauschal als vorübergehend – enger auf Fehlercodes fassen.
+
+**C2 umgesetzt (06.10.2026, Pull Request folgt):** Ausdauer-Eintrag, Pausentimer, Bildschirm-an und N1–N4.
+
+- **Core:** `log/cardio.ts` ergänzt um `cardioSpeedKind()`/`cardioSpeed()` (Laufen/Gehen Pace je km + km/h, Rad km/h,
+  Schwimmen Pace je 100 m; zu schnell → nur Warnung), `splitDuration()`, `cardioDurationS()`, `cardioLogFromInput()`
+  (Dauer Pflicht 1 min–12 h, Distanz 0–500 km mit 0 = ohne Distanz, Höhenmeter 0–10 000 – Grenzen = `CARDIO_LOG_LIMITS`
+  = Schema = Datenbank; Fehler je Feld), `talkTestLevel()` mit neuer Konstante `TALK_TEST_BANDS` (Quellen Foster 2008,
+  Reed & Pipe 2014; „ganze Sätze“ bis `ENDURANCE_EFFORT.easyMax`). `log/rest-timer.ts` ergänzt um
+  `nextSetExercise()`/`restAfterCheckedSet()` (Reihenfolge der Sätze im Trainingsmodus: Supersätze in Runden, „nicht
+  gemacht“ zählt nicht, nach dem letzten Satz keine Pause). Tests mit Grenzfällen.
+- **App – Ausdauer:** „Heute“ bietet an Ausdauer-Tagen „Ausdauer eintragen“ bzw. „Ausdauer heute nachholen“
+  (`startKind()` gilt jetzt für beide Arten, ohne Übungs-Bibliothek); der Hinweis „kommt mit dem nächsten Update“ ist
+  entfernt. Trainingsmodus-Ansicht Ausdauer: tatsächliche Art, Dauer (Std/Min, vorbelegt aus der geplanten Einheit),
+  Distanz in km mit Komma, Höhenmeter, Pace bzw. km/h live (Bildschirmleser mit ausgeschriebenen Einheiten,
+  `aria-live`), „Bitte prüfen“ bei unplausibler Geschwindigkeit, Anstrengung 0–10 mit Gesprächstest-Erklärung
+  (`session_rpe`). Der Entwurf speichert die Eingabe als Text (`WorkoutDraft.cardio`, verschlüsselt wie C1; Entwürfe
+  aus C1 ohne das Feld bleiben lesbar); gesendet wird über `save_session_log` mit `cardio`-Teil, im Testmodus über
+  `checkSessionLog()`. Ansehen/Ändern liest den gespeicherten Ausdauer-Eintrag.
+- **App – Pausentimer:** Leiste unten (`RestTimerBar`): Restzeit groß, −15 s / +15 s / Überspringen; startet beim
+  Abhaken eines Satzes mit der Pause aus `restAfterCheckedSet()`, endet beim Zurücknehmen des Hakens; beim Ändern
+  eines gespeicherten Trainings keine Pause. Ende: Vibration über `expo-haptics` (nur App) und
+  `announceForAccessibility` (App), sichtbarer Hinweis „Pause vorbei“ mit `aria-live` (Browser). Rechnung nur mit
+  Zeitstempeln (`useRestTimer`).
+- **App – Bildschirm an:** `useScreenAwake()` (expo-keep-awake, im Browser Wake-Lock; nach Tab-Wechsel erneut
+  angefordert) solange der Trainingsmodus offen ist; Schalter „Bildschirm im Training anlassen“ in den Einstellungen
+  (Standard an, gespeichert nur auf dem Gerät unter `fitnessapp.keep-awake.v1`, keine Nutzerdaten).
+- **Pakete:** `expo-haptics ~57.0.3`, `expo-keep-awake ~57.0.2` (SDK 57, `expo install` offline; Lockfile nur um die
+  zwei Einträge ergänzt). Laufen in Expo Go und im EAS-Build.
+- **N1:** `LogQueue` zählt Fehlversuche je Eintrag (`attempts`, `firstFailedAt`, `nextAttemptAt` – gespeichert):
+  `classifyLogError()` unterscheidet `retry` (Netz, Sitzung inkl. 42501 „Nicht angemeldet.“ → „Bitte melde dich erneut
+  an“, 429, Datenbank/Gateway nicht erreichbar – Senden anhalten, nichts zählen) und `transient` (z. B. 42501 „Profil
+  fehlt“, 500, 57014, 40001, unlesbare Antwort – zählen, mit dem nächsten Eintrag weitermachen, Wartezeit 1 min / 5 min
+  / 30 min / 2 h). Nach `LOG_QUEUE_RETRY.maxAttempts` = 5 Versuchen bzw. 24 h ab dem ersten Fehlversuch: als
+  abgelehnter Entwurf gesichert (Grund `not_transferred`, Meldung auf „Heute“), nie verworfen. `close_missed_sessions`
+  läuft auch, wenn nur solche Einträge warten (Ergebnis `blocked`; skipped → completed bleibt erlaubt).
+- **N2:** Nach der Übertragung einer Fassung wird ihr unveränderter Entwurf entfernt (K9-Fall); ein danach geänderter
+  Entwurf bleibt. **N3:** Test mit sessionStorage, der beim Schreiben wirft (online gesendet; offline Meldung, Entwurf
+  bleibt und verschwindet nach der Übertragung). **N4:** „jwt“ im Fehlertext allein gilt nicht mehr als
+  vorübergehend (nur feste Codes bzw. „JWT expired“).
+- **Tests:** Vitest `cardio.test.ts`, `rest-timer.test.ts` (core), `log-queue.test.ts` (N1), `supabase-backend.test.ts`
+  (Einordnung, N1–N4), `workout.test.ts` (Ausdauer im Testmodus), `workout-format.test.ts`; Playwright
+  `e2e/workout.spec.ts` „Ausdauer mit Pace“ und „Pausentimer … Bildschirm-an-Schalter“; Bildschirmfotos
+  `ausdauer-eintrag`, `ausdauer-abschluss`, `training-satz-pause`.
+
+**Wächter-Prüfung C2: freigegeben – eingearbeitet (06.10.2026):**
+
+- **S1:** Pausenende im Browser über eine DAUERHAFT vorhandene, unsichtbare Live-Region (`RestAnnouncer`, nur der
+  Text wird gesetzt); E2E prüft, dass sie vor dem Pausenende leer im DOM steht.
+- **K2:** Wake-Lock: keine zweite Anfrage, solange eine läuft (sonst bliebe eine Sperre unfreigegeben).
+- **K3:** Die Dauer-Fehlermeldung ist den Feldern Stunden und Minuten zugeordnet (Browser `aria-describedby`, App
+  Hinweis des Feldes); E2E prüft die Zuordnung.
+- **K4:** Meldung `not_transferred` bittet um baldiges erneutes Speichern (Einträge nur bis 14 Tage nach dem
+  Training, W2).
+- **K1 (bekannte Grenze):** In der App kommt das Pausenende-Signal (Vibration, Ansage) nicht, solange die App im
+  Hintergrund ist – erst beim Zurückkehren. Vertretbar, weil der Bildschirm im Training an bleibt; eine lokale
+  Benachrichtigung ist ggf. eine spätere Phase.
+- **K5 (bekannte Grenze):** Weil N1 einen hängenden Eintrag überspringt, kann eine später gemachte Einheit vor einer
+  früheren ankommen. Liegen beide am selben Tag, bekommt die frühere `day_taken` und bleibt als Entwurf erhalten –
+  kein Verlust.
+
+Offen für D: Woche, Verlauf, Löschen-UI, Export; Live-Test mit Supabase (W13) inkl. der Prüfpunkte aus S5 sowie
+Pausentimer-Vibration und Bildschirm-an auf echten Geräten (Android/iPhone).
 
 ## Wächter-Prüfung (Runde 1) – wie die Befunde gelöst sind
 

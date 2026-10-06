@@ -77,4 +77,6 @@ export const STORAGE_KEYS = {
   /** Geladene Tagebuch-Einträge (Supabase-Modus, für offline). */
   logCache: 'fitnessapp.log-cache.v1',
   logCacheKey: 'fitnessapp.log-cache-key.v1',
+  /** Geräte-Einstellung „Bildschirm im Training anlassen“ (true/false, keine Nutzerdaten). */
+  keepAwake: 'fitnessapp.keep-awake.v1',
 } as const;

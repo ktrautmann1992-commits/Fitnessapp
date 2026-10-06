@@ -56,3 +56,55 @@ export function restAfterSet(current: RestExercise, next: RestExercise | null): 
   }
   return clampRest(current.rest_s);
 }
+
+/** Eine Übung im Trainingsmodus mit ihren Sätzen (für die Reihenfolge der Sätze). */
+export interface RestSetExercise extends RestExercise {
+  /** Anzahl der Satz-Zeilen. */
+  readonly setCount: number;
+  /** „Nicht gemacht“ – zählt in der Reihenfolge nicht. */
+  readonly skipped: boolean;
+}
+
+/**
+ * Übung des NÄCHSTEN Satzes nach Satz `setIndex` der Übung `index` – Reihenfolge wie im Trainingsmodus: ohne
+ * Supersatz Satz für Satz, dann die nächste Übung; im Supersatz (gleiche `superset_group`) in Runden (A1, A2, A1, …),
+ * nach der letzten Runde die erste Übung nach der Gruppe. null = Training zu Ende.
+ */
+export function nextSetExercise(
+  exercises: readonly RestSetExercise[],
+  index: number,
+  setIndex: number,
+): RestSetExercise | null {
+  const current = exercises[index];
+  if (!current) return null;
+  const active = exercises.filter((e) => !e.skipped);
+  const after = (orderNo: number, exclude: string | null) =>
+    active
+      .filter((e) => e.order_no > orderNo && (exclude === null || e.superset_group !== exclude))
+      .sort((a, b) => a.order_no - b.order_no)[0] ?? null;
+  if (current.superset_group === null) {
+    if (setIndex + 1 < current.setCount) return current;
+    return after(current.order_no, null);
+  }
+  const group = current.superset_group;
+  const members = active
+    .filter((e) => e.superset_group === group)
+    .sort((a, b) => a.order_no - b.order_no);
+  const sameRound = members.find((e) => e.order_no > current.order_no && e.setCount > setIndex);
+  if (sameRound) return sameRound;
+  const nextRound = members.find((e) => e.setCount > setIndex + 1);
+  if (nextRound) return nextRound;
+  const last = Math.max(current.order_no, ...members.map((e) => e.order_no));
+  return after(last, group);
+}
+
+/** Pause nach dem Abhaken eines Satzes (0 = keine Pause: im Supersatz weiter bzw. Training zu Ende). */
+export function restAfterCheckedSet(
+  exercises: readonly RestSetExercise[],
+  index: number,
+  setIndex: number,
+): number {
+  const current = exercises[index];
+  if (!current) return 0;
+  return restAfterSet(current, nextSetExercise(exercises, index, setIndex));
+}

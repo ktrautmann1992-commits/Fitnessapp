@@ -21,14 +21,22 @@ import { cacheableRows } from './write-ops';
 import {
   chooseAlternative,
   currentTarget,
+  draftCardioResult,
   draftFromLog,
   draftToPayload,
   needsWeightConfirmation,
+  setCardioFields,
   setSkipped,
   updateSet,
   type WorkoutDraft,
 } from './workout-draft';
-import { alternativeTarget, newWorkoutDraft, startKind, workoutView } from './workout-session';
+import {
+  alternativeTarget,
+  newEnduranceDraft,
+  newWorkoutDraft,
+  startKind,
+  workoutView,
+} from './workout-session';
 
 /**
  * Trainingsmodus im Testmodus (docs/PLAN-PHASE-4.md Etappe C1): Entwurf aus der angezeigten Einheit, Eintrag nach den
@@ -564,5 +572,121 @@ describe('Testmodus wie die Datenbank (Wächter C1 K1, K2)', () => {
     expect(after.sessionLogs).toHaveLength(2);
     expect(new Set(after.sessionLogs.map((l) => l.id)).size).toBe(2);
     expect(logForSession(after, monday.plannedSessionId)?.id).toBe(mondayLog?.id);
+  });
+});
+
+describe('Ausdauer-Eintrag (Etappe C2)', () => {
+  /** Mo Ausdauer 30 min, Mi + Fr Kraft im Studio. */
+  const person = () =>
+    planPersonRows({
+      slots: [
+        { user_id: USER_ID, slot_no: 1, weekday: 1, kind: 'endurance', minutes: 30 },
+        { user_id: USER_ID, slot_no: 2, weekday: 3, kind: 'strength_gym', minutes: 60 },
+        { user_id: USER_ID, slot_no: 3, weekday: 5, kind: 'strength_gym', minutes: 60 },
+      ],
+    });
+  const meta = { ownerUserId: USER_ID, today: MONDAY, now: NOW, newId: randomUUID };
+
+  it('startbar ohne Bibliothek; Art und Dauer aus der geplanten Einheit vorbelegt', async () => {
+    const s = await setup(person());
+    const session = todaysSession(s.rows);
+    expect(session.kind).toBe('endurance');
+    expect(startKind(s.rows, session, MONDAY)).toBe('today');
+    const draft = newEnduranceDraft(s.rows, session.id, meta);
+    expect(draft).toMatchObject({
+      kind: 'endurance',
+      exercises: [],
+      plannedSessionId: session.id,
+      cardio: {
+        modality: session.endurance_modality,
+        hours: String(Math.floor(session.estimated_minutes / 60)),
+        minutes: String(session.estimated_minutes % 60),
+        distanceKm: '',
+        elevationM: '',
+      },
+    });
+    // Kraft-Einheit liefert keinen Ausdauer-Entwurf.
+    const wednesday = activePlan(s.rows)?.sessions.find((x) => x.kind === 'strength');
+    if (wednesday) expect(newEnduranceDraft(s.rows, wednesday.id, meta)).toBeNull();
+  });
+
+  it('Eintrag über save_session_log mit cardio-Teil (Testmodus: checkSessionLog) → erledigt, Ansehen/Ändern', async () => {
+    const s = await setup(person());
+    const session = todaysSession(s.rows);
+    let draft = newEnduranceDraft(s.rows, session.id, meta);
+    if (!draft) throw new Error('Kein Entwurf');
+    draft = setCardioFields(
+      draft,
+      { modality: 'run', hours: '0', minutes: '33', distanceKm: '6,0', elevationM: '45' },
+      NOW,
+    );
+    draft = { ...draft, sessionRpe: 4 };
+    const payload = payloadOf(draft);
+    expect(sessionLogPayloadSchema.safeParse(payload).success).toBe(true);
+    expect(payload).toMatchObject({
+      kind: 'endurance',
+      status: 'completed',
+      exercises: [],
+      session_rpe: 4,
+      cardio: { modality: 'run', duration_s: 1980, distance_m: 6000, elevation_m: 45 },
+    });
+    expect(await s.backend.submitWorkout(draft, payload)).toEqual({
+      kind: 'saved',
+      orphaned: false,
+    });
+    const { rows } = await s.backend.loadRows();
+    const log = logForSession(rows, session.id);
+    expect(log).toMatchObject({ kind: 'endurance', status: 'completed', session_rpe: 4 });
+    expect(rows.cardioLogs).toEqual([
+      expect.objectContaining({
+        session_log_id: log?.id,
+        modality: 'run',
+        duration_s: 1980,
+        distance_m: 6000,
+        elevation_m: 45,
+      }),
+    ]);
+    expect(rows.plannedSessions.find((x) => x.id === session.id)?.status).toBe('completed');
+    // Entwurf weg; Ändern zeigt die gespeicherten Werte.
+    expect(await s.backend.loadDrafts()).toEqual([]);
+    const edit = log
+      ? draftFromLog(rows, log.id, { ownerUserId: USER_ID, fromHealthPlan: true, now: NOW })
+      : null;
+    expect(edit?.cardio).toEqual({
+      modality: 'run',
+      hours: '0',
+      minutes: '33',
+      distanceKm: '6',
+      elevationM: '45',
+    });
+    expect(edit?.editing).toBe(true);
+  });
+
+  it('ungültige Eingabe → kein cardio-Teil, Zod lehnt den Eintrag ab (nie halb gespeichert)', async () => {
+    const s = await setup(person());
+    const draft = newEnduranceDraft(s.rows, todaysSession(s.rows).id, meta);
+    if (!draft) throw new Error('Kein Entwurf');
+    const broken = setCardioFields(draft, { hours: '', minutes: '', distanceKm: '5,' }, NOW);
+    const result = draftCardioResult(broken);
+    expect(result).toEqual({
+      ok: false,
+      errors: { duration: 'duration_missing', distance: 'distance_invalid' },
+    });
+    const payload = payloadOf(broken);
+    expect(payload.cardio).toBeNull();
+    expect(sessionLogPayloadSchema.safeParse(payload).success).toBe(false);
+    expect(await s.backend.submitWorkout(broken, payload)).toEqual({
+      kind: 'rejected',
+      reason: 'invalid',
+    });
+  });
+
+  it('Entwurf aus C1 (ohne cardio-Feld) bleibt lesbar; Kraft hat keinen cardio-Teil', async () => {
+    const s = await setup();
+    const draft = tickAll(startDraft(s));
+    const legacy = { ...draft } as WorkoutDraft;
+    delete legacy.cardio;
+    expect(draftCardioResult(legacy)).toBeNull();
+    expect(payloadOf(legacy).cardio).toBeNull();
   });
 });

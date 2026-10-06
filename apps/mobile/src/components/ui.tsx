@@ -46,16 +46,20 @@ export function Body({
   muted = false,
   style,
   testID,
+  accessibilityLabel,
 }: {
   children: ReactNode;
   muted?: boolean;
   style?: StyleProp<TextStyle>;
   testID?: string;
+  /** Text für den Bildschirmleser, wenn er vom sichtbaren abweicht (z. B. Einheiten ausgeschrieben). */
+  accessibilityLabel?: string;
 }) {
   const theme = useThemeColors();
   return (
     <Text
       testID={testID}
+      accessibilityLabel={accessibilityLabel}
       style={[styles.body, { color: muted ? theme.textMuted : theme.text }, style]}
     >
       {children}
@@ -63,7 +67,16 @@ export function Body({
   );
 }
 
-export function FieldError({ message, testID }: { message?: string | undefined; testID?: string }) {
+export function FieldError({
+  message,
+  testID,
+  nativeID,
+}: {
+  message?: string | undefined;
+  testID?: string;
+  /** Kennung, über die Eingabefelder die Meldung zuordnen (aria-describedby, describedBy). */
+  nativeID?: string;
+}) {
   const theme = useThemeColors();
   if (!message) {
     return null;
@@ -73,6 +86,7 @@ export function FieldError({ message, testID }: { message?: string | undefined; 
       accessibilityRole="alert"
       accessibilityLiveRegion="polite"
       testID={testID}
+      nativeID={nativeID}
       style={[styles.error, { color: theme.danger }]}
     >
       {message}
@@ -177,6 +191,7 @@ export function TextField({
   onSubmitEditing,
   inputRef,
   multiline = false,
+  describedBy,
 }: {
   label: string;
   value: string;
@@ -192,8 +207,15 @@ export function TextField({
   onSubmitEditing?: () => void;
   inputRef?: Ref<TextInput>;
   multiline?: boolean;
+  /**
+   * Fehlermeldung außerhalb des Feldes (z. B. gemeinsam für Stunden und Minuten): Browser über aria-describedby,
+   * App über den Hinweis des Feldes.
+   */
+  describedBy?: { id: string; text: string | undefined };
 }) {
   const theme = useThemeColors();
+  const a11yHint = [hint, describedBy?.text].filter(Boolean).join(' ') || undefined;
+  const invalid = Boolean(error) || Boolean(describedBy?.text);
   return (
     <View style={[styles.field, style]}>
       <Text style={[styles.label, { color: theme.text }]}>{label}</Text>
@@ -201,9 +223,10 @@ export function TextField({
       <TextInput
         ref={inputRef}
         accessibilityLabel={label}
-        accessibilityHint={hint}
+        accessibilityHint={a11yHint}
         accessibilityState={{ disabled: false }}
-        aria-invalid={error ? true : undefined}
+        aria-invalid={invalid ? true : undefined}
+        aria-describedby={describedBy?.text ? describedBy.id : undefined}
         value={value}
         onChangeText={onChangeText}
         placeholder={placeholder}
@@ -221,7 +244,7 @@ export function TextField({
           {
             color: theme.text,
             backgroundColor: theme.surface,
-            borderColor: error ? theme.danger : theme.border,
+            borderColor: invalid ? theme.danger : theme.border,
           },
         ]}
       />

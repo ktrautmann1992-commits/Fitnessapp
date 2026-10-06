@@ -27,6 +27,7 @@ import {
 } from './training-plan';
 import type { UserRows } from './types';
 import {
+  createEnduranceDraft,
   createWorkoutDraft,
   type DraftExercise,
   type DraftTarget,
@@ -157,7 +158,8 @@ export function trainedTodayOther(rows: UserRows, session: StoredSession, today:
 }
 
 export function startKind(rows: UserRows, session: StoredSession, today: string): StartKind {
-  if (session.status !== 'planned' || session.kind !== 'strength') return null;
+  // Kraft und Ausdauer (Etappe C2) – gleiche Regeln (heute bzw. nachholen, nie stapeln).
+  if (session.status !== 'planned') return null;
   if (trainedTodayOther(rows, session, today)) return null;
   if (session.scheduled_on === today) return 'today';
   return canCatchUp(allSessions(rows), session.id, today) ? 'catch_up' : null;
@@ -180,6 +182,28 @@ export function newWorkoutDraft(
     items: view.items,
     plannedExerciseIds,
     fromHealthPlan: view.active.plan.uses_health_data,
+    performedOn: meta.today,
+    now: meta.now,
+    newId: meta.newId,
+  });
+}
+
+/**
+ * Neuer Ausdauer-Entwurf (Etappe C2) – braucht keine Übungs-Bibliothek (keine Übungen, nichts zu prüfen).
+ * null = Einheit gehört nicht zum aktiven Plan oder ist keine Ausdauer-Einheit.
+ */
+export function newEnduranceDraft(
+  rows: UserRows,
+  sessionId: string,
+  meta: { ownerUserId: string; today: string; now: string; newId: () => string },
+): WorkoutDraft | null {
+  const active = activePlan(rows);
+  const session = active?.sessions.find((s) => s.id === sessionId);
+  if (!active || !session || session.kind !== 'endurance') return null;
+  return createEnduranceDraft({
+    ownerUserId: meta.ownerUserId,
+    session,
+    fromHealthPlan: active.plan.uses_health_data,
     performedOn: meta.today,
     now: meta.now,
     newId: meta.newId,
