@@ -3,6 +3,7 @@ import {
   blockWeekFor,
   followUpBlockState,
   nextPlannedSession,
+  planInfoNotices,
   prepareSessionForDisplay,
   sessionLocation,
   sessionOn,
@@ -574,6 +575,15 @@ export default function TodayScreen() {
           </View>
         ) : null}
       </Card>
+      {planInfoNotices(plan, lib).map((notice) => (
+        <Notice
+          key={notice}
+          title={t.plan.infoNotices[notice].title}
+          testID={`plan-info-${notice}`}
+        >
+          <Body>{t.plan.infoNotices[notice].text}</Body>
+        </Notice>
+      ))}
       {/* Plan als PDF (docs/PLAN-PDF-EXPORT.md P3): Hinweis bei Gesundheitsbezug zeigt die Druckansicht. */}
       <Button
         label={t.printView.button}

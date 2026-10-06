@@ -1,7 +1,7 @@
 # Plan: Training nur mit dem eigenen Körpergewicht
 
-Stand: 05.10.2026 · Status: **vom Wächter mit Auflagen freigegeben, Auflagen eingearbeitet** (Abschnitt 10) · K1 und
-K2+K3 umgesetzt (siehe „Umsetzungsstand“), K4 offen
+Stand: 06.10.2026 · Status: **vom Wächter mit Auflagen freigegeben, Auflagen eingearbeitet** (Abschnitt 10) · **K1–K4
+umgesetzt** (siehe „Umsetzungsstand“); offen bleiben Fachprüfung, Freigabe (`published`) und Einspielen
 
 ## 1. Ziel in einfachen Worten
 
@@ -301,3 +301,24 @@ Ergebnis: **mit Auflagen freigegeben**, alle Auflagen eingearbeitet.
   aus den K1/K2-Übungen). Studio und Zuhause voll ausgestattet: unverändert. Abweichungen nur bei fehlenden Geräten
   bzw. Schwangerschaft durch neue Übungen (Snapshot). Profile ohne Kraft-Geräte bekommen in der App jetzt die
   Körpergewicht-Vorlagen.
+
+**Etappe K4 – umgesetzt (06.10.2026, noch nicht committet):**
+
+- **Entscheidung in `packages/core`:** `planInfoNotices(plan, library)` (`plan/view.ts`) liefert `bodyweight_limits`
+  allein über das Vorlagen-Kennzeichen (`isBodyweightTemplateId()` – `isBodyweightTemplate()` bzw. ID-Endung
+  `-koerpergewicht`, wenn die Bibliothek nicht geladen oder die Vorlage archiviert ist). Reiner Ausdauer-Plan und
+  gemischte Wochen (Studio-Vorlage) → kein Hinweis. Kein neuer Engine-Hinweis-Code, keine Migration, Engine-Version
+  bleibt 3.
+- **App-Text** (`apps/mobile/src/i18n/de.ts`, `plan.infoNotices.bodyweight_limits`), angezeigt auf „Fertig“ und
+  „Heute“ als Hinweis „Training ohne Geräte“: Plan ohne Geräte hält fit und baut Kraft auf; ehrlich: der Trainingsreiz
+  ist ohne Geräte begrenzt, vor allem für Rücken und Beinrückseite; mit Kurzhanteln oder Band lässt sich gezielter
+  steigern; Geräte unter Einstellungen → Angaben ändern eintragen → die App bietet einen neuen Plan an. Keine
+  Heilversprechen. Die Klimmzugstange wird bewusst nicht als Planwechsel genannt (zählt nicht als Kraft-Gerät, W2).
+- **W9:** Text `location_mismatch` war schon in K2+K3 allgemeiner gefasst – unverändert.
+- **KONZEPT** Abschnitt 4 um „Training nur mit dem eigenen Körpergewicht“ inkl. ehrlichem Satz (A9) ergänzt;
+  **PLAN-PHASE-3 Frage 12** als erledigt markiert.
+- **Tests:** `view.test.ts` (alle Vorlagen im Inhaltsstand, ohne Vorlage, ohne Bibliothek/ID-Endung, erzeugte Pläne
+  ohne Geräte bei 1/2/7 Tagen, mit Kurzhanteln, gemischte Woche); E2E `training-plan.spec.ts` (Zuhause ohne Geräte:
+  Hinweis auf „Fertig“ und „Heute“; Studio: kein Hinweis).
+- **Nicht in K4:** Hinweis in der Druckansicht/PDF – sie zeigt weder die Planbeschreibung noch diesen Hinweis; bei
+  Bedarf eigene kleine Etappe.

@@ -12,6 +12,7 @@ import {
   exerciseMark,
   followUpBlockState,
   nextPlannedSession,
+  planInfoNotices,
   planUpdateOffer,
   prepareSessionForDisplay,
   sessionLocation,
@@ -415,5 +416,84 @@ describe('planUpdateOffer', () => {
     );
     expect(offer.reasons).toEqual(['age_threshold']);
     expect(offer.stricter).toBe(false);
+  });
+});
+
+describe('planInfoNotices (Körpergewicht-Hinweis, docs/PLAN-KOERPERGEWICHT.md K4)', () => {
+  const lib = repoLibrary();
+
+  it('jede Körpergewicht-Vorlage → bodyweight_limits, alle anderen Vorlagen → kein Hinweis', () => {
+    expect(lib.templates.length).toBeGreaterThan(18);
+    for (const template of lib.templates) {
+      const expected = template.id.endsWith('-koerpergewicht') ? ['bodyweight_limits'] : [];
+      expect(planInfoNotices({ template_id: template.id }, lib), template.id).toEqual(expected);
+    }
+  });
+
+  it('reiner Ausdauer-Plan (ohne Vorlage) → kein Hinweis, auch ohne Bibliothek', () => {
+    expect(planInfoNotices({ template_id: null }, lib)).toEqual([]);
+    expect(planInfoNotices({ template_id: null }, null)).toEqual([]);
+  });
+
+  it('Bibliothek nicht geladen bzw. Vorlage archiviert → Entscheidung über die ID-Endung', () => {
+    expect(planInfoNotices({ template_id: 'fitness-einsteiger-2t-koerpergewicht' }, null)).toEqual([
+      'bodyweight_limits',
+    ]);
+    expect(
+      planInfoNotices(
+        { template_id: 'muskelaufbau-fortgeschritten-4t-koerpergewicht' },
+        { templates: [] },
+      ),
+    ).toEqual(['bodyweight_limits']);
+    expect(planInfoNotices({ template_id: 'fitness-einsteiger-3t-studio' }, null)).toEqual([]);
+    expect(planInfoNotices({ template_id: 'fitness-einsteiger-3t-zuhause' }, null)).toEqual([]);
+  });
+
+  it('erzeugter Plan: zu Hause ohne Geräte (1, 2, 7 Tage) → Hinweis; mit Kurzhanteln → keiner', () => {
+    for (const days of [1, 2, 7]) {
+      const noGear = generateTrainingPlan(
+        person({
+          trainingLocation: 'home',
+          sessionsPerWeek: days,
+          minutesPerSession: 45,
+          preferredDays: [1, 2, 3, 4, 5, 6, 7].slice(0, days),
+          homeEquipment: [],
+        }),
+        lib,
+        MONDAY,
+      );
+      expect(noGear.ok).toBe(true);
+      if (noGear.ok) expect(planInfoNotices(noGear.plan, lib)).toEqual(['bodyweight_limits']);
+    }
+    const dumbbells = generateTrainingPlan(
+      person({
+        trainingLocation: 'home',
+        minutesPerSession: 45,
+        homeEquipment: [{ equipmentId: 'dumbbells', weightsKg: [4, 8, 10] }],
+      }),
+      lib,
+      MONDAY,
+    );
+    expect(dumbbells.ok).toBe(true);
+    if (dumbbells.ok) expect(planInfoNotices(dumbbells.plan, lib)).toEqual([]);
+  });
+
+  it('gemischte Woche Studio + Zuhause ohne Geräte → Studio-Vorlage, kein Körpergewicht-Hinweis', () => {
+    const result = generateTrainingPlan(
+      person({
+        homeEquipment: [],
+        schedule: {
+          mode: 'fixed',
+          slots: [
+            { weekday: 1, kind: 'strength_gym', minutes: 45 },
+            { weekday: 4, kind: 'strength_home', minutes: 45 },
+          ],
+        },
+      }),
+      lib,
+      MONDAY,
+    );
+    expect(result.ok).toBe(true);
+    if (result.ok) expect(planInfoNotices(result.plan, lib)).toEqual([]);
   });
 });
