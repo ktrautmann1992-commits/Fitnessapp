@@ -2,7 +2,7 @@
 -- Nutzerdaten. Verhindert, dass das Mindestalter 16 durch Weglassen des Profils umgangen wird.
 begin;
 create extension if not exists pgtap with schema extensions;
-select plan(14);
+select plan(16);
 
 insert into auth.users (id, email) values
   ('11111111-1111-4111-8111-111111111111', 'nutzer-a@example.test');
@@ -10,6 +10,12 @@ insert into auth.users (id, email) values
 -- Doppelte Absicherung prüfen: Einwilligung existiert (vom Admin eingefügt), aber kein Profil.
 insert into public.consents (user_id, consent_type, version, platform)
 values ('11111111-1111-4111-8111-111111111111', 'health_data', 1, 'web');
+-- Freigegebene Übung (für das Startgewicht: Ablehnung NUR wegen des fehlenden Profils).
+insert into public.exercises (id, version, status, name_de, name_en, movement_pattern, primary_muscles, mechanics,
+  load_type, difficulty, description_de, steps_de, tips_de, common_mistakes_de, safety_note_de)
+values ('uebung-a', 1, 'published', 'Übung A', 'Exercise A', 'squat', '{quadriceps}', 'compound', 'weight', 1,
+  'Beschreibung der Übung mit genügend Zeichen.', '{"Erster Schritt der Übung.","Zweiter Schritt der Übung."}',
+  '{"Ein hilfreicher Tipp."}', '{"Ein typischer Fehler."}', 'Gewicht so wählen, dass die Technik sauber bleibt.');
 
 set local role authenticated;
 set local request.jwt.claims = '{"sub":"11111111-1111-4111-8111-111111111111","role":"authenticated"}';
@@ -64,6 +70,15 @@ select throws_ok(
 select throws_ok(
   $$ select public.save_training_plan('{}'::jsonb) $$,
   '42501', 'Profil fehlt.', 'ohne Profil: kein Trainingsplan'
+);
+
+select throws_ok(
+  $$ select public.save_session_log('{}'::jsonb) $$,
+  '42501', 'Profil fehlt.', 'ohne Profil: kein Tagebuch-Eintrag'
+);
+select throws_ok(
+  $$ insert into public.exercise_start_weights (exercise_id, weight_kg) values ('uebung-a', 20) $$,
+  '42501', null, 'ohne Profil: kein Startgewicht'
 );
 
 -- Mit Profil geht es.

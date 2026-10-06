@@ -1,7 +1,7 @@
 -- Konto löschen (delete_my_account): löscht alle Daten des Aufrufers per Kaskade, fremde Daten bleiben.
 begin;
 create extension if not exists pgtap with schema extensions;
-select plan(22);
+select plan(28);
 
 insert into auth.users (id, email) values
   ('11111111-1111-4111-8111-111111111111', 'nutzer-a@example.test'),
@@ -59,6 +59,29 @@ insert into public.planned_sessions (plan_id, user_id, block_no, week_no, templa
   name_de, focus, estimated_minutes, warmup_de, cooldown_de)
 select id, user_id, 1, 1, 1, current_date + 1, 'Ganzkörper', 'full_body', 50, 'A.', 'B.' from public.user_plans;
 
+-- Phase 4: Trainingstagebuch und Startgewichte beider Nutzer.
+insert into public.exercises (id, version, status, name_de, name_en, movement_pattern, primary_muscles, mechanics,
+  load_type, difficulty, description_de, steps_de, tips_de, common_mistakes_de, safety_note_de)
+values ('uebung-a', 1, 'published', 'Übung A', 'Exercise A', 'squat', '{quadriceps}', 'compound', 'weight', 1,
+  'Beschreibung der Übung mit genügend Zeichen.', '{"Erster Schritt der Übung.","Zweiter Schritt der Übung."}',
+  '{"Ein hilfreicher Tipp."}', '{"Ein typischer Fehler."}', 'Gewicht so wählen, dass die Technik sauber bleibt.');
+insert into public.session_logs (user_id, planned_session_id, kind, performed_on, status, name_de, last_write_id,
+  client_updated_at, notes)
+select user_id, id, 'strength', current_date, 'completed', 'Ganzkörper', gen_random_uuid(), now(), 'Notiz'
+from public.planned_sessions;
+insert into public.exercise_logs (session_log_id, user_id, order_no, exercise_id, exercise_name_de, load_type, status)
+select id, user_id, 1, 'uebung-a', 'Übung A', 'weight', 'done' from public.session_logs;
+insert into public.set_logs (exercise_log_id, user_id, set_no, reps, weight_kg, done)
+select id, user_id, 1, 10, 20, true from public.exercise_logs;
+insert into public.session_logs (user_id, kind, performed_on, status, name_de, last_write_id, client_updated_at)
+select u, 'endurance', current_date - 1, 'completed', 'Ausdauer-Einheit', gen_random_uuid(), now()
+from unnest(array['11111111-1111-4111-8111-111111111111', '22222222-2222-4222-8222-222222222222']::uuid[]) as u;
+insert into public.cardio_logs (session_log_id, user_id, modality, duration_s)
+select id, user_id, 'run', 1800 from public.session_logs where kind = 'endurance';
+insert into public.exercise_start_weights (user_id, exercise_id, weight_kg)
+select u, 'uebung-a', 22.5
+from unnest(array['11111111-1111-4111-8111-111111111111', '22222222-2222-4222-8222-222222222222']::uuid[]) as u;
+
 -- Ohne Anmeldung (authenticated ohne Nutzer-ID) passiert nichts.
 set local role authenticated;
 set local request.jwt.claims = '{"role":"authenticated"}';
@@ -87,6 +110,12 @@ select is_empty($$ select 1 from public.food_preferences where user_id = '111111
 
 select is_empty($$ select 1 from public.user_plans where user_id = '11111111-1111-4111-8111-111111111111' $$, 'A: user_plans leer');
 
+select is_empty($$ select 1 from public.session_logs where user_id = '11111111-1111-4111-8111-111111111111' $$, 'A: session_logs leer');
+select is_empty($$ select 1 from public.exercise_logs where user_id = '11111111-1111-4111-8111-111111111111' $$, 'A: exercise_logs leer');
+select is_empty($$ select 1 from public.set_logs where user_id = '11111111-1111-4111-8111-111111111111' $$, 'A: set_logs leer');
+select is_empty($$ select 1 from public.cardio_logs where user_id = '11111111-1111-4111-8111-111111111111' $$, 'A: cardio_logs leer');
+select is_empty($$ select 1 from public.exercise_start_weights where user_id = '11111111-1111-4111-8111-111111111111' $$, 'A: exercise_start_weights leer');
+
 -- B ist unberührt.
 select is(
   (select count(*) from public.planned_sessions where user_id = '22222222-2222-4222-8222-222222222222'),
@@ -111,6 +140,14 @@ select is(
 select is(
   (select count(*) from public.food_preferences where user_id = '22222222-2222-4222-8222-222222222222'),
   1::bigint, 'B: Vorlieben unverändert'
+);
+
+select results_eq(
+  $$ select (select count(*)::int from public.session_logs where user_id = '22222222-2222-4222-8222-222222222222'),
+            (select count(*)::int from public.set_logs where user_id = '22222222-2222-4222-8222-222222222222'),
+            (select count(*)::int from public.exercise_start_weights where user_id = '22222222-2222-4222-8222-222222222222') $$,
+  $$ values (2, 1, 1) $$,
+  'B: Tagebuch und Startgewicht unverändert'
 );
 
 -- Kataloge bleiben erhalten.
