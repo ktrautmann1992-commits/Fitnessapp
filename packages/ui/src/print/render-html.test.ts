@@ -4,7 +4,13 @@ import { describe, expect, it } from 'vitest';
 
 import { normalizeLogo, renderAssetsModule } from '../../scripts/generate-print-assets.mjs';
 import { ALPHA5_LOGO_SVG, ARCHIVO_WOFF2_BASE64 } from './assets.generated';
-import { escapeHtml, PRINT_CSP, renderPrintHtml, splitPages } from './render-html';
+import {
+  escapeHtml,
+  PRINT_CSP,
+  renderPrintHtml,
+  scopedPrintStyles,
+  splitPages,
+} from './render-html';
 import type { TranslatedDocument } from './types';
 
 const EVIL = [
@@ -209,5 +215,54 @@ describe('assets.generated.ts (B6)', () => {
     expect(() => normalizeLogo('<svg><image href="https://x"/></svg>')).toThrow();
     expect(() => normalizeLogo('<svg onload="x"></svg>')).toThrow();
     expect(normalizeLogo('<svg>\n  <path d="M0 0"/>\n</svg>')).toBe('<svg><path d="M0 0"/></svg>');
+  });
+});
+
+describe('scopedPrintStyles – Druckansicht im Browser (Wächter P3/P4 S2)', () => {
+  const css = scopedPrintStyles(['.vorschau', '#druck']);
+
+  /** Alle Selektoren außerhalb von @-Regeln-Köpfen. */
+  function selectors(text: string): string[] {
+    const found: string[] = [];
+    const walk = (part: string) => {
+      let i = 0;
+      while (i < part.length) {
+        const open = part.indexOf('{', i);
+        if (open === -1) return;
+        const head = part.slice(i, open).trim();
+        let depth = 1;
+        let j = open + 1;
+        while (j < part.length && depth > 0) {
+          if (part[j] === '{') depth += 1;
+          else if (part[j] === '}') depth -= 1;
+          j += 1;
+        }
+        if (head.startsWith('@media')) walk(part.slice(open + 1, j - 1));
+        else if (!head.startsWith('@')) found.push(...head.split(',').map((s) => s.trim()));
+        i = j;
+      }
+    };
+    walk(text);
+    return found;
+  }
+
+  it('jede Regel gilt nur in Vorschau bzw. Druck-Kopie; html/body werden zum Bereich', () => {
+    const all = selectors(css);
+    expect(all.length).toBeGreaterThan(40);
+    for (const sel of all) expect(sel).toMatch(/^(\.vorschau|#druck)( |$)/);
+    expect(all).toContain('.vorschau');
+    expect(all).toContain('#druck .page--landscape');
+    expect(all).toContain('.vorschau .table-scroll');
+    expect(all).not.toContain('body');
+    expect(all.some((s) => /(^| )(html|body)( |$)/.test(s))).toBe(false);
+  });
+
+  it('Schrift und @page einmal global; gleiche Regeln wie im eigenständigen HTML', () => {
+    expect(css.match(/@font-face/g)).toHaveLength(1);
+    expect(css.match(/@page quer/g)).toHaveLength(1);
+    expect(css.match(/@media print/g)).toHaveLength(2);
+    const standalone = renderPrintHtml(doc('x'));
+    expect(standalone).toContain('* { box-sizing: border-box; }');
+    expect(standalone).toContain('@page { size: A4 portrait; margin: 0; }');
   });
 });

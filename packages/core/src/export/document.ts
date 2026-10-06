@@ -87,6 +87,7 @@ export interface PrintTextParams {
   'session.warmup': Record<string, never>;
   'session.cooldown': Record<string, never>;
   'session.exercises': { session: string };
+  'session.continued': { session: string };
   /** Erklärung unter der Übungstabelle; „Leer = Startgewicht finden“ nur, wenn die Einheit Gewichtsübungen hat. */
   'session.weightHint': { hasWeight: boolean };
   /** Alle Übungen nach den aktuellen Regeln ausgeblendet – neutral, ohne Grund (B1). */
@@ -283,6 +284,7 @@ const PARAM_SCHEMAS = {
   'session.warmup': empty,
   'session.cooldown': empty,
   'session.exercises': z.strictObject({ session: dataValueSchema }),
+  'session.continued': z.strictObject({ session: dataValueSchema }),
   'session.weightHint': z.strictObject({ hasWeight: z.boolean() }),
   'session.noExercises': empty,
   'load.bodyweight': empty,

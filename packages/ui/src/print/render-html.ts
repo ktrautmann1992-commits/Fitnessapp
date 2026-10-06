@@ -54,7 +54,8 @@ function safeLang(lang: string): string {
 
 const c = brandColors;
 
-function styles(): string {
+/** Regeln, die global gelten müssen (Schrift, Seitenformat). */
+function globalStyles(): string {
   return `
 @font-face {
   font-family: 'Archivo';
@@ -66,6 +67,12 @@ function styles(): string {
 }
 @page { size: A4 portrait; margin: 0; }
 @page quer { size: A4 landscape; margin: 0; }
+`;
+}
+
+/** Regeln des Dokuments (Selektoren für das eigenständige Druck-HTML). */
+function documentStyles(): string {
+  return `
 * { box-sizing: border-box; }
 html { -webkit-print-color-adjust: exact; print-color-adjust: exact; -webkit-text-size-adjust: 100%; }
 body {
@@ -88,7 +95,7 @@ body {
 }
 .page:last-child { break-after: auto; page-break-after: auto; }
 .page--landscape { width: 297mm; min-height: 210mm; padding: 8mm 12mm 16mm; page: quer; }
-h1, h2, h3 {
+h1, h2, h3, .h1, .h2, .h3 {
   font-family: 'Archivo', system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
   font-weight: 800;
   font-stretch: 75%;
@@ -97,9 +104,9 @@ h1, h2, h3 {
   break-after: avoid;
   page-break-after: avoid;
 }
-h1 { font-size: 28pt; }
-h2 { font-size: 17pt; margin-top: 2mm; }
-h3 { font-size: 12.5pt; margin-top: 4mm; margin-bottom: 2.5mm; }
+h1, .h1 { font-size: 28pt; }
+h2, .h2 { font-size: 17pt; margin-top: 2mm; }
+h3, .h3 { font-size: 12.5pt; margin-top: 4mm; margin-bottom: 2.5mm; }
 p { margin: 0 0 3mm; }
 .muted { color: ${c.grau}; font-size: 10pt; }
 .brand {
@@ -169,8 +176,8 @@ td.log { height: 8mm; }
   color: ${c.grau};
 }
 .page--landscape .page-footer { left: 12mm; right: 12mm; bottom: 6mm; }
-.page--landscape h2 { margin-top: 0; }
-.page--landscape h3 { margin-top: 2.5mm; }
+.page--landscape h2, .page--landscape .h2 { margin-top: 0; }
+.page--landscape h3, .page--landscape .h3 { margin-top: 2.5mm; }
 .page--landscape p, .page--landscape dl.kv { margin-bottom: 2mm; }
 .page--landscape td.log { height: 7mm; }
 .page-footer svg { height: 5mm; width: auto; display: block; }
@@ -320,7 +327,7 @@ export function renderPrintHtml(doc: TranslatedDocument): string {
 <meta name="referrer" content="no-referrer">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>${escapeHtml(doc.title)}</title>
-<style>${styles()}</style>
+<style>${globalStyles()}${documentStyles()}</style>
 </head>
 <body>
 <main>
@@ -329,4 +336,55 @@ ${pages}
 </body>
 </html>
 `;
+}
+
+/**
+ * Selektoren einer Regel auf einen Bereich begrenzen: `html`/`body` werden zum Bereich selbst, alles andere wird
+ * zum Nachfahren des Bereichs. Gilt nur für das CSS dieses Renderers (keine Kommas in Klammern).
+ */
+function scopeSelectors(selectors: string, scope: string): string {
+  return selectors
+    .split(',')
+    .map((raw) => {
+      const sel = raw.trim();
+      if (sel === 'html' || sel === 'body') return scope;
+      return `${scope} ${sel}`;
+    })
+    .join(', ');
+}
+
+/** CSS-Text blockweise durchgehen; `@media` rekursiv, andere @-Regeln unverändert. */
+function scopeCss(css: string, scope: string): string {
+  let out = '';
+  let i = 0;
+  while (i < css.length) {
+    const open = css.indexOf('{', i);
+    if (open === -1) break;
+    const head = css.slice(i, open).trim();
+    let depth = 1;
+    let j = open + 1;
+    while (j < css.length && depth > 0) {
+      if (css[j] === '{') depth += 1;
+      else if (css[j] === '}') depth -= 1;
+      j += 1;
+    }
+    const body = css.slice(open + 1, j - 1);
+    if (head.startsWith('@media')) out += `${head} {${scopeCss(body, scope)}}\n`;
+    else if (head.startsWith('@')) out += `${head} {${body}}\n`;
+    else if (head.startsWith('/*')) {
+      // Kommentar vor der Regel: abtrennen.
+      const end = head.indexOf('*/') + 2;
+      out += `${scopeSelectors(head.slice(end), scope)} {${body}}\n`;
+    } else out += `${scopeSelectors(head, scope)} {${body}}\n`;
+    i = j;
+  }
+  return out;
+}
+
+/**
+ * Druck-CSS für die Druckansicht im Browser (Wächter P3/P4 S2): Schrift und `@page` global, alle übrigen Regeln
+ * nur innerhalb der angegebenen Bereiche (z. B. Vorschau und Druck-Kopie) – die App-Oberfläche bleibt unberührt.
+ */
+export function scopedPrintStyles(scopes: readonly string[]): string {
+  return [globalStyles(), ...scopes.map((scope) => scopeCss(documentStyles(), scope))].join('\n');
 }

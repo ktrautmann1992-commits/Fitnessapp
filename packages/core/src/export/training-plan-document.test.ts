@@ -725,3 +725,56 @@ describe('buildTrainingPlanDocument – Wächter-Auflagen P1+P2', () => {
     expect(JSON.stringify(doc)).not.toMatch(/spinal|hidden|ausgeblendet/i);
   });
 });
+
+describe('buildTrainingPlanDocument – Seitenumbruch der Einheiten (Wächter K2)', () => {
+  /** Jede Einheit: 8 Übungen mit langen Namen, Supersätze und sehr langes Aufwärmen/Cool-down. */
+  const heavy = (all: StoredSession[]) =>
+    all.map((s) => {
+      const first = s.exercises[0];
+      if (s.kind !== 'strength' || !first) return s;
+      const long = 'Locker einlaufen und mobilisieren. '.repeat(17).slice(0, 600);
+      return {
+        ...s,
+        warmup_de: long,
+        cooldown_de: long,
+        exercises: Array.from({ length: 8 }, (_, i) => ({
+          ...first,
+          order_no: i + 1,
+          exercise_name_de: `${first.exercise_name_de} – sehr langsam, kontrolliert und mit voller Bewegungsamplitude`,
+          superset_group: i < 2 ? 'A' : null,
+        })),
+      };
+    });
+
+  const continued = (doc: PrintDocument) =>
+    doc.sections.filter(
+      (b) => b.type === 'heading' && b.text.kind === 'text' && b.text.code === 'session.continued',
+    );
+
+  it('normale Einheiten bleiben auf einer Seite (keine Fortsetzung)', () => {
+    for (const options of [{}, { logColumns: 8, landscape: true }]) {
+      const doc = build(person(), options);
+      expect(continued(doc)).toHaveLength(0);
+    }
+  });
+
+  it('zu lange Einheit → Fortsetzungsseite; jede Übung genau einmal, Cool-down am Ende', () => {
+    for (const options of [{}, { logColumns: 8, landscape: true }]) {
+      const doc = build(person(), options, { sessions: heavy });
+      const sessionsCount = new Set(exerciseTables(doc).map((t) => JSON.stringify(t.caption))).size;
+      expect(continued(doc).length).toBeGreaterThanOrEqual(sessionsCount);
+      const rows = exerciseTables(doc).reduce((sum, t) => sum + t.rows.length, 0);
+      expect(rows).toBe(sessionsCount * 8);
+      // Fortsetzung beginnt immer mit einem Seitenumbruch in derselben Ausrichtung.
+      doc.sections.forEach((b, i) => {
+        if (b.type === 'heading' && b.text.kind === 'text' && b.text.code === 'session.continued') {
+          expect(doc.sections[i - 1]).toEqual({
+            type: 'pageBreak',
+            orientation: 'landscape' in options ? 'landscape' : 'portrait',
+          });
+        }
+      });
+      expect(doc.sections.at(-1)?.type).toBe('paragraph');
+    }
+  });
+});

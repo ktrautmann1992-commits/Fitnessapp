@@ -1,7 +1,7 @@
 # Plan: Trainingsplan als PDF im Alpha5-Layout
 
-Stand: 05.10.2026 · Status: **P1+P2 umgesetzt** (Abschnitt 12) · P3/P4 offen · Plan vom Wächter mit Auflagen
-freigegeben, Auflagen eingearbeitet (Abschnitt 11)
+Stand: 06.10.2026 · Status: **P1+P2 umgesetzt** (Abschnitt 12) · **P3+P4 umgesetzt** (Abschnitt 13, EAS-Prüfung auf
+Geräten offen) · Plan vom Wächter mit Auflagen freigegeben, Auflagen eingearbeitet (Abschnitt 11)
 
 ## 1. Ziel in einfachen Worten
 
@@ -16,7 +16,7 @@ folgt mit Phase 5**; der Aufbau wird jetzt so gebaut, dass dafür nur ein neuer 
 - Marke: Logo `packages/ui/brand/alpha5-mark.svg` (reiner Pfad), Farben `packages/ui/theme.css` (`--brand-blau
 #1f5bff`, `--brand-schwarz`, `--brand-eisblau`), Schrift Archivo (OFL; Latin-woff2 in
   `apps/mobile/public/fonts/archivo-latin-wdth-normal.woff2`).
-- In `apps/mobile` gibt es noch **kein** `expo-print`.
+- `expo-print` ~57.0.2 ist seit P4 eingebunden (vorher keins).
 
 ## 3. Optionen und Entscheidung
 
@@ -118,7 +118,7 @@ Struktur für Screenreader) – die App-Ansicht bleibt die barrierefreie Hauptqu
 ## 9. So testet ihr es am Handy
 
 1. Ab P1+P2: GitHub-App → Actions → `ci`-Lauf → Artefakt „pdf-vorschau“ öffnen (Beispiel-Plan als HTML).
-2. Ab P3: im Pull Request den **Vercel-Vorschau-Link** öffnen, mit Testkonto anmelden, Plan öffnen.
+2. Ab P3: im Pull Request den **Vercel-Vorschau-Link** öffnen, mit Testkonto anmelden (oder „Testmodus starten“), Plan öffnen.
 3. **„Als PDF speichern“** tippen → bei Plan mit Gesundheitsangaben erscheint der Hinweis → „Weiter“ → Druckansicht.
 4. Android Chrome: „Drucken / als PDF sichern“ → Drucker „Als PDF speichern“ → Herunterladen. iPhone Safari:
    „Drucken / als PDF sichern“ → in den Druckoptionen oben das **Teilen-Symbol** → „In Dateien sichern“.
@@ -218,6 +218,91 @@ Ergebnis: **mit Auflagen freigegeben**, alle Auflagen eingearbeitet.
 - **K9:** `previousStartGroup` in der App immer aus `planStartGroup()` (nicht aus den aktuellen Regeln wie in den
   CI-Beispielen).
 
-**Offen für P3/P4:** App-Knopf, Hinweis-Dialog bei `uses_health_data`, Web-Druckansicht-Route mit `window.print()`
-und Playwright-Test; `expo-print` (P4). Seiten mit sehr vielen getauschten Übungen können in Ausnahmefällen über
-eine A4-Seite laufen (dann fehlt auf der ersten Teilseite die Fußzeile) – Beispiele in CI bleiben auf je einer Seite.
+**Erledigt in P3/P4** (Abschnitt 13): App-Knopf, Hinweis-Dialog, Web-Druckansicht, `expo-print`, Seitenumbruch
+langer Einheiten (vorher konnten Seiten mit sehr vielen bzw. langen Übungen über A4 laufen).
+
+## 13. Umsetzung P3 + P4 (Stand 06.10.2026)
+
+**Dateien**
+
+- Core: `training-plan-document.ts` bricht Einheiten-Seiten nach **geschätzter Höhe** um (neuer Code
+  `session.continued` = „… (Fortsetzung)“, Tabelle mit Kopfzeile wird fortgesetzt, Hinweis + Cool-down notfalls auf
+  eigener Folgeseite). Schätzwerte zentral in `PRINT_EXPORT.layout` (`constants.ts`). Tests im Abschnitt
+  „Seitenumbruch der Einheiten (Wächter K2)“.
+- App: `src/lib/print-plan.ts` (Zusammenstecken Plan → Dokument → Übersetzung → HTML, Auswahl der Spalten, Meldungen),
+  `src/lib/print-output.ts` (Web: `window.print()`) bzw. `print-output.native.ts` (`Print.printAsync`),
+  `src/components/print-preview.tsx` (Web-Vorschau + Druck-Kopie) bzw. `.native.tsx` (keine Vorschau),
+  Route `src/app/plan/drucken.tsx`, Knopf „Als PDF speichern“ auf „Heute“, Texte `i18n/de.ts` → `printView`.
+- Tests: `print-plan.test.ts`, `print-output.native.test.ts`, Belastungstest in `print-document.test.ts`;
+  Playwright `e2e/print-pages.spec.ts` (alle Beispiele + Belastungstest hochkant/quer) und zwei Abläufe in
+  `e2e/training-plan.spec.ts`. Die CI-Vorschau enthält zusätzlich `…-belastungstest.html`.
+
+**Ablauf in der App**
+
+1. „Heute“ → **„Als PDF speichern“** → Route `/plan/drucken`.
+2. Plan mit `uses_health_data`: zuerst der Hinweis aus §4 („Weiter“ / „Abbrechen“ = zurück). Das Dokument entsteht
+   **erst nach „Weiter“** – auch beim direkten Aufruf der Adresse.
+3. Einstellungen: Name aufs Deckblatt (Standard aus, wird nicht gespeichert), Mitschreib-Spalten 0/2/4 (Standard 4),
+   im Web zusätzlich „8 Spalten im Querformat“.
+4. **„Drucken / als PDF sichern“** (unten fest): Web → Druckdialog des Browsers; iPhone/Android → System-Druckdialog.
+5. Zustände: Laden (Bibliothek), Fehler „Übungen konnten nicht geladen werden“ mit „Erneut versuchen“, kein Plan,
+   keine Einheiten, Fehler/abgebrochen beim nativen Drucken – alles mit deutschem Text.
+
+**Regeln im Code**
+
+- **K9:** `previousStartGroup` kommt in der App **immer** aus `startGroupOf()` = `planStartGroup()`; Bibliothek,
+  Ersatz-Bibliothek und Geräte je Ort wie auf „Heute“ (Test prüft den Aufruf).
+- **K11:** Der Name wird mit dem Zod-Schema aus core geprüft; die App zeigt je Fall einen eigenen Satz (fehlt, zu lang,
+  unzulässige Zeichen inkl. Emoji mit Zero-Width-Joiner). „Drucken“ ist dann gesperrt, die Vorschau wird ausgeblendet.
+- **K2:** Playwright misst im Druck-Layout jede `section.page` (≤ 297 mm hochkant, ≤ 210 mm quer, Fußzeile vorhanden)
+  und vergleicht die Seitenzahl des von Chromium erzeugten PDFs mit der Zahl der Abschnitte – für alle Beispiele, den
+  Belastungstest (8 Übungen, lange Namen, Supersatz + „ersetzt“, 600 Zeichen Aufwärmen **und** Cool-down) und die
+  Druckansicht in der App (hochkant und quer). Ohne den neuen Seitenumbruch lief der Belastungstest über
+  (hochkant ≈ 455 mm, quer ≈ 342 mm).
+- **Web (B5):** Kein iframe. Die Druckansicht hängt das Dokument zweimal ein: als Vorschau in der App (Handy-Layout)
+  und als Druck-Kopie direkt unter `<body>`, die nur `@media print` sichtbar ist; beim Drucken wird alles andere
+  ausgeblendet. Die Kopie ist für Screenreader verborgen und hat eigene IDs. Beim Verlassen werden Stil, Kopie und
+  Seitentitel zurückgesetzt. Seitentitel (= Dateiname-Vorschlag) „Trainingsplan“, ohne Namen (B7).
+- **Nativ (B2–B4):** nur `Print.printAsync({ html, width: 595, height: 842 })`. **Kein** `printToFileAsync`, keine
+  Datei im Cache, kein `expo-sharing`/`expo-file-system`, kein eigenes Teilen-Menü (CLAUDE.md „Kein Teilen“). Im
+  System-Druckdialog bietet das Betriebssystem selbst „Als PDF sichern“ bzw. auf dem iPhone das Teilen-Symbol der
+  Druckvorschau an – das ist der private Download aus §9 und keine Teilen-Funktion der App. Abbrechen auf iOS
+  (`ERR_PRINT_INCOMPLETE`) ist kein Fehler. Fehlermeldungen enthalten nie HTML oder Plan-Inhalte.
+- **Barrierefreiheit (B10):** Knopf mit `accessibilityHint`, Hinweis als modaler Dialog (`alert`), Ladezustand als
+  `progressbar`, Ansage „Plan als PDF“, sobald die Ansicht bereit ist; Vorschau als benannter Bereich.
+- `expo-print` per `EXPO_OFFLINE=1 expo install expo-print` auf **~57.0.2** (SDK 57) gesetzt; Lockfile-Änderung nur
+  der neue Eintrag (14 Zeilen), `pnpm install --frozen-lockfile` läuft durch.
+
+**Abweichungen (begründet)**
+
+1. **Querformat nur im Web.** Prüfung von P4 im Quelltext von `expo-print` 57: iOS rendert das HTML in einer
+   `WKWebView` auf **eine** feste Seitengröße (595 × 842) und Android setzt eine feste `MediaSize` – gemischtes Hoch-/
+   Querformat (`@page quer`) wird nativ nicht unterstützt. Nativ gibt es daher nur 0/2/4 Spalten hochkant (auch ein
+   veralteter Formularstand wird auf 4 begrenzt, Test). Im Web bleibt die gemischte Ausrichtung (Playwright-Test).
+2. **Hinweis-Dialog in der Druckansicht** statt auf „Heute“: so gilt er auch beim direkten Aufruf von
+   `/plan/drucken`; für die Nutzerin ist der Ablauf gleich (Knopf → Hinweis → Weiter → Druckansicht).
+3. **Seitenumbruch als Schätzung in core** (wie schon `weekRowsPerPage`): ohne Skript im Druck-HTML (CSP) kann nichts
+   gemessen werden. Die Werte sind vorsichtig; der Playwright-Test sichert sie ab. Normale Beispiele bleiben
+   unverändert (5/8/5/5 Seiten, keine Fortsetzung).
+4. **Gewichts-Spalte in der App leer:** Phase-4-Gewichte (Trainingstagebuch) gibt es in der App noch nicht; sobald es
+   sie gibt, `progress` in `buildPlanPrint` übergeben.
+
+**Wächter-Prüfung P3+P4 – Auflagen umgesetzt**
+
+| Befund                             | Umsetzung                                                                                                                                                                                                                                                                                                                                                                                                                                                                |
+| ---------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| S1 CSP gilt in der App-Seite nicht | `lib/print-sanitize.ts`: Erlaubnisliste für Elemente (main, section, …, svg, path) und Attribute (class, id, lang, scope, role, focusable, aria-*, `style` nur `width:…%` an `col`, SVG viewBox/d/fill/xmlns); alles andere – Skripte, Bilder, Links, `on*`, href/src, Kommentare – wird entfernt. Unit-Test mit `<img onerror>`, `javascript:`-Link, `<script>`, iframe, `url()`; echte Dokumente bleiben unverändert (happy-dom als Test-Umgebung, nur devDependency). |
+| S2 Druck-CSS galt app-weit         | `scopedPrintStyles()` in packages/ui: nur Schrift und `@page` global, alle übrigen Regeln nur in Vorschau (`.a5-print-preview`) und Druck-Kopie (`#alpha5-print-root`); `html`/`body` werden zum Bereich. Unit-Test (jeder Selektor im Bereich) und E2E (Stil der App-Überschriften und von `body` auf `/plan/drucken` gleich wie auf „Heute“).                                                                                                                          |
+| K1 Direktaufruf                    | E2E: `/plan/drucken` direkt → Hinweis, keine Vorschau und keine Druck-Kopie vor „Weiter“.                                                                                                                                                                                                                                                                                                                                                                                |
+| K2 Regeln fehlen                   | Eigener Fehlerzustand „Deine Angaben sind gerade nicht vollständig …“ statt endlosem Laden.                                                                                                                                                                                                                                                                                                                                                                              |
+| K3 Neubau je Tastendruck           | Name entprellt (300 ms; „Drucken“ bis dahin gesperrt); Druck-CSS wird nur einmal eingehängt.                                                                                                                                                                                                                                                                                                                                                                             |
+| K4 zwei h1                         | Vorschau-Überschriften als `role="heading"` eine Ebene tiefer (gleiches Aussehen über `.h1`–`.h3`); App-Überschriften tragen jetzt `aria-level` (Ebene 2 war im Browser bisher Ebene 1). E2E: genau eine Überschrift der Ebene 1.                                                                                                                                                                                                                                        |
+
+**Offen**
+
+- **P4 ist erst nach dem EAS-Gerätetest fertig (Wächter K5).** `expo-print` ist ein natives Modul: Ein bestehender
+  Development- bzw. EAS-Build kennt es nicht – für den Handy-Test ist ein **neuer Build** nötig (K6, im PR-Text unter
+  „So testest du es am Handy“ nennen).
+- EAS-Build Android + iOS auf echten Geräten: Druckdialog, A4, Schrift/Logo, Ränder, Flugmodus (§9 Schritt 6).
+  Erst danach P4 als abgeschlossen melden.
+- Prüfen, ob iOS die Seiten mit `viewPrintFormatter` exakt auf A4 umbricht (sonst `useMarkupFormatter` testen).

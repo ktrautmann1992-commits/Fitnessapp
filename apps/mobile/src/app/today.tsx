@@ -397,6 +397,14 @@ export default function TodayScreen() {
           </View>
         ) : null}
       </Card>
+      {/* Plan als PDF (docs/PLAN-PDF-EXPORT.md P3): Hinweis bei Gesundheitsbezug zeigt die Druckansicht. */}
+      <Button
+        label={t.printView.button}
+        variant="secondary"
+        accessibilityHint={t.printView.buttonHint}
+        onPress={() => router.push('/plan/drucken' as Href)}
+        testID="plan-print"
+      />
       {dialogs}
     </Screen>
   );
