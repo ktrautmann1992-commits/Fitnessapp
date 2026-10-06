@@ -1,9 +1,9 @@
-import type { WorkoutItem } from '@fitnessapp/core';
+import { type CardioSpeed, formatDuration, type WorkoutItem } from '@fitnessapp/core';
 
 import { type DraftTarget, draftTargetFrom } from '@/data/workout-draft';
 import { t } from '@/i18n';
 
-import { formatKg } from './format';
+import { formatDecimal, formatKg } from './format';
 import { repsRange, reserveFromRpe, restText } from './plan-format';
 
 /**
@@ -85,4 +85,32 @@ export function workoutTargetLines(item: WorkoutItem): string[] | null {
   if (!item.plan) return null;
   const target = draftTargetFrom(item.plan, item.shown);
   return [targetText(target), ...targetNotes(target), t.plan.rest(restText(item.shown.rest_s))];
+}
+
+/** Pace bzw. Geschwindigkeit (live beim Ausdauer-Eintrag): Anzeige und Bildschirmleser (km ausgeschrieben, 6.5). */
+export function cardioSpeedTexts(speed: CardioSpeed): { text: string; a11y: string }[] {
+  const kmh = formatDecimal(speed.kmh);
+  const speedLine = { text: t.workout.cardio.speed(kmh), a11y: t.workout.cardio.speedA11y(kmh) };
+  if (speed.kind === 'kmh' || speed.paceS === null) return [speedLine];
+  const minutes = Math.floor(speed.paceS / 60);
+  const seconds = speed.paceS % 60;
+  const pace =
+    speed.kind === 'per_km'
+      ? {
+          text: t.workout.cardio.paceKm(formatDuration(speed.paceS)),
+          a11y: t.workout.cardio.paceKmA11y(minutes, seconds),
+        }
+      : {
+          text: t.workout.cardio.pace100(formatDuration(speed.paceS)),
+          a11y: t.workout.cardio.pace100A11y(minutes, seconds),
+        };
+  return speed.kind === 'per_km' ? [pace, speedLine] : [pace];
+}
+
+/** Restzeit der Pause, z. B. „1:30“, und für den Bildschirmleser. */
+export function restTexts(remaining: number): { text: string; a11y: string } {
+  return {
+    text: formatDuration(remaining),
+    a11y: t.workout.rest.remainingA11y(Math.floor(remaining / 60), remaining % 60),
+  };
 }

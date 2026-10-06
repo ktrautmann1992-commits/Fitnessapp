@@ -427,7 +427,8 @@ export const de = {
     completedPartly: '✓ Erledigt (teilweise)',
     viewWorkout: 'Ansehen/Ändern',
     pendingUpload: 'Wird übertragen, sobald du online bist.',
-    enduranceLater: 'Ausdauer eintragen kommt mit dem nächsten Update.',
+    startEndurance: 'Ausdauer eintragen',
+    catchUpEndurance: 'Ausdauer heute nachholen',
     alreadyTrained: 'Heute ist schon ein Training eingetragen – nie zwei Einheiten an einem Tag.',
     libraryMissingStart:
       'Training starten geht, sobald die Übungen geprüft sind – bitte kurz online gehen.',
@@ -709,6 +710,8 @@ export const de = {
       date_window: 'Das Datum liegt außerhalb des erlaubten Zeitraums.',
       daily_limit: 'Heute wurden schon zu viele Trainings gespeichert.',
       invalid: 'Ungültige Werte im Tagebuch.',
+      not_transferred:
+        'Dieses Training ließ sich nach mehreren Versuchen nicht übertragen. Es liegt als Entwurf vor – bitte bald erneut speichern: Einträge gehen nur bis 14 Tage nach dem Training.',
     },
     open: 'Öffnen',
     retry: 'Erneut versuchen',
@@ -718,6 +721,65 @@ export const de = {
     draftContinue: 'Fortsetzen',
     draftSave: 'Speichern',
     draftDiscard: 'Verwerfen',
+    // Pausentimer (5.5, 6.1)
+    rest: {
+      label: 'Pause',
+      remainingA11y: (minutes: number, seconds: number) =>
+        minutes > 0
+          ? `Pause, noch ${minutes} ${minutes === 1 ? 'Minute' : 'Minuten'} ${seconds} Sekunden`
+          : `Pause, noch ${seconds} Sekunden`,
+      minus: '−15 s',
+      plus: '+15 s',
+      minusA11y: 'Pause 15 Sekunden kürzer',
+      plusA11y: 'Pause 15 Sekunden länger',
+      skip: 'Überspringen',
+      skipA11y: 'Pause überspringen',
+      over: 'Pause vorbei – weiter geht’s!',
+      close: 'Weiter',
+    },
+    // Ausdauer-Eintrag (6.1 Punkt 3)
+    cardio: {
+      title: 'Ausdauer eintragen',
+      intro: 'Trag ein, was du tatsächlich gemacht hast.',
+      planned: (minutes: number) => `Geplant: ${minutes} Minuten`,
+      modality: 'Was hast du gemacht?',
+      modalities: { run: 'Laufen', walk: 'Gehen', bike: 'Rad', swim: 'Schwimmen' },
+      duration: 'Dauer (Pflicht)',
+      hours: 'Stunden',
+      minutes: 'Minuten',
+      distance: 'Distanz in km (optional)',
+      distanceHint: 'Mit Komma, z. B. 5,2',
+      elevation: 'Höhenmeter (optional)',
+      paceKm: (pace: string) => `Pace: ${pace} min/km`,
+      pace100: (pace: string) => `Pace: ${pace} min/100 m`,
+      speed: (kmh: string) => `Geschwindigkeit: ${kmh} km/h`,
+      paceKmA11y: (minutes: number, seconds: number) =>
+        `Pace: ${minutes} Minuten ${seconds} Sekunden pro Kilometer`,
+      pace100A11y: (minutes: number, seconds: number) =>
+        `Pace: ${minutes} Minuten ${seconds} Sekunden pro 100 Meter`,
+      speedA11y: (kmh: string) => `Geschwindigkeit: ${kmh} Kilometer pro Stunde`,
+      noDistance: 'Mit Distanz rechnen wir dir Pace bzw. Geschwindigkeit aus.',
+      checkSpeed: 'Bitte prüfen: Das ist sehr schnell für diese Art. Stimmen Dauer und Distanz?',
+      errors: {
+        duration_missing: 'Bitte gib die Dauer an.',
+        duration_invalid: 'Bitte ganze Stunden und Minuten (0–59) eingeben.',
+        duration_range: 'Die Dauer muss zwischen 1 Minute und 12 Stunden liegen.',
+        distance_invalid: 'Bitte eine Distanz in km eingeben, z. B. 5,2.',
+        distance_range: 'Höchstens 500 km.',
+        elevation_invalid: 'Bitte ganze Höhenmeter eingeben.',
+        elevation_range: 'Höchstens 10.000 Höhenmeter.',
+      },
+      invalid: 'Bitte prüfe die markierten Angaben.',
+      effortLabel: 'Wie anstrengend war es? (Anstrengung 0–10)',
+      talkTestIntro: 'Gesprächstest: Wie gut konntest du dabei noch sprechen?',
+      talkTest: {
+        rest: 'Ruhe – ganz ohne Anstrengung.',
+        full_sentences: 'Du konntest dich noch in ganzen Sätzen unterhalten.',
+        short_sentences: 'Nur noch kurze Sätze gingen.',
+        few_words: 'Nur noch einzelne Wörter gingen.',
+        no_talking: 'Sprechen war kaum möglich.',
+      },
+    },
   },
   settings: {
     title: 'Einstellungen',
@@ -758,6 +820,10 @@ export const de = {
     sessionExpired: 'Bitte melde dich erneut an – deine Einträge bleiben erhalten.',
     baseConsentNote:
       'Nutzungsbedingungen und Datenschutzerklärung sind Voraussetzung für die Nutzung. Wenn du nicht mehr einverstanden bist, lösche bitte dein Konto.',
+    screen: 'Bildschirm',
+    keepAwake: 'Bildschirm im Training anlassen',
+    keepAwakeHint:
+      'Solange du ein Training einträgst, geht der Bildschirm nicht aus. Kostet etwas Akku; im Browser nur, wo es unterstützt wird.',
     reminder: 'Mess-Erinnerung',
     reminderEnabled: 'Erinnerung an Körperumfänge',
     reminderInterval: 'Abstand in Tagen (7–90)',

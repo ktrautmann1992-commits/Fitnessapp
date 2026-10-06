@@ -1,7 +1,14 @@
 import { describe, expect, it } from 'vitest';
 
+import { ENDURANCE_EFFORT, TALK_TEST_BANDS } from '../constants';
 import {
+  cardioDurationS,
+  cardioLogFromInput,
   cardioPlausibility,
+  cardioSpeed,
+  cardioSpeedKind,
+  splitDuration,
+  talkTestLevel,
   formatDuration,
   loggedEnduranceMinutes,
   paceSecondsPer100m,
@@ -60,5 +67,127 @@ describe('loggedEnduranceMinutes (10-%-Bezug mit echten Einträgen)', () => {
 
   it('ohne Einträge leer', () => {
     expect(loggedEnduranceMinutes([]).size).toBe(0);
+  });
+});
+
+describe('Ausdauer-Eintrag im Trainingsmodus (Etappe C2)', () => {
+  const input = (overrides: Partial<Parameters<typeof cardioLogFromInput>[0]> = {}) => ({
+    modality: 'run' as const,
+    hours: 0,
+    minutes: 30,
+    distanceKm: 5,
+    elevationM: null,
+    ...overrides,
+  });
+
+  it('Live-Anzeige: Laufen/Gehen Pace je km, Rad km/h, Schwimmen je 100 m', () => {
+    expect(cardioSpeedKind('run')).toBe('per_km');
+    expect(cardioSpeedKind('walk')).toBe('per_km');
+    expect(cardioSpeedKind('bike')).toBe('kmh');
+    expect(cardioSpeedKind('swim')).toBe('per_100m');
+    expect(cardioSpeed('run', 1800, 5000)).toEqual({
+      kind: 'per_km',
+      paceS: 360,
+      kmh: 10,
+      check: false,
+    });
+    expect(cardioSpeed('bike', 3600, 25_300)).toEqual({
+      kind: 'kmh',
+      paceS: null,
+      kmh: 25.3,
+      check: false,
+    });
+    expect(cardioSpeed('swim', 1500, 1000)?.paceS).toBe(150);
+  });
+
+  it('ohne Distanz oder Dauer keine Anzeige; zu schnell → nur Warnung', () => {
+    expect(cardioSpeed('run', 1800, null)).toBeNull();
+    expect(cardioSpeed('run', null, 5000)).toBeNull();
+    expect(cardioSpeed('walk', 1800, 6000)?.check).toBe(true);
+    expect(cardioSpeed('walk', 1800, 4000)?.check).toBe(false);
+  });
+
+  it('Eingabe → cardio-Teil von save_session_log (Komma-Distanz, 0 km = ohne Distanz)', () => {
+    expect(
+      cardioLogFromInput(input({ hours: 1, minutes: 5, distanceKm: 10.55, elevationM: 120 })),
+    ).toEqual({
+      ok: true,
+      cardio: { modality: 'run', duration_s: 3900, distance_m: 10_550, elevation_m: 120 },
+    });
+    expect(cardioLogFromInput(input({ distanceKm: 0 }))).toMatchObject({
+      ok: true,
+      cardio: { distance_m: null },
+    });
+    expect(cardioLogFromInput(input({ hours: null, minutes: 45, distanceKm: null }))).toMatchObject(
+      {
+        ok: true,
+        cardio: { duration_s: 2700, distance_m: null, elevation_m: null },
+      },
+    );
+  });
+
+  it('Dauer ist Pflicht und liegt zwischen 1 Minute und 12 Stunden', () => {
+    expect(cardioLogFromInput(input({ hours: null, minutes: null }))).toEqual({
+      ok: false,
+      errors: { duration: 'duration_missing' },
+    });
+    expect(cardioLogFromInput(input({ hours: 0, minutes: 0 }))).toMatchObject({
+      errors: { duration: 'duration_range' },
+    });
+    expect(cardioLogFromInput(input({ hours: 0, minutes: 1 })).ok).toBe(true);
+    expect(cardioLogFromInput(input({ hours: 12, minutes: 0 })).ok).toBe(true);
+    expect(cardioLogFromInput(input({ hours: 12, minutes: 1 }))).toMatchObject({
+      errors: { duration: 'duration_range' },
+    });
+    expect(cardioLogFromInput(input({ hours: 1, minutes: 60 }))).toMatchObject({
+      errors: { duration: 'duration_invalid' },
+    });
+    expect(cardioLogFromInput(input({ minutes: 1.5 }))).toMatchObject({
+      errors: { duration: 'duration_invalid' },
+    });
+    expect(cardioLogFromInput(input({ minutes: Number.NaN }))).toMatchObject({
+      errors: { duration: 'duration_invalid' },
+    });
+    // Nur Minuten über 59 ohne Stunden: erlaubt (90 Minuten).
+    expect(cardioDurationS({ hours: null, minutes: 90 })).toBe(5400);
+  });
+
+  it('Distanz und Höhenmeter: unlesbar, negativ oder zu groß → Fehler je Feld', () => {
+    expect(cardioLogFromInput(input({ distanceKm: Number.NaN }))).toMatchObject({
+      errors: { distance: 'distance_invalid' },
+    });
+    expect(cardioLogFromInput(input({ distanceKm: -1 }))).toMatchObject({
+      errors: { distance: 'distance_invalid' },
+    });
+    expect(cardioLogFromInput(input({ distanceKm: 500 })).ok).toBe(true);
+    expect(cardioLogFromInput(input({ distanceKm: 500.001 }))).toMatchObject({
+      errors: { distance: 'distance_range' },
+    });
+    expect(cardioLogFromInput(input({ elevationM: 10_000 })).ok).toBe(true);
+    expect(cardioLogFromInput(input({ elevationM: 10_001 }))).toMatchObject({
+      errors: { elevation: 'elevation_range' },
+    });
+    expect(cardioLogFromInput(input({ elevationM: 12.5 }))).toMatchObject({
+      errors: { elevation: 'elevation_invalid' },
+    });
+  });
+
+  it('Dauer aufteilen (Vorbelegung aus der geplanten Einheit)', () => {
+    expect(splitDuration(30 * 60)).toEqual({ hours: 0, minutes: 30 });
+    expect(splitDuration(95 * 60)).toEqual({ hours: 1, minutes: 35 });
+    expect(splitDuration(0)).toEqual({ hours: 0, minutes: 0 });
+  });
+
+  it('Gesprächstest: lockere Ausdauer (bis ENDURANCE_EFFORT.easyMax) heißt „ganze Sätze“', () => {
+    expect(TALK_TEST_BANDS.fullSentencesMax).toBeGreaterThanOrEqual(ENDURANCE_EFFORT.easyMax);
+    expect(talkTestLevel(0)).toBe('rest');
+    expect(talkTestLevel(1)).toBe('full_sentences');
+    expect(talkTestLevel(ENDURANCE_EFFORT.easyMax)).toBe('full_sentences');
+    expect(talkTestLevel(5)).toBe('short_sentences');
+    expect(talkTestLevel(6)).toBe('short_sentences');
+    expect(talkTestLevel(7)).toBe('few_words');
+    expect(talkTestLevel(8)).toBe('few_words');
+    expect(talkTestLevel(9)).toBe('no_talking');
+    expect(talkTestLevel(10)).toBe('no_talking');
   });
 });

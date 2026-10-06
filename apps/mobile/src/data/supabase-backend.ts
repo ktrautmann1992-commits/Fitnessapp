@@ -138,6 +138,10 @@ export function classifySupabaseError(error: unknown, sensitive = false): Backen
   if (e.hint === 'min_age' || message.includes('ab 16 Jahren')) {
     return 'min_age';
   }
+  // 42501 „Nicht angemeldet.“ aus den RPCs (auth.uid() ist leer) = Sitzung weg (Nachprüfung C1 N1).
+  if (e.code === '42501' && /^nicht angemeldet/i.test(message)) {
+    return 'not_signed_in';
+  }
   // 42501 = RLS-Verstoß: bei Gesundheitsdaten fehlt die (aktuelle) Einwilligung, sonst das Profil.
   if (e.code === '42501') {
     return sensitive ? 'consent_required' : 'profile_missing';
@@ -170,45 +174,55 @@ function toPlanError(error: unknown, sensitive: boolean): BackendError {
 }
 
 /**
- * Fehler von save_session_log (W8, W10): Netz, abgelaufene Sitzung und fehlende Rechte = „später erneut“ (nie
- * verwerfen); sonst der Grund der Ablehnung aus dem festen Fehlercode (die Meldungen enthalten keine Inhalte).
+ * Fehler von save_session_log (W8, W10, Nachprüfung C1 N1):
+ * - 'retry' = Netz, abgelaufene Sitzung (auch 42501 „Nicht angemeldet.“) oder Server/Datenbank allgemein nicht
+ *   erreichbar bzw. gedrosselt – betrifft ALLE Einträge: Senden anhalten, später erneut, nichts zählen.
+ * - 'transient' = vorübergehend, aber womöglich nur DIESER Eintrag (z. B. 42501 „Profil fehlt“, Serverfehler 500,
+ *   Zeitlimit, Serialisierung, unlesbare Antwort): Fehlversuch zählen, mit dem nächsten Eintrag weitermachen; nach
+ *   LOG_QUEUE_RETRY Versuchen bzw. 24 h als abgelehnter Entwurf sichern (nie verwerfen).
+ * - sonst der Grund der Ablehnung aus dem festen Fehlercode (die Meldungen enthalten keine Inhalte).
  */
-export function classifyLogError(error: unknown): 'retry' | LogRejectReason {
-  if (isTransientError(error)) return 'retry';
+export function classifyLogError(error: unknown): 'retry' | 'transient' | LogRejectReason {
+  const code = classifySupabaseError(error);
   const e = (error ?? {}) as ErrorLike;
-  if (e.code === '23505') return 'day_taken';
-  if (e.code === '54000') return 'daily_limit';
+  const db = e.code ?? '';
+  // Datenbank-Codes zuerst: 57014 meldet „…statement timeout“ und ist kein Netzfehler.
+  if (/^57/.test(db) || db === '40001' || db === '40P01') return 'transient';
+  if (
+    code === 'network' ||
+    code === 'not_signed_in' ||
+    code === 'rate_limited' ||
+    /^PGRST(00[0-3]|30[1-3])$/.test(db) ||
+    /^(08|53)/.test(db) ||
+    e.status === 502 ||
+    e.status === 503 ||
+    e.status === 504
+  ) {
+    return 'retry';
+  }
+  if (
+    code === 'profile_missing' ||
+    db === 'invalid_response' ||
+    (typeof e.status === 'number' && e.status >= 500)
+  ) {
+    return 'transient';
+  }
+  if (db === '23505') return 'day_taken';
+  if (db === '54000') return 'daily_limit';
   if ((e.message ?? '').includes('außerhalb des erlaubten Zeitraums')) return 'date_window';
   return 'invalid';
 }
 
 /**
- * Vorübergehende Fehler (Wächter C1 S1) – nie als Ablehnung werten: Netz, Sitzung/JWT (PGRST301–303, „JWT
- * expired“, 401), fehlende Rechte (42501), Drosselung (429), Datenbank nicht erreichbar (PGRST000–003), Klassen
- * 08 (Verbindung), 53 (Ressourcen), 57 (Abbruch, z. B. 57014 Zeitlimit), Serialisierung/Deadlock (40001/40P01),
- * Server-Fehler (≥ 500) und unlesbare Antworten.
+ * Vorübergehende Fehler (Wächter C1 S1) – nie als Ablehnung werten: Netz, Sitzung (PGRST301–303, „JWT expired“,
+ * 401, 42501 „Nicht angemeldet.“), fehlende Rechte (42501), Drosselung (429), Datenbank nicht erreichbar
+ * (PGRST000–003), Klassen 08 (Verbindung), 53 (Ressourcen), 57 (Abbruch, z. B. 57014 Zeitlimit),
+ * Serialisierung/Deadlock (40001/40P01), Server-Fehler (≥ 500) und unlesbare Antworten. Nur feste Codes – „jwt“ im
+ * Fehlertext allein reicht nicht (Nachprüfung C1 N4).
  */
 export function isTransientError(error: unknown): boolean {
-  const code = classifySupabaseError(error);
-  if (
-    code === 'network' ||
-    code === 'not_signed_in' ||
-    code === 'profile_missing' ||
-    code === 'rate_limited'
-  ) {
-    return true;
-  }
-  const e = (error ?? {}) as ErrorLike;
-  const db = e.code ?? '';
-  return (
-    /^PGRST(00[0-3]|30[1-3])$/.test(db) ||
-    /jwt/i.test(e.message ?? '') ||
-    /^(08|53|57)/.test(db) ||
-    db === '40001' ||
-    db === '40P01' ||
-    db === 'invalid_response' ||
-    (typeof e.status === 'number' && e.status >= 500)
-  );
+  const kind = classifyLogError(error);
+  return kind === 'retry' || kind === 'transient';
 }
 
 /** Antwort von save_session_log/delete_session_log prüfen (Abbildung, keine Werte loggen). */
@@ -488,7 +502,17 @@ export function createSupabaseBackend(options: SupabaseBackendOptions): Backend 
       return kind;
     },
     currentUserId: () => currentUserId,
-    onSaved: (entry, response) => {
+    onSaved: async (entry, response) => {
+      // N2: Lag die Fassung nur im Arbeitsspeicher (Gerätespeicher nicht beschreibbar, K9), blieb ihr Entwurf
+      // stehen – nach der Übertragung entfernen, solange er seither nicht geändert wurde.
+      await drafts
+        .removeWhere(
+          (d) =>
+            d.key === entry.draft.key &&
+            d.state === 'open' &&
+            d.updatedAt === entry.draft.updatedAt,
+        )
+        .catch(() => undefined);
       emit({
         kind: 'log_saved',
         orphaned: response.result === 'orphaned',
@@ -502,7 +526,11 @@ export function createSupabaseBackend(options: SupabaseBackendOptions): Backend 
     },
     onRejected: async (entry, reason) => {
       await drafts.put({ ...entry.draft, state: 'rejected', rejectReason: reason });
-      console.warn('Training vom Server abgelehnt – als Entwurf gesichert.');
+      console.warn(
+        reason === 'not_transferred'
+          ? 'Training nach mehreren Versuchen nicht übertragen – als Entwurf gesichert.'
+          : 'Training vom Server abgelehnt – als Entwurf gesichert.',
+      );
       emit({ kind: 'log_rejected', reason, key: entry.key, writeId: entry.payload.write_id });
     },
   });
@@ -526,7 +554,7 @@ export function createSupabaseBackend(options: SupabaseBackendOptions): Backend 
       }
       return true;
     } catch (error) {
-      return classifyLogError(error) !== 'retry';
+      return !isTransientError(error);
     }
   }
 
@@ -539,14 +567,16 @@ export function createSupabaseBackend(options: SupabaseBackendOptions): Backend 
     if (!syncDone) return false;
     if (!(await cleanHealthIfConsentInvalid())) return false;
     const logResult = await logQueue.flush();
-    if (logResult !== 'done') return false;
+    // 'blocked' = einzelne Einträge warten auf ihren nächsten Versuch (N1) – die Verbindung steht, also hängt
+    // close_missed_sessions nicht dahinter (skipped → completed bleibt erlaubt, W8).
+    if (logResult !== 'done' && logResult !== 'blocked') return false;
     try {
       const { error } = await client.rpc('close_missed_sessions');
-      if (error && classifyLogError(error) === 'retry') return false;
+      if (error && isTransientError(error)) return false;
     } catch {
       // Nur Statuspflege – beim nächsten Laden erneut.
     }
-    return true;
+    return logResult === 'done';
   }
 
   function applyContext(): ApplyContext {

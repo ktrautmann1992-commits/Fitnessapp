@@ -13,6 +13,10 @@ import type { LogRejectReason, WorkoutDraft } from './workout-draft';
  *   ältere, die `base_revision` bleibt die der zuletzt BESTÄTIGTEN Fassung (W3).
  * - Jede Fassung trägt eine `write_id` (R4); Neuversuche senden dieselbe.
  * - Netzwerkfehler und 401 (Sitzung abgelaufen) = später erneut, nie verwerfen.
+ * - Vorübergehende Fehler, die womöglich nur EINEN Eintrag betreffen (Nachprüfung C1 N1): Fehlversuche je Eintrag
+ *   zählen, mit dem nächsten Eintrag weitermachen, Wartezeit bis zum nächsten Versuch; nach LOG_QUEUE_RETRY.maxAttempts
+ *   Versuchen bzw. 24 h als abgelehnter Entwurf sichern („not_transferred“), nie verwerfen – so hängt kein Eintrag
+ *   die Warteschlange dauerhaft auf.
  * - `conflict` (W3) und inhaltliche Ablehnung: ERST als Entwurf sichern (onConflict/onRejected), DANN aus der
  *   Warteschlange entfernen.
  * - Konto-Bindung (R5): gesendet wird nur, wenn das angemeldete Konto dem der Warteschlange entspricht.
@@ -26,6 +30,28 @@ export interface LogQueueEntry {
   draft: WorkoutDraft;
   /** Lokal: Eintrag aus einem Plan mit Gesundheits-Check (S1, nie gesendet). */
   fromHealthPlan: boolean;
+  /** Fehlversuche mit vorübergehendem Fehler (N1); fehlt = 0. */
+  attempts?: number;
+  /** Zeitpunkt (ms) des ersten Fehlversuchs (N1). */
+  firstFailedAt?: number;
+  /** Frühester nächster Versuch (ms, N1). */
+  nextAttemptAt?: number;
+}
+
+/**
+ * Neuversuche bei vorübergehenden Fehlern eines Eintrags (Nachprüfung C1 N1): höchstens `maxAttempts` Versuche bzw.
+ * `maxAgeMs` ab dem ersten Fehlversuch; dazwischen wachsende Wartezeiten (1 min, 5 min, 30 min, 2 h). Quelle:
+ * PRODUKTENTSCHEIDUNG (technische Grenze, keine Gesundheitsregel).
+ */
+export const LOG_QUEUE_RETRY = {
+  maxAttempts: 5,
+  maxAgeMs: 24 * 60 * 60 * 1000,
+  backoffMs: [60_000, 5 * 60_000, 30 * 60_000, 2 * 60 * 60_000],
+} as const;
+
+function backoffAfter(attempts: number): number {
+  const steps = LOG_QUEUE_RETRY.backoffMs;
+  return steps[Math.min(attempts, steps.length) - 1] ?? steps[steps.length - 1] ?? 0;
 }
 
 /** Antwort von save_session_log. */
@@ -39,6 +65,8 @@ export interface SaveLogResponse {
 export type LogFlushResult =
   /** Warteschlange leer. */
   | 'done'
+  /** Verbindung steht, aber einzelne Einträge warten auf ihren nächsten Versuch (N1). */
+  | 'blocked'
   /** offline bzw. Sitzung abgelaufen – später erneut. */
   | 'later'
   /** gesperrt (Widerruf läuft). */
@@ -68,14 +96,22 @@ export interface LogQueueOptions {
   store: ProtectedStore;
   /** Sendet eine Fassung (save_session_log). Wirft bei Fehlern. */
   execute: (payload: SessionLogPayload) => Promise<SaveLogResponse>;
-  /** Fehler einordnen: 'retry' = Netz/Sitzung (später), sonst Grund der Ablehnung. */
-  classify: (error: unknown) => 'retry' | LogRejectReason;
+  /**
+   * Fehler einordnen: 'retry' = Netz/Sitzung/Server allgemein (Senden anhalten, später), 'transient' = vorübergehend,
+   * womöglich nur dieser Eintrag (zählen, weiter mit dem nächsten – N1), sonst Grund der Ablehnung.
+   */
+  classify: (error: unknown) => 'retry' | 'transient' | LogRejectReason;
+  /** Uhr in ms (Tests); Standard Date.now. */
+  now?: () => number;
   /** Angemeldetes Konto (null = keins). */
   currentUserId: () => string | null;
   onSaved?: (entry: LogQueueEntry, response: SaveLogResponse) => Promise<void> | void;
   /** Konflikt: lokale Fassung als Entwurf sichern (MUSS gespeichert sein, bevor der Eintrag entfernt wird). */
   onConflict: (entry: LogQueueEntry, response: SaveLogResponse) => Promise<void>;
-  /** Abgelehnt: als Entwurf sichern (vor dem Entfernen). Ohne Inhalte loggen! */
+  /**
+   * Abgelehnt bzw. nach mehreren Versuchen nicht übertragbar ('not_transferred', N1): als Entwurf sichern (vor dem
+   * Entfernen). Ohne Inhalte loggen!
+   */
   onRejected: (entry: LogQueueEntry, reason: LogRejectReason) => Promise<void>;
 }
 
@@ -204,10 +240,17 @@ export class LogQueue {
     const current = this.options.currentUserId();
     if (current === null) return 'later';
     if (this.owner !== null && this.owner !== current) return 'foreign';
-    while (this.entries.length > 0) {
+    const now = this.options.now ?? Date.now;
+    // Jeder Eintrag höchstens einmal je Durchgang; Einträge in ihrer Wartezeit (N1) werden übersprungen.
+    const tried = new Set<LogQueueEntry>();
+    for (;;) {
       if (this.locked) return 'locked';
-      const [entry] = this.entries;
+      const startedAt = now();
+      const entry = this.entries.find(
+        (candidate) => !tried.has(candidate) && (candidate.nextAttemptAt ?? 0) <= startedAt,
+      );
       if (!entry) break;
+      tried.add(entry);
       try {
         const response = await this.options.execute(entry.payload);
         if (response.result === 'conflict') {
@@ -232,13 +275,38 @@ export class LogQueue {
       } catch (error) {
         const kind = this.options.classify(error);
         if (kind === 'retry') return 'later';
-        await this.options.onRejected(entry, kind);
+        if (kind === 'transient') {
+          const failedAt = now();
+          const attempts = (entry.attempts ?? 0) + 1;
+          const firstFailedAt = entry.firstFailedAt ?? failedAt;
+          if (
+            attempts < LOG_QUEUE_RETRY.maxAttempts &&
+            failedAt - firstFailedAt < LOG_QUEUE_RETRY.maxAgeMs
+          ) {
+            // Später erneut – nur, wenn die Fassung nicht inzwischen ersetzt wurde; weiter mit dem nächsten Eintrag.
+            const retry: LogQueueEntry = {
+              ...entry,
+              attempts,
+              firstFailedAt,
+              nextAttemptAt: failedAt + backoffAfter(attempts),
+            };
+            this.entries = this.entries.map((candidate) =>
+              candidate === entry ? retry : candidate,
+            );
+            tried.add(retry);
+            await this.persist();
+            continue;
+          }
+          await this.options.onRejected(entry, 'not_transferred');
+        } else {
+          await this.options.onRejected(entry, kind);
+        }
       }
       // Nur den gesendeten Eintrag entfernen – zwischenzeitlich ersetzte/ergänzte Einträge bleiben.
       this.entries = this.entries.filter((candidate) => candidate !== entry);
       await this.persist();
     }
-    return 'done';
+    return this.entries.length === 0 ? 'done' : 'blocked';
   }
 
   /** Schreibvorgänge nacheinander (Wächter C1 B1) – der zuletzt veranlasste Stand landet zuletzt. */

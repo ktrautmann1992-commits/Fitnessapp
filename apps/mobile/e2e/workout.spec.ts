@@ -3,10 +3,10 @@ import { expect, test, type Page } from '@playwright/test';
 import { heading, onboard } from './plan-helpers';
 
 /**
- * Trainingsmodus im TESTMODUS (docs/PLAN-PHASE-4.md Etappe C1 – Kraft) mit festem Datum Mittwoch, 07.10.2026
- * (Europe/Berlin): Einheit starten, Sätze eintragen, Alternative, „nicht gemacht“, Abschluss; Entwurf nach Neu laden;
- * beforeunload-Warnung; offline eintragen; Progression nach zwei Einheiten; Widerruf behält das Tagebuch ohne
- * Vorgaben.
+ * Trainingsmodus im TESTMODUS (docs/PLAN-PHASE-4.md Etappe C1 – Kraft, C2 – Ausdauer und Pausentimer) mit festem
+ * Datum Mittwoch, 07.10.2026 (Europe/Berlin): Einheit starten, Sätze eintragen, Alternative, „nicht gemacht“,
+ * Abschluss; Entwurf nach Neu laden; beforeunload-Warnung; offline eintragen; Progression nach zwei Einheiten;
+ * Widerruf behält das Tagebuch ohne Vorgaben; Ausdauer mit Pace; Pausentimer und Bildschirm-an-Schalter.
  */
 
 const LOCAL_DB = 'fitnessapp.local.v1';
@@ -33,6 +33,13 @@ interface StoredRows {
     done: boolean;
     reps: number | null;
     weight_kg: number | null;
+  }[];
+  cardioLogs: {
+    session_log_id: string;
+    modality: string;
+    duration_s: number;
+    distance_m: number | null;
+    elevation_m: number | null;
   }[];
 }
 
@@ -329,4 +336,158 @@ test('Widerruf „Tagebuch behalten“: Einträge bleiben ohne Vorgaben aus dem 
   }
   // Ist-Werte bleiben.
   expect(rows.setLogs.filter((s) => s.done && s.weight_kg === 20).length).toBeGreaterThan(0);
+});
+
+test('Ausdauer mit Pace: Art, Dauer, Distanz mit Komma, Pace live, Gesprächstest, gespeichert', async ({
+  page,
+}) => {
+  await onboard(page, {
+    ...STUDIO_3_DAYS,
+    days: [
+      ['Montag', 'Kraft im Studio', 60],
+      ['Mittwoch', 'Ausdauer', 30],
+      ['Freitag', 'Kraft im Studio', 60],
+    ],
+  });
+  await toToday(page);
+  await expect(page.getByText('Ausdauer eintragen kommt', { exact: false })).toHaveCount(0);
+  await expect(page.getByTestId('workout-start')).toHaveText('Ausdauer eintragen');
+  await page.getByTestId('workout-start').click();
+
+  const card = page.getByTestId('workout-cardio');
+  await expect(card).toBeVisible();
+  // Kein Pausentimer und keine Übungen bei Ausdauer.
+  await expect(page.locator('[data-testid^="workout-exercise-"]')).toHaveCount(0);
+  await card.getByRole('radio', { name: 'Laufen' }).click();
+  await page.getByTestId('workout-cardio-hours').fill('0');
+  await page.getByTestId('workout-cardio-minutes').fill('33');
+  await expect(page.getByTestId('workout-cardio-speed')).toContainText(
+    'Mit Distanz rechnen wir dir',
+  );
+  await page.getByTestId('workout-cardio-distance').fill('6,0');
+  const speed = page.getByTestId('workout-cardio-speed');
+  await expect(speed).toContainText('Pace: 5:30 min/km');
+  await expect(speed).toContainText('Geschwindigkeit: 10,9 km/h');
+  await expect(page.getByLabel('Pace: 5 Minuten 30 Sekunden pro Kilometer')).toBeVisible();
+  // Gehen mit 10,9 km/h → nur Warnung „Bitte prüfen“; zurück zu Laufen.
+  await card.getByRole('radio', { name: 'Gehen' }).click();
+  await expect(page.getByTestId('workout-cardio-check')).toContainText('Bitte prüfen');
+  await card.getByRole('radio', { name: 'Rad', exact: true }).click();
+  await expect(speed).toHaveText('Geschwindigkeit: 10,9 km/h');
+  await card.getByRole('radio', { name: 'Laufen' }).click();
+  await expect(page.getByTestId('workout-cardio-check')).toHaveCount(0);
+  await page.getByTestId('workout-cardio-elevation').fill('45');
+
+  // Dauer ist Pflicht: leer → Hinweis, Speichern gesperrt.
+  await page.getByTestId('workout-cardio-hours').fill('');
+  await page.getByTestId('workout-cardio-minutes').fill('');
+  await expect(page.getByTestId('workout-cardio-duration-error')).toHaveText(
+    'Bitte gib die Dauer an.',
+  );
+  // Fehlermeldung ist beiden Feldern zugeordnet (Bildschirmleser, Wächter C2 K3).
+  for (const field of ['workout-cardio-hours', 'workout-cardio-minutes']) {
+    await expect(page.getByTestId(field)).toHaveAttribute(
+      'aria-describedby',
+      'workout-cardio-duration-error',
+    );
+  }
+  await expect(page.locator('#workout-cardio-duration-error')).toHaveText(
+    'Bitte gib die Dauer an.',
+  );
+  await page.getByTestId('workout-save').click();
+  await expect(page.getByTestId('workout-error')).toHaveText('Bitte prüfe die markierten Angaben.');
+  await page.getByTestId('workout-cardio-minutes').fill('33');
+
+  // Anstrengung 4 mit Gesprächstest.
+  await expect(
+    page.getByText('Gesprächstest: Wie gut konntest du dabei noch sprechen?'),
+  ).toBeVisible();
+  await page.getByTestId('workout-effort-4').click();
+  await expect(page.getByTestId('workout-talk-test')).toHaveText(
+    'Du konntest dich noch in ganzen Sätzen unterhalten.',
+  );
+  await page.getByTestId('workout-save').click();
+
+  await heading(page, 'Heute');
+  await expect(page.getByTestId('workout-message')).toContainText('Training gespeichert');
+  await expect(page.getByTestId('plan-completed')).toContainText('Erledigt');
+  const rows = await storedRows(page);
+  expect(rows.sessionLogs).toHaveLength(1);
+  expect(rows.sessionLogs[0]).toMatchObject({ status: 'completed', session_rpe: 4 });
+  expect(rows.cardioLogs).toEqual([
+    expect.objectContaining({
+      session_log_id: rows.sessionLogs[0]?.id,
+      modality: 'run',
+      duration_s: 1980,
+      distance_m: 6000,
+      elevation_m: 45,
+    }),
+  ]);
+  expect(rows.exerciseLogs).toHaveLength(0);
+
+  // Ansehen/Ändern: gespeicherte Werte, Pace wieder da.
+  await page.getByTestId('workout-view').click();
+  await expect(page.getByTestId('workout-cardio-distance')).toHaveValue('6');
+  await expect(page.getByTestId('workout-cardio-speed')).toContainText('Pace: 5:30 min/km');
+  await page.getByRole('button', { name: 'Zurück zu Heute' }).first().click();
+  await heading(page, 'Heute');
+});
+
+test('Pausentimer nach jedem Satz: −15/+15 s, Ende sichtbar, Überspringen; Bildschirm-an-Schalter', async ({
+  page,
+}) => {
+  await onboard(page, STUDIO_3_DAYS);
+  await toToday(page);
+  await page.getByTestId('workout-start').click();
+  await setWeight(page, 0, 8);
+  await expect(page.getByTestId('rest-timer')).toHaveCount(0);
+  await page.getByTestId('workout-done-0-0').click();
+
+  const time = page.getByTestId('rest-timer-time');
+  await expect(page.getByTestId('rest-timer')).toBeVisible();
+  // Live-Region steht schon VOR dem Pausenende im DOM (leer) – nur ihr Text ändert sich (Wächter C2 S1).
+  const announcer = page.getByTestId('rest-announcer');
+  await expect(announcer).toHaveAttribute('aria-live', 'assertive');
+  await expect(announcer).toHaveText('');
+  const seconds = async () => {
+    const [m, sec] = (await time.innerText()).split(':').map(Number);
+    return (m ?? 0) * 60 + (sec ?? 0);
+  };
+  const start = await seconds();
+  expect(start).toBeGreaterThan(0);
+  await page.getByTestId('rest-timer-plus').click();
+  await expect.poll(seconds).toBe(start + 15);
+  await page.getByTestId('rest-timer-minus').click();
+  await page.getByTestId('rest-timer-minus').click();
+  await expect.poll(seconds).toBe(start - 15);
+  await expect(page.getByLabel(/^Pause, noch /)).toBeVisible();
+
+  // Zeit läuft (auch im Hintergrund – gerechnet mit Zeitstempeln): 11 Minuten später ist die Pause vorbei.
+  await page.clock.setFixedTime(new Date(WEDNESDAY.getTime() + 11 * 60 * 1000));
+  await expect(page.getByTestId('rest-timer-over')).toHaveText('✓ Pause vorbei – weiter geht’s!');
+  await expect(announcer).toHaveText('Pause vorbei – weiter geht’s!');
+  await page.getByTestId('rest-timer-skip').click();
+  await expect(page.getByTestId('rest-timer')).toHaveCount(0);
+
+  // Nächster Satz: wieder Pause, Überspringen beendet sie; Haken zurücknehmen beendet sie auch.
+  await page.getByTestId('workout-done-0-1').click();
+  await expect(page.getByTestId('rest-timer')).toBeVisible();
+  await page.getByTestId('rest-timer-skip').click();
+  await expect(page.getByTestId('rest-timer')).toHaveCount(0);
+  await page.getByTestId('workout-done-0-2').click();
+  await expect(page.getByTestId('rest-timer')).toBeVisible();
+  await page.getByTestId('workout-done-0-2').click();
+  await expect(page.getByTestId('rest-timer')).toHaveCount(0);
+
+  // Einstellungen: „Bildschirm im Training anlassen“ (Standard an), abschaltbar – nur auf diesem Gerät gespeichert.
+  await page.getByRole('button', { name: 'Zurück zu Heute' }).first().click();
+  await heading(page, 'Heute');
+  await page.getByRole('button', { name: 'Einstellungen' }).click();
+  const keepAwake = page.getByRole('checkbox', { name: 'Bildschirm im Training anlassen' });
+  await expect(keepAwake).toHaveAttribute('aria-checked', 'true');
+  await keepAwake.click();
+  await expect(keepAwake).toHaveAttribute('aria-checked', 'false');
+  await expect
+    .poll(() => page.evaluate(() => window.localStorage.getItem('fitnessapp.keep-awake.v1')))
+    .toBe('false');
 });

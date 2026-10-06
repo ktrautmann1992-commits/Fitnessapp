@@ -465,23 +465,27 @@ export default function TodayScreen() {
             </Notice>
           ) : null}
           {start && !hasDraft ? (
-            shown.libraryMissing || !view ? (
+            // Ausdauer braucht keine Übungs-Bibliothek (C2); Kraft erst nach geprüften Übungen (H7).
+            selectedSession.kind === 'strength' && (shown.libraryMissing || !view) ? (
               <Notice tone="info">{t.today.libraryMissingStart}</Notice>
             ) : (
               <>
                 {start === 'catch_up' ? <Body muted>{t.today.catchUpHint}</Body> : null}
                 <Button
-                  label={start === 'today' ? t.today.startWorkout : t.today.catchUp}
+                  label={
+                    selectedSession.kind === 'endurance'
+                      ? start === 'today'
+                        ? t.today.startEndurance
+                        : t.today.catchUpEndurance
+                      : start === 'today'
+                        ? t.today.startWorkout
+                        : t.today.catchUp
+                  }
                   onPress={() => router.push(`/workout/${selectedSession.id}` as Href)}
                   testID="workout-start"
                 />
               </>
             )
-          ) : null}
-          {selectedSession.kind === 'endurance' &&
-          selectedSession.status === 'planned' &&
-          selectedSession.scheduled_on === today ? (
-            <Body muted>{t.today.enduranceLater}</Body>
           ) : null}
           {missed ? (
             <Notice tone="info" testID="plan-missed">

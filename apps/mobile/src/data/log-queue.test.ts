@@ -2,7 +2,13 @@ import type { SessionLogPayload } from '@fitnessapp/core';
 import { describe, expect, it } from 'vitest';
 
 import { USER_ID } from '../test/fixtures';
-import { LogQueue, logQueueKey, type LogQueueEntry, type SaveLogResponse } from './log-queue';
+import {
+  LOG_QUEUE_RETRY,
+  LogQueue,
+  logQueueKey,
+  type LogQueueEntry,
+  type SaveLogResponse,
+} from './log-queue';
 import { createMemoryProtectedStore } from './protected-store';
 import type { LogRejectReason, WorkoutDraft } from './workout-draft';
 
@@ -84,9 +90,11 @@ function entry(
   };
 }
 
-type Step = SaveLogResponse | Error | { reject: true };
+/** `transient` = vorübergehender Fehler nur dieses Eintrags (z. B. Serverfehler 500, N1). */
+type Step = SaveLogResponse | Error | { reject: true } | { transient: true };
 
 function setup(steps: Step[] = [], user: string | null = USER_ID) {
+  let clock = 1_000_000;
   const store = createMemoryProtectedStore();
   const sent: SessionLogPayload[] = [];
   const events: string[] = [];
@@ -98,10 +106,16 @@ function setup(steps: Step[] = [], user: string | null = USER_ID) {
       const step = steps.shift() ?? { result: 'ok', id: p.id, revision: 1 };
       if (step instanceof Error) throw step;
       if ('reject' in step) throw { code: '23505', message: 'An diesem Tag …' };
+      if ('transient' in step) throw { code: '', status: 500, message: 'Internal Server Error' };
       return step;
     },
-    classify: (error): 'retry' | LogRejectReason =>
-      error instanceof Error ? 'retry' : 'day_taken',
+    classify: (error): 'retry' | 'transient' | LogRejectReason =>
+      error instanceof Error
+        ? 'retry'
+        : (error as { status?: number }).status === 500
+          ? 'transient'
+          : 'day_taken',
+    now: () => clock,
     currentUserId: () => currentUser,
     onSaved: (e, r) => {
       events.push(`saved:${e.key}:${r.result}`);
@@ -114,7 +128,14 @@ function setup(steps: Step[] = [], user: string | null = USER_ID) {
       events.push(`rejected:${e.key}:${reason}:queued=${String(queue.snapshot().includes(e))}`);
     },
   });
-  return { queue, store, sent, events, setUser: (u: string | null) => (currentUser = u) };
+  return {
+    queue,
+    store,
+    sent,
+    events,
+    setUser: (u: string | null) => (currentUser = u),
+    advance: (ms: number) => (clock += ms),
+  };
 }
 
 describe('LogQueue', () => {
@@ -243,5 +264,68 @@ describe('LogQueue', () => {
       await queue.flush();
     }
     expect(sent.at(-1)?.write_id).toBe('zweite');
+  });
+
+  it('N1: vorübergehender Fehler nur eines Eintrags hält die anderen nicht auf; Wartezeit bis zum nächsten Versuch', async () => {
+    const { queue, sent, events, advance } = setup([{ transient: true }]);
+    await queue.add(entry('1'), USER_ID);
+    await queue.add(entry('2'), USER_ID);
+    // Eintrag 1 scheitert (500) → Eintrag 2 wird trotzdem gesendet; 1 wartet.
+    expect(await queue.flush()).toBe('blocked');
+    expect(sent.map((p) => p.write_id)).toEqual(['w-1', 'w-2']);
+    expect(events).toEqual(['saved:save_session_log:ps-2:ok']);
+    expect(queue.snapshot()[0]).toMatchObject({ key: 'save_session_log:ps-1', attempts: 1 });
+    // In der Wartezeit kein neuer Versuch.
+    expect(await queue.flush()).toBe('blocked');
+    expect(sent).toHaveLength(2);
+    // Danach mit derselben write_id (R4) – geschafft.
+    advance(LOG_QUEUE_RETRY.backoffMs[0]);
+    expect(await queue.flush()).toBe('done');
+    expect(sent.at(-1)?.write_id).toBe('w-1');
+  });
+
+  it('N1: nach maxAttempts Fehlversuchen als abgelehnter Entwurf gesichert (vor dem Entfernen), nie verworfen', async () => {
+    const steps: Step[] = Array.from({ length: LOG_QUEUE_RETRY.maxAttempts }, () => ({
+      transient: true as const,
+    }));
+    const { queue, sent, events, advance, store } = setup(steps);
+    await queue.add(entry('1'), USER_ID);
+    for (let i = 1; i < LOG_QUEUE_RETRY.maxAttempts; i += 1) {
+      expect(await queue.flush()).toBe('blocked');
+      // Zähler übersteht einen Neustart (gespeichert).
+      expect(JSON.parse(store.peek() ?? '{}')).toMatchObject({ entries: [{ attempts: i }] });
+      advance(LOG_QUEUE_RETRY.backoffMs.at(-1) ?? 0);
+    }
+    expect(await queue.flush()).toBe('done');
+    expect(sent).toHaveLength(LOG_QUEUE_RETRY.maxAttempts);
+    expect(events).toEqual(['rejected:save_session_log:ps-1:not_transferred:queued=true']);
+    expect(queue.size()).toBe(0);
+  });
+
+  it('N1: 24 h nach dem ersten Fehlversuch → Meldung schon beim nächsten Fehlversuch', async () => {
+    const { queue, events, advance } = setup([{ transient: true }, { transient: true }]);
+    await queue.add(entry('1'), USER_ID);
+    expect(await queue.flush()).toBe('blocked');
+    advance(LOG_QUEUE_RETRY.maxAgeMs);
+    expect(await queue.flush()).toBe('done');
+    expect(events).toEqual(['rejected:save_session_log:ps-1:not_transferred:queued=true']);
+  });
+
+  it('N1: Netz/Sitzung zählen nicht als Fehlversuch; eine neue Fassung beginnt wieder bei 0', async () => {
+    const { queue, advance } = setup([
+      { transient: true },
+      new Error('offline'),
+      new Error('offline'),
+    ]);
+    await queue.add(entry('1'), USER_ID);
+    expect(await queue.flush()).toBe('blocked');
+    advance(LOG_QUEUE_RETRY.backoffMs[0]);
+    expect(await queue.flush()).toBe('later');
+    expect(queue.snapshot()[0]?.attempts).toBe(1);
+    await queue.add(entry('1', { write_id: 'neu' }), USER_ID);
+    expect(queue.snapshot()[0]?.attempts).toBeUndefined();
+    // Eine neue Fassung wird sofort versucht (keine Wartezeit der alten).
+    expect(await queue.flush()).toBe('later');
+    expect(await queue.flush()).toBe('done');
   });
 });

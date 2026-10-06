@@ -7,10 +7,11 @@ import { describe, expect, it } from 'vitest';
 import { consent, NOW, rowsWith, TODAY, USER_ID, VERSIONS } from '../test/fixtures';
 import { createMemoryStore, STORAGE_KEYS } from './kv';
 import { answersFromRows } from './mapping';
-import { createMemoryProtectedStore } from './protected-store';
+import { createMemoryProtectedStore, createSessionProtectedStore } from './protected-store';
 import {
   classifyLogError,
   classifySupabaseError,
+  isTransientError,
   createSupabaseBackend,
   executeWriteOp,
 } from './supabase-backend';
@@ -27,7 +28,9 @@ interface Call {
  * Minimaler Ersatz für den Supabase-Client: zeichnet alle Aufrufe auf (Tabelle + Methodenkette) und
  * liefert das Ergebnis von `respond` (Standard: kein Fehler).
  */
-function fakeClient(respond: (call: Call) => { data?: unknown; error?: unknown } = () => ({})) {
+function fakeClient(
+  respond: (call: Call) => { data?: unknown; error?: unknown; status?: number } = () => ({}),
+) {
   const calls: Call[] = [];
   const builder = (call: Call): unknown =>
     new Proxy(
@@ -784,7 +787,7 @@ describe('Supabase-Modus: Tagebuch-Warteschlange', () => {
   }
 
   function make(
-    respond: (call: Call) => { data?: unknown; error?: unknown },
+    respond: (call: Call) => { data?: unknown; error?: unknown; status?: number },
     store = createMemoryStore(),
     s = stores(),
   ) {
@@ -1051,7 +1054,8 @@ describe('Supabase-Modus: Tagebuch-Warteschlange', () => {
   });
 
   it('S1: vorübergehende Fehler (abgelaufenes JWT, 429, 5xx, DB nicht erreichbar, Serialisierung) = später erneut', () => {
-    const transient = [
+    // Betrifft alle Einträge (Netz, Sitzung, Server allgemein): Senden anhalten, nichts zählen.
+    const retry = [
       { code: 'PGRST303', message: 'JWT expired', details: null, hint: null },
       { code: 'PGRST301', message: 'JWSError JWSInvalidSignature', details: null, hint: null },
       {
@@ -1060,6 +1064,16 @@ describe('Supabase-Modus: Tagebuch-Warteschlange', () => {
         details: null,
         hint: null,
       },
+      { code: '08006', message: 'connection failure', details: null, hint: null },
+      { code: '', message: 'Too Many Requests', details: null, hint: null, status: 429 },
+      { code: '', message: 'Bad Gateway', details: null, hint: null, status: 502 },
+      // N1: 42501 „Nicht angemeldet.“ aus den RPCs = Sitzung weg → „Bitte erneut anmelden“.
+      { code: '42501', message: 'Nicht angemeldet.', details: null, hint: null, status: 403 },
+      networkError,
+    ];
+    for (const error of retry) expect(classifyLogError(error)).toBe('retry');
+    // Womöglich nur dieser Eintrag (N1): zählen, mit dem nächsten weitermachen.
+    const transient = [
       { code: '40001', message: 'could not serialize access', details: null, hint: null },
       { code: '40P01', message: 'deadlock detected', details: null, hint: null },
       {
@@ -1068,13 +1082,20 @@ describe('Supabase-Modus: Tagebuch-Warteschlange', () => {
         details: null,
         hint: null,
       },
-      { code: '08006', message: 'connection failure', details: null, hint: null },
-      { code: '', message: 'Too Many Requests', details: null, hint: null, status: 429 },
-      { code: '', message: 'Bad Gateway', details: null, hint: null, status: 502 },
+      { code: '42501', message: 'Profil fehlt.', details: null, hint: null, status: 403 },
+      { code: '', message: 'Internal Server Error', details: null, hint: null, status: 500 },
       { code: 'invalid_response', message: 'Ungültige Antwort.' },
-      networkError,
     ];
-    for (const error of transient) expect(classifyLogError(error)).toBe('retry');
+    for (const error of transient) expect(classifyLogError(error)).toBe('transient');
+    for (const error of [...retry, ...transient]) expect(isTransientError(error)).toBe(true);
+    expect(classifySupabaseError({ code: '42501', message: 'Nicht angemeldet.' })).toBe(
+      'not_signed_in',
+    );
+    // N4: „jwt“ im Fehlertext allein ist kein vorübergehender Fehler (nur feste Codes bzw. „JWT expired“).
+    expect(
+      classifyLogError({ code: '22023', message: 'Ungültige Werte (jwt im Text).', status: 400 }),
+    ).toBe('invalid');
+    expect(isTransientError({ code: 'P0001', message: 'jwt claim fehlt' })).toBe(false);
     expect(classifySupabaseError({ code: 'PGRST303', message: 'JWT expired' })).toBe(
       'not_signed_in',
     );
@@ -1188,5 +1209,112 @@ describe('Supabase-Modus: Tagebuch-Warteschlange', () => {
     online = true;
     // Die eigene Fassung kommt als Konflikt zurück – das „ok“ der anderen Einheit (zuerst gesendet) zählt nicht.
     expect(await backend.submitWorkout(draftOf(false), logPayload())).toEqual({ kind: 'conflict' });
+  });
+
+  it('N1: Serverfehler nur eines Eintrags → nächster Eintrag und close_missed_sessions laufen weiter', async () => {
+    let online = false;
+    const OTHER_SESSION = '55555555-5555-4555-8555-555555555555';
+    const { backend, calls } = make((call) => {
+      if (!online) return { error: networkError };
+      if (call.table !== 'rpc:save_session_log') return ok(call);
+      const p = (call.args[0]?.[0] as { p_log: SessionLogPayload }).p_log;
+      return p.planned_session_id === SESSION
+        ? {
+            error: { code: '', message: 'Internal Server Error', details: null, hint: null },
+            status: 500,
+          }
+        : { data: { result: 'ok', id: p.id, revision: 1 } };
+    });
+    await backend.submitWorkout(draftOf(false), logPayload());
+    await backend.submitWorkout(
+      { ...draftOf(false), key: OTHER_SESSION },
+      logPayload({
+        id: '66666666-6666-4666-8666-666666666666',
+        write_id: '77777777-7777-4777-8777-777777777777',
+        planned_session_id: OTHER_SESSION,
+      }),
+    );
+    online = true;
+    const before = calls.length;
+    // Nicht alles übertragen (ein Eintrag wartet) – aber der andere ist gesendet und die Statuspflege lief.
+    expect(await backend.flush()).toBe(false);
+    expect(calls.slice(before).map((c) => c.table)).toEqual([
+      'rpc:save_session_log',
+      'rpc:save_session_log',
+      'rpc:close_missed_sessions',
+    ]);
+    expect(backend.pendingLogSessionIds()).toEqual([SESSION]);
+  });
+
+  it('N1: 42501 „Nicht angemeldet.“ beim Senden → bleibt wartend, Meldung „erneut anmelden“', async () => {
+    const { backend, s, events } = make((call) =>
+      call.table === 'rpc:save_session_log'
+        ? { error: { code: '42501', message: 'Nicht angemeldet.', details: null, hint: null } }
+        : {},
+    );
+    expect(await backend.submitWorkout(draftOf(false), logPayload())).toEqual({ kind: 'queued' });
+    expect(events).toContain('session_expired');
+    expect(s.logQueueStore.peek()).not.toBeNull();
+  });
+
+  it('N3/N2 (K9): sessionStorage wirft beim Schreiben – online sofort gesendet; offline Meldung, Entwurf bleibt und verschwindet nach der Übertragung', async () => {
+    const throwing = {
+      getItem: () => null,
+      setItem: () => {
+        throw new Error('QuotaExceededError');
+      },
+      removeItem: () => undefined,
+    };
+    const brokenStores = () => ({
+      ...stores(),
+      workoutDraftStore: {
+        ...createSessionProtectedStore(throwing, 'draft', { strict: true }),
+        peek: () => null,
+      },
+      logQueueStore: {
+        ...createSessionProtectedStore(throwing, 'queue', { strict: true }),
+        peek: () => null,
+      },
+    });
+    // Online: Fassung aus dem Arbeitsspeicher sofort gesendet, Entwurf weg.
+    const online = make(ok, createMemoryStore(), brokenStores());
+    await expect(online.backend.saveDraft(draftOf(false))).rejects.toThrow();
+    expect(await online.backend.submitWorkout(draftOf(false), logPayload())).toEqual({
+      kind: 'saved',
+      orphaned: false,
+    });
+    expect(await online.backend.loadDrafts()).toEqual([]);
+
+    // Offline: „Offline-Speicher nicht verfügbar“, der Entwurf bleibt (Arbeitsspeicher) …
+    let reachable = false;
+    const offline = make(
+      (call) => (reachable ? ok(call) : { error: networkError }),
+      createMemoryStore(),
+      brokenStores(),
+    );
+    await offline.backend.saveDraft(draftOf(false)).catch(() => undefined);
+    await expect(offline.backend.submitWorkout(draftOf(false), logPayload())).rejects.toMatchObject(
+      { code: 'storage_unavailable' },
+    );
+    expect(await offline.backend.loadDrafts()).toHaveLength(1);
+    // … und wird nach der späteren Übertragung entfernt (N2: kein „Entwurf gefunden“ für ein gespeichertes Training).
+    reachable = true;
+    expect(await offline.backend.flush()).toBe(true);
+    expect(await offline.backend.loadDrafts()).toEqual([]);
+  });
+
+  it('N2: ein nach dem Einreihen weiter geänderter Entwurf bleibt nach der Übertragung stehen', async () => {
+    let online = false;
+    const { backend } = make((call) => (online ? ok(call) : { error: networkError }));
+    await backend.submitWorkout(draftOf(false), logPayload());
+    // Erneut geöffnet und geändert (neuer Stand), noch nicht gespeichert.
+    await backend.saveDraft({
+      ...draftOf(false),
+      sessionRpe: 9,
+      updatedAt: '2026-10-05T19:00:00.000Z',
+    });
+    online = true;
+    await backend.flush();
+    expect(await backend.loadDrafts()).toHaveLength(1);
   });
 });

@@ -66,6 +66,7 @@ export class DraftStore {
 
   async removeWhere(predicate: (draft: WorkoutDraft) => boolean): Promise<void> {
     const drafts = await this.current();
+    if (!drafts.some(predicate)) return;
     await this.persist(drafts.filter((d) => !predicate(d)));
   }
 
