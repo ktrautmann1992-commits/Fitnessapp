@@ -52,9 +52,12 @@ test('Studio 3 Tage: Plan auf „Heute“, Wochenübersicht, Verschieben und Str
   });
   await expect(page.getByTestId('done-plan')).toContainText('Dein Plan ist fertig');
   await expect(page.getByTestId('done-plan')).toContainText('Vorlage: Muskelaufbau');
+  await expect(page.getByTestId('done-info-bodyweight_limits')).toHaveCount(0);
   await page.getByRole('button', { name: 'Zum Plan' }).click();
 
   await heading(page, 'Heute');
+  // Studio-Plan: kein Körpergewicht-Hinweis (Etappe K4).
+  await expect(page.getByTestId('plan-info-bodyweight_limits')).toHaveCount(0);
   await expect(page.getByTestId('plan-test-content')).toHaveText(
     'Testinhalte – KI-Entwurf, nicht fachlich geprüft',
   );
@@ -360,8 +363,16 @@ test('Zuhause ohne Geräte, 7 Tage: Deckel, Ruhetage und verständliche Hinweise
     goal: 'Fitness & Gesundheit',
     days: all.map((day) => [day, 'Kraft zu Hause', 30] as [string, string, number]),
   });
+  // Etappe K4: ehrlicher Hinweis zur Grenze des Trainingsreizes ohne Geräte – schon auf „Fertig“.
+  await expect(page.getByTestId('done-info-bodyweight_limits')).toContainText(
+    'Ohne Geräte ist der Trainingsreiz begrenzt',
+  );
   await page.getByRole('button', { name: 'Zum Plan' }).click();
   await heading(page, 'Heute');
+  const bodyweightInfo = page.getByTestId('plan-info-bodyweight_limits');
+  await expect(bodyweightInfo).toContainText('Training ohne Geräte');
+  await expect(bodyweightInfo).toContainText('Ohne Geräte ist der Trainingsreiz begrenzt');
+  await expect(bodyweightInfo).toContainText('Einstellungen → Angaben ändern');
   const notes = page.getByTestId('plan-notes');
   await expect(notes).toContainText('Mehr als 4 Kraft-Einheiten planen wir nicht');
   // Etappe K1: ohne Geräte gibt es jetzt Türrahmen-Rudern – kein Hinweis „Ziehen fehlt“ mehr.

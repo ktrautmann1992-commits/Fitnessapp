@@ -1,3 +1,4 @@
+import { planInfoNotices } from '@fitnessapp/core';
 import { Redirect, useRouter } from 'expo-router';
 import { useEffect, useRef, useState } from 'react';
 import { View } from 'react-native';
@@ -92,6 +93,19 @@ export default function DoneScreen() {
           <Body>{t.plan.quality[plan.match_quality]}</Body>
         </Notice>
       ) : null}
+      {state.kind === 'ready' && plan
+        ? planInfoNotices(plan, app.library.kind === 'ready' ? app.library.library : null).map(
+            (notice) => (
+              <Notice
+                key={notice}
+                title={t.plan.infoNotices[notice].title}
+                testID={`done-info-${notice}`}
+              >
+                <Body>{t.plan.infoNotices[notice].text}</Body>
+              </Notice>
+            ),
+          )
+        : null}
       <Heading level={2}>{t.done.summary}</Heading>
       <Card>
         {lines.map((line) => (

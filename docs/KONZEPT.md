@@ -120,6 +120,18 @@ Verbindlich ist der freigegebene Ablauf in `docs/PLAN-PHASE-1.md` Abschnitt 3 (S
   („Ohne Vorschlag planen“). Der Plan heißt „Ausdauer-Grundlage – <Disziplin>“ (`planTitle`, nur Anzeige; gespeichert bleibt
   `template_title_de`). Hinweis: Wettkampfplan rückwärts ab Renndatum kommt in Phase 10.
 
+**Training nur mit dem eigenen Körpergewicht (Engine-Version 3, `docs/PLAN-KOERPERGEWICHT.md`, Etappen K1–K4):**
+- Sind alle Kraft-Tage zu Hause und gibt es dort keine Kraft-Geräte (freie Gewichte, Bänder, Maschinen; Bank,
+  Klimmzugstange und Ausdauer-Geräte zählen nicht), gibt es nur **Körpergewicht-Vorlagen** (3 Ziele × 2 Level × 2/3/4
+  Tage, nur Übungen ohne Geräte, Rudern über Türrahmen bzw. Handtuch, Hüftbeugen ohne Gewicht, jede Einheit mit Rumpf).
+  Steigern über mehr Wiederholungen, dann einen Satz mehr, dann eine schwerere Variante. Gemischte Wochen (Studio +
+  Zuhause ohne Geräte) bekommen vorerst die Studio-Vorlage, die Zuhause-Tage tauschen auf Übungen ohne Geräte.
+- **Ehrlich gesagt:** Ohne Geräte ist der Trainingsreiz begrenzt – vor allem für Rücken und Beinrückseite und je
+  fortgeschrittener man ist. Die Pläne halten fit und bauen Kraft auf; für maximalen Muskelaufbau sind Geräte besser
+  (schon ein Widerstandsband oder Kurzhanteln). Das steht in der Planbeschreibung und als Hinweis „Training ohne
+  Geräte“ in der App (Fertig-Bildschirm und „Heute“, `planInfoNotices()` in `packages/core` entscheidet allein über
+  das Vorlagen-Kennzeichen). Trägt die Person Geräte nach, bietet die App einen neuen Plan an.
+
 **Umsetzung ab Phase 4 (`docs/PLAN-PHASE-4.md`, Etappe A: Core in `packages/core/src/log`):**
 - **Progression aus dem Tagebuch, nicht in den Plan geschrieben:** Grundlage ist der gespeicherte, ortsunabhängige
   Zustand `state_*` (Gewicht, Ziel-Wdh., Zusatzsatz, Dauer) des neuesten zählenden Eintrags – nie die angezeigte Vorgabe.

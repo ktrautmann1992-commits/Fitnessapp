@@ -502,6 +502,13 @@ export const de = {
       endurance_basic_only:
         'Dein Wettkampfplan rückwärts ab Renndatum (lange Läufe, Tempo, Tapering) kommt in einem späteren Update.',
     },
+    // Feste Hinweise aus der Vorlage (planInfoNotices in packages/core, docs/PLAN-KOERPERGEWICHT.md K4).
+    infoNotices: {
+      bodyweight_limits: {
+        title: 'Training ohne Geräte',
+        text: 'Dein Plan kommt ganz ohne Geräte aus – nur mit deinem Körpergewicht und Alltagsdingen wie Wand, Stuhl oder Handtuch. Er hält dich fit und baut Kraft auf. Ehrlich gesagt: Ohne Geräte ist der Trainingsreiz begrenzt, vor allem für Rücken und Beinrückseite und je weiter du kommst. Mit Kurzhanteln oder einem Widerstandsband kannst du gezielter steigern. Trägst du Geräte unter Einstellungen → Angaben ändern ein, bieten wir dir einen passenden neuen Plan an.',
+      },
+    },
     medicalNoticeTitle: 'Vor dem Training',
     medicalNotice:
       'Bitte kläre vor dem Training ärztlich ab, ob es für dich passt. Bei Brustschmerz, Schwindel oder Atemnot sofort aufhören.',

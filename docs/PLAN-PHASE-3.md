@@ -888,7 +888,11 @@ den Inhalten des Branches), hilfreich für die fachliche Prüfung.
 11. **Altersregeln?** _Empfehlung:_ unter 18 RPE ≤ 8 ohne Technik-Übungen; ab 65 RPE ≤ 7 ohne Sprünge und
     Technik-Übungen (Produktentscheidung, Abschnitt 5.4); strengere Regel ab dem Geburtstag sofort, Lockerung nur
     nach Bestätigung. Fachlich mit prüfen lassen.
-12. **Lücke „ohne Geräte“ und „ohne Über-Kopf“ in der Übungsbibliothek?** _Empfehlung:_ Nach Etappe A einen
+12. **Lücke „ohne Geräte“ und „ohne Über-Kopf“ in der Übungsbibliothek?** **Erledigt (06.10.2026,
+    `docs/PLAN-KOERPERGEWICHT.md` K1–K4):** Übungen ohne Geräte für Zug (Türrahmen-/Handtuch-Rudern, Y-T-W) und
+    Hüftbeugen (Good Morning, einbeiniges Kreuzheben), eigene Körpergewicht-Vorlagen und ein ehrlicher Hinweis in der
+    App; Schulter ohne Über-Kopf bleibt eine gelbe Lücke (V11), fachliche Prüfung vor `published` offen. _Ursprüngliche
+    Empfehlung:_ Nach Etappe A einen
     `content-generate`-Lauf für Körpergewicht-Varianten von Zug und Hüftbeugen (z. B. Rudern am stabilen Tisch,
     Rückenstrecken am Boden) und eine Schulter-Übung ohne Über-Kopf-Position (z. B. Frontheben mit Band); bis dahin
     Ersatz über gemeinsamen Hauptmuskel bzw. Hinweis.

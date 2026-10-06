@@ -3,6 +3,7 @@ import { addDays, isoWeekday, startOfIsoWeek } from '../dates';
 import type { EquipmentLocation, PlannedSessionStatus } from '../enums';
 import type { TrainingSchedule } from '../training-schedule';
 import { applyCurrentEnduranceRules, applyCurrentSafetyRules } from './apply-safety';
+import { isBodyweightTemplateId, type PlanLibrary } from './content-pool';
 import { type EquipmentProfile, isExerciseFeasible } from './equipment-profile';
 import { type EnduranceStartGroup, isStricterGroup, type PlanSafetyRules } from './safety';
 import { type GeneratedSession, isStrengthKind, locationOfKind } from './schedule';
@@ -338,4 +339,29 @@ export function planUpdateOffer(
       stricterGroup ||
       (reasons.includes('health_check_newer') && rules.medicalNotice && !plan.medical_notice),
   };
+}
+
+// ---------------------------------------------------------------------------------------------------------
+// Feste Plan-Hinweise (kein Hinweis-Code der Engine, sondern aus der Vorlage abgeleitet)
+// ---------------------------------------------------------------------------------------------------------
+
+/**
+ * `bodyweight_limits`: Plan aus einer Körpergewicht-Vorlage (docs/PLAN-KOERPERGEWICHT.md §1, Etappe K4, A9) –
+ * die App sagt ehrlich, wo die Grenze des Trainingsreizes ohne Geräte liegt und was Geräte ändern.
+ */
+export type PlanInfoNotice = 'bodyweight_limits';
+
+/**
+ * Welche festen Hinweise zu einem gespeicherten Plan gehören. Entscheidung allein über das Vorlagen-Kennzeichen
+ * (isBodyweightTemplate bzw. ID-Endung, wenn die Vorlage nicht in der Bibliothek steht – Bibliothek noch nicht
+ * geladen, offline, archiviert; `library = null` heißt „nicht geladen“). Reiner Ausdauer-Plan (`template_id` null)
+ * und gemischte Wochen (Studio-Vorlage) → kein Hinweis.
+ */
+export function planInfoNotices(
+  plan: { readonly template_id: string | null },
+  library: Pick<PlanLibrary, 'templates'> | null,
+): PlanInfoNotice[] {
+  return isBodyweightTemplateId(library ?? { templates: [] }, plan.template_id)
+    ? ['bodyweight_limits']
+    : [];
 }
