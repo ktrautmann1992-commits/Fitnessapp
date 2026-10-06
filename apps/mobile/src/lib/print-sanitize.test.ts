@@ -41,6 +41,7 @@ describe('sanitizePrintTree (Wächter P3/P4 S1)', () => {
     expect(main.textContent).toContain('Text');
   });
 
+  // Erzeugt und parst alle Beispiel-Dokumente (je ~140 KB mit Schrift) – auf CI-Runnern deutlich über 5 s.
   it('echte Druck-Dokumente bleiben unverändert', () => {
     for (const example of PRINT_EXAMPLES) {
       const html = renderPrintHtml(translatePrintDocument(exampleDocument(example)));
@@ -48,5 +49,5 @@ describe('sanitizePrintTree (Wächter P3/P4 S1)', () => {
       const before = parsed.querySelector('main')?.outerHTML;
       expect(sanitized(html).outerHTML).toBe(before);
     }
-  });
+  }, 60_000);
 });
