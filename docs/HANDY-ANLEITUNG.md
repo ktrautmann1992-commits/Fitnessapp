@@ -63,8 +63,8 @@ Vercel zeigt die App im Handy-Browser, Expo baut die echten Apps in der Cloud.
 
 ## Teil 5 – So testet ihr
 - **Phasen 0–7:** über den Vercel-Link im Handy-Browser (Web-Version der App). Tipp: „Zum Home-Bildschirm hinzufügen“ – fühlt sich dann fast wie eine App an.
-- **Android-App:** Workflow `eas-build` starten → Link zur APK öffnen → installieren.
-- **iPhone-App:** Workflow `eas-build` startet auch den Upload zu **TestFlight** → TestFlight-App öffnen → installieren. Ihr beide könnt als Tester eingetragen werden.
+- **Android-App:** Workflow `eas-build` starten (android, preview, Einreichen nein) → Link zur APK öffnen → installieren. Schritt für Schritt: **Teil 9**.
+- **iPhone-App:** Workflow `eas-build` mit ios, production, **Einreichen ja** → Upload zu **TestFlight** → TestFlight-App öffnen → installieren. Ihr beide werdet als interne Tester eingetragen. Einmalige Einrichtung: `docs/SETUP.md` Teil D2.
 - **Smartwatch/Health-Funktionen (Phase 8)** funktionieren nur in der echten App, nicht im Browser.
 - **App neu installieren nach größeren Daten-Änderungen** (z. B. Phase 3, Etappe B2 „Trainingstage + Gewichte“): Alte App-Builds werden dann nicht mehr unterstützt. Nach dem Merge den neuen `eas-build` laden und die App neu installieren (Android: neue APK; iPhone: Update in TestFlight). Im Browser genügt Neuladen. Im Testmodus werden alte Angaben auf dem Gerät automatisch umgewandelt; sicherer ist **Einstellungen → Testdaten löschen** und das Onboarding neu starten.
   - **Nach der Neuinstallation bitte die Trainingstage neu wählen** (Einstellungen bzw. Onboarding „Deine Trainingstage“): Alte Angaben wurden als Kraft-Tage übernommen – auch wenn euer Ziel Ausdauer ist; Lauftage müsst ihr selbst eintragen. Wunsch-Tage, deren Anzahl nicht zu „Tage pro Woche“ passte, sind entfallen.
@@ -110,7 +110,7 @@ Passwörter oder Codes. Claude trägt es dann im Umsetzungsstand von `docs/PLAN-
 1. Supabase ist eingerichtet (docs/SETUP.md), Migrationen sind durch (GitHub-App → Actions → `db-migrate` grün),
    freigegebene Inhalte sind eingespielt (`content-seed`).
 2. Vercel → Projekt „fitnessapp“ → **Settings → Environment Variables**: `EXPO_PUBLIC_SUPABASE_URL` und
-   `EXPO_PUBLIC_SUPABASE_ANON_KEY` sind für „Preview“ und „Production“ eingetragen → **Deployments → Redeploy**.
+   `EXPO_PUBLIC_SUPABASE_PUBLISHABLE_KEY` sind für „Preview“ und „Production“ eingetragen → **Deployments → Redeploy**.
 3. Zwei Handys (A und B), auf beiden den Vorschau-Link (bzw. die Produktions-Adresse) im Browser öffnen und mit
    **demselben Konto** per E-Mail-Code anmelden. Wenn vorhanden: zusätzlich die Android-APK/TestFlight-App (für 12–14).
 
@@ -161,6 +161,60 @@ Punkte 2–7 ohne Handys gegen Supabase prüfen (Playwright im Supabase-Modus mi
 bräuchte es ein zweites Supabase-Projekt nur für Tests (sonst landen Testdaten im echten Projekt) und einen Weg, den
 Anmelde-Code ohne Postfach zu bekommen (Service-Role-Schlüssel als GitHub-Secret). Das ist größer als dieser Schritt
 und braucht eure Entscheidung – die Handy-Prüfung oben ersetzt er ohnehin nicht (zwei Geräte, Flugmodus, App-Funktionen).
+
+## Teil 9 – Echte App bauen und auf dem Handy prüfen (Phase 4, Etappe E) – **braucht euch**
+Claude kann in der Cloud-Sitzung weder Expo-, Apple- noch Google-Konten bedienen. Die Einrichtung steht in
+`docs/SETUP.md` Teil D (Expo, Android) und Teil D2 (Apple/TestFlight, Google Play). Schlüssel **nie** in den Chat –
+nur in GitHub-Secrets bzw. auf expo.dev.
+
+**A – Workflow starten (GitHub-App)**
+1. GitHub-App → Repository → **Actions** → **eas-build** → oben **Run workflow** (fehlt der Knopf: im Browser
+   „Desktop-Website anfordern“).
+2. Branch **main**, Plattform, Profil und „Nach dem Build einreichen“ wählen:
+   - Android-Test: **android / preview / nein**
+   - iPhone-Test: **ios / production / ja** (vorher einmal `eas-ios-setup` mit Eingabe **JA**, SETUP D2 Schritt A6)
+3. **Run workflow** → nach ca. 1–3 Minuten ist der Lauf grün. Lauf antippen → **Summary**: dort steht der Link zur
+   Build-Seite auf expo.dev (oder, falls etwas fehlt, „eas-build übersprungen“ mit dem Grund – z. B. fehlendes
+   `EXPO_TOKEN` oder fehlende Projekt-ID).
+4. Der eigentliche Build dauert auf expo.dev ca. 15–30 Minuten (Gratisplan: Warteschlange).
+
+**B – Android-APK installieren**
+1. Build-Seite auf dem Android-Handy öffnen (bei expo.dev angemeldet) → **Install** bzw. **Download** → APK öffnen.
+2. Beim ersten Mal fragt Android „Installation aus unbekannten Quellen“ → für den Browser **erlauben** → zurück →
+   **Installieren**. Play Protect warnt evtl. („unbekannte App“) → **Trotzdem installieren**.
+3. Neue Version: einfach die neue APK genauso installieren (die Daten bleiben).
+
+**C – iPhone über TestFlight**
+1. Einmalig die App **TestFlight** aus dem App Store laden und mit der Apple-ID anmelden, die in App Store Connect
+   als interne Testerin bzw. interner Tester eingetragen ist (SETUP D2 Schritt A7).
+2. Nach dem Build mit „Einreichen: ja“ dauert die Verarbeitung bei Apple noch ca. 10–30 Minuten; dann kommt eine
+   E-Mail bzw. Mitteilung von TestFlight → **TestFlight → Alpha5 → Installieren**.
+
+**D – Was auf echten Geräten zu prüfen ist** (je einmal Android und iPhone; Ergebnis Claude schreiben, z. B.
+„E: Punkt 1–9 ok, Punkt 4 iPhone Fehler: …“ – ohne Passwörter oder Codes)
+1. **Start:** App-Name **Alpha5** unter dem Symbol, Logo-Symbol (Android auch rund und als „Designtes Symbol“),
+   Startbildschirm Logo auf Schwarz, App startet ohne Absturz; hell und dunkel.
+2. **Keine Berechtigungs-Abfragen:** Beim ganzen Durchklicken fragt die App **nie** nach Kamera, Fotos, Standort,
+   Face ID, Kontakten oder Mitteilungen. Android: Einstellungen → Apps → Alpha5 → Berechtigungen zeigt
+   „Keine Berechtigungen“ (Internet und Vibration zählen nicht als Berechtigung).
+3. **Testmodus und Anmeldung:** „Ohne Konto testen“ funktioniert; mit Supabase-Werten auf expo.dev (SETUP D6)
+   klappt die Anmeldung per E-Mail-Code.
+4. **Pausentimer vibriert** am Ende der Pause (Etappe C2) – App offen lassen; Ton aus/Vibration an.
+5. **Bildschirm bleibt an**, solange das Training offen ist (Bildschirm-Sperre z. B. 30 Sekunden einstellen und
+   warten); Schalter in den Einstellungen aus → Bildschirm geht wieder aus (C2).
+6. **Offline:** Flugmodus an → Training eintragen und speichern → App aus dem App-Wechsler wischen → neu öffnen →
+   Eintrag und Entwurf sind noch da (Teil 8 Punkt 10, im Supabase-Modus).
+7. **Datenexport in einen Ordner** (Etappe D): Einstellungen → **Meine Daten exportieren** → Hinweis → Ordner
+   wählen (iPhone: „Dateien“ → „Auf meinem iPhone“ bzw. iCloud Drive; Android: z. B. „Downloads“) →
+   „Die Datei wurde gespeichert.“ → Datei ist im Ordner. Zweiter Export am selben Tag → Datei mit `-2` (Teil 8
+   Punkte 14–15).
+8. **PDF-Export** (Plan P4): „Heute“ → **Als PDF speichern** → (Hinweis bei Gesundheits-Check) → **Drucken / als
+   PDF sichern** → System-Druckdialog erscheint; A4 hochkant, Logo, Tabellen nicht abgeschnitten. iPhone: in der
+   Druckvorschau Teilen-Symbol → **In Dateien sichern**; Android: Drucker **Als PDF speichern**. Auch im
+   **Flugmodus**. Abbrechen des Dialogs zeigt keinen Fehler.
+9. **Sicherung:** Android-Einstellungen → Google → Sicherung: Alpha5 wird nicht mitgesichert (gewollt – das
+   Tagebuch ist verschlüsselt, die Sicherung ist der Server).
+10. **Live-Test W13** (Teil 8) am besten gleich mit der echten App wiederholen – Punkte 10–15 gehen nur dort.
 
 ## Tipps
 - Eine Sitzung = eine Aufgabe. Lieber mehrere kurze Sitzungen als eine endlose.
