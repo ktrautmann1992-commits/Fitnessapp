@@ -1163,7 +1163,140 @@ belegt, Verschieben dorthin bietet die App nicht an) – dann den Unterschied do
 Einheiten an einem Tag (erledigt + geplant aus einem neuen Plan) korrekt machen; Test in Etappe C.
 
 Wächter-Prüfung Etappe B: freigegeben mit Auflagen; B1, B2, S1–S3, S5, S6, K1–K3, K5 umgesetzt, S4 und K4 als
-Pflichtpunkte Etappe C festgehalten. Nächster Schritt: Etappe C.
+Pflichtpunkte Etappe C festgehalten (in C1 erledigt, siehe unten).
+
+**Etappe C – geteilt in C1 und C2 (06.10.2026).** Der Plan sieht die Teilung ausdrücklich vor („C1 Kraft, C2
+Ausdauer + Pausentimer“). **C1 ist umgesetzt** (Pull Request folgt): die gesamte Offline-/Sync-Grundlage für ALLE
+Einträge plus der Trainingsmodus für Kraft. **C2** bringt Ausdauer-Eintrag (6.1 Punkt 3, Pace/km/h live,
+Gesprächstest), Pausentimer-Leiste (5.5, Vibration `expo-haptics`, Bildschirmleser-Ansage), Bildschirm-an
+(`expo-keep-awake`/Wake-Lock, Schalter in den Einstellungen) und die E2E-Abläufe „Ausdauer mit Pace“. Bis dahin zeigt
+„Heute“ an Ausdauer-Tagen „Ausdauer eintragen kommt mit dem nächsten Update.“ – das Datenmodell (`cardio`, Status
+`completed` für Ausdauer) ist in C1 schon durchgängig vorhanden.
+
+Umgesetzt in C1:
+
+- **Core** (`packages/core/src/log/workout.ts`, Tests `workout.test.ts`): `planWorkout()`/`planWorkoutExercise()`
+  (Progression zuerst, dann `rules.rpeMax`; Vorgabe, `state_*` über `stateToStore()`, Hinweis NUR über
+  `progressHintForDisplay()`), `referenceDosage()` (Vorlagen-Satzzahl/RPE der Belastungswoche, W7),
+  `weightStepsFor()` (Stufen nur zu Hause), `extraSetAllowed()` (V9 gegen `WEEKLY_SETS_PER_MUSCLE` der Vorlage),
+  `allowedAlternatives()` (Regeln wie `findSubstitute()`, plus die vorgeschlagene schwerere Variante),
+  `alignShownExercises()` (ausgeblendete Übungen), `initialSets()`, `adjustWeight()`/`adjustReps()`,
+  `rpeFromReserve()`/`reserveFromRpe()`, `exerciseLogStatusFor()` (Sicherheits-Ersatz zählt als `alternative`, wie der
+  Server es verlangt), `sessionLogStatus()`, `neutralSessionName()`/`neutralizeSessionLogPayload()` (S1).
+- **Wächter S4 (Pflichtpunkt) – Entscheidung:** Der Client bleibt beim **Verschieben konservativ**
+  (`rescheduleSession()`: eine erledigte Einheit belegt ihren Tag, die App verschiebt nie dorthin – dokumentiert im
+  Typ, Test). `sessionOn()` liefert bei erledigter + geplanter Einheit am selben Tag die **offene** (neu
+  `completedOn()`), Test. `local-rules.ts` `noCollisions()` folgt der Datenbank (nur `planned` belegt), sonst wäre ein
+  neuer Plan am Tag eines erledigten Trainings im Testmodus nicht speicherbar (Test). Zusätzlich bietet „Heute“ kein
+  zweites Training an, wenn am Tag schon eine andere geplante Einheit eingetragen ist (`startKind()`, „nie stapeln“).
+- **Speicher (4.1):** drei weitere geschützte Speicher (`STORAGE_KEYS.workoutDraft/logQueue/logCache` + je eigener
+  Schlüssel, `PROTECTED_STORE_KEYS`, `createDeviceProtectedStores()` für App/Browser). `DraftStore`
+  (`draft-store.ts`), `LogQueue` (`log-queue.ts`), Tagebuch-Zwischenspeicher im Supabase-Backend. `cacheableRows()` gibt
+  das Tagebuch getrennt zurück (`logs`), nie im `rowsCache`. Leeren bei Abmelden/Konto löschen/Testdaten löschen,
+  NICHT bei Widerruf (nur bereinigen).
+- **LogQueue (4.3):** Schlüssel `save_session_log:<planned_session_id>`, Ersetzen behält die `base_revision`, gleiche
+  `write_id` bei Neuversuch, Netz/401 = später (Meldung „Bitte melde dich erneut an“), Konflikt/Ablehnung → Entwurf
+  VOR dem Entfernen, `orphaned` → Meldung, Konto-Bindung, Sperre + Bereinigung vor dem Widerruf, neuere Fassung
+  während des Sendens baut auf der bestätigten Revision auf. Sende-Reihenfolge `SyncQueue` → `LogQueue` →
+  `close_missed_sessions()`; vor `save_training_plan` wird die `LogQueue` gesendet (H-b); liegen Einträge aus
+  Gesundheits-Plänen in der Warteschlange, prüft die App vorher `has_valid_consent('health_data')` und neutralisiert
+  (anderes Gerät, R3).
+- **Konto-Bindung (R5):** `owner_user_id` in Entwurf, `LogQueue`, `logCache` und – neu – der normalen `SyncQueue`
+  (altes Listenformat wird weiter gelesen); fremdes Konto → nichts gesendet, „Heute“ fragt „…löschen?“.
+- **Supabase-Backend:** RPCs `save_session_log`, `delete_session_log` (nur online, Fehler `online_only`),
+  `recent_exercise_logs`, `close_missed_sessions`, `revoke_health_data` (statt `update consents` für health_data),
+  Startgewicht direkt per PostgREST (`set_exercise_start_weight` über die normale `SyncQueue`, Schlüssel je Übung).
+  Laden: 12 Wochen Tagebuch (`in`-Filter in Paketen) + `recent_exercise_logs()`, wartende Trainings werden für die
+  Anzeige darübergelegt (nie in den Zwischenspeicher).
+- **Testmodus:** `checkSessionLog()` (`local-rules.ts`) mit denselben Regeln und derselben Reihenfolge wie
+  `save_session_log` (Zod, Idempotenz/Konflikt vor Art und Datum, W2, Tageslimit, nie stapeln, Übungen und
+  `alternative`, verwaist, `skipped → completed`, Gesundheits-Plan ohne Einwilligung neutral); `log-rows.ts` bildet
+  Eintrag ⇄ Zeilen ab (Löschen wie `delete_session_log`, `on delete set null`, `close_missed_sessions` beim Laden,
+  Neutralisieren/Löschen beim Widerruf, H-c bei `save_training_plan` ohne gültige Einwilligung).
+- **App:** `app/workout/[sessionId].tsx` (Satz-Zeilen mit −/+ und Ansage, großer Haken, Gewicht gilt für folgende
+  offene Sätze, „Wiederholungen in Reserve“ 0–5+, „Nicht gemacht“ ohne Grund, Alternative, eigenes Startgewicht mit
+  Bestätigung über der Schwelle, Gewichts-Bestätigung W5, „Tippfehler?“, Belastung 0–10 als `adjustable`-Regler mit
+  Pfeiltasten, Notiz mit Hinweis S3 und Code-Point-Zähler, Verwerfen mit Nachfrage, Ändern eines Eintrags ohne
+  Übungstausch); „Heute“: berechnetes Ziel in der Einheit („3 × 10 Wiederholungen mit 22,5 kg je Hantel“),
+  „Training starten“/„Heute nachholen“ (`canCatchUp()`), „✓ Erledigt“ + „Ansehen/Ändern“, Entwurf gefunden
+  (Fortsetzen/Speichern/Verwerfen), Konflikt (Meine Fassung behalten / Andere übernehmen), abgelehnt, „wird
+  übertragen“; Browser: Tab-Hinweis und `beforeunload` solange Entwurf oder Wartendes; Einstellungen: Widerrufs-Dialog
+  mit Wahl „Tagebuch behalten (empfohlen)“ / „auch löschen“ und den Hinweisen H6, R3 und **K4**; Abmelden mit
+  Nachfrage (R6, „Jetzt senden“ → Rest → erneut fragen).
+- **Tests:** Vitest `log-queue.test.ts`, `workout.test.ts` (Testmodus-Ablauf, `checkSessionLog`, Widerruf,
+  Speicher), `log-rows.test.ts`, Ergänzungen in `supabase-backend.test.ts` (W8-Reihenfolge, H-b, R3, R5, 401,
+  Konflikt/Ablehnung/orphaned, logCache offline, Löschen nur online), `protected-store.test.ts`,
+  `sync-queue.test.ts`, `workout-format.test.ts` (Pflichtpunkt `harder_variant` nur mit Variantenname); Playwright
+  `e2e/workout.spec.ts` mit festem Datum (Kraft-Einheit komplett mit Alternative und „nicht gemacht“, Progression nach
+  zwei Einheiten sichtbar, Entwurf nach Neu laden, `beforeunload`, Abmelde-Nachfrage, offline eintragen, Widerruf
+  behält das Tagebuch ohne Vorgaben); Bildschirmfotos `training-*` und `heute-erledigt` (hell/dunkel).
+
+Festlegungen bei der Umsetzung von C1:
+
+1. Ein neuer Entwurf wird erst beim ersten Tipp gespeichert (Hineinschauen hinterlässt nichts); nach Neu laden auf dem
+   Trainingsbildschirm geht es direkt weiter, „Heute“ zeigt „Fortsetzen / Speichern / Verwerfen“.
+2. Beim **Ändern** eines gespeicherten Eintrags bleibt der Schnappschuss der Vorgabe (was damals gezeigt wurde);
+   Übungen sind dann nicht tauschbar. Nach einer Neutralisierung (Widerruf) gilt dasselbe für offene Entwürfe.
+3. Ein beim Speichern als nicht bestätigt erkanntes Gewicht über den Warnschwellen blockiert das Speichern mit Hinweis
+   – die Person bestätigt („Ja, stimmt so“) oder korrigiert.
+4. Im Testmodus wird `close_missed_sessions` beim Laden nachgebildet (Gleichstand mit dem Server).
+5. Die Bestätigung eines gespeicherten Startgewichts gilt als erteilt (die App speichert es erst nach der Nachfrage).
+
+Offen für C2/D: Ausdauer + Pausentimer + Bildschirm-an (C2); Woche, Verlauf, Löschen-UI, Export (D); Live-Test mit
+Supabase (W13, D).
+
+**Wächter-Prüfung C1: mit Auflagen – eingearbeitet (06.10.2026):**
+
+- **B1 (blockierend):** `createEncryptedProtectedStore` führt `read`/`write`/`clear` je Speicher über eine
+  Promise-Kette nacheinander aus; ein Generationszähler verhindert, dass ein Schlüssel von vor `clear()` weiterverwendet
+  wird; der gemerkte Schlüssel wird erst NACH `secrets.remove` vergessen. `LogQueue`/`DraftStore` schreiben ihren Stand
+  über eine eigene Kette in Auftragsreihenfolge (Momentaufnahme beim Auslösen), gleichzeitiges erstes Laden überschreibt
+  keinen inzwischen geänderten Stand. `saveDraft` im Trainingsmodus meldet Fehler („Zwischenstand konnte nicht gesichert
+  werden“). Vitest „gleichzeitig clear() und write() → neue Instanz liest die Daten“; die Wächter-Skripte `race.ts`/
+  `race2.ts` liefern jetzt die Daten nach dem Neustart.
+- **S1:** `classifyLogError()`/`isTransientError()`: PGRST301–303 bzw. „JWT expired“, 401, 42501, 429, PGRST000–003,
+  Klassen 08/53/57 (u. a. 57014), 40001/40P01, ≥ 500 und unlesbare Antworten = später erneut (der HTTP-Status wird an den
+  PostgREST-Fehler angehängt). Tests mit echten Fehlerformen.
+- **S2:** In Zwischenspeicher kommt nur Bestätigtes: `writeCache(…, 'server')` merkt sich den bestätigten Stand; Aufrufe
+  mit Anzeige-Zeilen entfernen die Überlagerung wartender Trainings (Tagebuch und `completed`). Test.
+- **S3:** `cleanHealthIfConsentInvalid()` prüft beim Laden/Senden und nach `save_training_plan` (H-c) Warteschlange UND
+  Entwürfe; bei ungültiger Einwilligung werden beide neutralisiert. Test.
+- **S4:** Sende-Ereignisse tragen Schlüssel und `write_id`; „Training speichern“ wertet nur das eigene Ergebnis. Test
+  mit zwei wartenden Fassungen.
+- **S5 → Pflicht-Prüfpunkte für den Live-Test W13 (Etappe D):** App offline mit wartendem Training und offenem Entwurf
+  hart beenden und neu starten (Warteschlange und Entwurf sind noch da und werden übertragen); Sitzung/Token ablaufen
+  lassen, während ein Training wartet (bleibt wartend, Hinweis „erneut anmelden“, nach Anmeldung übertragen); Konflikt
+  und Ablehnung auf echtem Server; Browser im privaten Fenster (Hinweis „Offline-Speicher nicht verfügbar“).
+- **K1:** Testmodus zählt Erstellungen je Tag in `localDb.logCounter` (auch gelöschte), wie der Server.
+  **K2:** Testmodus vergibt bei schon vergebener Eintrags- bzw. Übungs-id eine neue (Festlegung 7).
+  **K4:** „Heute“ erklärt „Heute ist schon ein Training eingetragen …“. **K5:** Text „noch nicht übertragen“, im Browser
+  mit Tab-Hinweis. **K6:** „Gewicht eingeben“ je Übung (gilt für den ersten offenen und alle folgenden Sätze).
+  **K7:** Halteübung abhaken ohne Dauer → Vorgabe bzw. 5 s. **K9:** sessionStorage für Entwurf und Warteschlange im
+  strikten Modus – ein gescheitertes Schreiben wird gemeldet; „Training speichern“ sendet die Fassung dann sofort aus
+  dem Arbeitsspeicher, gelingt das nicht: „Offline-Speicher nicht verfügbar – bitte mit Verbindung speichern“.
+- **K3 (dokumentiert, Abweichung):** `checkSessionLog()` prüft das vollständige Zod-Schema VOR der Idempotenz; der
+  Server prüft vorher nur Felder und Formate, Übungen/Sätze danach. Ohne Wirkung bei unveränderter Fassung (die App sendet
+  bei Neuversuchen dieselbe gültige Fassung).
+- **K8 (dokumentiert):** Ging die Antwort auf eine Fassung verloren und wird die wartende Einheit vorher noch einmal
+  geändert, behält die neue Fassung die alte `base_revision` → Konflikt mit der eigenen Fassung; „Meine Fassung
+  behalten“ löst ihn, nichts geht verloren.
+- `completedOn()` (core) ist für Woche/Verlauf (Etappe D) vorgesehen; „Heute“ nutzt den Hinweis aus K4.
+- **CI:** `pnpm check` läuft mit `turbo … --continue` (alle Fehler eines Laufs sichtbar, nicht langsamer). Ein
+  JUnit-Bericht als Artefakt wird erst ergänzt, falls der einmal beobachtete core-Testfehler erneut auftritt (der Wächter
+  konnte ihn in 18 Läufen nicht nachstellen).
+
+**Nachprüfung C1 (Runde 2): freigegeben (06.10.2026).** Offen für C2/D:
+
+- **N1 (soll, Pflicht C2/D):** Ein Eintrag, der dauerhaft mit einem als vorübergehend eingestuften Fehler scheitert
+  (z. B. „Profil fehlt“ als 42501, ein nur von diesem Eintrag ausgelöster Serverfehler, dauerhaft unlesbare Antworten),
+  bleibt vorne in der Warteschlange; spätere Trainings und `close_missed_sessions` hängen dahinter. Lösung: Fehlversuche
+  je Eintrag zählen, bei Nicht-Netzfehlern mit dem nächsten Eintrag weitermachen, nach ~5 Versuchen bzw. 24 h Meldung
+  zeigen und den Eintrag als abgelehnten Entwurf sichern (nie verwerfen); 42501 „Nicht angemeldet“ → „Bitte erneut
+  anmelden“.
+- **N2 (kann):** Im K9-Fall bleibt nach späterer Übertragung der Entwurf stehen („Entwurf gefunden“ für ein gespeichertes
+  Training; erneutes Speichern → Konflikt, kein Verlust).
+- **N3 (kann):** Test für K9 mit einem sessionStorage, der beim Schreiben wirft.
+- **N4 (kann):** „jwt“ im Fehlertext gilt pauschal als vorübergehend – enger auf Fehlercodes fassen.
 
 ## Wächter-Prüfung (Runde 1) – wie die Befunde gelöst sind
 

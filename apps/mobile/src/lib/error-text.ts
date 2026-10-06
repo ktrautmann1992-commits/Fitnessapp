@@ -25,6 +25,12 @@ export function errorText(error: unknown): string {
       return t.errors.planRejected;
     case 'no_template':
       return t.errors.noTemplate;
+    case 'online_only':
+      return t.errors.onlineOnly;
+    case 'foreign_data':
+      return t.errors.foreignData;
+    case 'storage_unavailable':
+      return t.errors.storageUnavailable;
     case 'unknown':
       return t.errors.generic;
   }

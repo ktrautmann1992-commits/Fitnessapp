@@ -10,7 +10,7 @@
     "lint": "turbo run lint",
     "typecheck": "turbo run typecheck",
     "test": "turbo run test",
-    "check": "turbo run lint typecheck test",
+    "check": "turbo run lint typecheck test --continue",
     "format": "prettier --write .",
     "format:check": "prettier --check .",
     "content:validate": "pnpm --filter @fitnessapp/content validate",

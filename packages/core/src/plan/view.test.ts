@@ -16,6 +16,7 @@ import {
   prepareSessionForDisplay,
   sessionLocation,
   sessionOn,
+  completedOn,
   type StoredSession,
   weekOverview,
 } from './view';
@@ -262,6 +263,19 @@ describe('Heute und Woche', () => {
     );
     expect(sessionOn(skipped, '2026-10-07')).toBeNull();
     expect(nextPlannedSession(skipped, '2026-10-06')?.scheduled_on).toBe('2026-10-09');
+  });
+
+  it('S4: erledigte und geplante Einheit am selben Tag (neuer Plan) → die offene zählt, erledigte bleibt sichtbar', () => {
+    const first = sessions[0] as StoredSession;
+    const done = { ...first, id: 'alt-erledigt', status: 'completed' as const };
+    const open = { ...first, id: 'neu-geplant' };
+    expect(sessionOn([done, open], first.scheduled_on)?.id).toBe('neu-geplant');
+    expect(sessionOn([open, done], first.scheduled_on)?.id).toBe('neu-geplant');
+    expect(sessionOn([done], first.scheduled_on)?.id).toBe('alt-erledigt');
+    expect(completedOn([done, open], first.scheduled_on).map((s) => s.id)).toEqual([
+      'alt-erledigt',
+    ]);
+    expect(weekOverview([done, open], first.scheduled_on)[0]?.session?.id).toBe('neu-geplant');
   });
 
   it('Wochenübersicht Mo–So mit heute, verschoben und gestrichen', () => {

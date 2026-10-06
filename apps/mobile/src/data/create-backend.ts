@@ -8,7 +8,7 @@ import { Platform } from 'react-native';
 import { supabaseConfig } from '../lib/supabase';
 import { todayIso } from '../lib/format';
 import type { Backend } from './backend';
-import { createDeviceProtectedStore } from './device-protected-store';
+import { createDeviceProtectedStores } from './device-protected-store';
 import type { KeyValueStore } from './kv';
 import { createLocalBackend } from './local-backend';
 import { createSupabaseBackend } from './supabase-backend';
@@ -21,7 +21,7 @@ export function consentPlatform(): ConsentPlatform {
   return Platform.OS === 'ios' ? 'ios' : Platform.OS === 'android' ? 'android' : 'web';
 }
 
-function newId(): string {
+export function newId(): string {
   const cryptoApi = globalThis.crypto as Crypto | undefined;
   if (cryptoApi?.randomUUID) {
     return cryptoApi.randomUUID();
@@ -40,6 +40,8 @@ function newId(): string {
 export function createBackend(): Backend {
   const platform = consentPlatform();
   const now = () => new Date().toISOString();
+  // Vier eigene geschützte Speicher (Plan mit Gesundheitsbezug, Entwurf, Tagebuch-Warteschlange, -Zwischenspeicher).
+  const stores = createDeviceProtectedStores();
   if (supabaseConfig.status === 'ok') {
     const client = createSupabaseClient(supabaseConfig.config, {
       auth: {
@@ -56,10 +58,20 @@ export function createBackend(): Backend {
       platform,
       now,
       newId,
-      // Pläne mit Gesundheitsbezug (Frage 14): App verschlüsselt, Browser nur sessionStorage.
-      protectedStore: createDeviceProtectedStore(),
+      // Pläne mit Gesundheitsbezug (Frage 14) und Tagebuch (Phase 4 Frage 3): App verschlüsselt, Browser nur
+      // sessionStorage.
+      protectedStore: stores.healthPlan,
+      workoutDraftStore: stores.workoutDraft,
+      logQueueStore: stores.logQueue,
+      logCacheStore: stores.logCache,
     });
   }
   // Testmodus: einzige Stelle, an der die Plan-Engine Entwürfe nutzen darf (allowDrafts in createLocalBackend).
-  return createLocalBackend(deviceStore, { platform, today: () => todayIso(), now, newId });
+  return createLocalBackend(deviceStore, {
+    platform,
+    today: () => todayIso(),
+    now,
+    newId,
+    draftStore: stores.workoutDraft,
+  });
 }

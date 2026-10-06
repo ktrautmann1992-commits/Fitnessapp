@@ -1,15 +1,25 @@
 import {
+  addDays,
   evaluateHealthScreening,
   HEALTH_PLAN_CACHE_MAX_AGE_DAYS,
   healthScreeningAnswersSchema,
   isoDateInTimeZone,
+  LOG_CACHE_WEEKS,
   type ConsentType,
   type PlanLibrary,
   type PlanSafetyRules,
+  type SessionLogPayload,
 } from '@fitnessapp/core';
 import type { AppSupabaseClient, Json } from '@fitnessapp/db';
 
-import { BackendError, type Backend, type BackendErrorCode, type BackendEvent } from './backend';
+import {
+  BackendError,
+  type Backend,
+  type BackendErrorCode,
+  type BackendEvent,
+  type LogSaveOutcome,
+} from './backend';
+import { DraftStore } from './draft-store';
 import { readJson, STORAGE_KEYS, writeJson, type KeyValueStore } from './kv';
 import { upgradeStoredRows } from './legacy-rows';
 import { type ConsentVersions, versionsFromDocuments } from './mapping';
@@ -20,13 +30,36 @@ import {
   libraryToCache,
 } from './plan-library';
 import { planSave } from './plan-save';
+import {
+  applySessionLog,
+  logRowsOf,
+  removeSessionLog,
+  EMPTY_LOG_ROWS,
+  type LogRows,
+  mergeLogRows,
+  neutralizeHealthPlanLogRows,
+  deleteHealthPlanLogRows,
+} from './log-rows';
+import {
+  ForeignQueueError,
+  LogQueue,
+  logQueueKey,
+  type LogQueueEntry,
+  type SaveLogResponse,
+} from './log-queue';
 import { createMemoryProtectedStore, type ProtectedStore } from './protected-store';
 import { SyncQueue } from './sync-queue';
 import { effectiveSafetyRules } from './training-plan';
 import {
+  emptyUserRows,
   type AuthSession,
+  type CardioLogRow,
   type ConsentDocument,
   type ConsentPlatform,
+  type ExerciseLogRow,
+  type SessionLogRow,
+  type SetLogRow,
+  type StartWeightRow,
   type PlannedExerciseRow,
   type PlannedSessionRow,
   type UserPlanRow,
@@ -41,6 +74,7 @@ import {
   type PlanRows,
   type WriteOp,
 } from './write-ops';
+import type { LogRejectReason, WorkoutDraft } from './workout-draft';
 
 /**
  * SUPABASE-MODUS: Login per 6-stelligem E-Mail-Code, Daten in der Datenbank (Frankfurt, RLS).
@@ -108,7 +142,8 @@ export function classifySupabaseError(error: unknown, sensitive = false): Backen
   if (e.code === '42501') {
     return sensitive ? 'consent_required' : 'profile_missing';
   }
-  if (e.code === 'PGRST301' || e.status === 401) {
+  // Abgelaufenes/ungültiges JWT: PostgREST ab 12 meldet PGRST303 („JWT expired“), ältere PGRST301/302.
+  if (/^PGRST30[1-3]$/.test(e.code ?? '') || /jwt expired/i.test(message) || e.status === 401) {
     return 'not_signed_in';
   }
   return 'unknown';
@@ -132,6 +167,73 @@ function toPlanError(error: unknown, sensitive: boolean): BackendError {
     sensitive,
     cause: error,
   });
+}
+
+/**
+ * Fehler von save_session_log (W8, W10): Netz, abgelaufene Sitzung und fehlende Rechte = „später erneut“ (nie
+ * verwerfen); sonst der Grund der Ablehnung aus dem festen Fehlercode (die Meldungen enthalten keine Inhalte).
+ */
+export function classifyLogError(error: unknown): 'retry' | LogRejectReason {
+  if (isTransientError(error)) return 'retry';
+  const e = (error ?? {}) as ErrorLike;
+  if (e.code === '23505') return 'day_taken';
+  if (e.code === '54000') return 'daily_limit';
+  if ((e.message ?? '').includes('außerhalb des erlaubten Zeitraums')) return 'date_window';
+  return 'invalid';
+}
+
+/**
+ * Vorübergehende Fehler (Wächter C1 S1) – nie als Ablehnung werten: Netz, Sitzung/JWT (PGRST301–303, „JWT
+ * expired“, 401), fehlende Rechte (42501), Drosselung (429), Datenbank nicht erreichbar (PGRST000–003), Klassen
+ * 08 (Verbindung), 53 (Ressourcen), 57 (Abbruch, z. B. 57014 Zeitlimit), Serialisierung/Deadlock (40001/40P01),
+ * Server-Fehler (≥ 500) und unlesbare Antworten.
+ */
+export function isTransientError(error: unknown): boolean {
+  const code = classifySupabaseError(error);
+  if (
+    code === 'network' ||
+    code === 'not_signed_in' ||
+    code === 'profile_missing' ||
+    code === 'rate_limited'
+  ) {
+    return true;
+  }
+  const e = (error ?? {}) as ErrorLike;
+  const db = e.code ?? '';
+  return (
+    /^PGRST(00[0-3]|30[1-3])$/.test(db) ||
+    /jwt/i.test(e.message ?? '') ||
+    /^(08|53|57)/.test(db) ||
+    db === '40001' ||
+    db === '40P01' ||
+    db === 'invalid_response' ||
+    (typeof e.status === 'number' && e.status >= 500)
+  );
+}
+
+/** Antwort von save_session_log/delete_session_log prüfen (Abbildung, keine Werte loggen). */
+function parseLogResponse(data: unknown): SaveLogResponse {
+  const value = (data ?? {}) as Partial<SaveLogResponse>;
+  const result =
+    value.result === 'ok' || value.result === 'orphaned' || value.result === 'conflict'
+      ? value.result
+      : null;
+  if (result === null) throw { code: 'invalid_response', message: 'Ungültige Antwort.' };
+  return {
+    result,
+    id: typeof value.id === 'string' ? value.id : null,
+    revision: typeof value.revision === 'number' ? value.revision : null,
+    ...(value.exercise_ids ? { exercise_ids: value.exercise_ids } : {}),
+  };
+}
+
+/** Wie viele IDs je `in`-Filter (Länge der Adresse begrenzen). */
+const IN_CHUNK = 80;
+
+function chunks<T>(items: readonly T[], size: number): T[][] {
+  const out: T[][] = [];
+  for (let i = 0; i < items.length; i += size) out.push(items.slice(i, i + size));
+  return out;
 }
 
 /** Update ohne betroffene Zeile (Einheit gibt es nicht mehr, z. B. Plan ersetzt) – vom Server abgelehnt. */
@@ -241,6 +343,27 @@ export async function executeWriteOp(
         }),
       );
       return;
+    // Eigenes Startgewicht direkt per PostgREST (bewusste Ausnahme W14; RLS: eigene Zeilen, Profil-Pflicht).
+    case 'set_exercise_start_weight':
+      if (op.weightKg === null) {
+        check(
+          await client
+            .from('exercise_start_weights')
+            .delete()
+            .eq('user_id', userId)
+            .eq('exercise_id', op.exerciseId),
+        );
+      } else {
+        check(
+          await client
+            .from('exercise_start_weights')
+            .upsert(
+              { user_id: userId, exercise_id: op.exerciseId, weight_kg: op.weightKg },
+              { onConflict: 'user_id,exercise_id' },
+            ),
+        );
+      }
+      return;
     // Nur Datum und Status (Trigger private.planned_sessions_before_update prüft den Rest).
     case 'update_planned_session': {
       const result = await client
@@ -287,6 +410,19 @@ export interface SupabaseBackendOptions {
    * Standard (Tests): nur Arbeitsspeicher.
    */
   protectedStore?: ProtectedStore;
+  /**
+   * Geschützte Tagebuch-Speicher (PLAN-PHASE-4 4.1): Entwurf, Tagebuch-Warteschlange, Tagebuch-Zwischenspeicher –
+   * je ein eigener Speicher mit eigenem Schlüssel. Standard (Tests): nur Arbeitsspeicher.
+   */
+  workoutDraftStore?: ProtectedStore;
+  logQueueStore?: ProtectedStore;
+  logCacheStore?: ProtectedStore;
+}
+
+/** Inhalt des geschützten Tagebuch-Zwischenspeichers (4.6). */
+interface LogCache {
+  userId: string;
+  logs: LogRows;
 }
 
 const CONSENT_TYPES_WITH_TEXT = ['terms', 'privacy', 'health_data'] as const;
@@ -294,6 +430,8 @@ const CONSENT_TYPES_WITH_TEXT = ['terms', 'privacy', 'health_data'] as const;
 export function createSupabaseBackend(options: SupabaseBackendOptions): Backend {
   const { client, store } = options;
   const protectedStore = options.protectedStore ?? createMemoryProtectedStore();
+  const logCacheStore = options.logCacheStore ?? createMemoryProtectedStore();
+  const drafts = new DraftStore(options.workoutDraftStore ?? createMemoryProtectedStore());
   let currentUserId: string | null = null;
   /** Zuletzt geladene Einwilligungs-Versionen (für die wirksamen Sicherheitsregeln im Zwischenspeicher). */
   let versions: ConsentVersions | null = null;
@@ -318,10 +456,98 @@ export function createSupabaseBackend(options: SupabaseBackendOptions): Backend 
       console.warn(`Änderung verworfen (${op.kind}): vom Server abgelehnt.`);
       if (op.kind === 'update_planned_session') {
         // Verschiebung abgelehnt (Einheit ersetzt, Tag belegt …) → App lädt den Plan neu und meldet es.
-        for (const listener of listeners) listener({ kind: 'plan_change_dropped' });
+        emit({ kind: 'plan_change_dropped' });
       }
     },
+    currentUserId: () => currentUserId,
   });
+
+  function emit(event: BackendEvent) {
+    for (const listener of listeners) listener(event);
+  }
+
+  /**
+   * Eigene Tagebuch-Warteschlange (4.3): nie stilles Verwerfen – Konflikt und Ablehnung werden ERST als Entwurf
+   * gesichert, dann entfernt. Keine Inhalte in Logs (nur die Art des Ereignisses).
+   */
+  const logQueue = new LogQueue({
+    store: options.logQueueStore ?? createMemoryProtectedStore(),
+    execute: async (payload) => {
+      const { data, error, status } = await client.rpc('save_session_log', {
+        p_log: toJson(payload),
+      });
+      // PostgrestError trägt keinen HTTP-Status – für 429/5xx (später erneut, S1) ergänzen.
+      if (error) throw { ...error, status };
+      return parseLogResponse(data);
+    },
+    classify: (error) => {
+      const kind = classifyLogError(error);
+      if (kind === 'retry' && classifySupabaseError(error) === 'not_signed_in') {
+        emit({ kind: 'session_expired' });
+      }
+      return kind;
+    },
+    currentUserId: () => currentUserId,
+    onSaved: (entry, response) => {
+      emit({
+        kind: 'log_saved',
+        orphaned: response.result === 'orphaned',
+        key: entry.key,
+        writeId: entry.payload.write_id,
+      });
+    },
+    onConflict: async (entry, response) => {
+      await drafts.put({ ...entry.draft, state: 'conflict', serverRevision: response.revision });
+      emit({ kind: 'log_conflict', key: entry.key, writeId: entry.payload.write_id });
+    },
+    onRejected: async (entry, reason) => {
+      await drafts.put({ ...entry.draft, state: 'rejected', rejectReason: reason });
+      console.warn('Training vom Server abgelehnt – als Entwurf gesichert.');
+      emit({ kind: 'log_rejected', reason, key: entry.key, writeId: entry.payload.write_id });
+    },
+  });
+
+  /**
+   * Bereinigung nach einem Widerruf auf einem ANDEREN Gerät bzw. nach H-c (R3, S1): Liegen Warteschlangen-Einträge
+   * ODER Entwürfe aus Plänen mit Gesundheits-Check auf dem Gerät und ist die Einwilligung health_data nicht (mehr)
+   * gültig, werden beide neutralisiert. false = offline (später erneut).
+   */
+  async function cleanHealthIfConsentInvalid(): Promise<boolean> {
+    await logQueue.load();
+    const hasHealth =
+      logQueue.hasHealthPlanEntries() || (await drafts.all()).some((d) => d.fromHealthPlan);
+    if (!hasHealth) return true;
+    try {
+      const { data, error } = await client.rpc('has_valid_consent', { p_type: 'health_data' });
+      if (error) throw error;
+      if (data !== true) {
+        await logQueue.cleanHealthPlanEntries('neutralize');
+        await drafts.cleanHealthPlanDrafts('neutralize');
+      }
+      return true;
+    } catch (error) {
+      return classifyLogError(error) !== 'retry';
+    }
+  }
+
+  /**
+   * Sende-Reihenfolge (W8): normale Warteschlange → Tagebuch-Warteschlange → close_missed_sessions(). Vorher die
+   * Bereinigung bei ungültiger Einwilligung (cleanHealthIfConsentInvalid). true = beide Warteschlangen leer.
+   */
+  async function flushAll(): Promise<boolean> {
+    const syncDone = await queue.flush();
+    if (!syncDone) return false;
+    if (!(await cleanHealthIfConsentInvalid())) return false;
+    const logResult = await logQueue.flush();
+    if (logResult !== 'done') return false;
+    try {
+      const { error } = await client.rpc('close_missed_sessions');
+      if (error && classifyLogError(error) === 'retry') return false;
+    } catch {
+      // Nur Statuspflege – beim nächsten Laden erneut.
+    }
+    return true;
+  }
 
   function applyContext(): ApplyContext {
     return { now: options.now(), newId: options.newId, flagsFor: () => [], today: today() };
@@ -358,8 +584,58 @@ export function createSupabaseBackend(options: SupabaseBackendOptions): Backend 
    * (cacheableRows); Pläne mit Gesundheitsbezug und gesundheitsbezogene Sicherheitsregeln nur in den geschützten
    * Zwischenspeicher. Liefert der Server keinen solchen Plan mehr (ersetzt/fehlt/Widerruf), wird er gelöscht.
    */
-  async function writeCache(userId: string, rows: UserRows): Promise<void> {
+  /**
+   * Bestätigter Stand (Wächter C1 S2): Tagebuch und Status der Einheiten so, wie der Server sie zuletzt geliefert hat.
+   * In die Zwischenspeicher kommt nie die Anzeige-Überlagerung noch nicht übertragener Trainings (withPendingLogs) –
+   * sonst zeigte das Gerät offline „erledigt“, obwohl die Fassung später abgelehnt wird.
+   */
+  let confirmed: { logs: LogRows; status: Map<string, PlannedSessionRow['status']> } | null = null;
+
+  function rememberConfirmed(rows: UserRows): void {
+    confirmed = {
+      logs: logRowsOf(rows),
+      status: new Map(rows.plannedSessions.map((s) => [s.id, s.status] as const)),
+    };
+  }
+
+  /** Anzeige-Zeilen ohne die Überlagerung wartender Trainings. */
+  function withoutPendingLogs(rows: UserRows): UserRows {
+    const pendingWrites = new Set(logQueue.snapshot().map((e) => e.payload.write_id));
+    const pendingSessions = new Set(
+      logQueue
+        .snapshot()
+        .map((e) => e.payload.planned_session_id)
+        .filter((id): id is string => id !== null),
+    );
+    const logs: LogRows = confirmed
+      ? confirmed.logs
+      : pendingWrites.size === 0
+        ? logRowsOf(rows)
+        : rows.sessionLogs
+            .filter((l) => pendingWrites.has(l.last_write_id))
+            .reduce((next, l) => removeSessionLog(next, l.id), rows);
+    return {
+      ...rows,
+      ...logRowsOf({ ...rows, ...logs }),
+      plannedSessions: rows.plannedSessions.map((s) => {
+        if (s.status !== 'completed' || !pendingSessions.has(s.id)) return s;
+        const before = confirmed?.status.get(s.id);
+        return before !== undefined && before !== 'completed' ? { ...s, status: before } : s;
+      }),
+    };
+  }
+
+  /** `server` = Zeilen kommen direkt vom Server (ohne Überlagerung) und werden der neue bestätigte Stand. */
+  async function writeCache(
+    userId: string,
+    displayRows: UserRows,
+    origin: 'server' | 'display' = 'display',
+  ): Promise<void> {
+    if (origin === 'server') rememberConfirmed(displayRows);
+    const rows = origin === 'server' ? displayRows : withoutPendingLogs(displayRows);
     const split = cacheableRows(rows, { allowHealthPlanCache: true });
+    // Tagebuch nur im eigenen geschützten Speicher (S4); nie im normalen rowsCache.
+    await logCacheStore.write(JSON.stringify({ userId, logs: split.logs } satisfies LogCache));
     await writeJson(store, STORAGE_KEYS.rowsCache, {
       userId,
       rows: split.rows,
@@ -397,6 +673,100 @@ export function createSupabaseBackend(options: SupabaseBackendOptions): Backend 
     } catch {
       return null;
     }
+  }
+
+  async function readLogCache(userId: string): Promise<LogRows> {
+    const raw = await logCacheStore.read();
+    if (!raw) return EMPTY_LOG_ROWS;
+    try {
+      const parsed = JSON.parse(raw) as LogCache;
+      return parsed.userId === userId ? { ...EMPTY_LOG_ROWS, ...parsed.logs } : EMPTY_LOG_ROWS;
+    } catch {
+      return EMPTY_LOG_ROWS;
+    }
+  }
+
+  /**
+   * Noch nicht übertragene Trainings über den Stand legen (Anzeige „erledigt – wird übertragen“). Nur für die
+   * Anzeige – in den Zwischenspeicher kommt ausschließlich der Server-Stand.
+   */
+  function withPendingLogs(rows: UserRows, userId: string): UserRows {
+    return logQueue.snapshot().reduce((next, entry) => {
+      const linked = next.plannedSessions.some((s) => s.id === entry.payload.planned_session_id);
+      const existing = next.sessionLogs.find(
+        (l) =>
+          (linked && l.planned_session_id === entry.payload.planned_session_id) ||
+          l.id === entry.payload.id,
+      );
+      return applySessionLog(next, entry.payload, {
+        userId,
+        linked,
+        keepTargets: true,
+        fromHealthPlan: entry.fromHealthPlan,
+        id: existing?.id ?? entry.payload.id,
+        // Noch unbestätigt: Revision der Basis (0 = neu) – die Warteschlange behält ohnehin deren base_revision.
+        revision: entry.payload.base_revision ?? 0,
+        now: options.now(),
+        isIntroWeek: entry.payload.is_intro_week,
+        isDeload: entry.payload.is_deload,
+      });
+    }, rows);
+  }
+
+  /**
+   * Tagebuch laden (4.6): die letzten LOG_CACHE_WEEKS Wochen plus recent_exercise_logs() (Grundlage der
+   * Progression, auch für ältere Einträge); RLS: nur eigene Zeilen.
+   */
+  async function fetchLogs(userId: string): Promise<LogRows> {
+    const since = addDays(today(), -LOG_CACHE_WEEKS * 7);
+    const sessions = await client
+      .from('session_logs')
+      .select('*')
+      .eq('user_id', userId)
+      .gte('performed_on', since)
+      .order('performed_on');
+    if (sessions.error) throw sessions.error;
+    const sessionLogs = (sessions.data ?? []) as SessionLogRow[];
+    const exerciseLogs: ExerciseLogRow[] = [];
+    const cardioLogs: CardioLogRow[] = [];
+    for (const ids of chunks(
+      sessionLogs.map((l) => l.id),
+      IN_CHUNK,
+    )) {
+      const [exercises, cardio] = await Promise.all([
+        client.from('exercise_logs').select('*').in('session_log_id', ids),
+        client.from('cardio_logs').select('*').in('session_log_id', ids),
+      ]);
+      if (exercises.error) throw exercises.error;
+      if (cardio.error) throw cardio.error;
+      exerciseLogs.push(...((exercises.data ?? []) as ExerciseLogRow[]));
+      cardioLogs.push(...((cardio.data ?? []) as CardioLogRow[]));
+    }
+    const setLogs: SetLogRow[] = [];
+    for (const ids of chunks(
+      exerciseLogs.map((e) => e.id),
+      IN_CHUNK,
+    )) {
+      const sets = await client.from('set_logs').select('*').in('exercise_log_id', ids);
+      if (sets.error) throw sets.error;
+      setLogs.push(...((sets.data ?? []) as SetLogRow[]));
+    }
+    const recent = await client.rpc('recent_exercise_logs', { p_per_exercise: 2 });
+    if (recent.error) throw recent.error;
+    const extra = (recent.data ?? {}) as Partial<LogRows> & {
+      session_logs?: SessionLogRow[];
+      exercise_logs?: ExerciseLogRow[];
+      set_logs?: SetLogRow[];
+    };
+    return mergeLogRows(
+      { sessionLogs, exerciseLogs, setLogs, cardioLogs },
+      {
+        sessionLogs: extra.session_logs ?? [],
+        exerciseLogs: extra.exercise_logs ?? [],
+        setLogs: extra.set_logs ?? [],
+        cardioLogs: [],
+      },
+    );
   }
 
   /** Aktiver Plan mit Einheiten und Übungen (RLS: nur eigene Zeilen). */
@@ -446,8 +816,8 @@ export function createSupabaseBackend(options: SupabaseBackendOptions): Backend 
       queue.snapshot().map((entry) => entry.op),
       applyContext(),
     );
-    await writeCache(userId, rows);
-    return rows;
+    await writeCache(userId, rows, 'server');
+    return withPendingLogs(rows, userId);
   }
 
   async function fetchLibrary(): Promise<PlanLibrary> {
@@ -515,6 +885,12 @@ export function createSupabaseBackend(options: SupabaseBackendOptions): Backend 
       client.from('measurement_reminders').select('*').eq('user_id', userId).maybeSingle(),
     ]);
     const plan = await fetchActivePlan(userId);
+    const startWeights = await client
+      .from('exercise_start_weights')
+      .select('*')
+      .eq('user_id', userId);
+    if (startWeights.error) throw startWeights.error;
+    const logs = await fetchLogs(userId);
     for (const result of [
       profile,
       consents,
@@ -545,6 +921,8 @@ export function createSupabaseBackend(options: SupabaseBackendOptions): Backend 
       healthScreenings: screening.data ?? [],
       reminder: reminder.data,
       ...plan,
+      ...logs,
+      startWeights: (startWeights.data ?? []) as StartWeightRow[],
     };
   }
 
@@ -610,11 +988,10 @@ export function createSupabaseBackend(options: SupabaseBackendOptions): Backend 
     },
 
     signOut: async () => {
-      await queue.flush();
+      // Die App fragt vorher nach, wenn noch Trainings warten (R6) – hier wird alles samt Schlüsseln geleert.
+      await flushAll().catch(() => false);
       await client.auth.signOut();
-      await queue.clear();
-      await store.removeItem(STORAGE_KEYS.rowsCache);
-      await protectedStore.clear();
+      await clearLocal();
       currentUserId = null;
     },
 
@@ -646,7 +1023,8 @@ export function createSupabaseBackend(options: SupabaseBackendOptions): Backend 
 
     loadRows: async () => {
       const session = await requireSession();
-      await queue.flush();
+      // Nie an ein fremdes Konto senden (R5): flushAll() sendet nur passende Warteschlangen.
+      await flushAll().catch(() => false);
       try {
         // Noch nicht gesendete Änderungen darüberlegen, damit die Anzeige zum Gerät passt.
         const rows = await refreshRows(session.userId);
@@ -659,17 +1037,22 @@ export function createSupabaseBackend(options: SupabaseBackendOptions): Backend 
         if (cache?.userId !== session.userId) {
           throw new BackendError('network', { cause: error });
         }
-        const rows = upgradeStoredRows(cache.rows);
+        const cached = {
+          ...upgradeStoredRows(cache.rows),
+          ...(await readLogCache(session.userId)),
+        };
         const health = await readHealthCache(session.userId);
+        const rows = health?.plans
+          ? {
+              ...cached,
+              plans: [...cached.plans, ...health.plans.plans],
+              plannedSessions: [...cached.plannedSessions, ...health.plans.plannedSessions],
+              plannedExercises: [...cached.plannedExercises, ...health.plans.plannedExercises],
+            }
+          : cached;
+        rememberConfirmed(rows);
         return {
-          rows: health?.plans
-            ? {
-                ...rows,
-                plans: [...rows.plans, ...health.plans.plans],
-                plannedSessions: [...rows.plannedSessions, ...health.plans.plannedSessions],
-                plannedExercises: [...rows.plannedExercises, ...health.plans.plannedExercises],
-              }
-            : rows,
+          rows: withPendingLogs(rows, session.userId),
           offline: true,
           cachedSafetyRules: health?.safetyRules ?? null,
         };
@@ -697,6 +1080,10 @@ export function createSupabaseBackend(options: SupabaseBackendOptions): Backend 
     },
 
     revokeConsent: async (type) => {
+      if (type === 'health_data') {
+        await revokeHealthData(false);
+        return;
+      }
       const session = await requireSession();
       const { error } = await client
         .from('consents')
@@ -706,10 +1093,6 @@ export function createSupabaseBackend(options: SupabaseBackendOptions): Backend 
         .is('revoked_at', null);
       if (error) {
         throw toBackendError(error);
-      }
-      if (type === 'health_data') {
-        // Die Datenbank löscht alle Pläne mit Gesundheitsbezug – der geschützte Zwischenspeicher sofort auch.
-        await protectedStore.clear();
       }
     },
 
@@ -765,23 +1148,20 @@ export function createSupabaseBackend(options: SupabaseBackendOptions): Backend 
       if (error) {
         throw toBackendError(error);
       }
-      await queue.clear();
-      await store.removeItem(STORAGE_KEYS.rowsCache);
-      await protectedStore.clear();
+      await clearLocal();
       // Die Sitzung gehört zu einem gelöschten Konto – nur lokal abmelden.
       await client.auth.signOut({ scope: 'local' });
       currentUserId = null;
     },
 
-    pendingChanges: () => queue.size(),
-    flush: () => queue.flush(),
+    pendingChanges: () => queue.size() + logQueue.size(),
+    flush: () => flushAll().catch(() => false),
 
     clearDeviceData: async () => {
-      await queue.clear();
+      await clearLocal();
       for (const key of Object.values(STORAGE_KEYS)) {
         await store.removeItem(key);
       }
-      await protectedStore.clear();
     },
 
     loadPlanLibrary: async ({ allowCached }) => {
@@ -800,6 +1180,8 @@ export function createSupabaseBackend(options: SupabaseBackendOptions): Backend 
 
     savePlan: async (payload) => {
       const session = await requireSession();
+      // H-b: wartende Trainings zuerst senden, damit sie ihrer Einheit zugeordnet werden statt zu verwaisen.
+      await logQueue.flush().catch(() => 'later');
       try {
         await executeWriteOp(client, session.userId, { kind: 'save_training_plan', payload });
       } catch (error) {
@@ -807,6 +1189,8 @@ export function createSupabaseBackend(options: SupabaseBackendOptions): Backend 
       }
       // Ein neuer Plan ersetzt ausdrücklich alle wartenden Verschiebungen des alten Plans.
       await queue.remove((op) => op.kind === 'update_planned_session');
+      // H-c: Plan ohne gültige Einwilligung → Entwürfe/Warteschlange aus Gesundheits-Plänen neutralisieren.
+      await cleanHealthIfConsentInvalid();
       return refreshRows(session.userId);
     },
 
@@ -852,8 +1236,171 @@ export function createSupabaseBackend(options: SupabaseBackendOptions): Backend 
         listeners.delete(listener);
       };
     },
+
+    // --- Trainingstagebuch (4.1–4.5) ---------------------------------------------------------------------
+    loadDrafts: async () => {
+      const session = await requireSession();
+      return drafts.forOwner(session.userId);
+    },
+    saveDraft: async (draft) => {
+      await drafts.put(draft);
+    },
+    discardDraft: async (key) => {
+      await drafts.remove(key);
+    },
+    submitWorkout: async (draft, payload) => submit(draft, payload),
+    deleteSessionLog: async (id, baseRevision) => {
+      await requireSession();
+      const { data, error } = await client.rpc('delete_session_log', {
+        p_id: id,
+        p_base_revision: baseRevision,
+      });
+      if (error) {
+        const code = classifySupabaseError(error);
+        throw new BackendError(code === 'network' ? 'online_only' : code, { cause: error });
+      }
+      return parseLogResponse(data).result === 'conflict' ? 'conflict' : 'ok';
+    },
+    setStartWeight: async (exerciseId, weightKg, rows) => {
+      const session = await requireSession();
+      const op: WriteOp = { kind: 'set_exercise_start_weight', exerciseId, weightKg };
+      const next = applyWriteOps(rows, [op], displayContext());
+      await writeCache(session.userId, next);
+      await queue.add([op]);
+      void queue.flush();
+      return next;
+    },
+    revokeHealthData: (deleteLogs) => revokeHealthData(deleteLogs),
+    pendingWorkouts: async () => {
+      await logQueue.load();
+      const owner = currentUserId;
+      return {
+        queued: owner !== null && logQueue.ownerUserId() === owner ? logQueue.size() : 0,
+        drafts: owner ? (await drafts.forOwner(owner)).length : 0,
+      };
+    },
+    pendingLogSessionIds: () =>
+      logQueue
+        .snapshot()
+        .map((entry) => entry.payload.planned_session_id)
+        .filter((id): id is string => id !== null),
+    hasForeignDeviceData: async () => {
+      const session = await requireSession();
+      return (
+        (await logQueue.hasForeign(session.userId)) ||
+        (await queue.hasForeign(session.userId)) ||
+        (await drafts.hasForeign(session.userId))
+      );
+    },
+    discardForeignDeviceData: async () => {
+      const session = await requireSession();
+      if (await logQueue.hasForeign(session.userId)) await logQueue.clear();
+      if (await queue.hasForeign(session.userId)) await queue.clear();
+      await drafts.removeWhere((d) => d.ownerUserId !== session.userId);
+    },
   };
 
+  /** Alles Lokale samt Schlüsseln löschen (Abmelden, Konto löschen, Testdaten löschen – 4.1). */
+  async function clearLocal(): Promise<void> {
+    await queue.clear();
+    await logQueue.clear();
+    await drafts.clear();
+    await store.removeItem(STORAGE_KEYS.rowsCache);
+    await protectedStore.clear();
+    await logCacheStore.clear();
+  }
+
+  /**
+   * Training beenden (4.3): Fassung in die verschlüsselte Warteschlange, DANN Entwurf entfernen, dann senden. Kommt
+   * die Fassung als Konflikt/Ablehnung zurück, liegt sie wieder als Entwurf vor (onConflict/onRejected).
+   */
+  async function submit(draft: WorkoutDraft, payload: SessionLogPayload): Promise<LogSaveOutcome> {
+    const session = await requireSession();
+    const entry: LogQueueEntry = {
+      key: logQueueKey(payload),
+      payload,
+      draft: { ...draft, state: 'open', rejectReason: null },
+      fromHealthPlan: draft.fromHealthPlan,
+    };
+    let persisted = true;
+    try {
+      await logQueue.add(entry, session.userId);
+    } catch (error) {
+      if (error instanceof ForeignQueueError) throw new BackendError('foreign_data');
+      // Gerätespeicher nicht beschreibbar (K9): Die Fassung liegt nur im Arbeitsspeicher der Warteschlange – sofort
+      // senden; der Entwurf bleibt, bis sie übertragen ist.
+      persisted = false;
+    }
+    if (persisted) await drafts.remove(draft.key);
+    // Nur das Ergebnis GENAU dieser Fassung zählt (Wächter C1 S4) – nicht das einer anderen wartenden Einheit.
+    let outcome: LogSaveOutcome | null = null;
+    const unsubscribe = backend.subscribe((event) => {
+      if (!('writeId' in event) || event.writeId !== payload.write_id) return;
+      if (event.kind === 'log_saved') outcome = { kind: 'saved', orphaned: event.orphaned };
+      if (event.kind === 'log_conflict') outcome = { kind: 'conflict' };
+      if (event.kind === 'log_rejected') outcome = { kind: 'rejected', reason: event.reason };
+    });
+    try {
+      await flushAll();
+    } finally {
+      unsubscribe();
+    }
+    const stillQueued = logQueue.snapshot().some((e) => e.payload.write_id === payload.write_id);
+    if (!persisted) {
+      if (stillQueued || outcome === null) throw new BackendError('storage_unavailable');
+      await drafts.remove(draft.key).catch(() => undefined);
+    }
+    return stillQueued || outcome === null ? { kind: 'queued' } : outcome;
+  }
+
+  /**
+   * Widerruf health_data (R3): Senden sperren, laufendes Senden abwarten, Warteschlange/Entwurf/Zwischenspeicher
+   * bereinigen, dann revoke_health_data(p_delete_logs) – eine Transaktion auf dem Server.
+   */
+  async function revokeHealthData(deleteLogs: boolean): Promise<void> {
+    const session = await requireSession();
+    logQueue.setLocked(true);
+    try {
+      await logQueue.idle();
+      const mode = deleteLogs ? 'delete' : 'neutralize';
+      await logQueue.cleanHealthPlanEntries(mode);
+      await drafts.cleanHealthPlanDrafts(mode);
+      const cached = await readLogCache(session.userId);
+      const base = asRows(cached);
+      const cleaned = neutralizeHealthPlanLogRows(
+        deleteLogs ? deleteHealthPlanLogRows(base) : base,
+      );
+      await logCacheStore.write(
+        JSON.stringify({
+          userId: session.userId,
+          logs: {
+            sessionLogs: cleaned.sessionLogs,
+            exerciseLogs: cleaned.exerciseLogs,
+            setLogs: cleaned.setLogs,
+            cardioLogs: cleaned.cardioLogs,
+          },
+        } satisfies LogCache),
+      );
+      const { error } = await client.rpc('revoke_health_data', { p_delete_logs: deleteLogs });
+      if (error) {
+        const code = classifySupabaseError(error, true);
+        throw new BackendError(code === 'network' ? 'online_only' : code, {
+          sensitive: true,
+          cause: error,
+        });
+      }
+      // Die Datenbank löscht alle Pläne mit Gesundheitsbezug – der geschützte Zwischenspeicher sofort auch.
+      await protectedStore.clear();
+    } finally {
+      logQueue.setLocked(false);
+    }
+  }
+
   void queue.load();
+  void logQueue.load();
   return backend;
+}
+
+function asRows(logs: LogRows): UserRows {
+  return { ...emptyUserRows(), ...logs };
 }

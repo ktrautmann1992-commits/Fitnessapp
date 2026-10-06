@@ -25,11 +25,18 @@ import {
   type SavePlanSession,
   savePlanPayloadSchema,
   startOfIsoWeek,
+  exerciseStartWeightSchema,
+  isWithinLogDateWindow,
+  SESSION_LOG_LIMITS,
+  type Exercise,
+  type SessionLogPayload,
+  sessionLogPayloadSchema,
 } from '@fitnessapp/core';
 
 import type { ConsentVersions } from './mapping';
 import { healthPlanBasis } from './training-plan';
 import type { PlannedSessionRow, ProfileRow, UserRows } from './types';
+import type { LogRejectReason } from './workout-draft';
 import { kindsForScope, type WriteOp } from './write-ops';
 
 /**
@@ -162,6 +169,13 @@ export function isValidOp(op: WriteOp, context: { today: string; profile: Profil
         measurementReminderIntervalSchema.safeParse(op.row.interval_days).success &&
         (op.row.next_due_on === null || isoDateSchema.safeParse(op.row.next_due_on).success)
       );
+    // Eigenes Startgewicht: CHECK 0,5–500 kg (exerciseStartWeightSchema), Profil-Pflicht prüft der Aufrufer.
+    case 'set_exercise_start_weight':
+      return (
+        op.weightKg === null ||
+        exerciseStartWeightSchema.safeParse({ exercise_id: op.exerciseId, weight_kg: op.weightKg })
+          .success
+      );
     // Pläne brauchen mehr Zusammenhang (Bibliothek, alle Zeilen) → isValidPlanOp.
     case 'save_training_plan':
     case 'append_plan_block':
@@ -205,9 +219,14 @@ function sessionsValid(
   );
 }
 
-/** Nie zwei nicht gestrichene Einheiten an einem Tag – auch über Pläne hinweg (eindeutiger Index). */
+/**
+ * Nie zwei geplante Einheiten an einem Tag – auch über Pläne hinweg (eindeutiger Index). Wie in der Datenbank seit
+ * Phase 4 (Etappe B, Festlegung 1) belegen nur `planned`-Einheiten ihren Tag; eine erledigte nicht mehr (sonst wäre
+ * ein neuer Plan mit einer Einheit am Tag eines heute erledigten Trainings nicht speicherbar). Die App selbst bietet
+ * das Verschieben auf einen erledigten Tag weiterhin nicht an (rescheduleSession, konservativ – Wächter S4).
+ */
 function noCollisions(existing: readonly PlannedSessionRow[], dates: readonly string[]): boolean {
-  const taken = new Set(existing.filter((s) => s.status !== 'skipped').map((s) => s.scheduled_on));
+  const taken = new Set(existing.filter((s) => s.status === 'planned').map((s) => s.scheduled_on));
   return new Set(dates).size === dates.length && dates.every((d) => !taken.has(d));
 }
 
@@ -321,4 +340,140 @@ export function isValidPlanOp(op: WriteOp, ctx: PlanRuleContext): boolean {
     default:
       return false;
   }
+}
+
+// ---------------------------------------------------------------------------------------------------------
+// Trainingstagebuch (Testmodus): dieselben Regeln wie public.save_session_log
+// (supabase/migrations/20261006120200_training_log_rpcs.sql, docs/PLAN-PHASE-4.md 3.6 Punkt 1, 4.6).
+// ---------------------------------------------------------------------------------------------------------
+
+export interface LogRuleContext {
+  /** Heute (Europe/Berlin). */
+  today: string;
+  rows: UserRows;
+  /** Übungen, die der Testmodus kennt (statt „published bzw. archiviert und eigen“ in der Datenbank). */
+  exercises: ReadonlyMap<string, Pick<Exercise, 'load_type'>>;
+  /** Gültige Einwilligung health_data (has_valid_consent). */
+  healthConsentValid: boolean;
+  /** Heute schon neu angelegte Einträge (Tageslimit, K1). */
+  createdToday: number;
+}
+
+export type LogCheck =
+  /** Gleiche write_id erneut gesendet (R4) – ok ohne erneutes Ersetzen. */
+  | { kind: 'repeat'; result: 'ok' | 'orphaned'; id: string; revision: number }
+  | { kind: 'conflict'; id: string | null; revision: number | null }
+  | { kind: 'reject'; reason: LogRejectReason }
+  | {
+      kind: 'write';
+      result: 'ok' | 'orphaned';
+      id: string;
+      revision: number;
+      linked: boolean;
+      keepTargets: boolean;
+      fromHealthPlan: boolean;
+      isIntroWeek: boolean;
+      isDeload: boolean;
+      isNew: boolean;
+    };
+
+/**
+ * Prüft einen Eintrag wie save_session_log (Reihenfolge wie dort: Idempotenz und Konflikt VOR Art und Datum, S3):
+ * Zod-Schema (= Feldliste), verwaist (B4/H-a), Revision (W3), write_id (R4), Art, Datumsfenster (W2), Tageslimit,
+ * nie stapeln, Übungen bekannt mit passender Belastungsart, planned_exercise_id gehört zur Einheit, `alternative` ⇔
+ * andere Übung, Vorgaben aus Gesundheits-Plänen nur mit gültiger Einwilligung (S1/H-c, Festlegung 4).
+ */
+export function checkSessionLog(payload: SessionLogPayload, ctx: LogRuleContext): LogCheck {
+  if (!sessionLogPayloadSchema.safeParse(payload).success) {
+    return { kind: 'reject', reason: 'invalid' };
+  }
+  const { rows } = ctx;
+  const planned = payload.planned_session_id
+    ? rows.plannedSessions.find((s) => s.id === payload.planned_session_id)
+    : undefined;
+  const linked = planned !== undefined;
+  const plan = planned ? rows.plans.find((p) => p.id === planned.plan_id) : undefined;
+  const keepTargets = linked && (!(plan?.uses_health_data ?? false) || ctx.healthConsentValid);
+  const fromHealthPlan = keepTargets && (plan?.uses_health_data ?? false);
+  const result = payload.planned_session_id !== null && !linked ? 'orphaned' : 'ok';
+
+  const existing = linked
+    ? rows.sessionLogs.find((l) => l.planned_session_id === planned.id)
+    : rows.sessionLogs.find((l) => l.id === payload.id);
+  if (!linked && existing && existing.planned_session_id !== null) {
+    return { kind: 'reject', reason: 'invalid' };
+  }
+  if (existing && existing.last_write_id === payload.write_id) {
+    return {
+      kind: 'repeat',
+      result:
+        payload.planned_session_id !== null && existing.planned_session_id === null
+          ? 'orphaned'
+          : 'ok',
+      id: existing.id,
+      revision: existing.revision,
+    };
+  }
+  if (existing && payload.base_revision !== existing.revision) {
+    return { kind: 'conflict', id: existing.id, revision: existing.revision };
+  }
+  if (!existing && payload.base_revision !== null) {
+    return { kind: 'conflict', id: null, revision: null };
+  }
+
+  if (linked && planned.kind !== payload.kind) return { kind: 'reject', reason: 'invalid' };
+  const reference = planned
+    ? (planned.original_date ?? planned.scheduled_on)
+    : payload.planned_date;
+  if (!isWithinLogDateWindow(payload.performed_on, reference, ctx.today)) {
+    return { kind: 'reject', reason: 'date_window' };
+  }
+  if (!existing && ctx.createdToday >= SESSION_LOG_LIMITS.maxLogsPerDay) {
+    return { kind: 'reject', reason: 'daily_limit' };
+  }
+  if (
+    linked &&
+    rows.sessionLogs.some(
+      (l) =>
+        l.performed_on === payload.performed_on &&
+        l.planned_session_id !== null &&
+        l.planned_session_id !== planned.id,
+    )
+  ) {
+    return { kind: 'reject', reason: 'day_taken' };
+  }
+  const plannedIds = payload.exercises
+    .map((e) => e.planned_exercise_id)
+    .filter((id): id is string => id !== null);
+  if (new Set(plannedIds).size !== plannedIds.length) return { kind: 'reject', reason: 'invalid' };
+  for (const e of payload.exercises) {
+    if (ctx.exercises.get(e.exercise_id)?.load_type !== e.load_type) {
+      return { kind: 'reject', reason: 'invalid' };
+    }
+    if (linked && e.planned_exercise_id !== null) {
+      const plannedExercise = rows.plannedExercises.find(
+        (p) => p.id === e.planned_exercise_id && p.session_id === planned.id,
+      );
+      if (
+        !plannedExercise ||
+        (e.status === 'alternative') === (plannedExercise.exercise_id === e.exercise_id)
+      ) {
+        return { kind: 'reject', reason: 'invalid' };
+      }
+    } else if (linked && e.status === 'alternative') {
+      return { kind: 'reject', reason: 'invalid' };
+    }
+  }
+  return {
+    kind: 'write',
+    result,
+    id: existing?.id ?? payload.id,
+    revision: (existing?.revision ?? 0) + 1,
+    linked,
+    keepTargets,
+    fromHealthPlan,
+    isIntroWeek: planned ? planned.is_intro_week : payload.is_intro_week,
+    isDeload: planned ? planned.is_deload : payload.is_deload,
+    isNew: !existing,
+  };
 }

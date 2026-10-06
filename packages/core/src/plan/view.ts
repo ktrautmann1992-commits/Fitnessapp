@@ -160,9 +160,20 @@ export function sessionLocation(
 const byDate = (a: { scheduled_on: string }, b: { scheduled_on: string }) =>
   a.scheduled_on < b.scheduled_on ? -1 : a.scheduled_on > b.scheduled_on ? 1 : 0;
 
-/** Nicht gestrichene Einheit an diesem Tag (höchstens eine – Regel „nie stapeln“). */
+/**
+ * Nicht gestrichene Einheit an diesem Tag. „Nie stapeln“ gilt in der Datenbank seit Phase 4 nur für `planned`
+ * (PLAN-PHASE-4 Umsetzungsstand B, Festlegung 1): Eine erledigte (`completed`) Einheit belegt ihren Tag nicht mehr,
+ * an demselben Tag kann z. B. eine geplante Einheit eines neuen Plans liegen. Dann zählt die noch offene
+ * (`planned`) Einheit; sonst die erledigte.
+ */
 export function sessionOn<T extends StoredSession>(sessions: readonly T[], date: string): T | null {
-  return sessions.find((s) => s.scheduled_on === date && s.status !== 'skipped') ?? null;
+  const onDay = sessions.filter((s) => s.scheduled_on === date && s.status !== 'skipped');
+  return onDay.find((s) => s.status === 'planned') ?? onDay[0] ?? null;
+}
+
+/** Erledigte Einheiten an diesem Tag (Anzeige „erledigt“ neben einer offenen Einheit). */
+export function completedOn<T extends StoredSession>(sessions: readonly T[], date: string): T[] {
+  return sessions.filter((s) => s.scheduled_on === date && s.status === 'completed');
 }
 
 /** Nächste geplante Einheit NACH `today`. */

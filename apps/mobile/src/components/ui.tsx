@@ -45,14 +45,19 @@ export function Body({
   children,
   muted = false,
   style,
+  testID,
 }: {
   children: ReactNode;
   muted?: boolean;
   style?: StyleProp<TextStyle>;
+  testID?: string;
 }) {
   const theme = useThemeColors();
   return (
-    <Text style={[styles.body, { color: muted ? theme.textMuted : theme.text }, style]}>
+    <Text
+      testID={testID}
+      style={[styles.body, { color: muted ? theme.textMuted : theme.text }, style]}
+    >
       {children}
     </Text>
   );

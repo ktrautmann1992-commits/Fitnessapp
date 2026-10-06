@@ -1,4 +1,4 @@
-import type { KeyValueStore } from './kv';
+import { STORAGE_KEYS, type KeyValueStore } from './kv';
 
 /**
  * Geschützter Zwischenspeicher für Pläne mit Gesundheitsbezug (Gründer-Entscheidung Frage 14, PLAN-PHASE-3
@@ -16,6 +16,45 @@ export interface ProtectedStore {
   read(): Promise<string | null>;
   write(text: string): Promise<void>;
   clear(): Promise<void>;
+}
+
+/**
+ * Die vier geschützten Speicher der App – je mit eigenem Daten- und Schlüssel-Namen (PLAN-PHASE-4 4.1): Plan mit
+ * Gesundheitsbezug (Frage 14) sowie Entwurf, Tagebuch-Warteschlange und Tagebuch-Zwischenspeicher (Frage 3). Nie
+ * geteilt: `clear()` löscht auch den Schlüssel, und der Plan-Cache wird bei Widerruf/Planwechsel geleert, das
+ * Tagebuch nicht.
+ */
+export const PROTECTED_STORE_NAMES = [
+  'healthPlan',
+  'workoutDraft',
+  'logQueue',
+  'logCache',
+] as const;
+export type ProtectedStoreName = (typeof PROTECTED_STORE_NAMES)[number];
+
+/** Daten- und Schlüssel-Name (STORAGE_KEYS) je geschütztem Speicher. */
+export const PROTECTED_STORE_KEYS: Record<
+  ProtectedStoreName,
+  { dataKey: string; keyName: string }
+> = {
+  healthPlan: { dataKey: STORAGE_KEYS.healthPlanCache, keyName: STORAGE_KEYS.healthPlanKey },
+  workoutDraft: { dataKey: STORAGE_KEYS.workoutDraft, keyName: STORAGE_KEYS.workoutDraftKey },
+  logQueue: { dataKey: STORAGE_KEYS.logQueue, keyName: STORAGE_KEYS.logQueueKey },
+  logCache: { dataKey: STORAGE_KEYS.logCache, keyName: STORAGE_KEYS.logCacheKey },
+};
+
+export type ProtectedStores = Record<ProtectedStoreName, ProtectedStore>;
+
+export function createMemoryProtectedStores(): Record<
+  ProtectedStoreName,
+  ProtectedStore & { peek(): string | null }
+> {
+  return {
+    healthPlan: createMemoryProtectedStore(),
+    workoutDraft: createMemoryProtectedStore(),
+    logQueue: createMemoryProtectedStore(),
+    logCache: createMemoryProtectedStore(),
+  };
 }
 
 export function createMemoryProtectedStore(): ProtectedStore & { peek(): string | null } {
@@ -40,10 +79,15 @@ export interface SessionStorageLike {
   removeItem(key: string): void;
 }
 
-/** Browser: sessionStorage – endet mit dem Tab. Ohne sessionStorage (z. B. gesperrt) kein Zwischenspeicher. */
+/**
+ * Browser: sessionStorage – endet mit dem Tab. Ohne sessionStorage (z. B. gesperrt) kein Zwischenspeicher.
+ * `strict` (Entwurf und Tagebuch-Warteschlange, Wächter C1 K9): ein gescheitertes Schreiben wird gemeldet
+ * (ProtectedStoreUnavailableError) statt still geschluckt – die App zeigt dann „Offline-Speicher nicht verfügbar“.
+ */
 export function createSessionProtectedStore(
   storage: SessionStorageLike | null,
   key: string,
+  options: { strict?: boolean } = {},
 ): ProtectedStore {
   return {
     kind: 'session',
@@ -56,9 +100,11 @@ export function createSessionProtectedStore(
     },
     write: async (text) => {
       try {
-        storage?.setItem(key, text);
+        if (!storage) throw new ProtectedStoreUnavailableError();
+        storage.setItem(key, text);
       } catch {
-        // Speicher voll oder gesperrt: dann eben ohne Offline-Plan (nie Fallback auf localStorage).
+        // Speicher voll oder gesperrt: nie Fallback auf localStorage.
+        if (options.strict) throw new ProtectedStoreUnavailableError();
       }
     },
     clear: async () => {
@@ -69,6 +115,14 @@ export function createSessionProtectedStore(
       }
     },
   };
+}
+
+/** Geschützter Speicher nicht beschreibbar (Browser: sessionStorage voll oder gesperrt). Ohne Inhalte. */
+export class ProtectedStoreUnavailableError extends Error {
+  constructor() {
+    super('ProtectedStoreUnavailable');
+    this.name = 'ProtectedStoreUnavailableError';
+  }
 }
 
 /** Sicherer Schlüsselspeicher des Geräts (expo-secure-store). */
@@ -98,51 +152,71 @@ export function createEncryptedProtectedStore(options: {
   dataKey: string;
 }): ProtectedStore {
   const { secrets, data, cipher, keyName, dataKey } = options;
+  /**
+   * Alle Vorgänge dieses Speichers laufen NACHEINANDER (Promise-Kette, Wächter C1 B1): Sonst könnte ein `write()` in
+   * der Lücke eines `clear()` den gerade gelöschten Schlüssel weiterverwenden – nach dem Neustart wären die Daten
+   * unlesbar und still verloren. Zusätzlich ein Generationszähler: ein Schlüssel aus einer früheren Generation
+   * (vor `clear()`) wird nie mehr benutzt.
+   */
+  let chain: Promise<unknown> = Promise.resolve();
+  function serial<T>(task: () => Promise<T>): Promise<T> {
+    const result = chain.then(task, task);
+    chain = result.catch(() => undefined);
+    return result;
+  }
+  let generation = 0;
   /** Sperre: gleichzeitige erste Schreibvorgänge erzeugen nur EINEN Schlüssel (sonst wären Daten unlesbar). */
-  let keyPromise: Promise<string> | null = null;
+  let keyPromise: { generation: number; promise: Promise<string> } | null = null;
 
   function ensureKey(): Promise<string> {
-    keyPromise ??= (async () => {
+    if (keyPromise && keyPromise.generation === generation) return keyPromise.promise;
+    const own = generation;
+    const promise = (async () => {
       const existing = await secrets.get(keyName);
       if (existing !== null) return existing;
       const created = await cipher.generateKey();
       await secrets.set(keyName, created);
       return created;
     })().catch((error: unknown) => {
-      keyPromise = null;
+      if (keyPromise?.promise === promise) keyPromise = null;
       throw error;
     });
-    return keyPromise;
+    keyPromise = { generation: own, promise };
+    return promise;
   }
 
-  async function clear(): Promise<void> {
-    keyPromise = null;
+  async function clearNow(): Promise<void> {
+    generation += 1;
     await data.removeItem(dataKey);
     await secrets.remove(keyName);
+    // Erst NACH dem Löschen des Schlüssels vergessen (kein Zugriff auf den alten Schlüssel mehr möglich).
+    keyPromise = null;
   }
 
   return {
     kind: 'encrypted',
-    read: async () => {
-      const sealed = await data.getItem(dataKey);
-      if (sealed === null) return null;
-      const key = await secrets.get(keyName);
-      if (key === null) {
-        await data.removeItem(dataKey);
-        return null;
-      }
-      try {
-        return base64ToUtf8(await cipher.open(key, sealed));
-      } catch {
-        await clear();
-        return null;
-      }
-    },
-    write: async (text) => {
-      const key = await ensureKey();
-      await data.setItem(dataKey, await cipher.seal(key, utf8ToBase64(text)));
-    },
-    clear,
+    read: () =>
+      serial(async () => {
+        const sealed = await data.getItem(dataKey);
+        if (sealed === null) return null;
+        const key = await secrets.get(keyName);
+        if (key === null) {
+          await data.removeItem(dataKey);
+          return null;
+        }
+        try {
+          return base64ToUtf8(await cipher.open(key, sealed));
+        } catch {
+          await clearNow();
+          return null;
+        }
+      }),
+    write: (text) =>
+      serial(async () => {
+        const key = await ensureKey();
+        await data.setItem(dataKey, await cipher.seal(key, utf8ToBase64(text)));
+      }),
+    clear: () => serial(clearNow),
   };
 }
 

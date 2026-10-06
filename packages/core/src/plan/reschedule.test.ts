@@ -27,6 +27,17 @@ describe('rescheduleSession', () => {
     });
   });
 
+  it('S4 (konservativ): eine erledigte Einheit belegt ihren Tag – dorthin wird nie verschoben', () => {
+    const week = [
+      s('mo', '2026-10-05'),
+      s('mi', '2026-10-07', { status: 'completed', focus: 'upper' }),
+      s('so', '2026-10-11', { status: 'completed', focus: 'upper' }),
+    ];
+    const result = rescheduleSession(week, 'mo', '2026-10-06');
+    expect(result.kind === 'moved' ? result.date : null).not.toBe('2026-10-07');
+    expect(result.kind === 'moved' ? result.date : null).not.toBe('2026-10-11');
+  });
+
   it('Freitag ohne Platz bis Sonntag → gestrichen, nie in die nächste Woche', () => {
     const busy = [...WEEK, s('so', '2026-10-11')];
     expect(rescheduleSession(busy, 'fr', '2026-10-09')).toEqual({ kind: 'skipped' });

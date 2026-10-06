@@ -173,6 +173,26 @@ for (const scheme of ['light', 'dark'] as const) {
     await shot('heute-kraft');
     await page.getByTestId('plan-notes').scrollIntoViewIfNeeded();
     await shot('heute-hinweise');
+    // Trainingsmodus (Phase 4, Etappe C1): Mittwoch ist der Kraft-Tag.
+    await page.clock.setFixedTime(new Date('2026-10-07T09:00:00+02:00'));
+    await page.goto('/');
+    await heading('Heute');
+    await page.getByTestId('workout-start').click();
+    await expect(page.getByTestId('workout-exercise-0')).toBeVisible();
+    await shot('training-start');
+    const plus = page.getByTestId('workout-weight-0-0-plus');
+    if ((await plus.count()) > 0) for (let i = 0; i < 8; i += 1) await plus.click();
+    await page.getByTestId('workout-done-0-0').click();
+    await shot('training-satz');
+    await page.getByTestId('workout-alternative-1').click();
+    await page.getByTestId('workout-exercise-1').scrollIntoViewIfNeeded();
+    await shot('training-alternativen');
+    await page.getByTestId('workout-effort').scrollIntoViewIfNeeded();
+    await page.getByTestId('workout-effort-6').click();
+    await shot('training-abschluss');
+    await page.getByTestId('workout-save').click();
+    await heading('Heute');
+    await shot('heute-erledigt');
     await page.getByRole('button', { name: 'Einstellungen' }).click();
     await heading('Einstellungen');
     await shot('einstellungen');

@@ -4,6 +4,7 @@ import type {
   PlanSafetyRules,
   SavePlanPayload,
   SavePlanSession,
+  SessionLogPayload,
 } from '@fitnessapp/core';
 
 import type { ConsentVersions } from './mapping';
@@ -15,6 +16,7 @@ import type {
   StepSave,
   UserRows,
 } from './types';
+import type { LogRejectReason, WorkoutDraft } from './workout-draft';
 
 /**
  * Gemeinsame Schnittstelle der beiden Betriebsarten:
@@ -56,7 +58,33 @@ export interface SessionUpdate {
 /** Ereignisse aus dem Hintergrund (Warteschlange). */
 export type BackendEvent =
   /** Eine wartende Verschiebung wurde vom Server abgelehnt und verworfen → Plan neu laden + Meldung. */
-  { kind: 'plan_change_dropped' };
+  | { kind: 'plan_change_dropped' }
+  /** Ein Training wurde übertragen (neu laden). `orphaned` = Plan hatte sich geändert (B4). */
+  | { kind: 'log_saved'; orphaned: boolean; key: string; writeId: string }
+  /** Ein Training kam als Konflikt bzw. Ablehnung zurück – es liegt als Entwurf vor (4.3). */
+  | { kind: 'log_conflict'; key: string; writeId: string }
+  | { kind: 'log_rejected'; reason: LogRejectReason; key: string; writeId: string }
+  /** Senden scheiterte an der abgelaufenen Sitzung – erneut anmelden, Einträge bleiben (R5). */
+  | { kind: 'session_expired' };
+
+/** Ergebnis von „Training speichern“ (docs/PLAN-PHASE-4.md 4.3, 6.3). */
+export type LogSaveOutcome =
+  /** Gespeichert; `orphaned` = Plan hatte sich geändert, Training trotzdem gespeichert (B4). */
+  | { kind: 'saved'; orphaned: boolean }
+  /** Offline bzw. noch nicht übertragen – liegt verschlüsselt in der Warteschlange. */
+  | { kind: 'queued' }
+  /** Auf einem anderen Gerät geändert – die eigene Fassung liegt als Entwurf vor (W3). */
+  | { kind: 'conflict' }
+  /** Abgelehnt – liegt als Entwurf vor (nie stilles Verwerfen). */
+  | { kind: 'rejected'; reason: LogRejectReason };
+
+/** Wartende Trainings (Abmelde-Nachfrage R6, Anzeige). */
+export interface PendingWorkouts {
+  /** In der Tagebuch-Warteschlange (noch nicht übertragen). */
+  queued: number;
+  /** Offene Entwürfe sowie abgelehnte und Konflikt-Fassungen. */
+  drafts: number;
+}
 
 export interface Backend {
   readonly mode: BackendMode;
@@ -109,6 +137,38 @@ export interface Backend {
   updatePlannedSession(update: SessionUpdate, rows: UserRows): Promise<UserRows>;
   /** Hintergrund-Ereignisse abonnieren; Rückgabe = abbestellen. */
   subscribe(listener: (event: BackendEvent) => void): () => void;
+
+  // --- Trainingstagebuch (Phase 4, Etappe C) --------------------------------------------------------------
+  /** Entwürfe des angemeldeten Kontos (geschützter Entwurfs-Speicher). */
+  loadDrafts(): Promise<WorkoutDraft[]>;
+  /** Entwurf sofort sichern (jeder Tipp, 4.2). */
+  saveDraft(draft: WorkoutDraft): Promise<void>;
+  /** Entwurf verwerfen. */
+  discardDraft(key: string): Promise<void>;
+  /**
+   * Training beenden: Testmodus speichert sofort lokal (gleiche Regeln wie save_session_log); Supabase legt die
+   * Fassung in die verschlüsselte Tagebuch-Warteschlange und sendet sie, sobald möglich. Der Entwurf wird erst
+   * entfernt, wenn die Fassung sicher in der Warteschlange bzw. gespeichert ist; Konflikt/Ablehnung → Entwurf.
+   */
+  submitWorkout(draft: WorkoutDraft, payload: SessionLogPayload): Promise<LogSaveOutcome>;
+  /** Eintrag löschen (nur online, mit Revision, R4). */
+  deleteSessionLog(id: string, baseRevision: number): Promise<'ok' | 'conflict'>;
+  /** Eigenes Startgewicht (nur ohne Eintrag sinnvoll); null = entfernen. */
+  setStartWeight(exerciseId: string, weightKg: number | null, rows: UserRows): Promise<UserRows>;
+  /**
+   * Widerruf health_data (R3): Senden der Tagebuch-Warteschlange sperren, Einträge aus Gesundheits-Plänen in
+   * Warteschlange, Entwurf und Zwischenspeicher bereinigen (neutralisieren bzw. bei `deleteLogs` entfernen), dann
+   * revoke_health_data(deleteLogs) in EINER Transaktion.
+   */
+  revokeHealthData(deleteLogs: boolean): Promise<void>;
+  /** Wartende Trainings und Entwürfe (R6). */
+  pendingWorkouts(): Promise<PendingWorkouts>;
+  /** Planned-Session-IDs mit noch nicht übertragenem Training (Anzeige „wird übertragen“). */
+  pendingLogSessionIds(): readonly string[];
+  /** Liegen Einträge eines anderen Kontos auf dem Gerät (R5)? */
+  hasForeignDeviceData(): Promise<boolean>;
+  /** Einträge eines anderen Kontos löschen (nach Nachfrage). */
+  discardForeignDeviceData(): Promise<void>;
 }
 
 export interface SaveContext {
@@ -130,6 +190,12 @@ export type BackendErrorCode =
   | 'plan_rejected'
   /** Keine passende freigegebene Vorlage (no_template). */
   | 'no_template'
+  /** Nur online möglich (Löschen, Export, Widerruf). */
+  | 'online_only'
+  /** Auf dem Gerät liegen noch nicht übertragene Trainings eines anderen Kontos (R5). */
+  | 'foreign_data'
+  /** Geschützter Gerätespeicher nicht beschreibbar (Browser: sessionStorage voll/gesperrt, K9). */
+  | 'storage_unavailable'
   | 'unknown';
 
 /** Fehler mit festem Code – die Bildschirme zeigen dazu einen deutschen Text (i18n errors.*). */
