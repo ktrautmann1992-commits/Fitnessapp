@@ -9,6 +9,7 @@ import { describe, expect, it } from 'vitest';
 import { MEASUREMENT_SITES } from './body-measurements';
 import { CURRENT_CONSENT_VERSIONS } from './consent';
 import {
+  CARDIO_LOG_LIMITS,
   ENDURANCE_SESSION_LIMITS,
   EQUIPMENT_WEIGHT_DECIMALS,
   BARBELL_BAR_KG,
@@ -17,6 +18,9 @@ import {
   PLAN_BLOCK_LIMITS,
   PLAN_SAVE_LIMITS,
   PLANNED_LOAD_LIMITS,
+  SESSION_LOG_LIMITS,
+  SESSION_RPE_LIMITS,
+  SET_RPE_LIMITS,
   TEMPLATE_DOSAGE_LIMITS,
   BODY_MEASUREMENT_LIMITS,
   CONTENT_SCHEMA_LIMITS,
@@ -33,6 +37,13 @@ import { EQUIPMENT } from './equipment';
 import { FOOD_GROUPS } from './food-groups';
 import { HEALTH_FLAGS, HEALTH_SCREENING_QUESTIONS } from './health-screening';
 import { ONBOARDING_STEPS } from './onboarding';
+import {
+  cardioLogSchema,
+  exerciseLogSchema,
+  exerciseStartWeightSchema,
+  sessionLogPayloadSchema,
+  setLogSchema,
+} from './log/schemas';
 import { ENDURANCE_EFFORT_LIMITS } from './plan/generate';
 import {
   savePlanExerciseSchema,
@@ -124,6 +135,9 @@ describe('Enums', () => {
     ['plan_note', enums.PLAN_NOTES],
     ['planned_session_kind', enums.PLANNED_SESSION_KINDS],
     ['endurance_modality', enums.ENDURANCE_MODALITIES],
+    ['session_log_status', enums.SESSION_LOG_STATUSES],
+    ['exercise_log_status', enums.EXERCISE_LOG_STATUSES],
+    ['log_source', enums.LOG_SOURCES],
   ] as const)('public.%s entspricht packages/core', (name, values) => {
     expect(enumValues(name)).toEqual([...values]);
   });
@@ -300,6 +314,34 @@ describe('Grenzwerte', () => {
     `start_date_max_days_ahead constant integer := ${PLAN_SAVE_LIMITS.startDateMaxDaysAhead}`,
     `schedule_max_days_ahead constant integer := ${PLAN_SAVE_LIMITS.scheduleMaxDaysAhead}`,
     `kept_replaced_plans constant integer := ${PLAN_SAVE_LIMITS.keptReplacedPlans}`,
+    // Trainingstagebuch (Phase 4 Etappe B): SESSION_LOG_LIMITS, SET_RPE_LIMITS, SESSION_RPE_LIMITS, CARDIO_LOG_LIMITS
+    `order_no between ${SESSION_LOG_LIMITS.exercisesPerSession.min} and ${SESSION_LOG_LIMITS.exercisesPerSession.max}`,
+    `set_no between ${SESSION_LOG_LIMITS.setsPerExercise.min} and ${SESSION_LOG_LIMITS.setsPerExercise.max}`,
+    between('reps', SESSION_LOG_LIMITS.reps),
+    between('weight_kg', SESSION_LOG_LIMITS.weightKg),
+    between('duration_s', SESSION_LOG_LIMITS.durationS),
+    `char_length(notes) <= ${SESSION_LOG_LIMITS.notesMaxChars}`,
+    `rpe between ${SET_RPE_LIMITS.min} and ${SET_RPE_LIMITS.max} and rpe * ${1 / SET_RPE_LIMITS.step} = trunc(rpe * ${1 / SET_RPE_LIMITS.step})`,
+    between('session_rpe', SESSION_RPE_LIMITS),
+    between('duration_s', CARDIO_LOG_LIMITS.durationS),
+    between('distance_m', CARDIO_LOG_LIMITS.distanceM),
+    between('elevation_m', CARDIO_LOG_LIMITS.elevationM),
+    `target_sets between ${SESSION_LOG_LIMITS.setsPerExercise.min} and ${TEMPLATE_DOSAGE_LIMITS.sets.max}`,
+    between('target_reps', TEMPLATE_DOSAGE_LIMITS.reps),
+    between('state_target_reps', TEMPLATE_DOSAGE_LIMITS.reps),
+    between('target_duration_s', TEMPLATE_DOSAGE_LIMITS.durationS),
+    between('state_duration_s', TEMPLATE_DOSAGE_LIMITS.durationS),
+    between('target_rpe', TEMPLATE_DOSAGE_LIMITS.rpe),
+    between('target_weight_kg', PLANNED_LOAD_LIMITS.targetWeightKg),
+    between('state_weight_kg', PLANNED_LOAD_LIMITS.targetWeightKg),
+    // Eigenes Startgewicht = exerciseStartWeightSchema (PLANNED_LOAD_LIMITS)
+    `weight_kg numeric(5, 2) not null check (${between('weight_kg', PLANNED_LOAD_LIMITS.targetWeightKg)})`,
+    `backdate_days constant integer := ${SESSION_LOG_LIMITS.backdateDays}`,
+    `future_days constant integer := ${SESSION_LOG_LIMITS.futureDays}`,
+    `week_tolerance_days constant integer := ${SESSION_LOG_LIMITS.weekToleranceDays}`,
+    `max_logs_per_day constant integer := ${SESSION_LOG_LIMITS.maxLogsPerDay}`,
+    `exercises_per_session_max constant integer := ${SESSION_LOG_LIMITS.exercisesPerSession.max}`,
+    `sets_per_exercise_max constant integer := ${SESSION_LOG_LIMITS.setsPerExercise.max}`,
   ])('SQL enthält „%s“', (expected) => {
     expect(allSql).toContain(expected);
   });
@@ -335,6 +377,10 @@ describe('Eingabe der Plan-Funktionen (save_training_plan / append_plan_block)',
 
   it('plan_keys der neuesten save_training_plan-Fassung unverändert', () => {
     expect(keysOf(kindsSql, 'plan_keys')).toEqual(Object.keys(savePlanPayloadSchema.shape).sort());
+    // Phase-4-Nachtrag H-c (create or replace in *_training_log_rpcs.sql)
+    expect(keysOf(readMigration('_training_log_rpcs.sql'), 'plan_keys')).toEqual(
+      Object.keys(savePlanPayloadSchema.shape).sort(),
+    );
   });
 });
 
@@ -361,5 +407,77 @@ describe('Trainingstage (Etappe B2)', () => {
     const check = sql.indexOf(`${BARBELL_PLATE_MAX_KG} >= all (weights_kg)`);
     expect(cleanup).toBeGreaterThan(0);
     expect(check).toBeGreaterThan(cleanup);
+  });
+});
+
+describe('Trainingstagebuch (Phase 4 Etappe B)', () => {
+  const sql = readMigration('_training_log_rpcs.sql');
+
+  /** Feldliste `name constant jsonb := '{…}'` aus save_session_log: Name → erlaubte JSON-Typen. */
+  function fieldsOf(name: string): Record<string, string> {
+    const match = new RegExp(`${name} constant jsonb := '([^']*)'`).exec(sql);
+    if (!match) {
+      throw new Error(`${name} nicht gefunden`);
+    }
+    return JSON.parse(match[1] as string) as Record<string, string>;
+  }
+
+  it.each([
+    ['log_fields', sessionLogPayloadSchema],
+    ['exercise_fields', exerciseLogSchema],
+    ['set_fields', setLogSchema],
+    ['cardio_fields', cardioLogSchema],
+  ] as const)('save_session_log: %s = Felder des strikten Zod-Schemas', (name, schema) => {
+    expect(Object.keys(fieldsOf(name)).sort()).toEqual(Object.keys(schema.shape).sort());
+  });
+
+  it.each([
+    ['log_fields', sessionLogPayloadSchema],
+    ['exercise_fields', exerciseLogSchema],
+    ['set_fields', setLogSchema],
+    ['cardio_fields', cardioLogSchema],
+  ] as const)('save_session_log: %s erlaubt null genau bei nullable-Feldern', (name, schema) => {
+    const shape = schema.shape as Record<
+      string,
+      { safeParse: (value: unknown) => { success: boolean } }
+    >;
+    for (const [key, types] of Object.entries(fieldsOf(name))) {
+      expect(types.split('|').includes('null'), key).toBe(shape[key]?.safeParse(null).success);
+    }
+  });
+
+  it('Record-Variablen nie in derselben Bedingung wie ihr Zuweisungs-Kennzeichen (Wächter N1)', () => {
+    // PL/pgSQL wertet `linked and planned.kind …` NICHT verkürzt aus: Ist „planned“ nicht zugewiesen, scheitert der
+    // Aufruf je nach Verbindung mit 55000. Zugriffe gehören in ein eigenes `if linked then … end if;`.
+    const offending = sql
+      .split('\n')
+      .filter((line) => /\b(linked|session_found)\b.*\b(planned|session)\.[a-z_]/.test(line));
+    expect(offending).toEqual([]);
+  });
+
+  it('Server-Felder sind NICHT in der Feldliste (S1, W3)', () => {
+    for (const key of ['user_id', 'from_health_plan', 'revision', 'last_write_id']) {
+      expect(Object.keys(fieldsOf('log_fields'))).not.toContain(key);
+    }
+  });
+
+  it('Startgewicht: Felder = exerciseStartWeightSchema', () => {
+    const table = readMigration('_training_logs.sql');
+    const block = table.slice(table.indexOf('create table public.exercise_start_weights'));
+    for (const key of Object.keys(exerciseStartWeightSchema.shape)) {
+      expect(block).toContain(`  ${key} `);
+    }
+  });
+
+  it('completed kommt in einer eigenen Migration VOR der Funktions-Migration', () => {
+    const enumsFile = migrationFiles.findIndex((n) => n.endsWith('_training_log_enums.sql'));
+    const tablesFile = migrationFiles.findIndex((n) => n.endsWith('_training_logs.sql'));
+    const rpcsFile = migrationFiles.findIndex((n) => n.endsWith('_training_log_rpcs.sql'));
+    expect(readMigration('_training_log_enums.sql')).toContain(
+      "alter type public.planned_session_status add value 'completed'",
+    );
+    expect(enumsFile).toBeGreaterThanOrEqual(0);
+    expect(tablesFile).toBeGreaterThan(enumsFile);
+    expect(rpcsFile).toBeGreaterThan(tablesFile);
   });
 });

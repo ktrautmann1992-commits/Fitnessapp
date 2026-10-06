@@ -201,8 +201,11 @@ export type TemplateExperienceLevel = (typeof TEMPLATE_EXPERIENCE_LEVELS)[number
 export const PLAN_STATUSES = ['active', 'replaced'] as const;
 export type PlanStatus = (typeof PLAN_STATUSES)[number];
 
-/** Status einer geplanten Einheit (Phase 4 ergänzt `completed`). */
-export const PLANNED_SESSION_STATUSES = ['planned', 'skipped'] as const;
+/**
+ * Status einer geplanten Einheit. `completed` (ab Phase 4) setzt nur der Server über save_session_log; Nutzer
+ * dürfen direkt nur `planned`/`skipped` setzen (Verschiebe-Trigger, PLAN-PHASE-4 W1).
+ */
+export const PLANNED_SESSION_STATUSES = ['planned', 'skipped', 'completed'] as const;
 export type PlannedSessionStatus = (typeof PLANNED_SESSION_STATUSES)[number];
 
 /** Güte des Vorlagen-Matchings: passt genau / mit Anpassungen / nächstbeste Vorlage. */
@@ -270,8 +273,8 @@ export const LEVEL_TEMPLATE_MAPPING = {
 } as const satisfies Record<ExperienceLevel, TemplateExperienceLevel>;
 
 // ---------------------------------------------------------------------------------------------------------
-// Phase 4 · Trainingstagebuch (docs/PLAN-PHASE-4.md Abschnitt 3.2). Postgres-Enums folgen in Etappe B
-// (dann Abgleich in db-sync.test.ts).
+// Phase 4 · Trainingstagebuch (docs/PLAN-PHASE-4.md Abschnitt 3.2). Postgres-Enums seit Etappe B
+// (20261006120000_training_log_enums.sql, Abgleich in db-sync.test.ts).
 // ---------------------------------------------------------------------------------------------------------
 
 /** Status eines Tagebuch-Eintrags: ganz oder teilweise geschafft. */

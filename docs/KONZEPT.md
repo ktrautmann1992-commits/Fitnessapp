@@ -174,7 +174,9 @@ Verbindlich ist der freigegebene Ablauf in `docs/PLAN-PHASE-1.md` Abschnitt 3 (S
 - Heute: geplante Einheit mit allen Übungen, Sätzen, Wiederholungen, Zielgewicht, Pause
 - Pro Übung: abhaken / nicht gemacht / Alternative durchgeführt (Auswahl aus Alternativen)
 - Pro Satz: Gewicht, Wiederholungen, optional RPE
-- Ausdauer: Distanz, Zeit, Pace/Geschwindigkeit, Höhenmeter, Herzfrequenz (manuell oder aus Wearable)
+- Ausdauer: Distanz, Zeit, Pace/Geschwindigkeit, Höhenmeter, Herzfrequenz (manuell oder aus Wearable) – **Herzfrequenz
+  erst ab Phase 8** (Gesundheitsdatum mit eigener Einwilligungslogik, `docs/PLAN-PHASE-4.md` 3.4 S2); Phase 4 speichert
+  keine Herzfrequenz, auch nicht manuell
 - Belastungsempfinden der Einheit: Schieberegler 0–10
 - Notizen, Pausentimer, Aufwärm- und Mobility-Block, Übungsvideos/Animationen
 - In der App aufgezeichnete Strecken (Abschnitt 10.1) landen automatisch als Ausdauer-Eintrag im Tagebuch
@@ -393,6 +395,28 @@ Verbindlich ist der freigegebene Ablauf in `docs/PLAN-PHASE-1.md` Abschnitt 3 (S
 - **Vorgemerkt für Phase 4:** optionales Feld „eigenes Startgewicht“ (Selbsteinschätzung); Tagebuch-Einträge
   (`set_logs.planned_exercise_id`) mit `on delete set null` und eigener Kopie, damit der Widerruf kein Tagebuch mitlöscht;
   „gestern verpasst → skipped“ und Progressions-Änderungen an `planned_exercises` über eigene `security definer`-Funktionen.
+
+### Abweichungen ab Phase 4, Etappe B (umgesetzt, siehe `docs/PLAN-PHASE-4.md` und `supabase/migrations/20261006120*`)
+- **`exercise_logs` zwischen `session_logs` und `set_logs`:** „nicht gemacht“ ist eine Übung **ohne** Sätze, und Vorgabe
+  (`target_*`) und Progressions-Zustand (`state_*`, roh) werden je Übung einmal gespeichert. `exercise_logs` enthält die
+  **tatsächlich gemachte** Übung (`exercise_id`), bei einer Alternative den Verweis auf die geplante
+  (`planned_exercise_id`), dazu `weight_confirmed`, `target_extra_set` und `is_return`. `set_logs` (exercise_log_id,
+  set_no, reps, weight_kg, duration_s, rpe, done) verweist daher **nicht** selbst auf `planned_exercise_id`.
+- **`session_logs`** (planned_session_id, kind, performed_on, status `completed|partial`, session_rpe 0–10, notes ≤ 280
+  Zeichen, Schnappschuss name_de/is_intro_week/is_deload, **from_health_plan** (nur Server), **revision** und
+  **last_write_id** (Konflikte und Idempotenz), source `manual`): eine Einheit nur einmal, nie zwei geplante Einheiten am
+  selben Tag. **`cardio_logs`** (1:1, modality, duration_s, distance_m, elevation_m) – **ohne** `avg_hr` (Phase 8).
+- **Schnappschuss statt Kaskade:** Verweise auf Pläne `on delete set null (spalte)`; ein Widerruf oder das Aufräumen
+  ersetzter Pläne löscht kein Tagebuch. Beim Widerruf `health_data` werden Vorgaben, Zustand und Varianten-Name aus
+  Plänen mit Gesundheits-Check **neutralisiert** (Ist-Werte bleiben); auf Wunsch löscht `revoke_health_data(true)`
+  diese Einträge in derselben Transaktion. Gleiches ohne gültige Einwilligung (abgelehnte Neu-Einwilligung).
+- **Rechte:** Tagebuch nur lesen; Schreiben nur über `save_session_log`/`delete_session_log` (`security definer`).
+  Ausnahme **`exercise_start_weights`** (eigenes Startgewicht, direkt schreibbar, mit Profil). `planned_session_status`
+  hat zusätzlich `completed` (nur vom Server gesetzt); „nie stapeln“ bei geplanten Einheiten gilt nur noch für
+  `planned`; wird ein Eintrag gelöscht, geht die Einheit nur zurück auf `planned`, wenn ihr Plan aktiv ist, ihre
+  Woche läuft und der Tag frei ist (sonst `skipped`). Export aller eigenen Daten über `export_my_data()` (ohne
+  Konto-E-Mail, die die App ergänzt, und ohne `waitlist`). Tageslimit neuer Einträge über einen Zähler
+  (`private.session_log_daily_counts`, kein Inhalt).
 
 ### Erweiterungen (geplant, `docs/ERWEITERUNGEN.md`)
 Alle Tabellen mit RLS (jeder sieht nur eigene Zeilen; Ausnahmen: Katalog-/Inhaltstabellen für alle lesbar, Pflege nur

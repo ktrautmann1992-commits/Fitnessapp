@@ -284,7 +284,8 @@ Widerrufs-Dialog und Datenschutzerklärung.
    - Obergrenze gegen Missbrauch: höchstens `SESSION_LOG_LIMITS.maxLogsPerDay` neue Einträge je Kalendertag.
 2. **`public.delete_session_log(p_id uuid, p_base_revision int)`** – nur wenn `p_base_revision` der gespeicherten
    `revision` entspricht (sonst `conflict`, R4); eigener Eintrag weg (Kaskade auf Übungen/Sätze/Ausdauer); die
-   geplante Einheit wird wieder `planned`, solange ihre Woche läuft, sonst `skipped`. Nur online (Abschnitt 4.5).
+   geplante Einheit wird wieder `planned`, wenn ihr Plan aktiv ist, ihre Woche läuft **und** an ihrem Tag keine
+   andere geplante Einheit liegt (Wächter Etappe B, B1), sonst `skipped`. Nur online (Abschnitt 4.5).
 3. **`public.close_missed_sessions() returns integer`** – setzt eigene Einheiten des aktiven Plans auf `skipped`,
    die **noch `planned`** sind und deren ISO-Woche (`coalesce(original_date, scheduled_on)`) **vorbei** ist.
    Idempotent, ruft die App beim Laden (online) auf – **erst nachdem** die normale Warteschlange und die
@@ -1057,7 +1058,112 @@ Festlegungen bei der Umsetzung (Wächter-Prüfung Etappe A eingearbeitet):
 bei einer Alternative ist `stateWeightKg` der Zustand der Alternativ-Übung (deren eigener Verlauf), nie der der
 geplanten Übung. Die Leichter-Warnung vergleicht gegen den Zustand und die Stufen des Orts.
 
-Nächster Schritt: Wächter-Prüfung von Etappe A, dann Etappe B.
+**Etappe B – umgesetzt (06.10.2026, Pull Request folgt):** drei Migrationen
+
+- `20261006120000_training_log_enums.sql` – `session_log_status`, `exercise_log_status`, `log_source` und
+  `planned_session_status` + `completed` (eigene Datei vor den Funktionen); `PLANNED_SESSION_STATUSES` in `enums.ts`
+  ergänzt.
+- `20261006120100_training_logs.sql` – Tabellen aus 3.2 mit CHECKs (= `constants.ts`, Abgleich in `db-sync.test.ts`),
+  Indizes, RLS auf allen fünf Tabellen (nur eigene Zeilen; Tagebuch nur lesen, Startgewichte direkt mit Profil-Pflicht),
+  `on delete set null (spalte)` (B2; dafür `unique (id, user_id)` auf `planned_exercises`), Lese-Regel archivierter
+  Übungen aus eigenen Einträgen, Verschiebe-Trigger mit `new.status in ('planned', 'skipped')` (W1).
+- `20261006120200_training_log_rpcs.sql` – `save_session_log`, `delete_session_log`, `close_missed_sessions`,
+  `recent_exercise_logs`, `export_my_data`, `revoke_health_data`, `private.neutralize_health_plan_logs()`,
+  `consents_after_revoke()` (neutralisiert vor **und nach** dem Löschen der Pläne) und `save_training_plan` mit
+  Nachtrag H-c; Tageszähler `private.session_log_daily_counts`.
+- pgTAP `17_training_logs` (61), `18_training_log_rpcs` (143) und `19_training_log_fresh_connection` (4), Ergänzungen in `04_account_deletion` (Tagebuch und
+  Startgewichte) und `06_profile_required`; `database.types.ts` (5 Tabellen, 3 Enums + `completed`, 6 Funktionen);
+  `db-sync.test.ts` (Enums, Grenzen, Datumskonstanten, Feldlisten inkl. null-Erlaubnis je Feld, Reihenfolge der
+  Migrationen); KONZEPT 5 (Herzfrequenz erst Phase 8) und 12 („Abweichungen ab Phase 4, Etappe B“).
+
+Festlegungen bei der Umsetzung:
+
+1. **„Nie stapeln“ der geplanten Einheiten nur noch für `planned`:** Der Index `planned_sessions_one_per_day_idx` gilt
+   jetzt `where status = 'planned'` (vorher `<> 'skipped'`, bei nur zwei Werten gleichbedeutend). Sonst würde eine
+   erledigte Einheit ihren Tag dauerhaft belegen: Ein neuer Plan mit einer Einheit am Tag einer heute erledigten
+   Einheit des alten Plans wäre nicht speicherbar, und `skipped → completed` (W8) könnte an einer inzwischen dorthin
+   verschobenen Einheit scheitern. Das Tagebuch stapelt weiterhin nie (`session_logs_one_per_day_idx`). pgTAP: B
+   speichert heute einen neuen Plan, obwohl seine erledigte Einheit heute liegt. **Folge (Wächter B1):** Weil eine
+   `completed`-Einheit ihren Tag nicht mehr belegt, setzt `delete_session_log` sie nur auf `planned` zurück, wenn ihr
+   Plan aktiv ist, ihre Woche läuft und an `scheduled_on` keine andere geplante Einheit liegt – sonst `skipped`; ein
+   `unique_violation` (gleichzeitiges Verschieben) wird ohne Detail gemeldet. pgTAP: (a) andere Einheit auf den
+   erledigten Tag verschoben, dann gelöscht; (b) Eintrag → neuer Plan → Eintrag gelöscht → ein weiterer Plan mit
+   Einheit an diesem Tag lässt sich speichern.
+2. **Feldlisten als Typ-Liste:** `save_session_log` prüft je Ebene genau die Felder **und** ihre JSON-Typen
+   (`log_fields`/`exercise_fields`/`set_fields`/`cardio_fields`, z. B. `"number|null"`); alle Felder sind Pflicht (wie
+   Zod: nullable, nicht optional). `db-sync.test.ts` gleicht Namen und null-Erlaubnis mit den Zod-Schemas ab.
+3. **Server-Wahrheit bei bekannter Einheit:** `is_intro_week`/`is_deload` übernimmt der Server aus der geplanten Einheit,
+   das Datumsfenster rechnet mit deren `coalesce(original_date, scheduled_on)`; `planned_date` gilt nur für verwaiste
+   Einträge.
+4. **Gesundheits-Plan ohne gültige Einwilligung** (z. B. Neu-Einwilligung abgelehnt, Eintrag kommt danach): Der Eintrag
+   bleibt mit der Einheit verknüpft (`ok`, Einheit `completed`), wird aber wie beim Widerruf ohne `target_*`/`state_*`,
+   mit neutralem Namen und `from_health_plan = false` gespeichert – „Vorgaben aus Gesundheits-Plänen nur mit
+   Einwilligung“ gilt damit auch für spät eintreffende Einträge (passt zu H-c und R3).
+5. **Ohne `planned_session_id`** (in Phase 4 nur das erneute Senden eines verwaisten Eintrags): wie verwaist ohne
+   Vorgaben gespeichert, Antwort `ok`. `orphaned` kommt nur, wenn eine gesendete `planned_session_id` nicht (mehr) zur
+   Person gehört – auch beim erneuten Senden derselben `write_id`.
+6. **Übungen:** `load_type` muss zur Übung passen; mit `planned_exercise_id` ist `done`/`skipped` genau die geplante
+   Übung und `alternative` eine andere; zusätzliche Übungen ohne `planned_exercise_id` sind erlaubt, eine Alternative
+   braucht den Verweis. Gewichte (2 Nachkommastellen) und RPE (0,5er-Schritte) werden **vor** der Rundung der Spalten
+   geprüft (7,49 wird nicht still zu 7,5).
+7. **Vergebene ids:** Ist die vom Gerät erzeugte `id` eines neuen Eintrags (oder einer Übung) schon vergeben (fremde
+   Zeile), vergibt der Server eine neue und gibt sie zurück – ohne unterscheidbare Meldung (wie H-a). Die Einheit steht
+   in `id`; neu vergebene Übungs-ids stehen nur dann in `exercise_ids` (`{"<id vom Gerät>": "<gespeicherte id>"}`), wenn
+   es welche gibt (Wächter S5). Doppelte Übungs-ids oder dieselbe `planned_exercise_id` zweimal in einer Einheit lehnt
+   der Server ab (wie Zod, K5).
+8. **Antworten:** neuer Eintrag mit `base_revision` ohne gespeicherte Zeile → `{"result": "conflict", "id": null,
+"revision": null}` (anderswo gelöscht). `delete_session_log` meldet für einen nicht (mehr) vorhandenen bzw. fremden
+   Eintrag `ok` (idempotent, nichts Unterscheidbares). Datumsfenster: eigene Meldung „Das Datum liegt außerhalb des
+   erlaubten Zeitraums.“ (22023), Tageslimit „Heute wurden schon zu viele Trainings gespeichert.“ (54000); alle übrigen
+   Fehler der Klassen 22 und 23 „Ungültige Werte im Tagebuch.“ mit dem ursprünglichen Code, ohne Detail (Wächter S1).
+   **Reihenfolge (S3):** Die Idempotenz (gleiche `write_id` → `ok`) und `conflict` kommen **vor** Art- und
+   Datumsprüfung – eine verlorene Antwort bleibt auch nach Ablauf des 14-Tage-Fensters `ok`.
+   **Tageslimit (K1):** gezählt werden Erstellungen je Person und Tag in `private.session_log_daily_counts` (auch später
+   gelöschte; die Zählerzeile serialisiert gleichzeitige Aufrufe); Ändern bestehender Einträge zählt nicht. Der Zähler
+   enthält keinen Tagebuch-Inhalt, ist nicht über die API lesbar, nicht im Export und wird mit dem Konto gelöscht.
+   **Zeitformate (K2):** Datum nur `JJJJ-MM-TT`, Zeitstempel nur ISO mit Zeitzone (`Z` oder `±hh:mm`) wie Zod – kein
+   `infinity`/`epoch`, keine Zeit ohne Zone.
+9. **`recent_exercise_logs()`** liefert `{session_logs, exercise_logs, set_logs}` in Tabellenform (direkt in `UserRows`
+   übernehmbar); „zählend“ wie `isCountingEntry()` (ohne Erholungs-, Einstiegswoche und Wiedereinstieg `is_return`);
+   `p_per_exercise` wird auf 1–10 begrenzt.
+10. **`export_my_data()`** liefert `{format_version, exported_at, user_id, data: {<tabelle>: [...]}}`; enthält auch
+    `admin_users` (Fremdschlüssel auf `auth.users`). pgTAP prüft zusätzlich jede `public`-Tabelle mit Spalte `user_id`
+    (K3). **Bewusst nicht im Export:** die Konto-E-Mail aus `auth.users` (ergänzt die App, 3.7) und `waitlist` (nur
+    E-Mail ohne Verknüpfung zum Konto, eigene Auskunft per E-Mail) – in Datenschutzerklärung/Auskunft erwähnen (Phase 12).
+11. **Neutralisieren** ändert die `revision` nicht (die Geräte bereinigen selbst, 3.4 S1; eine danach gesendete Fassung
+    eines gelöschten Gesundheits-Plans kommt als `orphaned` ohne Vorgaben an, pgTAP). `revoke_health_data()`
+    neutralisiert auch, wenn keine aktive Einwilligung mehr bestand.
+12. **Gleichzeitiges Speichern während des Widerrufs (Wächter B2, S2):** `consents_after_revoke()` neutralisiert ein
+    zweites Mal **nach** dem Löschen der Pläne – das Löschen wartet auf die Sperre eines laufenden `save_session_log`,
+    dessen Eintrag erst danach sichtbar ist. `revoke_health_data()` sperrt vor dem Löschen (`p_delete_logs`) die
+    Einheiten der Gesundheits-Pläne (`for update`), damit ein gleichzeitig gespeicherter Eintrag mitgelöscht wird.
+    pgTAP stellt den Ablauf per Trigger nach; die Race-Probe des Wächters mit zwei Verbindungen (direkter Widerruf,
+    `revoke_health_data(false)` und `(true)`) ergibt jeweils einen neutralen bzw. gelöschten Eintrag.
+13. **Robustheit (Wächter Runde 2, N1/N2):** Record-Variablen (`planned`, `session`) werden nur innerhalb eines
+    eigenen `if linked then`/`if session_found then` gelesen – PL/pgSQL wertet `and` nicht verkürzt aus, sonst je nach
+    Verbindung Fehler 55000 (`db-sync.test.ts` prüft das Muster; pgTAP `19_training_log_fresh_connection` ruft
+    `save_session_log` ohne `planned_session_id` als ersten Aufruf einer frischen Verbindung auf). Sperr-Reihenfolge
+    überall erst Einheit, dann Eintrag: `delete_session_log` liest den Verweis ohne Sperre, sperrt die Einheit, dann
+    den Eintrag und prüft `revision` erneut; `revoke_health_data` sperrt die Einheiten `order by id` (keine Deadlocks,
+    Probe d1/d2: gleichzeitiges Ändern und Löschen ergibt `conflict` statt `40P01`).
+14. **Neutralisierte Einträge (K4):** Nach einem Widerruf „Tagebuch behalten“ oder H-c steht `from_health_plan = false`
+    – ein späteres „auch löschen“ trifft diese Einträge nicht mehr (das Kennzeichen ist die einzige Quelle). Gehört in
+    den Widerrufs-Dialog (Etappe C: Hinweis „Einträge aus früheren Widerrufen sind schon ohne Vorgaben und werden nicht
+    mehr erkannt“) und in die DSFA.
+
+**Für Etappe C festgehalten (aus Etappe B):** Die App ruft für den Widerruf `health_data` künftig
+`revoke_health_data(p_delete_logs)` statt `update consents`; `apps/mobile/src/data/backend.ts`
+(`status: 'planned' | 'skipped'`) kennt `completed` noch nicht; die Wiedereinstiegs-Uhr rechnet mit dem
+Tagebuch-Zwischenspeicher (12 Wochen) – `recent_exercise_logs()` liefert je Übung nur die Progressions-Grundlage.
+**Pflichtpunkt Etappe C (Wächter S4):** In der Datenbank belegt eine `completed`-Einheit ihren Tag nicht mehr
+(Festlegung 1). `packages/core/src/plan/reschedule.ts`, `plan/view.ts` (`sessionOn()` liefert bei `completed` und
+`planned` am selben Tag nur die erste) und `apps/mobile/src/data/local-rules.ts` behandeln „belegt“ noch als
+`status !== 'skipped'`. Entscheidung in Etappe C: Der Client darf konservativ bleiben (erledigte Tage gelten als
+belegt, Verschieben dorthin bietet die App nicht an) – dann den Unterschied dokumentieren und `sessionOn()` für zwei
+Einheiten an einem Tag (erledigt + geplant aus einem neuen Plan) korrekt machen; Test in Etappe C.
+
+Wächter-Prüfung Etappe B: freigegeben mit Auflagen; B1, B2, S1–S3, S5, S6, K1–K3, K5 umgesetzt, S4 und K4 als
+Pflichtpunkte Etappe C festgehalten. Nächster Schritt: Etappe C.
 
 ## Wächter-Prüfung (Runde 1) – wie die Befunde gelöst sind
 

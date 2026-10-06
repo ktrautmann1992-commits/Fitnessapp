@@ -121,6 +121,41 @@ export type Database = {
         };
         Relationships: [];
       };
+      cardio_logs: {
+        Row: {
+          distance_m: number | null;
+          duration_s: number;
+          elevation_m: number | null;
+          modality: Database['public']['Enums']['endurance_modality'];
+          session_log_id: string;
+          user_id: string;
+        };
+        Insert: {
+          distance_m?: number | null;
+          duration_s: number;
+          elevation_m?: number | null;
+          modality: Database['public']['Enums']['endurance_modality'];
+          session_log_id: string;
+          user_id: string;
+        };
+        Update: {
+          distance_m?: number | null;
+          duration_s?: number;
+          elevation_m?: number | null;
+          modality?: Database['public']['Enums']['endurance_modality'];
+          session_log_id?: string;
+          user_id?: string;
+        };
+        Relationships: [
+          {
+            foreignKeyName: 'cardio_logs_session_log_id_user_id_fkey';
+            columns: ['session_log_id', 'user_id'];
+            isOneToOne: false;
+            referencedRelation: 'session_logs';
+            referencedColumns: ['id', 'user_id'];
+          },
+        ];
+      };
       consent_documents: {
         Row: {
           body_de: string;
@@ -245,6 +280,135 @@ export type Database = {
           },
           {
             foreignKeyName: 'exercise_alternatives_exercise_id_fkey';
+            columns: ['exercise_id'];
+            isOneToOne: false;
+            referencedRelation: 'exercises';
+            referencedColumns: ['id'];
+          },
+        ];
+      };
+      exercise_logs: {
+        Row: {
+          exercise_id: string;
+          exercise_name_de: string;
+          id: string;
+          is_return: boolean;
+          load_type: Database['public']['Enums']['load_type'];
+          order_no: number;
+          planned_exercise_id: string | null;
+          reps_max: number | null;
+          reps_min: number | null;
+          session_log_id: string;
+          state_duration_s: number | null;
+          state_extra_set: boolean | null;
+          state_target_reps: number | null;
+          state_weight_kg: number | null;
+          status: Database['public']['Enums']['exercise_log_status'];
+          target_duration_s: number | null;
+          target_extra_set: boolean | null;
+          target_reps: number | null;
+          target_rpe: number | null;
+          target_sets: number | null;
+          target_weight_kg: number | null;
+          user_id: string;
+          weight_confirmed: boolean;
+        };
+        Insert: {
+          exercise_id: string;
+          exercise_name_de: string;
+          id?: string;
+          is_return?: boolean;
+          load_type: Database['public']['Enums']['load_type'];
+          order_no: number;
+          planned_exercise_id?: string | null;
+          reps_max?: number | null;
+          reps_min?: number | null;
+          session_log_id: string;
+          state_duration_s?: number | null;
+          state_extra_set?: boolean | null;
+          state_target_reps?: number | null;
+          state_weight_kg?: number | null;
+          status: Database['public']['Enums']['exercise_log_status'];
+          target_duration_s?: number | null;
+          target_extra_set?: boolean | null;
+          target_reps?: number | null;
+          target_rpe?: number | null;
+          target_sets?: number | null;
+          target_weight_kg?: number | null;
+          user_id: string;
+          weight_confirmed?: boolean;
+        };
+        Update: {
+          exercise_id?: string;
+          exercise_name_de?: string;
+          id?: string;
+          is_return?: boolean;
+          load_type?: Database['public']['Enums']['load_type'];
+          order_no?: number;
+          planned_exercise_id?: string | null;
+          reps_max?: number | null;
+          reps_min?: number | null;
+          session_log_id?: string;
+          state_duration_s?: number | null;
+          state_extra_set?: boolean | null;
+          state_target_reps?: number | null;
+          state_weight_kg?: number | null;
+          status?: Database['public']['Enums']['exercise_log_status'];
+          target_duration_s?: number | null;
+          target_extra_set?: boolean | null;
+          target_reps?: number | null;
+          target_rpe?: number | null;
+          target_sets?: number | null;
+          target_weight_kg?: number | null;
+          user_id?: string;
+          weight_confirmed?: boolean;
+        };
+        Relationships: [
+          {
+            foreignKeyName: 'exercise_logs_exercise_id_fkey';
+            columns: ['exercise_id'];
+            isOneToOne: false;
+            referencedRelation: 'exercises';
+            referencedColumns: ['id'];
+          },
+          {
+            foreignKeyName: 'exercise_logs_planned_exercise_id_user_id_fkey';
+            columns: ['planned_exercise_id', 'user_id'];
+            isOneToOne: false;
+            referencedRelation: 'planned_exercises';
+            referencedColumns: ['id', 'user_id'];
+          },
+          {
+            foreignKeyName: 'exercise_logs_session_log_id_user_id_fkey';
+            columns: ['session_log_id', 'user_id'];
+            isOneToOne: false;
+            referencedRelation: 'session_logs';
+            referencedColumns: ['id', 'user_id'];
+          },
+        ];
+      };
+      exercise_start_weights: {
+        Row: {
+          exercise_id: string;
+          updated_at: string;
+          user_id: string;
+          weight_kg: number;
+        };
+        Insert: {
+          exercise_id: string;
+          updated_at?: string;
+          user_id?: string;
+          weight_kg: number;
+        };
+        Update: {
+          exercise_id?: string;
+          updated_at?: string;
+          user_id?: string;
+          weight_kg?: number;
+        };
+        Relationships: [
+          {
+            foreignKeyName: 'exercise_start_weights_exercise_id_fkey';
             columns: ['exercise_id'];
             isOneToOne: false;
             referencedRelation: 'exercises';
@@ -726,6 +890,124 @@ export type Database = {
         };
         Relationships: [];
       };
+      session_logs: {
+        Row: {
+          client_updated_at: string;
+          created_at: string;
+          finished_at: string | null;
+          from_health_plan: boolean;
+          id: string;
+          is_deload: boolean;
+          is_intro_week: boolean;
+          kind: Database['public']['Enums']['planned_session_kind'];
+          last_write_id: string;
+          name_de: string;
+          notes: string | null;
+          performed_on: string;
+          planned_session_id: string | null;
+          revision: number;
+          session_rpe: number | null;
+          source: Database['public']['Enums']['log_source'];
+          started_at: string | null;
+          status: Database['public']['Enums']['session_log_status'];
+          updated_at: string;
+          user_id: string;
+        };
+        Insert: {
+          client_updated_at: string;
+          created_at?: string;
+          finished_at?: string | null;
+          from_health_plan?: boolean;
+          id?: string;
+          is_deload?: boolean;
+          is_intro_week?: boolean;
+          kind: Database['public']['Enums']['planned_session_kind'];
+          last_write_id: string;
+          name_de: string;
+          notes?: string | null;
+          performed_on: string;
+          planned_session_id?: string | null;
+          revision?: number;
+          session_rpe?: number | null;
+          source?: Database['public']['Enums']['log_source'];
+          started_at?: string | null;
+          status: Database['public']['Enums']['session_log_status'];
+          updated_at?: string;
+          user_id: string;
+        };
+        Update: {
+          client_updated_at?: string;
+          created_at?: string;
+          finished_at?: string | null;
+          from_health_plan?: boolean;
+          id?: string;
+          is_deload?: boolean;
+          is_intro_week?: boolean;
+          kind?: Database['public']['Enums']['planned_session_kind'];
+          last_write_id?: string;
+          name_de?: string;
+          notes?: string | null;
+          performed_on?: string;
+          planned_session_id?: string | null;
+          revision?: number;
+          session_rpe?: number | null;
+          source?: Database['public']['Enums']['log_source'];
+          started_at?: string | null;
+          status?: Database['public']['Enums']['session_log_status'];
+          updated_at?: string;
+          user_id?: string;
+        };
+        Relationships: [
+          {
+            foreignKeyName: 'session_logs_planned_session_id_user_id_fkey';
+            columns: ['planned_session_id', 'user_id'];
+            isOneToOne: false;
+            referencedRelation: 'planned_sessions';
+            referencedColumns: ['id', 'user_id'];
+          },
+        ];
+      };
+      set_logs: {
+        Row: {
+          done: boolean;
+          duration_s: number | null;
+          exercise_log_id: string;
+          reps: number | null;
+          rpe: number | null;
+          set_no: number;
+          user_id: string;
+          weight_kg: number | null;
+        };
+        Insert: {
+          done: boolean;
+          duration_s?: number | null;
+          exercise_log_id: string;
+          reps?: number | null;
+          rpe?: number | null;
+          set_no: number;
+          user_id: string;
+          weight_kg?: number | null;
+        };
+        Update: {
+          done?: boolean;
+          duration_s?: number | null;
+          exercise_log_id?: string;
+          reps?: number | null;
+          rpe?: number | null;
+          set_no?: number;
+          user_id?: string;
+          weight_kg?: number | null;
+        };
+        Relationships: [
+          {
+            foreignKeyName: 'set_logs_exercise_log_id_user_id_fkey';
+            columns: ['exercise_log_id', 'user_id'];
+            isOneToOne: false;
+            referencedRelation: 'exercise_logs';
+            referencedColumns: ['id', 'user_id'];
+          },
+        ];
+      };
       template_exercises: {
         Row: {
           day_index: number;
@@ -1017,15 +1299,19 @@ export type Database = {
     };
     Functions: {
       append_plan_block: { Args: { p_plan_id: string; p_sessions: Json }; Returns: number };
+      close_missed_sessions: { Args: never; Returns: number };
       current_consent_version: {
         Args: { p_type: Database['public']['Enums']['consent_type'] };
         Returns: number;
       };
       delete_my_account: { Args: never; Returns: undefined };
+      delete_session_log: { Args: { p_base_revision: number; p_id: string }; Returns: Json };
+      export_my_data: { Args: never; Returns: Json };
       has_valid_consent: {
         Args: { p_type: Database['public']['Enums']['consent_type'] };
         Returns: boolean;
       };
+      recent_exercise_logs: { Args: { p_per_exercise?: number }; Returns: Json };
       replace_food_preferences: {
         Args: { p_items: Json; p_scope: string };
         Returns: undefined;
@@ -1038,6 +1324,8 @@ export type Database = {
         };
         Returns: undefined;
       };
+      revoke_health_data: { Args: { p_delete_logs: boolean }; Returns: undefined };
+      save_session_log: { Args: { p_log: Json }; Returns: Json };
       save_training_plan: { Args: { p_plan: Json }; Returns: string };
       seed_content: { Args: { p_content: Json }; Returns: Json };
       waitlist_cleanup: { Args: never; Returns: number };
@@ -1081,11 +1369,13 @@ export type Database = {
       equipment_category:
         'free_weights' | 'bench' | 'bodyweight' | 'bands' | 'cardio' | 'other' | 'machines';
       equipment_location: 'home' | 'gym';
+      exercise_log_status: 'done' | 'skipped' | 'alternative';
       exercise_mechanics: 'compound' | 'isolation';
       experience_level: 'beginner' | 'advanced' | 'competitive';
       food_preference_kind: 'like' | 'dislike' | 'intolerance';
       goal_type: 'fat_loss' | 'definition' | 'muscle_gain' | 'general_fitness' | 'endurance';
       load_type: 'weight' | 'bodyweight' | 'band' | 'time';
+      log_source: 'manual';
       movement_pattern:
         | 'squat'
         | 'hinge'
@@ -1147,8 +1437,9 @@ export type Database = {
         | 'endurance_basic_only';
       plan_status: 'active' | 'replaced';
       planned_session_kind: 'strength' | 'endurance';
-      planned_session_status: 'planned' | 'skipped';
+      planned_session_status: 'planned' | 'skipped' | 'completed';
       session_focus: 'full_body' | 'upper' | 'lower';
+      session_log_status: 'completed' | 'partial';
       sex: 'male' | 'female' | 'diverse' | 'unspecified';
       training_location: 'gym' | 'home' | 'both';
       training_slot_kind: 'strength_gym' | 'strength_home' | 'endurance';
@@ -1289,11 +1580,13 @@ export const Constants = {
         'machines',
       ],
       equipment_location: ['home', 'gym'],
+      exercise_log_status: ['done', 'skipped', 'alternative'],
       exercise_mechanics: ['compound', 'isolation'],
       experience_level: ['beginner', 'advanced', 'competitive'],
       food_preference_kind: ['like', 'dislike', 'intolerance'],
       goal_type: ['fat_loss', 'definition', 'muscle_gain', 'general_fitness', 'endurance'],
       load_type: ['weight', 'bodyweight', 'band', 'time'],
+      log_source: ['manual'],
       movement_pattern: [
         'squat',
         'hinge',
@@ -1358,8 +1651,9 @@ export const Constants = {
       ],
       plan_status: ['active', 'replaced'],
       planned_session_kind: ['strength', 'endurance'],
-      planned_session_status: ['planned', 'skipped'],
+      planned_session_status: ['planned', 'skipped', 'completed'],
       session_focus: ['full_body', 'upper', 'lower'],
+      session_log_status: ['completed', 'partial'],
       sex: ['male', 'female', 'diverse', 'unspecified'],
       training_location: ['gym', 'home', 'both'],
       training_slot_kind: ['strength_gym', 'strength_home', 'endurance'],
