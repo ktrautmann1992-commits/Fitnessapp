@@ -661,6 +661,7 @@ export const de = {
     warmup: 'Aufwärmen',
     cooldown: 'Cool-down',
     exercisesCaption: (session: string) => `Übungen – ${session}`,
+    continued: (session: string) => `${session} (Fortsetzung)`,
     weightHint:
       'Gewicht: deine aktuelle Vorgabe aus der App. Leer = Startgewicht finden – lieber zu leicht als zu schwer. RPE = Anstrengung von 10 (RPE 7 = noch etwa 3 Wiederholungen in Reserve).',
     rpeHint: 'RPE = Anstrengung von 10 (RPE 7 = noch etwa 3 Wiederholungen in Reserve).',
@@ -694,6 +695,51 @@ export const de = {
     effortHint:
       'Anstrengung von 0 bis 10: Bei lockeren Einheiten kannst du dich noch in ganzen Sätzen unterhalten.',
     notesHeading: 'Gut zu wissen',
+  },
+  /** Plan als PDF: Knopf, Hinweis, Druckansicht (docs/PLAN-PDF-EXPORT.md §3, §4, P3/P4). */
+  printView: {
+    button: 'Als PDF speichern',
+    buttonHint: 'Öffnet die Druckansicht deines Trainingsplans.',
+    title: 'Plan als PDF',
+    intro:
+      'Dein Trainingsplan auf A4 – zum Ausdrucken oder fürs Studio. Die Datei entsteht nur auf deinem Gerät.',
+    healthTitle: 'Bevor du speicherst',
+    healthText:
+      'Dieser Plan berücksichtigt deine Gesundheitsangaben. Speichere oder drucke die Datei nur bewusst.',
+    healthConfirm: 'Weiter',
+    loading: 'Druckansicht wird vorbereitet …',
+    printing: 'Druckdialog wird geöffnet …',
+    optionsTitle: 'Einstellungen',
+    includeName: 'Meinen Namen auf das Deckblatt drucken',
+    nameLabel: 'Name auf dem Deckblatt',
+    nameHint: 'Wird nicht gespeichert und erscheint nur im PDF.',
+    nameMissing: 'Bitte gib einen Namen ein oder lass das Häkchen weg.',
+    nameTooLong: (max: number) => `Bitte höchstens ${max} Zeichen.`,
+    nameInvalid:
+      'Bitte nur Buchstaben, Zahlen und einfache Satzzeichen. Zusammengesetzte Emoji (z. B. 👩‍💻) und unsichtbare Sonderzeichen gehen leider nicht.',
+    columnsLabel: 'Leere Spalten zum Mitschreiben',
+    columnsNone: 'Keine',
+    columnsCount: (count: number) => (count === 1 ? '1 Spalte' : `${count} Spalten`),
+    columnsDefault: 'Standard',
+    columnsLandscape: (count: number) => `${count} Spalten im Querformat`,
+    columnsLandscapeHint: 'Die Seiten der Einheiten werden quer gedruckt.',
+    printButton: 'Drucken / als PDF sichern',
+    printHintWeb:
+      'Tippe auf „Drucken / als PDF sichern“. Android: Drucker „Als PDF speichern“ wählen. iPhone: in den Druckoptionen oben auf das Teilen-Symbol, dann „In Dateien sichern“.',
+    printHintNative:
+      'Tippe auf „Drucken / als PDF sichern“. Im Druckdialog kannst du drucken oder „Als PDF sichern“ wählen.',
+    previewTitle: 'Vorschau',
+    previewLabel: 'Vorschau deines Trainingsplans',
+    back: 'Zurück zum Plan',
+    noPlanTitle: 'Noch kein Plan',
+    noPlanText: 'Erstelle zuerst deinen Trainingsplan – dann kannst du ihn als PDF speichern.',
+    libraryMissing:
+      'Die Übungen konnten gerade nicht geladen werden. Prüfe deine Verbindung und versuche es noch einmal.',
+    noSessions: 'In deinem Plan gibt es gerade keine Einheiten zum Drucken.',
+    rulesMissing:
+      'Deine Angaben sind gerade nicht vollständig. Bitte prüfe sie in den Einstellungen – danach kannst du den Plan speichern.',
+    failed: 'Das hat leider nicht geklappt. Bitte versuche es noch einmal.',
+    cancelled: 'Drucken abgebrochen – es wurde nichts gespeichert.',
   },
   notFound: {
     title: 'Diese Seite gibt es nicht.',

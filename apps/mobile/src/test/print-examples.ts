@@ -10,6 +10,7 @@ import {
   type ExportProgress,
   type ExportProgressByLocation,
   generateTrainingPlan,
+  isExerciseFeasible,
   type PlanInputsInput,
   type PlanLibrary,
   planSafetyRules,
@@ -165,17 +166,24 @@ function progressFor(
 }
 
 /** Baut das Druck-Dokument eines Beispiels (wie später die App: Plan + Anzeige-Regeln + Geräte je Ort). */
-export function exampleDocument(example: PrintExample, today = EXAMPLE_DAY): PrintDocument {
+export function exampleDocument(
+  example: PrintExample,
+  today = EXAMPLE_DAY,
+  adjust: (sessions: StoredSession[], library: PlanLibrary) => StoredSession[] = (s) => s,
+): PrintDocument {
   const library = exampleLibrary();
   const generated = generateTrainingPlan(example.inputs, library, today);
   if (!generated.ok) throw new Error(`${example.slug}: ${generated.error}`);
   const plan = generated.plan;
-  const sessions: StoredSession[] = plan.sessions.map((s, i) => ({
-    ...s,
-    id: `beispiel-${i}`,
-    status: 'planned',
-    original_date: null,
-  }));
+  const sessions: StoredSession[] = adjust(
+    plan.sessions.map((s, i) => ({
+      ...s,
+      id: `beispiel-${i}`,
+      status: 'planned',
+      original_date: null,
+    })),
+    library,
+  );
   const rules = planSafetyRules(example.inputs, today);
   const home = (example.inputs.homeEquipment ?? []).map((item) => ({
     equipmentId: item.equipmentId,
@@ -199,4 +207,81 @@ export function exampleDocument(example: PrintExample, today = EXAMPLE_DAY): Pri
   );
   if (!result.ok) throw new Error(`${example.slug}: ${result.error}`);
   return result.document;
+}
+
+// ---------------------------------------------------------------------------------------------------------
+// Belastungstest (Wächter K2): passt jede Seite auf A4?
+// ---------------------------------------------------------------------------------------------------------
+
+/** 4 Kraft-Tage zu Hause ohne Geräte (Körpergewicht-Vorlage) – Grundlage des Belastungstests. */
+export const EXTREME_EXAMPLE: PrintExample = {
+  slug: 'belastungstest',
+  description:
+    'Belastungstest: 8 Übungen mit langen Namen, Supersätze, jede „ersetzt (Gerät fehlt)“, 600 Zeichen Aufwärmen',
+  inputs: {
+    ...base,
+    goalType: 'general_fitness',
+    experienceLevel: 'advanced',
+    homeEquipment: [],
+    schedule: {
+      mode: 'fixed',
+      slots: [1, 2, 4, 5].map((weekday) => ({
+        weekday,
+        kind: 'strength_home' as const,
+        minutes: 60,
+      })),
+    },
+  },
+};
+
+const LONG_SUFFIX = ' – langsam, kontrolliert und mit voller Bewegungsamplitude (Variante)';
+const WARMUP_600 = 'Locker einlaufen, Gelenke mobilisieren und Aufwärmsätze machen. '
+  .repeat(10)
+  .slice(0, 600);
+
+/**
+ * Jede Kraft-Einheit: 8 zu Hause machbare Übungen mit langen Namen, je ersetzt für eine Studio-Übung (Gerät fehlt),
+ * Supersätze A/B, 600 Zeichen Aufwärmen und Cool-down. Ausgedacht, nur für den Seitentest.
+ */
+export function extremeDocument(
+  options: Partial<TrainingPlanExportOptionsInput> = {},
+): PrintDocument {
+  return exampleDocument(
+    { ...EXTREME_EXAMPLE, options: { ...EXTREME_EXAMPLE.options, ...options } },
+    EXAMPLE_DAY,
+    (sessions, library) => {
+      const home = equipmentProfile('home', []);
+      const all = [...library.exercises.values()];
+      const doable = all.filter(
+        (e) =>
+          e.load_type === 'bodyweight' &&
+          e.caution_tags.length === 0 &&
+          isExerciseFeasible(e, home),
+      );
+      const gymOnly = all.find((e) => !isExerciseFeasible(e, home));
+      if (doable.length < 8 || !gymOnly) throw new Error('Belastungstest: zu wenige Übungen.');
+      return sessions.map((s) => {
+        const first = s.exercises[0];
+        if (s.kind !== 'strength' || !first) return s;
+        return {
+          ...s,
+          warmup_de: WARMUP_600,
+          cooldown_de: WARMUP_600,
+          exercises: doable.slice(0, 8).map((e, i) => ({
+            ...first,
+            order_no: i + 1,
+            exercise_id: e.id,
+            source_exercise_id: gymOnly.id,
+            exercise_name_de: `${e.name_de}${LONG_SUFFIX}`,
+            sets: 4,
+            reps_min: 8,
+            reps_max: 12,
+            duration_s: null,
+            rest_s: 90,
+            superset_group: i < 2 ? 'A' : i < 4 ? 'B' : null,
+          })),
+        };
+      });
+    },
+  );
 }

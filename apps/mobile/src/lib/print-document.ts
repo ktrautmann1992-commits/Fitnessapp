@@ -107,6 +107,7 @@ const TEXTS: Translators = {
   'session.warmup': () => p.warmup,
   'session.cooldown': () => p.cooldown,
   'session.exercises': ({ session }) => p.exercisesCaption(session),
+  'session.continued': ({ session }) => p.continued(session),
   'session.weightHint': ({ hasWeight }) => (hasWeight ? p.weightHint : p.rpeHint),
   'session.noExercises': () => p.noExercises,
   'load.bodyweight': () => p.loadBodyweight,

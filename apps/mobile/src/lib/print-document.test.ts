@@ -4,7 +4,7 @@ import { describe, expect, it } from 'vitest';
 
 import { t } from '@/i18n';
 
-import { exampleDocument, PRINT_EXAMPLES } from '../test/print-examples';
+import { exampleDocument, extremeDocument, PRINT_EXAMPLES } from '../test/print-examples';
 import { translatePrintDocument, translatePrintText } from './print-document';
 
 describe('translatePrintText', () => {
@@ -118,5 +118,22 @@ describe('Beispiele: Plan → Dokument → übersetzt → HTML', () => {
     expect(html).toContain('<dt>Tage</dt><dd>Samstag</dd></div><div><dt>Ort</dt><dd>Zuhause</dd>');
     expect(html).toContain('20 kg');
     expect(html).toContain('12 kg');
+  });
+});
+
+describe('Belastungstest (Wächter K2) – Grundlage für den A4-Test in e2e/print.spec.ts', () => {
+  it('8 Übungen mit langen Namen, jede „ersetzt“, Supersätze, 600 Zeichen Aufwärmen', () => {
+    for (const options of [{}, { logColumns: 8, landscape: true }]) {
+      const html = renderPrintHtml(translatePrintDocument(extremeDocument(options)));
+      // Exercise-Zeilen (Wochenübersicht hat andere Zeilenköpfe): jede mit „ersetzt“, 8 je Einheit.
+      const swaps = html.match(/ersetzt \(Gerät fehlt\)/g) ?? [];
+      const warmups = html.match(/<p>Locker einlaufen[^<]{550,}<\/p>/g) ?? [];
+      expect(warmups.length).toBeGreaterThan(0);
+      expect(swaps.length).toBe((warmups.length / 2) * 8);
+      expect(html.match(/Supersatz A/g)).toHaveLength((warmups.length / 2) * 2);
+      expect(html).toContain('langsam, kontrolliert');
+      // Zu lang für eine Seite → Fortsetzungsseiten (Wächter K2).
+      expect(html).toContain('(Fortsetzung)');
+    }
   });
 });

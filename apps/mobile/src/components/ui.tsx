@@ -32,6 +32,8 @@ export function Heading({ children, level = 1 }: { children: ReactNode; level?: 
   return (
     <Text
       accessibilityRole="header"
+      // Ebene für Screenreader im Browser (sonst gilt jede Überschrift als Ebene 1).
+      aria-level={level}
       style={[level === 1 ? [styles.h1, displayFont()] : styles.h2, { color: theme.text }]}
     >
       {children}

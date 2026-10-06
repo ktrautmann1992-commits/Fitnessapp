@@ -827,4 +827,29 @@ export const PRINT_EXPORT = {
   weekRowsPerPage: 10,
   enduranceRowsPerPage: 20,
   nameMaxLength: 60,
+  /**
+   * Seitenumbruch der Einheiten-Seiten (Wächter K2): grobe Höhen-Schätzung in mm, damit eine Einheit mit vielen
+   * bzw. langen Übungen auf eine Folgeseite umbricht statt über A4 hinauszulaufen. Werte passen zum Layout in
+   * packages/ui/src/print/render-html.ts (Innenränder, 11 pt Text, 10 pt Tabelle, schmalste Übungs-Spalte) und
+   * sind bewusst vorsichtig; geprüft im Playwright-Test apps/mobile/e2e/print-pages.spec.ts (Belastungstest).
+   */
+  layout: {
+    /** Nutzbare Höhe je Seite (A4 minus Innenränder und Fußzeile) mit Sicherheitsabstand. */
+    pageHeightMm: { portrait: 250, landscape: 172 },
+    /** Zeichen je Zeile im Fließtext bzw. in der Übungs-Spalte (schmalste Variante). */
+    bodyCharsPerLine: { portrait: 85, landscape: 125 },
+    exerciseCharsPerLine: { portrait: 20, landscape: 27 },
+    bodyLineMm: 5.3,
+    tableLineMm: 4.8,
+    /** Zellen-Innenabstand plus Rahmen je Tabellenzeile. */
+    rowPaddingMm: 2.8,
+    /** Mindesthöhe einer Übungs-Zeile (Mitschreib-Feld). */
+    rowMinMm: { portrait: 10.6, landscape: 9.6 },
+    /** Überschrift + Tage/Ort/Dauer, Zwischenüberschrift, Tabellen-Titel + Kopfzeile, Hinweis unter der Tabelle. */
+    sessionHeaderMm: 15,
+    subheadingMm: 8,
+    tableHeadMm: 19,
+    tableHintMm: 13,
+    paragraphGapMm: 3,
+  },
 } as const;

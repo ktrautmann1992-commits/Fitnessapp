@@ -478,7 +478,7 @@ function sessionBlocks(
       role: 'log' as const,
     })),
   ];
-  return [
+  const top: PrintBlock[] = [
     { type: 'pageBreak', orientation },
     { type: 'heading', level: 2, text: content(shown.name_de) },
     {
@@ -500,31 +500,90 @@ function sessionBlocks(
     },
     { type: 'heading', level: 3, text: label('session.warmup') },
     { type: 'paragraph', text: content(shown.warmup_de) },
-    // Alle Übungen ausgeblendet (aktuelle Regeln, kein Ersatz): neutraler Hinweis statt leerer Tabelle (K7).
-    ...(shown.exercises.length === 0
-      ? [{ type: 'paragraph', text: label('session.noExercises') } as const]
-      : ([
-          {
-            type: 'table',
-            caption: text('session.exercises', {
-              session: shown.name_de.replace(/[\p{Cc}\p{Cf}]/gu, '').slice(0, 600),
-            }),
-            columns,
-            rows: shown.exercises.map((e) =>
-              exerciseRow(e, version, display, progress, options.logColumns),
-            ),
-          },
-          {
-            type: 'paragraph',
-            muted: true,
-            text: text('session.weightHint', {
-              hasWeight: shown.exercises.some((e) => isWeighted(e.exercise_id, display)),
-            }),
-          },
-        ] as const)),
+  ];
+  const bottom: PrintBlock[] = [
     { type: 'heading', level: 3, text: label('session.cooldown') },
     { type: 'paragraph', text: content(shown.cooldown_de) },
   ];
+  // Alle Übungen ausgeblendet (aktuelle Regeln, kein Ersatz): neutraler Hinweis statt leerer Tabelle (K7).
+  if (shown.exercises.length === 0) {
+    return [...top, { type: 'paragraph', text: label('session.noExercises') }, ...bottom];
+  }
+
+  const sessionName = shown.name_de.replace(/[\p{Cc}\p{Cf}]/gu, '').slice(0, 600);
+  const rows = shown.exercises.map((e) =>
+    exerciseRow(e, version, display, progress, options.logColumns),
+  );
+  const table = (part: PrintTableRow[]): PrintBlock => ({
+    type: 'table',
+    caption: text('session.exercises', { session: sessionName }),
+    columns,
+    rows: part,
+  });
+  const hint: PrintBlock = {
+    type: 'paragraph',
+    muted: true,
+    text: text('session.weightHint', {
+      hasWeight: shown.exercises.some((e) => isWeighted(e.exercise_id, display)),
+    }),
+  };
+
+  // Seitenumbruch nach geschätzter Höhe (Wächter K2): Übungen bis die Seite voll ist, Rest auf Folgeseiten.
+  const L = PRINT_EXPORT.layout;
+  const pageMm = L.pageHeightMm[orientation];
+  const bottomMm = L.tableHintMm + L.subheadingMm + paragraphMm(shown.cooldown_de, orientation);
+  const pages: PrintTableRow[][] = [[]];
+  let used =
+    L.sessionHeaderMm + L.subheadingMm + paragraphMm(shown.warmup_de, orientation) + L.tableHeadMm;
+  for (const row of rows) {
+    const height = rowMm(row, orientation);
+    const current = pages.at(-1) as PrintTableRow[];
+    if (current.length > 0 && used + height > pageMm) {
+      pages.push([row]);
+      used = L.sessionHeaderMm + L.tableHeadMm + height;
+    } else {
+      current.push(row);
+      used += height;
+    }
+  }
+  const blocks: PrintBlock[] = [...top];
+  pages.forEach((part, index) => {
+    if (index > 0) {
+      blocks.push(
+        { type: 'pageBreak', orientation },
+        { type: 'heading', level: 2, text: text('session.continued', { session: sessionName }) },
+      );
+    }
+    blocks.push(table(part));
+  });
+  if (used + bottomMm > pageMm) {
+    // Hinweis und Cool-down passen nicht mehr: eigene Folgeseite.
+    blocks.push(
+      { type: 'pageBreak', orientation },
+      { type: 'heading', level: 2, text: text('session.continued', { session: sessionName }) },
+    );
+  }
+  blocks.push(hint, ...bottom);
+  return blocks;
+}
+
+/** Geschätzte Höhe eines Absatzes in mm (Seitenumbruch, K2). */
+function paragraphMm(value: string, orientation: PrintOrientation): number {
+  const L = PRINT_EXPORT.layout;
+  const lines = Math.max(1, Math.ceil(value.length / L.bodyCharsPerLine[orientation]));
+  return lines * L.bodyLineMm + L.paragraphGapMm;
+}
+
+/** Geschätzte Höhe einer Übungs-Zeile in mm: Zeilen der Übungs-Spalte (Name + Markierungen). */
+function rowMm(row: PrintTableRow, orientation: PrintOrientation): number {
+  const L = PRINT_EXPORT.layout;
+  const perLine = L.exerciseCharsPerLine[orientation];
+  const lines = row.header.reduce(
+    (sum, value) =>
+      sum + (value.kind === 'data' ? Math.max(1, Math.ceil(value.value.length / perLine)) : 1),
+    0,
+  );
+  return Math.max(L.rowMinMm[orientation], lines * L.tableLineMm + L.rowPaddingMm);
 }
 
 // ---------------------------------------------------------------------------------------------------------

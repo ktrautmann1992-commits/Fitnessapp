@@ -11,7 +11,13 @@ import { fileURLToPath } from 'node:url';
 import { renderPrintHtml } from '@fitnessapp/ui/print';
 
 import { translatePrintDocument } from '../src/lib/print-document';
-import { EXAMPLE_DAY, exampleDocument, PRINT_EXAMPLES } from '../src/test/print-examples';
+import {
+  EXAMPLE_DAY,
+  exampleDocument,
+  EXTREME_EXAMPLE,
+  extremeDocument,
+  PRINT_EXAMPLES,
+} from '../src/test/print-examples';
 
 const outDir = fileURLToPath(new URL('../pdf-vorschau/', import.meta.url));
 rmSync(outDir, { recursive: true, force: true });
@@ -26,8 +32,12 @@ const summary: string[] = [
   '| --- | --- |',
 ];
 
-for (const example of PRINT_EXAMPLES) {
-  const doc = exampleDocument(example);
+// Beispiele plus Belastungstest (Wächter K2: Fortsetzungsseiten statt Überlauf).
+const all = [
+  ...PRINT_EXAMPLES.map((example) => ({ example, doc: exampleDocument(example) })),
+  { example: EXTREME_EXAMPLE, doc: extremeDocument() },
+];
+for (const { example, doc } of all) {
   const html = renderPrintHtml(translatePrintDocument(doc));
   const file = `${doc.meta.fileName}-${example.slug}.html`;
   writeFileSync(new URL(file, `file://${outDir}`), html);

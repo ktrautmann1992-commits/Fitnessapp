@@ -1,4 +1,5 @@
 import { expect, test, type Page } from '@playwright/test';
+import { expectA4, pageHeights, pdfPageCount } from './print-helpers';
 
 /**
  * Trainingsplan im TESTMODUS (docs/PLAN-PHASE-3.md Abschnitt 10, Etappe C) mit festem Datum:
@@ -561,4 +562,165 @@ test('verpasste Einheit mit freiem Tag: Mo/Fr, Uhr Mittwoch → Montags-Einheit 
   const rows = await storedRows(page);
   const moved = rows.plannedSessions.find((s) => s.scheduled_on === '2026-10-07');
   expect(moved).toMatchObject({ original_date: '2026-10-05', status: 'planned' });
+});
+
+test('Plan als PDF: Hinweis bei Gesundheitsangaben, Druckansicht, Name, Querformat, Drucken (P3)', async ({
+  page,
+}) => {
+  await onboard(page, {
+    consent: true,
+    yesQuestion: 0,
+    level: /^Fortgeschritten/,
+    goal: 'Muskelaufbau',
+    days: [
+      ['Montag', 'Kraft im Studio', 60],
+      ['Mittwoch', 'Kraft im Studio', 60],
+      ['Freitag', 'Kraft im Studio', 60],
+    ],
+  });
+  await page.getByRole('button', { name: 'Zum Plan' }).click();
+  await heading(page, 'Heute');
+  // Druckdialog des Browsers abfangen (zählt nur die Aufrufe).
+  await page.evaluate(() => {
+    const w = window as unknown as { __prints: number };
+    w.__prints = 0;
+    window.print = () => {
+      w.__prints += 1;
+    };
+  });
+
+  // Stil der App-Oberfläche auf „Heute“ merken (Wächter S2: Druck-CSS darf ihn nicht verändern).
+  const appStyle = async (title: string, sub: string) =>
+    page.evaluate(
+      ([t, s]) => {
+        const pick = (el: Element | null | undefined) => {
+          if (!el) return null;
+          const c = getComputedStyle(el);
+          return [c.fontFamily, c.fontStretch, c.fontSize, c.fontWeight, c.marginTop, c.color].join(
+            '|',
+          );
+        };
+        const find = (text: string) =>
+          [...document.querySelectorAll('#root [role="heading"], #root h1, #root h2')].find(
+            (el) => el.textContent === text,
+          );
+        const body = getComputedStyle(document.body);
+        return {
+          title: pick(find(t as string)),
+          sub: pick(find(s as string)),
+          body: [body.backgroundColor, body.fontFamily, body.fontSize].join('|'),
+        };
+      },
+      [title, sub],
+    );
+  const todayStyle = await appStyle('Heute', 'Deine Woche');
+  expect(todayStyle.title).not.toBeNull();
+  expect(todayStyle.sub).not.toBeNull();
+
+  // Direktaufruf der Adresse: Hinweis erscheint trotzdem, keine Vorschau vor „Weiter“ (Wächter K1).
+  await page.goto('/plan/drucken');
+  await heading(page, 'Bevor du speicherst');
+  await expect(page.getByTestId('print-preview')).toHaveCount(0);
+  await expect(page.locator('#alpha5-print-root')).toHaveCount(0);
+  await page.getByRole('button', { name: 'Abbrechen' }).click();
+  await heading(page, 'Heute');
+  await page.evaluate(() => {
+    const w = window as unknown as { __prints: number };
+    w.__prints = 0;
+    window.print = () => {
+      w.__prints += 1;
+    };
+  });
+
+  // Hinweis vor dem Erzeugen (§4) – Abbrechen führt zurück.
+  await page.getByRole('button', { name: 'Als PDF speichern' }).click();
+  await heading(page, 'Bevor du speicherst');
+  await expect(
+    page.getByText('Dieser Plan berücksichtigt deine Gesundheitsangaben.'),
+  ).toBeVisible();
+  await expect(page.getByTestId('print-preview')).toHaveCount(0);
+  await page.getByRole('button', { name: 'Abbrechen' }).click();
+  await heading(page, 'Heute');
+  await page.getByRole('button', { name: 'Als PDF speichern' }).click();
+  await page.getByRole('button', { name: 'Weiter', exact: true }).click();
+
+  // Druckansicht mit Vorschau.
+  await heading(page, 'Plan als PDF');
+  const preview = page.getByTestId('print-preview');
+  await expect(preview.getByRole('heading', { name: 'Dein Trainingsplan' })).toBeVisible();
+  await expect(preview).toContainText('Muskelaufbau · 3 Tage');
+  await expect(preview).toContainText('Alpha5 ersetzt keine ärztliche Beratung.');
+  await expect(preview).not.toContainText(/Gesundheit|Fortgeschritten|vorsichtig/);
+  expect(await page.title()).toBe('Trainingsplan');
+  // App-Oberfläche unverändert (gleicher Stil wie auf „Heute“), Vorschau-Überschriften eine Stufe tiefer (K4).
+  const printStyle = await appStyle('Plan als PDF', 'Einstellungen');
+  expect(printStyle.title).toBe(todayStyle.title);
+  expect(printStyle.sub).toBe(todayStyle.sub);
+  expect(printStyle.body).toBe(todayStyle.body);
+  await expect(page.getByRole('heading', { level: 1 })).toHaveCount(1);
+  await expect(preview.locator('h1, h2, h3')).toHaveCount(0);
+  await expect(
+    preview.getByRole('heading', { name: 'Dein Trainingsplan', level: 2 }),
+  ).toBeVisible();
+
+  // Name: verständliche Meldung bei ungültigen Zeichen (K11), sonst auf dem Deckblatt.
+  await page.getByRole('checkbox', { name: 'Meinen Namen auf das Deckblatt drucken' }).click();
+  const name = page.getByLabel('Name auf dem Deckblatt');
+  await name.fill('Anna 👩‍💻');
+  await expect(page.getByText(/Zusammengesetzte Emoji/)).toBeVisible();
+  await expect(page.getByTestId('print-button')).toBeDisabled();
+  await name.fill('Anna Test');
+  await expect(page.getByTestId('print-preview')).toContainText('Anna Test');
+  expect(await page.title()).toBe('Trainingsplan');
+
+  // Drucken öffnet den Druckdialog.
+  await page.getByTestId('print-button').click();
+  expect(await page.evaluate(() => (window as unknown as { __prints: number }).__prints)).toBe(1);
+
+  // Druck-Layout: nur das Dokument, jede Seite passt auf A4 (K2), PDF-Seiten = Abschnitte.
+  await page.emulateMedia({ media: 'print' });
+  await expect(page.locator('#root')).toBeHidden();
+  await expect(page.locator('#alpha5-print-root')).toBeVisible();
+  let pages = await pageHeights(page, '#alpha5-print-root section.page');
+  expectA4(pages);
+  expect(pdfPageCount(await page.pdf({ preferCSSPageSize: true }))).toBe(pages.length);
+  await page.emulateMedia({ media: 'screen' });
+
+  // Querformat mit 8 Spalten (nur Web).
+  await page.getByRole('radio', { name: /8 Spalten im Querformat/ }).click();
+  await expect(page.locator('#alpha5-print-root section.page--landscape').first()).toBeAttached();
+  await page.emulateMedia({ media: 'print' });
+  pages = await pageHeights(page, '#alpha5-print-root section.page');
+  expect(pages.some((p) => p.landscape)).toBe(true);
+  expectA4(pages);
+  expect(pdfPageCount(await page.pdf({ preferCSSPageSize: true }))).toBe(pages.length);
+  await page.emulateMedia({ media: 'screen' });
+
+  // Zurück: Druck-Kopie und Stile sind wieder weg.
+  await page.getByRole('button', { name: 'Zurück zum Plan' }).click();
+  await heading(page, 'Heute');
+  await expect(page.locator('#alpha5-print-root')).toHaveCount(0);
+  await expect(page.locator('#alpha5-print-style')).toHaveCount(0);
+});
+
+test('Plan als PDF ohne Gesundheitsangaben: kein Hinweis, direkt zur Druckansicht', async ({
+  page,
+}) => {
+  await onboard(page, {
+    consent: false,
+    level: /^Einsteiger/,
+    goal: 'Fitness & Gesundheit',
+    days: [
+      ['Dienstag', 'Kraft zu Hause', 30],
+      ['Donnerstag', 'Kraft zu Hause', 30],
+    ],
+  });
+  await page.getByRole('button', { name: 'Zum Plan' }).click();
+  await heading(page, 'Heute');
+  await page.getByRole('button', { name: 'Als PDF speichern' }).click();
+  await heading(page, 'Plan als PDF');
+  await expect(page.getByText('Bevor du speicherst')).toHaveCount(0);
+  await expect(page.getByTestId('print-preview')).toContainText('Körper');
+  await page.emulateMedia({ media: 'print' });
+  expectA4(await pageHeights(page, '#alpha5-print-root section.page'));
 });
