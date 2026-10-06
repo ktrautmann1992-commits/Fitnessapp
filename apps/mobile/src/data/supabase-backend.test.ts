@@ -1053,6 +1053,104 @@ describe('Supabase-Modus: Tagebuch-Warteschlange', () => {
     expect(offline.rows.sessionLogs.map((l) => l.id)).toEqual([LOG_ID]);
   });
 
+  it('Etappe D: Export = export_my_data() + Konto-E-Mail; nur online; ungültige Antwort → Fehler ohne Inhalte', async () => {
+    const tables = [
+      'profiles',
+      'consents',
+      'body_metrics',
+      'body_measurements',
+      'measurement_reminders',
+      'health_screening',
+      'goals',
+      'user_equipment',
+      'training_slots',
+      'nutrition_prefs',
+      'food_preferences',
+      'admin_users',
+      'user_plans',
+      'planned_sessions',
+      'planned_exercises',
+      'session_logs',
+      'exercise_logs',
+      'set_logs',
+      'cardio_logs',
+      'exercise_start_weights',
+    ];
+    const exported = {
+      format_version: 1,
+      exported_at: NOW,
+      user_id: USER_ID,
+      data: {
+        ...Object.fromEntries(tables.map((table) => [table, []])),
+        session_logs: [{ id: LOG_ID, notes: 'Griff eng' }],
+        consents: [{ consent_type: 'health_data', revoked_at: NOW }],
+      },
+    };
+    const { backend, calls, store } = make((call) =>
+      call.table === 'rpc:export_my_data' ? { data: exported } : {},
+    );
+    const file = await backend.exportMyData();
+    expect(file.account.email).toBe('a@b.de');
+    expect(file.data.session_logs).toEqual([{ id: LOG_ID, notes: 'Griff eng' }]);
+    expect(file.data.consents).toHaveLength(1);
+    expect(calls.filter((c) => c.table === 'rpc:export_my_data')).toHaveLength(1);
+    // Nie im Gerätespeicher.
+    expect(JSON.stringify(store.dump())).not.toContain('Griff eng');
+
+    const { backend: offline } = make(() => ({ error: networkError }));
+    await expect(offline.exportMyData()).rejects.toMatchObject({ code: 'online_only' });
+    const { backend: broken } = make((call) =>
+      call.table === 'rpc:export_my_data' ? { data: { format_version: 1, notes: 'Knie' } } : {},
+    );
+    const error = await broken.exportMyData().catch((e: unknown) => e as Error);
+    expect(error).toMatchObject({ code: 'unknown' });
+    expect((error as Error).message).not.toContain('Knie');
+  });
+
+  it('Etappe D: Verlauf vollständig ab heute − 12 Wochen; ältere Einträge seitenweise nur online', async () => {
+    const older = Array.from({ length: 20 }, (_, i) => ({
+      id: `log-${i}`,
+      user_id: USER_ID,
+      performed_on:
+        i < 19 ? `2026-07-${String(10 - Math.floor(i / 3)).padStart(2, '0')}` : '2026-07-01',
+      kind: 'strength',
+    }));
+    const { backend, calls, store } = make((call) => {
+      if (call.table === 'session_logs' && call.chain.includes('lt')) return { data: older };
+      if (
+        call.table === 'session_logs' &&
+        call.chain.includes('eq') &&
+        call.args.some((a) => a[0] === 'performed_on')
+      ) {
+        return { data: [older[19], { ...older[19], id: 'same-day' }] };
+      }
+      if (call.table === 'exercise_logs') return { data: [{ id: 'e1', session_log_id: 'log-0' }] };
+      if (call.table === 'set_logs') return { data: [{ exercise_log_id: 'e1', set_no: 1 }] };
+      return { data: [] };
+    });
+    // TODAY = 2026-10-03 → vollständig ab 2026-07-11 (12 Wochen).
+    expect(backend.logHistoryStart()).toBe('2026-07-11');
+    const page = await backend.loadOlderLogs('2026-07-11');
+    const query = calls.find((c) => c.table === 'session_logs' && c.chain.includes('lt'));
+    expect(query?.args).toContainEqual(['performed_on', '2026-07-11']);
+    expect(query?.args).toContainEqual([20]);
+    // Volle Seite → alle Einträge des ältesten Tages dazu, nächste Seite davor.
+    expect(page.logs.sessionLogs.map((l) => l.id)).toContain('same-day');
+    expect(page.logs.sessionLogs).toHaveLength(21);
+    expect(page.nextBefore).toBe('2026-07-01');
+    expect(page.logs.setLogs).toHaveLength(1);
+    expect(store.dump()[STORAGE_KEYS.rowsCache]).toBeUndefined();
+
+    const { backend: last } = make((call) =>
+      call.table === 'session_logs' ? { data: older.slice(0, 3) } : { data: [] },
+    );
+    expect((await last.loadOlderLogs('2026-07-11')).nextBefore).toBeNull();
+    const { backend: offline } = make(() => ({ error: networkError }));
+    await expect(offline.loadOlderLogs('2026-07-11')).rejects.toMatchObject({
+      code: 'online_only',
+    });
+  });
+
   it('S1: vorübergehende Fehler (abgelaufenes JWT, 429, 5xx, DB nicht erreichbar, Serialisierung) = später erneut', () => {
     // Betrifft alle Einträge (Netz, Sitzung, Server allgemein): Senden anhalten, nichts zählen.
     const retry = [

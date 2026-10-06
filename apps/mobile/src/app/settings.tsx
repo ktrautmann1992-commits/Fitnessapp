@@ -1,12 +1,14 @@
 import {
   activeConsentVersion,
+  dataExportFileName,
+  dataExportJson,
   MEASUREMENT_REMINDER_INTERVAL_DAYS,
   measurementReminderIntervalSchema,
   nextMeasurementDue,
   type ConsentType,
 } from '@fitnessapp/core';
 import { Redirect, useRouter } from 'expo-router';
-import { useState } from 'react';
+import { useMemo, useState } from 'react';
 import { View } from 'react-native';
 
 import { ConfirmDialog, Screen } from '@/components/screen';
@@ -20,18 +22,21 @@ import {
   Notice,
   TextField,
 } from '@/components/ui';
+import { BackendError } from '@/data/backend';
 import { consentRecordsFromRows } from '@/data/mapping';
 import { activePlan } from '@/data/training-plan';
 import type { ConsentRow } from '@/data/types';
 import { t } from '@/i18n';
 import { createPlanErrorText, errorText } from '@/lib/error-text';
-import { formatDateDe, formatTimestampDe } from '@/lib/format';
+import { formatDateDe, formatTimestampDe, todayIso } from '@/lib/format';
 import { useKeepAwakeSetting } from '@/lib/keep-awake';
 import { planTitleText } from '@/lib/plan-title';
+import { SAVE_TARGET, saveTextFile } from '@/lib/save-file';
+import { singleFlight } from '@/lib/single-flight';
 import { useApp } from '@/state/app-state';
 import { healthConsentStatus, lastMeasurementDate } from '@/state/flow';
 
-type DialogKind = 'revoke' | 'delete' | 'clear' | 'recreate' | 'signout' | null;
+type DialogKind = 'revoke' | 'delete' | 'clear' | 'recreate' | 'signout' | 'export' | null;
 
 const LISTED_CONSENTS = [
   'terms',
@@ -60,8 +65,19 @@ export default function SettingsScreen() {
   const app = useApp();
   const [dialog, setDialog] = useState<DialogKind>(null);
   const [busy, setBusy] = useState(false);
+  const { exportData } = app;
+  // Export holen und speichern – ein zweiter Tipp währenddessen startet keinen zweiten Export (Wächter D K2).
+  const runExport = useMemo(
+    () =>
+      singleFlight(async () => {
+        const file = await exportData();
+        return saveTextFile(dataExportFileName(todayIso()), dataExportJson(file));
+      }),
+    [exportData],
+  );
   const [dialogError, setDialogError] = useState<string>();
   const [message, setMessage] = useState<string>();
+  const [exportMessage, setExportMessage] = useState<{ tone: 'success' | 'info'; text: string }>();
   const keepAwake = useKeepAwakeSetting();
   const [reminderEnabled, setReminderEnabled] = useState(app.rows?.reminder?.enabled ?? true);
   const [interval, setIntervalText] = useState(
@@ -117,6 +133,22 @@ export default function SettingsScreen() {
         await app.clearDeviceData();
         setDialog(null);
         router.replace('/welcome');
+      } else if (dialog === 'export') {
+        // Datenexport (3.7): nur online; die Datei geht direkt in Download-Ordner bzw. den gewählten Ordner –
+        // kein Teilen-Dialog, keine Zwischen-Datei, nichts davon in Logs.
+        const result = await runExport();
+        setExportMessage(
+          result === 'saved'
+            ? {
+                tone: 'success',
+                text:
+                  SAVE_TARGET === 'download'
+                    ? t.settings.exportSavedWeb
+                    : t.settings.exportSavedNative,
+              }
+            : { tone: 'info', text: t.settings.exportCancelled },
+        );
+        setDialog(null);
       } else if (dialog === 'recreate') {
         const outcome = await app.createPlan();
         if (outcome.ok) {
@@ -127,7 +159,11 @@ export default function SettingsScreen() {
         }
       }
     } catch (caught) {
-      setDialogError(errorText(caught));
+      setDialogError(
+        dialog === 'export' && !(caught instanceof BackendError)
+          ? t.settings.exportFailed
+          : errorText(caught),
+      );
     } finally {
       setBusy(false);
     }
@@ -220,11 +256,20 @@ export default function SettingsScreen() {
                 text: t.plan.recreateText,
                 confirm: t.plan.recreateConfirm,
               }
-            : {
-                title: t.settings.clearTitle,
-                text: t.settings.clearText,
-                confirm: t.settings.clearConfirm,
-              };
+            : dialog === 'export'
+              ? {
+                  title: t.settings.exportDialogTitle,
+                  text: t.settings.exportDialogText,
+                  confirm:
+                    SAVE_TARGET === 'download'
+                      ? t.settings.exportConfirmWeb
+                      : t.settings.exportConfirmNative,
+                }
+              : {
+                  title: t.settings.clearTitle,
+                  text: t.settings.clearText,
+                  confirm: t.settings.clearConfirm,
+                };
 
   return (
     <Screen
@@ -359,6 +404,28 @@ export default function SettingsScreen() {
         />
       </Card>
 
+      <Heading level={2}>{t.settings.exportTitle}</Heading>
+      <Card>
+        <Body muted>{t.settings.exportText}</Body>
+        {app.backend.mode === 'local' ? <Body muted>{t.settings.exportTestMode}</Body> : null}
+        {app.offline ? <Body muted>{t.errors.onlineOnly}</Body> : null}
+        {exportMessage ? (
+          <Notice tone={exportMessage.tone} testID="settings-export-message">
+            {exportMessage.text}
+          </Notice>
+        ) : null}
+        <Button
+          label={t.settings.exportButton}
+          variant="secondary"
+          onPress={() => {
+            setDialogError(undefined);
+            setExportMessage(undefined);
+            setDialog('export');
+          }}
+          testID="settings-export"
+        />
+      </Card>
+
       <Heading level={2}>{t.settings.account}</Heading>
       <View style={{ gap: 8 }}>
         {app.session.email ? <Body muted>{app.session.email}</Body> : null}
@@ -400,7 +467,11 @@ export default function SettingsScreen() {
         title={dialogTexts.title}
         message={dialogTexts.text}
         confirmLabel={dialogTexts.confirm}
-        confirmVariant={dialog === 'recreate' || dialog === 'signout' ? 'primary' : 'danger'}
+        confirmVariant={
+          dialog === 'recreate' || dialog === 'signout' || dialog === 'export'
+            ? 'primary'
+            : 'danger'
+        }
         onConfirm={() => void confirm()}
         onCancel={() => setDialog(null)}
         loading={busy}
@@ -420,15 +491,27 @@ export default function SettingsScreen() {
                 onPress: () => void revokeDeletingLogs(),
               },
             }
-          : dialog === 'signout'
+          : dialog === 'export'
             ? {
-                alternative: {
-                  label: t.settings.signOutAnyway,
-                  variant: 'danger' as const,
-                  onPress: () => void signOut(true),
-                },
+                // Hinweis vor dem Herunterladen (W9) plus wohin die Datei geht und was noch fehlt.
+                notes: [
+                  SAVE_TARGET === 'download'
+                    ? t.settings.exportWhereWeb
+                    : t.settings.exportWhereNative,
+                  ...(app.pendingLogSessionIds.length > 0
+                    ? [t.settings.exportPending(app.pendingLogSessionIds.length)]
+                    : []),
+                ],
               }
-            : {})}
+            : dialog === 'signout'
+              ? {
+                  alternative: {
+                    label: t.settings.signOutAnyway,
+                    variant: 'danger' as const,
+                    onPress: () => void signOut(true),
+                  },
+                }
+              : {})}
       />
     </Screen>
   );

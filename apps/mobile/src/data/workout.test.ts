@@ -1,8 +1,10 @@
 import { randomUUID } from 'node:crypto';
 
 import {
+  logEditability,
   sessionLogPayloadSchema,
   toSavePlanPayload,
+  weekLogSummary,
   type PlanLibrary,
   type PlanSafetyRules,
 } from '@fitnessapp/core';
@@ -15,6 +17,7 @@ import { createLocalBackend } from './local-backend';
 import { checkSessionLog } from './local-rules';
 import { createMemoryStore } from './kv';
 import { logEntriesFromRows, logForSession } from './log-rows';
+import { logDetail, summaryInputs } from './log-summary';
 import { activePlan, effectiveSafetyRules, generatePlanFromRows } from './training-plan';
 import type { UserRows } from './types';
 import { cacheableRows } from './write-ops';
@@ -688,5 +691,52 @@ describe('Ausdauer-Eintrag (Etappe C2)', () => {
     delete legacy.cardio;
     expect(draftCardioResult(legacy)).toBeNull();
     expect(payloadOf(legacy).cardio).toBeNull();
+  });
+});
+
+describe('Etappe D im Testmodus: Woche, Eintrag, Löschen, Export', () => {
+  it('Woche zeigt das Training am Montag, Eintrag mit Übungen; Löschen macht die Einheit wieder offen', async () => {
+    const s = await setup();
+    const draft = tickAll(startDraft(s));
+    await s.backend.submitWorkout(draft, payloadOf(draft));
+    const { rows } = await s.backend.loadRows();
+    const { sessions, logs } = summaryInputs(rows);
+    const week = weekLogSummary(sessions, logs, MONDAY, MONDAY);
+    expect(week.days[0]?.status).toBe('done');
+    expect(week.sessionsDone).toBe(1);
+    expect(week.strengthSets).toBeGreaterThan(0);
+
+    const log = logForSession(rows, draft.plannedSessionId);
+    if (!log) throw new Error('Eintrag fehlt');
+    const detail = logDetail(rows, log.id);
+    expect(detail?.exercises.length).toBeGreaterThan(0);
+    const session = rows.plannedSessions.find((x) => x.id === log.planned_session_id) ?? null;
+    expect(logEditability(log, session, MONDAY)).toBe('editable');
+
+    // Falsche Revision → Konflikt, nichts gelöscht; richtige → weg, Einheit wieder geplant.
+    expect(await s.backend.deleteSessionLog(log.id, log.revision + 1)).toBe('conflict');
+    expect(await s.backend.deleteSessionLog(log.id, log.revision)).toBe('ok');
+    const after = (await s.backend.loadRows()).rows;
+    expect(after.sessionLogs).toHaveLength(0);
+    expect(after.plannedSessions.find((x) => x.id === draft.plannedSessionId)?.status).toBe(
+      'planned',
+    );
+  });
+
+  it('Export enthält Tagebuch, Einwilligungs-Verlauf und alle Tabellen; nichts nachzuladen', async () => {
+    const s = await setup();
+    const draft = tickAll(startDraft(s));
+    await s.backend.submitWorkout(draft, payloadOf(draft));
+    const file = await s.backend.exportMyData();
+    expect(file.data.session_logs).toHaveLength(1);
+    expect(file.data.set_logs.length).toBeGreaterThan(0);
+    expect(file.data.consents.length).toBeGreaterThanOrEqual(2);
+    expect(file.data.user_plans).toHaveLength(1);
+    expect(file.account.email).toBeNull();
+    expect(s.backend.logHistoryStart()).toBeNull();
+    expect(await s.backend.loadOlderLogs(MONDAY)).toEqual({
+      logs: { sessionLogs: [], exerciseLogs: [], setLogs: [], cardioLogs: [] },
+      nextBefore: null,
+    });
   });
 });

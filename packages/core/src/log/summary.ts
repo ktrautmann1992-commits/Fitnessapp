@@ -291,3 +291,92 @@ export function exerciseHistory(
     })
     .sort((a, b) => (a.performedOn < b.performedOn ? 1 : a.performedOn > b.performedOn ? -1 : 0));
 }
+
+// ---------------------------------------------------------------------------------------------------------
+// Etappe D: Blättern in der Woche, Ändern eines Eintrags
+// ---------------------------------------------------------------------------------------------------------
+
+/** Erste und letzte Woche (je Montag), zwischen denen die Wochenansicht blättern darf. */
+export interface WeekBounds {
+  readonly first: string;
+  readonly last: string;
+}
+
+/**
+ * Grenzen fürs Blättern: von der frühesten Woche mit Eintrag oder Einheit bis zur spätesten Woche mit einer Einheit,
+ * mindestens die laufende Woche. `earliest` = ab hier liegt das Tagebuch vollständig auf dem Gerät (Supabase: die
+ * letzten LOG_CACHE_WEEKS Wochen) – davor wird nicht geblättert (ältere Einträge zeigt der Verlauf nach dem
+ * Nachladen).
+ */
+export function summaryWeekBounds(
+  sessions: readonly Pick<SummarySession, 'scheduled_on'>[],
+  logs: readonly Pick<SummaryLog, 'performed_on'>[],
+  today: string,
+  options: { readonly earliest?: string | null } = {},
+): WeekBounds {
+  const current = startOfIsoWeek(today);
+  const dates = [...sessions.map((s) => s.scheduled_on), ...logs.map((l) => l.performed_on)];
+  let first = current;
+  let last = current;
+  for (const date of dates) {
+    const week = startOfIsoWeek(date);
+    if (week < first) first = week;
+    if (week > last) last = week;
+  }
+  // Nie hinter die laufende Woche klemmen (sonst ließe sich „heute“ nicht anzeigen).
+  const earliest = options.earliest ? startOfIsoWeek(options.earliest) : null;
+  if (earliest !== null && first < earliest) first = earliest < current ? earliest : current;
+  return { first, last };
+}
+
+export interface WeekPager {
+  /** Montag der angezeigten Woche (in die Grenzen geklemmt). */
+  readonly weekStart: string;
+  /** Montag der Vorwoche bzw. null am Anfang. */
+  readonly previous: string | null;
+  /** Montag der Folgewoche bzw. null am Ende. */
+  readonly next: string | null;
+}
+
+/** Vor- und Folgewoche innerhalb der Grenzen; die gewünschte Woche wird in die Grenzen geklemmt. */
+export function weekPager(week: string, bounds: WeekBounds): WeekPager {
+  let weekStart = startOfIsoWeek(week);
+  if (weekStart < bounds.first) weekStart = bounds.first;
+  if (weekStart > bounds.last) weekStart = bounds.last;
+  const previous = addDays(weekStart, -7);
+  const next = addDays(weekStart, 7);
+  return {
+    weekStart,
+    previous: previous >= bounds.first ? previous : null,
+    next: next <= bounds.last ? next : null,
+  };
+}
+
+/**
+ * Darf ein gespeicherter Eintrag geändert werden? Nur mit (noch) bekannter geplanter Einheit (verwaiste Einträge bzw.
+ * Einheiten ersetzter Pläne nicht – der Schnappschuss der Vorgabe lässt sich ohne Einheit nicht neu aufbauen) und nur
+ * im Datumsfenster von save_session_log (W2: gleiche ISO-Woche ± 1 Tag, höchstens 14 Tage zurück) – sonst lehnte der
+ * Server die neue Fassung ab. Löschen ist davon unabhängig (delete_session_log, nur online).
+ */
+export type LogEditability = 'editable' | 'unlinked' | 'too_old';
+
+export function logEditability(
+  log: Pick<SummaryLog, 'planned_session_id' | 'performed_on'>,
+  session: Pick<SummarySession, 'id' | 'scheduled_on' | 'original_date'> | null,
+  today: string,
+): LogEditability {
+  if (
+    log.planned_session_id === null ||
+    session === null ||
+    session.id !== log.planned_session_id
+  ) {
+    return 'unlinked';
+  }
+  return isWithinLogDateWindow(
+    log.performed_on,
+    session.original_date ?? session.scheduled_on,
+    today,
+  )
+    ? 'editable'
+    : 'too_old';
+}

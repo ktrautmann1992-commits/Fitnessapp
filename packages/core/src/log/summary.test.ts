@@ -1,14 +1,18 @@
 import { describe, expect, it } from 'vitest';
 
+import { addDays } from '../dates';
 import type { ReschedulableSession } from '../plan/reschedule';
 import {
   canCatchUp,
   exerciseHistory,
   historyByWeek,
   isWithinLogDateWindow,
+  logEditability,
+  summaryWeekBounds,
   type SummaryLog,
   type SummarySession,
   weekLogSummary,
+  weekPager,
 } from './summary';
 
 const session = (
@@ -265,5 +269,124 @@ describe('Verlauf', () => {
         },
       ])[0]?.best,
     ).toEqual({ kind: 'time', durationS: 45 });
+  });
+});
+
+describe('Etappe D: erledigt + geplant am selben Tag (Wächter B S4)', () => {
+  it('Eintrag des alten Plans und geplante Einheit des neuen Plans stehen beide am Tag, erledigt zuerst', () => {
+    const w = weekLogSummary(
+      [
+        session('alt', '2026-10-07', { status: 'completed', plan_active: false }),
+        session('neu', '2026-10-07'),
+      ],
+      [log('l', '2026-10-07', { planned_session_id: 'alt', done_sets: 9 })],
+      '2026-10-07',
+      '2026-10-07',
+    );
+    expect(w.days[2]?.items.map((i) => [i.status, i.sessionId])).toEqual([
+      ['done', 'alt'],
+      ['planned', 'neu'],
+    ]);
+    expect(w.days[2]?.status).toBe('done');
+    expect(w).toMatchObject({ sessionsDone: 1, sessionsPlanned: 1, strengthSets: 9 });
+  });
+
+  it('erledigte Einheit ohne Eintrag auf dem Gerät (z. B. älter als der Zwischenspeicher) zählt als erledigt', () => {
+    const w = weekLogSummary(
+      [session('s', '2026-10-05', { status: 'completed' })],
+      [],
+      '2026-10-05',
+      '2026-10-09',
+    );
+    expect(w.days[0]?.items[0]).toMatchObject({ status: 'done', logId: null });
+  });
+
+  it('1 und 7 Trainingstage je Woche', () => {
+    const one = weekLogSummary([session('a', '2026-10-05')], [], '2026-10-05', '2026-10-04');
+    expect(one.days.filter((d) => d.status !== 'rest')).toHaveLength(1);
+    const seven = Array.from({ length: 7 }, (_, i) => session(`d${i}`, addDays('2026-10-05', i)));
+    const all = weekLogSummary(seven, [], '2026-10-05', '2026-10-08');
+    expect(all.days.map((d) => d.status)).toEqual([
+      'missed',
+      'missed',
+      'missed',
+      'planned',
+      'planned',
+      'planned',
+      'planned',
+    ]);
+    expect(all.sessionsPlanned).toBe(7);
+  });
+});
+
+describe('summaryWeekBounds und weekPager (Blättern)', () => {
+  it('von der frühesten Woche mit Eintrag/Einheit bis zur letzten Einheit, mindestens die laufende Woche', () => {
+    const bounds = summaryWeekBounds(
+      [session('s', '2026-11-20')],
+      [log('l', '2026-09-02')],
+      '2026-10-07',
+    );
+    expect(bounds).toEqual({ first: '2026-08-31', last: '2026-11-16' });
+    expect(summaryWeekBounds([], [], '2026-10-07')).toEqual({
+      first: '2026-10-05',
+      last: '2026-10-05',
+    });
+  });
+
+  it('nicht vor den vollständig geladenen Zeitraum (Supabase: 12 Wochen), nie hinter die laufende Woche', () => {
+    expect(
+      summaryWeekBounds([], [log('alt', '2026-01-05')], '2026-10-07', { earliest: '2026-07-15' }),
+    ).toEqual({ first: '2026-07-13', last: '2026-10-05' });
+    expect(
+      summaryWeekBounds([], [log('alt', '2026-01-05')], '2026-10-07', { earliest: '2026-12-01' })
+        .first,
+    ).toBe('2026-10-05');
+  });
+
+  it('Vor- und Folgewoche, Ränder und Klemmen', () => {
+    const bounds = { first: '2026-09-28', last: '2026-10-12' };
+    expect(weekPager('2026-10-07', bounds)).toEqual({
+      weekStart: '2026-10-05',
+      previous: '2026-09-28',
+      next: '2026-10-12',
+    });
+    expect(weekPager('2026-09-28', bounds)).toMatchObject({ previous: null });
+    expect(weekPager('2026-10-18', bounds)).toMatchObject({ weekStart: '2026-10-12', next: null });
+    expect(weekPager('2025-01-01', bounds).weekStart).toBe('2026-09-28');
+  });
+
+  it('Jahreswechsel: Woche 53 → Woche 1', () => {
+    const pager = weekPager('2026-12-31', { first: '2026-12-21', last: '2027-01-04' });
+    expect(pager).toEqual({ weekStart: '2026-12-28', previous: '2026-12-21', next: '2027-01-04' });
+  });
+});
+
+describe('logEditability (Ändern aus dem Verlauf)', () => {
+  const s = { id: 's', scheduled_on: '2026-10-07', original_date: null };
+
+  it('im Datumsfenster änderbar, danach „zu alt“ (W2)', () => {
+    const l = { planned_session_id: 's', performed_on: '2026-10-07' };
+    expect(logEditability(l, s, '2026-10-07')).toBe('editable');
+    expect(logEditability(l, s, '2026-10-21')).toBe('editable');
+    expect(logEditability(l, s, '2026-10-22')).toBe('too_old');
+  });
+
+  it('nachgeholt: Fenster nach dem ursprünglichen Termin', () => {
+    const moved = { ...s, scheduled_on: '2026-10-09', original_date: '2026-10-06' };
+    expect(
+      logEditability({ planned_session_id: 's', performed_on: '2026-10-09' }, moved, '2026-10-09'),
+    ).toBe('editable');
+  });
+
+  it('verwaist oder Einheit nicht (mehr) geladen → nicht änderbar', () => {
+    expect(
+      logEditability({ planned_session_id: null, performed_on: '2026-10-07' }, s, '2026-10-07'),
+    ).toBe('unlinked');
+    expect(
+      logEditability({ planned_session_id: 's', performed_on: '2026-10-07' }, null, '2026-10-07'),
+    ).toBe('unlinked');
+    expect(
+      logEditability({ planned_session_id: 'x', performed_on: '2026-10-07' }, s, '2026-10-07'),
+    ).toBe('unlinked');
   });
 });

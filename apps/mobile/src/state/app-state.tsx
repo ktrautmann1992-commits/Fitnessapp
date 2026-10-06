@@ -1,4 +1,5 @@
 import {
+  type DataExportFile,
   followUpBlockState,
   type GeneratedPlan,
   type PlanLibrary,
@@ -43,6 +44,7 @@ import {
   rescheduleInRows,
 } from '@/data/training-plan';
 import { readJson, STORAGE_KEYS, writeJson } from '@/data/kv';
+import { EMPTY_LOG_ROWS, type LogRows, mergeLogRows, removeSessionLog } from '@/data/log-rows';
 import { answersFromRows, versionsFromDocuments, type ConsentVersions } from '@/data/mapping';
 import type {
   AuthSession,
@@ -82,6 +84,13 @@ export type WorkoutMessage =
 
 /** Abmelden (R6): wartende Trainings/Entwürfe → Nachfrage statt sofort abmelden. */
 export type SignOutResult = { kind: 'signed_out' } | { kind: 'pending'; count: number };
+
+/** Online nachgeladene ältere Einträge (Verlauf, Etappe D) – nur im Arbeitsspeicher. */
+export interface OlderLogs {
+  logs: LogRows;
+  /** Nächste Seite: Einträge vor diesem Datum; null = keine älteren mehr. */
+  nextBefore: string | null;
+}
 
 /** Bibliothek der Plan-Engine (für Anzeige und Folgeblock). */
 type LibraryState =
@@ -148,6 +157,16 @@ export interface AppContextValue {
   /** Senden scheiterte an der abgelaufenen Sitzung (R5) → „Bitte melde dich erneut an“. */
   sessionExpired: boolean;
 
+  // --- Woche, Verlauf, Export (Phase 4, Etappe D) ---
+  /** Nachgeladene ältere Einträge; null = noch nichts nachgeladen. */
+  olderLogs: OlderLogs | null;
+  /** Nächste Seite älterer Einträge laden (nur online, Fehler als BackendError). */
+  loadOlderLogs: () => Promise<void>;
+  /** Eintrag löschen (nur online, mit Revision R4); danach neu laden. */
+  deleteLog: (logId: string, revision: number) => Promise<'ok' | 'conflict'>;
+  /** Datenexport (nur online): alle eigenen Daten plus Konto-E-Mail. */
+  exportData: () => Promise<DataExportFile>;
+
   // --- Trainingsplan (Phase 3) ---
   /** Übungs-Bibliothek (null = nicht geladen/fehlt → Zustand „Übungen können nicht geprüft werden“). */
   library: LibraryState;
@@ -192,6 +211,7 @@ export function AppStateProvider({ children }: { children: ReactNode }) {
   const [pendingLogSessionIds, setPendingLogSessionIds] = useState<readonly string[]>([]);
   const [foreignData, setForeignData] = useState(false);
   const [sessionExpired, setSessionExpired] = useState(false);
+  const [olderLogs, setOlderLogs] = useState<OlderLogs | null>(null);
   const appendingRef = useRef(false);
   /** Plan, für den das Anhängen gescheitert ist (kein erneuter Versuch bis zum neuen Plan). */
   const appendFailedRef = useRef<string | null>(null);
@@ -433,6 +453,7 @@ export function AppStateProvider({ children }: { children: ReactNode }) {
     setPendingLogSessionIds([]);
     setForeignData(false);
     setSessionExpired(false);
+    setOlderLogs(null);
   }, []);
 
   // --- Trainingstagebuch -----------------------------------------------------------------------------------
@@ -500,6 +521,34 @@ export function AppStateProvider({ children }: { children: ReactNode }) {
     },
     [backend, refreshPending, rows],
   );
+
+  // --- Woche, Verlauf, Export (Etappe D) -------------------------------------------------------------------
+  const loadOlderLogs = useCallback(async () => {
+    const before = olderLogs ? olderLogs.nextBefore : backend.logHistoryStart();
+    if (before === null) return;
+    const page = await backend.loadOlderLogs(before);
+    setOlderLogs((current) => ({
+      logs: mergeLogRows(current?.logs ?? EMPTY_LOG_ROWS, page.logs),
+      nextBefore: page.nextBefore,
+    }));
+  }, [backend, olderLogs]);
+
+  const deleteLog = useCallback(
+    async (logId: string, revision: number) => {
+      const result = await backend.deleteSessionLog(logId, revision);
+      if (result === 'ok') {
+        setOlderLogs((current) =>
+          current ? { ...current, logs: removeSessionLog(current.logs, logId) } : current,
+        );
+      }
+      // Auch beim Konflikt neu laden: Der Eintrag wurde auf einem anderen Gerät geändert.
+      await loadUser().catch(() => undefined);
+      return result;
+    },
+    [backend, loadUser],
+  );
+
+  const exportData = useCallback(() => backend.exportMyData(), [backend]);
 
   const discardForeignData = useCallback(async () => {
     await backend.discardForeignDeviceData();
@@ -699,6 +748,10 @@ export function AppStateProvider({ children }: { children: ReactNode }) {
       foreignData,
       discardForeignData,
       sessionExpired,
+      olderLogs,
+      loadOlderLogs,
+      deleteLog,
+      exportData,
     }),
     [
       backend,
@@ -743,6 +796,10 @@ export function AppStateProvider({ children }: { children: ReactNode }) {
       foreignData,
       discardForeignData,
       sessionExpired,
+      olderLogs,
+      loadOlderLogs,
+      deleteLog,
+      exportData,
     ],
   );
 

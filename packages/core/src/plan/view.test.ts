@@ -276,6 +276,16 @@ describe('Heute und Woche', () => {
       'alt-erledigt',
     ]);
     expect(weekOverview([done, open], first.scheduled_on)[0]?.session?.id).toBe('neu-geplant');
+    // Etappe D: Die erledigte Einheit bleibt in der Woche sichtbar („außerdem erledigt“), nie doppelt.
+    const day = weekOverview([done, open], first.scheduled_on).find(
+      (d) => d.date === first.scheduled_on,
+    );
+    expect(day?.alsoCompleted.map((s) => s.id)).toEqual(['alt-erledigt']);
+    const onlyDone = weekOverview([done], first.scheduled_on).find(
+      (d) => d.date === first.scheduled_on,
+    );
+    expect(onlyDone?.session?.id).toBe('alt-erledigt');
+    expect(onlyDone?.alsoCompleted).toEqual([]);
   });
 
   it('Wochenübersicht Mo–So mit heute, verschoben und gestrichen', () => {

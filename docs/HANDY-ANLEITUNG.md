@@ -84,6 +84,84 @@ Vercel zeigt die App im Handy-Browser, Expo baut die echten Apps in der Cloud.
   - Gut zu wissen: Widerruft ihr auf einem **anderen** Gerät, sieht ein Handy, das gerade **offline** ist, den Plan noch, bis es wieder online lädt. Spätestens nach **14 Tagen ohne Verbindung** löscht die App den Zwischenspeicher von selbst.
 - **Mit Supabase** erscheint ein Plan erst, wenn Inhalte freigegeben sind (`content-review` → Merge → `content-seed`); vorher zeigt „Heute“ richtigerweise „kein freigegebener Plan“.
 
+## Teil 7 – Woche, Verlauf und Export testen (Phase 4, Etappe D, Testmodus)
+1. Vorschau-Link aus dem Pull Request öffnen (Testmodus). Schon einmal durchgeklickt? **Einstellungen → Testdaten löschen**.
+2. Onboarding (z. B. Mo/Mi/Fr Kraft im Studio) → **Zum Plan** → **Training starten** → ein paar Sätze abhaken →
+   **Training speichern**.
+3. „Heute“ → **Woche**: Jeder Tag zeigt Zeichen **und** Wort („✓ Erledigt“, „◐ Teilweise erledigt“, „! Verpasst“,
+   „○ Geplant“, „Ruhetag“). Unten die Summen (Einheiten, Kraft-Sätze, Ausdauer-Minuten und -km).
+4. **Nächste Woche ›** und **‹ Vorwoche** antippen – vor dem Plan-Beginn ist „Vorwoche“ ausgegraut.
+5. Beim erledigten Tag **Ansehen** → der Eintrag mit Datum, Sätzen („Satz 1: 20 kg × 10“), Belastung und Notiz.
+6. **Verlauf dieser Übung** → je Training der beste Satz. Zurück.
+7. **Ändern** → z. B. Belastung ändern → **Training speichern** → zurück im Eintrag steht der neue Wert.
+8. **Eintrag löschen** → Nachfrage → **Endgültig löschen** → „Eintrag gelöscht.“; auf „Heute“ ist die Einheit wieder offen.
+9. **Einstellungen → Meine Daten exportieren** → Hinweis „Diese Datei enthält Gesundheitsdaten …“ →
+   **Datei herunterladen** → die Datei `alpha5-meine-daten-<Datum>.json` liegt in „Downloads“ (in der Dateien-App
+   antippen zeigt den Inhalt). Darin u. a. `session_logs` (Tagebuch), `consents` (Einwilligungen samt Verlauf) und
+   `account` (im Testmodus ohne E-Mail).
+10. Alles einmal hell und einmal dunkel ansehen.
+
+## Teil 8 – Live-Test mit Supabase (Pflicht vor „MVP fertig“, W13) – **offen, braucht euch**
+Diesen Test kann Claude in der Cloud-Sitzung nicht machen (kein echtes Konto, keine zwei Handys). Bitte einmal
+durchspielen und das Ergebnis Claude im Chat schreiben („W13: Punkt 1–14 ok, Punkt 9 Fehler: …“) – **ohne**
+Passwörter oder Codes. Claude trägt es dann im Umsetzungsstand von `docs/PLAN-PHASE-4.md` ein.
+
+**Vorbereitung**
+1. Supabase ist eingerichtet (docs/SETUP.md), Migrationen sind durch (GitHub-App → Actions → `db-migrate` grün),
+   freigegebene Inhalte sind eingespielt (`content-seed`).
+2. Vercel → Projekt „fitnessapp“ → **Settings → Environment Variables**: `EXPO_PUBLIC_SUPABASE_URL` und
+   `EXPO_PUBLIC_SUPABASE_ANON_KEY` sind für „Preview“ und „Production“ eingetragen → **Deployments → Redeploy**.
+3. Zwei Handys (A und B), auf beiden den Vorschau-Link (bzw. die Produktions-Adresse) im Browser öffnen und mit
+   **demselben Konto** per E-Mail-Code anmelden. Wenn vorhanden: zusätzlich die Android-APK/TestFlight-App (für 12–14).
+
+**Prüfpunkte W13**
+1. Handy A: Onboarding fertig, Plan erstellt. Handy B: Seite neu laden → derselbe Plan.
+2. Handy A: **Flugmodus an** → Training starten, Sätze abhaken, **Training speichern** → „noch nicht übertragen“.
+3. Handy A: **Flugmodus aus** → nach wenigen Sekunden verschwindet „wird übertragen“ (spätestens nach 15 Sekunden
+   bzw. beim Zurückkehren in die App).
+4. Handy B: neu laden → das Training ist auf „Heute“ erledigt, in **Woche** und **Verlauf** sichtbar.
+5. **Konflikt:** Auf A und B denselben Eintrag öffnen (**Ansehen/Ändern**), auf A etwas ändern und speichern, danach auf
+   B etwas anderes ändern und speichern → B zeigt „Diese Einheit wurde auf einem anderen Gerät geändert.“ →
+   **Meine Fassung behalten** → A zeigt nach dem Neuladen die Fassung von B.
+6. **Löschen nur online:** Handy A Flugmodus an → Verlauf → Eintrag → **Eintrag löschen** → „Dafür brauchst du kurz
+   Verbindung.“ Flugmodus aus → erneut löschen → „Eintrag gelöscht.“; B zeigt ihn nach dem Neuladen nicht mehr.
+7. **Export:** Einstellungen → **Meine Daten exportieren** → Datei öffnen: eure **E-Mail** steht unter `account`,
+   `session_logs` und `consents` sind gefüllt. Im Flugmodus kommt „Dafür brauchst du kurz Verbindung.“
+8. **Widerruf:** Einstellungen → Gesundheitsdaten → **Widerrufen** → „Tagebuch behalten (empfohlen)“ → Plan wird neu
+   angeboten, der **Verlauf bleibt**; Einträge zeigen keine Vorgaben aus dem Gesundheits-Check mehr. Danach wieder
+   einwilligen und neuen Plan erstellen.
+9. **Abmelden mit Wartendem:** Flugmodus an → Training speichern → Einstellungen → **Abmelden** → Nachfrage „1 Training
+   ist noch nicht übertragen“ → **Jetzt senden** → „immer noch nicht alles übertragen“ → **Abbrechen**, Flugmodus aus,
+   erneut Abmelden → ohne Nachfrage abgemeldet.
+
+**Prüfpunkte S5 (aus der Wächter-Prüfung C1) und Geräte-Punkte**
+10. **App hart beenden:** (App bzw. APK) Flugmodus an, ein Training speichern und ein zweites nur anfangen (Entwurf) →
+    App aus dem App-Wechsler wischen → neu öffnen → „Du hast ein Training … nicht beendet“ und das wartende Training
+    sind noch da → Flugmodus aus → beides wird übertragen (Entwurf vorher speichern).
+11. **Sitzung abgelaufen:** Training im Flugmodus speichern, die App mehrere Stunden (über Nacht) zu lassen, dann
+    Flugmodus aus → kommt „Bitte melde dich erneut an“, bleibt das Training wartend; nach dem Anmelden wird es
+    übertragen.
+12. **Plan geändert, während ein Training wartet (echter Server):** Handy A Flugmodus an, Training speichern; auf
+    Handy B **Einstellungen → Plan neu erstellen**; dann auf A Flugmodus aus → das Training wird übertragen und steht
+    im **Verlauf** (je nach Stand mit dem Hinweis „Dein Plan hat sich geändert – dein Training wurde trotzdem
+    gespeichert.“) – nichts geht verloren. (Eine echte
+    Ablehnung lässt sich am Handy kaum auslösen; sie ist mit automatischen Tests geprüft.)
+13. **Privates Browser-Fenster:** Link im privaten Tab öffnen, anmelden, Flugmodus an, Training speichern → Hinweis
+    „Offline-Speicher nicht verfügbar …“ (bzw. Speichern klappt online).
+14. **Nur in der App (APK/TestFlight):** Pausentimer-Ende **vibriert**; der **Bildschirm bleibt an**, solange das
+    Training offen ist (Schalter in den Einstellungen); **Meine Daten exportieren** öffnet die Ordner-Auswahl
+    (iPhone: „Dateien“, Android: z. B. „Downloads“) und die Datei liegt danach dort.
+15. **Export zweimal am selben Tag** (App): denselben Ordner wählen → die zweite Datei heißt
+    `alpha5-meine-daten-<Datum>-2.json`, die erste bleibt unverändert. Auf dem **iPhone** einmal mit
+    **„Auf meinem iPhone“** und einmal mit **iCloud Drive** prüfen (beide Male „Die Datei wurde gespeichert.“ und die
+    Datei ist in der Dateien-App zu sehen).
+
+**Vorschlag (noch nicht gebaut): automatischer Smoke-Test.** Ein manuell startbarer GitHub-Workflow könnte die
+Punkte 2–7 ohne Handys gegen Supabase prüfen (Playwright im Supabase-Modus mit einem eigenen Test-Konto). Dafür
+bräuchte es ein zweites Supabase-Projekt nur für Tests (sonst landen Testdaten im echten Projekt) und einen Weg, den
+Anmelde-Code ohne Postfach zu bekommen (Service-Role-Schlüssel als GitHub-Secret). Das ist größer als dieser Schritt
+und braucht eure Entscheidung – die Handy-Prüfung oben ersetzt er ohnehin nicht (zwei Geräte, Flugmodus, App-Funktionen).
+
 ## Tipps
 - Eine Sitzung = eine Aufgabe. Lieber mehrere kurze Sitzungen als eine endlose.
 - Bei Unsicherheit einfach fragen: „Erklär mir in einfachen Worten, was du gerade geändert hast.“

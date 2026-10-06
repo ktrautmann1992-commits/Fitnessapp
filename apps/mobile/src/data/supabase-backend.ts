@@ -1,8 +1,10 @@
 import {
   addDays,
+  buildDataExportFile,
   evaluateHealthScreening,
   HEALTH_PLAN_CACHE_MAX_AGE_DAYS,
   healthScreeningAnswersSchema,
+  HISTORY_PAGE_SIZE,
   isoDateInTimeZone,
   LOG_CACHE_WEEKS,
   type ConsentType,
@@ -18,6 +20,7 @@ import {
   type BackendErrorCode,
   type BackendEvent,
   type LogSaveOutcome,
+  type OlderLogsPage,
 } from './backend';
 import { DraftStore } from './draft-store';
 import { readJson, STORAGE_KEYS, writeJson, type KeyValueStore } from './kv';
@@ -243,6 +246,9 @@ function parseLogResponse(data: unknown): SaveLogResponse {
 
 /** Wie viele IDs je `in`-Filter (Länge der Adresse begrenzen). */
 const IN_CHUNK = 80;
+
+/** Einheiten je nachgeladener Verlaufs-Seite. */
+const OLDER_LOGS_PAGE = HISTORY_PAGE_SIZE;
 
 function chunks<T>(items: readonly T[], size: number): T[][] {
   const out: T[][] = [];
@@ -743,20 +749,13 @@ export function createSupabaseBackend(options: SupabaseBackendOptions): Backend 
     }, rows);
   }
 
-  /**
-   * Tagebuch laden (4.6): die letzten LOG_CACHE_WEEKS Wochen plus recent_exercise_logs() (Grundlage der
-   * Progression, auch für ältere Einträge); RLS: nur eigene Zeilen.
-   */
-  async function fetchLogs(userId: string): Promise<LogRows> {
-    const since = addDays(today(), -LOG_CACHE_WEEKS * 7);
-    const sessions = await client
-      .from('session_logs')
-      .select('*')
-      .eq('user_id', userId)
-      .gte('performed_on', since)
-      .order('performed_on');
-    if (sessions.error) throw sessions.error;
-    const sessionLogs = (sessions.data ?? []) as SessionLogRow[];
+  /** Ab hier lädt fetchLogs() das Tagebuch vollständig (4.6). */
+  function logWindowStart(): string {
+    return addDays(today(), -LOG_CACHE_WEEKS * 7);
+  }
+
+  /** Übungen, Sätze und Ausdauer zu Einträgen (RLS: nur eigene Zeilen; `in`-Filter in Paketen). */
+  async function fetchLogDetails(sessionLogs: SessionLogRow[]): Promise<LogRows> {
     const exerciseLogs: ExerciseLogRow[] = [];
     const cardioLogs: CardioLogRow[] = [];
     for (const ids of chunks(
@@ -781,6 +780,57 @@ export function createSupabaseBackend(options: SupabaseBackendOptions): Backend 
       if (sets.error) throw sets.error;
       setLogs.push(...((sets.data ?? []) as SetLogRow[]));
     }
+    return { sessionLogs, exerciseLogs, setLogs, cardioLogs };
+  }
+
+  /**
+   * Ältere Einträge vor `before` (Verlauf, Etappe D): die neuesten OLDER_LOGS_PAGE Einheiten, dazu alle weiteren vom
+   * ältesten Tag der Seite (sonst gingen beim Weiterblättern mit `performed_on < before` Einträge desselben Tages
+   * verloren). Nur online; nie in den Zwischenspeicher.
+   */
+  async function fetchOlderLogs(userId: string, before: string): Promise<OlderLogsPage> {
+    const page = await client
+      .from('session_logs')
+      .select('*')
+      .eq('user_id', userId)
+      .lt('performed_on', before)
+      .order('performed_on', { ascending: false })
+      .limit(OLDER_LOGS_PAGE);
+    if (page.error) throw page.error;
+    const sessionLogs = (page.data ?? []) as SessionLogRow[];
+    let nextBefore: string | null = null;
+    const oldest = sessionLogs.at(-1)?.performed_on;
+    if (sessionLogs.length >= OLDER_LOGS_PAGE && oldest !== undefined) {
+      const sameDay = await client
+        .from('session_logs')
+        .select('*')
+        .eq('user_id', userId)
+        .eq('performed_on', oldest);
+      if (sameDay.error) throw sameDay.error;
+      const known = new Set(sessionLogs.map((l) => l.id));
+      sessionLogs.push(
+        ...((sameDay.data ?? []) as SessionLogRow[]).filter((l) => !known.has(l.id)),
+      );
+      nextBefore = oldest;
+    }
+    return { logs: await fetchLogDetails(sessionLogs), nextBefore };
+  }
+
+  /**
+   * Tagebuch laden (4.6): die letzten LOG_CACHE_WEEKS Wochen plus recent_exercise_logs() (Grundlage der
+   * Progression, auch für ältere Einträge); RLS: nur eigene Zeilen.
+   */
+  async function fetchLogs(userId: string): Promise<LogRows> {
+    const sessions = await client
+      .from('session_logs')
+      .select('*')
+      .eq('user_id', userId)
+      .gte('performed_on', logWindowStart())
+      .order('performed_on');
+    if (sessions.error) throw sessions.error;
+    const { sessionLogs, exerciseLogs, setLogs, cardioLogs } = await fetchLogDetails(
+      (sessions.data ?? []) as SessionLogRow[],
+    );
     const recent = await client.rpc('recent_exercise_logs', { p_per_exercise: 2 });
     if (recent.error) throw recent.error;
     const extra = (recent.data ?? {}) as Partial<LogRows> & {
@@ -1327,6 +1377,33 @@ export function createSupabaseBackend(options: SupabaseBackendOptions): Backend 
       if (await logQueue.hasForeign(session.userId)) await logQueue.clear();
       if (await queue.hasForeign(session.userId)) await queue.clear();
       await drafts.removeWhere((d) => d.ownerUserId !== session.userId);
+    },
+
+    // --- Woche, Verlauf, Export (Etappe D) -----------------------------------------------------------------
+    logHistoryStart: () => logWindowStart(),
+    loadOlderLogs: async (before) => {
+      const session = await requireSession();
+      try {
+        return await fetchOlderLogs(session.userId, before);
+      } catch (error) {
+        const code = classifySupabaseError(error);
+        throw new BackendError(code === 'network' ? 'online_only' : code, { cause: error });
+      }
+    },
+    exportMyData: async () => {
+      const session = await requireSession();
+      const { data, error } = await client.rpc('export_my_data');
+      if (error) {
+        // Nur der Fehlercode – nie Inhalte (der Export enthält Gesundheitsdaten).
+        const code = classifySupabaseError(error);
+        throw new BackendError(code === 'network' ? 'online_only' : code, {
+          sensitive: true,
+          cause: error,
+        });
+      }
+      const file = buildDataExportFile(data, { email: session.email });
+      if (!file) throw new BackendError('unknown', { sensitive: true });
+      return file;
     },
   };
 

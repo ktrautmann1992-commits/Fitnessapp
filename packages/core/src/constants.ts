@@ -801,6 +801,12 @@ export const REST_TIMER = { stepS: 15, minS: 0, maxS: 600 } as const;
 export const LOG_CACHE_WEEKS = 12;
 
 /**
+ * Verlauf: so viele Einheiten zeigt die Liste je Schritt („Weitere anzeigen“) bzw. lädt die App online je Seite nach
+ * (docs/PLAN-PHASE-4.md 6.1 Punkt 5, „je 20 nachladen“). Quelle: PRODUKTENTSCHEIDUNG.
+ */
+export const HISTORY_PAGE_SIZE = 20;
+
+/**
  * Plausibilitäts-Bestätigung beim Gewicht (W5): Mehr als 10 % über dem Progressions-Zustand zählt für die
  * Progression nur nach ausdrücklicher Bestätigung (gleiche Grenze wie LOAD_PROGRESSION.maxIncreaseFraction).
  * Ohne Zustand (erster Eintrag, eigenes Startgewicht) gelten absolute Schwellen je Geräte-Art: Kurzhantel/Kettlebell

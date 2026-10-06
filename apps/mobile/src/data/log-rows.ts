@@ -132,7 +132,7 @@ export function applySessionLog(
 }
 
 /** Eintrag samt Übungen, Sätzen und Ausdauer entfernen (Kaskade wie in der Datenbank). */
-export function removeSessionLog(rows: UserRows, id: string): UserRows {
+export function removeSessionLog<T extends LogRows>(rows: T, id: string): T {
   const exerciseIds = new Set(
     rows.exerciseLogs.filter((e) => e.session_log_id === id).map((e) => e.id),
   );

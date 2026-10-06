@@ -1,5 +1,6 @@
 import {
   ageInYears,
+  buildDataExportFile,
   CURRENT_CONSENT_VERSIONS,
   createBirthDateSchema,
   evaluateHealthScreening,
@@ -18,12 +19,14 @@ import {
 import { healthConsentStatus } from '../state/flow';
 import { BackendError, type Backend } from './backend';
 import { LOCAL_CONSENT_DOCUMENTS } from './consent-texts';
+import { localDataExport } from './data-export';
 import { DraftStore } from './draft-store';
 import { checkSessionLog, isValidOp, isValidPlanOp } from './local-rules';
 import {
   applySessionLog,
   closeMissedSessionRows,
   deleteSessionLogRows,
+  EMPTY_LOG_ROWS,
   neutralizeHealthPlanLogRows,
 } from './log-rows';
 import { createMemoryProtectedStore, type ProtectedStore } from './protected-store';
@@ -471,6 +474,17 @@ export function createLocalBackend(store: KeyValueStore, options: LocalBackendOp
       const db = await load();
       const owner = db.session?.userId;
       await drafts.removeWhere((d) => d.ownerUserId !== owner);
+    },
+    // Testmodus: das ganze Tagebuch liegt auf dem Gerät – nichts nachzuladen.
+    logHistoryStart: () => null,
+    loadOlderLogs: async () => ({ logs: EMPTY_LOG_ROWS, nextBefore: null }),
+    exportMyData: async () => {
+      const { rows, session } = await requireProfile();
+      const file = buildDataExportFile(localDataExport(rows, session.userId, options.now()), {
+        email: session.email,
+      });
+      if (!file) throw new BackendError('unknown');
+      return file;
     },
   };
 }

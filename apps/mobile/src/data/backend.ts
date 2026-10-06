@@ -1,5 +1,6 @@
 import type {
   ConsentType,
+  DataExportFile,
   PlanLibrary,
   PlanSafetyRules,
   SavePlanPayload,
@@ -7,6 +8,7 @@ import type {
   SessionLogPayload,
 } from '@fitnessapp/core';
 
+import type { LogRows } from './log-rows';
 import type { ConsentVersions } from './mapping';
 import type {
   AuthSession,
@@ -84,6 +86,13 @@ export interface PendingWorkouts {
   queued: number;
   /** Offene Entwürfe sowie abgelehnte und Konflikt-Fassungen. */
   drafts: number;
+}
+
+/** Online nachgeladene ältere Tagebuch-Einträge (Verlauf, Etappe D) – nur im Arbeitsspeicher, nie im Gerätespeicher. */
+export interface OlderLogsPage {
+  logs: LogRows;
+  /** Für die nächste Seite: Einträge vor diesem Datum; null = keine älteren mehr. */
+  nextBefore: string | null;
 }
 
 export interface Backend {
@@ -169,6 +178,20 @@ export interface Backend {
   hasForeignDeviceData(): Promise<boolean>;
   /** Einträge eines anderen Kontos löschen (nach Nachfrage). */
   discardForeignDeviceData(): Promise<void>;
+
+  // --- Woche, Verlauf, Export (Phase 4, Etappe D) -----------------------------------------------------------
+  /**
+   * Ab diesem Datum liegt das Tagebuch VOLLSTÄNDIG auf dem Gerät (Supabase: die letzten LOG_CACHE_WEEKS Wochen);
+   * null = alles (Testmodus). Ältere Einheiten aus recent_exercise_logs() sind unvollständig (nur einzelne Übungen).
+   */
+  logHistoryStart(): string | null;
+  /** Ältere Einträge vor `before` nachladen (nur online, je bis zu 20 Einheiten; 4.5). */
+  loadOlderLogs(before: string): Promise<OlderLogsPage>;
+  /**
+   * Datenexport (Recht auf Auskunft, 3.7): alle eigenen Zeilen aller Tabellen (export_my_data) plus Konto-E-Mail.
+   * Nur online. Enthält Gesundheitsdaten – nie loggen, nie zwischenspeichern.
+   */
+  exportMyData(): Promise<DataExportFile>;
 }
 
 export interface SaveContext {

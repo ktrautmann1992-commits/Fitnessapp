@@ -134,11 +134,14 @@ export function WeekOverview({
             : t.plan.restShort;
         const extra = [
           day.isToday ? t.plan.todayBadge : null,
+          session?.status === 'completed' ? t.plan.completedBadge : null,
           session?.is_deload ? t.plan.deloadBadge : null,
           session?.original_date && session.original_date !== session.scheduled_on
             ? t.plan.movedFrom(weekdayShort(session.original_date))
             : null,
           ...day.movedAway.map((s) => t.plan.movedAway(weekdayShort(s.scheduled_on))),
+          // Erledigte Einheit neben einer offenen am selben Tag (completedOn, z. B. alter Plan) – Etappe D.
+          ...day.alsoCompleted.map((s) => t.plan.alsoCompleted(s.name_de)),
         ].filter((value): value is string => value !== null);
         const isSelected = day.date === selected;
         return (

@@ -209,9 +209,28 @@ for (const scheme of ['light', 'dark'] as const) {
     await page.getByTestId('workout-save').click();
     await heading('Heute');
     await shot('heute-erledigt');
+    // Woche, Verlauf, Eintrag (Etappe D).
+    await page.getByTestId('today-week').click();
+    await heading('Woche');
+    await shot('woche');
+    await page.getByTestId('week-summary').scrollIntoViewIfNeeded();
+    await shot('woche-summen');
+    await page.getByRole('button', { name: 'Verlauf' }).click();
+    await heading('Verlauf');
+    await shot('verlauf');
+    await page.getByTestId('history-entry').first().click();
+    await expect(page.getByTestId('log-entry')).toBeVisible();
+    await shot('eintrag');
+    await page.getByTestId('log-delete').click();
+    await shot('eintrag-loeschen');
+    await page.goto('/');
+    await heading('Heute');
     await page.getByRole('button', { name: 'Einstellungen' }).click();
     await heading('Einstellungen');
     await shot('einstellungen');
+    await page.getByTestId('settings-export').click();
+    await shot('export-dialog');
+    await page.getByRole('button', { name: 'Abbrechen' }).click();
     await page.getByRole('button', { name: 'Gesundheitsdaten: Widerrufen' }).click();
     await shot('widerruf-dialog');
   });
