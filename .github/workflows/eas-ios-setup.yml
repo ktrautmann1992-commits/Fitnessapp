@@ -1,0 +1,215 @@
+name: eas-ios-setup
+
+# EINMALIG und manuell startbar: legt für das iPhone das Verteilungs-Zertifikat und das Provisioning-Profil
+# bei Expo (EAS) an – ohne Terminal und ohne Mac. Danach laufen iPhone-Builds über den Workflow eas-build.
+#
+# Warum ein eigener Workflow? Geprüft im Quelltext von eas-cli (Stand 24.11.0, 05.10.2026):
+# Ein nicht-interaktiver Build (wie in eas-build) kann das Verteilungs-Zertifikat NICHT selbst erzeugen
+# („Credentials are not set up. Run this command again in interactive mode.“). Das Provisioning-Profil kann er
+# mit einem App-Store-Connect-Schlüssel erneuern – das Zertifikat muss aber vorher bei EAS liegen. Dieser
+# Workflow startet deshalb `eas credentials:configure-build` in einem simulierten Terminal und bestätigt alle
+# Fragen mit der Standard-Antwort (Enter). In eas-cli 24.11.0 heißt das: vorhandenes Zertifikat/Profil wiederverwenden,
+# sonst neu erzeugen; die Anmeldung bei Apple läuft über den App-Store-Connect-Schlüssel (kein Apple-Passwort,
+# keine Zwei-Faktor-Abfrage). Ein erneuter Lauf ersetzt nichts.
+# Sonderfall Apple-Grenze („Maximum number of Distribution Certificates“): eas-cli fragt dann, welche
+# Zertifikate widerrufen werden sollen. Der Workflow bricht in diesem Fall sofort ab (widerruft nichts) und
+# erklärt in der Zusammenfassung, was zu tun ist.
+#
+# Braucht (docs/SETUP.md D2): EXPO_TOKEN, Expo-Projekt-ID in app.config.ts sowie die GitHub-Secrets
+# ASC_API_KEY_P8 (Inhalt der .p8-Datei), ASC_KEY_ID, ASC_ISSUER_ID, APPLE_TEAM_ID; optional die
+# GitHub-Variable APPLE_TEAM_TYPE (Standard COMPANY_OR_ORGANIZATION, sonst INDIVIDUAL).
+# Die Schlüssel-Datei liegt nur während des Laufs im Temp-Ordner und wird am Ende immer gelöscht.
+on:
+  workflow_dispatch:
+    inputs:
+      confirm:
+        description: 'Zum Starten JA eintippen (legt Zertifikat und Profil bei Apple/Expo an)'
+        type: string
+        required: true
+        default: ''
+
+# Nur lesen: Der Workflow schreibt nichts ins Repository.
+permissions:
+  contents: read
+
+concurrency:
+  group: eas-ios-setup
+  cancel-in-progress: false
+
+# eas-cli FEST auf die Version, deren Fragen geprüft sind (Wächter E, S1). `yes ''` beantwortet jede Frage mit
+# der Standard-Antwort – eine neuere Version könnte neue Fragen oder andere Standardwerte haben.
+# Vor dem Anheben: Fragen von `eas credentials:configure-build` (iOS) im Quelltext der neuen Version neu prüfen.
+env:
+  EAS_CLI_VERSION: '24.11.0'
+  EXPO_NO_TELEMETRY: '1'
+
+jobs:
+  setup:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    # Secrets nur in den Schritten, die sie brauchen. Fremde Actions auf Commit-SHA festgelegt.
+    steps:
+      - name: Bestätigung prüfen
+        id: confirm
+        env:
+          CONFIRM: ${{ inputs.confirm }}
+        run: |
+          if [ "$CONFIRM" = "JA" ]; then
+            echo "ok=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "::notice title=eas-ios-setup nicht gestartet::Zum Starten im Feld „confirm“ genau JA eintippen."
+            {
+              echo "### ⏸️ Nicht gestartet"
+              echo ""
+              echo "Zum Starten bei **Run workflow** im Feld „confirm“ genau **JA** eintippen. Es wurde nichts verändert."
+            } >> "$GITHUB_STEP_SUMMARY"
+            echo "ok=false" >> "$GITHUB_OUTPUT"
+          fi
+
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+        if: steps.confirm.outputs.ok == 'true'
+
+      # Fehlt etwas, wird der Lauf ROT mit einer Liste (Wächter E, K3) – anders als eas-build, weil dieser
+      # Workflow nur gezielt gestartet wird.
+      - name: Voraussetzungen prüfen
+        if: steps.confirm.outputs.ok == 'true'
+        env:
+          EXPO_TOKEN: ${{ secrets.EXPO_TOKEN }}
+          ASC_API_KEY_P8: ${{ secrets.ASC_API_KEY_P8 }}
+          ASC_KEY_ID: ${{ secrets.ASC_KEY_ID }}
+          ASC_ISSUER_ID: ${{ secrets.ASC_ISSUER_ID }}
+          APPLE_TEAM_ID: ${{ secrets.APPLE_TEAM_ID }}
+        run: |
+          missing=()
+          [ -z "$EXPO_TOKEN" ] && missing+=("GitHub-Secret **EXPO_TOKEN** (SETUP Teil D Schritt 4)")
+          [ -z "$ASC_API_KEY_P8" ] && missing+=("GitHub-Secret **ASC_API_KEY_P8** – Inhalt der .p8-Datei (SETUP D2 A4)")
+          [ -z "$ASC_KEY_ID" ] && missing+=("GitHub-Secret **ASC_KEY_ID** (SETUP D2 A4)")
+          [ -z "$ASC_ISSUER_ID" ] && missing+=("GitHub-Secret **ASC_ISSUER_ID** (SETUP D2 A4)")
+          [ -z "$APPLE_TEAM_ID" ] && missing+=("GitHub-Secret **APPLE_TEAM_ID** (SETUP D2 A3)")
+          if grep -q "EAS_PROJECT_ID = ''" apps/mobile/app.config.ts; then
+            missing+=("Expo-Projekt-ID in apps/mobile/app.config.ts (SETUP Teil D Schritt 5 – Claude nennen)")
+          fi
+          if [ "${#missing[@]}" -gt 0 ]; then
+            {
+              echo "### ❌ eas-ios-setup: Voraussetzungen fehlen"
+              echo ""
+              echo "Es wurde nichts verändert. Bitte zuerst eintragen:"
+              echo ""
+              for item in "${missing[@]}"; do echo "- $item"; done
+            } >> "$GITHUB_STEP_SUMMARY"
+            echo "::error title=Voraussetzungen fehlen::${#missing[@]} Angabe(n) fehlen – Liste in der Zusammenfassung (Summary)."
+            exit 1
+          fi
+
+      - uses: pnpm/action-setup@b906affcce14559ad1aafd4ab0e942779e9f58b1 # v4
+        if: steps.confirm.outputs.ok == 'true'
+      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4
+        if: steps.confirm.outputs.ok == 'true'
+        with:
+          node-version: 22
+          cache: pnpm
+      - run: pnpm install --frozen-lockfile
+        if: steps.confirm.outputs.ok == 'true'
+      # Ohne `token`: Die Action würde EXPO_TOKEN sonst für alle folgenden Schritte setzen.
+      - uses: expo/expo-github-action@c7b66a9c327a43a8fa7c0158e7f30d6040d2481e # v8
+        if: steps.confirm.outputs.ok == 'true'
+        with:
+          eas-version: ${{ env.EAS_CLI_VERSION }}
+      - name: eas-cli-Version prüfen
+        if: steps.confirm.outputs.ok == 'true'
+        run: |
+          actual=$(eas --version | grep -o 'eas-cli/[0-9.]*' | cut -d/ -f2)
+          if [ "$actual" != "$EAS_CLI_VERSION" ]; then
+            echo "::error title=Falsche eas-cli-Version::Erwartet $EAS_CLI_VERSION, gefunden ${actual:-keine}. Die automatischen Antworten sind nur für $EAS_CLI_VERSION geprüft."
+            exit 1
+          fi
+
+      - name: Zertifikat und Profil bei EAS anlegen
+        id: setup
+        if: steps.confirm.outputs.ok == 'true'
+        working-directory: apps/mobile
+        env:
+          EXPO_TOKEN: ${{ secrets.EXPO_TOKEN }}
+          ASC_API_KEY_P8: ${{ secrets.ASC_API_KEY_P8 }}
+          EXPO_ASC_KEY_ID: ${{ secrets.ASC_KEY_ID }}
+          EXPO_ASC_ISSUER_ID: ${{ secrets.ASC_ISSUER_ID }}
+          EXPO_APPLE_TEAM_ID: ${{ secrets.APPLE_TEAM_ID }}
+          APPLE_TEAM_TYPE: ${{ vars.APPLE_TEAM_TYPE }}
+        run: |
+          umask 077
+          mkdir -m 700 "$RUNNER_TEMP/asc-key"
+          printf '%s\n' "$ASC_API_KEY_P8" > "$RUNNER_TEMP/asc-key/AuthKey.p8"
+          unset ASC_API_KEY_P8
+          export EXPO_ASC_API_KEY_PATH="$RUNNER_TEMP/asc-key/AuthKey.p8"
+          export EXPO_APPLE_TEAM_TYPE="${APPLE_TEAM_TYPE:-COMPANY_OR_ORGANIZATION}"
+          log="$RUNNER_TEMP/asc-key/eas-ios-setup.log"
+          done_file="$RUNNER_TEMP/asc-key/done"
+          limit_file="$RUNNER_TEMP/asc-key/limit"
+          : > "$log"
+          limit_pattern='maximum number of .*certificates|select certificates to revoke'
+
+          # Tastatur-Ersatz: drückt jede Sekunde Enter (= Standard-Antwort), bis eas-cli fertig ist (dann EOF,
+          # sonst bliebe `script` hängen), höchstens 15 Minuten. Erscheint die Apple-Grenze für Zertifikate,
+          # wird eas-cli sofort beendet – nichts wird widerrufen (siehe Kopf der Datei).
+          feed() {
+            local waited=0
+            while [ ! -f "$done_file" ] && [ "$waited" -lt 900 ]; do
+              if grep -qiE "$limit_pattern" "$log"; then
+                touch "$limit_file"
+                pkill -TERM -f 'credentials:configure-build' || true
+                break
+              fi
+              printf '\n'
+              sleep 1
+              waited=$((waited + 1))
+            done
+          }
+
+          # `script` stellt ein Terminal bereit (eas-cli fragt nur mit Terminal) und schreibt die Ausgabe sofort
+          # (-f) ins Protokoll, das `feed` liest; die Ausgabe erscheint zusätzlich im Log dieses Schritts.
+          status=0
+          feed | env -u CI script -qefc \
+            "eas credentials:configure-build --platform ios --profile production; rc=\$?; echo \$rc > '$done_file'; exit \$rc" \
+            "$log" || status=$?
+
+          limit=false
+          { [ -f "$limit_file" ] || grep -qiE "$limit_pattern" "$log"; } && limit=true
+          echo "limit=$limit" >> "$GITHUB_OUTPUT"
+          if [ "$limit" = "true" ]; then
+            echo "::error title=Apple-Grenze für Zertifikate erreicht::Abgebrochen, nichts widerrufen – Anleitung in der Zusammenfassung (Summary)."
+            exit 1
+          fi
+          exit "$status"
+
+      - name: Zusammenfassung
+        if: steps.confirm.outputs.ok == 'true' && always()
+        env:
+          STATUS: ${{ job.status }}
+          LIMIT: ${{ steps.setup.outputs.limit }}
+        run: |
+          {
+            if [ "$LIMIT" = "true" ]; then
+              echo "### ❌ Apple-Grenze: zu viele Verteilungs-Zertifikate"
+              echo ""
+              echo "Apple erlaubt je Team nur wenige „Apple Distribution“-Zertifikate. Der Workflow hat abgebrochen und **nichts widerrufen**."
+              echo ""
+              echo "1. developer.apple.com → **Account** → **Certificates, Identifiers & Profiles** → **Certificates** (fehlt der Menüpunkt: Browser-Menü → „Desktop-Website anfordern“)."
+              echo "2. Bei den Einträgen vom Typ **Distribution** bzw. **Apple Distribution** das Ablaufdatum ansehen. Nur ein Zertifikat antippen, das **sicher nicht mehr gebraucht** wird (z. B. abgelaufen oder aus einem alten Versuch) → **Revoke** → bestätigen."
+              echo "   Achtung: Apps, die mit einem widerrufenen Zertifikat signiert sind, lassen sich nicht mehr neu bauen, bis sie ein neues bekommen. Unsicher? Erst Claude den Link dieses Laufs geben."
+              echo "3. GitHub-App → Actions → **eas-ios-setup** → Run workflow → **JA** eintippen → erneut starten."
+            elif [ "$STATUS" = "success" ]; then
+              echo "### ✅ iPhone-Zugangsdaten bei EAS eingerichtet"
+              echo ""
+              echo "Prüfen: expo.dev → Projekt fitnessapp → **Credentials** → iOS → de.fitnessapp.app: Distribution Certificate und Provisioning Profile sind da."
+              echo "Weiter: Workflow **eas-build** mit Plattform ios, Profil production, Einreichen ja."
+              echo "Wurde für die Einrichtung ein Admin-Schlüssel benutzt: jetzt widerrufen und die ASC-Secrets löschen (SETUP D2 A4)."
+            else
+              echo "### ❌ Einrichtung fehlgeschlagen"
+              echo ""
+              echo "Den Fehler zeigt der fehlgeschlagene Schritt (rot) bzw. die Liste oben. Link dieses Laufs an Claude geben (ohne Schlüssel)."
+            fi
+          } >> "$GITHUB_STEP_SUMMARY"
+
+      - name: Schlüssel-Datei löschen
+        if: always()
+        run: rm -rf "$RUNNER_TEMP/asc-key"

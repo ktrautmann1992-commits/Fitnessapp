@@ -3,7 +3,7 @@
 Diese Anleitung verbindet das Repository mit **Supabase** (Datenbank), **Vercel** (Vorschau-Links im Browser),
 **Expo** (echte App-Builds) und **Anthropic** (Inhalts-Erzeugung). Alles geht im Handy-Browser.
 
-**Reihenfolge:** Teil A → B → C → D → E → F → G → H. Für den ersten Vorschau-Link reicht **Teil C**.
+**Reihenfolge:** Teil A → B → C → D (→ D2 für iPhone/Stores) → E → F → G → H. Für den ersten Vorschau-Link reicht **Teil C**.
 Für den Redaktionsbereich `/admin` der Website brauchst du **Teil G**.
 Für die Content-Pipeline (Übungen und Plan-Vorlagen) brauchst du **Teil H**, für echte KI-Entwürfe zusätzlich
 **Teil E**. Die Bedienung steht am Ende unter **„Inhalte erzeugen und freigeben am Handy“**.
@@ -34,6 +34,14 @@ Sie werden nicht rot.
 | `SUPABASE_ACCESS_TOKEN`                | Supabase (A8) | GitHub Secret (B)                                                          | **JA**  |
 | `EXPO_TOKEN`                           | Expo (D4)     | GitHub Secret (B)                                                          | **JA**  |
 | Expo-Projekt-ID                        | Expo (D3)     | Claude in einer Sitzung nennen (D5), kommt in `apps/mobile/app.config.ts`  | nein    |
+| Apple-ID der App (Zahl)                | Apple (D2 A2) | Claude in einer Sitzung nennen, kommt in `apps/mobile/eas.json`            | nein    |
+| `ASC_API_KEY_P8`                       | Apple (D2 A4) | GitHub Secret (B), nur für die Einrichtung, danach löschen (D2 A4)         | **JA**  |
+| .p8-Datei „App-Manager“                | Apple (D2 A5) | nur auf expo.dev → Credentials → iOS (D2 A5)                               | **JA**  |
+| `ASC_KEY_ID`                           | Apple (D2 A4) | GitHub Secret (B)                                                          | nein    |
+| `ASC_ISSUER_ID`                        | Apple (D2 A4) | GitHub Secret (B)                                                          | nein    |
+| `APPLE_TEAM_ID`                        | Apple (D2 A3) | GitHub Secret (B)                                                          | nein    |
+| `APPLE_TEAM_TYPE` (optional)           | selbst (D2)   | GitHub **Variable**, nur `INDIVIDUAL` bei Einzelperson-Konto               | nein    |
+| Google-Dienstkonto (JSON)              | Google (D2 G) | nur auf expo.dev → Credentials → Android (D2 G4)                           | **JA**  |
 | `ANTHROPIC_API_KEY`                    | Anthropic (E) | GitHub Secret (B)                                                          | **JA**  |
 | `CONTENT_MODEL` (optional)             | selbst (E5)   | GitHub **Variable** (E5), Standard `claude-opus-5-5`                       | nein    |
 | `CONTENT_EFFORT` (optional)            | selbst (E5)   | GitHub **Variable** (E5), Standard `high`                                  | nein    |
@@ -152,11 +160,129 @@ Die Landingpage verlinkt auf die Web-Version der App. Ohne Eintrag zeigt der Kno
 5. In einer Claude-Code-Sitzung schreiben: **„Trag die Expo-Projekt-ID `…` in apps/mobile/app.config.ts ein.“**
 6. Für die echten Apps auch die Datenbank-Werte hinterlegen: expo.dev → Projekt → **Environment variables** →
    **Add variable**:
-   - `EXPO_PUBLIC_SUPABASE_URL` (Visibility: **Plain text**, Environments: **preview** und **production**)
+   - `EXPO_PUBLIC_SUPABASE_URL` (Visibility: **Plain text**, Environments: **development**, **preview** und
+     **production**)
    - `EXPO_PUBLIC_SUPABASE_PUBLISHABLE_KEY` (genauso)
 
-Der erste vollständige Android- und iPhone-Build (Signatur-Schlüssel, Apple- und Google-Konto, TestFlight) wird
-in **Phase 4** eingerichtet. Bis dahin endet der Workflow `eas-build` mit einem Hinweis statt mit einem Fehler.
+   **Nicht „Secret“ wählen:** Alles mit `EXPO_PUBLIC_` steht ohnehin lesbar im App-Paket (wie im Browser). Expo
+   legt solche Variablen deshalb selbst als „Plain text“ an; „Secret“ ist für echte Geheimnisse gedacht, die nur
+   auf den Expo-Servern gelesen werden. Welche Umgebung ein Build nimmt, steht in `apps/mobile/eas.json`
+   (`preview` → preview, `production` → production). Ohne diese Variablen startet die App im **Testmodus**.
+
+Danach geht schon die **Android-APK** (Workflow `eas-build`, Plattform android, Profil preview). Für das iPhone
+(TestFlight) und den Play Store kommt **Teil D2** dazu. Fehlt etwas, endet der Workflow `eas-build` mit einem
+Hinweis statt mit einem Fehler.
+
+---
+
+## Teil D2 – Apple und Google verbinden (iPhone über TestFlight, Play Store)
+
+> **Schlüssel nie in den Chat.** Sie kommen nur in **GitHub → Settings → Secrets and variables → Actions** oder
+> auf **expo.dev → Credentials**. Claude braucht nur zwei Zahlen, die **kein** Geheimnis sind: die Expo-Projekt-ID
+> (Teil D) und die Apple-ID der App (Schritt A2).
+
+**Kosten (Stand 06.10.2026):** Apple Developer Program **99 USD pro Jahr**, Google Play **25 USD einmalig**. Der
+**Expo-Gratisplan** enthält **15 Android- und 15 iPhone-Builds pro Monat** in einer Warteschlange mit niedriger
+Priorität (oft 10–30 Minuten Wartezeit); Einreichen bei den Stores ist enthalten. Mehr Builds bzw. schnellere
+Warteschlange: Plan „Starter“ (19 USD/Monat). Werte ändern sich – aktuell auf **expo.dev/pricing**.
+
+### Wie das iPhone ohne Terminal und ohne Mac klappt (W11)
+
+Geprüft im Quelltext der aktuellen Expo-Werkzeuge (eas-cli 24.11.0, 05.10.2026):
+
+- Ein Build aus GitHub läuft immer **ohne Rückfragen**. So kann Expo das **Verteilungs-Zertifikat** für das
+  iPhone **nicht** neu erzeugen – es muss vorher bei Expo liegen. Das **Provisioning-Profil** dagegen kann Expo
+  selbst erneuern, wenn ein App-Store-Connect-Schlüssel hinterlegt ist.
+- Deshalb gibt es den Workflow **`eas-ios-setup`**: Er läuft **einmal** und legt Zertifikat und Profil bei Expo an.
+  Die Anmeldung bei Apple macht er mit dem App-Store-Connect-Schlüssel (kein Apple-Passwort, kein Code aufs Handy).
+  Dafür muss der Schlüssel einmal als **GitHub-Secret** eingetragen werden (Schritt A4). Der Workflow schreibt ihn
+  nur während des Laufs in eine geschützte Temp-Datei und löscht sie am Ende immer.
+- Für die Einrichtung braucht es einen Schlüssel mit Rolle **Admin**, der danach widerrufen wird. Zum
+  **Einreichen bei TestFlight** liegt ein zweiter Schlüssel mit Rolle **App-Manager** auf **expo.dev** (Schritt A5).
+
+### A – Apple (TestFlight)
+
+1. **developer.apple.com** → **Account** → dem **Apple Developer Program** beitreten (99 USD/Jahr; als Firma mit
+   D-U-N-S-Nummer, Frage 10 im Plan). Die Prüfung durch Apple kann einige Tage dauern.
+2. **appstoreconnect.apple.com** → **Apps** → **+** → **Neue App**: Plattform iOS, Name **Alpha5**, Sprache
+   **Deutsch**, Bundle-ID **`de.fitnessapp.app`** (fehlt sie in der Liste: developer.apple.com → **Certificates,
+   Identifiers & Profiles → Identifiers → +** → App IDs → Bundle ID „Explicit“ `de.fitnessapp.app` anlegen, dann
+   zurück), SKU **`alpha5`** → **Erstellen**. Danach **App-Informationen** öffnen und die **Apple-ID** (eine
+   Zahl, z. B. `6612345678`) in einer Claude-Code-Sitzung nennen: **„Trag die Apple-ID der App `…` in
+   apps/mobile/eas.json ein.“** – das ist kein Geheimnis.
+3. **Team-ID** notieren: developer.apple.com → **Account** → **Membership details** → **Team ID** (10 Zeichen).
+4. App-Store-Connect-Schlüssel erzeugen: appstoreconnect.apple.com → **Benutzer und Zugriff** →
+   **Integrationen** → **App Store Connect API** → Reiter **Team-Schlüssel** → **+** → Name `expo-einrichtung`,
+   Zugriff **Admin** → **Generieren**. **Issuer-ID** (oben) und **Schlüssel-ID** notieren, dann **API-Schlüssel
+   herunterladen** – das geht **nur einmal**, die Datei `AuthKey_….p8` landet in „Downloads“. Im
+   Passwort-Manager sichern.
+   Dann in GitHub eintragen (Repository → **Settings → Secrets and variables → Actions → New repository secret**):
+   - `ASC_API_KEY_P8` – der **Inhalt** der .p8-Datei. iPhone: Dateien-App → Downloads → Datei antippen (zeigt den
+     Text) → lange drücken → **Alles auswählen** → **Kopieren** → im Secret-Feld einfügen. Android: Datei mit einem
+     Text-Editor öffnen und den ganzen Text kopieren. Der Text beginnt mit `-----BEGIN PRIVATE KEY-----`.
+   - `ASC_KEY_ID` – Schlüssel-ID
+   - `ASC_ISSUER_ID` – Issuer-ID
+   - `APPLE_TEAM_ID` – Team-ID aus Schritt 3
+   - Nur bei einem **Einzelperson-Konto** (keine Firma): unter **Variables** (nicht Secrets) `APPLE_TEAM_TYPE` =
+     `INDIVIDUAL`. Bei einer Firma nichts eintragen.
+
+   **Warum „Admin“ und wie lange?** Zertifikate und Profile anlegen darf nur ein Schlüssel mit viel Recht. Der
+   Admin-Schlüssel ist deshalb **nur für die Einrichtung** (Schritt 6) gedacht: Danach in App Store Connect
+   **widerrufen** (Benutzer und Zugriff → Integrationen → App Store Connect API → Schlüssel → **Widerrufen**) und
+   die vier GitHub-Secrets `ASC_*`/`APPLE_TEAM_ID` **löschen**. Für das tägliche Einreichen bei TestFlight reicht
+   ein zweiter Schlüssel mit Rolle **App-Manager**, der nur auf expo.dev liegt (Schritt 5). Läuft das Profil nach
+   einem Jahr ab oder meldet ein iPhone-Build „Provisioning profile…“, dann wieder kurz einen Admin-Schlüssel
+   anlegen, Schritt 4 und 6 wiederholen und danach widerrufen.
+
+5. Schlüssel fürs Einreichen bei Expo hochladen: wie Schritt 4 einen **zweiten** Schlüssel erzeugen, Name `expo`,
+   Zugriff **App-Manager**, .p8 herunterladen. Dann **expo.dev** → Projekt **fitnessapp** → **Credentials** →
+   **iOS** → Bundle-ID `de.fitnessapp.app` → bei **App Store Connect API Key** (für „Submissions“)
+   **Add/Upload** → diese .p8 aus „Downloads“ wählen, Schlüssel-ID, Issuer-ID und Team-ID eintragen → **Save**. (Heißen die Knöpfe bei euch
+   anders, Claude kurz schreiben, wie die Seite aussieht – ohne Schlüssel.)
+6. GitHub-App → Repository → **Actions** → **eas-ios-setup** → **Run workflow** → im Feld **confirm** genau
+   **JA** eintippen → **Run workflow** (einmalig; ohne „JA“ passiert nichts). Grün = in der Zusammenfassung steht
+   „iPhone-Zugangsdaten bei EAS eingerichtet“; auf expo.dev unter **Credentials → iOS** sind jetzt **Distribution
+   Certificate** und **Provisioning Profile** zu sehen. Rot = die Zusammenfassung sagt, was fehlt (Liste) bzw. was
+   zu tun ist (z. B. Apple-Grenze für Zertifikate erreicht – mit Klick-Anleitung); sonst Link des Laufs an Claude
+   geben. Danach den Admin-Schlüssel widerrufen und die Secrets löschen (Kasten in Schritt 4).
+7. **TestFlight**: appstoreconnect.apple.com → **Apps → Alpha5 → TestFlight** → **Interne Tests** → **+** →
+   Gruppe „Gründer“ → euch beide hinzufügen (ihr müsst als Benutzer im App-Store-Connect-Team sein). Interne Tester
+   brauchen **keine** Beta-Prüfung durch Apple.
+8. Erster iPhone-Build: **Actions → eas-build → Run workflow** → Plattform **ios**, Profil **production**,
+   Einreichen **ja**. Nach dem Build (15–30 Minuten) und der Verarbeitung bei Apple (ca. 10–30 Minuten) erscheint
+   Alpha5 in der **TestFlight-App** → **Installieren**. Beim ersten Mal fragt App Store Connect evtl. nach der
+   Exportkontrolle – die App ist mit „keine eigene Verschlüsselung“ markiert, die Frage sollte entfallen.
+
+### G – Google (Play Store; zum Testen reicht die APK aus Teil D)
+
+1. **play.google.com/console** → Entwicklerkonto anlegen (25 USD einmalig; Firma empfohlen). Achtung: Neue
+   **private** Konten müssen vor der Veröffentlichung 14 Tage mit mindestens 12 Testern testen – für interne Tests
+   gilt das nicht.
+2. **App erstellen** → Name **Alpha5**, Sprache Deutsch, **App**, **Kostenlos** → Erklärungen bestätigen.
+3. Dienstkonto für das automatische Hochladen: **console.cloud.google.com** → Projekt anlegen → **IAM und
+   Verwaltung → Dienstkonten → Dienstkonto erstellen** → **Schlüssel → Schlüssel hinzufügen → JSON** (die Datei
+   landet in „Downloads“). In der **Play Console → Nutzer und Berechtigungen → Neue Nutzer einladen** die
+   E-Mail-Adresse des Dienstkontos einladen, Rechte für die App Alpha5 („Releases verwalten“).
+4. **expo.dev** → Projekt → **Credentials** → **Android** → `de.fitnessapp.app` → **Google Service Account Key**
+   → JSON-Datei aus „Downloads“ hochladen.
+5. **Der allererste Upload muss von Hand sein** (Google-Regel): **eas-build** mit Plattform **android**, Profil
+   **production**, Einreichen **nein** → auf der Build-Seite (Link in der Zusammenfassung) die **.aab**
+   herunterladen → Play Console → **Testen → Interner Test → Neuen Release erstellen** → .aab hochladen →
+   speichern. Ab dann geht „Einreichen: ja“ automatisch (als **Entwurf** im internen Test, solange die App nie
+   veröffentlicht war – im Release auf **Überprüfen und einführen** tippen).
+
+### Wann was bauen?
+
+| Ziel                       | Plattform | Profil     | Einreichen | Ergebnis                                      |
+| -------------------------- | --------- | ---------- | ---------- | --------------------------------------------- |
+| Android-App testen         | android   | preview    | nein       | APK zum Installieren (Link in der Zusammenf.) |
+| iPhone-App testen          | ios       | production | ja         | TestFlight                                    |
+| Play Store (interner Test) | android   | production | ja         | Entwurf im internen Test (nach erstem Upload) |
+| Beide Stores               | all       | production | ja         | TestFlight + Play intern                      |
+| ios + preview              | –         | –          | –          | wird abgefangen: iPhone nur über TestFlight   |
+
+Das Profil `development` (Development Build mit `expo-dev-client`) ist vorbereitet, aber erst ab den
+Wearables/Abos nötig – das Paket ist noch nicht installiert und der Workflow bietet das Profil nicht an.
 
 ---
 
@@ -474,17 +600,18 @@ zeigt „Heute“ richtigerweise „Für deine Angaben gibt es gerade keinen fre
 
 ## Überblick: Was passiert automatisch?
 
-| Workflow           | Wann                                                              | Braucht                                                                 |
-| ------------------ | ----------------------------------------------------------------- | ----------------------------------------------------------------------- |
-| `ci`               | bei jedem Push und Pull Request (inkl. Klick-Tests), per Hand     | nichts                                                                  |
-| `db-migrate`       | nach Merge in `main`, wenn sich Migrationen ändern, oder per Hand | `SUPABASE_ACCESS_TOKEN`, `SUPABASE_DB_PASSWORD`, `SUPABASE_PROJECT_REF` |
-| `content-generate` | per Hand (Actions → Run workflow)                                 | `ANTHROPIC_API_KEY` (Probelauf: nichts)                                 |
-| `content-collect`  | alle 3 Stunden und per Hand                                       | Teil H; `ANTHROPIC_API_KEY` nur für echte Läufe                         |
-| `content-review`   | per Hand                                                          | Teil H                                                                  |
-| `content-seed`     | nach Merge in `main` (Inhalte), nach `db-migrate` und per Hand    | `SUPABASE_URL`, `SUPABASE_SECRET_KEY` (ohne: nur Prüfung)               |
-| `waitlist-cleanup` | täglich 03:17 UTC und per Hand (Löschfristen der Warteliste)      | `SUPABASE_URL`, `SUPABASE_SECRET_KEY`                                   |
-| `eas-build`        | per Hand                                                          | `EXPO_TOKEN` + Expo-Projekt-ID                                          |
-| Vercel             | bei jedem Push automatisch                                        | Teil C                                                                  |
+| Workflow           | Wann                                                              | Braucht                                                                                |
+| ------------------ | ----------------------------------------------------------------- | -------------------------------------------------------------------------------------- |
+| `ci`               | bei jedem Push und Pull Request (inkl. Klick-Tests), per Hand     | nichts                                                                                 |
+| `db-migrate`       | nach Merge in `main`, wenn sich Migrationen ändern, oder per Hand | `SUPABASE_ACCESS_TOKEN`, `SUPABASE_DB_PASSWORD`, `SUPABASE_PROJECT_REF`                |
+| `content-generate` | per Hand (Actions → Run workflow)                                 | `ANTHROPIC_API_KEY` (Probelauf: nichts)                                                |
+| `content-collect`  | alle 3 Stunden und per Hand                                       | Teil H; `ANTHROPIC_API_KEY` nur für echte Läufe                                        |
+| `content-review`   | per Hand                                                          | Teil H                                                                                 |
+| `content-seed`     | nach Merge in `main` (Inhalte), nach `db-migrate` und per Hand    | `SUPABASE_URL`, `SUPABASE_SECRET_KEY` (ohne: nur Prüfung)                              |
+| `waitlist-cleanup` | täglich 03:17 UTC und per Hand (Löschfristen der Warteliste)      | `SUPABASE_URL`, `SUPABASE_SECRET_KEY`                                                  |
+| `eas-build`        | per Hand (Plattform, Profil, Einreichen ja/nein)                  | `EXPO_TOKEN` + Expo-Projekt-ID; iPhone/Stores zusätzlich Teil D2                       |
+| `eas-ios-setup`    | einmal per Hand vor dem ersten iPhone-Build (Eingabe „JA“)        | `EXPO_TOKEN`, Projekt-ID, `ASC_*`-Secrets, `APPLE_TEAM_ID` (D2); rot, wenn etwas fehlt |
+| Vercel             | bei jedem Push automatisch                                        | Teil C                                                                                 |
 
 Fehlt etwas, endet der Workflow **grün** mit dem Hinweis „übersprungen“. Den Hinweis siehst du in der GitHub-App
 unter **Actions** → Lauf antippen → **Summary**.

@@ -1,7 +1,15 @@
 name: eas-build
 
-# Manuell startbar: baut die native App in der Expo-Cloud (EAS Build).
-# Android „preview“ = APK zum direkten Installieren. iOS braucht zusätzlich den Apple-Account (Phase 4).
+# Manuell startbar (GitHub-App → Actions → eas-build → Run workflow): baut die native App in der Expo-Cloud.
+#   android + preview    = APK zum direkten Installieren (Test)
+#   ios     + production = iPhone-Build; mit „Einreichen: ja“ landet er in TestFlight
+#   production + „Einreichen: ja“ = nach dem Build automatisch einreichen (iOS → TestFlight, Android → Play intern)
+# Regeln (docs/PLAN-PHASE-4.md 7.2, Wächter W12):
+#   - ios + preview wird abgefangen (bräuchte beim iPhone registrierte Geräte) – iPhone-Tests laufen über
+#     production + TestFlight; bei all + preview wird nur Android gebaut.
+#   - Einreichen nur mit production; Android preview ist eine APK und für Google Play nicht einreichbar.
+#   - Fehlt etwas (EXPO_TOKEN, Projekt-ID, App-ID von Apple), endet der Lauf mit einem Hinweis statt rot.
+# Anleitung: docs/SETUP.md Teil D und D2.
 on:
   workflow_dispatch:
     inputs:
@@ -14,61 +22,209 @@ on:
           - all
         default: android
       profile:
-        description: 'Build-Profil (preview = Test-APK, production = Store)'
+        description: 'Build-Profil (preview = Test-APK nur Android, production = Store/TestFlight)'
         type: choice
         options:
           - preview
           - production
         default: preview
+      submit:
+        description: 'Nach dem Build einreichen (nur production: iOS → TestFlight, Android → Play intern)'
+        type: choice
+        options:
+          - nein
+          - ja
+        default: nein
+
+# Nur lesen: Der Workflow schreibt nichts ins Repository.
+permissions:
+  contents: read
+
+concurrency:
+  group: eas-build
+  cancel-in-progress: false
+
+# eas-cli fest auf eine geprüfte Version (Wächter E, S1) – gleiche Version wie eas-ios-setup.
+# Vor dem Anheben: Changelog von eas-cli lesen und die Fragen von eas-ios-setup neu prüfen.
+env:
+  EAS_CLI_VERSION: '24.11.0'
+  EXPO_NO_TELEMETRY: '1'
 
 jobs:
   build:
     runs-on: ubuntu-latest
     timeout-minutes: 30
-    env:
-      EXPO_TOKEN: ${{ secrets.EXPO_TOKEN }}
+    # Secrets nur in den Schritten, die sie brauchen (nicht für den ganzen Job, z. B. nicht für pnpm install).
+    # Fremde Actions auf Commit-SHA festgelegt (Kommentar = Tag zum Zeitpunkt des Festlegens).
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+
       - name: Voraussetzungen prüfen
-        id: secrets
+        id: check
+        env:
+          EXPO_TOKEN: ${{ secrets.EXPO_TOKEN }}
+          PLATFORM: ${{ inputs.platform }}
+          PROFILE: ${{ inputs.profile }}
+          SUBMIT: ${{ inputs.submit }}
         run: |
-          missing=""
-          [ -z "$EXPO_TOKEN" ] && missing="$missing GitHub-Secret EXPO_TOKEN,"
-          if grep -q "EAS_PROJECT_ID = ''" apps/mobile/app.config.ts; then
-            missing="$missing Expo-Projekt-ID in apps/mobile/app.config.ts,"
-          fi
-          if [ -n "$missing" ]; then
-            echo "::notice title=eas-build übersprungen::Es fehlt:${missing%,} – siehe docs/SETUP.md Teil D"
-            echo "### ⏭️ eas-build übersprungen" >> "$GITHUB_STEP_SUMMARY"
-            echo "Es fehlt:${missing%,}. Anleitung: docs/SETUP.md Teil D" >> "$GITHUB_STEP_SUMMARY"
+          summary() { echo "$1" >> "$GITHUB_STEP_SUMMARY"; }
+          skip() {
+            echo "::warning title=eas-build übersprungen::$1"
+            summary "### ⏭️ eas-build übersprungen"
+            summary ""
+            summary "$1"
             echo "ready=false" >> "$GITHUB_OUTPUT"
-          else
-            echo "ready=true" >> "$GITHUB_OUTPUT"
+            exit 0
+          }
+
+          missing=""
+          [ -z "$EXPO_TOKEN" ] && missing="$missing das GitHub-Secret EXPO_TOKEN (docs/SETUP.md Teil D Schritt 4 und Teil B),"
+          if grep -q "EAS_PROJECT_ID = ''" apps/mobile/app.config.ts; then
+            missing="$missing die Expo-Projekt-ID in apps/mobile/app.config.ts (docs/SETUP.md Teil D Schritt 5),"
+          fi
+          [ -n "$missing" ] && skip "Es fehlt:${missing%,}. Es wurde nichts gebaut."
+
+          # Plattformen auflösen (ios + preview abfangen).
+          platforms="$PLATFORM"
+          [ "$PLATFORM" = "all" ] && platforms="android ios"
+          if [ "$PROFILE" = "preview" ] && [ "$PLATFORM" != "android" ]; then
+            if [ "$PLATFORM" = "ios" ]; then
+              skip "iPhone + preview geht nicht (preview bräuchte beim iPhone vorab registrierte Geräte). iPhone-Tests laufen über **Plattform ios, Profil production, Einreichen: ja** → TestFlight."
+            fi
+            echo "::notice title=Nur Android::Profil preview gibt es nur für Android – das iPhone wird übersprungen (iPhone: production + TestFlight)."
+            summary "ℹ️ Profil preview: nur Android gebaut. iPhone-Tests laufen über production + TestFlight."
+            platforms="android"
           fi
 
-      - uses: pnpm/action-setup@v4
-        if: steps.secrets.outputs.ready == 'true'
-      - uses: actions/setup-node@v4
-        if: steps.secrets.outputs.ready == 'true'
+          # Einreichen nur mit production.
+          submit_android=false
+          submit_ios=false
+          if [ "$SUBMIT" = "ja" ]; then
+            if [ "$PROFILE" != "production" ]; then
+              echo "::notice title=Einreichen ignoriert::Einreichen geht nur mit dem Profil production (preview ist eine APK, Google Play nimmt nur AAB)."
+              summary "ℹ️ „Einreichen: ja“ ignoriert – geht nur mit dem Profil production."
+            else
+              case " $platforms " in *" android "*) submit_android=true ;; esac
+              case " $platforms " in *" ios "*) submit_ios=true ;; esac
+              if [ "$submit_ios" = "true" ]; then
+                asc_app_id=$(node -p "require('./apps/mobile/eas.json').submit?.production?.ios?.ascAppId ?? ''")
+                if [ -z "$asc_app_id" ]; then
+                  submit_ios=false
+                  echo "::notice title=iPhone nicht eingereicht::In apps/mobile/eas.json fehlt die Apple-ID der App (ascAppId). Der iPhone-Build läuft, wird aber nicht an TestFlight geschickt – docs/SETUP.md D2 Schritt A2."
+                  summary "ℹ️ iPhone: Build ohne Einreichen – die Apple-ID der App (ascAppId) fehlt noch in apps/mobile/eas.json (docs/SETUP.md D2)."
+                fi
+              fi
+            fi
+          fi
+
+          echo "platforms=$platforms" >> "$GITHUB_OUTPUT"
+          echo "submit_android=$submit_android" >> "$GITHUB_OUTPUT"
+          echo "submit_ios=$submit_ios" >> "$GITHUB_OUTPUT"
+          echo "ready=true" >> "$GITHUB_OUTPUT"
+
+      - uses: pnpm/action-setup@b906affcce14559ad1aafd4ab0e942779e9f58b1 # v4
+        if: steps.check.outputs.ready == 'true'
+      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4
+        if: steps.check.outputs.ready == 'true'
         with:
           node-version: 22
           cache: pnpm
-      - uses: expo/expo-github-action@v8
-        if: steps.secrets.outputs.ready == 'true'
-        with:
-          eas-version: latest
-          token: ${{ secrets.EXPO_TOKEN }}
       - run: pnpm install --frozen-lockfile
-        if: steps.secrets.outputs.ready == 'true'
+        if: steps.check.outputs.ready == 'true'
+      # Ohne `token`: Die Action würde EXPO_TOKEN sonst für alle folgenden Schritte setzen.
+      - uses: expo/expo-github-action@c7b66a9c327a43a8fa7c0158e7f30d6040d2481e # v8
+        if: steps.check.outputs.ready == 'true'
+        with:
+          eas-version: ${{ env.EAS_CLI_VERSION }}
+      - name: eas-cli-Version prüfen
+        if: steps.check.outputs.ready == 'true'
+        run: |
+          actual=$(eas --version | grep -o 'eas-cli/[0-9.]*' | cut -d/ -f2)
+          if [ "$actual" != "$EAS_CLI_VERSION" ]; then
+            echo "::error title=Falsche eas-cli-Version::Erwartet $EAS_CLI_VERSION, gefunden ${actual:-keine}."
+            exit 1
+          fi
+
+      # Build je Plattform. Optional (Workflow-Variante aus docs/SETUP.md D2): App-Store-Connect-Schlüssel aus
+      # GitHub-Secrets für iPhone-Builds – nur in diesem Schritt, als Datei in einem Ordner, den nur dieser
+      # Nutzer lesen kann; der letzte Schritt löscht ihn immer. Ohne diese Secrets nutzt EAS den Schlüssel von
+      # expo.dev.
       - name: Build in der Expo-Cloud starten
-        if: steps.secrets.outputs.ready == 'true'
+        if: steps.check.outputs.ready == 'true'
         working-directory: apps/mobile
         env:
-          PLATFORM: ${{ inputs.platform }}
+          EXPO_TOKEN: ${{ secrets.EXPO_TOKEN }}
+          ASC_API_KEY_P8: ${{ secrets.ASC_API_KEY_P8 }}
+          ASC_KEY_ID: ${{ secrets.ASC_KEY_ID }}
+          ASC_ISSUER_ID: ${{ secrets.ASC_ISSUER_ID }}
+          APPLE_TEAM_ID: ${{ secrets.APPLE_TEAM_ID }}
+          APPLE_TEAM_TYPE: ${{ vars.APPLE_TEAM_TYPE }}
+          PLATFORMS: ${{ steps.check.outputs.platforms }}
           PROFILE: ${{ inputs.profile }}
-        run: eas build --platform "$PLATFORM" --profile "$PROFILE" --non-interactive --no-wait
-      - name: Zusammenfassung
-        if: steps.secrets.outputs.ready == 'true'
+          SUBMIT_ANDROID: ${{ steps.check.outputs.submit_android }}
+          SUBMIT_IOS: ${{ steps.check.outputs.submit_ios }}
         run: |
-          echo "### ✅ Build gestartet" >> "$GITHUB_STEP_SUMMARY"
-          echo "Den Fortschritt und den Download-Link findest du auf expo.dev → dein Projekt → Builds." >> "$GITHUB_STEP_SUMMARY"
+          set -o pipefail
+          case " $PLATFORMS " in
+            *" ios "*)
+              if [ -n "$ASC_API_KEY_P8" ] && [ -n "$ASC_KEY_ID" ] && [ -n "$ASC_ISSUER_ID" ] && [ -n "$APPLE_TEAM_ID" ]; then
+                umask 077
+                mkdir -m 700 "$RUNNER_TEMP/asc-key"
+                printf '%s\n' "$ASC_API_KEY_P8" > "$RUNNER_TEMP/asc-key/AuthKey.p8"
+                export EXPO_ASC_API_KEY_PATH="$RUNNER_TEMP/asc-key/AuthKey.p8"
+                export EXPO_ASC_KEY_ID="$ASC_KEY_ID"
+                export EXPO_ASC_ISSUER_ID="$ASC_ISSUER_ID"
+                export EXPO_APPLE_TEAM_ID="$APPLE_TEAM_ID"
+                export EXPO_APPLE_TEAM_TYPE="${APPLE_TEAM_TYPE:-COMPANY_OR_ORGANIZATION}"
+              else
+                echo "Keine (vollständigen) ASC-Secrets – EAS nutzt die Zugangsdaten auf expo.dev."
+              fi
+              ;;
+          esac
+          unset ASC_API_KEY_P8
+          : > "$RUNNER_TEMP/eas-links.txt"
+          for platform in $PLATFORMS; do
+            extra=""
+            if [ "$platform" = "android" ] && [ "$SUBMIT_ANDROID" = "true" ]; then extra="--auto-submit"; fi
+            if [ "$platform" = "ios" ] && [ "$SUBMIT_IOS" = "true" ]; then extra="--auto-submit"; fi
+            echo "::group::$platform ($PROFILE) $extra"
+            eas build --platform "$platform" --profile "$PROFILE" --non-interactive --no-wait $extra \
+              2>&1 | tee "$RUNNER_TEMP/eas-$platform.log"
+            echo "::endgroup::"
+            link=$(grep -o 'https://expo.dev/accounts/[^ ]*/builds/[0-9a-zA-Z-]*' "$RUNNER_TEMP/eas-$platform.log" | head -n 1 || true)
+            echo "$platform|${link}|${extra}" >> "$RUNNER_TEMP/eas-links.txt"
+          done
+
+      - name: Zusammenfassung
+        if: steps.check.outputs.ready == 'true' && always()
+        env:
+          PROFILE: ${{ inputs.profile }}
+          STATUS: ${{ job.status }}
+        run: |
+          {
+            if [ "$STATUS" = "success" ]; then
+              echo "### ✅ Build gestartet (Profil $PROFILE)"
+            else
+              echo "### ❌ Build konnte nicht (vollständig) gestartet werden (Profil $PROFILE)"
+              echo ""
+              echo "Den Fehler zeigt der Schritt „Build in der Expo-Cloud starten“. Link dieses Laufs an Claude geben."
+            fi
+            echo ""
+            echo "| Plattform | Build-Seite (Fortschritt, Download) | Einreichen |"
+            echo "| --- | --- | --- |"
+            while IFS='|' read -r platform link extra; do
+              [ -z "$platform" ] && continue
+              [ -n "$link" ] || link="expo.dev → Projekt fitnessapp → Builds"
+              sub="nein"; [ -n "$extra" ] && sub="ja (nach dem Build)"
+              echo "| $platform | $link | $sub |"
+            done < <(cat "$RUNNER_TEMP/eas-links.txt" 2>/dev/null || true)
+            echo ""
+            echo "Dauer ca. 15–30 Minuten (Gratisplan: Warteschlange mit niedriger Priorität)."
+            echo "- **Android-APK:** Build-Seite am Handy öffnen → **Install** bzw. APK herunterladen → öffnen → installieren."
+            echo "- **iPhone:** nach dem Einreichen ca. 10–30 Minuten Verarbeitung bei Apple → TestFlight-App → Alpha5 → Installieren."
+            echo "- Erster iPhone-Build mit Fehler „Credentials are not set up“? Einmal den Workflow **eas-ios-setup** starten (docs/SETUP.md D2)."
+          } >> "$GITHUB_STEP_SUMMARY"
+
+      - name: Schlüssel-Datei löschen
+        if: always()
+        run: rm -rf "$RUNNER_TEMP/asc-key"

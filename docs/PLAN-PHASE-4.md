@@ -1448,6 +1448,109 @@ Festlegungen und Abweichungen bei der Umsetzung von D:
 
 Offen nach D: **Live-Test W13 (Gründer)**, danach „MVP fertig“ im Umsetzungsstand; Etappe E (EAS Build und Submit).
 
+**Etappe E – im Repository umgesetzt (06.10.2026, Pull Request folgt); Konten, Secrets und Geräte-Test: offen –
+braucht Gründer.** Ohne Expo-/Apple-/Google-Konto und ohne Secrets geprüft; Expo-Webseiten (docs.expo.dev,
+expo.dev) waren aus der Cloud-Sitzung gesperrt, deshalb wurden Abläufe im **Quelltext von eas-cli** (GitHub,
+Stand 24.11.0 vom 05.10.2026) und in den installierten Expo-SDK-57-Paketen nachgeprüft.
+
+- **`apps/mobile/eas.json` (7.2 Punkt 2):** je Profil `environment` (development/preview/production);
+  `submit.production.android` = `track: "internal"`, `releaseStatus: "draft"`; `submit.production.ios` vorbereitet,
+  **`ascAppId` fehlt noch** (Apple-ID der App, liefern die Gründer – kein Geheimnis); `cli.version >= 20.2.0`
+  (ab dort nutzt ein Build ohne Rückfragen den auf expo.dev hinterlegten App-Store-Connect-Schlüssel). Gegen das
+  aktuelle `eas.schema.json` geprüft (gültig).
+- **`apps/mobile/app.config.ts` (7.2 Punkt 3):** `ios.config.usesNonExemptEncryption: false` (schreibt
+  `ITSAppUsesNonExemptEncryption = false`, H4); **keine** `NS…UsageDescription` (keines der genutzten Module –
+  expo-print, -haptics, -keep-awake, -file-system, -secure-store, -crypto – braucht eine); `expo-secure-store` als
+  Plugin mit `faceIDPermission: false` (kein Face-ID-Text) und Android-Sicherungsregeln; **Datenschutz-Manifest**
+  `ios.privacyManifests` (SDK 57 unterstützt es): Tracking aus, Gründe der Required-Reason-APIs = Vereinigung der
+  Manifeste von React Native, expo-constants, expo-system-ui, expo-file-system, AsyncStorage; erhobene Daten
+  (E-Mail, Nutzer-ID, Gesundheit, Fitness, sonstige Inhalte = Notizen) nur „App-Funktion“, verknüpft, kein Tracking.
+  Android: `allowBackup: false` und gesperrt `READ/WRITE_EXTERNAL_STORAGE` (kamen über das Auto-Plugin von
+  expo-file-system; die Ordner-Auswahl braucht sie nicht) sowie `SYSTEM_ALERT_WINDOW` (Vorlage) → übrig bleiben
+  `INTERNET` und `VIBRATE`. **`EAS_PROJECT_ID` bleibt leer** (Gründer).
+- **`eas-build.yml` (7.2 Punkt 1, W12):** neue Auswahl „Nach dem Build einreichen“ (nein/ja); ios + preview →
+  übersprungen mit Hinweis, all + preview → nur Android; Einreichen nur mit production (`--auto-submit`), sonst
+  Hinweis; iOS-Einreichen ohne `ascAppId` → Build läuft, Einreichen entfällt mit Hinweis; fehlendes `EXPO_TOKEN`
+  bzw. Projekt-ID → **Warnung + Zusammenfassung, Lauf grün, nichts gebaut** (Konvention aus SETUP „wird nicht rot“);
+  Build je Plattform, **Link zur Build-Seite** aus der Ausgabe in der Zusammenfassung (Tabelle), bei Fehler
+  ❌-Zusammenfassung; optional ASC-Schlüssel aus GitHub-Secrets per `umask 077`-Temp-Datei, Löschen im
+  `always()`-Schritt.
+- **Neu `eas-ios-setup.yml` (7.2 Punkt 4, W11):** Festlegung nach Quelltext-Prüfung: Ein Build ohne Rückfragen kann
+  das **Verteilungs-Zertifikat nicht erzeugen** (`MissingCredentialsNonInteractiveError`), nur das Profil (mit
+  ASC-Schlüssel). Der reine Webseiten-Weg (.p8 auf expo.dev) reicht daher für den **ersten** iOS-Build nicht.
+  Lösung ohne Terminal: einmaliger Workflow, der `eas credentials:configure-build --platform ios --profile
+production` in einem simulierten Terminal (`script`) mit Standard-Antworten startet; Apple-Anmeldung über
+  `EXPO_ASC_*` aus GitHub-Secrets (`ASC_API_KEY_P8`, `ASC_KEY_ID`, `ASC_ISSUER_ID`, `APPLE_TEAM_ID`, optional
+  Variable `APPLE_TEAM_TYPE`), Datei mit `umask 077` in `$RUNNER_TEMP`, Löschen im `always()`-Schritt, Abbruch nach
+  15 Minuten. Die .p8 kommt **zusätzlich** auf expo.dev (für TestFlight-Einreichen und Profil-Erneuerung).
+  **Ungetestet** (braucht echte Konten) – erster Lauf durch die Gründer ist DoD.
+- **Statische Prüfung in CI ohne Secrets und ohne Netz:** `apps/mobile/src/test/native-config.test.ts` (läuft mit
+  `pnpm check`): app.config.ts (Bundle-ID, Exportkontrolle, keine Berechtigungstexte, Secure-Store-Plugin, Android-
+  Sicherung/Berechtigungen, Datenschutz-Manifest deckt alle Gründe der eingebauten Bibliotheken ab), eas.json
+  (Profile, APK, `environment`, Submit-Einstellungen) und **`expo config --type introspect`** mit `EXPO_OFFLINE=1`
+  (Info.plist und AndroidManifest nach allen Config-Plugins). **Nicht** eingebaut: `expo-doctor` (fragt die
+  Expo-Server nach Versionen/Abhängigkeiten ab) und eine Schema-Prüfung von eas.json in CI (das Schema liegt nur
+  im eas-cli-Repository; es mitzuliefern hieße, es von Hand aktuell zu halten).
+- **Doku:** `docs/SETUP.md` Teil D ergänzt (Expo-Umgebungsvariablen „Plain text“, nicht „Secret“ – eas-cli legt
+  `EXPO_PUBLIC_*` selbst als Plain text an, 7.2 Punkt 5), **neuer Teil D2** (Kosten/Build-Kontingent H3, Apple,
+  Google, Tabelle „Wann was bauen?“), Schlüssel-Tabelle und Workflow-Übersicht; `docs/HANDY-ANLEITUNG.md`
+  **Teil 9** (Workflow starten, APK installieren, TestFlight, Geräte-Prüfliste: Vibration und Bildschirm-an aus
+  C2, Export-Ordner aus D, PDF-Druck aus P4, W13 mit der echten App); Teil 8 Variablenname korrigiert
+  (`…_PUBLISHABLE_KEY` statt `…_ANON_KEY`).
+
+Abweichungen bei E:
+
+1. **Exportkontrolle über `ios.config.usesNonExemptEncryption`** statt `ios.infoPlist.ITSAppUsesNonExemptEncryption`
+   – das offizielle Expo-Feld, schreibt denselben Info.plist-Schlüssel (Test prüft das Ergebnis).
+2. **W11:** Der bevorzugte reine Webseiten-Weg reicht nicht für das erste Zertifikat (siehe oben); deshalb ist die
+   „Alternative“ (GitHub-Secrets + Temp-Datei) Pflicht für den ersten iOS-Build, und die Gründer kopieren einmal den
+   **Text** der .p8-Datei in ein GitHub-Secret (der Plan wollte Text-Kopieren vermeiden – ohne Mac/Terminal gibt es
+   keinen anderen geprüften Weg). Die genauen Knopf-Namen auf expo.dev (Credentials) konnten nicht nachgesehen werden
+   (Seite aus der Sitzung gesperrt) – Anleitung bittet um Rückmeldung, falls sie abweichen.
+3. **Kosten (H3)** aus Suchergebnissen zur Expo-Preisseite (expo.dev selbst gesperrt): Gratisplan 15 Android- +
+   15 iOS-Builds/Monat, niedrige Priorität; Starter 19 USD/Monat. In SETUP mit Datum und Verweis auf
+   expo.dev/pricing.
+4. **Fehlendes `EXPO_TOKEN`** endet als gelbe Warnung mit grünem Lauf (bestehende Konvention), nicht rot.
+5. **Profil `development`** bleibt in eas.json, wird aber im Workflow nicht angeboten: `expo-dev-client` ist noch
+   nicht installiert (erst ab Wearables/Abos nötig).
+6. **Android-Sicherung aus** (`allowBackup: false`) – neu, nicht im Plan: Eine Google-Drive-Sicherung des
+   verschlüsselten Tagebuchs wäre ohne den Keystore-Schlüssel unlesbar; Server = Sicherung. In der
+   Datenschutzerklärung (Phase 12) erwähnen.
+
+**Wächter-Prüfung E: mit Auflagen – eingearbeitet (06.10.2026):**
+
+- **S1:** eas-cli in beiden Workflows fest auf **24.11.0** (`EAS_CLI_VERSION`), Versionsprüfung vor dem Lauf
+  (`eas --version`, sonst rot); Kommentar „vor dem Anheben die Fragen von eas-ios-setup neu prüfen“.
+- **S2:** `eas-ios-setup` braucht die Eingabe **`confirm = JA`** (sonst passiert nichts) und hat eine eigene
+  `concurrency`-Gruppe. Die Ausgabe wird über `script -f` mitgeschrieben; erscheint die Apple-Grenze
+  („Maximum number of Distribution Certificates“ bzw. „Select certificates to revoke“), wird eas-cli sofort beendet
+  (nichts widerrufen) und die Zusammenfassung erklärt per Klick-Anleitung, wie man ein ungenutztes Zertifikat
+  widerruft. Statt `yes ''` drückt eine Schleife jede Sekunde Enter, bis eas-cli fertig ist: Lokal getestet –
+  mit endlosem `yes` wäre `script` nach dem Ende von eas-cli bis zum Zeitlimit hängen geblieben (Lauf immer rot).
+  Mit Ersatz-`eas` getestet: Standard-Antworten, Rückgabewert wird durchgereicht, Abbruch bei der Grenze nach ca.
+  3 Sekunden, Schlüsseldatei mit Rechten 600.
+- **S3:** beide Workflows `permissions: contents: read`. `EXPO_TOKEN` und die ASC-Secrets stehen nur noch in
+  den Schritten, die sie brauchen (nicht im Job, nicht bei `pnpm install`); `expo-github-action` bekommt kein
+  `token` mehr (es würde `EXPO_TOKEN` sonst für alle folgenden Schritte setzen). In eas-build entsteht die
+  Schlüsseldatei erst im Build-Schritt. Actions auf Commit-SHA gepinnt (per `git ls-remote` ermittelt):
+  checkout v4 `11d5960…`, pnpm/action-setup v4 `b906aff…`, setup-node v4 `49933ea…`, expo-github-action v8
+  `c7b66a9…`. Die anderen Workflows sind unverändert (nicht Teil von E).
+- **K1:** SETUP D2: Admin-Schlüssel nur für die Einrichtung, danach widerrufen und Secrets löschen; zum Einreichen
+  ein zweiter Schlüssel mit Rolle App-Manager nur auf expo.dev.
+- **K2:** `supportsTablet: true` als **Gründer-Entscheidung bis Phase 12** markiert (app.config.ts): iPad-App =
+  iPad-Bildschirmfotos und iPad-Prüfung durch Apple.
+- **K3:** `eas-ios-setup` wird bei fehlenden Voraussetzungen **rot** mit Liste in der Zusammenfassung
+  (eas-build bleibt bei der grünen Warnung, W12).
+
+**Offen – nur die Gründer (E-DoD):** Expo-Projekt anlegen und **Projekt-ID** nennen, `EXPO_TOKEN` als Secret,
+Supabase-Werte als Expo-Variablen (SETUP D); Apple Developer Program, App in App Store Connect, **Apple-ID der App**
+nennen (→ `ascAppId`), ASC-Schlüssel als GitHub-Secrets und auf expo.dev, **`eas-ios-setup` einmal starten**,
+TestFlight-Gruppe; Google-Konto, Dienstkonto auf expo.dev, erster AAB-Upload von Hand (SETUP D2); dann **APK
+installierbar** und **iOS in TestFlight sichtbar** sowie die Geräte-Prüfliste HANDY-ANLEITUNG Teil 9 (inkl.
+Vibration, Bildschirm-an, Export-Ordner, PDF-Druck) und W13 (Teil 8). Anleitung einmal am Handy durchspielen und
+Abweichungen melden. Bis Phase 12: iPad ja/nein (`supportsTablet`, K2); Rechts-Checkliste: Exportkontrolle (H4), App-Store-Datenschutzangaben passend zum
+Datenschutz-Manifest, Sicherung aus.
+
 ## Wächter-Prüfung (Runde 1) – wie die Befunde gelöst sind
 
 | Befund                                                | Lösung                                                                                                                                                                                                                                                                           | Abschnitt                                                        |
