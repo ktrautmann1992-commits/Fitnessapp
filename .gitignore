@@ -45,3 +45,6 @@ apps/web/screenshots/
 # Website und App-Testmodus: beim Bauen aus content/ erzeugt (scripts/bundle-content.mjs)
 apps/web/src/generated/
 apps/mobile/src/generated/
+
+# PDF-Vorschau (CI-Artefakt, pnpm --filter @fitnessapp/mobile pdf:preview)
+pdf-vorschau/

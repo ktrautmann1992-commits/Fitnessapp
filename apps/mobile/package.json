@@ -11,6 +11,7 @@
     "typecheck": "node ../../scripts/bundle-content.mjs src/generated/content-files.ts --empty-if-supabase && tsc --noEmit",
     "test": "node ../../scripts/bundle-content.mjs src/generated/content-files.ts --empty-if-supabase && vitest run --passWithNoTests",
     "test:e2e": "playwright test",
+    "pdf:preview": "node ../../scripts/bundle-content.mjs src/generated/content-files.ts --empty-if-supabase && tsx scripts/pdf-preview.ts",
     "eas-build-post-install": "node ../../scripts/bundle-content.mjs src/generated/content-files.ts --empty-if-supabase",
     "screenshots": "SCREENSHOT_DIR=${SCREENSHOT_DIR:-screenshots} playwright test e2e/screenshots.spec.ts"
   },
@@ -44,6 +45,7 @@
   },
   "devDependencies": {
     "@playwright/test": "1.63.0",
-    "@types/react": "~19.2.2"
+    "@types/react": "~19.2.2",
+    "tsx": "^4.23.15"
   }
 }

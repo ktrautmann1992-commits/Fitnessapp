@@ -245,11 +245,18 @@ export default function TodayScreen() {
   const followUp = followUpBlockState(active.sessions, today);
   const templateVersion = lib?.templates.find((tpl) => tpl.id === plan.template_id)?.version;
   const offer = rules ? planOffer(rows, app.versions, active, rules, today, templateVersion) : null;
+  // Nachschlagen auch archivierter Übungen des laufenden Plans; Ersatz nur aus freigegebenen.
+  const lookup = lib ? (lib.displayExercises ?? lib.exercises) : null;
   const context = selectedSession
     ? {
-        // Nachschlagen auch archivierter Übungen des laufenden Plans; Ersatz nur aus freigegebenen.
-        library: lib ? (lib.displayExercises ?? lib.exercises) : null,
-        profile: profiles.get(sessionLocation(selectedSession, snapshot?.schedule ?? null)),
+        library: lookup,
+        // Ort: fester Tag bzw. bei „Tage egal“ mit zwei Orten aus der Fassung (Heim-Geräte).
+        profile: profiles.get(
+          sessionLocation(selectedSession, snapshot?.schedule ?? null, {
+            library: lookup,
+            homeProfile: profiles.get('home'),
+          }),
+        ),
       }
     : null;
   const shown =

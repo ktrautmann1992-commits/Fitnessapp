@@ -15,6 +15,9 @@ AGENTS.md
 
 # Automatisch erzeugt aus packages/ui/theme.css
 packages/ui/src/tokens.generated.ts
+
+# Automatisch erzeugt aus Schrift und Logo (pnpm --filter @fitnessapp/ui print-assets)
+packages/ui/src/print/assets.generated.ts
 docs/ERWEITERUNGEN.md
 docs/ALPHA5-PAKET.md
 test-results

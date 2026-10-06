@@ -1,6 +1,7 @@
 # Plan: Trainingsplan als PDF im Alpha5-Layout
 
-Stand: 05.10.2026 · Status: **vom Wächter mit Auflagen freigegeben, Auflagen eingearbeitet** (Abschnitt 11)
+Stand: 05.10.2026 · Status: **P1+P2 umgesetzt** (Abschnitt 12) · P3/P4 offen · Plan vom Wächter mit Auflagen
+freigegeben, Auflagen eingearbeitet (Abschnitt 11)
 
 ## 1. Ziel in einfachen Worten
 
@@ -82,9 +83,11 @@ Struktur für Screenreader) – die App-Ansicht bleibt die barrierefreie Hauptqu
 - **`packages/core/src/export/`** (reine Fachlogik, testbar):
   - `document.ts`: allgemeines Dokumentmodell `PrintDocument { meta, sections: Block[] }` mit Blöcken `heading`,
     `paragraph`, `keyValue`, `table`, `notice`, `pageBreak` – Inhalte als **Codes und Daten**, keine Texte.
-  - `training-plan-document.ts`: `buildTrainingPlanDocument(plan, sessions, library, progress, options)`; nutzt
-    `prepareSessionForDisplay()`, `sessionLocation()` und die Phase-4-Vorgaben je Ort; Optionen per Zod
-    (`includeName`, `logColumns` 0–4, `landscape`, `onDate`).
+  - `training-plan-document.ts`: `buildTrainingPlanDocument(plan, sessions, display, progress, options)` mit
+    Anzeige-Kontext `display = { rules, previousStartGroup, library, substituteLibrary?, profiles }` (Geräte je
+    Ort); nutzt `prepareSessionForDisplay()`, `sessionLocation()` und die Phase-4-Vorgaben je Ort; Optionen per Zod
+    (`includeName`, `name`, `logColumns` 0–4 hochkant bzw. bis 8 nur mit `landscape`, `onDate`).
+    `previousStartGroup` kommt in der App **immer** aus `planStartGroup()` (wie in der Plan-Ansicht).
   - Später `nutrition-plan-document.ts` (Phase 5) mit demselben Modell.
 - **`apps/mobile`** übersetzt Codes mit `i18n/de.ts` → Typ **„übersetztes Dokument“** (nur fertige Texte).
 - **`packages/ui/src/print/render-html.ts`:** übersetztes Dokument → HTML-String (Tokens, Logo, Schrift, Print-CSS,
@@ -150,3 +153,71 @@ Ergebnis: **mit Auflagen freigegeben**, alle Auflagen eingearbeitet.
 | B10 Barrierefreiheit, iOS-PDF ungetaggt                   | §5            |
 | B11 Codes → App übersetzt → UI rendert; keine Zyklusdaten | §4, §6        |
 | B12 Etappen P1+P2 mit CI-Artefakt, P4 klein, iOS-Schritte | §8, §9        |
+
+## 12. Umsetzung P1+P2 (Stand 05.10.2026)
+
+**Dateien**
+
+- Core (P1): `packages/core/src/export/document.ts` (Dokumentmodell, Text-Codes mit typisierten Parametern,
+  Zod-Schema `printDocumentSchema`), `packages/core/src/export/training-plan-document.ts`
+  (`buildTrainingPlanDocument`, Optionen `trainingPlanExportOptionsSchema`), Grenzwerte `PRINT_EXPORT` in
+  `constants.ts`. Tests: `document.test.ts`, `training-plan-document.test.ts`.
+- UI (P2): `packages/ui/src/print/` – `types.ts` („übersetztes Dokument“), `render-html.ts` (`renderPrintHtml`,
+  `escapeHtml`, `PRINT_CSP`), `assets.generated.ts` (erzeugt von `scripts/generate-print-assets.mjs`, in CI mit
+  `print-assets:check`). Eigener Einstieg `@fitnessapp/ui/print`, damit die ca. 120 KB nur beim Drucken geladen werden.
+- App (Übersetzung, B11): `apps/mobile/src/lib/print-document.ts` (`translatePrintDocument`, Texte in
+  `i18n/de.ts` → `print`). Beispiele: `apps/mobile/src/test/print-examples.ts`; CI-Vorschau
+  `apps/mobile/scripts/pdf-preview.ts` (`pnpm --filter @fitnessapp/mobile pdf:preview`, Artefakt „pdf-vorschau“,
+  Liste der Dateien in der Zusammenfassung des Laufs). Die App-Oberfläche (Knopf, Dialog, Druckansicht) folgt in P3.
+
+**Regeln im Code**
+
+- Planname aus Ziel + Tagen (z. B. „Muskelaufbau · 3 Tage“) statt Vorlagenname – die Vorlagennamen enthalten das
+  Level (B1). Arzt-Hinweis und Fußzeile immer; `medical_notice`/`uses_health_data` werden nicht gelesen.
+- „ersetzt (Gerät fehlt)“ nur bei `exerciseMark() === 'equipment_swap'`; „angepasst“ (Sicherheit) wird nicht gedruckt.
+- Fassungen: je Kraft-Einheit eine Seite pro Ort und Inhalt; Wochentage aus dem ursprünglichen Termin; Gewicht aus
+  `prescriptionForDisplay()` mit Progression **und Gewichtsstufen des Orts** (B8), sonst leer.
+- Block: der laufende bzw. nächste Block zum Stichtag (`blockWeekFor`), sonst der letzte.
+
+**Abweichungen (begründet)**
+
+1. **Plan-Hinweise:** gedruckt werden nur die Gerätegründe `exercises_substituted`, `exercises_removed`,
+   `no_pull_exercise`, `location_mismatch` (wörtlich §5 Punkt 5). Hinweise wie `endurance_walk` oder
+   `week_total_capped` hängen an der Startgruppe (Gesundheit/Alter) und entfallen deshalb.
+2. **Mitschreib-Spalten:** Zod erlaubt 0–4 hochkant und bis 8 nur mit `landscape: true` (§5 „Querformat, wenn mehr
+   als 4 Spalten“, §10 Frage 2) statt starr 0–4 wie in §6.
+3. **B1-Test „bis auf die Übungen identisch“:** gilt wörtlich für Fortgeschrittene. Bei Einsteigern liegt die
+   Erholungswoche mit Flag nach 4 statt 5 Wochen (`DELOAD_SCHEDULE`), damit ändern sich Zeitraum und Wochenzeilen.
+   Das ist Trainingsinhalt wie die Übungen und lässt sich ohne falschen Plan nicht verbergen; Codes, Texte und
+   Aufbau bleiben gleich (eigener Test). Wächter: OK (Rhythmus 4 gilt auch für Fortgeschrittene, Level steht nicht im PDF).
+4. **Tabellen-Titel** als Absatz bzw. Überschrift (`captionLevel`) mit `aria-labelledby` statt `<caption>`: Chrome bricht Tabellen mit `<caption>` auf
+   Querformat-Seiten unnötig auf eine neue Seite um (im Test nachgestellt).
+5. **Tabellen in Archivo** (leicht schmal, eingebettet) statt Systemschrift: gleiche Spaltenbreiten auf allen Geräten;
+   Fließtext bleibt Systemschrift.
+6. Querformat-Seiten nutzen eine benannte Seite (`@page quer`). Ob iOS/Android-`printAsync` gemischte Ausrichtung
+   druckt, wird in P4 geprüft (sonst ganzes Dokument quer bzw. Querformat-Option nur im Web).
+7. **Signatur:** `buildTrainingPlanDocument(plan, sessions, display, progress, options)` bekommt den
+   Anzeige-Kontext (aktuelle `rules`, `previousStartGroup`, `library`, `profiles` je Ort) statt nur `library` – sonst
+   würde das PDF lockerer drucken als die App. In P3 ist `previousStartGroup` **immer** `planStartGroup()` (§6).
+
+**Wächter-Prüfung P1+P2 – Auflagen umgesetzt**
+
+| Befund                                      | Umsetzung                                                                                                                                                                                                                                                                                                                                                                                                                                    |
+| ------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| S1 Ort bei „Tage egal“ mit Studio + Zuhause | `sessionLocation(session, schedule, { library, homeProfile })`: mehrdeutig → Ort aus der Fassung (Übung zu Hause nicht machbar → Studio, sonst Zuhause). Gilt auch in der App („Heute“). Tests in `view.test.ts` und `training-plan-document.test.ts`. Rest: Haben beide Fassungen denselben Inhalt, heißt sie „Zuhause“ (vorsichtigere Heim-Gewichtsstufen). Sauber wäre der gespeicherte Ort je Einheit (Migration) – offene Verbesserung. |
+| S2 Gewicht nach Belastungsart               | Zelle `load.bodyweight` / `load.band` / `load.none`; Hinweis, Anleitung und Legende ohne „Startgewicht“/„Gewicht“, wenn keine Gewichtsübung (`hasWeight`).                                                                                                                                                                                                                                                                                   |
+| S3 doppelte Überschrift                     | Tabellentitel mit `captionLevel: 2` wird selbst zur `h2` (mit `aria-labelledby`), keine eigene Überschrift mehr.                                                                                                                                                                                                                                                                                                                             |
+| S4 Doku                                     | §6 und Abweichung 7.                                                                                                                                                                                                                                                                                                                                                                                                                         |
+| K1, K3–K8                                   | Zeilen-Codes im Einsteiger-Test; Tabelle im Scroll-Rahmen statt `display:block`; `\p{Cf}` ausgeschlossen (Name und Inhalte); Dokument-Schema prüft „>4 Spalten nur quer“; Legende mit `hasRestDay`; neutraler Hinweis `session.noExercises` statt leerer Tabelle; tote Testzeilen entfernt.                                                                                                                                                  |
+| K10                                         | `pnpm install` ausgeführt; `node-linker=hoisted` → `tsx` liegt unter `node_modules/.bin` im Hauptordner.                                                                                                                                                                                                                                                                                                                                     |
+
+**Pflichtpunkte für P3** (aus der Wächter-Prüfung):
+
+- **K2:** Playwright-Test für die Druckansicht: Höhe jeder `section.page` ≤ 297 mm (hochkant) bzw. ≤ 210 mm (quer)
+  für alle Beispiele plus einen Extremfall (8 Übungen, lange Namen, Supersatz + „ersetzt“, 600 Zeichen Aufwärmen).
+- **K9:** `previousStartGroup` in der App immer aus `planStartGroup()` (nicht aus den aktuellen Regeln wie in den
+  CI-Beispielen).
+
+**Offen für P3/P4:** App-Knopf, Hinweis-Dialog bei `uses_health_data`, Web-Druckansicht-Route mit `window.print()`
+und Playwright-Test; `expo-print` (P4). Seiten mit sehr vielen getauschten Übungen können in Ausnahmefällen über
+eine A4-Seite laufen (dann fehlt auf der ersten Teilseite die Fußzeile) – Beispiele in CI bleiben auf je einer Seite.

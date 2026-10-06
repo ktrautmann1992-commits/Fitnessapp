@@ -813,3 +813,18 @@ export const WEIGHT_CONFIRM_LIMITS = {
  * PRODUKTENTSCHEIDUNG, fachliche Prüfung vor Veröffentlichung.
  */
 export const RETURN_AFTER_PAUSE = { pauseDays: 28, loadFactor: 0.9, rpeReduction: 1 } as const;
+
+/**
+ * Trainingsplan als PDF (docs/PLAN-PDF-EXPORT.md §5, Wächter B9): A4 hochkant ist schmal – höchstens 4
+ * Mitschreib-Spalten; mehr (bis 8, „mehr Wochen“) nur auf Einheiten-Seiten im Querformat. Standard: 4 hochkant
+ * (§10 Frage 2). Zeilen je Tabelle so, dass eine Seite bei Mindestschrift 10 pt nicht überläuft. Name auf dem
+ * Deckblatt höchstens 60 Zeichen. Quelle: PRODUKTENTSCHEIDUNG (Wächter-Auflage B9), Seitenmaße DIN EN ISO 216.
+ */
+export const PRINT_EXPORT = {
+  defaultLogColumns: 4,
+  maxLogColumnsPortrait: 4,
+  maxLogColumnsLandscape: 8,
+  weekRowsPerPage: 10,
+  enduranceRowsPerPage: 20,
+  nameMaxLength: 60,
+} as const;

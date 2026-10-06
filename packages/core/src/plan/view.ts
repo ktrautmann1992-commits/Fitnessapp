@@ -108,28 +108,47 @@ export function exerciseMark(
     : 'adjusted';
 }
 
+/** Zum Auflösen eines mehrdeutigen Orts: Übungs-Merkmale und Geräte zu Hause. */
+export interface SessionLocationContext {
+  readonly library: ReadonlyMap<string, Exercise> | null;
+  readonly homeProfile?: Pick<EquipmentProfile, 'available'>;
+}
+
 /**
- * Ort einer gespeicherten Kraft-Einheit (für den Ersatz in der Anzeige): bei festen Tagen die Art des
- * ursprünglichen Wochentags; sonst (Tage egal, unbekannt) „zu Hause“ – die Heim-Geräte sind immer auch im Studio
- * vorhanden, ein Ersatz ist damit an beiden Orten machbar.
+ * Ort einer gespeicherten Kraft-Einheit (für Ersatz, Gewichtsstufen und Druck): bei festen Tagen die Art des
+ * ursprünglichen Wochentags; bei nur einem Kraft-Ort dieser Ort.
+ * Mehrdeutig („Tage egal“ mit Studio UND Zuhause, verschobener Tag ohne Eintrag): Der Ort wird nicht gespeichert,
+ * darum aus der Fassung abgeleitet (PDF-Wächter S1) – ist eine Übung mit den Heim-Geräten nicht machbar, ist es die
+ * Studio-Fassung; sonst „zu Hause“ (die Heim-Geräte sind immer auch im Studio vorhanden, Ersatz an beiden Orten
+ * machbar; bei gleichem Inhalt beider Fassungen gelten die vorsichtigeren Heim-Gewichtsstufen). Ohne Kontext bzw.
+ * ohne Bibliothek: „zu Hause“.
  */
 export function sessionLocation(
-  session: Pick<StoredSession, 'kind' | 'scheduled_on' | 'original_date'>,
+  session: Pick<StoredSession, 'kind' | 'scheduled_on' | 'original_date'> & {
+    readonly exercises?: StoredSession['exercises'];
+  },
   schedule: TrainingSchedule | null,
+  ctx?: SessionLocationContext,
 ): EquipmentLocation {
-  if (schedule?.mode === 'fixed') {
-    const weekday = isoWeekday(session.original_date ?? session.scheduled_on);
-    const slot = schedule.slots.find((s) => s.weekday === weekday && isStrengthKind(s.kind));
-    if (slot) return locationOfKind(slot.kind);
+  if (schedule) {
+    if (schedule.mode === 'fixed') {
+      const weekday = isoWeekday(session.original_date ?? session.scheduled_on);
+      const slot = schedule.slots.find((s) => s.weekday === weekday && isStrengthKind(s.kind));
+      if (slot) return locationOfKind(slot.kind);
+    }
     const kinds = new Set(
       schedule.slots.filter((s) => isStrengthKind(s.kind)).map((s) => locationOfKind(s.kind)),
     );
     if (kinds.size === 1) return [...kinds][0] as EquipmentLocation;
-  } else if (schedule) {
-    const kinds = new Set(
-      schedule.slots.filter((s) => isStrengthKind(s.kind)).map((s) => locationOfKind(s.kind)),
-    );
-    if (kinds.size === 1) return [...kinds][0] as EquipmentLocation;
+  }
+  const library = ctx?.library;
+  const home = ctx?.homeProfile;
+  if (library && home && session.exercises && session.exercises.length > 0) {
+    const needsGym = session.exercises.some((e) => {
+      const exercise = library.get(e.exercise_id);
+      return exercise !== undefined && !isExerciseFeasible(exercise, home);
+    });
+    if (needsGym) return 'gym';
   }
   return 'home';
 }
