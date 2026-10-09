@@ -36,6 +36,7 @@ export function SessionCard({
   context,
   heading,
   targets,
+  onOpenExercise,
 }: {
   /** Gespeicherte Einheit (vor den aktuellen Sicherheitsregeln). */
   original: StoredSession;
@@ -50,6 +51,8 @@ export function SessionCard({
    * Dosierung aus dem Plan („3 × 10 mit 22,5 kg je Hantel“) und zeigt Hinweise der Progression.
    */
   targets?: readonly (readonly string[] | null)[];
+  /** Übungs-Glossar (Etappe G1): Übungsname als Link zur Anleitung. */
+  onOpenExercise?: (exerciseId: string) => void;
 }) {
   const theme = useThemeColors();
   const session = shown.session;
@@ -85,9 +88,29 @@ export function SessionCard({
                 style={[styles.exercise, { borderColor: theme.border }]}
                 testID="plan-exercise"
               >
-                <Text style={[styles.exerciseName, { color: theme.text }]}>
-                  {exercise.order_no}. {exercise.exercise_name_de}
-                </Text>
+                {onOpenExercise ? (
+                  <Pressable
+                    accessibilityRole="link"
+                    accessibilityLabel={`${exercise.order_no}. ${exercise.exercise_name_de}`}
+                    accessibilityHint={t.glossary.openGuideHint}
+                    onPress={() => onOpenExercise(exercise.exercise_id)}
+                    testID="plan-exercise-link"
+                    style={({ pressed }) => [styles.exerciseLink, { opacity: pressed ? 0.8 : 1 }]}
+                  >
+                    <Text
+                      style={[
+                        styles.exerciseName,
+                        { color: theme.link, textDecorationLine: 'underline' },
+                      ]}
+                    >
+                      {exercise.order_no}. {exercise.exercise_name_de}
+                    </Text>
+                  </Pressable>
+                ) : (
+                  <Text style={[styles.exerciseName, { color: theme.text }]}>
+                    {exercise.order_no}. {exercise.exercise_name_de}
+                  </Text>
+                )}
                 {mark === 'equipment_swap' ? <Body muted>{t.plan.substituted}</Body> : null}
                 {mark === 'adjusted' ? <Body muted>{t.plan.adjusted}</Body> : null}
                 {(computed ?? exerciseLines(exercise)).map((line) => (
@@ -194,6 +217,7 @@ const styles = StyleSheet.create({
     gap: 2,
   },
   exerciseName: { fontSize: fontSize.md, fontWeight: fontWeight.semibold, lineHeight: 24 },
+  exerciseLink: { minHeight: MIN_TOUCH, justifyContent: 'center' },
   week: { gap: spacing.xs },
   day: {
     minHeight: MIN_TOUCH,

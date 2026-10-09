@@ -108,6 +108,7 @@ export function Button({
   disabled = false,
   accessibilityLabel,
   accessibilityHint,
+  expanded,
   testID,
 }: {
   label: string;
@@ -117,6 +118,8 @@ export function Button({
   disabled?: boolean;
   accessibilityLabel?: string;
   accessibilityHint?: string;
+  /** Aufklapp-Knopf: Zustand für den Bildschirmleser (aria-expanded). */
+  expanded?: boolean;
   testID?: string;
 }) {
   const theme = useThemeColors();
@@ -144,7 +147,12 @@ export function Button({
       accessibilityRole={variant === 'link' ? 'link' : 'button'}
       accessibilityLabel={accessibilityLabel ?? label}
       accessibilityHint={accessibilityHint}
-      accessibilityState={{ disabled: inactive, busy: loading }}
+      accessibilityState={{
+        disabled: inactive,
+        busy: loading,
+        ...(expanded !== undefined ? { expanded } : {}),
+      }}
+      aria-expanded={expanded}
       disabled={inactive}
       onPress={onPress}
       testID={testID}
@@ -442,11 +450,14 @@ export function Checkbox({
 export function Notice({
   tone = 'info',
   title,
+  titleAsHeader = false,
   children,
   testID,
 }: {
   tone?: 'info' | 'warning' | 'danger' | 'success';
   title?: string;
+  /** Titel als Überschrift auszeichnen (Überschriften-Navigation), z. B. „Sicherheitshinweis“. */
+  titleAsHeader?: boolean;
   children?: ReactNode;
   testID?: string;
 }) {
@@ -468,7 +479,14 @@ export function Notice({
         { backgroundColor: theme.surface, borderColor: theme.border, borderLeftColor: accent },
       ]}
     >
-      {title ? <Text style={[styles.noticeTitle, { color: theme.text }]}>{title}</Text> : null}
+      {title ? (
+        <Text
+          accessibilityRole={titleAsHeader ? 'header' : undefined}
+          style={[styles.noticeTitle, { color: theme.text }]}
+        >
+          {title}
+        </Text>
+      ) : null}
       {typeof children === 'string' ? <Body>{children}</Body> : children}
     </View>
   );

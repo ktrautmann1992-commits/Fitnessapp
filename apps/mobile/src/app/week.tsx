@@ -176,6 +176,12 @@ export default function WeekScreen() {
         variant="secondary"
         onPress={() => router.push('/history' as Href)}
       />
+      <Button
+        label={t.glossary.allExercises}
+        variant="secondary"
+        onPress={() => router.push('/uebungen' as Href)}
+        testID="week-glossary"
+      />
     </Screen>
   );
 }

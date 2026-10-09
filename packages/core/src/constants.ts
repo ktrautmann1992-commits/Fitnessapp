@@ -873,3 +873,10 @@ export const PRINT_EXPORT = {
     paragraphGapMm: 3,
   },
 } as const;
+
+/**
+ * Übungs-Glossar (docs/PLAN-UEBUNGEN-GLOSSAR-TAUSCH.md 7.1/8.1, Etappe G1): Suchwort höchstens 100 Zeichen (längere
+ * Eingaben werden gekürzt – kein Übungsname ist annähernd so lang); höchstens 6 „Ähnliche Übungen“ (gleich viele wie
+ * später die Tausch-Vorschläge, SWAP_RULES.maxCandidates). Quelle: PRODUKTENTSCHEIDUNG (Lesbarkeit am Handy).
+ */
+export const GLOSSARY_LIMITS = { queryMaxChars: 100, similarMax: 6 } as const;

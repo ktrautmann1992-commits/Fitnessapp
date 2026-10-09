@@ -1,7 +1,7 @@
-import { cardioSpeed, logEditability } from '@fitnessapp/core';
+import { cardioSpeed, findGlossaryExercise, logEditability } from '@fitnessapp/core';
 import { fontSize, fontWeight, spacing } from '@fitnessapp/ui';
 import { Redirect, useLocalSearchParams, useRouter, type Href } from 'expo-router';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { StyleSheet, Text, View } from 'react-native';
 
 import { ConfirmDialog, Screen } from '@/components/screen';
@@ -34,6 +34,11 @@ export default function LogEntryScreen() {
   const [dialogError, setDialogError] = useState<string>();
   const [message, setMessage] = useState<{ tone: 'success' | 'warning'; text: string }>();
   const goBack = () => (router.canGoBack() ? router.back() : router.replace('/history' as Href));
+  const { ensureLibrary, library } = app;
+  useEffect(() => {
+    void ensureLibrary();
+  }, [ensureLibrary]);
+  const lib = library.kind === 'ready' ? library.library : null;
 
   if (app.status.kind === 'loading') {
     return (
@@ -163,6 +168,17 @@ export default function LogEntryScreen() {
                 </Body>
               );
             })}
+            {findGlossaryExercise(lib, row.exercise_id) ? (
+              <Button
+                label={t.glossary.guide}
+                variant="link"
+                accessibilityLabel={t.glossary.guideA11y(row.exercise_name_de)}
+                onPress={() =>
+                  router.push(`/uebungen/${encodeURIComponent(row.exercise_id)}` as Href)
+                }
+                testID="log-exercise-guide"
+              />
+            ) : null}
             {row.status !== 'skipped' ? (
               <Button
                 label={t.logEntry.exerciseHistory}
