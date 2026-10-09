@@ -1,7 +1,8 @@
 import {
-  type EquipmentLocation,
+  type ActivePlanRows,
+  activePlan,
+  allSessions,
   equipmentIdSchema,
-  equipmentProfile,
   experienceLevelSchema,
   type GeneratePlanResult,
   generateTrainingPlan,
@@ -18,22 +19,22 @@ import {
   planSafetyRules,
   planStartGroup,
   type PlanUpdateOffer,
+  planSnapshot,
   planUpdateOffer,
+  profilesFor,
   rescheduleSession,
   type RescheduleResult,
   type SavePlanSession,
   scheduleFromSlots,
-  type StoredSession,
   toAppendBlockPayload,
   dropPastSessions,
-  savePlanInputsSchema,
   planInputsSchema,
   planInputsSnapshot,
 } from '@fitnessapp/core';
 
 import { healthConsentStatus } from '../state/flow';
 import type { ConsentVersions } from './mapping';
-import type { PlannedSessionRow, UserPlanRow, UserRows } from './types';
+import type { UserPlanRow, UserRows } from './types';
 
 /**
  * Trainingsplan in der App (docs/PLAN-PHASE-3.md Abschnitt 10): Angaben aus den Zeilen → Plan-Engine
@@ -147,72 +148,14 @@ export function generatePlanFromRows(
 // Gespeicherter Plan
 // ---------------------------------------------------------------------------------------------------------
 
-export interface ActivePlan {
-  plan: UserPlanRow;
-  /** Einheiten des aktiven Plans (nach Datum), Übungen nach order_no. */
-  sessions: StoredSession[];
-}
+/** Aktiver Plan: Zeile aus user_plans plus Einheiten (nach Datum), Übungen nach order_no. */
+export type ActivePlan = ActivePlanRows<UserPlanRow>;
 
-function toStoredSession(rows: UserRows, s: PlannedSessionRow): StoredSession {
-  return {
-    id: s.id,
-    status: s.status,
-    original_date: s.original_date,
-    block_no: s.block_no,
-    week_no: s.week_no,
-    is_intro_week: s.is_intro_week,
-    is_deload: s.is_deload,
-    kind: s.kind,
-    template_day_index: s.template_day_index,
-    scheduled_on: s.scheduled_on,
-    name_de: s.name_de,
-    focus: s.focus,
-    endurance_modality: s.endurance_modality,
-    effort_target: s.effort_target,
-    estimated_minutes: s.estimated_minutes,
-    warmup_de: s.warmup_de,
-    cooldown_de: s.cooldown_de,
-    exercises: rows.plannedExercises
-      .filter((e) => e.session_id === s.id)
-      .sort((a, b) => a.order_no - b.order_no)
-      .map((e) => ({
-        order_no: e.order_no,
-        exercise_id: e.exercise_id,
-        source_exercise_id: e.source_exercise_id,
-        exercise_name_de: e.exercise_name_de,
-        sets: e.sets,
-        reps_min: e.reps_min,
-        reps_max: e.reps_max,
-        duration_s: e.duration_s,
-        rest_s: e.rest_s,
-        rpe_target: e.rpe_target,
-        superset_group: e.superset_group,
-        notes_de: e.notes_de,
-        target_weight_kg: e.target_weight_kg,
-      })),
-  };
-}
-
-const byDate = (a: { scheduled_on: string }, b: { scheduled_on: string }) =>
-  a.scheduled_on.localeCompare(b.scheduled_on);
-
-export function activePlan(rows: UserRows): ActivePlan | null {
-  const plan = rows.plans.find((p) => p.status === 'active');
-  if (!plan) return null;
-  return {
-    plan,
-    sessions: rows.plannedSessions
-      .filter((s) => s.plan_id === plan.id)
-      .sort(byDate)
-      .map((s) => toStoredSession(rows, s)),
-  };
-}
-
-/** Angaben, mit denen der Plan erstellt wurde (user_plans.inputs); null = unlesbar. */
-export function planSnapshot(plan: UserPlanRow): PlanInputsSnapshot | null {
-  const parsed = savePlanInputsSchema.safeParse(plan.inputs);
-  return parsed.success ? (parsed.data as PlanInputsSnapshot) : null;
-}
+/**
+ * Abbildung der Plan-Zeilen auf die Engine (aktiver Plan, alle Einheiten, Schnappschuss der Angaben, Geräte-Profile)
+ * liegt seit Etappe A0 (docs/PLAN-PHASE-4B.md 5.1) in packages/core/src/plan/rows.ts – hier nur weitergereicht.
+ */
+export { activePlan, allSessions, planSnapshot, profilesFor };
 
 /** Aktueller Stand der Angaben im Format von user_plans.inputs (für planNeedsUpdate), Zod an der Grenze. */
 export function currentSnapshot(
@@ -261,20 +204,6 @@ export function startGroupOf(active: ActivePlan, birthDate: string) {
   return planStartGroup(active.plan, birthDate);
 }
 
-/** Geräte-Profile je Ort aus den Angaben des Plans (Ersatz in Anzeige und Folgeblock). */
-export function profilesFor(snapshot: PlanInputsSnapshot | null) {
-  const home = (snapshot?.homeEquipment ?? []).flatMap((item) => {
-    const id = equipmentIdSchema.safeParse(item.equipmentId);
-    return id.success
-      ? [{ equipmentId: id.data, weightsKg: item.weightsKg, barKg: item.barKg }]
-      : [];
-  });
-  return new Map<EquipmentLocation, ReturnType<typeof equipmentProfile>>([
-    ['gym', equipmentProfile('gym', home)],
-    ['home', equipmentProfile('home', home)],
-  ]);
-}
-
 /**
  * Folgeblock (Abschnitt 5.10) aus dem SCHNAPPSCHUSS des Plans plus den AKTUELLEN Sicherheitsregeln. Die
  * Startgruppe beim Erstellen kommt ausschließlich aus planStartGroup() (nach dem Neuladen gibt es keine
@@ -317,11 +246,6 @@ export function nextBlockFromRows(
   });
   const upcoming = dropPastSessions(sessions, today);
   return upcoming.length > 0 ? toAppendBlockPayload(upcoming) : null;
-}
-
-/** Alle Einheiten der Person (auch früherer Pläne) – für „nie stapeln“ beim Verschieben. */
-export function allSessions(rows: UserRows): StoredSession[] {
-  return [...rows.plannedSessions].sort(byDate).map((s) => toStoredSession(rows, s));
 }
 
 /** Einheit verschieben (5.11): nächster freier Tag dieser ISO-Woche ab heute, sonst streichen. */
