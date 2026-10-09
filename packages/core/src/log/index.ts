@@ -4,6 +4,7 @@ export * from './harder-variant';
 export * from './plausibility';
 export * from './progression';
 export * from './rest-timer';
+export * from './rows';
 export * from './schemas';
 export * from './summary';
 export * from './types';

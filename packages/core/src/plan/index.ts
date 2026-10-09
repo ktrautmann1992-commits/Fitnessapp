@@ -10,6 +10,7 @@ export * from './loads';
 export * from './match';
 export * from './payload';
 export * from './reschedule';
+export * from './rows';
 export * from './safety';
 export * from './schedule';
 export * from './start-group';
