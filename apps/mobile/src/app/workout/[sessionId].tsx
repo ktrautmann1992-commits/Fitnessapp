@@ -4,6 +4,7 @@ import {
   cardioSpeed,
   cardioDurationS,
   codePointLength,
+  findGlossaryExercise,
   ENDURANCE_MODALITIES,
   type EnduranceModality,
   isPlausibleTargetWeight,
@@ -257,6 +258,11 @@ export default function WorkoutScreen() {
   const notesLength = codePointLength(current.notes);
   const notesTooLong = notesLength > SESSION_LOG_LIMITS.notesMaxChars;
   const canSwitch = !current.editing && view !== null;
+  /** „So geht's“ (Etappe G1): Schritte und Sicherheitshinweis aus der Bibliothek, auch offline (Zwischenspeicher). */
+  const guideFor = (exerciseId: string) => {
+    const exercise = findGlossaryExercise(lib, exerciseId);
+    return exercise ? { steps: exercise.steps_de, safetyNote: exercise.safety_note_de } : null;
+  };
 
   async function save() {
     if (cardioResult && !cardioResult.ok) {
@@ -409,6 +415,12 @@ export default function WorkoutScreen() {
             update(chooseAlternative(current, index, target, now()));
             setAlternativesFor(null);
           }}
+          guide={guideFor(currentTarget(exercise).exerciseId)}
+          onOpenGuide={() =>
+            router.push(
+              `/uebungen/${encodeURIComponent(currentTarget(exercise).exerciseId)}` as Href,
+            )
+          }
           onSkip={(skipped) => update(setSkipped(current, index, skipped, now()))}
           onSet={(setIndex, patch) => changeSet(index, setIndex, patch)}
           onAddSet={() =>
@@ -513,6 +525,8 @@ function ExerciseCard({
   onToggleAlternatives,
   alternatives,
   onChooseAlternative,
+  guide,
+  onOpenGuide,
   onSkip,
   onSet,
   onAddSet,
@@ -526,6 +540,9 @@ function ExerciseCard({
   onToggleAlternatives: () => void;
   alternatives: readonly { id: string; name_de: string }[];
   onChooseAlternative: (alternativeId: string | null) => void;
+  /** Kurz-Anleitung zum Aufklappen (ohne den Trainingsmodus zu verlassen); null = Bibliothek fehlt. */
+  guide: { steps: readonly string[]; safetyNote: string } | null;
+  onOpenGuide: () => void;
   onSkip: (skipped: boolean) => void;
   onSet: (setIndex: number, patch: Partial<DraftExercise['sets'][number]>) => void;
   onAddSet: () => void;
@@ -540,6 +557,7 @@ function ExerciseCard({
   } | null;
 }) {
   const theme = useThemeColors();
+  const [guideOpen, setGuideOpen] = useState(false);
   const target = currentTarget(exercise);
   const perPiece = perPieceText(target);
   const warnings = exercise.sets.flatMap((set) => (set.done ? warningsForSet(exercise, set) : []));
@@ -560,6 +578,48 @@ function ExerciseCard({
         </Heading>
         {exercise.alternative ? (
           <Body muted>{t.workout.alternativeOf(exercise.planned.nameDe)}</Body>
+        ) : null}
+        {guide ? (
+          // Aufklappen statt Navigieren: Pausentimer und Eingaben bleiben, wo sie sind (Plan 8.1).
+          <View style={styles.guide}>
+            <Button
+              label={t.glossary.howToShow}
+              variant="secondary"
+              expanded={guideOpen}
+              accessibilityLabel={t.glossary.howToA11y(target.nameDe)}
+              onPress={() => setGuideOpen((open) => !open)}
+              testID={`workout-howto-${index}`}
+            />
+            {guideOpen ? (
+              <View style={styles.guide} testID={`workout-howto-panel-${index}`}>
+                {guide.steps.map((step, stepIndex) => (
+                  <View
+                    key={`${stepIndex}-${step}`}
+                    style={styles.guideStep}
+                    accessible
+                    accessibilityLabel={t.glossary.stepA11y(
+                      stepIndex + 1,
+                      guide.steps.length,
+                      step,
+                    )}
+                  >
+                    <Body style={styles.guideNo}>{stepIndex + 1}.</Body>
+                    <Body style={styles.guideText}>{step}</Body>
+                  </View>
+                ))}
+                <Notice title={t.glossary.safetyTitle} titleAsHeader>
+                  <Body>{guide.safetyNote}</Body>
+                </Notice>
+                <Button
+                  label={t.glossary.fullGuide}
+                  variant="link"
+                  accessibilityLabel={t.glossary.guideA11y(target.nameDe)}
+                  onPress={onOpenGuide}
+                  testID={`workout-guide-${index}`}
+                />
+              </View>
+            ) : null}
+          </View>
         ) : null}
         {exercise.skipped ? (
           <Notice tone="info" testID={`workout-skipped-${index}`}>
@@ -926,4 +986,8 @@ const styles = StyleSheet.create({
   actions: { gap: 8 },
   alternatives: { gap: 8 },
   durationField: { flex: 1, minWidth: 120 },
+  guide: { gap: 6 },
+  guideStep: { flexDirection: 'row', gap: 8 },
+  guideNo: { fontWeight: '700', minWidth: 24 },
+  guideText: { flex: 1 },
 });

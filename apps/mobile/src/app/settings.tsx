@@ -7,7 +7,7 @@ import {
   nextMeasurementDue,
   type ConsentType,
 } from '@fitnessapp/core';
-import { Redirect, useRouter } from 'expo-router';
+import { Redirect, useRouter, type Href } from 'expo-router';
 import { useMemo, useState } from 'react';
 import { View } from 'react-native';
 
@@ -311,6 +311,17 @@ export default function SettingsScreen() {
             setDialogError(undefined);
             setDialog('recreate');
           }}
+        />
+      </Card>
+
+      <Heading level={2}>{t.glossary.settingsTitle}</Heading>
+      <Card>
+        <Body muted>{t.glossary.settingsText}</Body>
+        <Button
+          label={t.glossary.allExercises}
+          variant="secondary"
+          onPress={() => router.push('/uebungen' as Href)}
+          testID="settings-glossary"
         />
       </Card>
 

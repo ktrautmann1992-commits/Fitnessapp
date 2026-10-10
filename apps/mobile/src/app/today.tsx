@@ -325,6 +325,12 @@ export default function TodayScreen() {
             testID="today-history"
           />
         ) : null}
+        <Button
+          label={t.glossary.allExercises}
+          variant="secondary"
+          onPress={() => router.push('/uebungen' as Href)}
+          testID="today-glossary"
+        />
         {dialogs}
       </Screen>
     );
@@ -452,6 +458,9 @@ export default function TodayScreen() {
               selected === today ? t.plan.todaySession : t.plan.sessionOn(dayLabel(selected))
             }
             {...(targets && selectedSession.status === 'planned' ? { targets } : {})}
+            onOpenExercise={(exerciseId) =>
+              router.push(`/uebungen/${encodeURIComponent(exerciseId)}` as Href)
+            }
           />
           {selectedSession.status === 'completed' ? (
             <Notice tone="success" testID="plan-completed">
@@ -552,6 +561,12 @@ export default function TodayScreen() {
           />
         </View>
       </View>
+      <Button
+        label={t.glossary.allExercises}
+        variant="secondary"
+        onPress={() => router.push('/uebungen' as Href)}
+        testID="today-glossary"
+      />
 
       <Card>
         <Body muted>{planTitleText(plan)}</Body>

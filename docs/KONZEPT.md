@@ -204,6 +204,17 @@ und -km, Blättern; nachgeholte Einheiten am tatsächlichen Datum), **Verlauf** 
 wählen – kein Teilen-Dialog). Regeln in `packages/core/src/log/summary.ts` und `packages/core/src/export/data-export.ts`.
 Übungsvideos/Animationen und automatische Einträge aus Strecken/Wearables kommen später (Phase 8/10).
 
+**Übungs-Glossar (`docs/PLAN-UEBUNGEN-GLOSSAR-TAUSCH.md`, Etappe G1, umgesetzt):** Seite „Übungen“ (`app/uebungen/`) mit
+Suche (Name, andere Namen, englischer Name, Beschreibung; Umlaute und Bindestriche egal) und Filtern (Bereich,
+Ausrüstung: ohne Geräte / mit meinen Geräten zu Hause / Studio mit Geräten, Schwierigkeit); Detailseite mit
+Beschreibung, „So geht's“-Schritten, Tipps, häufigen Fehlern, Sicherheitshinweis, ähnlichen Übungen (erlaubt, machbar,
+gleiches Muster, nicht schwerer) und Link zum eigenen Verlauf. Erreichbar über den Übungsnamen auf „Heute“, „Alle
+Übungen“ (Heute/Woche/Einstellungen), aufklappbares „So geht's“ im Trainingsmodus (ohne den Bildschirm zu verlassen),
+Verlauf je Übung und Eintrag (auch archivierte Übungen). Nur Text aus den vorhandenen Feldern – Bilder/Videos folgen
+(G2). Ist eine Übung nach den aktuellen Sicherheitsregeln nicht für den Plan vorgesehen, steht nur ein neutraler Satz
+ohne Grund da. Entwürfe tragen im Testmodus „Testinhalt – noch nicht fachlich geprüft“; live nur freigegebene Inhalte.
+Regeln in `packages/core/src/content/glossary.ts`, Grenzen in `GLOSSARY_LIMITS`.
+
 ## 6. Ernährungs-Engine (`packages/core/nutrition`)
 - Grundumsatz: Mifflin-St Jeor (bzw. Katch-McArdle, wenn Körperfett bekannt)
 - Gesamtumsatz: Grundumsatz × Alltagsfaktor + Trainingsenergie der geplanten Einheiten (tagesgenau)

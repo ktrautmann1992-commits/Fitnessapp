@@ -1,6 +1,6 @@
-import { exerciseHistory } from '@fitnessapp/core';
+import { exerciseHistory, findGlossaryExercise } from '@fitnessapp/core';
 import { Redirect, useLocalSearchParams, useRouter, type Href } from 'expo-router';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { View } from 'react-native';
 
 import { Screen } from '@/components/screen';
@@ -11,6 +11,7 @@ import { t } from '@/i18n';
 import { errorText } from '@/lib/error-text';
 import { bestSetText } from '@/lib/history-format';
 import { dayLabel } from '@/lib/plan-format';
+import { decodeRouteParam } from '@/lib/route-param';
 import { useApp } from '@/state/app-state';
 import { resolveEntryRoute } from '@/state/flow';
 
@@ -22,11 +23,15 @@ import { resolveEntryRoute } from '@/state/flow';
  */
 export default function ExerciseHistoryScreen() {
   const params = useLocalSearchParams<{ exerciseId: string }>();
-  const exerciseId = decodeURIComponent(String(params.exerciseId ?? ''));
+  const exerciseId = decodeRouteParam(params.exerciseId);
   const router = useRouter();
   const app = useApp();
   const [loadingOlder, setLoadingOlder] = useState(false);
   const [error, setError] = useState<string>();
+  const { ensureLibrary, library } = app;
+  useEffect(() => {
+    void ensureLibrary();
+  }, [ensureLibrary]);
 
   if (app.status.kind === 'loading') {
     return (
@@ -56,6 +61,9 @@ export default function ExerciseHistoryScreen() {
   }
   const entries = exerciseHistory(exerciseId, logEntriesFromRows(rows));
   const name = historyExercises(rows).find((e) => e.exerciseId === exerciseId)?.name ?? null;
+  // Anleitung im Glossar – auch archivierte Übungen (displayExercises, Etappe G1).
+  const hasGuide =
+    findGlossaryExercise(library.kind === 'ready' ? library.library : null, exerciseId) !== null;
 
   return (
     <Screen
@@ -69,6 +77,15 @@ export default function ExerciseHistoryScreen() {
         />
       }
     >
+      {hasGuide ? (
+        <Button
+          label={t.glossary.guide}
+          variant="link"
+          accessibilityLabel={t.glossary.guideA11y(name ?? exerciseId)}
+          onPress={() => router.push(`/uebungen/${encodeURIComponent(exerciseId)}` as Href)}
+          testID="exercise-history-guide"
+        />
+      ) : null}
       {entries.length === 0 ? (
         <Card>
           <Body>{t.history.exerciseEmpty}</Body>
