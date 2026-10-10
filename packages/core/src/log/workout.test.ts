@@ -2,10 +2,13 @@ import { describe, expect, it } from 'vitest';
 
 import type { PlannedExerciseDraft } from '../plan/adapt';
 import { equipmentProfile } from '../plan/equipment-profile';
+import { swapCandidatesFor } from '../plan/preferences';
 import { planSafetyRules } from '../plan/safety';
+import { pref } from '../plan/swap-test-helpers';
 import { FULL_HOME, MONDAY, person, repoLibrary } from '../plan/test-library';
-import type { StoredSession } from '../plan/view';
+import { prepareSessionForDisplay, type StoredSession } from '../plan/view';
 import { sessionLogPayloadSchema } from './schemas';
+import type { Exercise } from '../content/schemas';
 import type { ExerciseLogEntry } from './types';
 import {
   adjustReps,
@@ -140,6 +143,7 @@ function context(overrides: Partial<PlanExerciseContext> = {}): PlanExerciseCont
     isDeload: false,
     weekSessions: [],
     weeklySetMax: 14,
+    swap: { swapRules: healthy },
     ...overrides,
   };
 }
@@ -202,6 +206,36 @@ describe('extraSetAllowed (V9)', () => {
     // Gestrichene Einheiten zählen nicht.
     const skipped = week.map((s) => ({ ...s, status: 'skipped' as const }));
     expect(extraSetAllowed(goblet, skipped, library, 1)).toBe(true);
+  });
+
+  it('Pflicht-Test 10: gemischte Woche, Präferenz nur zu Hause → nur die Heim-Einheit nach Präferenz gezählt', () => {
+    const homeSession = session([planned('tuerrahmen-rudern', { sets: 4 })], { id: 'h' });
+    const gymSession = session([planned('tuerrahmen-rudern', { sets: 4 })], { id: 'g' });
+    const mixed = [homeSession, gymSession];
+    const rowing = ex('kurzhantelrudern-einarmig');
+    const layer = (prefs: ReturnType<typeof pref>[]) => ({
+      preferences: prefs,
+      locations: new Map([
+        ['h', { location: 'home' as const, ambiguous: false }],
+        ['g', { location: 'gym' as const, ambiguous: false }],
+      ]),
+      profiles: new Map([
+        ['home' as const, homeNothing],
+        ['gym' as const, gym],
+      ]),
+      library,
+      lookup: library,
+      swapRules: healthy,
+    });
+    // Ohne Präferenzen identisch zu vorher: 2 × 4 Sätze oberer Rücken, +1 > 6.
+    expect(extraSetAllowed(rowing, mixed, library, 6)).toBe(false);
+    expect(extraSetAllowed(rowing, mixed, library, 6, layer([]))).toBe(false);
+    // „Hier nicht machbar“ zu Hause ohne Kandidat → Heim-Einheit zählt 0, Studio weiter 4.
+    const notFeasible = layer([pref('tuerrahmen-rudern', 'home', 'not_feasible')]);
+    expect(extraSetAllowed(rowing, mixed, library, 6, notFeasible)).toBe(true);
+    // Dieselbe Präferenz im Studio: dort gibt es einen Kandidaten (gleiches Muster) → Zählung bleibt.
+    const atGym = layer([pref('tuerrahmen-rudern', 'gym', 'not_feasible')]);
+    expect(extraSetAllowed(rowing, mixed, library, 6, atGym)).toBe(false);
   });
 });
 
@@ -327,7 +361,36 @@ describe('allowedAlternatives', () => {
       rules: healthy,
       exclude: new Set(['liegestuetz']),
     }).map((e) => e.id);
-    expect(ids).toEqual([]);
+    // Seit Etappe T1 (bewusst): auch Bibliothek mit gleichem Muster und gemeinsamem Hauptmuskel.
+    expect(ids).toEqual(['liegestuetz-erhoeht']);
+    expect(
+      allowedAlternatives(bench, {
+        library,
+        profile: homeNothing,
+        rules: healthy,
+        exclude: new Set(['liegestuetz', 'liegestuetz-erhoeht']),
+      }),
+    ).toEqual([]);
+  });
+
+  it('Etappe T1: Ausschlüsse am Ort und Schwierigkeit ≤ min(gespeichert, angezeigt)', () => {
+    const bench = ex('bankdruecken-kurzhantel');
+    const ids = allowedAlternatives(bench, {
+      library,
+      profile: gym,
+      rules: healthy,
+      preferences: [pref('liegestuetz', 'gym', 'dislike')],
+      location: 'gym',
+      harderVariantId: 'liegestuetz',
+    }).map((e) => e.id);
+    expect(ids).not.toContain('liegestuetz');
+    const easier = allowedAlternatives(ex('liegestuetz-erhoeht'), {
+      library,
+      profile: gym,
+      rules: healthy,
+      stored: ex('liegestuetz-fuesse-erhoeht'),
+    });
+    for (const alt of easier) expect(alt.difficulty).toBeLessThanOrEqual(1);
   });
 
   it('Sicherheitsregeln: gesperrte Merkmale werden nie angeboten (ab 65 kein long_supine)', () => {
@@ -535,5 +598,310 @@ describe('Neutralisieren (S1)', () => {
     expect(neutral.notes).toBe('Griffbreite eng');
     expect(sessionLogPayloadSchema.safeParse(neutral).success).toBe(true);
     expect(neutralSessionName('endurance')).toBe('Ausdauer-Einheit');
+  });
+});
+
+// ---------------------------------------------------------------------------------------------------------
+// Etappe T1 (docs/PLAN-UEBUNGEN-GLOSSAR-TAUSCH.md 4.3, 7.3, 7.4)
+// ---------------------------------------------------------------------------------------------------------
+
+/** Die Alternativen-Liste VOR Etappe T1 (unverändert kopiert) – nur für den Snapshot „vorher/nachher“. */
+function legacyAllowedAlternatives(
+  exercise: Exercise,
+  ctx: {
+    library: ReadonlyMap<string, Exercise>;
+    profile: { available: ReadonlySet<string> };
+    rules: { excludedCautionTags: readonly string[] };
+    harderVariantId?: string | null;
+  },
+): string[] {
+  const feasible = (c: Exercise) => c.equipment_ids.every((id) => ctx.profile.available.has(id));
+  const allowed = (c: Exercise) =>
+    !c.caution_tags.some((tag) => ctx.rules.excludedCautionTags.includes(tag));
+  const isTime = exercise.load_type === 'time';
+  const result: Exercise[] = [];
+  const sorted = [...exercise.alternatives].sort(
+    (a, b) => a.priority - b.priority || (a.alternative_id < b.alternative_id ? -1 : 1),
+  );
+  for (const alt of sorted) {
+    const c = ctx.library.get(alt.alternative_id);
+    if (
+      !c ||
+      c.id === exercise.id ||
+      (c.load_type === 'time') !== isTime ||
+      !feasible(c) ||
+      !allowed(c)
+    ) {
+      continue;
+    }
+    if (c.difficulty > exercise.difficulty && c.id !== ctx.harderVariantId) continue;
+    result.push(c);
+  }
+  const variant = ctx.harderVariantId ? ctx.library.get(ctx.harderVariantId) : undefined;
+  if (
+    variant &&
+    !result.some((e) => e.id === variant.id) &&
+    feasible(variant) &&
+    allowed(variant)
+  ) {
+    result.push(variant);
+  }
+  return result.map((c) => c.id);
+}
+
+describe('allowedAlternatives ≡ swapCandidates(today) (Pflicht-Test 8, Wächter S1)', () => {
+  const templateExerciseIds = [
+    ...new Set(
+      lib.templates.flatMap((t) =>
+        t.sessions.flatMap((s) => s.exercises.map((e) => e.exercise_id)),
+      ),
+    ),
+  ].sort();
+  const profiles = [
+    ['Studio', gym],
+    ['Zuhause Geräte', home],
+    ['Zuhause ohne', homeNothing],
+  ] as const;
+  const ruleSets = [
+    ['gesund', healthy],
+    [
+      'Schwangerschaft',
+      planSafetyRules(person({ healthScreening: { flags: ['pregnancy'] } }), MONDAY),
+    ],
+  ] as const;
+
+  it('über alle Übungen aller Vorlagen gleich', () => {
+    expect(templateExerciseIds.length).toBeGreaterThan(0);
+    for (const id of templateExerciseIds) {
+      for (const [, profile] of profiles) {
+        for (const [, rules] of ruleSets) {
+          const viaWrapper = allowedAlternatives(ex(id), { library, profile, rules }).map(
+            (e) => e.id,
+          );
+          const direct = swapCandidatesFor(ex(id), ex(id), {
+            library,
+            profile,
+            swapRules: rules,
+            preferences: [],
+            location: profile.location,
+            inSession: new Set(),
+            mode: 'today',
+          }).candidates.map((e) => e.id);
+          expect(viaWrapper).toEqual(direct);
+        }
+      }
+    }
+  });
+
+  it('K4: Abbildung aller Mantel-Parameter (S ≠ X, Präferenzen, Einheit, schwerere Variante, Ort)', () => {
+    const prefs = [
+      pref('liegestuetz-erhoeht', 'gym', 'dislike'),
+      pref('kniebeuge-stuhl', 'home', 'dislike'),
+    ];
+    for (const [storedId, shownId, variant] of [
+      ['bankdruecken-langhantel', 'bankdruecken-kurzhantel', 'bankdruecken-langhantel'],
+      ['kniebeuge-langhantel', 'goblet-kniebeuge', 'kniebeuge-pause'],
+      ['liegestuetz', 'liegestuetz', 'liegestuetz-fuesse-erhoeht'],
+    ] as const) {
+      for (const ambiguous of [false, true]) {
+        const viaWrapper = allowedAlternatives(ex(shownId), {
+          library,
+          profile: gym,
+          rules: healthy,
+          stored: ex(storedId),
+          exclude: new Set(['brustpresse']),
+          harderVariantId: variant,
+          preferences: prefs,
+          location: 'gym',
+          ambiguousLocation: ambiguous,
+        }).map((e) => e.id);
+        const direct = swapCandidatesFor(ex(storedId), ex(shownId), {
+          library,
+          profile: gym,
+          swapRules: healthy,
+          preferences: prefs,
+          location: 'gym',
+          ambiguousLocation: ambiguous,
+          inSession: new Set(['brustpresse']),
+          mode: 'today',
+          harderVariantId: variant,
+        }).candidates.map((e) => e.id);
+        expect(viaWrapper).toEqual(direct);
+        // Unabhängig: nie Einheit, nie Ausschluss am Ort (bei Mehrdeutigkeit beide Orte), nie S oder X selbst.
+        expect(viaWrapper).not.toContain('brustpresse');
+        expect(viaWrapper).not.toContain('liegestuetz-erhoeht');
+        if (ambiguous) expect(viaWrapper).not.toContain('kniebeuge-stuhl');
+        expect(viaWrapper).not.toContain(shownId);
+      }
+    }
+  });
+
+  it('bewusste Änderung im Trainingsmodus: Alternativen vorher/nachher (Snapshot – bei Änderung im PR nennen)', () => {
+    const lines: string[] = [];
+    let unchanged = 0;
+    for (const id of templateExerciseIds) {
+      for (const [pLabel, profile] of profiles) {
+        for (const [rLabel, rules] of ruleSets) {
+          // K5: wie im Trainingsmodus mit der schwereren Variante (erste `harder`-Alternative) – Reihenfolge zählt.
+          const variant =
+            ex(id)
+              .alternatives.filter((a) => a.reason === 'harder')
+              .sort((a, b) => a.priority - b.priority)[0]?.alternative_id ?? null;
+          const before = legacyAllowedAlternatives(ex(id), {
+            library,
+            profile,
+            rules,
+            harderVariantId: variant,
+          });
+          const after = allowedAlternatives(ex(id), {
+            library,
+            profile,
+            rules,
+            harderVariantId: variant,
+          }).map((e) => e.id);
+          // Sicherheit sinkt nirgends: jeder neue Kandidat erlaubt, machbar, nicht schwerer, gleiches Muster.
+          for (const c of after.filter((x) => x !== variant).map(ex)) {
+            expect(c.caution_tags.some((t) => rules.excludedCautionTags.includes(t))).toBe(false);
+            expect(c.equipment_ids.every((e) => profile.available.has(e))).toBe(true);
+            expect(c.difficulty).toBeLessThanOrEqual(ex(id).difficulty);
+            expect(c.movement_pattern).toBe(ex(id).movement_pattern);
+          }
+          if (before.join() === after.join()) {
+            unchanged += 1;
+            continue;
+          }
+          const removed = before.filter((x) => !after.includes(x));
+          lines.push(
+            `${id} | ${pLabel} | ${rLabel}${variant ? ` | Variante ${variant}` : ''}: [${before.join(', ')}] → [${after.join(', ')}]${
+              removed.length > 0 ? ` (weg: ${removed.join(', ')})` : ''
+            }`,
+          );
+        }
+      }
+    }
+    expect({ unchanged, changed: lines }).toMatchSnapshot();
+  }, 30_000);
+});
+
+describe('Zuordnung und Trainingsmodus mit Präferenzen (Etappe T1)', () => {
+  it('alignShownExercises nutzt storedOrderNos (Präferenz-Ausblendung in der Mitte)', () => {
+    const stored = session([
+      planned('liegestuetz', { order_no: 1 }),
+      planned('tuerrahmen-rudern', { order_no: 2 }),
+      planned('kniebeuge-koerpergewicht', { order_no: 3 }),
+    ]);
+    const shown = prepareSessionForDisplay(stored, {
+      rules: healthy,
+      previousStartGroup: 'beginner',
+      library,
+      profile: homeNothing,
+      swap: {
+        swapRules: healthy,
+        preferences: [pref('tuerrahmen-rudern', 'home', 'not_feasible')],
+        location: 'home',
+      },
+    });
+    expect(shown.hiddenByPreference).toEqual(['tuerrahmen-rudern']);
+    expect(
+      alignShownExercises(stored, shown).map((a) => [a.stored.order_no, a.shown.exercise_id]),
+    ).toEqual([
+      [1, 'liegestuetz'],
+      [3, 'kniebeuge-koerpergewicht'],
+    ]);
+    // Ohne storedOrderNos (ältere Aufrufer): Vereinigung aus hidden und hiddenByPreference.
+    const legacy = { ...shown, storedOrderNos: undefined };
+    expect(alignShownExercises(stored, legacy).map((a) => a.stored.order_no)).toEqual([1, 3]);
+    const items = planWorkout(stored, shown, [stored], context({ profile: homeNothing }));
+    expect(items.map((i) => i.plannedOrderNo)).toEqual([1, 3]);
+  });
+
+  it('planWorkout: Ausschlüsse nie als Alternative, schwerere Variante mit exclude (S2)', () => {
+    const stored = session([
+      planned('kniebeuge-koerpergewicht', { order_no: 1, sets: 3, reps_min: 10, reps_max: 15 }),
+    ]);
+    const shown = prepareSessionForDisplay(stored, {
+      rules: healthy,
+      previousStartGroup: 'beginner',
+      library,
+      profile: homeNothing,
+    });
+    // Zustand am Ende des Puffers zweimal geschafft → harder_variant (wie im Test oben).
+    const done = (date: string): ExerciseLogEntry => ({
+      ...entry('kniebeuge-koerpergewicht', date, 0, 17),
+      loadType: 'bodyweight',
+      targetWeightKg: null,
+      targetReps: 17,
+      targetExtraSet: true,
+      targetSets: 4,
+      state: { weightKg: null, targetReps: 17, extraSet: true, durationS: null },
+      sets: Array.from({ length: 4 }, () => ({
+        reps: 17,
+        weightKg: null,
+        durationS: null,
+        rpe: null,
+        done: true,
+      })),
+    });
+    const base = { profile: homeNothing, entries: [done('2026-10-05'), done('2026-10-07')] };
+    const plain = planWorkout(stored, shown, [stored], context(base));
+    expect(plain[0]?.plan?.hint.harderVariant?.exerciseId).toBe('kniebeuge-pause');
+    expect(plain[0]?.alternatives.map((a) => a.id).at(-1)).toBe('kniebeuge-pause');
+    const excluded = planWorkout(
+      stored,
+      shown,
+      [stored],
+      context({
+        ...base,
+        swap: {
+          swapRules: healthy,
+          preferences: [pref('kniebeuge-pause', 'home', 'dislike')],
+          location: 'home',
+        },
+      }),
+    );
+    expect(excluded[0]?.plan?.hint).toEqual({ hint: null, harderVariant: null });
+    expect(excluded[0]?.alternatives.map((a) => a.id)).not.toContain('kniebeuge-pause');
+    // Ausschluss nur im Studio → zu Hause weiter vorgeschlagen.
+    const atGym = planWorkout(
+      stored,
+      shown,
+      [stored],
+      context({
+        ...base,
+        swap: {
+          swapRules: healthy,
+          preferences: [pref('kniebeuge-pause', 'gym', 'dislike')],
+          location: 'home',
+        },
+      }),
+    );
+    expect(atGym[0]?.plan?.hint.harderVariant?.exerciseId).toBe('kniebeuge-pause');
+  });
+});
+
+describe('Progression nach einem Tausch (4.3, R2)', () => {
+  it('Ersatz ohne eigene Einträge → „Startgewicht finden“; kein Übertragen der alten Gewichte', () => {
+    const entries = ['2026-10-01', '2026-10-05', '2026-10-08'].map((d) =>
+      entry('goblet-kniebeuge', d, 20, 10),
+    );
+    const replacement = planWorkoutExercise(
+      ex('ausfallschritt-rueckwaerts-kurzhantel'),
+      planned('ausfallschritt-rueckwaerts-kurzhantel'),
+      ref,
+      context({ entries, profile: home }),
+    );
+    expect(replacement.state).toBeNull();
+    expect(replacement.prescription.weightKg).toBeNull();
+  });
+
+  it('alte Übung kommt nach mehr als 28 Tagen zurück → RETURN_AFTER_PAUSE', () => {
+    const entries = [entry('goblet-kniebeuge', '2026-09-01', 20, 10)];
+    const back = planWorkoutExercise(
+      ex('goblet-kniebeuge'),
+      planned('goblet-kniebeuge'),
+      ref,
+      context({ entries, profile: home }),
+    );
+    expect(back.progress.returnAfterPause).toBe(true);
   });
 });

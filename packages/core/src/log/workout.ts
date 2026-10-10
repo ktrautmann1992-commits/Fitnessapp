@@ -7,6 +7,7 @@ import {
 } from '../constants';
 import type { Exercise } from '../content/schemas';
 import type {
+  EquipmentLocation,
   ExerciseLogStatus,
   ExperienceLevel,
   LoadType,
@@ -14,10 +15,22 @@ import type {
   SessionLogStatus,
 } from '../enums';
 import type { PlannedExerciseDraft } from '../plan/adapt';
-import { type EquipmentProfile, isExerciseFeasible } from '../plan/equipment-profile';
+import type { EquipmentProfile } from '../plan/equipment-profile';
 import { type IncrementKind, incrementKindFor } from '../plan/loads';
-import { isExerciseAllowed, type PlanSafetyRules } from '../plan/safety';
-import type { DisplaySession, StoredSession } from '../plan/view';
+import {
+  applyExercisePreferences,
+  type ExercisePair,
+  type ExercisePreference,
+  preferencesAt,
+  swapCandidatesFor,
+} from '../plan/preferences';
+import type { PlanSafetyRules } from '../plan/safety';
+import {
+  type DisplaySession,
+  displayPairs,
+  type SessionLocationInfo,
+  type StoredSession,
+} from '../plan/view';
 import { type DisplayHint, progressHintForDisplay } from './harder-variant';
 import {
   type Prescription,
@@ -86,21 +99,69 @@ export function weightStepsFor(
 }
 
 /**
+ * Präferenz-Schicht für V9 (docs/PLAN-UEBUNGEN-GLOSSAR-TAUSCH.md 4.3, Wächter S3/N6): bewusst NUR die Präferenzen
+ * auf die gespeicherten Übungen der Woche (Paar (S, S), ohne Sicherheitsstufe und ohne Day-Swaps), jede Einheit mit
+ * IHREM Ort. Ohne Präferenzen ist V9 damit identisch zu vorher. Eine Präferenz auf einen Sicherheits-Ersatz wirkt in V9
+ * nicht (V9 zählt dann die gespeicherte Übung – gleiches Muster, in der Regel gleiche Muskeln).
+ */
+export interface WeekPreferenceLayer {
+  readonly preferences: readonly ExercisePreference[];
+  /** Ort je Einheit (sessionLocationInfo) nach Einheiten-ID; Einheiten ohne Eintrag zählen unverändert. */
+  readonly locations: ReadonlyMap<string, SessionLocationInfo>;
+  readonly profiles: ReadonlyMap<EquipmentLocation, Pick<EquipmentProfile, 'available'>>;
+  /** Nur freigegebene Inhalte (Kandidaten, S-8) und alle Übungen zum Nachschlagen. */
+  readonly library: ReadonlyMap<string, Exercise>;
+  readonly lookup: ReadonlyMap<string, Exercise>;
+  /** displaySwapRules(plan, birthDate, aktuell) (4.5). */
+  readonly swapRules: Pick<PlanSafetyRules, 'excludedCautionTags' | 'cautious'>;
+}
+
+type WeekSession = Pick<StoredSession, 'status' | 'kind' | 'exercises'> & { readonly id?: string };
+
+function weekExercisesAfterPreferences(
+  session: WeekSession,
+  layer: WeekPreferenceLayer | undefined,
+): readonly PlannedExerciseDraft[] {
+  const where = session.id !== undefined ? layer?.locations.get(session.id) : undefined;
+  if (!layer || !where || layer.preferences.length === 0) return session.exercises;
+  const pairs: ExercisePair[] = session.exercises.map((e) => ({
+    stored: e,
+    shown: e,
+    storedOrderNo: e.order_no,
+  }));
+  return applyExercisePreferences(
+    pairs,
+    { kind: session.kind, exerciseCount: session.exercises.length },
+    {
+      library: layer.library,
+      lookup: layer.lookup,
+      profile: layer.profiles.get(where.location) ?? null,
+      swapRules: layer.swapRules,
+      preferences: layer.preferences,
+      location: where.location,
+      ambiguousLocation: where.ambiguous,
+    },
+  ).pairs.map((p) => p.shown);
+}
+
+/**
  * Darf heute ein Zusatzsatz dazukommen (V9)? Nur, wenn +1 Satz dieser Übung die Wochensätze keiner ihrer
  * Hauptmuskeln über die Obergrenze der Vorlage (WEEKLY_SETS_PER_MUSCLE) hebt. Gezählt werden die nicht gestrichenen
  * Kraft-Einheiten der Woche (Hauptmuskel 1, Nebenmuskel 0,5 je Satz). Ohne Obergrenze (unbekannte Vorlage): nein.
+ * Mit `layer` (Etappe T1) nach der Präferenz-Schicht je Einheit (siehe WeekPreferenceLayer).
  */
 export function extraSetAllowed(
   exercise: Pick<Exercise, 'primary_muscles'>,
-  weekSessions: readonly Pick<StoredSession, 'status' | 'kind' | 'exercises'>[],
+  weekSessions: readonly WeekSession[],
   library: ReadonlyMap<string, Pick<Exercise, 'primary_muscles' | 'secondary_muscles'>>,
   weeklyMax: number | null,
+  layer?: WeekPreferenceLayer,
 ): boolean {
   if (weeklyMax === null) return false;
   const sets = new Map<string, number>();
   for (const session of weekSessions) {
     if (session.status === 'skipped' || session.kind !== 'strength') continue;
-    for (const item of session.exercises) {
+    for (const item of weekExercisesAfterPreferences(session, layer)) {
       const ex = library.get(item.exercise_id);
       if (!ex) continue;
       for (const m of ex.primary_muscles) {
@@ -180,8 +241,34 @@ export interface PlanExerciseContext {
   readonly today: string;
   readonly isDeload: boolean;
   /** Woche der Einheit (für V9) und Obergrenze Wochensätze der Vorlage (null = unbekannt). */
-  readonly weekSessions: readonly Pick<StoredSession, 'status' | 'kind' | 'exercises'>[];
+  readonly weekSessions: readonly WeekSession[];
   readonly weeklySetMax: number | null;
+  /**
+   * Übungs-Tausch (Etappe T1) – PFLICHT, damit die Plan-Untergrenze nie vergessen wird (Wächter T1-S1/S2):
+   * Alternativen und schwerere Variante prüfen IMMER mit `swap.swapRules` = displaySwapRules(plan, birthDate, rules)
+   * (4.5). Präferenzen (optional) am Ort der Einheit (Standard `profile.location`): Ausschlüsse werden nie als
+   * Alternative bzw. schwerere Variante vorgeschlagen (S-7, Wächter S2).
+   */
+  readonly swap: WorkoutSwapOptions;
+  /** V9 nach der Präferenz-Schicht (Wächter S3); fehlt es, zählt V9 die gespeicherten Übungen. */
+  readonly weekPreferenceLayer?: WeekPreferenceLayer;
+}
+
+export interface WorkoutSwapOptions {
+  readonly swapRules: PlanSafetyRules;
+  readonly preferences?: readonly ExercisePreference[];
+  readonly location?: EquipmentLocation;
+  readonly ambiguousLocation?: boolean;
+}
+
+/** Ausschlüsse am Ort der Einheit (bei mehrdeutigem Ort an beiden) ∪ Übungen der Einheit. */
+function excludedFor(ctx: PlanExerciseContext, inSession?: ReadonlySet<string>): Set<string> {
+  const at = preferencesAt(
+    ctx.swap.preferences ?? [],
+    ctx.swap.location ?? ctx.profile.location,
+    ctx.swap.ambiguousLocation ?? false,
+  );
+  return new Set([...at.keys(), ...(inSession ?? [])]);
 }
 
 /**
@@ -195,9 +282,17 @@ export function planWorkoutExercise(
   planned: PlannedExerciseDraft,
   reference: { readonly templateSets: number; readonly rpeTarget: number },
   ctx: PlanExerciseContext,
+  /** Übungen der (angezeigten) Einheit – nie als schwerere Variante vorschlagen (Etappe T1, S2). */
+  inSession?: ReadonlySet<string>,
 ): WorkoutExercisePlan {
   const steps = weightStepsFor(exercise, ctx.profile);
-  const allowExtraSet = extraSetAllowed(exercise, ctx.weekSessions, ctx.library, ctx.weeklySetMax);
+  const allowExtraSet = extraSetAllowed(
+    exercise,
+    ctx.weekSessions,
+    ctx.library,
+    ctx.weeklySetMax,
+    ctx.weekPreferenceLayer,
+  );
   const progressionContext = progressionContextFor({
     exercise,
     planned,
@@ -228,8 +323,9 @@ export function planWorkoutExercise(
   const hint = progressHintForDisplay(exercise.id, progress, {
     library: ctx.engineLibrary,
     profile: ctx.profile,
-    rules: ctx.rules,
+    rules: ctx.swap.swapRules,
     experienceLevel: ctx.experienceLevel,
+    exclude: excludedFor(ctx, inSession),
   });
   const stateWeight = state?.weightKg ?? null;
   const heavier =
@@ -253,10 +349,13 @@ export function planWorkoutExercise(
 }
 
 /**
- * Erlaubte Alternativen für „Alternative durchgeführt“ (6.1): Alternativen der Übung (exercise_alternatives), die
- * nach den AKTUELLEN Sicherheitsregeln erlaubt, am Ort machbar und nicht schwerer sind und nicht Wiederholungs- gegen
- * Halteübung tauschen – gleiche Regeln wie findSubstitute(). Zusätzlich die von progressHintForDisplay()
- * vorgeschlagene schwerere Variante (wer sie macht, trägt sie als Alternative ein, 5.1). Sortiert nach Priorität.
+ * Erlaubte Alternativen für „Alternative durchgeführt“ bzw. „Tauschen“ im Trainingsmodus (6.1) – seit Etappe T1 ein
+ * dünner Mantel um swapCandidates(…, mode 'today') (docs/PLAN-UEBUNGEN-GLOSSAR-TAUSCH.md 4.3, Wächter S1): Heute und
+ * Trainingsmodus zeigen dieselbe Liste. Regeln S-1 bis S-8 gegen das Paar (S = `stored`, Standard: die Übung selbst;
+ * X = `exercise`), zusätzlich die von progressHintForDisplay() vorgeschlagene schwerere Variante am Ende (wer sie
+ * macht, trägt sie als Alternative ein, 5.1). `rules` sind die Regeln für Kandidaten (displaySwapRules, 4.5).
+ * Bewusste Verhaltensänderung gegenüber vorher: Muster geprüft, Alternativen der Alternativen und Bibliothek kommen
+ * hinzu, Schwierigkeit ≤ min(S, X) (Snapshot-Test „Alternativen vorher/nachher“).
  */
 export function allowedAlternatives(
   exercise: Exercise,
@@ -267,40 +366,26 @@ export function allowedAlternatives(
     /** Übungen, die schon in der Einheit vorkommen. */
     readonly exclude?: ReadonlySet<string>;
     readonly harderVariantId?: string | null;
+    /** Gespeicherte Übung S des Termins (Standard: `exercise`). */
+    readonly stored?: Exercise;
+    readonly preferences?: readonly ExercisePreference[];
+    readonly location?: EquipmentLocation;
+    readonly ambiguousLocation?: boolean;
   },
 ): Exercise[] {
-  const isTime = exercise.load_type === 'time';
-  const result: Exercise[] = [];
-  const sorted = [...exercise.alternatives].sort(
-    (a, b) => a.priority - b.priority || (a.alternative_id < b.alternative_id ? -1 : 1),
-  );
-  for (const alt of sorted) {
-    const candidate = ctx.library.get(alt.alternative_id);
-    if (
-      candidate === undefined ||
-      candidate.id === exercise.id ||
-      (ctx.exclude?.has(candidate.id) ?? false) ||
-      (candidate.load_type === 'time') !== isTime ||
-      !isExerciseFeasible(candidate, ctx.profile) ||
-      !isExerciseAllowed(candidate, ctx.rules)
-    ) {
-      continue;
-    }
-    const harder = candidate.difficulty > exercise.difficulty;
-    if (harder && candidate.id !== ctx.harderVariantId) continue;
-    result.push(candidate);
-  }
-  const variant = ctx.harderVariantId ? ctx.library.get(ctx.harderVariantId) : undefined;
-  if (
-    variant &&
-    !result.some((e) => e.id === variant.id) &&
-    !(ctx.exclude?.has(variant.id) ?? false) &&
-    isExerciseFeasible(variant, ctx.profile) &&
-    isExerciseAllowed(variant, ctx.rules)
-  ) {
-    result.push(variant);
-  }
-  return result;
+  return [
+    ...swapCandidatesFor(ctx.stored ?? exercise, exercise, {
+      library: ctx.library,
+      profile: ctx.profile,
+      swapRules: ctx.rules,
+      preferences: ctx.preferences ?? [],
+      location: ctx.location ?? 'home',
+      ambiguousLocation: ctx.ambiguousLocation ?? false,
+      inSession: ctx.exclude ?? new Set(),
+      mode: 'today',
+      harderVariantId: ctx.harderVariantId ?? null,
+    }).candidates,
+  ];
 }
 
 // ---------------------------------------------------------------------------------------------------------
@@ -322,25 +407,19 @@ export interface WorkoutItem {
 }
 
 /**
- * Ordnet die angezeigten Übungen den gespeicherten zu: prepareSessionForDisplay() blendet nicht erlaubte Übungen ohne
- * Ersatz aus und nummeriert neu, die Reihenfolge bleibt. Die k-te angezeigte Übung ist also die k-te nicht
- * ausgeblendete gespeicherte.
+ * Ordnet die angezeigten Übungen den gespeicherten zu (Wächter B1): über `storedOrderNos` der Anzeige (ab Etappe
+ * T1, auch nach Präferenz-Ausblendung in der Mitte der Einheit); ohne sie wie bisher – prepareSessionForDisplay()
+ * blendet aus und nummeriert neu, die Reihenfolge bleibt, die k-te angezeigte Übung ist die k-te nicht ausgeblendete
+ * gespeicherte (Vereinigung aus `hidden` und `hiddenByPreference`).
  */
 export function alignShownExercises(
   stored: Pick<StoredSession, 'exercises'>,
-  shown: Pick<DisplaySession<StoredSession>, 'session' | 'hidden'>,
+  shown: Pick<
+    DisplaySession<StoredSession>,
+    'session' | 'hidden' | 'hiddenByPreference' | 'storedOrderNos'
+  >,
 ): { readonly stored: PlannedExerciseDraft; readonly shown: PlannedExerciseDraft }[] {
-  const hidden = [...shown.hidden];
-  const visible = stored.exercises.filter((e) => {
-    const index = hidden.indexOf(e.exercise_id);
-    if (index === -1) return true;
-    hidden.splice(index, 1);
-    return false;
-  });
-  return shown.session.exercises.flatMap((e, i) => {
-    const original = visible[i];
-    return original ? [{ stored: original, shown: e }] : [];
-  });
+  return displayPairs(stored, shown).map((p) => ({ stored: p.stored, shown: p.shown }));
 }
 
 export function planWorkout(
@@ -363,7 +442,7 @@ export function planWorkout(
         alternatives: [],
       };
     }
-    const plan = planWorkoutExercise(exercise, item, reference, ctx);
+    const plan = planWorkoutExercise(exercise, item, reference, ctx, inSession);
     return {
       plannedOrderNo: original.order_no,
       storedExerciseId: original.exercise_id,
@@ -373,9 +452,13 @@ export function planWorkout(
       alternatives: allowedAlternatives(exercise, {
         library: ctx.engineLibrary,
         profile: ctx.profile,
-        rules: ctx.rules,
+        rules: ctx.swap.swapRules,
         exclude: inSession,
         harderVariantId: plan.hint.harderVariant?.exerciseId ?? null,
+        stored: ctx.library.get(original.exercise_id) ?? exercise,
+        preferences: ctx.swap.preferences ?? [],
+        location: ctx.swap.location ?? ctx.profile.location,
+        ambiguousLocation: ctx.swap.ambiguousLocation ?? false,
       }),
     };
   });

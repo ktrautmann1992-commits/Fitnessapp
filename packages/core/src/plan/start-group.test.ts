@@ -2,8 +2,13 @@ import { describe, expect, it } from 'vitest';
 
 import { generateTrainingPlan } from './generate';
 import { toSavePlanPayload } from './payload';
-import { isStricterGroup } from './safety';
-import { planStartGroup, type PlanStartGroupSource } from './start-group';
+import { isExerciseAllowed, isStricterGroup, planSafetyRules } from './safety';
+import {
+  displaySwapRules,
+  planFloorRules,
+  planStartGroup,
+  type PlanStartGroupSource,
+} from './start-group';
 import { MONDAY, person, repoLibrary } from './test-library';
 
 const base = (overrides: Partial<PlanStartGroupSource> = {}): PlanStartGroupSource => ({
@@ -99,5 +104,99 @@ describe('planStartGroup', () => {
       );
       expect(group).toBe(result.plan.safety_rules.enduranceStartGroup);
     }
+  });
+});
+
+describe('planFloorRules / displaySwapRules (docs/PLAN-UEBUNGEN-GLOSSAR-TAUSCH.md 4.5, Wächter B4)', () => {
+  const tags = (plan: PlanStartGroupSource, birthDate = '1990-01-01') =>
+    planFloorRules(plan, birthDate).excludedCautionTags;
+  const current = (flags: ('pregnancy' | 'injury')[] | null, birthDate = '1990-01-01') =>
+    planSafetyRules(
+      {
+        experienceLevel: 'advanced',
+        birthDate,
+        healthScreening: flags === null ? null : { flags },
+      },
+      '2026-10-05',
+    );
+
+  it('gesunder Plan (Check ohne Flag, Erwachsener) → keine ausgeschlossenen Merkmale', () => {
+    expect(tags(base())).toEqual([]);
+    expect(planFloorRules(base(), '1990-01-01').cautious).toBe(false);
+    expect(planFloorRules(base(), '1990-01-01').pregnancyNotice).toBe(false);
+  });
+
+  it('ohne Check → vorsichtig inklusive overhead; Arzt-Hinweis → zusätzlich long_supine', () => {
+    const noCheck = tags(base({ uses_health_data: false }));
+    expect(noCheck).toEqual(
+      expect.arrayContaining(['high_impact', 'spinal_loading', 'high_skill', 'overhead']),
+    );
+    expect(noCheck).not.toContain('long_supine');
+    const medical = planFloorRules(base({ medical_notice: true }), '1990-01-01');
+    expect(medical.excludedCautionTags).toEqual(
+      expect.arrayContaining([
+        'high_impact',
+        'spinal_loading',
+        'high_skill',
+        'overhead',
+        'long_supine',
+      ]),
+    );
+    expect(medical.cautious).toBe(true);
+    expect(medical.pregnancyNotice).toBe(false);
+    expect(medical.rpeMax).toBeLessThanOrEqual(7);
+  });
+
+  it('Alter am Erstellungstag: 16/17 → high_skill, 18 → frei, 64 → frei, 65 → high_impact + high_skill', () => {
+    const at = (birthDate: string) => tags(base(), birthDate);
+    expect(at('2010-10-05')).toEqual(['high_skill']); // 16
+    expect(at('2009-10-06')).toEqual(['high_skill']); // 17, Geburtstag erst morgen
+    expect(at('2008-10-05')).toEqual([]); // 18. Geburtstag am Erstellungstag
+    expect(at('1962-10-06')).toEqual([]); // 63/64
+    expect(at('1961-10-06')).toEqual([]); // 64
+    expect(at('1961-10-05')).toEqual(expect.arrayContaining(['high_impact', 'high_skill'])); // 65 am Erstellungstag
+  });
+
+  it('unlesbare Angaben bzw. Datum → strengste Regeln (N3), aber nicht alle Merkmale', () => {
+    for (const plan of [base({ created_at: 'kaputt' }), base({ created_at: '' })]) {
+      const rules = planFloorRules(plan, '1990-01-01');
+      expect(rules.excludedCautionTags).toEqual(
+        expect.arrayContaining([
+          'high_impact',
+          'spinal_loading',
+          'high_skill',
+          'overhead',
+          'long_supine',
+        ]),
+      );
+      expect(rules.cautious).toBe(true);
+      expect(rules.enduranceStartGroup).toBe('cautious');
+    }
+    expect(planFloorRules(base(), 'kein-datum').cautious).toBe(true);
+    expect(planFloorRules(base(), '2030-01-01').cautious).toBe(true); // Geburt nach Erstellung
+    // Unlesbares Level → Einsteiger (strenger), ändert keine Merkmale.
+    expect(planFloorRules(base({ inputs: null }), '1990-01-01').beginnerTemplatesOnly).toBe(true);
+  });
+
+  it('Lockerung öffnet nichts: Schwangerschafts-Plan, danach Check ohne Flag → long_supine bleibt gesperrt', () => {
+    const plan = base({ medical_notice: true });
+    const swapRules = displaySwapRules(plan, '1990-01-01', current([]));
+    expect(swapRules.excludedCautionTags).toContain('long_supine');
+    expect(isExerciseAllowed({ caution_tags: ['long_supine'] }, swapRules)).toBe(false);
+    // Nach „Plan neu erstellen“ ohne Flag: Untergrenze weg.
+    const fresh = displaySwapRules(base(), '1990-01-01', current([]));
+    expect(isExerciseAllowed({ caution_tags: ['long_supine'] }, fresh)).toBe(true);
+  });
+
+  it('17-jährig erstellt, 18. Geburtstag → high_skill bleibt gesperrt bis „Plan neu erstellen“', () => {
+    const plan = base({ created_at: '2026-10-04T08:00:00.000Z' });
+    const now18 = current([], '2008-10-05');
+    expect(now18.excludedCautionTags).not.toContain('high_skill');
+    expect(displaySwapRules(plan, '2008-10-05', now18).excludedCautionTags).toContain('high_skill');
+  });
+
+  it('strengere aktuelle Regel wirkt sofort', () => {
+    const swapRules = displaySwapRules(base(), '1990-01-01', current(['pregnancy']));
+    expect(swapRules.excludedCautionTags).toContain('long_supine');
   });
 });

@@ -1,5 +1,6 @@
 import {
   canCatchUp,
+  displaySwapRules,
   type EquipmentProfile,
   experienceLevelSchema,
   type PlanLibrary,
@@ -96,6 +97,9 @@ export function workoutView(
     isDeload: stored.is_deload,
     weekSessions,
     weeklySetMax: template ? weeklySetRange(template).max : null,
+    // Alternativen und schwerere Variante IMMER mit der Untergrenze des Plans (Etappe T1, Wächter T1-S1): eine
+    // Lockerung nach der Erstellung öffnet erst nach „Plan neu erstellen“ etwas (PLAN-PHASE-3 5.4).
+    swap: { swapRules: displaySwapRules(active.plan, birthDate, rules) },
   };
   const items = planWorkout(stored, shown, active.sessions, context);
   return { active, stored, shown, profile, items, context };

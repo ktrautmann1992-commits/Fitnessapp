@@ -1,6 +1,7 @@
 import { randomUUID } from 'node:crypto';
 
 import {
+  allowedAlternatives,
   logEditability,
   sessionLogPayloadSchema,
   toSavePlanPayload,
@@ -738,5 +739,39 @@ describe('Etappe D im Testmodus: Woche, Eintrag, Löschen, Export', () => {
       logs: { sessionLogs: [], exerciseLogs: [], setLogs: [], cardioLogs: [] },
       nextBefore: null,
     });
+  });
+});
+
+describe('Tausch-Untergrenze im Trainingsmodus (Etappe T1, Wächter T1-S1)', () => {
+  it('Plan in der Schwangerschaft erstellt, Schwangerschaft beendet → keine Rückenlage-/Überkopf-Alternative', async () => {
+    const s = await setup(planPersonRows({ flags: ['pregnancy', 'conservative_plan'] }));
+    expect(activePlan(s.rows)?.plan.medical_notice).toBe(true);
+    // Aktuelle Regeln wie nach dem neuen Gesundheits-Check ohne Flag (Plan noch nicht neu erstellt).
+    const healthyRows = planPersonRows();
+    const relaxed = effectiveSafetyRules(healthyRows, VERSIONS, MONDAY);
+    if (!relaxed) throw new Error('Regeln fehlen');
+    expect(relaxed.excludedCautionTags).not.toContain('long_supine');
+    let withoutFloor = 0;
+    for (const session of activePlan(s.rows)?.sessions ?? []) {
+      if (session.kind !== 'strength') continue;
+      const view = workoutView(s.rows, s.library, relaxed, session.id, session.scheduled_on);
+      if (!view) continue;
+      for (const item of view.items) {
+        for (const alt of item.alternatives) {
+          expect(alt.caution_tags).not.toContain('long_supine');
+          expect(alt.caution_tags).not.toContain('overhead');
+        }
+        // Gegenprobe: nur mit den gelockerten aktuellen Regeln käme Rückenlage in die Liste.
+        const shown = view.context.library.get(item.shown.exercise_id);
+        if (!shown) continue;
+        withoutFloor += allowedAlternatives(shown, {
+          library: view.context.engineLibrary,
+          profile: view.profile,
+          rules: relaxed,
+          stored: view.context.library.get(item.storedExerciseId) ?? shown,
+        }).filter((a) => a.caution_tags.includes('long_supine')).length;
+      }
+    }
+    expect(withoutFloor).toBeGreaterThan(0);
   });
 });

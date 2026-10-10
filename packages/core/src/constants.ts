@@ -880,3 +880,35 @@ export const PRINT_EXPORT = {
  * später die Tausch-Vorschläge, SWAP_RULES.maxCandidates). Quelle: PRODUKTENTSCHEIDUNG (Lesbarkeit am Handy).
  */
 export const GLOSSARY_LIMITS = { queryMaxChars: 100, similarMax: 6 } as const;
+
+/**
+ * Übungen tauschen (docs/PLAN-UEBUNGEN-GLOSSAR-TAUSCH.md 4.1, 4.2, 5.1, Etappe T1). Quelle: PRODUKTENTSCHEIDUNG
+ * (Lesbarkeit am Handy, Schutz vor einseitigen Plänen, Speicherplatz) – fachlich zu bestätigen.
+ * - `maxPerUser`: technische Obergrenze der Ausschlüsse („Ab jetzt immer“) je Person (später auch im Trigger, T3).
+ * - `manyExclusionsNotice`: ab so vielen Ausschlüssen an einem Ort der Hinweis „Plan wird einseitiger“.
+ */
+export const EXERCISE_PREFERENCE_LIMITS = { maxPerUser: 100, manyExclusionsNotice: 10 } as const;
+
+/**
+ * Tausch-Vorschläge (4.1): höchstens 6 je Übung (gleich viele wie die „Ähnlichen Übungen“ im Glossar).
+ * `keyPatternGroups`: Grundbausteine einer Einheit (4.2, PLAN-KOERPERGEWICHT §4/W7) – fällt die letzte Übung einer
+ * Gruppe durch „Hier nicht machbar“ weg, nennt die App das ausdrücklich (nur Anzeige, wie `no_pull_exercise`).
+ * Quelle: PRODUKTENTSCHEIDUNG.
+ */
+export const SWAP_RULES = {
+  maxCandidates: 6,
+  keyPatternGroups: [['horizontal_pull', 'vertical_pull'], ['hinge']],
+} as const satisfies {
+  maxCandidates: number;
+  keyPatternGroups: readonly (readonly MovementPattern[])[];
+};
+
+/**
+ * „Nur heute“ vor dem Training (Day-Swaps, 5.1): höchstens 200 Einträge im Gerätespeicher (PRODUKTENTSCHEIDUNG);
+ * `storedOrderNo` höchstens so groß wie `planned_exercises.order_no` in der Datenbank (1–8,
+ * PLAN_BLOCK_LIMITS.exercisesPerSession, Wächter T1-K9).
+ */
+export const DAY_SWAP_LIMITS = {
+  maxEntries: 200,
+  maxStoredOrderNo: PLAN_BLOCK_LIMITS.exercisesPerSession,
+} as const;

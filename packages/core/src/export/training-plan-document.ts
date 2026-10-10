@@ -8,12 +8,15 @@ import type { EnduranceDiscipline, EquipmentLocation, GoalType, PlanNote } from 
 import { prescriptionForDisplay, type ProgressResult } from '../log/progression';
 import type { PlannedExerciseDraft } from '../plan/adapt';
 import type { EquipmentProfile } from '../plan/equipment-profile';
+import type { ExercisePreference } from '../plan/preferences';
 import type { EnduranceStartGroup, PlanSafetyRules } from '../plan/safety';
 import {
   blockWeekFor,
+  type DisplaySession,
   exerciseMark,
   prepareSessionForDisplay,
   sessionLocation,
+  sessionLocationInfo,
   sessionOn,
   type SessionLocationContext,
   type StoredSession,
@@ -104,6 +107,16 @@ export interface ExportDisplayContext {
   readonly library: ReadonlyMap<string, Exercise> | null;
   readonly substituteLibrary?: ReadonlyMap<string, Exercise>;
   readonly profiles: ReadonlyMap<EquipmentLocation, Pick<EquipmentProfile, 'available'>>;
+  /**
+   * Übungs-Tausch (docs/PLAN-UEBUNGEN-GLOSSAR-TAUSCH.md 7.3.2, Etappe T1): Präferenzen („Ab jetzt immer“) wirken wie
+   * in der App, je Einheit am eigenen Ort; `swapRules` = displaySwapRules(…). NIE Day-Swaps („Nur heute“ ist kein
+   * Plan).
+   */
+  readonly swap?: {
+    /** Pflicht im Bündel: displaySwapRules(plan, birthDate, rules) (4.5, Wächter T1-S2). */
+    readonly swapRules: PlanSafetyRules;
+    readonly preferences: readonly ExercisePreference[];
+  };
 }
 
 /** Progression einer Übung an einem Ort (Phase 4): Ergebnis von progressFromLogs() und Gewichtsstufen des Orts. */
@@ -360,11 +373,27 @@ interface SessionVersion {
   readonly location: EquipmentLocation;
   readonly original: StoredSession;
   readonly shown: StoredSession;
+  readonly display: DisplaySession<StoredSession>;
   readonly weekdays: Set<number>;
 }
 
-function versionKey(location: EquipmentLocation, shown: StoredSession): string {
+/**
+ * Schlüssel einer Fassung: gleiche angezeigte Einheit am gleichen Ort. Seit Etappe T1 zählen auch die
+ * Präferenz-Markierungen je Zeile und die Zahl der ausgelassenen Übungen dazu (Wächter T1-K7) – sonst könnte die
+ * Markierung „getauscht (deine Wahl)“ aus dem ersten Termin für einen anderen Termin falsch sein.
+ */
+function versionKey(location: EquipmentLocation, display: DisplaySession<StoredSession>): string {
+  const shown = display.session;
+  const orderNos = display.storedOrderNos ?? [];
+  const marked = shown.exercises.map(
+    (e, i) =>
+      display.preferenceSwapped?.some(
+        (r) => r.storedOrderNo === orderNos[i] && r.to === e.exercise_id,
+      ) ?? false,
+  );
   return JSON.stringify([
+    display.hiddenByPreference?.length ?? 0,
+    marked,
     shown.template_day_index,
     location,
     shown.name_de,
@@ -382,18 +411,27 @@ function versionKey(location: EquipmentLocation, shown: StoredSession): string {
 
 function exerciseRow(
   exercise: PlannedExerciseDraft,
+  index: number,
   version: SessionVersion,
   display: ExportDisplayContext,
   progress: ExportProgressByLocation | null,
   logColumns: number,
 ): PrintTableRow {
   const header: PrintText[] = [content(exercise.exercise_name_de)];
-  const mark = exerciseMark(exercise, version.original, {
-    library: display.library,
-    profile: display.profiles.get(version.location),
-  });
-  // Nur Gerätetausch markieren – „angepasst“ (Sicherheitsregeln) bleibt unsichtbar (B1).
+  const storedOrderNo = version.display.storedOrderNos?.[index];
+  const mark = exerciseMark(
+    exercise,
+    version.original,
+    {
+      library: display.library,
+      profile: display.profiles.get(version.location),
+    },
+    storedOrderNo !== undefined ? { storedOrderNo, display: version.display } : undefined,
+  );
+  // Nur Gerätetausch und Präferenz-Tausch („deine Wahl“) markieren – „angepasst“ (Sicherheitsregeln) bleibt
+  // unsichtbar (B1); Day-Swaps gibt es im PDF nicht.
   if (mark === 'equipment_swap') header.push(label('mark.equipmentSwap'));
+  if (mark === 'preference') header.push(label('mark.preferenceSwap'));
   if (exercise.superset_group !== null) {
     header.push(text('mark.superset', { group: exercise.superset_group }));
   }
@@ -505,14 +543,34 @@ function sessionBlocks(
     { type: 'heading', level: 3, text: label('session.cooldown') },
     { type: 'paragraph', text: content(shown.cooldown_de) },
   ];
-  // Alle Übungen ausgeblendet (aktuelle Regeln, kein Ersatz): neutraler Hinweis statt leerer Tabelle (K7).
+  const omitted = version.display.hiddenByPreference?.length ?? 0;
+  // Neutraler Druckhinweis „ausgelassen (deine Wahl)“ (Wächter K7) – nie der Sicherheitstext „Plan neu erstellen“.
+  const omittedHint: PrintBlock[] =
+    omitted > 0
+      ? [
+          {
+            type: 'paragraph',
+            muted: true,
+            text: text('session.preferenceOmitted', { count: Math.min(omitted, 100) }),
+          },
+        ]
+      : [];
+  // Alle Übungen ausgeblendet (aktuelle Regeln, kein Ersatz): neutraler Hinweis statt leerer Tabelle (K7). Nur wegen
+  // Präferenzen leer (emptyByPreference): nur der neutrale Präferenz-Hinweis.
   if (shown.exercises.length === 0) {
-    return [...top, { type: 'paragraph', text: label('session.noExercises') }, ...bottom];
+    return [
+      ...top,
+      ...(version.display.hidden.length > 0 || omitted === 0
+        ? [{ type: 'paragraph', text: label('session.noExercises') } as const]
+        : []),
+      ...omittedHint,
+      ...bottom,
+    ];
   }
 
   const sessionName = shown.name_de.replace(/[\p{Cc}\p{Cf}]/gu, '').slice(0, 600);
-  const rows = shown.exercises.map((e) =>
-    exerciseRow(e, version, display, progress, options.logColumns),
+  const rows = shown.exercises.map((e, index) =>
+    exerciseRow(e, index, version, display, progress, options.logColumns),
   );
   const table = (part: PrintTableRow[]): PrintBlock => ({
     type: 'table',
@@ -563,7 +621,7 @@ function sessionBlocks(
       { type: 'heading', level: 2, text: text('session.continued', { session: sessionName }) },
     );
   }
-  blocks.push(hint, ...bottom);
+  blocks.push(hint, ...omittedHint, ...bottom);
   return blocks;
 }
 
@@ -665,7 +723,11 @@ export function buildTrainingPlanDocument(
     (s) => s.status !== 'skipped',
   );
   for (const original of strength) {
-    const location = sessionLocation(original, schedule, locationContext(display));
+    const { location, ambiguous } = sessionLocationInfo(
+      original,
+      schedule,
+      locationContext(display),
+    );
     const profile = display.profiles.get(location);
     const shown = prepareSessionForDisplay(original, {
       rules: display.rules,
@@ -673,9 +735,19 @@ export function buildTrainingPlanDocument(
       library: display.library,
       ...(display.substituteLibrary ? { substituteLibrary: display.substituteLibrary } : {}),
       ...(profile ? { profile } : {}),
+      ...(display.swap
+        ? {
+            swap: {
+              swapRules: display.swap.swapRules,
+              preferences: display.swap.preferences,
+              location,
+              ambiguousLocation: ambiguous,
+            },
+          }
+        : {}),
     });
     if (shown.libraryMissing) return { ok: false, error: 'library_missing' };
-    const key = versionKey(location, shown.session);
+    const key = versionKey(location, shown);
     const existing = versions.get(key);
     const weekday = isoWeekday(planDate(original));
     if (existing) existing.weekdays.add(weekday);
@@ -685,6 +757,7 @@ export function buildTrainingPlanDocument(
         location,
         original,
         shown: shown.session,
+        display: shown,
         weekdays: new Set([weekday]),
       });
     }

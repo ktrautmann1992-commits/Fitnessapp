@@ -203,10 +203,13 @@ export function findSubstitute(original: Exercise, ctx: SubstituteContext): Subs
  * Schwerere Variante für die Progression (Körpergewicht/Halteübung, Abschnitt 5.9): Alternative mit Grund
  * `harder`, machbar mit dem Geräte-Profil des Orts und erlaubt nach den AKTUELLEN Sicherheitsregeln (z. B. ab 65 kein
  * Tisch-Rudern, Merkmal `high_skill`); null = keine. Angebunden über progressHintForDisplay() (log/harder-variant.ts).
+ * `exclude` (Wächter S2, Etappe T1): Ausschlüsse des Orts und Übungen der Einheit werden übersprungen – es kommt die
+ * nächste erlaubte `harder`-Variante oder keine (z. B. ist die schwerere Variante des Ersatzes Y genau die
+ * ausgeschlossene Übung A).
  */
 export function findHarderVariant(
   exercise: Exercise,
-  ctx: Omit<SubstituteContext, 'exclude'> & {
+  ctx: SubstituteContext & {
     /** Höchstens so viel schwerer (`difficulty`); weggelassen = beliebig (W8: Einsteiger nur +1). */
     readonly maxDifficultyStep?: number;
   },
@@ -219,6 +222,8 @@ export function findHarderVariant(
     .filter(
       (c): c is Exercise =>
         c !== undefined &&
+        c.id !== exercise.id &&
+        !(ctx.exclude?.has(c.id) ?? false) &&
         c.difficulty <= maxDifficulty &&
         isExerciseFeasible(c, ctx.profile) &&
         isExerciseAllowed(c, ctx.rules),

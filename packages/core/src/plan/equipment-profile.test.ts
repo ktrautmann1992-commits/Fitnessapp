@@ -267,6 +267,32 @@ describe('findHarderVariant', () => {
       })?.id,
     ).toBe('kniebeuge-pause'); // Etappe K1: Kette innerhalb Körpergewicht
   });
+
+  it('exclude (Wächter S2): ausgeschlossene Variante übersprungen → nächste erlaubte oder keine', () => {
+    // Nächste erlaubte: Goblet ausgeschlossen → Kniebeuge mit Pause.
+    expect(
+      findHarderVariant(get('kniebeuge-koerpergewicht'), {
+        library: lib,
+        profile: dumbbellsOnly,
+        rules: healthy,
+        exclude: new Set(['goblet-kniebeuge']),
+      })?.id,
+    ).toBe('kniebeuge-pause');
+    // Y = Stuhl-Kniebeuge ist die `easier`-Alternative von A = Körpergewicht-Kniebeuge; A ausgeschlossen, die
+    // schwerere Variante von Y ist genau A → kein Vorschlag.
+    expect(
+      findHarderVariant(get('kniebeuge-stuhl'), { library: lib, profile: nothing, rules: healthy })
+        ?.id,
+    ).toBe('kniebeuge-koerpergewicht');
+    expect(
+      findHarderVariant(get('kniebeuge-stuhl'), {
+        library: lib,
+        profile: nothing,
+        rules: healthy,
+        exclude: new Set(['kniebeuge-koerpergewicht']),
+      }),
+    ).toBeNull();
+  });
 });
 
 describe('Langhantel: ladbare Gesamtgewichte (B3-Pflichtpunkt, Erweiterungsplan 4.3)', () => {

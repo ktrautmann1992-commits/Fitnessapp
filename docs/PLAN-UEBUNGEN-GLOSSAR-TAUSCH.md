@@ -297,7 +297,8 @@ rules)`. Gilt für **alle** Kandidaten-Prüfungen: „Nur heute“ (Heute/Woche 
 - **Bekannte Folge:** Personen mit `medical_notice` (jedes Gesundheits-Flag) bekommen auch nach „Plan neu erstellen“
   keine `long_supine`-Übungen als Tausch-Kandidat, solange ein Flag besteht. Ihre gespeicherten Übungen bleiben
   unberührt. Das ist vorsichtig und gewollt; der Echte-Inhalte-Snapshot (7.4) zeigt, wo dadurch „immer“ nicht
-  angeboten wird. Gründer-Frage 12.
+  angeboten wird. Gründer-Frage 12. Ebenso (Wächter N5): Pläne mit **beliebigem** Flag (z. B. nur Schwangerschaft)
+  bekommen keine Überkopf-Übungen (`overhead`) als Tausch-Kandidat, auch wenn sie im Plan stehen dürfen.
 - **Tests:** Plan in der Schwangerschaft erstellt, danach Check ohne Schwangerschaft → Glute Bridge erscheint nicht als
   Kandidat (heute und immer); nach „Plan neu erstellen“ ohne Flag → erscheint. 17-Jähriger Plan, 18. Geburtstag →
   `high_skill` bleibt gesperrt bis „Plan neu erstellen“. Strengere aktuelle Regel → wirkt sofort.
@@ -868,8 +869,8 @@ Gründe für den Schnitt:
 10. **Glossar öffentlich (Landingpage)?** _Empfehlung:_ Später, nach Fachprüfung und G2.
 11. **Bilder/Videos (G2): eigene Produktion oder Lizenz?** _Empfehlung:_ Eigener Plan. Bis dahin reicht Text.
 12. **Neu (B4): Dürfen Lockerungen beim Tauschen sofort wirken?** _Empfehlung:_ Nein. Erst nach „Plan neu erstellen“
-    (PLAN-PHASE-3 5.4). Folge: Bei Plänen mit Arzt-Hinweis sind Übungen in langer Rückenlage nie Tausch-Kandidat,
-    solange ein Gesundheits-Flag besteht (4.5).
+    (PLAN-PHASE-3 5.4). Folge: Bei Plänen mit Arzt-Hinweis sind Übungen in langer Rückenlage und Überkopf-Übungen nie
+    Tausch-Kandidat, solange ein Gesundheits-Flag besteht (4.5, N5).
 13. **Neu (S1): Darf sich die Alternativen-Liste im Trainingsmodus ändern** (mehr Kandidaten, strengere Prüfung), damit
     Heute und Training dieselbe Liste zeigen? _Empfehlung:_ Ja, mit Snapshot-Test.
 
@@ -949,3 +950,122 @@ Gründe für den Schnitt:
 8. Kennzeichen „noch nicht fachlich geprüft“: Entwürfe zeigen „Testinhalt – noch nicht fachlich geprüft“; freigegebene
    KI-Entwürfe ohne Fachprüfung (`needsExpertReviewLabel`) zeigen auf der Detailseite „Noch nicht fachlich geprüft“.
 9. Ungültige Übungs-ID im Link (z. B. kaputtes `%`) zeigt „Diese Übung gibt es nicht (mehr).“ statt abzustürzen.
+
+### T1 – Tausch-Core (umgesetzt, 10.10.2026)
+
+- **Konstanten/Enums:** `EXERCISE_PREFERENCE_LIMITS` (100 / Hinweis ab 10), `SWAP_RULES` (`maxCandidates: 6`,
+  `keyPatternGroups` Zug/Hüftbeuge), `DAY_SWAP_LIMITS` (200) in `constants.ts` (PRODUKTENTSCHEIDUNG);
+  `EXERCISE_PREFERENCE_KINDS` in `enums.ts` (Datenbank-Enum folgt in T3, daher noch nicht in `db-sync.test.ts`).
+- **`plan/start-group.ts`:** `planFloorRules(plan, birthDate)` (ohne Check → vorsichtig + `overhead`; Arzt-Hinweis →
+  zusätzlich `long_supine`; Alter am Erstellungstag; unlesbar → strengste Regeln nach N3) und
+  `displaySwapRules(plan, birthDate, rules)` (B4).
+- **`plan/preferences.ts`:** `exercisePreferenceSchema` (strikt, Zod), `ExercisePair`, `preferencesAt` (Ort; bei
+  mehrdeutigem Ort Vereinigung, `not_feasible` vor `dislike`), `swapCandidates`/`swapCandidatesFor` (S-1 bis S-8,
+  Reihenfolge 4.1, höchstens 6, schwerere Variante nur „heute“ am Ende), `canExclude`, `applyExercisePreferences`
+  (B1/B2, S8, S9, S10), `preferenceNotices`, `upsertPreference`/`removePreference`, `pairStoredAndShown`.
+- **`plan/day-swaps.ts`:** `daySwapSchema` (strikt), `parseStoredDaySwaps` (kaputter Speicher, fremdes Konto),
+  `applyDaySwaps` (B3, N1, N2), `pruneDaySwaps` (N1 über `canCatchUp`), `upsertDaySwap`/`removeDaySwap`.
+- **`plan/view.ts`:** `prepareSessionForDisplay` mit Paaren → Präferenzen → Day-Swaps → Neu-Nummerierung;
+  `DisplaySession` mit `storedOrderNos`, `hiddenByPreference`, `preferenceSwapped`, `daySwapped`, `keptDisliked`,
+  `preferenceNotices`, `droppedDaySwaps`, `emptyByPreference`; `displayPairs`; `exerciseMark` mit `'preference'` und
+  `'day_swap'` (K6); `sessionLocationInfo` (S4).
+- **Trainingsmodus (`log/workout.ts`, `log/harder-variant.ts`, `plan/equipment-profile.ts`):** `allowedAlternatives`
+  als Mantel um `swapCandidatesFor(…, 'today')` (S1), `findHarderVariant`/`progressHintForDisplay` mit `exclude` (S2),
+  `alignShownExercises` über `storedOrderNos`, `planWorkout` mit Präferenzen/`swapRules`, V9 mit
+  `WeekPreferenceLayer` (S3, N6).
+- **PDF:** `ExportDisplayContext.preferences`/`swapRules` (nie Day-Swaps), Markierung `mark.preferenceSwap`
+  („getauscht (deine Wahl)“), neutraler Druckhinweis `session.preferenceOmitted` (K7); bei nur wegen Präferenzen
+  leerer Einheit kein „Plan neu erstellen“.
+- **Tests:** `preferences.test.ts`, `day-swaps.test.ts`, `view-swap.test.ts` (Regression über Profile × Regeln,
+  Pflicht-Tests 1, 2, 4–7, 9, 11, Markierungen), `swap-properties.test.ts` (Eigenschaftstest mit Regeländerungen nach
+  der Erstellung, 160 Zufallsfälle; Echte-Inhalte-Snapshot „kein ‚Ab jetzt immer‘“), Ergänzungen in
+  `start-group.test.ts`, `workout.test.ts` (Pflicht-Tests 8 und 10, Snapshot „Alternativen vorher/nachher“,
+  Progression nach Tausch), `harder-variant.test.ts`, `equipment-profile.test.ts`, `rest-timer.test.ts` (Pflicht-Test 5,
+  Ein-Mitglied-Supersatz), `training-plan-document.test.ts`.
+
+**Abweichungen und Festlegungen:**
+
+1. **N7 entschieden: Abweichung festgehalten.** Das Glossar (`similar`, `availableForMe`) bleibt bei den **aktuellen**
+   Regeln. Begründung: Das Glossar setzt nichts in den Plan ein und braucht keinen Plan (auch ohne Plan nutzbar); nur
+   der Tausch verändert die Anzeige, und er prüft immer mit `displaySwapRules`. Nach einer Lockerung kann das Glossar
+   daher eine Übung als „ähnlich“ zeigen, die der Tausch (noch) nicht anbietet – sicher, nur uneinheitlich. Erst nach
+   „Plan neu erstellen“ stimmen beide überein.
+2. **Signaturen** leicht anders als in 7.2, ohne fachlichen Unterschied: `preferencesAt(prefs, location, ambiguous)`
+   statt `'both'` (der geratene Ort liefert den Ersatz zuerst); `canExclude(pair, pref, ctx)` prüft die ganze
+   Präferenz mit Zod (statt `kind, location` einzeln) und liefert einen Grund (`invalid`, `library_missing`,
+   `no_candidate`, `limit_reached`, `replacement_not_candidate`); `applyExercisePreferences(pairs, { kind,
+exerciseCount }, ctx)` und `applyDaySwaps(pairs, session, swaps, ctx)` arbeiten auf den Paaren;
+   `exerciseMark(exercise, stored, ctx, { storedOrderNo, display })` – der neue vierte Parameter ist optional, damit
+   die App bis T2 unverändert bleibt. Die neuen `DisplaySession`-Felder sind im Typ optional, werden von
+   `prepareSessionForDisplay` aber immer gesetzt.
+3. **Bezugspaar je Schicht:** Die Präferenz-Schicht prüft gegen (S, X nach Sicherheit), die Day-Swap-Schicht gegen
+   (S, angezeigt nach Präferenzen) – die Schwierigkeit bleibt damit ≤ min(S, X). Für den Tausch-Dialog (T2) liefert
+   `displayPairs()` das Paar (S, angezeigt); die Präferenz hängt an der angezeigten Übung (4.0).
+4. **Türrahmen-Rudern → Handtuch-Rudern ist kein Kandidat:** Handtuch-Rudern ist eine Halteübung (S-4, nie Wdh. ↔
+   Halten). Im Körpergewicht-Plan ohne Geräte hat Türrahmen-Rudern daher keinen Kandidaten („immer“ nicht
+   angeboten; bei `not_feasible` → `preference_key_pattern_missing`). Die Beispiele in 7.4 und Abschnitt 13
+   (Handy-Test Schritt 4) müssen in T2 eine andere Übung nehmen; die Lücke steht im Echte-Inhalte-Snapshot
+   (`packages/core/src/plan/__snapshots__/swap-properties.test.ts.snap`) als Hinweis für die Content-Pflege.
+5. **Grundbausteine (4.2):** `missingKeyPattern` meldet eine weggefallene Übung, wenn danach keine Übung derselben
+   Gruppe mehr in der Einheit steht – Gruppen: Zug (`horizontal_pull` + `vertical_pull`) und Hüftbeuge (`hinge`).
+6. **Doppelte Präferenzen** (kaputter Speicher, gleiche Übung und Ort) werden wie bei mehrdeutigem Ort
+   zusammengeführt (`not_feasible` gewinnt).
+7. **Day-Swaps:** IDs (`ownerUserId`, `planId`, `sessionId`) sind UUIDs; je Konto, Einheit und Position höchstens ein
+   Eintrag; über 200 fallen die ältesten weg. Doppelte Einträge für dieselbe Position: nur der erste (nach
+   `createdAt`) gilt, der Rest kommt in `droppedDaySwaps`. Nachholen heute (N1): `DisplayContext.catchUpToday`
+   (die App berechnet es mit `canCatchUp`), `pruneDaySwaps` prüft es selbst.
+8. **Schwerere Variante:** Mit Tausch-Kontext (`preferences` bzw. `swapRules` im `PlanExerciseContext`) nutzt
+   `progressHintForDisplay` die `swapRules` und schließt Ausschlüsse des Orts und die Übungen der Einheit aus. Ohne
+   diesen Kontext ist der Hinweis unverändert (Regression).
+9. **App-Änderungen in T1 (nur zwei Stellen):** Die zwei neuen Druck-Codes stehen in
+   `apps/mobile/src/lib/print-document.ts` und `i18n/de.ts` („getauscht (deine Wahl)“, „1 Übung ausgelassen (deine
+   Wahl)“), damit `apps/mobile` typsicher bleibt. Außerdem übergibt `apps/mobile/src/data/workout-session.ts` dem
+   Trainingsmodus die Plan-Untergrenze (Wächter T1-S1, siehe unten). Präferenzen und Day-Swaps übergibt die App erst
+   in T2.
+10. **N4** (laufender Entwurf mit Alternative aus der alten Liste): geprüft – der Entwurf prüft die Alternative beim
+    Fortsetzen nicht gegen die Liste (`alternativeTarget` schlägt nur in der Bibliothek nach). Ein App-Test dafür kommt
+    mit T2.
+11. **`PLAN_ENGINE_VERSION` bleibt 3**, `inputs` unverändert. Bewusste Änderung nur in der Alternativen-Liste des
+    Trainingsmodus (Snapshot `packages/core/src/log/__snapshots__/workout.test.ts.snap`: nur Zugänge, keine Abgänge;
+    jeder neue Kandidat erlaubt, machbar, nicht schwerer, gleiches Muster).
+
+**Nachträge aus der Wächter-Prüfung T1 (`waechter-t1.md`, Urteil „mit Auflagen“) – umgesetzt:**
+
+- **S1:** `workout-session.ts` übergibt `swap: { swapRules: displaySwapRules(active.plan, birthDate, rules) }`.
+  App-Test: Plan in der Schwangerschaft erstellt, Schwangerschaft beendet (Plan nicht neu erstellt) → im
+  Trainingsmodus keine Alternative mit `long_supine`/`overhead`; Gegenprobe mit nur den aktuellen Regeln zeigt solche
+  Übungen (der Test schlägt ohne die Zeile an).
+- **S2 – entschieden: per Typ (Variante a).** Kein Rückfall `?? rules` mehr:
+  - `DisplayContext.swap?: { swapRules; location; ambiguousLocation?; preferences?; daySwaps?: { swaps; planId;
+ownerUserId; today; catchUpToday? } }` – Präferenzen und Day-Swaps gibt es nur im Bündel mit **Pflichtfeld**
+    `swapRules`; ohne `swap` laufen keine Tausch-Schichten (sichere Richtung). Typ-Test mit `@ts-expect-error`.
+  - `PlanExerciseContext.swap: { swapRules; preferences?; location?; ambiguousLocation? }` ist **Pflicht**:
+    Alternativen und schwerere Variante prüfen immer mit der Plan-Untergrenze; die schwerere Variante schließt
+    immer die Ausschlüsse des Orts und die Übungen der Einheit aus (Folge: eine Variante, die schon in der Einheit
+    steht, wird nicht mehr vorgeschlagen).
+  - `ExportDisplayContext.swap?: { swapRules; preferences }` (PDF).
+  - Die flachen Felder (`preferences`, `location`, `swapRules`, `daySwaps`, `today`, `planId`, `catchUpToday`) aus
+    Umsetzungsstand-Punkt 2 sind damit ersetzt.
+- **K2:** `applyDaySwaps` prüft das Konto selbst (`ownerUserId` im Kontext); fremde Swaps fallen weg (Test).
+- **K3:** `canExclude` bekommt `profiles` je Ort und prüft mit dem Profil des **gewählten** Orts (Test „geraten zu
+  Hause, gewählt Studio“).
+- **K4:** Gleichheitstest zusätzlich mit S ≠ X, Präferenzen, Einheit, schwererer Variante und mehrdeutigem Ort, mit
+  unabhängigen Erwartungen.
+- **K5:** Snapshot „Alternativen vorher/nachher“ vergleicht jetzt die **Reihenfolge** und rechnet mit der schwereren
+  Variante (erste `harder`-Alternative) – weiterhin keine Abgänge.
+- **K6:** Eigenschaftstest mit wirksamen Day-Swaps (Zähler > 20), „archivierter“ Übung (nur Nachschlagen, nie Ersatz)
+  und gelegentlichem Altersübergang (+2 Jahre).
+- **K7:** PDF-Fassungen trennen sich auch nach Präferenz-Markierung je Zeile und Zahl der ausgelassenen Übungen
+  (Test „einmal getauscht, einmal geplant“).
+- **K9:** `daySwapSchema.storedOrderNo` 1–8 (`DAY_SWAP_LIMITS.maxStoredOrderNo` = `PLAN_BLOCK_LIMITS.exercisesPerSession`,
+  wie `planned_exercises.order_no`).
+
+**Offene Punkte aus der Wächter-Prüfung T1:**
+
+- **K1 – Fachprüfung der neuen Trainingsmodus-Alternativen** (Content-Pflege): regelkonform, aber für Einsteiger teils
+  überraschend, z. B. `rdl-einbeinig-koerpergewicht → rumaenisches-kreuzheben-langhantel, kettlebell-swing`
+  (ballistisch), `kniebeuge-koerpergewicht → beinpresse`, `fliegende-kabel → bankdruecken-kurzhantel/liegestuetz`
+  (Isolation ↔ Grundübung). Grundlage: Snapshot `packages/core/src/log/__snapshots__/workout.test.ts.snap`. Mögliche
+  Folge: Stufe 3 auf gleiche `mechanics` begrenzen oder ballistische Übungen kennzeichnen.
+- **K8 – in T2 sichtbar machen:** Eine Präferenz auf eine archivierte angezeigte Übung wird ignoriert (S-8), auch bei
+  „Hier nicht machbar“. Die Einstellungen müssen sie als „nicht mehr verfügbar“ mit „Entfernen“ zeigen (8.2).

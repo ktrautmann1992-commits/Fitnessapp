@@ -24,6 +24,11 @@ export interface HarderVariantContext {
   readonly rules: Pick<PlanSafetyRules, 'excludedCautionTags' | 'cautious'>;
   /** Level aus den Angaben: Einsteiger (wie vorsichtige Pläne) höchstens 1 Schwierigkeitsstufe schwerer (W8). */
   readonly experienceLevel: ExperienceLevel;
+  /**
+   * Nicht vorschlagen (Wächter S2, Etappe T1): Ausschlüsse des Orts („Mag ich nicht“/„Hier nicht machbar“) und
+   * Übungen der Einheit – dann die nächste erlaubte schwerere Variante oder kein Hinweis.
+   */
+  readonly exclude?: ReadonlySet<string>;
 }
 
 export interface HarderVariantSuggestion {
@@ -55,6 +60,7 @@ export function progressHintForDisplay(
         library: ctx.library,
         profile: ctx.profile,
         rules: ctx.rules,
+        ...(ctx.exclude ? { exclude: ctx.exclude } : {}),
         ...(ctx.experienceLevel === 'beginner' || ctx.rules.cautious
           ? { maxDifficultyStep: HARDER_VARIANT_RULES.cautiousMaxDifficultyStep }
           : {}),

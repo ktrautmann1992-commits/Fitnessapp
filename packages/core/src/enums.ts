@@ -90,6 +90,14 @@ export type CookingMode = (typeof COOKING_MODES)[number];
 export const FOOD_PREFERENCE_KINDS = ['like', 'dislike', 'intolerance'] as const;
 export type FoodPreferenceKind = (typeof FOOD_PREFERENCE_KINDS)[number];
 
+/**
+ * Ausschluss einer Übung an einem Ort (docs/PLAN-UEBUNGEN-GLOSSAR-TAUSCH.md 5.1, D-1): „Mag ich nicht“ (weich) bzw.
+ * „Hier nicht machbar“ (hart, Ort/Ausstattung). Bewusst KEIN Gesundheitsgrund – kein Gesundheitsdatum.
+ * Datenbank-Enum `public.exercise_preference_kind` folgt in Etappe T3.
+ */
+export const EXERCISE_PREFERENCE_KINDS = ['dislike', 'not_feasible'] as const;
+export type ExercisePreferenceKind = (typeof EXERCISE_PREFERENCE_KINDS)[number];
+
 // ---------------------------------------------------------------------------------------------------------
 // Phase 2 · Inhalte (Übungsbibliothek und Plan-Vorlagen), docs/PLAN-PHASE-2.md Abschnitt 5
 // ---------------------------------------------------------------------------------------------------------
