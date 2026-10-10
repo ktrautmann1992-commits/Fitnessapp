@@ -55,6 +55,8 @@ export const de = {
       'Offline-Speicher nicht verfügbar (z. B. privates Fenster) – bitte mit Verbindung speichern.',
     foreignData:
       'Auf diesem Gerät liegen noch Einträge eines anderen Kontos. Bitte entscheide zuerst, ob sie gelöscht werden sollen.',
+    preferenceRejected:
+      'Das ließ sich gerade nicht speichern – deine Auswahl passt nicht mehr zum aktuellen Stand. Bitte öffne den Tausch noch einmal.',
   },
   welcome: {
     logoLabel: 'Alpha5',
@@ -656,10 +658,6 @@ export const de = {
     // Menü
     skip: 'Nicht gemacht',
     unskip: 'Doch gemacht',
-    alternative: 'Alternative durchgeführt',
-    alternativeTitle: 'Welche Übung hast du gemacht?',
-    alternativeNone: 'Für diese Übung gibt es gerade keine passende Alternative.',
-    backToPlanned: (name: string) => `Doch „${name}“ gemacht`,
     startWeight: 'Eigenes Startgewicht',
     startWeightLabel: 'Startgewicht in kg',
     startWeightHint: 'Gilt nur, solange du diese Übung noch nicht eingetragen hast.',
@@ -994,7 +992,10 @@ export const de = {
       count === 1
         ? '1 Training ist noch nicht übertragen und fehlt in der Datei.'
         : `${count} Trainings sind noch nicht übertragen und fehlen in der Datei.`,
-    exportTestMode: 'Testmodus: Die Datei enthält die Angaben auf diesem Gerät (ohne E-Mail).',
+    exportTestMode:
+      'Testmodus: Die Datei enthält die Angaben auf diesem Gerät (ohne E-Mail), auch deine ausgeschlossenen Übungen.',
+    exportDeviceOnly:
+      'Nicht enthalten sind Angaben, die nur kurz auf diesem Gerät liegen: laufende Trainings (Entwürfe) und „Nur heute“-Tausche.',
     exportSavedWeb: 'Die Datei wurde heruntergeladen.',
     exportSavedNative: 'Die Datei wurde gespeichert.',
     exportCancelled: 'Export abgebrochen – es wurde nichts gespeichert.',
@@ -1208,6 +1209,117 @@ export const de = {
     guide: 'Anleitung',
     settingsTitle: 'Übungen (Glossar)',
     settingsText: 'Alle Übungen mit Anleitung – auch ohne Plan.',
+  },
+  /**
+   * Übungen tauschen (docs/PLAN-UEBUNGEN-GLOSSAR-TAUSCH.md 8.2/8.4, Etappe T2). Kein „verboten“, kein Gesundheitsbezug,
+   * nie „kann ich nicht“ (D-1): „Hier nicht machbar“ meint immer Ort und Ausstattung.
+   */
+  swap: {
+    button: 'Tauschen',
+    buttonA11y: (name: string) => `${name} tauschen`,
+    undoDaySwap: 'Tausch zurücknehmen',
+    undoDaySwapA11y: (name: string) => `Tausch zurücknehmen, wieder ${name}`,
+    markPreference: 'getauscht (deine Wahl)',
+    markDaySwap: 'heute getauscht',
+    markDaySwapLater: 'für dieses Training getauscht',
+    dialogTitle: 'Übung tauschen',
+    insteadOf: (name: string) => `Statt ${name}:`,
+    candidatesLabel: 'Alternativen',
+    howTo: "So geht's",
+    howToA11y: (name: string) => `So geht's: ${name}`,
+    harderVariant: 'etwas schwerer – nur für heute',
+    durationTitle: 'Wie lange?',
+    onlyToday: 'Nur heute',
+    onlyThisSession: 'Nur bei diesem Training',
+    always: (place: string) => `Ab jetzt immer – ${place}`,
+    alwaysPlain: 'Ab jetzt immer',
+    alwaysHint:
+      'Die App merkt sich deine Wahl für diesen Ort – in allen Einheiten und neuen Plänen.',
+    places: { home: 'zu Hause', gym: 'im Studio' },
+    alwaysUnavailable:
+      'Für diese Übung gibt es hier gerade keine gleichwertige Alternative – „Ab jetzt immer“ geht deshalb nicht.',
+    alwaysNotForChoice:
+      'Diese Alternative geht nur für heute. Für „Ab jetzt immer“ wähle bitte eine andere.',
+    todayUnavailable:
+      'Dieser Termin ist vorbei und kann heute nicht mehr nachgeholt werden – „Nur heute“ wirkt hier nicht mehr.',
+    alwaysDaySwapped:
+      'Diese Übung ist schon nur für heute getauscht – dafür geht „Ab jetzt immer“ nicht. Für heute kannst du eine andere Übung wählen.',
+    chooseDuration: 'Bitte wähle, wie lange getauscht wird.',
+    alwaysLimit:
+      'Du hast die Höchstzahl ausgeschlossener Übungen erreicht. In den Einstellungen kannst du Übungen wieder zulassen.',
+    locationTitle: 'Wo trainierst du diese Einheit?',
+    locationHome: 'Zu Hause',
+    locationGym: 'Im Studio',
+    reasonTitle: 'Warum?',
+    reasonDislike: 'Mag ich nicht',
+    reasonNotFeasible: 'Hier nicht machbar',
+    reasonNotFeasibleHint: 'z. B. Gerät, Platz, Ausstattung',
+    healthHint:
+      'Hast du bei einer Übung Schmerzen oder Beschwerden? Dann lass sie aus und kläre das ärztlich ab. Im Gesundheits-Check (Einstellungen) kannst du Angaben machen, damit die App deinen Plan vorsichtiger macht.',
+    confirm: 'Tauschen',
+    cancel: 'Abbrechen',
+    close: 'Schließen',
+    chooseCandidate: 'Bitte wähle eine Übung.',
+    chooseLocation: 'Bitte wähle, wo du diese Einheit trainierst.',
+    chooseReason: 'Bitte wähle einen Grund.',
+    noCandidates: 'Für diese Übung gibt es hier gerade keine gleichwertige Alternative.',
+    noCandidatesWorkout: 'Du kannst sie heute auslassen – mit „Nicht gemacht“.',
+    libraryMissing: 'Die Alternativen können gerade nicht geprüft werden – kurz online gehen.',
+    adjustEquipment: 'Geräte anpassen',
+    adjustEquipmentHint:
+      'Mehr Geräte zu Hause bringen mehr Alternativen – sie wirken, sobald du den Plan neu erstellst.',
+    backToPlanned: (name: string) => `Zurück zu ${name}`,
+    done: (from: string, to: string) => `${from} durch ${to} ersetzt.`,
+    doneAlwaysHint:
+      'Rückgängig machen kannst du das auch unter Einstellungen, Ausgeschlossene Übungen.',
+    undo: 'Rückgängig',
+    undone: 'Tausch rückgängig gemacht.',
+    failed: 'Der Tausch hat nicht geklappt. Bitte versuche es noch einmal.',
+    hiddenByPreference: (count: number) =>
+      count === 1
+        ? '1 Übung entfällt hier – du hast sie als hier nicht machbar markiert, und es gibt keine machbare Alternative. Hebe den Ausschluss auf oder passe deine Geräte an.'
+        : `${count} Übungen entfallen hier – du hast sie als hier nicht machbar markiert, und es gibt keine machbare Alternative. Hebe einen Ausschluss auf oder passe deine Geräte an.`,
+    keyPatternMissing: {
+      pull: 'Dieser Einheit fehlt jetzt eine Rücken-Übung (Ziehen).',
+      hinge: 'Dieser Einheit fehlt jetzt eine Hüft-Übung (Hüftbeuge).',
+    },
+    keptDisliked: 'Keine passende Alternative – diese Übung bleibt vorerst in deinem Plan.',
+    emptyByPreference: 'Alle Übungen dieser Einheit hast du hier ausgeschlossen.',
+    emptyStartDisabled: 'Training starten geht wieder, sobald du einen Ausschluss aufhebst.',
+    manyExclusions: 'Du hast viele Übungen ausgeschlossen – dein Plan wird einseitiger.',
+    viewExclusions: 'Ausschlüsse ansehen',
+    draftRunning: 'Für diese Einheit läuft ein Training – tauschen kannst du dort.',
+  },
+  /** Einstellungen → „Ausgeschlossene Übungen“ (8.2, Etappe T2). */
+  exclusions: {
+    title: 'Ausgeschlossene Übungen',
+    intro:
+      'Diese Übungen zeigt dir die App am jeweiligen Ort nicht mehr, sondern eine gleichwertige Alternative. Du kannst sie jederzeit wieder zulassen.',
+    empty: 'Du hast keine Übungen ausgeschlossen.',
+    groups: { home: 'Zu Hause', gym: 'Im Studio' },
+    kind: { dislike: 'Mag ich nicht', not_feasible: 'Hier nicht machbar' },
+    replacement: (name: string) => `Ersatz: ${name}`,
+    noReplacement: 'Ersatz: wählt die App',
+    replacementUnavailable: 'Dein Ersatz ist nicht mehr verfügbar – die App wählt einen anderen.',
+    unavailable: 'nicht mehr verfügbar',
+    unavailableHint: 'Diese Übung bietet die App nicht mehr an – der Eintrag wirkt nicht mehr.',
+    allow: 'Wieder zulassen',
+    allowA11y: (name: string, place: string) => `${name} ${place} wieder zulassen`,
+    remove: 'Entfernen',
+    removeA11y: (name: string, place: string) => `${name} ${place}: Eintrag entfernen`,
+    allowTitle: 'Wieder zulassen?',
+    allowText: 'Die Übung erscheint wieder in deinem Plan – ab sofort.',
+    removeTitle: 'Eintrag entfernen?',
+    removeText: 'Der Eintrag wird gelöscht. Die Übung bietet die App ohnehin nicht mehr an.',
+    allowed: (name: string) => `${name} ist wieder zugelassen.`,
+    removed: 'Eintrag entfernt.',
+    unknownName: 'Unbekannte Übung',
+    libraryMissing: 'Übungsnamen können gerade nicht geladen werden – kurz online gehen.',
+    notSupported:
+      'Ausschlüsse kommen bald auch für Konten. Bis dahin kannst du Übungen „nur heute“ tauschen.',
+    settingsText: 'Übungen, die du „ab jetzt immer“ getauscht hast – mit „Wieder zulassen“.',
+    glossaryStatus: (place: string, reason: string) => `Ausgeschlossen ${place}: ${reason}`,
+    back: 'Zurück',
   },
   notFound: {
     title: 'Diese Seite gibt es nicht.',

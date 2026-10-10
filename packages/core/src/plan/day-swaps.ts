@@ -88,6 +88,20 @@ export function removeDaySwap(
   return list.filter((s) => !sameSlot(s, slot));
 }
 
+/**
+ * Wirkt ein „Nur heute“-Tausch an dieser Einheit (Wächter T2-S1)? Nur an geplanten Einheiten, deren AKTUELLES Datum
+ * heute oder später liegt – oder die heute nachgeholt werden dürfen (canCatchUp, N1). Gemeinsames Prädikat für
+ * applyDaySwaps, pruneDaySwaps und die App (Angebot „Nur heute“), damit nie ein Tausch angeboten wird, der nicht wirkt.
+ */
+export function daySwapApplies(
+  session: { readonly status: PlannedSessionStatus; readonly scheduled_on: string },
+  options: { readonly today: string; readonly catchUpToday: boolean },
+): boolean {
+  return (
+    session.status === 'planned' && (session.scheduled_on >= options.today || options.catchUpToday)
+  );
+}
+
 /** Einheit, für die Day-Swaps gelten (die angezeigte, gespeicherte Einheit). */
 export interface DaySwapSession {
   readonly id: string;
@@ -143,9 +157,10 @@ export function applyDaySwaps(
   const result = [...pairs];
   const daySwapped: SwapRecord[] = [];
   const dropped: DaySwap[] = [];
-  const active =
-    session.status === 'planned' &&
-    (session.scheduled_on >= ctx.today || (ctx.catchUpToday ?? false));
+  const active = daySwapApplies(session, {
+    today: ctx.today,
+    catchUpToday: ctx.catchUpToday ?? false,
+  });
   const done = new Set<number>();
   for (const swap of own) {
     const index = result.findIndex((p) => p.storedOrderNo === swap.storedOrderNo);
@@ -198,7 +213,11 @@ export function pruneDaySwaps(
   return swaps.filter((swap) => {
     if (options.activePlanId === null || swap.planId !== options.activePlanId) return false;
     const session = sessions.find((s) => s.id === swap.sessionId);
-    if (!session || session.status !== 'planned') return false;
-    return session.scheduled_on >= options.today || canCatchUp(sessions, session.id, options.today);
+    if (!session) return false;
+    return daySwapApplies(session, {
+      today: options.today,
+      catchUpToday:
+        session.scheduled_on < options.today && canCatchUp(sessions, session.id, options.today),
+    });
   });
 }

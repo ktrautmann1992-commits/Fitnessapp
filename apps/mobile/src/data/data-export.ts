@@ -1,10 +1,15 @@
-import { DATA_EXPORT_FORMAT_VERSION, type DataExportTable } from '@fitnessapp/core';
+import {
+  DATA_EXPORT_FORMAT_VERSION,
+  type DataExportTable,
+  type PendingDbExportTable,
+} from '@fitnessapp/core';
 
 import type { UserRows } from './types';
 
 /**
  * Testmodus: Datenexport aus dem Gerätespeicher in DERSELBEN Form wie export_my_data() (docs/PLAN-PHASE-4.md 3.7) –
- * gleiche Tabellen-Schlüssel (der Typ erzwingt alle aus DATA_EXPORT_TABLES), Zeilen wie gespeichert. Danach prüft
+ * gleiche Tabellen-Schlüssel (der Typ erzwingt alle aus DATA_EXPORT_TABLES und PENDING_DB_EXPORT_TABLES), Zeilen wie
+ * gespeichert. Danach prüft
  * buildDataExportFile() (packages/core) beide Wege gleich. Nur Abbildung.
  */
 export function localDataExport(
@@ -15,10 +20,10 @@ export function localDataExport(
   format_version: number;
   exported_at: string;
   user_id: string;
-  data: Record<DataExportTable, unknown[]>;
+  data: Record<DataExportTable | PendingDbExportTable, unknown[]>;
 } {
   const one = <T>(row: T | null): T[] => (row === null ? [] : [row]);
-  const data: Record<DataExportTable, unknown[]> = {
+  const data: Record<DataExportTable | PendingDbExportTable, unknown[]> = {
     profiles: one(rows.profile),
     consents: [...rows.consents].sort((a, b) => a.granted_at.localeCompare(b.granted_at)),
     body_metrics: rows.bodyMetrics,
@@ -42,6 +47,8 @@ export function localDataExport(
     set_logs: rows.setLogs,
     cardio_logs: rows.cardioLogs,
     exercise_start_weights: rows.startWeights,
+    // Übungs-Präferenzen (Etappe T2) – in export_my_data() erst mit Etappe T3 (PENDING_DB_EXPORT_TABLES).
+    exercise_preferences: rows.exercisePreferences,
   };
   return {
     format_version: DATA_EXPORT_FORMAT_VERSION,

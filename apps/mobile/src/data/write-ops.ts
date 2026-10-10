@@ -4,6 +4,7 @@ import {
   PLAN_SAVE_LIMITS,
   type ConsentPlatform,
   type ConsentType,
+  type EquipmentLocation,
   type FoodPreferenceKind,
   type SavePlanPayload,
   type SavePlanSession,
@@ -21,6 +22,7 @@ import {
 import type {
   BodyMeasurementsRow,
   BodyMetricsRow,
+  ExercisePreferenceRow,
   FoodPreferenceRow,
   GoalsRow,
   MeasurementReminderRow,
@@ -82,7 +84,15 @@ export type WriteOp =
    * Eigenes Startgewicht (exercise_start_weights, direkt per PostgREST – bewusste Ausnahme W14); null = entfernen.
    * Kein Tagebuch-Inhalt: darf über die normale Warteschlange (Schlüssel set_exercise_start_weight:<exercise_id>).
    */
-  | { kind: 'set_exercise_start_weight'; exerciseId: string; weightKg: number | null };
+  | { kind: 'set_exercise_start_weight'; exerciseId: string; weightKg: number | null }
+  /**
+   * Übungs-Präferenz „Ab jetzt immer“ anlegen bzw. ersetzen (Schlüssel Übung + Ort; docs/PLAN-UEBUNGEN-GLOSSAR-TAUSCH.md
+   * 9, Etappe T2). Kein Gesundheitsdatum: ab T3 über die normale Warteschlange
+   * (Schlüssel exercise_preference:<exercise_id>:<location>, letzte Änderung gewinnt).
+   */
+  | { kind: 'upsert_exercise_preference'; row: ExercisePreferenceRow }
+  /** Übungs-Präferenz entfernen („Wieder zulassen“, „Entfernen“, Rückgängig). */
+  | { kind: 'delete_exercise_preference'; exerciseId: string; location: EquipmentLocation };
 
 export type ProfilePatch = Pick<
   TablesUpdate<'profiles'>,
@@ -289,6 +299,23 @@ function applyOne(rows: UserRows, op: WriteOp, ctx: ApplyContext): UserRows {
               ],
       };
     }
+    case 'upsert_exercise_preference':
+      return {
+        ...rows,
+        exercisePreferences: [
+          ...rows.exercisePreferences.filter(
+            (p) => !(p.exercise_id === op.row.exercise_id && p.location === op.row.location),
+          ),
+          op.row,
+        ],
+      };
+    case 'delete_exercise_preference':
+      return {
+        ...rows,
+        exercisePreferences: rows.exercisePreferences.filter(
+          (p) => !(p.exercise_id === op.exerciseId && p.location === op.location),
+        ),
+      };
     case 'update_planned_session':
       return {
         ...rows,

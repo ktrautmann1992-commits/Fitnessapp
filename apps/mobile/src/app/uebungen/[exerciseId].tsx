@@ -6,12 +6,14 @@ import { StyleSheet, Text, View } from 'react-native';
 
 import { Screen } from '@/components/screen';
 import { Body, Button, Card, Heading, LoadingState, Notice } from '@/components/ui';
+import { preferencesFromRows } from '@/data/exercise-swap';
 import { glossaryContextFromRows } from '@/data/glossary';
 import { EMPTY_LOG_ROWS, logRowsOf, mergeLogRows } from '@/data/log-rows';
 import { historyExercises } from '@/data/log-summary';
 import { t } from '@/i18n';
 import { featureLine } from '@/lib/glossary-format';
 import { decodeRouteParam } from '@/lib/route-param';
+import { placeText } from '@/lib/swap-format';
 import { useThemeColors } from '@/lib/theme';
 import { useApp } from '@/state/app-state';
 import { resolveEntryRoute } from '@/state/flow';
@@ -70,6 +72,9 @@ export default function GlossaryDetailScreen() {
     );
   }
 
+  const exclusions = app.backend.supportsExercisePreferences
+    ? preferencesFromRows(app.rows).filter((p) => p.exercise_id === entry.id)
+    : [];
   const hasHistory = historyExercises(
     mergeLogRows(logRowsOf(app.rows), app.olderLogs?.logs ?? EMPTY_LOG_ROWS),
   ).some((e) => e.exerciseId === entry.id);
@@ -110,6 +115,21 @@ export default function GlossaryDetailScreen() {
         </Notice>
       ) : entry.inMyPlan ? (
         <Body>{t.glossary.inMyPlan}</Body>
+      ) : null}
+      {/* Ausschluss-Status (Etappe T2) mit Weg zu „Wieder zulassen“ in den Einstellungen. */}
+      {exclusions.length > 0 ? (
+        <Notice tone="info" testID="glossary-excluded">
+          {exclusions.map((pref) => (
+            <Body key={pref.location}>
+              {t.exclusions.glossaryStatus(placeText(pref.location), t.exclusions.kind[pref.kind])}
+            </Body>
+          ))}
+          <Button
+            label={t.swap.viewExclusions}
+            variant="link"
+            onPress={() => router.push('/ausgeschlossene-uebungen' as Href)}
+          />
+        </Notice>
       ) : null}
 
       <Card>

@@ -5,6 +5,7 @@ import {
   DATA_EXPORT_TABLES,
   dataExportFileName,
   dataExportJson,
+  PENDING_DB_EXPORT_TABLES,
 } from './data-export';
 
 const USER = '11111111-1111-4111-8111-111111111111';
@@ -39,6 +40,17 @@ describe('Datenexport (3.7, W9)', () => {
   it('neue Tabelle einer neueren Datenbank bleibt in der Datei (nie Daten verlieren)', () => {
     const file = buildDataExportFile(serverExport({ new_table: [{ a: 1 }] }), { email: null });
     expect(file?.data['new_table']).toEqual([{ a: 1 }]);
+  });
+
+  it('Testmodus-Tabellen vor der Datenbank-Etappe (exercise_preferences) bleiben in der Datei', () => {
+    expect(PENDING_DB_EXPORT_TABLES).toEqual(['exercise_preferences']);
+    // Noch nicht in export_my_data() (db-sync.test.ts) – also nicht in DATA_EXPORT_TABLES.
+    expect(DATA_EXPORT_TABLES as readonly string[]).not.toContain('exercise_preferences');
+    const prefs = [{ exercise_id: 'liegestuetz', location: 'home', kind: 'dislike' }];
+    const file = buildDataExportFile(serverExport({ exercise_preferences: prefs }), {
+      email: null,
+    });
+    expect(file?.data['exercise_preferences']).toEqual(prefs);
   });
 
   it('ungültige Antwort: fehlende Tabelle, falsches Format, keine Liste → null', () => {

@@ -4,6 +4,7 @@ import { DAY_SWAP_LIMITS } from '../constants';
 import { addDays } from '../dates';
 import {
   applyDaySwaps,
+  daySwapApplies,
   type DaySwapContext,
   daySwapSchema,
   parseStoredDaySwaps,
@@ -326,5 +327,21 @@ describe('pruneDaySwaps', () => {
     expect(
       pruneDaySwaps([swap], [s(SESSION_ID, WEDNESDAY)], { today: MONDAY, activePlanId: null }),
     ).toEqual([]);
+  });
+});
+
+describe('daySwapApplies (Wächter T2-S1)', () => {
+  const today = '2026-10-07';
+  it('geplant und heute/später, oder heute nachholbar → wirkt; sonst nicht', () => {
+    const at = (scheduled_on: string, status: 'planned' | 'completed' | 'skipped' = 'planned') => ({
+      status,
+      scheduled_on,
+    });
+    expect(daySwapApplies(at(today), { today, catchUpToday: false })).toBe(true);
+    expect(daySwapApplies(at('2026-10-09'), { today, catchUpToday: false })).toBe(true);
+    expect(daySwapApplies(at('2026-10-05'), { today, catchUpToday: false })).toBe(false);
+    expect(daySwapApplies(at('2026-10-05'), { today, catchUpToday: true })).toBe(true);
+    expect(daySwapApplies(at(today, 'completed'), { today, catchUpToday: true })).toBe(false);
+    expect(daySwapApplies(at(today, 'skipped'), { today, catchUpToday: false })).toBe(false);
   });
 });

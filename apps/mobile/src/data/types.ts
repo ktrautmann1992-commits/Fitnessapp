@@ -6,6 +6,7 @@ import type {
   CookingStep,
   EnduranceDiscipline,
   EquipmentItemInput,
+  ExercisePreference,
   ExperienceLevel,
   GoalType,
   HealthFlag,
@@ -50,6 +51,12 @@ export type SetLogRow = Tables<'set_logs'>;
 export type CardioLogRow = Tables<'cardio_logs'>;
 /** Eigenes Startgewicht (kein Tagebuch-Inhalt, darf in den normalen Zwischenspeicher). */
 export type StartWeightRow = Tables<'exercise_start_weights'>;
+/**
+ * Übungs-Präferenz „Mag ich nicht“ / „Hier nicht machbar“ je Ort (docs/PLAN-UEBUNGEN-GLOSSAR-TAUSCH.md 5.1/9, Etappe
+ * T2) – so wie die spätere Tabelle `exercise_preferences` (T3; bis dahin nicht in database.types.ts). Kein
+ * Gesundheitsdatum (Abschnitt 6): darf in den normalen Zwischenspeicher, nie an Analytics oder Logs.
+ */
+export type ExercisePreferenceRow = ExercisePreference & { user_id: string };
 
 /** Alle Zeilen eines Nutzers – im Testmodus der komplette Gerätespeicher, im Supabase-Modus ein Abbild. */
 export interface UserRows {
@@ -85,6 +92,8 @@ export interface UserRows {
   setLogs: SetLogRow[];
   cardioLogs: CardioLogRow[];
   startWeights: StartWeightRow[];
+  /** Übungs-Präferenzen (Testmodus ab Etappe T2; Supabase-Modus bis T3 immer leer). */
+  exercisePreferences: ExercisePreferenceRow[];
 }
 
 export function emptyUserRows(): UserRows {
@@ -108,6 +117,7 @@ export function emptyUserRows(): UserRows {
     setLogs: [],
     cardioLogs: [],
     startWeights: [],
+    exercisePreferences: [],
   };
 }
 

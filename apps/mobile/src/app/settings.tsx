@@ -323,6 +323,17 @@ export default function SettingsScreen() {
           onPress={() => router.push('/uebungen' as Href)}
           testID="settings-glossary"
         />
+        {app.backend.supportsExercisePreferences ? (
+          <>
+            <Body muted>{t.exclusions.settingsText}</Body>
+            <Button
+              label={t.exclusions.title}
+              variant="secondary"
+              onPress={() => router.push('/ausgeschlossene-uebungen' as Href)}
+              testID="settings-exclusions"
+            />
+          </>
+        ) : null}
       </Card>
 
       <Heading level={2}>{t.settings.consents}</Heading>
@@ -419,6 +430,7 @@ export default function SettingsScreen() {
       <Card>
         <Body muted>{t.settings.exportText}</Body>
         {app.backend.mode === 'local' ? <Body muted>{t.settings.exportTestMode}</Body> : null}
+        <Body muted>{t.settings.exportDeviceOnly}</Body>
         {app.offline ? <Body muted>{t.errors.onlineOnly}</Body> : null}
         {exportMessage ? (
           <Notice tone={exportMessage.tone} testID="settings-export-message">

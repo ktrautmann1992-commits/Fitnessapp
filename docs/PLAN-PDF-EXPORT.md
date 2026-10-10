@@ -46,7 +46,10 @@ Fußzeile als normales Element je Seite.
 - **Nichts Verräterisches im PDF (B1):**
   - Der neutrale Arzt-Hinweis steht auf **jedem** PDF, für alle gleich: „Bitte kläre vor Trainingsbeginn ärztlich ab,
     ob das Training für dich passt. Alpha5 ersetzt keine ärztliche Beratung.“
-  - Markierung „getauscht“ **nur** bei fehlendem Gerät, **nie** bei Tausch aus Sicherheitsgründen.
+  - Markierung „getauscht“ **nur** bei fehlendem Gerät, **nie** bei Tausch aus Sicherheitsgründen. _Ab Etappe T1/T2
+    (`docs/PLAN-UEBUNGEN-GLOSSAR-TAUSCH.md` 7.3): „getauscht (deine Wahl)“ bei „Ab jetzt immer“ und der neutrale
+    Druckhinweis „1 Übung ausgelassen (deine Wahl)“; die App übergibt Präferenzen samt Plan-Untergrenze, nie
+    „Nur heute“-Tausche._
   - **Kein Level** auf dem Deckblatt (sonst verrät „Einsteiger“ bei Fortgeschrittenen den vorsichtigen Plan).
   - Keine Gründe, Flags, Schwangerschaft, Alter, Geburtsdatum, Körpergewicht; **Zyklusdaten nie** (B11).
 - **Name optional**, Standard aus. Dokument-**Titel und Dateiname ohne Namen** (B7).

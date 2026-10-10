@@ -1003,6 +1003,8 @@ export function createSupabaseBackend(options: SupabaseBackendOptions): Backend 
       ...plan,
       ...logs,
       startWeights: (startWeights.data ?? []) as StartWeightRow[],
+      // Übungs-Präferenzen gibt es in der Datenbank erst mit Etappe T3 (supportsExercisePreferences = false).
+      exercisePreferences: [],
     };
   }
 
@@ -1037,6 +1039,8 @@ export function createSupabaseBackend(options: SupabaseBackendOptions): Backend 
 
   const backend: Backend = {
     mode: 'supabase',
+    // Übungs-Präferenzen erst mit Etappe T3 (Tabelle exercise_preferences) – bis dahin nur „Nur heute“ (8.2).
+    supportsExercisePreferences: false,
     signIn: {
       kind: 'email_code',
       requestCode: async (email) => {
@@ -1340,6 +1344,10 @@ export function createSupabaseBackend(options: SupabaseBackendOptions): Backend 
         throw new BackendError(code === 'network' ? 'online_only' : code, { cause: error });
       }
       return parseLogResponse(data).result === 'conflict' ? 'conflict' : 'ok';
+    },
+    updateExercisePreferences: async () => {
+      // Kein halbfertiger Zustand: Die App bietet „Ab jetzt immer“ ohne supportsExercisePreferences nicht an.
+      throw new BackendError('preference_rejected');
     },
     setStartWeight: async (exerciseId, weightKg, rows) => {
       const session = await requireSession();

@@ -184,7 +184,7 @@ Verbindlich ist der freigegebene Ablauf in `docs/PLAN-PHASE-1.md` Abschnitt 3 (S
 
 ## 5. Tagesansicht & Trainingstagebuch
 - Heute: geplante Einheit mit allen Übungen, Sätzen, Wiederholungen, Zielgewicht, Pause
-- Pro Übung: abhaken / nicht gemacht / Alternative durchgeführt (Auswahl aus Alternativen)
+- Pro Übung: abhaken / nicht gemacht / tauschen (Auswahl aus gleichwertigen Alternativen, „Nur heute“ oder „Ab jetzt immer“)
 - Pro Satz: Gewicht, Wiederholungen, optional RPE
 - Ausdauer: Distanz, Zeit, Pace/Geschwindigkeit, Höhenmeter, Herzfrequenz (manuell oder aus Wearable) – **Herzfrequenz
   erst ab Phase 8** (Gesundheitsdatum mit eigener Einwilligungslogik, `docs/PLAN-PHASE-4.md` 3.4 S2); Phase 4 speichert
@@ -213,6 +213,22 @@ gleiches Muster, nicht schwerer) und Link zum eigenen Verlauf. Erreichbar über 
 Verlauf je Übung und Eintrag (auch archivierte Übungen). Nur Text aus den vorhandenen Feldern – Bilder/Videos folgen
 (G2). Ist eine Übung nach den aktuellen Sicherheitsregeln nicht für den Plan vorgesehen, steht nur ein neutraler Satz
 ohne Grund da. Entwürfe tragen im Testmodus „Testinhalt – noch nicht fachlich geprüft“; live nur freigegebene Inhalte.
+
+**Übungen tauschen (`docs/PLAN-UEBUNGEN-GLOSSAR-TAUSCH.md`, Etappen T1/T2, im Testmodus umgesetzt; Supabase folgt mit
+T3):** „Tauschen“ an jeder Übung einer geplanten Kraft-Einheit auf „Heute“ (auch für andere Tage über die
+Wochenübersicht) und im Trainingsmodus (ersetzt „Alternative durchgeführt“). Der Dialog zeigt nur gleichwertige oder
+leichtere Übungen mit gleichem Bewegungsmuster, geprüft gegen die aktuellen Sicherheitsregeln **und** die Untergrenze
+des laufenden Plans (`displaySwapRules`; Lockerungen öffnen erst nach „Plan neu erstellen“). Dauer: **„Nur heute“**
+(bzw. „Nur bei diesem Training“; vor dem Training als Gerätedaten `fitnessapp.day-swaps.v1`, im Training im Entwurf)
+oder **„Ab jetzt immer – zu Hause / im Studio“** mit Grund „Mag ich nicht“ oder „Hier nicht machbar“ (kein Freitext,
+kein Gesundheitsgrund; bei unklarem Ort fragt die App nach). „Immer“ wirkt als Schicht beim Anzeigen in allen Einheiten,
+Folgeblöcken, neuen Plänen und im PDF – der gespeicherte Plan bleibt unverändert. Kennzeichen: „heute getauscht“ bzw.
+„getauscht (deine Wahl)“ – auch wenn vorher ein Sicherheits-Ersatz stand (die angezeigte Übung ist dann die Wahl der
+Person); ein reiner Sicherheits-Ersatz heißt weiter „angepasst an deine aktuellen Angaben“. „Rückgängig“ ohne Zeitlimit,
+Verwaltung unter Einstellungen → „Ausgeschlossene Übungen“ (Wieder zulassen; nicht mehr angebotene Übungen „nicht mehr
+verfügbar“ + Entfernen). Entfällt eine „hier nicht machbare“ Übung mangels Alternative, steht ein neutraler Hinweis da –
+nie „Plan neu erstellen“. Präferenzen sind im Datenexport (Testmodus) enthalten; „Nur heute“-Tausche als Gerätedaten
+nicht.
 Regeln in `packages/core/src/content/glossary.ts`, Grenzen in `GLOSSARY_LIMITS`.
 
 ## 6. Ernährungs-Engine (`packages/core/nutrition`)
@@ -538,6 +554,11 @@ löschen, nie in Logs/Analytics.
 - **Limit erreicht:** klare Meldung („Dein Kontingent für … ist diesen Monat aufgebraucht, ab … wieder verfügbar“),
   keine stille Fehlfunktion. Die Grundfunktion ohne KI (z. B. manuelles Eintragen) bleibt nutzbar.
 - Alle KI-Funktionen hinter Feature-Flag; Kostenübersicht im Admin-Bereich.
+- **Übungs-Präferenzen gehen nicht an den KI-Coach** („Mag ich nicht“ / „Hier nicht machbar“,
+  `docs/PLAN-UEBUNGEN-GLOSSAR-TAUSCH.md` Abschnitt 6, D-5) – nur nach neuer Datenschutz-Bewertung.
+  **DSFA-Merkposten (Restrisiko):** Ein Muster von Ausschlüssen (z. B. alle kniebelastenden Übungen) könnte mittelbar
+  auf Beschwerden schließen lassen (EuGH C-184/20). Milderung: kein Grund-Feld mit Gesundheitsbezug, kein Freitext, RLS,
+  Export, Löschung, keine Auswertung außerhalb des Tauschs, keine Weitergabe an Analytics, Logs oder Partner.
 
 ## 16. Fitnessstudio & Mitgliedschaft (Gratis)
 - **Studio in der Nähe:** Suche im Umkreis des Standorts über **OpenStreetMap** (kostenlos; andere Anbieter nur nach

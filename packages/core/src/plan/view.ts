@@ -1,6 +1,6 @@
 import type { Exercise } from '../content/schemas';
 import { addDays, isoWeekday, startOfIsoWeek } from '../dates';
-import type { EquipmentLocation, PlannedSessionStatus } from '../enums';
+import type { EquipmentLocation, MovementPattern, PlannedSessionStatus } from '../enums';
 import type { TrainingSchedule } from '../training-schedule';
 import { applyCurrentEnduranceRules, applyCurrentSafetyRules } from './apply-safety';
 import { isBodyweightTemplateId, type PlanLibrary } from './content-pool';
@@ -116,6 +116,11 @@ export interface DisplaySession<T extends StoredSession> {
     readonly exerciseId: string;
   }[];
   readonly preferenceNotices?: readonly PreferenceNotice[];
+  /**
+   * Muster weggefallener Übungen, deren Grundbaustein-Gruppe (SWAP_RULES.keyPatternGroups) in der Einheit jetzt fehlt
+   * – für den ausdrücklichen Hinweis („Dieser Einheit fehlt jetzt eine Rücken-Übung“, 4.2; Etappe T2).
+   */
+  readonly missingKeyPattern?: readonly MovementPattern[];
   /** Ungültige bzw. verfallene Day-Swaps dieser Einheit – die App räumt sie aus dem Speicher. */
   readonly droppedDaySwaps?: readonly DaySwap[];
   /** Kraft-Einheit, die wegen Präferenzen leer ist (Wächter S9): „Training starten“ deaktiviert, eigener Hinweis. */
@@ -217,6 +222,7 @@ export function prepareSessionForDisplay<T extends StoredSession>(
     preferenceNotices:
       session.kind === 'strength' ? preferenceNotices(prefs ?? emptyLayer, exclusions) : [],
     droppedDaySwaps: days?.droppedDaySwaps ?? [],
+    missingKeyPattern: prefs?.missingKeyPattern ?? [],
     emptyByPreference: prefs?.emptyByPreference ?? false,
   };
 }

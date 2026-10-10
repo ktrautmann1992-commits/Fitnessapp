@@ -1,6 +1,10 @@
 import {
   ageInYears,
   buildDataExportFile,
+  displayPairs,
+  displaySwapRules,
+  preferenceChainFrom,
+  preferenceLimitReached,
   CURRENT_CONSENT_VERSIONS,
   createBirthDateSchema,
   evaluateHealthScreening,
@@ -14,14 +18,16 @@ import {
   type ConsentType,
   type ContentFile,
   type PlanLibrary,
+  type PreferenceChange,
 } from '@fitnessapp/core';
 
 import { healthConsentStatus } from '../state/flow';
-import { BackendError, type Backend } from './backend';
+import { BackendError, type Backend, type PreferenceSwapContext } from './backend';
 import { LOCAL_CONSENT_DOCUMENTS } from './consent-texts';
 import { localDataExport } from './data-export';
 import { DraftStore } from './draft-store';
-import { checkSessionLog, isValidOp, isValidPlanOp } from './local-rules';
+import { preferencesFromRows, sessionDisplay } from './exercise-swap';
+import { checkSessionLog, isValidOp, isValidPlanOp, isValidPreferenceOp } from './local-rules';
 import {
   applySessionLog,
   closeMissedSessionRows,
@@ -34,6 +40,7 @@ import { readJson, STORAGE_KEYS, writeJson, type KeyValueStore } from './kv';
 import { upgradeStoredRows } from './legacy-rows';
 import { type ConsentVersions, versionsFromDocuments } from './mapping';
 import { planSave } from './plan-save';
+import { activePlan, effectiveSafetyRules, planSnapshot, profilesFor } from './training-plan';
 import { emptyUserRows, type AuthSession, type ConsentPlatform, type UserRows } from './types';
 import {
   applyHealthDataRevocation,
@@ -213,8 +220,100 @@ export function createLocalBackend(store: KeyValueStore, options: LocalBackendOp
     return applyWriteOps(rows, [op], applyContext());
   }
 
+  /**
+   * Übungs-Präferenzen (Etappe T2): jede Änderung der Reihe nach prüfen wie die spätere Datenbank (RLS, Limit-Trigger)
+   * plus canExclude für das Paar der Einheit (wie der Tausch-Dialog) – alles oder nichts.
+   */
+  async function updatePreferences(
+    changes: readonly PreferenceChange[],
+    at: PreferenceSwapContext | null,
+  ): Promise<UserRows> {
+    const { db, rows, session } = await requireProfile();
+    const library = await planLibrary();
+    const active = activePlan(rows);
+    const storedSession =
+      at && active
+        ? active.sessions.find((s) => s.id === at.sessionId && s.kind === 'strength')
+        : undefined;
+    const today = options.today();
+    const rules = effectiveSafetyRules(rows, LOCAL_VERSIONS, today);
+    const swapRules =
+      active && rules && rows.profile
+        ? displaySwapRules(active.plan, rows.profile.birth_date, rules)
+        : null;
+    const profiles = profilesFor(active ? planSnapshot(active.plan) : null);
+    /**
+     * Paar der Einheit, wie es JETZT angezeigt wird (Wächter T2-K1): Die Präferenz muss an der angezeigten Übung hängen
+     * oder an der Übung X einer Kette X → angezeigt (preferenceChainFrom). Ohne Day-Swaps (eine Präferenz hängt nie an
+     * einem Tagestausch).
+     */
+    function pairFor(current: UserRows, exerciseId: string) {
+      if (!active || !rules || !storedSession || !at) return null;
+      const shown = sessionDisplay({
+        rows: current,
+        active,
+        library,
+        rules,
+        session: storedSession,
+        today,
+        daySwaps: null,
+        ownerUserId: null,
+      });
+      const pair = displayPairs(storedSession, shown.shown).find(
+        (p) => p.storedOrderNo === at.storedOrderNo,
+      );
+      if (!pair) return null;
+      const chainFrom = preferenceChainFrom(
+        shown.shown.preferenceSwapped,
+        pair.storedOrderNo,
+        pair.shown.exercise_id,
+      );
+      return exerciseId === pair.shown.exercise_id || exerciseId === chainFrom
+        ? { stored: pair.stored, shown: { ...pair.stored, exercise_id: exerciseId } }
+        : null;
+    }
+    let next = rows;
+    for (const change of changes) {
+      if (
+        change.op === 'upsert' &&
+        preferenceLimitReached(
+          preferencesFromRows(next),
+          change.preference.exercise_id,
+          change.preference.location,
+        )
+      ) {
+        throw new BackendError('preference_limit');
+      }
+      const op: WriteOp =
+        change.op === 'upsert'
+          ? {
+              kind: 'upsert_exercise_preference',
+              row: { ...change.preference, user_id: session.userId },
+            }
+          : {
+              kind: 'delete_exercise_preference',
+              exerciseId: change.exercise_id,
+              location: change.location,
+            };
+      const ok = isValidPreferenceOp(op, {
+        rows: next,
+        library,
+        pair: change.op === 'upsert' ? pairFor(next, change.preference.exercise_id) : null,
+        inSession: new Set(at?.inSession ?? []),
+        ambiguousLocation: at?.ambiguousLocation ?? false,
+        swapRules,
+        profiles,
+      });
+      if (!ok) throw new BackendError('preference_rejected');
+      next = applyWriteOps(next, [op], applyContext());
+    }
+    await save({ ...db, rows: next });
+    return next;
+  }
+
   return {
     mode: 'local',
+    supportsExercisePreferences: true,
     signIn: {
       kind: 'test_mode',
       start: async () => {
@@ -453,6 +552,7 @@ export function createLocalBackend(store: KeyValueStore, options: LocalBackendOp
       await save({ ...db, rows: deleteSessionLogRows(rows, id, options.today()) });
       return 'ok';
     },
+    updateExercisePreferences: (changes, at) => updatePreferences(changes, at),
     setStartWeight: async (exerciseId, weightKg) => {
       const { db, rows } = await requireProfile();
       const next = applyChecked(rows, { kind: 'set_exercise_start_weight', exerciseId, weightKg });

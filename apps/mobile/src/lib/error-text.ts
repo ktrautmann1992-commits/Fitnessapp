@@ -31,6 +31,10 @@ export function errorText(error: unknown): string {
       return t.errors.foreignData;
     case 'storage_unavailable':
       return t.errors.storageUnavailable;
+    case 'preference_rejected':
+      return t.errors.preferenceRejected;
+    case 'preference_limit':
+      return t.swap.alwaysLimit;
     case 'unknown':
       return t.errors.generic;
   }

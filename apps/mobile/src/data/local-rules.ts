@@ -31,9 +31,17 @@ import {
   type Exercise,
   type SessionLogPayload,
   sessionLogPayloadSchema,
+  canExclude,
+  type EquipmentLocation,
+  type EquipmentProfile,
+  type ExercisePair,
+  exercisePreferenceSchema,
+  type PlanSafetyRules,
+  preferenceLimitReached,
 } from '@fitnessapp/core';
 
 import type { ConsentVersions } from './mapping';
+import { preferencesFromRows } from './exercise-swap';
 import { healthPlanBasis } from './training-plan';
 import type { PlannedSessionRow, ProfileRow, UserRows } from './types';
 import type { LogRejectReason } from './workout-draft';
@@ -176,12 +184,71 @@ export function isValidOp(op: WriteOp, context: { today: string; profile: Profil
         exerciseStartWeightSchema.safeParse({ exercise_id: op.exerciseId, weight_kg: op.weightKg })
           .success
       );
-    // Pläne brauchen mehr Zusammenhang (Bibliothek, alle Zeilen) → isValidPlanOp.
+    // Präferenzen und Pläne brauchen mehr Zusammenhang (Bibliothek, Einheit) → checkExercisePreference / isValidPlanOp.
+    case 'upsert_exercise_preference':
+    case 'delete_exercise_preference':
     case 'save_training_plan':
     case 'append_plan_block':
     case 'update_planned_session':
       return false;
   }
+}
+
+// ---------------------------------------------------------------------------------------------------------
+// Übungs-Präferenzen (Testmodus, Etappe T2): dieselben Regeln wie später die RLS-Policies und der Limit-Trigger von
+// exercise_preferences (docs/PLAN-UEBUNGEN-GLOSSAR-TAUSCH.md 5.2/9) plus canExclude wie im Tausch-Dialog.
+// ---------------------------------------------------------------------------------------------------------
+
+export interface PreferenceRuleContext {
+  rows: UserRows;
+  /**
+   * Gebündelte Bibliothek des Testmodus: Ersatz nur aus `exercises` (Entwürfe ohne roten Befund bzw. freigegeben,
+   * Wächter S7), die Übung selbst auch aus `displayExercises` (archiviert im eigenen Plan).
+   */
+  library: Pick<PlanLibrary, 'exercises' | 'displayExercises'>;
+  /** Paar (gespeichert, angezeigt) der Einheit, an der getauscht wurde; null = Einheit unbekannt. */
+  pair: Pick<ExercisePair, 'stored' | 'shown'> | null;
+  inSession: ReadonlySet<string>;
+  ambiguousLocation: boolean;
+  /** displaySwapRules(Plan, Geburtsdatum, aktuelle Regeln); null = Angaben unvollständig. */
+  swapRules: PlanSafetyRules | null;
+  profiles: ReadonlyMap<EquipmentLocation, Pick<EquipmentProfile, 'available'>>;
+}
+
+/**
+ * Präferenz-Vorgang gültig? Entfernen: eigenes Profil genügt. Anlegen/Ändern: eigene Zeile (user_id), strikt nach
+ * exercisePreferenceSchema (Enum, Ersatz ≠ Übung, kein Freitext), Übung lesbar, Ersatz nur aus der angebotenen
+ * Bibliothek, Obergrenze, und canExclude() für das Paar der Einheit (Kandidat vorhanden, Ersatz ist Kandidat).
+ */
+export function isValidPreferenceOp(op: WriteOp, ctx: PreferenceRuleContext): boolean {
+  const profile = ctx.rows.profile;
+  if (!profile) return false;
+  if (op.kind === 'delete_exercise_preference') return true;
+  if (op.kind !== 'upsert_exercise_preference') return false;
+  const { user_id: userId, ...row } = op.row;
+  const parsed = exercisePreferenceSchema.safeParse(row);
+  if (userId !== profile.user_id || !parsed.success) return false;
+  const pref = parsed.data;
+  const readable = ctx.library.displayExercises ?? ctx.library.exercises;
+  if (!readable.has(pref.exercise_id)) return false;
+  if (
+    pref.replacement_exercise_id !== null &&
+    !ctx.library.exercises.has(pref.replacement_exercise_id)
+  ) {
+    return false;
+  }
+  const preferences = preferencesFromRows(ctx.rows);
+  if (preferenceLimitReached(preferences, pref.exercise_id, pref.location)) return false;
+  if (!ctx.pair || !ctx.swapRules || ctx.pair.shown.exercise_id !== pref.exercise_id) return false;
+  return canExclude(ctx.pair, pref, {
+    library: ctx.library.exercises,
+    lookup: readable,
+    profiles: ctx.profiles,
+    swapRules: ctx.swapRules,
+    preferences,
+    ambiguousLocation: ctx.ambiguousLocation,
+    inSession: ctx.inSession,
+  }).ok;
 }
 
 // ---------------------------------------------------------------------------------------------------------

@@ -649,7 +649,10 @@ letzten Übung der Gruppe.
      **Wiederholungen −/+**, großer Haken „Satz geschafft“; danach startet der Pausentimer.
    - Menü je Übung: **„Nicht gemacht“** (ein Tipp, **ohne** Grund-Auswahl, S3), **„Alternative durchgeführt“** (Liste aus `exercise_alternatives`, nur
      Übungen, die die aktuellen Sicherheitsregeln erlauben und nicht schwerer sind – gleiche Regeln wie
-     `findSubstitute()`), **„Eigenes Startgewicht“** (nur ohne Eintrag).
+     `findSubstitute()`), **„Eigenes Startgewicht“** (nur ohne Eintrag). _Seit Etappe T2
+     (`docs/PLAN-UEBUNGEN-GLOSSAR-TAUSCH.md` 8.2) ersetzt das Menü **„Tauschen“** den Punkt „Alternative durchgeführt“:
+     gleicher Dialog wie auf „Heute“ (Kandidaten aus `swapCandidates('today')`), „Nur heute“ = Alternative im Entwurf,
+     „Ab jetzt immer“ zusätzlich als Präferenz._
    - Optional je Satz: „Wie viele Wiederholungen wären noch gegangen?“ (0 / 1 / 2 / 3 / 4 / 5+).
    - **Pausentimer** als Leiste unten: Restzeit groß, −15 s / +15 s / Überspringen; am Ende Vibration (App) und
      sichtbarer Hinweis; Bildschirmleser-Ansage.

@@ -77,6 +77,11 @@ export const STORAGE_KEYS = {
   /** Geladene Tagebuch-Einträge (Supabase-Modus, für offline). */
   logCache: 'fitnessapp.log-cache.v1',
   logCacheKey: 'fitnessapp.log-cache-key.v1',
+  /**
+   * „Nur heute“-Tausch vor dem Training (Day-Swaps, docs/PLAN-UEBUNGEN-GLOSSAR-TAUSCH.md 5.1/9): nur IDs und Datum,
+   * kein Gesundheitsdatum, unverschlüsselt, je Konto (data/day-swaps.ts).
+   */
+  daySwaps: 'fitnessapp.day-swaps.v1',
   /** Geräte-Einstellung „Bildschirm im Training anlassen“ (true/false, keine Nutzerdaten). */
   keepAwake: 'fitnessapp.keep-awake.v1',
 } as const;

@@ -1,5 +1,6 @@
 import {
   buildTrainingPlanDocument,
+  displaySwapRules,
   type PlanLibrary,
   type PlanSafetyRules,
   PRINT_EXPORT,
@@ -8,6 +9,7 @@ import {
 } from '@fitnessapp/core';
 import { renderPrintHtml } from '@fitnessapp/ui/print';
 
+import { preferencesFromRows } from '@/data/exercise-swap';
 import { type ActivePlan, planSnapshot, profilesFor, startGroupOf } from '@/data/training-plan';
 import type { UserRows } from '@/data/types';
 import { t } from '@/i18n';
@@ -147,6 +149,11 @@ export function buildPlanPrint(input: PlanPrintInput): PlanPrintResult {
       library: library.displayExercises ?? library.exercises,
       substituteLibrary: library.exercises,
       profiles: profilesFor(snapshot),
+      // „Ab jetzt immer“ gilt auch im PDF (Etappe T2), mit der Plan-Untergrenze (Wächter T1-S2); NIE Day-Swaps.
+      swap: {
+        swapRules: displaySwapRules(active.plan, birthDate, rules),
+        preferences: preferencesFromRows(rows),
+      },
     },
     // Phase-4-Gewichte gibt es in der App noch nicht (Trainingstagebuch folgt) → Gewichts-Spalte leer.
     null,

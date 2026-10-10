@@ -1,34 +1,37 @@
 import {
   addDays,
   blockWeekFor,
+  type DaySwap,
   followUpBlockState,
   nextPlannedSession,
   planInfoNotices,
-  prepareSessionForDisplay,
-  sessionLocation,
+  type PreferenceChange,
   sessionOn,
   startOfIsoWeek,
   weekOverview,
 } from '@fitnessapp/core';
-import { Redirect, useRouter, type Href } from 'expo-router';
-import { useEffect, useMemo, useState } from 'react';
+import { Redirect, useFocusEffect, useRouter, type Href } from 'expo-router';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 import { Platform, View } from 'react-native';
 
 import { MedicalNotice, SessionCard, WeekOverview } from '@/components/plan';
 import { ConfirmDialog, Screen } from '@/components/screen';
+import { focusTestId, SwapDialog, type SwapDecision, SwapFeedback } from '@/components/swap';
 import { Body, Button, Card, Heading, LoadingState, Notice } from '@/components/ui';
-import { BackendError } from '@/data/backend';
+import { BackendError, type PreferenceSwapContext } from '@/data/backend';
+import {
+  canSwapIn,
+  newDaySwap,
+  preferenceContextOf,
+  preferenceSaveFor,
+  sessionDisplay,
+  type SwapTarget,
+  swapTargetFor,
+} from '@/data/exercise-swap';
 import { logForSession } from '@/data/log-rows';
 import type { WorkoutDraft } from '@/data/workout-draft';
 import { startKind, trainedTodayOther, workoutView } from '@/data/workout-session';
-import {
-  activePlan,
-  planOffer,
-  planSnapshot,
-  profilesFor,
-  rescheduleInRows,
-  startGroupOf,
-} from '@/data/training-plan';
+import { activePlan, planOffer, rescheduleInRows } from '@/data/training-plan';
 import { t } from '@/i18n';
 import { createPlanErrorText, errorText } from '@/lib/error-text';
 import { formatDateDe, todayIso } from '@/lib/format';
@@ -54,6 +57,18 @@ export default function TodayScreen() {
   const [declineDialog, setDeclineDialog] = useState(false);
   const [discardDraftKey, setDiscardDraftKey] = useState<string | null>(null);
   const [foreignDialog, setForeignDialog] = useState(false);
+  /** Offener Tausch-Dialog (Etappe T2) und Rückmeldung mit „Rückgängig“ (ohne Zeitlimit, Wächter K4). */
+  const [swapTarget, setSwapTarget] = useState<{ target: SwapTarget; index: number } | null>(null);
+  const [swapBusy, setSwapBusy] = useState(false);
+  const [swapError, setSwapError] = useState<string>();
+  const [swapFeedback, setSwapFeedback] = useState<{
+    text: string;
+    tone: 'success' | 'danger' | 'info';
+    undo:
+      | { kind: 'preference'; changes: readonly PreferenceChange[]; at: PreferenceSwapContext }
+      | { kind: 'day_swap'; sessionId: string; storedOrderNo: number }
+      | null;
+  } | null>(null);
 
   const { ensureLibrary, appendNextBlockIfDue, library } = app;
   useEffect(() => {
@@ -66,6 +81,8 @@ export default function TodayScreen() {
 
   const rows = app.rows;
   const active = useMemo(() => (rows ? activePlan(rows) : null), [rows]);
+  // Bildschirm verlassen → „Rückgängig“ verschwindet (8.2; rückgängig geht dann über die Einstellungen).
+  useFocusEffect(useCallback(() => () => setSwapFeedback(null), []));
 
   if (app.status.kind === 'loading') {
     return (
@@ -152,6 +169,7 @@ export default function TodayScreen() {
   /** Verschieben antippen: Ergebnis vorab berechnen – wird gestrichen, erst nachfragen. */
   function requestMove(sessionId: string) {
     if (!rows) return;
+    setSwapFeedback(null);
     const preview = rescheduleInRows(rows, sessionId, today);
     if (preview.kind === 'skipped') {
       setSkipDialog(sessionId);
@@ -338,9 +356,7 @@ export default function TodayScreen() {
 
   // --- Plan vorhanden -------------------------------------------------------------------------------------
   const plan = active.plan;
-  const birthDate = rows.profile?.birth_date ?? today;
-  const snapshot = planSnapshot(plan);
-  const profiles = profilesFor(snapshot);
+  const ownerUserId = app.session?.userId ?? null;
   const week = blockWeekFor(active.sessions, today);
   const days = weekOverview(active.sessions, today, selected);
   const selectedSession = sessionOn(active.sessions, selected);
@@ -352,30 +368,22 @@ export default function TodayScreen() {
   const followUp = followUpBlockState(active.sessions, today);
   const templateVersion = lib?.templates.find((tpl) => tpl.id === plan.template_id)?.version;
   const offer = rules ? planOffer(rows, app.versions, active, rules, today, templateVersion) : null;
-  // Nachschlagen auch archivierter Übungen des laufenden Plans; Ersatz nur aus freigegebenen.
-  const lookup = lib ? (lib.displayExercises ?? lib.exercises) : null;
-  const context = selectedSession
-    ? {
-        library: lookup,
-        // Ort: fester Tag bzw. bei „Tage egal“ mit zwei Orten aus der Fassung (Heim-Geräte).
-        profile: profiles.get(
-          sessionLocation(selectedSession, snapshot?.schedule ?? null, {
-            library: lookup,
-            homeProfile: profiles.get('home'),
-          }),
-        ),
-      }
-    : null;
-  const shown =
-    selectedSession && rules && context
-      ? prepareSessionForDisplay(selectedSession, {
+  // EIN Anzeigeweg (prepareSessionForDisplay im Core): Sicherheitsregeln → Präferenzen → „Nur heute“-Tausche.
+  const display =
+    selectedSession && rules
+      ? sessionDisplay({
+          rows,
+          active,
+          library: lib,
           rules,
-          previousStartGroup: startGroupOf(active, birthDate),
-          library: context.library,
-          ...(lib ? { substituteLibrary: lib.exercises } : {}),
-          ...(context.profile ? { profile: context.profile } : {}),
+          session: selectedSession,
+          today,
+          daySwaps: app.daySwaps,
+          ownerUserId,
         })
       : null;
+  const shown = display?.shown ?? null;
+  const context = display?.context ?? null;
   // Verschieben/Streichen, solange die Woche des ursprünglichen Termins nicht vorbei ist – auch verpasste
   // Einheiten an vergangenen Tagen dieser Woche (Regel des Datenbank-Triggers).
   const canMove =
@@ -390,6 +398,8 @@ export default function TodayScreen() {
     selectedSession && selectedSession.kind === 'strength' && lib && rules
       ? workoutView(rows, lib, rules, selectedSession.id, today, {
           excludeLogId: logForSession(rows, selectedSession.id)?.id ?? null,
+          daySwaps: app.daySwaps,
+          ownerUserId,
         })
       : null;
   const targets = view?.items.map(workoutTargetLines);
@@ -398,6 +408,118 @@ export default function TodayScreen() {
   const hasDraft = selectedSession ? app.drafts.some((d) => d.key === selectedSession.id) : false;
   const pendingUpload =
     selectedSession !== null && app.pendingLogSessionIds.includes(selectedSession.id);
+  const swapEnabled =
+    selectedSession !== null &&
+    display !== null &&
+    canSwapIn(selectedSession, display, hasDraft, app.backend.supportsExercisePreferences);
+  const supportsPreferences = app.backend.supportsExercisePreferences;
+  const viewExclusions = supportsPreferences
+    ? () => router.push('/ausgeschlossene-uebungen' as Href)
+    : null;
+
+  function openSwap(index: number) {
+    if (!selectedSession || !display || !lib || !rows) return;
+    const target = swapTargetFor(selectedSession, display, lib, rows, index, today);
+    if (!target) return;
+    setSwapFeedback(null);
+    setSwapError(undefined);
+    setSwapTarget({ target, index });
+  }
+
+  function closeSwap() {
+    const index = swapTarget?.index;
+    setSwapTarget(null);
+    setSwapError(undefined);
+    // Fokus zurück auf „Tauschen“ (8.3).
+    if (index !== undefined) setTimeout(() => focusTestId(`plan-swap-${index}`), 50);
+  }
+
+  async function confirmSwap(decision: SwapDecision) {
+    if (!swapTarget || !selectedSession || !ownerUserId || !rows) return;
+    const { target } = swapTarget;
+    const toName =
+      target.choices.today.find((c) => c.id === decision.candidateId)?.name_de ??
+      decision.candidateId;
+    const text = t.swap.done(target.shownName, toName);
+    setSwapBusy(true);
+    setSwapError(undefined);
+    try {
+      if (decision.duration === 'always') {
+        // Nie still auf „Nur heute“ ausweichen (Wächter T2-K3) – der Dialog verlangt Ort und Grund.
+        if (!decision.location || !decision.kind) throw new BackendError('unknown');
+        const save = preferenceSaveFor(target, rows, {
+          location: decision.location,
+          kind: decision.kind,
+          replacementId: decision.candidateId,
+          now: new Date().toISOString(),
+        });
+        const at = preferenceContextOf(target);
+        await app.updateExercisePreferences(save.changes, at);
+        setSwapFeedback({
+          text: `${text} ${t.swap.doneAlwaysHint}`,
+          tone: 'success',
+          undo: { kind: 'preference', changes: save.undo, at },
+        });
+      } else {
+        const swap = newDaySwap(target, {
+          ownerUserId,
+          planId: active?.plan.id ?? '',
+          scheduledOn: selectedSession.scheduled_on,
+          alternativeId: decision.candidateId,
+          now: new Date().toISOString(),
+        });
+        if (!swap) throw new BackendError('unknown');
+        await app.addDaySwap(swap);
+        setSwapFeedback({
+          text,
+          tone: 'success',
+          undo: {
+            kind: 'day_swap',
+            sessionId: target.sessionId,
+            storedOrderNo: target.storedOrderNo,
+          },
+        });
+      }
+      setSwapTarget(null);
+    } catch (caught) {
+      setSwapError(caught instanceof BackendError ? errorText(caught) : t.swap.failed);
+    } finally {
+      setSwapBusy(false);
+    }
+  }
+
+  async function undoSwap() {
+    const undo = swapFeedback?.undo;
+    if (!undo || !ownerUserId) return;
+    setSwapBusy(true);
+    try {
+      if (undo.kind === 'preference') {
+        await app.updateExercisePreferences(undo.changes, undo.at);
+      } else {
+        await app.removeDaySwaps([
+          { ownerUserId, sessionId: undo.sessionId, storedOrderNo: undo.storedOrderNo },
+        ]);
+      }
+      setSwapFeedback({ text: t.swap.undone, tone: 'info', undo: null });
+    } catch (caught) {
+      setSwapFeedback({ text: errorText(caught), tone: 'danger', undo: null });
+    } finally {
+      setSwapBusy(false);
+    }
+  }
+
+  async function undoDaySwap(index: number) {
+    const orderNo = shown?.storedOrderNos?.[index];
+    if (!selectedSession || !ownerUserId || orderNo === undefined) return;
+    try {
+      await app.removeDaySwaps([
+        { ownerUserId, sessionId: selectedSession.id, storedOrderNo: orderNo },
+      ]);
+      setSwapFeedback({ text: t.swap.undone, tone: 'info', undo: null });
+    } catch (caught) {
+      setSwapFeedback({ text: errorText(caught), tone: 'danger', undo: null });
+    }
+  }
 
   return (
     <Screen title={t.today.title} testID="today" footer={footer}>
@@ -461,7 +583,31 @@ export default function TodayScreen() {
             onOpenExercise={(exerciseId) =>
               router.push(`/uebungen/${encodeURIComponent(exerciseId)}` as Href)
             }
+            swap={{
+              enabled: swapEnabled,
+              later: selectedSession.scheduled_on > today,
+              onSwap: openSwap,
+              onUndoDaySwap: (index) => void undoDaySwap(index),
+              onViewExclusions: viewExclusions,
+            }}
           />
+          {/* Vom Core verworfene „Nur heute“-Tausche still aus dem Speicher räumen (8.2). */}
+          <DaySwapCleanup dropped={shown.droppedDaySwaps ?? []} />
+          {swapFeedback ? (
+            <SwapFeedback
+              text={swapFeedback.text}
+              tone={swapFeedback.tone}
+              onUndo={swapFeedback.undo ? () => void undoSwap() : null}
+              undoBusy={swapBusy}
+            />
+          ) : null}
+          {hasDraft &&
+          selectedSession.kind === 'strength' &&
+          selectedSession.status === 'planned' ? (
+            <Body muted testID="plan-swap-draft-hint">
+              {t.swap.draftRunning}
+            </Body>
+          ) : null}
           {selectedSession.status === 'completed' ? (
             <Notice tone="success" testID="plan-completed">
               <Body>{log?.status === 'partial' ? t.today.completedPartly : t.today.completed}</Body>
@@ -485,7 +631,20 @@ export default function TodayScreen() {
           ) : null}
           {start && !hasDraft ? (
             // Ausdauer braucht keine Übungs-Bibliothek (C2); Kraft erst nach geprüften Übungen (H7).
-            selectedSession.kind === 'strength' && (shown.libraryMissing || !view) ? (
+            selectedSession.kind === 'strength' && shown.emptyByPreference ? (
+              // Wächter S9: Start deaktiviert, mit sichtbarem Grund (nie eine stumme leere Einheit).
+              <>
+                <Body muted testID="plan-start-disabled">
+                  {t.swap.emptyStartDisabled}
+                </Body>
+                <Button
+                  label={start === 'today' ? t.today.startWorkout : t.today.catchUp}
+                  onPress={() => undefined}
+                  disabled
+                  testID="workout-start"
+                />
+              </>
+            ) : selectedSession.kind === 'strength' && (shown.libraryMissing || !view) ? (
               <Notice tone="info">{t.today.libraryMissingStart}</Notice>
             ) : (
               <>
@@ -541,7 +700,15 @@ export default function TodayScreen() {
       )}
 
       <Heading level={2}>{t.plan.weekTitle}</Heading>
-      <WeekOverview days={days} selected={selected} onSelect={setSelected} />
+      <WeekOverview
+        days={days}
+        selected={selected}
+        onSelect={(date) => {
+          // Andere Aktion → „Rückgängig“ verschwindet (8.2).
+          setSwapFeedback(null);
+          setSelected(date);
+        }}
+      />
       {/* Woche und Verlauf (Etappe D) – eine Tab-Leiste kommt mit der Ernährung (Phase 5). */}
       <View style={{ flexDirection: 'row', gap: 8 }}>
         <View style={{ flex: 1 }}>
@@ -608,8 +775,37 @@ export default function TodayScreen() {
         testID="plan-print"
       />
       {dialogs}
+      <SwapDialog
+        target={swapTarget?.target ?? null}
+        allowAlways={supportsPreferences}
+        busy={swapBusy}
+        error={swapError}
+        onConfirm={(decision) => void confirmSwap(decision)}
+        onCancel={closeSwap}
+        onOpenGuide={(exerciseId) => {
+          setSwapTarget(null);
+          router.push(`/uebungen/${encodeURIComponent(exerciseId)}` as Href);
+        }}
+        onAdjustEquipment={() => {
+          setSwapTarget(null);
+          router.push('/onboarding/equipment?edit=1' as Href);
+        }}
+      />
     </Screen>
   );
+}
+
+/** Räumt verworfene Day-Swaps einmal je Änderung aus dem Speicher (keine Meldung – die Anzeige ist schon richtig). */
+function DaySwapCleanup({ dropped }: { dropped: readonly DaySwap[] }) {
+  const { dropDaySwaps } = useApp();
+  const key = dropped.map((d) => `${d.sessionId}:${d.storedOrderNo}:${d.createdAt}`).join('|');
+  useEffect(() => {
+    if (dropped.length === 0) return;
+    void dropDaySwaps(dropped).catch(() => undefined);
+    // Nur bei geänderter Liste (key) – `dropped` ist bei jeder Anzeige ein neues Array.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [key, dropDaySwaps]);
+  return null;
 }
 
 function workoutMessageText(message: NonNullable<ReturnType<typeof useApp>['workoutMessage']>) {

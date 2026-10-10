@@ -1,6 +1,7 @@
 import {
   adjustReps,
   adjustWeight,
+  type PreferenceChange,
   cardioSpeed,
   cardioDurationS,
   codePointLength,
@@ -20,6 +21,7 @@ import { Platform, StyleSheet, View } from 'react-native';
 
 import { MedicalNotice } from '@/components/plan';
 import { ConfirmDialog, Screen } from '@/components/screen';
+import { focusTestId, SwapDialog, type SwapDecision, SwapFeedback } from '@/components/swap';
 import {
   Body,
   Button,
@@ -29,7 +31,6 @@ import {
   Heading,
   LoadingState,
   Notice,
-  OptionButton,
   TextField,
 } from '@/components/ui';
 import {
@@ -40,7 +41,14 @@ import {
   SetDoneButton,
   Stepper,
 } from '@/components/workout';
+import { BackendError, type PreferenceSwapContext } from '@/data/backend';
 import { newId } from '@/data/create-backend';
+import {
+  preferenceContextOf,
+  preferenceSaveFor,
+  type SwapTarget,
+  workoutSwapTarget,
+} from '@/data/exercise-swap';
 import { logForSession } from '@/data/log-rows';
 import { activePlan } from '@/data/training-plan';
 import {
@@ -53,6 +61,7 @@ import {
   type DraftCardio,
   draftFromLog,
   type DraftExercise,
+  type DraftTarget,
   needsWeightConfirmation,
   replacePlanned,
   setCardioFields,
@@ -104,7 +113,19 @@ export default function WorkoutScreen() {
   // Zurück zu „Heute“ (der Trainingsmodus wird von dort geöffnet) – nie zwei „Heute“ im Stapel.
   const goToday = () => (router.canGoBack() ? router.back() : router.replace('/today'));
   const [localDraft, setLocalDraft] = useState<WorkoutDraft | null>(null);
-  const [alternativesFor, setAlternativesFor] = useState<number | null>(null);
+  /** Tausch-Dialog (Etappe T2) – ersetzt „Alternative durchgeführt“. */
+  const [swapFor, setSwapFor] = useState<{ index: number; target: SwapTarget } | null>(null);
+  const [swapBusy, setSwapBusy] = useState(false);
+  const [swapError, setSwapError] = useState<string>();
+  const [swapFeedback, setSwapFeedback] = useState<{
+    text: string;
+    tone: 'success' | 'info' | 'danger';
+    undo: {
+      index: number;
+      previous: DraftTarget | null;
+      preferences: { changes: readonly PreferenceChange[]; at: PreferenceSwapContext } | null;
+    } | null;
+  } | null>(null);
   const [startWeightFor, setStartWeightFor] = useState<number | null>(null);
   const [startWeightText, setStartWeightText] = useState('');
   const [startWeightError, setStartWeightError] = useState<string>();
@@ -124,14 +145,18 @@ export default function WorkoutScreen() {
   const lib = library.kind === 'ready' ? library.library : null;
   const rules = app.safetyRules;
   const stored = app.drafts.find((d) => d.key === sessionId) ?? null;
+  const ownerUserId = app.session?.userId ?? null;
   const view = useMemo(
     () =>
       rows && lib && rules
         ? workoutView(rows, lib, rules, sessionId, today, {
             excludeLogId: rows ? (logForSession(rows, sessionId)?.id ?? null) : null,
+            // „Nur heute“-Tausche vor dem Training: Der neue Entwurf übernimmt die getauschte Übung (5.1).
+            daySwaps: app.daySwaps,
+            ownerUserId,
           })
         : null,
-    [lib, rows, rules, sessionId, today],
+    [app.daySwaps, ownerUserId, lib, rows, rules, sessionId, today],
   );
   // Neuer Entwurf erst beim ersten Tipp gespeichert (vorher bleibt nichts liegen, wenn man nur hineinschaut).
   const initialDraft = useMemo<WorkoutDraft | null>(() => {
@@ -209,9 +234,11 @@ export default function WorkoutScreen() {
 
   const current = draft;
   const now = () => new Date().toISOString();
-  function update(next: WorkoutDraft) {
+  function update(next: WorkoutDraft, keepFeedback = false) {
     setLocalDraft(next);
     setError(undefined);
+    // Jede andere Aktion beendet das Angebot „Rückgängig“ (8.2, ohne Zeitlimit).
+    if (!keepFeedback) setSwapFeedback(null);
     // Jeder Tipp wird gesichert; scheitert das (Browser-Speicher voll/gesperrt), sagen wir es – nie still (B1, K9).
     app.saveDraft(next).catch(() => setError(t.workout.draftSaveFailed));
   }
@@ -263,6 +290,101 @@ export default function WorkoutScreen() {
     const exercise = findGlossaryExercise(lib, exerciseId);
     return exercise ? { steps: exercise.steps_de, safetyNote: exercise.safety_note_de } : null;
   };
+
+  /** Eintrag im Trainingsmodus: Paar (gespeichert, im Entwurf geplant) – der laufende Entwurf gilt (5.1). */
+  function openSwap(index: number) {
+    const exercise = current.exercises[index];
+    if (!exercise || !view || !lib || !rows) return;
+    const storedOrderNo =
+      rows.plannedExercises.find((e) => e.id === exercise.plannedExerciseId)?.order_no ?? null;
+    const item = view.items.find(
+      (candidate) =>
+        candidate.plannedOrderNo === storedOrderNo &&
+        candidate.shown.exercise_id === exercise.planned.exerciseId,
+    );
+    const target = workoutSwapTarget({
+      session: view.stored,
+      display: view.display,
+      library: lib,
+      rows,
+      storedOrderNo,
+      plannedExerciseId: exercise.planned.exerciseId,
+      draftExerciseIds: current.exercises
+        .filter((_, i) => i !== index)
+        .map((e) => currentTarget(e).exerciseId),
+      harderVariantId: item?.plan?.hint.harderVariant?.exerciseId ?? null,
+    });
+    if (!target) return;
+    setSwapFeedback(null);
+    setSwapError(undefined);
+    setSwapFor({ index, target });
+  }
+
+  function closeSwap() {
+    const index = swapFor?.index;
+    setSwapFor(null);
+    setSwapError(undefined);
+    if (index !== undefined) setTimeout(() => focusTestId(`workout-swap-${index}`), 50);
+  }
+
+  async function confirmSwap(decision: SwapDecision) {
+    if (!swapFor || !view || !rows) return;
+    const { index, target } = swapFor;
+    const exercise = current.exercises[index];
+    const alternative = exercise ? alternativeTarget(view, exercise, decision.candidateId) : null;
+    if (!exercise || !alternative) {
+      setSwapError(t.swap.failed);
+      return;
+    }
+    setSwapBusy(true);
+    setSwapError(undefined);
+    try {
+      let preferences: { changes: readonly PreferenceChange[]; at: PreferenceSwapContext } | null =
+        null;
+      if (decision.duration === 'always') {
+        // Nie still auf „Nur heute“ ausweichen (Wächter T2-K3) – der Dialog verlangt Ort und Grund.
+        if (!decision.location || !decision.kind) throw new BackendError('unknown');
+        const save = preferenceSaveFor(target, rows, {
+          location: decision.location,
+          kind: decision.kind,
+          replacementId: decision.candidateId,
+          now: now(),
+        });
+        const at = preferenceContextOf(target);
+        await app.updateExercisePreferences(save.changes, at);
+        preferences = { changes: save.undo, at };
+      }
+      update(chooseAlternative(current, index, alternative, now()));
+      const text = t.swap.done(currentTarget(exercise).nameDe, alternative.nameDe);
+      setSwapFeedback({
+        text: preferences ? `${text} ${t.swap.doneAlwaysHint}` : text,
+        tone: 'success',
+        undo: { index, previous: exercise.alternative, preferences },
+      });
+      setSwapFor(null);
+    } catch (caught) {
+      setSwapError(caught instanceof BackendError ? errorText(caught) : t.swap.failed);
+    } finally {
+      setSwapBusy(false);
+    }
+  }
+
+  async function undoSwap() {
+    const undo = swapFeedback?.undo;
+    if (!undo) return;
+    setSwapBusy(true);
+    try {
+      if (undo.preferences) {
+        await app.updateExercisePreferences(undo.preferences.changes, undo.preferences.at);
+      }
+      update(chooseAlternative(current, undo.index, undo.previous, now()), true);
+      setSwapFeedback({ text: t.swap.undone, tone: 'info', undo: null });
+    } catch (caught) {
+      setSwapFeedback({ text: errorText(caught), tone: 'danger', undo: null });
+    } finally {
+      setSwapBusy(false);
+    }
+  }
 
   async function save() {
     if (cardioResult && !cardioResult.ok) {
@@ -319,7 +441,15 @@ export default function WorkoutScreen() {
     setStartWeightError(undefined);
     try {
       const nextRows = await app.setStartWeight(target.exerciseId, value);
-      const nextView = lib && rules ? workoutView(nextRows, lib, rules, sessionId, today) : null;
+      // Gleiche Optionen wie die Anzeige (Wächter T2-S2): sonst fände die Neuberechnung eine „nur heute“
+      // getauschte Übung nicht.
+      const nextView =
+        lib && rules
+          ? workoutView(nextRows, lib, rules, sessionId, today, {
+              daySwaps: app.daySwaps,
+              ownerUserId,
+            })
+          : null;
       const replanned = nextView ? replannedTarget(nextView, exercise) : null;
       if (replanned) update(replacePlanned(current, index, replanned, now()));
       setStartWeightFor(null);
@@ -397,24 +527,7 @@ export default function WorkoutScreen() {
           exercise={exercise}
           index={index}
           canSwitch={canSwitch}
-          alternativesOpen={alternativesFor === index}
-          onToggleAlternatives={() => setAlternativesFor((open) => (open === index ? null : index))}
-          alternatives={
-            canSwitch && view
-              ? (view.items.find(
-                  (item) =>
-                    item.storedExerciseId === exercise.storedExerciseId &&
-                    item.shown.exercise_id === exercise.planned.exerciseId,
-                )?.alternatives ?? [])
-              : []
-          }
-          onChooseAlternative={(alternativeId) => {
-            if (!view) return;
-            const target = alternativeId ? alternativeTarget(view, exercise, alternativeId) : null;
-            if (alternativeId && !target) return;
-            update(chooseAlternative(current, index, target, now()));
-            setAlternativesFor(null);
-          }}
+          onSwap={() => openSwap(index)}
           guide={guideFor(currentTarget(exercise).exerciseId)}
           onOpenGuide={() =>
             router.push(
@@ -452,6 +565,15 @@ export default function WorkoutScreen() {
           }
         />
       ))}
+
+      {swapFeedback ? (
+        <SwapFeedback
+          text={swapFeedback.text}
+          tone={swapFeedback.tone}
+          onUndo={swapFeedback.undo ? () => void undoSwap() : null}
+          undoBusy={swapBusy}
+        />
+      ) : null}
 
       <Card>
         <Heading level={2}>{t.workout.finishTitle}</Heading>
@@ -494,6 +616,36 @@ export default function WorkoutScreen() {
         />
       </Card>
 
+      <SwapDialog
+        target={swapFor?.target ?? null}
+        allowAlways={app.backend.supportsExercisePreferences}
+        workout
+        backToPlanned={(() => {
+          const exercise = swapFor ? current.exercises[swapFor.index] : undefined;
+          if (!swapFor || !exercise?.alternative) return null;
+          const index = swapFor.index;
+          return {
+            label: t.swap.backToPlanned(exercise.planned.nameDe),
+            onPress: () => {
+              update(chooseAlternative(current, index, null, now()));
+              closeSwap();
+            },
+          };
+        })()}
+        busy={swapBusy}
+        error={swapError}
+        onConfirm={(decision) => void confirmSwap(decision)}
+        onCancel={closeSwap}
+        onOpenGuide={(exerciseId) => {
+          // Sicher: Der Entwurf ist bei jedem Tipp gespeichert (8.1).
+          setSwapFor(null);
+          router.push(`/uebungen/${encodeURIComponent(exerciseId)}` as Href);
+        }}
+        onAdjustEquipment={() => {
+          setSwapFor(null);
+          router.push('/onboarding/equipment?edit=1' as Href);
+        }}
+      />
       <ConfirmDialog
         visible={discardDialog}
         title={t.workout.discardTitle}
@@ -521,10 +673,7 @@ function ExerciseCard({
   exercise,
   index,
   canSwitch,
-  alternativesOpen,
-  onToggleAlternatives,
-  alternatives,
-  onChooseAlternative,
+  onSwap,
   guide,
   onOpenGuide,
   onSkip,
@@ -536,10 +685,8 @@ function ExerciseCard({
   exercise: DraftExercise;
   index: number;
   canSwitch: boolean;
-  alternativesOpen: boolean;
-  onToggleAlternatives: () => void;
-  alternatives: readonly { id: string; name_de: string }[];
-  onChooseAlternative: (alternativeId: string | null) => void;
+  /** „Tauschen“ (Etappe T2): Dialog mit Alternativen, „Nur heute“ / „Ab jetzt immer“. */
+  onSwap: () => void;
   /** Kurz-Anleitung zum Aufklappen (ohne den Trainingsmodus zu verlassen); null = Bibliothek fehlt. */
   guide: { steps: readonly string[]; safetyNote: string } | null;
   onOpenGuide: () => void;
@@ -758,10 +905,11 @@ function ExerciseCard({
           />
           {canSwitch ? (
             <Button
-              label={t.workout.alternative}
+              label={t.swap.button}
               variant="secondary"
-              onPress={onToggleAlternatives}
-              testID={`workout-alternative-${index}`}
+              accessibilityLabel={t.swap.buttonA11y(target.nameDe)}
+              onPress={onSwap}
+              testID={`workout-swap-${index}`}
             />
           ) : null}
           {startWeight ? (
@@ -773,31 +921,6 @@ function ExerciseCard({
             />
           ) : null}
         </View>
-        {alternativesOpen ? (
-          <View style={styles.alternatives} accessibilityRole="radiogroup">
-            <Body>{t.workout.alternativeTitle}</Body>
-            {alternatives.length === 0 && !exercise.alternative ? (
-              <Body muted>{t.workout.alternativeNone}</Body>
-            ) : null}
-            {exercise.alternative ? (
-              <OptionButton
-                role="radio"
-                label={t.workout.backToPlanned(exercise.planned.nameDe)}
-                selected={false}
-                onPress={() => onChooseAlternative(null)}
-              />
-            ) : null}
-            {alternatives.map((alt) => (
-              <OptionButton
-                key={alt.id}
-                role="radio"
-                label={alt.name_de}
-                selected={exercise.alternative?.exerciseId === alt.id}
-                onPress={() => onChooseAlternative(alt.id)}
-              />
-            ))}
-          </View>
-        ) : null}
         {startWeight?.open ? (
           <View style={styles.alternatives}>
             <TextField

@@ -490,6 +490,8 @@ describe('Leere Einheit, Ausdauer, Supersatz, Hinweise', () => {
     expect(shown.preferenceNotices).toEqual(
       expect.arrayContaining(['preference_session_empty', 'preference_key_pattern_missing']),
     );
+    // Etappe T2: welche Grundbausteine fehlen (für den ausdrücklichen Hinweis in der App).
+    expect([...(shown.missingKeyPattern ?? [])].sort()).toEqual(['hinge', 'horizontal_pull']);
   });
 
   it('Pflicht-Test 11: nur Präferenz-Ausblendung → `hidden` leer (kein Hinweis „Plan neu erstellen“)', () => {
@@ -510,6 +512,7 @@ describe('Leere Einheit, Ausdauer, Supersatz, Hinweise', () => {
         'preference_key_pattern_missing',
       ]),
     );
+    expect(shown.missingKeyPattern).toEqual(['horizontal_pull']);
   });
 
   it('Pflicht-Test 7: Ausdauer-Einheit bleibt unverändert', () => {
