@@ -2,6 +2,8 @@
 
 **Status:** Freigegeben am 09.10.2026 – die Gründer übernehmen bei allen offenen Fragen (Abschnitt 13) die Empfehlung. Wächter: freigabefähig (2 Runden). Umsetzung startet mit Etappe A0.
 
+**Nachtrag 10.10.2026 (Phase 5, N0):** A0 ist umgesetzt. Reihenfolge laut Gründer-Entscheidung 09.10.2026: A0 → Übungs-Glossar und Übungstausch (erledigt bis T2) → **Phase 5** (`docs/PLAN-PHASE-5.md`) → 4b weiter mit A → D (Testmodus) → E; B und C später. Weil Phase 5 vorher kommt, legt **Phase 5** `packages/core/src/nutrition/limits.ts` an (inkl. `clampCalorieAdjustment()`); 4b ruft nur auf. Die Kalorien-Stellen in diesem Plan (K1, 2.1, 2.2, 5.2, 5.6, 5.8, Etappe A, Abschnitt 11, Frage 3, Risiko 11) sind an Phase 5 (S10, R2-S5) angeglichen.
+
 **Grundlage:**
 
 - `CLAUDE.md`.
@@ -11,6 +13,7 @@
 - `docs/PLAN-PHASE-4.md`: Abschnitte 2.3, 3.6 und 10, Frage 9, Umsetzungsstand bis Etappe E.
 - `docs/PLAN-PHASE-3.md`: Vormerkungen „Phase 4b“.
 - `docs/PLAN-PDF-EXPORT.md`.
+- `docs/PLAN-PHASE-5.md`, Abschnitte 4.6 und 13 (N0, N1): Kalorien-Schutzgrenzen und Versatz-Schnittstelle für 4b (S10, R2-S5).
 
 **Vorbedingung (nur für die Etappen B und C):** Der Live-Test W13 aus Phase 4 (zwei Handys, echtes Supabase) ist abgeschlossen. Ohne ihn ist der Server-Weg aus Abschnitt 6 nicht prüfbar. A0, A, D (Testmodus) und E brauchen ihn nicht.
 
@@ -30,7 +33,7 @@ Die Wächter-Prüfung (scratchpad `waechter-plan-4b.md`) hat zwei blockierende P
 | **S4** CORS zwischen App-Web-Export und `apps/web`                         | CORS nur für die eigene App-Domain plus Vorschau-Muster, `Authorization` erlaubt, keine Cookies; `EXPO_PUBLIC_WEB_URL` in der App.                                                                                                                                                                                                                                                                                                      | 6.1, 6.4                                    |
 | **S5** Mess-Erinnerung nach Widerruf                                       | Ohne gültige `health_data`-Einwilligung plant die App keine Mess-Erinnerung und storniert eine geplante. `enabled` bleibt unverändert. Test in E.                                                                                                                                                                                                                                                                                       | 7                                           |
 | **S6** Unstimmigkeiten mit dem Code                                        | `ENDURANCE_SESSION_LIMITS.minSessionMinutes`; Ausdauer-Schwelle vereinfacht auf feste 7 (begründet); `consecutiveSessionsForStep` an beiden Stellen in `loads.ts`; Umzug der Zeilen-Abbildung als eigene Etappe **A0**.                                                                                                                                                                                                                 | 5.1, 5.2, 10                                |
-| **K1** Kalorien-Schutzgrenzen                                              | `clampCalorieAdjustment()` in `packages/core/src/nutrition/limits.ts` (neu, Phase 5 baut dort weiter).                                                                                                                                                                                                                                                                                                                                  | 5.2                                         |
+| **K1** Kalorien-Schutzgrenzen                                              | `clampCalorieAdjustment()` in `packages/core/src/nutrition/limits.ts`. **Nachtrag 10.10.2026:** Die Datei legt Phase 5 an (kommt vor 4b A); die Funktion begrenzt nur Schrittweite und Summe des Versatzes, alle Schutzgrenzen liegen in `clampCalorieTarget` (PLAN-PHASE-5 S10, R2-S5).                                                                                                                                                | 5.2                                         |
 | **K2** Testschalter „Premium simulieren“                                   | Technisch nur bei `backend.mode === 'local'`, Test: Supabase-Modus kennt den Schalter nicht.                                                                                                                                                                                                                                                                                                                                            | 8.1                                         |
 | **K3** Etappe A zu groß                                                    | Benachrichtigungs-Funktionen ziehen nach E. E ist damit wirklich unabhängig.                                                                                                                                                                                                                                                                                                                                                            | 10                                          |
 | **K4** Beta-Freischaltung im Export                                        | Zusätzlich in `db-sync.test.ts` und pgTAP abgesichert (H-f deckt `private` nicht ab).                                                                                                                                                                                                                                                                                                                                                   | 4.7, 10                                     |
@@ -73,24 +76,24 @@ Außerdem kommen **Benachrichtigungen** dazu, und die sind **gratis**:
 6. **Premium-Prüfung serverseitig** über `has_entitlement()`. Bis Phase 7 steht sie hinter dem Feature-Flag `live_adjustment` plus Beta-Freischaltung (Workflow `beta-grant`, Abschnitt 6.3). Gratis-Nutzer behalten genau die Progression aus Phase 4.
 7. **Benachrichtigungen (gratis)** als lokale Benachrichtigungen auf dem Gerät: Mess-Erinnerung und Pausenende.
 8. **Vorbereitung**, aber noch nicht aktiv:
-   - Regel-Typen `calorie_adjust` und `muscle_gain_volume` (Phase 5),
+   - Regel-Typen `calorie_adjust` und `muscle_gain_volume` (Aktivierung erst mit einem Nachtrag zu diesem Plan, sobald das Kalorienziel aus Phase 5 da ist; Frage 3),
    - `readiness_lighter` (Phase 8),
    - Auslöser `wearable_data` (Phase 8),
    - `competition_date_changed` (Phase 10).
 
 ### 2.2 Was NICHT in Phase 4b kommt
 
-| Thema                                                                                                 | Wann / Begründung                                                                                                                        |
-| ----------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------- |
-| Kalorien anpassen (Fettverlust: Taille, Bauch und Gewicht stagnieren; Muskelaufbau: Kalorien erhöhen) | Phase 5. Es gibt noch kein Kalorienziel. In 4b gibt es nur die geprüften Schutzgrenzen-Funktionen und reservierte Regel-Typen (Frage 3). |
-| Muskelaufbau: Volumen bei Stillstand von Gewicht, Umfängen und Kraft                                  | zusammen mit den Kalorien in Phase 5, weil die Regel Körperdaten **und** Kalorien kombiniert                                             |
-| Readiness, Tagesform aus Wearable                                                                     | Phase 8                                                                                                                                  |
-| Wettkampfdatum als Auslöser                                                                           | Phase 10                                                                                                                                 |
-| KI-Erklärung in Worten (KONZEPT 4.1, optional)                                                        | Phase 7b oder 11, Premium-KI mit `ai_usage`                                                                                              |
-| Paywall, Abo, `entitlements` aus RevenueCat bzw. Stripe                                               | Phase 7. 4b baut nur die Prüf-Funktion, die Phase 7 befüllt.                                                                             |
-| Server-Push (Push-Token, Expo Push Service), z. B. „Dein Plan wurde angepasst“                        | später (Frage 8). In 4b zeigt die App das als Hinweis an.                                                                                |
-| Benachrichtigungen im Browser (Web Push)                                                              | nicht geplant. Im Browser bleibt es beim Hinweis in der App.                                                                             |
-| PDF des Ernährungsplans (P5 in `PLAN-PDF-EXPORT.md`)                                                  | Phase 5 (gehört zum Ernährungsplan).                                                                                                     |
+| Thema                                                                                                 | Wann / Begründung                                                                                                                                                                                                                                                                  |
+| ----------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Kalorien anpassen (Fettverlust: Taille, Bauch und Gewicht stagnieren; Muskelaufbau: Kalorien erhöhen) | Kalorienziel und alle Schutzgrenzen kommen aus Phase 5 (vor 4b A). Die Regel selbst (Auslöser, Schritt) ist in 4b nur reserviert; aktiv erst mit einem Nachtrag zu diesem Plan (Frage 3). Sie liefert dann nur einen Versatz `adjustmentKcal` für `nutritionTargetsForWeek` (5.2). |
+| Muskelaufbau: Volumen bei Stillstand von Gewicht, Umfängen und Kraft                                  | zusammen mit der Kalorien-Regel (Nachtrag nach Phase 5), weil die Regel Körperdaten **und** Kalorien kombiniert                                                                                                                                                                    |
+| Readiness, Tagesform aus Wearable                                                                     | Phase 8                                                                                                                                                                                                                                                                            |
+| Wettkampfdatum als Auslöser                                                                           | Phase 10                                                                                                                                                                                                                                                                           |
+| KI-Erklärung in Worten (KONZEPT 4.1, optional)                                                        | Phase 7b oder 11, Premium-KI mit `ai_usage`                                                                                                                                                                                                                                        |
+| Paywall, Abo, `entitlements` aus RevenueCat bzw. Stripe                                               | Phase 7. 4b baut nur die Prüf-Funktion, die Phase 7 befüllt.                                                                                                                                                                                                                       |
+| Server-Push (Push-Token, Expo Push Service), z. B. „Dein Plan wurde angepasst“                        | später (Frage 8). In 4b zeigt die App das als Hinweis an.                                                                                                                                                                                                                          |
+| Benachrichtigungen im Browser (Web Push)                                                              | nicht geplant. Im Browser bleibt es beim Hinweis in der App.                                                                                                                                                                                                                       |
+| PDF des Ernährungsplans (P5 in `PLAN-PDF-EXPORT.md`)                                                  | Phase 5 (gehört zum Ernährungsplan).                                                                                                                                                                                                                                               |
 
 ### 2.3 Gratis und Premium
 
@@ -388,14 +391,12 @@ Bezeichnungen: `L` = `loadWeeksBeforeDeload(level, vorsichtig)` des Plans (5 bzw
 - **Wirkung:** Vorschlag „auf X−1 Trainingstage umstellen“, wobei der Tag mit den meisten Ausfällen wegfällt (Anzeige mit Begründung).
 - **Nicht bei:** einem Trainingstag pro Woche (dann nur der Hinweis „Kürzere Einheiten?“ ohne Plan-Änderung), Ruhezeit 28 Tage nach Ablehnung, offenem Vorschlag.
 
-**Reserviert (in 4b nicht aktiv, nur Typ und Schutzgrenzen):**
+**Reserviert (in 4b nicht aktiv, nur Typ und Versatz-Begrenzung):**
 
-- **`calorie_adjust`:** `clampCalorieAdjustment(current, proposed, { tdee, bmr, weightKg })` in **`packages/core/src/nutrition/limits.ts`** (neuer Ordner, Wächter K1). Dort baut Phase 5 die Ernährungs-Engine weiter, so gibt es die Schutzgrenzen-Logik nur einmal; `adjust/` ruft sie nur auf. Reine Funktion mit Tests, damit Phase 5 nur noch anschließt. Grenzen:
-  - Defizit höchstens `MAX_CALORIE_DEFICIT_FRACTION` × Gesamtumsatz,
-  - nie unter Grundumsatz × `MIN_INTAKE_RELATIVE_TO_BMR`,
-  - Gewichtsverlust-Ziel höchstens `MAX_WEEKLY_WEIGHT_LOSS_FRACTION`,
-  - Schritt je Anpassung ±`LIVE_ADJUSTMENT.calorieStepKcal` (100–150 kcal, PRODUKTENTSCHEIDUNG),
-  - **nicht abschaltbar**.
+- **`calorie_adjust`:** `clampCalorieAdjustment(currentOffsetKcal, proposedOffsetKcal)` in **`packages/core/src/nutrition/limits.ts`**. **Die Datei kommt aus Phase 5** (Etappe N1, `docs/PLAN-PHASE-5.md` 4.1 und 4.6), weil Phase 5 vor 4b A umgesetzt wird; `adjust/` ruft sie nur auf (Wächter K1, PLAN-PHASE-5 S10 und R2-S5). Sie kennt **keine** Schutzgrenzen und braucht keinen Kontext (kein `tdee`, `bmr`, `weightKg`, keine Flags). Grenzen dieser Funktion:
+  - Schritt je Anpassung höchstens ±`ADJUSTMENT_STEP_MAX_KCAL` (150 kcal, PRODUKTENTSCHEIDUNG, schon aus Phase 5 N1); 4b wählt `LIVE_ADJUSTMENT.calorieStepKcal` (100–150 kcal) **≤ `ADJUSTMENT_STEP_MAX_KCAL`** (Test in A),
+  - Summe des Versatzes höchstens ±`ADJUSTMENT_OFFSET_MAX_KCAL` (1.000 kcal, PRODUKTENTSCHEIDUNG, aus Phase 5).
+- **Schutzgrenzen nur an einer Stelle:** 4b speichert **keine** Kalorienziele, sondern nur den Versatz. Er fließt als `adjustmentKcal` in `nutritionTargetsForWeek()` und läuft dort bei **jeder** Berechnung, je Tag mit vollem Kontext, durch **`clampCalorieTarget()`** – die **einzige** Stelle mit Schutzgrenzen (Defizit höchstens `MAX_CALORIE_DEFICIT_FRACTION`, nie unter Grundumsatz × `MIN_INTAKE_RELATIVE_TO_BMR`, Gewichtsverlust höchstens `MAX_WEEKLY_WEIGHT_LOSS_FRACTION`, Energieverfügbarkeit, Überschuss-Deckel und Sonderfälle; alle mit `TagesbedarfGrenze` nach PLAN-PHASE-5 4.6). **Nicht abschaltbar**; kein Versatz kann eine Grenze lockern. Greift schon ohne Versatz eine Untergrenze, ändert ein negativer Versatz an diesem Tag nichts; sonst bleibt das Ziel ≥ Untergrenze (PLAN-PHASE-5 W23). Ein **positiver** Versatz ist durch die Obergrenze `dayCeilingKcal` begrenzt, die in **jedem** Modus gilt (inkl. +5-%-Deckel unter 18 und ohne Gesundheits-Check; PLAN-PHASE-5 4.6, W26, W27).
 - **`muscle_gain_volume`, `readiness_lighter`:** nur in den Enums.
 
 ### 5.3 Reihenfolge und Konflikte (`adjust/engine.ts`)
@@ -441,7 +442,7 @@ Bezeichnungen: `L` = `loadWeeksBeforeDeload(level, vorsichtig)` des Plans (5 bzw
 | `lookbackDays`                 | 42                                                                                                                             | PRODUKTENTSCHEIDUNG (deckt 3 Wochen + Block-Rand ab)                                                                                                                                                                     |
 | `deloadForward`                | nur wenn Erholungswoche ≥ 2 Wochen nach der nächsten Woche; höchstens 1 je Block; Dosierung der getauschten Woche = Vorwoche   | `DELOAD_SCHEDULE`/`DELOAD_DOSAGE` (Bell et al. 2023, schon zitiert); PRODUKTENTSCHEIDUNG                                                                                                                                 |
 | `recompute.maxPerUserPerHour`  | 20                                                                                                                             | PRODUKTENTSCHEIDUNG (Missbrauchsschutz der API-Route); gleicher Wert als SQL-Konstante in `claim_adjustment_events`                                                                                                      |
-| `calorieStepKcal` (reserviert) | 100–150 kcal je Schritt, Phase 5                                                                                               | PRODUKTENTSCHEIDUNG; Schutzgrenzen aus CLAUDE.md unverändert                                                                                                                                                             |
+| `calorieStepKcal` (reserviert) | 100–150 kcal je Schritt, ≤ `ADJUSTMENT_STEP_MAX_KCAL` (150, Phase 5); Summe über `ADJUSTMENT_OFFSET_MAX_KCAL` (Phase 5)        | PRODUKTENTSCHEIDUNG; Schutzgrenzen aus CLAUDE.md unverändert, nur in `clampCalorieTarget` (Phase 5)                                                                                                                      |
 
 Alle PRODUKTENTSCHEIDUNG-Werte gehen in die fachliche Prüfung vor dem Launch (Frage 11).
 
@@ -550,12 +551,10 @@ Alle PRODUKTENTSCHEIDUNG-Werte gehen in die fachliche Prüfung vor dem Launch (F
 - getauschte Woche nie über der Vorwoche,
 - 20 feste Fälle daraus (gültig und absichtlich verletzt) liegen als `adjust/fixtures/invariants.json`. Ein Skript übersetzt sie in `supabase/tests/22_week_invariants.test.sql`; `db-sync.test.ts` prüft, dass die Datei aktuell ist. So entscheiden Core und SQL-Nachrechnung nachweislich gleich.
 
-**Schutzgrenzen Kalorien (reserviert):**
+**Kalorien-Versatz (reserviert):** Die Grenzfälle der Schutzgrenzen (Defizit genau 25 % / 25,1 %, Ziel genau Grundumsatz / darunter, −1 %/Woche bei 45 kg und 200 kg, Überschuss-Richtung) testet **Phase 5** an `clampCalorieTarget` (PLAN-PHASE-5 12.1, W23). In 4b bleibt:
 
-- Defizit genau 25 % / 25,1 %
-- Ziel genau Grundumsatz / darunter
-- −1 %/Woche bei 45 kg und 200 kg
-- Überschuss-Richtung
+- `LIVE_ADJUSTMENT.calorieStepKcal ≤ ADJUSTMENT_STEP_MAX_KCAL` (die Funktion selbst testet Phase 5: Schritt genau 150 / 151 kcal, Summe genau ±1.000 / darüber),
+- sobald die Regel aktiv ist: Versatz −1.000 kcal ergibt über `nutritionTargetsForWeek` an jedem Tag, an dem **schon ohne Versatz** eine Untergrenze greift, dasselbe Ziel wie ohne Versatz, sonst Ziel ≥ Untergrenze; Versatz +1.000 kcal ergibt nie ein Ziel über `dayCeilingKcal` (PLAN-PHASE-5 W23, W27).
 
 **CI-Zusammenfassung:** `packages/content/src/plan-examples.ts` bekommt „Beispiel-Anpassungen“. Für drei Test-Personen gibt es je eine ausgedachte Folge mit der Anpassung und ihrem Erklärsatz, so ist Etappe A am Handy sichtbar.
 
@@ -763,7 +762,7 @@ Offline gilt die zuletzt geladene Anpassung weiter, und die Anzeige rechnet mit 
   - Option `carriedLoadWeeks` in `nextPlanBlock()`,
   - `restoreTemporaryChanges()` vor `baseSessionsFromBlock()`,
   - `LIVE_ADJUSTMENT` mit Quellen,
-  - reservierte Kalorien-Schutzgrenzen-Funktion in `nutrition/limits.ts`,
+  - **keine** eigene Kalorien-Funktion: `nutrition/limits.ts` inkl. `clampCalorieAdjustment()` kommt aus Phase 5 (N1); A ruft sie nur auf (Typ `calorie_adjust` bleibt reserviert),
   - Invarianten-Fixtures `adjust/fixtures/invariants.json`,
   - CI-Zusammenfassung „Beispiel-Anpassungen“.
 - _DoD:_
@@ -853,6 +852,11 @@ Premium-Prüfung ausschließlich serverseitig (CLAUDE.md „KI-Grenze“) – oh
 `docs/PLAN-UEBUNGEN-GLOSSAR-TAUSCH.md` (folgt). Danach geht 4b mit Etappe A weiter. Reihenfolge damit:
 **A0 → Übungs-Glossar und Übungstausch → A → D (Testmodus) → E**; B und C wie oben später.
 
+**Gründer-Entscheidung 09.10.2026 – Phase 5 vor 4b A (nachgetragen 10.10.2026):** Nach Übungs-Glossar und
+Übungstausch (erledigt bis T2; T3 später mit Supabase) kommt zuerst **Phase 5** (`docs/PLAN-PHASE-5.md`, Testmodus
+N1–N6). Reihenfolge damit: **A0 (erledigt) → Übungs-Glossar und Übungstausch → Phase 5 → A → D (Testmodus) → E**;
+B und C wie oben später.
+
 ## 11. Definition of Done (gesamt, CLAUDE.md)
 
 1. Typen und Zod-Schemas (`adjust/schemas.ts`, `database.types.ts`).
@@ -867,7 +871,7 @@ Premium-Prüfung ausschließlich serverseitig (CLAUDE.md „KI-Grenze“) – oh
    - SETUP (Secrets, `APP_WEB_ORIGIN`, `EXPO_PUBLIC_WEB_URL`, Workflow `beta-grant` als Klick-Schritte am Handy),
    - Umsetzungsstand in diesem Plan.
 
-Zusätzlich gilt: Premium-Prüfung nur auf dem Server (Funktion **und** Route), Kalorien-Schutzgrenzen als nicht abschaltbare Funktion getestet, keine Gesundheitsdaten in Logs, keine Oberfläche mit Nutzerdaten hinter dem Admin-Passwort Stufe A, Wochen-Invarianten in Core **und** SQL geprüft.
+Zusätzlich gilt: Premium-Prüfung nur auf dem Server (Funktion **und** Route), Kalorien-Schutzgrenzen nur in `clampCalorieTarget` aus Phase 5 (nicht abschaltbar, dort getestet; 4b liefert nur den Versatz), keine Gesundheitsdaten in Logs, keine Oberfläche mit Nutzerdaten hinter dem Admin-Passwort Stufe A, Wochen-Invarianten in Core **und** SQL geprüft.
 
 ## 12. So testet ihr es am Handy
 
@@ -894,6 +898,7 @@ Zusätzlich gilt: Premium-Prüfung nur auf dem Server (Funktion **und** Route), 
 1. **Wo läuft die Regel-Engine?** _Empfehlung:_ API-Route in `apps/web` auf Vercel (Region Frankfurt), dazu die Ereignis-Liste in der Datenbank und ein stündlicher GitHub-Action-Lauf als Netz (Abschnitt 3). Keine Supabase Edge Function (neues System) und keine Regeln in SQL (doppelte Logik).
 2. **Premium bis Phase 7?** _Empfehlung:_ Feature-Flag `live_adjustment` plus Beta-Freischaltung einzelner Konten per Workflow `beta-grant` (mit Ablaufdatum, Frage 13). Gratis-Nutzer sehen bis zur Paywall **nichts** davon, kein Teaser. Phase 7 tauscht nur den Rumpf von `has_entitlement_for`.
 3. **Kalorien-Regeln (Fettverlust, Muskelaufbau)?** _Empfehlung:_ erst mit Phase 5, weil es noch kein Kalorienziel gibt. In 4b nur die getestete Schutzgrenzen-Funktion und reservierte Regel-Typen. Alternative: Phase 5 vor 4b ziehen. Dann käme aber die Live-Anpassung später, obwohl das Tagebuch schon Daten liefert.
+   _Nachtrag 10.10.2026:_ Die Gründer haben Phase 5 vor 4b gezogen (09.10.2026). Das Kalorienziel und `nutrition/limits.ts` kommen damit aus Phase 5; 4b liefert nur einen Versatz (5.2). Die Regel `calorie_adjust` bleibt in A/D reserviert und wird erst mit einem Nachtrag zu diesem Plan (Auslöser, Schritt, Bestätigung, Wächter-Prüfung) aktiv.
 4. **Was passiert automatisch, was erst nach Bestätigung?**
    - _Empfehlung automatisch, rückgängig machbar:_ Gewicht senken bzw. schneller steigern, eine Woche 1 Satz weniger, Ausdauer eine Woche −15 %, Übungstausch bei Stillstand, Erholungswoche vorziehen.
    - _Empfehlung nur mit Bestätigung:_ weniger Trainingstage und später Kalorien.
@@ -923,6 +928,6 @@ Zusätzlich gilt: Premium-Prüfung nur auf dem Server (Funktion **und** Route), 
 8. **Gesundheitsdaten auf Vercel.** Gegenmittel: Region Frankfurt, keine Logs, AV-Vertrag, DSFA (Frage 12).
 9. **Abhängigkeit vom offenen Live-Test W13.** Gegenmittel: C erst danach. A, B, D (Testmodus) und E gehen vorher.
 10. **Benachrichtigungen auf iOS und Android unterschiedlich** (Android 13 Erlaubnis, exakte Alarme). Gegenmittel: Geräte-Test in E. Kleine Ungenauigkeiten beim Pausenende sind unkritisch, weil die App-Anzeige mit Zeitstempeln rechnet.
-11. **Abgrenzung zu Phase 5 verschwimmt (Kalorien).** Gegenmittel: In 4b sind Regel-Typen und Schutzgrenzen nur reserviert und getestet (in `nutrition/limits.ts`), aktiv erst mit dem Kalorienziel aus Phase 5.
+11. **Abgrenzung zu Phase 5 verschwimmt (Kalorien).** Gegenmittel: `nutrition/limits.ts` und alle Schutzgrenzen gehören Phase 5 (`clampCalorieTarget`, einzige Stelle); 4b liefert nur einen Versatz über `clampCalorieAdjustment` (Schritt und Summe) und `adjustmentKcal` in `nutritionTargetsForWeek`. Regel-Typen bleiben reserviert, bis ein Nachtrag sie aktiviert.
 12. **Vorgezogene Erholungswoche bricht den Rhythmus oder die 10-%-Regel.** Gegenmittel: feste Tausch-Regel (5.2), `carriedLoadWeeks` im Folgeblock, Eigenschaftstest über zwei Blöcke, gleiche Prüfung in SQL (`apply_plan_adjustments`, `append_plan_block`), Fallback `volume_reduce`.
 13. **Änderung trifft ein laufendes Training.** Gegenmittel: nur Einheiten ab morgen ohne Eintrag (S1), Test „Entwurf vor Tausch → Speichern ok“.
