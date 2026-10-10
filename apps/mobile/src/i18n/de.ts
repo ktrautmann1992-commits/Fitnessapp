@@ -1062,6 +1062,10 @@ export const de = {
     rpeHint: 'RPE = Anstrengung von 10 (RPE 7 = noch etwa 3 Wiederholungen in Reserve).',
     noExercises:
       'Für diese Einheit zeigen wir gerade keine Übungen. Bitte erstelle deinen Plan in der App neu.',
+    preferenceOmitted: (count: number) =>
+      count === 1
+        ? '1 Übung ausgelassen (deine Wahl)'
+        : `${count} Übungen ausgelassen (deine Wahl)`,
     loadBodyweight: 'Körper\u00ADgewicht', // bedingter Trennstrich: bricht in der schmalen Gewichtsspalte sauber um
     loadBand: 'Band',
     loadNone: '–',
@@ -1080,6 +1084,7 @@ export const de = {
       effort: 'Anstrengung',
     },
     equipmentSwap: 'ersetzt (Gerät fehlt)',
+    preferenceSwap: 'getauscht (deine Wahl)',
     superset: (group: string) => `Supersatz ${group}`,
     seconds: (seconds: number) => `${seconds} s`,
     restMinutes: (minutes: string) => `${minutes} min`,

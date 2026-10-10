@@ -18,6 +18,18 @@ const harder = { hint: 'harder_variant' } as const;
 const advanced = 'advanced' as const;
 
 describe('progressHintForDisplay', () => {
+  it('exclude (Wächter S2): ausgeschlossene Variante (Ort bzw. Einheit) → kein Hinweis', () => {
+    expect(
+      progressHintForDisplay('tuerrahmen-rudern', harder, {
+        library,
+        profile: nothing,
+        rules: healthy,
+        experienceLevel: advanced,
+        exclude: new Set(['tisch-rudern']),
+      }),
+    ).toEqual({ hint: null, harderVariant: null });
+  });
+
   it('Türrahmen-Rudern ohne Geräte → Tisch-Rudern (Alternative mit Grund „harder“)', () => {
     expect(
       progressHintForDisplay('tuerrahmen-rudern', harder, {

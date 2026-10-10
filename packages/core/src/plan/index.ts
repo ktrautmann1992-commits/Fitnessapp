@@ -1,6 +1,7 @@
 export * from './adapt';
 export * from './apply-safety';
 export * from './content-pool';
+export * from './day-swaps';
 export * from './deload';
 export * from './endurance';
 export * from './equipment-profile';
@@ -9,6 +10,7 @@ export * from './inputs';
 export * from './loads';
 export * from './match';
 export * from './payload';
+export * from './preferences';
 export * from './reschedule';
 export * from './rows';
 export * from './safety';

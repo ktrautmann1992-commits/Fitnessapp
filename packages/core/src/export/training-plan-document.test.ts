@@ -6,6 +6,7 @@ import { type GeneratedPlan, generateTrainingPlan } from '../plan/generate';
 import type { PlanInputsInput } from '../plan/inputs';
 import { planSafetyRules, type PlanSafetyRules } from '../plan/safety';
 import { FULL_HOME, MONDAY, person, repoLibrary } from '../plan/test-library';
+import { pref } from '../plan/swap-test-helpers';
 import type { StoredSession } from '../plan/view';
 import {
   type PrintBlock,
@@ -63,6 +64,8 @@ function build(
     progress?: ExportProgressByLocation;
     substituteLibrary?: ExportDisplayContext['substituteLibrary'];
     sessions?: (s: StoredSession[]) => StoredSession[];
+    preferences?: NonNullable<ExportDisplayContext['swap']>['preferences'];
+    swapRules?: PlanSafetyRules;
   } = {},
 ): PrintDocument {
   const plan = generate(inputs);
@@ -73,6 +76,14 @@ function build(
     {
       ...displayFor(inputs, extra.rules),
       ...(extra.substituteLibrary ? { substituteLibrary: extra.substituteLibrary } : {}),
+      ...(extra.preferences
+        ? {
+            swap: {
+              preferences: extra.preferences,
+              swapRules: extra.swapRules ?? extra.rules ?? planSafetyRules(inputs, MONDAY),
+            },
+          }
+        : {}),
     },
     extra.progress ?? null,
     { onDate: MONDAY, ...options },
@@ -776,5 +787,143 @@ describe('buildTrainingPlanDocument – Seitenumbruch der Einheiten (Wächter K2
       });
       expect(doc.sections.at(-1)?.type).toBe('paragraph');
     }
+  });
+});
+
+describe('buildTrainingPlanDocument – Übungs-Tausch (Etappe T1, docs/PLAN-UEBUNGEN-GLOSSAR-TAUSCH.md 7.3)', () => {
+  const bodyweight = person({
+    trainingLocation: 'home',
+    homeEquipment: [],
+    preferredDays: [2, 4],
+    sessionsPerWeek: 2,
+  });
+
+  it('ohne bzw. mit leeren Präferenzen: identisches Dokument (Regression)', () => {
+    for (const inputs of [
+      person(),
+      bodyweight,
+      person({ sessionsPerWeek: 1, preferredDays: [3] }),
+    ]) {
+      expect(build(inputs, {}, { preferences: [] })).toEqual(build(inputs));
+    }
+  });
+
+  it('„getauscht (deine Wahl)“ mit einer Übung, die sicher einen Kandidaten hat', () => {
+    const doc = build(
+      person(),
+      {},
+      {
+        sessions: (all) =>
+          all.map((s) =>
+            s.kind === 'strength'
+              ? {
+                  ...s,
+                  exercises: s.exercises.slice(0, 1).map((e) => ({
+                    ...e,
+                    exercise_id: 'goblet-kniebeuge',
+                    source_exercise_id: 'goblet-kniebeuge',
+                    exercise_name_de: 'Goblet-Kniebeuge',
+                  })),
+                }
+              : s,
+          ),
+        preferences: [pref('goblet-kniebeuge', 'gym', 'dislike')],
+      },
+    );
+    expect(codesOf(doc)).toContain('"code":"mark.preferenceSwap"');
+    expect(JSON.stringify(doc)).not.toContain('Goblet-Kniebeuge');
+  });
+
+  it('„Hier nicht machbar“ ohne Alternative → neutraler Druckhinweis „ausgelassen (deine Wahl)“, nie „Plan neu erstellen“', () => {
+    const doc = build(
+      person(),
+      {},
+      {
+        sessions: (all) =>
+          all.map((s) =>
+            s.kind === 'strength'
+              ? {
+                  ...s,
+                  exercises: ['liegestuetz', 'tuerrahmen-rudern'].map((id, i) => ({
+                    ...s.exercises[0]!,
+                    order_no: i + 1,
+                    exercise_id: id,
+                    source_exercise_id: id,
+                  })),
+                }
+              : s,
+          ),
+        // Im Studio alle Ruder-Alternativen ausschließen.
+        preferences: [
+          pref('tuerrahmen-rudern', 'gym', 'not_feasible'),
+          ...[...library.exercises.values()]
+            .filter((e) => e.movement_pattern === 'horizontal_pull' && e.id !== 'tuerrahmen-rudern')
+            .map((e) => pref(e.id, 'gym', 'dislike')),
+        ],
+      },
+    );
+    const codes = codesOf(doc);
+    expect(codes).toContain('"code":"session.preferenceOmitted"');
+    expect(codes).not.toContain('"code":"session.noExercises"');
+    expect(JSON.stringify(doc)).toContain(
+      '"code":"session.preferenceOmitted","params":{"count":1}',
+    );
+  });
+
+  it('K7: gleiche angezeigte Übung, einmal getauscht und einmal geplant → getrennte Fassungen, Markierung je Fassung', () => {
+    let n = 0;
+    const doc = build(
+      person(),
+      {},
+      {
+        sessions: (all) =>
+          all.map((s) => {
+            if (s.kind !== 'strength') return s;
+            n += 1;
+            const id = n % 2 === 0 ? 'goblet-kniebeuge' : 'kniebeuge-koerpergewicht';
+            return {
+              ...s,
+              template_day_index: 0,
+              name_de: 'Ganzkörper',
+              exercises: s.exercises.slice(0, 1).map((e) => ({
+                ...e,
+                exercise_id: id,
+                source_exercise_id: id,
+              })),
+            };
+          }),
+        preferences: [pref('goblet-kniebeuge', 'gym', 'dislike', 'kniebeuge-koerpergewicht')],
+      },
+    );
+    const marks = exerciseTables(doc).map((t) =>
+      JSON.stringify(t.rows).includes('"code":"mark.preferenceSwap"'),
+    );
+    expect(marks.sort()).toEqual([false, true]);
+  });
+
+  it('alle Übungen „Hier nicht machbar“ → nur der neutrale Hinweis, keine leere Tabelle', () => {
+    const doc = build(
+      person(),
+      {},
+      {
+        sessions: (all) =>
+          all.map((s) =>
+            s.kind === 'strength'
+              ? {
+                  ...s,
+                  exercises: s.exercises.slice(0, 1).map((e) => ({
+                    ...e,
+                    exercise_id: 'tuerrahmen-rudern',
+                    source_exercise_id: 'tuerrahmen-rudern',
+                  })),
+                }
+              : s,
+          ),
+        preferences: [...library.exercises.keys()].map((id) => pref(id, 'gym', 'not_feasible')),
+      },
+    );
+    expect(exerciseTables(doc)).toHaveLength(0);
+    expect(codesOf(doc)).toContain('"code":"session.preferenceOmitted"');
+    expect(codesOf(doc)).not.toContain('"code":"session.noExercises"');
   });
 });

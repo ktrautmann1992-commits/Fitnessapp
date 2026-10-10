@@ -92,6 +92,11 @@ export interface PrintTextParams {
   'session.weightHint': { hasWeight: boolean };
   /** Alle Übungen nach den aktuellen Regeln ausgeblendet – neutral, ohne Grund (B1). */
   'session.noExercises': Record<string, never>;
+  /**
+   * Übungen wegen „Hier nicht machbar“ ohne Alternative ausgelassen – neutral „{count} Übung(en) ausgelassen (deine
+   * Wahl)“, ohne Aufforderung zum Neu-Erstellen (docs/PLAN-UEBUNGEN-GLOSSAR-TAUSCH.md 7.3, Wächter K7).
+   */
+  'session.preferenceOmitted': { count: number };
   /** Gewichts-Zelle bei Übungen ohne Zusatzgewicht (Wächter S2). */
   'load.bodyweight': Record<string, never>;
   'load.band': Record<string, never>;
@@ -111,6 +116,8 @@ export interface PrintTextParams {
   'col.effort': Record<string, never>;
   /** „ersetzt (Gerät fehlt)“ – NUR bei fehlendem Gerät, nie bei Tausch aus Sicherheitsgründen (B1). */
   'mark.equipmentSwap': Record<string, never>;
+  /** „getauscht (deine Wahl)“ – NUR bei Präferenz-Tausch (D-4); Sicherheits-Ersatz bleibt unsichtbar (B1). */
+  'mark.preferenceSwap': Record<string, never>;
   'mark.superset': { group: string };
   'value.reps': { min: number; max: number };
   'value.targetReps': { reps: number };
@@ -287,6 +294,7 @@ const PARAM_SCHEMAS = {
   'session.continued': z.strictObject({ session: dataValueSchema }),
   'session.weightHint': z.strictObject({ hasWeight: z.boolean() }),
   'session.noExercises': empty,
+  'session.preferenceOmitted': z.strictObject({ count: z.number().int().min(1).max(100) }),
   'load.bodyweight': empty,
   'load.band': empty,
   'load.none': empty,
@@ -303,6 +311,7 @@ const PARAM_SCHEMAS = {
   'col.minutes': empty,
   'col.effort': empty,
   'mark.equipmentSwap': empty,
+  'mark.preferenceSwap': empty,
   'mark.superset': z.strictObject({ group: z.string().regex(/^[A-Z]$/) }),
   'value.reps': z.strictObject({ min: z.number().int().min(0), max: z.number().int().min(0) }),
   'value.targetReps': z.strictObject({ reps: z.number().int().min(0) }),

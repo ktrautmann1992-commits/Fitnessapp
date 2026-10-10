@@ -97,3 +97,20 @@ describe('Pause nach einem abgehakten Satz (Reihenfolge im Trainingsmodus, Etapp
     expect(restAfterCheckedSet([ex(1, 2, 900)], 0, 0)).toBe(600);
   });
 });
+
+describe('Supersatz mit nur einem Mitglied (Übungs-Tausch, Wächter S8)', () => {
+  // Nach einer Ausblendung „Hier nicht machbar“ bleibt von Supersatz A nur eine Übung übrig.
+  const exercises = [
+    { order_no: 1, rest_s: 90, superset_group: 'A', setCount: 3, skipped: false },
+    { order_no: 2, rest_s: 120, superset_group: null, setCount: 2, skipped: false },
+  ];
+
+  it('wie eine Einzelübung: normale Pause, Satz für Satz, danach die nächste Übung', () => {
+    expect(nextSetExercise(exercises, 0, 0)).toBe(exercises[0]);
+    expect(nextSetExercise(exercises, 0, 1)).toBe(exercises[0]);
+    expect(nextSetExercise(exercises, 0, 2)).toBe(exercises[1]);
+    expect(restAfterCheckedSet(exercises, 0, 0)).toBe(90);
+    expect(restAfterCheckedSet(exercises, 0, 2)).toBe(90);
+    expect(restAfterCheckedSet(exercises, 1, 1)).toBe(0);
+  });
+});
