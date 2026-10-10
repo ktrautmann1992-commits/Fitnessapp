@@ -85,6 +85,12 @@ GitHub-App den Workflow eas-build und bekomme eine Android-APK zum Installieren 
 iOS-Build in TestFlight.
 ```
 
+### Zwischenschritt – Übungs-Glossar und Übungstausch
+**Stand 10.10.2026: G1, T1 und T2 erledigt** (Plan `docs/PLAN-UEBUNGEN-GLOSSAR-TAUSCH.md`, Gründer-Wunsch vom
+09.10.2026, kein eigener Prompt). Glossar mit Anleitung zu allen Übungen (G1), Tausch-Logik „Nur heute“ / „Ab jetzt
+immer“ in `packages/core` (T1) und Tausch in der App im Testmodus (T2). **T3** (Supabase: Migration, RLS, pgTAP)
+kommt später zusammen mit den anderen Supabase-Etappen, **G2** (Bilder/Videos) später mit eigenem Plan.
+
 ## Phase 4b – Live-Anpassung (Premium, ohne KI)
 ```
 Setze docs/KONZEPT.md Abschnitt 4.1 um: Regel-Engine in packages/core mit umfassenden Tests
@@ -95,6 +101,10 @@ Bestätigung bei großen Änderungen (weniger Trainingstage, Kalorien), Mess-Eri
 Kalorienänderungen nur innerhalb der Schutzgrenzen aus CLAUDE.md. Premium-Prüfung auf dem Server
 (bis Phase 7 hinter Feature-Flag); Gratis-Nutzer behalten die einfache Progression.
 ```
+**Stand 10.10.2026:** Plan freigegeben (`docs/PLAN-PHASE-4B.md`), **Etappe A0 erledigt**. Reihenfolge laut
+Gründer-Entscheidung 09.10.2026: Übungs-Glossar/Übungstausch (erledigt bis T2) → **Phase 5** → danach 4b weiter mit
+A → D (Testmodus) → E; B und C später, wenn echte Konten mit Supabase kommen. Kalorien-Anpassungen aus 4b laufen nur
+als Versatz durch die Schutzgrenzen der Ernährungs-Engine aus Phase 5 (`nutrition/limits.ts`).
 
 ## Phase 5 – Ernährungs-Engine, Essensplan, Einkaufsliste
 ```
@@ -105,6 +115,11 @@ aus CLAUDE.md, Makros, Mahlzeiten-Timing vor/nach dem Training – alles geteste
 Wochen-Essensplan (Vorlieben, Ernährungsform, Schwein ja/nein, Kochmodus täglich/Meal-Prep)
 und aggregierte, nach Abteilung sortierte Einkaufsliste.
 ```
+**Stand 10.10.2026: Plan freigegeben** (`docs/PLAN-PHASE-5.md`, zwei Wächter-Runden eingearbeitet, offene Fragen:
+„Alles wie empfohlen“), **Etappe N0 (Plan) erledigt**. Kommt **vor** der weiteren Umsetzung von Phase 4b (Reihenfolge:
+Übungs-Glossar/Übungstausch bis T2 → Phase 5 → 4b). Zuerst nur im **Testmodus** (N1–N6), Supabase später (N7),
+Batch-Pipeline für Rezepte optional (N8). Nächste Etappe: **N1** (Core: Bedarf, Grenzen, Makros, Timing), parallel
+N2a.
 
 ### Erweiterung Phase 5 – Lebensmittel-Tracker, Standardgerichte, Gerichte rund ums Training
 ```

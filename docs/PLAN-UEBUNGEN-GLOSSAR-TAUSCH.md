@@ -1,6 +1,8 @@
 # Plan: Übungs-Glossar und Übungen tauschen („Nur heute“ / „Ab jetzt immer“)
 
-Stand: 09.10.2026 · Status: **freigegeben** (Gründer 09.10.2026: Empfehlungen übernommen; Wächter-Nachprüfung: freigabefähig, N1–N6 in T1/T2) · Herkunft:
+Stand: 10.10.2026 · Status: **G1, T1, T2 umgesetzt; T3/G2 später** (T3 mit den Supabase-Etappen, G2 mit eigenem
+Plan; Details in Abschnitt 16) · freigegeben (Gründer 09.10.2026: Empfehlungen übernommen; Wächter-Nachprüfung:
+freigabefähig, N1–N6 in T1/T2) · Als Nächstes folgt Phase 5 (`docs/PLAN-PHASE-5.md`), danach Phase 4b · Herkunft:
 Gründer-Wunsch vom 09.10.2026 · Wächter-Prüfung: `waechter-plan-glossar.md` (Urteil „mit Auflagen“)
 
 **Gründer-Entscheidungen (bleiben):** Umsetzung vor Phase 4b · Tausch-Dauer bei jedem Tausch wählbar · Glossar erst
