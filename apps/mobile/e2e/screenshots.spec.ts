@@ -200,9 +200,11 @@ for (const scheme of ['light', 'dark'] as const) {
     await page.getByTestId('workout-done-0-0').click();
     await expect(page.getByTestId('rest-timer')).toBeVisible();
     await shot('training-satz-pause');
-    await page.getByTestId('workout-alternative-1').click();
-    await page.getByTestId('workout-exercise-1').scrollIntoViewIfNeeded();
+    // Tausch-Dialog (Etappe T2) statt der früheren Liste „Alternative durchgeführt“.
+    await page.getByTestId('workout-swap-1').click();
+    await page.getByTestId('swap-dialog').waitFor();
     await shot('training-alternativen');
+    await page.getByTestId('swap-cancel').click();
     await page.getByTestId('workout-effort').scrollIntoViewIfNeeded();
     await page.getByTestId('workout-effort-6').click();
     await shot('training-abschluss');

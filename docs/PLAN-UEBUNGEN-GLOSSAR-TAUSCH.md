@@ -632,7 +632,8 @@ missingKeyPattern: MovementPattern[], emptyByPreference: boolean }`.
   gesperrt bis „Plan neu erstellen“. `planFloorRules`-Grenzfälle (4.5).
 - **`findHarderVariant` mit `exclude` (S2):** Y = `easier`-Alternative von A, A ausgeschlossen, schwerere Variante von
   Y = A → kein bzw. nächster Vorschlag; Variant-Zweig der Alternativen ebenfalls gefiltert.
-- **Mindestanforderungen:** Körpergewicht-Plan, Türrahmen-Rudern `not_feasible` → Handtuch-Rudern. Beides
+- **Mindestanforderungen:** Körpergewicht-Plan, Türrahmen-Rudern `not_feasible` → Handtuch-Rudern (siehe
+  Umsetzungsstand T1 Punkt 4: kein Kandidat wegen S-4). Beides
   ausgeschlossen → `preference_key_pattern_missing`. `canExclude` liefert false, wenn kein Kandidat.
 - **Progression:** Ersatz ohne Einträge → Kalibrierung. Rückkehr der alten Übung nach 30 Tagen →
   `RETURN_AFTER_PAUSE`.
@@ -829,12 +830,13 @@ Gründe für den Schnitt:
    - Filter „Ohne Geräte“ → nur Übungen ohne Geräte.
    - Training starten → bei einer Übung „So geht's“ aufklappen, der Pausentimer läuft weiter.
 4. **Tauschen „Nur heute“ (T2):**
-   - Auf „Heute“ bei Türrahmen-Rudern „Tauschen“ → Handtuch-Rudern → „Nur heute“ → Kennzeichen „heute getauscht“ →
-     Training starten → Handtuch-Rudern steht schon da.
-   - Morgen bzw. nächste Einheit: wieder Türrahmen-Rudern.
+   - Auf „Heute“ bei **Kniebeuge mit Körpergewicht** „Tauschen“ → **Kniebeuge zum Stuhl** → „Nur heute“ → Kennzeichen
+     „heute getauscht“ → Training starten → Kniebeuge zum Stuhl steht schon da. (Korrigiert in T2: Türrahmen-Rudern hat
+     ohne Geräte keine gleichwertige Alternative – Handtuch-Rudern ist eine Halteübung, Umsetzungsstand T1 Punkt 4.)
+   - Nächste Einheit (Wochenübersicht): wieder Kniebeuge mit Körpergewicht; dort heißt es „Nur bei diesem Training“.
 5. **Tauschen „Ab jetzt immer“:**
-   - Eine Übung tauschen → „Ab jetzt immer – zu Hause“ → „Mag ich nicht“ → Kennzeichen „getauscht (deine Wahl)“ in
-     allen Einheiten. „Rückgängig“ bleibt stehen, bis du etwas anderes tippst.
+   - **Liegestütz mit erhöhten Händen** tauschen → **Liegestütz** → „Ab jetzt immer – zu Hause“ → „Mag ich nicht“ →
+     Kennzeichen „getauscht (deine Wahl)“ in allen Einheiten. „Rückgängig“ bleibt stehen, bis du etwas anderes tippst.
    - Woche ansehen, Druckansicht/PDF öffnen → die neue Übung steht drin.
 6. Einstellungen → „Ausgeschlossene Übungen“ → „Wieder zulassen“ → die Übung ist sofort zurück.
 7. **Sicherheit prüfen:**
@@ -843,8 +845,10 @@ Gründe für den Schnitt:
    - Schwangerschaft wieder austragen → Glute Bridge erscheint beim Tauschen erst nach „Plan neu erstellen“.
    - Alter ab 65 → kein Tisch-Rudern.
    - Bei einer Übung ohne Alternative ist „Ab jetzt immer“ ausgegraut, mit Erklärung.
-8. **Hinweise prüfen:** Eine Übung „Hier nicht machbar“ ausschließen, für die es keine Alternative mehr gibt → neutraler
-   Hinweis „entfällt hier … Ausschlüsse ansehen“, **kein** Hinweis „Plan neu erstellen“.
+8. **Hinweise prüfen:** Bei Türrahmen-Rudern „Tauschen“ → ehrlicher Hinweis „keine gleichwertige Alternative“, „Ab
+   jetzt immer“ wird gar nicht erst angeboten. Der Fall „Hier nicht machbar, Alternative fällt später weg“ (neutraler
+   Hinweis „entfällt hier … Ausschlüsse ansehen“, **kein** „Plan neu erstellen“) lässt sich am Handy nur über spätere
+   Änderungen erreichen und ist im E2E-Test `swap.spec.ts` abgedeckt.
 9. Einstellungen → „Meine Daten exportieren“ → die Datei enthält `exercise_preferences`.
 10. Optional am Handy mit Bildschirmleser (TalkBack/VoiceOver): Tausch-Dialog durchgehen, Ansage „… ersetzt“ hören.
 11. GitHub-App → Actions → letzter `ci`-Lauf grün. Ab T3 zusätzlich `db-migrate` grün.
@@ -1069,3 +1073,95 @@ ownerUserId; today; catchUpToday? } }` – Präferenzen und Day-Swaps gibt es nu
   Folge: Stufe 3 auf gleiche `mechanics` begrenzen oder ballistische Übungen kennzeichnen.
 - **K8 – in T2 sichtbar machen:** Eine Präferenz auf eine archivierte angezeigte Übung wird ignoriert (S-8), auch bei
   „Hier nicht machbar“. Die Einstellungen müssen sie als „nicht mehr verfügbar“ mit „Entfernen“ zeigen (8.2).
+
+### T2 – Tausch in der App, Testmodus (umgesetzt, 10.10.2026)
+
+- **Core (Ergänzungen mit Tests):** neu `plan/swap-choices.ts` – `swapChoices` (Dialog: „Nur heute“-Liste = dieselbe
+  Funktion wie im Trainingsmodus, „immer“-Kandidaten je wählbarem Ort genau wie `canExclude`, Obergrenze, Kette
+  X → Y), `alwaysAllowedFor`, `PreferenceChange`/`applyPreferenceChanges`, `preferenceSaveChanges` (inkl. Rückgängig),
+  `preferenceChainFrom`, `exclusionOverview` (Einstellungen, K8); in `plan/preferences.ts` `alwaysCandidates`,
+  `preferenceLimitReached` und `CanExcludeContext` (canExclude nutzt sie, Verhalten gleich); `DisplaySession.missingKeyPattern`
+  (für „Dieser Einheit fehlt jetzt eine Rücken-Übung“); `PENDING_DB_EXPORT_TABLES = ['exercise_preferences']` in
+  `export/data-export.ts`.
+- **App-Daten:** `UserRows.exercisePreferences` (`ExercisePreferenceRow`, `legacy-rows.ts` → `[]`, Zod beim Lesen);
+  WriteOps `upsert_exercise_preference`/`delete_exercise_preference`; `local-rules.ts` `isValidPreferenceOp` (Profil,
+  eigene `user_id`, strikt, Übung lesbar, Ersatz nur aus der angebotenen Bibliothek = Entwurf ohne roten Befund bzw.
+  freigegeben, Obergrenze, `canExclude` für das Paar der Einheit); `Backend.updateExercisePreferences(changes, at)` (alles
+  oder nichts, Fehler `preference_rejected`) und `supportsExercisePreferences` (Testmodus `true`, Supabase `false`).
+  Day-Swap-Speicher `data/day-swaps.ts` (Schlüssel `STORAGE_KEYS.daySwaps`, Zod je Eintrag, nur eigenes Konto,
+  fremde Konten bleiben liegen, `pruneDaySwaps` beim Laden, verworfene `droppedDaySwaps` nach jeder Anzeige
+  aufgeräumt, beim Abmelden/Konto löschen weg, beim Widerruf `health_data` die zu Gesundheitsplänen).
+- **Ein Anzeigeweg:** `data/exercise-swap.ts` `sessionDisplay()` setzt für „Heute“ und Trainingsmodus Regeln,
+  Plan-Untergrenze (`displaySwapRules`, immer), Ort (`sessionLocationInfo`), Präferenzen und Day-Swaps für
+  `prepareSessionForDisplay` zusammen. `workoutView` nutzt ihn (Präferenzen und Ort auch für Alternativen/schwerere
+  Variante, `weekPreferenceLayer` für V9). PDF (`lib/print-plan.ts`) übergibt `swap: { swapRules, preferences }`.
+  **Alle Aufrufer übergeben damit `swap` mit `displaySwapRules`.**
+- **UI:** `components/swap.tsx` (Tausch-Dialog, Rückmeldung mit Live-Region/Ansage und „Rückgängig“ ohne Zeitlimit),
+  `SessionCard` mit „Tauschen“, „Tausch zurücknehmen“, Kennzeichen als Text, neutralen Hinweisen (B1b, S9, K7-Gegenstück
+  in der App, viele Ausschlüsse); „Heute“ (auch andere Tage der Wochenübersicht; „Training starten“ bei
+  `emptyByPreference` deaktiviert mit sichtbarem Grund); Trainingsmodus „Tauschen“ statt „Alternative durchgeführt“
+  (nur heute = Alternative im Entwurf, immer = zusätzlich Präferenz, „Zurück zu …“); neue Seite
+  `app/ausgeschlossene-uebungen.tsx` (Einstellungen → „Ausgeschlossene Übungen“); Glossar-Detail zeigt den
+  Ausschluss-Status; Export-Hinweis zu Gerätedaten. Texte in `i18n/de.ts` (`swap`, `exclusions`).
+- **Tests:** Core `swap-choices.test.ts` (Gegenproben über `canExclude`), `view-swap.test.ts` (missingKeyPattern),
+  `data-export.test.ts`; App `exercise-swap.test.ts` (Regression ohne Präferenzen, Day-Swap bis zum gespeicherten
+  Eintrag mit `planned_exercise_id`, „immer“ + Rückgängig, Kette, Ablehnungen, `isValidPreferenceOp`, Trainingsmodus,
+  **N4**), `day-swaps.test.ts`, `legacy-rows.test.ts`, `swap-format.test.ts`, `print-plan.test.ts`,
+  `data-export.test.ts`; E2E `apps/mobile/e2e/swap.spec.ts` (nur heute, Rückgängig, Escape/Fokus, immer, alle Tage,
+  PDF, Glossar, Einstellungen, Export, Wieder zulassen, Trainingsmodus, B1b, K8).
+
+**Abweichungen und Festlegungen:**
+
+1. **Kette X → Y → Z:** Wer eine schon per Präferenz getauschte Übung Y „ab jetzt immer“ tauscht, speichert die
+   Präferenz auf Y **und** den neuen Ersatz Z für die Präferenz auf X (sonst wählte die Anzeige für X den ersten
+   Kandidaten statt Z). Angeboten werden dann nur Kandidaten, die auch für X gelten (`swapChoices.chainFromId`).
+   Rückgängig in derselben Reihenfolge (erst Y, dann X).
+2. **„Tausch zurücknehmen“** statt erneutem Tauschen an einer „heute getauschten“ Übung (eine Präferenz auf einen
+   Day-Swap wäre unklar). „Rückgängig“ gibt es für beide Dauern, nicht nur für „immer“.
+3. **Läuft ein Entwurf**, bietet „Heute“ kein „Tauschen“ an (Hinweis „tauschen kannst du dort“) – der Entwurf gilt
+   (5.1). Im Trainingsmodus ist das Paar (gespeichert, im Entwurf geplant); „in der Einheit“ sind die anderen Einträge
+   des Entwurfs.
+4. **S-6 bei der Prüfung:** Die getauschte Position zählt nicht als „schon in der Einheit“ (die angezeigte Übung ist
+   ohnehin kein Kandidat); sonst wäre beim Rückgängig-Machen einer Kette der alte Ersatz gesperrt.
+5. **Export:** `exercise_preferences` steht im Testmodus-Export; `DATA_EXPORT_TABLES` bleibt bis T3 gleich
+   (db-sync-Test gegen `export_my_data`), die Tabelle steht in `PENDING_DB_EXPORT_TABLES` und kommt über `catchall`
+   durch die Prüfung. Day-Swaps sind Gerätedaten (Hinweis in den Einstellungen).
+6. **„Geräte anpassen“** steht bei „keine gleichwertige Alternative“ immer (nicht nur bei „Hier nicht machbar“) und
+   führt zu Hause zum Geräte-Schritt, im Studio zu den Einstellungen.
+7. **Escape im Browser** schließt den Dialog, sobald react-native-web das Modal fertig eingeblendet hat (~0,3 s).
+   Fokus beim Öffnen auf den Titel, beim Schließen zurück auf „Tauschen“ (nur Browser; nativ setzt der Bildschirmleser
+   den Fokus selbst).
+8. **Ohne Bibliothek** (offline ohne Zwischenspeicher) keine Tausch-Schichten und kein „Tauschen“ – Day-Swaps würden
+   sonst als ungültig verworfen.
+9. **Glossar-Detail:** zeigt den Ausschluss-Status mit Link „Ausschlüsse ansehen“ (statt „Wieder zulassen“ direkt).
+10. **Bestehende E2E-Specs angepasst:** `workout.spec.ts` und `screenshots.spec.ts` nutzen „Tauschen“ statt
+    „Alternative durchgeführt“; `history.spec.ts` erwartet 21 Tabellen im Testmodus-Export.
+
+**Nachträge aus der Wächter-Prüfung T2 (`waechter-t2.md`, Urteil „mit Auflagen“) – umgesetzt:**
+
+- **S1:** Neues Core-Prädikat `daySwapApplies(session, { today, catchUpToday })` (`plan/day-swaps.ts`), genutzt von
+  `applyDaySwaps`, `pruneDaySwaps` und der App (`SessionDisplay.daySwapActive`). An verpassten, nicht nachholbaren
+  Terminen ist „Nur heute“ deaktiviert (sichtbarer Grund); „Tauschen“ erscheint dort nur, wenn „Ab jetzt immer“ möglich
+  ist (`canSwapIn(…, supportsPreferences)`). Core- und App-Test (mit Gegenprobe: ein Day-Swap dort würde verworfen).
+- **S2:** Der zweite `workoutView`-Aufruf (eigenes Startgewicht) bekommt dieselben Optionen (`daySwaps`,
+  `ownerUserId`); App-Test „Day-Swap → Entwurf → Startgewicht → Vorgabe aus dem Startgewicht“ (mit Gegenprobe ohne
+  Day-Swaps).
+- **S3:** App-Test „Tage egal“ mit Studio und Zuhause: Ort mehrdeutig, beide Orte wählbar, Speichern für den nicht
+  geratenen Ort angenommen, Anzeige wendet die Präferenz an. Ein E2E-Schritt dafür fehlt (das Onboarding „Tage egal“
+  mit zwei Orten ist im E2E-Helfer nicht vorgesehen) – offen, Kann.
+- **K1:** Der Testmodus prüft gegen das wirklich angezeigte Paar (`sessionDisplay` + `displayPairs`): Die Präferenz
+  muss an der angezeigten Übung bzw. an X einer Kette hängen. Test.
+- **K2:** Eigener Fehlercode `preference_limit` (Text „Höchstzahl erreicht …“); `preference_rejected` neutral formuliert.
+- **K3:** „Ab jetzt immer“ ohne Ort/Grund wirft einen Fehler, nie stiller Rückfall auf „Nur heute“.
+- **K4:** Gruppen der Grundbausteine aus dem Core (`missingKeyGroups`, `KEY_PATTERN_GROUP_CODES` passend zu
+  `SWAP_RULES.keyPatternGroups`).
+- **K5:** E2E „Abmelden entfernt die Day-Swaps des Kontos“.
+- **K6:** Nach einem Tausch liegt der Fokus auf der Rückmeldung (E2E).
+- **K7:** Zeilen in „Ausgeschlossene Übungen“ als Überschrift Ebene 3.
+- **K8:** „Geräte anpassen“ nur zu Hause bzw. bei mehrdeutigem Ort, mit Hinweis „wirkt, sobald du den Plan neu
+  erstellst“; im Studio entfällt der Knopf.
+- **K9 – offen:** Im Inhaltsstand gibt es keine archivierte Übung; der E2E-Fall nutzt eine nicht mehr vorhandene ID
+  („Unbekannte Übung“, „nicht mehr verfügbar“). Der Fall „archiviert, Name über `displayExercises`“ ist im Core-Test
+  `exclusionOverview` abgedeckt.
+- Zusätzlich: Im Trainingsmodus ist „Ab jetzt immer“ an einer Übung, die vor dem Training nur für heute getauscht
+  wurde, deaktiviert (mit Erklärung) – die Präferenz hinge sonst an einer Tagesübung.

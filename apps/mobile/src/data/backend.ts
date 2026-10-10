@@ -1,6 +1,7 @@
 import type {
   ConsentType,
   DataExportFile,
+  PreferenceChange,
   PlanLibrary,
   PlanSafetyRules,
   SavePlanPayload,
@@ -95,8 +96,25 @@ export interface OlderLogsPage {
   nextBefore: string | null;
 }
 
+/**
+ * Wo „Ab jetzt immer“ gewählt wurde (für die Prüfung canExclude im Testmodus, docs/PLAN-UEBUNGEN-GLOSSAR-TAUSCH.md 9):
+ * Einheit des aktiven Plans, gespeicherte Position und die Übungen, die dort gerade angezeigt werden.
+ */
+export interface PreferenceSwapContext {
+  sessionId: string;
+  storedOrderNo: number;
+  inSession: readonly string[];
+  /** Ort der Einheit nur geraten (4.4) – Ausschlüsse beider Orte zählen. */
+  ambiguousLocation: boolean;
+}
+
 export interface Backend {
   readonly mode: BackendMode;
+  /**
+   * „Ab jetzt immer“ und „Ausgeschlossene Übungen“ (Etappe T2): Testmodus ja; Supabase-Modus erst mit Etappe T3
+   * (Tabelle exercise_preferences) – bis dahin nur „Nur heute“, kein halbfertiger Zustand (8.2).
+   */
+  readonly supportsExercisePreferences: boolean;
   readonly signIn: SignIn;
   getSession(): Promise<AuthSession | null>;
   signOut(): Promise<void>;
@@ -162,6 +180,16 @@ export interface Backend {
   submitWorkout(draft: WorkoutDraft, payload: SessionLogPayload): Promise<LogSaveOutcome>;
   /** Eintrag löschen (nur online, mit Revision, R4). */
   deleteSessionLog(id: string, baseRevision: number): Promise<'ok' | 'conflict'>;
+  /**
+   * Übungs-Präferenzen ändern (der Reihe nach, alles oder nichts): „Ab jetzt immer“ (`at` Pflicht – geprüft wie der
+   * Tausch-Dialog mit canExclude), Rückgängig, „Wieder zulassen“. Entfernen braucht kein `at`. Fehler
+   * `preference_rejected`. Supabase-Modus vor T3: nicht unterstützt (`supportsExercisePreferences`).
+   */
+  updateExercisePreferences(
+    changes: readonly PreferenceChange[],
+    at: PreferenceSwapContext | null,
+    rows: UserRows,
+  ): Promise<UserRows>;
   /** Eigenes Startgewicht (nur ohne Eintrag sinnvoll); null = entfernen. */
   setStartWeight(exerciseId: string, weightKg: number | null, rows: UserRows): Promise<UserRows>;
   /**
@@ -219,6 +247,13 @@ export type BackendErrorCode =
   | 'foreign_data'
   /** Geschützter Gerätespeicher nicht beschreibbar (Browser: sessionStorage voll/gesperrt, K9). */
   | 'storage_unavailable'
+  /**
+   * Übungs-Präferenz abgelehnt (Etappe T2): keine gleichwertige Alternative mehr, Obergrenze erreicht oder die Auswahl
+   * passt nicht mehr zum aktuellen Stand (gleiche Prüfung wie der Tausch-Dialog, canExclude).
+   */
+  | 'preference_rejected'
+  /** Obergrenze EXERCISE_PREFERENCE_LIMITS.maxPerUser erreicht. */
+  | 'preference_limit'
   | 'unknown';
 
 /** Fehler mit festem Code – die Bildschirme zeigen dazu einen deutschen Text (i18n errors.*). */

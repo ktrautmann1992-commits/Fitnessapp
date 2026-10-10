@@ -309,6 +309,52 @@ export type CanExcludeResult =
         | 'replacement_not_candidate';
     };
 
+/** Kontext für „Ab jetzt immer“ (canExclude, alwaysCandidates): Geräte je Ort statt eines Profils. */
+export type CanExcludeContext = Omit<
+  SwapContext,
+  'mode' | 'harderVariantId' | 'location' | 'profile'
+> & {
+  /**
+   * Geräte je Ort (Wächter T1-K3): geprüft wird mit dem Profil des GEWÄHLTEN Orts der Präferenz – bei mehrdeutigem
+   * Ort kann die Person im Dialog einen anderen Ort wählen als den geratenen.
+   */
+  readonly profiles: ReadonlyMap<EquipmentLocation, Pick<EquipmentProfile, 'available'>>;
+};
+
+/**
+ * Kandidaten für „Ab jetzt immer“ am Ort `location` (Grundlage von canExclude und dem Tausch-Dialog, Etappe T2):
+ * swapCandidates(…, 'always') mit dem Geräte-Profil dieses Orts; die eigene (alte) Präferenz auf X an diesem Ort
+ * schließt keine Kandidaten aus.
+ */
+export function alwaysCandidates(
+  pair: Pick<ExercisePair, 'stored' | 'shown'>,
+  location: EquipmentLocation,
+  ctx: CanExcludeContext,
+): SwapCandidates {
+  const { profiles, ...rest } = ctx;
+  return swapCandidates(pair, {
+    ...rest,
+    profile: profiles.get(location) ?? null,
+    location,
+    preferences: ctx.preferences.filter(
+      (o) => !(o.exercise_id === pair.shown.exercise_id && o.location === location),
+    ),
+    mode: 'always',
+  });
+}
+
+/** Ist die Obergrenze der Ausschlüsse erreicht (eine Änderung derselben Übung am selben Ort zählt nicht neu)? */
+export function preferenceLimitReached(
+  preferences: readonly ExercisePreference[],
+  exerciseId: string,
+  location: EquipmentLocation,
+): boolean {
+  const others = preferences.filter(
+    (o) => !(o.exercise_id === exerciseId && o.location === location),
+  );
+  return others.length >= EXERCISE_PREFERENCE_LIMITS.maxPerUser;
+}
+
 /**
  * Darf „Ab jetzt immer“ gespeichert werden (7.2)? Gemeinsame Prüfung für UI und Testmodus-Regeln (local-rules):
  * gültige Eingabe (Zod), Kandidat vorhanden (4.2), Obergrenze EXERCISE_PREFERENCE_LIMITS.maxPerUser (eine Änderung
@@ -317,34 +363,17 @@ export type CanExcludeResult =
 export function canExclude(
   pair: Pick<ExercisePair, 'stored' | 'shown'>,
   pref: unknown,
-  ctx: Omit<SwapContext, 'mode' | 'harderVariantId' | 'location' | 'profile'> & {
-    /**
-     * Geräte je Ort (Wächter T1-K3): geprüft wird mit dem Profil des GEWÄHLTEN Orts der Präferenz – bei mehrdeutigem
-     * Ort kann die Person im Dialog einen anderen Ort wählen als den geratenen.
-     */
-    readonly profiles: ReadonlyMap<EquipmentLocation, Pick<EquipmentProfile, 'available'>>;
-  },
+  ctx: CanExcludeContext,
 ): CanExcludeResult {
   const parsed = exercisePreferenceSchema.safeParse(pref);
   if (!parsed.success || parsed.data.exercise_id !== pair.shown.exercise_id) {
     return { ok: false, reason: 'invalid' };
   }
   const p = parsed.data;
-  const others = ctx.preferences.filter(
-    (o) => !(o.exercise_id === p.exercise_id && o.location === p.location),
-  );
-  if (others.length >= EXERCISE_PREFERENCE_LIMITS.maxPerUser) {
+  if (preferenceLimitReached(ctx.preferences, p.exercise_id, p.location)) {
     return { ok: false, reason: 'limit_reached' };
   }
-  const { profiles, ...rest } = ctx;
-  const result = swapCandidates(pair, {
-    ...rest,
-    profile: profiles.get(p.location) ?? null,
-    location: p.location,
-    // Die eigene (alte) Präferenz auf X schließt keine Kandidaten aus.
-    preferences: others,
-    mode: 'always',
-  });
+  const result = alwaysCandidates(pair, p.location, ctx);
   if (result.reason !== null) return { ok: false, reason: result.reason };
   if (
     p.replacement_exercise_id !== null &&

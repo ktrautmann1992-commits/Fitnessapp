@@ -60,6 +60,40 @@ describe('Plan als PDF – Zusammenstecken (P3/P4)', () => {
     expect(spy.mock.calls[0]?.[3]).toBeNull();
   });
 
+  it('„Ab jetzt immer“ wirkt im PDF (Plan-Untergrenze dabei), ohne Präferenzen kein Kennzeichen (Etappe T2)', async () => {
+    const plan = await savedPlan();
+    const spy = vi.mocked(core.buildTrainingPlanDocument);
+    spy.mockClear();
+    const plain = buildPlanPrint({ ...plan, today: TODAY, form: form(), target: 'web' });
+    if (!plain.ok) throw new Error('kein Dokument');
+    expect(plain.html).not.toContain(t.print.preferenceSwap);
+    const display = spy.mock.calls[0]?.[2];
+    expect(display?.swap?.swapRules).toEqual(
+      core.displaySwapRules(plan.active.plan, plan.rows.profile?.birth_date ?? TODAY, plan.rules),
+    );
+    expect(display?.swap?.preferences).toEqual([]);
+    // Alle Übungen der ersten Kraft-Einheit „mag ich nicht“ im Studio → mindestens eine getauscht.
+    const first = plan.active.sessions.find((s) => s.kind === 'strength');
+    const prefs = (first?.exercises ?? []).map((e) => ({
+      user_id: plan.rows.profile?.user_id ?? '',
+      exercise_id: e.exercise_id,
+      location: 'gym' as const,
+      kind: 'dislike' as const,
+      replacement_exercise_id: null,
+      created_at: '2026-10-03T08:00:00.000Z',
+      updated_at: '2026-10-03T08:00:00.000Z',
+    }));
+    const swapped = buildPlanPrint({
+      ...plan,
+      rows: { ...plan.rows, exercisePreferences: prefs },
+      today: TODAY,
+      form: form(),
+      target: 'web',
+    });
+    if (!swapped.ok) throw new Error('kein Dokument');
+    expect(swapped.html).toContain(t.print.preferenceSwap);
+  });
+
   it('Plan mit Gesundheitsangaben: kein Wort dazu im Dokument (B1)', async () => {
     const plan = await savedPlan({ flags: ['injury'] });
     expect(plan.active.plan.uses_health_data).toBe(true);

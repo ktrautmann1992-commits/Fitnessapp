@@ -36,6 +36,15 @@ export const DATA_EXPORT_TABLES = [
 
 export type DataExportTable = (typeof DATA_EXPORT_TABLES)[number];
 
+/**
+ * Tabellen, die der TESTMODUS schon exportiert, die Datenbank (export_my_data) aber erst mit der Supabase-Etappe:
+ * `exercise_preferences` (docs/PLAN-UEBUNGEN-GLOSSAR-TAUSCH.md 9, Etappe T2; Migration und export_my_data in T3 –
+ * dann nach DATA_EXPORT_TABLES verschieben). Die Prüfung der Datei lässt sie über `catchall` zu.
+ */
+export const PENDING_DB_EXPORT_TABLES = ['exercise_preferences'] as const;
+
+export type PendingDbExportTable = (typeof PENDING_DB_EXPORT_TABLES)[number];
+
 /** Format der Datei (= export_my_data().format_version). */
 export const DATA_EXPORT_FORMAT_VERSION = 1;
 

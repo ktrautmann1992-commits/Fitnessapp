@@ -1,12 +1,27 @@
 import {
   BARBELL_ID,
+  exercisePreferenceSchema,
   BARBELL_PLATE_MAX_KG,
   scheduleFromLegacyGoals,
   type TrainingLocation,
 } from '@fitnessapp/core';
 
 import { toTrainingSlotRows } from './mapping';
-import type { GoalsRow, UserEquipmentRow, UserRows } from './types';
+import type { ExercisePreferenceRow, GoalsRow, UserEquipmentRow, UserRows } from './types';
+
+function storedPreferences(stored: UserRows): ExercisePreferenceRow[] {
+  const list: unknown = (stored as { exercisePreferences?: unknown }).exercisePreferences;
+  if (!Array.isArray(list)) return [];
+  const owner = stored.profile?.user_id;
+  return list.flatMap((item: unknown) => {
+    if (typeof item !== 'object' || item === null) return [];
+    const { user_id: userId, ...rest } = item as Record<string, unknown>;
+    const parsed = exercisePreferenceSchema.safeParse(rest);
+    return parsed.success && typeof userId === 'string' && (owner === undefined || userId === owner)
+      ? [{ ...parsed.data, user_id: userId }]
+      : [];
+  });
+}
 
 /** goals-Felder des Gerätespeichers aus App-Versionen vor Etappe B2. */
 interface LegacyGoalsFields {
@@ -37,6 +52,9 @@ export function upgradeStoredRows(stored: UserRows): UserRows {
     setLogs: stored.setLogs ?? [],
     cardioLogs: stored.cardioLogs ?? [],
     startWeights: stored.startWeights ?? [],
+    // Vor Etappe T2 gab es keine Übungs-Präferenzen; der Gerätespeicher ist nicht vertrauenswürdig – nur gültige
+    // Einträge (Zod, strikt) des eigenen Kontos bleiben (docs/PLAN-UEBUNGEN-GLOSSAR-TAUSCH.md 9).
+    exercisePreferences: storedPreferences(stored),
   };
   const goals = stored.goals as (GoalsRow & LegacyGoalsFields) | null;
   if (

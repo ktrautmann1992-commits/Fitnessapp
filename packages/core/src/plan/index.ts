@@ -16,6 +16,7 @@ export * from './rows';
 export * from './safety';
 export * from './schedule';
 export * from './start-group';
+export * from './swap-choices';
 export * from './title';
 export * from './update';
 export * from './view';

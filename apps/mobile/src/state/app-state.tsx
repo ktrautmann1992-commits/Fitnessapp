@@ -1,6 +1,10 @@
 import {
   type DataExportFile,
+  type DaySwap,
   followUpBlockState,
+  type PreferenceChange,
+  removeDaySwap as removeDaySwapEntry,
+  upsertDaySwap,
   type GeneratedPlan,
   type PlanLibrary,
   type PlanSafetyRules,
@@ -28,8 +32,10 @@ import {
   type Backend,
   type BackendErrorCode,
   type LogSaveOutcome,
+  type PreferenceSwapContext,
 } from '@/data/backend';
 import { createBackend, deviceStore, newId } from '@/data/create-backend';
+import { createDaySwapStore, prunedDaySwaps, withoutHealthPlanSwaps } from '@/data/day-swaps';
 import {
   draftToPayload,
   isValidPayload,
@@ -183,6 +189,23 @@ export interface AppContextValue {
   moveSession: (sessionId: string) => Promise<RescheduleResult>;
   /** Folgeblock anhängen, wenn fällig (automatisch beim Anzeigen von „Heute“). */
   appendNextBlockIfDue: () => Promise<void>;
+
+  // --- Übungstausch (docs/PLAN-UEBUNGEN-GLOSSAR-TAUSCH.md, Etappe T2) ---
+  /** „Nur heute“-Tausche vor dem Training (Gerätespeicher, nur dieses Konto; geprüft bei jeder Anzeige im Core). */
+  daySwaps: readonly DaySwap[];
+  /** Day-Swap anlegen bzw. ersetzen (je Einheit und Position einer). */
+  addDaySwap: (swap: DaySwap) => Promise<void>;
+  /** Day-Swaps entfernen (Rückgängig bzw. Aufräumen der vom Core verworfenen). */
+  removeDaySwaps: (
+    slots: readonly Pick<DaySwap, 'ownerUserId' | 'sessionId' | 'storedOrderNo'>[],
+  ) => Promise<void>;
+  /** Vom Core verworfene Day-Swaps (droppedDaySwaps) genau so aus dem Speicher räumen. */
+  dropDaySwaps: (swaps: readonly DaySwap[]) => Promise<void>;
+  /** „Ab jetzt immer“, Rückgängig, „Wieder zulassen“ (Testmodus; Supabase ab T3). */
+  updateExercisePreferences: (
+    changes: readonly PreferenceChange[],
+    at: PreferenceSwapContext | null,
+  ) => Promise<UserRows>;
 }
 
 /** Meldung nach verworfener Verschiebung (Text in i18n, hier nur der Schlüssel). */
@@ -212,6 +235,8 @@ export function AppStateProvider({ children }: { children: ReactNode }) {
   const [foreignData, setForeignData] = useState(false);
   const [sessionExpired, setSessionExpired] = useState(false);
   const [olderLogs, setOlderLogs] = useState<OlderLogs | null>(null);
+  const [daySwaps, setDaySwaps] = useState<readonly DaySwap[]>([]);
+  const [daySwapStore] = useState(() => createDaySwapStore(deviceStore));
   const appendingRef = useRef(false);
   /** Plan, für den das Anhängen gescheitert ist (kein erneuter Versuch bis zum neuen Plan). */
   const appendFailedRef = useRef<string | null>(null);
@@ -233,6 +258,26 @@ export function AppStateProvider({ children }: { children: ReactNode }) {
     }
   }, [backend]);
 
+  /** Day-Swaps des Kontos laden und aufräumen (pruneDaySwaps); ein kaputter Gerätespeicher ergibt eine leere Liste. */
+  const reloadDaySwaps = useCallback(
+    async (loaded: UserRows) => {
+      const owner = loaded.profile?.user_id;
+      if (!owner) {
+        setDaySwaps([]);
+        return;
+      }
+      try {
+        const stored = await daySwapStore.load(owner);
+        const kept = prunedDaySwaps(loaded, stored, todayIso());
+        if (kept.length !== stored.length) await daySwapStore.save(owner, kept);
+        setDaySwaps(kept);
+      } catch {
+        setDaySwaps([]);
+      }
+    },
+    [daySwapStore],
+  );
+
   const loadUser = useCallback(async (): Promise<UserRows> => {
     const result = await backend.loadRows();
     setRows(result.rows);
@@ -240,8 +285,9 @@ export function AppStateProvider({ children }: { children: ReactNode }) {
     setCachedRules(result.offline ? (result.cachedSafetyRules ?? null) : null);
     refreshPending();
     await reloadDrafts();
+    await reloadDaySwaps(result.rows);
     return result.rows;
-  }, [backend, refreshPending, reloadDrafts]);
+  }, [backend, refreshPending, reloadDaySwaps, reloadDrafts]);
 
   /** Lädt Texte, Sitzung und Daten (Status bleibt bis zum Ende unverändert). */
   const load = useCallback(async () => {
@@ -407,10 +453,17 @@ export function AppStateProvider({ children }: { children: ReactNode }) {
 
   const revokeHealthData = useCallback(
     async (deleteLogs: boolean) => {
+      // Day-Swaps zu Plänen mit Gesundheitsbezug mit entfernen (wie die Entwürfe, PLAN-UEBUNGEN-GLOSSAR-TAUSCH 9).
+      const owner = rows?.profile?.user_id;
+      if (rows && owner) {
+        const kept = withoutHealthPlanSwaps(rows, await daySwapStore.load(owner));
+        await daySwapStore.save(owner, kept);
+        setDaySwaps(kept);
+      }
       await backend.revokeHealthData(deleteLogs);
       await loadUser();
     },
-    [backend, loadUser],
+    [backend, daySwapStore, loadUser, rows],
   );
 
   const saveStep = useCallback(
@@ -454,7 +507,61 @@ export function AppStateProvider({ children }: { children: ReactNode }) {
     setForeignData(false);
     setSessionExpired(false);
     setOlderLogs(null);
+    setDaySwaps([]);
   }, []);
+
+  // --- Übungstausch (Etappe T2) -----------------------------------------------------------------------------
+  const addDaySwap = useCallback(
+    async (swap: DaySwap) => {
+      const next = upsertDaySwap(await daySwapStore.load(swap.ownerUserId), swap);
+      await daySwapStore.save(swap.ownerUserId, next);
+      setDaySwaps(next);
+    },
+    [daySwapStore],
+  );
+
+  const removeDaySwaps = useCallback(
+    async (slots: readonly Pick<DaySwap, 'ownerUserId' | 'sessionId' | 'storedOrderNo'>[]) => {
+      const owner = slots[0]?.ownerUserId;
+      if (!owner) return;
+      const next = slots.reduce<DaySwap[]>(
+        (list, slot) => removeDaySwapEntry(list, slot),
+        await daySwapStore.load(owner),
+      );
+      await daySwapStore.save(owner, next);
+      setDaySwaps(next);
+    },
+    [daySwapStore],
+  );
+
+  const dropDaySwaps = useCallback(
+    async (dropped: readonly DaySwap[]) => {
+      const owner = dropped[0]?.ownerUserId;
+      if (!owner) return;
+      const same = (a: DaySwap, b: DaySwap) =>
+        a.sessionId === b.sessionId &&
+        a.storedOrderNo === b.storedOrderNo &&
+        a.alternativeId === b.alternativeId &&
+        a.createdAt === b.createdAt;
+      const current = await daySwapStore.load(owner);
+      const next = current.filter((s) => !dropped.some((d) => same(s, d)));
+      if (next.length === current.length) return;
+      await daySwapStore.save(owner, next);
+      setDaySwaps(next);
+    },
+    [daySwapStore],
+  );
+
+  const updateExercisePreferences = useCallback(
+    async (changes: readonly PreferenceChange[], at: PreferenceSwapContext | null) => {
+      if (!rows) throw new BackendError('not_signed_in');
+      const next = await backend.updateExercisePreferences(changes, at, rows);
+      setRows(next);
+      refreshPending();
+      return next;
+    },
+    [backend, refreshPending, rows],
+  );
 
   // --- Trainingstagebuch -----------------------------------------------------------------------------------
   const saveDraft = useCallback(
@@ -665,10 +772,17 @@ export function AppStateProvider({ children }: { children: ReactNode }) {
     }
   }, [backend, library, loadUser, offline, rows, safetyRules]);
 
+  /** Day-Swaps des Kontos vom Gerät entfernen (Abmelden, Konto löschen). */
+  const forgetDaySwaps = useCallback(async () => {
+    const owner = rows?.profile?.user_id ?? session?.userId;
+    if (owner) await daySwapStore.removeOwner(owner).catch(() => undefined);
+  }, [daySwapStore, rows, session]);
+
   const deleteAccount = useCallback(async () => {
     await backend.deleteAccount();
+    await forgetDaySwaps();
     resetUser();
-  }, [backend, resetUser]);
+  }, [backend, forgetDaySwaps, resetUser]);
 
   const pendingCount = useCallback(async () => {
     const pending = await backend.pendingWorkouts();
@@ -682,10 +796,11 @@ export function AppStateProvider({ children }: { children: ReactNode }) {
         if (count > 0) return { kind: 'pending', count };
       }
       await backend.signOut();
+      await forgetDaySwaps();
       resetUser();
       return { kind: 'signed_out' };
     },
-    [backend, pendingCount, resetUser],
+    [backend, forgetDaySwaps, pendingCount, resetUser],
   );
 
   const sendPending = useCallback(async () => {
@@ -752,6 +867,11 @@ export function AppStateProvider({ children }: { children: ReactNode }) {
       loadOlderLogs,
       deleteLog,
       exportData,
+      daySwaps,
+      addDaySwap,
+      removeDaySwaps,
+      dropDaySwaps,
+      updateExercisePreferences,
     }),
     [
       backend,
@@ -800,6 +920,11 @@ export function AppStateProvider({ children }: { children: ReactNode }) {
       loadOlderLogs,
       deleteLog,
       exportData,
+      daySwaps,
+      addDaySwap,
+      removeDaySwaps,
+      dropDaySwaps,
+      updateExercisePreferences,
     ],
   );
 

@@ -1,13 +1,12 @@
 import {
   canCatchUp,
-  displaySwapRules,
+  type DaySwap,
   type EquipmentProfile,
   experienceLevelSchema,
   type PlanLibrary,
   type PlanSafetyRules,
   planWorkout,
-  prepareSessionForDisplay,
-  sessionLocation,
+  sessionLocationInfo,
   startOfIsoWeek,
   type DisplaySession,
   type PlanExerciseContext,
@@ -17,15 +16,9 @@ import {
   type WorkoutItem,
 } from '@fitnessapp/core';
 
+import { preferencesFromRows, type SessionDisplay, sessionDisplay } from './exercise-swap';
 import { logEntriesFromRows, startWeightsFromRows } from './log-rows';
-import {
-  type ActivePlan,
-  activePlan,
-  allSessions,
-  planSnapshot,
-  profilesFor,
-  startGroupOf,
-} from './training-plan';
+import { type ActivePlan, activePlan, allSessions, planSnapshot } from './training-plan';
 import type { UserRows } from './types';
 import {
   createEnduranceDraft,
@@ -50,6 +43,8 @@ export interface WorkoutView {
   items: WorkoutItem[];
   /** Kontext der Progression (für eine später gewählte Alternative). */
   context: PlanExerciseContext;
+  /** Anzeige samt Ort, Plan-Untergrenze und Geräten je Ort (Tausch-Dialog im Trainingsmodus, Etappe T2). */
+  display: SessionDisplay;
 }
 
 export function workoutView(
@@ -58,33 +53,39 @@ export function workoutView(
   rules: PlanSafetyRules,
   sessionId: string,
   today: string,
-  options: { excludeLogId?: string | null } = {},
+  options: {
+    excludeLogId?: string | null;
+    /** „Nur heute“-Tausche vor dem Training (Etappe T2) – der Entwurf übernimmt die getauschte Übung. */
+    daySwaps?: readonly DaySwap[] | null;
+    ownerUserId?: string | null;
+  } = {},
 ): WorkoutView | null {
   const active = activePlan(rows);
   const stored = active?.sessions.find((s) => s.id === sessionId);
   const birthDate = rows.profile?.birth_date;
   const level = experienceLevelSchema.safeParse(rows.profile?.experience_level);
   if (!active || !stored || !birthDate || !level.success) return null;
-  const snapshot = planSnapshot(active.plan);
-  const profiles = profilesFor(snapshot);
   const lookup = library.displayExercises ?? library.exercises;
-  const location = sessionLocation(stored, snapshot?.schedule ?? null, {
-    library: lookup,
-    homeProfile: profiles.get('home'),
-  });
-  const profile = profiles.get(location) as EquipmentProfile;
-  const shown = prepareSessionForDisplay(stored, {
+  // Gleicher Anzeigeweg wie „Heute“: Sicherheitsregeln → Präferenzen → Day-Swaps (Plan-Untergrenze immer dabei).
+  const display = sessionDisplay({
+    rows,
+    active,
+    library,
     rules,
-    previousStartGroup: startGroupOf(active, birthDate),
-    library: lookup,
-    substituteLibrary: library.exercises,
-    profile,
+    session: stored,
+    today,
+    daySwaps: options.daySwaps ?? null,
+    ownerUserId: options.ownerUserId ?? null,
   });
+  const profile = display.profiles.get(display.location.location) as EquipmentProfile;
+  const shown = display.shown;
+  const preferences = preferencesFromRows(rows);
   const template = library.templates.find((tpl) => tpl.id === active.plan.template_id);
   const weekStart = startOfIsoWeek(stored.original_date ?? stored.scheduled_on);
   const weekSessions = active.sessions.filter(
     (s) => startOfIsoWeek(s.original_date ?? s.scheduled_on) === weekStart,
   );
+  const snapshot = planSnapshot(active.plan);
   const context: PlanExerciseContext = {
     library: lookup,
     engineLibrary: library.exercises,
@@ -98,11 +99,38 @@ export function workoutView(
     weekSessions,
     weeklySetMax: template ? weeklySetRange(template).max : null,
     // Alternativen und schwerere Variante IMMER mit der Untergrenze des Plans (Etappe T1, Wächter T1-S1): eine
-    // Lockerung nach der Erstellung öffnet erst nach „Plan neu erstellen“ etwas (PLAN-PHASE-3 5.4).
-    swap: { swapRules: displaySwapRules(active.plan, birthDate, rules) },
+    // Lockerung nach der Erstellung öffnet erst nach „Plan neu erstellen“ etwas (PLAN-PHASE-3 5.4). Ausschlüsse am
+    // Ort der Einheit werden nie als Alternative bzw. schwerere Variante vorgeschlagen (Etappe T2).
+    swap: {
+      swapRules: display.swapRules,
+      preferences,
+      location: display.location.location,
+      ambiguousLocation: display.location.ambiguous,
+    },
+    // V9 nach der Präferenz-Schicht, jede Einheit der Woche mit ihrem eigenen Ort (4.3, Wächter S3/N6).
+    ...(preferences.length > 0
+      ? {
+          weekPreferenceLayer: {
+            preferences,
+            locations: new Map(
+              weekSessions.map((s) => [
+                s.id,
+                sessionLocationInfo(s, snapshot?.schedule ?? null, {
+                  library: lookup,
+                  homeProfile: display.profiles.get('home'),
+                }),
+              ]),
+            ),
+            profiles: display.profiles,
+            library: library.exercises,
+            lookup,
+            swapRules: display.swapRules,
+          },
+        }
+      : {}),
   };
   const items = planWorkout(stored, shown, active.sessions, context);
-  return { active, stored, shown, profile, items, context };
+  return { active, stored, shown, profile, items, context, display };
 }
 
 /**

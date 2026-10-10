@@ -11,9 +11,10 @@ import { Pressable, StyleSheet, Text, View } from 'react-native';
 
 import { t } from '@/i18n';
 import { dayLabel, enduranceLines, exerciseLines, weekdayShort } from '@/lib/plan-format';
+import { keyPatternTexts, markText } from '@/lib/swap-format';
 import { useThemeColors } from '@/lib/theme';
 
-import { Body, Card, Heading, MIN_TOUCH, Notice } from './ui';
+import { Body, Button, Card, Heading, MIN_TOUCH, Notice } from './ui';
 
 /**
  * Bausteine für „Heute“ (docs/PLAN-PHASE-3.md 10.2): Einheit, Arzt-Hinweis, Wochenübersicht. Nur Anzeige –
@@ -37,6 +38,7 @@ export function SessionCard({
   heading,
   targets,
   onOpenExercise,
+  swap,
 }: {
   /** Gespeicherte Einheit (vor den aktuellen Sicherheitsregeln). */
   original: StoredSession;
@@ -53,9 +55,24 @@ export function SessionCard({
   targets?: readonly (readonly string[] | null)[];
   /** Übungs-Glossar (Etappe G1): Übungsname als Link zur Anleitung. */
   onOpenExercise?: (exerciseId: string) => void;
+  /**
+   * Übungstausch (Etappe T2): „Tauschen“ an jeder Übung (nur wenn `enabled`), „Tausch zurücknehmen“ bei „heute
+   * getauscht“, Link „Ausschlüsse ansehen“ zu den Einstellungen (null = keine Präferenzen, z. B. Supabase vor T3).
+   */
+  swap?: {
+    enabled: boolean;
+    /** Termin nach heute („für dieses Training getauscht“). */
+    later: boolean;
+    onSwap: (index: number) => void;
+    onUndoDaySwap: (index: number) => void;
+    onViewExclusions: (() => void) | null;
+  };
 }) {
   const theme = useThemeColors();
   const session = shown.session;
+  const hiddenByPreference = shown.hiddenByPreference ?? [];
+  const notices = shown.preferenceNotices ?? [];
+  const keyPatterns = keyPatternTexts(shown.missingKeyPattern);
   return (
     <Card>
       <Body muted>{heading}</Body>
@@ -80,7 +97,17 @@ export function SessionCard({
         <View style={styles.block}>
           <Text style={[styles.label, { color: theme.text }]}>{t.plan.exercises}</Text>
           {session.exercises.map((exercise, index) => {
-            const mark = exerciseMark(exercise, original, context);
+            const storedOrderNo = shown.storedOrderNos?.[index];
+            const mark = exerciseMark(
+              exercise,
+              original,
+              context,
+              storedOrderNo !== undefined ? { storedOrderNo, display: shown } : undefined,
+            );
+            const markLabel = markText(mark, swap?.later ?? false);
+            const kept = shown.keptDisliked?.some(
+              (k) => k.storedOrderNo === storedOrderNo && k.exerciseId === exercise.exercise_id,
+            );
             const computed = targets?.[index] ?? null;
             return (
               <View
@@ -111,19 +138,83 @@ export function SessionCard({
                     {exercise.order_no}. {exercise.exercise_name_de}
                   </Text>
                 )}
-                {mark === 'equipment_swap' ? <Body muted>{t.plan.substituted}</Body> : null}
-                {mark === 'adjusted' ? <Body muted>{t.plan.adjusted}</Body> : null}
+                {markLabel ? (
+                  <Body muted testID={`plan-exercise-mark-${index}`}>
+                    {markLabel}
+                  </Body>
+                ) : null}
                 {(computed ?? exerciseLines(exercise)).map((line) => (
                   <Body key={line} muted>
                     {line}
                   </Body>
                 ))}
+                {kept ? (
+                  <Body muted testID={`plan-kept-disliked-${index}`}>
+                    {t.swap.keptDisliked}
+                  </Body>
+                ) : null}
+                {swap?.enabled ? (
+                  mark === 'day_swap' ? (
+                    <Button
+                      label={t.swap.undoDaySwap}
+                      variant="secondary"
+                      accessibilityLabel={t.swap.undoDaySwapA11y(
+                        original.exercises.find((e) => e.order_no === storedOrderNo)
+                          ?.exercise_name_de ?? exercise.exercise_name_de,
+                      )}
+                      onPress={() => swap.onUndoDaySwap(index)}
+                      testID={`plan-swap-undo-${index}`}
+                    />
+                  ) : (
+                    <Button
+                      label={t.swap.button}
+                      variant="secondary"
+                      accessibilityLabel={t.swap.buttonA11y(exercise.exercise_name_de)}
+                      onPress={() => swap.onSwap(index)}
+                      testID={`plan-swap-${index}`}
+                    />
+                  )
+                ) : null}
               </View>
             );
           })}
           {shown.hidden.length > 0 ? (
+            // Nur Sicherheits-Ausblendungen (Wächter B1b) – nie wegen einer Präferenz.
             <Notice tone="warning" testID="plan-hidden-exercises">
               {t.plan.hiddenExercises}
+            </Notice>
+          ) : null}
+          {shown.emptyByPreference ? (
+            <Notice tone="info" testID="plan-empty-by-preference">
+              <Body>{t.swap.emptyByPreference}</Body>
+              {swap?.onViewExclusions ? (
+                <Button
+                  label={t.swap.viewExclusions}
+                  variant="link"
+                  onPress={swap.onViewExclusions}
+                />
+              ) : null}
+            </Notice>
+          ) : hiddenByPreference.length > 0 ? (
+            // Neutral, ohne „Plan neu erstellen“ (Wächter B1b, Pflicht-Test 11).
+            <Notice tone="info" testID="plan-hidden-by-preference">
+              <Body>{t.swap.hiddenByPreference(hiddenByPreference.length)}</Body>
+              {keyPatterns.map((text) => (
+                <Body key={text}>{text}</Body>
+              ))}
+              {swap?.onViewExclusions ? (
+                <Button
+                  label={t.swap.viewExclusions}
+                  variant="link"
+                  onPress={swap.onViewExclusions}
+                  testID="plan-view-exclusions"
+                />
+              ) : null}
+            </Notice>
+          ) : null}
+          {notices.includes('many_exclusions') ? (
+            <Notice tone="info" testID="plan-many-exclusions">
+              {t.swap.manyExclusions}
             </Notice>
           ) : null}
         </View>

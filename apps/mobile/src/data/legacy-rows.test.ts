@@ -102,3 +102,43 @@ describe('upgradeStoredRows (Gerätespeicher vor Etappe B2)', () => {
     expect(upgradeStoredRows(stored).trainingSlots).toEqual([]);
   });
 });
+
+describe('Übungs-Präferenzen im Gerätespeicher (Etappe T2)', () => {
+  const valid = {
+    user_id: USER_ID,
+    exercise_id: 'liegestuetz',
+    location: 'home',
+    kind: 'dislike',
+    replacement_exercise_id: null,
+    created_at: '2026-10-05T08:00:00.000Z',
+    updated_at: '2026-10-05T08:00:00.000Z',
+  };
+
+  it('ältere Stände ohne Präferenzen → leere Liste', () => {
+    const old: Partial<UserRows> = rowsWith();
+    delete old.exercisePreferences;
+    expect(upgradeStoredRows(old as UserRows).exercisePreferences).toEqual([]);
+  });
+
+  it('nur gültige Einträge des eigenen Kontos (Zod strikt): Gesundheitsgrund, Freitext, fremd → weg', () => {
+    const stored = {
+      ...rowsWith(),
+      exercisePreferences: [
+        valid,
+        { ...valid, exercise_id: 'kniebeuge-koerpergewicht', kind: 'pain' },
+        { ...valid, exercise_id: 'glute-bridge', note: 'Knie' },
+        {
+          ...valid,
+          exercise_id: 'ausfallschritt',
+          user_id: '00000000-0000-4000-8000-000000000999',
+        },
+        { ...valid, exercise_id: 'liegestuetz', replacement_exercise_id: 'liegestuetz' },
+        'kaputt',
+        null,
+      ],
+    } as unknown as UserRows;
+    expect(upgradeStoredRows(stored).exercisePreferences).toEqual([valid]);
+    const notArray = { ...rowsWith(), exercisePreferences: 'x' } as unknown as UserRows;
+    expect(upgradeStoredRows(notArray).exercisePreferences).toEqual([]);
+  });
+});

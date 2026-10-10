@@ -114,12 +114,13 @@ test('Kraft-Einheit komplett: Sätze, Alternative, „nicht gemacht“, Abschlus
   await tickAll(page, 0);
   await expect(page.getByText('Übung 2 von', { exact: false })).toBeVisible();
 
-  // Übung 2: Alternative durchgeführt.
-  await page.getByTestId('workout-alternative-1').click();
-  const options = page.getByTestId('workout-exercise-1').getByRole('radio');
+  // Übung 2: „Tauschen“ (Etappe T2, ersetzt „Alternative durchgeführt“) → Alternative, nur heute.
+  await page.getByTestId('workout-swap-1').click();
+  const options = page.getByTestId('swap-dialog').getByTestId('swap-candidates').getByRole('radio');
   await expect(options.first()).toBeVisible();
-  const altName = (await options.first().innerText()).trim();
+  const altName = ((await options.first().getAttribute('aria-label')) ?? '').trim();
   await options.first().click();
+  await page.getByTestId('swap-confirm').click();
   await expect(page.getByTestId('workout-exercise-1')).toContainText('statt ');
   await expect(page.getByTestId('workout-exercise-1').getByRole('heading')).toContainText(altName);
   await setWeight(page, 1, 4);
@@ -177,7 +178,7 @@ test('Kraft-Einheit komplett: Sätze, Alternative, „nicht gemacht“, Abschlus
   await expect(
     page.getByText('Du änderst ein gespeichertes Training.', { exact: false }),
   ).toBeVisible();
-  await expect(page.getByTestId('workout-alternative-0')).toHaveCount(0);
+  await expect(page.getByTestId('workout-swap-0')).toHaveCount(0);
   await expect(page.getByTestId('workout-notes')).toHaveValue('Griff etwas enger');
   await page.getByRole('button', { name: 'Zurück zu Heute' }).first().click();
   await heading(page, 'Heute');

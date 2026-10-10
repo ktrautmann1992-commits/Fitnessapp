@@ -101,6 +101,18 @@ Vercel zeigt die App im Handy-Browser, Expo baut die echten Apps in der Cloud.
    `account` (im Testmodus ohne E-Mail).
 10. Alles einmal hell und einmal dunkel ansehen.
 
+## Teil 7b – Übungen tauschen testen (Etappe T2, Testmodus)
+1. Vorschau-Link öffnen, **Einstellungen → Testdaten löschen**, neues Testkonto: Ort **Zuhause**, Geräte **keine**,
+   Mo/Mi/Fr Kraft zu Hause.
+2. **Nur heute:** Auf „Heute“ bei **Kniebeuge mit Körpergewicht** auf **Tauschen** → **Kniebeuge zum Stuhl** → „Nur heute“
+   → **Tauschen**. Darunter steht „heute getauscht“, oben „… ersetzt.“ mit **Rückgängig**. Training starten → die
+   Kniebeuge zum Stuhl steht schon da. Ein anderer Tag (Wochenübersicht) zeigt weiter die Kniebeuge mit Körpergewicht.
+3. **Ab jetzt immer:** Bei **Liegestütz mit erhöhten Händen** → **Liegestütz** → „Ab jetzt immer – zu Hause“ →
+   „Mag ich nicht“ → **Tauschen**. Kennzeichen „getauscht (deine Wahl)“, auch an den anderen Tagen und in der PDF-Ansicht.
+4. **Einstellungen → Ausgeschlossene Übungen** → **Wieder zulassen** → bestätigen → die Übung ist sofort zurück.
+5. Übungen ohne gleichwertige Alternative (z. B. Türrahmen-Rudern) zeigen ehrlich „keine gleichwertige Alternative“.
+6. Im Training **Tauschen** an einer Übung → Alternative wählen → Name wechselt, „statt …“ steht darunter.
+
 ## Teil 8 – Live-Test mit Supabase (Pflicht vor „MVP fertig“, W13) – **offen, braucht euch**
 Diesen Test kann Claude in der Cloud-Sitzung nicht machen (kein echtes Konto, keine zwei Handys). Bitte einmal
 durchspielen und das Ergebnis Claude im Chat schreiben („W13: Punkt 1–14 ok, Punkt 9 Fehler: …“) – **ohne**
