@@ -1,0 +1,71 @@
+name: foods-import
+
+# Manuell startbar (GitHub-App → Actions → foods-import → Run workflow, Branch „main“):
+# Lädt die Original-Datei der Nährwert-Quelle von der festen Adresse aus packages/content/src/foods/sources.ts.
+# - Modus „kandidaten“: listet für Zutaten ohne Quell-ID passende Zeilen (Quell-ID + Bezeichnung) in der
+#   Zusammenfassung des Laufs. Schreibt nichts.
+# - Modus „import“: filtert die benötigten Zeilen OHNE Wertänderung nach content/sources/<quelle>/<version>/
+#   (extract.csv, SOURCE.json mit beiden Prüfsummen, ATTRIBUTION.md), schreibt die Lebensmittel content/foods/
+#   (einzige Schreibstelle), prüft mit content:validate, legt einen von GitHub als „verified“ gekennzeichneten
+#   Commit über die GitHub-API auf dem Branch foods-import/<Lauf-ID> an und öffnet einen Pull Request.
+# Freigabe ist erst der MERGE durch einen Menschen. Details: docs/PLAN-PHASE-5.md 5.1 und 19.3.
+on:
+  workflow_dispatch:
+    inputs:
+      quelle:
+        description: 'Quelle (Allowlist in sources.ts)'
+        type: choice
+        options:
+          - bls
+        default: bls
+      version:
+        description: 'Version der Quelle'
+        type: choice
+        options:
+          - '4.0'
+        default: '4.0'
+      modus:
+        description: 'kandidaten = nur Vorschläge anzeigen, import = Auszug + Lebensmittel als Pull Request'
+        type: choice
+        options:
+          - kandidaten
+          - import
+        default: kandidaten
+
+permissions:
+  contents: write
+  pull-requests: write
+  actions: write
+
+concurrency:
+  group: foods-import
+  cancel-in-progress: false
+
+jobs:
+  import:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      # Allowlist und Skripte nur vom Stand main (H1).
+      - name: Nur auf main
+        if: github.ref != 'refs/heads/main'
+        run: |
+          echo "::error::foods-import bitte auf dem Branch main starten (gestartet auf ${GITHUB_REF_NAME})."
+          exit 1
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+        with:
+          persist-credentials: false
+      - uses: pnpm/action-setup@b906affcce14559ad1aafd4ab0e942779e9f58b1 # v4
+      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4
+        with:
+          node-version: 22
+          cache: pnpm
+      - run: pnpm install --frozen-lockfile
+      # Eingaben nur über Umgebungsvariablen (nie direkt im Skript-Text).
+      - name: Original laden, Auszug und Lebensmittel erzeugen, Pull Request öffnen
+        env:
+          QUELLE: ${{ inputs.quelle }}
+          VERSION: ${{ inputs.version }}
+          MODUS: ${{ inputs.modus }}
+          GITHUB_TOKEN: ${{ github.token }}
+        run: pnpm --filter @fitnessapp/content foods:import --source "$QUELLE" --version "$VERSION" --mode "$MODUS"

@@ -268,7 +268,7 @@ describe('Berichte', () => {
     const markdown = formatMarkdownSummary(failing);
     expect(markdown).toContain('### ❌ Inhalte: blockierende Fehler');
     expect(markdown).toContain('| 🔴 Ü1 | Übung `x-y-z` | – | Text mit \\| Strich |');
-    expect(markdown).toContain('Keine JSON-Dateien: exercises/a.txt');
+    expect(markdown).toContain('Datei-Fehler: exercises/a.txt');
     expect(formatReport(failing)).toContain('Ergebnis: 2 blockierende Fehler');
   });
 });

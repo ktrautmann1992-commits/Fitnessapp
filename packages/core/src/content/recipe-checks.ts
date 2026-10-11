@@ -298,7 +298,8 @@ export function checkFoodAllergens(
 /** Lebensmittel, die gekocht höchstens 1 Tag halten (S12): Reis, Hackfleisch (dazu Fisch, Krebs-/Weichtiere, Geflügel). */
 const SHORT_FRIDGE_RULE: WordRule = {
   words: ['reis', '=hack', 'hackfleisch', 'gehacktes', 'faschiertes'],
-  negatives: ['reiswaffel', 'reiswaffeln', 'reispapier'],
+  // Reisessig/Reiswein sind kein gekochter Reis (N2b-Zuordnung).
+  negatives: ['reiswaffel', 'reiswaffeln', 'reispapier', 'reisessig', 'reiswein'],
 };
 
 /** R9 je Lebensmittel: Reis, Fisch, Hackfleisch und Geflügel höchstens 1 Tag (S12, PRODUKTENTSCHEIDUNG). */

@@ -1,0 +1,67 @@
+name: sources-integrity-main
+
+# Herkunftsprüfung der Nährwert-Quellen MIT DEM CODE VON MAIN (docs/PLAN-PHASE-5.md 5.1.1 b, Wächter N2b S2).
+# Der Job sources-integrity in ci.yml läuft mit dem Code des Pull Requests – ein PR, der die Prüfung aufweicht,
+# könnte sich dort selbst grün prüfen. Dieser Workflow nutzt deshalb `pull_request_target`:
+# - Ausgeführt wird NUR Code von main (Checkout des Basis-Stands, `pnpm install` aus main).
+# - Der Stand des Pull Requests wird nur als DATEN in den Ordner pr-daten geholt. Dort wird nichts installiert,
+#   gebaut oder ausgeführt (nur git diff/rev-list/show und Dateien lesen).
+# - Rechte nur lesend, keine Secrets, keine gespeicherten Zugangsdaten, kein Cache.
+# Eine Änderung an den Prüfskripten wirkt damit erst nach dem Merge; bis dahin prüft der alte Code.
+on:
+  pull_request_target:
+    types: [opened, synchronize, reopened]
+  # Pull Requests von foods-import öffnet der Workflow mit dem GITHUB_TOKEN – solche Ereignisse starten KEINE
+  # Workflows (auch nicht pull_request_target). foods-import startet diesen Workflow deshalb per workflow_dispatch
+  # auf dem Branch foods-import/<Lauf-ID>; der Check-Lauf hängt dann am Kopf-Commit des PRs (Wächter N2b, GB1).
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  actions: read
+
+concurrency:
+  group: sources-integrity-main-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  check:
+    # Name exakt so lassen – er ist Pflicht-Check in der Regel für main (docs/SETUP.md J2).
+    name: sources-integrity (Code von main)
+    # Per Hand nur für foods-import-Branches sinnvoll (sonst gibt es keinen Pull Request zu prüfen).
+    if: github.event_name == 'pull_request_target' || startsWith(github.ref, 'refs/heads/foods-import/')
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      # Code: beim Pull Request der Basis-Stand, beim Start per Hand ausdrücklich main – nur dieser Code läuft.
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+        with:
+          ref: ${{ github.event_name == 'pull_request_target' && github.event.pull_request.base.sha || 'refs/heads/main' }}
+          persist-credentials: false
+      - uses: pnpm/action-setup@b906affcce14559ad1aafd4ab0e942779e9f58b1 # v4
+      # Bewusst ohne Cache (kein Austausch zwischen PR- und Basis-Kontext).
+      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4
+        with:
+          node-version: 22
+      # Installation VOR dem Daten-Checkout: Der PR-Stand kann so nie in die Installation geraten (GK1).
+      - run: pnpm install --frozen-lockfile
+      # Stand des Pull Requests (bzw. Kopf von foods-import/<id>) nur als Daten, mit main-Historie für git diff/rev-list.
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+        with:
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+          path: pr-daten
+          fetch-depth: 0
+          persist-credentials: false
+      - name: Vergleichsstand main im Daten-Ordner
+        working-directory: pr-daten
+        run: git fetch --no-tags origin +refs/heads/main:refs/remotes/origin/main
+      - name: Herkunft prüfen (Code von main, PR-Stand als Daten)
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
+          PR_HEAD_REPO: ${{ github.event.pull_request.head.repo.full_name }}
+          INTEGRITY_REPO_ROOT: ${{ github.workspace }}/pr-daten
+        run: pnpm --filter @fitnessapp/content sources:integrity
+      - name: Lebensmittel gegen Quellauszug (R17/R18, Code von main)
+        env:
+          PR_CONTENT: ${{ github.workspace }}/pr-daten/content
+        run: pnpm --filter @fitnessapp/content validate --content "$PR_CONTENT"

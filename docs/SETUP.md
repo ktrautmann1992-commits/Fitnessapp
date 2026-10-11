@@ -3,7 +3,7 @@
 Diese Anleitung verbindet das Repository mit **Supabase** (Datenbank), **Vercel** (Vorschau-Links im Browser),
 **Expo** (echte App-Builds) und **Anthropic** (Inhalts-Erzeugung). Alles geht im Handy-Browser.
 
-**Reihenfolge:** Teil A → B → C → D (→ D2 für iPhone/Stores) → E → F → G → H. Für den ersten Vorschau-Link reicht **Teil C**.
+**Reihenfolge:** Teil A → B → C → D (→ D2 für iPhone/Stores) → E → F → G → H (→ J für die Nährwert-Quelle). Für den ersten Vorschau-Link reicht **Teil C**.
 Für den Redaktionsbereich `/admin` der Website brauchst du **Teil G**.
 Für die Content-Pipeline (Übungen und Plan-Vorlagen) brauchst du **Teil H**, für echte KI-Entwürfe zusätzlich
 **Teil E**. Die Bedienung steht am Ende unter **„Inhalte erzeugen und freigeben am Handy“**.
@@ -613,6 +613,97 @@ GitHub-App – dort kann man keine Dateien bearbeiten):
 
 ---
 
+## Teil J – Nährwert-Quelle schützen und Lebensmittel importieren (Phase 5, Etappe N2b)
+
+Nährwerte kommen **nur** aus der amtlichen Quelle (Bundeslebensmittelschlüssel 4.0 des Max Rubner-Instituts,
+Lizenz CC BY 4.0). Den Auszug schreibt **nur** der Workflow `foods-import`; die Prüfung `sources-integrity` in `ci`
+wird rot, wenn jemand Werte von Hand oder per Claude-Sitzung ändert. Zwei Schutzregeln richtet ihr einmal im
+Handy-Browser ein (ggf. „Desktop-Website anfordern“). Details: `docs/PLAN-PHASE-5.md` 5.1 und Umsetzungsstand N2b.
+
+### J1 – Regel für die Import-Branches `foods-import/*`
+
+Ziel: Auf einen Branch, den der Workflow angelegt hat, kann niemand nachträglich eigene Commits schieben.
+
+1. **github.com** → euer Repository → **Settings**.
+2. Links **Rules → Rulesets** → **New ruleset** → **New branch ruleset**.
+3. **Ruleset Name:** `foods-import geschützt`. **Enforcement status:** **Active**.
+4. **Target branches** → **Add target** → **Include by pattern** → `foods-import/*` → **Add inclusion pattern**.
+5. Unter **Rules** anhaken: **Restrict updates** und **Block force pushes**. „Restrict deletions“ nicht
+   anhaken, damit ihr den Branch nach dem Merge löschen könnt.
+6. **Bypass list** leer lassen → ganz unten **Create**.
+
+> **Hinweis zu „Restrict creations“:** Diese Regel lassen wir aus, weil der Workflow den Branch sonst nicht
+> anlegen kann. Euer eigenes Konto (und damit auch eine Claude-Sitzung) könnte deshalb selbst einen Branch
+> `foods-import/…` anlegen. Das fängt die Prüfung **sources-integrity** ab (nur verifizierte Commits von
+> `github-actions[bot]` aus einem echten `foods-import`-Lauf auf main), nicht das Ruleset.
+
+### J2 – Regel für `main`: Pflicht-Freigabe und Pflicht-Checks
+
+Die Datei `.github/CODEOWNERS` nennt **nur** die Ordner `content/sources/` und `content/foods/`. Diese schreibt
+ausschließlich der Workflow `foods-import` (Autor `github-actions[bot]`) – deshalb könnt ihr diese Pull Requests
+selbst freigeben, und eure eigenen Pull Requests bleiben frei mergebar. Ein zweites GitHub-Konto ist nicht nötig.
+
+1. **Settings → Rules → Rulesets** → **New ruleset** → **New branch ruleset**.
+2. **Ruleset Name:** `main schützen`. **Enforcement status:** **Active**.
+3. **Target branches** → **Add target** → **Include default branch**.
+4. **Require a pull request before merging** anhaken → aufklappen:
+   - **Required approvals:** `0` lassen.
+   - **Require review from Code Owners** anhaken. (Zeigt GitHub an, dass das nur mit mindestens einer Freigabe
+     wirkt, „Required approvals“ auf `1` stellen und Claude Bescheid geben – dann braucht jeder Pull Request
+     eure Freigabe.)
+5. **Require status checks to pass** anhaken → **Add checks** → nacheinander suchen und antippen:
+   - `Lint, Typen, Tests, Build`
+   - `sources-integrity`
+   - `sources-integrity (Code von main)`
+
+   Ein Check erscheint erst in der Auswahl, wenn er einmal gelaufen ist (nach dem Merge dieser Etappe beim
+   nächsten Pull Request). Fehlt einer, später nachtragen. **Nicht** als Pflicht eintragen:
+   `Migrationen + RLS-Tests (pgTAP)` – dieser Check läuft nur, wenn sich `supabase/` ändert, und würde andere
+   Pull Requests sonst blockieren. Pull Requests von `foods-import` starten wegen einer GitHub-Regel
+   (Pull Requests mit dem Workflow-Schlüssel lösen keine Workflows aus) keine Checks von selbst – `foods-import`
+   startet deshalb `ci` **und** `sources-integrity-main` ausdrücklich für den Branch `foods-import/<Lauf-ID>`.
+   Die Checks hängen dann am Kopf-Commit des Pull Requests und erfüllen die Pflicht. Fehlt einer („Expected –
+   Waiting for status“), unter **Actions → sources-integrity-main** bzw. **ci → Run workflow** den Branch
+   `foods-import/<Lauf-ID>` wählen.
+
+6. **Block force pushes** anhaken → **Create**.
+7. **Pull Request von `foods-import` freigeben** – das macht **immer ein Gründer selbst** in der GitHub-App bzw.
+   im Handy-Browser, **nie eine Claude-Sitzung**: Pull Request öffnen → **Files changed** → **Review changes** →
+   **Approve** → **Submit review** → **Merge pull request**.
+
+> **Regel für Claude-Sitzungen:** Claude gibt keine Pull Requests frei (kein „Approve“), merged keine
+> Pull Requests von `foods-import/*` und startet `sources-integrity-main` nie per Hand (ein per Hand gestarteter
+> Lauf nutzt die Workflow-Datei des gewählten Branches – auf einem eigenen Branch ließe sich der Check sonst
+> fälschen). Claude arbeitet mit eurem Konto – technisch könnte es das, deshalb gilt die
+> Regel ausdrücklich (festgehalten in `docs/PLAN-PHASE-5.md`, Umsetzungsstand N2b).
+
+### J3 – Lebensmittel importieren
+
+1. **Actions → foods-import → Run workflow** → Branch **main**.
+2. **quelle** `bls`, **version** `4.0`, **modus** `kandidaten` → **Run workflow**.
+3. Lauf antippen → **Summary**: oben „Spalten der Quelle“ (welche Spalte je Nährwert genutzt wird), darunter für
+   jede Zutat ohne Quell-ID passende Einträge der Quelle (BLS-Schlüssel und Bezeichnung, keine Nährwerte). Ist der Lauf rot mit „Original-Datei nicht geladen“, stimmt die Adresse in
+   `packages/content/src/foods/sources.ts` nicht – Claude in einer Sitzung Bescheid geben (siehe unten).
+4. Die gewählten Schlüssel trägt eine Claude-Sitzung (oder ihr per Pull Request) in
+   `content/food-mapping/alpha5-zuordnung.json` bei `source.ref` ein → Pull Request → mergen.
+5. **Actions → foods-import → Run workflow** → **modus** `import`. Es erscheint ein Pull Request
+   **„Lebensmittel: Bundeslebensmittelschlüssel …“** mit Adresse, beiden Prüfsummen, Import-Bericht und dem
+   Gegencheck gegen `alpha5-rezepte.json` (🔴 = „Zuordnung prüfen“).
+6. Auf grüne Checks warten (`ci` inkl. **sources-integrity** und **sources-integrity (Code von main)**) →
+   **selbst** freigeben und mergen (J2 Schritt 7).
+7. Danach prüft ihr jedes Lebensmittel mit der Checkliste (Plan 5.1.1 d) – markierte Zuordnungen zuerst.
+
+**Wöchentliche Prüfung:** Jeden Montag lädt `ci` die Original-Datei neu und vergleicht die Prüfsummen. GitHub
+schaltet zeitgesteuerte Läufe in öffentlichen Repositories nach **60 Tagen ohne Aktivität** ab – dann unter
+**Actions → ci** den Hinweis antippen und **Enable workflow** wählen.
+
+**Adresse der Original-Datei bestätigen (einmalig):** Im Handy-Browser
+`https://www.openagrar.de/receive/openagrar_mods_00112643` öffnen → bei der Datei
+**BLS_4_0_Daten_2025_DE.xlsx** lange auf den Link tippen → **Link kopieren** → in einer Claude-Sitzung einfügen.
+Claude trägt die Adresse in `sources.ts` ein (bisher aus der Recherche abgeleitet, noch nicht bestätigt).
+
+---
+
 ## Inhalte erzeugen und freigeben am Handy
 
 Alle Inhalte (Übungen, Plan-Vorlagen) liegen als Dateien im Repository. Der Weg ist immer:
@@ -685,18 +776,21 @@ zeigt „Heute“ richtigerweise „Für deine Angaben gibt es gerade keinen fre
 
 ## Überblick: Was passiert automatisch?
 
-| Workflow           | Wann                                                              | Braucht                                                                                |
-| ------------------ | ----------------------------------------------------------------- | -------------------------------------------------------------------------------------- |
-| `ci`               | bei jedem Push und Pull Request (inkl. Klick-Tests), per Hand     | nichts                                                                                 |
-| `db-migrate`       | nach Merge in `main`, wenn sich Migrationen ändern, oder per Hand | `SUPABASE_ACCESS_TOKEN`, `SUPABASE_DB_PASSWORD`, `SUPABASE_PROJECT_REF`                |
-| `content-generate` | per Hand (Actions → Run workflow)                                 | `ANTHROPIC_API_KEY` (Probelauf: nichts)                                                |
-| `content-collect`  | alle 3 Stunden und per Hand                                       | Teil H; `ANTHROPIC_API_KEY` nur für echte Läufe                                        |
-| `content-review`   | per Hand                                                          | Teil H                                                                                 |
-| `content-seed`     | nach Merge in `main` (Inhalte), nach `db-migrate` und per Hand    | `SUPABASE_URL`, `SUPABASE_SECRET_KEY` (ohne: nur Prüfung)                              |
-| `waitlist-cleanup` | täglich 03:17 UTC und per Hand (Löschfristen der Warteliste)      | `SUPABASE_URL`, `SUPABASE_SECRET_KEY`                                                  |
-| `eas-build`        | per Hand (Plattform, Profil, Einreichen ja/nein)                  | `EXPO_TOKEN` + Expo-Projekt-ID; iPhone/Stores zusätzlich Teil D2                       |
-| `eas-ios-setup`    | einmal per Hand vor dem ersten iPhone-Build (Eingabe „JA“)        | `EXPO_TOKEN`, Projekt-ID, `ASC_*`-Secrets, `APPLE_TEAM_ID` (D2); rot, wenn etwas fehlt |
-| Vercel             | bei jedem Push automatisch                                        | Teil C                                                                                 |
+| Workflow                 | Wann                                                                | Braucht                                                                                |
+| ------------------------ | ------------------------------------------------------------------- | -------------------------------------------------------------------------------------- |
+| `ci`                     | bei jedem Push und Pull Request (inkl. Klick-Tests), per Hand       | nichts                                                                                 |
+| `db-migrate`             | nach Merge in `main`, wenn sich Migrationen ändern, oder per Hand   | `SUPABASE_ACCESS_TOKEN`, `SUPABASE_DB_PASSWORD`, `SUPABASE_PROJECT_REF`                |
+| `content-generate`       | per Hand (Actions → Run workflow)                                   | `ANTHROPIC_API_KEY` (Probelauf: nichts)                                                |
+| `content-collect`        | alle 3 Stunden und per Hand                                         | Teil H; `ANTHROPIC_API_KEY` nur für echte Läufe                                        |
+| `content-review`         | per Hand                                                            | Teil H                                                                                 |
+| `content-seed`           | nach Merge in `main` (Inhalte), nach `db-migrate` und per Hand      | `SUPABASE_URL`, `SUPABASE_SECRET_KEY` (ohne: nur Prüfung)                              |
+| `waitlist-cleanup`       | täglich 03:17 UTC und per Hand (Löschfristen der Warteliste)        | `SUPABASE_URL`, `SUPABASE_SECRET_KEY`                                                  |
+| `foods-import`           | per Hand (Branch main, Modus kandidaten/import)                     | Teil H, J                                                                              |
+| `ci` · sources-integrity | bei jedem PR, auf main und wöchentlich (Mo 04:23 UTC)               | nichts (Original-Datei wird aus dem Internet geladen)                                  |
+| `sources-integrity-main` | bei jedem PR (`pull_request_target`, Prüfung mit dem Code von main) | nichts                                                                                 |
+| `eas-build`              | per Hand (Plattform, Profil, Einreichen ja/nein)                    | `EXPO_TOKEN` + Expo-Projekt-ID; iPhone/Stores zusätzlich Teil D2                       |
+| `eas-ios-setup`          | einmal per Hand vor dem ersten iPhone-Build (Eingabe „JA“)          | `EXPO_TOKEN`, Projekt-ID, `ASC_*`-Secrets, `APPLE_TEAM_ID` (D2); rot, wenn etwas fehlt |
+| Vercel                   | bei jedem Push automatisch                                          | Teil C                                                                                 |
 
 Fehlt etwas, endet der Workflow **grün** mit dem Hinweis „übersprungen“. Den Hinweis siehst du in der GitHub-App
 unter **Actions** → Lauf antippen → **Summary**.

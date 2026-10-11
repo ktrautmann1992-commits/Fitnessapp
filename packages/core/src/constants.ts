@@ -1427,3 +1427,16 @@ export const RECIPE_COVERAGE = {
   minPerCombination: 7,
   intolerances: ['gluten', 'lactose', 'dairy', 'eggs', 'peanuts', 'tree_nuts'],
 } as const;
+
+/**
+ * Gegencheck Gründer-Datei ↔ Quelle (docs/PLAN-PHASE-5.md 19.2/19.3, Etappe N2b/N2c): `pro_100g` aus
+ * `alpha5-rezepte.json` ist nur Gegencheck, maßgeblich ist immer die amtliche Quelle. Abweichung über `relative`
+ * (3 %) wird gemeldet, über `reviewRelative` (15 %) als „Zuordnung prüfen“ markiert; Mindestabstand `minKcal`
+ * bzw. `minGrams` gegen Rundungsrauschen. PRODUKTENTSCHEIDUNG (Plan 19.2 `ALPHA5_IMPORT_TOLERANCE`).
+ */
+export const ALPHA5_IMPORT_TOLERANCE = {
+  relative: 0.03,
+  reviewRelative: 0.15,
+  minKcal: 5,
+  minGrams: 1,
+} as const;

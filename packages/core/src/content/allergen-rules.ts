@@ -252,6 +252,7 @@ const PLANT_PREFIXES = [
   'lupinen',
 ] as const;
 const DAIRY_ENDINGS_PLANT = [
+  'skyr',
   'milch',
   'sahne',
   'rahm',
@@ -525,9 +526,26 @@ const MINCE_ENDINGS = [
   'faschiertes',
   'faschierte',
 ] as const;
+/**
+ * Ausdrücklich gemischtes Hackfleisch – auch mit Schwein vorn („Schweinehackfleisch gemischt“): Rind + Schwein
+ * (Wächter N2b, K1). Wortfolgen, damit „gemischt“ allein (z. B. „gemischter Salat“) nichts auslöst.
+ */
+const MIXED_MINCE_PHRASES = [
+  'gemischtes hack',
+  'gemischtes hackfleisch',
+  'hackfleisch gemischt',
+  'hack gemischt',
+  'schweinehackfleisch gemischt',
+  'schweinehack gemischt',
+  'hackfleisch halb und halb',
+  'hack halb und halb',
+] as const;
 /** Ausdrückliche Tierart bzw. pflanzlich, aber nicht Rind (für die Rind-Regel). */
 const MINCE_NOT_BEEF_NEGATIVES = combine(
   [
+    // Schweinehack ist kein Rind (Schwein prüft die Schwein-Regel; N2b-Zuordnung „Schweinehackfleisch“).
+    'schweine',
+    'schweins',
     'puten',
     'truthahn',
     'lamm',
@@ -555,10 +573,14 @@ const MINCE_NEGATIVES = [
 ];
 /**
  * Für die Schwein-Regel: wie `MINCE_NEGATIVES`, aber Wild-/Hirschhack zählt vorsichtig als Schwein (oft mit
- * Schweinespeck gemischt; Wächter-Gegenprüfung N2a, G-K1).
+ * Schweinespeck gemischt; Wächter-Gegenprüfung N2a, G-K1), und Schweinehack bleibt selbstverständlich Schwein
+ * (die Negative „schweine…hack“ gelten nur für Rind/„gemischtes Hack“, N2b).
  */
 const MINCE_PORK_NEGATIVES = MINCE_NEGATIVES.filter(
-  (negative) => !negative.startsWith('wild') && !negative.startsWith('hirsch'),
+  (negative) =>
+    !negative.startsWith('wild') &&
+    !negative.startsWith('hirsch') &&
+    !negative.startsWith('schwein'),
 );
 
 const DAIRY_RULE: GroupRule = {
@@ -774,6 +796,7 @@ export const ALLERGEN_RULES: Readonly<Record<FoodGroupId, GroupRule>> = {
       'ochsen',
       // Hackfleisch ohne Angabe der Tierart: vorsichtig Rind + Schwein (siehe MIXED_MINCE_RULE).
       ...MINCE_WORDS,
+      ...MIXED_MINCE_PHRASES,
     ],
     negatives: MINCE_NOT_BEEF_NEGATIVES,
     sourceCategories: ['meat_beef_veal'],
@@ -1149,7 +1172,7 @@ export const GELATIN_RULE: WordRule = {
 
 /** Hackfleisch ohne Tierart → `beef` + `meat_kind: ['beef', 'pork']` (Wächter N0, N2a S1). */
 export const MIXED_MINCE_RULE: WordRule = {
-  words: [...MINCE_WORDS, 'gemischtes hack'],
+  words: [...MINCE_WORDS, ...MIXED_MINCE_PHRASES],
   negatives: MINCE_NEGATIVES,
 };
 

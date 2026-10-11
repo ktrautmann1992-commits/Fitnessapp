@@ -125,7 +125,10 @@ und aggregierte, nach Abteilung sortierte Einkaufsliste.
 Batch-Pipeline für Rezepte optional (N8). **Etappe N1 (Core: Bedarf, Grenzen, Makros, Timing) umgesetzt**
 (`packages/core/src/nutrition`, CI-Tabelle „Beispiel-Ernährung“). **Etappe N2a (Inhalte: Schemas, Prüfregeln
 R1–R19, Allergen-Pflichtregeln für alle 23 Gruppen, Einheiten, `selectNutritionContent`, Test-Fixtures) umgesetzt.**
-Nächste Etappe: N2b (Lebensmittel-Katalog aus der Quelle; Voraussetzung Lizenzklärung).
+**Etappe N2b Teil 1 umgesetzt (11.10.2026):** Lizenz geklärt (BLS 4.0, CC BY 4.0, Namensnennung Max
+Rubner-Institut), Workflow `foods-import`, CI-Job `sources-integrity`, Zuordnungs-Vorschlag für alle 236 Zutaten
+(`content/food-mapping/alpha5-zuordnung.json`, Quell-IDs aus dem Kandidatenlauf), CODEOWNERS, `docs/SETUP.md` Teil J.
+Nächster Schritt: Gründer-Aufgaben Teil J, dann Import per Workflow; danach N2b Teil 2 („Katalog geprüft“).
 **Nachtrag 11.10.2026 (Erweiterungen Teil 2):** Rezeptbestand ist `packages/content/seed/alpha5-rezepte.json` statt
 KI-erzeugter Rezepte – N2b umfasst alle 236 Zutaten, N2c ist der Import (Prompt B Schritte 3–5), N3–N6 enthalten den
 Umfang von Prompt C; neue Etappen N9–N14 (Prompts D, F, E). Details `docs/PLAN-PHASE-5.md` Abschnitt 19.

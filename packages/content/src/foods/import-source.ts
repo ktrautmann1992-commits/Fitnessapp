@@ -1,0 +1,372 @@
+/**
+ * `import-source.ts` (docs/PLAN-PHASE-5.md 5.1, B6a, 19.3): baut die Lebensmittel `content/foods/<id>.json`
+ * aus der Zuordnung (Beschreibung, Vorschlag aus einer Claude-Sitzung) und dem Quellauszug (Nährwerte und
+ * Bezeichnung der Quelle, maschinell). EINZIGE Schreibstelle für `content/foods/` (S3); läuft nur im Workflow
+ * `foods-import`.
+ *
+ * - Nährwerte und `source.name` kommen nur aus dem Quellauszug (über `source-rows.ts`), nie aus der Zuordnung,
+ *   nie aus der Gründer-Datei (deren `pro_100g` ist nur Gegencheck, Bericht > 3 % / > 15 %).
+ * - Erwartungsliste `allergen-expectations.json` aus den Gruppen der Zuordnung (bei R19 von Menschen bestätigt).
+ * - Unverändert → Datei bleibt byte-gleich. Geändert → `version` + 1, Katalog-Prüfung zurückgesetzt.
+ *   Freigegebene Lebensmittel werden nie überschrieben (Bericht).
+ */
+import {
+  ALPHA5_IMPORT_TOLERANCE,
+  type AllergenExpectations,
+  type Food,
+  type FoodGroupId,
+  foodSchema,
+  type SourceNutrientRow,
+  sourceRowKey,
+} from '@fitnessapp/core';
+
+import type { FoodMapping, MappingItem } from './mapping';
+import type { SourceDefinition } from './sources';
+
+export const FOODS_DIR = 'content/foods';
+export const EXPECTATIONS_PATH = `${FOODS_DIR}/allergen-expectations.json`;
+/** Ausnahmeliste (R18), von Menschen gepflegt – bewusst außerhalb von content/foods/ (Wächter N2b, S4). */
+export const EXCEPTIONS_PATH = 'content/food-mapping/allergen-exceptions.json';
+
+/** `pro_100g` einer Zutat in alpha5-rezepte.json (nur Gegencheck). */
+export interface Alpha5Per100g {
+  readonly kcal: number;
+  readonly eiweiss_g: number;
+  readonly kohlenhydrate_g: number;
+  readonly fett_g: number;
+}
+
+export interface Deviation {
+  readonly id: string;
+  readonly field: 'kcal' | 'protein_g' | 'carbs_g' | 'fat_g';
+  readonly file: number;
+  readonly source: number;
+  /** Relative Abweichung zur Quelle (0,05 = 5 %). */
+  readonly relative: number;
+  /** `report` = über 3 %, `review` = über 15 % („Zuordnung prüfen“). */
+  readonly level: 'report' | 'review';
+}
+
+export interface ImportInput {
+  readonly mapping: FoodMapping;
+  readonly def: SourceDefinition;
+  /** Quellzeilen nach `sourceRowKey`. */
+  readonly sourceRows: ReadonlyMap<string, SourceNutrientRow>;
+  /** Abrufdatum der Original-Datei (YYYY-MM-DD). */
+  readonly retrievedOn: string;
+  /** Vorhandene Lebensmittel-Dateien (geparstes JSON) nach ID. */
+  readonly existing: ReadonlyMap<string, unknown>;
+  /** Gegencheck-Werte aus alpha5-rezepte.json nach Zutat-ID (`alpha5_id`). */
+  readonly alpha5: ReadonlyMap<string, Alpha5Per100g>;
+  /** Datum für neue Dateien (YYYY-MM-DD). */
+  readonly today: string;
+}
+
+export interface ImportReport {
+  readonly written: string[];
+  readonly unchanged: string[];
+  readonly skipped: { id: string; reason: string }[];
+  readonly deviations: Deviation[];
+  /** Vorhandene Lebensmittel ohne (gültige) Zuordnung mehr – bleiben liegen, nur gemeldet (Wächter N2b, K7). */
+  readonly orphaned: string[];
+}
+
+export interface ImportOutput {
+  /** Lebensmittel, die geschrieben werden (neu oder geändert). */
+  readonly foods: Map<string, Food>;
+  readonly expectations: AllergenExpectations;
+  readonly report: ImportReport;
+}
+
+/**
+ * Felder, deren Änderung eine neue Version und eine neue Katalog-Prüfung verlangt (alles außer meta, version,
+ * status und Abrufdatum).
+ */
+function substance(food: Food): string {
+  // Ein neues Abrufdatum allein ist keine inhaltliche Änderung.
+  return canonicalJson({
+    ...food,
+    meta: undefined,
+    version: undefined,
+    status: undefined,
+    source: { ...food.source, retrieved_at: undefined },
+  });
+}
+
+/** Ändern sich Nährwerte, Quell-ID, Gruppen oder Schwangerschafts-Hinweis, gilt die Fachprüfung nicht mehr. */
+export function needsExpertReset(previous: Food, next: Food): boolean {
+  return (
+    canonicalJson(previous.nutrients_per_100g) !== canonicalJson(next.nutrients_per_100g) ||
+    previous.source.ref !== next.source.ref ||
+    previous.source.db !== next.source.db ||
+    previous.source.version !== next.source.version ||
+    canonicalJson([...previous.groups].sort()) !== canonicalJson([...next.groups].sort()) ||
+    previous.pregnancy_caution !== next.pregnancy_caution
+  );
+}
+
+/** JSON mit rekursiv sortierten Schlüsseln (Vergleich unabhängig von der Reihenfolge). */
+export function canonicalJson(value: unknown): string {
+  if (Array.isArray(value)) {
+    return `[${value.map(canonicalJson).join(',')}]`;
+  }
+  if (value !== null && typeof value === 'object') {
+    const entries = Object.entries(value as Record<string, unknown>)
+      .filter(([, v]) => v !== undefined)
+      .sort(([a], [b]) => (a < b ? -1 : a > b ? 1 : 0));
+    return `{${entries.map(([k, v]) => `${JSON.stringify(k)}:${canonicalJson(v)}`).join(',')}}`;
+  }
+  return JSON.stringify(value);
+}
+
+function sortedGroups(groups: readonly FoodGroupId[]): FoodGroupId[] {
+  return [...groups].sort();
+}
+
+function buildFood(
+  item: MappingItem,
+  row: SourceNutrientRow,
+  input: ImportInput,
+  previous: Food | undefined,
+): Food {
+  return {
+    id: item.food_id,
+    version: previous?.version ?? 1,
+    status: previous?.status ?? 'draft',
+    name_de: item.name_de,
+    aliases_de: item.aliases_de,
+    shopping_category: item.shopping_category,
+    pantry: item.pantry,
+    nutrients_per_100g: row.nutrients_per_100g,
+    units: item.units,
+    groups: sortedGroups(item.groups),
+    animal: item.animal,
+    meat_kind: item.meat_kind,
+    ...(item.gelatin_origin === undefined ? {} : { gelatin_origin: item.gelatin_origin }),
+    pregnancy_caution: item.pregnancy_caution,
+    alcohol: item.alcohol,
+    max_fridge_days: item.max_fridge_days,
+    freezable: item.freezable,
+    substitutes: item.substitutes,
+    source: {
+      db: input.def.db,
+      version: input.def.version,
+      ref: row.ref,
+      name: row.name,
+      category: item.source.category,
+      license: input.def.license,
+      retrieved_at: input.retrievedOn,
+    },
+    meta: previous?.meta ?? {
+      origin: 'claude_session',
+      model: input.mapping.model,
+      batch_id: null,
+      created_on: input.today,
+      expert_reviewed: false,
+      reviewed_by: null,
+      reviewed_at: null,
+      review_note: null,
+      catalog_reviewed_by: null,
+      catalog_reviewed_at: null,
+    },
+  };
+}
+
+/** Gegencheck Datei-Wert ↔ Quellwert (Plan 19.3 (a)). */
+export function alpha5Deviations(
+  id: string,
+  file: Alpha5Per100g,
+  source: SourceNutrientRow['nutrients_per_100g'],
+): Deviation[] {
+  const pairs: [Deviation['field'], number, number][] = [
+    ['kcal', file.kcal, source.kcal],
+    ['protein_g', file.eiweiss_g, source.protein_g],
+    ['carbs_g', file.kohlenhydrate_g, source.carbs_g],
+    ['fat_g', file.fett_g, source.fat_g],
+  ];
+  const T = ALPHA5_IMPORT_TOLERANCE;
+  const result: Deviation[] = [];
+  for (const [field, fileValue, sourceValue] of pairs) {
+    const absolute = Math.abs(fileValue - sourceValue);
+    const minimum = field === 'kcal' ? T.minKcal : T.minGrams;
+    if (absolute <= minimum) {
+      continue;
+    }
+    const relative = sourceValue === 0 ? Number.POSITIVE_INFINITY : absolute / sourceValue;
+    if (relative > T.relative) {
+      result.push({
+        id,
+        field,
+        file: fileValue,
+        source: sourceValue,
+        relative,
+        level: relative > T.reviewRelative ? 'review' : 'report',
+      });
+    }
+  }
+  return result;
+}
+
+/** Baut Lebensmittel und Erwartungsliste (rein, ohne Dateizugriff – testbar). */
+export function importFoods(input: ImportInput): ImportOutput {
+  const foods = new Map<string, Food>();
+  const expectations: Record<string, FoodGroupId[]> = {};
+  const report: ImportReport = {
+    written: [],
+    unchanged: [],
+    skipped: [],
+    deviations: [],
+    orphaned: [],
+  };
+
+  for (const item of input.mapping.items) {
+    const id = item.food_id;
+    if (item.source.db !== input.def.db || item.source.version !== input.def.version) {
+      report.skipped.push({
+        id,
+        reason: `andere Quelle (${item.source.db} ${item.source.version}) – eigener Lauf nötig`,
+      });
+      continue;
+    }
+    if (item.source.ref === null) {
+      report.skipped.push({ id, reason: 'noch keine Quell-ID zugeordnet (Kandidaten im Bericht)' });
+      continue;
+    }
+    const row = input.sourceRows.get(
+      sourceRowKey({ db: input.def.db, version: input.def.version, ref: item.source.ref }),
+    );
+    if (row === undefined) {
+      report.skipped.push({
+        id,
+        reason: `Quell-ID „${item.source.ref}“ nicht im Auszug (fehlt in der Quelle oder Wert unvollständig)`,
+      });
+      continue;
+    }
+
+    const previousRaw = input.existing.get(id);
+    let previous: Food | undefined;
+    if (previousRaw !== undefined) {
+      const parsed = foodSchema.safeParse(previousRaw);
+      if (!parsed.success) {
+        report.skipped.push({
+          id,
+          reason: 'vorhandene Datei ist ungültig – bitte prüfen, nicht überschrieben',
+        });
+        continue;
+      }
+      previous = parsed.data;
+    }
+
+    let food = buildFood(item, row, input, previous);
+    if (previous !== undefined) {
+      if (substance(previous) === substance(food)) {
+        report.unchanged.push(id);
+        expectations[id] = sortedGroups(item.groups);
+        continue;
+      }
+      if (previous.status === 'published') {
+        report.skipped.push({
+          id,
+          reason:
+            'freigegeben – wird nie überschrieben; erst über content-review zurück auf Entwurf setzen',
+        });
+        expectations[id] = sortedGroups(previous.groups);
+        continue;
+      }
+      // Fachlich wichtige Änderung (Werte, Quell-ID, Gruppen, Schwangerschaft) → auch die Fachprüfung zurücksetzen
+      // (Wächter N2b, S6); sonst nur die Katalog-Prüfung.
+      const expertReset = needsExpertReset(previous, food);
+      food = {
+        ...food,
+        version: previous.version + 1,
+        meta: {
+          ...previous.meta,
+          catalog_reviewed_by: null,
+          catalog_reviewed_at: null,
+          ...(expertReset
+            ? { expert_reviewed: false, reviewed_by: null, reviewed_at: null, review_note: null }
+            : {}),
+        },
+      };
+    }
+    const checked = foodSchema.safeParse(food);
+    if (!checked.success) {
+      report.skipped.push({
+        id,
+        reason: `Schemafehler: ${checked.error.issues.map((i) => `${i.path.join('.')}: ${i.message}`).join('; ')}`,
+      });
+      continue;
+    }
+    foods.set(id, checked.data);
+    expectations[id] = sortedGroups(item.groups);
+    report.written.push(id);
+
+    const fileValues = input.alpha5.get(item.alpha5_id);
+    if (fileValues !== undefined) {
+      report.deviations.push(...alpha5Deviations(id, fileValues, row.nutrients_per_100g));
+    }
+  }
+
+  // Verwaiste Lebensmittel: Datei vorhanden, aber nicht (mehr) importiert – Erwartungen aus der Datei behalten,
+  // damit R18 sie weiter prüft; im Bericht melden.
+  for (const [id, raw] of input.existing) {
+    if (expectations[id] !== undefined) {
+      continue;
+    }
+    report.orphaned.push(id);
+    const parsed = foodSchema.safeParse(raw);
+    if (parsed.success) {
+      expectations[id] = sortedGroups(parsed.data.groups);
+    }
+  }
+  report.orphaned.sort();
+
+  const sortedExpectations: Record<string, FoodGroupId[]> = {};
+  for (const key of Object.keys(expectations).sort()) {
+    sortedExpectations[key] = expectations[key] ?? [];
+  }
+  return { foods, expectations: sortedExpectations, report };
+}
+
+/** Bericht als Markdown (PR-Text, Zusammenfassung des Laufs). */
+export function formatImportReport(report: ImportReport, missingRefs: readonly string[]): string {
+  const pct = (value: number) =>
+    Number.isFinite(value) ? `${(value * 100).toFixed(1).replace('.', ',')} %` : '∞';
+  const lines = [
+    '#### Lebensmittel',
+    '',
+    `- neu oder geändert: **${report.written.length}**`,
+    `- unverändert: ${report.unchanged.length}`,
+    `- nicht importiert: ${report.skipped.length}`,
+    `- Quell-IDs ohne Zeile in der Original-Datei: ${missingRefs.length === 0 ? 'keine' : missingRefs.join(', ')}`,
+    `- verwaist (Datei vorhanden, keine gültige Zuordnung mehr – bitte prüfen): ${report.orphaned.length === 0 ? 'keine' : report.orphaned.join(', ')}`,
+    '',
+  ];
+  if (report.skipped.length > 0) {
+    lines.push('| Zutat | Grund |', '| --- | --- |');
+    for (const s of report.skipped) {
+      lines.push(`| \`${s.id}\` | ${s.reason.replace(/\|/g, '\\|')} |`);
+    }
+    lines.push('');
+  }
+  const review = report.deviations.filter((d) => d.level === 'review');
+  lines.push(
+    `#### Gegencheck alpha5-rezepte.json ↔ Quelle (> 3 % gemeldet, > 15 % „Zuordnung prüfen“)`,
+    '',
+    `${report.deviations.length} Abweichungen, davon ${review.length} „Zuordnung prüfen“. Maßgeblich ist immer die Quelle.`,
+    '',
+  );
+  if (report.deviations.length > 0) {
+    lines.push('| Zutat | Wert | Datei | Quelle | Abweichung |', '| --- | --- | --- | --- | --- |');
+    const ordered = [...report.deviations].sort((a, b) =>
+      a.level === b.level ? a.id.localeCompare(b.id) : a.level === 'review' ? -1 : 1,
+    );
+    for (const d of ordered) {
+      lines.push(
+        `| ${d.level === 'review' ? '🔴' : '🟡'} \`${d.id}\` | ${d.field} | ${d.file} | ${d.source} | ${pct(d.relative)} |`,
+      );
+    }
+    lines.push('');
+  }
+  return lines.join('\n');
+}

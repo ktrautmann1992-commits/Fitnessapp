@@ -1,0 +1,12 @@
+# Pflicht-Freigabe durch die Gründer (docs/PLAN-PHASE-5.md 5.1.1 b, H1; Einrichtung: docs/SETUP.md Teil J2).
+# Wirkt erst, wenn in der Regel für main „Require review from Code Owners“ eingeschaltet ist.
+#
+# Bewusst NUR die Ordner, die ausschließlich der Workflow foods-import schreibt (Autor github-actions[bot]):
+# So kann der Gründer diese Pull Requests selbst freigeben. Eigene Pull Requests (Skripte, Zuordnung, Workflows)
+# sind hier nicht gelistet – sonst wären sie mit nur einem GitHub-Konto gesperrt (Wächter N2b, B1). Die Skripte
+# schützt die Prüfung mit dem Code von main (Workflow sources-integrity-main) und Pflicht-Checks.
+# Freigabe (Approve) und Merge von foods-import-Pull-Requests macht immer ein Gründer selbst, nie eine
+# Claude-Sitzung.
+
+/content/sources/ @ktrautmann1992-commits
+/content/foods/ @ktrautmann1992-commits
