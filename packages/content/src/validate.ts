@@ -128,7 +128,14 @@ const STATUS_DE: Record<ContentStatus, string> = {
   archived: 'zurückgezogen',
 };
 
-const KIND_DE = { exercise: 'Übung', plan_template: 'Vorlage', library: 'Bibliothek' } as const;
+const KIND_DE = {
+  exercise: 'Übung',
+  plan_template: 'Vorlage',
+  library: 'Bibliothek',
+  food: 'Lebensmittel',
+  recipe: 'Rezept',
+  recipe_library: 'Rezeptbestand',
+} as const;
 
 function countByStatus(items: readonly { status: ContentStatus }[]): string {
   const count = (status: ContentStatus) => items.filter((item) => item.status === status).length;

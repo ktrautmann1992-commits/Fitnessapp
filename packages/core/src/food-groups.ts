@@ -8,7 +8,7 @@ import { z } from 'zod';
  * supabase/migrations/20261003120500_nutrition_preferences.sql passen (geprüft in db-sync.test.ts).
  */
 export const FOOD_GROUPS = [
-  { id: 'gluten', nameDe: 'Glutenhaltiges Getreide (Weizen, Roggen, Gerste)' },
+  { id: 'gluten', nameDe: 'Glutenhaltiges Getreide (Weizen, Dinkel, Roggen, Gerste, Hafer)' },
   { id: 'dairy', nameDe: 'Milch und Milchprodukte' },
   { id: 'lactose', nameDe: 'Laktose (Milchzucker)' },
   { id: 'eggs', nameDe: 'Eier' },

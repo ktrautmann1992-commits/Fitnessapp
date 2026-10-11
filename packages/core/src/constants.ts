@@ -1328,3 +1328,102 @@ export const MEAL_TIMING_RULES = {
  * 78(12):1262–1282; Heft und Seiten VOR LIVEGANG FACHLICH PRÜFEN.
  */
 export const PREGNANCY_CAFFEINE_MAX_MG = 200;
+
+// ---------------------------------------------------------------------------------------------------------
+// Phase 5 · Lebensmittel und Rezepte (docs/PLAN-PHASE-5.md Abschnitt 5, Etappe N2a)
+//
+// Grenzen der Inhalts-Schemas (`content/food-schema.ts`, `content/recipe-schema.ts`) und der Prüfregeln R1–R19
+// (`content/recipe-checks.ts`). Werte aus dem Plan; Quellen bzw. PRODUKTENTSCHEIDUNG je Eintrag.
+// ---------------------------------------------------------------------------------------------------------
+
+/**
+ * Grenzen des Lebensmittel-Schemas (Plan 5.1). Nährwerte je 100 g; Summe aus Eiweiß, Kohlenhydraten, Fett und
+ * Ballaststoffen höchstens 100 g plus `macroSumToleranceG` (Rundung der Quelle). Einheiten-Umrechnung: Stück bis
+ * 3 kg (z. B. Kürbis), EL bis 30 g, TL bis 15 g, Dichte 0,2–2,0 g/ml. PRODUKTENTSCHEIDUNG.
+ */
+export const FOOD_SCHEMA_LIMITS = {
+  kcalPer100g: { min: 0, max: 900 },
+  gramsPer100g: { min: 0, max: 100 },
+  macroSumToleranceG: 1,
+  pieceG: { min: 0.1, max: 3000 },
+  tbspG: { min: 1, max: 30 },
+  tspG: { min: 0.5, max: 15 },
+  mlToG: { min: 0.2, max: 2 },
+  aliases: 10,
+  substitutes: 5,
+} as const;
+
+/**
+ * Meal-Prep-Haltbarkeit (Plan 5.1 S12, Regel R9): gekochte Speisen höchstens 3 Tage im Kühlschrank; Reis, Fisch,
+ * Hackfleisch und Geflügel höchstens 1 Tag. Grundlage: BfR-Verbrauchertipps zur Lagerung zubereiteter Speisen
+ * (u. a. Bacillus cereus in gekochtem Reis). Der WORTLAUT der BfR-Fundstelle konnte in N2a nicht am Original geprüft
+ * werden: VOR LIVEGANG FACHLICH PRÜFEN (wortgenaues Zitat mit Fundstelle nachtragen). Werte: PRODUKTENTSCHEIDUNG.
+ */
+export const MEAL_PREP_FRIDGE_DAYS = { max: 3, sensitiveMax: 1 } as const;
+
+/** Grenzen des Rezept-Schemas (Plan 5.2). */
+export const RECIPE_SCHEMA_LIMITS = {
+  servings: { min: 1, max: 8 },
+  ingredients: { min: 1, max: 20 },
+  steps: { min: 1, max: 15 },
+  prepMinutes: { min: 1, max: 120 },
+  cookMinutes: { min: 0, max: 240 },
+  amount: { min: 0.1, max: 5000 },
+  declaredKcal: { min: 0, max: 3000 },
+  declaredMacroG: { min: 0, max: 300 },
+  costLevel: { min: 1, max: 3 },
+  equipment: 10,
+} as const;
+
+/**
+ * Eine Prise in Gramm (Einheit `pinch`, Plan 4.1 `units.ts`). Übliche Küchenangabe etwa 0,3–0,5 g; gewählt wird
+ * der obere Wert (Salz eher über- als unterschätzt). PRODUKTENTSCHEIDUNG.
+ */
+export const PINCH_G = 0.5;
+
+/**
+ * Rundung von Zutatenmengen (Plan 6.2): Gramm/ml auf 5 (unter 20 auf 1), Stück auf ½ (Eier ganz), EL/TL auf ½,
+ * Prise ganz. PRODUKTENTSCHEIDUNG.
+ */
+export const AMOUNT_ROUNDING = {
+  massStep: 5,
+  smallMassStep: 1,
+  smallMassBelow: 20,
+  pieceStep: 0.5,
+  spoonStep: 0.5,
+  pinchStep: 1,
+} as const;
+
+/**
+ * Prüfregeln für Rezepte und Lebensmittel (Plan 5.3).
+ * - R3 Makro-Plausibilität: kcal ±10 % (mindestens ±20 kcal), Makros ±15 % (mindestens ±3 g) je Portion.
+ * - R4 Atwater je Lebensmittel: 4·Eiweiß + 4·Kohlenhydrate + 9·Fett + 2·Ballaststoffe = kcal ±15 %
+ *   (Energie-Umrechnungsfaktoren nach VO (EU) Nr. 1169/2011 (LMIV), Anhang XIV). Zusätzlich mindestens ±4 kcal
+ *   absolut, damit sehr energiearme Lebensmittel (z. B. Gurke) nicht an der Rundung der Quelle scheitern
+ *   (PRODUKTENTSCHEIDUNG, N2a).
+ * - R5 kcal je Portion: Frühstück 200–900, Hauptgericht 300–1.200, Snack 80–500 (gelb).
+ * - R11 Mengen je Portion: Salz ≤ 2,5 g, Öl ≤ 30 g, jede Zutat ≤ 600 g (gelb). Öl = Lebensmittel der Abteilung
+ *   „Öle, Essig & Saucen“ mit mindestens `oilMinFatG` Fett je 100 g.
+ * Werte: PRODUKTENTSCHEIDUNG (Plan 5.3).
+ */
+export const RECIPE_CHECK_LIMITS = {
+  macroPlausibility: { kcalRel: 0.1, kcalAbsMin: 20, macroRel: 0.15, macroAbsMinG: 3 },
+  atwater: { protein: 4, carbs: 4, fat: 9, fiber: 2, tolerance: 0.15, absMinKcal: 4 },
+  kcalPerServing: {
+    breakfast: { min: 200, max: 900 },
+    main: { min: 300, max: 1200 },
+    snack: { min: 80, max: 500 },
+  },
+  perServing: { saltMaxG: 2.5, oilMaxG: 30, ingredientMaxG: 600 },
+  oilMinFatG: 90,
+} as const;
+
+/**
+ * Abdeckungsbericht (Regel R16, gelb, Plan 5.4): Anzahl passender Rezepte je Mahlzeit × Ernährungsform × häufige
+ * Unverträglichkeit; unter `minPerCombination` (7 = eine Woche ohne Wiederholung) gelber Hinweis.
+ * Häufige Unverträglichkeiten: PRODUKTENTSCHEIDUNG.
+ */
+export const RECIPE_COVERAGE = {
+  minPerCombination: 7,
+  intolerances: ['gluten', 'lactose', 'dairy', 'eggs', 'peanuts', 'tree_nuts'],
+} as const;
