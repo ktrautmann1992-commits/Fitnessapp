@@ -20,6 +20,9 @@ packages/ui/src/tokens.generated.ts
 packages/ui/src/print/assets.generated.ts
 docs/ERWEITERUNGEN.md
 docs/ALPHA5-PAKET.md
+docs/ERWEITERUNGEN-2.md
+# Gründer-Datei, unverändert lassen (Import in N2c)
+packages/content/seed/alpha5-rezepte.json
 test-results
 playwright-report
 
