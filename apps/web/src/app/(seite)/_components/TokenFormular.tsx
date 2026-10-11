@@ -16,12 +16,13 @@ const abonnieren = (onChange: () => void) => {
  * keinem Referer) und schickt es erst per Knopf (POST) ab.
  */
 export function TokenFormular({
-  aktion,
+  action,
   frage,
   knopf,
   ungueltig,
 }: {
-  aktion: 'bestaetigen' | 'abmelden';
+  /** Ziel des Formulars, z. B. /api/warteliste/bestaetigen. */
+  action: string;
   frage: string;
   knopf: string;
   ungueltig: string;
@@ -44,7 +45,7 @@ export function TokenFormular({
     );
   }
   return (
-    <form method="post" action={`/api/warteliste/${aktion}`}>
+    <form method="post" action={action}>
       <p className={styles.einleitung}>{frage}</p>
       <input type="hidden" name="token" value={token} />
       <button className={`${styles.knopf} ${styles['knopf--primaer']}`} type="submit">

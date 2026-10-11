@@ -1,4 +1,5 @@
 import { Beispieleinheit } from './_components/Beispieleinheit';
+import { GratisRezepteFormular } from './_components/GratisRezepteFormular';
 import { WartelisteFormular } from './_components/WartelisteFormular';
 import styles from './seite.module.css';
 
@@ -248,6 +249,38 @@ export default function Startseite() {
               gespeichert.
             </li>
           </ul>
+        </div>
+      </section>
+
+      {/* GRATIS-REZEPTE (Lead-Magnet, ERWEITERUNGEN-2.md Abschnitt 8) */}
+      <section className={styles.abschnitt} id="gratis-rezepte">
+        <div className={styles.huelle}>
+          <div className={styles.rezepte}>
+            <img
+              className={styles['rezepte__bild']}
+              src="/bilder/gratis-rezepte-deckblatt-360.webp"
+              srcSet="/bilder/gratis-rezepte-deckblatt-360.webp 360w, /bilder/gratis-rezepte-deckblatt-720.webp 720w"
+              sizes="(min-width: 900px) 18rem, 11rem"
+              width={360}
+              height={509}
+              loading="lazy"
+              decoding="async"
+              alt="Deckblatt des PDFs „20 Lieblingsrezepte – Gratis-Auszug aus dem Alpha5 Rezeptbuch“: weiße Schrift und blaues α5-Logo auf dunklem Grund."
+            />
+            <div className={styles.warteliste}>
+              <h2 className={styles.titel}>20 Rezepte gratis als PDF</h2>
+              <p className={styles.einleitung}>
+                Unsere Lieblingsrezepte aus dem Alpha5-Rezeptbuch: vor und nach dem Training, für
+                lange Läufe und den Wettkampftag, schnell in 10 Minuten und als Protein-Dessert.
+                Vegan, vegetarisch, mit Fleisch und ohne Schweinefleisch – mit Nährwerten pro
+                Portion.
+              </p>
+              <p className={styles['rezepte__hinweis']}>
+                Kostenlos und ohne Newsletter-Pflicht: Du bekommst nur den Download-Link per E-Mail.
+              </p>
+              <GratisRezepteFormular />
+            </div>
+          </div>
         </div>
       </section>
 
