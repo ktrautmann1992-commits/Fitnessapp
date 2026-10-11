@@ -1,7 +1,7 @@
 /// <reference types="node" />
 import { expect, test } from '@playwright/test';
 
-import { WAITLIST_CONSENT } from '../src/lib/waitlist/consent';
+import { LEAD_MAGNET_CONSENT, WAITLIST_CONSENT } from '../src/lib/waitlist/consent';
 
 /** Landingpage, Warteliste (ohne Einstellungen), Rechtsseiten, robots/sitemap – Handy-Ansicht 390 × 844. */
 
@@ -19,6 +19,7 @@ test('Startseite: Kopfzeile, Hero und alle Abschnitte', async ({ page }) => {
     'Was danach kommt',
     'Kostenlos starten',
     'Deine Gesundheitsdaten bleiben deine',
+    '20 Rezepte gratis als PDF',
     'Sei beim Start dabei',
   ]) {
     await expect(page.getByRole('heading', { level: 2, name: titel })).toBeAttached();
@@ -66,11 +67,12 @@ test('Beispiel-Einheit: abhaken, Alternative tauschen, Belastung einschätzen', 
 test('Warteliste: Prüfungen im Formular, ohne Einstellungen „bald aktiv“', async ({ page }) => {
   await page.goto('/#warteliste');
   await expect(page.getByTestId('einwilligungstext')).toHaveText(WAITLIST_CONSENT.text);
+  const bereich = page.locator('#warteliste');
   const knopf = page.locator('#eintragen');
-  const meldung = page.locator('#warteliste [role="status"]');
+  const meldung = bereich.getByRole('status');
 
-  const email = page.getByLabel('E-Mail-Adresse');
-  const haken = page.getByRole('checkbox');
+  const email = bereich.getByLabel('E-Mail-Adresse');
+  const haken = bereich.getByRole('checkbox');
   await knopf.click();
   await expect(meldung).toHaveText('Bitte gib eine gültige E-Mail-Adresse ein.');
   await expect(email).toHaveAttribute('aria-invalid', 'true');
@@ -120,6 +122,128 @@ test('Mail-Link-Seiten: Knopf statt Sofort-Aktion, ohne Einstellungen „bald ak
   await expect(page.getByText('Dieser Link ist ungültig.', { exact: false })).toBeVisible();
 });
 
+test('Gratis-Rezepte: Vorschaubild, Pflicht-Einwilligung, Newsletter freiwillig und nicht vorausgewählt', async ({
+  page,
+}) => {
+  await page.goto('/#gratis-rezepte');
+  const bereich = page.locator('#gratis-rezepte');
+  // Abschnitt steht direkt vor der Warteliste
+  await expect(page.locator('#gratis-rezepte + #warteliste')).toHaveCount(1);
+  const bild = bereich.getByRole('img', { name: /Deckblatt des PDFs/ });
+  await expect(bild).toBeVisible();
+  // lazy geladen: warten, bis das Bild wirklich da ist
+  await expect
+    .poll(() => bild.evaluate((img: HTMLImageElement) => img.naturalWidth))
+    .toBeGreaterThan(0);
+
+  await expect(bereich.getByTestId('rezepte-einwilligung')).toHaveText(
+    LEAD_MAGNET_CONSENT.download,
+  );
+  await expect(bereich.getByTestId('rezepte-newsletter-text')).toHaveText(
+    LEAD_MAGNET_CONSENT.newsletter,
+  );
+  const email = bereich.getByLabel('E-Mail-Adresse', { exact: true });
+  const pflicht = bereich.locator('#rezepte-zustimmung');
+  const newsletter = bereich.locator('#rezepte-newsletter');
+  const knopf = bereich.getByRole('button', { name: 'Rezepte gratis anfordern' });
+  const meldung = bereich.getByRole('status');
+  await expect(newsletter).not.toBeChecked();
+  await expect(pflicht).not.toBeChecked();
+
+  await knopf.click();
+  await expect(meldung).toHaveText('Bitte gib eine gültige E-Mail-Adresse ein.');
+  await expect(email).toBeFocused();
+  await email.fill('lena@beispiel.de');
+  // Nur Newsletter ohne Pflicht-Häkchen reicht nicht
+  await newsletter.check();
+  await knopf.click();
+  await expect(meldung).toHaveText(
+    'Bitte bestätige, dass wir dir den Download-Link schicken dürfen.',
+  );
+  await expect(pflicht).toBeFocused();
+  await expect(pflicht).toHaveAttribute('aria-invalid', 'true');
+
+  // Ohne Newsletter: newsletter=false wird geschickt; ohne Einstellungen „bald verfügbar“
+  await newsletter.uncheck();
+  await pflicht.check();
+  const anfrage = page.waitForRequest('**/api/gratis-rezepte');
+  const antwort = page.waitForResponse('**/api/gratis-rezepte');
+  await knopf.click();
+  expect((await anfrage).postDataJSON()).toEqual({
+    email: 'lena@beispiel.de',
+    consent: true,
+    newsletter: false,
+    website: '',
+  });
+  expect((await antwort).status()).toBe(503);
+  await expect(meldung).toHaveText(
+    'Der Download ist bald verfügbar. Bitte versuch es in ein paar Tagen noch einmal.',
+  );
+
+  // Mit Newsletter: newsletter=true
+  await newsletter.check();
+  const anfrage2 = page.waitForRequest('**/api/gratis-rezepte');
+  await knopf.click();
+  expect((await anfrage2).postDataJSON()).toMatchObject({ newsletter: true });
+
+  // Link zur Datenschutzerklärung (Abschnitt Gratis-Rezepte)
+  await expect(bereich.getByRole('link', { name: 'Datenschutzerklärung' })).toHaveAttribute(
+    'href',
+    '/datenschutz#gratis-rezepte',
+  );
+});
+
+test('Gratis-Rezepte-API: Spamschutz wie Warteliste', async ({ request }) => {
+  const fremd = await request.post('/api/gratis-rezepte', {
+    data: { email: 'a@b.de', consent: true },
+    headers: { origin: 'https://boese.example' },
+  });
+  expect(fremd.status()).toBe(403);
+  const bot = await request.post('/api/gratis-rezepte', {
+    data: { email: 'a@b.de', consent: true, website: 'spam' },
+    headers: { origin: 'http://localhost:3100' },
+  });
+  expect(bot.status()).toBe(200);
+  const ohne = await request.post('/api/gratis-rezepte', {
+    data: { email: 'a@b.de', consent: false, newsletter: true },
+    headers: { origin: 'http://localhost:3100' },
+  });
+  expect(ohne.status()).toBe(400);
+});
+
+test('Gratis-Rezepte: Mail-Link-Seiten, kein Download-Knopf ohne Bestätigung, PDF nicht indexiert', async ({
+  page,
+  request,
+}) => {
+  await page.goto(`/gratis-rezepte/bestaetigen#token=${'A'.repeat(43)}`);
+  await expect(page.locator('meta[name="robots"]')).toHaveAttribute('content', /noindex/);
+  await page.getByRole('button', { name: 'Jetzt bestätigen' }).click();
+  await expect(page).toHaveURL(/\/gratis-rezepte\/bestaetigen\?ergebnis=inaktiv/);
+  await expect(page.getByText('Der Download ist bald verfügbar.', { exact: false })).toBeVisible();
+
+  // Ohne gültigen, signierten Nachweis aus der Bestätigung gibt es keinen Download-Knopf
+  for (const adresse of [
+    '/gratis-rezepte/bestaetigen?ergebnis=ok',
+    `/gratis-rezepte/bestaetigen?ergebnis=ok&download=${Date.now() + 60_000}.${'a'.repeat(64)}`,
+  ]) {
+    await page.goto(adresse);
+    // … und auch keinen Dankestext, der eine Bestätigung behauptet (neutral)
+    await expect(page.getByRole('status')).toContainText('Wenn du deine Adresse bestätigt hast');
+    await expect(page.getByText('Danke!')).toHaveCount(0);
+    await expect(page.getByRole('link', { name: 'PDF herunterladen' })).toHaveCount(0);
+  }
+
+  await page.goto(`/gratis-rezepte/abmelden#token=${'A'.repeat(43)}`);
+  await page.getByRole('button', { name: 'Adresse löschen' }).click();
+  await expect(page).toHaveURL(/\/gratis-rezepte\/abmelden\?ergebnis=inaktiv/);
+
+  const pdf = await request.get('/downloads/Alpha5-Gratis-Rezepte.pdf');
+  expect(pdf.status()).toBe(200);
+  expect(pdf.headers()['content-type']).toContain('application/pdf');
+  expect(pdf.headers()['x-robots-tag']).toContain('noindex');
+  expect((await pdf.body()).subarray(0, 5).toString()).toBe('%PDF-');
+});
+
 test('Rechtsseiten mit Platzhaltern, verlinkt im Fuß', async ({ page }) => {
   await page.goto('/');
   for (const [link, titel] of [
@@ -142,6 +266,9 @@ test('robots.txt und sitemap.xml', async ({ request }) => {
   const robots = await (await request.get('/robots.txt')).text();
   expect(robots).toContain('Disallow: /admin');
   expect(robots).toContain('Disallow: /warteliste/');
+  expect(robots).toContain('Disallow: /gratis-rezepte/');
+  // PDF nicht per robots sperren – sonst sehen Suchmaschinen das X-Robots-Tag: noindex nicht
+  expect(robots).not.toContain('/downloads/');
   expect(robots).toContain('Sitemap: https://fitnessapp-web-eight.vercel.app/sitemap.xml');
   const sitemap = await (await request.get('/sitemap.xml')).text();
   for (const pfad of ['', '/impressum', '/datenschutz', '/agb']) {

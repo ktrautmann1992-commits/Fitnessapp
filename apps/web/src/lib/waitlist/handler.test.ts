@@ -43,9 +43,18 @@ function fakes(outcome: Awaited<ReturnType<WaitlistStore['signup']>> = 'send') {
       return outcome;
     }),
     confirm: vi.fn(async () => 'confirmed' as const),
+    confirmLeadMagnet: vi.fn(async () => ({
+      outcome: 'confirmed' as const,
+      email: null,
+      newsletterOptIn: false,
+    })),
     unsubscribe: vi.fn(async () => true),
   };
-  const mailer = { sendConfirmation: vi.fn(async (_mail: ConfirmationMail) => undefined) };
+  const mailer = {
+    sendConfirmation: vi.fn(async (_mail: ConfirmationMail) => undefined),
+    sendDownload: vi.fn(async () => undefined),
+    sendNewsletterConfirmation: vi.fn(async () => undefined),
+  };
   const deps: DepsFactory = () => ({ store, mailer });
   return { store, mailer, deps, signups };
 }
@@ -203,6 +212,8 @@ describe('handleSignup', () => {
     expect(res.status).toBe(200);
     const saved = f.signups[0]!;
     expect(saved.email).toBe('anna@beispiel.de');
+    expect(saved.source).toBe('warteliste');
+    expect(saved.newsletterOptIn).toBe(false);
     expect(saved.consentTextVersion).toBe(1);
     expect(saved.ipHash).toBe(hashIp(SECRET, '203.0.113.7'));
     expect(saved.tokenExpiresAt.getTime()).toBe(NOW + WAITLIST_TOKEN_TTL_MS);

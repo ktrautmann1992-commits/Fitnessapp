@@ -526,6 +526,91 @@ Adresse gebaut, und das Formular nimmt Anfragen nur von bekannten Adressen an (s
 List-Unsubscribe=One-Click` (RFC 8058, Ein-Klick-Abmelden – Pflicht bei Gmail/Yahoo für Massen-Mails). Dafür
 > braucht es dann einen POST-Endpunkt ohne Zwischenseite.
 
+### I7 – Gratis-Rezepte als PDF (Lead-Magnet)
+
+Auf der Startseite steht vor der Warteliste der Abschnitt **„20 Rezepte gratis als PDF“**. Er nutzt dieselben
+Einstellungen wie die Warteliste (I1–I5) – es gibt **nichts zusätzlich einzurichten**. Fehlen die Werte, zeigt das
+Formular „Der Download ist bald verfügbar“.
+
+So läuft es ab:
+
+1. Besucherin gibt ihre E-Mail ein und setzt das **Pflicht-Häkchen** (nur: „Schickt mir den Download-Link“).
+   Das **Newsletter-Häkchen** ist freiwillig und **nicht** vorausgewählt (Entscheidung vom 11.10.2026: Download
+   ohne Newsletter-Pflicht).
+2. Sie bekommt eine **Bestätigungs-Mail** (Double-Opt-in). Die Mail sagt ausdrücklich, was bestätigt wird:
+   „nur Download-Link, kein Newsletter“ oder „Mit dem Klick bestätigst du auch den Newsletter“. Link antippen →
+   auf der Seite **Jetzt bestätigen**. Fordert jemand dieselbe Adresse vor der Bestätigung noch einmal an, gilt nur
+   der Link aus der **neuesten** Mail (die den dann gültigen Newsletter-Stand nennt).
+3. Danach: zweite Mail mit dem **Download-Link** (`/downloads/Alpha5-Gratis-Rezepte.pdf`), und auf der Seite
+   erscheint der Knopf **PDF herunterladen** (nur direkt nach der echten Bestätigung, 30 Minuten lang).
+4. Fordert eine schon bestätigte Adresse die Rezepte noch einmal an, geht der Download-Link direkt noch einmal
+   raus. Setzt sie dabei **neu** das Newsletter-Häkchen, kommt stattdessen eine eigene Bestätigungs-Mail nur für
+   den Newsletter (mit dem Download-Link darin).
+
+> **Bewusste Entscheidung (Info für die Gründer):** Das PDF liegt öffentlich unter
+> `/downloads/Alpha5-Gratis-Rezepte.pdf`. Wer die Adresse kennt, kann es ohne Anmeldung laden. Das ist
+> datenschutzrechtlich unkritisch (das PDF enthält keine personenbezogenen Daten); Suchmaschinen bekommen
+> „nicht indexieren“ (`X-Robots-Tag: noindex`). Soll der Download wirklich geschützt sein, müsste das PDF in einen
+> privaten Speicher mit zeitlich begrenzten Links – sagt Claude Bescheid.
+
+Was gespeichert wird (Tabelle `waitlist`, wie bei der Warteliste, Spamschutz identisch):
+
+- Spalte `source` = `lead-magnet` (Warteliste: `warteliste`). Eine Adresse kann in beiden Listen stehen.
+- Spalte `newsletter_opt_in` = Newsletter bestellt **und** per Mail bestätigt (Zeitpunkt in
+  `newsletter_confirmed_at`). Die Warteliste hat hier immer `false` – ihr Zweck ist nur „Infos zum Start“.
+- **Wer darf was bekommen?** (Export: Supabase → **Table Editor → waitlist → Filter** → **Export → CSV**)
+  - **Newsletter** (Rezepte, Trainingstipps, Start-Infos): nur `source` „= lead-magnet“ **und**
+    `newsletter_opt_in` „= true“ **und** `confirmed_at` „is not null“. Niemals an die Warteliste.
+  - **Start-Info** („Alpha5 ist da“): Warteliste (`source` „= warteliste“, `confirmed_at` „is not null“) **und** die
+    Newsletter-Abonnenten von oben. Doppelte Adressen nur einmal anschreiben.
+  - Gratis-Rezepte ohne Newsletter: **keine** weiteren Mails.
+- Abmelden: Jede Mail hat ihren eigenen Abmelde-Link, und **alle** bleiben gültig, bis der Eintrag gelöscht ist
+  (Tabelle `waitlist_unsubscribe_tokens`, nur Prüfwerte). Abmelden löscht nur den Eintrag dieser Liste – die
+  Warteliste hat ihren eigenen Link. Für künftige Newsletter-Mails: jede Mail bekommt ein neues Abmelde-Token
+  (Datenbank-Funktion `waitlist_add_unsubscribe_token`).
+- Ohne Newsletter wird die Adresse **30 Tage nach der Bestätigung automatisch gelöscht** (Workflow
+  waitlist-cleanup).
+- **Zahlen ohne Personenbezug:** Supabase → **Table Editor → waitlist_stats** – pro Tag und Liste nur
+  `signups` (Bestätigungs-Mails verschickt) und `confirmations` (Bestätigungen). Keine Adressen, keine
+  Gesundheitsdaten.
+- PDF austauschen: neue Datei unter `apps/web/public/downloads/Alpha5-Gratis-Rezepte.pdf` (gleicher Name)
+  per Pull Request. Das Vorschaubild (`apps/web/public/bilder/gratis-rezepte-deckblatt-*.webp`) bitte Claude neu
+  erzeugen lassen, wenn sich das Deckblatt ändert.
+
+> **TODO vor dem Livegang:** Einwilligungstexte, Mail-Texte, die 30-Tage-Frist und den Abschnitt 5 der
+> Datenschutzerklärung (`/datenschutz`) rechtlich prüfen lassen.
+
+### I8 – Text der Bestätigungs-Mail ändern (am Handy)
+
+Alle Mail-Texte (Warteliste, Gratis-Rezepte: Bestätigung und Download-Mail) stehen in **einer Datei**:
+`apps/web/src/lib/waitlist/mail-texte.ts`. Links fügt die Website selbst ein. Im Handy-Browser (nicht in der
+GitHub-App – dort kann man keine Dateien bearbeiten):
+
+1. **github.com** öffnen und anmelden → euer Repository **Fitnessapp** antippen.
+2. Nacheinander die Ordner antippen: **apps → web → src → lib → waitlist → mail-texte.ts**.
+3. Oben rechts auf das **Stift-Symbol** („Edit this file“) tippen. Siehst du es nicht: **⋯** → **Edit file**
+   (ggf. im Browser-Menü „Desktop-Website anfordern“).
+4. Den passenden Block suchen – z. B. `gratisRezepteBestaetigen` für die Bestätigungs-Mail der Gratis-Rezepte,
+   `warteliste` für die Warteliste, `gratisRezepteDownload` für die Mail mit dem Download-Link,
+   `gratisRezepteNewsletter` für die nachträgliche Newsletter-Bestätigung. `betreff` ist die Betreffzeile, `text`
+   der Haupttext, `knopf…` die Beschriftung des Knopfs. `mitNewsletter`/`ohneNewsletter` sind die Sätze, die
+   sagen, ob der Klick den Newsletter mit bestätigt – **diese Aussage nie streichen oder abschwächen** (sonst ist
+   die Newsletter-Einwilligung nicht nachweisbar).
+5. **Nur den Text zwischen den einfachen Anführungszeichen `'…'` ändern.** Anführungszeichen und Komma am
+   Zeilenende stehen lassen. Im Text kein `'` tippen – stattdessen `’` (z. B. „Das war’s“).
+6. Oben **Commit changes…** → **Create a new branch for this commit and start a pull request** auswählen →
+   **Propose changes** → **Create pull request**.
+7. Warten, bis die Prüfung **ci** grün ist (Tests prüfen, dass die Datei in Ordnung ist und alle Texte gefüllt
+   sind). Rot? Meist fehlt ein Anführungszeichen – Claude im PR um Korrektur bitten.
+8. **Merge pull request** → **Confirm merge**. Vercel veröffentlicht die Website neu; ab dann gilt der neue Text.
+   Testen: auf der Produktions-Adresse selbst eintragen (Vorschau-Links verschicken keine Mails, siehe I5).
+
+> Die **Einwilligungstexte** neben den Häkchen stehen in `apps/web/src/lib/waitlist/consent.ts`. Ändert ihr
+> dort etwas, muss auch die Zahl bei `version` um 1 steigen (damit nachvollziehbar bleibt, wer welchem Text
+> zugestimmt hat) – das lieber Claude machen lassen. Wichtig: Bei den Gratis-Rezepten laufen **beide** Texte
+> (Download-Häkchen und Newsletter-Häkchen) unter **einer** gemeinsamen `version` – ändert sich nur einer der
+> beiden, steigt trotzdem diese eine Zahl. Mail-Texte (`mail-texte.ts`) haben keine Version.
+
 ---
 
 ## Inhalte erzeugen und freigeben am Handy

@@ -29,11 +29,11 @@ select ok(
   'anon/authenticated haben keine Tabellenrechte'
 );
 select ok(
-  not has_function_privilege('anon', 'public.waitlist_signup(text, integer, text, text, text, text, timestamptz)', 'execute')
-  and not has_function_privilege('authenticated', 'public.waitlist_signup(text, integer, text, text, text, text, timestamptz)', 'execute')
+  not has_function_privilege('anon', 'public.waitlist_signup(text, integer, text, text, text, text, timestamptz, text, boolean)', 'execute')
+  and not has_function_privilege('authenticated', 'public.waitlist_signup(text, integer, text, text, text, text, timestamptz, text, boolean)', 'execute')
   and not has_function_privilege('anon', 'public.waitlist_confirm(text)', 'execute')
   and not has_function_privilege('authenticated', 'public.waitlist_unsubscribe(text)', 'execute')
-  and has_function_privilege('service_role', 'public.waitlist_signup(text, integer, text, text, text, text, timestamptz)', 'execute')
+  and has_function_privilege('service_role', 'public.waitlist_signup(text, integer, text, text, text, text, timestamptz, text, boolean)', 'execute')
   and has_function_privilege('service_role', 'public.waitlist_confirm(text)', 'execute')
   and has_function_privilege('service_role', 'public.waitlist_unsubscribe(text)', 'execute')
   and not has_function_privilege('anon', 'public.waitlist_cleanup()', 'execute')
@@ -42,7 +42,7 @@ select ok(
   'Funktionen nur für service_role ausführbar'
 );
 select is(
-  (select proconfig from pg_proc where oid = 'public.waitlist_signup(text, integer, text, text, text, text, timestamptz)'::regprocedure),
+  (select proconfig from pg_proc where oid = 'public.waitlist_signup(text, integer, text, text, text, text, timestamptz, text, boolean)'::regprocedure),
   array['search_path=""'], 'waitlist_signup mit leerem search_path'
 );
 

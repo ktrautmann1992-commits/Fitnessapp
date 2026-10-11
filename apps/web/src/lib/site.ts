@@ -50,5 +50,8 @@ export const SITE_TITLE = 'Alpha5 – Training und Ernährung, die zu dir passen
 export const SITE_DESCRIPTION =
   'Alpha5 erstellt deinen Trainingsplan aus deinem Ziel, deiner Zeit und deinem Equipment. Im Studio oder zu Hause, vom ersten Workout bis zum Marathon.';
 
+/** PDF „20 Rezepte gratis“ (apps/web/public/downloads/). Link steht in der Download-Mail und auf der Bestätigungsseite. */
+export const GRATIS_REZEPTE_PDF = '/downloads/Alpha5-Gratis-Rezepte.pdf';
+
 /** Öffentliche Seiten (für die Sitemap). */
 export const PUBLIC_PATHS = ['/', '/impressum', '/datenschutz', '/agb'] as const;

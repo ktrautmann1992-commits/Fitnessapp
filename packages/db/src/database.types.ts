@@ -1247,6 +1247,12 @@ export type Database = {
           created_at: string;
           email: string;
           id: string;
+          newsletter_confirmed_at: string | null;
+          newsletter_consent_text_version: number | null;
+          newsletter_opt_in: boolean;
+          newsletter_token_expires_at: string | null;
+          newsletter_token_hash: string | null;
+          source: string;
           token_expires_at: string | null;
           token_hash: string | null;
           unsubscribe_token_hash: string;
@@ -1258,6 +1264,12 @@ export type Database = {
           created_at?: string;
           email: string;
           id?: string;
+          newsletter_confirmed_at?: string | null;
+          newsletter_consent_text_version?: number | null;
+          newsletter_opt_in?: boolean;
+          newsletter_token_expires_at?: string | null;
+          newsletter_token_hash?: string | null;
+          source?: string;
           token_expires_at?: string | null;
           token_hash?: string | null;
           unsubscribe_token_hash: string;
@@ -1269,6 +1281,12 @@ export type Database = {
           created_at?: string;
           email?: string;
           id?: string;
+          newsletter_confirmed_at?: string | null;
+          newsletter_consent_text_version?: number | null;
+          newsletter_opt_in?: boolean;
+          newsletter_token_expires_at?: string | null;
+          newsletter_token_hash?: string | null;
+          source?: string;
           token_expires_at?: string | null;
           token_hash?: string | null;
           unsubscribe_token_hash?: string;
@@ -1293,6 +1311,53 @@ export type Database = {
         };
         Relationships: [];
       };
+      waitlist_stats: {
+        Row: {
+          confirmations: number;
+          day: string;
+          signups: number;
+          source: string;
+        };
+        Insert: {
+          confirmations?: number;
+          day?: string;
+          signups?: number;
+          source: string;
+        };
+        Update: {
+          confirmations?: number;
+          day?: string;
+          signups?: number;
+          source?: string;
+        };
+        Relationships: [];
+      };
+      waitlist_unsubscribe_tokens: {
+        Row: {
+          created_at: string;
+          token_hash: string;
+          waitlist_id: string;
+        };
+        Insert: {
+          created_at?: string;
+          token_hash: string;
+          waitlist_id: string;
+        };
+        Update: {
+          created_at?: string;
+          token_hash?: string;
+          waitlist_id?: string;
+        };
+        Relationships: [
+          {
+            foreignKeyName: 'waitlist_unsubscribe_tokens_waitlist_id_fkey';
+            columns: ['waitlist_id'];
+            isOneToOne: false;
+            referencedRelation: 'waitlist';
+            referencedColumns: ['id'];
+          },
+        ];
+      };
     };
     Views: {
       [_ in never]: never;
@@ -1311,6 +1376,10 @@ export type Database = {
         Args: { p_type: Database['public']['Enums']['consent_type'] };
         Returns: boolean;
       };
+      lead_magnet_confirm: {
+        Args: { p_token_hash: string; p_unsubscribe_token_hash: string };
+        Returns: Json;
+      };
       recent_exercise_logs: { Args: { p_per_exercise?: number }; Returns: Json };
       replace_food_preferences: {
         Args: { p_items: Json; p_scope: string };
@@ -1328,14 +1397,24 @@ export type Database = {
       save_session_log: { Args: { p_log: Json }; Returns: Json };
       save_training_plan: { Args: { p_plan: Json }; Returns: string };
       seed_content: { Args: { p_content: Json }; Returns: Json };
+      waitlist_add_unsubscribe_token: {
+        Args: { p_token_hash: string; p_waitlist_id: string };
+        Returns: undefined;
+      };
       waitlist_cleanup: { Args: never; Returns: number };
       waitlist_confirm: { Args: { p_token_hash: string }; Returns: string };
+      waitlist_count: {
+        Args: { p_confirmations: number; p_signups: number; p_source: string };
+        Returns: undefined;
+      };
       waitlist_signup: {
         Args: {
           p_consent_text_version: number;
           p_email: string;
           p_email_hash: string;
           p_ip_hash: string;
+          p_newsletter_opt_in?: boolean;
+          p_source?: string;
           p_token_expires_at: string;
           p_token_hash: string;
           p_unsubscribe_token_hash: string;

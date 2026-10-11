@@ -597,6 +597,32 @@
 .meldung--fehler {
   color: var(--signal);
 }
+/* Gratis-Rezepte (Lead-Magnet): dunkle Karte auf heller Fläche – Formular im selben Stil wie die Warteliste */
+.rezepte {
+  display: grid;
+  gap: var(--raum-l);
+  background: var(--schwarz);
+  color: var(--weiss);
+  border-radius: var(--rund-gross);
+  padding: var(--raum-l) var(--raum-m);
+}
+.rezepte .einleitung {
+  color: var(--grau-dunkel);
+}
+.rezepte__bild {
+  display: block;
+  width: 11rem;
+  height: auto;
+  border: 1px solid var(--graphit-hell);
+  border-radius: var(--rund-klein);
+  box-shadow: 0 30px 80px -30px rgb(31 91 255 / 0.45);
+}
+.rezepte__hinweis {
+  margin: var(--raum-m) 0 0;
+  font-weight: 700;
+  color: var(--himmel);
+}
+
 /* Honeypot gegen Bots: für Menschen unsichtbar, nicht per Tab erreichbar */
 .honig {
   position: absolute;
@@ -683,6 +709,15 @@
   }
   .schutz {
     grid-template-columns: repeat(2, 1fr);
+  }
+  .rezepte {
+    grid-template-columns: auto 1fr;
+    align-items: start;
+    gap: var(--raum-xl);
+    padding: var(--raum-l);
+  }
+  .rezepte__bild {
+    width: 18rem;
   }
 }
 

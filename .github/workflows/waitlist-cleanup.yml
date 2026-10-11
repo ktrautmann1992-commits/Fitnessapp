@@ -2,7 +2,8 @@ name: waitlist-cleanup
 
 # Löschfristen der Warteliste (Migration 20261004130000_waitlist.sql, docs/SETUP.md Teil I):
 # Täglich die Datenbank-Funktion waitlist_cleanup() aufrufen – löscht nie bestätigte Einträge nach Ablauf des
-# Links (48 h) und Rate-Limit-Prüfwerte nach 24 h, auch wenn niemand die Website besucht.
+# Links (48 h), Rate-Limit-Prüfwerte nach 24 h und Gratis-Rezepte-Einträge OHNE Newsletter 30 Tage nach der
+# Bestätigung (Migration 20261011120000_waitlist_lead_magnet.sql), auch wenn niemand die Website besucht.
 # Ohne die GitHub-Secrets SUPABASE_URL/SUPABASE_SECRET_KEY endet der Workflow grün mit Hinweis.
 # Der Schlüssel wird nie ausgegeben (nur in einer Datei für curl, GitHub maskiert ihn zusätzlich).
 on:

@@ -17,10 +17,10 @@ export default function Datenschutz() {
 
       <h2>2. Überblick</h2>
       <p>
-        Wir verarbeiten personenbezogene Daten nur, soweit das für die Website, die Warteliste und
-        die App nötig ist. Gesundheits- und Körperdaten verarbeiten wir nur mit deiner
-        ausdrücklichen, gesonderten Einwilligung. Wir verkaufen keine Daten und geben keine
-        Gesundheitsdaten an Werbe-, Analyse- oder Affiliate-Partner weiter.
+        Wir verarbeiten personenbezogene Daten nur, soweit das für die Website, die Warteliste, den
+        Versand der Gratis-Rezepte und die App nötig ist. Gesundheits- und Körperdaten verarbeiten
+        wir nur mit deiner ausdrücklichen, gesonderten Einwilligung. Wir verkaufen keine Daten und
+        geben keine Gesundheitsdaten an Werbe-, Analyse- oder Affiliate-Partner weiter.
       </p>
 
       <h2>3. Aufruf der Website (Hosting bei Vercel)</h2>
@@ -72,14 +72,55 @@ export default function Datenschutz() {
         </P>
       </p>
 
-      <h2>5. Datenbank (Supabase, Frankfurt)</h2>
+      <h2 id="gratis-rezepte">5. Gratis-Rezepte als PDF und Newsletter</h2>
+      {/* TODO(Recht): Abschnitt vor dem Livegang prüfen lassen (Rechtsgrundlagen, Fristen). */}
       <p>
-        Warteliste und App-Daten speichern wir bei Supabase in einem Rechenzentrum in Frankfurt am
-        Main (EU).{' '}
+        Wenn du unsere 20 Rezepte als PDF anforderst, speichern wir deine E-Mail-Adresse, die
+        Version des Einwilligungstexts, ob du zusätzlich den Newsletter bestellt hast, und die
+        Zeitpunkte von Anfrage und Bestätigung (beim Newsletter auch den Zeitpunkt seiner
+        Bestätigung). Zweck: dir den Download-Link zu schicken. Du bekommst zuerst eine
+        Bestätigungs-Mail (Double-Opt-in), die ausdrücklich nennt, ob du nur den Download-Link oder
+        zusätzlich den Newsletter bestätigst. Nach dem Klick auf den Link und auf „Jetzt bestätigen“
+        schicken wir dir eine zweite Mail mit dem Download-Link. Fragst du die Rezepte später noch
+        einmal an, schicken wir dir den Link erneut.
+      </p>
+      <p>
+        Der Download hängt <strong>nicht</strong> vom Newsletter ab. Den Newsletter (Infos zum Start
+        von Alpha5, Rezepte, Trainingstipps) bekommst du nur, wenn du das eigene, freiwillige
+        Häkchen dafür setzt und ihn per Link bestätigst – setzt du das Häkchen erst bei einer
+        späteren Anfrage, bekommst du dafür eine eigene Bestätigungs-Mail. Ohne Newsletter schicken
+        wir dir nach der Mail mit dem Download-Link keine weiteren E-Mails und löschen deine Adresse
+        30 Tage nach der Bestätigung automatisch (tägliche Löschung). Mit Newsletter speichern wir
+        sie bis zu deiner Abmeldung{' '}
+        <P>
+          Speicherdauer Newsletter festlegen – Vorschlag: bis zur Abmeldung, spätestens 24 Monate
+          nach der letzten Anforderung oder Bestätigung (TODO Recht)
+        </P>
+        . Unbestätigte Anfragen löschen wir wie bei der Warteliste spätestens nach 3 Tagen. Die
+        Warteliste (Abschnitt 4) ist davon getrennt: Sie dient nur der Information über den Start
+        und hat einen eigenen Abmelde-Link.
+      </p>
+      <p>
+        Jede Mail enthält einen Link, mit dem du deine Adresse aus der Liste der Gratis-Rezepte
+        sofort löschen (und damit auch den Newsletter abbestellen) kannst; die Links aller unserer
+        Mails bleiben dafür gültig. Missbrauchsschutz, Prüfwerte (HMAC-Hash) und E-Mail-Versand über
+        Resend wie in Abschnitt 4 beschrieben. Für Statistik zählen wir nur, wie viele Anfragen und
+        Bestätigungen es pro Tag gab – ohne Bezug zu einer Person. Rechtsgrundlage: für die
+        Zusendung des angeforderten Download-Links Art. 6 Abs. 1 lit. b DSGVO (Erfüllung deiner
+        Anfrage) bzw. deine Einwilligung (Art. 6 Abs. 1 lit. a DSGVO){' '}
+        <P>bei der rechtlichen Prüfung festlegen</P>, für den Newsletter deine Einwilligung (Art. 6
+        Abs. 1 lit. a DSGVO), für den Missbrauchsschutz Art. 6 Abs. 1 lit. f DSGVO. Die Einwilligung
+        kannst du jederzeit widerrufen.
+      </p>
+
+      <h2>6. Datenbank (Supabase, Frankfurt)</h2>
+      <p>
+        Warteliste, Anfragen der Gratis-Rezepte und App-Daten speichern wir bei Supabase in einem
+        Rechenzentrum in Frankfurt am Main (EU).{' '}
         <P>Anbieter Supabase Inc., Auftragsverarbeitungsvertrag (DPA), ggf. Drittlandbezug</P>
       </p>
 
-      <h2>6. App: Gesundheitsdaten (Art. 9 DSGVO)</h2>
+      <h2>7. App: Gesundheitsdaten (Art. 9 DSGVO)</h2>
       <p>
         Körper-, Gesundheits- und (später) Zyklusdaten verarbeiten wir nur mit deiner
         ausdrücklichen, getrennten Einwilligung (Art. 9 Abs. 2 lit. a DSGVO), um deinen Trainings-
@@ -89,7 +130,7 @@ export default function Datenschutz() {
         <P>Kategorien im Detail, Speicherdauer, Löschfristen</P>
       </p>
 
-      <h2>7. Deine Rechte</h2>
+      <h2>8. Deine Rechte</h2>
       <ul>
         <li>Auskunft (Art. 15), Berichtigung (Art. 16), Löschung (Art. 17)</li>
         <li>Einschränkung (Art. 18), Datenübertragbarkeit (Art. 20), Widerspruch (Art. 21)</li>
@@ -101,7 +142,7 @@ export default function Datenschutz() {
       </ul>
       <p>In der App kannst du deine Daten jederzeit exportieren und dein Konto löschen.</p>
 
-      <h2>8. Änderungen</h2>
+      <h2>9. Änderungen</h2>
       <p>
         <P>Hinweis zur Aktualisierung dieser Erklärung</P>
       </p>

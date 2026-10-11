@@ -1,5 +1,6 @@
 /**
- * Ablauf der Warteliste ohne Next-Abhängigkeit (die Route Handler unter app/api/warteliste/* übersetzen nur).
+ * Ablauf der Warteliste und der Gratis-Rezepte (Lead-Magnet) ohne Next-Abhängigkeit (die Route Handler unter
+ * app/api/warteliste/* und app/api/gratis-rezepte/* übersetzen nur).
  * So ist alles per Unit-Test prüfbar (Speicher und Mail-Versand werden im Test ersetzt).
  *
  * Grundsätze:
@@ -9,14 +10,15 @@
  * - Keine E-Mail-Adressen, IPs oder Token in Logs (Fehlermeldungen enthalten nur HTTP-Status).
  */
 import { type HeaderReader, isSameOriginRequest } from '@/lib/admin/origin';
-import { allowedOrigins, mailBaseUrl } from '@/lib/site';
+import { allowedOrigins, GRATIS_REZEPTE_PDF, mailBaseUrl } from '@/lib/site';
 
 import { readWaitlistConfig, type WaitlistConfig } from './config';
-import { WAITLIST_CONSENT } from './consent';
-import { createResendMailer, type Mailer } from './mailer';
+import { LEAD_MAGNET_CONSENT, WAITLIST_CONSENT } from './consent';
+import { createResendMailer, type Mailer, type WaitlistSource } from './mailer';
 import { createSupabaseWaitlistStore, type WaitlistStore } from './store';
 import {
   clientIp,
+  createDownloadPass,
   createToken,
   hashConfirmToken,
   hashEmail,
@@ -26,7 +28,7 @@ import {
   rateLimitIpKey,
   WAITLIST_TOKEN_TTL_MS,
 } from './tokens';
-import { waitlistSignupSchema } from './validation';
+import { leadMagnetSignupSchema, waitlistSignupSchema } from './validation';
 
 type Env = Readonly<Record<string, string | undefined>>;
 
@@ -51,6 +53,21 @@ export const WAITLIST_MESSAGES = {
   failed: 'Das hat gerade nicht geklappt. Bitte versuch es später noch einmal.',
   invalidRequest: 'Bitte gib eine gültige E-Mail-Adresse ein.',
 } as const;
+
+export const LEAD_MAGNET_MESSAGES = {
+  ...WAITLIST_MESSAGES,
+  success:
+    'Fast geschafft. Bitte bestätige den Link in deiner E-Mail – danach schicken wir dir die Rezepte.',
+  notConfigured: 'Der Download ist bald verfügbar. Bitte versuch es in ein paar Tagen noch einmal.',
+} as const;
+
+type Messages = Readonly<Record<keyof typeof WAITLIST_MESSAGES, string>>;
+
+/** Pfad der Seiten zu den Mail-Links (Bestätigen/Abmelden) je Liste. */
+export const LINK_BASE_PATH = {
+  warteliste: '/warteliste',
+  'lead-magnet': '/gratis-rezepte',
+} as const satisfies Record<WaitlistSource, string>;
 
 export type SignupCode =
   'ok' | 'invalid' | 'forbidden' | 'not_configured' | 'rate_limited' | 'failed';
@@ -82,25 +99,84 @@ export interface SignupInput {
   readonly schedule?: Scheduler;
 }
 
-export async function handleSignup(input: SignupInput): Promise<SignupResult> {
+/** Gemeinsame Eingabe nach der Prüfung: normalisierte Adresse, Honeypot, Newsletter-Häkchen. */
+interface ParsedSignup {
+  readonly email: string;
+  readonly website: string;
+  readonly newsletterOptIn: boolean;
+}
+
+interface SignupSpec {
+  readonly source: WaitlistSource;
+  readonly consentTextVersion: number;
+  readonly messages: Messages;
+  readonly parse: (
+    body: unknown,
+  ) => { ok: true; data: ParsedSignup } | { ok: false; message: string };
+}
+
+/** Warteliste: POST /api/warteliste. */
+export function handleSignup(input: SignupInput): Promise<SignupResult> {
+  return signup(input, {
+    source: 'warteliste',
+    consentTextVersion: WAITLIST_CONSENT.version,
+    messages: WAITLIST_MESSAGES,
+    parse: (body) => {
+      const parsed = waitlistSignupSchema.safeParse(body);
+      return parsed.success
+        ? { ok: true, data: { ...parsed.data, newsletterOptIn: false } }
+        : {
+            ok: false,
+            message: parsed.error.issues[0]?.message ?? WAITLIST_MESSAGES.invalidRequest,
+          };
+    },
+  });
+}
+
+/**
+ * Gratis-Rezepte (Lead-Magnet): POST /api/gratis-rezepte. Pflicht ist nur die Einwilligung zur Zusendung des
+ * Download-Links; das Newsletter-Häkchen ist freiwillig und wird als newsletter_opt_in gespeichert.
+ */
+export function handleLeadMagnetSignup(input: SignupInput): Promise<SignupResult> {
+  return signup(input, {
+    source: 'lead-magnet',
+    consentTextVersion: LEAD_MAGNET_CONSENT.version,
+    messages: LEAD_MAGNET_MESSAGES,
+    parse: (body) => {
+      const parsed = leadMagnetSignupSchema.safeParse(body);
+      return parsed.success
+        ? {
+            ok: true,
+            data: {
+              email: parsed.data.email,
+              website: parsed.data.website,
+              newsletterOptIn: parsed.data.newsletter,
+            },
+          }
+        : {
+            ok: false,
+            message: parsed.error.issues[0]?.message ?? WAITLIST_MESSAGES.invalidRequest,
+          };
+    },
+  });
+}
+
+async function signup(input: SignupInput, spec: SignupSpec): Promise<SignupResult> {
+  const { messages } = spec;
   if (!isSameOriginRequest(input.headers, allowedOrigins(input.env))) {
-    return result(403, 'forbidden', WAITLIST_MESSAGES.forbidden);
+    return result(403, 'forbidden', messages.forbidden);
   }
-  const parsed = waitlistSignupSchema.safeParse(input.body);
-  if (!parsed.success) {
-    return result(
-      400,
-      'invalid',
-      parsed.error.issues[0]?.message ?? WAITLIST_MESSAGES.invalidRequest,
-    );
+  const parsed = spec.parse(input.body);
+  if (!parsed.ok) {
+    return result(400, 'invalid', parsed.message);
   }
   if (parsed.data.website.trim() !== '') {
     // Honeypot: Bot – nichts speichern, nichts senden, aber „Erfolg“ melden.
-    return result(200, 'ok', WAITLIST_MESSAGES.success);
+    return result(200, 'ok', messages.success);
   }
   const configResult = readWaitlistConfig(input.env);
   if (configResult.status !== 'ok') {
-    return result(503, 'not_configured', WAITLIST_MESSAGES.notConfigured);
+    return result(503, 'not_configured', messages.notConfigured);
   }
   const { config } = configResult;
   const { store, mailer } = (input.deps ?? defaultDeps)(config);
@@ -110,8 +186,10 @@ export async function handleSignup(input: SignupInput): Promise<SignupResult> {
   const unsubscribeToken = createToken();
   try {
     const outcome = await store.signup({
+      source: spec.source,
+      newsletterOptIn: parsed.data.newsletterOptIn,
       email,
-      consentTextVersion: WAITLIST_CONSENT.version,
+      consentTextVersion: spec.consentTextVersion,
       ipHash: hashIp(config.tokenSecret, rateLimitIpKey(clientIp(input.headers))),
       emailHash: hashEmail(config.tokenSecret, email),
       tokenHash: hashConfirmToken(config.tokenSecret, confirmToken),
@@ -119,31 +197,62 @@ export async function handleSignup(input: SignupInput): Promise<SignupResult> {
       tokenExpiresAt: new Date(input.now + WAITLIST_TOKEN_TTL_MS),
     });
     if (outcome === 'rate_limited') {
-      return result(429, 'rate_limited', WAITLIST_MESSAGES.rateLimited);
+      return result(429, 'rate_limited', messages.rateLimited);
     }
+    // Links nur aus fester Adresse (nie aus Kopfzeilen). Token im #Fragment: wird nie an Server gesendet,
+    // steht nicht in Server-Logs und nicht im Referer.
+    const base = mailBaseUrl(input.env);
+    const linkBase = `${base}${LINK_BASE_PATH[spec.source]}`;
+    const unsubscribeUrl = `${linkBase}/abmelden#token=${unsubscribeToken}`;
     if (outcome === 'send') {
-      // Links nur aus fester Adresse (nie aus Kopfzeilen). Token im #Fragment: wird nie an Server gesendet,
-      // steht nicht in Server-Logs und nicht im Referer.
-      const base = mailBaseUrl(input.env);
       const mail = {
         to: email,
-        confirmUrl: `${base}/warteliste/bestaetigen#token=${confirmToken}`,
-        unsubscribeUrl: `${base}/warteliste/abmelden#token=${unsubscribeToken}`,
+        source: spec.source,
+        confirmUrl: `${linkBase}/bestaetigen#token=${confirmToken}`,
+        unsubscribeUrl,
+        // Gratis-Rezepte: Mail nennt den Newsletter-Status ausdrücklich (Klick bestätigt ihn mit).
+        ...(spec.source === 'lead-magnet' ? { newsletterOptIn: parsed.data.newsletterOptIn } : {}),
       };
-      (input.schedule ?? runNow)(async () => {
-        try {
-          await mailer.sendConfirmation(mail);
-        } catch (error) {
-          console.error('Warteliste: Mail-Versand fehlgeschlagen –', (error as Error).message);
-        }
-      });
+      scheduleMail(input.schedule, () => mailer.sendConfirmation(mail));
+    } else if (spec.source === 'lead-magnet' && outcome === 'newsletter_confirm') {
+      // Schon bestätigt, Newsletter-Häkchen neu: eigenes Double-Opt-in nur für den Newsletter + Download-Link.
+      const mail = {
+        to: email,
+        confirmUrl: `${linkBase}/bestaetigen#token=${confirmToken}`,
+        downloadUrl: `${base}${GRATIS_REZEPTE_PDF}`,
+        unsubscribeUrl,
+      };
+      scheduleMail(input.schedule, () => mailer.sendNewsletterConfirmation(mail));
+    } else if (
+      spec.source === 'lead-magnet' &&
+      (outcome === 'resend_download' || outcome === 'resend_download_newsletter')
+    ) {
+      // Gratis-Rezepte schon bestätigt: Download-Link erneut (Adresse ist für diesen Zweck bestätigt).
+      const mail = {
+        to: email,
+        downloadUrl: `${base}${GRATIS_REZEPTE_PDF}`,
+        unsubscribeUrl,
+        newsletterOptIn: outcome === 'resend_download_newsletter',
+      };
+      scheduleMail(input.schedule, () => mailer.sendDownload(mail));
     }
     // 'confirmed': schon bestätigt – keine Mail, aber dieselbe Antwort (verrät nichts).
-    return result(200, 'ok', WAITLIST_MESSAGES.success);
+    return result(200, 'ok', messages.success);
   } catch (error) {
     console.error('Warteliste: Eintragen fehlgeschlagen –', (error as Error).message);
-    return result(502, 'failed', WAITLIST_MESSAGES.failed);
+    return result(502, 'failed', messages.failed);
   }
+}
+
+/** Mail NACH der Antwort senden; Fehler nur mit HTTP-Status loggen (nie Adresse oder Token). */
+function scheduleMail(schedule: Scheduler | undefined, send: () => Promise<void>) {
+  (schedule ?? runNow)(async () => {
+    try {
+      await send();
+    } catch (error) {
+      console.error('Warteliste: Mail-Versand fehlgeschlagen –', (error as Error).message);
+    }
+  });
 }
 
 // ---------------------------------------------------------------------------------------------------------
@@ -151,7 +260,19 @@ export async function handleSignup(input: SignupInput): Promise<SignupResult> {
 // ---------------------------------------------------------------------------------------------------------
 
 export type LinkAction = 'bestaetigen' | 'abmelden';
-export type LinkOutcome = 'ok' | 'ungueltig' | 'abgelaufen' | 'inaktiv' | 'fehler';
+/**
+ * Ergebnis auf der Seite. Gratis-Rezepte zusätzlich: 'ok-newsletter' (Adresse + Newsletter bestätigt),
+ * 'newsletter' (Newsletter nachträglich bestätigt). Abmelden: 'unbekannt' = nichts (mehr) gefunden.
+ */
+export type LinkOutcome =
+  | 'ok'
+  | 'ok-newsletter'
+  | 'newsletter'
+  | 'ungueltig'
+  | 'abgelaufen'
+  | 'inaktiv'
+  | 'fehler'
+  | 'unbekannt';
 
 export interface LinkResult {
   readonly kind: 'redirect' | 'forbidden';
@@ -163,42 +284,88 @@ export interface LinkInput {
   readonly headers: HeaderReader;
   readonly token: unknown;
   readonly deps?: DepsFactory;
+  /** Download-Mail nach der Bestätigung NACH der Antwort senden (Route: `after`). */
+  readonly schedule?: Scheduler;
+  /** Seiten, auf die zurückgeleitet wird. Standard: Warteliste. */
+  readonly source?: WaitlistSource;
+  /** Jetzt (ms) – für den signierten Download-Nachweis. Standard: Date.now(). */
+  readonly now?: number;
 }
 
-const linkRedirect = (action: LinkAction, outcome: LinkOutcome): LinkResult => ({
+const linkRedirect = (
+  action: LinkAction,
+  outcome: LinkOutcome,
+  source: WaitlistSource = 'warteliste',
+  downloadPass?: string,
+): LinkResult => ({
   kind: 'redirect',
-  location: `/warteliste/${action}?ergebnis=${outcome}`,
+  location:
+    `${LINK_BASE_PATH[source]}/${action}?ergebnis=${outcome}` +
+    (downloadPass ? `&download=${downloadPass}` : ''),
 });
 
 export async function handleLinkAction(action: LinkAction, input: LinkInput): Promise<LinkResult> {
   if (!isSameOriginRequest(input.headers, allowedOrigins(input.env))) {
     return { kind: 'forbidden' };
   }
+  const source = input.source ?? 'warteliste';
   if (!isWellFormedToken(input.token)) {
-    return linkRedirect(action, 'ungueltig');
+    return linkRedirect(action, 'ungueltig', source);
   }
   const configResult = readWaitlistConfig(input.env);
   if (configResult.status !== 'ok') {
-    return linkRedirect(action, 'inaktiv');
+    return linkRedirect(action, 'inaktiv', source);
   }
   const { config } = configResult;
-  const { store } = (input.deps ?? defaultDeps)(config);
+  const deps = (input.deps ?? defaultDeps)(config);
+  const { store } = deps;
   try {
-    if (action === 'bestaetigen') {
+    if (action === 'bestaetigen' && source === 'warteliste') {
       const outcome = await store.confirm(hashConfirmToken(config.tokenSecret, input.token));
-      return linkRedirect(
-        action,
-        outcome === 'confirmed' ? 'ok' : outcome === 'expired' ? 'abgelaufen' : 'ungueltig',
-      );
+      return linkRedirect(action, confirmOutcome(outcome), source);
     }
-    // Abmelden: Ergebnis immer „ok“ – auch wenn nichts (mehr) eingetragen war.
-    await store.unsubscribe(hashUnsubscribeToken(config.tokenSecret, input.token));
-    return linkRedirect(action, 'ok');
+    if (action === 'bestaetigen') {
+      // Gratis-Rezepte: beim ERSTEN Bestätigen weiteres Abmelde-Token speichern und die Download-Mail schicken.
+      const unsubscribeToken = createToken();
+      const confirmed = await store.confirmLeadMagnet(
+        hashConfirmToken(config.tokenSecret, input.token),
+        hashUnsubscribeToken(config.tokenSecret, unsubscribeToken),
+      );
+      if (confirmed.outcome === 'confirmed' && confirmed.email) {
+        const base = mailBaseUrl(input.env);
+        const mail = {
+          to: confirmed.email,
+          downloadUrl: `${base}${GRATIS_REZEPTE_PDF}`,
+          unsubscribeUrl: `${base}${LINK_BASE_PATH[source]}/abmelden#token=${unsubscribeToken}`,
+          newsletterOptIn: confirmed.newsletterOptIn === true,
+        };
+        const { mailer } = deps;
+        scheduleMail(input.schedule, () => mailer.sendDownload(mail));
+      }
+      if (confirmed.outcome === 'confirmed' || confirmed.outcome === 'newsletter') {
+        // Nur nach echter Bestätigung: signierter, kurzlebiger Nachweis → Seite zeigt den Download-Knopf.
+        const pass = createDownloadPass(config.tokenSecret, input.now ?? Date.now());
+        const outcome: LinkOutcome =
+          confirmed.outcome === 'newsletter'
+            ? 'newsletter'
+            : confirmed.newsletterOptIn
+              ? 'ok-newsletter'
+              : 'ok';
+        return linkRedirect(action, outcome, source, pass);
+      }
+      return linkRedirect(action, confirmOutcome(confirmed.outcome), source);
+    }
+    // Abmelden: ehrlich melden, ob etwas gelöscht wurde (Link aus jeder unserer Mails gilt bis zur Löschung).
+    const deleted = await store.unsubscribe(hashUnsubscribeToken(config.tokenSecret, input.token));
+    return linkRedirect(action, deleted ? 'ok' : 'unbekannt', source);
   } catch (error) {
     console.error(`Warteliste: ${action} fehlgeschlagen –`, (error as Error).message);
-    return linkRedirect(action, 'fehler');
+    return linkRedirect(action, 'fehler', source);
   }
 }
+
+const confirmOutcome = (outcome: 'confirmed' | 'expired' | 'invalid'): LinkOutcome =>
+  outcome === 'confirmed' ? 'ok' : outcome === 'expired' ? 'abgelaufen' : 'ungueltig';
 
 /** JSON-Antwort der Eintragen-Route. Nie zwischenspeichern. */
 export function toJsonResponse(res: SignupResult): Response {

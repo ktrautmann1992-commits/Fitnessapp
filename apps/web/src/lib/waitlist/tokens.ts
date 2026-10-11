@@ -3,7 +3,7 @@
  * der Klartext des Tokens steht nur im Link der Bestätigungs-Mail. Auch IP-Adresse und E-Mail landen im
  * Rate-Limit nur als HMAC-Hash (mit eigenem Präfix, damit sich die Hashes nicht vergleichen lassen).
  */
-import { createHmac, randomBytes } from 'node:crypto';
+import { createHmac, randomBytes, timingSafeEqual } from 'node:crypto';
 
 /** Gültigkeit des Bestätigungslinks. */
 export const WAITLIST_TOKEN_TTL_MS = 48 * 60 * 60 * 1000;
@@ -25,6 +25,29 @@ export const hashUnsubscribeToken = (secret: string, token: string) =>
   hmac(secret, 'unsubscribe', token);
 export const hashIp = (secret: string, ip: string) => hmac(secret, 'ip', ip);
 export const hashEmail = (secret: string, email: string) => hmac(secret, 'email', email);
+
+/** Gültigkeit des Download-Knopfs auf der Bestätigungsseite (nach erfolgreicher Bestätigung). */
+export const DOWNLOAD_PASS_TTL_MS = 30 * 60 * 1000;
+
+/**
+ * Kurzlebiger, signierter Nachweis „gerade bestätigt“ für die Seite /gratis-rezepte/bestaetigen: Nur damit zeigt
+ * sie den Download-Knopf (nicht schon bei ?ergebnis=ok allein). Form: `<Ablauf ms>.<HMAC>`. Enthält keine
+ * personenbezogenen Daten.
+ */
+export function createDownloadPass(secret: string, now: number): string {
+  const expires = String(now + DOWNLOAD_PASS_TTL_MS);
+  return `${expires}.${hmac(secret, 'download-pass', expires)}`;
+}
+
+export function isValidDownloadPass(secret: string, pass: unknown, now: number): boolean {
+  if (typeof pass !== 'string') return false;
+  const match = /^(\d{13,16})\.([0-9a-f]{64})$/.exec(pass);
+  if (!match) return false;
+  const [, expires, signature] = match as unknown as [string, string, string];
+  if (Number(expires) < now) return false;
+  const expected = Buffer.from(hmac(secret, 'download-pass', expires), 'hex');
+  return timingSafeEqual(expected, Buffer.from(signature, 'hex'));
+}
 
 /**
  * IP-Adresse des Besuchers hinter Vercel: erster Eintrag von X-Forwarded-For bzw. X-Real-IP (setzt Vercel selbst).
