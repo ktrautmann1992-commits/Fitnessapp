@@ -4,6 +4,10 @@ Eingearbeitet: Erweiterungen aus dem Brainstorming der Gründer (`docs/ERWEITERU
 bleiben stabil, weil andere Dokumente darauf verweisen; neue Themen stehen als Unterabschnitte (z. B. 4.1, 6.1) oder
 in den neuen Abschnitten 15 und 16.
 
+Eingearbeitet am 11.10.2026: **Erweiterungen Teil 2** – Rezepte, Küche und Lead-Magnet (`docs/ERWEITERUNGEN-2.md`) in
+den Abschnitten 3, 6.5–6.13, 11, 12, 13, 14 und im neuen Abschnitt 17 (Lead-Magnet). Konflikte mit bestehenden Regeln
+und wie sie aufgelöst sind: Abschnitt 18. Umsetzungsplan: `docs/PLAN-PHASE-5.md` Abschnitt 19.
+
 **Grundregeln für alle Erweiterungen:** Echtzeit-KI nur für Premium (Abschnitt 15). Kein Teilen, keine Community,
 keine Ranglisten, keine öffentlichen Profile – Strecken, Fotos, Abzeichen und Challenges bleiben privat
 (Ausnahme nur Partner-Modus, Abschnitt 11).
@@ -67,6 +71,19 @@ Verbindlich ist der freigegebene Ablauf in `docs/PLAN-PHASE-1.md` Abschnitt 3 (S
   gültige Antworten als `draft` (`origin: batch`), prüft alles und öffnet einen Pull Request; `content-review` setzt den
   Status per Pull Request; `content-seed` prüft alles und spielt nur `published` ein. Inhaltsarten (`exercise`,
   `plan_template`) sind austauschbar – Rezepte kommen in Phase 5 als weitere Art dazu. Probelauf ohne Schlüssel.
+
+**Rezept-Startbestand aus `alpha5-rezepte.json` (Erweiterungen Teil 2, `docs/PLAN-PHASE-5.md` Abschnitt 19):**
+- Die Gründer-Datei `packages/content/seed/alpha5-rezepte.json` (242 Rezepte, 236 Zutaten, 4 Meal-Prep-Wochenpläne,
+  2 Ratgeber) **ersetzt die KI-Erzeugung des Rezept-Startbestands**. Ein Import-Skript wandelt sie (idempotent über die
+  IDs, Zod-geprüft) in Inhaltsdateien unter `content/` um – alles als `draft`, Ergebnis als Pull Request. Die Datei
+  selbst bleibt unverändert.
+- **Nährwerte nie aus der Datei:** Jede der 236 Zutaten bekommt einen Eintrag der amtlichen Nährwertdatenbank (BLS
+  o. ä., maschineller Import wie in Phase 5); die Werte der Datei dienen nur als Gegencheck (Abweichung > 3 % wird
+  gemeldet). Allergene, Ernährungsform und „ohne Schwein“ berechnet der Core aus den Zutaten (Regeln aus Phase 5, N2a).
+- Freigabe wie gehabt per Pull Request, zusätzlich **Sammelfreigabe pro Kategorie** über `content-review`; vor dem
+  Livegang Fachprüfung durch eine Ernährungsfachkraft. Entwürfe kommen nie nach Supabase.
+- Weitere Inhaltsarten über die Batch-Pipeline (je `draft` → Prüfung → Freigabe): **Austausch-Tabelle**
+  `ingredient_substitutions` (6.9), **Packungsgrößen** der Zutaten (6.11); später Rezept-Ergänzungen.
 
 ## 4. Trainingsplan-Engine (`packages/core/plan`)
 1. **Matching:** passende Vorlage nach Ziel, Level, Tagen, Dauer, Equipment-Profil (Scoring, beste Übereinstimmung)
@@ -240,7 +257,8 @@ Regeln in `packages/core/src/content/glossary.ts`, Grenzen in `GLOSSARY_LIMITS`.
 - Wettkampf: Carb-Loading-Tage, Frühstück am Wettkampftag, Gel-/Trinkplan
 - Plan-Erzeugung: Rezepte aus Datenbank filtern (Vorlieben, Ernährungsform, Kochmodus) → Optimierung auf Tagesmakros (Portionsgrößen skalieren) → Wochenplan
 - Einkaufsliste: aggregiert, nach Supermarkt-Abteilung sortiert, abhakbar, Meal-Prep-Mengen
-- Lebensmittel tauschen, Barcode-Scanner (Open Food Facts; Lizenz beachten, Abschnitt 6.1)
+- Lebensmittel tauschen (Zutaten-Austausch, Abschnitt 6.9), Barcode-Scanner (Open Food Facts; Lizenz beachten, Abschnitt 6.1)
+- Rezepte, Küche und Einkauf aus den Erweiterungen Teil 2: Abschnitte 6.5–6.13
 
 **Umsetzung ab Phase 5 (`docs/PLAN-PHASE-5.md`, Etappe N1: Core in `packages/core/src/nutrition`):** Grundumsatz
 Mifflin-St Jeor (divers/keine Angabe −78) bzw. Katch-McArdle nur mit Körperfett ≤ 90 Tage und **nur für den Vorschlag**;
@@ -286,6 +304,12 @@ Deckel 15 % (kein Check, Medikamente/Arzt-Hinweis, ab 65) bzw. 10 % (BMI 18,5–
 - Rezepte kommen aus der Content-Pipeline (Abschnitt 3) mit Tag `vor_training` / `waehrend` / `nach_training`.
 - **Offene Entscheidung (in Phase 5 treffen):** Vorschläge mit konkreten Marken (z. B. bestimmter Riegel) oder nur mit
   Produktarten („Haferriegel“)? Marken wären werbeähnlich und müssten herstellerneutral bzw. gekennzeichnet sein.
+  → Entschieden in Phase 5 (`docs/PLAN-PHASE-5.md` 16 A, Nr. 18): **nur Produktarten**.
+- **Abgrenzung zu den Erweiterungen Teil 2 (Abschnitt 6.6):** Bedarf, Zeitfenster und Timing-Hinweise sind gratis
+  (Phase-5-Entscheidung 1); gratis ist auch das **selbst Suchen** in den Kategorien Pre-Workout, Post-Workout und
+  Cardio & Ausdauer. **Premium** ist das, was dieser Abschnitt beschreibt: die **automatische Belegung** jeder
+  geplanten Einheit mit passenden, skalierten Rezepten samt Erinnerung („Rezepte automatisch passend zu jeder
+  Trainingseinheit“ in Abschnitt 13).
 
 ### 6.4 Kalorien per Foto (Premium, KI)
 - Foto der Mahlzeit → Claude-API mit Bildeingabe schätzt Lebensmittel und Portionen → Abgleich mit Lebensmitteldatenbank
@@ -294,6 +318,131 @@ Deckel 15 % (kein Check, Medikamente/Arzt-Hinweis, ab 65) bzw. 10 % (BMI 18,5–
 - Foto standardmäßig **nach der Auswertung löschen**; speichern nur, wenn der Nutzer es aktiv möchte
 - Foto und Schätzung gelten als Gesundheitsdaten → **eigene Einwilligung** (inkl. Hinweis auf Verarbeitung durch den KI-Anbieter)
 - Tages- und Monatslimit über `ai_usage` (Abschnitt 15)
+
+### 6.5 Rezepte in der App (Gratis)
+Quelle: `docs/ERWEITERUNGEN-2.md` Abschnitte 1–2. Startbestand aus `alpha5-rezepte.json` (Abschnitt 3).
+- **Kategorien:** 4 Ernährungsformen (vegan, vegetarisch, mit Fleisch, ohne Schweinefleisch) und 8 Themen: Fertig in
+  10 Minuten, Pre-Workout, Post-Workout, Cardio & Ausdauer, Wettkampftag, Meal-Prep-Wochenpläne, Protein-Desserts,
+  Spar-Küche. Ein Rezept kann in mehreren Themen stehen (n:m).
+- **Ernährungsform „passt für“:** Ein Rezept passt für alle Gruppen, deren Regeln es erfüllt (vegan → alle vier,
+  vegetarisch → vegetarisch und beide Fleisch-Gruppen, ohne Schwein → beide Fleisch-Gruppen). Gefiltert wird **immer
+  über die Ernährungsform, die der Core aus den Zutaten berechnet**, nie über die Themen-Kategorie und nie allein über
+  die Angabe in der Gründer-Datei (die dient nur als Gegencheck, siehe Abschnitt 18).
+- **Rezeptsuche mit Filtern:** Ernährungsform (aus dem Profil vorbelegt, erweiterbar – sie ist eine Vorliebe), Kategorie, Mahlzeit/Zeitpunkt (Abschnitt,
+  z. B. Frühstück oder „60–90 Min. vorher“), „Unter 10 Minuten“, max. Kosten (nur Rezepte mit Kostenschätzung, 6.13),
+  Vorlieben/Abneigungen und Unverträglichkeiten aus dem Profil. Ausschlüsse (Unverträglichkeit, „mag ich nicht“,
+  Schwein, Schwangerschafts-Vorsicht) wirken in der Suche genauso hart wie im Essensplan.
+- **Rezeptansicht mit Portionswähler:** Mengen und Nährwerte werden für die gewählte Portionenzahl umgerechnet;
+  Meal-Prep-Rezepte (meist 5 Portionen) zeigen Gesamtmenge **und** Menge pro Portion. Die Einkaufsliste daraus ist
+  abhakbar (Abschnitt 6).
+
+### 6.6 Trainingsbezug und Wettkampftage
+- **Gratis:** Bedarf, Zeitfenster und Timing-Hinweise vor/nach dem Training (Phase 5), Rezeptsuche in den Kategorien
+  Pre-Workout, Post-Workout und Cardio & Ausdauer, Ratgeber (6.8).
+- **Premium (ohne KI, = Abschnitt 6.3):** Die Ernährungs-Engine belegt automatisch vor jeder geplanten Einheit
+  Rezepte aus *Pre-Workout*, danach aus *Post-Workout*; bei Ausdauereinheiten **ab 75 Minuten** aus *Cardio &
+  Ausdauer* inklusive Verpflegung unterwegs.
+- **Wettkampftage (mit Phase 10):** Steht ein Wettkampf im Kalender, werden die Tage davor mit *Wettkampftag*-Rezepten
+  geplant; **Carb-Loading nur bei Wettkämpfen ab ca. 90 Minuten**. Bis Phase 10 sind die Wettkampf-Rezepte nur über
+  die Suche und den Ratgeber erreichbar, nicht im automatischen Plan.
+- **Schutzgrenzen gelten immer:** An Carb-Loading-Tagen (1–2 Tage vor dem Wettkampf) wird statt eines Defizits auf
+  **Erhalt** geplant; zusätzlich verschieben sich die Makros zu mehr Kohlenhydraten. Beides läuft als Eingabe durch die
+  zentrale Begrenzung `clampCalorieTarget` (Phase 5) – nie an den Kalorien-Schutzgrenzen aus CLAUDE.md vorbei; eine
+  Live-Anpassung (4.1) wirkt an diesen Tagen nicht. Fett bleibt bei mindestens 20 % der Energie. Im Modus ohne Kalorienziel (z. B. Schwangerschaft)
+  nur allgemeine Hinweise.
+
+### 6.7 Meal-Prep-Modus (1 Plan gratis, alle Pläne Premium)
+- Ablauf: Plan wählen → Einkaufsliste → **Kochtag-Ansicht** mit Schritt-für-Schritt-Ablauf und **Timern** nach den
+  Startminuten → Wochenplan Mo–Fr wird automatisch belegt; das **Abendessen bleibt frei** für frische Rezepte.
+- **Harte Filter gelten auch hier:** Jedes Rezept eines Plans läuft durch den kompletten Filter (Allergene,
+  Unverträglichkeiten, Ernährungsform, Schwein, „mag ich nicht“, Schwangerschafts-Vorsicht). Passt auch nur ein Rezept
+  nicht, wird der Plan dieser Person **nicht angeboten** („Passt nicht zu deinen Angaben“, ohne Grund zu nennen).
+- Der Schalter „Kalorienzahlen ausblenden“ gilt hier und in allen Ansichten aus 6.5–6.13.
+- Aufbewahrung und Haltbarkeit folgen **immer** den Regeln aus Phase 5 (Haltbarkeit je Lebensmittel, z. B. gekochter
+  Reis, Fisch, Hackfleisch, Geflügel höchstens 1 Tag im Kühlschrank, sonst einfrieren oder frisch kochen) – auch wenn
+  der Text eines Plans etwas anderes sagt (Abschnitt 18).
+- Start mit 4 Plänen (je Ernährungsform einer). Welcher Plan gratis ist, wird mit Phase 7 festgelegt (Vorschlag: der
+  erste Plan, der den kompletten Filter besteht; besteht keiner, gibt es keinen); in der Testphase sind alle offen.
+
+### 6.8 Ratgeber (Gratis, offline)
+- Lesbare Seiten **„Wettkampf-Ernährung“** (8 Abschnitte) und **„Unterwegs essen“** (Grundregeln + 10 Orte), mit der
+  App gebündelt und **offline** verfügbar.
+- Der Wettkampf-Ratgeber trägt beim Carb-Loading den festen Hinweis „Im Kaloriendefizit, unter 18 Jahren oder in der
+  Schwangerschaft nicht ohne fachliche Absprache.“; Mengenangaben wie g/kg prüft die Fachkraft.
+- Texte laufen durch dieselben Textregeln wie Rezepte (keine Heil- und Nährwertversprechen, Health-Claims-Verordnung)
+  und durch die Fachprüfung vor dem Livegang.
+
+### 6.9 Zutaten-Austausch (Gratis, ohne KI)
+- Zutat antippen → „Austauschen“ → Liste passender Alternativen → Nährwerte und Einkaufsliste werden neu berechnet.
+- Datenbasis: Tabelle `ingredient_substitutions` (Zutat, Ersatz, Faktor, Rolle, Hinweis). Rolle = Eiweiß,
+  Kohlenhydrat, Fett, Gemüse, Würze, Süße; der Faktor hält die Hauptrolle gleich (z. B. Eiweißmenge bei Eiweißquellen).
+- **Nur sichere Alternativen:** Jede Alternative durchläuft den kompletten Filter aus Phase 5 (Ernährungsform,
+  Schwein, Unverträglichkeiten, „mag ich nicht“, Schwangerschafts-Vorsicht, Allergen-Regeln) – wie die festen
+  Ersatz-Zutaten. Wird eine Zutat durch Ei, Fisch, Fleisch o. Ä. ersetzt, gilt sie als **ungegart**, bis es anders
+  feststeht (sichere Richtung bei Schwangerschaft). Der Tag wird danach erneut gegen die Kalorien-Schutzgrenzen
+  (Unter- **und** Obergrenze) geprüft; passt er nicht, wird der Tausch nicht angeboten.
+- **Haltbarkeit:** Nach dem Tausch wird die Haltbarkeit neu berechnet und der Meal-Prep-Zeitplan angepasst (einfrieren
+  oder frisch kochen); für schon vorgekochte Portionen wird kein Tausch angeboten.
+- Der Server prüft getauschte Zutaten beim Speichern erneut (ab Supabase-Etappe).
+- Die Austausch-Tabelle entsteht **offline** über die Content-Pipeline (Claude Batch-API), wird gegen ein Schema
+  geprüft und im Admin-Bereich freigegeben – keine Echtzeit-KI.
+
+### 6.10 Bewertung nach dem Essen (Gratis, ohne KI, privat)
+- Nach einer geplanten Mahlzeit: Daumen hoch/runter, optional Grund: „Schmeckt mir nicht“, „Zu aufwendig“,
+  „Zu teuer“, „Macht nicht satt“, „Unverträglich“.
+- Feste Regeln: Daumen hoch → häufiger vorschlagen; Daumen runter → 8 Wochen nicht mehr vorschlagen; „Unverträglich“ →
+  App bietet an, einzelne Zutaten als Abneigung („mag ich nicht“, je Lebensmittel) ins Profil zu übernehmen – einzeln
+  auswählbar, **nichts vorausgewählt**, der Nutzer bestätigt; „Zu aufwendig“ → mehr Rezepte unter 15 Minuten; „Macht
+  nicht satt“ / „Zu teuer“ → nur andere Reihenfolge der Vorschläge. Kein Grund ändert Energie, Portionen oder Grenzen.
+- Tabelle `recipe_ratings` (user_id, recipe_id, Wert, Grund, Datum) mit RLS. Bewertungen sind **privat**, werden nie
+  angezeigt oder ausgewertet (keine Community, keine Durchschnittsnoten), sind in Export und Löschung enthalten.
+- „Unverträglich“ ist ein Gesundheitsbezug (Art. 9): wird **nicht** als Grund gespeichert, sondern führt nur zum
+  Bestätigungs-Dialog (Abschnitt 18).
+
+### 6.11 Resteverwertung (Kühlschrank-Suche gratis, automatische Resteplanung Premium)
+- **Kühlschrank-Suche (Gratis):** „Was habe ich da?“ – Zutaten auswählen → Rezepte sortiert nach Übereinstimmung
+  (Anteil der vorhandenen Zutaten, gewichtet nach Menge), gefiltert nach Ernährungsform und allen Ausschlüssen.
+  Die Auswahl wird nicht dauerhaft gespeichert.
+- **Packungsgrößen:** Feld Packungsgröße bei den Zutaten (übliche Handelsgröße, z. B. Brokkoli 500 g, Quark 500 g),
+  über die Content-Pipeline vorgeschlagen und im Admin freigegeben.
+- **Automatische Resteplanung (Premium):** Die Einkaufsliste rundet auf Packungen auf; was übrig bleibt, erhöht den
+  Score von Rezepten, die diese Zutat verbrauchen (frische Zutaten mit kurzer Haltbarkeit zuerst; angebrochenes rohes
+  Fleisch, Fisch oder Rohmilch zählt nur für den Folgetag). Anzeige: „Dieses
+  Rezept verbraucht deinen restlichen Brokkoli.“ Regel-Engine in `packages/core` (`nutrition/leftovers.ts`) mit Tests.
+  Der Reste-Score ändert nur die Reihenfolge der Kandidaten, nie die Filter oder Schutzgrenzen.
+
+### 6.12 Paar-Modus beim Kochen (Premium, braucht den Partner-Modus)
+- Baut auf dem **Partner-Modus** auf (Abschnitt 11, beidseitige Zustimmung) – die Oberfläche kommt deshalb erst mit
+  Phase 11; die Rechenlogik vorher.
+- **Eigener, einzeln freigegebener Bereich „Gemeinsam kochen“:** Jede Person willigt ausdrücklich ein (Gesundheitsdaten,
+  Art. 9 DSGVO), mit dem Hinweis „Deine Portionsgrößen und die Rezeptauswahl lassen Rückschlüsse auf deinen Bedarf und
+  deine Unverträglichkeiten zu.“ Ohne diese Einwilligung: Standardportion, keine Ausschlüsse der Person im Text.
+- Gemeinsame Mahlzeiten werden einmal geplant, aber für jede Person eine eigene Portion berechnet:
+  **Portionsfaktor = Kalorienziel dieser Mahlzeit ÷ kcal pro Portion**, begrenzt auf **0,6–1,8**, gerundet auf
+  sinnvolle Schritte (z. B. 10 g bei Beilagen, keine halben Eier). Optional Beilagen unterschiedlich skalieren,
+  Eiweißquelle gleich (Rolle je Rezept-Zutat, 6.9). Ohne Kalorienziel (z. B. Schwangerschaft) gilt Faktor 1.
+- Das Kalorienziel jeder Person kommt nur aus ihrer eigenen Ernährungs-Engine (mit Schutzgrenzen); der Portionsfaktor
+  ist **keine** eigene Begrenzungsstelle und darf den Tag einer Person nie unter ihre Untergrenze oder über ihre
+  Obergrenze bringen – geht das nicht, bekommt diese Person für die Mahlzeit einen eigenen Vorschlag.
+- Gemeinsame Rezepte und jeder Tausch darin müssen die Ausschlüsse **beider** Personen erfüllen.
+- Eine gemeinsame Einkaufsliste mit der Summe beider Portionen; Anzeige z. B. „Anna 180 g Reis · Ben 120 g Reis“.
+  Sichtbar sind keine Zahlen zu Zielen oder Körperdaten – **Portionen lassen aber Rückschlüsse zu** (deshalb die
+  eigene Einwilligung).
+- Monetarisierung prüfen (Phase 7): „Partner-Abo“ (zwei Konten, günstigerer Preis).
+
+### 6.13 Einkaufsliste weitergeben, Kosten und Händler
+- **Sofort (Gratis):** Einkaufsliste als Text weitergeben (System-Teilen-Dialog → WhatsApp, Notizen, Erinnerungen),
+  als PDF exportieren; gemeinsame Liste im Paar-Modus (mit Phase 11). Das ist **privates Weitergeben** durch den
+  Nutzer selbst, kein öffentliches Teilen (Abschnitt 18). Inhalt wie beim PDF: nur Produkte und Mengen, keine kcal,
+  keine Gründe, kein Körpergewicht; Hinweis vor dem Weitergeben, wenn Ersatzprodukte auf eine Unverträglichkeit schließen
+  lassen.
+- **Kosten:** Preise und „Kosten pro Portion“ sind immer als **Schätzung** gekennzeichnet („ca. 1,20 € pro Portion,
+  Schätzung, Stand 2026“) und nur dort sichtbar, wo eine freigegebene Schätzung vorliegt.
+- **Später – Händler-Anbindung:** Lieferdienste/Supermärkte erst, wenn geklärt ist, ob und zu welchen Bedingungen ein
+  Händler eine offizielle Schnittstelle oder ein Partner-/Affiliate-Programm anbietet; **keine inoffiziellen
+  Schnittstellen**. Technisch als Modul hinter Feature-Flag; Affiliate-Links als „Anzeige“ gekennzeichnet; Affiliate
+  beeinflusst nie, welches Rezept oder Produkt vorgeschlagen wird. Einschalten nur mit eigener Einwilligung,
+  DSFA-Ergänzung und Datenminimierung (nur Produktarten und Mengen, keine Ersatz-Hinweise, keine Plan-/Profildaten).
 
 ## 7. Supplement-Modul
 - Nur evidenzbasiert: Proteinpulver (wenn Eiweißziel über Ernährung schwer erreichbar), Kreatin-Monohydrat, Koffein (vor Training, mit Tageslimit und Hinweis auf Schlaf), Vitamin D (Hinweis: Spiegel ärztlich prüfen lassen), bei Ausdauer: Kohlenhydrat-Gels/Elektrolyte; Omega-3 optional
@@ -334,6 +483,9 @@ Deckel 15 % (kein Check, Medikamente/Arzt-Hinweis, ab 65) bzw. 10 % (BMI 18,5–
 - Partner-Modus: gemeinsame Einkaufsliste/Wochenplan, gegenseitige Freigaben. Das ist **kein öffentliches Teilen**:
   genau zwei Personen, beidseitige Zustimmung, nur ausdrücklich freigegebene Bereiche, jederzeit beendbar. Körperfotos,
   Gesundheits- und Zyklusdaten sind davon ausgeschlossen, solange nicht ausdrücklich anders beschlossen.
+  Darauf baut der **Paar-Modus beim Kochen** auf (Abschnitt 6.12, Premium): eigener Bereich mit eigener
+  Art.-9-Einwilligung beider Personen; gemeinsame Mahlzeiten mit eigener Portion je Person und gemeinsamer
+  Einkaufsliste – keine Zahlen zu Zielen oder Körperdaten, Portionen lassen aber Rückschlüsse zu.
 - Wettkampf-Countdown, Erfolge (dezent, nicht ans Gewicht gekoppelt)
 
 ### 11.1 Körperumfänge mit Mess-Erinnerung (Gratis) – Grundlage in Phase 1 umgesetzt
@@ -514,12 +666,34 @@ löschen, nie in Logs/Analytics.
 - Neue Einwilligungsarten (`consent_documents`) für Körperfotos und für Mahlzeiten-Fotos; Namen beim Umsetzen festlegen.
 - Spaltennamen in Englisch wie die bestehenden Tabellen; die deutschen Feldnamen aus `docs/ERWEITERUNGEN.md` sind nur Beschreibung.
 
+### Erweiterungen Teil 2 (geplant, `docs/ERWEITERUNGEN-2.md`, Details `docs/PLAN-PHASE-5.md` Abschnitt 19)
+Inhaltstabellen: für angemeldete Nutzer nur `published` lesbar, Schreiben **nur** über `seed_content()` (strenger als
+„nur Admin“: auch der Admin-Bereich schreibt nicht in die Datenbank, Abschnitt 3). Nutzertabellen: RLS, jeder sieht nur
+eigene Zeilen, in Export und Kontolöschung enthalten.
+- `recipes` erweitert um Abschnitt (`section_de`), Gesamtzeit, Tags, Tipp, Kostenschätzung pro Portion (mit Stand),
+  `meal_prep_plan_id`; `recipe_categories` (Katalog der 8 Themen) + `recipe_category_links` (n:m). Ernährungsformen
+  brauchen **kein** eigenes n:m: „passt für“ ergibt sich aus der berechneten Ernährungsform und „ohne Schwein“ (6.5).
+- `meal_prep_plans` (Titel, Beschreibung, Aufbewahrung, Hinweis Abendessen) mit `meal_prep_plan_recipes` und
+  `meal_prep_plan_steps` (Startminute, Schritt) – Inhalt
+- `guides` (Ratgeber Wettkampf, Unterwegs; Abschnitte als jsonb) – Inhalt
+- `ingredient_substitutions` (food_id, substitute_food_id, factor, role, note_de) – Inhalt, per Batch-API erzeugt
+- `foods` erweitert um Packungsgröße und – falls entschieden – Schätzpreis je kg (Inhalt, als Schätzung gekennzeichnet)
+- `recipe_ratings` (user_id, recipe_id, value, reason, rated_on) – Nutzerdaten, privat, kein Grund „unverträglich“ (6.10)
+- `food_dislikes` (user_id, food_id) – „mag ich nicht“ je Lebensmittel (6.10), hart wie die Gruppen-Abneigungen
+- Alle diese Tabellen kommen gemeinsam mit der Supabase-Etappe N7 der Phase 5 (vorher nur Testmodus)
+- `recipe_ingredients` erweitert um die Rolle je Zutat; Meal-Prep-Pläne mit strukturiertem Aufbewahrungsplan
+  (Rezept, Wochentag, Kühlschrank/Einfrieren/frisch), geprüft gegen die Haltbarkeitsregeln
+- Paar-Modus: gemeinsame Pläne/Einkaufslisten erst mit dem Partner-Modus (Phase 11), Tabellen dort festlegen
+- `waitlist.source` (`warteliste` | `lead-magnet`) für den Lead-Magnet (Abschnitt 17) – nicht Teil der App-Daten
+
 ## 13. Monetarisierung
 - **Gratis:** Onboarding, Standard-Plan aus Vorlagen mit einfacher Progression (Gewicht steigt bei geschafften
   Wiederholungen), Trainingstagebuch, Grundberechnung Kalorien/Makros, Supplement-Übersicht, außerdem alles aus der
   Tabelle unten mit „Ja“ bei Gratis
-- **Premium (Abo monatlich/jährlich):** Live-Anpassung des Plans, Ernährungsplan + Einkaufsliste, Gerichte vor/während/nach
-  dem Training, Wettkampfvorbereitung, Zyklus-Anpassung, Wearables & Readiness, Strecken-Vorschläge (Abschnitt 10),
+- **Premium (Abo monatlich/jährlich):** Live-Anpassung des Plans, Ernährungsplan + Einkaufsliste (laut Phase-5-Entscheidung
+  in der Testphase für alle offen, endgültig mit Phase 7; Bedarf, Makros, Timing, Rezepte und PDF gratis), Gerichte
+  vor/während/nach dem Training (automatische Belegung, 6.6), alle Meal-Prep-Pläne, automatische Resteplanung,
+  Paar-Modus beim Kochen, Wettkampfvorbereitung, Zyklus-Anpassung, Wearables & Readiness, Strecken-Vorschläge (Abschnitt 10),
   Partner-Modus, **alle KI-Funktionen** (KI-Coach, Kalorien per Foto, Körperfoto-Analyse, KI-Erklärungen) – siehe Abschnitt 15
 - **Affiliate:** Supplement-Shops (gekennzeichnet, neutral)
 - **Sponsoring:** optional bei Monats-Challenges (Rabattcode, als „Werbung“ gekennzeichnet, ohne Datenweitergabe)
@@ -542,6 +716,24 @@ löschen, nie in Logs/Analytics.
 | Kalorien per Foto (KI) | Nein | Ja |
 | Körperfoto-Analyse (KI) | Nein | Ja |
 
+**Gratis / Premium für die Erweiterungen Teil 2** (`docs/ERWEITERUNGEN-2.md` Abschnitt 9; Premium in der Testphase für
+alle offen, Server-Prüfung mit Phase 7):
+
+| Funktion | Gratis | Premium |
+|---|---|---|
+| Rezeptsuche mit allen Filtern (6.5) | Ja | Ja |
+| Ratgeber Wettkampf und Unterwegs (6.8) | Ja | Ja |
+| Zutaten-Austausch (6.9) | Ja | Ja |
+| Bewertung nach dem Essen (6.10) | Ja | Ja |
+| Kühlschrank-Suche (6.11) | Ja | Ja |
+| Einkaufsliste weitergeben (Text, PDF) (6.13) | Ja | Ja |
+| Bedarf und Timing vor/nach dem Training, Suche in Pre-/Post-Workout und Cardio (6.6) | Ja | Ja |
+| Meal-Prep-Wochenpläne mit Kochtag-Modus (6.7) | 1 Plan | Alle |
+| Automatische Resteplanung (6.11) | Nein | Ja |
+| Paar-Modus beim Kochen (6.12, ab Partner-Modus) | Nein | Ja |
+| Rezepte automatisch passend zu jeder Trainingseinheit (6.3/6.6) | Nein | Ja |
+| 20 Gratis-Rezepte als PDF auf der Landingpage (17) | Ja | – |
+
 ## 14. Rechtliches (vor Launch prüfen lassen)
 - DSGVO Art. 9 Einwilligung, Datenschutzfolgenabschätzung, AV-Verträge (Supabase, Vercel, RevenueCat, Stripe)
 - Abgrenzung zum Medizinprodukt (MDR): keine Diagnosen, keine Therapieaussagen
@@ -553,6 +745,10 @@ löschen, nie in Logs/Analytics.
 - Lizenzen: Open Food Facts und OpenStreetMap (ODbL) mit Quellenangabe in der App
 - Standortberechtigung im Hintergrund (Strecken): Begründungstexte für App Store und Play Store
 - Mitgliedschafts-Erinnerung: nur Erinnerung an selbst eingetragene Fristen, keine Rechtsberatung zur Kündigung
+- Erweiterungen Teil 2: Lizenz der Nährwertdatenbank (Namensnennung) für alle 236 Zutaten; Ratgeber- und Rezepttexte
+  gegen die Health-Claims-Verordnung; Preise nur als Schätzung (keine Preisangabe im Sinne der PAngV);
+  Lead-Magnet-Einwilligung ohne Kopplung an den Newsletter (Abschnitt 17, Art. 7 Abs. 4 DSGVO);
+  Händler-Anbindung nur über offizielle Schnittstellen bzw. Partnerprogramme, Kennzeichnung „Anzeige“
 - Datenschutzerklärung, Abschnitt Auskunft/Datenexport (Phase 12, aus `docs/PLAN-PHASE-4.md` Etappe D): „Meine Daten
   exportieren“ liefert den Stand **auf dem Server** (alle eigenen Tabellen, Einwilligungs-Verlauf, Konto-E-Mail).
   Nicht enthalten sind Entwürfe und noch nicht übertragene Trainings auf dem Gerät (die App nennt deren Zahl vor dem
@@ -585,3 +781,36 @@ löschen, nie in Logs/Analytics.
 - **Mitgliedschaft:** Studio, Vertragsbeginn, Mindestlaufzeit, Kündigungsfrist, Monatsbeitrag, Notizen.
 - **Erinnerung vor Ablauf der Kündigungsfrist** (z. B. 4 Wochen und 1 Woche vorher).
 - Kennzahl **„Kosten pro Trainingsbesuch“** aus Beitrag und protokollierten Studio-Einheiten.
+
+## 17. Lead-Magnet auf der Landingpage (Erweiterungen Teil 2)
+- Abschnitt **„20 Rezepte gratis als PDF“** vor der Warteliste, mit Vorschaubild (Deckblatt) und Formular (E-Mail +
+  Einwilligung). PDF: `apps/web/public/downloads/Alpha5-Gratis-Rezepte.pdf`.
+- Ablauf: Eintrag in `waitlist` mit `source = 'lead-magnet'` → Double-Opt-in-Mail → nach Bestätigung Mail mit
+  Download-Link. Spamschutz wie bei der Warteliste.
+- **Gründer-Entscheidung 11.10.2026:** Download **ohne Newsletter-Pflicht** – Pflicht-Häkchen nur für den Download-Link,
+  Newsletter über ein **separates, freiwilliges, nicht vorausgewähltes Häkchen** (kein Kopplungsproblem nach Art. 7
+  Abs. 4 DSGVO). Abmeldung jederzeit. Ohne Newsletter werden Adressen 30 Tage nach der Bestätigung gelöscht.
+- Tracking ohne Gesundheitsdaten: nur Anzahl Anmeldungen und Bestätigungen.
+- Umsetzung und Klick-Schritte: `docs/SETUP.md` Abschnitt I7 (Prompt G). Vor dem Livegang: Einwilligungs- und
+  Mail-Texte rechtlich prüfen; Texte im PDF gegen die Health-Claims-Verordnung prüfen.
+- **Bedingung für den Livegang – Nährwerte im PDF:** Sie stammen aus der Gründer-Datei, nicht aus der amtlichen
+  Datenbank. Die 20 Rezepte werden nach dem Katalog-Import (Phase 5, N2b) gegen die Katalogwerte geprüft (Abweichung
+  > 3 % → PDF korrigieren) und fachlich geprüft. Bis dahin trägt das PDF die Kennzeichnung „Richtwerte, nicht fachlich
+  geprüft“ – oder es geht erst danach live.
+
+## 18. Erweiterungen Teil 2: Konflikte mit bestehenden Regeln und ihre Auflösung
+| Thema | Konflikt | Auflösung |
+|---|---|---|
+| Einkaufsliste weitergeben vs. „Kein Teilen, keine Community“ | ERWEITERUNGEN-2 Abschnitt 7 erlaubt Teilen per System-Dialog | **Privates Weitergeben** durch den Nutzer selbst an Menschen/Apps seiner Wahl ist kein öffentliches Teilen (kein Profil, kein Feed, keine Sichtbarkeit für andere Nutzer). Inhalt wie beim PDF: keine kcal, keine Gründe, kein Körpergewicht; Hinweis bei verräterischen Ersatzprodukten. Der Datenexport (Abschnitt 14) bleibt ohne Teilen-Dialog, weil er Gesundheitsdaten enthält. |
+| Nährwert-Herkunft | Die Gründer-Datei enthält Nährwerte pro 100 g und pro Portion | Maßgeblich sind **nur** die Werte aus der amtlichen Datenbank (maschineller Import, Phase 5); jede der 236 Zutaten bekommt einen Quell-Eintrag. Datei-Werte nur als Gegencheck, Abweichung > 3 % wird gemeldet. |
+| Filter über `ernaehrungsformen` | ERWEITERUNGEN-2: „Filter immer über dieses Feld“ | Gefiltert wird über die **aus den Zutaten berechnete** Ernährungsform (gleiche Bedeutung „passt für“, 6.5). Das Feld der Datei ist Gegencheck; Abweichung → Rezept bleibt Entwurf, bis geklärt (Prüfregeln R6/R8). |
+| Allergene | Die Datei enthält keine Allergen-Angaben | Allergene kommen aus den Allergen-Pflichtregeln für alle 23 Gruppen (Phase 5, N2a) und der menschlichen Katalog-Prüfung. |
+| Paar-Modus | braucht zwei verknüpfte Konten; Portionen verraten Bedarf und Unverträglichkeiten | Erst mit dem **Partner-Modus (Phase 11)**, als eigener Bereich mit eigener Art.-9-Einwilligung beider Personen; die Rechenlogik (Portionsfaktor) kommt vorher, die Oberfläche danach. |
+| „Rezepte passend zu jeder Einheit“ Premium vs. Phase-5-Timing gratis | Phase 5 hat Bedarf und Timing gratis entschieden | **Bedarf, Zeitfenster, Timing-Hinweise und die Suche gratis; die automatische Rezept-Belegung je Einheit Premium** (6.3, 6.6). |
+| Budget/Kosten | Phase 5 (Frage 13): „kein Budget“ | Neuer Gründer-Wunsch ersetzt das: Filter „max. Kosten“ und Spar-Küche, Preise **nur als Schätzung** gekennzeichnet (6.13). |
+| Meal-Prep-Haltbarkeit | Pläne der Datei nennen z. B. „Curry mit Reis 3–4 Tage“ | Es gelten die Haltbarkeitsregeln aus Phase 5 (u. a. gekochter Reis 1 Tag im Kühlschrank, sonst einfrieren/frisch kochen), auch nach einem Zutaten-Tausch; maschinell geprüft über einen strukturierten Aufbewahrungsplan. Wie die Pläne angepasst werden, ist Gründer-Frage (`docs/PLAN-PHASE-5.md` 19.12 (b)). |
+| Meal-Prep-Pläne als festes Rezept-Bündel | ein Plan könnte Ausschlüsse umgehen | Jedes Rezept läuft durch den kompletten Filter; passt eines nicht, wird der Plan nicht angeboten (6.7). |
+| Lead-Magnet-PDF | Nährwerte aus der Gründer-Datei gehen öffentlich | Livegang-Bedingung: Abgleich mit den Katalogwerten + Fachprüfung, bis dahin Kennzeichnung „Richtwerte“ (Abschnitt 17). |
+| Bewertung „Unverträglich“ | wäre ein Gesundheitsdatum (Art. 9) in `recipe_ratings` | Grund wird nicht gespeichert; nur Dialog „als ‚mag ich nicht‘ übernehmen?“ (Bestätigung durch den Nutzer); eine Unverträglichkeit nur über das Profil mit `health_data`-Einwilligung. |
+| Import „in die Datenbank“ (Prompt B) | Inhalte fließen nur Repository → Datenbank, Entwürfe nie nach Supabase | Import erzeugt Inhaltsdateien als `draft` per Pull Request; `content-seed` spielt weiter nur Freigegebenes ein; Admin-Bereich schreibt nicht in die Datenbank (Sammelfreigabe über `content-review`). |
+| Carb-Loading / Portionsfaktor / Tausch vs. Kalorien-Schutzgrenzen | alle verändern Mengen | `clampCalorieTarget` bleibt die **einzige** Stelle mit Schutzgrenzen; jeder Tag bleibt zwischen Unter- und Obergrenze. an Carb-Loading-Tagen Erhalt statt Defizit (ohne 4b-Versatz) und Makro-Verschiebung innerhalb des begrenzten Ziels (Fett ≥ 20 %, Eiweiß-Minimum); Portionsfaktor und Tausch rechnen nur mit begrenzten Zielen. |
