@@ -6,6 +6,8 @@ import type { ContentStatus } from '../enums';
  * Zusätzlich zwei Datei-Regeln ohne Nummer im Plan: DATEI (Dateiname = ID, ID eindeutig, gültiges JSON) und
  * VERSION (Abschnitt 5, Punkt 6: Ändert sich ein freigegebener Inhalt, steigt `version`).
  * Dazu PROBELAUF (Wächter-Hinweis Etappe B): Beispiel-Inhalte aus dem Probelauf dürfen nie `published` sein.
+ * Phase 5 (docs/PLAN-PHASE-5.md 5.3): R1–R19 für Lebensmittel und Rezepte (R1 Schema und R15 Version blockieren
+ * wie Ü1/VERSION immer).
  */
 export const CONTENT_RULES = {
   DATEI: { severity: 'error', title: 'Datei: gültiges JSON, Dateiname = ID, ID eindeutig' },
@@ -62,12 +64,97 @@ export const CONTENT_RULES = {
     title:
       'Jede Einheit passt gekürzt in minutes_min (Körpergewicht: mit Rumpf, Ziehen und Hüftbeugen)',
   },
+  // Phase 5 · Lebensmittel und Rezepte (docs/PLAN-PHASE-5.md 5.3)
+  R1: {
+    severity: 'error',
+    title:
+      'Schema korrekt (Rezept und Lebensmittel), inkl. Pflichtangabe „heated“ bei tierischen Zutaten',
+  },
+  R2: {
+    severity: 'error',
+    title: 'Jedes Lebensmittel existiert, Einheit ist in Gramm umrechenbar',
+  },
+  R3: {
+    severity: 'error',
+    title: 'Makro-Plausibilität je Portion: kcal ±10 % (mind. ±20 kcal), Makros ±15 % (mind. ±3 g)',
+  },
+  R4: {
+    severity: 'error',
+    title: 'Atwater je Lebensmittel: 4·Eiweiß + 4·KH + 9·Fett + 2·Ballaststoffe = kcal ±15 %',
+  },
+  R5: {
+    severity: 'warning',
+    title: 'kcal je Portion: Frühstück 200–900, Hauptgericht 300–1.200, Snack 80–500',
+  },
+  R6: {
+    severity: 'error',
+    title: 'Deklarierte Ernährungsform = berechnete (inkl. optionaler Zutaten)',
+  },
+  R7: {
+    severity: 'error',
+    title: 'Deklarierte Allergene enthalten alle berechneten (inkl. optionaler Zutaten)',
+  },
+  R8: {
+    severity: 'error',
+    title: '„contains_pork“ = berechnet (Gelatine unbekannter Herkunft zählt als Schwein)',
+  },
+  R9: {
+    severity: 'error',
+    title:
+      'Meal-Prep: Haltbarkeit ≤ kürzeste Haltbarkeit der Zutaten und ≤ 3 Tage, sonst nur einfrierbar',
+  },
+  R10: {
+    severity: 'error',
+    title:
+      'Textregeln: keine Heil- oder Gesundheitsversprechen, keine Nährwert-Schlagworte, keine Marken',
+  },
+  R11: {
+    severity: 'warning',
+    title: 'Mengen je Portion plausibel (Salz ≤ 2,5 g, Öl ≤ 30 g, Zutat ≤ 600 g)',
+  },
+  R12: { severity: 'error', title: 'Kein Alkohol' },
+  R13: {
+    severity: 'error',
+    title:
+      'Schwangerschafts-Vorsicht aus Zutaten und Zubereitung berechnet = „declared_pregnancy_caution“',
+  },
+  R14: {
+    severity: 'error',
+    title: 'Ohne Kochen („no_cook“): Kochzeit 0 und keine Herd-/Ofen-Geräte',
+  },
+  R15: { severity: 'error', title: 'Geänderter freigegebener Inhalt hat eine höhere Version' },
+  R16: {
+    severity: 'warning',
+    title:
+      'Abdeckung: mindestens 7 Rezepte je Mahlzeit × Ernährungsform × häufige Unverträglichkeit',
+  },
+  R17: {
+    severity: 'error',
+    title: 'Nährwerte = Quellauszug, Quell-ID existiert, Lizenz eingetragen',
+  },
+  R18: {
+    severity: 'error',
+    title:
+      'Allergen-Pflichtregeln (alle 23 Gruppen, Schwein, Schwangerschaft), Erwartungsliste, Ersatzprodukte',
+  },
+  R18H: {
+    severity: 'warning',
+    title: 'Kernwort mitten im zusammengesetzten Wort – Gruppe von Menschen prüfen',
+  },
+  R19: {
+    severity: 'error',
+    title: 'Lebensmittel katalog-geprüft (sonst ist das Rezept nicht nutzbar)',
+  },
 } as const satisfies Record<string, { severity: IssueSeverity; title: string }>;
 
 export type ContentRuleId = keyof typeof CONTENT_RULES;
 export type IssueSeverity = 'error' | 'warning';
-/** Worauf sich ein Befund bezieht. `library` = ganze Übungsbibliothek (Regel Ü5). */
-export type ContentKind = 'exercise' | 'plan_template' | 'library';
+/**
+ * Worauf sich ein Befund bezieht. `library` = ganze Übungsbibliothek (Regel Ü5), `recipe_library` = ganzer
+ * Rezeptbestand (Regel R16).
+ */
+export type ContentKind =
+  'exercise' | 'plan_template' | 'library' | 'food' | 'recipe' | 'recipe_library';
 
 export interface ContentIssue {
   readonly rule: ContentRuleId;
@@ -83,7 +170,7 @@ export interface ContentIssue {
 }
 
 /** Regeln, die IMMER blockieren – auch bei Entwürfen (Plan Abschnitt 7, „Was liegen darf“). */
-const ALWAYS_BLOCKING: readonly ContentRuleId[] = ['DATEI', 'Ü1', 'VERSION'];
+const ALWAYS_BLOCKING: readonly ContentRuleId[] = ['DATEI', 'Ü1', 'VERSION', 'R1', 'R15'];
 
 /**
  * true = der Befund lässt `content:validate` (und damit ci, content-review, content-collect, content-seed)

@@ -2,7 +2,7 @@ import { describe, expect, it } from 'vitest';
 
 import { CONTENT_RULES, isBlockingIssue, makeIssue } from './rules';
 
-describe('Regeltabelle (Plan Abschnitt 7)', () => {
+describe('Regeltabelle (Plan Abschnitt 7, Phase 5 Abschnitt 5.3)', () => {
   it('Stufen exakt wie im Plan', () => {
     const red = Object.entries(CONTENT_RULES)
       .filter(([, rule]) => rule.severity === 'error')
@@ -27,8 +27,24 @@ describe('Regeltabelle (Plan Abschnitt 7)', () => {
       'V9',
       'V10',
       'V12',
+      'R1',
+      'R2',
+      'R3',
+      'R4',
+      'R6',
+      'R7',
+      'R8',
+      'R9',
+      'R10',
+      'R12',
+      'R13',
+      'R14',
+      'R15',
+      'R17',
+      'R18',
+      'R19',
     ]);
-    expect(yellow).toEqual(['Ü5', 'V5', 'V6', 'V7', 'V11', 'V13']);
+    expect(yellow).toEqual(['Ü5', 'V5', 'V6', 'V7', 'V11', 'V13', 'R5', 'R11', 'R16', 'R18H']);
   });
 });
 
@@ -41,6 +57,8 @@ describe('isBlockingIssue', () => {
 
   it('Schema-, Datei- und Versionsfehler blockieren immer – auch bei Entwürfen', () => {
     expect(isBlockingIssue(makeIssue('Ü1', at('draft'), 'x'))).toBe(true);
+    expect(isBlockingIssue(makeIssue('R1', at('draft'), 'x'))).toBe(true);
+    expect(isBlockingIssue(makeIssue('R15', at('draft'), 'x'))).toBe(true);
     expect(isBlockingIssue(makeIssue('DATEI', at(null), 'x'))).toBe(true);
     expect(isBlockingIssue(makeIssue('VERSION', at('draft'), 'x'))).toBe(true);
   });
@@ -49,6 +67,8 @@ describe('isBlockingIssue', () => {
     expect(isBlockingIssue(makeIssue('Ü2', at('published'), 'x'))).toBe(true);
     expect(isBlockingIssue(makeIssue('Ü2', at('draft'), 'x'))).toBe(false);
     expect(isBlockingIssue(makeIssue('V9', at('archived'), 'x'))).toBe(false);
+    expect(isBlockingIssue(makeIssue('R18', at('draft'), 'x'))).toBe(false);
+    expect(isBlockingIssue(makeIssue('R18', at('published'), 'x'))).toBe(true);
   });
 
   it('gelbe Hinweise blockieren nie', () => {

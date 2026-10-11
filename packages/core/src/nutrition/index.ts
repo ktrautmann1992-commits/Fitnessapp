@@ -4,6 +4,8 @@ export * from './energy';
 export * from './limits';
 export * from './macros';
 export * from './notices';
+export * from './recipe-nutrients';
 export * from './schemas';
 export * from './targets';
 export * from './timing';
+export * from './units';

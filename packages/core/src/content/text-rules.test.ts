@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 
-import { findTextRuleHits } from './text-rules';
+import { findNutritionTextRuleHits, findTextRuleHits } from './text-rules';
 
 const labels = (text: string) => findTextRuleHits(text).map((hit) => hit.label);
 
@@ -53,5 +53,59 @@ describe('Textregeln (Ü6)', () => {
     expect(labels('Teilheilung')).toEqual([]);
     expect(labels('Heilsam')).toEqual(['heilen/Heilung']);
     expect(labels('TRXL')).toEqual([]);
+  });
+});
+
+describe('Health-Claims, Nährwert-Schlagworte und Lebensmittel-Marken (R10, Plan Abschnitt 10)', () => {
+  const nutritionLabels = (text: string) => findNutritionTextRuleHits(text).map((hit) => hit.label);
+
+  it.each([
+    ['Stärkt das Immunsystem.', 'Immunsystem stärken'],
+    ['Senkt Cholesterin.', 'Cholesterin senken'],
+    ['Entgiftet den Körper.', 'entgiften'],
+    ['Unser Detox-Smoothie', 'Detox'],
+    ['Der perfekte Fatburner', 'Fatburner'],
+    ['Kurbelt den Stoffwechsel an.', 'Stoffwechsel ankurbeln'],
+    ['Ein echtes Superfood', 'Superfood'],
+    ['Basische Gemüsesuppe', 'basisch'],
+    ['Anti-Aging-Bowl', 'Anti-Aging'],
+    ['Schützt vor Erkältungen.', 'schützt vor'],
+    ['Eiweißreiches Frühstück', 'eiweißreich'],
+    ['Proteinreich und lecker', 'proteinreich'],
+    ['Zuckerfreier Kuchen', 'zuckerfrei'],
+    ['Light-Joghurt', 'light'],
+    ['Ballaststoffreiches Brot', 'ballaststoffreich'],
+    ['Ein gesundes Frühstück', 'gesund'],
+  ])('„%s“ → %s', (text, label) => {
+    expect(nutritionLabels(text)).toContain(label);
+  });
+
+  it('Lebensmittel-Marken (nur Produktarten)', () => {
+    expect(nutritionLabels('Mit Nutella bestreichen.')).toEqual(['Nutella']);
+    expect(nutritionLabels('Ein Würfel Maggi')).toEqual(['Maggi']);
+    expect(nutritionLabels('Backpulver von Dr. Oetker')).toEqual(['Dr. Oetker']);
+    expect(nutritionLabels('Cola von Coca-Cola')).toEqual(['Coca-Cola']);
+    expect(findNutritionTextRuleHits('Philadelphia')[0]?.kind).toBe('brand');
+  });
+
+  it('enthält auch die Regeln für Übungen (Heilversprechen, Marken)', () => {
+    expect(nutritionLabels('Heilt Magenprobleme')).toContain('heilen/Heilung');
+  });
+
+  it('neutrale Rezepttexte bleiben erlaubt (keine Fehlalarme)', () => {
+    for (const text of [
+      'Haferflocken mit Milch aufkochen und 3 Minuten quellen lassen.',
+      'Maggikraut (Liebstöckel) fein hacken.',
+      'Mit Basilikum garnieren.',
+      'Etwa 25 g Eiweiß je Portion.',
+      'Im Highlight der Woche: Linsencurry.',
+      'Nach dem Gesundheits-Check freigeschaltet.',
+    ]) {
+      expect(findNutritionTextRuleHits(text), text).toEqual([]);
+    }
+  });
+
+  it('Übungstexte (Ü6) prüfen Health-Claims nicht', () => {
+    expect(findTextRuleHits('Light-Variante der Übung')).toEqual([]);
   });
 });

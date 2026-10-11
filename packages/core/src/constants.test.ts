@@ -171,3 +171,36 @@ describe('Wiedereinstieg nach Pause (Phase 4, C1)', () => {
     expect(c.RETURN_AFTER_PAUSE.rpeReduction).toBeGreaterThanOrEqual(1);
   });
 });
+
+describe('Lebensmittel und Rezepte (Phase 5, N2a)', () => {
+  it('Meal-Prep: höchstens 3 Tage, empfindliche Lebensmittel höchstens 1 Tag (S12)', async () => {
+    const { MEAL_PREP_FRIDGE_DAYS } = await import('./constants');
+    expect(MEAL_PREP_FRIDGE_DAYS.max).toBeLessThanOrEqual(3);
+    expect(MEAL_PREP_FRIDGE_DAYS.sensitiveMax).toBeLessThanOrEqual(1);
+  });
+
+  it('Prüfgrenzen laut Plan 5.3 (R3, R4, R5, R11) und Abdeckung 7 (R16)', async () => {
+    const { RECIPE_CHECK_LIMITS, RECIPE_COVERAGE } = await import('./constants');
+    expect(RECIPE_CHECK_LIMITS.macroPlausibility).toEqual({
+      kcalRel: 0.1,
+      kcalAbsMin: 20,
+      macroRel: 0.15,
+      macroAbsMinG: 3,
+    });
+    expect(RECIPE_CHECK_LIMITS.atwater.tolerance).toBe(0.15);
+    expect(RECIPE_CHECK_LIMITS.kcalPerServing.main).toEqual({ min: 300, max: 1200 });
+    expect(RECIPE_CHECK_LIMITS.perServing).toEqual({
+      saltMaxG: 2.5,
+      oilMaxG: 30,
+      ingredientMaxG: 600,
+    });
+    expect(RECIPE_COVERAGE.minPerCombination).toBe(7);
+  });
+
+  it('Rezept-Schema: Portionen 1–8, Zutaten 1–20, Schritte 1–15 (Plan 5.2)', async () => {
+    const { RECIPE_SCHEMA_LIMITS } = await import('./constants');
+    expect(RECIPE_SCHEMA_LIMITS.servings).toEqual({ min: 1, max: 8 });
+    expect(RECIPE_SCHEMA_LIMITS.ingredients).toEqual({ min: 1, max: 20 });
+    expect(RECIPE_SCHEMA_LIMITS.steps).toEqual({ min: 1, max: 15 });
+  });
+});

@@ -4,6 +4,14 @@ import { CONTENT_STATUSES, type ContentStatus } from '../enums';
 import type { ExerciseLookup } from './analysis';
 import { checkExercise, checkLibraryCoverage, checkPlanTemplate } from './checks';
 import { checkTemplateFitsMinimum } from './fit-check';
+import { type Food, foodSchema } from './food-schema';
+import {
+  checkFood,
+  checkRecipe,
+  checkRecipeCoverage,
+  type NutritionCatalogContext,
+} from './recipe-checks';
+import { type Recipe, recipeSchema } from './recipe-schema';
 import { type ContentIssue, isBlockingIssue, makeIssue } from './rules';
 import { type Exercise, exerciseSchema, type PlanTemplate, planTemplateSchema } from './schemas';
 
@@ -14,6 +22,13 @@ import { type Exercise, exerciseSchema, type PlanTemplate, planTemplateSchema } 
  */
 
 export type ContentFileKind = 'exercise' | 'plan_template';
+
+/**
+ * Inhaltsarten der Ernährung (docs/PLAN-PHASE-5.md 5.1–5.3). Bewusst getrennt von `ContentFileKind`, solange
+ * Ordner (`CONTENT_FOLDERS`, N2c) und Pipeline-Arten (N8) sie noch nicht kennen.
+ */
+export type NutritionContentFileKind = 'food' | 'recipe';
+export type AnyContentFileKind = ContentFileKind | NutritionContentFileKind;
 
 export interface ContentFile {
   readonly kind: ContentFileKind;
@@ -27,11 +42,25 @@ export interface ContentFile {
   readonly previous?: unknown;
 }
 
+/** Inhaltsdatei der Ernährung (`content/foods/<id>.json`, `content/recipes/<id>.json`). */
+export interface NutritionContentFile extends Omit<ContentFile, 'kind'> {
+  readonly kind: NutritionContentFileKind;
+}
+
+export interface ContentValidationOptions {
+  /** Begleitdaten des Lebensmittel-Katalogs (R17, R18). Fehlen sie, sind alle Lebensmittel rot. */
+  readonly nutritionCatalog?: NutritionCatalogContext;
+}
+
 export interface ContentValidationResult {
   /** Übungen mit gültigem Schema (bei doppelter ID nur die erste). */
   readonly exercises: readonly Exercise[];
   /** Plan-Vorlagen mit gültigem Schema (bei doppelter ID nur die erste). */
   readonly templates: readonly PlanTemplate[];
+  /** Lebensmittel mit gültigem Schema (bei doppelter ID nur das erste). */
+  readonly foods: readonly Food[];
+  /** Rezepte mit gültigem Schema (bei doppelter ID nur das erste). */
+  readonly recipes: readonly Recipe[];
   /** Alle Befunde (rot und gelb). */
   readonly issues: readonly ContentIssue[];
   /** Befunde, die das Prüfskript fehlschlagen lassen (siehe isBlockingIssue). */
@@ -79,10 +108,11 @@ function contentBody(value: unknown): string {
  * fachliche Inhalt geändert, muss `version` steigen. Eine Version darf nie sinken.
  */
 export function checkVersionChange(
-  kind: ContentFileKind,
+  kind: AnyContentFileKind,
   previous: unknown,
   current: Pick<Exercise, 'id' | 'status' | 'version'>,
 ): ContentIssue[] {
+  const rule = kind === 'food' || kind === 'recipe' ? 'R15' : 'VERSION';
   if (previous === null || typeof previous !== 'object') {
     return [];
   }
@@ -94,7 +124,7 @@ export function checkVersionChange(
   if (current.version < prevVersion) {
     return [
       makeIssue(
-        'VERSION',
+        rule,
         target,
         `Version ${current.version} ist kleiner als vorher (${prevVersion}).`,
         'version',
@@ -108,7 +138,7 @@ export function checkVersionChange(
   ) {
     return [
       makeIssue(
-        'VERSION',
+        rule,
         target,
         `Freigegebener Inhalt wurde geändert – bitte „version“ auf ${prevVersion + 1} erhöhen.`,
         'version',
@@ -118,15 +148,16 @@ export function checkVersionChange(
   return [];
 }
 
-function schemaIssues(file: ContentFile, error: z.ZodError): ContentIssue[] {
+function schemaIssues(file: ContentFile | NutritionContentFile, error: z.ZodError): ContentIssue[] {
   const target = {
     kind: file.kind,
     id: readId(file.data, file.fileName),
     status: readStatus(file.data),
   };
+  const rule = file.kind === 'food' || file.kind === 'recipe' ? 'R1' : 'Ü1';
   return error.issues.map((issue) =>
     makeIssue(
-      'Ü1',
+      rule,
       target,
       issue.message,
       issue.path.length > 0 ? issue.path.join('.') : undefined,
@@ -155,7 +186,7 @@ export function isDryRunContent(content: Pick<Exercise, 'id' | 'meta'>): boolean
  * werden – weder per content-review noch von Hand. Entwürfe und zurückgezogene Probelauf-Inhalte sind erlaubt.
  */
 export function checkDryRunNotPublished(
-  kind: ContentFileKind,
+  kind: AnyContentFileKind,
   content: Pick<Exercise, 'id' | 'status' | 'meta'>,
 ): ContentIssue[] {
   if (content.status !== 'published' || !isDryRunContent(content)) {
@@ -171,11 +202,26 @@ export function checkDryRunNotPublished(
   ];
 }
 
-/** Prüft alle Inhaltsdateien gemeinsam. */
-export function validateContent(files: readonly ContentFile[]): ContentValidationResult {
+const SCHEMAS = {
+  exercise: exerciseSchema,
+  plan_template: planTemplateSchema,
+  food: foodSchema,
+  recipe: recipeSchema,
+} as const;
+
+/**
+ * Prüft alle Inhaltsdateien gemeinsam. Lebensmittel und Rezepte (Phase 5) werden mit R1–R19 geprüft; ihre
+ * Begleitdaten (Quellauszug, Erwartungs- und Ausnahmeliste) kommen über `options.nutritionCatalog`.
+ */
+export function validateContent(
+  files: readonly (ContentFile | NutritionContentFile)[],
+  options: ContentValidationOptions = {},
+): ContentValidationResult {
   const issues: ContentIssue[] = [];
   const exercises: Exercise[] = [];
   const templates: PlanTemplate[] = [];
+  const foods: Food[] = [];
+  const recipes: Recipe[] = [];
   const seenIds = new Map<string, string>();
 
   for (const file of files) {
@@ -184,10 +230,7 @@ export function validateContent(files: readonly ContentFile[]): ContentValidatio
       issues.push(makeIssue('DATEI', fileTarget, `Kein gültiges JSON: ${file.jsonError}`));
       continue;
     }
-    const parsed =
-      file.kind === 'exercise'
-        ? exerciseSchema.safeParse(file.data)
-        : planTemplateSchema.safeParse(file.data);
+    const parsed = SCHEMAS[file.kind].safeParse(file.data);
     if (!parsed.success) {
       issues.push(...schemaIssues(file, parsed.error));
       continue;
@@ -216,8 +259,12 @@ export function validateContent(files: readonly ContentFile[]): ContentValidatio
     issues.push(...checkDryRunNotPublished(file.kind, content));
     if (file.kind === 'exercise') {
       exercises.push(content as Exercise);
-    } else {
+    } else if (file.kind === 'plan_template') {
       templates.push(content as PlanTemplate);
+    } else if (file.kind === 'food') {
+      foods.push(content as Food);
+    } else {
+      recipes.push(content as Recipe);
     }
   }
 
@@ -231,5 +278,54 @@ export function validateContent(files: readonly ContentFile[]): ContentValidatio
     issues.push(...checkTemplateFitsMinimum(template, library));
   }
 
-  return { exercises, templates, issues, blocking: issues.filter(isBlockingIssue) };
+  const foodLookup = new Map(foods.map((food) => [food.id, food]));
+  const catalog = options.nutritionCatalog ?? {};
+  for (const food of foods) {
+    issues.push(...checkFood(food, foodLookup, catalog));
+  }
+  issues.push(...catalogFileIssues(catalog, foodLookup));
+  for (const recipe of recipes) {
+    issues.push(...checkRecipe(recipe, foodLookup));
+  }
+  issues.push(...checkRecipeCoverage(recipes, foodLookup));
+
+  return {
+    exercises,
+    templates,
+    foods,
+    recipes,
+    issues,
+    blocking: issues.filter(isBlockingIssue),
+  };
+}
+
+/** Erwartungs- und Ausnahmeliste nennen nur Lebensmittel, die es gibt (R18). */
+function catalogFileIssues(
+  catalog: NutritionCatalogContext,
+  foods: ReadonlyMap<string, Food>,
+): ContentIssue[] {
+  const issues: ContentIssue[] = [];
+  for (const id of Object.keys(catalog.expectations ?? {}).sort()) {
+    if (!foods.has(id)) {
+      issues.push(
+        makeIssue(
+          'R18',
+          { kind: 'food', id, status: null },
+          'Erwartungsliste nennt ein Lebensmittel, das es im Katalog nicht gibt.',
+        ),
+      );
+    }
+  }
+  for (const exception of catalog.exceptions ?? []) {
+    if (!foods.has(exception.food_id)) {
+      issues.push(
+        makeIssue(
+          'R18',
+          { kind: 'food', id: exception.food_id, status: null },
+          `Ausnahmeliste („${exception.rule}“) nennt ein Lebensmittel, das es im Katalog nicht gibt.`,
+        ),
+      );
+    }
+  }
+  return issues;
 }

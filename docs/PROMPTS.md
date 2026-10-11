@@ -119,7 +119,9 @@ und aggregierte, nach Abteilung sortierte Einkaufsliste.
 „Alles wie empfohlen“), **Etappe N0 (Plan) erledigt**. Kommt **vor** der weiteren Umsetzung von Phase 4b (Reihenfolge:
 Übungs-Glossar/Übungstausch bis T2 → Phase 5 → 4b). Zuerst nur im **Testmodus** (N1–N6), Supabase später (N7),
 Batch-Pipeline für Rezepte optional (N8). **Etappe N1 (Core: Bedarf, Grenzen, Makros, Timing) umgesetzt**
-(`packages/core/src/nutrition`, CI-Tabelle „Beispiel-Ernährung“). Nächste Etappen: N2a (parallel möglich), dann N2b.
+(`packages/core/src/nutrition`, CI-Tabelle „Beispiel-Ernährung“). **Etappe N2a (Inhalte: Schemas, Prüfregeln
+R1–R19, Allergen-Pflichtregeln für alle 23 Gruppen, Einheiten, `selectNutritionContent`, Test-Fixtures) umgesetzt.**
+Nächste Etappe: N2b (Lebensmittel-Katalog aus der Quelle; Voraussetzung Lizenzklärung).
 
 ### Erweiterung Phase 5 – Lebensmittel-Tracker, Standardgerichte, Gerichte rund ums Training
 ```

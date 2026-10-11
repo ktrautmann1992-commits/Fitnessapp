@@ -1,6 +1,15 @@
 import { describe, expect, it } from 'vitest';
 
-import type { ContentFile } from './validate';
+import {
+  catalogFor,
+  FIXTURE_FOODS,
+  FIXTURE_RECIPES,
+  FOOD_META,
+  ing,
+  makeFood,
+  makeRecipe,
+} from './nutrition-fixtures';
+import type { ContentFile, NutritionContentFile } from './validate';
 import {
   canonicalJson,
   checkDryRunNotPublished,
@@ -232,5 +241,125 @@ describe('canonicalJson', () => {
     );
     expect(canonicalJson({ a: 1 })).not.toBe(canonicalJson({ a: 2 }));
     expect(canonicalJson('x')).toBe('"x"');
+  });
+});
+
+describe('validateContent: Lebensmittel und Rezepte (Phase 5, R1/R15)', () => {
+  const nutritionFiles = (): NutritionContentFile[] => [
+    ...FIXTURE_FOODS.map((data): NutritionContentFile => ({
+      kind: 'food',
+      fileName: `${data.id}.json`,
+      data,
+    })),
+    ...FIXTURE_RECIPES.map((data): NutritionContentFile => ({
+      kind: 'recipe',
+      fileName: `${data.id}.json`,
+      data,
+    })),
+  ];
+
+  it('stimmiger Katalog + Rezepte: nur gelbe Abdeckungs-Hinweise (R16), nichts blockiert', () => {
+    const result = validateContent([...exerciseFiles(), templateFile(), ...nutritionFiles()], {
+      nutritionCatalog: catalogFor(),
+    });
+    expect(result.issues.filter((i) => i.rule !== 'R16')).toEqual([]);
+    expect(result.blocking).toEqual([]);
+    expect(result.foods).toHaveLength(FIXTURE_FOODS.length);
+    expect(result.recipes).toHaveLength(FIXTURE_RECIPES.length);
+    expect(result.exercises).toHaveLength(LIBRARY.length);
+  });
+
+  it('Schemafehler eines Rezept-Entwurfs → R1, blockiert immer', () => {
+    const result = validateContent(
+      [
+        {
+          kind: 'recipe',
+          fileName: 'x.json',
+          data: { ...makeRecipe({ id: 'x-y-z' }), servings: 0 },
+        },
+      ],
+      { nutritionCatalog: catalogFor([]) },
+    );
+    expect(result.issues).toMatchObject([
+      { rule: 'R1', kind: 'recipe', id: 'x-y-z', path: 'servings' },
+    ]);
+    expect(result.blocking).toHaveLength(1);
+  });
+
+  it('fehlendes heated (R1) blockiert auch Entwürfe; andere rote Befunde an Entwürfen nicht', () => {
+    const noHeated = makeRecipe({
+      id: 'haehnchen-ohne-heated',
+      ingredients: [ing('haehnchenbrust', 150, 'g'), ing('reis', 75, 'g')],
+    });
+    const result = validateContent(
+      [...nutritionFiles(), { kind: 'recipe', fileName: `${noHeated.id}.json`, data: noHeated }],
+      { nutritionCatalog: catalogFor() },
+    );
+    const own = result.issues.filter((i) => i.id === noHeated.id);
+    expect(own.map((i) => i.rule)).toEqual(expect.arrayContaining(['R1', 'R3', 'R13']));
+    expect(result.blocking.map((i) => i.rule)).toEqual(['R1']);
+  });
+
+  it('Dateiname ≠ ID und doppelte ID (je Art getrennt) → DATEI', () => {
+    const food = makeFood();
+    const result = validateContent(
+      [
+        { kind: 'food', fileName: 'falsch.json', data: food },
+        { kind: 'food', fileName: 'haferflocken.json', data: food },
+        {
+          kind: 'exercise',
+          fileName: 'haferflocken.json',
+          data: makeExercise({ id: 'haferflocken' }),
+        },
+      ],
+      { nutritionCatalog: catalogFor([food]) },
+    );
+    expect(result.issues.filter((i) => i.rule === 'DATEI').map((i) => i.kind)).toEqual([
+      'food',
+      'food',
+    ]);
+    expect(result.foods).toHaveLength(1);
+  });
+
+  it('Versionsregel R15 für freigegebene Lebensmittel', () => {
+    const published = makeFood({
+      status: 'published',
+      meta: { ...FOOD_META, reviewed_by: 'KT', reviewed_at: '2026-10-11' },
+    });
+    const changed = { ...published, pantry: false };
+    const result = validateContent(
+      [{ kind: 'food', fileName: 'haferflocken.json', data: changed, previous: published }],
+      { nutritionCatalog: catalogFor([changed]) },
+    );
+    expect(result.issues.map((i) => i.rule)).toEqual(['R15']);
+    expect(result.blocking).toHaveLength(1);
+  });
+
+  it('Erwartungs- oder Ausnahmeliste mit unbekanntem Lebensmittel → R18', () => {
+    const result = validateContent(nutritionFiles(), {
+      nutritionCatalog: {
+        ...catalogFor(),
+        expectations: { ...catalogFor().expectations, quinoa: ['gluten'] },
+        exceptions: [
+          {
+            food_id: 'buchweizen',
+            rule: 'gluten',
+            reason: 'Buchweizen ist kein Getreide.',
+            source: 'Testquelle',
+          },
+        ],
+      },
+    });
+    expect(result.issues.filter((i) => i.rule === 'R18').map((i) => i.id)).toEqual([
+      'quinoa',
+      'buchweizen',
+    ]);
+  });
+
+  it('ohne Ernährungsdateien bleibt alles wie bisher (keine R-Befunde)', () => {
+    const result = validateContent([...exerciseFiles(), templateFile()]);
+    expect(result.foods).toEqual([]);
+    expect(result.recipes).toEqual([]);
+    expect(result.issues).toEqual([]);
   });
 });

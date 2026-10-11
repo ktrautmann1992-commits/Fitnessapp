@@ -73,6 +73,71 @@ export const FORBIDDEN_BRANDS: readonly TermRule[] = [
   wholeWord: true,
 }));
 
+/**
+ * Gesundheitsbezogene und nährwertbezogene Angaben (Phase 5, Regel R10; docs/PLAN-PHASE-5.md Abschnitt 10):
+ * VO (EG) Nr. 1924/2006 (Health-Claims-Verordnung) und VO (EU) Nr. 432/2012 (Liste zulässiger Angaben).
+ * Rezept- und Lebensmitteltexte nennen neutrale Zahlen statt Versprechen oder Schlagworten. Nicht abschließend.
+ */
+export const HEALTH_CLAIM_TERMS: readonly TermRule[] = [
+  { label: 'Immunsystem stärken', pattern: 'immunsystem', wholeWord: false },
+  { label: 'Abwehrkräfte', pattern: 'abwehrkr(?:a|ä)ft', wholeWord: false },
+  { label: 'Cholesterin senken', pattern: 'cholesterin', wholeWord: false },
+  { label: 'entgiften', pattern: 'entgift', wholeWord: false },
+  { label: 'Detox', pattern: 'detox', wholeWord: false },
+  { label: 'Fatburner', pattern: 'fat\\s*-?\\s*burn', wholeWord: false },
+  { label: 'Fettverbrennung', pattern: 'fettverbrenn', wholeWord: false },
+  { label: 'Stoffwechsel ankurbeln', pattern: 'stoffwechsel', wholeWord: false },
+  { label: 'Superfood', pattern: 'super\\s*-?\\s*food', wholeWord: false },
+  { label: 'basisch', pattern: 'basisch', wholeWord: false },
+  { label: 'Anti-Aging', pattern: 'anti\\s*-?\\s*aging', wholeWord: false },
+  { label: 'schützt vor', pattern: 'sch(?:ü|ue)tz(?:t|en)\\s+vor', wholeWord: false },
+  { label: 'eiweißreich', pattern: 'eiwei(?:ß|ss)reich', wholeWord: false },
+  { label: 'proteinreich', pattern: 'proteinreich', wholeWord: false },
+  { label: 'High Protein', pattern: 'high\\s*-?\\s*protein', wholeWord: false },
+  { label: 'zuckerfrei', pattern: 'zuckerfrei', wholeWord: false },
+  { label: 'ohne Zuckerzusatz', pattern: 'ohne\\s+zuckerzusatz', wholeWord: false },
+  { label: 'light', pattern: 'light', wholeWord: true },
+  { label: 'ballaststoffreich', pattern: 'ballaststoffreich', wholeWord: false },
+  { label: 'vitaminreich', pattern: 'vitaminreich', wholeWord: false },
+  { label: 'gesund', pattern: 'gesund(?!heits-?check)', wholeWord: false },
+];
+
+/** Lebensmittel-Marken (herstellerneutrale Rezepte: nur Produktarten, Gründer-Entscheidung 16 A Nr. 18). */
+export const FORBIDDEN_FOOD_BRANDS: readonly TermRule[] = [
+  'Nutella',
+  'Philadelphia',
+  'Maggi',
+  'Knorr',
+  'Alpro',
+  'Oatly',
+  'Barilla',
+  'Kellogg',
+  'Danone',
+  'Activia',
+  'Ehrmann',
+  'Dr. Oetker',
+  'Coca-Cola',
+  'Red Bull',
+  'Milka',
+  'Lindt',
+  'Haribo',
+  'Heinz',
+  'Tabasco',
+  'Kerrygold',
+  'Leerdammer',
+  'Babybel',
+  'Nesquik',
+  'Nescafé',
+  'Ovomaltine',
+  'Lurpak',
+  'Weihenstephan',
+  'Rama',
+].map((brand) => ({
+  label: brand,
+  pattern: brand.replace(/\./g, '\\.').replace(/-/g, '-?').replace(/ /g, '\\s*'),
+  wholeWord: true,
+}));
+
 function compile(rule: TermRule): RegExp {
   const end = rule.wholeWord ? '(?![\\p{L}\\p{N}])' : '';
   return new RegExp(`(?<![\\p{L}\\p{N}])(?:${rule.pattern})${end}`, 'iu');
@@ -83,21 +148,41 @@ const COMPILED = [
   ...FORBIDDEN_BRANDS.map((rule) => ({ kind: 'brand' as const, rule, re: compile(rule) })),
 ];
 
+const COMPILED_NUTRITION = [
+  ...COMPILED,
+  ...HEALTH_CLAIM_TERMS.map((rule) => ({ kind: 'health_claim' as const, rule, re: compile(rule) })),
+  ...FORBIDDEN_FOOD_BRANDS.map((rule) => ({ kind: 'brand' as const, rule, re: compile(rule) })),
+];
+
 export interface TextRuleHit {
-  readonly kind: 'medical' | 'brand';
+  readonly kind: 'medical' | 'brand' | 'health_claim';
   /** Gefundene Stelle im Text. */
   readonly match: string;
   readonly label: string;
 }
 
-/** Alle Verstöße in einem Text (leer = in Ordnung). */
-export function findTextRuleHits(text: string): TextRuleHit[] {
+function findHits(text: string, compiled: typeof COMPILED_NUTRITION): TextRuleHit[] {
   const hits: TextRuleHit[] = [];
-  for (const { kind, rule, re } of COMPILED) {
-    const found = re.exec(text);
+  // NFC: zerlegte Umlaute (z. B. aus macOS-Kopien) wie zusammengesetzte behandeln (Wächter N2a, B2).
+  const normalized = text.normalize('NFC');
+  for (const { kind, rule, re } of compiled) {
+    const found = re.exec(normalized);
     if (found) {
       hits.push({ kind, match: found[0], label: rule.label });
     }
   }
   return hits;
+}
+
+/** Alle Verstöße in einem Text (leer = in Ordnung). Übungen und Vorlagen (Regel Ü6). */
+export function findTextRuleHits(text: string): TextRuleHit[] {
+  return findHits(text, COMPILED);
+}
+
+/**
+ * Wie `findTextRuleHits`, zusätzlich Health-Claims, Nährwert-Schlagworte und Lebensmittel-Marken – für
+ * Rezepte und Lebensmittel (Regel R10).
+ */
+export function findNutritionTextRuleHits(text: string): TextRuleHit[] {
+  return findHits(text, COMPILED_NUTRITION);
 }

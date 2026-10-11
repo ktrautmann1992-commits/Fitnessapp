@@ -112,6 +112,9 @@ export const ISSUE_KIND_LABELS: Record<ContentIssue['kind'], string> = {
   exercise: 'Übung',
   plan_template: 'Vorlage',
   library: 'Bibliothek',
+  food: 'Lebensmittel',
+  recipe: 'Rezept',
+  recipe_library: 'Rezeptbestand',
 };
 
 /** Gerätename aus dem Katalog; unbekannte IDs bleiben sichtbar (Regel Ü2/V2 meldet sie). */

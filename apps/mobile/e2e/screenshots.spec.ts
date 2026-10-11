@@ -142,7 +142,7 @@ for (const scheme of ['light', 'dark'] as const) {
       .click();
     await page
       .getByRole('checkbox', {
-        name: 'Glutenhaltiges Getreide (Weizen, Roggen, Gerste): Mag ich nicht',
+        name: 'Glutenhaltiges Getreide (Weizen, Dinkel, Roggen, Gerste, Hafer): Mag ich nicht',
       })
       .click();
     await shot('ernaehrung');
