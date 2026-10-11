@@ -23,6 +23,8 @@ import {
   validateContent,
 } from '@fitnessapp/core';
 
+import { loadNutritionCatalog } from './foods/catalog-loader';
+
 /** Ordner unter `content/` je Inhaltsart. */
 export const CONTENT_FOLDERS: Record<ContentFileKind, string> = {
   exercise: 'exercises',
@@ -172,11 +174,14 @@ export function formatReport(input: ReportInput): string {
     'Inhalte prüfen (content:validate)',
     `Übungen: ${result.exercises.length} (${countByStatus(result.exercises)})`,
     `Plan-Vorlagen: ${result.templates.length} (${countByStatus(result.templates)})`,
+    ...(result.foods.length > 0
+      ? [`Lebensmittel: ${result.foods.length} (${countByStatus(result.foods)})`]
+      : []),
     `Versionen: ${versionNote}`,
     '',
     ...strayFiles.map(
       (file) =>
-        `ROT  DATEI   ${file}: keine JSON-Datei – bitte entfernen oder umbenennen. [blockiert]`,
+        `ROT  DATEI   ${file}${file.includes(': ') ? '' : ': keine JSON-Datei – bitte entfernen oder umbenennen.'} [blockiert]`,
     ),
     ...[...errors, ...warnings].map(issueLine),
     ...(result.issues.length + strayFiles.length === 0 ? ['Keine Befunde.'] : []),
@@ -201,13 +206,11 @@ export function formatMarkdownSummary(input: ReportInput): string {
   return [
     blocking === 0 ? '### ✅ Inhalte geprüft' : '### ❌ Inhalte: blockierende Fehler',
     '',
-    `Übungen: ${result.exercises.length} (${countByStatus(result.exercises)}) · Plan-Vorlagen: ${result.templates.length} (${countByStatus(result.templates)})`,
+    `Übungen: ${result.exercises.length} (${countByStatus(result.exercises)}) · Plan-Vorlagen: ${result.templates.length} (${countByStatus(result.templates)})${result.foods.length > 0 ? ` · Lebensmittel: ${result.foods.length} (${countByStatus(result.foods)})` : ''}`,
     '',
     `Versionen: ${input.versionNote}`,
     '',
-    ...(input.strayFiles.length > 0
-      ? [`🔴 Keine JSON-Dateien: ${input.strayFiles.join(', ')}`, '']
-      : []),
+    ...(input.strayFiles.length > 0 ? [`🔴 Datei-Fehler: ${input.strayFiles.join(', ')}`, ''] : []),
     ...(rows.length > 0
       ? ['| Regel | Inhalt | Status | Befund |', '| --- | --- | --- | --- |', ...rows]
       : ['Keine Befunde.']),
@@ -277,9 +280,14 @@ export function validateRepository(options: {
     ...(repoRoot === undefined ? {} : { repoRoot }),
     ...(readPrevious === undefined ? {} : { readPrevious }),
   });
+  // Lebensmittel-Katalog (Etappe N2b, R17/R18): nur, wenn `content/foods/` existiert.
+  const nutrition = loadNutritionCatalog(contentDir);
   return {
-    result: validateContent(loaded.files),
-    strayFiles: loaded.strayFiles,
+    result: validateContent(
+      [...loaded.files, ...nutrition.files],
+      nutrition.catalog === undefined ? {} : { nutritionCatalog: nutrition.catalog },
+    ),
+    strayFiles: [...loaded.strayFiles, ...nutrition.problems],
     versionNote,
   };
 }
