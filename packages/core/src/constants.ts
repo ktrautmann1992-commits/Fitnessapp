@@ -912,3 +912,419 @@ export const DAY_SWAP_LIMITS = {
   maxEntries: 200,
   maxStoredOrderNo: PLAN_BLOCK_LIMITS.exercisesPerSession,
 } as const;
+
+// ---------------------------------------------------------------------------------------------------------
+// Phase 5 · Ernährung (docs/PLAN-PHASE-5.md Abschnitt 4, Etappe N1)
+//
+// Alle Formeln und Grenzwerte der Ernährungs-Engine (`packages/core/src/nutrition/`). Die Schutzgrenzen gelten
+// ausschließlich in `clampCalorieTarget` (nutrition/limits.ts) und sind NICHT abschaltbar – kein Parameter, keine
+// Einstellung und kein Testschalter lockert sie.
+// Hinweis zu den Quellen: Die Zitate stammen aus dem Plan und wurden in Etappe N1 ohne Zugriff auf die
+// Originalarbeiten gegengelesen. Wo der Wortlaut/Code nicht offline bestätigt werden konnte, steht
+// „VOR LIVEGANG FACHLICH PRÜFEN“. Produktentscheidungen sind als PRODUKTENTSCHEIDUNG markiert.
+// ---------------------------------------------------------------------------------------------------------
+
+/**
+ * Grundumsatz nach Mifflin-St Jeor: 10 × kg + 6,25 × cm − 5 × Jahre + s.
+ * s = +5 (männlich), −161 (weiblich), −78 (divers/keine Angabe = Mittelwert beider Werte, Phase-1-Frage 9).
+ * Quelle: Mifflin MD, St Jeor ST et al. (1990), „A new predictive equation for resting energy expenditure in
+ * healthy individuals“, Am J Clin Nutr 51(2):241–247. Genauigkeit: Frankenfield D et al. (2005),
+ * J Am Diet Assoc 105(5):775–789 (bei ca. 80 % der Normalgewichtigen innerhalb ±10 %).
+ * `validAge`: Altersspanne der Originalstudie (19–78 Jahre); außerhalb Hinweis `bmr_estimate_age` (Plan 4.3, K2).
+ * `limitsSexOffsetUnknown` (Wächter N1, S1): Für die SCHUTZGRENZEN rechnet divers/keine Angabe mit dem männlichen
+ * Offset (+5, höherer Grundumsatz = sichere Richtung, wie max(Mifflin, Katch)); der Vorschlag bleibt beim
+ * Mittelwert −78. PRODUKTENTSCHEIDUNG.
+ */
+export const MIFFLIN_ST_JEOR = {
+  kgFactor: 10,
+  cmFactor: 6.25,
+  ageFactor: 5,
+  sexOffset: { male: 5, female: -161, diverse: -78, unspecified: -78 },
+  validAge: { min: 19, max: 78 },
+  limitsSexOffsetUnknown: 5,
+} as const;
+
+/**
+ * Grundumsatz nach Katch-McArdle: 370 + 21,6 × fettfreie Masse (kg).
+ * Quelle: McArdle WD, Katch FI, Katch VL, „Exercise Physiology: Nutrition, Energy, and Human Performance“
+ * (Lehrbuch, Formel seit den 1990er-Auflagen) – Auflage/Seite VOR LIVEGANG FACHLICH PRÜFEN.
+ * Nur für den VORSCHLAG (bmrForNeeds); alle Schutzgrenzen rechnen mit max(Mifflin, Katch) (Plan B3, R2-B1).
+ */
+export const KATCH_MCARDLE = { intercept: 370, ffmFactor: 21.6 } as const;
+
+/**
+ * Katch-McArdle und gemessene fettfreie Masse nur mit einer Körperfett-Messung, die höchstens so viele Tage alt
+ * ist (Tag der Berechnung minus Messdatum). Quelle: PRODUKTENTSCHEIDUNG (Plan 4.3, Gründer-Frage 16 A Nr. 17).
+ */
+export const BODY_FAT_MAX_AGE_DAYS = 90;
+
+/**
+ * Höchstes plausibles Alter für die Ernährungs-Engine (Plausibilitätsgrenze gegen Tippfehler; Mifflin ist nur bis
+ * 78 Jahre validiert, Tests bis 100). Darüber verständlicher Fehler statt unsinniger Werte. PRODUKTENTSCHEIDUNG
+ * (Wächter N1, K5).
+ */
+export const NUTRITION_MAX_AGE_YEARS = 120;
+
+/**
+ * Hinweis „Dein Gewicht ist älter als 3 Monate“, wenn die neueste Gewichtsangabe älter als so viele Tage ist
+ * (es wird trotzdem weitergerechnet). Quelle: PRODUKTENTSCHEIDUNG (Plan 4.9).
+ */
+export const WEIGHT_OUTDATED_AFTER_DAYS = 90;
+
+/**
+ * Alltagsfaktor OHNE Sport (der Sport wird tagesgenau als Trainingsenergie addiert).
+ * Quelle: D-A-CH-Referenzwerte für die Nährstoffzufuhr (DGE, ÖGE, SGE), Kapitel Energie: PAL-Beispiele
+ * 1,4–1,5 (sitzend, wenig Bewegung) / 1,6–1,7 (sitzend mit Gehen/Stehen) / 1,8–1,9 (überwiegend stehend/gehend) /
+ * 2,0–2,4 (körperlich anstrengende Arbeit). Wir nehmen die MITTE der Spanne (Plan 4.4, S1) – Unterschätzen wäre
+ * für die Schutzgrenzen das Risiko. Auflage/Seite der D-A-CH-Tabelle VOR LIVEGANG FACHLICH PRÜFEN.
+ * `default`: ohne Angabe 1,45 (überwiegend sitzend) – unterschätzt den Bedarf aktiver Menschen eher; die App sagt
+ * das ehrlich (Hinweis `activity_level_default`). PRODUKTENTSCHEIDUNG (16 B (d)).
+ */
+export const ACTIVITY_FACTORS = {
+  sedentary: 1.45,
+  light: 1.65,
+  active: 1.85,
+  very_active: 2.2,
+  default: 1.45,
+} as const;
+
+/**
+ * MET-Werte für die Trainingsenergie (Plan 4.4, S11b): kcal netto = (MET − 1) × kg × Stunden (die Ruheenergie
+ * steckt schon im Grundbedarf); für die Energieverfügbarkeit brutto = MET × kg × Stunden (R2-K2).
+ * `effort_target` 1–2 = „sehr locker“ (`low`), 3–4 = „locker“ (`high`); fehlend/unbekannt = `fallback`
+ * (= jeweils der HÖHERE Wert: mehr Trainingsenergie → höheres Ziel → sichere Richtung).
+ * Quellen: Ainsworth BE et al. (2011), „2011 Compendium of Physical Activities: a second update of codes and MET
+ * values“, Med Sci Sports Exerc 43(8):1575–1581; Herrmann SD et al. (2024), „2024 Adult Compendium of Physical
+ * Activities“, J Sport Health Sci 13(1):6–12.
+ * Codes (nach Erinnerung an die Ausgabe 2011, in N1 NICHT gegen das Original geprüft – VOR LIVEGANG FACHLICH
+ * PRÜFEN, Plan S11c; weichen die Originalwerte ab, gelten die Originalwerte):
+ * - Kraft 3,5: 02054 „resistance (weight) training, multiple exercises, 8–15 repetitions at varied resistance“.
+ * - Laufen 6,0 / 7,0: 12029 „running, 4 mph (13 min/mile)“ / 12020 „jogging, general“.
+ * - Gehen 3,5 / 4,3: 17190 „walking, 2.8–3.2 mph, level, moderate pace“ / 17200 „walking, 3.5 mph, level, brisk“.
+ *   Der Plan nennt für „zügig“ 17231; der Wert 4,3 passt nach unserer Erinnerung zu 17200 – prüfen.
+ * - Rad 5,5 / 6,8: 6,8 = 02012 (Ergometer, leicht bis moderat) bzw. 01020 (draußen, 10–11,9 mph, gemütlich);
+ *   für 5,5 ist kein Code bestätigt – prüfen (Plan: 02012 vs. 02013).
+ * - Schwimmen 5,0 / 5,8: 5,8 = 18310 „swimming laps, freestyle, front crawl, slow, light or moderate effort“;
+ *   für 5,0 ist kein Code bestätigt – prüfen.
+ * - Unbekannte Sportart 7,0: PRODUKTENTSCHEIDUNG (höchster lockerer Wert, sichere Richtung).
+ */
+export const TRAINING_MET = {
+  strength: 3.5,
+  endurance: {
+    run: { low: 6.0, high: 7.0, fallback: 7.0 },
+    walk: { low: 3.5, high: 4.3, fallback: 4.3 },
+    bike: { low: 5.5, high: 6.8, fallback: 6.8 },
+    swim: { low: 5.0, high: 5.8, fallback: 5.8 },
+  },
+  unknownEndurance: 7.0,
+  /** `effort_target` bis einschließlich diesem Wert gilt als „sehr locker“. */
+  lowEffortMax: 2,
+} as const;
+
+/**
+ * Plausibilitätsdeckel der (netto) Trainingsenergie je Tag in kcal (Plan 4.4, S11d). Greift er, plant der Tag
+ * OHNE Defizit (Untergrenze = TagesbedarfGrenze, Hinweis `training_energy_capped`, R2-S8), weil der Deckel nur den
+ * gerechneten Bedarf senkt, nicht die echte Belastung. Quelle: PRODUKTENTSCHEIDUNG (Beispiel: 300 kg × 240 min
+ * Laufen wären 7.200 kcal).
+ */
+export const TRAINING_KCAL_DAY_MAX = 3000;
+
+/**
+ * Zielanpassung vom Grundbedarf OHNE Trainingsenergie (Plan 4.5, S2): Vorschlag = Grundbedarf × (1 + Anpassung)
+ * + Trainingsenergie + 4b-Versatz. Startwerte, PRODUKTENTSCHEIDUNG – fachlich zu prüfen.
+ * Quellen/Orientierung: Fettverlust/Definition: Helms ER et al. (2014), J Int Soc Sports Nutr 11:20 (moderate
+ * Defizite); Muskelaufbau: Iraki J et al. (2019), Sports 7(7):154 (Einsteiger mehr, Fortgeschrittene weniger
+ * Überschuss).
+ */
+export const GOAL_ENERGY_ADJUSTMENT = {
+  fat_loss: -0.2,
+  definition: -0.1,
+  muscle_gain: { beginner: 0.1, advanced: 0.05, competitive: 0.05 },
+  general_fitness: 0,
+  endurance: 0,
+} as const;
+
+/**
+ * Energiegehalt von 1 kg Körpergewicht als PLANUNGSWERT (nur für den Deckel „~1 % Körpergewicht pro Woche“ und den
+ * Überschussdeckel – keine Prognosen, deshalb nie „Du verlierst X kg“).
+ * Quelle: Wishnofsky M (1958), Am J Clin Nutr 6(5):542–546; Einschränkung: Hall KD (2008), „What is the required
+ * energy deficit per unit weight loss?“, Int J Obes 32(3):573–576.
+ */
+export const KCAL_PER_KG_BODY_WEIGHT = 7700;
+
+/**
+ * Höchste geplante Zunahme pro Woche als Anteil des Körpergewichts (0,005 = 0,5 %) für den Überschussdeckel.
+ * Quelle: Iraki J et al. (2019), Sports 7(7):154 (0,25–0,5 % pro Woche). PRODUKTENTSCHEIDUNG: oberer Wert.
+ */
+export const MAX_WEEKLY_WEIGHT_GAIN_FRACTION = 0.005;
+
+/**
+ * Energieverfügbarkeit (EA): Untergrenze = min(TagesbedarfGrenze, 30 × fettfreie Masse + Trainingsenergie BRUTTO)
+ * (Plan 4.6 Nr. 4, S2, R2-K2). EA = (Zufuhr − Trainingsenergie) / fettfreie Masse.
+ * Quellen: Loucks AB, Kiens B, Wright HH (2011), „Energy availability in athletes“, J Sports Sci 29 Suppl 1:S7–S15;
+ * Mountjoy M et al. (2023), „2023 International Olympic Committee's (IOC) consensus statement on Relative Energy
+ * Deficiency in Sport (REDs)“, Br J Sports Med 57(17):1073–1097.
+ * Brutto/netto: Wir rechnen die Trainingsenergie hier BRUTTO (MET × kg × h) – das ergibt die höhere, also
+ * vorsichtigere Untergrenze. Ob Loucks 2011 brutto oder netto definiert, konnte in N1 nicht am Original geprüft
+ * werden – VOR LIVEGANG FACHLICH PRÜFEN (bei „netto“ bleibt brutto trotzdem die sichere Richtung).
+ */
+export const EA_MIN_KCAL_PER_KG_FFM = 30;
+
+/**
+ * Schätzung der fettfreien Masse ohne Körperfett-Messung (nur für die EA-Untergrenze; höhere FFM = vorsichtiger):
+ * FFM = 9270 × kg / (a + b × BMI); Männer a = 6680, b = 216; Frauen a = 8780, b = 244; divers/keine Angabe =
+ * Mittelwert beider Ergebnisse (PRODUKTENTSCHEIDUNG, Plan 4.6 Nr. 4) – für die EA-Untergrenze (eine Grenze) gilt bei
+ * divers/keine Angabe die Formel für Männer (höhere FFM = vorsichtiger; Wächter N1, S1).
+ * Quelle: Janmahasatian S, Duffull SB, Ash S, Ward LC, Byrne NM, Green B (2005), „Quantification of lean
+ * bodyweight“, Clin Pharmacokinet 44(10):1051–1065. Formel nach unserer Kenntnis wie im Original; Seite VOR
+ * LIVEGANG FACHLICH PRÜFEN.
+ */
+export const JANMAHASATIAN_FFM = {
+  numerator: 9270,
+  male: { a: 6680, b: 216 },
+  female: { a: 8780, b: 244 },
+} as const;
+
+/**
+ * Überschussdeckel `surplusCap` (Plan 4.6, H2): immer gesetzt, Standard 0,10 (= PORTION_TOLERANCE), Sonderfälle
+ * (unter 18, kein Gesundheits-Check) 0,05; bei mehreren Fällen gilt der KLEINSTE Wert. Der Zod-Typ erzwingt
+ * [0,05; 0,10]. PRODUKTENTSCHEIDUNG (Wächter N1, K4): Iraki J et al. (2019), Sports 7(7):154 nennen eine Zunahme
+ * von ca. 0,25–0,5 % Körpergewicht pro Woche (siehe MAX_WEEKLY_WEIGHT_GAIN_FRACTION), keinen Prozent-Deckel – 10 %
+ * ist ein vorsichtiger eigener Wert. VOR LIVEGANG FACHLICH PRÜFEN.
+ */
+export const SURPLUS_CAP = { default: 0.1, special: 0.05 } as const;
+
+/**
+ * Toleranz der Tagessumme des Essensplans um das Ziel (Planband, Plan 4.6.1): ±10 %, nach unten zusätzlich durch
+ * die Schutzgrenzen begrenzt. Quelle: PRODUKTENTSCHEIDUNG.
+ */
+export const PORTION_TOLERANCE = 0.1;
+
+/**
+ * Sonderfall-Deckel des Defizits (Anteil unter TagesbedarfGrenze; strengster Wert gewinnt, Plan 4.9):
+ * - noHealthCheck 0,15: wie beim Training vorsichtig (B4, `planSafetyRules`: kein Check → vorsichtig),
+ * - medical 0,15: Flags `medication` oder `medical_clearance_recommended`,
+ * - senior 0,15: ab 65 (Muskelerhalt; Bauer J et al. (2013), PROT-AGE, J Am Med Dir Assoc 14(8):542–559),
+ * - lowNormalBmi 0,10: Erwachsene mit BMI 18,5 bis unter 20.
+ * Werte: PRODUKTENTSCHEIDUNG (Gründer-Frage 16 A Nr. 9) – fachlich zu bestätigen.
+ * Kein Defizit (Deckel 0) gilt bei `maintenance_only`, unter 18, bei Untergewicht und an Tagen mit gedeckelter
+ * Trainingsenergie.
+ */
+export const SPECIAL_CASE_DEFICIT_CAPS = {
+  noHealthCheck: 0.15,
+  medical: 0.15,
+  senior: 0.15,
+  lowNormalBmi: 0.1,
+} as const;
+
+/**
+ * Altersgrenzen der Ernährung (tagesgenau ab dem Geburtstag, Plan 4.9): unter 18 kein Defizit (Gründer-Entscheidung
+ * 2), ab 65 vorsichtiger. Gleiche Werte wie AGE_PLAN_RULES (Training), damit beide Bereiche übereinstimmen.
+ */
+export const NUTRITION_AGE_RULES = {
+  minorBelowAge: AGE_PLAN_RULES.minor.belowAge,
+  seniorFromAge: AGE_PLAN_RULES.senior.fromAge,
+} as const;
+
+/**
+ * BMI-Grenzen für Erwachsene (für unter 18 gelten Perzentilen – dort keine BMI-Regeln, Plan 4.9).
+ * Quelle: WHO-BMI-Klassifikation (Untergewicht < 18,5; deutliches Untergewicht < 17; Adipositas ≥ 30).
+ * `lowNormal` 20 und `proteinReference` 25 (Eiweiß rechnet ab BMI 30 mit dem Gewicht bei BMI 25):
+ * PRODUKTENTSCHEIDUNG (Plan 4.7, 4.9).
+ */
+export const BMI_LIMITS = {
+  severeUnderweight: 17,
+  underweight: 18.5,
+  lowNormal: 20,
+  proteinReferenceFrom: 30,
+  proteinReference: 25,
+} as const;
+
+/**
+ * Eiweiß in g je kg (Referenz-)Körpergewicht (Plan 4.7, S16).
+ * Quellen: Morton RW et al. (2018), Br J Sports Med 52(6):376–384; Jäger R et al. (2017), ISSN Position Stand
+ * „Protein and exercise“, J Int Soc Sports Nutr 14:20; Thomas DT, Erdman KA, Burke LM (2016), ACSM/AND/DC Joint
+ * Position Statement „Nutrition and Athletic Performance“, Med Sci Sports Exerc 48(3):543–568.
+ * - `max` 2,2 g/kg: allgemeine Obergrenze (PRODUKTENTSCHEIDUNG).
+ * - `cautiousMax` 1,6 g/kg: unter 18, `medication`, `medical_clearance_recommended`, kein Gesundheits-Check
+ *   (PRODUKTENTSCHEIDUNG, vorsichtig).
+ * - `senior` 1,2–1,6 g/kg ab 65: Bauer J et al. (2013), PROT-AGE, J Am Med Dir Assoc 14(8):542–559 (Gesunde
+ *   1,0–1,2, Aktive 1,2–1,5 g/kg); Deckel 1,6 wegen der Nierenfunktion im Alter – PRODUKTENTSCHEIDUNG.
+ * - `kidneyNoticeAbove` 1,6 g/kg: darüber fester Hinweis `protein_kidney_notice` (der Check fragt nicht nach den
+ *   Nieren).
+ */
+export const PROTEIN_G_PER_KG = {
+  byGoal: {
+    fat_loss: 2.0,
+    definition: 2.2,
+    muscle_gain: 1.8,
+    general_fitness: 1.4,
+    endurance: 1.4,
+  },
+  max: 2.2,
+  cautiousMax: 1.6,
+  senior: { min: 1.2, max: 1.6 },
+  kidneyNoticeAbove: 1.6,
+} as const;
+
+/**
+ * Fett als Anteil der Energie: Standard 25 %, mindestens 20 % (Plan 4.7).
+ * Quellen: Thomas DT et al. (2016), Med Sci Sports Exerc 48(3):543–568 (20–35 %); D-A-CH-Referenzwerte (Richtwert
+ * 30 %). Standard 25 %: PRODUKTENTSCHEIDUNG.
+ */
+export const FAT_ENERGY_SHARE = { default: 0.25, min: 0.2 } as const;
+
+/**
+ * Kohlenhydrate:
+ * - `referenceMinG` 130 g/Tag: Institute of Medicine (2005), Dietary Reference Intakes for Energy, Carbohydrate,
+ *   Fiber, Fat, Fatty Acids, Cholesterol, Protein, and Amino Acids (RDA Kohlenhydrate Erwachsene). Unterschritten →
+ *   nur Hinweis `carbs_below_reference`, die Energie bleibt verbindlich (R2-K1). (Schwangerschaft/Stillzeit wären
+ *   175/210 g – derzeit `no_targets`, K3.)
+ * - `enduranceGPerKg`: Ziel Ausdauer, Richtwert nach Trainingsminuten des Tages (untere Werte der Spannen
+ *   < 60 min 3–5, 60–120 min 5–7, > 120 min 6–10 g/kg). Quellen: Thomas DT et al. (2016); Burke LM et al. (2011),
+ *   „Carbohydrates for training and competition“, J Sports Sci 29 Suppl 1:S17–S27. Untere Werte:
+ *   PRODUKTENTSCHEIDUNG (die Energie ist verbindlich).
+ */
+export const CARBS = {
+  referenceMinG: 130,
+  enduranceGPerKg: [
+    { maxMinutes: 59, gPerKg: 3 },
+    { maxMinutes: 120, gPerKg: 5 },
+    { maxMinutes: Number.POSITIVE_INFINITY, gPerKg: 6 },
+  ],
+} as const;
+
+/** Energie je Gramm (Atwater-Faktoren, auch LMIV Anhang XIV): Eiweiß 4, Kohlenhydrate 4, Fett 9 kcal/g. */
+export const KCAL_PER_GRAM = { protein: 4, carbs: 4, fat: 9 } as const;
+
+/**
+ * Rundung der Ausgabe (Plan 4.6.2, 4.7): kcal auf 10, Makros auf 5 g – gerichtet (nie aus dem erlaubten Bereich).
+ * Quelle: PRODUKTENTSCHEIDUNG.
+ */
+export const NUTRITION_ROUNDING = { kcal: 10, macroG: 5 } as const;
+
+/**
+ * 4b-Versatz (Plan 4.6, R2-S5, H3): `clampCalorieAdjustment` begrenzt NUR die Schrittweite je Anpassung
+ * (`stepMaxKcal` 150) und die Summe des Versatzes (`offsetMaxKcal` ±1.000). Alle Schutzgrenzen gelten danach in
+ * `clampCalorieTarget`. 4b wählt `LIVE_ADJUSTMENT.calorieStepKcal` ≤ 150. PRODUKTENTSCHEIDUNG.
+ */
+export const ADJUSTMENT_STEP_MAX_KCAL = 150;
+export const ADJUSTMENT_OFFSET_MAX_KCAL = 1000;
+
+/**
+ * Mahlzeiten-Plätze je `meals_per_day` (Plan 4.8, `MEAL_SLOT_LAYOUTS`) mit Energieanteilen (Summe 1) und
+ * Standard-Uhrzeiten (Minuten nach Mitternacht) zur Zuordnung vor/nach dem Training.
+ * Uhrzeiten aus dem Plan (Frühstück 7:30, Snack 10:00, Mittag 12:30, Snack 15:30, Abend 18:30, Spät-Snack 20:30);
+ * Hauptmahlzeit bei 1 Mahlzeit 12:30, zusätzlicher Snack bei 7–8 Mahlzeiten 17:00 bzw. 21:30.
+ * Anteile: PRODUKTENTSCHEIDUNG (Beispiel aus dem Plan: 4 Mahlzeiten 25/35/30/10 %).
+ */
+export const MEAL_SLOT_TIMES = {
+  main: 750,
+  breakfast: 450,
+  snack_morning: 600,
+  lunch: 750,
+  snack_afternoon: 930,
+  snack_pre_dinner: 1020,
+  dinner: 1110,
+  snack_late: 1230,
+  snack_night: 1290,
+} as const;
+
+export const MEAL_SLOT_LAYOUTS = {
+  1: [['main', 1]],
+  2: [
+    ['lunch', 0.5],
+    ['dinner', 0.5],
+  ],
+  3: [
+    ['breakfast', 0.3],
+    ['lunch', 0.35],
+    ['dinner', 0.35],
+  ],
+  4: [
+    ['breakfast', 0.25],
+    ['lunch', 0.35],
+    ['snack_afternoon', 0.1],
+    ['dinner', 0.3],
+  ],
+  5: [
+    ['breakfast', 0.2],
+    ['snack_morning', 0.1],
+    ['lunch', 0.3],
+    ['snack_afternoon', 0.1],
+    ['dinner', 0.3],
+  ],
+  6: [
+    ['breakfast', 0.2],
+    ['snack_morning', 0.1],
+    ['lunch', 0.25],
+    ['snack_afternoon', 0.1],
+    ['dinner', 0.25],
+    ['snack_late', 0.1],
+  ],
+  7: [
+    ['breakfast', 0.18],
+    ['snack_morning', 0.08],
+    ['lunch', 0.24],
+    ['snack_afternoon', 0.08],
+    ['snack_pre_dinner', 0.08],
+    ['dinner', 0.24],
+    ['snack_late', 0.1],
+  ],
+  8: [
+    ['breakfast', 0.17],
+    ['snack_morning', 0.08],
+    ['lunch', 0.22],
+    ['snack_afternoon', 0.08],
+    ['snack_pre_dinner', 0.08],
+    ['dinner', 0.22],
+    ['snack_late', 0.08],
+    ['snack_night', 0.07],
+  ],
+} as const satisfies Record<number, readonly (readonly [keyof typeof MEAL_SLOT_TIMES, number])[]>;
+
+/**
+ * Trainingszeit (`training_time`) → angenommene Startzeit in Minuten nach Mitternacht (geplante Einheiten haben
+ * keine Uhrzeit). `early` < 8 Uhr. PRODUKTENTSCHEIDUNG – so gewählt, dass die Standard-Mahlzeiten sinnvoll vor bzw.
+ * nach dem Training liegen (z. B. „abends“ 17:30 → Abendessen 18:30 nach einer Stunde Training).
+ */
+export const TRAINING_TIME_START_MINUTES = {
+  early: 390,
+  morning: 570,
+  midday: 690,
+  afternoon: 960,
+  evening: 1050,
+} as const;
+
+/**
+ * Zuordnung vor/nach dem Training (Plan 4.8). Quellen: Kerksick CM et al. (2017), ISSN Position Stand „Nutrient
+ * timing“, J Int Soc Sports Nutr 14:33; Schoenfeld BJ, Aragon AA (2018), J Int Soc Sports Nutr 15:10; KONZEPT 6.
+ * - Mahlzeit „vor dem Training“: 2–3 h vorher; weil die Mahlzeiten feste Uhrzeiten haben, nehmen wir die letzte
+ *   Hauptmahlzeit 2–4 h vor dem Start (`preMealMinutes`, Obergrenze 4 h = PRODUKTENTSCHEIDUNG).
+ * - „Kleiner Snack vorher“: ein Snack 30–60 min vor dem Start.
+ * - „Nach dem Training“: die nächste Mahlzeit bis 2 h nach dem Ende.
+ * - `roleShareBonus`: Mahlzeiten vor/nach dem Training je +5 Prozentpunkte Energieanteil, die anderen anteilig
+ *   weniger (PRODUKTENTSCHEIDUNG).
+ * - `postProteinGPerKg` 0,4 g/kg Eiweiß nach dem Training (Schoenfeld/Aragon 2018) – Richtwert für N3/X4.
+ * - `longSessionMinutes`: Ausdauer ab 90 min → Hinweis `long_session_fueling` (30–60 g Kohlenhydrate pro Stunde;
+ *   Thomas 2016; Jeukendrup A (2014), Sports Med 44 Suppl 1:S25–S33).
+ */
+export const MEAL_TIMING_RULES = {
+  preMealMinutes: { min: 120, max: 240 },
+  preSnackMinutes: { min: 30, max: 60 },
+  postMealMaxMinutes: 120,
+  roleShareBonus: 0.05,
+  postProteinGPerKg: 0.4,
+  longSessionMinutes: 90,
+} as const;
+
+/**
+ * Schwangerschaft/Stillzeit (Modus `no_targets`, Plan 4.9 B5): fester Koffein-Hinweis (Gründer-Frage 16 B (m)).
+ * Quelle: BfR-Verbraucherinformation zu Koffein (höchstens 200 mg Koffein am Tag in Schwangerschaft und Stillzeit,
+ * gestützt auf EFSA (2015), „Scientific Opinion on the safety of caffeine“, EFSA Journal 13(5):4102) – der
+ * WORTLAUT des BfR-Textes konnte in N1 nicht am Original geprüft werden: VOR LIVEGANG FACHLICH PRÜFEN.
+ * Begründung des Modus: Koletzko B et al. (2018), Handlungsempfehlungen des Netzwerks Gesund ins Leben „Ernährung
+ * und Lebensstil vor und während der Schwangerschaft“ – nach unserer Kenntnis Geburtshilfe Frauenheilkd
+ * 78(12):1262–1282; Heft und Seiten VOR LIVEGANG FACHLICH PRÜFEN.
+ */
+export const PREGNANCY_CAFFEINE_MAX_MG = 200;

@@ -48,6 +48,10 @@ jobs:
       # aktuellen Inhaltsstand und schreibt sie lesbar in die Zusammenfassung des Laufs (Summary).
       - name: Beispielpläne (Plan-Engine)
         run: pnpm plan:examples
+      # Ernährungs-Engine (docs/PLAN-PHASE-5.md, Etappe N1): Tagesziele einer Woche für ausgedachte Test-Personen A–H
+      # (Schutzgrenzen, Sonderfälle) als Tabelle „Beispiel-Ernährung“ in der Zusammenfassung des Laufs (Summary).
+      - name: Beispiel-Ernährung (Ernährungs-Engine)
+        run: pnpm nutrition:examples
       - name: Lint, Typen, Tests
         run: pnpm check
       # PDF-Export (docs/PLAN-PDF-EXPORT.md §8 P1+P2): Trainingsplan für ausgedachte Beispiel-Personen als Druck-HTML.

@@ -11,6 +11,7 @@
     "review": "tsx src/review-cli.ts",
     "seed": "tsx src/seed-cli.ts",
     "plan:examples": "tsx src/plan-examples-cli.ts",
+    "nutrition:examples": "tsx src/nutrition-examples-cli.ts",
     "lint": "eslint .",
     "typecheck": "tsc --noEmit",
     "test": "vitest run --passWithNoTests"
