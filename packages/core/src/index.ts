@@ -14,3 +14,4 @@ export * from './content';
 export * from './plan';
 export * from './log';
 export * from './export';
+export * from './nutrition';

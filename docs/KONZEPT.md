@@ -242,6 +242,21 @@ Regeln in `packages/core/src/content/glossary.ts`, Grenzen in `GLOSSARY_LIMITS`.
 - Einkaufsliste: aggregiert, nach Supermarkt-Abteilung sortiert, abhakbar, Meal-Prep-Mengen
 - Lebensmittel tauschen, Barcode-Scanner (Open Food Facts; Lizenz beachten, Abschnitt 6.1)
 
+**Umsetzung ab Phase 5 (`docs/PLAN-PHASE-5.md`, Etappe N1: Core in `packages/core/src/nutrition`):** Grundumsatz
+Mifflin-St Jeor (divers/keine Angabe −78) bzw. Katch-McArdle nur mit Körperfett ≤ 90 Tage und **nur für den Vorschlag**;
+alle Schutzgrenzen rechnen mit `TagesbedarfGrenze = max(Mifflin, Katch) × Alltagsfaktor + Trainingsenergie`
+(bei divers/keine Angabe für die Grenzen Mifflin mit +5 und FFM nach der Männer-Formel – sichere Richtung).
+Alltagsfaktor **ohne Sport** (Mitte der D-A-CH-Spannen 1,45/1,65/1,85/2,2, ohne Angabe 1,45), Trainingsenergie netto
+(MET − 1) × kg × h tagesgenau aus aktivem und ersetztem Plan (Deckel 3.000 kcal → Tag ohne Defizit). Zielanpassung vom
+Grundbedarf ohne Training. `clampCalorieTarget` ist die einzige Stelle mit Schutzgrenzen (Grundumsatz, 25 %, ~1 %/Woche,
+Energieverfügbarkeit ≥ 30 kcal/kg FFM mit brutto-Trainingsenergie, Obergrenze in jedem Modus, gerichtete Rundung auf
+10 kcal, Planband ±10 %); `clampCalorieAdjustment` (für 4b) begrenzt nur Schritt (≤ 150) und Summe (±1.000) des
+Versatzes. Sonderfälle je Tag: `no_targets` (keine Einwilligung, keine Größe/kein Gewicht, Schwangerschaft/Stillzeit),
+`maintenance_only` (unter 18 bzw. Untergewicht bei Fettverlust/Definition, kein Check bei Geschlecht ≠ männlich),
+Deckel 15 % (kein Check, Medikamente/Arzt-Hinweis, ab 65) bzw. 10 % (BMI 18,5–20). Makros Eiweiß → Fett → Kohlenhydrate
+(Rest, Energie verbindlich), Timing vor/nach dem Training über die Angabe „Trainingszeit“. Abweichungen: Tabelle in
+`docs/PLAN-PHASE-5.md` Abschnitt 17.
+
 ### 6.1 Lebensmittel-Tracker mit Barcode-Scan (Gratis)
 - Scan über die Handykamera, Abfrage bei **Open Food Facts**; Ergebnis in `food_products` zwischenspeichern
 - **Lizenz ODbL:** Quellenangabe „Daten von Open Food Facts (ODbL)“ sichtbar in der App (Produktansicht und Impressum/Lizenzen)

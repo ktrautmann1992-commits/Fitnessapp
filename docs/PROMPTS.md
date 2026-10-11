@@ -118,8 +118,8 @@ und aggregierte, nach Abteilung sortierte Einkaufsliste.
 **Stand 10.10.2026: Plan freigegeben** (`docs/PLAN-PHASE-5.md`, zwei Wächter-Runden eingearbeitet, offene Fragen:
 „Alles wie empfohlen“), **Etappe N0 (Plan) erledigt**. Kommt **vor** der weiteren Umsetzung von Phase 4b (Reihenfolge:
 Übungs-Glossar/Übungstausch bis T2 → Phase 5 → 4b). Zuerst nur im **Testmodus** (N1–N6), Supabase später (N7),
-Batch-Pipeline für Rezepte optional (N8). Nächste Etappe: **N1** (Core: Bedarf, Grenzen, Makros, Timing), parallel
-N2a.
+Batch-Pipeline für Rezepte optional (N8). **Etappe N1 (Core: Bedarf, Grenzen, Makros, Timing) umgesetzt**
+(`packages/core/src/nutrition`, CI-Tabelle „Beispiel-Ernährung“). Nächste Etappen: N2a (parallel möglich), dann N2b.
 
 ### Erweiterung Phase 5 – Lebensmittel-Tracker, Standardgerichte, Gerichte rund ums Training
 ```

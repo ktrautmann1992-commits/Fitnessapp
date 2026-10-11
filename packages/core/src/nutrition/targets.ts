@@ -1,0 +1,218 @@
+import { ageInYears, meetsMinimumAge } from '../age';
+import { WEIGHT_OUTDATED_AFTER_DAYS } from '../constants';
+import { addDays, daysBetween } from '../dates';
+import { latestBodyValues } from './body-data';
+import { nutritionEligibility } from './eligibility';
+import { dayEnergy, sessionsForDay } from './energy';
+import { applyGoalAdjustment, type CalorieLimitContext, clampCalorieTarget } from './limits';
+import { nutritionMacros } from './macros';
+import { type CalorieCapCode, type NutritionNoticeCode, sortNotices } from './notices';
+import {
+  type NutritionInputsInput,
+  nutritionInputsSchema,
+  type NutritionMode,
+  nutritionTargetsOptionsSchema,
+  type RecipeExclusion,
+  weekStartSchema,
+} from './schemas';
+import { type MealSlot, mealSlotsForDay } from './timing';
+
+/**
+ * Wochenziele der Ernährung (docs/PLAN-PHASE-5.md 4.10). Rechnet je Tag (Mo–So) neu – die Engine speichert nichts.
+ * Ändert sich das Gewicht, ändert sich das Ziel nach derselben Formel (keine Live-Anpassung).
+ * Ein 4b-Versatz (`adjustmentKcal`, ±1.000) ist Teil des Vorschlags und läuft immer durch `clampCalorieTarget`.
+ */
+
+const MINUTES_PER_DAY = 24 * 60;
+/** Wochenbeginn höchstens ein Jahr vor/nach `today` (Plausibilität, Wächter N1 K5). */
+const WEEK_START_MAX_DISTANCE_DAYS = 366;
+
+export interface NutritionDaySession {
+  readonly sessionId: string;
+  readonly kind: 'strength' | 'endurance';
+  readonly enduranceModality: 'run' | 'walk' | 'bike' | 'swim' | null;
+  readonly minutes: number;
+}
+
+export interface NutritionDayTargets {
+  readonly date: string;
+  readonly mode: NutritionMode;
+  readonly ageYears: number;
+  /** Grundumsatz für die Grenzen (max(Mifflin, Katch)), gerundet; null bei `no_targets`. */
+  readonly bmrKcal: number | null;
+  /** Gesamtumsatz für die Grenzen (TagesbedarfGrenze), gerundet; null bei `no_targets`. */
+  readonly tdeeKcal: number | null;
+  /** Trainingsenergie netto (gedeckelt), gerundet; null bei `no_targets`. */
+  readonly trainingKcal: number | null;
+  readonly sessions: readonly NutritionDaySession[];
+  /** Gerichtet gerundetes Tagesziel; null bei `no_targets`. */
+  readonly targetKcal: number | null;
+  /** Planband (nur intern, ungerundet). */
+  readonly band: { readonly min: number; readonly max: number } | null;
+  readonly floorKcal: number | null;
+  readonly ceilingKcal: number | null;
+  readonly proteinG: number | null;
+  readonly carbsG: number | null;
+  readonly fatG: number | null;
+  readonly appliedCaps: readonly CalorieCapCode[];
+  readonly slots: readonly MealSlot[];
+  readonly notices: readonly NutritionNoticeCode[];
+  readonly recipeExclusions: readonly RecipeExclusion[];
+}
+
+export interface NutritionWeekTargets {
+  readonly weekStart: string;
+  readonly days: readonly NutritionDayTargets[];
+  /** true, sobald Körperdaten oder Flags (oder ein Check) eingeflossen sind (7.1). */
+  readonly usesHealthData: boolean;
+}
+
+/** Ziele für die ISO-Woche ab `weekStart` (Montag). */
+export function nutritionTargetsForWeek(
+  rawInputs: NutritionInputsInput,
+  weekStart: string,
+  options?: { readonly adjustmentKcal?: number },
+): NutritionWeekTargets {
+  const inputs = nutritionInputsSchema.parse(rawInputs);
+  if (!meetsMinimumAge(inputs.birthDate, inputs.today)) {
+    throw new RangeError('Die Ernährungs-Engine ist erst ab dem Mindestalter nutzbar.');
+  }
+  const monday = weekStartSchema.parse(weekStart);
+  if (Math.abs(daysBetween(inputs.today, monday)) > WEEK_START_MAX_DISTANCE_DAYS) {
+    throw new RangeError('Die Woche liegt mehr als ein Jahr von heute entfernt.');
+  }
+  const { adjustmentKcal } = nutritionTargetsOptionsSchema.parse(options ?? {});
+  const body = inputs.healthDataConsent
+    ? latestBodyValues(inputs.bodyMetricsRows, inputs.today)
+    : { height: null, weight: null, bodyFat: null };
+  const flags = inputs.healthDataConsent ? (inputs.healthFlags?.flags ?? null) : null;
+
+  const days: NutritionDayTargets[] = [];
+  let usesHealthData = false;
+  for (let i = 0; i < 7; i += 1) {
+    const date = addDays(monday, i);
+    const ageYears = date < inputs.birthDate ? 0 : ageInYears(inputs.birthDate, date);
+    const bodyForDay =
+      body.height !== null && body.weight !== null
+        ? { weightKg: body.weight.value, heightCm: body.height.value }
+        : null;
+    const eligibility = nutritionEligibility({
+      ageYears,
+      sex: inputs.sex,
+      goalType: inputs.goalType,
+      healthDataConsent: inputs.healthDataConsent,
+      body: bodyForDay,
+      healthFlags: flags,
+    });
+    usesHealthData ||= eligibility.usesHealthData;
+    const counted = sessionsForDay(inputs.sessions, date, inputs.today);
+    const timing = mealSlotsForDay({
+      mealsPerDay: inputs.mealsPerDay,
+      trainingTime: inputs.trainingTime,
+      sessions: counted,
+    });
+    const sessions = counted.map((s) => ({
+      sessionId: s.sessionId,
+      kind: s.kind,
+      enduranceModality: s.enduranceModality,
+      minutes: s.minutes,
+    }));
+
+    if (eligibility.mode === 'no_targets' || bodyForDay === null) {
+      days.push({
+        date,
+        mode: 'no_targets',
+        ageYears,
+        bmrKcal: null,
+        tdeeKcal: null,
+        trainingKcal: null,
+        sessions,
+        targetKcal: null,
+        band: null,
+        floorKcal: null,
+        ceilingKcal: null,
+        proteinG: null,
+        carbsG: null,
+        fatG: null,
+        appliedCaps: [],
+        slots: timing.slots,
+        notices: sortNotices([...eligibility.notices, ...timing.notices]),
+        recipeExclusions: eligibility.recipeExclusions,
+      });
+      continue;
+    }
+
+    const energy = dayEnergy({
+      day: date,
+      weightKg: bodyForDay.weightKg,
+      heightCm: bodyForDay.heightCm,
+      ageYears,
+      sex: inputs.sex,
+      bodyFat: body.bodyFat,
+      activityLevel: inputs.activityLevel,
+      sessions: counted,
+    });
+    const notices: NutritionNoticeCode[] = [...eligibility.notices, ...timing.notices];
+    if (
+      body.weight !== null &&
+      daysBetween(body.weight.measuredOn, date) > WEIGHT_OUTDATED_AFTER_DAYS
+    ) {
+      notices.push('weight_outdated');
+    }
+    if (inputs.activityLevel === null) notices.push('activity_level_default');
+    if (energy.training.capped) notices.push('training_energy_capped');
+
+    const mode = eligibility.mode;
+    const adjustment = applyGoalAdjustment(inputs.goalType, inputs.experienceLevel, mode);
+    const proposed = energy.baseNeeds * (1 + adjustment) + energy.training.netKcal + adjustmentKcal;
+    const context: CalorieLimitContext = {
+      bmrForFloor: energy.bmrForFloor,
+      baseNeeds: energy.baseNeeds,
+      needs: energy.needs,
+      limitNeeds: energy.limitNeeds,
+      weightKg: bodyForDay.weightKg,
+      ffmKg: energy.ffmForEnergyAvailability,
+      trainingGrossKcal: energy.training.grossKcal,
+      trainingCapped: energy.training.capped,
+      mode,
+      goalIsSurplus: inputs.goalType === 'muscle_gain',
+      deficitCap: eligibility.deficitCap,
+      surplusCap: eligibility.surplusCap,
+    };
+    const clamped = clampCalorieTarget(proposed, context);
+    if (clamped.appliedCaps.includes('energy_availability_cap')) {
+      notices.push('energy_availability_cap');
+    }
+    const macros = nutritionMacros({
+      targetKcal: clamped.targetKcal,
+      goalType: inputs.goalType,
+      weightKg: bodyForDay.weightKg,
+      heightCm: bodyForDay.heightCm,
+      proteinMin: eligibility.proteinMin,
+      proteinCap: eligibility.proteinCap,
+      // Tagessumme kann über 24 h liegen (mehrere Einheiten, Datenfehler) – nie die ganze Woche abbrechen (S2).
+      trainingMinutes: Math.min(energy.training.minutes, MINUTES_PER_DAY),
+    });
+    days.push({
+      date,
+      mode,
+      ageYears,
+      bmrKcal: Math.round(energy.bmrForFloor),
+      tdeeKcal: Math.round(energy.limitNeeds),
+      trainingKcal: Math.round(energy.training.netKcal),
+      sessions,
+      targetKcal: clamped.targetKcal,
+      band: clamped.band,
+      floorKcal: clamped.floorKcal,
+      ceilingKcal: clamped.ceilingKcal,
+      proteinG: macros.proteinG,
+      carbsG: macros.carbsG,
+      fatG: macros.fatG,
+      appliedCaps: clamped.appliedCaps,
+      slots: timing.slots,
+      notices: sortNotices([...notices, ...macros.notices]),
+      recipeExclusions: eligibility.recipeExclusions,
+    });
+  }
+  return { weekStart: monday, days, usesHealthData };
+}
