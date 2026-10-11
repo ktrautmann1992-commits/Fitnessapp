@@ -14,6 +14,10 @@ Jeder Prompt unten beginnt implizit mit: „Lies CLAUDE.md und docs/KONZEPT.md. 
 Die Erweiterungen aus dem Brainstorming (`docs/ERWEITERUNGEN.md`) sind in `docs/KONZEPT.md` eingearbeitet und hängen
 als Ergänzungen bzw. „b“-Phasen an den passenden Phasen unten (4b, 7b, 9b, 11b).
 
+Die **Erweiterungen Teil 2** (`docs/ERWEITERUNGEN-2.md`: Rezepte, Küche, Lead-Magnet) sind ebenfalls in
+`docs/KONZEPT.md` eingearbeitet (Abschnitte 6.5–6.13, 17, 18). Ihre Prompts B–G stehen direkt nach Phase 5;
+der Umsetzungsplan dazu ist `docs/PLAN-PHASE-5.md` Abschnitt 19.
+
 ---
 
 ## Phase 0 – Fundament
@@ -122,6 +126,9 @@ Batch-Pipeline für Rezepte optional (N8). **Etappe N1 (Core: Bedarf, Grenzen, M
 (`packages/core/src/nutrition`, CI-Tabelle „Beispiel-Ernährung“). **Etappe N2a (Inhalte: Schemas, Prüfregeln
 R1–R19, Allergen-Pflichtregeln für alle 23 Gruppen, Einheiten, `selectNutritionContent`, Test-Fixtures) umgesetzt.**
 Nächste Etappe: N2b (Lebensmittel-Katalog aus der Quelle; Voraussetzung Lizenzklärung).
+**Nachtrag 11.10.2026 (Erweiterungen Teil 2):** Rezeptbestand ist `packages/content/seed/alpha5-rezepte.json` statt
+KI-erzeugter Rezepte – N2b umfasst alle 236 Zutaten, N2c ist der Import (Prompt B Schritte 3–5), N3–N6 enthalten den
+Umfang von Prompt C; neue Etappen N9–N14 (Prompts D, F, E). Details `docs/PLAN-PHASE-5.md` Abschnitt 19.
 
 ### Erweiterung Phase 5 – Lebensmittel-Tracker, Standardgerichte, Gerichte rund ums Training
 ```
@@ -135,6 +142,100 @@ Alternative ohne Kochen, Sonderfall Frühtraining, Push-Erinnerung zum richtigen
 hinter Feature-Flag). Ergänze die Content-Pipeline um passende
 Rezepte mit den Tags vor_training, waehrend und nach_training. Lege mir vorher die offene
 Entscheidung "konkrete Marken oder nur Produktarten" zur Freigabe vor.
+```
+
+## Erweiterungen Teil 2 – Rezepte, Küche, Lead-Magnet (Prompts B–G)
+Quelle: `docs/ERWEITERUNGEN-2.md` (Gründer, 11.10.2026). Jeder Prompt beginnt implizit mit: „Lies CLAUDE.md,
+docs/KONZEPT.md und docs/ERWEITERUNGEN-2.md. Erst Plan in einfachen Worten zeigen und auf Freigabe warten.“
+Die Prompts sind in `docs/PLAN-PHASE-5.md` Abschnitt 19 in Etappen übersetzt – **dort steht, was gilt**; die Prompts
+bleiben zur Nachvollziehbarkeit stehen.
+
+**Stand 11.10.2026 – Gesamtplan von den Gründern freigegeben.** Reihenfolge:
+1. Prompt B Schritte 1–2: Dateien einsortieren (**erledigt**, #32) und Doku einarbeiten (**erledigt**).
+2. Prompt G: Lead-Magnet (**in Arbeit**, läuft parallel).
+3. Prompt B Schritte 3–5 (Rezept-Import) zusammen mit Phase-5-Etappen **N2b/N2c** (+ N2d Admin).
+4. Prompt C zusammen mit Phase-5-Etappen **N3–N6**.
+5. Prompt D → Etappen **N9–N11**.
+6. Prompt F (nur „Sofort“) → Etappe **N12**.
+7. Prompt E: Logik (Portionsfaktor, Reste-Score) sofort → Etappe **N13**; Resteplanung in der App → **N14**;
+   Oberfläche Paar-Modus erst mit dem Partner-Modus (Phase 11).
+
+Festgelegt: Nährwerte aus der amtlichen Datenbank (jede der 236 Zutaten mit Quell-Eintrag, Datei-Werte nur
+Gegencheck > 3 %), Allergene über die Regeln aus N2a, alle Rezepte `draft` + Fachprüfung; Premium in der Testphase
+für alle offen, Server-Prüfung mit Phase 7; Lead-Magnet ohne Newsletter-Pflicht.
+
+### Prompt B – Dokumente einarbeiten und Rezepte importieren
+**Schritte 1 und 2 erledigt** (B1: Dateien einsortiert, B2: Doku eingearbeitet). **Schritte 3–5** laufen als
+Phase-5-Etappen N2b/N2c/N2d (Abweichung: Import erzeugt Inhaltsdateien per Pull Request statt direkt in die
+Datenbank; Tabellen kommen mit N7 – siehe PLAN-PHASE-5 Abschnitt 19).
+```
+Lies CLAUDE.md und ERWEITERUNGEN-2.md im Hauptverzeichnis.
+1. Verschiebe ERWEITERUNGEN-2.md nach docs/, alpha5-rezepte.json nach packages/content/seed/ und
+   Alpha5-Gratis-Rezepte.pdf nach apps/web/public/downloads/.
+2. Arbeite ERWEITERUNGEN-2.md in docs/KONZEPT.md (Abschnitte und Gratis/Premium-Tabelle) und
+   docs/PROMPTS.md (neue Phasen an passender Stelle) ein.
+3. Erweitere das Datenbankschema für Rezepte, falls nötig: Kategorien, Ernährungsformen (n:m), Tags,
+   Abschnitt, Portionen, Kosten, Meal-Prep-Pläne mit Kochtag-Schritten, Ratgeber-Seiten. Migrationen mit
+   RLS (Inhalte für alle lesbar, Schreiben nur Admin).
+4. Schreibe ein Import-Skript in packages/content (idempotent über die ids), validiere die Datei mit Zod,
+   rechne Nährwerte aus den Zutaten nach und melde Abweichungen über 3 %. Lege den GitHub-Workflow
+   content-seed so an, dass er die Datei importiert (manuell startbar).
+5. Alle importierten Rezepte bleiben status=draft und erscheinen im Admin-Bereich zur Freigabe; baue dort
+   eine Sammel-Freigabe pro Kategorie.
+Zeig mir am Ende, wie viele Rezepte, Zutaten und Pläne importiert wurden.
+```
+
+### Prompt C – Rezepte in der App
+**Offen** – zusammen mit den Phase-5-Etappen N3–N6 (Rezeptsuche, Portionswähler, Einkaufsliste abhakbar,
+Trainingsbezug, Meal-Prep-Kochtag mit Timern, Ratgeber offline). Wettkampftage kommen mit Phase 10, die
+automatische Rezept-Belegung je Einheit ist Premium (Etappe X4).
+```
+Setze docs/ERWEITERUNGEN-2.md Abschnitt 2 um: Rezeptsuche mit Filtern (Ernährungsform aus dem Profil
+vorbelegt), Rezeptansicht mit Portionswähler und abhakbarer Einkaufsliste, Trainingsbezug in der
+Ernährungs-Engine (Pre-/Post-Workout, Cardio ab 75 Min., Wettkampftage), Meal-Prep-Modus mit
+Kochtag-Ansicht und Timern, Ratgeber-Seiten offline. Gratis/Premium nach Abschnitt 9, Prüfung auf dem Server.
+```
+
+### Prompt D – Austausch, Bewertung, Kühlschrank-Suche
+**Offen** – Etappen N9 (Zutaten-Austausch inkl. Haltbarkeit und `heated` nach dem Tausch), N10 (Bewertung),
+N11 (Kühlschrank-Suche, Packungsgrößen). Tabellen erst mit der Supabase-Etappe N7.
+```
+Setze docs/ERWEITERUNGEN-2.md Abschnitte 3, 4 und 5 (nur Kühlschrank-Suche und Packungsgrößen) um. Die
+Austausch-Tabelle und die Packungsgrößen erzeugst du über die Content-Pipeline (Batch-API, Zod-Schema,
+status=draft, Freigabe im Admin). Regel-Logik in packages/core mit Tests. Keine Echtzeit-KI.
+```
+
+### Prompt E – Resteplanung und Paar-Modus (Premium)
+**Offen** – Logik sofort nach Prompt F (Etappe N13: Portionsfaktor und Reste-Score in `packages/core`), Resteplanung
+in der App danach (N14), Oberfläche Paar-Modus erst mit dem Partner-Modus in Phase 11 – als eigener Bereich mit
+eigener Art.-9-Einwilligung beider Personen.
+```
+Setze docs/ERWEITERUNGEN-2.md Abschnitte 5 (automatische Resteplanung) und 6 (Paar-Modus beim Kochen) um.
+Beides Premium, Prüfung auf dem Server. Portionsfaktor und Reste-Score als reine Funktionen in
+packages/core mit Tests (Grenzfälle: sehr unterschiedliche Kalorienziele, Rezept ohne Beilage,
+5-Portionen-Rezepte).
+```
+
+### Prompt F – Einkaufsliste teilen
+**Offen** – nur der Teil „Sofort“ (Etappe N12: als Text weitergeben, PDF aus N6, Händler-Modul hinter Feature-Flag
+ohne Händler). Die gemeinsame Liste im Paar-Modus kommt mit Phase 11.
+```
+Setze docs/ERWEITERUNGEN-2.md Abschnitt 7 (nur den Teil „Sofort“) um: Einkaufsliste als Text teilen, als
+PDF exportieren, gemeinsame Liste im Paar-Modus. Bereite ein Modul für spätere Händler-Anbindungen mit
+Feature-Flag vor, ohne einen Händler anzubinden.
+```
+
+### Prompt G – Lead-Magnet auf der Landingpage
+**In Arbeit (11.10.2026)** – Download ohne Newsletter-Pflicht (separates, freiwilliges Häkchen); Klick-Schritte in
+`docs/SETUP.md` Abschnitt I7. **Bedingung für den Livegang:** Die Nährwerte im PDF stammen aus der Gründer-Datei –
+nach N2b gegen die Katalogwerte prüfen (> 3 % → PDF korrigieren) und fachlich prüfen; bis dahin Kennzeichnung
+„Richtwerte, nicht fachlich geprüft“ oder erst danach live (`docs/KONZEPT.md` 17).
+```
+Setze docs/ERWEITERUNGEN-2.md Abschnitt 8 um: Abschnitt „20 Rezepte gratis als PDF“ auf der Landingpage im
+bestehenden Design (Vorschaubild aus Seite 1 von apps/web/public/downloads/Alpha5-Gratis-Rezepte.pdf
+erzeugen), Formular mit Einwilligung, waitlist.source = 'lead-magnet', Double-Opt-in, nach Bestätigung Mail
+mit Download-Link. Spamschutz wie bei der Warteliste. Erkläre mir in docs/SETUP.md mit Klick-Schritten am
+Handy, wie ich den Text der Bestätigungsmail ändere.
 ```
 
 ## Phase 6 – Supplement-Modul & Affiliate
@@ -200,6 +301,9 @@ Erweitere die Plan-Engine um Periodisierung rückwärts vom Wettkampfdatum (Basi
 Spitze, Tapering) und die Ernährung um Carb-Loading und Wettkampf-Verpflegung. Baue Strecken
 nach docs/KONZEPT.md Abschnitt 10 mit MapLibre/OpenStreetMap, Standortsuche, Filter, GPX-Import/-Export.
 ```
+**Ergänzung aus den Erweiterungen Teil 2:** Wettkampftage im Essensplan mit den *Wettkampftag*-Rezepten aus
+`alpha5-rezepte.json` (Carb-Loading nur ab ca. 90 Min. Wettkampfdauer, immer innerhalb der Schutzgrenzen über
+`clampCalorieTarget`), Ratgeber „Wettkampf-Ernährung“ verlinken – Etappe W1 in `docs/PLAN-PHASE-5.md` Abschnitt 19.
 
 ### Erweiterung Phase 10 – Strecken aufzeichnen
 ```
@@ -217,6 +321,9 @@ Zustimmung und gemeinsamer Einkaufsliste. Optionaler KI-Coach-Chat (Premium, Fea
 Monatslimit und Kosten-Logging über ai_usage), der nur den Plan des Nutzers erklärt und keine medizinischen
 Aussagen trifft.
 ```
+**Ergänzung aus den Erweiterungen Teil 2:** Mit dem Partner-Modus kommt die Oberfläche des **Paar-Modus beim Kochen**
+(Premium, `docs/KONZEPT.md` 6.12) auf Basis der Logik aus Etappe N13 sowie die gemeinsame Einkaufsliste aus Prompt F –
+Etappe P1 in `docs/PLAN-PHASE-5.md` Abschnitt 19.
 
 ## Phase 11b – Monats-Challenges
 ```
