@@ -156,9 +156,9 @@ export interface DownloadLinkSearch {
   readonly all: string[];
 }
 
+/** Pfad EXAKT wie in sources.ts (kein Präfix, kein Muster, kein angehängter Schrägstrich). */
 function pathMatches(pathname: string, linkPath: string): boolean {
-  const trim = (p: string) => (p.length > 1 && p.endsWith('/') ? p.slice(0, -1) : p);
-  return trim(pathname) === trim(linkPath);
+  return pathname === linkPath;
 }
 
 /** Sucht Download-Links nach den Regeln aus sources.ts. */
@@ -213,7 +213,7 @@ export function selectDownloadLink(
   }
   if (search.matches.length === 0) {
     throw new SourceDownloadError(
-      `Kein Download-Link auf der Seite ${pageUrl} gefunden (erwartet genau einen Link ${wanted}). Die Seite hat sich vermutlich geändert – Claude in einer Sitzung Bescheid geben (docs/SETUP.md Teil J).`,
+      `Kein Download-Link auf der Seite ${pageUrl} gefunden (erwartet genau einen Link ${wanted}). Die Seite hat sich vermutlich geändert, z. B. ein neuer Dateiname (neue BLS-Fassung) – dann \`linkPath\` in packages/content/src/foods/sources.ts per Gründer-PR anpassen. Claude in einer Sitzung Bescheid geben (docs/SETUP.md Teil J).`,
       diagnostics,
     );
   }

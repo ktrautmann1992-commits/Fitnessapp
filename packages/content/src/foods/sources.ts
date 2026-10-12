@@ -121,8 +121,13 @@ export interface SourceDefinition {
  * (Spalte 1 BLS-Schlüssel, 2 deutsche, 3 englische Bezeichnung; je Nährstoff drei Spalten Wert/Herkunft/Referenz;
  * Werte je 100 g essbarer Anteil).
  *
- * Adresse: offizielle Download-Seite des MRI (blsdb.de). Der Knopf „Download BLS-Daten“ verweist auf
- * `/download?token=<Code>`, der Code wechselt vermutlich je Seitenaufruf – deshalb `downloadPage`. Die frühere
+ * Adresse: offizielle Download-Seite des MRI (blsdb.de). Die Seite hat ZWEI Links „Download BLS-Daten“ (Lauf 4,
+ * 12.10.2026): den Navigationslink `/download?token=<Code>` (führt nur wieder auf diese Seite) und den Datei-Link
+ * `/assets/uploads/BLS_4_0_2025_DE.zip?token=<Code>`. Gewählt wird nur der Datei-Link – Pfad EXAKT, kein Präfix,
+ * kein Muster; der Code wechselt je Seitenaufruf. Neuer Dateiname (z. B. `BLS_4_1_…zip`) → Abbruch mit Liste der
+ * Links, Anpassung per Gründer-PR (gewollt).
+ * Im ZIP wird die xlsx `BLS_4_0_Daten_2025_DE.xlsx` (Name laut BLS-Dokumentation) bevorzugt; heißt sie anders,
+ * nimmt die Format-Erkennung genau eine xlsx (mehrere → Abbruch). Die frühere
  * Adresse im Archiv OpenAgrar leitet automatische Abrufe auf eine Bot-Sperre (Proof-of-Work-Challenge) um; diese
  * wird nicht umgangen (Umsetzungsstand N2b, 12.10.2026). Lizenz-Wortlaut und Zitierweise von der Download-Seite,
  * von den Gründern am 12.10.2026 bestätigt (Screenshot). Betreiber von blsdb.de laut Impressum: Max Rubner-Institut
@@ -136,7 +141,11 @@ const BLS_4_0: SourceDefinition = {
   version: '4.0',
   title: 'Bundeslebensmittelschlüssel (BLS), Version 4.0',
   url: 'https://blsdb.de/download',
-  downloadPage: { linkPath: '/download', tokenParam: 'token', redirectHosts: [] },
+  downloadPage: {
+    linkPath: '/assets/uploads/BLS_4_0_2025_DE.zip',
+    tokenParam: 'token',
+    redirectHosts: [],
+  },
   urlStatus: 'confirmed',
   licenseStatus: 'confirmed',
   confirmedBy:
