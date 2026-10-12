@@ -13,6 +13,7 @@
  * hängt.
  */
 import { CHALLENGE_MESSAGE, detectChallenge, maskUrl, SourceDownloadError } from './download-page';
+import { describeHtmlPage, mdCode } from './html-diagnosis';
 import type { SourceDefinition } from './sources';
 import {
   isXlsxArchive,
@@ -29,6 +30,8 @@ export interface ResponseMeta {
   readonly contentDisposition: string | null;
   /** Adresse nach Weiterleitungen (Codes gekürzt). */
   readonly finalUrl: string;
+  /** Namen der Cookies, die der Server mit dieser Antwort setzt (keine Werte; nur Diagnose). */
+  readonly cookieNames?: readonly string[];
 }
 
 export interface UnpackedOriginal {
@@ -89,10 +92,10 @@ export function printableStart(buffer: Buffer, length = 160): string {
 function describe(meta: ResponseMeta, buffer: Buffer, filename: string | null): string[] {
   return [
     `HTTP ${meta.status}`,
-    `Typ ${meta.contentType ?? 'unbekannt'}`,
+    `Typ ${mdCode(meta.contentType ?? 'unbekannt', 100)}`,
     `Größe ${buffer.length} Bytes`,
-    `Dateiname laut Server ${filename ?? 'keiner'}`,
-    `Adresse ${maskUrl(meta.finalUrl)}`,
+    `Dateiname laut Server ${filename === null ? 'keiner' : mdCode(filename, 100)}`,
+    `Adresse ${mdCode(maskUrl(meta.finalUrl))}`,
   ];
 }
 
@@ -128,7 +131,9 @@ export function unpackOriginal(
   const info = describe(meta, buffer, served);
   const details = [
     `Antwort: ${info.join(', ')}`,
-    ...(served === null ? [] : [`Dateiname laut Server (Content-Disposition): \`${served}\``]),
+    ...(served === null
+      ? []
+      : [`Dateiname laut Server (Content-Disposition): ${mdCode(served, 200)}`]),
   ];
   if (!isZip(buffer)) {
     if (looksLikeHtml(buffer, meta.contentType)) {
@@ -137,20 +142,25 @@ export function unpackOriginal(
       if (challenge !== null) {
         throw new SourceDownloadError(`${CHALLENGE_MESSAGE} (${challenge})`, [
           `Antwort: ${info.join(', ')}`,
-          `Anfang „${printableStart(buffer)}“`,
+          `Anfang ${mdCode(printableStart(buffer))}`,
         ]);
       }
+      // Lauf 3 (N2b): Token-Link liefert HTML – Seite strukturiert beschreiben, NICHTS davon befolgen.
       throw new SourceDownloadError(
         `Der Server liefert eine Webseite statt der Datei (${info.join(', ')}).`,
-        [`Antwort: ${info.join(', ')}`, `Anfang „${printableStart(buffer)}“`],
+        [
+          `Antwort: ${info.join(', ')}`,
+          'Inhalt dieser Seite (nur beschrieben – kein Formular abgeschickt, kein meta-refresh befolgt, kein Skript ausgeführt):',
+          ...describeHtmlPage(html, meta.finalUrl, meta.cookieNames ?? []).map((l) => `  - ${l}`),
+        ],
       );
     }
     if (def.format === 'csv') {
       return { data: buffer, filename: served, container: 'datei', details };
     }
     throw new SourceDownloadError(
-      `Antwort ist weder xlsx noch ZIP (${info.join(', ')}, Anfang „${printableStart(buffer, 60)}“).`,
-      [`Antwort: ${info.join(', ')}`, `Anfang „${printableStart(buffer)}“`],
+      `Antwort ist weder xlsx noch ZIP (${info.join(', ')}, Anfang ${mdCode(printableStart(buffer, 60))}).`,
+      [`Antwort: ${info.join(', ')}`, `Anfang ${mdCode(printableStart(buffer))}`],
     );
   }
 
@@ -249,15 +259,21 @@ export function diagnoseOriginal(
     }
     return lines;
   }
-  const text = buffer.toString('utf8').replace(/^\uFEFF/, '');
-  const first = text.split(/\r?\n/, 1)[0] ?? '';
-  lines.push(`Erste Zeile (Kopfzeile, gekürzt): „${first.slice(0, 2000)}“`);
-  lines.push(`Anfang „${printableStart(buffer)}“`);
+  // Nur den Anfang lesen (CSV kann bis 200 MB groß sein); Kopfzeile ist kein Geheimnis → nicht maskieren (NK1).
+  const text = buffer
+    .subarray(0, 64 * 1024)
+    .toString('utf8')
+    .replace(/^\uFEFF/, '');
+  const newline = text.search(/\r?\n/);
+  const first = newline < 0 ? text : text.slice(0, newline);
+  lines.push(`Erste Zeile (Kopfzeile, gekürzt): ${mdCode(first, 2000, false)}`);
+  lines.push(`Anfang ${mdCode(printableStart(buffer))}`);
   return lines;
 }
 
 /** Kopfzeile als nummerierte Liste (höchstens 80 Spalten). */
 export function headerLine(header: readonly string[]): string {
-  const shown = header.slice(0, 80).map((h, i) => `${i}: ${h}`);
+  // Zellinhalte als Inline-Code (nicht maskiert): Spaltennamen sind keine Geheimnisse (NK2).
+  const shown = header.slice(0, 80).map((h, i) => `${i}: ${mdCode(h, 120, false)}`);
   return `Kopfzeile (erste ${shown.length} von ${header.length} Spalten): ${shown.join(' | ')}`;
 }

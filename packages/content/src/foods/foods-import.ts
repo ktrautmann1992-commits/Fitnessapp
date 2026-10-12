@@ -176,18 +176,36 @@ export function reviewShareNote(report: ImportReport, totalItems: number): strin
   return `Merge-Regel: höchstens 10 % „Zuordnung prüfen“ – hier ${flagged.size} von ${totalItems} (${percent}). Darüber wird nicht gemergt, bevor der Grund geklärt ist.`;
 }
 
+/** Aufklappbarer Block mit der Beschreibung der Download-Seite (leer = nichts). */
+function firstPageBlock(lines: readonly string[]): string[] {
+  if (lines.length === 0) {
+    return [];
+  }
+  return [
+    '<details><summary>Diagnose: erste Seite (Download-Seite)</summary>',
+    '',
+    ...lines.map((l) => `- ${l}`),
+    '',
+    '</details>',
+    '',
+  ];
+}
+
 /** Bericht, wenn das Laden scheitert – mit allen Diagnose-Zeilen (Status, Typ, Größe, Dateiname, ZIP-Einträge, Links). */
 export function downloadFailure(def: SourceDefinition, error: unknown): string {
   const message = error instanceof Error ? error.message : String(error);
   const diagnostics = error instanceof SourceDownloadError ? error.diagnostics : [];
+  const firstPage = error instanceof SourceDownloadError ? error.firstPage : [];
   return [
     `### ❌ foods-import: Original-Datei nicht geladen (${def.title})`,
     '',
     message,
     '',
     `- Adresse${def.downloadPage === null ? '' : ' (Download-Seite)'}: ${def.url}`,
-    ...diagnostics.map((d) => `- ${d}`),
+    // Zeilen mit „  - “ sind Unterpunkte (z. B. Beschreibung der HTML-Antwort) – nicht doppelt aufzählen (K1).
+    ...diagnostics.map((d) => (d.startsWith('  - ') ? d : `- ${d}`)),
     '',
+    ...firstPageBlock(firstPage),
     'Bot-Sperren, Captchas und Anmeldeseiten werden nicht umgangen. Nächster Schritt: Zusammenfassung an Claude in einer Sitzung geben (docs/SETUP.md Teil J).',
     '',
   ].join('\n');
@@ -289,6 +307,7 @@ export async function runFoodsImport(
         '',
         '</details>',
         '',
+        ...firstPageBlock(fetched.firstPage ?? []),
       ].join('\n'),
     };
   }
