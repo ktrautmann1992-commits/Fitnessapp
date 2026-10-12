@@ -165,7 +165,9 @@ function checkWeek(input: NutritionInputsInput, monday: string, adjustmentKcal: 
     }
     if (ceiling - floor >= 10) expect(t).toBeLessThanOrEqual(ceiling + EPS);
     else expect(t).toBe(Math.ceil(floor / 10 - 1e-9) * 10);
-    expect(day.band!.max).toBeLessThanOrEqual(Math.max(ceiling, t) + EPS);
+    // Mindestbreite des Bands 20 kcal (Plan 4.6.1, Wächter N3 S1) – unabhängig hier als Zahl.
+    expect(day.band!.max).toBeLessThanOrEqual(Math.max(ceiling, t, day.band!.min + 20) + EPS);
+    expect(day.band!.max - day.band!.min).toBeGreaterThanOrEqual(20 - EPS);
     expect(day.band!.min).toBeLessThanOrEqual(day.band!.max);
     expect(t % 10).toBe(0);
     // Makros: Energie verbindlich, Fett ≥ 20 %, nichts negativ

@@ -247,6 +247,13 @@ describe('Planband (4.6.1, B1)', () => {
     const band = planBand(1110, 1101.5, 1101.5);
     expect(band.min).toBeLessThanOrEqual(band.max);
   });
+
+  it('Mindestbreite 20 kcal (Wächter N3 S1): nur nach oben aufgeweitet, Untergrenze bleibt', () => {
+    expect(planBand(1110, 1101.5, 1101.5)).toEqual({ min: 1101.5, max: 1121.5 });
+    expect(planBand(2000, 1995, 2005)).toEqual({ min: 1995, max: 2015 });
+    // Breites Band unverändert.
+    expect(planBand(2000, 1500, 2100)).toEqual({ min: 1800, max: 2100 });
+  });
 });
 
 describe('Zielanpassung (4.5)', () => {
@@ -315,5 +322,47 @@ describe('Struktur (Wächter N1, K2): Schutzgrenzen nur über nutritionTargetsFo
     };
     for (const top of ['packages', 'apps', 'scripts']) walk(join(root, top));
     expect(offenders).toEqual([]);
+  });
+});
+
+describe('Struktur (Wächter N1 K2, erweitert in N3): Essensplan rechnet keine eigenen Grenzen', () => {
+  it('Schutzgrenzen-Konstanten und planBand nur in limits/eligibility/schemas (nicht in Plan, Meal-Prep, Liste, Suche)', () => {
+    const root = join(import.meta.dirname, '../../../..');
+    const allowed = new Set(
+      [
+        'constants.ts',
+        'nutrition/limits.ts',
+        'nutrition/eligibility.ts',
+        'nutrition/schemas.ts',
+      ].map((file) => join(root, 'packages/core/src', file)),
+    );
+    const pattern =
+      /\b(MAX_CALORIE_DEFICIT_FRACTION|MIN_INTAKE_RELATIVE_TO_BMR|MAX_WEEKLY_WEIGHT_LOSS_FRACTION|MAX_WEEKLY_WEIGHT_GAIN_FRACTION|EA_MIN_KCAL_PER_KG_FFM|SPECIAL_CASE_DEFICIT_CAPS|SURPLUS_CAP|PORTION_TOLERANCE|PLAN_BAND_MIN_WIDTH_KCAL)\b|\bplanBand\s*\(/;
+    const skip = new Set(['node_modules', 'dist', 'build', '.expo', '.next', '.turbo', 'coverage']);
+    const offenders: string[] = [];
+    const walk = (dir: string) => {
+      for (const entry of readdirSync(dir, { withFileTypes: true })) {
+        if (skip.has(entry.name) || entry.name.startsWith('.')) continue;
+        const path = join(dir, entry.name);
+        if (entry.isDirectory()) walk(path);
+        else if (/\.(ts|tsx|mjs|js)$/.test(entry.name) && !/\.test\.tsx?$/.test(entry.name)) {
+          if (!allowed.has(path) && pattern.test(readFileSync(path, 'utf8'))) offenders.push(path);
+        }
+      }
+    };
+    for (const top of ['packages', 'apps', 'scripts']) walk(join(root, top));
+    expect(offenders).toEqual([]);
+    // Die N3-Dateien gibt es wirklich (sonst prüft der Test nichts).
+    for (const file of [
+      'meal-plan.ts',
+      'meal-prep.ts',
+      'meal-prep-plan.ts',
+      'scale.ts',
+      'filter.ts',
+    ]) {
+      expect(
+        readFileSync(join(root, 'packages/core/src/nutrition', file), 'utf8').length,
+      ).toBeGreaterThan(0);
+    }
   });
 });

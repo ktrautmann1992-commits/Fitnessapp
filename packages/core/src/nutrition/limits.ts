@@ -13,6 +13,7 @@ import {
   MAX_WEEKLY_WEIGHT_LOSS_FRACTION,
   MIN_INTAKE_RELATIVE_TO_BMR,
   NUTRITION_ROUNDING,
+  PLAN_BAND_MIN_WIDTH_KCAL,
   PORTION_TOLERANCE,
   SURPLUS_CAP,
 } from '../constants';
@@ -215,8 +216,8 @@ export function clampCalorieTarget(
 
 /**
  * Planband (Plan 4.6.1, B1): Die Tagessumme des ausgelieferten Essensplans muss darin liegen.
- * [max(Untergrenze, Ziel × 0,9); min(Ziel × 1,1, Obergrenze)] – nie leer, weil Untergrenze ≤ Ziel ≤ Obergrenze
- * (bzw. Ziel = ceil10(Untergrenze), wenn beide < 10 kcal auseinander liegen).
+ * [max(Untergrenze, Ziel × 0,9); min(Ziel × 1,1, Obergrenze)], mindestens `PLAN_BAND_MIN_WIDTH_KCAL` (20 kcal)
+ * breit – nach oben aufgeweitet, die Untergrenze bleibt.
  */
 export function planBand(
   targetKcal: number,
@@ -224,7 +225,12 @@ export function planBand(
   ceilingKcal: number,
 ): { min: number; max: number } {
   const min = Math.max(floorKcal, targetKcal * (1 - PORTION_TOLERANCE));
-  const max = Math.max(min, Math.min(targetKcal * (1 + PORTION_TOLERANCE), ceilingKcal));
+  // Mindestbreite 20 kcal (Wächter N3 S1): sonst wäre das Band mit gerundeten Portionen nicht treffbar. Die
+  // Untergrenze bleibt unverändert – aufgeweitet wird nur nach oben.
+  const max = Math.max(
+    min + PLAN_BAND_MIN_WIDTH_KCAL,
+    Math.min(targetKcal * (1 + PORTION_TOLERANCE), ceilingKcal),
+  );
   return { min, max };
 }
 

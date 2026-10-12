@@ -1,6 +1,6 @@
 # Plan Phase 5 – Ernährungs-Engine, Essensplan und Einkaufsliste
 
-**Status:** **freigegeben, Etappen N0 (Plan), N1 (Core: Bedarf, Grenzen, Makros, Timing) und N2a (Inhalte: Schemas, Prüfregeln, Einheiten) umgesetzt** – Stand 11.10.2026. Offene Fragen 16 B: Gründer „Alles wie empfohlen“ (10.10.2026). Gegenprüfung der R2-Blocker durch den Wächter im N0-PR. **N2b Teil 1 (Quelle/Lizenz geklärt, Import-Infrastruktur, Zuordnungs-Vorschlag) umgesetzt** – der Katalog selbst entsteht nach dem Merge über den Workflow `foods-import` (Umsetzungsstand N2b). **Nachtrag „Erweiterungen 2 (11.10.2026)“** in Abschnitt 19 (Fassung 2 nach Wächter-Prüfung, B1/B2 und S1–S14 eingearbeitet): Rezeptbestand aus `alpha5-rezepte.json`, Import in N2b/N2c, Umfang von Prompt C in N3–N6, neue Etappen N9–N14, W1 und P1. Fassung 3 nach Wächter-Nachprüfung `waechter-plan-5-r2.md` (Urteil „mit Auflagen“, alle Befunde eingearbeitet); Fassung 2 nach `waechter-plan-5.md`.
+**Status:** **freigegeben, Etappen N0 (Plan), N1 (Core: Bedarf, Grenzen, Makros, Timing) und N2a (Inhalte: Schemas, Prüfregeln, Einheiten) umgesetzt** – Stand 11.10.2026. Offene Fragen 16 B: Gründer „Alles wie empfohlen“ (10.10.2026). Gegenprüfung der R2-Blocker durch den Wächter im N0-PR. **N2b Teil 1 (Quelle/Lizenz geklärt, Import-Infrastruktur, Zuordnungs-Vorschlag) umgesetzt** – der Katalog selbst entsteht nach dem Merge über den Workflow `foods-import` (Umsetzungsstand N2b). **N2c (Rezept-Import als Entwurf) und N3 (Core: Essensplan, Meal-Prep, Einkaufsliste, Rezeptsuche) umgesetzt** – Stand 12.10.2026 (Umsetzungsstand N2c/N3). **Nachtrag „Erweiterungen 2 (11.10.2026)“** in Abschnitt 19 (Fassung 2 nach Wächter-Prüfung, B1/B2 und S1–S14 eingearbeitet): Rezeptbestand aus `alpha5-rezepte.json`, Import in N2b/N2c, Umfang von Prompt C in N3–N6, neue Etappen N9–N14, W1 und P1. Fassung 3 nach Wächter-Nachprüfung `waechter-plan-5-r2.md` (Urteil „mit Auflagen“, alle Befunde eingearbeitet); Fassung 2 nach `waechter-plan-5.md`.
 **Reihenfolge (Gründer-Entscheidung 09.10.2026):** 4b-A0 (erledigt) → Übungs-Glossar und Übungstausch (erledigt bis T2; T3 später mit Supabase) → **Phase 5** → Phase 4b (A → D → E; B/C später).
 **Testphase:** zuerst nur im **Testmodus** (lokal auf dem Gerät, ohne Supabase). Supabase-Teile (Migrationen, RLS, pgTAP) sind hier vollständig geplant, kommen aber in einer späteren Etappe (N7). Einzige Ausnahme: die kleine CHECK-Migration für den Onboarding-Schritt in N4 (S8).
 
@@ -1561,3 +1561,169 @@ ergänzen lassen (eigene Claude-Sitzung).
 
 **So testest du es am Handy:** Pull Request → **Checks → ci** grün. Nach dem Lebensmittel-Import: **Actions →
 alpha5-import → Run workflow** → im neuen Pull Request stehen Zahlen und Befunde (19.11).
+
+### N3 – Core: Essensplan und Einkaufsliste (umgesetzt, 12.10.2026)
+
+Nur reine Logik in `packages/core/src/nutrition/`, keine App (N4/N5), keine Migration (N7). Gearbeitet wird mit den
+Test-Fixtures aus N2a (`content/nutrition-fixtures.ts`) plus N3-Ergänzungen (`nutrition/meal-plan-fixtures.ts`, nur
+in Tests), weil der echte Katalog erst mit `foods-import`/`alpha5-import` entsteht.
+
+1. **Dateien** (`packages/core/src/nutrition/`, Export über `index.ts`):
+   - `filter.ts` – **einzige** Stelle für die harten Regeln (6.1, 19.6 B1): Status (`published`, Testmodus `draft`),
+     roter Befund (`redRecipeIds`), Lebensmittel vorhanden und katalog-geprüft (R19), Nährwerte berechenbar (R2),
+     Alkohol (R12), Ernährungsform, Schwein nur bei `eatsPork === true` (`null` = nein, W10/G2, Gelatine unbekannter
+     Herkunft = Schwein), Unverträglichkeiten, „mag ich nicht“ (hart, K9: Unverträglichkeit schlägt „mag ich“),
+     `pregnancy_caution` aus Katalog-Flag, `heated: false`, `no_cook` und **unbestätigter Import-Annahme
+     (`unconfirmed_heated`)**. Optionale Zutaten werden weggelassen (S3), Ersatz-Zutaten nur mit passendem
+     `for_groups` und **komplettem erneuten Filter** (S4); am Ende prüft `computeRecipeFacts` das ganze Rezept noch
+     einmal. Dazu `slotFitReasons` (Mahlzeiten-Typ, Meal-Prep-Eignung, „werktags höchstens X Minuten“, Wettkampf nie
+     automatisch, Ergänzungs-Snack nur `no_cook`).
+   - `scale.ts` – `scalePortion` (Faktor 0,5–2,0, Rundung nach 6.2, Eier ganz, nie 0, Nährwerte nach der Rundung),
+     Portionswähler `scaleRecipeForServings` (1–12, 19.6) und `balancePortions` (Tagesausgleich ins Planband mit
+     gerundeten Mengen, Zielpunkt Bandmitte, einzelnes Nachregeln bei Rundungssprüngen, feste Portionen bleiben).
+   - `meal-plan.ts` – `buildMealPlanWeek` (6.3): Plätze aus den Tageszielen, Kandidaten über `filter.ts`, Punkte
+     (`MEAL_PLAN_SCORING`: Passung, Eiweiß, Rolle vor/nach dem Training über `training_tags`/Kategorien,
+     „mag ich“, Wiederholung, Haupt-Eiweißquelle am Vortag, Zutaten-Wiederverwendung, feste Streuung je Variante),
+     Gleichstand über `stableHash`, Wiederholungsgrenzen (`MEAL_PLAN_REPEAT_LIMITS`), Tagesausgleich mit bis zu 2
+     Ergänzungs-Snacks, Status `complete` | `below_floor` (+ `day_below_floor`) | `no_targets` (Faktor 1, höchstens
+     ein Snack unter `NO_TARGETS_MIN_DAY_KCAL`), leere Plätze mit Grund (`emptySlots`), vergangene Tage aus
+     `existingPlan` unverändert, schon gekochte Reste fest. `swapMealRecipe` („Rezept tauschen“), `mealPlanBand`,
+     `daySafetyKey`.
+   - `meal-prep.ts` – Kochtermine `mealPrepCookEvents` (`MEAL_PREP_COOK_OFFSETS`), vorgekochte Plätze,
+     Haltbarkeit `mealPrepKeeping` (R9 mit den **tatsächlich verwendeten** Zutaten inkl. Ersatz: Minimum aus Rezept,
+     `max_fridge_days` der Zutaten und 3 Tagen; einfrierbar nur Rezept **und** alle Zutaten) und `mealPrepDayUse`
+     (Kochtag → Kühlschrank → eingefroren → frisch).
+   - `meal-prep-plan.ts` – `applyMealPrepPlan` (19.6 B1/K7/G3), `selectFreeMealPrepPlan` (Gratis-Plan = erster
+     angebotener in fester Reihenfolge nach ID, sonst keiner), `cookDaySchedule` (Schritte mit Minuten bis zum
+     nächsten Schritt für die Timer).
+   - `replan.ts` – `needsAutomaticReplan` (6.6: Modus, Deckel, Tagessumme außerhalb des aktuellen Bands, Rezept
+     besteht den Filter nicht mehr) und `automaticReplan` (Plan ab heute **und** Einkaufsliste im selben Schritt,
+     R2-S4).
+   - `shopping-list.ts` – `buildShoppingList`, `rebuildShoppingList`, `addManualShoppingItem`,
+     `removeManualShoppingItem`, `setShoppingItemChecked`, `roundShoppingAmount` (6.5).
+   - `recipe-search.ts` – `searchRecipes` (19.6): harte Regeln wie `filter.ts`, Ernährungsform erweiterbar und
+     gekennzeichnet (K3/G4), weiche Filter Kategorie, Abschnitt, „Unter 10 Minuten“, max. Kosten (nur freigegebene
+     Schätzung), Text; Sortierung Titel/ID.
+   - `meal-plan-payload.ts` – `mealPlanPayloadSchema` (strikt, Datumsrahmen der Woche, Faktor 0,5–2,0, kein Platz
+     doppelt, Kochtag passend) und `toMealPlanPayload`; `inputs` ohne Körperdaten, Flags, Unverträglichkeiten,
+     Abneigungen und „ohne Schwein“ (K8).
+   - `stable-hash.ts` – FNV-1a (`stableHash`, `stableHashKey`, `stableUnit`), kein `Math.random`.
+   - `schemas.ts` + `mealPlanProfileSchema` (Ernährungsform, Schwein, Kochmodus, Kochtage, `mealprep_slots`,
+     Vorlieben/Abneigungen/Unverträglichkeiten, Zeitlimit werktags); `notices.ts` + `MEAL_PLAN_NOTICE_CODES`.
+2. **Konstanten** (`constants.ts`, Abschnitt „Phase 5 · Essensplan und Einkaufsliste“, alle PRODUKTENTSCHEIDUNG):
+   `MEAL_PLAN_ENGINE_VERSION`, `PORTION_SCALE_LIMITS`, `MEAL_PLAN_FILL`, `NO_TARGETS_MIN_DAY_KCAL`,
+   `MEAL_PLAN_REPEAT_LIMITS`, `MEAL_PLAN_SCORING`, `MEAL_PREP_COOK_OFFSETS`, `CARDIO_RECIPE_MIN_MINUTES` (nur der Wert
+   für X4, K4), `RECIPE_SERVINGS_PICKER`, `SHOPPING_LIST_ROUNDING`. Keine Schutzgrenze ist neu oder verändert.
+3. **Schutzgrenzen bleiben an einer Stelle:** Der Essensplan nutzt nur das fertige Planband aus
+   `nutritionTargetsForWeek` → `clampCalorieTarget`. **Strukturtest K2 erweitert** (`limits.test.ts`): Die
+   Schutzgrenzen-Konstanten und `planBand` kommen außerhalb von `limits.ts`/`eligibility.ts`/`schemas.ts`/`constants.ts`
+   nirgends vor (auch nicht in Plan, Meal-Prep, Liste, Suche). `NutritionDayTargets` hat zusätzlich `deficitCap` und
+   `surplusCap` – nur zum Abgleich „Deckel geändert“ (6.6).
+4. **Tests** (Vitest, 7 neue Testdateien mit 98 Tests nach der Wächter-Prüfung + Strukturtest in `limits.test.ts`): **W2** als Eigenschaftstest über die Ausgabe von
+   `buildMealPlanWeek` (160 Wochen: 1–8 Mahlzeiten, 30/45/200/300 kg, alle Ziele, Modi `full`/`maintenance_only`/
+   `no_targets`, Flags inkl. kein Check und Schwangerschaft, Einwilligung ja/nein, 0–7 Trainingstage bis 240 min,
+   zufällige Profile mit Unverträglichkeiten/Abneigungen/Schwein/Meal-Prep 1–7 Kochtage/Zeitlimit, Pools ohne Snacks/
+   ohne Frühstück/nur Hauptgerichte/leer; dazu Meal-Prep 1–7 Kochtage mit festen Resten nach Neuplanung am
+   Donnerstag): jeder Tag `complete` im Planband (≥ Untergrenze aus N1) oder `below_floor` mit Hinweis, **nie über der
+   Obergrenze**, Faktoren 0,5–2,0, keine Menge 0, Kühlschrank nie länger als R9, Einfrieren nur wenn erlaubt.
+   **„Kein ausgeschlossenes Rezept“** unabhängig an den tatsächlich verwendeten Zutaten (Gruppen, Schwein,
+   Ernährungsform, Alkohol, Schwangerschaft inkl. ungegart/unbestätigt) – im Plan, in Meal-Prep-Plänen (19.6 DoD:
+   Erdnuss + vegane Woche, Schwangerschaft + Fisch nur als Annahme erhitzt, `eats_pork = false/null` + Fleisch,
+   Pilze „mag ich nicht“) und in der Suche. **W9 (Core), W10, W11 (Core), W15, W22 (Core), K9**, Gratis-Plan,
+   Portionswähler (1/12 Portionen, 5-Portionen-Rezept, Eier ganz), R9/`storage_plan`, G3, Grenzfälle (1 vs. 7
+   Trainingstage, 1–8 Mahlzeiten, 300 kg mit 1 Mahlzeit → `below_floor`, 30 kg mit 8 Mahlzeiten, `no_targets`,
+   `maintenance_only`, keine passenden Rezepte mit Grund), Determinismus/Varianten, Wiederholungsgrenzen, Tauschen,
+   vergangene Tage, Payload ohne Gesundheitsdaten, Einkaufsliste (Aggregation, Aufrunden nie 0, Stück vs. Gramm,
+   Vorrat, Abteilungen, Ersatzprodukt, Zeitraum, Häkchen, eigene Einträge). **Gegenprobe:** absichtlich eingebaute
+   Fehler (Tag unter dem Band als `complete`, Schwangerschafts-Ausschluss abgeschaltet, Haltbarkeit der Zutaten
+   ignoriert) machen die Tests rot.
+
+**Abweichungen / Präzisierungen gegenüber dem Plan:**
+
+- **Sehr schmales Planband:** Liegen Unter- und Obergrenze weniger als 20 kcal auseinander (z. B. sehr niedriger
+  Katch-Bedarf bei Muskelaufbau, Breite 0 möglich), reicht das Band bis Untergrenze + 20 kcal – **in `planBand`
+  (`limits.ts`, `PLAN_BAND_MIN_WIDTH_KCAL`)**, nicht im Essensplan (Wächter N3 S1). Die Untergrenze bleibt; die
+  Obergrenze (Überschussdeckel) wird so höchstens um 20 kcal überschritten, wie bei der gerichteten Rundung (4.6.2).
+- **Über der Obergrenze im normalen Plan:** Reicht Faktor 0,5 nicht, fällt eine Mahlzeit weg (zuerst Snacks, dann
+  Hauptmahlzeiten, die mit den meisten kcal; Platz leer mit Grund `above_ceiling`, Hinweis `meal_removed_ceiling`).
+  Der Plan regelte das nur für Meal-Prep-Pläne (G3: dort wird nichts gestrichen, sondern der Plan nicht angeboten).
+- **Wiederholungsgrenzen** sind hart; nur wenn kein Kandidat sie einhält, wird wiederholt (Hinweis
+  `recipe_repeated`) – ein leerer Platz wäre schlechter. Snacks höchstens 3× (PRODUKTENTSCHEIDUNG).
+- **Eiweiß ≥ 90 %** wird je Tag geprüft (Hinweis `protein_below_target`), je Platz nur über die Punkte bevorzugt.
+- **Ersatz-Zutaten** beheben nur Unverträglichkeit/„mag ich nicht“ – nie Ernährungsform, Schwein oder
+  Schwangerschaft (vegan + Vollmilch → raus, auch wenn Haferdrink ginge).
+- **Kochtermine 4–7** festgelegt (4: So, Di, Do, Sa · 5: So, Di, Mi, Fr, Sa · 6: So, Di–Sa · 7: täglich); ein Kochtermin,
+  der schon vorbei ist, ohne gekochte Reste im bisherigen Plan → diese Tage frisch. Bei „Mittag + Abend“ bekommt jeder
+  Platz sein eigenes Gericht. Ein Termin bevorzugt Gerichte, die alle seine Tage halten (Kühlschrank oder einfrierbar).
+- **„Rezept tauschen“** tauscht genau eine Mahlzeit; das neue Gericht wird an dem Tag frisch gekocht. Angeboten wird
+  der beste Kandidat, der den Tag **nicht verschlechtert**: keine andere Mahlzeit fällt weg, nie über der Obergrenze,
+  ein vollständiger Tag bleibt vollständig – sonst `no_alternative` (Wächter N3 S3). Besteht eine andere Mahlzeit des
+  Tages den Filter nicht mehr (oder fehlt ihre Rezeptversion), wird nicht getauscht, sondern `replan_needed`
+  gemeldet (S4). Wird eine Kochtag-Mahlzeit getauscht oder wegen der Obergrenze gestrichen, werden ihre Reste an den
+  Folgetagen frisch gekocht (gleiches Rezept, Hinweis `meal_prep_fresh_days`; `repairOrphanLeftovers`, S2).
+- **`applyMealPrepPlan`:** Liegt der Sonntag schon zurück, ist der Kochtag heute (Tage davor bleiben); ab Samstag
+  wird der Plan für diese Woche nicht mehr angeboten. Snack-Platz = Nachmittags-Snack, sonst der erste Snack; bei
+  1 Mahlzeit nimmt das Hauptgericht den Platz `main`. Zwei Plan-Rezepte für denselben Platz → nicht angeboten.
+  `storage_plan` und R9 (mit den tatsächlichen Zutaten) werden verglichen, **die sicherere Angabe gewinnt**.
+  Gratis-Plan: feste Reihenfolge = nach ID (offener Punkt aus N2c).
+- **Automatische Neuplanung** einer Woche mit Meal-Prep-Plan: Tage ab heute werden normal geplant; schon gekochte
+  Reste bleiben, wenn sie den Filter weiter bestehen (19.6 Nr. 2).
+- **Automatische Neuplanung:** Die Einkaufsliste wird ab `max(Beginn, heute)` neu erzeugt (Wächter N3 B1) – offene
+  Einträge aus Käufen vor heute fallen weg, abgehakte bleiben mit „nicht mehr im Plan“. `out_of_band` gilt, sobald
+  eine Tagessumme (mit optionalen Zutaten) über der neuen Obergrenze liegt – unabhängig vom Status –, ein
+  vollständiger Tag darunter liegt oder ein unvollständiger Tag jetzt erreichbar ist (B2).
+- **Optionale Zutaten** (nicht weggelassen) zählen für die Untergrenze nicht (sichere Richtung, N2a), für die
+  Obergrenze aber mit (`optionalKcal`, Wächter N3 K3). Liegt ein Tag nur ihretwegen über der Obergrenze, werden sie
+  weggelassen (`omitted_optional`, Hinweis `optional_omitted_ceiling`); erst wenn das nicht reicht, fällt eine Mahlzeit
+  weg (Nachprüfung NB1).
+- **Payload** in eigener Datei `meal-plan-payload.ts` (statt `schemas.ts`, wegen der Abhängigkeit vom Plan-Typ);
+  `inputs` zusätzlich ohne Abneigungen und „ohne Schwein“ (Datensparsamkeit, 7.1).
+- **Einkaufsliste:** Wird ein Lebensmittel irgendwo in Stück verwendet und ist ein Stückgewicht bekannt, steht es
+  ganz in Stück; Milliliter bleiben Milliliter; nur in Prisen verwendet → „nach Geschmack“. Meal-Prep wird zum Kochtag
+  gekauft, der Sonntag vor der Woche zählt zur Woche.
+- **Namen:** Tag im Essensplan heißt `PlannedMealDay` (`PlannedDay` gibt es schon im Trainingsplan);
+  `recipeTotalMinutes` aus `content/import-rules.ts` wird wiederverwendet.
+- **Rezeptsuche:** zuerst mit der Profil-Ernährungsform (wie der Essensplan), nur sonst mit der erweiterten; was nur
+  über die Erweiterung gefunden wird, ist immer gekennzeichnet.
+- **Nicht in N3:** CI-Zusammenfassung „Beispiel-Woche + Einkaufsliste“ (braucht den echten Katalog – kommt, sobald
+  `foods-import` und `alpha5-import` gelaufen sind; Plan 13), Texte der Hinweis-Codes (N4/N5), Zutaten-Austausch mit
+  Rollen und Tausch-Regeln B2 (N9), „Daumen runter“ für Plan-Rezepte (N10), Carb-Loading auf Erhalt (W1, Phase 10),
+  Belegung je Einheit ab 75 Minuten (X4, nur die Konstante).
+
+**Wächter-Prüfung N3 (12.10.2026): FREIGABE MIT AUFLAGEN** (Bericht `waechter-n3.md`; Fuzz-Test mit zufälligen
+Katalogen: 0 Verstöße bei Ausschlüssen, Band und Haltbarkeit). Umgesetzt:
+
+- **B1** Einkaufsliste nach automatischer Neuplanung ab heute; Test: Liste für die ganze Woche + Schwangerschaft am
+  Donnerstag → kein offener Eintrag mit Schwangerschafts-Risiko.
+- **B2** `out_of_band` unabhängig vom Status bei Überschreiten der Obergrenze; Test 120 kg, Muskelaufbau → Fettabbau.
+- **S1** Mindestbreite des Bands in `planBand` (`limits.ts`); W2 rechnet das Band unabhängig aus Ziel, Unter- und
+  Obergrenze mit eigener Zahl 20 (`independentBand`); N1-Eigenschaftstest angepasst.
+- **S2** Keine verwaisten Reste (`repairOrphanLeftovers` nach Plan und Tausch); W2 prüft „jeder Rest mit Kochtag in der
+  Woche hat dort eine Kochtag-Mahlzeit desselben Rezepts“; Test Tausch einer Kochtag-Mahlzeit.
+- **S3/S4** Tausch ohne Verschlechterung bzw. mit Meldung `replan_needed`; Tests (über der Obergrenze an einem
+  `below_floor`-Tag, `complete` → `below_floor`, andere Mahlzeit fällt durch).
+- **S5** Tests für feste Reste + Schwangerschaft und Einfrieren mit Ersatzprodukt; Ausschluss-Prüfungen in den Tests
+  mit eigenen Regeln (`expectPork`, `expectNeedsHeating`, `usedFoodViolations`), nicht mit `foodContainsPork`/
+  `needsHeatedFlag`. Gegenprobe: die drei vorher unentdeckten Mutationen (Reste ohne Schwangerschafts-Filter,
+  Einfrieren am Original, Tausch über der Obergrenze) sowie „Tausch ohne Status-Prüfung“, „ohne Reste-Reparatur“ und
+  „Liste ab Wochenbeginn“ machen Tests rot.
+- **NB1 (Nachprüfung)** Frisch erzeugter Plan verlangte sofort eine Neuplanung (Folge von K3): optionale Zutaten werden
+  bei der Obergrenze zuerst weggelassen; `needsAutomaticReplan` prüft mit `dayWithinPlanBand` genau die Garantie von
+  `buildMealPlanWeek`, und `variantForMeal` erkennt zusätzlich weggelassene optionale Zutaten als dieselbe Variante.
+  Eigenschaftstest „frischer Plan braucht keine Neuplanung“ über das W2-Raster und schmale Bänder (30–45 kg,
+  Muskelaufbau, 1–8 Mahlzeiten, 3 Ernährungsformen); Tests „optionale Zutat weglassen rettet die Mahlzeit“ und
+  „below_floor mit optionaler Zutat ohne Neuplanungs-Schleife“; gestrichene Mahlzeiten im schmalen Raster nicht mehr
+  als ohne Mitzählen optionaler Zutaten. **NK1** (Zeitlimit werktags bei umgewandelten Resten) nur vermerkt.
+- **K3** optionale Zutaten für die Obergrenze; **K6** Strukturtest um `PORTION_TOLERANCE` und
+  `PLAN_BAND_MIN_WIDTH_KCAL` erweitert (`clampCalorieTarget`/`dayFloorKcal`/`dayCeilingKcal` prüft der erste
+  Strukturtest schon).
+- **K5 – Hinweis für N7:** `substitutions` und `omitted_optional` im Payload lassen indirekt auf Unverträglichkeiten
+  schließen; der Server setzt `uses_health_data = true`, sobald Ersatz oder Weglassen vorkommt (am Schema vermerkt).
+- **Nur dokumentiert:** **K1** `applyMealPrepPlan` prüft `slotFitReasons` nicht (Wettkampf-Rezept bzw. Zeitlimit in
+  einem Plan würde fest eingeplant) – vor dem automatischen Gratis-Plan mit echten Plänen nachziehen (spätestens N5).
+  **K2** `redRecipeIds` bleibt optional; Pflicht ist, den Bestand über `selectNutritionContent` zu laden (am Typ
+  vermerkt). **K4** Rundungssprung im schmalen Band führt erst zum Streichen einer Mahlzeit, bevor ein anderer
+  Kandidat versucht wird – verbessern mit N5 (Wochenansicht).
+
+**So testest du es am Handy:** Pull Request → **Checks → ci** grün (Lint, Typen, Tests). Die „Beispiel-Woche“ in der
+Summary folgt mit dem ersten echten Katalog.

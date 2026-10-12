@@ -56,3 +56,29 @@ export function sortCaps(codes: Iterable<CalorieCapCode>): CalorieCapCode[] {
   const set = new Set(codes);
   return CALORIE_CAP_CODES.filter((code) => set.has(code));
 }
+
+/**
+ * Hinweis-Codes des Essensplans (docs/PLAN-PHASE-5.md 6.2–6.4, Etappe N3). Texte ab N4/N5 in der App.
+ * `day_below_floor`: „Dieser Tag erreicht deinen Mindestbedarf nicht – ergänze z. B. eine Portion Obst, Nüsse oder
+ * Joghurt.“ (Tag erscheint als „unvollständiger Vorschlag“, nie als „dein Plan“).
+ */
+export const MEAL_PLAN_NOTICE_CODES = [
+  'day_below_floor',
+  'no_targets_portions',
+  'no_candidates_for_slot',
+  'meal_removed_ceiling',
+  'optional_omitted_ceiling',
+  'protein_below_target',
+  'fill_snacks_added',
+  'recipe_repeated',
+  'meal_prep_freeze',
+  'meal_prep_fresh_days',
+  'drafts_used',
+  'drafts_allergens_unreviewed',
+] as const;
+export type MealPlanNoticeCode = (typeof MEAL_PLAN_NOTICE_CODES)[number];
+
+export function sortMealPlanNotices(codes: Iterable<MealPlanNoticeCode>): MealPlanNoticeCode[] {
+  const set = new Set(codes);
+  return MEAL_PLAN_NOTICE_CODES.filter((code) => set.has(code));
+}
