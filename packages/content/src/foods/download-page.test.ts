@@ -13,6 +13,7 @@ import {
   SourceDownloadError,
 } from './download-page';
 import { sha256Hex } from './extract-source';
+import { findSource, SOURCES } from './sources';
 import {
   diagnoseOriginal,
   filenameFromContentDisposition,
@@ -332,5 +333,108 @@ describe('Wächter-Nachtrag blsdb: NK1/NK2', () => {
       }
     }
     expect(() => readXlsxRows(xlsx)).toThrow(/zu groß/);
+  });
+});
+
+/** Nachbau von https://blsdb.de/download (Lauf 4, 12.10.2026) – ATTRAPPE, Codes erfunden. */
+function blsPage(fileLinks: readonly string[]): string {
+  const nav = [
+    '/',
+    '/suche',
+    '/lebensmittel',
+    '/naehrstoffe',
+    '/download?token=NAV1-2345-6789',
+    '/faq',
+    '/dokumentation',
+    '/news',
+    '/kontakt',
+    '/impressum',
+    '/datenschutz',
+    '/barrierefreiheit',
+    '/lizenz',
+    'https://www.mri.bund.de/',
+    'https://creativecommons.org/licenses/by/4.0/deed.de',
+    'https://doi.org/10.25826/Data20251217-134202-0',
+  ];
+  const links = [
+    ...nav.slice(0, 4).map((h) => `<a href="${h}">Navi</a>`),
+    '<a class="nav-link" href="https://blsdb.de/download?token=NAV1-2345-6789">Download BLS-Daten</a>',
+    ...nav.slice(5).map((h) => `<a href="${h}">Navi</a>`),
+    ...fileLinks.map((h) => `<a class="btn btn-primary" href="${h}">Download BLS-Daten</a>`),
+  ].join('');
+  return `<!DOCTYPE html><html lang="de"><head><title>BLS - Download</title></head><body>
+<form action="/download" method="get"><select name="lang"><option value="de">DE</option><option value="en">EN</option></select></form>
+<h1>Download</h1><p>Die Daten des BLS stehen als Open Data zur freien Verfügung.</p>${links}
+<footer>Copyright © 2005-2026 MRI, Standort Karlsruhe</footer></body></html>`;
+}
+
+describe('blsdb.de: Datei-Link statt Navigationslink (Lauf 4)', () => {
+  const bls = findSource(SOURCES, 'bls', '4.0');
+  if (bls === undefined || bls.downloadPage === null) {
+    throw new Error('BLS 4.0 mit Download-Seite erwartet');
+  }
+  const config = bls.downloadPage;
+  const zip = 'https://blsdb.de/assets/uploads/BLS_4_0_2025_DE.zip?token=FILE-9876-5432';
+
+  it('echte Seite nachgebaut (beide „Download BLS-Daten“-Links, Sprach-Formular, 17 Links) → genau der ZIP-Link', () => {
+    const html = blsPage([zip]);
+    const search = findDownloadLinks(html, bls.url, config);
+    expect(search.all).toHaveLength(17);
+    expect(selectDownloadLink(html, bls.url, config)).toBe(zip);
+  });
+
+  it('Ende zu Ende: Seite → ZIP-Link → xlsx aus dem ZIP; der Navigationslink wird nie geladen', async () => {
+    const xlsx = testOriginal();
+    const site = fakeSite({
+      [bls.url]: { body: blsPage([zip]), headers: { 'set-cookie': 'JSESSIONID=abc; Path=/' } },
+      'https://blsdb.de/assets/uploads/BLS_4_0_2025_DE.zip?token=*': {
+        body: buildZip({ 'BLS_4_0_Daten_2025_DE.xlsx': xlsx, 'BLS_4_0_Dokumentation.pdf': '%PDF' }),
+        headers: { 'content-type': 'application/zip' },
+      },
+    });
+    const fetched = await fetchSourceOriginal(bls, site.fetch, noWait);
+    expect(fetched.filename).toBe('BLS_4_0_Daten_2025_DE.xlsx');
+    expect(fetched.data.equals(xlsx)).toBe(true);
+    expect(site.requests.map((r) => r.url)).toEqual([bls.url, zip]);
+  });
+
+  it('Gegenprobe: ohne ZIP-Link (nur Navigationslink) → Abbruch mit Liste der Links', () => {
+    const error = errorOf(() => selectDownloadLink(blsPage([]), bls.url, config));
+    expect(error.message).toMatch(/Kein Download-Link .*linkPath/);
+    expect(error.diagnostics.join('\n')).toMatch(/download\?token=NAV1…/);
+  });
+
+  it('Gegenprobe: neuer Dateiname (BLS_4_1) oder Präfix-/Muster-Treffer → kein Treffer', () => {
+    for (const other of [
+      'https://blsdb.de/assets/uploads/BLS_4_1_2026_DE.zip?token=FILE-1',
+      'https://blsdb.de/assets/uploads/BLS_4_0_2025_DE.zip/x?token=FILE-1',
+      'https://blsdb.de/assets/uploads/BLS_4_0_2025_DE.zip.exe?token=FILE-1',
+      'https://blsdb.de/assets/uploads/BLS_4_0_2025_DE.zip',
+    ]) {
+      expect(() => selectDownloadLink(blsPage([other]), bls.url, config)).toThrow(
+        /Kein Download-Link/,
+      );
+    }
+  });
+
+  it('Gegenprobe: ZIP-Link auf fremdem Host (oder http) wird nicht gewählt', () => {
+    const html = blsPage([
+      'https://boese.example.com/assets/uploads/BLS_4_0_2025_DE.zip?token=EVIL-1234',
+      'http://blsdb.de/assets/uploads/BLS_4_0_2025_DE.zip?token=EVIL-5678',
+    ]);
+    const search = findDownloadLinks(html, bls.url, config);
+    expect(search.matches).toEqual([]);
+    expect(search.foreign).toHaveLength(2);
+    expect(() => selectDownloadLink(html, bls.url, config)).toThrow(/Kein Download-Link/);
+  });
+
+  it('zwei verschiedene ZIP-Links → Abbruch (genau ein Treffer)', () => {
+    const html = blsPage([
+      zip,
+      'https://blsdb.de/assets/uploads/BLS_4_0_2025_DE.zip?token=ANDE-RS12',
+    ]);
+    expect(() => selectDownloadLink(html, bls.url, config)).toThrow(
+      /2 verschiedene Download-Links/,
+    );
   });
 });

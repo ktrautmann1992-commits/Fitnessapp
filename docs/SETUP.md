@@ -711,8 +711,10 @@ schaltet zeitgesteuerte Läufe in öffentlichen Repositories nach **60 Tagen ohn
 **Actions → ci** den Hinweis antippen und **Enable workflow** wählen.
 
 **Woher die Datei kommt (bestätigt 12.10.2026, nichts mehr zu tun):** Der Workflow öffnet die offizielle Seite
-`https://blsdb.de/download` des Max Rubner-Instituts und nimmt den **einen** Link „Download BLS-Daten“ von dort
-(`…/download?token=<Code>`, der Code wechselt bei jedem Aufruf). Die frühere Adresse im Archiv OpenAgrar ist für
+`https://blsdb.de/download` des Max Rubner-Instituts und nimmt von dort den **einen** Datei-Link
+„Download BLS-Daten“ (`…/assets/uploads/BLS_4_0_2025_DE.zip?token=<Code>`, der Code wechselt bei jedem Aufruf; den
+gleich beschrifteten Navigationslink `…/download?token=…` ignoriert er). Heißt die Datei einmal anders (neue
+BLS-Fassung), bricht der Lauf mit „Kein Download-Link“ ab – dann passt Claude den Dateinamen per Pull Request an. Die frühere Adresse im Archiv OpenAgrar ist für
 automatische Abrufe gesperrt (Bot-Sperre) – solche Sperren umgeht der Workflow nie. Ob die Datei echt ist, prüft die
 **Prüfsumme**: Sie wird vor dem ersten Import in `sources.ts` festgenagelt (J3 Schritt 4), der Import speichert
 sie zusätzlich in `SOURCE.json`, jeder spätere Lauf und die wöchentliche Prüfung vergleichen sie. Lizenz-Wortlaut und Zitierweise habt ihr am 12.10.2026 per Screenshot bestätigt.

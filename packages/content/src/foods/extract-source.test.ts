@@ -222,7 +222,7 @@ describe('SOURCE.json, Namensnennung und Allowlist', () => {
     const bls = SOURCES.find((s) => s.db === 'bls');
     expect(bls?.url).toBe('https://blsdb.de/download');
     expect(bls?.downloadPage).toEqual({
-      linkPath: '/download',
+      linkPath: '/assets/uploads/BLS_4_0_2025_DE.zip',
       tokenParam: 'token',
       redirectHosts: [],
     });
