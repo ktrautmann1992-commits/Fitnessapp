@@ -9,13 +9,16 @@ import { inflateRawSync } from 'node:zlib';
 
 /** Obergrenzen gegen kaputte oder bösartige Dateien. */
 export const XLSX_LIMITS = {
-  /** Größe einer entpackten Datei im Archiv. */
-  maxEntryBytes: 512 * 1024 * 1024,
+  /** Größe einer entpackten Datei im Archiv (BLS 4.0 ≈ 14 MB; Wächter-Nachtrag blsdb, NK1). */
+  maxEntryBytes: 128 * 1024 * 1024,
+  /** Summe aller entpackten Bytes je Archiv-Lesevorgang (auch verschachtelt: ZIP → xlsx → Blätter). */
+  maxTotalBytes: 256 * 1024 * 1024,
   /** Anzahl Dateien im Archiv. */
   maxEntries: 10_000,
 } as const;
 
-interface ZipEntry {
+/** Eintrag im zentralen Verzeichnis eines ZIP-Archivs. */
+export interface ZipEntry {
   readonly name: string;
   readonly method: number;
   readonly compressedSize: number;
@@ -28,7 +31,11 @@ function fail(message: string): never {
   throw new Error(`xlsx: ${message}`);
 }
 
-function readZipEntries(buffer: Buffer): Map<string, ZipEntry> {
+/** Verzeichnis eines ZIP-Archivs (auch für ZIP-Downloads mit xlsx/csv, siehe original-format.ts). */
+export function readZipEntries(buffer: Buffer): Map<string, ZipEntry> {
+  if (buffer.length < 22) {
+    fail('keine gültige ZIP-Datei (zu kurz).');
+  }
   // Ende des zentralen Verzeichnisses suchen (höchstens 64 KiB Kommentar).
   const minEocd = Math.max(0, buffer.length - 22 - 0xffff);
   let eocd = -1;
@@ -77,7 +84,8 @@ function readZipEntries(buffer: Buffer): Map<string, ZipEntry> {
   return entries;
 }
 
-function readZipEntry(buffer: Buffer, entry: ZipEntry): Buffer {
+/** Eine Datei aus dem ZIP-Archiv entpacken (Größe begrenzt, nur „stored“/„deflate“). */
+export function readZipEntry(buffer: Buffer, entry: ZipEntry): Buffer {
   if ((entry.flags & 0x1) !== 0) {
     fail(`„${entry.name}“ ist verschlüsselt.`);
   }
@@ -104,6 +112,11 @@ function readZipEntry(buffer: Buffer, entry: ZipEntry): Buffer {
   return out;
 }
 
+/** true = ZIP-Archiv ist eine xlsx-Datei (`[Content_Types].xml` und Einträge unter `xl/`). */
+export function isXlsxArchive(entries: ReadonlyMap<string, ZipEntry>): boolean {
+  return entries.has('[Content_Types].xml') && [...entries.keys()].some((n) => n.startsWith('xl/'));
+}
+
 /** XML-Entitäten und die OOXML-Maskierung `_xHHHH_` auflösen. */
 export function decodeXmlText(value: string): string {
   return value
@@ -119,12 +132,16 @@ export function decodeXmlText(value: string): string {
           return '"';
         case 'apos':
           return "'";
-        default:
-          return String.fromCodePoint(
-            entity.startsWith('#x')
-              ? Number.parseInt(entity.slice(2), 16)
-              : Number.parseInt(entity.slice(1), 10),
-          );
+        default: {
+          const code = entity.startsWith('#x')
+            ? Number.parseInt(entity.slice(2), 16)
+            : Number.parseInt(entity.slice(1), 10);
+          // Ungültige Zeichenreferenz (z. B. &#99999999; oder Ersatzbereich) → Ersatzzeichen statt RangeError
+          // (Wächter-Nachtrag blsdb, NK2).
+          const valid =
+            Number.isInteger(code) && code <= 0x10ffff && !(code >= 0xd800 && code <= 0xdfff);
+          return valid ? String.fromCodePoint(code) : '\uFFFD';
+        }
       }
     })
     .replace(/_x([0-9a-fA-F]{4})_/g, (_m, hex: string) =>
@@ -197,6 +214,17 @@ function resolveSheetPath(files: Map<string, Buffer>, sheet: string | null): str
   return fail(`Verweis auf Tabellenblatt „${chosen.name}“ fehlt.`);
 }
 
+/** Namen der Tabellenblätter (für die Diagnose im Modus „kandidaten“). */
+export function readXlsxSheetNames(buffer: Buffer): string[] {
+  const entries = readZipEntries(buffer);
+  const workbook = entries.get('xl/workbook.xml');
+  if (workbook === undefined) {
+    fail('Arbeitsmappe (xl/workbook.xml) fehlt.');
+  }
+  const xml = readZipEntry(buffer, workbook).toString('utf8');
+  return [...xml.matchAll(/<sheet\b([^>]*)\/?>/g)].map((m) => attribute(m[1] ?? '', 'name') ?? '');
+}
+
 /**
  * Zellen-Texte eines Tabellenblatts als Zeilen (leere Zellen = ""; Zeilen ohne Zellen fallen weg).
  * Zahlen bleiben der gespeicherte Text (z. B. „12.5“ oder „1.2E-2“), nie formatiert.
@@ -208,11 +236,15 @@ export function readXlsxRows(buffer: Buffer, sheet: string | null = null): strin
     name === 'xl/_rels/workbook.xml.rels' ||
     name === 'xl/sharedStrings.xml' ||
     name.startsWith('xl/worksheets/');
+  const chosen = [...entries.values()].filter((entry) => wanted(entry.name));
+  // Gesamtgrenze vor dem Entpacken (Größen laut Verzeichnis; readZipEntry prüft jede Größe danach nach).
+  const total = chosen.reduce((sum, entry) => sum + entry.uncompressedSize, 0);
+  if (total > XLSX_LIMITS.maxTotalBytes) {
+    fail(`Arbeitsmappe zu groß (${total} Bytes entpackt, höchstens ${XLSX_LIMITS.maxTotalBytes}).`);
+  }
   const files = new Map<string, Buffer>();
-  for (const entry of entries.values()) {
-    if (wanted(entry.name)) {
-      files.set(entry.name, readZipEntry(buffer, entry));
-    }
+  for (const entry of chosen) {
+    files.set(entry.name, readZipEntry(buffer, entry));
   }
   const sheetPath = resolveSheetPath(files, sheet);
   const sheetXml = files.get(sheetPath)?.toString('utf8');

@@ -4,22 +4,38 @@
  * der Quelle, Commit nur über die API (verified), Branch foods-import/<run-id>, Pull Request mit Prüfsummen,
  * Zweitlauf ohne Änderung, Abbruch außerhalb von main.
  */
-import { mkdirSync, mkdtempSync, readFileSync, rmSync, writeFileSync } from 'node:fs';
+import { existsSync, mkdirSync, mkdtempSync, readFileSync, rmSync, writeFileSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { dirname, join } from 'node:path';
 
 import { foodSchema } from '@fitnessapp/core';
 import { afterEach, describe, expect, it } from 'vitest';
 
-import { runFoodsImport, type FoodsImportDeps } from './foods-import';
+import {
+  MAX_REVIEW_SHARE,
+  reviewShareNote,
+  runFoodsImport,
+  type FoodsImportDeps,
+} from './foods-import';
 import { BOT_LOGIN, type GitHubApi } from './github-api';
 import { integrityDepsFromEnv } from './integrity-env';
 import { checkSourcesIntegrity } from './integrity';
 import type { FoodMapping, MappingItem } from './mapping';
 import { sha256Hex } from './extract-source';
-import { TEST_SOURCE, testOriginal } from './test-helpers';
+import { fetchSourceOriginal } from './download';
+import {
+  buildZip,
+  downloadPageHtml,
+  fakeSite,
+  fetchedOf,
+  TEST_PAGE_SOURCE,
+  TEST_SOURCE,
+  testOriginal,
+} from './test-helpers';
 
 const dirs: string[] = [];
+const PINNED_SOURCE = { ...TEST_SOURCE, originalSha256: sha256Hex(testOriginal()) };
+const PINNED_PAGE_SOURCE = { ...TEST_PAGE_SOURCE, originalSha256: sha256Hex(testOriginal()) };
 afterEach(() => {
   for (const dir of dirs.splice(0)) {
     rmSync(dir, { recursive: true, force: true });
@@ -145,10 +161,13 @@ function deps(dir: string, api: FakeApi, extra: Partial<FoodsImportDeps> = {}): 
     runId: '4711',
     refName: 'main',
     now: () => new Date('2026-10-11T12:00:00.000Z'),
-    download: (url) =>
-      url === TEST_SOURCE.url ? Promise.resolve(testOriginal()) : Promise.reject(new Error('404')),
+    download: (def) =>
+      def.url === TEST_SOURCE.url
+        ? Promise.resolve(fetchedOf(testOriginal()))
+        : Promise.reject(new Error('404')),
     api,
-    sources: [TEST_SOURCE],
+    // NB1: Import nur mit festgenagelter Prüfsumme.
+    sources: [PINNED_SOURCE],
     ...extra,
   };
 }
@@ -331,5 +350,160 @@ describe('foods-import (Ende zu Ende, Test-Quelle)', () => {
     );
     expect(pinned.exitCode).toBe(1);
     expect(pinned.markdown).toMatch(/andere Prüfsumme/);
+  });
+});
+
+describe('foods-import mit Download-Seite (blsdb.de, Umsetzungsstand N2b)', () => {
+  const PAGE = TEST_PAGE_SOURCE.url;
+  const FILE = 'https://daten.example.org/download?token=*';
+  const pageDeps = (site: ReturnType<typeof fakeSite>): Partial<FoodsImportDeps> => ({
+    sources: [PINNED_PAGE_SOURCE],
+    download: (def) => fetchSourceOriginal(def, site.fetch, { retryDelaysMs: [] }),
+  });
+
+  it('import über ZIP-Download: Seiten-Adresse und Dateiname des Eintrags in SOURCE.json, Prüfsumme der xlsx', async () => {
+    const dir = workdir();
+    const site = fakeSite({
+      [PAGE]: { body: downloadPageHtml(['/download?token=A1B2-C3D4']) },
+      [FILE]: {
+        body: buildZip({ 'BLS/original.xlsx': testOriginal(), 'BLS/Doku.pdf': '%PDF' }),
+        headers: { 'content-disposition': 'attachment; filename="BLS_4_0.zip"' },
+      },
+    });
+    const result = await runFoodsImport(
+      { source: 'bls', version: '4.0', mode: 'import' },
+      deps(dir, fakeApi(), pageDeps(site)),
+    );
+    expect(result.exitCode).toBe(0);
+    const manifest = JSON.parse(
+      readFileSync(join(dir, 'content/sources/bls/4.0/SOURCE.json'), 'utf8'),
+    );
+    expect(manifest).toMatchObject({
+      url: PAGE,
+      original_filename: 'original.xlsx',
+      original_sha256: sha256Hex(testOriginal()),
+    });
+    expect(result.markdown).toContain(
+      'Geladen über: https://daten.example.org/download?token=A1B2…',
+    );
+    expect(result.markdown).toContain('aus ZIP entpackt');
+
+    // Späterer Lauf: neuer Code, aber andere Datei → Abbruch (festgenagelte Prüfsumme; ohne sie: weicht vom
+    // ersten Import ab).
+    const changed = fakeSite({
+      [PAGE]: { body: downloadPageHtml(['/download?token=NEU9-8765']) },
+      [FILE]: { body: testOriginal([['Z1', 'Neu', '', 1, '', 1, 1, 1, 1, 1, 1, 1]]) },
+    });
+    const api = fakeApi();
+    const second = await runFoodsImport(
+      { source: 'bls', version: '4.0', mode: 'import' },
+      deps(dir, api, pageDeps(changed)),
+    );
+    expect(second.exitCode).toBe(1);
+    expect(second.markdown).toMatch(/andere Prüfsumme als in sources.ts festgelegt/);
+    expect(api.calls).toEqual([]);
+    const unpinned = await runFoodsImport(
+      { source: 'bls', version: '4.0', mode: 'kandidaten' },
+      deps(dir, fakeApi(), { ...pageDeps(changed), sources: [TEST_PAGE_SOURCE] }),
+    );
+    expect(unpinned.exitCode).toBe(1);
+    expect(unpinned.markdown).toMatch(/weicht vom ersten Import ab/);
+  });
+
+  it('kandidaten: Fehler beim Laden → Zusammenfassung mit Diagnose (Links, ZIP-Einträge)', async () => {
+    const dir = workdir();
+    const noLink = fakeSite({ [PAGE]: { body: downloadPageHtml(['/faq', '/impressum']) } });
+    const result = await runFoodsImport(
+      { source: 'bls', version: '4.0', mode: 'kandidaten' },
+      deps(dir, fakeApi(), pageDeps(noLink)),
+    );
+    expect(result.exitCode).toBe(1);
+    expect(result.markdown).toMatch(/❌ foods-import: Original-Datei nicht geladen/);
+    expect(result.markdown).toMatch(/Links auf der Seite \(2/);
+
+    const csvZip = fakeSite({
+      [PAGE]: { body: downloadPageHtml(['/download?token=A1B2-C3D4']) },
+      [FILE]: { body: buildZip({ 'BLS_4_0_Daten.csv': 'SBLS;ST\n', 'LIESMICH.txt': 'x' }) },
+    });
+    const zipResult = await runFoodsImport(
+      { source: 'bls', version: '4.0', mode: 'kandidaten' },
+      deps(dir, fakeApi(), pageDeps(csvZip)),
+    );
+    expect(zipResult.exitCode).toBe(1);
+    expect(zipResult.markdown).toMatch(/`BLS_4_0_Daten\.csv`.*`LIESMICH\.txt`/);
+  });
+
+  it('kandidaten: Datei nicht lesbar (falsches Blatt) → Diagnose mit Blättern und Einträgen; Erfolg → Kopfzeile', async () => {
+    const dir = workdir();
+    const site = fakeSite({
+      [PAGE]: { body: downloadPageHtml(['/download?token=A1B2-C3D4']) },
+      [FILE]: { body: testOriginal() },
+    });
+    const wrongSheet = await runFoodsImport(
+      { source: 'bls', version: '4.0', mode: 'kandidaten' },
+      deps(dir, fakeApi(), {
+        ...pageDeps(site),
+        sources: [{ ...TEST_PAGE_SOURCE, sheet: 'Daten' }],
+      }),
+    );
+    expect(wrongSheet.exitCode).toBe(1);
+    expect(wrongSheet.markdown).toMatch(/Original-Datei nicht lesbar/);
+    expect(wrongSheet.markdown).toMatch(/Tabellenblätter: BLS/);
+    const ok = await runFoodsImport(
+      { source: 'bls', version: '4.0', mode: 'kandidaten' },
+      deps(dir, fakeApi(), pageDeps(site)),
+    );
+    expect(ok.exitCode).toBe(0);
+    expect(ok.markdown).toMatch(/Kopfzeile \(erste 12 von 12 Spalten\): 0: SBLS/);
+    expect(ok.markdown).not.toMatch(/370/);
+  });
+});
+
+describe('Wächter-Nachtrag blsdb, NB1', () => {
+  it('Modus import ohne festgenagelte Prüfsumme (originalSha256 = null) → Abbruch, nichts geschrieben', async () => {
+    const dir = workdir();
+    const api = fakeApi();
+    const result = await runFoodsImport(
+      { source: 'bls', version: '4.0', mode: 'import' },
+      deps(dir, api, { sources: [TEST_SOURCE] }),
+    );
+    expect(result.exitCode).toBe(1);
+    expect(result.markdown).toMatch(
+      /Kein Import: .*noch keine Prüfsumme \(`originalSha256`\) festgenagelt/,
+    );
+    expect(result.markdown).toContain(sha256Hex(testOriginal()));
+    expect(api.calls).toEqual([]);
+    expect(existsSync(join(dir, 'content/sources'))).toBe(false);
+    // Kandidaten geht weiterhin ohne Festnageln (liefert die Prüfsumme dafür).
+    const candidates = await runFoodsImport(
+      { source: 'bls', version: '4.0', mode: 'kandidaten' },
+      deps(dir, api, { sources: [TEST_SOURCE] }),
+    );
+    expect(candidates.exitCode).toBe(0);
+  });
+
+  it('Merge-Regel: mehr als 10 % „Zuordnung prüfen“ → NICHT MERGEN', () => {
+    const report = (ids: string[]) => ({
+      written: [],
+      unchanged: [],
+      skipped: [],
+      orphaned: [],
+      deviations: ids.flatMap((id) => [
+        { id, field: 'kcal' as const, file: 1, source: 2, relative: 0.5, level: 'review' as const },
+        {
+          id,
+          field: 'fat_g' as const,
+          file: 1,
+          source: 2,
+          relative: 0.5,
+          level: 'review' as const,
+        },
+      ]),
+    });
+    expect(MAX_REVIEW_SHARE).toBe(0.1);
+    expect(reviewShareNote(report(['a']), 10)).toMatch(/^Merge-Regel: .*1 von 10 \(10,0 %\)/);
+    expect(reviewShareNote(report(['a', 'b']), 10)).toMatch(
+      /NICHT MERGEN.*2 von 10 Zutaten \(20,0 %\)/,
+    );
   });
 });

@@ -4,6 +4,7 @@
  */
 import { deflateRawSync } from 'node:zlib';
 
+import type { DownloadFetch, DownloadResponse, FetchedOriginal } from './download';
 import type { SourceDefinition } from './sources';
 
 const CRC_TABLE = (() => {
@@ -27,13 +28,13 @@ function crc32(data: Buffer): number {
 }
 
 /** Baut ein ZIP-Archiv (Methode 0 = gespeichert, 8 = deflate). */
-export function buildZip(files: Record<string, string>, method: 0 | 8 = 8): Buffer {
+export function buildZip(files: Record<string, string | Buffer>, method: 0 | 8 = 8): Buffer {
   const locals: Buffer[] = [];
   const centrals: Buffer[] = [];
   let offset = 0;
   for (const [name, text] of Object.entries(files)) {
     const nameBuf = Buffer.from(name, 'utf8');
-    const data = Buffer.from(text, 'utf8');
+    const data = Buffer.isBuffer(text) ? text : Buffer.from(text, 'utf8');
     const stored = method === 8 ? deflateRawSync(data) : data;
     const crc = crc32(data);
     const local = Buffer.alloc(30);
@@ -174,7 +175,10 @@ export const TEST_SOURCE: SourceDefinition = {
   version: '4.0',
   title: 'Test-Quelle (erfunden)',
   url: 'https://example.org/quelle/v4/original.xlsx',
+  downloadPage: null,
   urlStatus: 'confirmed',
+  licenseStatus: 'confirmed',
+  confirmedBy: 'Testeintrag',
   originalFilename: 'original.xlsx',
   format: 'xlsx',
   sheet: null,
@@ -198,6 +202,65 @@ export const TEST_SOURCE: SourceDefinition = {
   columnsStatus: 'confirmed',
   license: 'CC BY 4.0',
   licenseUrl: 'https://creativecommons.org/licenses/by/4.0/deed.de',
+  licenseText: 'Test-Lizenzhinweis (erfunden).',
   attribution: 'Test-Herausgeber (2025): Test-Quelle, Version 4.0. Lizenz: CC BY 4.0.',
   changesNote: 'Testauszug.',
 };
+
+/** Erfundene Test-Quelle mit Download-Seite (wie BLS auf blsdb.de, aber Host example.org). */
+export const TEST_PAGE_SOURCE: SourceDefinition = {
+  ...TEST_SOURCE,
+  url: 'https://daten.example.org/download',
+  downloadPage: { linkPath: '/download', tokenParam: 'token', redirectHosts: [] },
+};
+
+/** Ergebnis von `fetchSourceOriginal` für eine direkt geladene Datei (Tests). */
+export function fetchedOf(data: Buffer, downloadUrl = TEST_SOURCE.url): FetchedOriginal {
+  return { data, filename: null, container: 'datei', details: [], downloadUrl };
+}
+
+/** Antwort einer Test-Webseite. */
+export interface FakeRoute {
+  readonly status?: number;
+  readonly body: Buffer | string;
+  readonly headers?: Record<string, string>;
+  /** Adresse nach Weiterleitung (Standard: die angefragte). */
+  readonly redirectTo?: string;
+}
+
+/**
+ * Erfundene Website: Adresse → Antwort; `token=…` in der Anfrage zählt als beliebiger Code (`token=*`).
+ * Merkt sich alle Anfragen mit Kopfzeilen.
+ */
+export function fakeSite(routes: Record<string, FakeRoute>): {
+  fetch: DownloadFetch;
+  requests: { url: string; headers: Record<string, string> }[];
+} {
+  const requests: { url: string; headers: Record<string, string> }[] = [];
+  const fetchImpl: DownloadFetch = (url, init) => {
+    requests.push({ url, headers: init?.headers ?? {} });
+    const key = url.replace(/token=[^&]*/, 'token=*');
+    const route = routes[url] ?? routes[key];
+    const headers = new Map(
+      Object.entries(route?.headers ?? {}).map(([k, v]) => [k.toLowerCase(), v]),
+    );
+    const body = route === undefined ? Buffer.from('nicht gefunden') : Buffer.from(route.body);
+    const status = route === undefined ? 404 : (route.status ?? 200);
+    const response: DownloadResponse = {
+      ok: status >= 200 && status < 300,
+      status,
+      url: route?.redirectTo ?? url,
+      headers: { get: (name) => headers.get(name.toLowerCase()) ?? null },
+      arrayBuffer: () => Promise.resolve(new Uint8Array(body).buffer as ArrayBuffer),
+    };
+    return Promise.resolve(response);
+  };
+  return { fetch: fetchImpl, requests };
+}
+
+/** Download-Seite im Stil von blsdb.de mit den angegebenen Links. */
+export function downloadPageHtml(links: readonly string[], extra = ''): string {
+  return `<!DOCTYPE html><html><head><title>BLS Download</title></head><body><h1>Download</h1>${links
+    .map((href) => `<a class="btn" href="${href}">Download BLS-Daten</a>`)
+    .join('')}${extra}</body></html>`;
+}

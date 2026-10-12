@@ -22,7 +22,7 @@ import { pathToFileURL } from 'node:url';
 
 import { z } from 'zod';
 
-import { downloadOriginal } from './download';
+import { fetchSourceOriginal } from './download';
 import { commitProvenance, githubApi, importRunProvenance } from './github-api';
 import { type IntegrityDeps, NO_SYMLINK_PATHS } from './integrity';
 import { SOURCES_DIR } from './extract-source';
@@ -49,6 +49,15 @@ const allowlistSchema = z.array(
       license: z.string(),
       attribution: z.string(),
       originalSha256: z.string().nullable(),
+      // Fehlt in älteren Ständen von main (vor der Umstellung auf blsdb.de) = Datei-Adresse direkt.
+      downloadPage: z
+        .object({
+          linkPath: z.string().startsWith('/'),
+          tokenParam: z.string().min(1),
+          redirectHosts: z.array(z.string().min(1)),
+        })
+        .nullable()
+        .optional(),
       format: z.enum(['xlsx', 'csv']),
       keyColumn: z.number().int().min(0),
     })
@@ -150,7 +159,7 @@ export function integrityDepsFromEnv(repoRoot: string, env: NodeJS.ProcessEnv): 
       return importRunProvenance(api, runId);
     },
     loadMainSources: () => loadSourcesFromRef(repoRoot, base),
-    download: (url) => downloadOriginal(url),
+    download: async (def) => (await fetchSourceOriginal(def)).data,
     listSourceDirs: () => {
       if (!existsSync(sourcesRoot)) {
         return [];
