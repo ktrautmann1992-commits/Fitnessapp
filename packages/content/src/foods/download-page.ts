@@ -13,11 +13,18 @@ import { decodeXmlText } from './xlsx';
 /** Fehler beim Laden der Quelle – mit Diagnose-Zeilen für die Zusammenfassung des Laufs (Markdown). */
 export class SourceDownloadError extends Error {
   readonly diagnostics: readonly string[];
+  /** Beschreibung der ersten Seite (Download-Seite), für einen aufklappbaren Block. */
+  readonly firstPage: readonly string[];
 
-  constructor(message: string, diagnostics: readonly string[] = []) {
+  constructor(
+    message: string,
+    diagnostics: readonly string[] = [],
+    firstPage: readonly string[] = [],
+  ) {
     super(message);
     this.name = 'SourceDownloadError';
     this.diagnostics = diagnostics;
+    this.firstPage = firstPage;
   }
 }
 
@@ -63,10 +70,64 @@ export function maskUrl(url: string): string {
         parsed.searchParams.set(key, `${value.slice(0, 4)}…`);
       }
     }
-    return decodeURI(parsed.toString());
+    return maskTokens(decodeURI(parsed.toString()));
   } catch {
-    return url.slice(0, 200);
+    return maskTokens(url.slice(0, 200));
   }
+}
+
+/** Dateiendungen, deren Namen nicht als Code gelten (z. B. `BLS_4_0_Daten_2025_DE.xlsx` bleibt lesbar). */
+const FILE_EXTENSION =
+  /^\.(?:xlsx?|zip|csv|pdf|js|mjs|css|html?|json|txt|png|jpe?g|svg|gif|webp|woff2?)\b/i;
+
+/**
+ * Code-artig: nur Ziffern, oder mindestens zwei Wechsel zwischen Buchstabe und Ziffer (Hex, UUID, Token). Wörter mit
+ * angehängter Zahl wie „Proteinbedarf2025“ zählen nicht (Wächter NK1).
+ */
+function looksLikeCode(run: string): boolean {
+  if (/^[\d-]+$/.test(run)) {
+    return true;
+  }
+  return (run.match(/[A-Za-z](?=\d)|\d(?=[A-Za-z])/g)?.length ?? 0) >= 2;
+}
+
+const SECRET_WORDS = ['token', 'csrf', 'key', 'session', 'auth', 'sig', 'nonce'];
+const capitalize = (w: string) => `${w.charAt(0).toUpperCase()}${w.slice(1)}`;
+
+/**
+ * Wert hinter einem Schlüsselwort (`token=…`, `"csrf": "…"`, `downloadToken="…"`). Das Schlüsselwort steht an einer
+ * Wortgrenze (Wortanfang oder camelCase-Grenze) und endet dort (kein Kleinbuchstabe danach) – „Monkey“, „keyword“,
+ * „Signatur“ zählen nicht (Wächter NK1). Zwischen Schlüsselwort und „=“/„:“ höchstens 30 Zeichen, damit die Regex
+ * bei Ketten wie „tokentoken…“ linear bleibt (NS1).
+ */
+const SECRET_KEY_VALUE = new RegExp(
+  `((?:(?<![A-Za-z])(?:${SECRET_WORDS.flatMap((w) => [w, capitalize(w), w.toUpperCase()]).join('|')})|(?<=[a-z])(?:${SECRET_WORDS.map(capitalize).join('|')}))(?![a-z])[\\w-]{0,30}["']?\\s{0,5}[:=]\\s{0,5}["']?)([^"'\\s&,;}<>…]{4})[^"'\\s&,;}<>…]+`,
+  'g',
+);
+
+/**
+ * Codes/Token in beliebigem Text kürzen (Protokoll, Summary, Actions-Logs; Wächter „Diagnose“ S2):
+ * - Werte von Parametern (`?`, `&`, `;`, `#` … `name=`) ab 5 Zeichen → 4 Zeichen + „…“;
+ * - Werte hinter Namen wie token/csrf/key/session/auth/sig/nonce (`"token":"…"`, `downloadToken="…"`);
+ * - Blöcke wie `6NHL-47N5-K4S1-…` (≥ 3 Gruppen à 4 Zeichen);
+ * - jede Folge aus ≥ 16 Zeichen `[A-Za-z0-9_-]` mit mindestens einer Ziffer (UUID, Hex-Code, Pfad-Segment) –
+ *   außer Dateinamen vor einer bekannten Endung.
+ */
+export function maskTokens(text: string): string {
+  return text
+    .replace(/([?&;#][\w.%-]{0,40}=)([^&"'\s<>#]{4})[^&"'\s<>#]+/g, '$1$2…')
+    .replace(SECRET_KEY_VALUE, '$1$2…')
+    .replace(
+      /(?<![A-Za-z0-9_-])[A-Za-z0-9_-]{16,}(?![A-Za-z0-9_-])/g,
+      (run, offset: number, all: string) =>
+        looksLikeCode(run) &&
+        // Bezeichner mit „_“ (z. B. Spaltennamen wie E200_Sorbinsaeure_in_mg_100g) sind keine Codes (NK1).
+        !run.includes('_') &&
+        !FILE_EXTENSION.test(all.slice(offset + run.length, offset + run.length + 8))
+          ? `${run.slice(0, 4)}…`
+          : run,
+    )
+    .replace(/\b([A-Za-z0-9]{4})(?:-[A-Za-z0-9]{4}){2,}\b/g, '$1…');
 }
 
 /** Alle `href`-Ziele im HTML (Entitäten aufgelöst, relativ zur Seite aufgelöst, ungültige weggelassen). */

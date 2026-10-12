@@ -454,7 +454,11 @@ describe('foods-import mit Download-Seite (blsdb.de, Umsetzungsstand N2b)', () =
       deps(dir, fakeApi(), pageDeps(site)),
     );
     expect(ok.exitCode).toBe(0);
-    expect(ok.markdown).toMatch(/Kopfzeile \(erste 12 von 12 Spalten\): 0: SBLS/);
+    expect(ok.markdown).toMatch(/Kopfzeile \(erste 12 von 12 Spalten\): 0: `SBLS`/);
+    // NS2: Die Prüfsumme steht vollständig (64 Hex-Zeichen) in der Summary – nötig zum Festnageln (NB1).
+    const sha = sha256Hex(testOriginal());
+    expect(sha).toMatch(/^[0-9a-f]{64}$/);
+    expect(ok.markdown).toContain(`- SHA-256 Original: \`${sha}\``);
     expect(ok.markdown).not.toMatch(/370/);
   });
 });
@@ -480,6 +484,8 @@ describe('Wächter-Nachtrag blsdb, NB1', () => {
       deps(dir, api, { sources: [TEST_SOURCE] }),
     );
     expect(candidates.exitCode).toBe(0);
+    // NS2: vollständige Prüfsumme im Hinweis zum Festnageln.
+    expect(candidates.markdown).toContain(`diese SHA-256 (\`${sha256Hex(testOriginal())}\`)`);
   });
 
   it('Merge-Regel: mehr als 10 % „Zuordnung prüfen“ → NICHT MERGEN', () => {

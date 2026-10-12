@@ -30,7 +30,8 @@ void main('foods-import', async () => {
       runId: process.env.GITHUB_RUN_ID ?? '0',
       refName: process.env.GITHUB_REF_NAME ?? '',
       now: () => new Date(),
-      download: (def) => fetchSourceOriginal(def),
+      download: (def) =>
+        fetchSourceOriginal(def, undefined, { describePages: mode === 'kandidaten' }),
       ...(token && repository ? { api: githubApi(token, repository) } : {}),
     },
   );

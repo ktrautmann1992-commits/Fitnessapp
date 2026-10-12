@@ -12,6 +12,7 @@ import {
   selectDownloadLink,
   SourceDownloadError,
 } from './download-page';
+import { describeHtmlPage, mdCode } from './html-diagnosis';
 import { printableStart, type UnpackedOriginal, unpackOriginal } from './original-format';
 import type { SourceDefinition } from './sources';
 
@@ -137,6 +138,20 @@ export async function downloadOriginal(
 export interface FetchedOriginal extends UnpackedOriginal {
   /** Tatsächlich geladene Adresse (Codes gekürzt) – nur fürs Protokoll, nie für die Prüfung. */
   readonly downloadUrl: string;
+  /** Beschreibung der Download-Seite (nur bei `downloadPage`), für einen aufklappbaren Block. */
+  readonly firstPage?: readonly string[];
+}
+
+/** Namen der Cookies, die eine Antwort setzt (nur Namen, nie Werte – für die Diagnose). */
+export function setCookieNames(response: DownloadResponse): string[] {
+  const raw =
+    response.headers.getSetCookie?.() ??
+    (response.headers.get('set-cookie') ?? '').split(/,(?=\s*[^;,=\s]+=)/).filter(Boolean);
+  return [
+    ...new Set(
+      raw.map((c) => c.split('=', 1)[0]?.trim() ?? '').filter((name) => /^[^;\s]+$/.test(name)),
+    ),
+  ];
 }
 
 function hostOf(url: string): string {
@@ -167,7 +182,11 @@ export async function fetchSourceOriginal(
     readonly downloadPage?: SourceDefinition['downloadPage'] | undefined;
   },
   fetchImpl: DownloadFetch = fetch as unknown as DownloadFetch,
-  options: DownloadOptions & { readonly maxBytes?: number } = {},
+  options: DownloadOptions & {
+    readonly maxBytes?: number;
+    /** true = Beschreibung der Download-Seite auch bei Erfolg mitliefern (Modus „kandidaten“, Wächter K3). */
+    readonly describePages?: boolean;
+  } = {},
 ): Promise<FetchedOriginal> {
   const maxBytes = options.maxBytes ?? MAX_ORIGINAL_BYTES;
   if (!def.url.startsWith('https://')) {
@@ -178,80 +197,107 @@ export async function fetchSourceOriginal(
   let fileUrl = def.url;
   const headers: Record<string, string> = {};
   const details: string[] = [];
+  // Beschreibung der Download-Seite erst bei Bedarf (Fehler oder Modus „kandidaten“) – reine Textauswertung.
+  const firstPage: { describe: (() => string[]) | null } = { describe: null };
 
-  if (page !== null) {
-    const response = await fetchWithRetry(def.url, fetchImpl, options, {
-      Accept: 'text/html,application/xhtml+xml',
-    });
-    const finalUrl = response.url || def.url;
-    const body = await readBody(response, MAX_PAGE_BYTES).catch((error: Error) => {
-      throw new SourceDownloadError(`Download-Seite ${def.url}: ${error.message}`);
-    });
-    const html = body.toString('utf8');
-    const info = `HTTP ${response.status}, Typ ${response.headers.get('content-type') ?? 'unbekannt'}, ${body.length} Bytes, Adresse ${maskUrl(finalUrl)}`;
-    const challenge = detectChallenge(html, finalUrl);
-    if (challenge !== null) {
-      throw new SourceDownloadError(`${CHALLENGE_MESSAGE} (${challenge})`, [
+  try {
+    return await loadOriginal();
+  } catch (error) {
+    if (
+      error instanceof SourceDownloadError &&
+      firstPage.describe !== null &&
+      error.firstPage.length === 0
+    ) {
+      throw new SourceDownloadError(error.message, error.diagnostics, firstPage.describe());
+    }
+    throw error;
+  }
+
+  async function loadOriginal(): Promise<FetchedOriginal> {
+    if (page !== null) {
+      const response = await fetchWithRetry(def.url, fetchImpl, options, {
+        Accept: 'text/html,application/xhtml+xml',
+      });
+      const finalUrl = response.url || def.url;
+      const body = await readBody(response, MAX_PAGE_BYTES).catch((error: Error) => {
+        throw new SourceDownloadError(`Download-Seite ${def.url}: ${error.message}`);
+      });
+      const html = body.toString('utf8');
+      // Nur Beschreibung der geladenen Seite – löst keine Anfrage aus.
+      const cookieNames = setCookieNames(response);
+      firstPage.describe = () => describeHtmlPage(html, finalUrl, cookieNames);
+      const info = `HTTP ${response.status}, Typ ${mdCode(response.headers.get('content-type') ?? 'unbekannt', 100)}, ${body.length} Bytes, Adresse ${mdCode(maskUrl(finalUrl))}`;
+      const challenge = detectChallenge(html, finalUrl);
+      if (challenge !== null) {
+        throw new SourceDownloadError(`${CHALLENGE_MESSAGE} (${challenge})`, [
+          `Download-Seite: ${info}`,
+          `Anfang ${mdCode(printableStart(body))}`,
+        ]);
+      }
+      if (!response.ok) {
+        throw new SourceDownloadError(
+          `Download-Seite ${def.url} nicht geladen: HTTP ${response.status}. Adresse in packages/content/src/foods/sources.ts prüfen (docs/SETUP.md Teil J).`,
+          [`Download-Seite: ${info}`],
+        );
+      }
+      if (!finalUrl.startsWith('https://') || hostOf(finalUrl) !== pageHost) {
+        throw new SourceDownloadError(
+          `Download-Seite leitet auf eine fremde Adresse weiter (${maskUrl(finalUrl)}) – erwartet https://${pageHost}.`,
+          [`Download-Seite: ${info}`],
+        );
+      }
+      fileUrl = selectDownloadLink(html, def.url, page);
+      details.push(
         `Download-Seite: ${info}`,
-        `Anfang „${printableStart(body)}“`,
-      ]);
+        `Download-Link aus der Seite: \`${maskUrl(fileUrl)}\``,
+      );
+      headers.Referer = def.url;
+      const cookies = cookieHeader(response);
+      if (cookies !== null) {
+        headers.Cookie = cookies;
+      }
+    }
+
+    const response = await fetchWithRetry(fileUrl, fetchImpl, options, headers);
+    const finalUrl = response.url || fileUrl;
+    const allowedHosts = new Set([pageHost, ...(page?.redirectHosts ?? [])]);
+    if (!finalUrl.startsWith('https://')) {
+      throw new SourceDownloadError(
+        `Weiterleitung auf eine Nicht-HTTPS-Adresse: ${maskUrl(finalUrl)}`,
+      );
+    }
+    if (page !== null && !allowedHosts.has(hostOf(finalUrl))) {
+      throw new SourceDownloadError(
+        `Download leitet auf den fremden Host ${hostOf(finalUrl)} weiter – erlaubt: ${[...allowedHosts].join(', ')} (sources.ts \`redirectHosts\`, nur nach Prüfung per Gründer-PR).`,
+      );
     }
     if (!response.ok) {
       throw new SourceDownloadError(
-        `Download-Seite ${def.url} nicht geladen: HTTP ${response.status}. Adresse in packages/content/src/foods/sources.ts prüfen (docs/SETUP.md Teil J).`,
-        [`Download-Seite: ${info}`],
+        `Original-Datei nicht geladen (${maskUrl(fileUrl)}): HTTP ${response.status}. Adresse in packages/content/src/foods/sources.ts prüfen (docs/SETUP.md Teil J).`,
+        [
+          `Antwort: HTTP ${response.status}, Typ ${mdCode(response.headers.get('content-type') ?? 'unbekannt', 100)}`,
+        ],
       );
     }
-    if (!finalUrl.startsWith('https://') || hostOf(finalUrl) !== pageHost) {
-      throw new SourceDownloadError(
-        `Download-Seite leitet auf eine fremde Adresse weiter (${maskUrl(finalUrl)}) – erwartet https://${pageHost}.`,
-        [`Download-Seite: ${info}`],
-      );
-    }
-    fileUrl = selectDownloadLink(html, def.url, page);
-    details.push(`Download-Seite: ${info}`, `Download-Link aus der Seite: \`${maskUrl(fileUrl)}\``);
-    headers.Referer = def.url;
-    const cookies = cookieHeader(response);
-    if (cookies !== null) {
-      headers.Cookie = cookies;
-    }
+    const buffer = await readBody(response, maxBytes).catch((error: Error) => {
+      throw new SourceDownloadError(error.message);
+    });
+    const unpacked = unpackOriginal(buffer, def, {
+      status: response.status,
+      contentType: response.headers.get('content-type'),
+      contentDisposition: response.headers.get('content-disposition'),
+      finalUrl,
+      cookieNames: setCookieNames(response),
+    });
+    return {
+      ...unpacked,
+      details: [...details, ...unpacked.details],
+      downloadUrl: maskUrl(fileUrl),
+      ...(options.describePages === true && firstPage.describe !== null
+        ? { firstPage: firstPage.describe() }
+        : {}),
+    };
   }
-
-  const response = await fetchWithRetry(fileUrl, fetchImpl, options, headers);
-  const finalUrl = response.url || fileUrl;
-  const allowedHosts = new Set([pageHost, ...(page?.redirectHosts ?? [])]);
-  if (!finalUrl.startsWith('https://')) {
-    throw new SourceDownloadError(
-      `Weiterleitung auf eine Nicht-HTTPS-Adresse: ${maskUrl(finalUrl)}`,
-    );
-  }
-  if (page !== null && !allowedHosts.has(hostOf(finalUrl))) {
-    throw new SourceDownloadError(
-      `Download leitet auf den fremden Host ${hostOf(finalUrl)} weiter – erlaubt: ${[...allowedHosts].join(', ')} (sources.ts \`redirectHosts\`, nur nach Prüfung per Gründer-PR).`,
-    );
-  }
-  if (!response.ok) {
-    throw new SourceDownloadError(
-      `Original-Datei nicht geladen (${maskUrl(fileUrl)}): HTTP ${response.status}. Adresse in packages/content/src/foods/sources.ts prüfen (docs/SETUP.md Teil J).`,
-      [
-        `Antwort: HTTP ${response.status}, Typ ${response.headers.get('content-type') ?? 'unbekannt'}`,
-      ],
-    );
-  }
-  const buffer = await readBody(response, maxBytes).catch((error: Error) => {
-    throw new SourceDownloadError(error.message);
-  });
-  const unpacked = unpackOriginal(buffer, def, {
-    status: response.status,
-    contentType: response.headers.get('content-type'),
-    contentDisposition: response.headers.get('content-disposition'),
-    finalUrl,
-  });
-  return {
-    ...unpacked,
-    details: [...details, ...unpacked.details],
-    downloadUrl: maskUrl(fileUrl),
-  };
 }
 
 /** xlsx ist ein ZIP-Archiv: beginnt mit „PK\x03\x04“. */

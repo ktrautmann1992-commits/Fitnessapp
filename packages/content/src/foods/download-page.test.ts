@@ -290,7 +290,7 @@ describe('Format der Antwort erkennen', () => {
         contentDisposition: 'attachment; filename="info.pdf"',
       }),
     );
-    expect(other.message).toMatch(/weder xlsx noch ZIP.*Dateiname laut Server info\.pdf/);
+    expect(other.message).toMatch(/weder xlsx noch ZIP.*Dateiname laut Server `info\.pdf`/);
   });
 
   it('Dateiname aus Content-Disposition (ohne Pfad)', () => {
@@ -305,7 +305,7 @@ describe('Format der Antwort erkennen', () => {
   it('Diagnose: Blätter, Zeilenzahl, Kopfzeile – keine Nährwerte', () => {
     const lines = diagnoseOriginal(testOriginal(), TEST_SOURCE).join('\n');
     expect(lines).toMatch(/Tabellenblätter: BLS/);
-    expect(lines).toMatch(/Kopfzeile .*0: SBLS \| 1: ST/);
+    expect(lines).toMatch(/Kopfzeile .*0: `SBLS` \| 1: `ST`/);
     expect(lines).not.toMatch(/Haferflocken|370/);
   });
 });
