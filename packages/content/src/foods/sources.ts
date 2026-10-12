@@ -93,6 +93,12 @@ export interface SourceDefinition {
   readonly originalSha256: string | null;
   /** Spalte (0-basiert) mit der Quell-ID (BLS-Schlüssel). */
   readonly keyColumn: number;
+  /**
+   * Format der Quell-ID als regulärer Ausdruck mit ^…$ (BLS 4.0: Großbuchstabe + 6 Ziffern/Großbuchstaben).
+   * Zeilen mit abweichender Quell-ID erscheinen weder in Kandidaten noch in der Namensliste, sie werden nur gezählt
+   * (Schutz vor Log-Kommandos wie `::stop-commands::` am Zeilenanfang; Wächter-Prüfung Zuordnung S2).
+   */
+  readonly keyPattern: string;
   /** Spalte (0-basiert) mit der deutschen Bezeichnung. */
   readonly nameColumn: number;
   /** Nährwert-Spalten je Feld; mehrere Einträge = Alternativen in dieser Reihenfolge. */
@@ -158,6 +164,8 @@ const BLS_4_0: SourceDefinition = {
   // 14.093.078 Bytes, 7140 Zeilen, 418 Spalten (ZIP 14.263.306 Bytes).
   originalSha256: '524bbefe25b691f5cb3de7a9f3e27fa2967aebfeabf217d99414ba7806e78c60',
   keyColumn: 0,
+  // Geprüft an allen 994 Codes der Summary des Laufs „kandidaten“ vom 12.10.2026.
+  keyPattern: '^[A-Z][0-9A-Z]{6}$',
   nameColumn: 1,
   nutrients: {
     kcal: [{ code: 'ENERCC', unit: 'kcal', convert: 'none' }],

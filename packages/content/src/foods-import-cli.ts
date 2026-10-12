@@ -35,6 +35,10 @@ void main('foods-import', async () => {
       ...(token && repository ? { api: githubApi(token, repository) } : {}),
     },
   );
+  if (result.log !== undefined) {
+    // Nur ins Actions-Log (stdout), nicht in die Zusammenfassung – Größenlimit (Modus „kandidaten“).
+    process.stdout.write(`${result.log}\n`);
+  }
   writeReport(result.markdown);
   return result.exitCode;
 });

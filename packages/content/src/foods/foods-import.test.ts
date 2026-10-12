@@ -182,6 +182,7 @@ describe('foods-import (Ende zu Ende, Test-Quelle)', () => {
     );
     expect(result.exitCode).toBe(0);
     expect(result.markdown).toContain('https://github.com/o/r/pull/99');
+    expect(result.log).toBeUndefined(); // Namensliste nur im Modus „kandidaten“
 
     // Nur benötigte Zeilen, unverändert.
     const extract = readFileSync(join(dir, 'content/sources/bls/4.0/extract.csv'), 'utf8');
@@ -312,6 +313,23 @@ describe('foods-import (Ende zu Ende, Test-Quelle)', () => {
     );
     expect(result.markdown).not.toMatch(/370/); // keine Nährwerte im Kandidatenbericht
     expect(api.calls).toEqual([]);
+    // Vollständige Namensliste nur fürs Log (stdout), nicht in der Zusammenfassung; keine Nährwerte.
+    const log = result.log ?? '';
+    expect(log.split('\n')).toEqual([
+      '=== BLS-NAMENSLISTE BEGINN ===',
+      'C133000\tHaferflocken',
+      'M141200\tJoghurt, 1,5 % Fett',
+      'F110100\tApfel, roh',
+      'T100000\tLachs "Atlantik", roh',
+      'X999999\tUnvollständig',
+      '=== BLS-NAMENSLISTE ENDE ===',
+    ]);
+    expect(log).not.toMatch(/370/);
+    expect(result.markdown).not.toContain('\t'); // Zeilen der Liste nicht in der Zusammenfassung
+    expect(result.markdown).toContain(
+      'Namensliste (Quell-ID + Bezeichnung) nur im Log dieses Laufs: 5 Zeilen',
+    );
+    expect(result.markdown).not.toContain('nicht ausgegeben');
   });
 
   it('Modus import ohne eingetragene Quell-ID → Abbruch mit Hinweis, nichts geschrieben', async () => {

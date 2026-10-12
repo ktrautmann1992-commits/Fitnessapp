@@ -194,6 +194,7 @@ describe('R18: Treffer, Negativliste und Grenzfall je Gruppe (Plan 5.1.3, W19)',
     ['Tahini', ['sesame'], []],
     ['Knollensellerie', ['celery'], []],
     ['Gemüsebrühe', ['celery'], []],
+    // Im eigenen Namen bleibt „mittelscharf“ spicy; nur die Quell-Bezeichnung wird neutralisiert (N2b, S1).
     ['Senf mittelscharf', ['mustard', 'spicy'], []],
     ['Lupinenmehl', ['lupin'], ['gluten']],
     ['Weinessig', ['sulphites'], ['alcohol']],

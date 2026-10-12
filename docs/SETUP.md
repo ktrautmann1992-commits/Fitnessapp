@@ -686,6 +686,12 @@ selbst freigeben, und eure eigenen Pull Requests bleiben frei mergebar. Ein zwei
    Lauf rot („Original-Datei nicht geladen“ oder „nicht lesbar“), steht darunter eine **Diagnose** (Antwort des
    Servers, Links der Download-Seite, ZIP-Einträge, Kopfzeile) – die ganze Zusammenfassung kopieren und Claude in
    einer Sitzung geben (siehe unten).
+   Zusätzlich steht im **Log** des Laufs (Job antippen → Schritt „Original laden, Auszug und Lebensmittel erzeugen, Pull Request öffnen“) die **vollständige Namensliste**
+   der Quelle: je Zeile `Quell-ID<TAB>Bezeichnung`, eingerahmt von `=== BLS-NAMENSLISTE BEGINN ===` und
+   `=== BLS-NAMENSLISTE ENDE ===` (nur Schlüssel und Namen, keine Nährwerte; nicht in der Summary wegen deren
+   Größenlimit). Claude schneidet sie aus dem Log aus und findet damit passende Einträge ohne weiteren Lauf. Die
+   Bezeichnungen stehen wie die ganze BLS-Datei unter **CC BY 4.0** (Namensnennung: Max Rubner-Institut) – die
+   Ausgabe im Log ist damit erlaubt.
 4. **Pflicht: Prüfsumme festnageln (vor dem ersten Import).** Oben in der Summary steht „SHA-256 Original“.
    Die ganze Summary kopieren und in einer Claude-Sitzung einfügen. Claude trägt den Wert als `originalSha256` in
    `packages/content/src/foods/sources.ts` ein → Pull Request → **ihr merged selbst**. Ohne diesen Schritt bricht der
