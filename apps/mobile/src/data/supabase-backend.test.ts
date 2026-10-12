@@ -15,7 +15,7 @@ import {
   createSupabaseBackend,
   executeWriteOp,
 } from './supabase-backend';
-import type { StepSave } from './types';
+import type { StepSave, UserRows } from './types';
 import type { WorkoutDraft } from './workout-draft';
 
 interface Call {
@@ -272,10 +272,105 @@ describe('Supabase-Modus: Speichern', () => {
     expect(calls.find((c) => c.table === 'rpc:revoke_health_data')?.args).toEqual([
       [{ p_delete_logs: false }],
     ]);
-    await backend.revokeHealthData(true);
+    await backend.revokeHealthData(true, null);
     expect(calls.filter((c) => c.table === 'rpc:revoke_health_data').at(-1)?.args).toEqual([
       [{ p_delete_logs: true }],
     ]);
+  });
+
+  it('Widerruf mit Umwandlung (7.4, R2-K4): erst revoke_health_data, dann „mag ich nicht“ über die Warteschlange', async () => {
+    const { client, calls } = fakeClient();
+    const store = createMemoryStore();
+    const backend = createSupabaseBackend(options(client, store));
+    const withIntolerance: UserRows = {
+      ...rows,
+      foodPreferences: [
+        { user_id: USER_ID, food_group: 'peanuts', kind: 'intolerance' },
+        { user_id: USER_ID, food_group: 'peanuts', kind: 'like' },
+        { user_id: USER_ID, food_group: 'fish', kind: 'like' },
+      ],
+    };
+    await backend.revokeHealthData(false, { rows: withIntolerance });
+    await backend.flush();
+    const tables = calls.map((c) => c.table);
+    const revokeAt = tables.indexOf('rpc:revoke_health_data');
+    const convertAt = tables.indexOf('rpc:replace_food_preferences');
+    expect(revokeAt).toBeGreaterThanOrEqual(0);
+    expect(convertAt).toBeGreaterThan(revokeAt);
+    const payload = JSON.stringify(calls[convertAt]?.args);
+    expect(payload).toContain('taste');
+    expect(payload).toContain('peanuts');
+    expect(payload).toContain('dislike');
+    expect(payload).not.toContain('intolerance');
+    // Nie Unverträglichkeiten auf dem Gerät (Zwischenspeicher, Warteschlange).
+    expect(JSON.stringify(store.dump())).not.toContain('intolerance');
+  });
+
+  it('Widerruf mit Umwandlung, danach offline (W12, Wächter N4 S1): Vorgang wartet, Anzeige mit Ausschluss und widerrufen', async () => {
+    let offline = false;
+    const { client, calls } = fakeClient((call) =>
+      offline && call.table === 'rpc:replace_food_preferences' ? { error: networkError } : {},
+    );
+    const store = createMemoryStore();
+    const backend = createSupabaseBackend(options(client, store));
+    const withIntolerance: UserRows = {
+      ...rows,
+      foodPreferences: [{ user_id: USER_ID, food_group: 'peanuts', kind: 'intolerance' }],
+    };
+    offline = true;
+    await backend.revokeHealthData(false, { rows: withIntolerance });
+    await backend.flush();
+    expect(calls.some((c) => c.table === 'rpc:revoke_health_data')).toBe(true);
+    expect(backend.pendingChanges()).toBe(1);
+    const queued = store.dump()[STORAGE_KEYS.syncQueue] ?? '';
+    expect(queued).toContain('peanuts');
+    expect(queued).toContain('dislike');
+    const cache = JSON.parse(store.dump()[STORAGE_KEYS.rowsCache] ?? '{}') as {
+      rows: UserRows;
+    };
+    expect(cache.rows.foodPreferences).toEqual([
+      { user_id: USER_ID, food_group: 'peanuts', kind: 'dislike' },
+    ]);
+    expect(
+      cache.rows.consents.find((c) => c.consent_type === 'health_data')?.revoked_at,
+    ).not.toBeNull();
+    expect(JSON.stringify(store.dump())).not.toContain('intolerance');
+    // Wieder online → die Umwandlung wird gesendet.
+    offline = false;
+    await backend.flush();
+    expect(backend.pendingChanges()).toBe(0);
+  });
+
+  it('Widerruf ohne Zustimmung: nichts eingelesen, keine Umwandlung (R2-K4)', async () => {
+    const { client, calls } = fakeClient();
+    const store = createMemoryStore();
+    const backend = createSupabaseBackend(options(client, store));
+    await backend.revokeHealthData(false, null);
+    await backend.flush();
+    expect(calls.some((c) => c.table === 'rpc:replace_food_preferences')).toBe(false);
+    expect(backend.pendingChanges()).toBe(0);
+  });
+
+  it('Unverträglichkeiten löschen (NK2): sofort per delete, ohne Einwilligung, nie Warteschlange; offline → Fehler', async () => {
+    const { client, calls } = fakeClient();
+    const store = createMemoryStore();
+    const backend = createSupabaseBackend(options(client, store));
+    await backend.deleteStoredIntolerances();
+    const call = calls.find((c) => c.table === 'food_preferences');
+    expect(call?.chain).toEqual(['delete', 'eq', 'eq']);
+    expect(call?.args).toEqual([[], ['user_id', USER_ID], ['kind', 'intolerance']]);
+    expect(backend.pendingChanges()).toBe(0);
+    const failing = fakeClient(() => ({ error: networkError }));
+    const offline = createSupabaseBackend(options(failing.client, createMemoryStore()));
+    await expect(offline.deleteStoredIntolerances()).rejects.toMatchObject({ code: 'online_only' });
+    expect(offline.pendingChanges()).toBe(0);
+  });
+
+  it('Ernährung erst ab Etappe N7: kein Schritt nutrition_setup, kein Bestand (R2-S3)', async () => {
+    const { client } = fakeClient();
+    const backend = createSupabaseBackend(options(client));
+    expect(backend.supportsNutrition).toBe(false);
+    expect(await backend.loadNutritionLibrary({ demo: true })).toBeNull();
   });
 
   it('Widerruf anderer Einwilligungen: setzt revoked_at nur bei aktiven Einwilligungen dieser Art', async () => {
@@ -917,7 +1012,7 @@ describe('Supabase-Modus: Tagebuch-Warteschlange', () => {
     );
     await backend.submitWorkout(draftOf(true), logPayload());
     online = true;
-    await backend.revokeHealthData(false);
+    await backend.revokeHealthData(false, null);
     // Während des Widerrufs wird nichts gesendet (offline vorher: gar nicht).
     expect(calls.filter((c) => c.table === 'rpc:save_session_log')).toHaveLength(0);
     expect(queueAtRevoke).toContain('Kraft-Einheit');
@@ -938,7 +1033,7 @@ describe('Supabase-Modus: Tagebuch-Warteschlange', () => {
     const s = stores();
     const { backend } = make(() => ({ error: networkError }), createMemoryStore(), s);
     await backend.submitWorkout(draftOf(true), logPayload());
-    await backend.revokeHealthData(true).catch(() => undefined);
+    await backend.revokeHealthData(true, null).catch(() => undefined);
     expect(s.logQueueStore.peek()).toBeNull();
   });
 

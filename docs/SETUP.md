@@ -760,6 +760,23 @@ gewollt – so fällt jede Änderung auf. Ausweg:
 
 ---
 
+## Teil K – Freigabe-Checkliste Ernährung vor Supabase- und Store-Builds (Phase 5, harte Bedingung)
+
+Bevor ihr einen Build **mit Supabase-Werten** oder einen **Store-Build** (TestFlight, Play Store) startet, muss diese
+Liste abgehakt sein (Wächter N4 S5). Im Testmodus (Vercel-Vorschau ohne Supabase) gilt sie noch nicht.
+
+- [ ] Hilfe-Stellen bei Essstörungen fachlich geprüft: **Deutschland** (Beratung des BIÖG, früher BZgA),
+      **Österreich** (Hotline für Essstörungen), **Schweiz** (Arbeitsgemeinschaft Ess-Störungen AES) – Namen,
+      Erreichbarkeit und Telefonnummern bestätigt.
+- [ ] Notrufnummern geprüft: 112 (DE/AT/CH) und **144** (Rettungsdienst CH) – Text in der App ergänzt.
+- [ ] Texte eintragen lassen (Claude-Sitzung, Datei `apps/mobile/src/i18n/de-nutrition.ts`, Abschnitt `help`) und den
+      Vermerk „VOR VERÖFFENTLICHUNG PRÜFEN“ entfernen.
+
+So geht's am Handy: In einer Claude-Sitzung schreiben „Hilfe-Stellen Essstörungen: geprüfte Nummern eintragen“ und die
+geprüften Angaben mitschicken → Pull Request prüfen → mergen.
+
+---
+
 ## Inhalte erzeugen und freigeben am Handy
 
 Alle Inhalte (Übungen, Plan-Vorlagen) liegen als Dateien im Repository. Der Weg ist immer:

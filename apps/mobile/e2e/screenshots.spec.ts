@@ -150,6 +150,14 @@ for (const scheme of ['light', 'dark'] as const) {
     await page.getByRole('radio', { name: /^Täglich frisch/ }).click();
     await shot('kochmodus');
     await next();
+    await heading('Alltag und Training');
+    await page.getByRole('radio', { name: /^Sitzend mit Bewegung/ }).click();
+    await page
+      .getByRole('radiogroup', { name: 'Wann trainierst du meistens?' })
+      .getByRole('radio', { name: 'Abends' })
+      .click();
+    await shot('alltag-training');
+    await next();
     await heading('Geschafft!');
     await expect(page.getByTestId('done-plan')).toBeVisible();
     await shot('fertig');
@@ -235,5 +243,35 @@ for (const scheme of ['light', 'dark'] as const) {
     await page.getByRole('button', { name: 'Abbrechen' }).click();
     await page.getByRole('button', { name: 'Gesundheitsdaten: Widerrufen' }).click();
     await shot('widerruf-dialog');
+    await page.getByRole('button', { name: 'Abbrechen' }).click();
+    // Ernährung (Phase 5, Etappe N4): Karte „Essen heute“, Tag, Rezept, Einstellungen – mit Beispiel-Rezepten
+    // (Testwerte), solange der echte Katalog fehlt.
+    await page.getByTestId('settings-nutrition-open').scrollIntoViewIfNeeded();
+    await shot('einstellungen-ernaehrung');
+    await page.goto('/ernaehrung');
+    await expect(page.getByTestId('nutrition-day')).toBeVisible();
+    await shot('ernaehrung-ohne-rezepte');
+    if ((await page.getByTestId('nutrition-demo-use').count()) > 0) {
+      await page.getByTestId('nutrition-demo-use').click();
+    } else {
+      // Bündel hat schon echte Rezepte: Beispiel-Rezepte nur für die Bilder erzwingen (K7).
+      await page.evaluate(() =>
+        window.localStorage.setItem('fitnessapp.nutrition-demo.v1', JSON.stringify('force')),
+      );
+      await page.goto('/ernaehrung');
+    }
+    await expect(page.getByTestId('nutrition-meals')).toBeVisible();
+    await shot('ernaehrung-tag');
+    await page.getByTestId('nutrition-meals').scrollIntoViewIfNeeded();
+    await shot('ernaehrung-mahlzeiten');
+    await page.getByTestId('meal-lunch').click();
+    await expect(page.getByTestId('recipe')).toBeVisible();
+    await shot('rezept');
+    await page.getByTestId('recipe-contains').scrollIntoViewIfNeeded();
+    await shot('rezept-enthaelt');
+    await page.goto('/');
+    await heading('Heute');
+    await page.getByTestId('today-nutrition-card').scrollIntoViewIfNeeded();
+    await shot('heute-essen');
   });
 }

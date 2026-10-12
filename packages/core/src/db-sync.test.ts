@@ -87,6 +87,14 @@ function quotedListAfter(sql: string, marker: string): string[] {
   return [...sql.slice(open, close).matchAll(/'([^']+)'/g)].map((match) => match[1] as string);
 }
 
+/**
+ * Wie `quotedListAfter`, aber die LETZTE Fassung (eine spätere Migration ersetzt eine CHECK-Bedingung, z. B. die
+ * Onboarding-Schritte in Etappe N4).
+ */
+function lastQuotedListAfter(sql: string, marker: string): string[] {
+  return quotedListAfter(sql.slice(sql.lastIndexOf(marker)), marker);
+}
+
 /** Werte eines Postgres-Enums: `create type … as enum (…)` plus spätere `alter type … add value '…'`. */
 function enumValues(name: string): string[] {
   const added = [
@@ -197,8 +205,12 @@ describe('Listen', () => {
     expect(quotedListAfter(allSql, 'food_group in (')).toEqual(FOOD_GROUPS.map((g) => g.id));
   });
 
-  it('Onboarding-Schritte entsprechen ONBOARDING_STEPS', () => {
-    expect(quotedListAfter(allSql, 'onboarding_step in (')).toEqual([...ONBOARDING_STEPS]);
+  it('Onboarding-Schritte entsprechen ONBOARDING_STEPS (letzte Fassung der CHECK-Liste, W16)', () => {
+    expect(lastQuotedListAfter(allSql, 'onboarding_step in (')).toEqual([...ONBOARDING_STEPS]);
+    // Etappe N4 (S8): nutrition_setup kommt mit der kleinen CHECK-Migration – neue Enums erst in N7.
+    expect(readMigration('_onboarding_nutrition_setup.sql')).toContain(
+      'drop constraint if exists profiles_onboarding_step_check',
+    );
   });
 
   it('Gesundheits-Flags entsprechen HEALTH_FLAGS', () => {

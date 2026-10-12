@@ -33,7 +33,10 @@ export function localDataExport(
     goals: one(rows.goals),
     user_equipment: rows.userEquipment,
     training_slots: rows.trainingSlots,
-    nutrition_prefs: one(rows.nutritionPrefs),
+    // Testmodus (Etappe N4): Antworten des Schritts nutrition_setup als Spalten von nutrition_prefs – genau so, wie
+    // export_my_data() sie ab Etappe N7 liefert (docs/PLAN-PHASE-5.md 7.3). Essenspläne werden in N4 nicht gespeichert
+    // (bei jedem Öffnen neu berechnet) – Tabellen meal_plans/shopping_lists kommen mit N5/N7.
+    nutrition_prefs: nutritionPrefsExport(rows),
     food_preferences: rows.foodPreferences,
     // Im Testmodus gibt es keine Redaktions-Rechte.
     admin_users: [],
@@ -56,4 +59,21 @@ export function localDataExport(
     user_id: userId,
     data,
   };
+}
+
+function nutritionPrefsExport(rows: UserRows): unknown[] {
+  const setup = rows.nutritionSetup;
+  if (rows.nutritionPrefs === null) {
+    return setup === null ? [] : [setup];
+  }
+  if (setup === null) return [rows.nutritionPrefs];
+  return [
+    {
+      ...rows.nutritionPrefs,
+      activity_level: setup.activity_level,
+      training_time: setup.training_time,
+      mealprep_slots: setup.mealprep_slots,
+      show_energy_numbers: setup.show_energy_numbers,
+    },
+  ];
 }

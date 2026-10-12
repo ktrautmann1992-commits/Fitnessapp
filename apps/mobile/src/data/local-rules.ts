@@ -12,6 +12,7 @@ import {
   isoDateSchema,
   MEASUREMENT_SITES,
   measurementReminderIntervalSchema,
+  nutritionSetupColumnsSchema,
   nutritionStepSchema,
   onboardingStepSchema,
   sexSchema,
@@ -135,6 +136,13 @@ export function isValidOp(op: WriteOp, context: { today: string; profile: Profil
               foodPreferences: [],
             }).success;
       return prefsOk && cookingOk;
+    }
+    // Schritt nutrition_setup (Etappe N4): Werte wie die künftigen nutrition_prefs-Spalten (N7), nur eigenes Konto.
+    case 'upsert_nutrition_setup': {
+      const { user_id: userId, ...columns } = op.row;
+      return (
+        userId === context.profile.user_id && nutritionSetupColumnsSchema.safeParse(columns).success
+      );
     }
     case 'replace_food_preferences': {
       const kinds = kindsForScope(op.scope);

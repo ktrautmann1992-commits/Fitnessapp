@@ -239,6 +239,27 @@ async function finishNutrition(page: Page, options: { intolerance: boolean }) {
     .click();
   await next(page);
 
+  // Neuer Schritt nutrition_setup (Etappe N4): Alltagsaktivität wirklich abfragen (K7) – ohne Auswahl kein Weiter.
+  await expect(page.getByRole('heading', { name: 'Alltag und Training' })).toBeVisible();
+  await expect(page.getByTestId('nutrition-help')).toBeVisible();
+  await expect(page.getByRole('checkbox', { name: 'Kalorienzahlen anzeigen' })).toHaveAttribute(
+    'aria-checked',
+    'true',
+  );
+  await next(page);
+  await expect(page.getByText(/Bitte wähle, wie aktiv dein Alltag ist/)).toBeVisible();
+  await expect(page.getByText(/Bitte wähle, wann du meistens trainierst/)).toBeVisible();
+  await page.getByRole('radio', { name: /^Überwiegend stehend oder gehend/ }).click();
+  await page
+    .getByRole('radiogroup', { name: 'Wann trainierst du meistens?' })
+    .getByRole('radio', { name: 'Abends' })
+    .click();
+  await page
+    .getByRole('radiogroup', { name: 'Was kochst du vor?' })
+    .getByRole('radio', { name: 'Mittag- und Abendessen' })
+    .click();
+  await next(page);
+
   await expect(page.getByRole('heading', { name: 'Geschafft!' })).toBeVisible();
   await expect(page.getByTestId('done-plan')).toContainText('Dein Plan ist fertig');
 }
@@ -274,7 +295,7 @@ test('mit Einwilligung: Körperdaten, Umfänge, Gesundheits-Check mit Arzt-Hinwe
   page,
 }) => {
   await startUntilSex(page);
-  await expect(page.getByText('Schritt 1 von 11')).toBeVisible();
+  await expect(page.getByText('Schritt 1 von 12')).toBeVisible();
   await page.getByRole('radio', { name: 'weiblich' }).click();
   await page
     .getByRole('radiogroup', { name: 'Interesse am Zyklus-Modul später?' })
@@ -298,7 +319,7 @@ test('mit Einwilligung: Körperdaten, Umfänge, Gesundheits-Check mit Arzt-Hinwe
   await page.getByRole('button', { name: 'Einwilligen und weiter' }).click();
 
   await expect(page.getByRole('heading', { name: 'Körperdaten' })).toBeVisible();
-  await expect(page.getByText('Schritt 3 von 11')).toBeVisible();
+  await expect(page.getByText('Schritt 3 von 12')).toBeVisible();
   await page.getByLabel('Größe in cm').fill('17');
   await next(page);
   await expect(page.getByText('Größe: mindestens 100 cm.')).toBeVisible();
@@ -436,7 +457,7 @@ test('ohne Einwilligung Gesundheitsdaten: keine Körperdaten, kein Gesundheits-C
   await page.getByRole('button', { name: 'Ohne Einwilligung fortfahren' }).click();
 
   await expect(page.getByRole('heading', { name: 'Deine Trainingserfahrung' })).toBeVisible();
-  await expect(page.getByText('Schritt 3 von 8')).toBeVisible();
+  await expect(page.getByText('Schritt 3 von 9')).toBeVisible();
   await finishTrainingAndNutrition(page, { intolerance: false });
   await expect(page.getByText(/Ohne Einwilligung Gesundheitsdaten/)).toBeVisible();
   await expect(

@@ -24,6 +24,9 @@ export const ONBOARDING_STEPS = [
   'equipment',
   'nutrition',
   'cooking',
+  // Alltagsaktivität, Trainingszeit, Meal-Prep-Plätze, „Kalorienzahlen anzeigen“ (docs/PLAN-PHASE-5.md 8.1, Etappe N4).
+  // Bis Etappe N7 nur im Testmodus anwendbar (nutritionSetupAvailable, R2-S3).
+  'nutrition_setup',
 ] as const;
 export type OnboardingStep = (typeof ONBOARDING_STEPS)[number];
 
@@ -61,6 +64,12 @@ export interface OnboardingState {
    * Mindestens ein Trainingstag „Kraft zu Hause“ (hasHomeStrength)? Nur dann folgt der Schritt „Equipment“.
    */
   hasHomeStrength?: boolean | undefined;
+  /**
+   * Gibt es einen Speicherort für den Schritt `nutrition_setup` (docs/PLAN-PHASE-5.md 8.1, R2-S3)? Bis Etappe N7 setzt
+   * nur das lokale Backend (Testmodus) `true`. Anders als bei den übrigen Feldern gilt `undefined` als „nicht
+   * anwendbar“ (sicherer Standard: der Supabase-Modus zeigt den Schritt nicht und speichert nichts ins Leere).
+   */
+  nutritionSetupAvailable?: boolean | undefined;
 }
 
 export function isOnboardingStep(value: unknown): value is OnboardingStep {
@@ -84,6 +93,9 @@ export function isStepApplicable(step: OnboardingStep, state: OnboardingState): 
   }
   if (step === 'equipment') {
     return state.hasHomeStrength !== false;
+  }
+  if (step === 'nutrition_setup') {
+    return state.nutritionSetupAvailable === true;
   }
   return true;
 }

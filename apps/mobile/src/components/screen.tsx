@@ -183,6 +183,7 @@ export function ConfirmDialog({
   confirmVariant = 'danger',
   alternative,
   notes,
+  children,
   testID,
 }: {
   visible: boolean;
@@ -190,6 +191,8 @@ export function ConfirmDialog({
   message: string;
   /** Weitere Hinweise unter dem Text (z. B. beim Widerruf). */
   notes?: readonly string[];
+  /** Zusätzliche Bedienelemente unter den Hinweisen (z. B. eine aktive Wahl beim Widerruf, nie vorausgewählt). */
+  children?: ReactNode;
   confirmLabel: string;
   /** Zweite Wahl neben der Bestätigung (z. B. „Trotzdem abmelden“). */
   alternative?: { label: string; onPress: () => void; variant?: 'danger' | 'secondary' };
@@ -211,34 +214,38 @@ export function ConfirmDialog({
           testID={testID}
           style={[styles.dialog, { backgroundColor: theme.surface, borderColor: theme.border }]}
         >
-          <Heading level={2}>{title}</Heading>
-          <Body>{message}</Body>
-          {notes?.map((note) => (
-            <Body key={note} muted>
-              {note}
-            </Body>
-          ))}
-          <FieldError message={error} />
-          <Button
-            label={confirmLabel}
-            variant={confirmVariant}
-            onPress={onConfirm}
-            loading={loading}
-          />
-          {alternative ? (
+          {/* Lange Dialoge (z. B. Widerruf mit Wahl) bleiben auf kleinen Bildschirmen scrollbar. */}
+          <ScrollView contentContainerStyle={styles.dialogContent}>
+            <Heading level={2}>{title}</Heading>
+            <Body>{message}</Body>
+            {notes?.map((note) => (
+              <Body key={note} muted>
+                {note}
+              </Body>
+            ))}
+            {children}
+            <FieldError message={error} />
             <Button
-              label={alternative.label}
-              variant={alternative.variant ?? 'secondary'}
-              onPress={alternative.onPress}
+              label={confirmLabel}
+              variant={confirmVariant}
+              onPress={onConfirm}
+              loading={loading}
+            />
+            {alternative ? (
+              <Button
+                label={alternative.label}
+                variant={alternative.variant ?? 'secondary'}
+                onPress={alternative.onPress}
+                disabled={loading}
+              />
+            ) : null}
+            <Button
+              label={t.common.cancel}
+              variant="secondary"
+              onPress={onCancel}
               disabled={loading}
             />
-          ) : null}
-          <Button
-            label={t.common.cancel}
-            variant="secondary"
-            onPress={onCancel}
-            disabled={loading}
-          />
+          </ScrollView>
         </View>
       </View>
     </Modal>
@@ -378,11 +385,11 @@ const styles = StyleSheet.create({
   dialog: {
     width: '100%',
     maxWidth: maxContentWidth,
+    maxHeight: '92%',
     borderWidth: 1,
     borderRadius: radius.lg,
-    padding: spacing.lg,
-    gap: spacing.md,
   },
+  dialogContent: { padding: spacing.lg, gap: spacing.md },
   dateField: { gap: spacing.xs },
   dateLabel: { fontSize: fontSize.md, fontWeight: fontWeight.semibold },
   dateRow: { flexDirection: 'row', alignItems: 'flex-end', gap: spacing.xs },

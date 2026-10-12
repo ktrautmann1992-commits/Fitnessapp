@@ -15,11 +15,33 @@ const base = [consent('terms'), consent('privacy')];
 
 describe('resolveEntryRoute', () => {
   it('ohne Sitzung → Willkommen, ohne Profil → Alter, ohne AGB/Datenschutz → Einwilligungen', () => {
-    expect(resolveEntryRoute({ session: null, rows: null, versions: VERSIONS })).toBe('/welcome');
-    expect(resolveEntryRoute({ session, rows: null, versions: VERSIONS })).toBe('/age');
-    expect(resolveEntryRoute({ session, rows: rowsWith(), versions: VERSIONS })).toBe('/consents');
     expect(
       resolveEntryRoute({
+        nutritionSetupAvailable: false,
+        session: null,
+        rows: null,
+        versions: VERSIONS,
+      }),
+    ).toBe('/welcome');
+    expect(
+      resolveEntryRoute({
+        nutritionSetupAvailable: false,
+        session,
+        rows: null,
+        versions: VERSIONS,
+      }),
+    ).toBe('/age');
+    expect(
+      resolveEntryRoute({
+        nutritionSetupAvailable: false,
+        session,
+        rows: rowsWith(),
+        versions: VERSIONS,
+      }),
+    ).toBe('/consents');
+    expect(
+      resolveEntryRoute({
+        nutritionSetupAvailable: false,
         session,
         rows: rowsWith({ consents: [consent('terms')] }),
         versions: VERSIONS,
@@ -30,6 +52,7 @@ describe('resolveEntryRoute', () => {
   it('neue Textversion der AGB → erneut zu den Einwilligungen', () => {
     expect(
       resolveEntryRoute({
+        nutritionSetupAvailable: false,
         session,
         rows: rowsWith({ consents: base, profile: profile({ onboarding_completed_at: NOW }) }),
         versions: { ...VERSIONS, terms: 2 },
@@ -39,10 +62,16 @@ describe('resolveEntryRoute', () => {
 
   it('Fortsetzen am gespeicherten Schritt; unbekannt → erster Schritt', () => {
     expect(
-      resolveEntryRoute({ session, rows: rowsWith({ consents: base }), versions: VERSIONS }),
+      resolveEntryRoute({
+        nutritionSetupAvailable: false,
+        session,
+        rows: rowsWith({ consents: base }),
+        versions: VERSIONS,
+      }),
     ).toBe('/onboarding/sex');
     expect(
       resolveEntryRoute({
+        nutritionSetupAvailable: false,
         session,
         rows: rowsWith({ consents: base, profile: profile({ onboarding_step: 'goal' }) }),
         versions: VERSIONS,
@@ -53,6 +82,7 @@ describe('resolveEntryRoute', () => {
   it('Gesundheits-Schritt ohne Einwilligung wird übersprungen', () => {
     expect(
       resolveEntryRoute({
+        nutritionSetupAvailable: false,
         session,
         rows: rowsWith({ consents: base, profile: profile({ onboarding_step: 'body_metrics' }) }),
         versions: VERSIONS,
@@ -63,6 +93,7 @@ describe('resolveEntryRoute', () => {
   it('fertig → Heute', () => {
     expect(
       resolveEntryRoute({
+        nutritionSetupAvailable: false,
         session,
         rows: rowsWith({ consents: base, profile: profile({ onboarding_completed_at: NOW }) }),
         versions: VERSIONS,
@@ -96,12 +127,18 @@ describe('Einwilligung health_data', () => {
       deriveOnboardingState(
         rowsWith({ profile: profile({ onboarding_step: 'health_consent' }) }),
         VERSIONS,
+        false,
       ),
-    ).toEqual({ healthDataConsent: undefined, hasHomeStrength: undefined });
+    ).toEqual({
+      healthDataConsent: undefined,
+      hasHomeStrength: undefined,
+      nutritionSetupAvailable: false,
+    });
     expect(
       deriveOnboardingState(
         rowsWith({ profile: profile({ onboarding_step: 'experience' }) }),
         VERSIONS,
+        false,
       ).healthDataConsent,
     ).toBe(false);
     expect(
@@ -111,6 +148,7 @@ describe('Einwilligung health_data', () => {
           consents: [consent('health_data')],
         }),
         VERSIONS,
+        false,
       ).healthDataConsent,
     ).toBe(true);
   });
@@ -127,7 +165,7 @@ describe('Equipment-Schritt nach den Trainingstagen', () => {
 
   it('nur mit mindestens einem Tag „Kraft zu Hause“; ohne Trainingstage noch offen', () => {
     const state = (trainingSlots: ReturnType<typeof slot>[]) =>
-      deriveOnboardingState(rowsWith({ trainingSlots }), VERSIONS).hasHomeStrength;
+      deriveOnboardingState(rowsWith({ trainingSlots }), VERSIONS, false).hasHomeStrength;
     expect(state([])).toBeUndefined();
     expect(state([slot('strength_gym'), slot('endurance', 2)])).toBe(false);
     expect(state([slot('endurance'), slot('strength_home', 2)])).toBe(true);
@@ -137,6 +175,7 @@ describe('Equipment-Schritt nach den Trainingstagen', () => {
     const base = { profile: profile({ onboarding_step: 'training_location' }) };
     expect(
       resolveEntryRoute({
+        nutritionSetupAvailable: false,
         session: { userId: 'u', email: null },
         rows: rowsWith({
           ...base,
@@ -148,6 +187,7 @@ describe('Equipment-Schritt nach den Trainingstagen', () => {
     ).toBe('/onboarding/equipment');
     expect(
       resolveEntryRoute({
+        nutritionSetupAvailable: false,
         session: { userId: 'u', email: null },
         rows: rowsWith({
           ...base,

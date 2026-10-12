@@ -25,12 +25,15 @@ export function planSave(
     versions: ConsentVersions;
     platform: ConsentPlatform;
     now: string;
+    /** Speicherort für `nutrition_setup` (Testmodus ja, Supabase erst ab N7 – R2-S3). */
+    nutritionSetupAvailable: boolean;
   },
 ): PlannedSave {
   const answers = applyStepToAnswers(input.answers, save);
   const hasHealthConsent = healthConsentStatus(input.rows, input.versions) === 'valid';
-  const before = deriveOnboardingState(input.rows, input.versions);
+  const before = deriveOnboardingState(input.rows, input.versions, input.nutritionSetupAvailable);
   const after: OnboardingState = {
+    nutritionSetupAvailable: input.nutritionSetupAvailable,
     healthDataConsent:
       save.step === 'health_consent' ? save.granted || hasHealthConsent : before.healthDataConsent,
     hasHomeStrength:
@@ -46,6 +49,7 @@ export function planSave(
     versions: input.versions,
     hasHealthConsent,
     reminderIntervalDays: input.rows.reminder?.interval_days,
+    onboardingCompleted: input.rows.profile?.onboarding_completed_at != null,
   });
   return { ops, answers, next };
 }

@@ -96,6 +96,15 @@ export function summaryLines(answers: OnboardingAnswers, hasHealthConsent: boole
           : t.steps.cooking.options.daily.label,
     });
   }
+  if (answers.nutritionSetup) {
+    const setup = t.nutrition.setup;
+    lines.push({
+      label: setup.title,
+      value: `${setup.activities[answers.nutritionSetup.activityLevel].label} · Training: ${
+        setup.trainingTimes[answers.nutritionSetup.trainingTime]
+      }`,
+    });
+  }
   return lines;
 }
 

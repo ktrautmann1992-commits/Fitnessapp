@@ -8,7 +8,7 @@ import { t } from '@/i18n';
 import { useApp } from '@/state/app-state';
 import { deriveOnboardingState } from '@/state/flow';
 import { BodyMeasurementsStep, BodyMetricsStep, HealthScreeningStep } from '@/steps/health-steps';
-import { CookingStep, NutritionStep } from '@/steps/nutrition-steps';
+import { CookingStep, NutritionSetupStep, NutritionStep } from '@/steps/nutrition-steps';
 import { ExperienceStep, HealthConsentStep, SexStep } from '@/steps/profile-steps';
 import { EquipmentStep, GoalStep, TrainingScheduleStep } from '@/steps/training-steps';
 import { useStep, type StepController } from '@/steps/use-step';
@@ -28,9 +28,10 @@ const STEP_SCREENS: Record<ShownStep, ComponentType<{ ctl: StepController }>> = 
   equipment: EquipmentStep,
   nutrition: NutritionStep,
   cooking: CookingStep,
+  nutrition_setup: NutritionSetupStep,
 };
 
-/** Onboarding-Schritte 1–11 (Reihenfolge und Bedingungen aus packages/core/src/onboarding.ts). */
+/** Onboarding-Schritte 1–12 (Reihenfolge und Bedingungen aus packages/core/src/onboarding.ts). */
 export default function OnboardingStepRoute() {
   const { step } = useLocalSearchParams<{ step: string }>();
   const app = useApp();
@@ -55,7 +56,10 @@ export default function OnboardingStepRoute() {
   // Nicht anwendbare Schritte (z. B. Körperdaten ohne Einwilligung) gibt es nicht – zurück zum Startpunkt.
   if (
     step === 'training_location' ||
-    !isStepApplicable(step, deriveOnboardingState(app.rows, app.versions))
+    !isStepApplicable(
+      step,
+      deriveOnboardingState(app.rows, app.versions, app.backend.supportsNutrition),
+    )
   ) {
     return <Redirect href={app.entryRoute() as Href} />;
   }

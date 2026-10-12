@@ -1574,6 +1574,13 @@ export const CARDIO_RECIPE_MIN_MINUTES = 75;
 export const RECIPE_SERVINGS_PICKER = { min: 1, max: 12 } as const;
 
 /**
+ * „Nächste Mahlzeit“ auf „Heute“ (Plan 8.2 Nr. 1, Etappe N4): Eine Mahlzeit gilt noch als „nächste“, solange ihre
+ * Standard-Uhrzeit (`MEAL_SLOT_TIMES`) höchstens so viele Minuten zurückliegt. Nur Anzeige, keine Grenze.
+ * PRODUKTENTSCHEIDUNG.
+ */
+export const NEXT_MEAL_GRACE_MINUTES = 60;
+
+/**
  * Einkaufsliste (Plan 6.5): Mengen werden auf Kaufschritte AUFGERUNDET – Gramm/ml unter 100 auf 10, ab 100 auf 50,
  * Stück auf ganze; eine Menge > 0 wird nie 0. Eigene Einträge höchstens 80 Zeichen. PRODUKTENTSCHEIDUNG.
  */

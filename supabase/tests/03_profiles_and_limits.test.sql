@@ -1,7 +1,7 @@
 -- Mindestalter 16 (serverseitig) und Wertebereiche (identisch zu packages/core/src/constants.ts).
 begin;
 create extension if not exists pgtap with schema extensions;
-select plan(68);
+select plan(69);
 
 insert into auth.users (id, email) values
   ('11111111-1111-4111-8111-111111111111', 'nutzer-a@example.test');
@@ -68,6 +68,8 @@ select lives_ok($$ update public.profiles set sex = 'diverse', cycle_module_inte
 select lives_ok($$ update public.profiles set sex = 'unspecified' $$, 'keine Angabe');
 select throws_ok($$ update public.profiles set onboarding_step = 'wearable' $$, '23514', null, 'unbekannter Onboarding-Schritt');
 select lives_ok($$ update public.profiles set onboarding_step = 'cooking' $$, 'bekannter Onboarding-Schritt');
+-- Phase 5 N4 (S8): neuer Schritt nutrition_setup in der CHECK-Liste.
+select lives_ok($$ update public.profiles set onboarding_step = 'nutrition_setup' $$, 'Onboarding-Schritt nutrition_setup (N4)');
 select throws_ok($$ update public.profiles set locale = 'en-US' $$, '22P02', null, 'nicht unterstützte Sprache');
 
 -- ---------------------------------------------------------------------------------------------------------

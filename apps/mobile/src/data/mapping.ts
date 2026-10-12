@@ -14,6 +14,7 @@ import {
   MEASUREMENT_SITES,
   type NutritionStep,
   nextMeasurementDue,
+  nutritionSetupColumns,
   ONBOARDING_STEPS,
   type OnboardingStep,
   scheduleFromSlots,
@@ -62,6 +63,8 @@ export interface PlanContext {
   hasHealthConsent: boolean;
   /** Bisherige Mess-Erinnerung (Abstand bleibt beim Nachmessen erhalten). */
   reminderIntervalDays?: number | undefined;
+  /** Onboarding schon abgeschlossen (Bearbeiten aus den Einstellungen). */
+  onboardingCompleted?: boolean | undefined;
 }
 
 /** Übernimmt einen gespeicherten Schritt in die Antworten (für Anzeige und für planStepWrites). */
@@ -103,6 +106,8 @@ export function applyStepToAnswers(answers: OnboardingAnswers, save: StepSave): 
       return { ...answers, nutrition: save.nutrition };
     case 'cooking':
       return { ...answers, cooking: save.cooking };
+    case 'nutrition_setup':
+      return { ...answers, nutritionSetup: save.setup };
   }
 }
 
@@ -334,6 +339,16 @@ export function planStepWrites(save: StepSave, ctx: PlanContext): WriteOp[] {
         { kind: 'upsert_nutrition_prefs', row: toNutritionPrefsRow(userId, answers) },
         progressOp,
       ];
+    // Etappe N4: bis N7 nur im Testmodus (der Supabase-Modus zeigt den Schritt nicht, R2-S3).
+    // Nach abgeschlossenem Onboarding (z. B. Schalter „Kalorienzahlen anzeigen“) bleibt der Fortschritt unverändert –
+    // onboarding_completed_at wird nicht neu gesetzt (Wächter N4 K5).
+    case 'nutrition_setup': {
+      const setupOp: WriteOp = {
+        kind: 'upsert_nutrition_setup',
+        row: { user_id: userId, ...nutritionSetupColumns(save.setup) },
+      };
+      return ctx.onboardingCompleted ? [setupOp] : [setupOp, progressOp];
+    }
   }
 }
 
@@ -442,6 +457,16 @@ export function answersFromRows(rows: UserRows): OnboardingAnswers {
     } else if (prefs.cooking_mode === 'meal_prep' && prefs.mealprep_days !== null) {
       answers.cooking = { cookingMode: 'meal_prep', mealprepDays: prefs.mealprep_days };
     }
+  }
+  const setup = rows.nutritionSetup;
+  if (setup) {
+    answers.nutritionSetup = {
+      activityLevel: setup.activity_level,
+      trainingTime: setup.training_time,
+      // Meal-Prep-Plätze nur bei Meal-Prep (sonst gilt der Standard „Mittag“ ohne Frage).
+      mealprepSlots: prefs?.cooking_mode === 'meal_prep' ? setup.mealprep_slots : null,
+      showEnergyNumbers: setup.show_energy_numbers,
+    };
   }
   return answers;
 }

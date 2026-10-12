@@ -1,13 +1,35 @@
 import {
   BARBELL_ID,
   exercisePreferenceSchema,
+  nutritionSetupColumnsSchema,
   BARBELL_PLATE_MAX_KG,
   scheduleFromLegacyGoals,
   type TrainingLocation,
 } from '@fitnessapp/core';
 
 import { toTrainingSlotRows } from './mapping';
-import type { ExercisePreferenceRow, GoalsRow, UserEquipmentRow, UserRows } from './types';
+import type {
+  ExercisePreferenceRow,
+  GoalsRow,
+  NutritionSetupRow,
+  UserEquipmentRow,
+  UserRows,
+} from './types';
+
+/**
+ * Schritt nutrition_setup (Etappe N4): vorher gab es ihn nicht; der Gerätespeicher ist nicht vertrauenswürdig – nur
+ * ein gültiger Eintrag (Zod, strikt) des eigenen Kontos bleibt, sonst null (Schritt wird erneut gefragt).
+ */
+function storedNutritionSetup(stored: UserRows): NutritionSetupRow | null {
+  const value: unknown = (stored as { nutritionSetup?: unknown }).nutritionSetup;
+  if (typeof value !== 'object' || value === null) return null;
+  const { user_id: userId, ...rest } = value as Record<string, unknown>;
+  const parsed = nutritionSetupColumnsSchema.safeParse(rest);
+  const owner = stored.profile?.user_id;
+  return parsed.success && typeof userId === 'string' && (owner === undefined || userId === owner)
+    ? { ...parsed.data, user_id: userId }
+    : null;
+}
 
 function storedPreferences(stored: UserRows): ExercisePreferenceRow[] {
   const list: unknown = (stored as { exercisePreferences?: unknown }).exercisePreferences;
@@ -55,6 +77,7 @@ export function upgradeStoredRows(stored: UserRows): UserRows {
     // Vor Etappe T2 gab es keine Übungs-Präferenzen; der Gerätespeicher ist nicht vertrauenswürdig – nur gültige
     // Einträge (Zod, strikt) des eigenen Kontos bleiben (docs/PLAN-UEBUNGEN-GLOSSAR-TAUSCH.md 9).
     exercisePreferences: storedPreferences(stored),
+    nutritionSetup: storedNutritionSetup(stored),
   };
   const goals = stored.goals as (GoalsRow & LegacyGoalsFields) | null;
   if (

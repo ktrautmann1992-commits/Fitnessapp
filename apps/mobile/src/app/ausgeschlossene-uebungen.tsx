@@ -50,7 +50,12 @@ export default function ExclusionsScreen() {
       </Screen>
     );
   }
-  const route = resolveEntryRoute({ session: app.session, rows: app.rows, versions: app.versions });
+  const route = resolveEntryRoute({
+    session: app.session,
+    rows: app.rows,
+    versions: app.versions,
+    nutritionSetupAvailable: app.backend.supportsNutrition,
+  });
   if (route !== '/today' || !rows) {
     return <Redirect href={route as Href} />;
   }

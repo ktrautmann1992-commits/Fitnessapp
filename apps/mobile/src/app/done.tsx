@@ -3,6 +3,7 @@ import { Redirect, useRouter } from 'expo-router';
 import { useEffect, useRef, useState } from 'react';
 import { View } from 'react-native';
 
+import { NutritionDoneSummary } from '@/components/nutrition';
 import { Screen } from '@/components/screen';
 import { Body, Button, Card, Heading, LoadingState, Notice } from '@/components/ui';
 import { activePlan } from '@/data/training-plan';
@@ -106,6 +107,8 @@ export default function DoneScreen() {
             ),
           )
         : null}
+      {/* Ernährungs-Zusammenfassung (docs/PLAN-PHASE-5.md 8.1, Etappe N4). */}
+      <NutritionDoneSummary />
       <Heading level={2}>{t.done.summary}</Heading>
       <Card>
         {lines.map((line) => (

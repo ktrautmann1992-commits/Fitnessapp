@@ -5,6 +5,8 @@
  * erfüllen (siehe i18n/index.ts). Fachliche Texte, die zur Logik gehören (Gesundheits-Fragen,
  * Mess-Anleitungen, Geräte- und Lebensmittelnamen), stehen in packages/core und werden dort gepflegt.
  */
+import { deNutrition } from './de-nutrition';
+
 export const de = {
   common: {
     next: 'Weiter',
@@ -365,6 +367,9 @@ export const de = {
       kinds: { like: 'Mag ich', dislike: 'Mag ich nicht', intolerance: 'Unverträglich' },
       intoleranceLocked:
         'Unverträglichkeiten sind Gesundheitsdaten und lassen sich nur mit deiner Einwilligung angeben (Einstellungen).',
+      // docs/PLAN-PHASE-5.md 8.1: „mag ich nicht“ wirkt im Essensplan genauso hart (Gründer-Entscheidung 5).
+      dislikeInstead:
+        'Ohne Einwilligung kannst du Lebensmittel unter „mag ich nicht“ ausschließen – der Essensplan lässt sie dann genauso weg.',
     },
     cooking: {
       title: 'Wie kochst du?',
@@ -1324,6 +1329,7 @@ export const de = {
   notFound: {
     title: 'Diese Seite gibt es nicht.',
   },
+  nutrition: deNutrition,
 } as const;
 
 /** Typ, den jede Übersetzung erfüllen muss (Texte als string, Funktionen mit gleicher Signatur). */

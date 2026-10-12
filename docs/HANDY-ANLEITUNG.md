@@ -113,6 +113,20 @@ Vercel zeigt die App im Handy-Browser, Expo baut die echten Apps in der Cloud.
 5. Übungen ohne gleichwertige Alternative (z. B. Türrahmen-Rudern) zeigen ehrlich „keine gleichwertige Alternative“.
 6. Im Training **Tauschen** an einer Übung → Alternative wählen → Name wechselt, „statt …“ steht darunter.
 
+## Teil 7c – Ernährung testen (Phase 5, Etappe N4, Testmodus)
+1. Vorschau-Link öffnen, **Einstellungen → Testdaten löschen**, neues Testkonto: Einwilligung, **weiblich**, 70 kg,
+   Ziel **Abnehmen**, Mo/Mi/Fr Kraft, **vegetarisch**, „Pilze: Mag ich nicht“, 4 Mahlzeiten, Meal-Prep 2×.
+2. Neuer Schritt **„Alltag und Training“**: Ohne Auswahl kommt ein Hinweis; „Sitzend mit Bewegung“ und „Abends“ wählen.
+3. „Geschafft!“ zeigt „Trainingstag ca. … kcal, Ruhetag ca. … kcal“.
+4. „Heute“ → Karte **„Essen heute“** → **Ernährung**. Solange der Lebensmittel-Katalog fehlt: **„Beispiel-Rezepte mit
+   Testwerten verwenden“** (gelb gekennzeichnet, keine echten Nährwerte).
+5. Abendessen zeigt „nach dem Training“; Rezept antippen → Portion, „Enthält: …“, Warnung „Allergene noch nicht
+   fachlich geprüft“; keine Pilze, kein Fleisch.
+6. **Einstellungen → Kalorienzahlen anzeigen** aus → in Ernährung, Rezept und auf „Heute“ keine kcal mehr.
+7. **Einstellungen → Einwilligung Gesundheitsdaten widerrufen** → Hinweis zu Unverträglichkeiten und Einkaufsliste,
+   Häkchen „stattdessen unter ‚mag ich nicht‘“ → danach Ernährung ohne Kalorienziel.
+8. Alles einmal hell und einmal dunkel ansehen.
+
 ## Teil 8 – Live-Test mit Supabase (Pflicht vor „MVP fertig“, W13) – **offen, braucht euch**
 Diesen Test kann Claude in der Cloud-Sitzung nicht machen (kein echtes Konto, keine zwei Handys). Bitte einmal
 durchspielen und das Ergebnis Claude im Chat schreiben („W13: Punkt 1–14 ok, Punkt 9 Fehler: …“) – **ohne**

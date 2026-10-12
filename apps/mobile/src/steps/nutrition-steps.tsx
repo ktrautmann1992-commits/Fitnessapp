@@ -1,6 +1,13 @@
 import {
+  ACTIVITY_LEVELS,
   cookingStepSchema,
   DIET_TYPES,
+  MEALPREP_SLOT_MODES,
+  nutritionSetupStepSchema,
+  TRAINING_TIMES,
+  type ActivityLevel,
+  type MealprepSlotMode,
+  type TrainingTime,
   FOOD_GROUPS,
   FOOD_PREFERENCE_KINDS,
   NUTRITION_LIMITS,
@@ -14,7 +21,8 @@ import { useState } from 'react';
 import { StyleSheet, View } from 'react-native';
 
 import { Screen, StepFooter } from '@/components/screen';
-import { Body, Card, ChoiceList, Heading, Notice, OptionButton } from '@/components/ui';
+import { Body, Card, Checkbox, ChoiceList, Heading, Notice, OptionButton } from '@/components/ui';
+import { EatingHelpNotice } from '@/components/nutrition';
 import { t } from '@/i18n';
 import { toggleFoodPreference, withoutIntolerances } from '@/lib/food-preferences';
 import { fieldErrorsFromIssues, type FieldErrors } from '@/lib/validation-errors';
@@ -113,7 +121,11 @@ export function NutritionStep({ ctl }: { ctl: StepController }) {
       />
       <Heading level={2}>{t.steps.nutrition.preferences}</Heading>
       <Body muted>{t.steps.nutrition.preferencesHint}</Body>
-      {canIntolerance ? null : <Notice tone="info">{t.steps.nutrition.intoleranceLocked}</Notice>}
+      {canIntolerance ? null : (
+        <Notice tone="info">
+          {`${t.steps.nutrition.intoleranceLocked} ${t.steps.nutrition.dislikeInstead}`}
+        </Notice>
+      )}
       {errors.foodPreferences ? <Notice tone="danger">{errors.foodPreferences}</Notice> : null}
       {FOOD_GROUPS.map((group) => (
         <Card key={group.id} style={styles.groupCard}>
@@ -191,6 +203,93 @@ export function CookingStep({ ctl }: { ctl: StepController }) {
           error={errors.mealprepDays}
         />
       ) : null}
+    </Screen>
+  );
+}
+
+/**
+ * Schritt `nutrition_setup` (docs/PLAN-PHASE-5.md 8.1, Etappe N4; bis N7 nur im Testmodus, R2-S3):
+ * 1. Alltagsaktivität ohne Sport (Pflicht – Wächter N1 K7: ohne Angabe rechnet die Engine mit 1,45),
+ * 2. Trainingszeit (mit „unterschiedlich“), 3. Meal-Prep-Plätze (nur bei Meal-Prep),
+ * 4. Hinweis Essstörungen + „Kalorienzahlen anzeigen“ (Standard an, Frage 16 B (h)).
+ */
+export function NutritionSetupStep({ ctl }: { ctl: StepController }) {
+  const saved = ctl.app.answers.nutritionSetup;
+  const mealPrep = ctl.app.answers.cooking?.cookingMode === 'meal_prep';
+  const [activity, setActivity] = useState<ActivityLevel | undefined>(saved?.activityLevel);
+  const [time, setTime] = useState<TrainingTime | undefined>(saved?.trainingTime);
+  const [slots, setSlots] = useState<MealprepSlotMode>(saved?.mealprepSlots ?? 'lunch');
+  const [showNumbers, setShowNumbers] = useState(saved?.showEnergyNumbers ?? true);
+  const [errors, setErrors] = useState<FieldErrors>({});
+  const texts = t.nutrition.setup;
+
+  function next() {
+    const parsed = nutritionSetupStepSchema.safeParse({
+      activityLevel: activity,
+      trainingTime: time,
+      mealprepSlots: mealPrep ? slots : null,
+      showEnergyNumbers: showNumbers,
+    });
+    if (!parsed.success) {
+      setErrors(
+        fieldErrorsFromIssues(parsed.error.issues, {
+          activityLevel: texts.activityRequired,
+          trainingTime: texts.trainingTimeRequired,
+        }),
+      );
+      return;
+    }
+    setErrors({});
+    void ctl.submit({ step: 'nutrition_setup', setup: parsed.data });
+  }
+
+  return (
+    <Screen
+      title={texts.title}
+      intro={texts.intro}
+      progress={ctl.progress}
+      footer={
+        <StepFooter onBack={ctl.goBack} onNext={next} loading={ctl.saving} error={ctl.error} />
+      }
+    >
+      <ChoiceList
+        label={texts.activity}
+        options={ACTIVITY_LEVELS.map((value) => ({
+          value,
+          label: texts.activities[value].label,
+          description: texts.activities[value].text,
+        }))}
+        value={activity}
+        onChange={setActivity}
+        error={errors.activityLevel}
+      />
+      <ChoiceList
+        label={texts.trainingTime}
+        options={TRAINING_TIMES.map((value) => ({ value, label: texts.trainingTimes[value] }))}
+        value={time}
+        onChange={setTime}
+        error={errors.trainingTime}
+      />
+      {mealPrep ? (
+        <ChoiceList
+          label={texts.mealprepSlots}
+          horizontal
+          options={MEALPREP_SLOT_MODES.map((value) => ({
+            value,
+            label: texts.mealprepOptions[value],
+          }))}
+          value={slots}
+          onChange={setSlots}
+        />
+      ) : null}
+      <EatingHelpNotice />
+      <Checkbox
+        label={texts.showNumbers}
+        checked={showNumbers}
+        onChange={setShowNumbers}
+        testID="setup-show-numbers"
+      />
+      <Body muted>{texts.showNumbersHint}</Body>
     </Screen>
   );
 }
