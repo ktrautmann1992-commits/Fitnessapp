@@ -10,7 +10,14 @@ import {
   SURPLUS_CAP,
 } from '../constants';
 import { isoWeekday } from '../dates';
-import { ENDURANCE_MODALITIES, PLANNED_SESSION_KINDS, PLANNED_SESSION_STATUSES } from '../enums';
+import {
+  COOKING_MODES,
+  DIET_TYPES,
+  ENDURANCE_MODALITIES,
+  PLANNED_SESSION_KINDS,
+  PLANNED_SESSION_STATUSES,
+} from '../enums';
+import { foodGroupSchema } from '../food-groups';
 import { HEALTH_FLAGS } from '../health-screening';
 import {
   enduranceDisciplineSchema,
@@ -181,3 +188,71 @@ export const weekStartSchema = isoDateSchema.refine(
  */
 export const surplusCapSchema = z.number().min(SURPLUS_CAP.special).max(SURPLUS_CAP.default);
 export const deficitCapSchema = z.number().min(0).max(MAX_CALORIE_DEFICIT_FRACTION);
+
+// ---------------------------------------------------------------------------------------------------------
+// Essensplan (Etappe N3, docs/PLAN-PHASE-5.md 6.1–6.4)
+// ---------------------------------------------------------------------------------------------------------
+
+/** Was beim Meal-Prep vorgekocht wird (Plan 6.4, `mealprep_slots`): Mittag (Standard) oder Mittag + Abend. */
+export const MEALPREP_SLOT_MODES = ['lunch', 'lunch_dinner'] as const;
+export type MealprepSlotMode = (typeof MEALPREP_SLOT_MODES)[number];
+
+const groupList = z
+  .array(foodGroupSchema)
+  .max(23)
+  .default([])
+  .refine((groups) => new Set(groups).size === groups.length, 'Jede Gruppe nur einmal.');
+
+/**
+ * Vorlieben für den Essensplan (Plan 4.2 `prefs`, 6.1). Unverträglichkeiten sind Art.-9-Daten und kommen nur mit
+ * gültiger `health_data`-Einwilligung hierher (die App gibt sie sonst nicht weiter). Die Ernährungsform ist Teil
+ * des Schutzes im Essensplan (in der Rezeptsuche erweiterbar, 19.6 K3).
+ * - Schwein nur bei `eatsPork === true`; `null` bei Mischkost zählt wie „nein“ (W10, G2).
+ * - „Mag ich“ und „mag ich nicht“ derselben Gruppe schließen sich aus (Unique-Index `like_xor_dislike`);
+ *   Unverträglichkeit + „mag ich“ ist erlaubt – die Unverträglichkeit gewinnt (K9).
+ */
+export const mealPlanProfileSchema = z
+  .strictObject({
+    diet: z.enum(DIET_TYPES),
+    eatsPork: z.boolean().nullable().default(null),
+    cookingMode: z.enum(COOKING_MODES).default('daily'),
+    mealprepDays: z
+      .number()
+      .int()
+      .min(NUTRITION_LIMITS.mealPrepDaysPerWeek.min)
+      .max(NUTRITION_LIMITS.mealPrepDaysPerWeek.max)
+      .nullable()
+      .default(null),
+    mealprepSlots: z.enum(MEALPREP_SLOT_MODES).default('lunch'),
+    likes: groupList,
+    dislikes: groupList,
+    intolerances: groupList,
+    /** Optional „werktags höchstens X Minuten“ (Plan 6.1, 7.2: 10–120). */
+    maxPrepMinutesWeekday: z.number().int().min(10).max(120).nullable().default(null),
+  })
+  .superRefine((profile, ctx) => {
+    if (profile.diet !== 'omnivore' && profile.eatsPork === true) {
+      ctx.addIssue({
+        code: 'custom',
+        path: ['eatsPork'],
+        message: 'Bei vegetarischer oder veganer Ernährung gibt es kein Schweinefleisch.',
+      });
+    }
+    if (profile.cookingMode === 'meal_prep' && profile.mealprepDays === null) {
+      ctx.addIssue({
+        code: 'custom',
+        path: ['mealprepDays'],
+        message: 'Meal-Prep braucht die Anzahl Kochtage pro Woche (1–7).',
+      });
+    }
+    const dislikes = new Set(profile.dislikes);
+    if (profile.likes.some((group) => dislikes.has(group))) {
+      ctx.addIssue({
+        code: 'custom',
+        path: ['likes'],
+        message: 'Eine Gruppe kann nicht gleichzeitig „mag ich“ und „mag ich nicht“ sein.',
+      });
+    }
+  });
+export type MealPlanProfile = z.infer<typeof mealPlanProfileSchema>;
+export type MealPlanProfileInput = z.input<typeof mealPlanProfileSchema>;

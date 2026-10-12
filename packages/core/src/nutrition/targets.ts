@@ -58,6 +58,12 @@ export interface NutritionDayTargets {
   readonly slots: readonly MealSlot[];
   readonly notices: readonly NutritionNoticeCode[];
   readonly recipeExclusions: readonly RecipeExclusion[];
+  /**
+   * Deckel aus den Sonderfällen (4.9) – nur zum Abgleich bei der automatischen Neuplanung (6.6: „Modus oder Deckel
+   * geändert“). Die Grenzen selbst gelten ausschließlich in `clampCalorieTarget`.
+   */
+  readonly deficitCap: number;
+  readonly surplusCap: number;
 }
 
 export interface NutritionWeekTargets {
@@ -138,6 +144,8 @@ export function nutritionTargetsForWeek(
         slots: timing.slots,
         notices: sortNotices([...eligibility.notices, ...timing.notices]),
         recipeExclusions: eligibility.recipeExclusions,
+        deficitCap: eligibility.deficitCap,
+        surplusCap: eligibility.surplusCap,
       });
       continue;
     }
@@ -212,6 +220,8 @@ export function nutritionTargetsForWeek(
       slots: timing.slots,
       notices: sortNotices([...notices, ...macros.notices]),
       recipeExclusions: eligibility.recipeExclusions,
+      deficitCap: eligibility.deficitCap,
+      surplusCap: eligibility.surplusCap,
     });
   }
   return { weekStart: monday, days, usesHealthData };

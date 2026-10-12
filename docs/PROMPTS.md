@@ -133,6 +133,9 @@ Nächster Schritt: Gründer-Aufgaben Teil J, dann Import per Workflow; danach N2
 (Entwürfe als Pull Request, nie `content/foods`), Zod-Schemas für Meal-Prep-Pläne und Ratgeber, Rezeptfelder aus 19.4,
 Prüfregeln R20–R22, Inhalts-Bündel und Auswahl in der App (`selectNutritionContent`). Die Rezeptdateien entstehen erst
 per Workflow, sobald der Lebensmittel-Katalog importiert ist (`docs/SETUP.md` Teil J, „Rezepte importieren“).
+**Etappe N3 umgesetzt (12.10.2026):** Core für Essensplan (`buildMealPlanWeek`, Planband je Tag oder
+`below_floor`), Rezept-Filter mit allen harten Ausschlüssen, Meal-Prep (Kochtermine, R9, `applyMealPrepPlan`,
+Gratis-Plan), Einkaufsliste, automatische Neuplanung, Rezeptsuche und Portionswähler – mit Test-Fixtures, ohne App.
 **Nachtrag 11.10.2026 (Erweiterungen Teil 2):** Rezeptbestand ist `packages/content/seed/alpha5-rezepte.json` statt
 KI-erzeugter Rezepte – N2b umfasst alle 236 Zutaten, N2c ist der Import (Prompt B Schritte 3–5), N3–N6 enthalten den
 Umfang von Prompt C; neue Etappen N9–N14 (Prompts D, F, E). Details `docs/PLAN-PHASE-5.md` Abschnitt 19.

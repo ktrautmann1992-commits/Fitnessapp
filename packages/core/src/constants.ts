@@ -1101,6 +1101,15 @@ export const SURPLUS_CAP = { default: 0.1, special: 0.05 } as const;
 export const PORTION_TOLERANCE = 0.1;
 
 /**
+ * Mindestbreite des Planbands (Plan 4.6.1, Etappe N3, Wächter N3 S1): Liegen Unter- und Obergrenze weniger als
+ * 20 kcal auseinander (z. B. sehr niedriger Katch-Bedarf bei Muskelaufbau, Breite 0 möglich), reicht das Band bis
+ * Untergrenze + 20 kcal – ein Band der Breite 0 ist mit gerundeten Portionen nicht treffbar. Die UNTERGRENZE geht vor
+ * (wie bei der gerichteten Rundung, 4.6.2); sie wird nie gesenkt. Die Obergrenze ist der Überschussdeckel (keine
+ * Schutzgrenze aus CLAUDE.md) und wird so höchstens um 20 kcal überschritten. PRODUKTENTSCHEIDUNG.
+ */
+export const PLAN_BAND_MIN_WIDTH_KCAL = 20;
+
+/**
  * Sonderfall-Deckel des Defizits (Anteil unter TagesbedarfGrenze; strengster Wert gewinnt, Plan 4.9):
  * - noHealthCheck 0,15: wie beim Training vorsichtig (B4, `planSafetyRules`: kein Check → vorsichtig),
  * - medical 0,15: Flags `medication` oder `medical_clearance_recommended`,
@@ -1465,4 +1474,114 @@ export const MEAL_PREP_PLAN_LIMITS = {
   cookSteps: { min: 1, max: 30 },
   cookStepMinute: { min: 0, max: 240 },
   storageTexts: 10,
+} as const;
+
+// ---------------------------------------------------------------------------------------------------------
+// Phase 5 · Essensplan und Einkaufsliste (docs/PLAN-PHASE-5.md Abschnitt 6 und 19.6, Etappe N3)
+//
+// Regeln des Wochen-Essensplans (`nutrition/meal-plan.ts`, `scale.ts`, `meal-prep.ts`) und der Einkaufsliste
+// (`nutrition/shopping-list.ts`). Die Kalorien-Schutzgrenzen stehen NICHT hier: Sie gelten ausschließlich in
+// `clampCalorieTarget` (N1); der Essensplan hält nur das daraus berechnete Planband ein (B1).
+// ---------------------------------------------------------------------------------------------------------
+
+/** Version der Essensplan-Engine (gespeichert in `meal_plans.engine_version`, N7). */
+export const MEAL_PLAN_ENGINE_VERSION = 1;
+
+/**
+ * Portionsfaktor je Mahlzeit (Plan 6.2, `PORTION_SCALE_LIMITS`): halbe bis doppelte Portion des Grundrezepts
+ * (Grundrezept ÷ `servings`). PRODUKTENTSCHEIDUNG.
+ */
+export const PORTION_SCALE_LIMITS = { min: 0.5, max: 2 } as const;
+
+/**
+ * Tagesausgleich (Plan 6.2, B1): höchstens 2 Ergänzungs-Snacks (`no_cook`, alle Filter) je Tag; im Modus
+ * `no_targets` (S15) höchstens 1, wenn die Standardportionen unter `NO_TARGETS_MIN_DAY_KCAL` liegen.
+ * `proteinMinShare`: Eiweiß des Tages ≥ 90 % des Eiweißziels, sonst Hinweis `protein_below_target` (6.2).
+ */
+export const MEAL_PLAN_FILL = {
+  maxExtraSnacks: 2,
+  noTargetsMaxExtraSnacks: 1,
+  proteinMinShare: 0.9,
+} as const;
+
+/**
+ * Modus `no_targets` (Plan 6.2, S15): interner Plausibilitätswert für die Summe der Standardportionen; darunter
+ * kommt ein Ergänzungs-Snack dazu. Wird NIE angezeigt. PRODUKTENTSCHEIDUNG.
+ */
+export const NO_TARGETS_MIN_DAY_KCAL = 1800;
+
+/**
+ * Wiederholungen im Wochenplan (Plan 6.3 Nr. 3): Hauptgericht höchstens 2× pro Woche und nie an zwei Tagen
+ * hintereinander, Frühstück höchstens 3×; Snacks höchstens 3× (PRODUKTENTSCHEIDUNG). Gilt nicht für Meal-Prep-Reste
+ * eines Kochtermins. Gibt es keinen Kandidaten innerhalb der Grenzen, wird ausnahmsweise wiederholt (Hinweis
+ * `recipe_repeated`) – ein leerer Platz wäre schlechter.
+ */
+export const MEAL_PLAN_REPEAT_LIMITS = {
+  breakfast: 3,
+  main: 2,
+  snack: 3,
+} as const;
+
+/**
+ * Punkte je Kandidat (Plan 6.3 Nr. 3, `MEAL_PLAN_SCORING`), alle PRODUKTENTSCHEIDUNG:
+ * - `kcalFit`: Abzug je |ln(Faktor)| (Faktor 1 = Grundportion passt genau); `outsideScale` zusätzlich, wenn der
+ *   nötige Faktor außerhalb 0,5–2,0 liegt.
+ * - `protein`: Bonus je Eiweiß-Energieanteil (0–0,5); `postProtein` zusätzlich für die Mahlzeit nach dem Training.
+ * - `like`: Rezept enthält eine Gruppe aus „mag ich“.
+ * - `roleTag`: Trainings-Angabe bzw. Kategorie passt zur Rolle vor/nach dem Training (6.3 Nr. 5, 19.6).
+ * - `repeat`: Abzug je bisheriger Verwendung in der Woche; `sameProteinPrevDay`: gleiche Haupt-Eiweißquelle am
+ *   Vortag; `ingredientReuse`: Anteil schon eingekaufter Zutaten (weniger Reste).
+ * - `variantJitter`: feste, aus `stableHash(Woche | Platz | Rezept | Variante)` berechnete Streuung – „Andere
+ *   Vorschläge“ (Variante + 1) ändert so die Auswahl, ohne Zufall.
+ */
+export const MEAL_PLAN_SCORING = {
+  kcalFit: 2,
+  outsideScale: 4,
+  protein: 2,
+  postProtein: 2,
+  like: 1,
+  roleTag: 1.5,
+  repeat: 1.5,
+  sameProteinPrevDay: 1,
+  ingredientReuse: 0.5,
+  variantJitter: 0.75,
+} as const;
+
+/**
+ * Meal-Prep-Kochtermine je `mealprep_days` (Plan 6.4, `MEAL_PREP_DAYS`): Tage relativ zum Montag der Woche,
+ * −1 = Sonntag davor. 1: So · 2: So, Mi · 3: So, Di, Do · 4: So, Di, Do, Sa · 5: So, Di, Mi, Fr, Sa ·
+ * 6: So, Di–Sa · 7: jeden Tag (Mo–So). Ein Termin deckt die Tage bis zum nächsten Termin, höchstens so lange, wie
+ * das Gericht hält (R9); danach eingefroren (nur `freezable`) oder frisch gekocht. PRODUKTENTSCHEIDUNG.
+ */
+export const MEAL_PREP_COOK_OFFSETS = {
+  1: [-1],
+  2: [-1, 2],
+  3: [-1, 1, 3],
+  4: [-1, 1, 3, 5],
+  5: [-1, 1, 2, 4, 5],
+  6: [-1, 1, 2, 3, 4, 5],
+  7: [0, 1, 2, 3, 4, 5, 6],
+} as const satisfies Record<number, readonly number[]>;
+
+/**
+ * Cardio-Rezepte je Einheit erst ab 75 Minuten (Plan 19.6, K4) – Gründer-Vorgabe, PRODUKTENTSCHEIDUNG. Die
+ * automatische Belegung je Einheit ist Etappe X4 (Premium); in N3 steht nur der Wert. Bewusst getrennt vom Hinweis
+ * `long_session_fueling` (≥ 90 Minuten, `MEAL_TIMING_RULES`).
+ */
+export const CARDIO_RECIPE_MIN_MINUTES = 75;
+
+/** Portionswähler (Plan 19.6): 1–12 Portionen, ohne Bezug zu Kalorienzielen. PRODUKTENTSCHEIDUNG. */
+export const RECIPE_SERVINGS_PICKER = { min: 1, max: 12 } as const;
+
+/**
+ * Einkaufsliste (Plan 6.5): Mengen werden auf Kaufschritte AUFGERUNDET – Gramm/ml unter 100 auf 10, ab 100 auf 50,
+ * Stück auf ganze; eine Menge > 0 wird nie 0. Eigene Einträge höchstens 80 Zeichen. PRODUKTENTSCHEIDUNG.
+ */
+export const SHOPPING_LIST_ROUNDING = {
+  smallStep: 10,
+  largeStep: 50,
+  largeFrom: 100,
+  pieceStep: 1,
+  manualLabelMaxChars: 80,
+  manualItemsMax: 100,
 } as const;

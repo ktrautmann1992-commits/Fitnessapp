@@ -274,6 +274,13 @@ Versatzes. Sonderfälle je Tag: `no_targets` (keine Einwilligung, keine Größe/
 Deckel 15 % (kein Check, Medikamente/Arzt-Hinweis, ab 65) bzw. 10 % (BMI 18,5–20). Makros Eiweiß → Fett → Kohlenhydrate
 (Rest, Energie verbindlich), Timing vor/nach dem Training über die Angabe „Trainingszeit“. Abweichungen: Tabelle in
 `docs/PLAN-PHASE-5.md` Abschnitt 17.
+**Essensplan (Etappe N3, Core):** Rezepte filtert eine einzige Funktion (`filter.ts`: Ernährungsform, Schwein nur bei
+„isst Schwein = ja“, Unverträglichkeiten, „mag ich nicht“, Schwangerschaft inkl. ungegarter Zutaten; optionale Zutaten
+weglassen, Ersatzprodukte mit erneutem Filter). Der Wochenplan skaliert Portionen (0,5–2,0) so, dass jeder Tag im
+Planband liegt – sonst bis zu 2 Ergänzungs-Snacks bzw. „unvollständiger Vorschlag“ (`below_floor`); über der
+Obergrenze wird nie ausgeliefert. Meal-Prep hält die Haltbarkeit der tatsächlich verwendeten Zutaten ein (sonst
+einfrieren oder frisch kochen); Meal-Prep-Wochenpläne werden nur angeboten, wenn jedes Rezept den kompletten Filter
+besteht. Einkaufsliste nach Abteilungen, Mengen aufgerundet, Häkchen bleiben bei Neuplanung erhalten.
 
 ### 6.1 Lebensmittel-Tracker mit Barcode-Scan (Gratis)
 - Scan über die Handykamera, Abfrage bei **Open Food Facts**; Ergebnis in `food_products` zwischenspeichern
