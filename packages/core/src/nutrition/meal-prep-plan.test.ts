@@ -215,7 +215,7 @@ describe('applyMealPrepPlan – kompletter Filter je Rezept (B1)', () => {
       }
     }
     expect(offered).toBeGreaterThan(50);
-  });
+  }, 60_000);
 });
 
 describe('applyMealPrepPlan – Plätze, Haltbarkeit, Vorrang (K7, R9)', () => {

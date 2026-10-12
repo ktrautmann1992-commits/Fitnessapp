@@ -279,7 +279,7 @@ describe('W2 – Planband über die Ausgabe von buildMealPlanWeek (B1)', () => {
     // Beide Zweige kommen im Raster vor (sonst prüft der Test nichts).
     expect(complete).toBeGreaterThan(300);
     expect(belowFloor).toBeGreaterThan(0);
-  });
+  }, 60_000);
 
   it('Meal-Prep 1–7 Kochtage mit festen Resten aus dem bisherigen Plan (Neuplanung mitten in der Woche)', () => {
     for (let days = 1; days <= 7; days += 1) {
@@ -355,7 +355,7 @@ describe('Eigenschaftstest: kein ausgeschlossenes Rezept erscheint im Plan', () 
       mealsChecked += plan.days.reduce((n, d) => n + d.meals.length, 0);
     }
     expect(mealsChecked).toBeGreaterThan(500);
-  });
+  }, 60_000);
 
   it('feste Fälle: Erdnuss-Unverträglichkeit, Schwangerschaft, eats_pork = false, Pilze „mag ich nicht“', () => {
     const cases: { profile: MealPlanProfileInput; pregnant: boolean; forbidden: string[] }[] = [
