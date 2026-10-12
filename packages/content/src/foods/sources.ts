@@ -154,7 +154,9 @@ const BLS_4_0: SourceDefinition = {
   format: 'xlsx',
   sheet: null,
   csvDelimiter: ',',
-  originalSha256: null,
+  // Festgenagelt aus Lauf „kandidaten“ 38265538146 (12.10.2026): entpackte BLS_4_0_Daten_2025_DE.xlsx,
+  // 14.093.078 Bytes, 7140 Zeilen, 418 Spalten (ZIP 14.263.306 Bytes).
+  originalSha256: '524bbefe25b691f5cb3de7a9f3e27fa2967aebfeabf217d99414ba7806e78c60',
   keyColumn: 0,
   nameColumn: 1,
   nutrients: {
@@ -170,7 +172,9 @@ const BLS_4_0: SourceDefinition = {
       { code: 'NA', unit: 'mg', convert: 'sodium_mg_to_salt_g' },
     ],
   },
-  columnsStatus: 'unconfirmed',
+  // Spalten-Bericht Lauf 38265538146: alle Codes mit Einheit gefunden (ENERCC 6, PROT625 12, CHO 18, SUGAR 219,
+  // FAT 15, FASAT 246, FIBT 21, NACL 120).
+  columnsStatus: 'confirmed',
   license: 'CC BY 4.0',
   licenseUrl: 'https://creativecommons.org/licenses/by/4.0/deed.de',
   licenseText:
