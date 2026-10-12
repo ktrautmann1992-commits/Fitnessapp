@@ -1,0 +1,57 @@
+name: alpha5-import
+
+# Manuell startbar (GitHub-App → Actions → alpha5-import → Run workflow, Branch „main“):
+# Wandelt die Gründer-Datei packages/content/seed/alpha5-rezepte.json in Entwürfe um
+# (content/recipes, content/meal-prep-plans, content/guides – alle „draft“), prüft mit content:validate und öffnet
+# einen Pull Request mit dem Import-Bericht (Zahlen, Abweichungen > 3 %, Annahmen „erhitzt“, Abdeckung).
+# Schreibt NIE nach content/foods oder content/sources (das macht nur foods-import) und NIE in die Datenbank –
+# eingespielt wird erst nach Freigabe über content-seed. Freigabe ist der MERGE durch einen Menschen.
+# Ohne Lebensmittel-Katalog (content/foods leer) entsteht kein Pull Request, nur der Bericht.
+# Details: docs/PLAN-PHASE-5.md 19.2.
+on:
+  workflow_dispatch:
+    inputs:
+      modus:
+        description: 'pull-request = Entwürfe als Pull Request, bericht = nur Bericht (schreibt nichts)'
+        type: choice
+        options:
+          - pull-request
+          - bericht
+        default: pull-request
+
+permissions:
+  contents: write
+  pull-requests: write
+  actions: write
+
+concurrency:
+  group: alpha5-import
+  cancel-in-progress: false
+
+jobs:
+  import:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - name: Nur auf main
+        if: github.ref != 'refs/heads/main'
+        run: |
+          echo "::error::alpha5-import bitte auf dem Branch main starten (gestartet auf ${GITHUB_REF_NAME})."
+          exit 1
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+        with:
+          persist-credentials: false
+      - uses: pnpm/action-setup@b906affcce14559ad1aafd4ab0e942779e9f58b1 # v4
+      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4
+        with:
+          node-version: 22
+          cache: pnpm
+      - run: pnpm install --frozen-lockfile
+      # Eingaben nur über Umgebungsvariablen. Das Skript schreibt nur nach content/recipes, content/meal-prep-plans
+      # und content/guides (Prüfung VOR dem Commit), bricht bei offenem Import-PR ab und legt den Commit über die
+      # GitHub-API (verified) nur auf genau dem gestarteten Stand von main an (GITHUB_SHA), dann PR und ci.
+      - name: Import, Prüfung, Pull Request
+        env:
+          MODUS: ${{ inputs.modus }}
+          GITHUB_TOKEN: ${{ github.token }}
+        run: pnpm content:import-alpha5 --modus "$MODUS"

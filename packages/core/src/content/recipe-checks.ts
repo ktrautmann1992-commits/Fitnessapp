@@ -20,7 +20,8 @@ import {
   type SourceNutrientRow,
   sourceRowKey,
 } from './food-schema';
-import { MEAL_TYPES, type MealType, type Recipe } from './recipe-schema';
+import { CRITERIA_CATEGORIES, criteriaCategories, recipeTotalMinutes } from './import-rules';
+import { MEAL_TYPES, type MealType, RECIPE_CATEGORIES, type Recipe } from './recipe-schema';
 import { type ContentIssue, makeIssue } from './rules';
 import { findNutritionTextRuleHits } from './text-rules';
 
@@ -641,7 +642,9 @@ export function checkRecipe(
             ? 'im Katalog als heikel markiert'
             : r.kind === 'no_cook'
               ? 'tierische Zutat in einem Rezept ohne Kochen'
-              : 'tierische Zutat nicht erhitzt';
+              : r.kind === 'unconfirmed_heated'
+                ? '„erhitzt“ ist nur eine unbestätigte Import-Annahme'
+                : 'tierische Zutat nicht erhitzt';
         return `„${r.foodId}“: ${what}`;
       })
       .join('; ');
@@ -706,6 +709,46 @@ export function checkRecipe(
     }
   });
 
+  issues.push(...checkRecipeCategories(recipe));
+  return issues;
+}
+
+const CATEGORY_CRITERIA_DE: Readonly<Record<(typeof CRITERIA_CATEGORIES)[number], string>> = {
+  schnell: 'Gesamtzeit höchstens 10 Minuten',
+  'pre-workout': 'Trainings-Angabe „vor dem Training“',
+  'post-workout': 'Trainings-Angabe „nach dem Training“',
+  'meal-prep': 'für Meal-Prep geeignet',
+};
+
+/**
+ * R22 (gelb): Kategorie-Plausibilität in beide Richtungen (Plan 19.4). Nur, wenn das Rezept schon Kategorien hat
+ * (Feld vorhanden) – ältere Rezepte ohne Zuordnung werden nicht gemeldet.
+ */
+export function checkRecipeCategories(recipe: Recipe): ContentIssue[] {
+  if (recipe.categories === undefined) {
+    return [];
+  }
+  const target = recipeTarget(recipe);
+  const expected = criteriaCategories(recipe);
+  const issues: ContentIssue[] = [];
+  for (const id of CRITERIA_CATEGORIES) {
+    const has = recipe.categories.includes(id);
+    if (has === expected.has(id)) {
+      continue;
+    }
+    const name = RECIPE_CATEGORIES.find((c) => c.id === id)?.name_de ?? id;
+    const detail = id === 'schnell' ? ` (Gesamtzeit ${recipeTotalMinutes(recipe)} Min.)` : '';
+    issues.push(
+      makeIssue(
+        'R22',
+        target,
+        has
+          ? `Kategorie „${name}“, aber nicht ${CATEGORY_CRITERIA_DE[id]}${detail}.`
+          : `${CATEGORY_CRITERIA_DE[id][0]?.toUpperCase() ?? ''}${CATEGORY_CRITERIA_DE[id].slice(1)}${detail}, aber nicht in der Kategorie „${name}“.`,
+        'categories',
+      ),
+    );
+  }
   return issues;
 }
 

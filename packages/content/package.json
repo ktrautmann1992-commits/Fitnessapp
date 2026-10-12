@@ -14,6 +14,7 @@
     "nutrition:examples": "tsx src/nutrition-examples-cli.ts",
     "foods:import": "tsx src/foods-import-cli.ts",
     "sources:integrity": "tsx src/sources-integrity-cli.ts",
+    "import-alpha5": "tsx src/import-alpha5-cli.ts",
     "lint": "eslint .",
     "typecheck": "tsc --noEmit",
     "test": "vitest run --passWithNoTests"
@@ -26,5 +27,8 @@
   },
   "devDependencies": {
     "tsx": "^4.23.15"
+  },
+  "exports": {
+    "./catalog": "./src/foods/catalog-texts.ts"
   }
 }

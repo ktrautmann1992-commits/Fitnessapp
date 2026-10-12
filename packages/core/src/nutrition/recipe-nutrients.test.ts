@@ -271,3 +271,45 @@ describe('computeRecipeFacts: Haltbarkeit und Alkohol', () => {
     }
   });
 });
+
+describe('computeRecipeFacts: unbestätigte Import-Annahme „erhitzt“ (Wächter N2c, B1)', () => {
+  const recipe = recipeLookup().get('haehnchen-reis');
+  if (recipe === undefined) throw new Error('Fixture fehlt');
+  const assumption = {
+    ingredient_index: 0,
+    food_id: 'haehnchenbrust',
+    field: 'heated' as const,
+    value: true as const,
+    reason_de: 'Schritt 2 gart die Zutat durch.',
+  };
+
+  it('ohne Annahme: erhitzt → kein Schwangerschafts-Hinweis', () => {
+    expect(computeRecipeFacts(recipe, foodLookup()).pregnancyCaution).toBe(false);
+  });
+
+  it('unbestätigt → gilt wie nicht erhitzt', () => {
+    const facts = computeRecipeFacts(
+      { ...recipe, meta: { ...recipe.meta, import_assumptions: [assumption] } },
+      foodLookup(),
+    );
+    expect(facts.pregnancyCaution).toBe(true);
+    expect(facts.pregnancyReasons).toEqual([
+      { kind: 'unconfirmed_heated', index: 0, foodId: 'haehnchenbrust' },
+    ]);
+  });
+
+  it('bestätigt (oder ohne Annahmen) → zählt als erhitzt', () => {
+    const facts = computeRecipeFacts(
+      {
+        ...recipe,
+        meta: {
+          ...recipe.meta,
+          import_assumptions: [assumption],
+          import_assumptions_confirmed_by: 'KT',
+        },
+      },
+      foodLookup(),
+    );
+    expect(facts.pregnancyCaution).toBe(false);
+  });
+});

@@ -54,3 +54,27 @@ describe('sources-integrity-main.yml', () => {
     }
   });
 });
+
+describe('alpha5-import.yml (Etappe N2c, Plan 19.2)', () => {
+  const wf = read('.github/workflows/alpha5-import.yml');
+
+  it('nur manuell, nur auf main, Actions gepinnt, keine Secrets außer dem GITHUB_TOKEN', () => {
+    expect(wf).toMatch(/^on:\n {2}workflow_dispatch:/m);
+    expect(wf).not.toMatch(/^ {2}(push|pull_request|pull_request_target|schedule):/m);
+    expect(wf).toContain("if: github.ref != 'refs/heads/main'");
+    expect(wf).not.toContain('secrets.');
+    for (const line of wf.split('\n').filter((l) => l.includes('uses:'))) {
+      expect(line).toMatch(/@[0-9a-f]{40} # v\d+/);
+    }
+    expect(wf).toContain('persist-credentials: false');
+  });
+
+  it('Pull Request statt Datenbank; Zielordner prüft das Skript vor dem Commit (kein Schein-Schritt danach)', () => {
+    expect(wf).toContain('pnpm content:import-alpha5 --modus "$MODUS"');
+    expect(wf).not.toMatch(/supabase|SUPABASE/);
+    expect(wf).not.toContain('git status --porcelain');
+    const run = read('packages/content/src/import/alpha5-run.ts');
+    expect(run).toContain('ALPHA5_TARGET_DIRS.some');
+    expect(run).toContain('expectedBaseSha: deps.baseSha');
+  });
+});

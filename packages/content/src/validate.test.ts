@@ -244,7 +244,16 @@ describe('Versionsregel mit git', () => {
 describe('Berichte', () => {
   it('Markdown-Zusammenfassung mit Tabelle bzw. „Keine Befunde“', () => {
     const empty = {
-      result: { exercises: [], templates: [], foods: [], recipes: [], issues: [], blocking: [] },
+      result: {
+        exercises: [],
+        templates: [],
+        foods: [],
+        recipes: [],
+        mealPrepPlans: [],
+        guides: [],
+        issues: [],
+        blocking: [],
+      },
       strayFiles: [],
       versionNote: 'nicht geprüft',
     };

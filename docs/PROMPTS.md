@@ -129,6 +129,10 @@ R1–R19, Allergen-Pflichtregeln für alle 23 Gruppen, Einheiten, `selectNutriti
 Rubner-Institut), Workflow `foods-import`, CI-Job `sources-integrity`, Zuordnungs-Vorschlag für alle 236 Zutaten
 (`content/food-mapping/alpha5-zuordnung.json`, Quell-IDs aus dem Kandidatenlauf), CODEOWNERS, `docs/SETUP.md` Teil J.
 Nächster Schritt: Gründer-Aufgaben Teil J, dann Import per Workflow; danach N2b Teil 2 („Katalog geprüft“).
+**Etappe N2c umgesetzt (12.10.2026):** Import-Skript `pnpm content:import-alpha5` + Workflow `alpha5-import`
+(Entwürfe als Pull Request, nie `content/foods`), Zod-Schemas für Meal-Prep-Pläne und Ratgeber, Rezeptfelder aus 19.4,
+Prüfregeln R20–R22, Inhalts-Bündel und Auswahl in der App (`selectNutritionContent`). Die Rezeptdateien entstehen erst
+per Workflow, sobald der Lebensmittel-Katalog importiert ist (`docs/SETUP.md` Teil J, „Rezepte importieren“).
 **Nachtrag 11.10.2026 (Erweiterungen Teil 2):** Rezeptbestand ist `packages/content/seed/alpha5-rezepte.json` statt
 KI-erzeugter Rezepte – N2b umfasst alle 236 Zutaten, N2c ist der Import (Prompt B Schritte 3–5), N3–N6 enthalten den
 Umfang von Prompt C; neue Etappen N9–N14 (Prompts D, F, E). Details `docs/PLAN-PHASE-5.md` Abschnitt 19.

@@ -7,7 +7,7 @@ import type { ContentStatus } from '../enums';
  * VERSION (Abschnitt 5, Punkt 6: Ändert sich ein freigegebener Inhalt, steigt `version`).
  * Dazu PROBELAUF (Wächter-Hinweis Etappe B): Beispiel-Inhalte aus dem Probelauf dürfen nie `published` sein.
  * Phase 5 (docs/PLAN-PHASE-5.md 5.3): R1–R19 für Lebensmittel und Rezepte (R1 Schema und R15 Version blockieren
- * wie Ü1/VERSION immer).
+ * wie Ü1/VERSION immer); R20–R22 für Meal-Prep-Pläne, Ratgeber und Kategorien (19.4).
  */
 export const CONTENT_RULES = {
   DATEI: { severity: 'error', title: 'Datei: gültiges JSON, Dateiname = ID, ID eindeutig' },
@@ -145,16 +145,48 @@ export const CONTENT_RULES = {
     severity: 'error',
     title: 'Lebensmittel katalog-geprüft (sonst ist das Rezept nicht nutzbar)',
   },
+  // Erweiterungen 2 (docs/PLAN-PHASE-5.md 19.4, Etappe N2c)
+  R20: {
+    severity: 'error',
+    title:
+      'Meal-Prep-Plan: Rezepte existieren und sind Meal-Prep-geeignet, Kochschritte aufsteigend, Aufbewahrung Mo–Fr vollständig und nach R9; Haltbarkeit im Text nicht länger als R9',
+  },
+  R20H: {
+    severity: 'warning',
+    title: 'Meal-Prep-Plan: Haltbarkeitsangabe („N Tage“) im Text – fachlich prüfen',
+  },
+  R21: {
+    severity: 'error',
+    title:
+      'Ratgeber: Textregeln (keine Heil-/Gesundheitsversprechen, keine Marken), fester Hinweis beim Carb-Loading',
+  },
+  R21H: {
+    severity: 'warning',
+    title:
+      'Ratgeber: Mengen je kg Körpergewicht oder je Stunde, mg-Angaben und Supplement-Dosierungen – Fachprüfung',
+  },
+  R22: {
+    severity: 'warning',
+    title:
+      'Kategorie plausibel: „schnell“ ⇔ Gesamtzeit ≤ 10 Min., Pre-/Post-Workout ⇔ Trainings-Angabe, „meal-prep“ ⇔ Meal-Prep-geeignet',
+  },
 } as const satisfies Record<string, { severity: IssueSeverity; title: string }>;
 
 export type ContentRuleId = keyof typeof CONTENT_RULES;
 export type IssueSeverity = 'error' | 'warning';
 /**
  * Worauf sich ein Befund bezieht. `library` = ganze Übungsbibliothek (Regel Ü5), `recipe_library` = ganzer
- * Rezeptbestand (Regel R16).
+ * Rezeptbestand (Regel R16), `meal_prep_plan`/`guide` = Meal-Prep-Plan bzw. Ratgeber (R20/R21).
  */
 export type ContentKind =
-  'exercise' | 'plan_template' | 'library' | 'food' | 'recipe' | 'recipe_library';
+  | 'exercise'
+  | 'plan_template'
+  | 'library'
+  | 'food'
+  | 'recipe'
+  | 'recipe_library'
+  | 'meal_prep_plan'
+  | 'guide';
 
 export interface ContentIssue {
   readonly rule: ContentRuleId;

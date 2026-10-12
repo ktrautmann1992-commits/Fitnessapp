@@ -1,23 +1,15 @@
 /**
  * Lebensmittel-Katalog für `content:validate` laden (docs/PLAN-PHASE-5.md 5.1.1 b/c, R17, R18): Lebensmittel
  * aus `content/foods/`, Quellauszüge aus `content/sources/<db>/<version>/extract.csv` (über dieselbe Umrechnung
- * wie der Import, `source-rows.ts`), Erwartungs- und Ausnahmeliste.
+ * wie der Import, `source-rows.ts`), Erwartungs- und Ausnahmeliste. Das Übersetzen der Texte macht
+ * `catalog-texts.ts` (auch von der App genutzt, N2c).
  */
 import { existsSync, readdirSync, readFileSync } from 'node:fs';
 import { join } from 'node:path';
 
-import {
-  allergenExceptionsSchema,
-  allergenExpectationsSchema,
-  type NutritionCatalogContext,
-  type NutritionContentFile,
-  type SourceNutrientRow,
-  sourceRowKey,
-} from '@fitnessapp/core';
+import type { NutritionCatalogContext, NutritionContentFile } from '@fitnessapp/core';
 
-import { readExtractRecords } from './extract-source';
-import { sourceNutrientRows } from './source-rows';
-import { findSource, SOURCES } from './sources';
+import { buildNutritionCatalog, type CatalogExtractText } from './catalog-texts';
 
 export const FOODS_FOLDER = 'foods';
 export const EXPECTATIONS_FILE = 'allergen-expectations.json';
@@ -74,61 +66,28 @@ export function loadNutritionCatalog(contentDir: string): LoadedNutritionCatalog
     );
   }
 
-  const sourceRows = new Map<string, SourceNutrientRow>();
   const sourcesDir = join(contentDir, 'sources');
+  const extracts: CatalogExtractText[] = [];
   if (existsSync(sourcesDir)) {
     for (const db of readdirSync(sourcesDir).sort()) {
       for (const version of readdirSync(join(sourcesDir, db)).sort()) {
-        const where = `sources/${db}/${version}`;
-        const def = findSource(SOURCES, db, version);
-        if (def === undefined) {
-          problems.push(`${where}: Quelle nicht in der Allowlist (sources.ts).`);
-          continue;
-        }
         const extractPath = join(sourcesDir, db, version, 'extract.csv');
-        if (!existsSync(extractPath)) {
-          problems.push(`${where}: extract.csv fehlt.`);
-          continue;
-        }
-        try {
-          const { rows } = sourceNutrientRows(
-            readExtractRecords(readFileSync(extractPath, 'utf8')),
-            def,
-          );
-          for (const row of rows.values()) {
-            sourceRows.set(sourceRowKey(row), row);
-          }
-        } catch (error) {
-          problems.push(`${where}: Quellauszug nicht lesbar – ${(error as Error).message}`);
-        }
+        extracts.push({
+          db,
+          version,
+          csv: existsSync(extractPath) ? readFileSync(extractPath, 'utf8') : null,
+        });
       }
     }
   }
-
-  const catalog: { -readonly [K in keyof NutritionCatalogContext]: NutritionCatalogContext[K] } = {
-    sourceRows,
-  };
   const expectationsPath = join(foodsDir, EXPECTATIONS_FILE);
-  if (existsSync(expectationsPath)) {
-    const { data, error } = readJsonFile(expectationsPath);
-    const parsed = allergenExpectationsSchema.safeParse(data);
-    if (error !== undefined || !parsed.success) {
-      problems.push(`${FOODS_FOLDER}/${EXPECTATIONS_FILE}: ungültig.`);
-    } else {
-      catalog.expectations = parsed.data;
-    }
-  }
   const exceptionsPath = join(contentDir, MAPPING_FOLDER, EXCEPTIONS_FILE);
-  if (existsSync(exceptionsPath)) {
-    const { data, error } = readJsonFile(exceptionsPath);
-    const parsed = allergenExceptionsSchema.safeParse(data);
-    if (error !== undefined || !parsed.success) {
-      problems.push(`${MAPPING_FOLDER}/${EXCEPTIONS_FILE}: ungültig.`);
-    } else {
-      catalog.exceptions = parsed.data;
-    }
-  } else {
-    catalog.exceptions = [];
-  }
+  const built = buildNutritionCatalog({
+    extracts,
+    expectations: existsSync(expectationsPath) ? readFileSync(expectationsPath, 'utf8') : undefined,
+    exceptions: existsSync(exceptionsPath) ? readFileSync(exceptionsPath, 'utf8') : undefined,
+  });
+  problems.push(...built.problems);
+  const catalog = built.catalog;
   return { files, catalog, problems };
 }

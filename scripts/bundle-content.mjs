@@ -1,4 +1,5 @@
-// Bündelt die Inhaltsdateien des Repositorys (content/exercises, content/plan-templates) beim Bauen in ein
+// Bündelt die Inhaltsdateien des Repositorys (content/exercises, content/plan-templates; Ernährung: content/foods,
+// recipes, meal-prep-plans, guides + Katalog-Begleitdaten) beim Bauen in ein
 // TypeScript-Modul. Gemeinsam genutzt von
 // - apps/web (Redaktionsbereich /admin): jede Vercel-Vorschau zeigt genau die Inhalte ihres Branches,
 // - apps/mobile (Testmodus ohne Supabase, docs/PLAN-PHASE-3.md 10.1): Plan aus den gebündelten Entwürfen; das Modul
@@ -28,16 +29,38 @@ const emptyBundle =
 
 /** Ordner je Inhaltsart – wie CONTENT_FOLDERS in packages/content/src/validate.ts. */
 const FOLDERS = { exercise: 'exercises', plan_template: 'plan-templates' };
+/**
+ * Ernährung (docs/PLAN-PHASE-5.md 13 N2c, 19.2) – wie NUTRITION_CONTENT_FOLDERS in packages/content/src/validate.ts
+ * plus Lebensmittel. Die Begleitdaten des Katalogs (Quellauszüge, Erwartungs- und Ausnahmeliste, Namensnennung)
+ * kommen als Texte mit; übersetzt werden sie in der App mit `@fitnessapp/content/catalog` (eine Stelle, R17).
+ */
+const NUTRITION_FOLDERS = {
+  food: 'foods',
+  recipe: 'recipes',
+  meal_prep_plan: 'meal-prep-plans',
+  guide: 'guides',
+};
+/** Begleitdatei in content/foods/, kein Lebensmittel. */
+const EXPECTATIONS_FILE = 'allergen-expectations.json';
+
+function readText(path) {
+  return existsSync(path) ? readFileSync(path, 'utf8') : null;
+}
 
 const files = [];
+const nutritionFiles = [];
 const strayFiles = [];
-for (const [kind, folder] of emptyBundle ? [] : Object.entries(FOLDERS)) {
+const folders = [
+  ...Object.entries(FOLDERS).map(([kind, folder]) => [kind, folder, files]),
+  ...Object.entries(NUTRITION_FOLDERS).map(([kind, folder]) => [kind, folder, nutritionFiles]),
+];
+for (const [kind, folder, target] of emptyBundle ? [] : folders) {
   const dir = join(contentDir, folder);
   if (!existsSync(dir)) {
     continue;
   }
   for (const fileName of readdirSync(dir).sort()) {
-    if (fileName.startsWith('.')) {
+    if (fileName.startsWith('.') || (kind === 'food' && fileName === EXPECTATIONS_FILE)) {
       continue;
     }
     if (!fileName.endsWith('.json')) {
@@ -46,9 +69,9 @@ for (const [kind, folder] of emptyBundle ? [] : Object.entries(FOLDERS)) {
     }
     const text = readFileSync(join(dir, fileName), 'utf8');
     try {
-      files.push({ kind, fileName, data: JSON.parse(text) });
+      target.push({ kind, fileName, data: JSON.parse(text) });
     } catch (error) {
-      files.push({
+      target.push({
         kind,
         fileName,
         jsonError: error instanceof Error ? error.message : String(error),
@@ -57,13 +80,52 @@ for (const [kind, folder] of emptyBundle ? [] : Object.entries(FOLDERS)) {
   }
 }
 
-const payload = JSON.stringify({ files, strayFiles });
+// Begleitdaten des Lebensmittel-Katalogs (nur, wenn es Lebensmittel gibt).
+const nutritionCatalog = { extracts: [], expectations: null, exceptions: null, attributions: [] };
+const sourcesDir = join(contentDir, 'sources');
+if (!emptyBundle && existsSync(sourcesDir)) {
+  // Nur Ordner lesen – eine Datei (z. B. README) darf den Build nicht abbrechen (Wächter N2c, K3).
+  const subdirs = (dir) =>
+    readdirSync(dir, { withFileTypes: true })
+      .filter((entry) => entry.isDirectory())
+      .map((entry) => entry.name)
+      .sort();
+  for (const db of subdirs(sourcesDir)) {
+    for (const version of subdirs(join(sourcesDir, db))) {
+      const dir = join(sourcesDir, db, version);
+      nutritionCatalog.extracts.push({ db, version, csv: readText(join(dir, 'extract.csv')) });
+      const attribution = readText(join(dir, 'ATTRIBUTION.md'));
+      if (attribution !== null) {
+        nutritionCatalog.attributions.push({ db, version, text: attribution });
+      }
+    }
+  }
+}
+if (!emptyBundle) {
+  nutritionCatalog.expectations = readText(join(contentDir, 'foods', EXPECTATIONS_FILE));
+  nutritionCatalog.exceptions = readText(
+    join(contentDir, 'food-mapping', 'allergen-exceptions.json'),
+  );
+}
+
+const payload = JSON.stringify({ files, strayFiles, nutritionFiles, nutritionCatalog });
 const source = `// Automatisch erzeugt von scripts/bundle-content.mjs – nicht von Hand bearbeiten.
-import type { ContentFile } from '@fitnessapp/core';
+import type { ContentFile, NutritionContentFile } from '@fitnessapp/core';
+
+/** Begleitdaten des Lebensmittel-Katalogs als Texte (R17/R18, Namensnennung der Quelle). */
+export interface NutritionCatalogBundle {
+  readonly extracts: readonly { readonly db: string; readonly version: string; readonly csv: string | null }[];
+  readonly expectations: string | null;
+  readonly exceptions: string | null;
+  readonly attributions: readonly { readonly db: string; readonly version: string; readonly text: string }[];
+}
 
 export interface ContentBundle {
   readonly files: readonly ContentFile[];
   readonly strayFiles: readonly string[];
+  /** Lebensmittel, Rezepte, Meal-Prep-Pläne, Ratgeber (Etappe N2c). */
+  readonly nutritionFiles: readonly NutritionContentFile[];
+  readonly nutritionCatalog: NutritionCatalogBundle;
 }
 
 export const CONTENT_BUNDLE: ContentBundle = JSON.parse(${JSON.stringify(payload)}) as ContentBundle;
@@ -79,5 +141,5 @@ console.log(
     ? 'Supabase-Werte gesetzt: leeres Inhalts-Bündel (Inhalte kommen aus der Datenbank).'
     : `Inhalte gebündelt: ${files.filter((f) => f.kind === 'exercise').length} Übungen, ${
         files.filter((f) => f.kind === 'plan_template').length
-      } Plan-Vorlagen${strayFiles.length > 0 ? `, ${strayFiles.length} fremde Dateien` : ''}.`,
+      } Plan-Vorlagen, ${nutritionFiles.length} Ernährungs-Inhalte${strayFiles.length > 0 ? `, ${strayFiles.length} fremde Dateien` : ''}.`,
 );

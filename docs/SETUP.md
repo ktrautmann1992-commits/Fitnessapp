@@ -702,6 +702,17 @@ schaltet zeitgesteuerte Läufe in öffentlichen Repositories nach **60 Tagen ohn
 **BLS_4_0_Daten_2025_DE.xlsx** lange auf den Link tippen → **Link kopieren** → in einer Claude-Sitzung einfügen.
 Claude trägt die Adresse in `sources.ts` ein (bisher aus der Recherche abgeleitet, noch nicht bestätigt).
 
+**Rezepte importieren (Etappe N2c, erst NACH dem Merge des Lebensmittel-Pull-Requests):**
+
+1. GitHub-App → Repository → **Actions** → **alpha5-import** → **Run workflow**.
+2. Branch **main**, Modus **pull-request** → **Run workflow**.
+3. Nach 2–3 Minuten liegt ein Pull Request **„Rezepte als Entwurf: alpha5-rezepte.json …“** vor. Im Text: Zahlen
+   (Soll 242 Rezepte, 236 Zutaten, 4 Meal-Prep-Pläne, 2 Ratgeber), Abweichungen > 3 %, Annahmen „erhitzt“,
+   Haltbarkeit der Meal-Prep-Pläne, Abdeckung.
+4. Ist der Katalog noch leer, entsteht **kein** Pull Request – die Zusammenfassung des Laufs sagt „Katalog fehlt“.
+5. Auf grünes **ci** warten → prüfen → selbst mergen. Alle Rezepte bleiben Entwürfe, bis ihr sie freigebt.
+   Ein erneuter Lauf überschreibt keine von euch korrigierten oder freigegebenen Dateien.
+
 ---
 
 ## Inhalte erzeugen und freigeben am Handy

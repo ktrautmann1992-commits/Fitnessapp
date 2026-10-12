@@ -1,3 +1,4 @@
+import { buildNutritionCatalog } from '@fitnessapp/content/catalog';
 import {
   ageInYears,
   buildDataExportFile,
@@ -13,10 +14,13 @@ import {
   measurementReminderIntervalSchema,
   MIN_AGE_YEARS,
   requiresMedicalNotice,
+  selectNutritionContent,
   selectPlanContent,
   validateContent,
   type ConsentType,
   type ContentFile,
+  type NutritionContentFile,
+  type NutritionLibrary,
   type PlanLibrary,
   type PreferenceChange,
 } from '@fitnessapp/core';
@@ -587,4 +591,52 @@ export function createLocalBackend(store: KeyValueStore, options: LocalBackendOp
       return file;
     },
   };
+}
+
+// ---------------------------------------------------------------------------------------------------------
+// Ernährung (docs/PLAN-PHASE-5.md 13 N2c, R2-S6, W24): Lebensmittel, Rezepte, Meal-Prep-Pläne und Ratgeber aus
+// dem Inhalts-Bündel, geprüft mit `validateContent` und ausgewählt mit `selectNutritionContent(…, { allowDrafts:
+// true })` – wie die Plan-Bibliothek nur hier (Testmodus). Die Katalog-Begleitdaten übersetzt
+// `@fitnessapp/content/catalog` (eine Stelle, R17). Im Supabase-Build ist das Bündel leer (ab N7 Datenbank).
+// ---------------------------------------------------------------------------------------------------------
+
+/** Teil des Inhalts-Bündels, den die Ernährung braucht (siehe `src/generated/content-files.ts`). */
+export interface NutritionBundle {
+  readonly nutritionFiles: readonly NutritionContentFile[];
+  readonly nutritionCatalog: {
+    readonly extracts: readonly {
+      readonly db: string;
+      readonly version: string;
+      readonly csv: string | null;
+    }[];
+    readonly expectations: string | null;
+    readonly exceptions: string | null;
+  };
+}
+
+/**
+ * Bestand aus dem Bündel. Sind die Begleitdaten fehlerhaft (Quelle nicht in der Allowlist, Liste ungültig), werden
+ * sie verworfen – dann sind alle Lebensmittel rot (R17/R18) und nichts wird ausgewählt (sichere Richtung).
+ */
+export function nutritionLibraryFromBundle(bundle: NutritionBundle): NutritionLibrary {
+  const { catalog, problems } = buildNutritionCatalog({
+    extracts: bundle.nutritionCatalog.extracts,
+    expectations: bundle.nutritionCatalog.expectations ?? undefined,
+    exceptions: bundle.nutritionCatalog.exceptions ?? undefined,
+  });
+  const result = validateContent(
+    bundle.nutritionFiles,
+    problems.length === 0 ? { nutritionCatalog: catalog } : {},
+  );
+  return selectNutritionContent(result, { allowDrafts: true });
+}
+
+let nutritionCache: Promise<NutritionLibrary> | null = null;
+
+/** Ernährungs-Bestand des Testmodus, erst bei Bedarf geladen (wie die Plan-Bibliothek). Angezeigt ab N4. */
+export function loadNutritionLibrary(): Promise<NutritionLibrary> {
+  nutritionCache ??= import('../generated/content-files').then(({ CONTENT_BUNDLE }) =>
+    nutritionLibraryFromBundle(CONTENT_BUNDLE),
+  );
+  return nutritionCache;
 }

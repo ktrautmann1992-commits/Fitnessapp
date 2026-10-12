@@ -1406,3 +1406,137 @@ Keine Nährwerte im Repository, keine Migration, keine App-Änderung. Der Katalo
 - Strukturtest `workflows.test.ts`: Auslöser, Code nur von main, Installation vor den Daten, kein Cache, keine Secrets, gepinnte Actions, Pflicht-Check-Namen = SETUP J2.
 
 **So testest du es am Handy:** Pull Request → **Checks → ci** grün, darunter der neue Job **sources-integrity** und der Workflow **sources-integrity-main** (läuft erst ab dem nächsten PR nach dem Merge) („Noch keine Quellauszüge …“). Nach dem Merge: **Actions → foods-import → Run workflow** (Branch main, Modus `kandidaten`) → **Summary** zeigt die Kandidaten je Zutat.
+
+### N2c – Rezept-Import als Entwurf (umgesetzt, 12.10.2026: Skript, Schemas, Regeln, Workflow, Bündel)
+
+Keine Migration (Tabellen in N7), keine Anzeige in der App (N4). **Die Rezept-, Plan- und Ratgeber-Dateien sind nicht
+eingecheckt:** Plan 19.2/19.11 sieht sie als Pull Request des Workflows `alpha5-import` vor, und ohne Lebensmittel-
+Katalog (`content/foods/` ist bis zum `foods-import` leer) lassen sich Allergene, Schwangerschafts-Hinweis, `heated`,
+Haltbarkeit und Nährwerte nicht berechnen – Werte werden nicht erfunden.
+
+1. **Core (Zod, 19.4):** `recipe-schema.ts` um `section_de` (≤ 40), `categories[]` (`RECIPE_CATEGORIES`, 8 Themen),
+   `total_minutes` (1–360, Vorbereitung + Kochzeit ≤ Gesamtzeit), `ingredients[].role` (`INGREDIENT_ROLES`),
+   `cost_estimate { eur_per_serving, as_of, basis: 'estimate', reviewed_by? }` erweitert; `import-meta.ts`
+   (`source_file`, `import_hash`, `import_assumptions`, `import_assumptions_confirmed_by`; Freigabe mit unbestätigter
+   Annahme = Schemafehler; Annahme „erhitzt“ ohne `heated: true` = Schemafehler). Neue Arten
+   `meal-prep-plan-schema.ts` (`recipe_ids` 1–6, `cook_steps` 0–240, `storage_plan` Mo–Fr × `fridge|freeze|fresh`,
+   `storage_de`, `dinner_hint_de`) und `guide-schema.ts` (`sections[] { heading_de, body_de[], notice_de? }`,
+   `places[]`, fester Text `CARB_LOADING_NOTICE_DE`). Konstanten `RECIPE_EXTENSION_LIMITS`, `MEAL_PREP_PLAN_LIMITS`.
+2. **Prüfregeln:** R20 (rot) + R20H (gelb) in `meal-prep-checks.ts` (Rezepte existieren/geeignet, freigegebener Plan
+   nur mit freigegebenen Rezepten, Startminuten nicht fallend, `storage_plan` vollständig und nach R9, Wortregel
+   „N Tage“ gegen die R9-Grenze des genannten Rezepts – nennt der Text keines, gilt die kürzeste des Plans);
+   `deriveStoragePlan` (Kochtag Sonntag, Kühlschrank bis `fridge_days`, sonst einfrieren bzw. frisch). R21 (rot) +
+   R21H (gelb) in `guide-checks.ts` (Textregeln, Carb-Loading-Hinweis; Mengen je kg/Stunde, mg, Supplemente). R22
+   (gelb) in `recipe-checks.ts` (`criteriaCategories`: „schnell“ ⇔ ≤ 10 Min., Pre-/Post-Workout ⇔ Trainings-Angabe,
+   „meal-prep“ ⇔ geeignet; nur bei vorhandenem Feld `categories`). `validateContent` kennt `meal_prep_plan` und
+   `guide` (R1/R15), `selectNutritionContent` liefert zusätzlich `mealPrepPlans` (nur mit allen Rezepten) und
+   `guides`.
+3. **Import-Fachregeln in Core** (`import-rules.ts`): `findHeatingStep` (Wortliste aus 19.2 in üblichen Formen,
+   Zutatenname exakt, mit Endung oder als Kopfwort ab 4 Buchstaben, z. B. „Lachs“ für „Lachsfilet“; „kochendes
+   Wasser“ zählt nicht), `estimateCookMinutes`, `proposeIngredientRole`, `criteriaCategories`.
+4. **Skript** `packages/content/src/import/alpha5.ts` + `alpha5-run.ts`, `pnpm content:import-alpha5` (Modi
+   `bericht` – Standard, schreibt nichts –, `schreiben`, `pull-request`): `alpha5FileSchema` strikt (unbekannte
+   Felder, Pflichtfelder, doppelte IDs, unbekannte Zutat/Kategorie/Abschnitt/Abteilung, Plan mit unbekanntem Rezept,
+   nicht umwandelbare Menge 0 → Abbruch, nichts geschrieben); Abbildung wie 19.2; liest den Katalog nur (S3) und
+   schreibt ausschließlich `content/recipes|meal-prep-plans|guides/`; Rezept nur, wenn alle Zutaten im Katalog sind
+   (sonst „Zutat fehlt im Katalog“, abhängiger Plan ebenso), bei leerem Katalog gar nichts; `import_hash`,
+   Versionen, Schutz von `published`/`archived` und von Hand geänderten Entwürfen, fehlende IDs nur gemeldet.
+   Bericht: Zahlen, fehlende Zutaten, Abweichungen > 3 % je Rezept und je Zutat, Ernährungsform/Schwein,
+   umgewandelte Mengen, `heated`, Schutz/Handänderung, Abdeckung laut Datei (K9), Prüfung R1–R22 der gebauten
+   Inhalte inkl. Strukturprüfung ohne Katalog, R16-Tabelle.
+5. **Workflow** `.github/workflows/alpha5-import.yml` (manuell, nur `main`, Actions SHA-gepinnt, nur `GITHUB_TOKEN`):
+   Skript im Modus `pull-request` (verifizierter Commit über die GitHub-API auf `alpha5-import/<Lauf-ID>`, PR mit
+   Bericht, `ci` gestartet), danach Schutzschritt „keine Änderung unter `content/foods` oder `content/sources`“.
+   Strukturtest in `workflows.test.ts`. Klick-Schritte: `docs/SETUP.md` Teil J „Rezepte importieren“.
+6. **`content:validate`** lädt `NUTRITION_CONTENT_FOLDERS` (recipes, meal-prep-plans, guides), zählt sie und zeigt
+   die **Abdeckungstabelle R16** in der CI-Zusammenfassung (sobald es Rezepte gibt).
+7. **Bündel und App:** `scripts/bundle-content.mjs` bündelt zusätzlich `nutritionFiles` (foods ohne Erwartungsliste,
+   recipes, meal-prep-plans, guides) und `nutritionCatalog` (Quellauszüge, Erwartungs-/Ausnahmeliste,
+   `ATTRIBUTION.md` je Quelle als Text; im Supabase-Build leer). `packages/content/src/foods/catalog-texts.ts`
+   übersetzt die Texte (eine Stelle, auch von `catalog-loader.ts` genutzt; Paket-Export `@fitnessapp/content/catalog`).
+   `apps/mobile/src/data/local-backend.ts`: `nutritionLibraryFromBundle` / `loadNutritionLibrary` mit
+   `selectNutritionContent(…, { allowDrafts: true })` (Testmodus; fehlerhafte Begleitdaten → verworfen, sichere
+   Richtung). Tests `nutrition-library.test.ts` (W24, Bündel-Teil).
+
+**Import-Probelauf (12.10.2026, lokal, Modus `bericht`, Katalog leer):** Datei gültig, **242 Rezepte, 236 Zutaten,
+4 Meal-Prep-Pläne, 2 Ratgeber** (Soll erfüllt). Geschrieben: 0 („Katalog fehlt“, 236 Zutaten fehlen). Gebaut: 2
+Ratgeber → **3 rot (R21: „Light-Getränke“, „eiweißreich“ im Ratgeber Unterwegs, „gesunde Freizeitsportler“ im
+Wettkampf-Ratgeber), 4 gelb (R21H: g/kg- und g/Stunde-Angaben)**. Strukturprüfung der 242 Rezepte ohne Katalog
+(R1, R10, R14, R22): **alle schema-gültig, 15 rot (R10: 12 × „eiweißreich“, 1 × „light“ im Titel
+„Käsespätzle light …“, 1 × „ohne Zuckerzusatz“, 1 × „ballaststoffreich“), 0 gelb**. **Nach der Wächter-Prüfung
+(erweiterte R10-Liste, S1):** Ratgeber 6 rot / 4 gelb (zusätzlich 2 × „Eiweißquelle“ im Ratgeber Unterwegs und die
+Überschrift „Ballaststoff- und fettarm essen“), Rezepte **24 rot** (zusätzlich 4 × „fettarm“, 2 × „schlank“,
+„fettfrei“, „Low-Carb“, „Eiweißquelle“). Mengen `menge_g: 0`: 305 Prise,
+131 TL, 10 EL, 23 ml, 3 Stück. Abdeckung laut Datei: 28 Rezepte nur „mit Fleisch“, 62,4 % vegetarisch/vegan (K9).
+Abweichungen > 3 %, `heated`-Annahmen, R20 und R16 sind erst mit Katalog berechenbar (erster Workflow-Lauf).
+
+**Abweichungen / Präzisierungen:**
+
+- **Ordner:** `CONTENT_FOLDERS` bleibt bei Übungen/Vorlagen (die Pipeline nutzt es); die Ernährung hat
+  `NUTRITION_CONTENT_FOLDERS` (Lebensmittel lädt weiter `catalog-loader.ts`). In `bundle-content.mjs` stehen beide.
+- **Bündel:** Ernährungs-Inhalte liegen getrennt in `nutritionFiles`, damit Übungs-/Vorlagen-Code und Admin
+  unverändert bleiben. Die App bekommt die Abhängigkeit `@fitnessapp/content` (nur der reine Export `./catalog`).
+- **Leerer Katalog → nichts schreiben** (auch keine Ratgeber), damit der erste PR vollständig ist; Rezepte mit
+  fehlender Zutat werden übersprungen statt mit Lücken geschrieben.
+- **`categories`:** Themen-Kategorie der Datei + Tags (Ausdauer, Wettkampf, Dessert, Spar-Küche) + Merkmals-
+  Kategorien (R22). „meal-prep“ umfasst alle geeigneten Rezepte (83 mit Tag „Meal-Prep“), nicht nur die 12 der
+  Wochenpläne; Name deshalb „Meal-Prep“.
+- **Abschnitte:** Training → `snack` + Trainings-Angabe; Wettkampf: Carb-Loading und Vorabend → `main`,
+  Renntag-Frühstück → `breakfast` + vor dem Training, Im Rennen → `snack` + während, Nach dem Ziel → `snack` + nach.
+- **`prep_minutes`/`cook_minutes`:** Kochzeit aus Minutenangaben in Schritten mit Hitze-Verb geschätzt
+  (`estimateCookMinutes`), Rest Vorbereitung; maßgeblich ist `total_minutes`.
+- **Mengen 0 g:** „nach Geschmack“ → Prise, skaliert nicht; Messerspitze → Prise; TL/EL/ml/Blätter/Eiswürfel →
+  `tsp`/`tbsp`/`ml`/`piece` – **ohne Umrechnung im Katalog meldet R2 rot** (Rezept im Testmodus unsichtbar).
+  Die Einheiten (`units` in `content/food-mapping/alpha5-zuordnung.json`) sind noch leer; sie gehören in die
+  Zuordnung (eigene Claude-Sitzung + R19-Prüfung), nicht ins Import-Skript (S3).
+- **Rollen** nur als Vorschlag ohne eigenes Kennzeichen (Bestätigung bei der Fachprüfung); `import_assumptions`
+  enthält nur die `heated: true`-Annahmen.
+- **Meal-Prep-Pläne:** `storage_plan` wird aus R9 hergeleitet (sichere Richtung), die Datei-Texte („3–4 Tage“,
+  „5 Tage“) bleiben und werden von R20 rot gemeldet, bis Frage 19.12 (b) entschieden ist. Keine feste Reihenfolge
+  der Pläne im Schema (Gratis-Plan „erster in fester Reihenfolge“ → Sortierung nach ID oder Feld in N3).
+- **Nicht in N2c:** Eintrag „Lizenzen“ in der App und PDF-Fuß (erst wenn BLS-Werte angezeigt werden, N4/N6; die
+  Namensnennung reist schon jetzt im Bündel mit), `content-seed` für die neuen Arten (N7), Sammelfreigabe (N2d).
+
+**Wächter-Prüfung N2c (12.10.2026): BESTANDEN MIT AUFLAGEN** (Bericht `waechter-n2c.md`). Umgesetzt:
+
+- **B1 – „erhitzt“ ≠ „durchgegart“:** `findHeatingStep` kennt `NOT_FULLY_COOKED_PATTERNS` (glasig, rosa, medium,
+  blutig, halbgar, Spiegelei, wachsweich, weich gekocht, pochiert, „Eiweiß fest“, flüssiges Eigelb, Carpaccio, Tatar,
+  Sushi, Ceviche, nur kurz/kurz anbraten, roh). Nennt irgendein Schritt mit der Zutat eines davon, bleibt
+  `heated: false`. Bei Eiern `true` nur bei „hart“/„hartgekocht“ oder ≥ 9 Minuten (`EGG_HARD_MIN_MINUTES`, kleinste
+  Angabe im Schritt; PRODUKTENTSCHEIDUNG, Fachprüfung). Die sechs Sätze der Gründer-Datei sind Tests. Zusätzlich
+  zählen **unbestätigte Annahmen „durchgegart“ für die Schwangerschaft wie `heated: false`** (`computeRecipeFacts`,
+  Grund `unconfirmed_heated`); der Import setzt `declared_pregnancy_caution` entsprechend. Folge für N2d: Wer die
+  Annahmen bestätigt, muss `declared_pregnancy_caution` neu setzen (R13 meldet es rot).
+- **S1:** R10/R21 zusätzlich „fettarm“, „fettfrei“, „kalorienarm“, „energiearm“, „zuckerarm“, „salzarm“,
+  „natriumarm“, „Low Carb/Low Fat“, „reich an“, „Eiweiß-/Protein-/Ballaststoffquelle“, „schlank“ („fettreduziert“
+  bewusst nicht – Produktbezeichnung).
+- **S2:** `NutritionLibrary.recipes` und `.mealPrepPlans` sind ein **Bestand, nicht personenbezogen** – anzeigen
+  bzw. anwenden nur über die Engine (`filter.ts`, `applyMealPrepPlan` mit dem kompletten Filter, 19.6 B1, N3).
+- **S3:** W24 über `nutritionLibraryFromBundle` mit echtem BLS-4.0-Auszugsformat: Positivfall, nicht
+  katalog-geprüft, roter Befund, Plan mit fehlendem Rezept, Quelle außerhalb der Allowlist (mit Lebensmittel).
+- **S4:** Der Schein-Schritt nach dem Commit ist entfernt (die Zielordner prüft das Skript vor dem Commit). Der
+  Commit setzt genau auf `GITHUB_SHA` auf (`expectedBaseSha`; hat sich `main` geändert → Abbruch „bitte neu
+  starten“), und ein offener `alpha5-import/*`-Pull-Request bricht den Lauf ab.
+- **K1:** Import-Annahme nur für eine vorhandene Zutat mit gleicher `food_id` (Schema). Das Zurücksetzen der
+  Bestätigung bei späteren Handänderungen kommt mit der Sammelfreigabe (N2d).
+- **K3 (a):** Bündel liest unter `content/sources/` nur Ordner. (b) Größe/Spalten-Kürzung und (c) dynamischer
+  Import von `buildNutritionCatalog` folgen in N4, wenn die App den Bestand lädt (Module klein, Chunk lazy).
+- **K4:** R20 vergleicht „N Tage“ immer mit der kürzesten Haltbarkeit aller Plan-Rezepte (genannte Rezepte nur in
+  der Meldung), solange 19.12 (b) offen ist.
+- **K6:** Bei fehlendem Katalog steht im Bericht „Nicht prüfbar – Katalog fehlt“ statt „0 Abweichungen“.
+- **Gleiches Muster für `foods-import`** (Basis-SHA, offener PR) ist dort noch nicht umgesetzt – Hinweis für N2b
+  Teil 2.
+
+**Offen für die Gründer:** (1) Teil J (Ruleset, Adresse, `foods-import`) – danach **Actions → alpha5-import → Run
+workflow**; (2) die 24 R10-Texte der Rezepte und 6 R21-Texte der Ratgeber umformulieren (z. B. „eiweißreich“ →
+neutrale Zahl, „light“ → „leicht“ nur ohne Nährwert-Versprechen; „Light-Getränke“ ist eine Produktart, aber nicht
+zu „zuckerfrei“ umschreiben – das wäre wieder rot; „gesunde Freizeitsportler“ ist ein Sicherheits-Hinweis und darf
+die Einschränkung nicht verlieren, z. B. „für Freizeitsportler ohne Vorerkrankungen“; „Ballaststoff- und fettarm
+essen“ und „Eiweißquelle“ im Ratgeber neutral fassen, z. B. „Wenig Ballaststoffe und Fett“, „was dir Eiweiß
+liefert“), am besten in der Gründer-Datei, dann neu importieren; Titel mit „Protein-“ (z. B. „Heidelbeer-Protein-
+Muffins“, „Protein-Bananenbrot“) bei der Fachprüfung ansehen (Wächter K5: „Proteinquelle“ setzt ≥ 12 % Energie aus
+Eiweiß voraus); (3) Frage 19.12 (b) (Haltbarkeit der Meal-Prep-Pläne); (4) Einheiten TL/EL/ml je Zutat in der Zuordnung
+ergänzen lassen (eigene Claude-Sitzung).
+
+**So testest du es am Handy:** Pull Request → **Checks → ci** grün. Nach dem Lebensmittel-Import: **Actions →
+alpha5-import → Run workflow** → im neuen Pull Request stehen Zahlen und Befunde (19.11).
