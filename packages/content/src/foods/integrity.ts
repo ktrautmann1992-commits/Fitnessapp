@@ -4,9 +4,10 @@
  * Je Quelle unter `content/sources/<db>/<version>/`:
  *  1. `SOURCE.json` gültig; Quelle steht in der Allowlist `sources.ts` VON `main` (nie aus dem Pull Request);
  *     `SOURCE.json.url` = Allowlist-Adresse.
- *  2. Original-Datei wird IMMER neu geladen – von der Allowlist-Adresse aus `main` – und muss
- *     `original_sha256` haben (eine eingecheckte `original.*` ebenso). Wer Original UND Prüfsumme im selben PR
- *     ändert, fällt hier auf.
+ *  2. Original-Datei wird IMMER neu geladen – über den Allowlist-Eintrag aus `main` (feste Datei-Adresse bzw.
+ *     feste Download-Seite + der eine Link daraus, gleicher Host) – und muss `original_sha256` haben (eine
+ *     eingecheckte `original.*` ebenso). Weil der Link einer Download-Seite wechselt, sichert diese Prüfsumme die
+ *     Echtheit. Wer Original UND Prüfsumme im selben PR ändert, fällt hier auf.
  *  3. SHA-256 von `extract.csv` = `extract_sha256`; Kopfzeile = Kopfzeile der Original-Datei; JEDE Zeile ist eine
  *     unveränderte Zeile der Original-Datei; Anzahl = `extract_rows`.
  *  4. Pull Request/Branch: Änderungen unter `content/sources/**` nur auf `foods-import/<run-id>`; jeder Commit,
@@ -51,8 +52,11 @@ const ALLOWED_SOURCE_FILES = new Set(['SOURCE.json', 'extract.csv', 'ATTRIBUTION
 export interface IntegrityDeps {
   /** Allowlist aus `sources.ts` von `main`; null = auf main (noch) nicht vorhanden. */
   loadMainSources(): Promise<readonly SourceDefinition[] | null>;
-  /** Original-Datei laden (wirft bei Fehlern). */
-  download(url: string): Promise<Buffer>;
+  /**
+   * Original-Datei zum Allowlist-Eintrag laden (wirft bei Fehlern): bei einer Download-Seite über dieselbe
+   * Seiten-Logik wie foods-import (`fetchSourceOriginal`). Ergebnis = xlsx- bzw. csv-Datei (ZIP entpackt).
+   */
+  download(def: SourceDefinition): Promise<Buffer>;
   /** Ordner `content/sources/<db>/<version>` (relativ zum Repository). */
   listSourceDirs(): string[];
   /** Dateinamen in einem Quellordner. */
@@ -147,10 +151,10 @@ async function checkSourceDir(
     err('original_sha256 ≠ festgenagelte Prüfsumme in der Allowlist von main.');
   }
 
-  // Original IMMER neu laden – von der Allowlist-Adresse aus main (nie aus SOURCE.json oder dem PR).
+  // Original IMMER neu laden – über den Allowlist-Eintrag aus main (nie aus SOURCE.json oder dem PR).
   let original: Buffer;
   try {
-    original = await deps.download(allowed.url);
+    original = await deps.download(allowed);
   } catch (error) {
     err(`Original-Datei nicht geladen: ${(error as Error).message}`);
     return;

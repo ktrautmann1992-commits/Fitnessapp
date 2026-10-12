@@ -28,6 +28,7 @@ import {
   EXPECTATIONS_PATH,
   FOODS_DIR,
   formatImportReport,
+  type ImportReport,
   importFoods,
 } from './import-source';
 import { FOOD_MAPPING_PATH, parseFoodMapping } from './mapping';
@@ -43,6 +44,9 @@ import {
 } from './extract-source';
 import { NUTRIENT_KEYS, resolveNutrientColumns, sourceNutrientRows } from './source-rows';
 import { findSource, type SourceDefinition, SOURCES } from './sources';
+import type { FetchedOriginal } from './download';
+import { SourceDownloadError } from './download-page';
+import { diagnoseOriginal, headerLine } from './original-format';
 
 export const ALPHA5_SEED_PATH = 'packages/content/seed/alpha5-rezepte.json';
 export const FOODS_IMPORT_BRANCH_PREFIX = 'foods-import/';
@@ -62,7 +66,8 @@ export interface FoodsImportDeps {
   /** Branch, auf dem der Workflow läuft – nur `main` erlaubt (Allowlist und Skripte von main). */
   readonly refName: string;
   readonly now: () => Date;
-  download(url: string): Promise<Buffer>;
+  /** Original-Datei zum Allowlist-Eintrag laden (Standard: `fetchSourceOriginal`, auch über eine Download-Seite). */
+  download(def: SourceDefinition): Promise<FetchedOriginal>;
   /** GitHub-API (nur Modus „import“). */
   readonly api?: GitHubApi;
   /** Allowlist (Standard: sources.ts). */
@@ -128,6 +133,66 @@ export function columnCheck(header: readonly string[], def: SourceDefinition): s
   }
 }
 
+function readPreviousManifest(repoRoot: string, dir: string): SourceManifest | undefined {
+  const raw = readIfExists(repoRoot, `${dir}/SOURCE.json`);
+  if (raw === undefined) {
+    return undefined;
+  }
+  try {
+    const parsed = sourceManifestSchema.safeParse(JSON.parse(raw.toString('utf8')));
+    return parsed.success ? parsed.data : undefined;
+  } catch {
+    return undefined;
+  }
+}
+
+/** Höchster Anteil der Zutaten mit „Zuordnung prüfen“, bei dem ein Import-PR gemergt werden darf (NB1). */
+export const MAX_REVIEW_SHARE = 0.1;
+
+/** Meldung, wenn für die Quelle noch keine Prüfsumme in sources.ts festgenagelt ist (NB1). */
+export function pinRequiredMessage(loadedSha: string): string {
+  return [
+    '❌ **Kein Import: Für diese Quelle ist in `packages/content/src/foods/sources.ts` noch keine Prüfsumme (`originalSha256`) festgenagelt.**',
+    '',
+    'Feste Reihenfolge (docs/SETUP.md Teil J): (1) Lauf „kandidaten“, (2) Claude trägt die SHA-256 aus der Zusammenfassung per Pull Request als `originalSha256` ein, (3) ein Gründer merged, (4) erst dann Lauf „import“.',
+    '',
+    `Dieser Lauf hat geladen: \`${loadedSha}\``,
+    '',
+  ].join('\n');
+}
+
+/**
+ * Merge-Sperre für den Import-PR (NB1): Sind mehr als 10 % der Zutaten mit „Zuordnung prüfen“ (> 15 % Abweichung
+ * zur Gründer-Datei) markiert, wird nicht gemergt, bevor der Grund geklärt ist – eine falsche oder untergeschobene
+ * Datei fiele hier massenhaft auf.
+ */
+export function reviewShareNote(report: ImportReport, totalItems: number): string {
+  const flagged = new Set(report.deviations.filter((d) => d.level === 'review').map((d) => d.id));
+  const share = totalItems === 0 ? 0 : flagged.size / totalItems;
+  const percent = `${(share * 100).toFixed(1).replace('.', ',')} %`;
+  if (share > MAX_REVIEW_SHARE) {
+    return `⛔ **NICHT MERGEN, bevor der Grund geklärt ist:** ${flagged.size} von ${totalItems} Zutaten (${percent}) sind „Zuordnung prüfen“ – mehr als 10 %. Möglich: falsche Datei, falsche Spalten oder viele falsche Quell-IDs.`;
+  }
+  return `Merge-Regel: höchstens 10 % „Zuordnung prüfen“ – hier ${flagged.size} von ${totalItems} (${percent}). Darüber wird nicht gemergt, bevor der Grund geklärt ist.`;
+}
+
+/** Bericht, wenn das Laden scheitert – mit allen Diagnose-Zeilen (Status, Typ, Größe, Dateiname, ZIP-Einträge, Links). */
+export function downloadFailure(def: SourceDefinition, error: unknown): string {
+  const message = error instanceof Error ? error.message : String(error);
+  const diagnostics = error instanceof SourceDownloadError ? error.diagnostics : [];
+  return [
+    `### ❌ foods-import: Original-Datei nicht geladen (${def.title})`,
+    '',
+    message,
+    '',
+    `- Adresse${def.downloadPage === null ? '' : ' (Download-Seite)'}: ${def.url}`,
+    ...diagnostics.map((d) => `- ${d}`),
+    '',
+    'Bot-Sperren, Captchas und Anmeldeseiten werden nicht umgangen. Nächster Schritt: Zusammenfassung an Claude in einer Sitzung geben (docs/SETUP.md Teil J).',
+    '',
+  ].join('\n');
+}
+
 export async function runFoodsImport(
   options: FoodsImportOptions,
   deps: FoodsImportDeps,
@@ -145,7 +210,13 @@ export async function runFoodsImport(
       markdown: `### ❌ Quelle ${options.source} ${options.version} steht nicht in der Allowlist (sources.ts)\n`,
     };
   }
-  const original = await deps.download(def.url);
+  let fetched: FetchedOriginal;
+  try {
+    fetched = await deps.download(def);
+  } catch (error) {
+    return { exitCode: 1, markdown: downloadFailure(def, error) };
+  }
+  const original = fetched.data;
   const originalSha = sha256Hex(original);
   if (def.originalSha256 !== null && def.originalSha256 !== originalSha) {
     return {
@@ -153,25 +224,84 @@ export async function runFoodsImport(
       markdown: `### ❌ Original-Datei hat eine andere Prüfsumme als in sources.ts festgelegt\n\nGeladen: ${originalSha}\nErwartet: ${def.originalSha256}\n`,
     };
   }
-  const records = readOriginalRecords(original, def);
+  const dir = sourceDir(def);
+  const previousManifest = readPreviousManifest(deps.repoRoot, dir);
+  const shaChanged =
+    previousManifest !== undefined && previousManifest.original_sha256 !== originalSha;
+  const shaChangedMd = shaChanged
+    ? `❌ **Original-Datei weicht vom ersten Import ab:** geladen \`${originalSha}\`, SOURCE.json nennt \`${previousManifest.original_sha256}\`. Version ${def.version} sollte unverändert sein – Herausgeber hat die Datei geändert oder der Download ist nicht echt. Kein Import; Gründer entscheiden (neue Version in sources.ts per PR).\n`
+    : '';
+  const sourceLines = [
+    `- Adresse${def.downloadPage === null ? '' : ' (Download-Seite)'}: ${def.url}`,
+    ...(def.downloadPage === null ? [] : [`- Geladen über: ${fetched.downloadUrl}`]),
+    `- Datei: ${fetched.filename ?? def.originalFilename} (${fetched.container === 'zip' ? 'aus ZIP entpackt' : 'direkt'})`,
+    `- SHA-256 Original: \`${originalSha}\` (${original.length} Bytes)`,
+    `- Lizenz: ${def.license} – ${def.attribution}`,
+  ];
+  let records: string[][];
+  try {
+    records = readOriginalRecords(original, def);
+  } catch (error) {
+    return {
+      exitCode: 1,
+      markdown: [
+        `### ❌ foods-import: Original-Datei nicht lesbar (${def.title})`,
+        '',
+        (error as Error).message,
+        '',
+        ...sourceLines,
+        '',
+        '#### Diagnose',
+        '',
+        ...[...fetched.details, ...diagnoseOriginal(original, def)].map((d) => `- ${d}`),
+        '',
+      ].join('\n'),
+    };
+  }
   const mapping = parseFoodMapping(readJson(deps.repoRoot, FOOD_MAPPING_PATH));
   const candidates = formatCandidates(mappingCandidates(mapping, records, def));
   const head = [
     `### foods-import: ${def.title}`,
     '',
-    `- Adresse: ${def.url}`,
-    `- SHA-256 Original: \`${originalSha}\` (${original.length} Bytes, ${records.length - 1} Zeilen)`,
-    `- Lizenz: ${def.license} – ${def.attribution}`,
+    ...sourceLines,
+    `- Zeilen: ${records.length - 1}`,
     '',
+    ...(shaChangedMd === '' ? [] : [shaChangedMd]),
   ];
   if (options.mode === 'kandidaten') {
     return {
-      exitCode: 0,
-      markdown: [...head, columnCheck(records[0] ?? [], def), candidates].join('\n'),
+      exitCode: shaChanged ? 1 : 0,
+      markdown: [
+        ...head,
+        ...(def.originalSha256 === null
+          ? [
+              `➡️ **Vor dem Import Pflicht (NB1):** diese SHA-256 (\`${originalSha}\`) per Pull Request als \`originalSha256\` in sources.ts festnageln lassen und selbst mergen (docs/SETUP.md J3).`,
+              '',
+            ]
+          : []),
+        columnCheck(records[0] ?? [], def),
+        candidates,
+        '',
+        '<details><summary>Diagnose: Abruf und Aufbau der Datei</summary>',
+        '',
+        ...fetched.details.map((d) => `- ${d}`),
+        `- ${headerLine(records[0] ?? [])}`,
+        '',
+        '</details>',
+        '',
+      ].join('\n'),
     };
+  }
+  if (shaChanged) {
+    return { exitCode: 1, markdown: head.join('\n') };
   }
 
   // --- Modus import ---------------------------------------------------------------------------------
+  // Wächter-Nachtrag blsdb, NB1: Ohne festgenagelte Prüfsumme kein Import – sonst würde der erste Import die
+  // Prüfsumme der Datei, die er gerade bekommt, selbst zum Maßstab machen.
+  if (def.originalSha256 === null) {
+    return { exitCode: 1, markdown: [...head, pinRequiredMessage(originalSha)].join('\n') };
+  }
   const refs = mapping.items
     .filter(
       (i) => i.source.db === def.db && i.source.version === def.version && i.source.ref !== null,
@@ -192,15 +322,8 @@ export async function runFoodsImport(
   const extractRecords = readExtractRecords(extract.csv);
   const { rows: rowsByRef, problems } = sourceNutrientRows(extractRecords, def);
   const sourceRows = new Map([...rowsByRef.values()].map((row) => [sourceRowKey(row), row]));
-  const dir = sourceDir(def);
   const extractSha = sha256Hex(extract.csv);
 
-  const previousManifestRaw = readIfExists(deps.repoRoot, `${dir}/SOURCE.json`);
-  let previousManifest: SourceManifest | undefined;
-  if (previousManifestRaw !== undefined) {
-    const parsed = sourceManifestSchema.safeParse(JSON.parse(previousManifestRaw.toString('utf8')));
-    previousManifest = parsed.success ? parsed.data : undefined;
-  }
   const sameExtract =
     previousManifest !== undefined &&
     previousManifest.extract_sha256 === extractSha &&
@@ -215,7 +338,7 @@ export async function runFoodsImport(
           version: def.version,
           title: def.title,
           url: def.url,
-          original_filename: def.originalFilename,
+          original_filename: fetched.filename ?? def.originalFilename,
           original_bytes: original.length,
           original_sha256: originalSha,
           extract_sha256: extractSha,
@@ -273,6 +396,8 @@ export async function runFoodsImport(
   const reportMd = [
     ...head,
     `- SHA-256 Auszug: \`${extractSha}\` (${extractRecords.length - 1} Zeilen)`,
+    '',
+    reviewShareNote(imported.report, refs.length),
     '',
     formatImportReport(imported.report, extract.missingRefs),
     problemsMd,

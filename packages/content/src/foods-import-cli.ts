@@ -3,7 +3,7 @@
  * -- --source bls --version 4.0 --mode import|kandidaten`. Logik in foods/foods-import.ts.
  */
 import { main, repoRootOrFail, writeReport } from './cli';
-import { downloadOriginal } from './foods/download';
+import { fetchSourceOriginal } from './foods/download';
 import { runFoodsImport } from './foods/foods-import';
 import { githubApi } from './foods/github-api';
 
@@ -30,7 +30,7 @@ void main('foods-import', async () => {
       runId: process.env.GITHUB_RUN_ID ?? '0',
       refName: process.env.GITHUB_REF_NAME ?? '',
       now: () => new Date(),
-      download: (url) => downloadOriginal(url),
+      download: (def) => fetchSourceOriginal(def),
       ...(token && repository ? { api: githubApi(token, repository) } : {}),
     },
   );

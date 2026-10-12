@@ -1,7 +1,10 @@
 name: foods-import
 
 # Manuell startbar (GitHub-App → Actions → foods-import → Run workflow, Branch „main“):
-# Lädt die Original-Datei der Nährwert-Quelle von der festen Adresse aus packages/content/src/foods/sources.ts.
+# Lädt die Original-Datei der Nährwert-Quelle über den Eintrag in packages/content/src/foods/sources.ts: feste
+# Datei-Adresse oder feste Download-Seite (BLS: https://blsdb.de/download), aus der genau EIN Link mit wechselndem
+# Code gelesen wird (gleicher Host). Höflich (User-Agent mit Projekt, nacheinander, Wiederholungen mit Pause);
+# Bot-Sperren/Captchas werden nie umgangen – der Lauf bricht dann mit Diagnose in der Zusammenfassung ab.
 # - Modus „kandidaten“: listet für Zutaten ohne Quell-ID passende Zeilen (Quell-ID + Bezeichnung) in der
 #   Zusammenfassung des Laufs. Schreibt nichts.
 # - Modus „import“: filtert die benötigten Zeilen OHNE Wertänderung nach content/sources/<quelle>/<version>/

@@ -206,14 +206,31 @@ describe('SOURCE.json, Namensnennung und Allowlist', () => {
   it('Allowlist: nur HTTPS, feste versionierte Datei, Lizenz und Namensnennung gesetzt', () => {
     for (const source of SOURCES) {
       expect(source.url.startsWith('https://')).toBe(true);
-      expect(source.url).toMatch(/\.(xlsx|csv)$/);
       expect(source.url).not.toMatch(/latest|neueste|current/i);
-      expect(source.url).toContain(source.originalFilename);
+      if (source.downloadPage === null) {
+        expect(source.url).toMatch(/\.(xlsx|csv)$/);
+        expect(source.url).toContain(source.originalFilename);
+      } else {
+        // Feste Seite ohne Code; der Link mit wechselndem Code wird erst beim Laden gelesen.
+        expect(new URL(source.url).search).toBe('');
+        expect(source.downloadPage.linkPath.startsWith('/')).toBe(true);
+        expect(source.downloadPage.redirectHosts).toEqual([]);
+      }
       expect(source.attribution.length).toBeGreaterThan(20);
       expect(source.license).toBe('CC BY 4.0');
     }
     const bls = SOURCES.find((s) => s.db === 'bls');
+    expect(bls?.url).toBe('https://blsdb.de/download');
+    expect(bls?.downloadPage).toEqual({
+      linkPath: '/download',
+      tokenParam: 'token',
+      redirectHosts: [],
+    });
     expect(bls?.attribution).toContain('Max Rubner-Institut');
+    expect(bls?.attribution).toContain('DOI: 10.25826/Data20251217-134202-0');
+    expect(bls?.licenseText).toContain('CC BY 4.0');
+    expect(bls?.licenseStatus).toBe('confirmed');
+    expect(bls?.confirmedBy).toMatch(/Gründer 12\.10\.2026/);
     expect(attributionMarkdown(TEST_SOURCE)).toContain('foods-import');
   });
 });

@@ -13,7 +13,15 @@ import {
   type SourceManifest,
 } from './extract-source';
 import type { SourceDefinition } from './sources';
-import { TEST_SOURCE, testOriginal } from './test-helpers';
+import { fetchSourceOriginal } from './download';
+import {
+  downloadPageHtml,
+  fakeSite,
+  type FakeRoute,
+  TEST_PAGE_SOURCE,
+  TEST_SOURCE,
+  testOriginal,
+} from './test-helpers';
 
 const DIR = 'content/sources/bls/4.0';
 const ORIGINAL = testOriginal();
@@ -89,9 +97,9 @@ function deps(s: Scenario): IntegrityDeps {
           : { ok: false, reason: 'Workflow „.github/workflows/anderer.yml“' },
       ),
     loadMainSources: () => Promise.resolve(s.mainSources),
-    download: (url) => {
-      s.downloads.push(url);
-      const body = s.served.get(url);
+    download: (def) => {
+      s.downloads.push(def.url);
+      const body = s.served.get(def.url);
       return body === undefined ? Promise.reject(new Error('HTTP 404')) : Promise.resolve(body);
     },
     listSourceDirs: () =>
@@ -355,5 +363,88 @@ describe('W18 – sources-integrity', () => {
     const result = await run(s);
     expect(result.errors).toEqual([]);
     expect(result.notes.join('\n')).toMatch(/Noch keine Quellauszüge/);
+  });
+});
+
+/**
+ * Quelle über eine Download-Seite mit wechselndem Link (blsdb.de, Umsetzungsstand N2b): Die Echtheit sichert die
+ * Prüfsumme – Neuladen über dieselbe Seiten-Logik wie foods-import (`fetchSourceOriginal`).
+ */
+describe('W18 – sources-integrity mit Download-Seite (Link mit wechselndem Code)', () => {
+  const PAGE = TEST_PAGE_SOURCE.url;
+  const FILE = 'https://daten.example.org/download?token=*';
+
+  function pageScenario(routes: Record<string, FakeRoute>) {
+    const s = workflowScenario();
+    s.mainSources = [TEST_PAGE_SOURCE];
+    setManifest(s, { url: PAGE });
+    const site = fakeSite(routes);
+    const d: IntegrityDeps = {
+      ...deps(s),
+      download: async (def) => {
+        s.downloads.push(def.url);
+        return (await fetchSourceOriginal(def, site.fetch, { retryDelaysMs: [] })).data;
+      },
+    };
+    return { s, site, run: () => checkSourcesIntegrity(d) };
+  }
+
+  const goodRoutes = (): Record<string, FakeRoute> => ({
+    [PAGE]: { body: downloadPageHtml(['/download?token=NEU1-2345']) },
+    [FILE]: { body: ORIGINAL },
+  });
+
+  it('neuer Code, gleiche Datei → grün (Seite + Link neu gelesen)', async () => {
+    const { s, site, run } = pageScenario(goodRoutes());
+    const result = await run();
+    expect(result.errors).toEqual([]);
+    expect(s.downloads).toEqual([PAGE]);
+    expect(site.requests.map((r) => r.url)).toEqual([
+      PAGE,
+      'https://daten.example.org/download?token=NEU1-2345',
+    ]);
+  });
+
+  it('Seiten-Adresse in SOURCE.json geändert → rot', async () => {
+    const { s, run } = pageScenario(goodRoutes());
+    setManifest(s, { url: 'https://daten.example.org/andere-seite' });
+    expect((await run()).errors.join('\n')).toMatch(/URL in SOURCE.json .* ≠ Allowlist von main/);
+  });
+
+  it('Seite liefert eine abweichende Datei (andere Prüfsumme) → rot', async () => {
+    const forged = testOriginal([['Z1', 'Erfunden', '', 1, '', 1, 1, 1, 1, 1, 1, 1]]);
+    const { run } = pageScenario({ ...goodRoutes(), [FILE]: { body: forged } });
+    expect((await run()).errors.join('\n')).toMatch(
+      new RegExp(`Neu geladene Original-Datei hat SHA-256 ${sha256Hex(forged)}`),
+    );
+  });
+
+  it('Download-Link zeigt auf einen fremden Host → rot (nie geladen)', async () => {
+    const { site, run } = pageScenario({
+      [PAGE]: { body: downloadPageHtml(['https://boese.example.com/download?token=XXXX-1234']) },
+      'https://boese.example.com/download?token=*': { body: ORIGINAL },
+    });
+    const errors = (await run()).errors.join('\n');
+    expect(errors).toMatch(/Original-Datei nicht geladen: Kein Download-Link/);
+    expect(site.requests.map((r) => r.url)).toEqual([PAGE]);
+  });
+
+  it('Bot-Sperre statt Seite → rot mit klarer Meldung', async () => {
+    const { run } = pageScenario({
+      [PAGE]: {
+        body: '<html><title>Bitte warten</title></html>',
+        redirectTo: 'https://daten.example.org/pow-challenge?redirect_url=%2Fdownload',
+      },
+    });
+    expect((await run()).errors.join('\n')).toMatch(/Bot-Sperre .*NICHT umgangen/);
+  });
+
+  it('festgenagelte Prüfsumme (Gründer-PR nach erstem Import) passt → grün, weicht ab → rot', async () => {
+    const pinned = pageScenario(goodRoutes());
+    pinned.s.mainSources = [{ ...TEST_PAGE_SOURCE, originalSha256: sha256Hex(ORIGINAL) }];
+    expect((await pinned.run()).errors).toEqual([]);
+    const wrong = pageScenario(goodRoutes());
+    wrong.s.mainSources = [{ ...TEST_PAGE_SOURCE, originalSha256: 'c'.repeat(64) }];
+    expect((await wrong.run()).errors.join('\n')).toMatch(/festgenagelte Prüfsumme/);
   });
 });

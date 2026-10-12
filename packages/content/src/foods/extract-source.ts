@@ -128,7 +128,11 @@ export function attributionMarkdown(def: SourceDefinition): string {
     '',
     `**Lizenz:** ${def.license} – ${def.licenseUrl}`,
     '',
-    `**Original-Datei:** ${def.url}`,
+    `**Lizenz-Hinweis des Herausgebers:** ${def.licenseText}`,
+    '',
+    def.downloadPage === null
+      ? `**Original-Datei:** ${def.url}`
+      : `**Original-Datei:** \`${def.originalFilename}\` von der Download-Seite ${def.url} (Link mit wechselndem Code; Echtheit über SHA-256 in SOURCE.json)`,
     '',
     `**Änderungen:** ${def.changesNote}`,
     '',

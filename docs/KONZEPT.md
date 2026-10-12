@@ -744,9 +744,10 @@ alle offen, Server-Prüfung mit Phase 7):
 - KI-Funktionen mit Fotos: Verarbeitung durch den KI-Anbieter (AV-Vertrag, Datenübermittlung, keine Nutzung zum Training) prüfen
 - Lizenzen: Open Food Facts und OpenStreetMap (ODbL) mit Quellenangabe in der App
 - Nährwerte: Bundeslebensmittelschlüssel 4.0 (Max Rubner-Institut), Lizenz CC BY 4.0 – Namensnennung „Max
-  Rubner-Institut (2025): Bundeslebensmittelschlüssel (BLS), Version 4.0“ in der App („Lizenzen“) und im PDF-Fuß,
-  Änderungen kenntlich machen (Stand 11.10.2026, docs/PLAN-PHASE-5.md Umsetzungsstand N2b; Wortlaut der
-  Nutzungsbedingungen auf blsdb.de vor Launch bestätigen)
+  Rubner-Institut (2025): Bundeslebensmittelschlüssel (BLS), Version 4.0 — Deutsche Nährstoffdatenbank. Karlsruhe.
+  DOI: 10.25826/Data20251217-134202-0“ in der App („Lizenzen“) und im PDF-Fuß, Änderungen kenntlich machen. Wortlaut
+  der Nutzungsbedingungen auf https://blsdb.de/download von den Gründern am 12.10.2026 bestätigt (Screenshot); Bezug
+  der Datei über diese Seite (docs/PLAN-PHASE-5.md Umsetzungsstand N2b)
 - Standortberechtigung im Hintergrund (Strecken): Begründungstexte für App Store und Play Store
 - Mitgliedschafts-Erinnerung: nur Erinnerung an selbst eingetragene Fristen, keine Rechtsberatung zur Kündigung
 - Erweiterungen Teil 2: Lizenz der Nährwertdatenbank (Namensnennung) für alle 236 Zutaten; Ratgeber- und Rezepttexte

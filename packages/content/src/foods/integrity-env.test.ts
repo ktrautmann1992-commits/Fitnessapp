@@ -62,7 +62,10 @@ describe('Allowlist aus main laden', () => {
     write(
       dir,
       SOURCES_TS_PATH,
-      realSources.replace(/https:\/\/www\.openagrar\.de[^']*/, 'https://example.com/boese.xlsx'),
+      realSources.replace(
+        /url: 'https:\/\/blsdb\.de[^']*'/,
+        "url: 'https://example.com/boese.xlsx'",
+      ),
     );
     git(dir, 'commit', '-q', '-am', 'URL umgebogen');
     const loaded = await loadSourcesFromRef(dir, 'main');

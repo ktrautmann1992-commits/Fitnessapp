@@ -682,25 +682,62 @@ selbst freigeben, und eure eigenen Pull Requests bleiben frei mergebar. Ein zwei
 1. **Actions → foods-import → Run workflow** → Branch **main**.
 2. **quelle** `bls`, **version** `4.0`, **modus** `kandidaten` → **Run workflow**.
 3. Lauf antippen → **Summary**: oben „Spalten der Quelle“ (welche Spalte je Nährwert genutzt wird), darunter für
-   jede Zutat ohne Quell-ID passende Einträge der Quelle (BLS-Schlüssel und Bezeichnung, keine Nährwerte). Ist der Lauf rot mit „Original-Datei nicht geladen“, stimmt die Adresse in
-   `packages/content/src/foods/sources.ts` nicht – Claude in einer Sitzung Bescheid geben (siehe unten).
-4. Die gewählten Schlüssel trägt eine Claude-Sitzung (oder ihr per Pull Request) in
+   jede Zutat ohne Quell-ID passende Einträge der Quelle (BLS-Schlüssel und Bezeichnung, keine Nährwerte). Ist der
+   Lauf rot („Original-Datei nicht geladen“ oder „nicht lesbar“), steht darunter eine **Diagnose** (Antwort des
+   Servers, Links der Download-Seite, ZIP-Einträge, Kopfzeile) – die ganze Zusammenfassung kopieren und Claude in
+   einer Sitzung geben (siehe unten).
+4. **Pflicht: Prüfsumme festnageln (vor dem ersten Import).** Oben in der Summary steht „SHA-256 Original“.
+   Die ganze Summary kopieren und in einer Claude-Sitzung einfügen. Claude trägt den Wert als `originalSha256` in
+   `packages/content/src/foods/sources.ts` ein → Pull Request → **ihr merged selbst**. Ohne diesen Schritt bricht der
+   Modus `import` mit „Kein Import: … noch keine Prüfsumme festgenagelt“ ab. Grund: So müssen zwei Abrufe zu
+   verschiedenen Zeiten dieselbe Datei liefern, bevor Werte übernommen werden.
+5. **Einmalig: Betreiber prüfen.** Im Handy-Browser `https://blsdb.de` öffnen → ganz unten **Impressum** →
+   prüfen, ob dort das **Max Rubner-Institut** als Betreiber steht → Claude Bescheid geben (wird im Plan vermerkt;
+   automatisch konnte das noch nicht geprüft werden).
+6. Die gewählten Schlüssel trägt eine Claude-Sitzung (oder ihr per Pull Request) in
    `content/food-mapping/alpha5-zuordnung.json` bei `source.ref` ein → Pull Request → mergen.
-5. **Actions → foods-import → Run workflow** → **modus** `import`. Es erscheint ein Pull Request
+7. **Erst jetzt:** **Actions → foods-import → Run workflow** → **modus** `import`. Es erscheint ein Pull Request
    **„Lebensmittel: Bundeslebensmittelschlüssel …“** mit Adresse, beiden Prüfsummen, Import-Bericht und dem
    Gegencheck gegen `alpha5-rezepte.json` (🔴 = „Zuordnung prüfen“).
-6. Auf grüne Checks warten (`ci` inkl. **sources-integrity** und **sources-integrity (Code von main)**) →
+8. **Merge-Regel:** Im Pull-Request-Text steht der Anteil „Zuordnung prüfen“. Sind es **mehr als 10 %** der
+   Zutaten (Text „⛔ NICHT MERGEN“), **nicht mergen**, bevor der Grund geklärt ist (falsche Datei, falsche Spalten
+   oder viele falsche Quell-IDs) – Pull Request-Link an Claude geben.
+9. Sonst auf grüne Checks warten (`ci` inkl. **sources-integrity** und **sources-integrity (Code von main)**) →
    **selbst** freigeben und mergen (J2 Schritt 7).
-7. Danach prüft ihr jedes Lebensmittel mit der Checkliste (Plan 5.1.1 d) – markierte Zuordnungen zuerst.
+10. Danach prüft ihr jedes Lebensmittel mit der Checkliste (Plan 5.1.1 d) – markierte Zuordnungen zuerst.
 
 **Wöchentliche Prüfung:** Jeden Montag lädt `ci` die Original-Datei neu und vergleicht die Prüfsummen. GitHub
 schaltet zeitgesteuerte Läufe in öffentlichen Repositories nach **60 Tagen ohne Aktivität** ab – dann unter
 **Actions → ci** den Hinweis antippen und **Enable workflow** wählen.
 
-**Adresse der Original-Datei bestätigen (einmalig):** Im Handy-Browser
-`https://www.openagrar.de/receive/openagrar_mods_00112643` öffnen → bei der Datei
-**BLS_4_0_Daten_2025_DE.xlsx** lange auf den Link tippen → **Link kopieren** → in einer Claude-Sitzung einfügen.
-Claude trägt die Adresse in `sources.ts` ein (bisher aus der Recherche abgeleitet, noch nicht bestätigt).
+**Woher die Datei kommt (bestätigt 12.10.2026, nichts mehr zu tun):** Der Workflow öffnet die offizielle Seite
+`https://blsdb.de/download` des Max Rubner-Instituts und nimmt den **einen** Link „Download BLS-Daten“ von dort
+(`…/download?token=<Code>`, der Code wechselt bei jedem Aufruf). Die frühere Adresse im Archiv OpenAgrar ist für
+automatische Abrufe gesperrt (Bot-Sperre) – solche Sperren umgeht der Workflow nie. Ob die Datei echt ist, prüft die
+**Prüfsumme**: Sie wird vor dem ersten Import in `sources.ts` festgenagelt (J3 Schritt 4), der Import speichert
+sie zusätzlich in `SOURCE.json`, jeder spätere Lauf und die wöchentliche Prüfung vergleichen sie. Lizenz-Wortlaut und Zitierweise habt ihr am 12.10.2026 per Screenshot bestätigt.
+
+**Wenn der Lauf rot ist** mit „Bot-Sperre“, „Kein Download-Link“ oder „weicht vom ersten Import ab“:
+
+1. Lauf antippen → **Summary** → Text markieren → **Kopieren**.
+2. Im Handy-Browser `https://blsdb.de/download` öffnen und prüfen, ob der Knopf **Download BLS-Daten** noch da ist
+   und die Datei lädt.
+3. Beides (Zusammenfassung + was ihr seht, ggf. Screenshot) in einer Claude-Sitzung einfügen. Claude ändert
+   `sources.ts` nur per Pull Request, den ihr selbst prüft und mergt.
+
+**Wenn das MRI eine korrigierte Datei unter „4.0“ veröffentlicht:** Dann wird die wöchentliche Prüfung dauerhaft
+rot („Neu geladene Original-Datei hat SHA-256 …“ bzw. „andere Prüfsumme als in sources.ts festgelegt“). Das ist
+gewollt – so fällt jede Änderung auf. Ausweg:
+
+1. **Ursache klären:** Auf `https://blsdb.de` nach einem Hinweis auf eine korrigierte Fassung suchen (Neuigkeiten,
+   Änderungsprotokoll, Datum der Datei) und die Summary des roten Laufs an Claude geben. Ohne erkennbaren Grund
+   **nichts** ändern – dann könnte die Datei auch nicht echt sein.
+2. **Neue Prüfsumme festnageln:** Claude trägt per Pull Request das neue `originalSha256` in `sources.ts` ein (mit
+   Begründung im Text) → **ihr merged selbst**.
+3. **Neu importieren:** **Actions → foods-import → Run workflow** → Modus `import`. Der Pull Request
+   „Lebensmittel: …“ zeigt, welche Lebensmittel sich geändert haben (geänderte Werte setzen die Katalog- und
+   Fachprüfung dieser Lebensmittel zurück). Merge-Regel aus J3 Schritt 8 gilt auch hier.
+4. Nach dem Merge wird die wöchentliche Prüfung wieder grün.
 
 **Rezepte importieren (Etappe N2c, erst NACH dem Merge des Lebensmittel-Pull-Requests):**
 
