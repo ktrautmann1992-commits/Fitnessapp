@@ -390,11 +390,36 @@ describe('Download der Original-Datei', () => {
         arrayBuffer: () => Promise.resolve(new TextEncoder().encode(body).buffer as ArrayBuffer),
       });
 
+  it('xlsx-Adresse liefert Webseite statt Datei → verständlicher Fehler mit Antwort-Details', async () => {
+    const html: DownloadFetch = () =>
+      Promise.resolve({
+        ok: true,
+        status: 200,
+        url: 'https://example.org/login',
+        headers: { get: (n: string) => (n === 'content-type' ? 'text/html;charset=UTF-8' : null) },
+        arrayBuffer: () =>
+          Promise.resolve(
+            new TextEncoder().encode('<!DOCTYPE html><html><title>Anmeldung</title>')
+              .buffer as ArrayBuffer,
+          ),
+      });
+    await expect(downloadOriginal('https://example.org/a.xlsx', html)).rejects.toThrow(
+      /keine xlsx-Datei.*HTTP 200.*text\/html.*example\.org\/login.*DOCTYPE/,
+    );
+    const zip: DownloadFetch = () =>
+      Promise.resolve({
+        ok: true,
+        status: 200,
+        url: '',
+        headers: { get: () => null },
+        arrayBuffer: () => Promise.resolve(new Uint8Array([0x50, 0x4b, 0x03, 0x04, 1]).buffer),
+      });
+    expect((await downloadOriginal('https://example.org/a.xlsx', zip)).length).toBe(5);
+  });
+
   it('nur HTTPS (auch nach Weiterleitung), Fehler, leere/zu große Datei', async () => {
     await expect(downloadOriginal('http://example.org/a.xlsx', ok('x'))).rejects.toThrow(/HTTPS/);
-    expect((await downloadOriginal('https://example.org/a.xlsx', ok('abc'))).toString()).toBe(
-      'abc',
-    );
+    expect((await downloadOriginal('https://example.org/a.csv', ok('abc'))).toString()).toBe('abc');
     await expect(
       downloadOriginal('https://example.org/a.xlsx', ok('x', 'http://example.org/b')),
     ).rejects.toThrow(/Nicht-HTTPS/);
@@ -442,9 +467,7 @@ describe('Download der Original-Datei', () => {
     };
     const sleep = () => Promise.resolve();
     expect(
-      (
-        await downloadOriginal('https://example.org/a.xlsx', flaky, undefined, { sleep })
-      ).toString(),
+      (await downloadOriginal('https://example.org/a.csv', flaky, undefined, { sleep })).toString(),
     ).toBe('ok');
     expect(calls).toBe(3);
     let notFoundCalls = 0;

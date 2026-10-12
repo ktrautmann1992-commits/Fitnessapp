@@ -78,5 +78,43 @@ export async function downloadOriginal(
   if (buffer.length === 0) {
     throw new Error('Original-Datei ist leer.');
   }
+  if (url.toLowerCase().endsWith('.xlsx') && !isZip(buffer)) {
+    throw new Error(
+      `Original-Datei ist keine xlsx-Datei (${describeResponse(response, buffer)}). ` +
+        'Vermutlich liefert der Server eine Webseite statt der Datei – Adresse in packages/content/src/foods/sources.ts prüfen (docs/SETUP.md Teil J).',
+    );
+  }
   return buffer;
+}
+
+/** xlsx ist ein ZIP-Archiv: beginnt mit „PK\x03\x04“. */
+export function isZip(buffer: Buffer): boolean {
+  return (
+    buffer.length >= 4 &&
+    buffer[0] === 0x50 &&
+    buffer[1] === 0x4b &&
+    buffer[2] === 0x03 &&
+    buffer[3] === 0x04
+  );
+}
+
+/** Kurzbeschreibung der Antwort für die Fehlermeldung (keine Geheimnisse, nur öffentliche Server-Antwort). */
+export function describeResponse(
+  response: { status: number; url: string; headers: { get(name: string): string | null } },
+  buffer: Buffer,
+): string {
+  const start = buffer
+    .subarray(0, 160)
+    .toString('utf8')
+    .replace(/[^\x20-\x7E\u00C0-\u017F]+/g, ' ')
+    .trim();
+  return [
+    `HTTP ${response.status}`,
+    `Typ ${response.headers.get('content-type') ?? 'unbekannt'}`,
+    `${buffer.length} Bytes`,
+    response.url !== '' ? `Adresse nach Weiterleitung ${response.url}` : null,
+    `Anfang „${start}“`,
+  ]
+    .filter(Boolean)
+    .join(', ');
 }
