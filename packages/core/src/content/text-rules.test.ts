@@ -80,6 +80,41 @@ describe('Health-Claims, Nährwert-Schlagworte und Lebensmittel-Marken (R10, Pla
     expect(nutritionLabels(text)).toContain(label);
   });
 
+  it('Nährwert-Angaben nach VO 1924/2006 und Schlagworte (Wächter N2c, S1)', () => {
+    const cases: [string, string][] = [
+      ['Ein fettarmer Quark mit Honig.', 'fettarm'],
+      ['Ballaststoff- und fettarm essen', 'fettarm'],
+      ['Fettfreie Zubereitung.', 'fettfrei'],
+      ['Kalorienarmes Abendessen.', 'kalorienarm'],
+      ['Energiearme Beilage.', 'energiearm'],
+      ['Zuckerarmer Kuchen.', 'zuckerarm'],
+      ['Salzarme Brühe.', 'salzarm'],
+      ['Natriumarmes Wasser.', 'natriumarm'],
+      ['Ein Low-Carb-Abendessen.', 'Low Carb/Low Fat'],
+      ['Low Carb und lecker.', 'Low Carb/Low Fat'],
+      ['Lowfat-Joghurt.', 'Low Carb/Low Fat'],
+      ['Reich an Eisen.', 'reich an'],
+      ['Eine gute Proteinquelle.', 'Eiweiß-/Protein-/Ballaststoffquelle'],
+      ['Wähle zuerst deine Eiweißquelle.', 'Eiweiß-/Protein-/Ballaststoffquelle'],
+      ['Mit schlanker Tomatensauce.', 'schlank'],
+    ];
+    for (const [text, label] of cases) {
+      expect(nutritionLabels(text), text).toContain(label);
+    }
+  });
+
+  it('Produktbezeichnungen und Ähnliches ohne Angabe bleiben erlaubt', () => {
+    for (const text of [
+      'Kokosmilch fettreduziert',
+      'Fett in der Pfanne erhitzen.',
+      'Schlagsahne steif schlagen.',
+      'Kohlenhydrate aus Reis.',
+      'Ein reichhaltiges Frühstück.',
+    ]) {
+      expect(findNutritionTextRuleHits(text), text).toEqual([]);
+    }
+  });
+
   it('Lebensmittel-Marken (nur Produktarten)', () => {
     expect(nutritionLabels('Mit Nutella bestreichen.')).toEqual(['Nutella']);
     expect(nutritionLabels('Ein Würfel Maggi')).toEqual(['Maggi']);

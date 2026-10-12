@@ -1,6 +1,7 @@
 /**
  * Prüfskript `content:validate`: liest alle Inhalte unter `content/` und prüft sie mit den Regeln aus
- * packages/core (Schema Ü1, Plausibilitäts-Checks Ü2–Ü6 und V1–V11, Datei- und Versionsregeln).
+ * packages/core (Schema Ü1, Plausibilitäts-Checks Ü2–Ü6 und V1–V11, Datei- und Versionsregeln; Ernährung R1–R22
+ * für Lebensmittel, Rezepte, Meal-Prep-Pläne und Ratgeber).
  *
  * - Ausgabe auf Deutsch, rot = Fehler, gelb = Hinweis (docs/PLAN-PHASE-2.md Abschnitt 7).
  * - Exit-Code 1 bei Schema-/Dateifehlern jeder Art und bei roten Fehlern an FREIGEGEBENEN Inhalten.
@@ -19,23 +20,43 @@ import {
   type ContentIssue,
   type ContentStatus,
   type ContentValidationResult,
+  DIET_TYPES,
   isBlockingIssue,
+  MEAL_TYPES,
+  type NutritionContentFile,
+  type NutritionContentFileKind,
+  RECIPE_COVERAGE,
+  recipeCoverageReport,
   validateContent,
 } from '@fitnessapp/core';
 
 import { loadNutritionCatalog } from './foods/catalog-loader';
 
-/** Ordner unter `content/` je Inhaltsart. */
+/** Ordner unter `content/` je Inhaltsart (Übungen, Vorlagen – auch von der Pipeline genutzt). */
 export const CONTENT_FOLDERS: Record<ContentFileKind, string> = {
   exercise: 'exercises',
   plan_template: 'plan-templates',
 };
 
+/**
+ * Ordner der Ernährungs-Inhalte (docs/PLAN-PHASE-5.md 13 N2c, 19.2). Lebensmittel (`foods`) lädt
+ * `foods/catalog-loader.ts` mit Quellauszug, Erwartungs- und Ausnahmeliste; Rezepte, Meal-Prep-Pläne und
+ * Ratgeber kommen von hier. Gespiegelt in `FOLDERS` von `scripts/bundle-content.mjs`.
+ */
+export const NUTRITION_CONTENT_FOLDERS: Record<
+  Exclude<NutritionContentFileKind, 'food'>,
+  string
+> = {
+  recipe: 'recipes',
+  meal_prep_plan: 'meal-prep-plans',
+  guide: 'guides',
+};
+
 /** Liest den Stand einer Datei (Pfad relativ zum Repository) im Vergleichsstand; undefined = nicht vorhanden. */
 export type PreviousReader = (repoPath: string) => string | undefined;
 
-export interface LoadedContent {
-  readonly files: ContentFile[];
+export interface LoadedContent<F = ContentFile> {
+  readonly files: F[];
   /** Dateien, die nicht als Inhalt gelten (z. B. falsche Endung) – werden als Fehler gemeldet. */
   readonly strayFiles: string[];
 }
@@ -48,9 +69,37 @@ export function loadContentFiles(
   contentDir: string,
   options: { repoRoot?: string; readPrevious?: PreviousReader } = {},
 ): LoadedContent {
-  const files: ContentFile[] = [];
+  return loadFolders(contentDir, CONTENT_FOLDERS, options);
+}
+
+/** Liest Rezepte, Meal-Prep-Pläne und Ratgeber (Ordner `NUTRITION_CONTENT_FOLDERS`). */
+export function loadNutritionContentFiles(
+  contentDir: string,
+  options: { repoRoot?: string; readPrevious?: PreviousReader } = {},
+): LoadedContent<NutritionContentFile> {
+  return loadFolders(contentDir, NUTRITION_CONTENT_FOLDERS, options);
+}
+
+function loadFolders<K extends string>(
+  contentDir: string,
+  folders: Record<K, string>,
+  options: { repoRoot?: string; readPrevious?: PreviousReader },
+): LoadedContent<{
+  kind: K;
+  fileName: string;
+  data?: unknown;
+  jsonError?: string;
+  previous?: unknown;
+}> {
+  const files: {
+    kind: K;
+    fileName: string;
+    data?: unknown;
+    jsonError?: string;
+    previous?: unknown;
+  }[] = [];
   const strayFiles: string[] = [];
-  for (const [kind, folder] of Object.entries(CONTENT_FOLDERS) as [ContentFileKind, string][]) {
+  for (const [kind, folder] of Object.entries(folders) as [K, string][]) {
     const dir = join(contentDir, folder);
     if (!existsSync(dir)) {
       continue;
@@ -137,6 +186,8 @@ const KIND_DE = {
   food: 'Lebensmittel',
   recipe: 'Rezept',
   recipe_library: 'Rezeptbestand',
+  meal_prep_plan: 'Meal-Prep-Plan',
+  guide: 'Ratgeber',
 } as const;
 
 function countByStatus(items: readonly { status: ContentStatus }[]): string {
@@ -174,9 +225,7 @@ export function formatReport(input: ReportInput): string {
     'Inhalte prüfen (content:validate)',
     `Übungen: ${result.exercises.length} (${countByStatus(result.exercises)})`,
     `Plan-Vorlagen: ${result.templates.length} (${countByStatus(result.templates)})`,
-    ...(result.foods.length > 0
-      ? [`Lebensmittel: ${result.foods.length} (${countByStatus(result.foods)})`]
-      : []),
+    ...nutritionCountLines(result),
     `Versionen: ${versionNote}`,
     '',
     ...strayFiles.map(
@@ -206,7 +255,11 @@ export function formatMarkdownSummary(input: ReportInput): string {
   return [
     blocking === 0 ? '### ✅ Inhalte geprüft' : '### ❌ Inhalte: blockierende Fehler',
     '',
-    `Übungen: ${result.exercises.length} (${countByStatus(result.exercises)}) · Plan-Vorlagen: ${result.templates.length} (${countByStatus(result.templates)})${result.foods.length > 0 ? ` · Lebensmittel: ${result.foods.length} (${countByStatus(result.foods)})` : ''}`,
+    [
+      `Übungen: ${result.exercises.length} (${countByStatus(result.exercises)})`,
+      `Plan-Vorlagen: ${result.templates.length} (${countByStatus(result.templates)})`,
+      ...nutritionCountLines(result),
+    ].join(' · '),
     '',
     `Versionen: ${input.versionNote}`,
     '',
@@ -215,9 +268,67 @@ export function formatMarkdownSummary(input: ReportInput): string {
       ? ['| Regel | Inhalt | Status | Befund |', '| --- | --- | --- | --- |', ...rows]
       : ['Keine Befunde.']),
     '',
+    ...coverageMarkdown(result),
     'Rot blockiert nur bei freigegebenen Inhalten (Schema-/Dateifehler immer). Regeln: docs/PLAN-PHASE-2.md Abschnitt 7.',
     '',
   ].join('\n');
+}
+
+function nutritionCountLines(result: ContentValidationResult): string[] {
+  const lines: string[] = [];
+  const add = (label: string, items: readonly { status: ContentStatus }[]) => {
+    if (items.length > 0) {
+      lines.push(`${label}: ${items.length} (${countByStatus(items)})`);
+    }
+  };
+  add('Lebensmittel', result.foods);
+  add('Rezepte', result.recipes);
+  add('Meal-Prep-Pläne', result.mealPrepPlans);
+  add('Ratgeber', result.guides);
+  return lines;
+}
+
+const MEAL_TYPE_DE = { breakfast: 'Frühstück', main: 'Hauptgericht', snack: 'Snack' } as const;
+const DIET_DE = {
+  omnivore: 'mit Fleisch/Fisch',
+  vegetarian: 'vegetarisch',
+  vegan: 'vegan',
+} as const;
+
+/**
+ * Abdeckungsbericht (R16, Plan 5.4, 13 N2c): passende Rezepte je Mahlzeit × Ernährungsform × häufige
+ * Unverträglichkeit (Entwürfe und freigegebene). Nur, wenn es Rezepte gibt.
+ */
+export function coverageMarkdown(
+  result: Pick<ContentValidationResult, 'recipes' | 'foods'>,
+): string[] {
+  if (result.recipes.length === 0) {
+    return [];
+  }
+  const rows = recipeCoverageReport(result.recipes, new Map(result.foods.map((f) => [f.id, f])));
+  const intolerances: (string | null)[] = [null, ...RECIPE_COVERAGE.intolerances];
+  const count = (mealType: string, diet: string, intolerance: string | null) =>
+    rows.find((r) => r.mealType === mealType && r.diet === diet && r.intolerance === intolerance)
+      ?.count ?? 0;
+  const lines = [
+    '#### Abdeckung (R16)',
+    '',
+    `Passende Rezepte je Mahlzeit und Ernährungsform; Spalten „ohne …“ = bei dieser Unverträglichkeit. Unter ${RECIPE_COVERAGE.minPerCombination} = gelb. Lebensmittel, die im Katalog fehlen, zählen nicht.`,
+    '',
+    `| Mahlzeit | Ernährungsform | alle | ${RECIPE_COVERAGE.intolerances.map((g) => `ohne ${g}`).join(' | ')} |`,
+    `| --- | --- | ${intolerances.map(() => '---:').join(' | ')} |`,
+  ];
+  for (const mealType of MEAL_TYPES) {
+    for (const diet of DIET_TYPES) {
+      const cells = intolerances.map((g) => {
+        const n = count(mealType, diet, g);
+        return n < RECIPE_COVERAGE.minPerCombination ? `🟡 ${n}` : `${n}`;
+      });
+      lines.push(`| ${MEAL_TYPE_DE[mealType]} | ${DIET_DE[diet]} | ${cells.join(' | ')} |`);
+    }
+  }
+  lines.push('');
+  return lines;
 }
 
 export interface CliResult {
@@ -276,18 +387,21 @@ export function validateRepository(options: {
       : `nicht geprüft – Vergleichsstand „${options.base}“ nicht verfügbar`;
   }
 
-  const loaded = loadContentFiles(contentDir, {
+  const readOptions = {
     ...(repoRoot === undefined ? {} : { repoRoot }),
     ...(readPrevious === undefined ? {} : { readPrevious }),
-  });
+  };
+  const loaded = loadContentFiles(contentDir, readOptions);
+  // Rezepte, Meal-Prep-Pläne, Ratgeber (Etappe N2c).
+  const nutritionFiles = loadNutritionContentFiles(contentDir, readOptions);
   // Lebensmittel-Katalog (Etappe N2b, R17/R18): nur, wenn `content/foods/` existiert.
   const nutrition = loadNutritionCatalog(contentDir);
   return {
     result: validateContent(
-      [...loaded.files, ...nutrition.files],
+      [...loaded.files, ...nutrition.files, ...nutritionFiles.files],
       nutrition.catalog === undefined ? {} : { nutritionCatalog: nutrition.catalog },
     ),
-    strayFiles: [...loaded.strayFiles, ...nutrition.problems],
+    strayFiles: [...loaded.strayFiles, ...nutritionFiles.strayFiles, ...nutrition.problems],
     versionNote,
   };
 }

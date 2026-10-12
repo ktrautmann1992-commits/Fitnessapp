@@ -1440,3 +1440,29 @@ export const ALPHA5_IMPORT_TOLERANCE = {
   minKcal: 5,
   minGrams: 1,
 } as const;
+
+/**
+ * Schema-Erweiterungen aus „Erweiterungen 2“ (docs/PLAN-PHASE-5.md 19.4, Etappe N2c): Gesamtzeit 1–360 Minuten,
+ * Abschnitt höchstens 40 Zeichen, höchstens 8 Themen-Kategorien, Kostenschätzung 0–50 € je Portion. „Schnell“
+ * heißt: Gesamtzeit höchstens 10 Minuten (Regel R22, Kategorie „Fertig in 10 Minuten“ der Gründer-Datei).
+ * Werte: Plan 19.4 bzw. PRODUKTENTSCHEIDUNG.
+ */
+export const RECIPE_EXTENSION_LIMITS = {
+  totalMinutes: { min: 1, max: 360 },
+  sectionMaxChars: 40,
+  categoriesMax: 8,
+  quickMaxMinutes: 10,
+  costEurPerServing: { min: 0, max: 50 },
+} as const;
+
+/**
+ * Meal-Prep-Wochenpläne (Plan 19.4, Regel R20): 1–6 Rezepte, Kochtag-Schritte mit Startminute 0–240, Kochtag ist
+ * der Sonntag vor der Woche (Plan 19.6 `applyMealPrepPlan` Nr. 5) – Montag liegt also 1 Tag nach dem Kochen,
+ * Freitag 5 Tage. PRODUKTENTSCHEIDUNG.
+ */
+export const MEAL_PREP_PLAN_LIMITS = {
+  recipes: { min: 1, max: 6 },
+  cookSteps: { min: 1, max: 30 },
+  cookStepMinute: { min: 0, max: 240 },
+  storageTexts: 10,
+} as const;

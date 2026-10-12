@@ -2,7 +2,7 @@ import { describe, expect, it } from 'vitest';
 
 import { CONTENT_RULES, isBlockingIssue, makeIssue } from './rules';
 
-describe('Regeltabelle (Plan Abschnitt 7, Phase 5 Abschnitt 5.3)', () => {
+describe('Regeltabelle (Plan Abschnitt 7, Phase 5 Abschnitte 5.3 und 19.4)', () => {
   it('Stufen exakt wie im Plan', () => {
     const red = Object.entries(CONTENT_RULES)
       .filter(([, rule]) => rule.severity === 'error')
@@ -43,8 +43,24 @@ describe('Regeltabelle (Plan Abschnitt 7, Phase 5 Abschnitt 5.3)', () => {
       'R17',
       'R18',
       'R19',
+      'R20',
+      'R21',
     ]);
-    expect(yellow).toEqual(['Ü5', 'V5', 'V6', 'V7', 'V11', 'V13', 'R5', 'R11', 'R16', 'R18H']);
+    expect(yellow).toEqual([
+      'Ü5',
+      'V5',
+      'V6',
+      'V7',
+      'V11',
+      'V13',
+      'R5',
+      'R11',
+      'R16',
+      'R18H',
+      'R20H',
+      'R21H',
+      'R22',
+    ]);
   });
 });
 

@@ -5,6 +5,10 @@ import type { ExerciseLookup } from './analysis';
 import { checkExercise, checkLibraryCoverage, checkPlanTemplate } from './checks';
 import { checkTemplateFitsMinimum } from './fit-check';
 import { type Food, foodSchema } from './food-schema';
+import { checkGuide } from './guide-checks';
+import { type Guide, guideSchema } from './guide-schema';
+import { checkMealPrepPlan } from './meal-prep-checks';
+import { type MealPrepPlan, mealPrepPlanSchema } from './meal-prep-plan-schema';
 import {
   checkFood,
   checkRecipe,
@@ -24,10 +28,15 @@ import { type Exercise, exerciseSchema, type PlanTemplate, planTemplateSchema } 
 export type ContentFileKind = 'exercise' | 'plan_template';
 
 /**
- * Inhaltsarten der Ernährung (docs/PLAN-PHASE-5.md 5.1–5.3). Bewusst getrennt von `ContentFileKind`, solange
- * Ordner (`CONTENT_FOLDERS`, N2c) und Pipeline-Arten (N8) sie noch nicht kennen.
+ * Inhaltsarten der Ernährung (docs/PLAN-PHASE-5.md 5.1–5.3, 19.4). Bewusst getrennt von `ContentFileKind`, solange
+ * die Pipeline-Arten (N8) sie nicht kennen; Ordner: `NUTRITION_CONTENT_FOLDERS` (packages/content, N2c).
  */
-export type NutritionContentFileKind = 'food' | 'recipe';
+export type NutritionContentFileKind = 'food' | 'recipe' | 'meal_prep_plan' | 'guide';
+
+/** true = Inhaltsart der Ernährung (Regeln R1–R22, Version R15). */
+export function isNutritionKind(kind: AnyContentFileKind): kind is NutritionContentFileKind {
+  return kind === 'food' || kind === 'recipe' || kind === 'meal_prep_plan' || kind === 'guide';
+}
 export type AnyContentFileKind = ContentFileKind | NutritionContentFileKind;
 
 export interface ContentFile {
@@ -42,7 +51,7 @@ export interface ContentFile {
   readonly previous?: unknown;
 }
 
-/** Inhaltsdatei der Ernährung (`content/foods/<id>.json`, `content/recipes/<id>.json`). */
+/** Inhaltsdatei der Ernährung (`content/foods|recipes|meal-prep-plans|guides/<id>.json`). */
 export interface NutritionContentFile extends Omit<ContentFile, 'kind'> {
   readonly kind: NutritionContentFileKind;
 }
@@ -61,6 +70,10 @@ export interface ContentValidationResult {
   readonly foods: readonly Food[];
   /** Rezepte mit gültigem Schema (bei doppelter ID nur das erste). */
   readonly recipes: readonly Recipe[];
+  /** Meal-Prep-Wochenpläne mit gültigem Schema (19.4). */
+  readonly mealPrepPlans: readonly MealPrepPlan[];
+  /** Ratgeber mit gültigem Schema (19.4). */
+  readonly guides: readonly Guide[];
   /** Alle Befunde (rot und gelb). */
   readonly issues: readonly ContentIssue[];
   /** Befunde, die das Prüfskript fehlschlagen lassen (siehe isBlockingIssue). */
@@ -112,7 +125,7 @@ export function checkVersionChange(
   previous: unknown,
   current: Pick<Exercise, 'id' | 'status' | 'version'>,
 ): ContentIssue[] {
-  const rule = kind === 'food' || kind === 'recipe' ? 'R15' : 'VERSION';
+  const rule = isNutritionKind(kind) ? 'R15' : 'VERSION';
   if (previous === null || typeof previous !== 'object') {
     return [];
   }
@@ -154,7 +167,7 @@ function schemaIssues(file: ContentFile | NutritionContentFile, error: z.ZodErro
     id: readId(file.data, file.fileName),
     status: readStatus(file.data),
   };
-  const rule = file.kind === 'food' || file.kind === 'recipe' ? 'R1' : 'Ü1';
+  const rule = isNutritionKind(file.kind) ? 'R1' : 'Ü1';
   return error.issues.map((issue) =>
     makeIssue(
       rule,
@@ -207,10 +220,13 @@ const SCHEMAS = {
   plan_template: planTemplateSchema,
   food: foodSchema,
   recipe: recipeSchema,
+  meal_prep_plan: mealPrepPlanSchema,
+  guide: guideSchema,
 } as const;
 
 /**
- * Prüft alle Inhaltsdateien gemeinsam. Lebensmittel und Rezepte (Phase 5) werden mit R1–R19 geprüft; ihre
+ * Prüft alle Inhaltsdateien gemeinsam. Lebensmittel und Rezepte (Phase 5) werden mit R1–R19 und R22 geprüft,
+ * Meal-Prep-Pläne mit R20, Ratgeber mit R21; die
  * Begleitdaten (Quellauszug, Erwartungs- und Ausnahmeliste) kommen über `options.nutritionCatalog`.
  */
 export function validateContent(
@@ -222,6 +238,8 @@ export function validateContent(
   const templates: PlanTemplate[] = [];
   const foods: Food[] = [];
   const recipes: Recipe[] = [];
+  const mealPrepPlans: MealPrepPlan[] = [];
+  const guides: Guide[] = [];
   const seenIds = new Map<string, string>();
 
   for (const file of files) {
@@ -263,8 +281,12 @@ export function validateContent(
       templates.push(content as PlanTemplate);
     } else if (file.kind === 'food') {
       foods.push(content as Food);
-    } else {
+    } else if (file.kind === 'recipe') {
       recipes.push(content as Recipe);
+    } else if (file.kind === 'meal_prep_plan') {
+      mealPrepPlans.push(content as MealPrepPlan);
+    } else {
+      guides.push(content as Guide);
     }
   }
 
@@ -288,12 +310,21 @@ export function validateContent(
     issues.push(...checkRecipe(recipe, foodLookup));
   }
   issues.push(...checkRecipeCoverage(recipes, foodLookup));
+  const recipeLookup = new Map(recipes.map((recipe) => [recipe.id, recipe]));
+  for (const plan of mealPrepPlans) {
+    issues.push(...checkMealPrepPlan(plan, recipeLookup));
+  }
+  for (const guide of guides) {
+    issues.push(...checkGuide(guide));
+  }
 
   return {
     exercises,
     templates,
     foods,
     recipes,
+    mealPrepPlans,
+    guides,
     issues,
     blocking: issues.filter(isBlockingIssue),
   };

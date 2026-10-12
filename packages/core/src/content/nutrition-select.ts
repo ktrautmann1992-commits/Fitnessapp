@@ -1,4 +1,6 @@
 import { type Food, isCatalogReviewed } from './food-schema';
+import type { Guide } from './guide-schema';
+import type { MealPrepPlan } from './meal-prep-plan-schema';
 import type { Recipe } from './recipe-schema';
 import { isDryRunContent, type ContentValidationResult } from './validate';
 
@@ -11,6 +13,7 @@ import { isDryRunContent, type ContentValidationResult } from './validate';
  * - Testmodus (`allowDrafts`): zusätzlich `draft` ohne roten Befund. `archived` nie, Probelauf-Inhalte nie.
  * - Lebensmittel nur mit Katalog-Prüfung (R19, auch im Testmodus).
  * - Ein Rezept nur, wenn ALLE seine Lebensmittel (auch optionale) ausgewählt sind.
+ * - Ein Meal-Prep-Plan (19.4) nur, wenn ALLE seine Rezepte ausgewählt sind; Ratgeber nach Status und rotem Befund.
  * Ausgeschlossenes steht mit Grund in `excluded` (Testmodus-Diagnose).
  */
 
@@ -20,20 +23,33 @@ export type NutritionExclusionReason =
   | 'dry_run'
   | 'red_issue'
   | 'not_catalog_reviewed'
-  | 'food_unavailable';
+  | 'food_unavailable'
+  | 'recipe_unavailable';
 
 export interface NutritionExclusion {
-  readonly kind: 'food' | 'recipe';
+  readonly kind: 'food' | 'recipe' | 'meal_prep_plan' | 'guide';
   readonly id: string;
   readonly reason: NutritionExclusionReason;
   /** Bei `food_unavailable`: die fehlenden bzw. ausgeschlossenen Lebensmittel. */
   readonly foodIds?: readonly string[];
+  /** Bei `recipe_unavailable`: die fehlenden bzw. ausgeschlossenen Rezepte. */
+  readonly recipeIds?: readonly string[];
 }
 
 export interface NutritionLibrary {
   readonly foods: ReadonlyMap<string, Food>;
-  /** Nach ID sortiert. */
+  /**
+   * Nach ID sortiert. BESTAND, nicht personenbezogen: Ernährungsform, Schwein, Unverträglichkeiten, „mag ich nicht“
+   * und Schwangerschaft filtert erst die Engine (`filter.ts`, N3) – nie direkt anzeigen oder einplanen.
+   */
   readonly recipes: readonly Recipe[];
+  /**
+   * Meal-Prep-Pläne, deren Rezepte alle ausgewählt sind (nach ID sortiert). BESTAND, nicht personenbezogen:
+   * anzeigen bzw. anwenden nur über `applyMealPrepPlan` mit dem kompletten Filter je Rezept (Plan 19.6, B1, N3).
+   */
+  readonly mealPrepPlans: readonly MealPrepPlan[];
+  /** Ratgeber (nach ID sortiert, offline lesbar). */
+  readonly guides: readonly Guide[];
   /** true = enthält Entwürfe (Kennzeichnung und Allergen-Warnung in der App, K6). */
   readonly containsDrafts: boolean;
   readonly excluded: readonly NutritionExclusion[];
@@ -48,7 +64,8 @@ function byId<T extends { id: string }>(a: T, b: T): number {
 }
 
 export function selectNutritionContent(
-  result: Pick<ContentValidationResult, 'foods' | 'recipes' | 'issues'>,
+  result: Pick<ContentValidationResult, 'foods' | 'recipes' | 'issues'> &
+    Partial<Pick<ContentValidationResult, 'mealPrepPlans' | 'guides'>>,
   options: SelectNutritionContentOptions,
 ): NutritionLibrary {
   const redIds = new Set(
@@ -59,7 +76,7 @@ export function selectNutritionContent(
   const excluded: NutritionExclusion[] = [];
 
   const statusReason = (
-    kind: 'food' | 'recipe',
+    kind: NutritionExclusion['kind'],
     content: Pick<Recipe, 'id' | 'status' | 'meta'>,
   ): NutritionExclusionReason | null => {
     if (content.status === 'archived') {
@@ -110,8 +127,41 @@ export function selectNutritionContent(
     recipes.push(recipe);
   }
 
+  const recipeIds = new Set(recipes.map((recipe) => recipe.id));
+  const mealPrepPlans: MealPrepPlan[] = [];
+  for (const plan of [...(result.mealPrepPlans ?? [])].sort(byId)) {
+    const reason = statusReason('meal_prep_plan', plan);
+    if (reason !== null) {
+      excluded.push({ kind: 'meal_prep_plan', id: plan.id, reason });
+      continue;
+    }
+    const unavailable = plan.recipe_ids.filter((id) => !recipeIds.has(id));
+    if (unavailable.length > 0) {
+      excluded.push({
+        kind: 'meal_prep_plan',
+        id: plan.id,
+        reason: 'recipe_unavailable',
+        recipeIds: unavailable,
+      });
+      continue;
+    }
+    mealPrepPlans.push(plan);
+  }
+
+  const guides: Guide[] = [];
+  for (const guide of [...(result.guides ?? [])].sort(byId)) {
+    const reason = statusReason('guide', guide);
+    if (reason === null) {
+      guides.push(guide);
+    } else {
+      excluded.push({ kind: 'guide', id: guide.id, reason });
+    }
+  }
+
   const containsDrafts =
     recipes.some((recipe) => recipe.status === 'draft') ||
-    [...foods.values()].some((food) => food.status === 'draft');
-  return { foods, recipes, containsDrafts, excluded };
+    [...foods.values()].some((food) => food.status === 'draft') ||
+    mealPrepPlans.some((plan) => plan.status === 'draft') ||
+    guides.some((guide) => guide.status === 'draft');
+  return { foods, recipes, mealPrepPlans, guides, containsDrafts, excluded };
 }

@@ -100,6 +100,23 @@ export const HEALTH_CLAIM_TERMS: readonly TermRule[] = [
   { label: 'ballaststoffreich', pattern: 'ballaststoffreich', wholeWord: false },
   { label: 'vitaminreich', pattern: 'vitaminreich', wholeWord: false },
   { label: 'gesund', pattern: 'gesund(?!heits-?check)', wholeWord: false },
+  // Nährwertbezogene Angaben aus dem Anhang der VO (EG) Nr. 1924/2006 und ähnliche Schlagworte (Wächter N2c, S1).
+  // „fettreduziert“ bewusst NICHT: steht in Produktbezeichnungen von Zutaten (z. B. Kokosmilch fettreduziert).
+  { label: 'fettarm', pattern: 'fettarm', wholeWord: false },
+  { label: 'fettfrei', pattern: 'fettfrei', wholeWord: false },
+  { label: 'kalorienarm', pattern: 'kalorienarm', wholeWord: false },
+  { label: 'energiearm', pattern: 'energiearm', wholeWord: false },
+  { label: 'zuckerarm', pattern: 'zuckerarm', wholeWord: false },
+  { label: 'salzarm', pattern: 'salzarm', wholeWord: false },
+  { label: 'natriumarm', pattern: 'natriumarm', wholeWord: false },
+  { label: 'Low Carb/Low Fat', pattern: 'low\\s*-?\\s*(?:carb|fat)', wholeWord: false },
+  { label: 'reich an', pattern: 'reich\\s+an', wholeWord: true },
+  {
+    label: 'Eiweiß-/Protein-/Ballaststoffquelle',
+    pattern: '(?:eiwei(?:ß|ss)|protein|ballaststoff)-?quelle',
+    wholeWord: false,
+  },
+  { label: 'schlank', pattern: 'schlank', wholeWord: false },
 ];
 
 /** Lebensmittel-Marken (herstellerneutrale Rezepte: nur Produktarten, Gründer-Entscheidung 16 A Nr. 18). */

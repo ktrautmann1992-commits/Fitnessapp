@@ -67,7 +67,17 @@ export interface CommitFile {
  */
 export async function createVerifiedCommit(
   api: GitHubApi,
-  input: { base: string; branch: string; message: string; files: readonly CommitFile[] },
+  input: {
+    base: string;
+    branch: string;
+    message: string;
+    files: readonly CommitFile[];
+    /**
+     * Stand, aus dem die Dateien berechnet wurden (z. B. `GITHUB_SHA`). Steht `base` inzwischen woanders, bricht
+     * der Commit ab – sonst würde er zwischenzeitlich gemergte Änderungen still zurückdrehen (Wächter N2c, S4).
+     */
+    expectedBaseSha?: string;
+  },
 ): Promise<string> {
   if (input.files.length === 0) {
     throw new Error('Keine Dateien für den Commit.');
@@ -77,6 +87,11 @@ export async function createVerifiedCommit(
     `/git/ref/heads/${encodeURIComponent(input.base)}`,
   );
   const baseSha = ref.object.sha;
+  if (input.expectedBaseSha !== undefined && input.expectedBaseSha !== baseSha) {
+    throw new Error(
+      `${input.base} hat sich seit dem Start geändert (${input.expectedBaseSha.slice(0, 7)} → ${baseSha.slice(0, 7)}) – bitte den Workflow neu starten.`,
+    );
+  }
   const baseCommit = await api.request<{ tree: { sha: string } }>('GET', `/git/commits/${baseSha}`);
   const tree: { path: string; mode: '100644'; type: 'blob'; sha: string | null }[] = [];
   for (const file of input.files) {
@@ -139,6 +154,20 @@ export async function commitProvenance(api: GitHubApi, sha: string): Promise<Com
     return { sha, ok: false, reason: `Autor ist „${login ?? 'unbekannt'}“, nicht ${BOT_LOGIN}` };
   }
   return { sha, ok: true, reason: 'verified, github-actions[bot]' };
+}
+
+/** Offene Pull Requests, deren Branch mit `prefix` beginnt (z. B. `alpha5-import/`). */
+export async function openPullRequestsWithPrefix(
+  api: GitHubApi,
+  prefix: string,
+): Promise<{ url: string; branch: string }[]> {
+  const pulls = await api.request<{ html_url: string; head: { ref: string } }[]>(
+    'GET',
+    '/pulls?state=open&per_page=100',
+  );
+  return pulls
+    .filter((pull) => pull.head.ref.startsWith(prefix))
+    .map((pull) => ({ url: pull.html_url, branch: pull.head.ref }));
 }
 
 /** Öffnet einen Pull Request und liefert dessen Adresse. */

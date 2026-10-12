@@ -1,4 +1,5 @@
 import type { Food, FoodLookup, NutrientsPer100g } from '../content/food-schema';
+import type { RecipeMeta } from '../content/import-meta';
 import type { Recipe } from '../content/recipe-schema';
 import type { DietType } from '../enums';
 import { FOOD_GROUP_IDS, type FoodGroupId } from '../food-groups';
@@ -12,6 +13,8 @@ import { toGrams } from './units';
  * - Optionale Zutaten (S3) zählen für Ernährungsform, Allergene, Schwein, Alkohol und `pregnancy_caution` IMMER
  *   mit (das Rezept „enthält“ sie), außer der Filter hat sie ausdrücklich weggelassen (`omitted`).
  *   Nährwerte werden immer OHNE optionale Zutaten berechnet.
+ * - Unbestätigte Import-Annahmen „erhitzt“ (`meta.import_assumptions` ohne `import_assumptions_confirmed_by`)
+ *   gelten für `pregnancy_caution` wie `heated: false` (Wächter N2c, B1).
  * - Ersatz-Zutaten (S4): `substitutions` ersetzt das Lebensmittel einer Zutat vollständig (Menge und Einheit
  *   bleiben, `heated` bleibt) – alle Werte werden mit dem Ersatzprodukt neu berechnet.
  */
@@ -110,7 +113,9 @@ export function needsHeatedFlag(
 export type PregnancyReason =
   | { readonly kind: 'food_flag'; readonly index: number; readonly foodId: string }
   | { readonly kind: 'not_heated'; readonly index: number; readonly foodId: string }
-  | { readonly kind: 'no_cook'; readonly index: number; readonly foodId: string };
+  | { readonly kind: 'no_cook'; readonly index: number; readonly foodId: string }
+  /** `heated: true` nur als unbestätigte Import-Annahme – gilt wie nicht erhitzt (Wächter N2c, B1). */
+  | { readonly kind: 'unconfirmed_heated'; readonly index: number; readonly foodId: string };
 
 export interface RecipeFacts {
   /** Summe der nicht optionalen, nicht weggelassenen Zutaten. */
@@ -147,7 +152,9 @@ export interface RecipeFactsOptions {
 
 /** Berechnet alle Angaben eines Rezepts aus Zutaten und Katalog. */
 export function computeRecipeFacts(
-  recipe: Pick<Recipe, 'ingredients' | 'servings' | 'no_cook'>,
+  recipe: Pick<Recipe, 'ingredients' | 'servings' | 'no_cook'> & {
+    readonly meta?: Pick<RecipeMeta, 'import_assumptions' | 'import_assumptions_confirmed_by'>;
+  },
   foods: FoodLookup,
   options: RecipeFactsOptions = {},
 ): RecipeFacts {
@@ -162,6 +169,17 @@ export function computeRecipeFacts(
     }
   });
 
+  // Unbestätigte Import-Annahmen „erhitzt“ zählen für die Schwangerschaft wie `heated: false` (sichere Richtung).
+  const confirmed =
+    recipe.meta?.import_assumptions_confirmed_by !== undefined &&
+    recipe.meta.import_assumptions_confirmed_by !== null;
+  const unconfirmedHeated = new Set(
+    confirmed
+      ? []
+      : (recipe.meta?.import_assumptions ?? [])
+          .filter((a) => a.field === 'heated')
+          .map((a) => a.ingredient_index),
+  );
   const total = zeroNutrients();
   const gramsPerServing: (number | null)[] = [];
   const groups = new Set<FoodGroupId>();
@@ -210,6 +228,8 @@ export function computeRecipeFacts(
         pregnancyReasons.push({ kind: 'no_cook', index, foodId });
       } else if (ingredient.heated !== true) {
         pregnancyReasons.push({ kind: 'not_heated', index, foodId });
+      } else if (unconfirmedHeated.has(index)) {
+        pregnancyReasons.push({ kind: 'unconfirmed_heated', index, foodId });
       }
     }
 
