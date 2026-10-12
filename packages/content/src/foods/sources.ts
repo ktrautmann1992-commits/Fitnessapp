@@ -85,15 +85,15 @@ export interface SourceDefinition {
  * (Spalte 1 BLS-Schlüssel, 2 deutsche, 3 englische Bezeichnung; je Nährstoff drei Spalten Wert/Herkunft/Referenz;
  * Werte je 100 g essbarer Anteil).
  *
- * Adresse: archivierte Fassung im Repositorium OpenAgrar (dieselbe Ablage wie die BLS-4.0-Dokumentation,
- * openagrar_derivate_00069363) – fest und versioniert. Noch NICHT im Browser bestätigt (siehe `urlStatus`).
+ * Adresse: archivierte Fassung im Repositorium OpenAgrar (Datensatz openagrar_mods_00112643, Ablage
+ * openagrar_derivate_00069361) – fest und versioniert. Von den Gründern am 12.10.2026 im Browser bestätigt.
  */
 const BLS_4_0: SourceDefinition = {
   db: 'bls',
   version: '4.0',
   title: 'Bundeslebensmittelschlüssel (BLS), Version 4.0',
-  url: 'https://www.openagrar.de/servlets/MCRFileNodeServlet/openagrar_derivate_00069363/BLS_4_0_Daten_2025_DE.xlsx',
-  urlStatus: 'unconfirmed',
+  url: 'https://www.openagrar.de/servlets/MCRFileNodeServlet/openagrar_derivate_00069361/BLS_4_0_Daten_2025_DE.xlsx',
+  urlStatus: 'confirmed',
   originalFilename: 'BLS_4_0_Daten_2025_DE.xlsx',
   format: 'xlsx',
   sheet: null,
