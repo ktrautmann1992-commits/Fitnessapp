@@ -6,7 +6,7 @@
  */
 import { describe, expect, it } from 'vitest';
 
-import { addDays, startOfIsoWeek } from '../dates';
+import { addDays, isoWeekday, startOfIsoWeek } from '../dates';
 import { equipmentProfile } from './equipment-profile';
 import { generateTrainingPlan } from './generate';
 import { planSafetyRules } from './safety';
@@ -66,6 +66,11 @@ function check(
   wishSum: number,
   reference: { volume: number; sessionCap: number; stricter: boolean } | null,
   label: string,
+  /**
+   * Erster Block: Erzeugungsdatum und Wochentage der Ausdauer-Tage (training_week) – für die angebrochene Startwoche
+   * (siehe unten); Folgeblock: null.
+   */
+  partialStart: { startDate: string; enduranceWeekdays: readonly number[] } | null = null,
 ): { violations: string[]; lastLoad: number; lastLongest: number } {
   const violations: string[] = [];
   const byWeek = new Map<string, GeneratedSession[]>();
@@ -90,6 +95,14 @@ function check(
         : exp.startCap;
   let firstLoad = reference === null || reference.stricter;
   const start = Math.min(exp.start, wishSum);
+  // Angebrochene Startwoche: Woche 1 liegt in der Woche des Erzeugungsdatums UND mindestens ein Ausdauer-Tag lag vor
+  // dem Starttag. Sie ist wie Woche 0 kein Bezug: höchstens Startumfang, Deckel wie in der ersten Belastungswoche,
+  // die Folgewoche rechnet wieder vom Startumfang (nicht 1,1 × Teilwoche).
+  const partialStartWeek =
+    partialStart !== null &&
+    partialStart.enduranceWeekdays.some((d) => d < isoWeekday(partialStart.startDate))
+      ? startOfIsoWeek(partialStart.startDate)
+      : null;
   for (const [key, week] of [...byWeek.entries()].sort()) {
     const runs = week.filter((s) => s.kind === 'endurance');
     const strength = week.filter((s) => s.kind === 'strength');
@@ -123,6 +136,10 @@ function check(
     }
     const limit = ref > 0 ? Math.floor((ref * 110) / 100) : start;
     if (sum > limit) violations.push(`${label} ${key}: ${sum} > ${limit} (10 %)`);
+    const partial =
+      partialStartWeek !== null &&
+      weekNo === 1 &&
+      runs.every((s) => startOfIsoWeek(s.scheduled_on) === partialStartWeek);
     const perSession = Math.min(
       cap ?? Infinity,
       firstLoad ? TABLE.firstWeekMax : Infinity,
@@ -133,6 +150,8 @@ function check(
         violations.push(`${label} ${key}: Einheit ${s.estimated_minutes} > ${perSession}`);
       }
     }
+    // Angebrochene Startwoche: kein Bezug, Deckel je Einheit und erste Belastungswoche gelten weiter.
+    if (partial) continue;
     ref = sum;
     if (cap !== null) cap = Math.floor((cap * 110) / 100);
     firstLoad = false;
@@ -231,7 +250,12 @@ describe('Eigenschaften mit unabhängigen Erwartungen – zwei Blöcke, auch mit
           continue;
         }
         const exp1 = expected(p, today);
-        const first = check(result.plan.sessions, exp1, wishSum, null, `${label} B1`);
+        const first = check(result.plan.sessions, exp1, wishSum, null, `${label} B1`, {
+          startDate: today,
+          enduranceWeekdays: result.plan.training_week
+            .filter((d) => d.kind === 'endurance')
+            .map((d) => d.weekday),
+        });
         violations.push(...first.violations);
         for (const later of LATER) {
           const lastDate = result.plan.sessions

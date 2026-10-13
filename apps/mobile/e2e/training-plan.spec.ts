@@ -197,6 +197,54 @@ test('Ausdauer ohne Gesundheits-Check: Geh-Lauf-Wechsel, Anstrengung, vorsichtig
   expect(rows.plans[0]?.uses_health_data).toBe(false);
 });
 
+/**
+ * Fehlerbericht 13.10.2026 (Testlauf): „Die Trainingseinheit Laufen wurde nicht in die Wochenübersicht übernommen.“
+ * Start Mittwoch → angebrochene Woche 1 mit nur dem Samstag-Lauf. Früher war deren kleiner Umfang Bezug der
+ * 10-%-Regel: In der ersten vollen Woche fiel ein Lauf-Tag weg (Einheit unter 10 Minuten). Jetzt stehen Mo, Di und
+ * Sa als Lauf-Einheit in der Wochenübersicht.
+ */
+test('Start mitten in der Woche: alle Lauf-Tage in der Wochenübersicht der nächsten Woche', async ({
+  page,
+}) => {
+  await onboard(page, {
+    consent: false,
+    level: /^Einsteiger/,
+    goal: 'Ausdauer',
+    discipline: '10 km',
+    days: [
+      ['Montag', 'Ausdauer', 30],
+      ['Dienstag', 'Ausdauer', 30],
+      ['Mittwoch', 'Kraft im Studio', 45],
+      ['Donnerstag', 'Kraft im Studio', 45],
+      ['Samstag', 'Ausdauer', 30],
+    ],
+  });
+  await page.getByRole('button', { name: 'Zum Plan' }).click();
+  await heading(page, 'Heute');
+  await page.getByTestId('today-week').click();
+  await heading(page, 'Woche');
+  // Diese Woche: nur noch der Samstag-Lauf (Mo/Di lagen vor dem Planstart).
+  await expect(page.getByTestId('week-day-2026-10-10')).toContainText(
+    '○ Geplant: Geh-Lauf-Wechsel',
+  );
+  await page.getByTestId('week-next').click();
+  await expect(page.getByTestId('week-range')).toHaveText('12.10.2026 bis 18.10.2026');
+  for (const day of ['2026-10-12', '2026-10-13', '2026-10-17']) {
+    await expect(page.getByTestId(`week-day-${day}`)).toContainText('○ Geplant: Geh-Lauf-Wechsel');
+  }
+  await expect(page.getByTestId('week-summary')).toContainText('Einheiten: 0 geschafft, 5 geplant');
+  const rows = await storedRows(page);
+  const runs = rows.plannedSessions.filter(
+    (s) =>
+      s.kind === 'endurance' && s.scheduled_on >= '2026-10-12' && s.scheduled_on <= '2026-10-18',
+  );
+  expect(runs.map((s) => s.scheduled_on).sort()).toEqual([
+    '2026-10-12',
+    '2026-10-13',
+    '2026-10-17',
+  ]);
+});
+
 test('Ziel Marathon: Trainingstage mit Ausdauer vorbelegt → „Ausdauer-Grundlage – Marathon“', async ({
   page,
 }) => {

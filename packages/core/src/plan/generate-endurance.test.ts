@@ -7,6 +7,7 @@ import { describe, expect, it } from 'vitest';
 
 import { addDays, isoWeekday, startOfIsoWeek } from '../dates';
 import { HEALTH_FLAGS } from '../health-screening';
+import { type SummarySession, weekLogSummary } from '../log/summary';
 import { adaptTemplate } from './adapt';
 import { equipmentProfile } from './equipment-profile';
 import { generatedPlanSchema, generateTrainingPlan, type GeneratedPlan } from './generate';
@@ -31,17 +32,29 @@ const endurance = (p: GeneratedPlan) => p.sessions.filter((s) => s.kind === 'end
 const weekSum = (sessions: readonly GeneratedSession[], week: number) =>
   sessions.filter((s) => s.week_no === week).reduce((sum, s) => sum + s.estimated_minutes, 0);
 
-/** Prüft die 10-%-Regel unabhängig: Bezug = letzte Belastungswoche, Woche 0/Erholung nie Bezug, Deload ≤ 60 %. */
+/**
+ * Prüft die 10-%-Regel unabhängig: Bezug = letzte Belastungswoche, Woche 0/Erholung nie Bezug, Deload ≤ 60 %.
+ * Angebrochene Startwoche (Woche 1 in der Woche des Planstarts, mindestens ein Ausdauer-Tag lag vor dem Start) zählt
+ * wie Woche 0: höchstens Startumfang, nie Bezug.
+ */
 function tenPercentViolations(p: GeneratedPlan, start: number): string[] {
   const runs = endurance(p);
   const errors: string[] = [];
+  const startWeekday = isoWeekday(p.start_date);
+  const partialWeek1 = p.training_week.some(
+    (d) => d.kind === 'endurance' && d.weekday < startWeekday,
+  );
   let reference = 0;
   for (let week = 0; week <= 6; week += 1) {
     const inWeek = runs.filter((s) => s.week_no === week);
     if (inWeek.length === 0) continue;
     const sum = weekSum(runs, week);
-    if (week === 0) {
-      if (sum > start) errors.push(`Woche 0: ${sum} > Start ${start}`);
+    const partial =
+      week === 1 &&
+      partialWeek1 &&
+      inWeek.every((s) => startOfIsoWeek(s.scheduled_on) === startOfIsoWeek(p.start_date));
+    if (week === 0 || partial) {
+      if (sum > start) errors.push(`Woche ${week} (angebrochen): ${sum} > Start ${start}`);
       continue;
     }
     if (inWeek.every((s) => s.is_deload)) {
@@ -294,6 +307,113 @@ describe('Alter, Schwangerschaft, ohne Check, Arzt-Hinweis', () => {
     const p = runner({ schedule: fixed([2, 'strength_gym', 45]) });
     expect(p.notes).toContain('goal_endurance_not_yet');
     expect(p.notes).not.toContain('endurance_basic_only');
+  });
+});
+
+/**
+ * Fehlerbericht (Testlauf, Testmodus): „Die Trainingseinheit Laufen wurde nicht in die Wochenübersicht übernommen.“
+ * Ursache: Startet der Plan mitten in der Woche und zählt diese angebrochene Woche als Woche 1 (≥ Hälfte der
+ * Einheiten übrig), lag dort nur ein Teil der Ausdauer-Tage. Ihr kleiner Umfang war Bezug der 10-%-Regel – die
+ * erste volle Woche bekam nur ~1,1 × davon, verteilt auf ALLE Lauf-Tage; Einheiten unter 10 Minuten wurden
+ * gestrichen. Die angebrochene Startwoche ist jetzt wie Woche 0 nie Bezug: Die erste volle Woche startet mit S.
+ */
+describe('Start mitten in der Woche: alle Lauf-Tage in der Wochenübersicht (Fehlerbericht Laufen)', () => {
+  const WEDNESDAY = addDays(MONDAY, 2);
+  // Mo + Di Laufen, Mi + Do Studio, Sa Laufen; Start Mittwoch → Mi, Do, Sa = 3 von 5 übrig → angebrochene Woche 1
+  // mit nur EINEM Lauf-Tag (Sa).
+  const schedule = fixed(
+    [1, 'endurance', 30],
+    [2, 'endurance', 30],
+    [3, 'strength_gym', 45],
+    [4, 'strength_gym', 45],
+    [6, 'endurance', 30],
+  );
+  const runner = (overrides: Parameters<typeof person>[0]) =>
+    plan({ goalType: 'endurance', discipline: '10k', schedule, ...overrides }, WEDNESDAY);
+  const fullWeek = addDays(startOfIsoWeek(WEDNESDAY), 7);
+
+  /** Wochenübersicht (weekLogSummary) der ersten vollen Woche, wie die App sie aus den gespeicherten Einheiten baut. */
+  function weekView(p: GeneratedPlan) {
+    const sessions: SummarySession[] = p.sessions.map((s, i) => ({
+      id: `s${i}`,
+      scheduled_on: s.scheduled_on,
+      original_date: null,
+      status: 'planned',
+      kind: s.kind,
+      focus: s.focus,
+      name_de: s.name_de,
+      plan_active: true,
+    }));
+    return weekLogSummary(sessions, [], fullWeek, WEDNESDAY);
+  }
+
+  it.each([
+    ['ohne Gesundheits-Check (vorsichtig)', null, 'beginner', 45],
+    ['Einsteiger', { flags: [] }, 'beginner', 60],
+    ['Fortgeschritten', { flags: [] }, 'advanced', 120],
+  ] as const)('%s: Mo, Di und Sa stehen als Lauf-Einheit in der Woche', (_l, hc, level, start) => {
+    const p = runner({
+      healthScreening: hc === null ? null : { flags: [] },
+      experienceLevel: level,
+    });
+    // Woche 1 ist angebrochen (nur Sa läuft) – dennoch startet die erste volle Woche mit dem Startumfang.
+    expect(endurance(p).filter((s) => s.week_no === 1)).toHaveLength(1);
+    const view = weekView(p);
+    const names = (weekday: number) =>
+      view.days[weekday - 1]?.items.map((item) => item.name_de) ?? [];
+    for (const weekday of [1, 2, 6]) {
+      expect(names(weekday), `Wochentag ${weekday}`).toHaveLength(1);
+      expect(names(weekday)[0]).toMatch(/Dauerlauf|Geh-Lauf-Wechsel/);
+    }
+    expect(p.notes).not.toContain('rest_day_added');
+    const runs = endurance(p).filter((s) => s.week_no === 2);
+    const sum = runs.reduce((total, s) => total + s.estimated_minutes, 0);
+    // Volle Woche: Startumfang (Wunsch 90, gedeckelt durch S bzw. Start-Deckel je Einheit), nicht ~1,1 × Sa.
+    const cap = level === 'advanced' ? 90 : hc === null ? 20 : 30;
+    expect(sum).toBe(Math.min(90, start, 3 * cap));
+    expect(tenPercentViolations(p, Math.min(90, start))).toEqual([]);
+  });
+
+  it('Rad und Schwimmen (gleiche Umfangsregel): alle Ausdauer-Tage in der ersten vollen Woche', () => {
+    for (const discipline of ['cycling', 'swimming', 'triathlon_sprint'] as const) {
+      const p = runner({ discipline, experienceLevel: 'advanced' });
+      const week2 = endurance(p).filter((s) => s.week_no === 2);
+      expect(
+        week2.map((s) => isoWeekday(s.scheduled_on)),
+        discipline,
+      ).toEqual([1, 2, 6]);
+      // Startumfang Fortgeschritten 120, Wunsch 90 → 90 Minuten (nicht ~1,1 × der angebrochenen Woche).
+      expect(weekSum(week2, 2), discipline).toBe(90);
+    }
+  });
+
+  it('1 Ausdauer-Tag vor dem Start: erste volle Woche mit Startumfang, alle drei Lauf-Tage', () => {
+    // Mo Laufen lag vor dem Start (Mittwoch); Fr + Sa laufen in der angebrochenen Woche 1.
+    const p = plan(
+      {
+        goalType: 'endurance',
+        discipline: '10k',
+        schedule: fixed(
+          [1, 'endurance', 30],
+          [3, 'strength_gym', 45],
+          [5, 'endurance', 30],
+          [6, 'endurance', 30],
+        ),
+      },
+      WEDNESDAY,
+    );
+    expect(endurance(p).filter((s) => s.week_no === 1)).toHaveLength(2);
+    const week2 = endurance(p).filter((s) => s.week_no === 2);
+    expect(week2.map((s) => isoWeekday(s.scheduled_on))).toEqual([1, 5, 6]);
+    // Einsteiger: Startumfang 60 (nicht 1,1 × der Teilwoche), Start-Deckel 30 je Einheit.
+    expect(weekSum(week2, 2)).toBe(60);
+    expect(tenPercentViolations(p, 60)).toEqual([]);
+  });
+
+  it('Start am Montag (volle Woche 1): unverändert, Woche 1 ist Bezug', () => {
+    const p = plan({ goalType: 'endurance', discipline: '10k', schedule });
+    expect(weekSum(endurance(p), 1)).toBe(60);
+    expect(weekSum(endurance(p), 2)).toBe(66);
   });
 });
 

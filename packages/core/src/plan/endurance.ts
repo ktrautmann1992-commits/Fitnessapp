@@ -246,7 +246,8 @@ export function distributeEnduranceMinutes(
 /**
  * Wochenumfänge eines Blocks (Erweiterungsplan 5.5 Punkte 1–6):
  * - Startumfang S = min(Wunsch, Startumfang der Gruppe); Woche 0 bekommt höchstens den Anteil von S für ihre
- *   Resttage und ist nie Bezug,
+ *   Resttage und ist nie Bezug; ebenso nie Bezug ist eine angebrochene Startwoche 1 (Wunsch-Minuten der Woche unter
+ *   `wishWeekly`, weil Ausdauer-Tage vor dem Planstart lagen) – die erste volle Woche startet dann mit S,
  * - Belastungswoche ≤ floor(1,1 × letzte Belastungswoche); ohne Bezug gilt S (capWeeklyIncrease),
  * - Erholungswoche = floor(0,6 × letzte Belastungswoche), nie Bezug,
  * - Deckel je Einheit: Start-Deckel (Einsteiger 30, vorsichtig 20) in der ersten Belastungswoche, danach
@@ -314,7 +315,13 @@ export function enduranceWeekVolumes(
     }
     const { minutes, dropped } = distributeEnduranceMinutes(budget, week.wishes, cap);
     if (dropped > 0) droppedDay = true;
-    if (week.kind === 'intro' || week.kind === 'load') {
+    // Angebrochene Startwoche (Plan beginnt mitten in der Woche, weniger Ausdauer-Wunsch als eine volle Woche): wie
+    // Woche 0 nie Bezug – sonst bekäme die erste volle Woche nur ~1,1 × dieses Teil-Umfangs, verteilt auf ALLE
+    // Ausdauer-Tage, und Einheiten unter 10 Minuten fielen weg (Fehlerbericht „Laufen fehlt in der Woche“).
+    // Nur die ERSTE Woche ohne Bezug (kein Folgeblock, noch keine Belastungswoche); eine Teilwoche mitten im Block
+    // bleibt Bezug (vorsichtig).
+    const partialWeek = reference === null && !hadLoadWeek && wish < options.wishWeekly;
+    if ((week.kind === 'intro' || week.kind === 'load') && !partialWeek) {
       refVolume = minutes.reduce((sum, m) => sum + m, 0);
       if (startCap !== null) lastCap = cap;
       hadLoadWeek = true;

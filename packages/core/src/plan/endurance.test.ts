@@ -191,6 +191,68 @@ describe('enduranceWeekVolumes – 10-%-Regel, Deload, Deckel', () => {
     expect(next.weeks[0]?.budget).toBe(132);
   });
 
+  it('angebrochene Startwoche (weniger Ausdauer-Tage als die volle Woche) ist wie Woche 0 nie Bezug', () => {
+    // Start Mittwoch: in Woche 1 liegt nur der Samstag-Lauf (30 von 90 Wunsch-Minuten).
+    const result = enduranceWeekVolumes(
+      [
+        { kind: 'intro', wishes: [30] },
+        { kind: 'load', wishes: [30, 30, 30] },
+        { kind: 'load', wishes: [30, 30, 30] },
+      ],
+      { group: 'cautious', wishWeekly: 90 },
+    );
+    expect(result.weeks.map((w) => w.minutes)).toEqual([[20], [15, 15, 15], [17, 16, 16]]);
+    expect(result.droppedDay).toBe(false);
+    // Volle Woche 1 (alle Tage nach dem Start): weiterhin Bezug der 10-%-Regel.
+    const full = enduranceWeekVolumes(weeks(['intro', 'load'], [30, 30, 30]), {
+      group: 'cautious',
+      wishWeekly: 90,
+    });
+    expect(full.weeks.map((w) => w.minutes)).toEqual([
+      [15, 15, 15],
+      [17, 16, 16],
+    ]);
+  });
+
+  it('Teilwoche mitten im Block (nach einer Belastungswoche) bleibt Bezug', () => {
+    const result = enduranceWeekVolumes(
+      [
+        { kind: 'intro', wishes: [30, 30, 30] },
+        { kind: 'load', wishes: [30] },
+        { kind: 'load', wishes: [30, 30, 30] },
+      ],
+      { group: 'advanced', wishWeekly: 90 },
+    );
+    const sums = result.weeks.map((w) => w.minutes.reduce((a, b) => a + b, 0));
+    // Woche 2 (30) ist Bezug → Woche 3 höchstens floor(1,1 × 30) = 33, nicht wieder der Startumfang 90.
+    expect(sums).toEqual([90, 30, 33]);
+    // Ebenso im Folgeblock (mit Bezug): eine Woche mit weniger Wunsch ist Bezug.
+    const next = enduranceWeekVolumes(
+      [
+        { kind: 'load', wishes: [30] },
+        { kind: 'load', wishes: [30, 30, 30] },
+      ],
+      { group: 'advanced', wishWeekly: 90, reference: { volume: 90, sessionCap: null } },
+    );
+    expect(next.weeks.map((w) => w.minutes.reduce((a, b) => a + b, 0))).toEqual([30, 33]);
+  });
+
+  it('angebrochene Woche 1 → Belastungswochen → Erholung rechnet aus der vollen Woche', () => {
+    const result = enduranceWeekVolumes(
+      [
+        { kind: 'intro', wishes: [30] },
+        { kind: 'load', wishes: [30, 30, 30] },
+        { kind: 'load', wishes: [30, 30, 30] },
+        { kind: 'deload', wishes: [30, 30, 30] },
+      ],
+      { group: 'beginner', wishWeekly: 90 },
+    );
+    const sums = result.weeks.map((w) => w.minutes.reduce((a, b) => a + b, 0));
+    // Teilwoche 30; erste volle Woche = Startumfang 60 (Start-Deckel 30); dann 66; Erholung floor(0,6 × 66) = 39.
+    expect(sums).toEqual([30, 60, 66, 39]);
+    expect(result.weeks.map((w) => w.sessionCap)).toEqual([30, 30, 33, 33]);
+  });
+
   it('Start-Deckel je Einheit: Einsteiger Wunsch 60 min → Woche 1 höchstens 30, Woche 2 höchstens 33', () => {
     const result = enduranceWeekVolumes(weeks(['intro', 'load', 'load'], [60]), {
       group: 'beginner',
