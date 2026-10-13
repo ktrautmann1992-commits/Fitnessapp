@@ -177,3 +177,33 @@ describe('N2b: Senf mittelscharf ist nicht „spicy“ (nur Treffer aus der Quel
     expect(senf('Salsa', 'Salsa mittelscharf')).toContain('spicy');
   });
 });
+
+describe('Lauf 38367139392: Fleischteile „Oberschale“/„Oberschenkel“ sind kein „Obers“', () => {
+  it('BLS-Fleischteile → weder Milch noch Laktose', () => {
+    for (const name of [
+      'Schwein Schnitzel (Oberschale) roh',
+      'Schwein Roulade (Oberschale) roh',
+      'Schwein Oberschale (ohne Deckel) roh',
+      'Rinderoberschale',
+      'Hähnchen Oberschenkel, mit Haut, roh',
+      'Hähnchenoberschenkel',
+    ]) {
+      const keys = required(name);
+      expect(keys, name).not.toContain('dairy');
+      expect(keys, name).not.toContain('lactose');
+    }
+  });
+
+  it('Gegenprobe: „Obers“, „Schlagobers“, „Kaffeeobers“ bleiben Milch – auch neben einer Oberschale', () => {
+    for (const name of [
+      'Obers',
+      'Schlagobers',
+      'Kaffeeobers',
+      'Oberschale in Obers',
+      'Schweineoberschale mit Schlagobers',
+    ]) {
+      expect(required(name), name).toEqual(expect.arrayContaining(['dairy', 'lactose']));
+    }
+    expect(required('Schwein Schnitzel (Oberschale) roh', 'dairy')).toContain('dairy');
+  });
+});
