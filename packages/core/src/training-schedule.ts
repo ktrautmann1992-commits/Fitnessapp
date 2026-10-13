@@ -3,9 +3,11 @@ import { z } from 'zod';
 import {
   DEFAULT_SLOT_MINUTES,
   ENDURANCE_GOAL_SUGGESTION,
+  ENDURANCE_SECONDARY_SUGGESTION,
   ENDURANCE_START_RULES,
   MAX_STRENGTH_SESSIONS_PER_WEEK,
   SCHEDULE_HINT_LIMITS,
+  SECONDARY_GOAL_HINT_LIMITS,
   TRAINING_LIMITS,
   WEEKLY_SESSION_LIMITS,
 } from './constants';
@@ -275,15 +277,24 @@ export function suggestedWeekSlots(
  */
 export function suggestedTrainingSlots(input: {
   goalType: GoalType | null | undefined;
+  /** Nebenziel (docs/PLAN-ZIELE.md 4.3); ohne Angabe keines. */
+  secondaryGoalType?: GoalType | null;
   discipline: EnduranceDiscipline | null | undefined;
   experienceLevel: ExperienceLevel | null | undefined;
   ageYears: number | null;
   cautious: boolean;
   /** Ort der Kraft-Tage (bisherige Auswahl); ohne Angabe Studio. */
   strengthKind?: Exclude<TrainingSlotKind, 'endurance'>;
+  /**
+   * Nur beim Nebenziel Ausdauer: Tage pro Woche, die zur Verfügung stehen (1–7). Ohne Angabe
+   * ENDURANCE_SECONDARY_SUGGESTION.strengthDays Kraft-Tage plus die Ausdauer-Tage.
+   */
+  totalDays?: number;
 }): TrainingSchedule | null {
   if (input.goalType !== 'endurance') {
-    return null;
+    return input.goalType != null && input.secondaryGoalType === 'endurance'
+      ? secondaryEnduranceSlots(input)
+      : null;
   }
   const group = suggestionGroup(input);
   const triathlon = input.discipline != null && TRIATHLONS.includes(input.discipline);
@@ -306,6 +317,47 @@ export function suggestedTrainingSlots(input: {
     else if (endurance > minEndurance) endurance -= 1;
     else if (strength > 0) strength -= 1;
     else endurance -= 1;
+  }
+  return trainingScheduleSchema.parse({
+    mode: 'fixed',
+    slots: suggestedWeekSlots(endurance, strength, input.strengthKind),
+  });
+}
+
+/**
+ * Vorbelegung bei einem Kraft-/Fitness-/Abnehm-Hauptziel mit Nebenziel Ausdauer (docs/PLAN-ZIELE.md 4.3 und 11,
+ * Wächter S18 und Z1 S-1) – Vorrang „Hauptziel zuerst“: zuerst ENDURANCE_SECONDARY_SUGGESTION.strengthDays Kraft-Tage
+ * (bei 1 Tag dieser eine), nie zwei direkt hintereinander. Ausdauer-Tage nur auf danach freien Tagen: Anzahl nach
+ * Startgruppe (dieselbe `suggestionGroup` inkl. „vorsichtig“ wie beim Hauptziel Ausdauer), gedeckelt durch
+ * ENDURANCE_START_RULES.maxSessionsPerWeek. Übrige Tage bleiben FREI (kein Auffüllen mit Kraft). „Vorsichtig“ bekommt
+ * höchstens so viele Einheiten wie beim Hauptziel Ausdauer (ENDURANCE_GOAL_SUGGESTION.perGroup.cautious), danach gilt
+ * der Wochen-Deckel. 1 Tag → 1 Kraft; 2 Tage → 2 Kraft (Hinweis `secondary_endurance_no_room` in scheduleHints).
+ */
+function secondaryEnduranceSlots(input: {
+  experienceLevel: ExperienceLevel | null | undefined;
+  ageYears: number | null;
+  cautious: boolean;
+  strengthKind?: Exclude<TrainingSlotKind, 'endurance'>;
+  totalDays?: number;
+}): TrainingSchedule | null {
+  const group = suggestionGroup(input);
+  const S = ENDURANCE_SECONDARY_SUGGESTION;
+  const wanted = Math.min(S.perGroup[group], ENDURANCE_START_RULES.maxSessionsPerWeek[group]);
+  const total = input.totalDays ?? S.strengthDays + wanted;
+  if (!Number.isInteger(total) || total < 1 || total > MAX_SLOTS) {
+    return null;
+  }
+  let strength = Math.min(total, S.strengthDays);
+  let endurance = Math.min(wanted, total - strength);
+  const cautiousMax =
+    group === 'cautious'
+      ? ENDURANCE_GOAL_SUGGESTION.perGroup.cautious.endurance +
+        ENDURANCE_GOAL_SUGGESTION.perGroup.cautious.strength
+      : MAX_SLOTS;
+  const cap = Math.min(weeklySessionCap(input) ?? MAX_SLOTS, cautiousMax, MAX_SLOTS);
+  while (endurance + strength > cap) {
+    if (endurance > 0) endurance -= 1;
+    else strength -= 1;
   }
   return trainingScheduleSchema.parse({
     mode: 'fixed',
@@ -401,6 +453,11 @@ export function weeklySessionCap(input: {
 export const SCHEDULE_HINTS = [
   'endurance_goal_no_endurance',
   'strength_goal_no_strength',
+  // Nebenziel (docs/PLAN-ZIELE.md 4.3, Etappe Z1)
+  'secondary_endurance_no_endurance',
+  'secondary_endurance_no_room',
+  'secondary_strength_no_strength',
+  'concurrent_training',
   'strength_days_over_max',
   'strength_back_to_back',
   'no_rest_day',
@@ -415,26 +472,56 @@ const isStrength = (kind: TrainingSlotKind) => kind !== 'endurance';
  * Freundliche Hinweise zum Wochenplan (Abschnitt 3.2, Frage 13: nur Hinweis, nie blockieren).
  * `weeklySessionCap` aus weeklySessionCap(); bei Deckel und mehr Einheiten → week_total_capped, sonst bei
  * 7 Tagen no_rest_day.
+ * Nebenziel (docs/PLAN-ZIELE.md 4.3): Hauptziel Kraft → mindestens 2 Kraft-Tage, Kraft-Ziel nur als Nebenziel →
+ * mindestens 1; Hauptziel Ausdauer → mindestens 2 Ausdauer-Tage, Ausdauer als Nebenziel → mindestens 1 (ab 3 Tagen,
+ * sonst `secondary_endurance_no_room`). Muskelaufbau + Ausdauer → `concurrent_training`.
  */
 export function scheduleHints(
   schedule: TrainingSchedule,
-  context: { goalType: GoalType | null | undefined; weeklySessionCap: number | null },
+  context: {
+    goalType: GoalType | null | undefined;
+    secondaryGoalType?: GoalType | null;
+    weeklySessionCap: number | null;
+  },
 ): ScheduleHint[] {
   const totals = scheduleTotals(schedule);
   const strength = totals.byKind.strength_gym + totals.byKind.strength_home;
   const hints: ScheduleHint[] = [];
+  const primary = context.goalType ?? null;
+  const secondary = primary === null ? null : (context.secondaryGoalType ?? null);
   if (
-    context.goalType === 'endurance' &&
+    primary === 'endurance' &&
     totals.byKind.endurance < SCHEDULE_HINT_LIMITS.recommendedMinEnduranceDays
   ) {
     hints.push('endurance_goal_no_endurance');
   }
   if (
-    context.goalType != null &&
-    STRENGTH_GOALS.includes(context.goalType) &&
+    primary !== null &&
+    STRENGTH_GOALS.includes(primary) &&
     strength < SCHEDULE_HINT_LIMITS.recommendedMinStrengthDays
   ) {
     hints.push('strength_goal_no_strength');
+  }
+  if (
+    secondary === 'endurance' &&
+    totals.byKind.endurance < SECONDARY_GOAL_HINT_LIMITS.minEnduranceDays
+  ) {
+    hints.push(
+      totals.sessions < SECONDARY_GOAL_HINT_LIMITS.enduranceRoomFromDays
+        ? 'secondary_endurance_no_room'
+        : 'secondary_endurance_no_endurance',
+    );
+  }
+  if (
+    secondary !== null &&
+    STRENGTH_GOALS.includes(secondary) &&
+    strength < SECONDARY_GOAL_HINT_LIMITS.minStrengthDays
+  ) {
+    hints.push('secondary_strength_no_strength');
+  }
+  const goals = [primary, secondary];
+  if (goals.includes('muscle_gain') && goals.includes('endurance')) {
+    hints.push('concurrent_training');
   }
   if (strength > MAX_STRENGTH_SESSIONS_PER_WEEK) {
     hints.push('strength_days_over_max');

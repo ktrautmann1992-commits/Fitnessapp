@@ -36,6 +36,7 @@ import * as enums from './enums';
 import { DATA_EXPORT_TABLES } from './export/data-export';
 import { EQUIPMENT } from './equipment';
 import { FOOD_GROUPS } from './food-groups';
+import { GOAL_COMBINATIONS } from './goals/profile';
 import { HEALTH_FLAGS, HEALTH_SCREENING_QUESTIONS } from './health-screening';
 import { ONBOARDING_STEPS } from './onboarding';
 import {
@@ -370,22 +371,56 @@ describe('Eingabe der Plan-Funktionen (save_training_plan / append_plan_block)',
   // Jeweils die NEUESTE Fassung der Funktion (create or replace in einer späteren Migration).
   const rpcSql = readMigration('_training_plan_rpcs.sql');
   const kindsSql = readMigration('_plan_session_kinds.sql');
+  // Letzte Fassung von private.assert_plan_inputs (Ziele, Etappe Z1: optionales Nebenziel).
+  const goalsSql = readMigration('_plan_inputs_secondary_goal.sql');
   const keysOf = (sql: string, name: string) =>
     quotedListAfter(sql, `${name} constant text[] := array[`).sort();
 
   it.each([
     ['plan_keys', rpcSql, savePlanPayloadSchema],
-    ['input_keys', kindsSql, savePlanInputsSchema],
-    ['equipment_keys', kindsSql, savePlanHomeEquipmentSchema],
+    ['allowed_keys', goalsSql, savePlanInputsSchema],
+    ['equipment_keys', goalsSql, savePlanHomeEquipmentSchema],
     ['session_keys', kindsSql, savePlanSessionSchema],
     ['exercise_keys', kindsSql, savePlanExerciseSchema],
     // verschachtelt: schedule → mode/slots; slots[] → weekday/kind/minutes bzw. kind/minutes
-    ['schedule_keys', kindsSql, savePlanScheduleFixedSchema],
-    ['schedule_keys', kindsSql, savePlanScheduleFlexSchema],
-    ['fixed_slot_keys', kindsSql, savePlanFixedSlotSchema],
-    ['flex_slot_keys', kindsSql, savePlanFlexSlotSchema],
+    ['schedule_keys', goalsSql, savePlanScheduleFixedSchema],
+    ['schedule_keys', goalsSql, savePlanScheduleFlexSchema],
+    ['fixed_slot_keys', goalsSql, savePlanFixedSlotSchema],
+    ['flex_slot_keys', goalsSql, savePlanFlexSlotSchema],
   ] as const)('%s = Felder des strikten Zod-Schemas', (name, sql, schema) => {
     expect(keysOf(sql, name)).toEqual(Object.keys(schema.shape).sort());
+  });
+
+  it('required_keys = Pflichtfelder der Angaben (ohne das optionale Nebenziel, Wächter N3)', () => {
+    const shape = savePlanInputsSchema.shape;
+    const required = Object.keys(shape)
+      .filter((key) => !shape[key as keyof typeof shape].safeParse(undefined).success)
+      .sort();
+    expect(required).not.toContain('secondaryGoalType');
+    expect(keysOf(goalsSql, 'required_keys')).toEqual(required);
+    expect(keysOf(goalsSql, 'allowed_keys')).toEqual(
+      [...keysOf(goalsSql, 'required_keys'), 'secondaryGoalType'].sort(),
+    );
+  });
+
+  it('private.assert_plan_inputs ist zuletzt in *_plan_inputs_secondary_goal.sql definiert', () => {
+    const marker = 'create or replace function private.assert_plan_inputs(';
+    const lastFile = migrationFiles.filter((name) => readMigration(name).includes(marker)).at(-1);
+    expect(lastFile).toMatch(/_plan_inputs_secondary_goal\.sql$/);
+  });
+
+  it('private.goal_pair_allowed = GOAL_COMBINATIONS (Paarliste aus der Migration gelesen)', () => {
+    const body = goalsSql.slice(
+      goalsSql.indexOf('create or replace function private.goal_pair_allowed('),
+    );
+    const list = body.slice(body.indexOf(' in ('), body.indexOf('$$;'));
+    const pairs = [...list.matchAll(/\('([a-z_]+)', '([a-z_]+)'\)/g)].map(
+      (match) => `${match[1]}>${match[2]}`,
+    );
+    expect(pairs.sort()).toEqual(
+      GOAL_COMBINATIONS.map(([primary, secondary]) => `${primary}>${secondary}`).sort(),
+    );
+    expect(pairs).toHaveLength(10);
   });
 
   it('plan_keys der neuesten save_training_plan-Fassung unverändert', () => {

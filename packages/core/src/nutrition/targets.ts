@@ -1,6 +1,7 @@
 import { ageInYears, meetsMinimumAge } from '../age';
 import { WEIGHT_OUTDATED_AFTER_DAYS } from '../constants';
 import { addDays, daysBetween } from '../dates';
+import { goalEnergyDirection } from '../goals/profile';
 import { latestBodyValues } from './body-data';
 import { nutritionEligibility } from './eligibility';
 import { dayEnergy, sessionsForDay } from './energy';
@@ -92,6 +93,8 @@ export function nutritionTargetsForWeek(
     ? latestBodyValues(inputs.bodyMetricsRows, inputs.today)
     : { height: null, weight: null, bodyFat: null };
   const flags = inputs.healthDataConsent ? (inputs.healthFlags?.flags ?? null) : null;
+  // Ziel-Profil (docs/PLAN-ZIELE.md 4.4): Haupt- und optionales Nebenziel.
+  const goals = { primary: inputs.goalType, secondary: inputs.secondaryGoalType };
 
   const days: NutritionDayTargets[] = [];
   let usesHealthData = false;
@@ -106,6 +109,7 @@ export function nutritionTargetsForWeek(
       ageYears,
       sex: inputs.sex,
       goalType: inputs.goalType,
+      secondaryGoalType: inputs.secondaryGoalType,
       healthDataConsent: inputs.healthDataConsent,
       body: bodyForDay,
       healthFlags: flags,
@@ -171,7 +175,7 @@ export function nutritionTargetsForWeek(
     if (energy.training.capped) notices.push('training_energy_capped');
 
     const mode = eligibility.mode;
-    const adjustment = applyGoalAdjustment(inputs.goalType, inputs.experienceLevel, mode);
+    const adjustment = applyGoalAdjustment(goals, inputs.experienceLevel, mode);
     const proposed = energy.baseNeeds * (1 + adjustment) + energy.training.netKcal + adjustmentKcal;
     const context: CalorieLimitContext = {
       bmrForFloor: energy.bmrForFloor,
@@ -183,7 +187,8 @@ export function nutritionTargetsForWeek(
       trainingGrossKcal: energy.training.grossKcal,
       trainingCapped: energy.training.capped,
       mode,
-      goalIsSurplus: inputs.goalType === 'muscle_gain',
+      // Energie-Richtung des Ziel-Profils (Vorzeichen, Wächter S11) – nie „Muskelaufbau ist eines der Ziele“.
+      goalIsSurplus: goalEnergyDirection(goals) === 'surplus',
       deficitCap: eligibility.deficitCap,
       surplusCap: eligibility.surplusCap,
     };
@@ -194,6 +199,7 @@ export function nutritionTargetsForWeek(
     const macros = nutritionMacros({
       targetKcal: clamped.targetKcal,
       goalType: inputs.goalType,
+      secondaryGoalType: inputs.secondaryGoalType,
       weightKg: bodyForDay.weightKg,
       heightCm: bodyForDay.heightCm,
       proteinMin: eligibility.proteinMin,

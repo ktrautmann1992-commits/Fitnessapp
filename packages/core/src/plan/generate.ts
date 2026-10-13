@@ -278,6 +278,7 @@ export function generateTrainingPlan(
     const match = matchTemplate(
       {
         goalType: inputs.goalType,
+        secondaryGoalType: inputs.secondaryGoalType,
         experienceLevel: inputs.experienceLevel,
         sessionsPerWeek: wishedStrength.length,
         minutesPerSession: Math.max(...strengthDays.map((d) => d.minutes)),
@@ -335,7 +336,8 @@ export function generateTrainingPlan(
   }
 
   const enduranceDays = days.filter((d) => d.kind === 'endurance');
-  if (inputs.goalType === 'endurance') {
+  // Ausdauer als Haupt- ODER Nebenziel (docs/PLAN-ZIELE.md 4.3): Wettkampfplan folgt mit Phase 10.
+  if (inputs.goalType === 'endurance' || inputs.secondaryGoalType === 'endurance') {
     notes.add(enduranceDays.length > 0 ? 'endurance_basic_only' : 'goal_endurance_not_yet');
   }
   const loadWeeks = loadWeeksBeforeDeload(inputs.experienceLevel, rules.cautious);

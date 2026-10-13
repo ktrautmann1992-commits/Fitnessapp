@@ -458,3 +458,238 @@ describe('suggestedWeekSlots (1–7 Tage)', () => {
     expect(suggestedWeekSlots(-1, 2)).toEqual([]);
   });
 });
+
+describe('Zwei Ziele: Vorbelegung mit Ausdauer-Nebenziel (docs/PLAN-ZIELE.md 4.3, Wächter S18)', () => {
+  const base = {
+    goalType: 'fat_loss' as const,
+    secondaryGoalType: 'endurance' as const,
+    discipline: '10k' as const,
+    experienceLevel: 'advanced' as const,
+    ageYears: 35,
+    cautious: false,
+  };
+  const count = (s: TrainingSchedule | null) => scheduleTotals(s ?? { slots: [] }).byKind;
+  const strengthOf = (s: TrainingSchedule | null) => count(s).strength_gym + count(s).strength_home;
+
+  it('ohne Nebenziel Ausdauer bleibt es bei „keine Vorbelegung“ (Invariante)', () => {
+    for (const goalType of GOAL_TYPES.filter((g) => g !== 'endurance')) {
+      expect(suggestedTrainingSlots({ ...base, goalType, secondaryGoalType: null })).toBeNull();
+      expect(
+        suggestedTrainingSlots({ ...base, goalType, secondaryGoalType: 'fat_loss' }),
+      ).toBeNull();
+    }
+    expect(suggestedTrainingSlots({ ...base, goalType: undefined })).toBeNull();
+  });
+
+  it('Hauptziel zuerst: 1 Tag → 1 Kraft; 2 Tage → 2 Kraft (+ Hinweis kein Platz); 3 Tage → 2 Kraft + 1 Ausdauer; 7 Tage → 2 + 2, Rest frei', () => {
+    const one = suggestedTrainingSlots({ ...base, totalDays: 1 });
+    expect(count(one)).toEqual({ strength_gym: 1, strength_home: 0, endurance: 0 });
+    const two = suggestedTrainingSlots({ ...base, totalDays: 2 });
+    expect(count(two)).toEqual({ strength_gym: 2, strength_home: 0, endurance: 0 });
+    expect(
+      scheduleHints(two!, {
+        goalType: 'fat_loss',
+        secondaryGoalType: 'endurance',
+        weeklySessionCap: null,
+      }),
+    ).toContain('secondary_endurance_no_room');
+    const three = suggestedTrainingSlots({ ...base, totalDays: 3 });
+    expect(count(three)).toEqual({ strength_gym: 2, strength_home: 0, endurance: 1 });
+    const seven = suggestedTrainingSlots({ ...base, totalDays: 7 });
+    // Fortgeschritten: 2 Kraft + 2 Ausdauer (ENDURANCE_SECONDARY_SUGGESTION), übrige Tage bleiben frei (Wächter Z1 S-1)
+    expect(count(seven)).toEqual({ strength_gym: 2, strength_home: 0, endurance: 2 });
+    expect(
+      scheduleHints(seven!, {
+        goalType: 'fat_loss',
+        secondaryGoalType: 'endurance',
+        weeklySessionCap: null,
+      }),
+    ).not.toContain('secondary_endurance_no_endurance');
+  });
+
+  it('ohne Angabe der Tage: 2 Kraft + Ausdauer nach Startgruppe (Einsteiger 1, sonst 2)', () => {
+    expect(count(suggestedTrainingSlots(base))).toEqual({
+      strength_gym: 2,
+      strength_home: 0,
+      endurance: 2,
+    });
+    expect(count(suggestedTrainingSlots({ ...base, experienceLevel: 'beginner' }))).toEqual({
+      strength_gym: 2,
+      strength_home: 0,
+      endurance: 1,
+    });
+  });
+
+  it('vorsichtig (Flag, unter 18, ab 65, Alter unbekannt) wie beim Hauptziel Ausdauer über dieselbe Startgruppe', () => {
+    const cautious = suggestedTrainingSlots({ ...base, cautious: true, totalDays: 7 });
+    expect(count(cautious).endurance).toBe(1);
+    expect(cautious!.slots.length).toBeLessThanOrEqual(5);
+    for (const ageYears of [16, 17, 65, 100, null]) {
+      const s = suggestedTrainingSlots({ ...base, ageYears, totalDays: 7 });
+      expect(count(s).endurance).toBe(1);
+      expect(s!.slots.length).toBeLessThanOrEqual(5);
+    }
+  });
+
+  it('alle Tage 1–7 × Level × vorsichtig × Kraft-Hauptziele: gültig, Hauptziel zuerst, Deckel eingehalten', () => {
+    for (const goalType of ['fat_loss', 'definition', 'muscle_gain', 'general_fitness'] as const) {
+      for (const experienceLevel of EXPERIENCE_LEVELS) {
+        for (const cautious of [false, true]) {
+          for (let totalDays = 1; totalDays <= 7; totalDays += 1) {
+            const input = { ...base, goalType, experienceLevel, cautious, totalDays };
+            const s = suggestedTrainingSlots(input);
+            expect(trainingScheduleSchema.safeParse(s).success).toBe(true);
+            const byKind = count(s);
+            const strength = strengthOf(s);
+            expect(s!.slots.length).toBeLessThanOrEqual(
+              Math.min(totalDays, weeklySessionCap(input) ?? 7),
+            );
+            expect(strength).toBe(Math.min(totalDays, 2));
+            if (totalDays <= 2) expect(byKind.endurance).toBe(0);
+            else expect(byKind.endurance).toBeGreaterThanOrEqual(1);
+            expect(byKind.endurance).toBeLessThanOrEqual(
+              ENDURANCE_START_RULES.maxSessionsPerWeek[cautious ? 'cautious' : experienceLevel],
+            );
+          }
+        }
+      }
+    }
+  });
+
+  it('vorsichtig: nie mehr Einheiten als beim Hauptziel Ausdauer (Wächter Z1 S-1)', () => {
+    for (let totalDays = 1; totalDays <= 7; totalDays += 1) {
+      for (const experienceLevel of EXPERIENCE_LEVELS) {
+        const secondary = suggestedTrainingSlots({
+          ...base,
+          experienceLevel,
+          cautious: true,
+          totalDays,
+        });
+        const primary = suggestedTrainingSlots({
+          ...base,
+          goalType: 'endurance',
+          secondaryGoalType: null,
+          experienceLevel,
+          cautious: true,
+        });
+        expect(secondary!.slots.length).toBeLessThanOrEqual(primary!.slots.length);
+      }
+    }
+  });
+
+  it('der eigene Vorschlag löst keine eigenen Warn-Hinweise aus (1–7 Tage × Level × vorsichtig × Hauptziele, Wächter Z1 S-1)', () => {
+    for (const goalType of ['fat_loss', 'definition', 'muscle_gain', 'general_fitness'] as const) {
+      for (const experienceLevel of EXPERIENCE_LEVELS) {
+        for (const cautious of [false, true]) {
+          for (let totalDays = 1; totalDays <= 7; totalDays += 1) {
+            const input = { ...base, goalType, experienceLevel, cautious, totalDays };
+            const hints = scheduleHints(suggestedTrainingSlots(input)!, {
+              goalType,
+              secondaryGoalType: 'endurance',
+              weeklySessionCap: weeklySessionCap(input),
+            });
+            // Erlaubt: kein Platz für Ausdauer (1–2 Tage), Muskelaufbau + Ausdauer und – nur bei 1 Tag pro Woche –
+            // „mindestens 2 Kraft-Tage“ beim Kraft-Hauptziel (mehr Tage gibt es nicht).
+            const allowed = [
+              'secondary_endurance_no_room',
+              'concurrent_training',
+              ...(totalDays === 1 ? ['strength_goal_no_strength'] : []),
+            ];
+            expect(
+              hints.filter((h) => !allowed.includes(h)),
+              `${goalType} ${experienceLevel} ${cautious} ${totalDays}`,
+            ).toEqual([]);
+          }
+        }
+      }
+    }
+  });
+
+  it('Hauptziel Ausdauer mit Kraft-Nebenziel: Ausdauer zuerst nach den heutigen Regeln, mindestens 1 Kraft-Tag', () => {
+    for (const secondaryGoalType of ['muscle_gain', 'definition', 'fat_loss'] as const) {
+      for (const experienceLevel of EXPERIENCE_LEVELS) {
+        for (const cautious of [false, true]) {
+          const input = { ...base, goalType: 'endurance' as const, experienceLevel, cautious };
+          const withSecondary = suggestedTrainingSlots({ ...input, secondaryGoalType });
+          expect(withSecondary).toEqual(
+            suggestedTrainingSlots({ ...input, secondaryGoalType: null }),
+          );
+          expect(strengthOf(withSecondary)).toBeGreaterThanOrEqual(1);
+          expect(count(withSecondary).endurance).toBeGreaterThanOrEqual(2);
+        }
+      }
+    }
+  });
+
+  it('ungültige Tageszahl → keine Vorbelegung', () => {
+    for (const totalDays of [0, 8, 2.5, -1]) {
+      expect(suggestedTrainingSlots({ ...base, totalDays })).toBeNull();
+    }
+  });
+});
+
+describe('Zwei Ziele: Hinweise im Schritt „Deine Trainingstage“ (docs/PLAN-ZIELE.md 4.3)', () => {
+  const ctx = (
+    goalType: (typeof GOAL_TYPES)[number],
+    secondaryGoalType: (typeof GOAL_TYPES)[number] | null,
+  ) => ({ goalType, secondaryGoalType, weeklySessionCap: null }) as const;
+
+  it('ohne Nebenziel: unverändert', () => {
+    const one = fixed([3, 'strength_gym', 60]);
+    for (const goalType of GOAL_TYPES) {
+      expect(scheduleHints(one, ctx(goalType, null))).toEqual(
+        scheduleHints(one, { goalType, weeklySessionCap: null }),
+      );
+    }
+  });
+
+  it('Ausdauer als Nebenziel: kein Ausdauer-Tag → ab 3 Tagen „mindestens 1“, darunter „kein Platz“', () => {
+    expect(
+      scheduleHints(
+        fixed([1, 'strength_gym', 60], [4, 'strength_gym', 60]),
+        ctx('fat_loss', 'endurance'),
+      ),
+    ).toEqual(['secondary_endurance_no_room']);
+    expect(scheduleHints(fixed([1, 'strength_gym', 60]), ctx('fat_loss', 'endurance'))).toEqual([
+      'secondary_endurance_no_room',
+    ]);
+    expect(
+      scheduleHints(
+        fixed([1, 'strength_gym', 60], [3, 'strength_gym', 60], [5, 'strength_gym', 60]),
+        ctx('fat_loss', 'endurance'),
+      ),
+    ).toEqual(['secondary_endurance_no_endurance']);
+    // 1 Ausdauer-Tag reicht beim Nebenziel (beim Hauptziel Ausdauer wären es 2)
+    expect(
+      scheduleHints(
+        fixed([1, 'strength_gym', 60], [3, 'endurance', 30], [5, 'strength_gym', 60]),
+        ctx('fat_loss', 'endurance'),
+      ),
+    ).toEqual([]);
+  });
+
+  it('Kraft-Ziel nur als Nebenziel: mindestens 1 Kraft-Tag; als Hauptziel weiterhin 2', () => {
+    const oneStrength = fixed([1, 'endurance', 30], [3, 'strength_gym', 60], [5, 'endurance', 30]);
+    expect(scheduleHints(oneStrength, ctx('endurance', 'definition'))).toEqual([]);
+    const noStrength = fixed([1, 'endurance', 30], [5, 'endurance', 30]);
+    expect(scheduleHints(noStrength, ctx('endurance', 'definition'))).toEqual([
+      'secondary_strength_no_strength',
+    ]);
+    expect(scheduleHints(oneStrength, ctx('muscle_gain', 'endurance'))).toEqual([
+      'strength_goal_no_strength',
+      'concurrent_training',
+    ]);
+  });
+
+  it('Muskelaufbau + Ausdauer (beide Reihenfolgen) → concurrent_training', () => {
+    const week = fixed(
+      [1, 'strength_gym', 60],
+      [3, 'endurance', 30],
+      [5, 'strength_gym', 60],
+      [6, 'endurance', 30],
+    );
+    expect(scheduleHints(week, ctx('muscle_gain', 'endurance'))).toEqual(['concurrent_training']);
+    expect(scheduleHints(week, ctx('endurance', 'muscle_gain'))).toEqual(['concurrent_training']);
+    expect(scheduleHints(week, ctx('fat_loss', 'endurance'))).toEqual([]);
+  });
+});

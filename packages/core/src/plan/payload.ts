@@ -16,6 +16,7 @@ import {
   TRAINING_SLOT_KINDS,
 } from '../enums';
 import { BARBELL_ID, equipmentIdSchema } from '../equipment';
+import { isAllowedGoalPair } from '../goals/profile';
 import { ENDURANCE_EFFORT_LIMITS } from './generate';
 import {
   barbellBarKgSchema,
@@ -27,6 +28,7 @@ import {
   weightStepKgSchema,
 } from '../validation';
 import type { GeneratedPlan } from './generate';
+import { secondaryGoalEntry } from './inputs';
 import type { GeneratedSession } from './schedule';
 
 /**
@@ -131,6 +133,8 @@ export function toSavePlanPayload(plan: GeneratedPlan): SavePlanPayload {
     medical_notice: plan.medical_notice,
     inputs: {
       goalType: plan.inputs.goalType,
+      // Nur bei gesetztem Nebenziel (Wächter B1): ohne Nebenziel genau die Schlüssel von vorher.
+      ...secondaryGoalEntry(plan.inputs.secondaryGoalType),
       discipline: plan.inputs.discipline,
       experienceLevel: plan.inputs.experienceLevel,
       schedule:
@@ -319,10 +323,16 @@ export const savePlanScheduleSchema = z.discriminatedUnion('mode', [
   savePlanScheduleFlexSchema,
 ]);
 
-/** Angaben ohne Gesundheitsdaten – dieselben Werte prüft private.assert_plan_inputs() in der Datenbank. */
+/**
+ * Angaben ohne Gesundheitsdaten – dieselben Werte prüft private.assert_plan_inputs() in der Datenbank
+ * (letzte Fassung: *_plan_inputs_secondary_goal.sql). `secondaryGoalType` ist optional: fehlend und `null` heißen
+ * „kein Nebenziel“ (docs/PLAN-ZIELE.md 5.1); ein gesetztes Nebenziel muss ein erlaubtes Paar ergeben
+ * (= private.goal_pair_allowed).
+ */
 export const savePlanInputsSchema = z
   .strictObject({
     goalType: goalTypeSchema,
+    secondaryGoalType: goalTypeSchema.nullable().optional(),
     discipline: enduranceDisciplineSchema.nullable(),
     experienceLevel: experienceLevelSchema,
     schedule: savePlanScheduleSchema,
@@ -331,6 +341,10 @@ export const savePlanInputsSchema = z
     homeEquipment: z
       .array(savePlanHomeEquipmentSchema)
       .refine((items) => distinct(items.map((i) => i.equipmentId)), 'Jedes Gerät nur einmal.'),
+  })
+  .refine((inputs) => isAllowedGoalPair(inputs.goalType, inputs.secondaryGoalType), {
+    path: ['secondaryGoalType'],
+    message: 'Diese Kombination von Zielen ist nicht möglich.',
   })
   .refine(
     (inputs) => jsonbTextBytes(inputs) <= PLAN_SAVE_LIMITS.inputsMaxBytes,

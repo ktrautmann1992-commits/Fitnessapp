@@ -1,5 +1,7 @@
 import { describe, expect, it } from 'vitest';
 
+import { GOAL_TYPES } from './enums';
+import { GOAL_COMBINATIONS } from './goals/profile';
 import {
   bodyMetricsStepSchema,
   cookingStepSchema,
@@ -113,6 +115,50 @@ describe('Ziel', () => {
   it('Wettkampfdatum heute oder später', () => {
     ok(schema.safeParse({ goalType: 'endurance', targetDate: today }));
     fail(schema.safeParse({ goalType: 'endurance', targetDate: '2026-10-02' }));
+  });
+
+  // Zwei Ziele (docs/PLAN-ZIELE.md 4.2, Etappe Z1)
+  it('Nebenziel optional, Standard null (Wächter B1)', () => {
+    expect(schema.parse({ goalType: 'muscle_gain' }).secondaryGoalType).toBeNull();
+    expect(
+      schema.parse({ goalType: 'muscle_gain', secondaryGoalType: null }).secondaryGoalType,
+    ).toBeNull();
+  });
+
+  it('jedes erlaubte Paar ok, jedes verbotene abgelehnt', () => {
+    for (const primary of GOAL_TYPES) {
+      for (const secondary of GOAL_TYPES) {
+        const result = schema.safeParse({ goalType: primary, secondaryGoalType: secondary });
+        expect(result.success).toBe(
+          GOAL_COMBINATIONS.some(([p, s]) => p === primary && s === secondary),
+        );
+        if (!result.success) {
+          expect(result.error.issues[0]?.path).toEqual(['secondaryGoalType']);
+        }
+      }
+    }
+    fail(schema.safeParse({ goalType: 'fat_loss', secondaryGoalType: 'kraft' }));
+  });
+
+  it('Disziplin auch bei Ausdauer als Nebenziel', () => {
+    ok(
+      schema.safeParse({ goalType: 'fat_loss', secondaryGoalType: 'endurance', discipline: '10k' }),
+    );
+    ok(
+      schema.safeParse({
+        goalType: 'muscle_gain',
+        secondaryGoalType: 'endurance',
+        discipline: 'cycling',
+        targetDate: today,
+      }),
+    );
+    fail(
+      schema.safeParse({
+        goalType: 'fat_loss',
+        secondaryGoalType: 'muscle_gain',
+        discipline: '10k',
+      }),
+    );
   });
 });
 

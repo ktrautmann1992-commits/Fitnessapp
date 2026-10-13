@@ -315,6 +315,14 @@ export const de = {
           'Dein Ziel ist Ausdauer – wir empfehlen mindestens 2 Ausdauer-Tage.',
         strength_goal_no_strength:
           'Für Muskelaufbau/Definition empfehlen wir mindestens 2 Kraft-Tage.',
+        secondary_endurance_no_endurance:
+          'Für dein zweites Ziel Ausdauer empfehlen wir mindestens 1 Ausdauer-Tag.',
+        secondary_endurance_no_room:
+          'Für dein Ausdauer-Ziel ist bei so wenigen Tagen kein Platz. Mit einem dritten Tag planen wir Ausdauer ein.',
+        secondary_strength_no_strength:
+          'Für dein zweites Ziel empfehlen wir mindestens 1 Kraft-Tag.',
+        concurrent_training:
+          'Ausdauer und Muskelaufbau gehen gut zusammen. Plane Ausdauer möglichst nicht direkt vor dem Krafttraining; Rad ist schonender für die Beine als Laufen.',
         strength_days_over_max:
           'Mehr als 4 Kraft-Tage planen wir nicht – die übrigen werden Ruhetage mit lockerer Bewegung.',
         strength_back_to_back:
