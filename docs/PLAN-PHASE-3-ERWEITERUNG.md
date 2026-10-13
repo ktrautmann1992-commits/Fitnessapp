@@ -396,7 +396,11 @@ im Gehtempo und Ergometer).
    statt `planned` (bisher „ohne Vorwoche gilt der Plan“); Ergebnis immer mit `Math.floor` auf ganze Minuten. Nie
    über dem Wunsch. Kommentar an `MAX_WEEKLY_ENDURANCE_VOLUME_INCREASE_FRACTION` wird entsprechend ergänzt.
 3. **Woche 0 / Einstiegswoche:** Woche 0 bekommt höchstens den Anteil von `S` für ihre Resttage; die erste
-   Belastungswoche danach startet mit `S` (Woche 0 ist kein Bezug).
+   Belastungswoche danach startet mit `S` (Woche 0 ist kein Bezug). **Angebrochene Startwoche 1** (Start mitten in
+   der Woche, mindestens die Hälfte der Einheiten übrig, aber Ausdauer-Tage lagen schon vor dem Start): ebenfalls
+   **nie Bezug** – die erste volle Woche startet mit `S`. (Korrektur nach Fehlerbericht 13.10.2026 „Laufen fehlt in
+   der Wochenübersicht“: Vorher war der kleine Teil-Umfang Bezug, die volle Woche bekam nur ~1,1 × davon auf alle
+   Lauf-Tage verteilt, Einheiten unter 10 Minuten fielen weg.)
 4. **Erholungswoche:** `Math.floor(U_ref × 0,6)` (`ENDURANCE_DELOAD_VOLUME_FACTOR`), Anstrengung locker.
 5. **Folgeblock:** `U_ref` = **Summe der geplanten Ausdauer-Minuten der letzten Belastungswoche** aus
    `planned_sessions` (nicht die Erholungswoche) → erste Woche des neuen Blocks ≤ `floor(1,1 × U_ref)`.
