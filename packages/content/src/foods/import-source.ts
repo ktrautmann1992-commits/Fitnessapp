@@ -20,6 +20,12 @@ import {
   sourceRowKey,
 } from '@fitnessapp/core';
 
+import {
+  CONFIRMED_DIFFERENCES_PATH,
+  type ConfirmedDifference,
+  confirmationDraft,
+  confirmationMismatches,
+} from './confirmed-differences';
 import type { FoodMapping, MappingItem } from './mapping';
 import type { SourceDefinition } from './sources';
 
@@ -81,6 +87,18 @@ export interface ImportInput {
   readonly alpha5: ReadonlyMap<string, Alpha5Per100g>;
   /** Datum für neue Dateien (YYYY-MM-DD). */
   readonly today: string;
+  /**
+   * Liste „bestätigte Datenunterschiede“ (`confirmed-differences.ts`), nur vom Stand `main` geladen; fehlt = leer.
+   */
+  readonly confirmations?: readonly ConfirmedDifference[];
+}
+
+/** Zutat mit „Zuordnung prüfen“, deren Unterschied ein gültiger Eintrag der Liste bestätigt (🟠). */
+export interface ConfirmedInReport {
+  readonly id: string;
+  readonly reason_de: string;
+  readonly confirmed_by: string;
+  readonly confirmed_at: string;
 }
 
 export interface ImportReport {
@@ -97,6 +115,18 @@ export interface ImportReport {
   readonly compared: string[];
   /** Vorhandene Lebensmittel ohne (gültige) Zuordnung mehr – bleiben liegen, nur gemeldet (Wächter N2b, K7). */
   readonly orphaned: string[];
+  /** „Zuordnung prüfen“ mit gültiger Bestätigung – sichtbar als 🟠, zählt nicht zur 10-%-Regel (aber zum Deckel). */
+  readonly confirmed: ConfirmedInReport[];
+  /** Einträge der Liste, deren Bindung nicht mehr passt – die Zutat bleibt „Zuordnung prüfen“ (🔴). */
+  readonly invalidConfirmations: { id: string; problems: string[] }[];
+  /** Einträge ohne Wirkung (Zutat nicht verglichen oder ohne „Zuordnung prüfen“) – können raus. */
+  readonly unusedConfirmations: string[];
+  /**
+   * Je 🔴-Zutat (offen, auch bei ungültiger Bestätigung) ein kopierfertiger Eintrag für die Liste mit den exakten
+   * acht Werten, gegen die `confirmationMismatches` prüft; `reason_de`, `confirmed_by`, `confirmed_at` sind
+   * Platzhalter, die das Schema ablehnt, bis sie ausgefüllt sind (Wächter LOD, S2).
+   */
+  readonly confirmationDrafts: ConfirmedDifference[];
 }
 
 export interface ImportOutput {
@@ -332,7 +362,13 @@ export function importFoods(input: ImportInput): ImportOutput {
     noReference: [],
     compared: [],
     orphaned: [],
+    confirmed: [],
+    invalidConfirmations: [],
+    unusedConfirmations: [],
+    confirmationDrafts: [],
   };
+  const confirmations = new Map((input.confirmations ?? []).map((c) => [c.alpha5_id, c]));
+  const usedConfirmations = new Set<string>();
 
   for (const item of input.mapping.items) {
     const id = item.food_id;
@@ -422,10 +458,41 @@ export function importFoods(input: ImportInput): ImportOutput {
       if (hasNoReference(fileValues)) {
         report.noReference.push(id);
       } else {
-        report.deviations.push(...alpha5Deviations(id, fileValues, row.nutrients_per_100g));
+        const deviations = alpha5Deviations(id, fileValues, row.nutrients_per_100g);
+        report.deviations.push(...deviations);
+        const entry = confirmations.get(item.alpha5_id);
+        const needsReview = deviations.some((d) => d.level === 'review');
+        const target = {
+          db: row.db,
+          version: row.version,
+          ref: row.ref,
+          source: row.nutrients_per_100g,
+          file: fileValues,
+        };
+        const mismatches = entry === undefined ? undefined : confirmationMismatches(entry, target);
+        if (needsReview && mismatches?.length !== 0) {
+          // 🔴 offen: Vorlage mit den Rohwerten der Quelle (nicht dem Wert einer Lesart) – genau die Bindung.
+          report.confirmationDrafts.push(confirmationDraft(item.alpha5_id, target));
+        }
+        if (entry !== undefined && mismatches !== undefined && needsReview) {
+          usedConfirmations.add(item.alpha5_id);
+          if (mismatches.length === 0) {
+            report.confirmed.push({
+              id,
+              reason_de: entry.reason_de,
+              confirmed_by: entry.confirmed_by,
+              confirmed_at: entry.confirmed_at,
+            });
+          } else {
+            report.invalidConfirmations.push({ id, problems: mismatches });
+          }
+        }
       }
     }
   }
+  report.unusedConfirmations.push(
+    ...[...confirmations.keys()].filter((key) => !usedConfirmations.has(key)).sort(),
+  );
 
   // Verwaiste Lebensmittel: Datei vorhanden, aber nicht (mehr) importiert – Erwartungen aus der Datei behalten,
   // damit R18 sie weiter prüft; im Bericht melden.
@@ -469,12 +536,14 @@ export function formatImportReport(report: ImportReport, missingRefs: readonly s
     }
     lines.push('');
   }
+  const confirmedIds = new Set(report.confirmed.map((c) => c.id));
   const review = report.deviations.filter((d) => d.level === 'review');
   const reviewFoods = new Set(review.map((d) => d.id));
+  const openFoods = [...reviewFoods].filter((id) => !confirmedIds.has(id));
   lines.push(
     `#### Gegencheck alpha5-rezepte.json ↔ Quelle (${ALPHA5_REVIEW_RULE_NOTE})`,
     '',
-    `${report.deviations.length} Abweichungen, davon ${review.length} „Zuordnung prüfen“ bei ${reviewFoods.size} Zutaten. Maßgeblich ist immer die Quelle. Lesarten (KH + Ballaststoffe, KH ohne Zuckeralkohole, Ballaststoffe als KH) gleichen nur Definitionen der Gründer-Datei aus.`,
+    `${report.deviations.length} Abweichungen, davon ${review.length} „Zuordnung prüfen“ bei ${reviewFoods.size} Zutaten (🔴 offen: ${openFoods.length}, 🟠 bestätigt: ${confirmedIds.size}). Maßgeblich ist immer die Quelle. Lesarten (KH + Ballaststoffe, KH ohne Zuckeralkohole, Ballaststoffe als KH) gleichen nur Definitionen der Gründer-Datei aus.`,
     '',
   );
   if (report.noReference.length > 0) {
@@ -492,11 +561,54 @@ export function formatImportReport(report: ImportReport, missingRefs: readonly s
       a.level === b.level ? a.id.localeCompare(b.id) : a.level === 'review' ? -1 : 1,
     );
     for (const d of ordered) {
+      const mark = d.level === 'review' ? (confirmedIds.has(d.id) ? '🟠' : '🔴') : '🟡';
       lines.push(
-        `| ${d.level === 'review' ? '🔴' : '🟡'} \`${d.id}\` | ${d.field} | ${d.file} | ${d.source} | ${pct(d.relative)} | ${d.energyShare === undefined ? '–' : pct(d.energyShare)} | ${d.reading ?? '–'} |`,
+        `| ${mark} \`${d.id}\` | ${d.field} | ${d.file} | ${d.source} | ${pct(d.relative)} | ${d.energyShare === undefined ? '–' : pct(d.energyShare)} | ${d.reading ?? '–'} |`,
       );
     }
     lines.push('');
+  }
+  if (report.confirmed.length > 0) {
+    lines.push(
+      '#### 🟠 Bestätigte Datenunterschiede (content/food-mapping/bestaetigte-abweichungen.json, zählen nicht zur 10-%-Regel)',
+      '',
+      '| Zutat | Grund | bestätigt von (Angabe, kein Nachweis – Nachweis ist der Gründer-Merge) | am |',
+      '| --- | --- | --- | --- |',
+      ...report.confirmed.map(
+        (c) =>
+          `| 🟠 \`${c.id}\` | ${c.reason_de.replace(/\|/g, '\\|')} | ${c.confirmed_by.replace(/\|/g, '\\|')} | ${c.confirmed_at} |`,
+      ),
+      '',
+    );
+  }
+  if (report.invalidConfirmations.length > 0) {
+    lines.push(
+      '#### ⚠️ Bestätigungen ungültig (Werte oder Quell-ID geändert – Zutat bleibt 🔴 „Zuordnung prüfen“)',
+      '',
+      ...report.invalidConfirmations.map((c) => `- \`${c.id}\`: ${c.problems.join('; ')}`),
+      '',
+    );
+  }
+  if (report.unusedConfirmations.length > 0) {
+    lines.push(
+      `Bestätigungen ohne Wirkung (Zutat nicht verglichen oder ohne „Zuordnung prüfen“, können aus der Liste): ${report.unusedConfirmations.map((id) => `\`${id}\``).join(', ')}`,
+      '',
+    );
+  }
+  if (report.confirmationDrafts.length > 0) {
+    lines.push(
+      '<details>',
+      `<summary>📋 Kopierfertige Einträge für ${CONFIRMED_DIFFERENCES_PATH} (🔴 offen: ${report.confirmationDrafts.length})</summary>`,
+      '',
+      'Nur für Zutaten, deren Unterschied nach Prüfung **echt** ist (andere Ware, grober Wert in alpha5-rezepte.json) – nie für eine falsche Datei oder Quell-ID. Die acht Werte sind exakt die Bindung (Rohwerte der Quelle, nicht der Wert einer Lesart) und werden **nicht** geändert. Nur `reason_de`, `confirmed_by` (Angabe, kein Nachweis) und `confirmed_at` ausfüllen; mit Platzhalter lehnt das Schema den Eintrag ab. Den Bestätigungs-Pull-Request merged nur ein Gründer selbst (docs/SETUP.md J3).',
+      '',
+      '```json',
+      JSON.stringify(report.confirmationDrafts, null, 2),
+      '```',
+      '',
+      '</details>',
+      '',
+    );
   }
   return lines.join('\n');
 }

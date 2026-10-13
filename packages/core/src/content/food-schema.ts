@@ -148,8 +148,10 @@ export const REQUIRED_NUTRIENT_KEYS = ['kcal', 'protein_g', 'carbs_g', 'fat_g', 
 
 /**
  * Ergänzende Nährwerte (Import-Lauf 1, PR #47, docs/PLAN-PHASE-5.md N2b): Nennt die Quelle hier keinen Zahlenwert
- * („-“ = nicht bestimmt, „<LOD“/„<LOQ“ = unter Nachweis-/Bestimmungsgrenze), steht `null` – NIE eine Schätzung,
- * auch nicht 0. Summen über Zutaten werden dann ebenfalls `null` („unbekannt“), siehe `addOptionalNutrient`.
+ * („-“ oder leer = nicht bestimmt), steht `null` – NIE eine Schätzung, auch nicht 0. Summen über Zutaten werden
+ * dann ebenfalls `null` („unbekannt“), siehe `addOptionalNutrient`.
+ * Davon getrennt: „<LOD“/„<LOQ“/„TR“ (gemessen, unter Nachweis-/Bestimmungsgrenze) ist KEIN fehlender Wert – der
+ * Import liest es seit der Gründer-Entscheidung vom 13.10.2026 als 0 (`source-rows.ts`), auch bei Pflichtwerten.
  */
 export const OPTIONAL_NUTRIENT_KEYS = ['sugar_g', 'sat_fat_g', 'fiber_g'] as const;
 export type OptionalNutrientKey = (typeof OPTIONAL_NUTRIENT_KEYS)[number];

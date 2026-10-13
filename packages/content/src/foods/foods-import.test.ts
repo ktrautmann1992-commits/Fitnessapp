@@ -514,6 +514,10 @@ describe('Wächter-Nachtrag blsdb, NB1', () => {
       orphaned: [],
       noReference: [],
       compared: Array.from({ length: 10 }, (_, i) => `z${i}`),
+      confirmed: [],
+      invalidConfirmations: [],
+      unusedConfirmations: [],
+      confirmationDrafts: [],
       deviations: ids.flatMap((id) => [
         { id, field: 'kcal' as const, file: 1, source: 2, relative: 0.5, level: 'review' as const },
         {
@@ -528,11 +532,75 @@ describe('Wächter-Nachtrag blsdb, NB1', () => {
     });
     expect(MAX_REVIEW_SHARE).toBe(0.1);
     expect(reviewShareNote(report(['a']), 12)).toMatch(
-      /^Merge-Regel: .*1 von 10 verglichenen Zutaten \(10,0 %; 12 mit Quell-ID\)/,
+      /^Merge-Regel: .*🔴 1 offen \(10,0 %\), 🟠 0 bestätigt \(0,0 %\) von 10 verglichenen Zutaten \(12 mit Quell-ID\)/,
     );
     // Nenner = verglichene Zutaten (K6): 2 von 10 = 20 %, auch wenn 40 Zutaten eine Quell-ID haben.
     expect(reviewShareNote(report(['a', 'b']), 40)).toMatch(
-      /NICHT MERGEN.*2 von 10 verglichenen Zutaten \(20,0 %; 40 mit Quell-ID\)/,
+      /NICHT MERGEN.*🔴 2 offen \(20,0 %\).*von 10 verglichenen Zutaten \(40 mit Quell-ID\)/s,
     );
+  });
+});
+
+describe('foods-import: Liste „bestätigte Datenunterschiede“ (aus dem Stand des Laufs = main)', () => {
+  const LIST_PATH = 'content/food-mapping/bestaetigte-abweichungen.json';
+  const entry = {
+    alpha5_id: 'haferflocken',
+    source: { db: 'bls', version: '4.0' },
+    source_ref: 'C133000',
+    source_values: { kcal: 370, protein_g: 13.5, carbs_g: 58.7, fat_g: 7 },
+    file_values: { kcal: 444, eiweiss_g: 13.5, kohlenhydrate_g: 58.7, fett_g: 7 },
+    reason_de: 'Testgrund: Gründer-Wert stammt aus einer US-Tabelle.',
+    confirmed_by: 'ktrautmann1992-commits',
+    confirmed_at: '2026-10-13',
+  };
+  const writeList = (dir: string, content: string) => {
+    mkdirSync(dirname(join(dir, LIST_PATH)), { recursive: true });
+    writeFileSync(join(dir, LIST_PATH), content);
+  };
+
+  it('gültiger Eintrag → 🟠 im Pull Request; bei 1 von 2 Zutaten greift der Deckel (50 % > 20 %) → ⛔', async () => {
+    const dir = workdir();
+    writeList(
+      dir,
+      JSON.stringify({
+        format: 'alpha5-bestaetigte-abweichungen',
+        version: 1,
+        note_de: 'Test.',
+        entries: [entry],
+      }),
+    );
+    const result = await runFoodsImport(
+      { source: 'bls', version: '4.0', mode: 'import' },
+      deps(dir, fakeApi()),
+    );
+    expect(result.exitCode).toBe(0);
+    expect(result.markdown).toMatch(/🟠 `haferflocken` \| kcal \| 444 \| 370/);
+    expect(result.markdown).toMatch(/Bestätigte Datenunterschiede/);
+    expect(result.markdown).toMatch(/⛔ \*\*NICHT MERGEN.*🔴 0 offen.*🟠 1 bestätigt \(50,0 %\)/);
+    expect(result.markdown).toMatch(/mehr als 20 %/);
+  });
+
+  it('ungültige Liste → kein Import (nie still ignorieren)', async () => {
+    const dir = workdir();
+    writeList(dir, JSON.stringify({ format: 'alpha5-bestaetigte-abweichungen', version: 1 }));
+    const api = fakeApi();
+    const result = await runFoodsImport(
+      { source: 'bls', version: '4.0', mode: 'import' },
+      deps(dir, api),
+    );
+    expect(result.exitCode).toBe(1);
+    expect(result.markdown).toMatch(/Liste „bestätigte Datenunterschiede“ ungültig/);
+    expect(api.calls).toEqual([]);
+  });
+
+  it('Lauf außerhalb von main wird abgelehnt – die Liste kommt nie aus einem Pull Request', async () => {
+    const dir = workdir();
+    writeList(dir, '{ kaputt');
+    const result = await runFoodsImport(
+      { source: 'bls', version: '4.0', mode: 'import' },
+      deps(dir, fakeApi(), { refName: 'foods-import/4711' }),
+    );
+    expect(result.exitCode).toBe(1);
+    expect(result.markdown).toMatch(/nur auf `main` starten/);
   });
 });

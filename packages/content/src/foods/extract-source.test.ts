@@ -1,3 +1,4 @@
+import { checkFoodAtwater, type Food } from '@fitnessapp/core';
 import { describe, expect, it } from 'vitest';
 
 import { parseCsv, serializeCsv, serializeRecord } from './csv';
@@ -12,8 +13,10 @@ import {
 } from './extract-source';
 import {
   convertSourceValue,
+  isBelowDetection,
   parseSourceNumber,
   resolveNutrientColumns,
+  sourceCellValue,
   sourceNutrientRows,
 } from './source-rows';
 import { SOURCES } from './sources';
@@ -166,26 +169,123 @@ describe('Quellzeilen → Nährwerte (source-rows)', () => {
     expect(convertSourceValue(0.1 + 0.2, 'none')).toBe(0.3);
   });
 
-  it('ergänzende Werte ohne Zahl („-“, „<LOD“) → null + Hinweis; Pflichtwert ohne Zahl → Zeile fehlt (PR #47)', () => {
+  it('„-“ / leer = unbekannt: ergänzender Wert → null + Hinweis; Pflichtwert → Zeile fehlt (PR #47)', () => {
     const records = [
       TEST_HEADER,
-      // Honig: Ballaststoffe „<LOD or <LOQ“ → null, Zeile bleibt.
-      ['S120000', 'Honig', '', '310', '', '0.4', '76', '75', '0', '0', '<LOD or <LOQ', '5'],
       // Backpulver: gesättigte Fettsäuren „-“ → null.
       ['R421100', 'Backpulver', '', '100', '', '0.1', '24', '0', '0.1', '-', '0', '11000'],
-      // Orangensaft: Fett „<LOD or <LOQ“ ist Pflicht → nicht übernommen (nie 0 eingesetzt).
-      ['F603600', 'Orangensaft', '', '45', '', '0.7', '9', '8', '<LOD or <LOQ', '0', '0.2', '1'],
+      // Ahornsirup: Ballaststoffe leer → null.
+      ['S110000', 'Ahornsirup', '', '260', '', '0', '67', '60', '0.1', '0', '', '20'],
+      // Fett „-“ ist Pflicht und unbekannt → nicht übernommen (nie 0 eingesetzt).
+      ['X100000', 'Unbekannt', '', '45', '', '0.7', '9', '8', '-', '0', '0.2', '1'],
+      // Anderer Text als die festen Schreibweisen bleibt unbekannt (nie geraten).
+      ['X200000', 'Fremdtext', '', '45', '', '0.7', '9', '8', 'n.b.', '0', '0.2', '1'],
     ];
-    const { rows, problems, gaps } = sourceNutrientRows(records, TEST_SOURCE);
-    expect(rows.get('S120000')?.nutrients_per_100g.fiber_g).toBeNull();
+    const { rows, problems, gaps, belowDetection } = sourceNutrientRows(records, TEST_SOURCE);
     expect(rows.get('R421100')?.nutrients_per_100g.sat_fat_g).toBeNull();
-    expect(rows.has('F603600')).toBe(false);
-    expect(problems).toEqual([
-      { ref: 'F603600', message: expect.stringMatching(/fat_g/) as unknown as string },
+    expect(rows.get('S110000')?.nutrients_per_100g.fiber_g).toBeNull();
+    expect(rows.has('X100000')).toBe(false);
+    expect(rows.has('X200000')).toBe(false);
+    expect(problems.map((p) => p.ref)).toEqual(['X100000', 'X200000']);
+    expect(problems[0]?.message).toMatch(/fat_g/);
+    expect(gaps.map((g) => g.ref)).toEqual(['R421100', 'S110000']);
+    expect(belowDetection).toEqual([]);
+  });
+
+  it('„unter Nachweisgrenze“ (<LOD, <LOQ, TR, …) = 0 – für alle Nährwerte, auch Pflichtwerte (Gründer 13.10.2026)', () => {
+    const records = [
+      TEST_HEADER,
+      // Honig: Ballaststoffe „<LOD or <LOQ“ → 0 (bisher null).
+      ['S120000', 'Honig', '', '310', '', '0.4', '76', '75', '0', '0', '<LOD or <LOQ', '5'],
+      // Orangensaft (echte Zeile F603600): Fett „<LOD or <LOQ“ ist Pflicht → 0, Zeile wird übernommen.
+      [
+        'F603600',
+        'Orangensaft',
+        '',
+        '41',
+        '',
+        '0.75',
+        '8.5',
+        '8',
+        '<LOD or <LOQ',
+        '0',
+        '0.31',
+        '1',
+      ],
+      // Balsamico (R125000): Fett und Ballaststoffe „<LOD“ → 0.
+      ['R125000', 'Balsamicoessig', '', '95', '', '0', '20.04', '15', '<LOD', '0', '<LOD', '20'],
+      // Walnuss: Natrium „<LOD“ (Pflicht über Salz) → 0 g Salz; Leerzeichen werden getrimmt.
+      ['H120100', 'Walnuss', '', '680', '', '15', '11', '2', '65', '6', '6', ' <LOD '],
+      // „<LOQ“, „TR“ (trace), „<NWG“, „Spuren“.
+      ['F302100', 'Himbeere', '', '40', '', '1.3', '5', '5', '0.3', '<LOQ', '4.7', 'TR'],
+      ['X300000', 'Zweitquelle', '', '40', '', '1.3', '5', 'Spuren', '0.3', '<NWG', '4.7', '1'],
+    ];
+    const { rows, problems, gaps, belowDetection } = sourceNutrientRows(records, TEST_SOURCE);
+    expect(problems).toEqual([]);
+    expect(gaps).toEqual([]);
+    expect(rows.get('S120000')?.nutrients_per_100g.fiber_g).toBe(0);
+    expect(rows.get('F603600')?.nutrients_per_100g.fat_g).toBe(0);
+    expect(rows.get('F603600')?.nutrients_per_100g.kcal).toBe(41);
+    expect(rows.get('R125000')?.nutrients_per_100g).toMatchObject({ fat_g: 0, fiber_g: 0 });
+    expect(rows.get('H120100')?.nutrients_per_100g.salt_g).toBe(0);
+    expect(rows.get('F302100')?.nutrients_per_100g).toMatchObject({ sat_fat_g: 0, salt_g: 0 });
+    expect(rows.get('X300000')?.nutrients_per_100g).toMatchObject({ sugar_g: 0, sat_fat_g: 0 });
+    // Sichtbar im Bericht, mit dem Original-Text.
+    expect(belowDetection.map((b) => b.ref)).toEqual([
+      'S120000',
+      'F603600',
+      'R125000',
+      'H120100',
+      'F302100',
+      'X300000',
     ]);
-    expect(problems[0]?.message).not.toMatch(/fiber_g/);
-    expect(gaps.map((g) => g.ref)).toEqual(['S120000', 'R421100']);
-    expect(gaps[0]?.message).toMatch(/fiber_g .*„<LOD or <LOQ“/);
+    expect(belowDetection[1]?.message).toMatch(/fat_g \(„<LOD or <LOQ“\)/);
+    expect(belowDetection[2]?.message).toMatch(/fat_g .*fiber_g/);
+  });
+
+  it('kcal „<LOD“ mit Makros > 0 → 0 kcal, aber R4 (Atwater) meldet rot (Wächter LOD, K1)', () => {
+    // Fiktive Zeile: Energie „<LOD“ (bei BLS berechnet, kommt dort nie vor), Eiweiß/KH/Fett mit Zahl.
+    const records = [
+      TEST_HEADER,
+      [
+        'X400000',
+        'Energie unter Nachweisgrenze',
+        '',
+        '<LOD',
+        '',
+        '10',
+        '20',
+        '5',
+        '5',
+        '1',
+        '2',
+        '0.1',
+      ],
+    ];
+    const { rows, problems, belowDetection } = sourceNutrientRows(records, TEST_SOURCE);
+    expect(problems).toEqual([]);
+    const nutrients = rows.get('X400000')?.nutrients_per_100g;
+    expect(nutrients?.kcal).toBe(0);
+    expect(belowDetection[0]?.message).toMatch(/kcal \(„<LOD“\)/);
+    // content:validate (R4) hält die Zutat an: 0 kcal passt nicht zu 10 g Eiweiß, 20 g KH, 5 g Fett.
+    const food = {
+      id: 'test-lod-kcal',
+      status: 'draft',
+      nutrients_per_100g: nutrients,
+    } as unknown as Food;
+    expect(checkFoodAtwater(food)).toMatchObject([{ rule: 'R4', severity: 'error' }]);
+  });
+
+  it('Zellen-Übersetzung: nur feste Schreibweisen → 0, sonst Zahl oder unbekannt', () => {
+    for (const text of ['<LOD', '<LOQ', '<LOD or <LOQ', 'TR', '<NWG', 'Spuren', ' <LOD ']) {
+      expect(isBelowDetection(text)).toBe(true);
+      expect(sourceCellValue(text)).toBe(0);
+    }
+    for (const text of ['-', '', 'n.b.', '<lod', 'tr', '< LOD', '<LOD/LOQ', 'Spur']) {
+      expect(sourceCellValue(text)).toBeNull();
+    }
+    expect(sourceCellValue('0')).toBe(0);
+    expect(sourceCellValue('1,5')).toBe(1.5);
   });
 
   it('R4-Zusatzspalten (organische Säuren, Alkohol, Polyole) nur für eingetragene Codes; fehlt die Spalte, fehlt das Feld', () => {
@@ -224,7 +324,7 @@ describe('Quellzeilen → Nährwerte (source-rows)', () => {
     const { rows } = sourceNutrientRows(records, def);
     const n = rows.get('R123100')?.nutrients_per_100g;
     expect(n?.organic_acids_g).toBe(5.48);
-    expect(n?.alcohol_g).toBeNull(); // „<LOD“ → kein Wert
+    expect(n?.alcohol_g).toBe(0); // „<LOD“ → 0 (Gründer-Entscheidung 13.10.2026)
     expect(n && 'polyols_g' in n).toBe(false); // Spalte fehlt → Feld fehlt
     // Ohne `energyExtras` bleiben die Lebensmittel wie bisher (keine Zusatzfelder).
     expect(
