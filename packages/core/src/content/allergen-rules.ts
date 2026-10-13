@@ -76,6 +76,39 @@ function splitWords(normalized: string): Word[] {
     });
 }
 
+/**
+ * Tierart + Hackfleisch als getrennte Wörter (BLS-Schreibweise „Schwein Hackfleisch, roh“, „Rind Hackfleisch,
+ * roh“) wird zum zusammengesetzten Wort wie im Alltag („schweinehackfleisch“, „rinderhackfleisch“), damit die
+ * Tierart-Ausnahmen der Hackfleisch-Regeln greifen (N2b-Zuordnung; analog zum Fix „Schweinehackfleisch“).
+ * Nur direkt aufeinanderfolgende Wörter; „Hackfleisch gemischt“ ohne Tierart bleibt Rind + Schwein, und
+ * „Schwein Hackfleisch gemischt“ wird zu „schweinehackfleisch gemischt“ (ebenfalls Rind + Schwein).
+ */
+const SPECIES_MINCE_PREFIX: Readonly<Record<string, string>> = {
+  schwein: 'schweine',
+  rind: 'rinder',
+  kalb: 'kalbs',
+  pute: 'puten',
+  truthahn: 'truthahn',
+  lamm: 'lamm',
+  gefluegel: 'gefluegel',
+  haehnchen: 'haehnchen',
+  wild: 'wild',
+  hirsch: 'hirsch',
+};
+const SPECIES_MINCE_PATTERN = new RegExp(
+  `(^| )(${Object.keys(SPECIES_MINCE_PREFIX).join('|')}) (hackfleisch|hack)(?= |$)`,
+  'g',
+);
+
+/** Siehe SPECIES_MINCE_PREFIX; erwartet bereits normalisierten Text (normalizeFoodText). */
+export function joinSpeciesMince(normalized: string): string {
+  return normalized.replace(
+    SPECIES_MINCE_PATTERN,
+    (_match, start: string, species: string, mince: string) =>
+      `${start}${SPECIES_MINCE_PREFIX[species] ?? species}${mince}`,
+  );
+}
+
 /** Ein Treffer: Muster, getroffenes Wort und der normalisierte Text, in dem es steht. */
 export interface WordHit {
   readonly pattern: string;
@@ -148,7 +181,7 @@ export function matchWordRule(texts: readonly string[], rule: WordRule): WordHit
   }
   const hits: WordHit[] = [];
   for (const raw of texts) {
-    const text = normalizeFoodText(raw);
+    const text = joinSpeciesMince(normalizeFoodText(raw));
     if (text.length === 0) {
       continue;
     }
@@ -227,6 +260,12 @@ export type GroupRule =
       readonly sourceCategoryExempt?: readonly string[];
       /** Wortteile, die die Regel NUR in der Bezeichnung der Quelle aufheben (z. B. „laktosefrei“). */
       readonly sourceNameExempt?: readonly string[];
+      /**
+       * Wortfolgen, die NUR in der Bezeichnung der Quelle vor der Prüfung ersetzt werden ([von, nach], normalisiert),
+       * z. B. „senf mittelscharf“ → „senf“. Entfernt nur diesen Treffer – Name, Aliase und übrige Wörter der Quelle
+       * werden weiter geprüft (Wächter-Prüfung Zuordnung S1).
+       */
+      readonly sourceNameRewrites?: readonly (readonly [string, string])[];
       /** Zusätzlich immer menschliche Prüfung (R19-Checkliste), mit Begründung. */
       readonly humanReview?: string;
     }
@@ -527,19 +566,37 @@ const MINCE_ENDINGS = [
   'faschierte',
 ] as const;
 /**
- * Ausdrücklich gemischtes Hackfleisch – auch mit Schwein vorn („Schweinehackfleisch gemischt“): Rind + Schwein
- * (Wächter N2b, K1). Wortfolgen, damit „gemischt“ allein (z. B. „gemischter Salat“) nichts auslöst.
+ * Ausdrücklich gemischtes Hackfleisch – auch mit Tierart vorn („Schweinehackfleisch gemischt“, „Rinderhack halb und
+ * halb“, BLS „Rind Hackfleisch gemischt“ über `joinSpeciesMince`): Rind + Schwein (Wächter N2b, K1; Wächter-Prüfung
+ * Zuordnung B1 – alle Tierart-Vorsilben, damit „gemischt“ nie durch die Tierart-Ausnahmen entschärft wird).
+ * Wortfolgen, damit „gemischt“ allein (z. B. „gemischter Salat“) nichts auslöst.
  */
-const MIXED_MINCE_PHRASES = [
+const MIXED_MINCE_SPECIES_PREFIXES = [
+  '',
+  'schweine',
+  'schweins',
+  'rinder',
+  'rinds',
+  'rind',
+  'kalbs',
+  'puten',
+  'truthahn',
+  'lamm',
+  'gefluegel',
+  'haehnchen',
+  'wild',
+  'hirsch',
+] as const;
+const MIXED_MINCE_PHRASES: readonly string[] = [
   'gemischtes hack',
   'gemischtes hackfleisch',
-  'hackfleisch gemischt',
-  'hack gemischt',
-  'schweinehackfleisch gemischt',
-  'schweinehack gemischt',
-  'hackfleisch halb und halb',
-  'hack halb und halb',
-] as const;
+  ...MIXED_MINCE_SPECIES_PREFIXES.flatMap((prefix) =>
+    ['hackfleisch', 'hack'].flatMap((mince) => [
+      `${prefix}${mince} gemischt`,
+      `${prefix}${mince} halb und halb`,
+    ]),
+  ),
+];
 /** Ausdrückliche Tierart bzw. pflanzlich, aber nicht Rind (für die Rind-Regel). */
 const MINCE_NOT_BEEF_NEGATIVES = combine(
   [
@@ -1055,6 +1112,13 @@ export const ALLERGEN_RULES: Readonly<Record<FoodGroupId, GroupRule>> = {
     // „Paprika edelsüß“ und schwarzer Pfeffer sind nicht scharf im Sinne der Gruppe (kein Pflichtwort).
     negatives: [],
     sourceCategories: [],
+    // Senf „mittelscharf“ (BLS „Senf mittelscharf“) ist Senföl-Schärfe, keine Chili-Schärfe (N2b; bei R19 von
+    // einem Menschen zu bestätigen). Nur diese Wortfolge und nur in der Bezeichnung der QUELLE wird neutralisiert;
+    // Name, Aliase und weitere Wörter der Quelle („… mit Chili“) prüft die Regel weiter.
+    sourceNameRewrites: [
+      ['senf mittelscharf', 'senf'],
+      ['mittelscharfer senf', 'senf'],
+    ],
   },
 };
 
@@ -1120,6 +1184,8 @@ export const PORK_RULE: WordRule = {
     'coppa',
     ...SAUSAGE_WORDS,
     ...MINCE_WORDS,
+    // Ausdrücklich gemischt = Rind + Schwein, auch mit Tierart vorn (Wächter-Prüfung Zuordnung B1).
+    ...MIXED_MINCE_PHRASES,
   ],
   negatives: [
     ...combine(['puten', 'truthahn', 'haehnchen', 'huehnchen', 'gefluegel'], ['schinken', 'speck']),
@@ -1405,6 +1471,24 @@ export function foodRuleTexts(food: FoodForRules): string[] {
   ];
 }
 
+/** Texte für eine Gruppenregel: wie `foodRuleTexts`, die Quell-Bezeichnung ggf. mit `sourceNameRewrites`. */
+function groupRuleTexts(food: FoodForRules, rule: Extract<GroupRule, { kind: 'rule' }>): string[] {
+  const rewrites = rule.sourceNameRewrites ?? [];
+  if (rewrites.length === 0) {
+    return foodRuleTexts(food);
+  }
+  let source = ` ${normalizeFoodText(food.source.name).replace(/-/g, ' ')} `;
+  for (const [from, to] of rewrites) {
+    source = source.split(` ${from} `).join(` ${to} `);
+  }
+  return [
+    food.name_de,
+    ...(food.name_de_plural === undefined ? [] : [food.name_de_plural]),
+    ...food.aliases_de,
+    source.trim(),
+  ];
+}
+
 function wordReasons(hits: readonly WordHit[]): RuleReason[] {
   return hits.map((hit) => ({
     via: 'word',
@@ -1437,7 +1521,7 @@ export function requiredFoodRules(food: FoodForRules): RequiredFoodRules {
     ) {
       continue;
     }
-    add(group, wordReasons(matchWordRule(texts, rule)));
+    add(group, wordReasons(matchWordRule(groupRuleTexts(food, rule), rule)));
     if (rule.sourceCategories.includes(category)) {
       // Ausnahme nur aus der Bezeichnung der QUELLE, nie aus Aliasen (Wächter N2a, S3: „Kritharaki“ mit Alias
       // „griechische Reisnudeln“ darf die Gluten-Pflicht nicht aufheben).

@@ -1,9 +1,9 @@
 /**
  * Ablauf des Workflows `foods-import` (docs/PLAN-PHASE-5.md 5.1 Schritte 1–4, 19.3, H1).
  *
- * Modus „kandidaten“: Original laden, Kandidaten für Zutaten ohne Quell-ID in die Zusammenfassung – nichts
- * schreiben. Modus „import“: Original laden → `extract.csv` (nur benötigte Zeilen, unverändert) → `SOURCE.json`
- * + `ATTRIBUTION.md` → Lebensmittel und Erwartungsliste (`import-source.ts`) → `content:validate` → Commit über
+ * Modus „kandidaten“: Original laden, Kandidaten für Zutaten ohne Quell-ID in die Zusammenfassung, vollständige
+ * Namensliste (Quell-ID + Bezeichnung) nur ins Log – nichts schreiben. Modus „import“: Original laden →
+ * `extract.csv` (nur benötigte Zeilen, unverändert) → `SOURCE.json` + `ATTRIBUTION.md` → Lebensmittel und Erwartungsliste (`import-source.ts`) → `content:validate` → Commit über
  * die GitHub-API (verified) auf `foods-import/<run-id>` → Pull Request → ci starten.
  */
 import { existsSync, mkdirSync, readdirSync, readFileSync, writeFileSync } from 'node:fs';
@@ -14,7 +14,7 @@ import { sourceRowKey } from '@fitnessapp/core';
 import { blockingCount, formatMarkdownSummary, validateRepository } from '../validate';
 import { formatJson } from '../pipeline/files';
 import { PHONE_TEST_SECTION, truncateBody } from '../pipeline/pull-request';
-import { formatCandidates, mappingCandidates } from './candidates';
+import { formatCandidates, formatNameList, mappingCandidates, nameListMarkers } from './candidates';
 import { serializeCsv } from './csv';
 import {
   type CommitFile,
@@ -78,6 +78,11 @@ export interface FoodsImportResult {
   readonly exitCode: number;
   readonly markdown: string;
   readonly prUrl?: string;
+  /**
+   * Nur Modus „kandidaten“: vollständige Namensliste der Quelle (Quell-ID<TAB>Bezeichnung, mit Markern) – nur
+   * fürs Actions-Log (stdout), NICHT für die Zusammenfassung (Größenlimit). Keine Nährwerte.
+   */
+  readonly log?: string;
 }
 
 function readJson(repoRoot: string, path: string): unknown {
@@ -287,8 +292,10 @@ export async function runFoodsImport(
     ...(shaChangedMd === '' ? [] : [shaChangedMd]),
   ];
   if (options.mode === 'kandidaten') {
+    const nameList = formatNameList(records, def);
     return {
       exitCode: shaChanged ? 1 : 0,
+      log: nameList.text,
       markdown: [
         ...head,
         ...(def.originalSha256 === null
@@ -299,6 +306,8 @@ export async function runFoodsImport(
           : []),
         columnCheck(records[0] ?? [], def),
         candidates,
+        '',
+        `Vollständige Namensliste (Quell-ID + Bezeichnung) nur im Log dieses Laufs: ${nameList.written} Zeilen zwischen \`${nameListMarkers(def.db).begin}\` und \`${nameListMarkers(def.db).end}\`${nameList.skipped > 0 ? `; ${nameList.skipped} Zeilen mit leerer oder abweichender Quell-ID (Format \`${def.keyPattern}\`) nicht ausgegeben` : ''}.`,
         '',
         '<details><summary>Diagnose: Abruf und Aufbau der Datei</summary>',
         '',

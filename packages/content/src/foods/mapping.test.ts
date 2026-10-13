@@ -12,6 +12,9 @@ import { describe, expect, it } from 'vitest';
 import { REAL_REPO_ROOT } from '../pipeline/test-helpers';
 import { FOOD_MAPPING_PATH, parseFoodMapping } from './mapping';
 
+/** Format eines BLS-4.0-Schlüssels (geprüft an allen Codes der Summary des Laufs „kandidaten“ vom 12.10.2026). */
+const BLS_REF = /^[A-Z][0-9A-Z]{6}$/;
+
 const raw: unknown = JSON.parse(readFileSync(join(REAL_REPO_ROOT, FOOD_MAPPING_PATH), 'utf8'));
 const mapping = parseFoodMapping(raw);
 const alpha5 = JSON.parse(
@@ -106,6 +109,22 @@ describe('Zuordnung alpha5 → Quelle (Vorschlag, unbestätigt)', () => {
       expect(item.source.version).toBe('4.0');
       expect(item.source.search.length).toBeGreaterThan(0);
       expect(item.reason_de.length).toBeGreaterThan(20);
+      const ref = item.source.ref;
+      if (ref !== null) {
+        // BLS-4.0-Schlüssel: Großbuchstabe + 6 Ziffern/Großbuchstaben (z. B. „F110100“, „F3B4902“).
+        expect(ref, item.food_id).toMatch(BLS_REF);
+        // Jede eingetragene Quell-ID ist begründet (Herkunft aus dem Kandidatenlauf, Rohzustand).
+        expect(item.reason_de, item.food_id).toContain(`Quell-ID ${ref} `);
+      }
+    }
+  });
+
+  it('BLS-Format der Quell-IDs: Gegenproben', () => {
+    for (const ok of ['F110100', 'F3B4902', 'Y9A1050', 'M0A1000']) {
+      expect(ok).toMatch(BLS_REF);
+    }
+    for (const bad of ['f110100', 'F11010', 'F1101000', '1110100', 'F110 100', 'offen', '']) {
+      expect(bad).not.toMatch(BLS_REF);
     }
   });
 

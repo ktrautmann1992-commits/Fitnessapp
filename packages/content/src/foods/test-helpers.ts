@@ -185,6 +185,7 @@ export const TEST_SOURCE: SourceDefinition = {
   csvDelimiter: ',',
   originalSha256: null,
   keyColumn: 0,
+  keyPattern: '^[A-Z][0-9A-Z]{6}$',
   nameColumn: 1,
   nutrients: {
     kcal: [{ code: 'ENERCC', unit: 'kcal', convert: 'none' }],
