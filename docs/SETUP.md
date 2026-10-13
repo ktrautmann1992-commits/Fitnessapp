@@ -679,6 +679,11 @@ selbst freigeben, und eure eigenen Pull Requests bleiben frei mergebar. Ein zwei
 
 ### J3 – Lebensmittel importieren
 
+**Einmalig vorher:** **Settings → Actions → General** → ganz unten **Workflow permissions** → Haken bei
+**„Allow GitHub Actions to create and approve pull requests“** → **Save**. Ohne diesen Haken bricht der Modus
+`import` am Ende mit „GitHub Actions is not permitted to create or approve pull requests“ ab (gesetzt am
+13.10.2026). Eine Freigabe durch den Bot ersetzt keine Code-Owner-Freigabe – mergen tut ihr weiterhin selbst.
+
 1. **Actions → foods-import → Run workflow** → Branch **main**.
 2. **quelle** `bls`, **version** `4.0`, **modus** `kandidaten` → **Run workflow**.
 3. Lauf antippen → **Summary**: oben „Spalten der Quelle“ (welche Spalte je Nährwert genutzt wird), darunter für
