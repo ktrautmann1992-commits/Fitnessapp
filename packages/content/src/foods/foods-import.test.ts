@@ -512,6 +512,8 @@ describe('Wächter-Nachtrag blsdb, NB1', () => {
       unchanged: [],
       skipped: [],
       orphaned: [],
+      noReference: [],
+      compared: Array.from({ length: 10 }, (_, i) => `z${i}`),
       deviations: ids.flatMap((id) => [
         { id, field: 'kcal' as const, file: 1, source: 2, relative: 0.5, level: 'review' as const },
         {
@@ -525,9 +527,12 @@ describe('Wächter-Nachtrag blsdb, NB1', () => {
       ]),
     });
     expect(MAX_REVIEW_SHARE).toBe(0.1);
-    expect(reviewShareNote(report(['a']), 10)).toMatch(/^Merge-Regel: .*1 von 10 \(10,0 %\)/);
-    expect(reviewShareNote(report(['a', 'b']), 10)).toMatch(
-      /NICHT MERGEN.*2 von 10 Zutaten \(20,0 %\)/,
+    expect(reviewShareNote(report(['a']), 12)).toMatch(
+      /^Merge-Regel: .*1 von 10 verglichenen Zutaten \(10,0 %; 12 mit Quell-ID\)/,
+    );
+    // Nenner = verglichene Zutaten (K6): 2 von 10 = 20 %, auch wenn 40 Zutaten eine Quell-ID haben.
+    expect(reviewShareNote(report(['a', 'b']), 40)).toMatch(
+      /NICHT MERGEN.*2 von 10 verglichenen Zutaten \(20,0 %; 40 mit Quell-ID\)/,
     );
   });
 });

@@ -291,7 +291,8 @@ export function proposeIngredientRole(
   if (unit === 'pinch') {
     return 'seasoning';
   }
-  if (n.sugar_g >= 50) {
+  // Zucker ohne Zahlenwert in der Quelle (`null`): keine Annahme, die Rolle folgt dann den übrigen Regeln.
+  if (n.sugar_g !== null && n.sugar_g >= 50) {
     return 'sweet';
   }
   if (food.shopping_category === 'spices_baking') {

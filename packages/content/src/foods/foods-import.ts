@@ -42,7 +42,13 @@ import {
   sourceDir,
   sourceManifestSchema,
 } from './extract-source';
-import { NUTRIENT_KEYS, resolveNutrientColumns, sourceNutrientRows } from './source-rows';
+import {
+  ENERGY_EXTRA_SOURCE_KEYS,
+  NUTRIENT_KEYS,
+  resolveEnergyExtraColumns,
+  resolveNutrientColumns,
+  sourceNutrientRows,
+} from './source-rows';
 import { findSource, type SourceDefinition, SOURCES } from './sources';
 import type { FetchedOriginal } from './download';
 import { SourceDownloadError } from './download-page';
@@ -124,6 +130,7 @@ function readIfExists(repoRoot: string, path: string): Buffer | undefined {
 export function columnCheck(header: readonly string[], def: SourceDefinition): string {
   try {
     const columns = resolveNutrientColumns(header, def);
+    const extras = resolveEnergyExtraColumns(header, def);
     return [
       '#### Spalten der Quelle (für sources.ts)',
       '',
@@ -131,6 +138,14 @@ export function columnCheck(header: readonly string[], def: SourceDefinition): s
         (key) =>
           `- ${key}: Spalte ${columns[key].index} „${columns[key].header}“ (${columns[key].column.convert})`,
       ),
+      ...ENERGY_EXTRA_SOURCE_KEYS.flatMap((key) => {
+        const column = extras[key];
+        return column === undefined
+          ? []
+          : [
+              `- ${key} (nur R4): Spalte ${column.index} „${column.header}“ (${column.column.convert})`,
+            ];
+      }),
       '',
     ].join('\n');
   } catch (error) {
@@ -168,17 +183,21 @@ export function pinRequiredMessage(loadedSha: string): string {
 
 /**
  * Merge-Sperre für den Import-PR (NB1): Sind mehr als 10 % der Zutaten mit „Zuordnung prüfen“ (> 15 % Abweichung
- * zur Gründer-Datei) markiert, wird nicht gemergt, bevor der Grund geklärt ist – eine falsche oder untergeschobene
- * Datei fiele hier massenhaft auf.
+ * zur Gründer-Datei, Regel seit Import-Lauf 1 bei `ALPHA5_IMPORT_TOLERANCE`) markiert, wird nicht gemergt, bevor der
+ * Grund geklärt ist – eine falsche oder untergeschobene Datei fiele hier massenhaft auf. Zutaten ohne Vergleichswert
+ * in der Gründer-Datei zählen nicht als „Zuordnung prüfen“, bleiben aber im Nenner.
  */
 export function reviewShareNote(report: ImportReport, totalItems: number): string {
   const flagged = new Set(report.deviations.filter((d) => d.level === 'review').map((d) => d.id));
-  const share = totalItems === 0 ? 0 : flagged.size / totalItems;
+  // Nenner: verglichene Zutaten (K6) – nicht importierte Zutaten mit Quell-ID verdünnen den Anteil nicht.
+  const compared = report.compared.length;
+  const share = compared === 0 ? 0 : flagged.size / compared;
   const percent = `${(share * 100).toFixed(1).replace('.', ',')} %`;
+  const of = `${flagged.size} von ${compared} verglichenen Zutaten (${percent}; ${totalItems} mit Quell-ID)`;
   if (share > MAX_REVIEW_SHARE) {
-    return `⛔ **NICHT MERGEN, bevor der Grund geklärt ist:** ${flagged.size} von ${totalItems} Zutaten (${percent}) sind „Zuordnung prüfen“ – mehr als 10 %. Möglich: falsche Datei, falsche Spalten oder viele falsche Quell-IDs.`;
+    return `⛔ **NICHT MERGEN, bevor der Grund geklärt ist:** ${of} sind „Zuordnung prüfen“ – mehr als 10 %. Möglich: falsche Datei, falsche Spalten oder viele falsche Quell-IDs.`;
   }
-  return `Merge-Regel: höchstens 10 % „Zuordnung prüfen“ – hier ${flagged.size} von ${totalItems} (${percent}). Darüber wird nicht gemergt, bevor der Grund geklärt ist.`;
+  return `Merge-Regel: höchstens 10 % „Zuordnung prüfen“ – hier ${of}. Darüber wird nicht gemergt, bevor der Grund geklärt ist.`;
 }
 
 /** Aufklappbarer Block mit der Beschreibung der Download-Seite (leer = nichts). */
@@ -348,7 +367,7 @@ export async function runFoodsImport(
   }
   const extract = extractSourceRows(records, def, refs);
   const extractRecords = readExtractRecords(extract.csv);
-  const { rows: rowsByRef, problems } = sourceNutrientRows(extractRecords, def);
+  const { rows: rowsByRef, problems, gaps } = sourceNutrientRows(extractRecords, def);
   const sourceRows = new Map([...rowsByRef.values()].map((row) => [sourceRowKey(row), row]));
   const extractSha = sha256Hex(extract.csv);
 
@@ -421,6 +440,15 @@ export async function runFoodsImport(
           ...problems.map((p) => `- \`${p.ref}\`: ${p.message}`),
           '',
         ].join('\n');
+  const gapsMd =
+    gaps.length === 0
+      ? ''
+      : [
+          '#### Quellzeilen mit ergänzenden Werten ohne Zahl (übernommen als „kein Wert“, nie geschätzt)',
+          '',
+          ...gaps.map((p) => `- \`${p.ref}\`: ${p.message}`),
+          '',
+        ].join('\n');
   const reportMd = [
     ...head,
     `- SHA-256 Auszug: \`${extractSha}\` (${extractRecords.length - 1} Zeilen)`,
@@ -429,6 +457,7 @@ export async function runFoodsImport(
     '',
     formatImportReport(imported.report, extract.missingRefs),
     problemsMd,
+    gapsMd,
     candidates,
   ].join('\n');
 

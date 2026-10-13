@@ -44,7 +44,7 @@ import {
 } from '@fitnessapp/core';
 import { z } from 'zod';
 
-import { alpha5Deviations, type Deviation } from '../foods/import-source';
+import { alpha5Deviations, type Deviation, hasNoReference } from '../foods/import-source';
 import { ALPHA5_ID_EXCEPTIONS } from '../foods/mapping';
 
 export const ALPHA5_FILE_NAME = 'alpha5-rezepte.json';
@@ -979,7 +979,8 @@ export function importAlpha5(input: Alpha5ImportInput): Alpha5ImportOutput {
   ].sort();
   for (const zutat of file.zutaten) {
     const food = input.foods.get(foodIdFor(zutat.id));
-    if (food !== undefined) {
+    // Gründer-Datei ohne Vergleichswert (alle vier Werte 0, z. B. Pfeffer): kein Gegencheck möglich.
+    if (food !== undefined && !hasNoReference(zutat.pro_100g)) {
       deviations.push(
         ...alpha5Deviations(food.id, zutat.pro_100g, food.nutrients_per_100g).map((d) => ({
           ...d,

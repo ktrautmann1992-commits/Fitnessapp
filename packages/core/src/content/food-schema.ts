@@ -140,34 +140,70 @@ const grams = z.number().finite().min(L.gramsPer100g.min).max(L.gramsPer100g.max
 const positiveIn = (limits: { min: number; max: number }) =>
   z.number().finite().min(limits.min).max(limits.max);
 
+/**
+ * Pflicht-Nährwerte: ohne Zahlenwert in der Quelle wird die Zeile NICHT übernommen (nie geraten). Energie, Makros
+ * und Salz tragen Energie-Planband, Makro-Ziele und die Salz-Grenze (R11).
+ */
+export const REQUIRED_NUTRIENT_KEYS = ['kcal', 'protein_g', 'carbs_g', 'fat_g', 'salt_g'] as const;
+
+/**
+ * Ergänzende Nährwerte (Import-Lauf 1, PR #47, docs/PLAN-PHASE-5.md N2b): Nennt die Quelle hier keinen Zahlenwert
+ * („-“ = nicht bestimmt, „<LOD“/„<LOQ“ = unter Nachweis-/Bestimmungsgrenze), steht `null` – NIE eine Schätzung,
+ * auch nicht 0. Summen über Zutaten werden dann ebenfalls `null` („unbekannt“), siehe `addOptionalNutrient`.
+ */
+export const OPTIONAL_NUTRIENT_KEYS = ['sugar_g', 'sat_fat_g', 'fiber_g'] as const;
+export type OptionalNutrientKey = (typeof OPTIONAL_NUTRIENT_KEYS)[number];
+
+/**
+ * Energieliefernde Bestandteile, die NUR die Atwater-Prüfung R4 braucht (LMIV Anhang XIV): organische Säuren,
+ * Alkohol und mehrwertige Alkohole (Polyole, in den Kohlenhydraten enthalten). Fehlt die Spalte in der Quelle,
+ * fehlt das Feld; nennt die Quelle keinen Zahlenwert, steht `null`. Keine Verwendung im Essensplan.
+ */
+export const ENERGY_EXTRA_KEYS = ['organic_acids_g', 'alcohol_g', 'polyols_g'] as const;
+export type EnergyExtraKey = (typeof ENERGY_EXTRA_KEYS)[number];
+
+/**
+ * Summe zweier ergänzender Nährwerte: unbekannt (`null`) bleibt unbekannt – eine Summe mit einer fehlenden Zutat
+ * wäre eine stille Schätzung (Untergrenze) und wird deshalb nie als Zahl ausgegeben.
+ */
+export function addOptionalNutrient(sum: number | null, add: number | null): number | null {
+  return sum === null || add === null ? null : sum + add;
+}
+
+const optionalGrams = grams.nullable();
+
 /** Nährwerte je 100 g (Plan 5.1). Stimmen mit dem Quellauszug überein (Regel R17). */
 export const nutrientsPer100gSchema = z
   .strictObject({
     kcal: z.number().finite().min(L.kcalPer100g.min).max(L.kcalPer100g.max),
     protein_g: grams,
     carbs_g: grams,
-    sugar_g: grams,
+    sugar_g: optionalGrams,
     fat_g: grams,
-    sat_fat_g: grams,
-    fiber_g: grams,
+    sat_fat_g: optionalGrams,
+    fiber_g: optionalGrams,
     salt_g: grams,
+    organic_acids_g: optionalGrams.optional(),
+    alcohol_g: optionalGrams.optional(),
+    polyols_g: optionalGrams.optional(),
   })
   .superRefine((n, ctx) => {
-    if (n.sugar_g > n.carbs_g) {
+    if (n.sugar_g !== null && n.sugar_g > n.carbs_g) {
       ctx.addIssue({
         code: 'custom',
         path: ['sugar_g'],
         message: 'Zucker größer als Kohlenhydrate.',
       });
     }
-    if (n.sat_fat_g > n.fat_g) {
+    if (n.sat_fat_g !== null && n.sat_fat_g > n.fat_g) {
       ctx.addIssue({
         code: 'custom',
         path: ['sat_fat_g'],
         message: 'Gesättigte Fettsäuren größer als Fett.',
       });
     }
-    const sum = n.protein_g + n.carbs_g + n.fat_g + n.fiber_g;
+    // Obergrenzen-Prüfung: fehlende Ballaststoffe zählen hier nicht mit (die Summe wird dadurch nur kleiner).
+    const sum = n.protein_g + n.carbs_g + n.fat_g + (n.fiber_g ?? 0);
     if (sum > 100 + L.macroSumToleranceG) {
       ctx.addIssue({
         code: 'custom',

@@ -4,7 +4,12 @@ import { PORTION_SCALE_LIMITS, RECIPE_SERVINGS_PICKER } from '../constants';
 import type { Food, FoodLookup } from '../content/food-schema';
 import type { Recipe } from '../content/recipe-schema';
 import type { FilteredRecipe, RecipeSubstitution } from './filter';
-import type { RecipeNutrients } from './recipe-nutrients';
+import {
+  addFoodNutrients,
+  divideNutrients,
+  type RecipeNutrients,
+  zeroNutrients,
+} from './recipe-nutrients';
 import { type RecipeUnit, roundAmount, toGrams } from './units';
 
 /**
@@ -41,34 +46,6 @@ export interface ScaledPortion {
 }
 
 type RecipeVariant = Pick<FilteredRecipe, 'recipe' | 'omitted' | 'substitutions'>;
-
-const NUTRIENT_KEYS = [
-  'kcal',
-  'protein_g',
-  'carbs_g',
-  'sugar_g',
-  'fat_g',
-  'sat_fat_g',
-  'fiber_g',
-  'salt_g',
-] as const;
-
-export function zeroNutrients(): RecipeNutrients {
-  return {
-    kcal: 0,
-    protein_g: 0,
-    carbs_g: 0,
-    sugar_g: 0,
-    fat_g: 0,
-    sat_fat_g: 0,
-    fiber_g: 0,
-    salt_g: 0,
-  };
-}
-
-export function addNutrients(target: RecipeNutrients, add: RecipeNutrients): void {
-  for (const key of NUTRIENT_KEYS) target[key] += add[key];
-}
 
 /** Eier werden nur ganz verwendet (Plan 6.2). */
 function isWholePiece(food: Food, unit: RecipeUnit): boolean {
@@ -118,9 +95,7 @@ function scaleIngredients(
       grams,
     });
     if (!ingredient.optional) {
-      for (const key of NUTRIENT_KEYS) {
-        nutrients[key] += (grams * food.nutrients_per_100g[key]) / 100;
-      }
+      addFoodNutrients(nutrients, food, grams);
     } else {
       optionalKcal += (grams * food.nutrients_per_100g.kcal) / 100;
     }
@@ -180,8 +155,7 @@ export function scaleRecipeForServings(
   const { ingredients, nutrients } = scaleIngredients(v, foods, (scales) =>
     scales ? n / v.recipe.servings : 1,
   );
-  const perServing = zeroNutrients();
-  for (const key of NUTRIENT_KEYS) perServing[key] = nutrients[key] / n;
+  const perServing = divideNutrients(nutrients, n);
   return { servings: n, ingredients, total: nutrients, perServing };
 }
 

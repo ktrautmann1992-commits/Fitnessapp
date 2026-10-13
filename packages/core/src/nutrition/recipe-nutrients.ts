@@ -1,4 +1,11 @@
-import type { Food, FoodLookup, NutrientsPer100g } from '../content/food-schema';
+import {
+  addOptionalNutrient,
+  type Food,
+  type FoodLookup,
+  OPTIONAL_NUTRIENT_KEYS,
+  type OptionalNutrientKey,
+  REQUIRED_NUTRIENT_KEYS,
+} from '../content/food-schema';
 import type { RecipeMeta } from '../content/import-meta';
 import type { Recipe } from '../content/recipe-schema';
 import type { DietType } from '../enums';
@@ -19,20 +26,48 @@ import { toGrams } from './units';
  *   bleiben, `heated` bleibt) – alle Werte werden mit dem Ersatzprodukt neu berechnet.
  */
 
-export type RecipeNutrients = { -readonly [K in keyof NutrientsPer100g]: number };
+/**
+ * Nährwerte einer Menge (Rezept, Portion, Tag). Pflichtwerte sind immer Zahlen; Zucker, gesättigte Fettsäuren und
+ * Ballaststoffe sind `null` („unbekannt“), sobald eine gezählte Zutat dafür keinen Wert in der Quelle hat
+ * (`addOptionalNutrient`) – nie eine stille Untergrenze.
+ */
+export type RecipeNutrients = {
+  -readonly [K in (typeof REQUIRED_NUTRIENT_KEYS)[number]]: number;
+} & { -readonly [K in OptionalNutrientKey]: number | null };
 
-const NUTRIENT_KEYS = [
-  'kcal',
-  'protein_g',
-  'carbs_g',
-  'sugar_g',
-  'fat_g',
-  'sat_fat_g',
-  'fiber_g',
-  'salt_g',
-] as const satisfies readonly (keyof NutrientsPer100g)[];
+/** Beitrag einer Zutat (Gramm × Wert je 100 g); 0 g tragen immer 0 bei, auch ohne Wert. */
+export function nutrientAmount(grams: number, per100g: number | null): number | null {
+  if (grams === 0) {
+    return 0;
+  }
+  return per100g === null ? null : (grams * per100g) / 100;
+}
 
-function zeroNutrients(): RecipeNutrients {
+/** Addiert die Nährwerte von `grams` Gramm eines Lebensmittels zu `target`. */
+export function addFoodNutrients(target: RecipeNutrients, food: Food, grams: number): void {
+  const n = food.nutrients_per_100g;
+  for (const key of REQUIRED_NUTRIENT_KEYS) {
+    target[key] += (grams * n[key]) / 100;
+  }
+  for (const key of OPTIONAL_NUTRIENT_KEYS) {
+    target[key] = addOptionalNutrient(target[key], nutrientAmount(grams, n[key]));
+  }
+}
+
+/** Teilt alle Werte durch `divisor` (z. B. Portionen); `null` bleibt `null`. */
+export function divideNutrients(source: RecipeNutrients, divisor: number): RecipeNutrients {
+  const result = zeroNutrients();
+  for (const key of REQUIRED_NUTRIENT_KEYS) {
+    result[key] = source[key] / divisor;
+  }
+  for (const key of OPTIONAL_NUTRIENT_KEYS) {
+    const value = source[key];
+    result[key] = value === null ? null : value / divisor;
+  }
+  return result;
+}
+
+export function zeroNutrients(): RecipeNutrients {
   return {
     kcal: 0,
     protein_g: 0,
@@ -43,6 +78,16 @@ function zeroNutrients(): RecipeNutrients {
     fiber_g: 0,
     salt_g: 0,
   };
+}
+
+/** Addiert `add` zu `target` (z. B. Tagessumme); unbekannte ergänzende Werte bleiben unbekannt. */
+export function addNutrients(target: RecipeNutrients, add: RecipeNutrients): void {
+  for (const key of REQUIRED_NUTRIENT_KEYS) {
+    target[key] += add[key];
+  }
+  for (const key of OPTIONAL_NUTRIENT_KEYS) {
+    target[key] = addOptionalNutrient(target[key], add[key]);
+  }
 }
 
 /** Tierische Bestandteile, die ein Lebensmittel NICHT vegetarisch machen (R6, Plan 6.1). */
@@ -246,15 +291,10 @@ export function computeRecipeFacts(
     if (ingredient.optional) {
       return;
     }
-    for (const key of NUTRIENT_KEYS) {
-      total[key] += (grams * food.nutrients_per_100g[key]) / 100;
-    }
+    addFoodNutrients(total, food, grams);
   });
 
-  const perServing = zeroNutrients();
-  for (const key of NUTRIENT_KEYS) {
-    perServing[key] = total[key] / recipe.servings;
-  }
+  const perServing = divideNutrients(total, recipe.servings);
 
   return {
     total,

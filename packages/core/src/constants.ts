@@ -1410,6 +1410,13 @@ export const AMOUNT_ROUNDING = {
  *   (Energie-Umrechnungsfaktoren nach VO (EU) Nr. 1169/2011 (LMIV), Anhang XIV). Zusätzlich mindestens ±4 kcal
  *   absolut, damit sehr energiearme Lebensmittel (z. B. Gurke) nicht an der Rundung der Quelle scheitern
  *   (PRODUKTENTSCHEIDUNG, N2a).
+ *   Seit Import-Lauf 1 (PR #47, N2b) zählen – sofern die Quelle sie nennt – auch die übrigen Faktoren aus LMIV
+ *   Anhang XIV: organische Säuren 3 kcal/g, Alkohol (Ethanol) 7 kcal/g und mehrwertige Alkohole (Polyole)
+ *   2,4 kcal/g. Polyole sind nach LMIV Teil der Kohlenhydrate (Anhang I Nr. 7) und im BLS-Wert „CHO verfügbar“
+ *   enthalten; sie werden deshalb aus den Kohlenhydraten herausgerechnet (4 → 2,4 kcal/g), nie doppelt gezählt.
+ *   Beleg BLS 4.0: Apfelessig 18 kcal (ohne Säuren 1,4, mit 5,5 g Säuren 17,8 + Alkohol 0,7), Zitronensaft 30 kcal
+ *   (12,3 → 30,3), Sauerkraut 23 kcal (15,5 → 22,9), Champignon 28 kcal (32,5 → 28,5 mit 2,7 g Mannit). Erythrit
+ *   (0 kcal/g laut Anhang XIV) hat im BLS keinen eigenen Eintrag und keinen eigenen Polyol-Wert – entfällt.
  * - R5 kcal je Portion: Frühstück 200–900, Hauptgericht 300–1.200, Snack 80–500 (gelb).
  * - R11 Mengen je Portion: Salz ≤ 2,5 g, Öl ≤ 30 g, jede Zutat ≤ 600 g (gelb). Öl = Lebensmittel der Abteilung
  *   „Öle, Essig & Saucen“ mit mindestens `oilMinFatG` Fett je 100 g.
@@ -1417,7 +1424,17 @@ export const AMOUNT_ROUNDING = {
  */
 export const RECIPE_CHECK_LIMITS = {
   macroPlausibility: { kcalRel: 0.1, kcalAbsMin: 20, macroRel: 0.15, macroAbsMinG: 3 },
-  atwater: { protein: 4, carbs: 4, fat: 9, fiber: 2, tolerance: 0.15, absMinKcal: 4 },
+  atwater: {
+    protein: 4,
+    carbs: 4,
+    fat: 9,
+    fiber: 2,
+    organicAcids: 3,
+    alcohol: 7,
+    polyols: 2.4,
+    tolerance: 0.15,
+    absMinKcal: 4,
+  },
   kcalPerServing: {
     breakfast: { min: 200, max: 900 },
     main: { min: 300, max: 1200 },
@@ -1442,12 +1459,36 @@ export const RECIPE_COVERAGE = {
  * `alpha5-rezepte.json` ist nur Gegencheck, maßgeblich ist immer die amtliche Quelle. Abweichung über `relative`
  * (3 %) wird gemeldet, über `reviewRelative` (15 %) als „Zuordnung prüfen“ markiert; Mindestabstand `minKcal`
  * bzw. `minGrams` gegen Rundungsrauschen. PRODUKTENTSCHEIDUNG (Plan 19.2 `ALPHA5_IMPORT_TOLERANCE`).
+ *
+ * „Zuordnung prüfen“ (Stufe `review`) seit Import-Lauf 1 (PR #47, docs/PLAN-PHASE-5.md N2b) fachlich fair:
+ * - Energie: über `reviewRelative` (15 %) UND mindestens `reviewMinKcal` (20 kcal – dieselbe Mindest-Toleranz wie
+ *   R3 `macroPlausibility.kcalAbsMin`, damit Rundung und Sortenunterschiede energiearmer Lebensmittel nicht
+ *   auslösen).
+ * - Eiweiß, Kohlenhydrate, Fett: über `reviewRelative` (15 %), mindestens `minGrams` (1 g) UND die Abweichung
+ *   macht als Energie (Atwater-Faktor × Gramm, R4) mindestens `reviewEnergyShare` (15 %) des Energiegehalts aus –
+ *   gleicher Maßstab wie die Energie-Regel. So lösen 0,6 g statt 2,9 g Kohlenhydrate in Pilzen oder 3 g in Nüssen
+ *   (2 % der Energie) nicht aus, eine falsche Fettstufe (Milch 0,3 statt 1,5 % Fett: 1,2 g = 23 % der Energie)
+ *   aber weiterhin.
+ * - Definitionen: Die Gründer-Datei nutzt teils andere Definitionen als der BLS (Kohlenhydrate inklusive
+ *   Ballaststoffe wie in US-Tabellen, Kohlenhydrate ohne Zuckeralkohole wie in älteren Tabellen). Passt der
+ *   Datei-Wert zu einer dieser Lesarten der Quellwerte, zählt das als passend: Kohlenhydrate gegen CHO,
+ *   CHO + Ballaststoffe und CHO − Polyole; Energie gegen kcal und kcal + 2 kcal/g Ballaststoffe (Ballaststoffe dann
+ *   mit 4 statt 2 kcal/g als Kohlenhydrat gezählt) – die Energie-Lesart nur, wenn die Kohlenhydrate der Datei
+ *   selbst am besten zu „CHO + Ballaststoffe“ passen (eine Definition je Zutat) UND das Lebensmittel
+ *   ballaststoffbetont ist (Ballaststoffe ≥ verfügbare KH, z. B. Knoblauch, Sesam); sonst würde z. B. Vollkornbrot
+ *   statt Weißbrot durchrutschen. Eiweiß und Fett haben keine Lesart.
+ *   Grenze: Die KH-Lesarten selbst bleiben (nur 🟡); Verwechslungen ähnlicher Lebensmittel (Weißer Reis ↔
+ *   Vollkornreis, Apfel ↔ Apfelmus ungesüßt) erkennt kein Zahlenvergleich – dafür R18 (Bezeichnung) und R19.
+ * - Gründer-Datei ohne Vergleichswert (kcal, Eiweiß, Kohlenhydrate und Fett alle 0, z. B. Pfeffer, Salz, Wasser):
+ *   kein Gegencheck möglich → eigene Stufe „kein Vergleichswert“, zählt nicht als „Zuordnung prüfen“.
  */
 export const ALPHA5_IMPORT_TOLERANCE = {
   relative: 0.03,
   reviewRelative: 0.15,
   minKcal: 5,
   minGrams: 1,
+  reviewMinKcal: 20,
+  reviewEnergyShare: 0.15,
 } as const;
 
 /**

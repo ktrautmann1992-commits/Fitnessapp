@@ -50,6 +50,12 @@ export interface SourceNutrientColumn {
 export type SourceNutrientKey =
   'kcal' | 'protein_g' | 'carbs_g' | 'sugar_g' | 'fat_g' | 'sat_fat_g' | 'fiber_g' | 'salt_g';
 
+/**
+ * Zusätzliche energieliefernde Bestandteile (LMIV Anhang XIV), nur für die Atwater-Prüfung R4 (Import-Lauf 1,
+ * PR #47): organische Säuren, Alkohol, mehrwertige Alkohole (Polyole).
+ */
+export type SourceEnergyExtraKey = 'organic_acids_g' | 'alcohol_g' | 'polyols_g';
+
 export interface SourceDefinition {
   /** Kennung wie `SOURCE_DATABASES` in packages/core (food-schema.ts). */
   readonly db: 'bls' | 'ch_naehrwertdatenbank' | 'usda_fdc';
@@ -103,6 +109,14 @@ export interface SourceDefinition {
   readonly nameColumn: number;
   /** Nährwert-Spalten je Feld; mehrere Einträge = Alternativen in dieser Reihenfolge. */
   readonly nutrients: Readonly<Record<SourceNutrientKey, readonly SourceNutrientColumn[]>>;
+  /**
+   * Optionale Spalten nur für R4 (`SourceEnergyExtraKey`). Code vorhanden, aber Einheit falsch oder doppelt →
+   * Abbruch wie bei `nutrients`; Code fehlt in der Kopfzeile oder nicht eingetragen → Feld fehlt in den
+   * Lebensmitteln (R4 dann ohne diesen Anteil).
+   */
+  readonly energyExtras?: Readonly<
+    Partial<Record<SourceEnergyExtraKey, readonly SourceNutrientColumn[]>>
+  >;
   /**
    * `confirmed` = Spaltencodes an der Original-Datei geprüft. `unconfirmed` = nach öffentlicher Dokumentation
    * angenommen; der Import prüft die Kopfzeile und bricht mit der Liste der vorhandenen Spalten ab, wenn ein
@@ -179,6 +193,14 @@ const BLS_4_0: SourceDefinition = {
       { code: 'NACL', unit: 'g', convert: 'none' },
       { code: 'NA', unit: 'mg', convert: 'sodium_mg_to_salt_g' },
     ],
+  },
+  // Nur für R4 (LMIV Anhang XIV: organische Säuren 3, Alkohol 7, Polyole 2,4 kcal/g). Kopfzeilen geprüft am
+  // Auszug des Import-Laufs 38402246877 (13.10.2026): „ALC Alkohol (Ethanol) [g/100g]“ (Spalte 24),
+  // „OA Organische Säuren, gesamt [g/100g]“ (27), „POLYL Zuckeralkohole, gesamt [g/100g]“ (183).
+  energyExtras: {
+    organic_acids_g: [{ code: 'OA', unit: 'g', convert: 'none' }],
+    alcohol_g: [{ code: 'ALC', unit: 'g', convert: 'none' }],
+    polyols_g: [{ code: 'POLYL', unit: 'g', convert: 'none' }],
   },
   // Spalten-Bericht Lauf 38265538146: alle Codes mit Einheit gefunden (ENERCC 6, PROT625 12, CHO 18, SUGAR 219,
   // FAT 15, FASAT 246, FIBT 21, NACL 120).

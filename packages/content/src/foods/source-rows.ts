@@ -7,11 +7,17 @@
  */
 import {
   nutrientsPer100gSchema,
+  OPTIONAL_NUTRIENT_KEYS,
   type SourceNutrientRow,
   sourceNutrientRowSchema,
 } from '@fitnessapp/core';
 
-import type { SourceDefinition, SourceNutrientColumn, SourceNutrientKey } from './sources';
+import type {
+  SourceDefinition,
+  SourceEnergyExtraKey,
+  SourceNutrientColumn,
+  SourceNutrientKey,
+} from './sources';
 
 export const NUTRIENT_KEYS: readonly SourceNutrientKey[] = [
   'kcal',
@@ -22,6 +28,16 @@ export const NUTRIENT_KEYS: readonly SourceNutrientKey[] = [
   'sat_fat_g',
   'fiber_g',
   'salt_g',
+];
+
+/** Ergänzende Werte: ohne Zahlenwert in der Quelle → `null` (nie geschätzt), Zeile wird trotzdem übernommen. */
+const OPTIONAL_KEYS: ReadonlySet<SourceNutrientKey> = new Set(OPTIONAL_NUTRIENT_KEYS);
+
+/** Zusätzliche Spalten nur für R4, feste Reihenfolge. */
+export const ENERGY_EXTRA_SOURCE_KEYS: readonly SourceEnergyExtraKey[] = [
+  'organic_acids_g',
+  'alcohol_g',
+  'polyols_g',
 ];
 
 export interface ResolvedColumn {
@@ -46,18 +62,14 @@ export function headerHasUnit(header: string, unit: SourceNutrientColumn['unit']
   return new RegExp(`(^|[^a-zA-Zµ])${unit}([^a-zA-Z]|$)`).test(header);
 }
 
-/**
- * Findet je Nährwert die Spalte in der Kopfzeile (Code am Anfang + Einheit). Fehlt etwas, Abbruch mit der
- * Liste der Spaltenüberschriften – es wird NIE geraten.
- */
-export function resolveNutrientColumns(
+/** Sucht je Schlüssel die Wert-Spalte (Code am Anfang + Einheit); Probleme werden gesammelt. */
+function resolveColumns<K extends string>(
   header: readonly string[],
-  def: Pick<SourceDefinition, 'nutrients'>,
-): Record<SourceNutrientKey, ResolvedColumn> {
-  const resolved: Partial<Record<SourceNutrientKey, ResolvedColumn>> = {};
-  const problems: string[] = [];
-  for (const key of NUTRIENT_KEYS) {
-    const alternatives = def.nutrients[key];
+  specs: readonly (readonly [K, readonly SourceNutrientColumn[]])[],
+  problems: string[],
+): Partial<Record<K, ResolvedColumn>> {
+  const resolved: Partial<Record<K, ResolvedColumn>> = {};
+  for (const [key, alternatives] of specs) {
     let hit: ResolvedColumn | undefined;
     for (const column of alternatives) {
       // Die Quelle kann je Nährstoff mehrere Spalten mit demselben Code haben (Wert, Datenherkunft, Referenz);
@@ -95,6 +107,10 @@ export function resolveNutrientColumns(
       resolved[key] = hit;
     }
   }
+  return resolved;
+}
+
+function throwColumnProblems(header: readonly string[], problems: readonly string[]): void {
   if (problems.length > 0) {
     const shown = header.slice(0, 60).map((h, i) => `${i}: ${h}`);
     throw new Error(
@@ -105,7 +121,47 @@ export function resolveNutrientColumns(
       ].join('\n'),
     );
   }
+}
+
+/**
+ * Findet je Nährwert die Spalte in der Kopfzeile (Code am Anfang + Einheit). Fehlt etwas, Abbruch mit der
+ * Liste der Spaltenüberschriften – es wird NIE geraten.
+ */
+export function resolveNutrientColumns(
+  header: readonly string[],
+  def: Pick<SourceDefinition, 'nutrients'>,
+): Record<SourceNutrientKey, ResolvedColumn> {
+  const problems: string[] = [];
+  const resolved = resolveColumns(
+    header,
+    NUTRIENT_KEYS.map((key) => [key, def.nutrients[key]] as const),
+    problems,
+  );
+  throwColumnProblems(header, problems);
   return resolved as Record<SourceNutrientKey, ResolvedColumn>;
+}
+
+/**
+ * Spalten der zusätzlichen R4-Werte (`energyExtras`). Nur eingetragene Schlüssel. Fehlt der Code in der Kopfzeile,
+ * fehlt das Feld in den Lebensmitteln (R4 rechnet dann ohne diesen Anteil – sichere Richtung: eher ein Befund zu
+ * viel). Ein vorhandener Code mit falscher Einheit oder doppelt bricht ab wie bei den Nährwerten (nie geraten).
+ */
+export function resolveEnergyExtraColumns(
+  header: readonly string[],
+  def: Pick<SourceDefinition, 'energyExtras'>,
+): Partial<Record<SourceEnergyExtraKey, ResolvedColumn>> {
+  const extras = def.energyExtras ?? {};
+  const problems: string[] = [];
+  const specs = ENERGY_EXTRA_SOURCE_KEYS.flatMap((key) => {
+    const alternatives = extras[key];
+    return alternatives === undefined ? [] : [[key, alternatives] as const];
+  });
+  const resolved = resolveColumns(header, specs, problems);
+  throwColumnProblems(
+    header,
+    problems.filter((p) => !/: keine Spalte .* gefunden\.$/.test(p)),
+  );
+  return resolved;
 }
 
 /**
@@ -131,32 +187,50 @@ export function convertSourceValue(
 
 export interface SourceRowsResult {
   readonly rows: Map<string, SourceNutrientRow>;
-  /** Zeilen, die nicht übernommen werden können (fehlender Wert, Schemafehler) – mit Grund. */
+  /** Zeilen, die nicht übernommen werden können (fehlender Pflichtwert, Schemafehler) – mit Grund. */
   readonly problems: { ref: string; message: string }[];
+  /**
+   * Übernommene Zeilen, bei denen ein ergänzender Wert (Zucker, gesättigte Fettsäuren, Ballaststoffe) keinen
+   * Zahlenwert hat – steht als `null` im Lebensmittel, nie geschätzt (Import-Lauf 1, PR #47).
+   */
+  readonly gaps: { ref: string; message: string }[];
 }
 
 /** Liest die Datensätze eines Quellauszugs (erste = Kopfzeile) in Nährwert-Zeilen. */
 export function sourceNutrientRows(
   records: readonly (readonly string[])[],
-  def: Pick<SourceDefinition, 'db' | 'version' | 'keyColumn' | 'nameColumn' | 'nutrients'>,
+  def: Pick<
+    SourceDefinition,
+    'db' | 'version' | 'keyColumn' | 'nameColumn' | 'nutrients' | 'energyExtras'
+  >,
 ): SourceRowsResult {
   const [header, ...dataRows] = records;
   if (header === undefined) {
     throw new Error('Quellauszug ohne Kopfzeile.');
   }
   const columns = resolveNutrientColumns(header, def);
+  const extraColumns = resolveEnergyExtraColumns(header, def);
   const rows = new Map<string, SourceNutrientRow>();
   const problems: { ref: string; message: string }[] = [];
+  const gaps: { ref: string; message: string }[] = [];
   for (const record of dataRows) {
     const ref = (record[def.keyColumn] ?? '').trim();
     const name = (record[def.nameColumn] ?? '').trim();
-    const nutrients: Partial<Record<SourceNutrientKey, number>> = {};
+    const nutrients: Partial<Record<SourceNutrientKey | SourceEnergyExtraKey, number | null>> = {};
     const missing: string[] = [];
+    const withoutValue: string[] = [];
     for (const key of NUTRIENT_KEYS) {
       const { index, column, header: title } = columns[key];
       const value = parseSourceNumber(record[index] ?? '');
       if (value === null) {
-        missing.push(`${key} („${title}“: „${record[index] ?? ''}“)`);
+        const text = `${key} („${title}“: „${record[index] ?? ''}“)`;
+        if (OPTIONAL_KEYS.has(key)) {
+          // Ergänzender Wert ohne Zahl („-“, „<LOD“, „<LOQ“): `null`, nie 0 oder eine Schätzung.
+          nutrients[key] = null;
+          withoutValue.push(text);
+        } else {
+          missing.push(text);
+        }
       } else {
         nutrients[key] = convertSourceValue(value, column.convert);
       }
@@ -164,6 +238,14 @@ export function sourceNutrientRows(
     if (missing.length > 0) {
       problems.push({ ref, message: `Wert fehlt oder ist keine Zahl: ${missing.join(', ')}` });
       continue;
+    }
+    for (const key of ENERGY_EXTRA_SOURCE_KEYS) {
+      const resolved = extraColumns[key];
+      if (resolved === undefined) {
+        continue;
+      }
+      const value = parseSourceNumber(record[resolved.index] ?? '');
+      nutrients[key] = value === null ? null : convertSourceValue(value, resolved.column.convert);
     }
     const nutrientCheck = nutrientsPer100gSchema.safeParse(nutrients);
     if (!nutrientCheck.success) {
@@ -192,6 +274,12 @@ export function sourceNutrientRows(
       continue;
     }
     rows.set(ref, parsed.data);
+    if (withoutValue.length > 0) {
+      gaps.push({
+        ref,
+        message: `ohne Zahlenwert, als „kein Wert“ (null) übernommen: ${withoutValue.join(', ')}`,
+      });
+    }
   }
-  return { rows, problems };
+  return { rows, problems, gaps };
 }
