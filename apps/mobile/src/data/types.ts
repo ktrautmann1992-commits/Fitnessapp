@@ -11,6 +11,8 @@ import type {
   GoalType,
   HealthFlag,
   HealthScreeningAnswers,
+  NutritionSetupColumns,
+  NutritionSetupStep,
   NutritionStep,
   OnboardingStep,
   Sex,
@@ -58,6 +60,13 @@ export type StartWeightRow = Tables<'exercise_start_weights'>;
  */
 export type ExercisePreferenceRow = ExercisePreference & { user_id: string };
 
+/**
+ * Antworten des Onboarding-Schritts `nutrition_setup` (docs/PLAN-PHASE-5.md 8.1, Etappe N4): Alltagsaktivität,
+ * Trainingszeit, Meal-Prep-Plätze, „Kalorienzahlen anzeigen“. Spalten wie die künftigen `nutrition_prefs`-Spalten aus
+ * Etappe N7 – bis dahin NUR im Testmodus (Supabase-Modus immer null, R2-S3). Kein Gesundheitsdatum.
+ */
+export type NutritionSetupRow = NutritionSetupColumns & { user_id: string };
+
 /** Alle Zeilen eines Nutzers – im Testmodus der komplette Gerätespeicher, im Supabase-Modus ein Abbild. */
 export interface UserRows {
   profile: ProfileRow | null;
@@ -67,6 +76,8 @@ export interface UserRows {
   trainingSlots: TrainingSlotRow[];
   userEquipment: UserEquipmentRow[];
   nutritionPrefs: NutritionPrefsRow | null;
+  /** Schritt `nutrition_setup` (Testmodus ab Etappe N4; Supabase-Modus bis N7 immer null). */
+  nutritionSetup: NutritionSetupRow | null;
   foodPreferences: FoodPreferenceRow[];
   /** SENSIBEL (Art. 9 DSGVO) */
   bodyMetrics: BodyMetricsRow[];
@@ -104,6 +115,7 @@ export function emptyUserRows(): UserRows {
     trainingSlots: [],
     userEquipment: [],
     nutritionPrefs: null,
+    nutritionSetup: null,
     foodPreferences: [],
     bodyMetrics: [],
     bodyMeasurements: [],
@@ -169,6 +181,7 @@ export interface OnboardingAnswers {
   equipment?: EquipmentItemInput[];
   nutrition?: NutritionStep;
   cooking?: CookingStep;
+  nutritionSetup?: NutritionSetupStep;
 }
 
 /** Was ein Onboarding-Schritt speichert (je Schritt eigene Daten). */
@@ -189,7 +202,8 @@ export type StepSave =
   | { step: 'time_budget'; schedule: TrainingScheduleAnswer }
   | { step: 'equipment'; items: EquipmentItemInput[] }
   | { step: 'nutrition'; nutrition: NutritionStep }
-  | { step: 'cooking'; cooking: CookingStep };
+  | { step: 'cooking'; cooking: CookingStep }
+  | { step: 'nutrition_setup'; setup: NutritionSetupStep };
 
 export type StepSaveFor<S extends OnboardingStep> = Extract<StepSave, { step: S }>;
 

@@ -2,9 +2,11 @@ import {
   addDays,
   isoDateInTimeZone,
   PLAN_SAVE_LIMITS,
+  tastePreferencesAfterConversion,
   type ConsentPlatform,
   type ConsentType,
   type EquipmentLocation,
+  type FoodGroupId,
   type FoodPreferenceKind,
   type SavePlanPayload,
   type SavePlanSession,
@@ -27,6 +29,7 @@ import type {
   GoalsRow,
   MeasurementReminderRow,
   NutritionPrefsRow,
+  NutritionSetupRow,
   PlannedExerciseRow,
   PlannedSessionRow,
   TrainingSlotRow,
@@ -50,6 +53,11 @@ export type WriteOp =
   | { kind: 'replace_training_slots'; rows: TrainingSlotRow[] }
   | { kind: 'replace_user_equipment'; location: 'home' | 'gym'; rows: UserEquipmentRow[] }
   | { kind: 'upsert_nutrition_prefs'; row: NutritionPrefsRow }
+  /**
+   * Antworten des Schritts `nutrition_setup` (Etappe N4). Bis Etappe N7 NUR im Testmodus – der Supabase-Modus zeigt den
+   * Schritt nicht (R2-S3) und lehnt den Vorgang ab, falls er doch entsteht. Kein Gesundheitsdatum.
+   */
+  | { kind: 'upsert_nutrition_setup'; row: NutritionSetupRow }
   | { kind: 'replace_food_preferences'; scope: FoodPreferenceScope; rows: FoodPreferenceRow[] }
   | { kind: 'upsert_body_metrics'; row: BodyMetricsInsert }
   | { kind: 'upsert_body_measurements'; row: BodyMeasurementsInsert }
@@ -231,6 +239,8 @@ function applyOne(rows: UserRows, op: WriteOp, ctx: ApplyContext): UserRows {
       };
     case 'upsert_nutrition_prefs':
       return { ...rows, nutritionPrefs: op.row };
+    case 'upsert_nutrition_setup':
+      return { ...rows, nutritionSetup: op.row };
     case 'replace_food_preferences': {
       const kinds = kindsForScope(op.scope);
       return {
@@ -473,7 +483,15 @@ function splitPlans(rows: PlanRows): { health: PlanRows; other: PlanRows } {
  */
 export function applyHealthDataRevocation(
   rows: UserRows,
-  options: { deleteLogs?: boolean } = {},
+  options: {
+    deleteLogs?: boolean;
+    /**
+     * Widerruf mit Umwandlung (docs/PLAN-PHASE-5.md 7.4, R2-K4): NUR bei aktiver Zustimmung gesetzt – die vorher
+     * eingelesenen Gruppen der Unverträglichkeiten werden im selben Schritt als „mag ich nicht“ geschrieben (ein „mag
+     * ich“ derselben Gruppe wird ersetzt). Ohne Zustimmung: undefined, es wird nichts übernommen.
+     */
+    dislikeGroups?: readonly FoodGroupId[];
+  } = {},
 ): UserRows {
   // Tagebuch (PLAN-PHASE-4 S1, R3): Einträge aus Gesundheits-Plänen auf Wunsch löschen, sonst neutralisieren –
   // VOR dem Löschen der Pläne; danach werden nur die Verweise leer (on delete set null, B2).
@@ -486,9 +504,30 @@ export function applyHealthDataRevocation(
     bodyMetrics: [],
     bodyMeasurements: [],
     healthScreenings: [],
-    foodPreferences: rows.foodPreferences.filter((row) => row.kind !== 'intolerance'),
+    foodPreferences: revokedFoodPreferences(
+      rows.foodPreferences,
+      options.dislikeGroups,
+      rows.profile?.user_id ?? '',
+    ),
     ...other,
   });
+}
+
+/**
+ * Vorlieben nach dem Widerruf: Unverträglichkeiten gelöscht; mit Umwandlung (`dislikeGroups`) zusätzlich die Gruppen
+ * als „mag ich nicht“ (Regel aus packages/core, tastePreferencesAfterConversion).
+ */
+function revokedFoodPreferences(
+  rows: readonly FoodPreferenceRow[],
+  dislikeGroups: readonly FoodGroupId[] | undefined,
+  userId: string,
+): FoodPreferenceRow[] {
+  const taste = rows.filter((row) => row.kind !== 'intolerance');
+  if (dislikeGroups === undefined || dislikeGroups.length === 0) return taste;
+  return tastePreferencesAfterConversion(
+    taste.map((row) => ({ foodGroup: row.food_group as FoodGroupId, kind: row.kind })),
+    dislikeGroups,
+  ).map((pref) => ({ user_id: userId, food_group: pref.foodGroup, kind: pref.kind }));
 }
 
 export interface CacheableRows {

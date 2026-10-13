@@ -332,7 +332,7 @@ describe('Widerruf im Testmodus (S1, R3)', () => {
     // Ein offener Entwurf einer anderen Einheit des Gesundheits-Plans wird ebenfalls neutralisiert.
     const other = startDraft(s, '2026-10-07');
     await s.backend.saveDraft(other);
-    await s.backend.revokeHealthData(false);
+    await s.backend.revokeHealthData(false, null);
     const { rows } = await s.backend.loadRows();
     expect(rows.plans).toHaveLength(0);
     expect(rows.sessionLogs).toHaveLength(1);
@@ -365,7 +365,7 @@ describe('Widerruf im Testmodus (S1, R3)', () => {
     const draft = tickAll(startDraft(s));
     await s.backend.submitWorkout(draft, payloadOf(draft));
     await s.backend.saveDraft(startDraft(s, '2026-10-07'));
-    await s.backend.revokeHealthData(true);
+    await s.backend.revokeHealthData(true, null);
     const { rows } = await s.backend.loadRows();
     expect(rows.sessionLogs).toHaveLength(0);
     expect(rows.exerciseLogs).toHaveLength(0);
@@ -379,7 +379,7 @@ describe('Widerruf im Testmodus (S1, R3)', () => {
     expect(draft.fromHealthPlan).toBe(false);
     await s.backend.submitWorkout(draft, payloadOf(draft));
     const before = (await s.backend.loadRows()).rows;
-    await s.backend.revokeHealthData(true);
+    await s.backend.revokeHealthData(true, null);
     const after = (await s.backend.loadRows()).rows;
     expect(after.sessionLogs).toEqual(before.sessionLogs);
     expect(after.exerciseLogs).toEqual(before.exerciseLogs);
@@ -405,7 +405,7 @@ describe('Gerätespeicher', () => {
   it('Abmelden, Konto löschen und Testdaten löschen leeren den Entwurf; Widerruf nicht', async () => {
     const s = await setup();
     await s.backend.saveDraft(startDraft(s));
-    await s.backend.revokeHealthData(false);
+    await s.backend.revokeHealthData(false, null);
     expect(s.drafts.peek()).not.toBeNull();
     await s.backend.clearDeviceData();
     expect(s.drafts.peek()).toBeNull();

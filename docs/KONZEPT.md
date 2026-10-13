@@ -755,6 +755,11 @@ alle offen, Server-Prüfung mit Phase 7):
   DOI: 10.25826/Data20251217-134202-0“ in der App („Lizenzen“) und im PDF-Fuß, Änderungen kenntlich machen. Wortlaut
   der Nutzungsbedingungen auf https://blsdb.de/download von den Gründern am 12.10.2026 bestätigt (Screenshot); Bezug
   der Datei über diese Seite (docs/PLAN-PHASE-5.md Umsetzungsstand N2b)
+- **Hilfe-Stellen bei Essstörungen (harte Freigabe-Bedingung, Phase 5 N4, Wächter N4 S5):** Namen, Erreichbarkeit und
+  Telefonnummern für DE, AT und CH (CH inkl. Notruf 144 neben 112) fachlich prüfen und eintragen, BEVOR ein Build mit
+  Supabase-Werten oder ein Store-Build (TestFlight/Play Store) erstellt wird. Bis dahin nur Namen ohne Nummern, nur im
+  Testmodus (`apps/mobile/src/i18n/de-nutrition.ts`, Vermerk „VOR VERÖFFENTLICHUNG PRÜFEN“; Checkliste `docs/SETUP.md`
+  Teil K)
 - Standortberechtigung im Hintergrund (Strecken): Begründungstexte für App Store und Play Store
 - Mitgliedschafts-Erinnerung: nur Erinnerung an selbst eingetragene Fristen, keine Rechtsberatung zur Kündigung
 - Erweiterungen Teil 2: Lizenz der Nährwertdatenbank (Namensnennung) für alle 236 Zutaten; Ratgeber- und Rezepttexte

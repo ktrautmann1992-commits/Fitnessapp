@@ -2,9 +2,11 @@ import {
   addDays,
   buildDataExportFile,
   evaluateHealthScreening,
+  foodGroupSchema,
   HEALTH_PLAN_CACHE_MAX_AGE_DAYS,
   healthScreeningAnswersSchema,
   HISTORY_PAGE_SIZE,
+  intoleranceGroupsForConversion,
   isoDateInTimeZone,
   LOG_CACHE_WEEKS,
   type ConsentType,
@@ -19,6 +21,7 @@ import {
   type Backend,
   type BackendErrorCode,
   type BackendEvent,
+  type IntoleranceConversion,
   type LogSaveOutcome,
   type OlderLogsPage,
 } from './backend';
@@ -69,6 +72,7 @@ import {
   type UserRows,
 } from './types';
 import {
+  applyHealthDataRevocation,
   applyWriteOps,
   cacheableRows,
   isDirectOp,
@@ -384,6 +388,10 @@ export async function executeWriteOp(
         );
       }
       return;
+    // Schritt nutrition_setup: Spalten gibt es erst mit Etappe N7 – der Supabase-Modus erzeugt den Vorgang nie (R2-S3).
+    // Kommt er doch (z. B. alter Warteschlangen-Eintrag), wird er abgelehnt statt ins Leere geschrieben.
+    case 'upsert_nutrition_setup':
+      throw { code: 'not_supported', message: 'nutrition_setup erst ab Etappe N7.' };
     // Nur Datum und Status (Trigger private.planned_sessions_before_update prüft den Rest).
     case 'update_planned_session': {
       const result = await client
@@ -995,6 +1003,8 @@ export function createSupabaseBackend(options: SupabaseBackendOptions): Backend 
       trainingSlots: slots.data ?? [],
       userEquipment: equipment.data ?? [],
       nutritionPrefs: prefs.data,
+      // Spalten des Schritts nutrition_setup kommen erst mit Etappe N7 (R2-S3).
+      nutritionSetup: null,
       foodPreferences: food.data ?? [],
       bodyMetrics: metrics.data ?? [],
       bodyMeasurements: measurements.data ?? [],
@@ -1041,6 +1051,8 @@ export function createSupabaseBackend(options: SupabaseBackendOptions): Backend 
     mode: 'supabase',
     // Übungs-Präferenzen erst mit Etappe T3 (Tabelle exercise_preferences) – bis dahin nur „Nur heute“ (8.2).
     supportsExercisePreferences: false,
+    // Ernährung im Supabase-Modus erst mit Etappe N7 (Spalten, freigegebene Rezepte; R2-S3).
+    supportsNutrition: false,
     signIn: {
       kind: 'email_code',
       requestCode: async (email) => {
@@ -1165,7 +1177,7 @@ export function createSupabaseBackend(options: SupabaseBackendOptions): Backend 
 
     revokeConsent: async (type) => {
       if (type === 'health_data') {
-        await revokeHealthData(false);
+        await revokeHealthData(false, null);
         return;
       }
       const session = await requireSession();
@@ -1189,6 +1201,7 @@ export function createSupabaseBackend(options: SupabaseBackendOptions): Backend 
         versions: context.versions,
         platform: options.platform,
         now: options.now(),
+        nutritionSetupAvailable: false,
       });
       // 1. Gesundheitsdaten und Einwilligungen sofort senden (nie auf dem Gerät speichern).
       for (const op of planned.ops.filter(isDirectOp)) {
@@ -1358,7 +1371,25 @@ export function createSupabaseBackend(options: SupabaseBackendOptions): Backend 
       void queue.flush();
       return next;
     },
-    revokeHealthData: (deleteLogs) => revokeHealthData(deleteLogs),
+    revokeHealthData: (deleteLogs, conversion) => revokeHealthData(deleteLogs, conversion),
+    deleteStoredIntolerances: async () => {
+      const session = await requireSession();
+      // Lösch-Policy erlaubt eigene Zeilen ohne Einwilligung; Gesundheitsdaten → sofort, nie Warteschlange.
+      const { error } = await client
+        .from('food_preferences')
+        .delete()
+        .eq('user_id', session.userId)
+        .eq('kind', 'intolerance');
+      if (error) {
+        const code = classifySupabaseError(error, true);
+        throw new BackendError(code === 'network' ? 'online_only' : code, {
+          sensitive: true,
+          cause: error,
+        });
+      }
+    },
+    // Ernährungs-Bestand aus der Datenbank erst mit Etappe N7.
+    loadNutritionLibrary: async () => null,
     pendingWorkouts: async () => {
       await logQueue.load();
       const owner = currentUserId;
@@ -1472,8 +1503,21 @@ export function createSupabaseBackend(options: SupabaseBackendOptions): Backend 
    * Widerruf health_data (R3): Senden sperren, laufendes Senden abwarten, Warteschlange/Entwurf/Zwischenspeicher
    * bereinigen, dann revoke_health_data(p_delete_logs) – eine Transaktion auf dem Server.
    */
-  async function revokeHealthData(deleteLogs: boolean): Promise<void> {
+  async function revokeHealthData(
+    deleteLogs: boolean,
+    conversion: IntoleranceConversion | null,
+  ): Promise<void> {
     const session = await requireSession();
+    // 7.4 Schritt 1 (R2-K4): Gruppen der Unverträglichkeiten NUR bei Zustimmung einlesen – nur IDs, nur im
+    // Arbeitsspeicher. Ohne Zustimmung wird nichts gelesen und nichts behalten.
+    const dislikeGroups = conversion
+      ? intoleranceGroupsForConversion(
+          conversion.rows.foodPreferences.flatMap((row) => {
+            const group = foodGroupSchema.safeParse(row.food_group);
+            return group.success ? [{ foodGroup: group.data, kind: row.kind }] : [];
+          }),
+        )
+      : [];
     logQueue.setLocked(true);
     try {
       await logQueue.idle();
@@ -1506,6 +1550,32 @@ export function createSupabaseBackend(options: SupabaseBackendOptions): Backend 
       }
       // Die Datenbank löscht alle Pläne mit Gesundheitsbezug – der geschützte Zwischenspeicher sofort auch.
       await protectedStore.clear();
+      // 7.4 Schritt 3 (S17): die Gruppen als „mag ich nicht“ schreiben („mag ich“ derselben Gruppe wird ersetzt). Kein
+      // Gesundheitsdatum → über die Warteschlange: Bricht die Verbindung ab, bleibt die Umwandlung als wartender
+      // Vorgang gespeichert („Umwandlung ausstehend“) und wird bei der nächsten Verbindung gesendet; die Anzeige (Stand +
+      // Warteschlange, refreshRows) enthält die Ausschlüsse sofort.
+      // Reihenfolge (Wächter N4 S1): ZUERST in die (gespeicherte) Warteschlange, dann der Zwischenspeicher – bricht die
+      // App dazwischen ab, wird der Vorgang trotzdem gesendet. Im Zwischenspeicher ist health_data widerrufen.
+      if (conversion && dislikeGroups.length > 0) {
+        const now = options.now();
+        const revoked: UserRows = {
+          ...conversion.rows,
+          consents: conversion.rows.consents.map((c) =>
+            c.consent_type === 'health_data' && c.revoked_at === null
+              ? { ...c, revoked_at: now }
+              : c,
+          ),
+        };
+        const next = applyHealthDataRevocation(revoked, { deleteLogs, dislikeGroups });
+        const op: WriteOp = {
+          kind: 'replace_food_preferences',
+          scope: 'taste',
+          rows: next.foodPreferences,
+        };
+        await queue.add([op]);
+        await writeCache(session.userId, applyWriteOps(next, [op], displayContext()));
+        void queue.flush();
+      }
     } finally {
       logQueue.setLocked(false);
     }

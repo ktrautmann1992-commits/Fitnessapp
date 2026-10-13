@@ -84,4 +84,10 @@ export const STORAGE_KEYS = {
   daySwaps: 'fitnessapp.day-swaps.v1',
   /** Geräte-Einstellung „Bildschirm im Training anlassen“ (true/false, keine Nutzerdaten). */
   keepAwake: 'fitnessapp.keep-awake.v1',
+  /**
+   * Testmodus (Etappe N4): „Beispiel-Rezepte mit Testwerten verwenden“ (true/false), solange das Bündel noch keine
+   * Rezepte hat. Der Wert "force" (nur von den E2E-Tests gesetzt) erzwingt sie auch bei echten Rezepten. Keine
+   * Nutzerdaten.
+   */
+  nutritionDemo: 'fitnessapp.nutrition-demo.v1',
 } as const;

@@ -5,7 +5,8 @@
   "type": "module",
   "description": "Reine Fachlogik (Berechnungen, Plan- und Ernährungs-Engine) ohne UI.",
   "exports": {
-    ".": "./src/index.ts"
+    ".": "./src/index.ts",
+    "./demo-nutrition": "./src/demo-nutrition.ts"
   },
   "scripts": {
     "lint": "eslint .",

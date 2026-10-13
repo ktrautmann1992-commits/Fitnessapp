@@ -1,4 +1,5 @@
 export * from './body-data';
+export * from './day-view';
 export * from './eligibility';
 export * from './energy';
 export * from './filter';
@@ -9,9 +10,11 @@ export * from './meal-plan-payload';
 export * from './meal-prep';
 export * from './meal-prep-plan';
 export * from './notices';
+export * from './person';
 export * from './recipe-nutrients';
 export * from './recipe-search';
 export * from './replan';
+export * from './revocation';
 export * from './scale';
 export * from './schemas';
 export * from './shopping-list';

@@ -1,6 +1,6 @@
 # Plan Phase 5 – Ernährungs-Engine, Essensplan und Einkaufsliste
 
-**Status:** **freigegeben, Etappen N0 (Plan), N1 (Core: Bedarf, Grenzen, Makros, Timing) und N2a (Inhalte: Schemas, Prüfregeln, Einheiten) umgesetzt** – Stand 11.10.2026. Offene Fragen 16 B: Gründer „Alles wie empfohlen“ (10.10.2026). Gegenprüfung der R2-Blocker durch den Wächter im N0-PR. **N2b Teil 1 (Quelle/Lizenz geklärt, Import-Infrastruktur, Zuordnungs-Vorschlag) umgesetzt** – der Katalog selbst entsteht nach dem Merge über den Workflow `foods-import` (Umsetzungsstand N2b). **N2c (Rezept-Import als Entwurf) und N3 (Core: Essensplan, Meal-Prep, Einkaufsliste, Rezeptsuche) umgesetzt** – Stand 12.10.2026 (Umsetzungsstand N2c/N3). **Nachtrag „Erweiterungen 2 (11.10.2026)“** in Abschnitt 19 (Fassung 2 nach Wächter-Prüfung, B1/B2 und S1–S14 eingearbeitet): Rezeptbestand aus `alpha5-rezepte.json`, Import in N2b/N2c, Umfang von Prompt C in N3–N6, neue Etappen N9–N14, W1 und P1. Fassung 3 nach Wächter-Nachprüfung `waechter-plan-5-r2.md` (Urteil „mit Auflagen“, alle Befunde eingearbeitet); Fassung 2 nach `waechter-plan-5.md`.
+**Status:** **freigegeben, Etappen N0 (Plan), N1 (Core: Bedarf, Grenzen, Makros, Timing) und N2a (Inhalte: Schemas, Prüfregeln, Einheiten) umgesetzt** – Stand 11.10.2026. Offene Fragen 16 B: Gründer „Alles wie empfohlen“ (10.10.2026). Gegenprüfung der R2-Blocker durch den Wächter im N0-PR. **N2b Teil 1 (Quelle/Lizenz geklärt, Import-Infrastruktur, Zuordnungs-Vorschlag) umgesetzt** – der Katalog selbst entsteht nach dem Merge über den Workflow `foods-import` (Umsetzungsstand N2b). **N2c (Rezept-Import als Entwurf) und N3 (Core: Essensplan, Meal-Prep, Einkaufsliste, Rezeptsuche) umgesetzt** – Stand 12.10.2026 (Umsetzungsstand N2c/N3). **N4 (App Testmodus: Einrichtung, Tag, Rezept) umgesetzt** – Stand 12.10.2026 (Umsetzungsstand N4). **Nachtrag „Erweiterungen 2 (11.10.2026)“** in Abschnitt 19 (Fassung 2 nach Wächter-Prüfung, B1/B2 und S1–S14 eingearbeitet): Rezeptbestand aus `alpha5-rezepte.json`, Import in N2b/N2c, Umfang von Prompt C in N3–N6, neue Etappen N9–N14, W1 und P1. Fassung 3 nach Wächter-Nachprüfung `waechter-plan-5-r2.md` (Urteil „mit Auflagen“, alle Befunde eingearbeitet); Fassung 2 nach `waechter-plan-5.md`.
 **Reihenfolge (Gründer-Entscheidung 09.10.2026):** 4b-A0 (erledigt) → Übungs-Glossar und Übungstausch (erledigt bis T2; T3 später mit Supabase) → **Phase 5** → Phase 4b (A → D → E; B/C später).
 **Testphase:** zuerst nur im **Testmodus** (lokal auf dem Gerät, ohne Supabase). Supabase-Teile (Migrationen, RLS, pgTAP) sind hier vollständig geplant, kommen aber in einer späteren Etappe (N7). Einzige Ausnahme: die kleine CHECK-Migration für den Onboarding-Schritt in N4 (S8).
 
@@ -1738,3 +1738,107 @@ Katalogen: 0 Verstöße bei Ausschlüssen, Band und Haltbarkeit). Umgesetzt:
 
 **So testest du es am Handy:** Pull Request → **Checks → ci** grün (Lint, Typen, Tests). Die „Beispiel-Woche“ in der
 Summary folgt mit dem ersten echten Katalog.
+
+### N4 – App Testmodus: Einrichtung, Tag, Rezept (umgesetzt, 12.10.2026)
+
+Nur Testmodus; Supabase-Modus bis N7 unverändert (`Backend.supportsNutrition = false`). Einzige Migration: die kleine
+CHECK-Migration (S8).
+
+1. **Onboarding-Schritt `nutrition_setup`** („Alltag und Training“) nach `cooking`: Alltagsaktivität (4 Antworten mit
+   Beispielen, **Pflicht**, Wächter N1 K7), Trainingszeit (inkl. „unterschiedlich“, Pflicht), Meal-Prep-Plätze (nur bei
+   Meal-Prep), Hinweis Essstörungen mit Hilfe-Stellen, Schalter „Kalorienzahlen anzeigen“ (Standard an). Core:
+   `ONBOARDING_STEPS` + `OnboardingState.nutritionSetupAvailable` (nur `true` = anwendbar, R2-S3), Zod
+   `nutritionSetupStepSchema`/`nutritionSetupColumnsSchema` (Spaltennamen wie die N7-Spalten von `nutrition_prefs`).
+   Migration `20261012120000_onboarding_nutrition_setup.sql` (CHECK-Liste ersetzt), `db-sync.test.ts` prüft die
+   **letzte** Fassung der CHECK-Liste (W16), pgTAP 03 um `nutrition_setup` ergänzt. Bestehende Testerinnen: Karte auf
+   „Heute“ bzw. Ernährung fragt den Schritt einmalig ab („Ernährung einrichten“). „Ernährung ändern“ läuft
+   nutrition → cooking → nutrition_setup → Ernährung. Hinweis „mag ich nicht“ ohne Einwilligung im Schritt `nutrition`.
+2. **App** (`apps/mobile`): `data/nutrition-plan.ts` (Zeilen → `nutritionTargetsForWeek`/`buildMealPlanWeek`,
+   Unverträglichkeiten/Körperdaten/Flags nur mit Einwilligung; **K3:** Messdatum „morgen“ zählt als heute;
+   `recipeForPerson`: jedes Rezept nur über `filterRecipe` der Person, sonst „passt nicht zu deinen Angaben“ ohne Grund),
+   Karte „Essen heute“ (Tagesziel, nächste Mahlzeit mit Rolle, Kochtag, `below_floor`), `app/ernaehrung/index.tsx`
+   (Ziel + Makro-Balken, Mahlzeiten mit Portion/Rolle/Ergänzung/Ersatz/Weglassen, leere Plätze mit Grund, Hinweise und
+   Schutzgrenzen in einfachen Worten, Knöpfe Einwilligung/Gesundheits-Check/Gewicht, Blättern Mo–So),
+   `app/rezept/[id].tsx` („KI-Entwurf – fachlich prüfen“, Allergen-Warnung bei Entwürfen (K6), Portion aus dem Plan
+   bzw. Portionswähler 1–12, Zutaten, Schritte, Nährwerte je Portion, „Enthält: …“ inkl. Kokos (K11), Spuren-Hinweis,
+   HFI/Zöliakie, Meal-Prep-Haltbarkeit, Nährwert-Quelle mit Lizenz), Einstellungen „Ernährung“ (Ändern, Alltag/
+   Trainingszeit, „Kalorienzahlen anzeigen“, Hilfe-Hinweis), „Fertig“-Zusammenfassung „Trainingstag ca. … kcal,
+   Ruhetag ca. … kcal“ (ohne Zahlen bzw. ohne Ziel eigener Text). Texte in `i18n/de-nutrition.ts` (alle Hinweis-Codes
+   aus N1/N3). Bei „Kalorienzahlen aus“ nirgends kcal/Makro-Gramm (auch Rezept, „Heute“).
+3. **Core-Ergänzungen** (mit Tests `nutrition/n4-app.test.ts`): `revocation.ts`
+   (`intoleranceGroupsForConversion`, `tastePreferencesAfterConversion`), `day-view.ts` (`mealsInDayOrder`,
+   `nextMealOfDay` mit `NEXT_MEAL_GRACE_MINUTES = 60` (PRODUKTENTSCHEIDUNG), `cookDayMeals`, `weekEnergySummary` ohne
+   neues Runden, `recipeContains`/`COCONUT_RULE`), eigener Paket-Einstieg `@fitnessapp/core/demo-nutrition`.
+4. **Widerruf 7.4:** Dialog nennt Unverträglichkeiten, Essenspläne/Einkaufslisten und eigene Listeneinträge (K10); aktive
+   Wahl „stattdessen unter ‚mag ich nicht‘ ausschließen?“ (nicht vorausgewählt, nur bei vorhandenen Unverträglichkeiten).
+   Testmodus: Einlesen nur bei Zustimmung, Umwandlung atomar in `applyHealthDataRevocation(…, { dislikeGroups })`
+   (ein Speichern). Supabase-Modus (schon jetzt): Gruppen nur bei Zustimmung aus dem Arbeitsspeicher, nach
+   `revoke_health_data` als `replace_food_preferences` (Geschmack) über die bestehende Warteschlange – bricht die
+   Verbindung ab, bleibt die Umwandlung als wartender Vorgang gespeichert, die Anzeige (Stand + Warteschlange) enthält
+   die Ausschlüsse sofort. Ohne Zustimmung wird nichts eingelesen (R2-K4).
+5. **Export/Gerätespeicher:** Antworten von `nutrition_setup` im Export als Spalten von `nutrition_prefs` (Form wie
+   `export_my_data()` ab N7); Gerätespeicher älterer Versionen: ungültiger/fremder Eintrag → null (Zod).
+6. **Tests:** Core (W21 in `onboarding.test.ts`, W16 in `db-sync.test.ts`, N4-Tests), App-Vitest
+   (`nutrition-n4.test.ts`: W21 Backend, K7, W12 atomar, R2-K4, Export, Gerätespeicher, K3, Filter; Supabase-Backend:
+   Umwandlung über die Warteschlange erst nach `revoke_health_data`, ohne Zustimmung keine; `nutrition-format.test.ts`),
+   Playwright `e2e/nutrition.spec.ts` (Onboarding → Ziel → Rezept → Zahlen aus; Widerruf mit Angebot (W12); Widerruf
+   ohne Zustimmung → keine Spur in local-/sessionStorage (R2-K4); kein Check → Hinweis + Knopf; Schwangerschaft ohne
+   Zahlen; Einrichtung fehlt, keine Rezepte, Beispiel-Rezepte ein/aus, Blättern, Rezept passt nicht), bestehende
+   E2E-Tests um den neuen Schritt ergänzt, Screenshots hell/dunkel (`screenshots.spec.ts`, Ernährung, Rezept,
+   Einstellungen).
+
+**Abweichungen / Präzisierungen:**
+
+- **Beispiel-Rezepte mit Testwerten:** Der echte Katalog fehlt noch (`foods-import`/`alpha5-import`). Damit Testmodus
+  und E2E-Tests Rezepte haben, bietet die App bei leerem Bündel **auf aktive Wahl** die N2a/N3-Fixtures an
+  (`@fitnessapp/core/demo-nutrition`, eigener Lazy-Chunk, dieselben Regeln `validateContent`/`selectNutritionContent`,
+  deutlich „TESTWERTE – keine echten Nährwerte“). Sobald das Bündel Rezepte hat, haben diese immer Vorrang.
+- **Essensplan wird in N4 nicht gespeichert**, sondern bei jedem Öffnen deterministisch neu berechnet – passt damit
+  immer zum aktuellen Modus (6.6) und es gibt keine gespeicherten Pläne mit Gesundheitsbezug. Speichern (`mealPlans`
+  in `UserRows`), „Rezept tauschen“, „Andere Vorschläge“, „Essensplan neu erstellen“, vergangene Tage fest und
+  Einkaufsliste kommen mit **N5**; dort auch `pendingRevocationConversion` falls nötig (im Testmodus atomar, im
+  Supabase-Modus übernimmt die Warteschlange die Rolle).
+- **Rezeptsuche (`rezepte/index.tsx`) und Ratgeber (`ratgeber/[id].tsx`)** aus 19.6 sind nicht in N4 → N5. Der
+  Portionswähler ist in der Rezeptansicht (ohne Ziel-Bezug).
+- **Hilfe-Stellen Essstörungen** ohne Telefonnummern (nur Namen), Code-Vermerk „VOR VERÖFFENTLICHUNG PRÜFEN“.
+- Hinweis `carbs_below_reference` (nennt 130 g) entfällt bei „Kalorienzahlen aus“; Sicherheitshinweise bleiben.
+- „Kalorienzahlen anzeigen“ in den Einstellungen speichert über den Schritt `nutrition_setup`; nach abgeschlossenem
+  Onboarding bleibt der Fortschritt unverändert (Wächter N4 K5).
+- Bestätigungs-Dialog ist jetzt scrollbar (langer Widerrufs-Dialog auf kleinen Handys).
+
+**Wächter-Prüfung N4 (12.10.2026): MIT AUFLAGEN** (Bericht `waechter-n4.md`). Umgesetzt:
+
+- **B1** Veraltete (bzw. fehlende) Einwilligung + gespeicherte Unverträglichkeiten → kein Essensplan, keine Ziele,
+  keine Rezeptansicht (auch per Deep-Link), auf „Heute“ ebenso – nur der Hinweis „Einwilligung bestätigen“ mit Knopf.
+  Regel in core (`nutrition/person.ts`, `intoleranceAccess`), Tests in core, App (`nutrition-n4.test.ts`) und Playwright
+  (Deep-Link `/rezept/erdnuss-banane`).
+- **S1** Supabase-Widerruf mit Umwandlung: zuerst Warteschlange, dann Zwischenspeicher; `health_data` im Zwischenspeicher
+  als widerrufen markiert; Test „offline nach dem Widerruf“ (Vorgang wartet, Anzeige mit Ausschluss, danach gesendet).
+- **S2** Tests `recipeForPerson`: Unverträglichkeit, „mag ich nicht“, Schwein (`eats_pork` null/true), Schwangerschaft
+  per Deep-Link, B1.
+- **S3/K9** „Zahlen aus“: Hinweise mit Gramm- oder BMI-Angaben (`long_session_fueling`, `underweight`,
+  `severe_underweight`) erscheinen in einer Fassung ohne Zahlen (`noticesWithoutNumbers`, `noticeText`),
+  `carbs_below_reference` entfällt; systematischer Test über alle Hinweis-Codes (kein „… kcal“, „… g“, „BMI“).
+- **S4** Fachregeln nach core: `measuredOnForEngine` (K3), `intoleranceAccess` (Einwilligung, B1),
+  `weekExcludesPregnancyCaution`, `weekHidesEnergyNumbers`; die App bildet nur noch ab.
+- **S5** Hilfe-Stellen: harte Freigabe-Bedingung vor Supabase-/Store-Builds in KONZEPT 14 und `docs/SETUP.md` Teil K
+  (Checkliste, CH inkl. 144).
+- **K1** Schwangerschaft: auch im Rezept per Deep-Link keine kcal. **K2** Karte „Essen heute“ kennzeichnet Testwerte.
+  **K3** Widerruf verwirft ungültige Alt-Einträge statt zu scheitern (Test). **K5** Ändern nach dem Onboarding setzt
+  `onboarding_completed_at` nicht mehr neu (Schritt `nutrition_setup`; Test). **K7** E2E-Tests erzwingen die
+  Beispiel-Rezepte über den Gerätespeicher-Wert `"force"` (nur Testmodus, nur Tests) – unabhängig vom Stand des Bündels.
+  **K8** Text „…der Essensplan lässt sie dann genauso weg“. **K10** HANDY-ANLEITUNG Teil 7c „Ernährung testen“.
+- **Nachprüfung N4 (bestanden), NK1/NK2:** Der Sperr-Hinweis unterscheidet den Grund (`IntoleranceBlockReason`):
+  veraltet → „Neue Fassung bestätigen“; widerrufen bzw. nie erteilt → „Einwilligung erteilen“ **oder** „Gespeicherte
+  Unverträglichkeiten löschen“ (Recht auf Löschung, mit Bestätigungsdialog; geht ohne Einwilligung –
+  `Backend.deleteStoredIntolerances`: Testmodus im Gerätespeicher, Supabase sofort per `delete` nach der
+  Lösch-Policy von `food_preferences`, nie über die Warteschlange, offline Fehler). Tests in core, App und Playwright.
+- **K4 (dokumentiert):** „Ernährung ändern“ führt jetzt auch im Supabase-Modus von `nutrition` weiter zu
+  `cooking?edit=1` (vorher zurück zu „Heute“); ohne Speicherort endet die Kette nach `cooking` auf „Heute“.
+- **K6 (dokumentiert):** Der Lazy-Chunk `demo-nutrition` steht auch im Supabase-Build, wird dort aber nie geladen
+  (`loadNutritionLibrary` liefert `null`). Ausschließen per Build-Variable bei Bedarf in N7.
+
+**So testest du es am Handy:** Vorschau-Link → „Ohne Konto testen“ → Onboarding (Abschnitt 15, Schritt 1) → neuer
+Schritt „Alltag und Training“ → „Fertig“ zeigt „Trainingstag ca. … kcal“ → „Heute“ → Karte „Essen heute“ →
+„Ernährung“ → „Beispiel-Rezepte mit Testwerten verwenden“ → Rezept antippen → Einstellungen → „Kalorienzahlen
+anzeigen“ aus → keine kcal mehr → Einwilligung widerrufen mit Häkchen „mag ich nicht“.

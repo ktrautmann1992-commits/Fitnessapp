@@ -32,6 +32,7 @@ import {
   type Backend,
   type BackendErrorCode,
   type LogSaveOutcome,
+  type NutritionLibraryResult,
   type PreferenceSwapContext,
 } from '@/data/backend';
 import { createBackend, deviceStore, newId } from '@/data/create-backend';
@@ -98,6 +99,15 @@ export interface OlderLogs {
   nextBefore: string | null;
 }
 
+/** Ernährungs-Bestand (Phase 5, Etappe N4). */
+export type NutritionLibraryState =
+  | { kind: 'idle' }
+  | { kind: 'loading' }
+  | { kind: 'ready'; result: NutritionLibraryResult }
+  /** Supabase-Modus vor Etappe N7. */
+  | { kind: 'unsupported' }
+  | { kind: 'error' };
+
 /** Bibliothek der Plan-Engine (für Anzeige und Folgeblock). */
 type LibraryState =
   | { kind: 'idle' }
@@ -151,8 +161,13 @@ export interface AppContextValue {
   keepMyVersion: (draft: WorkoutDraft) => Promise<LogSaveOutcome | { kind: 'invalid' }>;
   /** Eigenes Startgewicht speichern; liefert den neuen Stand (für die Neuberechnung der Vorgabe). */
   setStartWeight: (exerciseId: string, weightKg: number | null) => Promise<UserRows>;
-  /** Widerruf health_data mit Wahl „Tagebuch behalten“ / „auch löschen“ (S1, R3). */
-  revokeHealthData: (deleteLogs: boolean) => Promise<void>;
+  /**
+   * Widerruf health_data mit Wahl „Tagebuch behalten“ / „auch löschen“ (S1, R3) und – nur bei aktiver Zustimmung –
+   * Umwandlung der Unverträglichkeiten in „mag ich nicht“ (docs/PLAN-PHASE-5.md 7.4, R2-K4).
+   */
+  revokeHealthData: (deleteLogs: boolean, convertIntolerances: boolean) => Promise<void>;
+  /** Gespeicherte Unverträglichkeiten löschen (Recht auf Löschung, geht ohne Einwilligung, NK2). */
+  deleteStoredIntolerances: () => Promise<void>;
   workoutMessage: WorkoutMessage | null;
   clearWorkoutMessage: () => void;
   /** Planned-Session-IDs mit noch nicht übertragenem Training. */
@@ -189,6 +204,13 @@ export interface AppContextValue {
   moveSession: (sessionId: string) => Promise<RescheduleResult>;
   /** Folgeblock anhängen, wenn fällig (automatisch beim Anzeigen von „Heute“). */
   appendNextBlockIfDue: () => Promise<void>;
+
+  // --- Ernährung (Phase 5, Etappe N4) ---
+  /** Ernährungs-Bestand (Lebensmittel, Rezepte) – erst bei Bedarf geladen. */
+  nutritionLibrary: NutritionLibraryState;
+  ensureNutritionLibrary: () => Promise<void>;
+  /** Testmodus: Beispiel-Rezepte mit Testwerten verwenden (nur solange das Bündel keine Rezepte hat). */
+  setNutritionDemo: (enabled: boolean) => Promise<void>;
 
   // --- Übungstausch (docs/PLAN-UEBUNGEN-GLOSSAR-TAUSCH.md, Etappe T2) ---
   /** „Nur heute“-Tausche vor dem Training (Gerätespeicher, nur dieses Konto; geprüft bei jeder Anzeige im Core). */
@@ -237,6 +259,9 @@ export function AppStateProvider({ children }: { children: ReactNode }) {
   const [olderLogs, setOlderLogs] = useState<OlderLogs | null>(null);
   const [daySwaps, setDaySwaps] = useState<readonly DaySwap[]>([]);
   const [daySwapStore] = useState(() => createDaySwapStore(deviceStore));
+  const [nutritionLibrary, setNutritionLibrary] = useState<NutritionLibraryState>({
+    kind: 'idle',
+  });
   const appendingRef = useRef(false);
   /** Plan, für den das Anhängen gescheitert ist (kein erneuter Versuch bis zum neuen Plan). */
   const appendFailedRef = useRef<string | null>(null);
@@ -404,8 +429,13 @@ export function AppStateProvider({ children }: { children: ReactNode }) {
 
   const routeFor = useCallback(
     (current: AuthSession | null, currentRows: UserRows | null) =>
-      resolveEntryRoute({ session: current, rows: currentRows, versions }),
-    [versions],
+      resolveEntryRoute({
+        session: current,
+        rows: currentRows,
+        versions,
+        nutritionSetupAvailable: backend.supportsNutrition,
+      }),
+    [backend, versions],
   );
 
   const entryRoute = useCallback(() => routeFor(session, rows), [routeFor, session, rows]);
@@ -451,8 +481,46 @@ export function AppStateProvider({ children }: { children: ReactNode }) {
     [backend, loadUser],
   );
 
+  // --- Ernährung (Etappe N4) ---------------------------------------------------------------------------------
+  const loadNutrition = useCallback(async () => {
+    if (!backend.supportsNutrition) {
+      setNutritionLibrary({ kind: 'unsupported' });
+      return;
+    }
+    setNutritionLibrary({ kind: 'loading' });
+    try {
+      // true = aktive Wahl; "force" setzen nur die E2E-Tests (Beispiel-Rezepte trotz echtem Bündel, Wächter N4 K7).
+      const stored = await readJson<boolean | 'force'>(deviceStore, STORAGE_KEYS.nutritionDemo);
+      const result = await backend.loadNutritionLibrary({
+        demo: stored === true || stored === 'force',
+        force: stored === 'force',
+      });
+      setNutritionLibrary(result ? { kind: 'ready', result } : { kind: 'unsupported' });
+    } catch {
+      setNutritionLibrary({ kind: 'error' });
+    }
+  }, [backend]);
+
+  const ensureNutritionLibrary = useCallback(async () => {
+    if (nutritionLibrary.kind === 'idle' || nutritionLibrary.kind === 'error') {
+      await loadNutrition();
+    }
+  }, [loadNutrition, nutritionLibrary.kind]);
+
+  const setNutritionDemo = useCallback(
+    async (enabled: boolean) => {
+      if (enabled) {
+        await writeJson(deviceStore, STORAGE_KEYS.nutritionDemo, true);
+      } else {
+        await deviceStore.removeItem(STORAGE_KEYS.nutritionDemo);
+      }
+      await loadNutrition();
+    },
+    [loadNutrition],
+  );
+
   const revokeHealthData = useCallback(
-    async (deleteLogs: boolean) => {
+    async (deleteLogs: boolean, convertIntolerances: boolean) => {
       // Day-Swaps zu Plänen mit Gesundheitsbezug mit entfernen (wie die Entwürfe, PLAN-UEBUNGEN-GLOSSAR-TAUSCH 9).
       const owner = rows?.profile?.user_id;
       if (rows && owner) {
@@ -460,11 +528,17 @@ export function AppStateProvider({ children }: { children: ReactNode }) {
         await daySwapStore.save(owner, kept);
         setDaySwaps(kept);
       }
-      await backend.revokeHealthData(deleteLogs);
+      // 7.4 (R2-K4): Die Unverträglichkeiten werden nur bei aktiver Zustimmung an das Backend gegeben (Arbeitsspeicher).
+      await backend.revokeHealthData(deleteLogs, convertIntolerances && rows ? { rows } : null);
       await loadUser();
     },
     [backend, daySwapStore, loadUser, rows],
   );
+
+  const deleteStoredIntolerances = useCallback(async () => {
+    await backend.deleteStoredIntolerances();
+    await loadUser();
+  }, [backend, loadUser]);
 
   const saveStep = useCallback(
     async (save: StepSave) => {
@@ -508,6 +582,7 @@ export function AppStateProvider({ children }: { children: ReactNode }) {
     setSessionExpired(false);
     setOlderLogs(null);
     setDaySwaps([]);
+    setNutritionLibrary({ kind: 'idle' });
   }, []);
 
   // --- Übungstausch (Etappe T2) -----------------------------------------------------------------------------
@@ -857,6 +932,7 @@ export function AppStateProvider({ children }: { children: ReactNode }) {
       keepMyVersion,
       setStartWeight,
       revokeHealthData,
+      deleteStoredIntolerances,
       workoutMessage,
       clearWorkoutMessage: () => setWorkoutMessage(null),
       pendingLogSessionIds,
@@ -872,6 +948,9 @@ export function AppStateProvider({ children }: { children: ReactNode }) {
       removeDaySwaps,
       dropDaySwaps,
       updateExercisePreferences,
+      nutritionLibrary,
+      ensureNutritionLibrary,
+      setNutritionDemo,
     }),
     [
       backend,
@@ -911,6 +990,7 @@ export function AppStateProvider({ children }: { children: ReactNode }) {
       keepMyVersion,
       setStartWeight,
       revokeHealthData,
+      deleteStoredIntolerances,
       workoutMessage,
       pendingLogSessionIds,
       foreignData,
@@ -925,6 +1005,9 @@ export function AppStateProvider({ children }: { children: ReactNode }) {
       removeDaySwaps,
       dropDaySwaps,
       updateExercisePreferences,
+      nutritionLibrary,
+      ensureNutritionLibrary,
+      setNutritionDemo,
     ],
   );
 

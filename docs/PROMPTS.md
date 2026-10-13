@@ -136,6 +136,10 @@ per Workflow, sobald der Lebensmittel-Katalog importiert ist (`docs/SETUP.md` Te
 **Etappe N3 umgesetzt (12.10.2026):** Core für Essensplan (`buildMealPlanWeek`, Planband je Tag oder
 `below_floor`), Rezept-Filter mit allen harten Ausschlüssen, Meal-Prep (Kochtermine, R9, `applyMealPrepPlan`,
 Gratis-Plan), Einkaufsliste, automatische Neuplanung, Rezeptsuche und Portionswähler – mit Test-Fixtures, ohne App.
+**Etappe N4 umgesetzt (12.10.2026, Testmodus):** Onboarding-Schritt „Alltag und Training“ (`nutrition_setup`, nur
+Testmodus bis N7) + CHECK-Migration, Karte „Essen heute“, Ernährung-Tag, Rezeptansicht mit Portionswähler und
+Allergen-Warnung, Einstellungen Ernährung („Kalorienzahlen anzeigen“), Widerruf mit Angebot „mag ich nicht“, Export.
+Bis der echte Katalog da ist: Beispiel-Rezepte mit Testwerten (gekennzeichnet). Details `docs/PLAN-PHASE-5.md`.
 **Nachtrag 11.10.2026 (Erweiterungen Teil 2):** Rezeptbestand ist `packages/content/seed/alpha5-rezepte.json` statt
 KI-erzeugter Rezepte – N2b umfasst alle 236 Zutaten, N2c ist der Import (Prompt B Schritte 3–5), N3–N6 enthalten den
 Umfang von Prompt C; neue Etappen N9–N14 (Prompts D, F, E). Details `docs/PLAN-PHASE-5.md` Abschnitt 19.

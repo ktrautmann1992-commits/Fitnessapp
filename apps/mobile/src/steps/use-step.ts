@@ -34,8 +34,12 @@ export function useStep(step: OnboardingStep): StepController {
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState<string>();
   const state = app.rows
-    ? deriveOnboardingState(app.rows, app.versions)
-    : { healthDataConsent: undefined, hasHomeStrength: undefined };
+    ? deriveOnboardingState(app.rows, app.versions, app.backend.supportsNutrition)
+    : {
+        healthDataConsent: undefined,
+        hasHomeStrength: undefined,
+        nutritionSetupAvailable: app.backend.supportsNutrition,
+      };
   const previous = previousStep(step, state);
 
   async function submit(save: StepSave) {
@@ -44,7 +48,7 @@ export function useStep(step: OnboardingStep): StepController {
     try {
       const route = await app.saveStep(save);
       if (editing) {
-        const target = nextEditRoute(step, save);
+        const target = nextEditRoute(step, save, app.backend.supportsNutrition);
         // Zurück zum vorhandenen „Heute“ (nicht ein zweites darüberlegen); sonst nächster Schritt.
         if (target === '/today') {
           router.dismissTo('/today');

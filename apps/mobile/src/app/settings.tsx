@@ -8,9 +8,10 @@ import {
   type ConsentType,
 } from '@fitnessapp/core';
 import { Redirect, useRouter, type Href } from 'expo-router';
-import { useMemo, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { View } from 'react-native';
 
+import { EatingHelpNotice } from '@/components/nutrition';
 import { ConfirmDialog, Screen } from '@/components/screen';
 import {
   Body,
@@ -86,6 +87,19 @@ export default function SettingsScreen() {
   const [reminderError, setReminderError] = useState<string>();
   const [reminderSaved, setReminderSaved] = useState(false);
   const [savingReminder, setSavingReminder] = useState(false);
+  /**
+   * Widerruf (docs/PLAN-PHASE-5.md 7.4): aktive Wahl „stattdessen unter ‚mag ich nicht‘ ausschließen?“ – nie
+   * vorausgewählt (R2-K4: ohne Zustimmung wird nichts eingelesen und nichts behalten).
+   */
+  const [convertIntolerances, setConvertIntolerances] = useState(false);
+  const [numbersSaving, setNumbersSaving] = useState(false);
+  const [numbersMessage, setNumbersMessage] = useState<string>();
+  const { ensureNutritionLibrary } = app;
+  const supportsNutrition = app.backend.supportsNutrition;
+  useEffect(() => {
+    // Testmodus: ob Beispiel-Rezepte angeboten werden, hängt vom Bündel ab.
+    if (supportsNutrition) void ensureNutritionLibrary();
+  }, [ensureNutritionLibrary, supportsNutrition]);
   /** Abmelden mit Wartendem (R6): Zahl der noch nicht übertragenen Trainings bzw. Entwürfe. */
   const [pendingCount, setPendingCount] = useState(0);
   const [stillPending, setStillPending] = useState(false);
@@ -104,6 +118,26 @@ export default function SettingsScreen() {
   const healthStatus = healthConsentStatus(rows, app.versions);
   const records = consentRecordsFromRows(rows.consents);
   const currentPlan = activePlan(rows)?.plan ?? null;
+  const hasIntolerances = rows.foodPreferences.some((p) => p.kind === 'intolerance');
+  const setup = app.answers.nutritionSetup;
+  const nutritionLib = app.nutritionLibrary.kind === 'ready' ? app.nutritionLibrary.result : null;
+
+  async function setShowNumbers(value: boolean) {
+    if (!setup) return;
+    setNumbersSaving(true);
+    setNumbersMessage(undefined);
+    try {
+      await app.saveStep({
+        step: 'nutrition_setup',
+        setup: { ...setup, showEnergyNumbers: value },
+      });
+      setNumbersMessage(t.nutrition.settings.showNumbersSaved);
+    } catch (caught) {
+      setNumbersMessage(errorText(caught));
+    } finally {
+      setNumbersSaving(false);
+    }
+  }
 
   async function confirm() {
     setBusy(true);
@@ -111,8 +145,13 @@ export default function SettingsScreen() {
     try {
       if (dialog === 'revoke') {
         // „Tagebuch behalten (empfohlen)“ – Vorgaben aus Gesundheits-Plänen werden neutralisiert (S1, R3).
-        await app.revokeHealthData(false);
-        setMessage(t.settings.revokeDone);
+        const convert = hasIntolerances && convertIntolerances;
+        await app.revokeHealthData(false, convert);
+        setMessage(
+          convert
+            ? `${t.settings.revokeDone} ${t.nutrition.revoke.converted}`
+            : t.settings.revokeDone,
+        );
         setDialog(null);
       } else if (dialog === 'signout') {
         // „Jetzt senden“ – bleibt danach etwas übrig, wird NICHT abgemeldet, sondern erneut gefragt (R6).
@@ -218,8 +257,13 @@ export default function SettingsScreen() {
     setBusy(true);
     setDialogError(undefined);
     try {
-      await app.revokeHealthData(true);
-      setMessage(t.settings.revokeDone);
+      const convert = hasIntolerances && convertIntolerances;
+      await app.revokeHealthData(true, convert);
+      setMessage(
+        convert
+          ? `${t.settings.revokeDone} ${t.nutrition.revoke.converted}`
+          : t.settings.revokeDone,
+      );
       setDialog(null);
     } catch (caught) {
       setDialogError(errorText(caught));
@@ -314,6 +358,47 @@ export default function SettingsScreen() {
         />
       </Card>
 
+      {supportsNutrition ? (
+        <>
+          <Heading level={2}>{t.nutrition.settings.title}</Heading>
+          <Card>
+            <Body muted>{t.nutrition.settings.text}</Body>
+            <Button
+              label={t.nutrition.settings.open}
+              variant="secondary"
+              onPress={() => router.push('/ernaehrung' as Href)}
+              testID="settings-nutrition-open"
+            />
+            <Button
+              label={t.nutrition.settings.edit}
+              variant="secondary"
+              onPress={() => router.push('/onboarding/nutrition?edit=1' as Href)}
+              testID="settings-nutrition-edit"
+            />
+            <Button
+              label={t.nutrition.settings.setup}
+              variant="secondary"
+              onPress={() => router.push('/onboarding/nutrition_setup?edit=1' as Href)}
+              testID="settings-nutrition-setup"
+            />
+            {setup ? (
+              <>
+                <Checkbox
+                  label={t.nutrition.settings.showNumbers}
+                  checked={setup.showEnergyNumbers}
+                  onChange={(value) => void setShowNumbers(value)}
+                  testID="settings-show-numbers"
+                />
+                <Body muted>{t.nutrition.setup.showNumbersHint}</Body>
+                {numbersSaving ? <LoadingState /> : null}
+                {numbersMessage ? <Body muted>{numbersMessage}</Body> : null}
+              </>
+            ) : null}
+          </Card>
+          <EatingHelpNotice />
+        </>
+      ) : null}
+
       <Heading level={2}>{t.glossary.settingsTitle}</Heading>
       <Card>
         <Body muted>{t.glossary.settingsText}</Body>
@@ -351,6 +436,8 @@ export default function SettingsScreen() {
                   accessibilityLabel={`${t.consentTypes.health_data}: ${t.settings.revoke}`}
                   onPress={() => {
                     setDialogError(undefined);
+                    // Jedes Mal neu und nicht vorausgewählt (7.4, aktive Wahl).
+                    setConvertIntolerances(false);
                     setDialog('revoke');
                   }}
                 />
@@ -473,6 +560,17 @@ export default function SettingsScreen() {
           <Heading level={2}>{t.settings.testMode}</Heading>
           <Card>
             <Body muted>{t.settings.testModeText}</Body>
+            {nutritionLib && (nutritionLib.demoAvailable || nutritionLib.demo) ? (
+              <>
+                <Body muted>{t.nutrition.settings.demoText}</Body>
+                <Checkbox
+                  label={t.nutrition.demoUse}
+                  checked={nutritionLib.demo}
+                  onChange={(value) => void app.setNutritionDemo(value)}
+                  testID="settings-nutrition-demo"
+                />
+              </>
+            ) : null}
             <Button
               label={t.settings.clearTestData}
               variant="danger"
@@ -502,12 +600,24 @@ export default function SettingsScreen() {
         testID={dialog ? `dialog-${dialog}` : undefined}
         {...(dialog === 'revoke'
           ? {
-              // Wahl aus S1 und Hinweise (H6, R3, K4).
+              // Wahl aus S1 und Hinweise (H6, R3, K4); Ernährung: Unverträglichkeiten und Pläne (7.4, K10).
               notes: [
+                t.nutrition.revoke.intolerances,
                 t.settings.revokeLogs,
                 t.settings.revokeOtherDevices,
                 t.settings.revokeEarlier,
               ],
+              children: hasIntolerances ? (
+                <View style={{ gap: 4 }}>
+                  <Checkbox
+                    label={t.nutrition.revoke.convert}
+                    checked={convertIntolerances}
+                    onChange={setConvertIntolerances}
+                    testID="revoke-convert"
+                  />
+                  <Body muted>{t.nutrition.revoke.convertHint}</Body>
+                </View>
+              ) : null,
               alternative: {
                 label: t.settings.revokeDeleteLogs,
                 variant: 'danger' as const,

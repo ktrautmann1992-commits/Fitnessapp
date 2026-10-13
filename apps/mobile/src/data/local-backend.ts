@@ -10,6 +10,7 @@ import {
   createBirthDateSchema,
   evaluateHealthScreening,
   healthScreeningAnswersSchema,
+  intoleranceGroupsForConversion,
   isoDateSchema,
   measurementReminderIntervalSchema,
   MIN_AGE_YEARS,
@@ -19,6 +20,8 @@ import {
   validateContent,
   type ConsentType,
   type ContentFile,
+  type FoodGroupId,
+  foodGroupSchema,
   type NutritionContentFile,
   type NutritionLibrary,
   type PlanLibrary,
@@ -26,7 +29,12 @@ import {
 } from '@fitnessapp/core';
 
 import { healthConsentStatus } from '../state/flow';
-import { BackendError, type Backend, type PreferenceSwapContext } from './backend';
+import {
+  BackendError,
+  type Backend,
+  type NutritionLibraryResult,
+  type PreferenceSwapContext,
+} from './backend';
 import { LOCAL_CONSENT_DOCUMENTS } from './consent-texts';
 import { localDataExport } from './data-export';
 import { DraftStore } from './draft-store';
@@ -93,6 +101,10 @@ export interface LocalBackendOptions {
   newId: () => string;
   /** Inhaltsdateien für den Testmodus (Standard: gebündelt aus content/, erst bei Bedarf geladen). */
   loadContent?: () => Promise<readonly ContentFile[]>;
+  /**
+   * Ernährungs-Bestand (Standard: Bündel bzw. Beispiel-Rezepte mit Testwerten, erst bei Bedarf geladen). Für Tests.
+   */
+  loadNutrition?: (options: { demo: boolean; force?: boolean }) => Promise<NutritionLibraryResult>;
   /**
    * Geschützter Entwurfs-Speicher (PLAN-PHASE-4 4.1/4.2; App verschlüsselt, Browser sessionStorage). Auch im
    * Testmodus – die Tagebuch-Einträge selbst liegen dort wie alles andere in `localDb` (dokumentierte Ausnahme).
@@ -185,9 +197,23 @@ export function createLocalBackend(store: KeyValueStore, options: LocalBackendOp
     return next;
   }
 
-  /** Widerruf health_data (R3): Entwürfe bereinigen, dann Einwilligung widerrufen und Daten wie der Trigger. */
-  async function revokeHealth(deleteLogs: boolean): Promise<void> {
+  /**
+   * Widerruf health_data (R3): Entwürfe bereinigen, dann Einwilligung widerrufen und Daten wie der Trigger.
+   * Umwandlung der Unverträglichkeiten (docs/PLAN-PHASE-5.md 7.4, S17, R2-K4, W12): NUR bei Zustimmung
+   * (`convertIntolerances`) werden die Gruppen eingelesen und im SELBEN Schritt als „mag ich nicht“ geschrieben – im
+   * Testmodus atomar (ein einziges Speichern von `localDb`, dazwischen gibt es keinen Stand ohne Ausschluss). Ohne
+   * Zustimmung wird nichts eingelesen und nichts behalten.
+   */
+  async function revokeHealth(deleteLogs: boolean, convertIntolerances: boolean): Promise<void> {
     const { db, rows } = await requireProfile();
+    const dislikeGroups: FoodGroupId[] | undefined = convertIntolerances
+      ? intoleranceGroupsForConversion(
+          rows.foodPreferences.flatMap((row) => {
+            const group = foodGroupSchema.safeParse(row.food_group);
+            return group.success ? [{ foodGroup: group.data, kind: row.kind }] : [];
+          }),
+        )
+      : undefined;
     await drafts.cleanHealthPlanDrafts(deleteLogs ? 'delete' : 'neutralize');
     const now = options.now();
     const revoked: UserRows = {
@@ -196,7 +222,9 @@ export function createLocalBackend(store: KeyValueStore, options: LocalBackendOp
         c.consent_type === 'health_data' && c.revoked_at === null ? { ...c, revoked_at: now } : c,
       ),
     };
-    await save({ ...db, rows: applyHealthDataRevocation(revoked, { deleteLogs }) });
+    // Ein Widerruf darf nie scheitern (Wächter N4 K3): ungültige Alt-Einträge verwirft die Umwandlung in core.
+    const next = applyHealthDataRevocation(revoked, { deleteLogs, dislikeGroups });
+    await save({ ...db, rows: next });
   }
 
   /** Prüft einen Vorgang wie die RLS-Policies/Trigger der Datenbank und wendet ihn an. */
@@ -318,6 +346,8 @@ export function createLocalBackend(store: KeyValueStore, options: LocalBackendOp
   return {
     mode: 'local',
     supportsExercisePreferences: true,
+    // Ernährung im Testmodus ab Etappe N4 (inkl. Schritt nutrition_setup, R2-S3).
+    supportsNutrition: true,
     signIn: {
       kind: 'test_mode',
       start: async () => {
@@ -404,7 +434,7 @@ export function createLocalBackend(store: KeyValueStore, options: LocalBackendOp
 
     revokeConsent: async (type) => {
       if (type === 'health_data') {
-        await revokeHealth(false);
+        await revokeHealth(false, false);
         return;
       }
       const { db, rows } = await requireProfile();
@@ -427,6 +457,7 @@ export function createLocalBackend(store: KeyValueStore, options: LocalBackendOp
         versions: LOCAL_VERSIONS,
         platform: options.platform,
         now: options.now(),
+        nutritionSetupAvailable: true,
       });
       // Alles oder nichts: erst alle Vorgänge prüfen und anwenden, dann einmal speichern.
       let next = rows;
@@ -563,7 +594,20 @@ export function createLocalBackend(store: KeyValueStore, options: LocalBackendOp
       await save({ ...db, rows: next });
       return next;
     },
-    revokeHealthData: revokeHealth,
+    revokeHealthData: (deleteLogs, conversion) => revokeHealth(deleteLogs, conversion !== null),
+    deleteStoredIntolerances: async () => {
+      // Wie die Lösch-Policy von food_preferences: eigene Zeilen, ohne Einwilligungs-Prüfung.
+      const { db, rows } = await requireProfile();
+      await save({
+        ...db,
+        rows: {
+          ...rows,
+          foodPreferences: rows.foodPreferences.filter((p) => p.kind !== 'intolerance'),
+        },
+      });
+    },
+    loadNutritionLibrary: (nutritionOptions) =>
+      (options.loadNutrition ?? loadNutritionLibrary)(nutritionOptions),
     pendingWorkouts: async () => {
       const db = await load();
       const owner = db.session?.userId;
@@ -632,11 +676,36 @@ export function nutritionLibraryFromBundle(bundle: NutritionBundle): NutritionLi
 }
 
 let nutritionCache: Promise<NutritionLibrary> | null = null;
+let demoCache: Promise<NutritionLibrary> | null = null;
 
-/** Ernährungs-Bestand des Testmodus, erst bei Bedarf geladen (wie die Plan-Bibliothek). Angezeigt ab N4. */
-export function loadNutritionLibrary(): Promise<NutritionLibrary> {
+/** Beispiel-Rezepte mit TESTWERTEN (`@fitnessapp/core/demo-nutrition`) – dieselben Regeln wie der echte Bestand. */
+async function demoNutritionLibrary(): Promise<NutritionLibrary> {
+  demoCache ??= import('@fitnessapp/core/demo-nutrition').then(({ demoNutritionContent }) => {
+    const demo = demoNutritionContent();
+    return selectNutritionContent(validateContent(demo.files, { nutritionCatalog: demo.catalog }), {
+      allowDrafts: true,
+    });
+  });
+  return demoCache;
+}
+
+/**
+ * Ernährungs-Bestand des Testmodus, erst bei Bedarf geladen (wie die Plan-Bibliothek). Hat das Bündel noch keine
+ * verwendbaren Rezepte (echter Katalog fehlt), gibt es auf Wunsch (`demo`) die Beispiel-Rezepte mit Testwerten –
+ * sonst den leeren Bestand (Zustand „noch keine Rezepte“). Echte Rezepte haben immer Vorrang.
+ */
+export async function loadNutritionLibrary(options: {
+  demo: boolean;
+  /** Nur E2E-Tests: Beispiel-Rezepte erzwingen (Wächter N4 K7). */
+  force?: boolean;
+}): Promise<NutritionLibraryResult> {
   nutritionCache ??= import('../generated/content-files').then(({ CONTENT_BUNDLE }) =>
     nutritionLibraryFromBundle(CONTENT_BUNDLE),
   );
-  return nutritionCache;
+  const library = await nutritionCache;
+  const demoAvailable = library.recipes.length === 0;
+  if ((demoAvailable && options.demo) || options.force === true) {
+    return { library: await demoNutritionLibrary(), demo: true, demoAvailable };
+  }
+  return { library, demo: false, demoAvailable };
 }

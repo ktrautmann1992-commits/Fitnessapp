@@ -301,7 +301,15 @@ describe('planSave: nächster Schritt nach packages/core', () => {
   it('ohne Einwilligung geht es nach „Einwilligung“ direkt zur Erfahrung', () => {
     const planned = planSave(
       { step: 'health_consent', granted: false },
-      { userId: USER_ID, answers: {}, rows: base, versions: VERSIONS, platform: 'web', now: NOW },
+      {
+        userId: USER_ID,
+        answers: {},
+        rows: base,
+        versions: VERSIONS,
+        platform: 'web',
+        now: NOW,
+        nutritionSetupAvailable: false,
+      },
     );
     expect(planned.next).toBe('experience');
   });
@@ -309,7 +317,15 @@ describe('planSave: nächster Schritt nach packages/core', () => {
   it('mit Einwilligung geht es zu den Körperdaten', () => {
     const planned = planSave(
       { step: 'health_consent', granted: true },
-      { userId: USER_ID, answers: {}, rows: base, versions: VERSIONS, platform: 'web', now: NOW },
+      {
+        userId: USER_ID,
+        answers: {},
+        rows: base,
+        versions: VERSIONS,
+        platform: 'web',
+        now: NOW,
+        nutritionSetupAvailable: false,
+      },
     );
     expect(planned.next).toBe('body_metrics');
   });
@@ -333,6 +349,7 @@ describe('planSave: nächster Schritt nach packages/core', () => {
         versions: VERSIONS,
         platform: 'web',
         now: NOW,
+        nutritionSetupAvailable: false,
       },
     );
     expect(planned.next).toBe('nutrition');
@@ -350,6 +367,7 @@ describe('planSave: nächster Schritt nach packages/core', () => {
         versions: VERSIONS,
         platform: 'web',
         now: NOW,
+        nutritionSetupAvailable: false,
       },
     );
     expect(home.next).toBe('equipment');

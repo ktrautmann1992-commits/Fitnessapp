@@ -1,6 +1,7 @@
 import type {
   ConsentType,
   DataExportFile,
+  NutritionLibrary,
   PreferenceChange,
   PlanLibrary,
   PlanSafetyRules,
@@ -108,8 +109,35 @@ export interface PreferenceSwapContext {
   ambiguousLocation: boolean;
 }
 
+/** Ernährungs-Bestand (Phase 5, Etappe N4). */
+export interface NutritionLibraryResult {
+  library: NutritionLibrary;
+  /** true = Beispiel-Rezepte mit TESTWERTEN (Testmodus, nur auf Wunsch, solange das Bündel keine Rezepte hat). */
+  demo: boolean;
+  /**
+   * Testmodus: Das Bündel hat noch keine verwendbaren Rezepte (echter Katalog fehlt, Workflow foods-import/alpha5-
+   * import) – Angebot „Beispiel-Rezepte mit Testwerten verwenden“.
+   */
+  demoAvailable: boolean;
+}
+
+/** Widerruf health_data mit Umwandlung der Unverträglichkeiten (docs/PLAN-PHASE-5.md 7.4, R2-K4). */
+export interface IntoleranceConversion {
+  /**
+   * Aktueller Stand (nur im Arbeitsspeicher): Daraus liest das Backend die Gruppen der Unverträglichkeiten – NUR, weil
+   * die Person der Umwandlung aktiv zugestimmt hat. Ohne Zustimmung wird `null` übergeben und nichts eingelesen.
+   */
+  rows: UserRows;
+}
+
 export interface Backend {
   readonly mode: BackendMode;
+  /**
+   * Ernährung (Phase 5): Testmodus ab Etappe N4; Supabase-Modus erst mit Etappe N7 (Spalten von nutrition_prefs,
+   * freigegebene Rezepte in der Datenbank). Steuert den Onboarding-Schritt `nutrition_setup` (R2-S3) und die
+   * Ernährungs-Bildschirme.
+   */
+  readonly supportsNutrition: boolean;
   /**
    * „Ab jetzt immer“ und „Ausgeschlossene Übungen“ (Etappe T2): Testmodus ja; Supabase-Modus erst mit Etappe T3
    * (Tabelle exercise_preferences) – bis dahin nur „Nur heute“, kein halbfertiger Zustand (8.2).
@@ -197,7 +225,24 @@ export interface Backend {
    * Warteschlange, Entwurf und Zwischenspeicher bereinigen (neutralisieren bzw. bei `deleteLogs` entfernen), dann
    * revoke_health_data(deleteLogs) in EINER Transaktion.
    */
-  revokeHealthData(deleteLogs: boolean): Promise<void>;
+  revokeHealthData(deleteLogs: boolean, conversion: IntoleranceConversion | null): Promise<void>;
+  /**
+   * Gespeicherte Unverträglichkeiten löschen (Recht auf Löschung, Wächter N4 NK2) – geht immer, auch ohne Einwilligung
+   * (Löschen braucht keine). Supabase: sofort, nur online (Gesundheitsdaten nie in die Warteschlange).
+   */
+  deleteStoredIntolerances(): Promise<void>;
+  /**
+   * Ernährungs-Bestand (Phase 5): Testmodus aus dem Bündel (Entwürfe erlaubt, `selectNutritionContent`), auf Wunsch
+   * Beispiel-Rezepte mit Testwerten (`demo`); Supabase-Modus bis Etappe N7 null.
+   */
+  loadNutritionLibrary(options: {
+    demo: boolean;
+    /**
+     * Nur Testmodus und nur für die E2E-Tests (Wächter N4 K7): Beispiel-Rezepte auch dann, wenn das Bündel schon echte
+     * Rezepte hat – damit die Tests nicht vom Stand des Katalogs abhängen. Kennzeichnung bleibt.
+     */
+    force?: boolean;
+  }): Promise<NutritionLibraryResult | null>;
   /** Wartende Trainings und Entwürfe (R6). */
   pendingWorkouts(): Promise<PendingWorkouts>;
   /** Planned-Session-IDs mit noch nicht übertragenem Training (Anzeige „wird übertragen“). */

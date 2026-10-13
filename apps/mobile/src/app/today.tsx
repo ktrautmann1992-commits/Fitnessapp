@@ -14,6 +14,7 @@ import { Redirect, useFocusEffect, useRouter, type Href } from 'expo-router';
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import { Platform, View } from 'react-native';
 
+import { NutritionTodayCard } from '@/components/nutrition';
 import { MedicalNotice, SessionCard, WeekOverview } from '@/components/plan';
 import { ConfirmDialog, Screen } from '@/components/screen';
 import { focusTestId, SwapDialog, type SwapDecision, SwapFeedback } from '@/components/swap';
@@ -50,6 +51,8 @@ export default function TodayScreen() {
   const router = useRouter();
   const app = useApp();
   const today = todayIso();
+  const clock = new Date();
+  const nowMinutes = clock.getHours() * 60 + clock.getMinutes();
   const [selected, setSelected] = useState(today);
   const [busy, setBusy] = useState(false);
   const [message, setMessage] = useState<{ tone: 'success' | 'danger'; text: string }>();
@@ -91,7 +94,12 @@ export default function TodayScreen() {
       </Screen>
     );
   }
-  const route = resolveEntryRoute({ session: app.session, rows: app.rows, versions: app.versions });
+  const route = resolveEntryRoute({
+    session: app.session,
+    rows: app.rows,
+    versions: app.versions,
+    nutritionSetupAvailable: app.backend.supportsNutrition,
+  });
   if (route !== '/today' || !rows) {
     return <Redirect href={route as Href} />;
   }
@@ -334,6 +342,7 @@ export default function TodayScreen() {
             loading={busy}
           />
         </Card>
+        <NutritionTodayCard nowMinutes={nowMinutes} />
         {rows.sessionLogs.length > 0 ? (
           // Das Tagebuch bleibt auch ohne Plan (z. B. nach dem Widerruf) – Verlauf erreichbar.
           <Button
@@ -709,7 +718,9 @@ export default function TodayScreen() {
           setSelected(date);
         }}
       />
-      {/* Woche und Verlauf (Etappe D) – eine Tab-Leiste kommt mit der Ernährung (Phase 5). */}
+      {/* Ernährung (Phase 5, Etappe N4): Karte „Essen heute“. */}
+      <NutritionTodayCard nowMinutes={nowMinutes} />
+      {/* Woche und Verlauf (Etappe D). */}
       <View style={{ flexDirection: 'row', gap: 8 }}>
         <View style={{ flex: 1 }}>
           <Button

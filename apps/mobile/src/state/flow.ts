@@ -48,7 +48,15 @@ export function healthConsentStatus(
  * - false: bewusst ohne Einwilligung weiter (Profil steht hinter dem Einwilligungs-Schritt) oder widerrufen,
  * - undefined: noch nicht gefragt.
  */
-export function deriveOnboardingState(rows: UserRows, versions: ConsentVersions): OnboardingState {
+export function deriveOnboardingState(
+  rows: UserRows,
+  versions: ConsentVersions,
+  /**
+   * Speicherort für den Schritt `nutrition_setup` vorhanden (Backend.supportsNutrition: Testmodus ja, Supabase erst
+   * ab Etappe N7 – R2-S3, docs/PLAN-PHASE-5.md 8.1).
+   */
+  nutritionSetupAvailable: boolean,
+): OnboardingState {
   const status = healthConsentStatus(rows, versions);
   const saved = rows.profile?.onboarding_step;
   const pastConsentStep =
@@ -63,11 +71,18 @@ export function deriveOnboardingState(rows: UserRows, versions: ConsentVersions)
     healthDataConsent,
     hasHomeStrength:
       slots.length > 0 ? slots.some((slot) => slot.kind === 'strength_home') : undefined,
+    nutritionSetupAvailable,
   };
 }
 
 export type EntryRoute =
-  '/welcome' | '/age' | '/consents' | '/done' | '/today' | `/onboarding/${OnboardingStep}`;
+  | '/welcome'
+  | '/age'
+  | '/consents'
+  | '/done'
+  | '/today'
+  | '/ernaehrung'
+  | `/onboarding/${OnboardingStep}`;
 
 export function stepRoute(step: OnboardingStep): EntryRoute {
   return `/onboarding/${step}`;
@@ -78,6 +93,8 @@ export function resolveEntryRoute(input: {
   session: AuthSession | null;
   rows: UserRows | null;
   versions: ConsentVersions;
+  /** Backend.supportsNutrition (Schritt `nutrition_setup` nur dann, R2-S3). */
+  nutritionSetupAvailable: boolean;
 }): EntryRoute {
   const { session, rows, versions } = input;
   if (!session) {
@@ -90,7 +107,10 @@ export function resolveEntryRoute(input: {
     return '/consents';
   }
   if (rows.profile.onboarding_completed_at == null) {
-    const step = resumeStep(rows.profile.onboarding_step, deriveOnboardingState(rows, versions));
+    const step = resumeStep(
+      rows.profile.onboarding_step,
+      deriveOnboardingState(rows, versions, input.nutritionSetupAvailable),
+    );
     return step === null ? '/done' : stepRoute(step);
   }
   return '/today';
@@ -117,10 +137,24 @@ export function lastMeasurementDate(rows: UserRows): string | null {
  */
 const EDIT_CHAIN = ['experience', 'goal', 'time_budget', 'equipment'] as const;
 
+/**
+ * „Ernährung ändern“ (docs/PLAN-PHASE-5.md 8.2 Nr. 7, Etappe N4): Ernährungsform/Vorlieben → Kochmodus → Alltag und
+ * Trainingszeit (nur mit Speicherort, R2-S3), danach zurück zur Ernährung.
+ */
+const NUTRITION_EDIT_CHAIN = ['nutrition', 'cooking', 'nutrition_setup'] as const;
+
 export function nextEditRoute(
   step: OnboardingStep,
   save: StepSave,
+  nutritionSetupAvailable = false,
 ): EntryRoute | `${EntryRoute}?edit=1` {
+  const nutritionIndex = (NUTRITION_EDIT_CHAIN as readonly string[]).indexOf(step);
+  if (nutritionIndex >= 0) {
+    const next = NUTRITION_EDIT_CHAIN[nutritionIndex + 1];
+    if (next === undefined) return '/ernaehrung';
+    if (next === 'nutrition_setup' && !nutritionSetupAvailable) return '/today';
+    return `${stepRoute(next)}?edit=1`;
+  }
   const index = (EDIT_CHAIN as readonly string[]).indexOf(step);
   if (index < 0 || index === EDIT_CHAIN.length - 1) return '/today';
   const next = EDIT_CHAIN[index + 1];

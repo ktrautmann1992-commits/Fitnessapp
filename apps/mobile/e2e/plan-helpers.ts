@@ -100,7 +100,25 @@ export async function onboard(page: Page, person: Person) {
   await next(page);
   await page.getByRole('radio', { name: /^Täglich frisch/ }).click();
   await next(page);
+  await completeNutritionSetup(page);
   await heading(page, 'Geschafft!');
+}
+
+/**
+ * Schritt „Alltag und Training“ (nutrition_setup, docs/PLAN-PHASE-5.md 8.1, Etappe N4 – nur im Testmodus): Alltag und
+ * Trainingszeit sind Pflicht (K7), „Kalorienzahlen anzeigen“ bleibt an.
+ */
+export async function completeNutritionSetup(
+  page: Page,
+  options: { activity?: RegExp; time?: string } = {},
+) {
+  await heading(page, 'Alltag und Training');
+  await page.getByRole('radio', { name: options.activity ?? /^Sitzend mit Bewegung/ }).click();
+  await page
+    .getByRole('radiogroup', { name: 'Wann trainierst du meistens?' })
+    .getByRole('radio', { name: options.time ?? 'Abends' })
+    .click();
+  await next(page);
 }
 
 export async function planDays(page: Page, days: [string, string, number][]) {

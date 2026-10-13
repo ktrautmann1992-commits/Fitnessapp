@@ -17,8 +17,15 @@ import {
 
 const full: OnboardingState = { healthDataConsent: true, hasHomeStrength: true };
 const noConsentGym: OnboardingState = { healthDataConsent: false, hasHomeStrength: false };
-/** Alle Schritte außer dem seit Etappe B2 nie anwendbaren Trainingsort. */
-const ALL_SHOWN = ONBOARDING_STEPS.filter((step) => step !== 'training_location');
+/**
+ * Alle Schritte außer dem seit Etappe B2 nie anwendbaren Trainingsort und dem Schritt `nutrition_setup`, der nur mit
+ * `nutritionSetupAvailable: true` (Testmodus bis N7) anwendbar ist.
+ */
+const ALL_SHOWN = ONBOARDING_STEPS.filter(
+  (step) => step !== 'training_location' && step !== 'nutrition_setup',
+);
+/** Testmodus (lokales Backend): Speicherort für `nutrition_setup` vorhanden (R2-S3). */
+const fullTestMode: OnboardingState = { ...full, nutritionSetupAvailable: true };
 
 describe('Schritt-Reihenfolge', () => {
   it('enthält keinen Wearable-Schritt (Frage 8)', () => {
@@ -157,5 +164,45 @@ describe('resumeStep', () => {
     expect(isOnboardingStep('cooking')).toBe(true);
     expect(isOnboardingStep('welcome')).toBe(false);
     expect(isOnboardingStep(3)).toBe(false);
+  });
+});
+
+describe('Schritt nutrition_setup (docs/PLAN-PHASE-5.md 8.1, R2-S3, W21)', () => {
+  it('steht direkt nach „cooking“ in ONBOARDING_STEPS (CHECK-Liste, W16)', () => {
+    expect(ONBOARDING_STEPS.indexOf('nutrition_setup')).toBe(
+      ONBOARDING_STEPS.indexOf('cooking') + 1,
+    );
+    expect(ONBOARDING_STEPS.at(-1)).toBe('nutrition_setup');
+  });
+
+  it('Supabase-Modus (nicht gesetzt bzw. false): nicht anwendbar, Liste ohne den Schritt, Ende nach „cooking“', () => {
+    for (const state of [full, noConsentGym, {}, { ...full, nutritionSetupAvailable: false }]) {
+      expect(isStepApplicable('nutrition_setup', state)).toBe(false);
+      expect(applicableSteps(state)).not.toContain('nutrition_setup');
+      expect(nextStep('cooking', state)).toBeNull();
+    }
+  });
+
+  it('Supabase-Modus: gespeicherter Schritt nutrition_setup → resumeStep springt weiter (fertig)', () => {
+    expect(resumeStep('nutrition_setup', full)).toBeNull();
+    expect(resumeStep('nutrition_setup', {})).toBeNull();
+  });
+
+  it('Testmodus (true): anwendbar, letzter Schritt nach „cooking“, Fortschritt zählt ihn mit', () => {
+    expect(isStepApplicable('nutrition_setup', fullTestMode)).toBe(true);
+    expect(applicableSteps(fullTestMode)).toEqual([...ALL_SHOWN, 'nutrition_setup']);
+    expect(nextStep('cooking', fullTestMode)).toBe('nutrition_setup');
+    expect(nextStep('nutrition_setup', fullTestMode)).toBeNull();
+    expect(previousStep('nutrition_setup', fullTestMode)).toBe('cooking');
+    expect(resumeStep('nutrition_setup', fullTestMode)).toBe('nutrition_setup');
+    expect(progress('nutrition_setup', fullTestMode)).toEqual({
+      current: 12,
+      total: 12,
+      fraction: 1,
+    });
+    // Auch ohne Einwilligung (kein Gesundheitsdatum): Schritt bleibt anwendbar.
+    expect(
+      isStepApplicable('nutrition_setup', { ...noConsentGym, nutritionSetupAvailable: true }),
+    ).toBe(true);
   });
 });

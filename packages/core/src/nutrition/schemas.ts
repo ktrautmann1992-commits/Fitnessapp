@@ -256,3 +256,45 @@ export const mealPlanProfileSchema = z
   });
 export type MealPlanProfile = z.infer<typeof mealPlanProfileSchema>;
 export type MealPlanProfileInput = z.input<typeof mealPlanProfileSchema>;
+
+// ---------------------------------------------------------------------------------------------------------
+// Onboarding-Schritt `nutrition_setup` (Etappe N4, docs/PLAN-PHASE-5.md 8.1)
+// ---------------------------------------------------------------------------------------------------------
+
+/**
+ * Antworten des Schritts `nutrition_setup`. Die Alltagsaktivität ist PFLICHT (Wächter N1 K7): Ohne Angabe rechnet die
+ * Engine mit dem niedrigsten Faktor 1,45, der aktive Menschen unterschätzt – deshalb wird sie wirklich abgefragt.
+ * Die Trainingszeit hat die Antwort „unterschiedlich“ (`varies`). `mealprepSlots` nur bei Meal-Prep (sonst `null`).
+ * „Kalorienzahlen anzeigen“ ist eine aktive Einstellung (Standard an, Frage 16 B (h)).
+ */
+export const nutritionSetupStepSchema = z.strictObject({
+  activityLevel: activityLevelSchema,
+  trainingTime: trainingTimeSchema,
+  mealprepSlots: z.enum(MEALPREP_SLOT_MODES).nullable().default(null),
+  showEnergyNumbers: z.boolean(),
+});
+export type NutritionSetupStep = z.infer<typeof nutritionSetupStepSchema>;
+export type NutritionSetupStepInput = z.input<typeof nutritionSetupStepSchema>;
+
+/**
+ * Gespeicherte Antworten – Spaltennamen wie die künftigen `nutrition_prefs`-Spalten aus Etappe N7 (7.2). Bis N7 nur
+ * im Testmodus (Gerätespeicher, wird beim Laden mit diesem Schema geprüft). Kein Gesundheitsdatum.
+ */
+export const nutritionSetupColumnsSchema = z.strictObject({
+  activity_level: activityLevelSchema,
+  training_time: trainingTimeSchema,
+  mealprep_slots: z.enum(MEALPREP_SLOT_MODES),
+  show_energy_numbers: z.boolean(),
+});
+export type NutritionSetupColumns = z.infer<typeof nutritionSetupColumnsSchema>;
+
+/** Antworten → Spalten (`mealprep_slots` ohne Meal-Prep: Standard „Mittag“, Frage 16 A (10)). */
+export function nutritionSetupColumns(step: NutritionSetupStepInput): NutritionSetupColumns {
+  const parsed = nutritionSetupStepSchema.parse(step);
+  return {
+    activity_level: parsed.activityLevel,
+    training_time: parsed.trainingTime,
+    mealprep_slots: parsed.mealprepSlots ?? 'lunch',
+    show_energy_numbers: parsed.showEnergyNumbers,
+  };
+}
