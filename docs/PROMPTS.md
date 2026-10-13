@@ -107,7 +107,7 @@ Kalorienänderungen nur innerhalb der Schutzgrenzen aus CLAUDE.md. Premium-Prüf
 ```
 **Stand 10.10.2026:** Plan freigegeben (`docs/PLAN-PHASE-4B.md`), **Etappe A0 erledigt**. Reihenfolge laut
 Gründer-Entscheidung 09.10.2026: Übungs-Glossar/Übungstausch (erledigt bis T2) → **Phase 5** → danach 4b weiter mit
-A → D (Testmodus) → E; B und C später, wenn echte Konten mit Supabase kommen. Kalorien-Anpassungen aus 4b laufen nur
+A → D (Testmodus) → E; B und C später, wenn echte Konten mit Supabase kommen. **Gründer-Entscheidung 13.10.2026:** Nach Phase 5 kommt zuerst **Phase 10** (Ausdauer-Wettkampf & Strecken), danach 4b. Kalorien-Anpassungen aus 4b laufen nur
 als Versatz durch die Schutzgrenzen der Ernährungs-Engine aus Phase 5 (`nutrition/limits.ts`).
 
 ## Phase 5 – Ernährungs-Engine, Essensplan, Einkaufsliste
@@ -310,6 +310,7 @@ user_gyms, gym_memberships mit RLS.
 ```
 
 ## Phase 10 – Ausdauer-Wettkampf & Strecken
+**Reihenfolge (Gründer-Entscheidung 13.10.2026):** direkt nach Phase 5, vor Phase 4b. Vor der Umsetzung: Plan vorlegen und freigeben lassen.
 ```
 Erweitere die Plan-Engine um Periodisierung rückwärts vom Wettkampfdatum (Basis, Aufbau,
 Spitze, Tapering) und die Ernährung um Carb-Loading und Wettkampf-Verpflegung. Baue Strecken
