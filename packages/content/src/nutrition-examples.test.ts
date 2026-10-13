@@ -14,7 +14,7 @@ const weekOf = (key: string) => {
 };
 
 describe('Beispiel-Ernährung (CI-Zusammenfassung, Plan 15 N1)', () => {
-  it('Tabelle für jede Person A–H', () => {
+  it('Tabelle für jede Person A–J', () => {
     const markdown = renderNutritionExamples();
     for (const person of NUTRITION_EXAMPLE_PERSONS)
       expect(markdown).toContain(`### ${person.name}`);
@@ -27,6 +27,8 @@ describe('Beispiel-Ernährung (CI-Zusammenfassung, Plan 15 N1)', () => {
       'F',
       'G',
       'H',
+      'I',
+      'J',
     ]);
   });
 
@@ -67,5 +69,28 @@ describe('Beispiel-Ernährung (CI-Zusammenfassung, Plan 15 N1)', () => {
   it('H (Frau 100 kg, KF 50 %) hat am Ruhetag 1.910 kcal', () => {
     for (const day of weekOf('H').days) expect(day.targetKcal).toBe(1910);
     expect(renderNutritionExamples()).toContain('1.910 kcal');
+  });
+
+  it('I (konkretes Ziel −10 kg in 26 Wochen): Defizit kleiner als ohne festes Ziel, Ruhetag am Montag 2.270 kcal', () => {
+    const person = NUTRITION_EXAMPLE_PERSONS.find((p) => p.key === 'I')!;
+    const week = weekOf('I');
+    const plain = nutritionTargetsForWeek(
+      { ...person.inputs, weightGoal: null },
+      NUTRITION_EXAMPLE_WEEK,
+    );
+    expect(week.days[0]!.targetKcal).toBe(2270);
+    expect(plain.days[0]!.targetKcal).toBe(2150);
+    for (const [i, day] of week.days.entries()) {
+      expect(day.weightGoalStatus).toBe('active');
+      expect(day.targetKcal!).toBeGreaterThanOrEqual(plain.days[i]!.targetKcal!);
+    }
+    expect(week.weightGoalNotices).toEqual([]);
+  });
+
+  it('J (zwei Ziele + zu schnelles Ziel): nie mehr als −15 %, Hinweis einmal in der Woche', () => {
+    const week = weekOf('J');
+    for (const day of week.days) expect(day.goalAdjustment).toBe(-0.15);
+    expect(week.weightGoalNotices).toEqual(['weight_goal_pace_capped']);
+    expect(renderNutritionExamples().match(/damit es sicher bleibt/g)).toHaveLength(1);
   });
 });

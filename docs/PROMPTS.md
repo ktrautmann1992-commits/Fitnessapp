@@ -169,7 +169,11 @@ BMI 18,5, Wächter empfiehlt hart 20, ab 70 J. 22) – Gründer-Entscheidung, n�
 **Stand 13.10.2026: Z1 umgesetzt, Wächter-geprüft (Auflagen eingearbeitet)** – Ziel-Profil `packages/core/src/goals/profile.ts`,
 `GOAL_PAIR_RULES`, Nebenziel in Plan und Ernährung (optional, Standard `null`, Payload ohne Schlüssel bei `null`),
 Migration `20261013120000_plan_inputs_secondary_goal.sql` (`goal_pair_allowed`, `assert_plan_inputs`) mit pgTAP 27.
-Abweichungen und Wächter-Auflagen (S-1 bis S-3, K-1 bis K-7; S-3 ist Auflage für Z4) in `docs/PLAN-ZIELE.md` Abschnitt 11. Reihenfolge (F12): **Z1**
+Abweichungen und Wächter-Auflagen (S-1 bis S-3, K-1 bis K-7; S-3 ist Auflage für Z4) in `docs/PLAN-ZIELE.md` Abschnitt 11.
+**Stand 13.10.2026: Z2 umgesetzt, Wächter-geprüft (Auflagen eingearbeitet)** – Abnehmziel und Ampel nur im Core
+(`goals/weight-goal*.ts`, `weightGoal` in `nutritionTargetsForWeek`, optional, Standard `null`), keine Migration, keine App.
+Abweichungen und Wächter-Auflagen (S-1, K-1 bis K-7; K-2/K-5/K-6 als Vormerkungen für 4b, Z3, Z5) in `docs/PLAN-ZIELE.md`
+Abschnitt 12. Reihenfolge (F12): **Z1**
 (Core: Ziel-Profil, zwei Ziele, dazu kleine Migration `assert_plan_inputs` mit optionalem Nebenziel-Schlüssel) und
 **Z2** (Core: Abnehmziel und Ampel) jetzt parallel zu Phase 5 → nach Phase 5: **Z3** (Datenmodell, Migration mit RLS,
 Testmodus, Export) → **Z4** (Onboarding mit Ampel, nach F8) → **Z5/Z6** (Einstellungen, Anzeigen, PDF, Doku) → dann

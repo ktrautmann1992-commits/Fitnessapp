@@ -1,6 +1,6 @@
 # Plan „Ziele erweitern“: Abnehmen mit oder ohne konkretes Ziel, Erreichbarkeits-Ampel, zwei Ziele
 
-**Status:** Plan **Wächter-geprüft (Auflagen eingearbeitet)**. Die Wächter-Prüfung vom 13.10.2026 ergab „Freigabe mit Auflagen“ (Blocker B1, Soll S1–S20, Kann K1–K10). Die Nachprüfung (Runde 2, gleicher Tag) ergab erneut „Freigabe mit Auflagen“ ohne Blocker (Soll N1–N4, Kann K-a bis K-f). Alle Auflagen beider Runden sind in diesem Dokument eingearbeitet, Übersicht in Abschnitt 10. Gründer-Entscheidungen vom 13.10.2026 in Abschnitt 0. **Offen:** F8 (Untergrenze Zielgewicht, Wächter S12), eine Gründer-Entscheidung. Bis dahin gilt BMI 18,5 vorläufig. F8 betrifft erst Z2 (Konstante) und muss vor Z4 (erste sichtbare App-Stelle) entschieden sein. Z1 kann beginnen.
+**Status:** Plan **Wächter-geprüft (Auflagen eingearbeitet)**. **Z1 und Z2 umgesetzt und Wächter-geprüft** (Abschnitte 11 und 12). Die Wächter-Prüfung vom 13.10.2026 ergab „Freigabe mit Auflagen“ (Blocker B1, Soll S1–S20, Kann K1–K10). Die Nachprüfung (Runde 2, gleicher Tag) ergab erneut „Freigabe mit Auflagen“ ohne Blocker (Soll N1–N4, Kann K-a bis K-f). Alle Auflagen beider Runden sind in diesem Dokument eingearbeitet, Übersicht in Abschnitt 10. Gründer-Entscheidungen vom 13.10.2026 in Abschnitt 0. **Offen:** F8 (Untergrenze Zielgewicht, Wächter S12), eine Gründer-Entscheidung. Bis dahin gilt BMI 18,5 vorläufig. F8 betrifft erst Z2 (Konstante) und muss vor Z4 (erste sichtbare App-Stelle) entschieden sein. Z1 kann beginnen.
 **Gründer-Wunsch (wörtlich):** „Baue folgendes beim Ziel Abnehmen noch ein: Auswahl Abnehmen ohne konkretes Ziel, Abnehmen mit konkretem Ziel mit dem Gewicht in kg abnehmen in welcher Zeit. Und auf einer Skala von rot bis grün soll angegeben werden wie gut das erreichbar ist. Zudem sollte man 2 Ziele auswählen können. Die Übungen im Trainingsplan sollen für beide Ziele passen.“
 **Etappen:** Z0–Z6 (Abschnitt 7).
 
@@ -136,7 +136,7 @@ In `nutritionTargetsForWeek` kommt eine neue Eingabe `weightGoal` hinzu (`nutrit
    - **Erreicht** (Wächter S8): Seit `startDate` gibt es mindestens eine Gewichtsangabe ≤ Zielgewicht (aus `bodyMetricsRows`, bis einschließlich d). Dann gilt Erhalt (Anpassung 0) und Hinweis `weight_goal_reached`, **bis der Nutzer wählt**, wie es weitergeht (6.4). Ein späteres Gewicht über dem Ziel schaltet das nicht zurück. So flackert nichts, und die Engine bleibt zustandslos: Sie leitet „erreicht“ aus den Messungen ab, eine eigene Spalte braucht es nicht. Test: Gewichtsfolge 80,1 → 79,9 → 80,2 bei Ziel 80,0 → ab 79,9 durchgehend „erreicht“.
    - **Aktiv**: gültig, nicht erreicht und `targetDate > d` (strikt; Wächter S7).
    - **Datum vorbei** (`targetDate ≤ d`): Standard-Defizit wie „ohne festes Ziel“ und Hinweis `weight_goal_date_passed`.
-2. **Benötigtes Tempo ab Tag d:** `restKg = aktuell − Ziel`, `restWochen = max(Tage von d bis targetDate, 1) / 7` (gezählt **ab d**, damit alle 7 Tage der Woche einheitlich rechnen; der `max` schützt zusätzlich vor einer Division durch 0), in kg/Woche `v_r = restKg / restWochen`. Tests am Zieldatum und am Tag davor.
+2. **Benötigtes Tempo ab Tag d:** `restKg = aktuell − Ziel`, `restWochen = max(Tage vom Ankertag bis targetDate, 1) / 7` mit **Ankertag = max(Messtag des neuesten Gewichts, startDate), höchstens d** (Wächter Z2 S-1; ursprünglich „ab d“). So bleibt das Tempo ohne neue Messung konstant – am Speichertag genau das Tempo der Ampel (Δ / Wochen) –, und die Engine verschärft nicht täglich, solange niemand wiegt (kein Widerspruch „Ampel: in deinem Tempo“ ↔ „wir planen langsamer“, S4). Der `max` schützt vor einer Division durch 0. In kg/Woche `v_r = restKg / restWochen`. Tests am Zieldatum und am Tag davor. Tage vor `startDate` haben kein Ziel (Wächter Z2 K-1).
 3. **Tempo der Standard-Anpassung:** `v_S = −Standard-Anpassung × Grundbedarf × 7 / 7700` kg/Woche (Standard-Anpassung des Ziel-Profils, z. B. −0,20 bei Abnehmen bzw. Kombinationswert aus 4.4; `KCAL_PER_KG_BODY_WEIGHT = 7700` nur als Planungswert, wie in Phase 5).
 4. **Geplantes Tempo (F5, „nie schneller als heute“):** `v = min(v_r, v_S)`. Gleichwertig als Energie-Anpassung: `Anpassung = max(Standard-Anpassung, −v_r × 7700 / 7 / Grundbedarf)`. Bei Defiziten ist das die **kleinere absolute** Anpassung. Ein konkretes Ziel kann das Defizit also nur verkleinern, nie vergrößern. `WEIGHT_GOAL_PACE_MAX_PLANNED` gibt es nicht mehr; die Obergrenze ist die Standard-Anpassung des Profils.
 5. **Vorschlag je Tag:** `Grundbedarf × (1 + Anpassung) + Trainingsenergie + 4b-Versatz`, also dieselbe Formel wie heute, nur mit der Anpassung aus Schritt 4. Das Defizit bezieht sich wie heute auf den Grundbedarf ohne Training (Energieverfügbarkeit, Phase 5 S2).
@@ -662,3 +662,59 @@ Migration `20261013120000_plan_inputs_secondary_goal.sql`, pgTAP `27_plan_inputs
 | K-5 | Text „bei so wenigen Tagen“                                                                                     | in 4.3 nachgezogen                                                                                                                                                                                    |
 | K-6 | Status in PROMPTS.md                                                                                            | „Wächter-geprüft, Auflagen eingearbeitet“                                                                                                                                                             |
 | K-7 | 7 Wunsch-Tage im Muster-Raster                                                                                  | ergänzt (1–4 und 7 Tage)                                                                                                                                                                              |
+
+---
+
+## 12. Umsetzung Z2 (13.10.2026): Abweichungen vom Plan
+
+Z2 ist umgesetzt wie in Abschnitt 7 beschrieben: `goals/weight-goal-schema.ts` (gespeichertes Ziel), `goals/weight-goal.ts`
+(Eingabe, Normalisierung, Validierung 2.3, Wirkung je Tag 2.4), `goals/weight-goal-feasibility.ts` (Ampel 3.1),
+Integration in `nutritionTargetsForWeek`, Konstanten 3.2 (Ziel-BMI 18,5 als „VORLÄUFIG – F8“). Keine Migration, keine App.
+Die Beispiele A, B, C, D–I laufen wörtlich als Tests (`weight-goal-feasibility.test.ts`, `weight-goal-targets.test.ts`).
+Abweichungen:
+
+1. **Hinweise je Woche statt je Tag:** Die Codes stehen in einer eigenen Liste `WEIGHT_GOAL_NOTICE_CODES` (`notices.ts`) und
+   kommen einmal je Woche in `NutritionWeekTargets.weightGoalNotices` (Wächter K10 ist damit eingebaut). Je Tag gibt es
+   `weightGoalStatus`, `weightGoalPaceCapped` und `goalAdjustment`. Die Tages-Hinweise (`NUTRITION_NOTICE_CODES`) und ihre
+   App-Texte bleiben unverändert; die App-Texte der neuen Codes kommen mit Z5.
+2. **`createWeightGoalSchema(person)`** bekommt die Eingaben der Ernährungs-Engine statt nur Gewicht, Größe, Alter und
+   Flags: „kein Defizit planbar“ (S1) braucht Geschlecht, Körperfett, Alltagsfaktor und Ziele.
+3. **Eigene Datei `weight-goal-schema.ts`** für das gespeicherte Ziel, sonst entstünde ein Import-Kreis
+   (`nutritionInputsSchema` → Ampel → Energie → Schemas).
+4. **Reihenfolge der Stände je Tag:** vor `startDate` kein Ziel → ungültig (Abnehmen kein Ziel mehr oder Ziel-BMI mit
+   neuester Größe) → ruht (Modus nicht `full`, auch `no_targets`) → erreicht → abgelaufen → kein Defizit → aktiv. Die Anpassung liegt immer in [Standard; 0]. Liegt das
+   neueste Gewicht schon vor `startDate` unter dem Ziel (nur per direktem API-Eintrag möglich), gilt das Ziel als ungültig.
+5. **`no_deficit` zur Laufzeit (K-d):** Die Engine rechnet die Kapazität mit dem Alter des Tages (18. bzw. 65. Geburtstag
+   in der Woche), einmal je Alter.
+6. **`weight_goal_pace_capped`** auch dann, wenn eine Schutzgrenze das Ziel anhebt (Sonderfall-Deckel, Energieverfügbarkeit,
+   Tage mit gedeckelter Trainingsenergie) – wie 2.4 Nr. 6.
+7. **Struktur-Test** in `limits.test.ts`: Die Ampel-Datei darf `clampCalorieTarget` aufrufen (nur aufrufen, keine eigenen
+   Grenzen). Der Kontext der Grenzen kommt für Engine und Ampel aus derselben Funktion `dayLimitContext`.
+8. **Sichere Dauer:** Fällt mit dem Alter am Ende von N die Kapazität auf ≤ 1 kcal, gibt es kein N („über 2 Jahre“).
+   `max(N, 4)` greift bei Orange und Rot nie (dort ist N ≥ Wunschwochen ≥ 4); ein Test hält das fest.
+9. **Beispiel I konkret:** wie G, aber Körperfett 35 % → D_C ≈ 2,1 kcal (knapp über 1) → kein N; Körperfett 31 % → N = 108.
+10. **Monatsangabe ab 27 Wochen** und alle Texte der Ampel sind App (Z4). Core liefert Entwurfstexte nur als
+    Zod-Fehlermeldungen (`WEIGHT_GOAL_ISSUE_MESSAGES`).
+11. **CI-Tabelle „Beispiel-Ernährung“:** Personen I (konkretes Ziel, Beispiel A, 26 Wochen) und J (Abnehmen → Muskelaufbau mit
+    zu schnellem Ziel, Hinweis „etwas langsamer“).
+12. **Restwochen ab Ankertag** statt ab Tag d (Wächter Z2 S-1, Plan 2.4 Nr. 2 angepasst).
+
+### Wächter-Prüfung Z2 (13.10.2026): „Freigabe mit Auflagen“, keine Blocker
+
+| Nr. | Auflage (kurz)                                                                                    | Umsetzung                                                                                                                                                                                                                                                                                                                                                        |
+| --- | ------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| S-1 | Ampel „in deinem Tempo“, Engine meldet in Woche 1 „langsamer“ und verschärft täglich ohne Messung | Restwochen ab Ankertag = max(Messtag neuestes Gewicht, `startDate`), höchstens d (2.4 Nr. 2). Test: Grün/Gelb/Orange „ruhiger“ (A 26/22, H 6/7) → in der Woche ab dem Speichern kein `pace_capped`, gleichbleibende Anpassung; Orange „langsamer“/Rot bremst sofort bzw. sobald v_S < v_r (A 21 nach 15 Wochen). CI-Person I jetzt an allen Ruhetagen 2.270 kcal |
+| K-1 | Tage vor `startDate` rechnen als aktiv                                                            | vor `startDate` kein Ziel (Status `null`), Test                                                                                                                                                                                                                                                                                                                  |
+| K-2 | negativer 4b-Versatz löst `pace_capped` aus                                                       | **Vormerkung 4b** (siehe unten)                                                                                                                                                                                                                                                                                                                                  |
+| K-3 | `no_targets` immer „ruht“, `maintenance_only` „ungültig“ zuerst                                   | einheitlich über `weightGoalPreStatus`: vor Start → ungültig → ruht, auch an Tagen ohne Zahlen; Test                                                                                                                                                                                                                                                             |
+| K-4 | Tests schärfen                                                                                    | (a) D ≤ Defizit der Standard-Anpassung für 4 Personen × 6 Paare mit unabhängigem Grundbedarf; (b) Zustand je Gewicht 30/45/200/300 kg festgeschrieben; (c) D_C = 0 an einer echten Person (Stand am Ziel mit BMI < 18,5)                                                                                                                                         |
+| K-5 | gespeichertes Ziel außerhalb `weightGoalSchema` bricht die Ernährungswoche                        | **Vormerkung Z3** (siehe unten)                                                                                                                                                                                                                                                                                                                                  |
+| K-6 | Gewicht älter als 90 Tage bei bestehendem Ziel                                                    | **Vormerkung Z5** (siehe unten)                                                                                                                                                                                                                                                                                                                                  |
+| K-7 | Doku/Status                                                                                       | Status-Kopf, `PROMPTS.md`, diese Tabelle                                                                                                                                                                                                                                                                                                                         |
+
+**Vormerkungen aus der Wächter-Prüfung Z2:**
+
+- **4b (K-2):** `weight_goal_pace_capped` vergleicht heute das begrenzte Ziel mit dem Vorschlag **inklusive** 4b-Versatz. Ein negativer Versatz, den eine Untergrenze abfängt, meldet so „langsamer“, obwohl schneller als benötigt geplant wird. Im 4b-Plan: Vergleich ohne Versatz führen oder nur „Grenze hebt über den Ziel-Vorschlag“ werten (zusammen mit S10).
+- **Z3 (K-5):** Die DB-CHECKs von `weight_goals` müssen exakt zu `weightGoalSchema` passen (28–728 Tage ab `start_date`, `numeric(4,1)`, 30–300 kg). Sonst lässt das Mapping ein unpassendes Ziel weg und zeigt `weight_goal_invalid`, statt dass `nutritionInputsSchema.parse` die ganze Ernährungswoche scheitern lässt. Test im Mapping.
+- **Z5 (K-6):** Ein bestehendes Ziel rechnet mit einem Gewicht, das älter als 90 Tage ist, weiter (sicher: nur kleineres Defizit; Tageshinweis `weight_outdated`). Entscheiden, ob dazu ein eigener Ziel-Hinweis („Gewicht aktualisieren, damit wir dein Ziel richtig planen“) gehört.
+- **Z4/Z5 (Wächter Z2 Runde 2, K-8):** An sehr wenigen Ruhetagen (8 bzw. 21 von ~14.300 im Raster) zeigt die Ampel Grün, die Engine meldet aber `pace_capped` – nur bei Geburtstag in der Woche und Tempo fast genau an der Kapazität (Engine rechnet ab dem Geburtstag mit einem Jahr mehr, ~1 kcal/Tag strenger). Sicher (Defizit nur kleiner). Abhilfe bei Gelegenheit: Stand „heute“ zusätzlich mit dem Alter am Zieldatum rechnen und ins Minimum nehmen.

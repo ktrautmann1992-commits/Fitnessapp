@@ -18,6 +18,8 @@ import {
 } from '../constants';
 import type { ExperienceLevel, GoalType } from '../enums';
 import { goalEnergyAdjustment, type GoalSelectionInput } from '../goals/profile';
+import type { NutritionEligibility } from './eligibility';
+import type { DayEnergy } from './energy';
 import { type CalorieCapCode, sortCaps } from './notices';
 import { deficitCapSchema, surplusCapSchema } from './schemas';
 
@@ -74,6 +76,37 @@ export const calorieLimitContextSchema = z
     path: ['limitNeeds'],
   });
 export type CalorieLimitContext = z.infer<typeof calorieLimitContextSchema>;
+
+/**
+ * Kontext der Schutzgrenzen eines Tages aus Energie und Sonderfällen – dieselbe Zusammenstellung für die
+ * Ernährungs-Engine (`nutritionTargetsForWeek`) und die Erreichbarkeits-Ampel (docs/PLAN-ZIELE.md 3.1: die Ampel
+ * rechnet keine eigenen Grenzen). `goalIsSurplus` kommt aus der Energie-Richtung des Ziel-Profils (Wächter S11).
+ */
+export function dayLimitContext(input: {
+  readonly energy: DayEnergy;
+  readonly eligibility: Pick<NutritionEligibility, 'mode' | 'deficitCap' | 'surplusCap'>;
+  readonly weightKg: number;
+  readonly goalIsSurplus: boolean;
+}): CalorieLimitContext {
+  const { energy, eligibility } = input;
+  if (eligibility.mode === 'no_targets') {
+    throw new RangeError('Ohne Ziele (no_targets) gibt es keine Schutzgrenzen-Rechnung.');
+  }
+  return {
+    bmrForFloor: energy.bmrForFloor,
+    baseNeeds: energy.baseNeeds,
+    needs: energy.needs,
+    limitNeeds: energy.limitNeeds,
+    weightKg: input.weightKg,
+    ffmKg: energy.ffmForEnergyAvailability,
+    trainingGrossKcal: energy.training.grossKcal,
+    trainingCapped: energy.training.capped,
+    mode: eligibility.mode,
+    goalIsSurplus: input.goalIsSurplus,
+    deficitCap: eligibility.deficitCap,
+    surplusCap: eligibility.surplusCap,
+  };
+}
 
 /** Wirksamer Defizitdeckel: 0 bei `maintenance_only` und an Tagen mit gedeckelter Trainingsenergie. */
 export function effectiveDeficitCap(ctx: CalorieLimitContext): number {

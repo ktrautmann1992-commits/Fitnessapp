@@ -204,3 +204,41 @@ describe('Lebensmittel und Rezepte (Phase 5, N2a)', () => {
     expect(RECIPE_SCHEMA_LIMITS.steps).toEqual({ min: 1, max: 15 });
   });
 });
+
+describe('Abnehmziel und Ampel (docs/PLAN-ZIELE.md 3.2, Etappe Z2)', () => {
+  it('Stufen aufsteigend, Orange = 1 %/Woche (CLAUDE.md), Skala reicht darüber hinaus', async () => {
+    const {
+      WEIGHT_GOAL_PACE_LEVELS: P,
+      WEIGHT_GOAL_SCALE_MAX_PACE,
+      MAX_WEEKLY_WEIGHT_LOSS_FRACTION: MAX,
+    } = await import('./constants');
+    expect(P.green).toBeLessThan(P.yellow);
+    expect(P.yellow).toBeLessThan(P.orange);
+    expect(P.orange).toBe(MAX);
+    expect(WEIGHT_GOAL_SCALE_MAX_PACE).toBeGreaterThan(P.orange);
+    expect([P.green, P.yellow, P.orange, WEIGHT_GOAL_SCALE_MAX_PACE]).toEqual([
+      0.005, 0.0075, 0.01, 0.0125,
+    ]);
+  });
+
+  it('Grenzen laut Plan: mind. 1 kg, 4–104 Wochen, Ziel-BMI 18,5 vorläufig (F8), Hinweis unter 20, Kapazität > 1 kcal', async () => {
+    const {
+      WEIGHT_GOAL_LIMITS: L,
+      WEIGHT_GOAL_MIN_CAPACITY_KCAL,
+      BMI_LIMITS,
+    } = await import('./constants');
+    expect(L.minKg).toBe(1);
+    expect(L.weeks).toEqual({ min: 4, max: 104 });
+    expect(L.minTargetBmi).toBe(18.5);
+    // Nie unter der WHO-Untergewichtsgrenze, auch wenn F8 die Grenze anhebt.
+    expect(L.minTargetBmi).toBeGreaterThanOrEqual(BMI_LIMITS.underweight);
+    expect(L.lowTargetBmiNotice).toBe(BMI_LIMITS.lowNormal);
+    expect(L.lowTargetBmiNotice).toBeGreaterThan(L.minTargetBmi);
+    expect(WEIGHT_GOAL_MIN_CAPACITY_KCAL).toBe(1);
+  });
+
+  it('kein `WEIGHT_GOAL_PACE_MAX_PLANNED` (F5: die Standard-Anpassung ist die Obergrenze)', async () => {
+    const constants = await import('./constants');
+    expect(Object.keys(constants)).not.toContain('WEIGHT_GOAL_PACE_MAX_PLANNED');
+  });
+});
