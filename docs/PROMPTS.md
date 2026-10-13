@@ -158,6 +158,19 @@ Rezepte mit den Tags vor_training, waehrend und nach_training. Lege mir vorher d
 Entscheidung "konkrete Marken oder nur Produktarten" zur Freigabe vor.
 ```
 
+### Zwischenschritt – Ziele erweitern (Z0–Z6)
+**Stand 13.10.2026: Z0 – Plan Wächter-geprüft (Auflagen eingearbeitet)** (Plan `docs/PLAN-ZIELE.md`, Gründer-Wunsch
+vom 13.10.2026, kein eigener Prompt): Abnehmen ohne oder mit konkretem Ziel (kg in welcher Zeit), Erreichbarkeits-Ampel
+von Rot bis Grün, Haupt- und Nebenziel. Gründer-Entscheidungen F1, F5 („nie schneller als heute“), F7 (nur
+Planungsdauer) und F12 stehen in Abschnitt 0, die übrigen Fragen „wie empfohlen“. Wächter-Urteil „Freigabe mit
+Auflagen“ (B1, S1–S20, K1–K10), Runde 2 erneut „Freigabe mit Auflagen“ ohne Blocker (N1–N4, K-a bis K-f),
+alle eingearbeitet (Abschnitt 10). **Offen: F8** (Untergrenze Zielgewicht; vorläufig
+BMI 18,5, Wächter empfiehlt hart 20, ab 70 J. 22) – Gründer-Entscheidung, nötig vor Z4. Reihenfolge (F12): **Z1**
+(Core: Ziel-Profil, zwei Ziele, dazu kleine Migration `assert_plan_inputs` mit optionalem Nebenziel-Schlüssel) und
+**Z2** (Core: Abnehmziel und Ampel) jetzt parallel zu Phase 5 → nach Phase 5: **Z3** (Datenmodell, Migration mit RLS,
+Testmodus, Export) → **Z4** (Onboarding mit Ampel, nach F8) → **Z5/Z6** (Einstellungen, Anzeigen, PDF, Doku) → dann
+Phase 10.
+
 ## Erweiterungen Teil 2 – Rezepte, Küche, Lead-Magnet (Prompts B–G)
 Quelle: `docs/ERWEITERUNGEN-2.md` (Gründer, 11.10.2026). Jeder Prompt beginnt implizit mit: „Lies CLAUDE.md,
 docs/KONZEPT.md und docs/ERWEITERUNGEN-2.md. Erst Plan in einfachen Worten zeigen und auf Freigabe warten.“
