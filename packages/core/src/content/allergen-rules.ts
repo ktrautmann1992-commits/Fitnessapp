@@ -384,6 +384,10 @@ const DAIRY_NEGATIVES = [
   'fleischkaese',
   // „Milchner“ = männlicher Fisch, „Milchsäure“ (fermentiert, nicht aus Milch).
   'milchsaeure',
+  // Fleischteile, nicht „Obers“ (österr. Sahne): BLS „Schwein Schnitzel (Oberschale) roh“, „Hähnchen Oberschenkel“
+  // (Kandidatenlauf 38367139392). Wirkt nur auf die Trefferspanne im selben Wort – „Schlagobers“ bleibt Milch.
+  'oberschale',
+  'oberschenkel',
 ] as const;
 
 /** Glutenfreie Getreide/Stärken: Vorsilben vor „Mehl/Nudeln/Grieß …“ (R2-S1). */

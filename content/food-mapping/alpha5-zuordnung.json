@@ -5,7 +5,7 @@
   "origin": "claude_session",
   "model": "claude-opus-5-5",
   "created_on": "2026-10-11",
-  "note_de": "KI-VORSCHLAG (Claude-Code-Sitzung, Etappe N2b, docs/PLAN-PHASE-5.md 19.3) – unbestätigt. Enthält NIE Nährwerte. Quell-IDs (BLS-Schlüssel) nur aus dem Kandidatenlauf des Workflows foods-import (Modus „kandidaten“, 12.10.2026, BLS 4.0) übernommen, nie geraten; Begründung je Zutat in reason_de, „UNSICHER“ = bei der Katalog-Prüfung (R19) zuerst prüfen. Ohne passenden Kandidaten bleibt ref = null mit angepassten Suchbegriffen für den nächsten Lauf. Gruppen, tierische Bestandteile, Schwangerschafts-Hinweis und Haltbarkeit sind vorsichtige Vorschläge und werden bei der Katalog-Prüfung (R19) von Menschen bestätigt. Einheiten (EL/TL/Stück) folgen mit dem Rezept-Import (N2c).",
+  "note_de": "KI-VORSCHLAG (Claude-Code-Sitzung, Etappe N2b, docs/PLAN-PHASE-5.md 19.3) – unbestätigt. Enthält NIE Nährwerte. Quell-IDs (BLS-Schlüssel) nur aus den Kandidatenläufen des Workflows foods-import (Modus „kandidaten“, 12.10.2026 und Lauf 38367139392 vom 13.10.2026, BLS 4.0) übernommen, nie geraten; Begründung je Zutat in reason_de, „UNSICHER“ = bei der Katalog-Prüfung (R19) zuerst prüfen. Ohne passenden Eintrag bleibt ref = null mit Begründung („nicht in BLS 4.0“). Gruppen, tierische Bestandteile, Schwangerschafts-Hinweis und Haltbarkeit sind vorsichtige Vorschläge und werden bei der Katalog-Prüfung (R19) von Menschen bestätigt. Einheiten (EL/TL/Stück) folgen mit dem Rezept-Import (N2c).",
   "items": [
     {
       "alpha5_id": "ahornsirup",
@@ -41,7 +41,7 @@
       "source": {
         "db": "bls",
         "version": "4.0",
-        "ref": null,
+        "ref": "F5A1902",
         "search": [
           "Ananas Konserve",
           "Ananas Konserve abgetropft",
@@ -64,7 +64,7 @@
       "max_fridge_days": 3,
       "freezable": true,
       "substitutes": [],
-      "reason_de": "Zustand: Konserve, abgetropft (ohne Saft). Quell-ID offen (Lauf „kandidaten“ 12.10.2026, BLS 4.0): nur roh/gedünstet/getrocknet/Saft – kein Konserven-Eintrag unter den 8 kürzesten. Suchbegriffe für den nächsten Lauf angepasst – nicht geraten."
+      "reason_de": "UNSICHER – bei R19 zuerst prüfen. Zustand: Konserve, abgetropft (ohne Saft). Quell-ID F5A1902 „Ananas in Fruchtsaft, Konserve, abgetropft“ (Lauf 38367139392 „kandidaten“ 13.10.2026, BLS 4.0): Konserve abgetropft; „in Fruchtsaft“ als üblichste Ware gewählt (auch ungesüßt F591902 und gezuckert F501902 vorhanden) – Aufguss der Ware prüfen."
     },
     {
       "alpha5_id": "apfel",
@@ -370,7 +370,7 @@
       "source": {
         "db": "bls",
         "version": "4.0",
-        "ref": null,
+        "ref": "C352000",
         "search": ["Basmati", "Reis poliert", "Reis parboiled", "Langkornreis", "Reis roh"],
         "state_de": "trocken, ungekocht (Rohzustand!)",
         "category": "cereal_products"
@@ -388,7 +388,7 @@
       "max_fridge_days": 1,
       "freezable": true,
       "substitutes": [],
-      "reason_de": "Zustand: trocken, ungekocht (Rohzustand!). Quell-ID offen (Lauf „kandidaten“ 12.10.2026, BLS 4.0): „Reis“ liefert nur Gerichte/Reismehl (Liste nach Länge gekürzt) – kein roher Reis. Suchbegriffe für den nächsten Lauf angepasst – nicht geraten. Haltbarkeit gekocht 1 Tag (R9: Reis, Fisch, Hackfleisch, Geflügel). Basmatireis = ungekochter, polierter Reis; Rohzustand trocken. Gekochter Reis höchstens 1 Tag im Kühlschrank (R9)."
+      "reason_de": "Zustand: trocken, ungekocht (Rohzustand!). Quell-ID C352000 „Reis poliert, roh“ (Lauf 38367139392 „kandidaten“ 13.10.2026, BLS 4.0): polierter Reis roh = trocken, ungekocht; eigener Basmati-Eintrag fehlt. Haltbarkeit gekocht 1 Tag (R9: Reis, Fisch, Hackfleisch, Geflügel). Basmatireis = ungekochter, polierter Reis; Rohzustand trocken. Gekochter Reis höchstens 1 Tag im Kühlschrank (R9)."
     },
     {
       "alpha5_id": "beeren-mischung-tk",
@@ -397,7 +397,7 @@
       "source": {
         "db": "bls",
         "version": "4.0",
-        "ref": null,
+        "ref": "F092100",
         "search": ["Beerenmischung", "Beeren gemischt", "Waldbeeren"],
         "state_de": "TK, roh",
         "category": "fruit"
@@ -415,7 +415,7 @@
       "max_fridge_days": 3,
       "freezable": true,
       "substitutes": [],
-      "reason_de": "Zustand: TK, roh. Quell-ID offen (Lauf „kandidaten“ 12.10.2026, BLS 4.0): nur einzelne Beeren; Beerenmischung mit Sauerkirschen (F092100) nicht sicher gleich. Suchbegriffe für den nächsten Lauf angepasst – nicht geraten. Mischung; gleichwertiger Eintrag „Beerenobst“ bzw. Hauptbeere wählen (Begründung bei der Zuordnung). Doppelt zu „beerenmischung-tk“ (gleiche Quell-ID)."
+      "reason_de": "UNSICHER – bei R19 zuerst prüfen. Zustand: TK, roh. Quell-ID F092100 „Beerenmischung mit Sauerkirschen, ungesüßt, roh“ (Lauf 38367139392 „kandidaten“ 13.10.2026, BLS 4.0): einzige Beerenmischung, roh (TK = roh); enthält laut BLS Sauerkirschen – Zusammensetzung der TK-Ware prüfen. Mischung; gleichwertiger Eintrag „Beerenobst“ bzw. Hauptbeere wählen (Begründung bei der Zuordnung). Doppelt zu „beerenmischung-tk“ (gleiche Quell-ID)."
     },
     {
       "alpha5_id": "beerenmischung-tk",
@@ -424,7 +424,7 @@
       "source": {
         "db": "bls",
         "version": "4.0",
-        "ref": null,
+        "ref": "F092100",
         "search": ["Beerenmischung", "Beeren gemischt", "Waldbeeren"],
         "state_de": "TK, roh",
         "category": "fruit"
@@ -442,7 +442,7 @@
       "max_fridge_days": 3,
       "freezable": true,
       "substitutes": [],
-      "reason_de": "Zustand: TK, roh. Quell-ID offen (Lauf „kandidaten“ 12.10.2026, BLS 4.0): nur einzelne Beeren; Beerenmischung mit Sauerkirschen (F092100) nicht sicher gleich. Suchbegriffe für den nächsten Lauf angepasst – nicht geraten. Wie „beeren-mischung-tk“ (doppelte Zutat-ID in der Gründer-Datei, gleiche Quell-ID)."
+      "reason_de": "UNSICHER – bei R19 zuerst prüfen. Zustand: TK, roh. Quell-ID F092100 „Beerenmischung mit Sauerkirschen, ungesüßt, roh“ (Lauf 38367139392 „kandidaten“ 13.10.2026, BLS 4.0): einzige Beerenmischung, roh (TK = roh); enthält laut BLS Sauerkirschen – Zusammensetzung der TK-Ware prüfen. Wie „beeren-mischung-tk“ (doppelte Zutat-ID in der Gründer-Datei, gleiche Quell-ID)."
     },
     {
       "alpha5_id": "blattsalat",
@@ -611,7 +611,7 @@
       "max_fridge_days": 3,
       "freezable": true,
       "substitutes": [],
-      "reason_de": "Zustand: Pulver. Quell-ID offen (Lauf „kandidaten“ 12.10.2026, BLS 4.0): keine Kandidaten; Proteinpulver evtl. nur über Zweitquelle (Plan 19.3). Suchbegriffe für den nächsten Lauf angepasst – nicht geraten. Proteinpulver hat in der Hauptquelle vermutlich keinen eigenen Eintrag → (1) gleichwertiger Eintrag mit Begründung, (2) Zweitquelle, sonst (3) ungeprüft (Plan 19.3). Nie Werte vom Etikett oder von einer KI."
+      "reason_de": "Zustand: Pulver. Quell-ID offen (Lauf 38367139392 „kandidaten“ 13.10.2026, BLS 4.0, Kandidaten aus der ganzen Datei): nicht in BLS 4.0: kein Casein-/Milcheiweißpulver (Lauf fand keinen Kandidaten). Proteinpulver hat in der Hauptquelle vermutlich keinen eigenen Eintrag → (1) gleichwertiger Eintrag mit Begründung, (2) Zweitquelle, sonst (3) ungeprüft (Plan 19.3). Nie Werte vom Etikett oder von einer KI."
     },
     {
       "alpha5_id": "cashewkerne",
@@ -752,7 +752,7 @@
       "max_fridge_days": 3,
       "freezable": true,
       "substitutes": [],
-      "reason_de": "Zustand: getrocknet. Quell-ID offen (Lauf „kandidaten“ 12.10.2026, BLS 4.0): nur Chili-Gerichte; BLS nennt Chili „Pfefferschote“. Suchbegriffe für den nächsten Lauf angepasst – nicht geraten."
+      "reason_de": "Zustand: getrocknet. Quell-ID offen (Lauf 38367139392 „kandidaten“ 13.10.2026, BLS 4.0, Kandidaten aus der ganzen Datei): nicht in BLS 4.0: nur frische Pfefferschote (G553100/G554100), kein getrocknetes Chili; frisch wäre bei Nährwerten pro Gramm falsch."
     },
     {
       "alpha5_id": "chilipulver",
@@ -785,7 +785,7 @@
       "max_fridge_days": 3,
       "freezable": true,
       "substitutes": [],
-      "reason_de": "Zustand: getrocknet, gemahlen. Quell-ID offen (Lauf „kandidaten“ 12.10.2026, BLS 4.0): nur Chili-Gerichte; BLS nennt Chili „Pfefferschote“. Suchbegriffe für den nächsten Lauf angepasst – nicht geraten."
+      "reason_de": "Zustand: getrocknet, gemahlen. Quell-ID offen (Lauf 38367139392 „kandidaten“ 13.10.2026, BLS 4.0, Kandidaten aus der ganzen Datei): nicht in BLS 4.0: nur frische Pfefferschote (G553100/G554100), kein Chilipulver; frisch wäre bei Nährwerten pro Gramm falsch."
     },
     {
       "alpha5_id": "chinakohl",
@@ -821,7 +821,7 @@
       "source": {
         "db": "bls",
         "version": "4.0",
-        "ref": null,
+        "ref": "C119200",
         "search": ["Couscous", "Kuskus", "Hartweizen Grieß", "Weizen Grieß"],
         "state_de": "trocken, ungekocht",
         "category": "cereal_products"
@@ -839,7 +839,7 @@
       "max_fridge_days": 3,
       "freezable": true,
       "substitutes": [],
-      "reason_de": "Zustand: trocken, ungekocht. Quell-ID offen (Lauf „kandidaten“ 12.10.2026, BLS 4.0): nur Grieß anderer Getreide (Mais, Reis, Hafer …) – kein Couscous/Weizengrieß. Suchbegriffe für den nächsten Lauf angepasst – nicht geraten."
+      "reason_de": "Zustand: trocken, ungekocht. Quell-ID C119200 „Couscous (Hartweizen) roh“ (Lauf 38367139392 „kandidaten“ 13.10.2026, BLS 4.0): roh = trocken, ungekocht (nicht gekocht/mit Butter)."
     },
     {
       "alpha5_id": "currypulver",
@@ -866,7 +866,7 @@
       "max_fridge_days": 3,
       "freezable": true,
       "substitutes": [],
-      "reason_de": "Zustand: Gewürzmischung. Quell-ID offen (Lauf „kandidaten“ 12.10.2026, BLS 4.0): nur Curry-Gerichte/-Saucen. Suchbegriffe für den nächsten Lauf angepasst – nicht geraten. Gewürzmischung – Senf/Sellerie je nach Produkt enthalten, vorsichtig gesetzt."
+      "reason_de": "Zustand: Gewürzmischung. Quell-ID offen (Lauf 38367139392 „kandidaten“ 13.10.2026, BLS 4.0, Kandidaten aus der ganzen Datei): nicht in BLS 4.0: kein Currypulver, nur Curry-Gerichte/-Ketchup. Gewürzmischung – Senf/Sellerie je nach Produkt enthalten, vorsichtig gesetzt."
     },
     {
       "alpha5_id": "datteln-getrocknet-entsteint",
@@ -920,7 +920,7 @@
       "max_fridge_days": 3,
       "freezable": true,
       "substitutes": [],
-      "reason_de": "Zustand: frisch, roh. Quell-ID offen (Lauf „kandidaten“ 12.10.2026, BLS 4.0): nur Gerichte/Salzdillgurke – kein Dill-Kraut. Suchbegriffe für den nächsten Lauf angepasst – nicht geraten."
+      "reason_de": "Zustand: frisch, roh. Quell-ID offen (Lauf 38367139392 „kandidaten“ 13.10.2026, BLS 4.0, Kandidaten aus der ganzen Datei): nicht in BLS 4.0: kein Dill-Eintrag."
     },
     {
       "alpha5_id": "dinkelmehl-type-630",
@@ -1223,7 +1223,7 @@
       "max_fridge_days": 3,
       "freezable": true,
       "substitutes": [],
-      "reason_de": "Zustand: Pulver. Quell-ID offen (Lauf „kandidaten“ 12.10.2026, BLS 4.0): keine Kandidaten; Zuckeraustauschstoff evtl. nur über Zweitquelle (Plan 19.3). Suchbegriffe für den nächsten Lauf angepasst – nicht geraten. Erythrit hat in der Hauptquelle vermutlich keinen Eintrag → Zweitquelle oder ungeprüft (Plan 19.3)."
+      "reason_de": "Zustand: Pulver. Quell-ID offen (Lauf 38367139392 „kandidaten“ 13.10.2026, BLS 4.0, Kandidaten aus der ganzen Datei): nicht in BLS 4.0: nur Sorbit (S162000) und Xylit (S163000) – andere Stoffe mit anderem Energiegehalt. Erythrit hat in der Hauptquelle vermutlich keinen Eintrag → Zweitquelle oder ungeprüft (Plan 19.3)."
     },
     {
       "alpha5_id": "espresso-zubereitet",
@@ -1259,7 +1259,7 @@
       "source": {
         "db": "bls",
         "version": "4.0",
-        "ref": null,
+        "ref": "C352032",
         "search": [
           "Reis gekocht",
           "Reis poliert gekocht",
@@ -1283,7 +1283,7 @@
       "max_fridge_days": 1,
       "freezable": true,
       "substitutes": [],
-      "reason_de": "Zustand: gegart (Fertigprodukt). Quell-ID offen (Lauf „kandidaten“ 12.10.2026, BLS 4.0): „Reis“ liefert nur Gerichte/Reismehl – kein gegarter Reis. Suchbegriffe für den nächsten Lauf angepasst – nicht geraten. Haltbarkeit gekocht 1 Tag (R9: Reis, Fisch, Hackfleisch, Geflügel)."
+      "reason_de": "UNSICHER – bei R19 zuerst prüfen. Zustand: gegart (Fertigprodukt). Quell-ID C352032 „Reis poliert, gekocht“ (Lauf 38367139392 „kandidaten“ 13.10.2026, BLS 4.0): polierter Reis gekocht als Grundzutat (nicht das Gericht X820162); Fertigware enthält oft Öl/Salz. Haltbarkeit gekocht 1 Tag (R9: Reis, Fisch, Hackfleisch, Geflügel)."
     },
     {
       "alpha5_id": "falafel-kuehlregal",
@@ -1346,7 +1346,7 @@
       "source": {
         "db": "bls",
         "version": "4.0",
-        "ref": null,
+        "ref": "M820200",
         "search": [
           "Frischkäse Halbfettstufe",
           "Frischkäse Dreiviertelfettstufe",
@@ -1370,7 +1370,7 @@
       "max_fridge_days": 3,
       "freezable": true,
       "substitutes": [],
-      "reason_de": "Zustand: Frischkäse, fettreduziert. Quell-ID offen (Lauf „kandidaten“ 12.10.2026, BLS 4.0): nur Frischkäsezubereitung < 10 % bzw. „mind. 10 %“ Fett i. Tr. – Fettstufe von „light“ (meist Halbfett/Dreiviertelfett) nicht eindeutig. Suchbegriffe für den nächsten Lauf angepasst – nicht geraten."
+      "reason_de": "UNSICHER – bei R19 zuerst prüfen. Zustand: Frischkäse, fettreduziert. Quell-ID M820200 „Frischkäsezubereitung Natur, mind. 10 % Fett i. Tr.“ (Lauf 38367139392 „kandidaten“ 13.10.2026, BLS 4.0): Frischkäse natur, mind. 10 % Fett i. Tr. als fettreduzierte Stufe; Fettstufe der Ware prüfen."
     },
     {
       "alpha5_id": "fruehlingszwiebel",
@@ -1487,7 +1487,7 @@
       "source": {
         "db": "bls",
         "version": "4.0",
-        "ref": null,
+        "ref": "R821000",
         "search": [
           "Gemüsebrühe Pulver",
           "Gemüsebrühe Trockenprodukt",
@@ -1512,7 +1512,7 @@
       "max_fridge_days": 3,
       "freezable": true,
       "substitutes": [],
-      "reason_de": "Zustand: Instantpulver (trocken). Quell-ID offen (Lauf „kandidaten“ 12.10.2026, BLS 4.0): nur zubereitete Brühen und Gerichte – kein Trockenprodukt. Suchbegriffe für den nächsten Lauf angepasst – nicht geraten. Brühe → Sellerie (Plan 5.1); Zusammensetzung je Produkt, Gluten/Laktose bei R19 prüfen."
+      "reason_de": "Zustand: Instantpulver (trocken). Quell-ID R821000 „Gemüse Bouillon/Brühe/Suppe (Brühwürfel, Pulver)“ (Lauf 38367139392 „kandidaten“ 13.10.2026, BLS 4.0): Gemüsebrühe als Brühwürfel/Pulver (trocken). Brühe → Sellerie (Plan 5.1); Zusammensetzung je Produkt, Gluten/Laktose bei R19 prüfen."
     },
     {
       "alpha5_id": "gemuesebruehe-zubereitet",
@@ -1701,7 +1701,7 @@
       "max_fridge_days": 3,
       "freezable": true,
       "substitutes": [],
-      "reason_de": "Zustand: Gewürzmischung. Quell-ID offen (Lauf „kandidaten“ 12.10.2026, BLS 4.0): nur Gyros-Gerichte – keine Gewürzmischung. Suchbegriffe für den nächsten Lauf angepasst – nicht geraten. Gewürzmischung; Zusammensetzung je Produkt – Gruppen vorsichtig. Wahrscheinlich kein Quelleintrag → ungeprüft oder gleichwertige Mischung."
+      "reason_de": "Zustand: Gewürzmischung. Quell-ID offen (Lauf 38367139392 „kandidaten“ 13.10.2026, BLS 4.0, Kandidaten aus der ganzen Datei): nicht in BLS 4.0: keine Gyros-/Grillgewürzmischung; Gewürzsalz R115000 ist überwiegend Salz und passt nicht. Gewürzmischung; Zusammensetzung je Produkt – Gruppen vorsichtig. Wahrscheinlich kein Quelleintrag → ungeprüft oder gleichwertige Mischung."
     },
     {
       "alpha5_id": "gyrosgewuerz",
@@ -1728,7 +1728,7 @@
       "max_fridge_days": 3,
       "freezable": true,
       "substitutes": [],
-      "reason_de": "Zustand: Gewürzmischung. Quell-ID offen (Lauf „kandidaten“ 12.10.2026, BLS 4.0): nur Gyros-Gerichte – keine Gewürzmischung. Suchbegriffe für den nächsten Lauf angepasst – nicht geraten. Doppelte Zutat-ID zu „gyros-gewuerz“."
+      "reason_de": "Zustand: Gewürzmischung. Quell-ID offen (Lauf 38367139392 „kandidaten“ 13.10.2026, BLS 4.0, Kandidaten aus der ganzen Datei): nicht in BLS 4.0: keine Gyros-/Grillgewürzmischung; Gewürzsalz R115000 ist überwiegend Salz und passt nicht. Doppelte Zutat-ID zu „gyros-gewuerz“."
     },
     {
       "alpha5_id": "hackfleisch-vom-schwein",
@@ -1764,7 +1764,7 @@
       "source": {
         "db": "bls",
         "version": "4.0",
-        "ref": null,
+        "ref": "C133000",
         "search": [
           "Hafer Flocken",
           "Haferflocken Vollkorn",
@@ -1788,7 +1788,7 @@
       "max_fridge_days": 3,
       "freezable": true,
       "substitutes": [],
-      "reason_de": "Zustand: trocken. Quell-ID offen (Lauf „kandidaten“ 12.10.2026, BLS 4.0): nur Haferflocken-Gerichte/-Gebäck; BLS benennt Getreideprodukte „Hafer Grieß“, „Hefe Flocken“ …. Suchbegriffe für den nächsten Lauf angepasst – nicht geraten."
+      "reason_de": "Zustand: trocken. Quell-ID C133000 „Hafer Flocken“ (Lauf 38367139392 „kandidaten“ 13.10.2026, BLS 4.0): trocken (nicht gekocht)."
     },
     {
       "alpha5_id": "haferkleie",
@@ -1797,7 +1797,7 @@
       "source": {
         "db": "bls",
         "version": "4.0",
-        "ref": null,
+        "ref": "C138000",
         "search": ["Hafer Kleie", "Kleie", "Haferkleie"],
         "state_de": "trocken",
         "category": "cereal_products"
@@ -1815,7 +1815,7 @@
       "max_fridge_days": 3,
       "freezable": true,
       "substitutes": [],
-      "reason_de": "Zustand: trocken. Quell-ID offen (Lauf „kandidaten“ 12.10.2026, BLS 4.0): keine Kandidaten. Suchbegriffe für den nächsten Lauf angepasst – nicht geraten."
+      "reason_de": "Zustand: trocken. Quell-ID C138000 „Hafer Kleie“ (Lauf 38367139392 „kandidaten“ 13.10.2026, BLS 4.0): genau passend."
     },
     {
       "alpha5_id": "halloumi",
@@ -1851,7 +1851,7 @@
       "source": {
         "db": "bls",
         "version": "4.0",
-        "ref": null,
+        "ref": "C219300",
         "search": ["Hartweizen Grieß", "Weizen Grieß", "Hartweizengrieß", "Grieß Hartweizen"],
         "state_de": "trocken",
         "category": "cereal_products"
@@ -1869,7 +1869,7 @@
       "max_fridge_days": 3,
       "freezable": true,
       "substitutes": [],
-      "reason_de": "Zustand: trocken. Quell-ID offen (Lauf „kandidaten“ 12.10.2026, BLS 4.0): nur Grieß anderer Getreide – kein Hartweizen-/Weizengrieß. Suchbegriffe für den nächsten Lauf angepasst – nicht geraten."
+      "reason_de": "Zustand: trocken. Quell-ID C219300 „Hartweizen Grieß“ (Lauf 38367139392 „kandidaten“ 13.10.2026, BLS 4.0): trocken (nicht gekocht, nicht Vollkorn)."
     },
     {
       "alpha5_id": "harzer-kaese",
@@ -2067,7 +2067,7 @@
       "source": {
         "db": "bls",
         "version": "4.0",
-        "ref": null,
+        "ref": "V416132",
         "search": [
           "Hähnchenbrust Aufschnitt",
           "Hähnchen Brustfilet gekocht",
@@ -2091,7 +2091,7 @@
       "max_fridge_days": 1,
       "freezable": true,
       "substitutes": [],
-      "reason_de": "Zustand: gegart, Aufschnitt. Quell-ID offen (Lauf „kandidaten“ 12.10.2026, BLS 4.0): nur rohe Teile/Innereien – kein gegarter Aufschnitt. Suchbegriffe für den nächsten Lauf angepasst – nicht geraten. Haltbarkeit gekocht 1 Tag (R9: Reis, Fisch, Hackfleisch, Geflügel)."
+      "reason_de": "UNSICHER – bei R19 zuerst prüfen. Zustand: gegart, Aufschnitt. Quell-ID V416132 „Hähnchen Brustfilet, gekocht“ (Lauf 38367139392 „kandidaten“ 13.10.2026, BLS 4.0): Hähnchenbrustfilet gekocht als nächster Eintrag; eigener Aufschnitt-Eintrag fehlt, Aufschnitt enthält meist Salz. Haltbarkeit gekocht 1 Tag (R9: Reis, Fisch, Hackfleisch, Geflügel)."
     },
     {
       "alpha5_id": "haehnchenbrustfilet",
@@ -2127,13 +2127,14 @@
       "source": {
         "db": "bls",
         "version": "4.0",
-        "ref": null,
+        "ref": "V413000",
         "search": [
           "Hähnchen Schenkel",
           "Hähnchen Keule",
           "Hähnchen Oberschenkel",
           "Hähnchen Unterschenkel",
-          "Huhn Schenkel"
+          "Huhn Schenkel",
+          "Hähnchen Fleisch"
         ],
         "state_de": "roh, ohne Haut und Knochen",
         "category": "meat_poultry"
@@ -2151,7 +2152,7 @@
       "max_fridge_days": 1,
       "freezable": true,
       "substitutes": [],
-      "reason_de": "Zustand: roh, ohne Haut und Knochen. Quell-ID offen (Lauf „kandidaten“ 12.10.2026, BLS 4.0): „Hähnchen“ liefert nur Innereien/Brust – kein Schenkel unter den 8 kürzesten. Suchbegriffe für den nächsten Lauf angepasst – nicht geraten. Haltbarkeit gekocht 1 Tag (R9: Reis, Fisch, Hackfleisch, Geflügel)."
+      "reason_de": "UNSICHER – bei R19 zuerst prüfen. Zustand: roh, ohne Haut und Knochen. Quell-ID V413000 „Hähnchen Fleisch, ohne Haut, roh“ (Lauf 38367139392 „kandidaten“ 13.10.2026, BLS 4.0): Hähnchenfleisch ohne Haut, roh; Schenkel gibt es nur mit Haut (V4A5100), das wäre fetter. Haltbarkeit gekocht 1 Tag (R9: Reis, Fisch, Hackfleisch, Geflügel)."
     },
     {
       "alpha5_id": "huettenkaese",
@@ -2241,7 +2242,7 @@
       "source": {
         "db": "bls",
         "version": "4.0",
-        "ref": null,
+        "ref": "M141200",
         "search": ["Joghurt 1,5 % Fett", "Joghurt fettarm", "Joghurt mild 1,5", "Joghurt Fett"],
         "state_de": "1,5 % Fett",
         "category": "dairy"
@@ -2259,7 +2260,7 @@
       "max_fridge_days": 3,
       "freezable": true,
       "substitutes": [],
-      "reason_de": "Zustand: 1,5 % Fett. Quell-ID offen (Lauf „kandidaten“ 12.10.2026, BLS 4.0): nur Joghurt-Gerichte/-Eis – kein Joghurt 1,5 %. Suchbegriffe für den nächsten Lauf angepasst – nicht geraten."
+      "reason_de": "Zustand: 1,5 % Fett. Quell-ID M141200 „Joghurt fettarm, mind. 1,5 % bis max. 1,8 % Fett“ (Lauf 38367139392 „kandidaten“ 13.10.2026, BLS 4.0): genau passend (1,5–1,8 % Fett, nicht laktosefrei)."
     },
     {
       "alpha5_id": "kabeljaufilet",
@@ -2376,7 +2377,7 @@
       "source": {
         "db": "bls",
         "version": "4.0",
-        "ref": null,
+        "ref": "K110100",
         "search": [
           "Kartoffel roh",
           "Kartoffel geschält roh",
@@ -2399,7 +2400,7 @@
       "max_fridge_days": 3,
       "freezable": true,
       "substitutes": [],
-      "reason_de": "Zustand: roh, geschält. Quell-ID offen (Lauf „kandidaten“ 12.10.2026, BLS 4.0): nur Kartoffel-Gerichte – keine rohe Kartoffel unter den 8 kürzesten. Suchbegriffe für den nächsten Lauf angepasst – nicht geraten."
+      "reason_de": "Zustand: roh, geschält. Quell-ID K110100 „Kartoffel geschält, roh“ (Lauf 38367139392 „kandidaten“ 13.10.2026, BLS 4.0): geschält, roh (laut Zustand)."
     },
     {
       "alpha5_id": "kassler-mager",
@@ -2435,7 +2436,7 @@
       "source": {
         "db": "bls",
         "version": "4.0",
-        "ref": null,
+        "ref": "H720902",
         "search": [
           "Kichererbse Konserve",
           "Kichererbse reif Konserve abgetropft",
@@ -2457,7 +2458,7 @@
       "max_fridge_days": 3,
       "freezable": true,
       "substitutes": [],
-      "reason_de": "Zustand: Konserve, abgetropft. Quell-ID offen (Lauf „kandidaten“ 12.10.2026, BLS 4.0): nur getrocknet/gekocht/Mehl/Gerichte – kein Konserven-Eintrag. Suchbegriffe für den nächsten Lauf angepasst – nicht geraten."
+      "reason_de": "Zustand: Konserve, abgetropft. Quell-ID H720902 „Kichererbse reif, Konserve, abgetropft“ (Lauf 38367139392 „kandidaten“ 13.10.2026, BLS 4.0): Konserve abgetropft, genau passend."
     },
     {
       "alpha5_id": "kichererbsenmehl",
@@ -2601,7 +2602,7 @@
       "source": {
         "db": "bls",
         "version": "4.0",
-        "ref": null,
+        "ref": "M171500",
         "search": ["Sahne 15 % Fett", "Sahne Fett", "Kochsahne", "Kaffeesahne", "Sahne zum Kochen"],
         "state_de": "15 % Fett",
         "category": "dairy"
@@ -2619,7 +2620,7 @@
       "max_fridge_days": 3,
       "freezable": true,
       "substitutes": [],
-      "reason_de": "Zustand: 15 % Fett. Quell-ID offen (Lauf „kandidaten“ 12.10.2026, BLS 4.0): nur Sahne-Gerichte/-Süßwaren – keine Sahne mit Fettstufe. Suchbegriffe für den nächsten Lauf angepasst – nicht geraten."
+      "reason_de": "UNSICHER – bei R19 zuerst prüfen. Zustand: 15 % Fett. Quell-ID M171500 „Kaffeesahne mind. 10 % Fett“ (Lauf 38367139392 „kandidaten“ 13.10.2026, BLS 4.0): Kaffeesahne mind. 10 % Fett als nächste Stufe; eigene 15-%-Sahne fehlt."
     },
     {
       "alpha5_id": "kochschinken",
@@ -2705,7 +2706,7 @@
       "max_fridge_days": 3,
       "freezable": true,
       "substitutes": [],
-      "reason_de": "Zustand: Konserve, fettreduziert. Quell-ID offen (Lauf „kandidaten“ 12.10.2026, BLS 4.0): nur Kokosmilch Vollfett (H154000) – fettreduziert hat etwa halben Fettgehalt. Suchbegriffe für den nächsten Lauf angepasst – nicht geraten."
+      "reason_de": "Zustand: Konserve, fettreduziert. Quell-ID offen (Lauf 38367139392 „kandidaten“ 13.10.2026, BLS 4.0, Kandidaten aus der ganzen Datei): nicht in BLS 4.0: nur Kokosmilch normal (H154000); die fettreduzierte Variante fehlt, Vollfett würde Fett und kcal etwa verdoppeln."
     },
     {
       "alpha5_id": "koriander-frisch",
@@ -2738,7 +2739,7 @@
       "max_fridge_days": 3,
       "freezable": true,
       "substitutes": [],
-      "reason_de": "Zustand: frisch, roh. Quell-ID offen (Lauf „kandidaten“ 12.10.2026, BLS 4.0): nur Linsensuppe mit Koriander – kein Kraut-Eintrag. Suchbegriffe für den nächsten Lauf angepasst – nicht geraten."
+      "reason_de": "Zustand: frisch, roh. Quell-ID offen (Lauf 38367139392 „kandidaten“ 13.10.2026, BLS 4.0, Kandidaten aus der ganzen Datei): nicht in BLS 4.0: kein Koriander-Eintrag (Kraut oder Samen)."
     },
     {
       "alpha5_id": "kreuzkuemmel",
@@ -2765,7 +2766,7 @@
       "max_fridge_days": 3,
       "freezable": true,
       "substitutes": [],
-      "reason_de": "Zustand: gemahlen. Quell-ID offen (Lauf „kandidaten“ 12.10.2026, BLS 4.0): keine Kandidaten. Suchbegriffe für den nächsten Lauf angepasst – nicht geraten."
+      "reason_de": "Zustand: gemahlen. Quell-ID offen (Lauf 38367139392 „kandidaten“ 13.10.2026, BLS 4.0, Kandidaten aus der ganzen Datei): nicht in BLS 4.0: kein Kreuzkümmel-Eintrag."
     },
     {
       "alpha5_id": "kurkuma",
@@ -2792,7 +2793,7 @@
       "max_fridge_days": 3,
       "freezable": true,
       "substitutes": [],
-      "reason_de": "Zustand: gemahlen. Quell-ID offen (Lauf „kandidaten“ 12.10.2026, BLS 4.0): keine Kandidaten. Suchbegriffe für den nächsten Lauf angepasst – nicht geraten."
+      "reason_de": "Zustand: gemahlen. Quell-ID offen (Lauf 38367139392 „kandidaten“ 13.10.2026, BLS 4.0, Kandidaten aus der ganzen Datei): nicht in BLS 4.0: kein Kurkuma-Eintrag."
     },
     {
       "alpha5_id": "kuemmel",
@@ -2825,7 +2826,7 @@
       "max_fridge_days": 3,
       "freezable": true,
       "substitutes": [],
-      "reason_de": "Zustand: ganz bzw. gemahlen. Quell-ID offen (Lauf „kandidaten“ 12.10.2026, BLS 4.0): nur Kümmel-Wurst/-Brot/-Kartoffeln – kein Gewürz-Eintrag. Suchbegriffe für den nächsten Lauf angepasst – nicht geraten."
+      "reason_de": "Zustand: ganz bzw. gemahlen. Quell-ID offen (Lauf 38367139392 „kandidaten“ 13.10.2026, BLS 4.0, Kandidaten aus der ganzen Datei): nicht in BLS 4.0: kein Kümmel als Gewürz, nur Brot/Wurst mit Kümmel."
     },
     {
       "alpha5_id": "kuerbiskerne",
@@ -2915,7 +2916,7 @@
       "source": {
         "db": "bls",
         "version": "4.0",
-        "ref": null,
+        "ref": "U807000",
         "search": ["Lamm Filet", "Lamm Lende", "Lamm Rücken", "Lamm Muskelfleisch"],
         "state_de": "roh",
         "category": "meat_lamb"
@@ -2933,7 +2934,7 @@
       "max_fridge_days": 3,
       "freezable": true,
       "substitutes": [],
-      "reason_de": "Zustand: roh. Quell-ID offen (Lauf „kandidaten“ 12.10.2026, BLS 4.0): „Lamm“ liefert nur Innereien/Brust/Nuss – kein Filet unter den 8 kürzesten. Suchbegriffe für den nächsten Lauf angepasst – nicht geraten."
+      "reason_de": "Zustand: roh. Quell-ID U807000 „Lamm Muskelfleisch, roh“ (Lauf 38367139392 „kandidaten“ 13.10.2026, BLS 4.0): Lamm Muskelfleisch roh; eigener Filet-Eintrag fehlt (nur gebratenes Gericht Y413032)."
     },
     {
       "alpha5_id": "langkornreis-trocken",
@@ -2942,7 +2943,7 @@
       "source": {
         "db": "bls",
         "version": "4.0",
-        "ref": null,
+        "ref": "C352000",
         "search": ["Langkornreis", "Reis poliert", "Reis parboiled", "Reis Langkorn", "Reis roh"],
         "state_de": "trocken, ungekocht (Rohzustand!)",
         "category": "cereal_products"
@@ -2960,7 +2961,7 @@
       "max_fridge_days": 1,
       "freezable": true,
       "substitutes": [],
-      "reason_de": "Zustand: trocken, ungekocht (Rohzustand!). Quell-ID offen (Lauf „kandidaten“ 12.10.2026, BLS 4.0): „Reis“ liefert nur Gerichte/Reismehl – kein roher Reis. Suchbegriffe für den nächsten Lauf angepasst – nicht geraten. Haltbarkeit gekocht 1 Tag (R9: Reis, Fisch, Hackfleisch, Geflügel)."
+      "reason_de": "Zustand: trocken, ungekocht (Rohzustand!). Quell-ID C352000 „Reis poliert, roh“ (Lauf 38367139392 „kandidaten“ 13.10.2026, BLS 4.0): polierter Reis roh = trocken, ungekocht; eigener Langkorn-Eintrag fehlt. Haltbarkeit gekocht 1 Tag (R9: Reis, Fisch, Hackfleisch, Geflügel)."
     },
     {
       "alpha5_id": "lasagneplatten",
@@ -3131,7 +3132,7 @@
       "source": {
         "db": "bls",
         "version": "4.0",
-        "ref": null,
+        "ref": "H730902",
         "search": ["Linse Konserve", "Linse reif Konserve abgetropft", "Linse abgetropft"],
         "state_de": "Konserve, abgetropft",
         "category": "legumes"
@@ -3149,7 +3150,7 @@
       "max_fridge_days": 3,
       "freezable": true,
       "substitutes": [],
-      "reason_de": "Zustand: Konserve, abgetropft. Quell-ID offen (Lauf „kandidaten“ 12.10.2026, BLS 4.0): nur getrocknet/gekocht/Mehl/Gerichte – kein Konserven-Eintrag. Suchbegriffe für den nächsten Lauf angepasst – nicht geraten."
+      "reason_de": "Zustand: Konserve, abgetropft. Quell-ID H730902 „Linse reif, Konserve, abgetropft“ (Lauf 38367139392 „kandidaten“ 13.10.2026, BLS 4.0): Konserve abgetropft, genau passend."
     },
     {
       "alpha5_id": "loeffelbiskuits",
@@ -3185,7 +3186,7 @@
       "source": {
         "db": "bls",
         "version": "4.0",
-        "ref": null,
+        "ref": "M713100",
         "search": [
           "Speisequark Magerstufe",
           "Quark Magerstufe",
@@ -3209,7 +3210,7 @@
       "max_fridge_days": 3,
       "freezable": true,
       "substitutes": [],
-      "reason_de": "Zustand: Magerstufe. Quell-ID offen (Lauf „kandidaten“ 12.10.2026, BLS 4.0): nur Quark-Gerichte/-Speisen – kein Speisequark Magerstufe. Suchbegriffe für den nächsten Lauf angepasst – nicht geraten."
+      "reason_de": "Zustand: Magerstufe. Quell-ID M713100 „Speisequark Magerstufe, Magerquark < 10 % Fett i. Tr.“ (Lauf 38367139392 „kandidaten“ 13.10.2026, BLS 4.0): Magerstufe, genau passend."
     },
     {
       "alpha5_id": "mais-dose-abgetropft",
@@ -3218,7 +3219,7 @@
       "source": {
         "db": "bls",
         "version": "4.0",
-        "ref": null,
+        "ref": "G570902",
         "search": [
           "Zuckermais Konserve",
           "Mais Konserve abgetropft",
@@ -3241,7 +3242,7 @@
       "max_fridge_days": 3,
       "freezable": true,
       "substitutes": [],
-      "reason_de": "Zustand: Konserve, abgetropft. Quell-ID offen (Lauf „kandidaten“ 12.10.2026, BLS 4.0): nur roh/Mehl/Grieß/Öl – kein Konserven-Eintrag. Suchbegriffe für den nächsten Lauf angepasst – nicht geraten."
+      "reason_de": "Zustand: Konserve, abgetropft. Quell-ID G570902 „Zuckermais Konserve, abgetropft“ (Lauf 38367139392 „kandidaten“ 13.10.2026, BLS 4.0): Zuckermais Konserve abgetropft (nicht gesäuert)."
     },
     {
       "alpha5_id": "majoran-getrocknet",
@@ -3268,7 +3269,7 @@
       "max_fridge_days": 3,
       "freezable": true,
       "substitutes": [],
-      "reason_de": "Zustand: getrocknet. Quell-ID offen (Lauf „kandidaten“ 12.10.2026, BLS 4.0): keine Kandidaten. Suchbegriffe für den nächsten Lauf angepasst – nicht geraten."
+      "reason_de": "Zustand: getrocknet. Quell-ID offen (Lauf 38367139392 „kandidaten“ 13.10.2026, BLS 4.0, Kandidaten aus der ganzen Datei): nicht in BLS 4.0: kein Majoran-Eintrag."
     },
     {
       "alpha5_id": "mandeln",
@@ -3331,7 +3332,7 @@
       "source": {
         "db": "bls",
         "version": "4.0",
-        "ref": null,
+        "ref": "G898300",
         "search": [
           "Tafelmeerrettich",
           "Meerrettich Zubereitung",
@@ -3355,7 +3356,7 @@
       "max_fridge_days": 3,
       "freezable": true,
       "substitutes": [],
-      "reason_de": "Zustand: Zubereitung im Glas. Quell-ID offen (Lauf „kandidaten“ 12.10.2026, BLS 4.0): nur roh, gekocht oder Sahne-/Apfelmeerrettich – kein Tafelmeerrettich (Glas). Suchbegriffe für den nächsten Lauf angepasst – nicht geraten. Meerrettich aus dem Glas ist oft geschwefelt → Sulfite vorsichtig gesetzt."
+      "reason_de": "Zustand: Zubereitung im Glas. Quell-ID G898300 „Tafel-Meerrettich Konserve“ (Lauf 38367139392 „kandidaten“ 13.10.2026, BLS 4.0): Tafelmeerrettich im Glas (nicht Sahne-Meerrettich). Meerrettich aus dem Glas ist oft geschwefelt → Sulfite vorsichtig gesetzt."
     },
     {
       "alpha5_id": "mie-nudeln",
@@ -3391,7 +3392,7 @@
       "source": {
         "db": "bls",
         "version": "4.0",
-        "ref": null,
+        "ref": "M111200",
         "search": [
           "Kuhmilch 1,5 % Fett",
           "Milch 1,5 % Fett",
@@ -3415,7 +3416,7 @@
       "max_fridge_days": 3,
       "freezable": true,
       "substitutes": [],
-      "reason_de": "Zustand: 1,5 % Fett. Quell-ID offen (Lauf „kandidaten“ 12.10.2026, BLS 4.0): nur Buttermilch/Milchpulver/Schokolade – keine Trinkmilch 1,5 %. Suchbegriffe für den nächsten Lauf angepasst – nicht geraten."
+      "reason_de": "Zustand: 1,5 % Fett. Quell-ID M111200 „Milch fettarm, frisch, 1,5 % Fett, pasteurisiert“ (Lauf 38367139392 „kandidaten“ 13.10.2026, BLS 4.0): genau passend (frisch, nicht laktosefrei)."
     },
     {
       "alpha5_id": "milchreis-rundkornreis",
@@ -3424,7 +3425,7 @@
       "source": {
         "db": "bls",
         "version": "4.0",
-        "ref": null,
+        "ref": "C352000",
         "search": ["Rundkornreis", "Milchreis roh", "Reis Rundkorn", "Reis poliert", "Reis roh"],
         "state_de": "trocken, ungekocht",
         "category": "cereal_products"
@@ -3442,7 +3443,7 @@
       "max_fridge_days": 1,
       "freezable": true,
       "substitutes": [],
-      "reason_de": "Zustand: trocken, ungekocht. Quell-ID offen (Lauf „kandidaten“ 12.10.2026, BLS 4.0): „Reis“ liefert nur Gerichte/Reismehl – kein roher Rundkornreis. Suchbegriffe für den nächsten Lauf angepasst – nicht geraten. Haltbarkeit gekocht 1 Tag (R9: Reis, Fisch, Hackfleisch, Geflügel). Gemeint ist der ungekochte Rundkornreis (nicht Fertig-Milchreis). Katalog-Name „Rundkornreis“, weil „Milchreis“ als Fertiggericht Milch enthält (R18 dairy); die Quell-Bezeichnung darf „Milchreis“ nur als roher Reis tragen – bei R19 prüfen."
+      "reason_de": "Zustand: trocken, ungekocht. Quell-ID C352000 „Reis poliert, roh“ (Lauf 38367139392 „kandidaten“ 13.10.2026, BLS 4.0): polierter Reis roh = trocken, ungekocht; eigener Rundkorn-Eintrag fehlt. Haltbarkeit gekocht 1 Tag (R9: Reis, Fisch, Hackfleisch, Geflügel). Gemeint ist der ungekochte Rundkornreis (nicht Fertig-Milchreis). Katalog-Name „Rundkornreis“, weil „Milchreis“ als Fertiggericht Milch enthält (R18 dairy); die Quell-Bezeichnung darf „Milchreis“ nur als roher Reis tragen – bei R19 prüfen."
     },
     {
       "alpha5_id": "minze-frisch",
@@ -3469,7 +3470,7 @@
       "max_fridge_days": 3,
       "freezable": true,
       "substitutes": [],
-      "reason_de": "Zustand: frisch, roh. Quell-ID offen (Lauf „kandidaten“ 12.10.2026, BLS 4.0): keine Kandidaten. Suchbegriffe für den nächsten Lauf angepasst – nicht geraten."
+      "reason_de": "Zustand: frisch, roh. Quell-ID offen (Lauf 38367139392 „kandidaten“ 13.10.2026, BLS 4.0, Kandidaten aus der ganzen Datei): nicht in BLS 4.0: kein Minze-Eintrag (Lauf fand keinen Kandidaten)."
     },
     {
       "alpha5_id": "mozzarella-light",
@@ -3523,7 +3524,7 @@
       "max_fridge_days": 3,
       "freezable": true,
       "substitutes": [],
-      "reason_de": "Zustand: gemahlen. Quell-ID offen (Lauf „kandidaten“ 12.10.2026, BLS 4.0): keine Kandidaten. Suchbegriffe für den nächsten Lauf angepasst – nicht geraten. Muskatnuss ist keine Schalenfrucht (Plan 5.1.3)."
+      "reason_de": "Zustand: gemahlen. Quell-ID offen (Lauf 38367139392 „kandidaten“ 13.10.2026, BLS 4.0, Kandidaten aus der ganzen Datei): nicht in BLS 4.0: kein Muskat-Eintrag. Muskatnuss ist keine Schalenfrucht (Plan 5.1.3)."
     },
     {
       "alpha5_id": "moehre",
@@ -3685,7 +3686,7 @@
       "max_fridge_days": 3,
       "freezable": true,
       "substitutes": [],
-      "reason_de": "Zustand: getrocknet. Quell-ID offen (Lauf „kandidaten“ 12.10.2026, BLS 4.0): keine Kandidaten. Suchbegriffe für den nächsten Lauf angepasst – nicht geraten."
+      "reason_de": "Zustand: getrocknet. Quell-ID offen (Lauf 38367139392 „kandidaten“ 13.10.2026, BLS 4.0, Kandidaten aus der ganzen Datei): nicht in BLS 4.0: kein Oregano-Eintrag."
     },
     {
       "alpha5_id": "paniermehl",
@@ -3799,7 +3800,7 @@
       "max_fridge_days": 3,
       "freezable": true,
       "substitutes": [],
-      "reason_de": "Zustand: gemahlen, mild. Quell-ID offen (Lauf „kandidaten“ 12.10.2026, BLS 4.0): keine Kandidaten. Suchbegriffe für den nächsten Lauf angepasst – nicht geraten."
+      "reason_de": "Zustand: gemahlen, mild. Quell-ID offen (Lauf 38367139392 „kandidaten“ 13.10.2026, BLS 4.0, Kandidaten aus der ganzen Datei): nicht in BLS 4.0: kein Paprikapulver (Gewürz), nur Gerichte mit Paprika."
     },
     {
       "alpha5_id": "paprikapulver-geraeuchert",
@@ -3832,7 +3833,7 @@
       "max_fridge_days": 3,
       "freezable": true,
       "substitutes": [],
-      "reason_de": "Zustand: gemahlen, geräuchert. Quell-ID offen (Lauf „kandidaten“ 12.10.2026, BLS 4.0): keine Kandidaten. Suchbegriffe für den nächsten Lauf angepasst – nicht geraten."
+      "reason_de": "Zustand: gemahlen, geräuchert. Quell-ID offen (Lauf 38367139392 „kandidaten“ 13.10.2026, BLS 4.0, Kandidaten aus der ganzen Datei): nicht in BLS 4.0: kein Paprikapulver (Gewürz), nur Gerichte mit Paprika."
     },
     {
       "alpha5_id": "parmesan",
@@ -3868,7 +3869,7 @@
       "source": {
         "db": "bls",
         "version": "4.0",
-        "ref": null,
+        "ref": "R161200",
         "search": ["Tomate passiert", "Tomatenpüree", "Passata", "Tomate Püree", "Tomatenpulpe"],
         "state_de": "passiert",
         "category": "vegetables"
@@ -3886,7 +3887,7 @@
       "max_fridge_days": 3,
       "freezable": true,
       "substitutes": [],
-      "reason_de": "Zustand: passiert. Quell-ID offen (Lauf „kandidaten“ 12.10.2026, BLS 4.0): nur roh/Mark/Pulver/Ketchup/Konserve – „Tomate passiert“ fiel aus den 8 kürzesten; Konserve ist nicht passiert. Suchbegriffe für den nächsten Lauf angepasst – nicht geraten."
+      "reason_de": "Zustand: passiert. Quell-ID R161200 „Tomaten passiert/Tomatenpüree“ (Lauf 38367139392 „kandidaten“ 13.10.2026, BLS 4.0): genau passend."
     },
     {
       "alpha5_id": "petersilie-frisch",
@@ -3922,7 +3923,7 @@
       "source": {
         "db": "bls",
         "version": "4.0",
-        "ref": null,
+        "ref": "R258100",
         "search": [
           "Pfeffer schwarz",
           "Pfeffer gemahlen",
@@ -3946,7 +3947,7 @@
       "max_fridge_days": 3,
       "freezable": true,
       "substitutes": [],
-      "reason_de": "Zustand: gemahlen. Quell-ID offen (Lauf „kandidaten“ 12.10.2026, BLS 4.0): nur Pfeffer-Gerichte/Pfefferschote – kein Gewürz-Eintrag. Suchbegriffe für den nächsten Lauf angepasst – nicht geraten."
+      "reason_de": "Zustand: gemahlen. Quell-ID R258100 „Pfeffer schwarz, getrocknet“ (Lauf 38367139392 „kandidaten“ 13.10.2026, BLS 4.0): schwarzer Pfeffer getrocknet; weißer Pfeffer fehlt."
     },
     {
       "alpha5_id": "putenbrust-aufschnitt",
@@ -3955,7 +3956,7 @@
       "source": {
         "db": "bls",
         "version": "4.0",
-        "ref": null,
+        "ref": "V486132",
         "search": [
           "Putenbrust Aufschnitt",
           "Pute Brust gekocht",
@@ -3979,7 +3980,7 @@
       "max_fridge_days": 1,
       "freezable": true,
       "substitutes": [],
-      "reason_de": "Zustand: gegart, Aufschnitt. Quell-ID offen (Lauf „kandidaten“ 12.10.2026, BLS 4.0): nur rohe Teile/Putenei – kein gegarter Aufschnitt. Suchbegriffe für den nächsten Lauf angepasst – nicht geraten. Haltbarkeit gekocht 1 Tag (R9: Reis, Fisch, Hackfleisch, Geflügel)."
+      "reason_de": "UNSICHER – bei R19 zuerst prüfen. Zustand: gegart, Aufschnitt. Quell-ID V486132 „Pute Brust, ohne Haut, gekocht“ (Lauf 38367139392 „kandidaten“ 13.10.2026, BLS 4.0): Putenbrust ohne Haut gekocht als nächster Eintrag; eigener Aufschnitt-Eintrag fehlt, Aufschnitt enthält meist Salz. Haltbarkeit gekocht 1 Tag (R9: Reis, Fisch, Hackfleisch, Geflügel)."
     },
     {
       "alpha5_id": "putenbrustaufschnitt",
@@ -3988,7 +3989,7 @@
       "source": {
         "db": "bls",
         "version": "4.0",
-        "ref": null,
+        "ref": "V486132",
         "search": [
           "Putenbrust Aufschnitt",
           "Pute Brust gekocht",
@@ -4012,7 +4013,7 @@
       "max_fridge_days": 1,
       "freezable": true,
       "substitutes": [],
-      "reason_de": "Zustand: gegart, Aufschnitt. Quell-ID offen (Lauf „kandidaten“ 12.10.2026, BLS 4.0): nur rohe Teile/Putenei – kein gegarter Aufschnitt. Suchbegriffe für den nächsten Lauf angepasst – nicht geraten. Haltbarkeit gekocht 1 Tag (R9: Reis, Fisch, Hackfleisch, Geflügel). Doppelte Zutat-ID zu „putenbrust-aufschnitt“."
+      "reason_de": "UNSICHER – bei R19 zuerst prüfen. Zustand: gegart, Aufschnitt. Quell-ID V486132 „Pute Brust, ohne Haut, gekocht“ (Lauf 38367139392 „kandidaten“ 13.10.2026, BLS 4.0): Putenbrust ohne Haut gekocht als nächster Eintrag; eigener Aufschnitt-Eintrag fehlt, Aufschnitt enthält meist Salz. Haltbarkeit gekocht 1 Tag (R9: Reis, Fisch, Hackfleisch, Geflügel). Doppelte Zutat-ID zu „putenbrust-aufschnitt“."
     },
     {
       "alpha5_id": "putenbrustfilet",
@@ -4048,12 +4049,13 @@
       "source": {
         "db": "bls",
         "version": "4.0",
-        "ref": null,
+        "ref": "V481000",
         "search": [
           "Pute Hackfleisch",
           "Putenhackfleisch",
           "Geflügel Hackfleisch",
-          "Truthahn Hackfleisch"
+          "Truthahn Hackfleisch",
+          "Pute Fleisch"
         ],
         "state_de": "roh",
         "category": "meat_poultry"
@@ -4071,7 +4073,7 @@
       "max_fridge_days": 1,
       "freezable": true,
       "substitutes": [],
-      "reason_de": "Zustand: roh. Quell-ID offen (Lauf „kandidaten“ 12.10.2026, BLS 4.0): nur ganze Teile/Innereien/Putenei – kein Hackfleisch. Suchbegriffe für den nächsten Lauf angepasst – nicht geraten. Haltbarkeit gekocht 1 Tag (R9: Reis, Fisch, Hackfleisch, Geflügel)."
+      "reason_de": "UNSICHER – bei R19 zuerst prüfen. Zustand: roh. Quell-ID V481000 „Pute Fleisch, ohne Haut, roh“ (Lauf 38367139392 „kandidaten“ 13.10.2026, BLS 4.0): Putenfleisch ohne Haut roh; eigener Hackfleisch-Eintrag fehlt. Haltbarkeit gekocht 1 Tag (R9: Reis, Fisch, Hackfleisch, Geflügel)."
     },
     {
       "alpha5_id": "radieschen",
@@ -4152,7 +4154,7 @@
       "max_fridge_days": 3,
       "freezable": true,
       "substitutes": [],
-      "reason_de": "Zustand: Essig. Quell-ID offen (Lauf „kandidaten“ 12.10.2026, BLS 4.0): nur andere Essigsorten – kein Reisessig. Suchbegriffe für den nächsten Lauf angepasst – nicht geraten."
+      "reason_de": "Zustand: Essig. Quell-ID offen (Lauf 38367139392 „kandidaten“ 13.10.2026, BLS 4.0, Kandidaten aus der ganzen Datei): nicht in BLS 4.0: kein Reisessig, nur Wein-/Branntwein-/Apfelessig; Reisessig ist oft gesüßt."
     },
     {
       "alpha5_id": "reisnudeln-trocken",
@@ -4296,7 +4298,7 @@
       "source": {
         "db": "bls",
         "version": "4.0",
-        "ref": null,
+        "ref": "C352000",
         "search": [
           "Risottoreis",
           "Rundkornreis",
@@ -4321,7 +4323,7 @@
       "max_fridge_days": 1,
       "freezable": true,
       "substitutes": [],
-      "reason_de": "Zustand: trocken, ungekocht. Quell-ID offen (Lauf „kandidaten“ 12.10.2026, BLS 4.0): „Reis“ liefert nur Gerichte/Reismehl – kein roher Rundkornreis. Suchbegriffe für den nächsten Lauf angepasst – nicht geraten. Haltbarkeit gekocht 1 Tag (R9: Reis, Fisch, Hackfleisch, Geflügel)."
+      "reason_de": "Zustand: trocken, ungekocht. Quell-ID C352000 „Reis poliert, roh“ (Lauf 38367139392 „kandidaten“ 13.10.2026, BLS 4.0): polierter Reis roh = trocken, ungekocht; eigener Risotto-/Rundkorn-Eintrag fehlt. Haltbarkeit gekocht 1 Tag (R9: Reis, Fisch, Hackfleisch, Geflügel)."
     },
     {
       "alpha5_id": "roastbeef-aufschnitt",
@@ -4357,7 +4359,7 @@
       "source": {
         "db": "bls",
         "version": "4.0",
-        "ref": null,
+        "ref": "G107100",
         "search": ["Romanasalat", "Römersalat", "Bindesalat", "Romana", "Lattich"],
         "state_de": "roh",
         "category": "vegetables"
@@ -4375,7 +4377,7 @@
       "max_fridge_days": 3,
       "freezable": false,
       "substitutes": [],
-      "reason_de": "Zustand: roh. Quell-ID offen (Lauf „kandidaten“ 12.10.2026, BLS 4.0): kein Romanasalat; Kopfsalat/Eisberg/Zuckerhut sind andere Sorten. Suchbegriffe für den nächsten Lauf angepasst – nicht geraten."
+      "reason_de": "Zustand: roh. Quell-ID G107100 „Römischer Salat/Romanasalat, roh“ (Lauf 38367139392 „kandidaten“ 13.10.2026, BLS 4.0): roh, genau passend."
     },
     {
       "alpha5_id": "romanasalatherzen",
@@ -4384,7 +4386,7 @@
       "source": {
         "db": "bls",
         "version": "4.0",
-        "ref": null,
+        "ref": "G107100",
         "search": ["Romanasalat", "Römersalat", "Bindesalat", "Romana", "Lattich"],
         "state_de": "roh",
         "category": "vegetables"
@@ -4402,7 +4404,7 @@
       "max_fridge_days": 3,
       "freezable": false,
       "substitutes": [],
-      "reason_de": "Zustand: roh. Quell-ID offen (Lauf „kandidaten“ 12.10.2026, BLS 4.0): kein Romanasalat; Kopfsalat/Eisberg/Zuckerhut sind andere Sorten. Suchbegriffe für den nächsten Lauf angepasst – nicht geraten."
+      "reason_de": "Zustand: roh. Quell-ID G107100 „Römischer Salat/Romanasalat, roh“ (Lauf 38367139392 „kandidaten“ 13.10.2026, BLS 4.0): roh; Herzen sind Teil des Romanasalats."
     },
     {
       "alpha5_id": "rosinen",
@@ -4411,7 +4413,7 @@
       "source": {
         "db": "bls",
         "version": "4.0",
-        "ref": null,
+        "ref": "F840100",
         "search": [
           "Weintraube getrocknet",
           "Traube getrocknet",
@@ -4435,7 +4437,7 @@
       "max_fridge_days": 3,
       "freezable": true,
       "substitutes": [],
-      "reason_de": "Zustand: getrocknet. Quell-ID offen (Lauf „kandidaten“ 12.10.2026, BLS 4.0): nur Gebäck/Gerichte mit Rosinen – BLS nennt Rosinen vermutlich „Weintraube getrocknet“. Suchbegriffe für den nächsten Lauf angepasst – nicht geraten."
+      "reason_de": "Zustand: getrocknet. Quell-ID F840100 „Rosine/Sultanine (Weinbeere getrocknet)“ (Lauf 38367139392 „kandidaten“ 13.10.2026, BLS 4.0): Rosine/Sultanine getrocknet (nicht Korinthe)."
     },
     {
       "alpha5_id": "rosmarin-getrocknet",
@@ -4462,7 +4464,7 @@
       "max_fridge_days": 3,
       "freezable": true,
       "substitutes": [],
-      "reason_de": "Zustand: getrocknet. Quell-ID offen (Lauf „kandidaten“ 12.10.2026, BLS 4.0): nur Gerichte mit Rosmarin – kein Kraut-Eintrag. Suchbegriffe für den nächsten Lauf angepasst – nicht geraten."
+      "reason_de": "Zustand: getrocknet. Quell-ID offen (Lauf 38367139392 „kandidaten“ 13.10.2026, BLS 4.0, Kandidaten aus der ganzen Datei): nicht in BLS 4.0: kein Rosmarin-Eintrag, nur Gerichte mit Rosmarin."
     },
     {
       "alpha5_id": "rote-linsen-trocken",
@@ -4606,7 +4608,7 @@
       "source": {
         "db": "bls",
         "version": "4.0",
-        "ref": null,
+        "ref": "T410600",
         "search": [
           "Lachs geräuchert",
           "Räucherlachs",
@@ -4629,7 +4631,7 @@
       "max_fridge_days": 1,
       "freezable": true,
       "substitutes": [],
-      "reason_de": "Zustand: kalt geräuchert. Quell-ID offen (Lauf „kandidaten“ 12.10.2026, BLS 4.0): „Lachs“ liefert nur roh/gegrillt/Graved/gesalzen – geräuchert fiel aus den 8 kürzesten. Suchbegriffe für den nächsten Lauf angepasst – nicht geraten. Haltbarkeit gekocht 1 Tag (R9: Reis, Fisch, Hackfleisch, Geflügel)."
+      "reason_de": "Zustand: kalt geräuchert. Quell-ID T410600 „Lachs geräuchert (Räucherlachs)“ (Lauf 38367139392 „kandidaten“ 13.10.2026, BLS 4.0): genau passend. Haltbarkeit gekocht 1 Tag (R9: Reis, Fisch, Hackfleisch, Geflügel)."
     },
     {
       "alpha5_id": "raeuchertofu",
@@ -4638,8 +4640,8 @@
       "source": {
         "db": "bls",
         "version": "4.0",
-        "ref": null,
-        "search": ["Tofu geräuchert", "Räuchertofu", "Tofu Rauch", "Tofu Räucher"],
+        "ref": "H861000",
+        "search": ["Tofu geräuchert", "Räuchertofu", "Tofu Rauch", "Tofu Räucher", "Tofu"],
         "state_de": "geräuchert",
         "category": "soy_products"
       },
@@ -4656,7 +4658,7 @@
       "max_fridge_days": 3,
       "freezable": true,
       "substitutes": [],
-      "reason_de": "Zustand: geräuchert. Quell-ID offen (Lauf „kandidaten“ 12.10.2026, BLS 4.0): nur Tofu natur/gegart/Gerichte – kein Räuchertofu. Suchbegriffe für den nächsten Lauf angepasst – nicht geraten."
+      "reason_de": "UNSICHER – bei R19 zuerst prüfen. Zustand: geräuchert. Quell-ID H861000 „Tofu“ (Lauf 38367139392 „kandidaten“ 13.10.2026, BLS 4.0): Tofu natur; geräucherter Tofu fehlt."
     },
     {
       "alpha5_id": "salatmix",
@@ -4665,7 +4667,7 @@
       "source": {
         "db": "bls",
         "version": "4.0",
-        "ref": null,
+        "ref": "G108100",
         "search": [
           "Salat gemischt",
           "Blattsalat gemischt",
@@ -4689,7 +4691,7 @@
       "max_fridge_days": 3,
       "freezable": false,
       "substitutes": [],
-      "reason_de": "Zustand: roh. Quell-ID offen (Lauf „kandidaten“ 12.10.2026, BLS 4.0): nur einzelne Salatsorten/Gerichte – kein gemischter Blattsalat. Suchbegriffe für den nächsten Lauf angepasst – nicht geraten. Mischung; gleichwertiger Blattsalat-Eintrag mit Begründung."
+      "reason_de": "UNSICHER – bei R19 zuerst prüfen. Zustand: roh. Quell-ID G108100 „Schnittsalat/Pflücksalat, roh“ (Lauf 38367139392 „kandidaten“ 13.10.2026, BLS 4.0): Schnitt-/Pflücksalat roh als Blattsalat; keine rohe Salatmischung ohne Dressing. Mischung; gleichwertiger Blattsalat-Eintrag mit Begründung."
     },
     {
       "alpha5_id": "salbei-frisch",
@@ -4716,7 +4718,7 @@
       "max_fridge_days": 3,
       "freezable": true,
       "substitutes": [],
-      "reason_de": "Zustand: frisch, roh. Quell-ID offen (Lauf „kandidaten“ 12.10.2026, BLS 4.0): nur ein Gericht mit Salbei – kein Kraut-Eintrag. Suchbegriffe für den nächsten Lauf angepasst – nicht geraten."
+      "reason_de": "Zustand: frisch, roh. Quell-ID offen (Lauf 38367139392 „kandidaten“ 13.10.2026, BLS 4.0, Kandidaten aus der ganzen Datei): nicht in BLS 4.0: kein Salbei-Eintrag, nur Gerichte mit Salbei."
     },
     {
       "alpha5_id": "salsa-glas",
@@ -4743,7 +4745,7 @@
       "max_fridge_days": 3,
       "freezable": true,
       "substitutes": [],
-      "reason_de": "Zustand: Sauce im Glas. Quell-ID offen (Lauf „kandidaten“ 12.10.2026, BLS 4.0): nur Salsa verde, spanische Sauce und Tomatensaucen – keine Tex-Mex-Salsa im Glas. Suchbegriffe für den nächsten Lauf angepasst – nicht geraten."
+      "reason_de": "Zustand: Sauce im Glas. Quell-ID offen (Lauf 38367139392 „kandidaten“ 13.10.2026, BLS 4.0, Kandidaten aus der ganzen Datei): nicht in BLS 4.0: keine Tomaten-Salsa (Dip); X3A7040 „Spanische Sauce (Salsa)“ ist eine gekochte Sauce und kein Dip aus dem Glas."
     },
     {
       "alpha5_id": "salz",
@@ -4887,12 +4889,13 @@
       "source": {
         "db": "bls",
         "version": "4.0",
-        "ref": null,
+        "ref": "H740902",
         "search": [
           "Bohne schwarz",
           "Schwarze Bohne",
           "Bohne schwarz Konserve",
-          "Schwarze Bohnen abgetropft"
+          "Schwarze Bohnen abgetropft",
+          "Gartenbohne reif"
         ],
         "state_de": "Konserve, abgetropft",
         "category": "legumes"
@@ -4910,7 +4913,7 @@
       "max_fridge_days": 3,
       "freezable": true,
       "substitutes": [],
-      "reason_de": "Zustand: Konserve, abgetropft. Quell-ID offen (Lauf „kandidaten“ 12.10.2026, BLS 4.0): „Bohne“ liefert nur andere Bohnensorten – keine schwarze Bohne. Suchbegriffe für den nächsten Lauf angepasst – nicht geraten."
+      "reason_de": "UNSICHER – bei R19 zuerst prüfen. Zustand: Konserve, abgetropft. Quell-ID H740902 „Gartenbohne reif, Konserve, abgetropft“ (Lauf 38367139392 „kandidaten“ 13.10.2026, BLS 4.0): Gartenbohne reif, Konserve abgetropft – schwarze Bohnen sind Gartenbohnen (Phaseolus vulgaris); eigener Eintrag fehlt."
     },
     {
       "alpha5_id": "schwarze-oliven-glas",
@@ -4946,7 +4949,7 @@
       "source": {
         "db": "bls",
         "version": "4.0",
-        "ref": null,
+        "ref": "U611100",
         "search": ["Schwein Filet", "Schwein Lende", "Schweinefilet", "Schweinelende"],
         "state_de": "roh",
         "category": "meat_pork"
@@ -4964,7 +4967,7 @@
       "max_fridge_days": 3,
       "freezable": true,
       "substitutes": [],
-      "reason_de": "Zustand: roh. Quell-ID offen (Lauf „kandidaten“ 12.10.2026, BLS 4.0): „Schwein“ liefert nur Innereien/Wurst/Gerichte – kein Filet unter den 8 kürzesten. Suchbegriffe für den nächsten Lauf angepasst – nicht geraten."
+      "reason_de": "Zustand: roh. Quell-ID U611100 „Schwein Filet/Lende, roh“ (Lauf 38367139392 „kandidaten“ 13.10.2026, BLS 4.0): roh (nicht tiefgefroren/gegrillt)."
     },
     {
       "alpha5_id": "schweinehackfleisch-mager",
@@ -5000,7 +5003,7 @@
       "source": {
         "db": "bls",
         "version": "4.0",
-        "ref": null,
+        "ref": "U541100",
         "search": [
           "Schwein Schnitzel",
           "Schwein Oberschale",
@@ -5023,7 +5026,7 @@
       "max_fridge_days": 3,
       "freezable": true,
       "substitutes": [],
-      "reason_de": "Zustand: roh. Quell-ID offen (Lauf „kandidaten“ 12.10.2026, BLS 4.0): „Schwein“ liefert nur Innereien/Wurst/Gerichte – kein Schnitzelfleisch unter den 8 kürzesten. Suchbegriffe für den nächsten Lauf angepasst – nicht geraten."
+      "reason_de": "Zustand: roh. Quell-ID U541100 „Schwein Schnitzel (Oberschale) roh“ (Lauf 38367139392 „kandidaten“ 13.10.2026, BLS 4.0): Schnitzel aus der Oberschale, roh (klassischer Schnitzel-Zuschnitt); U543100 „(Nuss)“ verworfen, weil die Nuss-Wortregel dort trifft."
     },
     {
       "alpha5_id": "seelachsfilet-tk",
@@ -5356,13 +5359,14 @@
       "source": {
         "db": "bls",
         "version": "4.0",
-        "ref": null,
+        "ref": "H844000",
         "search": [
           "Soja Skyr",
           "Skyralternative",
           "Soja-Skyralternative",
           "Soja Quark",
-          "Soja-Quarkalternative"
+          "Soja-Quarkalternative",
+          "Soja-Joghurtalternative ungesüßt"
         ],
         "state_de": "natur",
         "category": "soy_products"
@@ -5380,7 +5384,7 @@
       "max_fridge_days": 3,
       "freezable": true,
       "substitutes": [],
-      "reason_de": "Zustand: natur. Quell-ID offen (Lauf „kandidaten“ 12.10.2026, BLS 4.0): nur Sojadrink/-öl/-isolat … – Soja-Joghurtalternative hat deutlich weniger Eiweiß als Sojaskyr; evtl. Zweitquelle (Plan 19.3). Suchbegriffe für den nächsten Lauf angepasst – nicht geraten. Kein eigener Eintrag erwartet; gleichwertig ist Sojajoghurt nur bedingt (mehr Eiweiß) → eher Zweitquelle oder ungeprüft."
+      "reason_de": "UNSICHER – bei R19 zuerst prüfen. Zustand: natur. Quell-ID H844000 „Soja-Joghurtalternative ungesüßt“ (Lauf 38367139392 „kandidaten“ 13.10.2026, BLS 4.0): Soja-Joghurtalternative ungesüßt; Skyr-Alternative fehlt, hat meist mehr Eiweiß. Kein eigener Eintrag erwartet; gleichwertig ist Sojajoghurt nur bedingt (mehr Eiweiß) → eher Zweitquelle oder ungeprüft."
     },
     {
       "alpha5_id": "spaghetti-trocken",
@@ -5596,7 +5600,7 @@
       "max_fridge_days": 3,
       "freezable": true,
       "substitutes": [],
-      "reason_de": "Zustand: Tempeh. Quell-ID offen (Lauf „kandidaten“ 12.10.2026, BLS 4.0): keine Kandidaten. Suchbegriffe für den nächsten Lauf angepasst – nicht geraten."
+      "reason_de": "Zustand: Tempeh. Quell-ID offen (Lauf 38367139392 „kandidaten“ 13.10.2026, BLS 4.0, Kandidaten aus der ganzen Datei): nicht in BLS 4.0: kein Tempeh-Eintrag."
     },
     {
       "alpha5_id": "thunfisch-dose-im-eigenen-saft-abgetropft",
@@ -5605,7 +5609,7 @@
       "source": {
         "db": "bls",
         "version": "4.0",
-        "ref": null,
+        "ref": "T121902",
         "search": [
           "Thunfisch Konserve",
           "Thunfisch eigenen Saft",
@@ -5628,7 +5632,7 @@
       "max_fridge_days": 1,
       "freezable": true,
       "substitutes": [],
-      "reason_de": "Zustand: Konserve im eigenen Saft, abgetropft. Quell-ID offen (Lauf „kandidaten“ 12.10.2026, BLS 4.0): nur roh/gegart/TK/Aufstrich – Konserve fiel aus den 8 kürzesten. Suchbegriffe für den nächsten Lauf angepasst – nicht geraten. Haltbarkeit gekocht 1 Tag (R9: Reis, Fisch, Hackfleisch, Geflügel)."
+      "reason_de": "Zustand: Konserve im eigenen Saft, abgetropft. Quell-ID T121902 „Thunfisch im eigenen Saft, Konserve, abgetropft“ (Lauf 38367139392 „kandidaten“ 13.10.2026, BLS 4.0): im eigenen Saft, Konserve abgetropft – genau passend. Haltbarkeit gekocht 1 Tag (R9: Reis, Fisch, Hackfleisch, Geflügel)."
     },
     {
       "alpha5_id": "thunfisch-im-eigenen-saft-abgetropft",
@@ -5637,7 +5641,7 @@
       "source": {
         "db": "bls",
         "version": "4.0",
-        "ref": null,
+        "ref": "T121902",
         "search": [
           "Thunfisch Konserve",
           "Thunfisch eigenen Saft",
@@ -5660,7 +5664,7 @@
       "max_fridge_days": 1,
       "freezable": true,
       "substitutes": [],
-      "reason_de": "Zustand: Konserve im eigenen Saft, abgetropft. Quell-ID offen (Lauf „kandidaten“ 12.10.2026, BLS 4.0): nur roh/gegart/TK/Aufstrich – Konserve fiel aus den 8 kürzesten. Suchbegriffe für den nächsten Lauf angepasst – nicht geraten. Haltbarkeit gekocht 1 Tag (R9: Reis, Fisch, Hackfleisch, Geflügel). Doppelte Zutat-ID, gleiche Quell-ID."
+      "reason_de": "Zustand: Konserve im eigenen Saft, abgetropft. Quell-ID T121902 „Thunfisch im eigenen Saft, Konserve, abgetropft“ (Lauf 38367139392 „kandidaten“ 13.10.2026, BLS 4.0): im eigenen Saft, Konserve abgetropft – genau passend. Haltbarkeit gekocht 1 Tag (R9: Reis, Fisch, Hackfleisch, Geflügel). Doppelte Zutat-ID, gleiche Quell-ID."
     },
     {
       "alpha5_id": "toastbrot-weizen",
@@ -5822,7 +5826,7 @@
       "max_fridge_days": 3,
       "freezable": true,
       "substitutes": [],
-      "reason_de": "Zustand: Sauce im Glas. Quell-ID offen (Lauf „kandidaten“ 12.10.2026, BLS 4.0): nur Salsa verde, spanische Sauce und Tomatensaucen – keine Tex-Mex-Salsa im Glas. Suchbegriffe für den nächsten Lauf angepasst – nicht geraten."
+      "reason_de": "Zustand: Sauce im Glas. Quell-ID offen (Lauf 38367139392 „kandidaten“ 13.10.2026, BLS 4.0, Kandidaten aus der ganzen Datei): nicht in BLS 4.0: keine Tomaten-Salsa (Dip); X3A7040 „Spanische Sauce (Salsa)“ ist eine gekochte Sauce und kein Dip aus dem Glas."
     },
     {
       "alpha5_id": "veganes-proteinpulver",
@@ -5856,7 +5860,7 @@
       "max_fridge_days": 3,
       "freezable": true,
       "substitutes": [],
-      "reason_de": "Zustand: Pulver. Quell-ID offen (Lauf „kandidaten“ 12.10.2026, BLS 4.0): nur Sojaproteinisolat – vegane Proteinpulver sind meist Erbsen-/Reis-Mischungen mit Zusätzen; evtl. Zweitquelle (Plan 19.3). Suchbegriffe für den nächsten Lauf angepasst – nicht geraten. Pflanzliches Proteinpulver (oft Erbse/Soja): kein Quelleintrag erwartet → Zweitquelle oder ungeprüft; Gruppen vorsichtig."
+      "reason_de": "Zustand: Pulver. Quell-ID offen (Lauf 38367139392 „kandidaten“ 13.10.2026, BLS 4.0, Kandidaten aus der ganzen Datei): nicht in BLS 4.0: kein veganes Proteinpulver; Sojaproteinisolat H011000 passt nur, wenn die Ware reines Sojaisolat ist. Pflanzliches Proteinpulver (oft Erbse/Soja): kein Quelleintrag erwartet → Zweitquelle oder ungeprüft; Gruppen vorsichtig."
     },
     {
       "alpha5_id": "veganes-proteinpulver-schoko",
@@ -5890,7 +5894,7 @@
       "max_fridge_days": 3,
       "freezable": true,
       "substitutes": [],
-      "reason_de": "Zustand: Pulver, Kakao. Quell-ID offen (Lauf „kandidaten“ 12.10.2026, BLS 4.0): nur Sojaproteinisolat – aromatisierte Mischung mit Kakao/Süße passt nicht; evtl. Zweitquelle (Plan 19.3). Suchbegriffe für den nächsten Lauf angepasst – nicht geraten."
+      "reason_de": "Zustand: Pulver, Kakao. Quell-ID offen (Lauf 38367139392 „kandidaten“ 13.10.2026, BLS 4.0, Kandidaten aus der ganzen Datei): nicht in BLS 4.0: kein veganes Proteinpulver mit Kakao; Sojaproteinisolat H011000 ist ungesüßt und ohne Kakao."
     },
     {
       "alpha5_id": "veganes-proteinpulver-vanille",
@@ -5924,7 +5928,7 @@
       "max_fridge_days": 3,
       "freezable": true,
       "substitutes": [],
-      "reason_de": "Zustand: Pulver, Vanille. Quell-ID offen (Lauf „kandidaten“ 12.10.2026, BLS 4.0): nur Sojaproteinisolat – aromatisierte Mischung mit Süße passt nicht; evtl. Zweitquelle (Plan 19.3). Suchbegriffe für den nächsten Lauf angepasst – nicht geraten."
+      "reason_de": "Zustand: Pulver, Vanille. Quell-ID offen (Lauf 38367139392 „kandidaten“ 13.10.2026, BLS 4.0, Kandidaten aus der ganzen Datei): nicht in BLS 4.0: kein veganes Proteinpulver mit Vanille; Sojaproteinisolat H011000 ist ungesüßt."
     },
     {
       "alpha5_id": "vollkorn-knaeckebrot",
@@ -5960,7 +5964,7 @@
       "source": {
         "db": "bls",
         "version": "4.0",
-        "ref": null,
+        "ref": "B783012",
         "search": [
           "Weizenvollkorntortilla",
           "Vollkorntortilla",
@@ -5984,7 +5988,7 @@
       "max_fridge_days": 3,
       "freezable": true,
       "substitutes": [],
-      "reason_de": "Zustand: Vollkorn-Weizenfladen. Quell-ID offen (Lauf „kandidaten“ 12.10.2026, BLS 4.0): nur Weizentortilla (kein Vollkorn) und Gerichte. Suchbegriffe für den nächsten Lauf angepasst – nicht geraten."
+      "reason_de": "UNSICHER – bei R19 zuerst prüfen. Zustand: Vollkorn-Weizenfladen. Quell-ID B783012 „Weizentortilla“ (Lauf 38367139392 „kandidaten“ 13.10.2026, BLS 4.0): Weizentortilla; Vollkorn-Variante fehlt (weniger Ballaststoffe)."
     },
     {
       "alpha5_id": "vollkorn-wrap",
@@ -5993,7 +5997,7 @@
       "source": {
         "db": "bls",
         "version": "4.0",
-        "ref": null,
+        "ref": "B783012",
         "search": [
           "Weizenvollkorntortilla",
           "Vollkorntortilla",
@@ -6017,7 +6021,7 @@
       "max_fridge_days": 3,
       "freezable": true,
       "substitutes": [],
-      "reason_de": "Zustand: Vollkorn-Weizenfladen. Quell-ID offen (Lauf „kandidaten“ 12.10.2026, BLS 4.0): nur Weizentortilla (kein Vollkorn) und Gerichte. Suchbegriffe für den nächsten Lauf angepasst – nicht geraten. Gleiche Quell-ID wie „vollkorn-tortilla“."
+      "reason_de": "UNSICHER – bei R19 zuerst prüfen. Zustand: Vollkorn-Weizenfladen. Quell-ID B783012 „Weizentortilla“ (Lauf 38367139392 „kandidaten“ 13.10.2026, BLS 4.0): Weizentortilla; Vollkorn-Variante fehlt (weniger Ballaststoffe). Gleiche Quell-ID wie „vollkorn-tortilla“."
     },
     {
       "alpha5_id": "vollkornbrot",
@@ -6217,7 +6221,7 @@
       "source": {
         "db": "bls",
         "version": "4.0",
-        "ref": null,
+        "ref": "C218000",
         "search": ["Weichweizen Grieß", "Weizen Grieß", "Weichweizengrieß", "Grieß Weizen"],
         "state_de": "trocken",
         "category": "cereal_products"
@@ -6235,7 +6239,7 @@
       "max_fridge_days": 3,
       "freezable": true,
       "substitutes": [],
-      "reason_de": "Zustand: trocken. Quell-ID offen (Lauf „kandidaten“ 12.10.2026, BLS 4.0): nur Grieß anderer Getreide – kein Weizengrieß. Suchbegriffe für den nächsten Lauf angepasst – nicht geraten."
+      "reason_de": "Zustand: trocken. Quell-ID C218000 „Weichweizen Grieß“ (Lauf 38367139392 „kandidaten“ 13.10.2026, BLS 4.0): trocken (nicht gekocht)."
     },
     {
       "alpha5_id": "weizenbroetchen",
@@ -6271,7 +6275,7 @@
       "source": {
         "db": "bls",
         "version": "4.0",
-        "ref": null,
+        "ref": "H740902",
         "search": [
           "Bohne weiß Konserve",
           "Gartenbohne Konserve",
@@ -6295,7 +6299,7 @@
       "max_fridge_days": 3,
       "freezable": true,
       "substitutes": [],
-      "reason_de": "Zustand: Konserve, abgetropft. Quell-ID offen (Lauf „kandidaten“ 12.10.2026, BLS 4.0): „Bohne“ liefert nur andere Sorten, reif/roh – kein Konserven-Eintrag für weiße Bohnen. Suchbegriffe für den nächsten Lauf angepasst – nicht geraten."
+      "reason_de": "Zustand: Konserve, abgetropft. Quell-ID H740902 „Gartenbohne reif, Konserve, abgetropft“ (Lauf 38367139392 „kandidaten“ 13.10.2026, BLS 4.0): Gartenbohne reif (weiße Bohne), Konserve abgetropft (nicht in Tomatensoße)."
     },
     {
       "alpha5_id": "weisskohl",
@@ -6356,7 +6360,7 @@
       "max_fridge_days": 3,
       "freezable": true,
       "substitutes": [],
-      "reason_de": "Zustand: Pulver. Quell-ID offen (Lauf „kandidaten“ 12.10.2026, BLS 4.0): einziger Treffer Ricotta (Molkeneiweißkäse) – fachlich falsch; evtl. Zweitquelle (Plan 19.3). Suchbegriffe für den nächsten Lauf angepasst – nicht geraten. Whey = Molkenprotein; kein Quelleintrag erwartet → Zweitquelle oder ungeprüft."
+      "reason_de": "Zustand: Pulver. Quell-ID offen (Lauf 38367139392 „kandidaten“ 13.10.2026, BLS 4.0, Kandidaten aus der ganzen Datei): nicht in BLS 4.0: kein Molkenprotein; Süßmolkenpulver M887000 hat nur einen Bruchteil des Eiweißes. Whey = Molkenprotein; kein Quelleintrag erwartet → Zweitquelle oder ungeprüft."
     },
     {
       "alpha5_id": "whey-proteinpulver-schoko",
@@ -6390,7 +6394,7 @@
       "max_fridge_days": 3,
       "freezable": true,
       "substitutes": [],
-      "reason_de": "Zustand: Pulver, Kakao. Quell-ID offen (Lauf „kandidaten“ 12.10.2026, BLS 4.0): einziger Treffer Ricotta (Molkeneiweißkäse) – fachlich falsch; evtl. Zweitquelle (Plan 19.3). Suchbegriffe für den nächsten Lauf angepasst – nicht geraten."
+      "reason_de": "Zustand: Pulver, Kakao. Quell-ID offen (Lauf 38367139392 „kandidaten“ 13.10.2026, BLS 4.0, Kandidaten aus der ganzen Datei): nicht in BLS 4.0: kein Molkenprotein; Süßmolkenpulver M887000 hat nur einen Bruchteil des Eiweißes."
     },
     {
       "alpha5_id": "whey-proteinpulver-vanille",
@@ -6424,7 +6428,7 @@
       "max_fridge_days": 3,
       "freezable": true,
       "substitutes": [],
-      "reason_de": "Zustand: Pulver, Vanille. Quell-ID offen (Lauf „kandidaten“ 12.10.2026, BLS 4.0): einziger Treffer Ricotta (Molkeneiweißkäse) – fachlich falsch; evtl. Zweitquelle (Plan 19.3). Suchbegriffe für den nächsten Lauf angepasst – nicht geraten."
+      "reason_de": "Zustand: Pulver, Vanille. Quell-ID offen (Lauf 38367139392 „kandidaten“ 13.10.2026, BLS 4.0, Kandidaten aus der ganzen Datei): nicht in BLS 4.0: kein Molkenprotein; Süßmolkenpulver M887000 hat nur einen Bruchteil des Eiweißes."
     },
     {
       "alpha5_id": "wildpreiselbeeren-glas",
@@ -6505,7 +6509,7 @@
       "max_fridge_days": 3,
       "freezable": true,
       "substitutes": [],
-      "reason_de": "Zustand: gemahlen. Quell-ID offen (Lauf „kandidaten“ 12.10.2026, BLS 4.0): nur Gerichte/Gebäck mit Zimt – kein Gewürz-Eintrag. Suchbegriffe für den nächsten Lauf angepasst – nicht geraten."
+      "reason_de": "Zustand: gemahlen. Quell-ID offen (Lauf 38367139392 „kandidaten“ 13.10.2026, BLS 4.0, Kandidaten aus der ganzen Datei): nicht in BLS 4.0: kein Zimt-Eintrag, nur Gerichte/Gebäck mit Zimt."
     },
     {
       "alpha5_id": "zitronensaft",
@@ -6568,7 +6572,7 @@
       "source": {
         "db": "bls",
         "version": "4.0",
-        "ref": null,
+        "ref": "S111000",
         "search": [
           "Weißzucker",
           "Haushaltszucker",
@@ -6593,7 +6597,7 @@
       "max_fridge_days": 3,
       "freezable": true,
       "substitutes": [],
-      "reason_de": "Zustand: Haushaltszucker. Quell-ID offen (Lauf „kandidaten“ 12.10.2026, BLS 4.0): nur Puder-/Vanille-/Milchzucker u. a. – kein Haushaltszucker unter den Kandidaten. Suchbegriffe für den nächsten Lauf angepasst – nicht geraten."
+      "reason_de": "Zustand: Haushaltszucker. Quell-ID S111000 „Zucker weiß (Raffinadezucker/Weißzucker)“ (Lauf 38367139392 „kandidaten“ 13.10.2026, BLS 4.0): Weißzucker, genau passend."
     },
     {
       "alpha5_id": "zwieback",
