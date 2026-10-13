@@ -1,0 +1,49 @@
+{
+  "id": "oliven-schwarz",
+  "version": 1,
+  "status": "draft",
+  "name_de": "Oliven schwarz",
+  "aliases_de": [],
+  "shopping_category": "legumes_canned",
+  "pantry": true,
+  "nutrients_per_100g": {
+    "kcal": 140,
+    "protein_g": 0.84,
+    "carbs_g": 0,
+    "sugar_g": 0,
+    "fat_g": 14.84,
+    "sat_fat_g": 2.62,
+    "fiber_g": 1.6,
+    "salt_g": 1.838
+  },
+  "units": {},
+  "groups": [],
+  "animal": [],
+  "meat_kind": [],
+  "pregnancy_caution": false,
+  "alcohol": false,
+  "max_fridge_days": 3,
+  "freezable": true,
+  "substitutes": [],
+  "source": {
+    "db": "bls",
+    "version": "4.0",
+    "ref": "H520800",
+    "name": "Oliven geschwärzt, in Salzlake, abgetropft",
+    "category": "vegetables",
+    "license": "CC BY 4.0",
+    "retrieved_at": "2026-10-13"
+  },
+  "meta": {
+    "origin": "claude_session",
+    "model": "claude-opus-5-5",
+    "batch_id": null,
+    "created_on": "2026-10-13",
+    "expert_reviewed": false,
+    "reviewed_by": null,
+    "reviewed_at": null,
+    "review_note": null,
+    "catalog_reviewed_by": null,
+    "catalog_reviewed_at": null
+  }
+}

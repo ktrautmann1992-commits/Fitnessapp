@@ -1,0 +1,49 @@
+{
+  "id": "roastbeef-aufschnitt",
+  "version": 1,
+  "status": "draft",
+  "name_de": "Roastbeef (Aufschnitt)",
+  "aliases_de": [],
+  "shopping_category": "meat_sausage",
+  "pantry": false,
+  "nutrients_per_100g": {
+    "kcal": 180,
+    "protein_g": 28.72,
+    "carbs_g": 0.02,
+    "sugar_g": 0,
+    "fat_g": 7.27,
+    "sat_fat_g": 2.16,
+    "fiber_g": 0.01,
+    "salt_g": 0.56
+  },
+  "units": {},
+  "groups": ["beef"],
+  "animal": ["meat"],
+  "meat_kind": ["beef"],
+  "pregnancy_caution": true,
+  "alcohol": false,
+  "max_fridge_days": 3,
+  "freezable": true,
+  "substitutes": [],
+  "source": {
+    "db": "bls",
+    "version": "4.0",
+    "ref": "Y131132",
+    "name": "Roastbeef gebraten im Ofen, ohne Sauce",
+    "category": "meat_beef_veal",
+    "license": "CC BY 4.0",
+    "retrieved_at": "2026-10-13"
+  },
+  "meta": {
+    "origin": "claude_session",
+    "model": "claude-opus-5-5",
+    "batch_id": null,
+    "created_on": "2026-10-13",
+    "expert_reviewed": false,
+    "reviewed_by": null,
+    "reviewed_at": null,
+    "review_note": null,
+    "catalog_reviewed_by": null,
+    "catalog_reviewed_at": null
+  }
+}

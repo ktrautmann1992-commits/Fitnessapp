@@ -1,0 +1,49 @@
+{
+  "id": "datteln-getrocknet-entsteint",
+  "version": 1,
+  "status": "draft",
+  "name_de": "Datteln (getrocknet, entsteint)",
+  "aliases_de": [],
+  "shopping_category": "nuts_seeds_dried_fruit",
+  "pantry": true,
+  "nutrients_per_100g": {
+    "kcal": 356,
+    "protein_g": 2.64,
+    "carbs_g": 79.3,
+    "sugar_g": 78.92,
+    "fat_g": 0.36,
+    "sat_fat_g": 0,
+    "fiber_g": 11.16,
+    "salt_g": 0.0118
+  },
+  "units": {},
+  "groups": ["fructose"],
+  "animal": [],
+  "meat_kind": [],
+  "pregnancy_caution": false,
+  "alcohol": false,
+  "max_fridge_days": 3,
+  "freezable": true,
+  "substitutes": [],
+  "source": {
+    "db": "bls",
+    "version": "4.0",
+    "ref": "F504400",
+    "name": "Dattel getrocknet",
+    "category": "fruit",
+    "license": "CC BY 4.0",
+    "retrieved_at": "2026-10-13"
+  },
+  "meta": {
+    "origin": "claude_session",
+    "model": "claude-opus-5-5",
+    "batch_id": null,
+    "created_on": "2026-10-13",
+    "expert_reviewed": false,
+    "reviewed_by": null,
+    "reviewed_at": null,
+    "review_note": null,
+    "catalog_reviewed_by": null,
+    "catalog_reviewed_at": null
+  }
+}

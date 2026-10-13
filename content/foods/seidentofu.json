@@ -1,0 +1,49 @@
+{
+  "id": "seidentofu",
+  "version": 1,
+  "status": "draft",
+  "name_de": "Seidentofu",
+  "aliases_de": [],
+  "shopping_category": "chilled_plant_based",
+  "pantry": false,
+  "nutrients_per_100g": {
+    "kcal": 46,
+    "protein_g": 4.57,
+    "carbs_g": 0,
+    "sugar_g": 0,
+    "fat_g": 2.9,
+    "sat_fat_g": 0.45,
+    "fiber_g": 0.6,
+    "salt_g": 0.018
+  },
+  "units": {},
+  "groups": ["legumes", "soy"],
+  "animal": [],
+  "meat_kind": [],
+  "pregnancy_caution": false,
+  "alcohol": false,
+  "max_fridge_days": 3,
+  "freezable": true,
+  "substitutes": [],
+  "source": {
+    "db": "bls",
+    "version": "4.0",
+    "ref": "H861100",
+    "name": "Seidentofu",
+    "category": "soy_products",
+    "license": "CC BY 4.0",
+    "retrieved_at": "2026-10-13"
+  },
+  "meta": {
+    "origin": "claude_session",
+    "model": "claude-opus-5-5",
+    "batch_id": null,
+    "created_on": "2026-10-13",
+    "expert_reviewed": false,
+    "reviewed_by": null,
+    "reviewed_at": null,
+    "review_note": null,
+    "catalog_reviewed_by": null,
+    "catalog_reviewed_at": null
+  }
+}

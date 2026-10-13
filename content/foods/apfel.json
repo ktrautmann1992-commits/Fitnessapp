@@ -1,0 +1,49 @@
+{
+  "id": "apfel",
+  "version": 1,
+  "status": "draft",
+  "name_de": "Apfel",
+  "aliases_de": [],
+  "shopping_category": "fruit_vegetables",
+  "pantry": false,
+  "nutrients_per_100g": {
+    "kcal": 58,
+    "protein_g": 0.424,
+    "carbs_g": 11.7,
+    "sugar_g": 10.487,
+    "fat_g": 0.5,
+    "sat_fat_g": 0.201,
+    "fiber_g": 2.275,
+    "salt_g": 0.002
+  },
+  "units": {},
+  "groups": ["fructose"],
+  "animal": [],
+  "meat_kind": [],
+  "pregnancy_caution": false,
+  "alcohol": false,
+  "max_fridge_days": 3,
+  "freezable": true,
+  "substitutes": [],
+  "source": {
+    "db": "bls",
+    "version": "4.0",
+    "ref": "F110100",
+    "name": "Apfel roh",
+    "category": "fruit",
+    "license": "CC BY 4.0",
+    "retrieved_at": "2026-10-13"
+  },
+  "meta": {
+    "origin": "claude_session",
+    "model": "claude-opus-5-5",
+    "batch_id": null,
+    "created_on": "2026-10-13",
+    "expert_reviewed": false,
+    "reviewed_by": null,
+    "reviewed_at": null,
+    "review_note": null,
+    "catalog_reviewed_by": null,
+    "catalog_reviewed_at": null
+  }
+}

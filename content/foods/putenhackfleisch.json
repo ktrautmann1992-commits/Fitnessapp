@@ -1,0 +1,49 @@
+{
+  "id": "putenhackfleisch",
+  "version": 1,
+  "status": "draft",
+  "name_de": "Putenhackfleisch",
+  "aliases_de": [],
+  "shopping_category": "meat_sausage",
+  "pantry": false,
+  "nutrients_per_100g": {
+    "kcal": 102,
+    "protein_g": 20.5,
+    "carbs_g": 0,
+    "sugar_g": 0,
+    "fat_g": 2.2,
+    "sat_fat_g": 0.623,
+    "fiber_g": 0,
+    "salt_g": 0.232
+  },
+  "units": {},
+  "groups": ["poultry"],
+  "animal": ["meat"],
+  "meat_kind": ["poultry"],
+  "pregnancy_caution": false,
+  "alcohol": false,
+  "max_fridge_days": 1,
+  "freezable": true,
+  "substitutes": [],
+  "source": {
+    "db": "bls",
+    "version": "4.0",
+    "ref": "V481000",
+    "name": "Pute Fleisch, ohne Haut, roh",
+    "category": "meat_poultry",
+    "license": "CC BY 4.0",
+    "retrieved_at": "2026-10-13"
+  },
+  "meta": {
+    "origin": "claude_session",
+    "model": "claude-opus-5-5",
+    "batch_id": null,
+    "created_on": "2026-10-13",
+    "expert_reviewed": false,
+    "reviewed_by": null,
+    "reviewed_at": null,
+    "review_note": null,
+    "catalog_reviewed_by": null,
+    "catalog_reviewed_at": null
+  }
+}
