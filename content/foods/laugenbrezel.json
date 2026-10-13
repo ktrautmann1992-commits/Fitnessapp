@@ -1,0 +1,49 @@
+{
+  "id": "laugenbrezel",
+  "version": 1,
+  "status": "draft",
+  "name_de": "Laugenbrezel",
+  "aliases_de": [],
+  "shopping_category": "bread_bakery",
+  "pantry": false,
+  "nutrients_per_100g": {
+    "kcal": 282,
+    "protein_g": 9.132,
+    "carbs_g": 50,
+    "sugar_g": 1.4,
+    "fat_g": 4.113,
+    "sat_fat_g": 0.97,
+    "fiber_g": 3.746,
+    "salt_g": 2.81
+  },
+  "units": {},
+  "groups": ["gluten"],
+  "animal": [],
+  "meat_kind": [],
+  "pregnancy_caution": false,
+  "alcohol": false,
+  "max_fridge_days": 3,
+  "freezable": true,
+  "substitutes": [],
+  "source": {
+    "db": "bls",
+    "version": "4.0",
+    "ref": "B723000",
+    "name": "Laugengebäck mit Hagelsalz",
+    "category": "bread_bakery",
+    "license": "CC BY 4.0",
+    "retrieved_at": "2026-10-13"
+  },
+  "meta": {
+    "origin": "claude_session",
+    "model": "claude-opus-5-5",
+    "batch_id": null,
+    "created_on": "2026-10-13",
+    "expert_reviewed": false,
+    "reviewed_by": null,
+    "reviewed_at": null,
+    "review_note": null,
+    "catalog_reviewed_by": null,
+    "catalog_reviewed_at": null
+  }
+}

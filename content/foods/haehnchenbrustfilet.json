@@ -1,0 +1,49 @@
+{
+  "id": "haehnchenbrustfilet",
+  "version": 1,
+  "status": "draft",
+  "name_de": "Hähnchenbrustfilet",
+  "aliases_de": [],
+  "shopping_category": "meat_sausage",
+  "pantry": false,
+  "nutrients_per_100g": {
+    "kcal": 109,
+    "protein_g": 23.25,
+    "carbs_g": 0,
+    "sugar_g": 0,
+    "fat_g": 1.81,
+    "sat_fat_g": 0.41,
+    "fiber_g": 0,
+    "salt_g": 0.128
+  },
+  "units": {},
+  "groups": ["poultry"],
+  "animal": ["meat"],
+  "meat_kind": ["poultry"],
+  "pregnancy_caution": false,
+  "alcohol": false,
+  "max_fridge_days": 1,
+  "freezable": true,
+  "substitutes": [],
+  "source": {
+    "db": "bls",
+    "version": "4.0",
+    "ref": "V416100",
+    "name": "Hähnchen Brustfilet, roh",
+    "category": "meat_poultry",
+    "license": "CC BY 4.0",
+    "retrieved_at": "2026-10-13"
+  },
+  "meta": {
+    "origin": "claude_session",
+    "model": "claude-opus-5-5",
+    "batch_id": null,
+    "created_on": "2026-10-13",
+    "expert_reviewed": false,
+    "reviewed_by": null,
+    "reviewed_at": null,
+    "review_note": null,
+    "catalog_reviewed_by": null,
+    "catalog_reviewed_at": null
+  }
+}

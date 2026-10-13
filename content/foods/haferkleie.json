@@ -1,0 +1,49 @@
+{
+  "id": "haferkleie",
+  "version": 1,
+  "status": "draft",
+  "name_de": "Haferkleie",
+  "aliases_de": [],
+  "shopping_category": "cereal_breakfast",
+  "pantry": true,
+  "nutrients_per_100g": {
+    "kcal": 371,
+    "protein_g": 15.6,
+    "carbs_g": 53.3,
+    "sugar_g": 0.74,
+    "fat_g": 7.7,
+    "sat_fat_g": 1.5,
+    "fiber_g": 12.9,
+    "salt_g": 0.00495
+  },
+  "units": {},
+  "groups": ["gluten"],
+  "animal": [],
+  "meat_kind": [],
+  "pregnancy_caution": false,
+  "alcohol": false,
+  "max_fridge_days": 3,
+  "freezable": true,
+  "substitutes": [],
+  "source": {
+    "db": "bls",
+    "version": "4.0",
+    "ref": "C138000",
+    "name": "Hafer Kleie",
+    "category": "cereal_products",
+    "license": "CC BY 4.0",
+    "retrieved_at": "2026-10-13"
+  },
+  "meta": {
+    "origin": "claude_session",
+    "model": "claude-opus-5-5",
+    "batch_id": null,
+    "created_on": "2026-10-13",
+    "expert_reviewed": false,
+    "reviewed_by": null,
+    "reviewed_at": null,
+    "review_note": null,
+    "catalog_reviewed_by": null,
+    "catalog_reviewed_at": null
+  }
+}

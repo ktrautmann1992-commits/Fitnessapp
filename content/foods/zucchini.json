@@ -1,0 +1,49 @@
+{
+  "id": "zucchini",
+  "version": 1,
+  "status": "draft",
+  "name_de": "Zucchini",
+  "aliases_de": [],
+  "shopping_category": "fruit_vegetables",
+  "pantry": false,
+  "nutrients_per_100g": {
+    "kcal": 22,
+    "protein_g": 1.3,
+    "carbs_g": 3,
+    "sugar_g": 2,
+    "fat_g": 0.287,
+    "sat_fat_g": 0.068,
+    "fiber_g": 1.1,
+    "salt_g": 0.0027
+  },
+  "units": {},
+  "groups": [],
+  "animal": [],
+  "meat_kind": [],
+  "pregnancy_caution": false,
+  "alcohol": false,
+  "max_fridge_days": 3,
+  "freezable": true,
+  "substitutes": [],
+  "source": {
+    "db": "bls",
+    "version": "4.0",
+    "ref": "G582100",
+    "name": "Zucchini roh",
+    "category": "vegetables",
+    "license": "CC BY 4.0",
+    "retrieved_at": "2026-10-13"
+  },
+  "meta": {
+    "origin": "claude_session",
+    "model": "claude-opus-5-5",
+    "batch_id": null,
+    "created_on": "2026-10-13",
+    "expert_reviewed": false,
+    "reviewed_by": null,
+    "reviewed_at": null,
+    "review_note": null,
+    "catalog_reviewed_by": null,
+    "catalog_reviewed_at": null
+  }
+}

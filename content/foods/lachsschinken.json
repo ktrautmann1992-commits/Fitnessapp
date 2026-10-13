@@ -1,0 +1,49 @@
+{
+  "id": "lachsschinken",
+  "version": 1,
+  "status": "draft",
+  "name_de": "Lachsschinken",
+  "aliases_de": [],
+  "shopping_category": "meat_sausage",
+  "pantry": false,
+  "nutrients_per_100g": {
+    "kcal": 123,
+    "protein_g": 24.43,
+    "carbs_g": 0.76,
+    "sugar_g": 0.74,
+    "fat_g": 2.08,
+    "sat_fat_g": 0.71,
+    "fiber_g": 0,
+    "salt_g": 3.8375
+  },
+  "units": {},
+  "groups": [],
+  "animal": ["meat"],
+  "meat_kind": ["pork"],
+  "pregnancy_caution": true,
+  "alcohol": false,
+  "max_fridge_days": 3,
+  "freezable": true,
+  "substitutes": [],
+  "source": {
+    "db": "bls",
+    "version": "4.0",
+    "ref": "W443000",
+    "name": "Lachsschinken, Rohpökelware, geräuchert",
+    "category": "sausage_meat_products",
+    "license": "CC BY 4.0",
+    "retrieved_at": "2026-10-13"
+  },
+  "meta": {
+    "origin": "claude_session",
+    "model": "claude-opus-5-5",
+    "batch_id": null,
+    "created_on": "2026-10-13",
+    "expert_reviewed": false,
+    "reviewed_by": null,
+    "reviewed_at": null,
+    "review_note": null,
+    "catalog_reviewed_by": null,
+    "catalog_reviewed_at": null
+  }
+}

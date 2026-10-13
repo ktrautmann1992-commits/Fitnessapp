@@ -1,0 +1,49 @@
+{
+  "id": "mandeln",
+  "version": 1,
+  "status": "draft",
+  "name_de": "Mandeln",
+  "aliases_de": [],
+  "shopping_category": "nuts_seeds_dried_fruit",
+  "pantry": true,
+  "nutrients_per_100g": {
+    "kcal": 544,
+    "protein_g": 22.333,
+    "carbs_g": 3.87,
+    "sugar_g": 3.634,
+    "fat_g": 46.6,
+    "sat_fat_g": 4.01,
+    "fiber_g": 10,
+    "salt_g": 0.00518
+  },
+  "units": {},
+  "groups": ["tree_nuts"],
+  "animal": [],
+  "meat_kind": [],
+  "pregnancy_caution": false,
+  "alcohol": false,
+  "max_fridge_days": 3,
+  "freezable": true,
+  "substitutes": [],
+  "source": {
+    "db": "bls",
+    "version": "4.0",
+    "ref": "H210100",
+    "name": "Mandel süß",
+    "category": "nuts_seeds",
+    "license": "CC BY 4.0",
+    "retrieved_at": "2026-10-13"
+  },
+  "meta": {
+    "origin": "claude_session",
+    "model": "claude-opus-5-5",
+    "batch_id": null,
+    "created_on": "2026-10-13",
+    "expert_reviewed": false,
+    "reviewed_by": null,
+    "reviewed_at": null,
+    "review_note": null,
+    "catalog_reviewed_by": null,
+    "catalog_reviewed_at": null
+  }
+}

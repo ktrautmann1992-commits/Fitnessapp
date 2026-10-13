@@ -1,0 +1,49 @@
+{
+  "id": "sojadrink-ungesuesst",
+  "version": 1,
+  "status": "draft",
+  "name_de": "Sojadrink ungesüßt",
+  "aliases_de": [],
+  "shopping_category": "chilled_plant_based",
+  "pantry": false,
+  "nutrients_per_100g": {
+    "kcal": 30,
+    "protein_g": 3.22,
+    "carbs_g": 0.4,
+    "sugar_g": 0.389,
+    "fat_g": 1.297,
+    "sat_fat_g": 0.186,
+    "fiber_g": 1.75,
+    "salt_g": 0.063691
+  },
+  "units": {},
+  "groups": ["legumes", "soy"],
+  "animal": [],
+  "meat_kind": [],
+  "pregnancy_caution": false,
+  "alcohol": false,
+  "max_fridge_days": 3,
+  "freezable": true,
+  "substitutes": [],
+  "source": {
+    "db": "bls",
+    "version": "4.0",
+    "ref": "H841100",
+    "name": "Sojadrink ungesüßt",
+    "category": "soy_products",
+    "license": "CC BY 4.0",
+    "retrieved_at": "2026-10-13"
+  },
+  "meta": {
+    "origin": "claude_session",
+    "model": "claude-opus-5-5",
+    "batch_id": null,
+    "created_on": "2026-10-13",
+    "expert_reviewed": false,
+    "reviewed_by": null,
+    "reviewed_at": null,
+    "review_note": null,
+    "catalog_reviewed_by": null,
+    "catalog_reviewed_at": null
+  }
+}
