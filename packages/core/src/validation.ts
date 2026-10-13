@@ -31,6 +31,7 @@ import {
   OTHER_EQUIPMENT_ID,
 } from './equipment';
 import { foodGroupSchema } from './food-groups';
+import { isAllowedGoalPair } from './goals/profile';
 
 /**
  * Zod-Schemas für alle Onboarding-Eingaben (Prüfung in App/Website).
@@ -111,21 +112,36 @@ export const goalTypeSchema = z.enum(GOAL_TYPES);
 export const enduranceDisciplineSchema = z.enum(ENDURANCE_DISCIPLINES);
 export const trainingLocationSchema = z.enum(TRAINING_LOCATIONS);
 
-/** Schritt „Ziel“: Disziplin nur bei Ausdauer, Wettkampf-/Zieldatum optional und nicht in der Vergangenheit. */
+/**
+ * Schritt „Ziel“: Hauptziel, optionales Nebenziel (docs/PLAN-ZIELE.md 4.2, Standard `null` – Wächter B1, damit
+ * unveränderte App-Stände weiter funktionieren), Disziplin nur bei Ausdauer als Haupt- oder Nebenziel,
+ * Wettkampf-/Zieldatum optional und nicht in der Vergangenheit.
+ */
 export function createGoalStepSchema(today: string) {
   return z
     .strictObject({
       goalType: goalTypeSchema,
+      secondaryGoalType: goalTypeSchema.nullable().default(null),
       discipline: enduranceDisciplineSchema.nullable().optional(),
       targetDate: isoDateSchema
         .refine((date) => date >= today, 'Das Datum liegt in der Vergangenheit.')
         .nullable()
         .optional(),
     })
-    .refine((value) => value.discipline == null || value.goalType === 'endurance', {
-      path: ['discipline'],
-      message: 'Eine Disziplin gibt es nur beim Ziel Ausdauer.',
-    });
+    .refine((value) => isAllowedGoalPair(value.goalType, value.secondaryGoalType), {
+      path: ['secondaryGoalType'],
+      message: 'Diese Kombination von Zielen ist nicht möglich.',
+    })
+    .refine(
+      (value) =>
+        value.discipline == null ||
+        value.goalType === 'endurance' ||
+        value.secondaryGoalType === 'endurance',
+      {
+        path: ['discipline'],
+        message: 'Eine Disziplin gibt es nur beim Ziel Ausdauer.',
+      },
+    );
 }
 
 /** Wochentag nach ISO 8601: 1 = Montag … 7 = Sonntag. */

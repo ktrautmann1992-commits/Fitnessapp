@@ -6,7 +6,6 @@ import {
   ADJUSTMENT_STEP_MAX_KCAL,
   BODY_METRIC_LIMITS,
   EA_MIN_KCAL_PER_KG_FFM,
-  GOAL_ENERGY_ADJUSTMENT,
   KCAL_PER_KG_BODY_WEIGHT,
   MAX_CALORIE_DEFICIT_FRACTION,
   MAX_WEEKLY_WEIGHT_GAIN_FRACTION,
@@ -18,6 +17,7 @@ import {
   SURPLUS_CAP,
 } from '../constants';
 import type { ExperienceLevel, GoalType } from '../enums';
+import { goalEnergyAdjustment, type GoalSelectionInput } from '../goals/profile';
 import { type CalorieCapCode, sortCaps } from './notices';
 import { deficitCapSchema, surplusCapSchema } from './schemas';
 
@@ -57,7 +57,10 @@ export const calorieLimitContextSchema = z
     /** Trainingsenergie wurde gedeckelt → Tag ohne Defizit (R2-S8). */
     trainingCapped: z.boolean(),
     mode: z.enum(['full', 'maintenance_only']),
-    /** Ziel mit Überschuss (`muscle_gain`) – nur im Modus `full` wirksam. */
+    /**
+     * Ziel-Profil mit Energie-Richtung „Überschuss“ (`goalEnergyDirection(…) === 'surplus'`, Wächter S11 – nie
+     * „Muskelaufbau ist eines der Ziele“) – nur im Modus `full` wirksam.
+     */
     goalIsSurplus: z.boolean(),
     deficitCap: deficitCapSchema,
     surplusCap: surplusCapSchema,
@@ -235,16 +238,16 @@ export function planBand(
 }
 
 /**
- * Zielanpassung je Ziel (Plan 4.5) als Anteil des Grundbedarfs ohne Training. Bei `maintenance_only` immer 0.
+ * Zielanpassung (Plan 4.5) als Anteil des Grundbedarfs ohne Training – aus dem Ziel-Profil (docs/PLAN-ZIELE.md 4.4:
+ * Einzelziel = GOAL_ENERGY_ADJUSTMENT, Paar = GOAL_PAIR_RULES). Bei `maintenance_only` immer 0.
  */
 export function applyGoalAdjustment(
-  goal: GoalType,
+  goal: GoalType | GoalSelectionInput,
   level: ExperienceLevel,
   mode: 'full' | 'maintenance_only',
 ): number {
   if (mode === 'maintenance_only') return 0;
-  if (goal === 'muscle_gain') return GOAL_ENERGY_ADJUSTMENT.muscle_gain[level];
-  return GOAL_ENERGY_ADJUSTMENT[goal];
+  return goalEnergyAdjustment(typeof goal === 'string' ? { primary: goal } : goal, level);
 }
 
 const offsetSchema = z.number().finite();

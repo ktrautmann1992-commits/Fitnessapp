@@ -14,7 +14,8 @@ import { describe, expect, it } from 'vitest';
 
 import { ageInYears } from '../age';
 import { addDays, daysBetween } from '../dates';
-import { EXPERIENCE_LEVELS, GOAL_TYPES, SEX_OPTIONS } from '../enums';
+import { EXPERIENCE_LEVELS, GOAL_TYPES, type GoalType, SEX_OPTIONS } from '../enums';
+import { GOAL_COMBINATIONS } from '../goals/profile';
 import type { HealthFlag } from '../health-screening';
 import type { NutritionInputsInput, NutritionSessionInput } from './schemas';
 import { nutritionTargetsForWeek } from './targets';
@@ -29,6 +30,36 @@ import {
   session,
   sessionMet,
 } from './test-helpers';
+
+/**
+ * Ziel-Auswahl Haupt > Neben (docs/PLAN-ZIELE.md 4.2/4.4, Etappe Z1) – Energie-Richtung UNABHÄNGIG aus der
+ * Plan-Tabelle 4.4 abgeschrieben (nicht aus GOAL_PAIR_RULES): Defizit bzw. Überschuss je Auswahl.
+ */
+const SELECTIONS: readonly (readonly [GoalType, GoalType | null])[] = [
+  ...GOAL_TYPES.map((goal) => [goal, null] as const),
+  ['fat_loss', 'muscle_gain'],
+  ['fat_loss', 'endurance'],
+  ['definition', 'endurance'],
+  ['muscle_gain', 'fat_loss'],
+  ['muscle_gain', 'endurance'],
+  ['general_fitness', 'fat_loss'],
+  ['general_fitness', 'endurance'],
+  ['endurance', 'fat_loss'],
+  ['endurance', 'definition'],
+  ['endurance', 'muscle_gain'],
+];
+const DEFICIT_SELECTIONS = new Set([
+  'fat_loss>',
+  'definition>',
+  'fat_loss>muscle_gain',
+  'fat_loss>endurance',
+  'definition>endurance',
+  'muscle_gain>fat_loss',
+  'general_fitness>fat_loss',
+  'endurance>fat_loss',
+  'endurance>definition',
+]);
+const SURPLUS_SELECTIONS = new Set(['muscle_gain>', 'muscle_gain>endurance']);
 
 const FLAG_SETS: (readonly HealthFlag[] | null)[] = [
   null,
@@ -75,7 +106,7 @@ function checkWeek(input: NutritionInputsInput, monday: string, adjustmentKcal: 
   const sex = input.sex ?? null;
   const level = input.activityLevel ?? null;
   const factor = level === null ? 1.45 : PLAN.factor[level]!;
-  const goal = input.goalType;
+  const selection = `${input.goalType}>${input.secondaryGoalType ?? ''}`;
   let checked = 0;
 
   for (const day of week.days) {
@@ -126,7 +157,7 @@ function checkWeek(input: NutritionInputsInput, monday: string, adjustmentKcal: 
     const medical =
       flags?.includes('medication') === true ||
       flags?.includes('medical_clearance_recommended') === true;
-    const deficitGoal = goal === 'fat_loss' || goal === 'definition';
+    const deficitGoal = DEFICIT_SELECTIONS.has(selection);
     const underweight = !minor && bmi < 18.5;
     const maintenance = (noCheck && sex !== 'male') || (deficitGoal && (minor || underweight));
     expect(day.mode).toBe(maintenance ? 'maintenance_only' : 'full');
@@ -151,10 +182,11 @@ function checkWeek(input: NutritionInputsInput, monday: string, adjustmentKcal: 
       expect(lower).toBeGreaterThanOrEqual(tdeeK - (0.01 * kg * PLAN.kcalPerKg) / 7 - EPS);
     }
 
-    // Obergrenze unabhängig (H3): Überschuss nur bei muscle_gain im vollen Modus
+    // Obergrenze unabhängig (H3): Überschuss nur bei Auswahl mit Richtung „Überschuss“ (muscle_gain, muscle_gain >
+    // endurance – nie bei Abnehmen → Muskelaufbau, Wächter S11) im vollen Modus
     const surplusCap = minor || noCheck ? 0.05 : 0.1;
     let ceiling: number;
-    if (goal === 'muscle_gain' && !maintenance) {
+    if (SURPLUS_SELECTIONS.has(selection) && !maintenance) {
       const base = (k ?? mNeeds) * factor;
       ceiling = Math.max(
         floor,
@@ -223,11 +255,13 @@ function randomPerson(rnd: () => number, monday: string): NutritionInputsInput {
     );
   }
   const flags = pick(rnd, FLAG_SETS);
+  const [goalType, secondaryGoalType] = pick(rnd, SELECTIONS);
   return inputs({
     today,
     birthDate,
     sex: pick(rnd, [...SEX_OPTIONS, null]),
-    goalType: pick(rnd, GOAL_TYPES),
+    goalType,
+    secondaryGoalType,
     experienceLevel: pick(rnd, EXPERIENCE_LEVELS),
     healthDataConsent: rnd() < 0.9,
     bodyMetricsRows: rows,
@@ -313,6 +347,137 @@ describe('Eigenschaftstest: kein Eingabewert lockert eine Grenze (12.1, W17, W27
             MONDAY,
             adjustment,
           );
+        }
+      }
+    }
+  });
+});
+
+describe('Ziele Z1: Haupt- und Nebenziel lockern keine Grenze (docs/PLAN-ZIELE.md 7 Z1, Wächter S11, S19, K-b)', () => {
+  const sevenRuns = () =>
+    Array.from({ length: 7 }, (_, i) =>
+      session(addDays(MONDAY, i), {
+        kind: 'endurance',
+        enduranceModality: 'run',
+        effortTarget: 4,
+        minutes: 240,
+      }),
+    );
+  const oneDay = () => [session(addDays(MONDAY, 2), { minutes: 60 })];
+  /** Alter `age` ab Mittwoch der Woche (Geburtstag in der Woche) bzw. seit Jahresbeginn; 16 immer seit Jahresbeginn. */
+  const birthDateFor = (age: number, birthdayInWeek: boolean) =>
+    age === 16 || !birthdayInWeek ? `${2026 - age}-01-01` : `${2026 - age}-10-14`;
+
+  it('die unabhängige Auswahl-Liste deckt genau die erlaubten Paare ab', () => {
+    expect(
+      SELECTIONS.filter(([, secondary]) => secondary !== null)
+        .map(([p, s2]) => `${p}>${s2}`)
+        .sort(),
+    ).toEqual(GOAL_COMBINATIONS.map(([p, s2]) => `${p}>${s2}`).sort());
+  });
+
+  it('Eckfälle aus CLAUDE.md VOLLSTÄNDIG: Alter 16/17/18/65/100 × 30/300 kg (+ ohne Einwilligung) × 1 vs. 7 Einheiten × alle Deckel × alle Geschlechter × alle Auswahlen', () => {
+    let checked = 0;
+    for (const [goalType, secondaryGoalType] of SELECTIONS) {
+      for (const sex of [...SEX_OPTIONS, null]) {
+        for (const flags of FLAG_SETS) {
+          for (const age of [16, 17, 18, 65, 100]) {
+            for (const [kg, healthDataConsent] of [
+              [30, true],
+              [300, true],
+              // ohne Einwilligung (Wächter Z1 K-3): keine Körperdaten, keine Ziele
+              [80, false],
+            ] as const) {
+              for (const sessions of [oneDay(), sevenRuns()]) {
+                checked += checkWeek(
+                  inputs({
+                    // Geburtstag in der Woche (Mittwoch 14.10.): am Montag 17 J. 364 Tage → ab Mittwoch 18 usw.;
+                    // 16 J. schon seit Jahresbeginn (Mindestalter ab dem ersten Tag).
+                    birthDate: birthDateFor(age, true),
+                    sex,
+                    goalType,
+                    secondaryGoalType,
+                    healthDataConsent,
+                    healthFlags: flags === null ? null : { flags: [...flags] },
+                    bodyMetricsRows: [{ measuredOn: '2026-10-01', heightCm: 170, weightKg: kg }],
+                    sessions,
+                  }),
+                  MONDAY,
+                  0,
+                );
+              }
+            }
+          }
+        }
+      }
+    }
+    expect(checked).toBeGreaterThan(30_000);
+  }, 180_000);
+
+  it('Raster als Stichprobe (fester Seed): Auswahl × Flags × Geschlecht × Körperfett ja/nein × 5 Alltagsfaktoren × Alter 16/17/18/64/65/100 × BMI 16,9–30 × 0–7 Einheiten × 4b-Versatz 0/±1.000', () => {
+    const rnd = seededRandom(20261013);
+    const ages = [16, 17, 18, 64, 65, 100];
+    const bmis = [16.9, 18.4, 18.5, 19.9, 20, 30];
+    let checked = 0;
+    for (let i = 0; i < 1500; i += 1) {
+      const [goalType, secondaryGoalType] = pick(rnd, SELECTIONS);
+      const flags = pick(rnd, FLAG_SETS);
+      const cm = pick(rnd, [150, 170, 195]);
+      const kg = Math.round(pick(rnd, bmis) * (cm / 100) ** 2 * 10) / 10;
+      const count = Math.floor(rnd() * 8);
+      const sessions = Array.from({ length: count }, (_, d) =>
+        rnd() < 0.5
+          ? session(addDays(MONDAY, d), { minutes: 60 })
+          : session(addDays(MONDAY, d), {
+              kind: 'endurance',
+              enduranceModality: pick(rnd, MODALITIES),
+              effortTarget: 4,
+              // auch Tage mit gedeckelter Trainingsenergie (lange Einheiten bei hohem Gewicht)
+              minutes: rnd() < 0.3 ? 1440 : 30 + Math.floor(rnd() * 210),
+            }),
+      );
+      checked += checkWeek(
+        inputs({
+          birthDate: birthDateFor(pick(rnd, ages), rnd() < 0.5),
+          sex: pick(rnd, [...SEX_OPTIONS, null]),
+          goalType,
+          secondaryGoalType,
+          experienceLevel: pick(rnd, EXPERIENCE_LEVELS),
+          healthFlags: flags === null ? null : { flags: [...flags] },
+          activityLevel: pick(rnd, LEVELS),
+          bodyMetricsRows: [
+            {
+              measuredOn: '2026-10-01',
+              heightCm: cm,
+              weightKg: kg,
+              bodyFatPct: rnd() < 0.5 ? pick(rnd, [8, 25, 45]) : null,
+            },
+          ],
+          sessions,
+        }),
+        MONDAY,
+        pick(rnd, [0, -1000, 1000]),
+      );
+    }
+    expect(checked).toBeGreaterThan(5000);
+  }, 120_000);
+
+  it('Grenzfall 45 kg bei 156 cm (BMI ≈ 18,5) mit jeder Auswahl und jedem Geschlecht', () => {
+    for (const [goalType, secondaryGoalType] of SELECTIONS) {
+      for (const sex of [...SEX_OPTIONS, null]) {
+        for (const kg of [45, 44.9]) {
+          for (const adjustment of [-1000, 0, 1000]) {
+            checkWeek(
+              inputs({
+                sex,
+                goalType,
+                secondaryGoalType,
+                bodyMetricsRows: [{ measuredOn: '2026-10-01', heightCm: 156, weightKg: kg }],
+              }),
+              MONDAY,
+              adjustment,
+            );
+          }
         }
       }
     }

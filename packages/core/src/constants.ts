@@ -8,6 +8,7 @@ import type {
   CautionTag,
   EquipmentCategory,
   ExperienceLevel,
+  GoalType,
   MovementPattern,
   MuscleGroup,
   TrainingSlotKind,
@@ -1036,6 +1037,8 @@ export const TRAINING_KCAL_DAY_MAX = 3000;
  * Defizite); Muskelaufbau: Iraki J et al. (2019), Sports 7(7):154 (Einsteiger mehr, Fortgeschrittene weniger
  * Überschuss).
  */
+// Das VORZEICHEN je Ziel muss über alle Level gleich bleiben: goalEnergyDirection (goals/profile.ts) leitet die
+// Energie-Richtung levelunabhängig ab (Test in goals/profile.test.ts, Wächter Z1 K-4).
 export const GOAL_ENERGY_ADJUSTMENT = {
   fat_loss: -0.2,
   definition: -0.1,
@@ -1632,4 +1635,143 @@ export const SHOPPING_LIST_ROUNDING = {
   pieceStep: 1,
   manualLabelMaxChars: 80,
   manualItemsMax: 100,
+} as const;
+
+// ---------------------------------------------------------------------------------------------------------
+// Ziele · Haupt- und Nebenziel (docs/PLAN-ZIELE.md Abschnitt 4, Etappe Z1)
+//
+// Das Ziel-Profil (`packages/core/src/goals/profile.ts`) liest NUR diese Werte. Die Schutzgrenzen gelten weiter
+// ausschließlich in `clampCalorieTarget`; kein Ziel und keine Kombination lockert sie.
+// ---------------------------------------------------------------------------------------------------------
+
+/**
+ * Erlaubte Paare Hauptziel → Nebenziel mit Standard-Energie-Anpassung (Anteil des Grundbedarfs ohne Training,
+ * ohne konkretes Abnehmziel), Eiweiß-Richtwert in g/kg und Kohlenhydrat-Regel nach Training (Plan 4.2 und 4.4).
+ * Die Liste ist abschließend: Jedes nicht aufgeführte Paar ist verboten (dasselbe Ziel doppelt, Definition mit
+ * Abnehmen bzw. Muskelaufbau, Fitness als Nebenziel). Gespiegelt in `private.goal_pair_allowed` (Migration
+ * *_plan_inputs_secondary_goal.sql, Abgleich in db-sync.test.ts).
+ * Einzelziele behalten GOAL_ENERGY_ADJUSTMENT und PROTEIN_G_PER_KG.byGoal unverändert.
+ * Die Energie-Richtung (Defizit/Erhalt/Überschuss) wird NICHT gepflegt, sondern aus dem Vorzeichen der Anpassung
+ * abgeleitet (Wächter S11).
+ * Quellen/Orientierung: Helms ER, Aragon AA, Fitschen PJ (2014), J Int Soc Sports Nutr 11:20 (moderate Defizite,
+ * hohes Eiweiß zum Muskelerhalt); Barakat C et al. (2020), Strength Cond J 42(5):7–21 (Recomposition: kleines
+ * Defizit, Krafttraining, hohes Eiweiß); Thomas DT, Erdman KA, Burke LM (2016), Med Sci Sports Exerc
+ * 48(3):543–568 (Energieverfügbarkeit, Kohlenhydrate bei Ausdauer); Morton RW et al. (2018), Br J Sports Med
+ * 52(6):376–384 (Eiweiß bis ≈ 1,6–2,2 g/kg). Werte: PRODUKTENTSCHEIDUNG – fachlich zu prüfen.
+ * VOR LIVEGANG GEGEN ORIGINAL PRÜFEN.
+ */
+export const GOAL_PAIR_RULES = [
+  // Abnehmen → Muskelaufbau: Muskelerhalt im Defizit (Helms 2014).
+  {
+    primary: 'fat_loss',
+    secondary: 'muscle_gain',
+    energyAdjustment: -0.15,
+    proteinGPerKg: 2.2,
+    enduranceCarbs: false,
+  },
+  // Abnehmen → Ausdauer: die EA-Untergrenze in clampCalorieTarget greift zusätzlich.
+  {
+    primary: 'fat_loss',
+    secondary: 'endurance',
+    energyAdjustment: -0.15,
+    proteinGPerKg: 2.0,
+    enduranceCarbs: true,
+  },
+  {
+    primary: 'definition',
+    secondary: 'endurance',
+    energyAdjustment: -0.1,
+    proteinGPerKg: 2.2,
+    enduranceCarbs: true,
+  },
+  // Recomposition: kleines Defizit, hohes Eiweiß (Barakat 2020); entspricht „Definition“ (Wächter K3).
+  {
+    primary: 'muscle_gain',
+    secondary: 'fat_loss',
+    energyAdjustment: -0.1,
+    proteinGPerKg: 2.2,
+    enduranceCarbs: false,
+  },
+  // Kleiner Überschuss wegen der Ausdauer-Energie (Thomas 2016), für alle Level gleich.
+  {
+    primary: 'muscle_gain',
+    secondary: 'endurance',
+    energyAdjustment: 0.05,
+    proteinGPerKg: 1.8,
+    enduranceCarbs: true,
+  },
+  {
+    primary: 'general_fitness',
+    secondary: 'fat_loss',
+    energyAdjustment: -0.15,
+    proteinGPerKg: 2.0,
+    enduranceCarbs: false,
+  },
+  // Entspricht dem Ziel „Ausdauer“ (Wächter K3).
+  {
+    primary: 'general_fitness',
+    secondary: 'endurance',
+    energyAdjustment: 0,
+    proteinGPerKg: 1.4,
+    enduranceCarbs: true,
+  },
+  // Leistung zuerst; Wettkampfwoche ohne Defizit folgt mit Phase 10.
+  {
+    primary: 'endurance',
+    secondary: 'fat_loss',
+    energyAdjustment: -0.1,
+    proteinGPerKg: 2.0,
+    enduranceCarbs: true,
+  },
+  {
+    primary: 'endurance',
+    secondary: 'definition',
+    energyAdjustment: -0.1,
+    proteinGPerKg: 2.2,
+    enduranceCarbs: true,
+  },
+  {
+    primary: 'endurance',
+    secondary: 'muscle_gain',
+    energyAdjustment: 0,
+    proteinGPerKg: 1.8,
+    enduranceCarbs: true,
+  },
+] as const satisfies readonly {
+  readonly primary: GoalType;
+  readonly secondary: GoalType;
+  readonly energyAdjustment: number;
+  readonly proteinGPerKg: number;
+  readonly enduranceCarbs: boolean;
+}[];
+
+/**
+ * Vorbelegung von Ausdauer-Tagen beim Nebenziel Ausdauer (suggestedTrainingSlots, Plan 4.3 und 11, Wächter S18 und
+ * Z1 S-1): Einsteiger 1, sonst 2 Ausdauer-Tage pro Woche; die Startgruppe „vorsichtig“ (Flag, ohne Check, unter 18,
+ * ab 65) bekommt wie Einsteiger 1. Dieselbe Startgruppe und gedeckelt durch ENDURANCE_START_RULES.maxSessionsPerWeek
+ * wie beim Hauptziel Ausdauer. Vorrang „Hauptziel zuerst“: Erst bekommen `strengthDays` Kraft-Tage ihren Platz (bei
+ * 1 Tag pro Woche dieser eine, nie zwei hintereinander); Ausdauer kommt nur auf danach freie Tage, übrige Tage bleiben
+ * frei. Ohne Angabe der Tage gilt `strengthDays` Kraft-Tage plus die Ausdauer-Tage.
+ * Orientierung: Garber CE et al. (2011), Med Sci Sports Exerc 43(7):1334–1359 (Kraft an 2–3 Tagen pro Woche);
+ * Wilson JM et al. (2012), J Strength Cond Res 26(8):2293–2307 (Kraft und Ausdauer kombiniert).
+ * Werte: PRODUKTENTSCHEIDUNG – fachlich zu prüfen.
+ */
+export const ENDURANCE_SECONDARY_SUGGESTION = {
+  perGroup: { cautious: 1, beginner: 1, advanced: 2, competitive: 2 },
+  strengthDays: 2,
+} as const satisfies {
+  perGroup: Record<'cautious' | ExperienceLevel, number>;
+  strengthDays: number;
+};
+
+/**
+ * Empfohlene Mindestzahl Tage für ein NEBENziel im Schritt „Deine Trainingstage“ (scheduleHints, Plan 4.3):
+ * Kraft-Ziel nur als Nebenziel → mindestens 1 Kraft-Tag; Ausdauer als Nebenziel → mindestens 1 Ausdauer-Tag (ab 3
+ * Tagen pro Woche, sonst Hinweis `secondary_endurance_no_room`). Das Hauptziel behält SCHEDULE_HINT_LIMITS (2).
+ * Quelle: PRODUKTENTSCHEIDUNG, fachlich zu bestätigen.
+ */
+export const SECONDARY_GOAL_HINT_LIMITS = {
+  minStrengthDays: 1,
+  minEnduranceDays: 1,
+  enduranceRoomFromDays: 3,
 } as const;

@@ -8,7 +8,7 @@ import type {
 } from '../enums';
 import { equipmentIdSchema } from '../equipment';
 import { equipmentProfile } from './equipment-profile';
-import type { PlanInputsSnapshot } from './inputs';
+import { type PlanInputsSnapshot, secondaryGoalEntry } from './inputs';
 import { savePlanInputsSchema } from './payload';
 import type { StoredSession } from './view';
 
@@ -155,7 +155,13 @@ export function allSessions(
 /** Angaben, mit denen der Plan erstellt wurde (user_plans.inputs, Zod an der Grenze); null = unlesbar. */
 export function planSnapshot(plan: { inputs: unknown }): PlanInputsSnapshot | null {
   const parsed = savePlanInputsSchema.safeParse(plan.inputs);
-  return parsed.success ? (parsed.data as PlanInputsSnapshot) : null;
+  if (!parsed.success) return null;
+  // Fehlendes und `null`-Nebenziel sind gleich (docs/PLAN-ZIELE.md 4.6): Schlüssel nur bei gesetztem Nebenziel.
+  const { secondaryGoalType, ...rest } = parsed.data;
+  return {
+    ...(rest as Omit<PlanInputsSnapshot, 'secondaryGoalType'>),
+    ...secondaryGoalEntry(secondaryGoalType),
+  };
 }
 
 /** Geräte-Profile je Ort aus den Angaben des Plans (Ersatz in Anzeige und Folgeblock). */

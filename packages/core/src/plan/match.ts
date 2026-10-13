@@ -2,12 +2,12 @@ import { MAX_STRENGTH_SESSIONS_PER_WEEK, PLAN_MATCH_WEIGHTS } from '../constants
 import { isBodyweightTemplate } from '../content/checks';
 import type { PlanTemplate } from '../content/schemas';
 import {
-  GOAL_TEMPLATE_MAPPING,
   LEVEL_TEMPLATE_MAPPING,
   type PlanMatchQuality,
   type PlanNote,
   type TrainingLocation,
 } from '../enums';
+import { goalTemplate } from '../goals/profile';
 import type { PlanLibrary } from './content-pool';
 import { type EquipmentProfile, findSubstitute, isBodyweightOnly } from './equipment-profile';
 import type { PlanInputs } from './inputs';
@@ -37,6 +37,8 @@ export interface TemplateScore {
  */
 export interface MatchInputs {
   readonly goalType: PlanInputs['goalType'];
+  /** Nebenziel (docs/PLAN-ZIELE.md 4.3): bestimmt die Vorlage nur bei Hauptziel Ausdauer mit Kraft-Nebenziel. */
+  readonly secondaryGoalType?: PlanInputs['secondaryGoalType'];
   readonly experienceLevel: PlanInputs['experienceLevel'];
   readonly sessionsPerWeek: number;
   readonly minutesPerSession: number;
@@ -107,6 +109,14 @@ export function daysScore(template: PlanTemplate, wish: number): number {
   return 5;
 }
 
+/**
+ * Ziel der Vorlage aus dem Ziel-Profil (docs/PLAN-ZIELE.md 4.3: die Vorlage folgt dem Hauptziel über
+ * GOAL_TEMPLATE_MAPPING; Ausdauer mit Kraft-Nebenziel → Muskelaufbau). Ohne Nebenziel = GOAL_TEMPLATE_MAPPING.
+ */
+function templateGoalOf(inputs: Pick<MatchInputs, 'goalType' | 'secondaryGoalType'>) {
+  return goalTemplate({ primary: inputs.goalType, secondary: inputs.secondaryGoalType ?? null });
+}
+
 /** Punkte einer Vorlage für eine Person (0–100). */
 export function scoreTemplate(
   template: PlanTemplate,
@@ -114,7 +124,7 @@ export function scoreTemplate(
   ctx: MatchContext,
 ): TemplateScore {
   const W = PLAN_MATCH_WEIGHTS;
-  const goalMap = GOAL_TEMPLATE_MAPPING[inputs.goalType];
+  const goalMap = templateGoalOf(inputs);
   const goal =
     template.goal_type === goalMap.goal ? (goalMap.kind === 'fallback' ? 15 : W.goal) : 0;
   const wantedLevel = LEVEL_TEMPLATE_MAPPING[inputs.experienceLevel];
@@ -181,7 +191,7 @@ export function matchTemplate(inputs: MatchInputs, ctx: MatchContext): MatchResu
   }
   const template = best.template;
   const notes = new Set<PlanNote>();
-  const goalMap = GOAL_TEMPLATE_MAPPING[inputs.goalType];
+  const goalMap = templateGoalOf(inputs);
   // Ausdauer-Hinweise (goal_endurance_not_yet / endurance_basic_only) setzt generateTrainingPlan.
   const goalOk = template.goal_type === goalMap.goal && goalMap.kind !== 'fallback';
   const locationOk = template.location === ctx.profile.location && !bodyweightFallback;

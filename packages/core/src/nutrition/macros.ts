@@ -9,7 +9,7 @@ import {
   NUTRITION_ROUNDING,
   PROTEIN_G_PER_KG,
 } from '../constants';
-import type { GoalType } from '../enums';
+import { goalProteinGPerKg, goalUsesEnduranceCarbs, isAllowedGoalPair } from '../goals/profile';
 import { goalTypeSchema } from '../validation';
 import { bodyMassIndex } from './body-data';
 import { ceilTo, roundTo, roundWithin } from './limits';
@@ -24,6 +24,8 @@ export const macroInputsSchema = z
   .strictObject({
     targetKcal: z.number().positive().finite(),
     goalType: goalTypeSchema,
+    /** Nebenziel (docs/PLAN-ZIELE.md 4.4): Eiweiß und Kohlenhydrat-Regel aus dem Ziel-Profil; fehlend = keines. */
+    secondaryGoalType: goalTypeSchema.nullable().default(null),
     weightKg: z.number().min(BODY_METRIC_LIMITS.weightKg.min).max(BODY_METRIC_LIMITS.weightKg.max),
     heightCm: z.number().min(BODY_METRIC_LIMITS.heightCm.min).max(BODY_METRIC_LIMITS.heightCm.max),
     /** Eiweiß-Untergrenze/-Obergrenze in g/kg aus `nutritionEligibility`. */
@@ -35,7 +37,10 @@ export const macroInputsSchema = z
       .min(0)
       .max(24 * 60),
   })
-  .refine((m) => m.proteinMin <= m.proteinCap, { path: ['proteinMin'] });
+  .refine((m) => m.proteinMin <= m.proteinCap, { path: ['proteinMin'] })
+  .refine((m) => isAllowedGoalPair(m.goalType, m.secondaryGoalType), {
+    path: ['secondaryGoalType'],
+  });
 export type MacroInputs = z.input<typeof macroInputsSchema>;
 
 export interface Macros {
@@ -72,7 +77,8 @@ export function nutritionMacros(input: MacroInputs): Macros {
   const kcal = m.targetKcal;
   const notices = new Set<NutritionNoticeCode>();
   const ref = proteinReferenceWeight(m.weightKg, m.heightCm);
-  const goalPerKg: number = PROTEIN_G_PER_KG.byGoal[m.goalType as GoalType];
+  const selection = { primary: m.goalType, secondary: m.secondaryGoalType };
+  const goalPerKg = goalProteinGPerKg(selection);
   const fatMin = (FAT_ENERGY_SHARE.min * kcal) / KCAL_PER_GRAM.fat;
   // Die Energie ist verbindlich: Eiweiß nie mehr, als neben dem Mindestfett ins Tagesziel passt.
   const proteinEnergyMaxG =
@@ -84,8 +90,9 @@ export function nutritionMacros(input: MacroInputs): Macros {
   const carbsRest = () =>
     (kcal - KCAL_PER_GRAM.protein * perKg * ref - fatShare * kcal) / KCAL_PER_GRAM.carbs;
 
-  // Ausdauer: Richtwert nach Trainingsminuten; reicht der Rest nicht, Fett bis zur Untergrenze senken.
-  if (m.goalType === 'endurance') {
+  // Ausdauer (Haupt- oder Nebenziel, Ziel-Profil): Richtwert nach Trainingsminuten; reicht der Rest nicht, Fett
+  // bis zur Untergrenze senken.
+  if (goalUsesEnduranceCarbs(selection)) {
     const wanted = enduranceCarbsGPerKg(m.trainingMinutes) * m.weightKg;
     if (carbsRest() < wanted) {
       const share =

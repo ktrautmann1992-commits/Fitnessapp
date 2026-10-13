@@ -19,6 +19,7 @@ import {
 } from '../enums';
 import { foodGroupSchema } from '../food-groups';
 import { HEALTH_FLAGS } from '../health-screening';
+import { isAllowedGoalPair } from '../goals/profile';
 import {
   enduranceDisciplineSchema,
   experienceLevelSchema,
@@ -132,6 +133,8 @@ export const nutritionInputsSchema = z
     birthDate: isoDateSchema,
     sex: sexSchema.nullable().default(null),
     goalType: goalTypeSchema,
+    /** Nebenziel (docs/PLAN-ZIELE.md 4.6): optional, Standard `null` (Wächter B1). */
+    secondaryGoalType: goalTypeSchema.nullable().default(null),
     experienceLevel: experienceLevelSchema,
     discipline: enduranceDisciplineSchema.nullable().default(null),
     healthDataConsent: z.boolean(),
@@ -153,6 +156,10 @@ export const nutritionInputsSchema = z
         (sessions) => new Set(sessions.map((s) => s.sessionId)).size === sessions.length,
         'Jede Einheit nur einmal.',
       ),
+  })
+  .refine((inputs) => isAllowedGoalPair(inputs.goalType, inputs.secondaryGoalType), {
+    path: ['secondaryGoalType'],
+    message: 'Diese Kombination von Zielen ist nicht möglich.',
   })
   .refine(
     (inputs) =>

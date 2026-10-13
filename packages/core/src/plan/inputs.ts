@@ -4,6 +4,7 @@ import { isoDateSchema } from '../age';
 import { BARBELL_PLATE_MAX_KG, EQUIPMENT_LIMITS } from '../constants';
 import type { TrainingLocation } from '../enums';
 import { BARBELL_ID, equipmentIdSchema } from '../equipment';
+import { isAllowedGoalPair } from '../goals/profile';
 import { HEALTH_FLAGS } from '../health-screening';
 import {
   deriveTrainingLocation,
@@ -64,6 +65,8 @@ export const planHealthScreeningSchema = z
 export const planInputsSchema = z
   .strictObject({
     goalType: goalTypeSchema,
+    /** Nebenziel (docs/PLAN-ZIELE.md 4.6): optional, Standard `null` (Wächter B1). */
+    secondaryGoalType: goalTypeSchema.nullable().default(null),
     discipline: enduranceDisciplineSchema.nullable().default(null),
     experienceLevel: experienceLevelSchema,
     schedule: trainingScheduleSchema,
@@ -75,10 +78,20 @@ export const planInputsSchema = z
     sex: sexSchema.nullable().default(null),
     healthScreening: planHealthScreeningSchema,
   })
-  .refine((value) => value.discipline === null || value.goalType === 'endurance', {
-    path: ['discipline'],
-    message: 'Eine Disziplin gibt es nur beim Ziel Ausdauer.',
-  });
+  .refine((value) => isAllowedGoalPair(value.goalType, value.secondaryGoalType), {
+    path: ['secondaryGoalType'],
+    message: 'Diese Kombination von Zielen ist nicht möglich.',
+  })
+  .refine(
+    (value) =>
+      value.discipline === null ||
+      value.goalType === 'endurance' ||
+      value.secondaryGoalType === 'endurance',
+    {
+      path: ['discipline'],
+      message: 'Eine Disziplin gibt es nur beim Ziel Ausdauer.',
+    },
+  );
 
 export type PlanInputs = z.infer<typeof planInputsSchema>;
 export type PlanInputsInput = z.input<typeof planInputsSchema>;
@@ -90,6 +103,12 @@ export type PlanInputsInput = z.input<typeof planInputsSchema>;
  */
 export interface PlanInputsSnapshot {
   goalType: PlanInputs['goalType'];
+  /**
+   * Nebenziel – NUR vorhanden, wenn gesetzt (docs/PLAN-ZIELE.md 4.6, Wächter B1): Ohne Nebenziel bleibt der
+   * Schnappschuss (und damit der Payload von save_training_plan) byte-gleich zu vorher; alte Pläne ohne den
+   * Schlüssel lösen kein Angebot „Plan neu erstellen?“ aus. Fehlend und `null` bedeuten „kein Nebenziel“.
+   */
+  secondaryGoalType?: NonNullable<PlanInputs['secondaryGoalType']>;
   discipline: PlanInputs['discipline'];
   experienceLevel: PlanInputs['experienceLevel'];
   schedule: TrainingSchedule;
@@ -97,10 +116,18 @@ export interface PlanInputsSnapshot {
   homeEquipment: { equipmentId: string; weightsKg: number[]; barKg: number | null }[];
 }
 
+/** `{ secondaryGoalType }` nur bei gesetztem Nebenziel, sonst `{}` (Schlüssel fehlt, Wächter B1). */
+export function secondaryGoalEntry(
+  secondary: PlanInputs['secondaryGoalType'] | undefined,
+): Pick<PlanInputsSnapshot, 'secondaryGoalType'> {
+  return secondary == null ? {} : { secondaryGoalType: secondary };
+}
+
 export function planInputsSnapshot(inputs: PlanInputs): PlanInputsSnapshot {
   const schedule = trainingScheduleSchema.parse(inputs.schedule);
   return {
     goalType: inputs.goalType,
+    ...secondaryGoalEntry(inputs.secondaryGoalType),
     discipline: inputs.discipline,
     experienceLevel: inputs.experienceLevel,
     schedule:

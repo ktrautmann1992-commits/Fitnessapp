@@ -12,6 +12,7 @@ import {
   SURPLUS_CAP,
 } from '../constants';
 import type { GoalType, Sex } from '../enums';
+import { goalEnergyDirection, isAllowedGoalPair } from '../goals/profile';
 import { HEALTH_FLAGS, type HealthFlag } from '../health-screening';
 import { goalTypeSchema, sexSchema } from '../validation';
 import { bodyMassIndex } from './body-data';
@@ -29,6 +30,8 @@ export interface EligibilityInputs {
   readonly ageYears: number;
   readonly sex: Sex | null;
   readonly goalType: GoalType;
+  /** Nebenziel (docs/PLAN-ZIELE.md 4.4); fehlend = keines. */
+  readonly secondaryGoalType?: GoalType | null;
   /** Gültige `health_data`-Einwilligung. Ohne sie gibt es weder Körperdaten noch Flags. */
   readonly healthDataConsent: boolean;
   /** Neueste Größe und neuestes Gewicht; null = fehlt. */
@@ -55,27 +58,30 @@ export interface NutritionEligibility {
   readonly usesHealthData: boolean;
 }
 
-const DEFICIT_GOALS: readonly GoalType[] = ['fat_loss', 'definition'];
-
-const eligibilityInputsSchema = z.strictObject({
-  ageYears: z.number().int().min(0).max(NUTRITION_MAX_AGE_YEARS),
-  sex: sexSchema.nullable(),
-  goalType: goalTypeSchema,
-  healthDataConsent: z.boolean(),
-  body: z
-    .strictObject({
-      weightKg: z
-        .number()
-        .min(BODY_METRIC_LIMITS.weightKg.min)
-        .max(BODY_METRIC_LIMITS.weightKg.max),
-      heightCm: z
-        .number()
-        .min(BODY_METRIC_LIMITS.heightCm.min)
-        .max(BODY_METRIC_LIMITS.heightCm.max),
-    })
-    .nullable(),
-  healthFlags: z.array(z.enum(HEALTH_FLAGS)).nullable(),
-});
+const eligibilityInputsSchema = z
+  .strictObject({
+    ageYears: z.number().int().min(0).max(NUTRITION_MAX_AGE_YEARS),
+    sex: sexSchema.nullable(),
+    goalType: goalTypeSchema,
+    secondaryGoalType: goalTypeSchema.nullable().default(null),
+    healthDataConsent: z.boolean(),
+    body: z
+      .strictObject({
+        weightKg: z
+          .number()
+          .min(BODY_METRIC_LIMITS.weightKg.min)
+          .max(BODY_METRIC_LIMITS.weightKg.max),
+        heightCm: z
+          .number()
+          .min(BODY_METRIC_LIMITS.heightCm.min)
+          .max(BODY_METRIC_LIMITS.heightCm.max),
+      })
+      .nullable(),
+    healthFlags: z.array(z.enum(HEALTH_FLAGS)).nullable(),
+  })
+  .refine((value) => isAllowedGoalPair(value.goalType, value.secondaryGoalType), {
+    path: ['secondaryGoalType'],
+  });
 
 /** Wirksame Sonderfall-Regeln eines Tages (Eingaben mit Zod geprüft, Wächter N1 K1). */
 export function nutritionEligibility(rawInput: EligibilityInputs): NutritionEligibility {
@@ -91,7 +97,10 @@ export function nutritionEligibility(rawInput: EligibilityInputs): NutritionElig
     flags?.includes('medical_clearance_recommended') === true;
   const minor = input.ageYears < NUTRITION_AGE_RULES.minorBelowAge;
   const senior = input.ageYears >= NUTRITION_AGE_RULES.seniorFromAge;
-  const deficitGoal = DEFICIT_GOALS.includes(input.goalType);
+  // Energie-Richtung des Ziel-Profils (Vorzeichen der Anpassung, Wächter S11) ersetzt die Liste DEFICIT_GOALS.
+  const deficitGoal =
+    goalEnergyDirection({ primary: input.goalType, secondary: input.secondaryGoalType }) ===
+    'deficit';
 
   // Rezept-Ausschluss: Schwangerschaft, oder kein Check bei Geschlecht ≠ männlich (Schwangerschaft nicht
   // ausgeschlossen, B4). Gilt in jedem Modus – auch ohne Einwilligung (dann gibt es keinen Check).

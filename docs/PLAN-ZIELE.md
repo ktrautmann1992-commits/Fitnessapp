@@ -274,7 +274,7 @@ Gleichrangige Ziele bräuchten für jedes ungeordnete Paar eine eigene Mischrege
 - **„Kraft“** gibt es nicht als Ziel und es gibt keine Vorlagen dafür (Frage F3).
 - **Gleichwertige Paare** (Wächter K3): Zwei Paare entsprechen in Energie, Eiweiß und Vorlage einem Einzelziel. Sie bleiben erlaubt (F2), die App erklärt das im Kombinationssatz (6.1):
   - „Muskelaufbau → Abnehmen“ = Definition, aber mit der Möglichkeit eines Wunschgewichts: „Entspricht ‚Definition‘ – zusätzlich kannst du ein Wunschgewicht festlegen.“
-  - „Fitness → Ausdauer“ = Ziel Ausdauer: „Entspricht dem Ziel ‚Ausdauer‘.“
+  - „Fitness → Ausdauer“ = Ziel Ausdauer: „Entspricht dem Ziel ‚Ausdauer‘.“ **Auflage für Z4 (Wächter Z1 S-3):** Das gilt nur für Energie, Eiweiß und Vorlage, nicht für die Trainingswoche – die Vorbelegung läuft über „Hauptziel zuerst“ (Kraft vor Ausdauer), das Ziel Ausdauer belegt 3 Ausdauer- und 2 Kraft-Tage vor. In Z4 entweder den Satz einschränken („bei Energie und Eiweiß wie das Ziel ‚Ausdauer‘“) oder dieses Paar über den Ausdauer-Pfad vorbelegen.
 
 ### 4.3 Trainingsplan: Übungen passend für beide Ziele
 
@@ -284,7 +284,7 @@ Gleichrangige Ziele bräuchten für jedes ungeordnete Paar eine eigene Mischrege
 - **Recomposition** (Haupt Muskelaufbau + Neben Abnehmen) nutzt die Muskelaufbau-Vorlage (8–12 Wdh., längere Pausen). Quelle: Barakat C et al. (2020), Strength Cond J 42(5):7–21 – Krafttraining mit Hypertrophie-Reiz plus hohes Eiweiß ist der Hauptfaktor. Bei Haupt Abnehmen + Neben Muskelaufbau bleibt die Fettverlust-Vorlage (10–12 Wdh.). Bei Studio und Zuhause sind die Übungen gleich, die Dosierung unterscheidet sich wenig. Bei Körpergewicht hat die Muskelaufbau-Vorlage mehr Übungen (z. B. Liegestütz, Split-Kniebeuge) als die Fettverlust-Vorlage.
 - **Nebenziel Ausdauer:**
   - `suggestedTrainingSlots` belegt zusätzlich Ausdauer-Tage vor (Empfehlung: Einsteiger 1, sonst 2; als `ENDURANCE_SECONDARY_SUGGESTION` in den Konstanten). Die Vorbelegung läuft über **dieselbe** `suggestionGroup` (inkl. `cautious`) und dieselben `ENDURANCE_START_RULES` wie heute bei Hauptziel Ausdauer (Wächter S18). Disziplin und Wettkampfdatum sind auch beim Nebenziel erlaubt; das Datum wirkt erst mit Phase 10.
-  - **Vorrang „Hauptziel zuerst“** (Wächter S18) bei kleinem Zeitbudget: Bei einem Kraft-Hauptziel bekommen zuerst die Kraft-Tage ihren Platz (mindestens 2, bei 1 Tag pro Woche dieser eine). Ausdauer-Tage des Nebenziels kommen nur dazu, wenn danach noch Tage frei sind: 1 Tag → 1 Kraft; 2 Tage → 2 Kraft, Hinweis `secondary_endurance_no_room` („Für dein Ausdauer-Ziel ist bei 2 Tagen kein Platz. Mit einem dritten Tag planen wir Ausdauer ein.“); ab 3 Tagen → 2 Kraft + Ausdauer nach `ENDURANCE_SECONDARY_SUGGESTION`, gedeckelt durch `ENDURANCE_START_RULES.maxSessionsPerWeek[group]`. Bei Hauptziel Ausdauer gilt umgekehrt: Ausdauer zuerst nach den heutigen Regeln, das Kraft-Nebenziel bekommt die übrigen Tage (mindestens 1, wenn Platz ist).
+  - **Vorrang „Hauptziel zuerst“** (Wächter S18) bei kleinem Zeitbudget: Bei einem Kraft-Hauptziel bekommen zuerst die Kraft-Tage ihren Platz (mindestens 2, bei 1 Tag pro Woche dieser eine). Ausdauer-Tage des Nebenziels kommen nur dazu, wenn danach noch Tage frei sind: 1 Tag → 1 Kraft; 2 Tage → 2 Kraft, Hinweis `secondary_endurance_no_room` („Für dein Ausdauer-Ziel ist bei so wenigen Tagen kein Platz. Mit einem dritten Tag planen wir Ausdauer ein.“ – gilt auch für 1 Tag, Wächter Z1 K-5); ab 3 Tagen → 2 Kraft + Ausdauer nach `ENDURANCE_SECONDARY_SUGGESTION`, gedeckelt durch `ENDURANCE_START_RULES.maxSessionsPerWeek[group]`; übrige Tage bleiben frei (11 Nr. 4). Bei Hauptziel Ausdauer gilt umgekehrt: Ausdauer zuerst nach den heutigen Regeln, das Kraft-Nebenziel bekommt die übrigen Tage (mindestens 1, wenn Platz ist).
   - Bestehende Deckel gelten unverändert: max. 4 Kraft-Tage, Wochensumme `weeklySessionCap`, ≤ 10 % Steigerung, Erholungswochen.
   - Bei Muskelaufbau + Ausdauer kommt der Hinweis `concurrent_training`: „Ausdauer und Muskelaufbau gehen gut zusammen. Plane Ausdauer möglichst nicht direkt vor dem Krafttraining; Rad ist schonender für die Beine als Laufen.“ Quelle: Wilson JM et al. (2012), J Strength Cond Res 26(8):2293–2307.
 - **Hauptziel Ausdauer mit Nebenziel Kraft-Ziel:** Die Vorlage folgt `GOAL_TEMPLATE_MAPPING.endurance` (heute general_fitness, Fallback). Empfehlung: Bei Nebenziel Muskelaufbau oder Definition wird stattdessen die Muskelaufbau-Vorlage genommen (`templateGoal` aus dem Profil, Art `mapped`).
@@ -618,3 +618,47 @@ Ergebnis: B1, S1–S11, S13–S20 und K1–K10 gelöst; S12 bewusst offen (F8). 
 | K-d | Laufzeit-Wechsel in „kein Defizit planbar“            | Hinweis `weight_goal_no_deficit` (2.3, 4.6, 6, Z2)                                                                                              |
 | K-e | Bearbeiten-Feld wirkt wie Restmenge                   | neutrale Beschriftung „kg abnehmen ab heute“, ohne „noch“ (2.2)                                                                                 |
 | K-f | `toGoalsRow` in Z1                                    | bleibt bis Z3 unverändert (Z1)                                                                                                                  |
+
+---
+
+## 11. Umsetzung Z1 (13.10.2026): Abweichungen vom Plan
+
+Z1 ist umgesetzt wie in Abschnitt 7 beschrieben (Ziel-Profil, `GOAL_PAIR_RULES`, Nebenziel in Plan und Ernährung,
+Migration `20261013120000_plan_inputs_secondary_goal.sql`, pgTAP `27_plan_inputs_secondary_goal.test.sql`). Abweichungen:
+
+1. **Schnappschuss ohne Schlüssel statt `null`:** Ohne Nebenziel fehlt `secondaryGoalType` im Schnappschuss
+   (`planInputsSnapshot`) und im Payload ganz. Schnappschuss und Payload bleiben so byte-gleich zu vorher, und alte
+   Pläne lösen kein Angebot „Plan neu erstellen?“ aus. `planSnapshot` behandelt ein gespeichertes `null` wie einen
+   fehlenden Schlüssel. In den Zod-Eingaben (`planInputsSchema`, `createGoalStepSchema`, `nutritionInputsSchema`) gilt
+   wie geplant „optional, Standard `null`“.
+2. **Vier neue Hinweis-Codes statt zwei** in `SCHEDULE_HINTS`: neben `secondary_endurance_no_room` und
+   `concurrent_training` auch `secondary_endurance_no_endurance` (Ausdauer als Nebenziel, ab 3 Tagen kein
+   Ausdauer-Tag: „mindestens 1“) und `secondary_strength_no_strength` (Kraft-Ziel nur als Nebenziel: „mindestens 1“).
+   Die bestehenden Codes nennen „mindestens 2“ und passen deshalb nicht. Texte stehen in `apps/mobile/src/i18n/de.ts`;
+   ein Test prüft, dass jeder Code aus `SCHEDULE_HINTS` und `PLAN_NOTES` einen Text hat.
+3. **`concurrent_training`** steht in den Trainings-Hinweisen (`scheduleHints`) und in `goalProfile().notices`, nicht in
+   den Ernährungs-Hinweisen (`NUTRITION_NOTICE_CODES`).
+4. **Vorbelegung bei Ausdauer als Nebenziel** (`suggestedTrainingSlots`):
+   - Die Startgruppe „vorsichtig“ bekommt wie Einsteiger **1** Ausdauer-Tag (der Plan sagte nur „Einsteiger 1, sonst 2“).
+   - Neuer optionaler Parameter `totalDays` (verfügbare Tage). Ohne ihn: 2 Kraft-Tage plus die Ausdauer-Tage.
+   - Nach der Wächter-Prüfung Z1 (S-1): **2 Kraft-Tage** (bei 1 Tag dieser eine, nie zwei hintereinander) plus Ausdauer
+     nach Startgruppe; **übrige Tage bleiben frei** (kein Auffüllen mit Kraft). Beispiel: 7 Tage, Fortgeschritten → 2 Kraft
+     - 2 Ausdauer. „Vorsichtig“ bekommt höchstens so viele Einheiten wie beim Hauptziel Ausdauer (3), danach gilt der
+       Wochen-Deckel. Ein Test belegt für 1–7 Tage × Level × vorsichtig × Hauptziele, dass der eigene Vorschlag keine
+       eigenen Warn-Hinweise auslöst (erlaubt: `secondary_endurance_no_room`, `concurrent_training` und bei 1 Tag
+       `strength_goal_no_strength`).
+
+### Wächter-Prüfung Z1 (13.10.2026): „Freigabe mit Auflagen“, keine Blocker
+
+| Nr. | Auflage (kurz)                                                                                                  | Umsetzung                                                                                                                                                                                             |
+| --- | --------------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| S-1 | Vorbelegung füllte bis 4 Kraft-Tage auf (eigener Hinweis `strength_back_to_back`, „vorsichtig“ mit 5 Einheiten) | 2 Kraft + Ausdauer, Rest frei; „vorsichtig“ ≤ Hauptziel Ausdauer; Test ohne eigene Hinweise (Nr. 4 oben)                                                                                              |
+| S-2 | Ausführungsrecht für den CHECK ab Z3                                                                            | in Z1 erledigt: `grant execute on private.goal_pair_allowed … to authenticated, service_role` (Muster `has_distinct_elements`), anon nicht; pgTAP prüft die Rechte und den Aufruf als `authenticated` |
+| S-3 | „Fitness → Ausdauer = Ausdauer“ gilt nur für Energie, Eiweiß und Vorlage, nicht für die Trainingswoche          | **Auflage für Z4**, siehe 4.2: Satz einschränken oder das Paar über den Ausdauer-Pfad vorbelegen                                                                                                      |
+| K-1 | Ceiling-Test halb tautologisch                                                                                  | umbenannt; zusätzlicher Test über `nutritionTargetsForWeek` für alle Auswahlen                                                                                                                        |
+| K-2 | Rechte-Test in pgTAP                                                                                            | `has_function_privilege` für authenticated, service_role, anon (beide Funktionen)                                                                                                                     |
+| K-3 | Eckfälle ohne Einwilligung                                                                                      | in die vollständige Eckfall-Schleife aufgenommen                                                                                                                                                      |
+| K-4 | Vorzeichen über alle Level                                                                                      | Hinweis bei `GOAL_ENERGY_ADJUSTMENT`                                                                                                                                                                  |
+| K-5 | Text „bei so wenigen Tagen“                                                                                     | in 4.3 nachgezogen                                                                                                                                                                                    |
+| K-6 | Status in PROMPTS.md                                                                                            | „Wächter-geprüft, Auflagen eingearbeitet“                                                                                                                                                             |
+| K-7 | 7 Wunsch-Tage im Muster-Raster                                                                                  | ergänzt (1–4 und 7 Tage)                                                                                                                                                                              |

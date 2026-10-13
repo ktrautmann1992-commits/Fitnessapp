@@ -10,6 +10,7 @@ export * from './body-measurements';
 export * from './onboarding';
 export * from './validation';
 export * from './training-schedule';
+export * from './goals';
 export * from './content';
 export * from './plan';
 export * from './log';
