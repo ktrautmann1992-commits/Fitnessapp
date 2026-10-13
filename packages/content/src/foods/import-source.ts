@@ -40,11 +40,32 @@ export interface Deviation {
   readonly id: string;
   readonly field: 'kcal' | 'protein_g' | 'carbs_g' | 'fat_g';
   readonly file: number;
+  /** Verglichener Quellwert (bei einer Lesart, z. B. „KH + Ballaststoffe“, der umgerechnete Wert). */
   readonly source: number;
   /** Relative Abweichung zur Quelle (0,05 = 5 %). */
   readonly relative: number;
-  /** `report` = über 3 %, `review` = über 15 % („Zuordnung prüfen“). */
+  /**
+   * Nur Eiweiß/Kohlenhydrate/Fett: Abweichung als Energie (Gramm × Atwater-Faktor) im Verhältnis zum
+   * Energiegehalt (größerer Wert aus Datei und Quelle).
+   */
+  readonly energyShare?: number;
+  /** Lesart der Quellwerte, falls nicht der reine Quellwert am besten passt (z. B. „KH + Ballaststoffe“). */
+  readonly reading?: string;
+  /**
+   * `report` = über 3 %; `review` = „Zuordnung prüfen“ (Energie > 15 % und ≥ 20 kcal; Makro > 15 % und ≥ 15 % der
+   * Energie, `ALPHA5_IMPORT_TOLERANCE`).
+   */
   readonly level: 'report' | 'review';
+}
+
+/** Quellwerte, die der Gegencheck braucht (Lebensmittel je 100 g oder Rezept je Portion). */
+export interface CrossCheckValues {
+  readonly kcal: number;
+  readonly protein_g: number;
+  readonly carbs_g: number;
+  readonly fat_g: number;
+  readonly fiber_g?: number | null;
+  readonly polyols_g?: number | null;
 }
 
 export interface ImportInput {
@@ -67,6 +88,13 @@ export interface ImportReport {
   readonly unchanged: string[];
   readonly skipped: { id: string; reason: string }[];
   readonly deviations: Deviation[];
+  /** Zutaten ohne Vergleichswert in der Gründer-Datei (alle vier Werte 0) – kein Gegencheck möglich. */
+  readonly noReference: string[];
+  /**
+   * Zutaten, die in diesem Lauf mit der Gründer-Datei verglichen wurden (inkl. „kein Vergleichswert“) – Nenner der
+   * Merge-Regel (Wächter Import-Lauf 1, K6): nicht importierte Zutaten verdünnen den Anteil nicht.
+   */
+  readonly compared: string[];
   /** Vorhandene Lebensmittel ohne (gültige) Zuordnung mehr – bleiben liegen, nur gemeldet (Wächter N2b, K7). */
   readonly orphaned: string[];
 }
@@ -172,40 +200,125 @@ function buildFood(
   };
 }
 
-/** Gegencheck Datei-Wert ↔ Quellwert (Plan 19.3 (a)). */
+/**
+ * true = die Gründer-Datei hat für diese Zutat keinen Vergleichswert (kcal, Eiweiß, Kohlenhydrate, Fett alle 0;
+ * z. B. Pfeffer, Salz, Wasser). Dann ist kein Gegencheck möglich – Stufe „kein Vergleichswert“, nicht „Zuordnung
+ * prüfen“ (Import-Lauf 1, PR #47).
+ */
+export function hasNoReference(file: Alpha5Per100g): boolean {
+  return file.kcal === 0 && file.eiweiss_g === 0 && file.kohlenhydrate_g === 0 && file.fett_g === 0;
+}
+
+interface Reading {
+  readonly value: number;
+  readonly label?: string;
+}
+
+/**
+ * Lesarten der Quellwerte je Feld (Definitionen, keine Toleranz): Kohlenhydrate „verfügbar“ (BLS), inklusive
+ * Ballaststoffe (US-Tabellen) oder ohne Zuckeralkohole (ältere Tabellen); Energie auch mit Ballaststoffen als
+ * Kohlenhydrat (4 statt 2 kcal/g). Eiweiß und Fett haben nur den Quellwert.
+ */
+function readings(
+  field: Deviation['field'],
+  source: CrossCheckValues,
+  fiberInCarbs: boolean,
+): Reading[] {
+  const fiber = source.fiber_g ?? null;
+  const polyols = source.polyols_g ?? null;
+  if (field === 'kcal') {
+    // Nur wenn (1) die Kohlenhydrate der Datei selbst „inklusive Ballaststoffe“ gemeint sind (eine Definition je
+    // Zutat) UND (2) das Lebensmittel ballaststoffbetont ist (Ballaststoffe ≥ verfügbare KH, z. B. Knoblauch,
+    // Sesam, Tahin) – nur dort verschiebt die Definition die Energie spürbar. Sonst würde z. B. Vollkornbrot statt
+    // Weißbrot (mehr Ballaststoffe, weniger KH) über die Lesart durchrutschen (Wächter Import-Lauf 1, S1).
+    return [
+      { value: source.kcal },
+      ...(fiberInCarbs && fiber !== null && fiber > 0 && fiber >= source.carbs_g
+        ? [{ value: source.kcal + 2 * fiber, label: 'Ballaststoffe als KH (4 kcal/g)' }]
+        : []),
+    ];
+  }
+  if (field === 'carbs_g') {
+    return [
+      { value: source.carbs_g },
+      ...(fiber !== null && fiber > 0
+        ? [{ value: source.carbs_g + fiber, label: 'KH + Ballaststoffe' }]
+        : []),
+      ...(polyols !== null && polyols > 0
+        ? [{ value: Math.max(source.carbs_g - polyols, 0), label: 'KH ohne Zuckeralkohole' }]
+        : []),
+    ];
+  }
+  return [{ value: source[field] }];
+}
+
+const ENERGY_FACTOR = { protein_g: 4, carbs_g: 4, fat_g: 9 } as const;
+
+/**
+ * Gegencheck Datei-Wert ↔ Quellwert (Plan 19.3 (a), fair seit Import-Lauf 1, PR #47 – Regeln und Begründung bei
+ * `ALPHA5_IMPORT_TOLERANCE`). Je Feld zählt die am besten passende Lesart der Quellwerte.
+ */
 export function alpha5Deviations(
   id: string,
   file: Alpha5Per100g,
-  source: SourceNutrientRow['nutrients_per_100g'],
+  source: CrossCheckValues,
 ): Deviation[] {
-  const pairs: [Deviation['field'], number, number][] = [
-    ['kcal', file.kcal, source.kcal],
-    ['protein_g', file.eiweiss_g, source.protein_g],
-    ['carbs_g', file.kohlenhydrate_g, source.carbs_g],
-    ['fat_g', file.fett_g, source.fat_g],
+  const pairs: [Deviation['field'], number][] = [
+    ['kcal', file.kcal],
+    ['protein_g', file.eiweiss_g],
+    ['carbs_g', file.kohlenhydrate_g],
+    ['fat_g', file.fett_g],
   ];
   const T = ALPHA5_IMPORT_TOLERANCE;
+  const energyBase = Math.max(file.kcal, source.kcal, 1);
+  const bestReading = (options: readonly Reading[], fileValue: number): Reading => {
+    let best = options[0] as Reading;
+    for (const option of options) {
+      if (Math.abs(fileValue - option.value) < Math.abs(fileValue - best.value)) {
+        best = option;
+      }
+    }
+    return best;
+  };
+  const fiberInCarbs =
+    bestReading(readings('carbs_g', source, false), file.kohlenhydrate_g).label ===
+    'KH + Ballaststoffe';
   const result: Deviation[] = [];
-  for (const [field, fileValue, sourceValue] of pairs) {
+  for (const [field, fileValue] of pairs) {
+    const best = bestReading(readings(field, source, fiberInCarbs), fileValue);
+    const sourceValue = Math.round(best.value * 1e6) / 1e6;
     const absolute = Math.abs(fileValue - sourceValue);
     const minimum = field === 'kcal' ? T.minKcal : T.minGrams;
     if (absolute <= minimum) {
       continue;
     }
     const relative = sourceValue === 0 ? Number.POSITIVE_INFINITY : absolute / sourceValue;
-    if (relative > T.relative) {
-      result.push({
-        id,
-        field,
-        file: fileValue,
-        source: sourceValue,
-        relative,
-        level: relative > T.reviewRelative ? 'review' : 'report',
-      });
+    if (relative <= T.relative) {
+      continue;
     }
+    const energyShare =
+      field === 'kcal' ? undefined : (absolute * ENERGY_FACTOR[field]) / energyBase;
+    const review =
+      relative > T.reviewRelative &&
+      (energyShare === undefined
+        ? absolute >= T.reviewMinKcal
+        : energyShare >= T.reviewEnergyShare);
+    result.push({
+      id,
+      field,
+      file: fileValue,
+      source: sourceValue,
+      relative,
+      ...(energyShare === undefined ? {} : { energyShare }),
+      ...(best.label === undefined ? {} : { reading: best.label }),
+      level: review ? 'review' : 'report',
+    });
   }
   return result;
 }
+
+/** Kurzbeschreibung der Regel für Berichte (PR-Text, Import-Bericht). */
+export const ALPHA5_REVIEW_RULE_NOTE = `> ${Math.round(ALPHA5_IMPORT_TOLERANCE.relative * 100)} % gemeldet; „Zuordnung prüfen“: Energie > ${Math.round(ALPHA5_IMPORT_TOLERANCE.reviewRelative * 100)} % und ≥ ${ALPHA5_IMPORT_TOLERANCE.reviewMinKcal} kcal, Eiweiß/KH/Fett > ${Math.round(ALPHA5_IMPORT_TOLERANCE.reviewRelative * 100)} % und ≥ ${Math.round(ALPHA5_IMPORT_TOLERANCE.reviewEnergyShare * 100)} % der Energie`;
 
 /** Baut Lebensmittel und Erwartungsliste (rein, ohne Dateizugriff – testbar). */
 export function importFoods(input: ImportInput): ImportOutput {
@@ -216,6 +329,8 @@ export function importFoods(input: ImportInput): ImportOutput {
     unchanged: [],
     skipped: [],
     deviations: [],
+    noReference: [],
+    compared: [],
     orphaned: [],
   };
 
@@ -303,7 +418,12 @@ export function importFoods(input: ImportInput): ImportOutput {
 
     const fileValues = input.alpha5.get(item.alpha5_id);
     if (fileValues !== undefined) {
-      report.deviations.push(...alpha5Deviations(id, fileValues, row.nutrients_per_100g));
+      report.compared.push(id);
+      if (hasNoReference(fileValues)) {
+        report.noReference.push(id);
+      } else {
+        report.deviations.push(...alpha5Deviations(id, fileValues, row.nutrients_per_100g));
+      }
     }
   }
 
@@ -350,20 +470,30 @@ export function formatImportReport(report: ImportReport, missingRefs: readonly s
     lines.push('');
   }
   const review = report.deviations.filter((d) => d.level === 'review');
+  const reviewFoods = new Set(review.map((d) => d.id));
   lines.push(
-    `#### Gegencheck alpha5-rezepte.json ↔ Quelle (> 3 % gemeldet, > 15 % „Zuordnung prüfen“)`,
+    `#### Gegencheck alpha5-rezepte.json ↔ Quelle (${ALPHA5_REVIEW_RULE_NOTE})`,
     '',
-    `${report.deviations.length} Abweichungen, davon ${review.length} „Zuordnung prüfen“. Maßgeblich ist immer die Quelle.`,
+    `${report.deviations.length} Abweichungen, davon ${review.length} „Zuordnung prüfen“ bei ${reviewFoods.size} Zutaten. Maßgeblich ist immer die Quelle. Lesarten (KH + Ballaststoffe, KH ohne Zuckeralkohole, Ballaststoffe als KH) gleichen nur Definitionen der Gründer-Datei aus.`,
     '',
   );
+  if (report.noReference.length > 0) {
+    lines.push(
+      `⚪ Kein Vergleichswert (Gründer-Datei 0 kcal / 0 g, z. B. Gewürze): ${report.noReference.map((id) => `\`${id}\``).join(', ')} – zählt nicht als „Zuordnung prüfen“, bei R19 prüfen.`,
+      '',
+    );
+  }
   if (report.deviations.length > 0) {
-    lines.push('| Zutat | Wert | Datei | Quelle | Abweichung |', '| --- | --- | --- | --- | --- |');
+    lines.push(
+      '| Zutat | Wert | Datei | Quelle | Abweichung | Energieanteil | Lesart |',
+      '| --- | --- | --- | --- | --- | --- | --- |',
+    );
     const ordered = [...report.deviations].sort((a, b) =>
       a.level === b.level ? a.id.localeCompare(b.id) : a.level === 'review' ? -1 : 1,
     );
     for (const d of ordered) {
       lines.push(
-        `| ${d.level === 'review' ? '🔴' : '🟡'} \`${d.id}\` | ${d.field} | ${d.file} | ${d.source} | ${pct(d.relative)} |`,
+        `| ${d.level === 'review' ? '🔴' : '🟡'} \`${d.id}\` | ${d.field} | ${d.file} | ${d.source} | ${pct(d.relative)} | ${d.energyShare === undefined ? '–' : pct(d.energyShare)} | ${d.reading ?? '–'} |`,
       );
     }
     lines.push('');

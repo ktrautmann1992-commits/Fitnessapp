@@ -237,7 +237,7 @@ describe('import-source: Lebensmittel nur mit Quellwerten', () => {
     expect(out.report.skipped[4]?.reason).toMatch(/Schemafehler/);
   });
 
-  it('Gegencheck Gründer-Datei: > 3 % gemeldet, > 15 % „Zuordnung prüfen“, Mindestabstand', () => {
+  it('Gegencheck Gründer-Datei: > 3 % gemeldet, Mindestabstand; Bericht mit Energieanteil, Lesart und „kein Vergleichswert“', () => {
     const n = ROW.nutrients_per_100g;
     expect(
       alpha5Deviations('apfel', { kcal: 54, eiweiss_g: 0.3, kohlenhydrate_g: 12, fett_g: 0.2 }, n),
@@ -246,20 +246,35 @@ describe('import-source: Lebensmittel nur mit Quellwerten', () => {
     expect(
       alpha5Deviations('apfel', { kcal: 58, eiweiss_g: 0.3, kohlenhydrate_g: 12, fett_g: 0.9 }, n),
     ).toEqual([]);
+    // 18 g KH: beste Lesart „KH + Ballaststoffe“ = 14 g → 4 g = 16 kcal = 24 % der Energie → prüfen.
+    // 66 kcal statt 54: 12 kcal (unter 20 kcal) → nur gemeldet. Keine Energie-Lesart: Apfel ist nicht
+    // ballaststoffbetont (2 g Ballaststoffe < 12 g KH).
     const hits = alpha5Deviations(
       'apfel',
-      { kcal: 60, eiweiss_g: 0.3, kohlenhydrate_g: 14, fett_g: 0.2 },
+      { kcal: 66, eiweiss_g: 0.3, kohlenhydrate_g: 18, fett_g: 0.2 },
       n,
     );
-    expect(hits.map((h) => [h.field, h.level])).toEqual([
-      ['kcal', 'report'],
-      ['carbs_g', 'review'],
+    expect(hits.map((h) => [h.field, h.level, h.reading])).toEqual([
+      ['kcal', 'report', undefined],
+      ['carbs_g', 'review', 'KH + Ballaststoffe'],
     ]);
     const report = formatImportReport(
-      { written: ['apfel'], unchanged: [], skipped: [], deviations: hits, orphaned: [] },
+      {
+        written: ['apfel', 'pfeffer'],
+        unchanged: [],
+        skipped: [],
+        deviations: hits,
+        noReference: ['pfeffer'],
+        compared: ['apfel', 'pfeffer'],
+        orphaned: [],
+      },
       [],
     );
-    expect(report).toContain('🔴 `apfel` | carbs_g | 14 | 12 | 16,7 %');
+    expect(report).toContain(
+      '🔴 `apfel` | carbs_g | 18 | 14 | 28,6 % | 24,2 % | KH + Ballaststoffe |',
+    );
+    expect(report).toContain('davon 1 „Zuordnung prüfen“ bei 1 Zutaten');
+    expect(report).toMatch(/⚪ Kein Vergleichswert .*`pfeffer`/);
   });
 
   it('canonicalJson ist unabhängig von der Schlüssel-Reihenfolge und berücksichtigt verschachtelte Werte', () => {

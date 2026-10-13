@@ -18,7 +18,7 @@ import {
   roundShoppingAmount,
   setShoppingItemChecked,
 } from './shopping-list';
-import { zeroNutrients } from './scale';
+import { zeroNutrients } from './recipe-nutrients';
 
 const WEEK = '2026-10-12';
 

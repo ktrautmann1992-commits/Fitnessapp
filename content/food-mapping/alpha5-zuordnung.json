@@ -1346,7 +1346,7 @@
       "source": {
         "db": "bls",
         "version": "4.0",
-        "ref": "M820200",
+        "ref": "M820500",
         "search": [
           "Frischkäse Halbfettstufe",
           "Frischkäse Dreiviertelfettstufe",
@@ -1357,7 +1357,7 @@
         "state_de": "Frischkäse, fettreduziert",
         "category": "dairy"
       },
-      "name_de": "Frischkäse light",
+      "name_de": "Frischkäse (40 % Fett i. Tr.)",
       "aliases_de": [],
       "shopping_category": "chilled_dairy_eggs",
       "pantry": false,
@@ -1370,7 +1370,7 @@
       "max_fridge_days": 3,
       "freezable": true,
       "substitutes": [],
-      "reason_de": "UNSICHER – bei R19 zuerst prüfen. Zustand: Frischkäse, fettreduziert. Quell-ID M820200 „Frischkäsezubereitung Natur, mind. 10 % Fett i. Tr.“ (Lauf 38367139392 „kandidaten“ 13.10.2026, BLS 4.0): Frischkäse natur, mind. 10 % Fett i. Tr. als fettreduzierte Stufe; Fettstufe der Ware prüfen."
+      "reason_de": "UNSICHER – bei R19 zuerst prüfen. Zustand: Frischkäse, fettreduziert. Quell-ID M820500 „Frischkäsezubereitung Natur, mind. 40 % Fett i. Tr.“ (Lauf 38367139392 „kandidaten“ 13.10.2026, BLS 4.0): Korrektur Import-Lauf 1 (PR #47): vorher M820200 „… mind. 10 % Fett i. Tr.“ (86 kcal, 2,8 g Fett); die Gründer-Datei meint Frischkäse mit ca. 11 g Fett (150 kcal). Natur mit 20/30 % Fett i. Tr. fehlt im BLS → nächste Stufe 40 % (Fettstufe nach Käseverordnung). Name ohne „light“/„fettreduziert“ (R10, HCVO), mit Fettangabe wie Gouda/Mozzarella."
     },
     {
       "alpha5_id": "fruehlingszwiebel",
@@ -1607,8 +1607,8 @@
         "state_de": "Schnittkäse, fettreduziert, gerieben",
         "category": "dairy"
       },
-      "name_de": "Gouda light (gerieben)",
-      "aliases_de": [],
+      "name_de": "Gouda gerieben (30 % Fett i. Tr.)",
+      "aliases_de": ["Gouda Dreiviertelfettstufe gerieben"],
       "shopping_category": "chilled_dairy_eggs",
       "pantry": false,
       "units": {},
@@ -1620,7 +1620,7 @@
       "max_fridge_days": 3,
       "freezable": true,
       "substitutes": [],
-      "reason_de": "UNSICHER – bei R19 zuerst prüfen. Zustand: Schnittkäse, fettreduziert, gerieben. Quell-ID M402400 „Gouda mind. 30 % Fett i. Tr.“ (Lauf „kandidaten“ 12.10.2026, BLS 4.0): fettreduziert ≈ mind. 30 % Fett i. Tr.; Fettstufe der Ware prüfen."
+      "reason_de": "UNSICHER – bei R19 zuerst prüfen. Zustand: Schnittkäse, fettreduziert, gerieben. Quell-ID M402400 „Gouda mind. 30 % Fett i. Tr.“ (Lauf „kandidaten“ 12.10.2026, BLS 4.0): fettreduziert ≈ mind. 30 % Fett i. Tr.; Fettstufe der Ware prüfen. Name ohne „light“ (R10, Health-Claims-Verordnung), mit Fettangabe der Quelle (Import-Lauf 1, PR #47)."
     },
     {
       "alpha5_id": "gruene-bohnen-tk",
@@ -2091,7 +2091,7 @@
       "max_fridge_days": 1,
       "freezable": true,
       "substitutes": [],
-      "reason_de": "UNSICHER – bei R19 zuerst prüfen. Zustand: gegart, Aufschnitt. Quell-ID V416132 „Hähnchen Brustfilet, gekocht“ (Lauf 38367139392 „kandidaten“ 13.10.2026, BLS 4.0): Hähnchenbrustfilet gekocht als nächster Eintrag; eigener Aufschnitt-Eintrag fehlt, Aufschnitt enthält meist Salz. Haltbarkeit gekocht 1 Tag (R9: Reis, Fisch, Hackfleisch, Geflügel)."
+      "reason_de": "UNSICHER – bei R19 zuerst prüfen. Zustand: gegart, Aufschnitt. Quell-ID V416132 „Hähnchen Brustfilet, gekocht“ (Lauf 38367139392 „kandidaten“ 13.10.2026, BLS 4.0): gegartes Brustfilet als nächster Eintrag. R19-PFLICHT Salz prüfen: Quelle = ungesalzenes gegartes Fleisch (unter 0,6 g Salz), Handels-Aufschnitt hat 1,5–2,5 g/100 g – sonst ist R11 zu mild; ein Aufschnitt-Eintrag fehlt in der bekannten Namensliste des BLS."
     },
     {
       "alpha5_id": "haehnchenbrustfilet",
@@ -2647,7 +2647,7 @@
       "max_fridge_days": 3,
       "freezable": true,
       "substitutes": [],
-      "reason_de": "Zustand: gegart, Aufschnitt. Quell-ID W424000 „Schwein Kochschinken, Kochpökelware“ (Lauf „kandidaten“ 12.10.2026, BLS 4.0): Schwein Kochschinken. Kochschinken: gegart, Schwein."
+      "reason_de": "Zustand: gegart, Aufschnitt. Quell-ID W424000 „Schwein Kochschinken, Kochpökelware“ (Lauf „kandidaten“ 12.10.2026, BLS 4.0): Schwein Kochschinken. Kochschinken: gegart, Schwein. R19: Salz prüfen (Quelle 2,3 g – Kochpökelware, passt zur Handelsware 1,5–2,5 g)."
     },
     {
       "alpha5_id": "kokosmilch",
@@ -3484,8 +3484,8 @@
         "state_de": "fettreduziert",
         "category": "dairy"
       },
-      "name_de": "Mozzarella light",
-      "aliases_de": [],
+      "name_de": "Mozzarella (20 % Fett i. Tr.)",
+      "aliases_de": ["Mozzarella Halbfettstufe"],
       "shopping_category": "chilled_dairy_eggs",
       "pantry": false,
       "units": {},
@@ -3497,7 +3497,7 @@
       "max_fridge_days": 3,
       "freezable": true,
       "substitutes": [],
-      "reason_de": "Zustand: fettreduziert. Quell-ID M0A1000 „Mozzarella mind. 20 % Fett i. Tr.“ (Lauf „kandidaten“ 12.10.2026, BLS 4.0): fettreduziert = mind. 20 % Fett i. Tr.."
+      "reason_de": "Zustand: fettreduziert. Quell-ID M0A1000 „Mozzarella mind. 20 % Fett i. Tr.“ (Lauf „kandidaten“ 12.10.2026, BLS 4.0): fettreduziert = mind. 20 % Fett i. Tr.. Name ohne „light“ (R10, Health-Claims-Verordnung), mit Fettangabe der Quelle (Import-Lauf 1, PR #47)."
     },
     {
       "alpha5_id": "muskatnuss-gerieben",
@@ -3980,7 +3980,7 @@
       "max_fridge_days": 1,
       "freezable": true,
       "substitutes": [],
-      "reason_de": "UNSICHER – bei R19 zuerst prüfen. Zustand: gegart, Aufschnitt. Quell-ID V486132 „Pute Brust, ohne Haut, gekocht“ (Lauf 38367139392 „kandidaten“ 13.10.2026, BLS 4.0): Putenbrust ohne Haut gekocht als nächster Eintrag; eigener Aufschnitt-Eintrag fehlt, Aufschnitt enthält meist Salz. Haltbarkeit gekocht 1 Tag (R9: Reis, Fisch, Hackfleisch, Geflügel)."
+      "reason_de": "UNSICHER – bei R19 zuerst prüfen. Zustand: gegart, Aufschnitt. Quell-ID V486132 „Pute Brust, ohne Haut, gekocht“ (Lauf 38367139392 „kandidaten“ 13.10.2026, BLS 4.0): gegartes Brustfilet als nächster Eintrag. R19-PFLICHT Salz prüfen: Quelle = ungesalzenes gegartes Fleisch (unter 0,6 g Salz), Handels-Aufschnitt hat 1,5–2,5 g/100 g – sonst ist R11 zu mild; ein Aufschnitt-Eintrag fehlt in der bekannten Namensliste des BLS."
     },
     {
       "alpha5_id": "putenbrustaufschnitt",
@@ -4013,7 +4013,7 @@
       "max_fridge_days": 1,
       "freezable": true,
       "substitutes": [],
-      "reason_de": "UNSICHER – bei R19 zuerst prüfen. Zustand: gegart, Aufschnitt. Quell-ID V486132 „Pute Brust, ohne Haut, gekocht“ (Lauf 38367139392 „kandidaten“ 13.10.2026, BLS 4.0): Putenbrust ohne Haut gekocht als nächster Eintrag; eigener Aufschnitt-Eintrag fehlt, Aufschnitt enthält meist Salz. Haltbarkeit gekocht 1 Tag (R9: Reis, Fisch, Hackfleisch, Geflügel). Doppelte Zutat-ID zu „putenbrust-aufschnitt“."
+      "reason_de": "UNSICHER – bei R19 zuerst prüfen. Zustand: gegart, Aufschnitt. Quell-ID V486132 „Pute Brust, ohne Haut, gekocht“ (Lauf 38367139392 „kandidaten“ 13.10.2026, BLS 4.0): gegartes Brustfilet als nächster Eintrag. R19-PFLICHT Salz prüfen: Quelle = ungesalzenes gegartes Fleisch (unter 0,6 g Salz), Handels-Aufschnitt hat 1,5–2,5 g/100 g – sonst ist R11 zu mild; ein Aufschnitt-Eintrag fehlt in der bekannten Namensliste des BLS."
     },
     {
       "alpha5_id": "putenbrustfilet",
@@ -4049,14 +4049,8 @@
       "source": {
         "db": "bls",
         "version": "4.0",
-        "ref": "V481000",
-        "search": [
-          "Pute Hackfleisch",
-          "Putenhackfleisch",
-          "Geflügel Hackfleisch",
-          "Truthahn Hackfleisch",
-          "Pute Fleisch"
-        ],
+        "ref": "V485100",
+        "search": ["Pute Keule ohne Haut", "Pute Hackfleisch", "Putenhackfleisch", "Pute Fleisch"],
         "state_de": "roh",
         "category": "meat_poultry"
       },
@@ -4073,7 +4067,7 @@
       "max_fridge_days": 1,
       "freezable": true,
       "substitutes": [],
-      "reason_de": "UNSICHER – bei R19 zuerst prüfen. Zustand: roh. Quell-ID V481000 „Pute Fleisch, ohne Haut, roh“ (Lauf 38367139392 „kandidaten“ 13.10.2026, BLS 4.0): Putenfleisch ohne Haut roh; eigener Hackfleisch-Eintrag fehlt. Haltbarkeit gekocht 1 Tag (R9: Reis, Fisch, Hackfleisch, Geflügel)."
+      "reason_de": "UNSICHER – bei R19 zuerst prüfen. Zustand: roh. Quell-ID V485100 „Pute Keule, ohne Haut, roh“ (Namensliste 12.10.2026, BLS 4.0): Korrektur Import-Lauf 1 (PR #47): vorher V481000 „Pute Fleisch, ohne Haut, roh“ (102 kcal, 2,2 g Fett; Gründer-Datei 130 kcal, 5,5 g Fett). Putenhack wird meist aus Oberkeulenfleisch ohne Haut gewolft → Keule ohne Haut (fetter als Brust). Ein Hackfleisch-Eintrag für Pute fehlt; Fettgehalt bei R19 gegen die Ware prüfen. Haltbarkeit gekocht 1 Tag (R9)."
     },
     {
       "alpha5_id": "radieschen",
@@ -4244,8 +4238,13 @@
       "source": {
         "db": "bls",
         "version": "4.0",
-        "ref": "U010100",
-        "search": ["Rinderhackfleisch", "Rind Hackfleisch", "Tatar"],
+        "ref": "U203000",
+        "search": [
+          "Rind Fleisch sichtbarer Fettanteil max. 5 %",
+          "Rinderhackfleisch",
+          "Rind Hackfleisch",
+          "Rind grob entsehnt"
+        ],
         "state_de": "roh, 5 % Fett",
         "category": "meat_beef_veal"
       },
@@ -4262,7 +4261,7 @@
       "max_fridge_days": 1,
       "freezable": true,
       "substitutes": [],
-      "reason_de": "UNSICHER – bei R19 zuerst prüfen. Zustand: roh, 5 % Fett. Quell-ID U010100 „Rind Hackfleisch, roh“ (Lauf „kandidaten“ 12.10.2026, BLS 4.0): Rinderhackfleisch roh; Fettstufe der Quelle kann über 5 % liegen (R19-Prüfhinweis: Fettgehalt prüfen). R18: „Rind Hackfleisch“ zählt als Rind, nicht gemischt (joinSpeciesMince). Kein Schwangerschafts-Hinweis wie beim Schweinehack (wird gegart). Haltbarkeit gekocht 1 Tag (R9: Reis, Fisch, Hackfleisch, Geflügel)."
+      "reason_de": "UNSICHER – bei R19 zuerst prüfen. Zustand: roh, 5 % Fett. Quell-ID U203000 „Rind Fleisch, grob entsehnt, sichtbarer Fettanteil max. 5 % (R II) roh“ (Namensliste 12.10.2026, BLS 4.0): Korrektur Import-Lauf 1 (PR #47): vorher U010100 „Rind Hackfleisch, roh“ (224 kcal, 16,4 g Fett = übliche Hack-Fettstufe). R II = Ausgangsfleisch für mageres Hack, max. 5 % Fett; mageres Rinderhack fehlt im BLS. Tatar (U070100) nicht gewählt: löst die Rohfleisch-Regel (Schwangerschaft) aus, die Zutat wird gegart. Haltbarkeit gekocht 1 Tag (R9)."
     },
     {
       "alpha5_id": "rinderhueftsteak",
@@ -4332,8 +4331,8 @@
       "source": {
         "db": "bls",
         "version": "4.0",
-        "ref": "Y131132",
-        "search": ["Roastbeef", "Rind Roastbeef"],
+        "ref": "U221162",
+        "search": ["Rind Roastbeef gebraten", "Roastbeef", "Rind Roastbeef"],
         "state_de": "gegart (meist rosa), Aufschnitt",
         "category": "meat_beef_veal"
       },
@@ -4350,7 +4349,7 @@
       "max_fridge_days": 3,
       "freezable": true,
       "substitutes": [],
-      "reason_de": "UNSICHER – bei R19 zuerst prüfen. Zustand: gegart (meist rosa), Aufschnitt. Quell-ID Y131132 „Roastbeef gebraten im Ofen, ohne Sauce“ (Lauf „kandidaten“ 12.10.2026, BLS 4.0): gegart (im Ofen, ohne Sauce) passt zu Aufschnitt; rohes Roastbeef passt nicht. Roastbeef ist meist rosa gegart → „pregnancy_caution“ vorsichtig."
+      "reason_de": "UNSICHER – bei R19 zuerst prüfen. Quell-ID U221162 „Rind Roastbeef (Rücken) gebraten ohne Fett (Ofen)“ (Namensliste 12.10.2026, BLS 4.0): Korrektur Import-Lauf 1 (PR #47): vorher Y131132 (Gericht mit Bratfett, 180 kcal, 7,3 g Fett). Aufschnitt = im Ofen gegartes Roastbeef → Grundlebensmittel. Meist rosa → „pregnancy_caution“. R19-PFLICHT Salz prüfen: Quelle = ungesalzenes gegartes Fleisch (unter 0,6 g Salz), Handels-Aufschnitt hat 1,5–2,5 g/100 g – sonst ist R11 zu mild; ein Aufschnitt-Eintrag fehlt in der bekannten Namensliste des BLS."
     },
     {
       "alpha5_id": "romanasalat",
@@ -4976,8 +4975,8 @@
       "source": {
         "db": "bls",
         "version": "4.0",
-        "ref": "U020100",
-        "search": ["Schweinehackfleisch", "Hackfleisch Schwein", "Schwein Hack"],
+        "ref": "U685100",
+        "search": ["Schwein Hüfte", "Schinkenspeck", "Schweinehackfleisch", "Schwein Oberschale"],
         "state_de": "roh, mager",
         "category": "meat_pork"
       },
@@ -4994,7 +4993,7 @@
       "max_fridge_days": 1,
       "freezable": true,
       "substitutes": [],
-      "reason_de": "UNSICHER – bei R19 zuerst prüfen. Zustand: roh, mager. Quell-ID U020100 „Schwein Hackfleisch, roh“ (Lauf „kandidaten“ 12.10.2026, BLS 4.0): Schwein Hackfleisch roh; magere Variante nicht eigens vorhanden. R18: „Schwein Hackfleisch“ zählt als Schwein (Core-Regel joinSpeciesMince). Haltbarkeit gekocht 1 Tag (R9: Reis, Fisch, Hackfleisch, Geflügel)."
+      "reason_de": "UNSICHER – bei R19 zuerst prüfen. Zustand: roh, mager. Quell-ID U685100 „Schwein Hüfte/Schinkenspeck, roh“ (Namensliste 12.10.2026, BLS 4.0): Korrektur Import-Lauf 1 (PR #47): vorher U020100 „Schwein Hackfleisch, roh“ (271 kcal, 22,1 g Fett), gemeint ist mageres Hack (Gründer 7,5 g Fett). „Schinkenspeck“ = Fleischer-Name des frischen Teilstücks Hüfte (Gruppe U, roh), NICHT geräucherter Speck. Mageres Schweinehack fehlt im BLS. Hüfte ist magerer (ca. 2–4 g Fett): im nächsten Lauf ist 🔴 beim Fett zu erwarten – dann ist dies ein Ersatz, Gründer-Frage N2b."
     },
     {
       "alpha5_id": "schweineschnitzel",
@@ -5359,7 +5358,7 @@
       "source": {
         "db": "bls",
         "version": "4.0",
-        "ref": "H844000",
+        "ref": null,
         "search": [
           "Soja Skyr",
           "Skyralternative",
@@ -5384,7 +5383,7 @@
       "max_fridge_days": 3,
       "freezable": true,
       "substitutes": [],
-      "reason_de": "UNSICHER – bei R19 zuerst prüfen. Zustand: natur. Quell-ID H844000 „Soja-Joghurtalternative ungesüßt“ (Lauf 38367139392 „kandidaten“ 13.10.2026, BLS 4.0): Soja-Joghurtalternative ungesüßt; Skyr-Alternative fehlt, hat meist mehr Eiweiß. Kein eigener Eintrag erwartet; gleichwertig ist Sojajoghurt nur bedingt (mehr Eiweiß) → eher Zweitquelle oder ungeprüft."
+      "reason_de": "Zustand: natur. Quell-ID offen (null). Korrektur Import-Lauf 1 (PR #47): vorher H844000 „Soja-Joghurtalternative ungesüßt“ (44 kcal, 4,2 g Eiweiß); Sojaskyr hat etwa doppelt so viel Eiweiß (Gründer-Datei 8,5 g) – anderes Produkt, kein Datenunterschied. Eine Skyr-Alternative fehlt im BLS (Namensliste: nur Soja-Joghurtalternativen, Sojadrinks). Offene Gründer-Frage N2b 1 (3): Zweitquelle oder ohne Quellwerte; bis dahin 11 Rezepte nur als Struktur (N2c)."
     },
     {
       "alpha5_id": "spaghetti-trocken",

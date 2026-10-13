@@ -32,15 +32,18 @@ import {
   mealPrepSlots,
 } from './meal-prep';
 import { type MealPlanNoticeCode, sortMealPlanNotices } from './notices';
-import { computeRecipeFacts, type RecipeNutrients } from './recipe-nutrients';
 import {
   addNutrients,
+  computeRecipeFacts,
+  type RecipeNutrients,
+  zeroNutrients,
+} from './recipe-nutrients';
+import {
   balancePortions,
   type PortionDraft,
   type ScaledIngredient,
   type ScaledPortion,
   scalePortion,
-  zeroNutrients,
 } from './scale';
 import { type MealPlanProfile, type MealPlanProfileInput, mealPlanProfileSchema } from './schemas';
 import { stableHashKey, stableUnit } from './stable-hash';

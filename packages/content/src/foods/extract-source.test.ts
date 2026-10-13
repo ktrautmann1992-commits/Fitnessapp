@@ -166,6 +166,89 @@ describe('Quellzeilen → Nährwerte (source-rows)', () => {
     expect(convertSourceValue(0.1 + 0.2, 'none')).toBe(0.3);
   });
 
+  it('ergänzende Werte ohne Zahl („-“, „<LOD“) → null + Hinweis; Pflichtwert ohne Zahl → Zeile fehlt (PR #47)', () => {
+    const records = [
+      TEST_HEADER,
+      // Honig: Ballaststoffe „<LOD or <LOQ“ → null, Zeile bleibt.
+      ['S120000', 'Honig', '', '310', '', '0.4', '76', '75', '0', '0', '<LOD or <LOQ', '5'],
+      // Backpulver: gesättigte Fettsäuren „-“ → null.
+      ['R421100', 'Backpulver', '', '100', '', '0.1', '24', '0', '0.1', '-', '0', '11000'],
+      // Orangensaft: Fett „<LOD or <LOQ“ ist Pflicht → nicht übernommen (nie 0 eingesetzt).
+      ['F603600', 'Orangensaft', '', '45', '', '0.7', '9', '8', '<LOD or <LOQ', '0', '0.2', '1'],
+    ];
+    const { rows, problems, gaps } = sourceNutrientRows(records, TEST_SOURCE);
+    expect(rows.get('S120000')?.nutrients_per_100g.fiber_g).toBeNull();
+    expect(rows.get('R421100')?.nutrients_per_100g.sat_fat_g).toBeNull();
+    expect(rows.has('F603600')).toBe(false);
+    expect(problems).toEqual([
+      { ref: 'F603600', message: expect.stringMatching(/fat_g/) as unknown as string },
+    ]);
+    expect(problems[0]?.message).not.toMatch(/fiber_g/);
+    expect(gaps.map((g) => g.ref)).toEqual(['S120000', 'R421100']);
+    expect(gaps[0]?.message).toMatch(/fiber_g .*„<LOD or <LOQ“/);
+  });
+
+  it('R4-Zusatzspalten (organische Säuren, Alkohol, Polyole) nur für eingetragene Codes; fehlt die Spalte, fehlt das Feld', () => {
+    const def = {
+      ...TEST_SOURCE,
+      energyExtras: {
+        organic_acids_g: [{ code: 'OA', unit: 'g', convert: 'none' }],
+        alcohol_g: [{ code: 'ALC', unit: 'g', convert: 'none' }],
+        polyols_g: [{ code: 'POLYL', unit: 'g', convert: 'none' }],
+      },
+    } as const;
+    const header = [
+      ...TEST_HEADER,
+      'OA Organische Säuren, gesamt [g/100g]',
+      'ALC Alkohol (Ethanol) [g/100g]',
+    ];
+    const records = [
+      header,
+      [
+        'R123100',
+        'Apfelessig',
+        '',
+        '18',
+        '',
+        '0.2',
+        '0.15',
+        '0.1',
+        '0',
+        '0',
+        '0',
+        '1',
+        '5.48',
+        '<LOD',
+      ],
+    ];
+    const { rows } = sourceNutrientRows(records, def);
+    const n = rows.get('R123100')?.nutrients_per_100g;
+    expect(n?.organic_acids_g).toBe(5.48);
+    expect(n?.alcohol_g).toBeNull(); // „<LOD“ → kein Wert
+    expect(n && 'polyols_g' in n).toBe(false); // Spalte fehlt → Feld fehlt
+    // Ohne `energyExtras` bleiben die Lebensmittel wie bisher (keine Zusatzfelder).
+    expect(
+      Object.keys(
+        sourceNutrientRows(records, TEST_SOURCE).rows.get('R123100')?.nutrients_per_100g ?? {},
+      ),
+    ).not.toContain('organic_acids_g');
+    // Vorhandener Code mit falscher Einheit → Abbruch (nie geraten).
+    const wrong = header.map((h) =>
+      h.replace('OA Organische Säuren, gesamt [g/100g]', 'OA Organische Säuren [mg/100g]'),
+    );
+    expect(() => sourceNutrientRows([wrong, records[1] ?? []], def)).toThrow(/Einheit „g“/);
+  });
+
+  it('BLS 4.0: Zusatzspalten OA, ALC und POLYL sind festgenagelt (nur R4, Code + Einheit g, unverändert)', () => {
+    // Wächter Import-Lauf 1, K2: Zeigte ein Feld auf eine andere Spalte (z. B. WATER), wäre R4 praktisch aus.
+    const bls = SOURCES.find((s) => s.db === 'bls' && s.version === '4.0');
+    expect(bls?.energyExtras).toEqual({
+      organic_acids_g: [{ code: 'OA', unit: 'g', convert: 'none' }],
+      alcohol_g: [{ code: 'ALC', unit: 'g', convert: 'none' }],
+      polyols_g: [{ code: 'POLYL', unit: 'g', convert: 'none' }],
+    });
+  });
+
   it('Zeile mit unmöglichen Werten (Zucker > Kohlenhydrate) wird nicht übernommen', () => {
     const records = [
       TEST_HEADER,

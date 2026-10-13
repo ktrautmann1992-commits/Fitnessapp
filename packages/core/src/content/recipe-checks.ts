@@ -17,6 +17,7 @@ import {
   type Food,
   type FoodLookup,
   isCatalogReviewed,
+  type NutrientsPer100g,
   type SourceNutrientRow,
   sourceRowKey,
 } from './food-schema';
@@ -74,12 +75,30 @@ function textRuleIssues(target: Target, texts: readonly [string, string][]): Con
 // Lebensmittel: R2 (Ersatzprodukte), R4, R9 (Haltbarkeit), R10, R17, R18, R19
 // ---------------------------------------------------------------------------------------------------------
 
-/** R4: Energie nach Atwater (4·E + 4·KH + 9·F + 2·Ballaststoffe) passt zu den kcal der Quelle. */
+/**
+ * Energie nach Atwater (LMIV Anhang XIV): 4·E + 4·KH + 9·F + 2·Ballaststoffe, dazu – sofern die Quelle sie nennt –
+ * 3·organische Säuren + 7·Alkohol, und Polyole (Teil der Kohlenhydrate) mit 2,4 statt 4 kcal/g. Fehlende Werte
+ * (`null`/ohne Feld) zählen in DIESER Plausibilitätsprüfung nicht mit; gespeichert wird nie ein Ersatzwert.
+ */
+export function atwaterKcal(n: NutrientsPer100g): number {
+  const A = RECIPE_CHECK_LIMITS.atwater;
+  const polyols = Math.min(Math.max(n.polyols_g ?? 0, 0), n.carbs_g);
+  return (
+    A.protein * n.protein_g +
+    A.carbs * (n.carbs_g - polyols) +
+    A.polyols * polyols +
+    A.fat * n.fat_g +
+    A.fiber * (n.fiber_g ?? 0) +
+    A.organicAcids * (n.organic_acids_g ?? 0) +
+    A.alcohol * (n.alcohol_g ?? 0)
+  );
+}
+
+/** R4: Energie nach Atwater (`atwaterKcal`) passt zu den kcal der Quelle. */
 export function checkFoodAtwater(food: Food): ContentIssue[] {
   const A = RECIPE_CHECK_LIMITS.atwater;
   const n = food.nutrients_per_100g;
-  const computed =
-    A.protein * n.protein_g + A.carbs * n.carbs_g + A.fat * n.fat_g + A.fiber * n.fiber_g;
+  const computed = atwaterKcal(n);
   const tolerance = Math.max(A.tolerance * n.kcal, A.absMinKcal);
   if (Math.abs(computed - n.kcal) <= tolerance) {
     return [];
@@ -103,7 +122,15 @@ const NUTRIENT_LABELS = {
   sat_fat_g: 'gesättigte Fettsäuren',
   fiber_g: 'Ballaststoffe',
   salt_g: 'Salz',
+  organic_acids_g: 'organische Säuren',
+  alcohol_g: 'Alkohol',
+  polyols_g: 'mehrwertige Alkohole (Polyole)',
 } as const;
+
+/** Wert für die Anzeige im Prüfbericht (`null`/fehlend = „kein Wert“). */
+function fmtNutrient(value: number | null | undefined): string {
+  return value === null || value === undefined ? 'kein Wert' : fmt(value, 3);
+}
 
 /** R17: Nährwerte und Bezeichnung = Quellauszug (B6b). Die Herkunftsprüfung des Auszugs kommt in N2b. */
 export function checkFoodSource(food: Food, catalog: NutritionCatalogContext): ContentIssue[] {
@@ -131,14 +158,18 @@ export function checkFoodSource(food: Food, catalog: NutritionCatalogContext): C
   }
   const issues: ContentIssue[] = [];
   for (const key of Object.keys(NUTRIENT_LABELS) as (keyof typeof NUTRIENT_LABELS)[]) {
-    const own = food.nutrients_per_100g[key];
-    const expected = row.nutrients_per_100g[key];
-    if (Math.abs(own - expected) > 1e-9) {
+    // „kein Wert“ (null) und fehlendes Feld sind gleich; eine Zahl muss exakt stimmen, eine Zahl statt „kein Wert“
+    // (oder umgekehrt) ist rot – auch eine 0 statt „kein Wert“ wäre eine Schätzung.
+    const own = food.nutrients_per_100g[key] ?? null;
+    const expected = row.nutrients_per_100g[key] ?? null;
+    const same =
+      own === null || expected === null ? own === expected : Math.abs(own - expected) <= 1e-9;
+    if (!same) {
       issues.push(
         makeIssue(
           'R17',
           target,
-          `${NUTRIENT_LABELS[key]}: ${fmt(own, 3)} statt ${fmt(expected, 3)} laut Quelle – Nährwerte nur maschinell importieren.`,
+          `${NUTRIENT_LABELS[key]}: ${fmtNutrient(own)} statt ${fmtNutrient(expected)} laut Quelle – Nährwerte nur maschinell importieren.`,
           `nutrients_per_100g.${key}`,
         ),
       );

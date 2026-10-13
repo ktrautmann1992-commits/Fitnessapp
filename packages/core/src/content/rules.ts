@@ -80,7 +80,8 @@ export const CONTENT_RULES = {
   },
   R4: {
     severity: 'error',
-    title: 'Atwater je Lebensmittel: 4·Eiweiß + 4·KH + 9·Fett + 2·Ballaststoffe = kcal ±15 %',
+    title:
+      'Atwater je Lebensmittel (LMIV Anhang XIV): 4·Eiweiß + 4·KH + 9·Fett + 2·Ballaststoffe, dazu 3·org. Säuren + 7·Alkohol, Polyole 2,4 = kcal ±15 %',
   },
   R5: {
     severity: 'warning',
