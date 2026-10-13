@@ -1,13 +1,26 @@
 import { ageInYears, meetsMinimumAge } from '../age';
 import { WEIGHT_OUTDATED_AFTER_DAYS } from '../constants';
 import { addDays, daysBetween } from '../dates';
-import { goalEnergyDirection } from '../goals/profile';
+import { goalEnergyDirection, hasGoal } from '../goals/profile';
+import {
+  type WeightGoalDayResult,
+  type WeightGoalDayStatus,
+  weightGoalDayAdjustment,
+  weightGoalPreStatus,
+} from '../goals/weight-goal';
+import { hasPlannableDeficit, weightGoalCapacity } from '../goals/weight-goal-feasibility';
 import { latestBodyValues } from './body-data';
 import { nutritionEligibility } from './eligibility';
 import { dayEnergy, sessionsForDay } from './energy';
-import { applyGoalAdjustment, type CalorieLimitContext, clampCalorieTarget } from './limits';
+import { applyGoalAdjustment, clampCalorieTarget, dayLimitContext } from './limits';
 import { nutritionMacros } from './macros';
-import { type CalorieCapCode, type NutritionNoticeCode, sortNotices } from './notices';
+import {
+  type CalorieCapCode,
+  type NutritionNoticeCode,
+  sortNotices,
+  sortWeightGoalNotices,
+  type WeightGoalNoticeCode,
+} from './notices';
 import {
   type NutritionInputsInput,
   nutritionInputsSchema,
@@ -65,6 +78,15 @@ export interface NutritionDayTargets {
    */
   readonly deficitCap: number;
   readonly surplusCap: number;
+  /**
+   * Energie-Anpassung des Tages als Anteil des Grundbedarfs ohne Training (Standard des Ziel-Profils bzw. mit
+   * konkretem Abnehmziel kleiner, docs/PLAN-ZIELE.md 2.4); null bei `no_targets`.
+   */
+  readonly goalAdjustment: number | null;
+  /** Stand des konkreten Abnehmziels an diesem Tag; null ohne Ziel bzw. ohne Einwilligung. */
+  readonly weightGoalStatus: WeightGoalDayStatus | null;
+  /** Das Ziel wird an diesem Tag langsamer geplant als benötigt (Standard-Tempo oder eine Schutzgrenze bremst). */
+  readonly weightGoalPaceCapped: boolean;
 }
 
 export interface NutritionWeekTargets {
@@ -72,7 +94,21 @@ export interface NutritionWeekTargets {
   readonly days: readonly NutritionDayTargets[];
   /** true, sobald Körperdaten oder Flags (oder ein Check) eingeflossen sind (7.1). */
   readonly usesHealthData: boolean;
+  /**
+   * Hinweise zum Abnehmziel – einmal je Woche, nur für die Ernährungs-Übersicht (Wächter K10: `weight_goal_pace_capped`
+   * höchstens einmal pro Woche, kein täglicher Hinweis auf „Heute“).
+   */
+  readonly weightGoalNotices: readonly WeightGoalNoticeCode[];
 }
+
+const EPS = 1e-9;
+
+const WEIGHT_GOAL_STATUS_NOTICE: Partial<Record<WeightGoalDayStatus, WeightGoalNoticeCode>> = {
+  invalid: 'weight_goal_invalid',
+  no_deficit: 'weight_goal_no_deficit',
+  reached: 'weight_goal_reached',
+  date_passed: 'weight_goal_date_passed',
+};
 
 /** Ziele für die ISO-Woche ab `weekStart` (Montag). */
 export function nutritionTargetsForWeek(
@@ -95,6 +131,23 @@ export function nutritionTargetsForWeek(
   const flags = inputs.healthDataConsent ? (inputs.healthFlags?.flags ?? null) : null;
   // Ziel-Profil (docs/PLAN-ZIELE.md 4.4): Haupt- und optionales Nebenziel.
   const goals = { primary: inputs.goalType, secondary: inputs.secondaryGoalType };
+  // Konkretes Abnehmziel (docs/PLAN-ZIELE.md 2.4) nur mit Einwilligung und Körperdaten. Die Kapazität (Wächter K-d)
+  // hängt innerhalb der Woche nur am Alter des Tages – sie wird je Alter einmal gerechnet.
+  const weightGoal =
+    inputs.healthDataConsent && body.height !== null && body.weight !== null
+      ? inputs.weightGoal
+      : null;
+  const noDeficitByAge = new Map<number, boolean>();
+  const noDeficit = (date: string, ageYears: number) => {
+    if (weightGoal === null) return false;
+    let value = noDeficitByAge.get(ageYears);
+    if (value === undefined) {
+      value = !hasPlannableDeficit(weightGoalCapacity(inputs, weightGoal, { ageOn: date }).kcal);
+      noDeficitByAge.set(ageYears, value);
+    }
+    return value;
+  };
+  const weightGoalNotices = new Set<WeightGoalNoticeCode>();
 
   const days: NutritionDayTargets[] = [];
   let usesHealthData = false;
@@ -129,6 +182,18 @@ export function nutritionTargetsForWeek(
     }));
 
     if (eligibility.mode === 'no_targets' || bodyForDay === null) {
+      const pre =
+        weightGoal === null
+          ? null
+          : weightGoalPreStatus({
+              goal: weightGoal,
+              date,
+              losesWeight: hasGoal(goals, 'fat_loss'),
+              heightCm: body.height?.value ?? null,
+              mode: 'no_targets',
+            });
+      const noTargetsStatus = pre === 'ok' ? 'paused' : pre;
+      if (noTargetsStatus === 'invalid') weightGoalNotices.add('weight_goal_invalid');
       days.push({
         date,
         mode: 'no_targets',
@@ -150,6 +215,10 @@ export function nutritionTargetsForWeek(
         recipeExclusions: eligibility.recipeExclusions,
         deficitCap: eligibility.deficitCap,
         surplusCap: eligibility.surplusCap,
+        goalAdjustment: null,
+        // Schwangerschaft u. Ä.: Das Ziel ruht (Plan 2.3) – außer vor dem Start bzw. wenn es ungültig ist.
+        weightGoalStatus: noTargetsStatus,
+        weightGoalPaceCapped: false,
       });
       continue;
     }
@@ -175,24 +244,45 @@ export function nutritionTargetsForWeek(
     if (energy.training.capped) notices.push('training_energy_capped');
 
     const mode = eligibility.mode;
-    const adjustment = applyGoalAdjustment(goals, inputs.experienceLevel, mode);
+    const standardAdjustment = applyGoalAdjustment(goals, inputs.experienceLevel, mode);
+    // Konkretes Abnehmziel (F5): kann die Anpassung nur Richtung 0 verschieben, nie darüber hinaus.
+    const goalDay: WeightGoalDayResult | null =
+      weightGoal === null
+        ? null
+        : weightGoalDayAdjustment({
+            goal: weightGoal,
+            date,
+            today: inputs.today,
+            mode,
+            losesWeight: hasGoal(goals, 'fat_loss'),
+            standardAdjustment,
+            baseNeeds: energy.baseNeeds,
+            latestWeightKg: bodyForDay.weightKg,
+            latestWeightMeasuredOn: body.weight?.measuredOn ?? date,
+            heightCm: bodyForDay.heightCm,
+            bodyMetricsRows: inputs.bodyMetricsRows,
+            noDeficit: noDeficit(date, ageYears),
+          });
+    const adjustment =
+      goalDay === null ? standardAdjustment : Math.max(standardAdjustment, goalDay.adjustment);
     const proposed = energy.baseNeeds * (1 + adjustment) + energy.training.netKcal + adjustmentKcal;
-    const context: CalorieLimitContext = {
-      bmrForFloor: energy.bmrForFloor,
-      baseNeeds: energy.baseNeeds,
-      needs: energy.needs,
-      limitNeeds: energy.limitNeeds,
+    const context = dayLimitContext({
+      energy,
+      eligibility,
       weightKg: bodyForDay.weightKg,
-      ffmKg: energy.ffmForEnergyAvailability,
-      trainingGrossKcal: energy.training.grossKcal,
-      trainingCapped: energy.training.capped,
-      mode,
       // Energie-Richtung des Ziel-Profils (Vorzeichen, Wächter S11) – nie „Muskelaufbau ist eines der Ziele“.
       goalIsSurplus: goalEnergyDirection(goals) === 'surplus',
-      deficitCap: eligibility.deficitCap,
-      surplusCap: eligibility.surplusCap,
-    };
+    });
     const clamped = clampCalorieTarget(proposed, context);
+    // „Langsamer als gewünscht“ (Plan 2.4 Nr. 6): Standard-Tempo bremst oder eine Schutzgrenze hebt das Ziel an.
+    const paceCapped =
+      goalDay?.status === 'active' &&
+      (goalDay.slowerThanRequired || clamped.unroundedKcal > proposed + EPS);
+    if (goalDay !== null) {
+      const code = WEIGHT_GOAL_STATUS_NOTICE[goalDay.status];
+      if (code !== undefined) weightGoalNotices.add(code);
+      if (paceCapped) weightGoalNotices.add('weight_goal_pace_capped');
+    }
     if (clamped.appliedCaps.includes('energy_availability_cap')) {
       notices.push('energy_availability_cap');
     }
@@ -228,7 +318,15 @@ export function nutritionTargetsForWeek(
       recipeExclusions: eligibility.recipeExclusions,
       deficitCap: eligibility.deficitCap,
       surplusCap: eligibility.surplusCap,
+      goalAdjustment: adjustment,
+      weightGoalStatus: goalDay?.status ?? null,
+      weightGoalPaceCapped: paceCapped,
     });
   }
-  return { weekStart: monday, days, usesHealthData };
+  return {
+    weekStart: monday,
+    days,
+    usesHealthData,
+    weightGoalNotices: sortWeightGoalNotices(weightGoalNotices),
+  };
 }

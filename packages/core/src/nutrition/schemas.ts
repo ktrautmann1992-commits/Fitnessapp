@@ -20,6 +20,7 @@ import {
 import { foodGroupSchema } from '../food-groups';
 import { HEALTH_FLAGS } from '../health-screening';
 import { isAllowedGoalPair } from '../goals/profile';
+import { weightGoalSchema } from '../goals/weight-goal-schema';
 import {
   enduranceDisciplineSchema,
   experienceLevelSchema,
@@ -135,6 +136,12 @@ export const nutritionInputsSchema = z
     goalType: goalTypeSchema,
     /** Nebenziel (docs/PLAN-ZIELE.md 4.6): optional, Standard `null` (Wächter B1). */
     secondaryGoalType: goalTypeSchema.nullable().default(null),
+    /**
+     * Konkretes Abnehmziel (docs/PLAN-ZIELE.md 2.4, Etappe Z2): optional, Standard `null` (Wächter B1). Wirkt nur mit
+     * gültiger Einwilligung, im Modus `full` und mit Abnehmen als Haupt- oder Nebenziel – und kann das Defizit nur
+     * verkleinern (F5).
+     */
+    weightGoal: weightGoalSchema.nullable().default(null),
     experienceLevel: experienceLevelSchema,
     discipline: enduranceDisciplineSchema.nullable().default(null),
     healthDataConsent: z.boolean(),

@@ -32,6 +32,33 @@ export const NUTRITION_NOTICE_CODES = [
 export type NutritionNoticeCode = (typeof NUTRITION_NOTICE_CODES)[number];
 
 /**
+ * Hinweis-Codes zum konkreten Abnehmziel (docs/PLAN-ZIELE.md 2.3, 2.4, 6 Nr. 4; Etappe Z2). Sie stehen NICHT je Tag,
+ * sondern einmal je Woche in `NutritionWeekTargets.weightGoalNotices` (Ernährungs-Übersicht der Woche; Wächter K10:
+ * `weight_goal_pace_capped` höchstens einmal pro Woche, kein täglicher Dauerhinweis). Texte (Entwurf, Plan 2.3/2.4):
+ * - `weight_goal_pace_capped`: „Für dein Wunschziel planen wir etwas langsamer, damit es sicher bleibt.“
+ * - `weight_goal_reached`: „Du hast dein Wunschgewicht erreicht. Wie geht es weiter?“
+ * - `weight_goal_date_passed`: „Dein Zeitraum ist vorbei. Verlängern oder ohne festes Ziel weitermachen?“
+ * - `weight_goal_invalid`: „Dein Zielgewicht passt nicht mehr zu deinen Angaben. Bitte passe es an.“
+ * - `weight_goal_no_deficit`: „Derzeit planen wir für dich kein Kaloriendefizit. Wir empfehlen ‚ohne festes Ziel‘.“
+ * Die App-Texte kommen mit Etappe Z5 nach `apps/mobile/src/i18n/de.ts`. Zielgewicht und Codes nie in Logs/Analytics.
+ */
+export const WEIGHT_GOAL_NOTICE_CODES = [
+  'weight_goal_invalid',
+  'weight_goal_no_deficit',
+  'weight_goal_reached',
+  'weight_goal_date_passed',
+  'weight_goal_pace_capped',
+] as const;
+export type WeightGoalNoticeCode = (typeof WEIGHT_GOAL_NOTICE_CODES)[number];
+
+export function sortWeightGoalNotices(
+  codes: Iterable<WeightGoalNoticeCode>,
+): WeightGoalNoticeCode[] {
+  const set = new Set(codes);
+  return WEIGHT_GOAL_NOTICE_CODES.filter((code) => set.has(code));
+}
+
+/**
  * Greifende Grenzen eines Tages (4.6, „Reihenfolge“). Die App erklärt sie in einfachen Worten
  * („Wir planen nicht unter deinem Grundumsatz.“).
  */

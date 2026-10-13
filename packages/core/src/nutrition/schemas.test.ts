@@ -9,7 +9,14 @@ import {
   SURPLUS_CAP,
   TRAINING_KCAL_DAY_MAX,
 } from '../constants';
-import { CALORIE_CAP_CODES, NUTRITION_NOTICE_CODES, sortCaps, sortNotices } from './notices';
+import {
+  CALORIE_CAP_CODES,
+  NUTRITION_NOTICE_CODES,
+  sortCaps,
+  sortNotices,
+  sortWeightGoalNotices,
+  WEIGHT_GOAL_NOTICE_CODES,
+} from './notices';
 import {
   adjustmentKcalSchema,
   bodyMetricsRowSchema,
@@ -58,6 +65,31 @@ describe('Schemas der Ernährung', () => {
     expect(parsed.mealsPerDay).toBe(3);
     expect(parsed.trainingTime).toBeNull();
     expect(nutritionInputsSchema.safeParse({ ...inputs(), extra: 1 }).success).toBe(false);
+  });
+
+  it('Abnehmziel (docs/PLAN-ZIELE.md 2.3, Wächter B1): optional, Standard `null`, gespeichertes Ziel streng geprüft', () => {
+    expect(nutritionInputsSchema.parse(inputs()).weightGoal).toBeNull();
+    const goal = {
+      targetWeightKg: 75,
+      startDate: '2026-10-12',
+      targetDate: '2027-01-04',
+      amountMode: 'kg_to_lose',
+      timeMode: 'weeks',
+    } as const;
+    expect(nutritionInputsSchema.parse(inputs({ weightGoal: goal })).weightGoal).toEqual(goal);
+    expect(
+      nutritionInputsSchema.safeParse(inputs({ weightGoal: { ...goal, targetDate: '2026-10-20' } }))
+        .success,
+    ).toBe(false);
+    expect(new Set(WEIGHT_GOAL_NOTICE_CODES).size).toBe(WEIGHT_GOAL_NOTICE_CODES.length);
+    expect(sortWeightGoalNotices(['weight_goal_pace_capped', 'weight_goal_invalid'])).toEqual([
+      'weight_goal_invalid',
+      'weight_goal_pace_capped',
+    ]);
+    // Eigene Liste: Die Tages-Hinweise (mit App-Texten aus N4) bleiben unverändert.
+    for (const code of WEIGHT_GOAL_NOTICE_CODES) {
+      expect(NUTRITION_NOTICE_CODES as readonly string[]).not.toContain(code);
+    }
   });
 
   it('Hinweis- und Grenz-Codes sortiert ohne Doppelungen', () => {

@@ -13,6 +13,7 @@ import {
   type NutritionNoticeCode,
   type NutritionSessionInput,
   nutritionTargetsForWeek,
+  type WeightGoalNoticeCode,
 } from '@fitnessapp/core';
 
 /** Feste Beispielwoche (Montag), damit die Zahlen stabil und prüfbar bleiben. */
@@ -174,7 +175,62 @@ export const NUTRITION_EXAMPLE_PERSONS: readonly NutritionExamplePerson[] = [
       bodyMetricsRows: body(170, 100, 50),
     },
   },
+  {
+    key: 'I',
+    name: 'I – Ingo',
+    description:
+      'Mann, 90 kg, 180 cm, 35 J., Abnehmen MIT konkretem Ziel: −10 kg in 26 Wochen (Plan-Ziele Beispiel A, Grün) → kleineres Defizit als ohne festes Ziel (Ruhetag 2.270 statt 2.150 kcal)',
+    inputs: {
+      ...base,
+      birthDate: '1991-09-01',
+      sex: 'male',
+      goalType: 'fat_loss',
+      bodyMetricsRows: [
+        { measuredOn: '2026-10-10', heightCm: 180, weightKg: 90, bodyFatPct: null },
+      ],
+      weightGoal: {
+        targetWeightKg: 80,
+        startDate: NUTRITION_EXAMPLE_WEEK,
+        targetDate: addDays(NUTRITION_EXAMPLE_WEEK, 26 * 7),
+        amountMode: 'kg_to_lose',
+        timeMode: 'weeks',
+      },
+    },
+  },
+  {
+    key: 'J',
+    name: 'J – Jana',
+    description:
+      'Frau, 70 kg, 165 cm, 30 J., ZWEI Ziele Abnehmen → Muskelaufbau (−15 %) mit Ziel −3 kg in 4 Wochen (zu schnell) → nie mehr als −15 %, Hinweis „etwas langsamer“; Kraft Mo/Mi/Fr',
+    inputs: {
+      ...base,
+      birthDate: '1996-01-01',
+      sex: 'female',
+      goalType: 'fat_loss',
+      secondaryGoalType: 'muscle_gain',
+      bodyMetricsRows: [
+        { measuredOn: '2026-10-10', heightCm: 165, weightKg: 70, bodyFatPct: null },
+      ],
+      sessions: [unit(0, 'strength', 60), unit(2, 'strength', 60), unit(4, 'strength', 60)],
+      weightGoal: {
+        targetWeightKg: 67,
+        startDate: NUTRITION_EXAMPLE_WEEK,
+        targetDate: addDays(NUTRITION_EXAMPLE_WEEK, 28),
+        amountMode: 'kg_to_lose',
+        timeMode: 'weeks',
+      },
+    },
+  },
 ];
+
+/** Hinweise zum Abnehmziel (einmal je Woche, docs/PLAN-ZIELE.md 2.4) – kurze Texte nur für die CI-Tabelle. */
+export const WEIGHT_GOAL_NOTICE_TEXTS_DE: Record<WeightGoalNoticeCode, string> = {
+  weight_goal_invalid: 'Zielgewicht passt nicht mehr – Standard',
+  weight_goal_no_deficit: 'derzeit kein Defizit planbar – Standard',
+  weight_goal_reached: 'Wunschgewicht erreicht – Erhalt',
+  weight_goal_date_passed: 'Zeitraum vorbei – Standard',
+  weight_goal_pace_capped: 'wir planen etwas langsamer, damit es sicher bleibt',
+};
 
 const WEEKDAYS = ['Mo', 'Di', 'Mi', 'Do', 'Fr', 'Sa', 'So'];
 
@@ -263,6 +319,12 @@ export function renderNutritionExamples(): string {
     lines.push('| Tag | Training | Ziel | E / F / KH | Grenze greift | Hinweise |');
     lines.push('| --- | --- | --- | --- | --- | --- |');
     week.days.forEach((day, i) => lines.push(rowFor(day, i)));
+    if (week.weightGoalNotices.length > 0) {
+      lines.push(
+        '',
+        `Abnehmziel (Woche): ${week.weightGoalNotices.map((n) => WEIGHT_GOAL_NOTICE_TEXTS_DE[n]).join('; ')}`,
+      );
+    }
     lines.push('');
   }
   return `${lines.join('\n')}\n`;

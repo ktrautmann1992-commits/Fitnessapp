@@ -295,11 +295,14 @@ describe('clampCalorieAdjustment – nur Schrittweite und Summe (R2-S5, W23)', (
 });
 
 describe('Struktur (Wächter N1, K2): Schutzgrenzen nur über nutritionTargetsForWeek', () => {
-  it('clampCalorieTarget/dayFloorKcal/dayCeilingKcal werden außerhalb limits.ts/targets.ts nirgends aufgerufen', () => {
+  it('clampCalorieTarget/dayFloorKcal/dayCeilingKcal werden außerhalb limits.ts/targets.ts (und der Ampel) nirgends aufgerufen', () => {
     const root = join(import.meta.dirname, '../../../..');
     const allowed = new Set([
       join(root, 'packages/core/src/nutrition/limits.ts'),
       join(root, 'packages/core/src/nutrition/targets.ts'),
+      // Erreichbarkeits-Ampel (docs/PLAN-ZIELE.md 3.1): ruft clampCalorieTarget nur AUF, um die Kapazität mit
+      // denselben Grenzen wie die Engine zu rechnen – keine eigenen Grenzen (Wächter S1, S6).
+      join(root, 'packages/core/src/goals/weight-goal-feasibility.ts'),
     ]);
     const skip = new Set(['node_modules', 'dist', 'build', '.expo', '.next', '.turbo', 'coverage']);
     const offenders: string[] = [];

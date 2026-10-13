@@ -483,3 +483,215 @@ describe('Ziele Z1: Haupt- und Nebenziel lockern keine Grenze (docs/PLAN-ZIELE.m
     }
   });
 });
+
+describe('Ziele Z2: ein Abnehmziel lockert keine Grenze und plant nie schneller als ohne Ziel (docs/PLAN-ZIELE.md 7 Z2, F5, S19, K-b)', () => {
+  const sevenRuns = () =>
+    Array.from({ length: 7 }, (_, i) =>
+      session(addDays(MONDAY, i), {
+        kind: 'endurance',
+        enduranceModality: 'run',
+        effortTarget: 4,
+        minutes: 240,
+      }),
+    );
+  const oneDay = () => [session(addDays(MONDAY, 2), { minutes: 60 })];
+  const birthDateFor = (age: number, birthdayInWeek: boolean) =>
+    age === 16 || !birthdayInWeek ? `${2026 - age}-01-01` : `${2026 - age}-10-14`;
+  const FAT_LOSS_SELECTIONS = SELECTIONS.filter(([p, s2]) => p === 'fat_loss' || s2 === 'fat_loss');
+
+  /** Ziel: `lose` kg unter `kg` (mind. 30 kg), Start `startOffset` Tage vor Montag, Dauer `days` Tage. */
+  function goal(kg: number, lose: number, startOffset: number, days: number) {
+    const startDate = addDays(MONDAY, -startOffset);
+    return {
+      targetWeightKg: Math.max(30, Math.round((kg - lose) * 10) / 10),
+      startDate,
+      targetDate: addDays(startDate, days),
+      amountMode: 'kg_to_lose',
+      timeMode: 'weeks',
+    } as const;
+  }
+
+  /**
+   * Prüft die Woche mit Ziel unabhängig gegen alle Grenzen (checkWeek) und vergleicht Tag für Tag mit derselben
+   * Person ohne Ziel: Ziel ≥ Ziel ohne festes Ziel, Anpassung ≥ Standard-Anpassung und ≤ 0 (F5).
+   */
+  const statusCount = new Map<string, number>();
+  function checkGoalWeek(person: NutritionInputsInput, adjustmentKcal: number): number {
+    const checked = checkWeek(person, MONDAY, adjustmentKcal);
+    const withGoal = nutritionTargetsForWeek(person, MONDAY, { adjustmentKcal });
+    const plain = nutritionTargetsForWeek({ ...person, weightGoal: null }, MONDAY, {
+      adjustmentKcal,
+    });
+    expect(new Set(withGoal.weightGoalNotices).size).toBe(withGoal.weightGoalNotices.length);
+    for (const [i, day] of withGoal.days.entries()) {
+      const without = plain.days[i]!;
+      const key = `${day.weightGoalStatus}${day.weightGoalPaceCapped ? '+capped' : ''}`;
+      statusCount.set(key, (statusCount.get(key) ?? 0) + 1);
+      expect(day.mode).toBe(without.mode);
+      if (day.targetKcal === null) {
+        expect(without.targetKcal).toBeNull();
+        continue;
+      }
+      expect(day.targetKcal).toBeGreaterThanOrEqual(without.targetKcal!);
+      expect(day.goalAdjustment!).toBeGreaterThanOrEqual(without.goalAdjustment! - 1e-12);
+      expect(day.goalAdjustment!).toBeLessThanOrEqual(Math.max(0, without.goalAdjustment!));
+      expect(day.floorKcal).toBe(without.floorKcal);
+      expect(day.ceilingKcal).toBe(without.ceilingKcal);
+      if (day.weightGoalPaceCapped)
+        expect(withGoal.weightGoalNotices).toContain('weight_goal_pace_capped');
+    }
+    return checked;
+  }
+
+  it('Eckfälle aus CLAUDE.md VOLLSTÄNDIG: Alter 16/17/18/65/100 × 30/300 kg (+ ohne Einwilligung) × 1 vs. 7 Einheiten × alle Deckel × alle Geschlechter × Auswahlen mit Abnehmen (+ Definition) × Ziel-Arten', () => {
+    let checked = 0;
+    let variant = 0;
+    for (const [goalType, secondaryGoalType] of [
+      ...FAT_LOSS_SELECTIONS,
+      ['definition', null] as const,
+    ]) {
+      for (const sex of [...SEX_OPTIONS, null]) {
+        for (const flags of FLAG_SETS) {
+          for (const age of [16, 17, 18, 65, 100]) {
+            for (const [kg, healthDataConsent] of [
+              [30, true],
+              [300, true],
+              [80, false],
+            ] as const) {
+              for (const sessions of [oneDay(), sevenRuns()]) {
+                variant += 1;
+                // Ziel-Arten reihum: ehrgeizig (4 Wo.), ruhig (104 Wo.), abgelaufen, erreicht (Messung ≤ Ziel)
+                const kind = variant % 4;
+                const weightGoal =
+                  kind === 0
+                    ? goal(kg, 20, 0, 28)
+                    : kind === 1
+                      ? goal(kg, 5, 0, 728)
+                      : kind === 2
+                        ? goal(kg, 10, 30, 28)
+                        : goal(kg, 1, 20, 140);
+                const rows = [
+                  { measuredOn: '2026-10-01', heightCm: 170, weightKg: kg },
+                  ...(kind === 3
+                    ? [{ measuredOn: '2026-10-05', weightKg: weightGoal.targetWeightKg }]
+                    : []),
+                ];
+                checked += checkGoalWeek(
+                  inputs({
+                    birthDate: birthDateFor(age, true),
+                    sex,
+                    goalType,
+                    secondaryGoalType,
+                    healthDataConsent,
+                    healthFlags: flags === null ? null : { flags: [...flags] },
+                    bodyMetricsRows: rows,
+                    sessions,
+                    weightGoal,
+                  }),
+                  0,
+                );
+              }
+            }
+          }
+        }
+      }
+    }
+    expect(checked).toBeGreaterThan(15_000);
+  }, 240_000);
+
+  it('Raster als Stichprobe (fester Seed): Auswahl × Flags × Geschlecht × Körperfett × 5 Alltagsfaktoren × Alter 16/17/18/64/65/100 × BMI 16,9–30 × 0–7 Einheiten × 4b-Versatz 0/±1.000 × zufällige Ziele', () => {
+    const rnd = seededRandom(20261014);
+    const ages = [16, 17, 18, 64, 65, 100];
+    const bmis = [16.9, 18.4, 18.5, 19.9, 20, 30, 40];
+    let checked = 0;
+    for (let i = 0; i < 1200; i += 1) {
+      const [goalType, secondaryGoalType] = pick(rnd, [...FAT_LOSS_SELECTIONS, ...SELECTIONS]);
+      const flags = pick(rnd, FLAG_SETS);
+      const cm = pick(rnd, [150, 156, 170, 195]);
+      const kg = Math.min(
+        300,
+        Math.max(30, Math.round(pick(rnd, bmis) * (cm / 100) ** 2 * 10) / 10),
+      );
+      const count = Math.floor(rnd() * 8);
+      const sessions = Array.from({ length: count }, (_, d) =>
+        rnd() < 0.5
+          ? session(addDays(MONDAY, d), { minutes: 60 })
+          : session(addDays(MONDAY, d), {
+              kind: 'endurance',
+              enduranceModality: pick(rnd, MODALITIES),
+              effortTarget: 4,
+              minutes: rnd() < 0.3 ? 1440 : 30 + Math.floor(rnd() * 210),
+            }),
+      );
+      const weightGoal = goal(
+        kg,
+        pick(rnd, [0, 1, 3, 10, 40]) + Math.round(rnd() * 10) / 10,
+        Math.floor(rnd() * 120),
+        28 + Math.floor(rnd() * 701),
+      );
+      const rows: NonNullable<NutritionInputsInput['bodyMetricsRows']> = [
+        {
+          measuredOn: '2026-10-01',
+          heightCm: cm,
+          weightKg: kg,
+          bodyFatPct: rnd() < 0.5 ? pick(rnd, [8, 25, 45]) : null,
+        },
+      ];
+      if (rnd() < 0.2)
+        rows.push({
+          measuredOn: addDays(MONDAY, Math.floor(rnd() * 7)),
+          weightKg: weightGoal.targetWeightKg,
+        });
+      checked += checkGoalWeek(
+        inputs({
+          today: addDays(MONDAY, Math.floor(rnd() * 7)),
+          birthDate: birthDateFor(pick(rnd, ages), rnd() < 0.5),
+          sex: pick(rnd, [...SEX_OPTIONS, null]),
+          goalType,
+          secondaryGoalType,
+          experienceLevel: pick(rnd, EXPERIENCE_LEVELS),
+          healthFlags: flags === null ? null : { flags: [...flags] },
+          activityLevel: pick(rnd, LEVELS),
+          bodyMetricsRows: rows,
+          sessions,
+          weightGoal,
+        }),
+        pick(rnd, [0, -1000, 1000]),
+      );
+    }
+    expect(checked).toBeGreaterThan(4000);
+    // Nicht leer: Jeder Stand des Ziels kommt im Raster vor (inkl. gebremster Tage).
+    for (const key of [
+      'active',
+      'active+capped',
+      'reached',
+      'date_passed',
+      'invalid',
+      'paused',
+      'no_deficit',
+    ]) {
+      expect(statusCount.get(key) ?? 0, key).toBeGreaterThan(20);
+    }
+  }, 120_000);
+
+  it('Grenzfall 45 kg bei 156 cm (BMI ≈ 18,5) mit Ziel und jeder Auswahl mit Abnehmen', () => {
+    for (const [goalType, secondaryGoalType] of FAT_LOSS_SELECTIONS) {
+      for (const sex of [...SEX_OPTIONS, null]) {
+        for (const kg of [45, 46.5]) {
+          for (const adjustment of [-1000, 0, 1000]) {
+            checkGoalWeek(
+              inputs({
+                sex,
+                goalType,
+                secondaryGoalType,
+                bodyMetricsRows: [{ measuredOn: '2026-10-01', heightCm: 156, weightKg: kg }],
+                weightGoal: goal(kg, 1, 0, 28),
+              }),
+              adjustment,
+            );
+          }
+        }
+      }
+    }
+  });
+});

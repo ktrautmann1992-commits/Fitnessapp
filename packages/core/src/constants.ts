@@ -1775,3 +1775,70 @@ export const SECONDARY_GOAL_HINT_LIMITS = {
   minEnduranceDays: 1,
   enduranceRoomFromDays: 3,
 } as const;
+
+// ---------------------------------------------------------------------------------------------------------
+// Ziele · Abnehmziel und Erreichbarkeits-Ampel (docs/PLAN-ZIELE.md Abschnitte 2, 3; Etappe Z2)
+//
+// Das Abnehmziel kann das Defizit NUR verkleinern (Gründer-Entscheidung F5, „nie schneller als heute“): Die
+// Obergrenze des geplanten Tempos ist die Standard-Anpassung des Ziel-Profils (GOAL_ENERGY_ADJUSTMENT bzw.
+// GOAL_PAIR_RULES), danach gilt immer `clampCalorieTarget`. Deshalb gibt es KEIN `WEIGHT_GOAL_PACE_MAX_PLANNED`.
+// Die Ampel rechnet keine eigenen Grenzen; sie ruft nur `dayEnergy`, `nutritionEligibility` und
+// `clampCalorieTarget` auf.
+// ---------------------------------------------------------------------------------------------------------
+
+/**
+ * Stufen der Ampel als benötigtes Tempo r (Anteil des mittleren Gewichts pro Woche): Grün bis 0,5 %, Gelb bis
+ * 0,75 %, Orange bis 1 % (bzw. über der persönlichen Kapazität C), Rot darüber. `orange` = MAX_WEEKLY_WEIGHT_LOSS_FRACTION
+ * (Test in constants.test.ts).
+ * Quellen: Helms ER, Aragon AA, Fitschen PJ (2014), J Int Soc Sports Nutr 11:20 (0,5–1 % KG/Woche zum
+ * Muskelerhalt); Garthe I et al. (2011), Int J Sport Nutr Exerc Metab 21(2):97–104 (≈ 0,7 % vs. 1,4 %/Woche:
+ * langsamer erhält Magermasse besser); Deutsche Adipositas-Gesellschaft, S3-Leitlinie Prävention und Therapie der
+ * Adipositas (2014) (Defizit ca. 500–600 kcal/Tag).
+ * Die Grenze 0,75 % ist eine PRODUKTENTSCHEIDUNG (F6). VOR LIVEGANG GEGEN ORIGINAL PRÜFEN.
+ */
+export const WEIGHT_GOAL_PACE_LEVELS = { green: 0.005, yellow: 0.0075, orange: 0.01 } as const;
+
+/**
+ * Rechtes Ende der Skala (Zeiger x = 0 ganz links bei r ≥ 1,25 %/Woche): Zonen Rot [0; 0,2), Orange [0,2; 0,4),
+ * Gelb [0,4; 0,6), Grün [0,6; 1] entsprechen r = 1 % / 0,75 % / 0,5 % (Plan 3.1, Wächter S5). PRODUKTENTSCHEIDUNG.
+ */
+export const WEIGHT_GOAL_SCALE_MAX_PACE = 0.0125;
+
+/**
+ * Abstand des angezeigten Zeigers zu den Zonengrenzen (Plan 3.1, Wächter Runde 2 K-a): Der Zeiger wird beidseitig
+ * in die Zone der Stufe geklemmt, mit 0,01 Abstand zum Rand (bei Grün rechts bis 1). PRODUKTENTSCHEIDUNG.
+ */
+export const WEIGHT_GOAL_POINTER_MARGIN = 0.01;
+
+/**
+ * Kleinstes planbares Defizit am Ruhetag in kcal (Wächter S1): Liegt die Kapazität D_C darunter, ist „kein Defizit
+ * planbar“ (Zustand `no_deficit`, keine Stufe, kein N). PRODUKTENTSCHEIDUNG.
+ */
+export const WEIGHT_GOAL_MIN_CAPACITY_KCAL = 1;
+
+/**
+ * Höchstens so viele Durchläufe, um die sichere Dauer N mit dem Alter am Ende von N neu zu rechnen (Plan 3.1: N
+ * steigt dabei nur). PRODUKTENTSCHEIDUNG.
+ */
+export const WEIGHT_GOAL_AGE_ITERATIONS = 3;
+
+/**
+ * Grenzen der Eingabe „konkretes Abnehmziel“ (Plan 2.2, 2.3):
+ * - `minKg` 1: mindestens 1 kg (PRODUKTENTSCHEIDUNG).
+ * - `kgStep` 0,5 (Eingabe „kg abnehmen“) und `targetStep` 0,1 (Zielgewicht wie `body_metrics.weight_kg numeric(4,1)`).
+ * - `weeks` 4–104: Zeitraum zwischen 4 Wochen und 2 Jahren (in Tagen 28–728, gleiche Regel wie der künftige
+ *   Datums-CHECK von `weight_goals`, Plan 5.2). PRODUKTENTSCHEIDUNG.
+ * - `minTargetBmi` 18,5 und `lowTargetBmiNotice` 20 (= BMI_LIMITS.lowNormal):
+ *   **VORLÄUFIG – Entscheidung Gründer (F8).** Quelle für 18,5: WHO-BMI-Klassifikation (Untergewicht < 18,5).
+ *   Gegenposition (Wächter S12): Cederholm T et al. (2019), „GLIM criteria for the diagnosis of malnutrition“, Clin
+ *   Nutr 38(1):1–9 – BMI < 20 unter 70 J. bzw. < 22 ab 70 J. als phänotypisches Kriterium; Empfehlung des Wächters:
+ *   hart 20, ab 70 J. hart 22. Muss vor Etappe Z4 (erste sichtbare App-Stelle) entschieden sein.
+ */
+export const WEIGHT_GOAL_LIMITS = {
+  minKg: 1,
+  kgStep: 0.5,
+  targetStep: 0.1,
+  weeks: { min: 4, max: 104 },
+  minTargetBmi: 18.5,
+  lowTargetBmiNotice: BMI_LIMITS.lowNormal,
+} as const;
