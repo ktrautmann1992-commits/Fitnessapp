@@ -176,6 +176,37 @@ export function parseSourceNumber(raw: string): number | null {
   return Number.isFinite(number) ? number : null;
 }
 
+/**
+ * Schreibweisen für „gemessen, unter der Nachweis- bzw. Bestimmungsgrenze“ bzw. „Spuren“ (Gründer-Entscheidung
+ * 13.10.2026, docs/PLAN-PHASE-5.md N2b): Diese Zellen gelten als **0 g** – für ALLE Nährwerte, auch Pflichtwerte
+ * (übliche Praxis der Nährwertkennzeichnung, LMIV: Werte unter der Nachweisgrenze werden als 0 angegeben).
+ * Nur genau diese Texte (nach Trimmen, Groß-/Kleinschreibung wie in der Quelle): BLS 4.0 schreibt „<LOD“, „<LOQ“,
+ * „<LOD or <LOQ“ und „TR“ (trace, Spuren; am Auszug von Lauf 1 geprüft), „<NWG“ und „Spuren“ sind die deutschen
+ * Schreibweisen für eine Zweitquelle. „-“, leer und jeder andere Text bleiben „unbekannt“ (nie geraten).
+ * Die Rohzeile im Auszug bleibt unverändert; nur diese Übersetzung entscheidet (Import UND R17).
+ */
+export const BELOW_DETECTION_TEXTS: ReadonlySet<string> = new Set([
+  '<LOD',
+  '<LOQ',
+  '<LOD or <LOQ',
+  'TR',
+  '<NWG',
+  'Spuren',
+]);
+
+/** true = Zellen-Text bedeutet „unter Nachweis-/Bestimmungsgrenze“ bzw. „Spuren“ (→ 0 g). */
+export function isBelowDetection(raw: string): boolean {
+  return BELOW_DETECTION_TEXTS.has(raw.trim());
+}
+
+/**
+ * Wert einer Nährwert-Zelle: Zahl wie `parseSourceNumber`; „unter Nachweisgrenze“ → 0; „-“, leer oder anderer
+ * Text → null (unbekannt).
+ */
+export function sourceCellValue(raw: string): number | null {
+  return isBelowDetection(raw) ? 0 : parseSourceNumber(raw);
+}
+
 /** Umrechnung in die Einheit des Katalogs; auf 6 Nachkommastellen, damit kein Gleitkomma-Rauschen entsteht. */
 export function convertSourceValue(
   value: number,
@@ -194,6 +225,11 @@ export interface SourceRowsResult {
    * Zahlenwert hat – steht als `null` im Lebensmittel, nie geschätzt (Import-Lauf 1, PR #47).
    */
   readonly gaps: { ref: string; message: string }[];
+  /**
+   * Übernommene Zeilen mit Zellen „unter Nachweisgrenze“ (z. B. „<LOD“), die als 0 g gelesen wurden
+   * (Gründer-Entscheidung 13.10.2026) – im Import-Bericht sichtbar, der Original-Text steht im Auszug.
+   */
+  readonly belowDetection: { ref: string; message: string }[];
 }
 
 /** Liest die Datensätze eines Quellauszugs (erste = Kopfzeile) in Nährwert-Zeilen. */
@@ -213,19 +249,25 @@ export function sourceNutrientRows(
   const rows = new Map<string, SourceNutrientRow>();
   const problems: { ref: string; message: string }[] = [];
   const gaps: { ref: string; message: string }[] = [];
+  const belowDetection: { ref: string; message: string }[] = [];
   for (const record of dataRows) {
     const ref = (record[def.keyColumn] ?? '').trim();
     const name = (record[def.nameColumn] ?? '').trim();
     const nutrients: Partial<Record<SourceNutrientKey | SourceEnergyExtraKey, number | null>> = {};
     const missing: string[] = [];
     const withoutValue: string[] = [];
+    const zeroed: string[] = [];
     for (const key of NUTRIENT_KEYS) {
       const { index, column, header: title } = columns[key];
-      const value = parseSourceNumber(record[index] ?? '');
+      const raw = record[index] ?? '';
+      const value = sourceCellValue(raw);
+      if (value !== null && isBelowDetection(raw)) {
+        zeroed.push(`${key} („${raw.trim()}“)`);
+      }
       if (value === null) {
-        const text = `${key} („${title}“: „${record[index] ?? ''}“)`;
+        const text = `${key} („${title}“: „${raw}“)`;
         if (OPTIONAL_KEYS.has(key)) {
-          // Ergänzender Wert ohne Zahl („-“, „<LOD“, „<LOQ“): `null`, nie 0 oder eine Schätzung.
+          // Ergänzender Wert ohne Zahl („-“, leer): `null` = unbekannt, nie 0 oder eine Schätzung.
           nutrients[key] = null;
           withoutValue.push(text);
         } else {
@@ -244,7 +286,11 @@ export function sourceNutrientRows(
       if (resolved === undefined) {
         continue;
       }
-      const value = parseSourceNumber(record[resolved.index] ?? '');
+      const raw = record[resolved.index] ?? '';
+      const value = sourceCellValue(raw);
+      if (value !== null && isBelowDetection(raw)) {
+        zeroed.push(`${key} („${raw.trim()}“)`);
+      }
       nutrients[key] = value === null ? null : convertSourceValue(value, resolved.column.convert);
     }
     const nutrientCheck = nutrientsPer100gSchema.safeParse(nutrients);
@@ -280,6 +326,12 @@ export function sourceNutrientRows(
         message: `ohne Zahlenwert, als „kein Wert“ (null) übernommen: ${withoutValue.join(', ')}`,
       });
     }
+    if (zeroed.length > 0) {
+      belowDetection.push({
+        ref,
+        message: `unter Nachweisgrenze, als 0 übernommen: ${zeroed.join(', ')}`,
+      });
+    }
   }
-  return { rows, problems, gaps };
+  return { rows, problems, gaps, belowDetection };
 }

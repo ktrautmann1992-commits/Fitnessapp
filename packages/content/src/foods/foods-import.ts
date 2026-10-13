@@ -31,6 +31,12 @@ import {
   type ImportReport,
   importFoods,
 } from './import-source';
+import {
+  CONFIRMED_DIFFERENCES_PATH,
+  type ConfirmedDifference,
+  MAX_CONFIRMED_SHARE,
+  parseConfirmedDifferences,
+} from './confirmed-differences';
 import { FOOD_MAPPING_PATH, parseFoodMapping } from './mapping';
 import {
   attributionMarkdown,
@@ -181,23 +187,98 @@ export function pinRequiredMessage(loadedSha: string): string {
   ].join('\n');
 }
 
+/** Ergebnis der Merge-Regel (NB1) – Grundlage für den Text im Pull Request. */
+export interface ReviewVerdict {
+  /** Verglichene Zutaten (Nenner, K6). */
+  readonly compared: number;
+  /** Zutaten mit „Zuordnung prüfen“ OHNE gültige Bestätigung (🔴, zählen zur 10-%-Regel). */
+  readonly open: readonly string[];
+  /** Zutaten mit „Zuordnung prüfen“ und gültiger Bestätigung (🟠, zählen nur zum Deckel). */
+  readonly confirmed: readonly string[];
+  readonly openShare: number;
+  readonly confirmedShare: number;
+  /** true = ⛔ nicht mergen. */
+  readonly blocked: boolean;
+  /** Gründe für ⛔ (leer, wenn nicht gesperrt). */
+  readonly reasons: readonly string[];
+}
+
 /**
- * Merge-Sperre für den Import-PR (NB1): Sind mehr als 10 % der Zutaten mit „Zuordnung prüfen“ (> 15 % Abweichung
- * zur Gründer-Datei, Regel seit Import-Lauf 1 bei `ALPHA5_IMPORT_TOLERANCE`) markiert, wird nicht gemergt, bevor der
- * Grund geklärt ist – eine falsche oder untergeschobene Datei fiele hier massenhaft auf. Zutaten ohne Vergleichswert
- * in der Gründer-Datei zählen nicht als „Zuordnung prüfen“, bleiben aber im Nenner.
+ * Merge-Sperre für den Import-PR (NB1): Sind mehr als 10 % der verglichenen Zutaten „Zuordnung prüfen“ (> 15 %
+ * Abweichung zur Gründer-Datei, Regel seit Import-Lauf 1 bei `ALPHA5_IMPORT_TOLERANCE`) und NICHT bestätigt, wird
+ * nicht gemergt, bevor der Grund geklärt ist – eine falsche oder untergeschobene Datei fiele hier massenhaft auf.
+ * Bestätigte Datenunterschiede (`confirmed-differences.ts`) zählen nicht zur 10-%-Regel, aber zum Deckel: Sind mehr
+ * als 20 % bestätigt, gilt ⛔ unabhängig von der Liste. Zutaten ohne Vergleichswert zählen nur im Nenner.
  */
-export function reviewShareNote(report: ImportReport, totalItems: number): string {
-  const flagged = new Set(report.deviations.filter((d) => d.level === 'review').map((d) => d.id));
-  // Nenner: verglichene Zutaten (K6) – nicht importierte Zutaten mit Quell-ID verdünnen den Anteil nicht.
+export function reviewVerdict(report: ImportReport): ReviewVerdict {
+  const confirmedIds = new Set(report.confirmed.map((c) => c.id));
+  const flagged = [
+    ...new Set(report.deviations.filter((d) => d.level === 'review').map((d) => d.id)),
+  ];
+  const open = flagged.filter((id) => !confirmedIds.has(id)).sort();
+  const confirmed = flagged.filter((id) => confirmedIds.has(id)).sort();
   const compared = report.compared.length;
-  const share = compared === 0 ? 0 : flagged.size / compared;
-  const percent = `${(share * 100).toFixed(1).replace('.', ',')} %`;
-  const of = `${flagged.size} von ${compared} verglichenen Zutaten (${percent}; ${totalItems} mit Quell-ID)`;
-  if (share > MAX_REVIEW_SHARE) {
-    return `⛔ **NICHT MERGEN, bevor der Grund geklärt ist:** ${of} sind „Zuordnung prüfen“ – mehr als 10 %. Möglich: falsche Datei, falsche Spalten oder viele falsche Quell-IDs.`;
+  const openShare = compared === 0 ? 0 : open.length / compared;
+  const confirmedShare = compared === 0 ? 0 : confirmed.length / compared;
+  const reasons: string[] = [];
+  if (openShare > MAX_REVIEW_SHARE) {
+    reasons.push(
+      `${open.length} von ${compared} verglichenen Zutaten (${percent(openShare)}) sind „Zuordnung prüfen“ ohne Bestätigung – mehr als 10 %. Möglich: falsche Datei, falsche Spalten oder viele falsche Quell-IDs.`,
+    );
   }
-  return `Merge-Regel: höchstens 10 % „Zuordnung prüfen“ – hier ${of}. Darüber wird nicht gemergt, bevor der Grund geklärt ist.`;
+  if (confirmedShare > MAX_CONFIRMED_SHARE) {
+    reasons.push(
+      `${confirmed.length} von ${compared} verglichenen Zutaten (${percent(confirmedShare)}) sind als Datenunterschied bestätigt – mehr als ${Math.round(MAX_CONFIRMED_SHARE * 100)} %. So viele echte Unterschiede sind unwahrscheinlich; die Liste hebt die Merge-Regel dann nicht auf.`,
+    );
+  }
+  return {
+    compared,
+    open,
+    confirmed,
+    openShare,
+    confirmedShare,
+    blocked: reasons.length > 0,
+    reasons,
+  };
+}
+
+function percent(share: number): string {
+  return `${(share * 100).toFixed(1).replace('.', ',')} %`;
+}
+
+/** Text der Merge-Regel für Pull Request und Zusammenfassung (aus `reviewVerdict`). */
+export function reviewShareNote(report: ImportReport, totalItems: number): string {
+  const verdict = reviewVerdict(report);
+  const of = `🔴 ${verdict.open.length} offen (${percent(verdict.openShare)}), 🟠 ${verdict.confirmed.length} bestätigt (${percent(verdict.confirmedShare)}) von ${verdict.compared} verglichenen Zutaten (${totalItems} mit Quell-ID)`;
+  if (verdict.blocked) {
+    return [
+      `⛔ **NICHT MERGEN, bevor der Grund geklärt ist:** ${of}.`,
+      ...verdict.reasons.map((r) => `- ${r}`),
+    ].join('\n');
+  }
+  return `Merge-Regel: höchstens 10 % „Zuordnung prüfen“ ohne Bestätigung und höchstens ${Math.round(MAX_CONFIRMED_SHARE * 100)} % bestätigt – hier ${of}. Darüber wird nicht gemergt, bevor der Grund geklärt ist.`;
+}
+
+/**
+ * Liste „bestätigte Datenunterschiede“ aus dem Arbeitsordner des Laufs lesen. Der Lauf startet nur auf `main`
+ * (siehe `runFoodsImport`), die Liste kommt also wie die Allowlist immer von `main`, nie aus einem Pull Request.
+ * Fehlt die Datei → leer; ungültig → Fehler (kein Import, nie still ignorieren).
+ */
+export function loadConfirmations(repoRoot: string): ConfirmedDifference[] {
+  const full = join(repoRoot, CONFIRMED_DIFFERENCES_PATH);
+  if (!existsSync(full)) {
+    return [];
+  }
+  let data: unknown;
+  try {
+    data = JSON.parse(readFileSync(full, 'utf8'));
+  } catch (error) {
+    throw new Error(
+      `${CONFIRMED_DIFFERENCES_PATH} ist kein gültiges JSON: ${(error as Error).message}`,
+      { cause: error },
+    );
+  }
+  return parseConfirmedDifferences(data);
 }
 
 /** Aufklappbarer Block mit der Beschreibung der Download-Seite (leer = nichts). */
@@ -349,6 +430,15 @@ export async function runFoodsImport(
   if (def.originalSha256 === null) {
     return { exitCode: 1, markdown: [...head, pinRequiredMessage(originalSha)].join('\n') };
   }
+  let confirmations: ConfirmedDifference[];
+  try {
+    confirmations = loadConfirmations(deps.repoRoot);
+  } catch (error) {
+    return {
+      exitCode: 1,
+      markdown: `${head.join('\n')}\n### ❌ foods-import: Liste „bestätigte Datenunterschiede“ ungültig\n\n${(error as Error).message}\n`,
+    };
+  }
   const refs = mapping.items
     .filter(
       (i) => i.source.db === def.db && i.source.version === def.version && i.source.ref !== null,
@@ -367,7 +457,12 @@ export async function runFoodsImport(
   }
   const extract = extractSourceRows(records, def, refs);
   const extractRecords = readExtractRecords(extract.csv);
-  const { rows: rowsByRef, problems, gaps } = sourceNutrientRows(extractRecords, def);
+  const {
+    rows: rowsByRef,
+    problems,
+    gaps,
+    belowDetection,
+  } = sourceNutrientRows(extractRecords, def);
   const sourceRows = new Map([...rowsByRef.values()].map((row) => [sourceRowKey(row), row]));
   const extractSha = sha256Hex(extract.csv);
 
@@ -405,6 +500,7 @@ export async function runFoodsImport(
     existing: existingFoods(deps.repoRoot),
     alpha5: alpha5Values(deps.repoRoot),
     today: nowIso.slice(0, 10),
+    confirmations,
   });
 
   // Dateien zusammenstellen (Prettier-Format wie im Repository).
@@ -449,6 +545,15 @@ export async function runFoodsImport(
           ...gaps.map((p) => `- \`${p.ref}\`: ${p.message}`),
           '',
         ].join('\n');
+  const belowDetectionMd =
+    belowDetection.length === 0
+      ? ''
+      : [
+          '#### Quellzeilen mit Werten „unter Nachweisgrenze“ (als 0 übernommen, Gründer-Entscheidung 13.10.2026)',
+          '',
+          ...belowDetection.map((p) => `- \`${p.ref}\`: ${p.message}`),
+          '',
+        ].join('\n');
   const reportMd = [
     ...head,
     `- SHA-256 Auszug: \`${extractSha}\` (${extractRecords.length - 1} Zeilen)`,
@@ -458,6 +563,7 @@ export async function runFoodsImport(
     formatImportReport(imported.report, extract.missingRefs),
     problemsMd,
     gapsMd,
+    belowDetectionMd,
     candidates,
   ].join('\n');
 

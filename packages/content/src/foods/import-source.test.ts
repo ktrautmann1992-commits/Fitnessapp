@@ -267,13 +267,19 @@ describe('import-source: Lebensmittel nur mit Quellwerten', () => {
         noReference: ['pfeffer'],
         compared: ['apfel', 'pfeffer'],
         orphaned: [],
+        confirmed: [],
+        invalidConfirmations: [],
+        unusedConfirmations: [],
+        confirmationDrafts: [],
       },
       [],
     );
     expect(report).toContain(
       '🔴 `apfel` | carbs_g | 18 | 14 | 28,6 % | 24,2 % | KH + Ballaststoffe |',
     );
-    expect(report).toContain('davon 1 „Zuordnung prüfen“ bei 1 Zutaten');
+    expect(report).toContain(
+      'davon 1 „Zuordnung prüfen“ bei 1 Zutaten (🔴 offen: 1, 🟠 bestätigt: 0)',
+    );
     expect(report).toMatch(/⚪ Kein Vergleichswert .*`pfeffer`/);
   });
 

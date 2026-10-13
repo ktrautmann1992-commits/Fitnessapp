@@ -1,0 +1,6 @@
+{
+  "format": "alpha5-bestaetigte-abweichungen",
+  "version": 1,
+  "note_de": "Bestätigte Datenunterschiede zwischen alpha5-rezepte.json und der Quelle (docs/PLAN-PHASE-5.md N2b). Jeder Eintrag ist an Quelle, Quell-ID, die vier Quellwerte und die vier Werte der Gründer-Datei gebunden; weicht ein Wert ab, ist er ungültig. Höchstens 20 % der verglichenen Zutaten. Änderungen nur per Pull Request, den NUR ein Gründer selbst merged (nie eine Claude-Sitzung; docs/SETUP.md J3). Einträge kommen aus dem kopierfertigen Block im Import-Bericht (exakte Werte), nie von Hand geschätzt. confirmed_by ist eine Angabe, kein Nachweis – der Nachweis ist der Merge durch den Gründer.",
+  "entries": []
+}

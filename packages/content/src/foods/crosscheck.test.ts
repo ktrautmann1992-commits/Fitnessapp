@@ -357,6 +357,10 @@ describe('Gegencheck: vergiftete Datei, falsche Spalten, Zeilen-Versatz (Wächte
       orphaned: [],
       compared: poisoned.map((p) => p.id),
       deviations: poisoned.flatMap((p) => alpha5Deviations(p.id, p.file, p.source)),
+      confirmed: [],
+      invalidConfirmations: [],
+      unusedConfirmations: [],
+      confirmationDrafts: [],
     };
     expect(reviewShareNote(report, poisoned.length)).toMatch(/NICHT MERGEN/);
   });

@@ -642,6 +642,9 @@ Ziel: Auf einen Branch, den der Workflow angelegt hat, kann niemand nachträglic
 Die Datei `.github/CODEOWNERS` nennt **nur** die Ordner `content/sources/` und `content/foods/`. Diese schreibt
 ausschließlich der Workflow `foods-import` (Autor `github-actions[bot]`) – deshalb könnt ihr diese Pull Requests
 selbst freigeben, und eure eigenen Pull Requests bleiben frei mergebar. Ein zweites GitHub-Konto ist nicht nötig.
+Die Liste „bestätigte Datenunterschiede“ (`content/food-mapping/bestaetigte-abweichungen.json`) steht bewusst
+**nicht** in CODEOWNERS (Gründer-Entscheidung 13.10.2026): Den Pull Request dazu legt Claude an, mergen dürft
+**nur ihr** (J3 Schritt 8).
 
 1. **Settings → Rules → Rulesets** → **New ruleset** → **New branch ruleset**.
 2. **Ruleset Name:** `main schützen`. **Enforcement status:** **Active**.
@@ -672,7 +675,8 @@ selbst freigeben, und eure eigenen Pull Requests bleiben frei mergebar. Ein zwei
    **Approve** → **Submit review** → **Merge pull request**.
 
 > **Regel für Claude-Sitzungen:** Claude gibt keine Pull Requests frei (kein „Approve“), merged keine
-> Pull Requests von `foods-import/*` und startet `sources-integrity-main` nie per Hand (ein per Hand gestarteter
+> Pull Requests von `foods-import/*`, keine Bestätigungs-Pull-Requests „Bestätigte Datenunterschiede“ (J3
+> Schritt 8; Ausnahme nur auf eure ausdrückliche Anweisung im Chat, im Merge-Text vermerkt) und startet `sources-integrity-main` nie per Hand (ein per Hand gestarteter
 > Lauf nutzt die Workflow-Datei des gewählten Branches – auf einem eigenen Branch ließe sich der Check sonst
 > fälschen). Claude arbeitet mit eurem Konto – technisch könnte es das, deshalb gilt die
 > Regel ausdrücklich (festgehalten in `docs/PLAN-PHASE-5.md`, Umsetzungsstand N2b).
@@ -710,9 +714,36 @@ selbst freigeben, und eure eigenen Pull Requests bleiben frei mergebar. Ein zwei
 7. **Erst jetzt:** **Actions → foods-import → Run workflow** → **modus** `import`. Es erscheint ein Pull Request
    **„Lebensmittel: Bundeslebensmittelschlüssel …“** mit Adresse, beiden Prüfsummen, Import-Bericht und dem
    Gegencheck gegen `alpha5-rezepte.json` (🔴 = „Zuordnung prüfen“).
-8. **Merge-Regel:** Im Pull-Request-Text steht der Anteil „Zuordnung prüfen“. Sind es **mehr als 10 %** der
-   Zutaten (Text „⛔ NICHT MERGEN“), **nicht mergen**, bevor der Grund geklärt ist (falsche Datei, falsche Spalten
-   oder viele falsche Quell-IDs) – Pull Request-Link an Claude geben.
+8. **Merge-Regel:** Im Pull-Request-Text steht der Anteil „Zuordnung prüfen“ (🔴 offen, 🟠 bestätigt). Steht dort
+   „⛔ NICHT MERGEN“ (mehr als **10 %** 🔴 offen **oder** mehr als **20 %** 🟠 bestätigt), **nicht mergen** –
+   Pull-Request-Link an Claude geben. Sind die 🔴-Zeilen echte Datenunterschiede (andere Ware, grober Wert in
+   `alpha5-rezepte.json`) und keine falsche Datei, geht es so weiter:
+   1. **Claude erstellt den Pull Request „Bestätigte Datenunterschiede …“.** Claude prüft jede 🔴-Zeile und
+      kopiert für die echten Unterschiede die fertigen Einträge aus dem Import-Bericht (aufklappbarer Block
+      „📋 Kopierfertige Einträge“) in `content/food-mapping/bestaetigte-abweichungen.json`. Die Werte werden nicht
+      abgetippt oder geändert; Claude füllt nur Grund, Name und Datum aus. Der Import-Pull-Request bleibt offen.
+   2. **Ihr prüft und merged selbst:** Im Bestätigungs-Pull-Request die Tabelle im Text lesen (Zutat, Grund) →
+      **Files changed** ansehen → nach grünen Checks **Merge pull request** → **Confirm merge**. Ein Approve ist
+      nicht nötig (die Datei steht nicht in CODEOWNERS). **Claude merged diesen Pull Request nie** – euer Merge
+      ist die Bestätigung. Passt eine Zeile nicht, den Pull Request nicht mergen und Claude Bescheid geben.
+   3. **Import neu starten:** **Actions → foods-import → Run workflow** (Branch **main**, Modus `import`). Nur ein
+      neuer Lauf liest die Liste von `main`. Den alten Import-Pull-Request schließen (nicht mergen): Sein Text wurde
+      vor der Bestätigung geschrieben und zeigt weiter ⛔. (Sobald der geplante Pflicht-Check in CI da ist, genügt
+      es, im alten Import-Pull-Request die Checks neu zu starten.)
+   4. **Neuen Import-Pull-Request selbst mergen:** Dort stehen die bestätigten Zeilen als 🟠, die Merge-Regel ohne
+      ⛔ → weiter mit Schritt 9. Weicht ein Wert ab (neue Datei, andere Spalte, geänderte Gründer-Datei), ist die
+      Bestätigung ungültig und die Zeile wieder 🔴 – dann von vorn. Mehr als 20 % Bestätigte heben die Sperre
+      **nie** auf.
+
+   > **Ehrlich gesagt – ein GitHub-Konto:** Claude arbeitet mit eurem Konto und hätte technisch dieselben Rechte
+   > wie ihr (auch Merge). GitHub kann deshalb nicht unterscheiden, ob ihr oder eine Claude-Sitzung merged; auch
+   > CODEOWNERS würde das nicht ändern. Die Schranke ist allein die Regel „nur ihr merged“ (wie beim
+   > `originalSha256`-Pull-Request und bei den `foods-import`-Pull-Requests). Merged eine Claude-Sitzung doch, dann
+   > nur, wenn ihr es im Chat ausdrücklich anweist – und es steht dann im Merge-Text. Das Feld `confirmed_by` in der
+   > Liste ist nur eine Angabe, kein Nachweis; der Nachweis ist euer Merge (Git-Historie). Technisch sicherer wäre
+   > später ein zweites echtes Konto als Code-Owner oder ein Bot-Workflow (Plan N2b, „Gründer-Entscheidungen
+   > 13.10.2026“).
+
 9. Sonst auf grüne Checks warten (`ci` inkl. **sources-integrity** und **sources-integrity (Code von main)**) →
    **selbst** freigeben und mergen (J2 Schritt 7).
 10. Danach prüft ihr jedes Lebensmittel mit der Checkliste (Plan 5.1.1 d) – markierte Zuordnungen zuerst.
