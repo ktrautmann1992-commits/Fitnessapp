@@ -606,6 +606,47 @@ export const deNutrition = {
       notEditable: 'Die Einkaufsliste gibt es für diese und nächste Woche.',
     },
   },
+  /** Etappe N12 – Einkaufsliste weitergeben (KONZEPT 6.13, privat durch dich selbst, kein öffentliches Teilen). */
+  share: {
+    open: 'Weitergeben',
+    openHint: 'Einkaufsliste als Text an WhatsApp, Notizen oder Erinnerungen schicken',
+    title: 'Einkaufsliste weitergeben',
+    intro:
+      'Schick deine Einkaufsliste als Text an wen oder wohin du möchtest – z. B. per WhatsApp, in deine Notizen oder Erinnerungen. Alpha5 schickt nichts selbst und speichert nicht, wohin du sie gibst.',
+    contentNote:
+      'Im Text stehen nur Produkte und Mengen nach Abteilung – keine Kalorien, keine Gründe, kein Gewicht, keine Ziele. Eigene Einträge stehen so drin, wie du sie geschrieben hast.',
+    optionsTitle: 'Was soll mit?',
+    includeChecked: 'Erledigte Einträge mitnehmen (mit „erledigt“)',
+    includePantry: 'Vorrat mitnehmen (hast du wahrscheinlich da)',
+    includeManual: 'Eigene Einträge mitnehmen',
+    previewTitle: 'So sieht der Text aus',
+    previewA11y: 'Text der Einkaufsliste',
+    shareButton: 'Weitergeben',
+    shareHint: 'Öffnet den Teilen-Dialog deines Geräts',
+    copyButton: 'Text kopieren',
+    pdfButton: 'Stattdessen als PDF speichern',
+    empty: 'Deine Einkaufsliste ist leer – es gibt nichts weiterzugeben.',
+    nothingSelected:
+      'Mit dieser Auswahl bleibt nichts übrig. Nimm z. B. die erledigten Einträge oder den Vorrat mit.',
+    truncated: (count: number) =>
+      `Die Liste ist sehr lang: ${count} ${count === 1 ? 'Eintrag passt' : 'Einträge passen'} nicht mehr in den Text. Am Ende steht ein Hinweis darauf – für die ganze Liste nutze das PDF.`,
+    shared: 'Weitergegeben.',
+    opened: 'Teilen-Dialog geöffnet.',
+    invalid: 'Die Liste ließ sich nicht als Text aufbereiten. Bitte öffne die Einkaufsliste neu.',
+    copied: 'Text kopiert – füge ihn z. B. in WhatsApp oder deine Notizen ein.',
+    cancelled: 'Abgebrochen – es wurde nichts weitergegeben.',
+    manual:
+      'Teilen und Kopieren gehen in diesem Browser nicht. Markiere den Text oben und kopiere ihn selbst.',
+    failed: 'Das hat leider nicht geklappt. Bitte versuche es noch einmal.',
+    noticeTitle: 'Bevor du weitergibst',
+    noticeHealth:
+      'Diese Liste stammt aus einem Plan, der deine Gesundheitsangaben berücksichtigt. Gründe, Gewicht und Unverträglichkeiten stehen nicht im Text – Ersatzprodukte und fehlende Zutaten können aber darauf schließen lassen. Gib die Liste nur an Menschen oder Apps weiter, denen du das anvertrauen möchtest.',
+    noticeSubstitutes:
+      'Die Liste enthält Ersatzprodukte bzw. ausgetauschte Zutaten. Sie stehen ohne Grund im Text, können aber auf deine Angaben schließen lassen.',
+    noticeItems: (labels: string) => `Betrifft: ${labels}.`,
+    noticeConfirm: 'Weiter',
+    retailButton: 'Bei einem Händler bestellen (Anzeige)',
+  },
   mealPrep: {
     title: 'Meal-Prep-Wochenpläne',
     open: 'Meal-Prep-Pläne',

@@ -23,6 +23,7 @@ export * from './revocation';
 export * from './scale';
 export * from './schemas';
 export * from './shopping-list';
+export * from './shopping-list-share';
 export * from './shopping-list-store';
 export * from './stable-hash';
 export * from './substitute';

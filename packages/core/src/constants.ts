@@ -1725,6 +1725,38 @@ export const SHOPPING_LIST_ROUNDING = {
 export const SHOPPING_LIST_EXTRAS = { recipesMax: 20, itemsMax: 1000 } as const;
 
 /**
+ * Einkaufsliste weitergeben (Plan 19.7 N12, KONZEPT 6.13, Etappe N12) – Bedien- und Übertragungsschutz, keine Grenze
+ * zur Gesundheit. PRODUKTENTSCHEIDUNG.
+ * - `maxChars`: Höchstlänge des weitergegebenen Texts. Begründung: WhatsApp (in KONZEPT 6.13 als erstes Ziel genannt)
+ *   nimmt höchstens 65.536 Zeichen je Nachricht an; 60.000 lassen Luft für Zeilenumbrüche/Emoji-Zählung der Ziel-App.
+ *   Eine reale Wochenliste hat wenige hundert Zeilen (ca. 40 Zeichen) und liegt weit darunter; nur eine künstlich
+ *   volle Liste (bis `SHOPPING_LIST_EXTRAS.itemsMax` Einträge) wird gekürzt – dann SICHTBAR mit „… und N weitere
+ *   Einträge“ (nie stilles Weglassen) und dem Hinweis auf das PDF.
+ * - `labelMaxChars`: Höchstlänge eines Eintrags im Text (= Höchstlänge `name_de` im Katalog, Plan 5.1; eigene
+ *   Einträge haben höchstens 80 Zeichen) – längere, manipulierte Gerätespeicher-Texte werden mit „…“ gekürzt
+ *   (gezählt in Graphem-Clustern, also ganze Emojis).
+ * - `maxAmount`: größte Menge im Text (1.000.000 g = 1 t, 1.000 l bzw. eine Million Stück). Kein Haushaltseinkauf einer
+ *   Woche kommt in die Nähe; größere Werte sind fehlerhaft (z. B. manipulierter Gerätespeicher) und erscheinen ohne
+ *   Menge statt in Exponentialschreibweise („1e+21 g“, Wächter N12 H5).
+ */
+export const SHOPPING_LIST_SHARE = {
+  maxChars: 60_000,
+  labelMaxChars: 100,
+  maxAmount: 1_000_000,
+} as const;
+
+/**
+ * Feature-Flags im Code (Plan 19.7 N12, KONZEPT 6.13 „Später – Händler-Anbindung“). `retail_integration` bleibt AUS:
+ * Es gibt keinen Händler, keine offizielle Schnittstelle und kein Partnerprogramm. Einschalten nur per Pull Request,
+ * wenn ALLE Bedingungen aus K5 erfüllt sind (`RETAIL_INTEGRATION_CONDITIONS` in `retail/provider.ts`): eigene
+ * Einwilligung für die Übermittlung, DSFA-Ergänzung, Datenminimierung (nur Produktarten und Mengen), offizielle
+ * Schnittstelle bzw. Partnerprogramm, Kennzeichnung „Anzeige“. Ein Test hält das Flag aus (bewusst zu ändern).
+ */
+export const FEATURE_FLAGS: Readonly<{ retail_integration: boolean }> = {
+  retail_integration: false,
+};
+
+/**
  * Rezeptsuche (Plan 19.6, Etappe N5c): Stufen des Filters „max. Kosten je Portion“ in Euro. Angeboten nur, wenn es
  * Rezepte mit FREIGEGEBENER Kostenschätzung gibt (6.13). Bedienung, keine Grenze zur Gesundheit. PRODUKTENTSCHEIDUNG.
  */

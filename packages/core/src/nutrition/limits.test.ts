@@ -367,6 +367,7 @@ describe('Struktur (Wächter N1 K2, erweitert in N3, N9 und N11): Essensplan und
       'swap-resolve.ts',
       'ratings.ts',
       'fridge-search.ts',
+      'shopping-list-share.ts',
     ]) {
       expect(
         readFileSync(join(root, 'packages/core/src/nutrition', file), 'utf8').length,

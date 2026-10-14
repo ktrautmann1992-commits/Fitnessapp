@@ -259,8 +259,10 @@ packages/core mit Tests (Grenzfälle: sehr unterschiedliche Kalorienziele, Rezep
 ```
 
 ### Prompt F – Einkaufsliste teilen
-**Offen** – nur der Teil „Sofort“ (Etappe N12: als Text weitergeben, PDF aus N6, Händler-Modul hinter Feature-Flag
-ohne Händler). Die gemeinsame Liste im Paar-Modus kommt mit Phase 11.
+**Teil „Sofort“ im Testmodus umgesetzt (Etappe N12, 14.10.2026, docs/PLAN-PHASE-5.md Umsetzungsstand N12)** – als
+Text weitergeben (System-Teilen-Dialog bzw. Kopieren, Hinweis vorher wie K4), PDF aus N6, Händler-Modul nur als
+Schnittstelle hinter Feature-Flag `retail_integration` (aus, ohne Händler). Die gemeinsame Liste im Paar-Modus kommt mit
+Phase 11 (P1).
 ```
 Setze docs/ERWEITERUNGEN-2.md Abschnitt 7 (nur den Teil „Sofort“) um: Einkaufsliste als Text teilen, als
 PDF exportieren, gemeinsame Liste im Paar-Modus. Bereite ein Modul für spätere Händler-Anbindungen mit
