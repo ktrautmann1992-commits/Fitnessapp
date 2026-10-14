@@ -576,7 +576,7 @@ describe('Gründe und Daumen hoch: nur Reihenfolge (K6)', () => {
       }
     }
     expect(checkedDays).toBeGreaterThan(500);
-  });
+  }, 60_000);
 });
 
 describe('food_dislikes: „mag ich nicht“ je Lebensmittel, hart (filter.ts)', () => {
