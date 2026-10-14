@@ -1,0 +1,52 @@
+{
+  "id": "hummus",
+  "version": 1,
+  "status": "draft",
+  "name_de": "Hummus",
+  "aliases_de": [],
+  "shopping_category": "chilled_plant_based",
+  "pantry": false,
+  "nutrients_per_100g": {
+    "kcal": 324,
+    "protein_g": 5.9,
+    "carbs_g": 8,
+    "sugar_g": 0.7,
+    "fat_g": 28.5,
+    "sat_fat_g": 3.5,
+    "fiber_g": 5.9,
+    "salt_g": 0.98,
+    "organic_acids_g": 0.08,
+    "alcohol_g": 0,
+    "polyols_g": 0
+  },
+  "units": {},
+  "groups": ["legumes", "onion_garlic", "sesame"],
+  "animal": [],
+  "meat_kind": [],
+  "pregnancy_caution": false,
+  "alcohol": false,
+  "max_fridge_days": 3,
+  "freezable": true,
+  "substitutes": [],
+  "source": {
+    "db": "bls",
+    "version": "4.0",
+    "ref": "H960000",
+    "name": "Hummus/Kichererbsenmus",
+    "category": "composite_dishes",
+    "license": "CC BY 4.0",
+    "retrieved_at": "2026-10-14"
+  },
+  "meta": {
+    "origin": "claude_session",
+    "model": "claude-opus-5-5",
+    "batch_id": null,
+    "created_on": "2026-10-14",
+    "expert_reviewed": false,
+    "reviewed_by": null,
+    "reviewed_at": null,
+    "review_note": null,
+    "catalog_reviewed_by": null,
+    "catalog_reviewed_at": null
+  }
+}
