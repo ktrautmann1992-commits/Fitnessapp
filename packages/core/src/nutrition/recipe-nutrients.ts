@@ -6,7 +6,10 @@ import {
   type OptionalNutrientKey,
   REQUIRED_NUTRIENT_KEYS,
 } from '../content/food-schema';
-import type { RecipeMeta } from '../content/import-meta';
+import {
+  hasUnconfirmedImportAssumptions,
+  type ImportAssumptionsMeta,
+} from '../content/import-meta';
 import type { Recipe } from '../content/recipe-schema';
 import type { DietType } from '../enums';
 import { FOOD_GROUP_IDS, type FoodGroupId } from '../food-groups';
@@ -20,8 +23,9 @@ import { toGrams } from './units';
  * - Optionale Zutaten (S3) zählen für Ernährungsform, Allergene, Schwein, Alkohol und `pregnancy_caution` IMMER
  *   mit (das Rezept „enthält“ sie), außer der Filter hat sie ausdrücklich weggelassen (`omitted`).
  *   Nährwerte werden immer OHNE optionale Zutaten berechnet.
- * - Unbestätigte Import-Annahmen „erhitzt“ (`meta.import_assumptions` ohne `import_assumptions_confirmed_by`)
- *   gelten für `pregnancy_caution` wie `heated: false` (Wächter N2c, B1).
+ * - Unbestätigte Import-Annahmen „erhitzt“ (`meta.import_assumptions` ohne `import_assumptions_confirmed_by` oder
+ *   mit fehlendem/abweichendem Fingerabdruck, `hasUnconfirmedImportAssumptions`) gelten für `pregnancy_caution` wie
+ *   `heated: false` (Wächter N2c, B1; Wächter N2d S2).
  * - Ersatz-Zutaten (S4): `substitutions` ersetzt das Lebensmittel einer Zutat vollständig (Menge und Einheit
  *   bleiben, `heated` bleibt) – alle Werte werden mit dem Ersatzprodukt neu berechnet.
  */
@@ -197,8 +201,8 @@ export interface RecipeFactsOptions {
 
 /** Berechnet alle Angaben eines Rezepts aus Zutaten und Katalog. */
 export function computeRecipeFacts(
-  recipe: Pick<Recipe, 'ingredients' | 'servings' | 'no_cook'> & {
-    readonly meta?: Pick<RecipeMeta, 'import_assumptions' | 'import_assumptions_confirmed_by'>;
+  recipe: Pick<Recipe, 'ingredients' | 'servings' | 'no_cook' | 'steps_de'> & {
+    readonly meta?: ImportAssumptionsMeta;
   },
   foods: FoodLookup,
   options: RecipeFactsOptions = {},
@@ -215,11 +219,9 @@ export function computeRecipeFacts(
   });
 
   // Unbestätigte Import-Annahmen „erhitzt“ zählen für die Schwangerschaft wie `heated: false` (sichere Richtung).
-  const confirmed =
-    recipe.meta?.import_assumptions_confirmed_by !== undefined &&
-    recipe.meta.import_assumptions_confirmed_by !== null;
+  // Bestätigt zählt nur mit passendem Fingerabdruck (nach der Bestätigung geändert → wieder unbestätigt).
   const unconfirmedHeated = new Set(
-    confirmed
+    !hasUnconfirmedImportAssumptions(recipe)
       ? []
       : (recipe.meta?.import_assumptions ?? [])
           .filter((a) => a.field === 'heated')

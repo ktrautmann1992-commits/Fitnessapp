@@ -955,7 +955,8 @@ describe('Wächter N3 NB1: frischer Plan ohne Neuplanung, optionale Zutaten stat
     // Weglassen optionaler Zutaten (NB1) waren es deutlich mehr – das darf nicht wieder steigen.
     expect(removed).toBeLessThanOrEqual(227);
     expect(omittedForCeiling).toBeGreaterThan(0);
-  }, 60_000);
+    // Einzeln ~9 s; in CI teilt sich der Test die CPU mit ~100 Testdateien und riss am 14.10.2026 die 60-s-Grenze.
+  }, 180_000);
 
   it('Weglassen der optionalen Zutat rettet die Mahlzeit (statt sie zu streichen)', () => {
     const nudeln = makeRecipe({

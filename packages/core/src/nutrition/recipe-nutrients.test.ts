@@ -1,6 +1,7 @@
 import { describe, expect, it } from 'vitest';
 
 import { requiredFoodRules } from '../content/allergen-rules';
+import { importAssumptionsFingerprint } from '../content/import-meta';
 import {
   FIXTURE_RECIPES,
   foodLookup,
@@ -298,7 +299,7 @@ describe('computeRecipeFacts: unbestätigte Import-Annahme „erhitzt“ (Wächt
     ]);
   });
 
-  it('bestätigt (oder ohne Annahmen) → zählt als erhitzt', () => {
+  it('bestätigt mit passendem Fingerabdruck → zählt als erhitzt', () => {
     const facts = computeRecipeFacts(
       {
         ...recipe,
@@ -306,10 +307,36 @@ describe('computeRecipeFacts: unbestätigte Import-Annahme „erhitzt“ (Wächt
           ...recipe.meta,
           import_assumptions: [assumption],
           import_assumptions_confirmed_by: 'KT',
+          import_assumptions_fingerprint: importAssumptionsFingerprint(recipe),
         },
       },
       foodLookup(),
     );
     expect(facts.pregnancyCaution).toBe(false);
+  });
+
+  it('bestätigt ohne Fingerabdruck oder nach der Bestätigung geändert → wieder wie nicht erhitzt (Wächter N2d S2)', () => {
+    const confirmedMeta = {
+      ...recipe.meta,
+      import_assumptions: [assumption],
+      import_assumptions_confirmed_by: 'KT',
+    };
+    const withoutFingerprint = computeRecipeFacts({ ...recipe, meta: confirmedMeta }, foodLookup());
+    expect(withoutFingerprint.pregnancyCaution).toBe(true);
+    const edited = computeRecipeFacts(
+      {
+        ...recipe,
+        steps_de: [...recipe.steps_de, 'Zum Schluss roh nachwürzen.'],
+        meta: {
+          ...confirmedMeta,
+          import_assumptions_fingerprint: importAssumptionsFingerprint(recipe),
+        },
+      },
+      foodLookup(),
+    );
+    expect(edited.pregnancyCaution).toBe(true);
+    expect(edited.pregnancyReasons).toEqual([
+      { kind: 'unconfirmed_heated', index: 0, foodId: 'haehnchenbrust' },
+    ]);
   });
 });

@@ -1,6 +1,11 @@
 import { describe, expect, it } from 'vitest';
 
-import { hasUnconfirmedImportAssumptions, recipeMetaSchema } from './import-meta';
+import {
+  hasUnconfirmedImportAssumptions,
+  importAssumptionsFingerprint,
+  importAssumptionsState,
+  recipeMetaSchema,
+} from './import-meta';
 import { deriveStoragePlan } from './meal-prep-checks';
 import type { MealPrepPlan } from './meal-prep-plan-schema';
 import {
@@ -109,7 +114,7 @@ describe('Rezept-Schema: Erweiterungen 19.4', () => {
       meta: { ...importedRecipe().meta, import_assumptions: [assumption] },
     });
     expect(recipeSchema.safeParse(heated).success).toBe(true);
-    expect(hasUnconfirmedImportAssumptions(heated.meta)).toBe(true);
+    expect(hasUnconfirmedImportAssumptions(heated)).toBe(true);
 
     const published = {
       ...heated,
@@ -117,12 +122,116 @@ describe('Rezept-Schema: Erweiterungen 19.4', () => {
       meta: { ...heated.meta, ...reviewed },
     };
     expect(recipeSchema.safeParse(published).success).toBe(false);
-    const confirmed = {
+    // Bestätigt ohne Fingerabdruck (Altbestand/Handänderung) gilt als unbestätigt (Gründer-Entscheidung 14.10.2026).
+    const withoutFingerprint = {
       ...published,
       meta: { ...published.meta, import_assumptions_confirmed_by: 'KT' },
     };
+    expect(recipeSchema.safeParse(withoutFingerprint).success).toBe(false);
+    expect(hasUnconfirmedImportAssumptions(withoutFingerprint)).toBe(true);
+    expect(importAssumptionsState(withoutFingerprint)).toBe('changed');
+    const confirmed = {
+      ...published,
+      meta: {
+        ...published.meta,
+        import_assumptions_confirmed_by: 'KT',
+        import_assumptions_fingerprint: importAssumptionsFingerprint(published),
+      },
+    };
     expect(recipeSchema.safeParse(confirmed).success).toBe(true);
-    expect(hasUnconfirmedImportAssumptions(confirmed.meta)).toBe(false);
+    expect(hasUnconfirmedImportAssumptions(confirmed)).toBe(false);
+    expect(importAssumptionsState(confirmed)).toBe('confirmed');
+    // Nach der Bestätigung Schritt geändert → wieder unbestätigt, freigegeben rot (R1) mit eigener Meldung.
+    const edited = { ...confirmed, steps_de: [...confirmed.steps_de, 'Kurz ziehen lassen.'] };
+    expect(importAssumptionsState(edited)).toBe('changed');
+    const parsed = recipeSchema.safeParse(edited);
+    expect(parsed.success).toBe(false);
+    expect(parsed.error?.issues.map((i) => i.message).join(' ')).toContain('seitdem geändert');
+  });
+
+  it('Fingerabdruck: stabil (Schlüsselreihenfolge egal), ändert sich mit jeder Angabe zur Zubereitung (S2, S5)', () => {
+    const recipe = importedRecipe({
+      ingredients: [ing('haferflocken', 60, 'g', { heated: true })],
+      tip_de: 'Mit etwas Zimt servieren.',
+      total_minutes: 15,
+    });
+    const fp = importAssumptionsFingerprint(recipe);
+    expect(fp).toMatch(/^[0-9a-f]{16}$/);
+    const reordered = Object.fromEntries(
+      Object.entries({
+        ...recipe,
+        ingredients: recipe.ingredients.map((i) => Object.fromEntries(Object.entries(i).reverse())),
+      }).reverse(),
+    ) as Recipe;
+    expect(importAssumptionsFingerprint(reordered)).toBe(fp);
+    const [first] = recipe.ingredients;
+    const variants: Record<string, Recipe> = {
+      heated: { ...recipe, ingredients: [{ ...first!, heated: false }] },
+      amount: { ...recipe, ingredients: [{ ...first!, amount: 61 }] },
+      food_id: { ...recipe, ingredients: [{ ...first!, food_id: 'banane' }] },
+      note: { ...recipe, ingredients: [{ ...first!, note_de: 'roh' }] },
+      zutat: { ...recipe, ingredients: [...recipe.ingredients, ing('banane', 1, 'piece')] },
+      steps: { ...recipe, steps_de: ['Anders zubereiten.'] },
+      no_cook: { ...recipe, no_cook: !recipe.no_cook },
+      tip: { ...recipe, tip_de: 'Eigelb flüssig lassen.' },
+      tip_weg: { ...recipe, tip_de: undefined },
+      cook: { ...recipe, cook_minutes: recipe.cook_minutes - 1 },
+      prep: { ...recipe, prep_minutes: recipe.prep_minutes + 1 },
+      total: { ...recipe, total_minutes: 14 },
+      equipment: { ...recipe, equipment_de: ['Mikrowelle'] },
+      title: { ...recipe, title_de: 'Tatar-Variante' },
+      description: { ...recipe, description_de: 'Jetzt mit rohem Eigelb obendrauf.' },
+    };
+    for (const [name, variant] of Object.entries(variants)) {
+      expect(importAssumptionsFingerprint(variant), name).not.toBe(fp);
+    }
+    // Status, Version, meta, Kategorien, Schlagworte, Portionen und Meal-Prep zählen nicht.
+    const other: Recipe = {
+      ...recipe,
+      status: 'published',
+      version: 2,
+      categories: ['schnell'],
+      tags_de: ['zum Mitnehmen'],
+      servings: 2,
+      meal_prep: { suitable: true, fridge_days: 1, freezable: false },
+      meta: { ...recipe.meta, reviewed_by: 'KT' },
+    };
+    expect(importAssumptionsFingerprint(other)).toBe(fp);
+    // Teil-Objekt ohne die übrigen Felder → anderer Fingerabdruck (sichere Richtung „geändert“).
+    expect(
+      importAssumptionsFingerprint({
+        ingredients: recipe.ingredients,
+        steps_de: recipe.steps_de,
+        no_cook: recipe.no_cook,
+      }),
+    ).not.toBe(fp);
+  });
+
+  it('S5: bestätigt, danach nur der Tipp geändert → „changed“, Schwangerschafts-Grund wieder da', () => {
+    const recipe = importedRecipe({
+      ingredients: [ing('haferflocken', 60, 'g', { heated: true })],
+      tip_de: 'Gut durchkochen.',
+    });
+    const confirmed: Recipe = {
+      ...recipe,
+      meta: {
+        ...recipe.meta,
+        import_assumptions: [
+          {
+            ingredient_index: 0,
+            food_id: 'haferflocken',
+            field: 'heated',
+            value: true,
+            reason_de: 'Schritt 1 gart die Zutat durch.',
+          },
+        ],
+        import_assumptions_confirmed_by: 'KT',
+        import_assumptions_fingerprint: importAssumptionsFingerprint(recipe),
+      },
+    };
+    expect(importAssumptionsState(confirmed)).toBe('confirmed');
+    expect(importAssumptionsState({ ...confirmed, tip_de: 'Nur kurz erwärmen.' })).toBe('changed');
+    expect(importAssumptionsState({ ...confirmed, cook_minutes: 1 })).toBe('changed');
   });
 
   it('Import-Annahme muss zu einer vorhandenen Zutat mit gleicher food_id passen (Wächter N2c, K1)', () => {

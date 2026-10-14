@@ -14,7 +14,6 @@
 import { createHash } from 'node:crypto';
 
 import {
-  ALPHA5_IMPORT_TOLERANCE,
   CARB_LOADING_NOTICE_DE,
   canonicalJson,
   computeRecipeFacts,
@@ -46,6 +45,7 @@ import { z } from 'zod';
 
 import { alpha5Deviations, type Deviation, hasNoReference } from '../foods/import-source';
 import { ALPHA5_ID_EXCEPTIONS } from '../foods/mapping';
+import { IMPORT_TOLERANCE_NOTE_DE } from './deviations';
 
 export const ALPHA5_FILE_NAME = 'alpha5-rezepte.json';
 export const RECIPES_DIR = 'content/recipes';
@@ -529,6 +529,7 @@ export function buildRecipe(rezept: Alpha5Recipe, ctx: BuildContext): BuiltRecip
     ingredients,
     servings: rezept.portionen,
     no_cook: noCook,
+    steps_de: [...rezept.zubereitung],
     // Unbestätigte Annahmen „erhitzt“ zählen für die Schwangerschaft wie false (Wächter N2c, B1).
     meta: { import_assumptions: assumptions, import_assumptions_confirmed_by: null },
   };
@@ -1107,4 +1108,4 @@ export function importAlpha5(input: Alpha5ImportInput): Alpha5ImportOutput {
   };
 }
 
-export const ALPHA5_TOLERANCE_NOTE = `> ${Math.round(ALPHA5_IMPORT_TOLERANCE.relative * 100)} % (mind. ${ALPHA5_IMPORT_TOLERANCE.minKcal} kcal bzw. ${ALPHA5_IMPORT_TOLERANCE.minGrams} g)`;
+export const ALPHA5_TOLERANCE_NOTE = IMPORT_TOLERANCE_NOTE_DE;

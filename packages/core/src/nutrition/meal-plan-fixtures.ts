@@ -369,9 +369,13 @@ export function usedFoodViolations(
   foods: ReadonlyMap<string, Food> = N3_FOODS,
 ): string[] {
   const excluded = new Set<string>([...profile.intolerances, ...profile.dislikes]);
-  const unconfirmed =
-    (recipe.meta.import_assumptions?.length ?? 0) > 0 &&
-    (recipe.meta.import_assumptions_confirmed_by ?? null) === null;
+  // Unabhängig von der Implementierung (Wächter N2d K10): Die Fixtures kennen nur offene Annahmen
+  // (`confirmed_by: null`) oder keine. Bestätigte Annahmen (Fingerabdruck) prüfen die Tests in content/ und
+  // recipe-nutrients.test.ts – hier lieber laut abbrechen als still anders rechnen.
+  if ((recipe.meta.import_assumptions_confirmed_by ?? null) !== null) {
+    throw new Error(`Orakel: bestätigte Import-Annahmen in „${recipe.id}“ nicht vorgesehen.`);
+  }
+  const unconfirmed = (recipe.meta.import_assumptions?.length ?? 0) > 0;
   const problems: string[] = [];
   for (const { index, foodId } of used) {
     const food = foods.get(foodId) as Food;

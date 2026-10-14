@@ -10,7 +10,7 @@ import {
 import { CONTENT_STATUSES, DIET_TYPES } from '../enums';
 import { foodGroupSchema } from '../food-groups';
 import { recipeUnitSchema } from '../nutrition/units';
-import { hasUnconfirmedImportAssumptions, recipeMetaSchema } from './import-meta';
+import { importAssumptionsState, recipeMetaSchema } from './import-meta';
 import { contentIdSchema } from './schemas';
 
 /**
@@ -238,12 +238,15 @@ export const recipeSchema = z
         });
       }
     });
-    if (recipe.status === 'published' && hasUnconfirmedImportAssumptions(recipe.meta)) {
+    const assumptions = importAssumptionsState(recipe);
+    if (recipe.status === 'published' && (assumptions === 'open' || assumptions === 'changed')) {
       ctx.addIssue({
         code: 'custom',
         path: ['meta', 'import_assumptions_confirmed_by'],
         message:
-          'Freigegeben mit unbestätigten Import-Annahmen („heated“) – bitte bei der Freigabe bestätigen (Plan 19.5).',
+          assumptions === 'open'
+            ? 'Freigegeben mit unbestätigten Import-Annahmen („heated“) – bitte bei der Freigabe bestätigen (Plan 19.5).'
+            : 'Import-Annahmen („heated“) bestätigt, aber Zubereitung (Zutaten, Schritte, Tipp, Zeiten, Titel/Beschreibung, Geräte oder „no_cook“) seitdem geändert (Fingerabdruck fehlt oder passt nicht) – bitte erneut bestätigen (Plan 19.5).',
       });
     }
   });

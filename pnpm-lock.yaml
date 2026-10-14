@@ -150,6 +150,9 @@ importers:
 
   apps/web:
     dependencies:
+      '@fitnessapp/content':
+        specifier: workspace:*
+        version: link:../../packages/content
       '@fitnessapp/core':
         specifier: workspace:*
         version: link:../../packages/core

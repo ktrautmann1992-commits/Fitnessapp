@@ -3,6 +3,7 @@ import type { z } from 'zod';
 import { CONTENT_STATUSES, type ContentStatus } from '../enums';
 import type { ExerciseLookup } from './analysis';
 import { checkExercise, checkLibraryCoverage, checkPlanTemplate } from './checks';
+import { canonicalJson } from './canonical-json';
 import { checkTemplateFitsMinimum } from './fit-check';
 import { type Food, foodSchema } from './food-schema';
 import { checkGuide } from './guide-checks';
@@ -18,6 +19,8 @@ import {
 import { type Recipe, recipeSchema } from './recipe-schema';
 import { type ContentIssue, isBlockingIssue, makeIssue } from './rules';
 import { type Exercise, exerciseSchema, type PlanTemplate, planTemplateSchema } from './schemas';
+
+export { canonicalJson } from './canonical-json';
 
 /**
  * Prüft einen kompletten Inhaltsstand (alle Dateien unter `content/`): Datei-Regeln, Schema (Ü1),
@@ -88,20 +91,6 @@ function readStatus(data: unknown): ContentStatus | null {
 function readId(data: unknown, fallback: string): string {
   const id = (data as { id?: unknown } | null)?.id;
   return typeof id === 'string' && id.length > 0 ? id : fallback;
-}
-
-/** JSON mit sortierten Schlüsseln – für den Vergleich „hat sich der Inhalt geändert?“. */
-export function canonicalJson(value: unknown): string {
-  if (Array.isArray(value)) {
-    return `[${value.map(canonicalJson).join(',')}]`;
-  }
-  if (value !== null && typeof value === 'object') {
-    const entries = Object.entries(value as Record<string, unknown>)
-      .filter(([, v]) => v !== undefined)
-      .sort(([a], [b]) => (a < b ? -1 : a > b ? 1 : 0));
-    return `{${entries.map(([k, v]) => `${JSON.stringify(k)}:${canonicalJson(v)}`).join(',')}}`;
-  }
-  return JSON.stringify(value);
 }
 
 /** Fachlicher Inhalt ohne Status, Version und Herkunft/Prüfvermerk. */

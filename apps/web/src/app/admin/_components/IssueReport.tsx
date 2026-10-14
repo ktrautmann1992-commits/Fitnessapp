@@ -9,9 +9,12 @@ import styles from '../admin.module.css';
 export function IssueReport({
   issues,
   title = 'Prüfbericht',
+  headingId = 'pruefbericht',
 }: {
   issues: readonly ContentIssue[];
   title?: string;
+  /** Eindeutige ID der Überschrift, wenn mehrere Berichte auf einer Seite stehen. */
+  headingId?: string;
 }) {
   const errors = issues.filter((issue) => issue.severity === 'error');
   const warnings = issues.filter((issue) => issue.severity === 'warning');
@@ -23,8 +26,8 @@ export function IssueReport({
         : styles.noticeOk;
 
   return (
-    <section className={box} aria-labelledby="pruefbericht">
-      <h2 id="pruefbericht" className={styles.h2}>
+    <section className={box} aria-labelledby={headingId}>
+      <h2 id={headingId} className={styles.h2}>
         {title}
       </h2>
       {issues.length === 0 ? (

@@ -4,18 +4,26 @@
  */
 import {
   type AlternativeReason,
+  type AnimalKind,
   type CautionTag,
   type ContentIssue,
   type ContentOrigin,
   type ContentStatus,
+  type DietType,
   type EquipmentLocation,
   type ExerciseMechanics,
   findEquipment,
+  FOOD_GROUPS,
   type LoadType,
+  type MealType,
+  type MeatKind,
   type MovementPattern,
+  type PregnancyReason,
   type SessionFocus,
+  type StorageMethod,
   type TemplateExperienceLevel,
   type TemplateGoalType,
+  type TrainingTag,
 } from '@fitnessapp/core';
 
 export const STATUS_LABELS: Record<ContentStatus, string> = {
@@ -134,3 +142,76 @@ export function formatDateDe(isoDate: string): string {
 export function formatNumberDe(value: number): string {
   return value.toLocaleString('de-DE', { maximumFractionDigits: 1 });
 }
+
+// ---------------------------------------------------------------------------------------------------------
+// Ernährung (Etappe N2d)
+// ---------------------------------------------------------------------------------------------------------
+
+export const DIET_LABELS: Record<DietType, string> = {
+  omnivore: 'mit Fleisch/Fisch',
+  vegetarian: 'vegetarisch',
+  vegan: 'vegan',
+};
+
+export const MEAL_TYPE_LABELS: Record<MealType, string> = {
+  breakfast: 'Frühstück',
+  main: 'Hauptgericht',
+  snack: 'Snack',
+};
+
+export const TRAINING_TAG_LABELS: Record<TrainingTag, string> = {
+  vor_training: 'vor dem Training',
+  waehrend: 'während des Trainings',
+  nach_training: 'nach dem Training',
+};
+
+export const ANIMAL_LABELS: Record<AnimalKind, string> = {
+  dairy: 'Milch',
+  egg: 'Ei',
+  honey: 'Honig',
+  meat: 'Fleisch',
+  fish: 'Fisch',
+  shellfish: 'Krebs-/Weichtiere',
+  gelatin: 'Gelatine',
+  animal_rennet: 'tierisches Lab',
+  insect: 'Insekten',
+};
+
+export const MEAT_KIND_LABELS: Record<MeatKind, string> = {
+  pork: 'Schwein',
+  beef: 'Rind',
+  poultry: 'Geflügel',
+  lamb: 'Lamm',
+  game: 'Wild',
+  unknown: 'unbekannt',
+};
+
+export const STORAGE_METHOD_LABELS: Record<StorageMethod, string> = {
+  fridge: 'Kühlschrank',
+  freeze: 'einfrieren',
+  fresh: 'frisch zubereiten',
+};
+
+/** Name einer Lebensmittel-Gruppe (Allergene und Unverträglichkeiten); unbekannte IDs bleiben sichtbar. */
+export function foodGroupLabel(id: string): string {
+  return FOOD_GROUPS.find((group) => group.id === id)?.nameDe ?? `${id} (unbekannt)`;
+}
+
+const PREGNANCY_REASON_TEXT: Record<PregnancyReason['kind'], string> = {
+  food_flag: 'Lebensmittel mit Schwangerschafts-Hinweis',
+  not_heated: 'nicht durchgegart',
+  no_cook: 'Rezept ohne Kochen',
+  unconfirmed_heated: 'Annahme „durchgegart“ noch nicht bestätigt',
+};
+
+/** z. B. „huehnerei: Annahme „durchgegart“ noch nicht bestätigt“. */
+export function pregnancyReasonLabel(reason: PregnancyReason): string {
+  return `${reason.foodId}: ${PREGNANCY_REASON_TEXT[reason.kind]}`;
+}
+
+export const NUTRIENT_FIELD_LABELS = {
+  kcal: 'Energie (kcal)',
+  protein_g: 'Eiweiß (g)',
+  carbs_g: 'Kohlenhydrate (g)',
+  fat_g: 'Fett (g)',
+} as const;

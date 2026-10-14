@@ -2,7 +2,12 @@ import type { NextConfig } from 'next';
 
 const nextConfig: NextConfig = {
   // Workspace-Pakete liegen als TypeScript-Quellcode vor und werden von Next mitkompiliert.
-  transpilePackages: ['@fitnessapp/core', '@fitnessapp/db', '@fitnessapp/ui'],
+  transpilePackages: [
+    '@fitnessapp/content',
+    '@fitnessapp/core',
+    '@fitnessapp/db',
+    '@fitnessapp/ui',
+  ],
   poweredByHeader: false,
   // PDF der Gratis-Rezepte (public/downloads/): nicht in Suchmaschinen, der Link kommt per Mail.
   async headers() {

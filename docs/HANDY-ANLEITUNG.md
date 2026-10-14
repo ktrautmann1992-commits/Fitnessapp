@@ -48,7 +48,10 @@ Vercel zeigt die App im Handy-Browser, Expo baut die echten Apps in der Cloud.
 - **Actions** → Workflow auswählen → „Run workflow“ für:
   - `content-generate` – neue Übungen/Plan-Vorlagen als Entwurf erzeugen lassen (auch als kostenloser Probelauf)
   - `content-collect` – fertige Entwürfe abholen (läuft auch alle 3 Stunden von selbst) → Pull Request
-  - `content-review` – Inhalte freigeben oder zurückziehen → Pull Request (Merge = Freigabe)
+  - `content-review` – Inhalte freigeben oder zurückziehen → Pull Request (Merge = Freigabe); Art `recipe` = Rezepte
+    einer Kategorie auf einmal freigeben (Sammelfreigabe), Art `ids` = einzelne Übungen/Vorlagen **oder** einzelne
+    Rezepte (auch ohne Kategorie), Meal-Prep-Pläne und Ratgeber (`docs/SETUP.md` → „Inhalte erzeugen und freigeben am
+    Handy“, 3b)
   - `content-seed` – freigegebene Inhalte einspielen (läuft nach jedem Merge von selbst)
   - Schritt für Schritt: `docs/SETUP.md` → „Inhalte erzeugen und freigeben am Handy“
   - `eas-build` – neue Android-APK / iOS-TestFlight-Version bauen
@@ -126,6 +129,16 @@ Vercel zeigt die App im Handy-Browser, Expo baut die echten Apps in der Cloud.
 7. **Einstellungen → Einwilligung Gesundheitsdaten widerrufen** → Hinweis zu Unverträglichkeiten und Einkaufsliste,
    Häkchen „stattdessen unter ‚mag ich nicht‘“ → danach Ernährung ohne Kalorienziel.
 8. Alles einmal hell und einmal dunkel ansehen.
+
+**Redaktionsbereich Ernährung (Etappe N2d):** Vorschau-Link der Website → `/admin` → anmelden → oben **Rezepte**,
+**Lebensmittel**, **Meal-Prep**, **Ratgeber**. Rezepte: Kategorie antippen → Zahlen (Entwürfe, rot, Zutaten ohne
+Katalog-Prüfung, offene Annahmen, Abweichungen) und je Rezept „Sammelfreigabe: wird freigegeben / übersprungen – Grund“;
+unter **Ohne Kategorie** steht „Freigabe per ID“ (diese Rezepte erreicht die Sammelfreigabe nie). Rezept-Seite:
+Import-Annahmen „bestätigt“, „noch nicht bestätigt“ oder „seitdem geändert“ (Zubereitung nach der Bestätigung geändert
+→ erneut bestätigen). Lebensmittel: Checkliste der Katalog-Prüfung und je Lebensmittel die Angaben dazu. Meal-Prep und
+Ratgeber zeigen die ID und die Klick-Schritte zur Freigabe. Nur ansehen – freigegeben wird über **Actions →
+content-review** (Art `recipe` mit Kategorie oder Art `ids` mit IDs, SETUP 3b). Solange `foods-import`/`alpha5-import` nicht gelaufen sind, steht dort
+„Noch keine Rezepte“ bzw. „Noch keine Lebensmittel“.
 
 ## Teil 8 – Live-Test mit Supabase (Pflicht vor „MVP fertig“, W13) – **offen, braucht euch**
 Diesen Test kann Claude in der Cloud-Sitzung nicht machen (kein echtes Konto, keine zwei Handys). Bitte einmal

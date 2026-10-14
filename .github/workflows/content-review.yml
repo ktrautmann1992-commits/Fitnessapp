@@ -5,13 +5,28 @@ name: content-review
 # prüft ALLE Inhalte (content:validate, Prettier, Typprüfung) und öffnet einen Pull Request. Danach wird
 # ci für den Branch gestartet. Freigabe ist erst der MERGE durch einen Menschen – der Workflow genehmigt nie.
 # Details: docs/PLAN-PHASE-2.md Abschnitte 4 und 6.
+#
+# Art „recipe“ = Sammelfreigabe Rezepte pro Kategorie (docs/PLAN-PHASE-5.md 19.5, Etappe N2d): setzt „published“
+# nur für Entwürfe der Kategorie ohne roten Befund, mit ausschließlich katalog-geprüften und freigegebenen
+# Lebensmitteln und ohne unbestätigte Import-Annahmen „durchgegart“ (bestätigt nur mit dem Häkchen
+# „Import-Annahmen geprüft“, gespeichert mit Fingerabdruck der Zubereitung). Übersprungene stehen mit Grund im PR.
+# Art „ids“ mit Rezepten (auch ohne Kategorie), Meal-Prep-Plänen oder Ratgebern = Freigabe per ID mit denselben
+# Regeln und Häkchen (Meal-Prep-Plan nur, wenn alle seine Rezepte danach freigegeben sind; Ratgeber nur ohne roten
+# Befund). Lebensmittel nie über diesen Workflow (eigene Katalog-Prüfung).
 on:
   workflow_dispatch:
     inputs:
+      art:
+        description: 'Art: „ids“ = einzelne Inhalte per ID (Übungen/Vorlagen oder Rezepte/Meal-Prep-Pläne/Ratgeber), „recipe“ = Sammelfreigabe Rezepte pro Kategorie'
+        type: choice
+        options:
+          - ids
+          - recipe
+        default: ids
       ids:
-        description: 'IDs (mit Komma oder Leerzeichen getrennt), z. B. „goblet-kniebeuge, liegestuetz“'
+        description: 'Nur bei Art „ids“: IDs (mit Komma oder Leerzeichen getrennt), z. B. „goblet-kniebeuge, liegestuetz“ oder „ruehrei, pasta-woche“ – Training und Ernährung nicht mischen'
         type: string
-        required: true
+        required: false
       status:
         description: 'Neuer Status'
         type: choice
@@ -24,6 +39,28 @@ on:
         description: 'Wer hat geprüft? (Name oder Kürzel)'
         type: string
         required: true
+      kategorie:
+        description: 'Nur bei Art „recipe“: Rezept-Kategorie'
+        type: choice
+        options:
+          - '-'
+          - schnell
+          - pre-workout
+          - post-workout
+          - cardio
+          - wettkampf
+          - meal-prep
+          - protein-dessert
+          - spar-kueche
+        default: '-'
+      fachlich_geprueft:
+        description: 'Nur Ernährung (Art „recipe“ oder Rezepte/Pläne/Ratgeber per ID): fachlich geprüft (Fachperson hat geprüft)'
+        type: boolean
+        default: false
+      annahmen_geprueft:
+        description: 'Nur Rezepte (Art „recipe“ oder per ID): Import-Annahmen „durchgegart“ gegen die Zubereitung geprüft und bestätigt'
+        type: boolean
+        default: false
 
 permissions:
   contents: write
@@ -51,8 +88,12 @@ jobs:
       # Eingaben nur über Umgebungsvariablen (nie direkt im Skript-Text).
       - name: Status setzen, prüfen, Pull Request öffnen
         env:
+          REVIEW_KIND: ${{ inputs.art }}
           REVIEW_IDS: ${{ inputs.ids }}
           REVIEW_STATUS: ${{ inputs.status }}
           REVIEW_REVIEWER: ${{ inputs.pruefer }}
+          REVIEW_CATEGORY: ${{ inputs.kategorie }}
+          REVIEW_EXPERT_REVIEWED: ${{ inputs.fachlich_geprueft }}
+          REVIEW_CONFIRM_ASSUMPTIONS: ${{ inputs.annahmen_geprueft }}
           GH_TOKEN: ${{ github.token }}
         run: pnpm --filter @fitnessapp/content review
