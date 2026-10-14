@@ -137,6 +137,7 @@ export const deNutrition = {
     competition: 'Wettkampf-Rezept',
     not_no_cook: 'nur ohne Kochen',
     above_ceiling: 'Tag sonst über deinem Bedarf',
+    rated_down: 'passende Rezepte hast du abgelehnt (Daumen runter)',
   },
 
   // --- Hinweis-Codes der Engine (4.4–4.9) ----------------------------------------------------------------------
@@ -226,6 +227,8 @@ export const deNutrition = {
     autoAdjustedOk: 'Verstanden',
     updateSuggested:
       'Dein Bedarf hat sich geändert. Mit „Plan aktualisieren“ passen wir die Portionen und Rezepte ab heute an.',
+    ratedDownSuggested:
+      'In diesem Plan steht ein Rezept, das du mit Daumen runter bewertet hast. Mit „Plan aktualisieren“ planen wir die Woche ohne dieses Rezept neu.',
     update: 'Plan aktualisieren',
     updated: 'Dein Plan ist ab heute aktualisiert.',
     other: 'Andere Vorschläge',
@@ -427,6 +430,100 @@ export const deNutrition = {
         'Dein Plan muss zuerst an deine Angaben angepasst werden. Bitte öffne die Ernährung erneut.',
       not_editable: 'Diese Woche liegt zurück und lässt sich nicht mehr ändern.',
     },
+  },
+
+  // --- Bewertung nach dem Essen (KONZEPT 6.10, Etappe N10) ------------------------------------------------------------
+  rating: {
+    heading: 'Wie war’s?',
+    intro: 'Deine Bewertung bleibt privat und ändert nur, welche Rezepte wir dir vorschlagen.',
+    up: 'Daumen hoch',
+    down: 'Daumen runter',
+    upA11y: (title: string) => `${title}: Daumen hoch`,
+    downA11y: (title: string) => `${title}: Daumen runter`,
+    current: {
+      up: 'Deine Bewertung: Daumen hoch – wir schlagen dir das Rezept etwas häufiger vor.',
+      down: (until: string) =>
+        `Deine Bewertung: Daumen runter – bei neuen Planungen schlagen wir dir das Rezept bis einschließlich ${until} nicht vor.`,
+    },
+    undo: 'Bewertung zurücknehmen',
+    undone: 'Bewertung zurückgenommen.',
+    savedUp: 'Danke! Wir schlagen dir das Rezept etwas häufiger vor.',
+    saveFailed:
+      'Die Bewertung konnte gerade nicht gespeichert werden. Bitte versuche es noch einmal.',
+    limit:
+      'Du hast schon sehr viele Rezepte bewertet. Lösche zuerst Bewertungen unter Einstellungen → Ernährung → „Abgelehnte Lebensmittel und Bewertungen“.',
+    notYet: 'Bewerten kannst du eine Mahlzeit, sobald ihr Tag da ist.',
+    title: 'Daumen runter',
+    reasonHeading: 'Warum? (freiwillig)',
+    reasons: {
+      taste: 'Schmeckt mir nicht',
+      effort: 'Zu aufwendig',
+      cost: 'Zu teuer',
+      satiety: 'Macht nicht satt',
+      intolerant: 'Unverträglich',
+    },
+    reasonEffects: {
+      taste: 'Wir schlagen dir das Rezept 8 Wochen lang nicht mehr vor.',
+      effort: 'Außerdem schlagen wir dir öfter Rezepte vor, die in 15 Minuten fertig sind.',
+      cost: 'Außerdem kommen günstigere Rezepte weiter nach vorn (nur mit geprüfter Kostenschätzung).',
+      satiety: 'Außerdem kommen Rezepte mit mehr Ballaststoffen und Volumen weiter nach vorn.',
+      intolerant:
+        'Dieser Grund wird nicht gespeichert. Gleich kannst du einzelne Zutaten als „mag ich nicht“ ausschließen.',
+    },
+    noReason: 'Kein Grund',
+    effect: (until: string) =>
+      `Bei neuen Planungen schlagen wir dir das Rezept bis einschließlich ${until} nicht mehr vor. An Energie, Portionen und Grenzen ändert eine Bewertung nichts.`,
+    planStays:
+      'Schon gespeicherte Pläne bleiben so: In der laufenden Woche planst du die Tage ab heute mit „Andere Vorschläge“ neu; steht das Rezept in einem Plan für eine kommende Woche, bieten wir dort „Plan aktualisieren“ an.',
+    save: 'Speichern',
+    saved: 'Gespeichert. Danke für deine Bewertung.',
+    back: 'Zurück',
+    toPlan: 'Zum Essensplan',
+    dislikes: {
+      title: 'Zutaten als „mag ich nicht“ übernehmen?',
+      intro:
+        'Wähle die Zutaten aus, die du nicht mehr in Rezepten haben möchtest. Nichts ist vorausgewählt – Rezepte mit diesen Zutaten schlagen wir dir dann nicht mehr vor.',
+      healthHint:
+        '„Mag ich nicht“ schließt nur genau diese Lebensmittel aus – keine verwandten Produkte (z. B. Joghurt oder Käse bei Milch) und keine Spuren. Bei einer Allergie oder Unverträglichkeit trage sie bitte im Profil unter „Ernährung ändern“ ein (mit Einwilligung zu Gesundheitsangaben) – dann schließen wir die ganze Gruppe aus.',
+      profileButton: 'Allergien und Unverträglichkeiten im Profil eintragen',
+      apply: 'Übernehmen',
+      skip: 'Nichts übernehmen',
+      none: 'Alle Zutaten dieses Rezepts stehen schon unter „mag ich nicht“.',
+      applied: (n: number) =>
+        n === 1
+          ? '1 Zutat steht jetzt unter „mag ich nicht“.'
+          : `${n} Zutaten stehen jetzt unter „mag ich nicht“.`,
+      skipped: 'Es wurde nichts übernommen.',
+      failed: 'Die Auswahl konnte gerade nicht gespeichert werden. Bitte versuche es noch einmal.',
+      limit:
+        'Du hast schon sehr viele Lebensmittel ausgeschlossen. Entferne zuerst einige in den Einstellungen.',
+    },
+  },
+
+  // --- „Mag ich nicht“ je Lebensmittel (Etappe N10) -------------------------------------------------------------------
+  foodDislikes: {
+    title: 'Lebensmittel, die du nicht magst',
+    intro:
+      'Rezepte mit diesen Lebensmitteln schlagen wir dir nicht vor. Diese Angaben sind privat und kein Gesundheitsdatum.',
+    open: 'Abgelehnte Lebensmittel und Bewertungen',
+    settingsText:
+      'Lebensmittel, die du nach einer Bewertung ausgeschlossen hast, und deine Bewertungen.',
+    empty: 'Du hast noch keine einzelnen Lebensmittel ausgeschlossen.',
+    allow: 'Wieder zulassen',
+    allowA11y: (food: string) => `${food} wieder zulassen`,
+    allowed: (food: string) => `${food} ist wieder erlaubt.`,
+    unknownFood: 'Lebensmittel nicht mehr im Katalog',
+    loadingName: '…',
+    ratingsHeading: 'Deine Bewertungen',
+    ratingsText:
+      'Bewertungen sind privat und werden nur für deine Vorschläge verwendet. Du kannst sie hier alle löschen.',
+    ratingsNone: 'Du hast noch keine Rezepte bewertet.',
+    deleteRatings: 'Alle Bewertungen löschen',
+    deleteRatingsConfirm:
+      'Alle Bewertungen löschen? Abgelehnte Rezepte können danach wieder vorgeschlagen werden. Deine ausgeschlossenen Lebensmittel bleiben.',
+    ratingsDeleted: 'Alle Bewertungen sind gelöscht.',
+    failed: 'Das hat gerade nicht geklappt. Bitte versuche es noch einmal.',
+    back: 'Zurück',
   },
 
   // --- Einstellungen (8.2 Nr. 7) ---------------------------------------------------------------------------------

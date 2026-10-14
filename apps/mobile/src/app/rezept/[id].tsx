@@ -17,6 +17,7 @@ import { useState, type ReactNode } from 'react';
 import { View } from 'react-native';
 
 import { ConsentBlockedNotice, DemoBanner } from '@/components/nutrition';
+import { RatingCard } from '@/components/rating';
 import { Screen } from '@/components/screen';
 import { Body, Button, Card, ErrorState, Heading, LoadingState, Notice } from '@/components/ui';
 import { canSwapIngredient, recipeForPerson } from '@/data/nutrition-plan';
@@ -45,6 +46,8 @@ import { useNutritionWeek, useShoppingListActions } from '@/state/use-nutrition'
  * Etappe N9: Aus dem Essensplan geöffnet hat jede Zutat mit Rolle den Knopf „Austauschen“ (KONZEPT 6.9) – nur ab heute,
  * nicht für vorgekochte Portionen; getauschte Zutaten stehen mit „(ausgetauscht)“ da, „Enthält: …“ und Haltbarkeit
  * gelten für das, was tatsächlich gekocht wird.
+ * Etappe N10: Aus dem Essensplan geöffnet und der Tag ist da (heute oder vorbei) – „Wie war’s?“ mit Daumen hoch/runter
+ * (KONZEPT 6.10, `RatingCard`).
  */
 export default function RecipeScreen() {
   const router = useRouter();
@@ -328,6 +331,16 @@ export default function RecipeScreen() {
       </Card>
 
       {shoppingCard()}
+
+      {plannedMeal !== null && date !== null && params.platz !== undefined ? (
+        <RatingCard
+          recipeId={recipe.id}
+          title={recipe.title_de}
+          date={date}
+          slot={params.platz}
+          today={today}
+        />
+      ) : null}
 
       <Heading level={2}>{texts.ingredients}</Heading>
       <View style={{ gap: 4 }} testID="recipe-ingredients">

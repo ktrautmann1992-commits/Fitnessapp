@@ -1,6 +1,6 @@
 # Plan Phase 5 – Ernährungs-Engine, Essensplan und Einkaufsliste
 
-**Status:** **freigegeben, Etappen N0 (Plan), N1 (Core: Bedarf, Grenzen, Makros, Timing) und N2a (Inhalte: Schemas, Prüfregeln, Einheiten) umgesetzt** – Stand 11.10.2026. Offene Fragen 16 B: Gründer „Alles wie empfohlen“ (10.10.2026). Gegenprüfung der R2-Blocker durch den Wächter im N0-PR. **N2b Teil 1 (Quelle/Lizenz geklärt, Import-Infrastruktur, Zuordnungs-Vorschlag) umgesetzt** – der Katalog selbst entsteht nach dem Merge über den Workflow `foods-import` (Umsetzungsstand N2b). **N2c (Rezept-Import als Entwurf) und N3 (Core: Essensplan, Meal-Prep, Einkaufsliste, Rezeptsuche) umgesetzt** – Stand 12.10.2026 (Umsetzungsstand N2c/N3). **N4 (App Testmodus: Einrichtung, Tag, Rezept) umgesetzt** – Stand 12.10.2026 (Umsetzungsstand N4). **N2d (Admin-Seiten Ernährung, Sammelfreigabe Rezepte pro Kategorie und Freigabe per ID in `content-review`, Fingerabdruck bestätigter Import-Annahmen) umgesetzt** – Stand 14.10.2026, drei offene Fragen von den Gründern entschieden (Umsetzungsstand N2d). **N5a (App Testmodus: gespeicherter Essensplan, Wochenansicht, „Andere Vorschläge“, „Rezept tauschen“, „Plan aktualisieren“, automatische Neuplanung 6.6) umgesetzt** – Stand 14.10.2026; N5 ist in **N5a** und **N5b** (Einkaufsliste, Meal-Prep-Kochtag, „Zur Einkaufsliste“) geteilt (Umsetzungsstand N5a). **N5b (App Testmodus: Einkaufsliste offline mit eigenen Einträgen und Zeitraum, Neuerzeugung bei Neuplanung W22, „Zur Einkaufsliste“, Meal-Prep-Pläne mit Kochtag und Timern, Auftau-Hinweise; K-a, K-b, K5, K7, N3 K1) umgesetzt** – Stand 14.10.2026; offene Gründer-Entscheidung: Mitteilungen im Hintergrund (`expo-notifications`), Löschfrist weiter offen (Umsetzungsstand N5b). **N5c (App Testmodus: Rezeptsuche mit vorbelegter, erweiterbarer Ernährungsform und gekennzeichneten Treffern, „Zur Einkaufsliste“ für diese Treffer, Ratgeber offline mit R21-Prüfung und „Zahlen aus“) umgesetzt** – Stand 14.10.2026 (Umsetzungsstand N5c). **N6 (PDF P5: Essensplan und Einkaufsliste als PDF, gratis – Dokumentmodell, Renderer-Bausteine `checklist`/`steps`, Druckansichten `ernaehrung/drucken` und `einkaufsliste/drucken`, Knöpfe, nativer Druck, CI-Artefakt) umgesetzt** – Stand 14.10.2026; EAS-Build Android noch von den Gründern zu prüfen (Umsetzungsstand N6). **N9 (Zutaten-Austausch, Prompt D, KONZEPT 6.9, gratis: Austausch-Tabelle mit Regel R23 und Batch-Art, Core `substitute.ts`, Dialog „Zutat austauschen“, Testmodus) umgesetzt** – Stand 14.10.2026; Server-Prüfung S7 und pgTAP mit N7 (Umsetzungsstand N9). **Nachtrag „Erweiterungen 2 (11.10.2026)“** in Abschnitt 19 (Fassung 2 nach Wächter-Prüfung, B1/B2 und S1–S14 eingearbeitet): Rezeptbestand aus `alpha5-rezepte.json`, Import in N2b/N2c, Umfang von Prompt C in N3–N6, neue Etappen N9–N14, W1 und P1. Fassung 3 nach Wächter-Nachprüfung `waechter-plan-5-r2.md` (Urteil „mit Auflagen“, alle Befunde eingearbeitet); Fassung 2 nach `waechter-plan-5.md`.
+**Status:** **freigegeben, Etappen N0 (Plan), N1 (Core: Bedarf, Grenzen, Makros, Timing) und N2a (Inhalte: Schemas, Prüfregeln, Einheiten) umgesetzt** – Stand 11.10.2026. Offene Fragen 16 B: Gründer „Alles wie empfohlen“ (10.10.2026). Gegenprüfung der R2-Blocker durch den Wächter im N0-PR. **N2b Teil 1 (Quelle/Lizenz geklärt, Import-Infrastruktur, Zuordnungs-Vorschlag) umgesetzt** – der Katalog selbst entsteht nach dem Merge über den Workflow `foods-import` (Umsetzungsstand N2b). **N2c (Rezept-Import als Entwurf) und N3 (Core: Essensplan, Meal-Prep, Einkaufsliste, Rezeptsuche) umgesetzt** – Stand 12.10.2026 (Umsetzungsstand N2c/N3). **N4 (App Testmodus: Einrichtung, Tag, Rezept) umgesetzt** – Stand 12.10.2026 (Umsetzungsstand N4). **N2d (Admin-Seiten Ernährung, Sammelfreigabe Rezepte pro Kategorie und Freigabe per ID in `content-review`, Fingerabdruck bestätigter Import-Annahmen) umgesetzt** – Stand 14.10.2026, drei offene Fragen von den Gründern entschieden (Umsetzungsstand N2d). **N5a (App Testmodus: gespeicherter Essensplan, Wochenansicht, „Andere Vorschläge“, „Rezept tauschen“, „Plan aktualisieren“, automatische Neuplanung 6.6) umgesetzt** – Stand 14.10.2026; N5 ist in **N5a** und **N5b** (Einkaufsliste, Meal-Prep-Kochtag, „Zur Einkaufsliste“) geteilt (Umsetzungsstand N5a). **N5b (App Testmodus: Einkaufsliste offline mit eigenen Einträgen und Zeitraum, Neuerzeugung bei Neuplanung W22, „Zur Einkaufsliste“, Meal-Prep-Pläne mit Kochtag und Timern, Auftau-Hinweise; K-a, K-b, K5, K7, N3 K1) umgesetzt** – Stand 14.10.2026; offene Gründer-Entscheidung: Mitteilungen im Hintergrund (`expo-notifications`), Löschfrist weiter offen (Umsetzungsstand N5b). **N5c (App Testmodus: Rezeptsuche mit vorbelegter, erweiterbarer Ernährungsform und gekennzeichneten Treffern, „Zur Einkaufsliste“ für diese Treffer, Ratgeber offline mit R21-Prüfung und „Zahlen aus“) umgesetzt** – Stand 14.10.2026 (Umsetzungsstand N5c). **N6 (PDF P5: Essensplan und Einkaufsliste als PDF, gratis – Dokumentmodell, Renderer-Bausteine `checklist`/`steps`, Druckansichten `ernaehrung/drucken` und `einkaufsliste/drucken`, Knöpfe, nativer Druck, CI-Artefakt) umgesetzt** – Stand 14.10.2026; EAS-Build Android noch von den Gründern zu prüfen (Umsetzungsstand N6). **N9 (Zutaten-Austausch, Prompt D, KONZEPT 6.9, gratis: Austausch-Tabelle mit Regel R23 und Batch-Art, Core `substitute.ts`, Dialog „Zutat austauschen“, Testmodus) umgesetzt** – Stand 14.10.2026; Server-Prüfung S7 und pgTAP mit N7 (Umsetzungsstand N9). **N10 (Bewertung nach dem Essen, Prompt D, KONZEPT 6.10, gratis: Core `ratings.ts` – Daumen runter 8 Wochen, Gründe nur Reihenfolge, `food_dislikes` hart in `filter.ts`; „Wie war’s?“ und Dialog ohne Vorauswahl, Testmodus) umgesetzt** – Stand 14.10.2026; Tabellen mit RLS und pgTAP mit N7 (Umsetzungsstand N10). **Nachtrag „Erweiterungen 2 (11.10.2026)“** in Abschnitt 19 (Fassung 2 nach Wächter-Prüfung, B1/B2 und S1–S14 eingearbeitet): Rezeptbestand aus `alpha5-rezepte.json`, Import in N2b/N2c, Umfang von Prompt C in N3–N6, neue Etappen N9–N14, W1 und P1. Fassung 3 nach Wächter-Nachprüfung `waechter-plan-5-r2.md` (Urteil „mit Auflagen“, alle Befunde eingearbeitet); Fassung 2 nach `waechter-plan-5.md`.
 **Reihenfolge (Gründer-Entscheidung 09.10.2026):** 4b-A0 (erledigt) → Übungs-Glossar und Übungstausch (erledigt bis T2; T3 später mit Supabase) → **Phase 5** → Phase 4b (A → D → E; B/C später).
 **Testphase:** zuerst nur im **Testmodus** (lokal auf dem Gerät, ohne Supabase). Supabase-Teile (Migrationen, RLS, pgTAP) sind hier vollständig geplant, kommen aber in einer späteren Etappe (N7). Einzige Ausnahme: die kleine CHECK-Migration für den Onboarding-Schritt in N4 (S8).
 
@@ -836,7 +836,7 @@ Zusätzlich: K9 (Unverträglichkeit + „mag ich“ derselben Gruppe → ausgesc
 
 **N6 – PDF P5.** Dokumentmodell, Renderer-Blöcke, Druckansichten, Knöpfe, nativer Druck. _DoD:_ PDF-Tests aus 12.1 (inkl. K4-Formulierung), CI-Artefakt, EAS-Build Android geprüft.
 
-**N7 – Supabase.** Migrationen (Enums eigene Datei + `enums.ts`; Inhaltstabellen + `seed_content`; `nutrition_prefs`-Spalten **+ `nutritionSetupAvailable` im Supabase-Backend auf `true`** (R2-S3); `meal_plans`/`items`/`shopping_*` mit RLS, Spaltenrechten, Indizes; RPCs 7.3 inkl. Faktor-≠-1-Prüfung; Widerruf; Export), pgTAP 23–26 + Ergänzungen, `database.types.ts`, `db-sync.test.ts`, `supabase-backend.ts`, Sync-Warteschlange, geschützter Speicher. **Vorher: Fachprüfung durch eine Ernährungsfachkraft** (Gründer-Entscheidung 6). _DoD:_ `db-test` grün, Live-Test mit zwei Geräten; **Zitat- und Wertprüfung gegen die Originale** (Compendium-Codes/MET-Werte, Koletzko 2018, Janmahasatian 2005, Loucks 2011 brutto/netto, BfR-Koffein, Katch-McArdle, D-A-CH-PAL, Iraki 2019) erledigt und alle „VOR LIVEGANG FACHLICH PRÜFEN“-Stellen in `constants.ts` aufgelöst (aus N1 verschoben, Wächter N1 K6). **Erst wenn echte Konten kommen.** **Zusätzlich (Wächter N2d K9):** Rezept-Seed und Supabase-Tabelle transportieren `ingredients`, `steps_de`, `tip_de`, `no_cook`, Zeiten, `equipment_de`, Titel/Beschreibung und `meta.import_assumptions*` **unverändert** (fehlt `meta`, gälte der Stand als „none“ = unsichere Richtung); ein `db-sync`-/pgTAP-Test vergleicht `importAssumptionsState` vor und nach dem Seed. **Zusätzlich (Wächter N5a S4):** `meal_plans`/`meal_plan_items` speichern weder Planband noch `safetyKey`; 6.6 wird dafür ohne diese Felder umgesetzt.
+**N7 – Supabase.** Migrationen (Enums eigene Datei + `enums.ts`; Inhaltstabellen + `seed_content`; `nutrition_prefs`-Spalten **+ `nutritionSetupAvailable` im Supabase-Backend auf `true`** (R2-S3); `meal_plans`/`items`/`shopping_*` mit RLS, Spaltenrechten, Indizes; RPCs 7.3 inkl. Faktor-≠-1-Prüfung; Widerruf; Export), pgTAP 23–26 + Ergänzungen, `database.types.ts`, `db-sync.test.ts`, `supabase-backend.ts`, Sync-Warteschlange, geschützter Speicher. **Vorher: Fachprüfung durch eine Ernährungsfachkraft** (Gründer-Entscheidung 6). _DoD:_ `db-test` grün, Live-Test mit zwei Geräten; **Zitat- und Wertprüfung gegen die Originale** (Compendium-Codes/MET-Werte, Koletzko 2018, Janmahasatian 2005, Loucks 2011 brutto/netto, BfR-Koffein, Katch-McArdle, D-A-CH-PAL, Iraki 2019) erledigt und alle „VOR LIVEGANG FACHLICH PRÜFEN“-Stellen in `constants.ts` aufgelöst (aus N1 verschoben, Wächter N1 K6). **Erst wenn echte Konten kommen.** **Zusätzlich (Wächter N2d K9):** Rezept-Seed und Supabase-Tabelle transportieren `ingredients`, `steps_de`, `tip_de`, `no_cook`, Zeiten, `equipment_de`, Titel/Beschreibung und `meta.import_assumptions*` **unverändert** (fehlt `meta`, gälte der Stand als „none“ = unsichere Richtung); ein `db-sync`-/pgTAP-Test vergleicht `importAssumptionsState` vor und nach dem Seed. **Zusätzlich (Wächter N5a S4):** `meal_plans`/`meal_plan_items` speichern weder Planband noch `safetyKey`; 6.6 wird dafür ohne diese Felder umgesetzt. **Zusätzlich (Wächter N10 H8):** `food_dislikes` **ohne** `created_at`/Zeitstempel (sonst ließe sich ein „Daumen runter“ ohne Grund vom selben Tag auf „Unverträglich“ zurückführen); der Leer-Grund `rated_down` (`SLOT_EXCLUSION_REASONS`) wird in `mealPlanPayloadSchema`/`save_meal_plan` zugelassen; `recipe_ratings` mit CHECK `reason in ('taste','effort','cost','satiety')` und CHECK `reason is null or value = 'down'`, Unique `(user_id, recipe_id)`.
 
 **N8 – Batch-Pipeline Rezepte (optional, später).** `kinds/recipe.ts` (Matrix, Prompts, Structured Output nur mit Katalog-IDs), Probelauf ohne Schlüssel, `content-generate`/`collect` mit `ANTHROPIC_API_KEY`. _DoD:_ Probelauf grün, Kostenschätzung, PR mit Entwürfen.
 
@@ -1097,7 +1097,7 @@ Neue Prüfregeln (Teil von `content:validate`):
 - **Server (S7, mit N7):** `mealPlanPayloadSchema` bekommt die Tausch-Einträge (`food_id` → `substitute_food_id` je Rezept-Zutat); `save_meal_plan` prüft, dass die Ersetzung `published` in `ingredient_substitutions` existiert, und prüft Ernährungsform, Schwein und Unverträglichkeiten erneut mit `groups`, `animal`, `meat_kind` des Ersatzes (`pregnancy_caution` wie bisher nur im Core, R2-K8).
 - _DoD:_ Eigenschaftstest „kein angebotener Tausch verletzt einen Ausschluss“ und „kein Tausch hebt einen Tag über die Obergrenze oder unter die Untergrenze ohne `below_floor`“; **Tests B2:** „Tausch Tofu → Hähnchen im 5-Tage-Plan → ab Tag 2 einfrieren bzw. frisch“, „pflanzlich → Ei ohne `heated` ⇒ `pregnancy_caution`“, „Kochtag vorbei → kein Tausch für vorgekochte Portionen“; Probelauf ohne Schlüssel; App-Dialog „Austauschen“ mit Zahlen aus (S12); pgTAP für die Server-Prüfung in N7.
 
-**N10 – Bewertung nach dem Essen (Prompt D, KONZEPT 6.10, gratis).**
+**N10 – Bewertung nach dem Essen (Prompt D, KONZEPT 6.10, gratis).** _Umgesetzt im Testmodus (14.10.2026), siehe Umsetzungsstand N10._
 
 - Core `ratings.ts`: Daumen hoch → Bonus im Score (`MEAL_PLAN_SCORING`); Daumen runter → 8 Wochen ausgeschlossen (tagesgenau, deterministisch); „Zu aufwendig“ → Bonus für `total_minutes` ≤ 15; „Macht nicht satt“ → Bonus für Rezepte mit mehr Ballaststoffen/Volumen je kcal; „Zu teuer“ → Bonus für niedrigere Kostenschätzung. **Kein Grund ändert Energie, Portionen oder Grenzen** – nur die Reihenfolge (K6).
 - „Unverträglich“ → **nur Dialog** „Zutaten als ‚mag ich nicht‘ übernehmen?“: Zutaten des Rezepts **einzeln auswählbar, nichts vorausgewählt** (S8); gespeichert als **`food_dislikes`** (je Lebensmittel, hart wie „mag ich nicht“; `filter.ts` wird um `food_id`-Abneigungen erweitert, Test). Der Grund „Unverträglich“ wird **nie gespeichert** – nicht in `localDb`, Payload, Logs oder Analytics (Art. 9). Eine echte Unverträglichkeit nur über das Profil mit `health_data`.
@@ -2715,3 +2715,143 @@ Der Gratis-Tausch braucht die Art.-9-Einwilligung.
 vollständigen Tag unter die Untergrenze drücken (`below_floor`, 19.7 „Ausgleich oder `below_floor`“) – oder gilt wie
 beim „Rezept tauschen“ (N3 S3), dass ein vollständiger Tag vollständig bleibt? Umgesetzt ist bis dahin die sichere
 Voreinstellung oben (ausblenden, wenn es andere gibt; sonst mit Hinweis für alle betroffenen Tage).
+
+### N10 – Bewertung nach dem Essen (umgesetzt, 14.10.2026, ohne Commit)
+
+Umfang wie 19.7 N10 (Prompt D, KONZEPT 6.10): gratis, rein regelbasiert – keine Echtzeit-KI. Nur Testmodus;
+Supabase-Modus bis N7 unverändert (Tabellen `recipe_ratings`/`food_dislikes` mit RLS, Export, Löschung per Kaskade und
+pgTAP kommen mit N7, 19.4/19.10).
+
+1. **Core** (`packages/core/src/nutrition/ratings.ts`, Konstanten `RECIPE_RATING_RULES` und `MEAL_PLAN_SCORING.rating*`
+   in `constants.ts`, PRODUKTENTSCHEIDUNG):
+   - Schema `recipeRatingSchema` (strikt: `recipeId`, `value` `up | down`, `reason` nur bei `down`, `ratedOn`) mit den
+     Gründen `taste`, `effort`, `cost`, `satiety` – **„Unverträglich“ ist kein Wert des Schemas**. Die Auswahl der
+     Ansicht (`RECIPE_RATING_CHOICES` mit `intolerant`) geht nur über `recipeRatingFromChoice`: „Unverträglich“ →
+     Grund `null` + `offerFoodDislikes`; Daumen hoch verwirft Gründe.
+   - **Daumen runter:** `recipeBlockedByRating` – gesperrt am Bewertungstag und den 55 Tagen danach
+     (`ratingExclusionLastDay` = Bewertungstag + 55), ab Tag 57 wieder; deterministisch, tagesgenau je Plan-Tag.
+   - **Gründe** wirken im selben Zeitraum (`activeRatingReasons`): „Zu aufwendig“ → `ratingQuick` für Gesamtzeit ≤ 15
+     Min.; „Macht nicht satt“ → `ratingSatiety` × Sättigungs-Kennzahl (`recipeSatietyIndex`: Mittel aus Ballaststoffen je
+     100 kcal ÷ 4 und Gramm je kcal ÷ 1,5, je höchstens 1; Bezugswerte VOR LIVEGANG FACHLICH PRÜFEN); „Zu teuer“ →
+     `ratingCheaper` × (1 − Kosten ÷ 5 €), nur mit **freigegebener** Schätzung; „Schmeckt mir nicht“ ohne weitere Wirkung.
+     **Daumen hoch** → `ratingUp`. Die **Summe** der Boni ist auf `ratingMaxTotal` = 1,25 gedeckelt – strikt unter dem
+     Wiederholungs-Abzug (1,5, Wächter N10 S2).
+   - **Essensplan** (`meal-plan.ts`): `MealPlanInput.ratings`; `CandidatePool.ratings` – der Filter (`result`/`allowed`)
+     kennt die Bewertungen nicht. Abgelehnte Rezepte fallen nur aus den **Vorschlägen**: Plätze (`slotCandidates`),
+     Ergänzungs-Snacks, Meal-Prep-Kochtermine (an keinem abgedeckten Tag inkl. Kochtag) und „Rezept tauschen“. Bleibt
+     nur wegen Bewertungen kein Kandidat, bleibt der Platz leer mit dem neuen Grund `rated_down` (kein Filter-Grund; der
+     gespeicherte Plan kennt ihn). `ratingScoreBonus` geht in `scoreCandidate` ein – nur Reihenfolge.
+   - **Meal-Prep-Plan** (`meal-prep-plan.ts`, 19.6 Nr. 8): Ist ein Rezept des Plans an einem seiner Tage (Kochtag bis
+     Freitag) abgelehnt, wird der ganze Plan nicht angeboten („Passt nicht zu deinen Angaben“, ohne Grund); ein schon
+     gewählter Plan der laufenden Woche bleibt.
+   - **`food_dislikes`**: `MealPlanProfile.dislikedFoods` (Standard leer, ältere Profile gültig); `filter.ts` schließt
+     ein Lebensmittel aus „mag ich nicht“ je Lebensmittel hart aus (Grund `dislike`, auch in `foodAllowedForPerson`,
+     Rezeptsuche, Tausch, Endprüfung über die tatsächlich verwendeten Lebensmittel). Optionale Zutaten werden
+     weggelassen; **kein Ersatzprodukt** (Ersatz deckt nur Gruppen ab); ein abgelehntes Ersatzprodukt wird nie gewählt.
+     Dialog-Hilfen `foodDislikeChoices` (jede Zutat einmal, ohne schon abgelehnte, nichts vorausgewählt),
+     `addFoodDislikes` (leere Auswahl = nichts speichern, Obergrenze 300), `removeFoodDislike`.
+   - **Kein Grund ändert Energie, Portionen oder Grenzen (K6):** Das Planband kommt unverändert aus den Zielen
+     (`clampCalorieTarget`), der Strukturtest K2 kennt `ratings.ts`.
+2. **App** (`apps/mobile`, Testmodus): `UserRows.recipeRatings` (Spalten wie `recipe_ratings`, je Rezept eine Zeile =
+   letzte Bewertung) und `UserRows.foodDislikes`; Prüfung beim Laden (`legacy-rows.ts`: strikt, eigenes Konto, keine
+   Doppelten, unbekannte Felder/Gründe verworfen); Speichern `saveRecipeRating` (nur mit heutigem Datum),
+   `deleteRecipeRatings`, `saveFoodDislikes` (`rating-rows.ts`, Supabase-Modus bis N7 nicht unterstützt); Export
+   `recipe_ratings`/`food_dislikes` (`PENDING_DB_EXPORT_TABLES`); „Testdaten löschen“ und Konto löschen entfernen sie.
+   Engine-Eingabe: `ratings` und `dislikedFoods` aus den Zeilen (`nutrition-plan.ts`, auch im Fingerabdruck).
+   - Rezeptansicht aus dem Essensplan: **„Wie war’s?“** (`components/rating.tsx`) nur ab dem Tag der Mahlzeit; Daumen
+     hoch speichert sofort, die eigene Bewertung („bis einschließlich …“) mit „Bewertung zurücknehmen“.
+   - Neuer Bildschirm **`rezept/bewerten.tsx`**: Grund (freiwillig) mit Wirkung, „Speichern“; nach „Unverträglich“ der
+     Dialog „Zutaten als ‚mag ich nicht‘ übernehmen?“ (Häkchen je Zutat, keins gesetzt, „Übernehmen“/„Nichts
+     übernehmen“, Hinweis auf die echte Unverträglichkeit im Profil). „Unverträglich“ lebt nur im Zustand der Ansicht –
+     nicht in der Adresse, nicht im Gerätespeicher. Lade-, Fehler-, Leer-, Sperr- und „noch nicht“-Zustände; keine kcal.
+   - Neuer Bildschirm **`ernaehrung/abneigungen.tsx`** (Einstellungen → Ernährung → „Abgelehnte Lebensmittel und
+     Bewertungen“): „Wieder zulassen“ je Lebensmittel, „Alle Bewertungen löschen“ mit Nachfrage. Texte in
+     `i18n/de-nutrition.ts` (`rating`, `foodDislikes`, `emptyReasons.rated_down`).
+3. **Tests:** Core `n10-ratings.test.ts` (23): Schema/Datenschutz („Unverträglich“ nie speicherbar, Eigenschaftstest über
+   alle Auswahlen), **„8 Wochen genau“** (Tag 56 gesperrt, Tag 57 frei, Jahreswechsel/Schaltjahr; im Plan: Sperre bis
+   Dienstag → erst ab Mittwoch, abgelaufen = gleicher Plan wie ohne Bewertung), **„Plan bleibt deterministisch“**
+   (gleiche Eingaben, Reihenfolge der Bewertungen egal, leere Liste = bisher), keine automatische Neuplanung durch eine
+   Bewertung, „Rezept tauschen“, leerer Platz `rated_down`, Boni je Grund, **Eigenschaftstest K6** (60 Profile mit
+   zufälligen Bewertungen und Abneigungen, 1–8 Mahlzeiten, Schwangerschaft/`no_targets`, ohne Einwilligung, Meal-Prep:
+   Planband unverändert, Tage im Band, Faktoren 0,5–2,0 bzw. 1, nie ein abgelehntes Rezept an einem gesperrten Tag, nie
+   ein Ausschluss aus `filter.ts`, nie ein abgelehntes Lebensmittel), **„`food_dislikes` schließt aus“** (jede Zutat
+   jedes Rezepts, ohne Ersatzprodukt, Suche, `foodAllowedForPerson`, Plan, automatische Neuplanung), Dialog ohne
+   Vorauswahl, Meal-Prep-Plan mit Daumen runter. Gegenprobe: 8-Wochen-Grenze um einen Tag verschoben → 2 Tests rot;
+   Lebensmittel-Abneigung im Filter entfernt → 6 Tests rot. App-Vitest `nutrition-n10.test.ts` (5): **„Grund
+   ‚Unverträglich‘ landet nie in `localDb`, Export oder Logs“** (Konsole überwacht; es gibt kein Analytics-Modul in der
+   App), manipulierte Gerätespeicher-Zeilen, Datum/Zurücknehmen/Alle löschen, gespeicherter Plan bleibt, Abneigung →
+   Neuplanung. Playwright `e2e/nutrition-rating.spec.ts` (2): **„Daumen runter → nicht mehr im Plan“** (laufender Plan
+   bleibt, „Andere Vorschläge“ ohne das Rezept, keine kcal, morgen noch nicht bewertbar) und **Dialog ohne
+   Vorauswahl** (Grund weder in Adresse noch Gerätespeicher, Abneigung wirkt, wieder zulassen, Bewertungen löschen).
+   Datenexport-Test (Tabellenzahl 27) angepasst.
+
+**Präzisierungen (zur Wächter-Prüfung – vom Plan nicht ausdrücklich geregelt):**
+
+- **Bewertung ändert gespeicherte Pläne nicht automatisch** (seit Wächter N10 S1: für noch nicht begonnene Wochen
+  Hinweis mit „Plan aktualisieren“) (wie K7 für Meal-Prep-Pläne „die laufende Woche bleibt“, Einkauf ist
+  meist erledigt): Sie wirkt ab der nächsten Planung – neue Woche, „Andere Vorschläge“, „Rezept tauschen“, „Plan
+  aktualisieren“, automatische Neuplanung (6.6). Der Hinweis dazu steht in der Ansicht. Ein **neues „mag ich nicht“ je
+  Lebensmittel** ist dagegen ein harter Ausschluss und plant ab heute automatisch neu (wie Gruppen-Abneigungen).
+- **8 Wochen = 56 Tage einschließlich Bewertungstag**; gezählt wird ab dem Bewerten (Datum = heute), nicht ab dem Tag der
+  Mahlzeit. Bewertbar ist eine geplante Mahlzeit ab ihrem Tag („nach dem Essen“), aus der Rezeptansicht des Plans.
+- **Je Rezept eine Bewertung** (die letzte ersetzt die vorige); Gründe nur bei Daumen runter und nur, solange dessen 8
+  Wochen laufen; Daumen hoch gilt, bis er zurückgenommen oder ersetzt wird.
+- **Alle Kandidaten abgelehnt** → der Platz bleibt leer (`rated_down`), statt ein abgelehntes Rezept doch zu nehmen
+  (die übrigen Mahlzeiten und Ergänzungs-Snacks gleichen wie bei jedem leeren Platz aus).
+- **Rezeptsuche** zeigt abgelehnte Rezepte weiter (eigene Suche, kein Vorschlag); `food_dislikes` gelten dort hart.
+- **Datenschutz:** Bewertungen und `food_dislikes` gelten wie „mag ich nicht“ (food_preferences ohne Unverträglichkeit)
+  **nicht als Gesundheitsdatum** – keine Einwilligung nötig, ein Plan wird dadurch nicht zum Gesundheitsplan, ein
+  Widerruf `health_data` löscht sie nicht. Sie sind trotzdem privat: nie angezeigt außer der eigenen Bewertung beim
+  Rezept, nie aggregiert, nie in Logs/Analytics, in Export und Löschung. Grund: Der Gesundheitsbezug („Unverträglich“)
+  wird nie gespeichert, und `food_dislikes` tragen keinen Grund (19.7 N10). **Vormerkung N7:** RLS nur eigene Zeilen,
+  keine Aggregations-Funktion, Löschung per Kaskade, `export_my_data` mit beiden Tabellen, pgTAP „anderer Nutzer sieht
+  nichts“, CHECK `reason` ohne Gesundheitsgrund, Unique `(user_id, recipe_id)`.
+- **Einstellungs-Bildschirm „Abgelehnte Lebensmittel und Bewertungen“** zusätzlich (sonst ließe sich ein hartes „mag ich
+  nicht“ je Lebensmittel nicht mehr zurücknehmen); Bewertungen werden dort nicht aufgelistet, nur gelöscht.
+- Konstanten (Bonus-Gewichte, Sättigungs-Bezugswerte, Kosten-Bezugswert 5 €, Obergrenzen 2.000 Bewertungen/300
+  Lebensmittel) sind PRODUKTENTSCHEIDUNG ohne Schutzwirkung.
+
+**So testest du es am Handy:** HANDY-ANLEITUNG Teil 7c, Abschnitt „Bewertung nach dem Essen“.
+
+**Wächter-Prüfung N10 (14.10.2026): MERGEFÄHIG MIT AUFLAGEN** (Bericht `waechter-n10.md`, keine Blocker). Umgesetzt:
+
+- **S1** Gespeicherter Plan einer **noch nicht begonnenen** Woche mit einem Rezept, das an seinem Tag wegen Daumen
+  runter gesperrt ist: Hinweis „In diesem Plan steht ein Rezept, das du mit Daumen runter bewertet hast“ mit **„Plan
+  aktualisieren“** (`mealPlanHasRatedDownRecipes` in `ratings.ts`, `MealPlanState.ratedDownSuggested`) – keine
+  automatische Neuplanung; die laufende Woche bleibt wie bisher. Texte ehrlich: Die Sperre gilt „bei neuen Planungen“;
+  gespeicherte Pläne ändern sich nur über „Andere Vorschläge“ bzw. „Plan aktualisieren“. Tests: Core (nur vor
+  Wochenbeginn, nur gesperrte Tage, abgelaufen/Daumen hoch/fremdes Rezept nein, „Plan aktualisieren“ entfernt das Rezept),
+  App (nächste Woche gespeichert → Hinweis, Plan unverändert; laufende Woche nie).
+- **S2** Gesamtbonus gedeckelt (`MEAL_PLAN_SCORING.ratingMaxTotal` = 1,25 < `repeat` 1,5); Test „alle Boni zusammen =
+  Deckel < repeat“ und über alle Fixture-Rezepte.
+- **S3** Sperrfenster je Bewertung beim Aufbau des Index vorberechnet (`downByRecipe`), wirkende Gründe je Tag einmal
+  (`scoreArgs`, gemerkt im Index). Ergebnisse unverändert (alle Tests, Determinismus; Test „2.000 Bewertungen = gleicher
+  Plan wie die wirksamen allein“). Messung (19 Rezepte, eine Woche): ohne Bewertungen ca. 13 ms, mit 2.000 ca. 24 ms
+  (vorher 76 → 705 ms laut Bericht); der Rest ist die Zod-Prüfung der 2.000 Zeilen.
+- **S4** Dialogtext: „‚Mag ich nicht‘ schließt nur genau diese Lebensmittel aus – keine verwandten Produkte … und keine
+  Spuren. Bei einer Allergie oder Unverträglichkeit trage sie bitte im Profil … ein“ (Warnhinweis) plus Knopf
+  „Allergien und Unverträglichkeiten im Profil eintragen“ (`/onboarding/nutrition?edit=1`); Playwright prüft beides.
+- **H1** Daumen-hoch-Test verschärft: je Rezept und für drei Ernährungsformen nie seltener als ohne Bewertung, in Summe
+  häufiger. Gegenprobe `ratingUp = −1` → Test rot.
+- **H4** Volle Liste (2.000): verständliche Meldung „Lösche zuerst Bewertungen …“ (`recipeRatingLimitReached`, Ändern
+  einer vorhandenen Bewertung geht weiter). **Nichts wird automatisch aufgeräumt** (G3).
+- **H7** Einstellungs-Bildschirm zeigt beim Laden „…“ statt der rohen Lebensmittel-ID.
+- **H8** Vormerkungen für N7 bei der Etappe N7 (13) ergänzt.
+- **Nur vermerkt:** H2 (Konto-Prüfung ohne Profil, gleiches Muster wie Pläne/Listen), H3 (`rated_on` in der Zukunft
+  wirkt nur in die sichere Richtung), H5 (nach „Übernehmen“ verschwindet das gegessene Gericht aus dem heutigen Plan –
+  hängt an G1), H6 (Datumswechsel um Mitternacht, zweiter Versuch klappt).
+
+**Offen für die Gründer (Wächter N10, nicht umgesetzt):**
+
+- **G1** Nach „Unverträglich“ ein Angebot „In dieser Woche ersetzen“ für die restlichen Tage? (Und: soll Daumen runter
+  gespeicherte Pläne kommender Wochen nur per Hinweis – wie jetzt – oder anders betreffen?)
+- **G2** Alle passenden Rezepte eines Platzes abgelehnt: leerer Platz für 8 Wochen (jetzt) oder Rückfall auf das am
+  längsten abgelehnte Rezept mit Hinweis?
+- **G3** Aufbewahrung: abgelaufene Daumen-runter-Bewertungen löschen, behalten (jetzt) oder nach Frist löschen? Daumen
+  hoch gilt unbefristet; bei 2.000 Bewertungen ist Schluss (Meldung, H4).
+- **G4** Reichweite der Gründe: Ein „Zu teuer“/„Zu aufwendig“ ändert 8 Wochen die Reihenfolge **aller** Vorschläge
+  (jetzt) – oder nur innerhalb derselben Mahlzeit-Art/Kategorie?
+- **G5** Grund-Lebensmittel (Salz, Öl, Wasser, Gewürze) im Dialog anbieten (jetzt), ausblenden oder mit Hinweis „schließt
+  X % der Rezepte aus“?
+- **G6** Bestätigen (Datenschutz/DSFA), dass Bewertungen und `food_dislikes` nicht unter Art. 9 fallen (keine
+  Einwilligung, bleiben beim Widerruf `health_data`).

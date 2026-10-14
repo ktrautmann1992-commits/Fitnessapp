@@ -1626,6 +1626,41 @@ export const MEAL_PLAN_SCORING = {
   sameProteinPrevDay: 1,
   ingredientReuse: 0.5,
   variantJitter: 0.75,
+  /**
+   * Bewertung nach dem Essen (KONZEPT 6.10, Plan 19.7 N10, `RECIPE_RATING_RULES`) – NUR Reihenfolge, nie Filter,
+   * Energie, Portionen oder Grenzen (K6): `ratingUp` Daumen hoch; `ratingQuick` Rezept ≤ 15 Min., solange ein
+   * „Zu aufwendig“ gilt; `ratingSatiety` × Sättigungs-Kennzahl (0–1), solange ein „Macht nicht satt“ gilt;
+   * `ratingCheaper` × (1 − Kosten ÷ Bezugswert, 0–1, nur freigegebene Schätzung), solange ein „Zu teuer“ gilt.
+   * Die SUMME ist auf `ratingMaxTotal` gedeckelt – strikt kleiner als `repeat` (Wächter N10 S2), damit Abwechslung
+   * Vorrang behält und Bewertungen die Passung (`kcalFit`) kaum überstimmen.
+   */
+  ratingUp: 1,
+  ratingQuick: 1,
+  ratingSatiety: 1,
+  ratingCheaper: 1,
+  ratingMaxTotal: 1.25,
+} as const;
+
+/**
+ * Bewertung nach dem Essen (KONZEPT 6.10, docs/PLAN-PHASE-5.md 19.7 N10) – PRODUKTENTSCHEIDUNG, keine Schutzgrenze:
+ * - `downExclusionDays`: Daumen runter → das Rezept wird 8 Wochen (56 Tage, tagesgenau ab dem Bewertungstag) nicht
+ *   mehr vorgeschlagen (KONZEPT 6.10 „8 Wochen“); ab Tag 57 wieder. Gründe („Zu aufwendig“, „Macht nicht satt“,
+ *   „Zu teuer“) wirken im selben Zeitraum.
+ * - `quickMaxMinutes`: „Zu aufwendig“ → Bonus für Rezepte mit Gesamtzeit ≤ 15 Minuten (Plan 19.7).
+ * - `satiety`: Sättigungs-Kennzahl für „Macht nicht satt“ = Mittel aus min(Ballaststoffe je 100 kcal ÷
+ *   `fiberGPer100Kcal`, 1) und min(Gramm je kcal ÷ `gramsPerKcal`, 1) – mehr Ballaststoffe bzw. Volumen je kcal
+ *   (geringe Energiedichte, z. B. Rolls 2012, Physiol Behav; Bezugswerte gerundet, VOR LIVEGANG FACHLICH PRÜFEN).
+ * - `costReferenceEurPerServing`: Bezugswert für „Zu teuer“ (Kosten ≥ Bezugswert → kein Bonus); nur Rezepte mit
+ *   freigegebener Schätzung (19.8 Nr. 7).
+ * - `maxRatings`/`maxFoodDislikes`: Obergrenzen je Person (Gerätespeicher- bzw. Datenbank-Schutz).
+ */
+export const RECIPE_RATING_RULES = {
+  downExclusionDays: 56,
+  quickMaxMinutes: 15,
+  satiety: { fiberGPer100Kcal: 4, gramsPerKcal: 1.5 },
+  costReferenceEurPerServing: 5,
+  maxRatings: 2000,
+  maxFoodDislikes: 300,
 } as const;
 
 /**

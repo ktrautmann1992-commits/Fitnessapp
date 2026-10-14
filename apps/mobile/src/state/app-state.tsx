@@ -7,6 +7,7 @@ import {
   upsertDaySwap,
   type GeneratedPlan,
   type MealPlanWeek,
+  type RecipeRating,
   type StoredShoppingList,
   type PlanLibrary,
   type PlanSafetyRules,
@@ -251,6 +252,12 @@ export interface AppContextValue {
   saveShoppingList: (list: StoredShoppingList) => Promise<void>;
   /** Start des Meal-Prep-Kochtags setzen bzw. zurücksetzen (Timer, Etappe N5b). */
   saveCookDayStart: (weekStart: string, startedAt: string | null) => Promise<void>;
+  /** Bewertung nach dem Essen setzen bzw. zurücknehmen (`null`, Etappe N10). */
+  saveRecipeRating: (recipeId: string, rating: RecipeRating | null) => Promise<void>;
+  /** Alle eigenen Bewertungen löschen (Etappe N10). */
+  deleteRecipeRatings: () => Promise<void>;
+  /** „Mag ich nicht“ je Lebensmittel ersetzen (Etappe N10). */
+  saveFoodDislikes: (foodIds: readonly string[]) => Promise<void>;
 
   // --- Übungstausch (docs/PLAN-UEBUNGEN-GLOSSAR-TAUSCH.md, Etappe T2) ---
   /** „Nur heute“-Tausche vor dem Training (Gerätespeicher, nur dieses Konto; geprüft bei jeder Anzeige im Core). */
@@ -645,6 +652,33 @@ export function AppStateProvider({ children }: { children: ReactNode }) {
         throw new BackendError('not_signed_in');
       }
       setRows(await backend.saveCookDayStart(weekStart, startedAt, rows));
+    },
+    [backend, rows],
+  );
+
+  const saveRecipeRating = useCallback(
+    async (recipeId: string, rating: RecipeRating | null) => {
+      if (!rows) {
+        throw new BackendError('not_signed_in');
+      }
+      setRows(await backend.saveRecipeRating({ recipeId, rating }, rows));
+    },
+    [backend, rows],
+  );
+
+  const deleteRecipeRatings = useCallback(async () => {
+    if (!rows) {
+      throw new BackendError('not_signed_in');
+    }
+    setRows(await backend.deleteRecipeRatings(rows));
+  }, [backend, rows]);
+
+  const saveFoodDislikes = useCallback(
+    async (foodIds: readonly string[]) => {
+      if (!rows) {
+        throw new BackendError('not_signed_in');
+      }
+      setRows(await backend.saveFoodDislikes(foodIds, rows));
     },
     [backend, rows],
   );
@@ -1090,6 +1124,9 @@ export function AppStateProvider({ children }: { children: ReactNode }) {
       mealPlanSaveAttempt,
       saveShoppingList,
       saveCookDayStart,
+      saveRecipeRating,
+      deleteRecipeRatings,
+      saveFoodDislikes,
     }),
     [
       backend,
@@ -1154,6 +1191,9 @@ export function AppStateProvider({ children }: { children: ReactNode }) {
       mealPlanSaveAttempt,
       saveShoppingList,
       saveCookDayStart,
+      saveRecipeRating,
+      deleteRecipeRatings,
+      saveFoodDislikes,
     ],
   );
 

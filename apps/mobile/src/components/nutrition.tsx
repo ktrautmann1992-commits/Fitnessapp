@@ -202,9 +202,12 @@ export function MealPlanStateNotices({
           ) : null}
         </Notice>
       ) : null}
-      {state.updateSuggested && actions ? (
+      {(state.updateSuggested || state.ratedDownSuggested) && actions ? (
         <Notice tone="info" testID="nutrition-plan-update">
-          <Body>{texts.updateSuggested}</Body>
+          {state.updateSuggested ? <Body>{texts.updateSuggested}</Body> : null}
+          {state.ratedDownSuggested ? (
+            <Body testID="nutrition-plan-rated-down">{texts.ratedDownSuggested}</Body>
+          ) : null}
           <Button
             label={texts.update}
             loading={busy === 'update'}

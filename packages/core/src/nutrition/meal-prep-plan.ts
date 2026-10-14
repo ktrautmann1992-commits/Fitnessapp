@@ -16,6 +16,7 @@ import {
   type PinnedMeal,
   pinKey,
 } from './meal-plan';
+import { recipeBlockedOnAnyDay, recipeRatingIndex } from './ratings';
 import type { MealSlotId } from './timing';
 
 /**
@@ -36,6 +37,9 @@ import type { MealSlotId } from './timing';
  * 6. Portionen im Planband (B1); liegt ein Tag auch mit Faktor 0,5 über der Obergrenze → nicht angeboten (G3).
  * 7. Platz-Regeln wie im normalen Plan (`slotFitReasons`, Wächter N3 K1): Wettkampf-Rezepte nie, Zeitlimit werktags
  *    für einen Kochtag bzw. frische Tage an Werktagen – sonst nicht angeboten.
+ * 8. Daumen runter für ein Rezept des Plans (19.6 Nr. 8, K7, 19.7 N10): Der ganze Plan wird nicht angeboten, solange
+ *    die 8 Wochen an einem seiner Tage (Kochtag bis Freitag) laufen. Ein schon gewählter Plan der laufenden Woche
+ *    bleibt (die App zeigt ihn weiter, Bewertungen lösen keine Neuplanung aus).
  */
 
 export type MealPrepPlanOffer =
@@ -90,6 +94,11 @@ export function applyMealPrepPlan(
   );
   const layout = (targets.days[0]?.slots ?? []).map((s) => s.slot);
   const maxMinutes = pool.profile.maxPrepMinutesWeekday;
+  const ratings = recipeRatingIndex(input.ratings);
+  const planDates = [cookDate, ...prepDays.map((d) => addDays(weekStart, d.dayIndex))];
+  if (mealPrepPlan.recipe_ids.some((id) => recipeBlockedOnAnyDay(ratings, id, planDates))) {
+    return { offered: false };
+  }
 
   const assigned: { variant: FilteredRecipe; slot: MealSlotId }[] = [];
   for (const recipeId of mealPrepPlan.recipe_ids) {

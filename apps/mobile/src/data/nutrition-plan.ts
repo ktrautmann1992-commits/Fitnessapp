@@ -4,6 +4,7 @@ import {
   type MealPrepPlan,
   experienceLevelSchema,
   type MealPlanInput,
+  mealPlanHasRatedDownRecipes,
   mealPlanWeekEditable,
   type ReplanReason,
   resolveMealPlanWeek,
@@ -41,6 +42,7 @@ import { todayIso } from '../lib/format';
 import { healthConsentStatus } from '../state/flow';
 import type { ConsentVersions } from './mapping';
 import { storedMealPlanRow, storedShoppingListRow } from './meal-plan-rows';
+import { dislikedFoodsFromRows, ratingsFromRows } from './rating-rows';
 import { healthScreeningForPlan } from './training-plan';
 import type { UserRows } from './types';
 
@@ -175,6 +177,8 @@ export function mealPlanProfileFromRows(
       likes: groupsOf(rows, 'like'),
       dislikes: groupsOf(rows, 'dislike'),
       intolerances: [...access.intolerances],
+      // „Mag ich nicht“ je Lebensmittel (Etappe N10) – kein Gesundheitsdatum, hart wie die Gruppen-Abneigungen.
+      dislikedFoods: dislikedFoodsFromRows(rows),
     },
   };
 }
@@ -192,6 +196,11 @@ export interface MealPlanState {
   reasons: readonly ReplanReason[];
   /** Knopf „Plan aktualisieren“ (Tagesziel ab heute ≥ 5 % geändert, ohne Sicherheitsbezug). */
   updateSuggested: boolean;
+  /**
+   * Gespeicherter Plan einer noch nicht begonnenen Woche enthält ein mit Daumen runter abgelehntes Rezept (Etappe N10,
+   * Wächter S1) – Hinweis mit „Plan aktualisieren“, keine automatische Neuplanung (Regel: `mealPlanHasRatedDownRecipes`).
+   */
+  ratedDownSuggested: boolean;
   /** Hinweis „Dein Plan wurde an deine neuen Angaben angepasst.“ zeigen. */
   autoAdjusted: boolean;
   /** Hinweis „Rezepte wurden überarbeitet – Plan neu erstellt, auch vergangene Tage“ zeigen (K-b). */
@@ -269,6 +278,8 @@ export function computeNutritionWeek(input: {
       today: input.today,
       // Austausch-Tabelle (Etappe N9): ohne sie gilt eine getauschte Mahlzeit als nicht mehr passend (sichere Richtung).
       substitutions: input.library.substitutions,
+      // Bewertungen nach dem Essen (Etappe N10): nur Vorschläge/Reihenfolge, nie Filter, Energie oder Grenzen.
+      ratings: ratingsFromRows(input.rows),
     };
     const row = storedMealPlanRow(input.rows, input.weekStart);
     // Ohne gültige Einwilligung wird ein gespeicherter Plan mit Gesundheitsbezug weder angezeigt noch weiterverwendet
@@ -293,6 +304,10 @@ export function computeNutritionWeek(input: {
       action: resolved.action,
       reasons: resolved.action === 'replanned' ? resolved.reasons : [],
       updateSuggested: resolved.action === 'stored' && resolved.updateSuggested,
+      ratedDownSuggested:
+        editable &&
+        resolved.action === 'stored' &&
+        mealPlanHasRatedDownRecipes(resolved.plan, engineInput.ratings, input.today),
       // Nur in änderbaren Wochen (dort gibt es „Verstanden“; Wächter N5a K1).
       autoAdjusted:
         editable &&
@@ -318,6 +333,7 @@ export function computeNutritionWeek(input: {
             profile.profile,
             input.library.recipes.map((r) => `${r.id}@${r.version}`),
             input.library.substitutions.map((x) => `${x.id}@${x.version}`),
+            engineInput.ratings,
             input.allowDrafts,
             input.today,
           ]),

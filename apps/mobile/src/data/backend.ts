@@ -2,6 +2,7 @@ import type {
   ConsentType,
   DataExportFile,
   MealPlanWeek,
+  RecipeRating,
   StoredShoppingList,
   NutritionLibrary,
   PreferenceChange,
@@ -267,6 +268,22 @@ export interface Backend {
    * Einkaufsliste“. Testmodus: Gerätespeicher (meal-plan-rows.ts, geht ohne Netz); Supabase-Modus erst mit N7.
    */
   saveShoppingList(list: StoredShoppingList, rows: UserRows): Promise<UserRows>;
+  /**
+   * Bewertung nach dem Essen (Etappe N10, KONZEPT 6.10): `rating` setzt bzw. ersetzt die Bewertung des Rezepts (Datum =
+   * heute), `null` nimmt sie zurück. Testmodus: Gerätespeicher (rating-rows.ts, geht ohne Netz); Supabase-Modus erst mit
+   * N7 (`recipe_ratings`). Der Grund „Unverträglich“ kann hier gar nicht übergeben werden (Schema in packages/core).
+   */
+  saveRecipeRating(
+    change: { recipeId: string; rating: RecipeRating | null },
+    rows: UserRows,
+  ): Promise<UserRows>;
+  /** Alle eigenen Bewertungen löschen (Recht auf Löschung, Etappe N10). */
+  deleteRecipeRatings(rows: UserRows): Promise<UserRows>;
+  /**
+   * „Mag ich nicht“ je Lebensmittel ersetzen (Etappe N10, `food_dislikes`): nach dem Dialog „Zutaten übernehmen?“
+   * (bestätigte Auswahl) bzw. „Wieder zulassen“. Testmodus: Gerätespeicher; Supabase-Modus erst mit N7.
+   */
+  saveFoodDislikes(foodIds: readonly string[], rows: UserRows): Promise<UserRows>;
   /** Start des Meal-Prep-Kochtags (Timer) setzen bzw. mit null zurücksetzen (Etappe N5b). */
   saveCookDayStart(weekStart: string, startedAt: string | null, rows: UserRows): Promise<UserRows>;
   /** Wartende Trainings und Entwürfe (R6). */
