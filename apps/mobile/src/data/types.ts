@@ -12,6 +12,7 @@ import type {
   HealthFlag,
   HealthScreeningAnswers,
   MealPlanWeek,
+  StoredShoppingList,
   NutritionSetupColumns,
   NutritionSetupStep,
   NutritionStep,
@@ -83,7 +84,34 @@ export interface MealPlanRow {
   created_at: string;
   /** Automatisch neu geplant (6.6) – Hinweis „Dein Plan wurde an deine neuen Angaben angepasst.“ bis „Verstanden“. */
   auto_adjusted: boolean;
+  /**
+   * Neu erstellt, weil der gespeicherte Plan nicht mehr zu den Rezepten passte (neue Rezept-Version, auch vergangene
+   * Tage, Wächter N5a Nachprüfung K-b) – Hinweis bis „Verstanden“ (Etappe N5b).
+   */
+  recipes_changed: boolean;
+  /**
+   * Start des Meal-Prep-Kochtags (ISO-Zeitstempel) für die Timer (Etappe N5b) – nur, solange der gewählte
+   * Meal-Prep-Plan der Woche derselbe bleibt; null = nicht gestartet.
+   */
+  cook_day_started_at: string | null;
   plan: MealPlanWeek;
+}
+
+/**
+ * Gespeicherte Einkaufsliste einer Woche (docs/PLAN-PHASE-5.md 6.5, 7.2, Etappe N5b) – NUR im Testmodus (Supabase-
+ * Modus bis N7 immer leer; dort shopping_lists/shopping_list_items). Höchstens eine Liste je Woche. `list` ist der
+ * Stand aus packages/core (`parseStoredShoppingList`); die Plan-Einträge werden beim Öffnen immer aus dem aktuellen
+ * Plan neu erzeugt. SENSIBEL, wenn `uses_health_data` (Ersatzprodukte und fehlende Zutaten lassen auf
+ * Unverträglichkeiten schließen) – nie loggen; beim Widerruf samt eigener Einträge gelöscht (K10).
+ */
+export interface ShoppingListRow {
+  id: string;
+  user_id: string;
+  week_start: string;
+  uses_health_data: boolean;
+  created_at: string;
+  updated_at: string;
+  list: StoredShoppingList;
 }
 
 /** Alle Zeilen eines Nutzers – im Testmodus der komplette Gerätespeicher, im Supabase-Modus ein Abbild. */
@@ -126,6 +154,8 @@ export interface UserRows {
   exercisePreferences: ExercisePreferenceRow[];
   /** Essenspläne je Woche (Testmodus ab Etappe N5; Supabase-Modus bis N7 immer leer). */
   mealPlans: MealPlanRow[];
+  /** Einkaufslisten je Woche (Testmodus ab Etappe N5b; Supabase-Modus bis N7 immer leer). */
+  shoppingLists: ShoppingListRow[];
 }
 
 export function emptyUserRows(): UserRows {
@@ -152,6 +182,7 @@ export function emptyUserRows(): UserRows {
     startWeights: [],
     exercisePreferences: [],
     mealPlans: [],
+    shoppingLists: [],
   };
 }
 

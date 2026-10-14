@@ -25,6 +25,7 @@ import {
 } from './filter';
 import {
   type CookEvent,
+  leftoverKeeps,
   mealPrepCookEvents,
   type MealPrepDayUse,
   mealPrepDayUse,
@@ -241,7 +242,7 @@ export class CandidatePool {
   }
 }
 
-function isWeekday(date: string): boolean {
+export function isWeekday(date: string): boolean {
   return isoWeekday(date) <= 5;
 }
 
@@ -898,7 +899,8 @@ export function buildMealPlanWeekDetailed(
         );
         const r = recipe === undefined ? null : pool.result(recipe, exclude);
         const fixed = r !== null && r.ok ? variantForMeal(r.value, old, input.foods) : null;
-        if (fixed !== null) {
+        // Nur, solange der Rest noch hält (Kochtag + Haltbarkeit ≥ Tag, Wächter N5a K-a) – sonst neu belegen.
+        if (fixed !== null && leftoverKeeps(old, date, mealPrepKeeping(fixed, input.foods))) {
           selected.push({
             ...base,
             variant: fixed,

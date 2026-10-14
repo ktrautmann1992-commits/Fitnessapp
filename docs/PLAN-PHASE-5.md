@@ -1,6 +1,6 @@
 # Plan Phase 5 – Ernährungs-Engine, Essensplan und Einkaufsliste
 
-**Status:** **freigegeben, Etappen N0 (Plan), N1 (Core: Bedarf, Grenzen, Makros, Timing) und N2a (Inhalte: Schemas, Prüfregeln, Einheiten) umgesetzt** – Stand 11.10.2026. Offene Fragen 16 B: Gründer „Alles wie empfohlen“ (10.10.2026). Gegenprüfung der R2-Blocker durch den Wächter im N0-PR. **N2b Teil 1 (Quelle/Lizenz geklärt, Import-Infrastruktur, Zuordnungs-Vorschlag) umgesetzt** – der Katalog selbst entsteht nach dem Merge über den Workflow `foods-import` (Umsetzungsstand N2b). **N2c (Rezept-Import als Entwurf) und N3 (Core: Essensplan, Meal-Prep, Einkaufsliste, Rezeptsuche) umgesetzt** – Stand 12.10.2026 (Umsetzungsstand N2c/N3). **N4 (App Testmodus: Einrichtung, Tag, Rezept) umgesetzt** – Stand 12.10.2026 (Umsetzungsstand N4). **N2d (Admin-Seiten Ernährung, Sammelfreigabe Rezepte pro Kategorie und Freigabe per ID in `content-review`, Fingerabdruck bestätigter Import-Annahmen) umgesetzt** – Stand 14.10.2026, drei offene Fragen von den Gründern entschieden (Umsetzungsstand N2d). **N5a (App Testmodus: gespeicherter Essensplan, Wochenansicht, „Andere Vorschläge“, „Rezept tauschen“, „Plan aktualisieren“, automatische Neuplanung 6.6) umgesetzt** – Stand 14.10.2026; N5 ist in **N5a** und **N5b** (Einkaufsliste, Meal-Prep-Kochtag, „Zur Einkaufsliste“) geteilt (Umsetzungsstand N5a). **Nachtrag „Erweiterungen 2 (11.10.2026)“** in Abschnitt 19 (Fassung 2 nach Wächter-Prüfung, B1/B2 und S1–S14 eingearbeitet): Rezeptbestand aus `alpha5-rezepte.json`, Import in N2b/N2c, Umfang von Prompt C in N3–N6, neue Etappen N9–N14, W1 und P1. Fassung 3 nach Wächter-Nachprüfung `waechter-plan-5-r2.md` (Urteil „mit Auflagen“, alle Befunde eingearbeitet); Fassung 2 nach `waechter-plan-5.md`.
+**Status:** **freigegeben, Etappen N0 (Plan), N1 (Core: Bedarf, Grenzen, Makros, Timing) und N2a (Inhalte: Schemas, Prüfregeln, Einheiten) umgesetzt** – Stand 11.10.2026. Offene Fragen 16 B: Gründer „Alles wie empfohlen“ (10.10.2026). Gegenprüfung der R2-Blocker durch den Wächter im N0-PR. **N2b Teil 1 (Quelle/Lizenz geklärt, Import-Infrastruktur, Zuordnungs-Vorschlag) umgesetzt** – der Katalog selbst entsteht nach dem Merge über den Workflow `foods-import` (Umsetzungsstand N2b). **N2c (Rezept-Import als Entwurf) und N3 (Core: Essensplan, Meal-Prep, Einkaufsliste, Rezeptsuche) umgesetzt** – Stand 12.10.2026 (Umsetzungsstand N2c/N3). **N4 (App Testmodus: Einrichtung, Tag, Rezept) umgesetzt** – Stand 12.10.2026 (Umsetzungsstand N4). **N2d (Admin-Seiten Ernährung, Sammelfreigabe Rezepte pro Kategorie und Freigabe per ID in `content-review`, Fingerabdruck bestätigter Import-Annahmen) umgesetzt** – Stand 14.10.2026, drei offene Fragen von den Gründern entschieden (Umsetzungsstand N2d). **N5a (App Testmodus: gespeicherter Essensplan, Wochenansicht, „Andere Vorschläge“, „Rezept tauschen“, „Plan aktualisieren“, automatische Neuplanung 6.6) umgesetzt** – Stand 14.10.2026; N5 ist in **N5a** und **N5b** (Einkaufsliste, Meal-Prep-Kochtag, „Zur Einkaufsliste“) geteilt (Umsetzungsstand N5a). **N5b (App Testmodus: Einkaufsliste offline mit eigenen Einträgen und Zeitraum, Neuerzeugung bei Neuplanung W22, „Zur Einkaufsliste“, Meal-Prep-Pläne mit Kochtag und Timern, Auftau-Hinweise; K-a, K-b, K5, K7, N3 K1) umgesetzt** – Stand 14.10.2026; offene Gründer-Entscheidung: Mitteilungen im Hintergrund (`expo-notifications`), Löschfrist weiter offen (Umsetzungsstand N5b). **Nachtrag „Erweiterungen 2 (11.10.2026)“** in Abschnitt 19 (Fassung 2 nach Wächter-Prüfung, B1/B2 und S1–S14 eingearbeitet): Rezeptbestand aus `alpha5-rezepte.json`, Import in N2b/N2c, Umfang von Prompt C in N3–N6, neue Etappen N9–N14, W1 und P1. Fassung 3 nach Wächter-Nachprüfung `waechter-plan-5-r2.md` (Urteil „mit Auflagen“, alle Befunde eingearbeitet); Fassung 2 nach `waechter-plan-5.md`.
 **Reihenfolge (Gründer-Entscheidung 09.10.2026):** 4b-A0 (erledigt) → Übungs-Glossar und Übungstausch (erledigt bis T2; T3 später mit Supabase) → **Phase 5** → Phase 4b (A → D → E; B/C später).
 **Testphase:** zuerst nur im **Testmodus** (lokal auf dem Gerät, ohne Supabase). Supabase-Teile (Migrationen, RLS, pgTAP) sind hier vollständig geplant, kommen aber in einer späteren Etappe (N7). Einzige Ausnahme: die kleine CHECK-Migration für den Onboarding-Schritt in N4 (S8).
 
@@ -2170,3 +2170,148 @@ Wochen bis zum Widerruf bzw. Löschen. Wächter-Vorschlag (Datensparsamkeit, Art
 löschen; in N7 dasselbe serverseitig mit pgTAP; Einkaufslisten (N5b) mit derselben Frist.
 
 **So testest du es am Handy:** HANDY-ANLEITUNG Teil 7c, Abschnitt „Woche, Tauschen, automatische Anpassung“.
+
+### N5b – App Testmodus: Einkaufsliste, Meal-Prep-Kochtag, „Zur Einkaufsliste“ (umgesetzt, 14.10.2026, ohne Commit)
+
+Umfang wie in N5a festgelegt: Einkaufsliste mit Abhaken offline, eigene Einträge, Zeitraum, Neuerzeugung bei Neuplanung
+(W22 App), Meal-Prep-Kochtag mit Timern und Auftau-Hinweisen, „Zur Einkaufsliste“ (Rezept, Meal-Prep-Plan), dazu die
+für N5b vermerkten Punkte **K-a**, **K-b** (Nachprüfung N5a), **K5**, **K7** (Wächter N5a) und **N3 K1**. Nur
+Testmodus; Supabase-Modus bis N7 unverändert (`saveShoppingList`/`saveCookDayStart` dort „nicht unterstützt“).
+**Nicht umgesetzt:** Löschfrist alter Pläne/Listen (Gründer-Entscheidung offen, siehe N5a – gilt dann für Listen mit).
+
+1. **Core** (`packages/core/src/nutrition/`):
+   - `shopping-list-store.ts` (neu): gespeicherte Liste einer Woche (`StoredShoppingList` = Liste + Woche +
+     Plan-Fingerabdruck `mealPlanShoppingKey` + über „Zur Einkaufsliste“ hinzugefügte Rezepte), Zod strikt
+     (`parseStoredShoppingList`; Zeitraum in der Woche, kein Doppel, eigene Einträge ≤ 80 Zeichen/≤ 100, Rezepte
+     ≤ `SHOPPING_LIST_EXTRAS.recipesMax`, Portionen 1–12). `resolveShoppingList` beim Öffnen: **die Plan-Einträge kommen
+     immer aus dem aktuellen Plan** – aus dem Speicher nur Häkchen (über `item_key`), Markierungen, eigene Einträge,
+     abgehakte „nicht mehr im Plan“, Zeitraum und Rezepte (ein veränderter Speicher kann keine Plan-Zutat
+     unterschieben). Plan geändert → wie `automaticReplan` ab `max(Beginn, heute)` neu (R2-S4, W22).
+     `withShoppingListRange`, `addRecipeToShoppingList` (nur Rezepte, die den Filter der Person bestehen – bei
+     JEDEM Auflösen erneut gefiltert, sonst fallen sie weg), `removeRecipeFromShoppingList`, `newShoppingList`.
+   - `shopping-list.ts`: `buildShoppingList` mit zusätzlichen Zutaten (Rezepte, zusammengezählt je `item_key`),
+     `mergeShoppingList` (gemeinsame Regel für Neuerzeugung), Abhaken/eigene Einträge typerhaltend.
+   - `meal-prep-day.ts` (neu): `cookDayOverview` (Kochtag, je Rezept Tage aus Kühlschrank / Gefrierfach / frisch),
+     `thawHints` (Vorabend), `cookDayProgress`/`cookDayAlarms` (Timer nur aus Zeitstempeln),
+     `defaultMealPrepWeekStart` (Mo–Fr laufende, ab Samstag nächste Woche).
+   - **K-a:** `leftoverKeeps` (`meal-prep.ts`): Rest ab heute nur, wenn Kochtag < Tag und Kühlschrank ≤ Haltbarkeit
+     (R9 mit den tatsächlichen Zutaten) bzw. eingefroren nur bei einfrierbar; sonst neuer Grund `leftover_expired` in
+     `needsAutomaticReplan` → automatische Neuplanung ab heute; die Neuplanung übernimmt solche Reste nicht mehr.
+   - **K-b:** `resolveMealPlanWeek` unterscheidet `created` (kein Plan) und **`rebuilt`** (gespeicherter Plan passt nicht
+     mehr zu den Rezepten, auch vergangene Tage neu).
+   - **N3 K1:** `applyMealPrepPlan` prüft `slotFitReasons` (Meal-Prep-Eignung, Wettkampf nie, Zeitlimit werktags,
+     wenn der Kochtag ein Werktag ist) und das Zeitlimit für frisch gekochte Werktage – sonst nicht angeboten.
+   - Konstante `SHOPPING_LIST_EXTRAS` (PRODUKTENTSCHEIDUNG, keine Schutzgrenze); Export-Tabellen `shopping_lists`/
+     `shopping_list_items` in `PENDING_DB_EXPORT_TABLES` (Datenbank in N7).
+   - Beispiel-Bestand (`demo-nutrition.ts`): drei Meal-Prep-Wochen mit Testwerten (Pasta, vegane Curry-Woche mit
+     Erdnuss, Fisch), Aufbewahrung über `deriveStoragePlan` (R20 grün).
+   - Tests `n5b.test.ts` (27): K-a (Grenzen, manipulierter Kochtag/„eingefroren“, frische Pläne 1–7 Kochtage ×
+     1/4/8 Mahlzeiten ohne `leftover_expired`), K-b, K1 (Wettkampf, Zeitlimit Sonntag/Mittwoch, frische Tage),
+     Liste (Rundweg, ungültige Stände, Manipulation, W22 Schwangerschaft am Donnerstag inkl. hinzugefügtem
+     Räucherlachs-Rezept, vegan + neue Erdnuss-Unverträglichkeit, Zeitraum, 1/12 Portionen, Höchstzahl, nicht
+     passendes Rezept, Gesundheitsbezug), Kochtag (Sonntag/heute, Auftauen, Timer-Grenzen, Uhr zurückgestellt).
+2. **App** (`apps/mobile`):
+   - `UserRows.shoppingLists` (`ShoppingListRow`, höchstens eine je Woche), `MealPlanRow.recipes_changed` (K-b) und
+     `cook_day_started_at` (Kochtag-Start, bleibt nur bei gleichem Meal-Prep-Plan); Gerätespeicher älterer Versionen
+     über `upgradeStoredRows` (nur gültige Listen des eigenen Kontos).
+   - `Backend.saveMealPlan(…, { shoppingList })` speichert Plan **und** neu erzeugte Liste in EINEM Schreibvorgang
+     (R2-S4); `saveShoppingList`, `saveCookDayStart`; Regeln in `meal-plan-rows.ts` (Zod, laufende/nächste Woche, Liste
+     mit Gesundheitsbezug nur mit gültiger Einwilligung). Alle Schreibvorgänge nacheinander (S3).
+   - `computeNutritionWeek` löst auch die Liste auf; `useNutritionWeek` speichert einen neuen/neu geplanten Plan
+     zusammen mit der angepassten Liste. Tauschen, „Andere Vorschläge“, „Plan aktualisieren“ und „Meal-Prep-Plan
+     wählen“ erzeugen eine gespeicherte Liste im selben Schritt neu. `useShoppingListActions` für die Bildschirme.
+   - Bildschirme: **Einkaufsliste** (`einkaufsliste/index.tsx`: Diese/Nächste Woche, Abteilungen, Häkchen, „Erledigte
+     ausblenden“, Vorrat eingeklappt, eigener Eintrag mit Abteilung, Zeitraum, hinzugefügte Rezepte, Markierungen
+     „Menge geändert“/„nicht mehr im Plan“, Hinweis „angepasst“, Offline-Hinweis, Lade-/Fehler-/Leer-Zustände),
+     **Meal-Prep-Pläne** (`meal-prep/index.tsx`, ausgegraut „Passt nicht zu deinen Angaben“ ohne Grund und ohne
+     Rezeptnamen), **Plan** (`meal-prep/[id].tsx`: Rezepte, Kochtag, Aufbewahrung, „Plan für diese Woche wählen“ mit
+     Nachfrage, danach „Zur Einkaufsliste“ und „Zum Kochtag“), **Kochtag** (`meal-prep/kochtag.tsx`: Start/Neu
+     starten/Beenden, Restzeit bis zum nächsten Schritt, aktueller Schritt, was eingefroren/gekühlt wird).
+     **Rezept:** „Zur Einkaufsliste (N Portionen)“ mit dem Portionswähler. **Tag:** Links „Einkaufsliste“ und
+     „Meal-Prep-Pläne“, Auftau-Hinweis „Heute Abend auftauen“.
+   - **K5:** `useToday` – Tag und Woche wechseln um Mitternacht und beim Zurückkehren in die App (Ernährung,
+     Einkaufsliste, Meal-Prep). **K7:** Knopf „Erneut versuchen“ beim gescheiterten automatischen Speichern.
+   - Widerruf und „Gespeicherte Unverträglichkeiten löschen“ löschen Listen mit Gesundheitsbezug **samt eigener
+     Einträge** (K10); Export `shopping_lists`/`shopping_list_items` (Spalten wie 7.2 plus Zeitraum, Rezepte,
+     Markierungen) und `recipes_changed`/`cook_day_started_at` bei `meal_plans`.
+   - „Zahlen aus“: Einkaufsliste, Meal-Prep und Kochtag zeigen ohnehin keine kcal und keine Makro-Gramm.
+3. **Tests:** App-Vitest `nutrition-n5b.test.ts` (12: Speicher-Regeln, Gerätespeicher, Widerruf, Löschen, Export,
+   Häkchen nach Neustart, W22-Ablauf bis „gespeichert“, abgelehntes Speichern ändert auch den Plan nicht,
+   gleichzeitiges Speichern, Meal-Prep-Angebote, Kochtag-Start, K-b), Format-Tests (Einträge, Restzeit, Mitternacht).
+   Playwright `e2e/nutrition-shopping.spec.ts` (5): Abhaken und eigener Eintrag mit `setOffline`, Häkchen nach Neu
+   laden, Erledigte ausblenden, Zeitraum; **W22 App** (schwanger am Mittwoch → Plan und Liste angepasst, rohe
+   Mascarpone-Creme nicht mehr offen, Häkchen/eigene Einträge bleiben, keine Schleife); „Zur Einkaufsliste“ aus dem
+   Rezept; **Meal-Prep-Woche** (ausgegraut ohne Grund, Plan wählen → Einkaufsliste → Kochtag, Timer nach Neuladen und
+   ohne Netz, „Zahlen aus“ → keine kcal); Erdnuss-Unverträglichkeit → vegane Woche ausgegraut.
+
+**Abweichungen / Präzisierungen:**
+
+- **Auch manuelle Plan-Änderungen** (Tauschen, „Andere Vorschläge“, „Plan aktualisieren“, Meal-Prep-Plan wählen)
+  erzeugen eine gespeicherte Liste mit derselben Regel neu wie die automatische Neuplanung (6.5/6.6 nennen nur die
+  automatische; N9 verlangt es für den Zutaten-Tausch). Sonst stünde nach einem Tausch eine veraltete Liste da.
+- **Eine Liste entsteht erst bei der ersten Änderung** (Abhaken, eigener Eintrag, Zeitraum, „Zur Einkaufsliste“);
+  bis dahin wird sie aus dem Plan angezeigt. Der Hinweis „Einkaufsliste angepasst“ hängt am Hinweis „Plan angepasst“
+  (bis „Verstanden“ in der Ernährung).
+- **Zeitraum** nur innerhalb der Woche Mo–So (Liste je Woche). Beim Ändern fallen Einträge außerhalb ganz weg (auch
+  abgehakte – „nicht mehr im Plan“ wäre falsch); Häkchen bleiben, wo der Eintrag bleibt.
+- **„Zur Einkaufsliste“ aus dem Rezept:** Einträge werden mit den Plan-Einträgen zusammengezählt; erneutes Hinzufügen
+  setzt die Portionenzahl; aus dem Essensplan geöffnet kein Knopf (steht schon über den Plan drauf). Die Kennzeichnung
+  „passt nicht zu deiner Ernährungsform“ für Treffer der erweiterten Suche (19.6 K3/G4) kommt mit der Suche (N5c).
+- **„Zur Einkaufsliste“ aus dem Meal-Prep-Plan** gibt es nach „Plan wählen“ (Ablauf KONZEPT 6.7: Plan wählen →
+  Einkaufsliste → Kochtag): Die Mengen hängen vom Plan der Person ab. Der Knopf legt die Liste der Woche an und öffnet
+  sie.
+- **Gesundheitsbezug der Liste:** Plan mit Gesundheitsbezug oder hinzugefügte Rezepte, die mit Unverträglichkeiten
+  bzw. Gesundheits-Flags gefiltert wurden. Ohne gültige Einwilligung wird eine solche Liste nicht weiterverwendet
+  (wie N5a S1 beim Plan); eigene Einträge darin gehen dann verloren (sichere Richtung).
+- **Gewählter Meal-Prep-Plan** gilt, bis „Andere Vorschläge“, „Plan aktualisieren“ oder die automatische Neuplanung
+  die Tage ab heute ersetzen (Nachfrage-Text sagt das). Ausgegraute Pläne zeigen keine Rezeptnamen.
+- **Timer:** Start als Zeitstempel am gespeicherten Plan (`cook_day_started_at`); Fortschritt nur aus Zeitstempeln.
+- **Lokale Benachrichtigung – offene Gründer-Entscheidung:** Umgesetzt ist, was ohne neue native Abhängigkeit geht:
+  im Browser Mitteilungen über die Notification-API (Erlaubnis erst nach Tippen auf „Kochtag starten“; nur solange die
+  Seite offen ist), in der App Vibration und Ansage für den Bildschirmleser, solange sie geöffnet ist. Mitteilungen im
+  Hintergrund bräuchten `expo-notifications` (neue native Abhängigkeit; EAS richtet dafür auf iOS die
+  Push-Fähigkeit ein, Android fragt nach der Mitteilungs-Erlaubnis, neuer Development Build) – **offene
+  Gründer-Entscheidung**, Empfehlung und Bedingungen siehe „Wächter-Prüfung N5b“ unten.
+- **Auftau-Hinweis** zusätzlich in der Tagesansicht (Vorabend), nicht nur im Kochtag.
+- **Nebenbei behoben:** Ein Gerätespeicher mit ungültigem Datum ließ `parseStoredMealPlanWeek` werfen statt „ungültig“
+  zu melden (Zod verfeinert nach Formatfehlern weiter) – `weekStartSchema` und die Tages-Prüfung werfen nicht mehr.
+- **Nicht in N5b:** Druckansicht/Teilen der Liste (Abschnitt 11, Prompt F), Supabase-Tabellen und
+  `replace_shopping_list`/Offline-Warteschlange (N7), N3 K4 (Rundungssprung).
+
+**So testest du es am Handy:** HANDY-ANLEITUNG Teil 7c, Abschnitt „Einkaufsliste und Meal-Prep-Kochtag“.
+
+**Wächter-Prüfung N5b (14.10.2026): FREIGABE MIT AUFLAGEN** (Bericht `waechter-n5b.md`, kein Blocker). Umgesetzt:
+
+- **S1** Texte ohne falsche Zusage: „Kochtag läuft“ sagt jetzt, dass die Zeit weiterläuft, Erinnerungen aber nur
+  kommen, solange App bzw. Seite geöffnet ist; der Browser-Hinweis verspricht keine Mitteilungen der App im
+  Hintergrund mehr.
+- **K1** Abgehakte Einträge, die schon im Gerätespeicher als „nicht mehr im Plan“ standen, bleiben nur, wenn das
+  Lebensmittel für die Person heute erlaubt ist (`foodAllowedForPerson` in `filter.ts`: Katalog-Prüfung,
+  Ernährungsform, Schwein, Unverträglichkeit, „mag ich nicht“, Schwangerschafts-Hinweis). Frisch weggefallene,
+  abgehakte Einträge bleiben nach R2-S4 einmal mit „nicht mehr im Plan“ stehen; ist ihr Lebensmittel ausgeschlossen
+  (z. B. Räucherlachs nach „schwanger“), verschwinden sie beim nächsten Öffnen. Test „K1“ und Folge-Öffnen im
+  W22-Test (core).
+- **K2** Rezeptansicht und Tagesansicht folgen „heute“ über Mitternacht (`useToday`; die Tagesansicht nur, solange
+  kein anderer Tag gewählt ist).
+- **K4** Widerrufs-Dialog: eigene Einträge in Listen ohne Gesundheitsbezug bleiben – mit Hinweis, sie dort selbst zu
+  löschen, wenn sie etwas über die Gesundheit verraten.
+- **K5** E2E W22 prüft jetzt, dass jeder abgehakte Eintrag abgehakt bleibt (Ausnahme nur K1).
+- **K6** `cookDayAlarms` ist **vorbereitet** (Zeitpunkte für lokale Mitteilungen), in der App noch ungenutzt.
+- **Nur dokumentiert:** **K3** `thawHints` sucht „morgen“ nur in derselben Woche (Sonntag → Montag der nächsten Woche
+  ohne Hinweis); mit den heutigen Meal-Prep-Regeln ist ein Montag nie eingefroren. **K7** Nach einer neuen Fassung der
+  Einwilligung (kein Widerruf) bleibt eine Liste mit Gesundheitsbezug unbenutzt im Speicher, bis sie sich das nächste
+  Mal ändert (wie K-c aus N5a) – zusammen mit der Löschfrist lösen.
+
+**Offene Gründer-Entscheidung / Vormerkung für den ersten Development Build – Mitteilungen im Hintergrund
+(`expo-notifications`):** Wächter-Empfehlung: **nicht jetzt**, sondern gebündelt mit dem ersten Development Build (ab
+Wearables/Abos bzw. N7). Grund: neue native Abhängigkeit mit Config-Plugin (iOS Push-Entitlement, Android-Abfrage
+POST_NOTIFICATIONS), neuer EAS-Build, in Expo Go nicht vollständig testbar; der Testmodus funktioniert ohne (die
+Timer stimmen nach dem Öffnen). **Bedingungen für die spätere Umsetzung:**
+
+1. Nur lokale Mitteilungen (`scheduleNotificationAsync`) aus `cookDayAlarms`, kein Push-Server.
+2. Erlaubnis erst nach „Kochtag starten“.
+3. Text auf dem Sperrbildschirm allgemein („Kochtag: nächster Schritt“), Schritt-Text erst in der App – nie
+   Rezeptnamen auf dem Sperrbildschirm.
+4. Mitteilungen abbrechen bei „Beenden“, „Neu starten“, Planwechsel, Neuplanung, Widerruf und Abmelden.
+5. Keine Mitteilungen für Schritte in der Vergangenheit.
+6. Test: Nach Löschen bzw. Widerruf bleiben keine geplanten Mitteilungen übrig.

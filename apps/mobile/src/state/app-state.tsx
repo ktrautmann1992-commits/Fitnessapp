@@ -7,6 +7,7 @@ import {
   upsertDaySwap,
   type GeneratedPlan,
   type MealPlanWeek,
+  type StoredShoppingList,
   type PlanLibrary,
   type PlanSafetyRules,
   REQUIRED_CONSENT_TYPES,
@@ -216,18 +217,40 @@ export interface AppContextValue {
    * Essensplan der Woche speichern (Etappe N5: Tauschen, „Andere Vorschläge“, „Plan aktualisieren“, Hinweis
    * „Verstanden“). Fehler werfen (Anzeige im Bildschirm).
    */
-  saveMealPlan: (plan: MealPlanWeek, options: { autoAdjusted: boolean }) => Promise<void>;
+  saveMealPlan: (
+    plan: MealPlanWeek,
+    options: {
+      autoAdjusted: boolean;
+      recipesChanged?: boolean;
+      /** Neu erzeugte Einkaufsliste der Woche – im selben Schritt gespeichert (R2-S4, Etappe N5b). */
+      shoppingList?: StoredShoppingList | undefined;
+    },
+  ) => Promise<void>;
   /**
-   * Automatisch speichern, was `resolveMealPlanWeek` beim Öffnen ergeben hat (neu erstellt bzw. automatisch neu
-   * geplant, 6.6) – je Woche und Angaben-Fingerabdruck höchstens einmal (keine Schleife, kein Doppel aus zwei
-   * Bildschirmen). Fehler setzen `mealPlanSaveFailed` (der angezeigte Plan ist trotzdem der richtige).
+   * Automatisch speichern, was `resolveMealPlanWeek`/`resolveShoppingList` beim Öffnen ergeben haben (neu erstellt bzw.
+   * automatisch neu geplant, 6.6; Einkaufsliste an den Plan angepasst, W22) – je Woche und Fingerabdruck höchstens
+   * einmal (keine Schleife, kein Doppel aus zwei Bildschirmen). Fehler setzen `mealPlanSaveFailed` (angezeigt wird
+   * trotzdem der richtige Stand). `plan: null` = nur die Liste.
    */
   persistMealPlan: (
-    plan: MealPlanWeek,
-    options: { autoAdjusted: boolean; inputsKey: string },
+    plan: MealPlanWeek | null,
+    options: {
+      autoAdjusted: boolean;
+      recipesChanged: boolean;
+      inputsKey: string;
+      shoppingList?: StoredShoppingList | undefined;
+    },
   ) => Promise<void>;
   /** Das automatische Speichern des Essensplans ist gescheitert. */
   mealPlanSaveFailed: boolean;
+  /** „Erneut versuchen“ nach gescheitertem automatischem Speichern (Wächter N5a K7). */
+  retryMealPlanSave: () => void;
+  /** Zähler der Versuche (ändert sich bei „Erneut versuchen“, damit das automatische Speichern neu läuft). */
+  mealPlanSaveAttempt: number;
+  /** Einkaufsliste der Woche speichern (Etappe N5b: Abhaken, eigene Einträge, Zeitraum, „Zur Einkaufsliste“). */
+  saveShoppingList: (list: StoredShoppingList) => Promise<void>;
+  /** Start des Meal-Prep-Kochtags setzen bzw. zurücksetzen (Timer, Etappe N5b). */
+  saveCookDayStart: (weekStart: string, startedAt: string | null) => Promise<void>;
 
   // --- Übungstausch (docs/PLAN-UEBUNGEN-GLOSSAR-TAUSCH.md, Etappe T2) ---
   /** „Nur heute“-Tausche vor dem Training (Gerätespeicher, nur dieses Konto; geprüft bei jeder Anzeige im Core). */
@@ -280,6 +303,7 @@ export function AppStateProvider({ children }: { children: ReactNode }) {
     kind: 'idle',
   });
   const [mealPlanSaveFailed, setMealPlanSaveFailed] = useState(false);
+  const [mealPlanSaveAttempt, setMealPlanSaveAttempt] = useState(0);
   /** Automatisch gespeicherte Essenspläne: Woche | Angaben-Fingerabdruck (nur Arbeitsspeicher, Etappe N5). */
   const persistedMealPlansRef = useRef(new Set<string>());
   const appendingRef = useRef(false);
@@ -540,7 +564,14 @@ export function AppStateProvider({ children }: { children: ReactNode }) {
   );
 
   const saveMealPlan = useCallback(
-    async (plan: MealPlanWeek, options: { autoAdjusted: boolean }) => {
+    async (
+      plan: MealPlanWeek,
+      options: {
+        autoAdjusted: boolean;
+        recipesChanged?: boolean;
+        shoppingList?: StoredShoppingList | undefined;
+      },
+    ) => {
       if (!rows) {
         throw new BackendError('not_signed_in');
       }
@@ -551,17 +582,69 @@ export function AppStateProvider({ children }: { children: ReactNode }) {
   );
 
   const persistMealPlan = useCallback(
-    async (plan: MealPlanWeek, options: { autoAdjusted: boolean; inputsKey: string }) => {
-      const key = `${plan.weekStart}|${options.inputsKey}`;
+    async (
+      plan: MealPlanWeek | null,
+      options: {
+        autoAdjusted: boolean;
+        recipesChanged: boolean;
+        inputsKey: string;
+        shoppingList?: StoredShoppingList | undefined;
+      },
+    ) => {
+      const weekStart = plan?.weekStart ?? options.shoppingList?.weekStart;
+      if (weekStart === undefined) return;
+      const key = `${weekStart}|${options.inputsKey}|${plan === null ? '-' : 'plan'}|${
+        options.shoppingList?.planKey ?? '-'
+      }`;
       if (!rows || persistedMealPlansRef.current.has(key)) return;
       persistedMealPlansRef.current.add(key);
       try {
-        setRows(await backend.saveMealPlan(plan, { autoAdjusted: options.autoAdjusted }, rows));
+        if (plan !== null) {
+          setRows(
+            await backend.saveMealPlan(
+              plan,
+              {
+                autoAdjusted: options.autoAdjusted,
+                recipesChanged: options.recipesChanged,
+                shoppingList: options.shoppingList,
+              },
+              rows,
+            ),
+          );
+        } else if (options.shoppingList !== undefined) {
+          setRows(await backend.saveShoppingList(options.shoppingList, rows));
+        }
         setMealPlanSaveFailed(false);
       } catch {
         // Ohne Details (Gesundheitsdaten); der angezeigte Plan bleibt der nach den aktuellen Angaben.
         setMealPlanSaveFailed(true);
       }
+    },
+    [backend, rows],
+  );
+
+  const retryMealPlanSave = useCallback(() => {
+    persistedMealPlansRef.current.clear();
+    setMealPlanSaveFailed(false);
+    setMealPlanSaveAttempt((n) => n + 1);
+  }, []);
+
+  const saveShoppingList = useCallback(
+    async (list: StoredShoppingList) => {
+      if (!rows) {
+        throw new BackendError('not_signed_in');
+      }
+      setRows(await backend.saveShoppingList(list, rows));
+    },
+    [backend, rows],
+  );
+
+  const saveCookDayStart = useCallback(
+    async (weekStart: string, startedAt: string | null) => {
+      if (!rows) {
+        throw new BackendError('not_signed_in');
+      }
+      setRows(await backend.saveCookDayStart(weekStart, startedAt, rows));
     },
     [backend, rows],
   );
@@ -1003,6 +1086,10 @@ export function AppStateProvider({ children }: { children: ReactNode }) {
       saveMealPlan,
       persistMealPlan,
       mealPlanSaveFailed,
+      retryMealPlanSave,
+      mealPlanSaveAttempt,
+      saveShoppingList,
+      saveCookDayStart,
     }),
     [
       backend,
@@ -1063,6 +1150,10 @@ export function AppStateProvider({ children }: { children: ReactNode }) {
       saveMealPlan,
       persistMealPlan,
       mealPlanSaveFailed,
+      retryMealPlanSave,
+      mealPlanSaveAttempt,
+      saveShoppingList,
+      saveCookDayStart,
     ],
   );
 

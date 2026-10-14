@@ -103,7 +103,7 @@ test('Widerruf mit Angebot: Unverträglichkeit → „mag ich nicht“, „mag i
   await page.getByRole('button', { name: 'Gesundheitsdaten: Widerrufen' }).click();
   const dialog = page.getByTestId('dialog-revoke');
   await expect(dialog).toContainText('Deine Unverträglichkeiten werden gelöscht');
-  await expect(dialog).toContainText('auch deine eigenen Einträge in der Einkaufsliste');
+  await expect(dialog).toContainText('auch deine eigenen Einträge darin');
   const convert = page.getByTestId('revoke-convert');
   // Aktive Wahl – nicht vorausgewählt.
   await expect(convert).toHaveAttribute('aria-checked', 'false');

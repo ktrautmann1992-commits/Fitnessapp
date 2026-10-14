@@ -16,7 +16,6 @@ import { Screen } from '@/components/screen';
 import { Body, Button, Card, ErrorState, Heading, LoadingState, Notice } from '@/components/ui';
 import { recipeForPerson } from '@/data/nutrition-plan';
 import { t } from '@/i18n';
-import { todayIso } from '@/lib/format';
 import {
   containsText,
   formatAmount,
@@ -24,9 +23,10 @@ import {
   formatKcal,
   formatNumberDe,
 } from '@/lib/nutrition-format';
+import { useToday } from '@/lib/use-today';
 import { useApp } from '@/state/app-state';
 import { resolveEntryRoute } from '@/state/flow';
-import { useNutritionWeek } from '@/state/use-nutrition';
+import { useNutritionWeek, useShoppingListActions } from '@/state/use-nutrition';
 
 /**
  * Rezeptansicht (docs/PLAN-PHASE-5.md 8.2 Nr. 4, 19.6, Etappe N4): Titel, Kennzeichnung „KI-Entwurf – fachlich prüfen“
@@ -34,14 +34,24 @@ import { useNutritionWeek } from '@/state/use-nutrition';
  * Zeiten, Portion (aus dem Essensplan bzw. Portionswähler 1–12), Zutaten mit Mengen, Ersatz- und Weglass-Hinweise,
  * Schritte, Nährwerte je Portion (ausblendbar), „Enthält: …“ inkl. Kokos, Spuren-Hinweis, HFI/Zöliakie, Meal-Prep-
  * Haltbarkeit, Nährwert-Quelle. Jedes Rezept läuft vorher durch den Filter der Person (recipeForPerson).
+ * Etappe N5b: „Zur Einkaufsliste“ mit der gewählten Portionenzahl (19.6) – aus dem Essensplan geöffnet steht das
+ * Rezept schon über den Plan auf der Liste.
  */
 export default function RecipeScreen() {
   const router = useRouter();
   const app = useApp();
   const params = useLocalSearchParams<{ id: string; tag?: string; platz?: string }>();
   const date = isoDateSchema.safeParse(params.tag).success ? (params.tag as string) : null;
-  const view = useNutritionWeek(date ?? todayIso());
+  // Ohne Tag: heute – wechselt um Mitternacht mit (Wächter N5a K5 / N5b K2).
+  const today = useToday();
+  const view = useNutritionWeek(date ?? today);
   const [servings, setServings] = useState<number | null>(null);
+  const shoppingActions = useShoppingListActions(view.week);
+  const [shoppingBusy, setShoppingBusy] = useState(false);
+  const [shoppingMessage, setShoppingMessage] = useState<{
+    text: string;
+    tone: 'success' | 'danger';
+  } | null>(null);
 
   if (app.status.kind === 'loading') {
     return (
@@ -156,6 +166,75 @@ export default function RecipeScreen() {
     ).values(),
   ];
 
+  const shoppingTexts = t.nutrition.shopping.fromRecipe;
+  const onList = shoppingActions?.list.recipes.find((r) => r.recipeId === recipe.id) ?? null;
+  const weekForList = view.week.targets.weekStart;
+  async function addToShopping() {
+    if (!shoppingActions) return;
+    setShoppingBusy(true);
+    setShoppingMessage(null);
+    try {
+      const outcome = await shoppingActions.addRecipe(recipe.id, picked);
+      setShoppingMessage(
+        outcome.kind === 'ok'
+          ? { text: shoppingTexts.added(picked), tone: 'success' }
+          : outcome.kind === 'failed'
+            ? { text: t.nutrition.shopping.failed[outcome.reason], tone: 'danger' }
+            : { text: outcome.message || t.nutrition.shopping.saveFailed, tone: 'danger' },
+      );
+    } catch {
+      setShoppingMessage({ text: t.nutrition.shopping.saveFailed, tone: 'danger' });
+    } finally {
+      setShoppingBusy(false);
+    }
+  }
+  const openList = (
+    <Button
+      label={shoppingTexts.open}
+      variant="secondary"
+      onPress={() => router.push(`/einkaufsliste?woche=${weekForList}` as Href)}
+      testID="recipe-shopping-open"
+    />
+  );
+  function shoppingCard(): ReactNode {
+    if (plannedMeal) {
+      return (
+        <Card>
+          <Body muted testID="recipe-shopping-in-plan">
+            {shoppingTexts.inPlan}
+          </Body>
+          {shoppingActions ? openList : null}
+        </Card>
+      );
+    }
+    if (!shoppingActions) {
+      return view.week?.kind === 'ready' && view.week.plan !== null ? (
+        <Body muted>{shoppingTexts.notEditable}</Body>
+      ) : null;
+    }
+    return (
+      <Card>
+        <Button
+          label={shoppingTexts.add(picked)}
+          loading={shoppingBusy}
+          onPress={() => void addToShopping()}
+          testID="recipe-shopping-add"
+        />
+        {onList !== null && shoppingMessage === null ? (
+          <Body muted testID="recipe-shopping-on-list">
+            {shoppingTexts.added(onList.servings)}
+          </Body>
+        ) : null}
+        {shoppingMessage ? (
+          <Notice tone={shoppingMessage.tone} testID="recipe-shopping-message">
+            {shoppingMessage.text}
+          </Notice>
+        ) : null}
+        {onList !== null || shoppingMessage?.tone === 'success' ? openList : null}
+      </Card>
+    );
+  }
+
   return shell(
     recipe.title_de,
     <>
@@ -208,6 +287,8 @@ export default function RecipeScreen() {
           </View>
         )}
       </Card>
+
+      {shoppingCard()}
 
       <Heading level={2}>{texts.ingredients}</Heading>
       <View style={{ gap: 4 }} testID="recipe-ingredients">

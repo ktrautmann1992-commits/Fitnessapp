@@ -9,6 +9,7 @@ import {
   mealPlanBand,
   variantForMeal,
 } from './meal-plan';
+import { leftoverKeeps, mealPrepKeeping } from './meal-prep';
 import { rebuildShoppingList, type ShoppingList } from './shopping-list';
 
 /**
@@ -22,6 +23,7 @@ export const REPLAN_REASONS = [
   'caps_changed',
   'out_of_band',
   'recipe_excluded',
+  'leftover_expired',
 ] as const;
 export type ReplanReason = (typeof REPLAN_REASONS)[number];
 
@@ -37,8 +39,8 @@ type ReplanInput = Omit<MealPlanInput, 'existingPlan' | 'variant'>;
 /**
  * Muss der Plan ab heute automatisch neu geplant werden (6.6)? Ja, wenn sich an einem Tag ab heute der Modus oder
  * die Deckel geändert haben (neues Flag, 18./65. Geburtstag, BMI-Klasse, Check nachgeholt, Widerruf), eine
- * Tagessumme außerhalb des aktuellen Planbands liegt oder ein Rezept den Filter nicht mehr besteht (neue
- * Unverträglichkeit/Abneigung, Schwangerschaft).
+ * Tagessumme außerhalb des aktuellen Planbands liegt, ein Rezept den Filter nicht mehr besteht (neue
+ * Unverträglichkeit/Abneigung, Schwangerschaft) oder ein Rest nicht mehr hält (`leftover_expired`, K-a).
  */
 export function needsAutomaticReplan(plan: MealPlanWeek, input: ReplanInput): ReplanCheck {
   const today = isoDateSchema.parse(input.today);
@@ -64,9 +66,14 @@ export function needsAutomaticReplan(plan: MealPlanWeek, input: ReplanInput): Re
         (r) => r.id === meal.recipeId && r.version === meal.recipeVersion,
       );
       const result = recipe === undefined ? null : pool.result(recipe, exclude);
-      const same =
-        result !== null && result.ok && variantForMeal(result.value, meal, input.foods) !== null;
-      if (!same) reasons.add('recipe_excluded');
+      const variant =
+        result !== null && result.ok ? variantForMeal(result.value, meal, input.foods) : null;
+      if (variant === null) reasons.add('recipe_excluded');
+      // Reste nur, solange sie halten (Kochtag + Haltbarkeit ≥ Tag, Wächter N5a K-a): Ein veränderter
+      // Gerätespeicher darf keine Reste über die Kühlschrank-Haltbarkeit hinaus zeigen.
+      else if (!leftoverKeeps(meal, day.date, mealPrepKeeping(variant, input.foods))) {
+        reasons.add('leftover_expired');
+      }
     }
   }
   const list = [...reasons].sort();

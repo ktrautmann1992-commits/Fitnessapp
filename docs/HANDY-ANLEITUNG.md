@@ -147,7 +147,39 @@ Vercel zeigt die App im Handy-Browser, Expo baut die echten Apps in der Cloud.
 6. Mit einem frischen Testkonto (ohne Schwangerschaft): in der Adresszeile hinter den Vorschau-Link
    `/onboarding/body_metrics?edit=1` setzen → **Gewicht** um etwa 10 kg erhöhen → Ernährung: Hinweis „Dein Bedarf hat
    sich geändert“ mit Knopf **„Plan aktualisieren“** → Portionen ab heute neu.
-7. Die **Einkaufsliste** und der **Meal-Prep-Kochtag** kommen mit Etappe N5b.
+7. Die **Einkaufsliste** und der **Meal-Prep-Kochtag**: siehe nächster Abschnitt (Etappe N5b).
+
+**Einkaufsliste und Meal-Prep-Kochtag (Etappe N5b, Testmodus)** – mit dem Testkonto aus Schritt 1:
+
+1. **Ernährung** → unten **„Einkaufsliste“** → Einträge nach Supermarkt-Abteilungen, oben „Einkauf für … bis …“.
+   Ein paar Einträge antippen → Häkchen. **Flugmodus an** → weitere abhaken und unten einen **eigenen Eintrag**
+   (z. B. „Kaffee“, Abteilung wählen) hinzufügen → geht ohne Netz. Flugmodus aus, Seite neu laden → Häkchen und
+   eigener Eintrag sind noch da.
+2. **„Erledigte ausblenden“** antippen → abgehakte Einträge verschwinden; nochmal → wieder da. **„Vorrat anzeigen“**
+   klappt Salz, Öl usw. auf. Eigener Eintrag: **✕** löscht ihn.
+3. **„Zeitraum“** → bei „Von“ z. B. Donnerstag wählen → **„Zeitraum übernehmen“** → nur noch der Einkauf ab
+   Donnerstag; Häkchen bleiben.
+4. Ein Rezept direkt öffnen (z. B. Vorschau-Link + `/rezept/porridge-banane`) → Portionen mit **+** wählen →
+   **„Zur Einkaufsliste (2 Portionen)“** → „Steht auf deiner Einkaufsliste“ → **„Einkaufsliste öffnen“** → unten
+   „Aus Rezepten hinzugefügt“, dort **„Entfernen“**. Ein Rezept aus dem Essensplan zeigt stattdessen „steht über
+   deinen Essensplan schon auf der Einkaufsliste“.
+5. **Einstellungen → Gesundheits-Check wiederholen** → „schwanger“ = Ja → **Einkaufsliste** öffnen: Hinweis „Deine
+   Einkaufsliste wurde an deinen geänderten Plan angepasst“, Einkauf ab heute, keine offenen Zutaten aus Rezepten mit
+   Schwangerschafts-Hinweis mehr; Häkchen und eigene Einträge bleiben, schon abgehakte, nicht mehr gebrauchte Einträge
+   stehen als „nicht mehr im Plan“ da.
+6. **Ernährung → „Meal-Prep-Pläne“** → drei Beispiel-Wochen. Was nicht zu deinen Angaben passt, ist ausgegraut mit
+   „Passt nicht zu deinen Angaben“ (ohne Grund; z. B. die Fisch-Woche bei vegetarisch, die Curry-Woche bei
+   Erdnuss-Unverträglichkeit). Ab Samstag ist „Nächste Woche“ vorausgewählt.
+7. **„Pasta-Woche“** antippen → Rezepte, Kochtag und Aufbewahrung (Kühlschrank / einfrieren und am Vorabend auftauen /
+   frisch) → **„Plan für diese Woche wählen“** → bestätigen → „Für diese Woche gewählt“. **„Zur Einkaufsliste“** → die
+   Liste enthält den Kochtag-Einkauf.
+8. Zurück → **„Zum Kochtag“** → **„Kochtag starten“** → oben „Nächster Schritt in 5:00“, der aktuelle Schritt ist
+   umrandet. App schließen oder Flugmodus an, ein paar Minuten warten, wieder öffnen → der Timer ist weitergelaufen.
+   Im Browser fragt die Seite einmal nach Mitteilungen (nur solange die Seite offen ist); in der App vibriert sie bei
+   jedem neuen Schritt, solange sie geöffnet ist. **„Kochtag beenden“** setzt zurück.
+9. In der **Tagesansicht** steht am Vorabend eines Tages mit eingefrorener Portion „Heute Abend auftauen“.
+10. **Kalorienzahlen ausschalten** (Einstellungen → Ernährung ändern) → Meal-Prep-Pläne, Kochtag und Einkaufsliste
+    zeigen nirgends kcal.
 
 **Redaktionsbereich Ernährung (Etappe N2d):** Vorschau-Link der Website → `/admin` → anmelden → oben **Rezepte**,
 **Lebensmittel**, **Meal-Prep**, **Ratgeber**. Rezepte: Kategorie antippen → Zahlen (Entwürfe, rot, Zutaten ohne

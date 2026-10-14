@@ -1645,6 +1645,13 @@ export const SHOPPING_LIST_ROUNDING = {
   manualItemsMax: 100,
 } as const;
 
+/**
+ * „Zur Einkaufsliste“ aus einer Rezeptansicht (Plan 19.6, Etappe N5b): höchstens so viele zusätzliche Rezepte je
+ * Wochenliste (Portionen 1–12 wie `RECIPE_SERVINGS_PICKER`); höchstens so viele Einträge insgesamt im
+ * Gerätespeicher. Keine Grenze zur Gesundheit, nur Speicher- und Bedienschutz. PRODUKTENTSCHEIDUNG.
+ */
+export const SHOPPING_LIST_EXTRAS = { recipesMax: 20, itemsMax: 1000 } as const;
+
 // ---------------------------------------------------------------------------------------------------------
 // Ziele · Haupt- und Nebenziel (docs/PLAN-ZIELE.md Abschnitt 4, Etappe Z1)
 //

@@ -47,7 +47,13 @@ import {
   EMPTY_LOG_ROWS,
   neutralizeHealthPlanLogRows,
 } from './log-rows';
-import { applyMealPlanSave, checkMealPlanSave } from './meal-plan-rows';
+import {
+  applyCookDayStart,
+  applyMealPlanSave,
+  applyShoppingListSave,
+  checkMealPlanSave,
+  checkShoppingListSave,
+} from './meal-plan-rows';
 import { createMemoryProtectedStore, type ProtectedStore } from './protected-store';
 import { readJson, STORAGE_KEYS, writeJson, type KeyValueStore } from './kv';
 import { upgradeStoredRows } from './legacy-rows';
@@ -141,6 +147,8 @@ const SERIALIZED_METHODS = [
   'revokeHealthData',
   'deleteStoredIntolerances',
   'saveMealPlan',
+  'saveShoppingList',
+  'saveCookDayStart',
 ] as const satisfies readonly (keyof Backend)[];
 
 function serializeWrites(backend: Backend): Backend {
@@ -656,31 +664,80 @@ export function createLocalBackend(store: KeyValueStore, options: LocalBackendOp
           // Essenspläne mit Gesundheitsbezug lassen über Ersatz, Weglassen und leere Plätze auf die Unverträglichkeiten
           // schließen (Wächter N3 K5) – mit löschen (sichere Richtung, Etappe N5); beim Öffnen wird neu geplant.
           mealPlans: rows.mealPlans.filter((p) => !p.uses_health_data),
+          // Einkaufslisten ebenso (Ersatzprodukte, fehlende Zutaten; Etappe N5b) – samt eigener Einträge (K10).
+          shoppingLists: rows.shoppingLists.filter((l) => !l.uses_health_data),
         },
       });
     },
     loadNutritionLibrary: (nutritionOptions) =>
       (options.loadNutrition ?? loadNutritionLibrary)(nutritionOptions),
-    saveMealPlan: async (plan, { autoAdjusted }) => {
+    saveMealPlan: async (plan, { autoAdjusted, recipesChanged, shoppingList }) => {
       const { db, rows, session } = await requireProfile();
-      const check = checkMealPlanSave(plan, {
+      const ctx = { today: options.today(), rows, versions: LOCAL_VERSIONS };
+      const check = checkMealPlanSave(plan, ctx);
+      const listCheck =
+        shoppingList === undefined ? null : checkShoppingListSave(shoppingList, ctx);
+      const failed = !check.ok ? check : listCheck !== null && !listCheck.ok ? listCheck : null;
+      if (failed !== null) {
+        // Ohne Werte in der Meldung (Gesundheitsdaten, 7.1).
+        throw new BackendError(
+          failed.reason === 'consent_required' ? 'consent_required' : 'plan_rejected',
+          { sensitive: true },
+        );
+      }
+      if (
+        !check.ok ||
+        (listCheck?.ok === true && listCheck.list.weekStart !== check.plan.weekStart)
+      ) {
+        throw new BackendError('plan_rejected', { sensitive: true });
+      }
+      const now = options.now();
+      let next = applyMealPlanSave(rows, check.plan, {
+        id: options.newId(),
+        userId: session.userId,
+        now,
+        autoAdjusted,
+        recipesChanged: recipesChanged ?? false,
+      });
+      // Plan und Einkaufsliste im selben Schritt (R2-S4, W22) – ein Speichervorgang.
+      if (listCheck?.ok === true) {
+        next = applyShoppingListSave(next, listCheck.list, {
+          id: options.newId(),
+          userId: session.userId,
+          now,
+        });
+      }
+      await save({ ...db, rows: next });
+      return next;
+    },
+    saveShoppingList: async (list) => {
+      const { db, rows, session } = await requireProfile();
+      const check = checkShoppingListSave(list, {
         today: options.today(),
         rows,
         versions: LOCAL_VERSIONS,
       });
       if (!check.ok) {
-        // Ohne Werte in der Meldung (Gesundheitsdaten, 7.1).
         throw new BackendError(
           check.reason === 'consent_required' ? 'consent_required' : 'plan_rejected',
           { sensitive: true },
         );
       }
-      const next = applyMealPlanSave(rows, check.plan, {
+      const next = applyShoppingListSave(rows, check.list, {
         id: options.newId(),
         userId: session.userId,
         now: options.now(),
-        autoAdjusted,
       });
+      await save({ ...db, rows: next });
+      return next;
+    },
+    saveCookDayStart: async (weekStart, startedAt) => {
+      const { db, rows } = await requireProfile();
+      if (startedAt !== null && Number.isNaN(Date.parse(startedAt))) {
+        throw new BackendError('plan_rejected');
+      }
+      const next = applyCookDayStart(rows, weekStart, startedAt);
+      if (next === null) throw new BackendError('plan_rejected');
       await save({ ...db, rows: next });
       return next;
     },

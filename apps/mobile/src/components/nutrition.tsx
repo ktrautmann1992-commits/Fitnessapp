@@ -11,11 +11,20 @@ import {
 } from '@fitnessapp/core';
 import { fontSize, fontWeight, radius, spacing } from '@fitnessapp/ui';
 import { useRouter, type Href } from 'expo-router';
-import { useState } from 'react';
+import { type ReactNode, useState } from 'react';
 import { Pressable, StyleSheet, Text, View } from 'react-native';
 
 import { ConfirmDialog } from '@/components/screen';
-import { Body, Button, Card, Heading, MIN_TOUCH, Notice } from '@/components/ui';
+import {
+  Body,
+  Button,
+  Card,
+  ErrorState,
+  Heading,
+  LoadingState,
+  MIN_TOUCH,
+  Notice,
+} from '@/components/ui';
 import {
   computeNutritionWeek,
   type MealPlanState,
@@ -35,7 +44,7 @@ import {
 } from '@/lib/nutrition-format';
 import { useThemeColors } from '@/lib/theme';
 import { useApp } from '@/state/app-state';
-import { type MealPlanActions, useNutritionWeek } from '@/state/use-nutrition';
+import { type MealPlanActions, type NutritionView, useNutritionWeek } from '@/state/use-nutrition';
 
 /**
  * Bausteine der Ernährungs-Bildschirme (docs/PLAN-PHASE-5.md 8.2–8.4, Etappe N4). Nur Anzeige – Zahlen und Codes
@@ -138,10 +147,13 @@ export function MealPlanStateNotices({
   state,
   actions,
   saveFailed,
+  onRetry,
 }: {
   state: MealPlanState | null;
   actions: MealPlanActions | null;
   saveFailed: boolean;
+  /** „Erneut versuchen“ nach gescheitertem automatischem Speichern (Wächter N5a K7). */
+  onRetry?: () => void;
 }) {
   const texts = t.nutrition.plan;
   const [busy, setBusy] = useState<'dismiss' | 'update' | null>(null);
@@ -176,6 +188,20 @@ export function MealPlanStateNotices({
           ) : null}
         </Notice>
       ) : null}
+      {state.recipesChanged ? (
+        <Notice tone="info" testID="nutrition-plan-rebuilt">
+          <Body>{t.nutrition.rebuilt.text}</Body>
+          {actions ? (
+            <Button
+              label={t.nutrition.rebuilt.ok}
+              variant="secondary"
+              loading={busy === 'dismiss'}
+              onPress={() => void run('dismiss', actions.dismissAdjusted)}
+              testID="nutrition-plan-rebuilt-ok"
+            />
+          ) : null}
+        </Notice>
+      ) : null}
       {state.updateSuggested && actions ? (
         <Notice tone="info" testID="nutrition-plan-update">
           <Body>{texts.updateSuggested}</Body>
@@ -194,7 +220,15 @@ export function MealPlanStateNotices({
       ) : null}
       {saveFailed ? (
         <Notice tone="warning" testID="nutrition-plan-save-failed">
-          {texts.saveFailed}
+          <Body>{texts.saveFailed}</Body>
+          {onRetry ? (
+            <Button
+              label={t.nutrition.retrySave}
+              variant="secondary"
+              onPress={onRetry}
+              testID="nutrition-plan-save-retry"
+            />
+          ) : null}
         </Notice>
       ) : null}
       {message ? (
@@ -540,5 +574,58 @@ export function NutritionDoneSummary() {
         <Body muted>{t.nutrition.estimate}</Body>
       </View>
     </Card>
+  );
+}
+
+/**
+ * Gemeinsame Zustände der Ernährungs-Bildschirme (8.3, Etappe N5b): Supabase-Modus (noch nicht), Laden, Ladefehler mit
+ * „Erneut versuchen“, Einrichtung fehlt, Angaben unvollständig, Einwilligung blockiert, Rechenfehler. Nur anzeigen,
+ * wenn `nutritionReady(view)` false ist.
+ */
+export function NutritionGate({ view }: { view: NutritionView }): ReactNode {
+  const app = useApp();
+  const router = useRouter();
+  if (view.library.kind === 'unsupported') {
+    return <Notice tone="info">{t.nutrition.unsupported}</Notice>;
+  }
+  if (view.library.kind === 'error') {
+    return (
+      <ErrorState
+        message={t.nutrition.loadFailed}
+        onRetry={() => void app.ensureNutritionLibrary()}
+      />
+    );
+  }
+  if (view.setupMissing) {
+    return (
+      <Card>
+        <Body>{t.nutrition.setupNeeded}</Body>
+        <Button
+          label={t.nutrition.setupButton}
+          onPress={() => router.push('/onboarding/nutrition_setup?edit=1' as Href)}
+          testID="nutrition-setup"
+        />
+      </Card>
+    );
+  }
+  if (view.library.kind !== 'ready' || view.week === null) {
+    return <LoadingState label={t.nutrition.loading} />;
+  }
+  if (view.week.kind === 'incomplete') {
+    return <Notice tone="info">{t.nutrition.incomplete}</Notice>;
+  }
+  if (view.week.kind === 'blocked') {
+    return <ConsentBlockedNotice reason={view.week.reason} />;
+  }
+  return <Notice tone="danger">{t.nutrition.computeFailed}</Notice>;
+}
+
+/** true = Bestand geladen und Woche berechnet (dann kein Gate). */
+export function nutritionReady(view: NutritionView): boolean {
+  return (
+    view.library.kind === 'ready' &&
+    !view.setupMissing &&
+    view.week !== null &&
+    view.week.kind === 'ready'
   );
 }

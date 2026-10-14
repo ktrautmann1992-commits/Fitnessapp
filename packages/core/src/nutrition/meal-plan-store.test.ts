@@ -407,9 +407,9 @@ describe('Wächter N5a S2: Schnappschuss muss zu den Rezepten passen (mealPlanMa
     for (const change of changes) {
       const bad = tamper(plan, change);
       expect(mealPlanMatchesRecipes(bad, N3_RECIPES, N3_FOODS)).toBe(false);
-      // Auch an einem Donnerstag (Montag schon vergangen): nie der manipulierte Plan, sondern neu erstellt.
+      // Auch an einem Donnerstag (Montag schon vergangen): nie der manipulierte Plan, sondern neu erstellt (mit Hinweis, K-b).
       const result = resolveMealPlanWeek(bad, input(female, vegan, THURSDAY));
-      expect(result.action).toBe('created');
+      expect(result.action).toBe('rebuilt');
       for (const day of result.plan.days) {
         for (const meal of day.meals) {
           expect(meal.ingredients.some((i) => i.foodId === 'erdnuesse')).toBe(false);

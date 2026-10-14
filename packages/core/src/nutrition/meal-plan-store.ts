@@ -143,6 +143,8 @@ export const storedMealPlanWeekSchema = z
     mealPrepPlanId: contentIdSchema.nullable(),
   })
   .superRefine((plan, ctx) => {
+    // Zod verfeinert auch nach Formatfehlern weiter – mit kaputtem Datum nie werfen (Gerätespeicher, N5b).
+    if (!weekStartSchema.safeParse(plan.weekStart).success || !Array.isArray(plan.days)) return;
     plan.days.forEach((day, index) => {
       if (day.date !== addDays(plan.weekStart, index)) {
         ctx.addIssue({ code: 'custom', path: ['days', index, 'date'], message: 'Falscher Tag.' });
@@ -272,11 +274,14 @@ export function mealPlanUpdateSuggested(
 export type MealPlanResolution =
   /** Gespeicherter Plan passt; `updateSuggested` = Knopf „Plan aktualisieren“ zeigen. */
   | { readonly action: 'stored'; readonly plan: MealPlanWeek; readonly updateSuggested: boolean }
-  /**
-   * Kein (gültiger) Plan dieser Woche – neu erstellt (Variante 0). Auch, wenn der Schnappschuss nicht zu den Rezepten
-   * passt (`mealPlanMatchesRecipes`, Wächter N5a S2).
-   */
+  /** Kein (gültiger) Plan dieser Woche – neu erstellt (Variante 0). */
   | { readonly action: 'created'; readonly plan: MealPlanWeek }
+  /**
+   * Gespeicherter Plan derselben Woche passt nicht zu den Rezepten (`mealPlanMatchesRecipes`, Wächter N5a S2: neue
+   * Rezept-Version oder veränderter Gerätespeicher) – neu erstellt (Variante 0), AUCH die vergangenen Tage. Die App
+   * zeigt dazu einen Hinweis (Wächter N5a Nachprüfung K-b).
+   */
+  | { readonly action: 'rebuilt'; readonly plan: MealPlanWeek }
   /** Automatisch ab heute neu geplant (6.6) – Hinweis „Dein Plan wurde an deine neuen Angaben angepasst.“ */
   | {
       readonly action: 'replanned';
@@ -294,12 +299,11 @@ export function resolveMealPlanWeek(
   input: PlanInput,
 ): MealPlanResolution {
   const weekStart = input.targets.weekStart;
-  if (
-    stored === null ||
-    stored.weekStart !== weekStart ||
-    !mealPlanMatchesRecipes(stored, input.recipes, input.foods)
-  ) {
+  if (stored === null || stored.weekStart !== weekStart) {
     return { action: 'created', plan: buildMealPlanWeek({ ...input, variant: 0 }) };
+  }
+  if (!mealPlanMatchesRecipes(stored, input.recipes, input.foods)) {
+    return { action: 'rebuilt', plan: buildMealPlanWeek({ ...input, variant: 0 }) };
   }
   const check = needsAutomaticReplan(stored, input);
   if (check.needed) {

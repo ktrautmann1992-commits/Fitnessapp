@@ -2,6 +2,7 @@ import type {
   ConsentType,
   DataExportFile,
   MealPlanWeek,
+  StoredShoppingList,
   NutritionLibrary,
   PreferenceChange,
   PlanLibrary,
@@ -248,13 +249,26 @@ export interface Backend {
    * Essensplan einer Woche speichern (Etappe N5, docs/PLAN-PHASE-5.md 7.3/7.5): ersetzt den Plan derselben Woche.
    * Testmodus: Gerätespeicher mit denselben Regeln wie `save_meal_plan` (meal-plan-rows.ts); Supabase-Modus erst mit
    * Etappe N7 (bis dahin nicht unterstützt, `supportsNutrition = false`). `autoAdjusted` = automatisch neu geplant
-   * (6.6, Hinweis bis „Verstanden“). Fehler `plan_rejected` bzw. `consent_required`.
+   * (6.6, Hinweis bis „Verstanden“); `recipesChanged` = neu erstellt wegen neuer Rezept-Version (K-b). Mit
+   * `shoppingList` wird die neu erzeugte Einkaufsliste der Woche im SELBEN Schritt gespeichert (R2-S4, W22).
+   * Fehler `plan_rejected` bzw. `consent_required`.
    */
   saveMealPlan(
     plan: MealPlanWeek,
-    options: { autoAdjusted: boolean },
+    options: {
+      autoAdjusted: boolean;
+      recipesChanged?: boolean;
+      shoppingList?: StoredShoppingList | undefined;
+    },
     rows: UserRows,
   ): Promise<UserRows>;
+  /**
+   * Einkaufsliste einer Woche speichern (Etappe N5b, 6.5/7.3): Abhaken, eigene Einträge, Zeitraum, „Zur
+   * Einkaufsliste“. Testmodus: Gerätespeicher (meal-plan-rows.ts, geht ohne Netz); Supabase-Modus erst mit N7.
+   */
+  saveShoppingList(list: StoredShoppingList, rows: UserRows): Promise<UserRows>;
+  /** Start des Meal-Prep-Kochtags (Timer) setzen bzw. mit null zurücksetzen (Etappe N5b). */
+  saveCookDayStart(weekStart: string, startedAt: string | null, rows: UserRows): Promise<UserRows>;
   /** Wartende Trainings und Entwürfe (R6). */
   pendingWorkouts(): Promise<PendingWorkouts>;
   /** Planned-Session-IDs mit noch nicht übertragenem Training (Anzeige „wird übertragen“). */

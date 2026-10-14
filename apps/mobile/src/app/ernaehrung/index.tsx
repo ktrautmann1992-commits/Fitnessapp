@@ -6,6 +6,7 @@ import {
   type NutritionNoticeCode,
   type PlannedMeal,
   type PlannedMealDay,
+  thawHints,
 } from '@fitnessapp/core';
 import { Redirect, useLocalSearchParams, useRouter, type Href } from 'expo-router';
 import { useState, type ReactNode } from 'react';
@@ -26,7 +27,7 @@ import { Screen } from '@/components/screen';
 import { Body, Button, Card, ErrorState, Heading, LoadingState, Notice } from '@/components/ui';
 import { showEnergyNumbers } from '@/data/nutrition-plan';
 import { t } from '@/i18n';
-import { todayIso } from '@/lib/format';
+import { useToday } from '@/lib/use-today';
 import { formatKcal, slotLabel, visibleNotices } from '@/lib/nutrition-format';
 import { dayLabel } from '@/lib/plan-format';
 import { useApp } from '@/state/app-state';
@@ -38,16 +39,19 @@ import { useMealPlanActions, useNutritionWeek } from '@/state/use-nutrition';
  * Portion, Nährwerten und Rolle, Ergänzungs-Snacks gekennzeichnet, Hinweise (Schutzgrenzen in einfachen Worten),
  * Blättern über die Woche, alle Zustände (8.3). Rechnet nichts selbst – Ziele und Plan kommen aus packages/core.
  * Etappe N5: gespeicherter Plan, „Rezept tauschen“ (ab heute, nur Hauptplätze), Hinweis bei automatischer
- * Neuplanung (6.6), „Plan aktualisieren“, Link zur Wochenansicht. Die Einkaufsliste folgt mit N5b.
+ * Neuplanung (6.6), „Plan aktualisieren“, Link zur Wochenansicht. Etappe N5b: Auftau-Hinweis für morgen, Links zur
+ * Einkaufsliste und zu den Meal-Prep-Plänen, Hinweis „neu erstellt“ (K-b), „Erneut versuchen“ (K7).
  */
 export default function NutritionDayScreen() {
   const router = useRouter();
   const app = useApp();
   const params = useLocalSearchParams<{ tag?: string }>();
-  const today = todayIso();
-  const [selected, setSelected] = useState(() =>
-    isoDateSchema.safeParse(params.tag).success ? (params.tag as string) : today,
+  const today = useToday();
+  // Ohne gewählten Tag folgt die Ansicht „heute“ – auch über Mitternacht (Wächter N5b K2).
+  const [picked, setSelected] = useState<string | null>(() =>
+    isoDateSchema.safeParse(params.tag).success ? (params.tag as string) : null,
   );
+  const selected = picked ?? today;
   const view = useNutritionWeek(selected);
   const actions = useMealPlanActions(view.week);
   const [swapping, setSwapping] = useState<string | null>(null);
@@ -188,7 +192,12 @@ export default function NutritionDayScreen() {
         </Heading>
         {status ? <Body muted>{t.nutrition.dayStatus[status]}</Body> : null}
       </View>
-      <MealPlanStateNotices state={planState} actions={actions} saveFailed={view.saveFailed} />
+      <MealPlanStateNotices
+        state={planState}
+        actions={actions}
+        saveFailed={view.saveFailed}
+        onRetry={view.retrySave}
+      />
 
       {numbers && dayTargets.targetKcal !== null ? (
         <Card>
@@ -282,12 +291,38 @@ export default function NutritionDayScreen() {
           {swapMessage.text}
         </Notice>
       ) : null}
+      {plan !== null && dayDate >= today && thawHints(plan, dayDate).length > 0 ? (
+        <Notice tone="info" testID="nutrition-thaw">
+          <Body>{t.nutrition.thaw.title}</Body>
+          {thawHints(plan, dayDate).map((hint) => (
+            <Body key={`${hint.forDate}-${hint.slot}`}>
+              {t.nutrition.thaw.line(hint.titleDe, dayLabel(hint.forDate))}
+            </Body>
+          ))}
+        </Notice>
+      ) : null}
       {plan !== null ? (
         <Button
           label={t.nutrition.plan.weekView}
           variant="secondary"
           onPress={() => router.push(`/ernaehrung/woche?woche=${targets.weekStart}` as Href)}
           testID="nutrition-week-view"
+        />
+      ) : null}
+      {plan !== null && planState?.editable === true ? (
+        <Button
+          label={t.nutrition.shopping.open}
+          variant="secondary"
+          onPress={() => router.push(`/einkaufsliste?woche=${targets.weekStart}` as Href)}
+          testID="nutrition-shopping"
+        />
+      ) : null}
+      {plan !== null && view.library.result.library.mealPrepPlans.length > 0 ? (
+        <Button
+          label={t.nutrition.mealPrep.open}
+          variant="secondary"
+          onPress={() => router.push('/meal-prep' as Href)}
+          testID="nutrition-meal-prep"
         />
       ) : null}
 

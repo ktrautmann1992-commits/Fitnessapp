@@ -1,8 +1,14 @@
-import { type MealPlanWeek, mealPlanWeekEditable, parseStoredMealPlanWeek } from '@fitnessapp/core';
+import {
+  type MealPlanWeek,
+  mealPlanWeekEditable,
+  parseStoredMealPlanWeek,
+  parseStoredShoppingList,
+  type StoredShoppingList,
+} from '@fitnessapp/core';
 
 import { healthConsentStatus } from '../state/flow';
 import type { ConsentVersions } from './mapping';
-import type { MealPlanRow, UserRows } from './types';
+import type { MealPlanRow, ShoppingListRow, UserRows } from './types';
 
 /**
  * Essensplan speichern im TESTMODUS (docs/PLAN-PHASE-5.md 7.3 `save_meal_plan`, 7.5, Etappe N5) – dieselben Regeln,
@@ -35,12 +41,16 @@ export function checkMealPlanSave(
   return { ok: true, plan: parsed };
 }
 
-/** Ersetzt den Plan derselben Woche (höchstens einer je Woche). */
+/**
+ * Ersetzt den Plan derselben Woche (höchstens einer je Woche). Der Start des Kochtags (Timer) bleibt nur, solange der
+ * gewählte Meal-Prep-Plan derselbe ist.
+ */
 export function applyMealPlanSave(
   rows: UserRows,
   plan: MealPlanWeek,
-  ctx: { id: string; userId: string; now: string; autoAdjusted: boolean },
+  ctx: { id: string; userId: string; now: string; autoAdjusted: boolean; recipesChanged?: boolean },
 ): UserRows {
+  const before = storedMealPlanRow(rows, plan.weekStart);
   const row: MealPlanRow = {
     id: ctx.id,
     user_id: ctx.userId,
@@ -48,6 +58,13 @@ export function applyMealPlanSave(
     uses_health_data: plan.usesHealthData,
     created_at: ctx.now,
     auto_adjusted: ctx.autoAdjusted,
+    recipes_changed: ctx.recipesChanged ?? false,
+    cook_day_started_at:
+      before !== null &&
+      plan.mealPrepPlanId !== null &&
+      before.plan.mealPrepPlanId === plan.mealPrepPlanId
+        ? before.cook_day_started_at
+        : null,
     plan,
   };
   return {
@@ -61,4 +78,77 @@ export function applyMealPlanSave(
 /** Gespeicherter Plan der Woche (null = noch keiner). */
 export function storedMealPlanRow(rows: UserRows, weekStart: string): MealPlanRow | null {
   return rows.mealPlans.find((p) => p.week_start === weekStart) ?? null;
+}
+
+// ---------------------------------------------------------------------------------------------------------
+// Einkaufsliste (Etappe N5b, docs/PLAN-PHASE-5.md 6.5, 7.2, 7.3 `replace_shopping_list`)
+// ---------------------------------------------------------------------------------------------------------
+
+export type ShoppingListSaveCheck =
+  | { ok: true; list: StoredShoppingList }
+  | { ok: false; reason: 'invalid' | 'out_of_range' | 'consent_required' };
+
+/**
+ * Einkaufsliste speichern im TESTMODUS – dieselben Regeln, die der Server ab N7 prüft, soweit sie ohne Datenbank
+ * gelten: gültige Liste (Zod, `parseStoredShoppingList`), Datumsrahmen laufende/nächste Woche, ohne gültige Einwilligung
+ * keine Liste mit Gesundheitsbezug (wie Essenspläne, 7.1/K10).
+ */
+export function checkShoppingListSave(
+  list: unknown,
+  ctx: { today: string; rows: UserRows; versions: ConsentVersions },
+): ShoppingListSaveCheck {
+  const parsed = parseStoredShoppingList(list);
+  if (parsed === null) return { ok: false, reason: 'invalid' };
+  if (!mealPlanWeekEditable(parsed.weekStart, ctx.today)) {
+    return { ok: false, reason: 'out_of_range' };
+  }
+  if (parsed.usesHealthData && healthConsentStatus(ctx.rows, ctx.versions) !== 'valid') {
+    return { ok: false, reason: 'consent_required' };
+  }
+  return { ok: true, list: parsed };
+}
+
+/** Ersetzt die Liste derselben Woche (höchstens eine je Woche); `created_at` bleibt. */
+export function applyShoppingListSave(
+  rows: UserRows,
+  list: StoredShoppingList,
+  ctx: { id: string; userId: string; now: string },
+): UserRows {
+  const before = storedShoppingListRow(rows, list.weekStart);
+  const row: ShoppingListRow = {
+    id: before?.id ?? ctx.id,
+    user_id: ctx.userId,
+    week_start: list.weekStart,
+    uses_health_data: list.usesHealthData,
+    created_at: before?.created_at ?? ctx.now,
+    updated_at: ctx.now,
+    list,
+  };
+  return {
+    ...rows,
+    shoppingLists: [...rows.shoppingLists.filter((l) => l.week_start !== list.weekStart), row].sort(
+      (a, b) => a.week_start.localeCompare(b.week_start),
+    ),
+  };
+}
+
+/** Gespeicherte Liste der Woche (null = noch keine). */
+export function storedShoppingListRow(rows: UserRows, weekStart: string): ShoppingListRow | null {
+  return rows.shoppingLists.find((l) => l.week_start === weekStart) ?? null;
+}
+
+/** Start des Kochtags setzen bzw. zurücksetzen (null) – nur bei einem Plan mit gewähltem Meal-Prep-Plan. */
+export function applyCookDayStart(
+  rows: UserRows,
+  weekStart: string,
+  startedAt: string | null,
+): UserRows | null {
+  const row = storedMealPlanRow(rows, weekStart);
+  if (row === null || row.plan.mealPrepPlanId === null) return null;
+  return {
+    ...rows,
+    mealPlans: rows.mealPlans.map((p) =>
+      p.week_start === weekStart ? { ...p, cook_day_started_at: startedAt } : p,
+    ),
+  };
 }

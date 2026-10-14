@@ -9,6 +9,7 @@ import {
 } from '../content/food-schema';
 import { addDays } from '../dates';
 import type { MealPlanWeek } from './meal-plan';
+import type { ScaledIngredient } from './scale';
 
 /**
  * Einkaufsliste (docs/PLAN-PHASE-5.md 6.5, R2-S4) – aus dem Essensplan, nach Supermarkt-Abteilungen (5.5).
@@ -89,49 +90,59 @@ interface Bucket {
   substituteFor: Set<string>;
 }
 
-/** Einkaufsliste für einen Zeitraum (Standard: die ganze Woche, Plan 6.5). */
+/**
+ * Einkaufsliste für einen Zeitraum (Standard: die ganze Woche, Plan 6.5). `extras` = zusätzliche Zutaten, die
+ * unabhängig vom Zeitraum dazukommen („Zur Einkaufsliste“ aus einer Rezeptansicht, Etappe N5b) – sie werden mit den
+ * Plan-Zutaten zusammengezählt (gleicher Schlüssel `food_id|einheit`).
+ */
 export function buildShoppingList(
   plan: MealPlanWeek,
   foods: FoodLookup,
   range?: { readonly from: string; readonly to: string },
+  extras: readonly (readonly ScaledIngredient[])[] = [],
 ): ShoppingList {
   const { from, to } = rangeSchema.parse(
     range ?? { from: plan.weekStart, to: addDays(plan.weekStart, 6) },
   );
   const buckets = new Map<string, Bucket>();
+  const sources: (readonly ScaledIngredient[])[] = [];
   // Was am selben Kochtermin für mehrere Tage gekocht wird, wird zum Kochtag gekauft.
   for (const day of plan.days) {
     for (const meal of day.meals) {
       const purchase = meal.cookDate < plan.weekStart ? plan.weekStart : meal.cookDate;
       if (purchase < from || purchase > to) continue;
-      for (const ingredient of meal.ingredients) {
-        const food = foods.get(ingredient.foodId);
-        if (food === undefined) throw new Error(`Lebensmittel „${ingredient.foodId}“ fehlt.`);
-        const bucket = buckets.get(food.id) ?? {
-          grams: 0,
-          ml: 0,
-          pieceGrams: 0,
-          pinch: false,
-          usesPieces: false,
-          substituteFor: new Set<string>(),
-        };
-        if (ingredient.originalFoodId !== null) bucket.substituteFor.add(ingredient.originalFoodId);
-        switch (ingredient.unit) {
-          case 'pinch':
-            bucket.pinch = true;
-            break;
-          case 'ml':
-            bucket.ml += ingredient.amount;
-            break;
-          case 'piece':
-            bucket.usesPieces = true;
-            bucket.pieceGrams += ingredient.grams;
-            break;
-          default:
-            bucket.grams += ingredient.grams;
-        }
-        buckets.set(food.id, bucket);
+      sources.push(meal.ingredients);
+    }
+  }
+  sources.push(...extras);
+  for (const ingredients of sources) {
+    for (const ingredient of ingredients) {
+      const food = foods.get(ingredient.foodId);
+      if (food === undefined) throw new Error(`Lebensmittel „${ingredient.foodId}“ fehlt.`);
+      const bucket = buckets.get(food.id) ?? {
+        grams: 0,
+        ml: 0,
+        pieceGrams: 0,
+        pinch: false,
+        usesPieces: false,
+        substituteFor: new Set<string>(),
+      };
+      if (ingredient.originalFoodId !== null) bucket.substituteFor.add(ingredient.originalFoodId);
+      switch (ingredient.unit) {
+        case 'pinch':
+          bucket.pinch = true;
+          break;
+        case 'ml':
+          bucket.ml += ingredient.amount;
+          break;
+        case 'piece':
+          bucket.usesPieces = true;
+          bucket.pieceGrams += ingredient.grams;
+          break;
+        default:
+          bucket.grams += ingredient.grams;
       }
+      buckets.set(food.id, bucket);
     }
   }
 
@@ -193,13 +204,35 @@ export function rebuildShoppingList(
   newPlan: MealPlanWeek,
   foods: FoodLookup,
   range: { readonly from: string; readonly to: string } = { from: oldList.from, to: oldList.to },
+  extras: readonly (readonly ScaledIngredient[])[] = [],
 ): ShoppingList {
-  const fresh = buildShoppingList(newPlan, foods, range);
+  return mergeShoppingList(oldList, buildShoppingList(newPlan, foods, range, extras), {
+    planChanged: true,
+  });
+}
+
+/**
+ * Überträgt Häkchen, eigene Einträge und „nicht mehr im Plan“ von `oldList` auf die frisch erzeugte Liste `fresh`
+ * (Schlüssel `item_key`, R2-S4). `planChanged`: Mengenänderungen gegenüber der alten Liste markieren; sonst bleiben
+ * die bisherigen Markierungen (gleicher Plan, nur neu gelesen). Weggefallene offene Einträge verschwinden,
+ * weggefallene abgehakte bleiben mit „nicht mehr im Plan“, eigene Einträge bleiben unverändert.
+ */
+export function mergeShoppingList(
+  oldList: Pick<ShoppingList, 'items'>,
+  fresh: ShoppingList,
+  options: { readonly planChanged: boolean },
+): ShoppingList {
   const old = new Map(oldList.items.map((item) => [item.itemKey, item]));
   const items: ShoppingListItem[] = fresh.items.map((item) => {
     const before = old.get(item.itemKey);
     if (before === undefined || before.isManual) return item;
-    return { ...item, checked: before.checked, amountChanged: before.amount !== item.amount };
+    return {
+      ...item,
+      checked: before.checked,
+      amountChanged: options.planChanged
+        ? before.amount !== item.amount
+        : before.amountChanged && !before.notInPlan,
+    };
   });
   const freshKeys = new Set(fresh.items.map((item) => item.itemKey));
   for (const item of oldList.items) {
@@ -222,10 +255,10 @@ const manualItemSchema = z.strictObject({
 });
 
 /** Eigener Eintrag (Plan 6.5): Freitext ≤ 80 Zeichen, Abteilung wählbar. Gleicher Text → kein Doppel. */
-export function addManualShoppingItem(
-  list: ShoppingList,
+export function addManualShoppingItem<L extends ShoppingList>(
+  list: L,
   entry: { readonly labelDe: string; readonly category?: ShoppingCategory },
-): ShoppingList {
+): L {
   const { labelDe, category } = manualItemSchema.parse(entry);
   const itemKey = `manual|${labelDe.toLocaleLowerCase('de')}`;
   if (list.items.some((item) => item.itemKey === itemKey)) return list;
@@ -249,7 +282,7 @@ export function addManualShoppingItem(
   return { ...list, items: sortItems([...list.items, item]) };
 }
 
-export function removeManualShoppingItem(list: ShoppingList, itemKey: string): ShoppingList {
+export function removeManualShoppingItem<L extends ShoppingList>(list: L, itemKey: string): L {
   return {
     ...list,
     items: list.items.filter((item) => !(item.isManual && item.itemKey === itemKey)),
@@ -257,11 +290,11 @@ export function removeManualShoppingItem(list: ShoppingList, itemKey: string): S
 }
 
 /** Abhaken (offline möglich, Plan 6.5). */
-export function setShoppingItemChecked(
-  list: ShoppingList,
+export function setShoppingItemChecked<L extends ShoppingList>(
+  list: L,
   itemKey: string,
   checked: boolean,
-): ShoppingList {
+): L {
   return {
     ...list,
     items: list.items.map((item) => (item.itemKey === itemKey ? { ...item, checked } : item)),

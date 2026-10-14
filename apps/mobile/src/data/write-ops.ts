@@ -511,6 +511,8 @@ export function applyHealthDataRevocation(
     ),
     // Essenspläne mit Gesundheitsbezug (Etappe N5, docs/PLAN-PHASE-5.md 7.3/7.4) – wie meal_plans ab N7.
     mealPlans: rows.mealPlans.filter((plan) => !plan.uses_health_data),
+    // Einkaufslisten mit Gesundheitsbezug samt eigener Einträge (Etappe N5b, 7.3/7.4, K10) – wie shopping_lists ab N7.
+    shoppingLists: rows.shoppingLists.filter((list) => !list.uses_health_data),
     ...other,
   });
 }

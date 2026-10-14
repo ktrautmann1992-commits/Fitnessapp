@@ -2,7 +2,7 @@ import { z } from 'zod';
 
 import { MEAL_PREP_COOK_OFFSETS, MEAL_PREP_FRIDGE_DAYS, NUTRITION_LIMITS } from '../constants';
 import type { FoodLookup } from '../content/food-schema';
-import { addDays } from '../dates';
+import { addDays, daysBetween } from '../dates';
 import type { FilteredRecipe } from './filter';
 import type { MealprepSlotMode } from './schemas';
 import type { MealSlotId } from './timing';
@@ -95,4 +95,23 @@ export function mealPrepDayUse(keeping: MealPrepKeeping, daysAfterCook: number):
   if (daysAfterCook <= 0) return 'cook';
   if (daysAfterCook <= keeping.fridgeDays) return 'fridge';
   return keeping.freezable ? 'freeze' : 'fresh';
+}
+
+/**
+ * Hält ein Rest an `date` noch (Wächter N5a Nachprüfung K-a, R9)? Kühlschrank: Kochtag + Haltbarkeit ≥ Tag (und der
+ * Kochtag liegt davor); eingefroren: nur, wenn das Gericht mit den verwendeten Zutaten einfrierbar ist. Ein Rest ohne
+ * Aufbewahrung gilt als ungültig. Andere Mahlzeiten (`cook`, `fresh`) halten immer. Sichere Richtung: Im Zweifel nein
+ * – dann wird ab heute neu geplant.
+ */
+export function leftoverKeeps(
+  meal: { readonly prepKind: string; readonly cookDate: string; readonly storage: string | null },
+  date: string,
+  keeping: MealPrepKeeping,
+): boolean {
+  if (meal.prepKind !== 'leftover') return true;
+  const days = daysBetween(meal.cookDate, date);
+  if (days < 1) return false;
+  if (meal.storage === 'fridge') return days <= keeping.fridgeDays;
+  if (meal.storage === 'freeze') return keeping.freezable;
+  return false;
 }
