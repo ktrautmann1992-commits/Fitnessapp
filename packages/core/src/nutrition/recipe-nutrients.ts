@@ -13,7 +13,7 @@ import {
 import type { Recipe } from '../content/recipe-schema';
 import type { DietType } from '../enums';
 import { FOOD_GROUP_IDS, type FoodGroupId } from '../food-groups';
-import { toGrams } from './units';
+import { type RecipeUnit, toGrams } from './units';
 
 /**
  * Nährwerte, Ernährungsform, Allergene, Schwein, Alkohol und Schwangerschafts-Vorsicht eines Rezepts – berechnet
@@ -28,6 +28,10 @@ import { toGrams } from './units';
  *   `heated: false` (Wächter N2c, B1; Wächter N2d S2).
  * - Ersatz-Zutaten (S4): `substitutions` ersetzt das Lebensmittel einer Zutat vollständig (Menge und Einheit
  *   bleiben, `heated` bleibt) – alle Werte werden mit dem Ersatzprodukt neu berechnet.
+ * - Zutaten-Austausch (19.7 N9): `swaps` ersetzt Lebensmittel, Menge, Einheit und `heated` einer Zutat (aufgelöst aus
+ *   der Austausch-Tabelle, `swap-resolve.ts`). Hängt an der getauschten Zutat eine Import-Annahme „erhitzt“, gilt sie
+ *   für den Ersatz als UNBESTÄTIGT (die Bestätigung galt dem Original-Lebensmittel; sichere Richtung, Fingerabdruck
+ *   N2d). Der Fingerabdruck selbst wird immer am unveränderten Rezept gebildet.
  */
 
 /**
@@ -192,9 +196,19 @@ export interface RecipeFacts {
   readonly nutrientsComplete: boolean;
 }
 
+/** Getauschte Zutat (19.7 N9): Lebensmittel, Menge, Einheit und `heated` ersetzen die der Rezept-Zutat. */
+export interface SwappedIngredient {
+  readonly food_id: string;
+  readonly amount: number;
+  readonly unit: RecipeUnit;
+  readonly heated: boolean | undefined;
+}
+
 export interface RecipeFactsOptions {
   /** Ersatz je Zutat-Index → `food_id` des Ersatzprodukts (S4). */
   readonly substitutions?: ReadonlyMap<number, string>;
+  /** Zutaten-Austausch je Zutat-Index (19.7 N9). Nie zugleich mit Ersatz oder Weglassen an derselben Zutat. */
+  readonly swaps?: ReadonlyMap<number, SwappedIngredient>;
   /** Weggelassene OPTIONALE Zutaten (S3). Nicht optionale Zutaten können nicht weggelassen werden. */
   readonly omitted?: ReadonlySet<number>;
 }
@@ -217,15 +231,25 @@ export function computeRecipeFacts(
       throw new Error(`Ersatz für unbekannte Zutat ${index}.`);
     }
   });
+  options.swaps?.forEach((_, index) => {
+    if (recipe.ingredients[index] === undefined) {
+      throw new Error(`Austausch für unbekannte Zutat ${index}.`);
+    }
+    if (options.substitutions?.has(index) === true || options.omitted?.has(index) === true) {
+      throw new Error(`Zutat ${index} ist zugleich getauscht und ersetzt bzw. weggelassen.`);
+    }
+  });
 
   // Unbestätigte Import-Annahmen „erhitzt“ zählen für die Schwangerschaft wie `heated: false` (sichere Richtung).
   // Bestätigt zählt nur mit passendem Fingerabdruck (nach der Bestätigung geändert → wieder unbestätigt).
+  const heatedAssumptions = (recipe.meta?.import_assumptions ?? [])
+    .filter((a) => a.field === 'heated')
+    .map((a) => a.ingredient_index);
   const unconfirmedHeated = new Set(
     !hasUnconfirmedImportAssumptions(recipe)
-      ? []
-      : (recipe.meta?.import_assumptions ?? [])
-          .filter((a) => a.field === 'heated')
-          .map((a) => a.ingredient_index),
+      ? // Getauschte Zutat: Die bestätigte Annahme galt dem Original-Lebensmittel (19.7 N9, sichere Richtung).
+        heatedAssumptions.filter((index) => options.swaps?.has(index) === true)
+      : heatedAssumptions,
   );
   const total = zeroNutrients();
   const gramsPerServing: (number | null)[] = [];
@@ -240,11 +264,22 @@ export function computeRecipeFacts(
   let maxFridgeDays: number | null = null;
   let nutrientsComplete = true;
 
-  recipe.ingredients.forEach((ingredient, index) => {
+  recipe.ingredients.forEach((original, index) => {
     if (options.omitted?.has(index) === true) {
       gramsPerServing.push(0);
       return;
     }
+    const swap = options.swaps?.get(index);
+    const ingredient =
+      swap === undefined
+        ? original
+        : {
+            ...original,
+            food_id: swap.food_id,
+            amount: swap.amount,
+            unit: swap.unit,
+            heated: swap.heated,
+          };
     const foodId = options.substitutions?.get(index) ?? ingredient.food_id;
     const food = foods.get(foodId);
     if (food === undefined) {

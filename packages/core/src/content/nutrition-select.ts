@@ -2,6 +2,7 @@ import { type Food, isCatalogReviewed } from './food-schema';
 import type { Guide } from './guide-schema';
 import type { MealPrepPlan } from './meal-prep-plan-schema';
 import type { Recipe } from './recipe-schema';
+import type { IngredientSubstitution } from './substitution-schema';
 import { isDryRunContent, type ContentValidationResult } from './validate';
 
 /**
@@ -14,6 +15,7 @@ import { isDryRunContent, type ContentValidationResult } from './validate';
  * - Lebensmittel nur mit Katalog-Prüfung (R19, auch im Testmodus).
  * - Ein Rezept nur, wenn ALLE seine Lebensmittel (auch optionale) ausgewählt sind.
  * - Ein Meal-Prep-Plan (19.4) nur, wenn ALLE seine Rezepte ausgewählt sind; Ratgeber nach Status und rotem Befund.
+ * - Ein Austausch-Eintrag (19.7 N9) nur, wenn BEIDE Lebensmittel ausgewählt sind (Status, roter Befund R23).
  * Ausgeschlossenes steht mit Grund in `excluded` (Testmodus-Diagnose).
  */
 
@@ -26,8 +28,10 @@ export type NutritionExclusionReason =
   | 'food_unavailable'
   | 'recipe_unavailable';
 
+type SelectedKind = 'food' | 'recipe' | 'meal_prep_plan' | 'guide' | 'ingredient_substitution';
+
 export interface NutritionExclusion {
-  readonly kind: 'food' | 'recipe' | 'meal_prep_plan' | 'guide';
+  readonly kind: SelectedKind;
   readonly id: string;
   readonly reason: NutritionExclusionReason;
   /** Bei `food_unavailable`: die fehlenden bzw. ausgeschlossenen Lebensmittel. */
@@ -50,6 +54,11 @@ export interface NutritionLibrary {
   readonly mealPrepPlans: readonly MealPrepPlan[];
   /** Ratgeber (nach ID sortiert, offline lesbar). */
   readonly guides: readonly Guide[];
+  /**
+   * Austausch-Tabelle (19.7 N9, nach ID sortiert), nur Einträge mit ausgewählten Lebensmitteln. BESTAND, nicht
+   * personenbezogen: angeboten wird ein Tausch nur über `nutrition/substitute.ts` (kompletter Filter, R11, Planband).
+   */
+  readonly substitutions: readonly IngredientSubstitution[];
   /** true = enthält Entwürfe (Kennzeichnung und Allergen-Warnung in der App, K6). */
   readonly containsDrafts: boolean;
   readonly excluded: readonly NutritionExclusion[];
@@ -65,7 +74,7 @@ function byId<T extends { id: string }>(a: T, b: T): number {
 
 export function selectNutritionContent(
   result: Pick<ContentValidationResult, 'foods' | 'recipes' | 'issues'> &
-    Partial<Pick<ContentValidationResult, 'mealPrepPlans' | 'guides'>>,
+    Partial<Pick<ContentValidationResult, 'mealPrepPlans' | 'guides' | 'substitutions'>>,
   options: SelectNutritionContentOptions,
 ): NutritionLibrary {
   const redIds = new Set(
@@ -158,10 +167,31 @@ export function selectNutritionContent(
     }
   }
 
+  const substitutions: IngredientSubstitution[] = [];
+  for (const sub of [...(result.substitutions ?? [])].sort(byId)) {
+    const reason = statusReason('ingredient_substitution', sub);
+    if (reason !== null) {
+      excluded.push({ kind: 'ingredient_substitution', id: sub.id, reason });
+      continue;
+    }
+    const unavailable = [sub.food_id, sub.substitute_food_id].filter((id) => !foods.has(id));
+    if (unavailable.length > 0) {
+      excluded.push({
+        kind: 'ingredient_substitution',
+        id: sub.id,
+        reason: 'food_unavailable',
+        foodIds: unavailable,
+      });
+      continue;
+    }
+    substitutions.push(sub);
+  }
+
   const containsDrafts =
     recipes.some((recipe) => recipe.status === 'draft') ||
     [...foods.values()].some((food) => food.status === 'draft') ||
     mealPrepPlans.some((plan) => plan.status === 'draft') ||
-    guides.some((guide) => guide.status === 'draft');
-  return { foods, recipes, mealPrepPlans, guides, containsDrafts, excluded };
+    guides.some((guide) => guide.status === 'draft') ||
+    substitutions.some((sub) => sub.status === 'draft');
+  return { foods, recipes, mealPrepPlans, guides, substitutions, containsDrafts, excluded };
 }

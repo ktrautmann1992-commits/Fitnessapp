@@ -4,10 +4,21 @@
  * Jede Art bringt mit: Ordner, Höchstlänge der Antwort (max_tokens), Auswahl-Matrix, Anfrage-Texte, das
  * Zod-Schema der Antwort (daraus das JSON-Schema für Structured Outputs) und die Abbildung „Antwort → Datei“.
  * Plausibilitäts-Checks und Seed-Abbildung kommen aus packages/core bzw. seed-package.ts.
- * Rezepte (Phase 5) werden eine weitere Art – ohne Umbau von generate/collect/review.
+ * Rezepte (Phase 5) werden eine weitere Art – ohne Umbau von generate/collect/review. Seit Etappe N9 gibt es die
+ * Austausch-Tabelle (`ingredient_substitution`, docs/PLAN-PHASE-5.md 19.7) als erste Ernährungs-Art; eine Antwort
+ * kann dort mehrere Dateien ergeben (`toContents`).
  */
-import type { ContentFileKind, Exercise, PlanTemplate } from '@fitnessapp/core';
+import type {
+  ContentFileKind,
+  Exercise,
+  Food,
+  IngredientSubstitution,
+  PlanTemplate,
+} from '@fitnessapp/core';
 import type { z } from 'zod';
+
+/** Inhaltsarten der Pipeline: Training (Phase 2) und die Austausch-Tabelle (Phase 5, N9). */
+export type PipelineContentKind = ContentFileKind | 'ingredient_substitution';
 
 /** Was die Pipeline über den aktuellen Inhaltsstand weiß (aus `content/`). */
 export interface LibraryContext {
@@ -15,8 +26,12 @@ export interface LibraryContext {
   readonly exercises: readonly Exercise[];
   /** Plan-Vorlagen mit gültigem Schema (alle Status). */
   readonly templates: readonly PlanTemplate[];
+  /** Lebensmittel mit gültigem Schema, nicht zurückgezogen und katalog-geprüft (R19) – für Katalog-IDs. */
+  readonly foods: readonly Food[];
+  /** Austausch-Tabelle mit gültigem Schema (alle Status). */
+  readonly substitutions: readonly IngredientSubstitution[];
   /** Belegte IDs (Dateinamen ohne `.json`) je Art – auch von Dateien mit Fehlern. */
-  readonly takenIds: Readonly<Record<ContentFileKind, ReadonlySet<string>>>;
+  readonly takenIds: Readonly<Record<PipelineContentKind, ReadonlySet<string>>>;
 }
 
 /** Eine Achse der Auswahl-Matrix (z. B. Ziel, Level, Bewegungsmuster). */
@@ -52,7 +67,7 @@ export interface DryRunFixture {
 }
 
 export interface ContentKindDefinition {
-  readonly kind: ContentFileKind;
+  readonly kind: PipelineContentKind;
   /** Name in der Workflow-Eingabe, z. B. `exercises`. */
   readonly inputName: string;
   readonly labelDe: string;
@@ -73,15 +88,15 @@ export interface ContentKindDefinition {
   readonly contentSchema: z.ZodType;
   /** Zod-Schema der Modell-Antwort (ohne status, version, meta). */
   outputSchema(cell: GenerationCell, context: LibraryContext): z.ZodType;
-  /** Vollständiger Inhalt (Dateiformat) aus geprüfter Antwort + Herkunft. */
-  toContent(
+  /** Vollständige Inhalte (Dateiformat) aus geprüfter Antwort + Herkunft – eine oder mehrere Dateien je Antwort. */
+  toContents(
     output: unknown,
     cell: GenerationCell,
     meta: Record<string, unknown>,
   ): {
     id: string;
     content: Record<string, unknown>;
-  };
+  }[];
   /** Feste Beispiel-Antworten für den Probelauf. */
   dryRunFixtures(): DryRunFixture[];
 }

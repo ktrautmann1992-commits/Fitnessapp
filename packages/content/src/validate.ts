@@ -1,7 +1,7 @@
 /**
  * Prüfskript `content:validate`: liest alle Inhalte unter `content/` und prüft sie mit den Regeln aus
- * packages/core (Schema Ü1, Plausibilitäts-Checks Ü2–Ü6 und V1–V11, Datei- und Versionsregeln; Ernährung R1–R22
- * für Lebensmittel, Rezepte, Meal-Prep-Pläne und Ratgeber).
+ * packages/core (Schema Ü1, Plausibilitäts-Checks Ü2–Ü6 und V1–V11, Datei- und Versionsregeln; Ernährung R1–R23
+ * für Lebensmittel, Rezepte, Meal-Prep-Pläne, Ratgeber und die Austausch-Tabelle).
  *
  * - Ausgabe auf Deutsch, rot = Fehler, gelb = Hinweis (docs/PLAN-PHASE-2.md Abschnitt 7).
  * - Exit-Code 1 bei Schema-/Dateifehlern jeder Art und bei roten Fehlern an FREIGEGEBENEN Inhalten.
@@ -50,6 +50,7 @@ export const NUTRITION_CONTENT_FOLDERS: Record<
   recipe: 'recipes',
   meal_prep_plan: 'meal-prep-plans',
   guide: 'guides',
+  ingredient_substitution: 'substitutions',
 };
 
 /** Liest den Stand einer Datei (Pfad relativ zum Repository) im Vergleichsstand; undefined = nicht vorhanden. */
@@ -188,6 +189,7 @@ const KIND_DE = {
   recipe_library: 'Rezeptbestand',
   meal_prep_plan: 'Meal-Prep-Plan',
   guide: 'Ratgeber',
+  ingredient_substitution: 'Austausch',
 } as const;
 
 function countByStatus(items: readonly { status: ContentStatus }[]): string {
@@ -285,6 +287,7 @@ function nutritionCountLines(result: ContentValidationResult): string[] {
   add('Rezepte', result.recipes);
   add('Meal-Prep-Pläne', result.mealPrepPlans);
   add('Ratgeber', result.guides);
+  add('Austausch-Einträge', result.substitutions);
   return lines;
 }
 

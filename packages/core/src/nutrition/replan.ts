@@ -50,6 +50,7 @@ export function needsAutomaticReplan(plan: MealPlanWeek, input: ReplanInput): Re
     input.profile,
     input.allowDrafts,
     input.redRecipeIds,
+    input.substitutions,
   );
   const reasons = new Set<ReplanReason>();
   for (const day of plan.days) {
@@ -65,7 +66,9 @@ export function needsAutomaticReplan(plan: MealPlanWeek, input: ReplanInput): Re
       const recipe = input.recipes.find(
         (r) => r.id === meal.recipeId && r.version === meal.recipeVersion,
       );
-      const result = recipe === undefined ? null : pool.result(recipe, exclude);
+      // Mit den getauschten Zutaten der Mahlzeit (19.7 N9): Ein Tausch besteht den Filter erneut – sonst Neuplanung.
+      const result =
+        recipe === undefined ? null : pool.result(recipe, exclude, meal.ingredientSwaps);
       const variant =
         result !== null && result.ok ? variantForMeal(result.value, meal, input.foods) : null;
       if (variant === null) reasons.add('recipe_excluded');

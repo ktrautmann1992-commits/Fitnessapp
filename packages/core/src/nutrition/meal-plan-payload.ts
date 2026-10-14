@@ -1,7 +1,12 @@
 import { z } from 'zod';
 
 import { isoDateSchema } from '../age';
-import { MEAL_PLAN_ENGINE_VERSION, NUTRITION_LIMITS, PORTION_SCALE_LIMITS } from '../constants';
+import {
+  INGREDIENT_SUBSTITUTION_LIMITS,
+  MEAL_PLAN_ENGINE_VERSION,
+  NUTRITION_LIMITS,
+  PORTION_SCALE_LIMITS,
+} from '../constants';
 import { contentIdSchema } from '../content/schemas';
 import { addDays } from '../dates';
 import { COOKING_MODES, DIET_TYPES } from '../enums';
@@ -18,6 +23,13 @@ import type { MealSlotId } from './timing';
  * Hinweis für N7 (Wächter N3 K5): `substitutions` und `omitted_optional` lassen indirekt auf Unverträglichkeiten
  * schließen (z. B. laktosefreie Milch). Der Server setzt deshalb `uses_health_data = true`, sobald Ersatz oder
  * Weglassen vorkommt bzw. Unverträglichkeiten gefiltert wurden (7.1).
+ *
+ * Zutaten-Austausch (19.7 N9, S7): `ingredient_swaps` nennt je Mahlzeit die getauschten Zutaten (Lebensmittel →
+ * Ersatz). `save_meal_plan` (N7) prüft, dass es den Eintrag `published` in `ingredient_substitutions` gibt, und prüft
+ * Ernährungsform, Schwein und Unverträglichkeiten mit `groups`, `animal`, `meat_kind` des Ersatzes erneut
+ * (`pregnancy_caution` wie bisher nur im Core, R2-K8). Mengen kommen nie aus der Payload. Wie bei Ersatz und
+ * Weglassen setzt der Server `uses_health_data = true`, sobald `ingredient_swaps` nicht leer ist (Wächter N9 S5; der
+ * Core setzt `usesHealthData` am Plan schon jetzt).
  */
 
 const SLOT_KEYS = [
@@ -51,6 +63,9 @@ export const mealPlanItemPayloadSchema = z.strictObject({
     .array(z.strictObject({ food_id: contentIdSchema, substitute_food_id: contentIdSchema }))
     .max(20),
   omitted_optional: z.array(contentIdSchema).max(20),
+  ingredient_swaps: z
+    .array(z.strictObject({ food_id: contentIdSchema, substitute_food_id: contentIdSchema }))
+    .max(INGREDIENT_SUBSTITUTION_LIMITS.swapsPerMeal),
   is_fill: z.boolean(),
   prep_kind: z.enum(['cook', 'leftover', 'fresh']),
   cook_date: isoDateSchema,
@@ -146,6 +161,10 @@ export function toMealPlanPayload(
           substitute_food_id: s.substituteFoodId,
         })),
         omitted_optional: meal.omittedOptional.map((o) => o.foodId),
+        ingredient_swaps: (meal.ingredientSwaps ?? []).map((x) => ({
+          food_id: x.foodId,
+          substitute_food_id: x.substituteFoodId,
+        })),
         is_fill: meal.isFill,
         prep_kind: meal.prepKind,
         cook_date: meal.cookDate,

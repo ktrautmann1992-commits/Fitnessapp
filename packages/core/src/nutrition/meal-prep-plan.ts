@@ -3,12 +3,10 @@ import {
   daysAfterCookDay,
   type MealPrepPlan,
   PREP_WEEKDAYS,
-  type StorageMethod,
 } from '../content/meal-prep-plan-schema';
 import { addDays, daysBetween } from '../dates';
-import { recipeTotalMinutes } from '../content/import-rules';
 import { type FilteredRecipe, slotFitReasons } from './filter';
-import { mealPrepDayUse, mealPrepKeeping } from './meal-prep';
+import { freshCookTooLong, mealPrepKeeping, prepStorageForDay } from './meal-prep';
 import {
   buildMealPlanWeekDetailed,
   CandidatePool,
@@ -44,8 +42,6 @@ export type MealPrepPlanOffer =
   | { readonly offered: true; readonly plan: MealPlanWeek }
   /** „Passt nicht zu deinen Angaben“ – bewusst ohne Grund (19.6 Nr. 2). */
   | { readonly offered: false };
-
-const SAFETY_ORDER: Readonly<Record<StorageMethod, number>> = { fridge: 0, freeze: 1, fresh: 2 };
 
 /** Platz im Layout der Person für einen Mahlzeiten-Typ (19.6 K7). */
 function slotForMealType(
@@ -123,8 +119,12 @@ export function applyMealPrepPlan(
     for (const day of prepDays) {
       const date = addDays(weekStart, day.dayIndex);
       const daysAfter = day.dayIndex - cookOffset;
-      const derived = mealPrepDayUse(keeping, daysAfter);
-      if (derived === 'cook') {
+      const entry = mealPrepPlan.storage_plan.find(
+        (e) => e.recipe_id === variant.recipe.id && e.weekday === day.weekday,
+      );
+      // Eine Regel mit dem Zutaten-Austausch (Wächter N9 S1): die sicherere Angabe gewinnt, Einfrieren nur einfrierbar.
+      const method = prepStorageForDay(keeping, daysAfter, entry?.method ?? null);
+      if (method === 'cook') {
         pins.set(pinKey(date, slot), {
           variant,
           prepKind: 'cook',
@@ -134,21 +134,8 @@ export function applyMealPrepPlan(
         });
         continue;
       }
-      const entry = mealPrepPlan.storage_plan.find(
-        (e) => e.recipe_id === variant.recipe.id && e.weekday === day.weekday,
-      );
-      let method: StorageMethod = derived;
-      if (entry !== undefined && SAFETY_ORDER[entry.method] > SAFETY_ORDER[method]) {
-        method = entry.method;
-      }
-      if (method === 'freeze' && !keeping.freezable) method = 'fresh';
       // Frisch an einem Werktag: Zeitlimit werktags gilt auch hier (K1) – sonst nicht angeboten.
-      if (
-        method === 'fresh' &&
-        maxMinutes !== null &&
-        isWeekday(date) &&
-        recipeTotalMinutes(variant.recipe) > maxMinutes
-      ) {
+      if (method === 'fresh' && freshCookTooLong(variant.recipe, date, maxMinutes)) {
         return { offered: false };
       }
       pins.set(

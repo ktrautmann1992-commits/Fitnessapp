@@ -365,6 +365,10 @@ export const deNutrition = {
     ingredients: 'Zutaten',
     optional: '(optional)',
     instead: (original: string, substitute: string) => `${substitute} statt ${original}`,
+    swappedInstead: (original: string, substitute: string) =>
+      `${substitute} statt ${original} (ausgetauscht)`,
+    swapButton: 'Austauschen',
+    swapA11y: (food: string) => `${food} austauschen`,
     omittedLine: (food: string) => `ohne ${food}`,
     toTaste: 'nach Geschmack',
     steps: 'Zubereitung',
@@ -381,6 +385,48 @@ export const deNutrition = {
         : `Hält gekocht ${days} Tage im Kühlschrank.`,
     mealPrepFreezable: 'Lässt sich einfrieren.',
     equipment: (list: string) => `Du brauchst: ${list}`,
+  },
+
+  // --- Zutaten-Austausch (KONZEPT 6.9, Etappe N9) ------------------------------------------------------------------
+  ingredientSwap: {
+    title: 'Zutat austauschen',
+    intro:
+      'Du siehst nur Alternativen, die zu deinen Angaben und zu deinem Tag passen. Mengen, Nährwerte und Einkaufsliste passen wir automatisch an.',
+    current: (amount: string, food: string) => `In deinem Rezept: ${amount} ${food}`,
+    role: (label: string) => `Rolle im Rezept: ${label}`,
+    amount: (amount: string) => `Menge in deiner Portion: ${amount}`,
+    mealKcal: (kcal: string) => `Mahlzeit danach: ${kcal} kcal`,
+    note: (text: string) => `Hinweis: ${text}`,
+    original: 'Original aus dem Rezept',
+    choose: 'Nehmen',
+    chooseA11y: (food: string) => `${food} nehmen`,
+    belowFloor: (days: string) =>
+      `Danach erreichen diese Tage dein Ziel nicht ganz: ${days}. Das steht dann auch im Plan.`,
+    batch: (days: string) =>
+      `Nur vor dem Kochen tauschen: Gilt für alle Portionen dieses Kochtags (${days}). Was danach nicht mehr so lange hält, wird eingefroren oder frisch gekocht.`,
+    empty:
+      'Für diese Zutat gibt es gerade keine Alternative, die zu deinen Angaben und zu deinem Tag passt.',
+    saveFailed:
+      'Der Austausch konnte gerade nicht gespeichert werden. Bitte versuche es noch einmal.',
+    done: 'Ausgetauscht. Mengen, Nährwerte und Einkaufsliste sind angepasst.',
+    failed: {
+      past_day: 'Vergangene Tage bleiben unverändert.',
+      not_found: 'Diese Zutat gibt es in deinem Plan nicht (mehr). Bitte lade die Ansicht neu.',
+      already_cooked:
+        'Dieses Gericht ist schon vorgekocht oder der Kochtag läuft – für diese Portionen gibt es keinen Austausch.',
+      no_role: 'Für diese Zutat gibt es keinen Austausch.',
+      not_offered: 'Diese Alternative gibt es nicht (mehr). Bitte lade die Ansicht neu.',
+      excluded: 'Diese Alternative passt nicht zu deinen Angaben.',
+      amounts: 'Mit dieser Alternative passen die Mengen im Rezept nicht mehr.',
+      above_ceiling: 'Mit dieser Alternative würde dein Tag zu viel Energie enthalten.',
+      prep_time:
+        'Mit dieser Alternative müsste an einem Werktag frisch gekocht werden – länger, als du werktags Zeit hast.',
+      consent_required:
+        'Zum Austauschen brauchst du die Einwilligung zu Gesundheitsangaben: Ein Plan mit getauschten Zutaten kann auf Unverträglichkeiten oder Abneigungen schließen lassen.',
+      replan_needed:
+        'Dein Plan muss zuerst an deine Angaben angepasst werden. Bitte öffne die Ernährung erneut.',
+      not_editable: 'Diese Woche liegt zurück und lässt sich nicht mehr ändern.',
+    },
   },
 
   // --- Einstellungen (8.2 Nr. 7) ---------------------------------------------------------------------------------

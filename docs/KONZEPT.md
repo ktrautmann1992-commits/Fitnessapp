@@ -393,6 +393,10 @@ Quelle: `docs/ERWEITERUNGEN-2.md` Abschnitte 1–2. Startbestand aus `alpha5-rez
 - Der Server prüft getauschte Zutaten beim Speichern erneut (ab Supabase-Etappe).
 - Die Austausch-Tabelle entsteht **offline** über die Content-Pipeline (Claude Batch-API), wird gegen ein Schema
   geprüft und im Admin-Bereich freigegeben – keine Echtzeit-KI.
+- **Umsetzung (Etappe N9, Testmodus, 14.10.2026):** Tabelle `content/substitutions/` (Regel R23, Batch-Art
+  `ingredient-substitutions`, Freigabe über `content-review`), Regeln in `packages/core/src/nutrition/substitute.ts`
+  (Filter nach dem Tausch, R11, Planband, Haltbarkeit, Kochtag), Dialog „Zutat austauschen“ in der Rezeptansicht des
+  Essensplans; Details und Präzisierungen in `docs/PLAN-PHASE-5.md`, Umsetzungsstand N9.
 
 ### 6.10 Bewertung nach dem Essen (Gratis, ohne KI, privat)
 - Nach einer geplanten Mahlzeit: Daumen hoch/runter, optional Grund: „Schmeckt mir nicht“, „Zu aufwendig“,

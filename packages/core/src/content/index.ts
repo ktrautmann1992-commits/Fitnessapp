@@ -16,5 +16,7 @@ export * from './recipe-release';
 export * from './recipe-schema';
 export * from './rules';
 export * from './schemas';
+export * from './substitution-checks';
+export * from './substitution-schema';
 export * from './text-rules';
 export * from './validate';

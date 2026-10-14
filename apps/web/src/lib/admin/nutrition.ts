@@ -1,6 +1,7 @@
 /**
- * Ernährung im Redaktionsbereich (docs/PLAN-PHASE-5.md 13 N2d, 19.5): Lebensmittel, Rezepte, Meal-Prep-Pläne und
- * Ratgeber aus dem Inhalts-Bündel, geprüft mit denselben Regeln wie content:validate (`validateContent`, R1–R22) und
+ * Ernährung im Redaktionsbereich (docs/PLAN-PHASE-5.md 13 N2d, 19.5): Lebensmittel, Rezepte, Meal-Prep-Pläne,
+ * Ratgeber und die Austausch-Tabelle (19.7 N9) aus dem Inhalts-Bündel, geprüft mit denselben Regeln wie
+ * content:validate (`validateContent`, R1–R23) und
  * mit der Vorschau der Freigabe (`planRecipeRelease`, packages/core – dieselben Gründe für die Sammelfreigabe pro
  * Kategorie und für die Freigabe per ID). Nur ansehen – der Redaktionsbereich schreibt nicht (KONZEPT 3);
  * freigegeben wird über den Workflow content-review.
@@ -17,6 +18,7 @@ import {
   type FoodLookup,
   type Guide,
   importAssumptionsState,
+  type IngredientSubstitution,
   type ImportAssumptionsState,
   isCatalogReviewed,
   type MealPrepPlan,
@@ -117,6 +119,16 @@ export interface GuideEntry {
   readonly needsExpertReview: boolean;
 }
 
+/** Austausch-Eintrag (19.7 N9) mit Namen der Lebensmittel und Prüfbericht (R23). */
+export interface SubstitutionEntry {
+  readonly substitution: IngredientSubstitution;
+  readonly foodName: string | null;
+  readonly substituteName: string | null;
+  readonly issues: readonly ContentIssue[];
+  readonly summary: IssueSummary;
+  readonly needsExpertReview: boolean;
+}
+
 export interface NutritionBrokenFile {
   readonly kind: NutritionContentFileKind;
   readonly id: string;
@@ -129,6 +141,8 @@ export interface NutritionAdmin {
   readonly groups: readonly RecipeGroup[];
   readonly mealPrepPlans: readonly MealPrepEntry[];
   readonly guides: readonly GuideEntry[];
+  /** Austausch-Tabelle (Etappe N9), nach Zutat und Ersatz sortiert. */
+  readonly substitutions: readonly SubstitutionEntry[];
   readonly foodById: ReadonlyMap<string, FoodEntry>;
   readonly recipeById: ReadonlyMap<string, RecipeEntry>;
   /** Befunde zum ganzen Rezeptbestand (R16) und zu Begleitdateien des Katalogs ohne passendes Lebensmittel. */
@@ -283,11 +297,37 @@ export function buildNutritionAdmin(
     })
     .sort((a, b) => collator.compare(a.guide.title_de, b.guide.title_de));
 
+  const foodNames = new Map(result.foods.map((food) => [food.id, food.name_de]));
+  const substitutions: SubstitutionEntry[] = result.substitutions
+    .map((substitution): SubstitutionEntry => {
+      const issues = issuesFor('ingredient_substitution', substitution.id);
+      return {
+        substitution,
+        foodName: foodNames.get(substitution.food_id) ?? null,
+        substituteName: foodNames.get(substitution.substitute_food_id) ?? null,
+        issues,
+        summary: summarizeIssues(issues),
+        needsExpertReview: needsExpertReviewLabel(substitution.meta),
+      };
+    })
+    .sort(
+      (a, b) =>
+        collator.compare(
+          a.foodName ?? a.substitution.food_id,
+          b.foodName ?? b.substitution.food_id,
+        ) ||
+        collator.compare(
+          a.substituteName ?? a.substitution.substitute_food_id,
+          b.substituteName ?? b.substitution.substitute_food_id,
+        ),
+    );
+
   const valid = new Set([
     ...foods.map((e) => `food:${e.food.id}`),
     ...recipes.map((e) => `recipe:${e.recipe.id}`),
     ...mealPrepPlans.map((e) => `meal_prep_plan:${e.plan.id}`),
     ...guides.map((e) => `guide:${e.guide.id}`),
+    ...substitutions.map((e) => `ingredient_substitution:${e.substitution.id}`),
   ]);
   const brokenFiles: NutritionBrokenFile[] = [];
   for (const [key, issues] of byKey) {
@@ -308,6 +348,7 @@ export function buildNutritionAdmin(
     groups: groupRecipes(recipes),
     mealPrepPlans,
     guides,
+    substitutions,
     foodById: new Map(foods.map((entry) => [entry.food.id, entry])),
     recipeById: new Map(recipes.map((entry) => [entry.recipe.id, entry])),
     libraryIssues,

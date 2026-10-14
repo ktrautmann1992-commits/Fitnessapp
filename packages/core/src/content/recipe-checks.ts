@@ -436,6 +436,53 @@ const MEAL_TYPE_LABELS: Readonly<Record<MealType, string>> = {
   snack: 'Snack',
 };
 
+/** Befund der Mengen je Portion (R11). */
+export type ServingAmountFinding =
+  | { readonly kind: 'salt'; readonly grams: number }
+  | { readonly kind: 'oil'; readonly grams: number }
+  | {
+      readonly kind: 'ingredient';
+      readonly grams: number;
+      readonly index: number;
+      readonly food: Food;
+    };
+
+/**
+ * Mengen je Portion nach R11 (Salz ≤ 2,5 g, Öl ≤ 30 g, jede Zutat ≤ 600 g; `RECIPE_CHECK_LIMITS.perServing`) – EINE
+ * Regel für die Inhaltsprüfung (`checkRecipe`) und den Zutaten-Austausch (`nutrition/substitute.ts`, 19.7 N9).
+ * `foodAt(index)` liefert das TATSÄCHLICH verwendete Lebensmittel der Zutat (beim Tausch das Ersatzprodukt).
+ */
+export function servingAmountFindings(
+  facts: Pick<RecipeFacts, 'nutrientsComplete' | 'perServing' | 'gramsPerServing'>,
+  foodAt: (index: number) => Food | undefined,
+): ServingAmountFinding[] {
+  const Q = RECIPE_CHECK_LIMITS.perServing;
+  const findings: ServingAmountFinding[] = [];
+  if (facts.nutrientsComplete && facts.perServing.salt_g > Q.saltMaxG) {
+    findings.push({ kind: 'salt', grams: facts.perServing.salt_g });
+  }
+  let oilG = 0;
+  facts.gramsPerServing.forEach((grams, index) => {
+    const food = foodAt(index);
+    if (food === undefined || grams === null) {
+      return;
+    }
+    if (
+      food.shopping_category === 'oils_vinegar_sauces' &&
+      food.nutrients_per_100g.fat_g >= RECIPE_CHECK_LIMITS.oilMinFatG
+    ) {
+      oilG += grams;
+    }
+    if (grams > Q.ingredientMaxG) {
+      findings.push({ kind: 'ingredient', grams, index, food });
+    }
+  });
+  if (oilG > Q.oilMaxG) {
+    findings.push({ kind: 'oil', grams: oilG });
+  }
+  return findings;
+}
+
 /** Prüft ein Rezept gegen den Katalog. `facts` optional vorberechnet (sonst hier berechnet). */
 export function checkRecipe(
   recipe: Recipe,
@@ -613,50 +660,39 @@ export function checkRecipe(
   issues.push(...textRuleIssues(target, texts));
 
   // R11 (gelb): Mengen je Portion.
-  const Q = RECIPE_CHECK_LIMITS.perServing;
-  if (facts.nutrientsComplete && facts.perServing.salt_g > Q.saltMaxG) {
-    issues.push(
-      makeIssue(
-        'R11',
-        target,
-        `${fmt(facts.perServing.salt_g)} g Salz je Portion (höchstens ${fmt(Q.saltMaxG)} g).`,
-        'ingredients',
-      ),
-    );
-  }
-  let oilG = 0;
-  recipe.ingredients.forEach((ingredient, index) => {
-    const food = foods.get(ingredient.food_id);
-    const grams = facts.gramsPerServing[index];
-    if (food === undefined || grams === null || grams === undefined) {
-      return;
-    }
-    if (
-      food.shopping_category === 'oils_vinegar_sauces' &&
-      food.nutrients_per_100g.fat_g >= RECIPE_CHECK_LIMITS.oilMinFatG
-    ) {
-      oilG += grams;
-    }
-    if (grams > Q.ingredientMaxG) {
+  for (const finding of servingAmountFindings(facts, (index) => {
+    const ingredient = recipe.ingredients[index];
+    return ingredient === undefined ? undefined : foods.get(ingredient.food_id);
+  })) {
+    const Q = RECIPE_CHECK_LIMITS.perServing;
+    if (finding.kind === 'salt') {
       issues.push(
         makeIssue(
           'R11',
           target,
-          `${fmt(grams, 0)} g „${food.name_de}“ je Portion (höchstens ${Q.ingredientMaxG} g).`,
-          `ingredients.${index}.amount`,
+          `${fmt(finding.grams)} g Salz je Portion (höchstens ${fmt(Q.saltMaxG)} g).`,
+          'ingredients',
+        ),
+      );
+    } else if (finding.kind === 'ingredient') {
+      issues.push(
+        makeIssue(
+          'R11',
+          target,
+          `${fmt(finding.grams, 0)} g „${finding.food.name_de}“ je Portion (höchstens ${Q.ingredientMaxG} g).`,
+          `ingredients.${finding.index}.amount`,
+        ),
+      );
+    } else {
+      issues.push(
+        makeIssue(
+          'R11',
+          target,
+          `${fmt(finding.grams, 0)} g Öl je Portion (höchstens ${Q.oilMaxG} g).`,
+          'ingredients',
         ),
       );
     }
-  });
-  if (oilG > Q.oilMaxG) {
-    issues.push(
-      makeIssue(
-        'R11',
-        target,
-        `${fmt(oilG, 0)} g Öl je Portion (höchstens ${Q.oilMaxG} g).`,
-        'ingredients',
-      ),
-    );
   }
 
   // R12: kein Alkohol.

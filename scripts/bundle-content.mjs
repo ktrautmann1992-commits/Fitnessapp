@@ -1,5 +1,5 @@
 // Bündelt die Inhaltsdateien des Repositorys (content/exercises, content/plan-templates; Ernährung: content/foods,
-// recipes, meal-prep-plans, guides + Katalog-Begleitdaten) beim Bauen in ein
+// recipes, meal-prep-plans, guides, substitutions + Katalog-Begleitdaten) beim Bauen in ein
 // TypeScript-Modul. Gemeinsam genutzt von
 // - apps/web (Redaktionsbereich /admin): jede Vercel-Vorschau zeigt genau die Inhalte ihres Branches,
 // - apps/mobile (Testmodus ohne Supabase, docs/PLAN-PHASE-3.md 10.1): Plan aus den gebündelten Entwürfen; das Modul
@@ -39,6 +39,7 @@ const NUTRITION_FOLDERS = {
   recipe: 'recipes',
   meal_prep_plan: 'meal-prep-plans',
   guide: 'guides',
+  ingredient_substitution: 'substitutions',
 };
 /** Begleitdatei in content/foods/, kein Lebensmittel. */
 const EXPECTATIONS_FILE = 'allergen-expectations.json';

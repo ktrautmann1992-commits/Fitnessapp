@@ -1,8 +1,10 @@
 import {
   addManualShoppingItem,
   addRecipeToShoppingList,
+  applyIngredientSwap,
   applyMealPrepPlan,
   type DietType,
+  type IngredientSwapFailure,
   type MealPlanWeek,
   type MealPrepPlan,
   type MealSlotId,
@@ -123,6 +125,11 @@ export type MealSwapOutcome =
   | { kind: 'swapped'; title: string }
   | { kind: 'failed'; reason: 'no_alternative' | 'past_day' | 'not_found' | 'replan_needed' };
 
+export type IngredientSwapOutcome =
+  | { kind: 'swapped' }
+  | { kind: 'failed'; reason: IngredientSwapFailure | 'consent_required' }
+  | { kind: 'save_failed' };
+
 export interface MealPlanActions {
   /** „Rezept tauschen“ (6.3 Nr. 7) – nur Hauptplätze, nie Ergänzungs-Snacks, nie vergangene Tage. */
   swap: (date: string, slot: MealSlotId) => Promise<MealSwapOutcome>;
@@ -134,6 +141,15 @@ export interface MealPlanActions {
   dismissAdjusted: () => Promise<void>;
   /** Meal-Prep-Wochenplan für diese Woche wählen (19.6) – ersetzt den Plan ab dem Kochtag. */
   chooseMealPrepPlan: (mealPrepPlan: MealPrepPlan) => Promise<'chosen' | 'not_offered'>;
+  /**
+   * Zutat austauschen (KONZEPT 6.9, Etappe N9): `substituteFoodId` aus der Austausch-Tabelle, `null` = Original. Die
+   * Regeln (Filter, R11, Planband, Haltbarkeit) stehen in packages/core (`applyIngredientSwap`); Plan und
+   * Einkaufsliste werden im selben Schritt gespeichert (W22).
+   */
+  swapIngredient: (
+    target: { date: string; slot: MealSlotId; index: number },
+    substituteFoodId: string | null,
+  ) => Promise<IngredientSwapOutcome>;
 }
 
 /**
@@ -179,6 +195,21 @@ export function useMealPlanActions(week: NutritionWeekResult | null): MealPlanAc
         if (!offer.offered) return 'not_offered';
         await save(offer.plan);
         return 'chosen';
+      },
+      swapIngredient: async (target, substituteFoodId) => {
+        if (!week.planState?.ingredientSwapAllowed) {
+          return { kind: 'failed', reason: 'consent_required' };
+        }
+        const result = applyIngredientSwap(plan, target, substituteFoodId, input, {
+          cookStartedOn: week.planState.cookStartedOn,
+        });
+        if (!result.ok) return { kind: 'failed', reason: result.reason };
+        try {
+          await save(result.plan);
+        } catch {
+          return { kind: 'save_failed' };
+        }
+        return { kind: 'swapped' };
       },
     };
   }, [saveMealPlan, week]);

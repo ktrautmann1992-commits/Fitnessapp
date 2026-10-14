@@ -78,8 +78,15 @@ export function RecipeReleaseHint({
   );
 }
 
-/** Freigabe von Meal-Prep-Plänen und Ratgebern per ID (Gründer-Entscheidung 14.10.2026, Wächter-Empfehlung). */
-export function IdReleaseHint({ kind }: { kind: 'meal_prep_plan' | 'guide' }) {
+/**
+ * Freigabe von Meal-Prep-Plänen, Ratgebern und Austausch-Einträgen per ID (Gründer-Entscheidung 14.10.2026,
+ * Wächter-Empfehlung; Austausch seit Etappe N9).
+ */
+export function IdReleaseHint({
+  kind,
+}: {
+  kind: 'meal_prep_plan' | 'guide' | 'ingredient_substitution';
+}) {
   return (
     <section className={styles.section} aria-labelledby="freigabe-per-id">
       <h2 id="freigabe-per-id" className={styles.h2}>
@@ -98,7 +105,9 @@ export function IdReleaseHint({ kind }: { kind: 'meal_prep_plan' | 'guide' }) {
         <li>
           {kind === 'meal_prep_plan'
             ? 'Freigegeben wird ein Plan nur, wenn alle seine Rezepte danach freigegeben sind (schon vorher oder im selben Lauf – dann die Rezept-IDs mit angeben) und kein roter Befund bleibt (Aufbewahrung nach R9/R20).'
-            : 'Freigegeben wird ein Ratgeber nur ohne roten Befund (u. a. Health-Claims-Textregeln).'}
+            : kind === 'guide'
+              ? 'Freigegeben wird ein Ratgeber nur ohne roten Befund (u. a. Health-Claims-Textregeln).'
+              : 'Freigegeben wird ein Austausch nur ohne roten Befund (R23: beide Lebensmittel freigegeben und katalog-geprüft, Faktor hält die Messgröße der Rolle ±10 %, kein Alkohol; Hinweis-Text ohne Heilversprechen).'}
         </li>
         <li>
           Ist <strong>ci</strong> grün: Pull Request <strong>mergen</strong> – erst das ist die

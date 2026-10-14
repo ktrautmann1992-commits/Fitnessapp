@@ -125,6 +125,7 @@ export const ISSUE_KIND_LABELS: Record<ContentIssue['kind'], string> = {
   recipe_library: 'Rezeptbestand',
   meal_prep_plan: 'Meal-Prep-Plan',
   guide: 'Ratgeber',
+  ingredient_substitution: 'Austausch',
 };
 
 /** Gerätename aus dem Katalog; unbekannte IDs bleiben sichtbar (Regel Ü2/V2 meldet sie). */

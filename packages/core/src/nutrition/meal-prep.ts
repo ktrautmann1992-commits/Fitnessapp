@@ -2,7 +2,9 @@ import { z } from 'zod';
 
 import { MEAL_PREP_COOK_OFFSETS, MEAL_PREP_FRIDGE_DAYS, NUTRITION_LIMITS } from '../constants';
 import type { FoodLookup } from '../content/food-schema';
-import { addDays, daysBetween } from '../dates';
+import { recipeTotalMinutes } from '../content/import-rules';
+import type { Recipe } from '../content/recipe-schema';
+import { addDays, daysBetween, isoWeekday } from '../dates';
 import type { FilteredRecipe } from './filter';
 import type { MealprepSlotMode } from './schemas';
 import type { MealSlotId } from './timing';
@@ -60,12 +62,15 @@ export interface MealPrepKeeping {
   readonly freezable: boolean;
 }
 
-/** Haltbarkeit eines Gerichts mit den TATSÄCHLICH verwendeten Zutaten (Ersatz, Weglassen; S12, R9). */
+/** Haltbarkeit eines Gerichts mit den TATSÄCHLICH verwendeten Zutaten (Ersatz, Weglassen, Tausch; S12, R9, B2). */
 export function mealPrepKeeping(variant: FilteredRecipe, foods: FoodLookup): MealPrepKeeping {
   const { recipe } = variant;
   if (!recipe.meal_prep.suitable) return { fridgeDays: 0, freezable: false };
   const omitted = new Set(variant.omitted);
-  const subs = new Map(variant.substitutions.map((s) => [s.index, s.substituteFoodId]));
+  const subs = new Map([
+    ...variant.substitutions.map((s): [number, string] => [s.index, s.substituteFoodId]),
+    ...variant.swaps.map((s): [number, string] => [s.index, s.substituteFoodId]),
+  ]);
   let foodsFreezable = true;
   recipe.ingredients.forEach((ingredient, index) => {
     if (omitted.has(index)) return;
@@ -114,4 +119,48 @@ export function leftoverKeeps(
   if (meal.storage === 'fridge') return days <= keeping.fridgeDays;
   if (meal.storage === 'freeze') return keeping.freezable;
   return false;
+}
+
+/** Aufbewahrung je Tag: Kühlschrank, eingefroren oder frisch gekocht (wie `storage_plan`, S10). */
+export type PrepStorageMethod = 'fridge' | 'freeze' | 'fresh';
+
+const STORAGE_SAFETY: Readonly<Record<PrepStorageMethod, number>> = {
+  fridge: 0,
+  freeze: 1,
+  fresh: 2,
+};
+
+/**
+ * Aufbewahrung eines vorgekochten Gerichts an einem Tag nach dem Kochtag (19.6 Nr. 6, R9) – EINE Regel für
+ * `applyMealPrepPlan` und den Zutaten-Austausch (Wächter N9 S1): abgeleitet aus der Haltbarkeit (`mealPrepDayUse`),
+ * eine vorgegebene Angabe (`storage_plan` bzw. die bisherige Aufbewahrung) gewinnt, wenn sie sicherer ist
+ * (Kühlschrank < eingefroren < frisch); „eingefroren“ nur, wenn das Gericht einfrierbar ist, sonst frisch.
+ */
+export function prepStorageForDay(
+  keeping: MealPrepKeeping,
+  daysAfterCook: number,
+  planned: PrepStorageMethod | null,
+): PrepStorageMethod | 'cook' {
+  const derived = mealPrepDayUse(keeping, daysAfterCook);
+  if (derived === 'cook') return 'cook';
+  let method: PrepStorageMethod = derived;
+  if (planned !== null && STORAGE_SAFETY[planned] > STORAGE_SAFETY[method]) method = planned;
+  if (method === 'freeze' && !keeping.freezable) method = 'fresh';
+  return method;
+}
+
+/**
+ * Wird an diesem Tag frisch gekocht, gilt „werktags höchstens X Minuten“ (Wächter N3 K1) – true = zu lang (dann wird
+ * der Meal-Prep-Plan bzw. der Tausch nicht angeboten).
+ */
+export function freshCookTooLong(
+  recipe: Recipe,
+  date: string,
+  maxMinutesWeekday: number | null,
+): boolean {
+  return (
+    maxMinutesWeekday !== null &&
+    isoWeekday(date) <= 5 &&
+    recipeTotalMinutes(recipe) > maxMinutesWeekday
+  );
 }

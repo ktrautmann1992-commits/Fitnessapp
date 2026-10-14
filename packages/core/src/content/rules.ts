@@ -7,7 +7,8 @@ import type { ContentStatus } from '../enums';
  * VERSION (Abschnitt 5, Punkt 6: Ändert sich ein freigegebener Inhalt, steigt `version`).
  * Dazu PROBELAUF (Wächter-Hinweis Etappe B): Beispiel-Inhalte aus dem Probelauf dürfen nie `published` sein.
  * Phase 5 (docs/PLAN-PHASE-5.md 5.3): R1–R19 für Lebensmittel und Rezepte (R1 Schema und R15 Version blockieren
- * wie Ü1/VERSION immer); R20–R22 für Meal-Prep-Pläne, Ratgeber und Kategorien (19.4).
+ * wie Ü1/VERSION immer); R20–R22 für Meal-Prep-Pläne, Ratgeber und Kategorien (19.4); R23 für die Austausch-Tabelle
+ * (19.7 N9).
  */
 export const CONTENT_RULES = {
   DATEI: { severity: 'error', title: 'Datei: gültiges JSON, Dateiname = ID, ID eindeutig' },
@@ -171,6 +172,17 @@ export const CONTENT_RULES = {
     title:
       'Kategorie plausibel: „schnell“ ⇔ Gesamtzeit ≤ 10 Min., Pre-/Post-Workout ⇔ Trainings-Angabe, „meal-prep“ ⇔ Meal-Prep-geeignet',
   },
+  // Zutaten-Austausch (docs/PLAN-PHASE-5.md 19.7 N9)
+  R23: {
+    severity: 'error',
+    title:
+      'Austausch: beide Lebensmittel existieren und sind katalog-geprüft (freigegeben nur mit freigegebenen), kein Alkohol, Faktor hält die Messgröße der Rolle ±10 %, Paar nicht doppelt',
+  },
+  R23H: {
+    severity: 'warning',
+    title:
+      'Austausch: Süße (Süßkraft laut Hinweis) bzw. Ersatz muss durchgegart werden, das Original nicht – menschlich prüfen',
+  },
 } as const satisfies Record<string, { severity: IssueSeverity; title: string }>;
 
 export type ContentRuleId = keyof typeof CONTENT_RULES;
@@ -187,7 +199,8 @@ export type ContentKind =
   | 'recipe'
   | 'recipe_library'
   | 'meal_prep_plan'
-  | 'guide';
+  | 'guide'
+  | 'ingredient_substitution';
 
 export interface ContentIssue {
   readonly rule: ContentRuleId;

@@ -7,10 +7,13 @@ import {
   dietAllows,
   foodContainsPork,
   foodDiet,
+  needsHeatedFlag,
   type RecipeFacts,
 } from './recipe-nutrients';
 import type { MealPlanProfile } from './schemas';
 import type { MealSlotId } from './timing';
+import { swapKeepsHeating } from './swap-resolve';
+import type { RecipeUnit } from './units';
 
 /**
  * Rezept-Filter – harte Regeln (docs/PLAN-PHASE-5.md 6.1, 19.6 B1). EINZIGE Stelle, die entscheidet, ob ein
@@ -31,6 +34,11 @@ import type { MealSlotId } from './timing';
  * genommen, wenn ihr `for_groups` alle verletzten Gruppen der Zutat abdeckt – und dann läuft der KOMPLETTE Filter
  * mit dem Ersatzprodukt erneut (Haferdrink bei Gluten → raus; laktosefreie Milch bei `dairy` → raus).
  * Am Ende prüft `computeRecipeFacts` das ganze Rezept noch einmal (Verteidigung in der Tiefe).
+ *
+ * Zutaten-Austausch (19.7 N9, B2): `swaps` sind vom Nutzer gewählte Alternativen aus der Austausch-Tabelle (aufgelöst
+ * mit `resolveIngredientSwaps`). Das GEÄNDERTE Rezept läuft durch den kompletten Filter; eine getauschte Zutat wird
+ * nie weggelassen oder ersetzt – verletzt sie etwas (inkl. Schwangerschaft: Ersatz ohne `heated` = ungegart), passt
+ * das Rezept nicht.
  */
 
 export const RECIPE_EXCLUSION_REASONS = [
@@ -73,13 +81,34 @@ export interface RecipeSubstitution {
   readonly substituteFoodId: string;
 }
 
-/** Ein für die Person passendes Rezept – ggf. ohne optionale Zutaten und mit Ersatzprodukten. */
+/** Vom Nutzer gewählter Zutaten-Austausch (19.7 N9) – so steht er im gespeicherten Plan. */
+export interface IngredientSwapRef {
+  /** Index der Zutat im Rezept. */
+  readonly index: number;
+  /** Lebensmittel der Rezept-Zutat. */
+  readonly foodId: string;
+  /** Gewählter Ersatz (Austausch-Tabelle). */
+  readonly substituteFoodId: string;
+}
+
+/** Austausch, aufgelöst aus der Austausch-Tabelle: Menge, Einheit und `heated` des Ersatzes (B2). */
+export interface AppliedSwap extends IngredientSwapRef {
+  readonly amount: number;
+  readonly unit: RecipeUnit;
+  readonly heated: boolean | undefined;
+  /** ID des Eintrags in der Austausch-Tabelle. */
+  readonly substitutionId: string;
+}
+
+/** Ein für die Person passendes Rezept – ggf. ohne optionale Zutaten, mit Ersatzprodukten und getauschten Zutaten. */
 export interface FilteredRecipe {
   readonly recipe: Recipe;
   /** Weggelassene OPTIONALE Zutaten (Indizes, S3). */
   readonly omitted: readonly number[];
   /** Ersatzprodukte (S4). */
   readonly substitutions: readonly RecipeSubstitution[];
+  /** Vom Nutzer getauschte Zutaten (19.7 N9), nach Index sortiert. */
+  readonly swaps: readonly AppliedSwap[];
   /** Angaben mit Weglassungen und Ersatz neu berechnet. */
   readonly facts: RecipeFacts;
 }
@@ -161,11 +190,24 @@ function finalViolations(
   return RECIPE_EXCLUSION_REASONS.filter((reason) => reasons.has(reason));
 }
 
-/** Filtert ein Rezept für eine Person (Plan 6.1). */
+/** Austausch je Zutat-Index für `computeRecipeFacts`. */
+export function swapFactsMap(
+  swaps: readonly AppliedSwap[],
+): Map<number, { food_id: string; amount: number; unit: RecipeUnit; heated: boolean | undefined }> {
+  return new Map(
+    swaps.map((s) => [
+      s.index,
+      { food_id: s.substituteFoodId, amount: s.amount, unit: s.unit, heated: s.heated },
+    ]),
+  );
+}
+
+/** Filtert ein Rezept für eine Person (Plan 6.1), optional mit getauschten Zutaten (19.7 N9). */
 export function filterRecipe(
   recipe: Recipe,
   foods: FoodLookup,
   ctx: RecipeFilterContext,
+  swapsIn: readonly AppliedSwap[] = [],
 ): RecipeFilterResult {
   if (recipe.status === 'archived' || (recipe.status === 'draft' && !ctx.allowDrafts)) {
     return { ok: false, reasons: ['status'] };
@@ -174,10 +216,30 @@ export function filterRecipe(
   if (recipe.ingredients.some((i) => !foodUsable(foods.get(i.food_id), ctx.allowDrafts))) {
     return { ok: false, reasons: ['food_unavailable'] };
   }
+  const swaps = [...swapsIn].sort((a, b) => a.index - b.index);
+  const swapByIndex = new Map(swaps.map((s) => [s.index, s]));
+  // Verteidigung in der Tiefe (Wächter N9 Runde 2 K-a): Auch ein direkt übergebener, nicht über
+  // `resolveIngredientSwaps` geprüfter Tausch darf keinen Ersatz, der erhitzt werden muss, an eine nicht ausdrücklich
+  // erhitzte Zutat bzw. in ein Rezept ohne Kochen bringen (B1). Für Rezepte ohne Tausch ändert sich nichts.
+  if (
+    swapByIndex.size !== swaps.length ||
+    swaps.some((s) => {
+      const substitute = foods.get(s.substituteFoodId);
+      return (
+        recipe.ingredients[s.index]?.food_id !== s.foodId ||
+        !foodUsable(substitute, ctx.allowDrafts) ||
+        (needsHeatedFlag(substitute) && !swapKeepsHeating(recipe, s.index))
+      );
+    })
+  ) {
+    return { ok: false, reasons: ['food_unavailable'] };
+  }
+  const swapFacts = swapFactsMap(swaps);
   const groups = excludedGroups(ctx.profile);
 
-  // Schwangerschafts-Gründe je Zutat (Katalog-Flag, ungegart, no_cook, unbestätigte Annahme) aus dem Core.
-  const baseFacts = computeRecipeFacts(recipe, foods);
+  // Schwangerschafts-Gründe je Zutat (Katalog-Flag, ungegart, no_cook, unbestätigte Annahme) aus dem Core – mit
+  // getauschten Zutaten (Ersatz ohne `heated` = ungegart, B2).
+  const baseFacts = computeRecipeFacts(recipe, foods, { swaps: swapFacts });
   const pregnancyIndices = new Set(
     ctx.excludePregnancyCaution ? baseFacts.pregnancyReasons.map((r) => r.index) : [],
   );
@@ -187,7 +249,8 @@ export function filterRecipe(
   const blocking = new Set<RecipeExclusionReason>();
 
   recipe.ingredients.forEach((ingredient, index) => {
-    const food = foods.get(ingredient.food_id) as Food;
+    const swap = swapByIndex.get(index);
+    const food = foods.get(swap?.substituteFoodId ?? ingredient.food_id) as Food;
     const own = foodViolations(food, ctx, groups);
     const kinds = new Set(own.kinds);
     if (pregnancyIndices.has(index)) kinds.add('pregnancy_caution');
@@ -197,6 +260,11 @@ export function filterRecipe(
       return;
     }
     if (kinds.size === 0) return;
+    if (swap !== undefined) {
+      // Eine getauschte Zutat wird nie weggelassen oder ersetzt: Der Tausch passt dann nicht (19.7 N9).
+      for (const kind of kinds) blocking.add(kind);
+      return;
+    }
     if (ingredient.optional) {
       omitted.push(index);
       return;
@@ -213,6 +281,7 @@ export function filterRecipe(
           if (ctx.excludePregnancyCaution) {
             const trial = computeRecipeFacts(recipe, foods, {
               substitutions: new Map([[index, sub.food_id]]),
+              swaps: swapFacts,
             });
             if (trial.pregnancyReasons.some((r) => r.index === index)) return false;
           }
@@ -232,10 +301,11 @@ export function filterRecipe(
   const facts = computeRecipeFacts(recipe, foods, {
     omitted: new Set(omitted),
     substitutions: new Map(substitutions.map((s) => [s.index, s.substituteFoodId])),
+    swaps: swapFacts,
   });
   const reasons = finalViolations(facts, ctx, groups);
   if (reasons.length > 0) return { ok: false, reasons };
-  return { ok: true, value: { recipe, omitted, substitutions, facts } };
+  return { ok: true, value: { recipe, omitted, substitutions, swaps, facts } };
 }
 
 /** Mahlzeiten-Typ eines Platzes (Plan 6.1 „`meal_types` passt zum Slot“, 19.6 K7). */

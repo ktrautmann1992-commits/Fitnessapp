@@ -1695,6 +1695,23 @@ export const SHOPPING_LIST_EXTRAS = { recipesMax: 20, itemsMax: 1000 } as const;
  */
 export const RECIPE_SEARCH_COST_STEPS_EUR = [2, 3, 5] as const;
 
+/**
+ * Zutaten-Austausch (Plan 19.4/19.7, KONZEPT 6.9, Etappe N9) – Austausch-Tabelle `content/substitutions/` und Regel
+ * R23. Faktor 0,2–5 auf die MASSE der Original-Zutat (Plan 19.7 „Faktor 0,2–5“); er hält die Messgröße der Rolle
+ * (19.4, S6) innerhalb ±10 % (`roleTolerance`): Eiweiß = g Eiweiß, Kohlenhydrat = g Kohlenhydrate, Fett = g Fett,
+ * Gemüse = Masse (Faktor 1 ±10 %); Würze ohne Nährwertprüfung (Salz prüft R11 am getauschten Rezept), Süße nach
+ * Hinweis (gelb, menschliche Prüfung). Hinweis-Text höchstens `noteMaxChars` Zeichen. Keine Schutzgrenze – die
+ * Kalorien-Schutzgrenzen gelten weiter nur über das Planband aus `clampCalorieTarget`. PRODUKTENTSCHEIDUNG (Werte aus
+ * dem Plan 19.4/19.7).
+ */
+export const INGREDIENT_SUBSTITUTION_LIMITS = {
+  factor: { min: 0.2, max: 5 },
+  roleTolerance: 0.1,
+  noteMaxChars: 200,
+  /** Höchstzahl der Austausch-Einträge je Mahlzeit im gespeicherten Plan (Gerätespeicher-Schutz). */
+  swapsPerMeal: 20,
+} as const;
+
 // ---------------------------------------------------------------------------------------------------------
 // Ziele · Haupt- und Nebenziel (docs/PLAN-ZIELE.md Abschnitt 4, Etappe Z1)
 //

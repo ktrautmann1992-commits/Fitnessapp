@@ -9,7 +9,8 @@
  *
  * Inhalt: der kleine Test-Katalog aus N2a (`content/nutrition-fixtures.ts`), die Rezepte aus N2a/N3
  * (`nutrition/meal-plan-fixtures.ts`) und drei Meal-Prep-Wochenpläne für den Kochtag (Etappe N5b, Aufbewahrung nach
- * R9 hergeleitet) und zwei Beispiel-Ratgeber mit Testtexten (Etappe N5c), alle Status `draft`. Geprüft und ausgewählt wird wie beim echten Bestand über
+ * R9 hergeleitet), zwei Beispiel-Ratgeber mit Testtexten (Etappe N5c) und eine kleine Austausch-Tabelle mit Rollen an
+ * einigen Rezepten (Etappe N9, Zutaten-Austausch), alle Status `draft`. Geprüft und ausgewählt wird wie beim echten Bestand über
  * `validateContent` und `selectNutritionContent` – dieselben Regeln (R1–R22).
  * ACHTUNG: Die Nährwerte sind gerundete Testwerte, keine Quelldaten (R17 ist nur mit dem aus den Fixtures
  * abgeleiteten Auszug grün).
@@ -19,6 +20,9 @@ import { deriveStoragePlan } from './content/meal-prep-checks';
 import type { MealPrepPlan } from './content/meal-prep-plan-schema';
 import { catalogFor, FIXTURE_FOODS, RECIPE_META } from './content/nutrition-fixtures';
 import type { NutritionCatalogContext } from './content/recipe-checks';
+import type { IngredientRole, Recipe } from './content/recipe-schema';
+import type { IngredientSubstitution } from './content/substitution-schema';
+import { substitutionContentId } from './content/substitution-schema';
 import type { NutritionContentFile } from './content/validate';
 import { N3_RECIPES } from './nutrition/meal-plan-fixtures';
 
@@ -85,6 +89,132 @@ export const DEMO_MEAL_PREP_PLANS: readonly MealPrepPlan[] = [
       [25, 'Portionen abfüllen.'],
     ],
   ),
+];
+
+/**
+ * Rollen der Zutaten (19.4 S6) für die Beispiel-Rezepte (Etappe N9) – nur hier, damit die Test-Fixtures aus N2a/N3
+ * unverändert bleiben. Rezepte mit Import-Annahmen (`lachs-reis-annahme`) bekommen bewusst keine Rollen: Rollen
+ * gehören zur Zubereitung und würden den Fingerabdruck der bestätigten Annahmen ändern (N2d).
+ */
+export const DEMO_INGREDIENT_ROLES: Readonly<
+  Record<string, Readonly<Record<string, IngredientRole>>>
+> = {
+  'tofu-paprika': { tofu: 'protein', paprika: 'vegetable', reis: 'carb', olivenoel: 'fat' },
+  'haehnchen-reis': {
+    haehnchenbrust: 'protein',
+    reis: 'carb',
+    paprika: 'vegetable',
+    olivenoel: 'fat',
+    salz: 'seasoning',
+  },
+  'tofu-erdnuss-curry': {
+    tofu: 'protein',
+    reis: 'carb',
+    kokosmilch: 'fat',
+    erdnuesse: 'fat',
+    paprika: 'vegetable',
+  },
+  'hack-spaghetti': {
+    spaghetti: 'carb',
+    'hackfleisch-gemischt': 'protein',
+    'tomaten-passiert': 'vegetable',
+    zwiebel: 'vegetable',
+  },
+  'lachs-reis': { lachs: 'protein', reis: 'carb', olivenoel: 'fat' },
+  'champignon-reis': {
+    champignons: 'vegetable',
+    reis: 'carb',
+    olivenoel: 'fat',
+    zwiebel: 'vegetable',
+  },
+  'spaghetti-tomatensauce': {
+    spaghetti: 'carb',
+    'tomaten-passiert': 'vegetable',
+    zwiebel: 'vegetable',
+    olivenoel: 'fat',
+    salz: 'seasoning',
+  },
+  'porridge-banane': { haferflocken: 'carb', honig: 'sweet' },
+};
+
+/**
+ * Pflanzliche Zutaten, die laut Zubereitung tatsächlich gegart werden (Wächter N9 B1): Nur an ihnen darf ein Ersatz
+ * stehen, der erhitzt werden muss (Ei, Fleisch, Fisch). Geprüft an den Schritten: „Tofu und Paprika in Öl braten.“
+ * bzw. „Tofu und Paprika anbraten, …“.
+ */
+export const DEMO_HEATED_PLANT_FOODS: Readonly<Record<string, readonly string[]>> = {
+  'tofu-paprika': ['tofu'],
+  'tofu-erdnuss-curry': ['tofu'],
+};
+
+/** Rezept mit den Beispiel-Rollen (und `heated` gegarter pflanzlicher Zutaten); sonst unverändert. */
+export function withDemoRoles(recipe: Recipe): Recipe {
+  const roles = DEMO_INGREDIENT_ROLES[recipe.id];
+  if (roles === undefined || (recipe.meta.import_assumptions?.length ?? 0) > 0) return recipe;
+  const heated = DEMO_HEATED_PLANT_FOODS[recipe.id] ?? [];
+  return {
+    ...recipe,
+    ingredients: recipe.ingredients.map((ingredient) => {
+      const role = roles[ingredient.food_id];
+      const withHeat = heated.includes(ingredient.food_id)
+        ? { ...ingredient, heated: true }
+        : ingredient;
+      return role === undefined ? withHeat : { ...withHeat, role };
+    }),
+  };
+}
+
+function demoSubstitution(
+  food: string,
+  substitute: string,
+  role: IngredientRole,
+  factor: number,
+  note: string,
+): IngredientSubstitution {
+  return {
+    id: substitutionContentId(food, substitute),
+    version: 1,
+    status: 'draft',
+    food_id: food,
+    substitute_food_id: substitute,
+    factor,
+    role,
+    note_de: note,
+    meta: { ...RECIPE_META },
+  };
+}
+
+/**
+ * Austausch-Tabelle mit TESTWERTEN (Etappe N9): Faktor hält die Messgröße der Rolle (R23 grün, Süße gelb). Enthält
+ * absichtlich Paare, die für manche Personen nie angeboten werden (Hack mit Schwein, Ei ungegart in der
+ * Schwangerschaft, Hähnchen für Vegetarier) – das prüft der Core, nicht die Tabelle.
+ */
+export const DEMO_SUBSTITUTIONS: readonly IngredientSubstitution[] = [
+  demoSubstitution('tofu', 'haehnchenbrust', 'protein', 0.57, 'Hähnchen gut durchgaren.'),
+  demoSubstitution('tofu', 'huehnerei', 'protein', 1.04, 'Eier verquirlen und mitbraten.'),
+  demoSubstitution('haehnchenbrust', 'tofu', 'protein', 1.77, 'Tofu in Würfeln anbraten.'),
+  demoSubstitution('haehnchenbrust', 'lachs', 'protein', 1.15, 'Lachs kürzer garen.'),
+  demoSubstitution(
+    'haehnchenbrust',
+    'hackfleisch-gemischt',
+    'protein',
+    1.28,
+    'Hack krümelig durchbraten.',
+  ),
+  demoSubstitution('lachs', 'haehnchenbrust', 'protein', 0.87, 'Hähnchen gut durchgaren.'),
+  demoSubstitution('hackfleisch-gemischt', 'tofu', 'protein', 1.38, 'Tofu fein zerbröseln.'),
+  demoSubstitution(
+    'hackfleisch-gemischt',
+    'haehnchenbrust',
+    'protein',
+    0.78,
+    'Hähnchen klein schneiden und durchgaren.',
+  ),
+  demoSubstitution('reis', 'spaghetti', 'carb', 1.1, 'Nudeln nach Packungsangabe kochen.'),
+  demoSubstitution('spaghetti', 'reis', 'carb', 0.91, 'Reis nach Packungsangabe kochen.'),
+  demoSubstitution('paprika', 'champignons', 'vegetable', 1, 'Pilze in Scheiben schneiden.'),
+  demoSubstitution('champignons', 'paprika', 'vegetable', 1, 'Paprika in Streifen schneiden.'),
+  demoSubstitution('honig', 'zucker', 'sweet', 0.8, 'Etwas weniger Zucker als Honig nehmen.'),
 ];
 
 const GUIDE_META: Guide['meta'] = {
@@ -164,7 +294,7 @@ export function demoNutritionContent(): DemoNutritionContent {
       ...N3_RECIPES.map((recipe): NutritionContentFile => ({
         kind: 'recipe',
         fileName: `${recipe.id}.json`,
-        data: structuredClone(recipe),
+        data: structuredClone(withDemoRoles(recipe)),
       })),
       ...DEMO_MEAL_PREP_PLANS.map((plan): NutritionContentFile => ({
         kind: 'meal_prep_plan',
@@ -175,6 +305,11 @@ export function demoNutritionContent(): DemoNutritionContent {
         kind: 'guide',
         fileName: `${guide.id}.json`,
         data: structuredClone(guide),
+      })),
+      ...DEMO_SUBSTITUTIONS.map((sub): NutritionContentFile => ({
+        kind: 'ingredient_substitution',
+        fileName: `${sub.id}.json`,
+        data: structuredClone(sub),
       })),
     ],
     catalog: catalogFor(FIXTURE_FOODS),

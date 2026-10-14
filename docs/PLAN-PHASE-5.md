@@ -1,6 +1,6 @@
 # Plan Phase 5 – Ernährungs-Engine, Essensplan und Einkaufsliste
 
-**Status:** **freigegeben, Etappen N0 (Plan), N1 (Core: Bedarf, Grenzen, Makros, Timing) und N2a (Inhalte: Schemas, Prüfregeln, Einheiten) umgesetzt** – Stand 11.10.2026. Offene Fragen 16 B: Gründer „Alles wie empfohlen“ (10.10.2026). Gegenprüfung der R2-Blocker durch den Wächter im N0-PR. **N2b Teil 1 (Quelle/Lizenz geklärt, Import-Infrastruktur, Zuordnungs-Vorschlag) umgesetzt** – der Katalog selbst entsteht nach dem Merge über den Workflow `foods-import` (Umsetzungsstand N2b). **N2c (Rezept-Import als Entwurf) und N3 (Core: Essensplan, Meal-Prep, Einkaufsliste, Rezeptsuche) umgesetzt** – Stand 12.10.2026 (Umsetzungsstand N2c/N3). **N4 (App Testmodus: Einrichtung, Tag, Rezept) umgesetzt** – Stand 12.10.2026 (Umsetzungsstand N4). **N2d (Admin-Seiten Ernährung, Sammelfreigabe Rezepte pro Kategorie und Freigabe per ID in `content-review`, Fingerabdruck bestätigter Import-Annahmen) umgesetzt** – Stand 14.10.2026, drei offene Fragen von den Gründern entschieden (Umsetzungsstand N2d). **N5a (App Testmodus: gespeicherter Essensplan, Wochenansicht, „Andere Vorschläge“, „Rezept tauschen“, „Plan aktualisieren“, automatische Neuplanung 6.6) umgesetzt** – Stand 14.10.2026; N5 ist in **N5a** und **N5b** (Einkaufsliste, Meal-Prep-Kochtag, „Zur Einkaufsliste“) geteilt (Umsetzungsstand N5a). **N5b (App Testmodus: Einkaufsliste offline mit eigenen Einträgen und Zeitraum, Neuerzeugung bei Neuplanung W22, „Zur Einkaufsliste“, Meal-Prep-Pläne mit Kochtag und Timern, Auftau-Hinweise; K-a, K-b, K5, K7, N3 K1) umgesetzt** – Stand 14.10.2026; offene Gründer-Entscheidung: Mitteilungen im Hintergrund (`expo-notifications`), Löschfrist weiter offen (Umsetzungsstand N5b). **N5c (App Testmodus: Rezeptsuche mit vorbelegter, erweiterbarer Ernährungsform und gekennzeichneten Treffern, „Zur Einkaufsliste“ für diese Treffer, Ratgeber offline mit R21-Prüfung und „Zahlen aus“) umgesetzt** – Stand 14.10.2026 (Umsetzungsstand N5c). **N6 (PDF P5: Essensplan und Einkaufsliste als PDF, gratis – Dokumentmodell, Renderer-Bausteine `checklist`/`steps`, Druckansichten `ernaehrung/drucken` und `einkaufsliste/drucken`, Knöpfe, nativer Druck, CI-Artefakt) umgesetzt** – Stand 14.10.2026; EAS-Build Android noch von den Gründern zu prüfen (Umsetzungsstand N6). **Nachtrag „Erweiterungen 2 (11.10.2026)“** in Abschnitt 19 (Fassung 2 nach Wächter-Prüfung, B1/B2 und S1–S14 eingearbeitet): Rezeptbestand aus `alpha5-rezepte.json`, Import in N2b/N2c, Umfang von Prompt C in N3–N6, neue Etappen N9–N14, W1 und P1. Fassung 3 nach Wächter-Nachprüfung `waechter-plan-5-r2.md` (Urteil „mit Auflagen“, alle Befunde eingearbeitet); Fassung 2 nach `waechter-plan-5.md`.
+**Status:** **freigegeben, Etappen N0 (Plan), N1 (Core: Bedarf, Grenzen, Makros, Timing) und N2a (Inhalte: Schemas, Prüfregeln, Einheiten) umgesetzt** – Stand 11.10.2026. Offene Fragen 16 B: Gründer „Alles wie empfohlen“ (10.10.2026). Gegenprüfung der R2-Blocker durch den Wächter im N0-PR. **N2b Teil 1 (Quelle/Lizenz geklärt, Import-Infrastruktur, Zuordnungs-Vorschlag) umgesetzt** – der Katalog selbst entsteht nach dem Merge über den Workflow `foods-import` (Umsetzungsstand N2b). **N2c (Rezept-Import als Entwurf) und N3 (Core: Essensplan, Meal-Prep, Einkaufsliste, Rezeptsuche) umgesetzt** – Stand 12.10.2026 (Umsetzungsstand N2c/N3). **N4 (App Testmodus: Einrichtung, Tag, Rezept) umgesetzt** – Stand 12.10.2026 (Umsetzungsstand N4). **N2d (Admin-Seiten Ernährung, Sammelfreigabe Rezepte pro Kategorie und Freigabe per ID in `content-review`, Fingerabdruck bestätigter Import-Annahmen) umgesetzt** – Stand 14.10.2026, drei offene Fragen von den Gründern entschieden (Umsetzungsstand N2d). **N5a (App Testmodus: gespeicherter Essensplan, Wochenansicht, „Andere Vorschläge“, „Rezept tauschen“, „Plan aktualisieren“, automatische Neuplanung 6.6) umgesetzt** – Stand 14.10.2026; N5 ist in **N5a** und **N5b** (Einkaufsliste, Meal-Prep-Kochtag, „Zur Einkaufsliste“) geteilt (Umsetzungsstand N5a). **N5b (App Testmodus: Einkaufsliste offline mit eigenen Einträgen und Zeitraum, Neuerzeugung bei Neuplanung W22, „Zur Einkaufsliste“, Meal-Prep-Pläne mit Kochtag und Timern, Auftau-Hinweise; K-a, K-b, K5, K7, N3 K1) umgesetzt** – Stand 14.10.2026; offene Gründer-Entscheidung: Mitteilungen im Hintergrund (`expo-notifications`), Löschfrist weiter offen (Umsetzungsstand N5b). **N5c (App Testmodus: Rezeptsuche mit vorbelegter, erweiterbarer Ernährungsform und gekennzeichneten Treffern, „Zur Einkaufsliste“ für diese Treffer, Ratgeber offline mit R21-Prüfung und „Zahlen aus“) umgesetzt** – Stand 14.10.2026 (Umsetzungsstand N5c). **N6 (PDF P5: Essensplan und Einkaufsliste als PDF, gratis – Dokumentmodell, Renderer-Bausteine `checklist`/`steps`, Druckansichten `ernaehrung/drucken` und `einkaufsliste/drucken`, Knöpfe, nativer Druck, CI-Artefakt) umgesetzt** – Stand 14.10.2026; EAS-Build Android noch von den Gründern zu prüfen (Umsetzungsstand N6). **N9 (Zutaten-Austausch, Prompt D, KONZEPT 6.9, gratis: Austausch-Tabelle mit Regel R23 und Batch-Art, Core `substitute.ts`, Dialog „Zutat austauschen“, Testmodus) umgesetzt** – Stand 14.10.2026; Server-Prüfung S7 und pgTAP mit N7 (Umsetzungsstand N9). **Nachtrag „Erweiterungen 2 (11.10.2026)“** in Abschnitt 19 (Fassung 2 nach Wächter-Prüfung, B1/B2 und S1–S14 eingearbeitet): Rezeptbestand aus `alpha5-rezepte.json`, Import in N2b/N2c, Umfang von Prompt C in N3–N6, neue Etappen N9–N14, W1 und P1. Fassung 3 nach Wächter-Nachprüfung `waechter-plan-5-r2.md` (Urteil „mit Auflagen“, alle Befunde eingearbeitet); Fassung 2 nach `waechter-plan-5.md`.
 **Reihenfolge (Gründer-Entscheidung 09.10.2026):** 4b-A0 (erledigt) → Übungs-Glossar und Übungstausch (erledigt bis T2; T3 später mit Supabase) → **Phase 5** → Phase 4b (A → D → E; B/C später).
 **Testphase:** zuerst nur im **Testmodus** (lokal auf dem Gerät, ohne Supabase). Supabase-Teile (Migrationen, RLS, pgTAP) sind hier vollständig geplant, kommen aber in einer späteren Etappe (N7). Einzige Ausnahme: die kleine CHECK-Migration für den Onboarding-Schritt in N4 (S8).
 
@@ -1087,7 +1087,7 @@ Neue Prüfregeln (Teil von `content:validate`):
 
 ### 19.7 Neue Etappen (je ein Pull Request mit Wächter-Prüfung, Testmodus zuerst)
 
-**N9 – Zutaten-Austausch (Prompt D, KONZEPT 6.9, gratis).**
+**N9 – Zutaten-Austausch (Prompt D, KONZEPT 6.9, gratis).** _Umgesetzt im Testmodus (14.10.2026), siehe Umsetzungsstand N9._
 
 - Batch-Art `kinds/ingredient-substitution.ts` (Structured Output nur mit Katalog-IDs, Rollen aus 19.4, Faktor 0,2–5) → `draft` → Prüfregeln (beide IDs existieren und sind katalog-geprüft; Faktor hält die **Messgröße der Rolle** (19.4) innerhalb ±10 %; kein Alkohol; Hinweis-Text R10) → Freigabe über `content-review`/Admin.
 - Core `substitute.ts`: Eine Alternative wird nur angeboten, wenn das **geänderte Rezept den kompletten Filter erneut besteht** (wie S4) und danach **R11** (Salz, Öl, Zutat ≤ 600 g) erfüllt (S6).
@@ -2549,3 +2549,169 @@ Nur dokumentiert:
   `eligibility.ts`) und bleibt so.
 - **K7 „Enthält: …“ im PDF:** Allergen-Gruppen der Rezepte sind keine personenbezogenen Daten und wären auf Papier ein
   Sicherheitsgewinn (Kochen für Gäste) – vorgemerkt für eine spätere Etappe, nicht in N6.
+
+### N9 – Zutaten-Austausch (umgesetzt, 14.10.2026, ohne Commit)
+
+Umfang wie 19.7 N9 (Prompt D, KONZEPT 6.9): gratis, rein regelbasiert – keine Echtzeit-KI. Die Austausch-Tabelle
+entsteht offline über die Content-Pipeline und wird über `content-review` freigegeben; zur Laufzeit entscheiden nur feste
+Regeln in `packages/core`. Nur Testmodus; Supabase-Modus bis N7 unverändert (Tabelle `ingredient_substitutions`,
+`save_meal_plan`-Prüfung S7 und pgTAP kommen mit N7).
+
+1. **Inhalte** (`packages/core/src/content/`):
+   - `substitution-schema.ts`: neue Art `ingredient_substitution` (`content/substitutions/<id>.json`, Zod strikt):
+     `food_id`, `substitute_food_id` (≠), `factor` 0,2–5 (auf die **Masse**: Gramm Ersatz = Gramm Original × Faktor),
+     `role` (19.4), `note_de` (5–200 Zeichen), `meta`. Feste ID `tausch-<zutat>-zu-<ersatz>` (über 80 Zeichen:
+     `tausch-<16 Hex>`), `ROLE_MEASURE_DE`, `INGREDIENT_ROLE_LABELS_DE`. Konstante `INGREDIENT_SUBSTITUTION_LIMITS`
+     (Faktor, ±10 %, Hinweis-Länge, höchstens 20 Tausche je Mahlzeit; PRODUKTENTSCHEIDUNG aus 19.4/19.7, keine
+     Schutzgrenze).
+   - `substitution-checks.ts`: **R23 (rot)** beide Lebensmittel existieren, nicht zurückgezogen, katalog-geprüft (R19),
+     freigegebener Eintrag nur mit freigegebenen Lebensmitteln, kein Alkohol (R12), Faktor hält die **Messgröße der
+     Rolle ±10 %** (Eiweiß/Kohlenhydrate/Fett in g, Gemüse = Masse, Original ohne diese Messgröße → Rolle passt nicht;
+     Würze ohne Prüfung), dasselbe Paar (gleiche Rolle) nur einmal; **R10** Hinweis-Text (Heil-/Gesundheitsversprechen,
+     Marken); **R23H (gelb)** Rolle Süße – menschlich prüfen.
+   - `validateContent` (Ergebnis `substitutions`), `selectNutritionContent` (`NutritionLibrary.substitutions`: Status,
+     roter Befund, Probelauf, **beide Lebensmittel ausgewählt**), `planNutritionRelease` (Freigabe per ID: nur ohne
+     roten Befund im Stand danach), `servingAmountFindings` (R11 als eine Regel für `checkRecipe` und den Tausch).
+2. **Core** (`packages/core/src/nutrition/`):
+   - `swap-resolve.ts`: `resolveIngredientSwap(s)` – der Plan speichert nur „Zutat i: Lebensmittel → Ersatz“
+     (`IngredientSwapRef`); Menge, Einheit und `heated` kommen **immer** aus Tabelle und Rezept (Gerätespeicher kann
+     nichts unterschieben). Nur Zutaten **mit Rolle** und Einträge mit genau dieser Rolle. Einheit: Ei in ganzen Stück
+     (Stückgewicht), sonst die Rezept-Einheit, wenn sie für den Ersatz umrechenbar ist (nicht Stück), sonst Gramm.
+     **B2 mit Wächter N9 B1:** Ein Ersatz, der erhitzt werden muss, ist nur gültig, wenn das Rezept gekocht wird (nicht
+     `no_cook`) und das Original ausdrücklich `heated: true` hat (ohne Import-Annahme an dieser Zutat) – für alle
+     Personen; dann übernimmt er `heated: true`. Sonst wird er nicht angeboten (siehe Wächter-Prüfung unten).
+   - `recipe-nutrients.ts` (`swaps`), `filter.ts` (`filterRecipe(…, swaps)`): das **geänderte Rezept** läuft durch den
+     kompletten Filter; eine getauschte Zutat wird nie weggelassen oder ersetzt (verletzt sie etwas, passt das Rezept
+     nicht). **Import-Annahmen (N2d):** Der Fingerabdruck wird immer am unveränderten Rezept gebildet; hängt an der
+     getauschten Zutat eine Annahme „erhitzt“, gilt sie für den Ersatz als **unbestätigt** (die Bestätigung galt dem
+     Original-Lebensmittel) → `unconfirmed_heated` (sichere Richtung).
+   - `scale.ts` (getauschte Zutat mit `originalFoodId` und `swapped: true`), `meal-prep.ts` (Haltbarkeit mit den
+     tatsächlichen Zutaten), `meal-plan.ts` (`PlannedMeal.ingredientSwaps`, `CandidatePool` mit Tabelle,
+     `variantForMeal` vergleicht die Tausche), `replan.ts` und `meal-plan-store.ts` (`mealPlanMatchesRecipes` prüft jeden
+     Tausch gegen die Tabelle; Schema: `ingredientSwaps` optional, ältere Pläne bleiben gültig, Engine-Version
+     unverändert), `meal-plan-payload.ts` (**S7:** `ingredient_swaps` je Mahlzeit, ohne Mengen).
+   - `substitute.ts`: `ingredientSwapOptions` (nur sichere Alternativen, nach Namen; „Original“ zuerst, wenn getauscht;
+     nicht angebotene **ohne Grund**), `applyIngredientSwap` (Ergebnis Plan oder Grund `past_day`, `not_found`,
+     `already_cooked`, `no_role`, `not_offered`, `excluded`, `amounts`, `above_ceiling`, `replan_needed`),
+     `ingredientSwapPossible`, `recipeVariantForMeal` (Rezeptansicht mit den Tauschen). Ablauf: Filter an **jedem** Tag
+     des Gerichts (Schwangerschaft an einem Tag genügt) → R11 → Haltbarkeit neu (`mealPrepKeeping`, R9) für **alle
+     Portionen desselben Kochtags** (fridge, sonst einfrieren nur bei einfrierbar, sonst frisch; bisher eingefroren
+     bleibt eingefroren) → jeder betroffene Tag mit `finishDay` ohne Streichen (Ausgleich über die anderen Mahlzeiten
+     und Ergänzungs-Snacks, `no_targets` Faktor 1) → über der Obergrenze **kein Tausch** (S1), unter der Untergrenze
+     `below_floor` mit Hinweis. Vergangene Tage ändern sich nie. Kochtag vorbei (`cookDate` < heute) → kein Tausch für
+     vorgekochte Portionen. Schutzgrenzen nur über das Planband (`clampCalorieTarget`); **Strukturtest K2** um
+     `substitute.ts`/`swap-resolve.ts` erweitert.
+   - Beispiel-Bestand (`demo-nutrition.ts`): `DEMO_SUBSTITUTIONS` (13 Einträge mit Testwerten, R23 grün, Süße gelb) und
+     `DEMO_INGREDIENT_ROLES`/`withDemoRoles` (Rollen nur im Beispiel-Bestand; Rezepte mit Import-Annahmen ohne Rollen,
+     sonst änderte sich ihr Fingerabdruck).
+3. **Content-Pipeline** (`packages/content`): Batch-Art `kinds/ingredient-substitution.ts` (Workflow-Eingabe
+   `ingredient-substitutions`): je katalog-geprüftem Lebensmittel eine Anfrage, Antwort bis zu 4 Alternativen mit
+   **Structured Output nur aus Katalog-IDs** (ohne das Original, ohne Alkohol), Rollen aus 19.4, Faktor 0,2–5; Auswahl
+   nach Abteilung; übersprungen, wenn es für das Lebensmittel schon einen Eintrag gibt. Eine Antwort kann mehrere
+   Dateien ergeben (`toContents`, alle Arten). `content-collect`, Merkdatei, `content:validate` (R23), `content-review`
+   (Art `ids`) und `scripts/bundle-content.mjs` kennen den Ordner `substitutions`. Probelauf ohne Schlüssel (zwei
+   gültige, ein ungültiger Faktor, eine Ablehnung).
+4. **Redaktionsbereich** (`apps/web`): neue Seite **`/admin/austausch`** (nur ansehen: Paar, Rolle mit Messgröße,
+   Faktor, Hinweis, Prüfbericht R23, Klick-Schritte „Freigabe per ID“), Bereich „Austausch“ in der Navigation.
+5. **App** (`apps/mobile`, Testmodus): Rezeptansicht aus dem Essensplan: Knopf **„Austauschen“** je Zutat mit Rolle (nur
+   laufende/nächste Woche, ab heute, nicht für vorgekochte Portionen); getauschte Zutat „… statt … (ausgetauscht)“ mit dem
+   Hinweis aus der Tabelle; „Enthält: …“ und Haltbarkeit aus dem getauschten Rezept (`recipeVariantForMeal`). Neuer
+   Bildschirm **`rezept/austauschen.tsx`**: Zutat und Rolle, Alternativen mit Menge in der Portion, Hinweis,
+   „Mahlzeit danach: … kcal“ (nur mit Zahlen), Hinweis bei `below_floor` und bei mehreren Tagen eines Kochtags,
+   „Nehmen“ (speichert Plan **und** Einkaufsliste in einem Schritt, W22), „Original aus dem Rezept“; Lade-, Fehler-,
+   Leer-, Sperr- (Einwilligung) und „nicht änderbar“-Zustände. `MealPlanEngineInput.substitutions`, Export
+   `meal_plan_items.ingredient_swaps`. Texte in `i18n/de-nutrition.ts`.
+6. **Tests:** Core `n9-substitute.test.ts` (63, davon 36 Profile im Eigenschaftstest **„Austausch liefert nie etwas, das
+   filter.ts ausschließt“** mit eigener Erwartungsregel `usedFoodViolations` – Ernährungsform, Schwein inkl.
+   `eats_pork = null`, Unverträglichkeit, „mag ich nicht“, Schwangerschaft inkl. B2 – und „nie über der Obergrenze,
+   unter der Untergrenze nur `below_floor`, Faktoren 0,5–2,0, `no_targets` = 1, vergangene Tage unverändert“; dazu
+   Auflösen/Einheiten, Allergene und Nährwerte neu, **B2-Tests** „Tofu → Hähnchen im Meal-Prep-Plan → ab Tag 2
+   eingefroren bzw. frisch“, „pflanzlich → Ei ohne `heated` ⇒ `pregnancy_caution`“, „Kochtag vorbei → kein Tausch“,
+   Import-Annahmen, Obergrenze, gespeicherter Plan/Manipulation, Schwangerschaft später → Neuplanung, Einkaufsliste,
+   Payload), `substitution-checks.test.ts` (12: Schema, R23/R10/R23H, Auswahl, Freigabe), Strukturtest K2, Regeltabelle.
+   Gegenprobe: `heated`-Regel B2 absichtlich falsch → 8 Tests rot (auch der Eigenschaftstest). Content: Schema/Prompt-
+   Tests der neuen Art, Probelauf Ende-zu-Ende generate → collect. Web: Render-Test `/admin/austausch`, E2E Login-Schutz
+   und Leerzustand. App-Vitest `nutrition-n9.test.ts` (7), Playwright `e2e/nutrition-ingredient-swap.spec.ts` (2:
+   Austausch ohne Netz, nach Neuladen, Einkaufsliste, zurücknehmen, „Zahlen aus“ → keine kcal; Kochtag vorbei → kein
+   Knopf, direkter Aufruf gesperrt).
+
+**Abweichungen / Präzisierungen (zur Wächter-Prüfung):**
+
+- **Nur aus dem Essensplan:** Getauscht wird eine geplante Mahlzeit (Tag + Platz). Rezeptsuche und Portionswähler ohne
+  Plan bieten keinen Austausch an – 19.7 beschreibt den Tausch mit Tagesausgleich, Kochtag und Einkaufsliste des Plans.
+- **Ergänzungs-Snacks** werden nicht getauscht (sie werden bei jedem Ausgleich neu gewählt).
+- **Meal-Prep:** Der Tausch gilt für alle Portionen desselben Kochtags (es ist dasselbe gekochte Gericht). „Kochtag
+  vorbei“ = Kochtag vor heute; am Kochtag selbst ist der Tausch nur möglich, solange der Kochtag-Timer nicht gestartet
+  wurde (Wächter N9 K1).
+- **Untergrenze:** siehe Wächter N9 S2/S3 unten (sichere Voreinstellung, offene Gründer-Entscheidung).
+- **R11:** strikt nach dem Tausch; das Zurücknehmen prüft R11 nicht (es gilt das freigegebene Rezept).
+- **Einheit des Ersatzes** wie oben (Ei ganz, sonst Rezept-Einheit, sonst Gramm); „Faktor auf die Masse“ ist die
+  Auslegung von „Faktor 0,2–5“ (19.7) zusammen mit „Gemüse = Masse (Faktor 1 ±10 %)“ (19.4).
+- **Neuplanung:** „Andere Vorschläge“, „Plan aktualisieren“ und die automatische Neuplanung (6.6) ersetzen getauschte
+  Mahlzeiten ab heute wie beim „Rezept tauschen“. Ein Tausch selbst löst keine Neuplanung aus (`variantForMeal`
+  vergleicht die Tausche, `needsAutomaticReplan` filtert mit ihnen).
+- **Gesundheitsbezug:** siehe Wächter N9 S5 unten. Im PDF erscheint ein Tausch wie ein Ersatzprodukt („… statt …“).
+- **Admin-Seite `/admin/austausch`** zusätzlich (19.7 nennt „Freigabe über content-review/Admin“; der Admin schreibt nicht).
+- **Gelbes R23H** (Süße) blockiert die Freigabe nicht (wie andere gelbe Hinweise, steht im PR-Prüfbericht).
+- **Nicht in N9:** Tabelle `ingredient_substitutions` mit RLS, `save_meal_plan`-Prüfung S7 und pgTAP (N7); echte
+  Einträge (brauchen den katalog-geprüften Lebensmittel-Katalog aus `foods-import` und Rollen an den Rezepten, die beim
+  Import nur vorgeschlagen und bei der Freigabe bestätigt werden).
+
+**So testest du es am Handy:** HANDY-ANLEITUNG Teil 7c, Abschnitt „Zutaten austauschen“.
+
+**Wächter-Prüfung N9 (14.10.2026): MIT AUFLAGEN** (Bericht `waechter-n9.md`, 1 Blocker). Umgesetzt:
+
+- **B1 (Blocker)** Rohes Fleisch/Ei durch Tausch: Ein Ersatz, der erhitzt werden muss (Ei, Fisch, Krebs-/Weichtiere,
+  Fleisch, Rohmilch), wird nur aufgelöst/angeboten, wenn das Rezept nicht `no_cook` ist **und** das Original
+  ausdrücklich `heated: true` hat – ohne Import-Annahme an dieser Zutat (`swapKeepsHeating` in `swap-resolve.ts`) –
+  für **alle** Personen, nicht nur in der Schwangerschaft. Regressionstest mit dem Fall aus der Prüfung (kalter
+  Tofu-Salat, Mischkost, nicht schwanger → kein Hähnchen, kein Ei), Tests für Tofu ohne bzw. mit `heated: false`, Zutat
+  mit Import-Annahme; der Eigenschaftstest prüft die Regel mit einer eigenen Erwartung. **Beispiel-Bestand:** In
+  `tofu-paprika` („Tofu und Paprika in Öl braten.“) und `tofu-erdnuss-curry` („Tofu und Paprika anbraten …“) wird der
+  Tofu laut Schritten gegart → dort `heated: true` (`DEMO_HEATED_PLANT_FOODS`, nur Beispiel-Bestand). Folge: Tofu → Ei
+  bzw. Hähnchen ist dort erhitzt und wird auch in der Schwangerschaft angeboten; Rezepte, deren Tofu nicht gegart wird,
+  bekommen diese Alternativen nie. **Für echte Rezepte:** Pflanzliche Zutaten, die gegart werden, brauchen
+  `heated: true` (Freigabe-Prüfung), sonst gibt es dort keinen tierischen Ersatz.
+- **K5** Gelber Hinweis **R23H** zusätzlich, wenn der Ersatz durchgegart werden muss, das Original nicht („Hinweis soll
+  das Durchgaren nennen“).
+- **S1** Aufbewahrung nach dem Tausch über **dieselbe Regel** wie `applyMealPrepPlan` (`prepStorageForDay` in
+  `meal-prep.ts`: die sicherere Angabe gewinnt, eingefroren nur bei einfrierbar, sonst frisch) und dasselbe
+  Werktags-Zeitlimit (`freshCookTooLong`, N3 K1) – muss ein Rest danach an einem Werktag frisch gekocht werden und dauert
+  das Rezept zu lange, wird der Tausch nicht angeboten (neuer Grund `prep_time`). Test „eingefroren + nicht einfrierbarer
+  Ersatz (Ei) → frisch“ und „Zeitlimit 20 Min. → kein Tausch“.
+- **S2/S3** Jede Alternative kennt die betroffenen Tage, die vorher vollständig waren und danach `below_floor` wären
+  (`belowFloorDates`, alle Tage eines Kochtags). **Sichere Voreinstellung bis zur Gründer-Entscheidung:** solche
+  Alternativen werden ausgeblendet, solange es eine andere gibt, die alle Tage hält; gibt es nur solche, werden sie mit
+  Hinweis für **alle** betroffenen Tage angezeigt. „Original aus dem Rezept“ bleibt immer sichtbar. Tests dazu.
+- **S4** Eigenschaftstest jetzt 48 Profile, die Hälfte mit „heute“ = Mittwoch (vergangene Tage werden wirklich
+  verglichen, Zähler im Test), ein Drittel Meal-Prep (1/2/3/5 Kochtage).
+- **S5** Ein Plan mit Tausch ist ein **Gesundheitsdatum**: `usesHealthData = true`, sobald eine Mahlzeit
+  `ingredientSwaps` hat (`assembleWeek`; die Einkaufsliste übernimmt das vom Plan). Damit gelten Einwilligung (ohne
+  gültige `health_data`-Einwilligung kein Austausch – Knopf und Dialog gesperrt mit Hinweis, Speichern abgelehnt),
+  Widerruf (löscht den Plan) und Export wie bei Ersatzprodukten. Wird ein Tausch zurückgenommen, bleibt der Bezug am
+  Plan (sichere Richtung, wie N5a S1). **Vormerkung N7:** `save_meal_plan` setzt `uses_health_data = true` bei nicht
+  leeren `ingredient_swaps` (am Payload-Schema vermerkt). **Vormerkung N12:** der Hinweis vor dem Weitergeben nennt
+  getauschte Zutaten wie Ersatzprodukte.
+- **K1** Text „Nur vor dem Kochen tauschen“; ist der Kochtag-Timer gestartet (`cook_day_started_at`), gibt es am
+  Kochtag keinen Tausch mehr (`IngredientSwapContext.cookStartedOn`).
+- **K2** `recipeVariantForMeal` übernimmt die bei der Mahlzeit weggelassenen optionalen Zutaten (`withMealOmissions`).
+- **K4** Leere Antwort der Batch-Art („keine sinnvolle Alternative“) zählt als eigener Grund `no_content` statt
+  „ungültig“. Ein Merker, damit das Lebensmittel nicht erneut angefragt wird, ist **nicht** gebaut (nur dokumentiert;
+  bei Bedarf als Eintrag in der Merkdatei des Laufs nachziehen).
+- **Nur dokumentiert:** **K3** Die Rezeptansicht rechnet die Haltbarkeit nur nach einem Tausch mit den tatsächlichen
+  Zutaten, nicht bei einem Ersatzprodukt (vorbestehend). **K6** Anbieterwechsel (Gemini): Batch-Art ist
+  anbieterneutral (Zod, Enum mit Katalog-IDs); beim Wechsel prüfen, ob `responseSchema` Enums dieser Größe und strikte
+  Objekte abbildet; `maxTokens` „inkl. Denken“ ist Anthropic-spezifisch.
+
+**Wächter N9 Runde 2 (14.10.2026): FREIGABEFÄHIG** (Bericht `waechter-n9-r2.md`). Umgesetzt: **Soll** Zurücknehmen
+nach einem Meal-Prep-Tausch bezieht auch Restetage ein, die der Tausch zu „frisch gekocht“ gemacht hat (gleiches Rezept,
+Platz, Meal-Prep-Plan und Tausche, nach dem Kochtag) – Test „Tofu → Hähnchen (nicht einfrierbar) → Original → Dienstag
+wieder Tofu“; **K-a** `filterRecipe` lehnt auch einen direkt übergebenen Tausch ab, der B1 verletzt (Test; ohne Tausch
+unverändert); **K-c** JSDoc in `swap-resolve.ts` richtig zugeordnet. **K-b nur vermerkt:** Die Einwilligungs-Bedingung
+für den Tausch steht in der App (`nutrition-plan.ts`), die Server-Prüfung kommt mit N7; Produktfolge für die Gründer:
+Der Gratis-Tausch braucht die Art.-9-Einwilligung.
+
+**Offene Gründer-Entscheidung – Austausch und Untergrenze (Wächter N9 S3):** Darf ein Zutaten-Austausch einen vorher
+vollständigen Tag unter die Untergrenze drücken (`below_floor`, 19.7 „Ausgleich oder `below_floor`“) – oder gilt wie
+beim „Rezept tauschen“ (N3 S3), dass ein vollständiger Tag vollständig bleibt? Umgesetzt ist bis dahin die sichere
+Voreinstellung oben (ausblenden, wenn es andere gibt; sonst mit Hinweis für alle betroffenen Tage).

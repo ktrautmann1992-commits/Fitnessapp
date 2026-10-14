@@ -28,7 +28,9 @@ export type NotSavedReason =
   | 'duplicate_id'
   | 'duplicate_result'
   | 'unknown_custom_id'
-  | 'missing';
+  | 'missing'
+  /** Gültige, aber leere Antwort (z. B. „keine sinnvolle Alternative“ bei der Austausch-Tabelle). */
+  | 'no_content';
 
 export const NOT_SAVED_DE: Record<NotSavedReason, string> = {
   errored: 'Fehler bei der API – erneut versuchen',
@@ -44,6 +46,8 @@ export const NOT_SAVED_DE: Record<NotSavedReason, string> = {
   duplicate_result: 'Ergebnis doppelt geliefert',
   unknown_custom_id: 'unbekannte custom_id',
   missing: 'kein Ergebnis geliefert',
+  no_content:
+    'keine Inhalte vorgeschlagen (z. B. keine sinnvolle Alternative) – nicht erneut anfragen',
 };
 
 export interface SavedDraft {
@@ -189,22 +193,34 @@ export function processResults(input: ProcessInput): ProcessedResults {
       continue;
     }
 
-    const { id, content } = kind.toContent(output, cell, meta);
-    const full = kind.contentSchema.safeParse(content);
-    if (!full.success) {
-      skip('invalid', zodDetail(full.error));
+    let contents: { id: string; content: Record<string, unknown> }[];
+    try {
+      contents = kind.toContents(output, cell, meta);
+    } catch (error) {
+      skip('invalid', (error as Error).message);
       continue;
     }
-    if (context.takenIds[kind.kind].has(id)) {
-      skip('id_taken', id);
+    if (contents.length === 0) {
+      skip('no_content');
       continue;
     }
-    if (newIds.has(id)) {
-      skip('duplicate_id', id);
-      continue;
+    for (const { id, content } of contents) {
+      const full = kind.contentSchema.safeParse(content);
+      if (!full.success) {
+        skip('invalid', zodDetail(full.error));
+        continue;
+      }
+      if (context.takenIds[kind.kind].has(id)) {
+        skip('id_taken', id);
+        continue;
+      }
+      if (newIds.has(id)) {
+        skip('duplicate_id', id);
+        continue;
+      }
+      newIds.add(id);
+      drafts.push({ customId, label, id, content });
     }
-    newIds.add(id);
-    drafts.push({ customId, label, id, content });
   }
 
   for (const [customId, cell] of cells) {
