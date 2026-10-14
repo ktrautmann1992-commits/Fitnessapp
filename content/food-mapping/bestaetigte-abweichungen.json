@@ -2,5 +2,466 @@
   "format": "alpha5-bestaetigte-abweichungen",
   "version": 1,
   "note_de": "Bestätigte Datenunterschiede zwischen alpha5-rezepte.json und der Quelle (docs/PLAN-PHASE-5.md N2b). Jeder Eintrag ist an Quelle, Quell-ID, die vier Quellwerte und die vier Werte der Gründer-Datei gebunden; weicht ein Wert ab, ist er ungültig. Höchstens 20 % der verglichenen Zutaten. Änderungen nur per Pull Request, den NUR ein Gründer selbst merged (nie eine Claude-Sitzung; docs/SETUP.md J3). Einträge kommen aus dem kopierfertigen Block im Import-Bericht (exakte Werte), nie von Hand geschätzt. confirmed_by ist eine Angabe, kein Nachweis – der Nachweis ist der Merge durch den Gründer.",
-  "entries": []
+  "entries": [
+    {
+      "alpha5_id": "avocado",
+      "source": {
+        "db": "bls",
+        "version": "4.0"
+      },
+      "source_ref": "F502100",
+      "source_values": {
+        "kcal": 132,
+        "protein_g": 1.37,
+        "carbs_g": 1.37,
+        "fat_g": 12.5
+      },
+      "file_values": {
+        "kcal": 160,
+        "eiweiss_g": 2,
+        "kohlenhydrate_g": 1.9,
+        "fett_g": 14.7
+      },
+      "reason_de": "Zuordnung passt (Avocado roh). Der Gründer-Wert (160 kcal, 14,7 g Fett) stammt aus US-Tabellen; BLS misst 132 kcal und 12,5 g Fett. Natürliche Schwankung je Sorte und Reife, Quelle gilt.",
+      "confirmed_by": "Gründer (Nachweis = Merge dieses PR durch einen Gründer; Eintrag von Claude-Sitzung)",
+      "confirmed_at": "2026-10-14"
+    },
+    {
+      "alpha5_id": "datteln-getrocknet-entsteint",
+      "source": {
+        "db": "bls",
+        "version": "4.0"
+      },
+      "source_ref": "F504400",
+      "source_values": {
+        "kcal": 356,
+        "protein_g": 2.64,
+        "carbs_g": 79.3,
+        "fat_g": 0.36
+      },
+      "file_values": {
+        "kcal": 280,
+        "eiweiss_g": 2.5,
+        "kohlenhydrate_g": 66,
+        "fett_g": 0.4
+      },
+      "reason_de": "Zuordnung passt (Dattel getrocknet). Der Gründer-Wert (280 kcal, 66 g KH) entspricht wasserreicheren Datteln aus US-Tabellen; die BLS-Trockendattel hat 9,4 g Wasser je 100 g und 356 kcal. Anderer Tabellenwert, Quelle gilt.",
+      "confirmed_by": "Gründer (Nachweis = Merge dieses PR durch einen Gründer; Eintrag von Claude-Sitzung)",
+      "confirmed_at": "2026-10-14"
+    },
+    {
+      "alpha5_id": "falafel-kuehlregal",
+      "source": {
+        "db": "bls",
+        "version": "4.0"
+      },
+      "source_ref": "Y9A1050",
+      "source_values": {
+        "kcal": 193,
+        "protein_g": 8.88,
+        "carbs_g": 17,
+        "fat_g": 8
+      },
+      "file_values": {
+        "kcal": 230,
+        "eiweiss_g": 7,
+        "kohlenhydrate_g": 22,
+        "fett_g": 12
+      },
+      "reason_de": "Zuordnung passt (einziger Falafel-Eintrag im BLS, frittiert; Kühlregal-Falafel sind vorfrittiert). Der Gründer-Wert (230 kcal, 12 g Fett) ist ein Produktwert mit mehr Fett; Rezepturen schwanken je Hersteller. Quelle gilt, bei R19 Produkt prüfen. Hinweis: Quelle eher fettärmer als übliche Kühlregal-Ware.",
+      "confirmed_by": "Gründer (Nachweis = Merge dieses PR durch einen Gründer; Eintrag von Claude-Sitzung)",
+      "confirmed_at": "2026-10-14"
+    },
+    {
+      "alpha5_id": "hackfleisch-vom-schwein",
+      "source": {
+        "db": "bls",
+        "version": "4.0"
+      },
+      "source_ref": "U020100",
+      "source_values": {
+        "kcal": 271,
+        "protein_g": 17.88,
+        "carbs_g": 0,
+        "fat_g": 22.14
+      },
+      "file_values": {
+        "kcal": 230,
+        "eiweiss_g": 19.5,
+        "kohlenhydrate_g": 0,
+        "fett_g": 17
+      },
+      "reason_de": "Zuordnung passt (Schwein Hackfleisch, roh). Der Gründer-Wert (230 kcal, 17 g Fett) ist ein magererer Handelswert; BLS misst 271 kcal und 22,1 g Fett. Der Fettgehalt von Schweinehack schwankt stark, Quelle gilt.",
+      "confirmed_by": "Gründer (Nachweis = Merge dieses PR durch einen Gründer; Eintrag von Claude-Sitzung)",
+      "confirmed_at": "2026-10-14"
+    },
+    {
+      "alpha5_id": "heidelbeeren",
+      "source": {
+        "db": "bls",
+        "version": "4.0"
+      },
+      "source_ref": "F304100",
+      "source_values": {
+        "kcal": 61,
+        "protein_g": 0.5,
+        "carbs_g": 9.7,
+        "fat_g": 0.6
+      },
+      "file_values": {
+        "kcal": 45,
+        "eiweiss_g": 0.6,
+        "kohlenhydrate_g": 7.4,
+        "fett_g": 0.6
+      },
+      "reason_de": "Zuordnung passt (Heidelbeere roh). Der Gründer-Wert (45 kcal, 7,4 g KH) ist grob gerundet bzw. aus einer anderen Tabelle; BLS misst 61 kcal und 9,7 g KH. Natürliche Schwankung, Quelle gilt.",
+      "confirmed_by": "Gründer (Nachweis = Merge dieses PR durch einen Gründer; Eintrag von Claude-Sitzung)",
+      "confirmed_at": "2026-10-14"
+    },
+    {
+      "alpha5_id": "hummus",
+      "source": {
+        "db": "bls",
+        "version": "4.0"
+      },
+      "source_ref": "H960000",
+      "source_values": {
+        "kcal": 324,
+        "protein_g": 5.9,
+        "carbs_g": 8,
+        "fat_g": 28.5
+      },
+      "file_values": {
+        "kcal": 270,
+        "eiweiss_g": 7.5,
+        "kohlenhydrate_g": 12,
+        "fett_g": 21
+      },
+      "reason_de": "Zuordnung passt (Hummus/Kichererbsenmus). Der Gründer-Wert (270 kcal, 21 g Fett) ist ein Produktwert mit weniger Öl bzw. Tahin; die BLS-Rezeptur hat 324 kcal und 28,5 g Fett. Rezepturen schwanken je Hersteller, Quelle gilt.",
+      "confirmed_by": "Gründer (Nachweis = Merge dieses PR durch einen Gründer; Eintrag von Claude-Sitzung)",
+      "confirmed_at": "2026-10-14"
+    },
+    {
+      "alpha5_id": "ingwer",
+      "source": {
+        "db": "bls",
+        "version": "4.0"
+      },
+      "source_ref": "R211200",
+      "source_values": {
+        "kcal": 48,
+        "protein_g": 1.92,
+        "carbs_g": 6.8,
+        "fat_g": 0.75
+      },
+      "file_values": {
+        "kcal": 80,
+        "eiweiss_g": 1.8,
+        "kohlenhydrate_g": 15,
+        "fett_g": 0.8
+      },
+      "reason_de": "Zuordnung passt (Ingwer/Ingwerwurzel, roh). Der Gründer-Wert (80 kcal, 15 g KH) stammt aus US-Tabellen; BLS misst 48 kcal und 6,8 g verfügbare KH. Anderer Tabellenwert; je Rezept meist nur 5–10 g. Quelle gilt.",
+      "confirmed_by": "Gründer (Nachweis = Merge dieses PR durch einen Gründer; Eintrag von Claude-Sitzung)",
+      "confirmed_at": "2026-10-14"
+    },
+    {
+      "alpha5_id": "instantkaffee",
+      "source": {
+        "db": "bls",
+        "version": "4.0"
+      },
+      "source_ref": "N420900",
+      "source_values": {
+        "kcal": 150,
+        "protein_g": 19.5,
+        "carbs_g": 4.1,
+        "fat_g": 1.2
+      },
+      "file_values": {
+        "kcal": 353,
+        "eiweiss_g": 12.2,
+        "kohlenhydrate_g": 75,
+        "fett_g": 0.5
+      },
+      "reason_de": "Zuordnung passt (Instantkaffeepulver, nicht entkoffeiniert). Der Gründer-Wert (353 kcal, 75 g KH) stammt aus US-Tabellen, die den Rest als KH rechnen; BLS weist 4,1 g verfügbare KH und 22,3 g Ballaststoffe aus (150 kcal). Je Rezept nur 2 g. Quelle gilt.",
+      "confirmed_by": "Gründer (Nachweis = Merge dieses PR durch einen Gründer; Eintrag von Claude-Sitzung)",
+      "confirmed_at": "2026-10-14"
+    },
+    {
+      "alpha5_id": "kidneybohnen-dose-abgetropft",
+      "source": {
+        "db": "bls",
+        "version": "4.0"
+      },
+      "source_ref": "H742902",
+      "source_values": {
+        "kcal": 128,
+        "protein_g": 8.5,
+        "carbs_g": 15.1,
+        "fat_g": 1
+      },
+      "file_values": {
+        "kcal": 105,
+        "eiweiss_g": 8,
+        "kohlenhydrate_g": 14,
+        "fett_g": 0.5
+      },
+      "reason_de": "Zuordnung passt (Kidneybohne reif, Konserve, abgetropft). Der Gründer-Wert (105 kcal) ist grob bzw. aus einer anderen Tabelle; BLS misst 128 kcal. Wassergehalt der abgetropften Ware schwankt je Dose, Quelle gilt.",
+      "confirmed_by": "Gründer (Nachweis = Merge dieses PR durch einen Gründer; Eintrag von Claude-Sitzung)",
+      "confirmed_at": "2026-10-14"
+    },
+    {
+      "alpha5_id": "kochschinken",
+      "source": {
+        "db": "bls",
+        "version": "4.0"
+      },
+      "source_ref": "W424000",
+      "source_values": {
+        "kcal": 130,
+        "protein_g": 22.5,
+        "carbs_g": 0.74,
+        "fat_g": 3.7
+      },
+      "file_values": {
+        "kcal": 110,
+        "eiweiss_g": 19.5,
+        "kohlenhydrate_g": 1,
+        "fett_g": 3
+      },
+      "reason_de": "Zuordnung passt (Schwein Kochschinken, Kochpökelware). Der Gründer-Wert (110 kcal, 19,5 g Eiweiß) ist ein Produktwert mit mehr Wasser bzw. Lake; BLS misst 130 kcal und 22,5 g Eiweiß. Quelle gilt.",
+      "confirmed_by": "Gründer (Nachweis = Merge dieses PR durch einen Gründer; Eintrag von Claude-Sitzung)",
+      "confirmed_at": "2026-10-14"
+    },
+    {
+      "alpha5_id": "kokosmilch",
+      "source": {
+        "db": "bls",
+        "version": "4.0"
+      },
+      "source_ref": "H154000",
+      "source_values": {
+        "kcal": 227,
+        "protein_g": 2.774,
+        "carbs_g": 2.1,
+        "fat_g": 21.9
+      },
+      "file_values": {
+        "kcal": 180,
+        "eiweiss_g": 1.8,
+        "kohlenhydrate_g": 3,
+        "fett_g": 18
+      },
+      "reason_de": "Zuordnung passt (Kokosmilch/Kokosnussmilch; die fettreduzierte ist eine eigene Zutat). Der Gründer-Wert (180 kcal, 18 g Fett) entspricht einer dünneren Handelsware; BLS misst 227 kcal und 21,9 g Fett. Fettgehalt schwankt je Marke, Quelle gilt.",
+      "confirmed_by": "Gründer (Nachweis = Merge dieses PR durch einen Gründer; Eintrag von Claude-Sitzung)",
+      "confirmed_at": "2026-10-14"
+    },
+    {
+      "alpha5_id": "linsen-dose-abgetropft",
+      "source": {
+        "db": "bls",
+        "version": "4.0"
+      },
+      "source_ref": "H730902",
+      "source_values": {
+        "kcal": 119,
+        "protein_g": 9.036,
+        "carbs_g": 15.4,
+        "fat_g": 0.7
+      },
+      "file_values": {
+        "kcal": 95,
+        "eiweiss_g": 7.5,
+        "kohlenhydrate_g": 13,
+        "fett_g": 0.5
+      },
+      "reason_de": "Zuordnung passt (Linse reif, Konserve, abgetropft). Der Gründer-Wert (95 kcal) ist grob bzw. aus einer anderen Tabelle; BLS misst 119 kcal. Wassergehalt der abgetropften Ware schwankt je Dose, Quelle gilt.",
+      "confirmed_by": "Gründer (Nachweis = Merge dieses PR durch einen Gründer; Eintrag von Claude-Sitzung)",
+      "confirmed_at": "2026-10-14"
+    },
+    {
+      "alpha5_id": "meerrettich-glas",
+      "source": {
+        "db": "bls",
+        "version": "4.0"
+      },
+      "source_ref": "G898300",
+      "source_values": {
+        "kcal": 171,
+        "protein_g": 3.172,
+        "carbs_g": 9.451,
+        "fat_g": 11.922
+      },
+      "file_values": {
+        "kcal": 90,
+        "eiweiss_g": 2,
+        "kohlenhydrate_g": 12,
+        "fett_g": 3
+      },
+      "reason_de": "Zuordnung passt (Tafel-Meerrettich Konserve = Meerrettich im Glas, nicht Sahne-Meerrettich). Der Gründer-Wert (90 kcal, 3 g Fett) ist eine ölärmere Marke; die BLS-Rezeptur mit Öl hat 171 kcal und 11,9 g Fett. Je Rezept nur 5 g. Quelle gilt. Bei der Katalog-Prüfung (R19) Zutatenliste typischer Ware auf Milch/Ei prüfen.",
+      "confirmed_by": "Gründer (Nachweis = Merge dieses PR durch einen Gründer; Eintrag von Claude-Sitzung)",
+      "confirmed_at": "2026-10-14"
+    },
+    {
+      "alpha5_id": "sambal-oelek",
+      "source": {
+        "db": "bls",
+        "version": "4.0"
+      },
+      "source_ref": "R146100",
+      "source_values": {
+        "kcal": 55,
+        "protein_g": 1.45,
+        "carbs_g": 9.41,
+        "fat_g": 0.4
+      },
+      "file_values": {
+        "kcal": 40,
+        "eiweiss_g": 1.5,
+        "kohlenhydrate_g": 6,
+        "fett_g": 1
+      },
+      "reason_de": "Zuordnung passt (Sambal Oelek, Würzpaste). Der Gründer-Wert (40 kcal, 6 g KH) ist ein Produktwert mit weniger Zucker; BLS misst 55 kcal und 9,4 g KH. Je Rezept nur 5 g. Quelle gilt.",
+      "confirmed_by": "Gründer (Nachweis = Merge dieses PR durch einen Gründer; Eintrag von Claude-Sitzung)",
+      "confirmed_at": "2026-10-14"
+    },
+    {
+      "alpha5_id": "sauerkirschen-glas-abgetropft",
+      "source": {
+        "db": "bls",
+        "version": "4.0"
+      },
+      "source_ref": "F212902",
+      "source_values": {
+        "kcal": 52,
+        "protein_g": 0.84,
+        "carbs_g": 11.06,
+        "fat_g": 0.21
+      },
+      "file_values": {
+        "kcal": 65,
+        "eiweiss_g": 0.8,
+        "kohlenhydrate_g": 15,
+        "fett_g": 0.1
+      },
+      "reason_de": "Zuordnung passt (Sauerkirsche gezuckert, Konserve, abgetropft = übliche Glasware). Der Gründer-Wert (65 kcal, 15 g KH) liegt über der gezuckerten Ware, also grob bzw. aus einer anderen Tabelle (evtl. mit Saft). Quelle gilt.",
+      "confirmed_by": "Gründer (Nachweis = Merge dieses PR durch einen Gründer; Eintrag von Claude-Sitzung)",
+      "confirmed_at": "2026-10-14"
+    },
+    {
+      "alpha5_id": "schwarze-bohnen-dose-abgetropft",
+      "source": {
+        "db": "bls",
+        "version": "4.0"
+      },
+      "source_ref": "H740902",
+      "source_values": {
+        "kcal": 130,
+        "protein_g": 9.0383,
+        "carbs_g": 17.72,
+        "fat_g": 0.597
+      },
+      "file_values": {
+        "kcal": 110,
+        "eiweiss_g": 7.5,
+        "kohlenhydrate_g": 16,
+        "fett_g": 0.5
+      },
+      "reason_de": "Zuordnung passt (Gartenbohne reif, Konserve, abgetropft; schwarze Bohnen sind Gartenbohnen, Phaseolus vulgaris, ein eigener Eintrag fehlt). Der Gründer-Wert (110 kcal) ist grob bzw. aus einer anderen Tabelle; BLS misst 130 kcal. Quelle gilt.",
+      "confirmed_by": "Gründer (Nachweis = Merge dieses PR durch einen Gründer; Eintrag von Claude-Sitzung)",
+      "confirmed_at": "2026-10-14"
+    },
+    {
+      "alpha5_id": "seitan",
+      "source": {
+        "db": "bls",
+        "version": "4.0"
+      },
+      "source_ref": "C558000",
+      "source_values": {
+        "kcal": 199,
+        "protein_g": 28.4,
+        "carbs_g": 4,
+        "fat_g": 7.2
+      },
+      "file_values": {
+        "kcal": 135,
+        "eiweiss_g": 24,
+        "kohlenhydrate_g": 5,
+        "fett_g": 2
+      },
+      "reason_de": "Zuordnung passt (Fleischersatz glutenhaltig, Seitan). Der Gründer-Wert (135 kcal, 2 g Fett) entspricht reinem Seitan; die BLS-Ware enthält Öl (199 kcal, 7,2 g Fett). Rezepturen schwanken je Hersteller, Quelle gilt. Bei der Katalog-Prüfung (R19) Produktwahl festhalten (Seitan natur oder gewürzt).",
+      "confirmed_by": "Gründer (Nachweis = Merge dieses PR durch einen Gründer; Eintrag von Claude-Sitzung)",
+      "confirmed_at": "2026-10-14"
+    },
+    {
+      "alpha5_id": "senf",
+      "source": {
+        "db": "bls",
+        "version": "4.0"
+      },
+      "source_ref": "R132000",
+      "source_values": {
+        "kcal": 111,
+        "protein_g": 5.51,
+        "carbs_g": 2.94,
+        "fat_g": 6.96
+      },
+      "file_values": {
+        "kcal": 85,
+        "eiweiss_g": 6,
+        "kohlenhydrate_g": 4,
+        "fett_g": 4.5
+      },
+      "reason_de": "Zuordnung passt (Senf mittelscharf). Der Gründer-Wert (85 kcal, 4,5 g Fett) ist ein Produktwert; BLS misst 111 kcal und 7 g Fett (Anteil Senfsaat schwankt). Je Rezept meist 5–10 g. Quelle gilt.",
+      "confirmed_by": "Gründer (Nachweis = Merge dieses PR durch einen Gründer; Eintrag von Claude-Sitzung)",
+      "confirmed_at": "2026-10-14"
+    },
+    {
+      "alpha5_id": "suesskartoffel",
+      "source": {
+        "db": "bls",
+        "version": "4.0"
+      },
+      "source_ref": "K420100",
+      "source_values": {
+        "kcal": 119,
+        "protein_g": 1.63,
+        "carbs_g": 25.2,
+        "fat_g": 0.6
+      },
+      "file_values": {
+        "kcal": 86,
+        "eiweiss_g": 1.6,
+        "kohlenhydrate_g": 20,
+        "fett_g": 0.1
+      },
+      "reason_de": "Zuordnung passt (Batate/Süßkartoffel, roh). Der Gründer-Wert (86 kcal, 20 g KH) stammt aus US-Tabellen; BLS misst 119 kcal und 25,2 g KH. Natürliche Schwankung je Sorte, Quelle gilt.",
+      "confirmed_by": "Gründer (Nachweis = Merge dieses PR durch einen Gründer; Eintrag von Claude-Sitzung)",
+      "confirmed_at": "2026-10-14"
+    },
+    {
+      "alpha5_id": "weisse-bohnen-dose-abgetropft",
+      "source": {
+        "db": "bls",
+        "version": "4.0"
+      },
+      "source_ref": "H740902",
+      "source_values": {
+        "kcal": 130,
+        "protein_g": 9.0383,
+        "carbs_g": 17.72,
+        "fat_g": 0.597
+      },
+      "file_values": {
+        "kcal": 100,
+        "eiweiss_g": 7,
+        "kohlenhydrate_g": 14,
+        "fett_g": 0.5
+      },
+      "reason_de": "Zuordnung passt (Gartenbohne reif = weiße Bohne, Konserve, abgetropft, nicht in Tomatensoße). Der Gründer-Wert (100 kcal) ist grob bzw. aus einer anderen Tabelle; BLS misst 130 kcal. Wassergehalt schwankt je Dose, Quelle gilt.",
+      "confirmed_by": "Gründer (Nachweis = Merge dieses PR durch einen Gründer; Eintrag von Claude-Sitzung)",
+      "confirmed_at": "2026-10-14"
+    }
+  ]
 }
