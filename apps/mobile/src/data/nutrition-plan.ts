@@ -1,7 +1,11 @@
 import {
   addDays,
-  buildMealPlanWeek,
   experienceLevelSchema,
+  type MealPlanInput,
+  mealPlanWeekEditable,
+  type ReplanReason,
+  resolveMealPlanWeek,
+  stableHash,
   type FilteredRecipe,
   filterRecipe,
   intoleranceAccess,
@@ -25,6 +29,7 @@ import {
 
 import { healthConsentStatus } from '../state/flow';
 import type { ConsentVersions } from './mapping';
+import { storedMealPlanRow } from './meal-plan-rows';
 import { healthScreeningForPlan } from './training-plan';
 import type { UserRows } from './types';
 
@@ -35,8 +40,10 @@ import type { UserRows } from './types';
  * getestet (nutrition-n4.test.ts).
  *
  * Gesundheitsdaten (Körperdaten, Flags, Unverträglichkeiten) fließen NUR mit gültiger Einwilligung ein. Die Ziele
- * werden nie gespeichert (7.1); der Essensplan wird in N4 bei jedem Öffnen deterministisch neu berechnet (Speichern,
- * Tauschen und Einkaufsliste folgen mit N5) – damit passt er immer zum aktuellen Modus (6.6). Nie loggen.
+ * werden nie gespeichert (7.1). Der Essensplan einer Woche wird ab Etappe N5 gespeichert (Tauschen, „Andere
+ * Vorschläge“, vergangene Tage fest); beim Öffnen gilt immer `resolveMealPlanWeek` (6.6): passt der gespeicherte Plan
+ * nicht mehr zu Modus, Deckeln, Planband oder Filter, wird ab heute automatisch neu geplant – angezeigt wird nie ein
+ * Plan, der den aktuellen Angaben widerspricht. Nie loggen.
  */
 
 /** Woche Mo–So, in der `date` liegt. */
@@ -161,12 +168,36 @@ export function mealPlanProfileFromRows(
   };
 }
 
+/** Eingaben der Plan-Engine für Tauschen, „Andere Vorschläge“ und „Plan aktualisieren“ (Etappe N5). */
+export type MealPlanEngineInput = Omit<MealPlanInput, 'existingPlan' | 'variant'>;
+
+/** Zustand des gespeicherten Essensplans der Woche (Etappe N5). */
+export interface MealPlanState {
+  /** `stored` = gespeicherter Plan; `created` = noch keiner; `replanned` = automatisch neu geplant (6.6). */
+  action: 'stored' | 'created' | 'replanned';
+  reasons: readonly ReplanReason[];
+  /** Knopf „Plan aktualisieren“ (Tagesziel ab heute ≥ 5 % geändert, ohne Sicherheitsbezug). */
+  updateSuggested: boolean;
+  /** Hinweis „Dein Plan wurde an deine neuen Angaben angepasst.“ zeigen. */
+  autoAdjusted: boolean;
+  /** Laufende oder nächste Woche – nur diese wird gespeichert und kann getauscht werden. */
+  editable: boolean;
+  input: MealPlanEngineInput;
+  /**
+   * Fingerabdruck der Angaben (Ziele, Vorlieben, Bestand) – nur im Arbeitsspeicher, nie gespeichert oder geloggt.
+   * Schützt vor einer Speicher-Schleife: Je Woche und Fingerabdruck wird höchstens einmal automatisch gespeichert.
+   */
+  inputsKey: string;
+}
+
 export type NutritionWeekResult =
   | {
       kind: 'ready';
       targets: NutritionWeekTargets;
       /** null = kein Bestand (keine Rezepte) – Ziele werden trotzdem gezeigt. */
       plan: MealPlanWeek | null;
+      /** null = kein Bestand. */
+      planState: MealPlanState | null;
     }
   /** Angaben unvollständig (Ziel, Erfahrung oder Ernährungsform fehlt). */
   | { kind: 'incomplete' }
@@ -178,7 +209,10 @@ export type NutritionWeekResult =
   /** Die Engine hat die Eingaben abgelehnt (Zod) – nie still weiterrechnen. */
   | { kind: 'error' };
 
-/** Ziele und Essensplan der Woche ab `weekStart`. */
+/**
+ * Ziele und Essensplan der Woche ab `weekStart`. Mit Bestand: gespeicherter Plan der Woche nach `resolveMealPlanWeek`
+ * (neu / gespeichert / automatisch neu geplant, 6.6) – das Speichern übernimmt die App (`useNutritionWeek`).
+ */
 export function computeNutritionWeek(input: {
   rows: UserRows;
   versions: ConsentVersions;
@@ -194,18 +228,52 @@ export function computeNutritionWeek(input: {
   if (profile.kind === 'blocked') return { kind: 'blocked', reason: profile.reason };
   try {
     const targets = nutritionTargetsForWeek(inputs, input.weekStart);
-    const plan =
-      input.library && input.library.recipes.length > 0
-        ? buildMealPlanWeek({
-            targets,
-            profile: profile.profile,
-            recipes: input.library.recipes,
-            foods: input.library.foods,
-            allowDrafts: input.allowDrafts,
-            today: input.today,
-          })
+    if (!input.library || input.library.recipes.length === 0) {
+      return { kind: 'ready', targets, plan: null, planState: null };
+    }
+    const engineInput: MealPlanEngineInput = {
+      targets,
+      profile: profile.profile,
+      recipes: input.library.recipes,
+      foods: input.library.foods,
+      allowDrafts: input.allowDrafts,
+      today: input.today,
+    };
+    const row = storedMealPlanRow(input.rows, input.weekStart);
+    // Ohne gültige Einwilligung wird ein gespeicherter Plan mit Gesundheitsbezug weder angezeigt noch weiterverwendet
+    // (Art. 9; Wächter N5a S1): Er wird durch einen neuen Plan ohne Gesundheitsdaten ersetzt – auch die vergangenen
+    // Tage dieser Woche (sichere Richtung; ein Widerruf löscht ihn ohnehin).
+    const usable =
+      row !== null &&
+      (!row.uses_health_data || healthConsentStatus(input.rows, input.versions) === 'valid')
+        ? row
         : null;
-    return { kind: 'ready', targets, plan };
+    const resolved = resolveMealPlanWeek(usable?.plan ?? null, engineInput);
+    const editable = mealPlanWeekEditable(input.weekStart, input.today);
+    const planState: MealPlanState = {
+      action: resolved.action,
+      reasons: resolved.action === 'replanned' ? resolved.reasons : [],
+      updateSuggested: resolved.action === 'stored' && resolved.updateSuggested,
+      // Nur in änderbaren Wochen (dort gibt es „Verstanden“; Wächter N5a K1).
+      autoAdjusted:
+        editable &&
+        (resolved.action === 'replanned' ||
+          (resolved.action === 'stored' && usable?.auto_adjusted === true)),
+      editable,
+      input: engineInput,
+      inputsKey: String(
+        stableHash(
+          JSON.stringify([
+            targets,
+            profile.profile,
+            input.library.recipes.map((r) => `${r.id}@${r.version}`),
+            input.allowDrafts,
+            input.today,
+          ]),
+        ),
+      ),
+    };
+    return { kind: 'ready', targets, plan: resolved.plan, planState };
   } catch {
     // Bewusst ohne Details: keine Gesundheitsdaten in Logs oder Fehlermeldungen.
     return { kind: 'error' };

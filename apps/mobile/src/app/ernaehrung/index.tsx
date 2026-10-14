@@ -1,8 +1,10 @@
 import {
   addDays,
   isoDateSchema,
+  type MealSlotId,
   mealsInDayOrder,
   type NutritionNoticeCode,
+  type PlannedMeal,
   type PlannedMealDay,
 } from '@fitnessapp/core';
 import { Redirect, useLocalSearchParams, useRouter, type Href } from 'expo-router';
@@ -16,24 +18,27 @@ import {
   EatingHelpNotice,
   EmptySlotRow,
   MacroBars,
+  MealPlanStateNotices,
   MealRow,
   NutritionNotices,
 } from '@/components/nutrition';
 import { Screen } from '@/components/screen';
 import { Body, Button, Card, ErrorState, Heading, LoadingState, Notice } from '@/components/ui';
+import { showEnergyNumbers } from '@/data/nutrition-plan';
 import { t } from '@/i18n';
 import { todayIso } from '@/lib/format';
-import { formatKcal, visibleNotices } from '@/lib/nutrition-format';
+import { formatKcal, slotLabel, visibleNotices } from '@/lib/nutrition-format';
 import { dayLabel } from '@/lib/plan-format';
 import { useApp } from '@/state/app-state';
 import { healthConsentStatus, resolveEntryRoute } from '@/state/flow';
-import { useNutritionWeek } from '@/state/use-nutrition';
+import { useMealPlanActions, useNutritionWeek } from '@/state/use-nutrition';
 
 /**
  * Ernährung – Tag (docs/PLAN-PHASE-5.md 8.2 Nr. 2, Etappe N4): Ziel + Makro-Balken (ausblendbar), Mahlzeiten mit
  * Portion, Nährwerten und Rolle, Ergänzungs-Snacks gekennzeichnet, Hinweise (Schutzgrenzen in einfachen Worten),
  * Blättern über die Woche, alle Zustände (8.3). Rechnet nichts selbst – Ziele und Plan kommen aus packages/core.
- * „Rezept tauschen“, Wochenansicht und Einkaufsliste folgen mit Etappe N5.
+ * Etappe N5: gespeicherter Plan, „Rezept tauschen“ (ab heute, nur Hauptplätze), Hinweis bei automatischer
+ * Neuplanung (6.6), „Plan aktualisieren“, Link zur Wochenansicht. Die Einkaufsliste folgt mit N5b.
  */
 export default function NutritionDayScreen() {
   const router = useRouter();
@@ -44,6 +49,12 @@ export default function NutritionDayScreen() {
     isoDateSchema.safeParse(params.tag).success ? (params.tag as string) : today,
   );
   const view = useNutritionWeek(selected);
+  const actions = useMealPlanActions(view.week);
+  const [swapping, setSwapping] = useState<string | null>(null);
+  const [swapMessage, setSwapMessage] = useState<{
+    text: string;
+    tone: 'success' | 'warning' | 'danger';
+  } | null>(null);
 
   if (app.status.kind === 'loading') {
     return (
@@ -112,7 +123,7 @@ export default function NutritionDayScreen() {
     return shell(<Notice tone="danger">{t.nutrition.computeFailed}</Notice>);
   }
 
-  const { targets, plan } = view.week;
+  const { targets, plan, planState } = view.week;
   const { demo, demoAvailable } = view.library.result;
   const dayTargets = targets.days.find((d) => d.date === selected) ?? targets.days[0];
   if (!dayTargets) return shell(<Notice tone="danger">{t.nutrition.computeFailed}</Notice>);
@@ -124,6 +135,27 @@ export default function NutritionDayScreen() {
   const notices = visibleNotices(dayTargets.notices, view.showNumbers);
   const numbers = view.showNumbers && dayTargets.targetKcal !== null;
   const status = day?.status ?? (dayTargets.mode === 'no_targets' ? 'no_targets' : null);
+  const dayDate = dayTargets.date;
+  const canSwap = (meal: PlannedMeal) =>
+    actions !== null && !meal.isFill && dayDate >= today && !meal.slot.startsWith('extra');
+
+  async function swap(meal: PlannedMeal) {
+    if (!actions) return;
+    setSwapping(meal.slot);
+    setSwapMessage(null);
+    try {
+      const result = await actions.swap(dayDate, meal.slot as MealSlotId);
+      setSwapMessage(
+        result.kind === 'swapped'
+          ? { text: t.nutrition.plan.swapped(result.title), tone: 'success' }
+          : { text: t.nutrition.plan.swapFailed[result.reason], tone: 'warning' },
+      );
+    } catch {
+      setSwapMessage({ text: t.nutrition.plan.actionFailed, tone: 'danger' });
+    } finally {
+      setSwapping(null);
+    }
+  }
 
   return shell(
     <>
@@ -156,6 +188,7 @@ export default function NutritionDayScreen() {
         </Heading>
         {status ? <Body muted>{t.nutrition.dayStatus[status]}</Body> : null}
       </View>
+      <MealPlanStateNotices state={planState} actions={actions} saveFailed={view.saveFailed} />
 
       {numbers && dayTargets.targetKcal !== null ? (
         <Card>
@@ -183,7 +216,7 @@ export default function NutritionDayScreen() {
           ) : null}
           <Body muted>{t.nutrition.estimate}</Body>
         </Card>
-      ) : !view.showNumbers ? (
+      ) : !showEnergyNumbers(rows) ? (
         <Body muted testID="nutrition-numbers-hidden">
           {t.nutrition.numbersHidden}
         </Body>
@@ -215,23 +248,48 @@ export default function NutritionDayScreen() {
       ) : (
         <View style={{ gap: 8 }} testID="nutrition-meals">
           {mealsInDayOrder(day).map((meal) => (
-            <MealRow
-              key={meal.slot}
-              meal={meal}
-              showNumbers={view.showNumbers && day.status !== 'no_targets'}
-              foodName={foodName}
-              onOpen={() =>
-                router.push(
-                  `/rezept/${encodeURIComponent(meal.recipeId)}?tag=${day.date}&platz=${meal.slot}` as Href,
-                )
-              }
-            />
+            <View key={meal.slot} style={{ gap: 4 }}>
+              <MealRow
+                meal={meal}
+                showNumbers={view.showNumbers && day.status !== 'no_targets'}
+                foodName={foodName}
+                onOpen={() =>
+                  router.push(
+                    `/rezept/${encodeURIComponent(meal.recipeId)}?tag=${day.date}&platz=${meal.slot}` as Href,
+                  )
+                }
+              />
+              {canSwap(meal) ? (
+                <Button
+                  label={t.nutrition.plan.swap}
+                  accessibilityLabel={t.nutrition.plan.swapA11y(slotLabel(meal.slot), meal.titleDe)}
+                  variant="secondary"
+                  loading={swapping === meal.slot}
+                  disabled={swapping !== null && swapping !== meal.slot}
+                  onPress={() => void swap(meal)}
+                  testID={`swap-${meal.slot}`}
+                />
+              ) : null}
+            </View>
           ))}
           {day.emptySlots.map((empty) => (
             <EmptySlotRow key={empty.slot} empty={empty} />
           ))}
         </View>
       )}
+      {swapMessage ? (
+        <Notice tone={swapMessage.tone} testID="nutrition-swap-message">
+          {swapMessage.text}
+        </Notice>
+      ) : null}
+      {plan !== null ? (
+        <Button
+          label={t.nutrition.plan.weekView}
+          variant="secondary"
+          onPress={() => router.push(`/ernaehrung/woche?woche=${targets.weekStart}` as Href)}
+          testID="nutrition-week-view"
+        />
+      ) : null}
 
       <EatingHelpNotice />
       <Body muted>{t.nutrition.hfiCoeliac}</Body>

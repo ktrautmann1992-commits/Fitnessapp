@@ -1614,6 +1614,14 @@ export const MEAL_PREP_COOK_OFFSETS = {
  */
 export const CARDIO_RECIPE_MIN_MINUTES = 75;
 
+/**
+ * „Plan aktualisieren“ (Plan 8.2 Nr. 3, Etappe N5): Der Knopf erscheint, wenn sich das Tagesziel (Mitte des
+ * Planbands) eines Tages ab heute um mindestens diesen Anteil gegenüber dem gespeicherten Plan geändert hat – ohne
+ * Sicherheitsbezug (Modus, Deckel und Ausschlüsse planen automatisch neu, 6.6). Nur Anzeige, keine Grenze.
+ * PRODUKTENTSCHEIDUNG (Wert aus dem Plan: „Ziele ≥ 5 % geändert“).
+ */
+export const MEAL_PLAN_UPDATE_MIN_CHANGE = 0.05;
+
 /** Portionswähler (Plan 19.6): 1–12 Portionen, ohne Bezug zu Kalorienzielen. PRODUKTENTSCHEIDUNG. */
 export const RECIPE_SERVINGS_PICKER = { min: 1, max: 12 } as const;
 

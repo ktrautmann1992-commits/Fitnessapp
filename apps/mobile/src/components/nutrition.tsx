@@ -16,7 +16,12 @@ import { Pressable, StyleSheet, Text, View } from 'react-native';
 
 import { ConfirmDialog } from '@/components/screen';
 import { Body, Button, Card, Heading, MIN_TOUCH, Notice } from '@/components/ui';
-import { computeNutritionWeek, nutritionWeekStart, showEnergyNumbers } from '@/data/nutrition-plan';
+import {
+  computeNutritionWeek,
+  type MealPlanState,
+  nutritionWeekStart,
+  showEnergyNumbers,
+} from '@/data/nutrition-plan';
 import { t } from '@/i18n';
 import { errorText } from '@/lib/error-text';
 import { todayIso } from '@/lib/format';
@@ -30,7 +35,7 @@ import {
 } from '@/lib/nutrition-format';
 import { useThemeColors } from '@/lib/theme';
 import { useApp } from '@/state/app-state';
-import { useNutritionWeek } from '@/state/use-nutrition';
+import { type MealPlanActions, useNutritionWeek } from '@/state/use-nutrition';
 
 /**
  * Bausteine der Ernährungs-Bildschirme (docs/PLAN-PHASE-5.md 8.2–8.4, Etappe N4). Nur Anzeige – Zahlen und Codes
@@ -122,6 +127,82 @@ export function DemoBanner({ onDisable }: { onDisable?: () => void }) {
         />
       ) : null}
     </Notice>
+  );
+}
+
+/**
+ * Zustand des gespeicherten Plans (Etappe N5): „Dein Plan wurde an deine neuen Angaben angepasst.“ (6.6, bis
+ * „Verstanden“), Angebot „Plan aktualisieren“ (≥ 5 %), Speichern gescheitert, vergangene Woche nur lesen.
+ */
+export function MealPlanStateNotices({
+  state,
+  actions,
+  saveFailed,
+}: {
+  state: MealPlanState | null;
+  actions: MealPlanActions | null;
+  saveFailed: boolean;
+}) {
+  const texts = t.nutrition.plan;
+  const [busy, setBusy] = useState<'dismiss' | 'update' | null>(null);
+  const [message, setMessage] = useState<{ text: string; tone: 'success' | 'danger' } | null>(null);
+  if (state === null) return null;
+  async function run(kind: 'dismiss' | 'update', action: () => Promise<void>, done?: string) {
+    setBusy(kind);
+    setMessage(null);
+    try {
+      await action();
+      if (done) setMessage({ text: done, tone: 'success' });
+    } catch {
+      setMessage({ text: texts.actionFailed, tone: 'danger' });
+    } finally {
+      setBusy(null);
+    }
+  }
+  return (
+    <View style={styles.list}>
+      {state.autoAdjusted ? (
+        <Notice tone="info" testID="nutrition-plan-adjusted">
+          <Body>{texts.autoAdjusted}</Body>
+          <Body muted>{texts.autoAdjustedPast}</Body>
+          {actions ? (
+            <Button
+              label={texts.autoAdjustedOk}
+              variant="secondary"
+              loading={busy === 'dismiss'}
+              onPress={() => void run('dismiss', actions.dismissAdjusted)}
+              testID="nutrition-plan-adjusted-ok"
+            />
+          ) : null}
+        </Notice>
+      ) : null}
+      {state.updateSuggested && actions ? (
+        <Notice tone="info" testID="nutrition-plan-update">
+          <Body>{texts.updateSuggested}</Body>
+          <Button
+            label={texts.update}
+            loading={busy === 'update'}
+            onPress={() => void run('update', actions.refresh, texts.updated)}
+            testID="nutrition-plan-update-button"
+          />
+        </Notice>
+      ) : null}
+      {!state.editable ? (
+        <Body muted testID="nutrition-plan-readonly">
+          {texts.readOnlyWeek}
+        </Body>
+      ) : null}
+      {saveFailed ? (
+        <Notice tone="warning" testID="nutrition-plan-save-failed">
+          {texts.saveFailed}
+        </Notice>
+      ) : null}
+      {message ? (
+        <Notice tone={message.tone} testID="nutrition-plan-message">
+          {message.text}
+        </Notice>
+      ) : null}
+    </View>
   );
 }
 

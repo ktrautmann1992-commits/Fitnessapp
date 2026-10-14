@@ -47,6 +47,7 @@ import {
   EMPTY_LOG_ROWS,
   neutralizeHealthPlanLogRows,
 } from './log-rows';
+import { applyMealPlanSave, checkMealPlanSave } from './meal-plan-rows';
 import { createMemoryProtectedStore, type ProtectedStore } from './protected-store';
 import { readJson, STORAGE_KEYS, writeJson, type KeyValueStore } from './kv';
 import { upgradeStoredRows } from './legacy-rows';
@@ -111,6 +112,55 @@ export interface LocalBackendOptions {
    * Standard (Tests): Arbeitsspeicher.
    */
   draftStore?: ProtectedStore;
+}
+
+/**
+ * Alle Vorgänge, die den Gerätespeicher lesen und danach schreiben („laden → ändern → speichern“), laufen im Testmodus
+ * NACHEINANDER (Wächter N5a S3): Sonst könnten sich zwei automatische Schreiber überholen (z. B. Essensplan speichern
+ * und Folgeblock des Trainingsplans anhängen am Montag) und eine Änderung ginge verloren – im schlimmsten Fall eine
+ * Änderung an Einwilligung oder Gesundheits-Check. Reine Lesevorgänge ohne Schreiben laufen frei.
+ */
+const SERIALIZED_METHODS = [
+  'getSession',
+  'signOut',
+  'createProfile',
+  'loadRows',
+  'grantConsents',
+  'revokeConsent',
+  'saveStep',
+  'saveReminder',
+  'deleteAccount',
+  'clearDeviceData',
+  'savePlan',
+  'appendPlanBlock',
+  'updatePlannedSession',
+  'submitWorkout',
+  'deleteSessionLog',
+  'updateExercisePreferences',
+  'setStartWeight',
+  'revokeHealthData',
+  'deleteStoredIntolerances',
+  'saveMealPlan',
+] as const satisfies readonly (keyof Backend)[];
+
+function serializeWrites(backend: Backend): Backend {
+  let tail: Promise<unknown> = Promise.resolve();
+  const serial = <T>(run: () => Promise<T>): Promise<T> => {
+    const result = tail.then(run, run);
+    // Fehler eines Vorgangs halten die Reihe nicht an.
+    tail = result.catch(() => undefined);
+    return result;
+  };
+  const wrapped: Record<string, unknown> = { ...backend };
+  for (const key of SERIALIZED_METHODS) {
+    const method = backend[key] as (...args: unknown[]) => Promise<unknown>;
+    wrapped[key] = (...args: unknown[]) => serial(() => method(...args));
+  }
+  if (backend.signIn.kind === 'test_mode') {
+    const start = backend.signIn.start;
+    wrapped.signIn = { kind: 'test_mode', start: () => serial(start) };
+  }
+  return wrapped as unknown as Backend;
 }
 
 async function bundledContent(): Promise<readonly ContentFile[]> {
@@ -343,7 +393,7 @@ export function createLocalBackend(store: KeyValueStore, options: LocalBackendOp
     return next;
   }
 
-  return {
+  const backend: Backend = {
     mode: 'local',
     supportsExercisePreferences: true,
     // Ernährung im Testmodus ab Etappe N4 (inkl. Schritt nutrition_setup, R2-S3).
@@ -603,11 +653,37 @@ export function createLocalBackend(store: KeyValueStore, options: LocalBackendOp
         rows: {
           ...rows,
           foodPreferences: rows.foodPreferences.filter((p) => p.kind !== 'intolerance'),
+          // Essenspläne mit Gesundheitsbezug lassen über Ersatz, Weglassen und leere Plätze auf die Unverträglichkeiten
+          // schließen (Wächter N3 K5) – mit löschen (sichere Richtung, Etappe N5); beim Öffnen wird neu geplant.
+          mealPlans: rows.mealPlans.filter((p) => !p.uses_health_data),
         },
       });
     },
     loadNutritionLibrary: (nutritionOptions) =>
       (options.loadNutrition ?? loadNutritionLibrary)(nutritionOptions),
+    saveMealPlan: async (plan, { autoAdjusted }) => {
+      const { db, rows, session } = await requireProfile();
+      const check = checkMealPlanSave(plan, {
+        today: options.today(),
+        rows,
+        versions: LOCAL_VERSIONS,
+      });
+      if (!check.ok) {
+        // Ohne Werte in der Meldung (Gesundheitsdaten, 7.1).
+        throw new BackendError(
+          check.reason === 'consent_required' ? 'consent_required' : 'plan_rejected',
+          { sensitive: true },
+        );
+      }
+      const next = applyMealPlanSave(rows, check.plan, {
+        id: options.newId(),
+        userId: session.userId,
+        now: options.now(),
+        autoAdjusted,
+      });
+      await save({ ...db, rows: next });
+      return next;
+    },
     pendingWorkouts: async () => {
       const db = await load();
       const owner = db.session?.userId;
@@ -635,6 +711,7 @@ export function createLocalBackend(store: KeyValueStore, options: LocalBackendOp
       return file;
     },
   };
+  return serializeWrites(backend);
 }
 
 // ---------------------------------------------------------------------------------------------------------

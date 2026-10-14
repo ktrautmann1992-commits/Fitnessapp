@@ -6,6 +6,7 @@ import {
   removeDaySwap as removeDaySwapEntry,
   upsertDaySwap,
   type GeneratedPlan,
+  type MealPlanWeek,
   type PlanLibrary,
   type PlanSafetyRules,
   REQUIRED_CONSENT_TYPES,
@@ -211,6 +212,22 @@ export interface AppContextValue {
   ensureNutritionLibrary: () => Promise<void>;
   /** Testmodus: Beispiel-Rezepte mit Testwerten verwenden (nur solange das Bündel keine Rezepte hat). */
   setNutritionDemo: (enabled: boolean) => Promise<void>;
+  /**
+   * Essensplan der Woche speichern (Etappe N5: Tauschen, „Andere Vorschläge“, „Plan aktualisieren“, Hinweis
+   * „Verstanden“). Fehler werfen (Anzeige im Bildschirm).
+   */
+  saveMealPlan: (plan: MealPlanWeek, options: { autoAdjusted: boolean }) => Promise<void>;
+  /**
+   * Automatisch speichern, was `resolveMealPlanWeek` beim Öffnen ergeben hat (neu erstellt bzw. automatisch neu
+   * geplant, 6.6) – je Woche und Angaben-Fingerabdruck höchstens einmal (keine Schleife, kein Doppel aus zwei
+   * Bildschirmen). Fehler setzen `mealPlanSaveFailed` (der angezeigte Plan ist trotzdem der richtige).
+   */
+  persistMealPlan: (
+    plan: MealPlanWeek,
+    options: { autoAdjusted: boolean; inputsKey: string },
+  ) => Promise<void>;
+  /** Das automatische Speichern des Essensplans ist gescheitert. */
+  mealPlanSaveFailed: boolean;
 
   // --- Übungstausch (docs/PLAN-UEBUNGEN-GLOSSAR-TAUSCH.md, Etappe T2) ---
   /** „Nur heute“-Tausche vor dem Training (Gerätespeicher, nur dieses Konto; geprüft bei jeder Anzeige im Core). */
@@ -262,6 +279,9 @@ export function AppStateProvider({ children }: { children: ReactNode }) {
   const [nutritionLibrary, setNutritionLibrary] = useState<NutritionLibraryState>({
     kind: 'idle',
   });
+  const [mealPlanSaveFailed, setMealPlanSaveFailed] = useState(false);
+  /** Automatisch gespeicherte Essenspläne: Woche | Angaben-Fingerabdruck (nur Arbeitsspeicher, Etappe N5). */
+  const persistedMealPlansRef = useRef(new Set<string>());
   const appendingRef = useRef(false);
   /** Plan, für den das Anhängen gescheitert ist (kein erneuter Versuch bis zum neuen Plan). */
   const appendFailedRef = useRef<string | null>(null);
@@ -519,6 +539,33 @@ export function AppStateProvider({ children }: { children: ReactNode }) {
     [loadNutrition],
   );
 
+  const saveMealPlan = useCallback(
+    async (plan: MealPlanWeek, options: { autoAdjusted: boolean }) => {
+      if (!rows) {
+        throw new BackendError('not_signed_in');
+      }
+      setRows(await backend.saveMealPlan(plan, options, rows));
+      setMealPlanSaveFailed(false);
+    },
+    [backend, rows],
+  );
+
+  const persistMealPlan = useCallback(
+    async (plan: MealPlanWeek, options: { autoAdjusted: boolean; inputsKey: string }) => {
+      const key = `${plan.weekStart}|${options.inputsKey}`;
+      if (!rows || persistedMealPlansRef.current.has(key)) return;
+      persistedMealPlansRef.current.add(key);
+      try {
+        setRows(await backend.saveMealPlan(plan, { autoAdjusted: options.autoAdjusted }, rows));
+        setMealPlanSaveFailed(false);
+      } catch {
+        // Ohne Details (Gesundheitsdaten); der angezeigte Plan bleibt der nach den aktuellen Angaben.
+        setMealPlanSaveFailed(true);
+      }
+    },
+    [backend, rows],
+  );
+
   const revokeHealthData = useCallback(
     async (deleteLogs: boolean, convertIntolerances: boolean) => {
       // Day-Swaps zu Plänen mit Gesundheitsbezug mit entfernen (wie die Entwürfe, PLAN-UEBUNGEN-GLOSSAR-TAUSCH 9).
@@ -583,6 +630,8 @@ export function AppStateProvider({ children }: { children: ReactNode }) {
     setOlderLogs(null);
     setDaySwaps([]);
     setNutritionLibrary({ kind: 'idle' });
+    setMealPlanSaveFailed(false);
+    persistedMealPlansRef.current.clear();
   }, []);
 
   // --- Übungstausch (Etappe T2) -----------------------------------------------------------------------------
@@ -951,6 +1000,9 @@ export function AppStateProvider({ children }: { children: ReactNode }) {
       nutritionLibrary,
       ensureNutritionLibrary,
       setNutritionDemo,
+      saveMealPlan,
+      persistMealPlan,
+      mealPlanSaveFailed,
     }),
     [
       backend,
@@ -1008,6 +1060,9 @@ export function AppStateProvider({ children }: { children: ReactNode }) {
       nutritionLibrary,
       ensureNutritionLibrary,
       setNutritionDemo,
+      saveMealPlan,
+      persistMealPlan,
+      mealPlanSaveFailed,
     ],
   );
 

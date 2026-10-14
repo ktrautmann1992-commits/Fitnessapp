@@ -1015,6 +1015,8 @@ export function createSupabaseBackend(options: SupabaseBackendOptions): Backend 
       startWeights: (startWeights.data ?? []) as StartWeightRow[],
       // Übungs-Präferenzen gibt es in der Datenbank erst mit Etappe T3 (supportsExercisePreferences = false).
       exercisePreferences: [],
+      // Essenspläne gibt es in der Datenbank erst mit Etappe N7 (supportsNutrition = false).
+      mealPlans: [],
     };
   }
 
@@ -1390,6 +1392,10 @@ export function createSupabaseBackend(options: SupabaseBackendOptions): Backend 
     },
     // Ernährungs-Bestand aus der Datenbank erst mit Etappe N7.
     loadNutritionLibrary: async () => null,
+    // Essenspläne in der Datenbank erst mit Etappe N7 (supportsNutrition = false) – nie still ins Leere speichern.
+    saveMealPlan: async () => {
+      throw new BackendError('unknown', { sensitive: true });
+    },
     pendingWorkouts: async () => {
       await logQueue.load();
       const owner = currentUserId;

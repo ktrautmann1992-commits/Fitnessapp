@@ -1,6 +1,6 @@
 # Plan Phase 5 – Ernährungs-Engine, Essensplan und Einkaufsliste
 
-**Status:** **freigegeben, Etappen N0 (Plan), N1 (Core: Bedarf, Grenzen, Makros, Timing) und N2a (Inhalte: Schemas, Prüfregeln, Einheiten) umgesetzt** – Stand 11.10.2026. Offene Fragen 16 B: Gründer „Alles wie empfohlen“ (10.10.2026). Gegenprüfung der R2-Blocker durch den Wächter im N0-PR. **N2b Teil 1 (Quelle/Lizenz geklärt, Import-Infrastruktur, Zuordnungs-Vorschlag) umgesetzt** – der Katalog selbst entsteht nach dem Merge über den Workflow `foods-import` (Umsetzungsstand N2b). **N2c (Rezept-Import als Entwurf) und N3 (Core: Essensplan, Meal-Prep, Einkaufsliste, Rezeptsuche) umgesetzt** – Stand 12.10.2026 (Umsetzungsstand N2c/N3). **N4 (App Testmodus: Einrichtung, Tag, Rezept) umgesetzt** – Stand 12.10.2026 (Umsetzungsstand N4). **N2d (Admin-Seiten Ernährung, Sammelfreigabe Rezepte pro Kategorie und Freigabe per ID in `content-review`, Fingerabdruck bestätigter Import-Annahmen) umgesetzt** – Stand 14.10.2026, drei offene Fragen von den Gründern entschieden (Umsetzungsstand N2d). **Nachtrag „Erweiterungen 2 (11.10.2026)“** in Abschnitt 19 (Fassung 2 nach Wächter-Prüfung, B1/B2 und S1–S14 eingearbeitet): Rezeptbestand aus `alpha5-rezepte.json`, Import in N2b/N2c, Umfang von Prompt C in N3–N6, neue Etappen N9–N14, W1 und P1. Fassung 3 nach Wächter-Nachprüfung `waechter-plan-5-r2.md` (Urteil „mit Auflagen“, alle Befunde eingearbeitet); Fassung 2 nach `waechter-plan-5.md`.
+**Status:** **freigegeben, Etappen N0 (Plan), N1 (Core: Bedarf, Grenzen, Makros, Timing) und N2a (Inhalte: Schemas, Prüfregeln, Einheiten) umgesetzt** – Stand 11.10.2026. Offene Fragen 16 B: Gründer „Alles wie empfohlen“ (10.10.2026). Gegenprüfung der R2-Blocker durch den Wächter im N0-PR. **N2b Teil 1 (Quelle/Lizenz geklärt, Import-Infrastruktur, Zuordnungs-Vorschlag) umgesetzt** – der Katalog selbst entsteht nach dem Merge über den Workflow `foods-import` (Umsetzungsstand N2b). **N2c (Rezept-Import als Entwurf) und N3 (Core: Essensplan, Meal-Prep, Einkaufsliste, Rezeptsuche) umgesetzt** – Stand 12.10.2026 (Umsetzungsstand N2c/N3). **N4 (App Testmodus: Einrichtung, Tag, Rezept) umgesetzt** – Stand 12.10.2026 (Umsetzungsstand N4). **N2d (Admin-Seiten Ernährung, Sammelfreigabe Rezepte pro Kategorie und Freigabe per ID in `content-review`, Fingerabdruck bestätigter Import-Annahmen) umgesetzt** – Stand 14.10.2026, drei offene Fragen von den Gründern entschieden (Umsetzungsstand N2d). **N5a (App Testmodus: gespeicherter Essensplan, Wochenansicht, „Andere Vorschläge“, „Rezept tauschen“, „Plan aktualisieren“, automatische Neuplanung 6.6) umgesetzt** – Stand 14.10.2026; N5 ist in **N5a** und **N5b** (Einkaufsliste, Meal-Prep-Kochtag, „Zur Einkaufsliste“) geteilt (Umsetzungsstand N5a). **Nachtrag „Erweiterungen 2 (11.10.2026)“** in Abschnitt 19 (Fassung 2 nach Wächter-Prüfung, B1/B2 und S1–S14 eingearbeitet): Rezeptbestand aus `alpha5-rezepte.json`, Import in N2b/N2c, Umfang von Prompt C in N3–N6, neue Etappen N9–N14, W1 und P1. Fassung 3 nach Wächter-Nachprüfung `waechter-plan-5-r2.md` (Urteil „mit Auflagen“, alle Befunde eingearbeitet); Fassung 2 nach `waechter-plan-5.md`.
 **Reihenfolge (Gründer-Entscheidung 09.10.2026):** 4b-A0 (erledigt) → Übungs-Glossar und Übungstausch (erledigt bis T2; T3 später mit Supabase) → **Phase 5** → Phase 4b (A → D → E; B/C später).
 **Testphase:** zuerst nur im **Testmodus** (lokal auf dem Gerät, ohne Supabase). Supabase-Teile (Migrationen, RLS, pgTAP) sind hier vollständig geplant, kommen aber in einer späteren Etappe (N7). Einzige Ausnahme: die kleine CHECK-Migration für den Onboarding-Schritt in N4 (S8).
 
@@ -832,11 +832,11 @@ Zusätzlich: K9 (Unverträglichkeit + „mag ich“ derselben Gruppe → ausgesc
 
 **N4 – App Testmodus: Einrichtung, Tag, Rezept.** Onboarding-Schritt `nutrition_setup` **+ kleine CHECK-Migration** (S8) **+ `nutritionSetupAvailable` (nur Testmodus, R2-S3)**, Karte auf „Heute“, Ernährung-Tag, Rezeptansicht (inkl. Allergen-Warnung bei Entwürfen), Einstellungen Ernährung, `local-backend`/`types.ts`/`write-ops.ts`, Widerrufs-Dialog und Ablauf 7.4, Export. _DoD:_ Playwright: Onboarding → Ziel sichtbar → Rezept öffnen → Zahlen ausblenden; Widerruf mit Angebot (W12); kein Check → Hinweis; alle Zustände; Screenshots hell/dunkel; W16 und **W21** grün; Widerruf ohne Zustimmung → nichts zwischengespeichert (R2-K4). **Hinweis aus Wächter N1 (K7):** Der Schritt `nutrition_setup` fragt die Alltagsaktivität wirklich ab (ohne Angabe gilt 1,45 – der niedrigste Faktor unterschätzt aktive Menschen); Körperdaten-Datum höchstens heute + 1 Tag (die Engine ignoriert Zeilen nach `today`, K3).
 
-**N5 – App Testmodus: Woche, Tauschen, Einkaufsliste.** Wochenansicht, „Andere Vorschläge“, „Rezept tauschen“, Meal-Prep-Kochtag, Einkaufsliste mit Abhaken offline, eigene Einträge, „Plan aktualisieren“, automatische Neuplanung (6.6). _DoD:_ Playwright inkl. `setOffline`, Häkchen nach Neu laden erhalten, Meal-Prep-Woche, vegan + Unverträglichkeit, Schwangerschaft gesetzt → Plan **und Einkaufsliste** automatisch angepasst (W11, **W22 App**).
+**N5 – App Testmodus: Woche, Tauschen, Einkaufsliste** (geteilt in **N5a** Woche/Tauschen/Neuplanung und **N5b** Einkaufsliste/Meal-Prep-Kochtag, siehe Umsetzungsstand N5a). Wochenansicht, „Andere Vorschläge“, „Rezept tauschen“, Meal-Prep-Kochtag, Einkaufsliste mit Abhaken offline, eigene Einträge, „Plan aktualisieren“, automatische Neuplanung (6.6). _DoD:_ Playwright inkl. `setOffline`, Häkchen nach Neu laden erhalten, Meal-Prep-Woche, vegan + Unverträglichkeit, Schwangerschaft gesetzt → Plan **und Einkaufsliste** automatisch angepasst (W11, **W22 App**).
 
 **N6 – PDF P5.** Dokumentmodell, Renderer-Blöcke, Druckansichten, Knöpfe, nativer Druck. _DoD:_ PDF-Tests aus 12.1 (inkl. K4-Formulierung), CI-Artefakt, EAS-Build Android geprüft.
 
-**N7 – Supabase.** Migrationen (Enums eigene Datei + `enums.ts`; Inhaltstabellen + `seed_content`; `nutrition_prefs`-Spalten **+ `nutritionSetupAvailable` im Supabase-Backend auf `true`** (R2-S3); `meal_plans`/`items`/`shopping_*` mit RLS, Spaltenrechten, Indizes; RPCs 7.3 inkl. Faktor-≠-1-Prüfung; Widerruf; Export), pgTAP 23–26 + Ergänzungen, `database.types.ts`, `db-sync.test.ts`, `supabase-backend.ts`, Sync-Warteschlange, geschützter Speicher. **Vorher: Fachprüfung durch eine Ernährungsfachkraft** (Gründer-Entscheidung 6). _DoD:_ `db-test` grün, Live-Test mit zwei Geräten; **Zitat- und Wertprüfung gegen die Originale** (Compendium-Codes/MET-Werte, Koletzko 2018, Janmahasatian 2005, Loucks 2011 brutto/netto, BfR-Koffein, Katch-McArdle, D-A-CH-PAL, Iraki 2019) erledigt und alle „VOR LIVEGANG FACHLICH PRÜFEN“-Stellen in `constants.ts` aufgelöst (aus N1 verschoben, Wächter N1 K6). **Erst wenn echte Konten kommen.** **Zusätzlich (Wächter N2d K9):** Rezept-Seed und Supabase-Tabelle transportieren `ingredients`, `steps_de`, `tip_de`, `no_cook`, Zeiten, `equipment_de`, Titel/Beschreibung und `meta.import_assumptions*` **unverändert** (fehlt `meta`, gälte der Stand als „none“ = unsichere Richtung); ein `db-sync`-/pgTAP-Test vergleicht `importAssumptionsState` vor und nach dem Seed.
+**N7 – Supabase.** Migrationen (Enums eigene Datei + `enums.ts`; Inhaltstabellen + `seed_content`; `nutrition_prefs`-Spalten **+ `nutritionSetupAvailable` im Supabase-Backend auf `true`** (R2-S3); `meal_plans`/`items`/`shopping_*` mit RLS, Spaltenrechten, Indizes; RPCs 7.3 inkl. Faktor-≠-1-Prüfung; Widerruf; Export), pgTAP 23–26 + Ergänzungen, `database.types.ts`, `db-sync.test.ts`, `supabase-backend.ts`, Sync-Warteschlange, geschützter Speicher. **Vorher: Fachprüfung durch eine Ernährungsfachkraft** (Gründer-Entscheidung 6). _DoD:_ `db-test` grün, Live-Test mit zwei Geräten; **Zitat- und Wertprüfung gegen die Originale** (Compendium-Codes/MET-Werte, Koletzko 2018, Janmahasatian 2005, Loucks 2011 brutto/netto, BfR-Koffein, Katch-McArdle, D-A-CH-PAL, Iraki 2019) erledigt und alle „VOR LIVEGANG FACHLICH PRÜFEN“-Stellen in `constants.ts` aufgelöst (aus N1 verschoben, Wächter N1 K6). **Erst wenn echte Konten kommen.** **Zusätzlich (Wächter N2d K9):** Rezept-Seed und Supabase-Tabelle transportieren `ingredients`, `steps_de`, `tip_de`, `no_cook`, Zeiten, `equipment_de`, Titel/Beschreibung und `meta.import_assumptions*` **unverändert** (fehlt `meta`, gälte der Stand als „none“ = unsichere Richtung); ein `db-sync`-/pgTAP-Test vergleicht `importAssumptionsState` vor und nach dem Seed. **Zusätzlich (Wächter N5a S4):** `meal_plans`/`meal_plan_items` speichern weder Planband noch `safetyKey`; 6.6 wird dafür ohne diese Felder umgesetzt.
 
 **N8 – Batch-Pipeline Rezepte (optional, später).** `kinds/recipe.ts` (Matrix, Prompts, Structured Output nur mit Katalog-IDs), Probelauf ohne Schlüssel, `content-generate`/`collect` mit `ANTHROPIC_API_KEY`. _DoD:_ Probelauf grün, Kostenschätzung, PR mit Entwürfen.
 
@@ -2041,3 +2041,132 @@ Rezepte“ und Hinweis auf den fehlenden Katalog), **Lebensmittel** (Checkliste)
 `foods-import` und `alpha5-import`: Kategorie antippen → je Rezept „wird freigegeben“ bzw. Grund; „Ohne Kategorie“ →
 „Freigabe per ID“. Freigeben: **Actions → content-review → Run workflow** → Art `recipe` mit Kategorie **oder** Art `ids`
 mit IDs (Rezepte, Meal-Prep-Pläne, Ratgeber), Prüfer → PR prüfen und mergen (docs/SETUP.md 3b).
+
+### N5a – App Testmodus: Woche, Tauschen, automatische Neuplanung (umgesetzt, 14.10.2026, ohne Commit)
+
+**Teilung von N5:** Der Umfang (Woche, Tauschen, Neuplanung, Einkaufsliste offline, eigene Einträge, Meal-Prep-Kochtag mit
+Timern, „Zur Einkaufsliste“ aus Rezept und Meal-Prep-Plan, dazu die aus N4 verschobene Rezeptsuche und der Ratgeber) ist
+für einen Pull Request zu groß. **N5a** (dieser Stand): gespeicherter Plan, Wochenansicht, „Andere Vorschläge“, „Rezept
+tauschen“, „Plan aktualisieren“, automatische Neuplanung (6.6, W11 App). **N5b** (nächster PR): Einkaufsliste mit
+Abhaken offline, eigene Einträge, Zeitraum, Neuerzeugung bei Neuplanung (W22 App), Meal-Prep-Kochtag mit Timern und
+Auftau-Hinweisen, „Zur Einkaufsliste“ (Rezept, Meal-Prep-Plan), Playwright „Häkchen nach Neu laden“/`setOffline`/
+Meal-Prep-Woche/„Zahlen aus“ im Meal-Prep. Rezeptsuche (`rezepte/index.tsx`) und Ratgeber (`ratgeber/[id].tsx`) aus
+19.6 kommen als eigener PR **N5c** nach N5b (Auflagen unten).
+
+1. **Core** (`packages/core/src/nutrition/meal-plan-store.ts`, Tests `meal-plan-store.test.ts`, 15 Tests):
+   - `storedMealPlanWeekSchema`/`parseStoredMealPlanWeek` – Gerätespeicher ist nicht vertrauenswürdig: nur ein
+     vollständiger Plan der aktuellen Engine-Version (Zod strikt, 7 Tage in Reihenfolge), sonst „kein Plan“ (wird neu
+     erstellt; sichere Richtung, der neue Plan nutzt die aktuellen Angaben).
+   - `resolveMealPlanWeek(stored, input)` – beim Öffnen von „Heute“/„Ernährung“ (6.6): kein Plan → `created`;
+     `needsAutomaticReplan` → `replanned` über `automaticReplan` (ab heute, vergangene Tage und gekochte Reste fest);
+     sonst `stored` mit `updateSuggested`. **Angezeigt wird immer das Ergebnis** – ein gespeicherter Plan, der den
+     aktuellen Angaben widerspricht (Schwangerschaft, neue Unverträglichkeit), erscheint nie, auch nicht bis zum
+     Speichern.
+   - `mealPlanUpdateSuggested` – „Plan aktualisieren“ (8.2 Nr. 3): Mitte des Planbands eines Tages ab heute um
+     ≥ `MEAL_PLAN_UPDATE_MIN_CHANGE` (5 %, neue Konstante in `constants.ts`) geändert; Tage ohne Band zählen nicht.
+   - `mealPlanWithOtherSuggestions` (Variante + 1, nach 10 000 wieder 0), `refreshedMealPlan` (gleiche Variante),
+     `mealPlanWeekEditable` (laufende + nächste Woche, Datumsrahmen von `save_meal_plan`), `nextMealPlanVariant`.
+   - Tests: Rundweg JSON (1/4/8 Mahlzeiten, `no_targets`), ungültige Stände, Datumsrahmen inkl. Sonntag, W11 (Schwangerschaft
+     am Donnerstag: Mo–Mi gleich, ab Do `no_targets` ohne `pregnancy_caution`, danach keine Schleife), vegan + neue
+     Erdnuss-Unverträglichkeit, ganze Woche vergangen, Eigenschaft „Knopf genau bei ≥ 5 %“ über 60–100 kg (unabhängig
+     gerechnet), Andere Vorschläge über mehrere Varianten, höchste Variante, Plan aktualisieren.
+   - Export: `PENDING_DB_EXPORT_TABLES` um `meal_plans`, `meal_plan_items` ergänzt (in `export_my_data` mit N7).
+2. **App** (`apps/mobile`):
+   - `UserRows.mealPlans` (`MealPlanRow`: Woche, `uses_health_data`, `auto_adjusted`, Plan-Schnappschuss), höchstens
+     ein Plan je Woche; Gerätespeicher älterer Versionen über `upgradeStoredRows` (nur gültige Pläne des eigenen Kontos,
+     `uses_health_data` aus dem Plan). Supabase-Modus: immer leer, `saveMealPlan` nicht unterstützt (N7).
+   - `Backend.saveMealPlan` – Testmodus mit den Regeln von `save_meal_plan` (`data/meal-plan-rows.ts`): Schema,
+     Datumsrahmen, **ohne gültige Einwilligung kein Plan mit Gesundheitsbezug und kein Faktor ≠ 1 (S9)**; Fehler ohne
+     Werte.
+   - `computeNutritionWeek` löst den gespeicherten Plan mit `resolveMealPlanWeek` auf; `useNutritionWeek` speichert
+     einen neu erstellten bzw. automatisch neu geplanten Plan der laufenden/nächsten Woche (`persistMealPlan`, je Woche
+     und Angaben-Fingerabdruck höchstens einmal – keine Schleife, kein Doppel aus „Heute“ und „Ernährung“; Fingerabdruck
+     nur im Arbeitsspeicher). Speichern gescheitert → Hinweis, angezeigt wird trotzdem der richtige Plan.
+   - **Tag** (`ernaehrung/index.tsx`): „Rezept tauschen“ je Hauptmahlzeit ab heute (nie Ergänzungs-Snacks, nie
+     vergangene Tage; Meldungen je Grund von `swapMealRecipe`), Hinweis „Dein Plan wurde an deine neuen Angaben
+     angepasst.“ bis „Verstanden“, „Plan aktualisieren“, Knopf „Wochenansicht“.
+   - **Woche** (`ernaehrung/woche.tsx`, neu): „Diese Woche“/„Nächste Woche“, Mo–So mit Status, Mahlzeiten (Portion,
+     Ergänzung), Tagessumme nur mit Zahlen und bei vollständigem Tag, „Andere Vorschläge“ mit Nachfrage, Tag öffnen,
+     Rezept öffnen; Lade-/Fehler-/Leer-/Sperr-Zustände wie die Tagesansicht.
+   - **Widerruf** löscht Essenspläne mit Gesundheitsbezug (wie `consents_after_revoke()` ab N7); **„Gespeicherte
+     Unverträglichkeiten löschen“** löscht sie ebenfalls (Ersatz, Weglassen und leere Plätze lassen auf
+     Unverträglichkeiten schließen, Wächter N3 K5 – sichere Richtung). Export: `meal_plans`/`meal_plan_items` mit den
+     Spalten aus 7.2.
+   - **Zahlen:** Hat die Woche einen Tag in Schwangerschaft/Stillzeit, zeigt die Ernährung nirgends kcal – auch nicht
+     an vergangenen Tagen eines gespeicherten Plans (`weekHidesEnergyNumbers` jetzt im Hook für Tag, Woche, „Heute“).
+3. **Tests:** App-Vitest `nutrition-n5.test.ts` (Speicher-Regeln, ein Plan je Woche, Gerätespeicher, Widerruf,
+   Löschen der Unverträglichkeiten, Export, Ablauf neu → gespeichert → schwanger am Mittwoch → angepasst, Tauschen und
+   Andere Vorschläge gespeichert, vergangene Woche abgelehnt). Playwright `e2e/nutrition-week.spec.ts` (Plan
+   gespeichert, Wochenansicht, Andere Vorschläge nach Neuladen, nächste Woche, Zahlen aus → keine kcal in der Woche;
+   Tauschen mit `setOffline` und nach Neuladen; **W11 App**: schwanger am Mittwoch → Mo/Di unverändert, ab Mi ohne
+   Zahlen und ohne `pregnancy_caution`, Hinweis bis „Verstanden“; **vegan + Erdnuss-Unverträglichkeit** → automatisch
+   ohne Erdnuss-Rezepte; Plan aktualisieren nach +10 kg). Nach der Wächter-Prüfung zusätzlich S1–S4-Tests (siehe unten). Gemeinsame Schritte in `e2e/nutrition-helpers.ts` (N4-Spec
+   nutzt sie mit).
+
+**Abweichungen / Präzisierungen:**
+
+- **Gespeichert wird der ganze Plan** (Schnappschuss `MealPlanWeek`) statt Zeilen `meal_plans`/`meal_plan_items` – im
+  Testmodus nötig, weil `safetyKey`, Planband und Hinweise für 6.6 gebraucht werden. Die N7-Form entsteht im Export und
+  über `toMealPlanPayload`. Nur der aktive Plan je Woche, keine „ersetzten“.
+- **Erneute Filter-Prüfung gegen die Rezept-Spalten** (7.3) kommt mit der Datenbank; im Testmodus erzeugt dieselbe
+  Engine den Plan auf dem Gerät, und `resolveMealPlanWeek` prüft beim Öffnen ohnehin jedes Rezept erneut.
+- **Export** (Wächter S4): zusätzlich der ganze Schnappschuss (`plan_snapshot`) und `auto_adjusted`.
+- **Ältere Engine-Version** im Gerätespeicher gilt als ungültig → neuer Plan (die vergangenen Tage dieser Woche werden
+  dann neu berechnet). Heute ohne Folgen (`MEAL_PLAN_ENGINE_VERSION = 1`).
+- **„Plan aktualisieren“** vergleicht die Bandmitte (das gespeicherte Planband ist Teil des Plans; Ziele selbst werden
+  nicht gespeichert, 7.1). Liegt die Tagessumme schon außerhalb des neuen Bands, plant 6.6 automatisch neu.
+- **„Andere Vorschläge“ und „Plan aktualisieren“** ersetzen getauschte Rezepte ab heute (Nachfrage-Text sagt das).
+- **„Rezept tauschen“** nur gegen ein Rezept, das in der Woche noch nicht vorkommt (6.3 Nr. 7). Mit den wenigen
+  Beispiel-Rezepten heißt das oft „kein anderes passendes Rezept“ – mit dem echten Bestand (242 Rezepte) selten.
+- **Ältere Wochen** werden nicht gespeichert und nicht geändert (nur laufende und nächste Woche sind erreichbar).
+- **Hinweis „angepasst“** bleibt bis „Verstanden“ (Feld `auto_adjusted` am gespeicherten Plan).
+- Nicht in N5a (weiter offen aus N3): **K1** `applyMealPrepPlan` ohne `slotFitReasons` (mit N5b, Meal-Prep-Pläne), **K4**
+  Rundungssprung im schmalen Band; **„Essensplan neu erstellen“** in den Einstellungen (8.2 Nr. 7) entfällt vorerst –
+  „Plan aktualisieren“ bzw. „Andere Vorschläge“ decken es ab.
+
+**Wächter-Prüfung N5a (14.10.2026): FREIGABE MIT AUFLAGEN** (Bericht `waechter-n5a.md`, kein Blocker). Umgesetzt:
+
+- **S1** Ein automatisch neu geplanter Plan behält `usesHealthData` des alten Plans, solange er vergangene Tage daraus
+  übernimmt (`buildMealPlanWeekDetailed`). Zusätzlich verwendet die App einen gespeicherten Plan mit Gesundheitsbezug
+  ohne gültige Einwilligung (z. B. neue Fassung) gar nicht weiter: Er wird durch einen Plan ohne Gesundheitsdaten
+  ersetzt, auch die vergangenen Tage der Woche (sichere Richtung; Speichern klappt dann, Faktor 1). Tests in core und
+  App („Einwilligung ungültig, Woche halb vorbei“).
+- **S2** `mealPlanMatchesRecipes`: Titel, Status, Zutaten, Nährwerte und optionale kcal JEDER gespeicherten Mahlzeit
+  (auch vergangener Tage) müssen sich aus dem Rezept derselben Version, erlaubten Ersatzprodukten (`substitutes` des
+  Katalogs), weggelassenen optionalen Zutaten und dem Faktor genau ergeben, die Tagessumme muss passen – sonst wird der
+  Plan neu erstellt. **Folge:** Ändert sich die Version eines Rezepts der laufenden Woche, wird der Plan inklusive
+  vergangener Tage neu erstellt (sichere Richtung, Abweichung von „vergangene Tage nie ändern“ nur in diesem Fall).
+  Tests: frische, getauschte und neu geplante Pläne passen (5 Profile × 1/4/8 Mahlzeiten × mit/ohne Einwilligung,
+  Meal-Prep, Ersatz), Zod-Rundweg; manipulierter Speicher (Erdnüsse in den Zutaten eines vergangenen Tages, Titel,
+  unerlaubter Ersatz, Weglassen einer Pflichtzutat, Summe, Version, Nährwert) → neu erstellt, nie angezeigt.
+- **S3** Testmodus: Alle Vorgänge „laden → ändern → speichern“ im lokalen Backend laufen nacheinander
+  (`serializeWrites` in `local-backend.ts`); Test: Trainingsplan, Essensplan und Erinnerung gleichzeitig → alle drei
+  bleiben (vorher ging der Essensplan verloren).
+- **S4** Export vollständig: `meal_plans` enthält zusätzlich `auto_adjusted` und `plan_snapshot` (der ganze gespeicherte
+  Plan). **Für N7 festgelegt:** Die Datenbank speichert **weder das Planband noch den Abgleich-Schlüssel `safetyKey`**
+  (abgeleitete Ziele bzw. Modus/Ausschlüsse, 7.1). 6.6 (`out_of_band`, `caps_changed`, `mode_changed`) muss dort ohne
+  sie auskommen – z. B. Tagessummen gegen das jeweils aktuelle Band prüfen und Modus/Ausschlüsse aus den gespeicherten
+  Mahlzeiten (`day_status`, Rezept-Spalten) ableiten; das plant N7.
+- **Kann:** K1 Hinweis „angepasst“ nur in änderbaren Wochen; K2 ungenutzte Texte entfernt; K3 Supabase-Fehler mit
+  `sensitive`; K4 E2E-Test heißt jetzt „ohne Netz bedienbar“ (echter Offline-Test mit Warteschlange: N7); K6 fester
+  Grenzfall 4,9 %/5,0 %. **Nicht umgesetzt:** K5 (Mitternacht/Wochenwechsel bei offener App: Speicher-Hinweis, harmlos)
+  und K7 (Knopf „Erneut versuchen“ nach gescheitertem automatischem Speichern) – vermerkt für N5b.
+
+**N5c (eigener PR nach N5b, vor N6):** Rezeptsuche (`rezepte/index.tsx`) und Ratgeber (`ratgeber/[id].tsx`) aus 19.6.
+Auflagen des Wächters: Treffer nur über `filter.ts` mit demselben Profil inkl. `pregnancy_caution` (Eigenschaftstest:
+kein ausgeschlossenes Rezept in den Treffern); Ratgeber nur freigegeben und mit Prüfung gegen Heilversprechen
+(Health-Claims-Verordnung); „Zahlen aus“ gilt auch in Suche und Ratgeber.
+
+**Wächter-Nachprüfung N5a (14.10.2026): FREIGABE** (Bericht `waechter-n5a-r2.md`). Drei Kann-Punkte, vorgemerkt für N5b:
+K-a – Abgleich gespeicherter Pläne ab heute um Kochtag/Haltbarkeit ergänzen („Kochtag + Haltbarkeit ≥ Tag“, sonst neu
+planen), damit ein veränderter Gerätespeicher keine Reste über die Kühlschrank-Haltbarkeit hinaus zeigt; K-b – Hinweis,
+wenn ein Plan wegen neuer Rezept-Version samt vergangener Tage neu erstellt wurde; K-c – dokumentiert: Bei neuer Fassung
+der Einwilligung (kein Widerruf) wird der Plan mit Gesundheitsbezug der laufenden/nächsten Woche durch einen Plan ohne
+Gesundheitsdaten überschrieben (sichere Richtung, Art. 9), andere Gesundheitsdaten bleiben bis zur erneuten Zustimmung.
+
+**Offene Gründer-Entscheidung – Löschfrist gespeicherter Essenspläne (nicht umgesetzt):** Heute bleiben Pläne älterer
+Wochen bis zum Widerruf bzw. Löschen. Wächter-Vorschlag (Datensparsamkeit, Art. 5 Abs. 1 c/e DSGVO):
+`MEAL_PLAN_RETENTION_WEEKS = 4` (PRODUKTENTSCHEIDUNG) – Pläne, deren Woche mehr als 4 Wochen zurückliegt, beim Laden
+löschen; in N7 dasselbe serverseitig mit pgTAP; Einkaufslisten (N5b) mit derselben Frist.
+
+**So testest du es am Handy:** HANDY-ANLEITUNG Teil 7c, Abschnitt „Woche, Tauschen, automatische Anpassung“.
