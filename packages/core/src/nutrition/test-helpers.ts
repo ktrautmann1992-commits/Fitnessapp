@@ -2,6 +2,7 @@
  * Test-Hilfen der Ernährungs-Engine. Die Formeln hier sind bewusst UNABHÄNGIG von constants.ts aus dem Plan
  * abgeschrieben (docs/PLAN-PHASE-5.md 4.3–4.6), damit ein Fehler in den Konstanten auffällt.
  */
+import { ageInYears } from '../age';
 import type { NutritionInputsInput, NutritionSessionInput } from './schemas';
 
 export const PLAN = {
@@ -111,4 +112,36 @@ export function seededRandom(seed: number): () => number {
     t ^= t + Math.imul(t ^ (t >>> 7), t | 61);
     return ((t ^ (t >>> 14)) >>> 0) / 4294967296;
   };
+}
+
+export interface IndependentLimits {
+  /** Nie unter Grundumsatz, höchstens 25 % unter Gesamtumsatz (CLAUDE.md). */
+  readonly lower: number;
+  /** Gesamtumsatz + höchstens 10 % (unter 18: 5 %) Überschuss + 20 kcal Mindestbreite/Rundung. */
+  readonly upper: number;
+}
+
+/**
+ * Kalorien-Grenzen UNABHÄNGIG von der Engine (Wächter N13 S5): Mifflin-St-Jeor und Aktivitätsfaktor aus den
+ * Test-Hilfen (aus dem Plan abgeschrieben). Nur für Eingaben OHNE Einheiten und ohne Körperfett (eine Messung);
+ * die Engine-Grenzen dürfen nur enger sein.
+ */
+export function independentLimits(
+  o: Partial<NutritionInputsInput>,
+  date: string,
+): IndependentLimits | null {
+  const i = inputs(o);
+  const row = i.bodyMetricsRows?.[0];
+  const flags = i.healthFlags?.flags ?? [];
+  if (!i.healthDataConsent || flags.includes('pregnancy') || row === undefined) return null;
+  const age = ageInYears(i.birthDate, date);
+  const bmr = mifflin(
+    row.weightKg as number,
+    row.heightCm as number,
+    age,
+    i.sex === 'female' ? 'female' : 'male',
+  );
+  const tdee = bmr * (PLAN.factor[i.activityLevel ?? 'sedentary'] as number);
+  const surplus = age < 18 ? 0.05 : 0.1;
+  return { lower: Math.max(bmr, 0.75 * tdee) - 1e-6, upper: tdee * (1 + surplus) + 20 };
 }

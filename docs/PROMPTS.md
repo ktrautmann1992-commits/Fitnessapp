@@ -248,9 +248,10 @@ status=draft, Freigabe im Admin). Regel-Logik in packages/core mit Tests. Keine 
 ```
 
 ### Prompt E – Resteplanung und Paar-Modus (Premium)
-**Offen** – Logik sofort nach Prompt F (Etappe N13: Portionsfaktor und Reste-Score in `packages/core`), Resteplanung
-in der App danach (N14), Oberfläche Paar-Modus erst mit dem Partner-Modus in Phase 11 – als eigener Bereich mit
-eigener Art.-9-Einwilligung beider Personen.
+**Logik umgesetzt (Etappe N13, 14.10.2026, docs/PLAN-PHASE-5.md Umsetzungsstand N13)** – Portionsfaktor je Person
+(0,6–1,8, Beilagen getrennt, Ausgleich nur über die übrigen Mahlzeiten, über der Obergrenze eigener Vorschlag) und
+Reste-Score/Aufrunden auf Packungen in `packages/core`. **Offen:** Resteplanung in der App (N14), Oberfläche Paar-Modus
+erst mit dem Partner-Modus in Phase 11 – als eigener Bereich mit eigener Art.-9-Einwilligung beider Personen.
 ```
 Setze docs/ERWEITERUNGEN-2.md Abschnitte 5 (automatische Resteplanung) und 6 (Paar-Modus beim Kochen) um.
 Beides Premium, Prüfung auf dem Server. Portionsfaktor und Reste-Score als reine Funktionen in

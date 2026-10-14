@@ -242,3 +242,21 @@ describe('Abnehmziel und Ampel (docs/PLAN-ZIELE.md 3.2, Etappe Z2)', () => {
     expect(Object.keys(constants)).not.toContain('WEIGHT_GOAL_PACE_MAX_PLANNED');
   });
 });
+
+describe('Portionsfaktor und Reste (Phase 5, N13)', () => {
+  it('Faktor 0,6–1,8 (Plan 19.7 N13) liegt innerhalb von 0,5–2,0; rohe Reste nur Folgetag; Reste-Score < Wiederholung', async () => {
+    const {
+      COUPLE_PORTION_LIMITS,
+      PORTION_SCALE_LIMITS,
+      LEFTOVER_RAW_DAYS,
+      LEFTOVER_SCORING,
+      MEAL_PLAN_SCORING,
+    } = await import('./constants');
+    expect(COUPLE_PORTION_LIMITS.factor).toEqual({ min: 0.6, max: 1.8 });
+    expect(COUPLE_PORTION_LIMITS.factor.min).toBeGreaterThanOrEqual(PORTION_SCALE_LIMITS.min);
+    expect(COUPLE_PORTION_LIMITS.factor.max).toBeLessThanOrEqual(PORTION_SCALE_LIMITS.max);
+    expect(COUPLE_PORTION_LIMITS.sideStepG).toBe(10);
+    expect(LEFTOVER_RAW_DAYS.rawAnimal).toBe(1);
+    expect(LEFTOVER_SCORING.weight).toBeLessThan(MEAL_PLAN_SCORING.repeat);
+  });
+});

@@ -836,7 +836,7 @@ Zusätzlich: K9 (Unverträglichkeit + „mag ich“ derselben Gruppe → ausgesc
 
 **N6 – PDF P5.** Dokumentmodell, Renderer-Blöcke, Druckansichten, Knöpfe, nativer Druck. _DoD:_ PDF-Tests aus 12.1 (inkl. K4-Formulierung), CI-Artefakt, EAS-Build Android geprüft.
 
-**N7 – Supabase.** Migrationen (Enums eigene Datei + `enums.ts`; Inhaltstabellen + `seed_content`; `nutrition_prefs`-Spalten **+ `nutritionSetupAvailable` im Supabase-Backend auf `true`** (R2-S3); `meal_plans`/`items`/`shopping_*` mit RLS, Spaltenrechten, Indizes; RPCs 7.3 inkl. Faktor-≠-1-Prüfung; Widerruf; Export), pgTAP 23–26 + Ergänzungen, `database.types.ts`, `db-sync.test.ts`, `supabase-backend.ts`, Sync-Warteschlange, geschützter Speicher. **Vorher: Fachprüfung durch eine Ernährungsfachkraft** (Gründer-Entscheidung 6). _DoD:_ `db-test` grün, Live-Test mit zwei Geräten; **Zitat- und Wertprüfung gegen die Originale** (Compendium-Codes/MET-Werte, Koletzko 2018, Janmahasatian 2005, Loucks 2011 brutto/netto, BfR-Koffein, Katch-McArdle, D-A-CH-PAL, Iraki 2019) erledigt und alle „VOR LIVEGANG FACHLICH PRÜFEN“-Stellen in `constants.ts` aufgelöst (aus N1 verschoben, Wächter N1 K6). **Erst wenn echte Konten kommen.** **Zusätzlich (Wächter N2d K9):** Rezept-Seed und Supabase-Tabelle transportieren `ingredients`, `steps_de`, `tip_de`, `no_cook`, Zeiten, `equipment_de`, Titel/Beschreibung und `meta.import_assumptions*` **unverändert** (fehlt `meta`, gälte der Stand als „none“ = unsichere Richtung); ein `db-sync`-/pgTAP-Test vergleicht `importAssumptionsState` vor und nach dem Seed. **Zusätzlich (Wächter N5a S4):** `meal_plans`/`meal_plan_items` speichern weder Planband noch `safetyKey`; 6.6 wird dafür ohne diese Felder umgesetzt. **Zusätzlich (N11):** Packungsgrößen kommen als Inhalt aus `content/package-sizes/` (nur `published`, R24 grün) über `seed_content()` in die Spalte `foods.package_size_g` (bzw. eine Tabelle `food_package_sizes` mit Prüfvermerk, Entscheidung beim Bau von N7) – `content/foods/` bleibt allein `foods-import` vorbehalten (S3); keine Nutzerdaten, keine Tabelle für die Kühlschrank-Suche (die Auswahl wird nie gespeichert). **Zusätzlich (Wächter N10 H8):** `food_dislikes` **ohne** `created_at`/Zeitstempel (sonst ließe sich ein „Daumen runter“ ohne Grund vom selben Tag auf „Unverträglich“ zurückführen); der Leer-Grund `rated_down` (`SLOT_EXCLUSION_REASONS`) wird in `mealPlanPayloadSchema`/`save_meal_plan` zugelassen; `recipe_ratings` mit CHECK `reason in ('taste','effort','cost','satiety')` und CHECK `reason is null or value = 'down'`, Unique `(user_id, recipe_id)`.
+**N7 – Supabase.** Migrationen (Enums eigene Datei + `enums.ts`; Inhaltstabellen + `seed_content`; `nutrition_prefs`-Spalten **+ `nutritionSetupAvailable` im Supabase-Backend auf `true`** (R2-S3); `meal_plans`/`items`/`shopping_*` mit RLS, Spaltenrechten, Indizes; RPCs 7.3 inkl. Faktor-≠-1-Prüfung; Widerruf; Export), pgTAP 23–26 + Ergänzungen, `database.types.ts`, `db-sync.test.ts`, `supabase-backend.ts`, Sync-Warteschlange, geschützter Speicher. **Vorher: Fachprüfung durch eine Ernährungsfachkraft** (Gründer-Entscheidung 6). _DoD:_ `db-test` grün, Live-Test mit zwei Geräten; **Zitat- und Wertprüfung gegen die Originale** (Compendium-Codes/MET-Werte, Koletzko 2018, Janmahasatian 2005, Loucks 2011 brutto/netto, BfR-Koffein, Katch-McArdle, D-A-CH-PAL, Iraki 2019) erledigt und alle „VOR LIVEGANG FACHLICH PRÜFEN“-Stellen in `constants.ts` aufgelöst (aus N1 verschoben, Wächter N1 K6). **Erst wenn echte Konten kommen.** **Zusätzlich (Wächter N2d K9):** Rezept-Seed und Supabase-Tabelle transportieren `ingredients`, `steps_de`, `tip_de`, `no_cook`, Zeiten, `equipment_de`, Titel/Beschreibung und `meta.import_assumptions*` **unverändert** (fehlt `meta`, gälte der Stand als „none“ = unsichere Richtung); ein `db-sync`-/pgTAP-Test vergleicht `importAssumptionsState` vor und nach dem Seed. **Zusätzlich (Wächter N5a S4):** `meal_plans`/`meal_plan_items` speichern weder Planband noch `safetyKey`; 6.6 wird dafür ohne diese Felder umgesetzt. **Zusätzlich (N11):** Packungsgrößen kommen als Inhalt aus `content/package-sizes/` (nur `published`, R24 grün) über `seed_content()` in die Spalte `foods.package_size_g` (bzw. eine Tabelle `food_package_sizes` mit Prüfvermerk, Entscheidung beim Bau von N7) – `content/foods/` bleibt allein `foods-import` vorbehalten (S3); keine Nutzerdaten, keine Tabelle für die Kühlschrank-Suche (die Auswahl wird nie gespeichert). **Zusätzlich (Wächter N10 H8):** `food_dislikes` **ohne** `created_at`/Zeitstempel (sonst ließe sich ein „Daumen runter“ ohne Grund vom selben Tag auf „Unverträglich“ zurückführen); der Leer-Grund `rated_down` (`SLOT_EXCLUSION_REASONS`) wird in `mealPlanPayloadSchema`/`save_meal_plan` zugelassen; `recipe_ratings` mit CHECK `reason in ('taste','effort','cost','satiety')` und CHECK `reason is null or value = 'down'`, Unique `(user_id, recipe_id)`. **Zusätzlich (N13):** keine neue Tabelle oder Spalte – die Resteplanung braucht nur die Packungsgrößen aus N11 (s. o.); geteilte Portionen mit eigenem Beilagen-Faktor werden erst mit P1 (Phase 11) gespeichert, bis dahin bleibt `meal_plan_items` bei einem Faktor je Mahlzeit (die bestehende Prüfung „Faktor ≠ 1 ohne Einwilligung → abgelehnt“ gilt unverändert).
 
 **N8 – Batch-Pipeline Rezepte (optional, später).** `kinds/recipe.ts` (Matrix, Prompts, Structured Output nur mit Katalog-IDs), Probelauf ohne Schlüssel, `content-generate`/`collect` mit `ANTHROPIC_API_KEY`. _DoD:_ Probelauf grün, Kostenschätzung, PR mit Entwürfen.
 
@@ -1108,7 +1108,7 @@ Neue Prüfregeln (Teil von `content:validate`):
 
 **N12 – Einkaufsliste weitergeben (Prompt F „Sofort“, KONZEPT 6.13, gratis).** _Umgesetzt im Testmodus (14.10.2026), siehe Umsetzungsstand N12._ `shoppingListToText(list)` in Core (nach Abteilung, Produktarten und Mengen in g/Stück, **ohne kcal, ohne Gründe, ohne Körpergewicht**; Häkchen optional); System-Teilen-Dialog (nativ `Share`, Web `navigator.share` bzw. Kopieren); PDF aus N6. Hinweis vor dem Weitergeben, wenn `uses_health_data` bzw. Ersatzprodukte enthalten sind (wie K4). **Händler-Modul** `packages/core/src/retail/` nur als Schnittstelle (`RetailProvider`) + Feature-Flag `retail_integration` (aus), **ohne Händler**, ohne Netzwerkaufruf. **Bedingungen für das Einschalten des Flags (K5):** eigene Einwilligung für die Übermittlung, DSFA-Ergänzung, Datenminimierung (nur Produktarten und Mengen, keine Ersatz-Hinweise, keine Plan- oder Profildaten), offizielle Schnittstelle bzw. Partnerprogramm, Kennzeichnung „Anzeige“. Gemeinsame Liste im Paar-Modus → P1. _DoD:_ Tests Text (Escaping, leere Liste, Vorrat), Playwright Teilen/Kopieren, Flag aus = kein Knopf.
 
-**N13 – Portionsfaktor und Reste-Score (Prompt E, Logik, Core).**
+**N13 – Portionsfaktor und Reste-Score (Prompt E, Logik, Core).** _Umgesetzt in `packages/core` (14.10.2026), siehe Umsetzungsstand N13._
 
 - `nutrition/portion-factor.ts`: Faktor je Person = Ziel-kcal der Mahlzeit (aus **deren** `nutritionTargetsForWeek`, also schon durch `clampCalorieTarget`) ÷ kcal pro Portion, begrenzt auf **0,6–1,8** (`COUPLE_PORTION_LIMITS`, liegt innerhalb von `PORTION_SCALE_LIMITS` 0,5–2,0). Rundung 10 g bei Beilagen, ganze Eier; Beilagen (`role = carb`) getrennt skalierbar, Eiweißquelle (`role = protein`) gleich (Rollen aus 19.4).
 - **Ausgleich (S1):** Bei geteilten Gerichten bleibt der Faktor in 0,6–1,8; der Tagesausgleich aus 6.2 läuft dann **nur über die übrigen Slots und Ergänzungs-Snacks** (deren Faktoren weiter 0,5–2,0). Liegt der Tag einer Person danach noch **über der Obergrenze** (z. B. unter 18 oder ohne Check mit +5 %), werden zuerst Ergänzungs-Snacks gestrichen und andere Slots gesenkt; reicht das nicht, isst diese Person die Mahlzeit **nicht als geteilte Portion** (eigener Vorschlag nach 6.3). Unter der Untergrenze → Ausgleich oder `below_floor`.
@@ -3181,3 +3181,215 @@ Teilen“, Datenminimierung und Hinweis-Auslöser ohne Befund). Umgesetzt:
   davor? _Jetzt (sichere Voreinstellung): ausgenommen – Ersatz-Einträge nie, Listen mit Gesundheitsbezug gar nicht.
   Empfehlung des Wächters: vor dem Einschalten ausdrücklich entscheiden; K5 sagt nur „keine Ersatz-Hinweise“, der Name
   des Ersatzprodukts ist aber selbst der Hinweis._
+
+### N13 – Portionsfaktor und Reste-Score (umgesetzt, 14.10.2026, ohne Commit)
+
+Umfang wie 19.7 N13 (Prompt E, nur Logik in `packages/core`, KONZEPT 6.11/6.12): rein regelbasiert – keine KI, keine
+App-Oberfläche, nichts gespeichert, keine DB-Änderung. Die Anzeige der Reste und die Packungsangabe kommen mit N14
+(Premium), das gemeinsame Kochen mit P1 (Phase 11). Baut auf N9–N12 auf; N12 (PR #66) ist unverändert.
+
+1. **Konstanten** (`constants.ts`, alle PRODUKTENTSCHEIDUNG, Werte aus dem Plan, VOR LIVEGANG FACHLICH PRÜFEN):
+   `COUPLE_PORTION_LIMITS` (Faktor 0,6–1,8 innerhalb `PORTION_SCALE_LIMITS`, Beilagen 10 g ab 20 g, höchstens 6
+   Personen), `LEFTOVER_RAW_DAYS` (roh tierisch 1 Tag = nur Folgetag, S9; je Abteilung 1–30 Tage mit Begründung,
+   Orientierung BfR/Verbraucherzentrale), `LEFTOVER_SCORING` (Bonus höchstens 1 < `MEAL_PLAN_SCORING.repeat` 1,5;
+   Rechenschutz 50 offene Packungen je Lebensmittel).
+2. **`nutrition/portion-factor.ts`** (Strukturtest K2 erweitert):
+   - `mealTargetKcal(day, slot)` = Anteil des Platzes × Mitte des Planbands DIESER Person (aus
+     `nutritionTargetsForWeek`, also schon durch `clampCalorieTarget`) – derselbe Startwert wie im Tagesausgleich.
+   - `couplePortionFactor` (Zod): Ziel ÷ kcal je Portion, auf 0,01 gerundet, begrenzt 0,6–1,8 (`clamped` min/max);
+     ohne `health_data`-Einwilligung (`no_consent`), ohne Ziele (`no_targets`) oder bei 0 kcal (`no_kcal`) Faktor 1.
+   - `sharedMealPortions(persons, foods, mode)`: je Person ihre Portion an EINEM Gericht, mit dem Rezept nach IHREM
+     Filter (Ersatzprodukte, weggelassene optionale Zutaten). `uniform` = alles mit dem Personenfaktor; `sides` =
+     „Beilagen getrennt, Eiweißquelle gleich“: alle Zutaten außer der Beilage (Rolle `carb`) bekommen für alle
+     Personen mit Zielen denselben Faktor (der **kleinste** ihrer Faktoren, Wächter N13 G-N13-2, 0,6–1,8), die Beilage gleicht je Person auf ihr Ziel
+     aus (ebenfalls 0,6–1,8); Rezept ohne Beilage → wie `uniform` (`no_side`). Beilagen in g/ml ab 20 g auf 10 g, Eier
+     ganz, nie 0, Nährwerte nach der Rundung (`scalePortionByRole` in `scale.ts`). Personen ohne Ziel/Einwilligung
+     bekommen **genau** die Standardportion (`scalePortion(…, 1)`) und zählen beim gemeinsamen Faktor nicht mit. Reihenfolge egal.
+   - `sharedCookingAmounts` (Kochmenge = Summe der Portionen).
+   - `planSharedMeals({ mode, persons, meals })` (Zod: 1–6 Personen, Schlüssel `a–z0–9_-`, je Tag/Platz ein Gericht,
+     gleiche Woche, gleicher Lebensmittel-Katalog): je Person die Woche über `buildMealPlanWeekDetailed` mit den
+     geteilten Mahlzeiten (`shared`, intern). Ergebnis je Person Plan + `outcomes` (geteilt oder Grund) und je Gericht
+     die Portionen der Personen, die es wirklich teilen (nur intern, keine Ziele/Körperdaten).
+3. **Essensplan** (`meal-plan.ts`):
+   - **Geteilte Mahlzeit (S1):** steht als feste Portion (`fixedPortion`, `fixed: true`, `factor` = Personenfaktor) am
+     Platz – nach Meal-Prep-Wochenplan und schon gekochten Resten, vor Meal-Prep-Kochterminen und täglicher Auswahl. Sie
+     besteht den **kompletten Filter der Person** an diesem Tag (Ernährungsform, Schwein, Unverträglichkeiten, „mag ich
+     nicht“ inkl. `food_dislikes`, Schwangerschaft) und ist nicht mit Daumen runter gesperrt – sonst eigener Vorschlag.
+     Der Tagesausgleich (`finishDay`, Planband aus `clampCalorieTarget`) läuft **nur über die übrigen Plätze und
+     Ergänzungs-Snacks** (0,5–2,0) und streicht nichts; optionale Zutaten der geteilten Portion werden nicht verändert.
+     Liegt der Tag dann noch über der Obergrenze, wird er **ohne** diese geteilte Mahlzeit neu geplant (Stand der Woche
+     vorher wiederhergestellt) – eigener Vorschlag nach 6.3 mit den normalen Regeln; bei mehreren zuerst ohne die mit
+     den meisten kcal (`above_ceiling`). Unter der Untergrenze: Ergänzungs-Snacks bzw. `below_floor` wie immer.
+   - **Reste-Score (opt-in):** `MealPlanInput.leftovers = { packageSizes }`. Fehlt das Feld (bzw. ist die Tabelle leer),
+     plant die Engine genau wie bisher (Test). Mit Feld verfolgt `WeekState.leftovers` die angebrochenen Packungen Tag
+     für Tag; `scoreCandidate` addiert `leftoverScoreBonus` – **nur Reihenfolge**. Neu exportiert:
+     `rankSlotCandidates` (alle Kandidaten eines Platzes, sortiert); `pickDailyMeal` nimmt daraus den ersten innerhalb der
+     Wiederholungsgrenzen – gleiche Auswahl wie vorher (alle bisherigen Tests unverändert grün).
+4. **`nutrition/leftovers.ts`**: `isRawAnimalLeftover` (Fleisch, Fisch, Krebs-/Weichtiere, Milch mit
+   `pregnancy_caution` = Rohmilch wie R2-S2), `leftoverKeepDays`, `LeftoverTracker` (Packungen je Lebensmittel in Gramm:
+   Verbrauch zuerst aus nutzbaren Resten, sonst neue Packungen; ein **abgelaufener Rest wird nie verwendet**, dann
+   zählt eine neue Packung), `leftoverScore` (Σ min(Verwendung, Rest) ÷ Packung × 1 ÷ (1 + verbleibende Tage), Vorrat
+   zählt nicht, höchstens 1), `recordDayLeftovers`, `planLeftovers` (welche Mahlzeit welchen Rest verbraucht; Reste am
+   Ende mit `usableUntil`, Stück, Hinweis `freeze` bzw. `next_day_only`), `shoppingListPackages` (Einkaufsliste auf
+   Packungen aufrunden: gleiche Mahlzeiten und Kaufdaten wie `buildShoppingList`, angebrochene Packungen, Bedarf, Rest,
+   Rest in Stück; Lebensmittel ohne Packungsgröße unter `withoutPackageSize`). Packungsgrößen an der Grenze mit Zod
+   (Katalog-ID, ganze Gramm 1–5.000).
+5. **Tests:** Core `n13-portion-factor.test.ts` (28): Faktor (Rundung, **1.400 vs. 3.800 kcal → 0,6/1,8**, `no_targets`,
+   ohne Einwilligung, 0 kcal, Zod), `mealTargetKcal`, Portionen (uniform, sides mit gleicher Eiweißquelle, Reihenfolge
+   egal, **Rezept ohne Beilage**, **Eier ganz**, **5-Portionen-Rezept** mit Kochmenge, Beilagen-Rundung unter 20 g, 1 vs.
+   6 vs. 7 Personen, Person ohne Ziel/Einwilligung), Woche (sehr unterschiedliche Ziele mit Ausgleich, **Person unter 18
+   mit Überschussdeckel → keine geteilte Portion** – einmal klar darüber, einmal knapp: erst die übrigen Plätze gesenkt,
+   sonst eigener Vorschlag –, `no_targets`/Schwangerschaft/ohne Einwilligung → Faktor 1, vegane Person bekommt kein
+   Hähnchen, Daumen runter/vergangener Tag/fehlender Platz/unbekanntes Rezept, 1 vs. 7 Tage, 1 vs. 6 Personen,
+   **leerer Katalog**, deterministisch, Zod, nicht speicherbar bis P1, Leistung mit ca. 600 Rezepten) und
+   **Eigenschaftstest „Portionsfaktor hebt nie über die Obergrenze und drückt nie unter die Untergrenze ohne
+   `below_floor`“** (24 Läufe mit 1–3 Personen, 16–85 Jahre, 40–150 kg, 1–8 Mahlzeiten, ohne Einwilligung,
+   Schwangerschaft, vegan/vegetarisch/Erdnuss; Orakel `usedFoodViolations`; Zähler für geteilt/nicht geteilt; Zeitlimit
+   60 s). `n13-leftovers.test.ts` (20): Haltbarkeit (**rohes Hackfleisch als Rest → nur Folgetag**, danach neue Packung
+   und „einfrieren“; nicht einfrierbar → „nur Folgetag“), **Zutat ohne Packungsgröße**, **Eier** (6er, 2 Stück Rest),
+   mehrere Packungen, Kochtag vor dem Anbruch, Score (Dringlichkeit, Vorrat, Deckel), Aufrunden (≥ einfaches
+   Aufrunden, Vorrat genau, passt zur Einkaufsliste, Zeitraum, Zod), `planLeftovers`, ohne Feld = bisheriger Plan,
+   deterministisch, leerer Katalog, „Reste werden häufiger verbraucht“ (über 12 Profile), **Eigenschaftstest „Reste-Score
+   an/aus → gleiche Kandidatenmenge, jeder Tag im Band oder `below_floor`“** (36 Profile inkl. Meal-Prep, Schwangerschaft,
+   ohne Einwilligung; gleiche Kandidaten je Platz über `rankSlotCandidates` in 40 Fällen, Reihenfolge ändert sich
+   wirklich), Leistung mit ca. 600 Rezepten (mit Reste-Score ca. 63 ms statt 56 ms). Strukturtest K2 um
+   `portion-factor.ts`/`leftovers.ts` erweitert, dazu „lesen weder Unter-/Obergrenze noch Ziel-kcal direkt“;
+   Konstanten-Test.
+
+**Präzisierungen (vom Plan nicht ausdrücklich geregelt, vorsichtig gelöst):**
+
+- **„Ziel-kcal der Mahlzeit“** = Anteil des Platzes × Mitte des Planbands der Person – dieselbe Zahl, mit der der
+  Tagesausgleich startet; sie stammt nur aus `clampCalorieTarget` (keine eigene Grenze, Strukturtest).
+- **„Beilagen getrennt, Eiweißquelle gleich“:** gleich bleiben alle Zutaten außer der Beilage (auch Gemüse, Soße,
+  Fett – sie werden zusammen gekocht); der gemeinsame Faktor ist der kleinste der Personen mit Zielen (Wächter N13,
+  G-N13-2). Beide Modi gibt es;
+  welcher in P1 Standard ist, entscheidet ihr (G-N13-1). Echte Rezepte haben noch keine bestätigten Rollen (N2c) – dort
+  wirkt `sides` wie `uniform`.
+- **10-g-Rundung** nur für Beilagen in g/ml ab 20 g und nur in geteilten Portionen; die Standardportion (Faktor 1)
+  bleibt genau wie ohne Teilen.
+- **Ausgleich ohne Streichen:** Mit geteilter Mahlzeit fällt am Tag keine andere Mahlzeit weg (S1: „zuerst
+  Ergänzungs-Snacks … und andere Slots gesenkt“ – der Ausgleich nimmt nie zusätzliche Snacks dazu, wenn der Tag
+  darüber läge, und senkt die übrigen Plätze bis 0,5). Erst wenn das nicht reicht: eigener Vorschlag (dann gelten die
+  normalen Regeln, auch das Streichen einer Mahlzeit).
+- **Fällt eine Person heraus** (Obergrenze, Platz belegt), werden die Portionen der übrigen neu berechnet (anderer
+  gemeinsamer Faktor im Modus `sides`), bis sich nichts mehr ändert.
+- **Daumen runter** einer Person gilt auch für ein geteiltes Gericht (Grund `rated_down` → eigener Vorschlag) – wie in
+  N10 „nicht mehr vorschlagen“ (G-N13-3).
+- **Gründe** für „nicht geteilt“: `past_day`, `slot_missing` (Person hat den Platz nicht), `slot_taken` (gekochte Reste),
+  `not_found`, `excluded`, `rated_down`, `above_ceiling`. Nicht zusammen mit einem Meal-Prep-Wochenplan (Fehler).
+- **Nicht speicherbar bis P1 (berichtigt nach Wächter N13 S2):** Geteilte Mahlzeiten tragen `shared: true`.
+  `mealPlanMatchesRecipes` lehnt sie ausdrücklich ab und das Speicher-Schema kennt das Feld nicht – in **beiden** Modi
+  und für jede Person (die erste Fassung behauptete das, im Modus `uniform` stimmte es aber nur teilweise). Ein solcher
+  Plan gälte als nicht vorhanden und würde neu geplant (sichere Richtung, Test). P1 speichert Markierung und
+  Beilagen-Faktor; keine DB-Änderung in N13 (Vormerkung bei N7).
+- **Weiche Regeln (Wächter N13 H3):** Für das gemeinsam gewählte Gericht gelten Wiederholungsgrenzen, Zeitlimit an
+  Werktagen und die Passung Mahlzeit-Art/Platz nicht (bewusste Wahl des Paars) – P1 zeigt das an. Die harten Filter
+  gelten immer.
+- **Reste:** Verbrauch am Kochtag wie die Einkaufsliste; angebrochen = Tag des ersten Verbrauchs; Mahlzeiten desselben
+  Tages sehen einander beim Planen nicht (eingetragen wird nach dem Tag). Reste aus der Vorwoche zählen nicht (G-N13-5).
+  Die Packungszahl der Einkaufsliste kann über dem einfachen Aufrunden liegen, wenn ein Rest vor dem nächsten Verbrauch
+  abläuft (sichere Richtung: nie einen abgelaufenen Rest einplanen).
+- **Rohmilch** = Milch mit `pregnancy_caution` (wie R2-S2) – damit auch Rohmilchkäse nur bis zum Folgetag (sichere
+  Richtung, G-N13-4). Seit der Wächter-Prüfung zählen **alle** Lebensmittel mit `pregnancy_caution` (z. B. rohe
+  Sprossen, Räucherfisch) nur bis zum Folgetag (`LEFTOVER_RAW_DAYS.sensitive`, Hinweis „nur bis zum Folgetag“).
+- **Kaufdatum (Wächter N13 H8):** Der Reste-Score im Planer verbraucht am echten Kochtag (auch Sonntag vor der Woche),
+  `shoppingListPackages` wie die Einkaufsliste ab Wochenbeginn – bei Meal-Prep am Sonntag rechnen beide also mit leicht
+  unterschiedlichen Fristen (nur Reihenfolge bzw. Anzeige betroffen).
+- **Reste-Score ausgeschaltet** bis N14: kein App-Aufruf übergibt `leftovers`; „Rezept tauschen“ und Ergänzungs-Snacks
+  nutzen ihn auch mit Feld nicht. Engine-Version unverändert (ohne Feld identische Pläne).
+- **G2/G3 aus N11 nicht vorweggenommen:** Die Packungsgröße wird so genommen, wie sie freigegeben ist – bei Stückware =
+  ein Stück (jetziger Prompt) entsteht kein Rest, bei einer Mehrfachpackung entsprechend einer. Die Kühlschrank-Gewichtung
+  (G2) berührt N13 nicht; im Reste-Score zählt Vorrat gar nicht (er hält lange).
+
+**Gegenproben (danach zurückgesetzt):** (1) Obergrenze des Faktors entfernt → 15 Tests rot; Obergrenze 2,0 statt 1,8 →
+4 rot (auch der Eigenschaftstest). (2) Ohne Einwilligung trotzdem Faktor aus dem Ziel → 3 rot. (3) Über der Obergrenze
+kein eigener Vorschlag (Wiederholung ohne geteilte Mahlzeit abgeschaltet) → 2 rot. (4) Ausgleich darf mit geteilter
+Mahlzeit andere Mahlzeiten streichen → 1 rot. (5) Filter der Person für das geteilte Gericht ignoriert → 2 rot (vegane
+Person, Eigenschaftstest). (6) Rohe Reste 2 statt 1 Tag → 4 rot. (7) Abgelaufener Rest wird weiter verwendet → 1 rot.
+(8) Vorrat zählt im Reste-Score → 1 rot. (9) Reste-Score filtert Kandidaten (nur noch solche mit Rest) → 1 rot
+(Kandidatenmengen-Test). (10) Reste-Bonus 2 > Wiederholung → 2 rot. (11) `portion-factor.ts` liest `ceilingKcal` → 1 rot
+(Strukturtest).
+
+**Nebenbei:** Die Tests „Freigabe per ID“ (`content/recipe-release.test.ts`, N2d) liefen unter turbo-Last einmal
+über 5 s (volle `validateContent`-Läufe) – eigenes Zeitlimit 30 s wie N11 B1; keine Änderung am Verhalten.
+
+**So testest du es am Handy:** HANDY-ANLEITUNG Teil 7c, Abschnitt „Portionsfaktor und Reste-Score“ (nur CI und
+„Woche unverändert“ – sichtbar wird es mit N14 bzw. P1).
+
+**Offen für die Gründer (N13, nicht umgesetzt – sichere Voreinstellung gilt):**
+
+- **G-N13-1** Paar-Modus Standard: „Beilagen getrennt“ (alles außer der Beilage gleich) oder „alles je Person
+  skaliert“? Und soll bei „Beilagen getrennt“ wirklich auch Gemüse/Soße gleich sein – oder nur die Eiweißquelle (dann
+  müsste Soße/Gemüse je Person portioniert werden)? _Jetzt: beide Modi in Core, Entscheidung mit P1._
+- **G-N13-2** Gemeinsamer Faktor im Modus „Beilagen getrennt“: der **kleinste** Faktor (jetzt, sichere Voreinstellung
+  nach Wächter-Empfehlung: niemand bekommt mehr Hauptkomponente als sein Ziel, die Person mit höherem Bedarf gleicht
+  über Beilage und übrige Mahlzeiten aus, seltener „über der Obergrenze“) – oder das Mittel der Personen (Alternative:
+  ausgewogenere Eiweißmenge für die größere Person, aber öfter kein Teilen bei der kleineren)?
+- **G-N13-3** Daumen runter einer Person: gemeinsames Gericht für sie nicht (jetzt, eigener Vorschlag) – oder trotzdem
+  teilen?
+- **G-N13-4** Fachprüfung der Rest-Tage je Abteilung (`LEFTOVER_RAW_DAYS`: Obst/Gemüse, Milchprodukte, Tofu, Konserven,
+  Getränke 2; Brot, Saucen 3; trockene Waren, Tiefkühl 30; Fleisch/Fisch/Sonstiges 1) und ob Rohmilch-**Hartkäse** wie
+  Rohmilch nur bis zum Folgetag zählen soll (jetzt ja, sichere Richtung). **Ergänzt (Wächter N13 S4, nicht
+  umgesetzt):** Werte je Lebensmittel bzw. Untergruppe nötig – Hartkäse, Butter, Öl, Essig, H-Milch halten geöffnet
+  deutlich länger; jetzt ergibt z. B. Parmesan 3 × 20 g in der Woche 3 Packungen (sichere Richtung, aber für „weniger
+  Verschwendung“ falsch). Dafür braucht es fachliche Werte; **N14 macht die Anzeige von Packungszahl/Rest davon
+  abhängig**. Wortgenaue Fundstellen BfR/Verbraucherzentrale nachtragen.
+- **G-N13-5** Reste aus der Vorwoche (z. B. halbe Packung Quark vom Sonntag) in den nächsten Plan übernehmen? _Jetzt:
+  nein – braucht eine Speicherung und kommt frühestens mit N14._
+- **G-N13-6 (neu, Wächter H1) – Partner-Freigabe:** Im Modus „Beilagen getrennt“ hängt die Portion einer Person vom
+  Faktor der anderen ab; über Kochmenge und Portionen lässt sich der Bedarf der anderen Person ableiten. Darf das für
+  den Partner sichtbar/ableitbar sein? Wenn ja: ausdrücklich in den P1-Einwilligungstext („Dein Partner sieht, wie groß
+  deine Portion ist“) und `planSharedMeals` bekommt eine **eigene Partner-Freigabe** als Pflicht-Eingabe, getrennt von
+  `health_data` (heute nur der Abgleich Einwilligung ↔ Ziele, S3).
+- **G-N13-7 (neu, Wächter B1) – Optionale Zutaten bei geteilten Gerichten:** Optionale Zutaten je Person weglassen
+  (Topping auf dem eigenen Teller), damit das Teilen erhalten bleibt – oder dann nicht teilen? _Jetzt (sichere
+  Voreinstellung): Liegt der Tag nur wegen optionaler Zutaten der geteilten Portion über der Obergrenze, isst die
+  Person diese Mahlzeit nicht als geteilte Portion (eigener Vorschlag)._
+- Weiter offen aus N11: **G2** (Vorrats-Gewichtung der Kühlschrank-Suche) und **G3** (Packung bei Stückware) – N13 nutzt
+  die freigegebenen Werte unverändert; G3 muss vor dem ersten echten `package-sizes`-Lauf entschieden sein, weil davon
+  abhängt, ob bei Stückware Reste entstehen.
+
+**Wächter-Prüfung N13 (14.10.2026): 1 Blocker** (Bericht `waechter-n13.md`; keine Regression ohne `leftovers`-Feld,
+harte Filter je Person wirken, Reste-Score ordnet nur um). Umgesetzt:
+
+- **B1 (Blocker)** Optionale Zutaten der geteilten Portion konnten den Tag über die Obergrenze heben (der Ausgleich
+  durfte sie nicht weglassen und brach ab). Jetzt gilt ein solcher Tag in `finishDay` als „über der Obergrenze“
+  (`aboveCeiling`) → Tag ohne die geteilte Mahlzeit neu, eigener Vorschlag (G-N13-7 bleibt Gründer-Frage). Tests:
+  Eigenschaftstest mit `haehnchen-reis-nuss` (80 g Erdnüsse optional, ca. 480 kcal) über 30 Paare × 7 Tage, dazu der
+  große Eigenschaftstest mit der Hälfte der Gerichte als Nuss-Variante. Gegenprobe des Wächters (`g1-optional.mts`, 840
+  Personentage): vorher 71 Verletzungen, jetzt **0**.
+- **S1** Tausch an Tagen mit geteilter Mahlzeit: Wird eine **andere** Mahlzeit getauscht („Rezept tauschen“ oder
+  Zutaten-Austausch), bleibt die geteilte Portion exakt (Gramm und kcal, `fixedMealSelection`/`sharedMealPortion` in
+  `meal-plan.ts`, genutzt von `swapMealRecipe` und `substitute.ts`). Wird die geteilte Mahlzeit **selbst** getauscht,
+  ist sie für diese Person danach eine eigene Mahlzeit mit eigenem Faktor (nicht geteilt, nicht fest). Tests für beide
+  Wege; Wächter-Skript `g4-swap.mts`: vorher 28 von 28 geändert, jetzt 0.
+- **S2** Markierung `shared: true` an der geplanten Mahlzeit; nicht speicherbar in beiden Modi (siehe Präzisierungen),
+  Test für `uniform` und `sides`, jede Person.
+- **S3** `planSharedMeals` wirft, wenn eine Person ohne Einwilligung Ziele aus Gesundheitsdaten mitbringt
+  (`!healthDataConsent && targets.usesHealthData`). Test.
+- **S5** Eigenschaftstests mit **unabhängigem Kalorien-Orakel** (`independentLimits` in `test-helpers.ts`: Mifflin-St-Jeor
+  und Aktivitätsfaktor aus dem Plan abgeschrieben; untere Grenze max(Grundumsatz, 75 % des Gesamtumsatzes) an vollständigen
+  Tagen, obere Gesamtumsatz + 10 % (unter 18: 5 %) + 20 kcal inkl. optionaler Zutaten) – zusätzlich zum Band-Abgleich,
+  in beiden N13-Eigenschaftstests; schwere optionale Zutat in den Testdaten.
+- **S6** `mealTargetKcal` liegt jetzt in `meal-plan.ts` (neben `mealPlanBand`); der Strukturtest verbietet in
+  `portion-factor.ts`/`leftovers.ts` jeden Zugriff auf `band`, `mealPlanBand`, `planBand` sowie Unter-/Obergrenze und
+  Ziel-kcal.
+- **G-N13-2** Sichere Voreinstellung: gemeinsamer Faktor = der **kleinste** (statt Mittel), Test; Gründer-Frage mit
+  Alternative vermerkt.
+- **H6** Rohe Sprossen bzw. alle Lebensmittel mit `pregnancy_caution`: Reste nur bis zum Folgetag (Test).
+- **Nicht umgesetzt:** S4 (Rest-Tage je Untergruppe) → G-N13-4 (fachliche Werte nötig, N14-Anzeige hängt davon ab);
+  H3/H8 nur dokumentiert; H4 (Ausfall im Zwischenstand einer Runde ist endgültig – sicher, kann ein unnötiges „nicht
+  geteilt“ erzeugen) und H10 vermerkt. Neue Gründer-Fragen G-N13-6 und G-N13-7.
+- **Gegenproben zu den Auflagen (danach zurückgesetzt):** optionale kcal der geteilten Portion wieder ignoriert → 2 rot
+  (beide Eigenschaftstests); „Rezept tauschen“ rechnet die geteilte Portion wieder um → 1 rot; Zutaten-Austausch rechnet
+  sie um → 1 rot; getauschte geteilte Mahlzeit bleibt geteilt/fest → 1 rot; Einwilligungs-Abgleich entfernt → 1 rot;
+  Speicher-Sperre entfernt → 1 rot; Mittel statt kleinster Faktor → 1 rot; Sprossen 2 Tage → 1 rot.
+
+**Nachprüfung N13 (14.10.2026): kein Blocker.** Gegenproben neu gelaufen: 0/840 Personentage über dem Band (vorher 71),
+0/28 Tauschvorgänge ändern die geteilte Portion, keine Regression gegenüber dem Stand vor N13. Umgesetzt:
+
+- **NS1** `toMealPlanPayload` wirft bei `shared: true`, statt die Markierung beim Speichern still zu verlieren – Pläne
+  mit geteilter Mahlzeit sind damit an jeder Stelle bis P1 nicht speicherbar (Test in `n13-portion-factor.test.ts`,
+  Gegenprobe rot).
+- Hinweis für später: Das Test-Orakel `independentLimits` prüft die ~1 %-pro-Woche-Grenze noch nicht und ist bei
+  Fettverlust lockerer als das echte Band (der Band-Abgleich läuft mit, daher keine Lücke).

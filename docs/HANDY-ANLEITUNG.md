@@ -313,6 +313,15 @@ schickt nichts selbst, es gibt kein öffentliches Profil und nichts für andere 
 6. Es gibt **keinen** Knopf „Bei einem Händler bestellen“ – die Händler-Anbindung ist vorbereitet, aber ausgeschaltet
    (kein Händler, keine Daten an Dritte). **„Stattdessen als PDF speichern“** führt zur PDF-Ansicht (Etappe N6).
 
+**Portionsfaktor und Reste-Score (Etappe N13, nur Rechenlogik, ohne KI):** In der App gibt es dazu **noch nichts zu
+sehen** – die Anzeige „Dieses Rezept verbraucht deinen restlichen Brokkoli“ und die Packungsangabe in der
+Einkaufsliste kommen mit Etappe N14, das gemeinsame Kochen („Anna 180 g Reis · Ben 120 g Reis“) erst mit dem
+Partner-Modus (Phase 11). So prüft ihr N13 am Handy:
+
+1. GitHub-App → Pull Request von N13 → unten **Checks** → **ci** muss grün sein (dort laufen die neuen Tests:
+   „Portionsfaktor hebt nie über die Obergrenze …“ und „Reste-Score an/aus → gleiche Kandidaten …“).
+2. Vorschau-Link öffnen → **Ernährung** → die Woche sieht genauso aus wie vorher (N13 ändert bestehende Pläne nicht).
+
 **Redaktionsbereich Ernährung (Etappe N2d):** Vorschau-Link der Website → `/admin` → anmelden → oben **Rezepte**,
 **Lebensmittel**, **Meal-Prep**, **Ratgeber**, **Austausch** (N9) und **Packungen** (N11: Lebensmittel mit Gramm je
 Packung, Prüfbericht R24, Klick-Schritte „Freigabe per ID“; solange es keine gibt, steht dort „Noch keine

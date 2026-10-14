@@ -331,226 +331,237 @@ function guide(overrides: Partial<Guide> = {}): Guide {
   };
 }
 
-describe('Freigabe per ID (Art „ids“, Gründer-Entscheidungen 14.10.2026)', () => {
-  const noCategory = () => {
-    const r = recipe('porridge-banane');
-    delete (r as { categories?: unknown }).categories;
-    return r;
-  };
+// Volle `validateContent`-Läufe: eigenes Zeitlimit wie N11 B1 (unter turbo-Last über 5 s, Wächter-Lehre N11).
+describe(
+  'Freigabe per ID (Art „ids“, Gründer-Entscheidungen 14.10.2026)',
+  { timeout: 30_000 },
+  () => {
+    const noCategory = () => {
+      const r = recipe('porridge-banane');
+      delete (r as { categories?: unknown }).categories;
+      return r;
+    };
 
-  it('Rezept ohne Kategorie per ID: dieselben Regeln wie die Sammelfreigabe', () => {
-    const { decisions } = planNutritionRelease(
-      files(PUBLISHED_FOODS, [noCategory()]),
-      catalogFor(PUBLISHED_FOODS),
-      ['porridge-banane'],
-      OPTIONS,
-    );
-    expect(decisions).toHaveLength(1);
-    expect(decisions[0]?.kind).toBe('recipe');
-    expect(decisions[0]?.blockers).toEqual([]);
-    expect(decisions[0]?.released.status).toBe('published');
-    // Gleiche Gründe: Lebensmittel nicht freigegeben → übersprungen.
-    const blocked = planNutritionRelease(
-      files(FIXTURE_FOODS, [noCategory()]),
-      catalogFor(FIXTURE_FOODS),
-      ['porridge-banane'],
-      OPTIONS,
-    );
-    expect(blocked.decisions[0]?.blockers.map((b) => b.kind)).toContain('foods_not_published');
-  });
-
-  it('Annahmen per ID: ohne Häkchen übersprungen, mit Häkchen bestätigt (wie Sammelfreigabe)', () => {
-    const omelett = omelettWithAssumption();
-    delete (omelett as { categories?: unknown }).categories;
-    const run = (confirmAssumptions: boolean) =>
-      planNutritionRelease(
-        files(PUBLISHED_FOODS, [omelett]),
+    it('Rezept ohne Kategorie per ID: dieselben Regeln wie die Sammelfreigabe', () => {
+      const { decisions } = planNutritionRelease(
+        files(PUBLISHED_FOODS, [noCategory()]),
         catalogFor(PUBLISHED_FOODS),
-        [omelett.id],
-        { ...OPTIONS, confirmAssumptions },
-      ).decisions[0];
-    expect(run(false)?.blockers).toContainEqual({ kind: 'unconfirmed_assumptions', count: 1 });
-    const confirmed = run(true);
-    expect(confirmed?.blockers).toEqual([]);
-    expect(confirmed?.kind === 'recipe' && confirmed.released.declared_pregnancy_caution).toBe(
-      false,
-    );
-  });
-
-  it('Lebensmittel nie über diesen Weg, unbekannte IDs gemeldet, Reihenfolge der Eingabe', () => {
-    const result = planNutritionRelease(
-      files(PUBLISHED_FOODS, [recipe('porridge-banane'), recipe('tofu-paprika')]),
-      catalogFor(PUBLISHED_FOODS),
-      ['tofu-paprika', 'haferflocken', 'gibt-es-nicht', 'porridge-banane'],
-      OPTIONS,
-    );
-    expect(result.foodIds).toEqual(['haferflocken']);
-    expect(result.unknownIds).toEqual(['gibt-es-nicht']);
-    expect(result.decisions.map((d) => d.original.id)).toEqual(['tofu-paprika', 'porridge-banane']);
-  });
-
-  it('gleiche ID als Rezept und Ratgeber → mehrdeutig, nichts geplant', () => {
-    const result = planNutritionRelease(
-      files(PUBLISHED_FOODS, [recipe('porridge-banane')], [], [guide({ id: 'porridge-banane' })]),
-      catalogFor(PUBLISHED_FOODS),
-      ['porridge-banane'],
-      OPTIONS,
-    );
-    expect(result.ambiguousIds).toEqual(['porridge-banane']);
-    expect(result.decisions).toEqual([]);
-  });
-
-  it('Meal-Prep-Plan: nur wenn alle Rezepte danach freigegeben sind (vorher oder im selben Lauf)', () => {
-    const spaghetti = recipe('spaghetti-tomatensauce');
-    const alone = planNutritionRelease(
-      files(PUBLISHED_FOODS, [spaghetti], [spaghettiPlan()]),
-      catalogFor(PUBLISHED_FOODS),
-      ['pasta-woche'],
-      OPTIONS,
-    );
-    expect(alone.decisions[0]?.kind).toBe('meal_prep_plan');
-    expect(alone.decisions[0]?.blockers).toContainEqual({
-      kind: 'recipes_not_released',
-      recipeIds: ['spaghetti-tomatensauce'],
+        ['porridge-banane'],
+        OPTIONS,
+      );
+      expect(decisions).toHaveLength(1);
+      expect(decisions[0]?.kind).toBe('recipe');
+      expect(decisions[0]?.blockers).toEqual([]);
+      expect(decisions[0]?.released.status).toBe('published');
+      // Gleiche Gründe: Lebensmittel nicht freigegeben → übersprungen.
+      const blocked = planNutritionRelease(
+        files(FIXTURE_FOODS, [noCategory()]),
+        catalogFor(FIXTURE_FOODS),
+        ['porridge-banane'],
+        OPTIONS,
+      );
+      expect(blocked.decisions[0]?.blockers.map((b) => b.kind)).toContain('foods_not_published');
     });
-    expect(recipeReleaseBlockerText(alone.decisions[0]!.blockers[0]!)).toContain(
-      'Rezepte nicht freigegeben',
-    );
 
-    const together = planNutritionRelease(
-      files(PUBLISHED_FOODS, [spaghetti], [spaghettiPlan()]),
-      catalogFor(PUBLISHED_FOODS),
-      ['spaghetti-tomatensauce', 'pasta-woche'],
-      { ...OPTIONS, expertReviewed: true },
-    );
-    expect(together.decisions.map((d) => [d.kind, d.blockers])).toEqual([
-      ['recipe', []],
-      ['meal_prep_plan', []],
-    ]);
-    const released = together.decisions[1]!.released;
-    expect(released.status).toBe('published');
-    expect(released.meta).toMatchObject({
-      reviewed_by: 'KT',
-      reviewed_at: '2026-10-13',
-      expert_reviewed: true,
+    it('Annahmen per ID: ohne Häkchen übersprungen, mit Häkchen bestätigt (wie Sammelfreigabe)', () => {
+      const omelett = omelettWithAssumption();
+      delete (omelett as { categories?: unknown }).categories;
+      const run = (confirmAssumptions: boolean) =>
+        planNutritionRelease(
+          files(PUBLISHED_FOODS, [omelett]),
+          catalogFor(PUBLISHED_FOODS),
+          [omelett.id],
+          { ...OPTIONS, confirmAssumptions },
+        ).decisions[0];
+      expect(run(false)?.blockers).toContainEqual({ kind: 'unconfirmed_assumptions', count: 1 });
+      const confirmed = run(true);
+      expect(confirmed?.blockers).toEqual([]);
+      expect(confirmed?.kind === 'recipe' && confirmed.released.declared_pregnancy_caution).toBe(
+        false,
+      );
     });
-  });
 
-  it('Meal-Prep-Plan: Rezept im selben Lauf übersprungen → Plan auch übersprungen', () => {
-    const foods = PUBLISHED_FOODS.map((food) =>
-      food.id === 'zwiebel'
-        ? { ...food, meta: { ...food.meta, catalog_reviewed_by: null, catalog_reviewed_at: null } }
-        : food,
-    );
-    const result = planNutritionRelease(
-      files(foods, [recipe('spaghetti-tomatensauce')], [spaghettiPlan()]),
-      catalogFor(foods),
-      ['spaghetti-tomatensauce', 'pasta-woche'],
-      OPTIONS,
-    );
-    expect(result.decisions[0]?.blockers.map((b) => b.kind)).toContain(
-      'foods_not_catalog_reviewed',
-    );
-    expect(result.decisions[1]?.blockers).toContainEqual({
-      kind: 'recipes_not_released',
-      recipeIds: ['spaghetti-tomatensauce'],
+    it('Lebensmittel nie über diesen Weg, unbekannte IDs gemeldet, Reihenfolge der Eingabe', () => {
+      const result = planNutritionRelease(
+        files(PUBLISHED_FOODS, [recipe('porridge-banane'), recipe('tofu-paprika')]),
+        catalogFor(PUBLISHED_FOODS),
+        ['tofu-paprika', 'haferflocken', 'gibt-es-nicht', 'porridge-banane'],
+        OPTIONS,
+      );
+      expect(result.foodIds).toEqual(['haferflocken']);
+      expect(result.unknownIds).toEqual(['gibt-es-nicht']);
+      expect(result.decisions.map((d) => d.original.id)).toEqual([
+        'tofu-paprika',
+        'porridge-banane',
+      ]);
     });
-  });
 
-  it('Meal-Prep-Plan mit Aufbewahrung gegen R9 (Kühlschrank bis Freitag) → roter Befund R20', () => {
-    const published = recipe('spaghetti-tomatensauce', {
-      status: 'published',
-      meta: {
-        ...recipe('spaghetti-tomatensauce').meta,
+    it('gleiche ID als Rezept und Ratgeber → mehrdeutig, nichts geplant', () => {
+      const result = planNutritionRelease(
+        files(PUBLISHED_FOODS, [recipe('porridge-banane')], [], [guide({ id: 'porridge-banane' })]),
+        catalogFor(PUBLISHED_FOODS),
+        ['porridge-banane'],
+        OPTIONS,
+      );
+      expect(result.ambiguousIds).toEqual(['porridge-banane']);
+      expect(result.decisions).toEqual([]);
+    });
+
+    it('Meal-Prep-Plan: nur wenn alle Rezepte danach freigegeben sind (vorher oder im selben Lauf)', () => {
+      const spaghetti = recipe('spaghetti-tomatensauce');
+      const alone = planNutritionRelease(
+        files(PUBLISHED_FOODS, [spaghetti], [spaghettiPlan()]),
+        catalogFor(PUBLISHED_FOODS),
+        ['pasta-woche'],
+        OPTIONS,
+      );
+      expect(alone.decisions[0]?.kind).toBe('meal_prep_plan');
+      expect(alone.decisions[0]?.blockers).toContainEqual({
+        kind: 'recipes_not_released',
+        recipeIds: ['spaghetti-tomatensauce'],
+      });
+      expect(recipeReleaseBlockerText(alone.decisions[0]!.blockers[0]!)).toContain(
+        'Rezepte nicht freigegeben',
+      );
+
+      const together = planNutritionRelease(
+        files(PUBLISHED_FOODS, [spaghetti], [spaghettiPlan()]),
+        catalogFor(PUBLISHED_FOODS),
+        ['spaghetti-tomatensauce', 'pasta-woche'],
+        { ...OPTIONS, expertReviewed: true },
+      );
+      expect(together.decisions.map((d) => [d.kind, d.blockers])).toEqual([
+        ['recipe', []],
+        ['meal_prep_plan', []],
+      ]);
+      const released = together.decisions[1]!.released;
+      expect(released.status).toBe('published');
+      expect(released.meta).toMatchObject({
         reviewed_by: 'KT',
-        reviewed_at: '2026-10-01',
-      },
+        reviewed_at: '2026-10-13',
+        expert_reviewed: true,
+      });
     });
-    const fridgeAll = spaghettiPlan({
-      storage_plan: (['mon', 'tue', 'wed', 'thu', 'fri'] as const).map((weekday) => ({
-        recipe_id: 'spaghetti-tomatensauce',
-        weekday,
-        method: 'fridge' as const,
-      })),
+
+    it('Meal-Prep-Plan: Rezept im selben Lauf übersprungen → Plan auch übersprungen', () => {
+      const foods = PUBLISHED_FOODS.map((food) =>
+        food.id === 'zwiebel'
+          ? {
+              ...food,
+              meta: { ...food.meta, catalog_reviewed_by: null, catalog_reviewed_at: null },
+            }
+          : food,
+      );
+      const result = planNutritionRelease(
+        files(foods, [recipe('spaghetti-tomatensauce')], [spaghettiPlan()]),
+        catalogFor(foods),
+        ['spaghetti-tomatensauce', 'pasta-woche'],
+        OPTIONS,
+      );
+      expect(result.decisions[0]?.blockers.map((b) => b.kind)).toContain(
+        'foods_not_catalog_reviewed',
+      );
+      expect(result.decisions[1]?.blockers).toContainEqual({
+        kind: 'recipes_not_released',
+        recipeIds: ['spaghetti-tomatensauce'],
+      });
     });
-    const result = planNutritionRelease(
-      files(PUBLISHED_FOODS, [published], [fridgeAll]),
-      catalogFor(PUBLISHED_FOODS),
-      ['pasta-woche'],
-      OPTIONS,
-    );
-    const red = result.decisions[0]?.blockers.find((b) => b.kind === 'red_issues');
-    expect(red).toMatchObject({ rules: ['R20'] });
-    // Mit gültiger Aufbewahrung und schon freigegebenem Rezept: frei.
-    const ok = planNutritionRelease(
-      files(PUBLISHED_FOODS, [published], [spaghettiPlan()]),
-      catalogFor(PUBLISHED_FOODS),
-      ['pasta-woche'],
-      OPTIONS,
-    );
-    expect(ok.decisions[0]?.blockers).toEqual([]);
-  });
 
-  it('Ratgeber: ohne roten Befund frei, mit rotem Befund (Textregel) übersprungen; schon freigegeben bleibt', () => {
-    const ok = planNutritionRelease(
-      files(PUBLISHED_FOODS, [], [], [guide()]),
-      catalogFor(PUBLISHED_FOODS),
-      ['wettkampf'],
-      OPTIONS,
-    );
-    expect(ok.decisions[0]?.kind).toBe('guide');
-    expect(ok.decisions[0]?.blockers).toEqual([]);
-    expect(ok.decisions[0]?.released.status).toBe('published');
-
-    const claim = guide({
-      sections: [
-        {
-          heading_de: 'Wundermittel',
-          body_de: ['Dieses Frühstück heilt Erkältungen und stärkt das Immunsystem garantiert.'],
+    it('Meal-Prep-Plan mit Aufbewahrung gegen R9 (Kühlschrank bis Freitag) → roter Befund R20', () => {
+      const published = recipe('spaghetti-tomatensauce', {
+        status: 'published',
+        meta: {
+          ...recipe('spaghetti-tomatensauce').meta,
+          reviewed_by: 'KT',
+          reviewed_at: '2026-10-01',
         },
-      ],
+      });
+      const fridgeAll = spaghettiPlan({
+        storage_plan: (['mon', 'tue', 'wed', 'thu', 'fri'] as const).map((weekday) => ({
+          recipe_id: 'spaghetti-tomatensauce',
+          weekday,
+          method: 'fridge' as const,
+        })),
+      });
+      const result = planNutritionRelease(
+        files(PUBLISHED_FOODS, [published], [fridgeAll]),
+        catalogFor(PUBLISHED_FOODS),
+        ['pasta-woche'],
+        OPTIONS,
+      );
+      const red = result.decisions[0]?.blockers.find((b) => b.kind === 'red_issues');
+      expect(red).toMatchObject({ rules: ['R20'] });
+      // Mit gültiger Aufbewahrung und schon freigegebenem Rezept: frei.
+      const ok = planNutritionRelease(
+        files(PUBLISHED_FOODS, [published], [spaghettiPlan()]),
+        catalogFor(PUBLISHED_FOODS),
+        ['pasta-woche'],
+        OPTIONS,
+      );
+      expect(ok.decisions[0]?.blockers).toEqual([]);
     });
-    const red = planNutritionRelease(
-      files(PUBLISHED_FOODS, [], [], [claim]),
-      catalogFor(PUBLISHED_FOODS),
-      ['wettkampf'],
-      OPTIONS,
-    );
-    expect(red.decisions[0]?.blockers.map((b) => b.kind)).toEqual(['red_issues']);
 
-    const already = guide({
-      status: 'published',
-      meta: { ...guide().meta, reviewed_by: 'AB', reviewed_at: '2026-10-01' },
-    });
-    const same = planNutritionRelease(
-      files(PUBLISHED_FOODS, [], [], [already]),
-      catalogFor(PUBLISHED_FOODS),
-      ['wettkampf'],
-      OPTIONS,
-    );
-    expect(same.decisions[0]?.blockers).toEqual([{ kind: 'not_draft', status: 'published' }]);
-    expect(same.decisions[0]?.released.meta.reviewed_by).toBe('AB');
-  });
-
-  it('S6: Ratgeber mit gelbem R21H (Dosierung) nur mit „fachlich geprüft“', () => {
-    const dosage = guide({
-      sections: [
-        {
-          heading_de: 'Koffein',
-          body_de: ['Viele nehmen 3 mg Koffein pro kg Körpergewicht vor dem Rennen.'],
-        },
-      ],
-    });
-    const run = (expertReviewed: boolean) =>
-      planNutritionRelease(
-        files(PUBLISHED_FOODS, [], [], [dosage]),
+    it('Ratgeber: ohne roten Befund frei, mit rotem Befund (Textregel) übersprungen; schon freigegeben bleibt', () => {
+      const ok = planNutritionRelease(
+        files(PUBLISHED_FOODS, [], [], [guide()]),
         catalogFor(PUBLISHED_FOODS),
         ['wettkampf'],
-        { ...OPTIONS, expertReviewed },
-      ).decisions[0];
-    const without = run(false);
-    expect(without?.blockers.map((b) => b.kind)).toEqual(['needs_expert_review']);
-    expect(recipeReleaseBlockerText(without!.blockers[0]!)).toContain('fachlich geprüft');
-    expect(run(true)?.blockers).toEqual([]);
-  });
-});
+        OPTIONS,
+      );
+      expect(ok.decisions[0]?.kind).toBe('guide');
+      expect(ok.decisions[0]?.blockers).toEqual([]);
+      expect(ok.decisions[0]?.released.status).toBe('published');
+
+      const claim = guide({
+        sections: [
+          {
+            heading_de: 'Wundermittel',
+            body_de: ['Dieses Frühstück heilt Erkältungen und stärkt das Immunsystem garantiert.'],
+          },
+        ],
+      });
+      const red = planNutritionRelease(
+        files(PUBLISHED_FOODS, [], [], [claim]),
+        catalogFor(PUBLISHED_FOODS),
+        ['wettkampf'],
+        OPTIONS,
+      );
+      expect(red.decisions[0]?.blockers.map((b) => b.kind)).toEqual(['red_issues']);
+
+      const already = guide({
+        status: 'published',
+        meta: { ...guide().meta, reviewed_by: 'AB', reviewed_at: '2026-10-01' },
+      });
+      const same = planNutritionRelease(
+        files(PUBLISHED_FOODS, [], [], [already]),
+        catalogFor(PUBLISHED_FOODS),
+        ['wettkampf'],
+        OPTIONS,
+      );
+      expect(same.decisions[0]?.blockers).toEqual([{ kind: 'not_draft', status: 'published' }]);
+      expect(same.decisions[0]?.released.meta.reviewed_by).toBe('AB');
+    });
+
+    it('S6: Ratgeber mit gelbem R21H (Dosierung) nur mit „fachlich geprüft“', () => {
+      const dosage = guide({
+        sections: [
+          {
+            heading_de: 'Koffein',
+            body_de: ['Viele nehmen 3 mg Koffein pro kg Körpergewicht vor dem Rennen.'],
+          },
+        ],
+      });
+      const run = (expertReviewed: boolean) =>
+        planNutritionRelease(
+          files(PUBLISHED_FOODS, [], [], [dosage]),
+          catalogFor(PUBLISHED_FOODS),
+          ['wettkampf'],
+          { ...OPTIONS, expertReviewed },
+        ).decisions[0];
+      const without = run(false);
+      expect(without?.blockers.map((b) => b.kind)).toEqual(['needs_expert_review']);
+      expect(recipeReleaseBlockerText(without!.blockers[0]!)).toContain('fachlich geprüft');
+      expect(run(true)?.blockers).toEqual([]);
+    });
+  },
+);
