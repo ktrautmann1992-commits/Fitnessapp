@@ -13,15 +13,10 @@ import {
   TRAINING_MET,
 } from '../constants';
 import { daysBetween } from '../dates';
-import type { Sex } from '../enums';
+import type { ActivityLevel, Sex } from '../enums';
 import { bodyMassIndex, type DatedValue } from './body-data';
 import { sexSchema } from '../validation';
-import {
-  type ActivityLevel,
-  activityLevelSchema,
-  type NutritionSession,
-  nutritionSessionSchema,
-} from './schemas';
+import { activityLevelSchema, type NutritionSession, nutritionSessionSchema } from './schemas';
 
 /**
  * Energiebedarf (docs/PLAN-PHASE-5.md 4.3, 4.4). Alle Werte werden UNGERUNDET weitergerechnet (K1); gerundet wird

@@ -6,19 +6,25 @@ import {
   MEAL_PLAN_ENGINE_VERSION,
   NUTRITION_LIMITS,
   PORTION_SCALE_LIMITS,
+  RECIPE_SCHEMA_LIMITS,
 } from '../constants';
 import { contentIdSchema } from '../content/schemas';
 import { addDays } from '../dates';
 import { COOKING_MODES, DIET_TYPES } from '../enums';
 import { EXTRA_SLOTS, type MealPlanWeek } from './meal-plan';
-import { MEALPREP_SLOT_MODES, weekStartSchema } from './schemas';
+import { MEALPREP_SLOT_MODES } from '../enums';
+import { weekStartSchema } from './schemas';
 import type { MealSlotId } from './timing';
 
 /**
  * Payload eines Essensplans zum Speichern (docs/PLAN-PHASE-5.md 7.2/7.3, `mealPlanPayloadSchema`): Testmodus
- * (`localDb`, N4/N5) und später `save_meal_plan` (N7, prüft serverseitig erneut). Nur bekannte Felder (strikt).
+ * (`localDb`, N4/N5) und `save_meal_plan` (seit N7 in der Datenbank, prüft serverseitig erneut; Feldlisten gleicht
+ * db-sync.test.ts ab). Nur bekannte Felder (strikt).
  * `inputs` enthält bewusst KEINE Körperdaten, Flags, Unverträglichkeiten, Abneigungen und kein „ohne Schwein“
  * (K8, 7.1); `uses_health_data` setzt der Server. Keine Ziele, kein Planband (die Engine speichert keine Ziele).
+ *
+ * Ersatz, Weglassen und Tausch stehen je Zutat-STELLE (`index`) mit dem Lebensmittel dort (Wächter N7 S3); je Stelle
+ * höchstens eine Änderung.
  *
  * Hinweis für N7 (Wächter N3 K5): `substitutions` und `omitted_optional` lassen indirekt auf Unverträglichkeiten
  * schließen (z. B. laktosefreie Milch). Der Server setzt deshalb `uses_health_data = true`, sobald Ersatz oder
@@ -32,7 +38,8 @@ import type { MealSlotId } from './timing';
  * Core setzt `usesHealthData` am Plan schon jetzt).
  */
 
-const SLOT_KEYS = [
+/** Plätze einer Mahlzeit = CHECK-Liste `meal_plan_items.slot` (db-sync.test.ts). */
+export const MEAL_PLAN_SLOT_KEYS = [
   'main',
   'breakfast',
   'snack_morning',
@@ -47,32 +54,66 @@ const SLOT_KEYS = [
 
 const macro = z.number().finite().min(0).max(10_000);
 
-export const mealPlanItemPayloadSchema = z.strictObject({
-  date: isoDateSchema,
-  slot: z.enum(SLOT_KEYS),
-  role: z.enum(['pre', 'post', 'pre_snack']).nullable(),
-  recipe_id: contentIdSchema,
-  recipe_version: z.number().int().min(1),
-  title_de: z.string().min(1).max(100),
-  factor: z.number().finite().min(PORTION_SCALE_LIMITS.min).max(PORTION_SCALE_LIMITS.max),
-  kcal: macro,
-  protein_g: macro,
-  carbs_g: macro,
-  fat_g: macro,
-  substitutions: z
-    .array(z.strictObject({ food_id: contentIdSchema, substitute_food_id: contentIdSchema }))
-    .max(20),
-  omitted_optional: z.array(contentIdSchema).max(20),
-  ingredient_swaps: z
-    .array(z.strictObject({ food_id: contentIdSchema, substitute_food_id: contentIdSchema }))
-    .max(INGREDIENT_SUBSTITUTION_LIMITS.swapsPerMeal),
-  is_fill: z.boolean(),
-  prep_kind: z.enum(['cook', 'leftover', 'fresh']),
-  cook_date: isoDateSchema,
-  storage: z.enum(['fridge', 'freeze']).nullable(),
-  meal_prep_plan_id: contentIdSchema.nullable(),
-  day_status: z.enum(['complete', 'below_floor', 'no_targets']),
+/**
+ * Stelle einer Zutat im Rezept (0-basiert, = `recipe_ingredients.position`). Ersatz, Weglassen und Tausch gelten je
+ * Stelle, nicht je Lebensmittel (Wächter N7 S3): Ein Rezept darf dieselbe Zutat mehrfach enthalten (z. B. Milch einmal
+ * Pflicht, einmal optional). `food_id` ist das Lebensmittel an dieser Stelle (der Server prüft beides).
+ */
+const ingredientIndexSchema = z
+  .number()
+  .int()
+  .min(0)
+  .max(RECIPE_SCHEMA_LIMITS.ingredients.max - 1);
+
+/** Ersatzprodukt (S4) bzw. Zutaten-Tausch (N9) an einer Stelle. */
+export const ingredientChangeSchema = z.strictObject({
+  index: ingredientIndexSchema,
+  food_id: contentIdSchema,
+  substitute_food_id: contentIdSchema,
 });
+
+/** Weggelassene optionale Zutat (S3) an einer Stelle. */
+export const ingredientOmissionSchema = z.strictObject({
+  index: ingredientIndexSchema,
+  food_id: contentIdSchema,
+});
+
+export const mealPlanItemPayloadSchema = z
+  .strictObject({
+    date: isoDateSchema,
+    slot: z.enum(MEAL_PLAN_SLOT_KEYS),
+    role: z.enum(['pre', 'post', 'pre_snack']).nullable(),
+    recipe_id: contentIdSchema,
+    recipe_version: z.number().int().min(1),
+    title_de: z.string().min(1).max(100),
+    factor: z.number().finite().min(PORTION_SCALE_LIMITS.min).max(PORTION_SCALE_LIMITS.max),
+    kcal: macro,
+    protein_g: macro,
+    carbs_g: macro,
+    fat_g: macro,
+    substitutions: z.array(ingredientChangeSchema).max(RECIPE_SCHEMA_LIMITS.ingredients.max),
+    omitted_optional: z.array(ingredientOmissionSchema).max(RECIPE_SCHEMA_LIMITS.ingredients.max),
+    ingredient_swaps: z
+      .array(ingredientChangeSchema)
+      .max(INGREDIENT_SUBSTITUTION_LIMITS.swapsPerMeal),
+    is_fill: z.boolean(),
+    prep_kind: z.enum(['cook', 'leftover', 'fresh']),
+    cook_date: isoDateSchema,
+    storage: z.enum(['fridge', 'freeze']).nullable(),
+    meal_prep_plan_id: contentIdSchema.nullable(),
+    day_status: z.enum(['complete', 'below_floor', 'no_targets']),
+  })
+  .refine(
+    (item) => {
+      const indices = [
+        ...item.substitutions.map((c) => c.index),
+        ...item.omitted_optional.map((c) => c.index),
+        ...item.ingredient_swaps.map((c) => c.index),
+      ];
+      return new Set(indices).size === indices.length;
+    },
+    { path: ['substitutions'], message: 'Zutat mehrfach geändert.' },
+  );
 export type MealPlanItemPayload = z.infer<typeof mealPlanItemPayloadSchema>;
 
 export const mealPlanPayloadSchema = z
@@ -161,11 +202,13 @@ export function toMealPlanPayload(
         carbs_g: round1(meal.nutrients.carbs_g),
         fat_g: round1(meal.nutrients.fat_g),
         substitutions: meal.substitutions.map((s) => ({
+          index: s.index,
           food_id: s.foodId,
           substitute_food_id: s.substituteFoodId,
         })),
-        omitted_optional: meal.omittedOptional.map((o) => o.foodId),
+        omitted_optional: meal.omittedOptional.map((o) => ({ index: o.index, food_id: o.foodId })),
         ingredient_swaps: (meal.ingredientSwaps ?? []).map((x) => ({
+          index: x.index,
           food_id: x.foodId,
           substitute_food_id: x.substituteFoodId,
         })),

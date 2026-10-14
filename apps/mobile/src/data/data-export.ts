@@ -49,9 +49,7 @@ export function localDataExport(
     set_logs: rows.setLogs,
     cardio_logs: rows.cardioLogs,
     exercise_start_weights: rows.startWeights,
-    // Übungs-Präferenzen (Etappe T2) – in export_my_data() erst mit Etappe T3 (PENDING_DB_EXPORT_TABLES).
-    exercise_preferences: rows.exercisePreferences,
-    // Essenspläne (Etappe N5) – Spalten wie meal_plans/meal_plan_items aus docs/PLAN-PHASE-5.md 7.2 (N7).
+    // Essenspläne (Etappe N5) – Spalten wie meal_plans/meal_plan_items (Datenbank seit N7, 20261014120500_meal_plans.sql).
     meal_plans: rows.mealPlans.map((row) => ({
       id: row.id,
       user_id: row.user_id,
@@ -87,12 +85,17 @@ export function localDataExport(
           carbs_g: meal.nutrients.carbs_g,
           fat_g: meal.nutrients.fat_g,
           substitutions: meal.substitutions.map((s) => ({
+            index: s.index,
             food_id: s.foodId,
             substitute_food_id: s.substituteFoodId,
           })),
-          omitted_optional: meal.omittedOptional.map((o) => o.foodId),
+          omitted_optional: meal.omittedOptional.map((o) => ({
+            index: o.index,
+            food_id: o.foodId,
+          })),
           // Zutaten-Austausch (Etappe N9): Spalte wie `ingredient_swaps` der Payload.
           ingredient_swaps: (meal.ingredientSwaps ?? []).map((x) => ({
+            index: x.index,
             food_id: x.foodId,
             substitute_food_id: x.substituteFoodId,
           })),
@@ -146,6 +149,8 @@ export function localDataExport(
     // food_dislikes aus docs/PLAN-PHASE-5.md 19.4 (N7). Ohne Grund „Unverträglich“ (wird nie gespeichert).
     recipe_ratings: rows.recipeRatings,
     food_dislikes: rows.foodDislikes,
+    // Übungs-Präferenzen (Etappe T2) – in export_my_data() erst mit Etappe T3 (PENDING_DB_EXPORT_TABLES).
+    exercise_preferences: rows.exercisePreferences,
   };
   return {
     format_version: DATA_EXPORT_FORMAT_VERSION,

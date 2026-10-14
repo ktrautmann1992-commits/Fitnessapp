@@ -2,7 +2,7 @@
 -- Läuft mit `supabase test db` (pgTAP) – lokal und in der GitHub Action db-test.
 begin;
 create extension if not exists pgtap with schema extensions;
-select plan(67);
+select plan(68);
 
 insert into auth.users (id, email) values
   ('11111111-1111-4111-8111-111111111111', 'nutzer-a@example.test'),
@@ -238,7 +238,16 @@ select is(
   (select count(*) from public.consent_documents),
   3::bigint, 'anon: liest die drei veröffentlichten Einwilligungstexte'
 );
-select is(public.current_consent_version('health_data'), 1, 'anon: aktuelle Version health_data = 1');
+-- N7: current_consent_version ist nicht mehr für anon ausführbar (Advisor); die App liest die Version vor dem Login
+-- direkt aus consent_documents (RLS: nur veröffentlichte Texte) – gleiches Ergebnis.
+select throws_ok(
+  $$ select public.current_consent_version('health_data') $$,
+  '42501', null, 'anon: current_consent_version nicht aufrufbar (N7)'
+);
+select is(
+  (select max(version) from public.consent_documents where consent_type = 'health_data'),
+  1, 'anon: aktuelle Version health_data = 1 (direkt aus consent_documents)'
+);
 
 select * from finish();
 rollback;

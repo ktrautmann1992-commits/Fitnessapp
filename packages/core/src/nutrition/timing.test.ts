@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 
-import { TRAINING_TIMES, type TrainingTime } from './schemas';
+import { TRAINING_TIMES, type TrainingTime } from '../enums';
 import { isSnackSlot, mealSlotLayout, mealSlotsForDay } from './timing';
 
 const strength60 = [{ kind: 'strength' as const, minutes: 60 }];

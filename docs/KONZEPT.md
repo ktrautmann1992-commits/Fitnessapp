@@ -602,7 +602,8 @@ Quelle: `docs/ERWEITERUNGEN-2.md` Abschnitte 1–2. Startbestand aus `alpha5-rez
 - `session_logs` (planned_session_id, status, rpe_0_10, notes, source)
 - `set_logs` (session_log_id, planned_exercise_id, performed_exercise_id, set_no, reps, weight_kg, rpe, done)
 - `cardio_logs` (session_log_id, distance_m, duration_s, elevation_m, avg_hr, source)
-- `foods`, `recipes`, `recipe_ingredients`, `meal_plans`, `meal_plan_items`, `shopping_lists`, `shopping_list_items`
+- `foods`, `recipes`, `recipe_ingredients`, `meal_plans`, `meal_plan_items`, `shopping_lists`, `shopping_list_items` –
+  **umgesetzt in Phase 5, Etappe N7 (Teil 1), siehe Abweichungen ab Phase 5**
 - `supplements`, `supplement_contraindications`, `affiliate_links`, `user_supplement_plans`
 - `cycle_entries` – sensibel, verschlüsselt
 - `wearable_connections`, `daily_metrics`
@@ -702,6 +703,50 @@ Quelle: `docs/ERWEITERUNGEN-2.md` Abschnitte 1–2. Startbestand aus `alpha5-rez
   Konto-E-Mail, die die App ergänzt, und ohne `waitlist`). Tageslimit neuer Einträge über einen Zähler
   (`private.session_log_daily_counts`, kein Inhalt).
 
+### Abweichungen ab Phase 5, Etappe N7 Teil 1 (umgesetzt, siehe `docs/PLAN-PHASE-5.md` Umsetzungsstand N7 und `supabase/migrations/20261014120*`)
+- **Inhalte** (nur `published|archived`, anon nichts, angemeldete Nutzer lesen nur `published`, Schreiben nur über
+  `seed_nutrition_content()` – eigene Funktion neben `seed_content()`, nur `service_role`): `foods`, `recipes`,
+  `recipe_ingredients` (Index je Zutat, Rolle), `ingredient_substitutions`, `food_package_sizes` (eigene Tabelle statt
+  Spalte an `foods`), `meal_prep_plans` (eine Tabelle, Schritte/Aufbewahrung in `data`), `guides`. Jede Inhaltstabelle
+  hat `data jsonb` = die geprüfte Inhaltsdatei **unverändert** (inkl. `meta.import_assumptions*`), nur die Namen der
+  Prüfenden werden beim Einspielen durch „redaktion“ ersetzt und Prüfnotizen entfernt (Wächter N7 H8); die übrigen Spalten
+  sind daraus abgeleitet (Server-Prüfungen, Fremdschlüssel). Kategorien als Liste `recipes.categories` (CHECK) statt
+  `recipe_categories`/`recipe_category_links`. Eingespielt wird nur **fachlich geprüft** (`meta.expert_reviewed`,
+  Lebensmittel zusätzlich Katalog-Prüfung) – Gründer-Entscheidung 6 serverseitig.
+- **`nutrition_prefs`** ergänzt um `activity_level`, `training_time` (Enums), `mealprep_slots` (Enum, Standard Mittag),
+  `show_energy_numbers` (Standard an), `max_prep_minutes_weekday` (10–120) – kein Gesundheitsdatum.
+- **`meal_plans`** (ein Plan je Person und Woche; `uses_health_data` setzt nur der Server; `inputs` ohne Körperdaten,
+  Flags, Unverträglichkeiten, Abneigungen, „ohne Schwein“; Merker `auto_adjusted`, `recipes_changed`, Kochtag-Start) und
+  **`meal_plan_items`** (Schnappschuss je Mahlzeit: Rezept-Version, Titel, Faktor 0,5–2, Nährwerte, Ersatz, Weglassen
+  und Tausch **je Zutat-Stelle** `{index, food_id, …}` (Wächter N7 S3), Kochtag, Aufbewahrung, Tagesstatus). **Nicht** gespeichert: Ziele, Planband, Abgleich-Schlüssel, Modus,
+  leere Plätze mit Gründen, Hinweise (verraten Gesundheitsangaben; werden auf dem Gerät neu gerechnet). Geteilte
+  Mahlzeiten erst mit P1.
+- **`shopping_lists`** (eine je Woche, Verweis auf den Plan `on delete set null (meal_plan_id)`, Zeitraum, Plan-Schlüssel,
+  zusätzliche Rezepte) und **`shopping_list_items`** (Häkchen direkt änderbar, sonst nur über `replace_shopping_list`).
+- **`recipe_ratings`** (Grund nur bei Daumen runter, nie „unverträglich“, Datum = heute ±1 Tag, höchstens 2.000) und
+  **`food_dislikes`** (ohne Zeitstempel und ohne Grund, höchstens 300) – privat, keine Aggregation, nie Analytics.
+- **Funktionen:** `save_meal_plan` (Ernährungsform, Schwein, Unverträglichkeiten, „mag ich nicht“ je Gruppe und je
+  Lebensmittel und Alkohol je Zutat erneut geprüft, inkl. Ersatz/Weglassen/Tausch; Faktor ≠ 1 bzw. jeder
+  Gesundheitsbezug ohne Einwilligung abgelehnt), `replace_shopping_list`, `replace_food_dislikes`,
+  `delete_stored_intolerances` (löscht Pläne/Listen mit Gesundheitsbezug mit). **Bewusst nur im Core** (Abschnitt 6,
+  Plan 7.3): Kalorien-Schutzgrenzen und `pregnancy_caution` – ein manipulierter Client schadet nur sich selbst.
+- **Gleichzeitigkeit (Wächter N7 S2):** Funktionen, die die Einwilligung prüfen und Gesundheitsbezug speichern
+  (`save_meal_plan`, `replace_shopping_list`, `save_training_plan`/`append_plan_block` über `plan_health_basis`),
+  sperren die aktive Einwilligung vorher (`FOR SHARE`); der Widerruf sperrt sie zuerst (`FOR UPDATE`) und löscht
+  Pläne/Listen am Ende noch einmal – ein gleichzeitig gespeicherter Plan überlebt den Widerruf nicht. Feste
+  Reihenfolge überall: **erst die Einwilligung, dann Plan-/Einheiten-Zeilen** (sonst Deadlock; `append_plan_block` dafür
+  korrigiert, Nachprüfung N7 S-N1). Essensplan und Einkaufsliste derselben Woche teilen eine Sperre je Person und Woche
+  (`pg_advisory_xact_lock`), die Liste liest den Plan der Woche dadurch konsistent.
+- **Logs:** Die Payloads enthalten Gesundheitsbezüge; der Supabase-Standard `log_parameter_max_length_on_error = 0`
+  (Parameter nicht ins Postgres-Log) darf nicht geändert werden (Wächter N7 H10).
+- **Widerruf `health_data`** löscht zusätzlich Essenspläne und Einkaufslisten mit Gesundheitsbezug (samt eigener
+  Einträge); Bewertungen und „mag ich nicht“ bleiben. **Export** (`export_my_data`) enthält alle sechs neuen
+  Nutzertabellen, **Konto löschen** entfernt sie per Kaskade.
+- **Einwilligungstexte vor dem Login:** `current_consent_version` ist nicht mehr für `anon` ausführbar; die App liest
+  die höchste veröffentlichte Version direkt aus `consent_documents`.
+- **Noch nicht angebunden (N7 Teil 2):** Essensplan, Einkaufsliste und Rezept-Bestand im Supabase-Modus der App,
+  Einspielen der Ernährungs-Inhalte im Workflow `content-seed`.
+
 ### Erweiterungen (geplant, `docs/ERWEITERUNGEN.md`)
 Alle Tabellen mit RLS (jeder sieht nur eigene Zeilen; Ausnahmen: Katalog-/Inhaltstabellen für alle lesbar, Pflege nur
 durch Admin). **sensibel** = Gesundheitsdaten nach DSGVO Art. 9: nur mit gültiger Einwilligung speichern, beim Widerruf
@@ -749,7 +794,9 @@ eigene Zeilen, in Export und Kontolöschung enthalten.
   entschieden – Schätzpreis je kg (Inhalt, als Schätzung gekennzeichnet)
 - `recipe_ratings` (user_id, recipe_id, value, reason, rated_on) – Nutzerdaten, privat, kein Grund „unverträglich“ (6.10)
 - `food_dislikes` (user_id, food_id) – „mag ich nicht“ je Lebensmittel (6.10), hart wie die Gruppen-Abneigungen
-- Alle diese Tabellen kommen gemeinsam mit der Supabase-Etappe N7 der Phase 5 (vorher nur Testmodus)
+- Alle diese Tabellen kommen gemeinsam mit der Supabase-Etappe N7 der Phase 5 (vorher nur Testmodus) – **umgesetzt in
+  N7 Teil 1** mit den Präzisierungen oben (Kategorien als Liste, Meal-Prep-Pläne als eine Tabelle, Packungsgrößen als
+  eigene Tabelle)
 - `recipe_ingredients` erweitert um die Rolle je Zutat; Meal-Prep-Pläne mit strukturiertem Aufbewahrungsplan
   (Rezept, Wochentag, Kühlschrank/Einfrieren/frisch), geprüft gegen die Haltbarkeitsregeln
 - Paar-Modus: gemeinsame Pläne/Einkaufslisten erst mit dem Partner-Modus (Phase 11), Tabellen dort festlegen

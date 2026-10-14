@@ -1725,6 +1725,20 @@ export const SHOPPING_LIST_ROUNDING = {
 export const SHOPPING_LIST_EXTRAS = { recipesMax: 20, itemsMax: 1000 } as const;
 
 /**
+ * Größte Payload an `save_meal_plan` bzw. `replace_shopping_list` in Byte (Etappe N7, Wächter N7 H1) – der Server lehnt
+ * Größeres ab, BEVOR er die Eingabe Feld für Feld prüft. Keine Grenze zur Gesundheit, nur Schutz der Datenbank.
+ * PRODUKTENTSCHEIDUNG, hergeleitet aus den übrigen Grenzen:
+ * - Essensplan: höchstens 70 Mahlzeiten (7 × (8 + 2)) mit je höchstens 20 Zutaten-Änderungen (eine je Zutat,
+ *   `RECIPE_SCHEMA_LIMITS.ingredients.max`) à ca. 110 Byte plus ca. 700 Byte Grunddaten ≈ 3 KB je Mahlzeit, zusammen
+ *   ≈ 210 KB im ungünstigsten Fall → 256 KiB.
+ * - Einkaufsliste: höchstens 1.000 Einträge (`SHOPPING_LIST_EXTRAS.itemsMax`) mit Schlüssel und Bezeichnung (je ≤ 200
+ *   Zeichen) und ein paar Ersatz-Verweisen ≈ 1–2 KB je Eintrag → 2 MiB. Eine echte Wochenliste hat wenige hundert
+ *   Einträge (unter 100 KB).
+ */
+export const MEAL_PLAN_PAYLOAD_MAX_BYTES = 262_144;
+export const SHOPPING_LIST_PAYLOAD_MAX_BYTES = 2_097_152;
+
+/**
  * Einkaufsliste weitergeben (Plan 19.7 N12, KONZEPT 6.13, Etappe N12) – Bedien- und Übertragungsschutz, keine Grenze
  * zur Gesundheit. PRODUKTENTSCHEIDUNG.
  * - `maxChars`: Höchstlänge des weitergegebenen Texts. Begründung: WhatsApp (in KONZEPT 6.13 als erstes Ziel genannt)

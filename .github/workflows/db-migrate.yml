@@ -1,6 +1,8 @@
 name: db-migrate
 
-# Spielt neue Datenbank-Migrationen (supabase/migrations) nach dem Merge in main ein.
+# Spielt neue Datenbank-Migrationen (supabase/migrations) nach dem Merge in main ein – erst NACHDEM die
+# Datenbank-Tests (db-test: alle Migrationen in einer Test-Datenbank + pgTAP) grün sind (Wächter N7 S4). Sind sie rot,
+# wird nichts eingespielt.
 # Verbindet sich direkt mit der Datenbank (Session-Pooler, IPv4) – braucht nur Projekt-Kennung
 # und Datenbank-Passwort, keinen Supabase-Zugangs-Token (dessen Rechte-Modell ist zu fein für
 # `supabase link`; Stand 14.10.2026).
@@ -17,7 +19,12 @@ concurrency:
   cancel-in-progress: false
 
 jobs:
+  db-test:
+    name: Datenbank-Tests vor dem Einspielen
+    uses: ./.github/workflows/db-test.yml
+
   migrate:
+    needs: db-test
     runs-on: ubuntu-latest
     timeout-minutes: 15
     env:
@@ -46,7 +53,8 @@ jobs:
       - uses: supabase/setup-cli@v1
         if: steps.secrets.outputs.ready == 'true'
         with:
-          version: latest
+          # Feste Version wie in db-test (Wächter N7 S4).
+          version: 2.120.0
 
       - name: Datenbank-Verbindung finden
         if: steps.secrets.outputs.ready == 'true'

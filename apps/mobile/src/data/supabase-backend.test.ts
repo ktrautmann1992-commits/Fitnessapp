@@ -14,6 +14,9 @@ import {
   isTransientError,
   createSupabaseBackend,
   executeWriteOp,
+  isMissingFunction,
+  isMissingRelation,
+  nutritionPrefsFromDb,
 } from './supabase-backend';
 import type { StepSave, UserRows } from './types';
 import type { WorkoutDraft } from './workout-draft';
@@ -351,14 +354,13 @@ describe('Supabase-Modus: Speichern', () => {
     expect(backend.pendingChanges()).toBe(0);
   });
 
-  it('Unverträglichkeiten löschen (NK2): sofort per delete, ohne Einwilligung, nie Warteschlange; offline → Fehler', async () => {
+  it('Unverträglichkeiten löschen (NK2, N7): eine Datenbank-Funktion samt Plänen mit Gesundheitsbezug, nie Warteschlange; offline → Fehler', async () => {
     const { client, calls } = fakeClient();
     const store = createMemoryStore();
     const backend = createSupabaseBackend(options(client, store));
     await backend.deleteStoredIntolerances();
-    const call = calls.find((c) => c.table === 'food_preferences');
-    expect(call?.chain).toEqual(['delete', 'eq', 'eq']);
-    expect(call?.args).toEqual([[], ['user_id', USER_ID], ['kind', 'intolerance']]);
+    expect(calls.map((c) => c.table)).toContain('rpc:delete_stored_intolerances');
+    expect(calls.some((c) => c.table === 'food_preferences')).toBe(false);
     expect(backend.pendingChanges()).toBe(0);
     const failing = fakeClient(() => ({ error: networkError }));
     const offline = createSupabaseBackend(options(failing.client, createMemoryStore()));
@@ -366,11 +368,152 @@ describe('Supabase-Modus: Speichern', () => {
     expect(offline.pendingChanges()).toBe(0);
   });
 
-  it('Ernährung erst ab Etappe N7: kein Schritt nutrition_setup, kein Bestand (R2-S3)', async () => {
+  it('Ernährungs-Bildschirme im Supabase-Modus erst mit N7 Teil 2: kein Schritt nutrition_setup, kein Bestand (R2-S3)', async () => {
     const { client } = fakeClient();
     const backend = createSupabaseBackend(options(client));
     expect(backend.supportsNutrition).toBe(false);
     expect(await backend.loadNutritionLibrary({ demo: true })).toBeNull();
+  });
+
+  it('N7: Bewertung speichern (Upsert je Rezept), zurücknehmen (Löschen), alle löschen – nur eigene Zeilen', async () => {
+    const { client, calls } = fakeClient();
+    const store = createMemoryStore();
+    const backend = createSupabaseBackend(options(client, store));
+    const rows = rowsWith();
+    const rated = await backend.saveRecipeRating(
+      {
+        recipeId: 'overnight-oats',
+        rating: { recipeId: 'overnight-oats', value: 'down', reason: 'effort', ratedOn: TODAY },
+      },
+      rows,
+    );
+    const upsert = calls.find((c) => c.table === 'recipe_ratings' && c.chain[0] === 'upsert');
+    expect(upsert?.args[0]).toEqual([
+      {
+        user_id: USER_ID,
+        recipe_id: 'overnight-oats',
+        value: 'down',
+        reason: 'effort',
+        rated_on: TODAY,
+      },
+      { onConflict: 'user_id,recipe_id' },
+    ]);
+    expect(rated.recipeRatings).toHaveLength(1);
+    const removed = await backend.saveRecipeRating(
+      { recipeId: 'overnight-oats', rating: null },
+      rated,
+    );
+    const del = calls.filter((c) => c.table === 'recipe_ratings' && c.chain[0] === 'delete');
+    expect(del.at(-1)?.args).toEqual([[], ['user_id', USER_ID], ['recipe_id', 'overnight-oats']]);
+    expect(removed.recipeRatings).toEqual([]);
+    await backend.deleteRecipeRatings(rated);
+    expect(calls.filter((c) => c.table === 'recipe_ratings').at(-1)?.args).toEqual([
+      [],
+      ['user_id', USER_ID],
+    ]);
+    // Nicht vom heutigen Tag bzw. mit Grund bei Daumen hoch: abgelehnt, nichts gesendet.
+    const before = calls.length;
+    await expect(
+      backend.saveRecipeRating(
+        {
+          recipeId: 'overnight-oats',
+          rating: { recipeId: 'overnight-oats', value: 'up', reason: null, ratedOn: '2026-01-01' },
+        },
+        rows,
+      ),
+    ).rejects.toMatchObject({ code: 'unknown' });
+    expect(calls.length).toBe(before);
+  });
+
+  it('N7: „mag ich nicht“ je Lebensmittel atomar ersetzen (replace_food_dislikes); offline → online_only', async () => {
+    const { client, calls } = fakeClient();
+    const backend = createSupabaseBackend(options(client));
+    const next = await backend.saveFoodDislikes(['tofu', 'hafer'], rowsWith());
+    const call = calls.find((c) => c.table === 'rpc:replace_food_dislikes');
+    expect(call?.args[0]).toEqual([{ p_food_ids: ['hafer', 'tofu'] }]);
+    expect(next.foodDislikes).toEqual([
+      { user_id: USER_ID, food_id: 'hafer' },
+      { user_id: USER_ID, food_id: 'tofu' },
+    ]);
+    await expect(backend.saveFoodDislikes(['tofu', 'tofu'], rowsWith())).rejects.toMatchObject({
+      code: 'unknown',
+    });
+    const failing = fakeClient(() => ({ error: networkError }));
+    const offline = createSupabaseBackend(options(failing.client));
+    await expect(offline.saveFoodDislikes(['tofu'], rowsWith())).rejects.toMatchObject({
+      code: 'online_only',
+    });
+  });
+
+  it('N7: nutrition_prefs aus der Datenbank → Ernährungsangaben und Schritt nutrition_setup getrennt (Zod)', () => {
+    const base = {
+      user_id: USER_ID,
+      diet_type: 'vegan' as const,
+      eats_pork: null,
+      meals_per_day: 3,
+      cooking_mode: 'meal_prep' as const,
+      mealprep_days: 2,
+      created_at: NOW,
+      updated_at: NOW,
+      activity_level: null,
+      training_time: null,
+      mealprep_slots: 'lunch' as const,
+      show_energy_numbers: true,
+      max_prep_minutes_weekday: null,
+    };
+    expect(nutritionPrefsFromDb(null)).toEqual({ nutritionPrefs: null, nutritionSetup: null });
+    const open = nutritionPrefsFromDb(base);
+    expect(open.nutritionSetup).toBeNull();
+    expect(open.nutritionPrefs).toEqual({
+      user_id: USER_ID,
+      diet_type: 'vegan',
+      eats_pork: null,
+      meals_per_day: 3,
+      cooking_mode: 'meal_prep',
+      mealprep_days: 2,
+    });
+    const done = nutritionPrefsFromDb({
+      ...base,
+      activity_level: 'active',
+      training_time: 'evening',
+      mealprep_slots: 'lunch_dinner',
+      show_energy_numbers: false,
+    });
+    expect(done.nutritionSetup).toEqual({
+      user_id: USER_ID,
+      activity_level: 'active',
+      training_time: 'evening',
+      mealprep_slots: 'lunch_dinner',
+      show_energy_numbers: false,
+    });
+  });
+
+  it('N7: Schritt nutrition_setup schreibt die Spalten an nutrition_prefs; ohne Zeile abgelehnt', async () => {
+    const { client, calls } = fakeClient((call) =>
+      call.table === 'nutrition_prefs' ? { data: [{ user_id: USER_ID }] } : {},
+    );
+    const row = {
+      user_id: USER_ID,
+      activity_level: 'light' as const,
+      training_time: 'varies' as const,
+      mealprep_slots: 'lunch' as const,
+      show_energy_numbers: true,
+    };
+    await executeWriteOp(client, USER_ID, { kind: 'upsert_nutrition_setup', row });
+    const call = calls.find((c) => c.table === 'nutrition_prefs');
+    expect(call?.chain).toEqual(['update', 'eq', 'select']);
+    expect(call?.args[0]).toEqual([
+      {
+        activity_level: 'light',
+        training_time: 'varies',
+        mealprep_slots: 'lunch',
+        show_energy_numbers: true,
+      },
+    ]);
+    const missing = fakeClient((c) => (c.table === 'nutrition_prefs' ? { data: [] } : {}));
+    await expect(
+      executeWriteOp(missing.client, USER_ID, { kind: 'upsert_nutrition_setup', row }),
+    ).rejects.toMatchObject({ code: 'nutrition_prefs_missing' });
   });
 
   it('Widerruf anderer Einwilligungen: setzt revoked_at nur bei aktiven Einwilligungen dieser Art', async () => {
@@ -398,23 +541,60 @@ describe('Supabase-Modus: Speichern', () => {
 
   it('Einwilligungstexte: online zwischengespeichert, offline der letzte Stand', async () => {
     let online = true;
-    const { client } = fakeClient((call) => {
+    const { client, calls } = fakeClient(() => {
       if (!online) {
         return { error: networkError };
       }
-      return call.table.startsWith('rpc:')
-        ? { data: 1 }
-        : { data: { consent_type: 'terms', version: 1, title_de: 'Titel', body_de: 'Text' } };
+      return { data: { consent_type: 'terms', version: 1, title_de: 'Titel', body_de: 'Text' } };
     });
     const store = createMemoryStore();
     const backend = createSupabaseBackend(options(client, store));
     const docs = await backend.loadConsentDocuments();
     expect(docs).toHaveLength(3);
+    // N7: ohne current_consent_version (für anon gesperrt) – höchste veröffentlichte Version direkt aus der Tabelle.
+    expect(calls.some((c) => c.table.startsWith('rpc:'))).toBe(false);
+    const query = calls.find((c) => c.table === 'consent_documents');
+    expect(query?.chain).toEqual(['select', 'eq', 'order', 'limit', 'maybeSingle']);
+    expect(query?.args[2]).toEqual(['version', { ascending: false }]);
     online = false;
     expect(await backend.loadConsentDocuments()).toEqual(docs);
     // Ohne gespeicherten Stand bleibt es beim Fehler (Bildschirm zeigt „Erneut versuchen“).
     const empty = createSupabaseBackend(options(client, createMemoryStore()));
     await expect(empty.loadConsentDocuments()).rejects.toMatchObject({ code: 'network' });
+  });
+
+  it('Wächter N7 S1: Tabellen/Funktion vor db-migrate fehlen → Anmeldung läuft weiter, Löschen fällt zurück', async () => {
+    expect(isMissingRelation({ code: 'PGRST205' })).toBe(true);
+    expect(isMissingRelation({ code: '42P01' })).toBe(true);
+    expect(isMissingRelation({ code: '42501' })).toBe(false);
+    expect(isMissingFunction({ code: 'PGRST202' })).toBe(true);
+    expect(isMissingFunction({ code: '42883' })).toBe(true);
+    expect(isMissingFunction(null)).toBe(false);
+    const missing = { code: 'PGRST205', message: 'Could not find the table' };
+    const { client, calls } = fakeClient((call) => {
+      if (call.table === 'recipe_ratings' || call.table === 'food_dislikes')
+        return { error: missing };
+      if (call.table === 'rpc:delete_stored_intolerances') {
+        return { error: { code: 'PGRST202', message: 'Could not find the function' } };
+      }
+      if (call.table === 'profiles') return { data: rowsWith().profile };
+      return { data: call.chain.includes('maybeSingle') ? null : [] };
+    });
+    const backend = createSupabaseBackend(options(client));
+    const result = await backend.loadRows();
+    expect(result.offline).toBe(false);
+    expect(result.rows.recipeRatings).toEqual([]);
+    expect(result.rows.foodDislikes).toEqual([]);
+    await backend.deleteStoredIntolerances();
+    const fallback = calls.find((c) => c.table === 'food_preferences' && c.chain[0] === 'delete');
+    expect(fallback?.args).toEqual([[], ['user_id', USER_ID], ['kind', 'intolerance']]);
+    // Andere Fehler bleiben Fehler (kein stilles Verschlucken).
+    const broken = fakeClient((call) =>
+      call.table === 'recipe_ratings' ? { error: { code: '42501', message: 'denied' } } : {},
+    );
+    await expect(createSupabaseBackend(options(broken.client)).loadRows()).rejects.toBeInstanceOf(
+      Error,
+    );
   });
 
   it('Laden offline → zwischengespeicherter Stand ohne Gesundheitsdaten', async () => {
@@ -534,8 +714,6 @@ describe('Supabase-Modus: Trainingsplan', () => {
       if (!options.online()) return { error: networkError };
       const single = call.chain.includes('maybeSingle') || call.chain.includes('single');
       switch (call.table) {
-        case 'rpc:current_consent_version':
-          return { data: 1 };
         case 'consent_documents':
           return { data: { consent_type: 'terms', version: 1, title_de: 'T', body_de: 'B' } };
         case 'profiles':
@@ -1170,6 +1348,12 @@ describe('Supabase-Modus: Tagebuch-Warteschlange', () => {
       'set_logs',
       'cardio_logs',
       'exercise_start_weights',
+      'meal_plans',
+      'meal_plan_items',
+      'shopping_lists',
+      'shopping_list_items',
+      'recipe_ratings',
+      'food_dislikes',
     ];
     const exported = {
       format_version: 1,

@@ -99,14 +99,23 @@ export function addNutrients(target: RecipeNutrients, add: RecipeNutrients): voi
 }
 
 /** Tierische Bestandteile, die ein Lebensmittel NICHT vegetarisch machen (R6, Plan 6.1). */
-const NOT_VEGETARIAN = ['meat', 'fish', 'shellfish', 'gelatin', 'animal_rennet', 'insect'] as const;
+export const NOT_VEGETARIAN_ANIMAL_KINDS = [
+  'meat',
+  'fish',
+  'shellfish',
+  'gelatin',
+  'animal_rennet',
+  'insect',
+] as const;
 
 /** Ernährungsform eines Lebensmittels: vegan ohne jedes `animal[]`, Honig/Milch/Ei = vegetarisch (R6). */
 export function foodDiet(food: Pick<Food, 'animal'>): DietType {
   if (food.animal.length === 0) {
     return 'vegan';
   }
-  return food.animal.some((kind) => (NOT_VEGETARIAN as readonly string[]).includes(kind))
+  return food.animal.some((kind) =>
+    (NOT_VEGETARIAN_ANIMAL_KINDS as readonly string[]).includes(kind),
+  )
     ? 'omnivore'
     : 'vegetarian';
 }

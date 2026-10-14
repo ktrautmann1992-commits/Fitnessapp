@@ -36,7 +36,20 @@ export type ConsentRow = Tables<'consents'>;
 export type GoalsRow = WithoutTimestamps<Tables<'goals'>>;
 export type UserEquipmentRow = WithoutTimestamps<Tables<'user_equipment'>>;
 export type TrainingSlotRow = WithoutTimestamps<Tables<'training_slots'>>;
-export type NutritionPrefsRow = WithoutTimestamps<Tables<'nutrition_prefs'>>;
+/**
+ * Ernährungsangaben OHNE die Spalten des Schritts `nutrition_setup` (seit N7 an derselben Tabelle) – die stehen
+ * getrennt in `NutritionSetupRow` (Testmodus wie bisher; Supabase-Modus teilt die Zeile beim Laden auf).
+ */
+export const NUTRITION_SETUP_DB_COLUMNS = [
+  'activity_level',
+  'training_time',
+  'mealprep_slots',
+  'show_energy_numbers',
+  'max_prep_minutes_weekday',
+] as const;
+export type NutritionPrefsRow = WithoutTimestamps<
+  Omit<Tables<'nutrition_prefs'>, (typeof NUTRITION_SETUP_DB_COLUMNS)[number]>
+>;
 export type FoodPreferenceRow = WithoutTimestamps<Tables<'food_preferences'>>;
 export type BodyMetricsRow = WithoutTimestamps<Tables<'body_metrics'>>;
 export type BodyMeasurementsRow = WithoutTimestamps<Tables<'body_measurements'>>;
@@ -65,14 +78,14 @@ export type ExercisePreferenceRow = ExercisePreference & { user_id: string };
 
 /**
  * Antworten des Onboarding-Schritts `nutrition_setup` (docs/PLAN-PHASE-5.md 8.1, Etappe N4): Alltagsaktivität,
- * Trainingszeit, Meal-Prep-Plätze, „Kalorienzahlen anzeigen“. Spalten wie die künftigen `nutrition_prefs`-Spalten aus
- * Etappe N7 – bis dahin NUR im Testmodus (Supabase-Modus immer null, R2-S3). Kein Gesundheitsdatum.
+ * Trainingszeit, Meal-Prep-Plätze, „Kalorienzahlen anzeigen“. Seit Etappe N7 Spalten von `nutrition_prefs` (der
+ * Supabase-Modus teilt die Zeile beim Laden auf, `nutritionPrefsFromDb`). Kein Gesundheitsdatum.
  */
 export type NutritionSetupRow = NutritionSetupColumns & { user_id: string };
 
 /**
  * Gespeicherter Essensplan einer Woche (docs/PLAN-PHASE-5.md 6.3, 7.2, 7.5, Etappe N5) – NUR im Testmodus (Supabase-
- * Modus bis N7 immer leer; dort Tabellen meal_plans/meal_plan_items). Höchstens ein Plan je Woche (der aktive).
+ * Modus bis N7 Teil 2 immer leer; Tabellen meal_plans/meal_plan_items gibt es seit N7). Höchstens ein Plan je Woche (der aktive).
  * `plan` ist der vollständige Plan der Engine (Schnappschuss, geprüft mit `parseStoredMealPlanWeek`).
  * SENSIBEL, wenn `uses_health_data` (Ziele, Flags oder Unverträglichkeiten eingeflossen, 7.1) – nie loggen; beim
  * Widerruf health_data gelöscht.
@@ -100,7 +113,7 @@ export interface MealPlanRow {
 
 /**
  * Gespeicherte Einkaufsliste einer Woche (docs/PLAN-PHASE-5.md 6.5, 7.2, Etappe N5b) – NUR im Testmodus (Supabase-
- * Modus bis N7 immer leer; dort shopping_lists/shopping_list_items). Höchstens eine Liste je Woche. `list` ist der
+ * Modus bis N7 Teil 2 immer leer; Tabellen shopping_lists/shopping_list_items seit N7). Höchstens eine Liste je Woche. `list` ist der
  * Stand aus packages/core (`parseStoredShoppingList`); die Plan-Einträge werden beim Öffnen immer aus dem aktuellen
  * Plan neu erzeugt. SENSIBEL, wenn `uses_health_data` (Ersatzprodukte und fehlende Zutaten lassen auf
  * Unverträglichkeiten schließen) – nie loggen; beim Widerruf samt eigener Einträge gelöscht (K10).
@@ -117,7 +130,7 @@ export interface ShoppingListRow {
 
 /**
  * Bewertung nach dem Essen (KONZEPT 6.10, docs/PLAN-PHASE-5.md 19.7 N10) – so wie die spätere Tabelle `recipe_ratings`
- * (user_id, recipe_id, value, reason, rated_on; N7). NUR im Testmodus (Supabase-Modus bis N7 immer leer). Je Rezept eine
+ * (user_id, recipe_id, value, reason, rated_on; Tabelle seit N7). Je Rezept eine
  * Zeile (die letzte Bewertung). Kein Gesundheitsdatum – der Grund „Unverträglich“ wird nie gespeichert –, aber privat:
  * nie an Analytics oder Logs, in Export und Löschung enthalten.
  */
@@ -130,7 +143,7 @@ export interface RecipeRatingRow {
 }
 
 /**
- * „Mag ich nicht“ je Lebensmittel (`food_dislikes`, 19.7 N10; Tabelle mit N7) – NUR im Testmodus. Hart wie die
+ * „Mag ich nicht“ je Lebensmittel (`food_dislikes`, 19.7 N10; Tabelle seit N7, ohne Zeitstempel). Hart wie die
  * Gruppen-Abneigungen. Kein Gesundheitsdatum (ohne Grund gespeichert), nie an Analytics oder Logs.
  */
 export interface FoodDislikeRow {
@@ -147,7 +160,7 @@ export interface UserRows {
   trainingSlots: TrainingSlotRow[];
   userEquipment: UserEquipmentRow[];
   nutritionPrefs: NutritionPrefsRow | null;
-  /** Schritt `nutrition_setup` (Testmodus ab Etappe N4; Supabase-Modus bis N7 immer null). */
+  /** Schritt `nutrition_setup` (Testmodus ab Etappe N4; Supabase-Modus seit N7 aus den Spalten von nutrition_prefs). */
   nutritionSetup: NutritionSetupRow | null;
   foodPreferences: FoodPreferenceRow[];
   /** SENSIBEL (Art. 9 DSGVO) */
@@ -176,13 +189,13 @@ export interface UserRows {
   startWeights: StartWeightRow[];
   /** Übungs-Präferenzen (Testmodus ab Etappe T2; Supabase-Modus bis T3 immer leer). */
   exercisePreferences: ExercisePreferenceRow[];
-  /** Essenspläne je Woche (Testmodus ab Etappe N5; Supabase-Modus bis N7 immer leer). */
+  /** Essenspläne je Woche (Testmodus ab Etappe N5; Supabase-Modus bis N7 Teil 2 immer leer). */
   mealPlans: MealPlanRow[];
-  /** Einkaufslisten je Woche (Testmodus ab Etappe N5b; Supabase-Modus bis N7 immer leer). */
+  /** Einkaufslisten je Woche (Testmodus ab Etappe N5b; Supabase-Modus bis N7 Teil 2 immer leer). */
   shoppingLists: ShoppingListRow[];
-  /** Bewertungen nach dem Essen (Testmodus ab Etappe N10; Supabase-Modus bis N7 immer leer). */
+  /** Bewertungen nach dem Essen (Testmodus ab Etappe N10; Supabase-Modus seit N7 aus recipe_ratings). */
   recipeRatings: RecipeRatingRow[];
-  /** „Mag ich nicht“ je Lebensmittel (Testmodus ab Etappe N10; Supabase-Modus bis N7 immer leer). */
+  /** „Mag ich nicht“ je Lebensmittel (Testmodus ab Etappe N10; Supabase-Modus seit N7 aus food_dislikes). */
   foodDislikes: FoodDislikeRow[];
 }
 

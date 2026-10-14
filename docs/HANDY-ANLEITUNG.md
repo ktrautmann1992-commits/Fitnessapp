@@ -354,6 +354,33 @@ Ratgeber zeigen die ID und die Klick-Schritte zur Freigabe. Nur ansehen – frei
 content-review** (Art `recipe` mit Kategorie oder Art `ids` mit IDs, SETUP 3b). Solange `foods-import`/`alpha5-import` nicht gelaufen sind, steht dort
 „Noch keine Rezepte“ bzw. „Noch keine Lebensmittel“.
 
+## Teil 7d – Datenbank für die Ernährung prüfen (Phase 5, Etappe N7 Teil 1)
+In der App ändert sich dadurch **nichts Sichtbares**: Der Testmodus bleibt wie bisher, und der Supabase-Modus zeigt die
+Ernährung erst mit Teil 2. Ihr müsst nichts einstellen und keine Schlüssel eintragen. Prüfen könnt ihr am Handy:
+
+1. **Vor dem Merge:** Supabase im Handy-Browser → euer Projekt → links **Table Editor** → in der Liste darf es noch
+   **keine** Tabellen `foods`, `recipes`, `guides`, `meal_plans` geben (sonst Claude Bescheid geben, nicht mergen).
+2. GitHub-App → Pull Request öffnen → unten **Checks**: **db-test** (Migrationen + Datenbank-Tests) und **ci** sind
+   grün. Falls db-test rot ist: nicht mergen, Claude im Chat Bescheid geben.
+3. Optional: **Actions → db-types → Run workflow → Run workflow** → Lauf öffnen → **Summary**. Steht dort
+   „database.types.ts ist aktuell“, ist alles gut; sonst den Unterschied Claude in den Chat kopieren (die Typen sind
+   von Hand nachgezogen, kleine Reihenfolge-Unterschiede sind möglich).
+4. **Nach dem Merge:** **Actions → db-migrate** → Lauf öffnen. Er testet zuerst die Datenbank („Datenbank-Tests vor dem
+   Einspielen“) und spielt erst danach die neuen Tabellen ein (vorhandene Daten bleiben unverändert). **Warten, bis
+   db-migrate grün ist.** Erst dann: Vercel → Projekt „fitnessapp“ → **Deployments** → neuestes → **⋯ → Redeploy**, und
+   falls jemand die APK/TestFlight-App nutzt: **Actions → eas-build → Run workflow** (neuer Build). Grund: Ältere
+   App-Stände lesen die Einwilligungstexte noch über eine Funktion, die jetzt für nicht Angemeldete gesperrt ist.
+   Danach läuft **content-seed** wie bisher.
+5. Supabase → links **Advisors** → **Security Advisor** → **Refresh**: Der Hinweis zu `current_consent_version`
+   („executable by anon“) ist weg. **Erwartet und in Ordnung** sind Warnungen, dass angemeldete Nutzer Funktionen mit
+   „security definer“ ausführen dürfen – z. B. `save_meal_plan`, `replace_shopping_list`, `save_training_plan`,
+   `revoke_health_data`, `delete_my_account`. Diese Funktionen prüfen Login, Einwilligung und alle Werte selbst; nur so
+   kann die App Pläne speichern, ohne direkt in die Tabellen schreiben zu dürfen. Neue, andere Meldungen bitte Claude
+   schicken.
+6. Optional: Supabase → **Table Editor**: Es gibt die neuen, leeren Tabellen `foods`, `recipes`, `meal_plans`,
+   `shopping_lists`, `recipe_ratings`, `food_dislikes` u. a. Leer ist richtig – Rezepte kommen erst nach der
+   Fachprüfung (Gründer-Entscheidung 6), Nutzerdaten erst mit Teil 2.
+
 ## Teil 8 – Live-Test mit Supabase (Pflicht vor „MVP fertig“, W13) – **offen, braucht euch**
 Diesen Test kann Claude in der Cloud-Sitzung nicht machen (kein echtes Konto, keine zwei Handys). Bitte einmal
 durchspielen und das Ergebnis Claude im Chat schreiben („W13: Punkt 1–14 ok, Punkt 9 Fehler: …“) – **ohne**

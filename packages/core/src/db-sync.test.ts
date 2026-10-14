@@ -31,7 +31,41 @@ import {
   MIN_AGE_YEARS,
   NUTRITION_LIMITS,
   TRAINING_LIMITS,
+  INGREDIENT_SUBSTITUTION_LIMITS,
+  MEAL_PLAN_ENGINE_VERSION,
+  MEAL_PLAN_PAYLOAD_MAX_BYTES,
+  SHOPPING_LIST_PAYLOAD_MAX_BYTES,
+  MEAL_PREP_FRIDGE_DAYS,
+  PACKAGE_SIZE_LIMITS,
+  PORTION_SCALE_LIMITS,
+  RECIPE_RATING_RULES,
+  RECIPE_SCHEMA_LIMITS,
+  RECIPE_SERVINGS_PICKER,
+  SHOPPING_LIST_EXTRAS,
+  SHOPPING_LIST_ROUNDING,
 } from './constants';
+import {
+  ANIMAL_KINDS,
+  GELATIN_ORIGINS,
+  MEAT_KINDS,
+  SHOPPING_CATEGORIES,
+} from './content/food-schema';
+import { INGREDIENT_ROLES, MEAL_TYPES, RECIPE_CATEGORY_IDS } from './content/recipe-schema';
+import { EXTRA_SLOTS } from './nutrition/meal-plan';
+import {
+  MEAL_PLAN_SLOT_KEYS,
+  mealPlanItemPayloadSchema,
+  mealPlanPayloadSchema,
+} from './nutrition/meal-plan-payload';
+import { RECIPE_RATING_REASONS, RECIPE_RATING_VALUES } from './nutrition/ratings';
+import { NOT_VEGETARIAN_ANIMAL_KINDS } from './nutrition/recipe-nutrients';
+import { nutritionSetupColumnsSchema } from './nutrition/schemas';
+import {
+  shoppingListItemPayloadSchema,
+  shoppingListPayloadSchema,
+  shoppingListRecipePayloadSchema,
+} from './nutrition/shopping-list-payload';
+import { RECIPE_UNITS } from './nutrition/units';
 import * as enums from './enums';
 import { DATA_EXPORT_TABLES } from './export/data-export';
 import { EQUIPMENT } from './equipment';
@@ -148,6 +182,10 @@ describe('Enums', () => {
     ['session_log_status', enums.SESSION_LOG_STATUSES],
     ['exercise_log_status', enums.EXERCISE_LOG_STATUSES],
     ['log_source', enums.LOG_SOURCES],
+    // Phase 5 · N7 (20261014120100_nutrition_enums.sql)
+    ['activity_level', enums.ACTIVITY_LEVELS],
+    ['training_time', enums.TRAINING_TIMES],
+    ['mealprep_slot_mode', enums.MEALPREP_SLOT_MODES],
   ] as const)('public.%s entspricht packages/core', (name, values) => {
     expect(enumValues(name)).toEqual([...values]);
   });
@@ -529,11 +567,205 @@ describe('Trainingstagebuch (Phase 4 Etappe B)', () => {
     expect(rpcsFile).toBeGreaterThan(tablesFile);
   });
 
-  it('export_my_data(): Schlüssel von „data“ = DATA_EXPORT_TABLES (Datenexport in der App, Etappe D)', () => {
-    const start = sql.indexOf('create or replace function public.export_my_data()');
-    const end = sql.indexOf('$$;', start);
+  it('export_my_data(): Schlüssel von „data“ = DATA_EXPORT_TABLES (Datenexport in der App, Etappe D; N7)', () => {
+    // Jeweils die NEUESTE Fassung (Etappe N7 ergänzt die Ernährungs-Tabellen in *_meal_plan_rpcs.sql).
+    const marker = 'create or replace function public.export_my_data()';
+    const start = allSql.lastIndexOf(marker);
+    const end = allSql.indexOf('$$;', start);
+    const sql = allSql;
     const body = sql.slice(start, end);
     const keys = [...body.matchAll(/'([a-z_]+)', \(select coalesce/g)].map((m) => m[1]);
     expect(keys).toEqual([...DATA_EXPORT_TABLES]);
+  });
+});
+
+describe('Ernährung in der Datenbank (Phase 5, Etappe N7)', () => {
+  const content = readMigration('_nutrition_content.sql');
+  const plans = readMigration('_meal_plans.sql');
+  const rpcs = readMigration('_meal_plan_rpcs.sql');
+  const seed = readMigration('_seed_nutrition_content.sql');
+  /** Rumpf einer Funktion (bis zum Ende ihres $$-Blocks). */
+  const fn = (sql: string, name: string) => {
+    const start = sql.indexOf(`create or replace function ${name}(`);
+    if (start < 0) throw new Error(`${name} nicht gefunden`);
+    return sql.slice(start, sql.indexOf('$$;', sql.indexOf('as $$', start)));
+  };
+  const keysOf = (sql: string, name: string) =>
+    quotedListAfter(sql, `${name} constant text[] := array[`).sort();
+  const options = (schema: { options: readonly string[] }) => [...schema.options];
+
+  it.each([
+    ['groups <@ array[', content, FOOD_GROUPS.map((g) => g.id)],
+    ['animal <@ array[', content, [...ANIMAL_KINDS]],
+    ['meat_kind <@ array[', content, [...MEAT_KINDS]],
+    ['gelatin_origin in (', content, [...GELATIN_ORIGINS]],
+    ['shopping_category in (', content, [...SHOPPING_CATEGORIES]],
+    ['meal_types <@ array[', content, [...MEAL_TYPES]],
+    ['categories <@ array[', content, [...RECIPE_CATEGORY_IDS]],
+    ['unit in (', content, [...RECIPE_UNITS]],
+    ['role in (', content, [...INGREDIENT_ROLES]],
+    ['slot in (', plans, [...MEAL_PLAN_SLOT_KEYS]],
+    ['role in (', plans, options(mealPlanItemPayloadSchema.shape.role.unwrap())],
+    ['prep_kind in (', plans, options(mealPlanItemPayloadSchema.shape.prep_kind)],
+    ['storage in (', plans, options(mealPlanItemPayloadSchema.shape.storage.unwrap())],
+    ['day_status in (', plans, options(mealPlanItemPayloadSchema.shape.day_status)],
+    ['unit in (', plans, options(shoppingListItemPayloadSchema.shape.unit.unwrap())],
+    ['category in (', plans, [...SHOPPING_CATEGORIES]],
+    ['value in (', plans, [...RECIPE_RATING_VALUES]],
+    ['reason in (', plans, [...RECIPE_RATING_REASONS]],
+    ['p_animal && array[', seed, [...NOT_VEGETARIAN_ANIMAL_KINDS]],
+  ] as const)('CHECK-Liste „%s“ entspricht packages/core', (marker, sql, expected) => {
+    expect(quotedListAfter(sql, marker)).toEqual([...expected]);
+  });
+
+  it('der Grund „Unverträglich“ ist nie ein gespeicherter Bewertungsgrund (Art. 9)', () => {
+    expect(quotedListAfter(plans, 'reason in (')).not.toContain('intolerant');
+    expect(plans).toContain("check (reason is null or value = 'down')");
+  });
+
+  it('food_dislikes ohne Zeitstempel (Wächter N10 H8)', () => {
+    const table = plans.slice(plans.indexOf('create table public.food_dislikes'));
+    const body = table.slice(0, table.indexOf(');'));
+    expect(body).not.toMatch(/created_at|updated_at|rated_on/);
+  });
+
+  it('nutrition_prefs-Spalten des Schritts nutrition_setup = nutritionSetupColumnsSchema', () => {
+    const sql = readMigration('_nutrition_prefs_setup.sql');
+    for (const key of Object.keys(nutritionSetupColumnsSchema.shape)) {
+      expect(sql, key).toContain(`add column ${key} `);
+    }
+  });
+
+  it.each([
+    ['plan_keys', mealPlanPayloadSchema.shape],
+    ['input_keys', mealPlanPayloadSchema.shape.inputs.shape],
+    ['item_keys', mealPlanItemPayloadSchema.shape],
+    ['pair_keys', mealPlanItemPayloadSchema.shape.substitutions.element.shape],
+    ['omit_keys', mealPlanItemPayloadSchema.shape.omitted_optional.element.shape],
+  ] as const)('save_meal_plan: %s = Felder des strikten Zod-Schemas', (name, shape) => {
+    expect(keysOf(fn(rpcs, 'public.save_meal_plan'), name)).toEqual(Object.keys(shape).sort());
+  });
+
+  it('save_meal_plan: Tausch-Einträge haben dieselben Felder wie Ersatz-Einträge', () => {
+    expect(
+      Object.keys(mealPlanItemPayloadSchema.shape.ingredient_swaps.element.shape).sort(),
+    ).toEqual(keysOf(fn(rpcs, 'public.save_meal_plan'), 'pair_keys'));
+  });
+
+  it.each([
+    ['list_keys', shoppingListPayloadSchema.shape],
+    ['recipe_keys', shoppingListRecipePayloadSchema.shape],
+    ['item_keys', shoppingListItemPayloadSchema.shape],
+  ] as const)('replace_shopping_list: %s = Felder des strikten Zod-Schemas', (name, shape) => {
+    expect(keysOf(fn(rpcs, 'public.replace_shopping_list'), name)).toEqual(
+      Object.keys(shape).sort(),
+    );
+  });
+
+  it('Größe der Payload früh begrenzt (Wächter N7 H1) = MEAL_PLAN/SHOPPING_LIST_PAYLOAD_MAX_BYTES', () => {
+    expect(fn(rpcs, 'public.save_meal_plan')).toContain(
+      `payload_max_bytes constant integer := ${MEAL_PLAN_PAYLOAD_MAX_BYTES};`,
+    );
+    expect(fn(rpcs, 'public.replace_shopping_list')).toContain(
+      `payload_max_bytes constant integer := ${SHOPPING_LIST_PAYLOAD_MAX_BYTES};`,
+    );
+    expect(fn(rpcs, 'public.save_meal_plan')).toContain(
+      `changes_max constant integer := ${RECIPE_SCHEMA_LIMITS.ingredients.max};`,
+    );
+  });
+
+  it('Zutaten-Änderungen je Index (Wächter N7 S3): index in jedem Paar', () => {
+    expect(keysOf(fn(rpcs, 'public.save_meal_plan'), 'pair_keys')).toContain('index');
+    expect(keysOf(fn(rpcs, 'public.save_meal_plan'), 'omit_keys')).toEqual(['food_id', 'index']);
+  });
+
+  it('Einwilligung gesperrt, bevor geprüft wird (Wächter N7 S2)', () => {
+    const basis = fn(rpcs, 'private.nutrition_health_basis');
+    expect(basis.indexOf('for share')).toBeGreaterThan(0);
+    expect(basis.indexOf('for share')).toBeLessThan(basis.indexOf('has_valid_consent'));
+    expect(fn(rpcs, 'private.plan_health_basis')).toContain('for share');
+    // Nachprüfung N7 S-N1: Folgeblock sperrt die Einwilligung vor dem eigenen Plan (Reihenfolge wie der Widerruf).
+    const append = fn(rpcs, 'public.append_plan_block');
+    expect(append.indexOf('for share')).toBeGreaterThan(0);
+    expect(append.indexOf('for share')).toBeLessThan(append.indexOf('for update'));
+  });
+
+  it('Essensplan und Einkaufsliste derselben Woche teilen den Sperr-Schlüssel (Nachprüfung N7)', () => {
+    const lock = /pg_advisory_xact_lock\(hashtext\('([a-z_]+)\|'/;
+    expect(fn(rpcs, 'public.save_meal_plan').match(lock)?.[1]).toBe('nutrition_week');
+    expect(fn(rpcs, 'public.replace_shopping_list').match(lock)?.[1]).toBe('nutrition_week');
+  });
+
+  it('Server-Felder sind NICHT in den Payloads (uses_health_data des Plans setzt der Server, K8)', () => {
+    const planKeys = keysOf(fn(rpcs, 'public.save_meal_plan'), 'plan_keys');
+    for (const key of ['uses_health_data', 'user_id', 'status', 'band', 'safety_key']) {
+      expect(planKeys).not.toContain(key);
+    }
+    const inputKeys = keysOf(fn(rpcs, 'public.save_meal_plan'), 'input_keys');
+    for (const key of ['intolerances', 'dislikes', 'eats_pork', 'weight_kg', 'flags']) {
+      expect(inputKeys).not.toContain(key);
+    }
+    expect(keysOf(fn(rpcs, 'public.save_meal_plan'), 'item_keys')).not.toContain('shared');
+  });
+
+  const between = (column: string, limits: { min: number; max: number }) =>
+    `${column} between ${limits.min} and ${limits.max}`;
+
+  it.each([
+    [content, `max_fridge_days between 0 and ${MEAL_PREP_FRIDGE_DAYS.max}`],
+    [content, between('servings', RECIPE_SCHEMA_LIMITS.servings)],
+    [content, between('amount', RECIPE_SCHEMA_LIMITS.amount)],
+    [content, `position between 0 and ${RECIPE_SCHEMA_LIMITS.ingredients.max - 1}`],
+    [content, between('factor', INGREDIENT_SUBSTITUTION_LIMITS.factor)],
+    [content, between('package_size_g', PACKAGE_SIZE_LIMITS.grams)],
+    [plans, between('factor', PORTION_SCALE_LIMITS)],
+    [
+      plans,
+      `jsonb_array_length(ingredient_swaps) <= ${INGREDIENT_SUBSTITUTION_LIMITS.swapsPerMeal}`,
+    ],
+    [plans, `jsonb_array_length(added_recipes) <= ${SHOPPING_LIST_EXTRAS.recipesMax}`],
+    [plans, `char_length(label_de) <= ${SHOPPING_LIST_ROUNDING.manualLabelMaxChars}`],
+    [plans, `max_ratings constant integer := ${RECIPE_RATING_RULES.maxRatings}`],
+    [plans, `max_food_dislikes constant integer := ${RECIPE_RATING_RULES.maxFoodDislikes}`],
+    [rpcs, `engine_version_max constant integer := ${MEAL_PLAN_ENGINE_VERSION}`],
+    [
+      rpcs,
+      `items_max constant integer := ${7 * (NUTRITION_LIMITS.mealsPerDay.max + EXTRA_SLOTS.length)}`,
+    ],
+    [
+      rpcs,
+      `'meals_per_day', ${NUTRITION_LIMITS.mealsPerDay.min}, ${NUTRITION_LIMITS.mealsPerDay.max}, 0)`,
+    ],
+    [
+      rpcs,
+      `'mealprep_days', ${NUTRITION_LIMITS.mealPrepDaysPerWeek.min}, ${NUTRITION_LIMITS.mealPrepDaysPerWeek.max}, 0)`,
+    ],
+    [rpcs, `items_max constant integer := ${SHOPPING_LIST_EXTRAS.itemsMax}`],
+    [rpcs, `manual_items_max constant integer := ${SHOPPING_LIST_ROUNDING.manualItemsMax}`],
+    [rpcs, `recipes_max constant integer := ${SHOPPING_LIST_EXTRAS.recipesMax}`],
+    [rpcs, `'servings', ${RECIPE_SERVINGS_PICKER.min}, ${RECIPE_SERVINGS_PICKER.max}, 0)`],
+  ] as const)('SQL enthält „%#“ (Grenze = packages/core)', (sql, expected) => {
+    expect(sql).toContain(expected);
+  });
+
+  it('Widerruf health_data löscht Essenspläne und Einkaufslisten mit Gesundheitsbezug (neueste Fassung)', () => {
+    const marker = 'create or replace function private.consents_after_revoke()';
+    const body = allSql.slice(allSql.lastIndexOf(marker));
+    const end = body.indexOf('$$;');
+    expect(body.slice(0, end)).toContain(
+      'delete from public.meal_plans where user_id = new.user_id and uses_health_data;',
+    );
+    expect(body.slice(0, end)).toContain(
+      'delete from public.shopping_lists where user_id = new.user_id and uses_health_data;',
+    );
+    expect(migrationFiles.filter((n) => readMigration(n).includes(marker)).at(-1)).toMatch(
+      /_meal_plan_rpcs\.sql$/,
+    );
+  });
+
+  it('current_consent_version ist nicht mehr für anon ausführbar (Advisor, N7)', () => {
+    expect(readMigration('_consent_version_no_anon.sql')).toContain(
+      'revoke execute on function public.current_consent_version(public.consent_type) from anon;',
+    );
   });
 });

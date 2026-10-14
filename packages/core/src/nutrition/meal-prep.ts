@@ -6,7 +6,7 @@ import { recipeTotalMinutes } from '../content/import-rules';
 import type { Recipe } from '../content/recipe-schema';
 import { addDays, daysBetween, isoWeekday } from '../dates';
 import type { FilteredRecipe } from './filter';
-import type { MealprepSlotMode } from './schemas';
+import type { MealprepSlotMode } from '../enums';
 import type { MealSlotId } from './timing';
 
 /**

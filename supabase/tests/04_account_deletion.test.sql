@@ -1,7 +1,7 @@
 -- Konto löschen (delete_my_account): löscht alle Daten des Aufrufers per Kaskade, fremde Daten bleiben.
 begin;
 create extension if not exists pgtap with schema extensions;
-select plan(28);
+select plan(36);
 
 insert into auth.users (id, email) values
   ('11111111-1111-4111-8111-111111111111', 'nutzer-a@example.test'),
@@ -82,6 +82,33 @@ insert into public.exercise_start_weights (user_id, exercise_id, weight_kg)
 select u, 'uebung-a', 22.5
 from unnest(array['11111111-1111-4111-8111-111111111111', '22222222-2222-4222-8222-222222222222']::uuid[]) as u;
 
+-- Phase 5 (N7): Ernährung beider Nutzer – Plan mit Mahlzeit, Einkaufsliste mit eigenem Eintrag, Bewertung,
+-- „mag ich nicht“ je Lebensmittel, Spalten des Schritts nutrition_setup.
+insert into public.foods (id, version, status, name_de, shopping_category, pantry, pregnancy_caution, alcohol,
+  max_fridge_days, freezable, data)
+values ('hafer', 1, 'published', 'Hafer', 'other', false, false, false, 2, true, '{}');
+insert into public.recipes (id, version, status, title_de, meal_types, servings, no_cook, diet, contains_pork, data)
+values ('muesli', 1, 'published', 'Müsli', '{breakfast}', 1, true, 'vegan', false, '{}');
+update public.nutrition_prefs set activity_level = 'light', training_time = 'evening';
+insert into public.meal_plans (user_id, week_start, engine_version, variant, inputs, uses_health_data)
+select u, date_trunc('week', current_date)::date, 1, 0, '{}', true
+from unnest(array['11111111-1111-4111-8111-111111111111', '22222222-2222-4222-8222-222222222222']::uuid[]) as u;
+insert into public.meal_plan_items (plan_id, user_id, date, slot, recipe_id, recipe_version, title_de, factor, kcal,
+  protein_g, carbs_g, fat_g, is_fill, prep_kind, cook_date, day_status)
+select id, user_id, week_start, 'breakfast', 'muesli', 1, 'Müsli', 1, 300, 10, 50, 5, false, 'fresh', week_start,
+  'complete'
+from public.meal_plans;
+insert into public.shopping_lists (user_id, week_start, from_date, to_date, plan_key, uses_health_data)
+select user_id, week_start, week_start, week_start + 6, 'k', true from public.meal_plans;
+insert into public.shopping_list_items (list_id, user_id, item_key, label_de, category, is_pantry, is_manual)
+select id, user_id, 'manual|x', 'Eigenes', 'other', false, true from public.shopping_lists;
+insert into public.recipe_ratings (user_id, recipe_id, value, rated_on)
+select u, 'muesli', 'up', current_date
+from unnest(array['11111111-1111-4111-8111-111111111111', '22222222-2222-4222-8222-222222222222']::uuid[]) as u;
+insert into public.food_dislikes (user_id, food_id)
+select u, 'hafer'
+from unnest(array['11111111-1111-4111-8111-111111111111', '22222222-2222-4222-8222-222222222222']::uuid[]) as u;
+
 -- Ohne Anmeldung (authenticated ohne Nutzer-ID) passiert nichts.
 set local role authenticated;
 set local request.jwt.claims = '{"role":"authenticated"}';
@@ -115,6 +142,12 @@ select is_empty($$ select 1 from public.exercise_logs where user_id = '11111111-
 select is_empty($$ select 1 from public.set_logs where user_id = '11111111-1111-4111-8111-111111111111' $$, 'A: set_logs leer');
 select is_empty($$ select 1 from public.cardio_logs where user_id = '11111111-1111-4111-8111-111111111111' $$, 'A: cardio_logs leer');
 select is_empty($$ select 1 from public.exercise_start_weights where user_id = '11111111-1111-4111-8111-111111111111' $$, 'A: exercise_start_weights leer');
+select is_empty($$ select 1 from public.meal_plans where user_id = '11111111-1111-4111-8111-111111111111' $$, 'A: meal_plans leer');
+select is_empty($$ select 1 from public.meal_plan_items where user_id = '11111111-1111-4111-8111-111111111111' $$, 'A: meal_plan_items leer');
+select is_empty($$ select 1 from public.shopping_lists where user_id = '11111111-1111-4111-8111-111111111111' $$, 'A: shopping_lists leer');
+select is_empty($$ select 1 from public.shopping_list_items where user_id = '11111111-1111-4111-8111-111111111111' $$, 'A: shopping_list_items leer');
+select is_empty($$ select 1 from public.recipe_ratings where user_id = '11111111-1111-4111-8111-111111111111' $$, 'A: recipe_ratings leer');
+select is_empty($$ select 1 from public.food_dislikes where user_id = '11111111-1111-4111-8111-111111111111' $$, 'A: food_dislikes leer');
 
 -- B ist unberührt.
 select is(
@@ -148,6 +181,19 @@ select results_eq(
             (select count(*)::int from public.exercise_start_weights where user_id = '22222222-2222-4222-8222-222222222222') $$,
   $$ values (2, 1, 1) $$,
   'B: Tagebuch und Startgewicht unverändert'
+);
+
+select results_eq(
+  $$ select (select count(*)::int from public.meal_plan_items where user_id = '22222222-2222-4222-8222-222222222222'),
+            (select count(*)::int from public.shopping_list_items where user_id = '22222222-2222-4222-8222-222222222222'),
+            (select count(*)::int from public.recipe_ratings where user_id = '22222222-2222-4222-8222-222222222222'),
+            (select count(*)::int from public.food_dislikes where user_id = '22222222-2222-4222-8222-222222222222') $$,
+  $$ values (1, 1, 1, 1) $$,
+  'B: Ernährung unverändert'
+);
+select ok(
+  exists (select 1 from public.foods where id = 'hafer') and exists (select 1 from public.recipes where id = 'muesli'),
+  'Ernährungs-Inhalte bleiben erhalten'
 );
 
 -- Kataloge bleiben erhalten.

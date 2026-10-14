@@ -494,6 +494,70 @@ export type Database = {
         };
         Relationships: [];
       };
+      food_dislikes: {
+        Row: {
+          food_id: string;
+          user_id: string;
+        };
+        Insert: {
+          food_id: string;
+          user_id?: string;
+        };
+        Update: {
+          food_id?: string;
+          user_id?: string;
+        };
+        Relationships: [
+          {
+            foreignKeyName: 'food_dislikes_food_id_fkey';
+            columns: ['food_id'];
+            isOneToOne: false;
+            referencedRelation: 'foods';
+            referencedColumns: ['id'];
+          },
+        ];
+      };
+      food_package_sizes: {
+        Row: {
+          created_at: string;
+          data: Json;
+          food_id: string;
+          id: string;
+          package_size_g: number;
+          status: Database['public']['Enums']['content_status'];
+          updated_at: string;
+          version: number;
+        };
+        Insert: {
+          created_at?: string;
+          data: Json;
+          food_id: string;
+          id: string;
+          package_size_g: number;
+          status: Database['public']['Enums']['content_status'];
+          updated_at?: string;
+          version: number;
+        };
+        Update: {
+          created_at?: string;
+          data?: Json;
+          food_id?: string;
+          id?: string;
+          package_size_g?: number;
+          status?: Database['public']['Enums']['content_status'];
+          updated_at?: string;
+          version?: number;
+        };
+        Relationships: [
+          {
+            foreignKeyName: 'food_package_sizes_food_id_fkey';
+            columns: ['food_id'];
+            isOneToOne: true;
+            referencedRelation: 'foods';
+            referencedColumns: ['id'];
+          },
+        ];
+      };
       food_preferences: {
         Row: {
           created_at: string;
@@ -512,6 +576,66 @@ export type Database = {
           food_group?: string;
           kind?: Database['public']['Enums']['food_preference_kind'];
           user_id?: string;
+        };
+        Relationships: [];
+      };
+      foods: {
+        Row: {
+          alcohol: boolean;
+          animal: string[];
+          created_at: string;
+          data: Json;
+          freezable: boolean;
+          gelatin_origin: string | null;
+          groups: string[];
+          id: string;
+          max_fridge_days: number;
+          meat_kind: string[];
+          name_de: string;
+          pantry: boolean;
+          pregnancy_caution: boolean;
+          shopping_category: string;
+          status: Database['public']['Enums']['content_status'];
+          updated_at: string;
+          version: number;
+        };
+        Insert: {
+          alcohol: boolean;
+          animal?: string[];
+          created_at?: string;
+          data: Json;
+          freezable: boolean;
+          gelatin_origin?: string | null;
+          groups?: string[];
+          id: string;
+          max_fridge_days: number;
+          meat_kind?: string[];
+          name_de: string;
+          pantry: boolean;
+          pregnancy_caution: boolean;
+          shopping_category: string;
+          status: Database['public']['Enums']['content_status'];
+          updated_at?: string;
+          version: number;
+        };
+        Update: {
+          alcohol?: boolean;
+          animal?: string[];
+          created_at?: string;
+          data?: Json;
+          freezable?: boolean;
+          gelatin_origin?: string | null;
+          groups?: string[];
+          id?: string;
+          max_fridge_days?: number;
+          meat_kind?: string[];
+          name_de?: string;
+          pantry?: boolean;
+          pregnancy_caution?: boolean;
+          shopping_category?: string;
+          status?: Database['public']['Enums']['content_status'];
+          updated_at?: string;
+          version?: number;
         };
         Relationships: [];
       };
@@ -545,6 +669,36 @@ export type Database = {
         };
         Relationships: [];
       };
+      guides: {
+        Row: {
+          created_at: string;
+          data: Json;
+          id: string;
+          status: Database['public']['Enums']['content_status'];
+          title_de: string;
+          updated_at: string;
+          version: number;
+        };
+        Insert: {
+          created_at?: string;
+          data: Json;
+          id: string;
+          status: Database['public']['Enums']['content_status'];
+          title_de: string;
+          updated_at?: string;
+          version: number;
+        };
+        Update: {
+          created_at?: string;
+          data?: Json;
+          id?: string;
+          status?: Database['public']['Enums']['content_status'];
+          title_de?: string;
+          updated_at?: string;
+          version?: number;
+        };
+        Relationships: [];
+      };
       health_screening: {
         Row: {
           answers: Json;
@@ -569,6 +723,246 @@ export type Database = {
           id?: string;
           medical_notice_acknowledged_at?: string | null;
           user_id?: string;
+        };
+        Relationships: [];
+      };
+      ingredient_substitutions: {
+        Row: {
+          created_at: string;
+          data: Json;
+          factor: number;
+          food_id: string;
+          id: string;
+          role: string;
+          status: Database['public']['Enums']['content_status'];
+          substitute_food_id: string;
+          updated_at: string;
+          version: number;
+        };
+        Insert: {
+          created_at?: string;
+          data: Json;
+          factor: number;
+          food_id: string;
+          id: string;
+          role: string;
+          status: Database['public']['Enums']['content_status'];
+          substitute_food_id: string;
+          updated_at?: string;
+          version: number;
+        };
+        Update: {
+          created_at?: string;
+          data?: Json;
+          factor?: number;
+          food_id?: string;
+          id?: string;
+          role?: string;
+          status?: Database['public']['Enums']['content_status'];
+          substitute_food_id?: string;
+          updated_at?: string;
+          version?: number;
+        };
+        Relationships: [
+          {
+            foreignKeyName: 'ingredient_substitutions_food_id_fkey';
+            columns: ['food_id'];
+            isOneToOne: false;
+            referencedRelation: 'foods';
+            referencedColumns: ['id'];
+          },
+          {
+            foreignKeyName: 'ingredient_substitutions_substitute_food_id_fkey';
+            columns: ['substitute_food_id'];
+            isOneToOne: false;
+            referencedRelation: 'foods';
+            referencedColumns: ['id'];
+          },
+        ];
+      };
+      meal_plan_items: {
+        Row: {
+          carbs_g: number;
+          cook_date: string;
+          date: string;
+          day_status: string;
+          factor: number;
+          fat_g: number;
+          ingredient_swaps: Json;
+          is_fill: boolean;
+          kcal: number;
+          meal_prep_plan_id: string | null;
+          omitted_optional: Json;
+          plan_id: string;
+          prep_kind: string;
+          protein_g: number;
+          recipe_id: string;
+          recipe_version: number;
+          role: string | null;
+          slot: string;
+          storage: string | null;
+          substitutions: Json;
+          title_de: string;
+          user_id: string;
+        };
+        Insert: {
+          carbs_g: number;
+          cook_date: string;
+          date: string;
+          day_status: string;
+          factor: number;
+          fat_g: number;
+          ingredient_swaps?: Json;
+          is_fill: boolean;
+          kcal: number;
+          meal_prep_plan_id?: string | null;
+          omitted_optional?: Json;
+          plan_id: string;
+          prep_kind: string;
+          protein_g: number;
+          recipe_id: string;
+          recipe_version: number;
+          role?: string | null;
+          slot: string;
+          storage?: string | null;
+          substitutions?: Json;
+          title_de: string;
+          user_id: string;
+        };
+        Update: {
+          carbs_g?: number;
+          cook_date?: string;
+          date?: string;
+          day_status?: string;
+          factor?: number;
+          fat_g?: number;
+          ingredient_swaps?: Json;
+          is_fill?: boolean;
+          kcal?: number;
+          meal_prep_plan_id?: string | null;
+          omitted_optional?: Json;
+          plan_id?: string;
+          prep_kind?: string;
+          protein_g?: number;
+          recipe_id?: string;
+          recipe_version?: number;
+          role?: string | null;
+          slot?: string;
+          storage?: string | null;
+          substitutions?: Json;
+          title_de?: string;
+          user_id?: string;
+        };
+        Relationships: [
+          {
+            foreignKeyName: 'meal_plan_items_meal_prep_plan_id_fkey';
+            columns: ['meal_prep_plan_id'];
+            isOneToOne: false;
+            referencedRelation: 'meal_prep_plans';
+            referencedColumns: ['id'];
+          },
+          {
+            foreignKeyName: 'meal_plan_items_plan_id_user_id_fkey';
+            columns: ['plan_id', 'user_id'];
+            isOneToOne: false;
+            referencedRelation: 'meal_plans';
+            referencedColumns: ['id', 'user_id'];
+          },
+          {
+            foreignKeyName: 'meal_plan_items_recipe_id_fkey';
+            columns: ['recipe_id'];
+            isOneToOne: false;
+            referencedRelation: 'recipes';
+            referencedColumns: ['id'];
+          },
+        ];
+      };
+      meal_plans: {
+        Row: {
+          auto_adjusted: boolean;
+          cook_day_started_at: string | null;
+          created_at: string;
+          engine_version: number;
+          id: string;
+          inputs: Json;
+          meal_prep_plan_id: string | null;
+          recipes_changed: boolean;
+          status: string;
+          user_id: string;
+          uses_health_data: boolean;
+          variant: number;
+          week_start: string;
+        };
+        Insert: {
+          auto_adjusted?: boolean;
+          cook_day_started_at?: string | null;
+          created_at?: string;
+          engine_version: number;
+          id?: string;
+          inputs: Json;
+          meal_prep_plan_id?: string | null;
+          recipes_changed?: boolean;
+          status?: string;
+          user_id?: string;
+          uses_health_data: boolean;
+          variant: number;
+          week_start: string;
+        };
+        Update: {
+          auto_adjusted?: boolean;
+          cook_day_started_at?: string | null;
+          created_at?: string;
+          engine_version?: number;
+          id?: string;
+          inputs?: Json;
+          meal_prep_plan_id?: string | null;
+          recipes_changed?: boolean;
+          status?: string;
+          user_id?: string;
+          uses_health_data?: boolean;
+          variant?: number;
+          week_start?: string;
+        };
+        Relationships: [
+          {
+            foreignKeyName: 'meal_plans_meal_prep_plan_id_fkey';
+            columns: ['meal_prep_plan_id'];
+            isOneToOne: false;
+            referencedRelation: 'meal_prep_plans';
+            referencedColumns: ['id'];
+          },
+        ];
+      };
+      meal_prep_plans: {
+        Row: {
+          created_at: string;
+          data: Json;
+          id: string;
+          recipe_ids: string[];
+          status: Database['public']['Enums']['content_status'];
+          title_de: string;
+          updated_at: string;
+          version: number;
+        };
+        Insert: {
+          created_at?: string;
+          data: Json;
+          id: string;
+          recipe_ids: string[];
+          status: Database['public']['Enums']['content_status'];
+          title_de: string;
+          updated_at?: string;
+          version: number;
+        };
+        Update: {
+          created_at?: string;
+          data?: Json;
+          id?: string;
+          recipe_ids?: string[];
+          status?: Database['public']['Enums']['content_status'];
+          title_de?: string;
+          updated_at?: string;
+          version?: number;
         };
         Relationships: [];
       };
@@ -601,32 +995,47 @@ export type Database = {
       };
       nutrition_prefs: {
         Row: {
+          activity_level: Database['public']['Enums']['activity_level'] | null;
           cooking_mode: Database['public']['Enums']['cooking_mode'] | null;
           created_at: string;
           diet_type: Database['public']['Enums']['diet_type'];
           eats_pork: boolean | null;
-          meals_per_day: number | null;
+          max_prep_minutes_weekday: number | null;
           mealprep_days: number | null;
+          mealprep_slots: Database['public']['Enums']['mealprep_slot_mode'];
+          meals_per_day: number | null;
+          show_energy_numbers: boolean;
+          training_time: Database['public']['Enums']['training_time'] | null;
           updated_at: string;
           user_id: string;
         };
         Insert: {
+          activity_level?: Database['public']['Enums']['activity_level'] | null;
           cooking_mode?: Database['public']['Enums']['cooking_mode'] | null;
           created_at?: string;
           diet_type: Database['public']['Enums']['diet_type'];
           eats_pork?: boolean | null;
-          meals_per_day?: number | null;
+          max_prep_minutes_weekday?: number | null;
           mealprep_days?: number | null;
+          mealprep_slots?: Database['public']['Enums']['mealprep_slot_mode'];
+          meals_per_day?: number | null;
+          show_energy_numbers?: boolean;
+          training_time?: Database['public']['Enums']['training_time'] | null;
           updated_at?: string;
           user_id?: string;
         };
         Update: {
+          activity_level?: Database['public']['Enums']['activity_level'] | null;
           cooking_mode?: Database['public']['Enums']['cooking_mode'] | null;
           created_at?: string;
           diet_type?: Database['public']['Enums']['diet_type'];
           eats_pork?: boolean | null;
-          meals_per_day?: number | null;
+          max_prep_minutes_weekday?: number | null;
           mealprep_days?: number | null;
+          mealprep_slots?: Database['public']['Enums']['mealprep_slot_mode'];
+          meals_per_day?: number | null;
+          show_energy_numbers?: boolean;
+          training_time?: Database['public']['Enums']['training_time'] | null;
           updated_at?: string;
           user_id?: string;
         };
@@ -890,6 +1299,137 @@ export type Database = {
         };
         Relationships: [];
       };
+      recipe_ingredients: {
+        Row: {
+          amount: number;
+          food_id: string;
+          optional: boolean;
+          position: number;
+          recipe_id: string;
+          role: string | null;
+          scales: boolean;
+          unit: string;
+        };
+        Insert: {
+          amount: number;
+          food_id: string;
+          optional: boolean;
+          position: number;
+          recipe_id: string;
+          role?: string | null;
+          scales: boolean;
+          unit: string;
+        };
+        Update: {
+          amount?: number;
+          food_id?: string;
+          optional?: boolean;
+          position?: number;
+          recipe_id?: string;
+          role?: string | null;
+          scales?: boolean;
+          unit?: string;
+        };
+        Relationships: [
+          {
+            foreignKeyName: 'recipe_ingredients_food_id_fkey';
+            columns: ['food_id'];
+            isOneToOne: false;
+            referencedRelation: 'foods';
+            referencedColumns: ['id'];
+          },
+          {
+            foreignKeyName: 'recipe_ingredients_recipe_id_fkey';
+            columns: ['recipe_id'];
+            isOneToOne: false;
+            referencedRelation: 'recipes';
+            referencedColumns: ['id'];
+          },
+        ];
+      };
+      recipe_ratings: {
+        Row: {
+          rated_on: string;
+          reason: string | null;
+          recipe_id: string;
+          user_id: string;
+          value: string;
+        };
+        Insert: {
+          rated_on: string;
+          reason?: string | null;
+          recipe_id: string;
+          user_id?: string;
+          value: string;
+        };
+        Update: {
+          rated_on?: string;
+          reason?: string | null;
+          recipe_id?: string;
+          user_id?: string;
+          value?: string;
+        };
+        Relationships: [
+          {
+            foreignKeyName: 'recipe_ratings_recipe_id_fkey';
+            columns: ['recipe_id'];
+            isOneToOne: false;
+            referencedRelation: 'recipes';
+            referencedColumns: ['id'];
+          },
+        ];
+      };
+      recipes: {
+        Row: {
+          allergens: string[];
+          categories: string[];
+          contains_pork: boolean;
+          created_at: string;
+          data: Json;
+          diet: Database['public']['Enums']['diet_type'];
+          id: string;
+          meal_types: string[];
+          no_cook: boolean;
+          servings: number;
+          status: Database['public']['Enums']['content_status'];
+          title_de: string;
+          updated_at: string;
+          version: number;
+        };
+        Insert: {
+          allergens?: string[];
+          categories?: string[];
+          contains_pork: boolean;
+          created_at?: string;
+          data: Json;
+          diet: Database['public']['Enums']['diet_type'];
+          id: string;
+          meal_types: string[];
+          no_cook: boolean;
+          servings: number;
+          status: Database['public']['Enums']['content_status'];
+          title_de: string;
+          updated_at?: string;
+          version: number;
+        };
+        Update: {
+          allergens?: string[];
+          categories?: string[];
+          contains_pork?: boolean;
+          created_at?: string;
+          data?: Json;
+          diet?: Database['public']['Enums']['diet_type'];
+          id?: string;
+          meal_types?: string[];
+          no_cook?: boolean;
+          servings?: number;
+          status?: Database['public']['Enums']['content_status'];
+          title_de?: string;
+          updated_at?: string;
+          version?: number;
+        };
+        Relationships: [];
+      };
       session_logs: {
         Row: {
           client_updated_at: string;
@@ -1004,6 +1544,125 @@ export type Database = {
             columns: ['exercise_log_id', 'user_id'];
             isOneToOne: false;
             referencedRelation: 'exercise_logs';
+            referencedColumns: ['id', 'user_id'];
+          },
+        ];
+      };
+      shopping_list_items: {
+        Row: {
+          amount: number | null;
+          amount_changed: boolean;
+          category: string;
+          checked: boolean;
+          food_id: string | null;
+          is_manual: boolean;
+          is_pantry: boolean;
+          item_key: string;
+          label_de: string;
+          list_id: string;
+          not_in_plan: boolean;
+          substitute_for: string[];
+          unit: string | null;
+          updated_at: string;
+          user_id: string;
+        };
+        Insert: {
+          amount?: number | null;
+          amount_changed?: boolean;
+          category: string;
+          checked?: boolean;
+          food_id?: string | null;
+          is_manual: boolean;
+          is_pantry: boolean;
+          item_key: string;
+          label_de: string;
+          list_id: string;
+          not_in_plan?: boolean;
+          substitute_for?: string[];
+          unit?: string | null;
+          updated_at?: string;
+          user_id: string;
+        };
+        Update: {
+          amount?: number | null;
+          amount_changed?: boolean;
+          category?: string;
+          checked?: boolean;
+          food_id?: string | null;
+          is_manual?: boolean;
+          is_pantry?: boolean;
+          item_key?: string;
+          label_de?: string;
+          list_id?: string;
+          not_in_plan?: boolean;
+          substitute_for?: string[];
+          unit?: string | null;
+          updated_at?: string;
+          user_id?: string;
+        };
+        Relationships: [
+          {
+            foreignKeyName: 'shopping_list_items_food_id_fkey';
+            columns: ['food_id'];
+            isOneToOne: false;
+            referencedRelation: 'foods';
+            referencedColumns: ['id'];
+          },
+          {
+            foreignKeyName: 'shopping_list_items_list_id_user_id_fkey';
+            columns: ['list_id', 'user_id'];
+            isOneToOne: false;
+            referencedRelation: 'shopping_lists';
+            referencedColumns: ['id', 'user_id'];
+          },
+        ];
+      };
+      shopping_lists: {
+        Row: {
+          added_recipes: Json;
+          created_at: string;
+          from_date: string;
+          id: string;
+          meal_plan_id: string | null;
+          plan_key: string;
+          to_date: string;
+          updated_at: string;
+          user_id: string;
+          uses_health_data: boolean;
+          week_start: string;
+        };
+        Insert: {
+          added_recipes?: Json;
+          created_at?: string;
+          from_date: string;
+          id?: string;
+          meal_plan_id?: string | null;
+          plan_key: string;
+          to_date: string;
+          updated_at?: string;
+          user_id?: string;
+          uses_health_data: boolean;
+          week_start: string;
+        };
+        Update: {
+          added_recipes?: Json;
+          created_at?: string;
+          from_date?: string;
+          id?: string;
+          meal_plan_id?: string | null;
+          plan_key?: string;
+          to_date?: string;
+          updated_at?: string;
+          user_id?: string;
+          uses_health_data?: boolean;
+          week_start?: string;
+        };
+        Relationships: [
+          {
+            foreignKeyName: 'shopping_lists_meal_plan_id_user_id_fkey';
+            columns: ['meal_plan_id', 'user_id'];
+            isOneToOne: false;
+            referencedRelation: 'meal_plans';
             referencedColumns: ['id', 'user_id'];
           },
         ];
@@ -1371,6 +2030,7 @@ export type Database = {
       };
       delete_my_account: { Args: never; Returns: undefined };
       delete_session_log: { Args: { p_base_revision: number; p_id: string }; Returns: Json };
+      delete_stored_intolerances: { Args: never; Returns: undefined };
       export_my_data: { Args: never; Returns: Json };
       has_valid_consent: {
         Args: { p_type: Database['public']['Enums']['consent_type'] };
@@ -1381,10 +2041,12 @@ export type Database = {
         Returns: Json;
       };
       recent_exercise_logs: { Args: { p_per_exercise?: number }; Returns: Json };
+      replace_food_dislikes: { Args: { p_food_ids: Json }; Returns: undefined };
       replace_food_preferences: {
         Args: { p_items: Json; p_scope: string };
         Returns: undefined;
       };
+      replace_shopping_list: { Args: { p_list: Json }; Returns: string };
       replace_training_slots: { Args: { p_items: Json }; Returns: undefined };
       replace_user_equipment: {
         Args: {
@@ -1394,9 +2056,14 @@ export type Database = {
         Returns: undefined;
       };
       revoke_health_data: { Args: { p_delete_logs: boolean }; Returns: undefined };
+      save_meal_plan: {
+        Args: { p_auto_adjusted?: boolean; p_plan: Json; p_recipes_changed?: boolean };
+        Returns: string;
+      };
       save_session_log: { Args: { p_log: Json }; Returns: Json };
       save_training_plan: { Args: { p_plan: Json }; Returns: string };
       seed_content: { Args: { p_content: Json }; Returns: Json };
+      seed_nutrition_content: { Args: { p_content: Json }; Returns: Json };
       waitlist_add_unsubscribe_token: {
         Args: { p_token_hash: string; p_waitlist_id: string };
         Returns: undefined;
@@ -1424,6 +2091,7 @@ export type Database = {
       waitlist_unsubscribe: { Args: { p_unsubscribe_token_hash: string }; Returns: boolean };
     };
     Enums: {
+      activity_level: 'sedentary' | 'light' | 'active' | 'very_active';
       admin_role: 'content_admin';
       alternative_reason: 'other_equipment' | 'easier' | 'harder' | 'home';
       app_locale: 'de-DE' | 'de-AT' | 'de-CH';
@@ -1455,6 +2123,7 @@ export type Database = {
       goal_type: 'fat_loss' | 'definition' | 'muscle_gain' | 'general_fitness' | 'endurance';
       load_type: 'weight' | 'bodyweight' | 'band' | 'time';
       log_source: 'manual';
+      mealprep_slot_mode: 'lunch' | 'lunch_dinner';
       movement_pattern:
         | 'squat'
         | 'hinge'
@@ -1522,6 +2191,7 @@ export type Database = {
       sex: 'male' | 'female' | 'diverse' | 'unspecified';
       training_location: 'gym' | 'home' | 'both';
       training_slot_kind: 'strength_gym' | 'strength_home' | 'endurance';
+      training_time: 'early' | 'morning' | 'midday' | 'afternoon' | 'evening' | 'varies';
     };
     CompositeTypes: {
       [_ in never]: never;
@@ -1627,6 +2297,7 @@ export type Enums<
 export const Constants = {
   public: {
     Enums: {
+      activity_level: ['sedentary', 'light', 'active', 'very_active'],
       admin_role: ['content_admin'],
       alternative_reason: ['other_equipment', 'easier', 'harder', 'home'],
       app_locale: ['de-DE', 'de-AT', 'de-CH'],
@@ -1666,6 +2337,7 @@ export const Constants = {
       goal_type: ['fat_loss', 'definition', 'muscle_gain', 'general_fitness', 'endurance'],
       load_type: ['weight', 'bodyweight', 'band', 'time'],
       log_source: ['manual'],
+      mealprep_slot_mode: ['lunch', 'lunch_dinner'],
       movement_pattern: [
         'squat',
         'hinge',
@@ -1736,6 +2408,7 @@ export const Constants = {
       sex: ['male', 'female', 'diverse', 'unspecified'],
       training_location: ['gym', 'home', 'both'],
       training_slot_kind: ['strength_gym', 'strength_home', 'endurance'],
+      training_time: ['early', 'morning', 'midday', 'afternoon', 'evening', 'varies'],
     },
   },
 } as const;

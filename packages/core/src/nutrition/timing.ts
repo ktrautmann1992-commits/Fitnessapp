@@ -6,7 +6,8 @@ import {
   TRAINING_TIME_START_MINUTES,
 } from '../constants';
 import { type NutritionNoticeCode, sortNotices } from './notices';
-import type { NutritionSession, TrainingTime } from './schemas';
+import type { TrainingTime } from '../enums';
+import type { NutritionSession } from './schemas';
 
 /**
  * Mahlzeiten-Timing (docs/PLAN-PHASE-5.md 4.8): Plätze je `meals_per_day`, Zuordnung vor/nach dem Training und
