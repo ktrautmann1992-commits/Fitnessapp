@@ -6,19 +6,20 @@
  * Plausibilitäts-Checks und Seed-Abbildung kommen aus packages/core bzw. seed-package.ts.
  * Rezepte (Phase 5) werden eine weitere Art – ohne Umbau von generate/collect/review. Seit Etappe N9 gibt es die
  * Austausch-Tabelle (`ingredient_substitution`, docs/PLAN-PHASE-5.md 19.7) als erste Ernährungs-Art; eine Antwort
- * kann dort mehrere Dateien ergeben (`toContents`).
+ * kann dort mehrere Dateien ergeben (`toContents`). Seit N11 auch die Packungsgrößen (`package_size`).
  */
 import type {
   ContentFileKind,
   Exercise,
   Food,
   IngredientSubstitution,
+  PackageSize,
   PlanTemplate,
 } from '@fitnessapp/core';
 import type { z } from 'zod';
 
-/** Inhaltsarten der Pipeline: Training (Phase 2) und die Austausch-Tabelle (Phase 5, N9). */
-export type PipelineContentKind = ContentFileKind | 'ingredient_substitution';
+/** Inhaltsarten der Pipeline: Training (Phase 2), Austausch-Tabelle (Phase 5, N9) und Packungsgrößen (N11). */
+export type PipelineContentKind = ContentFileKind | 'ingredient_substitution' | 'package_size';
 
 /** Was die Pipeline über den aktuellen Inhaltsstand weiß (aus `content/`). */
 export interface LibraryContext {
@@ -30,6 +31,8 @@ export interface LibraryContext {
   readonly foods: readonly Food[];
   /** Austausch-Tabelle mit gültigem Schema (alle Status). */
   readonly substitutions: readonly IngredientSubstitution[];
+  /** Packungsgrößen mit gültigem Schema (alle Status, N11). */
+  readonly packageSizes: readonly PackageSize[];
   /** Belegte IDs (Dateinamen ohne `.json`) je Art – auch von Dateien mit Fehlern. */
   readonly takenIds: Readonly<Record<PipelineContentKind, ReadonlySet<string>>>;
 }

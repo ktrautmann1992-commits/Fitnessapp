@@ -3,6 +3,8 @@ import {
   type Food,
   FORBIDDEN_MEDICAL_TERMS,
   ingredientSubstitutionSchema,
+  PACKAGE_SIZE_LIMITS,
+  packageSizeSchema,
   planTemplateSchema,
 } from '@fitnessapp/core';
 import { demoNutritionContent } from '@fitnessapp/core/demo-nutrition';
@@ -22,6 +24,7 @@ import {
   ingredientSubstitutionKind,
   SUBSTITUTION_MAX_TOKENS,
 } from './kinds/ingredient-substitution';
+import { PACKAGE_SIZE_MAX_TOKENS, packageSizeKind } from './kinds/package-size';
 import { PLAN_TEMPLATE_MAX_TOKENS, planTemplateKind, templateIdFor } from './kinds/plan-template';
 import { buildBatchRequests } from './requests';
 import { REAL_REPO_ROOT } from './test-helpers';
@@ -103,7 +106,10 @@ describe('JSON-Schema aus Zod', () => {
 
   it('Antwort-Schemas aller Arten sind gültig, nutzen Katalog-IDs und feste Matrix-Werte', () => {
     for (const kind of Object.values(CONTENT_KINDS)) {
-      const ctx = kind === ingredientSubstitutionKind ? nutritionContext : context;
+      const ctx =
+        kind === ingredientSubstitutionKind || kind === packageSizeKind
+          ? nutritionContext
+          : context;
       for (const cell of kind.cells(ctx).slice(0, 5)) {
         const schema = toOutputJsonSchema(kind.outputSchema(cell, ctx));
         expect(findStructuredOutputProblems(schema)).toEqual([]);
@@ -136,6 +142,8 @@ describe('Inhaltsarten', () => {
     expect(findKind('exercises')).toBe(exerciseKind);
     expect(findKind('plan_template')).toBe(planTemplateKind);
     expect(findKind('ingredient-substitutions')).toBe(ingredientSubstitutionKind);
+    expect(findKind('package-sizes')).toBe(packageSizeKind);
+    expect(findKind('package_size')).toBe(packageSizeKind);
     expect(() => findKind('recipes')).toThrow(/Unbekannte Inhaltsart/);
   });
 
@@ -206,7 +214,10 @@ describe('Inhaltsarten', () => {
 
   it('Probelauf-Antworten: gültige passen zu Antwort- und Datei-Schema, die ungültige nur zum JSON-Format', () => {
     for (const kind of Object.values(CONTENT_KINDS)) {
-      const ctx = kind === ingredientSubstitutionKind ? nutritionContext : context;
+      const ctx =
+        kind === ingredientSubstitutionKind || kind === packageSizeKind
+          ? nutritionContext
+          : context;
       const fixtures = kind.dryRunFixtures();
       expect(fixtures.some((f) => f.response.kind === 'refusal')).toBe(true);
       const json = fixtures.filter((f) => f.response.kind === 'json');
@@ -242,9 +253,11 @@ describe('Inhaltsarten', () => {
                 ? planTemplateSchema
                 : null;
           const keys =
-            schema === null
-              ? Object.keys(ingredientSubstitutionSchema.shape)
-              : Object.keys(schema.shape);
+            schema !== null
+              ? Object.keys(schema.shape)
+              : kind.kind === 'package_size'
+                ? Object.keys(packageSizeSchema.shape)
+                : Object.keys(ingredientSubstitutionSchema.shape);
           expect(Object.keys(content)).toEqual(keys);
         }
       }
@@ -308,6 +321,98 @@ describe('Austausch-Tabelle (Etappe N9)', () => {
       .find((c) => c.values.food_id === 'banane')!;
     expect(ingredientSubstitutionKind.isPresent(tofu, ctx)).toBe(true);
     expect(ingredientSubstitutionKind.isPresent(banane, ctx)).toBe(false);
+  });
+});
+
+describe('Packungsgrößen (Etappe N11)', () => {
+  it('eine Zelle je katalog-geprüftem Lebensmittel ohne Alkohol; Antwort ganze Gramm 1–5.000 oder null', () => {
+    const cells = packageSizeKind.cells(nutritionContext);
+    expect(cells.length).toBe(nutritionContext.foods.filter((f) => !f.alcohol).length);
+    for (const cell of cells) expect(cell.customId).toMatch(/^[a-zA-Z0-9_-]{1,64}$/);
+    const tofu = cells.find((c) => c.values.food_id === 'tofu')!;
+    expect(tofu.targetId).toBe('packung-tofu');
+    const schema = packageSizeKind.outputSchema(tofu, nutritionContext);
+    const { min, max } = PACKAGE_SIZE_LIMITS.grams;
+    expect(schema.safeParse({ package_size_g: 200 }).success).toBe(true);
+    expect(schema.safeParse({ package_size_g: min }).success).toBe(true);
+    expect(schema.safeParse({ package_size_g: max }).success).toBe(true);
+    expect(schema.safeParse({ package_size_g: null }).success).toBe(true);
+    expect(schema.safeParse({ package_size_g: 0 }).success).toBe(false);
+    expect(schema.safeParse({ package_size_g: max + 1 }).success).toBe(false);
+    expect(schema.safeParse({ package_size_g: 200.5 }).success).toBe(false);
+    expect(JSON.stringify(toOutputJsonSchema(schema))).toContain('"integer"');
+    expect(PACKAGE_SIZE_MAX_TOKENS).toBe(4_000);
+  });
+
+  it('Antwort → Datei: Entwurf `packung-<id>`; null = keine Datei (no_content)', () => {
+    const tofu = packageSizeKind.cells(nutritionContext).find((c) => c.values.food_id === 'tofu')!;
+    const meta = { origin: 'batch', model: 'x', batch_id: 'b', created_on: '2026-10-14' };
+    const [file] = packageSizeKind.toContents({ package_size_g: 200 }, tofu, meta);
+    expect(file?.id).toBe('packung-tofu');
+    expect(file?.content).toMatchObject({ status: 'draft', food_id: 'tofu', package_size_g: 200 });
+    expect(packageSizeKind.toContents({ package_size_g: null }, tofu, meta)).toEqual([]);
+  });
+
+  it('Anfrage-Text: Handelsgröße DACH, ganze Gramm, keine Marken; übersprungen, wenn es schon einen Eintrag gibt', () => {
+    const system = packageSizeKind.systemPrompt(nutritionContext);
+    expect(system).toContain('kleinste übliche Kaufeinheit');
+    expect(system).toContain('ganze Gramm, 1–5.000');
+    expect(system).toContain('Keine Marken');
+    const banane = packageSizeKind
+      .cells(nutritionContext)
+      .find((c) => c.values.food_id === 'banane')!;
+    expect(packageSizeKind.userPrompt(banane, nutritionContext)).toContain('ein Stück ≈');
+    const existing = packageSizeSchema.parse({
+      id: 'packung-banane',
+      version: 1,
+      status: 'draft',
+      food_id: 'banane',
+      package_size_g: 1000,
+      meta: {
+        origin: 'batch',
+        model: 'x',
+        batch_id: 'b',
+        created_on: '2026-10-14',
+        expert_reviewed: false,
+        reviewed_by: null,
+        reviewed_at: null,
+        review_note: null,
+      },
+    });
+    const ctx = { ...nutritionContext, packageSizes: [existing] };
+    expect(packageSizeKind.isPresent(banane, ctx)).toBe(true);
+    expect(
+      packageSizeKind.isPresent(banane, {
+        ...ctx,
+        packageSizes: [{ ...existing, status: 'archived' }],
+      }),
+    ).toBe(false);
+    // Probelauf-Inhalte zählen nicht als vorhanden (Wächter N11 S3) – weder Packungen noch Austausch.
+    const dryRun = { ...existing, meta: { ...existing.meta, model: 'probelauf-ohne-ki' } };
+    expect(packageSizeKind.isPresent(banane, { ...ctx, packageSizes: [dryRun] })).toBe(false);
+    const tofu = ingredientSubstitutionKind
+      .cells(nutritionContext)
+      .find((c) => c.values.food_id === 'tofu')!;
+    const sub = ingredientSubstitutionSchema.parse({
+      id: 'tausch-tofu-zu-haehnchenbrust',
+      version: 1,
+      status: 'draft',
+      food_id: 'tofu',
+      substitute_food_id: 'haehnchenbrust',
+      factor: 0.57,
+      role: 'protein',
+      note_de: 'Probelauf: Hähnchen gut durchgaren.',
+      meta: { ...existing.meta, batch_id: 'probelauf_x' },
+    });
+    expect(ingredientSubstitutionKind.isPresent(tofu, { ...ctx, substitutions: [sub] })).toBe(
+      false,
+    );
+    expect(
+      ingredientSubstitutionKind.isPresent(tofu, {
+        ...ctx,
+        substitutions: [{ ...sub, meta: { ...existing.meta } }],
+      }),
+    ).toBe(true);
   });
 });
 

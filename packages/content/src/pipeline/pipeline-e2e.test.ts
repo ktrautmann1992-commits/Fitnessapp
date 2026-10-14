@@ -241,6 +241,32 @@ describe('Probelauf Ende-zu-Ende: generate → collect (ohne Netz, ohne Schlüss
     expect(neverApproves(tools.ghCalls)).toBe(true);
   });
 
+  it('Packungsgrößen (N11): Probelauf ohne Schlüssel bis zum Pull Request, Entwurf', async () => {
+    const r = repo();
+    const tools = fakeTools(r.root);
+    const generated = await runGenerate(
+      { kind: 'package-sizes', selection: 'alle', count: 10, dryRun: true, settings },
+      { repoRoot: r.root, tools, now, randomShort: () => 'pck001' },
+    );
+    expect(generated.status).toBe('submitted');
+    if (generated.status !== 'submitted') return;
+    expect(generated.record.kind).toBe('package_size');
+    r.git(['checkout', '--quiet', 'main']);
+    const collected = await runCollect({ repoRoot: r.root, tools, now });
+    expect(collected.exitCode).toBe(0);
+    const outcome = collected.outcomes[0]!;
+    expect(outcome.status).toBe('pr_opened');
+    expect(outcome.saved).toEqual(['packung-tofu']);
+    const draft = JSON.parse(
+      r.showRemote(generated.branch, 'content/package-sizes/packung-tofu.json'),
+    );
+    expect(draft).toMatchObject({ status: 'draft', food_id: 'tofu', package_size_g: 200 });
+    expect(draft.meta.model).toBe('probelauf-ohne-ki');
+    expect(outcome.markdown).toContain('ungültig (Schema/Grenzen)');
+    expect(outcome.markdown).toContain('abgelehnt (refusal)');
+    expect(neverApproves(tools.ghCalls)).toBe(true);
+  });
+
   it('überschreibt keinen Inhalt, der nach dem Absenden in main dazugekommen ist', async () => {
     const r = repo();
     const tools = fakeTools(r.root);

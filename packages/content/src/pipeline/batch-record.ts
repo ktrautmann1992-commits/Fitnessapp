@@ -36,7 +36,7 @@ export const batchRecordSchema = z.strictObject({
   status: z.enum(['submitted', 'collected']),
   dry_run: z.boolean(),
   batch_id: z.string().min(1),
-  kind: z.enum(['exercise', 'plan_template', 'ingredient_substitution']),
+  kind: z.enum(['exercise', 'plan_template', 'ingredient_substitution', 'package_size']),
   model: z.string().min(1),
   effort: z.enum(CONTENT_EFFORTS),
   selection: z.string(),

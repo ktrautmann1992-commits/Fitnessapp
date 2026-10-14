@@ -24,6 +24,7 @@ import {
 } from '@fitnessapp/core';
 import { z } from 'zod';
 
+import { countsAsPresent } from './present';
 import { OUTPUT_FORMAT_TEXT, ROLE_TEXT } from './prompt-rules';
 import type { ContentKindDefinition, GenerationCell, LibraryContext } from './types';
 
@@ -247,9 +248,10 @@ export const ingredientSubstitutionKind: ContentKindDefinition = {
       .sort((a, b) => (a.id < b.id ? -1 : a.id > b.id ? 1 : 0))
       .filter((food) => !food.alcohol)
       .map(cellFor),
-  // Übersprungen, sobald es für das Lebensmittel schon einen (nicht zurückgezogenen) Eintrag gibt.
+  // Übersprungen, sobald es für das Lebensmittel schon einen (nicht zurückgezogenen) Eintrag gibt – Probelauf-Inhalte
+  // zählen nicht (Wächter N11 S3).
   isPresent: (cell, context) =>
-    context.substitutions.some((s) => s.status !== 'archived' && s.food_id === cell.values.food_id),
+    context.substitutions.some((s) => countsAsPresent(s) && s.food_id === cell.values.food_id),
   systemPrompt,
   userPrompt,
   outputSchema: substitutionOutputSchema,

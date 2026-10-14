@@ -830,13 +830,16 @@ Voraussetzung: Teil H. Wo du die Workflows findest: GitHub-App → Repository �
    `ci`.
 6. Ansehen – am schönsten in der Vercel-Vorschau der **Website** unter `/admin` (Teil G) –, dann den Pull
    Request **schließen** (nicht mergen) und unten **Delete branch** tippen. Probelauf-Inhalte lassen sich nie
-   freigeben (`content:validate` meldet sie als rot, Regel PROBELAUF).
+   freigeben (`content:validate` meldet sie als rot, Regel PROBELAUF). Bei Austausch und Packungsgrößen haben
+   Probelauf-Dateien dieselbe ID wie echte (z. B. `packung-tofu`): Wurde ein Probelauf doch gemergt, die Datei per
+   Pull Request löschen – sonst meldet der echte Lauf für dieses Lebensmittel „ID belegt“.
 
 ### 2. Echte Entwürfe erzeugen (mit Schlüssel aus Teil E)
 
 1. **Actions → content-generate → Run workflow**.
-2. **Welche Inhalte?** `plan-templates`, `exercises` oder `ingredient-substitutions` (Austausch-Tabelle, Etappe N9 –
-   erst sinnvoll, wenn es katalog-geprüfte Lebensmittel gibt).
+2. **Welche Inhalte?** `plan-templates`, `exercises`, `ingredient-substitutions` (Austausch-Tabelle, Etappe N9) oder
+   `package-sizes` (Packungsgrößen, Etappe N11) – die beiden letzten erst sinnvoll, wenn es katalog-geprüfte
+   Lebensmittel gibt.
 3. **Auswahl** (optional): `alle` oder Begriffe aus der Matrix, getrennt mit Leerzeichen oder Komma:
    - Vorlagen: Ziel `muskelaufbau`/`fettverlust`/`fitness`, Level `einsteiger`/`fortgeschritten`, Tage `3t`/`4t`,
      Ort `studio`/`zuhause`, Minuten `30-45`/`45-60`/`60-75` – z. B. `muskelaufbau 30-45`.
@@ -847,6 +850,10 @@ Voraussetzung: Teil H. Wo du die Workflows findest: GitHub-App → Repository �
      Anfrage mit bis zu 4 Alternativen (nur Katalog-IDs). Lebensmittel mit vorhandenem Eintrag werden übersprungen.
      Freigeben wie in 3b (Art `ids`, IDs `tausch-…`); rot bleibt ein Eintrag, solange seine Lebensmittel nicht
      freigegeben sind oder der Faktor die Rolle nicht hält (Regel R23).
+   - Packungsgrößen: wie Austausch nach Abteilung, z. B. `fruit_vegetables` – je Lebensmittel eine Anfrage, Antwort
+     in ganzen Gramm (1–5.000 g). Freigeben wie in 3b (Art `ids`, IDs `packung-…`), vorher die Grammzahl mit einer
+     üblichen Packung im Laden vergleichen; rot bleibt ein Eintrag, solange sein Lebensmittel nicht freigegeben ist
+     oder die Packung kleiner als ein Stück wäre (Regel R24). Ansehen: Redaktionsbereich → **Packungen**.
 4. **Anzahl**: höchstens so viele Anfragen (1–200, Standard 10). **Probelauf** nicht anhaken → **Run workflow**.
 5. Die **Summary** zeigt die **Kostenschätzung** (schlimmster Fall) und endet sofort. Liegt die Schätzung über
    dem Deckel, steht dort „abgebrochen – nichts gesendet“.

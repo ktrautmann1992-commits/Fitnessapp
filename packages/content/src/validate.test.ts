@@ -252,6 +252,7 @@ describe('Berichte', () => {
         mealPrepPlans: [],
         guides: [],
         substitutions: [],
+        packageSizes: [],
         issues: [],
         blocking: [],
       },

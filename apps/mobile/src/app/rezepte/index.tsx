@@ -160,6 +160,12 @@ export default function RecipeSearchScreen() {
     <>
       {demo ? <DemoBanner /> : null}
       <Body muted>{texts.intro}</Body>
+      <Button
+        label={t.nutrition.fridge.open}
+        variant="secondary"
+        onPress={() => router.push('/rezepte/kuehlschrank' as Href)}
+        testID="recipe-search-fridge"
+      />
       <TextField
         label={texts.textLabel}
         hint={texts.textHint}

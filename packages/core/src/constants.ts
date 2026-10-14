@@ -1747,6 +1747,37 @@ export const INGREDIENT_SUBSTITUTION_LIMITS = {
   swapsPerMeal: 20,
 } as const;
 
+/**
+ * Packungsgrößen (Plan 19.4 „Packungsgrößen (N11)“, 19.7 N11, KONZEPT 6.11) – Tabelle `content/package-sizes/` und
+ * Regel R24. Übliche Handelsgröße je Lebensmittel in Gramm (z. B. Brokkoli 500 g, Quark 500 g). Plausibilität
+ * 1–5.000 g laut Plan 19.7 N11 (Schema R1, rot auch bei Entwürfen). Nur Bestand für die spätere Resteplanung (N13/N14,
+ * Aufrunden der Einkaufsliste); ändert nie Filter, Mengen im Essensplan oder Grenzen. PRODUKTENTSCHEIDUNG (Plan).
+ */
+export const PACKAGE_SIZE_LIMITS = {
+  grams: { min: 1, max: 5000 },
+} as const;
+
+/**
+ * Kühlschrank-Suche „Was habe ich da?“ (Plan 19.7 N11, KONZEPT 6.11) – gratis, regelbasiert, ohne KI:
+ * - `minorWeight`: Übereinstimmung = Anteil der vorhandenen Zutaten, gewichtet nach Menge in Gramm; Zutaten aus dem
+ *   Vorrat (`pantry`) und aus der Abteilung „Gewürze & Backzutaten“ zählen nur mit diesem Anteil ihrer Menge („Vorrat/
+ *   Gewürze zählen wenig“, Plan 19.7 N11). 0,1 = ein Zehntel. PRODUKTENTSCHEIDUNG ohne Schutzwirkung.
+ * - `maxSelectedFoods`: höchstens so viele ausgewählte Zutaten (Bedien- und Speicherschutz der Eingabe, Zod).
+ * - `maxMissingShown`: höchstens so viele fehlende Zutaten je Treffer in der Anzeige (Rest als „und N weitere“).
+ * - `minPercent`: Treffer erst ab dieser Übereinstimmung in ganzen Prozent (abgerundet) – keine „0 % passt“-Karten,
+ *   wenn nur ein gering gewichteter Vorrat (z. B. Öl) passt (Wächter N11 S1).
+ * - `pageSize`: so viele Karten zeigt die App auf einmal, weitere über „Mehr anzeigen“ (Wächter N11 S2).
+ * Die Suche ändert nur, welche Rezepte in welcher Reihenfolge erscheinen – die harten Filter (Ernährungsform,
+ * Schwein, Unverträglichkeiten, „mag ich nicht“, Schwangerschaft) laufen unverändert über `filter.ts`.
+ */
+export const FRIDGE_SEARCH = {
+  minorWeight: 0.1,
+  maxSelectedFoods: 100,
+  maxMissingShown: 6,
+  minPercent: 1,
+  pageSize: 30,
+} as const;
+
 // ---------------------------------------------------------------------------------------------------------
 // Ziele · Haupt- und Nebenziel (docs/PLAN-ZIELE.md Abschnitt 4, Etappe Z1)
 //

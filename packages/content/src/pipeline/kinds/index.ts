@@ -1,15 +1,17 @@
 import { exerciseKind } from './exercise';
 import { ingredientSubstitutionKind } from './ingredient-substitution';
+import { packageSizeKind } from './package-size';
 import { planTemplateKind } from './plan-template';
 import type { ContentKindDefinition, PipelineContentKind } from './types';
 
 export type * from './types';
 
-/** Alle Inhaltsarten der Pipeline: Training (Phase 2) und die Austausch-Tabelle (Phase 5, N9). */
+/** Alle Inhaltsarten der Pipeline: Training (Phase 2), Austausch-Tabelle (Phase 5, N9) und Packungsgrößen (N11). */
 export const CONTENT_KINDS: Readonly<Record<PipelineContentKind, ContentKindDefinition>> = {
   exercise: exerciseKind,
   plan_template: planTemplateKind,
   ingredient_substitution: ingredientSubstitutionKind,
+  package_size: packageSizeKind,
 };
 
 /** Art aus Workflow-Eingabe (`exercises`, `plan-templates`) oder interner Bezeichnung (`exercise`, …). */

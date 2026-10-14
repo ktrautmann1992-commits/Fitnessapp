@@ -426,6 +426,13 @@ Quelle: `docs/ERWEITERUNGEN-2.md` Abschnitte 1–2. Startbestand aus `alpha5-rez
   Fleisch, Fisch oder Rohmilch zählt nur für den Folgetag). Anzeige: „Dieses
   Rezept verbraucht deinen restlichen Brokkoli.“ Regel-Engine in `packages/core` (`nutrition/leftovers.ts`) mit Tests.
   Der Reste-Score ändert nur die Reihenfolge der Kandidaten, nie die Filter oder Schutzgrenzen.
+- **Umsetzung (Etappe N11, Testmodus, 14.10.2026):** Kühlschrank-Suche „Was habe ich da?“ in
+  `packages/core/src/nutrition/fridge-search.ts` – zuerst dieselben harten Filter wie die Rezeptsuche (Ernährungsform
+  des Profils, nicht erweiterbar), danach Übereinstimmung nach Menge in Gramm (Vorrat und Gewürze zählen ein
+  Zehntel, optionale Zutaten gar nicht), Gewürze allein ergeben keinen Treffer, stabile Sortierung; Auswahl nur im
+  Zustand der Ansicht. Packungsgrößen als eigene Inhaltsart `content/package-sizes/` (Regel R24, 1–5.000 g, Batch-Art
+  `package-sizes`, Freigabe über `content-review`, Admin „Packungen“), weil `content/foods/` nur der Lebensmittel-Import
+  schreiben darf; mit N7 werden sie zur Spalte an `foods`. Details in `docs/PLAN-PHASE-5.md`, Umsetzungsstand N11.
 
 ### 6.12 Paar-Modus beim Kochen (Premium, braucht den Partner-Modus)
 - Baut auf dem **Partner-Modus** auf (Abschnitt 11, beidseitige Zustimmung) – die Oberfläche kommt deshalb erst mit
@@ -693,7 +700,8 @@ eigene Zeilen, in Export und Kontolöschung enthalten.
   `meal_prep_plan_steps` (Startminute, Schritt) – Inhalt
 - `guides` (Ratgeber Wettkampf, Unterwegs; Abschnitte als jsonb) – Inhalt
 - `ingredient_substitutions` (food_id, substitute_food_id, factor, role, note_de) – Inhalt, per Batch-API erzeugt
-- `foods` erweitert um Packungsgröße und – falls entschieden – Schätzpreis je kg (Inhalt, als Schätzung gekennzeichnet)
+- `foods` erweitert um Packungsgröße (Quelle: freigegebene Einträge aus `content/package-sizes/`, N11) und – falls
+  entschieden – Schätzpreis je kg (Inhalt, als Schätzung gekennzeichnet)
 - `recipe_ratings` (user_id, recipe_id, value, reason, rated_on) – Nutzerdaten, privat, kein Grund „unverträglich“ (6.10)
 - `food_dislikes` (user_id, food_id) – „mag ich nicht“ je Lebensmittel (6.10), hart wie die Gruppen-Abneigungen
 - Alle diese Tabellen kommen gemeinsam mit der Supabase-Etappe N7 der Phase 5 (vorher nur Testmodus)

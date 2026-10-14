@@ -3,7 +3,7 @@ import Link from 'next/link';
 import styles from '../admin.module.css';
 
 export type AdminSection =
-  'training' | 'rezepte' | 'lebensmittel' | 'meal-prep' | 'ratgeber' | 'austausch';
+  'training' | 'rezepte' | 'lebensmittel' | 'meal-prep' | 'ratgeber' | 'austausch' | 'packungen';
 
 const SECTIONS: readonly { id: AdminSection; href: string; label: string }[] = [
   { id: 'training', href: '/admin', label: 'Training' },
@@ -12,6 +12,7 @@ const SECTIONS: readonly { id: AdminSection; href: string; label: string }[] = [
   { id: 'meal-prep', href: '/admin/meal-prep', label: 'Meal-Prep' },
   { id: 'ratgeber', href: '/admin/ratgeber', label: 'Ratgeber' },
   { id: 'austausch', href: '/admin/austausch', label: 'Austausch' },
+  { id: 'packungen', href: '/admin/packungen', label: 'Packungen' },
 ];
 
 /** Bereiche des Redaktionsbereichs (Training: Übungen/Vorlagen; Ernährung seit Etappe N2d). */

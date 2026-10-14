@@ -10,7 +10,7 @@
  * Inhalt: der kleine Test-Katalog aus N2a (`content/nutrition-fixtures.ts`), die Rezepte aus N2a/N3
  * (`nutrition/meal-plan-fixtures.ts`) und drei Meal-Prep-Wochenpläne für den Kochtag (Etappe N5b, Aufbewahrung nach
  * R9 hergeleitet), zwei Beispiel-Ratgeber mit Testtexten (Etappe N5c) und eine kleine Austausch-Tabelle mit Rollen an
- * einigen Rezepten (Etappe N9, Zutaten-Austausch), alle Status `draft`. Geprüft und ausgewählt wird wie beim echten Bestand über
+ * einigen Rezepten (Etappe N9, Zutaten-Austausch) sowie einige Packungsgrößen (Etappe N11), alle Status `draft`. Geprüft und ausgewählt wird wie beim echten Bestand über
  * `validateContent` und `selectNutritionContent` – dieselben Regeln (R1–R22).
  * ACHTUNG: Die Nährwerte sind gerundete Testwerte, keine Quelldaten (R17 ist nur mit dem aus den Fixtures
  * abgeleiteten Auszug grün).
@@ -19,6 +19,7 @@ import { CARB_LOADING_NOTICE_DE, type Guide } from './content/guide-schema';
 import { deriveStoragePlan } from './content/meal-prep-checks';
 import type { MealPrepPlan } from './content/meal-prep-plan-schema';
 import { catalogFor, FIXTURE_FOODS, RECIPE_META } from './content/nutrition-fixtures';
+import { type PackageSize, packageSizeContentId } from './content/package-size-schema';
 import type { NutritionCatalogContext } from './content/recipe-checks';
 import type { IngredientRole, Recipe } from './content/recipe-schema';
 import type { IngredientSubstitution } from './content/substitution-schema';
@@ -217,6 +218,29 @@ export const DEMO_SUBSTITUTIONS: readonly IngredientSubstitution[] = [
   demoSubstitution('honig', 'zucker', 'sweet', 0.8, 'Etwas weniger Zucker als Honig nehmen.'),
 ];
 
+/**
+ * Packungsgrößen mit TESTWERTEN (Etappe N11): übliche Handelsgröße in Gramm (R24 grün). Nur für den Redaktionsbereich
+ * und spätere Resteplanung (N13/N14) – die App nutzt sie in N11 noch nicht.
+ */
+export const DEMO_PACKAGE_SIZES: readonly PackageSize[] = (
+  [
+    ['champignons', 250],
+    ['haehnchenbrust', 400],
+    // Stückware = kleinste übliche Kaufeinheit = ein Stück (Stückgewicht im Beispiel-Katalog 150 g, Wächter N11 H7).
+    ['paprika', 150],
+    ['reis', 500],
+    ['spaghetti', 500],
+    ['tofu', 200],
+  ] as const
+).map(([foodId, grams]) => ({
+  id: packageSizeContentId(foodId),
+  version: 1,
+  status: 'draft',
+  food_id: foodId,
+  package_size_g: grams,
+  meta: { ...RECIPE_META },
+}));
+
 const GUIDE_META: Guide['meta'] = {
   origin: 'manual',
   model: null,
@@ -310,6 +334,11 @@ export function demoNutritionContent(): DemoNutritionContent {
         kind: 'ingredient_substitution',
         fileName: `${sub.id}.json`,
         data: structuredClone(sub),
+      })),
+      ...DEMO_PACKAGE_SIZES.map((entry): NutritionContentFile => ({
+        kind: 'package_size',
+        fileName: `${entry.id}.json`,
+        data: structuredClone(entry),
       })),
     ],
     catalog: catalogFor(FIXTURE_FOODS),

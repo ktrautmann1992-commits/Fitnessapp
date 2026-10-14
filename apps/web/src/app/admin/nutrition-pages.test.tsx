@@ -16,6 +16,7 @@ import FoodDetailPage from './lebensmittel/[id]/page';
 import FoodsPage from './lebensmittel/page';
 import SubstitutionsPage from './austausch/page';
 import MealPrepPage from './meal-prep/page';
+import PackageSizesPage from './packungen/page';
 import GuidesPage from './ratgeber/page';
 import RecipeDetailPage from './rezepte/[id]/page';
 import RecipesPage from './rezepte/page';
@@ -197,6 +198,17 @@ describe(
       expect(page).toContain('R23H');
       expect(page).toContain('Freigabe per ID');
       expect(page).toContain('R23');
+    });
+
+    it('Packungsgrößen (N11): Lebensmittel mit Gramm, ID, Status und Freigabe per ID', async () => {
+      const page = text(render(await PackageSizesPage()));
+      expect(admin.packageSizes.length).toBeGreaterThan(0);
+      expect(page).toContain(`${admin.packageSizes.length} Einträge`);
+      expect(page).toContain('Tofu natur: 200 g');
+      expect(page).toContain('packung-tofu');
+      expect(page).toContain('Freigabe per ID');
+      expect(page).toContain('R24');
+      expect(page).toContain('5.000 g');
     });
   },
 );

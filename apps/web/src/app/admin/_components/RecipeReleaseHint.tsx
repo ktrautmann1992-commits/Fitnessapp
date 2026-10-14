@@ -79,13 +79,13 @@ export function RecipeReleaseHint({
 }
 
 /**
- * Freigabe von Meal-Prep-Plänen, Ratgebern und Austausch-Einträgen per ID (Gründer-Entscheidung 14.10.2026,
- * Wächter-Empfehlung; Austausch seit Etappe N9).
+ * Freigabe von Meal-Prep-Plänen, Ratgebern, Austausch-Einträgen und Packungsgrößen per ID (Gründer-Entscheidung
+ * 14.10.2026, Wächter-Empfehlung; Austausch seit Etappe N9, Packungsgrößen seit N11).
  */
 export function IdReleaseHint({
   kind,
 }: {
-  kind: 'meal_prep_plan' | 'guide' | 'ingredient_substitution';
+  kind: 'meal_prep_plan' | 'guide' | 'ingredient_substitution' | 'package_size';
 }) {
   return (
     <section className={styles.section} aria-labelledby="freigabe-per-id">
@@ -107,7 +107,9 @@ export function IdReleaseHint({
             ? 'Freigegeben wird ein Plan nur, wenn alle seine Rezepte danach freigegeben sind (schon vorher oder im selben Lauf – dann die Rezept-IDs mit angeben) und kein roter Befund bleibt (Aufbewahrung nach R9/R20).'
             : kind === 'guide'
               ? 'Freigegeben wird ein Ratgeber nur ohne roten Befund (u. a. Health-Claims-Textregeln).'
-              : 'Freigegeben wird ein Austausch nur ohne roten Befund (R23: beide Lebensmittel freigegeben und katalog-geprüft, Faktor hält die Messgröße der Rolle ±10 %, kein Alkohol; Hinweis-Text ohne Heilversprechen).'}
+              : kind === 'package_size'
+                ? 'Freigegeben wird eine Packungsgröße nur ohne roten Befund (R24: Lebensmittel freigegeben und katalog-geprüft, 1–5.000 g, nicht kleiner als ein Stück, je Lebensmittel ein Eintrag). Bitte die Grammzahl mit einer üblichen Packung im Laden vergleichen.'
+                : 'Freigegeben wird ein Austausch nur ohne roten Befund (R23: beide Lebensmittel freigegeben und katalog-geprüft, Faktor hält die Messgröße der Rolle ±10 %, kein Alkohol; Hinweis-Text ohne Heilversprechen).'}
         </li>
         <li>
           Ist <strong>ci</strong> grün: Pull Request <strong>mergen</strong> – erst das ist die

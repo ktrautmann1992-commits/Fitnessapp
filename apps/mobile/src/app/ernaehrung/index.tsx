@@ -337,6 +337,14 @@ export default function NutritionDayScreen() {
           testID="nutrition-recipe-search"
         />
       ) : null}
+      {view.library.result.library.recipes.length > 0 ? (
+        <Button
+          label={t.nutrition.fridge.open}
+          variant="secondary"
+          onPress={() => router.push('/rezepte/kuehlschrank' as Href)}
+          testID="nutrition-fridge-search"
+        />
+      ) : null}
       {(readable?.length ?? 0) > 0 ? (
         <Button
           label={t.nutrition.guides.open}
