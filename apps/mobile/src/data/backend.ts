@@ -1,6 +1,7 @@
 import type {
   ConsentType,
   DataExportFile,
+  MealPlanWeek,
   NutritionLibrary,
   PreferenceChange,
   PlanLibrary,
@@ -243,6 +244,17 @@ export interface Backend {
      */
     force?: boolean;
   }): Promise<NutritionLibraryResult | null>;
+  /**
+   * Essensplan einer Woche speichern (Etappe N5, docs/PLAN-PHASE-5.md 7.3/7.5): ersetzt den Plan derselben Woche.
+   * Testmodus: Gerätespeicher mit denselben Regeln wie `save_meal_plan` (meal-plan-rows.ts); Supabase-Modus erst mit
+   * Etappe N7 (bis dahin nicht unterstützt, `supportsNutrition = false`). `autoAdjusted` = automatisch neu geplant
+   * (6.6, Hinweis bis „Verstanden“). Fehler `plan_rejected` bzw. `consent_required`.
+   */
+  saveMealPlan(
+    plan: MealPlanWeek,
+    options: { autoAdjusted: boolean },
+    rows: UserRows,
+  ): Promise<UserRows>;
   /** Wartende Trainings und Entwürfe (R6). */
   pendingWorkouts(): Promise<PendingWorkouts>;
   /** Planned-Session-IDs mit noch nicht übertragenem Training (Anzeige „wird übertragen“). */

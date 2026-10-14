@@ -11,6 +11,7 @@ import type {
   GoalType,
   HealthFlag,
   HealthScreeningAnswers,
+  MealPlanWeek,
   NutritionSetupColumns,
   NutritionSetupStep,
   NutritionStep,
@@ -67,6 +68,24 @@ export type ExercisePreferenceRow = ExercisePreference & { user_id: string };
  */
 export type NutritionSetupRow = NutritionSetupColumns & { user_id: string };
 
+/**
+ * Gespeicherter Essensplan einer Woche (docs/PLAN-PHASE-5.md 6.3, 7.2, 7.5, Etappe N5) – NUR im Testmodus (Supabase-
+ * Modus bis N7 immer leer; dort Tabellen meal_plans/meal_plan_items). Höchstens ein Plan je Woche (der aktive).
+ * `plan` ist der vollständige Plan der Engine (Schnappschuss, geprüft mit `parseStoredMealPlanWeek`).
+ * SENSIBEL, wenn `uses_health_data` (Ziele, Flags oder Unverträglichkeiten eingeflossen, 7.1) – nie loggen; beim
+ * Widerruf health_data gelöscht.
+ */
+export interface MealPlanRow {
+  id: string;
+  user_id: string;
+  week_start: string;
+  uses_health_data: boolean;
+  created_at: string;
+  /** Automatisch neu geplant (6.6) – Hinweis „Dein Plan wurde an deine neuen Angaben angepasst.“ bis „Verstanden“. */
+  auto_adjusted: boolean;
+  plan: MealPlanWeek;
+}
+
 /** Alle Zeilen eines Nutzers – im Testmodus der komplette Gerätespeicher, im Supabase-Modus ein Abbild. */
 export interface UserRows {
   profile: ProfileRow | null;
@@ -105,6 +124,8 @@ export interface UserRows {
   startWeights: StartWeightRow[];
   /** Übungs-Präferenzen (Testmodus ab Etappe T2; Supabase-Modus bis T3 immer leer). */
   exercisePreferences: ExercisePreferenceRow[];
+  /** Essenspläne je Woche (Testmodus ab Etappe N5; Supabase-Modus bis N7 immer leer). */
+  mealPlans: MealPlanRow[];
 }
 
 export function emptyUserRows(): UserRows {
@@ -130,6 +151,7 @@ export function emptyUserRows(): UserRows {
     cardioLogs: [],
     startWeights: [],
     exercisePreferences: [],
+    mealPlans: [],
   };
 }
 

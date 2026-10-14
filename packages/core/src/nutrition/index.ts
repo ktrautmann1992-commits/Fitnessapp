@@ -7,6 +7,7 @@ export * from './limits';
 export * from './macros';
 export * from './meal-plan';
 export * from './meal-plan-payload';
+export * from './meal-plan-store';
 export * from './meal-prep';
 export * from './meal-prep-plan';
 export * from './notices';

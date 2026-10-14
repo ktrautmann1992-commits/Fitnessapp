@@ -479,7 +479,7 @@ function splitPlans(rows: PlanRows): { health: PlanRows; other: PlanRows } {
 /**
  * Widerruf von health_data – spiegelt den Datenbank-Trigger private.consents_after_revoke(): löscht Körperdaten,
  * Umfänge, alle Gesundheits-Checks, Unverträglichkeiten und ALLE Pläne mit uses_health_data (aktiv und ersetzt)
- * samt allen Einheiten und Übungen. Pläne ohne Gesundheitsbezug bleiben unverändert (PLAN-PHASE-3 8.2/9).
+ * samt allen Einheiten und Übungen sowie alle Essenspläne mit uses_health_data (Etappe N5). Pläne ohne Gesundheitsbezug bleiben unverändert (PLAN-PHASE-3 8.2/9).
  */
 export function applyHealthDataRevocation(
   rows: UserRows,
@@ -509,6 +509,8 @@ export function applyHealthDataRevocation(
       options.dislikeGroups,
       rows.profile?.user_id ?? '',
     ),
+    // Essenspläne mit Gesundheitsbezug (Etappe N5, docs/PLAN-PHASE-5.md 7.3/7.4) – wie meal_plans ab N7.
+    mealPlans: rows.mealPlans.filter((plan) => !plan.uses_health_data),
     ...other,
   });
 }

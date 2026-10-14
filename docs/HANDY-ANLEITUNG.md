@@ -130,6 +130,25 @@ Vercel zeigt die App im Handy-Browser, Expo baut die echten Apps in der Cloud.
    Häkchen „stattdessen unter ‚mag ich nicht‘“ → danach Ernährung ohne Kalorienziel.
 8. Alles einmal hell und einmal dunkel ansehen.
 
+**Woche, Tauschen, automatische Anpassung (Etappe N5a, Testmodus)** – mit dem Testkonto aus Schritt 1:
+
+1. **Ernährung** → unten **„Wochenansicht“** → Montag bis Sonntag mit Mahlzeiten und Tagessumme; **„Diese Woche“** /
+   **„Nächste Woche“** umschalten.
+2. **„Andere Vorschläge“** → Nachfrage bestätigen → andere Rezepte ab heute. Seite neu laden → die neuen Rezepte
+   bleiben (der Plan ist jetzt auf dem Gerät gespeichert).
+3. Zurück zur Tagesansicht → unter einer Mahlzeit **„Rezept tauschen“** (am besten beim Snack nachmittags) →
+   „Getauscht – neu: …“. Mit den wenigen Beispiel-Rezepten kommt oft „kein anderes passendes Rezept“ – das ist
+   richtig, weil getauscht wird nur gegen ein Rezept, das in der Woche noch nicht vorkommt. Im **Flugmodus** geht das
+   Tauschen auch.
+4. **Einstellungen → Ernährung ändern** → z. B. Erdnüsse „Unverträglich“ → Ernährung öffnen → Hinweis **„Dein Plan
+   wurde an deine neuen Angaben angepasst.“**, keine Erdnuss-Rezepte mehr ab heute → **„Verstanden“** → Hinweis weg.
+5. **Einstellungen → Gesundheits-Check wiederholen** → „schwanger“ = Ja → Ernährung: Plan ab heute ohne Zahlen und ohne rohe Eier,
+   Räucherfisch o. Ä.; die Tage vor heute bleiben, wie sie waren (Rezepte), aber auch dort ohne kcal.
+6. Mit einem frischen Testkonto (ohne Schwangerschaft): in der Adresszeile hinter den Vorschau-Link
+   `/onboarding/body_metrics?edit=1` setzen → **Gewicht** um etwa 10 kg erhöhen → Ernährung: Hinweis „Dein Bedarf hat
+   sich geändert“ mit Knopf **„Plan aktualisieren“** → Portionen ab heute neu.
+7. Die **Einkaufsliste** und der **Meal-Prep-Kochtag** kommen mit Etappe N5b.
+
 **Redaktionsbereich Ernährung (Etappe N2d):** Vorschau-Link der Website → `/admin` → anmelden → oben **Rezepte**,
 **Lebensmittel**, **Meal-Prep**, **Ratgeber**. Rezepte: Kategorie antippen → Zahlen (Entwürfe, rot, Zutaten ohne
 Katalog-Prüfung, offene Annahmen, Abweichungen) und je Rezept „Sammelfreigabe: wird freigegeben / übersprungen – Grund“;

@@ -984,7 +984,12 @@ export function buildMealPlanWeekDetailed(
     plan: assembleWeek(repairOrphanLeftovers(days, weekStart), {
       weekStart,
       variant,
-      usesHealthData: targets.usesHealthData || profile.intolerances.length > 0,
+      // Übernommene vergangene Tage (Faktoren, Ersatz, leere Plätze) tragen den Gesundheitsbezug des alten Plans
+      // weiter (Wächter N5a S1) – sonst würde ein Widerruf den neu geplanten Plan nicht löschen.
+      usesHealthData:
+        targets.usesHealthData ||
+        profile.intolerances.length > 0 ||
+        (existing !== null && existing.usesHealthData && days.some((d) => d.date < today)),
       mealPrepPlanId: internal.mealPrepPlanId ?? null,
     }),
     aboveCeilingDays,

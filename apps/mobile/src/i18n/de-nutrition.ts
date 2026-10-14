@@ -210,6 +210,48 @@ export const deNutrition = {
     drafts_allergens_unreviewed:
       'Allergene noch nicht fachlich geprüft – bei Allergien bitte nicht verwenden.',
   },
+  // --- Gespeicherter Plan, Woche, Tauschen (6.3 Nr. 7, 6.6, 8.2 Nr. 2–3, Etappe N5) ---------------------------
+  plan: {
+    autoAdjusted: 'Dein Plan wurde an deine neuen Angaben angepasst.',
+    autoAdjustedPast: 'Vergangene Tage bleiben unverändert.',
+    autoAdjustedOk: 'Verstanden',
+    updateSuggested:
+      'Dein Bedarf hat sich geändert. Mit „Plan aktualisieren“ passen wir die Portionen und Rezepte ab heute an.',
+    update: 'Plan aktualisieren',
+    updated: 'Dein Plan ist ab heute aktualisiert.',
+    other: 'Andere Vorschläge',
+    otherTitle: 'Andere Vorschläge?',
+    otherText:
+      'Wir schlagen dir ab heute andere Rezepte vor. Getauschte Rezepte ab heute werden dabei ersetzt; vergangene Tage bleiben unverändert.',
+    otherConfirm: 'Andere Vorschläge',
+    otherDone: 'Hier sind andere Vorschläge ab heute.',
+    swap: 'Rezept tauschen',
+    swapA11y: (slot: string, title: string) => `Rezept tauschen: ${slot}, ${title}`,
+    swapped: (title: string) => `Getauscht – neu: ${title}.`,
+    swapFailed: {
+      no_alternative:
+        'Für diese Mahlzeit gibt es gerade kein anderes passendes Rezept, das in deinen Tag passt.',
+      past_day: 'Vergangene Tage bleiben unverändert.',
+      not_found: 'Diese Mahlzeit gibt es nicht mehr. Bitte lade die Ansicht neu.',
+      replan_needed:
+        'Dein Plan muss zuerst an deine Angaben angepasst werden. Bitte öffne die Ernährung erneut.',
+    },
+    saveFailed:
+      'Dein Essensplan konnte gerade nicht gespeichert werden. Angezeigt wird trotzdem der Plan nach deinen aktuellen Angaben.',
+    actionFailed: 'Das hat nicht geklappt. Bitte versuche es noch einmal.',
+    readOnlyWeek: 'Diese Woche liegt zurück und lässt sich nicht mehr ändern.',
+    weekView: 'Wochenansicht',
+  },
+  week: {
+    title: 'Essensplan der Woche',
+    range: (from: string, to: string) => `${from} bis ${to}`,
+    thisWeek: 'Diese Woche',
+    nextWeek: 'Nächste Woche',
+    dayTotal: (kcal: string) => `Tagessumme: ${kcal} kcal`,
+    openDay: (day: string) => `${day} öffnen`,
+    noMeals: 'Keine Mahlzeiten geplant.',
+    past: 'vergangen',
+  },
   actions: {
     grantConsent: 'Einwilligung erteilen',
     healthCheck: 'Gesundheits-Check machen',
