@@ -1106,7 +1106,7 @@ Neue Prüfregeln (Teil von `content:validate`):
 
 **N11 – Kühlschrank-Suche und Packungsgrößen (Prompt D, KONZEPT 6.11, gratis).** _Umgesetzt im Testmodus (14.10.2026), siehe Umsetzungsstand N11._ Core `fridge-search.ts`: Übereinstimmung = Anteil vorhandener Zutaten gewichtet nach Menge (Vorrat/Gewürze zählen wenig), danach dieselben harten Filter wie die Rezeptsuche, stabile Sortierung; Auswahl wird nicht gespeichert; Zahlen-Schalter (S12). Batch-Art `package-size` → Feld `package_size_g` → `draft` → Freigabe (Plausibilität 1–5.000 g). _DoD:_ Tests (keine Zutat, alle Zutaten, nur Gewürze, Ausschlüsse wirken), App „Was habe ich da?“.
 
-**N12 – Einkaufsliste weitergeben (Prompt F „Sofort“, KONZEPT 6.13, gratis).** `shoppingListToText(list)` in Core (nach Abteilung, Produktarten und Mengen in g/Stück, **ohne kcal, ohne Gründe, ohne Körpergewicht**; Häkchen optional); System-Teilen-Dialog (nativ `Share`, Web `navigator.share` bzw. Kopieren); PDF aus N6. Hinweis vor dem Weitergeben, wenn `uses_health_data` bzw. Ersatzprodukte enthalten sind (wie K4). **Händler-Modul** `packages/core/src/retail/` nur als Schnittstelle (`RetailProvider`) + Feature-Flag `retail_integration` (aus), **ohne Händler**, ohne Netzwerkaufruf. **Bedingungen für das Einschalten des Flags (K5):** eigene Einwilligung für die Übermittlung, DSFA-Ergänzung, Datenminimierung (nur Produktarten und Mengen, keine Ersatz-Hinweise, keine Plan- oder Profildaten), offizielle Schnittstelle bzw. Partnerprogramm, Kennzeichnung „Anzeige“. Gemeinsame Liste im Paar-Modus → P1. _DoD:_ Tests Text (Escaping, leere Liste, Vorrat), Playwright Teilen/Kopieren, Flag aus = kein Knopf.
+**N12 – Einkaufsliste weitergeben (Prompt F „Sofort“, KONZEPT 6.13, gratis).** _Umgesetzt im Testmodus (14.10.2026), siehe Umsetzungsstand N12._ `shoppingListToText(list)` in Core (nach Abteilung, Produktarten und Mengen in g/Stück, **ohne kcal, ohne Gründe, ohne Körpergewicht**; Häkchen optional); System-Teilen-Dialog (nativ `Share`, Web `navigator.share` bzw. Kopieren); PDF aus N6. Hinweis vor dem Weitergeben, wenn `uses_health_data` bzw. Ersatzprodukte enthalten sind (wie K4). **Händler-Modul** `packages/core/src/retail/` nur als Schnittstelle (`RetailProvider`) + Feature-Flag `retail_integration` (aus), **ohne Händler**, ohne Netzwerkaufruf. **Bedingungen für das Einschalten des Flags (K5):** eigene Einwilligung für die Übermittlung, DSFA-Ergänzung, Datenminimierung (nur Produktarten und Mengen, keine Ersatz-Hinweise, keine Plan- oder Profildaten), offizielle Schnittstelle bzw. Partnerprogramm, Kennzeichnung „Anzeige“. Gemeinsame Liste im Paar-Modus → P1. _DoD:_ Tests Text (Escaping, leere Liste, Vorrat), Playwright Teilen/Kopieren, Flag aus = kein Knopf.
 
 **N13 – Portionsfaktor und Reste-Score (Prompt E, Logik, Core).**
 
@@ -3007,3 +3007,177 @@ Befund – kein Weg zeigt ein Rezept, das `filter.ts` ausschließt). Umgesetzt:
   (Netz/Schale), wenn Stückware meist so verkauft wird; danach Prompt und Beispielwert anpassen._
 - **G4** Mit „Daumen runter“ abgelehnte Rezepte in der Kühlschrank-Suche zeigen (jetzt ja, wie Rezeptsuche) oder
   ausblenden? _Empfehlung: so lassen wie die Rezeptsuche; bitte bestätigen._
+
+### N12 – Einkaufsliste weitergeben (umgesetzt, 14.10.2026, ohne Commit)
+
+Umfang wie 19.7 N12 (Prompt F „Sofort“, KONZEPT 6.13): gratis, rein regelbasiert – keine KI. Nur Testmodus; im
+Supabase-Modus zeigt die Ansicht wie Einkaufsliste und PDF „nicht unterstützt“ (bis N7). **Vereinbarkeit mit „Kein
+Teilen, keine Community“ (CLAUDE.md) geprüft:** „Weitergeben“ ist laut KONZEPT 6.13 und 18 das **private Weitergeben
+durch die Person selbst** an Menschen oder Apps ihrer Wahl (System-Teilen-Dialog bzw. Kopieren) – kein öffentliches
+Profil, kein Feed, keine Sichtbarkeit für andere Nutzer, kein Link auf die App, nichts geht an einen Server, nichts wird
+gespeichert. Damit liegt es innerhalb der Regel; ein öffentlicher oder app-interner Austausch wurde **nicht** gebaut.
+
+1. **Core** `packages/core/src/nutrition/shopping-list-share.ts` (Konstante `SHOPPING_LIST_SHARE` in `constants.ts`):
+   - `shoppingListToText(list, options)` → `{ ok, text, itemCount, omittedForLength }` bzw. `empty` (Liste leer) /
+     `nothing_selected` (mit der Auswahl bleibt nichts). Aufbau: „Einkaufsliste TT.MM.JJJJ – TT.MM.JJJJ“, Abteilungen in
+     fester Reihenfolge (5.5) mit Zeilen „- 500 g Haferflocken“, „- 3 Stück Bananen“, „- Salz – nach Geschmack“, eigene
+     Einträge ohne Menge; am Ende „Vorrat (hast du wahrscheinlich da)“. Deterministisch.
+   - **Datenminimierung über das Schema:** Die Eingabe wird mit `z.object` auf Name, Menge, Einheit, Abteilung und die
+     Kennzeichen Vorrat/eigen/erledigt/nicht-mehr-im-Plan reduziert; `usesHealthData`, `substituteFor`, `foodId`,
+     `itemKey` und Markierungen erreichen den Textaufbau nicht. Keine kcal, keine Gründe, kein Körpergewicht, kein Ziel,
+     keine Unverträglichkeit, kein „statt …“, keine Links/Tracking/Affiliate.
+   - Optionen `shoppingListShareOptionsSchema` (Zod strikt): `includeChecked` (Standard aus – „Häkchen optional“: mit
+     „(erledigt)“), `includePantry` (an), `includeManual` (an). „Nicht mehr im Plan“ steht nie drin (wie im PDF).
+   - **Mengen:** `shareAmountText` rundet wie die Liste auf Kaufschritte (`roundShoppingAmount`, idempotent), ganze
+     Zahlen mit Tausenderpunkt („1.250 g“); ungültige Mengen (0, negativ, NaN, ∞, über 1.000.000) → ohne Menge, nie
+     „0 g“ und nie Exponentialschreibweise. Ungültige Eingaben (Zeitraum endet vor dem Beginn, kaputte Einträge,
+     unbekannte Optionen) ergeben `{ ok: false, reason: 'invalid' }` statt eines Wurfs.
+   - **Escaping** (`sanitizeShareLabel`, Klartext ohne Auszeichnungssprache): Unicode-NFC (Umlaute einheitlich),
+     Steuerzeichen/Zeilenumbrüche → Leerzeichen (eine Zeile je Eintrag, keine eingeschleusten Überschriften),
+     **alle** unsichtbaren Zeichen entfernt (ganze Kategorie Cf inkl. Tag-Zeichen U+E0000–E007F, dazu U+034F,
+     Hangul-Füller, Variantenwähler; ZWJ und U+FE0E/FE0F nur innerhalb von Emoji-Sequenzen), einzelne Surrogate
+     entfernt, Emojis bleiben, Links in eigenen Einträgen ohne Anhang ab „?“/„#“ (auch ohne Wortgrenze),
+     `javascript:`/`vbscript:` → „[Link entfernt]“ (keine weitergehende Link-Erkennung: Kurzlinks oder Domains ohne
+     Schema bleiben), höchstens 100 Graphem-Cluster je Eintrag (Kürzung ohne halbe Emojis/Flaggen).
+   - **Länge:** höchstens 60.000 Zeichen (WhatsApp-Grenze 65.536); darüber ganze Zeilen und sichtbar „… und N weitere
+     Einträge (Liste zu lang – nutze das PDF)“ – nie stilles Weglassen.
+   - `shoppingListShareNotice(list, options)` → `required`, `usesHealthData`, `substituteLabels`: Hinweis nötig bei
+     Gesundheitsbezug der Liste **oder** wenn die gewählte Auswahl Ersatzprodukte/ausgetauschte Zutaten (N9) enthält;
+     genannt werden alle Ersatz-Einträge der Auswahl – auch solche, die wegen der Längengrenze gekürzt würden (sichere
+     Richtung, Wächter N12 H4; Vormerkung N9 S5). `shoppingListShareNoticeKey` = Schlüssel für „bestätigt“ aus
+     Zeitraum, Gesundheitsbezug, Ersatz-Einträgen und Text-Prüfsumme (Wächter N12 S3).
+   - **Händler-Modul** `packages/core/src/retail/provider.ts`: `RetailProvider` (nur `official_api`/`partner_program`,
+     Kennzeichnung „Anzeige“ im Typ), `RETAIL_PROVIDERS = []`, `RETAIL_INTEGRATION_CONDITIONS` (K5: Einwilligung
+     Übermittlung, DSFA, Datenminimierung, offizielle Schnittstelle, „Anzeige“), `retailOrderLines` (nur offene
+     Plan-Einträge mit Produktart und Menge – ohne Vorrat, eigene Einträge, Ersatz-Einträge, IDs; Liste aus einem Plan
+     mit Gesundheitsbezug → keine Zeilen, bis G7 entschieden ist), `retailIntegrationAvailable` (Flag **und** Händler
+     **und** die ausdrücklichen Eingaben Einwilligung, DSFA ergänzt, offizielle Schnittstelle). Flag
+     `FEATURE_FLAGS.retail_integration` in `constants.ts` ist aus. Kein Netzwerkaufruf.
+2. **App** (`apps/mobile`, Testmodus): Knopf **„Weitergeben“** in der Einkaufsliste → neuer Bildschirm
+   **`einkaufsliste/weitergeben.tsx`**: Hinweis zum Inhalt, Auswahl (Erledigte / Vorrat / eigene Einträge), Vorschau des
+   **genauen** Texts (markierbar), **„Weitergeben“** (nativ `Share` aus React Native – keine neue native Abhängigkeit;
+   Web `navigator.share`), im Web zusätzlich **„Text kopieren“** (`navigator.clipboard`); Rückfall-Kette Teilen →
+   Kopieren → „Markiere den Text“ (`lib/share-text.ts`/`.native.ts`). Vor jedem Weitergeben mit Hinweis-Pflicht der Dialog
+   **„Bevor du weitergibst“** (Gesundheitsbezug; bei Ersatz/Austausch „Betrifft: …“); bestätigt gilt nur für genau
+   diesen Stand während des Besuchs der Ansicht. „Stattdessen als PDF speichern“ → Druckansicht aus N6. Zustände:
+   Laden, Fehler (Bestand), nicht unterstützt, Sperre ohne Einwilligung, unvollständig, kein Plan, leere Liste, nichts
+   ausgewählt, gekürzt, abgebrochen, kopiert, manuell, Fehler beim Teilen (ohne Details). Händler-Knopf nur, wenn
+   `retailIntegrationAvailable` – heute nie. Texte in `i18n/de-nutrition.ts` (`share`). Nichts wird gespeichert
+   (Auswahl nur im Ansichtszustand), nichts geloggt, kein Server-Aufruf.
+3. **Tests:** Core `n12-share.test.ts` (28): Aufbau (genauer Text, Abteilungs-Reihenfolge, leer/`nothing_selected`,
+   Häkchen optional, Vorrat/eigene abwählbar, Optionen strikt, deterministisch), Mengen-Rundung (Kaufschritte,
+   Tausenderpunkt, ganze Stück, ungültige Mengen), Escaping (NFC-Umlaute, Emojis mit ZWJ/Hautfarbe, einzelne Surrogate,
+   eingeschleuste Zeilen, Bidi/unsichtbar, Markdown bleibt Text, Links ohne Tracking, Kürzung nach Codepunkten), sehr
+   lange Liste (300 vollständig; 1.100 → sichtbar gekürzt, ≤ 60.000, nur ganze Zeilen), **keine Gesundheitsdaten**
+   (Text identisch bei anderem Gesundheitsbezug/Ersatz-Hinweisen/IDs; kein „statt“, kein Original, keine kcal/Gründe/
+   Gewicht/Links; echte Liste aus `buildShoppingList` mit Ersatzprodukt und Austausch), Hinweis (Gesundheitsbezug,
+   Ersatz allein, nur ausgewählte Einträge, Abhaken), **Eigenschaftstest** (200 zufällige Listen mit Sonderzeichen:
+   jede ausgewählte Zeile genau einmal, ≤ maxChars, NFC, deterministisch; Zeitlimit 30 s), Händler-Modul (Flag aus,
+   keine Händler, Bedingungen, Tor, Datenminimierung). Strukturtest K2 kennt `shopping-list-share.ts`. App-Vitest
+   `data/nutrition-n12.test.ts` (3: echte Wochen mit Laktose, Gluten+Erdnüsse, Schwangerschaft → keine
+   Gesundheitsdaten im Text, Hinweis nennt das Ersatzprodukt, nichts geloggt), `lib/share-text.test.ts` (5: Teilen,
+   Abbrechen, ohne API → Kopieren, `canShare` nein/Fehler → Kopieren, ohne Zwischenablage → manuell; kein `fetch`, keine
+   Konsole), `lib/share-text.native.test.ts` (3). Playwright `e2e/nutrition-share.spec.ts` (3): Vorschau ohne
+   Gesundheitsdaten, Hinweis → Abbrechen gibt nichts weiter → Weiter → `navigator.share` mit genau dem Vorschau-Text,
+   zweites Mal ohne Hinweis, Auswahl, **ohne Netz**, Gerätespeicher unverändert, keine fremden Anfragen, **kein
+   Händler-Knopf**, „(erledigt)“; Rückfall ohne Web Share API (Kopieren, ohne Zwischenablage „manuell“); nach einem
+   Zutaten-Austausch nennt der Hinweis die Einträge, die alle im Text stehen.
+
+**Präzisierungen (vom Plan nicht ausdrücklich geregelt, vorsichtig gelöst):**
+
+- **Inhalt minimal:** Titel mit Zeitraum, Abteilungen, Einträge, Vorrat. **Nicht** im Text: über „Zur Einkaufsliste“
+  hinzugefügte Rezept-Titel (im PDF stehen sie), Markierungen („Menge geändert“, „nicht mehr im Plan“, „passt nicht zu
+  deiner Ernährungsform“), kein App-Name, kein Link, keine Werbung.
+- **„Häkchen optional“** = Auswahl „Erledigte Einträge mitnehmen“, Standard aus (der Text ist zum Einkaufen; das PDF
+  druckt Erledigte mit Haken).
+- **Mengen in g/ml/Stück:** Flüssigkeiten bleiben in ml wie in der Liste (19.7 nennt „g/Stück“); keine Umrechnung in
+  Liter.
+- **Eigene Einträge** stehen bereinigt, aber sonst so drin, wie die Person sie geschrieben hat (Hinweis in der Ansicht;
+  abwählbar). Was sie selbst hineinschreibt, ist ihre Entscheidung – die App fügt nichts hinzu. Links darin verlieren
+  ihren Anhang (Tracking-/Partner-Parameter); `javascript:`-Links werden ersetzt. Eine echte Link-Erkennung gibt es
+  bewusst nicht – „ohne Links“ gilt für das, was die App selbst schreibt.
+- **Hinweis-Bedingung** = `usesHealthData` der Liste **oder** Ersatzprodukte/ausgetauschte Zutaten im Text („wie K4“
+  und Vormerkung N9 S5); „fehlende Zutaten“ (weggelassene optionale) werden im Hinweistext genannt wie beim PDF.
+  Bestätigt gilt nur innerhalb der Ansicht und für denselben Stand (Woche, Zeitraum, Gesundheitsbezug,
+  Ersatz-Einträge, Text – ändert sich etwas davon, z. B. Wochenwechsel um Mitternacht oder andere Auswahl, erscheint
+  der Hinweis erneut); nach Verlassen der Ansicht erneut. Eine offene Anfrage, deren Stand sich ändert, wird
+  verworfen (öffnet sich nie ohne neuen Tipp).
+- **Android-Rückmeldung:** Android meldet nicht, ob wirklich verschickt wurde – dort steht nur „Teilen-Dialog
+  geöffnet.“ (iOS und Web: „Weitergegeben.“ bzw. „Abgebrochen“).
+- **Kein eigener Kopieren-Knopf nativ:** React Native hat keine eingebaute Zwischenablage mehr; der System-Teilen-Dialog
+  bietet „Kopieren“ selbst an. So kommt keine neue native Abhängigkeit dazu (kein neuer EAS-Build nötig).
+- **Feature-Flag als Code-Konstante:** Es gibt noch keine Flag-Verwaltung; das Flag in `constants.ts` lässt sich nur per
+  Pull Request einschalten, ein Test hält es aus (Einschalten = bewusste Änderung mit den K5-Bedingungen). Eine
+  serverseitige Flag-Verwaltung kommt bei Bedarf mit Phase 7.
+- **Daten an Händler (später):** `retailOrderLines` lässt zusätzlich Vorrat, Erledigtes, eigene Einträge (Freitext
+  kann alles enthalten) und **Ersatz-Einträge** weg; eine Liste aus einem Plan mit Gesundheitsbezug ergibt gar keine
+  Zeilen (sichere Voreinstellung bis G7) – strenger als „nur Produktarten und Mengen“.
+- **Länge 60.000 Zeichen** (PRODUKTENTSCHEIDUNG, Begründung in `constants.ts`); reale Listen liegen weit darunter.
+
+**Gegenproben (danach zurückgesetzt; Nachträge zur Wächter-Prüfung unten):** (1) Hinweis ignoriert Ersatzprodukte (`required` nur bei Gesundheitsbezug) →
+Core 2 rot. (2) Gesundheitsbezug in die Titelzeile geschrieben (Schema durchlässig gemacht) → Core 1 rot. (3)
+Steuerzeichen/Zeilenumbrüche nicht ersetzt → Core 2 rot. (4) Links behalten Tracking-Anhang → Core 1 rot. (5) Keine
+Längengrenze → Core 1 rot. (6) Feature-Flag `retail_integration = true` → Core 1 rot. (7) Mengen nicht gerundet →
+Core 1 rot.
+
+**EAS-Build: NICHT geprüft** (keine neue native Abhängigkeit; `Share` ist Teil von React Native). **Gründer:** in der
+echten App (HANDY-ANLEITUNG Teil 9) Einkaufsliste → Weitergeben → WhatsApp/Notizen prüfen.
+
+**So testest du es am Handy:** HANDY-ANLEITUNG Teil 7c, Abschnitt „Einkaufsliste weitergeben“.
+
+**Wächter-Prüfung N12 (14.10.2026): FREIGABEFÄHIG MIT AUFLAGEN** (Bericht `waechter-n12.md`, kein Blocker; „Kein
+Teilen“, Datenminimierung und Hinweis-Auslöser ohne Befund). Umgesetzt:
+
+- **S1** Unsichtbare Zeichen vollständig: ganze Kategorie Cf (Tag-Zeichen U+E0000–E007F, U+00AD, U+180E, U+2061–2064,
+  U+206A–206F, U+FFF9–FFFB …) plus U+034F, Hangul-Füller U+115F/1160/3164/FFA0, Khmer U+17B4/17B5, Variantenwähler
+  U+FE00–FE0F/U+E0100–E01EF und Mongolisch U+180B–180F; ZWJ nur zwischen Emojis, U+FE0E/FE0F nur nach einem Emoji bzw.
+  einer Tastenkappen-Basis. Tests: jede Klasse einzeln, Vollprüfung über **alle** Cf-Codepunkte, Emoji-Sequenzen
+  (Familie, Regenbogenflagge, Herz, Tastenkappe, Hautfarbe) bleiben, ZWJ/VS außerhalb fliegen raus,
+  `java\u200bscript:` wird erkannt.
+- **S2** Android: „Teilen-Dialog geöffnet.“ statt „Weitergegeben.“ (`Share` meldet dort immer „geteilt“); nativer Test
+  für den Android-Fall.
+- **S3** Bestätigungs-Schlüssel aus Woche, Zeitraum, Gesundheitsbezug, Ersatz-Einträgen und Text
+  (`shoppingListShareNoticeKey`); offene Anfrage mit anderem Stand wird verworfen. Tests: Core (Wochenwechsel,
+  anderer Zeitraum, andere Menge, andere Auswahl), Playwright (andere Auswahl → Hinweis erneut).
+- **S4** App-Tests `nutrition-n12.test.ts` mit Zeitlimit 60 s (wie die Geschwister-Tests).
+- **H1** Kürzung nach Graphem-Clustern (`Intl.Segmenter`, sonst Codepunkte); Test Familien-Emoji und Flaggen an der
+  Grenze.
+- **H2** Doku/Kommentare ehrlich („ohne Links“ = nichts von der App; in eigenen Einträgen nur ohne Tracking-Anhang);
+  Anhang auch ohne Wortgrenze entfernt; `javascript:`/`vbscript:` → „[Link entfernt]“. Keine weitergehende
+  Link-Erkennung.
+- **H4** Sichere Richtung: Der Hinweis nennt alle Ersatz-Einträge der Auswahl, auch gekürzte; Doku angepasst, Test.
+- **H5** Zeitraum `from > to` → `invalid`; Mengen über 1.000.000 → ohne Menge (`SHOPPING_LIST_SHARE.maxAmount`), nie
+  „1e+21 g“; ungültige Eingaben → `{ ok: false, reason: 'invalid' }` (Ansicht zeigt eine Meldung), der Hinweis wirft
+  nie (ungültig → eher ein Hinweis zu viel). Tests.
+- **H7** HANDY-ANLEITUNG nur mit Handy-Schritten (Handy-Browser ohne Teilen-Dialog statt Computer-Browser).
+- **H8** `retailOrderLines` ohne Ersatz-Einträge und ohne Zeilen bei Plänen mit Gesundheitsbezug;
+  `retailIntegrationAvailable` verlangt Einwilligung, DSFA und offizielle Schnittstelle als ausdrückliche Eingaben
+  (ohne Standardwert). Tests je fehlender Bedingung.
+- **Gegenproben zu den Auflagen (danach zurückgesetzt):** Tag-Zeichen und U+3164 nicht mehr entfernt → Core 2 rot;
+  Variantenwähler immer behalten → 2 rot; Schlüssel ohne Zeitraum und Text → 1 rot; Ersatz-Einträge an Händler → 1
+  rot; DSFA-Bedingung entfernt → 1 rot; Android meldet „Weitergegeben“ → nativ 1 rot; Mengen-Deckel entfernt → 1 rot.
+- **Nur vermerkt:** H3 (WhatsApp formatiert `*…*`/`_…_` – bleibt Text, eine Zeile je Eintrag), H6 (Nutzergeste: der
+  Stub prüft sie nicht – Praxistest am Handy, Android-Chrome und iPhone-Safari, bleibt Pflicht-Abnahme), H9 ohne
+  Befund.
+
+**Offen für die Gründer (N12, nicht umgesetzt – sichere Voreinstellung gilt; Empfehlungen des Wächters):**
+
+- **G1** Soll der Text eine Zeile „Erstellt mit Alpha5“ (ohne Link) tragen? _Jetzt: nein. Empfehlung: nein
+  (Datenminimierung, „Kein Teilen“)._
+- **G2** Standard „nur offene Einträge“ (jetzt) oder alles inkl. Erledigter? _Empfehlung: so lassen._
+- **G3** Rezept-Titel aus „Zur Einkaufsliste“ in den Text (wie im PDF)? _Jetzt: nein. Empfehlung: so lassen (Titel wie
+  „Laktosefreier …“ ließen Rückschlüsse zu)._
+- **G4** Hinweis vor jedem Weitergeben (jetzt: je Besuch der Ansicht und Stand) – oder mit „nicht mehr anzeigen“?
+  _Empfehlung: so lassen (Art.-9-Bezug)._
+- **G5** Flüssigkeiten ab 1.000 ml als Liter („1,25 l“) anzeigen? _Jetzt: ml. Empfehlung: rein kosmetisch, frei
+  entscheidbar._
+- **G6** Flag-Verwaltung: reicht die Code-Konstante bis zur ersten Händler-Anbindung, oder soll mit Phase 7 eine
+  serverseitige Flag-Tabelle kommen? _Empfehlung: Entscheidung mit Phase 7 – für die KI-Funktionen (CLAUDE.md „hinter
+  Feature-Flag“, Premium serverseitig) reicht eine Code-Konstante nicht; für `retail_integration` heute schon._
+- **G7 (neu, vor dem Einschalten der Händler-Anbindung)** Ersatzprodukt-Namen bzw. Listen aus Plänen mit
+  Gesundheitsbezug sind Rückschlüsse nach Art. 9 DSGVO und gingen an einen kommerziellen Dritten. (a) Muss
+  `transfer_consent` eine **ausdrückliche Einwilligung nach Art. 9 Abs. 2 lit. a** sein (getrennt, mit Version)?
+  (b) Werden Ersatz-Einträge bzw. Listen mit Gesundheitsbezug von der Übermittlung ausgenommen – oder kommt ein Hinweis
+  davor? _Jetzt (sichere Voreinstellung): ausgenommen – Ersatz-Einträge nie, Listen mit Gesundheitsbezug gar nicht.
+  Empfehlung des Wächters: vor dem Einschalten ausdrücklich entscheiden; K5 sagt nur „keine Ersatz-Hinweise“, der Name
+  des Ersatzprodukts ist aber selbst der Hinweis._

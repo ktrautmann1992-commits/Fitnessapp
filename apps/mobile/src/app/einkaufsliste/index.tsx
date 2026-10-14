@@ -49,7 +49,8 @@ import {
  * nach dem Neuladen), „Erledigte ausblenden“, Vorrat eingeklappt, eigene Einträge, Zeitraum wählen, über „Zur
  * Einkaufsliste“ hinzugefügte Rezepte, Markierungen „Menge geändert“/„nicht mehr im Plan“ nach einer Neuplanung
  * (W22). Laufende und nächste Woche. Rechnet nichts selbst – alles aus packages/core (shopping-list-store.ts).
- * Keine kcal, keine Gründe (Unverträglichkeiten stehen nirgends). Etappe N6: „Als PDF speichern“ (PDF P5).
+ * Keine kcal, keine Gründe (Unverträglichkeiten stehen nirgends). Etappe N6: „Als PDF speichern“ (PDF P5); Etappe N12:
+ * „Weitergeben“ (einkaufsliste/weitergeben.tsx).
  */
 export default function ShoppingListScreen() {
   const router = useRouter();
@@ -344,6 +345,13 @@ export default function ShoppingListScreen() {
         </Card>
       ) : null}
 
+      {/* Etappe N12: als Text weitergeben (System-Teilen-Dialog bzw. Kopieren), Hinweis vorher wie K4. */}
+      <Button
+        label={t.nutrition.share.open}
+        accessibilityHint={t.nutrition.share.openHint}
+        onPress={() => router.push(`/einkaufsliste/weitergeben?woche=${list.weekStart}` as Href)}
+        testID="shopping-share"
+      />
       {/* PDF P5 (11, Etappe N6): Druckansicht mit Kästchen; Hinweis-Dialog bei Gesundheitsbezug. */}
       <Button
         label={t.nutrition.printView.button}

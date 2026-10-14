@@ -459,6 +459,16 @@ Quelle: `docs/ERWEITERUNGEN-2.md` Abschnitte 1–2. Startbestand aus `alpha5-rez
   Nutzer selbst, kein öffentliches Teilen (Abschnitt 18). Inhalt wie beim PDF: nur Produkte und Mengen, keine kcal,
   keine Gründe, kein Körpergewicht; Hinweis vor dem Weitergeben, wenn Ersatzprodukte auf eine Unverträglichkeit schließen
   lassen.
+  **Umgesetzt im Testmodus (Etappe N12, 14.10.2026, `docs/PLAN-PHASE-5.md` Umsetzungsstand N12):** „Einkaufsliste →
+  Weitergeben“ mit Vorschau des genauen Texts (Abteilungen, Produktarten, Mengen in g/ml/Stück, Vorrat am Ende; wahlweise
+  mit Erledigten, ohne Vorrat, ohne eigene Einträge), System-Teilen-Dialog (nativ `Share`, Web `navigator.share`) bzw.
+  „Text kopieren“, Rückfall „Text markieren“. Der Text entsteht in `packages/core` (`shoppingListToText`) nur aus
+  Produktnamen, Mengen, Abteilung und Vorrats-/Erledigt-Kennzeichen – keine kcal, Gründe, Ziele, Unverträglichkeiten,
+  kein „statt …“, kein App-Link, keine Werbung; Links stehen nur drin, wenn die Person sie selbst in einen eigenen Eintrag
+  schreibt – dann ohne Tracking-Anhang ab „?“/„#“, `javascript:`-Links werden entfernt; unsichtbare Zeichen (auch
+  versteckter Text über Tag-Zeichen) werden entfernt. Vor dem Weitergeben erscheint ein Hinweis, wenn die Liste aus einem
+  Plan mit Gesundheitsbezug stammt oder Ersatzprodukte/ausgetauschte Zutaten enthält (diese werden dort genannt). Nichts
+  geht an einen Server, nichts wird gespeichert. Gemeinsame Liste im Paar-Modus weiter mit Phase 11 (P1).
 - **Kosten:** Preise und „Kosten pro Portion“ sind immer als **Schätzung** gekennzeichnet („ca. 1,20 € pro Portion,
   Schätzung, Stand 2026“) und nur dort sichtbar, wo eine freigegebene Schätzung vorliegt.
 - **Später – Händler-Anbindung:** Lieferdienste/Supermärkte erst, wenn geklärt ist, ob und zu welchen Bedingungen ein
@@ -466,6 +476,10 @@ Quelle: `docs/ERWEITERUNGEN-2.md` Abschnitte 1–2. Startbestand aus `alpha5-rez
   Schnittstellen**. Technisch als Modul hinter Feature-Flag; Affiliate-Links als „Anzeige“ gekennzeichnet; Affiliate
   beeinflusst nie, welches Rezept oder Produkt vorgeschlagen wird. Einschalten nur mit eigener Einwilligung,
   DSFA-Ergänzung und Datenminimierung (nur Produktarten und Mengen, keine Ersatz-Hinweise, keine Plan-/Profildaten).
+  **Vorbereitet (N12):** `packages/core/src/retail/` nur als Schnittstelle (`RetailProvider`, `retailOrderLines` =
+  Datenminimierung, `retailIntegrationAvailable`), Feature-Flag `retail_integration` in `constants.ts` **aus**, kein
+  Händler, kein Netzwerkaufruf, kein Knopf in der App. Bis zur Gründer-Entscheidung G7 (PLAN-PHASE-5 N12) gingen
+  Ersatz-Einträge und Listen aus Plänen mit Gesundheitsbezug nie an einen Händler.
 
 ## 7. Supplement-Modul
 - Nur evidenzbasiert: Proteinpulver (wenn Eiweißziel über Ernährung schwer erreichbar), Kreatin-Monohydrat, Koffein (vor Training, mit Tageslimit und Hinweis auf Schlaf), Vitamin D (Hinweis: Spiegel ärztlich prüfen lassen), bei Ausdauer: Kohlenhydrat-Gels/Elektrolyte; Omega-3 optional

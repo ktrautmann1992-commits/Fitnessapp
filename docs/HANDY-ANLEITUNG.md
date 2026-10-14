@@ -290,6 +290,29 @@ Pilze „mag ich nicht“):
 8. Mit einem zweiten Testkonto **vegan**, **Erdnüsse: Unverträglich** und **schwanger** (Gesundheits-Check): Erdnüsse,
    Räucherlachs, Ei und Milch tauchen in der Auswahl gar nicht auf; mit Banane + Tofu kommt kein Erdnuss-Rezept.
 
+**Einkaufsliste weitergeben (Etappe N12, Testmodus, gratis, ohne KI)** – mit dem Testkonto aus Schritt 1. Weitergeben
+heißt: **du selbst** schickst die Liste als Text an wen oder wohin du willst (WhatsApp, Notizen, Erinnerungen). Die App
+schickt nichts selbst, es gibt kein öffentliches Profil und nichts für andere Nutzer.
+
+1. **Ernährung → Einkaufsliste → „Weitergeben“**. **Prüfen:** Unter „So sieht der Text aus“ steht der ganze Text:
+   „Einkaufsliste … – …“, darunter die Abteilungen (z. B. „Obst & Gemüse“) mit Zeilen wie „- 500 g …“ oder „- 3 Stück
+   …“, am Ende „Vorrat (hast du wahrscheinlich da)“. **Nirgends** kcal, Gewicht, Ziel, Unverträglichkeit oder „statt“.
+2. **„Weitergeben“** antippen → zuerst kommt **„Bevor du weitergibst“** (dein Plan berücksichtigt Gesundheitsangaben).
+   „Abbrechen“ → „Abgebrochen – es wurde nichts weitergegeben.“ Nochmal → **„Weiter“** → der Teilen-Dialog deines Handys
+   geht auf (Android-Chrome, iPhone-Safari) → z. B. **WhatsApp** an dich selbst oder **Notizen** wählen. **Prüfen:**
+   Der Text sieht dort genauso aus wie in der Vorschau (Umlaute, Emojis aus eigenen Einträgen).
+3. Häkchen **„Vorrat mitnehmen“** aus → der Vorrat verschwindet aus der Vorschau. Auf der Liste einen Eintrag
+   abhaken → in „Weitergeben“ fehlt er; mit **„Erledigte Einträge mitnehmen“** steht er mit „(erledigt)“ da.
+4. **„Text kopieren“** antippen → „Text kopiert – füge ihn … ein“ → in einer Notiz einfügen. Im Handy-Browser ohne
+   Teilen-Dialog (z. B. Firefox auf Android) kopiert auch „Weitergeben“ den Text. Geht beides nicht, steht „Markiere den
+   Text oben und kopiere ihn selbst“.
+   **Echte App auf Android:** Nach dem Teilen-Dialog steht nur „Teilen-Dialog geöffnet.“ (Android meldet nicht, ob du
+   wirklich etwas verschickt hast).
+5. **Nach einem Zutaten-Austausch** („Zutaten austauschen“ oben) erneut „Weitergeben“ → der Hinweis nennt unter
+   **„Betrifft: …“** die ausgetauschten Zutaten (sie stehen ohne Grund in der Liste, lassen aber Rückschlüsse zu).
+6. Es gibt **keinen** Knopf „Bei einem Händler bestellen“ – die Händler-Anbindung ist vorbereitet, aber ausgeschaltet
+   (kein Händler, keine Daten an Dritte). **„Stattdessen als PDF speichern“** führt zur PDF-Ansicht (Etappe N6).
+
 **Redaktionsbereich Ernährung (Etappe N2d):** Vorschau-Link der Website → `/admin` → anmelden → oben **Rezepte**,
 **Lebensmittel**, **Meal-Prep**, **Ratgeber**, **Austausch** (N9) und **Packungen** (N11: Lebensmittel mit Gramm je
 Packung, Prüfbericht R24, Klick-Schritte „Freigabe per ID“; solange es keine gibt, steht dort „Noch keine
