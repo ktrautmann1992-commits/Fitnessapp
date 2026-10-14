@@ -1,6 +1,6 @@
 # Plan Phase 5 – Ernährungs-Engine, Essensplan und Einkaufsliste
 
-**Status:** **freigegeben, Etappen N0 (Plan), N1 (Core: Bedarf, Grenzen, Makros, Timing) und N2a (Inhalte: Schemas, Prüfregeln, Einheiten) umgesetzt** – Stand 11.10.2026. Offene Fragen 16 B: Gründer „Alles wie empfohlen“ (10.10.2026). Gegenprüfung der R2-Blocker durch den Wächter im N0-PR. **N2b Teil 1 (Quelle/Lizenz geklärt, Import-Infrastruktur, Zuordnungs-Vorschlag) umgesetzt** – der Katalog selbst entsteht nach dem Merge über den Workflow `foods-import` (Umsetzungsstand N2b). **N2c (Rezept-Import als Entwurf) und N3 (Core: Essensplan, Meal-Prep, Einkaufsliste, Rezeptsuche) umgesetzt** – Stand 12.10.2026 (Umsetzungsstand N2c/N3). **N4 (App Testmodus: Einrichtung, Tag, Rezept) umgesetzt** – Stand 12.10.2026 (Umsetzungsstand N4). **Nachtrag „Erweiterungen 2 (11.10.2026)“** in Abschnitt 19 (Fassung 2 nach Wächter-Prüfung, B1/B2 und S1–S14 eingearbeitet): Rezeptbestand aus `alpha5-rezepte.json`, Import in N2b/N2c, Umfang von Prompt C in N3–N6, neue Etappen N9–N14, W1 und P1. Fassung 3 nach Wächter-Nachprüfung `waechter-plan-5-r2.md` (Urteil „mit Auflagen“, alle Befunde eingearbeitet); Fassung 2 nach `waechter-plan-5.md`.
+**Status:** **freigegeben, Etappen N0 (Plan), N1 (Core: Bedarf, Grenzen, Makros, Timing) und N2a (Inhalte: Schemas, Prüfregeln, Einheiten) umgesetzt** – Stand 11.10.2026. Offene Fragen 16 B: Gründer „Alles wie empfohlen“ (10.10.2026). Gegenprüfung der R2-Blocker durch den Wächter im N0-PR. **N2b Teil 1 (Quelle/Lizenz geklärt, Import-Infrastruktur, Zuordnungs-Vorschlag) umgesetzt** – der Katalog selbst entsteht nach dem Merge über den Workflow `foods-import` (Umsetzungsstand N2b). **N2c (Rezept-Import als Entwurf) und N3 (Core: Essensplan, Meal-Prep, Einkaufsliste, Rezeptsuche) umgesetzt** – Stand 12.10.2026 (Umsetzungsstand N2c/N3). **N4 (App Testmodus: Einrichtung, Tag, Rezept) umgesetzt** – Stand 12.10.2026 (Umsetzungsstand N4). **N2d (Admin-Seiten Ernährung, Sammelfreigabe Rezepte pro Kategorie und Freigabe per ID in `content-review`, Fingerabdruck bestätigter Import-Annahmen) umgesetzt** – Stand 14.10.2026, drei offene Fragen von den Gründern entschieden (Umsetzungsstand N2d). **Nachtrag „Erweiterungen 2 (11.10.2026)“** in Abschnitt 19 (Fassung 2 nach Wächter-Prüfung, B1/B2 und S1–S14 eingearbeitet): Rezeptbestand aus `alpha5-rezepte.json`, Import in N2b/N2c, Umfang von Prompt C in N3–N6, neue Etappen N9–N14, W1 und P1. Fassung 3 nach Wächter-Nachprüfung `waechter-plan-5-r2.md` (Urteil „mit Auflagen“, alle Befunde eingearbeitet); Fassung 2 nach `waechter-plan-5.md`.
 **Reihenfolge (Gründer-Entscheidung 09.10.2026):** 4b-A0 (erledigt) → Übungs-Glossar und Übungstausch (erledigt bis T2; T3 später mit Supabase) → **Phase 5** → Phase 4b (A → D → E; B/C später).
 **Testphase:** zuerst nur im **Testmodus** (lokal auf dem Gerät, ohne Supabase). Supabase-Teile (Migrationen, RLS, pgTAP) sind hier vollständig geplant, kommen aber in einer späteren Etappe (N7). Einzige Ausnahme: die kleine CHECK-Migration für den Onboarding-Schritt in N4 (S8).
 
@@ -826,7 +826,7 @@ Zusätzlich: K9 (Unverträglichkeit + „mag ich“ derselben Gruppe → ausgesc
 
 **N2c – Rezepte als Entwurf.** ~60 Rezepte `draft` (mit `heated` je tierischer Zutat und `declared_pregnancy_caution`), `FOLDERS` in `bundle-content.mjs` und `CONTENT_FOLDERS` in `packages/content/src/validate.ts` um `foods`/`recipes` erweitert, Auswahl in der App über `selectNutritionContent` (R2-S6), Abdeckungsbericht. _DoD:_ `content:validate` grün, Abdeckungsbericht in CI, W24 (Bundle).
 
-**N2d – Admin-Seiten** `admin/rezepte`, `admin/lebensmittel` (nur ansehen, Checkliste Katalog-Prüfung anzeigen). Kann mit N4 zusammengelegt werden.
+**N2d – Admin-Seiten** `admin/rezepte`, `admin/lebensmittel` (nur ansehen, Checkliste Katalog-Prüfung anzeigen). Kann mit N4 zusammengelegt werden. **Umgesetzt 13.10.2026** (mit `admin/meal-prep`, `admin/ratgeber` und Sammelfreigabe 19.5; Umsetzungsstand N2d).
 
 **N3 – Core: Essensplan und Einkaufsliste.** Braucht N1 + N2a (Fixtures), nicht den ganzen Bestand. `filter.ts`, `scale.ts`, `meal-plan.ts`, `meal-prep.ts`, `replan.ts`, `shopping-list.ts`, `stable-hash.ts`, `mealPlanPayloadSchema`; CI „Beispiel-Woche + Einkaufsliste“ (mit echtem Katalog, sobald N2b/N2c da sind). _DoD:_ Tests 12.1 (Plan/Liste) + **W2** (Planband-Eigenschaftstest über `buildMealPlanWeek`), W9–W11 (Core), W15, **W22 (Core)**, K9.
 
@@ -836,7 +836,7 @@ Zusätzlich: K9 (Unverträglichkeit + „mag ich“ derselben Gruppe → ausgesc
 
 **N6 – PDF P5.** Dokumentmodell, Renderer-Blöcke, Druckansichten, Knöpfe, nativer Druck. _DoD:_ PDF-Tests aus 12.1 (inkl. K4-Formulierung), CI-Artefakt, EAS-Build Android geprüft.
 
-**N7 – Supabase.** Migrationen (Enums eigene Datei + `enums.ts`; Inhaltstabellen + `seed_content`; `nutrition_prefs`-Spalten **+ `nutritionSetupAvailable` im Supabase-Backend auf `true`** (R2-S3); `meal_plans`/`items`/`shopping_*` mit RLS, Spaltenrechten, Indizes; RPCs 7.3 inkl. Faktor-≠-1-Prüfung; Widerruf; Export), pgTAP 23–26 + Ergänzungen, `database.types.ts`, `db-sync.test.ts`, `supabase-backend.ts`, Sync-Warteschlange, geschützter Speicher. **Vorher: Fachprüfung durch eine Ernährungsfachkraft** (Gründer-Entscheidung 6). _DoD:_ `db-test` grün, Live-Test mit zwei Geräten; **Zitat- und Wertprüfung gegen die Originale** (Compendium-Codes/MET-Werte, Koletzko 2018, Janmahasatian 2005, Loucks 2011 brutto/netto, BfR-Koffein, Katch-McArdle, D-A-CH-PAL, Iraki 2019) erledigt und alle „VOR LIVEGANG FACHLICH PRÜFEN“-Stellen in `constants.ts` aufgelöst (aus N1 verschoben, Wächter N1 K6). **Erst wenn echte Konten kommen.**
+**N7 – Supabase.** Migrationen (Enums eigene Datei + `enums.ts`; Inhaltstabellen + `seed_content`; `nutrition_prefs`-Spalten **+ `nutritionSetupAvailable` im Supabase-Backend auf `true`** (R2-S3); `meal_plans`/`items`/`shopping_*` mit RLS, Spaltenrechten, Indizes; RPCs 7.3 inkl. Faktor-≠-1-Prüfung; Widerruf; Export), pgTAP 23–26 + Ergänzungen, `database.types.ts`, `db-sync.test.ts`, `supabase-backend.ts`, Sync-Warteschlange, geschützter Speicher. **Vorher: Fachprüfung durch eine Ernährungsfachkraft** (Gründer-Entscheidung 6). _DoD:_ `db-test` grün, Live-Test mit zwei Geräten; **Zitat- und Wertprüfung gegen die Originale** (Compendium-Codes/MET-Werte, Koletzko 2018, Janmahasatian 2005, Loucks 2011 brutto/netto, BfR-Koffein, Katch-McArdle, D-A-CH-PAL, Iraki 2019) erledigt und alle „VOR LIVEGANG FACHLICH PRÜFEN“-Stellen in `constants.ts` aufgelöst (aus N1 verschoben, Wächter N1 K6). **Erst wenn echte Konten kommen.** **Zusätzlich (Wächter N2d K9):** Rezept-Seed und Supabase-Tabelle transportieren `ingredients`, `steps_de`, `tip_de`, `no_cook`, Zeiten, `equipment_de`, Titel/Beschreibung und `meta.import_assumptions*` **unverändert** (fehlt `meta`, gälte der Stand als „none“ = unsichere Richtung); ein `db-sync`-/pgTAP-Test vergleicht `importAssumptionsState` vor und nach dem Seed.
 
 **N8 – Batch-Pipeline Rezepte (optional, später).** `kinds/recipe.ts` (Matrix, Prompts, Structured Output nur mit Katalog-IDs), Probelauf ohne Schlüssel, `content-generate`/`collect` mit `ANTHROPIC_API_KEY`. _DoD:_ Probelauf grün, Kostenschätzung, PR mit Entwürfen.
 
@@ -1911,3 +1911,133 @@ CHECK-Migration (S8).
 Schritt „Alltag und Training“ → „Fertig“ zeigt „Trainingstag ca. … kcal“ → „Heute“ → Karte „Essen heute“ →
 „Ernährung“ → „Beispiel-Rezepte mit Testwerten verwenden“ → Rezept antippen → Einstellungen → „Kalorienzahlen
 anzeigen“ aus → keine kcal mehr → Einwilligung widerrufen mit Häkchen „mag ich nicht“.
+
+### N2d – Admin-Seiten und Sammelfreigabe (umgesetzt, 13./14.10.2026, ohne Commit; Gründer-Entscheidungen unten)
+
+Umgesetzt nach 13 (N2d) und 19.5 (Prompt B Schritt 5):
+
+- **Core `packages/core/src/content/recipe-release.ts`** (Tests `recipe-release.test.ts`): `planRecipeRelease`,
+  `releasedRecipe`, `recipeReleaseBlockers`, `recipesInCategory`, `recipeReleaseBlockerText` – eine Stelle für die
+  Regeln der Sammelfreigabe, genutzt vom Workflow und von der Admin-Vorschau. Freigegeben wird nur ein **Entwurf**
+  der Kategorie, der im Stand **nach** der Freigabe (alle Regeln für freigegebene Inhalte, `validateContent`) keinen
+  roten Befund hat, nur **katalog-geprüfte und freigegebene** Lebensmittel nutzt (R19: freigegebenes Rezept nur mit
+  freigegebenen Lebensmitteln) und keine **unbestätigte Import-Annahme** hat. Häkchen „Import-Annahmen geprüft“ setzt
+  `meta.import_assumptions_confirmed_by` = Prüfer und berechnet `declared_pregnancy_caution` neu (Folge aus Wächter
+  N2c B1; ohne Neuberechnung wäre R13 rot – Test). Häkchen „fachlich geprüft“ setzt `expert_reviewed = true`, ein
+  vorhandenes `true` bleibt. Version bleibt (nur Status/Meta; `declared_pregnancy_caution` ändert sich nur an
+  Entwürfen, R15 greift erst bei freigegebenen Inhalten).
+- **Workflow `content-review`**: neue Eingaben `art` (`ids` | `recipe`), `kategorie` (Auswahl = `RECIPE_CATEGORY_IDS`,
+  Test gleicht die Liste ab), `fachlich_geprueft`, `annahmen_geprueft`; `ids` ist nicht mehr Pflicht (nur bei Art
+  `ids`). Skript `packages/content/src/pipeline/review-recipes.ts` (Tests `review-recipes.test.ts` mit Test-Repository):
+  prüft wie bisher alle Inhalte, Prettier, Typen; Pull Request mit Tabelle „Freigegeben“ (Annahmen, Schwangerschafts-
+  Hinweis vorher → nachher) und „Übersprungen“ mit Grund; nichts freigebbar → kein Pull Request, Gründe in der Summary.
+  Art `recipe` nur mit Status `published`. **Merge durch einen Menschen**; Hinweis „Livegang nur mit fachlich geprüft“
+  im PR-Text (Durchsetzung ab N7, Gründer-Entscheidung 6).
+- **Redaktionsbereich** (nur ansehen, serverseitige Zugangsprüfung in jeder Seite + `proxy.ts`): Bereichs-Navigation
+  Training/Rezepte/Lebensmittel/Meal-Prep/Ratgeber; `admin/rezepte` gruppiert nach Kategorie (+ „Ohne Kategorie“) mit
+  Entwürfe/freigegeben, rote Befunde, Zutaten ohne Katalog-Prüfung, offene Annahmen „durchgegart“, Abweichungen aus dem
+  Import-Bericht und „bereit zur Sammelfreigabe“ (ohne/mit Häkchen); Kategorie-Ansicht mit Grund je Rezept und
+  Klick-Schritten; `admin/rezepte/[id]`; `admin/lebensmittel` (Checkliste R19 aus 5.1.1 d, Filter „Prüfung offen“) und
+  `admin/lebensmittel/[id]` (Angaben je Checklisten-Punkt, Erwartungsliste, Nährwerte, Verwendung); `admin/meal-prep`
+  und `admin/ratgeber`. Leer-/Fehlerzustände: „Noch kein Lebensmittel-Katalog“, Fehler in Begleitdaten (dann ohne
+  Katalog prüfen, sichere Richtung), kaputte Dateien, ungültige Adresszeile (Zod). Daten: `apps/web/src/lib/admin/
+nutrition.ts` (Tests `nutrition.test.ts`), Katalog-Texte über `@fitnessapp/content/catalog` wie die App.
+- **Abweichungen aus dem Import-Bericht** im Admin: neue reine Funktion `recipeImportDeviations`
+  (`@fitnessapp/content/import-report`, `packages/content/src/import/deviations.ts`) – dieselbe Regel
+  `alpha5Deviations` wie `alpha5-import` (deklariert = Gründer-Datei ↔ berechnet). `apps/web` hängt dafür neu von
+  `@fitnessapp/content` ab (`transpilePackages`).
+- E2E `apps/web/e2e/admin.spec.ts`: neue Seiten ohne Anmeldung → Login; angemeldet Leerzustände, Checkliste,
+  Klick-Schritte, kein schreibendes Formular. **Mit Daten** (Wächter N2d S4): Render-Test
+  `apps/web/src/app/admin/nutrition-pages.test.tsx` rendert alle Ernährungs-Seiten (Übersicht, Kategorie, „ohne
+  Kategorie“, jede Rezept- und Lebensmittel-Seite, Meal-Prep, Ratgeber) mit den Beispiel-Inhalten
+  (`@fitnessapp/core/demo-nutrition` + Testplan + Test-Ratgeber, Zugang gemockt) in `vitest` (läuft in ci).
+
+**Abweichungen / Präzisierungen:**
+
+- Rote Befunde R19 (Lebensmittel) und R1 „unbestätigte Annahmen“ erscheinen in den Gründen nicht doppelt, sondern als
+  eigene Gründe („Lebensmittel nicht katalog-geprüft/freigegeben“, „Annahme nicht bestätigt“).
+- „Rezept-Prüfbericht“-Abweichungen werden im Admin aus `declared_per_serving` neu berechnet, nicht aus dem PR-Text des
+  Imports gelesen (gleiche Regel; nach Handänderung an `declared_per_serving` zeigt der Admin den neuen Stand).
+
+**Abhängigkeit (nicht N2d):** Solange es keine **freigegebenen, katalog-geprüften Lebensmittel** gibt, überspringt die
+Sammelfreigabe jedes Rezept. Dafür fehlen aus N2b Teil 2 die Option **„Katalog geprüft“** in `content-review` (R2-K6,
+Commits über die GitHub-API wegen `sources-integrity`) und ein Weg, Lebensmittel freizugeben.
+
+**Gründer-Entscheidungen 13./14.10.2026 zu den drei offenen Fragen (umgesetzt):**
+
+1. **Rezepte ohne Kategorie** (nach Import 41 von 242) → **einzeln per ID freigeben** (Variante b): `content-review`
+   Art `ids` kennt jetzt auch Rezepte, über **dieselbe Core-Funktion** `planRecipeRelease` mit der ID-Liste als
+   Auswahl – gleiche Gründe, gleiche Häkchen („fachlich geprüft“, „Import-Annahmen geprüft“), kein Weg an den Regeln
+   vorbei. Admin: Rezepte ohne Kategorie zeigen „Freigabe per ID“ und „über die Sammelfreigabe nicht erreichbar“
+   (Wächter N2d S3), die Gruppe zählt „bereit zur Freigabe per ID“.
+2. **Fingerabdruck** (Wächter N2c K1 / N2d S2, Variante a): Beim Bestätigen speichert der Core
+   `meta.import_assumptions_fingerprint` = `importAssumptionsFingerprint(rezept)` – kanonisches JSON
+   (`canonicalJson`, jetzt `content/canonical-json.ts`) über `IMPORT_ASSUMPTIONS_FINGERPRINT_FIELDS`, also `ingredients`
+   (vollständig, inkl. `heated`, Mengen, `food_id`, Notizen), `steps_de`, `no_cook` und – nach Wächter N2d Runde 2,
+   S5 – `tip_de`, `prep_minutes`, `cook_minutes`, `total_minutes`, `equipment_de`, `title_de` und `description_de`
+   (alles, was beschreibt, wie zubereitet und gegessen wird; nicht: Status, Version, `meta`, Kategorien,
+   Schlagworte, Abschnitt, Portionen, Meal-Prep-Angaben, deklarierte Werte, Kosten); zweimal FNV-1a (`stableHash`) → 16 Hex-Zeichen (Zod:
+   `importAssumptionsFingerprintSchema`). `hasUnconfirmedImportAssumptions(rezept)` (neu: nimmt das Rezept, nicht nur
+   `meta`) und `importAssumptionsState` (`none`/`open`/`changed`/`confirmed`) werten Bestätigung **ohne** oder mit
+   **abweichendem** Fingerabdruck als unbestätigt → sichere Richtung überall (App-Filter, Essensplan, CI, Admin, Seed):
+   R13 verlangt den Schwangerschafts-Hinweis, R1 ist rot bei `published` (eigene Meldung „seitdem geändert“), die
+   Freigabe überspringt das Rezept bis zur erneuten Bestätigung. Kein Kryptoschutz – gegen bewusstes Fälschen schützt
+   der menschliche Merge. Tests: Bearbeiten nach Bestätigung (Schema, Nährwerte, Filter, Freigabe, Admin).
+3. **Meal-Prep-Pläne und Ratgeber** (keine Präferenz → Wächter-Empfehlung): Art `ids` generisch für
+   Ernährungs-Inhalte, Core `planNutritionRelease(files, catalog, ids, options)` mit Regel je Art – Rezepte wie oben;
+   **Meal-Prep-Plan** nur, wenn alle `recipe_ids` nach dem Lauf freigegeben sind (vorher oder im selben Lauf ohne
+   Grund dagegen; zweiter Prüfdurchgang, in dem nur tatsächlich freigegebene Rezepte zählen) und kein roter Befund
+   bleibt (R20 inkl. Aufbewahrung nach R9); **Ratgeber** nur ohne roten Befund (R21, Textregeln inkl. Health-Claims).
+   Gelbe Hinweise (z. B. R20H „Haltbarkeit fachlich prüfen“) blockieren nicht, stehen aber im Prüfbericht des PR.
+   „Livegang nur mit fachlich geprüft“ steht als Hinweis im PR (Durchsetzung ab N7). **Lebensmittel ausdrücklich
+   nicht** über diesen Weg (Abbruch mit Hinweis auf die Katalog-Prüfung). Nur Zielstatus `published`; Zurückziehen
+   von Ernährungs-Inhalten per ID ist (wie vor N2d) nicht vorgesehen.
+
+**Weitere Wächter-Befunde N2d (umgesetzt):**
+
+- **S1:** Tests „bestätigte Annahme + weiterer Grund → `declared_pregnancy_caution` bleibt true“ (Lebensmittel mit
+  `pregnancy_caution`, zweite tierische Zutat `heated: false`) und Pipeline-Test mit `confirmAssumptions: 'true'`
+  (Datei mit Bestätigung + Fingerabdruck, PR-Tabelle „ja → **nein**“).
+- **S2:** durch Entscheidung 2 erledigt – das Häkchen „Import-Annahmen geprüft“ ist ab jetzt sicher nutzbar.
+- **S3, S4:** siehe oben (Vorschau „ohne Kategorie“, Render-Test mit Daten).
+- **K2:** `planRecipeRelease` nimmt ein vorhandenes `validateContent`-Ergebnis an; der Admin prüft den Bestand 3× statt
+  5×.
+- **K3:** Kommentar in `nutrition.ts` (Vorschau gibt probehalber alle Entwürfe zugleich frei; bei künftigen
+  rezeptübergreifenden Regeln je Kategorie rechnen).
+- **K4:** Eingaben ohne Wirkung stehen als Hinweis in der Summary (Kategorie bei Art `ids`, IDs bei Art `recipe`,
+  Häkchen bei Übungen/Vorlagen); gemischte Läufe Training + Ernährung werden abgelehnt
+  (`packages/content/src/pipeline/review-ids.ts`).
+- **K5:** PR-Text listet je Rezept die bestätigten Annahmen (Zutat, `food_id`, Begründung).
+
+**Wächter N2d Runde 2 (umgesetzt):**
+
+- **S5:** Fingerabdruck um Tipp, Zeiten, Geräte, Titel und Beschreibung erweitert (siehe Entscheidung 2); geprüft
+  wurden alle Felder des Rezept-Schemas. Teil-Objekte ohne diese Felder ergeben einen anderen Fingerabdruck
+  (sichere Richtung). Tests in `n2c-content.test.ts` (jede Feldänderung, „nur Tipp geändert → changed“).
+- **S6:** Der PR-Text listet die gelben Befunde je freigegebenem Inhalt (aus dem Prüfbericht nach dem Schreiben).
+  Ratgeber mit gelbem **R21H** (Dosierungen, Mengen je kg) werden nur mit Häkchen „fachlich geprüft“ freigegeben
+  (Grund `needs_expert_review`).
+- **K7:** `content-review` wechselt vor dem Klassifizieren der IDs auf `main`; klare Meldungen für „auf main nicht
+  gefunden“ (mit Liste und Hinweis) und gemischte Läufe (welche IDs Training, welche Ernährung).
+- **K10:** Das Orakel `usedFoodViolations` rechnet wieder unabhängig (nur offene Annahmen; bestätigte → Abbruch).
+- **K11:** Klick-Weg in SETUP 3b „freigegebenes Rezept ändern“.
+- **K12:** Formatierung oben repariert.
+- **K9:** in die Aufgabenliste von N7 übernommen.
+- **K8 – nur dokumentiert, nicht umgesetzt:** Eine CI-Sperre „`import_assumptions_confirmed_by`/`_fingerprint` nur auf
+  Branches `content-review/*` von `github-actions[bot]`“ soll dem Muster R2-K6 folgen. Dieses Muster ist **noch nicht
+  gebaut** (die CI-Prüfung für `catalog_reviewed_*` kommt erst mit „Katalog geprüft“, N2b Teil 2). Beide Sperren
+  zusammen dort umsetzen; bis dahin schützt der menschliche Merge (PR zeigt die Änderung an `meta`).
+
+**Noch offen (bewusst nicht in N2d):**
+
+- **K1 (Wächter N2d):** Die Abweichungsregel (`alpha5Deviations`, Lesarten, Mindestabstände) liegt in
+  `packages/content/src/foods/import-source.ts` und wird vom Admin genutzt – laut CLAUDE.md gehört Fachlogik nach
+  `packages/core`. Beim nächsten Anfassen verschieben (vorbestehend aus N2b).
+- **K6 (Wächter N2d):** Die Checkliste R19 steht als Text-Konstante in `CatalogChecklist.tsx`; mit der Option
+  „Katalog geprüft“ (N2b Teil 2) nach core verschieben (eine Quelle für Admin und Workflow).
+
+**So testest du es am Handy:** Vorschau-Link der Website → `/admin` → anmelden → **Rezepte** (heute „Noch keine
+Rezepte“ und Hinweis auf den fehlenden Katalog), **Lebensmittel** (Checkliste), **Meal-Prep**, **Ratgeber**. Nach
+`foods-import` und `alpha5-import`: Kategorie antippen → je Rezept „wird freigegeben“ bzw. Grund; „Ohne Kategorie“ →
+„Freigabe per ID“. Freigeben: **Actions → content-review → Run workflow** → Art `recipe` mit Kategorie **oder** Art `ids`
+mit IDs (Rezepte, Meal-Prep-Pläne, Ratgeber), Prüfer → PR prüfen und mergen (docs/SETUP.md 3b).

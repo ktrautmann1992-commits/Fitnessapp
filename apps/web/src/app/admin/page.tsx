@@ -32,6 +32,7 @@ import {
 } from '@/lib/admin/labels';
 
 import { AdminHeader } from './_components/AdminHeader';
+import { AdminNav } from './_components/AdminNav';
 import { ContentBadges } from './_components/Badges';
 import { DisabledNotice } from './_components/DisabledNotice';
 import { IssueReport } from './_components/IssueReport';
@@ -73,6 +74,7 @@ export default async function AdminOverviewPage({ searchParams }: { searchParams
     <>
       <AdminHeader loggedIn />
       <main className={styles.stack}>
+        <AdminNav current="training" />
         <div>
           <h1 className={styles.title}>Inhalte prüfen</h1>
           <p className={styles.subtitle}>

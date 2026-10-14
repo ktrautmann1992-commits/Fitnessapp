@@ -12,6 +12,7 @@ export * from './meal-prep-checks';
 export * from './meal-prep-plan-schema';
 export * from './nutrition-select';
 export * from './recipe-checks';
+export * from './recipe-release';
 export * from './recipe-schema';
 export * from './rules';
 export * from './schemas';

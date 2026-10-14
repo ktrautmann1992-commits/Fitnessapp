@@ -58,6 +58,17 @@ test.describe('mit Zugangsdaten', () => {
 
     await page.goto('/admin/vorlagen/muskelaufbau-einsteiger-3t-studio');
     await expect(page).toHaveURL(/\/admin\/login$/);
+
+    // Ernährung (N2d) ebenso.
+    for (const path of [
+      '/admin/rezepte',
+      '/admin/lebensmittel',
+      '/admin/meal-prep',
+      '/admin/ratgeber',
+    ]) {
+      await page.goto(path);
+      await expect(page).toHaveURL(/\/admin\/login$/);
+    }
     await page.goto('/admin/uebungen/goblet-kniebeuge');
     await expect(page).toHaveURL(/\/admin\/login$/);
   });
@@ -197,5 +208,55 @@ test.describe('mit Zugangsdaten', () => {
     expect(await context.cookies()).toEqual([]);
     await page.goto('/admin');
     await expect(page).toHaveURL(/\/admin\/login$/);
+  });
+});
+
+test.describe('Ernährung (N2d)', () => {
+  test('Rezepte, Lebensmittel, Meal-Prep, Ratgeber: nur ansehen, Leerzustand ohne Katalog, Klick-Schritte', async ({
+    page,
+  }) => {
+    await login(page);
+    await expect(page).toHaveURL(/\/admin$/);
+    const nav = page.getByRole('navigation', { name: 'Bereiche' });
+    await expect(nav.getByRole('link', { name: 'Training' })).toHaveAttribute(
+      'aria-current',
+      'page',
+    );
+
+    await nav.getByRole('link', { name: 'Rezepte' }).click();
+    await expect(page).toHaveURL(/\/admin\/rezepte$/);
+    await expect(page.getByRole('heading', { level: 1, name: 'Rezepte' })).toBeVisible();
+    // Heute ohne Katalog und ohne Rezepte im Repository (foods-import/alpha5-import noch nicht gelaufen).
+    await expect(page.getByText('Noch kein Lebensmittel-Katalog im Repository.')).toBeVisible();
+    await expect(page.getByRole('heading', { name: 'Noch keine Rezepte' })).toBeVisible();
+    await expect(page.getByRole('heading', { name: 'Sammelfreigabe pro Kategorie' })).toBeVisible();
+    await expect(page.getByText('content-review', { exact: true }).first()).toBeVisible();
+    // Kein Formular, das etwas ändert (der Redaktionsbereich schreibt nicht).
+    await expect(page.locator('form[method="post"]:not([action="/admin/api/logout"])')).toHaveCount(
+      0,
+    );
+
+    // Ungültige Kategorie in der Adresszeile wird ignoriert.
+    await page.goto('/admin/rezepte?kategorie=%3Cscript%3E');
+    await expect(page.getByRole('heading', { level: 1, name: 'Rezepte' })).toBeVisible();
+
+    await nav.getByRole('link', { name: 'Lebensmittel' }).click();
+    await expect(page.getByRole('heading', { level: 1, name: 'Lebensmittel' })).toBeVisible();
+    await expect(
+      page.getByRole('heading', { name: 'Checkliste Katalog-Prüfung (R19)' }),
+    ).toBeVisible();
+    await expect(page.getByText(/Salz bei Aufschnitt und verarbeiteter Ware/)).toBeVisible();
+    await expect(page.getByRole('heading', { name: 'Noch keine Lebensmittel' })).toBeVisible();
+
+    await nav.getByRole('link', { name: 'Meal-Prep' }).click();
+    await expect(page.getByRole('heading', { name: 'Noch keine Meal-Prep-Pläne' })).toBeVisible();
+    await nav.getByRole('link', { name: 'Ratgeber' }).click();
+    await expect(page.getByRole('heading', { name: 'Noch keine Ratgeber' })).toBeVisible();
+
+    // Unbekannte IDs → „nicht gefunden“.
+    await page.goto('/admin/rezepte/gibt-es-nicht');
+    await expect(page.getByRole('heading', { name: 'Inhalt nicht gefunden' })).toBeVisible();
+    await page.goto('/admin/lebensmittel/gibt-es-nicht');
+    await expect(page.getByRole('heading', { name: 'Inhalt nicht gefunden' })).toBeVisible();
   });
 });

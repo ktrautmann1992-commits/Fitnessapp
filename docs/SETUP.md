@@ -856,7 +856,7 @@ Voraussetzung: Teil H. Wo du die Workflows findest: GitHub-App → Repository �
 
 ### 3. Freigeben (oder zurückziehen)
 
-1. **Actions → content-review → Run workflow**.
+1. **Actions → content-review → Run workflow** → **Art**: `ids` (Standard).
 2. **IDs**: eine oder mehrere IDs, z. B. `goblet-kniebeuge, liegestuetz` (die ID ist der Dateiname ohne `.json`).
    Am einfachsten im Redaktionsbereich `/admin` filtern und **IDs kopieren** tippen.
 3. **Neuer Status**: `published` (freigeben), `archived` (zurückziehen) oder `draft` (zurück auf Entwurf).
@@ -865,6 +865,63 @@ Voraussetzung: Teil H. Wo du die Workflows findest: GitHub-App → Repository �
    Request; der Grund steht in der Summary. Tipp: Eine Vorlage lässt sich nur zusammen mit ihren Übungen
    freigeben – dann alle IDs in einem Lauf angeben.
 6. Auf grünes `ci` warten → **Merge pull request**. **Merge = Freigabe.**
+
+### 3b. Rezepte, Meal-Prep-Pläne und Ratgeber freigeben (Phase 5 Etappe N2d)
+
+Vorher im Redaktionsbereich **`/admin/rezepte`** die Kategorie antippen: Dort steht, welche Rezepte freigegeben
+würden und warum andere übersprungen werden. Zwei Wege, dieselben Regeln:
+
+**A – Ganze Kategorie (Sammelfreigabe)**
+
+1. **Actions → content-review → Run workflow**.
+2. **Art**: `recipe` · **Neuer Status**: `published` · **Wer hat geprüft?**: euer Kürzel. **IDs** leer lassen.
+3. **Kategorie** wählen (z. B. `meal-prep`).
+4. Häkchen setzen (siehe unten), **Run workflow**.
+
+**B – Einzeln per ID (Rezepte ohne Kategorie, Meal-Prep-Pläne, Ratgeber)**
+
+1. Im Redaktionsbereich die ID abschreiben: Rezept-Seite → **Steckbrief → ID**; Meal-Prep/Ratgeber → „ID“ unter dem
+   Titel.
+2. **Actions → content-review → Run workflow**.
+3. **Art**: `ids` · **IDs**: z. B. `ruehrei, pasta-woche` (mit Komma) · **Neuer Status**: `published` · **Wer hat
+   geprüft?**: euer Kürzel. **Kategorie** auf `-` lassen.
+4. Ein Meal-Prep-Plan wird nur freigegeben, wenn alle seine Rezepte danach freigegeben sind – noch nicht freigegebene
+   Rezepte einfach mit in die IDs schreiben. Übungen und Rezepte **nicht mischen** (zwei Läufe).
+5. Häkchen setzen (siehe unten), **Run workflow**.
+
+**Häkchen (beide Wege)**
+
+- **fachlich geprüft** nur, wenn eine Fachperson die Inhalte geprüft hat (für den Livegang ab N7 Pflicht).
+- **Import-Annahmen geprüft** nur, wenn ihr bei Rezepten mit offener Annahme „durchgegart“ die Zubereitung gelesen
+  habt – das bestätigt die Annahme, der Schwangerschafts-Hinweis wird neu berechnet. Gespeichert wird dazu ein
+  **Fingerabdruck** der Zubereitung: Ändert später jemand Zutaten, Mengen, Schritte, Tipp, Zeiten, Geräte, Titel oder
+  Beschreibung, gilt die Bestätigung nicht mehr (Hinweis wieder an, im Admin „seitdem geändert“) – dann erneut mit
+  Häkchen freigeben.
+- Ratgeber mit gelbem Hinweis **R21H** (Dosierungen, Mengen je kg) gibt der Workflow nur mit **fachlich geprüft**
+  frei.
+
+**Danach**
+
+1. Freigegeben werden nur Entwürfe ohne roten Befund; Rezepte nur mit katalog-geprüften und freigegebenen
+   Lebensmitteln und ohne offene Annahme. Es erscheint ein Pull Request mit den freigegebenen Inhalten, den bestätigten
+   Annahmen (Zutat und Begründung – bitte lesen) und den übersprungenen mit Grund. Wird nichts freigegeben, gibt es
+   keinen Pull Request – die Gründe stehen in der **Summary**. Dort steht auch, wenn eine Eingabe ohne Wirkung war.
+2. Im Pull Request die **gelben Hinweise zu den freigegebenen Inhalten** lesen (z. B. Haltbarkeit, Dosierungen).
+3. Auf grünes `ci` warten → **Merge pull request**. **Merge = Freigabe.**
+
+**Ein schon freigegebenes Rezept ändern** (z. B. Zutat korrigieren)
+
+Ändert ein Pull Request die Zubereitung eines freigegebenen Rezepts mit bestätigter Annahme, wird `ci` dort **rot**
+(„seitdem geändert“) – Absicht, damit nichts unbestätigt live geht. So geht ihr vor:
+
+1. Im selben Pull Request das Rezept zurück auf Entwurf setzen: GitHub-App → Pull Request → **Files changed** →
+   Datei `content/recipes/<id>.json` → **⋯ → Edit file** (oder Claude in der Sitzung darum bitten).
+2. Dort `"status": "published"` → `"draft"`, `"reviewed_by"`/`"reviewed_at"` → `null` und `"version"` um 1 erhöhen
+   (geänderter freigegebener Inhalt braucht eine höhere Version, R15). **Commit changes**.
+3. `ci` grün → **Merge**. Das Rezept ist jetzt Entwurf (in der App nicht mehr sichtbar).
+4. Danach wie oben **B – Einzeln per ID** mit Häkchen **Import-Annahmen geprüft** neu freigeben.
+
+Lebensmittel laufen **nicht** über content-review (eigene Katalog-Prüfung, Teil J).
 
 ### 4. Einspielen in die Datenbank (automatisch)
 

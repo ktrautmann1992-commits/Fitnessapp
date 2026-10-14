@@ -1,6 +1,7 @@
 import { describe, expect, it } from 'vitest';
 
 import type { Food } from '../content/food-schema';
+import { importAssumptionsFingerprint } from '../content/import-meta';
 import {
   FIXTURE_FOODS,
   FOOD_META,
@@ -211,8 +212,23 @@ describe('filterRecipe – Schwangerschaft (W4, W20, Wächter N2c B1)', () => {
       reasons: ['pregnancy_caution'],
     });
     expect(filterRecipe(r, N3_FOODS, ctx(omni)).ok).toBe(true);
-    const confirmed = { ...r, meta: { ...r.meta, import_assumptions_confirmed_by: 'KT' } };
+    const confirmed = {
+      ...r,
+      meta: {
+        ...r.meta,
+        import_assumptions_confirmed_by: 'KT',
+        import_assumptions_fingerprint: importAssumptionsFingerprint(r),
+      },
+    };
     expect(filterRecipe(confirmed, N3_FOODS, pregnant()).ok).toBe(true);
+    // Bestätigt, danach Menge geändert → wieder ausgeschlossen (sichere Richtung, Wächter N2d S2).
+    const edited = {
+      ...confirmed,
+      ingredients: confirmed.ingredients.map((i, index) =>
+        index === 0 ? { ...i, amount: i.amount + 10 } : i,
+      ),
+    };
+    expect(filterRecipe(edited, N3_FOODS, pregnant()).ok).toBe(false);
   });
 
   it('optionale heikle Zutat wird weggelassen', () => {

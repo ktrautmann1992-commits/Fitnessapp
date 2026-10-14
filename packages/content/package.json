@@ -29,6 +29,7 @@
     "tsx": "^4.23.15"
   },
   "exports": {
-    "./catalog": "./src/foods/catalog-texts.ts"
+    "./catalog": "./src/foods/catalog-texts.ts",
+    "./import-report": "./src/import/deviations.ts"
   }
 }

@@ -202,7 +202,10 @@ für alle offen, Server-Prüfung mit Phase 7; Lead-Magnet ohne Newsletter-Pflich
 ### Prompt B – Dokumente einarbeiten und Rezepte importieren
 **Schritte 1 und 2 erledigt** (B1: Dateien einsortiert, B2: Doku eingearbeitet). **Schritte 3–5** laufen als
 Phase-5-Etappen N2b/N2c/N2d (Abweichung: Import erzeugt Inhaltsdateien per Pull Request statt direkt in die
-Datenbank; Tabellen kommen mit N7 – siehe PLAN-PHASE-5 Abschnitt 19).
+Datenbank; Tabellen kommen mit N7 – siehe PLAN-PHASE-5 Abschnitt 19). **Schritt 5 umgesetzt (N2d, 13.10.2026):** Admin-Seiten
+Rezepte/Lebensmittel/Meal-Prep/Ratgeber (nur ansehen) und Sammelfreigabe pro Kategorie im Workflow `content-review`
+(Art `recipe`); 14.10.2026 nach Gründer-Entscheidungen: Freigabe per ID für Rezepte ohne Kategorie, Meal-Prep-Pläne
+und Ratgeber (Art `ids`) und Fingerabdruck bestätigter Import-Annahmen – Umsetzungsstand N2d.
 ```
 Lies CLAUDE.md und ERWEITERUNGEN-2.md im Hauptverzeichnis.
 1. Verschiebe ERWEITERUNGEN-2.md nach docs/, alpha5-rezepte.json nach packages/content/seed/ und
