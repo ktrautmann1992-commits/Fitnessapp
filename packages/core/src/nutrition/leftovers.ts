@@ -3,7 +3,8 @@ import { z } from 'zod';
 import { isoDateSchema } from '../age';
 import { LEFTOVER_RAW_DAYS, LEFTOVER_SCORING } from '../constants';
 import type { Food, FoodLookup } from '../content/food-schema';
-import { packageSizeGramsSchema } from '../content/package-size-schema';
+import { packageSizeLookup } from '../content/package-size-checks';
+import { type PackageSize, packageSizeGramsSchema } from '../content/package-size-schema';
 import { contentIdSchema } from '../content/schemas';
 import { addDays, daysBetween } from '../dates';
 import type { MealPlanWeek, PlannedMealDay } from './meal-plan';
@@ -121,12 +122,32 @@ export class LeftoverTracker {
    * (aufgerundet). Ergebnis: Gramm, die aus einer schon angebrochenen Packung kamen.
    */
   consume(foodId: string, grams: number, date: string): number {
+    return this.consumeDetailed(foodId, grams, date).fromLeftover;
+  }
+
+  /**
+   * Wie `consume` (gleicher Stand danach), zusätzlich: Gramm aus Packungen, die an einem FRÜHEREN Tag als `date`
+   * angebrochen wurden, und der früheste dieser Anbruchstage (N14: Hinweis „Nutzt deinen Rest“ – ein Rest derselben
+   * Kochrunde bzw. desselben Tages ist kein Rest „von vorher“).
+   */
+  consumeDetailed(
+    foodId: string,
+    grams: number,
+    date: string,
+  ): {
+    readonly fromLeftover: number;
+    readonly fromEarlierDay: number;
+    readonly earliestOpenedOn: string | null;
+  } {
+    const none = { fromLeftover: 0, fromEarlierDay: 0, earliestOpenedOn: null };
     const size = this.packageSizes.get(foodId);
-    if (size === undefined || !(grams > EPS)) return 0;
+    if (size === undefined || !(grams > EPS)) return none;
     this.needed.set(foodId, (this.needed.get(foodId) ?? 0) + grams);
     const list = this.open.get(foodId) ?? [];
     let rest = grams;
     let fromLeftover = 0;
+    let fromEarlierDay = 0;
+    let earliestOpenedOn: string | null = null;
     for (const pkg of list) {
       if (rest <= EPS) break;
       if (pkg.remainingG <= EPS || date > pkg.usableUntil) continue;
@@ -136,6 +157,12 @@ export class LeftoverTracker {
         pkg.usableUntil = addDays(date, this.keepDays(foodId));
       }
       const take = Math.min(rest, pkg.remainingG);
+      if (pkg.openedOn < date && take > EPS) {
+        fromEarlierDay += take;
+        if (earliestOpenedOn === null || pkg.openedOn < earliestOpenedOn) {
+          earliestOpenedOn = pkg.openedOn;
+        }
+      }
       pkg.remainingG -= take;
       rest -= take;
       fromLeftover += take;
@@ -160,7 +187,7 @@ export class LeftoverTracker {
           a.usableUntil < b.usableUntil ? -1 : a.usableUntil > b.usableUntil ? 1 : 0,
         ),
     );
-    return fromLeftover;
+    return { fromLeftover, fromEarlierDay, earliestOpenedOn };
   }
 
   /** Nutzbare Reste an einem Tag (angebrochen bis einschließlich `date`, noch nicht abgelaufen). */
@@ -285,6 +312,64 @@ export function recordDayLeftovers(
   });
 }
 
+/** Verbuchung einer Mahlzeit in zeitlicher Reihenfolge (`recordWeekLeftoversInCookOrder`). */
+export interface BookedMeal {
+  /** Index des Tages in `days` und der Mahlzeit in `day.meals`. */
+  readonly dayIndex: number;
+  readonly mealIndex: number;
+  /** Lebensmittel, die (teilweise) aus einem schon angebrochenen Rest kamen (nach ID). */
+  readonly fromRest: readonly string[];
+  /** Lebensmittel aus einer an einem FRÜHEREN Tag angebrochenen Packung → frühester Anbruchstag. */
+  readonly fromEarlierDay: ReadonlyMap<string, string>;
+}
+
+/**
+ * Verbrauch einer ganzen Woche in ZEITLICHER Reihenfolge verbuchen (Wächter N14 S1): alle Mahlzeiten stabil nach
+ * (Kaufdatum = `purchaseDate(cookDate)`, Esstag, Platz-Reihenfolge des Tages) sortiert. So verbraucht eine
+ * Meal-Prep-Kochrunde ihre Packungen am Kochtag – auch für die Portionen späterer Tage –, bevor frische Mahlzeiten der
+ * Folgetage einen „Rest“ sehen. `meals(day)` wählt die zu verbuchenden Mahlzeiten (z. B. Zeitraum der Einkaufsliste).
+ * Ergebnis in Verbuchungs-Reihenfolge.
+ */
+export function recordWeekLeftoversInCookOrder(
+  tracker: LeftoverTracker,
+  days: readonly Pick<PlannedMealDay, 'date' | 'meals'>[],
+  purchaseDate: (cookDate: string) => string = (d) => d,
+  include: (meal: PlannedMealDay['meals'][number]) => boolean = () => true,
+): BookedMeal[] {
+  const order: { dayIndex: number; mealIndex: number; date: string; dayDate: string }[] = [];
+  days.forEach((day, dayIndex) =>
+    day.meals.forEach((meal, mealIndex) => {
+      if (include(meal)) {
+        order.push({ dayIndex, mealIndex, date: purchaseDate(meal.cookDate), dayDate: day.date });
+      }
+    }),
+  );
+  const cmp = (a: string, b: string) => (a < b ? -1 : a > b ? 1 : 0);
+  order.sort(
+    (a, b) =>
+      cmp(a.date, b.date) ||
+      cmp(a.dayDate, b.dayDate) ||
+      a.dayIndex - b.dayIndex ||
+      a.mealIndex - b.mealIndex,
+  );
+  return order.map(({ dayIndex, mealIndex, date }) => {
+    const meal = days[dayIndex]!.meals[mealIndex]!;
+    const fromRest = new Set<string>();
+    const earlier = new Map<string, string>();
+    for (const ingredient of meal.ingredients) {
+      const r = tracker.consumeDetailed(ingredient.foodId, ingredient.grams, date);
+      if (r.fromLeftover > EPS) fromRest.add(ingredient.foodId);
+      if (r.fromEarlierDay > EPS && r.earliestOpenedOn !== null) {
+        const before = earlier.get(ingredient.foodId);
+        if (before === undefined || r.earliestOpenedOn < before) {
+          earlier.set(ingredient.foodId, r.earliestOpenedOn);
+        }
+      }
+    }
+    return { dayIndex, mealIndex, fromRest: [...fromRest].sort(), fromEarlierDay: earlier };
+  });
+}
+
 /** Mahlzeit, die einen Rest verbraucht („Dieses Rezept verbraucht deinen restlichen Brokkoli.“, N14). */
 export interface LeftoverMealUse {
   readonly date: string;
@@ -300,7 +385,7 @@ export interface PlanLeftovers {
 }
 
 /**
- * Reste eines Plans nachrechnen (gleiche Reihenfolge wie beim Planen: Tag für Tag, Mahlzeit für Mahlzeit): welche
+ * Reste eines Plans nachrechnen (zeitlich geordnet nach Kochtag, Wächter N14 S1 – `recordWeekLeftoversInCookOrder`): welche
  * Mahlzeit welchen Rest verbraucht und was am Ende übrig bleibt. Nur Lebensmittel mit Packungsgröße.
  */
 export function planLeftovers(
@@ -310,14 +395,14 @@ export function planLeftovers(
 ): PlanLeftovers {
   const tracker = new LeftoverTracker(foods, packageSizeLookupSchema.parse(packageSizes));
   const uses: LeftoverMealUse[] = [];
-  for (const day of plan.days) {
-    const fromRest = recordDayLeftovers(tracker, day);
-    day.meals.forEach((meal, i) => {
-      const foodIds = fromRest[i] ?? [];
-      if (foodIds.length > 0) {
-        uses.push({ date: day.date, slot: meal.slot, recipeId: meal.recipeId, foodIds });
-      }
-    });
+  // Zeitlich geordnet (Wächter N14 S1), danach wieder in Plan-Reihenfolge (Tag, Mahlzeit).
+  const booked = recordWeekLeftoversInCookOrder(tracker, plan.days)
+    .filter((b) => b.fromRest.length > 0)
+    .sort((a, b) => a.dayIndex - b.dayIndex || a.mealIndex - b.mealIndex);
+  for (const b of booked) {
+    const day = plan.days[b.dayIndex]!;
+    const meal = day.meals[b.mealIndex]!;
+    uses.push({ date: day.date, slot: meal.slot, recipeId: meal.recipeId, foodIds: b.fromRest });
   }
   return { uses, rests: tracker.rests() };
 }
@@ -366,18 +451,19 @@ export function shoppingListPackages(
   const tracker = new LeftoverTracker(foods, sizes);
   const without = new Set<string>();
   const purchase = (cookDate: string) => (cookDate < plan.weekStart ? plan.weekStart : cookDate);
+  const inRange = (m: PlannedMealDay['meals'][number]) => {
+    const date = purchase(m.cookDate);
+    return date >= from && date <= to;
+  };
   for (const day of plan.days) {
-    const meals = day.meals.filter((m) => {
-      const date = purchase(m.cookDate);
-      return date >= from && date <= to;
-    });
-    meals.forEach((m) =>
+    day.meals.filter(inRange).forEach((m) =>
       m.ingredients.forEach((i) => {
         if (!sizes.has(i.foodId)) without.add(i.foodId);
       }),
     );
-    recordDayLeftovers(tracker, { meals }, purchase);
   }
+  // Zeitlich geordnet (Wächter N14 S1): sonst zählte Meal-Prep mit späteren Frischmahlzeiten zu wenige Packungen.
+  recordWeekLeftoversInCookOrder(tracker, plan.days, purchase, inRange);
   const lines = tracker.trackedFoods().flatMap((foodId): ShoppingPackageLine[] => {
     const food = foods.get(foodId);
     const size = sizes.get(foodId);
@@ -399,4 +485,118 @@ export function shoppingListPackages(
     ];
   });
   return { lines, withoutPackageSize: [...without].sort() };
+}
+
+// ---------------------------------------------------------------------------------------------------------
+// Etappe N14 – Resteplanung in der App (docs/PLAN-PHASE-5.md 19.7 N14, Umsetzungsstand N14): nur der Teil, der NICHT
+// von den offenen Gründer-Fragen G-N13-4 (Rest-Tage je Untergruppe) und N11-G3 (Packung bei Stückware) abhängt –
+// Reste-Score im Wochenplan (nur Reihenfolge) und der Hinweis „Nutzt deinen Rest“ an der Mahlzeit. Packungszahl,
+// Restmenge und die Liste „übrig am Ende“ zeigt die App bewusst NICHT (sie wären z. B. bei Hartkäse irreführend).
+// ---------------------------------------------------------------------------------------------------------
+
+/**
+ * Eingabe `MealPlanInput.leftovers` aus den ausgewählten Packungsgrößen (`NutritionLibrary.packageSizes`). Ohne
+ * Packungsgrößen `undefined` – dann plant die Engine genau wie ohne Resteplanung (N13).
+ */
+export function leftoverPlanningInput(
+  entries: readonly PackageSize[],
+  options: { readonly allowDrafts: boolean },
+): { readonly packageSizes: PackageSizeLookup } | undefined {
+  const lookup = packageSizeLookup(usablePackageSizes(entries, options));
+  return lookup.size === 0 ? undefined : { packageSizes: packageSizeLookupSchema.parse(lookup) };
+}
+
+/**
+ * Packungsgrößen, die die Resteplanung verwenden darf (Wächter N14 H1): ohne `allowDrafts` (also außerhalb des
+ * Testmodus) nur freigegebene – doppelt abgesichert zu `selectNutritionContent`.
+ */
+export function usablePackageSizes(
+  entries: readonly PackageSize[],
+  options: { readonly allowDrafts: boolean },
+): PackageSize[] {
+  return entries.filter(
+    (e) => e.status === 'published' || (options.allowDrafts && e.status === 'draft'),
+  );
+}
+
+/** Ein Lebensmittel, dessen Rest eine Mahlzeit nutzt. */
+export interface LeftoverHintFood {
+  readonly foodId: string;
+  /** Tag, an dem die genutzte Packung angebrochen wurde (immer VOR dem Kochtag der Mahlzeit). */
+  readonly openedOn: string;
+  /** Roh tierisch (S9): wird nur bis zum Folgetag eingeplant. */
+  readonly rawAnimal: boolean;
+  /**
+   * Nur bis zum Folgetag eingeplant (Wächter N14 S3): roh tierisch ODER empfindlich (`pregnancy_caution`, z. B. rohe
+   * Sprossen, Rohmilchkäse, Kochschinken) – gleiche Regel wie `leftoverKeepDays`. Die App zeigt dazu einen neutralen
+   * Lagerhinweis.
+   */
+  readonly shortLived: boolean;
+  /** Packungsgröße freigegeben (`published`); sonst Entwurf bzw. Testwert – die App kennzeichnet das. */
+  readonly packageReviewed: boolean;
+}
+
+/** Hinweis „Nutzt deinen Rest: …“ an einer Mahlzeit (19.7 N14). */
+export interface LeftoverMealHint {
+  readonly date: string;
+  readonly slot: string;
+  readonly recipeId: string;
+  readonly foods: readonly LeftoverHintFood[];
+}
+
+/**
+ * Welche Mahlzeit einen Rest von FRÜHER nutzt (19.7 N14, „Dieses Rezept verbraucht deinen restlichen Brokkoli.“) –
+ * gleiche Rechnung wie `planLeftovers`: alle Mahlzeiten der Woche zeitlich nach Kochtag verbucht (Wächter N14 S1), so
+ * dass eine Meal-Prep-Kochrunde ihre Packungen am Kochtag verbraucht; abgelaufene Reste nie (S9). Ein Hinweis
+ * entsteht nur, wenn
+ * - die Packung an einem früheren Tag als dem Kochtag dieser Mahlzeit angebrochen wurde (Mahlzeiten derselben
+ *   Kochrunde oder desselben Tages „nutzen“ keinen Rest),
+ * - die Mahlzeit an diesem Tag gekocht wird (vorgekochte Meal-Prep-Portionen tragen keinen Hinweis – ihre Zutaten
+ *   wurden am Kochtag verbucht; ein Rest von früher erscheint am Kochtag selbst),
+ * - das Lebensmittel kein Vorrat ist (Reis, Nudeln halten lange; wie der Reste-Score).
+ * Rein und deterministisch; keine Mengen, keine Packungszahlen.
+ */
+export function leftoverMealHints(
+  plan: Pick<MealPlanWeek, 'days'>,
+  foods: FoodLookup,
+  allEntries: readonly PackageSize[],
+  options: { readonly allowDrafts: boolean },
+): LeftoverMealHint[] {
+  const entries = usablePackageSizes(allEntries, options);
+  const planning = leftoverPlanningInput(entries, options);
+  if (planning === undefined) return [];
+  const reviewed = new Map<string, boolean>();
+  for (const entry of [...entries].sort((a, b) => (a.id < b.id ? -1 : a.id > b.id ? 1 : 0))) {
+    if (!reviewed.has(entry.food_id)) reviewed.set(entry.food_id, entry.status === 'published');
+  }
+  const tracker = new LeftoverTracker(foods, planning.packageSizes);
+  const hints: LeftoverMealHint[] = [];
+  const booked = recordWeekLeftoversInCookOrder(tracker, plan.days).sort(
+    (a, b) => a.dayIndex - b.dayIndex || a.mealIndex - b.mealIndex,
+  );
+  for (const b of booked) {
+    const day = plan.days[b.dayIndex]!;
+    const meal = day.meals[b.mealIndex]!;
+    if (meal.prepKind === 'leftover' || b.fromEarlierDay.size === 0) continue;
+    const hintFoods = [...b.fromEarlierDay.entries()]
+      .sort(([x], [y]) => (x < y ? -1 : x > y ? 1 : 0))
+      .flatMap(([foodId, openedOn]): LeftoverHintFood[] => {
+        const food = foods.get(foodId);
+        if (food === undefined || food.pantry) return [];
+        const rawAnimal = isRawAnimalLeftover(food);
+        return [
+          {
+            foodId,
+            openedOn,
+            rawAnimal,
+            shortLived: rawAnimal || food.pregnancy_caution,
+            packageReviewed: reviewed.get(foodId) === true,
+          },
+        ];
+      });
+    if (hintFoods.length > 0) {
+      hints.push({ date: day.date, slot: meal.slot, recipeId: meal.recipeId, foods: hintFoods });
+    }
+  }
+  return hints;
 }

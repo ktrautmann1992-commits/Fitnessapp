@@ -29,7 +29,13 @@ import { Body, Button, Card, ErrorState, Heading, LoadingState, Notice } from '@
 import { showEnergyNumbers } from '@/data/nutrition-plan';
 import { t } from '@/i18n';
 import { useToday } from '@/lib/use-today';
-import { formatKcal, slotLabel, visibleNotices } from '@/lib/nutrition-format';
+import {
+  formatKcal,
+  leftoverHintsBySlot,
+  leftoverHintView,
+  slotLabel,
+  visibleNotices,
+} from '@/lib/nutrition-format';
 import { dayLabel } from '@/lib/plan-format';
 import { useApp } from '@/state/app-state';
 import { healthConsentStatus, resolveEntryRoute } from '@/state/flow';
@@ -42,7 +48,8 @@ import { useMealPlanActions, useNutritionWeek } from '@/state/use-nutrition';
  * Etappe N5: gespeicherter Plan, „Rezept tauschen“ (ab heute, nur Hauptplätze), Hinweis bei automatischer
  * Neuplanung (6.6), „Plan aktualisieren“, Link zur Wochenansicht. Etappe N5b: Auftau-Hinweis für morgen, Links zur
  * Einkaufsliste und zu den Meal-Prep-Plänen, Hinweis „neu erstellt“ (K-b), „Erneut versuchen“ (K7). Etappe N5c:
- * Links „Rezepte suchen“ und „Ratgeber“.
+ * Links „Rezepte suchen“ und „Ratgeber“. Etappe N14: Hinweis „Nutzt deinen Rest“ an der Mahlzeit (ohne Mengen und
+ * Packungszahlen, G-N13-4/N11-G3 offen).
  */
 export default function NutritionDayScreen() {
   const router = useRouter();
@@ -131,7 +138,8 @@ export default function NutritionDayScreen() {
     return shell(<Notice tone="danger">{t.nutrition.computeFailed}</Notice>);
   }
 
-  const { targets, plan, planState } = view.week;
+  const { targets, plan, planState, leftoverHints } = view.week;
+  const leftoverBySlot = leftoverHintsBySlot(leftoverHints);
   const { demo, demoAvailable } = view.library.result;
   const dayTargets = targets.days.find((d) => d.date === selected) ?? targets.days[0];
   if (!dayTargets) return shell(<Notice tone="danger">{t.nutrition.computeFailed}</Notice>);
@@ -266,6 +274,10 @@ export default function NutritionDayScreen() {
                 meal={meal}
                 showNumbers={view.showNumbers && day.status !== 'no_targets'}
                 foodName={foodName}
+                leftover={(() => {
+                  const hint = leftoverBySlot.get(`${day.date}|${meal.slot}`);
+                  return hint ? leftoverHintView(hint, foodName) : undefined;
+                })()}
                 onOpen={() =>
                   router.push(
                     `/rezept/${encodeURIComponent(meal.recipeId)}?tag=${day.date}&platz=${meal.slot}` as Href,
@@ -290,6 +302,11 @@ export default function NutritionDayScreen() {
           ))}
         </View>
       )}
+      {day !== null && leftoverHints.some((h) => h.date === day.date) ? (
+        <Body muted testID="nutrition-leftover-explain">
+          {t.nutrition.leftovers.explain}
+        </Body>
+      ) : null}
       {swapMessage ? (
         <Notice tone={swapMessage.tone} testID="nutrition-swap-message">
           {swapMessage.text}

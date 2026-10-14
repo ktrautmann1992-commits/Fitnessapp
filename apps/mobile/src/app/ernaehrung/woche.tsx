@@ -26,7 +26,15 @@ import {
 import { t } from '@/i18n';
 import { formatDateDe } from '@/lib/format';
 import { useToday } from '@/lib/use-today';
-import { formatKcal, formatNumberDe, slotLabel } from '@/lib/nutrition-format';
+import {
+  formatKcal,
+  formatNumberDe,
+  leftoverAccessibilityText,
+  leftoverHintsBySlot,
+  leftoverHintView,
+  type LeftoverHintView,
+  slotLabel,
+} from '@/lib/nutrition-format';
 import { dayLabel } from '@/lib/plan-format';
 import { useThemeColors } from '@/lib/theme';
 import { useApp } from '@/state/app-state';
@@ -125,8 +133,10 @@ export default function NutritionWeekScreen() {
     return shell(<Notice tone="danger">{t.nutrition.computeFailed}</Notice>);
   }
 
-  const { plan, planState } = view.week;
+  const { plan, planState, leftoverHints } = view.week;
+  const leftoverBySlot = leftoverHintsBySlot(leftoverHints);
   const { demo, demoAvailable } = view.library.result;
+  const foods = view.library.result.library.foods;
   const last = addDays(weekStart, 6);
   const texts = t.nutrition.week;
 
@@ -225,6 +235,12 @@ export default function NutritionWeekScreen() {
                 day={day}
                 today={today}
                 showNumbers={view.showNumbers}
+                leftoverFor={(slot) => {
+                  const hint = leftoverBySlot.get(`${day.date}|${slot}`);
+                  return hint
+                    ? leftoverHintView(hint, (id) => foods.get(id)?.name_de ?? id)
+                    : undefined;
+                }}
                 onOpenDay={() => router.push(`/ernaehrung?tag=${day.date}` as Href)}
                 onOpenRecipe={(recipeId, slot) =>
                   router.push(
@@ -258,12 +274,15 @@ function WeekDayCard({
   day,
   today,
   showNumbers,
+  leftoverFor,
   onOpenDay,
   onOpenRecipe,
 }: {
   day: PlannedMealDay;
   today: string;
   showNumbers: boolean;
+  /** Etappe N14: Hinweis „Nutzt deinen Rest“ (kurz angezeigt, vollständig vorgelesen – Wächter N14 S2). */
+  leftoverFor: (slot: string) => LeftoverHintView | undefined;
   onOpenDay: () => void;
   onOpenRecipe: (recipeId: string, slot: string) => void;
 }) {
@@ -287,30 +306,38 @@ function WeekDayCard({
           </Body>
         ) : null}
         {meals.length === 0 ? <Body muted>{texts.noMeals}</Body> : null}
-        {meals.map((meal) => (
-          <Pressable
-            key={meal.slot}
-            accessibilityRole="button"
-            accessibilityLabel={t.nutrition.openRecipe(meal.titleDe)}
-            onPress={() => onOpenRecipe(meal.recipeId, meal.slot)}
-            testID={`week-meal-${day.date}-${meal.slot}`}
-            style={({ pressed }) => [
-              styles.meal,
-              {
-                borderColor: theme.border,
-                backgroundColor: pressed ? theme.background : theme.surface,
-              },
-            ]}
-          >
-            <Text style={[styles.slot, { color: theme.textMuted }]}>{slotLabel(meal.slot)}</Text>
-            <Text style={[styles.title, { color: theme.text }]}>{meal.titleDe}</Text>
-            <Text style={[styles.detail, { color: theme.textMuted }]}>
-              {meal.isFill
-                ? `${t.nutrition.portion(formatNumberDe(meal.factor))} · ${t.nutrition.fill}`
-                : t.nutrition.portion(formatNumberDe(meal.factor))}
-            </Text>
-          </Pressable>
-        ))}
+        {meals.map((meal) => {
+          const leftover = leftoverFor(meal.slot);
+          return (
+            <Pressable
+              key={meal.slot}
+              accessibilityRole="button"
+              accessibilityLabel={
+                leftover
+                  ? `${t.nutrition.openRecipe(meal.titleDe)}. ${leftoverAccessibilityText(leftover)}`
+                  : t.nutrition.openRecipe(meal.titleDe)
+              }
+              onPress={() => onOpenRecipe(meal.recipeId, meal.slot)}
+              testID={`week-meal-${day.date}-${meal.slot}`}
+              style={({ pressed }) => [
+                styles.meal,
+                {
+                  borderColor: theme.border,
+                  backgroundColor: pressed ? theme.background : theme.surface,
+                },
+              ]}
+            >
+              <Text style={[styles.slot, { color: theme.textMuted }]}>{slotLabel(meal.slot)}</Text>
+              <Text style={[styles.title, { color: theme.text }]}>{meal.titleDe}</Text>
+              <Text style={[styles.detail, { color: theme.textMuted }]}>
+                {meal.isFill
+                  ? `${t.nutrition.portion(formatNumberDe(meal.factor))} · ${t.nutrition.fill}`
+                  : t.nutrition.portion(formatNumberDe(meal.factor))}
+                {leftover ? ` · ${t.nutrition.leftovers.weekShort}` : ''}
+              </Text>
+            </Pressable>
+          );
+        })}
         <Button
           label={texts.openDay(dayLabel(day.date))}
           variant="secondary"

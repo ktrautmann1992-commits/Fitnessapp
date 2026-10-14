@@ -714,6 +714,18 @@ export const deNutrition = {
     line: (title: string, day: string) =>
       `${title} für ${day} aus dem Gefrierfach in den Kühlschrank legen.`,
   },
+  // --- Resteplanung (19.7 N14): nur „Nutzt deinen Rest“, ohne Mengen und ohne Packungszahlen -------------------------
+  leftovers: {
+    /** z. B. „Nutzt deinen Rest: Champignons (seit Mo), Hähnchenbrust (seit Di)“ */
+    line: (list: string) => `Nutzt deinen Rest: ${list}`,
+    item: (food: string, weekday: string) => `${food} (seit ${weekday})`,
+    weekShort: 'nutzt einen Rest',
+    unreviewed: 'Packungsgröße noch nicht geprüft (Testwert)',
+    shortLived:
+      'Angebrochen nur kurz haltbar: Die App plant diesen Rest nur bis zum Folgetag ein. Gut gekühlt lagern und die Angaben auf der Packung beachten.',
+    explain:
+      'Die Hinweise gehen von üblichen Packungsgrößen aus und planen Reste nur kurz ein. Wie viele Packungen du kaufst, zeigt die Einkaufsliste noch nicht.',
+  },
   rebuilt: {
     text: 'Einige Rezepte wurden überarbeitet. Deshalb haben wir deinen Plan dieser Woche neu erstellt – auch die vergangenen Tage.',
     ok: 'Verstanden',

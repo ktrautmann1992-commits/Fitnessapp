@@ -443,6 +443,17 @@ Quelle: `docs/ERWEITERUNGEN-2.md` Abschnitte 1–2. Startbestand aus `alpha5-rez
   verbrauchten Rests ÷ Packung × Dringlichkeit, Vorrat zählt nicht, höchstens 1 Punkt – weniger als der Abzug für eine
   Wiederholung) ändert im Essensplan nur die Reihenfolge der Kandidaten; eingeschaltet wird er erst in N14 (Premium).
   Details in `docs/PLAN-PHASE-5.md`, Umsetzungsstand N13.
+- **Umsetzung (Etappe N14, Testmodus, nur der sichere Teil, 14.10.2026):** Der Wochenplan nutzt den Reste-Score,
+  sobald es Packungsgrößen gibt (neue Pläne, „Andere Vorschläge“, „Plan aktualisieren“, automatische Neuplanung –
+  gespeicherte Pläne bleiben). An der Mahlzeit steht „Nutzt deinen Rest: Tofu (seit Mo)“ (`leftoverMealHints`): nur
+  Reste aus einer an einem früheren Tag angebrochenen Packung, nie abgelaufene, nie Vorrat, nicht an vorgekochten
+  Meal-Prep-Portionen (Verbuchung zeitlich nach Kochtag); bei kurz haltbaren Resten (roh tierisch, Rohmilchkäse,
+  Sprossen, Kochschinken) der neutrale Satz „nur bis zum Folgetag … gut gekühlt lagern“; Hinweis auch im Vorlesetext; ungeprüfte
+  Packungsgrößen als „Testwert“ gekennzeichnet. **Bewusst nicht angezeigt:** Packungszahl, Restmenge und „übrig am
+  Ende/einfrieren“ in Einkaufsliste und Plan – sie hängen an den offenen Gründer-Fragen G-N13-4 (Rest-Tage je
+  Untergruppe, z. B. Hartkäse, Butter, Öl, Rohwurst) und N11-G3 (Packung bei Stückware) und wären bis dahin
+  irreführend (z. B. Parmesan 3 × 20 g → 3 Packungen). Premium-Prüfung serverseitig mit Phase 7; Testphase offen.
+  Details in `docs/PLAN-PHASE-5.md`, Umsetzungsstand N14.
 
 ### 6.12 Paar-Modus beim Kochen (Premium, braucht den Partner-Modus)
 - Baut auf dem **Partner-Modus** auf (Abschnitt 11, beidseitige Zustimmung) – die Oberfläche kommt deshalb erst mit

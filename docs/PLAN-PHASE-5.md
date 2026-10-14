@@ -1,6 +1,6 @@
 # Plan Phase 5 – Ernährungs-Engine, Essensplan und Einkaufsliste
 
-**Status:** **freigegeben, Etappen N0 (Plan), N1 (Core: Bedarf, Grenzen, Makros, Timing) und N2a (Inhalte: Schemas, Prüfregeln, Einheiten) umgesetzt** – Stand 11.10.2026. Offene Fragen 16 B: Gründer „Alles wie empfohlen“ (10.10.2026). Gegenprüfung der R2-Blocker durch den Wächter im N0-PR. **N2b Teil 1 (Quelle/Lizenz geklärt, Import-Infrastruktur, Zuordnungs-Vorschlag) umgesetzt** – der Katalog selbst entsteht nach dem Merge über den Workflow `foods-import` (Umsetzungsstand N2b). **N2c (Rezept-Import als Entwurf) und N3 (Core: Essensplan, Meal-Prep, Einkaufsliste, Rezeptsuche) umgesetzt** – Stand 12.10.2026 (Umsetzungsstand N2c/N3). **N4 (App Testmodus: Einrichtung, Tag, Rezept) umgesetzt** – Stand 12.10.2026 (Umsetzungsstand N4). **N2d (Admin-Seiten Ernährung, Sammelfreigabe Rezepte pro Kategorie und Freigabe per ID in `content-review`, Fingerabdruck bestätigter Import-Annahmen) umgesetzt** – Stand 14.10.2026, drei offene Fragen von den Gründern entschieden (Umsetzungsstand N2d). **N5a (App Testmodus: gespeicherter Essensplan, Wochenansicht, „Andere Vorschläge“, „Rezept tauschen“, „Plan aktualisieren“, automatische Neuplanung 6.6) umgesetzt** – Stand 14.10.2026; N5 ist in **N5a** und **N5b** (Einkaufsliste, Meal-Prep-Kochtag, „Zur Einkaufsliste“) geteilt (Umsetzungsstand N5a). **N5b (App Testmodus: Einkaufsliste offline mit eigenen Einträgen und Zeitraum, Neuerzeugung bei Neuplanung W22, „Zur Einkaufsliste“, Meal-Prep-Pläne mit Kochtag und Timern, Auftau-Hinweise; K-a, K-b, K5, K7, N3 K1) umgesetzt** – Stand 14.10.2026; offene Gründer-Entscheidung: Mitteilungen im Hintergrund (`expo-notifications`), Löschfrist weiter offen (Umsetzungsstand N5b). **N5c (App Testmodus: Rezeptsuche mit vorbelegter, erweiterbarer Ernährungsform und gekennzeichneten Treffern, „Zur Einkaufsliste“ für diese Treffer, Ratgeber offline mit R21-Prüfung und „Zahlen aus“) umgesetzt** – Stand 14.10.2026 (Umsetzungsstand N5c). **N6 (PDF P5: Essensplan und Einkaufsliste als PDF, gratis – Dokumentmodell, Renderer-Bausteine `checklist`/`steps`, Druckansichten `ernaehrung/drucken` und `einkaufsliste/drucken`, Knöpfe, nativer Druck, CI-Artefakt) umgesetzt** – Stand 14.10.2026; EAS-Build Android noch von den Gründern zu prüfen (Umsetzungsstand N6). **N9 (Zutaten-Austausch, Prompt D, KONZEPT 6.9, gratis: Austausch-Tabelle mit Regel R23 und Batch-Art, Core `substitute.ts`, Dialog „Zutat austauschen“, Testmodus) umgesetzt** – Stand 14.10.2026; Server-Prüfung S7 und pgTAP mit N7 (Umsetzungsstand N9). **N10 (Bewertung nach dem Essen, Prompt D, KONZEPT 6.10, gratis: Core `ratings.ts` – Daumen runter 8 Wochen, Gründe nur Reihenfolge, `food_dislikes` hart in `filter.ts`; „Wie war’s?“ und Dialog ohne Vorauswahl, Testmodus) umgesetzt** – Stand 14.10.2026; Tabellen mit RLS und pgTAP mit N7 (Umsetzungsstand N10). **N11 (Kühlschrank-Suche „Was habe ich da?“ und Packungsgrößen, Prompt D, KONZEPT 6.11, gratis: Core `fridge-search.ts` nach den harten Filtern, Packungsgrößen als eigene Inhaltsart mit Regel R24 und Batch-Art `package-sizes`, Admin `/admin/packungen`, Testmodus) umgesetzt** – Stand 14.10.2026; Spalte `foods.package_size_g` mit N7 (Umsetzungsstand N11). **Nachtrag „Erweiterungen 2 (11.10.2026)“** in Abschnitt 19 (Fassung 2 nach Wächter-Prüfung, B1/B2 und S1–S14 eingearbeitet): Rezeptbestand aus `alpha5-rezepte.json`, Import in N2b/N2c, Umfang von Prompt C in N3–N6, neue Etappen N9–N14, W1 und P1. Fassung 3 nach Wächter-Nachprüfung `waechter-plan-5-r2.md` (Urteil „mit Auflagen“, alle Befunde eingearbeitet); Fassung 2 nach `waechter-plan-5.md`.
+**Status:** **freigegeben, Etappen N0 (Plan), N1 (Core: Bedarf, Grenzen, Makros, Timing) und N2a (Inhalte: Schemas, Prüfregeln, Einheiten) umgesetzt** – Stand 11.10.2026. Offene Fragen 16 B: Gründer „Alles wie empfohlen“ (10.10.2026). Gegenprüfung der R2-Blocker durch den Wächter im N0-PR. **N2b Teil 1 (Quelle/Lizenz geklärt, Import-Infrastruktur, Zuordnungs-Vorschlag) umgesetzt** – der Katalog selbst entsteht nach dem Merge über den Workflow `foods-import` (Umsetzungsstand N2b). **N2c (Rezept-Import als Entwurf) und N3 (Core: Essensplan, Meal-Prep, Einkaufsliste, Rezeptsuche) umgesetzt** – Stand 12.10.2026 (Umsetzungsstand N2c/N3). **N4 (App Testmodus: Einrichtung, Tag, Rezept) umgesetzt** – Stand 12.10.2026 (Umsetzungsstand N4). **N2d (Admin-Seiten Ernährung, Sammelfreigabe Rezepte pro Kategorie und Freigabe per ID in `content-review`, Fingerabdruck bestätigter Import-Annahmen) umgesetzt** – Stand 14.10.2026, drei offene Fragen von den Gründern entschieden (Umsetzungsstand N2d). **N5a (App Testmodus: gespeicherter Essensplan, Wochenansicht, „Andere Vorschläge“, „Rezept tauschen“, „Plan aktualisieren“, automatische Neuplanung 6.6) umgesetzt** – Stand 14.10.2026; N5 ist in **N5a** und **N5b** (Einkaufsliste, Meal-Prep-Kochtag, „Zur Einkaufsliste“) geteilt (Umsetzungsstand N5a). **N5b (App Testmodus: Einkaufsliste offline mit eigenen Einträgen und Zeitraum, Neuerzeugung bei Neuplanung W22, „Zur Einkaufsliste“, Meal-Prep-Pläne mit Kochtag und Timern, Auftau-Hinweise; K-a, K-b, K5, K7, N3 K1) umgesetzt** – Stand 14.10.2026; offene Gründer-Entscheidung: Mitteilungen im Hintergrund (`expo-notifications`), Löschfrist weiter offen (Umsetzungsstand N5b). **N5c (App Testmodus: Rezeptsuche mit vorbelegter, erweiterbarer Ernährungsform und gekennzeichneten Treffern, „Zur Einkaufsliste“ für diese Treffer, Ratgeber offline mit R21-Prüfung und „Zahlen aus“) umgesetzt** – Stand 14.10.2026 (Umsetzungsstand N5c). **N6 (PDF P5: Essensplan und Einkaufsliste als PDF, gratis – Dokumentmodell, Renderer-Bausteine `checklist`/`steps`, Druckansichten `ernaehrung/drucken` und `einkaufsliste/drucken`, Knöpfe, nativer Druck, CI-Artefakt) umgesetzt** – Stand 14.10.2026; EAS-Build Android noch von den Gründern zu prüfen (Umsetzungsstand N6). **N9 (Zutaten-Austausch, Prompt D, KONZEPT 6.9, gratis: Austausch-Tabelle mit Regel R23 und Batch-Art, Core `substitute.ts`, Dialog „Zutat austauschen“, Testmodus) umgesetzt** – Stand 14.10.2026; Server-Prüfung S7 und pgTAP mit N7 (Umsetzungsstand N9). **N10 (Bewertung nach dem Essen, Prompt D, KONZEPT 6.10, gratis: Core `ratings.ts` – Daumen runter 8 Wochen, Gründe nur Reihenfolge, `food_dislikes` hart in `filter.ts`; „Wie war’s?“ und Dialog ohne Vorauswahl, Testmodus) umgesetzt** – Stand 14.10.2026; Tabellen mit RLS und pgTAP mit N7 (Umsetzungsstand N10). **N11 (Kühlschrank-Suche „Was habe ich da?“ und Packungsgrößen, Prompt D, KONZEPT 6.11, gratis: Core `fridge-search.ts` nach den harten Filtern, Packungsgrößen als eigene Inhaltsart mit Regel R24 und Batch-Art `package-sizes`, Admin `/admin/packungen`, Testmodus) umgesetzt** – Stand 14.10.2026; Spalte `foods.package_size_g` mit N7 (Umsetzungsstand N11). **N14 (Resteplanung in der App, Testmodus, nur der sichere Teil: Reste-Score im Wochenplan, Hinweis „Nutzt deinen Rest“ ohne Mengen; Packungszahl/Rest zurückgestellt bis G-N13-4 und N11-G3) umgesetzt** – Stand 14.10.2026 (Umsetzungsstand N14). **Nachtrag „Erweiterungen 2 (11.10.2026)“** in Abschnitt 19 (Fassung 2 nach Wächter-Prüfung, B1/B2 und S1–S14 eingearbeitet): Rezeptbestand aus `alpha5-rezepte.json`, Import in N2b/N2c, Umfang von Prompt C in N3–N6, neue Etappen N9–N14, W1 und P1. Fassung 3 nach Wächter-Nachprüfung `waechter-plan-5-r2.md` (Urteil „mit Auflagen“, alle Befunde eingearbeitet); Fassung 2 nach `waechter-plan-5.md`.
 **Reihenfolge (Gründer-Entscheidung 09.10.2026):** 4b-A0 (erledigt) → Übungs-Glossar und Übungstausch (erledigt bis T2; T3 später mit Supabase) → **Phase 5** → Phase 4b (A → D → E; B/C später).
 **Testphase:** zuerst nur im **Testmodus** (lokal auf dem Gerät, ohne Supabase). Supabase-Teile (Migrationen, RLS, pgTAP) sind hier vollständig geplant, kommen aber in einer späteren Etappe (N7). Einzige Ausnahme: die kleine CHECK-Migration für den Onboarding-Schritt in N4 (S8).
 
@@ -836,7 +836,7 @@ Zusätzlich: K9 (Unverträglichkeit + „mag ich“ derselben Gruppe → ausgesc
 
 **N6 – PDF P5.** Dokumentmodell, Renderer-Blöcke, Druckansichten, Knöpfe, nativer Druck. _DoD:_ PDF-Tests aus 12.1 (inkl. K4-Formulierung), CI-Artefakt, EAS-Build Android geprüft.
 
-**N7 – Supabase.** Migrationen (Enums eigene Datei + `enums.ts`; Inhaltstabellen + `seed_content`; `nutrition_prefs`-Spalten **+ `nutritionSetupAvailable` im Supabase-Backend auf `true`** (R2-S3); `meal_plans`/`items`/`shopping_*` mit RLS, Spaltenrechten, Indizes; RPCs 7.3 inkl. Faktor-≠-1-Prüfung; Widerruf; Export), pgTAP 23–26 + Ergänzungen, `database.types.ts`, `db-sync.test.ts`, `supabase-backend.ts`, Sync-Warteschlange, geschützter Speicher. **Vorher: Fachprüfung durch eine Ernährungsfachkraft** (Gründer-Entscheidung 6). _DoD:_ `db-test` grün, Live-Test mit zwei Geräten; **Zitat- und Wertprüfung gegen die Originale** (Compendium-Codes/MET-Werte, Koletzko 2018, Janmahasatian 2005, Loucks 2011 brutto/netto, BfR-Koffein, Katch-McArdle, D-A-CH-PAL, Iraki 2019) erledigt und alle „VOR LIVEGANG FACHLICH PRÜFEN“-Stellen in `constants.ts` aufgelöst (aus N1 verschoben, Wächter N1 K6). **Erst wenn echte Konten kommen.** **Zusätzlich (Wächter N2d K9):** Rezept-Seed und Supabase-Tabelle transportieren `ingredients`, `steps_de`, `tip_de`, `no_cook`, Zeiten, `equipment_de`, Titel/Beschreibung und `meta.import_assumptions*` **unverändert** (fehlt `meta`, gälte der Stand als „none“ = unsichere Richtung); ein `db-sync`-/pgTAP-Test vergleicht `importAssumptionsState` vor und nach dem Seed. **Zusätzlich (Wächter N5a S4):** `meal_plans`/`meal_plan_items` speichern weder Planband noch `safetyKey`; 6.6 wird dafür ohne diese Felder umgesetzt. **Zusätzlich (N11):** Packungsgrößen kommen als Inhalt aus `content/package-sizes/` (nur `published`, R24 grün) über `seed_content()` in die Spalte `foods.package_size_g` (bzw. eine Tabelle `food_package_sizes` mit Prüfvermerk, Entscheidung beim Bau von N7) – `content/foods/` bleibt allein `foods-import` vorbehalten (S3); keine Nutzerdaten, keine Tabelle für die Kühlschrank-Suche (die Auswahl wird nie gespeichert). **Zusätzlich (Wächter N10 H8):** `food_dislikes` **ohne** `created_at`/Zeitstempel (sonst ließe sich ein „Daumen runter“ ohne Grund vom selben Tag auf „Unverträglich“ zurückführen); der Leer-Grund `rated_down` (`SLOT_EXCLUSION_REASONS`) wird in `mealPlanPayloadSchema`/`save_meal_plan` zugelassen; `recipe_ratings` mit CHECK `reason in ('taste','effort','cost','satiety')` und CHECK `reason is null or value = 'down'`, Unique `(user_id, recipe_id)`. **Zusätzlich (N13):** keine neue Tabelle oder Spalte – die Resteplanung braucht nur die Packungsgrößen aus N11 (s. o.); geteilte Portionen mit eigenem Beilagen-Faktor werden erst mit P1 (Phase 11) gespeichert, bis dahin bleibt `meal_plan_items` bei einem Faktor je Mahlzeit (die bestehende Prüfung „Faktor ≠ 1 ohne Einwilligung → abgelehnt“ gilt unverändert).
+**N7 – Supabase.** Migrationen (Enums eigene Datei + `enums.ts`; Inhaltstabellen + `seed_content`; `nutrition_prefs`-Spalten **+ `nutritionSetupAvailable` im Supabase-Backend auf `true`** (R2-S3); `meal_plans`/`items`/`shopping_*` mit RLS, Spaltenrechten, Indizes; RPCs 7.3 inkl. Faktor-≠-1-Prüfung; Widerruf; Export), pgTAP 23–26 + Ergänzungen, `database.types.ts`, `db-sync.test.ts`, `supabase-backend.ts`, Sync-Warteschlange, geschützter Speicher. **Vorher: Fachprüfung durch eine Ernährungsfachkraft** (Gründer-Entscheidung 6). _DoD:_ `db-test` grün, Live-Test mit zwei Geräten; **Zitat- und Wertprüfung gegen die Originale** (Compendium-Codes/MET-Werte, Koletzko 2018, Janmahasatian 2005, Loucks 2011 brutto/netto, BfR-Koffein, Katch-McArdle, D-A-CH-PAL, Iraki 2019) erledigt und alle „VOR LIVEGANG FACHLICH PRÜFEN“-Stellen in `constants.ts` aufgelöst (aus N1 verschoben, Wächter N1 K6). **Erst wenn echte Konten kommen.** **Zusätzlich (Wächter N2d K9):** Rezept-Seed und Supabase-Tabelle transportieren `ingredients`, `steps_de`, `tip_de`, `no_cook`, Zeiten, `equipment_de`, Titel/Beschreibung und `meta.import_assumptions*` **unverändert** (fehlt `meta`, gälte der Stand als „none“ = unsichere Richtung); ein `db-sync`-/pgTAP-Test vergleicht `importAssumptionsState` vor und nach dem Seed. **Zusätzlich (Wächter N5a S4):** `meal_plans`/`meal_plan_items` speichern weder Planband noch `safetyKey`; 6.6 wird dafür ohne diese Felder umgesetzt. **Zusätzlich (N11):** Packungsgrößen kommen als Inhalt aus `content/package-sizes/` (nur `published`, R24 grün) über `seed_content()` in die Spalte `foods.package_size_g` (bzw. eine Tabelle `food_package_sizes` mit Prüfvermerk, Entscheidung beim Bau von N7) – `content/foods/` bleibt allein `foods-import` vorbehalten (S3); keine Nutzerdaten, keine Tabelle für die Kühlschrank-Suche (die Auswahl wird nie gespeichert). **Zusätzlich (Wächter N10 H8):** `food_dislikes` **ohne** `created_at`/Zeitstempel (sonst ließe sich ein „Daumen runter“ ohne Grund vom selben Tag auf „Unverträglich“ zurückführen); der Leer-Grund `rated_down` (`SLOT_EXCLUSION_REASONS`) wird in `mealPlanPayloadSchema`/`save_meal_plan` zugelassen; `recipe_ratings` mit CHECK `reason in ('taste','effort','cost','satiety')` und CHECK `reason is null or value = 'down'`, Unique `(user_id, recipe_id)`. **Zusätzlich (N13):** keine neue Tabelle oder Spalte – die Resteplanung braucht nur die Packungsgrößen aus N11 (s. o.); geteilte Portionen mit eigenem Beilagen-Faktor werden erst mit P1 (Phase 11) gespeichert, bis dahin bleibt `meal_plan_items` bei einem Faktor je Mahlzeit (die bestehende Prüfung „Faktor ≠ 1 ohne Einwilligung → abgelehnt“ gilt unverändert). **Zusätzlich (N14):** keine neue Tabelle oder Spalte – die Hinweise „Nutzt deinen Rest“ werden aus dem gespeicherten Plan und den Packungsgrößen nachgerechnet, nie gespeichert; Reste aus der Vorwoche (G-N13-5) bräuchten eine Speicherung und sind nicht umgesetzt. Mit Phase 7: `has_entitlement` für die Resteplanung (Premium, 19.9) – serverseitig nur prüfbar, soweit der Server den Plan selbst nachrechnet (Vormerkung).
 
 **N8 – Batch-Pipeline Rezepte (optional, später).** `kinds/recipe.ts` (Matrix, Prompts, Structured Output nur mit Katalog-IDs), Probelauf ohne Schlüssel, `content-generate`/`collect` mit `ANTHROPIC_API_KEY`. _DoD:_ Probelauf grün, Kostenschätzung, PR mit Entwürfen.
 
@@ -1116,7 +1116,7 @@ Neue Prüfregeln (Teil von `content:validate`):
 - `nutrition/leftovers.ts`: Einkaufsliste auf Packungen aufrunden (N11), Rest je Zutat, Reste-Score nach Menge und Haltbarkeit – ändert **nur die Reihenfolge** der Kandidaten. **Rohe Reste (S9):** `max_fridge_days` gilt für gekochte Speisen; angebrochene rohe Reste von Lebensmitteln mit `animal: meat | fish | shellfish` oder Rohmilch zählen **nur für den Folgetag** (danach Hinweis „einfrieren“); übrige Reste nach `LEFTOVER_RAW_DAYS` je Abteilung (Konstante mit Quelle, z. B. BfR/Verbraucherzentrale, PRODUKTENTSCHEIDUNG, Fachprüfung).
 - _DoD:_ Tests mit Grenzfällen sehr unterschiedliche Kalorienziele (1.400 vs. 3.800 kcal → 0,6/1,8 + Ausgleich), **eine Person unter 18 mit Überschussdeckel** (Obergrenze → keine geteilte Portion), `no_targets` → Faktor 1, Rezept ohne Beilage, 5-Portionen-Rezepte, Zutat ohne Packungsgröße, Eier, rohes Hackfleisch als Rest → nur Folgetag; Eigenschaftstests **„Portionsfaktor hebt nie über die Obergrenze und drückt nie unter die Untergrenze ohne `below_floor`“** und **„Reste-Score an/aus → gleiche Kandidatenmenge, jeder Tag im Band oder `below_floor`“** (S9); Strukturtest K2 erweitert.
 
-**N14 – Resteplanung in der App (Prompt E, Premium, Testmodus offen).** Wochenplan nutzt den Reste-Score, Anzeige „Dieses Rezept verbraucht deinen restlichen Brokkoli.“, Einkaufsliste mit Packungsangabe, Zahlen-Schalter (S12). Premium-Prüfung serverseitig mit Phase 7. _DoD:_ Playwright, Plan bleibt deterministisch.
+**N14 – Resteplanung in der App (Prompt E, Premium, Testmodus offen).** _Teilweise umgesetzt im Testmodus (14.10.2026): Reste-Score im Wochenplan und Hinweis „Nutzt deinen Rest“; Packungsangabe in der Einkaufsliste **zurückgestellt bis G-N13-4 und N11-G3**, siehe Umsetzungsstand N14._ Wochenplan nutzt den Reste-Score, Anzeige „Dieses Rezept verbraucht deinen restlichen Brokkoli.“, Einkaufsliste mit Packungsangabe, Zahlen-Schalter (S12). Premium-Prüfung serverseitig mit Phase 7. _DoD:_ Playwright, Plan bleibt deterministisch.
 
 **W1 – Wettkampftage (mit Phase 10).** Wettkampftag-Rezepte im Plan der Tage davor; Carb-Loading nur bei Wettkämpfen ab ca. 90 Min. (Konstante mit Quelle, z. B. Thomas 2016/Burke). **Nur Makro-Verschiebung innerhalb des Ziels aus `clampCalorieTarget`**: mehr Kohlenhydrate, weniger Fett – **Fett nie unter 20 % der Energie und Eiweiß nie unter dem Minimum aus 4.7** (S14); zusätzliche Energie nur als Eingabe in `nutritionTargetsForWeek`, nie daneben. **PRODUKTENTSCHEIDUNG (S14, Fachprüfung):** An Carb-Loading-Tagen wird das Ziel-Defizit auf Erhalt gesetzt (Zielanpassung 0, weiterhin innerhalb aller Grenzen) und der **4b-Versatz an diesen Tagen = 0** (G1); die **Anzahl der Carb-Loading-Tage ist 1–2** (`CARB_LOADING_DAYS = { min: 1, max: 2 }` in `constants.ts`, Quelle Burke et al./Thomas 2016, **VOR LIVEGANG FACHLICH PRÜFEN**); die Ratgeber-Werte „8–10 g/kg“ werden nur angestrebt, soweit die Energie das zulässt, sonst Hinweis. Nicht in `no_targets`, bei `maintenance_only`/unter 18 nur die Makro-Verschiebung im Erhaltungsband; Ratgeber verlinkt. _DoD:_ Eigenschaftstest „Carb-Loading-Tag ≥ Untergrenze und ≤ Obergrenze, Fett ≥ 20 %, Eiweiß ≥ Minimum“, Fälle unter 18, `maintenance_only`, Fettverlust, `no_targets`; Strukturtest K2 grün.
 
@@ -3393,3 +3393,157 @@ harte Filter je Person wirken, Reste-Score ordnet nur um). Umgesetzt:
   Gegenprobe rot).
 - Hinweis für später: Das Test-Orakel `independentLimits` prüft die ~1 %-pro-Woche-Grenze noch nicht und ist bei
   Fettverlust lockerer als das echte Band (der Band-Abgleich läuft mit, daher keine Lücke).
+
+### N14 – Resteplanung in der App (teilweise umgesetzt, 14.10.2026, ohne Commit)
+
+Umfang laut 19.7 N14 (Prompt E, Premium, Testmodus offen): „Wochenplan nutzt den Reste-Score, Anzeige ‚Dieses Rezept
+verbraucht deinen restlichen Brokkoli.‘, Einkaufsliste mit Packungsangabe, Zahlen-Schalter (S12)“. Baut auf N13
+(PR #67) auf; dessen Logik ist unverändert (nur eine zusätzliche, verhaltensgleiche Methode, s. u.). Rein regelbasiert,
+keine KI, nichts Neues gespeichert, keine DB-Änderung (Vormerkung bei N7).
+
+**Vorprüfung – was hängt an offenen Gründer-Entscheidungen?** Der Wächter zu N13 (S4, G-N13-4) hat festgestellt, dass
+die Rest-Tage nur je Abteilung gelten (Hartkäse, Butter, Öl, Essig, H-Milch, Rohwurst halten angebrochen viel länger) –
+z. B. Parmesan 3 × 20 g in der Woche ergibt 3 Packungen; dazu ist offen, was bei Stückware eine Packung ist (N11-G3).
+Daraus folgt für N14:
+
+| Teil von N14                                              | hängt an G-N13-4/N11-G3?                                                                                                                                   | Entscheidung                                                                                       |
+| --------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------- |
+| Reste-Score im Wochenplan                                 | nein – ändert nur die Reihenfolge; zu kurze Rest-Tage verschenken höchstens einen Bonus, nie einen abgelaufenen Rest (sichere Richtung)                    | **umgesetzt**                                                                                      |
+| Hinweis „Nutzt deinen Rest“ an der Mahlzeit               | nein – ohne Mengen; er erscheint nur, wenn der Rest nach den (kurzen) Regeln sicher noch nutzbar ist; ein zu kurzer Wert lässt höchstens einen Hinweis weg | **umgesetzt**                                                                                      |
+| Hinweis „nur bis zum Folgetag“ bei kurz haltbaren Resten  | nein – S9 ist Plan-Entscheidung; Wortlaut beschreibt die Regel der App, nicht die Haltbarkeit des Produkts                                                 | **umgesetzt** (nur an der Mahlzeit, die den Rest nutzt)                                            |
+| Einkaufsliste mit Packungszahl und Rest                   | **ja** – bei Hartkäse/Butter/Öl zu viele Packungen, bei Stückware je nach G3 andere Zahlen                                                                 | **zurückgestellt**, keine Anzeige, kein Schalter (`shoppingListPackages` bleibt ungenutzt in Core) |
+| Liste „übrig am Ende“ mit „einfrieren“/„nur bis Folgetag“ | **ja** – `rests()` zählt abgelaufene Reste je Abteilung mit (Parmesan dreimal) und empfähle Einfrieren auch für Salami/Rohwurst                            | **zurückgestellt**                                                                                 |
+| Reste aus der Vorwoche                                    | G-N13-5, braucht Speicherung                                                                                                                               | nicht umgesetzt                                                                                    |
+| Geteilte Mahlzeiten / Paar-Modus                          | P1 (Phase 11)                                                                                                                                              | nicht umgesetzt; Pläne mit geteilter Mahlzeit bleiben unspeicherbar (N13 NS1 unverändert)          |
+
+Ergebnis: Variante (a) – nur der ehrliche, nützliche Teil; die Zahlenanzeige ist **weggelassen** (kein versteckter
+Schalter, damit sie nicht versehentlich eingeschaltet wird). Sobald G-N13-4 (Werte je Untergruppe) und N11-G3
+entschieden sind, kommt sie als eigener Schritt.
+
+1. **Core** (`packages/core/src/nutrition/leftovers.ts`):
+   - `LeftoverTracker.consumeDetailed` – gleicher Stand wie `consume` (das jetzt darauf zeigt; Test „ändert den Stand
+     genau wie consume“), zusätzlich Gramm aus Packungen, die an einem **früheren** Tag angebrochen wurden, und deren
+     frühester Anbruchstag.
+   - `leftoverPlanningInput(packageSizes, { allowDrafts })` – Eingabe `MealPlanInput.leftovers` aus den ausgewählten
+     Packungsgrößen (`packageSizeLookup`, Zod an der Grenze); ohne `allowDrafts` nur freigegebene
+     (`usablePackageSizes`, Wächter N14 H1); ohne Packungsgrößen `undefined` → Plan exakt wie ohne Resteplanung.
+   - `recordWeekLeftoversInCookOrder` (Wächter N14 S1): verbucht alle Mahlzeiten der Woche **zeitlich** – stabil nach
+     (Kaufdatum = Kochtag, Esstag, Platz). Eine Meal-Prep-Kochrunde verbraucht ihre Packungen damit am Kochtag, auch
+     für die Portionen späterer Tage, bevor frische Mahlzeiten der Folgetage einen „Rest“ sehen. Genutzt von
+     `leftoverMealHints`, `planLeftovers` und `shoppingListPackages` (Packungszahl in der App weiter ausgeblendet).
+     Der Reste-Score der Engine bucht weiter Tag für Tag (`recordDayLeftovers`, unverändert aus N13, nur Reihenfolge;
+     Wächter H4 vermerkt – beim Freischalten der Packungszahl angleichen).
+   - `leftoverMealHints(plan, foods, packageSizes, { allowDrafts })` – je Mahlzeit die Lebensmittel, deren Rest sie
+     nutzt (gleiche Rechnung wie `planLeftovers`: zeitlich nach Kochtag verbucht, abgelaufene Reste nie), mit
+     Anbruchstag, `rawAnimal`, `shortLived` (roh tierisch ODER `pregnancy_caution` – genau die Lebensmittel, die
+     `leftoverKeepDays` nur bis zum Folgetag einplant, Wächter N14 S3) und `packageReviewed` (Packungsgröße
+     `published`). Ein Hinweis nur, wenn die Packung **vor** dem Kochtag angebrochen wurde (dieselbe Kochrunde oder
+     derselbe Tag ist kein Rest „von vorher“), nicht an vorgekochten Meal-Prep-Portionen (`prepKind = leftover`: ihre
+     Zutaten werden am Kochtag verbucht – ein Rest von früher erscheint am Kochtag selbst) und nie für Vorrat (wie der
+     Reste-Score). Keine Mengen, keine Packungszahlen.
+2. **App** (`apps/mobile`, Testmodus):
+   - `data/nutrition-plan.ts`: `computeNutritionWeek` übergibt `leftovers` an die Engine (neue Pläne, „Andere
+     Vorschläge“, „Plan aktualisieren“, automatische Neuplanung; „Rezept tauschen“ und Ergänzungs-Snacks nutzen den
+     Score weiter nicht, N13), der Fingerabdruck `inputsKey` kennt die Packungsgrößen, Ergebnis `leftoverHints`
+     (nur im Arbeitsspeicher). Reste-Score-Eingabe und Hinweise sind getrennt abgefangen (`safeLeftoverPlanningInput`,
+     `safeLeftoverMealHints`, Wächter N14 H2): ein Fehler dort ergibt keinen Score bzw. keine Hinweise, sperrt aber nie
+     die Ernährungsansicht.
+   - Tagesansicht `ernaehrung/index.tsx`: an der Mahlzeit „Nutzt deinen Rest: Tofu (seit Mo)“, bei ungeprüfter
+     Packungsgröße „Packungsgröße noch nicht geprüft (Testwert)“, bei kurz haltbaren Resten (`shortLived`) neutral
+     „Angebrochen nur kurz haltbar: Die App plant diesen Rest nur bis zum Folgetag ein. Gut gekühlt lagern und die
+     Angaben auf der Packung beachten.“ (kein „roh“ – gilt auch für Kochschinken, Rohmilchkäse, Sprossen; Wächter N14
+     S3); unter den Mahlzeiten der Satz „Die Hinweise gehen von üblichen Packungsgrößen aus und planen Reste nur kurz
+     ein. Wie viele Packungen du kaufst, zeigt die Einkaufsliste noch nicht.“ (Wächter N14 H3, s. Präzisierungen).
+     Wochenansicht `ernaehrung/woche.tsx`: „· nutzt einen Rest“. **Screenreader (Wächter N14 S2):** Das
+     `accessibilityLabel` der antippbaren Mahlzeit ersetzt ihren Inhalt – Hinweis, Testwert-Kennzeichnung und
+     Lagerhinweis werden deshalb in Tages- **und** Wochenansicht angehängt (`leftoverAccessibilityText`).
+   - Texte `i18n/de-nutrition.ts` (`leftovers`), Anzeige-Hilfen `lib/nutrition-format.ts` (`leftoverHintView`,
+     `leftoverHintsBySlot`, `leftoverAccessibilityText`), `MealRow` mit optionalem Hinweis.
+   - Zustände: unverändert die der Ernährungs-Ansichten (Laden, Fehler mit „Erneut versuchen“, unvollständig,
+     gesperrt, keine Rezepte); ohne Packungsgrößen (z. B. echtes Bündel ohne `package-sizes`) gibt es einfach keine
+     Hinweise. Keine kcal oder Gramm im Hinweis – der Zahlen-Schalter (S12) bleibt wirksam.
+3. **Tests:** Core `n14-leftover-hints.test.ts` (11): `leftoverPlanningInput` (leer → Plan identisch, erster Eintrag
+   je Lebensmittel, Zod 0/5.001 g), Hinweise (Rest von früher mit Anbruchstag, neue Packung nach Ablauf, **rohes
+   Hackfleisch nur am Folgetag, übermorgen kein Hinweis**, gleicher Tag/gleiche Kochrunde kein Hinweis, Meal-Prep-
+   Portionen ohne Hinweis, Vorrat/ohne Packungsgröße kein Hinweis, leerer Plan, deterministisch), **Eigenschaftstest
+   „Hinweise nie für abgelaufene Reste, roh tierisch nur vom Vortag“** (30 Profile inkl. Meal-Prep, Schwangerschaft,
+   ohne Einwilligung, 1–8 Mahlzeiten; zugleich „gleiche Eingaben → gleicher Plan“; Zeitlimit 60 s), `consumeDetailed`
+   = `consume`; nach der Wächter-Prüfung (16): **Tofu-Fall** (200-g-Packung, Mo Meal-Prep 2 × 100 g, Di frisch → kein
+   Hinweis, `planLeftovers` ohne Di, `shoppingListPackages` 2 Packungen), Rest von vor dem Kochtag erscheint am
+   Kochtag, `shortLived` für Sprossen/Kochschinken/Rohmilchkäse (nicht Tofu, = `leftoverKeepDays` 1), ohne
+   `allowDrafts` nur freigegebene Packungen. App-Vitest `nutrition-n14.test.ts` (6, nach der Wächter-Prüfung 8 – dazu
+   H1 ohne `allowDrafts`, H2 ungültige Packungsgröße → Ansicht bleibt, Vorlesetext, Erklärsatz ohne „bevorzugt“): Score an mit Packungsgrößen, ohne → Plan wie Engine ohne Feld,
+   Fingerabdruck; 7 Profile deterministisch, jeder Tag im Band oder `below_floor`, Hinweise passen zum Plan; vegan
+   ohne tierische Lebensmittel; **gespeicherter Plan bleibt gespeichert**; Hinweis-Text ohne Ziffern/„Packung“;
+   Einkaufsliste ohne Packungsangaben. Playwright `e2e/nutrition-leftovers.spec.ts`: Hinweise über alle 7 Tage, ohne
+   Ziffern, als Testwert gekennzeichnet, nicht in localStorage/sessionStorage oder Adresse, **nach Neuladen gleich**,
+   Wochenansicht mit gleicher Anzahl Vermerke, „Zahlen aus“ → Hinweise gleich, keine kcal; **`aria-label` der
+   Mahlzeit enthält Hinweis und Testwert-Kennzeichnung** (Tag und Woche, S2). Ein Fleisch-Fall mit Lagerhinweis ist mit
+   den Beispiel-Daten nicht erreichbar (geprüft über 20 omnivore Profile: Hähnchen liegt nie an Folgetagen; Wächter
+   N14 H8) – abgedeckt in Core (Hackfleisch, Sprossen, Kochschinken) und App-Vitest (Vorlesetext).
+
+**Präzisierungen (vom Plan nicht ausdrücklich geregelt, vorsichtig gelöst):**
+
+- **Text** „Nutzt deinen Rest: …“ statt „verbraucht deinen restlichen …“: ob der Rest ganz aufgebraucht wird, hängt
+  an Packungsgröße und Kaufverhalten – „nutzt“ stimmt in beiden Fällen. Mit Anbruchstag „(seit Mo)“, ohne Menge.
+- **Annahme „übliche Packung gekauft“** wird offen gesagt (Satz unter den Mahlzeiten), weil die Einkaufsliste bis zur
+  Entscheidung keine Packungen zeigt.
+- **Erklärsatz ohne „bevorzugt“ (Wächter N14 H3):** Ob ein angezeigter Plan mit Reste-Score entstand, lässt sich ohne
+  zusätzliche gespeicherte Angabe nicht feststellen (gespeicherte Pläne von vor N14 und „Rezept tauschen“ entstehen
+  ohne Score; eine Markierung im Plan wäre ein neues Feld im Gerätespeicher bzw. in `meal_plans`). Deshalb ist die
+  Behauptung „Der Plan bevorzugt …“ ganz **weggelassen**; der verbleibende Satz (Packungsannahme, kurze Planung, keine
+  Packungszahlen) stimmt für jeden angezeigten Plan.
+- **Gespeicherte Pläne bleiben** (keine Neuplanung, Engine-Version unverändert): Der Reste-Score ist keine
+  Sicherheitsregel, ein Wechsel der Reihenfolge rechtfertigt keine automatische Neuplanung (6.6). Die Hinweise werden
+  für jeden angezeigten Plan nachgerechnet – auch für einen Plan, der ohne Score entstand.
+- **Premium:** Testphase offen (19.9); die serverseitige Prüfung kommt mit Phase 7 (Vormerkung bei N7). Kein
+  Premium-Hinweis in der App, solange es kein Abo gibt.
+- **Entwürfe:** Packungsgrößen im Testmodus dürfen Entwürfe sein (wie Rezepte, `allowDrafts`); der Hinweis sagt dann
+  „Packungsgröße noch nicht geprüft (Testwert)“. Im Beispiel-Bestand sind alle 6 Packungen Testwerte.
+- **Wirkung heute klein:** Echte Packungsgrößen gibt es noch nicht (erster `package-sizes`-Lauf wartet auf N11-G3);
+  sichtbar ist N14 nur mit den Beispiel-Rezepten. Ohne Packungsgrößen ändert sich nichts.
+
+**Gegenproben (danach zurückgesetzt):** (1) Hinweis auch für Packungen vom selben Tag (`openedOn <= date`) → 2 rot.
+(2) Hinweis auch an vorgekochten Meal-Prep-Portionen → 1 rot. (3) Vorrat nicht ausgenommen → 2 rot. (4) Rohe
+tierische Reste 2 statt 1 Tag (`LEFTOVER_RAW_DAYS.rawAnimal`) → N14-Eigenschaftstest rot (insgesamt 4 rot mit N13).
+(5) Abgelaufene Reste werden weiter verwendet → 2 rot in N14 (Hackfleisch-Fall, Eigenschaftstest), 3 mit N13.
+(6) App übergibt `leftovers` nicht mehr → App-Vitest 1 rot. (7) Hinweis mit Packungszahl („1 Packung“) → App-Vitest 1
+rot und Playwright rot. **Nach der Wächter-Prüfung:** (8) S1 – Verbuchung wieder in Plan-Reihenfolge statt nach
+Kochtag → Tofu-Test rot. (9) S3 – `shortLived` nur roh tierisch → Sprossen/Kochschinken-Test rot. (10) H1 – Entwürfe
+auch ohne `allowDrafts` → Core 1 rot, App-Vitest 1 rot.
+
+**So testest du es am Handy:** HANDY-ANLEITUNG Teil 7c, Abschnitt „Resteplanung (Etappe N14)“.
+
+**Offen für die Gründer (N14):**
+
+- **G-N13-4 (blockiert den Rest von N14):** Rest-Tage je Untergruppe statt je Abteilung (Hartkäse, Butter, Öl, Essig,
+  H-Milch, Rohwurst/Salami, Kochschinken, Konfitüre, Senf …) mit Fachprüfung. Erst danach zeigt die Einkaufsliste
+  Packungszahl und Rest, und erst dann gibt es die Liste „übrig am Ende“ mit „einfrieren“/„nur bis Folgetag“.
+- **N11-G3 (blockiert den Rest von N14):** Packung bei Stückware = ein Stück oder übliche Mehrfachpackung? Davon hängt
+  ab, ob und wie viel Rest entsteht – vor dem ersten echten `package-sizes`-Lauf entscheiden.
+- **G-N14-1 (neu):** Soll der Hinweis „Nutzt deinen Rest“ auch in der Rezeptansicht und im PDF stehen? _Jetzt: nur
+  Tages- und Wochenansicht (PDF unverändert)._
+- **G-N14-2 (neu):** Soll ein bestehender Plan beim ersten Öffnen nach N14 neu geplant werden, damit der Reste-Score
+  wirkt? _Jetzt: nein (gespeicherte Pläne bleiben; „Andere Vorschläge“ oder die nächste Woche nutzen ihn)._
+- **G-N14-3 (neu, Wächter N14, mit der Ernährungsfachkraft N7):** Sollen empfindliche pflanzliche Lebensmittel (rohe
+  Sprossen) überhaupt als Rest am Folgetag eingeplant werden – oder gar nicht (dann `LEFTOVER_RAW_DAYS.sensitive` = 0)?
+  _Jetzt: Folgetag mit Lagerhinweis (S3)._
+- Weiter offen: G-N13-5 (Reste aus der Vorwoche, braucht Speicherung), P1-Fragen G-N13-1/-2/-3/-6/-7.
+
+**Wächter-Prüfung N14 (14.10.2026): Freigabe mit Auflagen, kein Blocker** (Bericht `waechter-n14.md`; ohne
+Packungsgrößen bytegleich zu HEAD in 61/61 Profilen, 0 Planband-Verstöße, deterministisch, Lebensmittelsicherheit
+eingehalten). Umgesetzt:
+
+- **S1** Zeitliche Verbuchung nach Kochtag (`recordWeekLeftoversInCookOrder`) in Hinweisen, `planLeftovers` und
+  `shoppingListPackages`; Tofu-Test. Nachprüfung mit dem Wächter-Skript (`order2`, an die neue Signatur angepasst):
+  **0 von 1.407** Hinweisen ohne zeitlich richtigen Rest (vorher 31 von 1.393); `compare`: ohne Packungsgrößen
+  weiter **61/61 bytegleich** zu HEAD, 0 Planband-Verstöße.
+- **S2** Hinweis, Testwert-Kennzeichnung und Lagerhinweis im Vorlesetext der Mahlzeit (Tag und Woche); App-Vitest und
+  Playwright (`aria-label`).
+- **S3** Feld `shortLived` und neutraler Wortlaut ohne „roh“; Test mit Sprossen, Kochschinken, Rohmilchkäse.
+- **H1** Packungsgrößen ohne `allowDrafts` nur `published` (Core `usablePackageSizes`); Tests Core und App.
+- **H2** Score-Eingabe und Hinweise getrennt abgefangen; Test mit ungültiger Packungsgröße (Ansicht bleibt).
+- **H3** Erklärsatz ohne Behauptung „bevorzugt“ (siehe Präzisierungen).
+- **H8** Fleisch-Fall im E2E mit Beispiel-Daten nicht erreichbar (s. Tests); Vorlesetext-Prüfung im E2E ergänzt.
+- **Nur vermerkt:** H4 (Score der Engine bucht Tag für Tag – nur Reihenfolge; vor dem Freischalten der Packungszahl
+  angleichen), H5/H6/H9/H10 ohne Befund, H7 („seit So“ für den Sonntag vor der Woche – unverändert).
