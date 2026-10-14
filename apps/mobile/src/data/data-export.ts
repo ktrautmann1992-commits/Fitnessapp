@@ -91,6 +91,11 @@ export function localDataExport(
             substitute_food_id: s.substituteFoodId,
           })),
           omitted_optional: meal.omittedOptional.map((o) => o.foodId),
+          // Zutaten-Austausch (Etappe N9): Spalte wie `ingredient_swaps` der Payload.
+          ingredient_swaps: (meal.ingredientSwaps ?? []).map((x) => ({
+            food_id: x.foodId,
+            substitute_food_id: x.substituteFoodId,
+          })),
           is_fill: meal.isFill,
           prep_kind: meal.prepKind,
           cook_date: meal.cookDate,

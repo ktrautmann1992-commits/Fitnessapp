@@ -251,6 +251,7 @@ describe('Berichte', () => {
         recipes: [],
         mealPrepPlans: [],
         guides: [],
+        substitutions: [],
         issues: [],
         blocking: [],
       },

@@ -6,6 +6,7 @@ import type { MealPrepPlan } from './meal-prep-plan-schema';
 import type { NutritionCatalogContext } from './recipe-checks';
 import type { Recipe, RecipeCategoryId } from './recipe-schema';
 import type { ContentIssue, ContentRuleId } from './rules';
+import type { IngredientSubstitution } from './substitution-schema';
 import {
   type ContentValidationResult,
   type NutritionContentFile,
@@ -271,7 +272,7 @@ function withReplacements(
 }
 
 /** Stand eines Meal-Prep-Plans oder Ratgebers nach der Freigabe (nur Status und Prüfvermerk ändern sich). */
-export function releasedContent<T extends MealPrepPlan | Guide>(
+export function releasedContent<T extends MealPrepPlan | Guide | IngredientSubstitution>(
   content: T,
   options: Pick<RecipeReleaseOptions, 'reviewer' | 'date' | 'expertReviewed'>,
 ): T {
@@ -290,7 +291,7 @@ export function releasedContent<T extends MealPrepPlan | Guide>(
 /** Rote Befunde eines Inhalts im Stand nach der Freigabe. */
 function redBlocker(
   issues: readonly ContentIssue[],
-  kind: 'meal_prep_plan' | 'guide',
+  kind: 'meal_prep_plan' | 'guide' | 'ingredient_substitution',
   id: string,
 ): NutritionReleaseBlocker[] {
   const red = issues.filter(
@@ -353,6 +354,12 @@ export type NutritionReleaseDecision =
       readonly original: Guide;
       readonly released: Guide;
       readonly blockers: readonly NutritionReleaseBlocker[];
+    }
+  | {
+      readonly kind: 'ingredient_substitution';
+      readonly original: IngredientSubstitution;
+      readonly released: IngredientSubstitution;
+      readonly blockers: readonly NutritionReleaseBlocker[];
     };
 
 export interface NutritionReleasePlan {
@@ -360,7 +367,7 @@ export interface NutritionReleasePlan {
   readonly decisions: readonly NutritionReleaseDecision[];
   /** IDs von Lebensmitteln – NICHT über diesen Weg (eigene Prüfung „Katalog geprüft“, R19). */
   readonly foodIds: readonly string[];
-  /** IDs, die es (mit gültigem Schema) weder als Rezept, Meal-Prep-Plan noch Ratgeber gibt. */
+  /** IDs, die es (mit gültigem Schema) weder als Rezept, Meal-Prep-Plan, Ratgeber noch Austausch gibt. */
   readonly unknownIds: readonly string[];
   /** IDs, die es in mehreren Arten gibt (z. B. Rezept und Ratgeber) – nicht eindeutig. */
   readonly ambiguousIds: readonly string[];
@@ -373,7 +380,10 @@ export interface NutritionReleasePlan {
  * - Meal-Prep-Pläne nur, wenn alle `recipe_ids` nach diesem Lauf freigegeben sind (schon vorher oder in diesem Lauf
  *   ohne Grund dagegen) und kein roter Befund bleibt (R20 inkl. Aufbewahrung nach R9),
  * - Ratgeber nur ohne roten Befund (R21, Textregeln inkl. Health-Claims) und mit gelbem R21H (z. B. Dosierungen)
- *   nur mit Häkchen „fachlich geprüft“ (Wächter N2d S6).
+ *   nur mit Häkchen „fachlich geprüft“ (Wächter N2d S6),
+ * - Austausch-Einträge (19.7 N9) nur ohne roten Befund im Stand danach (R23: beide Lebensmittel freigegeben und
+ *   katalog-geprüft, Messgröße der Rolle ±10 %, kein Alkohol; R10 Hinweis-Text). Gelbes R23H (Süße) blockiert nicht,
+ *   steht aber im Prüfbericht des Pull Requests.
  * Geprüft wird jeweils der Stand NACH der Freigabe; Pläne und Ratgeber in einem zweiten Durchgang, in dem nur die
  * tatsächlich freigegebenen Rezepte als freigegeben zählen. Lebensmittel werden nie freigegeben (`foodIds`).
  */
@@ -389,13 +399,16 @@ export function planNutritionRelease(
   const recipeById = new Map(before.recipes.map((r) => [r.id, r]));
   const planById = new Map(before.mealPrepPlans.map((p) => [p.id, p]));
   const guideById = new Map(before.guides.map((g) => [g.id, g]));
+  const subById = new Map(before.substitutions.map((x) => [x.id, x]));
   const foodIdSet = new Set(before.foods.map((f) => f.id));
 
   const foodIds: string[] = [];
   const unknownIds: string[] = [];
   const ambiguousIds: string[] = [];
   for (const id of wanted) {
-    const hits = [recipeById.has(id), planById.has(id), guideById.has(id)].filter(Boolean).length;
+    const hits = [recipeById.has(id), planById.has(id), guideById.has(id), subById.has(id)].filter(
+      Boolean,
+    ).length;
     if (hits > 1) ambiguousIds.push(id);
     else if (hits === 0 && foodIdSet.has(id)) foodIds.push(id);
     else if (hits === 0) unknownIds.push(id);
@@ -412,12 +425,21 @@ export function planNutritionRelease(
   });
   const guides = wanted.flatMap((id) => {
     const guide = guideById.get(id);
-    return guide !== undefined && !recipeById.has(id) && !planById.has(id) ? [guide] : [];
+    return guide !== undefined && !recipeById.has(id) && !planById.has(id) && !subById.has(id)
+      ? [guide]
+      : [];
+  });
+  const subs = wanted.flatMap((id) => {
+    const sub = subById.get(id);
+    return sub !== undefined && !recipeById.has(id) && !planById.has(id) && !guideById.has(id)
+      ? [sub]
+      : [];
   });
 
   const planDecisions = new Map<string, NutritionReleaseDecision>();
   const guideDecisions = new Map<string, NutritionReleaseDecision>();
-  if (plans.length + guides.length > 0) {
+  const subDecisions = new Map<string, NutritionReleaseDecision>();
+  if (plans.length + guides.length + subs.length > 0) {
     const replacements = new Map<string, unknown>();
     for (const decision of recipeDecisions.values()) {
       if (decision.blockers.length === 0) {
@@ -432,6 +454,11 @@ export function planNutritionRelease(
     for (const guide of guides) {
       if (guide.status === 'draft') {
         replacements.set(`guide:${guide.id}`, releasedContent(guide, options));
+      }
+    }
+    for (const sub of subs) {
+      if (sub.status === 'draft') {
+        replacements.set(`ingredient_substitution:${sub.id}`, releasedContent(sub, options));
       }
     }
     const after = validateContent(
@@ -467,13 +494,28 @@ export function planNutritionRelease(
             ];
       guideDecisions.set(guide.id, { kind: 'guide', original: guide, released, blockers });
     }
+    for (const sub of subs) {
+      const released =
+        (replacements.get(`ingredient_substitution:${sub.id}`) as
+          IngredientSubstitution | undefined) ?? sub;
+      const blockers: NutritionReleaseBlocker[] =
+        sub.status !== 'draft'
+          ? [{ kind: 'not_draft', status: sub.status }]
+          : redBlocker(after.issues, 'ingredient_substitution', sub.id);
+      subDecisions.set(sub.id, {
+        kind: 'ingredient_substitution',
+        original: sub,
+        released,
+        blockers,
+      });
+    }
   }
 
   const decisions = wanted.flatMap((id): NutritionReleaseDecision[] => {
     if (ambiguousIds.includes(id)) return [];
     const recipe = recipeDecisions.get(id);
     if (recipe !== undefined) return [{ kind: 'recipe', ...recipe }];
-    const other = planDecisions.get(id) ?? guideDecisions.get(id);
+    const other = planDecisions.get(id) ?? guideDecisions.get(id) ?? subDecisions.get(id);
     return other === undefined ? [] : [other];
   });
   return { decisions, foodIds, unknownIds, ambiguousIds };

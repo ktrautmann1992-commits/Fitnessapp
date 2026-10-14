@@ -1,15 +1,15 @@
-import type { ContentFileKind } from '@fitnessapp/core';
-
 import { exerciseKind } from './exercise';
+import { ingredientSubstitutionKind } from './ingredient-substitution';
 import { planTemplateKind } from './plan-template';
-import type { ContentKindDefinition } from './types';
+import type { ContentKindDefinition, PipelineContentKind } from './types';
 
 export type * from './types';
 
-/** Alle Inhaltsarten der Pipeline. Rezepte (Phase 5) kommen hier als weiterer Eintrag dazu. */
-export const CONTENT_KINDS: Readonly<Record<ContentFileKind, ContentKindDefinition>> = {
+/** Alle Inhaltsarten der Pipeline: Training (Phase 2) und die Austausch-Tabelle (Phase 5, N9). */
+export const CONTENT_KINDS: Readonly<Record<PipelineContentKind, ContentKindDefinition>> = {
   exercise: exerciseKind,
   plan_template: planTemplateKind,
+  ingredient_substitution: ingredientSubstitutionKind,
 };
 
 /** Art aus Workflow-Eingabe (`exercises`, `plan-templates`) oder interner Bezeichnung (`exercise`, …). */

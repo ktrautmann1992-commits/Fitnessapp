@@ -3,7 +3,7 @@ import { z } from 'zod';
 import { PORTION_SCALE_LIMITS, RECIPE_SERVINGS_PICKER } from '../constants';
 import type { Food, FoodLookup } from '../content/food-schema';
 import type { Recipe } from '../content/recipe-schema';
-import type { FilteredRecipe, RecipeSubstitution } from './filter';
+import type { AppliedSwap, FilteredRecipe, RecipeSubstitution } from './filter';
 import {
   addFoodNutrients,
   divideNutrients,
@@ -24,8 +24,10 @@ export interface ScaledIngredient {
   readonly index: number;
   /** Tatsächlich verwendetes Lebensmittel (bei Ersatz das Ersatzprodukt, S4). */
   readonly foodId: string;
-  /** Ursprüngliches Lebensmittel, nur bei Ersatz. */
+  /** Ursprüngliches Lebensmittel, nur bei Ersatz (S4) bzw. Zutaten-Austausch (N9). */
   readonly originalFoodId: string | null;
+  /** Nur beim Zutaten-Austausch (19.7 N9): vom Nutzer getauscht (sonst fehlt das Feld). */
+  readonly swapped?: true;
   readonly amount: number;
   readonly unit: RecipeUnit;
   readonly optional: boolean;
@@ -45,7 +47,10 @@ export interface ScaledPortion {
   readonly optionalKcal: number;
 }
 
-type RecipeVariant = Pick<FilteredRecipe, 'recipe' | 'omitted' | 'substitutions'>;
+type RecipeVariant = Pick<FilteredRecipe, 'recipe' | 'omitted' | 'substitutions'> & {
+  /** Getauschte Zutaten (19.7 N9): Lebensmittel, Menge und Einheit des Ersatzes. */
+  readonly swaps?: readonly AppliedSwap[];
+};
 
 /** Eier werden nur ganz verwendet (Plan 6.2). */
 function isWholePiece(food: Food, unit: RecipeUnit): boolean {
@@ -67,11 +72,17 @@ function scaleIngredients(
 ): { ingredients: ScaledIngredient[]; nutrients: RecipeNutrients; optionalKcal: number } {
   const omitted = new Set(variant.omitted);
   const subs = substitutionMap(variant.substitutions);
+  const swaps = new Map((variant.swaps ?? []).map((s) => [s.index, s]));
   const ingredients: ScaledIngredient[] = [];
   const nutrients = zeroNutrients();
   let optionalKcal = 0;
-  variant.recipe.ingredients.forEach((ingredient, index) => {
+  variant.recipe.ingredients.forEach((original, index) => {
     if (omitted.has(index)) return;
+    const swap = swaps.get(index);
+    const ingredient =
+      swap === undefined
+        ? original
+        : { ...original, food_id: swap.substituteFoodId, amount: swap.amount, unit: swap.unit };
     const foodId = subs.get(index) ?? ingredient.food_id;
     const food = foods.get(foodId);
     if (food === undefined) {
@@ -88,11 +99,12 @@ function scaleIngredients(
     ingredients.push({
       index,
       foodId,
-      originalFoodId: subs.has(index) ? ingredient.food_id : null,
+      originalFoodId: subs.has(index) || swap !== undefined ? original.food_id : null,
       amount,
       unit: ingredient.unit,
       optional: ingredient.optional,
       grams,
+      ...(swap !== undefined ? { swapped: true as const } : {}),
     });
     if (!ingredient.optional) {
       addFoodNutrients(nutrients, food, grams);
@@ -151,7 +163,7 @@ export function scaleRecipeForServings(
 ): ServingsScaled {
   const n = servingsSchema.parse(servings);
   const v: RecipeVariant =
-    'recipe' in variant ? variant : { recipe: variant, omitted: [], substitutions: [] };
+    'recipe' in variant ? variant : { recipe: variant, omitted: [], substitutions: [], swaps: [] };
   const { ingredients, nutrients } = scaleIngredients(v, foods, (scales) =>
     scales ? n / v.recipe.servings : 1,
   );

@@ -2,6 +2,7 @@ import { z } from 'zod';
 
 import { isoDateSchema } from '../age';
 import {
+  INGREDIENT_SUBSTITUTION_LIMITS,
   MEAL_PLAN_ENGINE_VERSION,
   MEAL_PLAN_UPDATE_MIN_CHANGE,
   MEAL_SLOT_TIMES,
@@ -21,9 +22,11 @@ import {
 import { MEAL_PLAN_NOTICE_CODES } from './notices';
 import type { FoodLookup } from '../content/food-schema';
 import type { Recipe } from '../content/recipe-schema';
+import type { IngredientSubstitution } from '../content/substitution-schema';
 import { automaticReplan, needsAutomaticReplan, type ReplanReason } from './replan';
 import { NUTRITION_MODES, weekStartSchema } from './schemas';
 import { scalePortion } from './scale';
+import { resolveIngredientSwaps } from './swap-resolve';
 import type { NutritionWeekTargets } from './targets';
 import { RECIPE_UNITS } from './units';
 
@@ -75,6 +78,7 @@ const ingredientSchema = z.strictObject({
   unit: z.enum(RECIPE_UNITS),
   optional: z.boolean(),
   grams: amount,
+  swapped: z.literal(true).optional(),
 });
 
 const mealSchema = z.strictObject({
@@ -97,6 +101,17 @@ const mealSchema = z.strictObject({
       }),
     )
     .max(50),
+  ingredientSwaps: z
+    .array(
+      z.strictObject({
+        index: z.number().int().min(0).max(200),
+        foodId: contentIdSchema,
+        substituteFoodId: contentIdSchema,
+      }),
+    )
+    .min(1)
+    .max(INGREDIENT_SUBSTITUTION_LIMITS.swapsPerMeal)
+    .optional(),
   omittedOptional: z
     .array(z.strictObject({ index: z.number().int().min(0).max(200), foodId: contentIdSchema }))
     .max(50),
@@ -164,7 +179,8 @@ export function parseStoredMealPlanWeek(value: unknown): MealPlanWeek | null {
  * Passt der gespeicherte Schnappschuss zu den Rezepten (Wächter N5a S2)? Der Gerätespeicher ist nicht vertrauenswürdig:
  * Titel, Status, Zutaten und Nährwerte JEDER Mahlzeit (auch vergangener Tage) müssen sich aus dem Rezept derselben
  * Version, den gespeicherten Ersatzprodukten (nur im Katalog erlaubte `substitutes`), den weggelassenen OPTIONALEN
- * Zutaten und dem Faktor genau wieder ergeben (`scalePortion`); die Tagessumme muss zu den Mahlzeiten passen. Sonst
+ * Zutaten, den getauschten Zutaten (19.7 N9: nur Einträge, die es in der Austausch-Tabelle gibt – Menge und Einheit
+ * immer aus der Tabelle) und dem Faktor genau wieder ergeben (`scalePortion`); die Tagessumme muss zu den Mahlzeiten passen. Sonst
  * false → der Plan gilt als nicht vorhanden und wird neu erstellt (sichere Richtung – auch wenn sich nur eine
  * Rezept-Version geändert hat). Ob die Mahlzeit ab heute noch durch den Filter der Person kommt, prüft zusätzlich
  * `needsAutomaticReplan`.
@@ -188,6 +204,7 @@ export function mealPlanMatchesRecipes(
   plan: MealPlanWeek,
   recipes: readonly Recipe[],
   foods: FoodLookup,
+  substitutions: readonly IngredientSubstitution[] = [],
 ): boolean {
   return plan.days.every((day) => {
     const kcal = day.meals.reduce((sum, meal) => sum + meal.nutrients.kcal, 0);
@@ -213,12 +230,26 @@ export function mealPlanMatchesRecipes(
         return ingredient?.optional === true && ingredient.food_id === o.foodId;
       });
       if (!substitutionsOk || !omittedOk) return false;
+      const swaps = resolveIngredientSwaps(
+        recipe,
+        meal.ingredientSwaps ?? [],
+        substitutions,
+        foods,
+      );
+      if (swaps === null) return false;
+      // Eine Zutat ist nie zugleich getauscht und ersetzt bzw. weggelassen.
+      const touched = new Set([
+        ...meal.substitutions.map((x) => x.index),
+        ...meal.omittedOptional.map((x) => x.index),
+      ]);
+      if (swaps.some((x) => touched.has(x.index))) return false;
       try {
         const portion = scalePortion(
           {
             recipe,
             omitted: meal.omittedOptional.map((o) => o.index),
             substitutions: meal.substitutions,
+            swaps,
           },
           meal.factor,
           foods,
@@ -302,7 +333,7 @@ export function resolveMealPlanWeek(
   if (stored === null || stored.weekStart !== weekStart) {
     return { action: 'created', plan: buildMealPlanWeek({ ...input, variant: 0 }) };
   }
-  if (!mealPlanMatchesRecipes(stored, input.recipes, input.foods)) {
+  if (!mealPlanMatchesRecipes(stored, input.recipes, input.foods, input.substitutions)) {
     return { action: 'rebuilt', plan: buildMealPlanWeek({ ...input, variant: 0 }) };
   }
   const check = needsAutomaticReplan(stored, input);

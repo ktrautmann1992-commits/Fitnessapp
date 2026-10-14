@@ -410,6 +410,6 @@ export const planTemplateKind: ContentKindDefinition = {
   systemPrompt,
   userPrompt: (cell) => userPrompt(cell),
   outputSchema: planTemplateOutputSchema,
-  toContent,
+  toContents: (output, cell, meta) => [toContent(output, cell, meta)],
   dryRunFixtures,
 };

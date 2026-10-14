@@ -15,9 +15,10 @@ on:
         options:
           - plan-templates
           - exercises
+          - ingredient-substitutions
         default: plan-templates
       auswahl:
-        description: 'Auswahl aus der Matrix, z. B. „alle“, „muskelaufbau 30-45“ oder „squat band“'
+        description: 'Auswahl aus der Matrix, z. B. „alle“, „muskelaufbau 30-45“, „squat band“ oder (Austausch) „meat_sausage“'
         type: string
         default: alle
       anzahl:

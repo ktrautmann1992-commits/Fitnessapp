@@ -209,6 +209,38 @@ describe('Probelauf Ende-zu-Ende: generate → collect (ohne Netz, ohne Schlüss
     expect(collected.outcomes[0]?.markdown).toContain('Fehler bei der API – erneut versuchen');
   });
 
+  it('Austausch-Tabelle (N9): Probelauf ohne Schlüssel, zwei Dateien aus einer Antwort, Entwurf', async () => {
+    const r = repo();
+    const tools = fakeTools(r.root);
+    const generated = await runGenerate(
+      { kind: 'ingredient-substitutions', selection: 'alle', count: 10, dryRun: true, settings },
+      { repoRoot: r.root, tools, now, randomShort: () => 'sub001' },
+    );
+    expect(generated.status).toBe('submitted');
+    if (generated.status !== 'submitted') return;
+    expect(generated.record.kind).toBe('ingredient_substitution');
+    r.git(['checkout', '--quiet', 'main']);
+    const collected = await runCollect({ repoRoot: r.root, tools, now });
+    expect(collected.exitCode).toBe(0);
+    const outcome = collected.outcomes[0]!;
+    expect(outcome.status).toBe('pr_opened');
+    expect(outcome.saved).toEqual(['tausch-tofu-zu-haehnchenbrust', 'tausch-tofu-zu-huehnerei']);
+    const draft = JSON.parse(
+      r.showRemote(generated.branch, 'content/substitutions/tausch-tofu-zu-haehnchenbrust.json'),
+    );
+    expect(draft).toMatchObject({
+      status: 'draft',
+      food_id: 'tofu',
+      substitute_food_id: 'haehnchenbrust',
+      role: 'protein',
+      factor: 0.57,
+    });
+    expect(draft.meta.model).toBe('probelauf-ohne-ki');
+    expect(outcome.markdown).toContain('ungültig (Schema/Grenzen)');
+    expect(outcome.markdown).toContain('abgelehnt (refusal)');
+    expect(neverApproves(tools.ghCalls)).toBe(true);
+  });
+
   it('überschreibt keinen Inhalt, der nach dem Absenden in main dazugekommen ist', async () => {
     const r = repo();
     const tools = fakeTools(r.root);

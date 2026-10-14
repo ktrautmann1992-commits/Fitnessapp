@@ -23,6 +23,8 @@ export * from './schemas';
 export * from './shopping-list';
 export * from './shopping-list-store';
 export * from './stable-hash';
+export * from './substitute';
+export * from './swap-resolve';
 export * from './targets';
 export * from './timing';
 export * from './units';

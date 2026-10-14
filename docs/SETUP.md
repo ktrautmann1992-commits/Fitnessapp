@@ -835,13 +835,18 @@ Voraussetzung: Teil H. Wo du die Workflows findest: GitHub-App → Repository �
 ### 2. Echte Entwürfe erzeugen (mit Schlüssel aus Teil E)
 
 1. **Actions → content-generate → Run workflow**.
-2. **Welche Inhalte?** `plan-templates` oder `exercises`.
+2. **Welche Inhalte?** `plan-templates`, `exercises` oder `ingredient-substitutions` (Austausch-Tabelle, Etappe N9 –
+   erst sinnvoll, wenn es katalog-geprüfte Lebensmittel gibt).
 3. **Auswahl** (optional): `alle` oder Begriffe aus der Matrix, getrennt mit Leerzeichen oder Komma:
    - Vorlagen: Ziel `muskelaufbau`/`fettverlust`/`fitness`, Level `einsteiger`/`fortgeschritten`, Tage `3t`/`4t`,
      Ort `studio`/`zuhause`, Minuten `30-45`/`45-60`/`60-75` – z. B. `muskelaufbau 30-45`.
      Vorhandene Vorlagen werden übersprungen.
    - Übungen: Bewegungsmuster (z. B. `squat`, `hinge`) und/oder Geräte `langhantel`, `kurzhantel`,
      `kettlebell`, `kabel_maschine`, `band`, `koerpergewicht` – z. B. `squat band`.
+   - Austausch: Abteilung des Lebensmittels, z. B. `meat_sausage` oder `chilled_plant_based` – je Lebensmittel eine
+     Anfrage mit bis zu 4 Alternativen (nur Katalog-IDs). Lebensmittel mit vorhandenem Eintrag werden übersprungen.
+     Freigeben wie in 3b (Art `ids`, IDs `tausch-…`); rot bleibt ein Eintrag, solange seine Lebensmittel nicht
+     freigegeben sind oder der Faktor die Rolle nicht hält (Regel R23).
 4. **Anzahl**: höchstens so viele Anfragen (1–200, Standard 10). **Probelauf** nicht anhaken → **Run workflow**.
 5. Die **Summary** zeigt die **Kostenschätzung** (schlimmster Fall) und endet sofort. Liegt die Schätzung über
    dem Deckel, steht dort „abgebrochen – nichts gesendet“.

@@ -4,9 +4,7 @@
  * einen Pull Request mit Prüfbericht und Kosten. Ohne offenen Lauf endet es sofort; Probeläufe brauchen
  * keinen Schlüssel.
  */
-import type { ContentFileKind, ContentIssue } from '@fitnessapp/core';
-
-import { CONTENT_FOLDERS } from '../validate';
+import type { ContentIssue } from '@fitnessapp/core';
 
 import {
   batchRecordPath,
@@ -16,8 +14,8 @@ import {
 } from './batch-record';
 import { BASE_BRANCH, BATCH_BRANCH_PREFIX, isoDateBerlin, zodMessage } from './config';
 import { dryRunResults } from './dry-run';
-import { contentPath, loadLibrary, writeJsonFile } from './files';
-import { findKind, type LibraryContext } from './kinds';
+import { contentPath, loadLibrary, PIPELINE_FOLDERS, writeJsonFile } from './files';
+import { findKind, type LibraryContext, type PipelineContentKind } from './kinds';
 import { actualCostUsd, formatUsd } from './pricing';
 import { commitPushAndOpenPr, issuesFor, PHONE_TEST_SECTION, runPrChecks } from './pull-request';
 import type { ContentApiClient } from './requests';
@@ -56,12 +54,12 @@ export interface CollectResult {
  */
 function withIdsFromMain(context: LibraryContext, tools: PipelineTools): LibraryContext {
   const takenIds = { ...context.takenIds };
-  for (const kind of Object.keys(CONTENT_FOLDERS) as ContentFileKind[]) {
+  for (const kind of Object.keys(PIPELINE_FOLDERS) as PipelineContentKind[]) {
     const listing = tools.git([
       'ls-tree',
       '--name-only',
       `origin/${BASE_BRANCH}`,
-      `content/${CONTENT_FOLDERS[kind]}/`,
+      `content/${PIPELINE_FOLDERS[kind]}/`,
     ]);
     const ids = new Set(takenIds[kind]);
     for (const line of listing.split('\n')) {

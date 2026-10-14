@@ -14,6 +14,7 @@ import { buildNutritionAdmin, type NutritionAdmin } from '@/lib/admin/nutrition'
 
 import FoodDetailPage from './lebensmittel/[id]/page';
 import FoodsPage from './lebensmittel/page';
+import SubstitutionsPage from './austausch/page';
 import MealPrepPage from './meal-prep/page';
 import GuidesPage from './ratgeber/page';
 import RecipeDetailPage from './rezepte/[id]/page';
@@ -181,6 +182,21 @@ describe(
       expect(guides).toContain('Wettkampf-Ernährung');
       expect(guides).toContain('Beim Bäcker');
       expect(guides).toContain('Health-Claims');
+    });
+
+    it('Austausch-Tabelle (N9): Paare mit Rolle, Faktor, Hinweis, Prüfbericht und Freigabe per ID', async () => {
+      const page = text(render(await SubstitutionsPage()));
+      expect(admin.substitutions.length).toBeGreaterThan(0);
+      expect(page).toContain(`${admin.substitutions.length} Einträge`);
+      expect(page).toContain('Tofu natur → Hähnchenbrust');
+      expect(page).toContain('Eiweißquelle (Messgröße: Eiweiß (g))');
+      expect(page).toContain('0,57 × Masse der Zutat');
+      expect(page).toContain('Hähnchen gut durchgaren.');
+      expect(page).toContain('tausch-tofu-zu-haehnchenbrust');
+      // Süße: gelber Befund R23H im Prüfbericht.
+      expect(page).toContain('R23H');
+      expect(page).toContain('Freigabe per ID');
+      expect(page).toContain('R23');
     });
   },
 );

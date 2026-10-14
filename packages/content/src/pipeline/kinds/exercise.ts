@@ -321,6 +321,6 @@ export const exerciseKind: ContentKindDefinition = {
   systemPrompt,
   userPrompt,
   outputSchema: exerciseOutputSchema,
-  toContent,
+  toContents: (output, cell, meta) => [toContent(output, cell, meta)],
   dryRunFixtures,
 };

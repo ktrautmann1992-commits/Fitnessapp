@@ -328,7 +328,7 @@ describe('Struktur (Wächter N1, K2): Schutzgrenzen nur über nutritionTargetsFo
   });
 });
 
-describe('Struktur (Wächter N1 K2, erweitert in N3): Essensplan rechnet keine eigenen Grenzen', () => {
+describe('Struktur (Wächter N1 K2, erweitert in N3 und N9): Essensplan und Tausch rechnen keine eigenen Grenzen', () => {
   it('Schutzgrenzen-Konstanten und planBand nur in limits/eligibility/schemas (nicht in Plan, Meal-Prep, Liste, Suche)', () => {
     const root = join(import.meta.dirname, '../../../..');
     const allowed = new Set(
@@ -355,13 +355,15 @@ describe('Struktur (Wächter N1 K2, erweitert in N3): Essensplan rechnet keine e
     };
     for (const top of ['packages', 'apps', 'scripts']) walk(join(root, top));
     expect(offenders).toEqual([]);
-    // Die N3-Dateien gibt es wirklich (sonst prüft der Test nichts).
+    // Die N3-Dateien (und der Zutaten-Austausch aus N9, 19.8 Nr. 1) gibt es wirklich (sonst prüft der Test nichts).
     for (const file of [
       'meal-plan.ts',
       'meal-prep.ts',
       'meal-prep-plan.ts',
       'scale.ts',
       'filter.ts',
+      'substitute.ts',
+      'swap-resolve.ts',
     ]) {
       expect(
         readFileSync(join(root, 'packages/core/src/nutrition', file), 'utf8').length,

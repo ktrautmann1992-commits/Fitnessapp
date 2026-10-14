@@ -1,4 +1,11 @@
-import { exerciseSchema, FORBIDDEN_MEDICAL_TERMS, planTemplateSchema } from '@fitnessapp/core';
+import {
+  exerciseSchema,
+  type Food,
+  FORBIDDEN_MEDICAL_TERMS,
+  ingredientSubstitutionSchema,
+  planTemplateSchema,
+} from '@fitnessapp/core';
+import { demoNutritionContent } from '@fitnessapp/core/demo-nutrition';
 import { describe, expect, it } from 'vitest';
 import { z } from 'zod';
 
@@ -11,11 +18,23 @@ import {
 } from './json-schema';
 import { CONTENT_KINDS, findKind } from './kinds';
 import { EXERCISE_MAX_TOKENS, exerciseKind } from './kinds/exercise';
+import {
+  ingredientSubstitutionKind,
+  SUBSTITUTION_MAX_TOKENS,
+} from './kinds/ingredient-substitution';
 import { PLAN_TEMPLATE_MAX_TOKENS, planTemplateKind, templateIdFor } from './kinds/plan-template';
 import { buildBatchRequests } from './requests';
 import { REAL_REPO_ROOT } from './test-helpers';
 
 const context = loadLibrary(REAL_REPO_ROOT);
+/** Kontext mit dem Beispiel-Katalog (Testwerte) – der echte Katalog entsteht erst mit `foods-import`. */
+const nutritionContext = {
+  ...context,
+  foods: demoNutritionContent()
+    .files.filter((file) => file.kind === 'food')
+    .map((file) => file.data as Food),
+};
+const TRAINING_KINDS = [exerciseKind, planTemplateKind];
 
 function allKeys(
   value: unknown,
@@ -82,10 +101,11 @@ describe('JSON-Schema aus Zod', () => {
     );
   });
 
-  it('Antwort-Schemas beider Arten sind gültig, nutzen Katalog-IDs und feste Matrix-Werte', () => {
+  it('Antwort-Schemas aller Arten sind gültig, nutzen Katalog-IDs und feste Matrix-Werte', () => {
     for (const kind of Object.values(CONTENT_KINDS)) {
-      for (const cell of kind.cells(context).slice(0, 5)) {
-        const schema = toOutputJsonSchema(kind.outputSchema(cell, context));
+      const ctx = kind === ingredientSubstitutionKind ? nutritionContext : context;
+      for (const cell of kind.cells(ctx).slice(0, 5)) {
+        const schema = toOutputJsonSchema(kind.outputSchema(cell, ctx));
         expect(findStructuredOutputProblems(schema)).toEqual([]);
         const text = JSON.stringify(schema);
         expect(text).not.toContain('"minLength"');
@@ -115,6 +135,7 @@ describe('Inhaltsarten', () => {
   it('findet Arten über Workflow-Eingabe und internen Namen', () => {
     expect(findKind('exercises')).toBe(exerciseKind);
     expect(findKind('plan_template')).toBe(planTemplateKind);
+    expect(findKind('ingredient-substitutions')).toBe(ingredientSubstitutionKind);
     expect(() => findKind('recipes')).toThrow(/Unbekannte Inhaltsart/);
   });
 
@@ -156,7 +177,7 @@ describe('Inhaltsarten', () => {
   });
 
   it('Anfrage-Texte: deutsch, Textregeln, verbotene Begriffe, Katalog', () => {
-    for (const kind of Object.values(CONTENT_KINDS)) {
+    for (const kind of TRAINING_KINDS) {
       const system = kind.systemPrompt(context);
       expect(system).toContain('keine Behandlung');
       for (const term of FORBIDDEN_MEDICAL_TERMS) {
@@ -185,21 +206,21 @@ describe('Inhaltsarten', () => {
 
   it('Probelauf-Antworten: gültige passen zu Antwort- und Datei-Schema, die ungültige nur zum JSON-Format', () => {
     for (const kind of Object.values(CONTENT_KINDS)) {
+      const ctx = kind === ingredientSubstitutionKind ? nutritionContext : context;
       const fixtures = kind.dryRunFixtures();
       expect(fixtures.some((f) => f.response.kind === 'refusal')).toBe(true);
       const json = fixtures.filter((f) => f.response.kind === 'json');
       const valid = json.filter(
         (f) =>
-          kind.outputSchema(f.cell, context).safeParse((f.response as { data: unknown }).data)
-            .success,
+          kind.outputSchema(f.cell, ctx).safeParse((f.response as { data: unknown }).data).success,
       );
       expect(valid.length).toBeGreaterThanOrEqual(1);
       expect(json.length - valid.length).toBe(1); // genau eine absichtlich ungültige
       for (const fixture of valid) {
         const output = kind
-          .outputSchema(fixture.cell, context)
+          .outputSchema(fixture.cell, ctx)
           .parse((fixture.response as { data: unknown }).data);
-        const { id, content } = kind.toContent(output, fixture.cell, {
+        const contents = kind.toContents(output, fixture.cell, {
           origin: 'batch',
           model: 'probelauf-ohne-ki',
           batch_id: 'probelauf_x',
@@ -209,13 +230,84 @@ describe('Inhaltsarten', () => {
           reviewed_at: null,
           review_note: null,
         });
-        expect(kind.contentSchema.safeParse(content).success).toBe(true);
-        expect(context.takenIds[kind.kind].has(id)).toBe(false);
-        // Feldreihenfolge wie in den Dateien.
-        const schema = kind.kind === 'exercise' ? exerciseSchema : planTemplateSchema;
-        expect(Object.keys(content)).toEqual(Object.keys(schema.shape));
+        expect(contents.length).toBeGreaterThanOrEqual(1);
+        for (const { id, content } of contents) {
+          expect(kind.contentSchema.safeParse(content).success).toBe(true);
+          expect(ctx.takenIds[kind.kind].has(id)).toBe(false);
+          // Feldreihenfolge wie in den Dateien.
+          const schema =
+            kind.kind === 'exercise'
+              ? exerciseSchema
+              : kind.kind === 'plan_template'
+                ? planTemplateSchema
+                : null;
+          const keys =
+            schema === null
+              ? Object.keys(ingredientSubstitutionSchema.shape)
+              : Object.keys(schema.shape);
+          expect(Object.keys(content)).toEqual(keys);
+        }
       }
     }
+  });
+});
+
+describe('Austausch-Tabelle (Etappe N9)', () => {
+  it('eine Zelle je katalog-geprüftem Lebensmittel; Antwort nur mit Katalog-IDs, Rollen, Faktor 0,2–5', () => {
+    const cells = ingredientSubstitutionKind.cells(nutritionContext);
+    expect(cells.length).toBe(nutritionContext.foods.length);
+    for (const cell of cells) expect(cell.customId).toMatch(/^[a-zA-Z0-9_-]{1,64}$/);
+    const tofu = cells.find((c) => c.values.food_id === 'tofu')!;
+    const json = JSON.stringify(
+      toOutputJsonSchema(ingredientSubstitutionKind.outputSchema(tofu, nutritionContext)),
+    );
+    expect(json).toContain('"haehnchenbrust"');
+    expect(json).not.toContain('"tofu"'); // nie das Original selbst
+    expect(json).toContain('"protein"');
+    const schema = ingredientSubstitutionKind.outputSchema(tofu, nutritionContext);
+    const entry = {
+      substitute_food_id: 'haehnchenbrust',
+      role: 'protein',
+      note_de: 'Gut durchgaren.',
+    };
+    expect(schema.safeParse({ substitutions: [{ ...entry, factor: 0.57 }] }).success).toBe(true);
+    expect(schema.safeParse({ substitutions: [{ ...entry, factor: 6 }] }).success).toBe(false);
+    expect(
+      schema.safeParse({ substitutions: [{ ...entry, substitute_food_id: 'erfunden' }] }).success,
+    ).toBe(false);
+    expect(SUBSTITUTION_MAX_TOKENS).toBe(8_000);
+  });
+
+  it('Anfrage-Text: Katalog mit Nährwerten, Rollen, Faktor-Regel, keine Heilversprechen, keine Marken', () => {
+    const system = ingredientSubstitutionKind.systemPrompt(nutritionContext);
+    expect(system).toContain('tofu: Tofu natur');
+    expect(system).toContain('Eiweiß 13 g');
+    expect(system).toContain('±10 %');
+    expect(system).toContain('Keine Gesundheits-, Nährwert- oder Heilversprechen');
+    expect(system).toContain('Keine Marken');
+    const cell = ingredientSubstitutionKind
+      .cells(nutritionContext)
+      .find((c) => c.values.food_id === 'tofu')!;
+    const user = ingredientSubstitutionKind.userPrompt(cell, {
+      ...nutritionContext,
+      substitutions: demoNutritionContent()
+        .files.filter((f) => f.kind === 'ingredient_substitution')
+        .map((f) => ingredientSubstitutionSchema.parse(f.data)),
+    });
+    expect(user).toContain('haehnchenbrust (protein)');
+  });
+
+  it('übersprungen, wenn es für das Lebensmittel schon einen Eintrag gibt', () => {
+    const subs = demoNutritionContent()
+      .files.filter((f) => f.kind === 'ingredient_substitution')
+      .map((f) => ingredientSubstitutionSchema.parse(f.data));
+    const ctx = { ...nutritionContext, substitutions: subs };
+    const tofu = ingredientSubstitutionKind.cells(ctx).find((c) => c.values.food_id === 'tofu')!;
+    const banane = ingredientSubstitutionKind
+      .cells(ctx)
+      .find((c) => c.values.food_id === 'banane')!;
+    expect(ingredientSubstitutionKind.isPresent(tofu, ctx)).toBe(true);
+    expect(ingredientSubstitutionKind.isPresent(banane, ctx)).toBe(false);
   });
 });
 

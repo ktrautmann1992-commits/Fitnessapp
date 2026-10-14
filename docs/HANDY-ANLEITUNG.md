@@ -221,6 +221,31 @@ Vercel zeigt die App im Handy-Browser, Expo baut die echten Apps in der Cloud.
 6. Ohne Handy: GitHub-App → **Actions** → letzter **ci**-Lauf → Artefakt **pdf-vorschau** → die Dateien
    `alpha5-essensplan-…` und `alpha5-einkaufsliste-…` öffnen (Beispiel-Personen mit Testwerten, auch Belastungstests).
 
+**Zutaten austauschen (Etappe N9, Testmodus, gratis, ohne KI)** – mit dem Testkonto aus Schritt 1 (vegetarisch,
+Pilze „mag ich nicht“):
+
+1. **Ernährung** → eine Mahlzeit von **heute oder später** antippen (z. B. mit Tofu, Reis, Spaghetti oder Honig) → in
+   der Rezeptansicht steht neben Zutaten mit Rolle (Eiweißquelle, Beilage, Süße …) der Knopf **„Austauschen“**.
+2. **„Austauschen“** → „Zutat austauschen“ zeigt die Zutat in deiner Portion, ihre Rolle und **nur passende
+   Alternativen** (z. B. Ei statt Tofu, Spaghetti statt Reis) mit Menge, Hinweis und „Mahlzeit danach: … kcal“.
+   **Prüfen:** kein Hähnchen, kein Fisch (vegetarisch), keine Pilze („mag ich nicht“). Gibt es keine passende
+   Alternative, steht das ohne Grund da.
+3. **Flugmodus an** → bei einer Alternative **„Nehmen“** → zurück im Rezept steht z. B. „Ei statt Tofu
+   (ausgetauscht)“; Menge, Nährwerte und „Enthält: …“ sind neu. Flugmodus aus, Seite neu laden → der Tausch bleibt.
+4. **Einkaufsliste** öffnen → die neue Zutat steht drauf, die alte (für diese Mahlzeit) nicht mehr.
+5. Wieder **„Austauschen“** → ganz oben **„Original aus dem Rezept“** → „Nehmen“ → die Zutat ist zurückgetauscht.
+6. Bei einem vorgekochten Gericht (Meal-Prep): Vor dem Kochtag gilt der Tausch für **alle Portionen dieses Kochtags**;
+   was danach nicht mehr so lange hält, wird eingefroren oder frisch gekocht. **Am Tag nach dem Kochtag** gibt es für
+   die vorgekochten Portionen keinen Knopf mehr.
+7. **Kalorienzahlen ausschalten** (Einstellungen → Ernährung ändern) → im Dialog „Zutat austauschen“ keine kcal.
+8. Ohne Einwilligung zu Gesundheitsangaben gibt es kein „Austauschen“ (ein Plan mit getauschten Zutaten zählt als
+   Gesundheitsdatum). Rezepte ohne Kochen (z. B. Overnight Oats) bekommen nie Ei, Fisch oder Fleisch als Alternative.
+   Ist der Kochtag-Timer gestartet, gibt es für die Gerichte dieses Kochtags keinen Austausch mehr.
+9. Redaktionsbereich: `/admin` → **Austausch** → die Austausch-Tabelle (Testwerte erst mit echten Einträgen; im Moment
+   „Noch keine Austausch-Einträge“). Neue Einträge: **Actions → content-generate** → Art
+   **ingredient-substitutions** (Probelauf ohne Schlüssel möglich) → Pull Request prüfen; freigeben mit **Actions →
+   content-review** → Art `ids` mit den IDs (`tausch-…`).
+
 **Redaktionsbereich Ernährung (Etappe N2d):** Vorschau-Link der Website → `/admin` → anmelden → oben **Rezepte**,
 **Lebensmittel**, **Meal-Prep**, **Ratgeber**. Rezepte: Kategorie antippen → Zahlen (Entwürfe, rot, Zutaten ohne
 Katalog-Prüfung, offene Annahmen, Abweichungen) und je Rezept „Sammelfreigabe: wird freigegeben / übersprungen – Grund“;

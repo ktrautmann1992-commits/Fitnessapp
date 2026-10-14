@@ -2,11 +2,13 @@ import {
   type DietType,
   dietTypeSchema,
   isoDateSchema,
+  mealPrepKeeping,
   needsExpertReviewLabel,
   RECIPE_SERVINGS_PICKER,
   recipeContains,
   type ScaledIngredient,
   scaleRecipeForServings,
+  substitutionFor,
   weekHidesEnergyNumbers,
   withoutNutrientAmounts,
 } from '@fitnessapp/core';
@@ -17,7 +19,7 @@ import { View } from 'react-native';
 import { ConsentBlockedNotice, DemoBanner } from '@/components/nutrition';
 import { Screen } from '@/components/screen';
 import { Body, Button, Card, ErrorState, Heading, LoadingState, Notice } from '@/components/ui';
-import { recipeForPerson } from '@/data/nutrition-plan';
+import { canSwapIngredient, recipeForPerson } from '@/data/nutrition-plan';
 import { t } from '@/i18n';
 import {
   containsText,
@@ -40,6 +42,9 @@ import { useNutritionWeek, useShoppingListActions } from '@/state/use-nutrition'
  * Haltbarkeit, Nährwert-Quelle. Jedes Rezept läuft vorher durch den Filter der Person (recipeForPerson).
  * Etappe N5b: „Zur Einkaufsliste“ mit der gewählten Portionenzahl (19.6) – aus dem Essensplan geöffnet steht das
  * Rezept schon über den Plan auf der Liste.
+ * Etappe N9: Aus dem Essensplan geöffnet hat jede Zutat mit Rolle den Knopf „Austauschen“ (KONZEPT 6.9) – nur ab heute,
+ * nicht für vorgekochte Portionen; getauschte Zutaten stehen mit „(ausgetauscht)“ da, „Enthält: …“ und Haltbarkeit
+ * gelten für das, was tatsächlich gekocht wird.
  */
 export default function RecipeScreen() {
   const router = useRouter();
@@ -178,6 +183,11 @@ export default function RecipeScreen() {
     return food ? [food] : [];
   });
   const contains = recipeContains(variant.facts, usedFoods);
+  // Haltbarkeit: nach einem Zutaten-Austausch mit den tatsächlich verwendeten Zutaten (R9, B2), sonst wie im Rezept.
+  const keeping =
+    variant.swaps.length > 0
+      ? mealPrepKeeping(variant, foods)
+      : { fridgeDays: recipe.meal_prep.fridge_days, freezable: recipe.meal_prep.freezable };
   const sources = [
     ...new Map(
       usedFoods.map((f) => [`${f.source.db}|${f.source.version}|${f.source.license}`, f.source]),
@@ -322,17 +332,64 @@ export default function RecipeScreen() {
       <Heading level={2}>{texts.ingredients}</Heading>
       <View style={{ gap: 4 }} testID="recipe-ingredients">
         {ingredients.map((ingredient) => {
-          const note = recipe.ingredients[ingredient.index]?.note_de;
+          const original = recipe.ingredients[ingredient.index];
+          // Getauscht: Hinweis aus der Austausch-Tabelle statt der Notiz zur Original-Zutat.
+          const note =
+            ingredient.swapped === true && original?.role !== undefined
+              ? substitutionFor(
+                  library.substitutions,
+                  original.food_id,
+                  ingredient.foodId,
+                  original.role,
+                )?.note_de
+              : original?.note_de;
           const name =
-            ingredient.originalFoodId !== null
-              ? texts.instead(foodName(ingredient.originalFoodId), foodName(ingredient.foodId))
-              : foodName(ingredient.foodId);
+            ingredient.originalFoodId === null
+              ? foodName(ingredient.foodId)
+              : ingredient.swapped === true
+                ? texts.swappedInstead(
+                    foodName(ingredient.originalFoodId),
+                    foodName(ingredient.foodId),
+                  )
+                : texts.instead(foodName(ingredient.originalFoodId), foodName(ingredient.foodId));
+          const line = `• ${formatAmount(ingredient.amount, ingredient.unit)} ${name}${
+            ingredient.optional ? ` ${texts.optional}` : ''
+          }${note ? ` – ${note}` : ''}`;
+          const swappable =
+            plannedMeal !== null &&
+            date !== null &&
+            params.platz !== undefined &&
+            view.week?.kind === 'ready' &&
+            canSwapIngredient(view.week, {
+              date,
+              slot: params.platz,
+              index: ingredient.index,
+            });
+          if (!swappable) {
+            return <Body key={ingredient.index}>{line}</Body>;
+          }
           return (
-            <Body key={ingredient.index}>
-              {`• ${formatAmount(ingredient.amount, ingredient.unit)} ${name}${
-                ingredient.optional ? ` ${texts.optional}` : ''
-              }${note ? ` – ${note}` : ''}`}
-            </Body>
+            <View
+              key={ingredient.index}
+              style={{ flexDirection: 'row', alignItems: 'center', gap: 8 }}
+            >
+              <View style={{ flex: 1 }}>
+                <Body testID={`recipe-ingredient-${ingredient.index}`}>{line}</Body>
+              </View>
+              <Button
+                label={texts.swapButton}
+                accessibilityLabel={texts.swapA11y(foodName(ingredient.foodId))}
+                variant="secondary"
+                onPress={() =>
+                  router.push(
+                    `/rezept/austauschen?id=${encodeURIComponent(recipe.id)}&tag=${date}&platz=${encodeURIComponent(
+                      params.platz ?? '',
+                    )}&zutat=${ingredient.index}` as Href,
+                  )
+                }
+                testID={`recipe-swap-${ingredient.index}`}
+              />
+            </View>
           );
         })}
         {variant.omitted.map((index) => {
@@ -375,10 +432,12 @@ export default function RecipeScreen() {
         <Body muted>{texts.traces}</Body>
         <Body muted>{t.nutrition.hfiCoeliac}</Body>
       </Card>
-      {recipe.meal_prep.suitable && recipe.meal_prep.fridge_days > 0 ? (
-        <Body muted>{texts.mealPrepFridge(recipe.meal_prep.fridge_days)}</Body>
+      {recipe.meal_prep.suitable && keeping.fridgeDays > 0 ? (
+        <Body muted testID="recipe-fridge-days">
+          {texts.mealPrepFridge(keeping.fridgeDays)}
+        </Body>
       ) : null}
-      {recipe.meal_prep.suitable && recipe.meal_prep.freezable ? (
+      {recipe.meal_prep.suitable && keeping.freezable ? (
         <Body muted>{texts.mealPrepFreezable}</Body>
       ) : null}
       {demo ? (

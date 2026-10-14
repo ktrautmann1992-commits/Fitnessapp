@@ -11,17 +11,20 @@ import {
 } from '../constants';
 import type { FoodLookup } from '../content/food-schema';
 import type { MealType, Recipe } from '../content/recipe-schema';
+import type { IngredientSubstitution } from '../content/substitution-schema';
 import type { ContentStatus } from '../enums';
 import { addDays, isoWeekday } from '../dates';
 import {
   filterRecipe,
   type FilteredRecipe,
+  type IngredientSwapRef,
   mealTypeForSlot,
   type RecipeExclusionReason,
   type RecipeFilterResult,
   type RecipeSubstitution,
   type SlotExclusionReason,
   slotFitReasons,
+  swapFactsMap,
 } from './filter';
 import {
   type CookEvent,
@@ -48,6 +51,7 @@ import {
 } from './scale';
 import { type MealPlanProfile, type MealPlanProfileInput, mealPlanProfileSchema } from './schemas';
 import { stableHashKey, stableUnit } from './stable-hash';
+import { resolveIngredientSwaps, swapKey } from './swap-resolve';
 import type { NutritionDayTargets, NutritionWeekTargets } from './targets';
 import type { MealRole, MealSlotId } from './timing';
 
@@ -83,6 +87,11 @@ export interface PlannedMeal {
   /** kcal nicht weggelassener optionaler Zutaten (zählen nur für die Obergrenze, K3). */
   readonly optionalKcal: number;
   readonly substitutions: readonly RecipeSubstitution[];
+  /**
+   * Vom Nutzer getauschte Zutaten (19.7 N9) – fehlt, wenn nichts getauscht ist. Menge, Einheit und `heated` kommen
+   * beim Prüfen immer aus der Austausch-Tabelle (`resolveIngredientSwaps`), nie aus dem Speicher.
+   */
+  readonly ingredientSwaps?: readonly IngredientSwapRef[];
   readonly omittedOptional: readonly { readonly index: number; readonly foodId: string }[];
   /** `cook` = Kochtag (Meal-Prep), `leftover` = vorgekocht, `fresh` = am Tag frisch gekocht. */
   readonly prepKind: PrepKind;
@@ -159,6 +168,11 @@ export interface MealPlanInput {
   readonly today: string;
   /** Bisheriger Plan derselben Woche: vergangene Tage bleiben unverändert, gekochte Reste fest. */
   readonly existingPlan?: MealPlanWeek | null;
+  /**
+   * Austausch-Tabelle (19.7 N9, aus `selectNutritionContent`). Fehlt sie, gilt jede Mahlzeit mit getauschter Zutat als
+   * nicht mehr passend (sichere Richtung → Neuplanung).
+   */
+  readonly substitutions?: readonly IngredientSubstitution[];
 }
 
 const variantSchema = z.number().int().min(0).max(10_000);
@@ -195,20 +209,42 @@ export class CandidatePool {
     profile: MealPlanProfileInput,
     readonly allowDrafts: boolean,
     readonly redRecipeIds?: ReadonlySet<string>,
+    /** Austausch-Tabelle (19.7 N9); ohne Tabelle besteht keine Mahlzeit mit getauschter Zutat. */
+    readonly substitutions: readonly IngredientSubstitution[] = [],
   ) {
     this.profile = mealPlanProfileSchema.parse(profile);
   }
 
-  result(recipe: Recipe, excludePregnancyCaution: boolean): RecipeFilterResult {
-    const key = `${recipe.id}@${recipe.version}|${excludePregnancyCaution ? 1 : 0}`;
+  /**
+   * Filter-Ergebnis für ein Rezept – optional mit vom Nutzer getauschten Zutaten (19.7 N9): Die Einträge werden aus
+   * der Austausch-Tabelle aufgelöst; ein ungültiger Eintrag lässt das Rezept durchfallen (sichere Richtung).
+   */
+  result(
+    recipe: Recipe,
+    excludePregnancyCaution: boolean,
+    swaps: readonly IngredientSwapRef[] = [],
+  ): RecipeFilterResult {
+    const key = `${recipe.id}@${recipe.version}|${excludePregnancyCaution ? 1 : 0}|${swapKey(swaps)}`;
     let result = this.cache.get(key);
     if (result === undefined) {
-      result = filterRecipe(recipe, this.foods, {
-        profile: this.profile,
-        excludePregnancyCaution,
-        allowDrafts: this.allowDrafts,
-        ...(this.redRecipeIds !== undefined ? { redRecipeIds: this.redRecipeIds } : {}),
-      });
+      const applied =
+        swaps.length === 0
+          ? []
+          : resolveIngredientSwaps(recipe, swaps, this.substitutions, this.foods);
+      result =
+        applied === null
+          ? { ok: false, reasons: ['food_unavailable'] }
+          : filterRecipe(
+              recipe,
+              this.foods,
+              {
+                profile: this.profile,
+                excludePregnancyCaution,
+                allowDrafts: this.allowDrafts,
+                ...(this.redRecipeIds !== undefined ? { redRecipeIds: this.redRecipeIds } : {}),
+              },
+              applied,
+            );
       this.cache.set(key, result);
     }
     return result;
@@ -246,9 +282,17 @@ export function isWeekday(date: string): boolean {
   return isoWeekday(date) <= 5;
 }
 
+/** Tatsächlich verwendete Lebensmittel je Zutat-Index (Ersatz S4 und Tausch N9). */
+function usedFoodMap(variant: FilteredRecipe): Map<number, string> {
+  return new Map([
+    ...variant.substitutions.map((s): [number, string] => [s.index, s.substituteFoodId]),
+    ...variant.swaps.map((s): [number, string] => [s.index, s.substituteFoodId]),
+  ]);
+}
+
 /** Haupt-Eiweißquelle: Zutat mit dem meisten Eiweiß je Portion (6.3 Nr. 3). */
 function mainProteinFood(variant: FilteredRecipe, foods: FoodLookup): string | null {
-  const subs = new Map(variant.substitutions.map((s) => [s.index, s.substituteFoodId]));
+  const subs = usedFoodMap(variant);
   let best: { id: string; protein: number } | null = null;
   variant.recipe.ingredients.forEach((ingredient, index) => {
     if (ingredient.optional) return;
@@ -262,14 +306,14 @@ function mainProteinFood(variant: FilteredRecipe, foods: FoodLookup): string | n
 
 function usedFoodIds(variant: FilteredRecipe): string[] {
   const omitted = new Set(variant.omitted);
-  const subs = new Map(variant.substitutions.map((s) => [s.index, s.substituteFoodId]));
+  const subs = usedFoodMap(variant);
   return variant.recipe.ingredients.flatMap((ingredient, index) =>
     omitted.has(index) ? [] : [subs.get(index) ?? ingredient.food_id],
   );
 }
 
 /** Zustand der Woche für Wiederholung, Eiweißquelle und Zutaten-Wiederverwendung. */
-class WeekState {
+export class WeekState {
   readonly uses = new Map<string, number[]>();
   readonly usedFoods = new Set<string>();
   readonly mainProteins = new Map<number, Set<string>>();
@@ -439,6 +483,15 @@ function toPlannedMeal(
     nutrients: portion.nutrients,
     optionalKcal: portion.optionalKcal,
     substitutions: selected.variant.substitutions,
+    ...(selected.variant.swaps.length > 0
+      ? {
+          ingredientSwaps: selected.variant.swaps.map((s) => ({
+            index: s.index,
+            foodId: s.foodId,
+            substituteFoodId: s.substituteFoodId,
+          })),
+        }
+      : {}),
     omittedOptional: selected.variant.omitted.map((index) => ({
       index,
       foodId: recipe.ingredients[index]?.food_id ?? '',
@@ -826,6 +879,7 @@ export function buildMealPlanWeekDetailed(
     input.profile,
     input.allowDrafts,
     input.redRecipeIds,
+    input.substitutions,
   );
   const profile = pool.profile;
   const state = new WeekState();
@@ -858,7 +912,7 @@ export function buildMealPlanWeekDetailed(
       existingDay.meals.forEach((meal) => {
         const recipe = input.recipes.find((r) => r.id === meal.recipeId);
         if (recipe === undefined) return;
-        const r = pool.result(recipe, false);
+        const r = pool.result(recipe, false, meal.ingredientSwaps);
         if (r.ok) state.record(r.value, dayIndex, input.foods, meal.prepKind !== 'leftover');
       });
       return;
@@ -897,7 +951,7 @@ export function buildMealPlanWeekDetailed(
         const recipe = input.recipes.find(
           (r) => r.id === old.recipeId && r.version === old.recipeVersion,
         );
-        const r = recipe === undefined ? null : pool.result(recipe, exclude);
+        const r = recipe === undefined ? null : pool.result(recipe, exclude, old.ingredientSwaps);
         const fixed = r !== null && r.ok ? variantForMeal(r.value, old, input.foods) : null;
         // Nur, solange der Rest noch hält (Kochtag + Haltbarkeit ≥ Tag, Wächter N5a K-a) – sonst neu belegen.
         if (fixed !== null && leftoverKeeps(old, date, mealPrepKeeping(fixed, input.foods))) {
@@ -1005,12 +1059,26 @@ export function buildMealPlanWeekDetailed(
  */
 export function variantForMeal(
   variant: FilteredRecipe,
-  meal: Pick<PlannedMeal, 'substitutions' | 'omittedOptional'>,
+  meal: Pick<PlannedMeal, 'substitutions' | 'omittedOptional' | 'ingredientSwaps'>,
   foods: FoodLookup,
 ): FilteredRecipe | null {
   const subsA = variant.substitutions.map((s) => `${s.index}:${s.substituteFoodId}`).join(',');
   const subsB = meal.substitutions.map((s) => `${s.index}:${s.substituteFoodId}`).join(',');
   if (subsA !== subsB) return null;
+  // Getauschte Zutaten (19.7 N9) müssen genau übereinstimmen – der Aufrufer filtert mit `meal.ingredientSwaps`.
+  if (swapKey(variant.swaps) !== swapKey(meal.ingredientSwaps ?? [])) return null;
+  return withMealOmissions(variant, meal, foods);
+}
+
+/**
+ * Variante mit den bei der Mahlzeit zusätzlich weggelassenen OPTIONALEN Zutaten (Obergrenze, NB1); null, wenn der
+ * Filter eine Zutat weglässt, die bei der Mahlzeit nicht fehlt, oder die Mahlzeit eine Pflichtzutat weglässt.
+ */
+export function withMealOmissions(
+  variant: FilteredRecipe,
+  meal: Pick<PlannedMeal, 'omittedOptional'>,
+  foods: FoodLookup,
+): FilteredRecipe | null {
   const mealOmitted = new Set(meal.omittedOptional.map((o) => o.index));
   if (variant.omitted.some((i) => !mealOmitted.has(i))) return null;
   const extra = [...mealOmitted].filter((i) => !variant.omitted.includes(i));
@@ -1031,6 +1099,7 @@ function withOmittedOptionals(
     facts: computeRecipeFacts(variant.recipe, foods, {
       omitted: new Set(sorted),
       substitutions: new Map(variant.substitutions.map((x) => [x.index, x.substituteFoodId])),
+      swaps: swapFactsMap(variant.swaps),
     }),
   };
 }
@@ -1099,7 +1168,7 @@ function choosePrepRecipe(
   };
 }
 
-function assembleWeek(
+export function assembleWeek(
   days: readonly PlannedMealDay[],
   info: {
     weekStart: string;
@@ -1119,7 +1188,11 @@ function assembleWeek(
     engineVersion: MEAL_PLAN_ENGINE_VERSION,
     days,
     notices: sortMealPlanNotices(notices),
-    usesHealthData: info.usesHealthData,
+    // Getauschte Zutaten lassen wie Ersatzprodukte auf Unverträglichkeiten oder Abneigungen schließen (Wächter N9 S5):
+    // ein Plan mit Tausch ist ein Gesundheitsdatum (Einwilligung, Widerruf, Export wie bei Ersatzprodukten).
+    usesHealthData:
+      info.usesHealthData ||
+      days.some((d) => d.meals.some((m) => (m.ingredientSwaps?.length ?? 0) > 0)),
     mealPrepPlanId: info.mealPrepPlanId,
   };
 }
@@ -1223,13 +1296,15 @@ export function swapMealRecipe(
     input.profile,
     input.allowDrafts,
     input.redRecipeIds,
+    input.substitutions,
   );
   const state = new WeekState();
   const exclude = dayTargets.recipeExclusions.includes('pregnancy_caution');
   /** Gleiche Rezeptversion, besteht den Filter, gleiche Weglassungen/Ersatzprodukte (S4). */
   const refilter = (m: PlannedMeal, excludePregnancy: boolean): FilteredRecipe | null => {
     const recipe = input.recipes.find((r) => r.id === m.recipeId && r.version === m.recipeVersion);
-    const r = recipe === undefined ? null : pool.result(recipe, excludePregnancy);
+    const r =
+      recipe === undefined ? null : pool.result(recipe, excludePregnancy, m.ingredientSwaps);
     return r !== null && r.ok ? variantForMeal(r.value, m, input.foods) : null;
   };
   plan.days.forEach((d, i) =>

@@ -12,7 +12,12 @@ import {
   stableHash,
   type DietType,
   type FilteredRecipe,
+  ingredientSwapOptions,
+  type IngredientSwapOptions,
+  ingredientSwapPossible,
+  type MealSlotId,
   recipeForPersonWithDiets,
+  recipeVariantForMeal,
   intoleranceAccess,
   type IntoleranceAccess,
   type IntoleranceBlockReason,
@@ -32,6 +37,7 @@ import {
   startOfIsoWeek,
 } from '@fitnessapp/core';
 
+import { todayIso } from '../lib/format';
 import { healthConsentStatus } from '../state/flow';
 import type { ConsentVersions } from './mapping';
 import { storedMealPlanRow, storedShoppingListRow } from './meal-plan-rows';
@@ -192,6 +198,13 @@ export interface MealPlanState {
   recipesChanged: boolean;
   /** Laufende oder nächste Woche – nur diese wird gespeichert und kann getauscht werden. */
   editable: boolean;
+  /**
+   * Zutaten-Austausch erlaubt (Etappe N9): änderbare Woche UND gültige Einwilligung zu Gesundheitsdaten – ein Plan mit
+   * Tausch ist ein Gesundheitsdatum (Wächter N9 S5, wie Ersatzprodukte).
+   */
+  ingredientSwapAllowed: boolean;
+  /** Tag, an dem der Kochtag-Timer gestartet wurde (Gerätezeit) – an diesem Kochtag kein Tausch mehr (K1). */
+  cookStartedOn: string | null;
   input: MealPlanEngineInput;
   /**
    * Fingerabdruck der Angaben (Ziele, Vorlieben, Bestand) – nur im Arbeitsspeicher, nie gespeichert oder geloggt.
@@ -254,6 +267,8 @@ export function computeNutritionWeek(input: {
       foods: input.library.foods,
       allowDrafts: input.allowDrafts,
       today: input.today,
+      // Austausch-Tabelle (Etappe N9): ohne sie gilt eine getauschte Mahlzeit als nicht mehr passend (sichere Richtung).
+      substitutions: input.library.substitutions,
     };
     const row = storedMealPlanRow(input.rows, input.weekStart);
     // Ohne gültige Einwilligung wird ein gespeicherter Plan mit Gesundheitsbezug weder angezeigt noch weiterverwendet
@@ -288,6 +303,13 @@ export function computeNutritionWeek(input: {
         (resolved.action === 'rebuilt' ||
           (resolved.action === 'stored' && usable?.recipes_changed === true)),
       editable,
+      ingredientSwapAllowed:
+        editable && healthConsentStatus(input.rows, input.versions) === 'valid',
+      cookStartedOn:
+        usable?.cook_day_started_at != null &&
+        Number.isFinite(Date.parse(usable.cook_day_started_at))
+          ? todayIso(new Date(Date.parse(usable.cook_day_started_at)))
+          : null,
       input: engineInput,
       inputsKey: String(
         stableHash(
@@ -295,6 +317,7 @@ export function computeNutritionWeek(input: {
             targets,
             profile.profile,
             input.library.recipes.map((r) => `${r.id}@${r.version}`),
+            input.library.substitutions.map((x) => `${x.id}@${x.version}`),
             input.allowDrafts,
             input.today,
           ]),
@@ -356,30 +379,85 @@ export function recipeForPerson(input: {
   if (profile.kind === 'blocked') return { kind: 'blocked', reason: profile.reason };
   if (!recipe) return { kind: 'not_found' };
   if (profile.kind !== 'ok') return { kind: 'not_for_you' };
-  const hit = recipeForPersonWithDiets(
-    recipe,
-    {
-      foods: input.library.foods,
-      profile: mealPlanProfileSchema.parse(profile.profile),
-      excludePregnancyCaution: weekExcludesPregnancyCaution(input.week.targets),
-      allowDrafts: input.allowDrafts,
-    },
-    // Aus dem Essensplan geöffnet: nie erweitert (G4).
-    input.from === null && input.extraDiet ? [input.extraDiet] : [],
-  );
-  if (hit === null) return { kind: 'not_for_you' };
+  const ctx = {
+    foods: input.library.foods,
+    profile: mealPlanProfileSchema.parse(profile.profile),
+    excludePregnancyCaution: weekExcludesPregnancyCaution(input.week.targets),
+    allowDrafts: input.allowDrafts,
+  };
   const meal =
     input.from === null
       ? undefined
       : input.week.plan?.days
           .find((d) => d.date === input.from?.date)
           ?.meals.find((m) => m.slot === input.from?.slot && m.recipeId === recipe.id);
+  // Getauschte Zutaten (Etappe N9): Filter, Allergene und Haltbarkeit mit dem, was tatsächlich gekocht wird.
+  if (meal?.ingredientSwaps !== undefined && meal.ingredientSwaps.length > 0) {
+    const swapped = recipeVariantForMeal(
+      recipe,
+      meal,
+      ctx,
+      input.library.foods,
+      input.library.substitutions,
+    );
+    return swapped === null
+      ? { kind: 'not_for_you' }
+      : { kind: 'ok', variant: swapped, plannedMeal: meal, outsideProfileDiet: null };
+  }
+  const hit = recipeForPersonWithDiets(
+    recipe,
+    ctx,
+    // Aus dem Essensplan geöffnet: nie erweitert (G4).
+    input.from === null && input.extraDiet ? [input.extraDiet] : [],
+  );
+  if (hit === null) return { kind: 'not_for_you' };
   return {
     kind: 'ok',
     variant: hit.variant,
     plannedMeal: meal ?? null,
     outsideProfileDiet: hit.outsideProfileDiet,
   };
+}
+
+/**
+ * Zutaten-Austausch (KONZEPT 6.9, Etappe N9): Kann an dieser Zutat einer geplanten Mahlzeit „Austauschen“ erscheinen?
+ * Nur in änderbaren Wochen (laufende/nächste), ab heute, nicht für vorgekochte Portionen und nur für Zutaten mit
+ * Rolle, nur mit gültiger Einwilligung zu Gesundheitsdaten (ein Plan mit Tausch ist ein Gesundheitsdatum, Wächter N9 S5)
+ * – die Regeln stehen in packages/core (`ingredientSwapPossible`).
+ */
+export function canSwapIngredient(
+  week: Extract<NutritionWeekResult, { kind: 'ready' }>,
+  target: { date: string; slot: string; index: number },
+): boolean {
+  if (week.plan === null || week.planState === null || !week.planState.ingredientSwapAllowed) {
+    return false;
+  }
+  return ingredientSwapPossible(
+    week.plan,
+    { ...target, slot: target.slot as MealSlotId },
+    week.planState.input,
+    { cookStartedOn: week.planState.cookStartedOn },
+  );
+}
+
+/**
+ * Alternativen für eine Zutat (Dialog „Austauschen“): nur sichere Alternativen aus der Austausch-Tabelle, jede mit dem
+ * fertig durchgerechneten Plan (`ingredientSwapOptions` in packages/core). Nicht angebotene erscheinen ohne Grund.
+ */
+export function ingredientSwapView(
+  week: Extract<NutritionWeekResult, { kind: 'ready' }>,
+  target: { date: string; slot: string; index: number },
+): IngredientSwapOptions | { ok: false; reason: 'not_editable' | 'consent_required' } {
+  if (week.plan === null || week.planState === null || !week.planState.editable) {
+    return { ok: false, reason: 'not_editable' };
+  }
+  if (!week.planState.ingredientSwapAllowed) return { ok: false, reason: 'consent_required' };
+  return ingredientSwapOptions(
+    week.plan,
+    { ...target, slot: target.slot as MealSlotId },
+    week.planState.input,
+    { cookStartedOn: week.planState.cookStartedOn },
+  );
 }
 
 export interface MealPrepOffer {

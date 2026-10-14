@@ -1,7 +1,7 @@
 /**
  * Verteiler für `content-review` (Workflow-Eingaben → richtige Freigabe):
  * - Art „ids“ mit Übungen/Plan-Vorlagen → `runReview` (wie bisher, alle Zielstatus),
- * - Art „ids“ mit Rezepten, Meal-Prep-Plänen oder Ratgebern → `runNutritionIdRelease` (nur Freigabe, gleiche Regeln
+ * - Art „ids“ mit Rezepten, Meal-Prep-Plänen, Ratgebern oder Austausch-Einträgen → `runNutritionIdRelease` (nur Freigabe, gleiche Regeln
  *   wie die Sammelfreigabe; Gründer-Entscheidungen 14.10.2026). Lebensmittel lehnt dieser Weg ab.
  * - Art „recipe“ → `runRecipeCategoryRelease` (Sammelfreigabe pro Kategorie).
  * Gemischte Läufe (Übung und Rezept zugleich) werden abgelehnt – die Regeln und Häkchen sind verschieden.
@@ -41,7 +41,7 @@ function exists(repoRoot: string, folder: string, id: string): boolean {
 export interface IdClassification {
   /** IDs mit Datei unter exercises/ bzw. plan-templates/. */
   readonly training: readonly string[];
-  /** IDs mit Datei unter recipes/, meal-prep-plans/, guides/ oder foods/. */
+  /** IDs mit Datei unter recipes/, meal-prep-plans/, guides/, substitutions/ oder foods/. */
   readonly nutrition: readonly string[];
   /** IDs ohne Datei in irgendeinem Bereich. */
   readonly unknown: readonly string[];
@@ -137,7 +137,7 @@ export async function runContentReview(
         '',
         `Nichts geändert: Auf \`main\` nicht gefunden: ${code(classes.unknown)}.`,
         '',
-        'Gesucht in Übungen, Plan-Vorlagen, Rezepten, Meal-Prep-Plänen, Ratgebern und Lebensmitteln. Tippfehler? Die ID steht im Redaktionsbereich (Rezept → Steckbrief → ID). Neue Inhalte sind erst nach dem Merge ihres Pull Requests freigebbar.',
+        'Gesucht in Übungen, Plan-Vorlagen, Rezepten, Meal-Prep-Plänen, Ratgebern, Austausch-Einträgen und Lebensmitteln. Tippfehler? Die ID steht im Redaktionsbereich (Rezept → Steckbrief → ID). Neue Inhalte sind erst nach dem Merge ihres Pull Requests freigebbar.',
         '',
       ].join('\n'),
     };
@@ -151,7 +151,7 @@ export async function runContentReview(
         'Nichts geändert: Die IDs mischen Training und Ernährung – bitte getrennt starten, die Regeln und Häkchen sind verschieden.',
         '',
         `- Übungen/Vorlagen: ${code(classes.training)}`,
-        `- Ernährung (Rezepte, Meal-Prep-Pläne, Ratgeber, Lebensmittel): ${code(classes.nutrition)}`,
+        `- Ernährung (Rezepte, Meal-Prep-Pläne, Ratgeber, Austausch, Lebensmittel): ${code(classes.nutrition)}`,
         '',
       ].join('\n'),
     };

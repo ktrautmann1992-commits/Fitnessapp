@@ -19,6 +19,8 @@ import {
 import { type Recipe, recipeSchema } from './recipe-schema';
 import { type ContentIssue, isBlockingIssue, makeIssue } from './rules';
 import { type Exercise, exerciseSchema, type PlanTemplate, planTemplateSchema } from './schemas';
+import { checkIngredientSubstitution, checkSubstitutionLibrary } from './substitution-checks';
+import { type IngredientSubstitution, ingredientSubstitutionSchema } from './substitution-schema';
 
 export { canonicalJson } from './canonical-json';
 
@@ -34,11 +36,18 @@ export type ContentFileKind = 'exercise' | 'plan_template';
  * Inhaltsarten der Ernährung (docs/PLAN-PHASE-5.md 5.1–5.3, 19.4). Bewusst getrennt von `ContentFileKind`, solange
  * die Pipeline-Arten (N8) sie nicht kennen; Ordner: `NUTRITION_CONTENT_FOLDERS` (packages/content, N2c).
  */
-export type NutritionContentFileKind = 'food' | 'recipe' | 'meal_prep_plan' | 'guide';
+export type NutritionContentFileKind =
+  'food' | 'recipe' | 'meal_prep_plan' | 'guide' | 'ingredient_substitution';
 
-/** true = Inhaltsart der Ernährung (Regeln R1–R22, Version R15). */
+/** true = Inhaltsart der Ernährung (Regeln R1–R23, Version R15). */
 export function isNutritionKind(kind: AnyContentFileKind): kind is NutritionContentFileKind {
-  return kind === 'food' || kind === 'recipe' || kind === 'meal_prep_plan' || kind === 'guide';
+  return (
+    kind === 'food' ||
+    kind === 'recipe' ||
+    kind === 'meal_prep_plan' ||
+    kind === 'guide' ||
+    kind === 'ingredient_substitution'
+  );
 }
 export type AnyContentFileKind = ContentFileKind | NutritionContentFileKind;
 
@@ -54,7 +63,7 @@ export interface ContentFile {
   readonly previous?: unknown;
 }
 
-/** Inhaltsdatei der Ernährung (`content/foods|recipes|meal-prep-plans|guides/<id>.json`). */
+/** Inhaltsdatei der Ernährung (`content/foods|recipes|meal-prep-plans|guides|substitutions/<id>.json`). */
 export interface NutritionContentFile extends Omit<ContentFile, 'kind'> {
   readonly kind: NutritionContentFileKind;
 }
@@ -77,6 +86,8 @@ export interface ContentValidationResult {
   readonly mealPrepPlans: readonly MealPrepPlan[];
   /** Ratgeber mit gültigem Schema (19.4). */
   readonly guides: readonly Guide[];
+  /** Austausch-Tabelle mit gültigem Schema (19.7 N9). */
+  readonly substitutions: readonly IngredientSubstitution[];
   /** Alle Befunde (rot und gelb). */
   readonly issues: readonly ContentIssue[];
   /** Befunde, die das Prüfskript fehlschlagen lassen (siehe isBlockingIssue). */
@@ -211,11 +222,12 @@ const SCHEMAS = {
   recipe: recipeSchema,
   meal_prep_plan: mealPrepPlanSchema,
   guide: guideSchema,
+  ingredient_substitution: ingredientSubstitutionSchema,
 } as const;
 
 /**
  * Prüft alle Inhaltsdateien gemeinsam. Lebensmittel und Rezepte (Phase 5) werden mit R1–R19 und R22 geprüft,
- * Meal-Prep-Pläne mit R20, Ratgeber mit R21; die
+ * Meal-Prep-Pläne mit R20, Ratgeber mit R21, die Austausch-Tabelle mit R23; die
  * Begleitdaten (Quellauszug, Erwartungs- und Ausnahmeliste) kommen über `options.nutritionCatalog`.
  */
 export function validateContent(
@@ -229,6 +241,7 @@ export function validateContent(
   const recipes: Recipe[] = [];
   const mealPrepPlans: MealPrepPlan[] = [];
   const guides: Guide[] = [];
+  const substitutions: IngredientSubstitution[] = [];
   const seenIds = new Map<string, string>();
 
   for (const file of files) {
@@ -274,6 +287,8 @@ export function validateContent(
       recipes.push(content as Recipe);
     } else if (file.kind === 'meal_prep_plan') {
       mealPrepPlans.push(content as MealPrepPlan);
+    } else if (file.kind === 'ingredient_substitution') {
+      substitutions.push(content as IngredientSubstitution);
     } else {
       guides.push(content as Guide);
     }
@@ -306,6 +321,10 @@ export function validateContent(
   for (const guide of guides) {
     issues.push(...checkGuide(guide));
   }
+  for (const substitution of substitutions) {
+    issues.push(...checkIngredientSubstitution(substitution, foodLookup));
+  }
+  issues.push(...checkSubstitutionLibrary(substitutions));
 
   return {
     exercises,
@@ -314,6 +333,7 @@ export function validateContent(
     recipes,
     mealPrepPlans,
     guides,
+    substitutions,
     issues,
     blocking: issues.filter(isBlockingIssue),
   };
