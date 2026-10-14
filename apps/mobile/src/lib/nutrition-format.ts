@@ -1,6 +1,7 @@
 import {
   FOOD_GROUPS,
   type FoodGroupId,
+  type LeftoverMealHint,
   type MealPlanSlotKey,
   type MealRole,
   type NutritionNoticeCode,
@@ -14,6 +15,7 @@ import {
 } from '@fitnessapp/core';
 
 import { t } from '@/i18n';
+import { weekdayShort } from '@/lib/plan-format';
 
 /**
  * Zahlen und Bausteine der Ernährung im deutschen Format („2.150 kcal“, „1,5 EL“, docs/PLAN-PHASE-5.md 8.4). Nur
@@ -145,4 +147,46 @@ export function nutrientSourcesText(
       })
       .join('; '),
   );
+}
+
+/** Anzeige des Hinweises „Nutzt deinen Rest“ (Etappe N14) – ohne Mengen und ohne Packungszahlen. */
+export interface LeftoverHintView {
+  readonly line: string;
+  /** Mindestens eine Packungsgröße ist noch ein Entwurf/Testwert. */
+  readonly unreviewed: boolean;
+  /** Ein nur bis zum Folgetag eingeplanter Rest (roh tierisch oder empfindlich, Wächter N14 S3) – Lagerhinweis. */
+  readonly shortLived: boolean;
+}
+
+export function leftoverHintView(
+  hint: LeftoverMealHint,
+  foodName: (foodId: string) => string,
+): LeftoverHintView {
+  return {
+    line: t.nutrition.leftovers.line(
+      hint.foods
+        .map((f) => t.nutrition.leftovers.item(foodName(f.foodId), weekdayShort(f.openedOn)))
+        .join(', '),
+    ),
+    unreviewed: hint.foods.some((f) => !f.packageReviewed),
+    shortLived: hint.foods.some((f) => f.shortLived),
+  };
+}
+
+/** Hinweise je Tag und Platz (`datum|platz`). */
+export function leftoverHintsBySlot(
+  hints: readonly LeftoverMealHint[],
+): ReadonlyMap<string, LeftoverMealHint> {
+  return new Map(hints.map((h) => [`${h.date}|${h.slot}`, h]));
+}
+
+/**
+ * Vorlesetext des Hinweises (Wächter N14 S2): Das `accessibilityLabel` einer antippbaren Mahlzeit ersetzt ihren
+ * Inhalt – der Hinweis und der Lagerhinweis werden deshalb angehängt.
+ */
+export function leftoverAccessibilityText(view: LeftoverHintView): string {
+  const parts = [view.line];
+  if (view.unreviewed) parts.push(t.nutrition.leftovers.unreviewed);
+  if (view.shortLived) parts.push(t.nutrition.leftovers.shortLived);
+  return parts.join('. ');
 }

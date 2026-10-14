@@ -21,6 +21,9 @@ import {
   recipeVariantForMeal,
   intoleranceAccess,
   type IntoleranceAccess,
+  type LeftoverMealHint,
+  leftoverMealHints,
+  leftoverPlanningInput,
   type IntoleranceBlockReason,
   mealPlanProfileSchema,
   measuredOnForEngine,
@@ -236,6 +239,11 @@ export type NutritionWeekResult =
        * Plan.
        */
       shopping: ShoppingListResolution | null;
+      /**
+       * Hinweise „Nutzt deinen Rest“ (Etappe N14, `leftoverMealHints`) – nur Lebensmittel und Anbruchstag, keine Mengen
+       * oder Packungszahlen (G-N13-4/N11-G3 offen). Leer ohne Plan oder ohne Packungsgrößen. Nie gespeichert.
+       */
+      leftoverHints: readonly LeftoverMealHint[];
     }
   /** Angaben unvollständig (Ziel, Erfahrung oder Ernährungsform fehlt). */
   | { kind: 'incomplete' }
@@ -246,6 +254,34 @@ export type NutritionWeekResult =
   | { kind: 'blocked'; reason: IntoleranceBlockReason }
   /** Die Engine hat die Eingaben abgelehnt (Zod) – nie still weiterrechnen. */
   | { kind: 'error' };
+
+/**
+ * Resteplanung (Etappe N14) ist eine Zusatzfunktion: Ein Fehler darin (z. B. eine ungültige Packungsgröße) darf nie
+ * die ganze Ernährungsansicht sperren (Wächter N14 H2) – dann gibt es keinen Reste-Score bzw. keine Hinweise. Ohne
+ * `allowDrafts` nur freigegebene Packungsgrößen (H1, Regel in core `usablePackageSizes`).
+ */
+export function safeLeftoverPlanningInput(
+  library: Pick<NutritionLibrary, 'packageSizes'>,
+  allowDrafts: boolean,
+): MealPlanInput['leftovers'] {
+  try {
+    return leftoverPlanningInput(library.packageSizes, { allowDrafts });
+  } catch {
+    return undefined;
+  }
+}
+
+export function safeLeftoverMealHints(
+  plan: MealPlanWeek,
+  library: Pick<NutritionLibrary, 'packageSizes' | 'foods'>,
+  allowDrafts: boolean,
+): readonly LeftoverMealHint[] {
+  try {
+    return leftoverMealHints(plan, library.foods, library.packageSizes, { allowDrafts });
+  } catch {
+    return [];
+  }
+}
 
 /**
  * Ziele und Essensplan der Woche ab `weekStart`. Mit Bestand: gespeicherter Plan der Woche nach `resolveMealPlanWeek`
@@ -267,7 +303,14 @@ export function computeNutritionWeek(input: {
   try {
     const targets = nutritionTargetsForWeek(inputs, input.weekStart);
     if (!input.library || input.library.recipes.length === 0) {
-      return { kind: 'ready', targets, plan: null, planState: null, shopping: null };
+      return {
+        kind: 'ready',
+        targets,
+        plan: null,
+        planState: null,
+        shopping: null,
+        leftoverHints: [],
+      };
     }
     const engineInput: MealPlanEngineInput = {
       targets,
@@ -280,6 +323,9 @@ export function computeNutritionWeek(input: {
       substitutions: input.library.substitutions,
       // Bewertungen nach dem Essen (Etappe N10): nur Vorschläge/Reihenfolge, nie Filter, Energie oder Grenzen.
       ratings: ratingsFromRows(input.rows),
+      // Resteplanung (Etappe N14, Premium mit Phase 7 – Testphase offen, 19.9): Reste-Score aus den Packungsgrößen (N11),
+      // NUR Reihenfolge der Vorschläge. Ohne Packungsgrößen fehlt das Feld → Plan genau wie vorher.
+      leftovers: safeLeftoverPlanningInput(input.library, input.allowDrafts),
     };
     const row = storedMealPlanRow(input.rows, input.weekStart);
     // Ohne gültige Einwilligung wird ein gespeicherter Plan mit Gesundheitsbezug weder angezeigt noch weiterverwendet
@@ -333,6 +379,7 @@ export function computeNutritionWeek(input: {
             profile.profile,
             input.library.recipes.map((r) => `${r.id}@${r.version}`),
             input.library.substitutions.map((x) => `${x.id}@${x.version}`),
+            input.library.packageSizes.map((x) => `${x.id}@${x.version}`),
             engineInput.ratings,
             input.allowDrafts,
             input.today,
@@ -340,7 +387,14 @@ export function computeNutritionWeek(input: {
         ),
       ),
     };
-    return { kind: 'ready', targets, plan: resolved.plan, planState, shopping };
+    return {
+      kind: 'ready',
+      targets,
+      plan: resolved.plan,
+      planState,
+      shopping,
+      leftoverHints: safeLeftoverMealHints(resolved.plan, input.library, input.allowDrafts),
+    };
   } catch {
     // Bewusst ohne Details: keine Gesundheitsdaten in Logs oder Fehlermeldungen.
     return { kind: 'error' };

@@ -322,6 +322,26 @@ Partner-Modus (Phase 11). So prüft ihr N13 am Handy:
    „Portionsfaktor hebt nie über die Obergrenze …“ und „Reste-Score an/aus → gleiche Kandidaten …“).
 2. Vorschau-Link öffnen → **Ernährung** → die Woche sieht genauso aus wie vorher (N13 ändert bestehende Pläne nicht).
 
+**Resteplanung (Etappe N14, Testmodus, ohne KI – nur der sichere Teil):** Der Essensplan bevorzugt jetzt Rezepte, die
+angebrochene Packungen weiterverwenden, und sagt es an der Mahlzeit. **Packungszahlen und Restmengen zeigt die App
+bewusst noch nicht** – dafür fehlen eure Entscheidungen G-N13-4 (wie lange halten z. B. Hartkäse, Butter, Öl, Salami
+angebrochen) und N11-G3 (Packung bei Stückware). Mit dem Testkonto aus Schritt 1 (Beispiel-Rezepte an):
+
+1. **Ernährung** → mit **„Nächster Tag“** durch die Woche blättern. **Prüfen:** An manchen Mahlzeiten steht
+   **„Nutzt deinen Rest: Tofu (seit Mo)“** o. ä., darunter „Packungsgröße noch nicht geprüft (Testwert)“; unter den
+   Mahlzeiten ein kurzer Satz, dass der Plan von üblichen Packungsgrößen ausgeht. **Nirgends** eine Gramm- oder
+   Packungszahl im Hinweis.
+2. **Wochenansicht** → an denselben Mahlzeiten steht „· nutzt einen Rest“.
+3. Seite neu laden → **dieselben** Hinweise an denselben Mahlzeiten (der Plan ist fest).
+4. Einstellungen → **Kalorienzahlen anzeigen** aus → die Hinweise bleiben, nirgends kcal.
+5. Steht ein Hinweis an einem kurz haltbaren Lebensmittel (Fleisch, Fisch, Rohmilchkäse, Sprossen), kommt dazu
+   „Angebrochen nur kurz haltbar: Die App plant diesen Rest nur bis zum Folgetag ein …“ – ein Rest von übermorgen wird
+   nie eingeplant. (Mit den Beispiel-Rezepten kommt das nicht vor.)
+6. Mit eingeschaltetem Screenreader (TalkBack/VoiceOver) eine Mahlzeit mit Hinweis antippen → vorgelesen wird
+   „Rezept öffnen … Nutzt deinen Rest …“ samt „Testwert“-Hinweis.
+7. Ein bereits gespeicherter Plan ändert sich durch N14 **nicht**; erst „Andere Vorschläge“ oder eine neue Woche
+   plant mit dem Reste-Score.
+
 **Redaktionsbereich Ernährung (Etappe N2d):** Vorschau-Link der Website → `/admin` → anmelden → oben **Rezepte**,
 **Lebensmittel**, **Meal-Prep**, **Ratgeber**, **Austausch** (N9) und **Packungen** (N11: Lebensmittel mit Gramm je
 Packung, Prüfbericht R24, Klick-Schritte „Freigabe per ID“; solange es keine gibt, steht dort „Noch keine

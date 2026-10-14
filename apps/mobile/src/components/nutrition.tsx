@@ -38,6 +38,8 @@ import {
   formatGrams,
   formatKcal,
   formatNumberDe,
+  leftoverAccessibilityText,
+  type LeftoverHintView,
   noticeText,
   roleLabel,
   slotLabel,
@@ -356,11 +358,14 @@ export function MealRow({
   showNumbers,
   foodName,
   onOpen,
+  leftover,
 }: {
   meal: PlannedMeal;
   showNumbers: boolean;
   foodName: (foodId: string) => string;
   onOpen: () => void;
+  /** Hinweis „Nutzt deinen Rest“ (Etappe N14) – ohne Mengen und Packungszahlen. */
+  leftover?: LeftoverHintView | undefined;
 }) {
   const theme = useThemeColors();
   const role = roleLabel(meal.role);
@@ -381,7 +386,11 @@ export function MealRow({
   return (
     <Pressable
       accessibilityRole="button"
-      accessibilityLabel={t.nutrition.openRecipe(meal.titleDe)}
+      accessibilityLabel={
+        leftover
+          ? `${t.nutrition.openRecipe(meal.titleDe)}. ${leftoverAccessibilityText(leftover)}`
+          : t.nutrition.openRecipe(meal.titleDe)
+      }
       onPress={onOpen}
       testID={`meal-${meal.slot}`}
       style={({ pressed }) => [
@@ -403,6 +412,24 @@ export function MealRow({
           {line}
         </Text>
       ))}
+      {leftover ? (
+        <View testID={`leftover-${meal.slot}`}>
+          <Text style={[styles.detail, { color: theme.text }]}>{leftover.line}</Text>
+          {leftover.unreviewed ? (
+            <Text style={[styles.detail, { color: theme.textMuted }]}>
+              {t.nutrition.leftovers.unreviewed}
+            </Text>
+          ) : null}
+          {leftover.shortLived ? (
+            <Text
+              style={[styles.detail, { color: theme.textMuted }]}
+              testID={`leftover-short-${meal.slot}`}
+            >
+              {t.nutrition.leftovers.shortLived}
+            </Text>
+          ) : null}
+        </View>
+      ) : null}
     </Pressable>
   );
 }
