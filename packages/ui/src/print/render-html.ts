@@ -3,6 +3,7 @@ import { brandColors } from '../tokens';
 import { ALPHA5_LOGO_SVG, ARCHIVO_WOFF2_BASE64 } from './assets.generated';
 import type {
   TranslatedBlock,
+  TranslatedChecklist,
   TranslatedDocument,
   TranslatedOrientation,
   TranslatedTable,
@@ -127,7 +128,7 @@ p { margin: 0 0 3mm; }
 }
 dl.kv { display: flex; flex-wrap: wrap; gap: 1.5mm 8mm; margin: 0 0 4mm; }
 dl.kv div { display: flex; gap: 2mm; }
-dl.kv dt { font-weight: 700; }
+dl.kv dt { font-weight: 700; flex: none; }
 dl.kv dd { margin: 0; }
 .notice {
   border-left: 3pt solid ${c.blau};
@@ -181,6 +182,39 @@ td.log { height: 8mm; }
 .page--landscape p, .page--landscape dl.kv { margin-bottom: 2mm; }
 .page--landscape td.log { height: 7mm; }
 .page-footer svg { height: 5mm; width: auto; display: block; }
+ul.checklist { list-style: none; margin: 0 0 4mm; padding: 0; }
+ul.checklist--2 { column-count: 2; column-gap: 8mm; }
+ul.checklist li {
+  display: flex;
+  align-items: flex-start;
+  gap: 2.5mm;
+  padding: 0.9mm 0;
+  break-inside: avoid;
+  page-break-inside: avoid;
+}
+.box {
+  flex: none;
+  width: 4.4mm;
+  height: 4.4mm;
+  margin-top: 0.3mm;
+  border: 1pt solid ${c.schwarz};
+  border-radius: 0.6mm;
+  font-size: 10pt;
+  line-height: 4.1mm;
+  text-align: center;
+  font-weight: 700;
+}
+.checked .check-text { color: ${c.grau}; text-decoration: line-through; }
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  white-space: nowrap;
+}
+ol.steps { margin: 0 0 3mm; padding-left: 7mm; }
+ol.steps li { margin: 0 0 1.5mm; break-inside: avoid; page-break-inside: avoid; }
 @media print {
   body { background: ${c.weiss}; }
   .page { margin: 0; }
@@ -188,6 +222,7 @@ td.log { height: 8mm; }
 @media screen and (max-width: 800px) {
   .page, .page--landscape { width: auto; min-height: 0; margin: 0 0 4mm; padding: 6mm 4mm; }
   .page-footer { position: static; margin-top: 6mm; }
+  ul.checklist--2 { column-count: 1; }
   /* Tabelle bleibt Tabelle (Semantik für VoiceOver); gescrollt wird der Rahmen. */
   .table-scroll { overflow-x: auto; }
   table { table-layout: auto; min-width: 150mm; }
@@ -258,6 +293,31 @@ function renderTable(table: TranslatedTable, id: string): string {
   return `${heading}<div class="table-scroll"><table aria-labelledby="${id}">${colgroup(table)}<thead><tr>${head}</tr></thead><tbody>${body}</tbody></table></div>`;
 }
 
+/** Überschrift bzw. Titel-Absatz einer Tabelle oder Liste (mit `id` für `aria-labelledby`). */
+function titleFor(caption: string, level: 2 | 3 | undefined, id: string): string {
+  const title = escapeHtml(caption);
+  return level === 2
+    ? `<h2 id="${id}">${title}</h2>`
+    : level === 3
+      ? `<h3 id="${id}">${title}</h3>`
+      : `<p class="table-title" id="${id}">${title}</p>`;
+}
+
+/** Kästchen-Liste: Kästchen rein dekorativ (Haken als Zeichen, nicht nur Farbe), Zustand als Screenreader-Text. */
+function renderChecklist(list: TranslatedChecklist, id: string): string {
+  const items = list.items
+    .map((item) => {
+      const box = `<span class="box" aria-hidden="true">${item.checked ? '✓' : ''}</span>`;
+      const state = item.checked
+        ? `<span class="sr-only">${escapeHtml(list.checkedLabel)}</span>`
+        : '';
+      return `<li${item.checked ? ' class="checked"' : ''}>${box}<span class="check-text">${lines(item.lines)}${state}</span></li>`;
+    })
+    .join('');
+  const cls = list.columns === 2 ? 'checklist checklist--2' : 'checklist';
+  return `${titleFor(list.caption, list.captionLevel, id)}<ul class="${cls}" aria-labelledby="${id}">${items}</ul>`;
+}
+
 function renderBlock(block: TranslatedBlock, id: string): string {
   switch (block.type) {
     case 'heading': {
@@ -276,6 +336,13 @@ function renderBlock(block: TranslatedBlock, id: string): string {
       return renderTable(block, id);
     case 'notice':
       return `<aside class="notice"><strong class="notice-title">${escapeHtml(block.title)}</strong>${escapeHtml(block.text)}</aside>`;
+    case 'checklist':
+      return renderChecklist(block, id);
+    case 'steps': {
+      const start =
+        Number.isInteger(block.start) && block.start > 1 ? ` start="${block.start}"` : '';
+      return `<ol class="steps"${start}>${block.items.map((step) => `<li>${escapeHtml(step)}</li>`).join('')}</ol>`;
+    }
     case 'pageBreak':
       return '';
     default: {

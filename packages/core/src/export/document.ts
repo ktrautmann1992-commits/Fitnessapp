@@ -12,11 +12,15 @@ import {
   type EquipmentLocation,
   type GoalType,
 } from '../enums';
+import { NUTRITION_PARAM_SCHEMAS, type NutritionPrintTextParams } from './nutrition-print-texts';
+import { printDataValueSchema } from './print-values';
 
 /**
  * Allgemeines Druck-Dokument (docs/PLAN-PDF-EXPORT.md §6, Wächter B11): Blöcke mit CODES und DATEN, keine fertigen
  * Texte. Die App übersetzt die Codes (i18n) in ein „übersetztes Dokument“, packages/ui rendert daraus HTML.
- * Später nutzt der Ernährungsplan (Phase 5) dasselbe Modell mit eigenen Codes.
+ * Seit Etappe N6 (PDF P5) nutzen Essensplan und Einkaufsliste dasselbe Modell mit eigenen Codes
+ * (`nutrition-print-texts.ts`) und zwei neuen Bausteinen: `checklist` (Kästchen-Liste) und `steps` (nummerierte
+ * Rezept-Schritte, fortsetzbar).
  *
  * Datenschutz (B1): Das Modell enthält bewusst KEINE Gesundheitsangaben – keine Flags, Gründe, Schwangerschaft,
  * Alter, Geburtsdatum, Körpergewicht, Zyklusdaten und kein Level. Die einzigen freien Texte sind Inhalte (Namen von
@@ -32,8 +36,8 @@ export const PRINT_PLAN_NOTES = [
 ] as const;
 export type PrintPlanNote = (typeof PRINT_PLAN_NOTES)[number];
 
-/** Parameter je Text-Code. Leeres Objekt = Text ohne Parameter. */
-export interface PrintTextParams {
+/** Parameter je Text-Code. Leeres Objekt = Text ohne Parameter. Ernährungs-Codes: `nutrition-print-texts.ts`. */
+export interface PrintTextParams extends NutritionPrintTextParams {
   /** Dokument-Titel und Dateiname – nie mit Namen (B7). */
   'doc.title': Record<string, never>;
   /** Fußzeile jeder Seite (neutral, für alle gleich). */
@@ -186,10 +190,24 @@ export type PrintBlock =
       readonly rows: readonly PrintTableRow[];
     }
   | { readonly type: 'notice'; readonly title: PrintText; readonly text: PrintText }
+  /**
+   * Kästchen-Liste (Einkaufsliste, N6): Titel als Überschrift bzw. Absatz, ein- oder zweispaltig. `checked` = in der
+   * App schon abgehakt (Kästchen mit Haken).
+   */
+  | {
+      readonly type: 'checklist';
+      readonly caption: PrintText;
+      readonly captionLevel?: 2 | 3;
+      readonly columns: 1 | 2;
+      readonly items: readonly { readonly text: PrintCell; readonly checked: boolean }[];
+    }
+  /** Nummerierte Schritte (Rezept, N6); `start` > 1 = Fortsetzung auf einer Folgeseite. */
+  | { readonly type: 'steps'; readonly start: number; readonly items: readonly PrintText[] }
   /** Neue Seite; `orientation` gilt für die folgende Seite. */
   | { readonly type: 'pageBreak'; readonly orientation: PrintOrientation };
 
-export type PrintDocumentKind = 'training_plan';
+export const PRINT_DOCUMENT_KINDS = ['training_plan', 'nutrition_plan', 'shopping_list'] as const;
+export type PrintDocumentKind = (typeof PRINT_DOCUMENT_KINDS)[number];
 
 export interface PrintDocument {
   readonly meta: {
@@ -229,10 +247,7 @@ export const printNumber = (value: number): PrintText => ({ kind: 'number', valu
 // ---------------------------------------------------------------------------------------------------------
 
 /** Freie Inhalte: keine Steuerzeichen, begrenzte Länge. */
-const dataValueSchema = z
-  .string()
-  .max(600)
-  .regex(/^[^\p{Cc}\p{Cf}]*$/u, 'Keine Steuer- oder Formatzeichen.');
+const dataValueSchema = printDataValueSchema;
 
 const weekdaysSchema = z.array(z.number().int().min(1).max(7)).max(7);
 const empty = z.strictObject({});
@@ -325,6 +340,7 @@ const PARAM_SCHEMAS = {
   'endurance.effortHint': empty,
   'notes.heading': empty,
   'plan.note': z.strictObject({ note: z.enum(PRINT_PLAN_NOTES) }),
+  ...NUTRITION_PARAM_SCHEMAS,
 } satisfies { [K in PrintTextCode]: z.ZodType<PrintTextParams[K]> };
 
 export const PRINT_TEXT_CODES = Object.keys(PARAM_SCHEMAS) as PrintTextCode[];
@@ -379,30 +395,87 @@ export const printBlockSchema: z.ZodType<PrintBlock> = z.discriminatedUnion('typ
       'Jede Zeile hat so viele Zellen wie Spalten (ohne Zeilenkopf).',
     ),
   z.strictObject({ type: z.literal('notice'), title: printTextSchema, text: printTextSchema }),
+  z.strictObject({
+    type: z.literal('checklist'),
+    caption: printTextSchema,
+    captionLevel: z.union([z.literal(2), z.literal(3)]).optional(),
+    columns: z.union([z.literal(1), z.literal(2)]),
+    items: z
+      .array(z.strictObject({ text: cellSchema.min(1), checked: z.boolean() }))
+      .min(1)
+      .max(200),
+  }),
+  z.strictObject({
+    type: z.literal('steps'),
+    start: z.number().int().min(1).max(100),
+    items: z.array(printTextSchema).min(1).max(30),
+  }),
   z.strictObject({ type: z.literal('pageBreak'), orientation: orientationSchema }),
 ]);
 
-export const printDocumentSchema: z.ZodType<PrintDocument> = z.strictObject({
-  meta: z.strictObject({
-    kind: z.literal('training_plan'),
-    title: printTextSchema,
-    fileName: z.string().regex(/^[a-z0-9-]{3,80}$/),
-    footer: printTextSchema,
-    createdOn: isoDateSchema,
-  }),
-  sections: z
-    .array(printBlockSchema)
-    .min(1)
-    .max(400)
-    .refine((sections) => {
-      // B9 auch auf Dokumentebene: mehr als 4 Mitschreib-Spalten nur auf Querformat-Seiten.
-      let orientation: PrintOrientation = 'portrait';
-      return sections.every((block) => {
-        if (block.type === 'pageBreak') orientation = block.orientation;
-        if (block.type !== 'table' || orientation === 'landscape') return true;
-        return (
-          block.columns.filter((c) => c.role === 'log').length <= PRINT_EXPORT.maxLogColumnsPortrait
-        );
-      });
-    }, `Hochkant höchstens ${PRINT_EXPORT.maxLogColumnsPortrait} Mitschreib-Spalten.`),
-});
+/** Alle Texte eines Dokuments (Meta, Blöcke, Tabellen, Listen). */
+export function printDocumentTexts(doc: Pick<PrintDocument, 'meta' | 'sections'>): PrintText[] {
+  const out: PrintText[] = [doc.meta.title, doc.meta.footer];
+  for (const block of doc.sections) {
+    switch (block.type) {
+      case 'heading':
+      case 'paragraph':
+        out.push(block.text);
+        break;
+      case 'keyValue':
+        for (const item of block.items) out.push(item.label, item.value);
+        break;
+      case 'table':
+        out.push(block.caption, ...block.columns.map((c) => c.header));
+        for (const row of block.rows) out.push(...row.header, ...row.cells.flat());
+        break;
+      case 'notice':
+        out.push(block.title, block.text);
+        break;
+      case 'checklist':
+        out.push(block.caption, ...block.items.flatMap((i) => i.text));
+        break;
+      case 'steps':
+        out.push(...block.items);
+        break;
+      case 'pageBreak':
+        break;
+    }
+  }
+  return out;
+}
+
+export const printDocumentSchema: z.ZodType<PrintDocument> = z
+  .strictObject({
+    meta: z.strictObject({
+      kind: z.enum(PRINT_DOCUMENT_KINDS),
+      title: printTextSchema,
+      fileName: z.string().regex(/^[a-z0-9-]{3,80}$/),
+      footer: printTextSchema,
+      createdOn: isoDateSchema,
+    }),
+    sections: z
+      .array(printBlockSchema)
+      .min(1)
+      // Essensplan mit 8 Mahlzeiten an 7 Tagen und lauter verschiedenen Rezepten: bis zu ~56 Rezept-Abschnitte (N6).
+      .max(2000)
+      .refine((sections) => {
+        // B9 auch auf Dokumentebene: mehr als 4 Mitschreib-Spalten nur auf Querformat-Seiten.
+        let orientation: PrintOrientation = 'portrait';
+        return sections.every((block) => {
+          if (block.type === 'pageBreak') orientation = block.orientation;
+          if (block.type !== 'table' || orientation === 'landscape') return true;
+          return (
+            block.columns.filter((c) => c.role === 'log').length <=
+            PRINT_EXPORT.maxLogColumnsPortrait
+          );
+        });
+      }, `Hochkant höchstens ${PRINT_EXPORT.maxLogColumnsPortrait} Mitschreib-Spalten.`),
+  })
+  .refine(
+    // Wächter N6 K2 (zweite Schutzschicht): kcal nur im Essensplan – nie auf der Einkaufsliste oder im Trainingsplan.
+    (doc) =>
+      doc.meta.kind === 'nutrition_plan' ||
+      printDocumentTexts(doc).every((v) => v.kind !== 'text' || v.code !== 'value.kcal'),
+    { message: 'kcal stehen nur im Essensplan.' },
+  ) as unknown as z.ZodType<PrintDocument>;

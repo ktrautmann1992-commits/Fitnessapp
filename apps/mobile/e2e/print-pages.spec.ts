@@ -2,6 +2,7 @@ import { renderPrintHtml } from '@fitnessapp/ui/print';
 import { expect, test } from '@playwright/test';
 
 import { translatePrintDocument } from '../src/lib/print-document';
+import { NUTRITION_PRINT_EXAMPLES } from '../src/test/nutrition-print-examples';
 import { exampleDocument, extremeDocument, PRINT_EXAMPLES } from '../src/test/print-examples';
 import { expectA4, pageHeights, pdfPageCount } from './print-helpers';
 
@@ -10,6 +11,8 @@ import { expectA4, pageHeights, pdfPageCount } from './print-helpers';
  * Für alle CI-Beispiele und den Belastungstest (8 Übungen, lange Namen, Supersatz + „ersetzt“, 600 Zeichen
  * Aufwärmen), hochkant und quer: Höhe jeder `section.page` beim Drucken ≤ 297 mm bzw. ≤ 210 mm, und das von
  * Chromium erzeugte PDF hat genau so viele Seiten wie das Dokument Abschnitte.
+ * Seit Etappe N6 (PDF P5) auch Essensplan und Einkaufsliste inkl. Belastungstests (8 Mahlzeiten mit langen Titeln,
+ * Rezept mit 20 Zutaten und 15 langen Schritten, Einkaufsliste mit 200 Einträgen).
  */
 
 const cases: { name: string; html: () => string }[] = [
@@ -26,6 +29,10 @@ const cases: { name: string; html: () => string }[] = [
     html: () =>
       renderPrintHtml(translatePrintDocument(extremeDocument({ logColumns: 8, landscape: true }))),
   },
+  ...NUTRITION_PRINT_EXAMPLES.map((example) => ({
+    name: `ernaehrung-${example.slug}`,
+    html: () => renderPrintHtml(translatePrintDocument(example.document())),
+  })),
 ];
 
 test.describe('Druck-HTML passt auf A4', () => {

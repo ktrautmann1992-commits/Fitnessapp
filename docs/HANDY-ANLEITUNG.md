@@ -201,6 +201,26 @@ Vercel zeigt die App im Handy-Browser, Expo baut die echten Apps in der Cloud.
 7. Mit einem frischen Testkonto **vegan**, „Erdnüsse: Unverträglich“ und „schwanger“ = Ja: In der Suche auch mit
    „Auch vegetarisch“ und „Auch mit Fleisch“ kein Erdnuss-Rezept, kein Räucherlachs, keine rohen Eier.
 
+**Essensplan und Einkaufsliste als PDF (Etappe N6 – PDF P5, Testmodus, gratis)** – mit dem Testkonto aus Schritt 1:
+
+1. **Ernährung** → **Woche** → **„Als PDF speichern“** → Hinweis „Bevor du speicherst“ (euer Plan nutzt
+   Gesundheitsangaben; der Text erwähnt, dass Ersatzprodukte wie „Laktosefreie Milch statt Vollmilch“ darauf
+   schließen lassen) → **Abbrechen** führt zurück, nichts entsteht. Nochmal → **Weiter**.
+2. Druckansicht „Essensplan als PDF“: Vorschau mit Logo, „Dein Essensplan“, Woche, Arzt-Hinweis, Wochenübersicht Mo–So
+   (Rezept + Menge „× 1,5“, Kochtag/vorgekocht) und Tagessummen in kcal, danach jedes Rezept mit Zutaten je Menge und
+   Schritten. **Prüfen:** keine Gründe, kein Gewicht, kein Ziel, keine Unverträglichkeit, kein Alter. Häkchen „Meinen
+   Namen auf das Deckblatt drucken“ → Name erscheint nur im PDF.
+3. **„Drucken / als PDF sichern“** → Android (Chrome): Drucker **„Als PDF speichern“** → Herunterladen. iPhone
+   (Safari): in den Druckoptionen oben das **Teilen-Symbol** → **„In Dateien sichern“**. PDF öffnen: A4 hochkant,
+   nichts abgeschnitten, Fußzeile auf jeder Seite.
+4. **Einkaufsliste** → einen Eintrag abhaken → **„Als PDF speichern“** → Hinweis → **Weiter** → Vorschau: nach
+   Abteilungen, zwei Spalten mit **Kästchen**, der abgehakte Eintrag mit Haken, „Hast du wahrscheinlich da“ am Ende,
+   **keine kcal**. Drucken wie in Schritt 3.
+5. **Kalorienzahlen ausschalten** (Einstellungen → Ernährung ändern) → Essensplan-PDF ohne kcal und ohne
+   „Tagessumme“. Mit einem frischen Testkonto „schwanger“ = Ja: auch mit eingeschalteten Zahlen keine kcal im PDF.
+6. Ohne Handy: GitHub-App → **Actions** → letzter **ci**-Lauf → Artefakt **pdf-vorschau** → die Dateien
+   `alpha5-essensplan-…` und `alpha5-einkaufsliste-…` öffnen (Beispiel-Personen mit Testwerten, auch Belastungstests).
+
 **Redaktionsbereich Ernährung (Etappe N2d):** Vorschau-Link der Website → `/admin` → anmelden → oben **Rezepte**,
 **Lebensmittel**, **Meal-Prep**, **Ratgeber**. Rezepte: Kategorie antippen → Zahlen (Entwürfe, rot, Zutaten ohne
 Katalog-Prüfung, offene Annahmen, Abweichungen) und je Rezept „Sammelfreigabe: wird freigegeben / übersprungen – Grund“;
@@ -325,6 +345,12 @@ nur in GitHub-Secrets bzw. auf expo.dev.
 9. **Sicherung:** Android-Einstellungen → Google → Sicherung: Alpha5 wird nicht mitgesichert (gewollt – das
    Tagebuch ist verschlüsselt, die Sicherung ist der Server).
 10. **Live-Test W13** (Teil 8) am besten gleich mit der echten App wiederholen – Punkte 10–15 gehen nur dort.
+11. **PDF Essensplan und Einkaufsliste** (Etappe N6 – PDF P5, im Testmodus „Ohne Konto testen“): Ernährung → Woche
+    → **Als PDF speichern** → Hinweis → **Weiter** → **Drucken / als PDF sichern** → System-Druckdialog; A4
+    hochkant, Logo, Wochenübersicht nicht abgeschnitten, Rezepte mit Schritten. Dasselbe in der **Einkaufsliste**
+    (Kästchen, keine kcal). Auch im **Flugmodus**; Abbrechen des Dialogs zeigt keinen Fehler. Nativ gibt es keine
+    Vorschau in der App – das Dokument erscheint direkt im Druckdialog. **Noch nicht geprüft** (Claude kann keinen
+    EAS-Build starten): bitte einmal Android (A + B oben) und Ergebnis schreiben, z. B. „N6 Android ok“.
 
 ## Tipps
 - Eine Sitzung = eine Aufgabe. Lieber mehrere kurze Sitzungen als eine endlose.

@@ -38,6 +38,7 @@ import { useMealPlanActions, useNutritionWeek } from '@/state/use-nutrition';
  * „Kalorienzahlen anzeigen“ und nur bei vollständigen Tagen), „Andere Vorschläge“ (Variante + 1 ab heute, mit
  * Nachfrage), „Plan aktualisieren“ (≥ 5 %), Hinweis bei automatischer Neuplanung (6.6). Laufende und nächste Woche;
  * vergangene Tage bleiben unverändert. Rechnet nichts selbst – alles aus packages/core.
+ * Etappe N6: „Als PDF speichern“ öffnet die Druckansicht `ernaehrung/drucken` (PDF P5).
  */
 export default function NutritionWeekScreen() {
   const router = useRouter();
@@ -209,6 +210,14 @@ export default function NutritionWeekScreen() {
               testID="nutrition-other"
             />
           ) : null}
+          {/* PDF P5 (11, Etappe N6): Druckansicht mit Hinweis-Dialog bei Gesundheitsbezug. */}
+          <Button
+            label={t.nutrition.printView.button}
+            variant="secondary"
+            accessibilityHint={t.nutrition.printView.planHint}
+            onPress={() => router.push(`/ernaehrung/drucken?woche=${weekStart}` as Href)}
+            testID="nutrition-week-print"
+          />
           <View style={styles.list} testID="nutrition-week-days">
             {plan.days.map((day) => (
               <WeekDayCard
