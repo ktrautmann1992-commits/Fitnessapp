@@ -3,6 +3,7 @@ import {
   exercisePreferenceSchema,
   nutritionSetupColumnsSchema,
   parseStoredMealPlanWeek,
+  parseStoredShoppingList,
   BARBELL_PLATE_MAX_KG,
   scheduleFromLegacyGoals,
   type TrainingLocation,
@@ -13,6 +14,7 @@ import type {
   ExercisePreferenceRow,
   GoalsRow,
   MealPlanRow,
+  ShoppingListRow,
   NutritionSetupRow,
   UserEquipmentRow,
   UserRows,
@@ -70,7 +72,54 @@ function storedMealPlans(stored: UserRows): MealPlanRow[] {
         uses_health_data: plan.usesHealthData,
         created_at: row.created_at,
         auto_adjusted: row.auto_adjusted,
+        // Vor Etappe N5b gab es beide Felder nicht.
+        recipes_changed: row.recipes_changed === true,
+        cook_day_started_at: isTimestamp(row.cook_day_started_at) ? row.cook_day_started_at : null,
         plan,
+      },
+    ];
+  });
+}
+
+function isTimestamp(value: unknown): value is string {
+  return typeof value === 'string' && value.length <= 40 && !Number.isNaN(Date.parse(value));
+}
+
+/**
+ * Einkaufslisten (Etappe N5b): vorher gab es keine; nur gültige Listen (`parseStoredShoppingList`, Zod strikt) des
+ * eigenen Kontos, je Woche höchstens eine. Gesundheitsbezug steht in der Liste selbst.
+ */
+function storedShoppingLists(stored: UserRows): ShoppingListRow[] {
+  const list: unknown = (stored as { shoppingLists?: unknown }).shoppingLists;
+  if (!Array.isArray(list)) return [];
+  const owner = stored.profile?.user_id;
+  const seen = new Set<string>();
+  return list.flatMap((item: unknown): ShoppingListRow[] => {
+    if (typeof item !== 'object' || item === null) return [];
+    const row = item as Record<string, unknown>;
+    const parsed = parseStoredShoppingList(row.list);
+    if (
+      parsed === null ||
+      typeof row.id !== 'string' ||
+      typeof row.user_id !== 'string' ||
+      (owner !== undefined && row.user_id !== owner) ||
+      row.week_start !== parsed.weekStart ||
+      seen.has(parsed.weekStart) ||
+      !isTimestamp(row.created_at) ||
+      !isTimestamp(row.updated_at)
+    ) {
+      return [];
+    }
+    seen.add(parsed.weekStart);
+    return [
+      {
+        id: row.id,
+        user_id: row.user_id,
+        week_start: parsed.weekStart,
+        uses_health_data: parsed.usesHealthData,
+        created_at: row.created_at,
+        updated_at: row.updated_at,
+        list: parsed,
       },
     ];
   });
@@ -124,6 +173,7 @@ export function upgradeStoredRows(stored: UserRows): UserRows {
     exercisePreferences: storedPreferences(stored),
     nutritionSetup: storedNutritionSetup(stored),
     mealPlans: storedMealPlans(stored),
+    shoppingLists: storedShoppingLists(stored),
   };
   const goals = stored.goals as (GoalsRow & LegacyGoalsFields) | null;
   if (

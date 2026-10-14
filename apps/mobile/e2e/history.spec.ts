@@ -245,11 +245,17 @@ test('Export: Hinweis vor dem Herunterladen, Datei mit Tagebuch, Konto und Einwi
   expect(file.data.session_logs?.[0]?.notes).toBe('Griff eng');
   expect(file.data.set_logs?.length).toBeGreaterThan(0);
   expect(file.data.consents?.map((c) => c.consent_type).sort()).toEqual(['privacy', 'terms']);
-  // 20 Datenbank-Tabellen + exercise_preferences (Testmodus, Etappe T2; in export_my_data ab T3) + meal_plans und
-  // meal_plan_items (Testmodus, Etappe N5a; in export_my_data ab N7).
-  expect(Object.keys(file.data)).toHaveLength(23);
+  // 20 Datenbank-Tabellen + exercise_preferences (Testmodus, Etappe T2; in export_my_data ab T3) + meal_plans,
+  // meal_plan_items (Etappe N5a) und shopping_lists, shopping_list_items (Etappe N5b; in export_my_data ab N7).
+  expect(Object.keys(file.data)).toHaveLength(25);
   expect(Object.keys(file.data)).toEqual(
-    expect.arrayContaining(['exercise_preferences', 'meal_plans', 'meal_plan_items']),
+    expect.arrayContaining([
+      'exercise_preferences',
+      'meal_plans',
+      'meal_plan_items',
+      'shopping_lists',
+      'shopping_list_items',
+    ]),
   );
   // Nichts vom Export im Gerätespeicher (außer dem ohnehin vorhandenen Testmodus-Speicher).
   const keys = await page.evaluate(() => Object.keys(window.localStorage));

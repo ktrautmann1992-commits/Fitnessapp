@@ -1017,6 +1017,7 @@ export function createSupabaseBackend(options: SupabaseBackendOptions): Backend 
       exercisePreferences: [],
       // Essenspläne gibt es in der Datenbank erst mit Etappe N7 (supportsNutrition = false).
       mealPlans: [],
+      shoppingLists: [],
     };
   }
 
@@ -1394,6 +1395,13 @@ export function createSupabaseBackend(options: SupabaseBackendOptions): Backend 
     loadNutritionLibrary: async () => null,
     // Essenspläne in der Datenbank erst mit Etappe N7 (supportsNutrition = false) – nie still ins Leere speichern.
     saveMealPlan: async () => {
+      throw new BackendError('unknown', { sensitive: true });
+    },
+    // Einkaufslisten und Kochtag ebenfalls erst mit Etappe N7.
+    saveShoppingList: async () => {
+      throw new BackendError('unknown', { sensitive: true });
+    },
+    saveCookDayStart: async () => {
       throw new BackendError('unknown', { sensitive: true });
     },
     pendingWorkouts: async () => {

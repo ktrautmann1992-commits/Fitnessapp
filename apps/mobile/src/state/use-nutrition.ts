@@ -1,9 +1,21 @@
 import {
+  addManualShoppingItem,
+  addRecipeToShoppingList,
+  applyMealPrepPlan,
+  type MealPlanWeek,
+  type MealPrepPlan,
   type MealSlotId,
   mealPlanWithOtherSuggestions,
   refreshedMealPlan,
+  removeManualShoppingItem,
+  removeRecipeFromShoppingList,
+  resolveShoppingList,
+  setShoppingItemChecked,
+  type ShoppingCategory,
+  type StoredShoppingList,
   swapMealRecipe,
   weekHidesEnergyNumbers,
+  withShoppingListRange,
 } from '@fitnessapp/core';
 import { useEffect, useMemo } from 'react';
 
@@ -13,7 +25,7 @@ import {
   type NutritionWeekResult,
   showEnergyNumbers,
 } from '@/data/nutrition-plan';
-import { todayIso } from '@/lib/format';
+import { useToday } from '@/lib/use-today';
 
 import { type NutritionLibraryState, useApp } from './app-state';
 
@@ -27,6 +39,10 @@ export interface NutritionView {
   setupMissing: boolean;
   /** Das automatische Speichern des Essensplans ist gescheitert (Etappe N5). */
   saveFailed: boolean;
+  /** „Erneut versuchen“ (Wächter N5a K7). */
+  retrySave: () => void;
+  /** Heute (Gerätezeit; wechselt um Mitternacht, Wächter N5a K5). */
+  today: string;
 }
 
 /**
@@ -38,7 +54,7 @@ export interface NutritionView {
 export function useNutritionWeek(date?: string): NutritionView {
   const app = useApp();
   const { ensureNutritionLibrary, nutritionLibrary, rows, versions, backend } = app;
-  const today = todayIso();
+  const today = useToday();
   const weekStart = nutritionWeekStart(date ?? today);
 
   useEffect(() => {
@@ -60,33 +76,38 @@ export function useNutritionWeek(date?: string): NutritionView {
         : null,
     [backend, library, rows, today, versions, weekStart],
   );
-  const { persistMealPlan, mealPlanSaveFailed } = app;
-  const pending = useMemo(
-    () =>
-      week?.kind === 'ready' &&
-      week.plan !== null &&
-      week.planState !== null &&
-      week.planState.editable &&
-      week.planState.action !== 'stored'
-        ? {
-            plan: week.plan,
-            autoAdjusted: week.planState.action === 'replanned',
-            inputsKey: week.planState.inputsKey,
-          }
-        : null,
-    [week],
-  );
+  const { persistMealPlan, mealPlanSaveFailed, retryMealPlanSave, mealPlanSaveAttempt } = app;
+  const pending = useMemo(() => {
+    if (week?.kind !== 'ready' || week.plan === null || week.planState === null) return null;
+    if (!week.planState.editable) return null;
+    // Einkaufsliste an einen geänderten Plan angepasst (W22) – mit dem Plan im selben Schritt speichern.
+    const shoppingList = week.shopping?.action === 'rebuilt' ? week.shopping.list : undefined;
+    const planPending = week.planState.action !== 'stored';
+    if (!planPending && shoppingList === undefined) return null;
+    return {
+      plan: planPending ? week.plan : null,
+      autoAdjusted: week.planState.action === 'replanned',
+      recipesChanged: week.planState.action === 'rebuilt',
+      inputsKey: week.planState.inputsKey,
+      shoppingList,
+    };
+  }, [week]);
   useEffect(() => {
     if (pending !== null) {
       void persistMealPlan(pending.plan, {
         autoAdjusted: pending.autoAdjusted,
+        recipesChanged: pending.recipesChanged,
         inputsKey: pending.inputsKey,
+        shoppingList: pending.shoppingList,
       });
     }
-  }, [pending, persistMealPlan]);
+    // `mealPlanSaveAttempt`: „Erneut versuchen“ startet das Speichern neu (K7).
+  }, [pending, persistMealPlan, mealPlanSaveAttempt]);
 
   return {
     saveFailed: mealPlanSaveFailed,
+    retrySave: retryMealPlanSave,
+    today,
     library: nutritionLibrary,
     week,
     // Schwangerschaft/Stillzeit an einem Tag der Woche → nirgends Energie-Zahlen, auch nicht an vergangenen Tagen
@@ -108,8 +129,10 @@ export interface MealPlanActions {
   otherSuggestions: () => Promise<void>;
   /** „Plan aktualisieren“ (gleiche Variante, neue Ziele ab heute). */
   refresh: () => Promise<void>;
-  /** Hinweis „angepasst“ ausblenden. */
+  /** Hinweise „angepasst“ bzw. „neu erstellt“ ausblenden. */
   dismissAdjusted: () => Promise<void>;
+  /** Meal-Prep-Wochenplan für diese Woche wählen (19.6) – ersetzt den Plan ab dem Kochtag. */
+  chooseMealPrepPlan: (mealPrepPlan: MealPrepPlan) => Promise<'chosen' | 'not_offered'>;
 }
 
 /**
@@ -124,20 +147,119 @@ export function useMealPlanActions(week: NutritionWeekResult | null): MealPlanAc
     if (!week.planState.editable) return null;
     const plan = week.plan;
     const input = week.planState.input;
+    // Gespeicherte Einkaufsliste der Woche wird bei jeder Plan-Änderung im selben Schritt neu erzeugt (Häkchen über
+    // item_key, R2-S4). Ohne gespeicherte Liste gibt es nichts anzupassen.
+    const storedList = week.shopping?.action === 'new' ? null : (week.shopping?.list ?? null);
+    const save = (next: MealPlanWeek) =>
+      saveMealPlan(next, {
+        autoAdjusted: false,
+        shoppingList:
+          storedList === null ? undefined : resolveShoppingList(storedList, next, input).list,
+      });
     return {
       swap: async (date, slot) => {
         const result = swapMealRecipe(plan, { date, slot }, input);
         if (!result.ok) return { kind: 'failed', reason: result.reason };
-        await saveMealPlan(result.plan, { autoAdjusted: false });
+        await save(result.plan);
         const meal = result.plan.days
           .find((d) => d.date === date)
           ?.meals.find((m) => m.slot === slot && !m.isFill);
         return { kind: 'swapped', title: meal?.titleDe ?? '' };
       },
-      otherSuggestions: () =>
-        saveMealPlan(mealPlanWithOtherSuggestions(plan, input), { autoAdjusted: false }),
-      refresh: () => saveMealPlan(refreshedMealPlan(plan, input), { autoAdjusted: false }),
-      dismissAdjusted: () => saveMealPlan(plan, { autoAdjusted: false }),
+      otherSuggestions: () => save(mealPlanWithOtherSuggestions(plan, input)),
+      refresh: () => save(refreshedMealPlan(plan, input)),
+      dismissAdjusted: () => saveMealPlan(plan, { autoAdjusted: false, recipesChanged: false }),
+      chooseMealPrepPlan: async (mealPrepPlan) => {
+        const offer = applyMealPrepPlan(mealPrepPlan, {
+          ...input,
+          existingPlan: plan,
+          variant: plan.variant,
+        });
+        if (!offer.offered) return 'not_offered';
+        await save(offer.plan);
+        return 'chosen';
+      },
     };
   }, [saveMealPlan, week]);
+}
+
+export type ShoppingActionOutcome =
+  | { kind: 'ok' }
+  | { kind: 'invalid'; message: string }
+  | { kind: 'failed'; reason: 'not_found' | 'not_for_you' | 'too_many' | 'save_failed' };
+
+export interface ShoppingListActions {
+  list: StoredShoppingList;
+  /** Abhaken (geht ohne Netz – Testmodus: Gerätespeicher). */
+  toggle: (itemKey: string, checked: boolean) => Promise<ShoppingActionOutcome>;
+  addManual: (labelDe: string, category: ShoppingCategory) => Promise<ShoppingActionOutcome>;
+  removeManual: (itemKey: string) => Promise<ShoppingActionOutcome>;
+  setRange: (from: string, to: string) => Promise<ShoppingActionOutcome>;
+  /** „Zur Einkaufsliste“ aus der Rezeptansicht (19.6). */
+  addRecipe: (recipeId: string, servings: number) => Promise<ShoppingActionOutcome>;
+  removeRecipe: (recipeId: string) => Promise<ShoppingActionOutcome>;
+  /** Liste speichern, wie sie ist (z. B. „Zur Einkaufsliste“ aus dem Meal-Prep-Plan legt sie an). */
+  ensureSaved: () => Promise<ShoppingActionOutcome>;
+}
+
+/**
+ * Änderungen an der Einkaufsliste der Woche (Etappe N5b). Regeln aus packages/core (shopping-list.ts,
+ * shopping-list-store.ts); hier wird nur gespeichert. Ausgangspunkt ist immer die aufgelöste Liste (passt zum
+ * aktuellen Plan). Null = kein Plan bzw. Woche nicht änderbar.
+ */
+export function useShoppingListActions(
+  week: NutritionWeekResult | null,
+): ShoppingListActions | null {
+  const { saveShoppingList } = useApp();
+  return useMemo(() => {
+    if (week?.kind !== 'ready' || week.plan === null || week.planState === null) return null;
+    if (!week.planState.editable || week.shopping === null) return null;
+    const plan = week.plan;
+    const input = week.planState.input;
+    const list = week.shopping.list;
+    const store = async (next: StoredShoppingList): Promise<ShoppingActionOutcome> => {
+      try {
+        await saveShoppingList(next);
+        return { kind: 'ok' };
+      } catch {
+        return { kind: 'failed', reason: 'save_failed' };
+      }
+    };
+    const guarded = async (change: () => StoredShoppingList): Promise<ShoppingActionOutcome> => {
+      let next: StoredShoppingList;
+      try {
+        next = change();
+      } catch (error) {
+        return { kind: 'invalid', message: validationMessage(error) };
+      }
+      return store(next);
+    };
+    return {
+      list,
+      toggle: (itemKey, checked) => guarded(() => setShoppingItemChecked(list, itemKey, checked)),
+      addManual: (labelDe, category) =>
+        guarded(() => addManualShoppingItem(list, { labelDe, category })),
+      removeManual: (itemKey) => guarded(() => removeManualShoppingItem(list, itemKey)),
+      setRange: (from, to) => guarded(() => withShoppingListRange(list, { from, to }, plan, input)),
+      addRecipe: async (recipeId, servings) => {
+        const result = addRecipeToShoppingList(list, { recipeId, servings }, plan, input);
+        if (!result.ok) return { kind: 'failed', reason: result.reason };
+        return store(result.list);
+      },
+      removeRecipe: (recipeId) =>
+        guarded(() => removeRecipeFromShoppingList(list, recipeId, plan, input)),
+      ensureSaved: () => store(list),
+    };
+  }, [saveShoppingList, week]);
+}
+
+/** Erste Meldung eines Zod- bzw. Bereichsfehlers aus packages/core (deutsche Texte), sonst allgemein. */
+function validationMessage(error: unknown): string {
+  if (error && typeof error === 'object' && 'issues' in error) {
+    const issues = (error as { issues: readonly { message?: unknown }[] }).issues;
+    const first = issues[0]?.message;
+    if (typeof first === 'string' && first.length > 0) return first;
+  }
+  if (error instanceof RangeError && error.message.length > 0) return error.message;
+  return '';
 }

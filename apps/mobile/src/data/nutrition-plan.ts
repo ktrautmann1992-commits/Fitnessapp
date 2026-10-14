@@ -1,10 +1,14 @@
 import {
   addDays,
+  applyMealPrepPlan,
+  type MealPrepPlan,
   experienceLevelSchema,
   type MealPlanInput,
   mealPlanWeekEditable,
   type ReplanReason,
   resolveMealPlanWeek,
+  resolveShoppingList,
+  type ShoppingListResolution,
   stableHash,
   type FilteredRecipe,
   filterRecipe,
@@ -29,7 +33,7 @@ import {
 
 import { healthConsentStatus } from '../state/flow';
 import type { ConsentVersions } from './mapping';
-import { storedMealPlanRow } from './meal-plan-rows';
+import { storedMealPlanRow, storedShoppingListRow } from './meal-plan-rows';
 import { healthScreeningForPlan } from './training-plan';
 import type { UserRows } from './types';
 
@@ -173,13 +177,18 @@ export type MealPlanEngineInput = Omit<MealPlanInput, 'existingPlan' | 'variant'
 
 /** Zustand des gespeicherten Essensplans der Woche (Etappe N5). */
 export interface MealPlanState {
-  /** `stored` = gespeicherter Plan; `created` = noch keiner; `replanned` = automatisch neu geplant (6.6). */
-  action: 'stored' | 'created' | 'replanned';
+  /**
+   * `stored` = gespeicherter Plan; `created` = noch keiner; `replanned` = automatisch neu geplant (6.6); `rebuilt` =
+   * neu erstellt, weil der gespeicherte Plan nicht mehr zu den Rezepten passte (K-b).
+   */
+  action: 'stored' | 'created' | 'replanned' | 'rebuilt';
   reasons: readonly ReplanReason[];
   /** Knopf „Plan aktualisieren“ (Tagesziel ab heute ≥ 5 % geändert, ohne Sicherheitsbezug). */
   updateSuggested: boolean;
   /** Hinweis „Dein Plan wurde an deine neuen Angaben angepasst.“ zeigen. */
   autoAdjusted: boolean;
+  /** Hinweis „Rezepte wurden überarbeitet – Plan neu erstellt, auch vergangene Tage“ zeigen (K-b). */
+  recipesChanged: boolean;
   /** Laufende oder nächste Woche – nur diese wird gespeichert und kann getauscht werden. */
   editable: boolean;
   input: MealPlanEngineInput;
@@ -198,6 +207,12 @@ export type NutritionWeekResult =
       plan: MealPlanWeek | null;
       /** null = kein Bestand. */
       planState: MealPlanState | null;
+      /**
+       * Einkaufsliste der Woche (Etappe N5b) nach `resolveShoppingList`: `new` = noch keine gespeichert (erst bei der
+       * ersten Änderung), `rebuilt` = an den geänderten Plan angepasst (wird mit dem Plan gespeichert). null = kein
+       * Plan.
+       */
+      shopping: ShoppingListResolution | null;
     }
   /** Angaben unvollständig (Ziel, Erfahrung oder Ernährungsform fehlt). */
   | { kind: 'incomplete' }
@@ -229,7 +244,7 @@ export function computeNutritionWeek(input: {
   try {
     const targets = nutritionTargetsForWeek(inputs, input.weekStart);
     if (!input.library || input.library.recipes.length === 0) {
-      return { kind: 'ready', targets, plan: null, planState: null };
+      return { kind: 'ready', targets, plan: null, planState: null, shopping: null };
     }
     const engineInput: MealPlanEngineInput = {
       targets,
@@ -250,6 +265,14 @@ export function computeNutritionWeek(input: {
         : null;
     const resolved = resolveMealPlanWeek(usable?.plan ?? null, engineInput);
     const editable = mealPlanWeekEditable(input.weekStart, input.today);
+    // Einkaufsliste wie der Plan (Art. 9): ohne gültige Einwilligung keine Liste mit Gesundheitsbezug weiterverwenden.
+    const listRow = storedShoppingListRow(input.rows, input.weekStart);
+    const usableList =
+      listRow !== null &&
+      (!listRow.uses_health_data || healthConsentStatus(input.rows, input.versions) === 'valid')
+        ? listRow.list
+        : null;
+    const shopping = resolveShoppingList(usableList, resolved.plan, engineInput);
     const planState: MealPlanState = {
       action: resolved.action,
       reasons: resolved.action === 'replanned' ? resolved.reasons : [],
@@ -259,6 +282,10 @@ export function computeNutritionWeek(input: {
         editable &&
         (resolved.action === 'replanned' ||
           (resolved.action === 'stored' && usable?.auto_adjusted === true)),
+      recipesChanged:
+        editable &&
+        (resolved.action === 'rebuilt' ||
+          (resolved.action === 'stored' && usable?.recipes_changed === true)),
       editable,
       input: engineInput,
       inputsKey: String(
@@ -273,7 +300,7 @@ export function computeNutritionWeek(input: {
         ),
       ),
     };
-    return { kind: 'ready', targets, plan: resolved.plan, planState };
+    return { kind: 'ready', targets, plan: resolved.plan, planState, shopping };
   } catch {
     // Bewusst ohne Details: keine Gesundheitsdaten in Logs oder Fehlermeldungen.
     return { kind: 'error' };
@@ -331,4 +358,45 @@ export function recipeForPerson(input: {
           .find((d) => d.date === input.from?.date)
           ?.meals.find((m) => m.slot === input.from?.slot && m.recipeId === recipe.id);
   return { kind: 'ok', variant: result.value, plannedMeal: meal ?? null };
+}
+
+export interface MealPrepOffer {
+  plan: MealPrepPlan;
+  /** Für diese Person und Woche angeboten (19.6); sonst ausgegraut „Passt nicht zu deinen Angaben“ – ohne Grund. */
+  offered: boolean;
+  /** Vorschau der Woche mit diesem Plan (nur wenn angeboten) – für Aufbewahrung und Kochtag. */
+  preview: MealPlanWeek | null;
+  /** Ist der gewählte Plan dieser Woche. */
+  chosen: boolean;
+}
+
+/**
+ * Meal-Prep-Wochenpläne für die Woche (19.6, Etappe N5b): Jeder Plan läuft durch `applyMealPrepPlan` (kompletter Filter
+ * der Person, Plätze, Haltbarkeit, Planband) – mit dem gespeicherten Plan der Woche als Grundlage (vergangene Tage
+ * bleiben). Feste Reihenfolge nach ID. Nur Zusammensetzen; die Regeln stehen in packages/core.
+ */
+export function mealPrepOffers(
+  week: Extract<NutritionWeekResult, { kind: 'ready' }>,
+  plans: readonly MealPrepPlan[],
+): MealPrepOffer[] {
+  if (week.plan === null || week.planState === null) return [];
+  const base = week.plan;
+  const input = week.planState.input;
+  return [...plans]
+    .sort((a, b) => (a.id < b.id ? -1 : a.id > b.id ? 1 : 0))
+    .map((plan) => {
+      let offer: ReturnType<typeof applyMealPrepPlan>;
+      try {
+        offer = applyMealPrepPlan(plan, { ...input, existingPlan: base, variant: base.variant });
+      } catch {
+        offer = { offered: false };
+      }
+      return {
+        plan,
+        offered: offer.offered || base.mealPrepPlanId === plan.id,
+        // Gewählt: die gespeicherte Woche selbst (sie kann nach dem Kochtag nicht mehr neu angewandt werden).
+        preview: base.mealPrepPlanId === plan.id ? base : offer.offered ? offer.plan : null,
+        chosen: base.mealPrepPlanId === plan.id,
+      };
+    });
 }

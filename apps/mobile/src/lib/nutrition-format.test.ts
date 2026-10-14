@@ -10,10 +10,13 @@ import { t } from '@/i18n';
 
 import {
   containsText,
+  countdownText,
   noticeText,
   formatAmount,
   formatKcal,
   formatNumberDe,
+  shoppingCategoryLabel,
+  shoppingItemText,
   visibleNotices,
 } from './nutrition-format';
 
@@ -70,5 +73,32 @@ describe('Ernährung: Zahlen und Bausteine im deutschen Format (8.4)', () => {
     for (const cap of CALORIE_CAP_CODES) {
       expect(t.nutrition.caps[cap], cap).not.toMatch(/kcal/);
     }
+  });
+});
+
+describe('Einkaufsliste: Einträge als Text (Etappe N5b)', () => {
+  it('Menge mit Einheit, „nach Geschmack“, eigener Eintrag ohne Menge, Abteilung', () => {
+    expect(
+      shoppingItemText({ amount: 500, unit: 'g', labelDe: 'Haferflocken', isManual: false }),
+    ).toBe('500 g Haferflocken');
+    expect(
+      shoppingItemText({ amount: 3, unit: 'piece', labelDe: 'Bananen', isManual: false }),
+    ).toBe('3 Stück Bananen');
+    expect(shoppingItemText({ amount: null, unit: null, labelDe: 'Salz', isManual: false })).toBe(
+      'Salz – nach Geschmack',
+    );
+    expect(shoppingItemText({ amount: null, unit: null, labelDe: 'Kaffee', isManual: true })).toBe(
+      'Kaffee',
+    );
+    expect(shoppingCategoryLabel('fruit_vegetables')).toBe('Obst & Gemüse');
+  });
+});
+
+describe('Kochtag-Timer: Restzeit', () => {
+  it('Minuten:Sekunden, Stunden nur wenn nötig, nie negativ', () => {
+    expect(countdownText(45)).toBe('0:45');
+    expect(countdownText(245)).toBe('4:05');
+    expect(countdownText(3720)).toBe('1:02:00');
+    expect(countdownText(-3)).toBe('0:00');
   });
 });

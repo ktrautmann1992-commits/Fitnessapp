@@ -63,6 +63,8 @@ export function localDataExport(
       meal_prep_plan_id: row.plan.mealPrepPlanId,
       created_at: row.created_at,
       auto_adjusted: row.auto_adjusted,
+      recipes_changed: row.recipes_changed,
+      cook_day_started_at: row.cook_day_started_at,
       // Testmodus: Gespeichert ist der ganze Schnappschuss (u. a. Planband je Tag, Abgleich-Schlüssel mit Modus und
       // Ausschlüssen, Zutaten in Gramm, leere Plätze, Hinweise) – Art. 15 verlangt alles Gespeicherte (Wächter N5a S4).
       // Ab N7 speichert die Datenbank weder Planband noch Abgleich-Schlüssel.
@@ -97,6 +99,43 @@ export function localDataExport(
           day_status: day.status,
         })),
       ),
+    ),
+    // Einkaufslisten (Etappe N5b) – Spalten wie shopping_lists/shopping_list_items aus docs/PLAN-PHASE-5.md 7.2 (N7),
+    // dazu Zeitraum-Schlüssel, „Zur Einkaufsliste“-Rezepte und Markierungen (Art. 15: alles Gespeicherte).
+    shopping_lists: rows.shoppingLists.map((row) => ({
+      id: row.id,
+      user_id: row.user_id,
+      meal_plan_id: rows.mealPlans.find((p) => p.week_start === row.week_start)?.id ?? null,
+      week_start: row.week_start,
+      from_date: row.list.from,
+      to_date: row.list.to,
+      uses_health_data: row.uses_health_data,
+      created_at: row.created_at,
+      updated_at: row.updated_at,
+      plan_key: row.list.planKey,
+      added_recipes: row.list.recipes.map((r) => ({
+        recipe_id: r.recipeId,
+        servings: r.servings,
+      })),
+    })),
+    shopping_list_items: rows.shoppingLists.flatMap((row) =>
+      row.list.items.map((item) => ({
+        list_id: row.id,
+        user_id: row.user_id,
+        item_key: item.itemKey,
+        food_id: item.foodId,
+        label_de: item.labelDe,
+        amount: item.amount,
+        unit: item.unit,
+        category: item.category,
+        is_pantry: item.isPantry,
+        is_manual: item.isManual,
+        checked: item.checked,
+        substitute_for: item.substituteFor,
+        amount_changed: item.amountChanged,
+        not_in_plan: item.notInPlan,
+        updated_at: row.updated_at,
+      })),
     ),
   };
   return {

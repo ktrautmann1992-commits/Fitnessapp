@@ -192,7 +192,8 @@ export const nutritionTargetsOptionsSchema = z
 
 /** Montag einer ISO-Woche. */
 export const weekStartSchema = isoDateSchema.refine(
-  (date) => isoWeekday(date) === 1,
+  // Zod prüft die Verfeinerung auch nach einem Formatfehler – dann nie werfen, sondern ablehnen (Gerätespeicher).
+  (date) => isoDateSchema.safeParse(date).success && isoWeekday(date) === 1,
   'Die Woche beginnt am Montag.',
 );
 

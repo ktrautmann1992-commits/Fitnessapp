@@ -6,6 +6,9 @@ import {
   type NutritionNoticeCode,
   type RecipeContains,
   type RecipeUnit,
+  SHOPPING_CATEGORY_LABELS_DE,
+  type ShoppingCategory,
+  type ShoppingListItem,
   unitLabelDe,
 } from '@fitnessapp/core';
 
@@ -90,4 +93,30 @@ export function noticeText(code: NutritionNoticeCode, showNumbers: boolean): str
     if (text !== undefined) return text;
   }
   return t.nutrition.notices[code];
+}
+
+/**
+ * Eintrag der Einkaufsliste als Text (Etappe N5b): „500 g Haferflocken“, „3 Bananen“, „Salz – nach Geschmack“, eigene
+ * Einträge ohne Menge nur mit Text. Mengen sind Einkaufsmengen (keine kcal) – auch bei „Zahlen aus“ sichtbar.
+ */
+export function shoppingItemText(
+  item: Pick<ShoppingListItem, 'amount' | 'unit' | 'labelDe' | 'isManual'>,
+): string {
+  if (item.amount !== null && item.unit !== null) {
+    return `${formatAmount(item.amount, item.unit)} ${item.labelDe}`;
+  }
+  return item.isManual ? item.labelDe : `${item.labelDe} – ${t.nutrition.shopping.toTaste}`;
+}
+
+export function shoppingCategoryLabel(category: ShoppingCategory): string {
+  return SHOPPING_CATEGORY_LABELS_DE[category];
+}
+
+/** Restzeit des Kochtag-Timers: „0:45“, „4:05“, „1:02:00“ (Stunden nur, wenn nötig). */
+export function countdownText(seconds: number): string {
+  const total = Math.max(0, Math.floor(seconds));
+  const h = Math.floor(total / 3600);
+  const m = Math.floor((total % 3600) / 60);
+  const s = String(total % 60).padStart(2, '0');
+  return h > 0 ? `${h}:${String(m).padStart(2, '0')}:${s}` : `${m}:${s}`;
 }

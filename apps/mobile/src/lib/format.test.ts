@@ -5,6 +5,7 @@ import {
   formatDateDe,
   formatDecimal,
   isoFromDateParts,
+  msUntilNextLocalDay,
   parseDecimal,
   todayIso,
 } from './format';
@@ -51,5 +52,18 @@ describe('Zahlen mit deutschem Komma', () => {
     expect(formatDecimal(1.25)).toBe('1,25');
     expect(formatDecimal(null)).toBe('');
     expect(formatDecimal(undefined)).toBe('');
+  });
+});
+
+describe('msUntilNextLocalDay (Wächter N5a K5: Tageswechsel bei offener App)', () => {
+  it('bis Mitternacht Gerätezeit, mindestens 1 s', () => {
+    expect(msUntilNextLocalDay(new Date(2026, 9, 12, 23, 59, 0))).toBe(60_000);
+    expect(msUntilNextLocalDay(new Date(2026, 9, 12, 0, 0, 0))).toBe(24 * 3_600_000);
+    expect(msUntilNextLocalDay(new Date(2026, 9, 12, 23, 59, 59, 999))).toBe(1000);
+    // Nach Mitternacht ist der neue Tag da.
+    const later = new Date(
+      new Date(2026, 9, 12, 22, 0).getTime() + msUntilNextLocalDay(new Date(2026, 9, 12, 22, 0)),
+    );
+    expect(todayIso(later)).toBe('2026-10-13');
   });
 });

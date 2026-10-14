@@ -130,6 +130,17 @@ function foodUsable(food: Food | undefined, allowDrafts: boolean): food is Food 
   return allowDrafts || food.status === 'published';
 }
 
+/**
+ * Einzelnes Lebensmittel für die Person erlaubt (Ernährungsform, Schwein, Unverträglichkeit, „mag ich nicht“,
+ * Schwangerschafts-Hinweis, Katalog-Prüfung)? Für Einträge, die nicht aus einem Rezept kommen (Einkaufsliste aus dem
+ * Gerätespeicher, Wächter N5b K1). Sichere Richtung: unbekannt = nein.
+ */
+export function foodAllowedForPerson(food: Food | undefined, ctx: RecipeFilterContext): boolean {
+  if (!foodUsable(food, ctx.allowDrafts)) return false;
+  if (ctx.excludePregnancyCaution && food.pregnancy_caution) return false;
+  return foodViolations(food, ctx, excludedGroups(ctx.profile)).kinds.size === 0;
+}
+
 /** Prüft das fertige Rezept (mit Weglassungen/Ersatz) gegen ALLE Regeln. Leere Liste = passt. */
 function finalViolations(
   facts: RecipeFacts,

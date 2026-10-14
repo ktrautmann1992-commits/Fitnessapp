@@ -32,7 +32,7 @@ export const deNutrition = {
   deleteIntolerances: 'Gespeicherte Unverträglichkeiten löschen',
   deleteIntolerancesTitle: 'Unverträglichkeiten löschen?',
   deleteIntolerancesText:
-    'Deine gespeicherten Unverträglichkeiten werden endgültig gelöscht und beim Essensplan nicht mehr berücksichtigt. Du kannst Lebensmittel stattdessen unter „mag ich nicht“ ausschließen (Einstellungen → Ernährung ändern).',
+    'Deine gespeicherten Unverträglichkeiten werden endgültig gelöscht und beim Essensplan nicht mehr berücksichtigt. Essenspläne und Einkaufslisten mit Gesundheitsbezug werden mit gelöscht (auch eigene Einträge) und neu erstellt. Du kannst Lebensmittel stattdessen unter „mag ich nicht“ ausschließen (Einstellungen → Ernährung ändern).',
   deleteIntolerancesConfirm: 'Löschen',
   deleteIntolerancesDone: 'Gespeicherte Unverträglichkeiten gelöscht.',
   setupNeeded:
@@ -391,9 +391,138 @@ export const deNutrition = {
   // --- Widerruf (7.4) -----------------------------------------------------------------------------------------
   revoke: {
     intolerances:
-      'Deine Unverträglichkeiten werden gelöscht und beim Essensplan nicht mehr berücksichtigt. Essenspläne und Einkaufslisten mit Gesundheitsbezug werden gelöscht – auch deine eigenen Einträge in der Einkaufsliste.',
+      'Deine Unverträglichkeiten werden gelöscht und beim Essensplan nicht mehr berücksichtigt. Essenspläne und Einkaufslisten mit Gesundheitsbezug werden gelöscht – auch deine eigenen Einträge darin. Eigene Einträge in Einkaufslisten ohne Gesundheitsbezug bleiben erhalten; lösche sie dort selbst, wenn sie etwas über deine Gesundheit verraten.',
     convert: 'Diese Lebensmittel stattdessen unter „mag ich nicht“ ausschließen?',
     convertHint: '„Mag ich nicht“ wirkt im Essensplan genauso – es ist kein Gesundheitsdatum.',
     converted: 'Deine bisherigen Unverträglichkeiten stehen jetzt unter „mag ich nicht“.',
   },
+  shopping: {
+    title: 'Einkaufsliste',
+    open: 'Einkaufsliste',
+    range: (from: string, to: string) => `Einkauf für ${from} bis ${to}`,
+    rangeTitle: 'Zeitraum',
+    rangeFrom: 'Von',
+    rangeTo: 'Bis',
+    rangeApply: 'Zeitraum übernehmen',
+    rangeInvalid: 'Der Zeitraum endet vor seinem Beginn.',
+    rangeHint: 'Meal-Prep wird zum Kochtag gekauft; der Sonntag vor der Woche zählt zum Montag.',
+    hideChecked: 'Erledigte ausblenden',
+    pantry: 'Hast du wahrscheinlich da',
+    pantryShow: (count: number) => `Vorrat anzeigen (${count})`,
+    pantryHide: 'Vorrat einklappen',
+    empty: 'Für diesen Zeitraum musst du nichts einkaufen.',
+    allChecked: 'Alles erledigt.',
+    toTaste: 'nach Geschmack',
+    amountChanged: 'Menge geändert',
+    notInPlan: 'nicht mehr im Plan',
+    manual: 'eigener Eintrag',
+    checkA11y: (label: string) => `Abhaken: ${label}`,
+    removeManual: (label: string) => `Eintrag löschen: ${label}`,
+    addTitle: 'Eigener Eintrag',
+    addLabel: 'Was brauchst du noch?',
+    addHint: 'Höchstens 80 Zeichen, z. B. „Kaffee“ oder „Spülmittel“.',
+    addCategory: 'Abteilung',
+    add: 'Hinzufügen',
+    addEmpty: 'Bitte einen Eintrag eingeben.',
+    recipesTitle: 'Aus Rezepten hinzugefügt',
+    recipeLine: (title: string, servings: number) =>
+      `${title} – ${servings} ${servings === 1 ? 'Portion' : 'Portionen'}`,
+    removeRecipe: (title: string) => `Entfernen: ${title}`,
+    offline:
+      'Abhaken geht auch ohne Netz – deine Häkchen bleiben gespeichert, auch nach dem Neuladen.',
+    adjusted:
+      'Deine Einkaufsliste wurde an deinen geänderten Plan angepasst. Häkchen und eigene Einträge bleiben; was nicht mehr gebraucht wird und schon abgehakt war, steht als „nicht mehr im Plan“ da.',
+    noPlan: 'Für diese Woche gibt es noch keinen Essensplan – deshalb auch keine Einkaufsliste.',
+    readOnly: 'Diese Woche lässt sich nicht mehr ändern.',
+    saveFailed: 'Das hat nicht geklappt. Bitte versuche es noch einmal.',
+    healthNote:
+      'Ersatzprodukte stehen hier ohne Grund. Zutaten aus deinem Plan kommen immer aus dem aktuellen Plan.',
+    failed: {
+      not_found: 'Dieses Rezept gibt es nicht mehr.',
+      not_for_you: 'Dieses Rezept passt nicht zu deinen Angaben.',
+      too_many: 'Es stehen schon 20 Rezepte auf der Liste. Entferne zuerst eines.',
+      save_failed: 'Das hat nicht geklappt. Bitte versuche es noch einmal.',
+    },
+    fromRecipe: {
+      add: (servings: number) =>
+        `Zur Einkaufsliste (${servings} ${servings === 1 ? 'Portion' : 'Portionen'})`,
+      added: (servings: number) =>
+        `Steht auf deiner Einkaufsliste (${servings} ${servings === 1 ? 'Portion' : 'Portionen'}).`,
+      inPlan: 'Dieses Rezept steht über deinen Essensplan schon auf der Einkaufsliste.',
+      open: 'Einkaufsliste öffnen',
+      notEditable: 'Die Einkaufsliste gibt es für diese und nächste Woche.',
+    },
+  },
+  mealPrep: {
+    title: 'Meal-Prep-Wochenpläne',
+    open: 'Meal-Prep-Pläne',
+    intro:
+      'Ein Kochtag, Montag bis Freitag vorgekocht: Frühstück, Mittag und Snack. Das Abendessen bleibt frei für ein frisches Rezept.',
+    weekFor: (from: string, to: string) => `Für die Woche ${from} bis ${to}`,
+    notOffered: 'Passt nicht zu deinen Angaben',
+    chosen: 'Für diese Woche gewählt',
+    none: 'Es gibt noch keine Meal-Prep-Wochenpläne.',
+    noneFits: 'Für deine Angaben gibt es noch keinen passenden Wochenplan.',
+    planA11y: (title: string) => `Plan ansehen: ${title}`,
+    recipes: 'Rezepte',
+    storageTitle: 'Aufbewahrung',
+    cookDay: (day: string) => `Kochtag: ${day}`,
+    fridgeDays: (days: string) => `Kühlschrank: ${days}`,
+    freezeDays: (days: string) => `Einfrieren, am Vorabend auftauen: ${days}`,
+    freshDays: (days: string) => `Frisch kochen: ${days}`,
+    safetyNote:
+      'Wir halten die Haltbarkeit je Lebensmittel ein (z. B. gekochter Reis, Fisch, Hackfleisch, Geflügel höchstens 1 Tag im Kühlschrank) – auch wenn ein Text etwas anderes sagt.',
+    choose: 'Plan für diese Woche wählen',
+    chooseTitle: 'Plan wählen?',
+    chooseText:
+      'Ab dem Kochtag belegen wir Frühstück, Mittag und Snack von Montag bis Freitag mit diesem Plan. Andere Mahlzeiten planen wir passend dazu. Vergangene Tage bleiben unverändert. „Andere Vorschläge“ ersetzt den Plan später ab heute wieder.',
+    chooseConfirm: 'Plan wählen',
+    chooseDone: 'Der Plan steht jetzt in deiner Woche.',
+    chooseFailed: 'Der Plan passt gerade nicht zu deinen Angaben.',
+    toShopping: 'Zur Einkaufsliste',
+    startCookDay: 'Zum Kochtag',
+    notFound: 'Diesen Plan gibt es nicht.',
+    notEditable: 'Meal-Prep-Pläne lassen sich für diese und nächste Woche wählen.',
+  },
+  cookDay: {
+    title: 'Kochtag',
+    notChosen: 'Für diese Woche ist kein Meal-Prep-Plan gewählt.',
+    choosePlan: 'Plan wählen',
+    start: 'Kochtag starten',
+    restart: 'Neu starten',
+    stop: 'Kochtag beenden',
+    running:
+      'Der Kochtag läuft – die Zeit läuft weiter, auch wenn du die App schließt oder offline bist. Erinnerungen an die Schritte kommen nur, solange die App bzw. Seite geöffnet ist.',
+    notStarted:
+      'Starte den Kochtag, sobald du loslegst. Die Schritte kommen nach ihren Startminuten.',
+    stepAt: (minute: number) => (minute === 0 ? 'Sofort' : `Nach ${minute} Min.`),
+    current: 'Jetzt',
+    done: 'erledigt',
+    upcoming: 'kommt',
+    next: (time: string) => `Nächster Schritt in ${time}`,
+    allStarted: 'Alle Schritte haben begonnen. Fertig? Dann beende den Kochtag.',
+    waitingFirst: (time: string) => `Erster Schritt in ${time}`,
+    notifyTitle: 'Kochtag',
+    notifyOn: 'Erinnerungen an die nächsten Schritte sind eingeschaltet.',
+    notifyOff: 'Wir erinnern dich an die nächsten Schritte, solange die App geöffnet ist.',
+    notifyWeb:
+      'Im Browser erinnern wir dich mit einer Mitteilung, solange die Seite geöffnet ist. In der App vibriert sie bei jedem neuen Schritt, solange sie geöffnet ist.',
+    freezeTitle: 'Einfrieren',
+    freezeLine: (title: string, days: string) => `${title}: Portionen für ${days} einfrieren`,
+    fridgeLine: (title: string, days: string) =>
+      `${title}: Portionen für ${days} in den Kühlschrank`,
+    freshLine: (title: string, days: string) => `${title}: am ${days} frisch kochen`,
+    storageTitle: 'Nach dem Kochen',
+    startFailed: 'Das hat nicht geklappt. Bitte versuche es noch einmal.',
+  },
+  thaw: {
+    title: 'Heute Abend auftauen',
+    line: (title: string, day: string) =>
+      `${title} für ${day} aus dem Gefrierfach in den Kühlschrank legen.`,
+  },
+  rebuilt: {
+    text: 'Einige Rezepte wurden überarbeitet. Deshalb haben wir deinen Plan dieser Woche neu erstellt – auch die vergangenen Tage.',
+    ok: 'Verstanden',
+  },
+  retrySave: 'Erneut versuchen',
 } as const;

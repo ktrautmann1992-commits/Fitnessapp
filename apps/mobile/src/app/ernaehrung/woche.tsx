@@ -24,7 +24,8 @@ import {
   Notice,
 } from '@/components/ui';
 import { t } from '@/i18n';
-import { formatDateDe, todayIso } from '@/lib/format';
+import { formatDateDe } from '@/lib/format';
+import { useToday } from '@/lib/use-today';
 import { formatKcal, formatNumberDe, slotLabel } from '@/lib/nutrition-format';
 import { dayLabel } from '@/lib/plan-format';
 import { useThemeColors } from '@/lib/theme';
@@ -42,7 +43,7 @@ export default function NutritionWeekScreen() {
   const router = useRouter();
   const app = useApp();
   const params = useLocalSearchParams<{ woche?: string }>();
-  const today = todayIso();
+  const today = useToday();
   const currentWeek = startOfIsoWeek(today);
   const requested = isoDateSchema.safeParse(params.woche).success
     ? startOfIsoWeek(params.woche as string)
@@ -186,7 +187,12 @@ export default function NutritionWeekScreen() {
         </Card>
       ) : (
         <>
-          <MealPlanStateNotices state={planState} actions={actions} saveFailed={view.saveFailed} />
+          <MealPlanStateNotices
+            state={planState}
+            actions={actions}
+            saveFailed={view.saveFailed}
+            onRetry={view.retrySave}
+          />
           {message ? (
             <Notice tone="success" testID="nutrition-week-message">
               {message}

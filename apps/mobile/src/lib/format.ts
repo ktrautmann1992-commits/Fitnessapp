@@ -12,6 +12,15 @@ export function todayIso(now: Date = new Date()): string {
   ].join('-');
 }
 
+/**
+ * Millisekunden bis zum nächsten Tageswechsel (Gerätezeit, 0:00 Uhr) – mindestens 1 s, damit ein Zeitgeber nie in
+ * einer Schleife läuft. Sommer-/Winterzeit: `new Date(y, m, d + 1)` ist die nächste lokale Mitternacht.
+ */
+export function msUntilNextLocalDay(now: Date): number {
+  const next = new Date(now.getFullYear(), now.getMonth(), now.getDate() + 1);
+  return Math.max(1000, next.getTime() - now.getTime());
+}
+
 /** Drei Eingabefelder (TT, MM, JJJJ) → ISO-Datum; null, wenn etwas fehlt oder keine Ziffern sind. */
 export function isoFromDateParts(day: string, month: string, year: string): string | null {
   const d = day.trim();
