@@ -49,6 +49,8 @@ describe('Datenexport (3.7, W9)', () => {
       'meal_plan_items',
       'shopping_lists',
       'shopping_list_items',
+      'recipe_ratings',
+      'food_dislikes',
     ]);
     // Noch nicht in export_my_data() (db-sync.test.ts) – also nicht in DATA_EXPORT_TABLES.
     expect(DATA_EXPORT_TABLES as readonly string[]).not.toContain('exercise_preferences');

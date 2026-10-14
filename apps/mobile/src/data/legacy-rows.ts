@@ -1,6 +1,9 @@
 import {
   BARBELL_ID,
+  contentIdSchema,
   exercisePreferenceSchema,
+  RECIPE_RATING_RULES,
+  recipeRatingSchema,
   nutritionSetupColumnsSchema,
   parseStoredMealPlanWeek,
   parseStoredShoppingList,
@@ -12,6 +15,8 @@ import {
 import { toTrainingSlotRows } from './mapping';
 import type {
   ExercisePreferenceRow,
+  FoodDislikeRow,
+  RecipeRatingRow,
   GoalsRow,
   MealPlanRow,
   ShoppingListRow,
@@ -139,6 +144,78 @@ function storedPreferences(stored: UserRows): ExercisePreferenceRow[] {
   });
 }
 
+/**
+ * Bewertungen (Etappe N10): vorher gab es keine; der Gerätespeicher ist nicht vertrauenswürdig – nur gültige Einträge
+ * (Zod, strikt: Gründe ohne „Unverträglich“, Grund nur bei Daumen runter) des eigenen Kontos, je Rezept höchstens einer,
+ * höchstens `RECIPE_RATING_RULES.maxRatings`.
+ */
+function storedRecipeRatings(stored: UserRows): RecipeRatingRow[] {
+  const list: unknown = (stored as { recipeRatings?: unknown }).recipeRatings;
+  if (!Array.isArray(list)) return [];
+  const owner = stored.profile?.user_id;
+  const seen = new Set<string>();
+  return list
+    .flatMap((item: unknown): RecipeRatingRow[] => {
+      if (typeof item !== 'object' || item === null) return [];
+      const row = item as Record<string, unknown>;
+      const keys = Object.keys(row).sort().join(',');
+      if (keys !== 'rated_on,reason,recipe_id,user_id,value') return [];
+      const parsed = recipeRatingSchema.safeParse({
+        recipeId: row.recipe_id,
+        value: row.value,
+        reason: row.reason,
+        ratedOn: row.rated_on,
+      });
+      const userId = row.user_id;
+      if (
+        !parsed.success ||
+        typeof userId !== 'string' ||
+        (owner !== undefined && userId !== owner) ||
+        seen.has(parsed.data.recipeId)
+      ) {
+        return [];
+      }
+      seen.add(parsed.data.recipeId);
+      return [
+        {
+          user_id: userId,
+          recipe_id: parsed.data.recipeId,
+          value: parsed.data.value,
+          reason: parsed.data.reason,
+          rated_on: parsed.data.ratedOn,
+        },
+      ];
+    })
+    .slice(0, RECIPE_RATING_RULES.maxRatings);
+}
+
+/** „Mag ich nicht“ je Lebensmittel (Etappe N10): nur gültige IDs des eigenen Kontos, je Lebensmittel einmal. */
+function storedFoodDislikes(stored: UserRows): FoodDislikeRow[] {
+  const list: unknown = (stored as { foodDislikes?: unknown }).foodDislikes;
+  if (!Array.isArray(list)) return [];
+  const owner = stored.profile?.user_id;
+  const seen = new Set<string>();
+  return list
+    .flatMap((item: unknown): FoodDislikeRow[] => {
+      if (typeof item !== 'object' || item === null) return [];
+      const row = item as Record<string, unknown>;
+      const id = contentIdSchema.safeParse(row.food_id);
+      const userId = row.user_id;
+      if (
+        Object.keys(row).length !== 2 ||
+        !id.success ||
+        typeof userId !== 'string' ||
+        (owner !== undefined && userId !== owner) ||
+        seen.has(id.data)
+      ) {
+        return [];
+      }
+      seen.add(id.data);
+      return [{ user_id: userId, food_id: id.data }];
+    })
+    .slice(0, RECIPE_RATING_RULES.maxFoodDislikes);
+}
+
 /** goals-Felder des Gerätespeichers aus App-Versionen vor Etappe B2. */
 interface LegacyGoalsFields {
   sessions_per_week?: number | null;
@@ -174,6 +251,8 @@ export function upgradeStoredRows(stored: UserRows): UserRows {
     nutritionSetup: storedNutritionSetup(stored),
     mealPlans: storedMealPlans(stored),
     shoppingLists: storedShoppingLists(stored),
+    recipeRatings: storedRecipeRatings(stored),
+    foodDislikes: storedFoodDislikes(stored),
   };
   const goals = stored.goals as (GoalsRow & LegacyGoalsFields) | null;
   if (

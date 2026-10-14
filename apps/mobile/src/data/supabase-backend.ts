@@ -1018,6 +1018,9 @@ export function createSupabaseBackend(options: SupabaseBackendOptions): Backend 
       // Essenspläne gibt es in der Datenbank erst mit Etappe N7 (supportsNutrition = false).
       mealPlans: [],
       shoppingLists: [],
+      // Bewertungen und „mag ich nicht“ je Lebensmittel erst mit Etappe N7 (Tabellen recipe_ratings, food_dislikes).
+      recipeRatings: [],
+      foodDislikes: [],
     };
   }
 
@@ -1403,6 +1406,16 @@ export function createSupabaseBackend(options: SupabaseBackendOptions): Backend 
     },
     saveCookDayStart: async () => {
       throw new BackendError('unknown', { sensitive: true });
+    },
+    // Bewertungen und „mag ich nicht“ je Lebensmittel erst mit Etappe N7 (supportsNutrition = false).
+    saveRecipeRating: async () => {
+      throw new BackendError('unknown');
+    },
+    deleteRecipeRatings: async () => {
+      throw new BackendError('unknown');
+    },
+    saveFoodDislikes: async () => {
+      throw new BackendError('unknown');
     },
     pendingWorkouts: async () => {
       await logQueue.load();

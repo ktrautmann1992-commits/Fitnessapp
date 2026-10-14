@@ -38,6 +38,12 @@ import {
 import { LOCAL_CONSENT_DOCUMENTS } from './consent-texts';
 import { localDataExport } from './data-export';
 import { DraftStore } from './draft-store';
+import {
+  applyFoodDislikes,
+  applyRecipeRatings,
+  checkFoodDislikesSave,
+  checkRecipeRatingSave,
+} from './rating-rows';
 import { preferencesFromRows, sessionDisplay } from './exercise-swap';
 import { checkSessionLog, isValidOp, isValidPlanOp, isValidPreferenceOp } from './local-rules';
 import {
@@ -149,6 +155,9 @@ const SERIALIZED_METHODS = [
   'saveMealPlan',
   'saveShoppingList',
   'saveCookDayStart',
+  'saveRecipeRating',
+  'deleteRecipeRatings',
+  'saveFoodDislikes',
 ] as const satisfies readonly (keyof Backend)[];
 
 function serializeWrites(backend: Backend): Backend {
@@ -728,6 +737,29 @@ export function createLocalBackend(store: KeyValueStore, options: LocalBackendOp
         userId: session.userId,
         now: options.now(),
       });
+      await save({ ...db, rows: next });
+      return next;
+    },
+    saveRecipeRating: async (change) => {
+      // Wie die künftige Tabelle recipe_ratings (RLS: eigene Zeilen); Werte nie in Meldungen oder Logs.
+      const { db, rows, session } = await requireProfile();
+      const check = checkRecipeRatingSave(rows, change, options.today());
+      if (!check.ok) throw new BackendError('unknown');
+      const next = applyRecipeRatings(rows, check.ratings, session.userId);
+      await save({ ...db, rows: next });
+      return next;
+    },
+    deleteRecipeRatings: async () => {
+      const { db, rows, session } = await requireProfile();
+      const next = applyRecipeRatings(rows, [], session.userId);
+      await save({ ...db, rows: next });
+      return next;
+    },
+    saveFoodDislikes: async (foodIds) => {
+      const { db, rows, session } = await requireProfile();
+      const check = checkFoodDislikesSave(foodIds);
+      if (!check.ok) throw new BackendError('unknown');
+      const next = applyFoodDislikes(rows, check.foodIds, session.userId);
       await save({ ...db, rows: next });
       return next;
     },

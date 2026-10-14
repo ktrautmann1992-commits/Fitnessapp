@@ -49,6 +49,15 @@ import {
   type ScaledPortion,
   scalePortion,
 } from './scale';
+import {
+  activeRatingReasons,
+  ratingScoreBonus,
+  type RecipeRatingReason,
+  recipeBlockedOnAnyDay,
+  type RecipeRatingIndex,
+  type RecipeRatingInput,
+  recipeRatingIndex,
+} from './ratings';
 import { type MealPlanProfile, type MealPlanProfileInput, mealPlanProfileSchema } from './schemas';
 import { stableHashKey, stableUnit } from './stable-hash';
 import { resolveIngredientSwaps, swapKey } from './swap-resolve';
@@ -173,6 +182,11 @@ export interface MealPlanInput {
    * nicht mehr passend (sichere Richtung → Neuplanung).
    */
   readonly substitutions?: readonly IngredientSubstitution[];
+  /**
+   * Bewertungen nach dem Essen (KONZEPT 6.10, 19.7 N10): Daumen runter nimmt ein Rezept 8 Wochen aus den Vorschlägen,
+   * Daumen hoch und Gründe ändern nur die Reihenfolge – nie Filter, Energie, Portionen oder Grenzen (K6).
+   */
+  readonly ratings?: readonly RecipeRatingInput[];
 }
 
 const variantSchema = z.number().int().min(0).max(10_000);
@@ -211,6 +225,8 @@ export class CandidatePool {
     readonly redRecipeIds?: ReadonlySet<string>,
     /** Austausch-Tabelle (19.7 N9); ohne Tabelle besteht keine Mahlzeit mit getauschter Zutat. */
     readonly substitutions: readonly IngredientSubstitution[] = [],
+    /** Bewertungen (19.7 N10) – nur für Vorschläge; `result`/`allowed` (der Filter) kennen sie nicht. */
+    readonly ratings: RecipeRatingIndex = recipeRatingIndex(undefined),
   ) {
     this.profile = mealPlanProfileSchema.parse(profile);
   }
@@ -353,6 +369,11 @@ interface ScoreArgs {
   readonly dayIndex: number;
   readonly likes: ReadonlySet<string>;
   readonly intolerances: ReadonlySet<string>;
+  /** Tag des Platzes (Bewertungen wirken tagesgenau, 19.7 N10). */
+  readonly date: string;
+  readonly ratings: RecipeRatingIndex;
+  /** An diesem Tag wirkende Gründe – einmal je Platz statt je Kandidat (Wächter N10 S3). */
+  readonly ratingReasons: ReadonlySet<RecipeRatingReason>;
 }
 
 function scoreCandidate(
@@ -399,6 +420,8 @@ function scoreCandidate(
   if (ids.length > 0) {
     score += (W.ingredientReuse * ids.filter((id) => state.usedFoods.has(id)).length) / ids.length;
   }
+  // Bewertungen (19.7 N10): nur Reihenfolge – der Kandidat hat den Filter schon bestanden (K6).
+  score += ratingScoreBonus(args.ratings, c, args.date, args.ratingReasons);
   score +=
     W.variantJitter * stableUnit(args.weekStart, args.slotKey, c.recipe.id, String(args.variant));
   return score;
@@ -507,13 +530,13 @@ function toPlannedMeal(
 
 function fillCandidates(ctx: DayContext, excludeIds: ReadonlySet<string>): FilteredRecipe[] {
   const exclude = ctx.targets.recipeExclusions.includes('pregnancy_caution');
-  return ctx.pool
-    .allowed(exclude)
-    .filter(
-      (c) =>
-        !excludeIds.has(c.recipe.id) &&
-        slotFitReasons(c.recipe, { slot: 'snack_afternoon', fill: true }).length === 0,
-    );
+  return ctx.pool.allowed(exclude).filter(
+    (c) =>
+      !excludeIds.has(c.recipe.id) &&
+      // Daumen runter (19.7 N10): auch nicht als Ergänzungs-Snack vorschlagen.
+      !recipeBlockedOnAnyDay(ctx.pool.ratings, c.recipe.id, [ctx.targets.date]) &&
+      slotFitReasons(c.recipe, { slot: 'snack_afternoon', fill: true }).length === 0,
+  );
 }
 
 /** Ergänzungs-Snack, der die Lücke am besten schließt (bei voller Portion), Gleichstand fest über den Hash. */
@@ -768,16 +791,29 @@ function chooseDrop(selected: readonly SelectedMeal[], foods: FoodLookup): numbe
 // Woche
 // ---------------------------------------------------------------------------------------------------------
 
-/** Kandidaten für einen Platz an einem Tag (Person + Platz). */
+/**
+ * Kandidaten für einen Platz an einem Tag (Person + Platz). Mit Daumen runter bewertete Rezepte fallen an den
+ * betroffenen Tagen weg (`ratingDates`, Standard: der Tag des Platzes; 19.7 N10) – `ignoreRatings` nur für die Frage,
+ * ob es OHNE Bewertungen einen Kandidaten gäbe (leerer Platz mit Grund `rated_down`).
+ */
 function slotCandidates(
   ctx: DayContext,
   slot: MealSlotId,
-  options: { mealPrep?: boolean; maxMinutes?: number | null; excludePregnancy?: boolean },
+  options: {
+    mealPrep?: boolean;
+    maxMinutes?: number | null;
+    excludePregnancy?: boolean;
+    ratingDates?: readonly string[];
+    ignoreRatings?: boolean;
+  },
 ): FilteredRecipe[] {
   const exclude =
     options.excludePregnancy ?? ctx.targets.recipeExclusions.includes('pregnancy_caution');
+  const dates = options.ratingDates ?? [ctx.targets.date];
   return ctx.pool.allowed(exclude).filter(
     (c) =>
+      (options.ignoreRatings === true ||
+        !recipeBlockedOnAnyDay(ctx.pool.ratings, c.recipe.id, dates)) &&
       slotFitReasons(c.recipe, {
         slot,
         mealPrep: options.mealPrep ?? false,
@@ -797,6 +833,9 @@ function scoreArgs(ctx: DayContext, slot: MealSlotId, role: MealRole, share: num
     dayIndex: ctx.dayIndex,
     likes: new Set(ctx.pool.profile.likes),
     intolerances: new Set(ctx.pool.profile.intolerances),
+    date: ctx.targets.date,
+    ratings: ctx.pool.ratings,
+    ratingReasons: activeRatingReasons(ctx.pool.ratings, ctx.targets.date),
   };
 }
 
@@ -814,10 +853,17 @@ export function pickDailyMeal(
   );
   if (candidates.length === 0) {
     const exclude = ctx.targets.recipeExclusions.includes('pregnancy_caution');
+    // Nur wegen Daumen runter leer (19.7 N10)? Dann genau dieser Grund – kein Filter, kein Gesundheitsbezug.
+    const withoutRatings = slotCandidates(ctx, slot, { maxMinutes, ignoreRatings: true }).filter(
+      (c) => !excludeIds.has(c.recipe.id),
+    );
     return {
       variant: null,
       repeated: false,
-      reasons: ctx.pool.emptyReasons(exclude, { slot, maxMinutes }),
+      reasons:
+        withoutRatings.length > 0
+          ? ['rated_down']
+          : ctx.pool.emptyReasons(exclude, { slot, maxMinutes }),
     };
   }
   const type = mealTypeForSlot(slot);
@@ -880,6 +926,7 @@ export function buildMealPlanWeekDetailed(
     input.allowDrafts,
     input.redRecipeIds,
     input.substitutions,
+    recipeRatingIndex(input.ratings),
   );
   const profile = pool.profile;
   const state = new WeekState();
@@ -1150,7 +1197,14 @@ function choosePrepRecipe(
   const otherIds = new Set(
     [...assignments.values()].flatMap((a) => (a.variant === null ? [] : [a.variant.recipe.id])),
   );
-  const candidates = slotCandidates(ctx, slot, { mealPrep: true, maxMinutes, excludePregnancy });
+  // Daumen runter (19.7 N10): an KEINEM der abgedeckten Tage (inkl. Kochtag) vorschlagen.
+  const ratingDates = [event.cookDate, ...event.dayIndices.map((d) => weekDate(ctx.weekStart, d))];
+  const candidates = slotCandidates(ctx, slot, {
+    mealPrep: true,
+    maxMinutes,
+    excludePregnancy,
+    ratingDates,
+  });
   if (candidates.length === 0) return { variant: null, keeping: null };
   const fresh = candidates.filter((c) => !otherIds.has(c.recipe.id));
   const pool = fresh.length > 0 ? fresh : candidates;
@@ -1297,6 +1351,7 @@ export function swapMealRecipe(
     input.allowDrafts,
     input.redRecipeIds,
     input.substitutions,
+    recipeRatingIndex(input.ratings),
   );
   const state = new WeekState();
   const exclude = dayTargets.recipeExclusions.includes('pregnancy_caution');

@@ -246,6 +246,32 @@ Pilze „mag ich nicht“):
    **ingredient-substitutions** (Probelauf ohne Schlüssel möglich) → Pull Request prüfen; freigeben mit **Actions →
    content-review** → Art `ids` mit den IDs (`tausch-…`).
 
+**Bewertung nach dem Essen (Etappe N10, Testmodus, gratis, ohne KI)** – mit dem Testkonto aus Schritt 1:
+
+1. **Ernährung** → eine Mahlzeit von **heute** antippen → unten in der Rezeptansicht steht **„Wie war’s?“** mit
+   **„Daumen hoch“** und **„Daumen runter“**. Bei einer Mahlzeit von morgen steht dort nur „Bewerten kannst du eine
+   Mahlzeit, sobald ihr Tag da ist.“
+2. **„Daumen runter“** → „Warum? (freiwillig)“: „Schmeckt mir nicht“, „Zu aufwendig“, „Zu teuer“, „Macht nicht satt“,
+   „Unverträglich“ oder „Kein Grund“ → **„Speichern“**. **Prüfen:** Hier stehen nirgends kcal, und es steht da, bis
+   wann das Rezept nicht mehr vorgeschlagen wird (8 Wochen).
+3. **Ernährung** öffnen → dein Plan ist **unverändert** (eine Bewertung plant nichts automatisch um). **Woche →
+   „Andere Vorschläge“** → das abgelehnte Rezept kommt ab heute nicht mehr vor (außer schon Vorgekochtem).
+4. Rezept wieder öffnen → „Deine Bewertung: Daumen runter … bis einschließlich …“ → **„Bewertung zurücknehmen“**.
+5. Andere Mahlzeit von heute → „Daumen runter“ → **„Unverträglich“** → „Speichern“ → Dialog **„Zutaten als ‚mag ich
+   nicht‘ übernehmen?“**. **Prüfen:** Kein Häkchen ist gesetzt, „Übernehmen“ geht erst nach einer Auswahl. Eine Zutat
+   wählen → „Übernehmen“ → Rezepte mit dieser Zutat kommen ab heute nicht mehr in den Plan (der Plan passt sich beim
+   Öffnen an). Der Grund „Unverträglich“ wird **nicht gespeichert** – nur „Daumen runter“ und die gewählte Zutat.
+   **Prüfen:** Der Hinweis sagt, dass nur genau diese Lebensmittel ausgeschlossen werden (keine verwandten Produkte,
+   keine Spuren), und der Knopf „Allergien und Unverträglichkeiten im Profil eintragen“ führt ins Profil.
+5a. **Nächste Woche:** Ernährung → Woche → „Nächste Woche“ ansehen (der Plan wird gespeichert) → ein Rezept daraus, das
+   auch heute in deinem Plan steht, mit Daumen runter bewerten → in der nächsten Woche erscheint der Hinweis „In
+   diesem Plan steht ein Rezept, das du mit Daumen runter bewertet hast“ mit **„Plan aktualisieren“**. Die laufende
+   Woche bekommt diesen Hinweis nicht.
+6. **Einstellungen → Ernährung → „Abgelehnte Lebensmittel und Bewertungen“** → die Zutat steht dort → **„Wieder
+   zulassen“**. Darunter **„Alle Bewertungen löschen“** (mit Nachfrage).
+7. **Einstellungen → Meine Daten exportieren** → in der Datei stehen `recipe_ratings` und `food_dislikes` (ohne Grund
+   „Unverträglich“). **„Testdaten löschen“** entfernt auch Bewertungen und Abneigungen.
+
 **Redaktionsbereich Ernährung (Etappe N2d):** Vorschau-Link der Website → `/admin` → anmelden → oben **Rezepte**,
 **Lebensmittel**, **Meal-Prep**, **Ratgeber**. Rezepte: Kategorie antippen → Zahlen (Entwürfe, rot, Zutaten ohne
 Katalog-Prüfung, offene Annahmen, Abweichungen) und je Rezept „Sammelfreigabe: wird freigegeben / übersprungen – Grund“;

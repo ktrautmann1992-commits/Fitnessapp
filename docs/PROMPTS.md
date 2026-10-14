@@ -236,8 +236,9 @@ Kochtag-Ansicht und Timern, Ratgeber-Seiten offline. Gratis/Premium nach Abschni
 
 ### Prompt D – Austausch, Bewertung, Kühlschrank-Suche
 **In Arbeit** – Etappe **N9 (Zutaten-Austausch inkl. Haltbarkeit und `heated` nach dem Tausch) umgesetzt im
-Testmodus** (14.10.2026, docs/PLAN-PHASE-5.md Umsetzungsstand N9); offen: N10 (Bewertung), N11 (Kühlschrank-Suche,
-Packungsgrößen). Tabellen erst mit der Supabase-Etappe N7.
+Testmodus** (14.10.2026, docs/PLAN-PHASE-5.md Umsetzungsstand N9); Etappe **N10 (Bewertung nach dem Essen, KONZEPT
+6.10) umgesetzt im Testmodus** (14.10.2026, Umsetzungsstand N10); offen: N11 (Kühlschrank-Suche, Packungsgrößen).
+Tabellen erst mit der Supabase-Etappe N7.
 ```
 Setze docs/ERWEITERUNGEN-2.md Abschnitte 3, 4 und 5 (nur Kühlschrank-Suche und Packungsgrößen) um. Die
 Austausch-Tabelle und die Packungsgrößen erzeugst du über die Content-Pipeline (Batch-API, Zod-Schema,

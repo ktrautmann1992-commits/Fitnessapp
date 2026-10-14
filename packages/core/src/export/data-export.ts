@@ -40,7 +40,8 @@ export type DataExportTable = (typeof DATA_EXPORT_TABLES)[number];
  * Tabellen, die der TESTMODUS schon exportiert, die Datenbank (export_my_data) aber erst mit der Supabase-Etappe:
  * `exercise_preferences` (docs/PLAN-UEBUNGEN-GLOSSAR-TAUSCH.md 9, Etappe T2; Migration und export_my_data in T3) und
  * `meal_plans`/`meal_plan_items` (docs/PLAN-PHASE-5.md 7.2/7.3, Etappe N5) sowie `shopping_lists`/
- * `shopping_list_items` (Etappe N5b; Migration und export_my_data für alle vier in N7) –
+ * `shopping_list_items` (Etappe N5b; Migration und export_my_data für alle vier in N7) sowie `recipe_ratings`/
+ * `food_dislikes` (Bewertung nach dem Essen, Etappe N10; Tabellen in N7, 19.4) –
  * dann nach DATA_EXPORT_TABLES verschieben. Die Prüfung der Datei lässt sie über `catchall` zu.
  */
 export const PENDING_DB_EXPORT_TABLES = [
@@ -49,6 +50,8 @@ export const PENDING_DB_EXPORT_TABLES = [
   'meal_plan_items',
   'shopping_lists',
   'shopping_list_items',
+  'recipe_ratings',
+  'food_dislikes',
 ] as const;
 
 export type PendingDbExportTable = (typeof PENDING_DB_EXPORT_TABLES)[number];

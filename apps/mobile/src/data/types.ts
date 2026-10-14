@@ -17,6 +17,7 @@ import type {
   NutritionSetupStep,
   NutritionStep,
   OnboardingStep,
+  RecipeRating,
   Sex,
   TrainingSchedule,
 } from '@fitnessapp/core';
@@ -114,6 +115,29 @@ export interface ShoppingListRow {
   list: StoredShoppingList;
 }
 
+/**
+ * Bewertung nach dem Essen (KONZEPT 6.10, docs/PLAN-PHASE-5.md 19.7 N10) – so wie die spätere Tabelle `recipe_ratings`
+ * (user_id, recipe_id, value, reason, rated_on; N7). NUR im Testmodus (Supabase-Modus bis N7 immer leer). Je Rezept eine
+ * Zeile (die letzte Bewertung). Kein Gesundheitsdatum – der Grund „Unverträglich“ wird nie gespeichert –, aber privat:
+ * nie an Analytics oder Logs, in Export und Löschung enthalten.
+ */
+export interface RecipeRatingRow {
+  user_id: string;
+  recipe_id: RecipeRating['recipeId'];
+  value: RecipeRating['value'];
+  reason: RecipeRating['reason'];
+  rated_on: string;
+}
+
+/**
+ * „Mag ich nicht“ je Lebensmittel (`food_dislikes`, 19.7 N10; Tabelle mit N7) – NUR im Testmodus. Hart wie die
+ * Gruppen-Abneigungen. Kein Gesundheitsdatum (ohne Grund gespeichert), nie an Analytics oder Logs.
+ */
+export interface FoodDislikeRow {
+  user_id: string;
+  food_id: string;
+}
+
 /** Alle Zeilen eines Nutzers – im Testmodus der komplette Gerätespeicher, im Supabase-Modus ein Abbild. */
 export interface UserRows {
   profile: ProfileRow | null;
@@ -156,6 +180,10 @@ export interface UserRows {
   mealPlans: MealPlanRow[];
   /** Einkaufslisten je Woche (Testmodus ab Etappe N5b; Supabase-Modus bis N7 immer leer). */
   shoppingLists: ShoppingListRow[];
+  /** Bewertungen nach dem Essen (Testmodus ab Etappe N10; Supabase-Modus bis N7 immer leer). */
+  recipeRatings: RecipeRatingRow[];
+  /** „Mag ich nicht“ je Lebensmittel (Testmodus ab Etappe N10; Supabase-Modus bis N7 immer leer). */
+  foodDislikes: FoodDislikeRow[];
 }
 
 export function emptyUserRows(): UserRows {
@@ -183,6 +211,8 @@ export function emptyUserRows(): UserRows {
     exercisePreferences: [],
     mealPlans: [],
     shoppingLists: [],
+    recipeRatings: [],
+    foodDislikes: [],
   };
 }
 

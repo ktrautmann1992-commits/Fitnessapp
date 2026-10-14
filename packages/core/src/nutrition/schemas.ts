@@ -7,8 +7,10 @@ import {
   MAX_CALORIE_DEFICIT_FRACTION,
   NUTRITION_MAX_AGE_YEARS,
   NUTRITION_LIMITS,
+  RECIPE_RATING_RULES,
   SURPLUS_CAP,
 } from '../constants';
+import { contentIdSchema } from '../content/schemas';
 import { isoWeekday } from '../dates';
 import {
   COOKING_MODES,
@@ -242,6 +244,16 @@ export const mealPlanProfileSchema = z
     likes: groupList,
     dislikes: groupList,
     intolerances: groupList,
+    /**
+     * „Mag ich nicht“ je Lebensmittel (`food_dislikes`, KONZEPT 6.10, Plan 19.7 N10) – hart wie die
+     * Gruppen-Abneigungen (`filter.ts`), aber ohne Ersatzprodukt. Kein Gesundheitsdatum: Es wird nie gespeichert,
+     * warum die Person ein Lebensmittel nicht mag (der Grund „Unverträglich“ führt nur zum Dialog).
+     */
+    dislikedFoods: z
+      .array(contentIdSchema)
+      .max(RECIPE_RATING_RULES.maxFoodDislikes)
+      .default([])
+      .refine((ids) => new Set(ids).size === ids.length, 'Jedes Lebensmittel nur einmal.'),
     /** Optional „werktags höchstens X Minuten“ (Plan 6.1, 7.2: 10–120). */
     maxPrepMinutesWeekday: z.number().int().min(10).max(120).nullable().default(null),
   })

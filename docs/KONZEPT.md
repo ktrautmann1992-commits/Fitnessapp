@@ -409,6 +409,11 @@ Quelle: `docs/ERWEITERUNGEN-2.md` Abschnitte 1–2. Startbestand aus `alpha5-rez
   angezeigt oder ausgewertet (keine Community, keine Durchschnittsnoten), sind in Export und Löschung enthalten.
 - „Unverträglich“ ist ein Gesundheitsbezug (Art. 9): wird **nicht** als Grund gespeichert, sondern führt nur zum
   Bestätigungs-Dialog (Abschnitt 18).
+- **Umsetzung (Etappe N10, Testmodus, 14.10.2026):** Regeln in `packages/core/src/nutrition/ratings.ts` (8 Wochen =
+  Bewertungstag + 55 Tage, Gründe wirken im selben Zeitraum, nur Reihenfolge), `food_dislikes` hart in `filter.ts`;
+  „Wie war’s?“ in der Rezeptansicht des Essensplans, Bildschirm „Daumen runter“ mit Dialog ohne Vorauswahl,
+  Einstellungen „Abgelehnte Lebensmittel und Bewertungen“. Eine Bewertung plant den laufenden Plan nicht um; sie wirkt
+  ab der nächsten Planung. Details in `docs/PLAN-PHASE-5.md`, Umsetzungsstand N10.
 
 ### 6.11 Resteverwertung (Kühlschrank-Suche gratis, automatische Resteplanung Premium)
 - **Kühlschrank-Suche (Gratis):** „Was habe ich da?“ – Zutaten auswählen → Rezepte sortiert nach Übereinstimmung

@@ -381,6 +381,13 @@ export default function SettingsScreen() {
               onPress={() => router.push('/onboarding/nutrition_setup?edit=1' as Href)}
               testID="settings-nutrition-setup"
             />
+            <Body muted>{t.nutrition.foodDislikes.settingsText}</Body>
+            <Button
+              label={t.nutrition.foodDislikes.open}
+              variant="secondary"
+              onPress={() => router.push('/ernaehrung/abneigungen' as Href)}
+              testID="settings-food-dislikes"
+            />
             {setup ? (
               <>
                 <Checkbox

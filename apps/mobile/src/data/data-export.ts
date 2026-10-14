@@ -142,6 +142,10 @@ export function localDataExport(
         updated_at: row.updated_at,
       })),
     ),
+    // Bewertungen nach dem Essen und „mag ich nicht“ je Lebensmittel (Etappe N10) – Spalten wie recipe_ratings/
+    // food_dislikes aus docs/PLAN-PHASE-5.md 19.4 (N7). Ohne Grund „Unverträglich“ (wird nie gespeichert).
+    recipe_ratings: rows.recipeRatings,
+    food_dislikes: rows.foodDislikes,
   };
   return {
     format_version: DATA_EXPORT_FORMAT_VERSION,

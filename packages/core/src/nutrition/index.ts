@@ -13,6 +13,7 @@ export * from './meal-prep';
 export * from './meal-prep-day';
 export * from './meal-prep-plan';
 export * from './notices';
+export * from './ratings';
 export * from './person';
 export * from './recipe-nutrients';
 export * from './recipe-search';

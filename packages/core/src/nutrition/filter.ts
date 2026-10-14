@@ -25,7 +25,8 @@ import type { RecipeUnit } from './units';
  * - die Ernährungsform passt (vegan ⊂ vegetarisch ⊂ omnivor; Lab und Gelatine nicht vegetarisch, Honig nicht vegan);
  * - Schwein nur bei `eatsPork === true` (`null` = nein, W10, G2; Gelatine unbekannter Herkunft = Schwein, S5);
  * - keine Gruppe aus Unverträglichkeiten und keine aus „mag ich nicht“ (Gründer-Entscheidung 5: hart; K9:
- *   Unverträglichkeit schlägt „mag ich“);
+ *   Unverträglichkeit schlägt „mag ich“) und kein Lebensmittel aus „mag ich nicht“ je Lebensmittel (`dislikedFoods`,
+ *   19.7 N10 – hart, ohne Ersatzprodukt; optionale Zutaten werden weggelassen);
  * - bei Ausschluss `pregnancy_caution` (Schwangerschaft; kein Check bei Geschlecht ≠ männlich, B4) keine
  *   Schwangerschafts-Vorsicht – aus Katalog-Flag, `heated: false`, `no_cook` und unbestätigter Import-Annahme
  *   „erhitzt“ (`unconfirmed_heated`, Wächter N2c B1).
@@ -62,6 +63,8 @@ export const SLOT_EXCLUSION_REASONS = [
   'prep_time',
   'competition',
   'not_no_cook',
+  /** Alle passenden Rezepte wurden mit Daumen runter bewertet (8 Wochen, 19.7 N10) – kein Filter, nur Vorschlag. */
+  'rated_down',
 ] as const;
 export type SlotExclusionReason = (typeof SLOT_EXCLUSION_REASONS)[number];
 
@@ -123,14 +126,22 @@ interface IngredientViolations {
   readonly kinds: ReadonlySet<FoodViolation>;
   /** Verletzte Gruppen (Unverträglichkeit/„mag ich nicht“). */
   readonly groups: readonly FoodGroupId[];
+  /** Das Lebensmittel selbst steht auf „mag ich nicht“ (19.7 N10) – dafür gibt es kein Ersatzprodukt. */
+  readonly foodDisliked: boolean;
 }
 
-/** Gruppen, die für diese Person ausgeschlossen sind (Unverträglichkeit ∪ „mag ich nicht“). */
+/** Ausschlüsse dieser Person: Gruppen (Unverträglichkeit, „mag ich nicht“) und Lebensmittel („mag ich nicht“). */
 function excludedGroups(profile: MealPlanProfile): {
   intolerance: ReadonlySet<FoodGroupId>;
   dislike: ReadonlySet<FoodGroupId>;
+  dislikedFoods: ReadonlySet<string>;
 } {
-  return { intolerance: new Set(profile.intolerances), dislike: new Set(profile.dislikes) };
+  return {
+    intolerance: new Set(profile.intolerances),
+    dislike: new Set(profile.dislikes),
+    // Ältere Aufrufer ohne Zod-Standardwert (Testmodus-Speicher) – sichere Richtung: leer = keine.
+    dislikedFoods: new Set(profile.dislikedFoods ?? []),
+  };
 }
 
 function foodViolations(
@@ -151,7 +162,9 @@ function foodViolations(
       violated.push(group);
     }
   }
-  return { kinds, groups: violated };
+  const foodDisliked = groups.dislikedFoods.has(food.id);
+  if (foodDisliked) kinds.add('dislike');
+  return { kinds, groups: violated, foodDisliked };
 }
 
 function foodUsable(food: Food | undefined, allowDrafts: boolean): food is Food {
@@ -175,6 +188,8 @@ function finalViolations(
   facts: RecipeFacts,
   ctx: RecipeFilterContext,
   groups: ReturnType<typeof excludedGroups>,
+  /** Tatsächlich verwendete Lebensmittel (ohne weggelassene, mit Ersatz und Tausch). */
+  usedFoods: readonly string[],
 ): RecipeExclusionReason[] {
   const reasons = new Set<RecipeExclusionReason>();
   if (!facts.nutrientsComplete || facts.missingFoods.length > 0)
@@ -187,6 +202,7 @@ function finalViolations(
     else if (groups.dislike.has(group)) reasons.add('dislike');
   }
   if (ctx.excludePregnancyCaution && facts.pregnancyCaution) reasons.add('pregnancy_caution');
+  if (usedFoods.some((id) => groups.dislikedFoods.has(id))) reasons.add('dislike');
   return RECIPE_EXCLUSION_REASONS.filter((reason) => reasons.has(reason));
 }
 
@@ -269,8 +285,10 @@ export function filterRecipe(
       omitted.push(index);
       return;
     }
-    // Ersatz nur für Gruppen-Verletzungen (Unverträglichkeit/„mag ich nicht“), mit passendem `for_groups`.
-    const onlyGroups = [...kinds].every((k) => k === 'intolerance' || k === 'dislike');
+    // Ersatz nur für Gruppen-Verletzungen (Unverträglichkeit/„mag ich nicht“), mit passendem `for_groups` – nie für
+    // ein Lebensmittel, das selbst auf „mag ich nicht“ steht (19.7 N10: Ersatz deckt nur Gruppen ab).
+    const onlyGroups =
+      !own.foodDisliked && [...kinds].every((k) => k === 'intolerance' || k === 'dislike');
     const substitute = onlyGroups
       ? food.substitutes.find((sub) => {
           if (!own.groups.every((g) => sub.for_groups.includes(g))) return false;
@@ -303,7 +321,15 @@ export function filterRecipe(
     substitutions: new Map(substitutions.map((s) => [s.index, s.substituteFoodId])),
     swaps: swapFacts,
   });
-  const reasons = finalViolations(facts, ctx, groups);
+  const omittedSet = new Set(omitted);
+  const used = new Map<number, string>([
+    ...substitutions.map((s): [number, string] => [s.index, s.substituteFoodId]),
+    ...swaps.map((s): [number, string] => [s.index, s.substituteFoodId]),
+  ]);
+  const usedFoods = recipe.ingredients.flatMap((ingredient, index) =>
+    omittedSet.has(index) ? [] : [used.get(index) ?? ingredient.food_id],
+  );
+  const reasons = finalViolations(facts, ctx, groups, usedFoods);
   if (reasons.length > 0) return { ok: false, reasons };
   return { ok: true, value: { recipe, omitted, substitutions, swaps, facts } };
 }
