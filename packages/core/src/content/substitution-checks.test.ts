@@ -266,5 +266,5 @@ describe('validateContent, Auswahl und Freigabe', () => {
       status: 'published',
       meta: { reviewed_by: 'KT', reviewed_at: '2026-10-14' },
     });
-  });
+  }, 30_000); // volle validateContent-Läufe; unter Last (turbo parallel) über 5 s (Wächter N11 B1)
 });

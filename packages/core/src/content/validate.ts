@@ -10,6 +10,8 @@ import { checkGuide } from './guide-checks';
 import { type Guide, guideSchema } from './guide-schema';
 import { checkMealPrepPlan } from './meal-prep-checks';
 import { type MealPrepPlan, mealPrepPlanSchema } from './meal-prep-plan-schema';
+import { checkPackageSize, checkPackageSizeLibrary } from './package-size-checks';
+import { type PackageSize, packageSizeSchema } from './package-size-schema';
 import {
   checkFood,
   checkRecipe,
@@ -37,16 +39,17 @@ export type ContentFileKind = 'exercise' | 'plan_template';
  * die Pipeline-Arten (N8) sie nicht kennen; Ordner: `NUTRITION_CONTENT_FOLDERS` (packages/content, N2c).
  */
 export type NutritionContentFileKind =
-  'food' | 'recipe' | 'meal_prep_plan' | 'guide' | 'ingredient_substitution';
+  'food' | 'recipe' | 'meal_prep_plan' | 'guide' | 'ingredient_substitution' | 'package_size';
 
-/** true = Inhaltsart der Ernährung (Regeln R1–R23, Version R15). */
+/** true = Inhaltsart der Ernährung (Regeln R1–R24, Version R15). */
 export function isNutritionKind(kind: AnyContentFileKind): kind is NutritionContentFileKind {
   return (
     kind === 'food' ||
     kind === 'recipe' ||
     kind === 'meal_prep_plan' ||
     kind === 'guide' ||
-    kind === 'ingredient_substitution'
+    kind === 'ingredient_substitution' ||
+    kind === 'package_size'
   );
 }
 export type AnyContentFileKind = ContentFileKind | NutritionContentFileKind;
@@ -63,7 +66,9 @@ export interface ContentFile {
   readonly previous?: unknown;
 }
 
-/** Inhaltsdatei der Ernährung (`content/foods|recipes|meal-prep-plans|guides|substitutions/<id>.json`). */
+/**
+ * Inhaltsdatei der Ernährung (`content/foods|recipes|meal-prep-plans|guides|substitutions|package-sizes/<id>.json`).
+ */
 export interface NutritionContentFile extends Omit<ContentFile, 'kind'> {
   readonly kind: NutritionContentFileKind;
 }
@@ -88,6 +93,8 @@ export interface ContentValidationResult {
   readonly guides: readonly Guide[];
   /** Austausch-Tabelle mit gültigem Schema (19.7 N9). */
   readonly substitutions: readonly IngredientSubstitution[];
+  /** Packungsgrößen mit gültigem Schema (19.7 N11). */
+  readonly packageSizes: readonly PackageSize[];
   /** Alle Befunde (rot und gelb). */
   readonly issues: readonly ContentIssue[];
   /** Befunde, die das Prüfskript fehlschlagen lassen (siehe isBlockingIssue). */
@@ -223,11 +230,12 @@ const SCHEMAS = {
   meal_prep_plan: mealPrepPlanSchema,
   guide: guideSchema,
   ingredient_substitution: ingredientSubstitutionSchema,
+  package_size: packageSizeSchema,
 } as const;
 
 /**
  * Prüft alle Inhaltsdateien gemeinsam. Lebensmittel und Rezepte (Phase 5) werden mit R1–R19 und R22 geprüft,
- * Meal-Prep-Pläne mit R20, Ratgeber mit R21, die Austausch-Tabelle mit R23; die
+ * Meal-Prep-Pläne mit R20, Ratgeber mit R21, die Austausch-Tabelle mit R23, Packungsgrößen mit R24; die
  * Begleitdaten (Quellauszug, Erwartungs- und Ausnahmeliste) kommen über `options.nutritionCatalog`.
  */
 export function validateContent(
@@ -242,6 +250,7 @@ export function validateContent(
   const mealPrepPlans: MealPrepPlan[] = [];
   const guides: Guide[] = [];
   const substitutions: IngredientSubstitution[] = [];
+  const packageSizes: PackageSize[] = [];
   const seenIds = new Map<string, string>();
 
   for (const file of files) {
@@ -289,6 +298,8 @@ export function validateContent(
       mealPrepPlans.push(content as MealPrepPlan);
     } else if (file.kind === 'ingredient_substitution') {
       substitutions.push(content as IngredientSubstitution);
+    } else if (file.kind === 'package_size') {
+      packageSizes.push(content as PackageSize);
     } else {
       guides.push(content as Guide);
     }
@@ -325,6 +336,10 @@ export function validateContent(
     issues.push(...checkIngredientSubstitution(substitution, foodLookup));
   }
   issues.push(...checkSubstitutionLibrary(substitutions));
+  for (const entry of packageSizes) {
+    issues.push(...checkPackageSize(entry, foodLookup));
+  }
+  issues.push(...checkPackageSizeLibrary(packageSizes));
 
   return {
     exercises,
@@ -334,6 +349,7 @@ export function validateContent(
     mealPrepPlans,
     guides,
     substitutions,
+    packageSizes,
     issues,
     blocking: issues.filter(isBlockingIssue),
   };

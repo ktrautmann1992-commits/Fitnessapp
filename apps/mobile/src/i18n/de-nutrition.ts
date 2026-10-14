@@ -712,6 +712,52 @@ export const deNutrition = {
       'Du hast dieses Rezept über die erweiterte Suche gefunden. Es kommt nie automatisch in deinen Essensplan.',
   },
 
+  // --- Kühlschrank-Suche „Was habe ich da?“ (19.7 N11, KONZEPT 6.11) ------------------------------------------------
+  fridge: {
+    title: 'Was habe ich da?',
+    open: 'Was habe ich da?',
+    intro:
+      'Wähle aus, was du im Kühlschrank oder Vorrat hast. Wir zeigen Rezepte, die möglichst viel davon verwenden. Unverträglichkeiten, „mag ich nicht“, Schweinefleisch, deine Ernährungsform und Hinweise für die Schwangerschaft gelten auch hier.',
+    privacy: 'Deine Auswahl wird nicht gespeichert – sie ist weg, sobald du die Seite verlässt.',
+    filterLabel: 'Zutat suchen',
+    filterHint: 'z. B. „Paprika“ oder „Reis“',
+    chooseTitle: 'Was hast du da?',
+    minorHint: 'Vorrat und Gewürze zählen weniger als frische Zutaten.',
+    noOptionMatch: 'Keine Zutat mit diesem Namen.',
+    selected: (n: number) =>
+      n === 0
+        ? 'Noch nichts ausgewählt'
+        : n === 1
+          ? '1 Zutat ausgewählt'
+          : `${n} Zutaten ausgewählt`,
+    limit: (n: number) => `Du kannst höchstens ${n} Zutaten auswählen.`,
+    clear: 'Auswahl leeren',
+    resultsTitle: 'Passende Rezepte',
+    results: (n: number) => (n === 1 ? '1 Rezept gefunden' : `${n} Rezepte gefunden`),
+    emptySelection: 'Wähle oben mindestens eine Zutat aus, dann zeigen wir passende Rezepte.',
+    onlySeasoning:
+      'Gewürze und Backzutaten allein reichen nicht – wähle mindestens eine weitere Zutat.',
+    empty:
+      'Kein Rezept passt zu deiner Auswahl. Wähle weitere Zutaten oder schau in die Rezeptsuche.',
+    emptyLibrary: 'Es gibt noch keine Rezepte.',
+    noOptions: 'Für deine Angaben gibt es noch keine Rezepte.',
+    match: (percent: number) => `${percent} % passt`,
+    matchA11y: (percent: number) => `Übereinstimmung ${percent} Prozent`,
+    have: (list: string) => `Hast du: ${list}`,
+    missing: (list: string, more: number) =>
+      `Fehlt noch: ${list}${more > 0 ? ` und ${more} weitere` : ''}`,
+    missingNone: 'Alle Hauptzutaten hast du da.',
+    missingMinor: (list: string) => `Aus dem Vorrat: ${list}`,
+    minutes: (n: number) => `${n} Min.`,
+    kcal: (kcal: string) => `${kcal} kcal je Portion`,
+    draft: 'Entwurf',
+    allergenWarning:
+      'Entwürfe: Allergene noch nicht fachlich geprüft – bei Allergien bitte nicht verwenden.',
+    cardA11y: (title: string) => `Rezept öffnen: ${title}`,
+    toSearch: 'Zur Rezeptsuche',
+    more: (n: number) => `Mehr anzeigen (noch ${n})`,
+  },
+
   // --- PDF P5: Essensplan und Einkaufsliste (11, Etappe N6) ---------------------------------------------------------
   /** Texte im Druck-Dokument – keine Gründe, kein Gewicht, keine Unverträglichkeiten (11, K4). */
   print: {

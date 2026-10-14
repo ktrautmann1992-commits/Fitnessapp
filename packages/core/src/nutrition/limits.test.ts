@@ -328,7 +328,7 @@ describe('Struktur (Wächter N1, K2): Schutzgrenzen nur über nutritionTargetsFo
   });
 });
 
-describe('Struktur (Wächter N1 K2, erweitert in N3 und N9): Essensplan und Tausch rechnen keine eigenen Grenzen', () => {
+describe('Struktur (Wächter N1 K2, erweitert in N3, N9 und N11): Essensplan und Tausch rechnen keine eigenen Grenzen', () => {
   it('Schutzgrenzen-Konstanten und planBand nur in limits/eligibility/schemas (nicht in Plan, Meal-Prep, Liste, Suche)', () => {
     const root = join(import.meta.dirname, '../../../..');
     const allowed = new Set(
@@ -356,7 +356,7 @@ describe('Struktur (Wächter N1 K2, erweitert in N3 und N9): Essensplan und Taus
     for (const top of ['packages', 'apps', 'scripts']) walk(join(root, top));
     expect(offenders).toEqual([]);
     // Die N3-Dateien (und der Zutaten-Austausch aus N9, 19.8 Nr. 1, sowie die Bewertung aus N10, K6) gibt es wirklich
-    // (sonst prüft der Test nichts).
+    // (sonst prüft der Test nichts); dazu die Kühlschrank-Suche aus N11 (nur Reihenfolge und Auswahl, keine Grenzen).
     for (const file of [
       'meal-plan.ts',
       'meal-prep.ts',
@@ -366,6 +366,7 @@ describe('Struktur (Wächter N1 K2, erweitert in N3 und N9): Essensplan und Taus
       'substitute.ts',
       'swap-resolve.ts',
       'ratings.ts',
+      'fridge-search.ts',
     ]) {
       expect(
         readFileSync(join(root, 'packages/core/src/nutrition', file), 'utf8').length,

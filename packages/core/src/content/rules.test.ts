@@ -46,6 +46,7 @@ describe('Regeltabelle (Plan Abschnitt 7, Phase 5 Abschnitte 5.3, 19.4 und 19.7)
       'R20',
       'R21',
       'R23',
+      'R24',
     ]);
     expect(yellow).toEqual([
       'Ü5',

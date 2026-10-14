@@ -26,6 +26,7 @@ import {
   type NutritionCatalogContext,
   type NutritionContentFile,
   type NutritionContentFileKind,
+  type PackageSize,
   planRecipeRelease,
   RECIPE_CATEGORIES,
   RECIPE_CATEGORY_IDS,
@@ -129,6 +130,15 @@ export interface SubstitutionEntry {
   readonly needsExpertReview: boolean;
 }
 
+/** Packungsgröße (19.7 N11) mit Namen des Lebensmittels und Prüfbericht (R24). */
+export interface PackageSizeEntry {
+  readonly packageSize: PackageSize;
+  readonly foodName: string | null;
+  readonly issues: readonly ContentIssue[];
+  readonly summary: IssueSummary;
+  readonly needsExpertReview: boolean;
+}
+
 export interface NutritionBrokenFile {
   readonly kind: NutritionContentFileKind;
   readonly id: string;
@@ -143,6 +153,8 @@ export interface NutritionAdmin {
   readonly guides: readonly GuideEntry[];
   /** Austausch-Tabelle (Etappe N9), nach Zutat und Ersatz sortiert. */
   readonly substitutions: readonly SubstitutionEntry[];
+  /** Packungsgrößen (Etappe N11), nach Lebensmittel sortiert. */
+  readonly packageSizes: readonly PackageSizeEntry[];
   readonly foodById: ReadonlyMap<string, FoodEntry>;
   readonly recipeById: ReadonlyMap<string, RecipeEntry>;
   /** Befunde zum ganzen Rezeptbestand (R16) und zu Begleitdateien des Katalogs ohne passendes Lebensmittel. */
@@ -322,12 +334,32 @@ export function buildNutritionAdmin(
         ),
     );
 
+  const packageSizes: PackageSizeEntry[] = result.packageSizes
+    .map((packageSize): PackageSizeEntry => {
+      const issues = issuesFor('package_size', packageSize.id);
+      return {
+        packageSize,
+        foodName: foodNames.get(packageSize.food_id) ?? null,
+        issues,
+        summary: summarizeIssues(issues),
+        needsExpertReview: needsExpertReviewLabel(packageSize.meta),
+      };
+    })
+    .sort(
+      (a, b) =>
+        collator.compare(
+          a.foodName ?? a.packageSize.food_id,
+          b.foodName ?? b.packageSize.food_id,
+        ) || collator.compare(a.packageSize.id, b.packageSize.id),
+    );
+
   const valid = new Set([
     ...foods.map((e) => `food:${e.food.id}`),
     ...recipes.map((e) => `recipe:${e.recipe.id}`),
     ...mealPrepPlans.map((e) => `meal_prep_plan:${e.plan.id}`),
     ...guides.map((e) => `guide:${e.guide.id}`),
     ...substitutions.map((e) => `ingredient_substitution:${e.substitution.id}`),
+    ...packageSizes.map((e) => `package_size:${e.packageSize.id}`),
   ]);
   const brokenFiles: NutritionBrokenFile[] = [];
   for (const [key, issues] of byKey) {
@@ -349,6 +381,7 @@ export function buildNutritionAdmin(
     mealPrepPlans,
     guides,
     substitutions,
+    packageSizes,
     foodById: new Map(foods.map((entry) => [entry.food.id, entry])),
     recipeById: new Map(recipes.map((entry) => [entry.recipe.id, entry])),
     libraryIssues,

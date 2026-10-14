@@ -8,7 +8,7 @@ import type { ContentStatus } from '../enums';
  * Dazu PROBELAUF (Wächter-Hinweis Etappe B): Beispiel-Inhalte aus dem Probelauf dürfen nie `published` sein.
  * Phase 5 (docs/PLAN-PHASE-5.md 5.3): R1–R19 für Lebensmittel und Rezepte (R1 Schema und R15 Version blockieren
  * wie Ü1/VERSION immer); R20–R22 für Meal-Prep-Pläne, Ratgeber und Kategorien (19.4); R23 für die Austausch-Tabelle
- * (19.7 N9).
+ * (19.7 N9); R24 für die Packungsgrößen (19.7 N11).
  */
 export const CONTENT_RULES = {
   DATEI: { severity: 'error', title: 'Datei: gültiges JSON, Dateiname = ID, ID eindeutig' },
@@ -183,6 +183,12 @@ export const CONTENT_RULES = {
     title:
       'Austausch: Süße (Süßkraft laut Hinweis) bzw. Ersatz muss durchgegart werden, das Original nicht – menschlich prüfen',
   },
+  // Packungsgrößen (docs/PLAN-PHASE-5.md 19.7 N11)
+  R24: {
+    severity: 'error',
+    title:
+      'Packungsgröße: Lebensmittel existiert und ist katalog-geprüft (freigegeben nur mit freigegebenem), Packung nicht kleiner als ein Stück, je Lebensmittel nur ein Eintrag, ID = packung-<Lebensmittel>',
+  },
 } as const satisfies Record<string, { severity: IssueSeverity; title: string }>;
 
 export type ContentRuleId = keyof typeof CONTENT_RULES;
@@ -200,7 +206,8 @@ export type ContentKind =
   | 'recipe_library'
   | 'meal_prep_plan'
   | 'guide'
-  | 'ingredient_substitution';
+  | 'ingredient_substitution'
+  | 'package_size';
 
 export interface ContentIssue {
   readonly rule: ContentRuleId;

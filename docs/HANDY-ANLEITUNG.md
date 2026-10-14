@@ -272,8 +272,28 @@ Pilze „mag ich nicht“):
 7. **Einstellungen → Meine Daten exportieren** → in der Datei stehen `recipe_ratings` und `food_dislikes` (ohne Grund
    „Unverträglich“). **„Testdaten löschen“** entfernt auch Bewertungen und Abneigungen.
 
+**Was habe ich da? – Kühlschrank-Suche (Etappe N11, Testmodus, gratis, ohne KI)** – mit dem Testkonto aus Schritt 1
+(vegetarisch, Pilze „mag ich nicht“):
+
+1. **Ernährung** → unten **„Was habe ich da?“** (auch oben in **„Rezepte suchen“**). **Prüfen:** Dort steht „Deine
+   Auswahl wird nicht gespeichert“ und „Wähle oben mindestens eine Zutat aus …“.
+2. In der Liste (nach Supermarkt-Abteilungen) gibt es **kein Fleisch** und **keine Champignons** – angeboten wird nur,
+   was in Rezepten für dich vorkommt.
+3. Nur **„Speisesalz“** antippen → Hinweis „Gewürze und Backzutaten allein reichen nicht …“.
+4. **„Banane“** dazu → Rezepte erscheinen, sortiert nach „… % passt“. „Banane“ steht mit **„100 % passt“** und „Alle
+   Hauptzutaten hast du da.“ ganz oben; andere Karten zeigen „Hast du: …“, „Fehlt noch: …“ und „Aus dem Vorrat: …“
+   (Vorrat und Gewürze zählen weniger). Über der Liste steht die Warnung „Allergene noch nicht fachlich geprüft“.
+5. Oben bei **„Zutat suchen“** z. B. „hafer“ tippen → die Liste wird kürzer. Nur **„Olivenöl“** gewählt → keine
+   Karte mit „0 % passt“. Bei vielen Treffern stehen zuerst 30 Karten da, darunter **„Mehr anzeigen (noch …)“**.
+6. Eine Karte antippen → Rezeptansicht (wie aus der Rezeptsuche). Zurück, Seite neu laden → **die Auswahl ist weg**.
+7. **Kalorienzahlen ausschalten** (Einstellungen → Ernährung) → in „Was habe ich da?“ stehen nirgends kcal.
+8. Mit einem zweiten Testkonto **vegan**, **Erdnüsse: Unverträglich** und **schwanger** (Gesundheits-Check): Erdnüsse,
+   Räucherlachs, Ei und Milch tauchen in der Auswahl gar nicht auf; mit Banane + Tofu kommt kein Erdnuss-Rezept.
+
 **Redaktionsbereich Ernährung (Etappe N2d):** Vorschau-Link der Website → `/admin` → anmelden → oben **Rezepte**,
-**Lebensmittel**, **Meal-Prep**, **Ratgeber**. Rezepte: Kategorie antippen → Zahlen (Entwürfe, rot, Zutaten ohne
+**Lebensmittel**, **Meal-Prep**, **Ratgeber**, **Austausch** (N9) und **Packungen** (N11: Lebensmittel mit Gramm je
+Packung, Prüfbericht R24, Klick-Schritte „Freigabe per ID“; solange es keine gibt, steht dort „Noch keine
+Packungsgrößen“). Rezepte: Kategorie antippen → Zahlen (Entwürfe, rot, Zutaten ohne
 Katalog-Prüfung, offene Annahmen, Abweichungen) und je Rezept „Sammelfreigabe: wird freigegeben / übersprungen – Grund“;
 unter **Ohne Kategorie** steht „Freigabe per ID“ (diese Rezepte erreicht die Sammelfreigabe nie). Rezept-Seite:
 Import-Annahmen „bestätigt“, „noch nicht bestätigt“ oder „seitdem geändert“ (Zubereitung nach der Bestätigung geändert

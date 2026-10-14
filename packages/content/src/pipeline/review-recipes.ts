@@ -63,7 +63,7 @@ export type RecipeReleaseInput = z.input<typeof recipeReleaseInputSchema>;
 export const nutritionIdsReleaseInputSchema = z.object({
   ids: reviewInputSchema.shape.ids,
   status: publishedOnly(
-    'Rezepte, Meal-Prep-Pläne, Ratgeber und Austausch-Einträge per ID nur mit Neuer Status = published (Zurückziehen folgt später, Plan 19.5).',
+    'Rezepte, Meal-Prep-Pläne, Ratgeber, Austausch-Einträge und Packungsgrößen per ID nur mit Neuer Status = published (Zurückziehen folgt später, Plan 19.5).',
   ),
   ...releaseFields,
 });
@@ -74,6 +74,7 @@ const KIND_LABEL: Record<NutritionReleaseDecision['kind'], string> = {
   meal_prep_plan: 'Meal-Prep-Plan',
   guide: 'Ratgeber',
   ingredient_substitution: 'Austausch',
+  package_size: 'Packungsgröße',
 };
 
 function fail(title: string, markdown: string): ReviewResult {
@@ -88,6 +89,10 @@ function label(d: NutritionReleaseDecision): string {
   if (d.kind === 'ingredient_substitution') {
     const o = d.original;
     return `\`${o.id}\` ${cell(`${o.food_id} → ${o.substitute_food_id} (${o.role}, Faktor ${o.factor.toLocaleString('de-DE')})`)}`;
+  }
+  if (d.kind === 'package_size') {
+    const o = d.original;
+    return `\`${o.id}\` ${cell(`${o.food_id}: ${o.package_size_g.toLocaleString('de-DE')} g`)}`;
   }
   return `\`${d.original.id}\` ${cell(d.original.title_de)}`;
 }
@@ -393,7 +398,7 @@ export async function runNutritionIdRelease(
     ),
     ...plan.unknownIds.map(
       (id) =>
-        `\`${id}\`: nicht gefunden (weder Rezept, Meal-Prep-Plan, Ratgeber noch Austausch-Eintrag mit gültigem Schema – content:validate zeigt Schemafehler).`,
+        `\`${id}\`: nicht gefunden (weder Rezept, Meal-Prep-Plan, Ratgeber, Austausch-Eintrag noch Packungsgröße mit gültigem Schema – content:validate zeigt Schemafehler).`,
     ),
     ...plan.ambiguousIds.map(
       (id) => `\`${id}\`: mehrdeutig (mehrere Inhaltsarten mit dieser ID) – bitte umbenennen.`,

@@ -66,6 +66,7 @@ test.describe('mit Zugangsdaten', () => {
       '/admin/meal-prep',
       '/admin/ratgeber',
       '/admin/austausch',
+      '/admin/packungen',
     ]) {
       await page.goto(path);
       await expect(page).toHaveURL(/\/admin\/login$/);
@@ -257,6 +258,9 @@ test.describe('Ernährung (N2d)', () => {
     await expect(
       page.getByRole('heading', { name: 'Noch keine Austausch-Einträge' }),
     ).toBeVisible();
+    await nav.getByRole('link', { name: 'Packungen' }).click();
+    await expect(page).toHaveURL(/\/admin\/packungen$/);
+    await expect(page.getByRole('heading', { name: 'Noch keine Packungsgrößen' })).toBeVisible();
 
     // Unbekannte IDs → „nicht gefunden“.
     await page.goto('/admin/rezepte/gibt-es-nicht');

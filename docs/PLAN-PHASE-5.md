@@ -1,6 +1,6 @@
 # Plan Phase 5 – Ernährungs-Engine, Essensplan und Einkaufsliste
 
-**Status:** **freigegeben, Etappen N0 (Plan), N1 (Core: Bedarf, Grenzen, Makros, Timing) und N2a (Inhalte: Schemas, Prüfregeln, Einheiten) umgesetzt** – Stand 11.10.2026. Offene Fragen 16 B: Gründer „Alles wie empfohlen“ (10.10.2026). Gegenprüfung der R2-Blocker durch den Wächter im N0-PR. **N2b Teil 1 (Quelle/Lizenz geklärt, Import-Infrastruktur, Zuordnungs-Vorschlag) umgesetzt** – der Katalog selbst entsteht nach dem Merge über den Workflow `foods-import` (Umsetzungsstand N2b). **N2c (Rezept-Import als Entwurf) und N3 (Core: Essensplan, Meal-Prep, Einkaufsliste, Rezeptsuche) umgesetzt** – Stand 12.10.2026 (Umsetzungsstand N2c/N3). **N4 (App Testmodus: Einrichtung, Tag, Rezept) umgesetzt** – Stand 12.10.2026 (Umsetzungsstand N4). **N2d (Admin-Seiten Ernährung, Sammelfreigabe Rezepte pro Kategorie und Freigabe per ID in `content-review`, Fingerabdruck bestätigter Import-Annahmen) umgesetzt** – Stand 14.10.2026, drei offene Fragen von den Gründern entschieden (Umsetzungsstand N2d). **N5a (App Testmodus: gespeicherter Essensplan, Wochenansicht, „Andere Vorschläge“, „Rezept tauschen“, „Plan aktualisieren“, automatische Neuplanung 6.6) umgesetzt** – Stand 14.10.2026; N5 ist in **N5a** und **N5b** (Einkaufsliste, Meal-Prep-Kochtag, „Zur Einkaufsliste“) geteilt (Umsetzungsstand N5a). **N5b (App Testmodus: Einkaufsliste offline mit eigenen Einträgen und Zeitraum, Neuerzeugung bei Neuplanung W22, „Zur Einkaufsliste“, Meal-Prep-Pläne mit Kochtag und Timern, Auftau-Hinweise; K-a, K-b, K5, K7, N3 K1) umgesetzt** – Stand 14.10.2026; offene Gründer-Entscheidung: Mitteilungen im Hintergrund (`expo-notifications`), Löschfrist weiter offen (Umsetzungsstand N5b). **N5c (App Testmodus: Rezeptsuche mit vorbelegter, erweiterbarer Ernährungsform und gekennzeichneten Treffern, „Zur Einkaufsliste“ für diese Treffer, Ratgeber offline mit R21-Prüfung und „Zahlen aus“) umgesetzt** – Stand 14.10.2026 (Umsetzungsstand N5c). **N6 (PDF P5: Essensplan und Einkaufsliste als PDF, gratis – Dokumentmodell, Renderer-Bausteine `checklist`/`steps`, Druckansichten `ernaehrung/drucken` und `einkaufsliste/drucken`, Knöpfe, nativer Druck, CI-Artefakt) umgesetzt** – Stand 14.10.2026; EAS-Build Android noch von den Gründern zu prüfen (Umsetzungsstand N6). **N9 (Zutaten-Austausch, Prompt D, KONZEPT 6.9, gratis: Austausch-Tabelle mit Regel R23 und Batch-Art, Core `substitute.ts`, Dialog „Zutat austauschen“, Testmodus) umgesetzt** – Stand 14.10.2026; Server-Prüfung S7 und pgTAP mit N7 (Umsetzungsstand N9). **N10 (Bewertung nach dem Essen, Prompt D, KONZEPT 6.10, gratis: Core `ratings.ts` – Daumen runter 8 Wochen, Gründe nur Reihenfolge, `food_dislikes` hart in `filter.ts`; „Wie war’s?“ und Dialog ohne Vorauswahl, Testmodus) umgesetzt** – Stand 14.10.2026; Tabellen mit RLS und pgTAP mit N7 (Umsetzungsstand N10). **Nachtrag „Erweiterungen 2 (11.10.2026)“** in Abschnitt 19 (Fassung 2 nach Wächter-Prüfung, B1/B2 und S1–S14 eingearbeitet): Rezeptbestand aus `alpha5-rezepte.json`, Import in N2b/N2c, Umfang von Prompt C in N3–N6, neue Etappen N9–N14, W1 und P1. Fassung 3 nach Wächter-Nachprüfung `waechter-plan-5-r2.md` (Urteil „mit Auflagen“, alle Befunde eingearbeitet); Fassung 2 nach `waechter-plan-5.md`.
+**Status:** **freigegeben, Etappen N0 (Plan), N1 (Core: Bedarf, Grenzen, Makros, Timing) und N2a (Inhalte: Schemas, Prüfregeln, Einheiten) umgesetzt** – Stand 11.10.2026. Offene Fragen 16 B: Gründer „Alles wie empfohlen“ (10.10.2026). Gegenprüfung der R2-Blocker durch den Wächter im N0-PR. **N2b Teil 1 (Quelle/Lizenz geklärt, Import-Infrastruktur, Zuordnungs-Vorschlag) umgesetzt** – der Katalog selbst entsteht nach dem Merge über den Workflow `foods-import` (Umsetzungsstand N2b). **N2c (Rezept-Import als Entwurf) und N3 (Core: Essensplan, Meal-Prep, Einkaufsliste, Rezeptsuche) umgesetzt** – Stand 12.10.2026 (Umsetzungsstand N2c/N3). **N4 (App Testmodus: Einrichtung, Tag, Rezept) umgesetzt** – Stand 12.10.2026 (Umsetzungsstand N4). **N2d (Admin-Seiten Ernährung, Sammelfreigabe Rezepte pro Kategorie und Freigabe per ID in `content-review`, Fingerabdruck bestätigter Import-Annahmen) umgesetzt** – Stand 14.10.2026, drei offene Fragen von den Gründern entschieden (Umsetzungsstand N2d). **N5a (App Testmodus: gespeicherter Essensplan, Wochenansicht, „Andere Vorschläge“, „Rezept tauschen“, „Plan aktualisieren“, automatische Neuplanung 6.6) umgesetzt** – Stand 14.10.2026; N5 ist in **N5a** und **N5b** (Einkaufsliste, Meal-Prep-Kochtag, „Zur Einkaufsliste“) geteilt (Umsetzungsstand N5a). **N5b (App Testmodus: Einkaufsliste offline mit eigenen Einträgen und Zeitraum, Neuerzeugung bei Neuplanung W22, „Zur Einkaufsliste“, Meal-Prep-Pläne mit Kochtag und Timern, Auftau-Hinweise; K-a, K-b, K5, K7, N3 K1) umgesetzt** – Stand 14.10.2026; offene Gründer-Entscheidung: Mitteilungen im Hintergrund (`expo-notifications`), Löschfrist weiter offen (Umsetzungsstand N5b). **N5c (App Testmodus: Rezeptsuche mit vorbelegter, erweiterbarer Ernährungsform und gekennzeichneten Treffern, „Zur Einkaufsliste“ für diese Treffer, Ratgeber offline mit R21-Prüfung und „Zahlen aus“) umgesetzt** – Stand 14.10.2026 (Umsetzungsstand N5c). **N6 (PDF P5: Essensplan und Einkaufsliste als PDF, gratis – Dokumentmodell, Renderer-Bausteine `checklist`/`steps`, Druckansichten `ernaehrung/drucken` und `einkaufsliste/drucken`, Knöpfe, nativer Druck, CI-Artefakt) umgesetzt** – Stand 14.10.2026; EAS-Build Android noch von den Gründern zu prüfen (Umsetzungsstand N6). **N9 (Zutaten-Austausch, Prompt D, KONZEPT 6.9, gratis: Austausch-Tabelle mit Regel R23 und Batch-Art, Core `substitute.ts`, Dialog „Zutat austauschen“, Testmodus) umgesetzt** – Stand 14.10.2026; Server-Prüfung S7 und pgTAP mit N7 (Umsetzungsstand N9). **N10 (Bewertung nach dem Essen, Prompt D, KONZEPT 6.10, gratis: Core `ratings.ts` – Daumen runter 8 Wochen, Gründe nur Reihenfolge, `food_dislikes` hart in `filter.ts`; „Wie war’s?“ und Dialog ohne Vorauswahl, Testmodus) umgesetzt** – Stand 14.10.2026; Tabellen mit RLS und pgTAP mit N7 (Umsetzungsstand N10). **N11 (Kühlschrank-Suche „Was habe ich da?“ und Packungsgrößen, Prompt D, KONZEPT 6.11, gratis: Core `fridge-search.ts` nach den harten Filtern, Packungsgrößen als eigene Inhaltsart mit Regel R24 und Batch-Art `package-sizes`, Admin `/admin/packungen`, Testmodus) umgesetzt** – Stand 14.10.2026; Spalte `foods.package_size_g` mit N7 (Umsetzungsstand N11). **Nachtrag „Erweiterungen 2 (11.10.2026)“** in Abschnitt 19 (Fassung 2 nach Wächter-Prüfung, B1/B2 und S1–S14 eingearbeitet): Rezeptbestand aus `alpha5-rezepte.json`, Import in N2b/N2c, Umfang von Prompt C in N3–N6, neue Etappen N9–N14, W1 und P1. Fassung 3 nach Wächter-Nachprüfung `waechter-plan-5-r2.md` (Urteil „mit Auflagen“, alle Befunde eingearbeitet); Fassung 2 nach `waechter-plan-5.md`.
 **Reihenfolge (Gründer-Entscheidung 09.10.2026):** 4b-A0 (erledigt) → Übungs-Glossar und Übungstausch (erledigt bis T2; T3 später mit Supabase) → **Phase 5** → Phase 4b (A → D → E; B/C später).
 **Testphase:** zuerst nur im **Testmodus** (lokal auf dem Gerät, ohne Supabase). Supabase-Teile (Migrationen, RLS, pgTAP) sind hier vollständig geplant, kommen aber in einer späteren Etappe (N7). Einzige Ausnahme: die kleine CHECK-Migration für den Onboarding-Schritt in N4 (S8).
 
@@ -836,7 +836,7 @@ Zusätzlich: K9 (Unverträglichkeit + „mag ich“ derselben Gruppe → ausgesc
 
 **N6 – PDF P5.** Dokumentmodell, Renderer-Blöcke, Druckansichten, Knöpfe, nativer Druck. _DoD:_ PDF-Tests aus 12.1 (inkl. K4-Formulierung), CI-Artefakt, EAS-Build Android geprüft.
 
-**N7 – Supabase.** Migrationen (Enums eigene Datei + `enums.ts`; Inhaltstabellen + `seed_content`; `nutrition_prefs`-Spalten **+ `nutritionSetupAvailable` im Supabase-Backend auf `true`** (R2-S3); `meal_plans`/`items`/`shopping_*` mit RLS, Spaltenrechten, Indizes; RPCs 7.3 inkl. Faktor-≠-1-Prüfung; Widerruf; Export), pgTAP 23–26 + Ergänzungen, `database.types.ts`, `db-sync.test.ts`, `supabase-backend.ts`, Sync-Warteschlange, geschützter Speicher. **Vorher: Fachprüfung durch eine Ernährungsfachkraft** (Gründer-Entscheidung 6). _DoD:_ `db-test` grün, Live-Test mit zwei Geräten; **Zitat- und Wertprüfung gegen die Originale** (Compendium-Codes/MET-Werte, Koletzko 2018, Janmahasatian 2005, Loucks 2011 brutto/netto, BfR-Koffein, Katch-McArdle, D-A-CH-PAL, Iraki 2019) erledigt und alle „VOR LIVEGANG FACHLICH PRÜFEN“-Stellen in `constants.ts` aufgelöst (aus N1 verschoben, Wächter N1 K6). **Erst wenn echte Konten kommen.** **Zusätzlich (Wächter N2d K9):** Rezept-Seed und Supabase-Tabelle transportieren `ingredients`, `steps_de`, `tip_de`, `no_cook`, Zeiten, `equipment_de`, Titel/Beschreibung und `meta.import_assumptions*` **unverändert** (fehlt `meta`, gälte der Stand als „none“ = unsichere Richtung); ein `db-sync`-/pgTAP-Test vergleicht `importAssumptionsState` vor und nach dem Seed. **Zusätzlich (Wächter N5a S4):** `meal_plans`/`meal_plan_items` speichern weder Planband noch `safetyKey`; 6.6 wird dafür ohne diese Felder umgesetzt. **Zusätzlich (Wächter N10 H8):** `food_dislikes` **ohne** `created_at`/Zeitstempel (sonst ließe sich ein „Daumen runter“ ohne Grund vom selben Tag auf „Unverträglich“ zurückführen); der Leer-Grund `rated_down` (`SLOT_EXCLUSION_REASONS`) wird in `mealPlanPayloadSchema`/`save_meal_plan` zugelassen; `recipe_ratings` mit CHECK `reason in ('taste','effort','cost','satiety')` und CHECK `reason is null or value = 'down'`, Unique `(user_id, recipe_id)`.
+**N7 – Supabase.** Migrationen (Enums eigene Datei + `enums.ts`; Inhaltstabellen + `seed_content`; `nutrition_prefs`-Spalten **+ `nutritionSetupAvailable` im Supabase-Backend auf `true`** (R2-S3); `meal_plans`/`items`/`shopping_*` mit RLS, Spaltenrechten, Indizes; RPCs 7.3 inkl. Faktor-≠-1-Prüfung; Widerruf; Export), pgTAP 23–26 + Ergänzungen, `database.types.ts`, `db-sync.test.ts`, `supabase-backend.ts`, Sync-Warteschlange, geschützter Speicher. **Vorher: Fachprüfung durch eine Ernährungsfachkraft** (Gründer-Entscheidung 6). _DoD:_ `db-test` grün, Live-Test mit zwei Geräten; **Zitat- und Wertprüfung gegen die Originale** (Compendium-Codes/MET-Werte, Koletzko 2018, Janmahasatian 2005, Loucks 2011 brutto/netto, BfR-Koffein, Katch-McArdle, D-A-CH-PAL, Iraki 2019) erledigt und alle „VOR LIVEGANG FACHLICH PRÜFEN“-Stellen in `constants.ts` aufgelöst (aus N1 verschoben, Wächter N1 K6). **Erst wenn echte Konten kommen.** **Zusätzlich (Wächter N2d K9):** Rezept-Seed und Supabase-Tabelle transportieren `ingredients`, `steps_de`, `tip_de`, `no_cook`, Zeiten, `equipment_de`, Titel/Beschreibung und `meta.import_assumptions*` **unverändert** (fehlt `meta`, gälte der Stand als „none“ = unsichere Richtung); ein `db-sync`-/pgTAP-Test vergleicht `importAssumptionsState` vor und nach dem Seed. **Zusätzlich (Wächter N5a S4):** `meal_plans`/`meal_plan_items` speichern weder Planband noch `safetyKey`; 6.6 wird dafür ohne diese Felder umgesetzt. **Zusätzlich (N11):** Packungsgrößen kommen als Inhalt aus `content/package-sizes/` (nur `published`, R24 grün) über `seed_content()` in die Spalte `foods.package_size_g` (bzw. eine Tabelle `food_package_sizes` mit Prüfvermerk, Entscheidung beim Bau von N7) – `content/foods/` bleibt allein `foods-import` vorbehalten (S3); keine Nutzerdaten, keine Tabelle für die Kühlschrank-Suche (die Auswahl wird nie gespeichert). **Zusätzlich (Wächter N10 H8):** `food_dislikes` **ohne** `created_at`/Zeitstempel (sonst ließe sich ein „Daumen runter“ ohne Grund vom selben Tag auf „Unverträglich“ zurückführen); der Leer-Grund `rated_down` (`SLOT_EXCLUSION_REASONS`) wird in `mealPlanPayloadSchema`/`save_meal_plan` zugelassen; `recipe_ratings` mit CHECK `reason in ('taste','effort','cost','satiety')` und CHECK `reason is null or value = 'down'`, Unique `(user_id, recipe_id)`.
 
 **N8 – Batch-Pipeline Rezepte (optional, später).** `kinds/recipe.ts` (Matrix, Prompts, Structured Output nur mit Katalog-IDs), Probelauf ohne Schlüssel, `content-generate`/`collect` mit `ANTHROPIC_API_KEY`. _DoD:_ Probelauf grün, Kostenschätzung, PR mit Entwürfen.
 
@@ -1104,7 +1104,7 @@ Neue Prüfregeln (Teil von `content:validate`):
 - Testmodus: `localDb.recipeRatings`, `localDb.foodDislikes`; Export und „Testdaten löschen“. Supabase-Tabellen mit RLS (nur eigene Zeilen, keine Aggregation, nie Analytics), Export, Löschung per Kaskade **in N7** (19.4, pgTAP in der N7-DoD).
 - _DoD (nur Testmodus):_ Tests „8 Wochen genau“, „Plan bleibt deterministisch“, „`food_dislikes` schließt aus“, **„Grund ‚Unverträglich‘ landet nie in `localDb`, Payload oder Logs; kein Analytics-Ereignis mit Bewertungsgrund“**; Playwright „Daumen runter → nicht mehr im Plan“, Dialog ohne Vorauswahl.
 
-**N11 – Kühlschrank-Suche und Packungsgrößen (Prompt D, KONZEPT 6.11, gratis).** Core `fridge-search.ts`: Übereinstimmung = Anteil vorhandener Zutaten gewichtet nach Menge (Vorrat/Gewürze zählen wenig), danach dieselben harten Filter wie die Rezeptsuche, stabile Sortierung; Auswahl wird nicht gespeichert; Zahlen-Schalter (S12). Batch-Art `package-size` → Feld `package_size_g` → `draft` → Freigabe (Plausibilität 1–5.000 g). _DoD:_ Tests (keine Zutat, alle Zutaten, nur Gewürze, Ausschlüsse wirken), App „Was habe ich da?“.
+**N11 – Kühlschrank-Suche und Packungsgrößen (Prompt D, KONZEPT 6.11, gratis).** _Umgesetzt im Testmodus (14.10.2026), siehe Umsetzungsstand N11._ Core `fridge-search.ts`: Übereinstimmung = Anteil vorhandener Zutaten gewichtet nach Menge (Vorrat/Gewürze zählen wenig), danach dieselben harten Filter wie die Rezeptsuche, stabile Sortierung; Auswahl wird nicht gespeichert; Zahlen-Schalter (S12). Batch-Art `package-size` → Feld `package_size_g` → `draft` → Freigabe (Plausibilität 1–5.000 g). _DoD:_ Tests (keine Zutat, alle Zutaten, nur Gewürze, Ausschlüsse wirken), App „Was habe ich da?“.
 
 **N12 – Einkaufsliste weitergeben (Prompt F „Sofort“, KONZEPT 6.13, gratis).** `shoppingListToText(list)` in Core (nach Abteilung, Produktarten und Mengen in g/Stück, **ohne kcal, ohne Gründe, ohne Körpergewicht**; Häkchen optional); System-Teilen-Dialog (nativ `Share`, Web `navigator.share` bzw. Kopieren); PDF aus N6. Hinweis vor dem Weitergeben, wenn `uses_health_data` bzw. Ersatzprodukte enthalten sind (wie K4). **Händler-Modul** `packages/core/src/retail/` nur als Schnittstelle (`RetailProvider`) + Feature-Flag `retail_integration` (aus), **ohne Händler**, ohne Netzwerkaufruf. **Bedingungen für das Einschalten des Flags (K5):** eigene Einwilligung für die Übermittlung, DSFA-Ergänzung, Datenminimierung (nur Produktarten und Mengen, keine Ersatz-Hinweise, keine Plan- oder Profildaten), offizielle Schnittstelle bzw. Partnerprogramm, Kennzeichnung „Anzeige“. Gemeinsame Liste im Paar-Modus → P1. _DoD:_ Tests Text (Escaping, leere Liste, Vorrat), Playwright Teilen/Kopieren, Flag aus = kein Knopf.
 
@@ -2855,3 +2855,155 @@ pgTAP kommen mit N7, 19.4/19.10).
   X % der Rezepte aus“?
 - **G6** Bestätigen (Datenschutz/DSFA), dass Bewertungen und `food_dislikes` nicht unter Art. 9 fallen (keine
   Einwilligung, bleiben beim Widerruf `health_data`).
+
+### N11 – Kühlschrank-Suche und Packungsgrößen (umgesetzt, 14.10.2026, ohne Commit)
+
+Umfang wie 19.7 N11 (Prompt D, KONZEPT 6.11): gratis, rein regelbasiert – keine Echtzeit-KI. Packungsgrößen entstehen
+offline über die Content-Pipeline und werden über `content-review` freigegeben. Nur Testmodus; Supabase-Modus bis N7
+unverändert (Spalte `foods.package_size_g` mit N7, Vormerkung bei der Etappe N7 in 13).
+
+1. **Inhalte** (`packages/core/src/content/`):
+   - `package-size-schema.ts`: neue Art `package_size` (`content/package-sizes/<id>.json`, Zod strikt): `food_id`,
+     `package_size_g` (ganze Gramm, **1–5.000 g** = Plausibilität aus 19.7, Schema R1, rot auch bei Entwürfen), `meta`.
+     Feste ID `packung-<lebensmittel>` (über 80 Zeichen: `packung-<16 Hex>`). Konstante `PACKAGE_SIZE_LIMITS`.
+   - `package-size-checks.ts`: **R24 (rot)** Lebensmittel existiert, nicht zurückgezogen, katalog-geprüft (R19),
+     freigegebener Eintrag nur mit freigegebenem Lebensmittel, **Packung nicht kleiner als ein Stück** (`units.piece_g`),
+     je Lebensmittel nur ein (nicht zurückgezogener) Eintrag, ID = `packung-<lebensmittel>` (Wächter N11 H6); `packageSizeLookup` für N13/N14.
+   - `validateContent` (Ergebnis `packageSizes`), `selectNutritionContent` (`NutritionLibrary.packageSizes`: Status,
+     roter Befund, Probelauf, Lebensmittel ausgewählt), `planNutritionRelease` (Freigabe per ID: nur ohne roten Befund
+     im Stand danach), Regeltabelle (`R24`), Beispiel-Bestand `DEMO_PACKAGE_SIZES` (6 Einträge mit Testwerten).
+2. **Core** `packages/core/src/nutrition/fridge-search.ts` (Konstante `FRIDGE_SEARCH` in `constants.ts`):
+   - `searchFridge(input, { foodIds })`: **zuerst** dieselben harten Filter wie die Rezeptsuche – jedes Rezept über
+     `recipeForPersonWithDiets` (= `filter.ts`) mit der **Ernährungsform des Profils**; Schwein, Unverträglichkeiten,
+     „mag ich nicht“ (Gruppe und Lebensmittel), `pregnancy_caution`, Status/Katalog unverändert. **Danach**
+     Übereinstimmung = Anteil der vorhandenen Zutaten, **gewichtet nach Menge in Gramm**; Vorrat (`pantry`) und Gewürze
+     (Abteilung „Gewürze & Backzutaten“) zählen mit `minorWeight` = 0,1 ihrer Menge; verglichen wird das tatsächlich
+     verwendete Lebensmittel (Ersatzprodukt statt Original); optionale Zutaten zählen nicht. Gelistet nur mit
+     mindestens einer vorhandenen Zutat, die **kein Gewürz** ist. Sortierung stabil: Übereinstimmung (auf 6 Stellen),
+     weniger fehlende Hauptzutaten, Titel, ID. Leere Auswahl → keine Treffer. Treffer mit `have`, `missing`
+     (Hauptzutaten), `missingMinor` (Vorrat/Gewürze).
+   - `fridgeSearchFoodOptions`: Auswahlliste nur aus Lebensmitteln, die in einem für die Person passenden Rezept (nicht
+     optional) verwendet werden – ausgeschlossene Lebensmittel erscheinen nie; nach Abteilung (5.5), dann Name.
+   - `fridgeSearchQuerySchema` (Zod strikt, Katalog-ID-Format, höchstens 100, Doppelte zählen einmal),
+     `fridgeMatchPercent` (abgerundet: 100 % nur bei vollständiger Übereinstimmung), `isMinorFridgeFood`,
+     `isSeasoningFood`. Strukturtest K2 kennt `fridge-search.ts` (keine eigenen Grenzen).
+3. **Content-Pipeline** (`packages/content`): Batch-Art `kinds/package-size.ts` (Workflow-Eingabe `package-sizes`): je
+   katalog-geprüftem Lebensmittel ohne Alkohol eine Anfrage, Antwort `package_size_g` in ganzen Gramm oder `null`
+   (= keine sinnvolle Angabe → `no_content`), Prompt „kleinste übliche Kaufeinheit im DACH-Handel“, keine Marken;
+   übersprungen, wenn es schon einen Eintrag gibt. `PIPELINE_FOLDERS`, Merkdatei, `content:validate` (R24, Zählzeile),
+   `content-review` (Art `ids`, Bezeichnung „Packungsgröße“) und `scripts/bundle-content.mjs` kennen
+   `package-sizes`. Probelauf ohne Schlüssel (eine gültige, eine über 5.000 g, eine Ablehnung). Workflow
+   `content-generate.yml` mit Option `package-sizes`; SETUP 2 ergänzt.
+4. **Redaktionsbereich** (`apps/web`): neue Seite **`/admin/packungen`** (nur ansehen: Lebensmittel mit Gramm, ID,
+   Status, Prüfbericht R24, Klick-Schritte „Freigabe per ID“), Bereich „Packungen“ in der Navigation.
+5. **App** (`apps/mobile`, Testmodus): neuer Bildschirm **`rezepte/kuehlschrank.tsx` „Was habe ich da?“** (Knopf in der
+   Tagesansicht und in der Rezeptsuche): Zutaten nach Abteilung als Häkchen mit Suchfeld, „Auswahl leeren“, Hinweis
+   „Deine Auswahl wird nicht gespeichert“, Karten mit „… % passt“, „Hast du: …“, „Fehlt noch: …“ (höchstens 6, Rest
+   „und N weitere“), „Aus dem Vorrat: …“, Zeit, kcal je Portion **nur mit Zahlen**, „Entwurf“; über der Liste die
+   Allergen-Warnung für Entwürfe (19.8 Nr. 9). Zustände: Laden, Fehler, Sperre ohne Einwilligung, unvollständig, keine
+   Rezepte, keine Zutaten für die Person, nichts ausgewählt, nur Gewürze, kein Treffer, Höchstzahl. Karte → Rezeptansicht
+   wie aus der Rezeptsuche (Profil-Ernährungsform). Daten: `data/fridge-search.ts` (`fridgeSearchForPerson`: Profil wie
+   Essensplan/Rezeptsuche, Schwangerschafts-Ausschluss wie die Woche, veraltete Auswahl fällt still weg). Texte in
+   `i18n/de-nutrition.ts` (`fridge`).
+6. **Tests:** Core `n11-fridge-search.test.ts` (14, nach der Wächter-Prüfung 16): **keine Zutat**, **alle Zutaten** (100 %, ganz oben), **nur
+   Gewürze** (keine Treffer, mit Hauptzutat wieder), Gewichtung unabhängig nachgerechnet (Hähnchen vs. Reis),
+   optionale Zutaten, Ersatzprodukt (laktosefrei), stabile Sortierung (Eingabe umgedreht = gleiches Ergebnis,
+   Gleichstand nach Titel), Prozent-Rundung, **Ausschlüsse wirken** (vegan nicht erweitert, Erdnuss, Pilze, Lebensmittel
+   „mag ich nicht“, Schwein unbekannt, Schwangerschaft) und **Eigenschaftstest „nie ein Rezept, das `filter.ts`
+   ausschließt; nie ein ausgeschlossenes Lebensmittel“** (120 Profile, Orakel `usedFoodViolations`, Auswahl absichtlich
+   mit ausgeschlossenen Lebensmitteln), Grenzfälle (Rezept nur aus Gewürzen, leerer Bestand, Auswahlliste).
+   `package-size-checks.test.ts` (11, nach der Wächter-Prüfung 12: Schema 0/1/5.000/5.001/Komma, feste ID, R24 je Regel, Bibliothek, Beispiel-Bestand,
+   Auswahl, Freigabe per ID); Regeltabelle (R24 rot). Content: Schema-/Prompt-Tests der Art, Probelauf Ende-zu-Ende
+   generate → collect → Pull Request. Web: Render-Test `/admin/packungen`, E2E Login-Schutz und Leerzustand. App-Vitest
+   `nutrition-n11.test.ts` (6, nach der Wächter-Prüfung 7: Eigenschaftstest über 8 Personen mit allen Zutaten ausgewählt, feste Fälle, Karten,
+   leere/Gewürz-/veraltete Auswahl, Sperre ohne Einwilligung, **„Auswahl nicht gespeichert und nicht geloggt“**).
+   Playwright `e2e/nutrition-fridge.spec.ts` (2: Auswahl ohne Fleisch/Pilze, nur Gewürze, 100 %, Allergen-Warnung,
+   Suchfeld, **Gerätespeicher vor und nach der Auswahl gleich**, Adresse ohne Auswahl, nach Neuladen leer, „Zahlen aus“
+   → keine kcal; vegan + Erdnuss + schwanger: Erdnüsse/Räucherlachs/Ei/Milch nicht in der Auswahl, kein Erdnuss-Rezept).
+   Gegenproben siehe unten.
+
+**Präzisierungen (vom Plan nicht ausdrücklich geregelt, vorsichtig gelöst):**
+
+- **Packungsgrößen als eigene Inhaltsart statt Feld in `content/foods/`:** 19.4 nennt „Zutat `package_size_g?` …
+  `meta.package_size_reviewed_*`“. `content/foods/` darf aber nur der Workflow `foods-import` schreiben (S3,
+  `sources-integrity` prüft jeden Commit dort) – ein Batch-Vorschlag oder eine Freigabe in diesen Dateien wäre rot bzw.
+  müsste die Herkunftsprüfung aufweichen. Deshalb `content/package-sizes/` wie die Austausch-Tabelle (N9); Status und
+  `meta.reviewed_by/at` des Eintrags entsprechen dem geplanten `package_size_reviewed_*`. Mit N7 wird daraus die Spalte
+  an `foods` (oder eine eigene Inhaltstabelle) – nur freigegebene Einträge, über `seed_content()`.
+- **Plausibilität:** 1–5.000 g als ganze Gramm im Schema (R1); zusätzlich rot, wenn die Packung kleiner als ein Stück
+  wäre. „Packung“ = kleinste übliche Kaufeinheit (bei Stückware ein Stück bzw. Netz/Schale) – so passt sie zur
+  Resteplanung (N13).
+- **Wofür N11 die Packungsgröße nutzt:** noch nicht in der App. „Einkaufsliste auf Packungen aufrunden (N11)“ in 19.7 N13
+  ist als „mit den Packungsgrößen aus N11“ gelesen – Aufrunden und Anzeige kommen mit N13/N14.
+- **Ernährungsform nicht erweiterbar:** Die Kühlschrank-Suche nutzt die Ernährungsform des Profils (KONZEPT 6.11
+  „gefiltert nach Ernährungsform“); das Erweitern der Rezeptsuche (K3) ist hier nicht übernommen (sichere Richtung, keine
+  gekennzeichneten Treffer). Weitere weiche Filter der Rezeptsuche (Kategorie, Zeit, Kosten) gibt es hier nicht.
+- **„Vorrat/Gewürze zählen wenig“** = Lebensmittel mit `pantry` oder aus „Gewürze & Backzutaten“ mit einem Zehntel
+  ihrer Grammzahl. Reis, Nudeln, Haferflocken oder Dosen sind im Katalog Vorrat und zählen daher wenig, reichen aber
+  für einen Treffer; **nur Gewürze/Backzutaten** reichen nie (sonst passte jedes Rezept mit Salz) – Hinweis in der App.
+- **Optionale Zutaten** zählen weder als vorhanden noch als fehlend; **Ersatzprodukte** zählen als das tatsächlich
+  verwendete Lebensmittel (bei Laktose-Unverträglichkeit passt „laktosefreie Milch“, nicht „Vollmilch“).
+- **Auswahlliste** nur aus Lebensmitteln passender Rezepte – Ausgeschlossenes (Allergene, Ernährungsform,
+  „mag ich nicht“, Schwangerschaft) wird gar nicht angeboten; eine veraltete Auswahl nach einer Profiländerung fällt
+  still weg. Höchstens 100 Zutaten (`FRIDGE_SEARCH.maxSelectedFoods`, Bedienschutz).
+- **Bewertungen** (Daumen runter) wirken hier nicht – wie in der Rezeptsuche (eigene Suche, kein Vorschlag);
+  `food_dislikes` wirken hart.
+- **Auswahl nicht gespeichert:** nur im Zustand der Ansicht (nicht in Adresse, Gerätespeicher, Export, Logs); nach
+  Verlassen oder Neuladen leer. Damit entsteht kein neues Gesundheitsdatum; angezeigt wird nur, was die Person ohnehin
+  sehen darf (Treffer nach ihrem Profil, Unverträglichkeiten nur mit gültiger Einwilligung, sonst gesperrt).
+- **Prozent** sind keine Energie- oder Makrozahl und bleiben bei „Zahlen aus“ sichtbar; kcal je Portion nur mit Zahlen.
+  Sortiert wird nie nach kcal.
+- **Batch-Art:** eine Anfrage je Lebensmittel (wie N9), Antwort `null` erlaubt (z. B. Leitungswasser) → kein Eintrag,
+  Grund `no_content`; kein Merker gegen erneute Anfrage (wie N9 K4).
+- **Admin-Seite `/admin/packungen`** zusätzlich (KONZEPT 6.11 „im Admin freigegeben“ – der Admin schreibt nicht, die
+  Freigabe läuft wie bei N9 über `content-review`, Art `ids`).
+
+**Gegenproben (danach zurückgesetzt):** (1) In `fridge-search.ts` die Ernährungsform um „mit Fleisch“ erweitert
+(`recipeForPersonWithDiets(recipe, ctx, ['omnivore'])`) → Core 2 Tests rot (Eigenschaftstest und „vegan nicht
+erweitert“), App-Vitest 2 rot (Eigenschaftstest, feste Fälle). (2) Die Regel „nur Gewürze reichen nicht“ entfernt →
+Core 2 rot, App 1 rot. (3) Gewichtung „Vorrat/Gewürze ein Zehntel“ entfernt → Core 1 rot, App 1 rot. (4) R24 „kleiner
+als ein Stück“ entfernt → 1 rot.
+
+**So testest du es am Handy:** HANDY-ANLEITUNG Teil 7c, Abschnitt „Was habe ich da? – Kühlschrank-Suche“; Packungen im
+Redaktionsbereich unter **Packungen**, erzeugen über SETUP 2 (`package-sizes`).
+
+**Wächter-Prüfung N11 (14.10.2026): MIT AUFLAGEN FREIGEBBAR** (Bericht `waechter-n11.md`, 1 Blocker; Sicherheit ohne
+Befund – kein Weg zeigt ein Rezept, das `filter.ts` ausschließt). Umgesetzt:
+
+- **B1 (Blocker)** Freigabe-Tests in `package-size-checks.test.ts` und (vorbestehend, N9) `substitution-checks.test.ts`
+  mit eigenem Zeitlimit 30 s (volle `validateContent`-Läufe überschritten unter turbo-Last die 5 s; Präzedenz
+  `swap-properties.test.ts`).
+- **S1** Treffer erst ab **1 %** Übereinstimmung (abgerundet, wie angezeigt; `FRIDGE_SEARCH.minPercent`) – keine Karten
+  „0 % passt“, wenn z. B. nur Olivenöl ausgewählt ist. Die Gewichtung selbst bleibt unverändert (G2 offen). Test „nur
+  Olivenöl → nichts unter 1 %, Hähnchen-Reis nicht gelistet“.
+- **S2** Leistung: Die für die Person gefilterten Rezepte (`fridgeSearchVariants`) und die Auswahlliste rechnet die App
+  **einmal** je Profil/Woche/Bestand (`prepareFridgeSearch`, useMemo ohne Auswahl); jedes Antippen rechnet nur noch die
+  Übereinstimmung (`fridgeSearchResults`). Die Kartenliste zeigt zuerst 30 Treffer (`FRIDGE_SEARCH.pageSize`), weitere
+  über „Mehr anzeigen (noch N)“; kcal je Portion werden nur für angezeigte Karten berechnet. Tests: vorberechnete
+  Varianten = gleiche Auswahl und gleiche Treffer (Core), begrenzte Liste = Anfang der vollen Liste, gleiche Gesamtzahl
+  (App).
+- **S3** Probelauf-Inhalte zählen in der Pipeline nicht als „schon vorhanden“ (`countsAsPresent` in
+  `kinds/present.ts`, genutzt von Packungsgrößen **und** der Austausch-Tabelle aus N9). Test für beide Arten.
+  **Restgrenze:** Ein versehentlich gemergter Probelauf belegt weiter die Datei-ID (`packung-tofu`); ein echter Lauf
+  meldet dann „ID belegt“ im Bericht, statt zu überschreiben. Deshalb SETUP: Probelauf-Pull-Requests nie mergen
+  (die Datei ggf. löschen).
+- **H6** R24 prüft zusätzlich, dass die ID zum Lebensmittel passt (`packung-<lebensmittel>`); Test.
+- **H7** Beispiel-Packung Paprika auf ein Stück (150 g) korrigiert – passend zu „Stückware = ein Stück“.
+- **H3** Der E2E-Test vergleicht localStorage **und** sessionStorage vor und nach der Auswahl.
+- **Nur vermerkt:** H2 (Auswahlliste lässt auf Ausschlüsse schließen – nur für die Person selbst sichtbar, nichts
+  gespeichert; im Partner-Modus P1 nie für die andere Person verwenden), H4 (Sortierung je Plattform stabil, Web und
+  App bei Umlauten nicht zeichengleich vergleichen), H5/H8/H9/H10 ohne Befund.
+
+**Offen für die Gründer (N11, nicht umgesetzt – sichere Voreinstellung gilt; Empfehlungen des Wächters):**
+
+- **G1** Soll „Was habe ich da?“ die Ernährungsform wie die Rezeptsuche erweitern können (Treffer gekennzeichnet) –
+  jetzt nein? _Empfehlung: nein, so lassen._
+- **G2** Gewichtung: Vorrat (Reis, Nudeln, Dosen) zählt wie Gewürze nur ein Zehntel (Plan-Wortlaut) – oder nur
+  Gewürze/Öl gering und Vorrat voll? _Empfehlung (Entscheidung nötig): Vorrat mit Kohlenhydrat-Basis (Reis, Nudeln,
+  Haferflocken) voll; Gewürze, Öl, Essig, Saucen ein Zehntel und allein nicht ausreichend; unter 1 % nicht zeigen
+  (Letzteres ist schon umgesetzt, S1)._
+- **G3** Packungsgröße bei Stückware = ein Stück (jetzt im Prompt) – oder übliche Mehrfachpackung (z. B. Paprika 3er)?
+  _Empfehlung (Entscheidung nötig, VOR dem ersten echten `package-sizes`-Lauf): die übliche Kaufeinheit im Laden
+  (Netz/Schale), wenn Stückware meist so verkauft wird; danach Prompt und Beispielwert anpassen._
+- **G4** Mit „Daumen runter“ abgelehnte Rezepte in der Kühlschrank-Suche zeigen (jetzt ja, wie Rezeptsuche) oder
+  ausblenden? _Empfehlung: so lassen wie die Rezeptsuche; bitte bestätigen._
