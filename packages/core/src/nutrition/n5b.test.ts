@@ -202,7 +202,8 @@ describe('Abgleich gespeicherter Pläne um Kochtag/Haltbarkeit (K-a)', () => {
         }
       }
     }
-  });
+    // Einzeln < 1 s; in CI unter Parallel-Last über der 5-s-Standardgrenze (14.10.2026).
+  }, 60_000);
 
   it('Rest „eingefroren“ bei nicht einfrierbarem Gericht → leftover_expired', () => {
     let tested = 0;
