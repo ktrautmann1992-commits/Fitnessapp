@@ -31,7 +31,6 @@ Sie werden nicht rot.
 | `SUPABASE_SECRET_KEY`                  | Supabase (A7) | GitHub Secret (B)                                                          | **JA**  |
 | `SUPABASE_PROJECT_REF`                 | Supabase (A4) | GitHub Secret (B)                                                          | nein    |
 | `SUPABASE_DB_PASSWORD`                 | Supabase (A3) | GitHub Secret (B)                                                          | **JA**  |
-| `SUPABASE_ACCESS_TOKEN`                | Supabase (A8) | GitHub Secret (B)                                                          | **JA**  |
 | `EXPO_TOKEN`                           | Expo (D4)     | GitHub Secret (B)                                                          | **JA**  |
 | Expo-Projekt-ID                        | Expo (D3)     | Claude in einer Sitzung nennen (D5), kommt in `apps/mobile/app.config.ts`  | nein    |
 | Apple-ID der App (Zahl)                | Apple (D2 A2) | Claude in einer Sitzung nennen, kommt in `apps/mobile/eas.json`            | nein    |
@@ -75,8 +74,7 @@ Sie werden nicht rot.
    `EXPO_PUBLIC_SUPABASE_PUBLISHABLE_KEY` und `NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY`.
 7. Auf derselben Seite beim **Secret key** (`sb_secret_…`) auf **Reveal** tippen und kopieren. Das ist `SUPABASE_SECRET_KEY`.
    Gibt es nur „Legacy“-Schlüssel, nimm stattdessen den Schlüssel `service_role`.
-8. Oben rechts auf dein **Profilbild → Account preferences → Access Tokens → Generate new token**.
-   Name: `github-actions` → **Generate** → kopieren. Das ist `SUPABASE_ACCESS_TOKEN`.
+8. _(Entfällt seit 14.10.2026: `db-migrate` verbindet sich direkt mit Passwort, ein Zugangs-Token wird nicht mehr gebraucht. Einen vorhandenen Token `github-actions` unter Account → Access Tokens löschen.)_
 
 ---
 
@@ -945,7 +943,7 @@ zeigt „Heute“ richtigerweise „Für deine Angaben gibt es gerade keinen fre
 | Workflow                 | Wann                                                                | Braucht                                                                                |
 | ------------------------ | ------------------------------------------------------------------- | -------------------------------------------------------------------------------------- |
 | `ci`                     | bei jedem Push und Pull Request (inkl. Klick-Tests), per Hand       | nichts                                                                                 |
-| `db-migrate`             | nach Merge in `main`, wenn sich Migrationen ändern, oder per Hand   | `SUPABASE_ACCESS_TOKEN`, `SUPABASE_DB_PASSWORD`, `SUPABASE_PROJECT_REF`                |
+| `db-migrate`             | nach Merge in `main`, wenn sich Migrationen ändern, oder per Hand   | `SUPABASE_DB_PASSWORD`, `SUPABASE_PROJECT_REF`                                         |
 | `content-generate`       | per Hand (Actions → Run workflow)                                   | `ANTHROPIC_API_KEY` (Probelauf: nichts)                                                |
 | `content-collect`        | alle 3 Stunden und per Hand                                         | Teil H; `ANTHROPIC_API_KEY` nur für echte Läufe                                        |
 | `content-review`         | per Hand                                                            | Teil H                                                                                 |
