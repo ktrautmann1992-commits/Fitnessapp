@@ -4,7 +4,7 @@ import { RECIPE_EXTENSION_LIMITS } from '../constants';
 import { normalizeFoodText } from '../content/allergen-rules';
 import type { FoodLookup } from '../content/food-schema';
 import { recipeTotalMinutes } from '../content/import-rules';
-import { RECIPE_CATEGORY_IDS, type Recipe } from '../content/recipe-schema';
+import { RECIPE_CATEGORY_IDS, type Recipe, type RecipeCategoryId } from '../content/recipe-schema';
 import { DIET_TYPES, type DietType } from '../enums';
 import { filterRecipe, type FilteredRecipe } from './filter';
 import { dietAllows } from './recipe-nutrients';
@@ -47,6 +47,84 @@ export interface RecipeSearchHit {
 }
 
 const DIET_RANK: Readonly<Record<DietType, number>> = { vegan: 0, vegetarian: 1, omnivore: 2 };
+const DIETS_BY_RANK: readonly DietType[] = ['vegan', 'vegetarian', 'omnivore'];
+
+/** Die großzügigste der Ernährungsformen (Erweitern, nie Einschränken, K3). */
+function widestDiet(profileDiet: DietType, extra: readonly DietType[]): DietType {
+  return [profileDiet, ...extra].reduce((a, b) => (DIET_RANK[b] > DIET_RANK[a] ? b : a));
+}
+
+/**
+ * Ernährungsformen, um die die Suche erweitert werden kann (K3): nur großzügigere als die Profil-Ernährungsform
+ * (vegan → vegetarisch, mit Fleisch; vegetarisch → mit Fleisch; mit Fleisch → keine).
+ */
+export function recipeSearchDietOptions(profileDiet: DietType): DietType[] {
+  return DIETS_BY_RANK.filter((diet) => DIET_RANK[diet] > DIET_RANK[profileDiet]);
+}
+
+/**
+ * Weiche Filter, die der Bestand hergibt (nicht personenbezogen): Kategorien in fester Reihenfolge, Abschnitte
+ * alphabetisch, ob es Rezepte mit FREIGEGEBENER Kostenschätzung gibt. Leere Filter werden nicht angeboten.
+ */
+export function recipeSearchFacets(recipes: readonly Recipe[]): {
+  categories: RecipeCategoryId[];
+  sections: string[];
+  hasReviewedCosts: boolean;
+} {
+  const categories = new Set(recipes.flatMap((r) => r.categories ?? []));
+  const sections = new Set(
+    recipes.flatMap((r) => (r.section_de === undefined ? [] : [r.section_de])),
+  );
+  return {
+    categories: RECIPE_CATEGORY_IDS.filter((id) => categories.has(id)),
+    sections: [...sections].sort((a, b) => a.localeCompare(b, 'de')),
+    hasReviewedCosts: recipes.some((r) => r.cost_estimate?.reviewed_by !== undefined),
+  };
+}
+
+export interface RecipeForPersonContext {
+  readonly foods: FoodLookup;
+  readonly profile: MealPlanProfileInput;
+  /** Ausschluss `pregnancy_caution` (aus den Tageszielen). */
+  readonly excludePregnancyCaution: boolean;
+  readonly allowDrafts: boolean;
+  readonly redRecipeIds?: ReadonlySet<string>;
+}
+
+/**
+ * EIN Rezept für die Person – dieselbe Regel wie die Suche (Rezeptansicht aus der Suche, „Zur Einkaufsliste“ eines
+ * Suchtreffers): zuerst wie im Essensplan mit der Profil-Ernährungsform (`filterRecipe`), nur wenn das nicht passt mit
+ * der erweiterten Form. Alle anderen Ausschlüsse (Schwein, Unverträglichkeiten, „mag ich nicht“,
+ * `pregnancy_caution`, Status) gelten unverändert – sie laufen in beiden Fällen durch `filterRecipe`.
+ * null = ausgeschlossen.
+ */
+export function recipeForPersonWithDiets(
+  recipe: Recipe,
+  ctx: RecipeForPersonContext,
+  extraDiets: readonly DietType[] = [],
+): RecipeSearchHit | null {
+  const profile = mealPlanProfileSchema.parse(ctx.profile);
+  const diets = z.array(z.enum(DIET_TYPES)).max(3).parse(extraDiets);
+  const searchDiet = widestDiet(profile.diet, diets);
+  const filterCtx = (p: typeof profile) => ({
+    profile: p,
+    excludePregnancyCaution: ctx.excludePregnancyCaution,
+    allowDrafts: ctx.allowDrafts,
+    ...(ctx.redRecipeIds !== undefined ? { redRecipeIds: ctx.redRecipeIds } : {}),
+  });
+  const own = filterRecipe(recipe, ctx.foods, filterCtx(profile));
+  const result =
+    own.ok || searchDiet === profile.diet
+      ? own
+      : filterRecipe(recipe, ctx.foods, filterCtx({ ...profile, diet: searchDiet }));
+  if (!result.ok) return null;
+  const diet = result.value.facts.diet;
+  return {
+    variant: result.value,
+    // Nur über die erweiterte Form gefunden → immer gekennzeichnet (G4: nie in den automatischen Plan).
+    outsideProfileDiet: own.ok ? null : dietAllows(profile.diet, diet) ? searchDiet : diet,
+  };
+}
 
 export function searchRecipes(
   input: {
@@ -60,30 +138,20 @@ export function searchRecipes(
   },
   rawQuery?: RecipeSearchQuery,
 ): RecipeSearchHit[] {
-  const profile = mealPlanProfileSchema.parse(input.profile);
   const query = recipeSearchQuerySchema.parse(rawQuery);
-  // Erweitern, nie einschränken: die großzügigste gewählte Ernährungsform.
-  const searchDiet = [profile.diet, ...query.diets].reduce((a, b) =>
-    DIET_RANK[b] > DIET_RANK[a] ? b : a,
-  );
-  const searchProfile = { ...profile, diet: searchDiet };
   const text = query.text === undefined ? null : normalizeFoodText(query.text);
-
-  const hits: RecipeSearchHit[] = [];
-  const filterCtx = (p: typeof profile) => ({
-    profile: p,
+  const ctx: RecipeForPersonContext = {
+    foods: input.foods,
+    profile: mealPlanProfileSchema.parse(input.profile),
     excludePregnancyCaution: input.excludePregnancyCaution,
     allowDrafts: input.allowDrafts,
     ...(input.redRecipeIds !== undefined ? { redRecipeIds: input.redRecipeIds } : {}),
-  });
+  };
+
+  const hits: RecipeSearchHit[] = [];
   for (const recipe of input.recipes) {
-    // Zuerst wie im Essensplan (Profil-Ernährungsform); nur wenn das nicht passt, mit der erweiterten Form.
-    const own = filterRecipe(recipe, input.foods, filterCtx(profile));
-    const result =
-      own.ok || searchDiet === profile.diet
-        ? own
-        : filterRecipe(recipe, input.foods, filterCtx(searchProfile));
-    if (!result.ok) continue;
+    const hit = recipeForPersonWithDiets(recipe, ctx, query.diets);
+    if (hit === null) continue;
     if (
       query.categories.length > 0 &&
       !query.categories.some((c) => recipe.categories?.includes(c) === true)
@@ -100,12 +168,7 @@ export function searchRecipes(
     }
     if (text !== null && text !== '' && !normalizeFoodText(recipe.title_de).includes(text))
       continue;
-    const diet = result.value.facts.diet;
-    hits.push({
-      variant: result.value,
-      // Nur über die erweiterte Form gefunden → immer gekennzeichnet (G4: nie in den automatischen Plan).
-      outsideProfileDiet: own.ok ? null : dietAllows(profile.diet, diet) ? searchDiet : diet,
-    });
+    hits.push(hit);
   }
   return hits.sort(
     (a, b) =>

@@ -181,6 +181,26 @@ Vercel zeigt die App im Handy-Browser, Expo baut die echten Apps in der Cloud.
 10. **Kalorienzahlen ausschalten** (Einstellungen → Ernährung ändern) → Meal-Prep-Pläne, Kochtag und Einkaufsliste
     zeigen nirgends kcal.
 
+**Rezeptsuche und Ratgeber (Etappe N5c, Testmodus)** – mit dem Testkonto aus Schritt 1:
+
+1. **Ernährung** → unten **„Rezepte suchen“** → oben steht „Deine Ernährungsform: vegetarisch“; die Karten zeigen
+   Zeit und „kcal je Portion“. Kein Fleisch, keine Pilze („mag ich nicht“ lässt sich hier nicht abschalten).
+2. **„Auch mit Fleisch“** antippen → zusätzliche Rezepte mit dem Hinweis „Passt nicht zu deiner Ernährungsform: mit
+   Fleisch“. Schweinefleisch erscheint trotzdem nicht (keine Angabe „isst Schwein“).
+3. **„Unter 10 Minuten“** antippen → nur schnelle Rezepte. Oben ins Suchfeld z. B. „Oats“ tippen → Treffer filtern
+   sich; ein Wort ohne Treffer → „Keine passenden Rezepte gefunden“. **„Filter zurücksetzen“** stellt alles zurück.
+4. Ein gekennzeichnetes Rezept öffnen (z. B. „Hähnchen …“) → oben derselbe Hinweis; Portionen mit **+** auf 3 →
+   die Mengen verdreifachen sich → **„Zur Einkaufsliste (3 Portionen)“** → **„Einkaufsliste öffnen“** → das Rezept
+   und seine Fleisch-Zutat sind mit „passt nicht zu deiner Ernährungsform“ markiert. In den Essensplan kommt es nie.
+5. **Ernährung** → **„Ratgeber“** → zwei Beispiel-Ratgeber (Testtexte, „Entwurf“). **Flugmodus an** →
+   „Wettkampf-Ernährung (Beispiel)“ öffnen → Abschnitte und der feste Hinweis beim Carb-Loading erscheinen ohne Netz;
+   zurück → „Unterwegs essen (Beispiel)“ mit „Beim Bäcker“. Flugmodus aus.
+6. **Kalorienzahlen ausschalten** → in der Suche keine kcal mehr, im Rezept mit Portionswähler keine Nährwerte; im
+   Ratgeber steht „Zahlenangaben … sind ausgeblendet“, die Absätze mit kcal bzw. „g … pro kg“ fehlen, der feste
+   Carb-Loading-Hinweis bleibt.
+7. Mit einem frischen Testkonto **vegan**, „Erdnüsse: Unverträglich“ und „schwanger“ = Ja: In der Suche auch mit
+   „Auch vegetarisch“ und „Auch mit Fleisch“ kein Erdnuss-Rezept, kein Räucherlachs, keine rohen Eier.
+
 **Redaktionsbereich Ernährung (Etappe N2d):** Vorschau-Link der Website → `/admin` → anmelden → oben **Rezepte**,
 **Lebensmittel**, **Meal-Prep**, **Ratgeber**. Rezepte: Kategorie antippen → Zahlen (Entwürfe, rot, Zutaten ohne
 Katalog-Prüfung, offene Annahmen, Abweichungen) und je Rezept „Sammelfreigabe: wird freigegeben / übersprungen – Grund“;

@@ -2,6 +2,7 @@ import {
   addManualShoppingItem,
   addRecipeToShoppingList,
   applyMealPrepPlan,
+  type DietType,
   type MealPlanWeek,
   type MealPrepPlan,
   type MealSlotId,
@@ -195,8 +196,15 @@ export interface ShoppingListActions {
   addManual: (labelDe: string, category: ShoppingCategory) => Promise<ShoppingActionOutcome>;
   removeManual: (itemKey: string) => Promise<ShoppingActionOutcome>;
   setRange: (from: string, to: string) => Promise<ShoppingActionOutcome>;
-  /** „Zur Einkaufsliste“ aus der Rezeptansicht (19.6). */
-  addRecipe: (recipeId: string, servings: number) => Promise<ShoppingActionOutcome>;
+  /**
+   * „Zur Einkaufsliste“ aus der Rezeptansicht (19.6). `diet`: erweiterte Ernährungsform eines Suchtreffers (K3/G4,
+   * Etappe N5c) – die Einträge sind dann gekennzeichnet.
+   */
+  addRecipe: (
+    recipeId: string,
+    servings: number,
+    diet?: DietType | null,
+  ) => Promise<ShoppingActionOutcome>;
   removeRecipe: (recipeId: string) => Promise<ShoppingActionOutcome>;
   /** Liste speichern, wie sie ist (z. B. „Zur Einkaufsliste“ aus dem Meal-Prep-Plan legt sie an). */
   ensureSaved: () => Promise<ShoppingActionOutcome>;
@@ -241,8 +249,13 @@ export function useShoppingListActions(
         guarded(() => addManualShoppingItem(list, { labelDe, category })),
       removeManual: (itemKey) => guarded(() => removeManualShoppingItem(list, itemKey)),
       setRange: (from, to) => guarded(() => withShoppingListRange(list, { from, to }, plan, input)),
-      addRecipe: async (recipeId, servings) => {
-        const result = addRecipeToShoppingList(list, { recipeId, servings }, plan, input);
+      addRecipe: async (recipeId, servings, diet) => {
+        const result = addRecipeToShoppingList(
+          list,
+          { recipeId, servings, ...(diet ? { diet } : {}) },
+          plan,
+          input,
+        );
         if (!result.ok) return { kind: 'failed', reason: result.reason };
         return store(result.list);
       },

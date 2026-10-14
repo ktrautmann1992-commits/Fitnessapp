@@ -256,7 +256,12 @@ describe('R10: Textregeln, Health Claims, Marken', () => {
       ],
     });
     const r10 = checkRecipe(recipe, foods).filter((i) => i.rule === 'R10');
-    expect(r10.map((i) => i.path)).toEqual(['title_de', 'steps_de.0', 'ingredients.0.note_de']);
+    // „stärkt das Immunsystem“ trifft zwei Regeln (Immunsystem, „stärkt …“, Wächter N5c S3) – je Stelle zählt der Fund.
+    expect([...new Set(r10.map((i) => i.path))]).toEqual([
+      'title_de',
+      'steps_de.0',
+      'ingredients.0.note_de',
+    ]);
   });
   it('Tipp, Schlagworte und Mengen-Anzeige werden mitgeprüft', () => {
     const recipe = makeRecipe({

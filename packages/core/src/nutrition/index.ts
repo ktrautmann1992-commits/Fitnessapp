@@ -3,6 +3,7 @@ export * from './day-view';
 export * from './eligibility';
 export * from './energy';
 export * from './filter';
+export * from './guides';
 export * from './limits';
 export * from './macros';
 export * from './meal-plan';

@@ -5,6 +5,9 @@ import {
   SHOPPING_CATEGORIES,
   type ShoppingCategory,
   type ShoppingListItem,
+  shoppingItemOutsideProfileDiet,
+  type ShoppingListRecipe,
+  shoppingRecipeOutsideProfileDiet,
   startOfIsoWeek,
 } from '@fitnessapp/core';
 import { fontSize, fontWeight, radius, spacing } from '@fitnessapp/ui';
@@ -188,6 +191,13 @@ export default function ShoppingListScreen() {
   const list = shopping.list;
   const recipes = view.library.result.library.recipes;
   const recipeTitle = (id: string) => recipes.find((r) => r.id === id)?.title_de ?? id;
+  // Kennzeichnung für Zutaten aus Treffern der erweiterten Suche (19.6 K3/G4, Etappe N5c).
+  const profileDiet = view.week.planState?.input.profile.diet ?? null;
+  const foods = view.library.result.library.foods;
+  const outsideDiet = (item: ShoppingListItem) =>
+    profileDiet !== null && shoppingItemOutsideProfileDiet(item, foods, profileDiet) !== null;
+  const recipeOutside = (entry: ShoppingListRecipe) =>
+    profileDiet === null ? null : shoppingRecipeOutsideProfileDiet(entry, profileDiet);
   const days = Array.from({ length: 7 }, (_, i) => addDays(list.weekStart, i));
   const dayChoices = days.map((d) => ({ value: d, label: dayLabel(d) }));
   const visible = (item: ShoppingListItem) => !hideChecked || !item.checked;
@@ -247,6 +257,7 @@ export default function ShoppingListScreen() {
     <ShoppingItemRow
       key={item.itemKey}
       item={item}
+      outsideDiet={outsideDiet(item)}
       disabled={actions === null || busy !== null}
       onToggle={(checked) =>
         actions
@@ -384,6 +395,13 @@ export default function ShoppingListScreen() {
             {list.recipes.map((entry) => (
               <View key={entry.recipeId} style={styles.list}>
                 <Body>{texts.recipeLine(recipeTitle(entry.recipeId), entry.servings)}</Body>
+                {recipeOutside(entry) !== null ? (
+                  <Body muted testID={`shopping-recipe-outside-${entry.recipeId}`}>
+                    {t.nutrition.search.outsideDiet(
+                      t.nutrition.dietNames[recipeOutside(entry) ?? 'omnivore'],
+                    )}
+                  </Body>
+                ) : null}
                 {actions ? (
                   <Button
                     label={texts.removeRecipe(recipeTitle(entry.recipeId))}
@@ -442,11 +460,13 @@ export default function ShoppingListScreen() {
 /** Ein Eintrag: Häkchen (großes Tippziel), Markierungen, bei eigenen Einträgen „löschen“. */
 function ShoppingItemRow({
   item,
+  outsideDiet,
   disabled,
   onToggle,
   onRemove,
 }: {
   item: ShoppingListItem;
+  outsideDiet: boolean;
   disabled: boolean;
   onToggle: (checked: boolean) => void;
   onRemove: (() => void) | undefined;
@@ -458,6 +478,7 @@ function ShoppingItemRow({
     item.notInPlan ? texts.notInPlan : null,
     item.amountChanged ? texts.amountChanged : null,
     item.isManual ? texts.manual : null,
+    outsideDiet ? texts.outsideDiet : null,
   ].filter((m): m is string => m !== null);
   return (
     <View
