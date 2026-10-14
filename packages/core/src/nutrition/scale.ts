@@ -2,7 +2,7 @@ import { z } from 'zod';
 
 import { PORTION_SCALE_LIMITS, RECIPE_SERVINGS_PICKER } from '../constants';
 import type { Food, FoodLookup } from '../content/food-schema';
-import type { Recipe } from '../content/recipe-schema';
+import type { Recipe, RecipeIngredient } from '../content/recipe-schema';
 import type { AppliedSwap, FilteredRecipe, RecipeSubstitution } from './filter';
 import {
   addFoodNutrients,
@@ -68,7 +68,9 @@ function substitutionMap(substitutions: readonly RecipeSubstitution[]): Map<numb
 function scaleIngredients(
   variant: RecipeVariant,
   foods: FoodLookup,
-  multiplier: (scales: boolean) => number,
+  multiplier: (scales: boolean, original: RecipeIngredient) => number,
+  /** Eigene Rundung je Zutat (geteilte Portionen, N13); `null` = Standard nach `roundAmount`. */
+  rounding?: (original: RecipeIngredient, unit: RecipeUnit, raw: number) => number | null,
 ): { ingredients: ScaledIngredient[]; nutrients: RecipeNutrients; optionalKcal: number } {
   const omitted = new Set(variant.omitted);
   const subs = substitutionMap(variant.substitutions);
@@ -88,10 +90,12 @@ function scaleIngredients(
     if (food === undefined) {
       throw new Error(`Lebensmittel „${foodId}“ fehlt im Katalog.`);
     }
-    const raw = ingredient.amount * multiplier(ingredient.scales);
-    const amount = roundAmount(raw, ingredient.unit, {
-      wholePieces: isWholePiece(food, ingredient.unit),
-    });
+    const raw = ingredient.amount * multiplier(ingredient.scales, original);
+    const amount =
+      rounding?.(original, ingredient.unit, raw) ??
+      roundAmount(raw, ingredient.unit, {
+        wholePieces: isWholePiece(food, ingredient.unit),
+      });
     const grams = toGrams(amount, ingredient.unit, food.units);
     if (grams === null) {
       throw new Error(`Einheit „${ingredient.unit}“ für „${foodId}“ nicht umrechenbar.`);
@@ -138,6 +142,48 @@ export function scalePortion(
   return { factor: f, ingredients, nutrients, optionalKcal };
 }
 
+/** Faktoren einer geteilten Portion nach Rollen (19.7 N13): Beilage (`carb`) getrennt, alles andere gemeinsam. */
+export interface RolePortionFactors {
+  /** Portionsfaktor der Person (Ziel-kcal ÷ kcal je Portion, begrenzt) – steht als `factor` am Ergebnis. */
+  readonly portion: number;
+  /** Faktor für alle skalierenden Zutaten außer der Beilage (u. a. die Eiweißquelle). */
+  readonly main: number;
+  /** Faktor für Zutaten mit Rolle `carb` (Beilage). */
+  readonly side: number;
+  /** Beilagen in g/ml auf diesen Schritt runden (ab `fromG`), sonst Standard-Rundung. */
+  readonly sideRounding: { readonly stepG: number; readonly fromG: number } | null;
+}
+
+/**
+ * Geteilte Portion (19.7 N13, KONZEPT 6.12): wie `scalePortion`, aber mit eigenem Faktor für die Beilage (Rolle
+ * `carb`) und optional 10-g-Schritten bei Beilagen. Eier bleiben ganz, eine Menge > 0 wird nie 0, Nährwerte nach der
+ * Rundung. Alle Faktoren 0,5–2,0 (`PORTION_SCALE_LIMITS`); die engere Spannweite des Paar-Modus prüft
+ * `portion-factor.ts`. Kennt KEINE Schutzgrenzen – den Tag hält der Tagesausgleich im Planband.
+ */
+export function scalePortionByRole(
+  variant: RecipeVariant,
+  factors: RolePortionFactors,
+  foods: FoodLookup,
+): ScaledPortion {
+  const portion = factorSchema.parse(factors.portion);
+  const main = factorSchema.parse(factors.main);
+  const side = factorSchema.parse(factors.side);
+  const servings = variant.recipe.servings;
+  const step = factors.sideRounding;
+  const { ingredients, nutrients, optionalKcal } = scaleIngredients(
+    variant,
+    foods,
+    (scales, original) =>
+      scales ? (original.role === 'carb' ? side : main) / servings : 1 / servings,
+    (original, unit, raw) => {
+      if (step === null || original.role !== 'carb' || !original.scales) return null;
+      if ((unit !== 'g' && unit !== 'ml') || raw < step.fromG) return null;
+      return Math.max(step.stepG, Math.round(raw / step.stepG) * step.stepG);
+    },
+  );
+  return { factor: portion, ingredients, nutrients, optionalKcal };
+}
+
 export interface ServingsScaled {
   readonly servings: number;
   readonly ingredients: readonly ScaledIngredient[];
@@ -181,6 +227,11 @@ export interface PortionDraft {
   readonly baseFactor: number;
   /** Fester Faktor (z. B. schon gekochte Meal-Prep-Portion) – wird nicht verändert. */
   readonly fixedFactor?: number | undefined;
+  /**
+   * Feste, schon berechnete Portion (geteilte Mahlzeit, 19.7 N13) – wird unverändert übernommen; verlangt
+   * `fixedFactor` (= `fixedPortion.factor`), damit sie wie jede feste Portion nicht ausgeglichen wird.
+   */
+  readonly fixedPortion?: ScaledPortion | undefined;
 }
 
 export interface BalancedDay {
@@ -210,6 +261,7 @@ export function balancePortions(
   const cache = new Map<string, ScaledPortion>();
   const portionAt = (i: number, factor: number): ScaledPortion => {
     const draft = drafts[i] as PortionDraft;
+    if (draft.fixedPortion !== undefined) return draft.fixedPortion;
     const f = draft.fixedFactor ?? clampFactor(factor);
     const key = `${i}:${f}`;
     let portion = cache.get(key);

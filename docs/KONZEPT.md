@@ -433,6 +433,16 @@ Quelle: `docs/ERWEITERUNGEN-2.md` Abschnitte 1–2. Startbestand aus `alpha5-rez
   Zustand der Ansicht. Packungsgrößen als eigene Inhaltsart `content/package-sizes/` (Regel R24, 1–5.000 g, Batch-Art
   `package-sizes`, Freigabe über `content-review`, Admin „Packungen“), weil `content/foods/` nur der Lebensmittel-Import
   schreiben darf; mit N7 werden sie zur Spalte an `foods`. Details in `docs/PLAN-PHASE-5.md`, Umsetzungsstand N11.
+- **Umsetzung (Etappe N13, nur Logik in `packages/core`, 14.10.2026):** `nutrition/leftovers.ts` rundet die
+  Einkaufsliste mit den Packungsgrößen aus N11 auf Packungen auf (`shoppingListPackages`: angebrochene Packungen und
+  Rest je Zutat; Zutaten ohne Packungsgröße bleiben ohne Aufrundung) und verfolgt angebrochene Packungen über die Woche.
+  Ein roher Rest von Fleisch, Fisch, Krebs-/Weichtieren oder Rohmilch (und empfindliche Lebensmittel wie rohe
+  Sprossen) zählt nur bis zum Folgetag (danach Hinweis
+  „einfrieren“), übrige Reste nach festen Tagen je Supermarkt-Abteilung (`LEFTOVER_RAW_DAYS`, VOR LIVEGANG FACHLICH
+  PRÜFEN); ein abgelaufener Rest wird nie eingeplant, dann zählt eine neue Packung. Der Reste-Score (Menge des
+  verbrauchten Rests ÷ Packung × Dringlichkeit, Vorrat zählt nicht, höchstens 1 Punkt – weniger als der Abzug für eine
+  Wiederholung) ändert im Essensplan nur die Reihenfolge der Kandidaten; eingeschaltet wird er erst in N14 (Premium).
+  Details in `docs/PLAN-PHASE-5.md`, Umsetzungsstand N13.
 
 ### 6.12 Paar-Modus beim Kochen (Premium, braucht den Partner-Modus)
 - Baut auf dem **Partner-Modus** auf (Abschnitt 11, beidseitige Zustimmung) – die Oberfläche kommt deshalb erst mit
@@ -452,6 +462,16 @@ Quelle: `docs/ERWEITERUNGEN-2.md` Abschnitte 1–2. Startbestand aus `alpha5-rez
   Sichtbar sind keine Zahlen zu Zielen oder Körperdaten – **Portionen lassen aber Rückschlüsse zu** (deshalb die
   eigene Einwilligung).
 - Monetarisierung prüfen (Phase 7): „Partner-Abo“ (zwei Konten, günstigerer Preis).
+- **Umsetzung der Rechenlogik (Etappe N13, `packages/core/src/nutrition/portion-factor.ts`, 14.10.2026):** Faktor je
+  Person aus ihrem eigenen Planband (Anteil der Mahlzeit × Bandmitte ÷ kcal je Portion), 0,6–1,8; ohne Ziele oder ohne
+  `health_data`-Einwilligung Faktor 1 (genau die Standardportion). Wahlweise „Beilagen getrennt“: Eiweißquelle und
+  übrige Zutaten für alle gleich (kleinster der Faktoren), nur die Beilage (Rolle `carb`) je Person; Rezept ohne Beilage →
+  gleichmäßig. Beilagen in 10-g-Schritten, Eier ganz. Der Tag jeder Person wird nur über ihre übrigen Mahlzeiten und
+  Ergänzungs-Snacks ausgeglichen; läge er über ihrer Obergrenze, bekommt sie für diese Mahlzeit einen eigenen Vorschlag.
+  Gemeinsame Gerichte bestehen den Filter jeder Person (sonst eigener Vorschlag). Noch keine Oberfläche und keine
+  Speicherung – beides mit P1 (Phase 11). Optionale Zutaten der geteilten Portion zählen für die Obergrenze mit
+  (sonst eigener Vorschlag); ein Tausch einer anderen Mahlzeit lässt die geteilte Portion unverändert, ein Tausch der
+  geteilten Mahlzeit macht sie zur eigenen. Details in `docs/PLAN-PHASE-5.md`, Umsetzungsstand N13.
 
 ### 6.13 Einkaufsliste weitergeben, Kosten und Händler
 - **Sofort (Gratis):** Einkaufsliste als Text weitergeben (System-Teilen-Dialog → WhatsApp, Notizen, Erinnerungen),

@@ -328,7 +328,7 @@ describe('Struktur (Wächter N1, K2): Schutzgrenzen nur über nutritionTargetsFo
   });
 });
 
-describe('Struktur (Wächter N1 K2, erweitert in N3, N9 und N11): Essensplan und Tausch rechnen keine eigenen Grenzen', () => {
+describe('Struktur (Wächter N1 K2, erweitert in N3, N9, N11 und N13): Essensplan, Tausch, Portionsfaktor und Reste rechnen keine eigenen Grenzen', () => {
   it('Schutzgrenzen-Konstanten und planBand nur in limits/eligibility/schemas (nicht in Plan, Meal-Prep, Liste, Suche)', () => {
     const root = join(import.meta.dirname, '../../../..');
     const allowed = new Set(
@@ -368,10 +368,23 @@ describe('Struktur (Wächter N1 K2, erweitert in N3, N9 und N11): Essensplan und
       'ratings.ts',
       'fridge-search.ts',
       'shopping-list-share.ts',
+      // N13 (19.8 Nr. 1): Portionsfaktor und Reste – nur Planband über den Tagesausgleich, keine eigenen Grenzen.
+      'portion-factor.ts',
+      'leftovers.ts',
     ]) {
       expect(
         readFileSync(join(root, 'packages/core/src/nutrition', file), 'utf8').length,
       ).toBeGreaterThan(0);
+    }
+  });
+
+  it('N13: Portionsfaktor und Reste lesen weder Planband noch Unter-/Obergrenze noch Ziel-kcal direkt (nur über mealTargetKcal und den Ausgleich in meal-plan.ts)', () => {
+    const root = join(import.meta.dirname, '../../../..');
+    for (const file of ['portion-factor.ts', 'leftovers.ts']) {
+      const source = readFileSync(join(root, 'packages/core/src/nutrition', file), 'utf8');
+      expect(source).not.toMatch(/\b(floorKcal|ceilingKcal|tdeeKcal|bmrKcal|targetKcal)\b/);
+      // Wächter N13 S6: auch `band.min`, `(band.min + band.max)`, `day.band`, `mealPlanBand(…)`.
+      expect(source).not.toMatch(/\b(band|mealPlanBand|planBand)\b/);
     }
   });
 });

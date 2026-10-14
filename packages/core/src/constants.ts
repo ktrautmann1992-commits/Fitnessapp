@@ -1810,6 +1810,84 @@ export const FRIDGE_SEARCH = {
   pageSize: 30,
 } as const;
 
+/**
+ * Portionsfaktor beim gemeinsamen Kochen (Plan 19.7 N13, KONZEPT 6.12, Wächter-Befund S1) – Logik in
+ * `nutrition/portion-factor.ts`, Oberfläche erst mit dem Partner-Modus (P1, Phase 11):
+ * - `factor`: Faktor je Person = Ziel-kcal der Mahlzeit (aus DEREN `nutritionTargetsForWeek`, also schon durch
+ *   `clampCalorieTarget`) ÷ kcal pro Portion, begrenzt auf 0,6–1,8 (Plan 19.7 N13, ERWEITERUNGEN-2 Abschnitt 6). Liegt
+ *   innerhalb von `PORTION_SCALE_LIMITS` (0,5–2,0, Test). KEINE Schutzgrenze: Ob der Tag der Person im Planband bleibt,
+ *   entscheidet allein der Tagesausgleich (`finishDay`) mit dem Planband aus `clampCalorieTarget`; geht das nicht,
+ *   isst die Person die Mahlzeit nicht als geteilte Portion (eigener Vorschlag).
+ * - `sideStepG`/`sideStepFromG`: Beilagen (Rolle `carb`) in Gramm/ml werden in geteilten Portionen auf 10 g gerundet
+ *   („10 g bei Beilagen“, Plan 19.7 N13) – erst ab 20 g, darunter gilt die normale Rundung (nie 0). Eier bleiben ganz
+ *   (wie überall, `AMOUNT_ROUNDING`).
+ * - `maxPersons`: höchstens so viele Personen je geteiltem Gericht (Bedien- und Rechenschutz; der Paar-Modus hat 2).
+ * PRODUKTENTSCHEIDUNG (Werte aus dem Plan), VOR LIVEGANG FACHLICH PRÜFEN (Spannweite 0,6–1,8 und Beilagen-Regel).
+ */
+export const COUPLE_PORTION_LIMITS = {
+  factor: { min: 0.6, max: 1.8 },
+  sideStepG: 10,
+  sideStepFromG: 20,
+  maxPersons: 6,
+} as const;
+
+/**
+ * Haltbarkeit ANGEBROCHENER, ROHER Reste einer Packung (Plan 19.7 N13, Wächter-Befund S9, KONZEPT 6.11) – nur für die
+ * Resteplanung (`nutrition/leftovers.ts`): Wie viele Tage nach dem Anbrechen (Tag des ersten Verbrauchs) ein Rest noch
+ * eingeplant werden darf. `max_fridge_days` (R9) gilt dagegen für GEKOCHTE Speisen und bleibt unberührt.
+ * - `rawAnimal`: rohes Fleisch, Fisch, Krebs-/Weichtiere und Rohmilch(-produkte) (`animal` meat/fish/shellfish bzw.
+ *   Milch mit `pregnancy_caution`) – NUR der Folgetag (Plan S9: „nur für den Folgetag, danach Hinweis ‚einfrieren‘“).
+ *   Orientierung: BfR „Schutz vor Lebensmittelinfektionen im Privathaushalt“ und Verbraucherzentrale „Lebensmittel
+ *   richtig lagern“ (Hackfleisch am Tag des Kaufs, rohes Fleisch/Fisch höchstens 1–2 Tage) – der kürzere Wert gilt.
+ * - `sensitive`: Lebensmittel mit `pregnancy_caution` (z. B. rohe Sprossen, Räucherfisch, Rohwurst) – ebenfalls nur
+ *   der Folgetag (BfR: Sprossen rasch verbrauchen; Wächter N13 H6).
+ * - `byCategory`: übrige Reste je Supermarkt-Abteilung (5.5), bewusst KURZ gewählt (ein zu langer Wert würde einen
+ *   verdorbenen Rest einplanen; ein zu kurzer nur einen Rest verschenken). Angeschnittenes Obst/Gemüse, geöffnete
+ *   Milchprodukte, Tofu, Konserven, Säfte 2 Tage (Verbraucherzentrale: angebrochene Konserven umfüllen, 1–2 Tage);
+ *   Brot 3 Tage; Saucen/Öle 3 Tage (geöffnete Saucen, Kokosmilch); trockene Waren (Nudeln, Reis, Getreide, Müsli,
+ *   Nüsse, Gewürze) 30 Tage; Tiefkühlware bleibt tiefgekühlt 30 Tage; Fleisch/Wurst/Fisch und „Sonstiges“ 1 Tag.
+ * PRODUKTENTSCHEIDUNG, Werte gerundet und VOR LIVEGANG FACHLICH PRÜFEN (wortgenaue Fundstellen BfR/Verbraucherzentrale
+ * nachtragen, Fachkraft bestätigt die Tage je Abteilung).
+ */
+export const LEFTOVER_RAW_DAYS = {
+  rawAnimal: 1,
+  sensitive: 1,
+  byCategory: {
+    fruit_vegetables: 2,
+    bread_bakery: 3,
+    chilled_dairy_eggs: 2,
+    chilled_plant_based: 2,
+    meat_sausage: 1,
+    fish: 1,
+    pasta_rice_grains: 30,
+    legumes_canned: 2,
+    cereal_breakfast: 30,
+    nuts_seeds_dried_fruit: 30,
+    oils_vinegar_sauces: 3,
+    spices_baking: 30,
+    frozen: 30,
+    drinks: 2,
+    other: 1,
+  },
+} as const;
+
+/**
+ * Reste-Score (Plan 19.7 N13, KONZEPT 6.11 „frische Zutaten mit kurzer Haltbarkeit zuerst“) – ändert NUR die
+ * Reihenfolge der Kandidaten im Essensplan, nie Filter, Mengen, Energie oder Grenzen:
+ * - `weight`: höchster Bonus in Punkten (`MEAL_PLAN_SCORING`-Skala). Strikt kleiner als `MEAL_PLAN_SCORING.repeat`
+ *   (1,5, Test), damit Abwechslung Vorrang behält (wie Wächter N10 S2); die harten Wiederholungsgrenzen
+ *   (`MEAL_PLAN_REPEAT_LIMITS`) gelten unverändert.
+ * - Bonus = `weight` × min(1, Σ je Lebensmittel mit nutzbarem Rest: verbrauchte Rest-Menge ÷ Packungsgröße ×
+ *   Dringlichkeit), Dringlichkeit = 1 ÷ (1 + verbleibende Tage) – ein Rest, der heute zuletzt nutzbar ist, zählt voll.
+ * - Vorrat (`pantry`) zählt nicht (hält lange, steht als „hast du wahrscheinlich da“ in der Liste).
+ * - `maxOpenPackagesPerFood`: Rechenschutz je Lebensmittel und Woche (mehr offene Packungen werden nicht verfolgt).
+ * PRODUKTENTSCHEIDUNG ohne Schutzwirkung.
+ */
+export const LEFTOVER_SCORING = {
+  weight: 1,
+  maxOpenPackagesPerFood: 50,
+} as const;
+
 // ---------------------------------------------------------------------------------------------------------
 // Ziele · Haupt- und Nebenziel (docs/PLAN-ZIELE.md Abschnitt 4, Etappe Z1)
 //

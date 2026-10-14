@@ -43,11 +43,23 @@ import {
   zeroNutrients,
 } from './recipe-nutrients';
 import {
+  type AvailableLeftover,
+  LeftoverTracker,
+  type LeftoverUse,
+  leftoverScore,
+  leftoverScoreBonus,
+  type PackageSizeLookup,
+  packageSizeLookupSchema,
+  recordDayLeftovers,
+} from './leftovers';
+import {
   balancePortions,
   type PortionDraft,
+  type RolePortionFactors,
   type ScaledIngredient,
   type ScaledPortion,
   scalePortion,
+  scalePortionByRole,
 } from './scale';
 import {
   activeRatingReasons,
@@ -114,6 +126,12 @@ export interface PlannedMeal {
   readonly fixed: boolean;
   /** Meal-Prep-Wochenplan, aus dem das Gericht stammt (19.6), sonst null. */
   readonly mealPrepPlanId: string | null;
+  /**
+   * Geteilte Mahlzeit (19.7 N13): feste Portion der Person an einem gemeinsamen Gericht – fehlt sonst. Wird bei jedem
+   * Ausgleich unverändert übernommen (Gramm und kcal, `sharedMealPortion`). Bis P1 nicht speicherbar (der gespeicherte
+   * Plan kennt das Feld nicht → neu planen, sichere Richtung).
+   */
+  readonly shared?: true;
 }
 
 export type EmptySlotReason = RecipeExclusionReason | SlotExclusionReason | 'above_ceiling';
@@ -187,6 +205,12 @@ export interface MealPlanInput {
    * Daumen hoch und Gründe ändern nur die Reihenfolge – nie Filter, Energie, Portionen oder Grenzen (K6).
    */
   readonly ratings?: readonly RecipeRatingInput[];
+  /**
+   * Resteplanung (19.7 N13, KONZEPT 6.11, Premium ab N14): Mit den Packungsgrößen (N11) erhöht ein nutzbarer Rest den
+   * Score von Kandidaten, die ihn verbrauchen – NUR Reihenfolge (`leftovers.ts`). Fehlt das Feld, plant die Engine
+   * genau wie bisher. „Rezept tauschen“ und Ergänzungs-Snacks nutzen den Reste-Score nicht.
+   */
+  readonly leftovers?: { readonly packageSizes: PackageSizeLookup } | undefined;
 }
 
 const variantSchema = z.number().int().min(0).max(10_000);
@@ -196,6 +220,20 @@ export function mealPlanBand(
   day: Pick<NutritionDayTargets, 'band'>,
 ): { readonly min: number; readonly max: number } | null {
   return day.band;
+}
+
+/**
+ * Ziel-kcal einer Mahlzeit aus den Tageszielen DIESER Person (19.7 N13): Anteil des Platzes × Mitte des Planbands –
+ * derselbe Startwert wie im Tagesausgleich (`finishDay`). null bei `no_targets` oder wenn die Person den Platz nicht hat.
+ */
+export function mealTargetKcal(
+  day: Pick<NutritionDayTargets, 'band' | 'slots'>,
+  slot: MealSlotId,
+): number | null {
+  const band = mealPlanBand(day);
+  const info = day.slots.find((s) => s.slot === slot);
+  if (band === null || info === undefined) return null;
+  return (info.share * (band.min + band.max)) / 2;
 }
 
 /** Abgleich-Schlüssel für 6.6 (Modus, Deckel, Rezept-Ausschlüsse) – ohne Zahlen zu Körperdaten. */
@@ -333,6 +371,30 @@ export class WeekState {
   readonly uses = new Map<string, number[]>();
   readonly usedFoods = new Set<string>();
   readonly mainProteins = new Map<number, Set<string>>();
+  /** Angebrochene Packungen (Resteplanung, 19.7 N13); null = ohne Reste-Score. */
+  leftovers: LeftoverTracker | null = null;
+
+  /** Kopie des Stands (geteilte Mahlzeiten: ein Tag wird ohne die geteilte Portion neu geplant, N13). */
+  clone(): WeekState {
+    const copy = new WeekState();
+    this.uses.forEach((days, id) => copy.uses.set(id, [...days]));
+    this.usedFoods.forEach((id) => copy.usedFoods.add(id));
+    this.mainProteins.forEach((set, day) => copy.mainProteins.set(day, new Set(set)));
+    copy.leftovers = this.leftovers?.clone() ?? null;
+    return copy;
+  }
+
+  /** Stand aus einer Kopie zurückholen (in place – `DayContext` hält dieselbe Instanz). */
+  restore(from: WeekState): void {
+    const copy = from.clone();
+    this.uses.clear();
+    copy.uses.forEach((days, id) => this.uses.set(id, days));
+    this.usedFoods.clear();
+    copy.usedFoods.forEach((id) => this.usedFoods.add(id));
+    this.mainProteins.clear();
+    copy.mainProteins.forEach((set, day) => this.mainProteins.set(day, set));
+    this.leftovers = copy.leftovers;
+  }
 
   record(variant: FilteredRecipe, dayIndex: number, foods: FoodLookup, countUse: boolean): void {
     if (countUse) {
@@ -374,6 +436,37 @@ interface ScoreArgs {
   readonly ratings: RecipeRatingIndex;
   /** An diesem Tag wirkende Gründe – einmal je Platz statt je Kandidat (Wächter N10 S3). */
   readonly ratingReasons: ReadonlySet<RecipeRatingReason>;
+  /** Nutzbare Reste an diesem Tag (19.7 N13); null = ohne Reste-Score. */
+  readonly leftovers: {
+    readonly available: ReadonlyMap<string, AvailableLeftover>;
+    readonly packageSizes: PackageSizeLookup;
+  } | null;
+  /** Portionen, die der Kandidat abdeckt (Meal-Prep-Kochtermin: alle Tage), für den Reste-Score. */
+  readonly portions: number;
+}
+
+/** Geschätzte Gramm je Lebensmittel für die geplanten Portionen (Reste-Score, 19.7 N13). */
+function candidateUses(c: FilteredRecipe, args: ScoreArgs): LeftoverUse[] {
+  const kcal = c.facts.perServing.kcal;
+  const factor =
+    args.targetKcal === null || kcal <= 0
+      ? 1
+      : Math.min(
+          Math.max(args.targetKcal / kcal, PORTION_SCALE_LIMITS.min),
+          PORTION_SCALE_LIMITS.max,
+        );
+  const omitted = new Set(c.omitted);
+  const used = usedFoodMap(c);
+  return c.recipe.ingredients.flatMap((ingredient, index) => {
+    const grams = c.facts.gramsPerServing[index];
+    if (omitted.has(index) || grams === null || grams === undefined) return [];
+    return [
+      {
+        foodId: used.get(index) ?? ingredient.food_id,
+        grams: grams * (ingredient.scales ? factor : 1) * args.portions,
+      },
+    ];
+  });
 }
 
 function scoreCandidate(
@@ -422,6 +515,17 @@ function scoreCandidate(
   }
   // Bewertungen (19.7 N10): nur Reihenfolge – der Kandidat hat den Filter schon bestanden (K6).
   score += ratingScoreBonus(args.ratings, c, args.date, args.ratingReasons);
+  // Reste-Score (19.7 N13): nur Reihenfolge – Filter, Mengen und Grenzen bleiben unberührt.
+  if (args.leftovers !== null && args.leftovers.available.size > 0) {
+    score += leftoverScoreBonus(
+      leftoverScore(
+        candidateUses(c, args),
+        args.leftovers.available,
+        foods,
+        args.leftovers.packageSizes,
+      ),
+    );
+  }
   score +=
     W.variantJitter * stableUnit(args.weekStart, args.slotKey, c.recipe.id, String(args.variant));
   return score;
@@ -469,6 +573,8 @@ export interface SelectedMeal {
   readonly mealPrepPlanId: string | null;
   /** Energieanteil des Platzes (für den Startfaktor). */
   readonly share: number;
+  /** Geteilte Mahlzeit (19.7 N13): fertig berechnete Portion der Person, wird nicht ausgeglichen. */
+  readonly fixedPortion?: ScaledPortion;
 }
 
 export interface DayContext {
@@ -490,7 +596,7 @@ function toPlannedMeal(
   selected: Pick<
     SelectedMeal,
     'role' | 'variant' | 'prepKind' | 'cookDate' | 'storage' | 'mealPrepPlanId'
-  > & { slot: MealPlanSlotKey; fixed: boolean; isFill: boolean },
+  > & { slot: MealPlanSlotKey; fixed: boolean; isFill: boolean; shared?: boolean },
   portion: ScaledPortion,
 ): PlannedMeal {
   const { recipe } = selected.variant;
@@ -525,7 +631,32 @@ function toPlannedMeal(
     isFill: selected.isFill,
     fixed: selected.fixed,
     mealPrepPlanId: selected.mealPrepPlanId,
+    ...(selected.shared === true ? { shared: true as const } : {}),
   };
+}
+
+/** Feste Portion einer gespeicherten geteilten Mahlzeit – exakt wie geplant (Gramm und kcal, Wächter N13 S1). */
+export function sharedMealPortion(meal: PlannedMeal): ScaledPortion | undefined {
+  if (meal.shared !== true) return undefined;
+  return {
+    factor: meal.factor,
+    ingredients: meal.ingredients,
+    nutrients: meal.nutrients,
+    optionalKcal: meal.optionalKcal,
+  };
+}
+
+/**
+ * Feste Angaben einer bestehenden Mahlzeit für einen erneuten Tagesausgleich („Rezept tauschen“, Zutaten-Austausch):
+ * geteilte Mahlzeit → unveränderte Portion und fest (nie gestrichen); gekochte Reste → fester Faktor.
+ */
+export function fixedMealSelection(
+  meal: PlannedMeal,
+): Pick<SelectedMeal, 'fixedFactor' | 'fixedPortion'> & { readonly pinned?: true } {
+  const portion = sharedMealPortion(meal);
+  if (portion !== undefined)
+    return { fixedFactor: portion.factor, fixedPortion: portion, pinned: true };
+  return meal.fixed ? { fixedFactor: meal.factor } : {};
 }
 
 function fillCandidates(ctx: DayContext, excludeIds: ReadonlySet<string>): FilteredRecipe[] {
@@ -594,7 +725,12 @@ export function finishDay(
     selected.forEach((s, i) => {
       meals.push(
         toPlannedMeal(
-          { ...s, fixed: s.fixedFactor !== undefined, isFill: false },
+          {
+            ...s,
+            fixed: s.fixedFactor !== undefined,
+            isFill: false,
+            shared: s.fixedPortion !== undefined,
+          },
           portions[i] as ScaledPortion,
         ),
       );
@@ -650,20 +786,30 @@ export function finishDay(
   const drafts = (): PortionDraft[] => {
     const mid = band === null ? null : (band.min + band.max) / 2;
     const all = [
-      ...selected.map((s) => ({ variant: s.variant, share: s.share, fixed: s.fixedFactor })),
-      ...fills.map((f) => ({ variant: f.variant, share: 0, fixed: undefined })),
+      ...selected.map((s) => ({
+        variant: s.variant,
+        share: s.share,
+        fixed: s.fixedFactor,
+        portion: s.fixedPortion,
+      })),
+      ...fills.map((f) => ({ variant: f.variant, share: 0, fixed: undefined, portion: undefined })),
     ];
     return all.map((d) => {
       const kcal = Math.max(d.variant.facts.perServing.kcal, 1);
       const base = mid === null || d.share === 0 ? 1 : (d.share * mid) / kcal;
-      return { variant: d.variant, baseFactor: base, fixedFactor: d.fixed };
+      return {
+        variant: d.variant,
+        baseFactor: base,
+        fixedFactor: d.portion?.factor ?? d.fixed,
+        fixedPortion: d.portion,
+      };
     });
   };
 
   // Modus no_targets (S15): Faktor 1, höchstens 1 Ergänzungs-Snack unter dem internen Mindestwert.
   if (band === null) {
     const portionsAt = () =>
-      drafts().map((d) => scalePortion(d.variant, d.fixedFactor ?? 1, foods));
+      drafts().map((d) => d.fixedPortion ?? scalePortion(d.variant, d.fixedFactor ?? 1, foods));
     let portions = portionsAt();
     const total = () => portions.reduce((sum, p) => sum + p.nutrients.kcal, 0);
     while (
@@ -719,6 +865,8 @@ export function finishDay(
     let best: { kind: 'meal' | 'fill'; index: number; kcal: number } | null = null;
     balanced.portions.forEach((p, i) => {
       if (p.optionalKcal <= 0 || (best !== null && p.optionalKcal <= best.kcal)) return;
+      // Eine geteilte Portion (N13) wird für eine Person nicht verändert – sonst passte sie nicht mehr zum Gericht.
+      if (i < selected.length && selected[i]?.fixedPortion !== undefined) return;
       best =
         i < selected.length
           ? { kind: 'meal', index: i, kcal: p.optionalKcal }
@@ -748,7 +896,9 @@ export function finishDay(
       if (balanced.status === 'below') addFills();
       continue;
     }
-    if (balanced.status !== 'above') break;
+    // Liegt der Tag nur noch wegen optionaler Zutaten einer geteilten Portion darüber (die nicht verändert werden darf),
+    // gilt er wie „über der Obergrenze“ (Wächter N13 B1): ohne Streichen → `aboveCeiling` → eigener Vorschlag.
+    if (balanced.status !== 'above' && !overWithOptional()) break;
     const dropIndex = options.allowDrop ? chooseDrop(selected, foods) : null;
     if (dropIndex === null) {
       // Nur bei festen Vorgaben (Meal-Prep-Wochenplan): der Aufrufer bietet den Plan dann nicht an (G3).
@@ -822,8 +972,15 @@ function slotCandidates(
   );
 }
 
-function scoreArgs(ctx: DayContext, slot: MealSlotId, role: MealRole, share: number): ScoreArgs {
+function scoreArgs(
+  ctx: DayContext,
+  slot: MealSlotId,
+  role: MealRole,
+  share: number,
+  portions = 1,
+): ScoreArgs {
   const band = mealPlanBand(ctx.targets);
+  const tracker = ctx.state.leftovers;
   return {
     weekStart: ctx.weekStart,
     variant: ctx.variant,
@@ -836,7 +993,31 @@ function scoreArgs(ctx: DayContext, slot: MealSlotId, role: MealRole, share: num
     date: ctx.targets.date,
     ratings: ctx.pool.ratings,
     ratingReasons: activeRatingReasons(ctx.pool.ratings, ctx.targets.date),
+    leftovers:
+      tracker === null
+        ? null
+        : { available: tracker.available(ctx.targets.date), packageSizes: tracker.packageSizes },
+    portions,
   };
+}
+
+/**
+ * Alle Kandidaten eines Platzes (Filter, Platz, Zeitlimit, Daumen runter, nicht schon heute), nach Punkten sortiert –
+ * beste zuerst, Gleichstand wie `pickBest`. Der Reste-Score (19.7 N13) ändert nur diese Reihenfolge, nie die Menge
+ * (Eigenschaftstest).
+ */
+export function rankSlotCandidates(
+  ctx: DayContext,
+  slot: MealSlotId,
+  role: MealRole,
+  share: number,
+  excludeIds: ReadonlySet<string> = new Set(),
+): FilteredRecipe[] {
+  const maxMinutes = isWeekday(ctx.targets.date) ? ctx.pool.profile.maxPrepMinutesWeekday : null;
+  const candidates = slotCandidates(ctx, slot, { maxMinutes }).filter(
+    (c) => !excludeIds.has(c.recipe.id),
+  );
+  return rankCandidates(candidates, scoreArgs(ctx, slot, role, share), ctx.state, ctx.pool.foods);
 }
 
 /** Täglich frisch: bester Kandidat innerhalb der Wiederholungsgrenzen, sonst ausnahmsweise mit Wiederholung. */
@@ -848,10 +1029,8 @@ export function pickDailyMeal(
   excludeIds: ReadonlySet<string> = new Set(),
 ): { variant: FilteredRecipe | null; repeated: boolean; reasons: EmptySlotReason[] } {
   const maxMinutes = isWeekday(ctx.targets.date) ? ctx.pool.profile.maxPrepMinutesWeekday : null;
-  const candidates = slotCandidates(ctx, slot, { maxMinutes }).filter(
-    (c) => !excludeIds.has(c.recipe.id),
-  );
-  if (candidates.length === 0) {
+  const ranked = rankSlotCandidates(ctx, slot, role, share, excludeIds);
+  if (ranked.length === 0) {
     const exclude = ctx.targets.recipeExclusions.includes('pregnancy_caution');
     // Nur wegen Daumen runter leer (19.7 N10)? Dann genau dieser Grund – kein Filter, kein Gesundheitsbezug.
     const withoutRatings = slotCandidates(ctx, slot, { maxMinutes, ignoreRatings: true }).filter(
@@ -867,26 +1046,13 @@ export function pickDailyMeal(
     };
   }
   const type = mealTypeForSlot(slot);
-  const args = scoreArgs(ctx, slot, role, share);
-  const within = candidates.filter((c) =>
-    ctx.state.withinRepeatLimits(c.recipe.id, type, ctx.dayIndex),
-  );
-  if (within.length > 0) {
-    return {
-      variant: pickBest(within, args, ctx.state, ctx.pool.foods),
-      repeated: false,
-      reasons: [],
-    };
-  }
+  const within = ranked.find((c) => ctx.state.withinRepeatLimits(c.recipe.id, type, ctx.dayIndex));
+  if (within !== undefined) return { variant: within, repeated: false, reasons: [] };
   // Nicht am selben Tag doppelt, wenn es irgend geht.
-  const notToday = candidates.filter(
+  const notToday = ranked.find(
     (c) => !(ctx.state.uses.get(c.recipe.id) ?? []).includes(ctx.dayIndex),
   );
-  return {
-    variant: pickBest(notToday.length > 0 ? notToday : candidates, args, ctx.state, ctx.pool.foods),
-    repeated: true,
-    reasons: [],
-  };
+  return { variant: notToday ?? (ranked[0] as FilteredRecipe), repeated: true, reasons: [] };
 }
 
 interface PrepAssignment {
@@ -907,14 +1073,60 @@ export function buildMealPlanWeek(input: MealPlanInput): MealPlanWeek {
 }
 
 /**
+ * Geteilte Mahlzeit einer Person (19.7 N13, KONZEPT 6.12): an `date`/`slot` dasselbe Rezept wie die anderen Personen,
+ * mit IHRER Portion (`factors` aus `portion-factor.ts`, Faktor 0,6–1,8 bzw. 1). Intern für `planSharedMeals`.
+ */
+export interface SharedMealPlacement {
+  readonly date: string;
+  readonly slot: MealSlotId;
+  readonly recipeId: string;
+  readonly factors: RolePortionFactors;
+}
+
+/**
+ * Warum eine Person eine geteilte Mahlzeit NICHT als geteilte Portion isst (sie bekommt dann einen eigenen Vorschlag
+ * nach 6.3): vergangener Tag, Platz fehlt bzw. ist durch eine feste Vorgabe/gekochte Reste belegt, Rezept fehlt,
+ * besteht ihren Filter nicht, ist mit Daumen runter gesperrt, oder der Tag läge über ihrer Obergrenze (S1).
+ */
+export type SharedMealSkipReason =
+  | 'past_day'
+  | 'slot_missing'
+  | 'slot_taken'
+  | 'not_found'
+  | 'excluded'
+  | 'rated_down'
+  | 'above_ceiling';
+
+export interface SharedMealOutcome {
+  readonly date: string;
+  readonly slot: MealSlotId;
+  readonly recipeId: string;
+  readonly shared: boolean;
+  readonly reason: SharedMealSkipReason | null;
+}
+
+/**
  * Wie `buildMealPlanWeek`, zusätzlich mit den Tagen, die nur wegen fester Vorgaben über der Obergrenze lägen.
  * `pins` (intern, `applyMealPrepPlan`) geben Mahlzeiten fest vor; sie ersetzen die Kochtermine aus
  * `mealprep_days` (19.6 Nr. 5). Solche Tage werden nie ausgeliefert (G3).
+ *
+ * `shared` (intern, `planSharedMeals`, 19.7 N13): geteilte Mahlzeiten mit fester Portion der Person. Der Tag wird
+ * NUR über die übrigen Plätze und Ergänzungs-Snacks ausgeglichen (keine andere Mahlzeit fällt weg); läge er dann noch
+ * über der Obergrenze, wird er ohne diese geteilte Mahlzeit neu geplant (eigener Vorschlag, S1) – bei mehreren
+ * zuerst ohne die mit den meisten kcal. Unter der Untergrenze: Ausgleich oder `below_floor` wie immer.
  */
 export function buildMealPlanWeekDetailed(
   input: MealPlanInput,
-  internal: { readonly pins?: MealPins; readonly mealPrepPlanId?: string } = {},
-): { readonly plan: MealPlanWeek; readonly aboveCeilingDays: readonly string[] } {
+  internal: {
+    readonly pins?: MealPins;
+    readonly mealPrepPlanId?: string;
+    readonly shared?: readonly SharedMealPlacement[];
+  } = {},
+): {
+  readonly plan: MealPlanWeek;
+  readonly aboveCeilingDays: readonly string[];
+  readonly sharedOutcomes: readonly SharedMealOutcome[];
+} {
   const today = isoDateSchema.parse(input.today);
   const variant = variantSchema.parse(input.variant ?? 0);
   const { targets } = input;
@@ -930,6 +1142,12 @@ export function buildMealPlanWeekDetailed(
   );
   const profile = pool.profile;
   const state = new WeekState();
+  if (input.leftovers !== undefined) {
+    state.leftovers = new LeftoverTracker(
+      input.foods,
+      packageSizeLookupSchema.parse(input.leftovers.packageSizes),
+    );
+  }
   const existing =
     input.existingPlan !== undefined &&
     input.existingPlan !== null &&
@@ -937,6 +1155,27 @@ export function buildMealPlanWeekDetailed(
       ? input.existingPlan
       : null;
   const pins = internal.pins ?? new Map<string, PinnedMeal>();
+  const shared = new Map<string, SharedMealPlacement>();
+  for (const placement of internal.shared ?? []) {
+    const key = pinKey(placement.date, placement.slot);
+    if (shared.has(key)) throw new Error(`Geteilte Mahlzeit ${key} doppelt.`);
+    shared.set(key, placement);
+  }
+  if (shared.size > 0 && pins.size > 0) {
+    throw new Error('Geteilte Mahlzeiten und Meal-Prep-Wochenplan nicht zugleich (N13).');
+  }
+  const outcomes = new Map<string, SharedMealOutcome>();
+  const setOutcome = (key: string, reason: SharedMealSkipReason | null) => {
+    const placement = shared.get(key);
+    if (placement === undefined) return;
+    outcomes.set(key, {
+      date: placement.date,
+      slot: placement.slot,
+      recipeId: placement.recipeId,
+      shared: reason === null,
+      reason,
+    });
+  };
   const usePrepSchedule =
     profile.cookingMode === 'meal_prep' && profile.mealprepDays !== null && pins.size === 0;
   const events: CookEvent[] = usePrepSchedule
@@ -952,6 +1191,7 @@ export function buildMealPlanWeekDetailed(
     const date = dayTargets.date;
     const ctx: DayContext = { targets: dayTargets, dayIndex, weekStart, variant, pool, state };
     const existingDay = existing?.days.find((d) => d.date === date);
+    const sharedToday = [...shared.keys()].filter((key) => shared.get(key)?.date === date);
 
     // Vergangene Tage ändern sich nie (6.3 Nr. 7).
     if (existingDay !== undefined && date < today) {
@@ -962,115 +1202,192 @@ export function buildMealPlanWeekDetailed(
         const r = pool.result(recipe, false, meal.ingredientSwaps);
         if (r.ok) state.record(r.value, dayIndex, input.foods, meal.prepKind !== 'leftover');
       });
+      if (state.leftovers !== null) recordDayLeftovers(state.leftovers, existingDay);
+      sharedToday.forEach((key) => setOutcome(key, 'past_day'));
       return;
     }
 
     const exclude = dayTargets.recipeExclusions.includes('pregnancy_caution');
-    const selected: SelectedMeal[] = [];
-    const emptySlots: EmptySlot[] = [];
-    const notices = new Set<MealPlanNoticeCode>();
-    const usedToday = new Set<string>();
 
-    for (const slotInfo of dayTargets.slots) {
-      const { slot, role, share } = slotInfo;
-      const base = { slot, role, share, pinned: false, mealPrepPlanId: null } as const;
+    /** Plant den Tag; `skipShared` = geteilte Mahlzeiten, die diese Person hier NICHT als geteilte Portion isst. */
+    const planDay = (skipShared: ReadonlySet<string>) => {
+      const selected: SelectedMeal[] = [];
+      const emptySlots: EmptySlot[] = [];
+      const notices = new Set<MealPlanNoticeCode>();
+      const usedToday = new Set<string>();
+      const sharedUsed: string[] = [];
+      const reasons = new Map<string, SharedMealSkipReason>();
 
-      // 1. Feste Vorgabe aus einem Meal-Prep-Wochenplan.
-      const pin = pins.get(pinKey(date, slot));
-      if (pin !== undefined) {
-        selected.push({
-          ...base,
-          variant: pin.variant,
-          prepKind: pin.prepKind,
-          cookDate: pin.cookDate,
-          storage: pin.storage,
-          pinned: true,
-          mealPrepPlanId: pin.mealPrepPlanId,
-        });
-        usedToday.add(pin.variant.recipe.id);
-        state.record(pin.variant, dayIndex, input.foods, false);
-        continue;
-      }
+      for (const slotInfo of dayTargets.slots) {
+        const { slot, role, share } = slotInfo;
+        const base = { slot, role, share, pinned: false, mealPrepPlanId: null } as const;
+        const key = pinKey(date, slot);
+        const placement = shared.get(key);
+        if (placement !== undefined && date < today) reasons.set(key, 'past_day');
 
-      // 2. Schon gekochte Reste aus dem bisherigen Plan bleiben fest – wenn sie noch durch den Filter kommen.
-      const old = existingDay?.meals.find((m) => m.slot === slot && !m.isFill);
-      if (old !== undefined && old.prepKind === 'leftover' && old.cookDate < today) {
-        const recipe = input.recipes.find(
-          (r) => r.id === old.recipeId && r.version === old.recipeVersion,
-        );
-        const r = recipe === undefined ? null : pool.result(recipe, exclude, old.ingredientSwaps);
-        const fixed = r !== null && r.ok ? variantForMeal(r.value, old, input.foods) : null;
-        // Nur, solange der Rest noch hält (Kochtag + Haltbarkeit ≥ Tag, Wächter N5a K-a) – sonst neu belegen.
-        if (fixed !== null && leftoverKeeps(old, date, mealPrepKeeping(fixed, input.foods))) {
+        // 1. Feste Vorgabe aus einem Meal-Prep-Wochenplan.
+        const pin = pins.get(key);
+        if (pin !== undefined) {
           selected.push({
             ...base,
-            variant: fixed,
-            prepKind: 'leftover',
-            cookDate: old.cookDate,
-            storage: old.storage,
-            fixedFactor: old.factor,
-            mealPrepPlanId: old.mealPrepPlanId,
+            variant: pin.variant,
+            prepKind: pin.prepKind,
+            cookDate: pin.cookDate,
+            storage: pin.storage,
+            pinned: true,
+            mealPrepPlanId: pin.mealPrepPlanId,
           });
-          usedToday.add(fixed.recipe.id);
-          state.record(fixed, dayIndex, input.foods, false);
+          usedToday.add(pin.variant.recipe.id);
+          state.record(pin.variant, dayIndex, input.foods, false);
+          if (placement !== undefined) reasons.set(key, 'slot_taken');
           continue;
         }
-      }
 
-      // 3. Meal-Prep nach Kochterminen (6.4).
-      const event = prepSlots.has(slot)
-        ? events.find((e) => e.dayIndices.includes(dayIndex))
-        : undefined;
-      if (event !== undefined && event.cookDate >= today) {
-        const key = `${event.offset}|${slot}`;
-        let assignment = assignments.get(key);
-        if (assignment === undefined) {
-          assignment = choosePrepRecipe(ctx, event, slot, role, share, targets, assignments);
-          assignments.set(key, assignment);
-          if (assignment.variant !== null) {
-            state.record(assignment.variant, dayIndex, input.foods, true);
-          }
-        }
-        if (assignment.variant !== null && assignment.keeping !== null) {
-          const use: MealPrepDayUse = mealPrepDayUse(assignment.keeping, dayIndex - event.offset);
-          if (use !== 'fresh' && !(exclude && assignment.variant.facts.pregnancyCaution)) {
+        // 2. Schon gekochte Reste aus dem bisherigen Plan bleiben fest – wenn sie noch durch den Filter kommen.
+        const old = existingDay?.meals.find((m) => m.slot === slot && !m.isFill);
+        if (old !== undefined && old.prepKind === 'leftover' && old.cookDate < today) {
+          const recipe = input.recipes.find(
+            (r) => r.id === old.recipeId && r.version === old.recipeVersion,
+          );
+          const r = recipe === undefined ? null : pool.result(recipe, exclude, old.ingredientSwaps);
+          const fixed = r !== null && r.ok ? variantForMeal(r.value, old, input.foods) : null;
+          // Nur, solange der Rest noch hält (Kochtag + Haltbarkeit ≥ Tag, Wächter N5a K-a) – sonst neu belegen.
+          if (fixed !== null && leftoverKeeps(old, date, mealPrepKeeping(fixed, input.foods))) {
             selected.push({
               ...base,
-              variant: assignment.variant,
-              prepKind: use === 'cook' ? 'cook' : 'leftover',
-              cookDate: event.cookDate,
-              storage: use === 'fridge' || use === 'freeze' ? use : null,
+              variant: fixed,
+              prepKind: 'leftover',
+              cookDate: old.cookDate,
+              storage: old.storage,
+              fixedFactor: old.factor,
+              mealPrepPlanId: old.mealPrepPlanId,
             });
-            usedToday.add(assignment.variant.recipe.id);
+            usedToday.add(fixed.recipe.id);
+            state.record(fixed, dayIndex, input.foods, false);
+            if (placement !== undefined) reasons.set(key, 'slot_taken');
             continue;
           }
         }
-        // Jenseits der Haltbarkeit ohne Einfrieren (oder kein geeignetes Gericht): frisch kochen (S12, W15).
-        notices.add('meal_prep_fresh_days');
+
+        // 2b. Geteilte Mahlzeit (19.7 N13): eigener Filter, Daumen runter, feste Portion der Person.
+        if (placement !== undefined && !skipShared.has(key) && !reasons.has(key)) {
+          const recipe = input.recipes.find((r) => r.id === placement.recipeId);
+          const r = recipe === undefined ? null : pool.result(recipe, exclude);
+          if (r === null) {
+            reasons.set(key, 'not_found');
+          } else if (!r.ok) {
+            reasons.set(key, 'excluded');
+          } else if (recipeBlockedOnAnyDay(pool.ratings, r.value.recipe.id, [date])) {
+            reasons.set(key, 'rated_down');
+          } else {
+            const portion = scalePortionByRole(r.value, placement.factors, input.foods);
+            selected.push({
+              ...base,
+              variant: r.value,
+              prepKind: 'fresh',
+              cookDate: date,
+              storage: null,
+              pinned: true,
+              fixedFactor: portion.factor,
+              fixedPortion: portion,
+            });
+            usedToday.add(r.value.recipe.id);
+            state.record(r.value, dayIndex, input.foods, true);
+            sharedUsed.push(key);
+            continue;
+          }
+        }
+
+        // 3. Meal-Prep nach Kochterminen (6.4).
+        const event = prepSlots.has(slot)
+          ? events.find((e) => e.dayIndices.includes(dayIndex))
+          : undefined;
+        if (event !== undefined && event.cookDate >= today) {
+          const prepKey = `${event.offset}|${slot}`;
+          let assignment = assignments.get(prepKey);
+          if (assignment === undefined) {
+            assignment = choosePrepRecipe(ctx, event, slot, role, share, targets, assignments);
+            assignments.set(prepKey, assignment);
+            if (assignment.variant !== null) {
+              state.record(assignment.variant, dayIndex, input.foods, true);
+            }
+          }
+          if (assignment.variant !== null && assignment.keeping !== null) {
+            const use: MealPrepDayUse = mealPrepDayUse(assignment.keeping, dayIndex - event.offset);
+            if (use !== 'fresh' && !(exclude && assignment.variant.facts.pregnancyCaution)) {
+              selected.push({
+                ...base,
+                variant: assignment.variant,
+                prepKind: use === 'cook' ? 'cook' : 'leftover',
+                cookDate: event.cookDate,
+                storage: use === 'fridge' || use === 'freeze' ? use : null,
+              });
+              usedToday.add(assignment.variant.recipe.id);
+              continue;
+            }
+          }
+          // Jenseits der Haltbarkeit ohne Einfrieren (oder kein geeignetes Gericht): frisch kochen (S12, W15).
+          notices.add('meal_prep_fresh_days');
+        }
+
+        // 4. Täglich frisch.
+        const pick = pickDailyMeal(ctx, slot, role, share, usedToday);
+        if (pick.variant === null) {
+          emptySlots.push({ slot, reasons: pick.reasons });
+          continue;
+        }
+        if (pick.repeated) notices.add('recipe_repeated');
+        selected.push({
+          ...base,
+          variant: pick.variant,
+          prepKind: 'fresh',
+          cookDate: date,
+          storage: null,
+        });
+        usedToday.add(pick.variant.recipe.id);
+        state.record(pick.variant, dayIndex, input.foods, true);
       }
 
-      // 4. Täglich frisch.
-      const pick = pickDailyMeal(ctx, slot, role, share, usedToday);
-      if (pick.variant === null) {
-        emptySlots.push({ slot, reasons: pick.reasons });
-        continue;
-      }
-      if (pick.repeated) notices.add('recipe_repeated');
-      selected.push({
-        ...base,
-        variant: pick.variant,
-        prepKind: 'fresh',
-        cookDate: date,
-        storage: null,
+      // Mit festen Vorgaben (Meal-Prep-Wochenplan, geteilte Mahlzeit) fällt nichts weg: passt der Tag nicht, wird
+      // der Plan nicht angeboten (19.6 Nr. 7, G3) bzw. die geteilte Mahlzeit entfällt für diese Person (S1).
+      const finished = finishDay(ctx, selected, emptySlots, notices, {
+        allowDrop: !selected.some((m) => m.pinned),
       });
-      usedToday.add(pick.variant.recipe.id);
-      state.record(pick.variant, dayIndex, input.foods, true);
-    }
+      const sharedKcal = new Map(
+        selected.flatMap((m): [string, number][] =>
+          m.fixedPortion === undefined
+            ? []
+            : [[pinKey(date, m.slot), m.fixedPortion.nutrients.kcal + m.fixedPortion.optionalKcal]],
+        ),
+      );
+      return { finished, sharedUsed, sharedKcal, reasons };
+    };
 
-    // Mit festen Vorgaben (Meal-Prep-Wochenplan) fällt nichts weg: passt der Tag nicht, wird der Plan nicht
-    // angeboten (19.6 Nr. 7, G3).
-    const finished = finishDay(ctx, selected, emptySlots, notices, {
-      allowDrop: !selected.some((m) => m.pinned),
+    // Geteilte Mahlzeiten: Stand vor dem Tag merken, damit ein neuer Versuch ohne eine von ihnen gleich startet.
+    const before = sharedToday.length > 0 ? state.clone() : null;
+    const assignmentsBefore = sharedToday.length > 0 ? new Map(assignments) : null;
+    const skip = new Set<string>();
+    let attempt = planDay(skip);
+    while (attempt.finished.aboveCeiling && attempt.sharedUsed.length > 0) {
+      // Über der Obergrenze trotz Ausgleich: diese Person isst die geteilte Mahlzeit mit den meisten kcal nicht als
+      // geteilte Portion (S1) – Gleichstand nach Platz-Reihenfolge des Tages.
+      const order = new Map(dayTargets.slots.map((x, i) => [pinKey(date, x.slot), i]));
+      const drop = [...attempt.sharedUsed].sort(
+        (a, b) =>
+          (attempt.sharedKcal.get(b) ?? 0) - (attempt.sharedKcal.get(a) ?? 0) ||
+          (order.get(a) ?? 0) - (order.get(b) ?? 0),
+      )[0] as string;
+      skip.add(drop);
+      state.restore(before as WeekState);
+      assignments.clear();
+      (assignmentsBefore as Map<string, PrepAssignment>).forEach((v, k) => assignments.set(k, v));
+      attempt = planDay(skip);
+    }
+    const { finished } = attempt;
+    sharedToday.forEach((key) => {
+      if (skip.has(key)) setOutcome(key, 'above_ceiling');
+      else if (attempt.sharedUsed.includes(key)) setOutcome(key, null);
+      else setOutcome(key, attempt.reasons.get(key) ?? 'slot_missing');
     });
     if (finished.aboveCeiling) aboveCeilingDays.push(date);
     finished.day.meals
@@ -1080,8 +1397,12 @@ export function buildMealPlanWeekDetailed(
         const r = recipe === undefined ? null : pool.result(recipe, exclude);
         if (r !== null && r.ok) state.record(r.value, dayIndex, input.foods, true);
       });
+    if (state.leftovers !== null) recordDayLeftovers(state.leftovers, finished.day);
     days.push(finished.day);
   });
+
+  // Geteilte Mahlzeiten außerhalb der Woche (kein Tag mit diesem Datum).
+  for (const key of shared.keys()) if (!outcomes.has(key)) setOutcome(key, 'slot_missing');
 
   return {
     plan: assembleWeek(repairOrphanLeftovers(days, weekStart), {
@@ -1096,6 +1417,9 @@ export function buildMealPlanWeekDetailed(
       mealPrepPlanId: internal.mealPrepPlanId ?? null,
     }),
     aboveCeilingDays,
+    sharedOutcomes: [...outcomes.values()].sort((a, b) =>
+      a.date < b.date ? -1 : a.date > b.date ? 1 : a.slot < b.slot ? -1 : a.slot > b.slot ? 1 : 0,
+    ),
   };
 }
 
@@ -1214,7 +1538,7 @@ function choosePrepRecipe(
     const keeping = mealPrepKeeping(c, ctx.pool.foods);
     return span <= keeping.fridgeDays || keeping.freezable;
   });
-  const args = scoreArgs(ctx, slot, role, share);
+  const args = scoreArgs(ctx, slot, role, share, event.dayIndices.length);
   const chosen = pickBest(keeps.length > 0 ? keeps : pool, args, ctx.state, ctx.pool.foods);
   return {
     variant: chosen,
@@ -1385,7 +1709,8 @@ export function swapMealRecipe(
       prepKind: m.prepKind,
       cookDate: m.cookDate,
       storage: m.storage,
-      ...(m.fixed ? { fixedFactor: m.factor } : {}),
+      // Geteilte Mahlzeit bleibt exakt (Gramm und kcal), wird nie umgerechnet (Wächter N13 S1).
+      ...fixedMealSelection(m),
     });
   }
 

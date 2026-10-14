@@ -25,6 +25,7 @@ import {
   variantForMeal,
   WeekState,
   withMealOmissions,
+  fixedMealSelection,
 } from './meal-plan';
 import { freshCookTooLong, mealPrepKeeping, prepStorageForDay } from './meal-prep';
 import type { MealPlanNoticeCode } from './notices';
@@ -340,7 +341,9 @@ export function applyIngredientSwap(
         share: info?.share ?? 0,
         mealPrepPlanId: m.mealPrepPlanId,
         pinned: m.mealPrepPlanId !== null,
-        ...(m.fixed ? { fixedFactor: m.factor } : {}),
+        // Geteilte Mahlzeit (N13): bleibt exakt; wird sie SELBST getauscht, ist sie für diese Person danach eine
+        // eigene Mahlzeit mit eigenem Faktor (Wächter N13 S1).
+        ...(m === member.meal && m.shared === true ? {} : fixedMealSelection(m)),
       };
       if (m === member.meal) {
         selected.push({ ...base, variant, ...placement });

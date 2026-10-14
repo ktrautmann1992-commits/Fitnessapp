@@ -136,6 +136,10 @@ export function toMealPlanPayload(
   plan: MealPlanWeek,
   inputs: MealPlanPayload['inputs'],
 ): MealPlanPayload {
+  // Geteilte Portionen (N13) haben bis P1 keine Spalte – sonst ginge `shared` beim Speichern still verloren (Wächter N13 NS1).
+  if (plan.days.some((day) => day.meals.some((meal) => meal.shared === true))) {
+    throw new Error('Pläne mit geteilter Mahlzeit sind bis P1 nicht speicherbar.');
+  }
   const round1 = (value: number) => Math.round(value * 10) / 10;
   return mealPlanPayloadSchema.parse({
     week_start: plan.weekStart,

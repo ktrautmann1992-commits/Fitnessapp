@@ -214,6 +214,8 @@ export function mealPlanMatchesRecipes(
         (r) => r.id === meal.recipeId && r.version === meal.recipeVersion,
       );
       if (recipe === undefined) return false;
+      // Geteilte Mahlzeiten (19.7 N13) sind bis P1 nicht speicherbar – in beiden Modi (Wächter N13 S2).
+      if (meal.shared === true) return false;
       if (meal.titleDe !== recipe.title_de || meal.recipeStatus !== recipe.status) return false;
       const substitutionsOk = meal.substitutions.every((sub) => {
         const ingredient = recipe.ingredients[sub.index];
