@@ -111,12 +111,12 @@ Struktur für Screenreader) – die App-Ansicht bleibt die barrierefreie Hauptqu
 
 ## 8. Etappen (je ein Pull Request, B12)
 
-| Etappe | Inhalt                                                                                                                      |
-| ------ | --------------------------------------------------------------------------------------------------------------------------- |
-| P1+P2  | Core-Dokumentmodell + Tests **und** HTML-Renderer mit Schrift/Logo-Modul; Beispiel-PDF-HTML als **CI-Artefakt** zum Ansehen |
-| P3     | App: Knopf, Hinweis-Dialog, Web-Druckansicht-Route; Vercel-Vorschau                                                         |
-| P4     | Nativ (klein): `expo-print` gepinnt, `printAsync` mit A4; EAS-Build Android + iOS                                           |
-| (P5)   | Phase 5: Ernährungsplan + Einkaufsliste als zweites Dokument                                                                |
+| Etappe | Inhalt                                                                                                                               |
+| ------ | ------------------------------------------------------------------------------------------------------------------------------------ |
+| P1+P2  | Core-Dokumentmodell + Tests **und** HTML-Renderer mit Schrift/Logo-Modul; Beispiel-PDF-HTML als **CI-Artefakt** zum Ansehen          |
+| P3     | App: Knopf, Hinweis-Dialog, Web-Druckansicht-Route; Vercel-Vorschau                                                                  |
+| P4     | Nativ (klein): `expo-print` gepinnt, `printAsync` mit A4; EAS-Build Android + iOS                                                    |
+| (P5)   | Phase 5: Ernährungsplan + Einkaufsliste als zweites Dokument – **umgesetzt in Etappe N6** (docs/PLAN-PHASE-5.md, Umsetzungsstand N6) |
 
 ## 9. So testet ihr es am Handy
 

@@ -49,7 +49,7 @@ import {
  * nach dem Neuladen), „Erledigte ausblenden“, Vorrat eingeklappt, eigene Einträge, Zeitraum wählen, über „Zur
  * Einkaufsliste“ hinzugefügte Rezepte, Markierungen „Menge geändert“/„nicht mehr im Plan“ nach einer Neuplanung
  * (W22). Laufende und nächste Woche. Rechnet nichts selbst – alles aus packages/core (shopping-list-store.ts).
- * Keine kcal, keine Gründe (Unverträglichkeiten stehen nirgends).
+ * Keine kcal, keine Gründe (Unverträglichkeiten stehen nirgends). Etappe N6: „Als PDF speichern“ (PDF P5).
  */
 export default function ShoppingListScreen() {
   const router = useRouter();
@@ -344,6 +344,14 @@ export default function ShoppingListScreen() {
         </Card>
       ) : null}
 
+      {/* PDF P5 (11, Etappe N6): Druckansicht mit Kästchen; Hinweis-Dialog bei Gesundheitsbezug. */}
+      <Button
+        label={t.nutrition.printView.button}
+        variant="secondary"
+        accessibilityHint={t.nutrition.printView.listHint}
+        onPress={() => router.push(`/einkaufsliste/drucken?woche=${list.weekStart}` as Href)}
+        testID="shopping-print"
+      />
       <Checkbox
         label={texts.hideChecked}
         checked={hideChecked}

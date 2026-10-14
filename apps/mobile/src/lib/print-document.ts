@@ -12,6 +12,7 @@ import { t } from '@/i18n';
 
 import { formatDateDe, formatDecimal, formatKg } from './format';
 import { dayLabel, repsRange } from './plan-format';
+import { NUTRITION_PRINT_TEXTS } from './print-nutrition-texts';
 
 /**
  * Druck-Dokument (Codes aus packages/core/src/export) → „übersetztes Dokument“ für packages/ui/print
@@ -43,6 +44,8 @@ function restShort(seconds: number): string {
 type Translators = { readonly [K in PrintTextCode]: (params: PrintTextParams[K]) => string };
 
 const TEXTS: Translators = {
+  // Essensplan und Einkaufsliste (Etappe N6 – PDF P5).
+  ...NUTRITION_PRINT_TEXTS,
   'doc.title': () => p.docTitle,
   'doc.footer': () => p.footer,
   'cover.heading': () => p.coverHeading,
@@ -191,6 +194,17 @@ function translateBlock(block: PrintBlock): TranslatedBlock {
         title: translatePrintText(block.title),
         text: translatePrintText(block.text),
       };
+    case 'checklist':
+      return {
+        type: 'checklist',
+        caption: translatePrintText(block.caption),
+        ...(block.captionLevel ? { captionLevel: block.captionLevel } : {}),
+        columns: block.columns,
+        checkedLabel: t.nutrition.print.checked,
+        items: block.items.map((item) => ({ lines: cell(item.text), checked: item.checked })),
+      };
+    case 'steps':
+      return { type: 'steps', start: block.start, items: block.items.map(translatePrintText) };
     case 'pageBreak':
       return { type: 'pageBreak', orientation: block.orientation };
   }

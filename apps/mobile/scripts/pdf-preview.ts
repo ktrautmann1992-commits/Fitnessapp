@@ -2,6 +2,7 @@
  * PDF-Vorschau für die CI (docs/PLAN-PDF-EXPORT.md §8 P1+P2, §9 Schritt 1): schreibt für AUSGEDACHTE Beispiel-Personen
  * das Druck-HTML nach `pdf-vorschau/` (GitHub Actions lädt den Ordner als Artefakt „pdf-vorschau“ hoch). Am Handy
  * öffnen und über „Drucken“ → „Als PDF sichern“ prüfen. Keine echten Nutzerdaten.
+ * Seit Etappe N6 (PDF P5, docs/PLAN-PHASE-5.md 11) auch Essensplan und Einkaufsliste (Beispiel-Rezepte mit Testwerten).
  *
  *   pnpm --filter @fitnessapp/mobile pdf:preview
  */
@@ -18,6 +19,10 @@ import {
   extremeDocument,
   PRINT_EXAMPLES,
 } from '../src/test/print-examples';
+import {
+  NUTRITION_EXAMPLE_DAY,
+  NUTRITION_PRINT_EXAMPLES,
+} from '../src/test/nutrition-print-examples';
 
 const outDir = fileURLToPath(new URL('../pdf-vorschau/', import.meta.url));
 rmSync(outDir, { recursive: true, force: true });
@@ -38,6 +43,26 @@ const all = [
   { example: EXTREME_EXAMPLE, doc: extremeDocument() },
 ];
 for (const { example, doc } of all) {
+  const html = renderPrintHtml(translatePrintDocument(doc));
+  const file = `${doc.meta.fileName}-${example.slug}.html`;
+  writeFileSync(new URL(file, `file://${outDir}`), html);
+  summary.push(`| \`${file}\` | ${example.description} |`);
+  process.stdout.write(
+    `geschrieben: pdf-vorschau/${file} (${Math.round(html.length / 1024)} KB)\n`,
+  );
+}
+
+summary.push(
+  '',
+  '## PDF-Vorschau (Essensplan und Einkaufsliste, PDF P5)',
+  '',
+  `Stand ${NUTRITION_EXAMPLE_DAY}, Beispiel-Rezepte mit Testwerten.`,
+  '',
+  '| Datei | Beispiel |',
+  '| --- | --- |',
+);
+for (const example of NUTRITION_PRINT_EXAMPLES) {
+  const doc = example.document();
   const html = renderPrintHtml(translatePrintDocument(doc));
   const file = `${doc.meta.fileName}-${example.slug}.html`;
   writeFileSync(new URL(file, `file://${outDir}`), html);

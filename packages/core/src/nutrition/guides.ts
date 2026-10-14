@@ -67,6 +67,22 @@ export function mentionsEnergyOrMacroGrams(text: string): boolean {
   return PERCENT.test(text) && (MACRO_WORDS.test(text) || ENERGY_WORDS.test(text));
 }
 
+/**
+ * Text ohne die Sätze, die Energie-Zahlen oder Makro-Mengen nennen (Wächter N6 S1) – dieselbe Erkennung wie im
+ * Ratgeber (`mentionsEnergyOrMacroGrams`, eine Quelle). Für Rezept-Beschreibungen wie „… mit fast 30 g Eiweiß“ oder
+ * „… bringt über 100 g Kohlenhydrate“: Solche Mengen gelten für das Grundrezept, nicht für die skalierte Portion, und
+ * fallen im PDF immer weg (keine Nährwerte je Rezept), in der App bei „Zahlen aus“ bzw. Schwangerschaft/Stillzeit.
+ * Sätze enden an „.“, „!“ oder „?“; ein Gedankenstrich-Nachsatz gehört zum Satz (sichere Richtung: ganzer Satz weg).
+ * Wörter ohne Menge („viel Eiweiß bei wenig Kalorien“) erkennt der Filter bewusst nicht – das sind Fragen der
+ * Health-Claims-Prüfung (R10), keine Zahlen. null = nichts übrig.
+ */
+export function withoutNutrientAmounts(text: string): string | null {
+  const sentences = text.split(/(?<=[.!?])\s+/u).filter((s) => s.trim() !== '');
+  const kept = sentences.filter((sentence) => !mentionsEnergyOrMacroGrams(sentence));
+  const result = kept.join(' ').trim();
+  return result === '' ? null : result;
+}
+
 export interface GuideDisplaySection {
   /** null = Überschrift nennt Zahlen und ist wegen „Zahlen aus“ ausgeblendet (Wächter N5c K1). */
   readonly heading: string | null;

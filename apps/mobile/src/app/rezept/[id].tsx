@@ -8,6 +8,7 @@ import {
   type ScaledIngredient,
   scaleRecipeForServings,
   weekHidesEnergyNumbers,
+  withoutNutrientAmounts,
 } from '@fitnessapp/core';
 import { Redirect, useLocalSearchParams, useRouter, type Href } from 'expo-router';
 import { useState, type ReactNode } from 'react';
@@ -24,6 +25,7 @@ import {
   formatGrams,
   formatKcal,
   formatNumberDe,
+  nutrientSourcesText,
 } from '@/lib/nutrition-format';
 import { useToday } from '@/lib/use-today';
 import { useApp } from '@/state/app-state';
@@ -160,6 +162,10 @@ export default function RecipeScreen() {
     (plannedMeal === null ||
       view.week.plan?.days.find((d) => d.date === date)?.status !== 'no_targets');
 
+  const description = showNumbers
+    ? recipe.description_de
+    : withoutNutrientAmounts(recipe.description_de);
+
   // Zutaten und Nährwerte je Portion: aus dem Essensplan (Portion der Person) oder Portionswähler (ohne Ziel-Bezug).
   const picked = servings ?? recipe.servings;
   const scaled = plannedMeal === null ? scaleRecipeForServings(variant, picked, foods) : null;
@@ -269,7 +275,12 @@ export default function RecipeScreen() {
           <Body muted>{t.nutrition.search.outsideDietRecipe}</Body>
         </Notice>
       ) : null}
-      <Body muted>{recipe.description_de}</Body>
+      {/* Wächter N6 S1: bei „Zahlen aus“/Schwangerschaft ohne Sätze mit kcal- oder Makro-Mengen (Filter aus core). */}
+      {description !== null ? (
+        <Body muted testID="recipe-description">
+          {description}
+        </Body>
+      ) : null}
       <Body muted>{texts.times(recipe.prep_minutes, recipe.cook_minutes)}</Body>
 
       <Card>
@@ -373,11 +384,11 @@ export default function RecipeScreen() {
       {demo ? (
         <Body muted>{t.nutrition.demoSource}</Body>
       ) : (
-        sources.map((source) => (
-          <Body key={`${source.db}|${source.version}|${source.license}`} muted>
-            {t.nutrition.source(t.nutrition.sourceNames[source.db], source.version, source.license)}
+        sources.length > 0 && (
+          <Body muted testID="recipe-source">
+            {nutrientSourcesText(sources)}
           </Body>
-        ))
+        )
       )}
       <Body muted>{t.nutrition.disclaimer}</Body>
     </>,

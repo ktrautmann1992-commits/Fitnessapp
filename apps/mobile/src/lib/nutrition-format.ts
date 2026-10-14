@@ -9,6 +9,7 @@ import {
   SHOPPING_CATEGORY_LABELS_DE,
   type ShoppingCategory,
   type ShoppingListItem,
+  type SourceDatabase,
   unitLabelDe,
 } from '@fitnessapp/core';
 
@@ -119,4 +120,29 @@ export function countdownText(seconds: number): string {
   const m = Math.floor((total % 3600) / 60);
   const s = String(total % 60).padStart(2, '0');
   return h > 0 ? `${h}:${String(m).padStart(2, '0')}:${s}` : `${m}:${s}`;
+}
+
+/**
+ * Namensnennung der Nährwert-Quellen (S13, CC BY 4.0; Wächter N6 S2): „Nährwerte: Bundeslebensmittelschlüssel (BLS)
+ * 4.0, Max Rubner-Institut (CC BY 4.0, creativecommons.org/licenses/by/4.0); umgerechnet und gerundet.“ – gleich in
+ * Rezeptansicht und PDF-Fuß. Mehrere Quellen mit „; “ getrennt.
+ */
+export function nutrientSourcesText(
+  sources: readonly { db: SourceDatabase; version: string; license: string }[],
+): string | null {
+  if (sources.length === 0) return null;
+  const n = t.nutrition;
+  return n.source(
+    sources
+      .map((s) => {
+        const names = n.sourceNames[s.db];
+        return n.sourceAttribution(
+          names.name,
+          s.version,
+          names.publisher,
+          n.licenseTexts[s.license] ?? s.license,
+        );
+      })
+      .join('; '),
+  );
 }

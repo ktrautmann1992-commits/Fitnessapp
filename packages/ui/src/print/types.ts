@@ -22,6 +22,17 @@ export interface TranslatedTable {
   }[];
 }
 
+/** Kästchen-Liste (Einkaufsliste): Einträge als Zeilen untereinander, `checked` = mit Haken. */
+export interface TranslatedChecklist {
+  readonly type: 'checklist';
+  readonly caption: string;
+  readonly captionLevel?: 2 | 3;
+  readonly columns: 1 | 2;
+  /** Screenreader-Text für abgehakte Einträge (z. B. „erledigt“). */
+  readonly checkedLabel: string;
+  readonly items: readonly { readonly lines: readonly string[]; readonly checked: boolean }[];
+}
+
 export type TranslatedBlock =
   | { readonly type: 'heading'; readonly level: 1 | 2 | 3; readonly text: string }
   | { readonly type: 'paragraph'; readonly text: string; readonly muted?: boolean }
@@ -31,6 +42,9 @@ export type TranslatedBlock =
     }
   | TranslatedTable
   | { readonly type: 'notice'; readonly title: string; readonly text: string }
+  | TranslatedChecklist
+  /** Nummerierte Schritte; `start` > 1 = Fortsetzung. */
+  | { readonly type: 'steps'; readonly start: number; readonly items: readonly string[] }
   | { readonly type: 'pageBreak'; readonly orientation: TranslatedOrientation };
 
 export interface TranslatedDocument {

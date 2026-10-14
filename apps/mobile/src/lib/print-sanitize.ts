@@ -32,6 +32,10 @@ const ALLOWED_ELEMENTS = new Set([
   'td',
   'svg',
   'path',
+  // Ernährungs-Dokumente (Etappe N6): Kästchen-Liste und nummerierte Rezept-Schritte.
+  'ul',
+  'ol',
+  'li',
 ]);
 
 const ALLOWED_ATTRIBUTES = new Set(['class', 'id', 'lang', 'scope', 'role', 'focusable']);
@@ -47,6 +51,7 @@ function keepAttribute(element: Element, name: string, value: string): boolean {
   if (attr.startsWith('on')) return false;
   if (!SAFE_VALUE.test(value) || /javascript:|data:/i.test(value)) return false;
   if (attr === 'style') return tag === 'col' && COL_STYLE.test(value.replace(/\s+/g, ''));
+  if (attr === 'start') return tag === 'ol' && /^\d{1,3}$/.test(value);
   if (attr === 'fill') return tag === 'path' && /^#[0-9a-f]{3,8}$/i.test(value);
   if (SVG_ATTRIBUTES.has(attr)) return tag === 'svg' || tag === 'path';
   return ALLOWED_ATTRIBUTES.has(attr) || attr.startsWith('aria-');

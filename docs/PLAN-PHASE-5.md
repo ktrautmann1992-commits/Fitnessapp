@@ -1,6 +1,6 @@
 # Plan Phase 5 – Ernährungs-Engine, Essensplan und Einkaufsliste
 
-**Status:** **freigegeben, Etappen N0 (Plan), N1 (Core: Bedarf, Grenzen, Makros, Timing) und N2a (Inhalte: Schemas, Prüfregeln, Einheiten) umgesetzt** – Stand 11.10.2026. Offene Fragen 16 B: Gründer „Alles wie empfohlen“ (10.10.2026). Gegenprüfung der R2-Blocker durch den Wächter im N0-PR. **N2b Teil 1 (Quelle/Lizenz geklärt, Import-Infrastruktur, Zuordnungs-Vorschlag) umgesetzt** – der Katalog selbst entsteht nach dem Merge über den Workflow `foods-import` (Umsetzungsstand N2b). **N2c (Rezept-Import als Entwurf) und N3 (Core: Essensplan, Meal-Prep, Einkaufsliste, Rezeptsuche) umgesetzt** – Stand 12.10.2026 (Umsetzungsstand N2c/N3). **N4 (App Testmodus: Einrichtung, Tag, Rezept) umgesetzt** – Stand 12.10.2026 (Umsetzungsstand N4). **N2d (Admin-Seiten Ernährung, Sammelfreigabe Rezepte pro Kategorie und Freigabe per ID in `content-review`, Fingerabdruck bestätigter Import-Annahmen) umgesetzt** – Stand 14.10.2026, drei offene Fragen von den Gründern entschieden (Umsetzungsstand N2d). **N5a (App Testmodus: gespeicherter Essensplan, Wochenansicht, „Andere Vorschläge“, „Rezept tauschen“, „Plan aktualisieren“, automatische Neuplanung 6.6) umgesetzt** – Stand 14.10.2026; N5 ist in **N5a** und **N5b** (Einkaufsliste, Meal-Prep-Kochtag, „Zur Einkaufsliste“) geteilt (Umsetzungsstand N5a). **N5b (App Testmodus: Einkaufsliste offline mit eigenen Einträgen und Zeitraum, Neuerzeugung bei Neuplanung W22, „Zur Einkaufsliste“, Meal-Prep-Pläne mit Kochtag und Timern, Auftau-Hinweise; K-a, K-b, K5, K7, N3 K1) umgesetzt** – Stand 14.10.2026; offene Gründer-Entscheidung: Mitteilungen im Hintergrund (`expo-notifications`), Löschfrist weiter offen (Umsetzungsstand N5b). **N5c (App Testmodus: Rezeptsuche mit vorbelegter, erweiterbarer Ernährungsform und gekennzeichneten Treffern, „Zur Einkaufsliste“ für diese Treffer, Ratgeber offline mit R21-Prüfung und „Zahlen aus“) umgesetzt** – Stand 14.10.2026 (Umsetzungsstand N5c). **Nachtrag „Erweiterungen 2 (11.10.2026)“** in Abschnitt 19 (Fassung 2 nach Wächter-Prüfung, B1/B2 und S1–S14 eingearbeitet): Rezeptbestand aus `alpha5-rezepte.json`, Import in N2b/N2c, Umfang von Prompt C in N3–N6, neue Etappen N9–N14, W1 und P1. Fassung 3 nach Wächter-Nachprüfung `waechter-plan-5-r2.md` (Urteil „mit Auflagen“, alle Befunde eingearbeitet); Fassung 2 nach `waechter-plan-5.md`.
+**Status:** **freigegeben, Etappen N0 (Plan), N1 (Core: Bedarf, Grenzen, Makros, Timing) und N2a (Inhalte: Schemas, Prüfregeln, Einheiten) umgesetzt** – Stand 11.10.2026. Offene Fragen 16 B: Gründer „Alles wie empfohlen“ (10.10.2026). Gegenprüfung der R2-Blocker durch den Wächter im N0-PR. **N2b Teil 1 (Quelle/Lizenz geklärt, Import-Infrastruktur, Zuordnungs-Vorschlag) umgesetzt** – der Katalog selbst entsteht nach dem Merge über den Workflow `foods-import` (Umsetzungsstand N2b). **N2c (Rezept-Import als Entwurf) und N3 (Core: Essensplan, Meal-Prep, Einkaufsliste, Rezeptsuche) umgesetzt** – Stand 12.10.2026 (Umsetzungsstand N2c/N3). **N4 (App Testmodus: Einrichtung, Tag, Rezept) umgesetzt** – Stand 12.10.2026 (Umsetzungsstand N4). **N2d (Admin-Seiten Ernährung, Sammelfreigabe Rezepte pro Kategorie und Freigabe per ID in `content-review`, Fingerabdruck bestätigter Import-Annahmen) umgesetzt** – Stand 14.10.2026, drei offene Fragen von den Gründern entschieden (Umsetzungsstand N2d). **N5a (App Testmodus: gespeicherter Essensplan, Wochenansicht, „Andere Vorschläge“, „Rezept tauschen“, „Plan aktualisieren“, automatische Neuplanung 6.6) umgesetzt** – Stand 14.10.2026; N5 ist in **N5a** und **N5b** (Einkaufsliste, Meal-Prep-Kochtag, „Zur Einkaufsliste“) geteilt (Umsetzungsstand N5a). **N5b (App Testmodus: Einkaufsliste offline mit eigenen Einträgen und Zeitraum, Neuerzeugung bei Neuplanung W22, „Zur Einkaufsliste“, Meal-Prep-Pläne mit Kochtag und Timern, Auftau-Hinweise; K-a, K-b, K5, K7, N3 K1) umgesetzt** – Stand 14.10.2026; offene Gründer-Entscheidung: Mitteilungen im Hintergrund (`expo-notifications`), Löschfrist weiter offen (Umsetzungsstand N5b). **N5c (App Testmodus: Rezeptsuche mit vorbelegter, erweiterbarer Ernährungsform und gekennzeichneten Treffern, „Zur Einkaufsliste“ für diese Treffer, Ratgeber offline mit R21-Prüfung und „Zahlen aus“) umgesetzt** – Stand 14.10.2026 (Umsetzungsstand N5c). **N6 (PDF P5: Essensplan und Einkaufsliste als PDF, gratis – Dokumentmodell, Renderer-Bausteine `checklist`/`steps`, Druckansichten `ernaehrung/drucken` und `einkaufsliste/drucken`, Knöpfe, nativer Druck, CI-Artefakt) umgesetzt** – Stand 14.10.2026; EAS-Build Android noch von den Gründern zu prüfen (Umsetzungsstand N6). **Nachtrag „Erweiterungen 2 (11.10.2026)“** in Abschnitt 19 (Fassung 2 nach Wächter-Prüfung, B1/B2 und S1–S14 eingearbeitet): Rezeptbestand aus `alpha5-rezepte.json`, Import in N2b/N2c, Umfang von Prompt C in N3–N6, neue Etappen N9–N14, W1 und P1. Fassung 3 nach Wächter-Nachprüfung `waechter-plan-5-r2.md` (Urteil „mit Auflagen“, alle Befunde eingearbeitet); Fassung 2 nach `waechter-plan-5.md`.
 **Reihenfolge (Gründer-Entscheidung 09.10.2026):** 4b-A0 (erledigt) → Übungs-Glossar und Übungstausch (erledigt bis T2; T3 später mit Supabase) → **Phase 5** → Phase 4b (A → D → E; B/C später).
 **Testphase:** zuerst nur im **Testmodus** (lokal auf dem Gerät, ohne Supabase). Supabase-Teile (Migrationen, RLS, pgTAP) sind hier vollständig geplant, kommen aber in einer späteren Etappe (N7). Einzige Ausnahme: die kleine CHECK-Migration für den Onboarding-Schritt in N4 (S8).
 
@@ -753,7 +753,7 @@ Alle Texte Deutsch in `apps/mobile/src/i18n/de.ts` aus festen Bausteinen, Zahlen
 - **Ernährungsplan:** Deckblatt (Logo, „Dein Essensplan“, Woche, optional Name – Standard aus), Wochenübersicht Mo–So × Mahlzeiten (Rezept + Portion; kcal je Tag nur, wenn „Zahlen anzeigen“ an ist und der Tag `complete` ist; `below_floor`-Tage mit Hinweis statt Zahl), danach je Rezept eine halbe bis ganze Seite. Im Modus `no_targets` keine Tagessummen.
 - **Einkaufsliste:** nach Abteilungen, zwei Spalten, Kästchen, Vorrat am Ende, **keine** kcal.
 - **Nichts Verräterisches (wie B1 beim Training):** keine Ziele „wegen …“, keine Unverträglichkeiten als Grund, kein Gewicht, keine Flags, keine Schwangerschaft, kein Alter. Titel ohne „glutenfrei/laktosefrei“. Hinweis-Dialog vor dem Erzeugen, wenn `uses_health_data`.
-- **Bewusste Ausnahme (K4):** Ersatz-Hinweise („mit laktosefreier Milch“) und das Ersatzprodukt in der Einkaufsliste lassen indirekt auf eine Unverträglichkeit schließen. Das ist unvermeidbar (sonst würde falsch eingekauft) und wird so dokumentiert; der Hinweis-Dialog vor dem Erzeugen erwähnt es.
+- **Bewusste Ausnahme (K4):** Ersatz-Hinweise („mit laktosefreier Milch“), Weglass-Hinweise der Rezepte („Ohne: Walnüsse“, S3; Ergänzung Wächter N6 K6) und das Ersatzprodukt in der Einkaufsliste lassen indirekt auf eine Unverträglichkeit schließen. Das ist unvermeidbar (sonst würde falsch eingekauft) und wird so dokumentiert; der Hinweis-Dialog vor dem Erzeugen erwähnt es.
 - Nährwert-Quelle (Namensnennung) im PDF-Fuß, falls die Lizenz es verlangt.
 - Knöpfe in Woche und Einkaufsliste; Web-Druckansicht, nativ `expo-print`. CI-Artefakt „pdf-vorschau“ um beide Dokumente erweitert.
 
@@ -774,7 +774,7 @@ Alle Texte Deutsch in `apps/mobile/src/i18n/de.ts` aus festen Bausteinen, Zahlen
 - **Essensplan:** deterministisch, nie Unverträglichkeit/Abneigung/Schwein/`pregnancy_caution` (Eigenschaftstest über alle Kombinationen), Wiederholungsgrenzen, Meal-Prep nie über `fridge_days`, Slot leer mit Grund, `no_targets` = Faktor 1 ohne Zielsummen, Ersatz-Zutat rechnet neu, vergangene Tage unverändert.
 - **Einkaufsliste:** Aggregation über Einheiten, Aufrunden, Stück vs. Gramm, Vorrat getrennt, Häkchen bleiben über `item_key`, eigene Einträge, Zeitraum, Ersatzprodukt statt Original, Neuerzeugung nach automatischer Neuplanung („nicht mehr im Plan“, R2-S4).
 - **Widerruf:** Pläne mit Gesundheitsbezug weg, Angebot „mag ich nicht“, neuer Plan ohne Ziele; bei Ablehnung der Umwandlung bleibt **nichts** zwischengespeichert (R2-K4).
-- **PDF (K4):** Profil mit/ohne Unverträglichkeit/Flag → Dokumente **bis auf Rezeptauswahl und Ersatz-Hinweise** identisch (keine Gründe, kein Gewicht, keine Flags, kein Alter); Escaping; Zahlen aus bei `show_energy_numbers = false`; `below_floor`-Tag ohne Zahl.
+- **PDF (K4):** Profil mit/ohne Unverträglichkeit/Flag → Dokumente **bis auf Rezeptauswahl sowie Ersatz- und Weglass-Hinweise** identisch (keine Gründe, kein Gewicht, keine Flags, kein Alter); Escaping; Zahlen aus bei `show_energy_numbers = false`; `below_floor`-Tag ohne Zahl.
 - **CI-Zusammenfassung:** „Beispiel-Ernährung“ für 7 Testpersonen (A: 80 kg Mann Fettverlust 3 Tage; B: 45 kg Frau; C: 200 kg; D: 16 J.; E: Schwangerschaft → `no_targets`; F: Marathon 6 Tage mit EA-Deckel; G: kein Gesundheits-Check, weiblich; **H: Frau 100 kg, 170 cm, 30 J., KF 50 % → Ruhetag 1.910 kcal, R2-B1**), Abdeckungsbericht Rezepte, Beispiel-Wochenplan + Einkaufsliste mit Planband-Prüfung.
 
 ### 12.2 Wächter-Grenzfälle (W1–W16 aus Runde 1, W17–W25 aus Runde 2, W26–W27 aus der N0-Gegenprüfung)
@@ -2418,3 +2418,134 @@ regelbasiert (keine Echtzeit-KI). Nur Testmodus; Supabase-Modus bis N7 unveränd
 - **K5** „Filter zurücksetzen“ erscheint nur, wenn wirklich ein Filter gesetzt ist.
 - **K6** Der Knopf „Ratgeber“ in der Tagesansicht erscheint nur, wenn `readableGuides` mindestens einen Ratgeber
   liefert.
+
+### N6 – PDF P5: Essensplan und Einkaufsliste (umgesetzt, 14.10.2026, ohne Commit)
+
+Umfang wie Abschnitt 11 und 13 (N6): Dokumentmodell, Renderer-Bausteine, Druckansichten, Knöpfe, nativer Druck.
+Gratis, rein regelbasiert (keine Echtzeit-KI). Nur Testmodus (Supabase-Modus bis N7 „nicht unterstützt“). Nichts wird
+gespeichert, hochgeladen oder geloggt – das Dokument entsteht im Speicher, erst nach dem Hinweis-Dialog.
+
+1. **Core** (`packages/core/src/export/`):
+   - `document.ts`: `PrintDocumentKind` = `'training_plan' | 'nutrition_plan' | 'shopping_list'` (Zod
+     `PRINT_DOCUMENT_KINDS`); neue Bausteine **`checklist`** (Kästchen-Liste, ein- oder zweispaltig, `checked` = in der
+     App abgehakt) und **`steps`** (nummerierte Rezept-Schritte, `start` > 1 = Fortsetzung). Zod für beide. Höchstzahl
+     der Blöcke je Dokument von 400 auf 2.000 (8 Mahlzeiten × 7 Tage mit lauter verschiedenen Rezepten). Die App fängt
+     ein ungültiges Dokument ab („Das hat leider nicht geklappt“) statt abzustürzen.
+   - `nutrition-print-texts.ts` (neu): 43 Text-Codes der Ernährungs-Dokumente mit strikten Parameter-Schemas (nur
+     Enums, begrenzte Zahlen und gesäuberte Inhalte) – **kein Code kennt Ziele, Gründe, Unverträglichkeiten, Flags,
+     Schwangerschaft, Gewicht oder Alter**. `print-values.ts` (neu): gemeinsames Inhalts-Schema.
+   - `nutrition-documents.ts` (neu): `buildNutritionPlanDocument` (Deckblatt mit Logo, „Dein Essensplan“, Woche,
+     optional Name – Standard aus –, Arzt-Hinweis, ggf. Testwerte- und Entwurfs-Hinweis, Anleitung, Produkt-Hinweis
+     Spuren + HFI/Zöliakie; Wochenübersicht Mo–So × Mahlzeiten mit Rezept und Menge, Kochtag/vorgekocht/Ergänzung,
+     Zeile „Tagessumme“ bzw. „Hinweis“; je Rezept ein Abschnitt mit „In deinem Plan“, Zeit, Beschreibung,
+     KI-Entwurf-/Allergen-Kennzeichnung, Zutaten je Mengen-Spalte, Weglass-Hinweis, Geräte, Schritte, Haltbarkeit) und
+     `buildShoppingListDocument` (Zeitraum, Abteilungen in fester Reihenfolge, zweispaltige Kästchen, Vorrat am Ende,
+     über „Zur Einkaufsliste“ hinzugefügte Rezepte, Arzt- und Produkt-Hinweis, **keine kcal**). Zod-Optionen
+     (`nutritionPlanPrintOptionsSchema`, `shoppingListPrintOptionsSchema`), Fehler `invalid_options`, `no_meals`,
+     `recipe_missing` (Rezept fehlt oder andere Version – nie mit falschen Schritten drucken).
+   - **Zahlen:** kcal nur als Tagessumme (16 A Nr. 16), nur bei „Kalorienzahlen anzeigen“, nur an Tagen `complete`,
+     nie in einer Woche mit Schwangerschaft/Stillzeit – der Core prüft `weekHidesEnergyNumbers` selbst (zusätzlich zur
+     App). `below_floor` → „unvollständig“ statt Zahl mit Erklärung in der Legende, `no_targets` → keine Summe. Keine
+     Nährwerte je Rezept.
+   - **Seitenumbruch** nach Höhen-Schätzung (`PRINT_EXPORT.nutritionLayout` in `constants.ts`, PRODUKTENTSCHEIDUNG
+     Layout): Wochenübersicht mit Folgeseite „Wochenübersicht (Fortsetzung)“ (z. B. 8 Mahlzeiten mit langen Namen),
+     Rezepte ganz auf die Seite, wenn sie passen, sonst neue Seite; lange Rezepte mit „… (Fortsetzung)“, Zutaten- und
+     Schritt-Listen laufen weiter (Nummerierung bleibt); lange Einkaufslisten auf mehrere Seiten. Immer hochkant.
+   - Namensnennung der Nährwert-Quellen (S13) im Fuß des Essensplans aus `source` der verwendeten Lebensmittel
+     (Wortlaut nach Wächter N6 S2, siehe unten); Beispiel-Rezepte:
+     „Nährwerte: Testwerte (keine Quelldaten)“.
+2. **UI** (`packages/ui/src/print/`): Renderer um `checklist` (Titel mit `aria-labelledby`, Kästchen dekorativ
+   `aria-hidden`, Haken als Zeichen „✓“ plus durchgestrichen und Screenreader-Text „erledigt“ – nicht nur Farbe) und
+   `steps` (`<ol start>`) erweitert; Escaping und CSP unverändert (B7). Mindestschrift 10 pt bleibt. `dl.kv dt`
+   schrumpft nicht mehr (lange Werte wie „In deinem Plan …“).
+3. **App** (`apps/mobile`):
+   - `lib/print-nutrition.ts` (Woche → Dokument → Übersetzung → HTML, Namens-Fehlertexte, Gesundheitsbezug),
+     `lib/print-nutrition-texts.ts` (Texte der Codes, deutsch), `lib/print-document.ts` (neue Bausteine),
+     `lib/print-sanitize.ts` (erlaubt `ul`/`ol`/`li`, `start` nur als Zahl an `ol`).
+   - Druckansichten **`app/ernaehrung/drucken.tsx`** und **`app/einkaufsliste/drucken.tsx`** (gemeinsam
+     `components/nutrition-print-view.tsx`): laufende/nächste Woche über `?woche=`, Hinweis-Dialog „Bevor du
+     speicherst“ bei `usesHealthData` (Plan bzw. Liste) **mit K4-Satz** („Ersatzprodukte und weggelassene Zutaten …
+     lassen darauf schließen“), beim Essensplan „Meinen Namen auf das Deckblatt drucken“ (entprellt, nicht gespeichert)
+     und Hinweis, ob kcal im PDF stehen; Vorschau im Browser, „Drucken / als PDF sichern“ (Web: Druckdialog, nativ
+     `expo-print` wie P4); Lade-, Fehler-, Sperr- (Einwilligung) und Leer-Zustände.
+   - Knöpfe **„Als PDF speichern“** in der Woche (`ernaehrung/woche.tsx`) und in der Einkaufsliste.
+4. **Tests:** Core `export/nutrition-documents.test.ts` (20): Aufbau und Schema, Name, Zahlen an/aus, Testwerte,
+   Schwangerschaft (auch gespeicherter Plan mit Zahlen-Tagen), `below_floor`, **K4** (unten), leerer Platz ohne Grund,
+   1 vs. 8 Mahlzeiten (mit Folgeseite), 8 × 7 lauter verschiedene Rezepte (Schema gültig), Meal-Prep-Markierungen, 5 Mengen → zwei Zutaten-Tabellen, sehr langes Rezept
+   (20 Zutaten, 15 Schritte, Folgeseiten, Nummerierung), Steuerzeichen/Skript-Text bleibt Text, `no_meals`/
+   `recipe_missing`, Entwürfe; Einkaufsliste (Abteilungen, Vorrat am Ende, keine kcal, Häkchen, „nicht mehr im Plan“
+   entfällt, eigene Einträge, Rezepte, leer, 200 Einträge, `usesHealthData` ändert nichts). `document.test.ts` (+2:
+   neue Bausteine und Codes). UI `render-html.test.ts` (+3, Böse-Eingaben auch in Liste und Schritten). App
+   `lib/print-nutrition.test.ts` (14: Zusammenstecken mit `computeNutritionWeek`, Zahlen aus, Schwangerschaft,
+   Unverträglichkeit ohne Gründe, Name, Einkaufsliste, Fehler, Übersetzungen, alle CI-Beispiele unverändert nach der
+   Bereinigung), `print-sanitize.test.ts` (+1). Playwright `e2e/nutrition-print.spec.ts` (3: Woche → Hinweis →
+   Abbrechen/Weiter → Vorschau ohne Gründe → Name → Druckdialog → A4; Einkaufsliste mit Kästchen und Haken, keine kcal,
+   kein Namensfeld; „Zahlen aus“ und Schwangerschaft ohne kcal) und `e2e/print-pages.spec.ts` (+7 Fälle: jede Seite
+   ≤ A4 und PDF-Seitenzahl = Abschnitte, inkl. Belastungstests).
+   - **K4-Formulierung (12.1):** Derselbe Plan mit `usesHealthData` an/aus, ohne/mit Hinweisen und Gründen leerer
+     Plätze („intolerance“, „pregnancy_caution“) und mit Zielen anderer Personen (Schwangerschaft, 16 J., 45 kg, keine
+     Einwilligung; bei „Zahlen aus“) ergibt ein **identisches** Dokument. Derselbe Plan mit und ohne Ersatzprodukt
+     unterscheidet sich **nur** in den Zutaten-Zeilen der Rezepte (und ggf. der Quellenangabe im Fuß). Im ganzen
+     Dokument stehen keine Unverträglichkeits-Codes, Flags, Ziele, Gewicht oder Geburtsjahr; Titel sind feste Codes.
+5. **CI-Artefakt:** `scripts/pdf-preview.ts` schreibt zusätzlich 7 Ernährungs-Dokumente (vegetarisch mit Zahlen,
+   „Zahlen aus“ + Name, Laktose + Meal-Prep, Schwangerschaft, Einkaufsliste, zwei Belastungstests) ins Artefakt
+   **„pdf-vorschau“** (Workflow `ci`, unverändert) und in die Zusammenfassung des Laufs. Beispiel-Personen mit
+   Testwerten aus `src/test/nutrition-print-examples.ts`.
+6. **EAS-Build Android: NICHT geprüft.** Claude kann in der Cloud-Sitzung keinen EAS-Build starten. Es kommt keine
+   neue native Abhängigkeit dazu (`expo-print` ist seit P4 gepinnt), das HTML ist hochkant wie beim Trainingsplan.
+   **Gründer:** GitHub-App → Actions → **eas-build** → Run workflow → `android / preview / nein` → APK installieren
+   (HANDY-ANLEITUNG Teil 9 A + B) → Teil 9 D **Punkt 11** prüfen und Ergebnis schreiben. Bis dahin ist das DoD-Häkchen
+   „EAS-Build Android geprüft“ offen.
+
+**Abweichungen / Präzisierungen (zur Wächter-Prüfung):**
+
+- **„Rezept-Block“** ist als Baustein `steps` (nummerierte, fortsetzbare Schritte) plus die vorhandenen Bausteine
+  (Überschrift, Angaben, Zutaten-Tabelle, Hinweise) umgesetzt, nicht als ein einziger Block: Ein Rezept mit 20 Zutaten
+  und 15 langen Schritten passt nicht auf eine Seite, und Blöcke lassen sich im Seitenmodell nicht über Seiten teilen.
+- **Mengen** heißen wie in der App „× 1,5“ (Vielfaches des Grundrezepts, „Deine Portion: 1,5 × Grundrezept“), nicht
+  „Portion 1,5“. Kommt ein Rezept in der Woche mit verschiedenen Mengen vor, hat die Zutaten-Tabelle je Menge eine
+  Spalte mit den Wochentagen; mehr als 4 Mengen → zweite Tabelle.
+- **Weglass-Hinweis** („Ohne: … (optionale Zutaten weggelassen)“) wird wie der Ersatz-Hinweis gedruckt (K4-Ausnahme,
+  sonst würde nach den Schritten falsch gekocht); der Hinweis-Dialog nennt beides. **Bitte im Wächter bestätigen.**
+- **Kein „Enthält: …“** (Allergen-Gruppen) und **keine Nährwerte je Rezept** im PDF (16 A Nr. 16: nur
+  Tagessummen); stattdessen auf jedem Dokument der feste Produkt-Hinweis (Spuren, HFI/Zöliakie). Kann ergänzt werden,
+  falls gewünscht.
+- **Leere Plätze** heißen neutral „kein passendes Rezept“ – ohne den Grund, den die App nennt.
+- **Einkaufsliste:** abgehakte Einträge mit Haken (wie in der App), abgehakte „nicht mehr im Plan“ entfallen, eigene
+  Einträge stehen drin; keine Markierungen „Menge geändert“ oder „passt nicht zu deiner Ernährungsform“. Kein Name
+  (11 nennt den Namen nur für das Deckblatt des Essensplans). Kein Quellen-Fuß (keine Nährwerte auf der Liste).
+- **Immer hochkant**, auch im Web (nativ gibt es ohnehin kein Querformat, PLAN-PDF-EXPORT §13).
+- **Entwürfe (16 B (i)):** Allergen-Warnung auf dem Deckblatt und bei jedem Entwurfs-Rezept, dazu „KI-Entwurf –
+  fachlich prüfen“.
+
+**So testest du es am Handy:** HANDY-ANLEITUNG Teil 7c, Abschnitt „Essensplan und Einkaufsliste als PDF“, und Teil 9 D
+Punkt 11 (echte App).
+
+**Wächter-Prüfung N6 (14.10.2026): FREIGABEFÄHIG MIT AUFLAGEN** (Bericht `waechter-n6.md`, kein Blocker). Umgesetzt:
+
+- **S1** Rezept-Beschreibungen mit Nährwert-Mengen: Neu `withoutNutrientAmounts` in `packages/core/src/nutrition/guides.ts`
+  (dieselbe Erkennung wie der Ratgeber, `mentionsEnergyOrMacroGrams` – eine Quelle) entfernt Sätze mit kcal/kJ oder
+  Makro-Gramm bzw. -Prozent. Im **PDF immer** (keine Nährwerte je Rezept; die Menge gilt für das Grundrezept, nicht für
+  „× 1,5“), in der **App-Rezeptansicht** bei „Zahlen aus“ und in Schwangerschaft/Stillzeit. Tests mit den echten
+  Formulierungen („fast 30 g Eiweiß“, „über 100 g Kohlenhydrate“, „über 30 g Eiweiß bei wenig Kalorien“) in core und
+  `packages/content/src/import/description-amounts.test.ts` (liest jede Beschreibung aus `seed/alpha5-rezepte.json`,
+  die Datei bleibt unverändert: nach dem Filter keine Energie-Zahl und keine Makro-Menge mehr). „viel Eiweiß bei wenig
+  Kalorien“ **ohne Menge** bleibt stehen – das ist keine Zahl, sondern eine Frage der Health-Claims-Prüfung (R10).
+- **S2** Namensnennung vollständig nach 5.1.1 (CC BY 4.0): in Rezeptansicht und PDF-Fuß gleich, aus
+  `nutrientSourcesText` (`lib/nutrition-format.ts`): „Nährwerte: Bundeslebensmittelschlüssel (BLS) 4.0, Max
+  Rubner-Institut (CC BY 4.0, creativecommons.org/licenses/by/4.0); umgerechnet und gerundet.“ – Quelle, Version,
+  Herausgeber, Lizenz mit Verweis auf den Lizenztext (als Text, kein Link) und Kennzeichnung der Änderungen.
+- **K2** `printDocumentSchema` lehnt kcal (`value.kcal`) außerhalb des Essensplans ab (zweite Schutzschicht).
+- **K3** Version steht bei der Quelle, nicht beim Institut (siehe S2).
+- **K4** Höhen-Schätzung der Legende, der Anleitung und des Produkt-Hinweises nach den gesetzten Teilen.
+- **K5** Eigener Dialogtext für die Einkaufsliste („Diese Liste stammt aus einem Plan, der deine Gesundheitsangaben
+  berücksichtigt …“).
+- **K6** Abschnitt 11 (K4-Ausnahme) und 12.1 „PDF (K4)“ nennen die Weglass-Hinweise ausdrücklich.
+
+Nur dokumentiert:
+
+- **K1 Restsignal `no_targets`:** Im Modus `no_targets` steht überall „× 1“ und es gibt keine Zeile „Tagessumme“. Das
+  lässt sich nicht eindeutig einer Schwangerschaft zuordnen (entsteht auch ohne Einwilligung bzw. ohne Körperdaten,
+  `eligibility.ts`) und bleibt so.
+- **K7 „Enthält: …“ im PDF:** Allergen-Gruppen der Rezepte sind keine personenbezogenen Daten und wären auf Papier ein
+  Sicherheitsgewinn (Kochen für Gäste) – vorgemerkt für eine spätere Etappe, nicht in N6.

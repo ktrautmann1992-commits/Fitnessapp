@@ -873,6 +873,43 @@ export const PRINT_EXPORT = {
     tableHintMm: 13,
     paragraphGapMm: 3,
   },
+  /**
+   * Ernährungs-Dokumente (docs/PLAN-PHASE-5.md 11, Etappe N6 – PDF P5): grobe Höhen-Schätzung in mm für den
+   * Seitenumbruch von Wochenübersicht, Rezepten und Einkaufsliste (immer hochkant – nativ gibt es kein Querformat).
+   * Werte passen zum Layout in packages/ui/src/print/render-html.ts und sind bewusst vorsichtig; geprüft im
+   * Playwright-Test apps/mobile/e2e/print-pages.spec.ts (Belastungstest: 8 Mahlzeiten mit langen Namen, Rezept mit
+   * 20 Zutaten und 15 langen Schritten, lange Einkaufsliste). PRODUKTENTSCHEIDUNG (Layout).
+   */
+  nutritionLayout: {
+    /** Logo-Kopf auf der ersten Seite. */
+    brandMm: 36,
+    h1Mm: 16,
+    /** Überschrift Ebene 2 (Rezept-Titel): erste Zeile inkl. Abstand, jede weitere Zeile. */
+    h2Mm: 13,
+    h2LineMm: 7.5,
+    h2CharsPerLine: 45,
+    h3Mm: 12,
+    /** Fließtext 11 pt bzw. grauer Text 10 pt. */
+    bodyCharsPerLine: 80,
+    mutedCharsPerLine: 88,
+    mutedLineMm: 4.8,
+    /** Hinweis-Kasten: Rand, Innenabstand und Titelzeile. */
+    noticeBaseMm: 23,
+    /** Wochenübersicht (8 Spalten hochkant): Zeichen je Zeile in einer Zelle. */
+    weekCellCharsPerLine: 10,
+    /** Zutaten-Tabelle: Breite der Zutaten-Spalte und der Mengen-Spalten (Gewichte wie im Renderer). */
+    contentWidthMm: 182,
+    tableCharMm: 2.05,
+    /** Einkaufsliste zweispaltig: Zeichen je Zeile und Höhe je Zeile eines Eintrags. */
+    checklistCharsPerLine: 32,
+    checklistLineMm: 5.2,
+    checklistItemPadMm: 1.8,
+    /** Rezept-Schritte (nummerierte Liste). */
+    stepCharsPerLine: 80,
+    stepGapMm: 1.6,
+    /** Höchstens so viele Portions-Spalten je Zutaten-Tabelle (sonst weitere Tabelle). */
+    maxPortionColumns: 4,
+  },
 } as const;
 
 /**

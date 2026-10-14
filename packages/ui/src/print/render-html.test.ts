@@ -46,6 +46,19 @@ function doc(evil: string): TranslatedDocument {
         ],
         rows: [{ header: [evil, 'ersetzt (Gerät fehlt)'], cells: [[evil], []] }],
       },
+      // Ernährungs-Dokumente (Etappe N6): Kästchen-Liste und Rezept-Schritte.
+      {
+        type: 'checklist',
+        caption: `Obst ${evil}`,
+        captionLevel: 3,
+        columns: 2,
+        checkedLabel: `erledigt ${evil}`,
+        items: [
+          { lines: [evil], checked: true },
+          { lines: [`500 g ${evil}`], checked: false },
+        ],
+      },
+      { type: 'steps', start: 1, items: [evil, `Schritt ${evil}`] },
     ],
   };
 }
@@ -117,6 +130,69 @@ describe('renderPrintHtml – Sicherheit (B7)', () => {
   it('ungültige Sprache → de (kein Attribut-Ausbruch)', () => {
     expect(renderPrintHtml({ ...SAMPLE, lang: 'de" onload="x' })).toContain('<html lang="de">');
     expect(renderPrintHtml({ ...SAMPLE, lang: 'de-AT' })).toContain('<html lang="de-AT">');
+  });
+});
+
+describe('renderPrintHtml – Kästchen-Liste und Schritte (Etappe N6, PDF P5)', () => {
+  const html = bodyOf(
+    renderPrintHtml({
+      ...SAMPLE,
+      title: 'Einkaufsliste',
+      blocks: [
+        {
+          type: 'checklist',
+          caption: 'Obst & Gemüse',
+          captionLevel: 3,
+          columns: 2,
+          checkedLabel: 'erledigt',
+          items: [
+            { lines: ['9 Stück Banane'], checked: true },
+            { lines: ['700 g Champignons'], checked: false },
+          ],
+        },
+        {
+          type: 'checklist',
+          caption: 'Vorrat',
+          columns: 1,
+          checkedLabel: 'erledigt',
+          items: [{ lines: ['Salz'], checked: false }],
+        },
+        { type: 'pageBreak', orientation: 'portrait' },
+        { type: 'steps', start: 1, items: ['Reis kochen.', 'Anbraten.'] },
+        { type: 'pageBreak', orientation: 'portrait' },
+        { type: 'steps', start: 8, items: ['Servieren.'] },
+        { type: 'steps', start: Number.NaN, items: ['Ohne Start.'] },
+      ],
+    }),
+  );
+
+  it('Liste mit Titel (aria-labelledby), zweispaltig, Kästchen dekorativ, Haken + Screenreader-Text', () => {
+    expect(html).toContain(
+      '<h3 id="t1-1">Obst &amp; Gemüse</h3><ul class="checklist checklist--2" aria-labelledby="t1-1">',
+    );
+    expect(html).toContain(
+      '<li class="checked"><span class="box" aria-hidden="true">✓</span><span class="check-text"><span class="line">9 Stück Banane</span><span class="sr-only">erledigt</span></span></li>',
+    );
+    expect(html).toContain(
+      '<li><span class="box" aria-hidden="true"></span><span class="check-text"><span class="line">700 g Champignons</span></span></li>',
+    );
+    expect(html).toContain(
+      '<p class="table-title" id="t1-2">Vorrat</p><ul class="checklist" aria-labelledby="t1-2">',
+    );
+  });
+
+  it('Schritte als nummerierte Liste; Fortsetzung mit start, ungültiger Start ohne Attribut', () => {
+    expect(html).toContain('<ol class="steps"><li>Reis kochen.</li><li>Anbraten.</li></ol>');
+    expect(html).toContain('<ol class="steps" start="8"><li>Servieren.</li></ol>');
+    expect(html).toContain('<ol class="steps"><li>Ohne Start.</li></ol>');
+  });
+
+  it('jede Seite hat Fußzeile; Druck-CSS kennt die neuen Bausteine (auch im Bereich der Vorschau)', () => {
+    expect(html.match(/<section class="page">/g)).toHaveLength(3);
+    expect(html.match(/class="page-footer"/g)).toHaveLength(3);
+    const scoped = scopedPrintStyles(['.vorschau']);
+    expect(scoped).toContain('.vorschau ul.checklist--2 {');
+    expect(scoped).toContain('.vorschau ol.steps li {');
   });
 });
 

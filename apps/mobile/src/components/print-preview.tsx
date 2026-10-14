@@ -81,7 +81,16 @@ function usePrintStyles() {
   }, []);
 }
 
-export function PrintPreview({ html, title }: { html: string; title: string }) {
+export function PrintPreview({
+  html,
+  title,
+  label = t.printView.previewLabel,
+}: {
+  html: string;
+  title: string;
+  /** Screenreader-Name der Vorschau (Standard: Trainingsplan). */
+  label?: string;
+}) {
   const hostRef = useRef<View>(null);
   usePrintStyles();
 
@@ -132,12 +141,5 @@ export function PrintPreview({ html, title }: { html: string; title: string }) {
     };
   }, [html, title]);
 
-  return (
-    <View
-      ref={hostRef}
-      testID="print-preview"
-      accessibilityLabel={t.printView.previewLabel}
-      role="region"
-    />
-  );
+  return <View ref={hostRef} testID="print-preview" accessibilityLabel={label} role="region" />;
 }

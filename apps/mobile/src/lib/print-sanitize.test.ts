@@ -41,6 +41,21 @@ describe('sanitizePrintTree (Wächter P3/P4 S1)', () => {
     expect(main.textContent).toContain('Text');
   });
 
+  it('Kästchen-Liste und Schritte (Etappe N6): ul/ol/li bleiben, start nur als Zahl an ol', () => {
+    const main = sanitized(`<main><ul class="checklist" aria-labelledby="t1" start="2">
+      <li class="checked" onclick="alert(1)"><span class="box" aria-hidden="true">✓</span>Banane</li></ul>
+      <ol class="steps" start="8"><li>Servieren.</li></ol>
+      <ol class="steps" start="javascript:alert(2)"><li>Böse.</li></ol></main>`);
+    const html = main.outerHTML;
+    expect(html).toContain('<ul class="checklist" aria-labelledby="t1">');
+    expect(html).toContain(
+      '<li class="checked"><span class="box" aria-hidden="true">✓</span>Banane</li>',
+    );
+    expect(html).toContain('<ol class="steps" start="8">');
+    expect(html).toContain('<ol class="steps"><li>Böse.</li></ol>');
+    expect(html).not.toMatch(/onclick|javascript:/);
+  });
+
   // Erzeugt und parst alle Beispiel-Dokumente (je ~140 KB mit Schrift) – auf CI-Runnern deutlich über 5 s.
   it('echte Druck-Dokumente bleiben unverändert', () => {
     for (const example of PRINT_EXAMPLES) {

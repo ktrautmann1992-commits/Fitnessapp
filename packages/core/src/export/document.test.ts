@@ -117,4 +117,86 @@ describe('Druck-Dokument (Zod)', () => {
       ).toBe(false);
     }
   });
+
+  it('Ernährungs-Dokumente (N6): Art, Kästchen-Liste und Schritte werden geprüft', () => {
+    for (const kind of ['nutrition_plan', 'shopping_list']) {
+      expect(printDocumentSchema.safeParse({ ...doc, meta: { ...doc.meta, kind } }).success).toBe(
+        true,
+      );
+    }
+    expect(
+      printDocumentSchema.safeParse({ ...doc, meta: { ...doc.meta, kind: 'rezept' } }).success,
+    ).toBe(false);
+    const item = { text: [printData('500 g Haferflocken')], checked: false };
+    const checklist = {
+      type: 'checklist',
+      caption: printText('shopping.category', { category: 'fruit_vegetables' }),
+      captionLevel: 3,
+      columns: 2,
+      items: [item, { ...item, checked: true }],
+    };
+    expect(printBlockSchema.safeParse(checklist).success).toBe(true);
+    for (const bad of [
+      { ...checklist, items: [] },
+      { ...checklist, columns: 3 },
+      { ...checklist, items: [{ text: [], checked: false }] },
+      { ...checklist, items: [{ ...item, checked: 'ja' }] },
+      { ...checklist, caption: printText('shopping.category', { category: 'baumarkt' } as never) },
+    ]) {
+      expect(printBlockSchema.safeParse(bad).success, JSON.stringify(bad)).toBe(false);
+    }
+    const steps = { type: 'steps', start: 1, items: [printData('Reis kochen.')] };
+    expect(printBlockSchema.safeParse(steps).success).toBe(true);
+    for (const bad of [
+      { ...steps, start: 0 },
+      { ...steps, start: 1.5 },
+      { ...steps, items: [] },
+      { ...steps, items: [printData('Schritt\u0007')] },
+    ]) {
+      expect(printBlockSchema.safeParse(bad).success, JSON.stringify(bad)).toBe(false);
+    }
+  });
+
+  it('Ernährungs-Codes: keine freien Zahlen, Einheiten oder Abteilungen außerhalb der Listen', () => {
+    for (const bad of [
+      { kind: 'text', code: 'value.kcal', params: { kcal: -1 } },
+      { kind: 'text', code: 'value.kcal', params: { kcal: 2150.5 } },
+      { kind: 'text', code: 'value.amount', params: { amount: 1, unit: 'tasse' } },
+      { kind: 'text', code: 'mealplan.slot', params: { slot: 'brunch' } },
+      { kind: 'text', code: 'mealplan.mark', params: { mark: 'intolerance' } },
+      { kind: 'text', code: 'recipe.inPlan', params: { uses: [] } },
+      {
+        kind: 'text',
+        code: 'recipe.ingredient',
+        params: { food: 'Milch', original: null, optional: false, note: null, reason: 'lactose' },
+      },
+      {
+        kind: 'text',
+        code: 'nutrition.doc.footer',
+        params: { document: 'nutrition_plan', sources: [], testValues: false, weightKg: 70 },
+      },
+    ]) {
+      expect(printTextSchema.safeParse(bad).success, JSON.stringify(bad)).toBe(false);
+    }
+    expect(printTextSchema.safeParse(printText('mealplan.slot', { slot: 'extra' })).success).toBe(
+      true,
+    );
+  });
+
+  it('Wächter N6 K2: kcal nur im Essensplan – Einkaufsliste/Trainingsplan mit kcal werden abgelehnt', () => {
+    const kcal = { type: 'paragraph', text: printText('value.kcal', { kcal: 2000 }) };
+    for (const kind of ['shopping_list', 'training_plan']) {
+      expect(
+        printDocumentSchema.safeParse({ ...doc, meta: { ...doc.meta, kind }, sections: [kcal] })
+          .success,
+      ).toBe(false);
+    }
+    expect(
+      printDocumentSchema.safeParse({
+        ...doc,
+        meta: { ...doc.meta, kind: 'nutrition_plan' },
+        sections: [kcal],
+      }).success,
+    ).toBe(true);
+  });
 });

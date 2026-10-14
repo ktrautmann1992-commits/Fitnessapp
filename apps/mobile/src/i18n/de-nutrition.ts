@@ -46,13 +46,22 @@ export const deNutrition = {
     'Beispiel-Rezepte mit TESTWERTEN – keine echten Nährwerte, keine geprüften Allergene. Nur zum Ausprobieren.',
   demoOff: 'Beispiel-Rezepte ausblenden',
   demoSource: 'Nährwerte: Testwerte (keine Quelldaten).',
-  source: (db: string, version: string, license: string) =>
-    `Nährwerte: ${db} ${version} (${license}).`,
+  /**
+   * Namensnennung nach CC BY 4.0 (PLAN-PHASE-5.md 5.1.1 S13, Wächter N6 S2/K3): Quelle mit Version und Herausgeber,
+   * Lizenz mit Verweis auf den Lizenztext, Kennzeichnung der Änderungen („umgerechnet und gerundet“).
+   */
+  source: (attribution: string) => `Nährwerte: ${attribution}; umgerechnet und gerundet.`,
+  sourceAttribution: (name: string, version: string, publisher: string, license: string) =>
+    `${name} ${version}${publisher ? `, ${publisher}` : ''} (${license})`,
   sourceNames: {
-    bls: 'Bundeslebensmittelschlüssel (BLS), Max Rubner-Institut',
-    ch_naehrwertdatenbank: 'Schweizer Nährwertdatenbank (BLV)',
-    usda_fdc: 'USDA FoodData Central',
+    bls: { name: 'Bundeslebensmittelschlüssel (BLS)', publisher: 'Max Rubner-Institut' },
+    ch_naehrwertdatenbank: { name: 'Schweizer Nährwertdatenbank', publisher: 'BLV' },
+    usda_fdc: { name: 'USDA FoodData Central', publisher: '' },
   },
+  /** Verweis auf den Lizenztext (ohne „https://“ – reiner Text im PDF, kein Link). */
+  licenseTexts: { 'CC BY 4.0': 'CC BY 4.0, creativecommons.org/licenses/by/4.0' } as Readonly<
+    Record<string, string>
+  >,
 
   // --- Tag ----------------------------------------------------------------------------------------------------
   dayStatus: {
@@ -558,6 +567,80 @@ export const deNutrition = {
     cardA11y: (title: string) => `Rezept öffnen: ${title}`,
     outsideDietRecipe:
       'Du hast dieses Rezept über die erweiterte Suche gefunden. Es kommt nie automatisch in deinen Essensplan.',
+  },
+
+  // --- PDF P5: Essensplan und Einkaufsliste (11, Etappe N6) ---------------------------------------------------------
+  /** Texte im Druck-Dokument – keine Gründe, kein Gewicht, keine Unverträglichkeiten (11, K4). */
+  print: {
+    docTitle: { nutrition_plan: 'Essensplan', shopping_list: 'Einkaufsliste' },
+    coverHeading: { nutrition_plan: 'Dein Essensplan', shopping_list: 'Deine Einkaufsliste' },
+    footer: 'Alpha5 ersetzt keine ärztliche oder ernährungsfachliche Beratung.',
+    footerTestValues: 'Nährwerte: Testwerte (keine Quelldaten).',
+    labelWeek: 'Woche',
+    labelRange: 'Zeitraum',
+    howToPlan:
+      'So nutzt du den Plan: Die Wochenübersicht zeigt je Tag deine Mahlzeiten mit der Menge („× 1,5“ = 1,5-fache Menge des Grundrezepts). Danach findest du jedes Rezept mit den Zutaten für deine Mengen und den Schritten.',
+    howToNumbers: 'Tagessummen in kcal sind Schätzungen – ±10 % sind normal.',
+    howToList:
+      'Nach Abteilungen sortiert – zum Abhaken im Laden. Mengen sind auf übliche Kaufmengen aufgerundet. Was du wahrscheinlich schon da hast, steht am Ende unter „Hast du wahrscheinlich da“.',
+    noticeTitle: 'Wichtig',
+    testValues:
+      'Beispiel-Rezepte mit TESTWERTEN – keine echten Nährwerte, keine geprüften Allergene. Nur zum Ausprobieren.',
+    draftAllergens:
+      'Entwürfe: Allergene noch nicht fachlich geprüft – bei Allergien bitte nicht verwenden.',
+    weekHeading: 'Wochenübersicht',
+    weekHeadingContinued: 'Wochenübersicht (Fortsetzung)',
+    colSlot: 'Mahlzeit',
+    extraRow: 'Ergänzung',
+    portion: (factor: string) => `× ${factor}`,
+    marks: { fill: 'Ergänzung', leftover: 'vorgekocht', cook: 'Kochtag' },
+    none: '–',
+    noRecipe: 'kein passendes Rezept',
+    rowTotal: 'Tagessumme',
+    rowNote: 'Hinweis',
+    belowFloor: 'unvollständig',
+    kcal: (kcal: string) => `${kcal} kcal`,
+    legendPortion: '× 1,5 = 1,5-fache Menge des Grundrezepts.',
+    legendFill: 'Ergänzung: kleiner Zusatz, damit du deinen Bedarf erreichst.',
+    legendCook: 'Kochtag: an diesem Tag für mehrere Tage vorkochen.',
+    legendLeftover: 'vorgekocht: vom Kochtag, nur aufwärmen.',
+    legendBelowFloor:
+      'unvollständig: Dieser Tag erreicht deinen Mindestbedarf nicht – ergänze z. B. eine Portion Obst, Nüsse oder Joghurt.',
+    legendNoRecipe: 'kein passendes Rezept: Für diesen Platz gibt es gerade kein Rezept.',
+    legendNumbers: 'Tagessummen sind Schätzungen – ±10 % sind normal.',
+    recipeContinued: (title: string) => `${title} (Fortsetzung)`,
+    labelInPlan: 'In deinem Plan',
+    use: (weekday: string, slot: string) => `${weekday} (${slot})`,
+    labelTime: 'Zeit',
+    colIngredient: 'Zutat',
+    colPortion: (factor: string, days: string) => `× ${factor} (${days})`,
+    omitted: (list: string) => `Ohne: ${list} (optionale Zutaten weggelassen)`,
+    checked: 'erledigt',
+    addedRecipes: (list: string) => `Auch auf der Liste – Zutaten für: ${list}.`,
+  },
+  printView: {
+    button: 'Als PDF speichern',
+    planHint: 'Öffnet die Druckansicht deines Essensplans.',
+    listHint: 'Öffnet die Druckansicht deiner Einkaufsliste.',
+    titlePlan: 'Essensplan als PDF',
+    titleList: 'Einkaufsliste als PDF',
+    introPlan:
+      'Dein Essensplan der Woche auf A4 – mit Wochenübersicht und Rezepten. Die Datei entsteht nur auf deinem Gerät.',
+    introList:
+      'Deine Einkaufsliste auf A4 mit Kästchen zum Abhaken. Die Datei entsteht nur auf deinem Gerät.',
+    healthText:
+      'Dieser Plan berücksichtigt deine Gesundheitsangaben. Gründe, Gewicht und Unverträglichkeiten stehen nicht im PDF – Ersatzprodukte und weggelassene Zutaten (z. B. „Laktosefreie Milch statt Vollmilch“) lassen aber darauf schließen. Speichere oder drucke die Datei nur bewusst.',
+    healthTextList:
+      'Diese Liste stammt aus einem Plan, der deine Gesundheitsangaben berücksichtigt. Gründe, Gewicht und Unverträglichkeiten stehen nicht im PDF – Ersatzprodukte (z. B. „Laktosefreie Milch“) und fehlende Zutaten lassen aber darauf schließen. Speichere oder drucke die Datei nur bewusst.',
+    numbersOff: 'Kalorienzahlen sind ausgeblendet – das PDF enthält keine kcal.',
+    numbersOn: 'Das PDF enthält nur Tagessummen in kcal, keine Nährwerte je Rezept.',
+    back: 'Zurück',
+    noPlan: 'Für diese Woche gibt es noch keinen Essensplan – deshalb gibt es nichts zu drucken.',
+    noMeals: 'In deinem Essensplan gibt es gerade keine Mahlzeiten zum Drucken.',
+    recipeMissing:
+      'Die Rezepte deines Plans konnten gerade nicht geladen werden. Öffne den Essensplan einmal neu und versuche es noch einmal.',
+    previewPlan: 'Vorschau deines Essensplans',
+    previewList: 'Vorschau deiner Einkaufsliste',
   },
 
   // --- Ratgeber (6.8, Etappe N5c) ----------------------------------------------------------------------------------
