@@ -10,8 +10,9 @@ import {
   resolveShoppingList,
   type ShoppingListResolution,
   stableHash,
+  type DietType,
   type FilteredRecipe,
-  filterRecipe,
+  recipeForPersonWithDiets,
   intoleranceAccess,
   type IntoleranceAccess,
   type IntoleranceBlockReason,
@@ -323,6 +324,11 @@ export type RecipeForPerson =
       variant: FilteredRecipe;
       /** Die Mahlzeit aus dem Essensplan (Portion, skalierte Zutaten), wenn das Rezept von dort geöffnet wurde. */
       plannedMeal: PlannedMeal | null;
+      /**
+       * Nur über die erweiterte Ernährungsform der Suche gefunden (19.6 K3/G4, Etappe N5c): Kennzeichnung „passt nicht
+       * zu deiner Ernährungsform: …“; null = passt zur Profil-Ernährungsform.
+       */
+      outsideProfileDiet: DietType | null;
     };
 
 /**
@@ -339,25 +345,41 @@ export function recipeForPerson(input: {
   allowDrafts: boolean;
   /** Geöffnet aus dem Essensplan: Tag und Platz. */
   from: { date: string; slot: string } | null;
+  /**
+   * Geöffnet aus der Rezeptsuche mit erweiterter Ernährungsform (K3, Etappe N5c). Erweitert NUR die Ernährungsform –
+   * alle anderen Ausschlüsse gelten unverändert (dieselbe Regel wie die Suche, `recipeForPersonWithDiets`).
+   */
+  extraDiet?: DietType | null;
 }): RecipeForPerson {
   const recipe = input.library.recipes.find((r) => r.id === input.recipeId);
   const profile = mealPlanProfileFromRows(input.rows, input.versions);
   if (profile.kind === 'blocked') return { kind: 'blocked', reason: profile.reason };
   if (!recipe) return { kind: 'not_found' };
   if (profile.kind !== 'ok') return { kind: 'not_for_you' };
-  const result = filterRecipe(recipe, input.library.foods, {
-    profile: mealPlanProfileSchema.parse(profile.profile),
-    excludePregnancyCaution: weekExcludesPregnancyCaution(input.week.targets),
-    allowDrafts: input.allowDrafts,
-  });
-  if (!result.ok) return { kind: 'not_for_you' };
+  const hit = recipeForPersonWithDiets(
+    recipe,
+    {
+      foods: input.library.foods,
+      profile: mealPlanProfileSchema.parse(profile.profile),
+      excludePregnancyCaution: weekExcludesPregnancyCaution(input.week.targets),
+      allowDrafts: input.allowDrafts,
+    },
+    // Aus dem Essensplan geöffnet: nie erweitert (G4).
+    input.from === null && input.extraDiet ? [input.extraDiet] : [],
+  );
+  if (hit === null) return { kind: 'not_for_you' };
   const meal =
     input.from === null
       ? undefined
       : input.week.plan?.days
           .find((d) => d.date === input.from?.date)
           ?.meals.find((m) => m.slot === input.from?.slot && m.recipeId === recipe.id);
-  return { kind: 'ok', variant: result.value, plannedMeal: meal ?? null };
+  return {
+    kind: 'ok',
+    variant: hit.variant,
+    plannedMeal: meal ?? null,
+    outsideProfileDiet: hit.outsideProfileDiet,
+  };
 }
 
 export interface MealPrepOffer {

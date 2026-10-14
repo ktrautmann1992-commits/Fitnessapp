@@ -117,6 +117,40 @@ export const HEALTH_CLAIM_TERMS: readonly TermRule[] = [
     wholeWord: false,
   },
   { label: 'schlank', pattern: 'schlank', wholeWord: false },
+  // Typische Heil- und Gesundheitsversprechen (Wächter N5c, S3) – Wirkung gegen Krankheiten bzw. auf Körperfunktionen.
+  { label: 'hilft gegen', pattern: 'hilf(?:t|en)\\s+gegen', wholeWord: true },
+  {
+    label: 'hilft beim Abnehmen',
+    pattern: '(?:hilf(?:t|en)|unterst(?:ü|ue)tz(?:t|en))\\s+(?:dich\\s+)?beim\\s+abnehmen',
+    wholeWord: true,
+  },
+  { label: 'beugt … vor', pattern: 'beug(?:t|en)\\s+(?:[\\p{L}-]+\\s+){0,4}vor', wholeWord: true },
+  { label: 'vorbeugen', pattern: 'vorbeug', wholeWord: false },
+  { label: 'entzündungshemmend', pattern: 'entz(?:ü|ue)nd', wholeWord: false },
+  { label: 'Krebs', pattern: 'krebs(?:risiko|vorsorge|erkrankung)?', wholeWord: true },
+  { label: 'Erkältung', pattern: 'erk(?:ä|ae)lt', wholeWord: false },
+  { label: 'Grippe', pattern: 'grippe', wholeWord: false },
+  { label: 'Infekt', pattern: 'infekt', wholeWord: false },
+  { label: 'Herz-Kreislauf', pattern: 'herz\\s*-?\\s*kreislauf', wholeWord: false },
+  { label: 'Blutzucker/Blutdruck senken', pattern: 'blut(?:zucker|druck)', wholeWord: false },
+  {
+    label: 'senkt …',
+    pattern: 'senk(?:t|en)\\s+(?:den\\s+|das\\s+|die\\s+)?(?:risiko|blut|cholesterin|entz)',
+    wholeWord: false,
+  },
+  {
+    label: 'stärkt …',
+    pattern:
+      'st(?:ä|ae)rk(?:t|en)\\s+(?:das\\s+|die\\s+|den\\s+|deine?n?\\s+)?(?:immun|abwehr|knochen|herz|nerven|darm)',
+    wholeWord: false,
+  },
+  {
+    label: 'gut für (Organ/Körperfunktion)',
+    pattern:
+      'gut\\s+f(?:ü|ue)r\\s+(?:die\\s+|den\\s+|das\\s+|deine?n?\\s+)?(?:verdauung|darm|herz|haut|haare|knochen|gelenk|immun|gehirn|nerven|leber|niere|augen|blut|figur|linie|gesundheit)',
+    wholeWord: false,
+  },
+  { label: 'verdauungsfördernd', pattern: 'verdauungsf(?:ö|oe)rder', wholeWord: false },
 ];
 
 /** Lebensmittel-Marken (herstellerneutrale Rezepte: nur Produktarten, Gründer-Entscheidung 16 A Nr. 18). */

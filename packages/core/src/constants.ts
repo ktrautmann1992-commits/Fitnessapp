@@ -1652,6 +1652,12 @@ export const SHOPPING_LIST_ROUNDING = {
  */
 export const SHOPPING_LIST_EXTRAS = { recipesMax: 20, itemsMax: 1000 } as const;
 
+/**
+ * Rezeptsuche (Plan 19.6, Etappe N5c): Stufen des Filters „max. Kosten je Portion“ in Euro. Angeboten nur, wenn es
+ * Rezepte mit FREIGEGEBENER Kostenschätzung gibt (6.13). Bedienung, keine Grenze zur Gesundheit. PRODUKTENTSCHEIDUNG.
+ */
+export const RECIPE_SEARCH_COST_STEPS_EUR = [2, 3, 5] as const;
+
 // ---------------------------------------------------------------------------------------------------------
 // Ziele · Haupt- und Nebenziel (docs/PLAN-ZIELE.md Abschnitt 4, Etappe Z1)
 //

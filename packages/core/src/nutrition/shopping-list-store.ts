@@ -5,9 +5,13 @@ import { RECIPE_SERVINGS_PICKER, SHOPPING_LIST_EXTRAS, SHOPPING_LIST_ROUNDING } 
 import { SHOPPING_CATEGORIES } from '../content/food-schema';
 import { contentIdSchema } from '../content/schemas';
 import { addDays } from '../dates';
+import type { FoodLookup } from '../content/food-schema';
+import { DIET_TYPES, type DietType } from '../enums';
 import { foodAllowedForPerson } from './filter';
 import { CandidatePool, type MealPlanInput, type MealPlanWeek } from './meal-plan';
 import { weekExcludesPregnancyCaution } from './person';
+import { dietAllows, foodDiet } from './recipe-nutrients';
+import { recipeForPersonWithDiets } from './recipe-search';
 import { type ScaledIngredient, scaleRecipeForServings } from './scale';
 import { mealPlanProfileSchema, weekStartSchema } from './schemas';
 import {
@@ -45,6 +49,11 @@ type PlanInput = Omit<MealPlanInput, 'existingPlan' | 'variant'>;
 export interface ShoppingListRecipe {
   readonly recipeId: string;
   readonly servings: number;
+  /**
+   * Erweiterte Ernährungsform aus der Rezeptsuche (19.6 K3/G4, Etappe N5c): Das Rezept wurde bewusst außerhalb der
+   * Profil-Ernährungsform gewählt. Erweitert nur die Ernährungsform – alle anderen Ausschlüsse gelten unverändert.
+   */
+  readonly diet?: DietType;
 }
 
 export interface StoredShoppingList extends ShoppingList {
@@ -97,7 +106,11 @@ const servingsSchema = z
   .min(RECIPE_SERVINGS_PICKER.min)
   .max(RECIPE_SERVINGS_PICKER.max);
 
-const recipeEntrySchema = z.strictObject({ recipeId: contentIdSchema, servings: servingsSchema });
+const recipeEntrySchema = z.strictObject({
+  recipeId: contentIdSchema,
+  servings: servingsSchema,
+  diet: z.enum(DIET_TYPES).optional(),
+});
 
 /** Gespeicherte Liste (Gerätespeicher bzw. ab N7 `shopping_lists`/`shopping_list_items`), strikt. */
 export const storedShoppingListSchema = z
@@ -177,10 +190,29 @@ function recipeExtras(
   const extras: (readonly ScaledIngredient[])[] = [];
   for (const entry of recipes) {
     const recipe = input.recipes.find((r) => r.id === entry.recipeId);
-    const result = recipe === undefined ? null : pool.result(recipe, exclude);
-    if (result === null || !result.ok) continue;
+    if (recipe === undefined) continue;
+    // Mit erweiterter Ernährungsform (Suchtreffer, K3): dieselbe Regel wie die Suche – nur die Ernährungsform ist
+    // erweitert, alle anderen Ausschlüsse laufen unverändert durch `filterRecipe`.
+    const variant =
+      entry.diet === undefined
+        ? (() => {
+            const result = pool.result(recipe, exclude);
+            return result.ok ? result.value : null;
+          })()
+        : (recipeForPersonWithDiets(
+            recipe,
+            {
+              foods: input.foods,
+              profile: input.profile,
+              excludePregnancyCaution: exclude,
+              allowDrafts: input.allowDrafts,
+              ...(input.redRecipeIds !== undefined ? { redRecipeIds: input.redRecipeIds } : {}),
+            },
+            [entry.diet],
+          )?.variant ?? null);
+    if (variant === null) continue;
     kept.push(entry);
-    extras.push(scaleRecipeForServings(result.value, entry.servings, input.foods).ingredients);
+    extras.push(scaleRecipeForServings(variant, entry.servings, input.foods).ingredients);
   }
   return { kept, extras };
 }
@@ -389,4 +421,34 @@ export function removeRecipeFromShoppingList(
     recipes: list.recipes.filter((r) => r.recipeId !== recipeId),
     planChanged: true,
   });
+}
+
+/**
+ * Kennzeichnung „passt nicht zu deiner Ernährungsform“ eines Eintrags (19.6 K3/G4, Etappe N5c): Das Lebensmittel
+ * passt nicht zur Profil-Ernährungsform – es kann nur über ein bewusst gewähltes Rezept der erweiterten Suche auf
+ * der Liste stehen. Liefert die Ernährungsform des Lebensmittels, sonst null (auch für eigene Einträge).
+ */
+export function shoppingItemOutsideProfileDiet(
+  item: Pick<ShoppingListItem, 'foodId' | 'isManual'>,
+  foods: FoodLookup,
+  profileDiet: DietType,
+): DietType | null {
+  if (item.isManual || item.foodId === null) return null;
+  const food = foods.get(item.foodId);
+  if (food === undefined) return null;
+  const diet = foodDiet(food);
+  return dietAllows(profileDiet, diet) ? null : diet;
+}
+
+/**
+ * Kennzeichnung eines über „Zur Einkaufsliste“ hinzugefügten Rezepts (19.6 K3/G4, Wächter N5c S1): Das Rezept wurde
+ * über die erweiterte Suche gewählt UND seine Ernährungsform passt nicht (mehr) zur aktuellen Profil-Ernährungsform.
+ * Hat sich das Profil inzwischen erweitert (z. B. vegan → mit Fleisch), entfällt die Kennzeichnung.
+ */
+export function shoppingRecipeOutsideProfileDiet(
+  entry: Pick<ShoppingListRecipe, 'diet'>,
+  profileDiet: DietType,
+): DietType | null {
+  if (entry.diet === undefined) return null;
+  return dietAllows(profileDiet, entry.diet) ? null : entry.diet;
 }

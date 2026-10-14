@@ -415,6 +415,7 @@ export const deNutrition = {
     toTaste: 'nach Geschmack',
     amountChanged: 'Menge geändert',
     notInPlan: 'nicht mehr im Plan',
+    outsideDiet: 'passt nicht zu deiner Ernährungsform',
     manual: 'eigener Eintrag',
     checkA11y: (label: string) => `Abhaken: ${label}`,
     removeManual: (label: string) => `Eintrag löschen: ${label}`,
@@ -525,4 +526,60 @@ export const deNutrition = {
     ok: 'Verstanden',
   },
   retrySave: 'Erneut versuchen',
+
+  // --- Rezeptsuche (19.6, Etappe N5c) ------------------------------------------------------------------------------
+  dietNames: { vegan: 'vegan', vegetarian: 'vegetarisch', omnivore: 'mit Fleisch' },
+  search: {
+    title: 'Rezepte suchen',
+    open: 'Rezepte suchen',
+    intro:
+      'Rezepte, die zu deinen Angaben passen. Unverträglichkeiten, „mag ich nicht“, Schweinefleisch und Hinweise für die Schwangerschaft gelten auch hier und lassen sich nicht abschalten.',
+    textLabel: 'Im Titel suchen',
+    textHint: 'z. B. „Curry“ oder „Oats“',
+    dietTitle: 'Ernährungsform',
+    dietOwn: (diet: string) => `Deine Ernährungsform: ${diet}`,
+    dietAlso: (diet: string) => `Auch ${diet}`,
+    dietHint:
+      'Deine Ernährungsform ist vorbelegt. Du kannst die Suche erweitern – solche Rezepte sind gekennzeichnet und kommen nie automatisch in deinen Essensplan.',
+    categoryTitle: 'Kategorie',
+    sectionTitle: 'Mahlzeit',
+    quick: 'Unter 10 Minuten',
+    costTitle: 'Höchstens je Portion',
+    costStep: (eur: number) => `bis ${eur} €`,
+    costHint: 'Nur Rezepte mit geprüfter Kostenschätzung.',
+    results: (n: number) => (n === 1 ? '1 Rezept gefunden' : `${n} Rezepte gefunden`),
+    empty: 'Keine passenden Rezepte gefunden. Probiere es mit weniger Filtern.',
+    emptyLibrary: 'Es gibt noch keine Rezepte.',
+    reset: 'Filter zurücksetzen',
+    outsideDiet: (diet: string) => `Passt nicht zu deiner Ernährungsform: ${diet}`,
+    minutes: (n: number) => `${n} Min.`,
+    kcal: (kcal: string) => `${kcal} kcal je Portion`,
+    draft: 'Entwurf',
+    cardA11y: (title: string) => `Rezept öffnen: ${title}`,
+    outsideDietRecipe:
+      'Du hast dieses Rezept über die erweiterte Suche gefunden. Es kommt nie automatisch in deinen Essensplan.',
+  },
+
+  // --- Ratgeber (6.8, Etappe N5c) ----------------------------------------------------------------------------------
+  guides: {
+    title: 'Ratgeber',
+    open: 'Ratgeber',
+    intro:
+      'Zum Nachlesen – die Ratgeber sind in der App gespeichert und funktionieren auch ohne Netz.',
+    none: 'Es gibt noch keine Ratgeber.',
+    notFound: 'Diesen Ratgeber gibt es nicht (mehr).',
+    draft: 'Entwurf – fachlich noch nicht geprüft',
+    openA11y: (title: string) => `Ratgeber öffnen: ${title}`,
+    hiddenNumbers: 'Zahlenangaben zu Kalorien und Nährstoff-Mengen sind hier ausgeblendet.',
+    hiddenInSection: (n: number) =>
+      n === 1
+        ? 'Ein Absatz mit Zahlen ist ausgeblendet.'
+        : `${n} Absätze mit Zahlen sind ausgeblendet.`,
+    places: 'Unterwegs',
+    good: 'Gute Wahl',
+    lessOften: 'Eher selten',
+    tip: (text: string) => `Tipp: ${text}`,
+    disclaimer:
+      'Allgemeine Informationen, keine persönliche Beratung. Bei Vorerkrankungen, in der Schwangerschaft oder bei Medikamenten sprich mit deiner Ärztin oder deinem Arzt.',
+  },
 } as const;

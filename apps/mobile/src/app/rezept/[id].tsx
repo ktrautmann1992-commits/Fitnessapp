@@ -1,4 +1,6 @@
 import {
+  type DietType,
+  dietTypeSchema,
   isoDateSchema,
   needsExpertReviewLabel,
   RECIPE_SERVINGS_PICKER,
@@ -40,8 +42,17 @@ import { useNutritionWeek, useShoppingListActions } from '@/state/use-nutrition'
 export default function RecipeScreen() {
   const router = useRouter();
   const app = useApp();
-  const params = useLocalSearchParams<{ id: string; tag?: string; platz?: string }>();
+  const params = useLocalSearchParams<{
+    id: string;
+    tag?: string;
+    platz?: string;
+    form?: string;
+  }>();
   const date = isoDateSchema.safeParse(params.tag).success ? (params.tag as string) : null;
+  // Aus der Rezeptsuche mit erweiterter Ernährungsform (K3, Etappe N5c); ungültige Werte zählen nicht.
+  const extraDiet = dietTypeSchema.safeParse(params.form).success
+    ? (params.form as DietType)
+    : null;
   // Ohne Tag: heute – wechselt um Mitternacht mit (Wächter N5a K5 / N5b K2).
   const today = useToday();
   const view = useNutritionWeek(date ?? today);
@@ -117,6 +128,7 @@ export default function RecipeScreen() {
     week: view.week,
     allowDrafts: app.backend.mode === 'local',
     from: date && params.platz ? { date, slot: params.platz } : null,
+    extraDiet,
   });
   if (found.kind === 'blocked') {
     return shell(t.nutrition.recipe.title, <ConsentBlockedNotice reason={found.reason} />);
@@ -136,7 +148,7 @@ export default function RecipeScreen() {
     );
   }
 
-  const { variant, plannedMeal } = found;
+  const { variant, plannedMeal, outsideProfileDiet } = found;
   const recipe = variant.recipe;
   const texts = t.nutrition.recipe;
   const foods = library.foods;
@@ -174,7 +186,7 @@ export default function RecipeScreen() {
     setShoppingBusy(true);
     setShoppingMessage(null);
     try {
-      const outcome = await shoppingActions.addRecipe(recipe.id, picked);
+      const outcome = await shoppingActions.addRecipe(recipe.id, picked, outsideProfileDiet);
       setShoppingMessage(
         outcome.kind === 'ok'
           ? { text: shoppingTexts.added(picked), tone: 'success' }
@@ -249,6 +261,12 @@ export default function RecipeScreen() {
       {recipe.status === 'draft' ? (
         <Notice tone="warning" testID="recipe-allergen-warning">
           {texts.allergenWarning}
+        </Notice>
+      ) : null}
+      {outsideProfileDiet ? (
+        <Notice tone="info" testID="recipe-outside-diet">
+          <Body>{t.nutrition.search.outsideDiet(t.nutrition.dietNames[outsideProfileDiet])}</Body>
+          <Body muted>{t.nutrition.search.outsideDietRecipe}</Body>
         </Notice>
       ) : null}
       <Body muted>{recipe.description_de}</Body>

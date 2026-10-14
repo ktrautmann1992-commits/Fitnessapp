@@ -1,6 +1,6 @@
 # Plan Phase 5 – Ernährungs-Engine, Essensplan und Einkaufsliste
 
-**Status:** **freigegeben, Etappen N0 (Plan), N1 (Core: Bedarf, Grenzen, Makros, Timing) und N2a (Inhalte: Schemas, Prüfregeln, Einheiten) umgesetzt** – Stand 11.10.2026. Offene Fragen 16 B: Gründer „Alles wie empfohlen“ (10.10.2026). Gegenprüfung der R2-Blocker durch den Wächter im N0-PR. **N2b Teil 1 (Quelle/Lizenz geklärt, Import-Infrastruktur, Zuordnungs-Vorschlag) umgesetzt** – der Katalog selbst entsteht nach dem Merge über den Workflow `foods-import` (Umsetzungsstand N2b). **N2c (Rezept-Import als Entwurf) und N3 (Core: Essensplan, Meal-Prep, Einkaufsliste, Rezeptsuche) umgesetzt** – Stand 12.10.2026 (Umsetzungsstand N2c/N3). **N4 (App Testmodus: Einrichtung, Tag, Rezept) umgesetzt** – Stand 12.10.2026 (Umsetzungsstand N4). **N2d (Admin-Seiten Ernährung, Sammelfreigabe Rezepte pro Kategorie und Freigabe per ID in `content-review`, Fingerabdruck bestätigter Import-Annahmen) umgesetzt** – Stand 14.10.2026, drei offene Fragen von den Gründern entschieden (Umsetzungsstand N2d). **N5a (App Testmodus: gespeicherter Essensplan, Wochenansicht, „Andere Vorschläge“, „Rezept tauschen“, „Plan aktualisieren“, automatische Neuplanung 6.6) umgesetzt** – Stand 14.10.2026; N5 ist in **N5a** und **N5b** (Einkaufsliste, Meal-Prep-Kochtag, „Zur Einkaufsliste“) geteilt (Umsetzungsstand N5a). **N5b (App Testmodus: Einkaufsliste offline mit eigenen Einträgen und Zeitraum, Neuerzeugung bei Neuplanung W22, „Zur Einkaufsliste“, Meal-Prep-Pläne mit Kochtag und Timern, Auftau-Hinweise; K-a, K-b, K5, K7, N3 K1) umgesetzt** – Stand 14.10.2026; offene Gründer-Entscheidung: Mitteilungen im Hintergrund (`expo-notifications`), Löschfrist weiter offen (Umsetzungsstand N5b). **Nachtrag „Erweiterungen 2 (11.10.2026)“** in Abschnitt 19 (Fassung 2 nach Wächter-Prüfung, B1/B2 und S1–S14 eingearbeitet): Rezeptbestand aus `alpha5-rezepte.json`, Import in N2b/N2c, Umfang von Prompt C in N3–N6, neue Etappen N9–N14, W1 und P1. Fassung 3 nach Wächter-Nachprüfung `waechter-plan-5-r2.md` (Urteil „mit Auflagen“, alle Befunde eingearbeitet); Fassung 2 nach `waechter-plan-5.md`.
+**Status:** **freigegeben, Etappen N0 (Plan), N1 (Core: Bedarf, Grenzen, Makros, Timing) und N2a (Inhalte: Schemas, Prüfregeln, Einheiten) umgesetzt** – Stand 11.10.2026. Offene Fragen 16 B: Gründer „Alles wie empfohlen“ (10.10.2026). Gegenprüfung der R2-Blocker durch den Wächter im N0-PR. **N2b Teil 1 (Quelle/Lizenz geklärt, Import-Infrastruktur, Zuordnungs-Vorschlag) umgesetzt** – der Katalog selbst entsteht nach dem Merge über den Workflow `foods-import` (Umsetzungsstand N2b). **N2c (Rezept-Import als Entwurf) und N3 (Core: Essensplan, Meal-Prep, Einkaufsliste, Rezeptsuche) umgesetzt** – Stand 12.10.2026 (Umsetzungsstand N2c/N3). **N4 (App Testmodus: Einrichtung, Tag, Rezept) umgesetzt** – Stand 12.10.2026 (Umsetzungsstand N4). **N2d (Admin-Seiten Ernährung, Sammelfreigabe Rezepte pro Kategorie und Freigabe per ID in `content-review`, Fingerabdruck bestätigter Import-Annahmen) umgesetzt** – Stand 14.10.2026, drei offene Fragen von den Gründern entschieden (Umsetzungsstand N2d). **N5a (App Testmodus: gespeicherter Essensplan, Wochenansicht, „Andere Vorschläge“, „Rezept tauschen“, „Plan aktualisieren“, automatische Neuplanung 6.6) umgesetzt** – Stand 14.10.2026; N5 ist in **N5a** und **N5b** (Einkaufsliste, Meal-Prep-Kochtag, „Zur Einkaufsliste“) geteilt (Umsetzungsstand N5a). **N5b (App Testmodus: Einkaufsliste offline mit eigenen Einträgen und Zeitraum, Neuerzeugung bei Neuplanung W22, „Zur Einkaufsliste“, Meal-Prep-Pläne mit Kochtag und Timern, Auftau-Hinweise; K-a, K-b, K5, K7, N3 K1) umgesetzt** – Stand 14.10.2026; offene Gründer-Entscheidung: Mitteilungen im Hintergrund (`expo-notifications`), Löschfrist weiter offen (Umsetzungsstand N5b). **N5c (App Testmodus: Rezeptsuche mit vorbelegter, erweiterbarer Ernährungsform und gekennzeichneten Treffern, „Zur Einkaufsliste“ für diese Treffer, Ratgeber offline mit R21-Prüfung und „Zahlen aus“) umgesetzt** – Stand 14.10.2026 (Umsetzungsstand N5c). **Nachtrag „Erweiterungen 2 (11.10.2026)“** in Abschnitt 19 (Fassung 2 nach Wächter-Prüfung, B1/B2 und S1–S14 eingearbeitet): Rezeptbestand aus `alpha5-rezepte.json`, Import in N2b/N2c, Umfang von Prompt C in N3–N6, neue Etappen N9–N14, W1 und P1. Fassung 3 nach Wächter-Nachprüfung `waechter-plan-5-r2.md` (Urteil „mit Auflagen“, alle Befunde eingearbeitet); Fassung 2 nach `waechter-plan-5.md`.
 **Reihenfolge (Gründer-Entscheidung 09.10.2026):** 4b-A0 (erledigt) → Übungs-Glossar und Übungstausch (erledigt bis T2; T3 später mit Supabase) → **Phase 5** → Phase 4b (A → D → E; B/C später).
 **Testphase:** zuerst nur im **Testmodus** (lokal auf dem Gerät, ohne Supabase). Supabase-Teile (Migrationen, RLS, pgTAP) sind hier vollständig geplant, kommen aber in einer späteren Etappe (N7). Einzige Ausnahme: die kleine CHECK-Migration für den Onboarding-Schritt in N4 (S8).
 
@@ -2152,7 +2152,7 @@ Meal-Prep-Woche/„Zahlen aus“ im Meal-Prep. Rezeptsuche (`rezepte/index.tsx`)
   Grenzfall 4,9 %/5,0 %. **Nicht umgesetzt:** K5 (Mitternacht/Wochenwechsel bei offener App: Speicher-Hinweis, harmlos)
   und K7 (Knopf „Erneut versuchen“ nach gescheitertem automatischem Speichern) – vermerkt für N5b.
 
-**N5c (eigener PR nach N5b, vor N6):** Rezeptsuche (`rezepte/index.tsx`) und Ratgeber (`ratgeber/[id].tsx`) aus 19.6.
+**N5c (eigener PR nach N5b, vor N6; umgesetzt, siehe Umsetzungsstand N5c):** Rezeptsuche (`rezepte/index.tsx`) und Ratgeber (`ratgeber/[id].tsx`) aus 19.6.
 Auflagen des Wächters: Treffer nur über `filter.ts` mit demselben Profil inkl. `pregnancy_caution` (Eigenschaftstest:
 kein ausgeschlossenes Rezept in den Treffern); Ratgeber nur freigegeben und mit Prüfung gegen Heilversprechen
 (Health-Claims-Verordnung); „Zahlen aus“ gilt auch in Suche und Ratgeber.
@@ -2315,3 +2315,106 @@ Timer stimmen nach dem Öffnen). **Bedingungen für die spätere Umsetzung:**
 4. Mitteilungen abbrechen bei „Beenden“, „Neu starten“, Planwechsel, Neuplanung, Widerruf und Abmelden.
 5. Keine Mitteilungen für Schritte in der Vergangenheit.
 6. Test: Nach Löschen bzw. Widerruf bleiben keine geplanten Mitteilungen übrig.
+
+### N5c – App Testmodus: Rezeptsuche und Ratgeber (umgesetzt, 14.10.2026, ohne Commit)
+
+Umfang wie in N5a festgelegt (19.6 Zeilen „Rezeptsuche mit Filtern“, „Portionswähler“, „Ratgeber offline“; DoD-Ergänzungen
+N4/N5) mit den Auflagen des Wächters: Treffer nur über `filter.ts` mit demselben Profil inkl. `pregnancy_caution`,
+Ratgeber nur freigegeben und gegen Heilversprechen geprüft, „Zahlen aus“ auch in Suche und Ratgeber. Gratis, rein
+regelbasiert (keine Echtzeit-KI). Nur Testmodus; Supabase-Modus bis N7 unverändert („nicht unterstützt“).
+
+1. **Core** (`packages/core/src/nutrition/`):
+   - `recipe-search.ts`: neue Einzelprüfung `recipeForPersonWithDiets(recipe, ctx, extraDiets)` – dieselbe Regel wie
+     die Suche (zuerst `filterRecipe` mit der Profil-Ernährungsform, nur sonst mit der erweiterten; alle anderen
+     Ausschlüsse unverändert); `searchRecipes` nutzt sie. Neu `recipeSearchDietOptions` (nur großzügigere Formen:
+     vegan → vegetarisch, mit Fleisch; vegetarisch → mit Fleisch) und `recipeSearchFacets` (Kategorien in fester
+     Reihenfolge, Abschnitte, ob es freigegebene Kostenschätzungen gibt – leere Filter werden nicht angeboten).
+   - `shopping-list-store.ts`: „Zur Einkaufsliste“ für Treffer der erweiterten Suche (19.6 K3/G4, aus N5b vermerkt) –
+     Rezept-Eintrag mit optionaler `diet` (Zod strikt, ältere Listen bleiben gültig); bei JEDEM Auflösen erneut über
+     `recipeForPersonWithDiets` gefiltert. `shoppingItemOutsideProfileDiet` kennzeichnet Einträge, deren Lebensmittel
+     nicht zur Profil-Ernährungsform passt.
+   - `guides.ts` (neu): `readableGuides` (Schema gültig, `published` – im Testmodus auch `draft` –, nie archiviert oder
+     Probelauf, **kein roter Befund aus `checkGuide`/R21**: Heil-/Gesundheits- und Nährwertversprechen, Marken,
+     fehlender Carb-Loading-Hinweis; zusätzlich zu `selectNutritionContent`), `guideForDisplay` (bei „Zahlen aus“
+     fallen Absätze mit kcal/kJ oder Makro-Gramm weg, gezählt; feste Hinweise bleiben), `mentionsEnergyOrMacroGrams`.
+   - Konstante `RECIPE_SEARCH_COST_STEPS_EUR = [2, 3, 5]` (PRODUKTENTSCHEIDUNG, Bedienung).
+   - Beispiel-Bestand (`demo-nutrition.ts`): zwei Beispiel-Ratgeber mit Testtexten (`DEMO_GUIDES`, Entwurf, je ein
+     Absatz mit Zahlen, Carb-Loading mit festem Hinweis, ohne roten Befund).
+   - Tests `n5c.test.ts` (10, nach der Wächter-Prüfung 14): Eigenschaftstest „Suche = Einzelprüfung, nie ein Rezept, das `filter.ts` mit der
+     erweiterten Form ausschließt; gekennzeichnet genau dann, wenn die Profil-Form nicht passt; Schwangerschaft,
+     Unverträglichkeit, ‚mag ich nicht‘, Schwein“ (150 Profile), feste Fälle (Erdnuss, Schwein unbekannt, Räucherlachs
+     und rohe Eier in der Schwangerschaft), Filter aus dem Bestand, „Zur Einkaufsliste“ erweitert (Kennzeichnung,
+     Rundweg, ältere Listen, Erweitern hebt keinen Ausschluss auf, Schwangerschaft später → Rezept fällt weg),
+     Ratgeber (Status, rote Befunde, Carb-Loading-Hinweis, Schema), Zahlen aus.
+2. **App** (`apps/mobile`):
+   - `data/recipe-search.ts`: `recipeSearchForPerson` – Profil wie Essensplan (`mealPlanProfileFromRows`:
+     Unverträglichkeiten nur mit gültiger Einwilligung, sonst **blockiert**), Schwangerschafts-Ausschluss wie die
+     Rezeptansicht (`weekExcludesPregnancyCaution`), Karten mit Zeit, kcal je Portion, Kennzeichnung.
+   - `recipeForPerson(…, extraDiet)`: Rezeptansicht aus der Suche mit Parameter `?form=` (nur gültige Werte; aus dem
+     Essensplan geöffnet nie erweitert); Hinweis „Passt nicht zu deiner Ernährungsform: …“ und „kommt nie automatisch
+     in deinen Essensplan“; „Zur Einkaufsliste“ übergibt die Form.
+   - Bildschirme: **Rezeptsuche** (`rezepte/index.tsx`: Suchfeld, „Deine Ernährungsform: …“ vorbelegt, „Auch …“ zum
+     Erweitern, „Unter 10 Minuten“, Kategorie/Mahlzeit/Kosten nur wenn vorhanden, „Filter zurücksetzen“, Anzahl,
+     Karten alphabetisch – nie nach kcal –, Lade-/Fehler-/Leer-/Sperr-Zustände), **Ratgeber-Übersicht**
+     (`ratgeber/index.tsx`) und **Ratgeber** (`ratgeber/[id].tsx`: Abschnitte, Orte mit „Gute Wahl“/„Eher selten“/Tipp,
+     fester Hinweis, Entwurf-Kennzeichnung, „nicht gefunden“). **Einkaufsliste:** Markierung „passt nicht zu deiner
+     Ernährungsform“ an Einträgen und hinzugefügten Rezepten. **Tag:** Links „Rezepte suchen“ und „Ratgeber“.
+   - „Zahlen aus“ (und Schwangerschaft/Stillzeit wie überall über `showNumbers`): keine kcal auf den Karten, keine
+     Nährwerte im Portionswähler (schon N4), im Ratgeber Absätze mit Zahlen ausgeblendet mit Hinweis.
+3. **Tests:** App-Vitest `nutrition-n5c.test.ts` (6): Eigenschaftstest über 9 Personen × 4 Erweiterungen (Treffer nur
+   über `filter.ts` inkl. Schwangerschaft), feste Fälle, vorbelegt/erweitert/„Unter 10 Minuten“, blockiert ohne
+   Einwilligung, Rezeptansicht aus der Suche, Beispiel-Ratgeber. Playwright `e2e/nutrition-search.spec.ts` (3): Suche
+   mit vorbelegter Ernährungsform, „Auch mit Fleisch“ gekennzeichnet ohne Schwein, „Unter 10 Minuten“, Leer-Zustand,
+   Portionswähler 1 → 3 (Mengen ×3), „Zur Einkaufsliste“ mit Kennzeichnung, direkter Aufruf ohne `?form` gesperrt,
+   **„Zahlen aus“ → keine kcal in Suche und Portionswähler**; vegan + Erdnuss + schwanger auch erweitert ohne
+   Erdnuss/Räucherlachs/rohe Eier/Schwein; **Ratgeber im Flugmodus** (`setOffline`), „Zahlen aus“ im Ratgeber.
+
+**Abweichungen / Präzisierungen:**
+
+- **Ratgeber-Übersicht** `ratgeber/index.tsx` zusätzlich zu `ratgeber/[id].tsx` (19.6 nennt nur die Einzelseite; ohne
+  Übersicht wären die Ratgeber nicht erreichbar).
+- **„Zahlen aus“ im Ratgeber:** Ratgeber-Texte sind Fließtext. Umgesetzt als Ausblenden ganzer Absätze (bzw.
+  Aufzählungspunkte, Einleitung, Tipps), die kcal/kJ oder Makro-Gramm nennen (z. B. „8–10 g Kohlenhydrate pro kg“),
+  mit Hinweis „Zahlenangaben … sind ausgeblendet“. Feste Hinweise (Carb-Loading) bleiben immer. Sichere Richtung.
+- **„Ratgeber nur freigegeben“:** live nur `published`; im Testmodus wie alle Inhalte auch Entwürfe ohne roten Befund
+  mit Kennzeichnung „Entwurf – fachlich noch nicht geprüft“. Rote R21-Befunde schließen in beiden Fällen aus (auch
+  wenn ein Ratgeber an `selectNutritionContent` vorbei käme). Gelbe R21H-Befunde (Mengen zur Fachprüfung) schließen
+  nicht aus – sie werden vor der Freigabe geprüft (`content-review`, Häkchen „fachlich geprüft“).
+- **Kennzeichnung auf der Einkaufsliste** je Eintrag aus der Ernährungsform des Lebensmittels (nicht gespeichert);
+  Plan-Einträge passen immer zur Profil-Form und tragen sie nie. Ein schon „nicht mehr im Plan“ stehender, abgehakter
+  Eintrag aus einem erweiterten Rezept verschwindet beim nächsten Öffnen (N5b K1, sichere Richtung).
+- **Text-Suche** nur im Titel (wie `searchRecipes` seit N3); höchstens 100 Zeichen.
+- **Kosten-Filter** in festen Stufen (2/3/5 € je Portion) und nur sichtbar, wenn es freigegebene Kostenschätzungen
+  gibt (heute keine – 6.13/N12).
+- **Nicht in N5c:** Supabase-Tabelle `guides` und Laden aus der Datenbank (N7), echte Ratgeber-Texte (kommen mit
+  `alpha5-import`; die 6 roten R21-Befunde aus N2c müssen vorher umformuliert werden, sonst bleiben sie ausgeblendet).
+
+**So testest du es am Handy:** HANDY-ANLEITUNG Teil 7c, Abschnitt „Rezeptsuche und Ratgeber“.
+
+**Wächter-Prüfung N5c (14.10.2026): FREIGABE MIT AUFLAGEN** (Bericht `waechter-n5c.md`, kein Blocker). Umgesetzt:
+
+- **S1** Die Kennzeichnung eines hinzugefügten Rezepts auf der Einkaufsliste kommt aus core
+  (`shoppingRecipeOutsideProfileDiet`, über `dietAllows`) statt aus einem Vergleich im UI. Hat sich das Profil
+  inzwischen erweitert (vegan → mit Fleisch), entfällt die Kennzeichnung. Test in `n5c.test.ts`.
+- **S2** Der Filter für „Zahlen aus“ erkennt auch Bindestrich- und zusammengesetzte Wörter („500-kcal-Snack“,
+  „2500-Kalorien-Diät“, „2000 Kalorienbedarf“, „30-g-Eiweiß-Regel“). Tests mit Gegenbeispielen (ml, Stunden, Gramm
+  ohne Makro-Wort).
+- **S3** Die Textregeln für Ernährungsinhalte (`HEALTH_CLAIM_TERMS`, gilt für Rezepte, Lebensmittel, Meal-Prep und
+  Ratgeber, nicht für Übungen) sind um typische Heilversprechen ergänzt: „hilft gegen“, „hilft/unterstützt beim
+  Abnehmen“, „beugt … vor“/„vorbeugen“, „entzündungs…“, Krebs, Erkältung, Grippe, Infekt, Herz-Kreislauf,
+  Blutzucker/Blutdruck, „senkt …“ (Risiko, Blut…, Cholesterin, Entzündung), „stärkt …“ (Immun…, Abwehr, Knochen, Herz,
+  Nerven, Darm), „gut für“ + Organ/Körperfunktion, „verdauungsfördernd“. Diabetes und Bluthochdruck standen schon in
+  der medizinischen Liste. Tests mit Gegenbeispielen (z. B. „Flusskrebse“, „Vorbereitung“, „hält sich gut für zwei
+  Tage“). **Neue Treffer im heutigen Bestand: keine.** `content:validate` bleibt grün, und ein Abgleich aller Texte in
+  `alpha5-rezepte.json` vor und nach der Ergänzung ergibt dieselben Treffer.
+- **K1** Titel, Überschriften und Ortsnamen mit Zahlen werden bei „Zahlen aus“ ebenfalls ausgeblendet. Die App zeigt
+  dann „Ratgeber“ als Titel bzw. lässt die Überschrift weg. Das gilt auch in der Übersicht.
+- **K2** Der Filter erkennt jetzt auch „MJ“/Kilojoule/Megajoule und Prozentangaben zusammen mit Makro- oder
+  Energie-Wörtern („30 % Fett“, „55 Prozent der Energie“). **Redaktionsregel (Ratgeber und Rezepttexte):** Zahlen
+  immer als Ziffern, Energie in kcal oder kJ. Zahlwörter wie „dreihundert Kalorien“ erkennt der Filter nicht.
+- **K3** Der Hinweis lautet neutral „Zahlenangaben zu Kalorien und Nährstoff-Mengen sind hier ausgeblendet.“ Er
+  passt so auch in Schwangerschaft und Stillzeit.
+- **K4** Die React-Keys im Ratgeber bestehen aus Index und Text, gleiche Absätze sind also möglich.
+- **K5** „Filter zurücksetzen“ erscheint nur, wenn wirklich ein Filter gesetzt ist.
+- **K6** Der Knopf „Ratgeber“ in der Tagesansicht erscheint nur, wenn `readableGuides` mindestens einen Ratgeber
+  liefert.

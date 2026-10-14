@@ -23,6 +23,7 @@ import {
   MealRow,
   NutritionNotices,
 } from '@/components/nutrition';
+import { useReadableGuides } from '@/components/guides';
 import { Screen } from '@/components/screen';
 import { Body, Button, Card, ErrorState, Heading, LoadingState, Notice } from '@/components/ui';
 import { showEnergyNumbers } from '@/data/nutrition-plan';
@@ -40,7 +41,8 @@ import { useMealPlanActions, useNutritionWeek } from '@/state/use-nutrition';
  * Blättern über die Woche, alle Zustände (8.3). Rechnet nichts selbst – Ziele und Plan kommen aus packages/core.
  * Etappe N5: gespeicherter Plan, „Rezept tauschen“ (ab heute, nur Hauptplätze), Hinweis bei automatischer
  * Neuplanung (6.6), „Plan aktualisieren“, Link zur Wochenansicht. Etappe N5b: Auftau-Hinweis für morgen, Links zur
- * Einkaufsliste und zu den Meal-Prep-Plänen, Hinweis „neu erstellt“ (K-b), „Erneut versuchen“ (K7).
+ * Einkaufsliste und zu den Meal-Prep-Plänen, Hinweis „neu erstellt“ (K-b), „Erneut versuchen“ (K7). Etappe N5c:
+ * Links „Rezepte suchen“ und „Ratgeber“.
  */
 export default function NutritionDayScreen() {
   const router = useRouter();
@@ -54,6 +56,8 @@ export default function NutritionDayScreen() {
   const selected = picked ?? today;
   const view = useNutritionWeek(selected);
   const actions = useMealPlanActions(view.week);
+  // Knopf „Ratgeber“ nur, wenn es anzeigbare Ratgeber gibt (Wächter N5c K6).
+  const readable = useReadableGuides(view);
   const [swapping, setSwapping] = useState<string | null>(null);
   const [swapMessage, setSwapMessage] = useState<{
     text: string;
@@ -323,6 +327,22 @@ export default function NutritionDayScreen() {
           variant="secondary"
           onPress={() => router.push('/meal-prep' as Href)}
           testID="nutrition-meal-prep"
+        />
+      ) : null}
+      {view.library.result.library.recipes.length > 0 ? (
+        <Button
+          label={t.nutrition.search.open}
+          variant="secondary"
+          onPress={() => router.push('/rezepte' as Href)}
+          testID="nutrition-recipe-search"
+        />
+      ) : null}
+      {(readable?.length ?? 0) > 0 ? (
+        <Button
+          label={t.nutrition.guides.open}
+          variant="secondary"
+          onPress={() => router.push('/ratgeber' as Href)}
+          testID="nutrition-guides"
         />
       ) : null}
 
