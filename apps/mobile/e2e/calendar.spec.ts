@@ -54,24 +54,23 @@ async function dragTo(page: Page, from: string, to: string, beforeDrop?: () => P
     .toBe(true);
   const end = await target.boundingBox();
   if (!start || !end) throw new Error('Kalender nicht sichtbar');
-  // Langer Druck (DRAG_LONG_PRESS_MS = 400 ms), dann ziehen. Im Headless-Browser der CI startet die Geste direkt
-  // nach einem abgelehnten Ablegen gelegentlich nicht (lokal nicht nachstellbar, nativ mit der APK prüfen): erst
-  // weiterziehen, wenn das Ziehen sichtbar läuft (Ziel-Hinweise erscheinen), sonst loslassen und neu drücken.
-  const dropHints = page.locator('[data-testid^="calendar-drop-"]');
-  for (let attempt = 1; ; attempt += 1) {
-    await page.mouse.move(start.x + start.width / 2, start.y + start.height / 2);
-    await page.mouse.down();
-    await page.waitForTimeout(700);
-    const started = await dropHints
-      .first()
-      .waitFor({ state: 'attached', timeout: 1500 })
-      .then(() => true)
-      .catch(() => false);
-    if (started) break;
+  // Langer Druck (DRAG_LONG_PRESS_MS = 400 ms), dann ziehen. Das Ziehen MUSS beim ersten Druck starten (Ziel-Hinweise
+  // erscheinen) – kein erneutes Drücken: Früher startete es im Browser nach einem abgelehnten Ablegen am selben Griff
+  // nicht mehr (docs/PLAN-AUSWERTUNG.md, Umsetzungsstand A1a); ein Rückfall soll hier sofort auffallen.
+  await page.mouse.move(start.x + start.width / 2, start.y + start.height / 2);
+  await page.mouse.down();
+  await page.waitForTimeout(700);
+  const started = await page
+    .locator('[data-testid^="calendar-drop-"]')
+    .first()
+    .waitFor({ state: 'attached', timeout: 2000 })
+    .then(() => true)
+    .catch(() => false);
+  if (!started) {
     await page.mouse.up();
-    if (attempt >= 3) throw new Error('Ziehen startet nach langem Druck nicht');
-    console.warn(`Ziehen nicht gestartet (Versuch ${attempt}) – neu drücken`);
-    await page.waitForTimeout(300);
+    throw new Error(
+      `Ziehen von ${from} startet nach langem Druck nicht (Griff ${from} reagiert nicht)`,
+    );
   }
   const steps = 12;
   for (let i = 1; i <= steps; i += 1) {
@@ -163,6 +162,50 @@ test('Drag-and-drop: erlaubte Tage leuchten, gesperrte zeigen den Grund; verschi
   stored = await sessions(page);
   expect(stored.find((s) => s.id === di?.id)?.date).toBe(DI);
   expect(stored.find((s) => s.id === fr?.id)?.date).toBe(FR);
+});
+
+test('Ziehen startet nach einem abgelehnten Ablegen sofort wieder, auch wenn der Browser die Zeiger-Freigabe verspätet meldet', async ({
+  page,
+}) => {
+  // Nachstellung des CI-Fehlers (Chrome 153, lokal sonst nicht auslösbar): Der Browser meldet „lostpointercapture“
+  // erst beim NÄCHSTEN Druck. Am selben Griff brach das jeden neuen Druck sofort ab – bis die Seite neu geladen wurde.
+  // Die App baut die Geste nach jedem Ende neu auf (lib/drag-lifecycle.ts); die verspätete Meldung trifft dann den
+  // alten Griff.
+  await page.addInitScript(() => {
+    const pending: { target: EventTarget; pointerId: number }[] = [];
+    window.addEventListener(
+      'lostpointercapture',
+      (event) => {
+        if (event.isTrusted && event.target) {
+          event.stopImmediatePropagation();
+          pending.push({ target: event.target, pointerId: event.pointerId });
+        }
+      },
+      true,
+    );
+    window.addEventListener('pointerdown', () => {
+      for (const late of pending.splice(0)) {
+        late.target.dispatchEvent(
+          new PointerEvent('lostpointercapture', { pointerId: late.pointerId, bubbles: true }),
+        );
+      }
+    });
+  });
+  await setup(page);
+  // Abgelehnt (Do, 48 h vor Freitag) – zweimal hintereinander am selben Griff, dann tauschen.
+  await dragTo(page, DI, DO);
+  await expect(page.getByTestId('calendar-message')).toContainText('Nicht verschoben: Zu nah an');
+  await dragTo(page, DI, DO);
+  await expect(page.getByTestId('calendar-message')).toContainText('Nicht verschoben: Zu nah an');
+  await dragTo(page, DI, FR, async () => {
+    await expect(page.getByTestId(`calendar-drop-${FR}`)).toContainText('✓ Tauschen mit');
+  });
+  await expect(page.getByTestId('calendar-message')).toContainText('Getauscht: jetzt am Freitag');
+  // Danach ist nichts hängen geblieben: Scrollen/„Dein Tag“ wieder frei, keine Ziel-Hinweise mehr.
+  await expect(page.locator('[data-testid^="calendar-drop-"]')).toHaveCount(0);
+  await expect(
+    page.getByRole('link').and(page.getByTestId(`calendar-open-day-${FR}`)),
+  ).toBeVisible();
 });
 
 test('„Verschieben …“-Menü: jeder Tag mit „erlaubt“ oder Grund; Auswahl verschiebt, bleibt nach Neuladen', async ({
