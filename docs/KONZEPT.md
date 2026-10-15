@@ -296,6 +296,16 @@ besteht. Einkaufsliste nach Abteilungen, Mengen aufgerundet, Häkchen bleiben be
 - Menge eingeben (g, Stück, Portion), Zuordnung zu Mahlzeit: Frühstück, Mittag, Abend, Snack, vor/nach Training
 - Tagesübersicht: Ziel aus der Ernährungs-Engine gegen tatsächlich Gegessenes
 - „Zuletzt gegessen“ und Favoriten für schnelles Eintragen
+- **Umgesetzt als Etappe E1 (15.10.2026, ohne Barcode – der kommt als E4; `docs/PLAN-AUSWERTUNG.md` Abschnitt 5 und
+  Umsetzungsstand E1):** Ernährungstagebuch (gratis, ohne KI) mit „Gegessen“ per Tipp an der Plan-Mahlzeit (Portion
+  ½ bis 2), Lebensmittel aus dem Katalog (g, ml, Stück), Rezept mit Portionen, Schnelleintrag (feste Bezeichnungen, kcal
+  optional, Makros optional), „Zuletzt“ (20 verschiedene) und Favoriten; Bearbeiten, Löschen, Nachtragen bis 14 Tage,
+  nie in die Zukunft; Rückfrage ab 1.500 kcal je Eintrag. Gruppen: Frühstück, Hauptmahlzeit, Mittag, Abend, Snack
+  („vor/nach Training“ steht an der Plan-Mahlzeit). „Kalorienzahlen aus“: Eintragen geht weiter, ohne kcal-Anzeige und
+  ohne kcal-Feld. Nur mit Einwilligung `health_data` (vorsorglich Art. 9); der Widerruf löscht die Einträge und die
+  Schnell-Favoriten, Favoriten aus Lebensmitteln/Rezepten (ohne Werte gespeichert) bleiben. Grenzen `FOOD_LOG_LIMITS` in `constants.ts`, Logik `packages/core/src/nutrition/food-log.ts`, Datenbank
+  `food_log_entries`/`food_log_favorites` mit `save_food_log_entries`/`delete_food_log_entry`. Testmodus fertig; der
+  Supabase-Modus folgt mit N7 Teil 2. Die Tagesübersicht „Ziel gegen Gegessenes“ (Kalorienbalken) kommt mit A2.
 
 ### 6.2 Standardgerichte (Gratis)
 - Eigene Gerichte anlegen („Mein Porridge“, „Shake nach dem Training“) mit kcal und Makros – direkt eingegeben oder aus Zutaten berechnet
@@ -802,6 +812,13 @@ eigene Zeilen, in Export und Kontolöschung enthalten.
   entschieden – Schätzpreis je kg (Inhalt, als Schätzung gekennzeichnet)
 - `recipe_ratings` (user_id, recipe_id, value, reason, rated_on) – Nutzerdaten, privat, kein Grund „unverträglich“ (6.10)
 - `food_dislikes` (user_id, food_id) – „mag ich nicht“ je Lebensmittel (6.10), hart wie die Gruppen-Abneigungen
+- `food_log_entries` (id, user_id, eaten_on, slot, source `plan_item|food|recipe|quick`, food_id/recipe_id, title_de,
+  amount, unit, portion, kcal, protein_g, carbs_g, fat_g, revision, last_write_id, Zeitstempel) – Ernährungstagebuch
+  (6.1, Etappe E1), vorsorglich Gesundheitsdatum: nur mit Einwilligung `health_data`, beim Widerruf gelöscht, Schreiben
+  nur über `save_food_log_entries`/`delete_food_log_entry`
+- `food_log_favorites` (user_id, fav_key, Vorlage ohne Datum) – Favoriten des Tagebuchs; Katalog/Rezept nur Verweis +
+  Menge (Titel aus dem Katalog, keine Werte), bleiben beim Widerruf; Schnell-Favoriten (Bezeichnung + kcal) nur mit
+  Einwilligung und beim Widerruf gelöscht; direkt per RLS (eigene Zeilen, höchstens 100)
 - Alle diese Tabellen kommen gemeinsam mit der Supabase-Etappe N7 der Phase 5 (vorher nur Testmodus) – **umgesetzt in
   N7 Teil 1** mit den Präzisierungen oben (Kategorien als Liste, Meal-Prep-Pläne als eine Tabelle, Packungsgrößen als
   eigene Tabelle)

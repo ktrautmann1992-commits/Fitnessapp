@@ -1354,6 +1354,9 @@ describe('Supabase-Modus: Tagebuch-Warteschlange', () => {
       'shopping_list_items',
       'recipe_ratings',
       'food_dislikes',
+      // Etappe E1
+      'food_log_entries',
+      'food_log_favorites',
     ];
     const exported = {
       format_version: 1,

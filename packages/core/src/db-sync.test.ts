@@ -24,6 +24,7 @@ import {
   TEMPLATE_DOSAGE_LIMITS,
   BODY_MEASUREMENT_LIMITS,
   CONTENT_SCHEMA_LIMITS,
+  FOOD_LOG_LIMITS,
   BODY_METRIC_LIMITS,
   EQUIPMENT_LIMITS,
   MEASURED_ON_MAX_DAYS_AHEAD,
@@ -68,6 +69,16 @@ import {
 import { RECIPE_UNITS } from './nutrition/units';
 import * as enums from './enums';
 import { DATA_EXPORT_TABLES } from './export/data-export';
+import {
+  FOOD_LOG_FAVORITE_SOURCES,
+  FOOD_LOG_REJECT_CODES,
+  FOOD_LOG_SLOTS,
+  FOOD_LOG_SOURCES,
+  FOOD_LOG_UNITS,
+  foodLogFavoriteSchema,
+  foodLogPayloadEntrySchema,
+  QUICK_ENTRY_LABELS,
+} from './nutrition/food-log';
 import { EQUIPMENT } from './equipment';
 import { FOOD_GROUPS } from './food-groups';
 import { GOAL_COMBINATIONS } from './goals/profile';
@@ -758,14 +769,149 @@ describe('Ernährung in der Datenbank (Phase 5, Etappe N7)', () => {
     expect(body.slice(0, end)).toContain(
       'delete from public.shopping_lists where user_id = new.user_id and uses_health_data;',
     );
+    // Neueste Fassung seit Etappe E1 in *_food_log_rpcs.sql (zusätzlich Tagebuch-Einträge, Abschnitt E1 unten).
     expect(migrationFiles.filter((n) => readMigration(n).includes(marker)).at(-1)).toMatch(
-      /_meal_plan_rpcs\.sql$/,
+      /_food_log_rpcs\.sql$/,
     );
   });
 
   it('current_consent_version ist nicht mehr für anon ausführbar (Advisor, N7)', () => {
     expect(readMigration('_consent_version_no_anon.sql')).toContain(
       'revoke execute on function public.current_consent_version(public.consent_type) from anon;',
+    );
+  });
+});
+
+describe('Ernährungstagebuch in der Datenbank (Etappe E1)', () => {
+  const tables = readMigration('_food_log.sql');
+  const rpcs = readMigration('_food_log_rpcs.sql');
+  const entries = tables.slice(0, tables.indexOf('create table public.food_log_favorites'));
+  const favorites = tables.slice(tables.indexOf('create table public.food_log_favorites'));
+  const fn = (name: string) => {
+    const start = rpcs.indexOf(`create or replace function ${name}(`);
+    if (start < 0) throw new Error(`${name} nicht gefunden`);
+    return rpcs.slice(start, rpcs.indexOf('$$;', rpcs.indexOf('as $$', start)));
+  };
+  const save = fn('public.save_food_log_entries');
+  const L = FOOD_LOG_LIMITS;
+
+  it.each([
+    ['slot in (', entries, [...FOOD_LOG_SLOTS]],
+    ["source in ('plan_item'", entries, [...FOOD_LOG_SOURCES]],
+    ['unit in (', entries, [...FOOD_LOG_UNITS]],
+    ['title_de in (', entries, [...QUICK_ENTRY_LABELS]],
+    ["source in ('food'", favorites, [...FOOD_LOG_FAVORITE_SOURCES]],
+    ['unit in (', favorites, [...FOOD_LOG_UNITS]],
+    ['title_de in (', favorites, [...QUICK_ENTRY_LABELS]],
+  ] as const)('CHECK-Liste „%s“ entspricht packages/core', (marker, sql, expected) => {
+    // Marker wie „source in ('plan_item'“ enden nicht auf „(“ – dann ab der Klammer davor lesen.
+    const at = sql.indexOf(marker);
+    const open = sql.lastIndexOf('(', at + marker.length);
+    expect(quotedListAfter(sql.slice(open), '(')).toEqual(expected);
+  });
+
+  it('save_food_log_entries: Feldliste = foodLogPayloadEntrySchema, null genau bei nullable-Feldern', () => {
+    const match = /entry_fields constant jsonb := '([^']*)'/.exec(save);
+    if (!match) throw new Error('entry_fields nicht gefunden');
+    const fields = JSON.parse(match[1] as string) as Record<string, string>;
+    const shape = foodLogPayloadEntrySchema.shape as Record<
+      string,
+      { safeParse: (value: unknown) => { success: boolean } }
+    >;
+    expect(Object.keys(fields).sort()).toEqual(Object.keys(shape).sort());
+    for (const [key, types] of Object.entries(fields)) {
+      expect(types.split('|').includes('null'), key).toBe(shape[key]?.safeParse(null).success);
+    }
+    for (const key of ['user_id', 'revision', 'last_write_id', 'created_at', 'updated_at']) {
+      expect(Object.keys(fields)).not.toContain(key);
+    }
+  });
+
+  it('Favoriten: Spalten = foodLogFavoriteSchema (+ user_id, created_at)', () => {
+    for (const key of Object.keys(foodLogFavoriteSchema.shape)) {
+      expect(favorites).toContain(`  ${key} `);
+    }
+  });
+
+  it.each([
+    [save, `backdate_days constant integer := ${L.backdateDays};`],
+    [save, `server_future_days constant integer := ${L.serverFutureDays};`],
+    [save, `max_entries_per_day constant integer := ${L.maxEntriesPerDay};`],
+    [save, `max_entries_per_save constant integer := ${L.maxEntriesPerSave};`],
+    [tables, `max_favorites constant integer := ${L.maxFavorites};`],
+    [entries, `kcal integer check (kcal between ${L.kcal.min} and ${L.kcal.max})`],
+    [entries, `protein_g between ${L.macroG.min} and ${L.macroG.max}`],
+    [entries, `portion between ${L.portion.min} and ${L.portion.max}`],
+    [entries, `amount between ${L.amountMass.min} and ${L.amountMass.max}`],
+    [entries, `amount between ${L.amountPiece.min} and ${L.amountPiece.max}`],
+    [entries, `char_length(title_de) between 1 and ${L.titleMaxChars}`],
+    [favorites, `kcal integer check (kcal between ${L.kcal.min} and ${L.kcal.max})`],
+    [favorites, `portion between ${L.portion.min} and ${L.portion.max}`],
+  ] as const)('SQL enthält „%#“ (Grenze = FOOD_LOG_LIMITS)', (sql, expected) => {
+    expect(sql).toContain(expected);
+  });
+
+  it('Einwilligung zuerst gesperrt, dann geprüft, dann Person, dann Zeilen (Wächter N7 S2)', () => {
+    const share = save.indexOf('for share');
+    expect(share).toBeGreaterThan(0);
+    expect(share).toBeLessThan(save.indexOf("has_valid_consent('health_data')"));
+    expect(save.indexOf("has_valid_consent('health_data')")).toBeLessThan(
+      save.indexOf('pg_advisory_xact_lock'),
+    );
+    expect(save.indexOf('pg_advisory_xact_lock')).toBeLessThan(save.indexOf('for update'));
+    // Löschen braucht keine Einwilligung (Recht auf Löschung).
+    expect(fn('public.delete_food_log_entry')).not.toContain('has_valid_consent');
+  });
+
+  it('keine Record-Variablen in den Funktionen (Wächter N1)', () => {
+    expect(save).not.toMatch(/\brecord;/);
+    expect(fn('public.delete_food_log_entry')).not.toMatch(/\brecord;/);
+  });
+
+  it('Antwort je Eintrag (Wächter E1 S2): Ablehnungs-Codes = FOOD_LOG_REJECT_CODES, Konflikt-Gründe', () => {
+    const codes = [...save.matchAll(/'code', '([a-z_]+)'|then '([a-z_]+)'|else '([a-z_]+)'/g)]
+      .map((m) => m[1] ?? m[2] ?? m[3])
+      .sort();
+    expect([...new Set(codes)]).toEqual([...FOOD_LOG_REJECT_CODES].sort());
+    for (const reason of ['revision', 'deleted', 'plan_item_exists']) {
+      expect(save).toContain(`'reason', '${reason}'`);
+    }
+    expect(save).not.toContain("'result', 'ok'");
+  });
+
+  it('Favoriten (Wächter E1 S1): Titel aus dem Katalog per Trigger, Katalog/Rezept ohne Werte', () => {
+    expect(tables).toContain('create trigger food_log_favorites_before_write');
+    expect(favorites).toContain(
+      'and kcal is null and protein_g is null and carbs_g is null and fat_g is null)',
+    );
+    expect(favorites).toContain("(source <> 'quick' or public.has_valid_consent('health_data'))");
+  });
+
+  it('Widerruf: Einträge am Anfang und am Ende gelöscht, Favoriten bleiben (A-G14)', () => {
+    const body = fn('private.consents_after_revoke');
+    const line = 'delete from public.food_log_entries where user_id = new.user_id;';
+    expect(body.split(line)).toHaveLength(3);
+    // Wächter E1 G1: nur Schnell-Favoriten (Bezeichnung + kcal) gehen mit; Katalog-/Rezept-Favoriten bleiben.
+    expect(body.split('food_log_favorites')).toHaveLength(2);
+    expect(body).toContain(
+      "delete from public.food_log_favorites where user_id = new.user_id and source = 'quick';",
+    );
+    // Die älteren Löschungen bleiben in der neuen Fassung erhalten.
+    for (const table of [
+      'body_metrics',
+      'body_measurements',
+      'health_screening',
+      'user_plans',
+      'meal_plans',
+    ]) {
+      expect(body).toContain(`delete from public.${table} where user_id = new.user_id`);
+    }
+  });
+
+  it('export_my_data(): neueste Fassung in *_food_log_rpcs.sql', () => {
+    const marker = 'create or replace function public.export_my_data()';
+    expect(migrationFiles.filter((n) => readMigration(n).includes(marker)).at(-1)).toMatch(
+      /_food_log_rpcs\.sql$/,
     );
   });
 });

@@ -1,6 +1,7 @@
 import type {
   ConsentType,
   DataExportFile,
+  FoodLogEntry,
   MealPlanWeek,
   RecipeRating,
   StoredShoppingList,
@@ -13,6 +14,7 @@ import type {
   SessionLogPayload,
 } from '@fitnessapp/core';
 
+import type { FavoriteChange } from './food-log-rows';
 import type { LogRows } from './log-rows';
 import type { ConsentVersions } from './mapping';
 import type {
@@ -290,6 +292,18 @@ export interface Backend {
    * `replace_food_dislikes` (nur online).
    */
   saveFoodDislikes(foodIds: readonly string[], rows: UserRows): Promise<UserRows>;
+  /**
+   * Ernährungstagebuch (Etappe E1, docs/PLAN-AUSWERTUNG.md 5): Einträge neu anlegen bzw. ganz ersetzen (gleiche id).
+   * Testmodus: Gerätespeicher mit denselben Regeln wie save_food_log_entries (food-log-rows.ts) – geht ohne Netz.
+   * Supabase-Modus erst mit N7 Teil 2 (Datenbank-Funktion seit E1; bis dahin nicht unterstützt,
+   * `supportsNutrition = false`). Fehler `consent_required`, `food_log_out_of_range`, `food_log_day_full`,
+   * `food_log_rejected` – immer ohne Werte (Gesundheitsdaten).
+   */
+  saveFoodLogEntries(entries: readonly FoodLogEntry[], rows: UserRows): Promise<UserRows>;
+  /** Eintrag löschen – geht immer (auch ohne Einwilligung, auch alte Einträge; Recht auf Löschung). */
+  deleteFoodLogEntry(id: string, rows: UserRows): Promise<UserRows>;
+  /** Stern setzen bzw. entfernen (`food_log_favorites`, kein Gesundheitsdatum). Fehler `favorite_limit`. */
+  changeFoodLogFavorite(change: FavoriteChange, rows: UserRows): Promise<UserRows>;
   /** Start des Meal-Prep-Kochtags (Timer) setzen bzw. mit null zurücksetzen (Etappe N5b). */
   saveCookDayStart(weekStart: string, startedAt: string | null, rows: UserRows): Promise<UserRows>;
   /** Wartende Trainings und Entwürfe (R6). */
@@ -348,6 +362,14 @@ export type BackendErrorCode =
   | 'preference_rejected'
   /** Obergrenze EXERCISE_PREFERENCE_LIMITS.maxPerUser erreicht. */
   | 'preference_limit'
+  /** Ernährungstagebuch (E1): Datum außerhalb von heute bis 14 Tage zurück bzw. Eintrag zu alt zum Ändern. */
+  | 'food_log_out_of_range'
+  /** Ernährungstagebuch (E1): höchstens 40 Einträge je Tag. */
+  | 'food_log_day_full'
+  /** Ernährungstagebuch (E1): ungültige Werte bzw. Plan-Mahlzeit schon eingetragen. */
+  | 'food_log_rejected'
+  /** Höchstens 100 Favoriten (FOOD_LOG_LIMITS.maxFavorites). */
+  | 'favorite_limit'
   | 'unknown';
 
 /** Fehler mit festem Code – die Bildschirme zeigen dazu einen deutschen Text (i18n errors.*). */
