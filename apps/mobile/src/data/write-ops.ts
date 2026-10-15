@@ -89,6 +89,21 @@ export type WriteOp =
       status: PlannedSessionRow['status'];
     }
   /**
+   * Zwei geplante Einheiten tauschen (public.swap_planned_sessions, Etappe A1a, A-G4). Nie in die Warteschlange: Der
+   * Tausch braucht den Server-Stand beider Einheiten (eine wartende Verschiebung könnte ihn sonst überholen) – ohne
+   * Verbindung „Dafür brauchst du kurz Verbindung“; Verschieben auf freie Tage geht weiter offline.
+   */
+  | {
+      kind: 'swap_planned_sessions';
+      sessionId: string;
+      otherSessionId: string;
+      /** Erwartete aktuelle Tage beider Einheiten (an den geprüften Stand gebunden). */
+      sessionOn: string;
+      otherSessionOn: string;
+      planId: string;
+      usesHealthData: boolean;
+    }
+  /**
    * Eigenes Startgewicht (exercise_start_weights, direkt per PostgREST – bewusste Ausnahme W14); null = entfernen.
    * Kein Tagebuch-Inhalt: darf über die normale Warteschlange (Schlüssel set_exercise_start_weight:<exercise_id>).
    */
@@ -140,6 +155,7 @@ export function isSensitiveOp(op: WriteOp): boolean {
       return op.payload.uses_health_data;
     case 'append_plan_block':
     case 'update_planned_session':
+    case 'swap_planned_sessions':
       return op.usesHealthData;
     default:
       return false;
@@ -148,11 +164,13 @@ export function isSensitiveOp(op: WriteOp): boolean {
 
 /**
  * Braucht der Vorgang eine gültige Einwilligung health_data (wie die RLS-Regeln bzw. Funktionen der Datenbank)?
- * Verschieben einer Einheit nicht – der Trigger prüft nur Datum und Status; Speichern und Folgeblock prüfen
+ * Verschieben und Tauschen nicht – Trigger bzw. swap_planned_sessions prüfen nur Datum und Status; Speichern und Folgeblock prüfen
  * Gesundheitsbezug und Einwilligung selbst (local-rules.ts).
  */
 export function needsHealthConsent(op: WriteOp): boolean {
-  return isSensitiveOp(op) && op.kind !== 'update_planned_session';
+  return (
+    isSensitiveOp(op) && op.kind !== 'update_planned_session' && op.kind !== 'swap_planned_sessions'
+  );
 }
 
 /**
@@ -165,7 +183,8 @@ export function isDirectOp(op: WriteOp): boolean {
     isSensitiveOp(op) ||
     op.kind === 'grant_consent' ||
     op.kind === 'save_training_plan' ||
-    op.kind === 'append_plan_block'
+    op.kind === 'append_plan_block' ||
+    op.kind === 'swap_planned_sessions'
   );
 }
 
@@ -344,6 +363,30 @@ function applyOne(rows: UserRows, op: WriteOp, ctx: ApplyContext): UserRows {
             : s,
         ),
       };
+    case 'swap_planned_sessions': {
+      // Wie swap_planned_sessions: Tage tauschen, Ursprungstag nur beim ERSTEN Verschieben setzen.
+      const a = rows.plannedSessions.find((s) => s.id === op.sessionId);
+      const b = rows.plannedSessions.find((s) => s.id === op.otherSessionId);
+      if (!a || !b) return rows;
+      return {
+        ...rows,
+        plannedSessions: rows.plannedSessions.map((s) =>
+          s.id === a.id
+            ? {
+                ...s,
+                scheduled_on: b.scheduled_on,
+                original_date: a.original_date ?? a.scheduled_on,
+              }
+            : s.id === b.id
+              ? {
+                  ...s,
+                  scheduled_on: a.scheduled_on,
+                  original_date: b.original_date ?? b.scheduled_on,
+                }
+              : s,
+        ),
+      };
+    }
   }
 }
 

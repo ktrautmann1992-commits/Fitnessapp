@@ -1,5 +1,6 @@
 import { addDays, startOfIsoWeek } from '../dates';
 import type { PlannedSessionKind, PlannedSessionStatus, SessionFocus } from '../enums';
+import { moveBlockReason } from './move';
 
 /**
  * Verpasste Einheiten neu planen – „verschieben oder streichen, nie stapeln“ (docs/PLAN-PHASE-3.md 5.11).
@@ -32,18 +33,11 @@ export type RescheduleResult =
   | { readonly kind: 'not_allowed'; readonly reason: 'not_found' | 'not_planned' };
 
 /**
- * Würden zwei Einheiten an Nachbartagen dieselben Muskeln ohne 48 h Pause treffen? Nur Kraft gegen Kraft – lockere
- * Ausdauer ist nie ein Konflikt (PRODUKTENTSCHEIDUNG, Erweiterungsplan 5.4).
- */
-function conflicts(a: SessionFocus | null, b: SessionFocus | null): boolean {
-  if (a === null || b === null) return false;
-  return a === 'full_body' || b === 'full_body' || a === b;
-}
-
-/**
  * Sucht den nächsten freien Tag ab heute in derselben ISO-Woche wie der ursprünglich geplante Tag
  * (`coalesce(original_date, scheduled_on)`), der die Erholungsregel einhält (Kraft nur gegen Kraft-Nachbarn;
- * Ausdauer darf auf jeden freien Tag); sonst streichen. Nie zwei Einheiten am Tag.
+ * Ausdauer darf auf jeden freien Tag); sonst streichen. Nie zwei Einheiten am Tag. Seit Etappe A1a über
+ * `moveBlockReason()` (move.ts) – dieselbe Regel wie der Kalender; an einem Nachbartag zählt JEDE Einheit (vorher nur
+ * eine je Tag, konservativer).
  * In der Erholungswoche wird immer gestrichen. `sessions` = alle Einheiten der Person (auch anderer Pläne).
  */
 export function rescheduleSession(
@@ -57,21 +51,13 @@ export function rescheduleSession(
   if (session.is_deload) return { kind: 'skipped' };
   const originalDate = session.original_date ?? session.scheduled_on;
   const weekStart = startOfIsoWeek(originalDate);
-  const sunday = addDays(weekStart, 6);
-  const others = sessions.filter((s) => s.id !== session.id && s.status !== 'skipped');
-  const focusOf = (s: ReschedulableSession) =>
-    (s.kind ?? 'strength') === 'strength' ? s.focus : null;
-  const occupied = new Map(others.map((s) => [s.scheduled_on, focusOf(s)] as const));
-  const own = focusOf(session);
-  const start = today > weekStart ? today : weekStart;
-  for (let date = start; date <= sunday; date = addDays(date, 1)) {
-    if (date === session.scheduled_on || occupied.has(date)) continue;
-    const before = occupied.get(addDays(date, -1));
-    const after = occupied.get(addDays(date, 1));
-    if (conflicts(before ?? null, own) || conflicts(after ?? null, own)) {
-      continue;
+  // Dieselbe Prüfung wie der Kalender (move.ts, Etappe A1a): erster Tag ohne Sperrgrund, ab Montag der Woche –
+  // Tage vor heute und der eigene Tag sind dort gesperrt.
+  for (let index = 0; index < 7; index += 1) {
+    const date = addDays(weekStart, index);
+    if (moveBlockReason(sessions, session, date, today) === null) {
+      return { kind: 'moved', date, originalDate };
     }
-    return { kind: 'moved', date, originalDate };
   }
   return { kind: 'skipped' };
 }

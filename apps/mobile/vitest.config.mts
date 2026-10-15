@@ -9,5 +9,7 @@ export default defineConfig({
   },
   test: {
     include: ['src/**/*.test.ts'],
+    // Der erste Test einer Datei lädt viele Module (lokal ~0,6 s); unter CI-Parallel-Last lief er über 5 s.
+    testTimeout: 30_000,
   },
 });

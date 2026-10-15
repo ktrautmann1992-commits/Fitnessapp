@@ -1,6 +1,6 @@
 # Plan „Kalender, Tages- und Wochenauswertung“ (Gründer-Wünsche 15.10.2026)
 
-**Status:** Freigegeben am 15.10.2026 – alle Entscheidungen A-G1 bis A-G20 „wie empfohlen“ (Abschnitt 14). Umsetzung etappenweise, jede Etappe mit Wächter-Prüfung.
+**Status:** Freigegeben am 15.10.2026 – alle Entscheidungen A-G1 bis A-G20 „wie empfohlen“ (Abschnitt 14). Umsetzung etappenweise, jede Etappe mit Wächter-Prüfung. **A1a (Trainingskalender mit Drag-and-drop und Tauschen) umgesetzt** – Stand 15.10.2026 (Umsetzungsstand A1a am Ende von Abschnitt 3).
 
 **Grundlage:** `CLAUDE.md`, `docs/KONZEPT.md` (4, 6.1–6.3, 11.3, 12), `docs/PLAN-PHASE-3.md` 5.11, `docs/PLAN-PHASE-4.md` (3.1–3.6, 5.6, Frage 6), `docs/PLAN-PHASE-4B.md`, `docs/PLAN-PHASE-5.md` (4.6, 4.6.1, 4.9, 6.2, 7.1, 13 X0–X2), `docs/PLAN-ZIELE.md` (3, K6, F7, F14), `docs/DESIGN.md`, Code-Stand vom 15.10.2026.
 
@@ -261,6 +261,55 @@ Optional (Frage A-G4): **Tauschen** – eine Einheit auf einen belegten Tag zieh
 4. Ohne Ziehen: „Verschieben …“ → Tag aus der Liste wählen.
 5. Flugmodus an → verschieben → neu laden → bleibt verschoben.
 6. Android-APK (Workflow `eas-build`): Ziehen mit dem Finger, Vibration.
+
+### Umsetzungsstand A1a (15.10.2026)
+
+**Was gilt:**
+
+- **Core** `packages/core/src/plan/move.ts`: `moveTargets(sessions, sessionId, today)` liefert für jeden Tag Mo–So der Woche des ursprünglichen Termins `{ date, allowed, kind: 'move' | 'swap', reason?, otherSessionId?, partner?, conflict? }`; `validateMove()` für einen Ziel-Tag (freier Tag = verschieben, belegter Tag = tauschen, A-G4), `validateSwap()` für zwei Einheiten, `moveBlockReason()` als gemeinsame Regel. `rescheduleSession()` nutzt seitdem dieselbe Prüfung. Zod: `moveRequestSchema`, `swapRequestSchema` (strikt, UUID, ISO-Datum, zwei verschiedene Einheiten).
+- **Datenbank** `supabase/migrations/20261015120000_swap_planned_sessions.sql` (rein additiv): `public.swap_planned_sessions(p_a, p_b, p_a_on, p_b_on)` – `security definer`, `search_path = ''`, `revoke` von `public`/`anon`, nur `authenticated`. pgTAP `supabase/tests/29_swap_planned_sessions.test.sql` (52 Prüfungen). Reines Verschieben nutzt weiter den bestehenden Trigger.
+- **App** `apps/mobile/src/app/kalender.tsx` (Einstieg: „Heute“ → **Kalender**, „Woche“ → **Im Kalender verschieben**), Bausteine `components/calendar.tsx`, Texte `i18n/de.ts` (`calendar`), Formulierung `lib/calendar-format.ts`. Testmodus (`local-rules.ts` wie die Server-Funktion) und Supabase-Modus (`swapPlannedSessions` → RPC).
+- **Tests:** Core 27 Tests in `move.test.ts` inkl. Eigenschaftstest (800 zufällige Wochen); App-Vitest (`plan-data.test.ts`, `supabase-backend.test.ts`, `calendar-format.test.ts`); Playwright `apps/mobile/e2e/calendar.spec.ts` (Drag-and-drop **und** „Verschieben …“-Menü, Rückgängig, Tauschen, Server-Ablehnung, kein Plan).
+
+**Präzisierungen (vom Plan nicht ausdrücklich festgelegt, vorsichtig gelöst):**
+
+1. **Weitere Gründe:** neben `past`, `other_week`, `occupied`, `recovery_48h`, `deload_skip_only`, `not_planned` gibt es `current` (die Einheit liegt schon dort) und `not_found`. `not_planned` gilt für erledigte, gestrichene **und** Einheiten ersetzter Pläne (der Trigger ändert nur Einheiten des aktiven Plans). Scheitert ein Tausch an der **anderen** Einheit, ist `partner: true` gesetzt („Tauschen mit „Beine“ geht nicht: Sie käme in die Vergangenheit.“).
+2. **Tauschen:** Ein belegter Tag ist nur tauschbar, wenn dort genau **eine geplante** Einheit des aktiven Plans liegt und **beide** danach alle Regeln erfüllen (Woche des jeweils eigenen Ursprungstags, ab heute, keine Erholungswoche, 48 h für beide neuen Nachbarn). Eine erledigte Einheit, eine Einheit eines alten Plans oder zwei Einheiten am Tag → „belegt“.
+3. **48 h an Nachbartagen mit mehreren Einheiten:** Jede Einheit zählt (z. B. erledigte des alten Plans neben einer geplanten). `rescheduleSession()` sah bisher nur eine je Tag (zufällig welche) – jetzt konservativer; alle bisherigen Tests bleiben grün.
+4. **Server und 48 h:** `swap_planned_sessions` prüft – wie der Verschiebe-Trigger – die 48-h-Regel **nicht** (Core-Regel, vorher in `validateSwap`). pgTAP dokumentiert das ausdrücklich (Tausch Fr ↔ So geht am Server durch).
+5. **Trigger und Index beim Tausch:** `planned_sessions_one_per_day_idx` ist ein eindeutiger **Index**, kein Constraint – nicht `deferrable`. Ein direktes Verschieben auf einen belegten Tag scheitert mit 23505 (pgTAP zeigt es). Die Funktion nutzt einen Zwischenschritt in einer Transaktion (A kurz `skipped`, B auf A's Tag, A auf B's Tag und zurück auf `planned`). Der Trigger greift in der Funktion nicht (`current_user` ist der Eigentümer), deshalb stehen alle seine Prüfungen in der Funktion selbst; beide Zeilen werden vorher `FOR UPDATE` in fester Reihenfolge gesperrt. `original_date` wie beim Verschieben nur beim ersten Mal.
+6. **Offline:** Verschieben auf einen freien Tag läuft wie bisher über die Warteschlange (Pläne ohne Gesundheitsbezug; mit Gesundheitsbezug sofort). **Tauschen geht nie in die Warteschlange:** Es braucht den Server-Stand beider Einheiten. Wartende Verschiebungen werden vorher gesendet; ohne Verbindung: „Tauschen braucht kurz Verbindung. Auf einen freien Tag verschieben geht auch offline.“ Lehnt der Server eine wartende Verschiebung später ab, lädt die App neu und meldet es (bestehend, auch im Kalender).
+7. **Ziehen im Browser:** Im Handy-Browser liegt die Geste auf dem Griff ⠿ (nur dort `touch-action: none`), damit die Seite über den Karten weiter scrollt (Risiko 4). Nativ ist die ganze Karte ziehbar (Pan erst nach 400 ms langem Druck, Vibration). Während des Ziehens scrollt die Seite nicht; es gibt **kein Auto-Scroll am Rand** – vorher so scrollen, dass Start- und Zieltag sichtbar sind, oder „Verschieben …“ nutzen. Hinweise am Tag erscheinen als Überlagerung, damit sich beim Ziehen nichts verschiebt.
+8. **Essensplan:** Die automatische Neuplanung (PLAN-PHASE-5 6.6) greift beim Öffnen von „Ernährung“ nur, wenn eine Tagessumme ab heute aus dem Planband fällt (oder Modus/Deckel sich ändern); sonst bietet „Ernährung“ nur „Plan aktualisieren“ an (Ziele ≥ 5 % geändert). Deshalb zeigt der Kalender nach jedem Verschieben/Tauschen, das heute oder später betrifft, „Deine Trainingstage haben sich geändert. Dein Essensplan passt eventuell nicht mehr – aktualisieren?“ mit **Zum Essensplan** – nur, wenn die Ernährung eingerichtet ist (Supabase-Modus erst mit N7 Teil 2).
+9. **Rückgängig** verschiebt bzw. tauscht zurück, nur solange der alte Tag noch erlaubt ist (nicht z. B., wenn er inzwischen in der Vergangenheit liegt); es verschwindet beim Verlassen des Bildschirms. `original_date` bleibt danach gesetzt (wie der Trigger).
+10. **Bedienhilfen:** „Einen Tag früher/später“ (`accessibilityActions` am Namen der Einheit) = genau ein Tag – belegt → Tausch, gesperrt → Grund wird angesagt. Im Browser unterstützt React Native Web diese Aktionen nicht; dort ist „Verschieben …“ (Tastatur, Screenreader) der Weg.
+11. **Erholungswoche:** Hinweis oben, die Einheiten sind im Kalender fest (kein Griff, kein „Verschieben …“); Streichen bleibt auf „Heute“.
+12. **Nach der Wächter-Prüfung (15.10.2026) umgesetzt:**
+    - **S1 – an den geprüften Stand gebunden:** Die App sendet die Tage mit, an denen sie beide Einheiten geprüft hat (`p_a_on`, `p_b_on`). Liegen sie nach dem Sperren nicht mehr dort (anderes Gerät, oder dieselbe Anfrage nach verlorener Antwort noch einmal), lehnt der Server mit „Der Plan hat sich inzwischen geändert.“ ab – so wird nie ein Tag getauscht, den der Core (48 h) nicht geprüft hat, und eine Wiederholung tauscht nie zurück. Der Testmodus prüft dasselbe. Nach **jedem** Fehler beim Verschieben/Tauschen lädt die App den Plan neu.
+    - **S2 – Fehler unterschieden:** Der Server liefert einen `hint` (`move_rules`, `plan_changed`, `not_found`); Trigger-Meldungen ohne hint werden nach Text zugeordnet. Texte: Regel („Das geht nicht: Verschieben nur ab heute, innerhalb derselben Woche und nicht in der Erholungswoche …“), geänderter Stand („Dein Plan hat sich inzwischen geändert – wir haben ihn neu geladen …“), vorübergehend (Zeitlimit 57xxx, Sperrkonflikt 40P01/40001, Server 5xx, Drosselung: „Bitte versuche es gleich noch einmal.“), sonst „Das hat nicht geklappt – dein Plan wurde neu geladen …“. Der Regel-Text erscheint nie für andere Ursachen.
+    - **S3 – Ansagen im Browser:** Der Kalender hat eine ständige Live-Region (`role="status"`, `aria-live="polite"`); Erfolgs- und Fehlermeldungen sowie „aufgenommen“ werden dort vorgelesen (nativ über `AccessibilityInfo`). Die sichtbare Meldung hat keine eigene Alarm-Rolle (kein Doppel).
+    - **H2:** Zeilensperre `FOR NO KEY UPDATE` (blockiert keine Fremdschlüssel-Prüfungen; zwei Tausche derselben Einheiten laufen weiter nacheinander).
+    - **H3:** Die Zieh-Rückrufe lesen den Stand über eine Ref – ein Hintergrund-Sync bricht das Ziehen nicht mehr ab.
+    - **H4 – kein Auto-Scroll:** bewusst weggelassen. Beim Ziehen müssten Bildschirm, gemessene Tage und die Verschiebung der Karte gleichzeitig nachgeführt werden; nativ ist das hier nicht prüfbar und wäre fehleranfällig. „Verschieben …“ bleibt der gleichwertige Weg für weite Wege.
+    - **H7:** pgTAP ergänzt um gestrichene Partner-Einheit, zweiten Tausch einer schon verschobenen Einheit, Tausch heute ↔ Sonntag, veralteten Stand, Wiederholung und die `hint`-Werte.
+    - **H10:** Essensplan-Hinweis über `nutritionHintNeeded()` – nur mit eingerichteter Ernährung und wenn ein betroffener Tag heute oder später liegt (der Ziel-Tag liegt nach den Regeln immer ab heute).
+13. **Wochen:** Der Kalender zeigt die aktuelle bis zur letzten Woche des Plans; vergangene Wochen stehen in „Woche“/„Verlauf“. Tippen auf einen Tag öffnet die Tagesauswertung erst mit A2.
+
+**Gegenproben (Regel absichtlich gebrochen → rot → zurückgesetzt):** Core: „nur ab heute“ entfernt (12 Tests rot), 48-h-Regel aus (13), erledigte belegen keinen Tag (4), Erholungswoche verschiebbar (3), Tausch prüft das Datum der anderen Einheit nicht (3), ersetzter Plan verschiebbar (3). App: Testmodus-Tausch ohne Erholungswochen- bzw. Vergangenheits-Prüfung, Tausch ohne vorheriges Senden der Warteschlange, Tausch in die Warteschlange – je rot. SQL (lokales Postgres 16 + pgTAP mit Supabase-Ersatz): Woche/Vergangenheit, Erholungswoche, aktiver Plan, fremde Einheiten, ohne Zwischenschritt (23505), `anon` nicht entzogen, ohne Zeilensperre, `original_date` überschrieben – je rot. Playwright: gesperrte Tage im Menü wählbar, Ziehen nimmt nie auf – je rot. Nach der Wächter-Prüfung zusätzlich (S1/S2): Server ohne Prüfung der erwarteten Tage, Testmodus ohne diese Prüfung, kein Neuladen nach Fehler, Fehler-Zuordnung ohne `hint` bzw. alles als Regel-Fehler – je rot.
+
+**Gründer-Fragen (sichere Voreinstellung gilt, bis ihr anders entscheidet):**
+
+- **48-h-Regel nur in der App** (wie beim Verschieben). Voreinstellung: so lassen – durch S1 kann der Server nur noch Tage tauschen, die die App mit der 48-h-Regel geprüft hat. Alternative: Datenbank prüft die 48 h zusätzlich (neue Migration).
+- **Tauschen nur mit Verbindung**, Verschieben auf freie Tage auch offline. Voreinstellung: so lassen.
+- **Kein Auto-Scroll beim Ziehen** (H4). Voreinstellung: weite Wege über „Verschieben …“; Nachrüsten später möglich.
+
+**Offen:**
+
+- Drag-and-drop **nativ** (Android-APK/TestFlight) ist hier nicht testbar – bitte mit dem Workflow `eas-build` am Gerät prüfen (Ziehen mit dem Finger, Vibration, Scrollen vor dem langen Druck, TalkBack/VoiceOver „Einen Tag früher/später“).
+- `swap_planned_sessions` ist lokal gegen Postgres 16 mit Supabase-Ersatz geprüft; im Pull Request läuft `db-test` mit dem echten Supabase-Stack.
+- Supabase-Modus nicht live getestet (wie bisher, Teil 8 der Handy-Anleitung).
+- Auto-Scroll beim Ziehen an den Bildschirmrand (siehe 7 und 12) – Gründer-Frage.
+- Natives Ziehen: ob `measureInWindow` und `absoluteY` unter Android edge-to-edge zusammenpassen und ob die Seite zwischen Aufnehmen und Sperren des Scrollens noch scrollt (Wächter H5) – mit der APK prüfen.
 
 ---
 

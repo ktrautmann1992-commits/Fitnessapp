@@ -191,6 +191,46 @@ function toPlanError(error: unknown, sensitive: boolean): BackendError {
   });
 }
 
+/** Meldungen des Verschiebe-Triggers, die eine REGEL nennen (nicht „Stand geändert“). */
+const MOVE_RULE_MESSAGE =
+  /^(Diese Woche ist vorbei|Einheiten der Erholungswoche|Verschieben nur ab heute|Bitte zwei verschiedene)/;
+
+/**
+ * Fehler beim Verschieben/Tauschen (Kalender, Wächter A1a S2) – nie ein falscher Regel-Text für andere Ursachen:
+ * - Netz → `network`, abgelaufene Sitzung → `not_signed_in`,
+ * - Zeitlimit/Sperrkonflikt/Serialisierung (57xxx, 40P01, 40001), Server 5xx, Drosselung → `temporary`,
+ * - swap_planned_sessions: `hint` move_rules → Regel; not_found/plan_changed → Stand geändert,
+ * - Trigger (ohne hint): Regel-Meldungen → Regel; alles andere (23514 „nur geplante“, 23505 Tag belegt, Einheit fehlt,
+ *   RLS) → Stand geändert.
+ */
+export function toMoveError(error: unknown, sensitive: boolean): BackendError {
+  if (error instanceof BackendError) return error;
+  const e = (error ?? {}) as ErrorLike;
+  const db = e.code ?? '';
+  // Datenbank-Codes zuerst: 57014 meldet „…statement timeout“ und ist kein Netzfehler (wie classifyLogError).
+  const code = /^5[37]/.test(db) ? 'unknown' : classifySupabaseError(error, sensitive);
+  if (code === 'network' || code === 'not_signed_in') {
+    return new BackendError(code, { sensitive, cause: error });
+  }
+  if (
+    code === 'rate_limited' ||
+    /^57/.test(db) ||
+    /^53/.test(db) ||
+    db === '40P01' ||
+    db === '40001' ||
+    (e.status !== undefined && e.status >= 500)
+  ) {
+    return new BackendError('temporary', { sensitive, cause: error });
+  }
+  const hint = e.hint ?? '';
+  const rules = hint === 'move_rules' || (hint === '' && MOVE_RULE_MESSAGE.test(e.message ?? ''));
+  return new BackendError('plan_rejected', {
+    sensitive,
+    cause: error,
+    moveReason: rules ? 'move_rules' : 'plan_changed',
+  });
+}
+
 /**
  * Fehler von save_session_log (W8, W10, Nachprüfung C1 N1):
  * - 'retry' = Netz, abgelaufene Sitzung (auch 42501 „Nicht angemeldet.“) oder Server/Datenbank allgemein nicht
@@ -493,6 +533,17 @@ export async function executeWriteOp(
       }
       return;
     }
+    // Tauschen (Etappe A1a): Server-Funktion prüft dieselben Regeln wie der Trigger für beide Einheiten.
+    case 'swap_planned_sessions':
+      check(
+        await client.rpc('swap_planned_sessions', {
+          p_a: op.sessionId,
+          p_b: op.otherSessionId,
+          p_a_on: op.sessionOn,
+          p_b_on: op.otherSessionOn,
+        }),
+      );
+      return;
   }
 }
 
@@ -1418,7 +1469,7 @@ export function createSupabaseBackend(options: SupabaseBackendOptions): Backend 
         try {
           await executeWriteOp(client, session.userId, op);
         } catch (error) {
-          throw toPlanError(error, true);
+          throw toMoveError(error, true);
         }
         const next = applyWriteOps(rows, [op], displayContext());
         await writeCache(session.userId, next);
@@ -1429,6 +1480,35 @@ export function createSupabaseBackend(options: SupabaseBackendOptions): Backend 
       await queue.add([op]);
       void queue.flush();
       return next;
+    },
+
+    swapPlannedSessions: async (swap, rows) => {
+      const session = await requireSession();
+      const op: WriteOp = { kind: 'swap_planned_sessions', ...swap };
+      // Wartende Verschiebungen zuerst senden: Der Tausch prüft den SERVER-Stand beider Einheiten. Bleibt etwas
+      // liegen (offline), wird nicht getauscht.
+      if (queue.snapshot().some((entry) => entry.op.kind === 'update_planned_session')) {
+        if (!(await queue.flush().catch(() => false))) {
+          throw new BackendError('online_only', { sensitive: swap.usesHealthData });
+        }
+      }
+      try {
+        await executeWriteOp(client, session.userId, op);
+      } catch (error) {
+        const failure = toMoveError(error, swap.usesHealthData);
+        throw failure.code === 'network'
+          ? new BackendError('online_only', { sensitive: swap.usesHealthData, cause: error })
+          : failure;
+      }
+      // Frischer Stand vom Server (eine eben gesendete Verschiebung könnte abgelehnt worden sein); scheitert das
+      // Laden, gilt der lokal getauschte Stand.
+      try {
+        return await refreshRows(session.userId);
+      } catch {
+        const next = applyWriteOps(rows, [op], displayContext());
+        await writeCache(session.userId, next);
+        return next;
+      }
     },
 
     subscribe: (listener) => {
