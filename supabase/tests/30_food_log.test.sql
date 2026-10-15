@@ -7,7 +7,7 @@
 -- „Heute“ = Donnerstag, 15.10.2026.
 begin;
 create extension if not exists pgtap with schema extensions;
-select plan(78);
+select plan(82);
 
 create or replace function private.berlin_today()
 returns date
@@ -112,6 +112,14 @@ select ok(
      and position('pg_advisory_xact_lock' in p.prosrc) < position('for update' in p.prosrc)
    from pg_proc p where p.oid = 'public.save_food_log_entries(jsonb)'::regprocedure),
   'save_food_log_entries sperrt die Einwilligung zuerst (FOR SHARE), prüft dann, dann Person, dann Zeilen'
+);
+-- Wächter E1 Nachprüfung S1: Schnell-Favoriten sperren die Einwilligung (FOR SHARE), bevor sie geprüft wird.
+select ok(
+  (select p.prosecdef and p.proconfig @> array['search_path=""']
+     and position('for share' in p.prosrc) > 0
+     and position('for share' in p.prosrc) < position('has_valid_consent' in p.prosrc)
+   from pg_proc p where p.oid = 'private.food_log_favorites_before_write()'::regprocedure),
+  'Favoriten-Trigger: security definer, Einwilligung FOR SHARE vor der Prüfung'
 );
 select is(
   (select (length(p.prosrc) - length(replace(p.prosrc, 'delete from public.food_log_entries where', '')))
@@ -431,6 +439,33 @@ select throws_ok(
   $$ insert into public.food_log_favorites (fav_key, source, title_de, kcal)
        select 'quick|Snack|' || i, 'quick', 'Snack', i from generate_series(1, 99) i $$,
   '23514', 'Zu viele Favoriten.', 'höchstens 100 Favoriten'
+);
+-- Wächter E1 Nachprüfung H1: Verstöße melden keine Werte (kein „Failing row contains (…)“ in Meldung oder DETAIL).
+create function pg_temp.fav_error(p_sql text) returns text language plpgsql as $f$
+declare
+  msg text;
+  detail text;
+begin
+  execute p_sql;
+  return 'kein Fehler';
+exception when others then
+  get stacked diagnostics msg = message_text, detail = pg_exception_detail;
+  return sqlstate || ' ' || msg || ' | ' || coalesce(detail, '');
+end;
+$f$;
+select is(
+  pg_temp.fav_error($$ insert into public.food_log_favorites (fav_key, source, title_de, kcal)
+                       values ('quick|Süßes|4250', 'quick', 'Süßes', 4250) $$),
+  '23514 Ungültiger Favorit. | ', 'ungültiger Schnell-Favorit: Meldung ohne Werte, ohne DETAIL'
+);
+select is(
+  pg_temp.fav_error($$ insert into public.food_log_favorites (fav_key, source, title_de, kcal)
+                       values ('quick|Süßes|250', 'quick', null, 250) $$),
+  '23514 Ungültiger Favorit. | ', 'fehlende Bezeichnung (NOT NULL): Meldung ohne Werte, ohne DETAIL'
+);
+select is(
+  pg_temp.fav_error($$ update public.food_log_favorites set kcal = 9 where fav_key = 'recipe|porridge' $$),
+  '23514 Ungültiger Favorit. | ', 'Ändern eines Rezept-Favoriten auf kcal: Meldung ohne Werte'
 );
 set local request.jwt.claims = '{"sub":"33333333-3333-4333-8333-333333333333","role":"authenticated"}';
 select throws_ok(

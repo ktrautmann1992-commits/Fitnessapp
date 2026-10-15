@@ -879,6 +879,25 @@ describe('Ernährungstagebuch in der Datenbank (Etappe E1)', () => {
     expect(save).not.toContain("'result', 'ok'");
   });
 
+  it('Favoriten-Trigger (Nachprüfung S1/H1): eigene Prüfung = CHECKs, Einwilligung FOR SHARE vor der Prüfung', () => {
+    const start = tables.indexOf(
+      'create or replace function private.food_log_favorites_before_write()',
+    );
+    const body = tables.slice(start, tables.indexOf('$$;', start));
+    expect(quotedListAfter(body, 'new.title_de in (')).toEqual([...QUICK_ENTRY_LABELS]);
+    expect(body).toContain(`new.kcal between ${L.kcal.min} and ${L.kcal.max}`);
+    expect(body).toContain(`new.portion between ${L.portion.min} and ${L.portion.max}`);
+    expect(body).toContain(`new.amount between ${L.amountMass.min} and ${L.amountMass.max}`);
+    expect(body).toContain(`new.amount between ${L.amountPiece.min} and ${L.amountPiece.max}`);
+    expect(body).toContain(
+      "raise exception 'Ungültiger Favorit.' using errcode = 'check_violation';",
+    );
+    expect(body.indexOf('for share')).toBeGreaterThan(0);
+    expect(body.indexOf('for share')).toBeLessThan(
+      body.indexOf("has_valid_consent('health_data')"),
+    );
+  });
+
   it('Favoriten (Wächter E1 S1): Titel aus dem Katalog per Trigger, Katalog/Rezept ohne Werte', () => {
     expect(tables).toContain('create trigger food_log_favorites_before_write');
     expect(favorites).toContain(

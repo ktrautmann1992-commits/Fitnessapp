@@ -656,9 +656,14 @@ Nur wenn ihr es wollt (A-G3). Regeln in 2.6. Neue Spalte `planned_sessions.is_ex
 - **S3 + G2:** keine kcal-Zahl in Fehlertexten (`too_much` → „Diese Menge ist ungewöhnlich groß – bitte prüfen.“); Rückfrage ab 1.500 kcal neutral „Bitte kurz prüfen – Stimmen Menge und Einheit: 750 g?“ (mit Zahlen zusätzlich kcal, ohne Zahlen nie); testIDs der Listen nur mit Position (kein Schlüssel mit kcal im DOM). Playwright prüft bei „Zahlen aus“: kein „kcal“ im ganzen DOM (inkl. data-testid).
 - **Hinweise:** H5 Tagesansicht nutzt den angezeigten Tag; H6 `rescaleEntry` prüft 2.000 g auch für Stück/ml; H1 siehe S2.
 - **Gegenproben (rot → zurückgesetzt):** Trigger-Titel entfernt, Katalog-Favorit mit kcal erlaubt, Schnell-Favorit ohne Einwilligung, Widerruf ohne Löschen der Schnell-Favoriten (pgTAP und Testmodus), kein Teilschritt je Eintrag, Plan-Duplikat nicht als Konflikt, „deleted“ als „revision“, Testmodus bricht ganzen Vorgang ab, Fehlertext mit kcal, Rückfrage mit kcal trotz „Zahlen aus“, Stück-Grenze beim Ändern, Core-Favorit mit kcal.
+- **Nachprüfung (`waechter-e1-nachpruefung.md`) – umgesetzt:**
+  - **S1:** Der Favoriten-Trigger `food_log_favorites_before_write` (security definer, `search_path=''`) sperrt bei Schnell-Favoriten (neu oder Wechsel zu quick) zuerst die aktiven `health_data`-Einwilligungen FOR SHARE und prüft dann `has_valid_consent` (gleiche Reihenfolge wie `save_food_log_entries`); sonst „Einwilligung Gesundheitsdaten fehlt.“ ohne Werte. Die RLS-Policy prüft zusätzlich. Harness: Favorit ohne Commit → Widerruf wartet → 0 Schnell-Favoriten; Widerruf zuerst → abgelehnt; Gegenprobe ohne FOR SHARE → 1 Schnell-Favorit bleibt.
+  - **H1:** Derselbe Trigger prüft alle CHECK-Bedingungen (auch NOT NULL) vorab und bricht mit „Ungültiger Favorit.“ ohne Werte und ohne DETAIL ab; die CHECKs bleiben als zweite Linie. pgTAP prüft Meldung und DETAIL.
+  - **H2:** Nach einem Teilerfolg im Testmodus lädt die App den gespeicherten Stand neu, bevor sie den Fehler meldet.
+  - Offen bleibt H3 (App im Supabase-Modus, Warteschlange) mit N7 Teil 2.
 - **Gründer-Frage G3 (für N7 Teil 2):** Abgelehnte Einträge aus der Warteschlange – sichere Voreinstellung: **lokal behalten mit Hinweis** („1 Eintrag konnte nicht gespeichert werden“), nie still verwerfen.
 - **Gründer-Frage G4 (vor A2):** Soll der Server die Nährwerte für Katalog/Rezept/Plan-Mahlzeit selbst nachrechnen? Sichere Voreinstellung: **bis A2 rechnet der Server nicht nach** (wie `save_meal_plan`); vor Bewertungshinweisen in A2 neu entscheiden (Empfehlung des Wächters: nachrechnen).
-- Bekannt (Wächter H4, bestehendes Muster): Konto löschen gleichzeitig mit Speichern kann einen Deadlock-Abbruch auslösen – kein Datenleck, nur Wiederholen. Ein Schnell-Favorit, der genau während eines Widerrufs gesetzt wird, sperrt die Einwilligung nicht (Favoriten-Policy) – er kann den Widerruf überdauern; vor N7 Teil 2 prüfen.
+- Bekannt (Wächter H4, bestehendes Muster): Konto löschen gleichzeitig mit Speichern kann einen Deadlock-Abbruch auslösen – kein Datenleck, nur Wiederholen.
 
 **Offen**
 

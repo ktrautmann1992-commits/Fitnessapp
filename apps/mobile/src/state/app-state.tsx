@@ -711,7 +711,22 @@ export function AppStateProvider({ children }: { children: ReactNode }) {
       if (!rows) {
         throw new BackendError('not_signed_in');
       }
-      setRows(await backend.saveFoodLogEntries(entries, rows));
+      try {
+        setRows(await backend.saveFoodLogEntries(entries, rows));
+      } catch (error) {
+        // Teilerfolg (Wächter E1 S2, Nachprüfung H2): gültige Einträge sind gespeichert, ein anderer wurde abgelehnt –
+        // den gespeicherten Stand trotzdem anzeigen, dann den Fehler melden.
+        const code = errorCode(error);
+        if (
+          code === 'food_log_rejected' ||
+          code === 'food_log_out_of_range' ||
+          code === 'food_log_day_full'
+        ) {
+          const reloaded = await backend.loadRows().catch(() => null);
+          if (reloaded) setRows(reloaded.rows);
+        }
+        throw error;
+      }
     },
     [backend, rows],
   );

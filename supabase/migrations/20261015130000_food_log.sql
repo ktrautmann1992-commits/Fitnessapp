@@ -190,9 +190,18 @@ create policy "Nutzer löschen eigene Favoriten"
   on public.food_log_favorites for delete to authenticated
   using (user_id = (select auth.uid()));
 
--- Titel von Katalog-/Rezept-Favoriten immer aus dem Katalog (Wächter E1 S1: kein Freitext über die rohe API). Der
--- Trigger läuft als Eigentümer (security definer, fester search_path), damit er auch archivierte Inhalte lesen kann.
--- Unbekannter Inhalt: der Fremdschlüssel lehnt ab (hier bleibt der Titel dann unverändert).
+-- BEFORE INSERT/UPDATE auf den Favoriten (security definer, fester search_path), in dieser Reihenfolge:
+-- 1. Titel von Katalog-/Rezept-Favoriten immer aus dem Katalog (Wächter E1 S1: kein Freitext über die rohe API; als
+--    Eigentümer, damit auch archivierte Inhalte lesbar sind).
+-- 2. Alle Bedingungen der CHECKs vorab prüfen und mit eigener Meldung OHNE Werte abbrechen (Wächter E1 Nachprüfung
+--    H1): Sonst hängt Postgres an CHECK-/NOT-NULL-Verstöße „Failing row contains (…)“ mit kcal und Bezeichnung an –
+--    an den Client und ins Server-Log. Die CHECKs der Tabelle bleiben als zweite Linie (sync: FOOD_LOG_LIMITS,
+--    QUICK_ENTRY_LABELS; db-sync.test.ts).
+-- 3. Schnell-Favoriten (Bezeichnung + kcal, neu oder Wechsel zu quick): zuerst die aktiven health_data-Einwilligungen
+--    der Person FOR SHARE sperren, dann prüfen (Wächter E1 Nachprüfung S1, gleiche Reihenfolge wie
+--    save_food_log_entries/append_plan_block). Ein gleichzeitiger Widerruf wartet dann auf dieses Speichern und löscht
+--    den Favoriten danach (consents_after_revoke); läuft der Widerruf zuerst, wird hier abgelehnt. Die RLS-Policy prüft
+--    zusätzlich (ohne Sperre).
 create or replace function private.food_log_favorites_before_write()
 returns trigger
 language plpgsql
@@ -201,6 +210,7 @@ set search_path = ''
 as $$
 declare
   catalog_title text;
+  valid boolean;
 begin
   if new.source = 'food' then
     select f.name_de into catalog_title from public.foods f where f.id = new.food_id;
@@ -209,6 +219,58 @@ begin
   end if;
   if catalog_title is not null then
     new.title_de := catalog_title;
+  end if;
+
+  -- Wie die CHECKs der Tabelle (null zählt als ungültig – auch NOT-NULL-Verstöße ohne Werte melden).
+  valid := coalesce(
+    new.user_id is not null
+    and char_length(new.fav_key) between 1 and 200
+    and new.source in ('food', 'recipe', 'quick')
+    and char_length(new.title_de) between 1 and 100
+    and (new.amount is null or new.amount > 0)
+    and (new.unit is null or new.unit in ('g', 'ml', 'piece'))
+    and (new.portion is null or (new.portion between 0.25 and 3 and new.portion * 4 = trunc(new.portion * 4)))
+    and (new.kcal is null or new.kcal between 0 and 3000)
+    and (new.protein_g is null or (new.protein_g between 0 and 750 and new.protein_g * 10 = trunc(new.protein_g * 10)))
+    and (new.carbs_g is null or (new.carbs_g between 0 and 750 and new.carbs_g * 10 = trunc(new.carbs_g * 10)))
+    and (new.fat_g is null or (new.fat_g between 0 and 750 and new.fat_g * 10 = trunc(new.fat_g * 10)))
+    and (
+      new.unit is null
+      or (new.unit in ('g', 'ml') and new.amount between 1 and 2000 and new.amount * 10 = trunc(new.amount * 10))
+      or (new.unit = 'piece' and new.amount between 0.5 and 20 and new.amount * 2 = trunc(new.amount * 2))
+    )
+    and (
+      (new.source = 'food'
+        and new.fav_key = 'food|' || new.food_id and new.recipe_id is null
+        and new.amount is not null and new.unit is not null and new.portion is null
+        and new.kcal is null and new.protein_g is null and new.carbs_g is null and new.fat_g is null)
+      or (new.source = 'recipe'
+        and new.fav_key = 'recipe|' || new.recipe_id and new.food_id is null
+        and new.portion is not null and new.amount is null and new.unit is null
+        and new.kcal is null and new.protein_g is null and new.carbs_g is null and new.fat_g is null)
+      or (new.source = 'quick'
+        and new.fav_key = 'quick|' || new.title_de || '|' || coalesce(new.kcal::text, '')
+        and new.food_id is null and new.recipe_id is null and new.amount is null and new.unit is null
+        and new.portion is null
+        -- sync: QUICK_ENTRY_LABELS
+        and new.title_de in ('Snack', 'Auswärts gegessen', 'Getränk', 'Süßes', 'Mahlzeit', 'Sonstiges')
+        and (new.kcal is not null or (new.protein_g is null and new.carbs_g is null and new.fat_g is null)))
+    ),
+    false
+  );
+  if not valid then
+    raise exception 'Ungültiger Favorit.' using errcode = 'check_violation';
+  end if;
+
+  if new.source = 'quick' then
+    perform 1
+    from public.consents c
+    where c.user_id = new.user_id and c.consent_type = 'health_data' and c.revoked_at is null
+    order by c.id
+    for share;
+    if new.user_id is distinct from auth.uid() or not public.has_valid_consent('health_data') then
+      raise exception 'Einwilligung Gesundheitsdaten fehlt.' using errcode = 'insufficient_privilege';
+    end if;
   end if;
   return new;
 end;
