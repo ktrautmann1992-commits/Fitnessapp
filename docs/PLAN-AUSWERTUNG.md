@@ -93,13 +93,13 @@ Die Trainings-Etappen (A1) und die Ernährungs-Etappen (E1) hängen nicht vonein
 
 Bezeichnungen je Tag: **Z** = Tagesziel, **U** = Untergrenze (`floorKcal`), **O** = Obergrenze (`ceilingKcal`), **B** = Planband `[B_min; B_max]`. Alle Werte kommen aus `nutritionTargetsForWeek()` – keine eigene Rechnung.
 
-| Zone | Bedingung (gegessen = G) | Farbe | Text (Entwurf) |
-| --- | --- | --- | --- |
-| unter Mindestbedarf | G < U | rot | „Unter deinem Mindestbedarf“ |
-| ausreichend | U ≤ G < B_min | gelb | „Etwas unter deinem Ziel“ |
-| im Zielbereich | B_min ≤ G ≤ B_max | grün | „Im Zielbereich“ |
-| etwas darüber | B_max < G ≤ R | gelb | „Etwas über deinem Ziel“ |
-| deutlich darüber | G > R | rot | „Deutlich über deinem Ziel“ |
+| Zone                | Bedingung (gegessen = G) | Farbe | Text (Entwurf)               |
+| ------------------- | ------------------------ | ----- | ---------------------------- |
+| unter Mindestbedarf | G < U                    | rot   | „Unter deinem Mindestbedarf“ |
+| ausreichend         | U ≤ G < B_min            | gelb  | „Etwas unter deinem Ziel“    |
+| im Zielbereich      | B_min ≤ G ≤ B_max        | grün  | „Im Zielbereich“             |
+| etwas darüber       | B_max < G ≤ R            | gelb  | „Etwas über deinem Ziel“     |
+| deutlich darüber    | G > R                    | rot   | „Deutlich über deinem Ziel“  |
 
 mit **R = max(O; Z × 1,20)**.
 
@@ -129,12 +129,12 @@ Am Morgen ist jeder Balken „unter dem Ziel“. Ein roter Balken um 8 Uhr wäre
 
 ### 2.3 „Kalorienzahlen aus“, Schwangerschaft/Stillzeit, keine Ziele
 
-| Fall | Was die Tagesauswertung zeigt |
-| --- | --- |
-| „Kalorienzahlen anzeigen“ aus | **Kein Kalorienbalken, keine Farben fürs Essen.** Nur eine neutrale Liste „Mahlzeiten heute: 3 von 4 abgehakt“ und der Trainingsteil. |
-| Schwangerschaft/Stillzeit (`no_targets`, `showNumbers = false`) | wie „Zahlen aus“ + bestehender Hinweis (Ärztin/Arzt/Hebamme). Keine Zahl, keine Farbe. |
-| Keine Körperdaten oder keine Einwilligung | Kein Ziel → kein Balken. Ohne Einwilligung auch kein Tagebuch (2.7). Einladung „Mit Größe und Gewicht …“ wie bisher. |
-| Plan-Tag `below_floor` | Balken normal. Der bestehende Hinweis „Dieser Tag erreicht deinen Mindestbedarf nicht – ergänze …“ steht dabei. |
+| Fall                                                            | Was die Tagesauswertung zeigt                                                                                                         |
+| --------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------- |
+| „Kalorienzahlen anzeigen“ aus                                   | **Kein Kalorienbalken, keine Farben fürs Essen.** Nur eine neutrale Liste „Mahlzeiten heute: 3 von 4 abgehakt“ und der Trainingsteil. |
+| Schwangerschaft/Stillzeit (`no_targets`, `showNumbers = false`) | wie „Zahlen aus“ + bestehender Hinweis (Ärztin/Arzt/Hebamme). Keine Zahl, keine Farbe.                                                |
+| Keine Körperdaten oder keine Einwilligung                       | Kein Ziel → kein Balken. Ohne Einwilligung auch kein Tagebuch (2.7). Einladung „Mit Größe und Gewicht …“ wie bisher.                  |
+| Plan-Tag `below_floor`                                          | Balken normal. Der bestehende Hinweis „Dieser Tag erreicht deinen Mindestbedarf nicht – ergänze …“ steht dabei.                       |
 
 Begründung: Wer Zahlen ausblendet, will weniger Fokus auf Kalorien. Ein Balken ohne Zahlen bewertet trotzdem das Essen. Deshalb gibt es dann gar keine Bewertung, nur die Liste.
 
@@ -168,12 +168,12 @@ Neue Core-Funktion `sessionAchievement()` rechnet je Einheit einen Erfüllungsgr
 
 **Stufen:**
 
-| Stufe | Bedingung | Text |
-| --- | --- | --- |
-| erreicht | ≥ 90 % | „Ziel erreicht“ |
-| größtenteils | 60–89 % | „Größtenteils geschafft“ |
-| teilweise | 1–59 % | „Teilweise gemacht“ |
-| offen / verpasst / gestrichen | kein Eintrag | wie heute in der Woche |
+| Stufe                         | Bedingung    | Text                     |
+| ----------------------------- | ------------ | ------------------------ |
+| erreicht                      | ≥ 90 %       | „Ziel erreicht“          |
+| größtenteils                  | 60–89 %      | „Größtenteils geschafft“ |
+| teilweise                     | 1–59 %       | „Teilweise gemacht“      |
+| offen / verpasst / gestrichen | kein Eintrag | wie heute in der Woche   |
 
 Erholungs- und Einstiegswoche: gleiche Rechnung, aber Text „Erholungswoche – leichter ist hier richtig“.
 
@@ -549,4 +549,3 @@ Kurz beantworten reicht („alles wie empfohlen“ geht auch).
 - **A-G18 Fotos speichern** (z. B. als Erinnerung)? _Empfehlung:_ **Nein** in E3 – nur „sofort löschen“. Weniger Risiko, kein Speicherplatz.
 - **A-G19 Gemini-Modell:** kleines, günstiges Modell mit Bildeingabe (Flash-Klasse), austauschbar über Konfiguration? _Empfehlung:_ **Ja**; vor dem Livegang mit 30 Testfotos gegen den Katalog prüfen (Trefferquote, Kosten).
 - **A-G20 Foto-KI vor Phase 7** (ohne Abos) testen? _Empfehlung:_ **Ja, nur für freigeschaltete Testkonten** (Feature-Flag + `beta-grant`), echte Premium-Prüfung mit Phase 7.
-
