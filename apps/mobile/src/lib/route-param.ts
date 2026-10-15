@@ -10,3 +10,11 @@ export function decodeRouteParam(value: string | string[] | undefined): string {
     return '';
   }
 }
+
+/** Datums-Parameter (JJJJ-MM-TT, gültiger Kalendertag) – sonst null (Etappe A1b: „+ Einheit“, Nachtragen). */
+export function isoDateParam(value: string | string[] | undefined): string | null {
+  const raw = decodeRouteParam(value);
+  if (!/^\d{4}-\d{2}-\d{2}$/.test(raw)) return null;
+  const parsed = new Date(`${raw}T00:00:00Z`);
+  return !Number.isNaN(parsed.getTime()) && parsed.toISOString().slice(0, 10) === raw ? raw : null;
+}

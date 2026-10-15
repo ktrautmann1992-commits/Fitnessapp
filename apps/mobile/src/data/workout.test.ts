@@ -167,7 +167,7 @@ describe('Training speichern (Testmodus wie save_session_log)', () => {
   it('Eintrag mit Alternative und „nicht gemacht“ (ohne Grund) → Einheit erledigt, Entwurf weg', async () => {
     const s = await setup();
     let draft = startDraft(s);
-    const view = workoutView(s.rows, s.library, s.rules, draft.plannedSessionId, MONDAY);
+    const view = workoutView(s.rows, s.library, s.rules, draft.plannedSessionId as string, MONDAY);
     if (!view) throw new Error();
     // Übung mit erlaubter Alternative suchen.
     const altIndex = view.items.findIndex((item) => item.alternatives.length > 0);
@@ -204,11 +204,11 @@ describe('Training speichern (Testmodus wie save_session_log)', () => {
     });
     expect(s.drafts.peek()).toBeNull();
     const { rows } = await s.backend.loadRows();
-    const log = logForSession(rows, draft.plannedSessionId);
+    const log = logForSession(rows, draft.plannedSessionId as string);
     expect(log).toMatchObject({ status: 'partial', revision: 1, from_health_plan: true });
-    expect(rows.plannedSessions.find((x) => x.id === draft.plannedSessionId)?.status).toBe(
-      'completed',
-    );
+    expect(
+      rows.plannedSessions.find((x) => x.id === (draft.plannedSessionId as string))?.status,
+    ).toBe('completed');
     // Alternative: eigene Vorgabe, Zustand der Alternativ-Übung (ohne Verlauf leer, R2) – nie die geplante.
     const altLog = rows.exerciseLogs.find((e) => e.status === 'alternative');
     expect(altLog?.exercise_id).toBe(altExercise?.id);
@@ -218,9 +218,9 @@ describe('Training speichern (Testmodus wie save_session_log)', () => {
       kind: 'saved',
       orphaned: false,
     });
-    expect(logForSession((await s.backend.loadRows()).rows, draft.plannedSessionId)?.revision).toBe(
-      1,
-    );
+    expect(
+      logForSession((await s.backend.loadRows()).rows, draft.plannedSessionId as string)?.revision,
+    ).toBe(1);
   });
 
   it('Ändern: Revision +1; veraltete Basis → Konflikt, Fassung bleibt als Entwurf (W3)', async () => {
@@ -228,7 +228,7 @@ describe('Training speichern (Testmodus wie save_session_log)', () => {
     const draft = tickAll(startDraft(s));
     await s.backend.submitWorkout(draft, payloadOf(draft));
     let { rows } = await s.backend.loadRows();
-    const log = logForSession(rows, draft.plannedSessionId);
+    const log = logForSession(rows, draft.plannedSessionId as string);
     if (!log) throw new Error();
     const edit = draftFromLog(rows, log.id, {
       ownerUserId: USER_ID,
@@ -243,7 +243,7 @@ describe('Training speichern (Testmodus wie save_session_log)', () => {
       orphaned: false,
     });
     rows = (await s.backend.loadRows()).rows;
-    expect(logForSession(rows, draft.plannedSessionId)).toMatchObject({
+    expect(logForSession(rows, draft.plannedSessionId as string)).toMatchObject({
       id: log.id,
       revision: 2,
       session_rpe: 6,
@@ -534,7 +534,7 @@ describe('checkSessionLog (local-rules.ts) – gleiche Regeln wie save_session_l
     // Erledigte Einheit des alten Plans und geplante des neuen am selben Tag; Eintrag bleibt verknüpft.
     const onMonday = saved.plannedSessions.filter((x) => x.scheduled_on === MONDAY);
     expect(onMonday.map((x) => x.status).sort()).toEqual(['completed', 'planned']);
-    expect(saved.sessionLogs[0]?.planned_session_id).toBe(draft.plannedSessionId);
+    expect(saved.sessionLogs[0]?.planned_session_id).toBe(draft.plannedSessionId as string);
     // „Heute“ zeigt die offene Einheit des neuen Plans (sessionOn), die alte bleibt erledigt.
     const active = activePlan(saved);
     const fresh = active?.sessions.find((x) => x.scheduled_on === MONDAY);
@@ -549,7 +549,7 @@ describe('Testmodus wie die Datenbank (Wächter C1 K1, K2)', () => {
     const s = await setup();
     const draft = tickAll(startDraft(s));
     await s.backend.submitWorkout(draft, payloadOf(draft));
-    const log = logForSession((await s.backend.loadRows()).rows, draft.plannedSessionId);
+    const log = logForSession((await s.backend.loadRows()).rows, draft.plannedSessionId as string);
     if (!log) throw new Error();
     expect(await s.backend.deleteSessionLog(log.id, 1)).toBe('ok');
     const db = JSON.parse(s.store.dump()['fitnessapp.local.v1'] ?? '{}') as {
@@ -563,7 +563,7 @@ describe('Testmodus wie die Datenbank (Wächter C1 K1, K2)', () => {
     const monday = tickAll(startDraft(s));
     await s.backend.submitWorkout(monday, payloadOf(monday));
     const before = (await s.backend.loadRows()).rows;
-    const mondayLog = logForSession(before, monday.plannedSessionId);
+    const mondayLog = logForSession(before, monday.plannedSessionId as string);
     // Mittwoch, gleiche Geräte-id wie der Montags-Eintrag (uuid-Kollision).
     const s2 = { ...s, rows: before };
     const wednesday = tickAll({ ...startDraft(s2, '2026-10-07'), logId: mondayLog?.id ?? '' });
@@ -575,7 +575,7 @@ describe('Testmodus wie die Datenbank (Wächter C1 K1, K2)', () => {
     const after = (await s.backend.loadRows()).rows;
     expect(after.sessionLogs).toHaveLength(2);
     expect(new Set(after.sessionLogs.map((l) => l.id)).size).toBe(2);
-    expect(logForSession(after, monday.plannedSessionId)?.id).toBe(mondayLog?.id);
+    expect(logForSession(after, monday.plannedSessionId as string)?.id).toBe(mondayLog?.id);
   });
 });
 
@@ -707,7 +707,7 @@ describe('Etappe D im Testmodus: Woche, Eintrag, Löschen, Export', () => {
     expect(week.sessionsDone).toBe(1);
     expect(week.strengthSets).toBeGreaterThan(0);
 
-    const log = logForSession(rows, draft.plannedSessionId);
+    const log = logForSession(rows, draft.plannedSessionId as string);
     if (!log) throw new Error('Eintrag fehlt');
     const detail = logDetail(rows, log.id);
     expect(detail?.exercises.length).toBeGreaterThan(0);
@@ -719,9 +719,9 @@ describe('Etappe D im Testmodus: Woche, Eintrag, Löschen, Export', () => {
     expect(await s.backend.deleteSessionLog(log.id, log.revision)).toBe('ok');
     const after = (await s.backend.loadRows()).rows;
     expect(after.sessionLogs).toHaveLength(0);
-    expect(after.plannedSessions.find((x) => x.id === draft.plannedSessionId)?.status).toBe(
-      'planned',
-    );
+    expect(
+      after.plannedSessions.find((x) => x.id === (draft.plannedSessionId as string))?.status,
+    ).toBe('planned');
   });
 
   it('Export enthält Tagebuch, Einwilligungs-Verlauf und alle Tabellen; nichts nachzuladen', async () => {

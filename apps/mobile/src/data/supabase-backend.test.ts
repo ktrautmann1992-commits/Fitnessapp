@@ -1235,6 +1235,61 @@ describe('Supabase-Modus: Tagebuch-Warteschlange', () => {
     expect(s.logQueueStore.peek()).toBeNull();
   });
 
+  it('Freie Einheit (A1b): offline in die Warteschlange (Schlüssel = id), gesendet mit is_free; Ablehnung → Entwurf', async () => {
+    const FREE_KEY = `frei-${LOG_ID}`;
+    const freePayload = logPayload({
+      planned_session_id: null,
+      name_de: 'Lauf',
+      kind: 'endurance',
+      exercises: [],
+      cardio: { modality: 'run', duration_s: 1800, distance_m: 5000, elevation_m: null },
+      is_free: true,
+    });
+    const freeDraft: WorkoutDraft = {
+      ...draftOf(false),
+      key: FREE_KEY,
+      plannedSessionId: null,
+      kind: 'endurance',
+      nameDe: 'Lauf',
+      isFree: true,
+      backfill: true,
+    };
+    let mode: 'offline' | 'reject' | 'ok' = 'offline';
+    const { backend, s, calls } = make((call) =>
+      mode === 'offline'
+        ? { error: networkError }
+        : mode === 'reject' && call.table === 'rpc:save_session_log'
+          ? {
+              error: {
+                code: '22023',
+                message: 'Das Datum liegt außerhalb des erlaubten Zeitraums.',
+                details: null,
+                hint: null,
+              },
+              status: 400,
+            }
+          : ok(call),
+    );
+    await backend.saveDraft(freeDraft);
+    expect(await backend.submitWorkout(freeDraft, freePayload)).toEqual({ kind: 'queued' });
+    expect(s.logQueueStore.peek()).toContain(`save_session_log:${LOG_ID}`);
+    // Keine geplante Einheit „wird übertragen“.
+    expect(backend.pendingLogSessionIds()).toEqual([]);
+    expect(await backend.loadDrafts()).toEqual([]);
+    mode = 'reject';
+    await backend.flush();
+    const sent = calls.filter((c) => c.table === 'rpc:save_session_log').at(-1);
+    expect((sent?.args[0]?.[0] as { p_log: SessionLogPayload }).p_log).toMatchObject({
+      is_free: true,
+      planned_session_id: null,
+    });
+    // Nie stilles Verwerfen: als abgelehnter Entwurf mit Grund zurück (Schlüssel frei-<id>).
+    expect(await backend.loadDrafts()).toEqual([
+      expect.objectContaining({ key: FREE_KEY, state: 'rejected', rejectReason: 'date_window' }),
+    ]);
+    expect(s.logQueueStore.peek()).toBeNull();
+  });
+
   it('Reihenfolge (W8): normale Warteschlange → Tagebuch → close_missed_sessions', async () => {
     let online = false;
     const { backend, calls } = make((call) => (online ? ok(call) : { error: networkError }));

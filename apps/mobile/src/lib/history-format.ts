@@ -1,4 +1,10 @@
-import { type BestSet, type DayStatus, formatDuration, type SummaryLog } from '@fitnessapp/core';
+import {
+  type BestSet,
+  type DayStatus,
+  formatDuration,
+  isBackfilledLog,
+  type SummaryLog,
+} from '@fitnessapp/core';
 
 import type { SetLogRow } from '@/data/types';
 import { t } from '@/i18n';
@@ -108,4 +114,17 @@ export function effortText(value: number): string {
 /** „05.10.2026 bis 11.10.2026“. */
 export function weekRangeText(weekStart: string, weekEnd: string): string {
   return t.week.range(formatDateDe(weekStart), formatDateDe(weekEnd));
+}
+
+/** Kennzeichen eines Eintrags im Verlauf (Etappe A1b): „freie Einheit“, „nachgetragen“ (isBackfilledLog). */
+export function logMarkers(
+  log: Pick<SummaryLog, 'is_free' | 'created_at' | 'performed_on'>,
+): string[] {
+  return [
+    log.is_free === true ? t.history.free : null,
+    log.created_at !== undefined &&
+    isBackfilledLog({ performed_on: log.performed_on, created_at: log.created_at })
+      ? t.history.backfilled
+      : null,
+  ].filter((value): value is string => value !== null);
 }

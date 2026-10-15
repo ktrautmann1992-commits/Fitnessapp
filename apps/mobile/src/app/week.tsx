@@ -61,6 +61,8 @@ export default function WeekScreen() {
   const itemLines = (item: DayItem): string[] =>
     [
       item.caughtUpFrom ? t.week.caughtUpFrom(formatDateDe(item.caughtUpFrom)) : null,
+      item.free ? t.week.free : null,
+      item.backfilled ? t.week.backfilled : null,
       item.status === 'dropped' ? t.week.droppedHint : null,
       item.sessionId !== null && item.logId !== null && pending.has(item.sessionId)
         ? t.week.pending

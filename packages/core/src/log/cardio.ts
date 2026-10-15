@@ -52,21 +52,23 @@ export function cardioPlausibility(
   return kmh > CARDIO_PLAUSIBILITY_KMH[modality] ? 'check_speed' : 'ok';
 }
 
-/** Ein Ausdauer-Eintrag mit Bezug zur geplanten Einheit (null = verwaist, zählt nie). */
+/** Ein Ausdauer-Eintrag mit Bezug zur geplanten Einheit (null = verwaist bzw. frei, zählt nie). */
 export interface CardioLogRef {
   readonly plannedSessionId: string | null;
   readonly durationS: number;
+  /** Freie Einheit (A1b) – zählt nie für den 10-%-Bezug, auch nicht mit (fehlerhaftem) Planbezug. */
+  readonly isFree?: boolean;
 }
 
 /**
  * Eingetragene Minuten je ID der geplanten Einheit – Eingabe für enduranceReferenceFromBlock() bzw.
- * nextPlanBlock({ loggedEnduranceMinutes }). Verwaiste Einträge (ohne geplante Einheit, B4/H-a) werden
- * ausgelassen und zählen damit nicht für den 10-%-Bezug.
+ * nextPlanBlock({ loggedEnduranceMinutes }). Verwaiste Einträge (ohne geplante Einheit, B4/H-a) und freie
+ * Einheiten (A1b) werden ausgelassen und zählen damit nicht für den 10-%-Bezug.
  */
 export function loggedEnduranceMinutes(logs: readonly CardioLogRef[]): Map<string, number> {
   const minutes = new Map<string, number>();
   for (const log of logs) {
-    if (log.plannedSessionId === null) continue;
+    if (log.plannedSessionId === null || (log.isFree ?? false)) continue;
     const value = Math.floor(Math.max(0, log.durationS) / 60);
     minutes.set(log.plannedSessionId, Math.max(minutes.get(log.plannedSessionId) ?? 0, value));
   }

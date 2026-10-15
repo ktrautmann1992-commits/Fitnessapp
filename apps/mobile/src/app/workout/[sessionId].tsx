@@ -6,6 +6,7 @@ import {
   cardioDurationS,
   codePointLength,
   findGlossaryExercise,
+  freeSessionDates,
   ENDURANCE_MODALITIES,
   type EnduranceModality,
   isPlausibleTargetWeight,
@@ -49,6 +50,7 @@ import {
   type SwapTarget,
   workoutSwapTarget,
 } from '@/data/exercise-swap';
+import { backfillDatesFromRows } from '@/data/backfill';
 import { logForSession } from '@/data/log-rows';
 import { activePlan } from '@/data/training-plan';
 import {
@@ -61,10 +63,14 @@ import {
   type DraftCardio,
   draftFromLog,
   type DraftExercise,
+  freeDraftResult,
   type DraftTarget,
   needsWeightConfirmation,
   replacePlanned,
   setCardioFields,
+  refreshFreeDraft,
+  removeDraftExercise,
+  setPerformedOn,
   setSessionFields,
   setSkipped,
   updateSet,
@@ -81,8 +87,10 @@ import {
 } from '@/data/workout-session';
 import { t } from '@/i18n';
 import { errorText } from '@/lib/error-text';
-import { formatDecimal, formatKg, parseDecimal, todayIso } from '@/lib/format';
+import { berlinTodayIso, formatDecimal, formatKg, parseDecimal, todayIso } from '@/lib/format';
 import { useKeepAwakeSetting, useScreenAwake } from '@/lib/keep-awake';
+import { dayLabel } from '@/lib/plan-format';
+import { isoDateParam } from '@/lib/route-param';
 import { useRestTimer } from '@/lib/use-rest-timer';
 import {
   cardioSpeedTexts,
@@ -104,9 +112,16 @@ import { useThemeColors } from '@/lib/theme';
  * packages/core.
  */
 export default function WorkoutScreen() {
-  const params = useLocalSearchParams<{ sessionId: string; edit?: string }>();
+  const params = useLocalSearchParams<{ sessionId: string; edit?: string; date?: string }>();
   const sessionId = String(params.sessionId ?? '');
   const editRequested = params.edit === '1';
+  /** Nachtragen aus dem Kalender (Etappe A1b): an diesem Tag trainiert. */
+  // „Heute“ für das Nachtrage-/Frei-Fenster wie der Server (Europe/Berlin, Wächter H4); heute selbst ist kein
+  // Nachtragen (G2/H2) – dann gilt der normale Trainingsmodus mit Pausentimer und startKind.
+  const entryToday = berlinTodayIso();
+  const dateParam = isoDateParam(params.date);
+  const backfillDate =
+    dateParam !== null && dateParam !== entryToday && dateParam !== todayIso() ? dateParam : null;
   const router = useRouter();
   const app = useApp();
   const today = todayIso();
@@ -133,6 +148,7 @@ export default function WorkoutScreen() {
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState<string>();
   const [discardDialog, setDiscardDialog] = useState(false);
+  const [dateOpen, setDateOpen] = useState(false);
   const rest = useRestTimer();
   const keepAwake = useKeepAwakeSetting();
 
@@ -172,21 +188,39 @@ export default function WorkoutScreen() {
           })
         : null;
     }
+    // Nachtragen (A1b): nur an einen erlaubten Tag (backfillDates aus packages/core), sonst wie bisher heute.
+    const performedOn =
+      backfillDate !== null &&
+      backfillDatesFromRows(rows, sessionId, entryToday).includes(backfillDate)
+        ? backfillDate
+        : undefined;
+    if (backfillDate !== null && performedOn === undefined) return null;
     const meta = {
       ownerUserId: app.session.userId,
       today,
       now: new Date().toISOString(),
       newId,
+      ...(performedOn !== undefined ? { performedOn } : {}),
     };
-    // Ausdauer braucht keine Übungs-Bibliothek (C2) – nur heute bzw. „Heute nachholen“ (startKind).
+    // Ausdauer braucht keine Übungs-Bibliothek (C2) – nur heute bzw. „Heute nachholen“ (startKind) oder nachtragen.
     const planned = activePlan(rows)?.sessions.find((x) => x.id === sessionId);
     if (planned?.kind === 'endurance') {
-      return startKind(rows, planned, today) ? newEnduranceDraft(rows, sessionId, meta) : null;
+      return performedOn !== undefined || startKind(rows, planned, today)
+        ? newEnduranceDraft(rows, sessionId, meta)
+        : null;
     }
     if (!view) return null;
     return newWorkoutDraft(rows, view, meta);
-  }, [app.session, editRequested, rows, sessionId, stored, today, view]);
-  const draft = localDraft ?? initialDraft;
+  }, [app.session, backfillDate, editRequested, entryToday, rows, sessionId, stored, today, view]);
+  const loadedDraft = localDraft ?? initialDraft;
+  // Freie Einheit (Wächter S1): Übungsnamen aus der aktuellen Bibliothek (der nächste Tipp sichert sie mit).
+  const draft = useMemo(
+    () =>
+      loadedDraft?.isFree === true && lib
+        ? refreshFreeDraft(loadedDraft, lib.exercises, loadedDraft.updatedAt).draft
+        : loadedDraft,
+    [lib, loadedDraft],
+  );
   // Bildschirm an, solange der Trainingsmodus offen ist (6.2) – abschaltbar in den Einstellungen.
   useScreenAwake(draft !== null && keepAwake.loaded && keepAwake.enabled);
 
@@ -215,7 +249,10 @@ export default function WorkoutScreen() {
 
   if (!draft) {
     const waiting = library.kind === 'loading' || library.kind === 'idle';
-    const notStartable = session && !editRequested && startKind(rows, session, today) === null;
+    const notStartable =
+      session &&
+      !editRequested &&
+      (backfillDate !== null || startKind(rows, session, today) === null);
     return (
       <Screen title={t.workout.title} testID="workout" footer={footerBack}>
         {waiting ? (
@@ -250,6 +287,20 @@ export default function WorkoutScreen() {
 
   const isEndurance = current.kind === 'endurance';
   const cardioResult = draftCardioResult(current);
+  const isFree = current.isFree === true;
+  // Wächter S1: Namen aus der aktuellen Bibliothek; nicht mehr freigegebene Übungen benennen (entfernen-Knopf).
+  const freeRefresh =
+    isFree && lib ? refreshFreeDraft(current, lib.exercises, current.updatedAt) : null;
+  const missingFree = freeRefresh?.missing ?? [];
+  /** Datumswahl nur beim Nachtragen (A1b) – sonst gilt heute. */
+  const dateChoices =
+    current.backfill === true && !current.editing
+      ? isFree
+        ? freeSessionDates(entryToday)
+        : current.plannedSessionId
+          ? backfillDatesFromRows(rows, current.plannedSessionId, entryToday)
+          : []
+      : [];
 
   /** Satz ändern; beim Abhaken startet die Pause aus packages/core (Supersätze beachtet, 5.5). */
   function changeSet(
@@ -260,8 +311,8 @@ export default function WorkoutScreen() {
     const before = current.exercises[index]?.sets[setIndex];
     const next = updateSet(current, index, setIndex, patch, now());
     update(next);
-    // Beim nachträglichen Ändern eines gespeicherten Trainings keine Pause.
-    if (patch.done === true && before && !before.done && !current.editing) {
+    // Beim nachträglichen Ändern bzw. Nachtragen (A1b) keine Pause.
+    if (patch.done === true && before && !before.done && !current.editing && !current.backfill) {
       const restS = restAfterCheckedSet(
         next.exercises.map((e) => ({
           order_no: e.orderNo,
@@ -396,6 +447,23 @@ export default function WorkoutScreen() {
       setError(t.workout.cardio.invalid);
       return;
     }
+    // Freie Einheit (A1b): dieselben Regeln wie save_session_log, mit verständlichem Grund (packages/core).
+    if (isFree) {
+      if (missingFree.length > 0) {
+        setError(t.backfill.missingExercise(missingFree[0]?.nameDe ?? ''));
+        return;
+      }
+      const check = freeDraftResult(current, {
+        writeId: current.logId,
+        now: now(),
+        today: entryToday,
+      });
+      const first = check.ok ? undefined : check.errors[0];
+      if (first !== undefined) {
+        setError(t.backfill.freeErrors[first]);
+        return;
+      }
+    }
     if (current.exercises.some(needsWeightConfirmation)) {
       setError(t.workout.confirmNeeded);
       return;
@@ -497,6 +565,7 @@ export default function WorkoutScreen() {
       }
     >
       {isEndurance ? null : <Body muted>{progressText}</Body>}
+      {isFree && !isEndurance ? <Body muted>{t.backfill.freeSkipHint}</Body> : null}
       {active?.plan.medical_notice ? <MedicalNotice /> : null}
       {Platform.OS === 'web' ? (
         <Notice tone="info" testID="workout-tab-hint">
@@ -505,6 +574,44 @@ export default function WorkoutScreen() {
       ) : null}
       {app.offline ? <Notice tone="warning">{t.plan.offline}</Notice> : null}
       {current.editing ? <Notice tone="info">{t.workout.editing}</Notice> : null}
+      {isFree ? (
+        <Notice tone="info" testID="workout-free">
+          {t.backfill.freeNotice}
+        </Notice>
+      ) : current.backfill === true ? (
+        <Notice tone="info">{t.backfill.backfillNotice}</Notice>
+      ) : null}
+      {current.backfill === true && !current.editing ? (
+        <Card>
+          <View style={styles.exercise} testID="workout-date">
+            <Heading level={2}>{t.backfill.dateLabel}</Heading>
+            <Body testID="workout-date-text">
+              {t.backfill.dateText(dayLabel(current.performedOn))}
+            </Body>
+            {dateChoices.length > 1 ? (
+              <Button
+                label={t.backfill.changeDate}
+                variant="secondary"
+                expanded={dateOpen}
+                onPress={() => setDateOpen((open) => !open)}
+                testID="workout-date-change"
+              />
+            ) : null}
+            {dateOpen ? (
+              <ChoiceList<string>
+                groupLabel={t.backfill.dateLabel}
+                options={dateChoices.map((value) => ({ value, label: dayLabel(value) }))}
+                value={current.performedOn}
+                onChange={(value) => {
+                  update(setPerformedOn(current, value, now()));
+                  setDateOpen(false);
+                }}
+                horizontal
+              />
+            ) : null}
+          </View>
+        </Card>
+      ) : null}
       {current.state === 'rejected' && current.rejectReason ? (
         <Notice tone="danger" testID="workout-rejected">
           {t.workout.rejected[current.rejectReason]}
@@ -531,6 +638,9 @@ export default function WorkoutScreen() {
           key={exercise.id}
           exercise={exercise}
           index={index}
+          free={isFree}
+          missing={missingFree.some((m) => m.index === index)}
+          onRemove={() => update(removeDraftExercise(current, index, now()))}
           canSwitch={canSwitch}
           onSwap={() => openSwap(index)}
           guide={guideFor(currentTarget(exercise).exerciseId)}
@@ -677,6 +787,9 @@ export default function WorkoutScreen() {
 function ExerciseCard({
   exercise,
   index,
+  free,
+  missing,
+  onRemove,
   canSwitch,
   onSwap,
   guide,
@@ -689,6 +802,11 @@ function ExerciseCard({
 }: {
   exercise: DraftExercise;
   index: number;
+  /** Freie Einheit (A1b): keine Vorgabe – nur eintragen, was gemacht wurde. */
+  free: boolean;
+  /** Freie Einheit: Übung nicht mehr freigegeben (Wächter S1) – entfernen. */
+  missing: boolean;
+  onRemove: () => void;
   canSwitch: boolean;
   /** „Tauschen“ (Etappe T2): Dialog mit Alternativen, „Nur heute“ / „Ab jetzt immer“. */
   onSwap: () => void;
@@ -730,6 +848,18 @@ function ExerciseCard({
         </Heading>
         {exercise.alternative ? (
           <Body muted>{t.workout.alternativeOf(exercise.planned.nameDe)}</Body>
+        ) : null}
+        {missing ? (
+          <Notice tone="danger" testID={`workout-missing-${index}`}>
+            <Body>{t.backfill.missingExercise(target.nameDe)}</Body>
+            <Button
+              label={t.backfill.removeExercise}
+              variant="secondary"
+              accessibilityLabel={t.backfill.removeExerciseA11y(target.nameDe)}
+              onPress={onRemove}
+              testID={`workout-remove-${index}`}
+            />
+          </Notice>
         ) : null}
         {guide ? (
           // Aufklappen statt Navigieren: Pausentimer und Eingaben bleiben, wo sie sind (Plan 8.1).
@@ -779,12 +909,20 @@ function ExerciseCard({
           </Notice>
         ) : (
           <>
-            <Body testID={`workout-target-${index}`}>{targetText(target)}</Body>
-            {targetNotes(target).map((line) => (
-              <Body key={line} muted>
-                {line}
+            {free ? (
+              <Body muted testID={`workout-target-${index}`}>
+                {t.backfill.freeExerciseHint}
               </Body>
-            ))}
+            ) : (
+              <>
+                <Body testID={`workout-target-${index}`}>{targetText(target)}</Body>
+                {targetNotes(target).map((line) => (
+                  <Body key={line} muted>
+                    {line}
+                  </Body>
+                ))}
+              </>
+            )}
             {exercise.sets.map((set, setIndex) => (
               <View
                 key={setIndex}

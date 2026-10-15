@@ -93,12 +93,22 @@ export interface ProgressOptions {
 
 /**
  * Zählt der Eintrag für „zweimal in Folge“ und als Zustands-Grundlage? Nicht: Einstiegswoche, Erholungswoche,
- * Wiedereinstieg nach Pause.
+ * Wiedereinstieg nach Pause, freie Einheit (Etappe A1b).
+ * ACHTUNG (Wächter A1b S2): Verwaiste Einträge (ohne geplante Einheit, nicht frei) ZÄHLEN für die Kraft-Progression
+ * – so seit Phase 4; vom 10-%-Bezug der Ausdauer sind sie ausgeschlossen (loggedEnduranceMinutes). „Frei“ ist für
+ * Kraft daher nur im Client/Core unumgehbar: Ein Eintrag ohne Planbezug und ohne is_free zählt (auch am Server,
+ * recent_exercise_logs). Ob verwaiste Einträge künftig auch nicht mehr zählen, ist Gründer-Frage G1
+ * (docs/PLAN-AUSWERTUNG.md, Umsetzungsstand A1b).
  */
 export function isCountingEntry(
-  entry: Pick<ExerciseLogEntry, 'isIntroWeek' | 'isDeload'> & { readonly isReturn?: boolean },
+  entry: Pick<ExerciseLogEntry, 'isIntroWeek' | 'isDeload'> & {
+    readonly isReturn?: boolean;
+    readonly isFree?: boolean;
+  },
 ) {
-  return !entry.isIntroWeek && !entry.isDeload && !(entry.isReturn ?? false);
+  return (
+    !entry.isIntroWeek && !entry.isDeload && !(entry.isReturn ?? false) && !(entry.isFree ?? false)
+  );
 }
 
 function compareEntries(a: ExerciseLogEntry, b: ExerciseLogEntry): number {
@@ -107,13 +117,17 @@ function compareEntries(a: ExerciseLogEntry, b: ExerciseLogEntry): number {
   return 0;
 }
 
-/** Alle Einträge dieser Übung mit Sätzen, älteste zuerst (Reihenfolge der Eingabe egal – zwei Geräte). */
+/**
+ * Alle Einträge dieser Übung mit Sätzen, älteste zuerst (Reihenfolge der Eingabe egal – zwei Geräte). Freie
+ * Einheiten (A1b) fehlen ganz: Sie sind weder Zustands- noch Kalibrierungsquelle und setzen die Pausen-Uhr nicht
+ * zurück (sie haben keine Vorgabe, an der sich ein Fortschritt messen ließe).
+ */
 export function entriesForExercise(
   exerciseId: string,
   entries: readonly ExerciseLogEntry[],
 ): ExerciseLogEntry[] {
   return entries
-    .filter((e) => e.exerciseId === exerciseId && e.status !== 'skipped')
+    .filter((e) => e.exerciseId === exerciseId && e.status !== 'skipped' && !(e.isFree ?? false))
     .sort(compareEntries);
 }
 

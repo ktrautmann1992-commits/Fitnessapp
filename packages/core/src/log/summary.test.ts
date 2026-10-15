@@ -390,3 +390,42 @@ describe('logEditability (Ändern aus dem Verlauf)', () => {
     ).toBe('unlinked');
   });
 });
+
+describe('Woche: freie und nachgetragene Einträge (Etappe A1b)', () => {
+  it('frei und nachgetragen werden markiert, zählen in der Woche', () => {
+    const week = weekLogSummary(
+      [session('s1', '2026-10-12')],
+      [
+        log('l1', '2026-10-12', {
+          planned_session_id: 's1',
+          done_sets: 9,
+          created_at: '2026-10-14T08:00:00Z',
+        }),
+        log('l2', '2026-10-13', {
+          kind: 'endurance',
+          is_free: true,
+          name_de: 'Lauf',
+          cardio_duration_s: 1800,
+          cardio_distance_m: 5000,
+          created_at: '2026-10-13T18:00:00Z',
+        }),
+      ],
+      '2026-10-12',
+      '2026-10-15',
+    );
+    const items = week.days.flatMap((d) => d.items);
+    expect(items.map((i) => [i.logId, i.free, i.backfilled])).toEqual([
+      ['l1', false, true],
+      ['l2', true, false],
+    ]);
+    expect(week.sessionsDone).toBe(2);
+    expect(week.sessionsPlanned).toBe(1);
+    expect(week.enduranceMinutes).toBe(30);
+    expect(week.strengthSets).toBe(9);
+  });
+
+  it('ohne created_at (ältere Anzeige-Daten): nie „nachgetragen“', () => {
+    const week = weekLogSummary([], [log('l', '2026-10-12')], '2026-10-12', '2026-10-15');
+    expect(week.days[0]?.items[0]).toMatchObject({ free: false, backfilled: false });
+  });
+});

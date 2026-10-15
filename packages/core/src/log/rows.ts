@@ -40,6 +40,8 @@ export interface SessionLogRow {
   is_intro_week: boolean;
   is_deload: boolean;
   from_health_plan: boolean;
+  /** Freie Einheit ohne geplante Einheit (Etappe A1b) – zählt nie für Progression/Kalibrierung/10-%-Bezug. */
+  is_free: boolean;
   revision: number;
   last_write_id: string;
   source: LogSource;
@@ -154,10 +156,15 @@ export function applySessionLog<T extends LogAndSessionRows>(
     status: payload.status,
     session_rpe: payload.session_rpe,
     notes: payload.notes,
-    name_de: meta.keepTargets ? payload.name_de : neutralSessionName(payload.kind),
+    // Freie Einheit: Name aus der festen Liste (FREE_SESSION.names) bleibt – wie save_session_log.
+    name_de:
+      meta.keepTargets || payload.is_free === true
+        ? payload.name_de
+        : neutralSessionName(payload.kind),
     is_intro_week: meta.isIntroWeek,
     is_deload: meta.isDeload,
     from_health_plan: meta.fromHealthPlan,
+    is_free: payload.is_free === true,
     revision: meta.revision,
     last_write_id: payload.write_id,
     source: payload.source,
@@ -424,6 +431,8 @@ export function logEntriesFromRows(
         isIntroWeek: log.is_intro_week,
         isDeload: log.is_deload,
         isReturn: e.is_return,
+        // Ältere Zeilen (vor A1b) haben das Feld nicht – gelten als nicht frei.
+        isFree: log.is_free === true,
         targetSets: e.target_sets,
         targetWeightKg: e.target_weight_kg,
         targetReps: e.target_reps,

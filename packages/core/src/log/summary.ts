@@ -7,6 +7,7 @@ import type {
   SessionLogStatus,
 } from '../enums';
 import { type ReschedulableSession, rescheduleSession } from '../plan/reschedule';
+import { isBackfilledLog } from './free-session';
 import type { LoggedSet } from './types';
 
 /**
@@ -84,6 +85,10 @@ export interface SummaryLog {
   readonly done_sets: number;
   readonly cardio_duration_s: number | null;
   readonly cardio_distance_m: number | null;
+  /** Freie Einheit (A1b); fehlt = nein. */
+  readonly is_free?: boolean;
+  /** Angelegt am (für „nachgetragen“, isBackfilledLog); fehlt = nicht nachgetragen. */
+  readonly created_at?: string;
 }
 
 export type DayStatus = 'done' | 'partial' | 'missed' | 'skipped' | 'planned' | 'dropped' | 'rest';
@@ -95,6 +100,10 @@ export interface DayItem {
   readonly name_de: string;
   /** Nachgeholt: ursprünglicher Termin (H2 – der Eintrag steht am tatsächlichen Datum). */
   readonly caughtUpFrom: string | null;
+  /** Freie Einheit ohne geplante Einheit (A1b). */
+  readonly free: boolean;
+  /** Erst an einem späteren Tag eingetragen (A1b, isBackfilledLog). */
+  readonly backfilled: boolean;
 }
 
 export interface SummaryDay {
@@ -155,6 +164,10 @@ export function weekLogSummary(
       logId: log.id,
       name_de: log.name_de,
       caughtUpFrom: reference !== null && reference !== log.performed_on ? reference : null,
+      free: log.is_free === true,
+      backfilled:
+        log.created_at !== undefined &&
+        isBackfilledLog({ performed_on: log.performed_on, created_at: log.created_at }),
     });
   }
   for (const session of sessions) {
@@ -170,6 +183,8 @@ export function weekLogSummary(
       logId: null,
       name_de: session.name_de,
       caughtUpFrom: null,
+      free: false,
+      backfilled: false,
     });
   }
 

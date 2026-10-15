@@ -1,4 +1,5 @@
 import {
+  freeSessionNutritionSessions,
   addDays,
   applyMealPrepPlan,
   type MealPrepPlan,
@@ -70,6 +71,29 @@ export function nutritionWeekStart(date: string): string {
 function sessionsForWeek(rows: UserRows, weekStart: string): NutritionSessionInput[] {
   const weekEnd = addDays(weekStart, 6);
   const planStatus = new Map(rows.plans.map((plan) => [plan.id, plan.status]));
+  // Freie Einheiten (Etappe A1b, A-G7): ihre Trainingsenergie zählt fürs Tagesziel (nur erhöhend, Deckel bleibt).
+  const weekLogs = rows.sessionLogs.filter(
+    (l) => l.is_free === true && l.performed_on >= weekStart && l.performed_on <= weekEnd,
+  );
+  const logOfExercise = new Map(rows.exerciseLogs.map((e) => [e.id, e.session_log_id] as const));
+  const doneSets = new Map<string, number>();
+  for (const set of rows.setLogs) {
+    const logId = logOfExercise.get(set.exercise_log_id);
+    if (logId !== undefined && set.done) doneSets.set(logId, (doneSets.get(logId) ?? 0) + 1);
+  }
+  const free: NutritionSessionInput[] = freeSessionNutritionSessions(weekLogs, {
+    cardio: rows.cardioLogs,
+    doneSets,
+  });
+  return [...planSessionsForWeek(rows, weekStart, weekEnd, planStatus), ...free];
+}
+
+function planSessionsForWeek(
+  rows: UserRows,
+  weekStart: string,
+  weekEnd: string,
+  planStatus: ReadonlyMap<string, UserRows['plans'][number]['status']>,
+): NutritionSessionInput[] {
   return rows.plannedSessions.flatMap((s): NutritionSessionInput[] => {
     const status = planStatus.get(s.plan_id);
     if (status === undefined || s.scheduled_on < weekStart || s.scheduled_on > weekEnd) return [];

@@ -37,6 +37,7 @@ function log(id: string, date: string, extra: Partial<SessionLogRow> = {}): Sess
     is_intro_week: false,
     is_deload: false,
     from_health_plan: false,
+    is_free: false,
     revision: 1,
     last_write_id: 'w',
     source: 'manual',

@@ -2,6 +2,16 @@
  * Reine Hilfsfunktionen für Eingabe und Anzeige (ohne React Native, daher mit Vitest testbar).
  * Keine Fachlogik – Grenzen und Regeln kommen aus packages/core.
  */
+import { isoDateInTimeZone } from '@fitnessapp/core';
+
+/**
+ * „Heute“ wie die Datenbank (private.berlin_today(), Europe/Berlin) – für das Fenster beim Nachtragen und für freie
+ * Einheiten (Wächter A1b H4): Ein Gerät in einer anderen Zeitzone bietet um Mitternacht nie einen Tag an, den der
+ * Server ablehnt.
+ */
+export function berlinTodayIso(now: Date = new Date()): string {
+  return isoDateInTimeZone(now.toISOString(), 'Europe/Berlin');
+}
 
 /** Heutiges Datum (Gerätezeit) als ISO-Datum JJJJ-MM-TT. */
 export function todayIso(now: Date = new Date()): string {

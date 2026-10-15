@@ -4,7 +4,12 @@ import {
   cardioLogFromInput,
   CONSERVATIVE_PLAN_RULES,
   type EnduranceModality,
+  type Exercise,
   exerciseLogStatusFor,
+  type FreeSessionResult,
+  freeSessionLogFromInput,
+  freeSessionName,
+  incrementKindFor,
   type ExerciseLogPayload,
   type IncrementKind,
   initialSets,
@@ -117,7 +122,7 @@ export interface WorkoutDraft {
   format: typeof DRAFT_FORMAT;
   /** Konto, dem der Entwurf gehört (R5). */
   ownerUserId: string;
-  /** Schlüssel = planned_session_id (eine Einheit, ein Entwurf). */
+  /** Schlüssel = planned_session_id (eine Einheit, ein Entwurf); freie Einheit: `frei-<logId>` (A1b). */
   key: string;
   state: DraftState;
   rejectReason: LogRejectReason | null;
@@ -130,7 +135,8 @@ export interface WorkoutDraft {
   baseRevision: number | null;
   /** Konflikt: Revision auf dem Server. */
   serverRevision: number | null;
-  plannedSessionId: string;
+  /** null nur bei einer freien Einheit (A1b). */
+  plannedSessionId: string | null;
   plannedDate: string;
   kind: StoredSession['kind'];
   nameDe: string;
@@ -145,6 +151,10 @@ export interface WorkoutDraft {
    * Ausdauer-Eintrag (Etappe C2); null bei Kraft. Fehlt in Entwürfen aus C1 (nur Kraft) – gilt dann als null.
    */
   cardio?: DraftCardio | null;
+  /** Freie Einheit ohne geplante Einheit (Etappe A1b); fehlt in älteren Entwürfen = false. */
+  isFree?: boolean;
+  /** Nachtragen (A1b): Datum im Trainingsmodus wählbar (sonst gilt heute); fehlt = false. */
+  backfill?: boolean;
   updatedAt: string;
 }
 
@@ -237,6 +247,8 @@ export interface CreateDraftInput {
   performedOn: string;
   now: string;
   newId: () => string;
+  /** Nachtragen aus dem Kalender (A1b) – Datum im Trainingsmodus wählbar. */
+  backfill?: boolean;
 }
 
 /** Neuer Entwurf aus der angezeigten Einheit. null = eine Übung ist nicht prüfbar (Bibliothek fehlt). */
@@ -289,6 +301,7 @@ export function createWorkoutDraft(input: CreateDraftInput): WorkoutDraft | null
     sessionRpe: null,
     notes: '',
     exercises,
+    ...(input.backfill ? { backfill: true } : {}),
     updatedAt: input.now,
   };
 }
@@ -327,7 +340,244 @@ export function createEnduranceDraft(
       distanceKm: '',
       elevationM: '',
     },
+    ...(input.backfill ? { backfill: true } : {}),
     updatedAt: input.now,
+  };
+}
+
+// ---------------------------------------------------------------------------------------------------------
+// Freie Einheit (Etappe A1b, docs/PLAN-AUSWERTUNG.md 4)
+// ---------------------------------------------------------------------------------------------------------
+
+/** Schlüssel eines freien Entwurfs (Route `/workout/<key>`). */
+export function freeDraftKey(logId: string): string {
+  return `frei-${logId}`;
+}
+
+/** Übung der freien Kraft-Einheit: ohne Vorgabe und Zustand, Warnungen nur über die absolute Schwelle. */
+function freeTarget(
+  exercise: Pick<Exercise, 'id' | 'name_de' | 'load_type' | 'equipment_ids'>,
+): DraftTarget {
+  return {
+    exerciseId: exercise.id,
+    nameDe: exercise.name_de,
+    loadType: exercise.load_type,
+    incrementKind: incrementKindFor(exercise),
+    perPiece:
+      exercise.load_type !== 'weight'
+        ? null
+        : exercise.equipment_ids.includes('kettlebells')
+          ? 'kettlebell'
+          : exercise.equipment_ids.includes('dumbbells')
+            ? 'dumbbell'
+            : null,
+    steps: [],
+    targets: {
+      target_sets: null,
+      reps_min: null,
+      reps_max: null,
+      target_reps: null,
+      target_extra_set: null,
+      target_weight_kg: null,
+      target_duration_s: null,
+      target_rpe: null,
+      is_return: false,
+    },
+    state: {
+      state_weight_kg: null,
+      state_target_reps: null,
+      state_extra_set: null,
+      state_duration_s: null,
+    },
+    heavierReferenceKg: null,
+    lighterReferenceKg: null,
+    chooseLightest: false,
+    source: 'none',
+    hint: null,
+    harderVariantName: null,
+  };
+}
+
+/** Sätze einer freien Übung zum Start (leer, nicht abgehakt). */
+export const FREE_START_SETS = 3;
+
+export interface CreateFreeDraftInput {
+  ownerUserId: string;
+  kind: StoredSession['kind'];
+  /** Ausdauer: gewählte Art. */
+  modality: EnduranceModality;
+  /** Kraft: gewählte Übungen aus der Bibliothek (Reihenfolge = Eingabe). */
+  exercises: readonly Pick<Exercise, 'id' | 'name_de' | 'load_type' | 'equipment_ids'>[];
+  performedOn: string;
+  /** Heute (Europe/Berlin): an einem früheren Tag = Nachtragen (Datumswahl, kein Pausentimer); heute = wie live. */
+  today: string;
+  now: string;
+  newId: () => string;
+}
+
+/**
+ * Neuer Entwurf einer freien Einheit (A1b): kein Planbezug, Name aus der festen Liste, Kraft ohne Vorgaben (leere
+ * Sätze), Ausdauer ohne Vorbelegung der Dauer. Gespeichert wie jeder Entwurf (geschützt, offline).
+ */
+export function createFreeDraft(input: CreateFreeDraftInput): WorkoutDraft {
+  const logId = input.newId();
+  const exercises =
+    input.kind === 'strength'
+      ? input.exercises.map((exercise, index): DraftExercise => {
+          const planned = freeTarget(exercise);
+          return {
+            id: input.newId(),
+            orderNo: index + 1,
+            plannedExerciseId: null,
+            storedExerciseId: exercise.id,
+            dosage: {
+              sets: FREE_START_SETS,
+              reps_min: null,
+              reps_max: null,
+              duration_s: null,
+              rpe_target: CONSERVATIVE_PLAN_RULES.rpeMax,
+              rest_s: 90,
+              superset_group: null,
+            },
+            reference: { templateSets: FREE_START_SETS, rpeTarget: CONSERVATIVE_PLAN_RULES.rpeMax },
+            planned,
+            alternative: null,
+            skipped: false,
+            sets: Array.from({ length: FREE_START_SETS }, () => ({
+              reps: null,
+              weightKg: null,
+              durationS: null,
+              rpe: null,
+              done: false,
+            })),
+            weightConfirmed: false,
+          };
+        })
+      : [];
+  return {
+    format: DRAFT_FORMAT,
+    ownerUserId: input.ownerUserId,
+    key: freeDraftKey(logId),
+    state: 'open',
+    rejectReason: null,
+    fromHealthPlan: false,
+    editing: false,
+    logId,
+    baseRevision: null,
+    serverRevision: null,
+    plannedSessionId: null,
+    plannedDate: input.performedOn,
+    kind: input.kind,
+    nameDe: freeSessionName(input.kind, input.kind === 'endurance' ? input.modality : null),
+    isIntroWeek: false,
+    isDeload: false,
+    performedOn: input.performedOn,
+    startedAt: null,
+    sessionRpe: null,
+    notes: '',
+    exercises,
+    cardio:
+      input.kind === 'endurance'
+        ? { modality: input.modality, hours: '', minutes: '', distanceKm: '', elevationM: '' }
+        : null,
+    isFree: true,
+    // Nachtrage-Modus nur für vergangene Tage (Wächter G2/H2) – heute gilt der normale Trainingsmodus.
+    backfill: input.performedOn !== input.today,
+    updatedAt: input.now,
+  };
+}
+
+/**
+ * Freier Entwurf → Eintrag über freeSessionLogFromInput() (packages/core): Datum, Name, keine Vorgaben, Plausibilität.
+ * „Nicht gemacht“ = Übung weglassen.
+ */
+export function freeDraftResult(
+  draft: WorkoutDraft,
+  options: { writeId: string; now: string; today: string },
+): FreeSessionResult {
+  const exercises = draft.exercises
+    .filter((e) => !e.skipped)
+    .map((e) => {
+      const target = currentTarget(e);
+      return {
+        id: e.id,
+        exerciseId: target.exerciseId,
+        nameDe: target.nameDe,
+        loadType: target.loadType,
+        incrementKind: target.incrementKind,
+        sets: e.sets,
+        weightConfirmed: e.weightConfirmed,
+      };
+    });
+  return freeSessionLogFromInput({
+    id: draft.logId,
+    writeId: options.writeId,
+    baseRevision: draft.baseRevision,
+    kind: draft.kind,
+    performedOn: draft.performedOn,
+    today: options.today,
+    exercises,
+    cardio: draft.kind === 'endurance' && draft.cardio ? cardioInputOf(draft.cardio) : null,
+    sessionRpe: draft.sessionRpe,
+    notes: draft.notes,
+    now: options.now,
+  });
+}
+
+/** Übung einer freien Einheit, die es in der Bibliothek nicht mehr (freigegeben) gibt. */
+export interface MissingFreeExercise {
+  index: number;
+  nameDe: string;
+}
+
+/**
+ * Freie Kraft-Einheit an die aktuelle Bibliothek angleichen (Wächter S1): Namen per exercise_id auffrischen (Übung
+ * umbenannt → Entwurf bleibt sendbar); Übungen, die nicht mehr freigegeben sind, werden benannt (`missing`) – die
+ * Person entfernt sie (removeDraftExercise), alle anderen Werte bleiben. Unverändert → derselbe Entwurf.
+ */
+export function refreshFreeDraft(
+  draft: WorkoutDraft,
+  exercises: ReadonlyMap<string, Pick<Exercise, 'name_de'>>,
+  now: string,
+): { draft: WorkoutDraft; missing: MissingFreeExercise[] } {
+  if (draft.isFree !== true) return { draft, missing: [] };
+  const missing: MissingFreeExercise[] = [];
+  let changed = false;
+  const next = draft.exercises.map((e, index) => {
+    const current = exercises.get(e.planned.exerciseId);
+    if (!current) {
+      if (!e.skipped) missing.push({ index, nameDe: e.planned.nameDe });
+      return e;
+    }
+    if (current.name_de === e.planned.nameDe) return e;
+    changed = true;
+    return { ...e, planned: { ...e.planned, nameDe: current.name_de } };
+  });
+  return { draft: changed ? { ...draft, exercises: next, updatedAt: now } : draft, missing };
+}
+
+/** Übung aus dem Entwurf entfernen (freie Einheit); Reihenfolge neu nummeriert, alle anderen Werte bleiben. */
+export function removeDraftExercise(draft: WorkoutDraft, index: number, now: string): WorkoutDraft {
+  return {
+    ...draft,
+    exercises: draft.exercises
+      .filter((_, i) => i !== index)
+      .map((e, i) => ({ ...e, orderNo: i + 1 })),
+    updatedAt: now,
+  };
+}
+
+/** Datum des Entwurfs ändern (nur beim Nachtragen, A1b). */
+export function setPerformedOn(
+  draft: WorkoutDraft,
+  performedOn: string,
+  now: string,
+): WorkoutDraft {
+  return {
+    ...draft,
+    performedOn,
+    ...(draft.isFree ? { plannedDate: performedOn } : {}),
+    updatedAt: now,
   };
 }
 
@@ -690,8 +940,17 @@ function exercisePayload(e: DraftExercise): ExerciseLogPayload {
 
 export function draftToPayload(
   draft: WorkoutDraft,
-  options: { writeId: string; now: string },
+  options: { writeId: string; now: string; today?: string },
 ): SessionLogPayload {
+  if (draft.isFree === true) {
+    // Freie Einheit: nur über packages/core (Regeln von save_session_log). Ungültig → Eintrag, den das Schema
+    // ablehnt (isValidPayload), damit nie eine ungeprüfte freie Fassung gesendet wird.
+    const result = freeDraftResult(draft, {
+      ...options,
+      today: options.today ?? draft.performedOn,
+    });
+    if (result.ok) return result.payload;
+  }
   const exercises = draft.exercises.map(exercisePayload);
   const notes = draft.notes.trim();
   return {
@@ -717,6 +976,9 @@ export function draftToPayload(
       const result = draftCardioResult(draft);
       return result?.ok ? result.cardio : null;
     })(),
+    // Ungültige freie Fassung (siehe oben): is_free ohne Planbezug-Regeln → Zod lehnt ab (exercise-/Ausdauer-Regeln
+    // bzw. Name prüft der Server erneut).
+    ...(draft.isFree === true ? { is_free: true, name_de: '' } : {}),
   };
 }
 
