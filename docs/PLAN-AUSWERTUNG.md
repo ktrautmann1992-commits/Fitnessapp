@@ -1,6 +1,6 @@
 # Plan „Kalender, Tages- und Wochenauswertung“ (Gründer-Wünsche 15.10.2026)
 
-**Status:** Entwurf zur Freigabe – noch kein Code. Erst nach eurer Freigabe (Abschnitt 14) und einer Wächter-Prüfung geht es los.
+**Status:** Freigegeben am 15.10.2026 – alle Entscheidungen A-G1 bis A-G20 „wie empfohlen“ (Abschnitt 14). Umsetzung etappenweise, jede Etappe mit Wächter-Prüfung.
 
 **Grundlage:** `CLAUDE.md`, `docs/KONZEPT.md` (4, 6.1–6.3, 11.3, 12), `docs/PLAN-PHASE-3.md` 5.11, `docs/PLAN-PHASE-4.md` (3.1–3.6, 5.6, Frage 6), `docs/PLAN-PHASE-4B.md`, `docs/PLAN-PHASE-5.md` (4.6, 4.6.1, 4.9, 6.2, 7.1, 13 X0–X2), `docs/PLAN-ZIELE.md` (3, K6, F7, F14), `docs/DESIGN.md`, Code-Stand vom 15.10.2026.
 
@@ -527,7 +527,7 @@ Nur wenn ihr es wollt (A-G3). Regeln in 2.6. Neue Spalte `planned_sessions.is_ex
 
 ## 14. Entscheidungen für die Gründer
 
-Kurz beantworten reicht („alles wie empfohlen“ geht auch).
+**Entschieden (Gründer, 15.10.2026): alle Punkte A-G1 bis A-G20 wie empfohlen.** Fachliche Prüfungen (A-G5, A-G11), juristische Prüfung des Einwilligungstexts und AVV mit Google (A-G17) bleiben vor dem Livegang offen.
 
 - **A-G1 Reihenfolge:** A1a → A1b → E1 → A2 → E2 → A3 → E3, optional E4 und A1c? _Empfehlung:_ **Ja.** Der Kalender bringt sofort Nutzen (auch im Supabase-Modus); E1 ist Pflicht vor dem Kalorienbalken.
 - **A-G2 Umfang E1:** Plan-Mahlzeit per Tipp, Katalog, Rezept, Schnelleintrag, Zuletzt/Favoriten – Barcode erst als E4? _Empfehlung:_ **Ja.** Der Katalog mit Nährwerten ist schon da; Barcode bringt Fremddaten und Kamera-Aufwand.
