@@ -1,6 +1,6 @@
 /**
  * Aufruf: `pnpm --filter @fitnessapp/content collect` (Workflow content-collect, alle 3 Stunden + per Hand).
- * ANTHROPIC_API_KEY ist nur für echte Läufe nötig; Probeläufe gehen ohne.
+ * GEMINI_API_KEY ist nur für echte Läufe nötig; Probeläufe gehen ohne.
  */
 import { apiClientFromEnv, main, repoRootOrFail, writeReport } from './cli';
 import { runCollect } from './pipeline/collect';

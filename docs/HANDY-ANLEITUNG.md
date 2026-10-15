@@ -30,7 +30,8 @@ Vercel zeigt die App im Handy-Browser, Expo baut die echten Apps in der Cloud.
 - **Supabase** (supabase.com) – Datenbank. Beim Projekt Region **Frankfurt (eu-central-1)** wählen.
 - **Vercel** (vercel.com) – mit GitHub anmelden.
 - **Expo** (expo.dev) – für die App-Builds.
-- **Anthropic Console** (console.anthropic.com) – API-Schlüssel für die Inhalts-Erzeugung.
+- **Google AI Studio** (aistudio.google.com) – Gemini-API-Schlüssel für die Inhalts-Erzeugung (seit 15.10.2026 statt
+  Anthropic; Einrichtung `docs/SETUP.md` Teil E).
 - Später, vor dem ersten nativen Build: **Apple Developer Program** (über die App „Apple Developer“, jährlich kostenpflichtig) und **Google Play Console** (einmalige Gebühr).
 
 ## Teil 2 – Der Arbeitsablauf pro Phase
@@ -46,7 +47,8 @@ Vercel zeigt die App im Handy-Browser, Expo baut die echten Apps in der Cloud.
 ## Teil 3 – Was ihr im Alltag in der GitHub-App macht
 - **Pull Requests** prüfen und mergen
 - **Actions** → Workflow auswählen → „Run workflow“ für:
-  - `content-generate` – neue Übungen/Plan-Vorlagen als Entwurf erzeugen lassen (auch als kostenloser Probelauf)
+  - `content-generate` – neue Übungen, Plan-Vorlagen, Austausch-Einträge, Packungsgrößen oder Rezepte als Entwurf
+    erzeugen lassen (KI: Google Gemini, offline; auch als kostenloser Probelauf)
   - `content-collect` – fertige Entwürfe abholen (läuft auch alle 3 Stunden von selbst) → Pull Request
   - `content-review` – Inhalte freigeben oder zurückziehen → Pull Request (Merge = Freigabe); Art `recipe` = Rezepte
     einer Kategorie auf einmal freigeben (Sammelfreigabe), Art `ids` = einzelne Übungen/Vorlagen **oder** einzelne
@@ -58,7 +60,7 @@ Vercel zeigt die App im Handy-Browser, Expo baut die echten Apps in der Cloud.
 - Rote Kreuze bei Actions = Fehler → Link kopieren und Claude Code in einer Sitzung geben: „Diese Action schlägt fehl, bitte beheben.“
 
 ## Teil 4 – Schlüssel und Passwörter (wichtig)
-- Schlüssel (Supabase, Anthropic, Expo usw.) **nie in den Chat** mit Claude kopieren.
+- Schlüssel (Supabase, Gemini, Expo usw.) **nie in den Chat** mit Claude kopieren.
 - Eintragen nur hier:
   - GitHub: Repository → Settings → Secrets and variables → Actions → „New repository secret“
   - Vercel: Projekt → Settings → Environment Variables
@@ -380,6 +382,53 @@ Ernährung erst mit Teil 2. Ihr müsst nichts einstellen und keine Schlüssel ei
 6. Optional: Supabase → **Table Editor**: Es gibt die neuen, leeren Tabellen `foods`, `recipes`, `meal_plans`,
    `shopping_lists`, `recipe_ratings`, `food_dislikes` u. a. Leer ist richtig – Rezepte kommen erst nach der
    Fachprüfung (Gründer-Entscheidung 6), Nutzerdaten erst mit Teil 2.
+
+## Teil 7e – Neue Rezepte per KI erzeugen (Phase 5, Etappe N8, Gemini offline)
+
+Die KI (Google Gemini) schreibt **nur Entwürfe** – offline über die Batch-API, nie in der App. Nutzerdaten gehen nie an
+Gemini, nur Regeln und der Lebensmittel-Katalog. Jeder Entwurf wird automatisch geprüft und muss von euch freigegeben
+werden.
+
+**A. Probelauf (ohne Schlüssel, kostenlos) – zuerst ausprobieren**
+
+1. GitHub-App → Repository → **Actions** → **content-generate** → **Run workflow**.
+2. **Welche Inhalte erzeugen?** → `recipes`. **Probelauf** anhaken. Rest so lassen → **Run workflow**.
+3. Nach ca. 1 Minute ist der Lauf grün. **Actions → content-collect → Run workflow → Run workflow**.
+4. Unter **Pull requests** erscheint **„Probelauf: Neue Entwürfe (Rezepte) – nicht mergen“**. Im Text: ein Beispiel-
+   Rezept gespeichert (`probelauf-haferflocken-banane`), eines **ungültig**, eines **abgelehnt**. Kosten: keine.
+5. Pull Request **schließen** (nicht mergen) → **Delete branch**.
+
+**B. Echter Lauf (mit `GEMINI_API_KEY`, kostet Geld)** – erst sinnvoll, wenn es katalog-geprüfte Lebensmittel gibt
+(sonst steht in der Summary „Rezepte gerade nicht möglich“ und es wird nichts gesendet).
+
+**Vorher einmalig: Monatsbudget mit Warnung** (Handy-Browser, ggf. „Desktop-Website anfordern“):
+**console.cloud.google.com** → oben das Projekt des Schlüssels wählen → **☰ → Billing → Budgets & alerts → Create
+budget** → Name `gemini-content`, nur dieses Projekt → **Next** → Betrag **10 $** → **Next** → Schwellen 50/90/100 %
+lassen, E-Mail-Warnung anhaken → **Finish**. Das Budget warnt nur; die harte Grenze ist der Deckel von 3 $ pro Lauf im
+Skript (Details `docs/SETUP.md` Teil E, Schritt 3a).
+
+1. **Actions → content-generate → Run workflow** → Art `recipes`.
+2. **Auswahl**, z. B. `fruehstueck vegan schnell` oder `hauptgericht meal_prep` (`alle` = alle 45 Kombinationen;
+   bei „alle“ wechseln sich Mahlzeit und Ernährungsform ab, und der Start rückt nach jedem gemergten Lauf weiter –
+   die Summary nennt die Startstelle).
+3. **Anzahl**: beim **ersten echten Lauf `3`** (= Standard; prüft günstig, ob Gemini den großen Katalog annimmt),
+   danach höchstens so viele, wie unter den Deckel von 3 $ passen (Summary zeigt die Schätzung). **Modell** leer
+   lassen (Standard für Rezepte `gemini-3.8-flash`, Denktiefe `medium`; Flash-Lite ist günstiger, für Rezepte aber
+   fachlich fraglich). Probelauf **nicht** anhaken → **Run
+   workflow**.
+4. Summary öffnen: Dort stehen **Kostenschätzung** (schlimmster Fall) und Deckel. Liegt sie darüber: „abgebrochen –
+   nichts gesendet“. Steht dort **„AUSGANG UNKLAR“** (Netzfehler beim Absenden): **nicht** neu starten, sondern in
+   Google AI Studio unter „Batches“ nach dem genannten Anzeigenamen (`alpha5-recipes-<Datum>-<kurz>`) sehen und Claude
+   Bescheid geben – sonst zahlt ihr evtl. doppelt.
+5. Meist nach einigen Stunden (Ziel von Google: innerhalb von 24 Stunden) öffnet **content-collect** automatisch den Pull Request **„Neue Entwürfe: …
+   Rezepte“** – schneller: **content-collect → Run workflow**. Im Text: Prüfbericht je Rezept (✅/🔴/🟡), nicht
+   gespeicherte Antworten mit Grund, tatsächliche Kosten.
+6. Ansehen: Vercel-Vorschau der Website → `/admin` → **Rezepte** (Hinweis „KI-Entwurf – fachlich prüfen“). Rot heißt
+   z. B. „deklarierte Allergene passen nicht zu den Zutaten“ – solche Entwürfe nicht freigeben, sondern korrigieren
+   lassen oder löschen. Fehlende Lebensmittel stehen unter **Prüfnotiz** (nur Vorschlag).
+7. Passt alles: auf grünes **ci** warten → **Merge pull request** → **Delete branch**. Die Rezepte sind jetzt
+   **Entwürfe** in `main`. Freigeben: **Actions → content-review** → Art `ids` → IDs der Rezepte → `published`.
+   Vor dem Livegang prüft zusätzlich eine Ernährungsfachkraft.
 
 ## Teil 8 – Live-Test mit Supabase (Pflicht vor „MVP fertig“, W13) – **offen, braucht euch**
 Diesen Test kann Claude in der Cloud-Sitzung nicht machen (kein echtes Konto, keine zwei Handys). Bitte einmal

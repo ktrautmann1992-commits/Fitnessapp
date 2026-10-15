@@ -144,6 +144,16 @@ Bis der echte Katalog da ist: Beispiel-Rezepte mit Testwerten (gekennzeichnet). 
 RLS, `seed_nutrition_content` nur mit Fachprüfung, `save_meal_plan` mit erneuter Filter- und Einwilligungs-Prüfung,
 `replace_shopping_list`, Bewertungen/„mag ich nicht“, Widerruf, Export, Löschung, pgTAP), Einwilligungstexte vor dem
 Login ohne `current_consent_version`. Teil 2 (App im Supabase-Modus, `content-seed` Ernährung) wartet auf Freigabe.
+**Etappe N8 umgesetzt (15.10.2026):** Content-Pipeline auf **Google Gemini** umgestellt (Gründer-Entscheidung
+14.10.2026 „KI läuft über Gemini – überall“): Gemini Batch API mit strukturierter JSON-Ausgabe, Secret
+`GEMINI_API_KEY` (`ANTHROPIC_API_KEY` entfällt), günstige Standardmodelle je Art (`gemini-3.5-flash-lite` für
+Austausch/Packungen, `gemini-3.8-flash` für Rezepte/Übungen/Vorlagen), Deckel 3 $ pro Lauf (höchstens 20 $), Standard
+3 Anfragen, Workflow-Eingabe „modell“. Neue
+Batch-Art `recipes` (nur Katalog-Zutaten, Health-Claims-Regeln, Allergene/Ernährungsform/Schwangerschaft als
+Gegenprüfung, Entwürfe per Pull Request, menschliche Freigabe). An Gemini gehen nur Inhalts-Prompts, nie Nutzerdaten.
+Prompt-Vorgaben für Rezepte: `packages/content/src/pipeline/kinds/recipe.ts` (System-Text) nach `docs/PLAN-PHASE-5.md`
+5.2, 5.3 und 10. Details `docs/PLAN-PHASE-5.md` Umsetzungsstand N8. Hinweis: Der Phase-2-Prompt oben nennt noch die
+„Claude Message Batches API“ – er bleibt zur Nachvollziehbarkeit stehen; gültig ist Gemini.
 **Nachtrag 11.10.2026 (Erweiterungen Teil 2):** Rezeptbestand ist `packages/content/seed/alpha5-rezepte.json` statt
 KI-erzeugter Rezepte – N2b umfasst alle 236 Zutaten, N2c ist der Import (Prompt B Schritte 3–5), N3–N6 enthalten den
 Umfang von Prompt C; neue Etappen N9–N14 (Prompts D, F, E). Details `docs/PLAN-PHASE-5.md` Abschnitt 19.

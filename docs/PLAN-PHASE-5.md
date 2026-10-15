@@ -838,7 +838,7 @@ Zusätzlich: K9 (Unverträglichkeit + „mag ich“ derselben Gruppe → ausgesc
 
 **N7 – Supabase.** _Teil 1 (Datenbank) umgesetzt am 14.10.2026, Teil 2 (App, `content-seed`) als Vorschlag – siehe Umsetzungsstand N7._ Migrationen (Enums eigene Datei + `enums.ts`; Inhaltstabellen + `seed_content`; `nutrition_prefs`-Spalten **+ `nutritionSetupAvailable` im Supabase-Backend auf `true`** (R2-S3); `meal_plans`/`items`/`shopping_*` mit RLS, Spaltenrechten, Indizes; RPCs 7.3 inkl. Faktor-≠-1-Prüfung; Widerruf; Export), pgTAP 23–26 + Ergänzungen, `database.types.ts`, `db-sync.test.ts`, `supabase-backend.ts`, Sync-Warteschlange, geschützter Speicher. **Vorher: Fachprüfung durch eine Ernährungsfachkraft** (Gründer-Entscheidung 6). _DoD:_ `db-test` grün, Live-Test mit zwei Geräten; **Zitat- und Wertprüfung gegen die Originale** (Compendium-Codes/MET-Werte, Koletzko 2018, Janmahasatian 2005, Loucks 2011 brutto/netto, BfR-Koffein, Katch-McArdle, D-A-CH-PAL, Iraki 2019) erledigt und alle „VOR LIVEGANG FACHLICH PRÜFEN“-Stellen in `constants.ts` aufgelöst (aus N1 verschoben, Wächter N1 K6). **Erst wenn echte Konten kommen.** **Zusätzlich (Wächter N2d K9):** Rezept-Seed und Supabase-Tabelle transportieren `ingredients`, `steps_de`, `tip_de`, `no_cook`, Zeiten, `equipment_de`, Titel/Beschreibung und `meta.import_assumptions*` **unverändert** (fehlt `meta`, gälte der Stand als „none“ = unsichere Richtung); ein `db-sync`-/pgTAP-Test vergleicht `importAssumptionsState` vor und nach dem Seed. **Zusätzlich (Wächter N5a S4):** `meal_plans`/`meal_plan_items` speichern weder Planband noch `safetyKey`; 6.6 wird dafür ohne diese Felder umgesetzt. **Zusätzlich (N11):** Packungsgrößen kommen als Inhalt aus `content/package-sizes/` (nur `published`, R24 grün) über `seed_content()` in die Spalte `foods.package_size_g` (bzw. eine Tabelle `food_package_sizes` mit Prüfvermerk, Entscheidung beim Bau von N7) – `content/foods/` bleibt allein `foods-import` vorbehalten (S3); keine Nutzerdaten, keine Tabelle für die Kühlschrank-Suche (die Auswahl wird nie gespeichert). **Zusätzlich (Wächter N10 H8):** `food_dislikes` **ohne** `created_at`/Zeitstempel (sonst ließe sich ein „Daumen runter“ ohne Grund vom selben Tag auf „Unverträglich“ zurückführen); der Leer-Grund `rated_down` (`SLOT_EXCLUSION_REASONS`) wird in `mealPlanPayloadSchema`/`save_meal_plan` zugelassen; `recipe_ratings` mit CHECK `reason in ('taste','effort','cost','satiety')` und CHECK `reason is null or value = 'down'`, Unique `(user_id, recipe_id)`. **Zusätzlich (N13):** keine neue Tabelle oder Spalte – die Resteplanung braucht nur die Packungsgrößen aus N11 (s. o.); geteilte Portionen mit eigenem Beilagen-Faktor werden erst mit P1 (Phase 11) gespeichert, bis dahin bleibt `meal_plan_items` bei einem Faktor je Mahlzeit (die bestehende Prüfung „Faktor ≠ 1 ohne Einwilligung → abgelehnt“ gilt unverändert). **Zusätzlich (N14):** keine neue Tabelle oder Spalte – die Hinweise „Nutzt deinen Rest“ werden aus dem gespeicherten Plan und den Packungsgrößen nachgerechnet, nie gespeichert; Reste aus der Vorwoche (G-N13-5) bräuchten eine Speicherung und sind nicht umgesetzt. Mit Phase 7: `has_entitlement` für die Resteplanung (Premium, 19.9) – serverseitig nur prüfbar, soweit der Server den Plan selbst nachrechnet (Vormerkung).
 
-**N8 – Batch-Pipeline Rezepte (optional, später).** `kinds/recipe.ts` (Matrix, Prompts, Structured Output nur mit Katalog-IDs), Probelauf ohne Schlüssel, `content-generate`/`collect` mit `ANTHROPIC_API_KEY`. _DoD:_ Probelauf grün, Kostenschätzung, PR mit Entwürfen.
+**N8 – Batch-Pipeline Rezepte (optional, später).** `kinds/recipe.ts` (Matrix, Prompts, Structured Output nur mit Katalog-IDs), Probelauf ohne Schlüssel, `content-generate`/`collect` mit `ANTHROPIC_API_KEY`. _DoD:_ Probelauf grün, Kostenschätzung, PR mit Entwürfen. **→ Umgesetzt am 15.10.2026 mit Google Gemini statt Claude (Gründer-Entscheidung 14.10.2026, Secret `GEMINI_API_KEY`) – siehe Umsetzungsstand N8.**
 
 **Reihenfolge:** N0 → N1 (‖ N2a) → N2b → N2c → N3 → N4 (+ N2d) → N5 → N6; N7 und N8 später. **Ergänzt am 11.10.2026 (Abschnitt 19):** danach N9 → N10 → N11 → N12 → N13 → N14; W1 mit Phase 10, P1 mit Phase 11. „Parallel zu N1“ gilt nur für N2a. N3 kann mit Fixtures schon nach N1 + N2a beginnen; die CI-Beispielwoche mit echtem Katalog folgt, sobald N2c fertig ist.
 
@@ -2701,7 +2701,9 @@ Regeln in `packages/core`. Nur Testmodus; Supabase-Modus bis N7 unverändert (Ta
 - **Nur dokumentiert:** **K3** Die Rezeptansicht rechnet die Haltbarkeit nur nach einem Tausch mit den tatsächlichen
   Zutaten, nicht bei einem Ersatzprodukt (vorbestehend). **K6** Anbieterwechsel (Gemini): Batch-Art ist
   anbieterneutral (Zod, Enum mit Katalog-IDs); beim Wechsel prüfen, ob `responseSchema` Enums dieser Größe und strikte
-  Objekte abbildet; `maxTokens` „inkl. Denken“ ist Anthropic-spezifisch.
+  Objekte abbildet; `maxTokens` „inkl. Denken“ ist Anthropic-spezifisch. **→ Erledigt mit N8 (15.10.2026):** Bei
+  Gemini 3 zählt `maxOutputTokens` Denken und Antwort ebenfalls zusammen (Umsetzungsstand N8); das Katalog-Enum steht
+  im `responseJsonSchema`, ob Gemini ~236 Werte annimmt, zeigt der erste echte Lauf (Anzahl 3, Wächter N8 H7).
 
 **Wächter N9 Runde 2 (14.10.2026): FREIGABEFÄHIG** (Bericht `waechter-n9-r2.md`). Umgesetzt: **Soll** Zurücknehmen
 nach einem Meal-Prep-Tausch bezieht auch Restetage ein, die der Tausch zu „frisch gekocht“ gemacht hat (gleiches Rezept,
@@ -3808,3 +3810,204 @@ Migrationsdateien wurden deshalb direkt geändert (Zeitstempel unverändert, kei
   Grundumsatz aus den gespeicherten Körperdaten, mit Ablehnung), damit die Schutzgrenze auch gegen manipulierte Clients
   greift? _Empfehlung: ja, mit Teil 2._
 - Weiter offen: Zitat-/Wertprüfung aus N1 K6, Live-Test (Teil 8), Premium-Prüfung mit Phase 7 (19.9, 16 B (l)).
+
+### N8 – KI-Rezepte offline + Anbieterwechsel auf Google Gemini (umgesetzt, 15.10.2026, ohne Commit)
+
+**Gründer-Entscheidung 14.10.2026: „KI läuft über Gemini – überall“** (Offline-Content-Generierung und später
+Premium). Die zugehörige CLAUDE.md-Änderung liegt als PR #62 offen (nur Gründer mergen); diese Etappe ändert CLAUDE.md
+nicht. Das GitHub-Secret `GEMINI_API_KEY` ist laut Gründern eingetragen.
+
+**Was jetzt gilt:**
+
+1. **Anbieter Gemini, Claude-Pfad entfernt.** `@anthropic-ai/sdk` ist aus `packages/content` entfernt; nichts anderes
+   hing davon ab (geprüft: nur Pipeline, CLI, Tests). Neu: anbieter-neutrale Schnittstelle
+   `pipeline/provider/types.ts` (`ContentApiClient`: `countTokens`, `createBatch`, `getBatch`; neutrales
+   `BatchResult`) und die Umsetzung `pipeline/provider/gemini.ts` mit dem offiziellen SDK **`@google/genai` 2.27.0**
+   (fest gepinnt, Veröffentlichung 02.10.2026). `generate`, `collect`, `results`, `dry-run` kennen nur noch die
+   Schnittstelle.
+2. **API-Form (Gemini Batch API, eingebettete Anfragen):** `batches.create({ model, src: InlinedRequest[] })` →
+   `POST /v1beta/models/{model}:batchGenerateContent`; jede Anfrage trägt `metadata.key = custom_id`, als Konfiguration
+   `systemInstruction`, `responseMimeType: "application/json"`, `responseJsonSchema` (aus dem Zod-Antwort-Schema),
+   `maxOutputTokens` (= bisherige Höchstzahl je Art, bei Gemini 3 inkl. Denken) und
+   `thinkingConfig.thinkingLevel` (= `CONTENT_EFFORT`: `minimal|low|medium|high`, Standard je Art, s. Punkt 3). Stand über
+   `batches.get({ name })`, fertig bei `JOB_STATE_SUCCEEDED|PARTIALLY_SUCCEEDED|FAILED|CANCELLED|EXPIRED`; Antworten in
+   `dest.inlinedResponses`. Kosten vorab: `models.countTokens` (kostenlos) je Anfrage. Quellen: Google Gemini Cookbook
+   `quickstarts/Batch_mode.ipynb` und `Get_started.ipynb` (github.com/google-gemini/cookbook, Stand 15.10.2026), SDK
+   `@google/genai` (Typen `InlinedRequest`, `BatchJob`, `GenerateContentConfig.responseJsonSchema`).
+3. **Modell und Kosten (Gründer-Vorgabe 15.10.2026: „günstiges Modell, nicht zu viele Kosten bei Gemini“):**
+   Standard **je Inhaltsart** (`defaultModel`/`defaultEffort` in `kinds/*.ts`), änderbar je Lauf über die Workflow-
+   Eingabe **„modell“** bzw. dauerhaft über die GitHub-Variablen `CONTENT_MODEL`/`CONTENT_EFFORT` (gelten dann für alle
+   Arten):
+
+   | Art                             | Modell                  | Denktiefe | Grund                                                            |
+   | ------------------------------- | ----------------------- | --------- | ---------------------------------------------------------------- |
+   | Packungsgrößen, Austausch       | `gemini-3.5-flash-lite` | `low`     | eng begrenzt (eine Zahl bzw. ≤ 4 Katalog-IDs + Faktor), R23/R24  |
+   | Rezepte, Übungen, Plan-Vorlagen | `gemini-3.8-flash`      | `medium`  | viel Fachlogik (Allergene, Schwangerschaft, Nährwerte, Training) |
+
+   **Begründung:** `gemini-3.5-flash-lite` ist das günstigste Modell, das die offizielle Batch-Anleitung (Google Gemini
+   Cookbook `quickstarts/Batch_mode.ipynb`, Stand 15.10.2026) ausdrücklich als Batch-Modell nennt („fastest,
+   lowest-cost model in the 3.5 family“); strukturierte Ausgabe per `responseJsonSchema` ist eine Funktion der
+   `generateContent`-Konfiguration, die auch Batch-Anfragen nutzen. `gemini-3.1-flash-lite` (SDK-Typen, kein
+   Preview) wäre laut Preisvergleichsseiten noch günstiger, steht aber nicht in der Batch-Liste des Cookbooks – nur als
+   Option mit Preis hinterlegt (lehnt die API es ab, scheitert der Lauf kostenlos). Für Rezepte ist Flash-Lite fachlich
+   fraglich (Allergen- und Schwangerschafts-Gegenprüfung, Nährwert-Rechnung) – daher `gemini-3.8-flash` (Standard-Modell
+   beider Cookbook-Anleitungen, ohne „-preview“). Denktiefe so niedrig wie sinnvoll (Denk-Token zählen als Ausgabe).
+   **Deckel:** `CONTENT_MAX_USD` Standard **3 $** pro Lauf (vorher 15 $), harte Obergrenze **20 $** (vorher 100 $);
+   Workflow-Eingabe „anzahl“ Standard **3** (vorher 10). Ein Modell ohne Preis in `pricing.ts` bricht vor dem ersten
+   API-Aufruf ab (Kostendeckel fällt nie still aus).
+
+4. **Gleiche Prüfkette wie bisher:** Antwort → JSON → Zod-Antwort-Schema (inkl. aller Grenzen) → Datei-Schema (R1/Ü1)
+   → Entwurf `status: draft`, `meta.origin: batch`, `meta.model`, `meta.batch_id` (Gemini `batches/…`),
+   `expert_reviewed: false` → `content:validate` (alle Regeln) → Pull Request. Freigabe nur über `content-review` +
+   menschlichen Merge. Probelauf ohne Schlüssel unverändert (feste Antworten, keine Kosten).
+5. **Neue Batch-Art `recipes`** (`kinds/recipe.ts`): Matrix Mahlzeit (3) × Ernährungsform (3) × Schwerpunkt `alltag`,
+   `schnell`, `meal_prep`, `ohne_kochen`, `nach_training` (5) = 45 Zellen; das Modell wählt die ID (wie Übungen,
+   Kollisionen → „ID existiert bereits“). Zutaten **nur Katalog-IDs** (katalog-geprüft R19, ohne Alkohol R12) als
+   `enum` im Schema; feste Matrix-Werte im Schema bzw. per Zod (`meal_types` enthält die Mahlzeit, `vegan`/
+   `vegetarian` fest, `no_cook`/`meal_prep.suitable` fest beim Schwerpunkt, „schnell“ ≤ 10 min, „nach dem Training“
+   mit Tag). System-Text: Health-Claims-Liste (R10, `HEALTH_CLAIM_TERMS`), verbotene medizinische Begriffe, Marken,
+   kein Alkohol, Allergen-Gruppen (alle 23 mit Bedeutung), Regeln zu Ernährungsform, Schwein, Schwangerschaft
+   (5.2 R2-S2), `heated`, `no_cook` (R14), Meal-Prep (R9), Mengen (R11), kcal-Richtwerte (R5); Katalog je Lebensmittel
+   mit Nährwerten, umrechenbaren Einheiten (R2), Gruppen, tierischen Bestandteilen, Fleischart, Schwangerschafts-
+   Hinweis, Kühlschrank-Tagen. Anfrage je Zelle mit vorhandenen Rezepten derselben Mahlzeit/Ernährungsform.
+6. **Workflows:** `content-generate.yml` mit Art `recipes`, Eingabe „modell“, Secret `GEMINI_API_KEY` statt
+   `ANTHROPIC_API_KEY` (im Probelauf wird der Schlüssel gar nicht übergeben); `content-collect.yml` mit
+   `GEMINI_API_KEY`. Schlüssel nur im jeweiligen Schritt, von GitHub maskiert, vom Skript zusätzlich geschwärzt
+   (`redactSecret` in Fehlermeldungen und Berichten), nie in Merkdatei/Entwürfen/Pull Requests; keine Artefakte.
+   actionlint grün.
+7. **Datenschutz:** An Gemini gehen ausschließlich Inhalts-Prompts (Rollen-Text, Regeln, Katalog, Matrix-Werte,
+   vorhandene Inhalts-IDs/-Titel) – **nie Nutzerdaten**; die Pipeline hat keinen Supabase-Zugriff. Deshalb ist für die
+   Offline-Erzeugung kein AVV nötig; vor Premium-Echtzeit-KI schon (KONZEPT 14/15, SETUP Teil E – Gründer-Aufgabe).
+8. **Admin-Texte anbieter-neutral:** Herkunft `batch` = „KI-Entwurf (Batch-API, Modell siehe unten)“, Hinweis
+   „Dieser Inhalt wurde von einer KI erstellt …“ (vorher „Claude“).
+
+**Präzisierungen (vom Plan nicht ausdrücklich geregelt, vorsichtig gelöst):**
+
+- **Batch statt synchroner Aufrufe:** Der Ablauf generate → (warten) → collect passt 1:1 zur Gemini Batch API (halber
+  Preis, Ziel 24 Stunden). Eingebettete Anfragen statt JSONL-Datei: höchstens 200 Anfragen je Lauf, Größe vor dem
+  Senden geprüft (19 MB, API-Grenze 20 MB) – sonst Abbruch „Batch zu groß“, nichts gesendet.
+- **Rate-Limit/Fehler:** Zählen und Abfragen: 408/429/5xx werden mit wachsender Pause (2/4/8/16 s, höchstens
+  5 Versuche) wiederholt. Das **Anlegen** des Batches nur bei **429** (sicher abgewiesen, Wächter N8 S3) – bei 503 bzw.
+  5xx könnte das Backend den Batch schon angenommen haben, ein zweiter Versuch wäre doppelt bezahlt. Zeitlimit je
+  Aufruf **120 s** (`REQUEST_TIMEOUT_MS`, SDK `httpOptions.timeout`). Endet das Anlegen ohne HTTP-Status (Netzfehler,
+  Zeitlimit) oder mit 5xx/408, meldet der Lauf **„AUSGANG UNKLAR – Batch wurde evtl. trotzdem angelegt“** mit dem
+  **eindeutigen Anzeigenamen** `alpha5-<art>-<Datum>-<zufällig>` (in Google AI Studio unter „Batches“ zu finden) und
+  „nicht sofort neu starten“ (Wächter N8 S2). Hinweis „GitHub-Secret GEMINI_API_KEY prüfen“ bei 401/403 **und** bei
+  HTTP 400 mit „API key not valid“/`API_KEY_INVALID` – so antwortet die Gemini API real auf falsche Schlüssel (Wächter
+  N8 S1). Fehlermeldungen tragen **kein** `cause` mehr (die SDK-Meldung wäre ungeschwärzt, Wächter N8 H1). Die
+  SDK-eigenen Wiederholungen sind abgeschaltet (nachvollziehbar, testbar).
+- **Zuordnung:** über `metadata.key` (= `custom_id`). Nur wenn **keine** Antwort eine Kennung trägt, gilt die laut
+  API garantierte Reihenfolge der Anfragen als Rückfall; fehlt sie nur bei einzelnen, wird nicht geraten – die Antwort
+  zählt als „unbekannte custom_id“, die Anfrage als Lücke „kein Ergebnis“ (Wächter N8 H2).
+- **Teilergebnisse:** `CANCELLED`/`EXPIRED`/`FAILED` mit teilweisen Antworten → vorhandene werden verarbeitet, fehlende
+  als „abgebrochen/abgelaufen/Fehler – erneut versuchen“ gemeldet; `PARTIALLY_SUCCEEDED` gilt als fertig.
+- **Ende-Gründe:** `STOP` → auswerten; `MAX_TOKENS` → „abgeschnitten“; `SAFETY`, `RECITATION`, `BLOCKLIST`,
+  `PROHIBITED_CONTENT`, `SPII` (und Bild-Varianten) sowie blockierte Anfragen (`promptFeedback.blockReason`) →
+  „abgelehnt bzw. vom Sicherheitsfilter blockiert“; sonst „unerwarteter Stopp-Grund“. Denk-Teile (`thought`) werden nie
+  als Antwort gelesen.
+- **JSON-Schema für Gemini:** nur die laut SDK unterstützten Angaben (`type`, `enum`, `items`, `min/maxItems`,
+  `minimum/maximum`, `anyOf`, `properties`, `required`, `additionalProperties`, `propertyOrdering`, …); `const` → `enum`
+  mit einem Wert, Muster/Text-Längen entfernt. Zod prüft alle Grenzen danach wie bisher. Optionale Felder sind bei
+  Gemini erlaubt (bei Claude mussten alle Felder Pflicht sein).
+- **Token-Zählung:** Die Developer API zählt in `countTokens` keinen System-Text und keine Konfiguration – gezählt
+  werden System-Text, Anfrage und Schema als Text (Näherung, eher zu hoch). Abgerechnet werden danach die gemeldeten
+  Token (`promptTokenCount`; Ausgabe = `candidatesTokenCount` + `thoughtsTokenCount`), zwischengespeicherte Token
+  vorsichtig zum vollen Preis.
+- **Preise (vorsichtig, eher zu hoch):** Die offizielle Preisseite war aus der Sitzung nicht erreichbar (Netz-Sperre);
+  Quellen sind mehrere Preisvergleichsseiten (u. a. openrouter.ai, eesel.ai, anotherwrapper.com, pricepertoken.com,
+  lmmarketcap.com). Hinterlegt je 1 Mio. Token Eingabe/Ausgabe: `gemini-3.8-flash` **0,75 $ / 3,75 $** (Batch-Preis ab
+  01.01.2027; bis 31.12.2026 laut Quellen 0,375 $ / 1,875 $), `gemini-3.5-flash-lite` **0,30 $ / 2,50 $** (Normalpreis,
+  OHNE Batch-Rabatt), `gemini-3.1-flash-lite` **0,25 $ / 1,50 $** (Normalpreis, OHNE Batch-Rabatt; Batch laut Quellen
+  0,125 $ / 0,75 $). Schlimmster Fall (nur Ausgabe) für 3 Anfragen: Rezepte ≈ 0,18 $, Packungsgrößen ≈ 0,03 $,
+  Austausch ≈ 0,06 $; dazu die gezählte Eingabe.
+- **Merkdatei Fassung 2** (`record_version: 2`, `provider: "gemini"`, `kind` + `recipe`): Claude-Merkdateien
+  (Fassung 1) gab es nur auf Arbeits-Branches (heute keine offenen `content/batch-*`); content-collect meldet sie als
+  ungültig, statt sie mit dem falschen Anbieter abzuholen.
+- **Rezepte: deklarierte Angaben bleiben KI-Angaben.** `declared_per_serving`, `declared_diet`,
+  `declared_allergens`, `contains_pork`, `declared_pregnancy_caution` werden NICHT aus dem Katalog überschrieben –
+  sie sind wie bei allen Rezepten die Gegenprüfung (R3, R6, R7, R8, R13); weicht die KI ab, ist der Entwurf rot und nicht
+  freigebbar. Die App nutzt ohnehin nur die berechneten Werte.
+- **Rezepte: neue Lebensmittel nur als Vorschlag** (5.4): Feld `missing_foods_de` (höchstens 5) in der Antwort; es
+  landet als Satz in `meta.review_note` („KI-Vorschlag fehlender Lebensmittel …“), nie als Zutat und nie in
+  `content/foods/` (bleibt allein `foods-import` vorbehalten).
+- **Rezepte: `heated` und `role` sind bei KI-Rezepten Pflicht** (für alle Zutaten, nicht nur Ei/Fisch/Fleisch) –
+  strenger als das Datei-Schema, damit R1/R13 nie an einer fehlenden Angabe scheitern und der Austausch (N9) Rollen hat.
+- **Rezepte ohne Katalog:** Gibt es keine katalog-geprüften Lebensmittel (heute in `main` der Fall), meldet ein echter
+  Lauf „Rezepte gerade nicht möglich“ und sendet nichts (neue optionale Methode `unavailableReason` der Inhaltsarten).
+  Der Probelauf geht trotzdem (Beispiel-IDs; fehlen sie im Katalog, meldet `content:validate` R2 rot – nicht
+  blockierend für Entwürfe, Probelauf-Inhalte sind ohnehin nie freigebbar).
+- **Rezepte werden nie „übersprungen“** (wie Übungen): Je Zelle sind viele Rezepte sinnvoll; Wiederholungen verhindert
+  die Liste vorhandener Rezepte im Anfrage-Text und die ID-Prüfung.
+- **Max. Ausgabe-Token Rezept:** 16.000 mit Denktiefe **`medium`** (Wächter N8 H4 + Gründer-Vorgabe „günstig“): Die
+  JSON-Antwort braucht etwa 1.500–3.000 Token, es bleiben über 12.000 Token Reserve fürs Denken. Mit `high` wäre das
+  knapp (abgeschnitten = bezahlt, aber verworfen); wer `CONTENT_EFFORT=high` setzt, prüft die ersten Läufe auf
+  „abgeschnitten“. Schlimmster Fall 0,06 $ Ausgabe je Rezept.
+- **Reihenfolge bei „alle“ (Wächter N8 H5):** Rezept-Zellen laufen Schwerpunkt → Mahlzeit → Ernährungsform (die ersten
+  9 decken jede Mahlzeit × Ernährungsform ab) und sind um die Zahl vorhandener KI-Rezepte aus Batch-Läufen (nicht
+  zurückgezogen, ohne Probelauf) modulo 45 gedreht – deterministisch aus dem Stand in `main`; nach jedem gemergten Lauf
+  rückt der Start weiter. Die Summary echter Läufe nennt die Startstelle (`selectionNote`).
+
+**Gegenproben (Tests, ohne Netz – Gemini immer gefälscht):**
+
+- `pipeline/provider/gemini.test.ts` (24): realistischer ungültiger Schlüssel (HTTP 400 `API_KEY_INVALID`, S1),
+  Anlegen bei Netzfehler/Zeitlimit „AUSGANG UNKLAR“ mit Anzeigename (S2), 500/503 beim Anlegen nicht wiederholt (S3),
+  sicher abgewiesener 400 ohne „unklar“, kein Schlüssel in der Fehlerkette (`cause`, `util.inspect`, H1), gemischte
+  Kennungen ohne Positions-Rückfall (H2); Anfrage-Format (`metadata.key`, JSON-Ausgabe, Schema, Denkstufe), nur
+  Inhalts-Felder (keine Nutzerdaten, kein Schlüssel), Token-Zählung, **Rate-Limit** (429 → Wiederholung → Erfolg;
+  dauerhaft 429 → Abbruch nach 5 Versuchen, kein Batch), 500 beim Anlegen nicht wiederholt, zu großer Batch, 401 mit
+  geschwärztem Schlüssel, **Abbruch** (AbortError), Stand „läuft noch“, Zuordnung über `metadata.key` und Rückfall
+  Reihenfolge, Ende-Gründe (abgeschnitten, Sicherheitsfilter, blockierte Anfrage, Fehler je Antwort), **Teilergebnisse**
+  (abgebrochen/abgelaufen/fehlgeschlagen), Datei-Ergebnis abgelehnt, Ende-zu-Ende bis `processResults` mit
+  **ungültigem JSON**, Teilergebnis und gültigem Entwurf.
+- `pipeline/kinds/recipe.test.ts` (15): abwechselnde, deterministisch rotierte Reihenfolge (H5), Matrix/Auswahl/Aliase, ohne Katalog nicht möglich, Schema nur Katalog-IDs ohne
+  Alkohol, feste Matrix-Werte, Schwerpunkte, Prompt-Regeln (alle Health-Claims-Begriffe, alle 23 Allergen-Gruppen,
+  Schwangerschaft, Schwein, Salz-Grenze), Katalog-Zeilen, vorhandene Rezepte im Anfrage-Text, Antwort → Entwurf
+  (Feldreihenfolge, gültig nach `recipeSchema`, Prüfnotiz für fehlende Lebensmittel).
+- `pipeline-e2e.test.ts`: Rezepte-Probelauf bis zum Pull Request (Entwurf, ungültig + abgelehnt im Bericht, keine
+  Kosten), echter Rezept-Lauf ohne Katalog sendet nichts, Rate-Limit beim Absenden → kein Branch, keine Merkdatei;
+  bestehende Läufe (Kostendeckel, Pending, ohne Schlüssel, Kosten im Bericht) auf Gemini umgestellt.
+- `results.test.ts`, `cost-and-selection.test.ts`, `schema-and-prompts.test.ts`: neutrales Ergebnis-Format,
+  Standard je Art (Flash-Lite/Flash, `low`/`medium`; jedes Standardmodell hat einen Preis; Eingabe geht vor), Deckel
+  3 $/Obergrenze 20 $/Anzahl 3, Gemini-Preise, Modell ohne Preis bricht **vor** dem ersten API-Aufruf ab, Gemini-Schema-Regeln (`const` → `enum`,
+  `propertyOrdering`, unzulässige Angaben).
+- Gesamt: `pnpm turbo run lint typecheck test --force` zweimal grün (packages/content 27 Testdateien), `pnpm
+format:check`, `pnpm build`, actionlint für `content-generate.yml` und `content-collect.yml` grün.
+
+**Wächter-Prüfung N8 (15.10.2026): eingearbeitet.** Kein Blocker. S1–S4, H1, H2, H4, H5, H7 umgesetzt (s. o.; S4 =
+Korrektur der N9-Notiz „`maxTokens` inkl. Denken ist Anthropic-spezifisch“, H7 = erster echter Lauf mit „Anzahl“ 3 in
+SETUP/HANDY). Nur dokumentiert:
+
+- **H3:** Die Developer API liefert `job.error` über das SDK nicht – bei `FAILED` steht nur „Batch fehlgeschlagen“.
+- **H6:** Zwei offene Batch-Branches können dieselbe Rezept-ID erzeugen (`takenIds` kennt nur `main`) → Konflikt im
+  zweiten Pull Request; wie bei Übungen. Abhilfe: Läufe nacheinander abholen und mergen.
+- **H8:** Katalog-Namen und Titel vorhandener Rezepte gehen ungefiltert in den Prompt – beides per Pull Request von
+  Menschen gemergt; die Ausgabe ist durch Schema-`enum`, Zod und fest überschriebenen Status eng begrenzt.
+- **H9:** Fehlertexte der API (`errored.detail`, `finishDetail`) stehen unverändert im PR-Text (keine Secrets).
+- **H10:** `content-collect` gibt `GEMINI_API_KEY` an den ganzen Schritt (auch Prettier/Typprüfung auf Batch-Branches);
+  setzt Schreibrecht aufs Repository voraus, Muster wie bisher mit Anthropic. Kein `pull_request_target`, Eingaben nur
+  über `env:`.
+- **H11:** Falsche Modell-ID kostet nichts (ohne Preis: Abbruch vor dem Aufruf; ohne Batch-Unterstützung: 4xx beim
+  Zählen/Anlegen, nicht wiederholt).
+- **H12:** Keine Regression; vor dem Merge mit `git ls-remote --heads origin 'content/batch-*'` bestätigen, dass keine
+  Claude-Merkdatei (Fassung 1) offen ist (am 15.10.2026: keine).
+- **H13:** „24 Stunden“ ist Googles Ziel, keine Zusage – Doku entsprechend formuliert.
+
+**So testest du es am Handy:** `docs/HANDY-ANLEITUNG.md` Teil 7e (Probelauf `recipes` ohne Schlüssel; echter Lauf erst
+mit katalog-geprüften Lebensmitteln). Einrichtung Gemini: `docs/SETUP.md` Teil E.
+
+**Offen für die Gründer (N8):**
+
+- **G-N8-1:** Preise von `gemini-3.8-flash`, `gemini-3.5-flash-lite` und `gemini-3.1-flash-lite` auf
+  ai.google.dev/gemini-api/docs/pricing bestätigen (hinterlegt vorsichtig, s. Präzisierungen). _Empfehlung:
+  bestätigen; bei Abweichung `pricing.ts` anpassen lassen (genauere Preise = mehr Anfragen unter dem Deckel)._
+- **G-N8-2:** Modellwahl – Standard je Art wie oben (Flash-Lite für einfache Arten, Flash für Rezepte). Nach den
+  ersten 3 Rezepten prüfen: Reicht Flash-Lite auch für Rezepte (Eingabe „modell“ `gemini-3.5-flash-lite` probieren)?
+  Stärkere Modelle (`gemini-4-argon` – laut Berichten nur eingeschränkt freigegeben, nicht in SDK 2.27.0;
+  `gemini-3.1-pro-preview` – „preview“ = nicht stabil) bräuchten erst einen Preis. _Empfehlung: so starten._
+- **G-N8-3:** Bezahlte Stufe für den Schlüssel (Projekt mit Abrechnung) und Monatsbudget mit Warnung (**10 $**) in
+  Google Cloud einrichten (SETUP Teil E, Schritt 3a). Bestätigen, dass `ANTHROPIC_API_KEY` gelöscht und widerrufen
+  werden darf.
+- **G-N8-4:** AVV/Datenverarbeitungsbedingungen mit Google erst vor Premium-Echtzeit-KI (Phase 7b) – Zuständigkeit und
+  Zeitpunkt festlegen (KONZEPT 14/15).
+- **G-N8-5:** Sollen bei KI-Rezepten die deklarierten Nährwerte/Allergene doch aus dem Katalog vorbelegt werden (weniger
+  rote Entwürfe, aber keine Gegenprüfung der KI mehr)? _Empfehlung: nein, so lassen._

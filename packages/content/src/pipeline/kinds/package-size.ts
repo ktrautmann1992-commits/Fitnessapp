@@ -20,6 +20,8 @@ import {
 } from '@fitnessapp/core';
 import { z } from 'zod';
 
+import { MODEL_FLASH_LITE } from '../config';
+
 import { countsAsPresent } from './present';
 import { OUTPUT_FORMAT_TEXT, ROLE_TEXT } from './prompt-rules';
 import type { ContentKindDefinition, GenerationCell, LibraryContext } from './types';
@@ -150,6 +152,9 @@ export const packageSizeKind: ContentKindDefinition = {
   labelDe: 'Packungsgrößen',
   folder: 'package-sizes',
   contentSchema: packageSizeSchema,
+  // Standard: eine Zahl je Lebensmittel; R24 prüft danach (Gründer-Vorgabe 15.10.2026, docs/PLAN-PHASE-5.md N8).
+  defaultModel: MODEL_FLASH_LITE,
+  defaultEffort: 'low',
   maxTokens: PACKAGE_SIZE_MAX_TOKENS,
   dimensions: [
     {

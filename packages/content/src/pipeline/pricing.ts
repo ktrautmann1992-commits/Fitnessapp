@@ -1,11 +1,18 @@
 /**
- * Kosten der Batch-Läufe (docs/PLAN-PHASE-2.md Abschnitt 10).
+ * Kosten der Batch-Läufe (docs/PLAN-PHASE-2.md Abschnitt 10, Anbieter Gemini seit docs/PLAN-PHASE-5.md N8).
  *
- * Quelle: Anthropic-Preisliste, Stand 25.09.2026 (Normalpreis je 1 Mio. Token); die Message Batches API kostet
- * die Hälfte. Denk-Token zählen als Ausgabe. Für ein Modell ohne hinterlegten Preis wird NICHT geschätzt,
- * sondern abgebrochen – der Kostendeckel soll nie stillschweigend ausfallen.
+ * Die Gemini Batch API kostet die Hälfte des Normalpreises (Google Gemini Cookbook, `quickstarts/Batch_mode.ipynb`:
+ * „Batches are priced at a 50% discount compared to the standard API“). Denk-Token zählen als Ausgabe.
+ *
+ * Preis-Stand (15.10.2026): Die offizielle Preisseite (ai.google.dev/gemini-api/docs/pricing) war aus der
+ * Umsetzungs-Sitzung nicht erreichbar. Mehrere Preisvergleichsseiten nennen für `gemini-3.8-flash` einen
+ * Einführungspreis von 0,75 $ / 3,75 $ je 1 Mio. Token (Batch 0,375 $ / 1,875 $) bis 31.12.2026 und danach
+ * 1,50 $ / 7,50 $. Hinterlegt ist VORSICHTIG der höhere Preis (Batch 0,75 $ / 3,75 $): Der Kostendeckel schätzt so
+ * eher zu hoch als zu niedrig. Gründer-Aufgabe: Preis auf der offiziellen Seite prüfen (docs/SETUP.md Teil E).
+ *
+ * Für ein Modell ohne hinterlegten Preis wird NICHT geschätzt, sondern abgebrochen – der Kostendeckel soll nie
+ * stillschweigend ausfallen.
  */
-import type Anthropic from '@anthropic-ai/sdk';
 
 export interface BatchPrice {
   /** US-Dollar je 1 Mio. Eingabe-Token (Batch-Preis). */
@@ -15,19 +22,20 @@ export interface BatchPrice {
 }
 
 /**
- * Batch-Preise = 50 % des Normalpreises. Nur Modelle mit Structured Outputs und Denktiefe (`effort`);
- * ein anderes Modell braucht hier erst einen Eintrag.
+ * Batch-Preise (Normalpreis × 0,5); ein anderes Modell braucht hier erst einen Eintrag. Alle Werte VORSICHTIG (eher zu
+ * hoch), weil die offizielle Preisseite aus der Sitzung nicht erreichbar war (Stand 15.10.2026, Drittanbieter-Seiten):
+ * - `gemini-3.8-flash`: s. o. – hinterlegt der Preis ab 01.01.2027 (Batch 0,75 $ / 3,75 $).
+ * - `gemini-3.5-flash-lite`: Normalpreis laut Preisvergleichsseiten 0,30 $ / 2,50 $; hinterlegt OHNE Batch-Rabatt
+ *   (0,30 $ / 2,50 $). In der Batch-Anleitung des Cookbooks ausdrücklich als Batch-Modell genannt.
+ * - `gemini-3.1-flash-lite`: Normalpreis laut Preisvergleichsseiten 0,25 $ / 1,50 $ (Batch dort 0,125 $ / 0,75 $);
+ *   hinterlegt OHNE Batch-Rabatt. Batch-Unterstützung nicht in der Cookbook-Liste bestätigt – nur als Option
+ *   (Workflow-Eingabe „modell“); lehnt die API das Modell ab, scheitert der Lauf kostenlos beim Zählen/Anlegen.
  */
 export const BATCH_PRICES_USD: Readonly<Record<string, BatchPrice>> = {
-  'claude-opus-5-5': { inputPerMTok: 2, outputPerMTok: 10 }, // normal 4 $ / 20 $
-  'claude-sonnet-5-5': { inputPerMTok: 1, outputPerMTok: 5 }, // normal 2 $ / 10 $
-  'claude-opus-5': { inputPerMTok: 2.5, outputPerMTok: 12.5 }, // normal 5 $ / 25 $
-  'claude-fable-5-1': { inputPerMTok: 5, outputPerMTok: 25 }, // normal 10 $ / 50 $
+  'gemini-3.8-flash': { inputPerMTok: 0.75, outputPerMTok: 3.75 },
+  'gemini-3.5-flash-lite': { inputPerMTok: 0.3, outputPerMTok: 2.5 },
+  'gemini-3.1-flash-lite': { inputPerMTok: 0.25, outputPerMTok: 1.5 },
 };
-
-/** Zuschläge für Prompt-Caching (relativ zum Eingabepreis), falls die API sie meldet. */
-const CACHE_WRITE_FACTOR = 1.25;
-const CACHE_READ_FACTOR = 0.1;
 
 export function batchPriceFor(model: string): BatchPrice {
   const price = BATCH_PRICES_USD[model];
@@ -44,17 +52,17 @@ export interface CostEstimate {
   readonly requests: number;
   /** Summe der Eingabe-Token aller Anfragen (Token-Zähl-Funktion der API). */
   readonly inputTokens: number;
-  /** max_tokens je Anfrage (fest je Inhaltsart). */
+  /** Höchstzahl Ausgabe-Token je Anfrage (fest je Inhaltsart, inkl. Denken). */
   readonly maxTokensPerRequest: number;
   readonly inputUsd: number;
-  /** Schlimmster Fall: jede Antwort schöpft max_tokens voll aus. */
+  /** Schlimmster Fall: jede Antwort schöpft die Höchstzahl voll aus. */
   readonly worstCaseOutputUsd: number;
   readonly worstCaseUsd: number;
   readonly maxUsd: number;
   readonly withinCap: boolean;
 }
 
-/** Schlimmster Fall wie in der Tabelle in Abschnitt 10: Eingabe + Anfragen × max_tokens × Ausgabepreis. */
+/** Schlimmster Fall wie in der Tabelle in Abschnitt 10: Eingabe + Anfragen × Höchstzahl × Ausgabepreis. */
 export function estimateWorstCase(input: {
   model: string;
   requests: number;
@@ -79,34 +87,35 @@ export function estimateWorstCase(input: {
   };
 }
 
+/** Gemeldete Token eines Laufs (anbieter-neutral). */
 export interface UsageTotals {
+  /** Eingabe-Token (Gemini: `promptTokenCount`, inkl. zwischengespeicherter Token – vorsichtig voll berechnet). */
   inputTokens: number;
+  /** Ausgabe-Token inkl. Denken (Gemini: `candidatesTokenCount` + `thoughtsTokenCount`). */
   outputTokens: number;
-  cacheWriteTokens: number;
-  cacheReadTokens: number;
+}
+
+/** Token einer einzelnen Antwort. */
+export interface ResponseUsage {
+  readonly inputTokens: number;
+  readonly outputTokens: number;
 }
 
 export function emptyUsage(): UsageTotals {
-  return { inputTokens: 0, outputTokens: 0, cacheWriteTokens: 0, cacheReadTokens: 0 };
+  return { inputTokens: 0, outputTokens: 0 };
 }
 
-/** Addiert die Token einer Antwort (nur `succeeded`-Ergebnisse werden berechnet). */
-export function addUsage(total: UsageTotals, usage: Anthropic.Messages.Usage): void {
-  total.inputTokens += usage.input_tokens;
-  total.outputTokens += usage.output_tokens;
-  total.cacheWriteTokens += usage.cache_creation_input_tokens ?? 0;
-  total.cacheReadTokens += usage.cache_read_input_tokens ?? 0;
+/** Addiert die Token einer Antwort (nur gelieferte Antworten werden berechnet). */
+export function addUsage(total: UsageTotals, usage: ResponseUsage): void {
+  total.inputTokens += usage.inputTokens;
+  total.outputTokens += usage.outputTokens;
 }
 
 /** Tatsächliche Kosten eines Laufs aus den gemeldeten Token. */
 export function actualCostUsd(model: string, usage: UsageTotals): number {
   const price = batchPriceFor(model);
   return (
-    (usage.inputTokens * price.inputPerMTok +
-      usage.cacheWriteTokens * price.inputPerMTok * CACHE_WRITE_FACTOR +
-      usage.cacheReadTokens * price.inputPerMTok * CACHE_READ_FACTOR +
-      usage.outputTokens * price.outputPerMTok) /
-    1_000_000
+    (usage.inputTokens * price.inputPerMTok + usage.outputTokens * price.outputPerMTok) / 1_000_000
   );
 }
 

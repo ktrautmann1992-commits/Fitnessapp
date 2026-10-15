@@ -17,12 +17,13 @@ function record(
   overrides: Partial<BatchRecord> = {},
 ): BatchRecord {
   return {
-    record_version: 1,
+    record_version: 2,
+    provider: 'gemini',
     status: 'submitted',
     dry_run: false,
-    batch_id: 'msgbatch_abc123',
+    batch_id: 'batches/abc123',
     kind: 'exercise',
-    model: 'claude-opus-5-5',
+    model: 'gemini-3.8-flash',
     effort: 'high',
     selection: 'alle',
     count: cells.length,
@@ -74,8 +75,8 @@ describe('Ergebnisse verarbeiten', () => {
     expect(draft.version).toBe(1);
     expect(draft.meta).toEqual({
       origin: 'batch',
-      model: 'claude-opus-5-5',
-      batch_id: 'msgbatch_abc123',
+      model: 'gemini-3.8-flash',
+      batch_id: 'batches/abc123',
       created_on: '2026-10-04',
       expert_reviewed: false,
       reviewed_by: null,
@@ -115,17 +116,7 @@ describe('Ergebnisse verarbeiten', () => {
     });
     const [a, b, c, d, e, f, g, h, i] = cells.map((x) => x.customId) as string[];
     const results: BatchResult[] = [
-      {
-        custom_id: a!,
-        result: {
-          type: 'errored',
-          error: {
-            type: 'error',
-            request_id: null,
-            error: { type: 'overloaded_error', message: 'x' },
-          },
-        },
-      },
+      { custom_id: a!, result: { type: 'errored', detail: '503: overloaded' } },
       { custom_id: b!, result: { type: 'expired' } },
       { custom_id: c!, result: { type: 'canceled' } },
       succeeded(d!, '', 'refusal'),
@@ -135,7 +126,7 @@ describe('Ergebnisse verarbeiten', () => {
         g!,
         JSON.stringify({ ...wandsitzen, movement_pattern: 'knee_flexion', description_de: 'kurz' }),
       ),
-      succeeded(h!, '{}', 'tool_use'),
+      succeeded(h!, '{}', 'other', undefined, 'MALFORMED_FUNCTION_CALL'),
       succeeded('ex-fremd-unbekannt', '{}'),
       // i fehlt ganz
     ];
@@ -160,11 +151,16 @@ describe('Ergebnisse verarbeiten', () => {
       'ex-fremd-unbekannt': 'unknown_custom_id',
       [i!]: 'missing',
     });
-    expect(processed.notSaved.find((n) => n.customId === d)?.detail).toContain('cyber');
-    // Abgerechnet: alle succeeded-Ergebnisse (6 × 1000 Eingabe, 6 × 2000 Ausgabe), nicht errored/expired.
+    expect(processed.notSaved.find((n) => n.customId === d)?.detail).toBe('SAFETY');
+    expect(processed.notSaved.find((n) => n.customId === a)?.detail).toBe('503: overloaded');
+    expect(processed.notSaved.find((n) => n.customId === h)?.detail).toBe(
+      'MALFORMED_FUNCTION_CALL',
+    );
+    // Abgerechnet: alle gelieferten Antworten (6 × 1000 Eingabe, 6 × 2000 Ausgabe), nicht errored/expired.
     expect(processed.usage.inputTokens).toBe(6000);
     expect(processed.usage.outputTokens).toBe(12000);
-    expect(actualCostUsd('claude-opus-5-5', processed.usage)).toBeCloseTo(0.132, 6);
+    // Gemini 3.8 Flash Batch (vorsichtig): 0,75 $ / 3,75 $ je 1 Mio. Token.
+    expect(actualCostUsd('gemini-3.8-flash', processed.usage)).toBeCloseTo(0.0495, 6);
   });
 
   it('überschreibt keine vorhandenen Inhalte und erkennt doppelte IDs im Lauf', () => {

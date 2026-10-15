@@ -112,7 +112,7 @@ export const FOCUS_LABELS: Record<SessionFocus, string> = {
 
 export const ORIGIN_LABELS: Record<ContentOrigin, string> = {
   claude_session: 'KI-Entwurf (Claude, Umsetzungs-Sitzung)',
-  batch: 'KI-Entwurf (Claude, Batch-API)',
+  batch: 'KI-Entwurf (Batch-API, Modell siehe unten)',
   manual: 'von Hand erstellt',
 };
 

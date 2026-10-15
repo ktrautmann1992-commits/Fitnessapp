@@ -1,6 +1,6 @@
 /**
  * Ende-zu-Ende ohne Netz und ohne Schlüssel: generate → collect im temporären git-Repository mit lokalem
- * „origin“; gh und die Typprüfung sind gefälscht, die Anthropic-API ist ein Mock.
+ * „origin“; gh und die Typprüfung sind gefälscht, die Gemini-API ist ein Mock (keine echten Netzaufrufe).
  */
 import { existsSync, readFileSync, writeFileSync } from 'node:fs';
 import { join } from 'node:path';
@@ -22,7 +22,7 @@ import {
   type TempRepo,
 } from './test-helpers';
 
-const settings: PipelineSettings = { model: 'claude-opus-5-5', effort: 'high', maxUsd: 15 };
+const settings: PipelineSettings = { model: 'gemini-3.8-flash', effort: 'high', maxUsd: 15 };
 const now = () => new Date('2026-10-03T10:00:00Z');
 const repos: TempRepo[] = [];
 function repo(): TempRepo {
@@ -57,7 +57,7 @@ describe('content-generate', () => {
   it('bricht über dem Kostendeckel ab, BEVOR etwas gesendet wird', async () => {
     const r = repo();
     const tools = fakeTools(r.root);
-    const client = mockClient({ inputTokensPerRequest: 200_000 });
+    const client = mockClient({ inputTokensPerRequest: 300_000 });
     const result = await runGenerate(
       { kind: 'plan-templates', selection: 'alle', count: 48, dryRun: false, settings },
       { repoRoot: r.root, tools, client, now },
@@ -86,7 +86,7 @@ describe('content-generate', () => {
         { kind: 'exercises', selection: 'alle', count: 5, dryRun: false, settings },
         { repoRoot: r.root, tools: recordingTools(), now },
       ),
-    ).rejects.toThrow(/ANTHROPIC_API_KEY/);
+    ).rejects.toThrow(/GEMINI_API_KEY/);
   });
 
   it('nichts zu tun, wenn alle ausgewählten Vorlagen existieren', async () => {
@@ -102,7 +102,7 @@ describe('content-generate', () => {
 
   it('sendet einen Batch, legt Branch + Merkdatei an und endet', async () => {
     const r = repo();
-    const client = mockClient({ inputTokensPerRequest: 8000, batchId: 'msgbatch_01XyZ9abcDEF' });
+    const client = mockClient({ inputTokensPerRequest: 8000, batchId: 'batches/01XyZ9abcDEF' });
     const result = await runGenerate(
       {
         kind: 'plan-templates',
@@ -116,7 +116,11 @@ describe('content-generate', () => {
     expect(result.status).toBe('submitted');
     if (result.status !== 'submitted') return;
     expect(client.calls.create).toBe(1);
-    expect(client.created[0]!.requests.map((q) => q.custom_id)).toEqual([
+    expect(client.created[0]!.model).toBe('gemini-3.8-flash');
+    expect(client.created[0]!.displayName).toMatch(
+      /^alpha5-plan-templates-2026-10-03-[0-9a-f]{6}$/,
+    );
+    expect(client.created[0]!.requests.map((q) => q.customId)).toEqual([
       'tpl-muscle_gain-beginner-3-gym-30-45',
       'tpl-muscle_gain-beginner-3-home-30-45',
       'tpl-muscle_gain-beginner-4-gym-30-45',
@@ -129,14 +133,16 @@ describe('content-generate', () => {
     expect(record).toMatchObject({
       status: 'submitted',
       dry_run: false,
-      batch_id: 'msgbatch_01XyZ9abcDEF',
+      batch_id: 'batches/01XyZ9abcDEF',
+      provider: 'gemini',
+      record_version: 2,
       kind: 'plan_template',
-      model: 'claude-opus-5-5',
+      model: 'gemini-3.8-flash',
       effort: 'high',
       count: 3,
       estimate: { input_tokens: 24_000, max_tokens_per_request: 24_000, max_usd: 15 },
     });
-    expect(record.estimate.worst_case_usd).toBeCloseTo(0.77, 2);
+    expect(record.estimate.worst_case_usd).toBeCloseTo(0.29, 2);
     expect(record.requests[0]?.target_id).toBe('muskelaufbau-einsteiger-3t-studio-30-45min');
   });
 });
@@ -185,7 +191,7 @@ describe('Probelauf Ende-zu-Ende: generate → collect (ohne Netz, ohne Schlüss
     expect(neverApproves(tools.ghCalls)).toBe(true);
     expect(tools.typecheckCalls).toBe(1);
     expect(outcome.markdown).toContain('ungültig (Schema/Grenzen)');
-    expect(outcome.markdown).toContain('abgelehnt (refusal)');
+    expect(outcome.markdown).toContain('(refusal)');
     expect(outcome.markdown).toContain('Probelauf: keine KI, keine Kosten.');
     expect(tools.prBodies[0]).toContain('So testest du es am Handy');
     expect(tools.prBodies[0]).toContain('Bitte NICHT mergen');
@@ -237,7 +243,7 @@ describe('Probelauf Ende-zu-Ende: generate → collect (ohne Netz, ohne Schlüss
     });
     expect(draft.meta.model).toBe('probelauf-ohne-ki');
     expect(outcome.markdown).toContain('ungültig (Schema/Grenzen)');
-    expect(outcome.markdown).toContain('abgelehnt (refusal)');
+    expect(outcome.markdown).toContain('(refusal)');
     expect(neverApproves(tools.ghCalls)).toBe(true);
   });
 
@@ -263,8 +269,72 @@ describe('Probelauf Ende-zu-Ende: generate → collect (ohne Netz, ohne Schlüss
     expect(draft).toMatchObject({ status: 'draft', food_id: 'tofu', package_size_g: 200 });
     expect(draft.meta.model).toBe('probelauf-ohne-ki');
     expect(outcome.markdown).toContain('ungültig (Schema/Grenzen)');
-    expect(outcome.markdown).toContain('abgelehnt (refusal)');
+    expect(outcome.markdown).toContain('(refusal)');
     expect(neverApproves(tools.ghCalls)).toBe(true);
+  });
+
+  it('Rezepte (N8): Probelauf ohne Schlüssel bis zum Pull Request, Entwurf ohne Kosten', async () => {
+    const r = repo();
+    const tools = fakeTools(r.root);
+    const generated = await runGenerate(
+      { kind: 'recipes', selection: 'alle', count: 10, dryRun: true, settings },
+      { repoRoot: r.root, tools, now, randomShort: () => 'rez001' },
+    );
+    expect(generated.status).toBe('submitted');
+    if (generated.status !== 'submitted') return;
+    expect(generated.record.kind).toBe('recipe');
+    expect(generated.record.provider).toBe('gemini');
+    r.git(['checkout', '--quiet', 'main']);
+    const collected = await runCollect({ repoRoot: r.root, tools, now });
+    expect(collected.exitCode).toBe(0);
+    const outcome = collected.outcomes[0]!;
+    expect(outcome.status).toBe('pr_opened');
+    expect(outcome.saved).toEqual(['probelauf-haferflocken-banane']);
+    const draft = JSON.parse(
+      r.showRemote(generated.branch, 'content/recipes/probelauf-haferflocken-banane.json'),
+    );
+    expect(draft).toMatchObject({ status: 'draft', version: 1, no_cook: true });
+    expect(draft.meta).toMatchObject({
+      origin: 'batch',
+      model: 'probelauf-ohne-ki',
+      expert_reviewed: false,
+      reviewed_by: null,
+    });
+    expect(outcome.markdown).toContain('ungültig (Schema/Grenzen)');
+    expect(outcome.markdown).toContain('(refusal)');
+    expect(outcome.markdown).toContain('Probelauf: keine KI, keine Kosten.');
+    expect(neverApproves(tools.ghCalls)).toBe(true);
+  });
+
+  it('Rezepte (N8): echter Lauf ohne katalog-geprüfte Lebensmittel sendet nichts', async () => {
+    const r = repo();
+    const client = mockClient();
+    const result = await runGenerate(
+      { kind: 'recipes', selection: 'alle', count: 5, dryRun: false, settings },
+      { repoRoot: r.root, tools: fakeTools(r.root), client, now },
+    );
+    expect(result.status).toBe('nothing');
+    expect(result.markdown).toContain('katalog-geprüften Lebensmittel');
+    expect(client.calls).toEqual({ countTokens: 0, create: 0, get: 0 });
+    expect(remoteBranches(r)).toEqual(['main']);
+  });
+
+  it('Rate-Limit beim Absenden: Abbruch ohne Branch und ohne Merkdatei', async () => {
+    const r = repo();
+    const client = mockClient();
+    const failing = {
+      ...client,
+      createBatch: async () => {
+        throw new Error('Gemini-API (Batch anlegen) fehlgeschlagen (HTTP 429) nach 5 Versuchen.');
+      },
+    };
+    await expect(
+      runGenerate(
+        { kind: 'exercises', selection: 'squat', count: 1, dryRun: false, settings },
+        { repoRoot: r.root, tools: fakeTools(r.root), client: failing, now },
+      ),
+    ).rejects.toThrow(/HTTP 429/);
+    expect(remoteBranches(r)).toEqual(['main']);
   });
 
   it('überschreibt keinen Inhalt, der nach dem Absenden in main dazugekommen ist', async () => {
@@ -343,7 +413,7 @@ describe('Probelauf Ende-zu-Ende: generate → collect (ohne Netz, ohne Schlüss
     const r = repo();
     const tools = fakeTools(r.root);
     const fixture = exerciseKind.dryRunFixtures()[0]!;
-    const submit = mockClient({ batchId: 'msgbatch_real00ab12cd' });
+    const submit = mockClient({ batchId: 'batches/real00ab12cd' });
     const generated = await runGenerate(
       { kind: 'exercises', selection: 'squat koerpergewicht', count: 1, dryRun: false, settings },
       { repoRoot: r.root, tools, client: submit, now },
@@ -358,7 +428,7 @@ describe('Probelauf Ende-zu-Ende: generate → collect (ohne Netz, ohne Schlüss
       repoRoot: r.root,
       tools,
       now,
-      client: mockClient({ processingStatus: 'in_progress' }),
+      client: mockClient({ state: 'pending' }),
     });
     expect(pending.outcomes[0]?.status).toBe('pending');
 
@@ -367,14 +437,15 @@ describe('Probelauf Ende-zu-Ende: generate → collect (ohne Netz, ohne Schlüss
         succeeded(
           fixture.cell.customId,
           JSON.stringify((fixture.response as { data: unknown }).data),
-          'end_turn',
+          'stop',
           { input: 9000, output: 6000 },
         ),
       ],
     });
     const result = await runCollect({ repoRoot: r.root, tools, now, client: done });
     expect(result.outcomes[0]?.status).toBe('pr_opened');
-    expect(result.outcomes[0]?.markdown).toContain('Tatsächlich: 0,08 $');
+    expect(result.outcomes[0]?.markdown).toContain('Tatsächlich: 0,03 $');
+    expect(result.outcomes[0]?.markdown).toContain('Anbieter Google Gemini');
     const create = tools.ghCalls.find((call) => call[1] === 'create')!;
     expect(create[create.indexOf('--title') + 1]).toBe(
       'Neue Entwürfe: 1 Übungen (2026-10-03-ab12cd)',

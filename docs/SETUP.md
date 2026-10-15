@@ -1,7 +1,8 @@
 # Einrichtung – nur mit dem Handy
 
 Diese Anleitung verbindet das Repository mit **Supabase** (Datenbank), **Vercel** (Vorschau-Links im Browser),
-**Expo** (echte App-Builds) und **Anthropic** (Inhalts-Erzeugung). Alles geht im Handy-Browser.
+**Expo** (echte App-Builds) und **Google Gemini** (Inhalts-Erzeugung, seit 15.10.2026 statt Anthropic). Alles geht
+im Handy-Browser.
 
 **Reihenfolge:** Teil A → B → C → D (→ D2 für iPhone/Stores) → E → F → G → H (→ J für die Nährwert-Quelle). Für den ersten Vorschau-Link reicht **Teil C**.
 Für den Redaktionsbereich `/admin` der Website brauchst du **Teil G**.
@@ -41,10 +42,11 @@ Sie werden nicht rot.
 | `APPLE_TEAM_ID`                        | Apple (D2 A3) | GitHub Secret (B)                                                          | nein    |
 | `APPLE_TEAM_TYPE` (optional)           | selbst (D2)   | GitHub **Variable**, nur `INDIVIDUAL` bei Einzelperson-Konto               | nein    |
 | Google-Dienstkonto (JSON)              | Google (D2 G) | nur auf expo.dev → Credentials → Android (D2 G4)                           | **JA**  |
-| `ANTHROPIC_API_KEY`                    | Anthropic (E) | GitHub Secret (B)                                                          | **JA**  |
-| `CONTENT_MODEL` (optional)             | selbst (E5)   | GitHub **Variable** (E5), Standard `claude-opus-5-5`                       | nein    |
-| `CONTENT_EFFORT` (optional)            | selbst (E5)   | GitHub **Variable** (E5), Standard `high`                                  | nein    |
-| `CONTENT_MAX_USD` (optional)           | selbst (E5)   | GitHub **Variable** (E5), Standard `15`, höchstens `100`                   | nein    |
+| `GEMINI_API_KEY`                       | Google (E)    | GitHub Secret (B)                                                          | **JA**  |
+| `ANTHROPIC_API_KEY`                    | –             | wird nicht mehr gebraucht (E6) – darf gelöscht werden                      | **JA**  |
+| `CONTENT_MODEL` (optional)             | selbst (E5)   | GitHub **Variable** (E5), leer = Standard je Art (Flash-Lite bzw. Flash)   | nein    |
+| `CONTENT_EFFORT` (optional)            | selbst (E5)   | GitHub **Variable** (E5), leer = Standard je Art (`low` bzw. `medium`)     | nein    |
+| `CONTENT_MAX_USD` (optional)           | selbst (E5)   | GitHub **Variable** (E5), Standard `3`, höchstens `20`                     | nein    |
 | `ADMIN_PASSWORD`                       | selbst (G1)   | Vercel-Projekt **Web**, Production + Preview (G2)                          | **JA**  |
 | `ADMIN_SESSION_SECRET`                 | selbst (G1)   | Vercel-Projekt **Web**, Production + Preview (G2)                          | **JA**  |
 | `RESEND_API_KEY`                       | Resend (I3)   | Vercel-Projekt **Web**, Production + Preview (I5)                          | **JA**  |
@@ -290,25 +292,59 @@ Wearables/Abos nötig – das Paket ist noch nicht installiert und der Workflow 
 
 ---
 
-## Teil E – Anthropic (Inhalts-Erzeugung, ab Phase 2)
+## Teil E – Google Gemini (Inhalts-Erzeugung, seit 15.10.2026)
 
-Nur nötig für **echte** KI-Entwürfe. Den Probelauf (siehe „Inhalte erzeugen und freigeben am Handy“) kannst du
-ohne Schlüssel machen.
+Gründer-Entscheidung 14.10.2026: **KI läuft über Gemini.** Die Content-Pipeline (`content-generate`,
+`content-collect`) nutzt die **Gemini Batch API** (halber Preis, Ergebnis meist innerhalb von 24 Stunden – ein Ziel, keine Zusage). Nur
+nötig für **echte** KI-Entwürfe – den Probelauf (siehe „Inhalte erzeugen und freigeben am Handy“) kannst du ohne
+Schlüssel machen.
 
-1. **console.anthropic.com** öffnen → anmelden.
-2. **Settings → Limits**: ein monatliches **Ausgabenlimit** festlegen – Empfehlung **30 $**. Das ist der dritte
-   Kostenschutz neben dem Deckel pro Lauf (15 $) und höchstens 200 Anfragen pro Lauf.
-3. **API Keys → Create Key** → Name `github-actions` → kopieren.
-4. Als GitHub Secret `ANTHROPIC_API_KEY` eintragen (Teil B). `content-generate` und `content-collect` brauchen
-   **nur** diesen Schlüssel.
+**Datenschutz:** An Gemini gehen nur **Inhalts-Prompts** (Regeln, Lebensmittel-Katalog, Übungs-/Rezept-Vorgaben) –
+**nie Nutzerdaten**. Die Pipeline hat gar keinen Zugriff auf Nutzerdaten. Deshalb ist für die Offline-Erzeugung
+noch **kein Auftragsverarbeitungsvertrag (AVV)** nötig. Den braucht ihr erst für **Premium-Echtzeit-KI** (KI-Coach,
+Kalorien per Foto …), bevor dort echte Nutzerdaten an Google gehen – Gründer-Aufgabe vor dem Livegang
+(docs/KONZEPT.md Abschnitt 15). Nutzt für den Schlüssel ein Projekt **mit Abrechnung (bezahlte Stufe)**: Nach den
+Gemini-API-Zusatzbedingungen kann Google Eingaben der **kostenlosen** Stufe zur Produktverbesserung nutzen (bitte
+beim Einrichten in den aktuellen Bedingungen nachlesen).
+
+1. **aistudio.google.com** öffnen → mit dem Google-Konto der Firma anmelden.
+2. Links bzw. im Menü **„Get API key“** → **„Create API key“** → ein Google-Cloud-Projekt wählen (z. B.
+   `alpha5-content`) → Schlüssel kopieren. (Die Menünamen können leicht abweichen.)
+3. Abrechnung für dieses Projekt einschalten (in AI Studio beim Schlüssel „Set up billing“ bzw. in der
+   Google-Cloud-Konsole **Billing**).
+   3a. **Monatsbudget mit Warnung anlegen** (Handy-Browser, ggf. „Desktop-Website anfordern“; Menünamen können leicht
+   abweichen, auf Deutsch heißt es „Abrechnung → Budgets und Benachrichtigungen“):
+   1. **console.cloud.google.com** öffnen → oben das Projekt aus Schritt 2 wählen (z. B. `alpha5-content`).
+   2. Menü **☰** → **Billing** (Abrechnung) → links **Budgets & alerts** → **Create budget**.
+   3. **Name** `gemini-content`, **Projects**: nur dieses Projekt → **Next**.
+   4. **Budget type** „Specified amount“, **Target amount** **10 $** (Empfehlung; ein Lauf kostet höchstens 3 $) →
+      **Next**.
+   5. Schwellen **50 %, 90 %, 100 %** lassen, „Email alerts to billing admins and users“ anhaken → **Finish**.
+      Achtung: Ein Budget **warnt** nur per E-Mail, es stoppt nichts. Die harten Grenzen stehen im Skript: Deckel
+      **3 $ pro Lauf** (höchstens 20 $ einstellbar), Standard **3 Anfragen** pro Lauf, höchstens 200.
+4. Als GitHub Secret `GEMINI_API_KEY` eintragen (Teil B). `content-generate` und `content-collect` brauchen
+   **nur** diesen Schlüssel. Der Schlüssel erscheint nie im Protokoll, in Dateien oder Pull Requests.
 5. Optional, nicht geheim: GitHub → Repository → **Settings → Secrets and variables → Actions** → Reiter
    **Variables** → **New repository variable**:
-   - `CONTENT_MODEL` – Modell, Standard `claude-opus-5-5` (Claude Opus 5.5). Nur ändern, wenn ihr das
-     ausdrücklich wollt (z. B. `claude-sonnet-5-5`, günstiger).
-   - `CONTENT_EFFORT` – Denktiefe `low`, `medium`, `high` (Standard), `xhigh` oder `max`.
-   - `CONTENT_MAX_USD` – Kostendeckel pro Lauf in Dollar, Standard `15`. Liegt die Schätzung (schlimmster Fall)
-     darüber, wird **nichts** gesendet. Höchstens **100** möglich (harte Obergrenze im Code) – ein größerer Wert
+   - `CONTENT_MODEL` – Gemini-Modell für **alle** Arten. **Leer lassen empfohlen:** Dann gilt der günstige Standard
+     je Art – `gemini-3.5-flash-lite` (günstigstes Batch-Modell) für Austausch und Packungsgrößen,
+     `gemini-3.8-flash` für Rezepte, Übungen und Vorlagen (mehr Fachlogik). Einzelne Läufe: Eingabe **„modell“**
+     beim Start von `content-generate`. Möglich sind nur Modelle mit Preis in
+     `packages/content/src/pipeline/pricing.ts` (heute zusätzlich `gemini-3.1-flash-lite`, Batch nicht bestätigt) –
+     sonst bricht der Lauf ab (Kostenschutz).
+   - `CONTENT_EFFORT` – Denktiefe `minimal`, `low`, `medium` oder `high` für alle Arten. Leer = Standard je Art
+     (`low` für Austausch/Packungen, `medium` sonst) – mehr Denken kostet mehr.
+   - `CONTENT_MAX_USD` – Kostendeckel pro Lauf in Dollar, Standard `3`. Liegt die Schätzung (schlimmster Fall)
+     darüber, wird **nichts** gesendet. Höchstens **20** möglich (harte Obergrenze im Code) – ein größerer Wert
      bricht den Lauf mit Hinweis ab.
+6. **Anthropic-Schlüssel entfällt:** Das GitHub Secret `ANTHROPIC_API_KEY` wird von keinem Workflow mehr gelesen.
+   Ihr könnt es unter **Settings → Secrets and variables → Actions** löschen und den Schlüssel in der
+   Anthropic-Konsole widerrufen.
+7. **Preise prüfen (einmalig):** Im Skript sind vorsichtig (eher zu hoch) hinterlegt, je 1 Mio. Token
+   Eingabe/Ausgabe: `gemini-3.8-flash` **0,75 $ / 3,75 $** (Batch-Preis ab 2027), `gemini-3.5-flash-lite`
+   **0,30 $ / 2,50 $** und `gemini-3.1-flash-lite` **0,25 $ / 1,50 $** (beide ohne Batch-Rabatt). Bitte auf
+   **ai.google.dev/gemini-api/docs/pricing** nachsehen; weicht ein Preis ab, Claude Bescheid geben.
+8. **Erster echter Lauf: „Anzahl“ `3`** (Standard) – prüft günstig, ob alles klappt.
 
 ---
 
@@ -843,9 +879,10 @@ Voraussetzung: Teil H. Wo du die Workflows findest: GitHub-App → Repository �
 ### 2. Echte Entwürfe erzeugen (mit Schlüssel aus Teil E)
 
 1. **Actions → content-generate → Run workflow**.
-2. **Welche Inhalte?** `plan-templates`, `exercises`, `ingredient-substitutions` (Austausch-Tabelle, Etappe N9) oder
-   `package-sizes` (Packungsgrößen, Etappe N11) – die beiden letzten erst sinnvoll, wenn es katalog-geprüfte
-   Lebensmittel gibt.
+2. **Welche Inhalte?** `plan-templates`, `exercises`, `ingredient-substitutions` (Austausch-Tabelle, Etappe N9),
+   `package-sizes` (Packungsgrößen, Etappe N11) oder `recipes` (neue Rezepte, Etappe N8) – die drei letzten erst
+   sinnvoll, wenn es katalog-geprüfte Lebensmittel gibt (ohne sie meldet der Lauf „gerade nicht möglich“ und sendet
+   nichts). **Modell** (optional): leer lassen = günstiger Standard je Art (Flash-Lite bzw. Flash).
 3. **Auswahl** (optional): `alle` oder Begriffe aus der Matrix, getrennt mit Leerzeichen oder Komma:
    - Vorlagen: Ziel `muskelaufbau`/`fettverlust`/`fitness`, Level `einsteiger`/`fortgeschritten`, Tage `3t`/`4t`,
      Ort `studio`/`zuhause`, Minuten `30-45`/`45-60`/`60-75` – z. B. `muskelaufbau 30-45`.
@@ -860,10 +897,23 @@ Voraussetzung: Teil H. Wo du die Workflows findest: GitHub-App → Repository �
      in ganzen Gramm (1–5.000 g). Freigeben wie in 3b (Art `ids`, IDs `packung-…`), vorher die Grammzahl mit einer
      üblichen Packung im Laden vergleichen; rot bleibt ein Eintrag, solange sein Lebensmittel nicht freigegeben ist
      oder die Packung kleiner als ein Stück wäre (Regel R24). Ansehen: Redaktionsbereich → **Packungen**.
-4. **Anzahl**: höchstens so viele Anfragen (1–200, Standard 10). **Probelauf** nicht anhaken → **Run workflow**.
+   - Rezepte: Mahlzeit `breakfast`/`fruehstueck`, `main`/`hauptgericht`, `snack`; Ernährungsform `vegan`,
+     `vegetarian`/`vegetarisch`, `omnivore`/`fleisch`; Schwerpunkt `alltag`, `schnell`, `meal_prep`,
+     `ohne_kochen`/`kalt`, `nach_training` – z. B. `fruehstueck vegan schnell`. Rezepte nutzen **nur** Zutaten aus
+     dem katalog-geprüften Lebensmittel-Katalog; fehlt der KI etwas, steht es nur als Vorschlag in der Prüfnotiz.
+     Nährwerte, Allergene, Ernährungsform und Schwangerschafts-Hinweis rechnet die App selbst aus dem Katalog;
+     weicht die KI-Angabe ab, meldet die Prüfung rot (R3, R6, R7, R8, R13). Jedes Rezept ist ein Entwurf
+     „KI-Entwurf – fachlich prüfen“; freigeben wie in 3b (Art `ids`) – vor dem Livegang prüft eine
+     Ernährungsfachkraft. Ansehen: Redaktionsbereich → **Rezepte**. Bei `alle` wechseln sich Mahlzeit und
+     Ernährungsform ab; der Start rückt nach jedem gemergten Lauf weiter (Summary nennt ihn). **Erster echter Lauf:
+     „Anzahl“ `3`** (prüft günstig, ob Gemini den großen Katalog im Schema annimmt).
+4. **Anzahl**: höchstens so viele Anfragen (1–200, Standard 10). **Allererster echter Lauf mit Gemini: `3`.**
+   **Probelauf** nicht anhaken → **Run workflow**. Steht in der Summary **„AUSGANG UNKLAR“** (Netzfehler beim
+   Absenden), **nicht** neu starten: in Google AI Studio unter „Batches“ nach dem genannten Anzeigenamen sehen und
+   Claude Bescheid geben (sonst evtl. doppelt bezahlt).
 5. Die **Summary** zeigt die **Kostenschätzung** (schlimmster Fall) und endet sofort. Liegt die Schätzung über
    dem Deckel, steht dort „abgebrochen – nichts gesendet“.
-6. Meist innerhalb einer Stunde ist der Batch fertig. `content-collect` öffnet dann automatisch (spätestens nach
+6. Meist innerhalb weniger Stunden ist der Batch fertig (Ziel von Google: innerhalb von 24 Stunden). `content-collect` öffnet dann automatisch (spätestens nach
    3 Stunden) den Pull Request **„Neue Entwürfe: …“** – mit Prüfbericht und tatsächlichen Kosten. Schneller:
    **content-collect → Run workflow**.
 7. Pull Request ansehen (Tab **Files changed** bzw. die Vercel-Vorschau der Website), auf grünes `ci` warten,
@@ -962,8 +1012,8 @@ zeigt „Heute“ richtigerweise „Für deine Angaben gibt es gerade keinen fre
 | ------------------------ | -------------------------------------------------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------- |
 | `ci`                     | bei jedem Push und Pull Request (inkl. Klick-Tests), per Hand                                                                    | nichts                                                                                 |
 | `db-migrate`             | nach Merge in `main`, wenn sich Migrationen ändern, oder per Hand – **erst nach grünem `db-test`** (läuft im selben Lauf vorher) | `SUPABASE_DB_PASSWORD`, `SUPABASE_PROJECT_REF`                                         |
-| `content-generate`       | per Hand (Actions → Run workflow)                                                                                                | `ANTHROPIC_API_KEY` (Probelauf: nichts)                                                |
-| `content-collect`        | alle 3 Stunden und per Hand                                                                                                      | Teil H; `ANTHROPIC_API_KEY` nur für echte Läufe                                        |
+| `content-generate`       | per Hand (Actions → Run workflow)                                                                                                | `GEMINI_API_KEY` (Probelauf: nichts)                                                   |
+| `content-collect`        | alle 3 Stunden und per Hand                                                                                                      | Teil H; `GEMINI_API_KEY` nur für echte Läufe                                           |
 | `content-review`         | per Hand                                                                                                                         | Teil H                                                                                 |
 | `content-seed`           | nach Merge in `main` (Inhalte), nach `db-migrate` und per Hand                                                                   | `SUPABASE_URL`, `SUPABASE_SECRET_KEY` (ohne: nur Prüfung)                              |
 | `waitlist-cleanup`       | täglich 03:17 UTC und per Hand (Löschfristen der Warteliste)                                                                     | `SUPABASE_URL`, `SUPABASE_SECRET_KEY`                                                  |
