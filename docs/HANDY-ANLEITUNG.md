@@ -438,9 +438,36 @@ Nach dem Merge spielt **db-migrate** (erst nach grünem db-test) zwei neue, leer
 8. Einen Eintrag **„Ändern“** (z. B. 2 Stück) und einen **„Löschen“**.
 9. **Einstellungen → Kalorienzahlen anzeigen** aus → im Tagebuch keine kcal, im Schnelleintrag kein kcal-Feld.
 10. **Einstellungen → Gesundheitsdaten widerrufen** → der Dialog nennt vorher „dein Ernährungstagebuch samt
-    Schnelleintrag-Favoriten (Favoriten aus Lebensmitteln und Rezepten bleiben)“ → danach sind alle Einträge und der
+    Schnelleintrag-Favoriten und eigenen Gerichten (Favoriten aus Lebensmitteln und Rezepten bleiben)“ → danach sind alle Einträge und der
     Favorit „Auswärts gegessen“ weg, ein Favorit wie „Banane“ ist noch da; „Eintragen“ bittet um die Einwilligung.
 11. „Heute“ zeigt auf der Karte „Essen heute“: „Gegessen heute: … Einträge“ und „Essen eintragen“.
+
+## Teil 7g – Eigene Gerichte testen (Etappe E2, Testmodus)
+Eigene Gerichte laufen wie das Tagebuch vorerst nur im **Testmodus** (mit Konto folgen sie mit N7 Teil 2). Ihr müsst
+nichts einstellen. Nach dem Merge spielt **db-migrate** (erst nach grünem db-test) zwei neue, leere Tabellen ein
+(`custom_meals`, `custom_meal_items`) und erweitert das Tagebuch um die Herkunft „eigenes Gericht“ – vorhandene Daten
+bleiben unverändert.
+
+1. Vorschau-Link aus dem Pull Request öffnen → Testmodus mit dem Testkonto aus Teil 7c (Einwilligung
+   Gesundheitsdaten erteilt) → **Ernährung** → ganz unten Abschnitt **„Eigene Gerichte“** → **„Eigenes Gericht
+   anlegen“**.
+2. Name **„Mein Porridge“**, „Aus Zutaten“: „Hafer“ suchen → Haferflocken **60 g** → „Hinzufügen“; „Milch“ →
+   Einheit **ml**, **200** → „Hinzufügen“; „Banane“ → **1 Stück** → „Hinzufügen“. Unter „Werte je Portion“ erscheinen
+   die Werte → **„Speichern“**.
+3. Zurück im Tagesverlauf: bei **„Eigene Gerichte“** Portion **½** wählen → bei „Mein Porridge“ **„Eintragen“**. Im
+   Abschnitt „Gegessen“ steht „Mein Porridge · ½ Portion“, die Tagessumme stimmt (halbe Werte).
+4. **„Eigene Gerichte verwalten“** → **„Neues Gericht anlegen“** → „Shake nach dem Training“, **„Werte direkt“**,
+   **450** kcal (Eiweiß/Kohlenhydrate/Fett optional) → „Speichern“. Passen die Makros gar nicht zu den kcal (mehr als
+   20 % daneben), kommt eine ruhige Rückfrage – keine Sperre.
+5. **„Eintragen“** → Reiter **Favoriten**: oben „Eigene Gerichte“ mit Portion → Shake eintragen. Reiter **Zuletzt**
+   zeigt beide.
+6. „Mein Porridge“ **ändern** (z. B. „Ergibt Portionen“ 2) → der schon eingetragene Tag behält seine Werte.
+7. Den Shake **löschen** → der Eintrag im Tagebuch bleibt mit seinen Werten und heißt jetzt „Eigenes Gericht“.
+8. **Flugmodus an** → ein Gericht anlegen und eintragen → Seite neu laden → alles ist noch da.
+9. **Einstellungen → Kalorienzahlen anzeigen** aus → beim Anlegen gibt es nur „Aus Zutaten“ (Werte im Hintergrund)
+   oder „Ohne Werte“, nirgends kcal.
+10. **Einstellungen → Gesundheitsdaten widerrufen** → der Dialog nennt „… samt Schnelleintrag-Favoriten und eigenen
+    Gerichten …“ → danach sind die eigenen Gerichte weg; „Eigene Gerichte“ bittet um die Einwilligung.
 
 ## Teil 7e – Neue Rezepte per KI erzeugen (Phase 5, Etappe N8, Gemini offline)
 

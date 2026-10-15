@@ -188,6 +188,7 @@ export function FoodLogDaySection({
                 key={row.id}
                 row={row}
                 showNumbers={showNumbers}
+                title={view.displayTitle(row)}
                 favorite={view.isFavorite(entryFromRow(row))}
                 editable={editable}
                 busy={busy}
@@ -248,6 +249,7 @@ export function FoodLogDaySection({
 /** Ein Eintrag mit Ändern, Löschen und Stern. */
 export function FoodLogEntryItem({
   row,
+  title,
   showNumbers,
   favorite,
   editable,
@@ -257,6 +259,8 @@ export function FoodLogEntryItem({
   onToggleFavorite,
 }: {
   row: FoodLogEntryRow;
+  /** Anzeigetitel (eigenes Gericht: aktueller Name, E2). */
+  title: string;
   showNumbers: boolean;
   favorite: boolean;
   editable: boolean;
@@ -272,9 +276,7 @@ export function FoodLogEntryItem({
       style={[styles.item, { borderColor: theme.border, backgroundColor: theme.surface }]}
       testID={`food-log-entry-${row.id}`}
     >
-      <Text style={[styles.title, { color: theme.text }]}>
-        {favorite ? `${row.title_de} ★` : row.title_de}
-      </Text>
+      <Text style={[styles.title, { color: theme.text }]}>{favorite ? `${title} ★` : title}</Text>
       <Text style={[styles.detail, { color: theme.textMuted }]}>
         {entryDetailText(entry, showNumbers)}
       </Text>
@@ -283,7 +285,7 @@ export function FoodLogEntryItem({
           <View style={styles.action}>
             <Button
               label={t.foodLog.edit}
-              accessibilityLabel={t.foodLog.editA11y(row.title_de)}
+              accessibilityLabel={t.foodLog.editA11y(title)}
               variant="secondary"
               disabled={busy}
               onPress={onEdit}
@@ -294,7 +296,7 @@ export function FoodLogEntryItem({
         <View style={styles.action}>
           <Button
             label={t.foodLog.delete}
-            accessibilityLabel={t.foodLog.deleteA11y(row.title_de)}
+            accessibilityLabel={t.foodLog.deleteA11y(title)}
             variant="secondary"
             disabled={busy}
             onPress={onDelete}
@@ -302,13 +304,12 @@ export function FoodLogEntryItem({
           />
         </View>
       </View>
-      {row.source !== 'plan_item' ? (
+      {/* Plan-Mahlzeiten und eigene Gerichte (E2) haben keinen Stern. */}
+      {row.source !== 'plan_item' && row.source !== 'custom_meal' ? (
         <Button
           label={favorite ? t.foodLog.favoriteRemove : t.foodLog.favoriteAdd}
           accessibilityLabel={
-            favorite
-              ? t.foodLog.favoriteRemoveA11y(row.title_de)
-              : t.foodLog.favoriteAddA11y(row.title_de)
+            favorite ? t.foodLog.favoriteRemoveA11y(title) : t.foodLog.favoriteAddA11y(title)
           }
           variant="link"
           disabled={busy}

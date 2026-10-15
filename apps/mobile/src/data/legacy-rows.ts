@@ -2,6 +2,8 @@ import {
   BARBELL_ID,
   contentIdSchema,
   exercisePreferenceSchema,
+  CUSTOM_MEAL_LIMITS,
+  customMealSchema,
   FOOD_LOG_LIMITS,
   foodLogEntrySchema,
   foodLogFavoriteSchema,
@@ -17,6 +19,8 @@ import {
 
 import { toTrainingSlotRows } from './mapping';
 import type {
+  CustomMealItemRow,
+  CustomMealRow,
   ExercisePreferenceRow,
   FoodDislikeRow,
   FoodLogEntryRow,
@@ -240,7 +244,8 @@ function storedFoodLogEntries(stored: UserRows): FoodLogEntryRow[] {
       updated_at: updatedAt,
       ...rest
     } = item as Record<string, unknown>;
-    const parsed = foodLogEntrySchema.safeParse(rest);
+    // Vor Etappe E2 gab es custom_meal_id nicht (= kein Verweis).
+    const parsed = foodLogEntrySchema.safeParse({ custom_meal_id: null, ...rest });
     if (
       !parsed.success ||
       typeof userId !== 'string' ||
@@ -295,6 +300,81 @@ function storedFoodLogFavorites(stored: UserRows): FoodLogFavoriteRow[] {
     .slice(0, FOOD_LOG_LIMITS.maxFavorites);
 }
 
+/**
+ * Eigene Gerichte (Etappe E2): vorher gab es keine; der Gerätespeicher ist nicht vertrauenswürdig – nur gültige
+ * Gerichte (Zod, strikt: `customMealSchema` mit ihren Zutaten) des eigenen Kontos, je id eines, höchstens 100. Zutaten
+ * nur zu einem gültigen Gericht. Tagebuch-Verweise auf ein verworfenes Gericht werden leer (wie on delete set null).
+ */
+function storedCustomMeals(
+  stored: UserRows,
+  entries: FoodLogEntryRow[],
+): Pick<UserRows, 'customMeals' | 'customMealItems' | 'foodLogEntries'> {
+  const list: unknown = (stored as { customMeals?: unknown }).customMeals;
+  const itemList: unknown = (stored as { customMealItems?: unknown }).customMealItems;
+  const owner = stored.profile?.user_id;
+  const items = Array.isArray(itemList) ? itemList : [];
+  const meals: CustomMealRow[] = [];
+  const mealItems: CustomMealItemRow[] = [];
+  const seen = new Set<string>();
+  for (const item of Array.isArray(list) ? list : []) {
+    if (meals.length >= CUSTOM_MEAL_LIMITS.maxMeals) break;
+    if (typeof item !== 'object' || item === null) continue;
+    const {
+      user_id: userId,
+      revision,
+      last_write_id: lastWriteId,
+      created_at: createdAt,
+      updated_at: updatedAt,
+      ...rest
+    } = item as Record<string, unknown>;
+    const own = items
+      .filter(
+        (i: unknown): i is Record<string, unknown> =>
+          typeof i === 'object' && i !== null && (i as { meal_id?: unknown }).meal_id === rest.id,
+      )
+      .sort((a, b) => Number(a.order_no) - Number(b.order_no));
+    const parsed = customMealSchema.safeParse({
+      ...rest,
+      items: own.map((i) => ({ food_id: i.food_id, amount: i.amount, unit: i.unit })),
+    });
+    if (
+      !parsed.success ||
+      typeof userId !== 'string' ||
+      (owner !== undefined && userId !== owner) ||
+      own.some((i, index) => i.user_id !== userId || i.order_no !== index + 1) ||
+      typeof revision !== 'number' ||
+      !Number.isInteger(revision) ||
+      revision < 1 ||
+      typeof lastWriteId !== 'string' ||
+      typeof createdAt !== 'string' ||
+      typeof updatedAt !== 'string' ||
+      seen.has(parsed.data.id)
+    ) {
+      continue;
+    }
+    seen.add(parsed.data.id);
+    const { items: mealItemValues, ...fields } = parsed.data;
+    meals.push({
+      ...fields,
+      user_id: userId,
+      revision,
+      last_write_id: lastWriteId,
+      created_at: createdAt,
+      updated_at: updatedAt,
+    });
+    mealItemValues.forEach((value, index) =>
+      mealItems.push({ ...value, meal_id: parsed.data.id, user_id: userId, order_no: index + 1 }),
+    );
+  }
+  return {
+    customMeals: meals,
+    customMealItems: mealItems,
+    foodLogEntries: entries.map((e) =>
+      e.custom_meal_id !== null && !seen.has(e.custom_meal_id) ? { ...e, custom_meal_id: null } : e,
+    ),
+  };
+}
+
 /** goals-Felder des Gerätespeichers aus App-Versionen vor Etappe B2. */
 interface LegacyGoalsFields {
   sessions_per_week?: number | null;
@@ -332,8 +412,8 @@ export function upgradeStoredRows(stored: UserRows): UserRows {
     shoppingLists: storedShoppingLists(stored),
     recipeRatings: storedRecipeRatings(stored),
     foodDislikes: storedFoodDislikes(stored),
-    foodLogEntries: storedFoodLogEntries(stored),
     foodLogFavorites: storedFoodLogFavorites(stored),
+    ...storedCustomMeals(stored, storedFoodLogEntries(stored)),
   };
   const goals = stored.goals as (GoalsRow & LegacyGoalsFields) | null;
   if (

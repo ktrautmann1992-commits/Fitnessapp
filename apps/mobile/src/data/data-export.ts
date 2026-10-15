@@ -156,6 +156,13 @@ export function localDataExport(
     food_log_favorites: [...rows.foodLogFavorites].sort((a, b) =>
       a.created_at.localeCompare(b.created_at),
     ),
+    // Eigene Gerichte und Zutaten (Etappe E2) – Spalten wie custom_meals/custom_meal_items.
+    custom_meals: [...rows.customMeals].sort(
+      (a, b) => a.created_at.localeCompare(b.created_at) || a.id.localeCompare(b.id),
+    ),
+    custom_meal_items: [...rows.customMealItems].sort(
+      (a, b) => a.meal_id.localeCompare(b.meal_id) || a.order_no - b.order_no,
+    ),
     // Übungs-Präferenzen (Etappe T2) – in export_my_data() erst mit Etappe T3 (PENDING_DB_EXPORT_TABLES).
     exercise_preferences: rows.exercisePreferences,
   };

@@ -1,6 +1,10 @@
 import {
   addDays,
+  CUSTOM_MEAL_PORTION_CHOICES,
+  type CustomMeal,
   defaultFoodLogSlot,
+  entryFromCustomMeal,
+  foodLogDisplayTitle,
   entryFromFood,
   entryFromRecipe,
   entryFromFavorite,
@@ -33,6 +37,7 @@ import { Redirect, useLocalSearchParams, useRouter, type Href } from 'expo-route
 import { useMemo, useState, type ReactNode } from 'react';
 import { View } from 'react-native';
 
+import { CustomMealPicker } from '@/components/custom-meals';
 import { NutritionGate, nutritionReady } from '@/components/nutrition';
 import { ConfirmDialog, Screen } from '@/components/screen';
 import {
@@ -65,6 +70,7 @@ import { formatDecimal, parseDecimal } from '@/lib/format';
 import { useToday } from '@/lib/use-today';
 import { useApp } from '@/state/app-state';
 import { resolveEntryRoute } from '@/state/flow';
+import { useCustomMeals } from '@/state/use-custom-meals';
 import { useFoodLogActions, useFoodLogDay } from '@/state/use-food-log';
 import { useNutritionWeek } from '@/state/use-nutrition';
 
@@ -79,7 +85,9 @@ type Message = { text: string; tone: 'success' | 'danger' | 'warning' };
  * Eintrag (Menge/Portion, Mahlzeit, Tag; Schnelleintrag: Bezeichnung und kcal). Alle Werte rechnet packages/core
  * (`entryFromFood`, `entryFromRecipe`, `quickEntry`, `rescaleEntry`); ab 1.500 kcal fragt die App „Stimmt die Menge?“
  * (keine Sperre). Bei „Kalorienzahlen aus“ keine kcal und kein kcal-Feld. Ohne Einwilligung health_data kein Eintragen
- * (A-G12). Kein Essensplan nötig.
+ * (A-G12). Kein Essensplan nötig. Etappe E2: unter „Favoriten“ die eigenen Gerichte (Portion 0,25–3), unter „Zuletzt“
+ * auch eingetragene eigene Gerichte (neu aus dem aktuellen Gericht gerechnet); Titel im Tagebuch bleibt „Eigenes
+ * Gericht“, angezeigt wird der Name.
  */
 export default function FoodLogEntryScreen() {
   const router = useRouter();
@@ -107,6 +115,9 @@ export default function FoodLogEntryScreen() {
   const [lastSaved, setLastSaved] = useState<FoodLogEntry | null>(null);
   const [pending, setPending] = useState<FoodLogEntry | null>(null);
   const [busy, setBusy] = useState(false);
+  const meals = useCustomMeals();
+  const titleOf = (entry: Pick<FoodLogEntry, 'source' | 'custom_meal_id' | 'title_de'>) =>
+    foodLogDisplayTitle(entry, meals);
 
   if (app.status.kind === 'loading') {
     return (
@@ -171,7 +182,7 @@ export default function FoodLogEntryScreen() {
       await actions.save([entry]);
       setLastSaved(editId ? null : entry);
       setMessage({
-        text: editId ? t.foodLog.updated : t.foodLog.saved(entry.title_de),
+        text: editId ? t.foodLog.updated : t.foodLog.saved(titleOf(entry)),
         tone: 'success',
       });
     } catch (error) {
@@ -213,7 +224,7 @@ export default function FoodLogEntryScreen() {
           {message.text}
         </Notice>
       ) : null}
-      {lastSaved && lastSaved.source !== 'plan_item' ? (
+      {lastSaved && lastSaved.source !== 'plan_item' && lastSaved.source !== 'custom_meal' ? (
         <Button
           label={
             isFavoriteEntry(rows.foodLogFavorites, lastSaved)
@@ -247,6 +258,7 @@ export default function FoodLogEntryScreen() {
         <EditEntry
           key={`${editRow.id}-${editRow.revision}`}
           row={editRow}
+          title={titleOf(editRow)}
           food={editRow.food_id === null ? null : (library.foods.get(editRow.food_id) ?? null)}
           today={today}
           showNumbers={showNumbers}
@@ -277,6 +289,9 @@ export default function FoodLogEntryScreen() {
   const all = rows.foodLogEntries;
   const recent = recentEntries(all);
   const favorites = orderFavorites(rows.foodLogFavorites, all);
+  const mealById = (id: string | null) => meals.find((m) => m.id === id) ?? null;
+  const pickCustom = (meal: CustomMeal, portion: number) =>
+    submit(entryFromCustomMeal(meal, portion, target()));
   const preselectedRecipe =
     typeof params.rezept === 'string'
       ? (library.recipes.find((r) => r.id === params.rezept) ?? null)
@@ -335,8 +350,46 @@ export default function FoodLogEntryScreen() {
           showNumbers={showNumbers}
           busy={busy}
           testID="food-log-recent"
-          onPick={(item) => submit(entryFromTemplate(templateOf(item), target()))}
+          titleOf={titleOf}
+          available={(item) =>
+            item.source !== 'custom_meal' ||
+            ('custom_meal_id' in item && mealById(item.custom_meal_id) !== null)
+          }
+          onPick={(item) => {
+            // Eigenes Gericht (E2): neu aus dem aktuellen Gericht mit derselben Portion.
+            if (item.source === 'custom_meal' && 'custom_meal_id' in item) {
+              const meal = mealById(item.custom_meal_id);
+              if (meal) pickCustom(meal, item.portion ?? 1);
+              return;
+            }
+            submit(entryFromTemplate(templateOf(item), target()));
+          }}
         />
+      ) : null}
+      {tab === 'favorites' ? (
+        <View style={{ gap: 8 }}>
+          <Heading level={2}>{t.customMeals.pickTitle}</Heading>
+          {meals.length > 0 ? (
+            <CustomMealPicker
+              meals={meals}
+              showNumbers={showNumbers}
+              busy={busy}
+              testID="food-log-custom-meals"
+              onPick={pickCustom}
+            />
+          ) : null}
+          <Button
+            label={meals.length > 0 ? t.customMeals.manage : t.customMeals.createFirst}
+            variant="secondary"
+            onPress={() =>
+              router.push(
+                (meals.length > 0 ? '/ernaehrung/gerichte' : '/ernaehrung/gericht') as Href,
+              )
+            }
+            testID="food-log-custom-meals-manage"
+          />
+          <Heading level={2}>{t.foodLog.tabs.favorites}</Heading>
+        </View>
       ) : null}
       {tab === 'favorites' ? (
         <TemplateList
@@ -345,6 +398,7 @@ export default function FoodLogEntryScreen() {
           showNumbers={showNumbers}
           busy={busy}
           testID="food-log-favorites"
+          titleOf={titleOf}
           available={(item) => !('fav_key' in item) || favoriteAvailable(item, library)}
           onPick={(item) =>
             // Favoriten aus Katalog/Rezept speichern keine Werte – neu aus dem Bestand gerechnet (Wächter E1 S1).
@@ -392,6 +446,7 @@ function TemplateList({
   showNumbers,
   busy,
   testID,
+  titleOf,
   available = () => true,
   onPick,
 }: {
@@ -400,6 +455,8 @@ function TemplateList({
   showNumbers: boolean;
   busy: boolean;
   testID: string;
+  /** Anzeigetitel (eigene Gerichte: Name, E2). */
+  titleOf: (item: FoodLogEntryRow) => string;
   available?: (item: FoodLogEntryRow | FoodLogFavorite) => boolean;
   onPick: (item: FoodLogEntryRow | FoodLogFavorite) => void;
 }) {
@@ -415,15 +472,16 @@ function TemplateList({
       {items.map((item, index) => {
         const key = 'fav_key' in item ? item.fav_key : item.id;
         const ok = available(item);
+        const title = 'fav_key' in item ? item.title_de : titleOf(item);
         // testID nur mit Position – der Schlüssel enthält kcal (Wächter E1 H7, nichts davon ins DOM).
         return (
           <Card key={key}>
-            <Body>{item.title_de}</Body>
+            <Body>{title}</Body>
             <Body muted>{templateDetailText(item, showNumbers)}</Body>
             {ok ? null : <Body muted>{t.foodLog.favoriteUnavailable}</Body>}
             <Button
               label={t.foodLog.addThis}
-              accessibilityLabel={t.foodLog.addThisA11y(item.title_de)}
+              accessibilityLabel={t.foodLog.addThisA11y(title)}
               disabled={busy || !ok}
               onPress={() => onPick(item)}
               testID={`${testID}-add-${index}`}
@@ -754,6 +812,7 @@ function QuickTab({
 /** Eintrag ändern: Menge/Portion, Mahlzeit und Tag (Plan-Mahlzeit nur Portion), Schnelleintrag neu; Löschen. */
 function EditEntry({
   row,
+  title,
   food,
   today,
   showNumbers,
@@ -762,6 +821,8 @@ function EditEntry({
   onDelete,
 }: {
   row: FoodLogEntryRow;
+  /** Anzeigetitel (eigenes Gericht: aktueller Name, E2). */
+  title: string;
   /** Umrechnung des Lebensmittels (Stück/ml → g), Wächter E1 H6. */
   food: Food | null;
   today: string;
@@ -786,16 +847,17 @@ function EditEntry({
     build.ok
       ? moveEntry(build.entry, isPlan ? row.slot : targetSlot, isPlan ? row.eaten_on : date)
       : build;
-  const portions = FOOD_LOG_PORTION_CHOICES.includes(
-    portion as (typeof FOOD_LOG_PORTION_CHOICES)[number],
-  )
-    ? [...FOOD_LOG_PORTION_CHOICES]
-    : [...FOOD_LOG_PORTION_CHOICES, portion].sort((a, b) => a - b);
+  // Eigene Gerichte (E2): Portion 0,25–3; sonst wie bisher.
+  const choices: readonly number[] =
+    row.source === 'custom_meal' ? CUSTOM_MEAL_PORTION_CHOICES : FOOD_LOG_PORTION_CHOICES;
+  const portions = choices.includes(portion)
+    ? [...choices]
+    : [...choices, portion].sort((a, b) => a - b);
 
   return (
     <View style={{ gap: 12 }} testID="food-log-edit">
       <Card>
-        <Heading level={2}>{row.title_de}</Heading>
+        <Heading level={2}>{title}</Heading>
         <Body muted>{entryDetailText(entry, showNumbers)}</Body>
       </Card>
       {!editable ? (
@@ -929,7 +991,7 @@ function EditEntry({
       )}
       <Button
         label={t.foodLog.delete}
-        accessibilityLabel={t.foodLog.deleteA11y(row.title_de)}
+        accessibilityLabel={t.foodLog.deleteA11y(title)}
         variant="danger"
         disabled={busy}
         onPress={() => setConfirmDelete(true)}

@@ -2176,3 +2176,35 @@ export const FOOD_LOG_DEFAULT_SLOT_MINUTES = {
   dinnerFrom: 17 * 60,
   dinnerUntil: 21 * 60 + 30,
 } as const;
+
+// ---------------------------------------------------------------------------------------------------------
+// Etappe E2 · Eigene Gerichte (docs/PLAN-AUSWERTUNG.md Abschnitt 7, KONZEPT 6.2). Identisch als CHECK bzw. Konstante
+// in der Datenbank (20261015160000_custom_meals.sql, 20261015160100_custom_meal_rpcs.sql, Abgleich in
+// db-sync.test.ts). Alle Werte sind PRODUKTENTSCHEIDUNG – VOR LIVEGANG FACHLICH PRÜFEN (Eingabegrenzen gegen
+// Tippfehler, keine Empfehlungen).
+// ---------------------------------------------------------------------------------------------------------
+
+/**
+ * Grenzen eines eigenen Gerichts (Plan 7):
+ * - höchstens 100 Gerichte je Person, 1–30 Zutaten je Gericht (Plan 7),
+ * - Name 1–60 Zeichen (Code-Points wie char_length), ohne Steuerzeichen und ohne Leerzeichen am Rand,
+ * - Portionen (Gericht aus Zutaten) 1–20, ganze Zahl; ein direkt angelegtes Gericht hat genau 1 Portion,
+ * - Werte JE PORTION wie ein Tagebuch-Eintrag: kcal 0–3.000 (ganz), Makros 0–750 g (eine Nachkommastelle) –
+ *   `FOOD_LOG_LIMITS.kcal`/`macroG`; Zutaten-Mengen wie im Tagebuch (`FOOD_LOG_LIMITS.amountMass`/`amountPiece`,
+ *   umgerechnet höchstens `gramsMax` je Zutat),
+ * - `macroKcalTolerance` 0,20: Weichen die direkt eingegebenen kcal um mehr als 20 % von den kcal ab, die Eiweiß,
+ *   Kohlenhydrate und Fett ergeben (`KCAL_PER_GRAM`, Atwater), fragt die App nach („Stimmen die Werte?“) – keine
+ *   Sperre (Plan 7),
+ * - `maxPayloadBytes` 16.000 je Speichervorgang (Server).
+ */
+export const CUSTOM_MEAL_LIMITS = {
+  maxMeals: 100,
+  maxItems: 30,
+  nameMaxChars: 60,
+  servings: { min: 1, max: 20 },
+  macroKcalTolerance: 0.2,
+  maxPayloadBytes: 16000,
+} as const;
+
+/** Portionen beim Eintragen eines eigenen Gerichts (Plan 7: 0,25–3). PRODUKTENTSCHEIDUNG. */
+export const CUSTOM_MEAL_PORTION_CHOICES = [0.25, 0.5, 0.75, 1, 1.25, 1.5, 2, 3] as const;
