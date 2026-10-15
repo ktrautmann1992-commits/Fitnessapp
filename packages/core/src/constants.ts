@@ -2176,3 +2176,31 @@ export const FOOD_LOG_DEFAULT_SLOT_MINUTES = {
   dinnerFrom: 17 * 60,
   dinnerUntil: 21 * 60 + 30,
 } as const;
+
+/**
+ * Farbzonen des Kalorienbalkens in der Tagesauswertung (docs/PLAN-AUSWERTUNG.md 2.1, 2.2, A-G5, Etappe A2).
+ * Alle Grenzen eines Tages kommen aus `nutritionTargetsForWeek` (Untergrenze, Planband, Obergrenze, Ziel) – hier steht
+ * nur der Faktor für „deutlich darüber“: rot erst über R = max(Obergrenze; Ziel × `upperRedTargetFactor`).
+ * `scaleHeadroomFactor` ist reine Darstellung (Balken reicht bis R × Faktor bzw. bis zum Ist-Wert) und keine Grenze.
+ * Quelle: PRODUKTENTSCHEIDUNG – VOR LIVEGANG FACHLICH PRÜFEN (Ernährungsfachkraft, A-G5).
+ */
+export const INTAKE_ZONES = {
+  upperRedTargetFactor: 1.2,
+  scaleHeadroomFactor: 1.1,
+} as const;
+
+/**
+ * „Trainingsziel erreicht“ (docs/PLAN-AUSWERTUNG.md 2.5, A-G11, Etappe A2): Erfüllungsgrad 0–100 % je Einheit.
+ * Stufen: ab `reachedMinPercent` „Ziel erreicht“, ab `mostlyMinPercent` „größtenteils“, darunter „teilweise“.
+ * Halteübung: Satz erfüllt ab `holdDurationFraction` der Vorgabe. Ausdauer: Hinweis „lockerer hilft der Erholung“,
+ * wenn die Anstrengung mehr als `effortHintAboveTarget` Punkte (Skala 0–10) über der Vorgabe liegt; Hinweis „länger als
+ * geplant“ über `longerThanPlannedFraction` der geplanten Minuten. Gewicht: eine Gewichtsstufe unter der Vorgabe zählt
+ * noch (Stufen wie LOAD_PROGRESSION bzw. eigene Gewichte). Quelle: PRODUKTENTSCHEIDUNG – VOR LIVEGANG FACHLICH PRÜFEN.
+ */
+export const SESSION_ACHIEVEMENT = {
+  reachedMinPercent: 90,
+  mostlyMinPercent: 60,
+  holdDurationFraction: 0.9,
+  effortHintAboveTarget: 2,
+  longerThanPlannedFraction: 1.1,
+} as const;

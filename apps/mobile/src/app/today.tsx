@@ -343,6 +343,14 @@ export default function TodayScreen() {
           />
         </Card>
         <NutritionTodayCard nowMinutes={nowMinutes} />
+        {/* Tagesauswertung (Etappe A2): Essen und Training heute. */}
+        <Button
+          label={t.day.openToday}
+          accessibilityLabel={t.day.openA11y(t.day.today)}
+          variant="secondary"
+          onPress={() => router.push(`/tag/${today}` as Href)}
+          testID="today-day"
+        />
         {rows.sessionLogs.length > 0 ? (
           // Das Tagebuch bleibt auch ohne Plan (z. B. nach dem Widerruf) – Verlauf erreichbar.
           <Button
@@ -720,6 +728,14 @@ export default function TodayScreen() {
       />
       {/* Ernährung (Phase 5, Etappe N4): Karte „Essen heute“. */}
       <NutritionTodayCard nowMinutes={nowMinutes} />
+      {/* Tagesauswertung (Etappe A2): Essen und Training heute. */}
+      <Button
+        label={t.day.openToday}
+        accessibilityLabel={t.day.openA11y(t.day.today)}
+        variant="secondary"
+        onPress={() => router.push(`/tag/${today}` as Href)}
+        testID="today-day"
+      />
       {/* Woche und Verlauf (Etappe D). */}
       <View style={{ flexDirection: 'row', gap: 8 }}>
         <View style={{ flex: 1 }}>
