@@ -106,6 +106,24 @@ Vercel zeigt die App im Handy-Browser, Expo baut die echten Apps in der Cloud.
    `account` (im Testmodus ohne E-Mail).
 10. Alles einmal hell und einmal dunkel ansehen.
 
+## Teil 7a – Trainingskalender testen (Etappe A1a, Testmodus)
+1. Vorschau-Link aus dem Pull Request öffnen → **Einstellungen → Testdaten löschen** (falls schon getestet) →
+   „Testmodus starten“ → Onboarding mit **Di und Fr Kraft im Studio** (bei Mo/Mi/Fr ist jeder freie Tag zu nah an einer
+   Ganzkörper-Einheit – dort geht nur Tauschen).
+2. „Heute“ → **Kalender**. Den Griff **⠿** einer Einheit gedrückt halten (ca. eine halbe Sekunde) und auf einen grün
+   gestrichelten Tag ziehen → „Verschoben auf …“ → **Rückgängig** antippen → die Einheit ist wieder am alten Tag.
+3. Beim Ziehen zeigen gesperrte Tage rot den Grund, z. B. „Zu nah an deiner Einheit „Ganzkörper B“ am Freitag …“. Dort
+   loslassen → „Nicht verschoben: …“, nichts ändert sich.
+4. Auf den Tag der anderen Einheit ziehen → „Getauscht: …“ (beide Einheiten wechseln den Tag).
+5. Ohne Ziehen: **Verschieben …** → Liste aller Tage mit ✓ (verschieben/tauschen) oder ✕ und Grund → einen Tag wählen.
+6. Unter der Meldung steht „Dein Essensplan passt eventuell nicht mehr …“ → **Zum Essensplan**.
+7. Flugmodus an → verschieben → Seite neu laden → bleibt verschoben. Tauschen im Flugmodus ist im Testmodus möglich (alles
+   auf dem Gerät); mit Konto sagt die App „Tauschen braucht kurz Verbindung“.
+8. Kalender auch über „Heute“ → **Woche** → **Im Kalender verschieben** erreichbar.
+9. Android-APK (Workflow `eas-build`): die ganze Karte lange drücken und mit dem Finger ziehen – kurzes Vibrieren beim
+   Aufnehmen. Mit TalkBack: auf den Namen der Einheit → Aktionen „Einen Tag früher/später“.
+10. Einmal hell und einmal dunkel ansehen.
+
 ## Teil 7b – Übungen tauschen testen (Etappe T2, Testmodus)
 1. Vorschau-Link öffnen, **Einstellungen → Testdaten löschen**, neues Testkonto: Ort **Zuhause**, Geräte **keine**,
    Mo/Mi/Fr Kraft zu Hause.

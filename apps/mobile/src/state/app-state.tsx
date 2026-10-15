@@ -13,7 +13,10 @@ import {
   type PlanSafetyRules,
   REQUIRED_CONSENT_TYPES,
   type ConsentType,
+  type MoveBlockReason,
+  moveRequestSchema,
   type RescheduleResult,
+  swapRequestSchema,
   toSavePlanPayload,
   generatedPlanSchema,
   type FoodLogEntry,
@@ -54,6 +57,7 @@ import {
   generatePlanFromRows,
   nextBlockFromRows,
   rescheduleInRows,
+  validateMoveInRows,
 } from '@/data/training-plan';
 import { readJson, STORAGE_KEYS, writeJson } from '@/data/kv';
 import { EMPTY_LOG_ROWS, type LogRows, mergeLogRows, removeSessionLog } from '@/data/log-rows';
@@ -207,6 +211,11 @@ export interface AppContextValue {
   createPlan: () => Promise<CreatePlanOutcome>;
   /** Einheit verschieben (5.11): freier Tag dieser Woche, sonst streichen. */
   moveSession: (sessionId: string) => Promise<RescheduleResult>;
+  /**
+   * Kalender (Etappe A1a): Einheit auf einen gewählten Tag verschieben bzw. – ist er belegt – mit der Einheit dort
+   * tauschen. Der Core prüft vorher (validateMove); der Server prüft erneut. Fehler werfen (BackendError).
+   */
+  moveSessionTo: (sessionId: string, targetDate: string) => Promise<MoveOutcome>;
   /** Folgeblock anhängen, wenn fällig (automatisch beim Anzeigen von „Heute“). */
   appendNextBlockIfDue: () => Promise<void>;
 
@@ -287,6 +296,12 @@ export interface AppContextValue {
 
 /** Meldung nach verworfener Verschiebung (Text in i18n, hier nur der Schlüssel). */
 export const PLAN_CHANGE_DROPPED = 'plan_change_dropped' as const;
+
+/** Ergebnis von moveSessionTo (Kalender, Etappe A1a). */
+export type MoveOutcome =
+  | { kind: 'moved'; sessionId: string; from: string; to: string }
+  | { kind: 'swapped'; sessionId: string; otherSessionId: string; from: string; to: string }
+  | { kind: 'blocked'; reason: MoveBlockReason };
 /** Meldung: Folgeblock ließ sich nicht anhängen → Plan neu erstellen. */
 export const PLAN_RECREATE_NEEDED = 'plan_recreate_needed' as const;
 
@@ -1013,6 +1028,71 @@ export function AppStateProvider({ children }: { children: ReactNode }) {
     [backend, refreshPending, rows],
   );
 
+  const moveSessionTo = useCallback(
+    async (sessionId: string, targetDate: string): Promise<MoveOutcome> => {
+      if (!rows) throw new BackendError('not_signed_in');
+      const request = moveRequestSchema.safeParse({ sessionId, targetDate });
+      if (!request.success) return { kind: 'blocked', reason: 'not_found' };
+      const active = activePlan(rows);
+      const session = rows.plannedSessions.find((s) => s.id === sessionId);
+      if (!active || !session) return { kind: 'blocked', reason: 'not_found' };
+      // Harte Sperren aus dem Core – vor jedem Senden (auch offline).
+      const check = validateMoveInRows(rows, sessionId, targetDate, todayIso());
+      if (!check.ok) return { kind: 'blocked', reason: check.reason };
+      const from = session.scheduled_on;
+      // Nach JEDEM Fehler (abgelehnt, veraltet, Netz, Zeitlimit) den Plan neu laden – so zeigt der Kalender nie einen
+      // veralteten Stand und bietet keinen unmöglichen Tausch erneut an (Wächter A1a S1/S2). Der Fehler geht weiter an
+      // den Bildschirm.
+      const reloadAfter = async (error: unknown): Promise<never> => {
+        await loadUser().catch(() => undefined);
+        throw error;
+      };
+      if (check.kind === 'swap') {
+        const swap = swapRequestSchema.parse({
+          sessionId,
+          otherSessionId: check.otherSessionId,
+          sessionOn: from,
+          otherSessionOn: targetDate,
+        });
+        const next = await backend
+          .swapPlannedSessions(
+            {
+              ...swap,
+              planId: active.plan.id,
+              usesHealthData: active.plan.uses_health_data,
+            },
+            rows,
+          )
+          .catch(reloadAfter);
+        setRows(next);
+        refreshPending();
+        return {
+          kind: 'swapped',
+          sessionId,
+          otherSessionId: check.otherSessionId,
+          from,
+          to: targetDate,
+        };
+      }
+      const next = await backend
+        .updatePlannedSession(
+          {
+            sessionId,
+            planId: active.plan.id,
+            usesHealthData: active.plan.uses_health_data,
+            scheduledOn: request.data.targetDate,
+            status: 'planned',
+          },
+          rows,
+        )
+        .catch(reloadAfter);
+      setRows(next);
+      refreshPending();
+      return { kind: 'moved', sessionId, from, to: targetDate };
+    },
+    [backend, loadUser, refreshPending, rows],
+  );
+
   const appendNextBlockIfDue = useCallback(async () => {
     if (!rows || offline || appendingRef.current || library.kind !== 'ready' || !safetyRules) {
       return;
@@ -1128,6 +1208,7 @@ export function AppStateProvider({ children }: { children: ReactNode }) {
       clearPlanMessage: () => setPlanMessage(null),
       createPlan,
       moveSession,
+      moveSessionTo,
       appendNextBlockIfDue,
       drafts,
       saveDraft,
@@ -1199,6 +1280,7 @@ export function AppStateProvider({ children }: { children: ReactNode }) {
       planMessage,
       createPlan,
       moveSession,
+      moveSessionTo,
       appendNextBlockIfDue,
       drafts,
       saveDraft,

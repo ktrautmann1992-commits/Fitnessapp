@@ -35,6 +35,7 @@ export const de = {
   },
   errors: {
     generic: 'Etwas ist schiefgelaufen. Bitte versuche es noch einmal.',
+    temporary: 'Das hat gerade nicht geklappt. Bitte versuche es gleich noch einmal.',
     network: 'Keine Verbindung – deine Angaben sind gespeichert, wir versuchen es gleich nochmal.',
     networkRetry: 'Keine Verbindung. Bitte versuche es erneut, sobald du online bist.',
     networkSensitive:
@@ -835,6 +836,91 @@ export const de = {
     olderHint: 'Ältere Wochen findest du im Verlauf.',
     empty: 'In dieser Woche ist nichts geplant und nichts eingetragen.',
     back: 'Zurück zu Heute',
+  },
+  /** Trainingskalender mit Drag-and-drop (docs/PLAN-AUSWERTUNG.md 3, Etappe A1a). */
+  calendar: {
+    title: 'Kalender',
+    open: 'Kalender',
+    openA11y: 'Trainingskalender öffnen – Einheiten auf einen anderen Tag verschieben',
+    openFromWeek: 'Im Kalender verschieben',
+    intro:
+      'Halte eine Einheit gedrückt und ziehe sie auf einen anderen Tag dieser Woche. Ohne Ziehen: „Verschieben …“.',
+    introWeb:
+      'Halte den Griff ⠿ einer Einheit gedrückt und ziehe sie auf einen anderen Tag dieser Woche. Ohne Ziehen: „Verschieben …“.',
+    current: 'Diese Woche',
+    noPlanTitle: 'Noch kein Plan',
+    noPlanText:
+      'Erstelle zuerst deinen Trainingsplan – danach kannst du hier Einheiten auf andere Tage legen.',
+    noPlanButton: 'Zu „Heute“',
+    empty: 'In dieser Woche sind keine Einheiten geplant.',
+    deloadNote:
+      'Erholungswoche: Diese Einheiten lassen sich nicht verschieben, nur streichen (auf „Heute“).',
+    rest: 'Ruhetag',
+    moveButton: 'Verschieben …',
+    moveButtonA11y: (name: string, day: string) => `${name} am ${day} verschieben`,
+    handle: '⠿',
+    handleA11y: (name: string) => `${name} ziehen (gedrückt halten)`,
+    earlier: 'Einen Tag früher',
+    later: 'Einen Tag später',
+    cardA11y: (name: string, day: string, extra: string) =>
+      extra ? `${name}, ${day} (${extra})` : `${name}, ${day}`,
+    menuTitle: (name: string) => `${name} verschieben`,
+    menuIntro: 'Wähle einen Tag dieser Woche. Gesperrte Tage zeigen den Grund.',
+    menuMove: (day: string) => `${day}: hierhin verschieben`,
+    menuSwap: (day: string, other: string) => `${day}: tauschen mit ${other}`,
+    menuBlocked: (day: string, reason: string) => `${day}: ${reason}`,
+    dropMove: 'Hier ablegen',
+    dropSwap: (other: string) => `Tauschen mit ${other}`,
+    dragging: (name: string) =>
+      `${name} aufgenommen. Lass sie auf einem hervorgehobenen Tag los – gesperrte Tage zeigen den Grund.`,
+    reasons: {
+      not_found: 'Diese Einheit gibt es nicht mehr.',
+      not_planned: 'Erledigte und gestrichene Einheiten bleiben, wo sie sind.',
+      deload_skip_only: 'Erholungswoche – hier nur streichen, nicht verschieben.',
+      past: 'Liegt in der Vergangenheit.',
+      other_week: 'Nur innerhalb derselben Woche.',
+      current: 'Hier liegt die Einheit schon.',
+      occupied: 'Belegt – dort liegt schon eine feste Einheit.',
+      recovery_48h: 'Zu nah an einer Kraft-Einheit mit denselben Muskeln.',
+    },
+    recoveryWith: (name: string, day: string) =>
+      `Zu nah an deiner Einheit „${name}“ am ${day} – dieselben Muskeln brauchen 48 Stunden Pause.`,
+    partner: (name: string, reason: string) => `Tauschen mit „${name}“ geht nicht: ${reason}`,
+    partnerReasons: {
+      not_found: 'Die andere Einheit gibt es nicht mehr.',
+      not_planned: 'Sie ist schon erledigt oder gestrichen.',
+      deload_skip_only: 'Sie gehört zur Erholungswoche.',
+      past: 'Sie käme in die Vergangenheit.',
+      other_week: 'Sie gehört zu einer anderen Woche.',
+      current: 'Das ist dieselbe Einheit.',
+      occupied: 'Sie ist fest.',
+      recovery_48h: 'Sie käme zu nah an eine Kraft-Einheit mit denselben Muskeln.',
+    },
+    moved: (day: string) => `Verschoben auf ${day}`,
+    swapped: (day: string, other: string, otherDay: string) =>
+      `Getauscht: jetzt am ${day}, „${other}“ am ${otherDay}`,
+    undo: 'Rückgängig',
+    undone: 'Rückgängig gemacht.',
+    notMoved: (reason: string) => `Nicht verschoben: ${reason}`,
+    rejectedRules:
+      'Das geht nicht: Verschieben nur ab heute, innerhalb derselben Woche und nicht in der Erholungswoche. Dein Plan wurde neu geladen.',
+    rejectedChanged:
+      'Dein Plan hat sich inzwischen geändert – wir haben ihn neu geladen. Bitte prüfe den Tag noch einmal.',
+    rejectedOther:
+      'Das hat nicht geklappt – dein Plan wurde neu geladen. Bitte prüfe den Tag noch einmal.',
+    swapOffline:
+      'Tauschen braucht kurz Verbindung. Auf einen freien Tag verschieben geht auch offline.',
+    nutritionHint:
+      'Deine Trainingstage haben sich geändert. Dein Essensplan passt eventuell nicht mehr – aktualisieren?',
+    nutritionButton: 'Zum Essensplan',
+    badges: {
+      completed: '✓ erledigt',
+      skipped: 'entfällt',
+      deload: 'Erholung',
+      today: 'heute',
+      movedFrom: (day: string) => `verschoben von ${day}`,
+    },
+    back: 'Zurück',
   },
   /** Verlauf (6.1 Punkt 5, Etappe D). */
   history: {

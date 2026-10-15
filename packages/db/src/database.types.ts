@@ -2213,6 +2213,10 @@ export type Database = {
       save_training_plan: { Args: { p_plan: Json }; Returns: string };
       seed_content: { Args: { p_content: Json }; Returns: Json };
       seed_nutrition_content: { Args: { p_content: Json }; Returns: Json };
+      swap_planned_sessions: {
+        Args: { p_a: string; p_a_on: string; p_b: string; p_b_on: string };
+        Returns: undefined;
+      };
       waitlist_add_unsubscribe_token: {
         Args: { p_token_hash: string; p_waitlist_id: string };
         Returns: undefined;

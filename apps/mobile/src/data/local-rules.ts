@@ -198,6 +198,7 @@ export function isValidOp(op: WriteOp, context: { today: string; profile: Profil
     case 'save_training_plan':
     case 'append_plan_block':
     case 'update_planned_session':
+    case 'swap_planned_sessions':
       return false;
   }
 }
@@ -411,6 +412,32 @@ export function isValidPlanOp(op: WriteOp, ctx: PlanRuleContext): boolean {
         rows.plannedSessions.filter((s) => s.id !== session.id),
         [op.scheduledOn],
       );
+    }
+    // Wie public.swap_planned_sessions (supabase/migrations/20261015120000_swap_planned_sessions.sql): beide eigene
+    // Einheiten geplant, im aktiven Plan, keine Erholungswoche, Woche nicht vorbei, jeder neue Tag ab heute und in der
+    // Woche des eigenen Ursprungstags. Die 48-h-Regel prüft (wie dort) nur der Core vorher (validateSwap).
+    case 'swap_planned_sessions': {
+      if (op.sessionId === op.otherSessionId) return false;
+      const a = rows.plannedSessions.find((s) => s.id === op.sessionId);
+      const b = rows.plannedSessions.find((s) => s.id === op.otherSessionId);
+      if (!a || !b || a.plan_id !== op.planId) return false;
+      // An den geprüften Stand gebunden (S1): beide liegen noch an den erwarteten Tagen.
+      if (a.scheduled_on !== op.sessionOn || b.scheduled_on !== op.otherSessionOn) return false;
+      const plan = rows.plans.find((p) => p.id === a.plan_id);
+      if (!plan || plan.status !== 'active' || plan.uses_health_data !== op.usesHealthData) {
+        return false;
+      }
+      if (b.plan_id !== a.plan_id) return false;
+      for (const [session, date] of [
+        [a, b.scheduled_on],
+        [b, a.scheduled_on],
+      ] as const) {
+        if (session.status !== 'planned' || session.is_deload) return false;
+        const weekStart = startOfIsoWeek(session.original_date ?? session.scheduled_on);
+        if (addDays(weekStart, 6) < today) return false;
+        if (date < today || startOfIsoWeek(date) !== weekStart) return false;
+      }
+      return true;
     }
     default:
       return false;

@@ -100,6 +100,12 @@ Verbindlich ist der freigegebene Ablauf in `docs/PLAN-PHASE-1.md` Abschnitt 3 (S
 5. **Deload:** alle 4–6 Wochen bzw. bei sinkender Leistung/hoher Belastungsempfindung
 6. **Ausdauer:** Intensitätsverteilung ca. 80/20, Zonen aus Testlauf/Herzfrequenz, Umfangsteigerung ≤10 %/Woche, Tapering vor Wettkampf
 7. **Neuplanung:** verpasste Einheiten sinnvoll verschieben oder streichen, nie stapeln
+   **Verschieben mit Ziel-Tag (Etappe A1a, umgesetzt 15.10.2026, `docs/PLAN-AUSWERTUNG.md` 3):** Trainingskalender
+   (Woche Mo–So) – Einheit per langem Druck auf einen anderen Tag ziehen oder über „Verschieben …“ einen Tag wählen.
+   `moveTargets()` nennt für jeden Tag „erlaubt“ oder den Grund (harte Sperren: nur ab heute, nur dieselbe ISO-Woche,
+   Erholungswoche nur streichen, nie zwei Einheiten am Tag, 48 h zwischen Kraft-Einheiten mit gleichen Muskeln, erledigte
+   fest). Belegter Tag = **tauschen**, wenn beide Einheiten danach alle Regeln erfüllen (Server-Funktion
+   `swap_planned_sessions`, braucht Verbindung). Danach „Rückgängig“ und der Hinweis zum Essensplan.
 8. **Fallback:** keine Vorlage passt → Echtzeit-KI-Generierung mit gleichem Schema + Validierung (Premium, Limit über `ai_usage`, Abschnitt 15).
    Gratis (**beschlossen 04.10.2026**, `docs/PLAN-PHASE-3.md` Frage 1): nächstbeste Vorlage mit Hinweis, was nicht ganz passt.
    Fehlen freigegebene Inhalte ganz: klarer Fehlerzustand, kein Ersatz
@@ -683,7 +689,9 @@ Quelle: `docs/ERWEITERUNGEN-2.md` Abschnitte 1–2. Startbestand aus `alpha5-rez
   (`on delete restrict`), Schnappschuss Name, Dosierung mit den fachlichen Grenzen V4 als CHECK, target_weight_kg).
 - **Rechte:** Nutzer dürfen Pläne und geplante Übungen nur **lesen**; an Einheiten nur Datum und Status ändern (Trigger:
   ab heute, gleiche ISO-Woche wie der ursprüngliche Tag, Erholungseinheiten nur streichen, nur `planned → skipped`, nur
-  aktiver Plan; die 48-h-Regel bleibt eine App-Regel). Anlegen nur über `save_training_plan(p_plan)` und
+  aktiver Plan; die 48-h-Regel bleibt eine App-Regel). Tauschen zweier Einheiten nur über
+  `swap_planned_sessions(p_a, p_b, p_a_on, p_b_on)` (Etappe A1a, `security definer`, dieselben Prüfungen für beide,
+  atomar, nur wenn beide noch an den von der App geprüften Tagen liegen). Anlegen nur über `save_training_plan(p_plan)` und
   `append_plan_block(p_plan_id, p_sessions)` (`security definer`, prüfen Login, Profil, Besitz, nur bekannte Felder, Werte
   der Angaben, nur freigegebene Inhalte, Datumsrahmen `PLAN_SAVE_LIMITS`; `uses_health_data`/`medical_notice` bestimmt
   die Datenbank selbst aus dem neuesten Gesundheits-Check und der Einwilligung; Fehler ohne Zeilen-Details). Ersetzte
