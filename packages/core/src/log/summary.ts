@@ -104,6 +104,11 @@ export interface DayItem {
   readonly free: boolean;
   /** Erst an einem späteren Tag eingetragen (A1b, isBackfilledLog). */
   readonly backfilled: boolean;
+  /**
+   * Tatsächliches Datum, wenn der Eintrag in einer ANDEREN Woche liegt als der Termin seiner Einheit (± 1 Tag an der
+   * Wochengrenze, W2): Er steht dann am Termin in der Woche der Einheit (Wächter A3 S1). Sonst fehlt das Feld.
+   */
+  readonly performedOn?: string;
 }
 
 export interface SummaryDay {
@@ -148,7 +153,13 @@ export function weekLogSummary(
   const weekEnd = addDays(weekStart, 6);
   const inWeek = (date: string) => date >= weekStart && date <= weekEnd;
   const sessionById = new Map(sessions.map((s) => [s.id, s] as const));
-  const weekLogs = logs.filter((l) => inWeek(l.performed_on));
+  // Ein Eintrag gehört zur Woche des Termins seiner Einheit (coalesce(original_date, scheduled_on)); ohne bekannte
+  // Einheit (frei, verwaist) zur Woche seines Datums. So zählt eine an der Wochengrenze (± 1 Tag) nachgeholte bzw.
+  // nachgetragene Einheit in genau EINER Woche – mit Termin und Eintrag (Wächter A3 S1).
+  const weekLogs = logs.filter((l) => {
+    const session = l.planned_session_id ? sessionById.get(l.planned_session_id) : undefined;
+    return inWeek(session ? (session.original_date ?? session.scheduled_on) : l.performed_on);
+  });
   const loggedSessionIds = new Set(
     logs.map((l) => l.planned_session_id).filter((id): id is string => id !== null),
   );
@@ -158,16 +169,25 @@ export function weekLogSummary(
   for (const log of weekLogs) {
     const session = log.planned_session_id ? sessionById.get(log.planned_session_id) : undefined;
     const reference = session ? (session.original_date ?? session.scheduled_on) : null;
-    push(log.performed_on, {
+    const outside = !inWeek(log.performed_on);
+    // Außerhalb der Woche eingetragen: am (verschobenen) Termin anzeigen, das tatsächliche Datum dazu.
+    const shownOn = !outside
+      ? log.performed_on
+      : session && inWeek(session.scheduled_on)
+        ? session.scheduled_on
+        : (reference ?? log.performed_on);
+    push(shownOn, {
       status: log.status === 'completed' ? 'done' : 'partial',
       sessionId: log.planned_session_id,
       logId: log.id,
       name_de: log.name_de,
-      caughtUpFrom: reference !== null && reference !== log.performed_on ? reference : null,
+      caughtUpFrom:
+        !outside && reference !== null && reference !== log.performed_on ? reference : null,
       free: log.is_free === true,
       backfilled:
         log.created_at !== undefined &&
         isBackfilledLog({ performed_on: log.performed_on, created_at: log.created_at }),
+      ...(outside ? { performedOn: log.performed_on } : {}),
     });
   }
   for (const session of sessions) {

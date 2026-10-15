@@ -2242,3 +2242,14 @@ export const SESSION_ACHIEVEMENT = {
   effortHintAboveTarget: 2,
   longerThanPlannedFraction: 1.1,
 } as const;
+
+/**
+ * Wochenauswertung (docs/PLAN-AUSWERTUNG.md 2.4, Abschnitt 8, A-G13, Etappe A3): Muster-Hinweis mit Hilfe-Stellen
+ * (fester Essstörungs-Hinweis wie PLAN-PHASE-5 4.9), wenn in einer Woche mindestens `patternBelowFloorMinDays`
+ * VERGANGENE Tage laut den Einträgen unter der Untergrenze (`floorKcal`) lagen. Einmal je Woche, kein Hinweis bei Tagen
+ * über dem Ziel. Keine eigene Kaloriengrenze – die Untergrenze kommt aus `nutritionTargetsForWeek`.
+ * Quelle: GRÜNDER-ENTSCHEIDUNG A-G13 (15.10.2026) – PRODUKTENTSCHEIDUNG, VOR LIVEGANG FACHLICH PRÜFEN.
+ */
+export const WEEK_EVALUATION = {
+  patternBelowFloorMinDays: 3,
+} as const;
