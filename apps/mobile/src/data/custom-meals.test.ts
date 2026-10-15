@@ -13,6 +13,7 @@ import {
   type FoodLogBuild,
   type FoodLogEntry,
   foodLogDisplayTitle,
+  rebuildEntry,
   zeroNutrients,
 } from '@fitnessapp/core';
 import { describe, expect, it } from 'vitest';
@@ -339,5 +340,35 @@ describe('Eigene Gerichte im Testmodus (E2)', () => {
     expect(recentDetailText(old, [meal(1, 900)], false)).toBe('½ Portion');
     // Gericht gelöscht: Schnappschuss (nicht eintragbar, siehe recentEntries).
     expect(recentDetailText(old, [], true)).toBe('½ Portion · 200 kcal');
+  });
+
+  it('gelöschtes Gericht hängt nicht (Wächter E2 Nachprüfung S1): (a) offline eingetragen, (b) Portion geändert', async () => {
+    const { backend } = seededBackend(rows());
+    let next = await backend.saveCustomMeal(meal(1, 400), rows());
+    // (b) Eintrag aus dem Gericht, dann löschen, dann Portion ändern mit dem alten Verweis.
+    const before = ok(
+      entryFromCustomMeal(meal(1, 400), 0.5, { id: ID(90), date: TODAY, slot: 'other' }),
+    );
+    next = await backend.saveFoodLogEntries([before], next);
+    next = await backend.deleteCustomMeal(ID(1), next);
+    const changed = ok(
+      rebuildEntry(before, { portion: 1 }, { foods: FOODS, recipes: [], meals: [] }),
+    );
+    next = await backend.saveFoodLogEntries([changed], next);
+    expect(next.foodLogEntries.find((e) => e.id === ID(90))).toMatchObject({
+      custom_meal_id: null,
+      kcal: 400,
+      portion: 1,
+    });
+    // (a) Offline aus dem (inzwischen gelöschten) Gericht eingetragen: gespeichert, Verweis leer.
+    const offline = ok(
+      entryFromCustomMeal(meal(1, 400), 1, { id: ID(91), date: TODAY, slot: 'other' }),
+    );
+    next = await backend.saveFoodLogEntries([offline], next);
+    expect(next.foodLogEntries.find((e) => e.id === ID(91))).toMatchObject({
+      custom_meal_id: null,
+      title_de: CUSTOM_MEAL_ENTRY_TITLE,
+      kcal: 400,
+    });
   });
 });

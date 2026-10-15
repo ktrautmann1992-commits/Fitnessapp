@@ -69,8 +69,10 @@ export function checkFoodLogSave(
       outcomes.push({ kind: 'rejected', code: 'invalid' });
       continue;
     }
-    // Eigenes Gericht (E2): Verweis nur auf ein vorhandenes eigenes Gericht – sonst ohne Verweis (wie
-    // save_food_log_entries; der Eintrag bleibt ein Schnappschuss mit festem Titel).
+    // Eigenes Gericht (E2): Verweis nur auf ein vorhandenes eigenes Gericht. Fehlt es (gelöscht), wird der Verweis
+    // leer und der Eintrag mit seinen Werten gespeichert – wie save_food_log_entries seit der Wächter-Nachprüfung E2 S1:
+    // neuer Eintrag = Werte des Geräts (Grenzen per Zod wie die CHECKs), Ändern = Schnappschuss (rebuildEntry). Die
+    // Werte selbst rechnet im Testmodus immer packages/core aus dem Bestand.
     const entry =
       parsed.data.custom_meal_id !== null &&
       !(rows.customMeals ?? []).some((m) => m.id === parsed.data.custom_meal_id)

@@ -28,7 +28,7 @@ import {
   type QuickEntryLabel,
   quickEntry,
   recentEntries,
-  rescaleEntry,
+  rebuildEntry,
   searchFoodLogCatalog,
   type Food,
   type Recipe,
@@ -84,7 +84,7 @@ type Message = { text: string; tone: 'success' | 'danger' | 'warning' };
  * Ernährung → „Eintragen“ (Etappe E1, docs/PLAN-AUSWERTUNG.md Abschnitt 5): Reiter Zuletzt · Favoriten · Suche ·
  * Schnell, dazu Tag (heute bis 14 Tage zurück) und Mahlzeit. Mit `bearbeiten=<id>` ändert der Bildschirm einen
  * Eintrag (Menge/Portion, Mahlzeit, Tag; Schnelleintrag: Bezeichnung und kcal). Alle Werte rechnet packages/core
- * (`entryFromFood`, `entryFromRecipe`, `quickEntry`, `rescaleEntry`); ab 1.500 kcal fragt die App „Stimmt die Menge?“
+ * (`entryFromFood`, `entryFromRecipe`, `quickEntry`, `rebuildEntry`); ab 1.500 kcal fragt die App „Stimmt die Menge?“
  * (keine Sperre). Bei „Kalorienzahlen aus“ keine kcal und kein kcal-Feld. Ohne Einwilligung health_data kein Eintragen
  * (A-G12). Kein Essensplan nötig. Etappe E2: unter „Favoriten“ die eigenen Gerichte (Portion 0,25–3), unter „Zuletzt“
  * auch eingetragene eigene Gerichte (neu aus dem aktuellen Gericht gerechnet); Titel im Tagebuch bleibt „Eigenes
@@ -260,7 +260,7 @@ export default function FoodLogEntryScreen() {
           key={`${editRow.id}-${editRow.revision}`}
           row={editRow}
           title={titleOf(editRow)}
-          food={editRow.food_id === null ? null : (library.foods.get(editRow.food_id) ?? null)}
+          sources={{ foods: library.foods, recipes: library.recipes, meals }}
           today={today}
           showNumbers={showNumbers}
           busy={busy}
@@ -823,7 +823,7 @@ function QuickTab({
 function EditEntry({
   row,
   title,
-  food,
+  sources,
   today,
   showNumbers,
   busy,
@@ -833,8 +833,11 @@ function EditEntry({
   row: FoodLogEntryRow;
   /** Anzeigetitel (eigenes Gericht: aktueller Name, E2). */
   title: string;
-  /** Umrechnung des Lebensmittels (Stück/ml → g), Wächter E1 H6. */
-  food: Food | null;
+  /**
+   * Bestand zum Neu-Rechnen beim Ändern (Wächter E2 Nachprüfung H2, `rebuildEntry`): Lebensmittel/Rezept/Gericht im
+   * Bestand → neu aus der Quelle; sonst aus dem Schnappschuss (mit 2.000-g-Grenze, Wächter E1 H6).
+   */
+  sources: Parameters<typeof rebuildEntry>[2];
   today: string;
   showNumbers: boolean;
   busy: boolean;
@@ -980,7 +983,7 @@ function EditEntry({
                       relocate(
                         value === row.amount
                           ? { ok: true, entry }
-                          : rescaleEntry(entry, { amount: value }, food),
+                          : rebuildEntry(entry, { amount: value }, sources),
                       ),
                     );
                     return;
@@ -989,7 +992,7 @@ function EditEntry({
                     relocate(
                       portion === row.portion
                         ? { ok: true, entry }
-                        : rescaleEntry(entry, { portion }),
+                        : rebuildEntry(entry, { portion }, sources),
                     ),
                   );
                 }}

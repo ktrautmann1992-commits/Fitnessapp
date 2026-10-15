@@ -2,6 +2,7 @@ import { z } from 'zod';
 
 import { CUSTOM_MEAL_LIMITS, FOOD_LOG_LIMITS, KCAL_PER_GRAM } from '../constants';
 import type { FoodLookup } from '../content/food-schema';
+import type { Recipe } from '../content/recipe-schema';
 import { contentIdSchema } from '../content/schemas';
 import {
   CUSTOM_MEAL_ENTRY_TITLE,
@@ -10,8 +11,11 @@ import {
   type FoodLogEntry,
   type FoodLogTarget,
   FOOD_LOG_UNITS,
+  entryFromFood,
+  entryFromRecipe,
   isValidFoodLogAmount,
   isValidFoodLogPortion,
+  rescaleEntry,
 } from './food-log';
 import { computeRecipeFacts } from './recipe-nutrients';
 import { gramsPerUnit } from './units';
@@ -509,4 +513,42 @@ export function orderCustomMeals<T extends Pick<CustomMeal, 'id' | 'name_de'>>(
       a.name_de.localeCompare(b.name_de, 'de') ||
       (a.id < b.id ? -1 : a.id > b.id ? 1 : 0),
   );
+}
+
+/**
+ * Menge bzw. Portion eines Eintrags ändern (Wächter E2 Nachprüfung H2, gleich in save_food_log_entries): Steckt die
+ * Quelle noch im Bestand (Lebensmittel bzw. Rezept im Katalog, eigenes Gericht vorhanden), wird NEU aus der Quelle
+ * gerechnet – sonst würde ein gerundeter Schnappschuss hochgerechnet (Gurke 1 g = 0 kcal → 2.000 g = 0 kcal). Fehlt die
+ * Quelle (archiviert bzw. Gericht gelöscht) oder ist es eine Plan-Mahlzeit, verhältnisgleich aus dem Schnappschuss
+ * (`rescaleEntry`, mit der 2.000-g-Grenze). Unveränderte Menge/Portion ändert nichts. id, Tag, Platz und Titel bleiben.
+ */
+export function rebuildEntry(
+  entry: FoodLogEntry,
+  change: { readonly portion: number } | { readonly amount: number },
+  sources: {
+    readonly foods: FoodLookup;
+    readonly recipes: readonly Recipe[];
+    readonly meals: readonly Pick<CustomMeal, 'id' | 'kcal' | 'protein_g' | 'carbs_g' | 'fat_g'>[];
+  },
+): FoodLogBuild {
+  if ('amount' in change ? change.amount === entry.amount : change.portion === entry.portion) {
+    return { ok: true, entry };
+  }
+  const target = { id: entry.id, date: entry.eaten_on, slot: entry.slot };
+  const keep = (build: FoodLogBuild): FoodLogBuild =>
+    build.ok ? { ok: true, entry: { ...build.entry, title_de: entry.title_de } } : build;
+  if (entry.source === 'food' && 'amount' in change && entry.unit !== null) {
+    const food = entry.food_id === null ? undefined : sources.foods.get(entry.food_id);
+    if (food) return keep(entryFromFood(food, change.amount, entry.unit, target));
+    return rescaleEntry(entry, change, null);
+  }
+  if (entry.source === 'recipe' && 'portion' in change) {
+    const recipe = sources.recipes.find((r) => r.id === entry.recipe_id);
+    if (recipe) return keep(entryFromRecipe(recipe, sources.foods, change.portion, target));
+  }
+  if (entry.source === 'custom_meal' && 'portion' in change) {
+    const meal = sources.meals.find((m) => m.id === entry.custom_meal_id);
+    if (meal) return entryFromCustomMeal(meal, change.portion, target);
+  }
+  return rescaleEntry(entry, change, null);
 }

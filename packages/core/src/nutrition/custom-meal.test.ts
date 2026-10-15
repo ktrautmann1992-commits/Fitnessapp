@@ -19,6 +19,7 @@ import {
   isValidCustomMealName,
   normalizeCustomMealName,
   orderCustomMeals,
+  rebuildEntry,
   renameCustomMeal,
 } from './custom-meal';
 import {
@@ -30,6 +31,7 @@ import {
   foodLogEntrySchema,
   foodLogKey,
   isFavoriteEntry,
+  entryFromFood,
   quickEntry,
   recentEntries,
   rescaleEntry,
@@ -766,4 +768,74 @@ describe('Eigenschaftstests (Zufall mit festem Startwert)', () => {
       }
     }
   }, 60_000);
+});
+
+describe('rebuildEntry – Ändern aus der Quelle, ohne Quelle aus dem Schnappschuss (Wächter E2 Nachprüfung H2)', () => {
+  const gurke = makeFood({
+    id: 'gurke',
+    name_de: 'Gurke',
+    nutrients_per_100g: {
+      ...zeroNutrients(),
+      kcal: 12,
+      protein_g: 0.6,
+      carbs_g: 1.8,
+      fat_g: 0.1,
+      sugar_g: 0,
+      sat_fat_g: 0,
+      fiber_g: 0,
+    },
+    units: { piece_g: 400 },
+  });
+  const foods = foodLookup([...FIXTURE_FOODS, gurke]);
+  const sources = { foods, recipes: [], meals: [] };
+  const target = { id: ID(80), date: '2026-10-15', slot: 'other' as const };
+  it('Gurke 1 g → 2.000 g ergibt 240 kcal (neu aus dem Katalog, nicht 0 × 2.000)', () => {
+    const small = entry(entryFromFood(gurke, 1, 'g', target));
+    expect(small.kcal).toBe(0);
+    expect(rescaleEntry(small, { amount: 2000 })).toMatchObject({ ok: true, entry: { kcal: 0 } });
+    expect(entry(rebuildEntry(small, { amount: 2000 }, sources))).toMatchObject({
+      kcal: 240,
+      protein_g: 12,
+      carbs_g: 36,
+      amount: 2000,
+      id: ID(80),
+    });
+  });
+  it('Lebensmittel nicht mehr im Bestand: aus dem Schnappschuss, 2.000-g-Grenze bleibt', () => {
+    const e = entry(entryFromFood(gurke, 100, 'g', target));
+    expect(entry(rebuildEntry(e, { amount: 200 }, { ...sources, foods: new Map() }))).toMatchObject(
+      {
+        kcal: 24,
+      },
+    );
+    expect(rebuildEntry(e, { amount: 2001 }, { ...sources, foods: new Map() })).toEqual({
+      ok: false,
+      reason: 'amount',
+    });
+    const pieces = entry(entryFromFood(gurke, 2, 'piece', target));
+    // Stück ohne Umrechnung im Bestand nicht prüfbar → abgelehnt (wie E1 H6).
+    expect(rebuildEntry(pieces, { amount: 3 }, { ...sources, foods: new Map() })).toEqual({
+      ok: false,
+      reason: 'unit',
+    });
+    expect(rebuildEntry(pieces, { amount: 6 }, sources)).toEqual({ ok: false, reason: 'amount' });
+  });
+  it('eigenes Gericht vorhanden: neu aus dem Gericht; gelöscht: aus dem Schnappschuss', () => {
+    const e = entry(entryFromCustomMeal(direct({ kcal: 450 }), 0.5, target));
+    expect(
+      entry(rebuildEntry(e, { portion: 1 }, { ...sources, meals: [direct({ kcal: 900 })] })),
+    ).toMatchObject({
+      kcal: 900,
+    });
+    expect(entry(rebuildEntry(e, { portion: 1 }, sources))).toMatchObject({ kcal: 450 });
+  });
+  it('unveränderte Menge ändert nichts (Verschieben behält den Schnappschuss)', () => {
+    const e = entry(entryFromCustomMeal(direct({ kcal: 450 }), 0.5, target));
+    expect(
+      rebuildEntry(e, { portion: 0.5 }, { ...sources, meals: [direct({ kcal: 900 })] }),
+    ).toEqual({
+      ok: true,
+      entry: e,
+    });
+  });
 });

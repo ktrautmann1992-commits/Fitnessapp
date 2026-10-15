@@ -7,7 +7,7 @@
 -- „Heute“ = Donnerstag, 15.10.2026.
 begin;
 create extension if not exists pgtap with schema extensions;
-select plan(102);
+select plan(125);
 
 create or replace function private.berlin_today()
 returns date
@@ -48,7 +48,11 @@ values
   ('banane', 1, 'published', 'Banane', 'fruit_vegetables', false, '{}', '{}', '{}', false, false, 2, false,
    '{"nutrients_per_100g": {"kcal": 93, "protein_g": 1.2, "carbs_g": 20, "fat_g": 0.2}, "units": {"piece_g": 120}}'),
   ('alt-lm', 1, 'archived', 'Altes Lebensmittel', 'other', false, '{}', '{}', '{}', false, false, 2, false,
-   '{"nutrients_per_100g": {"kcal": 370, "protein_g": 13.5, "carbs_g": 58.7, "fat_g": 7}, "units": {"tbsp_g": 10}}');
+   '{"nutrients_per_100g": {"kcal": 370, "protein_g": 13.5, "carbs_g": 58.7, "fat_g": 7}, "units": {"piece_g": 120}}'),
+  ('alt-gurke', 1, 'archived', 'Alte Gurke', 'fruit_vegetables', false, '{}', '{}', '{}', false, false, 2, false,
+   '{"nutrients_per_100g": {"kcal": 12, "protein_g": 0.6, "carbs_g": 1.8, "fat_g": 0.1}, "units": {"piece_g": 400}}'),
+  ('gurke', 1, 'published', 'Gurke', 'fruit_vegetables', false, '{}', '{}', '{}', false, false, 2, false,
+   '{"nutrients_per_100g": {"kcal": 12, "protein_g": 0.6, "carbs_g": 1.8, "fat_g": 0.1}, "units": {"piece_g": 400}}');
 -- Rezept mit 2 Portionen: Zutaten wie „Mein Porridge“, dazu eine optionale Zutat (zählt nicht), Stück ohne Gewicht
 -- (übersprungen wie im Core) und EL Milch.
 insert into public.recipes (id, version, status, title_de, meal_types, servings, no_cook, diet, contains_pork, data)
@@ -441,8 +445,8 @@ select is((select kcal from public.food_log_entries where id = pg_temp.uuid(501)
   'Eintrag behält seine Werte (Schnappschuss)');
 select is(pg_temp.one(jsonb_set(jsonb_set(pg_temp.entry(pg_temp.uuid(501), pg_temp.uuid(607), pg_temp.uuid(1)),
     '{base_revision}', '1'), '{portion}', '1')) ->> 'result', 'saved', 'Portion des Eintrags auf 1 geändert');
-select is((select kcal from public.food_log_entries where id = pg_temp.uuid(501)::uuid), 600,
-  'Ändern derselben Sache: verhältnisgleich aus dem Schnappschuss (300 × 2), nicht aus dem geänderten Gericht (900)');
+select is((select kcal from public.food_log_entries where id = pg_temp.uuid(501)::uuid), 900,
+  'Portion ändern bei vorhandenem Gericht: neu aus dem Gericht (900 × 1), nicht aus dem gerundeten Schnappschuss (Wächter E2 Nachprüfung H2)');
 
 -- ---------------------------------------------------------------------------------------------------------
 -- Isolation
@@ -460,10 +464,12 @@ select is(public.delete_custom_meal(pg_temp.uuid(1)::uuid),
   'D versucht As Gericht zu löschen (gleiche Antwort, ohne Wirkung)');
 select throws_ok($$ delete from public.custom_meals where id = pg_temp.uuid(1)::uuid $$,
   '42501', null, 'direktes DELETE per API verboten (nur delete_custom_meal, Wächter E2 S1)');
-select is(pg_temp.one(pg_temp.entry(pg_temp.uuid(801), pg_temp.uuid(901), pg_temp.uuid(1))),
-  pg_temp.rejected('invalid'), 'D kann nicht mit As Gericht eintragen (Werte nicht berechenbar, ohne Unterschied)');
-select is((select count(*)::int from public.food_log_entries where id = pg_temp.uuid(801)::uuid), 0,
-  'kein Eintrag mit fremdem Gericht');
+select is(pg_temp.one(pg_temp.entry(pg_temp.uuid(801), pg_temp.uuid(901), pg_temp.uuid(1))) ->> 'result', 'saved',
+  'D trägt mit As Gericht-id ein: gespeichert wie ein gelöschtes Gericht (ohne Unterschied)');
+select results_eq(
+  $$ select custom_meal_id, kcal from public.food_log_entries where id = pg_temp.uuid(801)::uuid $$,
+  $$ values (null::uuid, 225) $$,
+  'fremdes Gericht: Verweis leer, Werte vom Gerät – keine Werte aus As Gericht (kein Datenleck)');
 reset role;
 select results_eq(
   $$ select (select name_de from public.custom_meals where id = pg_temp.uuid(1)::uuid),
@@ -479,7 +485,7 @@ set local request.jwt.claims = '{"sub":"11111111-1111-4111-8111-111111111111","r
 select lives_ok($$ select public.delete_custom_meal(pg_temp.uuid(1)::uuid) $$, 'A löscht ein Gericht');
 select results_eq(
   $$ select title_de, custom_meal_id, kcal from public.food_log_entries where id = pg_temp.uuid(501)::uuid $$,
-  $$ values ('Eigenes Gericht'::text, null::uuid, 600) $$,
+  $$ values ('Eigenes Gericht'::text, null::uuid, 900) $$,
   'Tagebuch-Eintrag bleibt mit neutralem Titel und Werten, Verweis leer');
 select is((select count(*)::int from public.custom_meal_items where meal_id = pg_temp.uuid(3)::uuid), 1,
   'Zutaten anderer Gerichte bleiben');
@@ -494,6 +500,76 @@ set local role authenticated;
 set local request.jwt.claims = '{"sub":"22222222-2222-4222-8222-222222222222","role":"authenticated"}';
 select lives_ok($$ select public.delete_custom_meal(pg_temp.uuid(30)::uuid) $$, 'B ohne Einwilligung löscht');
 select is((select count(*)::int from public.custom_meals), 0, 'Löschen geht ohne Einwilligung (Recht auf Löschung)');
+
+-- ---------------------------------------------------------------------------------------------------------
+-- Wächter E2 Nachprüfung: gelöschte Gerichte (S1), 2.000 g beim Ändern (H1), Ändern aus der Quelle (H2), ungültige
+-- Gerätewerte (H3), Tabellen-CHECK direkt (H5)
+-- ---------------------------------------------------------------------------------------------------------
+set local role authenticated;
+set local request.jwt.claims = '{"sub":"11111111-1111-4111-8111-111111111111","role":"authenticated"}';
+-- (a) Offline aus Gericht M eingetragen, M inzwischen gelöscht, dann online: neuer Eintrag mit Verweis M.
+select is(pg_temp.save(pg_temp.direct(pg_temp.uuid(40), pg_temp.uuid(1401), null, 'Offline-Gericht', 400)) ->> 'result',
+  'saved', 'S1 (a): Gericht M angelegt');
+select lives_ok($$ select public.delete_custom_meal(pg_temp.uuid(40)::uuid) $$, 'S1 (a): M gelöscht');
+select is(pg_temp.one(jsonb_set(pg_temp.entry(pg_temp.uuid(540), pg_temp.uuid(1540), pg_temp.uuid(40)), '{kcal}', '200'))
+    ->> 'result', 'saved', 'S1 (a): Eintrag aus gelöschtem Gericht wird gespeichert (hängt nicht)');
+select results_eq(
+  $$ select title_de, custom_meal_id, kcal, protein_g from public.food_log_entries where id = pg_temp.uuid(540)::uuid $$,
+  $$ values ('Eigenes Gericht'::text, null::uuid, 200, 15::numeric) $$,
+  'S1 (a): geprüfte Werte des Geräts, Verweis leer, Titel bleibt');
+select is(pg_temp.one(jsonb_set(pg_temp.entry(pg_temp.uuid(541), pg_temp.uuid(1541), pg_temp.uuid(40)), '{kcal}', '3001')),
+  pg_temp.rejected('invalid'), 'S1 (a): Gerätewerte mit denselben Grenzen wie die CHECKs (3.001 kcal abgelehnt)');
+-- (b) Gerät B ändert die Portion eines Eintrags aus M, nachdem Gerät A M gelöscht hat (alter Verweis gesendet).
+select is(pg_temp.save(pg_temp.direct(pg_temp.uuid(41), pg_temp.uuid(1402), null, 'Zweites Gericht', 400)) ->> 'result',
+  'saved', 'S1 (b): Gericht M2 angelegt');
+select is(pg_temp.one(pg_temp.entry(pg_temp.uuid(542), pg_temp.uuid(1542), pg_temp.uuid(41))) ->> 'result', 'saved',
+  'S1 (b): ½ Portion aus M2 eingetragen (200 kcal)');
+select lives_ok($$ select public.delete_custom_meal(pg_temp.uuid(41)::uuid) $$, 'S1 (b): Gerät A löscht M2');
+select is(pg_temp.one(jsonb_set(jsonb_set(pg_temp.entry(pg_temp.uuid(542), pg_temp.uuid(1543), pg_temp.uuid(41)),
+    '{base_revision}', '1'), '{portion}', '1')) ->> 'result', 'saved',
+  'S1 (b): Gerät B ändert die Portion mit altem Verweis – gespeichert');
+select results_eq(
+  $$ select custom_meal_id, kcal, protein_g from public.food_log_entries where id = pg_temp.uuid(542)::uuid $$,
+  $$ values (null::uuid, 400, 30::numeric) $$,
+  'S1 (b): verhältnisgleich aus dem Schnappschuss (200 × 2), Verweis leer');
+-- H1: archiviertes Lebensmittel (Schnappschuss-Weg) – 2.000 g gelten auch beim Ändern, Stück über die Umrechnung.
+select is(pg_temp.one(pg_temp.food_entry(pg_temp.uuid(543), pg_temp.uuid(1544), 'alt-gurke', 2, 'piece')) ->> 'result',
+  'saved', 'H1: archiviertes Lebensmittel 2 Stück (800 g, 96 kcal) eingetragen');
+select is(pg_temp.one(jsonb_set(pg_temp.food_entry(pg_temp.uuid(543), pg_temp.uuid(1545), 'alt-gurke', 6, 'piece'),
+    '{base_revision}', '1')),
+  pg_temp.rejected('invalid'), 'H1: Ändern auf 6 Stück (2.400 g, nur 288 kcal) abgelehnt wie rescaleEntry');
+select is(pg_temp.one(jsonb_set(pg_temp.food_entry(pg_temp.uuid(543), pg_temp.uuid(1546), 'alt-gurke', 3, 'piece'),
+    '{base_revision}', '1')) ->> 'result', 'saved', 'H1: Ändern auf 3 Stück (1.200 g) geht');
+select is((select kcal from public.food_log_entries where id = pg_temp.uuid(543)::uuid), 144,
+  'H1: archiviert → verhältnisgleich aus dem Schnappschuss (96 × 1,5)');
+-- H2: Gurke 1 g → 2.000 g wird neu aus dem Katalog gerechnet (nicht 0 × 2.000).
+select is(pg_temp.one(pg_temp.food_entry(pg_temp.uuid(544), pg_temp.uuid(1547), 'gurke', 1, 'g')) ->> 'result',
+  'saved', 'H2: Gurke 1 g eingetragen (0 kcal)');
+select is(pg_temp.one(jsonb_set(pg_temp.food_entry(pg_temp.uuid(544), pg_temp.uuid(1548), 'gurke', 2000, 'g'),
+    '{base_revision}', '1')) ->> 'result', 'saved', 'H2: auf 2.000 g geändert');
+select results_eq(
+  $$ select kcal, protein_g, carbs_g from public.food_log_entries where id = pg_temp.uuid(544)::uuid $$,
+  $$ values (240, 12::numeric, 36::numeric) $$, 'H2: 240 kcal · 12 · 36 wie neu eingetragen');
+-- H3: ungültige Gerätewerte bleiben abgelehnt, auch wenn der Server sie ersetzen würde.
+select is(pg_temp.one(jsonb_set(pg_temp.food_entry(pg_temp.uuid(545), pg_temp.uuid(1549), 'hafer', 60, 'g'), '{kcal}', 'null')),
+  pg_temp.rejected('invalid'), 'H3: kcal null bei Lebensmittel abgelehnt');
+select is(pg_temp.one(jsonb_set(pg_temp.food_entry(pg_temp.uuid(545), pg_temp.uuid(1550), 'hafer', 60, 'g'), '{kcal}', '99999')),
+  pg_temp.rejected('invalid'), 'H3: kcal über 3.000 abgelehnt');
+select is(pg_temp.one(jsonb_set(pg_temp.food_entry(pg_temp.uuid(545), pg_temp.uuid(1551), 'hafer', 60, 'g'), '{carbs_g}', '-1')),
+  pg_temp.rejected('invalid'), 'H3: negative Kohlenhydrate abgelehnt');
+select is(pg_temp.one(jsonb_set(pg_temp.food_entry(pg_temp.uuid(545), pg_temp.uuid(1552), 'hafer', 60, 'g'), '{protein_g}', '800')),
+  pg_temp.rejected('invalid'), 'H3: Eiweiß über 750 g abgelehnt');
+select is(pg_temp.one(jsonb_set(pg_temp.entry(pg_temp.uuid(546), pg_temp.uuid(1553), pg_temp.uuid(4)), '{kcal}', 'null')),
+  pg_temp.rejected('invalid'), 'H3: eigenes Gericht – Makros ohne kcal abgelehnt');
+-- H5: Tabellen-CHECK direkt (als Eigentümer, ohne Funktion) – Menge über 2.000 g.
+reset role;
+select throws_ok(
+  $$ insert into public.food_log_entries (id, user_id, eaten_on, slot, source, food_id, title_de, amount, unit, kcal,
+       protein_g, carbs_g, fat_g, last_write_id)
+     values (gen_random_uuid(), '11111111-1111-4111-8111-111111111111', '2026-10-15', 'other', 'food', 'hafer', 'Hafer',
+       2000.5, 'g', 1, 0, 0, 0, gen_random_uuid()) $$,
+  '23514', null, 'H5: CHECK amount ≤ 2.000 der Tabelle greift auch ohne Funktion');
+set local role authenticated;
 
 -- ---------------------------------------------------------------------------------------------------------
 -- Export

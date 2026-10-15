@@ -109,11 +109,42 @@ begin
 end;
 $$;
 
--- Werte eines Tagebuch-Eintrags (Lebensmittel, Rezept, eigenes Gericht) aus dem Bestand – wie entryFromFood,
--- entryFromRecipe, entryFromCustomMeal; beim Ändern DESSELBEN Inhalts (gleiche Herkunft, gleicher Verweis, gleiche
--- Einheit) verhältnisgleich aus dem gespeicherten Schnappschuss wie rescaleEntry (der Schnappschuss bleibt, auch wenn
--- sich Katalog oder Gericht inzwischen geändert haben). null = nicht berechenbar (Eintrag wird abgelehnt).
--- Antwort {"kcal", "protein_g", "carbs_g", "fat_g"} (Werte bzw. null).
+-- Gerätewerte eines Eintrags in Form und Bereich (Wächter E2 Nachprüfung H3): dieselben Grenzen wie die CHECKs von
+-- food_log_entries – auch wenn der Server die Werte danach ersetzt, wird ein ungültiger Eintrag abgelehnt (wie E1 und
+-- wie Zod in packages/core). Lebensmittel/Rezept: alle vier Werte Pflicht; eigenes Gericht: Makros nur mit kcal.
+-- sync: FOOD_LOG_LIMITS.kcal/macroG
+create or replace function private.food_log_device_values_ok(p_entry jsonb)
+returns boolean
+language sql
+immutable
+set search_path = ''
+as $$
+  select coalesce(
+    (case when p_entry ->> 'source' in ('food', 'recipe')
+          then p_entry ->> 'kcal' is not null and p_entry ->> 'protein_g' is not null
+               and p_entry ->> 'carbs_g' is not null and p_entry ->> 'fat_g' is not null
+          else p_entry ->> 'kcal' is not null
+               or (p_entry ->> 'protein_g' is null and p_entry ->> 'carbs_g' is null and p_entry ->> 'fat_g' is null)
+     end)
+    and (p_entry ->> 'kcal' is null or (p_entry ->> 'kcal')::numeric between 0 and 3000)
+    and (p_entry ->> 'protein_g' is null or (p_entry ->> 'protein_g')::numeric between 0 and 750)
+    and (p_entry ->> 'carbs_g' is null or (p_entry ->> 'carbs_g')::numeric between 0 and 750)
+    and (p_entry ->> 'fat_g' is null or (p_entry ->> 'fat_g')::numeric between 0 and 750),
+    false)
+$$;
+
+-- Werte eines Tagebuch-Eintrags (Lebensmittel, Rezept, eigenes Gericht) – Antwort {"kcal", "protein_g", "carbs_g",
+-- "fat_g"} bzw. null = nicht berechenbar (Eintrag wird abgelehnt). Regeln (gleich in packages/core, rebuildEntry/
+-- entryFrom*; Wächter E2 Nachprüfung S1/H1/H2):
+-- 1. Ändern DESSELBEN Inhalts (gleiche Herkunft, Lebensmittel, Rezept, Einheit; bei eigenen Gerichten gleicher Verweis
+--    – oder das Gericht gibt es nicht mehr und der alte bzw. neue Verweis ist leer oder gleich):
+--    a) gleiche Menge bzw. Portion → gespeicherter Schnappschuss unverändert (Verschieben ändert keine Werte),
+--    b) Quelle im Bestand (Lebensmittel/Rezept freigegeben, eigenes Gericht vorhanden) → neu aus der Quelle (Punkt 2),
+--    c) sonst (archiviert bzw. Gericht gelöscht) → verhältnisgleich aus dem Schnappschuss wie rescaleEntry, bei
+--       Lebensmitteln mit derselben 2.000-g-Grenze (Stück/ml über die Umrechnung des Lebensmittels).
+-- 2. Neu aus der Quelle wie entryFromFood (≤ 2.000 g), entryFromRecipe, entryFromCustomMeal.
+-- 3. Eigenes Gericht fehlt (gelöscht oder fremd) und kein Fall 1: die Werte des Geräts (Form und Grenzen geprüft,
+--    food_log_device_values_ok); der Verweis wird leer – keine fremden Werte, kein dauerhaft hängender Eintrag.
 create or replace function private.food_log_server_values(
   p_entry jsonb, p_old jsonb, p_custom_meal_id uuid, p_user_id uuid
 )
@@ -128,40 +159,72 @@ declare
   src text := p_entry ->> 'source';
   factor double precision;
   food_data jsonb;
+  food_status text;
   per_unit double precision;
   grams double precision;
   per double precision[];
   portion double precision;
   r_servings integer;
+  r_status text;
   m_kcal double precision;
   m_protein double precision;
   m_carbs double precision;
   m_fat double precision;
-  found_meal boolean;
+  same_content boolean;
+  source_available boolean;
 begin
   if src not in ('food', 'recipe', 'custom_meal') then
     return null;
   end if;
-  -- Ändern desselben Inhalts: Schnappschuss × (neue Menge bzw. Portion ÷ alte) – wie rescaleEntry/scaled().
-  if p_old is not null
-     and p_old ->> 'source' = src
-     and (p_old ->> 'food_id') is not distinct from (p_entry ->> 'food_id')
-     and (p_old ->> 'recipe_id') is not distinct from (p_entry ->> 'recipe_id')
-     and (p_old ->> 'custom_meal_id') is not distinct from (p_entry ->> 'custom_meal_id')
-     and (p_old ->> 'unit') is not distinct from (p_entry ->> 'unit') then
-    factor := case when src = 'food'
-                then (p_entry ->> 'amount')::double precision / (p_old ->> 'amount')::double precision
-                else (p_entry ->> 'portion')::double precision / (p_old ->> 'portion')::double precision end;
-    return jsonb_build_object(
-      'kcal', private.js_round((p_old ->> 'kcal')::double precision * factor),
-      'protein_g', private.js_round1((p_old ->> 'protein_g')::double precision * factor),
-      'carbs_g', private.js_round1((p_old ->> 'carbs_g')::double precision * factor),
-      'fat_g', private.js_round1((p_old ->> 'fat_g')::double precision * factor));
+  if src = 'food' then
+    select f.data, f.status::text into food_data, food_status from public.foods f where f.id = p_entry ->> 'food_id';
+    if not found then return null; end if;
+  elsif src = 'recipe' then
+    select r.servings, r.status::text into r_servings, r_status from public.recipes r where r.id = p_entry ->> 'recipe_id';
+    if not found then return null; end if;
   end if;
+  source_available := case src
+    when 'food' then food_status = 'published'
+    when 'recipe' then r_status = 'published'
+    else p_custom_meal_id is not null end;
+
+  -- 1. Ändern desselben Inhalts.
+  same_content := p_old is not null
+    and p_old ->> 'source' = src
+    and (p_old ->> 'food_id') is not distinct from (p_entry ->> 'food_id')
+    and (p_old ->> 'recipe_id') is not distinct from (p_entry ->> 'recipe_id')
+    and (p_old ->> 'unit') is not distinct from (p_entry ->> 'unit')
+    and (src <> 'custom_meal'
+         or (p_old ->> 'custom_meal_id') is not distinct from (p_entry ->> 'custom_meal_id')
+         or (p_custom_meal_id is null
+             and (p_old ->> 'custom_meal_id' is null or p_entry ->> 'custom_meal_id' is null)));
+  if same_content then
+    if (src = 'food' and (p_old ->> 'amount')::numeric = (p_entry ->> 'amount')::numeric)
+       or (src <> 'food' and (p_old ->> 'portion')::numeric = (p_entry ->> 'portion')::numeric) then
+      return jsonb_build_object('kcal', p_old -> 'kcal', 'protein_g', p_old -> 'protein_g',
+                                'carbs_g', p_old -> 'carbs_g', 'fat_g', p_old -> 'fat_g');
+    end if;
+    if not source_available then
+      if src = 'food' then
+        per_unit := private.grams_per_unit(food_data -> 'units', p_entry ->> 'unit');
+        if per_unit is null or (p_entry ->> 'amount')::double precision * per_unit > grams_max then
+          return null;
+        end if;
+      end if;
+      factor := case when src = 'food'
+                  then (p_entry ->> 'amount')::double precision / (p_old ->> 'amount')::double precision
+                  else (p_entry ->> 'portion')::double precision / (p_old ->> 'portion')::double precision end;
+      return jsonb_build_object(
+        'kcal', private.js_round((p_old ->> 'kcal')::double precision * factor),
+        'protein_g', private.js_round1((p_old ->> 'protein_g')::double precision * factor),
+        'carbs_g', private.js_round1((p_old ->> 'carbs_g')::double precision * factor),
+        'fat_g', private.js_round1((p_old ->> 'fat_g')::double precision * factor));
+    end if;
+  end if;
+
+  -- 2. Neu aus der Quelle.
   if src = 'food' then
     -- entryFromFood: Gramm = Menge × Gramm je Einheit (höchstens 2.000 g), Faktor = Gramm / 100.
-    select f.data into food_data from public.foods f where f.id = p_entry ->> 'food_id';
-    if not found then return null; end if;
     per_unit := private.grams_per_unit(food_data -> 'units', p_entry ->> 'unit');
     if per_unit is null then return null; end if;
     grams := (p_entry ->> 'amount')::double precision * per_unit;
@@ -176,8 +239,6 @@ begin
   portion := (p_entry ->> 'portion')::double precision;
   if src = 'recipe' then
     -- entryFromRecipe: Werte je Portion aus den Zutaten (computeRecipeFacts) × Portionen.
-    select r.servings into r_servings from public.recipes r where r.id = p_entry ->> 'recipe_id';
-    if not found then return null; end if;
     per := private.ingredients_per_serving(
       (select coalesce(jsonb_agg(jsonb_build_object('food_id', i.food_id, 'amount', i.amount, 'unit', i.unit,
                                                     'optional', i.optional) order by i.position), '[]'::jsonb)
@@ -189,12 +250,15 @@ begin
       'carbs_g', private.js_round1(per[3] * portion),
       'fat_g', private.js_round1(per[4] * portion));
   end if;
+  -- 3. Eigenes Gericht fehlt (gelöscht oder fremd): Werte des Geräts (vorher geprüft), Verweis wird leer.
+  if p_custom_meal_id is null then
+    return jsonb_build_object('kcal', p_entry -> 'kcal', 'protein_g', p_entry -> 'protein_g',
+                              'carbs_g', p_entry -> 'carbs_g', 'fat_g', p_entry -> 'fat_g');
+  end if;
   -- entryFromCustomMeal: Werte je Portion des eigenen Gerichts × Portion; ohne Werte bleibt ohne Werte.
-  if p_custom_meal_id is null then return null; end if;
   select m.kcal, m.protein_g, m.carbs_g, m.fat_g into m_kcal, m_protein, m_carbs, m_fat
   from public.custom_meals m where m.id = p_custom_meal_id and m.user_id = p_user_id;
-  found_meal := found;
-  if not found_meal then return null; end if;
+  if not found then return null; end if;
   return jsonb_build_object(
     'kcal', private.js_round(m_kcal * portion),
     'protein_g', case when m_kcal is null then null else private.js_round1(m_protein * portion) end,
@@ -208,6 +272,7 @@ revoke all on function private.js_round1(double precision) from public;
 revoke all on function private.grams_per_unit(jsonb, text) from public;
 revoke all on function private.ingredients_per_serving(jsonb, integer, boolean) from public;
 revoke all on function private.food_log_server_values(jsonb, jsonb, uuid, uuid) from public;
+revoke all on function private.food_log_device_values_ok(jsonb) from public;
 
 -- ---------------------------------------------------------------------------------------------------------
 -- 1. save_custom_meal(p_meal jsonb) – einziger Schreibweg für Gerichte (neu oder ganz ersetzen, Zutaten inklusive).
@@ -644,10 +709,10 @@ begin
       elsif v_source = 'custom_meal' then
         -- E2: Titel immer fest (kein Freitext im Tagebuch, nie der Name des Gerichts). Der Verweis gilt nur für ein
         -- eigenes Gericht DIESER Person; gibt es das nicht (mehr) – anderswo gelöscht oder fremd –, bleibt der Verweis
-        -- leer (ohne unterscheidbare Meldung). Die Werte rechnet der Server (unten): ein NEUER Eintrag ohne vorhandenes
-        -- Gericht ist dann nicht berechenbar und wird abgelehnt; das Ändern eines Eintrags, dessen Gericht gelöscht
-        -- ist, rechnet aus seinem Schnappschuss. FOR KEY SHARE: das Gericht kann bis zum Ende dieses Speicherns nicht
-        -- gelöscht werden.
+        -- leer (ohne unterscheidbare Meldung). Werte (unten, food_log_server_values): ein neuer Eintrag ohne vorhandenes
+        -- Gericht behält die geprüften Werte des Geräts, das Ändern eines Eintrags, dessen Gericht gelöscht ist, rechnet
+        -- aus seinem Schnappschuss (Wächter E2 Nachprüfung S1). FOR KEY SHARE: das Gericht kann bis zum Ende dieses
+        -- Speicherns nicht gelöscht werden.
         v_title := 'Eigenes Gericht';
         select m.id into v_custom_meal_id
         from public.custom_meals m
@@ -659,9 +724,14 @@ begin
 
       -- Werte rechnet der SERVER (Gründer-Entscheidung 15.10.2026, E1-G4/E2-G2) für Lebensmittel, Rezept und eigenes
       -- Gericht aus dem Bestand (private.food_log_server_values, gleiche Rechnung wie packages/core); beim Ändern
-      -- desselben Inhalts verhältnisgleich aus dem Schnappschuss. Die Werte vom Gerät werden ersetzt. Schnelleintrag
+      -- desselben Inhalts mit gleicher Menge der Schnappschuss, ohne Quelle im Bestand verhältnisgleich daraus. Die Werte
+      -- vom Gerät werden ersetzt – außer bei einem eigenen Gericht, das es nicht (mehr) gibt (dann Gerätewerte, geprüft). Schnelleintrag
       -- und Plan-Mahlzeit (Schnappschuss des Essensplans) behalten die Werte des Geräts.
       if v_source in ('food', 'recipe', 'custom_meal') then
+        -- Gerätewerte trotzdem in Form und Bereich prüfen (Wächter E2 Nachprüfung H3, wie E1).
+        if not private.food_log_device_values_ok(e) then
+          raise exception 'Ungültige Werte im Ernährungstagebuch.' using errcode = 'invalid_parameter_value';
+        end if;
         select to_jsonb(f) into ex_row from public.food_log_entries f where f.id = ex_id;
         v_values := private.food_log_server_values(e, ex_row, v_custom_meal_id, current_user_id);
         if v_values is null then
