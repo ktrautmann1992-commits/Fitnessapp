@@ -296,3 +296,26 @@ export type ExerciseLogStatus = (typeof EXERCISE_LOG_STATUSES)[number];
 /** Herkunft eines Eintrags (später `route`, `wearable`). */
 export const LOG_SOURCES = ['manual'] as const;
 export type LogSource = (typeof LOG_SOURCES)[number];
+
+// ---------------------------------------------------------------------------------------------------------
+// Phase 5 · Ernährung (Etappe N7, 20261014120100_nutrition_enums.sql) – Onboarding-Schritt `nutrition_setup`
+// ---------------------------------------------------------------------------------------------------------
+
+/** Alltagsaktivität OHNE Sport (docs/PLAN-PHASE-5.md 4.4). */
+export const ACTIVITY_LEVELS = ['sedentary', 'light', 'active', 'very_active'] as const;
+export type ActivityLevel = (typeof ACTIVITY_LEVELS)[number];
+
+/** Übliche Trainingszeit (Plan 4.8). `varies` = unterschiedlich → keine Zuordnung vor/nach. */
+export const TRAINING_TIMES = [
+  'early',
+  'morning',
+  'midday',
+  'afternoon',
+  'evening',
+  'varies',
+] as const;
+export type TrainingTime = (typeof TRAINING_TIMES)[number];
+
+/** Was beim Meal-Prep vorgekocht wird (Plan 6.4, `mealprep_slots`): Mittag (Standard) oder Mittag + Abend. */
+export const MEALPREP_SLOT_MODES = ['lunch', 'lunch_dinner'] as const;
+export type MealprepSlotMode = (typeof MEALPREP_SLOT_MODES)[number];

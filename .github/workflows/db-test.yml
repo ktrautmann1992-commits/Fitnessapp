@@ -3,6 +3,8 @@ name: db-test
 # Startet eine Test-Datenbank (Supabase lokal im GitHub-Runner), spielt alle Migrationen ein und prüft mit
 # pgTAP (supabase/tests): Row Level Security (Nutzer A sieht nichts von Nutzer B), Einwilligungen,
 # Mindestalter, Wertebereiche und Konto-Löschung. Braucht keine Secrets und berührt NICHT die echte Datenbank.
+# Wird auch von db-migrate aufgerufen (workflow_call): Migrationen gehen erst live, wenn diese Tests grün sind
+# (Wächter N7 S4).
 on:
   push:
     branches: [main]
@@ -14,9 +16,12 @@ on:
       - 'supabase/**'
       - '.github/workflows/db-test.yml'
   workflow_dispatch:
+  workflow_call:
 
 concurrency:
-  group: db-test-${{ github.ref }}
+  # github.workflow ist beim Aufruf aus db-migrate „db-migrate“ – so bricht ein paralleler db-test-Lauf auf main den
+  # Testlauf vor dem Einspielen nie ab.
+  group: db-test-${{ github.workflow }}-${{ github.ref }}
   cancel-in-progress: true
 
 jobs:
@@ -28,7 +33,8 @@ jobs:
       - uses: actions/checkout@v4
       - uses: supabase/setup-cli@v1
         with:
-          version: latest
+          # Feste Version (Wächter N7 S4) – gleich in db-migrate und db-types. Aktualisieren nur per Pull Request.
+          version: 2.120.0
       # Startet Postgres, Auth (gotrue), PostgREST und Kong; der Rest wird für die Tests nicht gebraucht.
       # Beim Start werden alle Migrationen aus supabase/migrations eingespielt – ein Fehler bricht hier ab.
       - name: Test-Datenbank starten und Migrationen einspielen

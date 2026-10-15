@@ -136,9 +136,10 @@ export interface IntoleranceConversion {
 export interface Backend {
   readonly mode: BackendMode;
   /**
-   * Ernährung (Phase 5): Testmodus ab Etappe N4; Supabase-Modus erst mit Etappe N7 (Spalten von nutrition_prefs,
-   * freigegebene Rezepte in der Datenbank). Steuert den Onboarding-Schritt `nutrition_setup` (R2-S3) und die
-   * Ernährungs-Bildschirme.
+   * Ernährung (Phase 5): Testmodus ab Etappe N4. Supabase-Modus: Datenbank seit Etappe N7 (Teil 1: Tabellen, RLS,
+   * Funktionen, Spalten von nutrition_prefs, Bewertungen/Abneigungen); die Bildschirme schaltet erst N7 Teil 2 frei
+   * (Essensplan/Einkaufsliste aus der Datenbank ohne Planband, geschützter Speicher, Warteschlange). Steuert den
+   * Onboarding-Schritt `nutrition_setup` (R2-S3) und die Ernährungs-Bildschirme.
    */
   readonly supportsNutrition: boolean;
   /**
@@ -231,7 +232,8 @@ export interface Backend {
   revokeHealthData(deleteLogs: boolean, conversion: IntoleranceConversion | null): Promise<void>;
   /**
    * Gespeicherte Unverträglichkeiten löschen (Recht auf Löschung, Wächter N4 NK2) – geht immer, auch ohne Einwilligung
-   * (Löschen braucht keine). Supabase: sofort, nur online (Gesundheitsdaten nie in die Warteschlange).
+   * (Löschen braucht keine). Supabase: sofort, nur online (Gesundheitsdaten nie in die Warteschlange) – seit N7 über
+   * `delete_stored_intolerances`, das im selben Schritt Essenspläne/Einkaufslisten mit Gesundheitsbezug löscht.
    */
   deleteStoredIntolerances(): Promise<void>;
   /**
@@ -249,7 +251,8 @@ export interface Backend {
   /**
    * Essensplan einer Woche speichern (Etappe N5, docs/PLAN-PHASE-5.md 7.3/7.5): ersetzt den Plan derselben Woche.
    * Testmodus: Gerätespeicher mit denselben Regeln wie `save_meal_plan` (meal-plan-rows.ts); Supabase-Modus erst mit
-   * Etappe N7 (bis dahin nicht unterstützt, `supportsNutrition = false`). `autoAdjusted` = automatisch neu geplant
+   * N7 Teil 2 (die Datenbank-Funktion save_meal_plan gibt es seit N7 Teil 1; bis dahin nicht unterstützt,
+   * `supportsNutrition = false`). `autoAdjusted` = automatisch neu geplant
    * (6.6, Hinweis bis „Verstanden“); `recipesChanged` = neu erstellt wegen neuer Rezept-Version (K-b). Mit
    * `shoppingList` wird die neu erzeugte Einkaufsliste der Woche im SELBEN Schritt gespeichert (R2-S4, W22).
    * Fehler `plan_rejected` bzw. `consent_required`.
@@ -265,13 +268,15 @@ export interface Backend {
   ): Promise<UserRows>;
   /**
    * Einkaufsliste einer Woche speichern (Etappe N5b, 6.5/7.3): Abhaken, eigene Einträge, Zeitraum, „Zur
-   * Einkaufsliste“. Testmodus: Gerätespeicher (meal-plan-rows.ts, geht ohne Netz); Supabase-Modus erst mit N7.
+   * Einkaufsliste“. Testmodus: Gerätespeicher (meal-plan-rows.ts, geht ohne Netz); Supabase-Modus erst mit N7 Teil 2
+   * (replace_shopping_list gibt es seit N7 Teil 1).
    */
   saveShoppingList(list: StoredShoppingList, rows: UserRows): Promise<UserRows>;
   /**
    * Bewertung nach dem Essen (Etappe N10, KONZEPT 6.10): `rating` setzt bzw. ersetzt die Bewertung des Rezepts (Datum =
-   * heute), `null` nimmt sie zurück. Testmodus: Gerätespeicher (rating-rows.ts, geht ohne Netz); Supabase-Modus erst mit
-   * N7 (`recipe_ratings`). Der Grund „Unverträglich“ kann hier gar nicht übergeben werden (Schema in packages/core).
+   * heute), `null` nimmt sie zurück. Testmodus: Gerätespeicher (rating-rows.ts, geht ohne Netz); Supabase-Modus seit N7
+   * Tabelle `recipe_ratings` (nur online, RLS). Der Grund „Unverträglich“ kann hier gar nicht übergeben werden (Schema in
+   * packages/core).
    */
   saveRecipeRating(
     change: { recipeId: string; rating: RecipeRating | null },
@@ -281,7 +286,8 @@ export interface Backend {
   deleteRecipeRatings(rows: UserRows): Promise<UserRows>;
   /**
    * „Mag ich nicht“ je Lebensmittel ersetzen (Etappe N10, `food_dislikes`): nach dem Dialog „Zutaten übernehmen?“
-   * (bestätigte Auswahl) bzw. „Wieder zulassen“. Testmodus: Gerätespeicher; Supabase-Modus erst mit N7.
+   * (bestätigte Auswahl) bzw. „Wieder zulassen“. Testmodus: Gerätespeicher; Supabase-Modus seit N7 über
+   * `replace_food_dislikes` (nur online).
    */
   saveFoodDislikes(foodIds: readonly string[], rows: UserRows): Promise<UserRows>;
   /** Start des Meal-Prep-Kochtags (Timer) setzen bzw. mit null zurücksetzen (Etappe N5b). */

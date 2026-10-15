@@ -91,6 +91,12 @@ So trägst du **jeden** Schlüssel ein, der in der Tabelle unter „GitHub Secre
 Prüfen: **Actions** → links **db-migrate** → **Run workflow** → **Run workflow**. Ein grüner Haken ohne den
 Hinweis „übersprungen“ bedeutet: Supabase ist verbunden.
 
+**Reihenfolge nach einem Merge mit Datenbank-Änderungen (seit Etappe N7):** `db-migrate` führt zuerst die
+Datenbank-Tests aus (Job „Datenbank-Tests vor dem Einspielen“) und spielt nur bei Grün ein. Erst wenn **db-migrate grün**
+ist: Vercel-Projekt „fitnessapp“ → **Deployments** → neuestes → **⋯ → Redeploy** (falls die App-Version schneller live
+war) und – falls Testerinnen eine APK/TestFlight-App haben – **Actions → eas-build → Run workflow** für einen neuen
+Build. Die Supabase-CLI-Version steht in `db-test`, `db-migrate` und `db-types` fest (`version: 2.120.0`).
+
 ---
 
 ## Teil C – Vercel (zwei Projekte → Vorschau-Links)
@@ -952,21 +958,21 @@ zeigt „Heute“ richtigerweise „Für deine Angaben gibt es gerade keinen fre
 
 ## Überblick: Was passiert automatisch?
 
-| Workflow                 | Wann                                                                | Braucht                                                                                |
-| ------------------------ | ------------------------------------------------------------------- | -------------------------------------------------------------------------------------- |
-| `ci`                     | bei jedem Push und Pull Request (inkl. Klick-Tests), per Hand       | nichts                                                                                 |
-| `db-migrate`             | nach Merge in `main`, wenn sich Migrationen ändern, oder per Hand   | `SUPABASE_DB_PASSWORD`, `SUPABASE_PROJECT_REF`                                         |
-| `content-generate`       | per Hand (Actions → Run workflow)                                   | `ANTHROPIC_API_KEY` (Probelauf: nichts)                                                |
-| `content-collect`        | alle 3 Stunden und per Hand                                         | Teil H; `ANTHROPIC_API_KEY` nur für echte Läufe                                        |
-| `content-review`         | per Hand                                                            | Teil H                                                                                 |
-| `content-seed`           | nach Merge in `main` (Inhalte), nach `db-migrate` und per Hand      | `SUPABASE_URL`, `SUPABASE_SECRET_KEY` (ohne: nur Prüfung)                              |
-| `waitlist-cleanup`       | täglich 03:17 UTC und per Hand (Löschfristen der Warteliste)        | `SUPABASE_URL`, `SUPABASE_SECRET_KEY`                                                  |
-| `foods-import`           | per Hand (Branch main, Modus kandidaten/import)                     | Teil H, J                                                                              |
-| `ci` · sources-integrity | bei jedem PR, auf main und wöchentlich (Mo 04:23 UTC)               | nichts (Original-Datei wird aus dem Internet geladen)                                  |
-| `sources-integrity-main` | bei jedem PR (`pull_request_target`, Prüfung mit dem Code von main) | nichts                                                                                 |
-| `eas-build`              | per Hand (Plattform, Profil, Einreichen ja/nein)                    | `EXPO_TOKEN` + Expo-Projekt-ID; iPhone/Stores zusätzlich Teil D2                       |
-| `eas-ios-setup`          | einmal per Hand vor dem ersten iPhone-Build (Eingabe „JA“)          | `EXPO_TOKEN`, Projekt-ID, `ASC_*`-Secrets, `APPLE_TEAM_ID` (D2); rot, wenn etwas fehlt |
-| Vercel                   | bei jedem Push automatisch                                          | Teil C                                                                                 |
+| Workflow                 | Wann                                                                                                                             | Braucht                                                                                |
+| ------------------------ | -------------------------------------------------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------- |
+| `ci`                     | bei jedem Push und Pull Request (inkl. Klick-Tests), per Hand                                                                    | nichts                                                                                 |
+| `db-migrate`             | nach Merge in `main`, wenn sich Migrationen ändern, oder per Hand – **erst nach grünem `db-test`** (läuft im selben Lauf vorher) | `SUPABASE_DB_PASSWORD`, `SUPABASE_PROJECT_REF`                                         |
+| `content-generate`       | per Hand (Actions → Run workflow)                                                                                                | `ANTHROPIC_API_KEY` (Probelauf: nichts)                                                |
+| `content-collect`        | alle 3 Stunden und per Hand                                                                                                      | Teil H; `ANTHROPIC_API_KEY` nur für echte Läufe                                        |
+| `content-review`         | per Hand                                                                                                                         | Teil H                                                                                 |
+| `content-seed`           | nach Merge in `main` (Inhalte), nach `db-migrate` und per Hand                                                                   | `SUPABASE_URL`, `SUPABASE_SECRET_KEY` (ohne: nur Prüfung)                              |
+| `waitlist-cleanup`       | täglich 03:17 UTC und per Hand (Löschfristen der Warteliste)                                                                     | `SUPABASE_URL`, `SUPABASE_SECRET_KEY`                                                  |
+| `foods-import`           | per Hand (Branch main, Modus kandidaten/import)                                                                                  | Teil H, J                                                                              |
+| `ci` · sources-integrity | bei jedem PR, auf main und wöchentlich (Mo 04:23 UTC)                                                                            | nichts (Original-Datei wird aus dem Internet geladen)                                  |
+| `sources-integrity-main` | bei jedem PR (`pull_request_target`, Prüfung mit dem Code von main)                                                              | nichts                                                                                 |
+| `eas-build`              | per Hand (Plattform, Profil, Einreichen ja/nein)                                                                                 | `EXPO_TOKEN` + Expo-Projekt-ID; iPhone/Stores zusätzlich Teil D2                       |
+| `eas-ios-setup`          | einmal per Hand vor dem ersten iPhone-Build (Eingabe „JA“)                                                                       | `EXPO_TOKEN`, Projekt-ID, `ASC_*`-Secrets, `APPLE_TEAM_ID` (D2); rot, wenn etwas fehlt |
+| Vercel                   | bei jedem Push automatisch                                                                                                       | Teil C                                                                                 |
 
 Fehlt etwas, endet der Workflow **grün** mit dem Hinweis „übersprungen“. Den Hinweis siehst du in der GitHub-App
 unter **Actions** → Lauf antippen → **Summary**.

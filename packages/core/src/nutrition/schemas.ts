@@ -13,11 +13,14 @@ import {
 import { contentIdSchema } from '../content/schemas';
 import { isoWeekday } from '../dates';
 import {
+  ACTIVITY_LEVELS,
   COOKING_MODES,
   DIET_TYPES,
   ENDURANCE_MODALITIES,
+  MEALPREP_SLOT_MODES,
   PLANNED_SESSION_KINDS,
   PLANNED_SESSION_STATUSES,
+  TRAINING_TIMES,
 } from '../enums';
 import { foodGroupSchema } from '../food-groups';
 import { HEALTH_FLAGS } from '../health-screening';
@@ -32,24 +35,13 @@ import {
 
 /**
  * Zod-Schemas der Ernährungs-Engine (docs/PLAN-PHASE-5.md 4.2, 4.10). Eingaben werden an der Grenze geprüft.
- * Neue Aufzählungen (Alltag, Trainingszeit) bleiben bis Etappe N7 bewusst außerhalb von `enums.ts` (S8).
+ * Die Aufzählungen Alltag, Trainingszeit und Meal-Prep-Plätze stehen seit Etappe N7 in `enums.ts` (Postgres-Enums, S8).
  */
 
-/** Alltagsaktivität OHNE Sport (Plan 4.4, neue Angabe im Schritt `nutrition_setup`). */
-export const ACTIVITY_LEVELS = ['sedentary', 'light', 'active', 'very_active'] as const;
-export type ActivityLevel = (typeof ACTIVITY_LEVELS)[number];
+/** Alltagsaktivität OHNE Sport (Plan 4.4); Liste seit Etappe N7 in `enums.ts` (Postgres-Enum `activity_level`). */
 export const activityLevelSchema = z.enum(ACTIVITY_LEVELS);
 
-/** Übliche Trainingszeit (Plan 4.8). `varies` = unterschiedlich → keine Zuordnung vor/nach. */
-export const TRAINING_TIMES = [
-  'early',
-  'morning',
-  'midday',
-  'afternoon',
-  'evening',
-  'varies',
-] as const;
-export type TrainingTime = (typeof TRAINING_TIMES)[number];
+/** Übliche Trainingszeit (Plan 4.8); Liste seit Etappe N7 in `enums.ts` (Postgres-Enum `training_time`). */
 export const trainingTimeSchema = z.enum(TRAINING_TIMES);
 
 /** Modus je Tag (Plan 4.9): volles Ziel, nur Erhalt, keine Zahlen. */
@@ -209,10 +201,6 @@ export const deficitCapSchema = z.number().min(0).max(MAX_CALORIE_DEFICIT_FRACTI
 // ---------------------------------------------------------------------------------------------------------
 // Essensplan (Etappe N3, docs/PLAN-PHASE-5.md 6.1–6.4)
 // ---------------------------------------------------------------------------------------------------------
-
-/** Was beim Meal-Prep vorgekocht wird (Plan 6.4, `mealprep_slots`): Mittag (Standard) oder Mittag + Abend. */
-export const MEALPREP_SLOT_MODES = ['lunch', 'lunch_dinner'] as const;
-export type MealprepSlotMode = (typeof MEALPREP_SLOT_MODES)[number];
 
 const groupList = z
   .array(foodGroupSchema)

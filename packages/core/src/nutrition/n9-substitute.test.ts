@@ -560,7 +560,7 @@ describe('Austausch im Plan: Angebot, Tag, Einkaufsliste, Speicher', () => {
     });
     const item = payload.items.find((x) => x.date === target.date && x.slot === target.slot);
     expect(item?.ingredient_swaps).toEqual([
-      { food_id: 'tofu', substitute_food_id: 'haehnchenbrust' },
+      { index: 0, food_id: 'tofu', substitute_food_id: 'haehnchenbrust' },
     ]);
     expect(
       payload.items.filter((x) => x !== item).every((x) => x.ingredient_swaps.length === 0),

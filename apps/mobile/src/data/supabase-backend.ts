@@ -9,12 +9,13 @@ import {
   intoleranceGroupsForConversion,
   isoDateInTimeZone,
   LOG_CACHE_WEEKS,
+  nutritionSetupColumnsSchema,
   type ConsentType,
   type PlanLibrary,
   type PlanSafetyRules,
   type SessionLogPayload,
 } from '@fitnessapp/core';
-import type { AppSupabaseClient, Json } from '@fitnessapp/db';
+import type { AppSupabaseClient, Json, Tables } from '@fitnessapp/db';
 
 import {
   BackendError,
@@ -54,15 +55,25 @@ import {
   type SaveLogResponse,
 } from './log-queue';
 import { createMemoryProtectedStore, type ProtectedStore } from './protected-store';
+import {
+  applyFoodDislikes,
+  applyRecipeRatings,
+  checkFoodDislikesSave,
+  checkRecipeRatingSave,
+} from './rating-rows';
 import { SyncQueue } from './sync-queue';
 import { effectiveSafetyRules } from './training-plan';
 import {
   emptyUserRows,
+  NUTRITION_SETUP_DB_COLUMNS,
   type AuthSession,
   type CardioLogRow,
   type ConsentDocument,
   type ConsentPlatform,
   type ExerciseLogRow,
+  type FoodDislikeRow,
+  type NutritionPrefsRow,
+  type RecipeRatingRow,
   type SessionLogRow,
   type SetLogRow,
   type StartWeightRow,
@@ -262,6 +273,67 @@ function chunks<T>(items: readonly T[], size: number): T[][] {
 
 /** Update ohne betroffene Zeile (Einheit gibt es nicht mehr, z. B. Plan ersetzt) – vom Server abgelehnt. */
 const PLAN_ROW_MISSING = { code: 'plan_row_missing', message: 'Einheit nicht gefunden.' };
+/** nutrition_setup ohne Zeile in nutrition_prefs (Schritt „nutrition“ fehlt) – abgelehnt statt ins Leere. */
+const NUTRITION_PREFS_MISSING = {
+  code: 'nutrition_prefs_missing',
+  message: 'Ernährungsangaben fehlen.',
+};
+
+/**
+ * nutrition_prefs aus der Datenbank → Zeilen der App (Etappe N7): die Spalten des Schritts nutrition_setup getrennt
+ * (wie im Testmodus `nutritionSetup`). Beantwortet ist der Schritt erst mit Alltag UND Trainingszeit; Werte an der
+ * Grenze mit Zod geprüft (nutritionSetupColumnsSchema) – ungültig = Schritt offen. Rein, getestet.
+ */
+export function nutritionPrefsFromDb(
+  row: Tables<'nutrition_prefs'> | null,
+): Pick<UserRows, 'nutritionPrefs' | 'nutritionSetup'> {
+  if (row === null) return { nutritionPrefs: null, nutritionSetup: null };
+  const prefs: Record<string, unknown> = { ...row };
+  for (const column of [...NUTRITION_SETUP_DB_COLUMNS, 'created_at', 'updated_at']) {
+    delete prefs[column];
+  }
+  const setup = nutritionSetupColumnsSchema.safeParse({
+    activity_level: row.activity_level,
+    training_time: row.training_time,
+    mealprep_slots: row.mealprep_slots,
+    show_energy_numbers: row.show_energy_numbers,
+  });
+  return {
+    nutritionPrefs: prefs as NutritionPrefsRow,
+    nutritionSetup: setup.success ? { user_id: row.user_id, ...setup.data } : null,
+  };
+}
+
+/**
+ * Tabelle bzw. Datenbank-Funktion gibt es (noch) nicht (Wächter N7 S1): Ein App-Stand kann vor den Migrationen live
+ * sein (PR-Vorschau, Deploy vor `db-migrate`). PostgREST meldet PGRST205 (Tabelle) bzw. PGRST202 (Funktion), Postgres
+ * 42P01 bzw. 42883. Dann wird nicht die ganze Anmeldung abgebrochen, sondern sauber zurückgefallen. Rein, getestet.
+ */
+export function isMissingRelation(error: unknown): boolean {
+  const code = (error as ErrorLike | null)?.code;
+  return code === 'PGRST205' || code === '42P01';
+}
+
+export function isMissingFunction(error: unknown): boolean {
+  const code = (error as ErrorLike | null)?.code;
+  return code === 'PGRST202' || code === '42883';
+}
+
+/** Ergebnis einer Abfrage auf eine Tabelle, die es vor `db-migrate` noch nicht gibt: dann leer statt Fehler. */
+function emptyIfMissing<T>(result: { data: T[] | null; error: unknown }): {
+  data: T[] | null;
+  error: unknown;
+} {
+  return result.error !== null && isMissingRelation(result.error)
+    ? { data: [], error: null }
+    : result;
+}
+
+/** Fehler eines Schreibvorgangs, der nur online geht (ohne Netz → „online_only“, sonst fester Code). */
+function onlineOnlyError(error: unknown): BackendError {
+  const code = classifySupabaseError(error);
+  return new BackendError(code === 'network' ? 'online_only' : code, { cause: error });
+}
 
 /** Doppelte aktive Einwilligung (unique index) – beim erneuten Senden kein Fehler. */
 function isDuplicate(error: ErrorLike | null): boolean {
@@ -388,10 +460,25 @@ export async function executeWriteOp(
         );
       }
       return;
-    // Schritt nutrition_setup: Spalten gibt es erst mit Etappe N7 – der Supabase-Modus erzeugt den Vorgang nie (R2-S3).
-    // Kommt er doch (z. B. alter Warteschlangen-Eintrag), wird er abgelehnt statt ins Leere geschrieben.
-    case 'upsert_nutrition_setup':
-      throw { code: 'not_supported', message: 'nutrition_setup erst ab Etappe N7.' };
+    // Schritt nutrition_setup (Etappe N7): Spalten an nutrition_prefs. Die Zeile legt der Schritt „nutrition“ vorher an;
+    // fehlt sie, wird nichts ins Leere geschrieben (abgelehnt mit NUTRITION_PREFS_MISSING).
+    case 'upsert_nutrition_setup': {
+      const result = await client
+        .from('nutrition_prefs')
+        .update({
+          activity_level: op.row.activity_level,
+          training_time: op.row.training_time,
+          mealprep_slots: op.row.mealprep_slots,
+          show_energy_numbers: op.row.show_energy_numbers,
+        })
+        .eq('user_id', userId)
+        .select('user_id');
+      check(result);
+      if (!result.data || result.data.length === 0) {
+        throw NUTRITION_PREFS_MISSING;
+      }
+      return;
+    }
     // Nur Datum und Status (Trigger private.planned_sessions_before_update prüft den Rest).
     case 'update_planned_session': {
       const result = await client
@@ -943,6 +1030,8 @@ export function createSupabaseBackend(options: SupabaseBackendOptions): Backend 
       measurements,
       screening,
       reminder,
+      ratingsResult,
+      dislikesResult,
     ] = await Promise.all([
       client.from('profiles').select('*').eq('user_id', userId).maybeSingle(),
       client.from('consents').select('*').eq('user_id', userId),
@@ -971,7 +1060,16 @@ export function createSupabaseBackend(options: SupabaseBackendOptions): Backend 
         .order('created_at', { ascending: false })
         .limit(1),
       client.from('measurement_reminders').select('*').eq('user_id', userId).maybeSingle(),
+      // Bewertungen und „mag ich nicht“ je Lebensmittel (Etappe N7) – kein Gesundheitsdatum, aber privat.
+      client
+        .from('recipe_ratings')
+        .select('user_id, recipe_id, value, reason, rated_on')
+        .eq('user_id', userId),
+      client.from('food_dislikes').select('user_id, food_id').eq('user_id', userId),
     ]);
+    // Etappe N7 (Wächter N7 S1): vor `db-migrate` gibt es die Tabellen noch nicht – dann leer, Anmeldung läuft weiter.
+    const ratings = emptyIfMissing(ratingsResult);
+    const dislikes = emptyIfMissing(dislikesResult);
     const plan = await fetchActivePlan(userId);
     const startWeights = await client
       .from('exercise_start_weights')
@@ -991,6 +1089,8 @@ export function createSupabaseBackend(options: SupabaseBackendOptions): Backend 
       measurements,
       screening,
       reminder,
+      ratings,
+      dislikes,
     ]) {
       if (result.error) {
         throw result.error;
@@ -1002,9 +1102,9 @@ export function createSupabaseBackend(options: SupabaseBackendOptions): Backend 
       goals: goals.data,
       trainingSlots: slots.data ?? [],
       userEquipment: equipment.data ?? [],
-      nutritionPrefs: prefs.data,
-      // Spalten des Schritts nutrition_setup kommen erst mit Etappe N7 (R2-S3).
-      nutritionSetup: null,
+      // Seit Etappe N7 stehen die Antworten des Schritts nutrition_setup an derselben Zeile – aufgeteilt wie im
+      // Testmodus (nutritionPrefsFromDb, Zod an der Grenze).
+      ...nutritionPrefsFromDb(prefs.data),
       foodPreferences: food.data ?? [],
       bodyMetrics: metrics.data ?? [],
       bodyMeasurements: measurements.data ?? [],
@@ -1018,37 +1118,33 @@ export function createSupabaseBackend(options: SupabaseBackendOptions): Backend 
       // Essenspläne gibt es in der Datenbank erst mit Etappe N7 (supportsNutrition = false).
       mealPlans: [],
       shoppingLists: [],
-      // Bewertungen und „mag ich nicht“ je Lebensmittel erst mit Etappe N7 (Tabellen recipe_ratings, food_dislikes).
-      recipeRatings: [],
-      foodDislikes: [],
+      recipeRatings: (ratings.data ?? []) as RecipeRatingRow[],
+      foodDislikes: (dislikes.data ?? []) as FoodDislikeRow[],
     };
   }
 
+  /**
+   * Aktuelle Einwilligungstexte – auch VOR dem Login (anon). Seit Etappe N7 direkt aus consent_documents (RLS: nur
+   * veröffentlichte Texte); die höchste Version je Art ist die gültige – dasselbe Ergebnis wie
+   * public.current_consent_version, die für anon nicht mehr ausführbar ist (Supabase-Advisor).
+   */
   async function fetchConsentDocuments(): Promise<ConsentDocument[]> {
-    const versions = await Promise.all(
-      CONSENT_TYPES_WITH_TEXT.map(async (type) => {
-        const { data, error } = await client.rpc('current_consent_version', { p_type: type });
-        if (error) {
-          throw error;
-        }
-        return { type, version: data as number | null };
-      }),
-    );
     const documents: ConsentDocument[] = [];
-    for (const { type, version } of versions) {
-      if (version === null) {
-        continue;
-      }
+    for (const type of CONSENT_TYPES_WITH_TEXT) {
       const { data, error } = await client
         .from('consent_documents')
         .select('consent_type, version, title_de, body_de')
         .eq('consent_type', type)
-        .eq('version', version)
-        .single();
+        .order('version', { ascending: false })
+        .limit(1)
+        .maybeSingle();
       if (error) {
         throw error;
       }
-      documents.push({ type, version, title: data.title_de, body: data.body_de });
+      if (data === null) {
+        continue;
+      }
+      documents.push({ type, version: data.version, title: data.title_de, body: data.body_de });
     }
     return documents;
   }
@@ -1057,7 +1153,9 @@ export function createSupabaseBackend(options: SupabaseBackendOptions): Backend 
     mode: 'supabase',
     // Übungs-Präferenzen erst mit Etappe T3 (Tabelle exercise_preferences) – bis dahin nur „Nur heute“ (8.2).
     supportsExercisePreferences: false,
-    // Ernährung im Supabase-Modus erst mit Etappe N7 (Spalten, freigegebene Rezepte; R2-S3).
+    // Ernährungs-Bildschirme im Supabase-Modus erst mit Etappe N7 Teil 2 (Essensplan/Einkaufsliste aus der Datenbank ohne
+    // Planband, geschützter Speicher, Warteschlange; freigegebene Rezepte nach der Fachprüfung). Die Datenbank (Teil 1)
+    // steht; bis dahin auch kein Schritt nutrition_setup (R2-S3), damit nichts abgefragt wird, was noch nicht wirkt.
     supportsNutrition: false,
     signIn: {
       kind: 'email_code',
@@ -1380,12 +1478,18 @@ export function createSupabaseBackend(options: SupabaseBackendOptions): Backend 
     revokeHealthData: (deleteLogs, conversion) => revokeHealthData(deleteLogs, conversion),
     deleteStoredIntolerances: async () => {
       const session = await requireSession();
-      // Lösch-Policy erlaubt eigene Zeilen ohne Einwilligung; Gesundheitsdaten → sofort, nie Warteschlange.
-      const { error } = await client
-        .from('food_preferences')
-        .delete()
-        .eq('user_id', session.userId)
-        .eq('kind', 'intolerance');
+      // Etappe N7: eine Transaktion – Unverträglichkeiten UND Essenspläne/Einkaufslisten mit Gesundheitsbezug (wie im
+      // Testmodus, Wächter N3 K5). Geht ohne Einwilligung; Gesundheitsdaten → sofort, nie Warteschlange.
+      let { error } = await client.rpc('delete_stored_intolerances');
+      if (error && isMissingFunction(error)) {
+        // Wächter N7 S1: Funktion vor `db-migrate` noch nicht da – wie vor N7 nur die Unverträglichkeiten löschen
+        // (Essenspläne gibt es in der Datenbank dann ebenfalls noch nicht).
+        ({ error } = await client
+          .from('food_preferences')
+          .delete()
+          .eq('user_id', session.userId)
+          .eq('kind', 'intolerance'));
+      }
       if (error) {
         const code = classifySupabaseError(error, true);
         throw new BackendError(code === 'network' ? 'online_only' : code, {
@@ -1407,15 +1511,54 @@ export function createSupabaseBackend(options: SupabaseBackendOptions): Backend 
     saveCookDayStart: async () => {
       throw new BackendError('unknown', { sensitive: true });
     },
-    // Bewertungen und „mag ich nicht“ je Lebensmittel erst mit Etappe N7 (supportsNutrition = false).
-    saveRecipeRating: async () => {
-      throw new BackendError('unknown');
+    // Bewertung nach dem Essen und „mag ich nicht“ je Lebensmittel (Etappe N7, Tabellen recipe_ratings/food_dislikes,
+    // RLS: nur eigene Zeilen). Gleiche Prüfung wie im Testmodus (rating-rows.ts); nur online (kein Gesundheitsdatum,
+    // aber auch nicht wichtig genug für die Warteschlange). Werte nie in Meldungen oder Logs.
+    saveRecipeRating: async (change, rows) => {
+      const session = await requireSession();
+      const check = checkRecipeRatingSave(rows, change, today());
+      if (!check.ok) throw new BackendError('unknown');
+      const rating = check.ratings.find((r) => r.recipeId === change.recipeId) ?? null;
+      const result =
+        rating === null
+          ? await client
+              .from('recipe_ratings')
+              .delete()
+              .eq('user_id', session.userId)
+              .eq('recipe_id', change.recipeId)
+          : await client.from('recipe_ratings').upsert(
+              {
+                user_id: session.userId,
+                recipe_id: rating.recipeId,
+                value: rating.value,
+                reason: rating.reason,
+                rated_on: rating.ratedOn,
+              },
+              { onConflict: 'user_id,recipe_id' },
+            );
+      if (result.error) throw onlineOnlyError(result.error);
+      const next = applyRecipeRatings(rows, check.ratings, session.userId);
+      await writeCache(session.userId, next);
+      return next;
     },
-    deleteRecipeRatings: async () => {
-      throw new BackendError('unknown');
+    deleteRecipeRatings: async (rows) => {
+      const session = await requireSession();
+      const { error } = await client.from('recipe_ratings').delete().eq('user_id', session.userId);
+      if (error) throw onlineOnlyError(error);
+      const next = applyRecipeRatings(rows, [], session.userId);
+      await writeCache(session.userId, next);
+      return next;
     },
-    saveFoodDislikes: async () => {
-      throw new BackendError('unknown');
+    saveFoodDislikes: async (foodIds, rows) => {
+      const session = await requireSession();
+      const check = checkFoodDislikesSave(foodIds);
+      if (!check.ok) throw new BackendError('unknown');
+      // Atomar ersetzen (replace_food_dislikes, security invoker: RLS und Höchstzahl 300 greifen).
+      const { error } = await client.rpc('replace_food_dislikes', { p_food_ids: check.foodIds });
+      if (error) throw onlineOnlyError(error);
+      const next = applyFoodDislikes(rows, check.foodIds, session.userId);
+      await writeCache(session.userId, next);
+      return next;
     },
     pendingWorkouts: async () => {
       await logQueue.load();

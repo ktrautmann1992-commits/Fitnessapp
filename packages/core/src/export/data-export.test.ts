@@ -43,18 +43,20 @@ describe('Datenexport (3.7, W9)', () => {
   });
 
   it('Testmodus-Tabellen vor der Datenbank-Etappe (exercise_preferences) bleiben in der Datei', () => {
-    expect(PENDING_DB_EXPORT_TABLES).toEqual([
-      'exercise_preferences',
+    expect(PENDING_DB_EXPORT_TABLES).toEqual(['exercise_preferences']);
+    // Noch nicht in export_my_data() (db-sync.test.ts) – also nicht in DATA_EXPORT_TABLES.
+    expect(DATA_EXPORT_TABLES as readonly string[]).not.toContain('exercise_preferences');
+    // Ernährung seit Etappe N7 in export_my_data().
+    for (const table of [
       'meal_plans',
       'meal_plan_items',
       'shopping_lists',
       'shopping_list_items',
       'recipe_ratings',
       'food_dislikes',
-    ]);
-    // Noch nicht in export_my_data() (db-sync.test.ts) – also nicht in DATA_EXPORT_TABLES.
-    expect(DATA_EXPORT_TABLES as readonly string[]).not.toContain('exercise_preferences');
-    expect(DATA_EXPORT_TABLES as readonly string[]).not.toContain('meal_plans');
+    ]) {
+      expect(DATA_EXPORT_TABLES as readonly string[]).toContain(table);
+    }
     const prefs = [{ exercise_id: 'liegestuetz', location: 'home', kind: 'dislike' }];
     const file = buildDataExportFile(serverExport({ exercise_preferences: prefs }), {
       email: null,
