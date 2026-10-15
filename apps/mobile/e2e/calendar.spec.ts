@@ -136,7 +136,30 @@ test('Drag-and-drop: erlaubte Tage leuchten, gesperrte zeigen den Grund; verschi
   // Auf einen belegten Tag (Fr) ziehen → beide tauschen (A-G4).
   const [di, fr] = stored;
   await dragTo(page, DI, FR, async () => {
-    await expect(page.getByTestId(`calendar-drop-${FR}`)).toContainText('✓ Tauschen mit');
+    try {
+      await expect(page.getByTestId(`calendar-drop-${FR}`)).toContainText('✓ Tauschen mit');
+    } catch (error) {
+      // Diagnose für die CI (nur bei Fehlschlag): wo steht die Seite, welche Ziel-Hinweise gibt es?
+      const ids = await page
+        .locator('[data-testid^="calendar-"]')
+        .evaluateAll((els) => els.map((el) => el.getAttribute('data-testid')));
+      const boxes = {
+        handle: await page.getByTestId(`calendar-handle-${DI}`).boundingBox(),
+        target: await page.getByTestId(`calendar-day-${FR}`).boundingBox(),
+        label: await page.getByTestId(`calendar-open-day-${DI}`).boundingBox(),
+      };
+      console.log('DIAG url', page.url());
+      console.log('DIAG ids', JSON.stringify(ids));
+      console.log('DIAG boxes', JSON.stringify(boxes));
+      console.log(
+        'DIAG message',
+        await page
+          .getByTestId('calendar-message')
+          .textContent()
+          .catch(() => null),
+      );
+      throw error;
+    }
   });
   await expect(page.getByTestId('calendar-message')).toContainText('Getauscht: jetzt am Freitag');
   stored = await sessions(page);
