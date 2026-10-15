@@ -31,6 +31,8 @@ import {
   freeDraftKey,
   freeDraftResult,
   isValidPayload,
+  refreshFreeDraft,
+  removeDraftExercise,
   setCardioFields,
   setPerformedOn,
   setSkipped,
@@ -128,6 +130,7 @@ describe('Freie Einheit im Trainingsmodus (Entwurf)', () => {
       modality: 'run',
       exercises,
       performedOn: MONDAY,
+      today: MONDAY,
       now: NOW,
       newId: randomUUID,
     });
@@ -137,9 +140,22 @@ describe('Freie Einheit im Trainingsmodus (Entwurf)', () => {
       plannedDate: MONDAY,
       nameDe: 'Freie Kraft-Einheit',
       isFree: true,
-      backfill: true,
+      // Heute = normaler Trainingsmodus (Wächter G2/H2), nur vergangene Tage = Nachtragen.
+      backfill: false,
       cardio: null,
     });
+    expect(
+      createFreeDraft({
+        ownerUserId: USER_ID,
+        kind: 'endurance',
+        modality: 'run',
+        exercises: [],
+        performedOn: '2026-10-02',
+        today: MONDAY,
+        now: NOW,
+        newId: randomUUID,
+      }).backfill,
+    ).toBe(true);
     expect(draft.exercises.map((e) => e.planned.exerciseId)).toEqual(exercises.map((e) => e.id));
     expect(draft.exercises.every((e) => e.sets.every((x) => !x.done && x.reps === null))).toBe(
       true,
@@ -154,6 +170,7 @@ describe('Freie Einheit im Trainingsmodus (Entwurf)', () => {
       modality: 'bike',
       exercises: [],
       performedOn: MONDAY,
+      today: MONDAY,
       now: NOW,
       newId: randomUUID,
     });
@@ -173,6 +190,7 @@ describe('Freie Einheit im Trainingsmodus (Entwurf)', () => {
       modality: 'run',
       exercises: weightExercises(s.library, 1),
       performedOn: MONDAY,
+      today: MONDAY,
       now: NOW,
       newId: randomUUID,
     });
@@ -193,6 +211,7 @@ describe('Freie Einheit im Trainingsmodus (Entwurf)', () => {
         modality: 'run',
         exercises: weightExercises(s.library, 2),
         performedOn: MONDAY,
+        today: MONDAY,
         now: NOW,
         newId: randomUUID,
       }),
@@ -212,6 +231,7 @@ describe('Freie Einheit im Trainingsmodus (Entwurf)', () => {
       modality: 'run',
       exercises: [],
       performedOn: MONDAY,
+      today: MONDAY,
       now: NOW,
       newId: randomUUID,
     });
@@ -236,6 +256,7 @@ describe('Testmodus: freie Einheit speichern (Regeln wie save_session_log)', () 
       modality: 'run',
       exercises: [exercise],
       performedOn: MONDAY,
+      today: MONDAY,
       now: NOW,
       newId: randomUUID,
     });
@@ -284,6 +305,7 @@ describe('Testmodus: freie Einheit speichern (Regeln wie save_session_log)', () 
       modality: 'run',
       exercises: [],
       performedOn: MONDAY,
+      today: MONDAY,
       now: NOW,
       newId: randomUUID,
     });
@@ -360,10 +382,16 @@ describe('Testmodus: freie Einheit speichern (Regeln wie save_session_log)', () 
       kind: 'reject',
       reason: 'invalid',
     });
-    expect(checkSessionLog(build(MONDAY, 'Meine Übung'), ctx)).toEqual({
-      kind: 'reject',
-      reason: 'invalid',
-    });
+    // Wächter S1: abweichender Übungsname wird angenommen (gespeichert wird der Bibliotheksname, siehe unten) …
+    expect(checkSessionLog(build(MONDAY, 'Meine Übung'), ctx)).toMatchObject({ kind: 'write' });
+    // … eine nicht (mehr) freigegebene Übung nicht – auch wenn sie zur Anzeige noch bekannt ist.
+    expect(
+      checkSessionLog(build(MONDAY), {
+        ...ctx,
+        exercises: s.library.exercises,
+        publishedExercises: new Map(),
+      }),
+    ).toEqual({ kind: 'reject', reason: 'invalid' });
     expect(checkSessionLog(build(MONDAY), { ...ctx, createdToday: 10 })).toEqual({
       kind: 'reject',
       reason: 'daily_limit',
@@ -379,6 +407,7 @@ describe('Testmodus: freie Einheit speichern (Regeln wie save_session_log)', () 
         modality: 'run',
         exercises: [exercise],
         performedOn: MONDAY,
+        today: MONDAY,
         now: NOW,
         newId: randomUUID,
       }),
@@ -478,5 +507,90 @@ describe('Übungssuche für die freie Kraft-Einheit', () => {
     const result = freeExerciseCandidates(lib, 'kniebeuge', ['d'], 2);
     expect(result.items.map((e) => e.id)).toEqual(['d', 'a']);
     expect(result.more).toBe(1);
+  });
+});
+
+describe('Wächter S1: Bibliothek ändert sich nach dem Anlegen des Entwurfs', () => {
+  it('umbenannt → Name wird aufgefrischt, Entwurf bleibt speicherbar und speichert den Bibliotheksnamen', async () => {
+    const s = await setup();
+    const [exercise] = weightExercises(s.library, 1);
+    if (!exercise) throw new Error('Keine Übung');
+    let draft = tick(
+      createFreeDraft({
+        ownerUserId: USER_ID,
+        kind: 'strength',
+        modality: 'run',
+        exercises: [{ ...exercise, name_de: 'Alter Name' }],
+        performedOn: MONDAY,
+        today: MONDAY,
+        now: NOW,
+        newId: randomUUID,
+      }),
+    );
+    const refreshed = refreshFreeDraft(draft, s.library.exercises, NOW);
+    expect(refreshed.missing).toEqual([]);
+    expect(refreshed.draft.exercises[0]?.planned.nameDe).toBe(exercise.name_de);
+    // Auch ungefrischt (z. B. Senden aus der Warteschlange) speichert der Testmodus wie der Server den Bibliotheksnamen.
+    const payload = draftToPayload(draft, { writeId: randomUUID(), now: NOW, today: MONDAY });
+    expect(await s.backend.submitWorkout(draft, payload)).toEqual({
+      kind: 'saved',
+      orphaned: false,
+    });
+    const { rows } = await s.backend.loadRows();
+    expect(rows.exerciseLogs.find((e) => e.session_log_id === draft.logId)?.exercise_name_de).toBe(
+      exercise.name_de,
+    );
+    draft = refreshed.draft;
+    expect(refreshFreeDraft(draft, s.library.exercises, NOW).draft).toBe(draft);
+  });
+
+  it('nicht mehr freigegeben → benannt; Entfernen behält die übrigen Werte', async () => {
+    const s = await setup();
+    const [a, b] = weightExercises(s.library, 2);
+    if (!a || !b) throw new Error('Keine Übungen');
+    const draft = tick(
+      createFreeDraft({
+        ownerUserId: USER_ID,
+        kind: 'strength',
+        modality: 'run',
+        exercises: [a, b],
+        performedOn: '2026-10-02',
+        today: MONDAY,
+        now: NOW,
+        newId: randomUUID,
+      }),
+      25,
+      7,
+    );
+    const library = new Map([...s.library.exercises].filter(([id]) => id !== a.id));
+    const { missing } = refreshFreeDraft(draft, library, NOW);
+    expect(missing).toEqual([{ index: 0, nameDe: a.name_de }]);
+    const removed = removeDraftExercise(draft, 0, NOW);
+    expect(removed.exercises.map((e) => [e.orderNo, e.planned.exerciseId])).toEqual([[1, b.id]]);
+    expect(removed.exercises[0]?.sets).toEqual(draft.exercises[1]?.sets);
+    expect(removed).toMatchObject({
+      performedOn: '2026-10-02',
+      logId: draft.logId,
+      backfill: true,
+    });
+    expect(refreshFreeDraft(removed, library, NOW).missing).toEqual([]);
+    // „Nicht gemacht“ gilt nicht als fehlend (wird ohnehin weggelassen).
+    expect(refreshFreeDraft(setSkipped(draft, 0, true, NOW), library, NOW).missing).toEqual([]);
+  });
+
+  it('nicht freie Entwürfe bleiben unverändert', async () => {
+    const s = await setup();
+    const draft = createFreeDraft({
+      ownerUserId: USER_ID,
+      kind: 'endurance',
+      modality: 'run',
+      exercises: [],
+      performedOn: MONDAY,
+      today: MONDAY,
+      now: NOW,
+      newId: randomUUID,
+    });
+    const planned = { ...draft, isFree: false };
+    expect(refreshFreeDraft(planned, s.library.exercises, NOW).draft).toBe(planned);
   });
 });

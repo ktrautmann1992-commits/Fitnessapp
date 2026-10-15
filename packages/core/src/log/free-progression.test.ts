@@ -7,8 +7,8 @@ import type { ExerciseLogEntry, LoggedSet, ProgressionContext } from './types';
 
 /**
  * Etappe A1b: Freie Einheiten zählen nie für Progression und Kalibrierung (isCountingEntry, entriesForExercise) –
- * konservativ wie verwaiste Einträge. Eine nachgetragene GEPLANTE Einheit zählt normal (Reihenfolge nach
- * performed_on).
+ * strenger als verwaiste Einträge, die (seit Phase 4) für die Kraft-Progression zählen (Wächter S2, Gründer-Frage
+ * G1). Eine nachgetragene GEPLANTE Einheit zählt normal (Reihenfolge nach performed_on).
  */
 
 const ctx: ProgressionContext = {
@@ -170,5 +170,17 @@ describe('progressFromLogs ignoriert freie Einträge', () => {
         progressFromLogs('x', sim.entries, ctx, options),
       );
     }
+  }, 60_000);
+});
+
+describe('Dokumentiert (Wächter S2): verwaiste Einträge zählen für die Kraft-Progression', () => {
+  it('derselbe Eintrag ohne isFree kalibriert – mit isFree nicht (Gründer-Frage G1, Verhalten unverändert)', () => {
+    const today = '2026-10-15';
+    const orphan = freeEntry('2026-10-14', heavy(30), { isFree: false });
+    expect(isCountingEntry(orphan)).toBe(true);
+    expect(progressFromLogs('x', [orphan], ctx, { today }).source).toBe('calibration');
+    expect(progressFromLogs('x', [{ ...orphan, isFree: true }], ctx, { today }).source).toBe(
+      'none',
+    );
   });
 });

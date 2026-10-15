@@ -603,10 +603,13 @@ export function createLocalBackend(store: KeyValueStore, options: LocalBackendOp
     submitWorkout: async (draft, payload) => {
       const { db, rows, session } = await requireProfile();
       const today = options.today();
+      const library = await planLibrary();
       const check = checkSessionLog(payload, {
         today,
         rows,
-        exercises: (await planLibrary()).displayExercises ?? (await planLibrary()).exercises,
+        exercises: library.displayExercises ?? library.exercises,
+        // Freie Einheit (A1b): nur freigegebene Übungen (wie der Server).
+        publishedExercises: library.exercises,
         healthConsentValid: healthConsentStatus(rows, LOCAL_VERSIONS) === 'valid',
         createdToday: db.logCounter?.day === today ? db.logCounter.created : 0,
       });
@@ -629,9 +632,14 @@ export function createLocalBackend(store: KeyValueStore, options: LocalBackendOp
           );
           const stored = {
             ...payload,
-            exercises: payload.exercises.map((e) =>
-              otherExercises.has(e.id) ? { ...e, id: options.newId() } : e,
-            ),
+            exercises: payload.exercises.map((e) => {
+              const withId = otherExercises.has(e.id) ? { ...e, id: options.newId() } : e;
+              // Freie Einheit: Name aus der Bibliothek übernehmen (wie der Server, Wächter S1).
+              const name = library.exercises.get(e.exercise_id)?.name_de;
+              return payload.is_free === true && name
+                ? { ...withId, exercise_name_de: name }
+                : withId;
+            }),
           };
           const next = applySessionLog(rows, stored, {
             userId: session.userId,

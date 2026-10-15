@@ -133,7 +133,8 @@ export function backfillDates(
   logs: readonly (BackfillLog & { readonly id?: string })[],
   today: string,
 ): string[] {
-  if (session.scheduled_on > today) return [];
+  // Wie backfillOptions: nur Einheiten des aktiven Plans (Wächter H3).
+  if (!session.plan_active || session.scheduled_on > today) return [];
   const reference = session.original_date ?? session.scheduled_on;
   const dates: string[] = [];
   for (let i = 0; i <= SESSION_LOG_LIMITS.backdateDays; i += 1) {

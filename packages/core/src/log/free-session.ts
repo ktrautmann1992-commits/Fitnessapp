@@ -124,9 +124,9 @@ const TARGET_KEYS = [
 
 /**
  * Prüft die Regeln einer freien Einheit an einem (Zod-gültigen) Eintrag: kein Planbezug, `planned_date` =
- * `performed_on`, Datum heute bis backdateDays zurück, keine Einstiegs-/Erholungswoche, Name aus FREE_SESSION.names
- * (Ausdauer: passend zur Art), je Übung kein Planbezug, Status „done“, alle Vorgaben/Zustände leer, kein
- * Wiedereinstieg. Nicht freie Einträge → null. Gleiche Reihenfolge wie save_session_log: zuerst das Datum.
+ * `performed_on`, Datum heute bis backdateDays zurück, keine Einstiegs-/Erholungswoche, Einheit „completed“, Name aus
+ * FREE_SESSION.names (Ausdauer: passend zur Art), je Übung kein Planbezug, Status „done“, nur abgehakte Sätze, alle
+ * Vorgaben/Zustände leer, kein Wiedereinstieg. Den Übungsnamen übernimmt der Server aus der Bibliothek. Nicht freie Einträge → null. Gleiche Reihenfolge wie save_session_log: zuerst das Datum.
  */
 export function freeSessionPayloadIssue(
   payload: SessionLogPayload,
@@ -137,7 +137,9 @@ export function freeSessionPayloadIssue(
     return 'invalid';
   }
   if (entryDateBlock(payload.performed_on, today) !== null) return 'date_window';
-  if (payload.is_intro_week || payload.is_deload) return 'invalid';
+  // Nur abgehakte Sätze, Einheit daher „completed“ (wie freeSessionLogFromInput und der Server, Wächter H1).
+  if (payload.is_intro_week || payload.is_deload || payload.status !== 'completed')
+    return 'invalid';
   const expectedName =
     payload.kind === 'strength'
       ? FREE_SESSION.names.strength
@@ -147,6 +149,7 @@ export function freeSessionPayloadIssue(
   if (expectedName === null || payload.name_de !== expectedName) return 'invalid';
   for (const e of payload.exercises) {
     if (e.planned_exercise_id !== null || e.status !== 'done' || e.is_return) return 'invalid';
+    if (e.sets.some((set) => !set.done)) return 'invalid';
     if (TARGET_KEYS.some((key) => e[key] !== null)) return 'invalid';
   }
   return null;

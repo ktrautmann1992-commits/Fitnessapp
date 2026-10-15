@@ -731,7 +731,8 @@ export const de = {
       `Dein Training vom ${date} konnte nicht gespeichert werden – bitte prüfen.`,
     rejected: {
       day_taken: 'An diesem Tag ist schon eine Einheit eingetragen.',
-      date_window: 'Das Datum liegt außerhalb des erlaubten Zeitraums.',
+      date_window:
+        'Das Datum liegt außerhalb des erlaubten Zeitraums: Eintragen geht von heute bis 14 Tage zurück (Stichtag ist die deutsche Zeit). Bitte wähle ein anderes Datum.',
       daily_limit: 'Heute wurden schon zu viele Trainings gespeichert.',
       invalid: 'Ungültige Werte im Tagebuch.',
       not_transferred:
@@ -940,12 +941,15 @@ export const de = {
     plannedIntro: 'Zählt wie ein normales Training – auch für deine nächsten Vorgaben.',
     plannedNone: 'Für diesen Tag gibt es keine Einheit aus deinem Plan zum Nachtragen.',
     plannedButton: (name: string) => `„${name}“ nachtragen`,
+    plannedTodayButton: (name: string) => `„${name}“ jetzt trainieren`,
     plannedBlocked: (name: string, reason: string) => `${name}: ${reason}`,
     reasons: {
       logged: 'schon eingetragen',
       day_taken: 'an diesem Tag ist schon eine Einheit aus deinem Plan eingetragen',
       upcoming: 'liegt noch vor dir – trainiere sie am geplanten Tag',
       window: 'gehört zu einer anderen Woche',
+      not_today:
+        'heute nicht im Training möglich – auf „Heute“ siehst du, was heute geht (z. B. „Heute nachholen“)',
     },
     freeTitle: 'Freie Einheit',
     freeIntro:
@@ -983,6 +987,10 @@ export const de = {
       'Freie Einheit: zählt in Woche und Verlauf, aber nicht für die Vorgaben deines Plans.',
     backfillNotice: 'Du trägst nach. Die Einheit zählt wie ein normales Training.',
     freeSkipHint: '„Nicht gemacht“ lässt die Übung beim Speichern weg.',
+    missingExercise: (name: string) =>
+      `„${name}“ ist nicht mehr in der Bibliothek – bitte entfernen. Alles andere bleibt erhalten.`,
+    removeExercise: 'Übung entfernen',
+    removeExerciseA11y: (name: string) => `${name} aus diesem Training entfernen`,
     freeExerciseHint:
       'Trag ein, was du gemacht hast: je Satz Wiederholungen (und Gewicht), dann abhaken.',
     freeErrors: {

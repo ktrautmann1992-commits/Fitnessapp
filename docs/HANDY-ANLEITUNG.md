@@ -124,6 +124,23 @@ Vercel zeigt die App im Handy-Browser, Expo baut die echten Apps in der Cloud.
    Aufnehmen. Mit TalkBack: auf den Namen der Einheit → Aktionen „Einen Tag früher/später“.
 10. Einmal hell und einmal dunkel ansehen.
 
+## Teil 7a2 – Nachtragen und freie Einheit testen (Etappe A1b, Testmodus)
+1. Vorschau-Link aus dem Pull Request öffnen → Testmodus mit Plan (z. B. **Di und Fr Kraft im Studio**). Am besten an
+   einem Tag testen, an dem schon ein Trainingstag vorbei ist.
+2. „Heute“ → **Kalender** → an einem vergangenen Tag **+ Einheit** → unter „Geplante Einheit nachtragen“ die Einheit
+   wählen → im Training oben **Datum ändern** ausprobieren → einen Satz abhaken → **Training speichern**. Zurück im
+   Kalender steht der Eintrag mit „nachgetragen“; unter **Woche** ebenso.
+3. **+ Einheit** an einem vergangenen Tag → „Freie Einheit“ → **Ausdauer** → Laufen → Weiter → 30 Minuten eintragen →
+   speichern → im Kalender „✓ Lauf · frei“. Die nächste Kraft-Vorgabe auf „Heute“ bleibt gleich.
+4. **+ Einheit** → „Freie Einheit“ → **Kraft** → Übung suchen (z. B. „Kniebeuge“) und antippen → Weiter → Wiederholungen
+   eintragen, Satz abhaken → speichern → „Freie Kraft-Einheit · frei“. Ohne abgehakten Satz sagt die App, was fehlt.
+5. **+ Einheit** für **heute** an einem Trainingstag → „… jetzt trainieren“ → normales Training mit Pausentimer, ohne
+   Datumswahl.
+6. Mit **‹ Vorwoche** zurückblättern: Tage älter als 14 Tage zeigen „Nachtragen nur bis 14 Tage zurück“, künftige Tage
+   haben kein „+ Einheit“.
+7. Flugmodus an → freie Einheit eintragen → bleibt gespeichert (mit Konto: wird übertragen, sobald wieder Netz da ist).
+8. Mit TalkBack/VoiceOver: „+ Einheit“ nennt den Tag; beim Wählen von Übungen wird „1 Übung gewählt“ angesagt.
+
 ## Teil 7b – Übungen tauschen testen (Etappe T2, Testmodus)
 1. Vorschau-Link öffnen, **Einstellungen → Testdaten löschen**, neues Testkonto: Ort **Zuhause**, Geräte **keine**,
    Mo/Mi/Fr Kraft zu Hause.

@@ -751,7 +751,8 @@ export const SESSION_LOG_LIMITS = {
  * SESSION_LOG_LIMITS.backdateDays Tage zurück, nie in der Zukunft. Der Name kommt aus dieser festen Liste (kein
  * Freitext außer der Notiz) – Kraft ein Name, Ausdauer je Ausdauer-Art. Dieselbe Liste steht in save_session_log
  * (Abgleich in db-sync.test.ts). Freie Einträge zählen nie für Progression, Kalibrierung und den 10-%-Bezug der
- * Ausdauer (wie verwaiste Einträge), wohl aber in Woche, Verlauf und fürs Tagesziel (A-G7).
+ * Ausdauer (verwaiste Einträge zählen dagegen für die Kraft-Progression, Wächter S2/G1), wohl aber in Woche, Verlauf
+ * und fürs Tagesziel (A-G7).
  * `strengthMinutesPerSet`: geschätzte Minuten je abgehaktem Kraft-Satz samt Pause – nur für die Trainingsenergie
  * fürs Tagesziel (A-G7), höchstens `strengthMinutesMax`. Quelle: PRODUKTENTSCHEIDUNG (grobe Schätzung; die
  * Trainingsenergie hat zusätzlich den Deckel TRAINING_KCAL_DAY_MAX) – VOR LIVEGANG FACHLICH PRÜFEN.

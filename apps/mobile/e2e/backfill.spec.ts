@@ -30,7 +30,7 @@ async function storedLogs(page: Page): Promise<StoredLog[]> {
   return [...(rows.sessionLogs ?? [])].sort((a, b) => a.performed_on.localeCompare(b.performed_on));
 }
 
-async function setup(page: Page) {
+async function setup(page: Page, today: Date = THURSDAY) {
   await page.clock.setFixedTime(MONDAY);
   await page.goto('/');
   await page.evaluate(() => window.localStorage.clear());
@@ -46,7 +46,7 @@ async function setup(page: Page) {
   await page.getByRole('button', { name: 'Zum Plan' }).click();
   await heading(page, 'Heute');
   // Drei Tage später: Dienstag ist verpasst.
-  await page.clock.setFixedTime(THURSDAY);
+  await page.clock.setFixedTime(today);
   await page.reload();
   await heading(page, 'Heute');
   await page.getByTestId('today-calendar').click();
@@ -81,6 +81,8 @@ test('Geplante Einheit von vorgestern nachtragen: Datum, „nachgetragen“ in K
   await page.getByRole('radio', { name: 'Mittwoch, 07.10.' }).click();
   await expect(page.getByTestId('workout-date-text')).toHaveText('Trainiert am Mittwoch, 07.10.');
   await page.getByTestId('workout-done-0-0').click();
+  // Nachtragen: kein Pausentimer.
+  await expect(page.getByTestId('rest-timer')).toHaveCount(0);
   await page.getByTestId('workout-save').click();
 
   await heading(page, 'Kalender');
@@ -117,6 +119,8 @@ test('Freie Einheit: Lauf 30 min heute und Kraft aus der Bibliothek – im Kalen
   await page.getByTestId('backfill-start').click();
 
   await expect(page.getByTestId('workout-free')).toContainText('Freie Einheit');
+  // Heute ist kein Nachtragen (Wächter G2/H2): keine Datumswahl.
+  await expect(page.getByTestId('workout-date')).toHaveCount(0);
   // Ohne Dauer: verständlicher Fehler, nichts gespeichert.
   await page.getByTestId('workout-save').click();
   await expect(page.getByTestId('workout-error')).toHaveText('Bitte prüfe die markierten Angaben.');
@@ -188,4 +192,24 @@ test('Vor 15 Tagen: „+ Einheit“ nicht möglich, Grund steht da', async ({ pa
   await expect(page.getByTestId('backfill-blocked')).toHaveText(
     'Eintragen geht nur für heute und vergangene Tage.',
   );
+});
+
+test('„+ Einheit“ heute mit geplanter Einheit: normales Training mit Pausentimer, kein Nachtrage-Modus', async ({
+  page,
+}) => {
+  await setup(page, new Date('2026-10-09T09:00:00+02:00'));
+  await page.getByTestId('calendar-add-2026-10-09').click();
+  await heading(page, 'Einheit eintragen');
+  const live = page
+    .getByTestId('backfill-planned')
+    .getByRole('button', { name: /jetzt trainieren$/ });
+  await expect(live).toHaveCount(1);
+  // Die verpasste Di-Einheit lässt sich heute nicht live trainieren (48 h zum Freitag) – Grund statt Nachtrage-Modus.
+  await expect(page.getByTestId('backfill-planned-blocked')).toContainText(
+    'heute nicht im Training möglich',
+  );
+  await live.click();
+  await expect(page.getByTestId('workout-date')).toHaveCount(0);
+  await page.getByTestId('workout-done-0-0').click();
+  await expect(page.getByTestId('rest-timer')).toBeVisible();
 });

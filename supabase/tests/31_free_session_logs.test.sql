@@ -6,7 +6,7 @@
 -- „Heute“ ist fest Donnerstag, 15.10.2026: 14 Tage zurück = 01.10., 15 Tage zurück = 30.09.
 begin;
 create extension if not exists pgtap with schema extensions;
-select plan(55);
+select plan(59);
 
 create or replace function private.berlin_today()
 returns date
@@ -248,10 +248,27 @@ select is(
     p_exercises => jsonb_build_array(jsonb_set(pg_temp.free_ex(), '{is_return}', 'true')))) $$),
   '22023: Ungültige Werte im Tagebuch.', 'frei mit Wiedereinstieg: abgelehnt'
 );
+-- Wächter S1: Den Übungsnamen übernimmt der Server aus der Bibliothek (Umbenennung macht Entwürfe nicht unsendbar,
+-- Freitext landet nie in der Datenbank).
+select is(
+  public.save_session_log(pg_temp.free_strength('f0000000-0000-4000-8000-000000000020', gen_random_uuid()::text,
+    '2026-10-14', p_exercises => jsonb_build_array(pg_temp.free_ex('frei-a', 'Alter Name')))) ->> 'result',
+  'ok', 'Übungsname abweichend (z. B. umbenannt): angenommen'
+);
+select is(
+  (select exercise_name_de from public.exercise_logs where session_log_id = 'f0000000-0000-4000-8000-000000000020'),
+  'Übung frei-a', 'gespeichert wird der Name aus der Bibliothek, nie der gesendete Text'
+);
+-- Wächter H1: wie freeSessionLogFromInput – nur abgehakte Sätze, Einheit „completed“.
 select is(
   pg_temp.error_of($$ select public.save_session_log(pg_temp.free_strength(gen_random_uuid()::text, gen_random_uuid()::text,
-    p_exercises => jsonb_build_array(pg_temp.free_ex('frei-a', 'Meine Lieblingsübung')))) $$),
-  '22023: Ungültige Werte im Tagebuch.', 'Übungsname nicht aus der Bibliothek: abgelehnt (kein Freitext)'
+    p_exercises => jsonb_build_array(jsonb_set(pg_temp.free_ex(), '{sets,0,done}', 'false')))) $$),
+  '22023: Ungültige Werte im Tagebuch.', 'frei mit nicht abgehaktem Satz: abgelehnt'
+);
+select is(
+  pg_temp.error_of($$ select public.save_session_log(jsonb_set(pg_temp.free_strength(gen_random_uuid()::text,
+    gen_random_uuid()::text), '{status}', '"partial"')) $$),
+  '22023: Ungültige Werte im Tagebuch.', 'frei mit Status „partial“: abgelehnt'
 );
 select is(
   pg_temp.error_of($$ select public.save_session_log(pg_temp.free_strength(gen_random_uuid()::text, gen_random_uuid()::text,
@@ -363,6 +380,13 @@ select is(
   array['f0000000-0000-4000-8000-000000000004', 'f0000000-0000-4000-8000-000000000010'],
   'recent_exercise_logs: nur nicht freie Einträge (freie Kraft-Einheiten fehlen)'
 );
+-- Wächter S2 (dokumentiert, Verhalten seit Phase 4): Ein NICHT freier Eintrag ohne geplante Einheit (verwaist bzw.
+-- ältere Fassung ohne is_free) bleibt Grundlage der Kraft-Progression – „frei“ ist nur im Client/Core unumgehbar.
+select ok(
+  exists (select 1 from jsonb_array_elements(public.recent_exercise_logs(2) -> 'session_logs') x
+          where x ->> 'id' = 'f0000000-0000-4000-8000-000000000004' and x ->> 'planned_session_id' is null),
+  'verwaister Eintrag ohne is_free zählt weiter (recent_exercise_logs) – Gründer-Frage G1'
+);
 select ok(
   not exists (select 1 from jsonb_array_elements(public.recent_exercise_logs(10) -> 'session_logs') x
               where (x ->> 'is_free')::boolean),
@@ -379,7 +403,7 @@ select is(
    where (x ->> 'is_free')::boolean),
   array['f0000000-0000-4000-8000-000000000001', 'f0000000-0000-4000-8000-000000000002',
         'f0000000-0000-4000-8000-000000000003', 'f0000000-0000-4000-8000-000000000011',
-        'f0000000-0000-4000-8000-000000000012'],
+        'f0000000-0000-4000-8000-000000000012', 'f0000000-0000-4000-8000-000000000020'],
   'Export: freie Einträge mit is_free = true'
 );
 

@@ -93,7 +93,12 @@ export interface ProgressOptions {
 
 /**
  * Zählt der Eintrag für „zweimal in Folge“ und als Zustands-Grundlage? Nicht: Einstiegswoche, Erholungswoche,
- * Wiedereinstieg nach Pause, freie Einheit (Etappe A1b – konservativ wie verwaiste Einträge).
+ * Wiedereinstieg nach Pause, freie Einheit (Etappe A1b).
+ * ACHTUNG (Wächter A1b S2): Verwaiste Einträge (ohne geplante Einheit, nicht frei) ZÄHLEN für die Kraft-Progression
+ * – so seit Phase 4; vom 10-%-Bezug der Ausdauer sind sie ausgeschlossen (loggedEnduranceMinutes). „Frei“ ist für
+ * Kraft daher nur im Client/Core unumgehbar: Ein Eintrag ohne Planbezug und ohne is_free zählt (auch am Server,
+ * recent_exercise_logs). Ob verwaiste Einträge künftig auch nicht mehr zählen, ist Gründer-Frage G1
+ * (docs/PLAN-AUSWERTUNG.md, Umsetzungsstand A1b).
  */
 export function isCountingEntry(
   entry: Pick<ExerciseLogEntry, 'isIntroWeek' | 'isDeload'> & {

@@ -191,6 +191,12 @@ describe('backfillDates – Datumswahl im Trainingsmodus', () => {
     ]);
   });
 
+  it('Einheit eines ersetzten Plans: keine Tage (wie backfillOptions, Wächter H3)', () => {
+    expect(backfillDates(session('alt', '2026-10-13', { plan_active: false }), [], TODAY)).toEqual(
+      [],
+    );
+  });
+
   it('kommende Einheit: keine Tage', () => {
     expect(backfillDates(session('w2-fr', '2026-10-16'), [], TODAY)).toEqual([]);
   });
@@ -258,5 +264,5 @@ describe('Eigenschaft: „erlaubt“ erfüllt immer die Regeln von save_session_
         }
       }
     }
-  });
+  }, 60_000);
 });

@@ -455,7 +455,9 @@ export interface LogRuleContext {
   today: string;
   rows: UserRows;
   /** Übungen, die der Testmodus kennt (statt „published bzw. archiviert und eigen“ in der Datenbank). */
-  exercises: ReadonlyMap<string, Pick<Exercise, 'load_type' | 'name_de'>>;
+  exercises: ReadonlyMap<string, Pick<Exercise, 'load_type'>>;
+  /** Freigegebene Übungen (freie Einheit, A1b); fehlt = wie `exercises`. */
+  publishedExercises?: ReadonlyMap<string, Pick<Exercise, 'load_type'>>;
   /** Gültige Einwilligung health_data (has_valid_consent). */
   healthConsentValid: boolean;
   /** Heute schon neu angelegte Einträge (Tageslimit, K1). */
@@ -525,7 +527,8 @@ export function checkSessionLog(payload: SessionLogPayload, ctx: LogRuleContext)
   }
 
   // Freie Einheit (A1b, wie save_session_log in 20261015140000_free_session_logs.sql): frei bleibt frei, Datum heute
-  // bis 14 Tage zurück, Name aus fester Liste, keine Vorgaben; Übung mit ihrem Namen aus der Bibliothek.
+  // bis 14 Tage zurück, Name aus fester Liste, keine Vorgaben, nur abgehakte Sätze; nur freigegebene Übungen (den
+  // Übungsnamen übernimmt das Speichern aus der Bibliothek, Wächter S1).
   const isFree = payload.is_free === true;
   if (existing && (existing.is_free === true) !== isFree) {
     return { kind: 'reject', reason: 'invalid' };
@@ -534,7 +537,7 @@ export function checkSessionLog(payload: SessionLogPayload, ctx: LogRuleContext)
   if (freeIssue !== null) return { kind: 'reject', reason: freeIssue };
   if (
     isFree &&
-    payload.exercises.some((e) => ctx.exercises.get(e.exercise_id)?.name_de !== e.exercise_name_de)
+    payload.exercises.some((e) => !(ctx.publishedExercises ?? ctx.exercises).has(e.exercise_id))
   ) {
     return { kind: 'reject', reason: 'invalid' };
   }

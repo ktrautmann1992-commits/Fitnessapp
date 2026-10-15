@@ -26,8 +26,10 @@ import {
 import { backfillDayFromRows, freeExerciseCandidates } from '@/data/backfill';
 import { newId } from '@/data/create-backend';
 import { createFreeDraft } from '@/data/workout-draft';
+import { startKind } from '@/data/workout-session';
+import { activePlan } from '@/data/training-plan';
 import { t } from '@/i18n';
-import { todayIso } from '@/lib/format';
+import { berlinTodayIso } from '@/lib/format';
 import { dayLabel } from '@/lib/plan-format';
 import { isoDateParam } from '@/lib/route-param';
 import { useApp } from '@/state/app-state';
@@ -43,7 +45,8 @@ export default function BackfillScreen() {
   const params = useLocalSearchParams<{ date?: string }>();
   const router = useRouter();
   const app = useApp();
-  const today = todayIso();
+  // „Heute“ wie der Server (Europe/Berlin, Wächter H4).
+  const today = berlinTodayIso();
   const date = isoDateParam(params.date) ?? today;
   const [kind, setKind] = useState<PlannedSessionKind | null>(null);
   const [modality, setModality] = useState<EnduranceModality>('run');
@@ -132,6 +135,7 @@ export default function BackfillScreen() {
         modality,
         exercises,
         performedOn: date,
+        today,
         now: new Date().toISOString(),
         newId,
       });
@@ -161,14 +165,28 @@ export default function BackfillScreen() {
               <Heading level={2}>{t.backfill.plannedTitle}</Heading>
               <Body muted>{t.backfill.plannedIntro}</Body>
               {day.options.length === 0 ? <Body muted>{t.backfill.plannedNone}</Body> : null}
-              {day.options.map((option) =>
-                option.allowed ? (
+              {day.options.map((option) => {
+                // Heute (Wächter G2/H2): normales Training mit Pausentimer und denselben Prüfungen wie live
+                // (startKind) – nachtragen nur für vergangene Tage.
+                const isToday = date === today;
+                const planned = activePlan(rows)?.sessions.find((x) => x.id === option.sessionId);
+                const liveOk =
+                  !isToday || (planned !== undefined && startKind(rows, planned, today) !== null);
+                return option.allowed && liveOk ? (
                   <Button
                     key={option.sessionId}
-                    label={t.backfill.plannedButton(option.name_de)}
+                    label={
+                      isToday
+                        ? t.backfill.plannedTodayButton(option.name_de)
+                        : t.backfill.plannedButton(option.name_de)
+                    }
                     variant="secondary"
                     onPress={() =>
-                      router.replace(`/workout/${option.sessionId}?date=${date}` as Href)
+                      router.replace(
+                        (isToday
+                          ? `/workout/${option.sessionId}`
+                          : `/workout/${option.sessionId}?date=${date}`) as Href,
+                      )
                     }
                     testID={`backfill-planned-${option.sessionId}`}
                   />
@@ -176,11 +194,13 @@ export default function BackfillScreen() {
                   <Body key={option.sessionId} muted testID="backfill-planned-blocked">
                     {t.backfill.plannedBlocked(
                       option.name_de,
-                      t.backfill.reasons[option.reason ?? 'window'],
+                      t.backfill.reasons[
+                        option.allowed ? 'not_today' : (option.reason ?? 'window')
+                      ],
                     )}
                   </Body>
-                ),
-              )}
+                );
+              })}
             </View>
           </Card>
 

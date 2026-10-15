@@ -409,6 +409,8 @@ export interface CreateFreeDraftInput {
   /** Kraft: gewählte Übungen aus der Bibliothek (Reihenfolge = Eingabe). */
   exercises: readonly Pick<Exercise, 'id' | 'name_de' | 'load_type' | 'equipment_ids'>[];
   performedOn: string;
+  /** Heute (Europe/Berlin): an einem früheren Tag = Nachtragen (Datumswahl, kein Pausentimer); heute = wie live. */
+  today: string;
   now: string;
   newId: () => string;
 }
@@ -479,7 +481,8 @@ export function createFreeDraft(input: CreateFreeDraftInput): WorkoutDraft {
         ? { modality: input.modality, hours: '', minutes: '', distanceKm: '', elevationM: '' }
         : null,
     isFree: true,
-    backfill: true,
+    // Nachtrage-Modus nur für vergangene Tage (Wächter G2/H2) – heute gilt der normale Trainingsmodus.
+    backfill: input.performedOn !== input.today,
     updatedAt: input.now,
   };
 }
@@ -519,6 +522,49 @@ export function freeDraftResult(
     notes: draft.notes,
     now: options.now,
   });
+}
+
+/** Übung einer freien Einheit, die es in der Bibliothek nicht mehr (freigegeben) gibt. */
+export interface MissingFreeExercise {
+  index: number;
+  nameDe: string;
+}
+
+/**
+ * Freie Kraft-Einheit an die aktuelle Bibliothek angleichen (Wächter S1): Namen per exercise_id auffrischen (Übung
+ * umbenannt → Entwurf bleibt sendbar); Übungen, die nicht mehr freigegeben sind, werden benannt (`missing`) – die
+ * Person entfernt sie (removeDraftExercise), alle anderen Werte bleiben. Unverändert → derselbe Entwurf.
+ */
+export function refreshFreeDraft(
+  draft: WorkoutDraft,
+  exercises: ReadonlyMap<string, Pick<Exercise, 'name_de'>>,
+  now: string,
+): { draft: WorkoutDraft; missing: MissingFreeExercise[] } {
+  if (draft.isFree !== true) return { draft, missing: [] };
+  const missing: MissingFreeExercise[] = [];
+  let changed = false;
+  const next = draft.exercises.map((e, index) => {
+    const current = exercises.get(e.planned.exerciseId);
+    if (!current) {
+      if (!e.skipped) missing.push({ index, nameDe: e.planned.nameDe });
+      return e;
+    }
+    if (current.name_de === e.planned.nameDe) return e;
+    changed = true;
+    return { ...e, planned: { ...e.planned, nameDe: current.name_de } };
+  });
+  return { draft: changed ? { ...draft, exercises: next, updatedAt: now } : draft, missing };
+}
+
+/** Übung aus dem Entwurf entfernen (freie Einheit); Reihenfolge neu nummeriert, alle anderen Werte bleiben. */
+export function removeDraftExercise(draft: WorkoutDraft, index: number, now: string): WorkoutDraft {
+  return {
+    ...draft,
+    exercises: draft.exercises
+      .filter((_, i) => i !== index)
+      .map((e, i) => ({ ...e, orderNo: i + 1 })),
+    updatedAt: now,
+  };
 }
 
 /** Datum des Entwurfs ändern (nur beim Nachtragen, A1b). */

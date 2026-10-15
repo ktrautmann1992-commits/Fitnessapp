@@ -26,7 +26,7 @@ import {
   nutritionHintNeeded,
   outcomeText,
 } from '@/lib/calendar-format';
-import { todayIso } from '@/lib/format';
+import { berlinTodayIso, todayIso } from '@/lib/format';
 import { weekRangeText } from '@/lib/history-format';
 import { dayLabel, weekdayShort } from '@/lib/plan-format';
 import { PLAN_CHANGE_DROPPED, useApp } from '@/state/app-state';
@@ -387,7 +387,8 @@ export default function CalendarScreen() {
             const dayLogs = logsOn(day.date).filter(
               (l) => session === null || l.planned_session_id !== session.id,
             );
-            const entryBlock = entryDateBlock(day.date, today);
+            // Fenster wie der Server: „heute“ in Europe/Berlin (Wächter H4).
+            const entryBlock = entryDateBlock(day.date, berlinTodayIso());
             return (
               <CalendarDay
                 key={day.date}

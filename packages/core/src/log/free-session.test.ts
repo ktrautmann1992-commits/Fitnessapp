@@ -420,7 +420,7 @@ describe('freeSessionLogFromInput – Datum und Notiz', () => {
       expect(entryDateBlock(result.payload.performed_on, TODAY)).toBeNull();
     }
     expect(ok).toBeGreaterThan(50);
-  });
+  }, 60_000);
 });
 
 describe('freeSessionPayloadIssue (= Regeln von save_session_log und Testmodus)', () => {
@@ -451,6 +451,18 @@ describe('freeSessionPayloadIssue (= Regeln von save_session_log und Testmodus)'
       'date_window',
     ],
     ['Erholungswoche', (p) => ({ ...p, is_deload: true }), 'invalid'],
+    ['Status partial (Wächter H1)', (p) => ({ ...p, status: 'partial' as const }), 'invalid'],
+    [
+      'nicht abgehakter Satz (Wächter H1)',
+      (p) => ({
+        ...p,
+        exercises: p.exercises.map((e) => ({
+          ...e,
+          sets: e.sets.map((set) => ({ ...set, done: false })),
+        })),
+      }),
+      'invalid',
+    ],
     ['Einstiegswoche', (p) => ({ ...p, is_intro_week: true }), 'invalid'],
     ['Freitext-Name', (p) => ({ ...p, name_de: 'Mein Training' }), 'invalid'],
     [

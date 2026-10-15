@@ -4,8 +4,9 @@
 -- 2. save_session_log neu definiert (Grundlage: Fassung aus 20261006120200_training_log_rpcs.sql, nur erweitert):
 --    Feld is_free (optional – fehlt = false, damit ältere, noch wartende Fassungen gültig bleiben). Eine freie Einheit
 --    hat keine geplante Einheit, planned_date = performed_on, Datum heute bis 14 Tage zurück (nie in der Zukunft),
---    keine Einstiegs-/Erholungswoche, Name aus fester Liste (FREE_SESSION.names), je Übung: freigegebene Übung mit
---    ihrem Namen aus der Bibliothek, kein Planbezug, Status „done“, alle target_*/state_* leer, kein Wiedereinstieg.
+--    keine Einstiegs-/Erholungswoche, Einheit „completed“, Name aus fester Liste (FREE_SESSION.names), je Übung:
+--    freigegebene Übung (den Namen übernimmt der Server aus der Bibliothek, Wächter S1), kein Planbezug, Status
+--    „done“, nur abgehakte Sätze (H1), alle target_*/state_* leer, kein Wiedereinstieg.
 --    Ein bestehender Eintrag wechselt nie zwischen frei und nicht frei. Tageslimit und Fehlertexte wie bisher.
 -- 3. recent_exercise_logs überspringt freie Einträge (zählen nie für Progression/Kalibrierung).
 -- export_my_data nutzt to_jsonb(session_logs) und enthält is_free damit automatisch (pgTAP 31); consents_after_revoke
@@ -225,7 +226,9 @@ begin
       if v_performed_on > today or v_performed_on < today - backdate_days then
         raise exception 'Das Datum liegt außerhalb des erlaubten Zeitraums.' using errcode = 'invalid_parameter_value';
       end if;
+      -- Wie freeSessionLogFromInput (H1): nur abgehakte Sätze, Einheit daher immer „completed“.
       if intro_week or deload
+         or (p_log ->> 'status') is distinct from 'completed'
          or (p_log ->> 'name_de') is distinct from (
            free_names ->> case when log_kind = 'strength' then 'strength'
                                else coalesce(p_log -> 'cardio' ->> 'modality', '') end
@@ -304,16 +307,18 @@ begin
       ) then
         raise exception 'Ungültige Werte im Tagebuch.' using errcode = 'invalid_parameter_value';
       end if;
-      -- Freie Einheit (A1b): Übung aus der Bibliothek (freigegeben, Name wie dort), ohne Planbezug, „done“, ohne
-      -- Vorgaben und Zustand, kein Wiedereinstieg – kein Freitext außer der Notiz.
+      -- Freie Einheit (A1b): freigegebene Übung aus der Bibliothek, ohne Planbezug, „done“, nur abgehakte Sätze (H1),
+      -- ohne Vorgaben und Zustand, kein Wiedereinstieg. Den Übungsnamen übernimmt der Server aus der Bibliothek
+      -- (unten beim Einfügen) – so bleibt ein Entwurf nach einer Umbenennung sendbar (Wächter S1), und es gibt keinen
+      -- Freitext außer der Notiz.
       if v_is_free then
         if ex_planned_id is not null
            or ex_status <> 'done'
            or (e ->> 'is_return')::boolean
            or exists (select 1 from unnest(free_target_keys) k where jsonb_typeof(e -> k) <> 'null')
+           or exists (select 1 from jsonb_array_elements(e -> 'sets') x where x -> 'done' is distinct from 'true'::jsonb)
            or not exists (
-             select 1 from public.exercises x
-             where x.id = e ->> 'exercise_id' and x.status = 'published' and x.name_de = e ->> 'exercise_name_de'
+             select 1 from public.exercises x where x.id = e ->> 'exercise_id' and x.status = 'published'
            ) then
           raise exception 'Ungültige Werte im Tagebuch.' using errcode = 'invalid_parameter_value';
         end if;
@@ -429,7 +434,11 @@ begin
       select
         ex_id, log_id, current_user_id, (e ->> 'order_no')::smallint,
         case when linked then (e ->> 'planned_exercise_id')::uuid end,
-        e ->> 'exercise_id', e ->> 'exercise_name_de', (e ->> 'load_type')::public.load_type,
+        e ->> 'exercise_id',
+        case when v_is_free
+             then (select x.name_de from public.exercises x where x.id = e ->> 'exercise_id')
+             else e ->> 'exercise_name_de' end,
+        (e ->> 'load_type')::public.load_type,
         (e ->> 'status')::public.exercise_log_status,
         t.target_sets, t.reps_min, t.reps_max, t.target_reps, t.target_extra_set, t.target_weight_kg,
         t.target_duration_s, t.target_rpe, t.state_weight_kg, t.state_target_reps, t.state_extra_set,
