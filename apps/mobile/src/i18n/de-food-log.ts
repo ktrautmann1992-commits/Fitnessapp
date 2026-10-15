@@ -42,6 +42,8 @@ export const deFoodLog = {
   units: { g: 'g', ml: 'ml', piece: 'Stück' },
   kcal: (value: string) => `${value} kcal`,
   fromPlan: 'aus deinem Essensplan',
+  planNotStored:
+    'Dieser Plan war für diesen Tag nicht gespeichert – „Gegessen“ gibt es hier deshalb nicht. Eintragen geht trotzdem.',
   // „Gegessen“ an der Plan-Mahlzeit (Plan 5 Nr. 1)
   eaten: 'Gegessen',
   eatenA11y: (title: string) => `${title} als gegessen eintragen`,

@@ -131,6 +131,14 @@ export default function WeekScreen() {
               {dayLabel(day.date)}
               {day.date === today ? ` · ${t.plan.todayBadge}` : ''}
             </Text>
+            {/* Tagesauswertung (Etappe A2). */}
+            <Button
+              label={t.day.open}
+              variant="link"
+              accessibilityLabel={t.day.openA11y(dayLabel(day.date))}
+              onPress={() => router.push(`/tag/${day.date}` as Href)}
+              testID={`week-open-day-${day.date}`}
+            />
             {day.items.length === 0 ? (
               <Body muted>{t.week.status.rest}</Body>
             ) : (
