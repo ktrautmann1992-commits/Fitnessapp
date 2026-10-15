@@ -62,6 +62,21 @@ export interface SessionUpdate {
   status: 'planned' | 'skipped';
 }
 
+/** Zwei geplante Einheiten desselben (aktiven) Plans tauschen (Etappe A1a, A-G4). */
+export interface SessionSwap {
+  sessionId: string;
+  otherSessionId: string;
+  /**
+   * Tage, an denen beide Einheiten laut App GERADE liegen (geprüfter Stand, Wächter A1a S1). Der Server tauscht nur,
+   * wenn sie noch stimmen – sonst „Plan hat sich geändert“; eine Wiederholung tauscht nie zurück.
+   */
+  sessionOn: string;
+  otherSessionOn: string;
+  planId: string;
+  /** Plan mit Gesundheitsbezug → Fehler als „sensibel“ behandeln (wie beim Verschieben). */
+  usesHealthData: boolean;
+}
+
 /** Ereignisse aus dem Hintergrund (Warteschlange). */
 export type BackendEvent =
   /** Eine wartende Verschiebung wurde vom Server abgelehnt und verworfen → Plan neu laden + Meldung. */
@@ -194,6 +209,11 @@ export interface Backend {
    * Gesundheitsbezug sofort (ohne Netz → Fehler „Erneut versuchen“).
    */
   updatePlannedSession(update: SessionUpdate, rows: UserRows): Promise<UserRows>;
+  /**
+   * Zwei Einheiten tauschen (public.swap_planned_sessions). Immer sofort, nie über die Warteschlange; wartende
+   * Verschiebungen werden vorher gesendet. Ohne Verbindung → BackendError „online_only“.
+   */
+  swapPlannedSessions(swap: SessionSwap, rows: UserRows): Promise<UserRows>;
   /** Hintergrund-Ereignisse abonnieren; Rückgabe = abbestellen. */
   subscribe(listener: (event: BackendEvent) => void): () => void;
 
@@ -348,20 +368,35 @@ export type BackendErrorCode =
   | 'preference_rejected'
   /** Obergrenze EXERCISE_PREFERENCE_LIMITS.maxPerUser erreicht. */
   | 'preference_limit'
+  /** Vorübergehend (Zeitlimit, Sperrkonflikt, Server 5xx, Drosselung) – „bitte gleich noch einmal“. */
+  | 'temporary'
   | 'unknown';
+
+/**
+ * Warum ein Verschieben/Tauschen abgelehnt wurde (Kalender, Wächter A1a S2): `plan_changed` = Stand weicht ab (Einheit
+ * fehlt, erledigt, anderer Plan, Tag inzwischen belegt, erwartete Tage stimmen nicht), `move_rules` = Regeln (nur ab
+ * heute, gleiche Woche, Erholungswoche, Woche vorbei).
+ */
+export type MoveRejectReason = 'plan_changed' | 'move_rules';
 
 /** Fehler mit festem Code – die Bildschirme zeigen dazu einen deutschen Text (i18n errors.*). */
 export class BackendError extends Error {
   readonly code: BackendErrorCode;
   /** true = betraf Gesundheitsdaten (nicht auf dem Gerät zwischengespeichert). */
   readonly sensitive: boolean;
+  /** Nur bei abgelehntem Verschieben/Tauschen (`plan_rejected`): Ursache für den passenden Text. */
+  readonly moveReason: MoveRejectReason | null;
 
-  constructor(code: BackendErrorCode, options: { sensitive?: boolean; cause?: unknown } = {}) {
+  constructor(
+    code: BackendErrorCode,
+    options: { sensitive?: boolean; cause?: unknown; moveReason?: MoveRejectReason } = {},
+  ) {
     // Bewusst ohne Werte in der Meldung – keine Gesundheitsdaten in Fehlern oder Logs.
     super(`BackendError: ${code}`);
     this.name = 'BackendError';
     this.code = code;
     this.sensitive = options.sensitive ?? false;
+    this.moveReason = options.moveReason ?? null;
     if (options.cause !== undefined) {
       (this as { cause?: unknown }).cause = options.cause;
     }

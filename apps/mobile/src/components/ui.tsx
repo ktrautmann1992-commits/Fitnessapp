@@ -453,6 +453,7 @@ export function Notice({
   titleAsHeader = false,
   children,
   testID,
+  silent = false,
 }: {
   tone?: 'info' | 'warning' | 'danger' | 'success';
   title?: string;
@@ -460,6 +461,8 @@ export function Notice({
   titleAsHeader?: boolean;
   children?: ReactNode;
   testID?: string;
+  /** true = keine eigene Alarm-Rolle – die Ansage übernimmt eine Live-Region des Bildschirms (kein Doppel). */
+  silent?: boolean;
 }) {
   const theme = useThemeColors();
   const accent =
@@ -473,7 +476,7 @@ export function Notice({
   return (
     <View
       testID={testID}
-      accessibilityRole={tone === 'danger' || tone === 'warning' ? 'alert' : undefined}
+      accessibilityRole={!silent && (tone === 'danger' || tone === 'warning') ? 'alert' : undefined}
       style={[
         styles.notice,
         { backgroundColor: theme.surface, borderColor: theme.border, borderLeftColor: accent },

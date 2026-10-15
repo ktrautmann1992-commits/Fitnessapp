@@ -11,6 +11,11 @@ import {
   isBodyweightTemplateId,
   isoDateInTimeZone,
   loadWeeksBeforeDeload,
+  type MovableSession,
+  type MoveCheck,
+  moveTargets,
+  type MoveTarget,
+  validateMove,
   nextPlanBlock,
   type PlanInputsInput,
   type PlanInputsSnapshot,
@@ -255,4 +260,32 @@ export function rescheduleInRows(
   today: string,
 ): RescheduleResult {
   return rescheduleSession(allSessions(rows), sessionId, today);
+}
+
+/**
+ * Alle Einheiten der Person für den Kalender (Etappe A1a): mit „gehört zum aktiven Plan“ – Einheiten ersetzter Pläne
+ * sind fest, belegen ihren Tag aber weiter (wie beim Verschieben).
+ */
+export function movableSessions(rows: UserRows): MovableSession[] {
+  const active = new Set(rows.plans.filter((p) => p.status === 'active').map((p) => p.id));
+  const planOf = new Map(rows.plannedSessions.map((s) => [s.id, s.plan_id] as const));
+  return allSessions(rows).map((s) => ({
+    ...s,
+    in_active_plan: active.has(planOf.get(s.id) ?? ''),
+  }));
+}
+
+/** Je Tag der Woche: erlaubt (verschieben/tauschen) oder Grund – moveTargets aus packages/core. */
+export function moveTargetsInRows(rows: UserRows, sessionId: string, today: string): MoveTarget[] {
+  return moveTargets(movableSessions(rows), sessionId, today);
+}
+
+/** Darf die Einheit auf diesen Tag? – validateMove aus packages/core. */
+export function validateMoveInRows(
+  rows: UserRows,
+  sessionId: string,
+  targetDate: string,
+  today: string,
+): MoveCheck {
+  return validateMove(movableSessions(rows), sessionId, targetDate, today);
 }

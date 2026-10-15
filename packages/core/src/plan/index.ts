@@ -21,3 +21,4 @@ export * from './title';
 export * from './update';
 export * from './view';
 export * from './volume';
+export * from './move';

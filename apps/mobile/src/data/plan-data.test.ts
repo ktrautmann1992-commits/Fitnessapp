@@ -6,9 +6,23 @@ import { describe, expect, it } from 'vitest';
 
 import { localBackendOn, planPersonRows, seededBackend, TODAY, VERSIONS } from '../test/fixtures';
 import { isValidPlanOp } from './local-rules';
-import { activePlan, generatePlanFromRows } from './training-plan';
+import {
+  activePlan,
+  generatePlanFromRows,
+  movableSessions,
+  moveTargetsInRows,
+  validateMoveInRows,
+} from './training-plan';
 import type { UserRows } from './types';
-import { applyHealthDataRevocation, cacheableRows, isDirectOp, isSensitiveOp } from './write-ops';
+import {
+  applyHealthDataRevocation,
+  applyWriteOps,
+  cacheableRows,
+  isDirectOp,
+  isSensitiveOp,
+  needsHealthConsent,
+  type WriteOp,
+} from './write-ops';
 
 /**
  * Trainingspläne in der Datenebene (Etappe C): Regeln des Testmodus wie die Datenbank, Widerruf, was auf das
@@ -246,6 +260,186 @@ describe('Testmodus: Verschieben wie der Trigger', () => {
         saved,
       ),
     ).rejects.toMatchObject({ code: 'plan_rejected' });
+  });
+});
+
+describe('Testmodus: Tauschen wie swap_planned_sessions (Etappe A1a)', () => {
+  async function mondayPlan() {
+    const rows = planPersonRows();
+    const { store, payload, backend, library } = await generated(rows, '2026-10-05');
+    const saved = await backend.savePlan(payload, rows);
+    const active = activePlan(saved);
+    if (!active) throw new Error();
+    const on = (date: string) => {
+      const found = active.sessions.find((s) => s.scheduled_on === date);
+      if (!found) throw new Error(date);
+      return found;
+    };
+    return { store, backend, library, saved, active, on };
+  }
+
+  it('tauscht atomar, original_date nur beim ersten Mal; Rücktausch stellt die Tage wieder her', async () => {
+    const { backend, saved, active, on } = await mondayPlan();
+    const mo = on('2026-10-05');
+    const mi = on('2026-10-07');
+    const swap = {
+      sessionId: mo.id,
+      otherSessionId: mi.id,
+      sessionOn: '2026-10-05',
+      otherSessionOn: '2026-10-07',
+      planId: active.plan.id,
+      usesHealthData: active.plan.uses_health_data,
+    };
+    const swapped = await backend.swapPlannedSessions(swap, saved);
+    expect(swapped.plannedSessions.find((s) => s.id === mo.id)).toMatchObject({
+      scheduled_on: '2026-10-07',
+      original_date: '2026-10-05',
+      status: 'planned',
+    });
+    expect(swapped.plannedSessions.find((s) => s.id === mi.id)).toMatchObject({
+      scheduled_on: '2026-10-05',
+      original_date: '2026-10-07',
+    });
+    // Dieselbe Anfrage noch einmal (z. B. nach verlorener Antwort): Stand passt nicht mehr → abgelehnt, kein Rücktausch.
+    await expect(backend.swapPlannedSessions(swap, swapped)).rejects.toMatchObject({
+      code: 'plan_rejected',
+    });
+    const back = await backend.swapPlannedSessions(
+      { ...swap, sessionOn: '2026-10-07', otherSessionOn: '2026-10-05' },
+      swapped,
+    );
+    expect(back.plannedSessions.find((s) => s.id === mo.id)).toMatchObject({
+      scheduled_on: '2026-10-05',
+      original_date: '2026-10-05',
+    });
+    // Nie zwei geplante Einheiten an einem Tag.
+    const dates = back.plannedSessions
+      .filter((s) => s.status === 'planned')
+      .map((s) => s.scheduled_on);
+    expect(new Set(dates).size).toBe(dates.length);
+  });
+
+  it('Regeln wie der Server: Woche, Vergangenheit, Erholungswoche, erledigt, fremder Plan, gleiche Einheit', async () => {
+    const { saved, active, on, library } = await mondayPlan();
+    const mo = on('2026-10-05');
+    const mi = on('2026-10-07');
+    const fr = on('2026-10-09');
+    const nextWeek = active.sessions.find((s) => s.scheduled_on >= '2026-10-12' && !s.is_deload);
+    const deload = active.sessions.find((s) => s.is_deload);
+    if (!nextWeek || !deload) throw new Error();
+    const op = (
+      a: string,
+      b: string,
+      patch: Partial<Extract<WriteOp, { kind: 'swap_planned_sessions' }>> = {},
+    ): WriteOp => ({
+      kind: 'swap_planned_sessions',
+      sessionId: a,
+      otherSessionId: b,
+      sessionOn: saved.plannedSessions.find((s) => s.id === a)?.scheduled_on ?? '',
+      otherSessionOn: saved.plannedSessions.find((s) => s.id === b)?.scheduled_on ?? '',
+      planId: active.plan.id,
+      usesHealthData: active.plan.uses_health_data,
+      ...patch,
+    });
+    const ctx = (today: string, rows = saved) => ({ today, rows, versions: VERSIONS, library });
+    expect(isValidPlanOp(op(mo.id, fr.id), ctx('2026-10-05'))).toBe(true);
+    expect(isValidPlanOp(op(mo.id, mo.id), ctx('2026-10-05'))).toBe(false);
+    // An den geprüften Stand gebunden (S1): erwarteter Tag weicht ab → abgelehnt.
+    expect(isValidPlanOp(op(mo.id, fr.id, { sessionOn: '2026-10-06' }), ctx('2026-10-05'))).toBe(
+      false,
+    );
+    expect(
+      isValidPlanOp(op(mo.id, fr.id, { otherSessionOn: '2026-10-08' }), ctx('2026-10-05')),
+    ).toBe(false);
+    expect(isValidPlanOp(op(fr.id, nextWeek.id), ctx('2026-10-05'))).toBe(false);
+    expect(isValidPlanOp(op(nextWeek.id, deload.id), ctx('2026-10-05'))).toBe(false);
+    // Mittwoch: Montag liegt in der Vergangenheit → Freitag dürfte nicht dorthin.
+    expect(isValidPlanOp(op(mo.id, fr.id), ctx('2026-10-07'))).toBe(false);
+    expect(isValidPlanOp(op(mi.id, fr.id), ctx('2026-10-07'))).toBe(true);
+    expect(isValidPlanOp(op(mo.id, fr.id, { planId: 'anderer-plan' }), ctx('2026-10-05'))).toBe(
+      false,
+    );
+    expect(
+      isValidPlanOp(
+        op(mo.id, fr.id, { usesHealthData: !active.plan.uses_health_data }),
+        ctx('2026-10-05'),
+      ),
+    ).toBe(false);
+    const done: UserRows = {
+      ...saved,
+      plannedSessions: saved.plannedSessions.map((s) =>
+        s.id === fr.id ? { ...s, status: 'completed' } : s,
+      ),
+    };
+    expect(isValidPlanOp(op(mo.id, fr.id), ctx('2026-10-05', done))).toBe(false);
+    const replaced: UserRows = {
+      ...saved,
+      plans: saved.plans.map((p) => ({ ...p, status: 'replaced' as const })),
+    };
+    expect(isValidPlanOp(op(mo.id, fr.id), ctx('2026-10-05', replaced))).toBe(false);
+    // Erholungswoche allein (gleiche Woche, sonst alles erlaubt): nur streichen.
+    const deloadFriday: UserRows = {
+      ...saved,
+      plannedSessions: saved.plannedSessions.map((s) =>
+        s.id === fr.id ? { ...s, is_deload: true } : s,
+      ),
+    };
+    expect(isValidPlanOp(op(mo.id, fr.id), ctx('2026-10-05', deloadFriday))).toBe(false);
+    expect(isValidPlanOp(op(fr.id, mo.id), ctx('2026-10-05', deloadFriday))).toBe(false);
+  });
+
+  it('Tauschen geht nie in die Warteschlange; Einwilligung nicht nötig (wie Verschieben)', () => {
+    const swap: WriteOp = {
+      kind: 'swap_planned_sessions',
+      sessionId: 'a',
+      otherSessionId: 'b',
+      sessionOn: '2026-10-05',
+      otherSessionOn: '2026-10-07',
+      planId: 'p',
+      usesHealthData: false,
+    };
+    expect(isDirectOp(swap)).toBe(true);
+    expect(isSensitiveOp(swap)).toBe(false);
+    expect(isSensitiveOp({ ...swap, usesHealthData: true })).toBe(true);
+    expect(needsHealthConsent({ ...swap, usesHealthData: true })).toBe(false);
+  });
+
+  it('applyWriteOps: unbekannte Einheit ändert nichts', async () => {
+    const { saved, on } = await mondayPlan();
+    const next = applyWriteOps(
+      saved,
+      [
+        {
+          kind: 'swap_planned_sessions',
+          sessionId: on('2026-10-05').id,
+          otherSessionId: 'gibt-es-nicht',
+          sessionOn: '2026-10-05',
+          otherSessionOn: '2026-10-07',
+          planId: 'p',
+          usesHealthData: false,
+        },
+      ],
+      { now: '2026-10-05T08:00:00.000Z', newId: () => 'x', flagsFor: () => [] },
+    );
+    expect(next.plannedSessions).toEqual(saved.plannedSessions);
+  });
+
+  it('Kalender-Daten: Einheiten ersetzter Pläne sind fest, belegen aber ihren Tag', async () => {
+    const { saved, on } = await mondayPlan();
+    const replaced: UserRows = {
+      ...saved,
+      plans: saved.plans.map((p) => ({ ...p, status: 'replaced' as const })),
+    };
+    expect(movableSessions(saved).every((s) => s.in_active_plan)).toBe(true);
+    expect(movableSessions(replaced).every((s) => s.in_active_plan === false)).toBe(true);
+    const mo = on('2026-10-05');
+    expect(
+      moveTargetsInRows(replaced, mo.id, '2026-10-05').every((t) => t.reason === 'not_planned'),
+    ).toBe(true);
+    expect(validateMoveInRows(saved, mo.id, '2026-10-12', '2026-10-05')).toEqual({
+      ok: false,
+      reason: 'other_week',
+    });
   });
 });
 
