@@ -8,6 +8,8 @@ import type {
   EquipmentItemInput,
   ExercisePreference,
   ExperienceLevel,
+  FoodLogEntry,
+  FoodLogFavorite,
   GoalType,
   HealthFlag,
   HealthScreeningAnswers,
@@ -151,6 +153,22 @@ export interface FoodDislikeRow {
   food_id: string;
 }
 
+/**
+ * Ernährungstagebuch (Etappe E1, docs/PLAN-AUSWERTUNG.md Abschnitt 5) – Spalten wie `food_log_entries`; Werte-Listen
+ * aus packages/core (`foodLogEntrySchema`), nicht `string` wie in den generierten Typen (Abgleich in
+ * row-types.test.ts). SENSIBEL (Art. 9, vorsorglich, A-G12): nie loggen, beim Widerruf health_data gelöscht.
+ */
+export type FoodLogEntryRow = FoodLogEntry & {
+  user_id: string;
+  revision: number;
+  last_write_id: string;
+  created_at: string;
+  updated_at: string;
+};
+
+/** Favorit (Stern) – Spalten wie `food_log_favorites`. Kein Gesundheitsdatum (A-G14), bleibt beim Widerruf. */
+export type FoodLogFavoriteRow = FoodLogFavorite & { user_id: string; created_at: string };
+
 /** Alle Zeilen eines Nutzers – im Testmodus der komplette Gerätespeicher, im Supabase-Modus ein Abbild. */
 export interface UserRows {
   profile: ProfileRow | null;
@@ -197,6 +215,13 @@ export interface UserRows {
   recipeRatings: RecipeRatingRow[];
   /** „Mag ich nicht“ je Lebensmittel (Testmodus ab Etappe N10; Supabase-Modus seit N7 aus food_dislikes). */
   foodDislikes: FoodDislikeRow[];
+  /**
+   * Ernährungstagebuch (Testmodus ab Etappe E1; Supabase-Modus mit N7 Teil 2 – bis dahin immer leer, Tabelle und
+   * Funktionen gibt es seit E1). SENSIBEL.
+   */
+  foodLogEntries: FoodLogEntryRow[];
+  /** Favoriten des Tagebuchs (Testmodus ab E1; Supabase-Modus mit N7 Teil 2, bis dahin leer). */
+  foodLogFavorites: FoodLogFavoriteRow[];
 }
 
 export function emptyUserRows(): UserRows {
@@ -226,6 +251,8 @@ export function emptyUserRows(): UserRows {
     shoppingLists: [],
     recipeRatings: [],
     foodDislikes: [],
+    foodLogEntries: [],
+    foodLogFavorites: [],
   };
 }
 

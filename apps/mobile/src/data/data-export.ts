@@ -149,6 +149,13 @@ export function localDataExport(
     // food_dislikes aus docs/PLAN-PHASE-5.md 19.4 (N7). Ohne Grund „Unverträglich“ (wird nie gespeichert).
     recipe_ratings: rows.recipeRatings,
     food_dislikes: rows.foodDislikes,
+    // Ernährungstagebuch und Favoriten (Etappe E1) – Spalten wie food_log_entries/food_log_favorites.
+    food_log_entries: [...rows.foodLogEntries].sort(
+      (a, b) => a.eaten_on.localeCompare(b.eaten_on) || a.created_at.localeCompare(b.created_at),
+    ),
+    food_log_favorites: [...rows.foodLogFavorites].sort((a, b) =>
+      a.created_at.localeCompare(b.created_at),
+    ),
     // Übungs-Präferenzen (Etappe T2) – in export_my_data() erst mit Etappe T3 (PENDING_DB_EXPORT_TABLES).
     exercise_preferences: rows.exercisePreferences,
   };

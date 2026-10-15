@@ -556,6 +556,10 @@ export function applyHealthDataRevocation(
     mealPlans: rows.mealPlans.filter((plan) => !plan.uses_health_data),
     // Einkaufslisten mit Gesundheitsbezug samt eigener Einträge (Etappe N5b, 7.3/7.4, K10) – wie shopping_lists ab N7.
     shoppingLists: rows.shoppingLists.filter((list) => !list.uses_health_data),
+    // Ernährungstagebuch (Etappe E1, A-G12): alle Einträge; Schnell-Favoriten (Bezeichnung + kcal) gehen mit
+    // (Wächter E1 G1), Katalog-/Rezept-Favoriten bleiben (A-G14) – wie consents_after_revoke.
+    foodLogEntries: [],
+    foodLogFavorites: rows.foodLogFavorites.filter((f) => f.source !== 'quick'),
     ...other,
   });
 }

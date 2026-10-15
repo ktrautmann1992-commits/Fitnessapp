@@ -19,6 +19,7 @@ import {
   swapRequestSchema,
   toSavePlanPayload,
   generatedPlanSchema,
+  type FoodLogEntry,
 } from '@fitnessapp/core';
 import {
   createContext,
@@ -43,6 +44,7 @@ import {
 } from '@/data/backend';
 import { createBackend, deviceStore, newId } from '@/data/create-backend';
 import { createDaySwapStore, prunedDaySwaps, withoutHealthPlanSwaps } from '@/data/day-swaps';
+import type { FavoriteChange } from '@/data/food-log-rows';
 import {
   draftToPayload,
   isValidPayload,
@@ -267,6 +269,12 @@ export interface AppContextValue {
   deleteRecipeRatings: () => Promise<void>;
   /** „Mag ich nicht“ je Lebensmittel ersetzen (Etappe N10). */
   saveFoodDislikes: (foodIds: readonly string[]) => Promise<void>;
+  /** Ernährungstagebuch (Etappe E1): Einträge neu anlegen bzw. ersetzen (Testmodus; Supabase ab N7 Teil 2). */
+  saveFoodLogEntries: (entries: readonly FoodLogEntry[]) => Promise<void>;
+  /** Tagebuch-Eintrag löschen (geht immer). */
+  deleteFoodLogEntry: (id: string) => Promise<void>;
+  /** Stern setzen bzw. entfernen. */
+  changeFoodLogFavorite: (change: FavoriteChange) => Promise<void>;
 
   // --- Übungstausch (docs/PLAN-UEBUNGEN-GLOSSAR-TAUSCH.md, Etappe T2) ---
   /** „Nur heute“-Tausche vor dem Training (Gerätespeicher, nur dieses Konto; geprüft bei jeder Anzeige im Core). */
@@ -694,6 +702,51 @@ export function AppStateProvider({ children }: { children: ReactNode }) {
         throw new BackendError('not_signed_in');
       }
       setRows(await backend.saveFoodDislikes(foodIds, rows));
+    },
+    [backend, rows],
+  );
+
+  const saveFoodLogEntries = useCallback(
+    async (entries: readonly FoodLogEntry[]) => {
+      if (!rows) {
+        throw new BackendError('not_signed_in');
+      }
+      try {
+        setRows(await backend.saveFoodLogEntries(entries, rows));
+      } catch (error) {
+        // Teilerfolg (Wächter E1 S2, Nachprüfung H2): gültige Einträge sind gespeichert, ein anderer wurde abgelehnt –
+        // den gespeicherten Stand trotzdem anzeigen, dann den Fehler melden.
+        const code = errorCode(error);
+        if (
+          code === 'food_log_rejected' ||
+          code === 'food_log_out_of_range' ||
+          code === 'food_log_day_full'
+        ) {
+          const reloaded = await backend.loadRows().catch(() => null);
+          if (reloaded) setRows(reloaded.rows);
+        }
+        throw error;
+      }
+    },
+    [backend, rows],
+  );
+
+  const deleteFoodLogEntry = useCallback(
+    async (id: string) => {
+      if (!rows) {
+        throw new BackendError('not_signed_in');
+      }
+      setRows(await backend.deleteFoodLogEntry(id, rows));
+    },
+    [backend, rows],
+  );
+
+  const changeFoodLogFavorite = useCallback(
+    async (change: FavoriteChange) => {
+      if (!rows) {
+        throw new BackendError('not_signed_in');
+      }
+      setRows(await backend.changeFoodLogFavorite(change, rows));
     },
     [backend, rows],
   );
@@ -1213,6 +1266,9 @@ export function AppStateProvider({ children }: { children: ReactNode }) {
       saveRecipeRating,
       deleteRecipeRatings,
       saveFoodDislikes,
+      saveFoodLogEntries,
+      deleteFoodLogEntry,
+      changeFoodLogFavorite,
     }),
     [
       backend,
@@ -1281,6 +1337,9 @@ export function AppStateProvider({ children }: { children: ReactNode }) {
       saveRecipeRating,
       deleteRecipeRatings,
       saveFoodDislikes,
+      saveFoodLogEntries,
+      deleteFoodLogEntry,
+      changeFoodLogFavorite,
     ],
   );
 

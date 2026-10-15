@@ -23,6 +23,7 @@ import {
   MealRow,
   NutritionNotices,
 } from '@/components/nutrition';
+import { FoodLogDaySection, PlanMealEaten } from '@/components/food-log';
 import { useReadableGuides } from '@/components/guides';
 import { Screen } from '@/components/screen';
 import { Body, Button, Card, ErrorState, Heading, LoadingState, Notice } from '@/components/ui';
@@ -39,6 +40,7 @@ import {
 import { dayLabel } from '@/lib/plan-format';
 import { useApp } from '@/state/app-state';
 import { healthConsentStatus, resolveEntryRoute } from '@/state/flow';
+import { useFoodLogActions, useFoodLogDay } from '@/state/use-food-log';
 import { useMealPlanActions, useNutritionWeek } from '@/state/use-nutrition';
 
 /**
@@ -49,7 +51,8 @@ import { useMealPlanActions, useNutritionWeek } from '@/state/use-nutrition';
  * Neuplanung (6.6), „Plan aktualisieren“, Link zur Wochenansicht. Etappe N5b: Auftau-Hinweis für morgen, Links zur
  * Einkaufsliste und zu den Meal-Prep-Plänen, Hinweis „neu erstellt“ (K-b), „Erneut versuchen“ (K7). Etappe N5c:
  * Links „Rezepte suchen“ und „Ratgeber“. Etappe N14: Hinweis „Nutzt deinen Rest“ an der Mahlzeit (ohne Mengen und
- * Packungszahlen, G-N13-4/N11-G3 offen).
+ * Packungszahlen, G-N13-4/N11-G3 offen). Etappe E1: Ernährungstagebuch – „Gegessen“ je Mahlzeit (Portion ½ … 2) und
+ * Abschnitt „Gegessen“ mit allen Einträgen des Tages (docs/PLAN-AUSWERTUNG.md Abschnitt 5).
  */
 export default function NutritionDayScreen() {
   const router = useRouter();
@@ -69,6 +72,20 @@ export default function NutritionDayScreen() {
   const [swapMessage, setSwapMessage] = useState<{
     text: string;
     tone: 'success' | 'warning' | 'danger';
+  } | null>(null);
+  // Ernährungstagebuch (Etappe E1): Einträge des angezeigten Tages, „Gegessen“, Löschen, Favoriten.
+  // Derselbe Tag wie die Anzeige (dayTargets.date, Wächter E1 H5) – fällt die Woche auf ihren ersten Tag zurück,
+  // zeigt auch das Tagebuch diesen Tag.
+  const shownDate =
+    view.week?.kind === 'ready'
+      ? ((view.week.targets.days.find((d) => d.date === selected) ?? view.week.targets.days[0])
+          ?.date ?? selected)
+      : selected;
+  const foodLog = useFoodLogDay(shownDate, view.showNumbers);
+  const foodLogActions = useFoodLogActions();
+  const [eatenMessage, setEatenMessage] = useState<{
+    text: string;
+    tone: 'success' | 'danger';
   } | null>(null);
 
   if (app.status.kind === 'loading') {
@@ -284,6 +301,13 @@ export default function NutritionDayScreen() {
                   )
                 }
               />
+              <PlanMealEaten
+                meal={meal}
+                date={day.date}
+                view={foodLog}
+                actions={foodLogActions}
+                onMessage={setEatenMessage}
+              />
               {canSwap(meal) ? (
                 <Button
                   label={t.nutrition.plan.swap}
@@ -302,6 +326,18 @@ export default function NutritionDayScreen() {
           ))}
         </View>
       )}
+      {eatenMessage ? (
+        <Notice tone={eatenMessage.tone} testID="nutrition-eaten-message">
+          {eatenMessage.text}
+        </Notice>
+      ) : null}
+      <FoodLogDaySection
+        date={dayDate}
+        dayText={dayTargets.date === today ? t.nutrition.today : dayLabel(dayDate)}
+        view={foodLog}
+        actions={foodLogActions}
+        showNumbers={view.showNumbers}
+      />
       {day !== null && leftoverHints.some((h) => h.date === day.date) ? (
         <Body muted testID="nutrition-leftover-explain">
           {t.nutrition.leftovers.explain}

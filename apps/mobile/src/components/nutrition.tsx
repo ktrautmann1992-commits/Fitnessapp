@@ -44,8 +44,10 @@ import {
   roleLabel,
   slotLabel,
 } from '@/lib/nutrition-format';
+import { intakeSummaryText } from '@/lib/food-log-format';
 import { useThemeColors } from '@/lib/theme';
 import { useApp } from '@/state/app-state';
+import { useFoodLogDay } from '@/state/use-food-log';
 import { type MealPlanActions, type NutritionView, useNutritionWeek } from '@/state/use-nutrition';
 
 /**
@@ -468,12 +470,15 @@ const styles = StyleSheet.create({
 
 /**
  * Karte „Essen heute“ auf „Heute“ (8.2 Nr. 1): Tagesziel (oder ohne Zahlen), nächste Mahlzeit mit Rolle, Kochtag,
- * Hinweis bei `below_floor`, Link „Ernährung“. Nur mit Ernährung (Testmodus; Supabase ab N7).
+ * Hinweis bei `below_floor`, Link „Ernährung“. Nur mit Ernährung (Testmodus; Supabase ab N7). Etappe E1: „Gegessen heute:
+ * 3 Einträge“ (kcal nur mit Zahlen) und „Essen eintragen“.
  */
 export function NutritionTodayCard({ nowMinutes }: { nowMinutes: number }) {
   const router = useRouter();
   const app = useApp();
   const view = useNutritionWeek();
+  // Ernährungstagebuch (Etappe E1): Anzahl der Einträge heute (kcal nur mit Zahlen) und „Essen eintragen“.
+  const foodLog = useFoodLogDay(todayIso(), view.showNumbers);
   const texts = t.nutrition.todayCard;
   if (!app.backend.supportsNutrition) return null;
   const open = (
@@ -553,6 +558,21 @@ export function NutritionTodayCard({ nowMinutes }: { nowMinutes: number }) {
         ) : null}
         {week?.kind === 'ready' && week.plan === null ? (
           <Body muted>{t.nutrition.noRecipes}</Body>
+        ) : null}
+        {foodLog.consentValid ? (
+          <>
+            <Body testID="today-food-log">
+              {foodLog.intake.count === 0
+                ? t.foodLog.todayNone
+                : t.foodLog.todayLine(intakeSummaryText(foodLog.intake))}
+            </Body>
+            <Button
+              label={t.foodLog.todayAdd}
+              variant="secondary"
+              onPress={() => router.push(`/ernaehrung/eintragen?tag=${todayIso()}` as Href)}
+              testID="today-food-log-add"
+            />
+          </>
         ) : null}
         {open}
       </View>
