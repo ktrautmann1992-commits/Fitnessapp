@@ -747,6 +747,25 @@ export const SESSION_LOG_LIMITS = {
 } as const;
 
 /**
+ * Freie Einheit (docs/PLAN-AUSWERTUNG.md 2.6/4, Etappe A1b): Eintrag ohne geplante Einheit, heute oder höchstens
+ * SESSION_LOG_LIMITS.backdateDays Tage zurück, nie in der Zukunft. Der Name kommt aus dieser festen Liste (kein
+ * Freitext außer der Notiz) – Kraft ein Name, Ausdauer je Ausdauer-Art. Dieselbe Liste steht in save_session_log
+ * (Abgleich in db-sync.test.ts). Freie Einträge zählen nie für Progression, Kalibrierung und den 10-%-Bezug der
+ * Ausdauer (wie verwaiste Einträge), wohl aber in Woche, Verlauf und fürs Tagesziel (A-G7).
+ * `strengthMinutesPerSet`: geschätzte Minuten je abgehaktem Kraft-Satz samt Pause – nur für die Trainingsenergie
+ * fürs Tagesziel (A-G7), höchstens `strengthMinutesMax`. Quelle: PRODUKTENTSCHEIDUNG (grobe Schätzung; die
+ * Trainingsenergie hat zusätzlich den Deckel TRAINING_KCAL_DAY_MAX) – VOR LIVEGANG FACHLICH PRÜFEN.
+ */
+export const FREE_SESSION = {
+  names: {
+    strength: 'Freie Kraft-Einheit',
+    endurance: { run: 'Lauf', walk: 'Spaziergang', bike: 'Radfahrt', swim: 'Schwimmen' },
+  },
+  strengthMinutesPerSet: 3,
+  strengthMinutesMax: 180,
+} as const;
+
+/**
  * RPE je Satz 5–10 in 0,5er-Schritten, eingegeben als „Wiederholungen in Reserve“ (0 / 1 / 2 / 3 / 4 / 5+).
  * Quelle: Zourdos MC et al. (2016), „Novel resistance training-specific rating of perceived exertion scale
  * measuring repetitions in reserve“, J Strength Cond Res 30(1):267–275.

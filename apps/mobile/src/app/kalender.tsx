@@ -1,6 +1,9 @@
 import {
   addDays,
+  entryDateBlock,
+  isBackfilledLog,
   type MoveTarget,
+  SESSION_LOG_LIMITS,
   startOfIsoWeek,
   type StoredSession,
   weekOverview,
@@ -25,7 +28,7 @@ import {
 } from '@/lib/calendar-format';
 import { todayIso } from '@/lib/format';
 import { weekRangeText } from '@/lib/history-format';
-import { weekdayShort } from '@/lib/plan-format';
+import { dayLabel, weekdayShort } from '@/lib/plan-format';
 import { PLAN_CHANGE_DROPPED, useApp } from '@/state/app-state';
 import { resolveEntryRoute } from '@/state/flow';
 
@@ -252,14 +255,20 @@ export default function CalendarScreen() {
   }
 
   const currentWeek = startOfIsoWeek(today);
+  // Etappe A1b: zurückblättern bis zur Woche, in der das Nachtragen endet (heute − 14 Tage).
+  const firstWeek = startOfIsoWeek(addDays(today, -SESSION_LOG_LIMITS.backdateDays));
   const lastDate = active.sessions.reduce(
     (last, s) => (s.scheduled_on > last ? s.scheduled_on : last),
     today,
   );
   const lastWeek = startOfIsoWeek(lastDate);
-  const shownWeek = week < currentWeek ? currentWeek : week > lastWeek ? lastWeek : week;
+  const shownWeek = week < firstWeek ? firstWeek : week > lastWeek ? lastWeek : week;
   const days = weekOverview(active.sessions, today, shownWeek);
-  const empty = days.every((d) => d.session === null && d.skipped.length === 0);
+  /** Einträge je Tag (Etappe A1b: freie und nachgetragene Einheiten erscheinen im Kalender). */
+  const logsOn = (date: string) => rows.sessionLogs.filter((l) => l.performed_on === date);
+  const empty = days.every(
+    (d) => d.session === null && d.skipped.length === 0 && logsOn(d.date).length === 0,
+  );
   const deloadWeek = days.some((d) => d.session?.is_deload === true);
   const undoAllowed =
     feedback?.undo != null &&
@@ -273,6 +282,14 @@ export default function CalendarScreen() {
       session.is_deload ? t.calendar.badges.deload : null,
       session.original_date && session.original_date !== session.scheduled_on
         ? t.calendar.badges.movedFrom(weekdayShort(session.original_date))
+        : null,
+      rows.sessionLogs.some(
+        (l) =>
+          l.planned_session_id === session.id &&
+          l.performed_on === session.scheduled_on &&
+          isBackfilledLog(l),
+      )
+        ? t.backfill.calendarBackfilled
         : null,
     ].filter((value): value is string => value !== null);
 
@@ -305,7 +322,7 @@ export default function CalendarScreen() {
               label={t.week.previous}
               variant="secondary"
               accessibilityLabel={t.week.previousA11y}
-              disabled={shownWeek <= currentWeek || drag !== null}
+              disabled={shownWeek <= firstWeek || drag !== null}
               onPress={() => setWeek(addDays(shownWeek, -7))}
               testID="calendar-prev"
             />
@@ -360,7 +377,17 @@ export default function CalendarScreen() {
             const target: MoveTarget | null = drag
               ? (dragTargets.find((d) => d.date === day.date) ?? null)
               : null;
-            const movable = session !== null && session.status === 'planned' && !session.is_deload;
+            // Vergangene Wochen (A1b): nur ansehen und nachtragen, nichts verschieben.
+            const movable =
+              session !== null &&
+              session.status === 'planned' &&
+              !session.is_deload &&
+              shownWeek >= currentWeek;
+            // Einträge des Tages, außer dem der hier gezeigten Einheit (die trägt schon „✓ erledigt“).
+            const dayLogs = logsOn(day.date).filter(
+              (l) => session === null || l.planned_session_id !== session.id,
+            );
+            const entryBlock = entryDateBlock(day.date, today);
             return (
               <CalendarDay
                 key={day.date}
@@ -399,9 +426,42 @@ export default function CalendarScreen() {
                   <Body muted>
                     {`${day.skipped[0]?.name_de ?? ''} – ${t.calendar.badges.skipped}`}
                   </Body>
-                ) : (
+                ) : dayLogs.length === 0 ? (
                   <Body muted>{t.calendar.rest}</Body>
-                )}
+                ) : null}
+                {dayLogs.map((l) => {
+                  const extra = [
+                    l.is_free === true ? t.backfill.calendarFree : null,
+                    isBackfilledLog(l) ? t.backfill.calendarBackfilled : null,
+                  ]
+                    .filter((value): value is string => value !== null)
+                    .join(', ');
+                  return (
+                    <Button
+                      key={l.id}
+                      label={`✓ ${l.name_de}${extra ? ` · ${extra}` : ''}`}
+                      variant="link"
+                      accessibilityLabel={t.backfill.calendarLogA11y(l.name_de, extra)}
+                      onPress={() => router.push(`/log/${l.id}` as Href)}
+                      disabled={drag !== null}
+                      testID={`calendar-log-${day.date}`}
+                    />
+                  );
+                })}
+                {entryBlock === null ? (
+                  <Button
+                    label={t.backfill.add}
+                    variant="secondary"
+                    accessibilityLabel={t.backfill.addA11y(dayLabel(day.date))}
+                    disabled={drag !== null || busy}
+                    onPress={() => router.push(`/nachtragen?date=${day.date}` as Href)}
+                    testID={`calendar-add-${day.date}`}
+                  />
+                ) : entryBlock === 'too_old' ? (
+                  <Body muted testID={`calendar-add-blocked-${day.date}`}>
+                    {t.backfill.calendarTooOld}
+                  </Body>
+                ) : null}
               </CalendarDay>
             );
           })}

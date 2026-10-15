@@ -214,6 +214,12 @@ export const sessionLogPayloadSchema = z
     client_updated_at: timestamp,
     exercises: z.array(exerciseLogSchema).max(SESSION_LOG_LIMITS.exercisesPerSession.max),
     cardio: cardioLogSchema.nullable(),
+    /**
+     * Freie Einheit ohne geplante Einheit (Etappe A1b, docs/PLAN-AUSWERTUNG.md 4). Optional, damit ältere, noch
+     * wartende Fassungen gültig bleiben (fehlt = false, wie in save_session_log). Weitere Regeln einer freien
+     * Einheit (Datum, Name aus fester Liste, keine Vorgaben) prüft freeSessionPayloadIssue() (free-session.ts).
+     */
+    is_free: z.boolean().optional(),
   })
   .refine(
     (s) =>
@@ -232,6 +238,10 @@ export const sessionLogPayloadSchema = z
   .refine((s) => new Set(s.exercises.map((e) => e.id)).size === s.exercises.length, {
     message: 'Übungs-IDs doppelt.',
     path: ['exercises'],
+  })
+  .refine((s) => s.is_free !== true || s.planned_session_id === null, {
+    message: 'Freie Einheit ohne geplante Einheit.',
+    path: ['planned_session_id'],
   })
   .refine(
     (s) =>

@@ -11,7 +11,7 @@ import { historyExercises, historyLogRows, summaryLogs } from '@/data/log-summar
 import { t } from '@/i18n';
 import { errorText } from '@/lib/error-text';
 import { formatDateDe } from '@/lib/format';
-import { logSummaryText } from '@/lib/history-format';
+import { logMarkers, logSummaryText } from '@/lib/history-format';
 import { dayLabel } from '@/lib/plan-format';
 import { useThemeColors } from '@/lib/theme';
 import { useApp } from '@/state/app-state';
@@ -100,9 +100,11 @@ export default function HistoryScreen() {
             const summary = logSummaryText(log);
             const status = log.status === 'completed' ? t.history.completed : t.history.partial;
             const waiting = log.planned_session_id !== null && pending.has(log.planned_session_id);
+            const markers = logMarkers(log);
             const label = [
               dayLabel(log.performed_on),
               log.name_de,
+              ...markers,
               status,
               summary.a11y,
               waiting ? t.history.pending : null,
@@ -129,6 +131,14 @@ export default function HistoryScreen() {
                   {dayLabel(log.performed_on)}
                 </Text>
                 <Text style={[styles.entryName, { color: theme.text }]}>{log.name_de}</Text>
+                {markers.length > 0 ? (
+                  <Text
+                    style={[styles.entryLine, { color: theme.textMuted }]}
+                    testID="history-entry-markers"
+                  >
+                    {markers.join(' · ')}
+                  </Text>
+                ) : null}
                 <Text style={[styles.entryLine, { color: theme.text }]}>
                   {status} · {summary.text}
                 </Text>

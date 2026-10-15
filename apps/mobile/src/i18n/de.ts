@@ -826,6 +826,8 @@ export const de = {
     droppedHint: 'gehört zu einem früheren Plan',
     caughtUpFrom: (date: string) => `nachgeholt vom ${date}`,
     pending: 'wird noch übertragen',
+    free: 'freie Einheit',
+    backfilled: 'nachgetragen',
     open: 'Ansehen',
     summaryTitle: 'Summen der Woche',
     sessions: (done: number, planned: number) => `Einheiten: ${done} geschafft, ${planned} geplant`,
@@ -921,6 +923,86 @@ export const de = {
     },
     back: 'Zurück',
   },
+  /** Nachtragen und freie Einheit (docs/PLAN-AUSWERTUNG.md 4, Etappe A1b). */
+  backfill: {
+    title: 'Einheit eintragen',
+    add: '+ Einheit',
+    addA11y: (day: string) => `Einheit für ${day} eintragen`,
+    forDay: (day: string) => `Für ${day}`,
+    blocked: {
+      future: 'Eintragen geht nur für heute und vergangene Tage.',
+      too_old: 'Nachtragen geht nur bis 14 Tage zurück.',
+      daily_limit: 'Heute wurden schon zu viele Trainings gespeichert. Morgen geht es wieder.',
+    },
+    calendarTooOld: 'Nachtragen nur bis 14 Tage zurück',
+    plannedTitle: 'Geplante Einheit nachtragen',
+    plannedIntro: 'Zählt wie ein normales Training – auch für deine nächsten Vorgaben.',
+    plannedNone: 'Für diesen Tag gibt es keine Einheit aus deinem Plan zum Nachtragen.',
+    plannedButton: (name: string) => `„${name}“ nachtragen`,
+    plannedBlocked: (name: string, reason: string) => `${name}: ${reason}`,
+    reasons: {
+      logged: 'schon eingetragen',
+      day_taken: 'an diesem Tag ist schon eine Einheit aus deinem Plan eingetragen',
+      upcoming: 'liegt noch vor dir – trainiere sie am geplanten Tag',
+      window: 'gehört zu einer anderen Woche',
+    },
+    freeTitle: 'Freie Einheit',
+    freeIntro:
+      'Etwas außerhalb deines Plans gemacht? Freie Einheiten zählen in Woche und Verlauf, ändern aber nie die Vorgaben deines Plans.',
+    kindLabel: 'Was hast du gemacht?',
+    kinds: { strength: 'Kraft (Übungen aus der Bibliothek)', endurance: 'Ausdauer' },
+    modalityLabel: 'Art',
+    searchLabel: 'Übung suchen',
+    searchHint: 'z. B. Kniebeuge – höchstens 12 Übungen',
+    selected: (count: number) =>
+      count === 0
+        ? 'Noch keine Übung gewählt.'
+        : count === 1
+          ? '1 Übung gewählt'
+          : `${count} Übungen gewählt`,
+    pickA11y: (name: string, selected: boolean) =>
+      selected ? `${name}, gewählt – zum Abwählen tippen` : `${name} wählen`,
+    noResults: 'Keine Übung gefunden.',
+    moreResults: (count: number) => `… und ${count} weitere – bitte genauer suchen.`,
+    libraryLoading: 'Übungen werden geladen …',
+    libraryMissing:
+      'Die Übungsbibliothek ist gerade nicht verfügbar – bitte kurz online gehen. Ausdauer geht trotzdem.',
+    startEndurance: 'Weiter zum Eintragen',
+    startStrength: (count: number) =>
+      count === 1 ? 'Weiter mit 1 Übung' : `Weiter mit ${count} Übungen`,
+    chooseExercise: 'Bitte wähle mindestens eine Übung.',
+    maxReached: (max: number) => `Höchstens ${max} Übungen je Einheit.`,
+    saveFailed: 'Der Entwurf ließ sich auf diesem Gerät nicht sichern. Bitte versuche es erneut.',
+    back: 'Zurück zum Kalender',
+    // Trainingsmodus
+    dateLabel: 'An welchem Tag hast du trainiert?',
+    dateText: (day: string) => `Trainiert am ${day}`,
+    changeDate: 'Datum ändern',
+    freeNotice:
+      'Freie Einheit: zählt in Woche und Verlauf, aber nicht für die Vorgaben deines Plans.',
+    backfillNotice: 'Du trägst nach. Die Einheit zählt wie ein normales Training.',
+    freeSkipHint: '„Nicht gemacht“ lässt die Übung beim Speichern weg.',
+    freeExerciseHint:
+      'Trag ein, was du gemacht hast: je Satz Wiederholungen (und Gewicht), dann abhaken.',
+    freeErrors: {
+      date_future: 'Eintragen geht nur für heute und vergangene Tage.',
+      date_too_old: 'Nachtragen geht nur bis 14 Tage zurück. Bitte wähle ein anderes Datum.',
+      no_exercises: 'Bitte trag mindestens eine Übung ein.',
+      too_many_exercises: 'Höchstens 12 Übungen je Einheit.',
+      duplicate_exercise: 'Jede Übung nur einmal.',
+      no_sets:
+        'Hake bei jeder Übung mindestens einen Satz ab – oder setze sie auf „Nicht gemacht“.',
+      too_many_sets: 'Höchstens 10 Sätze je Übung.',
+      invalid_set: 'Bitte prüfe die abgehakten Sätze: Sie brauchen Wiederholungen bzw. Sekunden.',
+      confirm_weight: 'Bitte bestätige zuerst das ungewöhnlich hohe Gewicht.',
+      cardio_invalid: 'Bitte prüfe die markierten Angaben.',
+      notes_too_long: 'Die Notiz ist zu lang.',
+      invalid: 'Ungültige Werte im Tagebuch.',
+    },
+    calendarFree: 'frei',
+    calendarBackfilled: 'nachgetragen',
+    calendarLogA11y: (name: string, extra: string) => (extra ? `${name} (${extra})` : name),
+  },
   /** Verlauf (6.1 Punkt 5, Etappe D). */
   history: {
     title: 'Verlauf',
@@ -935,6 +1017,8 @@ export const de = {
     enduranceA11y: (minutes: number, km: string | null) =>
       km === null ? `${minutes} Minuten` : `${minutes} Minuten, ${km} Kilometer`,
     pending: 'wird noch übertragen',
+    free: 'freie Einheit',
+    backfilled: 'nachgetragen',
     showMore: 'Weitere anzeigen',
     loadOlder: 'Ältere Einträge laden',
     loadingOlder: 'Ältere Einträge werden geladen …',
@@ -999,6 +1083,10 @@ export const de = {
     editUnlinked:
       'Ändern geht nicht mehr: Die Einheit gehört zu einem früheren Plan. Löschen geht weiterhin.',
     editTooOld: 'Ändern geht nur bis 14 Tage nach dem Training. Löschen geht weiterhin.',
+    editFree:
+      'Freie Einheiten lassen sich nicht ändern. Lösche den Eintrag und trag ihn im Kalender neu ein.',
+    free: 'Freie Einheit – zählt in Woche und Verlauf, nicht für die Vorgaben deines Plans.',
+    backfilled: (date: string) => `Nachgetragen am ${date}`,
     back: 'Zurück zum Verlauf',
   },
   settings: {

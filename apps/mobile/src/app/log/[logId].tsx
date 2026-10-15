@@ -1,4 +1,10 @@
-import { cardioSpeed, findGlossaryExercise, logEditability } from '@fitnessapp/core';
+import {
+  cardioSpeed,
+  findGlossaryExercise,
+  isBackfilledLog,
+  isoDateInTimeZone,
+  logEditability,
+} from '@fitnessapp/core';
 import { fontSize, fontWeight, spacing } from '@fitnessapp/ui';
 import { Redirect, useLocalSearchParams, useRouter, type Href } from 'expo-router';
 import { useEffect, useState } from 'react';
@@ -124,6 +130,16 @@ export default function LogEntryScreen() {
         {reference !== null && reference !== log.performed_on ? (
           <Body muted>{t.logEntry.caughtUpFrom(formatDateDe(reference))}</Body>
         ) : null}
+        {log.is_free === true ? (
+          <Body muted testID="log-free">
+            {t.logEntry.free}
+          </Body>
+        ) : null}
+        {isBackfilledLog(log) ? (
+          <Body muted testID="log-backfilled">
+            {t.logEntry.backfilled(formatDateDe(isoDateInTimeZone(log.created_at)))}
+          </Body>
+        ) : null}
         <Body testID="log-status">
           {log.status === 'completed' ? t.logEntry.completed : t.logEntry.partial}
         </Body>
@@ -216,7 +232,11 @@ export default function LogEntryScreen() {
           />
         ) : (
           <Body muted testID="log-edit-hint">
-            {editability === 'too_old' ? t.logEntry.editTooOld : t.logEntry.editUnlinked}
+            {log.is_free === true
+              ? t.logEntry.editFree
+              : editability === 'too_old'
+                ? t.logEntry.editTooOld
+                : t.logEntry.editUnlinked}
           </Body>
         )}
         {waiting ? (

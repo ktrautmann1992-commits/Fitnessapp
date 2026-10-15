@@ -1,5 +1,7 @@
+export * from './backfill';
 export * from './calibration';
 export * from './cardio';
+export * from './free-session';
 export * from './harder-variant';
 export * from './plausibility';
 export * from './progression';

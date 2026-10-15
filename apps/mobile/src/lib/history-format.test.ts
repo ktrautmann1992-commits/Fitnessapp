@@ -8,6 +8,7 @@ import {
   dayStatusText,
   effortText,
   kmText,
+  logMarkers,
   logSummaryText,
   setLineText,
   weekRangeText,
@@ -94,5 +95,21 @@ describe('Texte für Woche, Verlauf und Eintrag (Etappe D)', () => {
     expect(cardioDurationText(1800).a11y).toBe('Dauer: 30 Minuten');
     expect(effortText(7)).toBe('Belastung: 7 – schwer');
     expect(weekRangeText('2026-10-05', '2026-10-11')).toBe('05.10.2026 bis 11.10.2026');
+  });
+});
+
+describe('logMarkers (Etappe A1b)', () => {
+  it('frei und nachgetragen', () => {
+    expect(
+      logMarkers({ is_free: true, performed_on: '2026-10-13', created_at: '2026-10-15T08:00:00Z' }),
+    ).toEqual(['freie Einheit', 'nachgetragen']);
+    expect(
+      logMarkers({
+        is_free: false,
+        performed_on: '2026-10-15',
+        created_at: '2026-10-15T08:00:00Z',
+      }),
+    ).toEqual([]);
+    expect(logMarkers({ performed_on: '2026-10-13' })).toEqual([]);
   });
 });

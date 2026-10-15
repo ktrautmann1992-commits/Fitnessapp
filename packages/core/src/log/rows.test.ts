@@ -81,6 +81,7 @@ function sessionLog(
     is_intro_week: false,
     is_deload: false,
     from_health_plan: false,
+    is_free: false,
     revision: 1,
     last_write_id: 'w',
     source: 'manual',
@@ -646,5 +647,60 @@ describe('Tagebuch-Zeilen auswählen und zusammenführen', () => {
     ]);
     expect(mergeLogRows(EMPTY_LOG_ROWS, EMPTY_LOG_ROWS)).toEqual(EMPTY_LOG_ROWS);
     expect(mergeLogRows(a, EMPTY_LOG_ROWS)).toEqual(a);
+  });
+});
+
+describe('Freie Einheit (Etappe A1b)', () => {
+  const freePayload = () =>
+    payload({
+      planned_session_id: null,
+      name_de: 'Freie Kraft-Einheit',
+      is_free: true,
+      exercises: payload().exercises.map((e) => ({
+        ...e,
+        planned_exercise_id: null,
+        target_sets: null,
+        reps_min: null,
+        reps_max: null,
+        target_reps: null,
+        target_extra_set: null,
+        target_weight_kg: null,
+        target_rpe: null,
+        state_weight_kg: null,
+        state_target_reps: null,
+        state_extra_set: null,
+      })),
+    });
+
+  it('applySessionLog: is_free gesetzt, Name aus der festen Liste bleibt (nicht neutral)', () => {
+    const next = applySessionLog(
+      empty(),
+      freePayload(),
+      meta({ linked: false, keepTargets: false }),
+    );
+    expect(next.sessionLogs[0]).toMatchObject({
+      is_free: true,
+      planned_session_id: null,
+      name_de: 'Freie Kraft-Einheit',
+    });
+  });
+
+  it('applySessionLog: ohne is_free (ältere Fassung) → nicht frei, verwaist neutral benannt', () => {
+    const older: SessionLogPayload = { ...freePayload() };
+    delete older.is_free;
+    const next = applySessionLog(empty(), older, meta({ linked: false, keepTargets: false }));
+    expect(next.sessionLogs[0]).toMatchObject({ is_free: false, name_de: 'Kraft-Einheit' });
+  });
+
+  it('logEntriesFromRows: isFree aus der Zeile; ältere Zeilen ohne Feld gelten als nicht frei', () => {
+    const rows = {
+      sessionLogs: [
+        sessionLog('frei', null, '2026-10-05', { is_free: true }),
+        { ...sessionLog('alt', null, '2026-10-06'), is_free: undefined as unknown as boolean },
+      ],
+      exerciseLogs: [exerciseLog('e1', 'frei'), exerciseLog('e2', 'alt')],
+      setLogs: [set('e1', 1), set('e2', 1)],
+    };
+    expect(logEntriesFromRows(rows).map((e) => e.isFree)).toEqual([true, false]);
   });
 });

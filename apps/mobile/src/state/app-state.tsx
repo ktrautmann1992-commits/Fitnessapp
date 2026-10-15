@@ -838,7 +838,12 @@ export function AppStateProvider({ children }: { children: ReactNode }) {
 
   const submit = useCallback(
     async (draft: WorkoutDraft): Promise<LogSaveOutcome | { kind: 'invalid' }> => {
-      const payload = draftToPayload(draft, { writeId: newId(), now: new Date().toISOString() });
+      // Freie Einheit (A1b): Datum gegen „heute“ prüfen (freeSessionLogFromInput in packages/core).
+      const payload = draftToPayload(draft, {
+        writeId: newId(),
+        now: new Date().toISOString(),
+        today: todayIso(),
+      });
       // Zod an der Grenze: nur Einträge, die save_session_log annehmen würde.
       if (!isValidPayload(payload)) {
         setWorkoutMessage({ kind: 'invalid' });
