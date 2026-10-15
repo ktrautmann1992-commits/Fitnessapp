@@ -148,10 +148,10 @@ test('Drag-and-drop: erlaubte Tage leuchten, gesperrte zeigen den Grund; verschi
         target: await page.getByTestId(`calendar-day-${FR}`).boundingBox(),
         label: await page.getByTestId(`calendar-open-day-${DI}`).boundingBox(),
       };
-      console.log('DIAG url', page.url());
-      console.log('DIAG ids', JSON.stringify(ids));
-      console.log('DIAG boxes', JSON.stringify(boxes));
-      console.log(
+      console.warn('DIAG url', page.url());
+      console.warn('DIAG ids', JSON.stringify(ids));
+      console.warn('DIAG boxes', JSON.stringify(boxes));
+      console.warn(
         'DIAG message',
         await page
           .getByTestId('calendar-message')
