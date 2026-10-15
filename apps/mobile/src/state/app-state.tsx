@@ -48,6 +48,7 @@ import type { FavoriteChange } from '@/data/food-log-rows';
 import {
   draftToPayload,
   isValidPayload,
+  refreshFreeDraft,
   type LogRejectReason,
   type WorkoutDraft,
 } from '@/data/workout-draft';
@@ -70,7 +71,7 @@ import type {
   StepSave,
   UserRows,
 } from '@/data/types';
-import { todayIso } from '@/lib/format';
+import { berlinTodayIso, todayIso } from '@/lib/format';
 import { supabaseConfig } from '@/lib/supabase';
 
 import { resolveEntryRoute, type EntryRoute } from './flow';
@@ -890,8 +891,15 @@ export function AppStateProvider({ children }: { children: ReactNode }) {
   );
 
   const submit = useCallback(
-    async (draft: WorkoutDraft): Promise<LogSaveOutcome | { kind: 'invalid' }> => {
-      const payload = draftToPayload(draft, { writeId: newId(), now: new Date().toISOString() });
+    async (input: WorkoutDraft): Promise<LogSaveOutcome | { kind: 'invalid' }> => {
+      const now = new Date().toISOString();
+      // Freie Einheit (A1b, Wächter S1): Übungsnamen aus der aktuellen Bibliothek nachziehen (Umbenennung).
+      const draft =
+        library.kind === 'ready'
+          ? refreshFreeDraft(input, library.library.exercises, now).draft
+          : input;
+      // Datum gegen „heute“ wie der Server (Europe/Berlin, H4) prüfen (freeSessionLogFromInput in packages/core).
+      const payload = draftToPayload(draft, { writeId: newId(), now, today: berlinTodayIso() });
       // Zod an der Grenze: nur Einträge, die save_session_log annehmen würde.
       if (!isValidPayload(payload)) {
         setWorkoutMessage({ kind: 'invalid' });
@@ -912,7 +920,7 @@ export function AppStateProvider({ children }: { children: ReactNode }) {
       }
       return outcome;
     },
-    [backend, loadUser, reloadDrafts],
+    [backend, library, loadUser, reloadDrafts],
   );
 
   const keepMyVersion = useCallback(

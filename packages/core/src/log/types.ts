@@ -42,6 +42,8 @@ export interface ExerciseLogEntry {
   readonly isDeload: boolean;
   /** Wiedereinstieg nach Pause (RETURN_AFTER_PAUSE) – zählt nicht für die Progression. */
   readonly isReturn?: boolean;
+  /** Freie Einheit ohne geplante Einheit (Etappe A1b) – zählt nie für Progression und Kalibrierung. */
+  readonly isFree?: boolean;
   /** Vorgabe beim Training (Anzeige-Schnappschuss, 3.3) – nach Widerruf aus Gesundheits-Plänen leer. */
   readonly targetSets: number | null;
   readonly targetWeightKg: number | null;

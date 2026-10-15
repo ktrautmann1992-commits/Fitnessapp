@@ -55,6 +55,9 @@ export function summaryLogs(rows: LogRows): SummaryLog[] {
     done_sets: doneSets.get(l.id) ?? 0,
     cardio_duration_s: cardio.get(l.id)?.duration_s ?? null,
     cardio_distance_m: cardio.get(l.id)?.distance_m ?? null,
+    // Etappe A1b: freie Einheit und „nachgetragen“ (aus created_at, isBackfilledLog).
+    is_free: l.is_free === true,
+    created_at: l.created_at,
   }));
 }
 

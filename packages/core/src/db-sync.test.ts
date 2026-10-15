@@ -19,6 +19,7 @@ import {
   PLAN_SAVE_LIMITS,
   PLANNED_LOAD_LIMITS,
   SESSION_LOG_LIMITS,
+  FREE_SESSION,
   SESSION_RPE_LIMITS,
   SET_RPE_LIMITS,
   TEMPLATE_DOSAGE_LIMITS,
@@ -508,7 +509,15 @@ describe('Trainingstage (Etappe B2)', () => {
 });
 
 describe('Trainingstagebuch (Phase 4 Etappe B)', () => {
-  const sql = readMigration('_training_log_rpcs.sql');
+  // Jeweils die NEUESTE Fassung von save_session_log (A1b: *_free_session_logs.sql erweitert um is_free).
+  const saveMarker = 'create or replace function public.save_session_log(';
+  const saveFile = migrationFiles.filter((name) => readMigration(name).includes(saveMarker)).at(-1);
+  if (!saveFile) throw new Error('save_session_log nicht gefunden');
+  const fullSql = readMigration(saveFile);
+  const sql = fullSql.slice(
+    fullSql.lastIndexOf(saveMarker),
+    fullSql.indexOf('$$;', fullSql.lastIndexOf(saveMarker)),
+  );
 
   /** Feldliste `name constant jsonb := '{…}'` aus save_session_log: Name → erlaubte JSON-Typen. */
   function fieldsOf(name: string): Record<string, string> {
@@ -540,7 +549,41 @@ describe('Trainingstagebuch (Phase 4 Etappe B)', () => {
     >;
     for (const [key, types] of Object.entries(fieldsOf(name))) {
       expect(types.split('|').includes('null'), key).toBe(shape[key]?.safeParse(null).success);
+      // „missing“ (Feld darf fehlen) genau bei optionalen Feldern (A1b: is_free).
+      expect(types.split('|').includes('missing'), key).toBe(
+        shape[key]?.safeParse(undefined).success,
+      );
     }
+  });
+
+  it('neueste save_session_log-Fassung steht in *_free_session_logs.sql (A1b)', () => {
+    expect(saveFile).toMatch(/_free_session_logs\.sql$/);
+    expect(fieldsOf('log_fields').is_free).toBe('boolean|missing');
+  });
+
+  it('freie Einheit: Namen in save_session_log = FREE_SESSION.names', () => {
+    const match = /free_names constant jsonb := '([^']*)'/.exec(sql);
+    if (!match) throw new Error('free_names nicht gefunden');
+    expect(JSON.parse(match[1] as string)).toEqual({
+      strength: FREE_SESSION.names.strength,
+      ...FREE_SESSION.names.endurance,
+    });
+    expect(Object.keys(FREE_SESSION.names.endurance).sort()).toEqual(
+      [...enums.ENDURANCE_MODALITIES].sort(),
+    );
+  });
+
+  it('freie Einheit: Server-Fenster = heute bis backdateDays zurück, nie in der Zukunft', () => {
+    expect(sql).toContain(
+      'if v_performed_on > today or v_performed_on < today - backdate_days then',
+    );
+  });
+
+  it('recent_exercise_logs (neueste Fassung) überspringt freie Einträge', () => {
+    const marker = 'create or replace function public.recent_exercise_logs(';
+    const start = allSql.lastIndexOf(marker);
+    const body = allSql.slice(start, allSql.indexOf('$$;', start));
+    expect(body).toContain('and not sl.is_free');
   });
 
   it('Record-Variablen nie in derselben Bedingung wie ihr Zuweisungs-Kennzeichen (Wächter N1)', () => {

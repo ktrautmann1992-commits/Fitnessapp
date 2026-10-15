@@ -201,7 +201,14 @@ export function startKind(rows: UserRows, session: StoredSession, today: string)
 export function newWorkoutDraft(
   rows: UserRows,
   view: WorkoutView,
-  meta: { ownerUserId: string; today: string; now: string; newId: () => string },
+  meta: {
+    ownerUserId: string;
+    today: string;
+    now: string;
+    newId: () => string;
+    /** Nachtragen (A1b): an diesem Tag trainiert (sonst heute); Datum im Trainingsmodus wählbar. */
+    performedOn?: string;
+  },
 ): WorkoutDraft | null {
   const plannedExerciseIds = new Map(
     rows.plannedExercises
@@ -214,9 +221,10 @@ export function newWorkoutDraft(
     items: view.items,
     plannedExerciseIds,
     fromHealthPlan: view.active.plan.uses_health_data,
-    performedOn: meta.today,
+    performedOn: meta.performedOn ?? meta.today,
     now: meta.now,
     newId: meta.newId,
+    backfill: meta.performedOn !== undefined,
   });
 }
 
@@ -227,7 +235,14 @@ export function newWorkoutDraft(
 export function newEnduranceDraft(
   rows: UserRows,
   sessionId: string,
-  meta: { ownerUserId: string; today: string; now: string; newId: () => string },
+  meta: {
+    ownerUserId: string;
+    today: string;
+    now: string;
+    newId: () => string;
+    /** Nachtragen (A1b): an diesem Tag trainiert (sonst heute). */
+    performedOn?: string;
+  },
 ): WorkoutDraft | null {
   const active = activePlan(rows);
   const session = active?.sessions.find((s) => s.id === sessionId);
@@ -236,8 +251,9 @@ export function newEnduranceDraft(
     ownerUserId: meta.ownerUserId,
     session,
     fromHealthPlan: active.plan.uses_health_data,
-    performedOn: meta.today,
+    performedOn: meta.performedOn ?? meta.today,
     now: meta.now,
     newId: meta.newId,
+    backfill: meta.performedOn !== undefined,
   });
 }

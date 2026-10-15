@@ -234,6 +234,22 @@ und -km, Blättern; nachgeholte Einheiten am tatsächlichen Datum), **Verlauf** 
 wählen – kein Teilen-Dialog). Regeln in `packages/core/src/log/summary.ts` und `packages/core/src/export/data-export.ts`.
 Übungsvideos/Animationen und automatische Einträge aus Strecken/Wearables kommen später (Phase 8/10).
 
+**Nachtragen und freie Einheit (`docs/PLAN-AUSWERTUNG.md` Abschnitt 4, Etappe A1b, gratis):** Im Kalender steht an jedem
+Tag von heute bis 14 Tage zurück **„+ Einheit“** (ältere Tage: „Nachtragen nur bis 14 Tage zurück“; Stichtag ist die
+deutsche Zeit wie in der Datenbank). Dort: **geplante Einheit nachtragen** (nur Einheiten des aktiven Plans, im
+Datumsfenster der Datenbank: Woche des Termins ± 1 Tag, nie zwei geplante am Tag, gesperrte mit Grund) – sie zählt
+normal, auch für die Progression – **oder freie Einheit** eintragen: Kraft mit Übungen aus der Bibliothek (höchstens 12,
+nur abgehakte Sätze, Tippfehler-Schutz wie live) bzw. Ausdauer (Art aus fester Liste, Dauer, Distanz, Anstrengung).
+Freie Einheiten (`session_logs.is_free`) haben keinen Planbezug, keine Vorgaben und einen Namen aus fester Liste; sie
+zählen **nie** für Progression, Kalibrierung und den 10-%-Bezug der Ausdauer, wohl aber in Woche, Verlauf und – über
+ihre Trainingsenergie – fürs Tagesziel (nur erhöhend, Deckel bleibt). Datumswahl im Trainingsmodus gibt es nur beim
+Nachtragen vergangener Tage (kein Pausentimer); „+ Einheit“ für **heute** öffnet das normale Training (Pausentimer,
+dieselben Prüfungen wie live). Woche, Verlauf, Eintrag und Kalender zeigen „nachgetragen“ (abgeleitet: an einem späteren
+Tag angelegt) und „freie Einheit“. Freie Einheiten lassen sich nicht ändern, nur löschen und neu eintragen. Offline über
+Entwurf und Tagebuch-Warteschlange. Hinweis: Verwaiste Einträge (Einheit gelöscht/Plan ersetzt) zählen seit Phase 4
+weiter für die Kraft-Progression (Gründer-Frage G1). Regeln in `packages/core/src/log/backfill.ts` und
+`free-session.ts`, Datenbank `supabase/migrations/20261015140000_free_session_logs.sql`.
+
 **Übungs-Glossar (`docs/PLAN-UEBUNGEN-GLOSSAR-TAUSCH.md`, Etappe G1, umgesetzt):** Seite „Übungen“ (`app/uebungen/`) mit
 Suche (Name, andere Namen, englischer Name, Beschreibung; Umlaute und Bindestriche egal) und Filtern (Bereich,
 Ausrüstung: ohne Geräte / mit meinen Geräten zu Hause / Studio mit Geräten, Schwierigkeit); Detailseite mit

@@ -1,6 +1,9 @@
 import { describe, expect, it } from 'vitest';
 
+import { entryDateBlock } from '@fitnessapp/core';
+
 import {
+  berlinTodayIso,
   datePartsFromIso,
   formatDateDe,
   formatDecimal,
@@ -65,5 +68,24 @@ describe('msUntilNextLocalDay (Wächter N5a K5: Tageswechsel bei offener App)', 
       new Date(2026, 9, 12, 22, 0).getTime() + msUntilNextLocalDay(new Date(2026, 9, 12, 22, 0)),
     );
     expect(todayIso(later)).toBe('2026-10-13');
+  });
+});
+
+describe('berlinTodayIso (Wächter A1b H4: „heute“ wie der Server)', () => {
+  it('Mitternacht in Berlin, unabhängig von der Gerätezeit', () => {
+    // 23:30 UTC = 01:30 Berlin (Sommerzeit) → schon der 15.
+    expect(berlinTodayIso(new Date('2026-10-14T22:30:00Z'))).toBe('2026-10-15');
+    expect(berlinTodayIso(new Date('2026-10-14T21:59:00Z'))).toBe('2026-10-14');
+    // Winterzeit (+1 h)
+    expect(berlinTodayIso(new Date('2026-12-31T23:30:00Z'))).toBe('2027-01-01');
+    expect(berlinTodayIso(new Date('2026-12-31T22:59:00Z'))).toBe('2026-12-31');
+  });
+
+  it('Fenster an der Grenze: Gerät westlich (noch 14.) bietet den 15. nicht an, wenn Berlin schon den 15. hat – umgekehrt nie einen Tag, den der Server ablehnt', () => {
+    const berlin = berlinTodayIso(new Date('2026-10-14T22:30:00Z'));
+    expect(entryDateBlock('2026-10-15', berlin)).toBeNull();
+    expect(entryDateBlock('2026-10-01', berlin)).toBeNull();
+    expect(entryDateBlock('2026-09-30', berlin)).toBe('too_old');
+    expect(entryDateBlock('2026-10-16', berlin)).toBe('future');
   });
 });

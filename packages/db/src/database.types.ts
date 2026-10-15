@@ -1585,6 +1585,7 @@ export type Database = {
           from_health_plan: boolean;
           id: string;
           is_deload: boolean;
+          is_free: boolean;
           is_intro_week: boolean;
           kind: Database['public']['Enums']['planned_session_kind'];
           last_write_id: string;
@@ -1607,6 +1608,7 @@ export type Database = {
           from_health_plan?: boolean;
           id?: string;
           is_deload?: boolean;
+          is_free?: boolean;
           is_intro_week?: boolean;
           kind: Database['public']['Enums']['planned_session_kind'];
           last_write_id: string;
@@ -1629,6 +1631,7 @@ export type Database = {
           from_health_plan?: boolean;
           id?: string;
           is_deload?: boolean;
+          is_free?: boolean;
           is_intro_week?: boolean;
           kind?: Database['public']['Enums']['planned_session_kind'];
           last_write_id?: string;
