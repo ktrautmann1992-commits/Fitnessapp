@@ -16,4 +16,5 @@ export * from './plan';
 export * from './log';
 export * from './export';
 export * from './nutrition';
+export * from './evaluation';
 export * from './retail';

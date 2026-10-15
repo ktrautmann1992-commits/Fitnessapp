@@ -193,10 +193,13 @@ export function CalendarDay({
   dropText,
   lifted,
   viewRef,
+  onOpenDay,
   children,
 }: {
   date: string;
   isToday: boolean;
+  /** Tippen auf den Tag öffnet „Dein Tag“ (Etappe A2); undefined = gesperrt (z. B. während des Ziehens). */
+  onOpenDay?: (() => void) | undefined;
   /** Nur während des Ziehens: erlaubt/Grund dieses Tages. */
   target: MoveTarget | null;
   hovered: boolean;
@@ -221,6 +224,13 @@ export function CalendarDay({
       : isToday
         ? theme.primary
         : theme.border;
+  const label = (
+    <Text style={[styles.dayLabel, { color: theme.text }]}>
+      {dayLabel(date)}
+      {isToday ? ` · ${t.calendar.badges.today}` : ''}
+      <Text style={[styles.dayLabelLink, { color: theme.link }]}>{` · ${t.day.open} ›`}</Text>
+    </Text>
+  );
   return (
     <View
       testID={`calendar-day-${date}`}
@@ -235,10 +245,24 @@ export function CalendarDay({
         lifted ? styles.dayLifted : null,
       ]}
     >
-      <Text style={[styles.dayLabel, { color: theme.text }]}>
-        {dayLabel(date)}
-        {isToday ? ` · ${t.calendar.badges.today}` : ''}
-      </Text>
+      {/* Während des Ziehens kein Pressable im Ziel-Tag (nur Text, gleiche Höhe): ein Drücken-Element unter dem
+          Ablagepunkt darf die Zieh-Geste im Browser nicht stören. */}
+      {onOpenDay ? (
+        <Pressable
+          onPress={onOpenDay}
+          accessibilityRole="link"
+          accessibilityLabel={t.day.openA11y(dayLabel(date))}
+          hitSlop={8}
+          style={styles.dayLabelPress}
+          testID={`calendar-open-day-${date}`}
+        >
+          {label}
+        </Pressable>
+      ) : (
+        <View style={styles.dayLabelPress} testID={`calendar-open-day-${date}`}>
+          {label}
+        </View>
+      )}
       {children}
       {dropText ? (
         <View
@@ -365,6 +389,8 @@ const styles = StyleSheet.create({
     opacity: 0.01,
   },
   dayLabel: { fontSize: fontSize.sm, fontWeight: fontWeight.bold },
+  dayLabelPress: { minHeight: MIN_TOUCH, justifyContent: 'center', alignSelf: 'flex-start' },
+  dayLabelLink: { fontWeight: fontWeight.semibold, textDecorationLine: 'underline' },
   dropText: { fontSize: fontSize.sm, lineHeight: 20, fontWeight: fontWeight.semibold },
   card: {
     borderRadius: radius.md,
