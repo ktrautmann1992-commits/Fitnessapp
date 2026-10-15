@@ -847,7 +847,10 @@ Zusätzlich: K9 (Unverträglichkeit + „mag ich“ derselben Gruppe → ausgesc
 - **X0 Entscheidung** „Marken oder nur Produktarten“ (Empfehlung: nur Produktarten) und juristische Klärung, ob `food_log_entries` eine `health_data`-Einwilligung braucht (Empfehlung: ja, vorsorglich).
 - **X1 Barcode + Open Food Facts:** `food_products`, Abruf über `apps/web`-Route mit Zwischenspeicher, Quellenangabe „Daten von Open Food Facts (ODbL)“, Kamera-Berechtigungstext.
 - **X2 Ernährungstagebuch:** `food_log_entries`, Tagesziel aus N1 gegen Gegessenes, Favoriten, „Gegessen“ per Tipp, Offline-Warteschlange. **→ Umgesetzt als Etappe E1 (15.10.2026, `docs/PLAN-AUSWERTUNG.md` Abschnitt 5 und Umsetzungsstand E1):** Tagebuch mit „Gegessen“ per Tipp, Katalog, Rezept, Schnelleintrag, Zuletzt/Favoriten im Testmodus; Datenbank (`food_log_entries`, `food_log_favorites`, `save_food_log_entries`, `delete_food_log_entry`, Widerruf, Export) fertig, App im Supabase-Modus mit N7 Teil 2. Der Abgleich Tagesziel gegen Gegessenes kommt mit A2. X0: Einwilligung `health_data` entschieden (A-G12); X1 → E4, X3 → E2.
-- **X3 Standardgerichte:** `custom_meals`, `custom_meal_items`.
+- **X3 Standardgerichte:** `custom_meals`, `custom_meal_items`. **→ Umgesetzt als Etappe E2 (15.10.2026,
+  `docs/PLAN-AUSWERTUNG.md` Abschnitt 7 und Umsetzungsstand E2):** eigene Gerichte direkt oder aus Zutaten, Eintragen
+  mit Portion ¼–3 als Schnappschuss (fester Titel „Eigenes Gericht“ + Verweis), Testmodus fertig; Datenbank
+  (`custom_meals`, `custom_meal_items`, `save_custom_meal`, Widerruf, Export) fertig, App im Supabase-Modus mit N7 Teil 2.
 - **X4 Gerichte vor/während/nach dem Training (Premium, ohne KI):** Zielmengen je Zeitfenster aus `timing.ts`, 2–3 Vorschläge (im Planband skaliert), Push-Erinnerungen, Premium-Prüfung serverseitig.
 
 ---

@@ -1,5 +1,6 @@
 import type {
   ConsentType,
+  CustomMeal,
   DataExportFile,
   FoodLogEntry,
   MealPlanWeek,
@@ -324,6 +325,15 @@ export interface Backend {
   deleteFoodLogEntry(id: string, rows: UserRows): Promise<UserRows>;
   /** Stern setzen bzw. entfernen (`food_log_favorites`, kein Gesundheitsdatum). Fehler `favorite_limit`. */
   changeFoodLogFavorite(change: FavoriteChange, rows: UserRows): Promise<UserRows>;
+  /**
+   * Eigenes Gericht anlegen bzw. ganz ersetzen (Etappe E2, docs/PLAN-AUSWERTUNG.md 7). Testmodus: Gerätespeicher mit
+   * denselben Regeln wie save_custom_meal (custom-meal-rows.ts) – geht ohne Netz. Supabase-Modus erst mit N7 Teil 2
+   * (Datenbank-Funktion seit E2; bis dahin nicht unterstützt). Fehler `consent_required`, `custom_meal_limit`,
+   * `custom_meal_rejected` – immer ohne Namen und ohne Werte.
+   */
+  saveCustomMeal(meal: CustomMeal, rows: UserRows): Promise<UserRows>;
+  /** Eigenes Gericht löschen – geht immer; eingetragene Tage behalten ihre Werte (Verweis wird leer). */
+  deleteCustomMeal(id: string, rows: UserRows): Promise<UserRows>;
   /** Start des Meal-Prep-Kochtags (Timer) setzen bzw. mit null zurücksetzen (Etappe N5b). */
   saveCookDayStart(weekStart: string, startedAt: string | null, rows: UserRows): Promise<UserRows>;
   /** Wartende Trainings und Entwürfe (R6). */
@@ -390,6 +400,10 @@ export type BackendErrorCode =
   | 'food_log_rejected'
   /** Höchstens 100 Favoriten (FOOD_LOG_LIMITS.maxFavorites). */
   | 'favorite_limit'
+  /** Eigene Gerichte (E2): höchstens 100 (CUSTOM_MEAL_LIMITS.maxMeals). */
+  | 'custom_meal_limit'
+  /** Eigene Gerichte (E2): ungültige Angaben (ohne Namen, ohne Werte gemeldet). */
+  | 'custom_meal_rejected'
   /** Vorübergehend (Zeitlimit, Sperrkonflikt, Server 5xx, Drosselung) – „bitte gleich noch einmal“. */
   | 'temporary'
   | 'unknown';

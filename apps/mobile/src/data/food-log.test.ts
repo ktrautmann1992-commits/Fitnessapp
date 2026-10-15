@@ -260,6 +260,7 @@ describe('Tagebuch im Testmodus (E1)', () => {
         'amount',
         'carbs_g',
         'created_at',
+        'custom_meal_id',
         'eaten_on',
         'fat_g',
         'food_id',

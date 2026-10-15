@@ -43,6 +43,10 @@ export function errorText(error: unknown): string {
       return t.foodLog.errors.rejected;
     case 'favorite_limit':
       return t.foodLog.errors.favoriteLimit;
+    case 'custom_meal_limit':
+      return t.customMeals.errors.limit;
+    case 'custom_meal_rejected':
+      return t.customMeals.errors.rejected;
     case 'temporary':
       return t.errors.temporary;
     case 'unknown':

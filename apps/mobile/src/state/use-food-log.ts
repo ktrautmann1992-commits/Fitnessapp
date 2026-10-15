@@ -5,6 +5,7 @@ import {
   foodLogDateStatus,
   type FoodLogDateStatus,
   foodLogDay,
+  foodLogDisplayTitle,
   type FoodLogEntry,
   isFavoriteEntry,
   markPlanItemEaten,
@@ -36,6 +37,11 @@ export interface FoodLogDayView {
   /** Eintrag der Plan-Mahlzeit an diesem Tag und Platz (sonst null). */
   planItem: (slot: string) => FoodLogEntryRow | null;
   isFavorite: (entry: FoodLogEntry) => boolean;
+  /**
+   * Anzeigetitel (Etappe E2): bei eigenen Gerichten der aktuelle Name aus den eigenen Gerichten, nach dem Löschen
+   * „Eigenes Gericht“ – nur für den Bildschirm, nie für testIDs oder Meldungen an den Server.
+   */
+  displayTitle: (entry: Pick<FoodLogEntry, 'source' | 'custom_meal_id' | 'title_de'>) => string;
 }
 
 export function useFoodLogDay(date: string, showNumbers: boolean): FoodLogDayView {
@@ -55,6 +61,7 @@ export function useFoodLogDay(date: string, showNumbers: boolean): FoodLogDayVie
       intake: dayIntakeView(entries, showNumbers),
       planItem: (slot) => entries.find((e) => e.source === 'plan_item' && e.slot === slot) ?? null,
       isFavorite: (entry) => isFavoriteEntry(favorites, entry),
+      displayTitle: (entry) => foodLogDisplayTitle(entry, rows?.customMeals ?? []),
     };
   }, [app.backend.supportsNutrition, app.versions, date, rows, showNumbers, today]);
 }

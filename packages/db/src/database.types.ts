@@ -221,6 +221,96 @@ export type Database = {
           },
         ];
       };
+      custom_meal_items: {
+        Row: {
+          amount: number;
+          food_id: string;
+          meal_id: string;
+          order_no: number;
+          unit: string;
+          user_id: string;
+        };
+        Insert: {
+          amount: number;
+          food_id: string;
+          meal_id: string;
+          order_no: number;
+          unit: string;
+          user_id: string;
+        };
+        Update: {
+          amount?: number;
+          food_id?: string;
+          meal_id?: string;
+          order_no?: number;
+          unit?: string;
+          user_id?: string;
+        };
+        Relationships: [
+          {
+            foreignKeyName: 'custom_meal_items_food_id_fkey';
+            columns: ['food_id'];
+            isOneToOne: false;
+            referencedRelation: 'foods';
+            referencedColumns: ['id'];
+          },
+          {
+            foreignKeyName: 'custom_meal_items_meal_id_user_id_fkey';
+            columns: ['meal_id', 'user_id'];
+            isOneToOne: false;
+            referencedRelation: 'custom_meals';
+            referencedColumns: ['id', 'user_id'];
+          },
+        ];
+      };
+      custom_meals: {
+        Row: {
+          carbs_g: number | null;
+          created_at: string;
+          fat_g: number | null;
+          id: string;
+          kcal: number | null;
+          last_write_id: string;
+          mode: string;
+          name_de: string;
+          protein_g: number | null;
+          revision: number;
+          servings: number;
+          updated_at: string;
+          user_id: string;
+        };
+        Insert: {
+          carbs_g?: number | null;
+          created_at?: string;
+          fat_g?: number | null;
+          id?: string;
+          kcal?: number | null;
+          last_write_id: string;
+          mode: string;
+          name_de: string;
+          protein_g?: number | null;
+          revision?: number;
+          servings: number;
+          updated_at?: string;
+          user_id: string;
+        };
+        Update: {
+          carbs_g?: number | null;
+          created_at?: string;
+          fat_g?: number | null;
+          id?: string;
+          kcal?: number | null;
+          last_write_id?: string;
+          mode?: string;
+          name_de?: string;
+          protein_g?: number | null;
+          revision?: number;
+          servings?: number;
+          updated_at?: string;
+          user_id?: string;
+        };
+        Relationships: [];
+      };
       equipment: {
         Row: {
           category: Database['public']['Enums']['equipment_category'];
@@ -522,6 +612,7 @@ export type Database = {
           amount: number | null;
           carbs_g: number | null;
           created_at: string;
+          custom_meal_id: string | null;
           eaten_on: string;
           fat_g: number | null;
           food_id: string | null;
@@ -543,6 +634,7 @@ export type Database = {
           amount?: number | null;
           carbs_g?: number | null;
           created_at?: string;
+          custom_meal_id?: string | null;
           eaten_on: string;
           fat_g?: number | null;
           food_id?: string | null;
@@ -564,6 +656,7 @@ export type Database = {
           amount?: number | null;
           carbs_g?: number | null;
           created_at?: string;
+          custom_meal_id?: string | null;
           eaten_on?: string;
           fat_g?: number | null;
           food_id?: string | null;
@@ -582,6 +675,13 @@ export type Database = {
           user_id?: string;
         };
         Relationships: [
+          {
+            foreignKeyName: 'food_log_entries_custom_meal_fkey';
+            columns: ['custom_meal_id', 'user_id'];
+            isOneToOne: false;
+            referencedRelation: 'custom_meals';
+            referencedColumns: ['id', 'user_id'];
+          },
           {
             foreignKeyName: 'food_log_entries_food_id_fkey';
             columns: ['food_id'];
@@ -2211,6 +2311,7 @@ export type Database = {
         Args: { p_auto_adjusted?: boolean; p_plan: Json; p_recipes_changed?: boolean };
         Returns: string;
       };
+      save_custom_meal: { Args: { p_meal: Json }; Returns: Json };
       save_food_log_entries: { Args: { p_entries: Json }; Returns: Json };
       save_session_log: { Args: { p_log: Json }; Returns: Json };
       save_training_plan: { Args: { p_plan: Json }; Returns: string };

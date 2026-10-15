@@ -560,6 +560,10 @@ export function applyHealthDataRevocation(
     // (Wächter E1 G1), Katalog-/Rezept-Favoriten bleiben (A-G14) – wie consents_after_revoke.
     foodLogEntries: [],
     foodLogFavorites: rows.foodLogFavorites.filter((f) => f.source !== 'quick'),
+    // Eigene Gerichte (Etappe E2): Name = Freitext, Werte selbst eingegeben – sichere Voreinstellung wie die
+    // Schnell-Favoriten: gelöscht, samt Zutaten (wie consents_after_revoke).
+    customMeals: [],
+    customMealItems: [],
     ...other,
   });
 }
