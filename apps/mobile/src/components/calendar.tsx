@@ -1,13 +1,14 @@
 import type { MoveTarget, StoredSession } from '@fitnessapp/core';
 import { fontSize, fontWeight, maxContentWidth, radius, spacing } from '@fitnessapp/ui';
 import * as Haptics from 'expo-haptics';
-import { useCallback, useMemo, type ReactNode } from 'react';
+import { useCallback, useEffect, useMemo, useRef, useState, type ReactNode } from 'react';
 import { Modal, Platform, Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
 import { Gesture, GestureDetector } from 'react-native-gesture-handler';
 import Animated, { useAnimatedStyle, useSharedValue, withTiming } from 'react-native-reanimated';
 
 import { t } from '@/i18n';
 import { menuLabel, type SessionName } from '@/lib/calendar-format';
+import { createDragLifecycle } from '@/lib/drag-lifecycle';
 import { dayLabel } from '@/lib/plan-format';
 import { useThemeColors } from '@/lib/theme';
 
@@ -58,14 +59,33 @@ export function DraggableSession({
   const translateY = useSharedValue(0);
   const lifted = useSharedValue(0);
   const web = Platform.OS === 'web';
+  /**
+   * Geste nach dem Ende neu aufbauen (neuer Schlüssel = neuer Griff, neuer Handler): Nach einem abgelehnten Ablegen
+   * blieb im Browser sonst Zustand am alten Griff hängen und das nächste Ziehen startete nicht (lib/drag-lifecycle).
+   */
+  const [generation, setGeneration] = useState(0);
+  const [lifecycle] = useState(() => createDragLifecycle({ web }));
+  const endRef = useRef(onDragEnd);
+  useEffect(() => {
+    endRef.current = onDragEnd;
+  }, [onDragEnd]);
+  // Karte verschwindet mitten im Ziehen (z. B. Plan neu geladen): onFinalize kommt dann evtl. nie – Zieh-Zustand des
+  // Bildschirms trotzdem zurücksetzen, sonst blieben Scrollen und „Dein Tag“ gesperrt.
+  useEffect(
+    () => () => {
+      if (lifecycle.unmount()) endRef.current();
+    },
+    [lifecycle],
+  );
 
   const start = useCallback(() => {
+    lifecycle.start();
     lifted.set(1);
     if (!web) {
       Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium).catch(() => undefined);
     }
     onDragStart(session);
-  }, [lifted, onDragStart, session, web]);
+  }, [lifecycle, lifted, onDragStart, session, web]);
   const update = useCallback(
     (event: { translationY: number; absoluteY: number }) => {
       translateY.set(event.translationY);
@@ -79,11 +99,14 @@ export function DraggableSession({
     },
     [onDrop, session],
   );
+  // onFinalize kommt auf JEDEM Weg (abgelegt, abgelehnt, abgebrochen, nie gestartet): hier alles zurücksetzen.
   const finalize = useCallback(() => {
+    const { renewGesture } = lifecycle.finish();
     translateY.set(withTiming(0, { duration: 120 }));
     lifted.set(0);
     onDragEnd();
-  }, [lifted, onDragEnd, translateY]);
+    if (renewGesture) setGeneration((current) => current + 1);
+  }, [lifecycle, lifted, onDragEnd, translateY]);
 
   const gesture = useMemo(
     () =>
@@ -95,8 +118,10 @@ export function DraggableSession({
         .onStart(start)
         .onUpdate(update)
         .onEnd(end)
-        .onFinalize(finalize),
-    [disabled, end, finalize, start, update],
+        .onFinalize(finalize)
+        // Nach jedem Ende ein neues Gesture-Objekt (eigene Kennung je Durchgang) für den neu aufgebauten Griff.
+        .withTestId(`calendar-drag-${session.id}-${generation}`),
+    [disabled, end, finalize, generation, session.id, start, update],
   );
 
   const animated = useAnimatedStyle(() => ({
@@ -121,7 +146,7 @@ export function DraggableSession({
     >
       <View style={styles.cardRow}>
         {web ? (
-          <GestureDetector gesture={gesture} touchAction="none" userSelect="none">
+          <GestureDetector key={generation} gesture={gesture} touchAction="none" userSelect="none">
             <View
               accessibilityLabel={t.calendar.handleA11y(session.name_de)}
               testID={`calendar-handle-${session.scheduled_on}`}
@@ -167,7 +192,13 @@ export function DraggableSession({
     </Animated.View>
   );
   // Nativ: die ganze Karte nach langem Druck ziehen (Scrollen geht vorher normal weiter).
-  return web ? card : <GestureDetector gesture={gesture}>{card}</GestureDetector>;
+  return web ? (
+    card
+  ) : (
+    <GestureDetector key={generation} gesture={gesture}>
+      {card}
+    </GestureDetector>
+  );
 }
 
 /**
