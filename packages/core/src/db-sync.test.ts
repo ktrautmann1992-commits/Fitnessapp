@@ -26,6 +26,8 @@ import {
   BODY_MEASUREMENT_LIMITS,
   CONTENT_SCHEMA_LIMITS,
   FOOD_LOG_LIMITS,
+  CUSTOM_MEAL_LIMITS,
+  PINCH_G,
   BODY_METRIC_LIMITS,
   EQUIPMENT_LIMITS,
   MEASURED_ON_MAX_DAYS_AHEAD,
@@ -79,7 +81,16 @@ import {
   foodLogFavoriteSchema,
   foodLogPayloadEntrySchema,
   QUICK_ENTRY_LABELS,
+  CUSTOM_MEAL_ENTRY_TITLE,
 } from './nutrition/food-log';
+import {
+  CUSTOM_MEAL_MODES,
+  CUSTOM_MEAL_NAME_EDGE_SPACE_CLASS,
+  CUSTOM_MEAL_NAME_FORBIDDEN_CLASS,
+  CUSTOM_MEAL_REJECT_CODES,
+  customMealItemSchema,
+  customMealPayloadSchema,
+} from './nutrition/custom-meal';
 import { EQUIPMENT } from './equipment';
 import { FOOD_GROUPS } from './food-groups';
 import { GOAL_COMBINATIONS } from './goals/profile';
@@ -812,9 +823,9 @@ describe('Ernährung in der Datenbank (Phase 5, Etappe N7)', () => {
     expect(body.slice(0, end)).toContain(
       'delete from public.shopping_lists where user_id = new.user_id and uses_health_data;',
     );
-    // Neueste Fassung seit Etappe E1 in *_food_log_rpcs.sql (zusätzlich Tagebuch-Einträge, Abschnitt E1 unten).
+    // Neueste Fassung seit Etappe E2 in *_custom_meal_rpcs.sql (E1: Tagebuch-Einträge, E2: eigene Gerichte).
     expect(migrationFiles.filter((n) => readMigration(n).includes(marker)).at(-1)).toMatch(
-      /_food_log_rpcs\.sql$/,
+      /_custom_meal_rpcs\.sql$/,
     );
   });
 
@@ -835,14 +846,25 @@ describe('Ernährungstagebuch in der Datenbank (Etappe E1)', () => {
     if (start < 0) throw new Error(`${name} nicht gefunden`);
     return rpcs.slice(start, rpcs.indexOf('$$;', rpcs.indexOf('as $$', start)));
   };
-  const save = fn('public.save_food_log_entries');
+  // Jeweils die NEUESTE Fassung (Etappe E2 erweitert save_food_log_entries und consents_after_revoke).
+  const newest = (name: string) => {
+    const start = allSql.lastIndexOf(`create or replace function ${name}(`);
+    if (start < 0) throw new Error(`${name} nicht gefunden`);
+    return allSql.slice(start, allSql.indexOf('$$;', allSql.indexOf('as $$', start)));
+  };
+  const save = newest('public.save_food_log_entries');
+  // CHECK-Bedingungen der Einträge: Herkunft und Form neu gefasst in *_custom_meals.sql (E2, nur erweitert).
+  const entriesE2 = readMigration('_custom_meals.sql').slice(
+    readMigration('_custom_meals.sql').indexOf('alter table public.food_log_entries'),
+  );
   const L = FOOD_LOG_LIMITS;
 
   it.each([
     ['slot in (', entries, [...FOOD_LOG_SLOTS]],
-    ["source in ('plan_item'", entries, [...FOOD_LOG_SOURCES]],
+    ["source in ('plan_item'", entriesE2, [...FOOD_LOG_SOURCES]],
     ['unit in (', entries, [...FOOD_LOG_UNITS]],
     ['title_de in (', entries, [...QUICK_ENTRY_LABELS]],
+    ['title_de in (', entriesE2, [...QUICK_ENTRY_LABELS]],
     ["source in ('food'", favorites, [...FOOD_LOG_FAVORITE_SOURCES]],
     ['unit in (', favorites, [...FOOD_LOG_UNITS]],
     ['title_de in (', favorites, [...QUICK_ENTRY_LABELS]],
@@ -950,7 +972,7 @@ describe('Ernährungstagebuch in der Datenbank (Etappe E1)', () => {
   });
 
   it('Widerruf: Einträge am Anfang und am Ende gelöscht, Favoriten bleiben (A-G14)', () => {
-    const body = fn('private.consents_after_revoke');
+    const body = newest('private.consents_after_revoke');
     const line = 'delete from public.food_log_entries where user_id = new.user_id;';
     expect(body.split(line)).toHaveLength(3);
     // Wächter E1 G1: nur Schnell-Favoriten (Bezeichnung + kcal) gehen mit; Katalog-/Rezept-Favoriten bleiben.
@@ -970,10 +992,168 @@ describe('Ernährungstagebuch in der Datenbank (Etappe E1)', () => {
     }
   });
 
-  it('export_my_data(): neueste Fassung in *_food_log_rpcs.sql', () => {
+  it('export_my_data(): neueste Fassung in *_custom_meal_rpcs.sql (E2)', () => {
     const marker = 'create or replace function public.export_my_data()';
     expect(migrationFiles.filter((n) => readMigration(n).includes(marker)).at(-1)).toMatch(
-      /_food_log_rpcs\.sql$/,
+      /_custom_meal_rpcs\.sql$/,
     );
+  });
+});
+
+describe('Eigene Gerichte in der Datenbank (Etappe E2)', () => {
+  const tables = readMigration('_custom_meals.sql');
+  const rpcs = readMigration('_custom_meal_rpcs.sql');
+  const meals = tables.slice(0, tables.indexOf('create table public.custom_meal_items'));
+  const items = tables.slice(
+    tables.indexOf('create table public.custom_meal_items'),
+    tables.indexOf('alter table public.custom_meals enable'),
+  );
+  const fn = (name: string) => {
+    const start = rpcs.indexOf(`create or replace function ${name}(`);
+    if (start < 0) throw new Error(`${name} nicht gefunden`);
+    return rpcs.slice(start, rpcs.indexOf('$$;', rpcs.indexOf('as $$', start)));
+  };
+  const saveMeal = fn('public.save_custom_meal');
+  const saveEntries = fn('public.save_food_log_entries');
+  const L = CUSTOM_MEAL_LIMITS;
+  const F = FOOD_LOG_LIMITS;
+  const fields = (sql: string, name: string) => {
+    const match = new RegExp(`${name} constant jsonb := '([^']*)'`).exec(sql);
+    if (!match) throw new Error(`${name} nicht gefunden`);
+    return JSON.parse(match[1] as string) as Record<string, string>;
+  };
+
+  it.each([
+    ['mode in (', meals, [...CUSTOM_MEAL_MODES]],
+    ['unit in (', items, [...FOOD_LOG_UNITS]],
+  ] as const)('CHECK-Liste „%s“ entspricht packages/core', (marker, sql, expected) => {
+    expect(quotedListAfter(sql, marker)).toEqual(expected);
+  });
+
+  it('save_custom_meal: Feldliste = customMealPayloadSchema, Zutaten = customMealItemSchema', () => {
+    const meal = fields(saveMeal, 'meal_fields');
+    const shape = customMealPayloadSchema.shape as Record<
+      string,
+      { safeParse: (value: unknown) => { success: boolean } }
+    >;
+    expect(Object.keys(meal).sort()).toEqual(Object.keys(shape).sort());
+    for (const [key, types] of Object.entries(meal)) {
+      expect(types.split('|').includes('null'), key).toBe(shape[key]?.safeParse(null).success);
+    }
+    for (const key of ['user_id', 'revision', 'last_write_id', 'created_at', 'updated_at']) {
+      expect(Object.keys(meal)).not.toContain(key);
+    }
+    expect(Object.keys(fields(saveMeal, 'item_fields')).sort()).toEqual(
+      Object.keys(customMealItemSchema.shape).sort(),
+    );
+  });
+
+  it('save_food_log_entries (E2): custom_meal_id dazu, fehlt es, gilt null (ältere Geräte)', () => {
+    expect(fields(saveEntries, 'entry_fields').custom_meal_id).toBe('string|null|missing');
+  });
+
+  it.each([
+    [saveMeal, `max_meals constant integer := ${L.maxMeals};`],
+    [saveMeal, `max_items constant integer := ${L.maxItems};`],
+    [saveMeal, `payload_max_bytes constant integer := ${L.maxPayloadBytes};`],
+    [meals, `char_length(name_de) between 1 and ${L.nameMaxChars}`],
+    [
+      meals,
+      `servings integer not null check (servings between ${L.servings.min} and ${L.servings.max})`,
+    ],
+    [meals, `kcal integer check (kcal between ${F.kcal.min} and ${F.kcal.max})`],
+    [meals, `protein_g between ${F.macroG.min} and ${F.macroG.max}`],
+    [items, `order_no integer not null check (order_no between 1 and ${L.maxItems})`],
+    [items, `amount between ${F.amountMass.min} and ${F.amountMass.max}`],
+    [items, `amount between ${F.amountPiece.min} and ${F.amountPiece.max}`],
+    [tables, `and title_de = '${CUSTOM_MEAL_ENTRY_TITLE}'`],
+    [saveEntries, `v_title := '${CUSTOM_MEAL_ENTRY_TITLE}';`],
+  ] as const)('SQL enthält „%#“ (Grenze = packages/core)', (sql, expected) => {
+    expect(sql).toContain(expected);
+  });
+
+  it('Einwilligung zuerst gesperrt, dann geprüft, dann Person, dann Zeilen (Wächter N7 S2)', () => {
+    const share = saveMeal.indexOf('for share');
+    expect(share).toBeGreaterThan(0);
+    expect(share).toBeLessThan(saveMeal.indexOf("has_valid_consent('health_data')"));
+    expect(saveMeal.indexOf("has_valid_consent('health_data')")).toBeLessThan(
+      saveMeal.indexOf('pg_advisory_xact_lock'),
+    );
+    expect(saveMeal.indexOf('pg_advisory_xact_lock')).toBeLessThan(saveMeal.indexOf('for update'));
+    expect(saveMeal).not.toMatch(/\brecord;/);
+  });
+
+  it('Ablehnungs-Codes = CUSTOM_MEAL_REJECT_CODES, Konflikt-Gründe', () => {
+    const codes = [...saveMeal.matchAll(/'code', '([a-z_]+)'/g)].map((m) => m[1]).sort();
+    expect([...new Set(codes)]).toEqual([...CUSTOM_MEAL_REJECT_CODES].sort());
+    for (const reason of ['revision', 'deleted']) {
+      expect(saveMeal).toContain(`'reason', '${reason}'`);
+    }
+  });
+
+  it('Widerruf löscht eigene Gerichte am Anfang und am Ende (sichere Voreinstellung E2)', () => {
+    const body = fn('private.consents_after_revoke');
+    expect(body.split('delete from public.custom_meals where user_id = new.user_id;')).toHaveLength(
+      3,
+    );
+  });
+
+  it('Name: dieselben verbotenen Zeichen und derselbe Rand-Leerraum wie isValidCustomMealName (Wächter E2 H1)', () => {
+    expect(meals).toContain(`name_de !~ '[${CUSTOM_MEAL_NAME_FORBIDDEN_CLASS}]'`);
+    expect(meals).toContain(`name_de !~ '^[${CUSTOM_MEAL_NAME_EDGE_SPACE_CLASS}]'`);
+    expect(meals).toContain(`name_de !~ '[${CUSTOM_MEAL_NAME_EDGE_SPACE_CLASS}]$'`);
+    expect(meals).not.toContain('[[:');
+  });
+
+  it('Löschen nur über delete_custom_meal: kein DELETE-Recht, Person → Einträge → Gericht (Wächter E2 S1)', () => {
+    expect(tables).toContain('grant select on table public.custom_meals to authenticated;');
+    expect(tables).not.toMatch(/grant [a-z, ]*delete[a-z, ]* on table public\.custom_meal/);
+    const del = fn('public.delete_custom_meal');
+    expect(del).not.toContain('has_valid_consent');
+    expect(del.indexOf('pg_advisory_xact_lock')).toBeGreaterThan(0);
+    // Dieselbe Advisory-Sperre wie save_food_log_entries: Speichern und Löschen laufen je Person nacheinander.
+    const lock = "pg_advisory_xact_lock(hashtext('food_log|' || current_user_id::text))";
+    expect(del).toContain(lock);
+    expect(saveEntries).toContain(lock);
+    expect(del.indexOf('pg_advisory_xact_lock')).toBeLessThan(
+      del.indexOf('from public.food_log_entries'),
+    );
+    expect(del.indexOf('from public.food_log_entries')).toBeLessThan(
+      del.indexOf('from public.custom_meals'),
+    );
+    expect(rpcs).toContain(
+      'revoke all on function public.delete_custom_meal(uuid) from public, anon;',
+    );
+  });
+
+  it('Server rechnet nach (E1-G4/E2-G2, 15.10.2026): Umrechnungen, Prise, 2.000 g, Rundung wie packages/core', () => {
+    const grams = fn('private.grams_per_unit');
+    for (const unit of RECIPE_UNITS) expect(grams).toContain(`when '${unit}' then`);
+    for (const key of ['ml_to_g', 'piece_g', 'tbsp_g', 'tsp_g'])
+      expect(grams).toContain(`'${key}'`);
+    expect(grams).toContain(`when 'pinch' then ${PINCH_G}::double precision`);
+    expect(fn('private.ingredients_per_serving')).toContain(
+      `grams_max constant double precision := ${FOOD_LOG_LIMITS.gramsMax};`,
+    );
+    expect(fn('private.food_log_server_values')).toContain(
+      `grams_max constant double precision := ${FOOD_LOG_LIMITS.gramsMax};`,
+    );
+    // Math.round (halbe aufwärts), nicht round() (Postgres rundet double precision halbe zur geraden Zahl).
+    expect(fn('private.js_round')).toContain('when p_x - floor(p_x) >= 0.5 then floor(p_x) + 1');
+    expect(fn('private.js_round1')).toContain('private.js_round(p_x * 10) / 10');
+    // Rechnung in derselben Reihenfolge wie computeRecipeFacts bzw. entryFromFood.
+    expect(fn('private.ingredients_per_serving')).toContain(
+      "t_kcal := t_kcal + (grams * (food_data -> 'nutrients_per_100g' ->> 'kcal')::double precision) / 100;",
+    );
+    expect(fn('private.food_log_server_values')).toContain('factor := grams / 100;');
+    // Die Werte vom Gerät werden für Lebensmittel, Rezept und eigenes Gericht ersetzt.
+    expect(saveEntries).toContain("if v_source in ('food', 'recipe', 'custom_meal') then");
+    expect(saveEntries).toContain('e := e || v_values;');
+    expect(saveMeal).toContain('per := private.ingredients_per_serving(v_items,');
+  });
+
+  it('Lebensmittel in Zutaten: on delete restrict; Tagebuch-Verweis: on delete set null (nur die Spalte)', () => {
+    expect(items).toContain('references public.foods (id) on update cascade on delete restrict');
+    expect(tables).toContain('on delete set null (custom_meal_id)');
   });
 });

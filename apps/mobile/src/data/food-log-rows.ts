@@ -45,7 +45,8 @@ export type FoodLogSaveCheck =
   | { ok: false; reason: 'consent_required' | 'invalid' };
 
 export function checkFoodLogSave(
-  rows: Pick<UserRows, 'consents' | 'profile' | 'foodLogEntries'>,
+  rows: Pick<UserRows, 'consents' | 'profile' | 'foodLogEntries'> &
+    Partial<Pick<UserRows, 'customMeals'>>,
   entries: readonly unknown[],
   ctx: { today: string; versions: ConsentVersions },
 ): FoodLogSaveCheck {
@@ -68,7 +69,15 @@ export function checkFoodLogSave(
       outcomes.push({ kind: 'rejected', code: 'invalid' });
       continue;
     }
-    const entry = parsed.data;
+    // Eigenes Gericht (E2): Verweis nur auf ein vorhandenes eigenes Gericht. Fehlt es (gelöscht), wird der Verweis
+    // leer und der Eintrag mit seinen Werten gespeichert – wie save_food_log_entries seit der Wächter-Nachprüfung E2 S1:
+    // neuer Eintrag = Werte des Geräts (Grenzen per Zod wie die CHECKs), Ändern = Schnappschuss (rebuildEntry). Die
+    // Werte selbst rechnet im Testmodus immer packages/core aus dem Bestand.
+    const entry =
+      parsed.data.custom_meal_id !== null &&
+      !(rows.customMeals ?? []).some((m) => m.id === parsed.data.custom_meal_id)
+        ? { ...parsed.data, custom_meal_id: null }
+        : parsed.data;
     const existing = current.find((row) => row.id === entry.id);
     if (
       foodLogDateStatus(entry.eaten_on, ctx.today) !== 'ok' ||
@@ -171,6 +180,7 @@ export function entryFromRow(row: FoodLogEntryRow): FoodLogEntry {
     source: row.source,
     food_id: row.food_id,
     recipe_id: row.recipe_id,
+    custom_meal_id: row.custom_meal_id,
     title_de: row.title_de,
     amount: row.amount,
     unit: row.unit,

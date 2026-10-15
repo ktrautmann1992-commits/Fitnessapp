@@ -19,6 +19,7 @@ import {
   swapRequestSchema,
   toSavePlanPayload,
   generatedPlanSchema,
+  type CustomMeal,
   type FoodLogEntry,
 } from '@fitnessapp/core';
 import {
@@ -276,6 +277,10 @@ export interface AppContextValue {
   deleteFoodLogEntry: (id: string) => Promise<void>;
   /** Stern setzen bzw. entfernen. */
   changeFoodLogFavorite: (change: FavoriteChange) => Promise<void>;
+  /** Eigenes Gericht anlegen bzw. ändern (Etappe E2; Testmodus, Supabase ab N7 Teil 2). */
+  saveCustomMeal: (meal: CustomMeal) => Promise<void>;
+  /** Eigenes Gericht löschen (geht immer). */
+  deleteCustomMeal: (id: string) => Promise<void>;
 
   // --- Übungstausch (docs/PLAN-UEBUNGEN-GLOSSAR-TAUSCH.md, Etappe T2) ---
   /** „Nur heute“-Tausche vor dem Training (Gerätespeicher, nur dieses Konto; geprüft bei jeder Anzeige im Core). */
@@ -748,6 +753,26 @@ export function AppStateProvider({ children }: { children: ReactNode }) {
         throw new BackendError('not_signed_in');
       }
       setRows(await backend.changeFoodLogFavorite(change, rows));
+    },
+    [backend, rows],
+  );
+
+  const saveCustomMeal = useCallback(
+    async (meal: CustomMeal) => {
+      if (!rows) {
+        throw new BackendError('not_signed_in');
+      }
+      setRows(await backend.saveCustomMeal(meal, rows));
+    },
+    [backend, rows],
+  );
+
+  const deleteCustomMeal = useCallback(
+    async (id: string) => {
+      if (!rows) {
+        throw new BackendError('not_signed_in');
+      }
+      setRows(await backend.deleteCustomMeal(id, rows));
     },
     [backend, rows],
   );
@@ -1272,6 +1297,8 @@ export function AppStateProvider({ children }: { children: ReactNode }) {
       saveFoodLogEntries,
       deleteFoodLogEntry,
       changeFoodLogFavorite,
+      saveCustomMeal,
+      deleteCustomMeal,
     }),
     [
       backend,
@@ -1343,6 +1370,8 @@ export function AppStateProvider({ children }: { children: ReactNode }) {
       saveFoodLogEntries,
       deleteFoodLogEntry,
       changeFoodLogFavorite,
+      saveCustomMeal,
+      deleteCustomMeal,
     ],
   );
 

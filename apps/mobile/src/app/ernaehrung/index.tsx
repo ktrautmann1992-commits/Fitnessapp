@@ -24,6 +24,7 @@ import {
   MealRow,
   NutritionNotices,
 } from '@/components/nutrition';
+import { CustomMealDaySection } from '@/components/custom-meals';
 import { FoodLogDaySection, PlanMealEaten } from '@/components/food-log';
 import { useReadableGuides } from '@/components/guides';
 import { Screen } from '@/components/screen';
@@ -53,7 +54,8 @@ import { useMealPlanActions, useNutritionWeek } from '@/state/use-nutrition';
  * Einkaufsliste und zu den Meal-Prep-Plänen, Hinweis „neu erstellt“ (K-b), „Erneut versuchen“ (K7). Etappe N5c:
  * Links „Rezepte suchen“ und „Ratgeber“. Etappe N14: Hinweis „Nutzt deinen Rest“ an der Mahlzeit (ohne Mengen und
  * Packungszahlen, G-N13-4/N11-G3 offen). Etappe E1: Ernährungstagebuch – „Gegessen“ je Mahlzeit (Portion ½ … 2) und
- * Abschnitt „Gegessen“ mit allen Einträgen des Tages (docs/PLAN-AUSWERTUNG.md Abschnitt 5).
+ * Abschnitt „Gegessen“ mit allen Einträgen des Tages (docs/PLAN-AUSWERTUNG.md Abschnitt 5). Etappe E2: Abschnitt
+ * „Eigene Gerichte“ (Portion wählen, mit einem Tipp eintragen; Abschnitt 7).
  */
 export default function NutritionDayScreen() {
   const router = useRouter();
@@ -350,6 +352,13 @@ export default function NutritionDayScreen() {
       <FoodLogDaySection
         date={dayDate}
         dayText={dayTargets.date === today ? t.nutrition.today : dayLabel(dayDate)}
+        view={foodLog}
+        actions={foodLogActions}
+        showNumbers={view.showNumbers}
+      />
+      {/* Etappe E2: eigene Gerichte mit einem Tipp eintragen. */}
+      <CustomMealDaySection
+        date={dayDate}
         view={foodLog}
         actions={foodLogActions}
         showNumbers={view.showNumbers}

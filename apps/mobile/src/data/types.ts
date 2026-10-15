@@ -8,6 +8,8 @@ import type {
   EquipmentItemInput,
   ExercisePreference,
   ExperienceLevel,
+  CustomMeal,
+  CustomMealItem,
   FoodLogEntry,
   FoodLogFavorite,
   GoalType,
@@ -169,6 +171,26 @@ export type FoodLogEntryRow = FoodLogEntry & {
 /** Favorit (Stern) – Spalten wie `food_log_favorites`. Kein Gesundheitsdatum (A-G14), bleibt beim Widerruf. */
 export type FoodLogFavoriteRow = FoodLogFavorite & { user_id: string; created_at: string };
 
+/**
+ * Eigenes Gericht (Etappe E2, docs/PLAN-AUSWERTUNG.md Abschnitt 7) – Spalten wie `custom_meals` (die Zutaten stehen
+ * in `custom_meal_items`). Der Name ist Freitext: nur mit Einwilligung health_data, beim Widerruf gelöscht, nie loggen,
+ * nie in testIDs.
+ */
+export type CustomMealRow = Omit<CustomMeal, 'items'> & {
+  user_id: string;
+  revision: number;
+  last_write_id: string;
+  created_at: string;
+  updated_at: string;
+};
+
+/** Zutat eines eigenen Gerichts – Spalten wie `custom_meal_items`. */
+export type CustomMealItemRow = CustomMealItem & {
+  meal_id: string;
+  user_id: string;
+  order_no: number;
+};
+
 /** Alle Zeilen eines Nutzers – im Testmodus der komplette Gerätespeicher, im Supabase-Modus ein Abbild. */
 export interface UserRows {
   profile: ProfileRow | null;
@@ -222,6 +244,12 @@ export interface UserRows {
   foodLogEntries: FoodLogEntryRow[];
   /** Favoriten des Tagebuchs (Testmodus ab E1; Supabase-Modus mit N7 Teil 2, bis dahin leer). */
   foodLogFavorites: FoodLogFavoriteRow[];
+  /**
+   * Eigene Gerichte und ihre Zutaten (Testmodus ab E2; Supabase-Modus mit N7 Teil 2 – bis dahin leer, Tabellen und
+   * save_custom_meal gibt es seit E2). Name = Freitext, SENSIBEL.
+   */
+  customMeals: CustomMealRow[];
+  customMealItems: CustomMealItemRow[];
 }
 
 export function emptyUserRows(): UserRows {
@@ -253,6 +281,8 @@ export function emptyUserRows(): UserRows {
     foodDislikes: [],
     foodLogEntries: [],
     foodLogFavorites: [],
+    customMeals: [],
+    customMealItems: [],
   };
 }
 
