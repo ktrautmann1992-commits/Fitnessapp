@@ -9,5 +9,6 @@ export * from './rest-timer';
 export * from './rows';
 export * from './schemas';
 export * from './summary';
+export * from './achievement';
 export * from './types';
 export * from './workout';

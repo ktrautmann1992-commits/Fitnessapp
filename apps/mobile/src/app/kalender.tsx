@@ -398,6 +398,9 @@ export default function CalendarScreen() {
                 hovered={drag !== null && drag.hover === day.date && drag.from !== day.date}
                 dropText={target && target.reason !== 'current' ? dropLabel(target, nameOf) : null}
                 lifted={drag?.from === day.date}
+                onOpenDay={
+                  drag !== null ? undefined : () => router.push(`/tag/${day.date}` as Href)
+                }
                 viewRef={(view) => {
                   if (view) dayViews.current.set(day.date, view);
                   else dayViews.current.delete(day.date);

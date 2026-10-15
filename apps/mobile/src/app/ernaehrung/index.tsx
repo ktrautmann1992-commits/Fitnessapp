@@ -1,5 +1,6 @@
 import {
   addDays,
+  evaluationMealPlanUsable,
   isoDateSchema,
   type MealSlotId,
   mealsInDayOrder,
@@ -171,6 +172,14 @@ export default function NutritionDayScreen() {
   const numbers = view.showNumbers && dayTargets.targetKcal !== null;
   const status = day?.status ?? (dayTargets.mode === 'no_targets' ? 'no_targets' : null);
   const dayDate = dayTargets.date;
+  // „Gegessen“ nur an einem gespeicherten Plan (bzw. laufende Woche ab heute) – nie an einem erst jetzt erzeugten Plan
+  // für einen vergangenen Tag (Wächter A2 S1, Regel in core).
+  const eatenAllowed = evaluationMealPlanUsable({
+    planStored: planState?.action === 'stored',
+    weekEditable: planState?.editable === true,
+    date: dayDate,
+    today,
+  });
   const canSwap = (meal: PlannedMeal) =>
     actions !== null && !meal.isFill && dayDate >= today && !meal.slot.startsWith('extra');
 
@@ -303,13 +312,15 @@ export default function NutritionDayScreen() {
                   )
                 }
               />
-              <PlanMealEaten
-                meal={meal}
-                date={day.date}
-                view={foodLog}
-                actions={foodLogActions}
-                onMessage={setEatenMessage}
-              />
+              {eatenAllowed ? (
+                <PlanMealEaten
+                  meal={meal}
+                  date={day.date}
+                  view={foodLog}
+                  actions={foodLogActions}
+                  onMessage={setEatenMessage}
+                />
+              ) : null}
               {canSwap(meal) ? (
                 <Button
                   label={t.nutrition.plan.swap}
@@ -328,6 +339,11 @@ export default function NutritionDayScreen() {
           ))}
         </View>
       )}
+      {plan !== null && day !== null && !eatenAllowed && foodLog.supported ? (
+        <Body muted testID="nutrition-plan-not-stored">
+          {t.foodLog.planNotStored}
+        </Body>
+      ) : null}
       {eatenMessage ? (
         <Notice tone={eatenMessage.tone} testID="nutrition-eaten-message">
           {eatenMessage.text}

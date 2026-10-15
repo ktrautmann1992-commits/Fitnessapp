@@ -273,5 +273,20 @@ for (const scheme of ['light', 'dark'] as const) {
     await heading('Heute');
     await page.getByTestId('today-nutrition-card').scrollIntoViewIfNeeded();
     await shot('heute-essen');
+    // „Dein Tag“ (Etappe A2): heute neutral „Noch offen“, nach allen Mahlzeiten grün, Training.
+    await page.getByTestId('today-day').click();
+    await expect(page.getByTestId('day')).toBeVisible();
+    await shot('dein-tag');
+    const eaten = page.getByTestId('day-food').getByTestId(/^eaten-(?!done|undo)/);
+    if ((await eaten.count()) > 0) {
+      await eaten.first().click();
+      await expect(page.getByTestId('day-zone')).toBeVisible();
+      await shot('dein-tag-offen');
+      while ((await eaten.count()) > 0) await eaten.first().click();
+      await page.getByTestId('day-bar').scrollIntoViewIfNeeded();
+      await shot('dein-tag-balken');
+    }
+    await page.getByTestId('day-training').scrollIntoViewIfNeeded();
+    await shot('dein-tag-training');
   });
 }

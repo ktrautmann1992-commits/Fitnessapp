@@ -442,7 +442,7 @@ Nach dem Merge spielt **db-migrate** (erst nach grünem db-test) zwei neue, leer
     Favorit „Auswärts gegessen“ weg, ein Favorit wie „Banane“ ist noch da; „Eintragen“ bittet um die Einwilligung.
 11. „Heute“ zeigt auf der Karte „Essen heute“: „Gegessen heute: … Einträge“ und „Essen eintragen“.
 
-## Teil 7g – Eigene Gerichte testen (Etappe E2, Testmodus)
+## Teil 7i – Eigene Gerichte testen (Etappe E2, Testmodus)
 Eigene Gerichte laufen wie das Tagebuch vorerst nur im **Testmodus** (mit Konto folgen sie mit N7 Teil 2). Ihr müsst
 nichts einstellen. Nach dem Merge spielt **db-migrate** (erst nach grünem db-test) zwei neue, leere Tabellen ein
 (`custom_meals`, `custom_meal_items`) und erweitert das Tagebuch um die Herkunft „eigenes Gericht“ – vorhandene Daten
@@ -468,6 +468,38 @@ bleiben unverändert.
    oder „Ohne Werte“, nirgends kcal.
 10. **Einstellungen → Gesundheitsdaten widerrufen** → der Dialog nennt „… samt Schnelleintrag-Favoriten und eigenen
     Gerichten …“ → danach sind die eigenen Gerichte weg; „Eigene Gerichte“ bittet um die Einwilligung.
+## Teil 7g – „Dein Tag“ testen (Etappe A2, Testmodus)
+Die Tagesauswertung braucht keine Einstellung und keine Datenbank-Änderung. Das Essen erscheint vorerst nur im
+**Testmodus** (mit Konto folgt es mit N7 Teil 2), der Trainingsteil geht in beiden Modi.
+
+1. Vorschau-Link aus dem Pull Request öffnen → Testmodus mit dem Testkonto aus Teil 7c → auf „Heute“
+   **„Dein Tag – Essen und Training“** tippen. Ohne Einträge steht „Nichts eingetragen.“ und das Tagesziel – kein
+   Balken, nie „0 kcal“.
+2. Bei der ersten Mahlzeit **„Gegessen“** → der Balken füllt sich **neutral** mit „○ Noch offen“ (heute nie rot). Alle
+   Mahlzeiten „Gegessen“ → **„✓ Im Zielbereich“** (grün; beim Abnehmen erst etwa ab dem Tagesziel, darunter gelb
+   „Etwas unter deinem Tagesziel“), darüber „1.640 von 1.800 kcal“ (eure Zahlen).
+3. **„← Vortag“** → gestern ohne Einträge ist grau „Nichts eingetragen.“. Über „Mahlzeiten und Einträge“ →
+   „Eintragen“ (gestern ist schon gewählt) → Schnell → „Mahlzeit“ **300** kcal → wieder „Dein Tag“ für gestern:
+   **„↓ Unter deinem Mindestbedarf“** (rot) mit ruhigem Satz und „Laut deinen Einträgen. Fehlt etwas? Du kannst es
+   nachtragen.“
+4. Gestern zusätzlich **3.000** kcal eintragen → „↑ Deutlich über deinem Ziel“ mit „Ein einzelner Tag ändert wenig.“
+   (kein Ausrufezeichen, kein Warnsymbol). Dazwischen gibt es gelb „Etwas unter/über deinem Ziel“.
+5. Ein Tag in der Zukunft (**„Folgetag →“**): Vorschau mit Tagesziel und geplanter Einheit, kein Balken.
+6. **Kalender** → auf den Namen eines Tages tippen („· Dein Tag ›“) bzw. **Woche** → „Dein Tag“ unter einem Tag:
+   öffnet die Tagesauswertung dieses Tages.
+7. Training: Einheit von heute starten, **einen** Satz abhaken, speichern → „Dein Tag“ zeigt „◐ Teilweise gemacht ·
+   … %“ und je Übung „1/3 Sätze“. Alle Sätze nach Vorgabe → „✓ Ziel erreicht“; 2 von 3 → „◕ Größtenteils gemacht“.
+8. **Einstellungen → Kalorienzahlen anzeigen** aus → „Dein Tag“ zeigt **keinen Balken, keine Farbe, keine kcal**,
+   nur „Mahlzeiten: x von y abgehakt“ und das Training.
+9. Testkonto mit Gesundheits-Check „schwanger“ (Teil 7c): kein Balken, keine Zahl, Hinweis auf Ärztin, Arzt oder
+   Hebamme.
+10. Ein Tag der **Vorwoche**, für die nie ein Essensplan gespeichert war: keine Mahlzeitenliste, keine
+    „Gegessen“-Knöpfe, Text „Für diesen Tag ist kein Essensplan gespeichert …“.
+11. **Flugmodus an** → „Dein Tag“ neu laden → alles ist noch da (Gerätespeicher).
+
+**Bitte fachlich prüfen lassen (vor dem Livegang):** Farbgrenzen (A-G5: grün = Planband, beim Abnehmen erst ab max(Untergrenze; Ziel × 0,95) – Gründer-Entscheidung 15.10.2026, rot unten = unter dem
+Mindestbedarf, rot oben = über max(Obergrenze; Ziel × 1,2)) und „Ziel erreicht ab 90 %“ (A-G11) – beide stehen als
+Konstanten `INTAKE_ZONES` und `SESSION_ACHIEVEMENT` in `packages/core/src/constants.ts`.
 
 ## Teil 7e – Neue Rezepte per KI erzeugen (Phase 5, Etappe N8, Gemini offline)
 

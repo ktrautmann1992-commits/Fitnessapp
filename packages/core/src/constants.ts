@@ -2208,3 +2208,37 @@ export const CUSTOM_MEAL_LIMITS = {
 
 /** Portionen beim Eintragen eines eigenen Gerichts (Plan 7: 0,25–3). PRODUKTENTSCHEIDUNG. */
 export const CUSTOM_MEAL_PORTION_CHOICES = [0.25, 0.5, 0.75, 1, 1.25, 1.5, 2, 3] as const;
+/**
+ * Farbzonen des Kalorienbalkens in der Tagesauswertung (docs/PLAN-AUSWERTUNG.md 2.1, 2.2, A-G5, Etappe A2).
+ * Alle Grenzen eines Tages kommen aus `nutritionTargetsForWeek` (Untergrenze, Planband, Obergrenze, Ziel) – hier steht
+ * nur der Faktor für „deutlich darüber“: rot erst über R = max(Obergrenze; Ziel × `upperRedTargetFactor`).
+ * `scaleHeadroomFactor` ist reine Darstellung (Balken reicht bis R × Faktor bzw. bis zum Ist-Wert) und keine Grenze.
+ * Quelle: PRODUKTENTSCHEIDUNG – VOR LIVEGANG FACHLICH PRÜFEN (Ernährungsfachkraft, A-G5).
+ *
+ * `lossGreenFromTargetFactor` (Gründer-Entscheidung G1, 15.10.2026): Bei Energie-Richtung Defizit (Abnehmen, Tag mit
+ * negativer Zielanpassung `goalAdjustment < 0`) beginnt Grün erst „etwa ab dem Tagesziel“ = max(U; Z × 0,95; B_min) –
+ * 0,95 als Rundungs- und Alltagstoleranz. Zwischen U und dieser Grenze ist der Tag gelb („Etwas unter deinem
+ * Tagesziel“), unter U bleibt er rot. Halten und Aufbau unverändert (Grün = Planband).
+ * Quelle: GRÜNDER-ENTSCHEIDUNG 15.10.2026 – VOR LIVEGANG FACHLICH PRÜFEN.
+ */
+export const INTAKE_ZONES = {
+  upperRedTargetFactor: 1.2,
+  scaleHeadroomFactor: 1.1,
+  lossGreenFromTargetFactor: 0.95,
+} as const;
+
+/**
+ * „Trainingsziel erreicht“ (docs/PLAN-AUSWERTUNG.md 2.5, A-G11, Etappe A2): Erfüllungsgrad 0–100 % je Einheit.
+ * Stufen: ab `reachedMinPercent` „Ziel erreicht“, ab `mostlyMinPercent` „größtenteils“, darunter „teilweise“.
+ * Halteübung: Satz erfüllt ab `holdDurationFraction` der Vorgabe. Ausdauer: Hinweis „lockerer hilft der Erholung“,
+ * wenn die Anstrengung mehr als `effortHintAboveTarget` Punkte (Skala 0–10) über der Vorgabe liegt; Hinweis „länger als
+ * geplant“ über `longerThanPlannedFraction` der geplanten Minuten. Gewicht: eine Gewichtsstufe unter der Vorgabe zählt
+ * noch (Stufen wie LOAD_PROGRESSION bzw. eigene Gewichte). Quelle: PRODUKTENTSCHEIDUNG – VOR LIVEGANG FACHLICH PRÜFEN.
+ */
+export const SESSION_ACHIEVEMENT = {
+  reachedMinPercent: 90,
+  mostlyMinPercent: 60,
+  holdDurationFraction: 0.9,
+  effortHintAboveTarget: 2,
+  longerThanPlannedFraction: 1.1,
+} as const;

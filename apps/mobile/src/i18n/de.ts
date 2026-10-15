@@ -6,6 +6,7 @@
  * Mess-Anleitungen, Geräte- und Lebensmittelnamen), stehen in packages/core und werden dort gepflegt.
  */
 import { deCustomMeals } from './de-custom-meals';
+import { deDay } from './de-day';
 import { deFoodLog } from './de-food-log';
 import { deNutrition } from './de-nutrition';
 
@@ -1524,6 +1525,7 @@ export const de = {
   nutrition: deNutrition,
   foodLog: deFoodLog,
   customMeals: deCustomMeals,
+  day: deDay,
 } as const;
 
 /** Typ, den jede Übersetzung erfüllen muss (Texte als string, Funktionen mit gleicher Signatur). */
