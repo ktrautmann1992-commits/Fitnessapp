@@ -247,8 +247,8 @@ test('Export: Hinweis vor dem Herunterladen, Datei mit Tagebuch, Konto und Einwi
   expect(file.data.consents?.map((c) => c.consent_type).sort()).toEqual(['privacy', 'terms']);
   // 20 Datenbank-Tabellen + exercise_preferences (Testmodus, Etappe T2; in export_my_data ab T3) + meal_plans,
   // meal_plan_items (Etappe N5a), shopping_lists, shopping_list_items (Etappe N5b) und recipe_ratings, food_dislikes
-  // (Etappe N10; in export_my_data ab N7).
-  expect(Object.keys(file.data)).toHaveLength(27);
+  // (Etappe N10; in export_my_data ab N7) + food_log_entries, food_log_favorites (Etappe E1).
+  expect(Object.keys(file.data)).toHaveLength(29);
   expect(Object.keys(file.data)).toEqual(
     expect.arrayContaining([
       'exercise_preferences',
@@ -258,6 +258,8 @@ test('Export: Hinweis vor dem Herunterladen, Datei mit Tagebuch, Konto und Einwi
       'shopping_list_items',
       'recipe_ratings',
       'food_dislikes',
+      'food_log_entries',
+      'food_log_favorites',
     ]),
   );
   // Nichts vom Export im Gerätespeicher (außer dem ohnehin vorhandenen Testmodus-Speicher).

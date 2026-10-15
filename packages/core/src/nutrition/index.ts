@@ -1,6 +1,7 @@
 export * from './body-data';
 export * from './day-view';
 export * from './eligibility';
+export * from './food-log';
 export * from './energy';
 export * from './filter';
 export * from './fridge-search';

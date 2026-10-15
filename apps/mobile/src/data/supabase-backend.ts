@@ -1171,6 +1171,9 @@ export function createSupabaseBackend(options: SupabaseBackendOptions): Backend 
       shoppingLists: [],
       recipeRatings: (ratings.data ?? []) as RecipeRatingRow[],
       foodDislikes: (dislikes.data ?? []) as FoodDislikeRow[],
+      // Ernährungstagebuch (E1): Tabellen seit E1, in der App erst mit N7 Teil 2 (supportsNutrition = false).
+      foodLogEntries: [],
+      foodLogFavorites: [],
     };
   }
 
@@ -1590,6 +1593,18 @@ export function createSupabaseBackend(options: SupabaseBackendOptions): Backend 
     },
     saveCookDayStart: async () => {
       throw new BackendError('unknown', { sensitive: true });
+    },
+    // Ernährungstagebuch (Etappe E1): Tabellen und Funktionen (save_food_log_entries, delete_food_log_entry,
+    // food_log_favorites) gibt es in der Datenbank; die App schaltet sie mit N7 Teil 2 frei (supportsNutrition = false,
+    // dann mit eigener verschlüsselter Warteschlange). Bis dahin nie still ins Leere speichern.
+    saveFoodLogEntries: async () => {
+      throw new BackendError('unknown', { sensitive: true });
+    },
+    deleteFoodLogEntry: async () => {
+      throw new BackendError('unknown', { sensitive: true });
+    },
+    changeFoodLogFavorite: async () => {
+      throw new BackendError('unknown');
     },
     // Bewertung nach dem Essen und „mag ich nicht“ je Lebensmittel (Etappe N7, Tabellen recipe_ratings/food_dislikes,
     // RLS: nur eigene Zeilen). Gleiche Prüfung wie im Testmodus (rating-rows.ts); nur online (kein Gesundheitsdatum,

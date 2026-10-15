@@ -2,6 +2,9 @@ import {
   BARBELL_ID,
   contentIdSchema,
   exercisePreferenceSchema,
+  FOOD_LOG_LIMITS,
+  foodLogEntrySchema,
+  foodLogFavoriteSchema,
   RECIPE_RATING_RULES,
   recipeRatingSchema,
   nutritionSetupColumnsSchema,
@@ -16,6 +19,8 @@ import { toTrainingSlotRows } from './mapping';
 import type {
   ExercisePreferenceRow,
   FoodDislikeRow,
+  FoodLogEntryRow,
+  FoodLogFavoriteRow,
   RecipeRatingRow,
   GoalsRow,
   MealPlanRow,
@@ -216,6 +221,80 @@ function storedFoodDislikes(stored: UserRows): FoodDislikeRow[] {
     .slice(0, RECIPE_RATING_RULES.maxFoodDislikes);
 }
 
+/**
+ * Ernährungstagebuch (Etappe E1): vorher gab es keins; der Gerätespeicher ist nicht vertrauenswürdig – nur gültige
+ * Einträge (Zod, strikt: `foodLogEntrySchema` plus Server-Felder) des eigenen Kontos, je id einer.
+ */
+function storedFoodLogEntries(stored: UserRows): FoodLogEntryRow[] {
+  const list: unknown = (stored as { foodLogEntries?: unknown }).foodLogEntries;
+  if (!Array.isArray(list)) return [];
+  const owner = stored.profile?.user_id;
+  const seen = new Set<string>();
+  return list.flatMap((item: unknown): FoodLogEntryRow[] => {
+    if (typeof item !== 'object' || item === null) return [];
+    const {
+      user_id: userId,
+      revision,
+      last_write_id: lastWriteId,
+      created_at: createdAt,
+      updated_at: updatedAt,
+      ...rest
+    } = item as Record<string, unknown>;
+    const parsed = foodLogEntrySchema.safeParse(rest);
+    if (
+      !parsed.success ||
+      typeof userId !== 'string' ||
+      (owner !== undefined && userId !== owner) ||
+      typeof revision !== 'number' ||
+      !Number.isInteger(revision) ||
+      revision < 1 ||
+      typeof lastWriteId !== 'string' ||
+      typeof createdAt !== 'string' ||
+      typeof updatedAt !== 'string' ||
+      seen.has(parsed.data.id)
+    ) {
+      return [];
+    }
+    seen.add(parsed.data.id);
+    return [
+      {
+        ...parsed.data,
+        user_id: userId,
+        revision,
+        last_write_id: lastWriteId,
+        created_at: createdAt,
+        updated_at: updatedAt,
+      },
+    ];
+  });
+}
+
+/** Favoriten des Tagebuchs (Etappe E1): nur gültige des eigenen Kontos, je Schlüssel einer, höchstens 100. */
+function storedFoodLogFavorites(stored: UserRows): FoodLogFavoriteRow[] {
+  const list: unknown = (stored as { foodLogFavorites?: unknown }).foodLogFavorites;
+  if (!Array.isArray(list)) return [];
+  const owner = stored.profile?.user_id;
+  const seen = new Set<string>();
+  return list
+    .flatMap((item: unknown): FoodLogFavoriteRow[] => {
+      if (typeof item !== 'object' || item === null) return [];
+      const { user_id: userId, created_at: createdAt, ...rest } = item as Record<string, unknown>;
+      const parsed = foodLogFavoriteSchema.safeParse(rest);
+      if (
+        !parsed.success ||
+        typeof userId !== 'string' ||
+        (owner !== undefined && userId !== owner) ||
+        typeof createdAt !== 'string' ||
+        seen.has(parsed.data.fav_key)
+      ) {
+        return [];
+      }
+      seen.add(parsed.data.fav_key);
+      return [{ ...parsed.data, user_id: userId, created_at: createdAt }];
+    })
+    .slice(0, FOOD_LOG_LIMITS.maxFavorites);
+}
+
 /** goals-Felder des Gerätespeichers aus App-Versionen vor Etappe B2. */
 interface LegacyGoalsFields {
   sessions_per_week?: number | null;
@@ -253,6 +332,8 @@ export function upgradeStoredRows(stored: UserRows): UserRows {
     shoppingLists: storedShoppingLists(stored),
     recipeRatings: storedRecipeRatings(stored),
     foodDislikes: storedFoodDislikes(stored),
+    foodLogEntries: storedFoodLogEntries(stored),
+    foodLogFavorites: storedFoodLogFavorites(stored),
   };
   const goals = stored.goals as (GoalsRow & LegacyGoalsFields) | null;
   if (

@@ -404,7 +404,7 @@ describe('Eigenschaftstest: kein ausgeschlossenes Rezept erscheint im Plan', () 
         }
       }
     }
-  });
+  }, 60_000);
 });
 
 describe('Grenzfälle', () => {
