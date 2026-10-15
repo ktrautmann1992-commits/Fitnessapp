@@ -253,14 +253,16 @@ weiter für die Kraft-Progression (Gründer-Frage G1). Regeln in `packages/core/
 **Tagesauswertung „Dein Tag“ (`docs/PLAN-AUSWERTUNG.md` Abschnitt 6, Etappe A2, gratis, ohne KI):** Route
 `app/tag/[date].tsx`, erreichbar aus „Heute“, Kalender (Tippen auf den Tag) und Woche, Blättern mit ← / →. **Essen:**
 Kalorienbalken mit Ist und Tagesziel („1.640 von 1.800 kcal“), Zielmarke und hell hinterlegten Zonen; Farbe nie allein
-(immer Text und Zeichen). Zonen (2.1, A-G5): rot unter der Untergrenze, gelb bis zum Planband, grün im Planband, gelb
-bis max(Obergrenze; Ziel × 1,2), darüber rot – alle Grenzen kommen unverändert aus `nutritionTargetsForWeek`, nur der
+(immer Text und Zeichen). Zonen (2.1, A-G5): rot unter der Untergrenze, gelb bis zum Planband, grün im Planband (beim
+Abnehmen erst ab max(Untergrenze; Ziel × 0,95), Gründer-Entscheidung 15.10.2026), gelb bis max(Obergrenze; Ziel × 1,2),
+darüber rot – alle Grenzen kommen unverändert aus `nutritionTargetsForWeek`, nur der
 Faktor 1,2 steht als `INTAKE_ZONES` in `constants.ts` (PRODUKTENTSCHEIDUNG, vor Livegang fachlich prüfen). **Heute**
 unter dem Planband neutral „Noch offen“ (A-G6), Tage ohne Eintrag grau (nie 0 kcal, nie rot), künftige Tage nur
 Tagesziel. Rot unten an vergangenen Tagen mit „Laut deinen Einträgen. Fehlt etwas? Du kannst es nachtragen.“; Texte
 ruhig und essstörungssensibel (2.4). **„Kalorienzahlen aus“ und Schwangerschaft/Stillzeit:** kein Balken, keine Farbe,
 keine kcal – nur „Mahlzeiten: 3 von 4 abgehakt“ (A-G8; der Typ von `intakeZone` enthält dann keine Zahl). Darunter die
-Plan-Mahlzeiten mit „Gegessen“. **Training:** Einheiten des Tages mit Status und Erfüllungsgrad (`sessionAchievement`,
+Plan-Mahlzeiten mit „Gegessen“ – nur aus einem gespeicherten Essensplan (vergangene Wochen ohne gespeicherten
+Plan: keine Mahlzeitenliste); künftige Tage nur Tagesziel und Plan. **Training:** Einheiten des Tages mit Status und Erfüllungsgrad (`sessionAchievement`,
 2.5, A-G11): Kraft je Satz abgehakt, Wdh. ≥ `reps_min`, Gewicht ≥ Vorgabe − eine Gewichtsstufe (Halteübung ≥ 90 % der
 Dauer), Ausdauer Minuten / geplante Minuten; ≥ 90 % „Ziel erreicht“, 60–89 % „Größtenteils gemacht“, 1–59 %
 „Teilweise gemacht“; freie Einheiten „Gemacht“ ohne Prozent; Erholungs-/Einstiegswoche „leichter ist hier richtig“.

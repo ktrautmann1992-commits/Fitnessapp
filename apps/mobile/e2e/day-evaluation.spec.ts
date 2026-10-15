@@ -84,6 +84,20 @@ test('Heute neutral bis zum Zielbereich, gestern rot mit „fehlt etwas?“, obe
   await expect(page.getByTestId('day-bar')).toHaveCount(0);
   await expect(page.getByTestId('day-intake-text')).toContainText('Nichts eingetragen.');
   await expect(page.getByTestId('day-training-empty')).toHaveText('Keine Einheit an diesem Tag.');
+  // Wächter A2 S1: Sonntag liegt in der Vorwoche, für die nie ein Essensplan gespeichert wurde – keine erfundene
+  // Mahlzeitenliste, keine „Gegessen“-Knöpfe, keine Abhak-Zahl.
+  await expect(page.getByTestId('day-no-meal-plan')).toHaveText(
+    /^Für diesen Tag ist kein Essensplan gespeichert/,
+  );
+  await expect(page.getByTestId('day-meals')).toHaveCount(0);
+  await expect(page.getByTestId('day-meal-list')).toHaveCount(0);
+  await expect(page.getByTestId('day-food').getByTestId(/^eaten-/)).toHaveCount(0);
+  // Gleiches in „Ernährung“ (E1) für diesen Tag: Plan sichtbar, aber ohne „Gegessen“.
+  await page.goto(`/ernaehrung?tag=${SUNDAY}`);
+  await expect(page.getByTestId('nutrition-day')).toBeVisible();
+  await expect(page.getByTestId('nutrition-plan-not-stored')).toBeVisible();
+  await expect(page.getByTestId(/^eaten-/)).toHaveCount(0);
+  await openDay(page, SUNDAY);
   await page.getByTestId('day-next').click();
   await expect(page.getByRole('heading', { name: 'Heute, Montag, 12.10.' })).toBeVisible();
 
@@ -100,7 +114,7 @@ test('Heute neutral bis zum Zielbereich, gestern rot mit „fehlt etwas?“, obe
   await quickEntry(page, SUNDAY, 1500);
   await openDay(page, SUNDAY);
   await expect(page.getByTestId('day-zone')).toHaveText(
-    /^(↘ Etwas unter deinem Ziel|✓ Im Zielbereich|↗ Etwas über deinem Ziel)$/,
+    /^(↘ Etwas unter deinem Tagesziel|✓ Im Zielbereich|↗ Etwas über deinem Ziel)$/,
   );
   await quickEntry(page, SUNDAY, 3000);
   await openDay(page, SUNDAY);
@@ -115,6 +129,11 @@ test('Heute neutral bis zum Zielbereich, gestern rot mit „fehlt etwas?“, obe
   await expect(page.getByTestId('day-bar')).toHaveCount(0);
   await expect(page.getByTestId('day-intake-text')).toContainText('Tagesziel:');
   await expect(page.getByTestId('day-training-item')).toContainText('○ Geplant');
+  // Wächter A2 H5: nur Tagesziel und Plan – keine Abhak-Zahl, keine „Gegessen“-Knöpfe.
+  await expect(page.getByTestId('day-meals')).toHaveCount(0);
+  await expect(page.getByTestId('day-planned-meals')).toHaveText('Geplante Mahlzeiten:');
+  await expect(page.getByTestId('day-meal-list')).toBeVisible();
+  await expect(page.getByTestId('day-food').getByTestId(/^eaten-/)).toHaveCount(0);
 
   // Einstieg aus dem Kalender (Tippen auf den Tag) und aus der Woche.
   await page.goto('/kalender');
@@ -160,7 +179,18 @@ test('„Kalorienzahlen aus“: kein Balken, keine Farben, nur „x von y Mahlze
     await expect(page.getByTestId('day-bar')).toHaveCount(0);
     await expect(page.getByTestId('day-zone')).toHaveCount(0);
     await expect(page.getByTestId('day-check-entries')).toHaveCount(0);
-    await expect(page.getByTestId('day-meals')).toHaveText(/^Mahlzeiten: \d von \d abgehakt$/);
+    if (date === MONDAY) {
+      await expect(page.getByTestId('day-meals')).toHaveText(/^Mahlzeiten: \d von \d abgehakt$/);
+    }
+    // Keine kcal-artigen Zahlen ohne Einheit im Essensteil (Wächter A2 H9): außer der Mahlzeiten-Anzahl kein
+    // „x von y“ bzw. „x/y“ und nirgends eine Zahl ab 100.
+    const food = await page.getByTestId('day-food').innerText();
+    const meals =
+      (await page.getByTestId('day-meals').count()) > 0
+        ? await page.getByTestId('day-meals').innerText()
+        : '';
+    expect(food.replace(meals, '')).not.toMatch(/\d[\d.]*\s*(von|\/)\s*\d/);
+    expect(food).not.toMatch(/\d{3}|\d\.\d{3}/);
     // Nirgends „kcal“ – auch nicht in data-testid, aria-label oder anderen Attributen.
     expect(await page.content()).not.toMatch(/kcal|Kilokalorien/i);
   }
@@ -215,4 +245,23 @@ test('Training mit Erfüllungsgrad, ungültiges Datum, ohne Einwilligung', async
   await expect(page.getByTestId('day-consent')).toBeVisible();
   await expect(page.getByTestId('day-bar')).toHaveCount(0);
   await expect(page.getByTestId('day-training-item')).toBeVisible();
+});
+
+test('Außerhalb des Nachtrage-Fensters: nur „Laut deinen Einträgen.“ (Wächter A2 H3)', async ({
+  page,
+}) => {
+  test.setTimeout(180_000);
+  await start(page);
+  // Genau 14 Tage zurück (28.09.) geht das Eintragen noch.
+  await quickEntry(page, '2026-09-28', 300);
+  await openDay(page, '2026-09-28');
+  await expect(page.getByTestId('day-check-entries')).toHaveText(
+    'Laut deinen Einträgen. Fehlt etwas? Du kannst es nachtragen.',
+  );
+  // Zwei Tage später liegt der Tag außerhalb des Fensters – kein Versprechen „nachtragen“.
+  await page.clock.setFixedTime(new Date('2026-10-14T09:00:00+02:00'));
+  await openDay(page, '2026-09-28');
+  await expect(page.getByTestId('day-zone')).toHaveText('↓ Unter deinem Mindestbedarf');
+  await expect(page.getByTestId('day-check-entries')).toHaveCount(0);
+  await expect(page.getByTestId('day-entries-basis')).toHaveText('Laut deinen Einträgen.');
 });

@@ -3,6 +3,8 @@ import {
   dateParamSchema,
   dayEvaluation,
   type DayEvaluation,
+  type DayEvaluationInput,
+  evaluationMealPlanUsable,
   mealsInDayOrder,
   type PlannedMealDay,
 } from '@fitnessapp/core';
@@ -148,11 +150,22 @@ export default function DayScreen() {
   const week = view.week;
   const ready = week?.kind === 'ready' ? week : null;
   const targets = ready?.targets.days.find((d) => d.date === date) ?? null;
-  const planDay: PlannedMealDay | null = ready?.plan?.days.find((d) => d.date === date) ?? null;
+  const anyPlanDay = ready?.plan?.days.find((d) => d.date === date) ?? null;
+  // Nur ein gespeicherter Essensplan (bzw. laufende Woche ab heute) – nie ein erst jetzt erzeugter Plan für einen
+  // vergangenen Tag (Wächter A2 S1, Regel in core).
+  const planUsable =
+    anyPlanDay !== null &&
+    evaluationMealPlanUsable({
+      planStored: ready?.planState?.action === 'stored',
+      weekEditable: ready?.planState?.editable === true,
+      date,
+      today,
+    });
+  const planDay: PlannedMealDay | null = planUsable ? anyPlanDay : null;
   const consent = healthConsentStatus(rows, app.versions);
   const foodAvailable = foodLog.supported && foodLog.consentValid;
   const libraryReady = library.kind === 'ready' || library.kind === 'missing';
-  const evaluation: DayEvaluation = dayEvaluation({
+  const evaluation = safeDayEvaluation({
     date,
     today,
     showNumbers: view.showNumbers,
@@ -172,6 +185,17 @@ export default function DayScreen() {
       library.kind === 'ready' ? library.library : null,
     ),
   });
+  if (evaluation === null) {
+    return shell(
+      <>
+        {header}
+        {pager}
+        <Notice tone="danger" testID="day-error">
+          {t.day.computeFailed}
+        </Notice>
+      </>,
+    );
+  }
   const hasActivePlan = rows.plans.some((p) => p.status === 'active');
   const nutritionLoading =
     foodLog.supported && (view.library.kind === 'idle' || view.library.kind === 'loading');
@@ -197,6 +221,7 @@ export default function DayScreen() {
             evaluation={evaluation}
             week={week}
             planDay={planDay}
+            planNotStored={anyPlanDay !== null && planDay === null}
             consentValid={consent === 'valid'}
             foodLogView={foodLog}
             foodLogActions={foodLogActions}
@@ -253,6 +278,7 @@ function FoodSection({
   evaluation,
   week,
   planDay,
+  planNotStored,
   consentValid,
   foodLogView,
   foodLogActions,
@@ -261,6 +287,8 @@ function FoodSection({
   evaluation: DayEvaluation;
   week: ReturnType<typeof useNutritionWeek>['week'];
   planDay: PlannedMealDay | null;
+  /** Für den Tag gibt es nur einen erst jetzt erzeugten, nie gespeicherten Plan (S1). */
+  planNotStored: boolean;
   consentValid: boolean;
   foodLogView: ReturnType<typeof useFoodLogDay>;
   foodLogActions: ReturnType<typeof useFoodLogActions>;
@@ -311,6 +339,8 @@ function FoodSection({
           <IntakeBarCard view={intakeBarView(intake)} />
           {notices.includes('check_entries') ? (
             <Body testID="day-check-entries">{t.day.checkEntries}</Body>
+          ) : notices.includes('entries_basis') ? (
+            <Body testID="day-entries-basis">{t.day.entriesBasis}</Body>
           ) : null}
           {food.entriesWithoutValue > 0 ? (
             <Body muted>{t.foodLog.withoutValue(food.entriesWithoutValue)}</Body>
@@ -333,13 +363,18 @@ function FoodSection({
       ) : null}
       {food.meals !== null ? (
         <Body testID="day-meals">{t.day.meals(food.meals.eaten, food.meals.planned)}</Body>
+      ) : planDay !== null ? (
+        // Künftiger Tag: nur der Plan, keine Abhak-Zahl (2.2, H5).
+        <Body muted testID="day-planned-meals">
+          {t.day.plannedMeals}
+        </Body>
       ) : (
         <Body muted testID="day-no-meal-plan">
-          {t.day.noMealPlan}
+          {planNotStored ? t.day.noStoredMealPlan : t.day.noMealPlan}
         </Body>
       )}
-      {planDay !== null && food.available ? (
-        <View style={styles.meals}>
+      {planDay !== null ? (
+        <View style={styles.meals} testID="day-meal-list">
           {mealsInDayOrder(planDay).map((meal) => (
             <View key={meal.slot} style={styles.meal}>
               <Body>{meal.titleDe}</Body>
@@ -366,3 +401,15 @@ const styles = StyleSheet.create({
   meals: { gap: spacing.sm },
   meal: { gap: spacing.xs },
 });
+
+/**
+ * `dayEvaluation` mit Fehlerzustand statt Router-Fehlerseite (Wächter A2 H7). Ein Datenfehler (Zod/RangeError) wird
+ * NICHT geloggt – die Eingaben enthalten Gesundheitsdaten.
+ */
+function safeDayEvaluation(input: DayEvaluationInput): DayEvaluation | null {
+  try {
+    return dayEvaluation(input);
+  } catch {
+    return null;
+  }
+}

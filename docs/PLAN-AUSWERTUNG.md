@@ -93,29 +93,31 @@ Die Trainings-Etappen (A1) und die Ernährungs-Etappen (E1) hängen nicht vonein
 
 Bezeichnungen je Tag: **Z** = Tagesziel, **U** = Untergrenze (`floorKcal`), **O** = Obergrenze (`ceilingKcal`), **B** = Planband `[B_min; B_max]`. Alle Werte kommen aus `nutritionTargetsForWeek()` – keine eigene Rechnung.
 
-| Zone                | Bedingung (gegessen = G) | Farbe | Text (Entwurf)               |
-| ------------------- | ------------------------ | ----- | ---------------------------- |
-| unter Mindestbedarf | G < U                    | rot   | „Unter deinem Mindestbedarf“ |
-| ausreichend         | U ≤ G < B_min            | gelb  | „Etwas unter deinem Ziel“    |
-| im Zielbereich      | B_min ≤ G ≤ B_max        | grün  | „Im Zielbereich“             |
-| etwas darüber       | B_max < G ≤ R            | gelb  | „Etwas über deinem Ziel“     |
-| deutlich darüber    | G > R                    | rot   | „Deutlich über deinem Ziel“  |
+| Zone                | Bedingung (gegessen = G) | Farbe | Text (Entwurf)                 |
+| ------------------- | ------------------------ | ----- | ------------------------------ |
+| unter Mindestbedarf | G < U                    | rot   | „Unter deinem Mindestbedarf“   |
+| ausreichend         | U ≤ G < G0               | gelb  | „Etwas unter deinem Tagesziel“ |
+| im Zielbereich      | G0 ≤ G ≤ B_max           | grün  | „Im Zielbereich“               |
+| etwas darüber       | B_max < G ≤ R            | gelb  | „Etwas über deinem Ziel“       |
+| deutlich darüber    | G > R                    | rot   | „Deutlich über deinem Ziel“    |
 
-mit **R = max(O; Z × 1,20)**.
+mit **R = max(O; Z × 1,20)** und **G0 = Beginn von Grün**: B_min; **beim Abnehmen** (Tag mit Defizit, `goalAdjustment < 0`) **G0 = max(U; Z × 0,95; B_min)** – Gründer-Entscheidung G1 vom 15.10.2026: „Grün in einem gesunden Bereich, also erst etwa ab dem Tagesziel“ (0,95 = Rundungs- und Alltagstoleranz, Konstante `INTAKE_ZONES.lossGreenFromTargetFactor`, VOR LIVEGANG FACHLICH PRÜFEN). Halten und Aufbau unverändert.
 
 **Begründung:**
 
-- **Grün = Planband (Ziel ± 10 %, aber nie unter U).** Das Band ist schon die fachlich geprüfte Toleranz des Essensplans. Ein Tag nach Plan ist also grün.
+- **Grün = Planband (Ziel ± 10 %, aber nie unter U).** Das Band ist schon die fachlich geprüfte Toleranz des Essensplans. Ein Tag nach Plan ist also grün. **Ausnahme Abnehmen (G1, 15.10.2026):** Grün erst ab max(U; Z × 0,95) – ein Tag knapp über der Untergrenze ist dort gelb „Etwas unter deinem Tagesziel“ (kein Lob für weniger, keine Aufforderung, mehr zu essen als nötig).
 - **Unter U ist immer rot.** Die Untergrenze ist die Schutzgrenze (Grundumsatz, 25 %-Deckel, 1 %/Woche, Energieverfügbarkeit). Ein Tag darunter darf nie „ausreichend“ heißen. Liegt U schon bei 90 % von Z, gibt es keine untere gelbe Zone.
 - **Gelb unten = sicher, aber unter Ziel.** Das ist „ausreichend“ im Sinne eurer Vorgabe.
 - **Rot oben erst ab der Obergrenze O** (bei Abnehmen etwa Tagesbedarf + 10 %). Ein Tag auf Erhaltungsniveau ist beim Abnehmen damit **gelb, nicht rot**. Das schützt vor Schuldgefühlen und passt zur Planlogik: Rot heißt „mehr, als wir je planen würden“.
 - **Z × 1,20** sorgt bei Muskelaufbau (O liegt dort nah am Ziel) für eine sichtbare gelbe Zone.
 
-**Beispiel Abnehmen (Ruhetag):** Z = 1.800, U = 1.725, O = 2.530 → rot < 1.725, gelb 1.725–1.799, grün 1.800–1.980 (hier ist B_min = Z, weil U über 90 % liegt), gelb 1.981–2.530, rot > 2.530.
+**Beispiel Abnehmen (Ruhetag, neu gerechnet 15.10.2026):** Z = 1.800, U = 1.725, B = [1.725; 1.980], O = 2.530 → G0 = max(1.725; 1.710; 1.725) = 1.725 → rot < 1.725, grün 1.725–1.980 (keine gelbe Zone unten, weil U schon über 95 % von Z liegt), gelb 1.981–2.530, rot > 2.530. (Der frühere Entwurf „gelb 1.725–1.799, B_min = Z“ war falsch gerechnet: B_min = max(U; 0,9 × Z) = 1.725.)
+
+**Beispiel Abnehmen mit größerem Abstand:** Z = 2.000, U = 1.700, B = [1.800; 2.200], O = 2.640 → G0 = max(1.700; 1.900; 1.800) = 1.900 → rot < 1.700, gelb 1.700–1.899, grün 1.900–2.200, gelb bis 2.640, rot darüber.
 
 **Beispiel Erhalt:** Z = 2.400, U = 1.800 → rot < 1.800, gelb 1.800–2.159, grün 2.160–2.640, gelb bis 2.880, rot darüber.
 
-Die Grenzen landen als Konstante `INTAKE_ZONES` (Faktor 1,20, Quelle/Markierung „PRODUKTENTSCHEIDUNG – VOR LIVEGANG FACHLICH PRÜFEN“) in `packages/core/src/constants.ts`.
+Die Grenzen landen als Konstante `INTAKE_ZONES` (Faktor 1,20, beim Abnehmen 0,95 für den Beginn von Grün, Quelle/Markierung „PRODUKTENTSCHEIDUNG – VOR LIVEGANG FACHLICH PRÜFEN“) in `packages/core/src/constants.ts`.
 
 ### 2.2 Heute anders als vergangene Tage
 
@@ -494,7 +496,7 @@ Bearbeiten und Löschen jedes Eintrags. Nachtragen bis 14 Tage zurück (`FOOD_LO
 1. **Beispiel „Abnehmen“ in 2.1 richtiggestellt:** B_min = max(U; 0,9 × Z) = max(1.725; 1.620) = **1.725** (nicht Z). Grün reicht dort also von 1.725 bis 1.980, eine gelbe Zone unten gibt es nicht. Der Test nutzt die richtiggestellten Werte.
 2. **U = O und Z knapp über O** (gerichtete Rundung bei greifendem Überschussdeckel, vom Eigenschaftstest gefunden): kein Datenfehler; Z liegt im Planband und ist grün. R = max(O; Z × 1,2; B_max) – B_max nur, weil das Planband laut Engine bis 20 kcal über O reichen darf (Mindestbreite). Sonst gilt: U ≤ B_min ≤ B_max und U ≤ Z, alles andere bricht mit Fehler ab (nie still raten).
 3. **Einträge ohne kcal** zählen bei „Eingetragen: n Einträge“, der Balken rechnet nur mit Werten. Hat ein Tag **nur** Einträge ohne Wert, gibt es keinen Balken („Deine Einträge haben keine Kalorienangabe – dafür gibt es keinen Balken.“) – nie 0 kcal und nie rot.
-4. **Heute** ist unter B_min immer neutral „Noch offen“ – auch unter der Untergrenze (der Tag läuft noch). Ab B_min wie vergangene Tage.
+4. **Heute** ist unter dem Beginn von Grün (B_min bzw. beim Abnehmen G0) immer neutral „Noch offen“ – auch unter der Untergrenze (der Tag läuft noch). Ab dort wie vergangene Tage.
 5. **Schwangerschaft/Stillzeit doppelt abgesichert:** `dayEvaluation` setzt die Zahlen selbst aus, sobald der Tag `pregnancy_no_targets` trägt – auch wenn die App „Zahlen an“ übergäbe (Gegenprobe unten).
 6. **„Größtenteils gemacht“ statt „Größtenteils geschafft“:** 2.4 verbietet „geschafft“; die Stufen heißen deshalb „Ziel erreicht“, „Größtenteils gemacht“, „Teilweise gemacht“. Eingetragen mit 0 % (z. B. alles ausgelassen) = „Eingetragen“ (neutral), ohne Vorgabe (freie Einheit, Übung ohne Satzvorgabe) = „Gemacht“ ohne Prozent. Zeichen: ✓ ◕ ◐ ○.
 7. **Rechnung 2.5:** Prozent abgerundet (89,9 % ist nicht „erreicht“), gekappt auf 100. Mittel nur über Übungen **mit** Vorgabe; ausgelassene Übung mit Vorgabe = 0, auch wenn Sätze eingetragen sind. Wdh.-Schwelle `reps_min`, ohne `reps_min` `target_reps`. Gewicht nur bei Gewichtsübungen mit Vorgabe: Langhantel/Maschine Vorgabe − 2,5 kg, freie Gewichte nächstkleinere eigene Stufe (gibt es keine, zählt die Vorgabe), ohne eigene Stufen − 2 kg (`LOAD_PROGRESSION`). Ist die Übung unbekannt bzw. die Bibliothek nicht geladen, zählt nur die Vorgabe selbst (strengere Richtung). Eigene Stufen kommen aus den Geräten des Plans am Ort der Einheit (`profilesFor`, `sessionLocationInfo`, `weightStepsFor`).
@@ -507,6 +509,22 @@ Bearbeiten und Löschen jedes Eintrags. Nachtragen bis 14 Tage zurück (`FOOD_LO
 14. **Supabase-Modus:** Der Essen-Teil zeigt bis N7 Teil 2 den bestehenden Hinweis („kommt bald“), der Trainingsteil funktioniert.
 
 **Gegenproben (Regel absichtlich gebrochen → rot → zurückgesetzt):** Core: heute nicht neutral (3 Tests rot), unter U gelb (11), `hidden` mit Zahl (4), Schutzgrenzen-Konstante importiert (Strukturtest d, 1), eigener Faktor 1,15 statt `INTAKE_ZONES` (6), ohne Einträge als 0 kcal gewertet (4), Schwangerschaft zeigt Zahlen (1), „erreicht“ ab 85 % (3), ohne Gewichtsstufen-Toleranz (2), ausgelassene Übung zählt (2), nicht abgerundet/gekappt (12). App: Bedienhilfe ohne Zone (1), „Größtenteils geschafft!“ (Sprachprüfung, 1), Bibliothek ignoriert (2), Ausdauer ohne geplante Minuten (2). Playwright: Bildschirm übergibt immer „Zahlen an“ → Test „Kalorienzahlen aus“ rot; der Schwangerschafts-Test bleibt dabei grün, weil `dayEvaluation` selbst absichert (Präzisierung 5).
+
+**Nach der Wächter-Prüfung (15.10.2026, `waechter-a2.md`, kein Blocker) umgesetzt:**
+
+- **S1 – nur gespeicherter Essensplan:** `evaluationMealPlanUsable()` (core): Mahlzeitenliste, „x von y abgehakt“, „Gegessen“ und `plan_below_floor` nur aus einem **gespeicherten** Plan bzw. in der laufenden/nächsten Woche ab heute. Sonst „Für diesen Tag ist kein Essensplan gespeichert – deshalb gibt es hier keine Mahlzeiten zum Abhaken. Eintragen geht trotzdem.“ Gleiches in „Ernährung“ (`/ernaehrung?tag=`, E1): Der Plan bleibt sichtbar, „Gegessen“ fehlt dort mit Hinweis.
+- **H3:** „Fehlt etwas? Du kannst es nachtragen.“ nur im Nachtrage-Fenster (`foodLogDateStatus`, E1); danach nur „Laut deinen Einträgen.“ (`entries_basis`).
+- **H4:** Geplante Ausdauer ohne eingetragene Dauer = „• Eingetragen“ (Stufe `logged`); „Gemacht“ ohne Vorgabe = „•“. Nur „Ziel erreicht“ trägt ✓.
+- **H5:** Künftige Tage: nur Tagesziel und „Geplante Mahlzeiten:“ ohne Abhak-Zahl und ohne „Gegessen“.
+- **H7:** Wirft `dayEvaluation` (Datenfehler), zeigt die Seite „Dein Tag lässt sich gerade nicht auswerten …“ statt der Router-Fehlerseite; nichts wird geloggt.
+- **H9:** Eigenschaft (b) auch für heute („offen“ links vor allen Zonen) und künftig (nie ein Balken); `achievement.test.ts` rechnet 3.000 Kraft- und 2.000 Ausdauer-Einheiten gegen ein unabhängiges Orakel (Zahlen aus Plan 2.5); Playwright „Zahlen aus“ prüft zusätzlich, dass im Essensteil außer der Mahlzeiten-Anzahl kein „x von y“/„x/y“ und keine Zahl ab 100 steht.
+- **Screenshots** hell/dunkel für „Dein Tag“ in `e2e/screenshots.spec.ts` (`dein-tag`, `dein-tag-offen`, `dein-tag-balken`, `dein-tag-training`).
+- **Gegenproben:** S1 Plan immer verwenden (core 1, App 2 rot), H3 immer „nachtragen“ (1), H4 ohne Dauer = „gemacht“ (core 1, App 1) bzw. Symbol ✓ (App 1), H5 Abhak-Zahl auch künftig (1), G1 ohne Abnehm-Regel (4) bzw. eigener Faktor 0,9 (5, u. a. Strukturtest d).
+
+**Entschieden (Gründer, 15.10.2026):**
+
+- **Wächter-G1 – Grün beim Abnehmen:** Grün erst etwa ab dem Tagesziel: G0 = max(U; Z × 0,95; B_min) bei Tagen mit Defizit (`goalAdjustment < 0`), Konstante `INTAKE_ZONES.lossGreenFromTargetFactor = 0,95` (VOR LIVEGANG FACHLICH PRÜFEN). Zwischen U und G0 gelb „Etwas unter deinem Tagesziel“, unter U rot; heute bis G0 neutral „Noch offen“. Halten/Aufbau unverändert. Tests: Grenzen ±1 kcal, Eigenschaft „bei Defizit nie Grün unter max(U; 0,95 × Z), Z immer grün“ (400 Engine-Tage), Orakel in den Engine-Grenzfällen, Strukturtest (d) unverändert (Faktor nur aus `INTAKE_ZONES`).
+- **Wächter-G2 – vergangene Wochen ohne gespeicherten Plan:** wie empfohlen keine Mahlzeitenliste (S1).
 
 **Gründer-Fragen (sichere Voreinstellung gilt, bis ihr anders entscheidet):**
 
@@ -521,7 +539,6 @@ Bearbeiten und Löschen jedes Eintrags. Nachtragen bis 14 Tage zurück (`FOOD_LO
 - Fachliche Prüfung `INTAKE_ZONES` (A-G5) und `SESSION_ACHIEVEMENT` (A-G11) durch Ernährungs- bzw. Trainingsfachkraft.
 - Essen im Supabase-Modus erst mit N7 Teil 2; Trainingsteil im Supabase-Modus nicht live getestet (Teil 8 der Handy-Anleitung).
 - Nativ (APK/TestFlight) nicht geprüft – Balken, Tippen auf den Tagesnamen im Kalender, TalkBack/VoiceOver-Ansage des Balkens mit dem Workflow `eas-build` am Gerät prüfen.
-- Screenshots hell/dunkel (Definition of Done 6) für „Dein Tag“ noch nicht in `e2e/screenshots.spec.ts` aufgenommen.
 - Wochenauswertung, Muster-Hinweis (≥ 3 Tage unter der Untergrenze) und „Tage ohne Eintrag zählen nicht“ kommen mit A3 (`weekEvaluation` baut auf `dayEvaluation` auf).
 
 ---

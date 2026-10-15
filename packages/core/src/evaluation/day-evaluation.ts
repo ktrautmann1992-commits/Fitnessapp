@@ -7,7 +7,7 @@ import {
   type SessionAchievementInput,
 } from '../log/achievement';
 import type { DayItem } from '../log/summary';
-import { dayIntake, type FoodLogEntry } from '../nutrition/food-log';
+import { dayIntake, type FoodLogEntry, foodLogDateStatus } from '../nutrition/food-log';
 import type { NutritionNoticeCode } from '../nutrition/notices';
 import type { NutritionDayTargets } from '../nutrition/targets';
 import { intakeZone, type IntakeZoneResult } from './intake-zone';
@@ -34,10 +34,30 @@ export function evaluationDayTiming(date: string, today: string): EvaluationDayT
 export type DayEvaluationNotice =
   /** Vergangener Tag unter der Untergrenze: „Laut deinen Einträgen. Fehlt etwas? Du kannst es nachtragen.“ (2.2) */
   | 'check_entries'
+  /**
+   * Wie `check_entries`, aber außerhalb des Nachtrage-Fensters (E1, `foodLogDateStatus`): nur „Laut deinen Einträgen.“ –
+   * nie ein Versprechen, das die App nicht halten kann (Wächter A2 H3).
+   */
+  | 'entries_basis'
   /** Der Essensplan dieses Tages erreicht die Untergrenze nicht (bestehender Hinweis `day_below_floor`, 2.3). */
   | 'plan_below_floor'
   /** „Trainingstag – dein Ziel ist heute höher.“ (2.4) – nur mit Zahlen. */
   | 'training_day';
+
+/**
+ * Darf der Essensplan eines Tages in die Auswertung („x von y Mahlzeiten“, „Gegessen“, `below_floor`)? Nur ein
+ * GESPEICHERTER Plan – oder in der laufenden/nächsten Woche (wird gleich gespeichert) ab heute. Sonst wäre es ein erst
+ * jetzt erzeugter Plan für einen Tag, an dem es ihn nie gab (Wächter A2 S1, G2).
+ */
+export function evaluationMealPlanUsable(input: {
+  readonly planStored: boolean;
+  readonly weekEditable: boolean;
+  readonly date: string;
+  readonly today: string;
+}): boolean {
+  if (input.planStored) return true;
+  return input.weekEditable && evaluationDayTiming(input.date, input.today) !== 'past';
+}
 
 /** Hinweis-Codes der Engine, die die Tagesauswertung zeigt (Schwangerschaft, Einladung zu Körperdaten/Einwilligung). */
 const TARGET_NOTICE_CODES: readonly NutritionNoticeCode[] = [
@@ -93,7 +113,7 @@ export interface DayEvaluation {
     readonly entryCount: number;
     /** Einträge ohne kcal-Wert – nur mit Zahlen relevant („Ein Eintrag ohne Kalorienangabe“). */
     readonly entriesWithoutValue: number;
-    /** „3 von 4 Mahlzeiten abgehakt“; null = kein Essensplan. */
+    /** „3 von 4 Mahlzeiten abgehakt“; null = kein (verwendbarer) Essensplan oder künftiger Tag. */
     readonly meals: { readonly planned: number; readonly eaten: number } | null;
     readonly targetNotices: readonly NutritionNoticeCode[];
   };
@@ -132,7 +152,8 @@ export function dayEvaluation(input: DayEvaluationInput): DayEvaluation {
         });
 
   let meals: DayEvaluation['food']['meals'] = null;
-  if (input.mealPlan !== null) {
+  // Künftige Tage: nur Tagesziel und Plan, keine Abhak-Zahl (2.2, Wächter A2 H5).
+  if (input.mealPlan !== null && timing !== 'future') {
     const slots = new Set(mealSlotsSchema.parse(input.mealPlan.slots));
     const eatenSlots = new Set(
       entries.filter((e) => e.source === 'plan_item' && slots.has(e.slot)).map((e) => e.slot),
@@ -147,7 +168,9 @@ export function dayEvaluation(input: DayEvaluationInput): DayEvaluation {
 
   const notices: DayEvaluationNotice[] = [];
   if (intake.kind === 'bar' && timing === 'past' && intake.zone === 'below_floor') {
-    notices.push('check_entries');
+    notices.push(
+      foodLogDateStatus(input.date, input.today) === 'ok' ? 'check_entries' : 'entries_basis',
+    );
   }
   if (showNumbers && input.mealPlan?.belowFloor === true && targets?.targetKcal != null) {
     notices.push('plan_below_floor');

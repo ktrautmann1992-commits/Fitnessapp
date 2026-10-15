@@ -450,7 +450,8 @@ Die Tagesauswertung braucht keine Einstellung und keine Datenbank-Änderung. Das
    **„Dein Tag – Essen und Training“** tippen. Ohne Einträge steht „Nichts eingetragen.“ und das Tagesziel – kein
    Balken, nie „0 kcal“.
 2. Bei der ersten Mahlzeit **„Gegessen“** → der Balken füllt sich **neutral** mit „○ Noch offen“ (heute nie rot). Alle
-   Mahlzeiten „Gegessen“ → **„✓ Im Zielbereich“** (grün), darüber „1.640 von 1.800 kcal“ (eure Zahlen).
+   Mahlzeiten „Gegessen“ → **„✓ Im Zielbereich“** (grün; beim Abnehmen erst etwa ab dem Tagesziel, darunter gelb
+   „Etwas unter deinem Tagesziel“), darüber „1.640 von 1.800 kcal“ (eure Zahlen).
 3. **„← Vortag“** → gestern ohne Einträge ist grau „Nichts eingetragen.“. Über „Mahlzeiten und Einträge“ →
    „Eintragen“ (gestern ist schon gewählt) → Schnell → „Mahlzeit“ **300** kcal → wieder „Dein Tag“ für gestern:
    **„↓ Unter deinem Mindestbedarf“** (rot) mit ruhigem Satz und „Laut deinen Einträgen. Fehlt etwas? Du kannst es
@@ -466,9 +467,11 @@ Die Tagesauswertung braucht keine Einstellung und keine Datenbank-Änderung. Das
    nur „Mahlzeiten: x von y abgehakt“ und das Training.
 9. Testkonto mit Gesundheits-Check „schwanger“ (Teil 7c): kein Balken, keine Zahl, Hinweis auf Ärztin, Arzt oder
    Hebamme.
-10. **Flugmodus an** → „Dein Tag“ neu laden → alles ist noch da (Gerätespeicher).
+10. Ein Tag der **Vorwoche**, für die nie ein Essensplan gespeichert war: keine Mahlzeitenliste, keine
+    „Gegessen“-Knöpfe, Text „Für diesen Tag ist kein Essensplan gespeichert …“.
+11. **Flugmodus an** → „Dein Tag“ neu laden → alles ist noch da (Gerätespeicher).
 
-**Bitte fachlich prüfen lassen (vor dem Livegang):** Farbgrenzen (A-G5: grün = Planband, rot unten = unter dem
+**Bitte fachlich prüfen lassen (vor dem Livegang):** Farbgrenzen (A-G5: grün = Planband, beim Abnehmen erst ab max(Untergrenze; Ziel × 0,95) – Gründer-Entscheidung 15.10.2026, rot unten = unter dem
 Mindestbedarf, rot oben = über max(Obergrenze; Ziel × 1,2)) und „Ziel erreicht ab 90 %“ (A-G11) – beide stehen als
 Konstanten `INTAKE_ZONES` und `SESSION_ACHIEVEMENT` in `packages/core/src/constants.ts`.
 

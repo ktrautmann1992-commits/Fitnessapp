@@ -325,3 +325,90 @@ describe('Eigenschaft: Erfüllungsgrad immer 0–100, Stufe passt zum Wert, abge
     }
   }, 60_000);
 });
+
+/**
+ * Unabhängiges Orakel (Wächter A2 H9): die Regel aus docs/PLAN-AUSWERTUNG.md 2.5 mit den Zahlen aus dem Plan
+ * abgeschrieben – NICHT aus constants.ts oder achievement.ts übernommen, damit ein Fehler dort auffällt.
+ */
+function oraclePercent(exercises: AchievementExerciseInput[]): number | null {
+  const parts: number[] = [];
+  for (const e of exercises) {
+    if (e.targetSets === null || e.targetSets === 0) continue;
+    let ok = 0;
+    if (e.status !== 'skipped') {
+      for (const s of e.sets) {
+        if (!s.done) continue;
+        const minReps = e.repsMin ?? e.targetReps;
+        if (minReps !== null && (s.reps ?? 0) < minReps) continue;
+        if (e.loadType === 'weight' && e.targetWeightKg !== null) {
+          // Plan 2.5: Vorgabe minus eine Gewichtsstufe (Langhantel 2,5 kg).
+          if (s.weightKg === null || s.weightKg < e.targetWeightKg - 2.5 - 1e-9) continue;
+        }
+        ok += 1;
+      }
+    }
+    parts.push(Math.min(ok, e.targetSets) / e.targetSets);
+  }
+  if (parts.length === 0) return null;
+  const mean = parts.reduce((a, b) => a + b, 0) / parts.length;
+  return Math.min(100, Math.floor(mean * 100 + 1e-9));
+}
+
+function oracleLevel(percent: number | null): string {
+  if (percent === null) return 'done';
+  if (percent >= 90) return 'reached';
+  if (percent >= 60) return 'mostly';
+  if (percent >= 1) return 'partly';
+  return 'none';
+}
+
+describe('Eigenschaft: Rechnung gegen ein unabhängiges Orakel (Plan 2.5)', () => {
+  it('3.000 zufällige Kraft-Einheiten (Langhantel): Prozent und Stufe wie das Orakel', () => {
+    const rand = seededRandom(20261015);
+    for (let i = 0; i < 3000; i += 1) {
+      const exercises = Array.from({ length: 1 + Math.floor(rand() * 10) }, () => {
+        const target = Math.round(rand() * 20) * 5;
+        return exercise({
+          status: rand() < 0.1 ? 'skipped' : 'done',
+          targetSets: rand() < 0.1 ? null : 1 + Math.floor(rand() * 6),
+          repsMin: rand() < 0.2 ? null : 5 + Math.floor(rand() * 6),
+          targetReps: 6 + Math.floor(rand() * 6),
+          targetWeightKg: rand() < 0.2 ? null : target,
+          sets: Array.from({ length: Math.floor(rand() * 8) }, () =>
+            set(
+              Math.floor(rand() * 14),
+              rand() < 0.05 ? null : Math.max(0, target + (Math.floor(rand() * 9) - 6) * 1.25),
+              rand() < 0.8,
+            ),
+          ),
+        });
+      });
+      const r = strength(exercises);
+      const expected = oraclePercent(exercises);
+      expect(r.percent).toBe(expected);
+      expect(r.level).toBe(oracleLevel(expected));
+    }
+  }, 60_000);
+
+  it('2.000 zufällige Ausdauer-Einheiten: Minuten / geplante Minuten, gekappt, abgerundet', () => {
+    const rand = seededRandom(77);
+    for (let i = 0; i < 2000; i += 1) {
+      const planned = 10 + Math.floor(rand() * 110);
+      const durationS = Math.floor(rand() * planned * 2 * 60);
+      const r = endurance({ plannedMinutes: planned, durationS });
+      const expected = Math.min(100, Math.floor((durationS / 60 / planned) * 100 + 1e-9));
+      expect(r.percent).toBe(expected);
+      expect(r.level).toBe(oracleLevel(expected));
+      expect(r.hints.includes('longer_than_planned')).toBe(durationS / 60 > planned * 1.1 + 1e-9);
+    }
+  }, 60_000);
+});
+
+describe('Wächter A2 H4: Ausdauer ohne eingetragene Dauer', () => {
+  it('geplante Einheit ohne Dauer → „logged“ (nie wie „erreicht“), ohne Prozent', () => {
+    expect(endurance({ durationS: null })).toMatchObject({ percent: null, level: 'logged' });
+  });
+  it('ohne Vorgabe bleibt es „done“', () => {
+    expect(endurance({ durationS: null, plannedMinutes: null })).toMatchObject({ level: 'done' });
+  });
+});

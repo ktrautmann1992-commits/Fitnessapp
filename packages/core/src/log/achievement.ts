@@ -78,9 +78,10 @@ export type SessionAchievementInput = z.input<typeof sessionAchievementInputSche
 
 /**
  * Stufe (2.5): `reached` ≥ 90 %, `mostly` 60–89 %, `partly` 1–59 %, `none` = eingetragen, aber 0 % (z. B. alle Übungen
- * ausgelassen), `done` = ohne Vorgabe („gemacht“, kein Prozentwert).
+ * ausgelassen), `done` = ohne Vorgabe („gemacht“, kein Prozentwert), `logged` = geplante Ausdauer OHNE eingetragene Dauer
+ * (nur „eingetragen“ – nie wie „erreicht“ dargestellt, Wächter A2 H4).
  */
-export type AchievementLevel = 'reached' | 'mostly' | 'partly' | 'none' | 'done';
+export type AchievementLevel = 'reached' | 'mostly' | 'partly' | 'none' | 'done' | 'logged';
 
 /** Hinweise, die nie „nicht erreicht“ bedeuten. */
 export type AchievementHint = 'effort_above_plan' | 'longer_than_planned';
@@ -249,7 +250,7 @@ export function sessionAchievement(rawInput: SessionAchievementInput): SessionAc
   return {
     kind: 'endurance',
     percent,
-    level: achievementLevel(percent),
+    level: planned !== null && input.durationS === null ? 'logged' : achievementLevel(percent),
     easyWeek: input.easyWeek,
     exercises: [],
     endurance: {

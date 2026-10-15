@@ -30,7 +30,7 @@ export const deDay = {
     `${eaten} von ${target} Kilokalorien, ${zone}`,
   zones: {
     below_floor: 'Unter deinem Mindestbedarf',
-    below_target: 'Etwas unter deinem Ziel',
+    below_target: 'Etwas unter deinem Tagesziel',
     in_range: 'Im Zielbereich',
     above_target: 'Etwas über deinem Ziel',
     well_above: 'Deutlich über deinem Ziel',
@@ -55,6 +55,8 @@ export const deDay = {
     open: 'Der Tag läuft noch.',
   },
   checkEntries: 'Laut deinen Einträgen. Fehlt etwas? Du kannst es nachtragen.',
+  /** Außerhalb des Nachtrage-Fensters (14 Tage) – kein Versprechen „nachtragen“ (Wächter A2 H3). */
+  entriesBasis: 'Laut deinen Einträgen.',
   trainingDay: 'Trainingstag – dein Ziel ist an diesem Tag höher.',
   noEntries: 'Nichts eingetragen.',
   noValues: 'Deine Einträge haben keine Kalorienangabe – dafür gibt es keinen Balken.',
@@ -63,6 +65,11 @@ export const deDay = {
   entries: (count: string) => `Eingetragen: ${count}`,
   meals: (eaten: number, planned: number) => `Mahlzeiten: ${eaten} von ${planned} abgehakt`,
   noMealPlan: 'Für diesen Tag gibt es keinen Essensplan. Eintragen geht trotzdem.',
+  noStoredMealPlan:
+    'Für diesen Tag ist kein Essensplan gespeichert – deshalb gibt es hier keine Mahlzeiten zum Abhaken. Eintragen geht trotzdem.',
+  plannedMeals: 'Geplante Mahlzeiten:',
+  computeFailed:
+    'Dein Tag lässt sich gerade nicht auswerten. Bitte versuche es später noch einmal.',
   openNutrition: 'Mahlzeiten und Einträge',
   openNutritionA11y: (day: string) => `Mahlzeiten und Einträge für ${day} öffnen`,
   // Training
@@ -75,8 +82,10 @@ export const deDay = {
     partly: 'Teilweise gemacht',
     none: 'Eingetragen',
     done: 'Gemacht',
+    logged: 'Eingetragen',
   },
-  levelSymbols: { reached: '✓', mostly: '◕', partly: '◐', none: '○', done: '✓' },
+  /** Nur „erreicht“ trägt ✓ – „gemacht“ ohne Vorgabe und „eingetragen“ ohne Dauer neutral (Wächter A2 H4). */
+  levelSymbols: { reached: '✓', mostly: '◕', partly: '◐', none: '○', done: '•', logged: '•' },
   easyWeek: {
     recovery: 'Erholungswoche – leichter ist hier richtig.',
     intro: 'Einstiegswoche – leichter ist hier richtig.',

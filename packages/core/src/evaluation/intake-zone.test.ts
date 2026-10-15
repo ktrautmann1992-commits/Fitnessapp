@@ -21,9 +21,18 @@ import {
 
 type Day = IntakeZoneInput['day'];
 
-function day(z: number, u: number, bandMin: number, bandMax: number, o: number): Day {
+/** `goalAdjustment` < 0 = Tag mit Defizit (Abnehmen, G1); Standard 0 = Halten. */
+function day(
+  z: number,
+  u: number,
+  bandMin: number,
+  bandMax: number,
+  o: number,
+  goalAdjustment = 0,
+): Day {
   return {
     mode: 'full',
+    goalAdjustment,
     targetKcal: z,
     floorKcal: u,
     band: { min: bandMin, max: bandMax },
@@ -77,9 +86,9 @@ describe('Zonengrenzen genau und ± 1 kcal (2.1)', () => {
   });
 
   it('R = max(O; Z × 1,2): liegt O höher, gilt O (Abnehmen, Erhaltungsniveau ist gelb, nicht rot)', () => {
-    // Abnehmen Ruhetag (Plan-Beispiel 2.1): Z 1.800, U 1.725 → B_min = max(U; 0,9 × Z) = 1.725 (keine gelbe Zone unten),
-    // B_max 1.980, O 2.530.
-    const loss = day(1800, 1725, 1725, 1980, 2530);
+    // Abnehmen Ruhetag (Plan-Beispiel 2.1, neu gerechnet mit G1): Z 1.800, U 1.725 → Grün ab max(U; 0,95 × Z; B_min)
+    // = max(1.725; 1.710; 1.725) = 1.725 (keine gelbe Zone unten), B_max 1.980, O 2.530.
+    const loss = day(1800, 1725, 1725, 1980, 2530, -0.2);
     expect(zoneOf(past(loss, 1724))).toBe('below_floor');
     expect(zoneOf(past(loss, 1725))).toBe('in_range');
     expect(zoneOf(past(loss, 1980))).toBe('in_range');
@@ -89,6 +98,28 @@ describe('Zonengrenzen genau und ± 1 kcal (2.1)', () => {
     expect(zoneOf(past(loss, 2531))).toBe('well_above');
     const bar = past(loss, 1900);
     expect(bar.kind === 'bar' && bar.markers.upperKcal).toBe(2530);
+  });
+
+  it('G1 Abnehmen: Grün erst ab max(U; Z × 0,95) – darunter gelb, unter U rot (±1 kcal)', () => {
+    // Z 2.000, U 1.700, B [1.800; 2.200], O 2.640, Defizit → Grün ab 1.900.
+    const loss = day(2000, 1700, 1800, 2200, 2640, -0.2);
+    expect(zoneOf(past(loss, 1699))).toBe('below_floor');
+    expect(zoneOf(past(loss, 1700))).toBe('below_target');
+    expect(zoneOf(past(loss, 1800))).toBe('below_target');
+    expect(zoneOf(past(loss, 1899))).toBe('below_target');
+    expect(zoneOf(past(loss, 1900))).toBe('in_range');
+    expect(zoneOf(past(loss, 1901))).toBe('in_range');
+    expect(zoneOf(past(loss, 2000))).toBe('in_range');
+    const bar = past(loss, 1950);
+    expect(bar.kind === 'bar' && bar.markers.greenFromKcal).toBe(1900);
+    // Heute: unter 1.900 noch offen.
+    const today = past(loss, 1850, { isToday: true });
+    expect(today.kind === 'bar' && today.zone).toBe('open');
+    // Gleiche Zahlen ohne Defizit (Halten/Aufbau): Grün wie bisher ab B_min.
+    const keep = day(2000, 1700, 1800, 2200, 2640, 0);
+    expect(zoneOf(past(keep, 1800))).toBe('in_range');
+    const gain = day(2000, 1700, 1800, 2200, 2640, 0.1);
+    expect(zoneOf(past(gain, 1800))).toBe('in_range');
   });
 
   it('U ≥ 0,9 × Z: keine gelbe Zone unten – direkt von rot nach grün', () => {
@@ -208,6 +239,7 @@ describe('Ohne Zahlen und ohne Ziel (2.3)', () => {
       floorKcal: null,
       band: null,
       ceilingKcal: null,
+      goalAdjustment: null,
     };
     expect(past(none, 1500)).toEqual({ kind: 'no_target' });
     expect(past(none, 1500, { showNumbers: false })).toEqual({ kind: 'hidden' });
@@ -226,7 +258,13 @@ function boundaryCheck(d: NutritionDayTargets) {
   if (d.floorKcal === null || d.band === null || d.targetKcal === null)
     throw new Error('kein Ziel');
   const u = Math.ceil(d.floorKcal);
-  const bMin = Math.ceil(d.band.min);
+  // Orakel G1 mit Zahl aus der Gründer-Entscheidung (nicht aus constants.ts): beim Defizit Grün ab max(B_min; U; 0,95 Z).
+  const deficit = d.goalAdjustment !== null && d.goalAdjustment < 0;
+  const greenFrom = deficit
+    ? Math.min(d.targetKcal, Math.max(d.band.min, d.floorKcal, d.targetKcal * 0.95))
+    : d.band.min;
+  const bMin = Math.ceil(greenFrom);
+  if (bMin - 1 >= u) expect(zoneOf(past(d, bMin - 1))).toBe('below_target');
   expect(zoneOf(past(d, u - 1))).toBe('below_floor');
   expect(zoneOf(past(d, bMin))).toBe('in_range');
   expect(zoneOf(past(d, d.targetKcal))).toBe('in_range');
@@ -375,6 +413,47 @@ describe('Eigenschaften (Abschnitt 6)', () => {
         expect(r.scale.maxKcal).toBeGreaterThanOrEqual(g);
       }
     }
+  }, 60_000);
+
+  it('(b) auch heute und künftig: heute „offen“ links vor allen Zonen, danach geordnet; künftig nie ein Balken', () => {
+    for (const d of days) {
+      const target = d.targetKcal as number;
+      let last = -2;
+      let seenOpen = false;
+      for (let g = 0; g <= target * 2; g += Math.max(1, Math.round(target / 50))) {
+        const r = past(d, g, { isToday: true });
+        if (r.kind !== 'bar') throw new Error('Balken erwartet');
+        // „open“ = links vor allen Zonen (Index −1); danach wie vergangene Tage, nie zurück nach „open“.
+        const index =
+          r.zone === 'open'
+            ? -1
+            : (ORDER.get(r.zone as (typeof INTAKE_ZONE_IDS)[number]) as number);
+        expect(index).toBeGreaterThanOrEqual(last);
+        if (r.zone === 'open') seenOpen = true;
+        else expect(['below_floor', 'below_target']).not.toContain(r.zone);
+        last = index;
+        const future = past(d, g, { isFuture: true });
+        expect(future).toEqual({ kind: 'future', targetKcal: target });
+      }
+      expect(seenOpen).toBe(true);
+    }
+  }, 60_000);
+
+  it('G1-Eigenschaft: bei Defizit nie Grün unter max(U; 0,95 × Z), Z immer grün, Ordnung bleibt', () => {
+    let deficitDays = 0;
+    for (const d of days) {
+      const z0 = d.targetKcal as number;
+      expect(zoneOf(past(d, z0))).toBe('in_range');
+      if (d.goalAdjustment === null || d.goalAdjustment >= 0) continue;
+      deficitDays += 1;
+      const limit = Math.max(d.floorKcal as number, z0 * 0.95);
+      for (const g of [limit - 1, limit - 0.01, (d.floorKcal as number) + 0.5]) {
+        if (g >= limit || g < 0) continue;
+        expect(zoneOf(past(d, g))).not.toBe('in_range');
+      }
+      expect(zoneOf(past(d, Math.min(z0, Math.ceil(limit))))).toBe('in_range');
+    }
+    expect(deficitDays).toBeGreaterThan(20);
   }, 60_000);
 
   it('(c) bei showNumbers = false steht nirgends eine kcal-Zahl', () => {

@@ -12,6 +12,7 @@ const day = {
   floorKcal: 1500,
   band: { min: 1620, max: 1980 },
   ceilingKcal: 2300,
+  goalAdjustment: 0,
 };
 
 function bar(eaten: number, isToday = false) {
@@ -152,6 +153,29 @@ describe('achievementView', () => {
     });
     const v = achievementView('Spaziergang', a, []);
     expect([v.levelText, v.percentText, v.lines]).toEqual(['Gemacht', null, ['20 min']]);
+  });
+});
+
+describe('Wächter A2 H4: nur „Ziel erreicht“ trägt ✓', () => {
+  it('Ausdauer ohne eingetragene Dauer: „• Eingetragen“, ohne Prozent', () => {
+    const a = sessionAchievement({
+      kind: 'endurance',
+      isFree: false,
+      easyWeek: null,
+      plannedMinutes: 40,
+      effortTarget: 3,
+      durationS: null,
+      distanceM: null,
+      sessionRpe: null,
+    });
+    const v = achievementView('Lauf', a, []);
+    expect([v.symbol, v.levelText, v.percentText]).toEqual(['•', 'Eingetragen', null]);
+  });
+  it('Symbole: ✓ nur bei „reached“', () => {
+    const symbols = t.day.levelSymbols;
+    for (const [level, symbol] of Object.entries(symbols)) {
+      expect(symbol === '✓').toBe(level === 'reached');
+    }
   });
 });
 

@@ -10,6 +10,7 @@ import {
   dayEvaluation,
   type DayEvaluationInput,
   evaluationDayTiming,
+  evaluationMealPlanUsable,
 } from './day-evaluation';
 
 /** „Dein Tag“ (docs/PLAN-AUSWERTUNG.md Abschnitt 6, Etappe A2): Essen + Training zusammengesetzt. */
@@ -283,5 +284,57 @@ describe('Training', () => {
       input({ showNumbers: false, trainingItems: [item({ logId: null, status: 'missed' })] }),
     );
     expect(r.training.items).toHaveLength(1);
+  });
+});
+
+describe('Wächter A2: S1, H3, H5', () => {
+  it('S1: Essensplan nur gespeichert – oder laufende Woche ab heute', () => {
+    const base = { date: '2026-10-11', today: '2026-10-12' };
+    expect(evaluationMealPlanUsable({ ...base, planStored: true, weekEditable: false })).toBe(true);
+    expect(evaluationMealPlanUsable({ ...base, planStored: false, weekEditable: false })).toBe(
+      false,
+    );
+    // Vergangener Tag der laufenden Woche, Plan noch nicht gespeichert → nein.
+    expect(evaluationMealPlanUsable({ ...base, planStored: false, weekEditable: true })).toBe(
+      false,
+    );
+    for (const date of ['2026-10-12', '2026-10-13']) {
+      expect(
+        evaluationMealPlanUsable({
+          date,
+          today: '2026-10-12',
+          planStored: false,
+          weekEditable: true,
+        }),
+      ).toBe(true);
+      expect(
+        evaluationMealPlanUsable({
+          date,
+          today: '2026-10-12',
+          planStored: false,
+          weekEditable: false,
+        }),
+      ).toBe(false);
+    }
+  });
+
+  it('H3: „Du kannst es nachtragen“ nur im Nachtrage-Fenster (14 Tage), danach nur „Laut deinen Einträgen.“', () => {
+    const at = (today: string) =>
+      dayEvaluation(input({ today, foodLog: { available: true, entries: [entry(300)] } })).notices;
+    expect(at(addDays(MONDAY, 14))).toContain('check_entries');
+    expect(at(addDays(MONDAY, 14))).not.toContain('entries_basis');
+    expect(at(addDays(MONDAY, 15))).toContain('entries_basis');
+    expect(at(addDays(MONDAY, 15))).not.toContain('check_entries');
+  });
+
+  it('H5: künftiger Tag ohne Abhak-Zahl', () => {
+    const r = dayEvaluation(
+      input({
+        today: '2026-10-11',
+        mealPlan: { slots: ['breakfast', 'lunch'], belowFloor: false },
+      }),
+    );
+    expect(r.timing).toBe('future');
+    expect(r.food.meals).toBeNull();
   });
 });

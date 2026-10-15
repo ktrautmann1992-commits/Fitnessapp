@@ -13,12 +13,14 @@ import type { NutritionDayTargets } from '../nutrition/targets';
  *
  * | Zone           | gegessen G       | Ton     |
  * | below_floor    | G < U            | rot     |
- * | below_target   | U ≤ G < B_min    | gelb    |
- * | in_range       | B_min ≤ G ≤ B_max| grün    |
+ * | below_target   | U ≤ G < G0       | gelb    |
+ * | in_range       | G0 ≤ G ≤ B_max   | grün    |
  * | above_target   | B_max < G ≤ R    | gelb    |
  * | well_above     | G > R            | rot     |
  *
- * Heute (2.2): unter B_min neutral „Noch offen“ (`open`) – nie rot am Morgen. Tage ohne Eintrag: `no_entries` (nie
+ * G0 = Beginn von Grün: B_min; beim Abnehmen (Tag mit Defizit) max(U; Z × 0,95; B_min) – Gründer-Entscheidung G1.
+ *
+ * Heute (2.2): unter G0 neutral „Noch offen“ (`open`) – nie rot am Morgen. Tage ohne Eintrag: `no_entries` (nie
  * 0 kcal, nie rot). Künftige Tage: `future` (nur Ziel, kein Balken). „Kalorienzahlen aus“ bzw. Schwangerschaft/Stillzeit
  * (`showNumbers = false`): `hidden` – der Typ enthält dann KEINE Zahl und keine Farbe (2.3).
  * Ziele und Zonen werden nie gespeichert (2.7) und nie geloggt.
@@ -56,7 +58,7 @@ export interface IntakeZoneInput {
   readonly hasEntries: boolean;
   readonly day: Pick<
     NutritionDayTargets,
-    'mode' | 'targetKcal' | 'band' | 'floorKcal' | 'ceilingKcal'
+    'mode' | 'targetKcal' | 'band' | 'floorKcal' | 'ceilingKcal' | 'goalAdjustment'
   >;
   readonly isToday: boolean;
   readonly isFuture: boolean;
@@ -81,6 +83,8 @@ export interface IntakeBar {
   readonly markers: {
     readonly floorKcal: number;
     readonly bandMinKcal: number;
+    /** Beginn von Grün: B_min, beim Abnehmen max(U; Z × 0,95; B_min) (G1). */
+    readonly greenFromKcal: number;
     readonly bandMaxKcal: number;
     readonly targetKcal: number;
     /** R = max(O; Z × 1,2): darüber „deutlich über deinem Ziel“. */
@@ -131,7 +135,13 @@ function dayLimits(day: IntakeZoneInput['day']) {
   }
   // R = max(O; Z × 1,2). Das Planband darf laut Engine bis 20 kcal über O reichen (Mindestbreite) – R liegt nie darunter.
   const upper = Math.max(o, z0 * INTAKE_ZONES.upperRedTargetFactor, band.max);
-  return { target: z0, floor: u, bandMin: band.min, bandMax: band.max, upper };
+  // Abnehmen (Energie-Richtung Defizit an diesem Tag): Grün erst etwa ab dem Tagesziel (Gründer-Entscheidung G1,
+  // 15.10.2026). Nie unter B_min und nie über Z (Z bleibt immer grün).
+  const deficit = day.goalAdjustment !== null && day.goalAdjustment < 0;
+  const greenFrom = deficit
+    ? Math.min(z0, Math.max(band.min, u, z0 * INTAKE_ZONES.lossGreenFromTargetFactor))
+    : band.min;
+  return { target: z0, floor: u, greenFrom, bandMin: band.min, bandMax: band.max, upper };
 }
 
 type Limits = NonNullable<ReturnType<typeof dayLimits>>;
@@ -139,7 +149,7 @@ type Limits = NonNullable<ReturnType<typeof dayLimits>>;
 /** Zone einer Menge an einem vergangenen Tag (volle Farbskala, 2.1). */
 function zoneOf(eaten: number, l: Limits): IntakeZoneId {
   if (eaten < l.floor) return 'below_floor';
-  if (eaten < l.bandMin) return 'below_target';
+  if (eaten < l.greenFrom) return 'below_target';
   if (eaten <= l.bandMax) return 'in_range';
   if (eaten <= l.upper) return 'above_target';
   return 'well_above';
@@ -148,8 +158,8 @@ function zoneOf(eaten: number, l: Limits): IntakeZoneId {
 function scaleZones(l: Limits, maxKcal: number): IntakeScaleZone[] {
   const parts: [IntakeZoneId, number, number][] = [
     ['below_floor', 0, l.floor],
-    ['below_target', l.floor, l.bandMin],
-    ['in_range', l.bandMin, l.bandMax],
+    ['below_target', l.floor, l.greenFrom],
+    ['in_range', l.greenFrom, l.bandMax],
     ['above_target', l.bandMax, l.upper],
     ['well_above', l.upper, maxKcal],
   ];
@@ -178,7 +188,7 @@ export function intakeZone(input: IntakeZoneInput): IntakeZoneResult {
   const eaten = flags.eatenKcal;
   const past = zoneOf(eaten, limits);
   // Heute: unter B_min neutral „Noch offen“ (2.2, A-G6) – auch unter U (der Tag läuft noch).
-  const zone: IntakeZoneId | 'open' = flags.isToday && eaten < limits.bandMin ? 'open' : past;
+  const zone: IntakeZoneId | 'open' = flags.isToday && eaten < limits.greenFrom ? 'open' : past;
   const maxKcal = Math.max(limits.upper * INTAKE_ZONES.scaleHeadroomFactor, eaten);
   return {
     kind: 'bar',
@@ -190,6 +200,7 @@ export function intakeZone(input: IntakeZoneInput): IntakeZoneResult {
     markers: {
       floorKcal: limits.floor,
       bandMinKcal: limits.bandMin,
+      greenFromKcal: limits.greenFrom,
       bandMaxKcal: limits.bandMax,
       targetKcal: limits.target,
       upperKcal: limits.upper,

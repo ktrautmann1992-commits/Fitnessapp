@@ -2183,10 +2183,17 @@ export const FOOD_LOG_DEFAULT_SLOT_MINUTES = {
  * nur der Faktor für „deutlich darüber“: rot erst über R = max(Obergrenze; Ziel × `upperRedTargetFactor`).
  * `scaleHeadroomFactor` ist reine Darstellung (Balken reicht bis R × Faktor bzw. bis zum Ist-Wert) und keine Grenze.
  * Quelle: PRODUKTENTSCHEIDUNG – VOR LIVEGANG FACHLICH PRÜFEN (Ernährungsfachkraft, A-G5).
+ *
+ * `lossGreenFromTargetFactor` (Gründer-Entscheidung G1, 15.10.2026): Bei Energie-Richtung Defizit (Abnehmen, Tag mit
+ * negativer Zielanpassung `goalAdjustment < 0`) beginnt Grün erst „etwa ab dem Tagesziel“ = max(U; Z × 0,95; B_min) –
+ * 0,95 als Rundungs- und Alltagstoleranz. Zwischen U und dieser Grenze ist der Tag gelb („Etwas unter deinem
+ * Tagesziel“), unter U bleibt er rot. Halten und Aufbau unverändert (Grün = Planband).
+ * Quelle: GRÜNDER-ENTSCHEIDUNG 15.10.2026 – VOR LIVEGANG FACHLICH PRÜFEN.
  */
 export const INTAKE_ZONES = {
   upperRedTargetFactor: 1.2,
   scaleHeadroomFactor: 1.1,
+  lossGreenFromTargetFactor: 0.95,
 } as const;
 
 /**
