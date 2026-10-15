@@ -37,6 +37,11 @@ import {
 } from './backend';
 import { LOCAL_CONSENT_DOCUMENTS } from './consent-texts';
 import { localDataExport } from './data-export';
+import {
+  applyCustomMealDelete,
+  applyCustomMealSave,
+  checkCustomMealSave,
+} from './custom-meal-rows';
 import { DraftStore } from './draft-store';
 import {
   applyFavoriteChange,
@@ -167,6 +172,8 @@ const SERIALIZED_METHODS = [
   'saveFoodLogEntries',
   'deleteFoodLogEntry',
   'changeFoodLogFavorite',
+  'saveCustomMeal',
+  'deleteCustomMeal',
 ] as const satisfies readonly (keyof Backend)[];
 
 function serializeWrites(backend: Backend): Backend {
@@ -843,6 +850,35 @@ export function createLocalBackend(store: KeyValueStore, options: LocalBackendOp
               : 'unknown',
         );
       }
+      await save({ ...db, rows: next });
+      return next;
+    },
+    // Eigene Gerichte (Etappe E2): dieselben Regeln wie save_custom_meal (custom-meal-rows.ts); im Testmodus immer
+    // ohne Netz (Gerätespeicher). Name und Werte nie in Meldungen oder Logs.
+    saveCustomMeal: async (meal) => {
+      const { db, rows, session } = await requireProfile();
+      const check = checkCustomMealSave(rows, meal, { versions: LOCAL_VERSIONS });
+      if (!check.ok) {
+        throw new BackendError(
+          check.reason === 'consent_required'
+            ? 'consent_required'
+            : check.reason === 'limit'
+              ? 'custom_meal_limit'
+              : 'custom_meal_rejected',
+          { sensitive: true },
+        );
+      }
+      const next = applyCustomMealSave(rows, check.meal, {
+        userId: session.userId,
+        now: options.now(),
+        newId: options.newId,
+      });
+      await save({ ...db, rows: next });
+      return next;
+    },
+    deleteCustomMeal: async (id) => {
+      const { db, rows } = await requireProfile();
+      const next = applyCustomMealDelete(rows, id);
       await save({ ...db, rows: next });
       return next;
     },

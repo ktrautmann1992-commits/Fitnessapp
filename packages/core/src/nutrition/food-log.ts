@@ -34,8 +34,11 @@ import { gramsPerUnit } from './units';
 // Werte-Listen (sync: CHECK-Listen in 20261015130000_food_log.sql, db-sync.test.ts)
 // ---------------------------------------------------------------------------------------------------------
 
-/** Herkunft eines Eintrags. Später kommen `custom_meal` (E2), `photo` (E3) und `product` (E4) dazu. */
-export const FOOD_LOG_SOURCES = ['plan_item', 'food', 'recipe', 'quick'] as const;
+/**
+ * Herkunft eines Eintrags. `custom_meal` seit Etappe E2 (eigenes Gericht); später kommen `photo` (E3) und `product`
+ * (E4) dazu.
+ */
+export const FOOD_LOG_SOURCES = ['plan_item', 'food', 'recipe', 'quick', 'custom_meal'] as const;
 export type FoodLogSource = (typeof FOOD_LOG_SOURCES)[number];
 
 /** Plätze = Plätze des Essensplans + `other` (frei eingetragen, angezeigt unter „Snack“). */
@@ -59,6 +62,14 @@ export const QUICK_ENTRY_LABELS = [
   'Sonstiges',
 ] as const;
 export type QuickEntryLabel = (typeof QUICK_ENTRY_LABELS)[number];
+
+/**
+ * Titel eines Tagebuch-Eintrags aus einem eigenen Gericht (Etappe E2): immer dieser feste Text, NIE der Name des
+ * Gerichts – das Tagebuch bleibt ohne Freitext (Plan 2.7, Wächter E1). Den Namen zeigt die App über
+ * `custom_meal_id` aus den eigenen Gerichten an; ist das Gericht gelöscht, bleibt dieser neutrale Titel (sync: CHECK
+ * in 20261015160000_custom_meals.sql).
+ */
+export const CUSTOM_MEAL_ENTRY_TITLE = 'Eigenes Gericht';
 
 /** Gruppen im Tagesverlauf (Plan 5): Frühstück, Hauptmahlzeit, Mittag, Abend, Snack. */
 export const FOOD_LOG_GROUPS = ['breakfast', 'main', 'lunch', 'dinner', 'snack'] as const;
@@ -125,6 +136,8 @@ const entryFields = {
   source: z.enum(FOOD_LOG_SOURCES),
   food_id: contentIdSchema.nullable(),
   recipe_id: contentIdSchema.nullable(),
+  /** Verweis auf das eigene Gericht (E2); null bei anderen Herkünften und nach dem Löschen des Gerichts. */
+  custom_meal_id: z.uuid().nullable(),
   title_de: titleSchema,
   amount: z.number().finite().nullable(),
   unit: z.enum(FOOD_LOG_UNITS).nullable(),
@@ -140,6 +153,8 @@ type EntryShape = {
   readonly source: FoodLogSource;
   readonly food_id: string | null;
   readonly recipe_id: string | null;
+  /** Nur Einträge haben ihn (Favoriten nicht) – fehlt er, gilt null. */
+  readonly custom_meal_id?: string | null;
   readonly title_de: string;
   readonly amount: number | null;
   readonly unit: FoodLogUnit | null;
@@ -185,6 +200,9 @@ function refineShape(
   // Favoriten aus Katalog/Rezept speichern KEINE Werte (Wächter E1 S1): die rechnet der Core beim Eintragen neu.
   const allValues =
     mode === 'favorite' ? values.every((v) => v === null) : values.every((v) => v !== null);
+  if (value.source !== 'custom_meal' && (value.custom_meal_id ?? null) !== null) {
+    issue('Verweis nur bei eigenem Gericht.');
+  }
   switch (value.source) {
     case 'food':
       if (value.food_id === null || value.recipe_id !== null) issue('Lebensmittel fehlt.');
@@ -214,6 +232,24 @@ function refineShape(
       if (!(QUICK_ENTRY_LABELS as readonly string[]).includes(value.title_de)) {
         issue('Bezeichnung nur aus der Auswahlliste.');
       }
+      if (
+        value.kcal === null &&
+        (value.protein_g !== null || value.carbs_g !== null || value.fat_g !== null)
+      ) {
+        issue('Makros nur zusammen mit kcal.');
+      }
+      break;
+    case 'custom_meal':
+      // Eigenes Gericht (E2): fester Titel statt Name (kein Freitext im Tagebuch), Portion 0,25–3, Werte als
+      // Schnappschuss – ohne Werte erlaubt (Gericht „ohne Werte“ bei „Kalorienzahlen aus“), Makros nur mit kcal.
+      if (mode === 'favorite') issue('Kein Favorit aus eigenem Gericht.');
+      if (value.food_id !== null || value.recipe_id !== null) issue('Ungültiges eigenes Gericht.');
+      if (value.portion === null || value.amount !== null || value.unit !== null) {
+        issue('Portion fehlt.');
+      } else if (!isValidFoodLogPortion(value.portion)) {
+        issue('Ungültige Portion.');
+      }
+      if (value.title_de !== CUSTOM_MEAL_ENTRY_TITLE) issue('Ungültige Bezeichnung.');
       if (
         value.kcal === null &&
         (value.protein_g !== null || value.carbs_g !== null || value.fat_g !== null)
@@ -285,7 +321,10 @@ export type FoodLogFavorite = z.infer<typeof foodLogFavoriteSchema>;
  * Rezepte.
  */
 export function foodLogKey(
-  entry: Pick<EntryShape, 'source' | 'food_id' | 'recipe_id' | 'title_de' | 'kcal'>,
+  entry: Pick<
+    EntryShape,
+    'source' | 'food_id' | 'recipe_id' | 'custom_meal_id' | 'title_de' | 'kcal'
+  >,
 ): string {
   switch (entry.source) {
     case 'food':
@@ -295,6 +334,9 @@ export function foodLogKey(
       return `recipe|${entry.recipe_id ?? ''}`;
     case 'quick':
       return `quick|${entry.title_de}|${entry.kcal === null ? '' : String(entry.kcal)}`;
+    case 'custom_meal':
+      // Je Gericht (nie der Name im Schlüssel); ein gelöschtes Gericht hat keinen Schlüssel-Inhalt.
+      return `custom|${entry.custom_meal_id ?? ''}`;
   }
 }
 
@@ -345,7 +387,10 @@ function nutrientValues(
   };
 }
 
-function finish(entry: FoodLogEntry): FoodLogBuild {
+/**
+ * Letzter Schritt jedes Bauens: Obergrenzen (`too_much`) und Schema. Auch für `entryFromCustomMeal` (custom-meal.ts).
+ */
+export function finishFoodLogEntry(entry: FoodLogEntry): FoodLogBuild {
   if (
     (entry.kcal !== null && entry.kcal > L.kcal.max) ||
     [entry.protein_g, entry.carbs_g, entry.fat_g].some((v) => v !== null && v > L.macroG.max)
@@ -366,13 +411,14 @@ export function entryFromPlanItem(
   target: Omit<FoodLogTarget, 'slot'>,
 ): FoodLogBuild {
   if (!isValidFoodLogPortion(portion)) return { ok: false, reason: 'portion' };
-  return finish({
+  return finishFoodLogEntry({
     id: target.id,
     eaten_on: target.date,
     slot: meal.slot,
     source: 'plan_item',
     food_id: null,
     recipe_id: meal.recipeId,
+    custom_meal_id: null,
     title_de: meal.titleDe,
     amount: null,
     unit: null,
@@ -398,13 +444,14 @@ export function entryFromFood(
   if (!isValidFoodLogAmount(amount, unit)) return { ok: false, reason: 'amount' };
   const grams = amount * perUnit;
   if (grams > L.gramsMax) return { ok: false, reason: 'amount' };
-  return finish({
+  return finishFoodLogEntry({
     id: target.id,
     eaten_on: target.date,
     slot: target.slot,
     source: 'food',
     food_id: food.id,
     recipe_id: null,
+    custom_meal_id: null,
     title_de: food.name_de,
     amount,
     unit,
@@ -427,13 +474,14 @@ export function entryFromRecipe(
   } catch {
     return { ok: false, reason: 'invalid' };
   }
-  return finish({
+  return finishFoodLogEntry({
     id: target.id,
     eaten_on: target.date,
     slot: target.slot,
     source: 'recipe',
     food_id: null,
     recipe_id: recipe.id,
+    custom_meal_id: null,
     title_de: recipe.title_de,
     amount: null,
     unit: null,
@@ -458,13 +506,14 @@ export function quickEntry(input: QuickEntryInput, target: FoodLogTarget): FoodL
   if (input.kcal !== null && (!Number.isFinite(input.kcal) || input.kcal > L.kcal.max)) {
     return { ok: false, reason: input.kcal > L.kcal.max ? 'too_much' : 'invalid' };
   }
-  return finish({
+  return finishFoodLogEntry({
     id: target.id,
     eaten_on: target.date,
     slot: target.slot,
     source: 'quick',
     food_id: null,
     recipe_id: null,
+    custom_meal_id: null,
     title_de: input.label,
     amount: null,
     unit: null,
@@ -485,13 +534,14 @@ export function entryFromTemplate(
   template: Omit<EntryShape, 'slot'> & { readonly source: Exclude<FoodLogSource, 'plan_item'> },
   target: FoodLogTarget,
 ): FoodLogBuild {
-  return finish({
+  return finishFoodLogEntry({
     id: target.id,
     eaten_on: target.date,
     slot: target.slot,
     source: template.source,
     food_id: template.food_id,
     recipe_id: template.recipe_id,
+    custom_meal_id: template.custom_meal_id ?? null,
     title_de: template.title_de,
     amount: template.amount,
     unit: template.unit,
@@ -520,7 +570,7 @@ export function rescaleEntry(
   if ('portion' in change) {
     if (entry.portion === null) return { ok: false, reason: 'invalid' };
     if (!isValidFoodLogPortion(change.portion)) return { ok: false, reason: 'portion' };
-    return finish({
+    return finishFoodLogEntry({
       ...entry,
       portion: change.portion,
       ...scaled(entry, change.portion / entry.portion),
@@ -532,7 +582,7 @@ export function rescaleEntry(
   const perUnit = entry.unit === 'g' ? 1 : food ? gramsPerUnit(entry.unit, food.units) : null;
   if (perUnit === null) return { ok: false, reason: 'unit' };
   if (change.amount * perUnit > L.gramsMax) return { ok: false, reason: 'amount' };
-  return finish({ ...entry, amount: change.amount, ...scaled(entry, factor) });
+  return finishFoodLogEntry({ ...entry, amount: change.amount, ...scaled(entry, factor) });
 }
 
 function scaled(entry: FoodLogEntry, factor: number) {
@@ -551,7 +601,7 @@ export function moveEntry(entry: FoodLogEntry, slot: FoodLogSlot, date: string):
     // Eine Plan-Mahlzeit gehört zu ihrem Tag und Platz.
     return { ok: false, reason: 'invalid' };
   }
-  return finish({ ...entry, slot, eaten_on: date });
+  return finishFoodLogEntry({ ...entry, slot, eaten_on: date });
 }
 
 /** Plausibilitäts-Rückfrage „Stimmt die Menge?“ ab 1.500 kcal je Eintrag – keine Sperre. */
@@ -707,7 +757,9 @@ export function recentEntries<T extends Timed>(
   n: number = L.recentCount,
 ): T[] {
   const sorted = [...entries]
+    // Plan-Mahlzeiten nicht; eigene Gerichte nur, solange es das Gericht gibt (gelöscht = Verweis null).
     .filter((e) => e.source !== 'plan_item')
+    .filter((e) => e.source !== 'custom_meal' || e.custom_meal_id !== null)
     .sort(
       (a, b) =>
         lastUse(b).localeCompare(lastUse(a)) ||
@@ -729,7 +781,8 @@ export function recentEntries<T extends Timed>(
 
 /** Favorit aus einem Eintrag (Stern); Plan-Mahlzeiten haben keinen Stern (null). */
 export function favoriteFromEntry(entry: FoodLogEntry): FoodLogFavorite | null {
-  if (entry.source === 'plan_item') return null;
+  // Plan-Mahlzeiten und eigene Gerichte haben keinen Stern (sie sind im Plan bzw. unter „Eigene Gerichte“).
+  if (entry.source === 'plan_item' || entry.source === 'custom_meal') return null;
   const parsed = foodLogFavoriteSchema.safeParse({
     fav_key: foodLogKey(entry),
     source: entry.source,
@@ -793,7 +846,11 @@ export function isFavoriteEntry(
   entry: FoodLogEntry,
 ): boolean {
   const key = foodLogKey(entry);
-  return entry.source !== 'plan_item' && favorites.some((f) => f.fav_key === key);
+  return (
+    entry.source !== 'plan_item' &&
+    entry.source !== 'custom_meal' &&
+    favorites.some((f) => f.fav_key === key)
+  );
 }
 
 /**

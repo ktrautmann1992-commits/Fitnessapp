@@ -39,9 +39,13 @@ from unnest(array['terms', 'privacy']::public.consent_type[]) as t;
 insert into public.foods (id, version, status, name_de, shopping_category, pantry, groups, animal, meat_kind,
   pregnancy_caution, alcohol, max_fridge_days, freezable, data)
 values
-  ('hafer', 1, 'published', 'Hafer', 'other', false, '{gluten}', '{}', '{}', false, false, 2, true, '{}'),
-  ('banane', 1, 'published', 'Banane', 'fruit_vegetables', false, '{}', '{}', '{}', false, false, 2, false, '{}'),
-  ('alt-lm', 1, 'archived', 'Altes Lebensmittel', 'other', false, '{}', '{}', '{}', false, false, 2, false, '{}');
+  -- data = Inhaltsdatei (Nährwerte je 100 g, Umrechnungen): daraus rechnet der Server die Werte (E1-G4, 15.10.2026).
+  ('hafer', 1, 'published', 'Hafer', 'other', false, '{gluten}', '{}', '{}', false, false, 2, true,
+   '{"nutrients_per_100g": {"kcal": 370, "protein_g": 13.5, "carbs_g": 58.7, "fat_g": 7}, "units": {"tbsp_g": 10}}'),
+  ('banane', 1, 'published', 'Banane', 'fruit_vegetables', false, '{}', '{}', '{}', false, false, 2, false,
+   '{"nutrients_per_100g": {"kcal": 93, "protein_g": 1.2, "carbs_g": 20, "fat_g": 0.2}, "units": {"piece_g": 120}}'),
+  ('alt-lm', 1, 'archived', 'Altes Lebensmittel', 'other', false, '{}', '{}', '{}', false, false, 2, false,
+   '{"nutrients_per_100g": {"kcal": 370, "protein_g": 13.5, "carbs_g": 58.7, "fat_g": 7}, "units": {"tbsp_g": 10}}');
 insert into public.recipes (id, version, status, title_de, meal_types, servings, no_cook, diet, contains_pork, data)
 values ('porridge', 1, 'published', 'Porridge', '{breakfast}', 1, false, 'vegetarian', false, '{}');
 

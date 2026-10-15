@@ -4,6 +4,8 @@ import { describe, expectTypeOf, it } from 'vitest';
 
 import type {
   CardioLogRow,
+  CustomMealItemRow,
+  CustomMealRow,
   ExerciseLogRow,
   FoodLogEntryRow,
   FoodLogFavoriteRow,
@@ -38,5 +40,12 @@ describe('Zeilen-Typen: packages/core = Datenbank', () => {
     expectTypeOf<keyof FoodLogFavoriteRow>().toEqualTypeOf<keyof Tables<'food_log_favorites'>>();
     expectTypeOf<FoodLogEntryRow>().toExtend<Tables<'food_log_entries'>>();
     expectTypeOf<FoodLogFavoriteRow>().toExtend<Tables<'food_log_favorites'>>();
+  });
+
+  it('Eigene Gerichte (E2): gleiche Spalten wie die Datenbank, Werte-Listen enger', () => {
+    expectTypeOf<keyof CustomMealRow>().toEqualTypeOf<keyof Tables<'custom_meals'>>();
+    expectTypeOf<keyof CustomMealItemRow>().toEqualTypeOf<keyof Tables<'custom_meal_items'>>();
+    expectTypeOf<CustomMealRow>().toExtend<Tables<'custom_meals'>>();
+    expectTypeOf<CustomMealItemRow>().toExtend<Tables<'custom_meal_items'>>();
   });
 });

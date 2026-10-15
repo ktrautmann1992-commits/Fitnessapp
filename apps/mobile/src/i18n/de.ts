@@ -5,6 +5,7 @@
  * erfüllen (siehe i18n/index.ts). Fachliche Texte, die zur Logik gehören (Gesundheits-Fragen,
  * Mess-Anleitungen, Geräte- und Lebensmittelnamen), stehen in packages/core und werden dort gepflegt.
  */
+import { deCustomMeals } from './de-custom-meals';
 import { deDay } from './de-day';
 import { deFoodLog } from './de-food-log';
 import { deNutrition } from './de-nutrition';
@@ -1111,7 +1112,7 @@ export const de = {
     reconsent: 'Neu einwilligen',
     revokeTitle: 'Einwilligung widerrufen?',
     revokeText:
-      'Der Widerruf löscht alle Körper- und Gesundheitsdaten: Körperdaten, Körperumfänge, alle Gesundheits-Checks, Unverträglichkeiten, alle Trainingspläne, die auf dem Gesundheits-Check beruhen, und dein Ernährungstagebuch samt Schnelleintrag-Favoriten (Favoriten aus Lebensmitteln und Rezepten bleiben). Deine übrigen Angaben bleiben erhalten.',
+      'Der Widerruf löscht alle Körper- und Gesundheitsdaten: Körperdaten, Körperumfänge, alle Gesundheits-Checks, Unverträglichkeiten, alle Trainingspläne, die auf dem Gesundheits-Check beruhen, und dein Ernährungstagebuch samt Schnelleintrag-Favoriten und eigenen Gerichten (Favoriten aus Lebensmitteln und Rezepten bleiben). Deine übrigen Angaben bleiben erhalten.',
     revokeDone: 'Einwilligung widerrufen. Deine Gesundheitsdaten wurden gelöscht.',
     revokeLogs:
       'Dein Tagebuch bleibt; Vorgaben aus dem Gesundheits-Check werden daraus entfernt. Du kannst die Einträge aus Plänen mit Gesundheits-Check aber auch löschen.',
@@ -1523,6 +1524,7 @@ export const de = {
   },
   nutrition: deNutrition,
   foodLog: deFoodLog,
+  customMeals: deCustomMeals,
   day: deDay,
 } as const;
 
