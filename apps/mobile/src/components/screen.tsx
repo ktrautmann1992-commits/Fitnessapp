@@ -37,6 +37,7 @@ export function Screen({
   children,
   footer,
   testID,
+  scrollEnabled = true,
 }: {
   title?: string;
   intro?: string;
@@ -44,6 +45,8 @@ export function Screen({
   children?: ReactNode;
   footer?: ReactNode;
   testID?: string;
+  /** false = Inhalt scrollt gerade nicht (z. B. während eine Einheit im Kalender gezogen wird). */
+  scrollEnabled?: boolean;
 }) {
   const theme = useThemeColors();
   return (
@@ -59,6 +62,7 @@ export function Screen({
         <ScrollView
           contentContainerStyle={styles.scroll}
           keyboardShouldPersistTaps="handled"
+          scrollEnabled={scrollEnabled}
           style={styles.flex}
         >
           <View style={styles.content}>

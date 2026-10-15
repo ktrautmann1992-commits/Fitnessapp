@@ -17,6 +17,7 @@ import {
   isMissingFunction,
   isMissingRelation,
   nutritionPrefsFromDb,
+  toMoveError,
 } from './supabase-backend';
 import type { StepSave, UserRows } from './types';
 import type { WorkoutDraft } from './workout-draft';
@@ -902,6 +903,136 @@ describe('Supabase-Modus: Trainingsplan', () => {
     // Update ohne betroffene Zeile (Einheit ersetzt) gilt als abgelehnt.
     expect(events).toEqual(['plan_change_dropped']);
     expect(backend.pendingChanges()).toBe(0);
+  });
+
+  it('Tauschen (A1a): wartende Verschiebungen zuerst, dann swap_planned_sessions; offline → „online_only“, nie Warteschlange', async () => {
+    let online = false;
+    const { client, calls } = server({ uses: false, online: () => online });
+    const store = createMemoryStore();
+    const backend = createSupabaseBackend(options(client, store));
+    const rows = rowsWith();
+    const swap = {
+      sessionId: 'sess-1',
+      otherSessionId: 'sess-2',
+      sessionOn: TODAY,
+      otherSessionOn: '2026-10-09',
+      planId: 'plan-1',
+      usesHealthData: false,
+    };
+    // Eine Verschiebung wartet (offline).
+    await backend.updatePlannedSession(
+      {
+        sessionId: 'sess-1',
+        planId: 'plan-1',
+        usesHealthData: false,
+        scheduledOn: TODAY,
+        status: 'planned',
+      },
+      rows,
+    );
+    await expect(backend.swapPlannedSessions(swap, rows)).rejects.toMatchObject({
+      code: 'online_only',
+    });
+    expect(store.dump()[STORAGE_KEYS.syncQueue]).not.toContain('swap_planned_sessions');
+    expect(calls.some((c) => c.table === 'rpc:swap_planned_sessions')).toBe(false);
+
+    online = true;
+    await backend.swapPlannedSessions(swap, rows);
+    const update = calls.findIndex(
+      (c) => c.table === 'planned_sessions' && c.chain.includes('update'),
+    );
+    const rpc = calls.findIndex((c) => c.table === 'rpc:swap_planned_sessions');
+    expect(update).toBeGreaterThanOrEqual(0);
+    expect(rpc).toBeGreaterThan(update);
+    expect(calls[rpc]?.args[0]?.[0]).toEqual({
+      p_a: 'sess-1',
+      p_b: 'sess-2',
+      p_a_on: TODAY,
+      p_b_on: '2026-10-09',
+    });
+    expect(backend.pendingChanges()).toBe(0);
+  });
+
+  it('Tauschen: Ablehnung der Datenbank → „plan_rejected“ (Plan mit Gesundheitsbezug: sensibel), Netz → „online_only“', async () => {
+    let failure: unknown = {
+      code: '23514',
+      message: 'Verschieben nur ab heute und innerhalb derselben Woche.',
+    };
+    const { client } = fakeClient((call) =>
+      call.table === 'rpc:swap_planned_sessions' ? { error: failure } : { data: [] },
+    );
+    const backend = createSupabaseBackend(options(client));
+    const swap = {
+      sessionId: 'a',
+      otherSessionId: 'b',
+      sessionOn: TODAY,
+      otherSessionOn: '2026-10-09',
+      planId: 'plan-1',
+      usesHealthData: true,
+    };
+    await expect(backend.swapPlannedSessions(swap, rowsWith())).rejects.toMatchObject({
+      code: 'plan_rejected',
+      sensitive: true,
+      moveReason: 'move_rules',
+    });
+    failure = {
+      code: '23514',
+      message: 'Der Plan hat sich inzwischen geändert.',
+      hint: 'plan_changed',
+    };
+    await expect(backend.swapPlannedSessions(swap, rowsWith())).rejects.toMatchObject({
+      code: 'plan_rejected',
+      moveReason: 'plan_changed',
+    });
+    failure = networkError;
+    await expect(backend.swapPlannedSessions(swap, rowsWith())).rejects.toMatchObject({
+      code: 'online_only',
+    });
+  });
+
+  it('toMoveError (Wächter A1a S2): Regel, geänderter Stand, vorübergehend und Netz getrennt', () => {
+    const reason = (error: unknown) => {
+      const e = toMoveError(error, false);
+      return e.code === 'plan_rejected' ? `plan_rejected:${e.moveReason ?? ''}` : e.code;
+    };
+    // swap_planned_sessions mit hint
+    expect(reason({ code: '23514', message: 'x', hint: 'move_rules' })).toBe(
+      'plan_rejected:move_rules',
+    );
+    expect(reason({ code: '23514', message: 'x', hint: 'plan_changed' })).toBe(
+      'plan_rejected:plan_changed',
+    );
+    expect(reason({ code: '23514', message: 'Einheit nicht gefunden.', hint: 'not_found' })).toBe(
+      'plan_rejected:plan_changed',
+    );
+    // Trigger ohne hint: Regel-Meldungen vs. Stand
+    expect(reason({ code: '23514', message: 'Diese Woche ist vorbei.' })).toBe(
+      'plan_rejected:move_rules',
+    );
+    expect(
+      reason({ code: '23514', message: 'Einheiten der Erholungswoche lassen sich nur streichen.' }),
+    ).toBe('plan_rejected:move_rules');
+    expect(
+      reason({ code: '23514', message: 'Gestrichene Einheiten lassen sich nicht mehr ändern.' }),
+    ).toBe('plan_rejected:plan_changed');
+    expect(
+      reason({ code: '23514', message: 'Nur Einheiten des aktiven Plans sind änderbar.' }),
+    ).toBe('plan_rejected:plan_changed');
+    expect(reason({ code: '23505', message: 'duplicate key' })).toBe('plan_rejected:plan_changed');
+    expect(reason({ code: 'plan_row_missing', message: 'Einheit nicht gefunden.' })).toBe(
+      'plan_rejected:plan_changed',
+    );
+    // vorübergehend
+    expect(reason({ code: '40P01', message: 'deadlock detected' })).toBe('temporary');
+    expect(reason({ code: '57014', message: 'canceling statement due to statement timeout' })).toBe(
+      'temporary',
+    );
+    expect(reason({ code: '40001', message: 'could not serialize' })).toBe('temporary');
+    expect(reason({ message: 'Bad Gateway', status: 502 })).toBe('temporary');
+    expect(reason({ message: 'Too Many Requests', status: 429 })).toBe('temporary');
+    // Netz und Anmeldung
+    expect(reason(networkError)).toBe('network');
+    expect(reason({ code: '42501', message: 'Nicht angemeldet.' })).toBe('not_signed_in');
   });
 
   it('Bibliothek: nur freigegebene Inhalte (allowDrafts nie true), offline aus dem Zwischenspeicher', async () => {

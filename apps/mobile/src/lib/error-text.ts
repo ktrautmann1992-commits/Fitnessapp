@@ -35,6 +35,8 @@ export function errorText(error: unknown): string {
       return t.errors.preferenceRejected;
     case 'preference_limit':
       return t.swap.alwaysLimit;
+    case 'temporary':
+      return t.errors.temporary;
     case 'unknown':
       return t.errors.generic;
   }

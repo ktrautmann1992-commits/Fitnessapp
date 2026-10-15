@@ -569,6 +569,7 @@ export function createLocalBackend(store: KeyValueStore, options: LocalBackendOp
       applyPlanOp({ kind: 'append_plan_block', planId, usesHealthData, sessions }),
     updatePlannedSession: async (update) =>
       applyPlanOp({ kind: 'update_planned_session', ...update }),
+    swapPlannedSessions: async (swap) => applyPlanOp({ kind: 'swap_planned_sessions', ...swap }),
     // Keine Warteschlange im Testmodus → keine Hintergrund-Ereignisse.
     subscribe: () => () => undefined,
 

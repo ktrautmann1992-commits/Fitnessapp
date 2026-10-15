@@ -739,6 +739,14 @@ export default function TodayScreen() {
           />
         </View>
       </View>
+      {/* Trainingskalender: Einheiten auf einen gewählten Tag ziehen (Etappe A1a). */}
+      <Button
+        label={t.calendar.open}
+        accessibilityLabel={t.calendar.openA11y}
+        variant="secondary"
+        onPress={() => router.push('/kalender' as Href)}
+        testID="today-calendar"
+      />
       <Button
         label={t.glossary.allExercises}
         variant="secondary"

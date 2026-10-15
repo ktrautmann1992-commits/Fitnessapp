@@ -176,6 +176,14 @@ export default function WeekScreen() {
           </Body>
         </View>
       </Card>
+      {/* Trainingskalender (Etappe A1a): Einheiten dieser oder kommender Wochen verschieben. */}
+      <Button
+        label={t.calendar.openFromWeek}
+        accessibilityLabel={t.calendar.openA11y}
+        variant="secondary"
+        onPress={() => router.push('/kalender' as Href)}
+        testID="week-calendar"
+      />
       <Button
         label={t.today.openHistory}
         variant="secondary"
