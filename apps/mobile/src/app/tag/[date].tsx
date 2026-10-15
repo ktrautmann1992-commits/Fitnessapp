@@ -18,7 +18,11 @@ import { PlanMealEaten } from '@/components/food-log';
 import { ConsentBlockedNotice } from '@/components/nutrition';
 import { Screen } from '@/components/screen';
 import { Body, Button, Card, Heading, LoadingState, Notice } from '@/components/ui';
-import { dayAchievementInputs, dayExerciseNames, dayTrainingItems } from '@/data/day-evaluation';
+import {
+  dayAchievementInputsAround,
+  dayExerciseNames,
+  dayTrainingItems,
+} from '@/data/day-evaluation';
 import { t } from '@/i18n';
 import { intakeBarView, intakeTextLine } from '@/lib/day-evaluation-format';
 import { dayLabel } from '@/lib/plan-format';
@@ -179,7 +183,7 @@ export default function DayScreen() {
             belowFloor: planDay.status === 'below_floor',
           },
     trainingItems: dayTrainingItems(rows, date, today),
-    achievements: dayAchievementInputs(
+    achievements: dayAchievementInputsAround(
       rows,
       date,
       library.kind === 'ready' ? library.library : null,

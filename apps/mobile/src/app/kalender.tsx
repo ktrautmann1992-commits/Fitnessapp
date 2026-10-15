@@ -339,6 +339,16 @@ export default function CalendarScreen() {
           </View>
         </View>
 
+        {/* Wochenauswertung (Etappe A3) der angezeigten Woche. */}
+        <Button
+          label={t.weekEval.open}
+          variant="secondary"
+          accessibilityLabel={t.weekEval.openA11y(weekRangeText(shownWeek, addDays(shownWeek, 6)))}
+          disabled={drag !== null}
+          onPress={() => router.push(`/wochenauswertung?woche=${shownWeek}` as Href)}
+          testID="calendar-week-evaluation"
+        />
+
         <LiveRegion text={live.text} version={live.version} />
         {feedback ? (
           <Notice tone={feedback.tone} testID="calendar-message" silent>

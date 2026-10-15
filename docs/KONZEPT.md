@@ -269,6 +269,20 @@ Dauer), Ausdauer Minuten / geplante Minuten; ≥ 90 % „Ziel erreicht“, 60–
 Ziele und Zonen werden nie gespeichert; keine neue Tabelle. Regeln in `packages/core/src/evaluation/` und
 `packages/core/src/log/achievement.ts`.
 
+**Wochenauswertung (`docs/PLAN-AUSWERTUNG.md` Abschnitt 8, Etappe A3, gratis, ohne KI):** Route
+`app/wochenauswertung.tsx` (`?woche=JJJJ-MM-TT`, Mo–So), erreichbar aus „Woche“ und Kalender, Blättern wie „Woche“.
+`weekEvaluation()` (`packages/core/src/evaluation/week-evaluation.ts`) setzt nur `weekLogSummary()` und
+`dayEvaluation()` zusammen – die Wochenzahlen sind genau die Summe der Tagesansichten. **Essen:** sieben kleine
+Tagesbalken mit Farbe, Zeichen und Kurztext (Tippen öffnet „Dein Tag“), „An 5 Tagen eingetragen. Davon 3 im
+Zielbereich, …“, Durchschnitt je eingetragenem Tag gegen das Durchschnittsziel genau dieser Tage. Gezählt werden nur
+vergangene Tage mit Einträgen (heute „läuft noch“, Tage ohne Eintrag zählen nicht). Keine Wochen-Bilanz in kcal, keine
+Summe, keine Prognose. **Muster-Hinweis:** ab 3 vergangenen Tagen einer Woche unter der Untergrenze einmal der feste
+Essstörungs-Hinweis mit Hilfe-Stellen (2.4, A-G13; `WEEK_EVALUATION.patternBelowFloorMinDays`). **„Kalorienzahlen aus“
+und Schwangerschaft/Stillzeit (an einem Tag der Woche):** nur Anzahlen (Tage mit Einträgen, Mahlzeiten), keine Farbe,
+nirgends kcal; ab 3 Tagen unter der Untergrenze nur der feste Hilfe-Hinweis ohne Einleitung und ohne Zahl (Schwangerschaft nie). **Training:** je Einheit Tag, Stufe und Erfüllungsgrad; Summen Einheiten
+erledigt/geplant, Kraft-Sätze erfüllt/geplant, Ausdauer-Minuten gemacht/geplant, Strecke; freie Einheiten getrennt.
+Einheiten zählen in der Woche ihres Termins (auch an der Wochengrenze nachgeholte, „gemacht am …“); lag schon der Essensplan unter der Untergrenze, sagt die Woche das dazu. Zustände zusätzlich „Diese Woche hat noch nicht begonnen“ und „zu alt für den Gerätespeicher“. Keine Migration.
+
 **Übungs-Glossar (`docs/PLAN-UEBUNGEN-GLOSSAR-TAUSCH.md`, Etappe G1, umgesetzt):** Seite „Übungen“ (`app/uebungen/`) mit
 Suche (Name, andere Namen, englischer Name, Beschreibung; Umlaute und Bindestriche egal) und Filtern (Bereich,
 Ausrüstung: ohne Geräte / mit meinen Geräten zu Hause / Studio mit Geräten, Schwierigkeit); Detailseite mit
@@ -350,6 +364,8 @@ besteht. Einkaufsliste nach Abteilungen, Mengen aufgerundet, Häkchen bleiben be
 
 - **Tagesauswertung (Etappe A2, 15.10.2026):** Der Kalorienbalken „Dein Tag“ baut auf dem Tagebuch auf (Abschnitt 5,
   „Tagesauswertung“); bei „Kalorienzahlen aus“ und in Schwangerschaft/Stillzeit ohne Balken, nur die Mahlzeiten-Anzahl.
+- **Wochenauswertung (Etappe A3, 15.10.2026):** Tagesbalken der Woche, Durchschnitt je eingetragenem Tag (keine
+  Wochen-Bilanz), Muster-Hinweis ab 3 Tagen unter der Untergrenze (Abschnitt 5, „Wochenauswertung“).
 
 ### 6.2 Standardgerichte (Gratis)
 - Eigene Gerichte anlegen („Mein Porridge“, „Shake nach dem Training“) mit kcal und Makros – direkt eingegeben oder aus Zutaten berechnet
