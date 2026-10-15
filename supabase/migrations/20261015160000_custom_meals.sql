@@ -26,12 +26,15 @@ create table public.custom_meals (
   -- id erzeugt das Gerät (offline); ist sie schon vergeben, vergibt save_custom_meal eine neue.
   id uuid primary key default gen_random_uuid(),
   user_id uuid not null references auth.users (id) on delete cascade,
-  -- sync: CUSTOM_MEAL_LIMITS.nameMaxChars; ohne Steuerzeichen, ohne Leerraum am Rand (isValidCustomMealName)
+  -- sync: CUSTOM_MEAL_LIMITS.nameMaxChars, CUSTOM_MEAL_NAME_FORBIDDEN_CLASS, CUSTOM_MEAL_NAME_EDGE_SPACE_CLASS
+  -- (isValidCustomMealName, Wächter E2 H1): ausdrückliche Unicode-Bereiche statt POSIX-Klassen (unabhängig von der
+  -- Locale) – keine Steuerzeichen, keine unsichtbaren Zeichen (Zero-Width, Bidi-Steuerung, Zeilen-/Absatztrenner,
+  -- BOM) und kein Leerraum (auch geschütztes Leerzeichen) am Rand.
   name_de text not null check (
     char_length(name_de) between 1 and 60
-    and name_de !~ '[[:cntrl:]]'
-    and name_de !~ '^[[:space:]]'
-    and name_de !~ '[[:space:]]$'
+    and name_de !~ '[\u0001-\u001f\u007f-\u009f\u200b-\u200f\u2028-\u202e\u2060-\u2064\u2066-\u2069\ufeff]'
+    and name_de !~ '^[ \u00a0\u1680\u2000-\u200a\u202f\u205f\u3000]'
+    and name_de !~ '[ \u00a0\u1680\u2000-\u200a\u202f\u205f\u3000]$'
   ),
   -- sync: CUSTOM_MEAL_MODES
   mode text not null check (mode in ('direct', 'ingredients')),
@@ -59,7 +62,7 @@ create table public.custom_meals (
 
 comment on table public.custom_meals is
   'Eigene Gerichte (E2). Name = Freitext: nur mit Einwilligung health_data, beim Widerruf gelöscht, nie loggen. '
-  'Schreiben nur über save_custom_meal; Löschen direkt (eigene Zeilen).';
+  'Schreiben nur über save_custom_meal, Löschen nur über delete_custom_meal.';
 
 create index custom_meals_user_idx on public.custom_meals (user_id);
 
@@ -97,22 +100,21 @@ create index custom_meal_items_user_idx on public.custom_meal_items (user_id);
 create index custom_meal_items_food_id_idx on public.custom_meal_items (food_id);
 
 -- ---------------------------------------------------------------------------------------------------------
--- Rechte und RLS: lesen und löschen eigene Zeilen; Anlegen/Ändern nur über save_custom_meal (nächste Migration).
--- Löschen braucht keine Einwilligung (Recht auf Löschung); die Zutaten gehen per Kaskade mit.
+-- Rechte und RLS: nur eigene Zeilen lesen. Anlegen/Ändern nur über save_custom_meal, Löschen nur über
+-- delete_custom_meal (nächste Migration, Wächter E2 S1: gleiche Sperr-Reihenfolge wie Speichern und Widerruf – erst die
+-- Tagebuch-Einträge mit dem Verweis, dann das Gericht). Löschen braucht keine Einwilligung (Recht auf Löschung); die
+-- Zutaten gehen per Kaskade mit.
 -- ---------------------------------------------------------------------------------------------------------
 alter table public.custom_meals enable row level security;
 alter table public.custom_meal_items enable row level security;
 
 revoke all on table public.custom_meals, public.custom_meal_items from anon, authenticated;
-grant select, delete on table public.custom_meals to authenticated;
+grant select on table public.custom_meals to authenticated;
 grant select on table public.custom_meal_items to authenticated;
 grant all on table public.custom_meals, public.custom_meal_items to service_role;
 
 create policy "Nutzer sehen eigene Gerichte"
   on public.custom_meals for select to authenticated
-  using (user_id = (select auth.uid()));
-create policy "Nutzer löschen eigene Gerichte"
-  on public.custom_meals for delete to authenticated
   using (user_id = (select auth.uid()));
 create policy "Nutzer sehen Zutaten eigener Gerichte"
   on public.custom_meal_items for select to authenticated

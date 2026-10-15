@@ -46,23 +46,51 @@ function codePoints(text: string): number {
 const multipleOf = (step: number) => (value: number) =>
   Math.abs(Math.round(value / step) * step - value) < 1e-9;
 
-// Steuerzeichen (Zeilenumbruch, Tabulator, …) – wie der CHECK `name_de !~ '[[:cntrl:]]'` in der Datenbank.
-// eslint-disable-next-line no-control-regex
-const CONTROL_CHARS = /[\u0000-\u001f\u007f-\u009f]/u;
+/**
+ * Zeichen, die im Namen NIE vorkommen dürfen (Wächter E2 H1) – als Inhalt einer Zeichenklasse, identisch im CHECK von
+ * custom_meals.name_de (db-sync.test.ts): Steuerzeichen (C0/C1), Zero-Width und Richtungsmarken (U+200B–U+200F),
+ * Zeilen-/Absatztrenner und Bidi-Steuerung (U+2028–U+202E), unsichtbare Operatoren (U+2060–U+2064), Bidi-Isolates
+ * (U+2066–U+2069), BOM (U+FEFF). Ausdrückliche Bereiche statt Klassen wie [[:cntrl:]] – unabhängig von Locale und Engine.
+ */
+export const CUSTOM_MEAL_NAME_FORBIDDEN_CLASS =
+  '\\u0001-\\u001f\\u007f-\\u009f\\u200b-\\u200f\\u2028-\\u202e\\u2060-\\u2064\\u2066-\\u2069\\ufeff';
+/** Leerraum, der nicht am Anfang oder Ende stehen darf (Leerzeichen, geschütztes Leerzeichen, typografische Leerzeichen). */
+export const CUSTOM_MEAL_NAME_EDGE_SPACE_CLASS =
+  ' \\u00a0\\u1680\\u2000-\\u200a\\u202f\\u205f\\u3000';
 
-/** true = gültiger Name: 1–60 Zeichen, ohne Leerzeichen am Rand, ohne Steuerzeichen. */
+const FORBIDDEN = new RegExp(`[\\u0000${CUSTOM_MEAL_NAME_FORBIDDEN_CLASS}]`, 'u');
+const FORBIDDEN_INVISIBLE = /[\u200b-\u200f\u202a-\u202e\u2060-\u2064\u2066-\u2069\ufeff]/gu;
+const EDGE_SPACE = new RegExp(
+  `^[${CUSTOM_MEAL_NAME_EDGE_SPACE_CLASS}]|[${CUSTOM_MEAL_NAME_EDGE_SPACE_CLASS}]$`,
+  'u',
+);
+
+/**
+ * true = gültiger Name: 1–60 Zeichen (Code-Points), keine verbotenen Zeichen, kein Leerraum am Rand – dieselbe Menge
+ * wie der CHECK in der Datenbank.
+ */
 export function isValidCustomMealName(name: string): boolean {
   return (
-    name.trim() === name &&
     codePoints(name) >= 1 &&
     codePoints(name) <= L.nameMaxChars &&
-    !CONTROL_CHARS.test(name)
+    !FORBIDDEN.test(name) &&
+    !EDGE_SPACE.test(name)
   );
 }
 
-/** Name aus der Eingabe: Leerzeichen am Rand weg, Leerraum innen auf ein Leerzeichen (Zeilenumbrüche → Leerzeichen). */
+/**
+ * Name aus der Eingabe: unsichtbare Zeichen (Zero-Width, Bidi-Steuerung, BOM) entfernen, Steuerzeichen und Leerraum
+ * (auch Zeilenumbrüche) zu einem Leerzeichen zusammenfassen, Rand weg. Das Ergebnis prüft `isValidCustomMealName`.
+ */
 export function normalizeCustomMealName(input: string): string {
-  return input.replace(/\s+/gu, ' ').trim();
+  return (
+    input
+      .replace(FORBIDDEN_INVISIBLE, '')
+      // eslint-disable-next-line no-control-regex
+      .replace(/[\u0000-\u001f\u007f-\u009f]/gu, ' ')
+      .replace(/\s+/gu, ' ')
+      .trim()
+  );
 }
 
 const nameSchema = z.string().refine(isValidCustomMealName, { message: 'Ungültiger Name.' });
@@ -145,7 +173,16 @@ export type CustomMealRejectCode = (typeof CUSTOM_MEAL_REJECT_CODES)[number];
 
 /** Antwort von save_custom_meal – an der Grenze geprüft (Zod), gleiche Form wie bei save_food_log_entries. */
 export const customMealSaveResultSchema = z.union([
-  z.strictObject({ result: z.literal('saved'), id: z.uuid(), revision: z.number().int().min(1) }),
+  // Mit den GESPEICHERTEN Werten je Portion (aus Zutaten rechnet der Server selbst, E2-G2) – die App übernimmt sie.
+  z.strictObject({
+    result: z.literal('saved'),
+    id: z.uuid(),
+    revision: z.number().int().min(1),
+    kcal: kcalSchema.nullable(),
+    protein_g: macroSchema.nullable(),
+    carbs_g: macroSchema.nullable(),
+    fat_g: macroSchema.nullable(),
+  }),
   z.strictObject({
     result: z.literal('conflict'),
     reason: z.literal('revision'),
@@ -376,6 +413,26 @@ export function customMealValuesNeedConfirmation(values: {
   const tolerance = L.macroKcalTolerance * kcal;
   if (p === null || c === null || f === null) return fromMacros - kcal > tolerance;
   return Math.abs(fromMacros - kcal) > tolerance;
+}
+
+export const CUSTOM_MEAL_VALUE_FIELDS = ['kcal', 'protein_g', 'carbs_g', 'fat_g'] as const;
+export type CustomMealValueField = (typeof CUSTOM_MEAL_VALUE_FIELDS)[number];
+
+/**
+ * Eingabefelder „Werte direkt“ prüfen (Wächter E2 H4/H5 – die Grenzen stehen nur in constants.ts): je Feld der Fehler,
+ * leeres Objekt = gültig. Eingabe: Zahl, `null` (leer) oder `NaN` (keine Zahl). kcal ist Pflicht (ganz, 0–3.000),
+ * Makros optional (0–750 g, eine Nachkommastelle).
+ */
+export function checkCustomMealDirectValues(
+  values: Readonly<Record<CustomMealValueField, number | null>>,
+): Partial<Record<CustomMealValueField, 'invalid'>> {
+  const errors: Partial<Record<CustomMealValueField, 'invalid'>> = {};
+  if (!kcalSchema.safeParse(values.kcal).success) errors.kcal = 'invalid';
+  for (const key of ['protein_g', 'carbs_g', 'fat_g'] as const) {
+    const value = values[key];
+    if (value !== null && !macroSchema.safeParse(value).success) errors[key] = 'invalid';
+  }
+  return errors;
 }
 
 /** Darf noch ein Gericht dazukommen? (höchstens 100) */

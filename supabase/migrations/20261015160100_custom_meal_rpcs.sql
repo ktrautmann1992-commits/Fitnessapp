@@ -1,4 +1,5 @@
--- Etappe E2 · Server-Funktionen der eigenen Gerichte (docs/PLAN-AUSWERTUNG.md Abschnitt 7, 2.7): save_custom_meal neu;
+-- Etappe E2 · Server-Funktionen der eigenen Gerichte (docs/PLAN-AUSWERTUNG.md Abschnitt 7, 2.7): save_custom_meal und
+-- delete_custom_meal neu;
 -- save_food_log_entries, consents_after_revoke() und export_my_data() in der NEUESTEN Fassung (20261015130100_food_log
 -- _rpcs.sql) übernommen und nur erweitert (echte Obermenge – jede bisherige Zeile steht unverändert darin, Abgleich per
 -- diff im Plan, Umsetzungsstand E2).
@@ -11,16 +12,215 @@
 -- wird das Speichern abgelehnt.
 
 -- ---------------------------------------------------------------------------------------------------------
+-- 0. Werte rechnet der SERVER (Gründer-Entscheidung 15.10.2026: E1-G4 / E2-G2 „Server rechnet nach“). Die Hilfen
+-- bilden die Rechnung von packages/core Schritt für Schritt in double precision nach (gleiche Reihenfolge der
+-- Operationen wie JavaScript, damit auch die Rundung gleich ausfällt; Abgleich db-sync.test.ts, pgTAP 32 und der
+-- Kreuzvergleich im Harness):
+-- - Gramm je Einheit = gramsPerUnit (units.ts), Prise = PINCH_G,
+-- - Rezept/Zutaten = computeRecipeFacts (recipe-nutrients.ts): Summe (Gramm × Wert) / 100 der nicht optionalen,
+--   umrechenbaren Zutaten in Reihenfolge, ÷ Portionen,
+-- - Rundung = Math.round (halbe aufwärts) bzw. round1 (eine Nachkommastelle).
+-- Nicht über die API erreichbar, selbst KEIN security definer (laufen in den aufrufenden Funktionen).
+-- ---------------------------------------------------------------------------------------------------------
+
+-- Math.round für Werte ≥ 0, exakt wie JavaScript (x − floor(x) ist in double precision exakt).
+create or replace function private.js_round(p_x double precision)
+returns double precision
+language sql
+immutable
+set search_path = ''
+as $$
+  select case when p_x - floor(p_x) >= 0.5 then floor(p_x) + 1 else floor(p_x) end
+$$;
+
+-- round1 aus packages/core: Math.round(x × 10) / 10.
+create or replace function private.js_round1(p_x double precision)
+returns double precision
+language sql
+immutable
+set search_path = ''
+as $$
+  select private.js_round(p_x * 10) / 10
+$$;
+
+-- Gramm je Einheit eines Lebensmittels (data.units); null = nicht umrechenbar. sync: gramsPerUnit, PINCH_G.
+create or replace function private.grams_per_unit(p_units jsonb, p_unit text)
+returns double precision
+language sql
+immutable
+set search_path = ''
+as $$
+  select case p_unit
+    when 'g' then 1::double precision
+    when 'ml' then (p_units ->> 'ml_to_g')::double precision
+    when 'piece' then (p_units ->> 'piece_g')::double precision
+    when 'tbsp' then (p_units ->> 'tbsp_g')::double precision
+    when 'tsp' then (p_units ->> 'tsp_g')::double precision
+    when 'pinch' then 0.5::double precision
+  end
+$$;
+
+-- Werte JE PORTION aus Zutaten [{food_id, amount, unit, optional?}] (Reihenfolge der Liste) = computeRecipeFacts.
+-- Ergebnis {kcal, Eiweiß, Kohlenhydrate, Fett}, ungerundet. p_strict (eigene Gerichte, customMealNutrients): fehlendes
+-- Lebensmittel, nicht umrechenbare Einheit oder über 2.000 g je Zutat → null; sonst (Rezepte) wird die Zutat wie im
+-- Core übersprungen.
+create or replace function private.ingredients_per_serving(p_items jsonb, p_servings integer, p_strict boolean)
+returns double precision[]
+language plpgsql
+stable
+set search_path = ''
+as $$
+declare
+  -- sync: FOOD_LOG_LIMITS.gramsMax
+  grams_max constant double precision := 2000;
+  item jsonb;
+  food_data jsonb;
+  per_unit double precision;
+  grams double precision;
+  t_kcal double precision := 0;
+  t_protein double precision := 0;
+  t_carbs double precision := 0;
+  t_fat double precision := 0;
+begin
+  for item in select x.value from jsonb_array_elements(p_items) with ordinality as x(value, ord) order by x.ord loop
+    select f.data into food_data from public.foods f where f.id = item ->> 'food_id';
+    if not found then
+      if p_strict then return null; end if;
+      continue;
+    end if;
+    per_unit := private.grams_per_unit(food_data -> 'units', item ->> 'unit');
+    if per_unit is null then
+      if p_strict then return null; end if;
+      continue;
+    end if;
+    grams := (item ->> 'amount')::double precision * per_unit;
+    if p_strict and grams > grams_max then
+      return null;
+    end if;
+    if coalesce((item ->> 'optional')::boolean, false) then
+      continue;
+    end if;
+    t_kcal := t_kcal + (grams * (food_data -> 'nutrients_per_100g' ->> 'kcal')::double precision) / 100;
+    t_protein := t_protein + (grams * (food_data -> 'nutrients_per_100g' ->> 'protein_g')::double precision) / 100;
+    t_carbs := t_carbs + (grams * (food_data -> 'nutrients_per_100g' ->> 'carbs_g')::double precision) / 100;
+    t_fat := t_fat + (grams * (food_data -> 'nutrients_per_100g' ->> 'fat_g')::double precision) / 100;
+  end loop;
+  return array[t_kcal / p_servings, t_protein / p_servings, t_carbs / p_servings, t_fat / p_servings];
+end;
+$$;
+
+-- Werte eines Tagebuch-Eintrags (Lebensmittel, Rezept, eigenes Gericht) aus dem Bestand – wie entryFromFood,
+-- entryFromRecipe, entryFromCustomMeal; beim Ändern DESSELBEN Inhalts (gleiche Herkunft, gleicher Verweis, gleiche
+-- Einheit) verhältnisgleich aus dem gespeicherten Schnappschuss wie rescaleEntry (der Schnappschuss bleibt, auch wenn
+-- sich Katalog oder Gericht inzwischen geändert haben). null = nicht berechenbar (Eintrag wird abgelehnt).
+-- Antwort {"kcal", "protein_g", "carbs_g", "fat_g"} (Werte bzw. null).
+create or replace function private.food_log_server_values(
+  p_entry jsonb, p_old jsonb, p_custom_meal_id uuid, p_user_id uuid
+)
+returns jsonb
+language plpgsql
+stable
+set search_path = ''
+as $$
+declare
+  -- sync: FOOD_LOG_LIMITS.gramsMax
+  grams_max constant double precision := 2000;
+  src text := p_entry ->> 'source';
+  factor double precision;
+  food_data jsonb;
+  per_unit double precision;
+  grams double precision;
+  per double precision[];
+  portion double precision;
+  r_servings integer;
+  m_kcal double precision;
+  m_protein double precision;
+  m_carbs double precision;
+  m_fat double precision;
+  found_meal boolean;
+begin
+  if src not in ('food', 'recipe', 'custom_meal') then
+    return null;
+  end if;
+  -- Ändern desselben Inhalts: Schnappschuss × (neue Menge bzw. Portion ÷ alte) – wie rescaleEntry/scaled().
+  if p_old is not null
+     and p_old ->> 'source' = src
+     and (p_old ->> 'food_id') is not distinct from (p_entry ->> 'food_id')
+     and (p_old ->> 'recipe_id') is not distinct from (p_entry ->> 'recipe_id')
+     and (p_old ->> 'custom_meal_id') is not distinct from (p_entry ->> 'custom_meal_id')
+     and (p_old ->> 'unit') is not distinct from (p_entry ->> 'unit') then
+    factor := case when src = 'food'
+                then (p_entry ->> 'amount')::double precision / (p_old ->> 'amount')::double precision
+                else (p_entry ->> 'portion')::double precision / (p_old ->> 'portion')::double precision end;
+    return jsonb_build_object(
+      'kcal', private.js_round((p_old ->> 'kcal')::double precision * factor),
+      'protein_g', private.js_round1((p_old ->> 'protein_g')::double precision * factor),
+      'carbs_g', private.js_round1((p_old ->> 'carbs_g')::double precision * factor),
+      'fat_g', private.js_round1((p_old ->> 'fat_g')::double precision * factor));
+  end if;
+  if src = 'food' then
+    -- entryFromFood: Gramm = Menge × Gramm je Einheit (höchstens 2.000 g), Faktor = Gramm / 100.
+    select f.data into food_data from public.foods f where f.id = p_entry ->> 'food_id';
+    if not found then return null; end if;
+    per_unit := private.grams_per_unit(food_data -> 'units', p_entry ->> 'unit');
+    if per_unit is null then return null; end if;
+    grams := (p_entry ->> 'amount')::double precision * per_unit;
+    if grams > grams_max then return null; end if;
+    factor := grams / 100;
+    return jsonb_build_object(
+      'kcal', private.js_round((food_data -> 'nutrients_per_100g' ->> 'kcal')::double precision * factor),
+      'protein_g', private.js_round1((food_data -> 'nutrients_per_100g' ->> 'protein_g')::double precision * factor),
+      'carbs_g', private.js_round1((food_data -> 'nutrients_per_100g' ->> 'carbs_g')::double precision * factor),
+      'fat_g', private.js_round1((food_data -> 'nutrients_per_100g' ->> 'fat_g')::double precision * factor));
+  end if;
+  portion := (p_entry ->> 'portion')::double precision;
+  if src = 'recipe' then
+    -- entryFromRecipe: Werte je Portion aus den Zutaten (computeRecipeFacts) × Portionen.
+    select r.servings into r_servings from public.recipes r where r.id = p_entry ->> 'recipe_id';
+    if not found then return null; end if;
+    per := private.ingredients_per_serving(
+      (select coalesce(jsonb_agg(jsonb_build_object('food_id', i.food_id, 'amount', i.amount, 'unit', i.unit,
+                                                    'optional', i.optional) order by i.position), '[]'::jsonb)
+       from public.recipe_ingredients i where i.recipe_id = p_entry ->> 'recipe_id'),
+      r_servings, false);
+    return jsonb_build_object(
+      'kcal', private.js_round(per[1] * portion),
+      'protein_g', private.js_round1(per[2] * portion),
+      'carbs_g', private.js_round1(per[3] * portion),
+      'fat_g', private.js_round1(per[4] * portion));
+  end if;
+  -- entryFromCustomMeal: Werte je Portion des eigenen Gerichts × Portion; ohne Werte bleibt ohne Werte.
+  if p_custom_meal_id is null then return null; end if;
+  select m.kcal, m.protein_g, m.carbs_g, m.fat_g into m_kcal, m_protein, m_carbs, m_fat
+  from public.custom_meals m where m.id = p_custom_meal_id and m.user_id = p_user_id;
+  found_meal := found;
+  if not found_meal then return null; end if;
+  return jsonb_build_object(
+    'kcal', private.js_round(m_kcal * portion),
+    'protein_g', case when m_kcal is null then null else private.js_round1(m_protein * portion) end,
+    'carbs_g', case when m_kcal is null then null else private.js_round1(m_carbs * portion) end,
+    'fat_g', case when m_kcal is null then null else private.js_round1(m_fat * portion) end);
+end;
+$$;
+
+revoke all on function private.js_round(double precision) from public;
+revoke all on function private.js_round1(double precision) from public;
+revoke all on function private.grams_per_unit(jsonb, text) from public;
+revoke all on function private.ingredients_per_serving(jsonb, integer, boolean) from public;
+revoke all on function private.food_log_server_values(jsonb, jsonb, uuid, uuid) from public;
+
+-- ---------------------------------------------------------------------------------------------------------
 -- 1. save_custom_meal(p_meal jsonb) – einziger Schreibweg für Gerichte (neu oder ganz ersetzen, Zutaten inklusive).
 -- Eingabe = customMealPayloadSchema. Antwort (= customMealSaveResultSchema):
---   {"result": "saved", "id", "revision"}                                     gespeichert (auch: gleiche Fassung erneut)
+--   {"result": "saved", "id", "revision", "kcal", "protein_g", "carbs_g", "fat_g"} gespeichert (auch: gleiche Fassung
+--                                                                             erneut) – mit den GESPEICHERTEN Werten
 --   {"result": "conflict", "reason": "revision", "id", "revision"}            anderswo geändert, nichts geschrieben
 --   {"result": "conflict", "reason": "deleted", "id": null, "revision": null} Gericht gibt es nicht mehr
 --   {"result": "rejected", "code": "invalid" | "limit"}                       ungültig bzw. schon 100 Gerichte
 -- Ausnahme (ganzer Aufruf): nicht angemeldet, Profil fehlt, Einwilligung fehlt.
--- Werte: Bei `ingredients` sind die Werte je Portion der Schnappschuss des Geräts (Core rechnet mit derselben
--- Rechnung wie Rezepte); der Server prüft Form und Grenzen, rechnet aber nicht nach (wie save_food_log_entries,
--- Gründer-Frage G4 aus E1). Zutaten: nur Lebensmittel des Katalogs mit Status `published`; ein inzwischen
+-- Werte (entschieden 15.10.2026, E2-G2): Bei `ingredients` rechnet der SERVER die Werte je Portion aus den Zutaten
+-- (private.ingredients_per_serving, gleiche Rechnung wie customMealNutrients); vom Gerät gesendete Werte werden
+-- ignoriert, die Antwort nennt die gespeicherten. Bei `direct` gelten die eingegebenen Werte. Zutaten: nur Lebensmittel des Katalogs mit Status `published`; ein inzwischen
 -- archiviertes Lebensmittel bleibt nur erlaubt, wenn es schon in DIESEM Gericht steckt (Umbenennen bleibt möglich).
 -- ---------------------------------------------------------------------------------------------------------
 create or replace function public.save_custom_meal(p_meal jsonb)
@@ -57,6 +257,7 @@ declare
   has_existing boolean;
   new_revision integer;
   meal_count integer;
+  per double precision[];
 begin
   if current_user_id is null then
     raise exception 'Nicht angemeldet.' using errcode = 'insufficient_privilege';
@@ -124,7 +325,9 @@ begin
 
     -- Idempotenz: dieselbe Fassung erneut gesendet → saved mit aktueller revision, nichts ändern.
     if has_existing and ex_write_id = v_write_id then
-      return jsonb_build_object('result', 'saved', 'id', ex_id, 'revision', ex_revision);
+      return jsonb_build_object('result', 'saved', 'id', ex_id, 'revision', ex_revision) || (
+        select jsonb_build_object('kcal', m.kcal, 'protein_g', m.protein_g, 'carbs_g', m.carbs_g, 'fat_g', m.fat_g)
+        from public.custom_meals m where m.id = ex_id);
     end if;
     -- Optimistische Sperre: Ändern nur auf Basis der gespeicherten revision; neu nur ohne Zeile.
     if has_existing and v_base_revision is distinct from ex_revision then
@@ -132,6 +335,19 @@ begin
     end if;
     if not has_existing and v_base_revision is not null then
       return jsonb_build_object('result', 'conflict', 'reason', 'deleted', 'id', null, 'revision', null);
+    end if;
+
+    -- Werte aus Zutaten rechnet der Server (E2-G2); nicht berechenbar (Einheit, über 2.000 g) → ungültig.
+    if v_mode = 'ingredients' then
+      per := private.ingredients_per_serving(v_items, (p_meal ->> 'servings')::integer, true);
+      if per is null then
+        raise exception 'Ungültiges eigenes Gericht.' using errcode = 'invalid_parameter_value';
+      end if;
+      p_meal := p_meal || jsonb_build_object(
+        'kcal', private.js_round(per[1]),
+        'protein_g', private.js_round1(per[2]),
+        'carbs_g', private.js_round1(per[3]),
+        'fat_g', private.js_round1(per[4]));
     end if;
 
     -- Zutaten nur aus dem Katalog: freigegeben, oder archiviert und schon in diesem Gericht (Schnappschuss bleibt).
@@ -188,7 +404,9 @@ begin
     if meal_count > max_meals then
       raise exception 'Zu viele eigene Gerichte.' using errcode = 'program_limit_exceeded';
     end if;
-    return jsonb_build_object('result', 'saved', 'id', v_id, 'revision', new_revision);
+    return jsonb_build_object('result', 'saved', 'id', v_id, 'revision', new_revision) || (
+      select jsonb_build_object('kcal', m.kcal, 'protein_g', m.protein_g, 'carbs_g', m.carbs_g, 'fat_g', m.fat_g)
+      from public.custom_meals m where m.id = v_id);
   exception
     when program_limit_exceeded then
       return jsonb_build_object('result', 'rejected', 'code', 'limit');
@@ -200,6 +418,48 @@ $$;
 
 revoke all on function public.save_custom_meal(jsonb) from public, anon;
 grant execute on function public.save_custom_meal(jsonb) to authenticated;
+
+-- ---------------------------------------------------------------------------------------------------------
+-- 1b. delete_custom_meal(p_id) – einziger Löschweg für Gerichte (Wächter E2 S1). Geht OHNE Einwilligung (Recht auf
+-- Löschung), auch für fremde oder schon gelöschte ids (dann ohne Wirkung, gleiche Antwort – nichts unterscheidbar).
+-- Sperr-Reihenfolge wie save_food_log_entries und der Widerruf, damit sich die Wege nicht gegenseitig blockieren
+-- (sonst Deadlock: direktes DELETE sperrte erst das Gericht, dann per „on delete set null“ die Einträge):
+--   1. Person (dieselbe Advisory-Sperre wie save_food_log_entries – Speichern und Löschen laufen nacheinander),
+--   2. die Tagebuch-Einträge mit diesem Verweis (FOR UPDATE),
+--   3. das Gericht (FOR UPDATE), dann löschen (Zutaten per Kaskade, Verweise werden leer).
+-- Die Einwilligung wird NICHT gesperrt (Löschen braucht keine); der Widerruf sperrt Einwilligung → Einträge →
+-- Gerichte, also dieselbe Richtung Einträge vor Gericht.
+-- Antwort: {"result": "ok", "id": p_id}
+-- ---------------------------------------------------------------------------------------------------------
+create or replace function public.delete_custom_meal(p_id uuid)
+returns jsonb
+language plpgsql
+security definer
+set search_path = ''
+as $$
+declare
+  current_user_id uuid := auth.uid();
+begin
+  if current_user_id is null then
+    raise exception 'Nicht angemeldet.' using errcode = 'insufficient_privilege';
+  end if;
+  perform pg_advisory_xact_lock(hashtext('food_log|' || current_user_id::text));
+  perform 1
+  from public.food_log_entries f
+  where f.user_id = current_user_id and f.custom_meal_id = p_id
+  order by f.id
+  for update;
+  perform 1
+  from public.custom_meals m
+  where m.id = p_id and m.user_id = current_user_id
+  for update;
+  delete from public.custom_meals m where m.id = p_id and m.user_id = current_user_id;
+  return jsonb_build_object('result', 'ok', 'id', p_id);
+end;
+$$;
+
+revoke all on function public.delete_custom_meal(uuid) from public, anon;
+grant execute on function public.delete_custom_meal(uuid) to authenticated;
 
 -- ---------------------------------------------------------------------------------------------------------
 -- 2. save_food_log_entries – neueste Fassung (20261015130100_food_log_rpcs.sql) unverändert übernommen und nur
@@ -241,6 +501,9 @@ declare
   v_title text;
   -- E2: Verweis auf das eigene Gericht (null = keins bzw. nicht (mehr) vorhanden).
   v_custom_meal_id uuid;
+  -- E1-G4/E2-G2 (entschieden 15.10.2026): gespeicherter Eintrag als jsonb (keine Record-Variable) und Server-Werte.
+  ex_row jsonb;
+  v_values jsonb;
   -- Bestehender Eintrag als einzelne Werte (keine Record-Variable, Wächter N1): null = keiner.
   ex_id uuid;
   ex_revision integer;
@@ -380,9 +643,11 @@ begin
         end if;
       elsif v_source = 'custom_meal' then
         -- E2: Titel immer fest (kein Freitext im Tagebuch, nie der Name des Gerichts). Der Verweis gilt nur für ein
-        -- eigenes Gericht DIESER Person; gibt es das nicht (mehr) – anderswo gelöscht oder fremd –, bleibt der Eintrag
-        -- ohne Verweis (Schnappschuss, ohne unterscheidbare Meldung). FOR KEY SHARE: das Gericht kann bis zum Ende
-        -- dieses Speicherns nicht gelöscht werden.
+        -- eigenes Gericht DIESER Person; gibt es das nicht (mehr) – anderswo gelöscht oder fremd –, bleibt der Verweis
+        -- leer (ohne unterscheidbare Meldung). Die Werte rechnet der Server (unten): ein NEUER Eintrag ohne vorhandenes
+        -- Gericht ist dann nicht berechenbar und wird abgelehnt; das Ändern eines Eintrags, dessen Gericht gelöscht
+        -- ist, rechnet aus seinem Schnappschuss. FOR KEY SHARE: das Gericht kann bis zum Ende dieses Speicherns nicht
+        -- gelöscht werden.
         v_title := 'Eigenes Gericht';
         select m.id into v_custom_meal_id
         from public.custom_meals m
@@ -390,6 +655,19 @@ begin
         for key share;
       else
         v_title := e ->> 'title_de';
+      end if;
+
+      -- Werte rechnet der SERVER (Gründer-Entscheidung 15.10.2026, E1-G4/E2-G2) für Lebensmittel, Rezept und eigenes
+      -- Gericht aus dem Bestand (private.food_log_server_values, gleiche Rechnung wie packages/core); beim Ändern
+      -- desselben Inhalts verhältnisgleich aus dem Schnappschuss. Die Werte vom Gerät werden ersetzt. Schnelleintrag
+      -- und Plan-Mahlzeit (Schnappschuss des Essensplans) behalten die Werte des Geräts.
+      if v_source in ('food', 'recipe', 'custom_meal') then
+        select to_jsonb(f) into ex_row from public.food_log_entries f where f.id = ex_id;
+        v_values := private.food_log_server_values(e, ex_row, v_custom_meal_id, current_user_id);
+        if v_values is null then
+          raise exception 'Ungültige Werte im Ernährungstagebuch.' using errcode = 'invalid_parameter_value';
+        end if;
+        e := e || v_values;
       end if;
 
       if has_existing then

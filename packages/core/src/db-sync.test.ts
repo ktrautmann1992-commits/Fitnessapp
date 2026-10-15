@@ -27,6 +27,7 @@ import {
   CONTENT_SCHEMA_LIMITS,
   FOOD_LOG_LIMITS,
   CUSTOM_MEAL_LIMITS,
+  PINCH_G,
   BODY_METRIC_LIMITS,
   EQUIPMENT_LIMITS,
   MEASURED_ON_MAX_DAYS_AHEAD,
@@ -84,6 +85,8 @@ import {
 } from './nutrition/food-log';
 import {
   CUSTOM_MEAL_MODES,
+  CUSTOM_MEAL_NAME_EDGE_SPACE_CLASS,
+  CUSTOM_MEAL_NAME_FORBIDDEN_CLASS,
   CUSTOM_MEAL_REJECT_CODES,
   customMealItemSchema,
   customMealPayloadSchema,
@@ -1093,6 +1096,60 @@ describe('Eigene Gerichte in der Datenbank (Etappe E2)', () => {
     expect(body.split('delete from public.custom_meals where user_id = new.user_id;')).toHaveLength(
       3,
     );
+  });
+
+  it('Name: dieselben verbotenen Zeichen und derselbe Rand-Leerraum wie isValidCustomMealName (Wächter E2 H1)', () => {
+    expect(meals).toContain(`name_de !~ '[${CUSTOM_MEAL_NAME_FORBIDDEN_CLASS}]'`);
+    expect(meals).toContain(`name_de !~ '^[${CUSTOM_MEAL_NAME_EDGE_SPACE_CLASS}]'`);
+    expect(meals).toContain(`name_de !~ '[${CUSTOM_MEAL_NAME_EDGE_SPACE_CLASS}]$'`);
+    expect(meals).not.toContain('[[:');
+  });
+
+  it('Löschen nur über delete_custom_meal: kein DELETE-Recht, Person → Einträge → Gericht (Wächter E2 S1)', () => {
+    expect(tables).toContain('grant select on table public.custom_meals to authenticated;');
+    expect(tables).not.toMatch(/grant [a-z, ]*delete[a-z, ]* on table public\.custom_meal/);
+    const del = fn('public.delete_custom_meal');
+    expect(del).not.toContain('has_valid_consent');
+    expect(del.indexOf('pg_advisory_xact_lock')).toBeGreaterThan(0);
+    // Dieselbe Advisory-Sperre wie save_food_log_entries: Speichern und Löschen laufen je Person nacheinander.
+    const lock = "pg_advisory_xact_lock(hashtext('food_log|' || current_user_id::text))";
+    expect(del).toContain(lock);
+    expect(saveEntries).toContain(lock);
+    expect(del.indexOf('pg_advisory_xact_lock')).toBeLessThan(
+      del.indexOf('from public.food_log_entries'),
+    );
+    expect(del.indexOf('from public.food_log_entries')).toBeLessThan(
+      del.indexOf('from public.custom_meals'),
+    );
+    expect(rpcs).toContain(
+      'revoke all on function public.delete_custom_meal(uuid) from public, anon;',
+    );
+  });
+
+  it('Server rechnet nach (E1-G4/E2-G2, 15.10.2026): Umrechnungen, Prise, 2.000 g, Rundung wie packages/core', () => {
+    const grams = fn('private.grams_per_unit');
+    for (const unit of RECIPE_UNITS) expect(grams).toContain(`when '${unit}' then`);
+    for (const key of ['ml_to_g', 'piece_g', 'tbsp_g', 'tsp_g'])
+      expect(grams).toContain(`'${key}'`);
+    expect(grams).toContain(`when 'pinch' then ${PINCH_G}::double precision`);
+    expect(fn('private.ingredients_per_serving')).toContain(
+      `grams_max constant double precision := ${FOOD_LOG_LIMITS.gramsMax};`,
+    );
+    expect(fn('private.food_log_server_values')).toContain(
+      `grams_max constant double precision := ${FOOD_LOG_LIMITS.gramsMax};`,
+    );
+    // Math.round (halbe aufwärts), nicht round() (Postgres rundet double precision halbe zur geraden Zahl).
+    expect(fn('private.js_round')).toContain('when p_x - floor(p_x) >= 0.5 then floor(p_x) + 1');
+    expect(fn('private.js_round1')).toContain('private.js_round(p_x * 10) / 10');
+    // Rechnung in derselben Reihenfolge wie computeRecipeFacts bzw. entryFromFood.
+    expect(fn('private.ingredients_per_serving')).toContain(
+      "t_kcal := t_kcal + (grams * (food_data -> 'nutrients_per_100g' ->> 'kcal')::double precision) / 100;",
+    );
+    expect(fn('private.food_log_server_values')).toContain('factor := grams / 100;');
+    // Die Werte vom Gerät werden für Lebensmittel, Rezept und eigenes Gericht ersetzt.
+    expect(saveEntries).toContain("if v_source in ('food', 'recipe', 'custom_meal') then");
+    expect(saveEntries).toContain('e := e || v_values;');
+    expect(saveMeal).toContain('per := private.ingredients_per_serving(v_items,');
   });
 
   it('Lebensmittel in Zutaten: on delete restrict; Tagebuch-Verweis: on delete set null (nur die Spalte)', () => {

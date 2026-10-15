@@ -1,7 +1,15 @@
-import type { CustomMeal, CustomMealBuildError, CustomMealValues } from '@fitnessapp/core';
+import {
+  type CustomMeal,
+  type CustomMealBuildError,
+  type CustomMealValues,
+  entryFromCustomMeal,
+  type FoodLogEntry,
+} from '@fitnessapp/core';
 
 import { t } from '@/i18n';
+import type { HealthConsentStatus } from '@/state/flow';
 
+import { entryDetailText } from './food-log-format';
 import { formatGrams, formatKcal } from './nutrition-format';
 
 /**
@@ -58,4 +66,36 @@ export function customMealBuildErrorText(reason: CustomMealBuildError): string {
     case 'invalid':
       return t.customMeals.errors.rejected;
   }
+}
+
+/**
+ * Detailzeile unter „Zuletzt“ (Wächter E2 H2): Für ein eigenes Gericht zeigt sie, was ein Tipp TATSÄCHLICH einträgt –
+ * das aktuelle Gericht × die zuletzt gewählte Portion (dieselbe Rechnung wie beim Eintragen, `entryFromCustomMeal`),
+ * nicht den alten Schnappschuss. Sonst wie bisher die Werte des Eintrags.
+ */
+export function recentDetailText(
+  item: FoodLogEntry,
+  meals: readonly CustomMeal[],
+  showNumbers: boolean,
+): string {
+  if (item.source === 'custom_meal' && item.portion !== null) {
+    const meal = meals.find((m) => m.id === item.custom_meal_id);
+    const built = meal
+      ? entryFromCustomMeal(meal, item.portion, {
+          id: item.id,
+          date: item.eaten_on,
+          slot: item.slot,
+        })
+      : null;
+    if (built?.ok) return entryDetailText(built.entry, showNumbers);
+  }
+  return entryDetailText(item, showNumbers);
+}
+
+/**
+ * Was „Eigene Gerichte“ anbietet (Wächter E2 S2): mit gültiger Einwilligung alles; ohne (fehlt oder veraltet) nur
+ * Löschen – das geht immer (Recht auf Löschung), Anlegen, Ändern und Eintragen nicht.
+ */
+export function customMealAccess(consent: HealthConsentStatus): { edit: boolean; delete: true } {
+  return { edit: consent === 'valid', delete: true };
 }

@@ -1,6 +1,7 @@
 import {
   buildCustomMeal,
   canAddCustomMeal,
+  checkCustomMealDirectValues,
   CUSTOM_MEAL_LIMITS,
   type CustomMeal,
   type CustomMealBuild,
@@ -153,7 +154,13 @@ function MealForm({
   const [protein, setProtein] = useState(formatDecimal(existing?.protein_g ?? null));
   const [carbs, setCarbs] = useState(formatDecimal(existing?.carbs_g ?? null));
   const [fat, setFat] = useState(formatDecimal(existing?.fat_g ?? null));
-  const [errors, setErrors] = useState<{ name?: string; kcal?: string; macro?: string }>({});
+  const [errors, setErrors] = useState<{
+    name?: string;
+    kcal?: string;
+    protein_g?: string;
+    carbs_g?: string;
+    fat_g?: string;
+  }>({});
   const [message, setMessage] = useState<{ text: string; tone: 'danger' | 'warning' } | null>(null);
   const [pending, setPending] = useState<CustomMeal | null>(null);
   const [busy, setBusy] = useState(false);
@@ -219,19 +226,23 @@ function MealForm({
         foods,
       );
     } else {
-      const value = parseDecimal(kcal);
-      const kcalOk = value !== null && Number.isInteger(value) && value >= 0 && value <= 3000;
-      const macro = (text: string) => {
-        const v = parseDecimal(text);
-        return v === null || (!Number.isNaN(v) && v >= 0 && v <= 750) ? v : Number.NaN;
+      // Feldprüfung mit den Grenzen aus constants.ts (packages/core, Wächter E2 H4); Fehler je Feld (H5).
+      const parsed = {
+        kcal: parseDecimal(kcal),
+        protein_g: parseDecimal(protein),
+        carbs_g: parseDecimal(carbs),
+        fat_g: parseDecimal(fat),
       };
-      const macros = [macro(protein), macro(carbs), macro(fat)];
-      const macrosOk = macros.every((m) => m === null || !Number.isNaN(m));
+      const fieldErrors = checkCustomMealDirectValues(parsed);
       setErrors({
-        ...(kcalOk ? {} : { kcal: t.customMeals.kcalInvalid }),
-        ...(macrosOk ? {} : { macro: t.customMeals.macroInvalid }),
+        ...(fieldErrors.kcal ? { kcal: t.customMeals.kcalInvalid } : {}),
+        ...(fieldErrors.protein_g ? { protein_g: t.customMeals.macroInvalid } : {}),
+        ...(fieldErrors.carbs_g ? { carbs_g: t.customMeals.macroInvalid } : {}),
+        ...(fieldErrors.fat_g ? { fat_g: t.customMeals.macroInvalid } : {}),
       });
-      if (!kcalOk || !macrosOk) return;
+      if (Object.keys(fieldErrors).length > 0 || parsed.kcal === null) return;
+      const value = parsed.kcal;
+      const macros = [parsed.protein_g, parsed.carbs_g, parsed.fat_g];
       build = buildCustomMeal(
         {
           id: mealId,
@@ -310,6 +321,7 @@ function MealForm({
                 keyboardType="decimal-pad"
                 maxLength={5}
                 style={{ flex: 1 }}
+                error={errors.protein_g}
                 testID="custom-meal-protein"
               />
               <TextField
@@ -319,6 +331,7 @@ function MealForm({
                 keyboardType="decimal-pad"
                 maxLength={5}
                 style={{ flex: 1 }}
+                error={errors.carbs_g}
                 testID="custom-meal-carbs"
               />
               <TextField
@@ -328,10 +341,10 @@ function MealForm({
                 keyboardType="decimal-pad"
                 maxLength={5}
                 style={{ flex: 1 }}
+                error={errors.fat_g}
                 testID="custom-meal-fat"
               />
             </View>
-            {errors.macro ? <Body muted>{errors.macro}</Body> : null}
           </View>
         ) : (
           <View style={{ gap: 4 }} testID="custom-meal-direct">
@@ -379,9 +392,10 @@ function MealForm({
           <ChoiceList
             label={t.customMeals.servingsLabel}
             horizontal
-            options={Array.from({ length: 8 }, (_, i) => i + 1)
-              .concat(servings > 8 ? [servings] : [])
-              .map((value) => ({ value, label: String(value) }))}
+            options={Array.from(
+              { length: CUSTOM_MEAL_LIMITS.servings.max - CUSTOM_MEAL_LIMITS.servings.min + 1 },
+              (_, i) => CUSTOM_MEAL_LIMITS.servings.min + i,
+            ).map((value) => ({ value, label: String(value) }))}
             value={servings}
             onChange={setServings}
           />

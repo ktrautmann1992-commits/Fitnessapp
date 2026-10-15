@@ -340,9 +340,9 @@ besteht. Einkaufsliste nach Abteilungen, Mengen aufgerundet, Häkchen bleiben be
   „Eigenes Gericht“ und einem Verweis (der Name wird nur angezeigt): Ändern oder Löschen des Gerichts ändert
   eingetragene Tage nicht. Höchstens 100 Gerichte. „Kalorienzahlen aus“: nur aus Zutaten (Werte im Hintergrund) oder
   ohne Werte, nirgends kcal. Datenschutz: Der Name ist Freitext – nur mit Einwilligung `health_data`, beim Widerruf
-  gelöscht (sichere Voreinstellung, Gründer-Frage E2-G1), im Export, Konto löschen per Kaskade, nie in Logs,
+  gelöscht (Gründer-Entscheidung E2-G1, 15.10.2026), im Export, Konto löschen per Kaskade, nie in Logs,
   Fehlermeldungen oder testIDs. Logik `packages/core/src/nutrition/custom-meal.ts`, Grenzen `CUSTOM_MEAL_LIMITS`,
-  Datenbank `custom_meals`/`custom_meal_items` mit `save_custom_meal`. Testmodus fertig; Supabase-Modus mit N7 Teil 2.
+  Datenbank `custom_meals`/`custom_meal_items` mit `save_custom_meal`/`delete_custom_meal`; die Werte aus Zutaten und die Werte der Tagebuch-Einträge (Lebensmittel, Rezept, eigenes Gericht) rechnet der Server mit derselben Rechnung nach (Entscheidung E1-G4/E2-G2). Testmodus fertig; Supabase-Modus mit N7 Teil 2.
 
 ### 6.3 Gerichte vor, während und nach dem Training (Premium, ohne KI)
 - Für **jede geplante Einheit** berechnet die Ernährungs-Engine **Zielmengen** (kcal, Eiweiß, Kohlenhydrate, Fett, bei

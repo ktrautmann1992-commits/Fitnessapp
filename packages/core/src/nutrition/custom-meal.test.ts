@@ -5,6 +5,7 @@ import { FIXTURE_FOODS, foodLookup, makeFood } from '../content/nutrition-fixtur
 import {
   buildCustomMeal,
   canAddCustomMeal,
+  checkCustomMealDirectValues,
   customMealComputable,
   type CustomMeal,
   type CustomMealItem,
@@ -93,23 +94,53 @@ describe('Grenzen (Plan 7)', () => {
 });
 
 describe('Name (Freitext, 1–60 Zeichen)', () => {
-  it.each([
+  // Dieselben Fälle wie pgTAP 32 (Tabelle name_cases) – Datenbank und Core lassen genau dieselben Namen zu (Wächter
+  // E2 H1). Zusätzlich hier: Emoji ×60 und NUL (in Postgres-Text gar nicht möglich).
+  const SHARED_NAME_CASES: readonly (readonly [string, boolean])[] = [
+    ['Meine Bowl', true],
+    ['Shake mit Milch (2 %)', true],
+    ['Müsli 😀', true],
     ['A', true],
+    ['Hafer\u00a0Flocken', true],
     ['ä'.repeat(60), true],
-    ['😀'.repeat(60), true],
-    ['ä'.repeat(61), false],
     ['', false],
+    ['ä'.repeat(61), false],
     [' Shake', false],
     ['Shake ', false],
-    ['Zeile\nzwei', false],
+    ['\u00a0Shake', false],
+    ['Shake\u00a0', false],
+    ['\u3000Shake', false],
+    ['Zeile\nZwei', false],
     ['Tab\tTab', false],
-    ['Nul\u0000l', false],
-  ])('„%s“ → %s', (name, valid) => {
-    expect(isValidCustomMealName(name)).toBe(valid);
-    expect(customMealSchema.safeParse(direct({ name_de: name })).success).toBe(valid);
-  });
-  it('normalizeCustomMealName: Rand weg, Leerraum innen zu einem Leerzeichen', () => {
+    ['Sha\u200bke', false],
+    ['Sha\u200dke', false],
+    ['Sha\u202eke', false],
+    ['Sha\u202ake', false],
+    ['Sha\u2066ke', false],
+    ['Sha\u2069ke', false],
+    ['Sha\u2028ke', false],
+    ['Sha\u2029ke', false],
+    ['\ufeffShake', false],
+    ['Sha\ufeffke', false],
+    ['Sha\u0085ke', false],
+    ['Sha\u2060ke', false],
+  ];
+  it.each([...SHARED_NAME_CASES, ['😀'.repeat(60), true] as const, ['Nul\u0000l', false] as const])(
+    '„%s“ → %s',
+    (name, valid) => {
+      expect(isValidCustomMealName(name)).toBe(valid);
+      expect(customMealSchema.safeParse(direct({ name_de: name })).success).toBe(valid);
+    },
+  );
+  it('normalizeCustomMealName: Rand weg, Leerraum innen zu einem Leerzeichen, unsichtbare Zeichen weg', () => {
     expect(normalizeCustomMealName('  Mein \n  Porridge\t')).toBe('Mein Porridge');
+    expect(normalizeCustomMealName('\ufeff\u00a0Sha\u200bke\u202e\u2028')).toBe('Shake');
+    for (const [name] of SHARED_NAME_CASES) {
+      const normalized = normalizeCustomMealName(name);
+      if (normalized.length > 0 && [...normalized].length <= 60) {
+        expect(isValidCustomMealName(normalized)).toBe(true);
+      }
+    }
   });
 });
 
@@ -168,8 +199,20 @@ describe('customMealSchema (strikt, wie die CHECKs)', () => {
   });
   it('Antwort des Servers: id null nur bei deleted', () => {
     expect(
-      customMealSaveResultSchema.safeParse({ result: 'saved', id: ID(1), revision: 1 }).success,
+      customMealSaveResultSchema.safeParse({
+        result: 'saved',
+        id: ID(1),
+        revision: 1,
+        kcal: 465,
+        protein_g: 16.3,
+        carbs_g: 69.1,
+        fat_g: 11.7,
+      }).success,
     ).toBe(true);
+    // Ohne die gespeicherten Werte unvollständig (die App übernimmt sie, E2-G2).
+    expect(
+      customMealSaveResultSchema.safeParse({ result: 'saved', id: ID(1), revision: 1 }).success,
+    ).toBe(false);
     expect(
       customMealSaveResultSchema.safeParse({
         result: 'conflict',
@@ -185,6 +228,23 @@ describe('customMealSchema (strikt, wie die CHECKs)', () => {
 });
 
 describe('customMealNutrients – gleiche Rechnung wie Rezepte', () => {
+  it('von Hand gerechnet: Banane 2 Stück + Milch 300 ml, 3 Portionen (Wächter E2 H7)', () => {
+    // Banane 2 × 120 g = 240 g: 223,2 kcal · 2,88 g Eiweiß · 48 g KH · 0,48 g Fett
+    // Milch 300 ml × 1,03 = 309 g: 197,76 kcal · 10,197 g Eiweiß · 14,832 g KH · 10,815 g Fett
+    // Summe 420,96 kcal · 13,077 · 62,832 · 11,295 → ÷ 3 = 140,32 · 4,359 · 20,944 · 3,765
+    expect(
+      customMealNutrients(
+        {
+          items: [
+            { food_id: 'banane', amount: 2, unit: 'piece' },
+            { food_id: 'vollmilch', amount: 300, unit: 'ml' },
+          ],
+          servings: 3,
+        },
+        FOODS,
+      ),
+    ).toEqual({ ok: true, perServing: { kcal: 140, protein_g: 4.4, carbs_g: 20.9, fat_g: 3.8 } });
+  });
   it('Mein Porridge (Haferflocken 60 g, Milch 200 ml, Banane 1 Stück) = computeRecipeFacts', () => {
     const result = customMealNutrients({ items: PORRIDGE_ITEMS, servings: 1 }, FOODS);
     const facts = computeRecipeFacts(
@@ -402,6 +462,27 @@ describe('buildCustomMeal / renameCustomMeal', () => {
       ),
     ).toEqual({ ok: false, reason: 'missing_food', index: 2 });
     expect(renameCustomMeal(m, '')).toEqual({ ok: false, reason: 'name', index: null });
+  });
+});
+
+describe('checkCustomMealDirectValues – Feldfehler je Feld (Wächter E2 H4/H5)', () => {
+  it('gültig, kcal fehlt, Grenzen aus FOOD_LOG_LIMITS, keine Zahl, zwei Nachkommastellen', () => {
+    const v = { kcal: 450, protein_g: 30, carbs_g: null, fat_g: 12.5 };
+    expect(checkCustomMealDirectValues(v)).toEqual({});
+    expect(checkCustomMealDirectValues({ ...v, kcal: null })).toEqual({ kcal: 'invalid' });
+    expect(checkCustomMealDirectValues({ ...v, kcal: FOOD_LOG_LIMITS.kcal.max })).toEqual({});
+    expect(checkCustomMealDirectValues({ ...v, kcal: FOOD_LOG_LIMITS.kcal.max + 1 })).toEqual({
+      kcal: 'invalid',
+    });
+    expect(checkCustomMealDirectValues({ ...v, kcal: 12.5 })).toEqual({ kcal: 'invalid' });
+    expect(
+      checkCustomMealDirectValues({
+        ...v,
+        protein_g: FOOD_LOG_LIMITS.macroG.max + 1,
+        fat_g: Number.NaN,
+      }),
+    ).toEqual({ protein_g: 'invalid', fat_g: 'invalid' });
+    expect(checkCustomMealDirectValues({ ...v, carbs_g: 1.25 })).toEqual({ carbs_g: 'invalid' });
   });
 });
 
@@ -668,7 +749,7 @@ describe('Eigenschaftstests (Zufall mit festem Startwert)', () => {
 
   it('Namen: normalisiert ist immer gültig oder leer bzw. zu lang; Schema = isValidCustomMealName', () => {
     const r = seededRandom(2017);
-    const chars = ['a', 'Ä', ' ', '\n', '\t', '😀', '-', 'ß', '\u0007', ' '];
+    const chars = ['a', 'Ä', ' ', '\n', '\t', '😀', '-', 'ß', '\u0007', '\u00a0'];
     for (let run = 0; run < 3000; run += 1) {
       const raw = Array.from(
         { length: Math.floor(r() * 70) },

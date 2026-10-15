@@ -7,7 +7,7 @@ import { NutritionGate, nutritionReady } from '@/components/nutrition';
 import { ConfirmDialog, Screen } from '@/components/screen';
 import { Body, Button, Card, Heading, LoadingState, Notice } from '@/components/ui';
 import { t } from '@/i18n';
-import { customMealDetailText } from '@/lib/custom-meal-format';
+import { customMealAccess, customMealDetailText } from '@/lib/custom-meal-format';
 import { errorText } from '@/lib/error-text';
 import { useToday } from '@/lib/use-today';
 import { useApp } from '@/state/app-state';
@@ -72,33 +72,41 @@ export default function CustomMealsScreen() {
   if (!nutritionReady(view) || view.library.kind !== 'ready') {
     return shell(<NutritionGate view={view} />);
   }
-  if (healthConsentStatus(rows, app.versions) !== 'valid') {
-    return shell(
-      <Notice tone="info" testID="custom-meals-consent">
-        <Body>{t.customMeals.consentNeeded}</Body>
-        <Button
-          label={t.foodLog.consentButton}
-          variant="secondary"
-          onPress={() => router.push('/health-consent')}
-          testID="custom-meals-consent-button"
-        />
-      </Notice>,
-    );
+  // Ohne gültige Einwilligung (fehlt oder veraltet, Wächter E2 S2): Hinweis + Liste nur mit „Löschen“ – Löschen geht
+  // immer (Recht auf Löschung), Anlegen/Ändern/Eintragen nicht.
+  const access = customMealAccess(healthConsentStatus(rows, app.versions));
+  const consentNotice = (
+    <Notice tone="info" testID="custom-meals-consent">
+      <Body>
+        {meals.length > 0 ? t.customMeals.consentDeleteOnly : t.customMeals.consentNeeded}
+      </Body>
+      <Button
+        label={t.foodLog.consentButton}
+        variant="secondary"
+        onPress={() => router.push('/health-consent')}
+        testID="custom-meals-consent-button"
+      />
+    </Notice>
+  );
+  if (!access.edit && meals.length === 0) {
+    return shell(consentNotice);
   }
   const showNumbers = view.showNumbers;
-  const canAdd = canAddCustomMeal(meals);
+  const canAdd = access.edit && canAddCustomMeal(meals);
 
   return shell(
     <>
-      <Body>{t.customMeals.intro}</Body>
+      {access.edit ? <Body>{t.customMeals.intro}</Body> : consentNotice}
       {!showNumbers ? <Body muted>{t.foodLog.numbersHidden}</Body> : null}
-      <Button
-        label={t.customMeals.create}
-        disabled={!canAdd}
-        onPress={() => router.push('/ernaehrung/gericht' as Href)}
-        testID="custom-meals-create"
-      />
-      {!canAdd ? (
+      {access.edit ? (
+        <Button
+          label={t.customMeals.create}
+          disabled={!canAdd}
+          onPress={() => router.push('/ernaehrung/gericht' as Href)}
+          testID="custom-meals-create"
+        />
+      ) : null}
+      {access.edit && !canAdd ? (
         <Notice tone="info" testID="custom-meals-limit">
           {t.customMeals.limitReached}
         </Notice>
@@ -122,18 +130,20 @@ export default function CustomMealsScreen() {
               <Heading level={2}>{meal.name_de}</Heading>
               <Body muted>{customMealDetailText(meal, showNumbers)}</Body>
               <View style={{ flexDirection: 'row', gap: 8 }}>
-                <View style={{ flex: 1 }}>
-                  <Button
-                    label={t.customMeals.edit}
-                    accessibilityLabel={t.customMeals.editA11y(meal.name_de)}
-                    variant="secondary"
-                    disabled={busy}
-                    onPress={() =>
-                      router.push(`/ernaehrung/gericht?id=${encodeURIComponent(meal.id)}` as Href)
-                    }
-                    testID={`custom-meals-edit-${index}`}
-                  />
-                </View>
+                {access.edit ? (
+                  <View style={{ flex: 1 }}>
+                    <Button
+                      label={t.customMeals.edit}
+                      accessibilityLabel={t.customMeals.editA11y(meal.name_de)}
+                      variant="secondary"
+                      disabled={busy}
+                      onPress={() =>
+                        router.push(`/ernaehrung/gericht?id=${encodeURIComponent(meal.id)}` as Href)
+                      }
+                      testID={`custom-meals-edit-${index}`}
+                    />
+                  </View>
+                ) : null}
                 <View style={{ flex: 1 }}>
                   <Button
                     label={t.customMeals.delete}

@@ -54,6 +54,7 @@ import { newId } from '@/data/create-backend';
 import { entryFromRow } from '@/data/food-log-rows';
 import type { FoodLogEntryRow } from '@/data/types';
 import { t } from '@/i18n';
+import { recentDetailText } from '@/lib/custom-meal-format';
 import { errorText } from '@/lib/error-text';
 import {
   buildErrorText,
@@ -351,6 +352,12 @@ export default function FoodLogEntryScreen() {
           busy={busy}
           testID="food-log-recent"
           titleOf={titleOf}
+          // Eigene Gerichte: Werte, die ein Tipp wirklich einträgt (aktuelles Gericht, Wächter E2 H2).
+          detailOf={(item) =>
+            'fav_key' in item
+              ? templateDetailText(item, showNumbers)
+              : recentDetailText(item, meals, showNumbers)
+          }
           available={(item) =>
             item.source !== 'custom_meal' ||
             ('custom_meal_id' in item && mealById(item.custom_meal_id) !== null)
@@ -447,6 +454,7 @@ function TemplateList({
   busy,
   testID,
   titleOf,
+  detailOf = (item) => templateDetailText(item, showNumbers),
   available = () => true,
   onPick,
 }: {
@@ -457,6 +465,8 @@ function TemplateList({
   testID: string;
   /** Anzeigetitel (eigene Gerichte: Name, E2). */
   titleOf: (item: FoodLogEntryRow) => string;
+  /** Detailzeile (Standard: Werte der Vorlage). */
+  detailOf?: (item: FoodLogEntryRow | FoodLogFavorite) => string;
   available?: (item: FoodLogEntryRow | FoodLogFavorite) => boolean;
   onPick: (item: FoodLogEntryRow | FoodLogFavorite) => void;
 }) {
@@ -477,7 +487,7 @@ function TemplateList({
         return (
           <Card key={key}>
             <Body>{title}</Body>
-            <Body muted>{templateDetailText(item, showNumbers)}</Body>
+            <Body muted>{detailOf(item)}</Body>
             {ok ? null : <Body muted>{t.foodLog.favoriteUnavailable}</Body>}
             <Button
               label={t.foodLog.addThis}

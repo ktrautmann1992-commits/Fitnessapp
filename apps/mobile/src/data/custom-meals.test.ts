@@ -17,6 +17,7 @@ import {
 } from '@fitnessapp/core';
 import { describe, expect, it } from 'vitest';
 
+import { customMealAccess, recentDetailText } from '@/lib/custom-meal-format';
 import { errorText } from '@/lib/error-text';
 
 import { localBackendOn, planPersonRows, seededBackend, TODAY, USER_ID } from '../test/fixtures';
@@ -320,5 +321,23 @@ describe('Eigene Gerichte im Testmodus (E2)', () => {
     delete old.customMeals;
     delete old.customMealItems;
     expect(upgradeStoredRows(old as UserRows).customMeals).toEqual([]);
+  });
+
+  it('ohne gültige Einwilligung nur Löschen (Wächter E2 S2)', () => {
+    expect(customMealAccess('valid')).toEqual({ edit: true, delete: true });
+    expect(customMealAccess('outdated')).toEqual({ edit: false, delete: true });
+    expect(customMealAccess('none')).toEqual({ edit: false, delete: true });
+  });
+
+  it('„Zuletzt“ zeigt, was ein Tipp einträgt: aktuelles Gericht × Portion (Wächter E2 H2)', () => {
+    const old = ok(
+      entryFromCustomMeal(meal(1, 400), 0.5, { id: ID(70), date: TODAY, slot: 'other' }),
+    );
+    expect(recentDetailText(old, [meal(1, 400)], true)).toBe('½ Portion · 200 kcal');
+    // Gericht inzwischen auf 900 kcal geändert: der Tipp trägt 450 kcal ein – genau das steht da.
+    expect(recentDetailText(old, [meal(1, 900)], true)).toBe('½ Portion · 450 kcal');
+    expect(recentDetailText(old, [meal(1, 900)], false)).toBe('½ Portion');
+    // Gericht gelöscht: Schnappschuss (nicht eintragbar, siehe recentEntries).
+    expect(recentDetailText(old, [], true)).toBe('½ Portion · 200 kcal');
   });
 });

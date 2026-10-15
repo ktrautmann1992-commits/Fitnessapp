@@ -152,6 +152,14 @@ test('Mein Porridge aus Zutaten, ½ Portion im Tagesverlauf, direkt 450 kcal, ä
   await page.getByTestId('custom-meals-create').click();
   await page.getByRole('radio', { name: 'Werte direkt' }).click();
   await page.getByTestId('custom-meal-kcal').fill('100');
+  // Feldfehler hängt am betroffenen Feld (Wächter E2 H5).
+  await page.getByTestId('custom-meal-protein').fill('800');
+  await page.getByTestId('custom-meal-name').fill('Eiweißriegel');
+  await page.getByTestId('custom-meal-save').click();
+  await expect(
+    page.getByText('Bitte Gramm von 0 bis 750 eingeben (eine Nachkommastelle).'),
+  ).toHaveCount(1);
+  await page.getByTestId('custom-meal-name').fill('');
   await page.getByTestId('custom-meal-protein').fill('50');
   await page.getByTestId('custom-meal-save').click();
   await expect(page.getByText('Bitte einen Namen mit 1 bis 60 Zeichen eingeben.')).toBeVisible();
@@ -189,10 +197,9 @@ test('Mein Porridge aus Zutaten, ½ Portion im Tagesverlauf, direkt 450 kcal, ä
   await page.getByRole('button', { name: 'Mein Porridge ändern' }).click();
   await expect(page.getByTestId('custom-meal-name')).toHaveValue('Mein Porridge');
   await page.getByTestId('custom-meal-name').fill('Porridge groß');
-  await page
-    .getByRole('radiogroup', { name: 'Ergibt Portionen' })
-    .getByRole('radio', { name: '2', exact: true })
-    .click();
+  const servings = page.getByRole('radiogroup', { name: 'Ergibt Portionen' });
+  await expect(servings.getByRole('radio')).toHaveCount(20); // 1–20 wie Core und Datenbank (Wächter E2 H3)
+  await servings.getByRole('radio', { name: '2', exact: true }).click();
   await expect(page.getByTestId('custom-meal-values')).toContainText('233 kcal');
   await page.getByTestId('custom-meal-save').click();
   await expect(page.getByTestId('custom-meals-list')).toContainText('Porridge groß');
@@ -284,10 +291,39 @@ test('Kalorienzahlen aus (nirgends kcal), ohne Werte, 100 Gerichte, Widerruf lö
   await expect(page.getByTestId('food-log-custom-meals')).toContainText('Bananen-Porridge');
   expect(await page.content()).not.toMatch(/kcal/);
 
+  // Einwilligung fehlt (z. B. neue Textfassung noch nicht bestätigt, Wächter E2 S2): Liste nur mit „Löschen“.
+  const consents = (await db(page)).rows.consents;
+  await patchDb(page, (value) => ({
+    ...value,
+    rows: {
+      ...value.rows,
+      consents: (value.rows.consents as { consent_type: string }[]).filter(
+        (c) => c.consent_type !== 'health_data',
+      ),
+    },
+  }));
+  await page.goto('/ernaehrung/gerichte');
+  await expect(page.getByTestId('custom-meals-consent')).toContainText('nur löschen');
+  await expect(page.getByTestId('custom-meals-list')).toContainText('Snackteller');
+  await expect(page.getByTestId('custom-meals-create')).toHaveCount(0);
+  await expect(page.getByTestId(/^custom-meals-edit-/)).toHaveCount(0);
+  await page.getByRole('button', { name: 'Snackteller löschen' }).click();
+  await page
+    .getByTestId('custom-meals-delete-dialog')
+    .getByRole('button', { name: 'Löschen' })
+    .click();
+  await expect(page.getByTestId('custom-meals-message')).toHaveText('Gericht gelöscht.');
+  await expect
+    .poll(async () => (await meals(page)).map((m) => m.name_de))
+    .toEqual(['Bananen-Porridge']);
+  await page.goto('/ernaehrung');
+  await expect(page.getByTestId('custom-meal-day')).toHaveCount(0);
+  await patchDb(page, (value) => ({ ...value, rows: { ...value.rows, consents } }));
+
   // 100 Gerichte: „Neues Gericht anlegen“ gesperrt, Hinweis.
   await patchDb(page, (value) => {
     const userId = (value.rows.profile as { user_id: string }).user_id;
-    const filler = Array.from({ length: 98 }, (_, i) => ({
+    const filler = Array.from({ length: 99 }, (_, i) => ({
       id: `00000000-0000-4000-8000-${String(i + 1).padStart(12, '0')}`,
       user_id: userId,
       name_de: `Gericht ${i + 1}`,
