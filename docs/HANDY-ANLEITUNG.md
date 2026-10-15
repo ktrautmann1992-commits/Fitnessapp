@@ -475,6 +475,32 @@ Die Tagesauswertung braucht keine Einstellung und keine Datenbank-Änderung. Das
 Mindestbedarf, rot oben = über max(Obergrenze; Ziel × 1,2)) und „Ziel erreicht ab 90 %“ (A-G11) – beide stehen als
 Konstanten `INTAKE_ZONES` und `SESSION_ACHIEVEMENT` in `packages/core/src/constants.ts`.
 
+## Teil 7h – Wochenauswertung testen (Etappe A3, Testmodus)
+Keine Einstellung und keine Datenbank-Änderung nötig. Das Essen erscheint vorerst nur im **Testmodus** (mit Konto folgt
+es mit N7 Teil 2), der Trainingsteil geht in beiden Modi.
+
+1. Vorschau-Link aus dem Pull Request öffnen → Testmodus → ein paar Tage dieser Woche Mahlzeiten „Gegessen“ abhaken
+   bzw. über „Eintragen“ nachtragen und eine Einheit trainieren (auch nachtragen, Teil 7a2).
+2. **Woche** → **„Wochenauswertung“** (oder im **Kalender** → „Wochenauswertung“): je Tag ein kleiner Balken mit
+   Zeichen und Kurztext („✓ Im Zielbereich“, „↓ Unter Mindestbedarf“ …). Heute steht „Noch offen“ bzw. „Heute läuft
+   noch und zählt erst danach mit.“
+3. Einen Tag antippen → „Dein Tag“ zeigt dieselbe Farbe. Die Zahlen der Woche („An 3 Tagen eingetragen. Davon …“,
+   „Ø … von Ø … kcal je eingetragenem Tag“) passen zu den Tagesansichten; Tage ohne Eintrag zählen nicht mit. Es gibt
+   **keine** Wochen-Summe in kcal und keine Prognose.
+4. Training: „Einheiten: x von y erledigt“, „Kraft-Sätze: x von y erfüllt“, Ausdauer-Minuten, Strecke; je Einheit Tag,
+   Stufe und Prozent. Freie Einheiten stehen extra.
+5. **„‹ Vorwoche“ / „Nächste Woche ›“** blättern. Eine kommende Woche zeigt „Diese Woche hat noch nicht begonnen“.
+6. An **drei** vergangenen Tagen nur je **300** kcal eintragen → ruhiger Hinweis „Laut deinen Einträgen lagen in
+   dieser Woche mehrere Tage unter deinem Mindestbedarf …“ mit den Hilfe-Stellen (genau einmal). Bei zwei Tagen kommt
+   er nicht.
+7. **Einstellungen → Kalorienzahlen anzeigen** aus → keine Balken, keine Farben, nirgends kcal, kein Hinweis – nur
+   „An n Tagen eingetragen“, „Mahlzeiten: x von y abgehakt“ und das Training. Gleiches mit Gesundheits-Check
+   „schwanger“ (dazu der Hinweis auf Ärztin, Arzt oder Hebamme).
+8. **Flugmodus an** → neu laden → alles ist noch da (Gerätespeicher).
+
+**Bitte fachlich prüfen lassen (vor dem Livegang):** Muster-Hinweis ab 3 Tagen unter dem Mindestbedarf je Woche
+(A-G13, Konstante `WEEK_EVALUATION` in `packages/core/src/constants.ts`).
+
 ## Teil 7e – Neue Rezepte per KI erzeugen (Phase 5, Etappe N8, Gemini offline)
 
 Die KI (Google Gemini) schreibt **nur Entwürfe** – offline über die Batch-API, nie in der App. Nutzerdaten gehen nie an

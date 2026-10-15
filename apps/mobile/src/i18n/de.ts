@@ -8,6 +8,7 @@
 import { deDay } from './de-day';
 import { deFoodLog } from './de-food-log';
 import { deNutrition } from './de-nutrition';
+import { deWeekEval } from './de-week-eval';
 
 export const de = {
   common: {
@@ -1524,6 +1525,7 @@ export const de = {
   nutrition: deNutrition,
   foodLog: deFoodLog,
   day: deDay,
+  weekEval: deWeekEval,
 } as const;
 
 /** Typ, den jede Übersetzung erfüllen muss (Texte als string, Funktionen mit gleicher Signatur). */

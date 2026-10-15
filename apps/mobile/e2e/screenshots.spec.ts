@@ -288,5 +288,13 @@ for (const scheme of ['light', 'dark'] as const) {
     }
     await page.getByTestId('day-training').scrollIntoViewIfNeeded();
     await shot('dein-tag-training');
+    // Wochenauswertung (Etappe A3): Tagesbalken (heute grün), Summen, Training mit Erfüllungsgrad.
+    await page.goto('/wochenauswertung?woche=2026-10-05');
+    await expect(page.getByTestId('week-eval')).toBeVisible();
+    await shot('wochenauswertung');
+    await page.getByTestId('week-eval-food-summary').scrollIntoViewIfNeeded();
+    await shot('wochenauswertung-summen');
+    await page.getByTestId('week-eval-training').scrollIntoViewIfNeeded();
+    await shot('wochenauswertung-training');
   });
 }

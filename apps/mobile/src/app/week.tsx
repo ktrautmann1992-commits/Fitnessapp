@@ -186,6 +186,15 @@ export default function WeekScreen() {
           </Body>
         </View>
       </Card>
+      {/* Wochenauswertung (Etappe A3): Essen und Training dieser Woche. */}
+      <Button
+        label={t.weekEval.open}
+        accessibilityLabel={t.weekEval.openA11y(
+          weekRangeText(summary.weekStart, addDays(summary.weekStart, 6)),
+        )}
+        onPress={() => router.push(`/wochenauswertung?woche=${summary.weekStart}` as Href)}
+        testID="week-evaluation"
+      />
       {/* Trainingskalender (Etappe A1a): Einheiten dieser oder kommender Wochen verschieben. */}
       <Button
         label={t.calendar.openFromWeek}
