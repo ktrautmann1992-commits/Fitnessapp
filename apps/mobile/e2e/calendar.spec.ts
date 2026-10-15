@@ -54,10 +54,25 @@ async function dragTo(page: Page, from: string, to: string, beforeDrop?: () => P
     .toBe(true);
   const end = await target.boundingBox();
   if (!start || !end) throw new Error('Kalender nicht sichtbar');
-  await page.mouse.move(start.x + start.width / 2, start.y + start.height / 2);
-  await page.mouse.down();
-  // Langer Druck (DRAG_LONG_PRESS_MS = 400 ms), dann ziehen.
-  await page.waitForTimeout(700);
+  // Langer Druck (DRAG_LONG_PRESS_MS = 400 ms), dann ziehen. Im Headless-Browser der CI startet die Geste direkt
+  // nach einem abgelehnten Ablegen gelegentlich nicht (lokal nicht nachstellbar, nativ mit der APK prüfen): erst
+  // weiterziehen, wenn das Ziehen sichtbar läuft (Ziel-Hinweise erscheinen), sonst loslassen und neu drücken.
+  const dropHints = page.locator('[data-testid^="calendar-drop-"]');
+  for (let attempt = 1; ; attempt += 1) {
+    await page.mouse.move(start.x + start.width / 2, start.y + start.height / 2);
+    await page.mouse.down();
+    await page.waitForTimeout(700);
+    const started = await dropHints
+      .first()
+      .waitFor({ state: 'attached', timeout: 1500 })
+      .then(() => true)
+      .catch(() => false);
+    if (started) break;
+    await page.mouse.up();
+    if (attempt >= 3) throw new Error('Ziehen startet nach langem Druck nicht');
+    console.warn(`Ziehen nicht gestartet (Versuch ${attempt}) – neu drücken`);
+    await page.waitForTimeout(300);
+  }
   const steps = 12;
   for (let i = 1; i <= steps; i += 1) {
     await page.mouse.move(
@@ -136,30 +151,7 @@ test('Drag-and-drop: erlaubte Tage leuchten, gesperrte zeigen den Grund; verschi
   // Auf einen belegten Tag (Fr) ziehen → beide tauschen (A-G4).
   const [di, fr] = stored;
   await dragTo(page, DI, FR, async () => {
-    try {
-      await expect(page.getByTestId(`calendar-drop-${FR}`)).toContainText('✓ Tauschen mit');
-    } catch (error) {
-      // Diagnose für die CI (nur bei Fehlschlag): wo steht die Seite, welche Ziel-Hinweise gibt es?
-      const ids = await page
-        .locator('[data-testid^="calendar-"]')
-        .evaluateAll((els) => els.map((el) => el.getAttribute('data-testid')));
-      const boxes = {
-        handle: await page.getByTestId(`calendar-handle-${DI}`).boundingBox(),
-        target: await page.getByTestId(`calendar-day-${FR}`).boundingBox(),
-        label: await page.getByTestId(`calendar-open-day-${DI}`).boundingBox(),
-      };
-      console.warn('DIAG url', page.url());
-      console.warn('DIAG ids', JSON.stringify(ids));
-      console.warn('DIAG boxes', JSON.stringify(boxes));
-      console.warn(
-        'DIAG message',
-        await page
-          .getByTestId('calendar-message')
-          .textContent()
-          .catch(() => null),
-      );
-      throw error;
-    }
+    await expect(page.getByTestId(`calendar-drop-${FR}`)).toContainText('✓ Tauschen mit');
   });
   await expect(page.getByTestId('calendar-message')).toContainText('Getauscht: jetzt am Freitag');
   stored = await sessions(page);
