@@ -224,6 +224,13 @@ export function CalendarDay({
       : isToday
         ? theme.primary
         : theme.border;
+  const label = (
+    <Text style={[styles.dayLabel, { color: theme.text }]}>
+      {dayLabel(date)}
+      {isToday ? ` · ${t.calendar.badges.today}` : ''}
+      <Text style={[styles.dayLabelLink, { color: theme.link }]}>{` · ${t.day.open} ›`}</Text>
+    </Text>
+  );
   return (
     <View
       testID={`calendar-day-${date}`}
@@ -238,21 +245,24 @@ export function CalendarDay({
         lifted ? styles.dayLifted : null,
       ]}
     >
-      <Pressable
-        onPress={onOpenDay}
-        disabled={onOpenDay === undefined}
-        accessibilityRole="link"
-        accessibilityLabel={t.day.openA11y(dayLabel(date))}
-        hitSlop={8}
-        style={styles.dayLabelPress}
-        testID={`calendar-open-day-${date}`}
-      >
-        <Text style={[styles.dayLabel, { color: theme.text }]}>
-          {dayLabel(date)}
-          {isToday ? ` · ${t.calendar.badges.today}` : ''}
-          <Text style={[styles.dayLabelLink, { color: theme.link }]}>{` · ${t.day.open} ›`}</Text>
-        </Text>
-      </Pressable>
+      {/* Während des Ziehens kein Pressable im Ziel-Tag (nur Text, gleiche Höhe): ein Drücken-Element unter dem
+          Ablagepunkt darf die Zieh-Geste im Browser nicht stören. */}
+      {onOpenDay ? (
+        <Pressable
+          onPress={onOpenDay}
+          accessibilityRole="link"
+          accessibilityLabel={t.day.openA11y(dayLabel(date))}
+          hitSlop={8}
+          style={styles.dayLabelPress}
+          testID={`calendar-open-day-${date}`}
+        >
+          {label}
+        </Pressable>
+      ) : (
+        <View style={styles.dayLabelPress} testID={`calendar-open-day-${date}`}>
+          {label}
+        </View>
+      )}
       {children}
       {dropText ? (
         <View
