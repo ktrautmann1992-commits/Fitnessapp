@@ -39,6 +39,9 @@ export const DATA_EXPORT_TABLES = [
   'shopping_list_items',
   'recipe_ratings',
   'food_dislikes',
+  // Etappe E1 · Ernährungstagebuch (docs/PLAN-AUSWERTUNG.md Abschnitt 5)
+  'food_log_entries',
+  'food_log_favorites',
 ] as const;
 
 export type DataExportTable = (typeof DATA_EXPORT_TABLES)[number];

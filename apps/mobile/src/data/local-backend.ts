@@ -39,6 +39,12 @@ import { LOCAL_CONSENT_DOCUMENTS } from './consent-texts';
 import { localDataExport } from './data-export';
 import { DraftStore } from './draft-store';
 import {
+  applyFavoriteChange,
+  applyFoodLogDelete,
+  applyFoodLogSave,
+  checkFoodLogSave,
+} from './food-log-rows';
+import {
   applyFoodDislikes,
   applyRecipeRatings,
   checkFoodDislikesSave,
@@ -158,6 +164,9 @@ const SERIALIZED_METHODS = [
   'saveRecipeRating',
   'deleteRecipeRatings',
   'saveFoodDislikes',
+  'saveFoodLogEntries',
+  'deleteFoodLogEntry',
+  'changeFoodLogFavorite',
 ] as const satisfies readonly (keyof Backend)[];
 
 function serializeWrites(backend: Backend): Backend {
@@ -761,6 +770,71 @@ export function createLocalBackend(store: KeyValueStore, options: LocalBackendOp
       const check = checkFoodDislikesSave(foodIds);
       if (!check.ok) throw new BackendError('unknown');
       const next = applyFoodDislikes(rows, check.foodIds, session.userId);
+      await save({ ...db, rows: next });
+      return next;
+    },
+    // Ernährungstagebuch (Etappe E1): dieselben Regeln wie save_food_log_entries/food_log_favorites (food-log-rows.ts);
+    // im Testmodus immer ohne Netz (Gerätespeicher). Werte nie in Meldungen oder Logs.
+    saveFoodLogEntries: async (entries) => {
+      const { db, rows, session } = await requireProfile();
+      const check = checkFoodLogSave(rows, entries, {
+        today: options.today(),
+        versions: LOCAL_VERSIONS,
+      });
+      if (!check.ok) {
+        throw new BackendError(
+          check.reason === 'consent_required' ? 'consent_required' : 'food_log_rejected',
+          { sensitive: true },
+        );
+      }
+      // Wie der Server: gültige Einträge werden gespeichert, auch wenn ein anderer abgelehnt wird (Wächter E1 S2).
+      const saved = check.outcomes.flatMap((o) => (o.kind === 'saved' ? [o.entry] : []));
+      const next =
+        saved.length === 0
+          ? rows
+          : applyFoodLogSave(rows, saved, {
+              userId: session.userId,
+              now: options.now(),
+              newId: options.newId,
+            });
+      if (saved.length > 0) await save({ ...db, rows: next });
+      const failed = check.outcomes.find((o) => o.kind !== 'saved');
+      if (failed) {
+        // Danach melden (ohne Werte); die gespeicherten Einträge bleiben.
+        const code =
+          failed.kind === 'rejected' && failed.code === 'out_of_range'
+            ? 'food_log_out_of_range'
+            : failed.kind === 'rejected' && failed.code === 'day_full'
+              ? 'food_log_day_full'
+              : 'food_log_rejected';
+        throw new BackendError(code, { sensitive: true });
+      }
+      return next;
+    },
+    deleteFoodLogEntry: async (id) => {
+      const { db, rows } = await requireProfile();
+      const next = applyFoodLogDelete(rows, id);
+      await save({ ...db, rows: next });
+      return next;
+    },
+    changeFoodLogFavorite: async (change) => {
+      const { db, rows, session } = await requireProfile();
+      const next = applyFavoriteChange(rows, change, {
+        userId: session.userId,
+        now: options.now(),
+        versions: LOCAL_VERSIONS,
+      });
+      if (next === null) {
+        throw new BackendError(
+          change.op === 'set' && rows.foodLogFavorites.length >= 100
+            ? 'favorite_limit'
+            : change.op === 'set' &&
+                change.favorite.source === 'quick' &&
+                healthConsentStatus(rows, LOCAL_VERSIONS) !== 'valid'
+              ? 'consent_required'
+              : 'unknown',
+        );
+      }
       await save({ ...db, rows: next });
       return next;
     },

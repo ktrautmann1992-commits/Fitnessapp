@@ -401,6 +401,30 @@ Ernährung erst mit Teil 2. Ihr müsst nichts einstellen und keine Schlüssel ei
    `shopping_lists`, `recipe_ratings`, `food_dislikes` u. a. Leer ist richtig – Rezepte kommen erst nach der
    Fachprüfung (Gründer-Entscheidung 6), Nutzerdaten erst mit Teil 2.
 
+## Teil 7f – Ernährungstagebuch testen (Etappe E1, Testmodus)
+Das Tagebuch läuft vorerst nur im **Testmodus** (mit Konto folgt es mit N7 Teil 2). Ihr müsst nichts einstellen.
+Nach dem Merge spielt **db-migrate** (erst nach grünem db-test) zwei neue, leere Tabellen ein (`food_log_entries`,
+`food_log_favorites`) – vorhandene Daten bleiben unverändert.
+
+1. Vorschau-Link aus dem Pull Request öffnen → Testmodus mit dem Testkonto aus Teil 7c (Einwilligung
+   Gesundheitsdaten erteilt) → **Ernährung**.
+2. Beim Frühstück **„Gegessen“** tippen. Beim Mittagessen „Gegessen“ tippen und danach **¾** wählen. Unten im
+   Abschnitt **„Gegessen“** stehen beide mit Summe.
+3. **„Eintragen“** → Mahlzeit **Snack** → Reiter **Suche** → „Banane“ → Banane antippen → **1 Stück** →
+   „Eintragen“ → „Fertig“: Banane steht unter **Snack**.
+4. „Eintragen“ → Reiter **Schnell** → **„Auswärts gegessen“**, **700** kcal → „Eintragen“ → **„Als Favorit
+   merken“**. Reiter **Favoriten** zeigt ihn (auch morgen).
+5. Mehr als 1.500 kcal in einem Eintrag → ruhige Rückfrage „Bitte kurz prüfen – Stimmen Menge und Einheit?“ (keine
+   Sperre; bei „Kalorienzahlen aus“ ohne kcal).
+6. **Flugmodus an** → etwas eintragen → Seite neu laden → alles ist noch da.
+7. „Eintragen“ → **„← Früher“** bis zum 14. Tag zurück: geht; weiter zurück ist gesperrt, der Grund steht da.
+8. Einen Eintrag **„Ändern“** (z. B. 2 Stück) und einen **„Löschen“**.
+9. **Einstellungen → Kalorienzahlen anzeigen** aus → im Tagebuch keine kcal, im Schnelleintrag kein kcal-Feld.
+10. **Einstellungen → Gesundheitsdaten widerrufen** → der Dialog nennt vorher „dein Ernährungstagebuch samt
+    Schnelleintrag-Favoriten (Favoriten aus Lebensmitteln und Rezepten bleiben)“ → danach sind alle Einträge und der
+    Favorit „Auswärts gegessen“ weg, ein Favorit wie „Banane“ ist noch da; „Eintragen“ bittet um die Einwilligung.
+11. „Heute“ zeigt auf der Karte „Essen heute“: „Gegessen heute: … Einträge“ und „Essen eintragen“.
+
 ## Teil 7e – Neue Rezepte per KI erzeugen (Phase 5, Etappe N8, Gemini offline)
 
 Die KI (Google Gemini) schreibt **nur Entwürfe** – offline über die Batch-API, nie in der App. Nutzerdaten gehen nie an

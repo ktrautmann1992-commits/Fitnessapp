@@ -2107,3 +2107,52 @@ export const WEIGHT_GOAL_LIMITS = {
   minTargetBmi: 18.5,
   lowTargetBmiNotice: BMI_LIMITS.lowNormal,
 } as const;
+
+// ---------------------------------------------------------------------------------------------------------
+// Etappe E1 · Ernährungstagebuch (docs/PLAN-AUSWERTUNG.md Abschnitt 5). Identisch als CHECK bzw. Konstante in der
+// Datenbank (20261015130100_food_log_rpcs.sql, Abgleich in db-sync.test.ts). Alle Werte sind
+// PRODUKTENTSCHEIDUNG – VOR LIVEGANG FACHLICH PRÜFEN (es sind Eingabegrenzen gegen Tippfehler, keine Empfehlungen).
+// ---------------------------------------------------------------------------------------------------------
+
+/**
+ * Grenzen eines Tagebuch-Eintrags (Plan 5):
+ * - `kcal` 0–3.000 je Eintrag (0 = z. B. Wasser), ganze kcal; `macroG` 0–750 g je Makro (3.000 kcal ÷ 4 kcal/g),
+ *   eine Nachkommastelle.
+ * - Menge in g/ml 1–2.000, in Stück 0,5–20 (in ½-Schritten); umgerechnet nie über 2.000 g.
+ * - Portion 0,25–3 (Plan-Mahlzeit: Auswahl `FOOD_LOG_PORTION_CHOICES`; Rezept: Portionen).
+ * - Höchstens 40 Einträge je Tag (`eaten_on`), höchstens 40 Einträge je Speichervorgang.
+ * - Nachtragen bis 14 Tage zurück (wie SESSION_LOG_LIMITS.backdateDays), nie in die Zukunft. Der Server lässt
+ *   `serverFutureDays` (1 Tag) als Zeitzonen-Toleranz zu, weil sein „heute“ Europe/Berlin ist (wie Training).
+ * - `plausibleKcal` 1.500: ab hier fragt die App „Stimmt die Menge?“ – keine Sperre.
+ * - `recentCount` 20 verschiedene „Zuletzt gegessen“, höchstens 100 Favoriten.
+ */
+export const FOOD_LOG_LIMITS = {
+  kcal: { min: 0, max: 3000 },
+  macroG: { min: 0, max: 750 },
+  amountMass: { min: 1, max: 2000 },
+  amountPiece: { min: 0.5, max: 20, step: 0.5 },
+  gramsMax: 2000,
+  portion: { min: 0.25, max: 3 },
+  titleMaxChars: 100,
+  maxEntriesPerDay: 40,
+  maxEntriesPerSave: 40,
+  backdateDays: 14,
+  serverFutureDays: 1,
+  plausibleKcal: 1500,
+  recentCount: 20,
+  maxFavorites: 100,
+} as const;
+
+/** Portionen für „Gegessen“ bei einer Plan-Mahlzeit (Plan 5 Nr. 1): ½, ¾, 1, 1¼, 1½, 2. PRODUKTENTSCHEIDUNG. */
+export const FOOD_LOG_PORTION_CHOICES = [0.5, 0.75, 1, 1.25, 1.5, 2] as const;
+
+/**
+ * Vorbelegung des Platzes beim freien Eintragen nach Uhrzeit (Minuten nach Mitternacht): Frühstück bis 10:30,
+ * Mittag bis 14:30, Abend 17:00–21:30, sonst Snack. Nur Vorbelegung, keine Grenze. PRODUKTENTSCHEIDUNG.
+ */
+export const FOOD_LOG_DEFAULT_SLOT_MINUTES = {
+  breakfastUntil: 10 * 60 + 30,
+  lunchUntil: 14 * 60 + 30,
+  dinnerFrom: 17 * 60,
+  dinnerUntil: 21 * 60 + 30,
+} as const;

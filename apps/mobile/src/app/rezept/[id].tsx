@@ -331,6 +331,18 @@ export default function RecipeScreen() {
       </Card>
 
       {shoppingCard()}
+      {/* Ernährungstagebuch (Etappe E1): Rezept mit Portionen eintragen (Plan-Mahlzeiten haben „Gegessen“ im Tag). */}
+      {plannedMeal ? null : (
+        <Button
+          label={t.foodLog.add}
+          accessibilityLabel={t.foodLog.addThisA11y(recipe.title_de)}
+          variant="secondary"
+          onPress={() =>
+            router.push(`/ernaehrung/eintragen?rezept=${encodeURIComponent(recipe.id)}` as Href)
+          }
+          testID="recipe-food-log"
+        />
+      )}
 
       {plannedMeal !== null && date !== null && params.platz !== undefined ? (
         <RatingCard

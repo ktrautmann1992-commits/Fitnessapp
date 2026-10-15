@@ -1,9 +1,12 @@
 import type * as core from '@fitnessapp/core';
+import type { Tables } from '@fitnessapp/db';
 import { describe, expectTypeOf, it } from 'vitest';
 
 import type {
   CardioLogRow,
   ExerciseLogRow,
+  FoodLogEntryRow,
+  FoodLogFavoriteRow,
   PlannedExerciseRow,
   PlannedSessionRow,
   SessionLogRow,
@@ -28,5 +31,12 @@ describe('Zeilen-Typen: packages/core = Datenbank', () => {
   it('Plan-Zeilen', () => {
     expectTypeOf<core.PlannedSessionRow>().toEqualTypeOf<PlannedSessionRow>();
     expectTypeOf<core.PlannedExerciseRow>().toEqualTypeOf<PlannedExerciseRow>();
+  });
+
+  it('Ernährungstagebuch (E1): gleiche Spalten wie die Datenbank, Werte-Listen enger', () => {
+    expectTypeOf<keyof FoodLogEntryRow>().toEqualTypeOf<keyof Tables<'food_log_entries'>>();
+    expectTypeOf<keyof FoodLogFavoriteRow>().toEqualTypeOf<keyof Tables<'food_log_favorites'>>();
+    expectTypeOf<FoodLogEntryRow>().toExtend<Tables<'food_log_entries'>>();
+    expectTypeOf<FoodLogFavoriteRow>().toExtend<Tables<'food_log_favorites'>>();
   });
 });

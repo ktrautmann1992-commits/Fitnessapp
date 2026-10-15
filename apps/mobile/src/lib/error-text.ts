@@ -35,6 +35,14 @@ export function errorText(error: unknown): string {
       return t.errors.preferenceRejected;
     case 'preference_limit':
       return t.swap.alwaysLimit;
+    case 'food_log_out_of_range':
+      return t.foodLog.errors.outOfRange;
+    case 'food_log_day_full':
+      return t.foodLog.errors.dayFull;
+    case 'food_log_rejected':
+      return t.foodLog.errors.rejected;
+    case 'favorite_limit':
+      return t.foodLog.errors.favoriteLimit;
     case 'temporary':
       return t.errors.temporary;
     case 'unknown':
