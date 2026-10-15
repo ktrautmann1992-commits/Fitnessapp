@@ -6,6 +6,7 @@ import { Body, Button } from '@/components/ui';
 import { t } from '@/i18n';
 import { achievementView, type IntakeBarView } from '@/lib/day-evaluation-format';
 import { dayStatusText } from '@/lib/history-format';
+import { dayLabel } from '@/lib/plan-format';
 import { useThemeColors } from '@/lib/theme';
 
 /**
@@ -109,6 +110,9 @@ export function DayTrainingRow({
       ) : (
         <Body>{dayStatusText(item.status)}</Body>
       )}
+      {item.performedOn ? (
+        <Body muted>{t.weekEval.performedOn(dayLabel(item.performedOn))}</Body>
+      ) : null}
       {view?.lines.map((line, index) => (
         <Body key={index} muted>
           {line}

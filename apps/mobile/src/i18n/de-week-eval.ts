@@ -39,6 +39,9 @@ export const deWeekEval = {
     hidden_none: '– Nichts eingetragen',
     unavailable: '–',
   },
+  /** Bedienhilfe, wenn der Kurztext nur ein Zeichen ist (Wächter A3 H2). */
+  dayUnavailableA11y: 'Ernährungstagebuch hier nicht verfügbar',
+  todayA11y: 'heute',
   dayShortMeals: (eaten: number, planned: number) => `${eaten} von ${planned} Mahlzeiten`,
   entryDays: (n: number) =>
     n === 0
@@ -54,6 +57,7 @@ export const deWeekEval = {
     above_target: (n: number) => `${n} etwas darüber`,
     well_above: (n: number) => `${n} deutlich darüber`,
     without_value: (n: number) => `${n} ohne Kalorienangabe`,
+    no_target: (n: number) => `${n} ohne Tagesziel`,
   },
   zoneSummary: (parts: readonly string[]) => `Davon ${parts.join(', ')}.`,
   average: (eaten: string, target: string) =>
@@ -65,6 +69,12 @@ export const deWeekEval = {
   todayOpen: 'Heute läuft noch und zählt erst danach mit.',
   meals: (eaten: number, planned: number) => `Mahlzeiten: ${eaten} von ${planned} abgehakt`,
   noTarget: 'Ohne Tagesziel gibt es keine Farben für die Tage.',
+  /** Wächter A3 G2: der Essensplan selbst lag unter dem Mindestbedarf (Text wie „Dein Tag“, für die Woche). */
+  planBelowFloor: (n: number) =>
+    n === 1
+      ? 'An 1 Tag erreichte schon dein Essensplan deinen Mindestbedarf nicht – ergänze dort z. B. eine Portion Obst, Nüsse oder Joghurt.'
+      : `An ${n} Tagen erreichte schon dein Essensplan deinen Mindestbedarf nicht – ergänze dort z. B. eine Portion Obst, Nüsse oder Joghurt.`,
+  performedOn: (day: string) => `gemacht am ${day}`,
   /** Muster-Hinweis (2.4, A-G13) – Einleitung, danach der feste Hinweis mit Hilfe-Stellen (PLAN-PHASE-5 4.9). */
   patternLead:
     'Laut deinen Einträgen lagen in dieser Woche mehrere Tage unter deinem Mindestbedarf. Dein Körper braucht an solchen Tagen mehr.',
@@ -73,11 +83,15 @@ export const deWeekEval = {
   noPlan: 'Du hast noch keinen Trainingsplan. Freie Einheiten kannst du im Kalender eintragen.',
   noSessions: 'In dieser Woche ist kein Training geplant und nichts eingetragen.',
   sessions: (done: number, planned: number) => `Einheiten: ${done} von ${planned} erledigt`,
+  /** Ohne geplante Einheiten nie „x von 0“ (Wächter A3 H5). */
+  sessionsOnly: (done: number) => `Einheiten: ${done} erledigt`,
   sets: (fulfilled: number, planned: number) => `Kraft-Sätze: ${fulfilled} von ${planned} erfüllt`,
   setsA11y: (fulfilled: number, planned: number) =>
     `Kraft-Sätze: ${fulfilled} von ${planned} erfüllt`,
   minutes: (done: number, planned: number) => `Ausdauer: ${done} von ${planned} min`,
   minutesA11y: (done: number, planned: number) => `Ausdauer: ${done} von ${planned} Minuten`,
+  minutesOnly: (done: number) => `Ausdauer: ${done} min`,
+  minutesOnlyA11y: (done: number) => `Ausdauer: ${done} Minuten`,
   km: (km: string) => `Strecke: ${km} km`,
   kmA11y: (km: string) => `Strecke: ${km} Kilometer`,
   setsNote: 'Ein Satz gilt als erfüllt, wenn Wiederholungen und Gewicht die Vorgabe erreichen.',

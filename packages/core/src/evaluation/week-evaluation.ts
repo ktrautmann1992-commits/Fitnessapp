@@ -110,10 +110,17 @@ export interface WeekFoodWithoutNumbers {
   readonly available: boolean;
   /** Vergangene Tage mit mindestens einem Eintrag. */
   readonly entryDays: number;
-  /** Mahlzeiten „x von y abgehakt“ über alle Tage bis heute mit verwendbarem Essensplan; null = keiner. */
+  /** Mahlzeiten „x von y abgehakt“ über die VERGANGENEN Tage mit verwendbarem Essensplan; null = keiner. */
   readonly meals: { readonly eaten: number; readonly planned: number } | null;
-  /** Die Woche enthält heute – der Tag läuft noch und zählt nicht mit. */
+  /** Die Woche enthält heute – der Tag läuft noch und zählt nicht mit (auch nicht bei den Mahlzeiten). */
   readonly todayOpen: boolean;
+  /**
+   * Nur der feste Hilfe-Hinweis (PLAN-PHASE-5 4.9) – ohne Einleitung, ohne „Mindestbedarf“, ohne Zahl (Wächter A3 G1,
+   * sichere Voreinstellung). Intern weiter gezählt: ab `patternBelowFloorMinDays` vergangenen Tagen unter der
+   * Untergrenze. Nie bei Schwangerschaft/Stillzeit (dort gibt es keine Untergrenze, der Hinweis auf Ärztin/Arzt/Hebamme
+   * bleibt).
+   */
+  readonly helpNotice: boolean;
 }
 
 export interface WeekFoodWithNumbers {
@@ -125,6 +132,8 @@ export interface WeekFoodWithNumbers {
   readonly valuedDays: number;
   /** Davon nur Einträge ohne Kalorienangabe (kein Balken, keine Zone). */
   readonly withoutValueDays: number;
+  /** Davon ohne Tagesziel (keine Körperdaten u. Ä.): Einträge mit kcal, aber keine Zone (Wächter A3 S2). */
+  readonly noTargetDays: number;
   /** Anzahl der vergangenen Tage je Zone (Summe = `valuedDays`). */
   readonly zoneCounts: Readonly<Record<IntakeZoneId, number>>;
   /** Ø je Tag mit Balken: gegessen gegen Ø-Tagesziel dieser Tage; null ohne solchen Tag. Keine Summe, keine Bilanz. */
@@ -133,6 +142,12 @@ export interface WeekFoodWithNumbers {
   readonly belowFloorDays: number;
   /** Fester Hinweis mit Hilfe-Stellen (2.4, A-G13) – einmal je Woche. */
   readonly patternNotice: boolean;
+  /**
+   * Vergangene Tage, deren gespeicherter Essensplan selbst unter der Untergrenze liegt (Hinweis `plan_below_floor`).
+   * Sie zählen weiter mit; die Woche nennt dazu den Plan-Hinweis (Wächter A3 G2), damit die Hilfe nicht wie ein
+   * Vorwurf wirkt.
+   */
+  readonly planBelowFloorDays: number;
   readonly meals: { readonly eaten: number; readonly planned: number } | null;
   readonly todayOpen: boolean;
   /** Hinweis-Codes der Engine (Einladung Körperdaten/Einwilligung) – je Code einmal. */
@@ -285,8 +300,9 @@ function easyWeekOf(
   return kinds.has('recovery') ? 'recovery' : kinds.has('intro') ? 'intro' : null;
 }
 
+/** Mahlzeiten nur über vergangene Tage – heute läuft noch (Wächter A3 H1). */
 function mealsOf(days: readonly DayEvaluation[]) {
-  const withPlan = days.filter((d) => d.food.meals !== null);
+  const withPlan = days.filter((d) => d.timing === 'past' && d.food.meals !== null);
   if (withPlan.length === 0) return null;
   return {
     eaten: withPlan.reduce((sum, d) => sum + (d.food.meals?.eaten ?? 0), 0),
@@ -311,19 +327,23 @@ function foodWithNumbers(days: readonly DayEvaluation[], todayOpen: boolean): We
     target += intake.targetKcal;
     valuedDays += 1;
   }
-  const entryDays = past.filter((d) => d.food.entryCount > 0).length;
+  const withEntries = past.filter((d) => d.food.entryCount > 0);
+  const entryDays = withEntries.length;
   const belowFloorDays = zoneCounts.below_floor;
   return {
     kind: 'numbers',
     available: days.some((d) => d.food.available),
     entryDays,
     valuedDays,
-    withoutValueDays: entryDays - valuedDays,
+    // Nur Tage, deren Einträge wirklich keine kcal haben (kein Balken trotz Ziel) – nicht Tage ohne Ziel (S2).
+    withoutValueDays: withEntries.filter((d) => d.food.intake.kind === 'no_entries').length,
+    noTargetDays: withEntries.filter((d) => d.food.intake.kind === 'no_target').length,
     zoneCounts,
     average:
       valuedDays === 0 ? null : { eatenKcal: eaten / valuedDays, targetKcal: target / valuedDays },
     belowFloorDays,
     patternNotice: belowFloorDays >= WEEK_EVALUATION.patternBelowFloorMinDays,
+    planBelowFloorDays: past.filter((d) => d.notices.includes('plan_below_floor')).length,
     meals: mealsOf(days),
     todayOpen,
     targetNotices: [...new Set(days.flatMap((d) => d.food.targetNotices))],
@@ -357,6 +377,14 @@ export function weekEvaluation(input: WeekEvaluationInput): WeekEvaluation {
   const todayOpen = days.some((d) => d.timing === 'today');
   if (!showNumbers) {
     const past = days.filter((d) => d.timing === 'past');
+    // G1: intern mit Zahlen weiterzählen (das Ergebnis enthält davon nur einen Wahrheitswert). dayEvaluation blendet
+    // Schwangerschaft/Stillzeit selbst aus – dann nie ein Hilfe-Hinweis über die Untergrenze.
+    const counted = input.showNumbers ? days : evaluateDays(input, summary, true);
+    const pregnancy = counted.some((d) => !d.showNumbers);
+    const belowFloor = counted.filter(
+      (d) =>
+        d.timing === 'past' && d.food.intake.kind === 'bar' && d.food.intake.zone === 'below_floor',
+    ).length;
     return {
       ...base,
       showNumbers: false,
@@ -367,6 +395,7 @@ export function weekEvaluation(input: WeekEvaluationInput): WeekEvaluation {
         entryDays: past.filter((d) => d.food.entryCount > 0).length,
         meals: mealsOf(days),
         todayOpen,
+        helpNotice: !pregnancy && belowFloor >= WEEK_EVALUATION.patternBelowFloorMinDays,
       },
     };
   }

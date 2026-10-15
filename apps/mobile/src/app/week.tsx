@@ -61,6 +61,8 @@ export default function WeekScreen() {
   const itemLines = (item: DayItem): string[] =>
     [
       item.caughtUpFrom ? t.week.caughtUpFrom(formatDateDe(item.caughtUpFrom)) : null,
+      // Wächter A3 S1: an der Wochengrenze eingetragen – steht am Termin, tatsächliches Datum dazu.
+      item.performedOn ? t.weekEval.performedOn(formatDateDe(item.performedOn)) : null,
       item.free ? t.week.free : null,
       item.backfilled ? t.week.backfilled : null,
       item.status === 'dropped' ? t.week.droppedHint : null,

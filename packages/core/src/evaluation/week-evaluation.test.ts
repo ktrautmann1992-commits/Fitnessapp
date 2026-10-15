@@ -510,8 +510,9 @@ describe('Fälle aus Abschnitt 8', () => {
       kind: 'hidden',
       available: true,
       entryDays: 2,
-      meals: { eaten: 0, planned: 6 },
+      meals: { eaten: 0, planned: 4 },
       todayOpen: true,
+      helpNotice: false,
     });
     for (const day of r.days) {
       expect(day.food.intake).toEqual({ kind: 'hidden' });
@@ -580,7 +581,14 @@ describe('Fälle aus Abschnitt 8', () => {
     const t = weekTargets({ bodyMetricsRows: [] });
     const r = weekEvaluation(input({ days: days({ 0: [2000], 1: [2000] }, t) }));
     if (r.food.kind !== 'numbers') throw new Error('Zahlen');
-    expect(r.food).toMatchObject({ entryDays: 2, valuedDays: 0, average: null });
+    // Wächter A3 S2: Tage ohne Ziel sind nicht „ohne Kalorienangabe“.
+    expect(r.food).toMatchObject({
+      entryDays: 2,
+      valuedDays: 0,
+      withoutValueDays: 0,
+      noTargetDays: 2,
+      average: null,
+    });
     expect(r.food.targetNotices).toEqual(['body_data_missing']);
   });
 
@@ -610,8 +618,8 @@ describe('Fälle aus Abschnitt 8', () => {
         : d,
     );
     const r = weekEvaluation(input({ today: WEDNESDAY, days: withPlan }));
-    // Mo, Di, Mi (heute) je 3 Mahlzeiten, Do–So künftig ohne Abhak-Zahl.
-    expect(r.food.meals).toEqual({ eaten: 2, planned: 9 });
+    // Mo, Di je 3 Mahlzeiten; Mi (heute) läuft noch (Wächter A3 H1), Do–So künftig ohne Abhak-Zahl.
+    expect(r.food.meals).toEqual({ eaten: 2, planned: 6 });
   });
 
   it('künftige Woche („noch nicht begonnen“): nur Vorschau, Einheiten geplant', () => {
@@ -781,7 +789,7 @@ describe('Eigenschaften (Abschnitt 8)', () => {
       const r = weekEvaluation(w);
       const past = r.days.filter((d) => d.timing === 'past');
       expect(r.food.entryDays).toBe(past.filter((d) => d.food.entryCount > 0).length);
-      const meals = r.days.filter((d) => d.food.meals !== null);
+      const meals = past.filter((d) => d.food.meals !== null);
       expect(r.food.meals === null).toBe(meals.length === 0);
       if (r.food.kind === 'numbers') {
         const bars = past.flatMap((d) => (d.food.intake.kind === 'bar' ? [d.food.intake] : []));
@@ -791,7 +799,12 @@ describe('Eigenschaften (Abschnitt 8)', () => {
         }
         const zoneSum = Object.values(r.food.zoneCounts).reduce((s, n) => s + n, 0);
         expect(zoneSum).toBe(r.food.valuedDays);
-        expect(r.food.withoutValueDays).toBe(r.food.entryDays - r.food.valuedDays);
+        expect(r.food.valuedDays + r.food.withoutValueDays + r.food.noTargetDays).toBe(
+          r.food.entryDays,
+        );
+        expect(r.food.withoutValueDays).toBe(
+          past.filter((d) => d.food.entryCount > 0 && d.food.intake.kind === 'no_entries').length,
+        );
         expect(r.food.belowFloorDays).toBe(r.food.zoneCounts.below_floor);
         expect(r.food.patternNotice).toBe(r.food.belowFloorDays >= 3);
         if (r.food.patternNotice) withPattern += 1;
@@ -871,6 +884,8 @@ describe('Eigenschaften (Abschnitt 8)', () => {
             'entryDays',
             'valuedDays',
             'withoutValueDays',
+            'noTargetDays',
+            'planBelowFloorDays',
             'zoneCounts',
             'average',
             'belowFloorDays',
@@ -964,5 +979,307 @@ describe('Strukturtest (keine eigenen Grenzwerte, wie A2 Eigenschaft d)', () => 
       (m) => m[1],
     );
     expect(numbers.filter((n) => !['0', '1'].includes(n as string))).toEqual([]);
+  });
+});
+
+// ---------------------------------------------------------------------------------------------------------
+// Wächter A3: S1 (Wochengrenze), G1 (Hilfe-Hinweis ohne Zahlen), G2 (Plan selbst unter der Untergrenze)
+// ---------------------------------------------------------------------------------------------------------
+
+function weekDays(weekStart: string): WeekEvaluationDayInput[] {
+  return Array.from({ length: 7 }, (_, i) => ({
+    date: addDays(weekStart, i),
+    targets: null,
+    foodLog: { available: true, entries: [] },
+    mealPlan: null,
+  }));
+}
+
+describe('S1: Einheiten an der Wochengrenze (± 1 Tag)', () => {
+  const B = NEXT_MONDAY;
+  const sessions = [
+    plannedSession('s1', DATES[0] as string, { status: 'completed' }),
+    // Sonntag geplant, am Montag der Folgewoche nachgetragen.
+    plannedSession('sun', DATES[6] as string, { status: 'completed' }),
+    // Montag der Folgewoche geplant, schon am Sonntag davor gemacht.
+    plannedSession('mon', B, { status: 'completed' }),
+    plannedSession('s2', addDays(B, 2)),
+  ];
+  const logs = [
+    log('l1', DATES[0] as string, { planned_session_id: 's1', done_sets: 3 }),
+    log('lsun', B, { planned_session_id: 'sun', done_sets: 2, created_at: `${B}T09:00:00Z` }),
+    log('lmon', DATES[6] as string, { planned_session_id: 'mon', done_sets: 3 }),
+  ];
+  const achievements = new Map([
+    ['l1', strengthAchievement([true, true, true])],
+    ['lsun', strengthAchievement([true, true, false])],
+    ['lmon', strengthAchievement([true, true, true])],
+  ]);
+  const plannedTargets = new Map([
+    ['s1', targets(3)],
+    ['sun', targets(3)],
+    ['mon', targets(3)],
+    ['s2', targets(4)],
+  ]);
+  const evaluate = (weekStart: string) =>
+    weekEvaluation(
+      input({
+        weekStart,
+        today: addDays(B, 3),
+        days: weekDays(weekStart),
+        sessions,
+        logs,
+        achievements,
+        plannedTargets,
+      }),
+    );
+
+  it('in der Woche des Termins gelistet UND gezählt – nie „1 von 0“ in der anderen Woche', () => {
+    const a = evaluate(MONDAY);
+    const b = evaluate(B);
+    expect(a.training.items.map((i) => [i.date, i.item.logId, i.item.performedOn])).toEqual([
+      [DATES[0], 'l1', undefined],
+      [DATES[6], 'lsun', B],
+    ]);
+    expect(a.training.sessions).toEqual({ done: 2, planned: 2 });
+    expect(a.training.strengthSets).toEqual({ fulfilled: 5, planned: 6, done: 5 });
+    expect(b.training.items.map((i) => [i.date, i.item.logId, i.item.performedOn])).toEqual([
+      [B, 'lmon', DATES[6]],
+      [addDays(B, 2), null, undefined],
+    ]);
+    expect(b.training.sessions).toEqual({ done: 1, planned: 2 });
+    expect(b.training.strengthSets).toEqual({ fulfilled: 3, planned: 7, done: 3 });
+  });
+
+  it('weekLogSummary („Woche“) gleich: Eintrag am Termin, tatsächliches Datum dazu', () => {
+    const a = weekLogSummary(sessions, logs, MONDAY, addDays(B, 3));
+    expect(a.days[6]?.items).toEqual([
+      expect.objectContaining({ logId: 'lsun', performedOn: B, caughtUpFrom: null }),
+    ]);
+    expect(a.sessionsDone).toBe(2);
+    expect(a.sessionsPlanned).toBe(2);
+    expect(a.strengthSets).toBe(5);
+  });
+});
+
+/** Mehrere Wochen mit verschobenen, nachgeholten, nachgetragenen, verwaisten und freien Einträgen. */
+function randomTraining(seed: number) {
+  const rand = seededRandom(seed);
+  const pick = <T>(values: readonly T[]): T => values[Math.floor(rand() * values.length)] as T;
+  const first = addDays(MONDAY, -7);
+  const sessions: SummarySession[] = [];
+  const logs: SummaryLog[] = [];
+  const achievements = new Map<string, SessionAchievementInput>();
+  const plannedTargets = new Map<string, PlannedSessionTargets>();
+  const setsOf = new Map<string, boolean[]>();
+  for (let d = 0; d < 21; d += 1) {
+    if (rand() < 0.45) continue;
+    const id = `s${d}`;
+    const week = addDays(first, Math.floor(d / 7) * 7);
+    const original = addDays(first, d);
+    // Manche innerhalb der eigenen Woche verschoben (Datenbank-Regel).
+    const moved = rand() < 0.25 ? addDays(week, Math.floor(rand() * 7)) : original;
+    const endurance = rand() < 0.35;
+    const logged = rand() < 0.6;
+    sessions.push(
+      plannedSession(id, moved, {
+        original_date: moved === original ? null : original,
+        kind: endurance ? 'endurance' : 'strength',
+        status: logged
+          ? pick(['completed', 'completed', 'skipped'] as const)
+          : pick(['planned', 'planned', 'skipped', 'completed'] as const),
+        plan_active: rand() > 0.1,
+      }),
+    );
+    const planned = 2 + Math.floor(rand() * 6);
+    const minutes = 20 + Math.floor(rand() * 40);
+    plannedTargets.set(id, endurance ? targets(null, minutes) : targets(planned));
+    if (!logged) continue;
+    // Eintrag in der Woche des Termins ± 1 Tag (W2) – also auch über die Wochengrenze.
+    const performed = addDays(week, -1 + Math.floor(rand() * 9));
+    const logId = `l${d}`;
+    const sets = Array.from({ length: planned }, () => rand() < 0.7);
+    setsOf.set(logId, sets);
+    const doneMinutes = Math.floor(rand() * 70);
+    logs.push(
+      log(logId, performed, {
+        planned_session_id: id,
+        kind: endurance ? 'endurance' : 'strength',
+        done_sets: endurance ? 0 : sets.filter(Boolean).length,
+        cardio_duration_s: endurance ? doneMinutes * 60 + Math.floor(rand() * 60) : null,
+      }),
+    );
+    achievements.set(
+      logId,
+      endurance ? enduranceAchievement(doneMinutes, minutes) : strengthAchievement(sets, planned),
+    );
+  }
+  // Verwaiste (Einheit gelöscht) und freie Einträge.
+  for (let k = 0; k < 3; k += 1) {
+    const free = rand() < 0.5;
+    const id = `${free ? 'f' : 'o'}${k}`;
+    const sets = [true, rand() < 0.5];
+    setsOf.set(id, sets);
+    logs.push(
+      log(id, addDays(first, Math.floor(rand() * 21)), {
+        is_free: free,
+        planned_session_id: free ? null : 'gone',
+        done_sets: sets.filter(Boolean).length,
+      }),
+    );
+    achievements.set(id, strengthAchievement(sets, free ? null : 2, null, free));
+  }
+  return { first, sessions, logs, achievements, plannedTargets, setsOf };
+}
+
+describe('S1-Eigenschaft: jede Einheit in genau einer Woche, Summen gegen ein unabhängiges Orakel', () => {
+  it('300 zufällige Folgen über drei Wochen', () => {
+    for (let seed = 1; seed <= 300; seed += 1) {
+      const g = randomTraining(seed);
+      const today = addDays(g.first, 25);
+      const byId = new Map(g.sessions.map((s) => [s.id, s] as const));
+      const weekOfLog = (l: SummaryLog) => {
+        const s = l.planned_session_id ? byId.get(l.planned_session_id) : undefined;
+        return startOfWeek(s ? (s.original_date ?? s.scheduled_on) : l.performed_on);
+      };
+      const listed = new Map<string, number>();
+      for (let w = 0; w < 3; w += 1) {
+        const weekStart = addDays(g.first, w * 7);
+        const r = weekEvaluation(
+          input({
+            weekStart,
+            today,
+            days: weekDays(weekStart),
+            sessions: g.sessions,
+            logs: g.logs,
+            achievements: g.achievements,
+            plannedTargets: g.plannedTargets,
+          }),
+        );
+        for (const { item } of [...r.training.items, ...r.training.free]) {
+          if (item.logId !== null) listed.set(item.logId, (listed.get(item.logId) ?? 0) + 1);
+        }
+        // Orakel, unabhängig von weekLogSummary.
+        const mine = g.logs.filter((l) => weekOfLog(l) === weekStart);
+        const plan = mine.filter((l) => l.is_free !== true);
+        const loggedIds = new Set(g.logs.map((l) => l.planned_session_id));
+        const sessionWeek = (s: SummarySession) => startOfWeek(s.original_date ?? s.scheduled_on);
+        const planned = g.sessions.filter(
+          (s) =>
+            s.plan_active &&
+            sessionWeek(s) === weekStart &&
+            (s.status !== 'skipped' || loggedIds.has(s.id)),
+        );
+        expect(r.training.sessions).toEqual({ done: plan.length, planned: planned.length });
+        let fulfilled = 0;
+        let plannedSets = 0;
+        let minutes = 0;
+        let plannedMinutes = 0;
+        for (const l of plan) {
+          const sets = g.setsOf.get(l.id);
+          const t = l.planned_session_id ? g.plannedTargets.get(l.planned_session_id) : undefined;
+          if (l.kind === 'strength') {
+            const target = l.planned_session_id === 'gone' ? 2 : (t?.strengthSets ?? 0);
+            plannedSets += target;
+            fulfilled += Math.min(target, (sets ?? []).filter(Boolean).length);
+          } else {
+            minutes += Math.floor((l.cardio_duration_s ?? 0) / 60);
+            plannedMinutes += t?.enduranceMinutes ?? 0;
+          }
+        }
+        // Offene/verpasste Einheiten (ohne Eintrag, noch geplant, aktiver Plan) an ihrem Tag in dieser Woche.
+        for (const s of g.sessions) {
+          if (loggedIds.has(s.id) || s.status !== 'planned' || !s.plan_active) continue;
+          if (startOfWeek(s.scheduled_on) !== weekStart) continue;
+          plannedSets += g.plannedTargets.get(s.id)?.strengthSets ?? 0;
+          plannedMinutes += g.plannedTargets.get(s.id)?.enduranceMinutes ?? 0;
+        }
+        expect(r.training.strengthSets.fulfilled).toBe(fulfilled);
+        expect(r.training.strengthSets.planned).toBe(plannedSets);
+        expect(r.training.enduranceMinutes).toEqual({ done: minutes, planned: plannedMinutes });
+        // Nie mehr Plan-Einträge des aktiven Plans erledigt als geplant („x von 0“).
+        const activeDone = plan.filter((l) => {
+          const s = l.planned_session_id ? byId.get(l.planned_session_id) : undefined;
+          return s !== undefined && s.plan_active;
+        }).length;
+        expect(activeDone).toBeLessThanOrEqual(r.training.sessions.planned);
+      }
+      // Jeder Eintrag steht in genau einer der drei Wochen (alle liegen darin).
+      for (const l of g.logs) {
+        const w = weekOfLog(l);
+        if (w < g.first || w > addDays(g.first, 14)) continue;
+        expect(listed.get(l.id)).toBe(1);
+      }
+    }
+  }, 60_000);
+});
+
+/** Montag einer Woche – unabhängig von `startOfIsoWeek` (UTC-Wochentag). */
+function startOfWeek(date: string): string {
+  const day = new Date(`${date}T00:00:00Z`).getUTCDay();
+  return addDays(date, -((day + 6) % 7));
+}
+
+const hiddenWeek = (value: WeekEvaluationInput) => weekEvaluation({ ...value, showNumbers: false });
+
+describe('G1: „Kalorienzahlen aus“ – nur der feste Hilfe-Hinweis, ohne Zahl', () => {
+  it('ab 3 vergangenen Tagen unter der Untergrenze: helpNotice, sonst nicht; nie mit Zahl', () => {
+    const t = weekTargets();
+    const below = (i: number) => (t[i]?.floorKcal as number) - 1;
+    const two = hiddenWeek(
+      input({ showNumbers: false, days: days({ 0: [below(0)], 3: [below(3)] }, t) }),
+    );
+    const three = hiddenWeek(
+      input({
+        showNumbers: false,
+        days: days({ 0: [below(0)], 3: [below(3)], 6: [below(6)] }, t),
+      }),
+    );
+    expect(two.food.helpNotice).toBe(false);
+    expect(three.food.helpNotice).toBe(true);
+    expect(JSON.stringify(three)).not.toMatch(/kcal|floor|below/i);
+    for (const n of numbersIn(three.food)) expect(n.path).toBe('entryDays');
+    // Heute zählt nicht.
+    const withToday = hiddenWeek(
+      input({
+        showNumbers: false,
+        today: WEDNESDAY,
+        days: days({ 0: [100], 1: [100], 2: [100] }, t),
+      }),
+    );
+    expect(withToday.food.helpNotice).toBe(false);
+  });
+
+  it('Schwangerschaft/Stillzeit: nie der Hinweis über die Untergrenze', () => {
+    const pregnant = weekTargets({ sex: 'female', healthFlags: { flags: ['pregnancy'] } });
+    const normal = weekTargets();
+    const mixed = normal.map((d, i) => (i === 5 ? (pregnant[5] ?? null) : d));
+    const eaten = { 0: [100], 1: [100], 2: [100], 3: [100] };
+    for (const showNumbers of [true, false]) {
+      const r = weekEvaluation(input({ showNumbers, days: days(eaten, mixed) }));
+      expect(r.food.kind).toBe('hidden');
+      expect(r.food.kind === 'hidden' && r.food.helpNotice).toBe(false);
+    }
+  });
+});
+
+describe('G2: Essensplan selbst unter der Untergrenze', () => {
+  it('Tage zählen weiter mit, die Woche nennt die Zahl der Plan-Tage (nur vergangene)', () => {
+    const t = weekTargets();
+    const below = (i: number) => (t[i]?.floorKcal as number) - 1;
+    const plan = { slots: ['breakfast'], belowFloor: true };
+    const r = weekEvaluation(
+      input({
+        today: addDays(MONDAY, 5),
+        days: days({ 0: [below(0)], 1: [below(1)], 2: [below(2)] }, t, { mealPlan: plan }),
+      }),
+    );
+    if (r.food.kind !== 'numbers') throw new Error('Zahlen');
+    expect(r.food.patternNotice).toBe(true);
+    expect(r.food.planBelowFloorDays).toBe(5);
+    const ok = weekEvaluation(
+      input({ days: days({ 0: [below(0)] }, t, { mealPlan: { ...plan, belowFloor: false } }) }),
+    );
+    expect(ok.food.kind === 'numbers' && ok.food.planBelowFloorDays).toBe(0);
   });
 });

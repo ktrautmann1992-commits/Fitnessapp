@@ -365,6 +365,12 @@ function FoodSection({
               <Body key={line}>{line}</Body>
             ))}
             {food.todayOpen ? <Body muted>{t.weekEval.todayOpen}</Body> : null}
+            {/* Wächter A3 G1: nur der feste Hilfe-Hinweis – ohne Einleitung, ohne „Mindestbedarf“, ohne Zahl. */}
+            {food.helpNotice ? (
+              <View testID="week-eval-help">
+                <EatingHelpNotice />
+              </View>
+            ) : null}
           </View>
         )
       ) : null}
@@ -387,8 +393,11 @@ function NumbersSummary({ food }: { food: Extract<WeekEvaluation['food'], { kind
               </Body>
               <Body muted>{t.weekEval.averageNote}</Body>
             </>
-          ) : food.entryDays > 0 && food.valuedDays === 0 ? (
-            <Body muted>{t.weekEval.noTarget}</Body>
+          ) : null}
+          {food.noTargetDays > 0 ? (
+            <Body muted testID="week-eval-no-target">
+              {t.weekEval.noTarget}
+            </Body>
           ) : null}
           {food.meals !== null ? (
             <Body testID="week-eval-meals">
@@ -398,6 +407,12 @@ function NumbersSummary({ food }: { food: Extract<WeekEvaluation['food'], { kind
           {food.todayOpen ? <Body muted>{t.weekEval.todayOpen}</Body> : null}
         </View>
       </Card>
+      {/* Wächter A3 G2: Lag schon der Essensplan unter dem Mindestbedarf, sagt die Woche das – kein Vorwurf. */}
+      {food.planBelowFloorDays > 0 ? (
+        <Body testID="week-eval-plan-below-floor">
+          {t.weekEval.planBelowFloor(food.planBelowFloorDays)}
+        </Body>
+      ) : null}
       {food.patternNotice ? (
         <View style={styles.lines} testID="week-eval-pattern">
           <Body>{t.weekEval.patternLead}</Body>

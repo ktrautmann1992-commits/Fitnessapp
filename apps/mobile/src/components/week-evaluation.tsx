@@ -129,6 +129,9 @@ export function WeekTrainingRow({
       ) : (
         <Body>{dayStatusText(item.status)}</Body>
       )}
+      {item.performedOn ? (
+        <Body muted>{t.weekEval.performedOn(dayLabel(item.performedOn))}</Body>
+      ) : null}
       {item.caughtUpFrom ? (
         <Body muted>{t.week.caughtUpFrom(dayLabel(item.caughtUpFrom))}</Body>
       ) : null}

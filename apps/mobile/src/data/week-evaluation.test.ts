@@ -356,6 +356,49 @@ describe('weekEvaluationInput', () => {
       patternNotice: true,
       todayOpen: true,
     });
-    expect(r.food.meals).toEqual({ eaten: 1, planned: 8 });
+    // Nur vergangene Tage (Mo–Mi); heute zählt erst danach (Wächter A3 H1).
+    expect(r.food.meals).toEqual({ eaten: 1, planned: 6 });
+  });
+});
+
+describe('Wächter A3 S1: Eintrag an der Wochengrenze', () => {
+  it('Sonntags-Einheit am Montag nachgetragen: Erfüllungsgrad in der Woche des Termins', () => {
+    const r = rowsWith({
+      plans: [{ id: 'p1', status: 'active', inputs: {} } as unknown as UserPlanRow],
+      plannedSessions: [planned('sun', { scheduled_on: '2026-10-18', status: 'completed' })],
+      sessionLogs: [log('x', { planned_session_id: 'sun', performed_on: '2026-10-19' })],
+      exerciseLogs: [exercise('ex', 'x')],
+      setLogs: [set('ex', 1), set('ex', 2), set('ex', 3)],
+    });
+    const a = weekEvaluation(
+      weekEvaluationInput({
+        rows: r,
+        weekStart: MONDAY,
+        today: '2026-10-21',
+        showNumbers: true,
+        nutrition: null,
+        foodLogAvailable: true,
+        library: null,
+      }),
+    );
+    expect(a.training.sessions).toEqual({ done: 1, planned: 1 });
+    expect(a.training.items[0]).toMatchObject({
+      date: '2026-10-18',
+      item: { performedOn: '2026-10-19' },
+      achievement: { percent: 100 },
+    });
+    const b = weekEvaluation(
+      weekEvaluationInput({
+        rows: r,
+        weekStart: '2026-10-19',
+        today: '2026-10-21',
+        showNumbers: true,
+        nutrition: null,
+        foodLogAvailable: true,
+        library: null,
+      }),
+    );
+    expect(b.training.sessions).toEqual({ done: 0, planned: 0 });
+    expect(b.training.items).toEqual([]);
   });
 });

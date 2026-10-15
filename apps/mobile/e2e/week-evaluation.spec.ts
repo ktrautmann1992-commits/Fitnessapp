@@ -176,12 +176,20 @@ test('Einstiege, Tagesbalken = „Dein Tag“, Ø nur eingetragene Tage, Muster-
   await page.getByTestId('calendar-week-evaluation').click();
   await expect(page).toHaveURL(new RegExp(`/wochenauswertung\\?woche=${MONDAY}$`));
 
-  // Offline: alles aus dem Gerätespeicher – neu laden zeigt dasselbe.
+  // Offline (Wächter A3 H6): wirklich ohne Netz – blättern und zurück, alles kommt aus dem Gerätespeicher.
   await page.reload();
   await expect(page.getByTestId('week-eval-pattern')).toHaveCount(1);
+  await page.context().setOffline(true);
+  await page.getByTestId('week-eval-next').click();
+  await expect(page.getByTestId('week-eval-range')).toHaveText('19.10.2026 bis 25.10.2026');
+  await page.getByTestId('week-eval-prev').click();
+  await expect(page.getByTestId('week-eval-range')).toHaveText('12.10.2026 bis 18.10.2026');
+  await expect(page.getByTestId('week-eval-pattern')).toHaveCount(1);
+  await expect(dayText(page, MONDAY)).toHaveText('↓ Unter Mindestbedarf ›');
+  await page.context().setOffline(false);
 });
 
-test('„Kalorienzahlen aus“: nur Anzahlen und Training – nirgends kcal, kein Balken, kein Muster-Hinweis', async ({
+test('„Kalorienzahlen aus“: nur Anzahlen und Training – nirgends kcal, kein Balken; ab 3 Tagen nur der feste Hilfe-Hinweis', async ({
   page,
 }) => {
   test.setTimeout(240_000);
@@ -204,10 +212,21 @@ test('„Kalorienzahlen aus“: nur Anzahlen und Training – nirgends kcal, kei
   await expect(page.getByTestId('week-eval-average')).toHaveCount(0);
   await expect(page.getByTestId('week-eval-zones')).toHaveCount(0);
   await expect(page.getByTestId('week-eval-pattern')).toHaveCount(0);
+  // Wächter A3 G1: nur der feste Hilfe-Hinweis – ohne Einleitung, ohne „Mindestbedarf“, ohne Wertung.
+  const help = page.getByTestId('week-eval-help');
+  await expect(help).toHaveCount(1);
+  await expect(help.getByTestId('nutrition-help')).toContainText(
+    'Wenn Essen oder Gewicht dich belasten',
+  );
+  expect(await page.getByTestId('week-eval').innerText()).not.toMatch(
+    /Mindestbedarf|unter deinem|Laut deinen Einträgen lagen/,
+  );
   await expect(page.getByTestId('week-eval-food-summary')).toContainText('An 3 Tagen eingetragen.');
   await expect(dayText(page, MONDAY)).toHaveText(/^(• Eingetragen|\d von \d Mahlzeiten) ›$/);
   // Keine kcal-artigen Zahlen im Essensteil: außer „x von y Mahlzeiten“ keine Zahl ab 100, kein „x von y“.
-  const foodText = await page.getByTestId('week-eval-food').innerText();
+  // (Der feste Hilfe-Text enthält „Im Notfall: 112“ – den nehmen wir aus.)
+  const helpText = await help.innerText();
+  const foodText = (await page.getByTestId('week-eval-food').innerText()).replace(helpText, '');
   const withoutDates = foodText.replace(/\d{2}\.\d{2}\.(\d{4})?/g, '');
   expect(withoutDates).not.toMatch(/\d{3}|\d\.\d{3}/);
   expect(withoutDates.replace(/\d+ von \d+ (Mahlzeiten|abgehakt)/g, '')).not.toMatch(

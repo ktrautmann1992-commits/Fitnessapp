@@ -67,7 +67,14 @@ export function weekDayView(day: DayEvaluation | DayEvaluationWithoutNumbers): W
     tone,
     fillPct,
     targetPct,
-    a11y: t.weekEval.dayA11y(dayLabel(day.date), short.replace(/^[^\p{L}\d]+\s*/u, '')),
+    a11y: t.weekEval.dayA11y(
+      day.timing === 'today'
+        ? `${dayLabel(day.date)}, ${t.weekEval.todayA11y}`
+        : dayLabel(day.date),
+      short === s.unavailable
+        ? t.weekEval.dayUnavailableA11y
+        : short.replace(/^[^\p{L}\d]+\s*/u, ''),
+    ),
   };
 }
 
@@ -88,6 +95,7 @@ export function weekFoodLines(food: WeekFoodWithNumbers): {
   const parts = ZONE_ORDER.filter((zone) => food.zoneCounts[zone] > 0).map((zone) =>
     t.weekEval.zoneCount[zone](food.zoneCounts[zone]),
   );
+  if (food.noTargetDays > 0) parts.push(t.weekEval.zoneCount.no_target(food.noTargetDays));
   if (food.withoutValueDays > 0)
     parts.push(t.weekEval.zoneCount.without_value(food.withoutValueDays));
   const average =
@@ -124,7 +132,10 @@ export interface TrainingLine {
 /** Summen des Trainings: Einheiten, Kraft-Sätze, Ausdauer-Minuten, Strecke (nur was in der Woche vorkommt). */
 export function weekTrainingLines(training: WeekTraining): readonly TrainingLine[] {
   const lines: TrainingLine[] = [];
-  const sessions = t.weekEval.sessions(training.sessions.done, training.sessions.planned);
+  const sessions =
+    training.sessions.planned === 0
+      ? t.weekEval.sessionsOnly(training.sessions.done)
+      : t.weekEval.sessions(training.sessions.done, training.sessions.planned);
   lines.push({ text: sessions, a11y: sessions });
   if (training.strengthSets.planned > 0 || training.strengthSets.fulfilled > 0) {
     const { fulfilled, planned } = training.strengthSets;
@@ -135,10 +146,11 @@ export function weekTrainingLines(training: WeekTraining): readonly TrainingLine
   }
   if (training.enduranceMinutes.planned > 0 || training.enduranceMinutes.done > 0) {
     const { done, planned } = training.enduranceMinutes;
-    lines.push({
-      text: t.weekEval.minutes(done, planned),
-      a11y: t.weekEval.minutesA11y(done, planned),
-    });
+    lines.push(
+      planned === 0
+        ? { text: t.weekEval.minutesOnly(done), a11y: t.weekEval.minutesOnlyA11y(done) }
+        : { text: t.weekEval.minutes(done, planned), a11y: t.weekEval.minutesA11y(done, planned) },
+    );
   }
   if (training.distanceM > 0) {
     const km = kmText(training.distanceM);

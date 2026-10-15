@@ -1,4 +1,5 @@
 import {
+  addDays,
   type DayItem,
   type EquipmentLocation,
   incrementKindFor,
@@ -104,4 +105,22 @@ export function dayExerciseNames(rows: UserRows, logId: string): string[] {
     .filter((e) => e.session_log_id === logId)
     .sort((a, b) => a.order_no - b.order_no)
     .map((e) => e.exercise_name_de);
+}
+
+/**
+ * Wie `dayAchievementInputs`, aber für Einträge des Tages ± 1: Eine an der Wochengrenze nachgeholte bzw. nachgetragene
+ * Einheit steht am Tag ihres Termins (Wächter A3 S1, `weekLogSummary`), ihr Eintrag hat ein anderes Datum.
+ */
+export function dayAchievementInputsAround(
+  rows: UserRows,
+  date: string,
+  library: PlanLibrary | null,
+): Map<string, SessionAchievementInput> {
+  const result = new Map<string, SessionAchievementInput>();
+  for (const offset of [-1, 0, 1]) {
+    for (const [id, value] of dayAchievementInputs(rows, addDays(date, offset), library)) {
+      result.set(id, value);
+    }
+  }
+  return result;
 }

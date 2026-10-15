@@ -279,9 +279,9 @@ vergangene Tage mit Einträgen (heute „läuft noch“, Tage ohne Eintrag zähl
 Summe, keine Prognose. **Muster-Hinweis:** ab 3 vergangenen Tagen einer Woche unter der Untergrenze einmal der feste
 Essstörungs-Hinweis mit Hilfe-Stellen (2.4, A-G13; `WEEK_EVALUATION.patternBelowFloorMinDays`). **„Kalorienzahlen aus“
 und Schwangerschaft/Stillzeit (an einem Tag der Woche):** nur Anzahlen (Tage mit Einträgen, Mahlzeiten), keine Farbe,
-nirgends kcal, kein Muster-Hinweis. **Training:** je Einheit Tag, Stufe und Erfüllungsgrad; Summen Einheiten
+nirgends kcal; ab 3 Tagen unter der Untergrenze nur der feste Hilfe-Hinweis ohne Einleitung und ohne Zahl (Schwangerschaft nie). **Training:** je Einheit Tag, Stufe und Erfüllungsgrad; Summen Einheiten
 erledigt/geplant, Kraft-Sätze erfüllt/geplant, Ausdauer-Minuten gemacht/geplant, Strecke; freie Einheiten getrennt.
-Zustände zusätzlich „Diese Woche hat noch nicht begonnen“ und „zu alt für den Gerätespeicher“. Keine Migration.
+Einheiten zählen in der Woche ihres Termins (auch an der Wochengrenze nachgeholte, „gemacht am …“); lag schon der Essensplan unter der Untergrenze, sagt die Woche das dazu. Zustände zusätzlich „Diese Woche hat noch nicht begonnen“ und „zu alt für den Gerätespeicher“. Keine Migration.
 
 **Übungs-Glossar (`docs/PLAN-UEBUNGEN-GLOSSAR-TAUSCH.md`, Etappe G1, umgesetzt):** Seite „Übungen“ (`app/uebungen/`) mit
 Suche (Name, andere Namen, englischer Name, Beschreibung; Umlaute und Bindestriche egal) und Filtern (Bereich,

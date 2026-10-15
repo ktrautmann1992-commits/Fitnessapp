@@ -492,10 +492,13 @@ es mit N7 Teil 2), der Trainingsteil geht in beiden Modi.
 5. **„‹ Vorwoche“ / „Nächste Woche ›“** blättern. Eine kommende Woche zeigt „Diese Woche hat noch nicht begonnen“.
 6. An **drei** vergangenen Tagen nur je **300** kcal eintragen → ruhiger Hinweis „Laut deinen Einträgen lagen in
    dieser Woche mehrere Tage unter deinem Mindestbedarf …“ mit den Hilfe-Stellen (genau einmal). Bei zwei Tagen kommt
-   er nicht.
-7. **Einstellungen → Kalorienzahlen anzeigen** aus → keine Balken, keine Farben, nirgends kcal, kein Hinweis – nur
-   „An n Tagen eingetragen“, „Mahlzeiten: x von y abgehakt“ und das Training. Gleiches mit Gesundheits-Check
-   „schwanger“ (dazu der Hinweis auf Ärztin, Arzt oder Hebamme).
+   er nicht. Am Montag oder Dienstag gibt es noch keine drei vergangenen Tage – dann in der **Vorwoche**
+   nachtragen („Eintragen“ → Tag bis 14 Tage zurück wählen) und dort mit „‹ Vorwoche“ ansehen.
+7. **Einstellungen → Kalorienzahlen anzeigen** aus → keine Balken, keine Farben, nirgends kcal – nur
+   „An n Tagen eingetragen“, „Mahlzeiten: x von y abgehakt“ und das Training. Mit den drei Tagen aus Schritt 6 steht
+   dann **nur** der feste Hilfe-Hinweis („Wenn Essen oder Gewicht dich belasten“) da – ohne „Mindestbedarf“, ohne
+   Zahl. Mit Gesundheits-Check „schwanger“: keine Zahlen, kein Hilfe-Hinweis, dafür der Hinweis auf Ärztin, Arzt oder
+   Hebamme.
 8. **Flugmodus an** → neu laden → alles ist noch da (Gerätespeicher).
 
 **Bitte fachlich prüfen lassen (vor dem Livegang):** Muster-Hinweis ab 3 Tagen unter dem Mindestbedarf je Woche

@@ -133,10 +133,12 @@ const food = (extra: Partial<WeekFoodWithNumbers> = {}): WeekFoodWithNumbers => 
   entryDays: 5,
   valuedDays: 5,
   withoutValueDays: 0,
+  noTargetDays: 0,
   zoneCounts: { below_floor: 0, below_target: 1, in_range: 3, above_target: 1, well_above: 0 },
   average: { eatenKcal: 1760.4, targetKcal: 1839.6 },
   belowFloorDays: 0,
   patternNotice: false,
+  planBelowFloorDays: 0,
   meals: null,
   todayOpen: false,
   targetNotices: [],
@@ -199,6 +201,7 @@ describe('weekFoodLines (Plan-Beispiel Abschnitt 8)', () => {
       entryDays: 4,
       meals: { eaten: 9, planned: 16 },
       todayOpen: true,
+      helpNotice: false,
     });
     expect(lines).toEqual(['An 4 Tagen eingetragen.', 'Mahlzeiten: 9 von 16 abgehakt']);
   });
@@ -283,5 +286,62 @@ describe('Sprache (2.4): ruhig, ohne Schuld- und Leistungswörter, keine Bilanz'
   it('Muster-Hinweis: Fürsorge, kein Lob, keine Zahl', () => {
     expect(t.weekEval.patternLead).toMatch(/Dein Körper braucht/);
     expect(t.weekEval.patternLead).not.toMatch(/\d/);
+  });
+});
+
+describe('Wächter A3', () => {
+  it('S2: Tage ohne Tagesziel eigener ruhiger Text, nicht „ohne Kalorienangabe“', () => {
+    const lines = weekFoodLines(
+      food({
+        entryDays: 2,
+        valuedDays: 0,
+        withoutValueDays: 0,
+        noTargetDays: 2,
+        zoneCounts: {
+          below_floor: 0,
+          below_target: 0,
+          in_range: 0,
+          above_target: 0,
+          well_above: 0,
+        },
+        average: null,
+      }),
+    );
+    expect(lines.zones).toBe('Davon 2 ohne Tagesziel.');
+    expect(lines.zones).not.toContain('Kalorienangabe');
+  });
+
+  it('H5: ohne Geplantes nie „x von 0“', () => {
+    const lines = weekTrainingLines(
+      training({
+        sessions: { done: 1, planned: 0 },
+        strengthSets: { fulfilled: 0, planned: 0, done: 0 },
+        enduranceMinutes: { done: 30, planned: 0 },
+        distanceM: 0,
+      }),
+    );
+    expect(lines).toEqual([
+      { text: 'Einheiten: 1 erledigt', a11y: 'Einheiten: 1 erledigt' },
+      { text: 'Ausdauer: 30 min', a11y: 'Ausdauer: 30 Minuten' },
+    ]);
+    expect(lines.map((l) => l.text).join(' ')).not.toMatch(/von 0/);
+  });
+
+  it('H2: Bedienhilfe nie leer, heute angesagt', () => {
+    const unavailable = weekDayView(
+      dayEvaluation({ ...base(), foodLog: { available: false, entries: [] } }),
+    );
+    expect(unavailable.a11y).toBe(
+      'Montag, 12.10.: Ernährungstagebuch hier nicht verfügbar. Dein Tag öffnen',
+    );
+    const today = weekDayView(day(500, { today: '2026-10-12' }));
+    expect(today.a11y).toBe('Montag, 12.10., heute: Noch offen. Dein Tag öffnen');
+  });
+
+  it('G2: Plan-Hinweis der Woche ruhig, ohne kcal', () => {
+    expect(t.weekEval.planBelowFloor(2)).toBe(
+      'An 2 Tagen erreichte schon dein Essensplan deinen Mindestbedarf nicht – ergänze dort z. B. eine Portion Obst, Nüsse oder Joghurt.',
+    );
+    expect(t.weekEval.planBelowFloor(1)).toMatch(/^An 1 Tag /);
   });
 });

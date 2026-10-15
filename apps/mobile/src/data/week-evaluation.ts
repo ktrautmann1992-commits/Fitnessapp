@@ -14,7 +14,7 @@ import {
   weekPager,
 } from '@fitnessapp/core';
 
-import { dayAchievementInputs } from './day-evaluation';
+import { dayAchievementInputsAround } from './day-evaluation';
 import { summaryInputs } from './log-summary';
 import type { UserRows } from './types';
 
@@ -70,11 +70,13 @@ export function weekEvaluationInput(input: {
   const { sessions, logs } = summaryInputs(rows);
   const achievements = new Map<string, SessionAchievementInput>();
   const days: WeekEvaluationDayInput[] = [];
+  // Einträge an der Wochengrenze (± 1 Tag, Wächter A3 S1) gehören zur Woche ihres Termins.
+  for (const offset of [0, 3, 6]) {
+    const around = dayAchievementInputsAround(rows, addDays(weekStart, offset), input.library);
+    for (const [id, value] of around) achievements.set(id, value);
+  }
   for (let i = 0; i < 7; i += 1) {
     const date = addDays(weekStart, i);
-    for (const [id, value] of dayAchievementInputs(rows, date, input.library)) {
-      achievements.set(id, value);
-    }
     const planDay = nutrition?.plan?.days.find((d) => d.date === date) ?? null;
     const usable =
       planDay !== null &&
