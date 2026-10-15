@@ -3,7 +3,7 @@
   "version": "0.0.0",
   "private": true,
   "type": "module",
-  "description": "Inhalte prüfen (content:validate), Content-Pipeline (Claude Batch-API: generate, collect, review) und Seed.",
+  "description": "Inhalte prüfen (content:validate), Content-Pipeline (Google Gemini Batch API: generate, collect, review) und Seed.",
   "scripts": {
     "validate": "tsx src/validate-cli.ts",
     "generate": "tsx src/generate-cli.ts",
@@ -20,8 +20,8 @@
     "test": "vitest run --passWithNoTests"
   },
   "dependencies": {
-    "@anthropic-ai/sdk": "^0.131.0",
     "@fitnessapp/core": "workspace:*",
+    "@google/genai": "2.27.0",
     "prettier": "^3.9.9",
     "zod": "^4.6.5"
   },

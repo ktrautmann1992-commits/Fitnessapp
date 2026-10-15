@@ -12,11 +12,12 @@ import { loadNutritionCatalog } from '../foods/catalog-loader';
 import { CONTENT_FOLDERS, loadContentFiles, loadNutritionContentFiles } from '../validate';
 import type { LibraryContext, PipelineContentKind } from './kinds';
 
-/** Ordner unter `content/` je Pipeline-Art (Training + Austausch-Tabelle, N9, + Packungsgrößen, N11). */
+/** Ordner unter `content/` je Pipeline-Art (Training, Austausch-Tabelle N9, Packungsgrößen N11, Rezepte N8). */
 export const PIPELINE_FOLDERS: Record<PipelineContentKind, string> = {
   ...CONTENT_FOLDERS,
   ingredient_substitution: 'substitutions',
   package_size: 'package-sizes',
+  recipe: 'recipes',
 };
 
 /** Lädt den Inhaltsstand unter `<repoRoot>/content` als Kontext für die Pipeline. */
@@ -24,10 +25,14 @@ export function loadLibrary(repoRoot: string): LibraryContext {
   const contentDir = join(repoRoot, 'content');
   const { files } = loadContentFiles(contentDir);
   const result = validateContent(files);
-  // Lebensmittel-Katalog, Austausch-Tabelle (N9) und Packungsgrößen (N11): Katalog-IDs für Structured Outputs.
+  // Lebensmittel-Katalog, Austausch-Tabelle (N9), Packungsgrößen (N11) und Rezepte (N8): Katalog-IDs für die
+  // strukturierte Ausgabe, vorhandene Einträge gegen Wiederholungen.
   const catalog = loadNutritionCatalog(contentDir);
   const substitutionFiles = loadNutritionContentFiles(contentDir).files.filter(
-    (file) => file.kind === 'ingredient_substitution' || file.kind === 'package_size',
+    (file) =>
+      file.kind === 'ingredient_substitution' ||
+      file.kind === 'package_size' ||
+      file.kind === 'recipe',
   );
   const nutrition = validateContent(
     [...catalog.files, ...substitutionFiles],
@@ -38,6 +43,7 @@ export function loadLibrary(repoRoot: string): LibraryContext {
     plan_template: new Set(),
     ingredient_substitution: new Set(),
     package_size: new Set(),
+    recipe: new Set(),
   };
   for (const file of [...files, ...substitutionFiles]) {
     takenIds[file.kind as PipelineContentKind].add(file.fileName.replace(/\.json$/, ''));
@@ -48,6 +54,7 @@ export function loadLibrary(repoRoot: string): LibraryContext {
     foods: nutrition.foods.filter((food) => food.status !== 'archived' && isCatalogReviewed(food)),
     substitutions: nutrition.substitutions,
     packageSizes: nutrition.packageSizes,
+    recipes: nutrition.recipes,
     takenIds,
   };
 }

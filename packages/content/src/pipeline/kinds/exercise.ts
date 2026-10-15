@@ -13,6 +13,8 @@ import {
 } from '@fitnessapp/core';
 import { z } from 'zod';
 
+import { MODEL_FLASH } from '../config';
+
 import { equipmentCatalogText, OUTPUT_FORMAT_TEXT, ROLE_TEXT, textRules } from './prompt-rules';
 import type { ContentKindDefinition, GenerationCell, LibraryContext } from './types';
 
@@ -302,6 +304,9 @@ export const exerciseKind: ContentKindDefinition = {
   labelDe: 'Übungen',
   folder: 'exercises',
   contentSchema: exerciseSchema,
+  // Standard: Fachtexte zu Technik und Sicherheit (Gründer-Vorgabe 15.10.2026, docs/PLAN-PHASE-5.md N8).
+  defaultModel: MODEL_FLASH,
+  defaultEffort: 'medium',
   maxTokens: EXERCISE_MAX_TOKENS,
   dimensions: [
     {

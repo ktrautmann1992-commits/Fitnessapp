@@ -1,6 +1,7 @@
 /**
  * `content-generate` (docs/PLAN-PHASE-2.md Abschnitt 4, Schritt 1): Anfragen bauen, Kosten schätzen,
- * Batch absenden, Arbeits-Branch mit Merkdatei anlegen – und sofort enden (kein Warten).
+ * Batch absenden (Google Gemini Batch API, docs/PLAN-PHASE-5.md N8), Arbeits-Branch mit Merkdatei anlegen – und
+ * sofort enden (kein Warten).
  *
  * Reihenfolge der Sicherungen: Auswahl prüfen → höchstens 200 Anfragen → Kostenschätzung (schlimmster Fall)
  * gegen CONTENT_MAX_USD → erst dann absenden. Bei Überschreitung wird NICHTS gesendet.
@@ -17,7 +18,13 @@ import {
   runName,
   shortId,
 } from './batch-record';
-import { BASE_BRANCH, isoDateBerlin, MAX_REQUESTS_PER_RUN, type PipelineSettings } from './config';
+import {
+  BASE_BRANCH,
+  isoDateBerlin,
+  MAX_REQUESTS_PER_RUN,
+  type PipelineSettings,
+  resolveRunSettings,
+} from './config';
 import { DRY_RUN_MODEL } from './dry-run';
 import { loadLibrary, writeJsonFile } from './files';
 import { type ContentKindDefinition, findKind, type GenerationCell } from './kinds';
@@ -27,7 +34,7 @@ import { parseSelection, planCells } from './selection';
 import { ensureGitIdentity, type PipelineTools } from './tools';
 
 export interface GenerateOptions {
-  /** `exercises` oder `plan-templates`. */
+  /** Workflow-Eingabe „art“, z. B. `exercises`, `plan-templates`, `recipes`. */
   readonly kind: string;
   /** Matrix-Auswahl, z. B. `alle` oder `muscle_gain, 30-45`. */
   readonly selection: string;
@@ -43,7 +50,7 @@ export interface GenerateDeps {
   /** Nur ohne Probelauf nötig. */
   readonly client?: ContentApiClient;
   readonly now: () => Date;
-  /** Zufällige Kurzkennung für Probeläufe (Test: fest). */
+  /** Zufällige Kurzkennung für Probeläufe und den eindeutigen Batch-Anzeigenamen (Test: fest). */
   readonly randomShort?: () => string;
 }
 
@@ -59,7 +66,7 @@ export type GenerateResult =
 
 function describeEstimate(estimate: CostEstimate): string[] {
   return [
-    `- Anfragen: ${estimate.requests} · max_tokens je Anfrage: ${estimate.maxTokensPerRequest.toLocaleString('de-DE')}`,
+    `- Anfragen: ${estimate.requests} · Höchstzahl Ausgabe-Token je Anfrage (inkl. Denken): ${estimate.maxTokensPerRequest.toLocaleString('de-DE')}`,
     `- Eingabe-Token (gezählt): ${estimate.inputTokens.toLocaleString('de-DE')} → ${formatUsd(estimate.inputUsd)}`,
     `- Ausgabe im schlimmsten Fall: ${formatUsd(estimate.worstCaseOutputUsd)}`,
     `- **Schlimmster Fall gesamt: ${formatUsd(estimate.worstCaseUsd)}** (Deckel CONTENT_MAX_USD: ${formatUsd(estimate.maxUsd)})`,
@@ -91,10 +98,12 @@ export async function runGenerate(
   const kind: ContentKindDefinition = findKind(options.kind);
   const count = validateCount(options.count);
   const selection = parseSelection(kind, options.selection);
-  const { settings, dryRun } = options;
+  const { dryRun } = options;
+  // Modell und Denktiefe: Eingabe/GitHub-Variable vor dem Standard der Art (Gründer-Vorgabe „günstig“, N8).
+  const settings = resolveRunSettings(kind, options.settings);
   const tools = deps.tools;
   if (!dryRun && !deps.client) {
-    throw new Error('ANTHROPIC_API_KEY fehlt – ohne Schlüssel geht nur der Probelauf.');
+    throw new Error('GEMINI_API_KEY fehlt – ohne Schlüssel geht nur der Probelauf.');
   }
 
   // Immer auf dem aktuellen Stand von main aufsetzen (egal, von welchem Branch der Workflow startet).
@@ -110,7 +119,25 @@ export async function runGenerate(
       `Probelauf (ohne KI, kostenlos): ${cells.length} feste Beispiel-Anfragen. Auswahl und Anzahl gelten nur für echte Läufe.`,
     );
   } else {
+    const unavailable = kind.unavailableReason?.(context) ?? null;
+    if (unavailable !== null) {
+      return {
+        status: 'nothing',
+        markdown: [
+          `### ⏭️ content-generate: ${kind.labelDe} gerade nicht möglich`,
+          '',
+          unavailable,
+          '',
+          'Es wurde nichts an die API gesendet. Der Probelauf geht trotzdem.',
+          '',
+        ].join('\n'),
+      };
+    }
     const planned = planCells(kind, context, selection, count);
+    const note = kind.selectionNote?.(context);
+    if (note !== undefined) {
+      header.push(note);
+    }
     cells = planned.cells;
     if (planned.present.length > 0) {
       header.push(
@@ -178,8 +205,12 @@ export async function runGenerate(
     const random = deps.randomShort?.() ?? randomBytes(3).toString('hex');
     batchId = `${DRY_RUN_BATCH_PREFIX}${random}`;
   } else {
-    // Ab hier entstehen Kosten. Die Batch-ID steht sofort im Protokoll, falls danach etwas schiefgeht.
-    const batch = await deps.client!.messages.batches.create({ requests });
+    // Ab hier entstehen Kosten. Die Batch-ID steht sofort im Protokoll, falls danach etwas schiefgeht. Der
+    // Anzeigename ist eindeutig (Zufallskennung), damit man einen Batch mit unklarem Ausgang in Google AI Studio
+    // wiederfindet (Wächter N8 S2).
+    const displayName = `alpha5-${kind.inputName}-${today}-${deps.randomShort?.() ?? randomBytes(3).toString('hex')}`;
+    console.warn(`content-generate: lege Batch „${displayName}“ an …`);
+    const batch = await deps.client!.createBatch(settings.model, requests, displayName);
     batchId = batch.id;
     console.warn(`content-generate: Batch ${batchId} angelegt.`);
   }
@@ -187,7 +218,8 @@ export async function runGenerate(
   const name = runName(today, shortId(batchId));
   const branch = batchBranch(name);
   const record = batchRecordSchema.parse({
-    record_version: 1,
+    record_version: 2,
+    provider: 'gemini',
     status: 'submitted',
     dry_run: dryRun,
     batch_id: batchId,
@@ -236,7 +268,7 @@ export async function runGenerate(
         ? `### ✅ Probelauf angelegt (${kind.labelDe}) – ohne KI, kostenlos`
         : `### ✅ Batch abgeschickt (${kind.labelDe})`,
       '',
-      `- Batch: \`${batchId}\` · Modell: ${record.model} · Denktiefe: ${settings.effort}`,
+      `- Batch: \`${batchId}\` · Anbieter: Google Gemini · Modell: ${record.model} · Denktiefe: ${settings.effort}`,
       `- Arbeits-Branch: \`${branch}\` (Merkdatei \`${recordPath}\`)`,
       ...header.map((line) => `- ${line}`),
       ...(dryRun ? [] : describeEstimate(estimate)),

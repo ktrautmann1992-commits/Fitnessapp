@@ -24,6 +24,8 @@ import {
 } from '@fitnessapp/core';
 import { z } from 'zod';
 
+import { MODEL_FLASH_LITE } from '../config';
+
 import { countsAsPresent } from './present';
 import { OUTPUT_FORMAT_TEXT, ROLE_TEXT } from './prompt-rules';
 import type { ContentKindDefinition, GenerationCell, LibraryContext } from './types';
@@ -235,6 +237,9 @@ export const ingredientSubstitutionKind: ContentKindDefinition = {
   labelDe: 'Austausch-Einträge',
   folder: 'substitutions',
   contentSchema: ingredientSubstitutionSchema,
+  // Standard: eng begrenzt: Katalog-IDs, Rolle, Faktor; R23 prüft danach (Gründer-Vorgabe 15.10.2026, docs/PLAN-PHASE-5.md N8).
+  defaultModel: MODEL_FLASH_LITE,
+  defaultEffort: 'low',
   maxTokens: SUBSTITUTION_MAX_TOKENS,
   dimensions: [
     {

@@ -6,6 +6,7 @@ import {
   PACKAGE_SIZE_LIMITS,
   packageSizeSchema,
   planTemplateSchema,
+  recipeSchema,
 } from '@fitnessapp/core';
 import { demoNutritionContent } from '@fitnessapp/core/demo-nutrition';
 import { describe, expect, it } from 'vitest';
@@ -15,8 +16,8 @@ import { loadLibrary } from './files';
 import {
   findStructuredOutputProblems,
   stripUnsupportedKeywords,
+  SUPPORTED_SCHEMA_KEYWORDS,
   toOutputJsonSchema,
-  UNSUPPORTED_SCHEMA_KEYWORDS,
 } from './json-schema';
 import { CONTENT_KINDS, findKind } from './kinds';
 import { EXERCISE_MAX_TOKENS, exerciseKind } from './kinds/exercise';
@@ -26,6 +27,7 @@ import {
 } from './kinds/ingredient-substitution';
 import { PACKAGE_SIZE_MAX_TOKENS, packageSizeKind } from './kinds/package-size';
 import { PLAN_TEMPLATE_MAX_TOKENS, planTemplateKind, templateIdFor } from './kinds/plan-template';
+import { recipeKind } from './kinds/recipe';
 import { buildBatchRequests } from './requests';
 import { REAL_REPO_ROOT } from './test-helpers';
 
@@ -58,7 +60,7 @@ function allKeys(
 }
 
 describe('JSON-Schema aus Zod', () => {
-  it('entfernt nicht unterstützte Angaben, behält aber Feldnamen wie „pattern“', () => {
+  it('behält nur von Gemini unterstützte Angaben, aber Feldnamen wie „pattern“', () => {
     const schema = z.strictObject({
       pattern: z.string().min(2).max(5).regex(/^a/),
       count: z.number().int().min(1).max(3).multipleOf(1),
@@ -69,16 +71,25 @@ describe('JSON-Schema aus Zod', () => {
     });
     const result = toOutputJsonSchema(schema);
     const keys = allKeys(result);
-    for (const keyword of UNSUPPORTED_SCHEMA_KEYWORDS) {
-      expect(keys.has(keyword), keyword).toBe(false);
+    const supported = new Set<string>(SUPPORTED_SCHEMA_KEYWORDS);
+    for (const key of keys) {
+      expect(supported.has(key), key).toBe(true);
+    }
+    for (const removed of ['minLength', 'maxLength', 'pattern', 'multipleOf', 'const', '$schema']) {
+      expect(keys.has(removed), removed).toBe(false);
     }
     const properties = result.properties as Record<string, Record<string, unknown>>;
     expect(Object.keys(properties)).toContain('pattern');
+    expect(properties.pattern).toEqual({ type: 'string' });
+    // Zahlen- und Listen-Grenzen versteht Gemini – sie bleiben (Zod prüft ohnehin danach).
+    expect(properties.count).toMatchObject({ type: 'integer', minimum: 1, maximum: 3 });
+    expect(properties.list).toMatchObject({ type: 'array', minItems: 1, maxItems: 4 });
     expect(properties.kind).toEqual({ type: 'string', enum: ['a', 'b'] });
-    expect(properties.fixed?.const).toBe(3);
+    expect(properties.fixed).toEqual({ type: 'number', enum: [3] }); // const → enum
     expect(properties.maybe).toEqual({ anyOf: [{ type: 'string' }, { type: 'null' }] });
     expect(result.additionalProperties).toBe(false);
     expect(result.required).toEqual(['pattern', 'count', 'list', 'kind', 'fixed', 'maybe']);
+    expect(result.propertyOrdering).toEqual(['pattern', 'count', 'list', 'kind', 'fixed', 'maybe']);
   });
 
   it('entfernt nicht unterstützte String-Formate, behält unterstützte', () => {
@@ -91,23 +102,28 @@ describe('JSON-Schema aus Zod', () => {
     });
   });
 
-  it('meldet offene Objekte und optionale Felder', () => {
+  it('meldet nicht unterstützte Angaben und Typ-Listen; optionale Felder sind bei Gemini erlaubt', () => {
     expect(
       findStructuredOutputProblems({
-        type: 'object',
-        properties: { a: { type: 'string' } },
-        required: [],
+        type: ['string', 'null'],
+        pattern: '^a',
+        enum: [true],
       }),
-    ).toHaveLength(2);
-    expect(() => toOutputJsonSchema(z.object({ a: z.string().optional() }))).toThrow(
-      /Structured Outputs/,
+    ).toHaveLength(3);
+    expect(
+      findStructuredOutputProblems(toOutputJsonSchema(z.object({ a: z.string().optional() }))),
+    ).toEqual([]);
+    expect(() => toOutputJsonSchema(z.array(z.string()) as unknown as z.ZodType)).toThrow(
+      /Wurzel muss ein Objekt/,
     );
+    // Boolesche Konstante: kein enum (nur Texte/Zahlen) – Zod prüft den Wert danach.
+    expect(stripUnsupportedKeywords({ type: 'boolean', const: true })).toEqual({ type: 'boolean' });
   });
 
   it('Antwort-Schemas aller Arten sind gültig, nutzen Katalog-IDs und feste Matrix-Werte', () => {
     for (const kind of Object.values(CONTENT_KINDS)) {
       const ctx =
-        kind === ingredientSubstitutionKind || kind === packageSizeKind
+        kind === ingredientSubstitutionKind || kind === packageSizeKind || kind === recipeKind
           ? nutritionContext
           : context;
       for (const cell of kind.cells(ctx).slice(0, 5)) {
@@ -122,7 +138,7 @@ describe('JSON-Schema aus Zod', () => {
     const templateSchema = JSON.stringify(
       toOutputJsonSchema(planTemplateKind.outputSchema(templateCell, context)),
     );
-    expect(templateSchema).toContain('"const":"muscle_gain"');
+    expect(templateSchema).toContain('"enum":["muscle_gain"]');
     expect(templateSchema).toContain('"goblet-kniebeuge"');
     const exerciseCell = exerciseKind
       .cells(context)
@@ -130,7 +146,7 @@ describe('JSON-Schema aus Zod', () => {
     const exerciseJson = JSON.stringify(
       toOutputJsonSchema(exerciseKind.outputSchema(exerciseCell, context)),
     );
-    expect(exerciseJson).toContain('"const":"squat"');
+    expect(exerciseJson).toContain('"enum":["squat"]');
     // Alternativen nur mit gleichem Bewegungsmuster.
     expect(exerciseJson).toContain('"kniebeuge-langhantel"');
     expect(exerciseJson).not.toContain('"liegestuetz"');
@@ -144,7 +160,9 @@ describe('Inhaltsarten', () => {
     expect(findKind('ingredient-substitutions')).toBe(ingredientSubstitutionKind);
     expect(findKind('package-sizes')).toBe(packageSizeKind);
     expect(findKind('package_size')).toBe(packageSizeKind);
-    expect(() => findKind('recipes')).toThrow(/Unbekannte Inhaltsart/);
+    expect(findKind('recipes')).toBe(recipeKind);
+    expect(findKind('recipe')).toBe(recipeKind);
+    expect(() => findKind('rezepte-live')).toThrow(/Unbekannte Inhaltsart/);
   });
 
   it('max_tokens fest je Art (24.000 Vorlagen, 12.000 Übungen)', () => {
@@ -215,7 +233,7 @@ describe('Inhaltsarten', () => {
   it('Probelauf-Antworten: gültige passen zu Antwort- und Datei-Schema, die ungültige nur zum JSON-Format', () => {
     for (const kind of Object.values(CONTENT_KINDS)) {
       const ctx =
-        kind === ingredientSubstitutionKind || kind === packageSizeKind
+        kind === ingredientSubstitutionKind || kind === packageSizeKind || kind === recipeKind
           ? nutritionContext
           : context;
       const fixtures = kind.dryRunFixtures();
@@ -257,7 +275,9 @@ describe('Inhaltsarten', () => {
               ? Object.keys(schema.shape)
               : kind.kind === 'package_size'
                 ? Object.keys(packageSizeSchema.shape)
-                : Object.keys(ingredientSubstitutionSchema.shape);
+                : kind.kind === 'recipe'
+                  ? Object.keys(recipeSchema.shape).filter((key) => key in content)
+                  : Object.keys(ingredientSubstitutionSchema.shape);
           expect(Object.keys(content)).toEqual(keys);
         }
       }
@@ -416,22 +436,20 @@ describe('Packungsgrößen (Etappe N11)', () => {
   });
 });
 
-describe('Anfragen für die Batch-API', () => {
-  it('baut je Zelle eine Anfrage mit Modell, max_tokens, Structured Outputs und Denktiefe – ohne fallbacks', () => {
+describe('Anfragen für die Gemini Batch API', () => {
+  it('baut je Zelle eine Anfrage mit System-Text, JSON-Schema, Höchstzahl Token und Denktiefe', () => {
     const cells = planTemplateKind.cells(context).slice(0, 3);
     const requests = buildBatchRequests(planTemplateKind, cells, context, {
-      model: 'claude-opus-5-5',
+      model: 'gemini-3.8-flash',
       effort: 'high',
     });
-    expect(requests.map((r) => r.custom_id)).toEqual(cells.map((c) => c.customId));
+    expect(requests.map((r) => r.customId)).toEqual(cells.map((c) => c.customId));
     for (const request of requests) {
-      expect(request.params.model).toBe('claude-opus-5-5');
-      expect(request.params.max_tokens).toBe(24_000);
-      expect(request.params.output_config?.effort).toBe('high');
-      expect(request.params.output_config?.format?.type).toBe('json_schema');
-      expect(request.params).not.toHaveProperty('fallbacks');
-      expect(request.params).not.toHaveProperty('thinking'); // Opus 5.5 denkt immer adaptiv
-      expect(request.params.system).toBe(requests[0]!.params.system);
+      expect(request.maxOutputTokens).toBe(24_000);
+      expect(request.effort).toBe('high');
+      expect(request.responseJsonSchema.type).toBe('object');
+      expect(findStructuredOutputProblems(request.responseJsonSchema)).toEqual([]);
+      expect(request.systemInstruction).toBe(requests[0]!.systemInstruction);
     }
   });
 

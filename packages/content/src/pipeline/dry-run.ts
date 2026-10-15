@@ -1,75 +1,63 @@
 /**
  * Probelauf ohne KI (docs/PLAN-PHASE-2.md Abschnitt 4, „Probelauf ohne KI“): feste Beispiel-Antworten statt
- * API, im Format echter Batch-Ergebnisse – inkl. einer absichtlich ungültigen und einer abgelehnten Antwort.
+ * API, im anbieter-neutralen Ergebnis-Format – inkl. einer absichtlich ungültigen und einer abgelehnten Antwort.
  * Die Ergebnisse kommen absichtlich in umgekehrter Reihenfolge (Zuordnung nur über `custom_id`).
+ * Kein Schlüssel, kein Netz, keine Kosten.
  */
-import type Anthropic from '@anthropic-ai/sdk';
 import { DRY_RUN_MODEL_ID } from '@fitnessapp/core';
 
-import type { DryRunFixture, DryRunResponse } from './kinds';
+import type { DryRunFixture } from './kinds';
 import type { BatchResult } from './results';
 
 /** Modell-Kennung der Probelauf-Entwürfe – content:validate lehnt sie als „published“ ab (Regel PROBELAUF). */
 export const DRY_RUN_MODEL = DRY_RUN_MODEL_ID;
 
-function message(
-  response: Exclude<DryRunResponse, { kind: 'errored' }>,
-  index: number,
-): Anthropic.Messages.Message {
-  const text = response.kind === 'json' ? JSON.stringify(response.data) : '';
-  return {
-    id: `msg_probelauf_${index}`,
-    type: 'message',
-    role: 'assistant',
-    model: DRY_RUN_MODEL,
-    container: null,
-    diagnostics: null,
-    content: text === '' ? [] : [{ type: 'text', text, citations: null }],
-    stop_reason:
-      response.kind === 'json'
-        ? 'end_turn'
-        : response.kind === 'refusal'
-          ? 'refusal'
-          : 'max_tokens',
-    stop_details:
-      response.kind === 'refusal'
-        ? { type: 'refusal', category: null, explanation: 'Probelauf: absichtlich abgelehnt.' }
-        : null,
-    stop_sequence: null,
-    usage: {
-      cache_creation: null,
-      cache_creation_input_tokens: null,
-      cache_read_input_tokens: null,
-      inference_geo: null,
-      input_tokens: 0,
-      output_tokens: 0,
-      output_tokens_details: null,
-      server_tool_use: null,
-      service_tier: 'batch',
-    },
-  };
-}
+const NO_USAGE = { inputTokens: 0, outputTokens: 0 } as const;
 
 /** Feste Ergebnisse für die Anfragen eines Probelaufs (gleiche custom_ids wie die Beispiel-Antworten). */
 export function dryRunResults(fixtures: readonly DryRunFixture[]): BatchResult[] {
-  const results = fixtures.map((fixture, index): BatchResult => {
-    if (fixture.response.kind === 'errored') {
-      return {
-        custom_id: fixture.cell.customId,
-        result: {
-          type: 'errored',
-          error: {
-            type: 'error',
-            request_id: null,
-            error: { type: 'api_error', message: 'Probelauf: absichtlicher Fehler.' },
+  const results = fixtures.map((fixture): BatchResult => {
+    const customId = fixture.cell.customId;
+    switch (fixture.response.kind) {
+      case 'errored':
+        return {
+          custom_id: customId,
+          result: { type: 'errored', detail: 'Probelauf: absichtlicher Fehler.' },
+        };
+      case 'refusal':
+        return {
+          custom_id: customId,
+          result: {
+            type: 'succeeded',
+            text: '',
+            finish: 'refusal',
+            finishDetail: 'Probelauf: absichtlich abgelehnt.',
+            usage: NO_USAGE,
           },
-        },
-      };
+        };
+      case 'max_tokens':
+        return {
+          custom_id: customId,
+          result: {
+            type: 'succeeded',
+            text: '',
+            finish: 'max_tokens',
+            finishDetail: 'MAX_TOKENS',
+            usage: NO_USAGE,
+          },
+        };
+      case 'json':
+        return {
+          custom_id: customId,
+          result: {
+            type: 'succeeded',
+            text: JSON.stringify(fixture.response.data),
+            finish: 'stop',
+            finishDetail: '',
+            usage: NO_USAGE,
+          },
+        };
     }
-    return {
-      custom_id: fixture.cell.customId,
-      result: { type: 'succeeded', message: message(fixture.response, index) },
-    };
   });
   return results.reverse();
 }

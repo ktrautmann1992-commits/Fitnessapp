@@ -25,7 +25,7 @@ import { ensureGitIdentity, type PipelineTools } from './tools';
 export interface CollectDeps {
   readonly repoRoot: string;
   readonly tools: PipelineTools;
-  /** undefined = kein ANTHROPIC_API_KEY (echte Läufe werden dann übersprungen). */
+  /** undefined = kein GEMINI_API_KEY (echte Läufe werden dann übersprungen). */
   readonly client?: ContentApiClient;
   readonly now: () => Date;
 }
@@ -106,20 +106,14 @@ async function fetchResults(
   if (record.dry_run) {
     return { status: 'ended', results: dryRunResults(findKind(record.kind).dryRunFixtures()) };
   }
-  const client = deps.client!;
-  const batch = await client.messages.batches.retrieve(record.batch_id);
-  if (batch.processing_status !== 'ended') {
-    const c = batch.request_counts;
-    return {
-      status: 'pending',
-      info: `Status ${batch.processing_status}: ${c.processing} in Arbeit, ${c.succeeded} fertig, ${c.errored} Fehler.`,
-    };
+  const batch = await deps.client!.getBatch(
+    record.batch_id,
+    record.requests.map((request) => request.custom_id),
+  );
+  if (batch.state !== 'ended') {
+    return { status: 'pending', info: batch.info };
   }
-  const results: BatchResult[] = [];
-  for await (const result of await client.messages.batches.results(record.batch_id)) {
-    results.push(result);
-  }
-  return { status: 'ended', results };
+  return { status: 'ended', results: batch.results };
 }
 
 /**
@@ -213,7 +207,7 @@ async function collectBranch(branch: string, deps: CollectDeps): Promise<BranchO
     return {
       branch,
       status: 'no_key',
-      markdown: `- ⏭️ \`${branch}\`: übersprungen – GitHub-Secret ANTHROPIC_API_KEY fehlt (docs/SETUP.md Teil E).`,
+      markdown: `- ⏭️ \`${branch}\`: übersprungen – GitHub-Secret GEMINI_API_KEY fehlt (docs/SETUP.md Teil E).`,
     };
   }
 
@@ -246,10 +240,7 @@ async function collectBranch(branch: string, deps: CollectDeps): Promise<BranchO
       at: deps.now().toISOString(),
       saved: processed.drafts.map((draft) => draft.id),
       not_saved: processed.notSaved.length,
-      input_tokens:
-        processed.usage.inputTokens +
-        processed.usage.cacheWriteTokens +
-        processed.usage.cacheReadTokens,
+      input_tokens: processed.usage.inputTokens,
       output_tokens: processed.usage.outputTokens,
       actual_usd: Math.round(costUsd * 10000) / 10000,
     },
@@ -280,7 +271,7 @@ async function collectBranch(branch: string, deps: CollectDeps): Promise<BranchO
       ? '> **Probelauf ohne KI:** Beispiel-Antworten zum Testen der Pipeline (eine absichtlich ungültig, eine abgelehnt). **Bitte NICHT mergen** – ansehen und den Pull Request danach schließen.'
       : '> KI-Entwurf – fachlich prüfen. Alle Inhalte sind `draft`; freigeben geht danach mit **Actions → content-review**.',
     '',
-    `Batch \`${record.batch_id}\` · Modell ${record.model} · Denktiefe ${record.effort} · ${record.requests.length} Anfragen · Auswahl „${record.selection}“`,
+    `Batch \`${record.batch_id}\` · Anbieter Google Gemini · Modell ${record.model} · Denktiefe ${record.effort} · ${record.requests.length} Anfragen · Auswahl „${record.selection}“`,
     '',
     `### Gespeichert (${processed.drafts.length})`,
     '',

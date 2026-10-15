@@ -1,6 +1,6 @@
 /**
  * Hilfen für Tests der Pipeline: temporäres git-Repository mit lokalem „origin“ (ohne Netz),
- * gefälschtes gh, gefälschter Anthropic-Client. Wird nur von *.test.ts genutzt.
+ * gefälschtes gh, gefälschter Gemini-Client (keine echten Netzaufrufe). Wird nur von *.test.ts genutzt.
  */
 import { execFileSync } from 'node:child_process';
 import { cpSync, mkdtempSync, readFileSync, rmSync } from 'node:fs';
@@ -8,10 +8,7 @@ import { tmpdir } from 'node:os';
 import { dirname, join, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
 
-import type Anthropic from '@anthropic-ai/sdk';
-
-import type { ContentApiClient } from './requests';
-import type { BatchResult } from './results';
+import type { BatchRequest, BatchResult, ContentApiClient, FinishKind } from './provider/types';
 import { systemTools, type PipelineTools } from './tools';
 
 /** Wurzel des echten Repositorys (für den Startbestand unter content/). */
@@ -132,98 +129,63 @@ export function recordingTools(): PipelineTools & { gitCalls: string[][]; ghCall
 }
 
 export interface MockClient extends ContentApiClient {
-  readonly calls: { countTokens: number; create: number; retrieve: number; results: number };
-  readonly created: Anthropic.Messages.Batches.BatchCreateParams[];
+  readonly calls: { countTokens: number; create: number; get: number };
+  /** Angelegte Batches (Modell, Anfragen, Anzeigename). */
+  readonly created: { model: string; requests: readonly BatchRequest[]; displayName: string }[];
 }
 
-/** Gefälschter Anthropic-Client: feste Token-Zahl je Anfrage, Batch-Status und Ergebnisse vorgebbar. */
+/**
+ * Gefälschter Gemini-Client (anbieter-neutrale Schnittstelle): feste Token-Zahl je Anfrage, Batch-Stand und
+ * Ergebnisse vorgebbar. Kein Netz.
+ */
 export function mockClient(
   options: {
     inputTokensPerRequest?: number;
     batchId?: string;
-    processingStatus?: 'in_progress' | 'canceling' | 'ended';
+    state?: 'pending' | 'ended';
     results?: BatchResult[];
   } = {},
 ): MockClient {
-  const calls = { countTokens: 0, create: 0, retrieve: 0, results: 0 };
-  const created: Anthropic.Messages.Batches.BatchCreateParams[] = [];
-  const batch = (status: 'in_progress' | 'canceling' | 'ended') => ({
-    id: options.batchId ?? 'msgbatch_test01abcdef',
-    type: 'message_batch',
-    processing_status: status,
-    request_counts: { canceled: 0, errored: 0, expired: 0, processing: 3, succeeded: 1 },
-  });
-  const client = {
+  const calls = { countTokens: 0, create: 0, get: 0 };
+  const created: MockClient['created'] = [];
+  return {
+    provider: 'gemini',
     calls,
     created,
-    messages: {
-      countTokens: async () => {
-        calls.countTokens += 1;
-        return { input_tokens: options.inputTokensPerRequest ?? 1000 };
-      },
-      batches: {
-        create: async (params: Anthropic.Messages.Batches.BatchCreateParams) => {
-          calls.create += 1;
-          created.push(params);
-          return batch('in_progress');
-        },
-        retrieve: async () => {
-          calls.retrieve += 1;
-          return batch(options.processingStatus ?? 'ended');
-        },
-        results: async () => {
-          calls.results += 1;
-          const items = options.results ?? [];
-          return (async function* () {
-            yield* items;
-          })();
-        },
-      },
+    countTokens: async () => {
+      calls.countTokens += 1;
+      return options.inputTokensPerRequest ?? 1000;
+    },
+    createBatch: async (model, requests, displayName) => {
+      calls.create += 1;
+      created.push({ model, requests, displayName });
+      return { id: options.batchId ?? 'batches/test01abcdef' };
+    },
+    getBatch: async () => {
+      calls.get += 1;
+      return options.state === 'pending'
+        ? { state: 'pending', info: 'Status JOB_STATE_RUNNING.' }
+        : { state: 'ended', info: 'Status JOB_STATE_SUCCEEDED.', results: options.results ?? [] };
     },
   };
-  return client as unknown as MockClient;
 }
 
-/** Erfolgreiches Batch-Ergebnis mit Text (z. B. JSON) und Stopp-Grund. */
+/** Gelieferte Antwort mit Text (z. B. JSON) und Ende-Grund. */
 export function succeeded(
   customId: string,
   text: string,
-  stopReason: Anthropic.Messages.StopReason = 'end_turn',
+  finish: FinishKind = 'stop',
   usage: { input: number; output: number } = { input: 1000, output: 2000 },
+  finishDetail = finish === 'stop' ? '' : finish === 'refusal' ? 'SAFETY' : String(finish),
 ): BatchResult {
   return {
     custom_id: customId,
     result: {
       type: 'succeeded',
-      message: {
-        id: `msg_${customId}`,
-        type: 'message',
-        role: 'assistant',
-        model: 'claude-opus-5-5',
-        container: null,
-        diagnostics: null,
-        content: [
-          { type: 'thinking', thinking: '', signature: 'sig' },
-          ...(text === '' ? [] : [{ type: 'text' as const, text, citations: null }]),
-        ],
-        stop_reason: stopReason,
-        stop_details:
-          stopReason === 'refusal'
-            ? { type: 'refusal', category: 'cyber', explanation: null }
-            : null,
-        stop_sequence: null,
-        usage: {
-          cache_creation: null,
-          cache_creation_input_tokens: null,
-          cache_read_input_tokens: null,
-          inference_geo: null,
-          input_tokens: usage.input,
-          output_tokens: usage.output,
-          output_tokens_details: null,
-          server_tool_use: null,
-          service_tier: 'batch',
-        },
-      },
+      text,
+      finish,
+      finishDetail,
+      usage: { inputTokens: usage.input, outputTokens: usage.output },
     },
   };
 }

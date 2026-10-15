@@ -3,26 +3,32 @@
  */
 import { appendFileSync } from 'node:fs';
 
-import Anthropic from '@anthropic-ai/sdk';
-
-import { gitRepoRoot } from './validate';
+import { createGeminiClient, redactSecret } from './pipeline/provider/gemini';
 import type { ContentApiClient } from './pipeline/requests';
+import { gitRepoRoot } from './validate';
 
-/** Bericht in die Konsole und – in GitHub Actions – in die Zusammenfassung des Laufs. */
+/**
+ * Bericht in die Konsole und – in GitHub Actions – in die Zusammenfassung des Laufs. Der Gemini-Schlüssel wird
+ * vorsichtshalber geschwärzt (GitHub maskiert Secrets zusätzlich selbst).
+ */
 export function writeReport(markdown: string): void {
-  process.stdout.write(`${markdown}\n`);
+  const text = redactSecret(markdown, process.env.GEMINI_API_KEY?.trim());
+  process.stdout.write(`${text}\n`);
   if (process.env.GITHUB_STEP_SUMMARY) {
-    appendFileSync(process.env.GITHUB_STEP_SUMMARY, `${markdown}\n`);
+    appendFileSync(process.env.GITHUB_STEP_SUMMARY, `${text}\n`);
   }
 }
 
-/** Anthropic-Client nur, wenn ANTHROPIC_API_KEY gesetzt ist (sonst undefined). */
+/**
+ * Gemini-Client nur, wenn GEMINI_API_KEY gesetzt ist (sonst undefined). Der Schlüssel geht nur an den Client –
+ * nie in Merkdateien, Entwürfe, Pull Requests oder Logs.
+ */
 export function apiClientFromEnv(): ContentApiClient | undefined {
-  const key = process.env.ANTHROPIC_API_KEY?.trim();
+  const key = process.env.GEMINI_API_KEY?.trim();
   if (!key) {
     return undefined;
   }
-  return new Anthropic({ apiKey: key, maxRetries: 4 });
+  return createGeminiClient({ apiKey: key });
 }
 
 export function repoRootOrFail(): string {

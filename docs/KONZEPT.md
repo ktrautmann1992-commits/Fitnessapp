@@ -41,7 +41,9 @@ Verbindlich ist der freigegebene Ablauf in `docs/PLAN-PHASE-1.md` Abschnitt 3 (S
 - Wearable verbinden: **in Phase 1 entfallen**, kommt mit Phase 8 (optional, überspringbar)
 
 ## 3. Content-Pipeline (Offline-KI)
-- Skripte in `packages/content` erzeugen per Claude Message Batches API (kostengünstig, asynchron):
+- Skripte in `packages/content` erzeugen per **Google Gemini Batch API** (kostengünstig, asynchron; bis 14.10.2026
+  Claude Message Batches API – Gründer-Entscheidung 14.10.2026 „KI läuft über Gemini – überall“,
+  `docs/PLAN-PHASE-5.md` Umsetzungsstand N8):
   - Plan-Vorlagen (Matrix: Ziel × Level × Tage/Woche × Minuten × Equipment-Profil × Geschlecht wo sinnvoll)
   - Ausdauer-Blöcke (Basis, Aufbau, Spitze, Tapering) je Disziplin und Level
   - Rezepte (getaggt: Ernährungsform, Schwein, Kochmodus, Zubereitungszeit, Makros pro Portion, Haltbarkeit für Meal-Prep;
@@ -66,11 +68,16 @@ Verbindlich ist der freigegebene Ablauf in `docs/PLAN-PHASE-1.md` Abschnitt 3 (S
   Datenbank; nicht mehr Freigegebenes wird archiviert statt gelöscht. Entwürfe liegen nie in Supabase.
 - Startbestand (Phase 2, Etappe A): 52 Übungen und 24 Plan-Vorlagen als KI-Entwurf (`origin: claude_session`).
 - **Pipeline (Phase 2, Etappe B, `packages/content/src/pipeline`):** `content-generate` schickt einen Batch an die
-  Claude Message Batches API (Structured Outputs, Kostenschätzung vorab, Deckel `CONTENT_MAX_USD`, höchstens 200
-  Anfragen) und endet; `content-collect` (alle 3 Stunden + per Hand) holt die Ergebnisse über `custom_id` ab, speichert
-  gültige Antworten als `draft` (`origin: batch`), prüft alles und öffnet einen Pull Request; `content-review` setzt den
-  Status per Pull Request; `content-seed` prüft alles und spielt nur `published` ein. Inhaltsarten (`exercise`,
-  `plan_template`) sind austauschbar – Rezepte kommen in Phase 5 als weitere Art dazu. Probelauf ohne Schlüssel.
+  Gemini Batch API (seit Etappe N8; strukturierte JSON-Ausgabe per `responseJsonSchema`, Kostenschätzung vorab, Deckel
+  `CONTENT_MAX_USD`, höchstens 200 Anfragen) und endet; `content-collect` (alle 3 Stunden + per Hand) holt die
+  Ergebnisse über `custom_id` (Gemini `metadata.key`) ab, speichert gültige Antworten als `draft` (`origin: batch`),
+  prüft alles und öffnet einen Pull Request; `content-review` setzt den Status per Pull Request; `content-seed` prüft
+  alles und spielt nur `published` ein. Inhaltsarten (`exercise`, `plan_template`, `ingredient_substitution`,
+  `package_size`, `recipe`) sind austauschbar; der KI-Anbieter steckt hinter einer Schnittstelle
+  (`pipeline/provider/`). Probelauf ohne Schlüssel. Secret: `GEMINI_API_KEY` (`ANTHROPIC_API_KEY` entfällt).
+- **Datenschutz der Offline-KI:** An Gemini gehen ausschließlich Inhalts-Prompts (Regeln, Lebensmittel-Katalog,
+  Matrix-Werte) – **nie Nutzerdaten**; die Pipeline hat keinen Zugriff auf Nutzerdaten. Ein AVV mit Google ist dafür
+  nicht nötig, wohl aber vor Premium-Echtzeit-KI (Abschnitt 15).
 
 **Rezept-Startbestand aus `alpha5-rezepte.json` (Erweiterungen Teil 2, `docs/PLAN-PHASE-5.md` Abschnitt 19):**
 - Die Gründer-Datei `packages/content/seed/alpha5-rezepte.json` (242 Rezepte, 236 Zutaten, 4 Meal-Prep-Wochenpläne,
@@ -319,7 +326,8 @@ besteht. Einkaufsliste nach Abteilungen, Mengen aufgerundet, Häkchen bleiben be
   Trainingseinheit“ in Abschnitt 13).
 
 ### 6.4 Kalorien per Foto (Premium, KI)
-- Foto der Mahlzeit → Claude-API mit Bildeingabe schätzt Lebensmittel und Portionen → Abgleich mit Lebensmitteldatenbank
+- Foto der Mahlzeit → KI-API (Gemini, Gründer-Entscheidung 14.10.2026) mit Bildeingabe schätzt Lebensmittel und
+  Portionen → Abgleich mit Lebensmitteldatenbank
 - Ergebnis immer als **Vorschlag**: Nutzer bestätigt oder korrigiert Lebensmittel und Mengen, erst dann wird eingetragen
 - Sichtbarer Hinweis, dass es sich um eine **Schätzung** handelt
 - Foto standardmäßig **nach der Auswertung löschen**; speichern nur, wenn der Nutzer es aktiv möchte
@@ -391,7 +399,7 @@ Quelle: `docs/ERWEITERUNGEN-2.md` Abschnitte 1–2. Startbestand aus `alpha5-rez
 - **Haltbarkeit:** Nach dem Tausch wird die Haltbarkeit neu berechnet und der Meal-Prep-Zeitplan angepasst (einfrieren
   oder frisch kochen); für schon vorgekochte Portionen wird kein Tausch angeboten.
 - Der Server prüft getauschte Zutaten beim Speichern erneut (ab Supabase-Etappe).
-- Die Austausch-Tabelle entsteht **offline** über die Content-Pipeline (Claude Batch-API), wird gegen ein Schema
+- Die Austausch-Tabelle entsteht **offline** über die Content-Pipeline (Batch-API, seit N8 Gemini), wird gegen ein Schema
   geprüft und im Admin-Bereich freigegeben – keine Echtzeit-KI.
 - **Umsetzung (Etappe N9, Testmodus, 14.10.2026):** Tabelle `content/substitutions/` (Regel R23, Batch-Art
   `ingredient-substitutions`, Freigabe über `content-review`), Regeln in `packages/core/src/nutrition/substitute.ts`
@@ -858,6 +866,11 @@ alle offen, Server-Prüfung mit Phase 7):
 - Impressum, AGB, Widerrufsbelehrung, Haftungsausschluss
 - Schweiz (revDSG) und Österreich mitprüfen
 - KI-Funktionen mit Fotos: Verarbeitung durch den KI-Anbieter (AV-Vertrag, Datenübermittlung, keine Nutzung zum Training) prüfen
+- **KI-Anbieter Google Gemini (seit 14.10.2026):** Für die Offline-Inhalte (nur Inhalts-Prompts, keine Nutzerdaten) kein
+  AVV nötig; nur bezahlte API-Stufe nutzen (Eingaben der kostenlosen Stufe darf Google zur Produktverbesserung
+  verwenden). **Vor Premium-Echtzeit-KI (Phase 7b):** AVV/Datenverarbeitungsbedingungen mit Google abschließen,
+  Serverstandort/Drittlandtransfer (SCC/DPF) prüfen, „keine Nutzung zum Training“ bestätigen, DSFA ergänzen –
+  Gründer-Aufgabe
 - Lizenzen: Open Food Facts und OpenStreetMap (ODbL) mit Quellenangabe in der App
 - Nährwerte: Bundeslebensmittelschlüssel 4.0 (Max Rubner-Institut), Lizenz CC BY 4.0 – Namensnennung „Max
   Rubner-Institut (2025): Bundeslebensmittelschlüssel (BLS), Version 4.0 — Deutsche Nährstoffdatenbank. Karlsruhe.
@@ -891,6 +904,9 @@ alle offen, Server-Prüfung mit Phase 7):
 - **Limit erreicht:** klare Meldung („Dein Kontingent für … ist diesen Monat aufgebraucht, ab … wieder verfügbar“),
   keine stille Fehlfunktion. Die Grundfunktion ohne KI (z. B. manuelles Eintragen) bleibt nutzbar.
 - Alle KI-Funktionen hinter Feature-Flag; Kostenübersicht im Admin-Bereich.
+- **KI-Anbieter: Google Gemini (API)** für Offline-Inhalte und Premium-KI (Gründer-Entscheidung 14.10.2026). Offline
+  gehen nur Inhalts-Prompts an Gemini; bevor Premium-Funktionen Nutzerdaten (Fotos, Chat, Körperdaten) an Gemini
+  senden, braucht es den AVV mit Google und die Prüfungen aus Abschnitt 14 (Gründer-Aufgabe).
 - **Übungs-Präferenzen gehen nicht an den KI-Coach** („Mag ich nicht“ / „Hier nicht machbar“,
   `docs/PLAN-UEBUNGEN-GLOSSAR-TAUSCH.md` Abschnitt 6, D-5) – nur nach neuer Datenschutz-Bewertung.
   **DSFA-Merkposten (Restrisiko):** Ein Muster von Ausschlüssen (z. B. alle kniebelastenden Übungen) könnte mittelbar

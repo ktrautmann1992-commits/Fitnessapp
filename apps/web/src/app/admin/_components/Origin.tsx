@@ -4,7 +4,7 @@ import { formatDateDe, ORIGIN_LABELS } from '@/lib/admin/labels';
 
 import styles from '../admin.module.css';
 
-/** Herkunft und Prüfvermerk (meta) eines Inhalts, z. B. „KI-Entwurf, Claude, 03.10.2026“. */
+/** Herkunft und Prüfvermerk (meta) eines Inhalts, z. B. „KI-Entwurf (Batch-API), gemini-3.8-flash, 15.10.2026“. */
 export function OriginSection({ meta, version }: { meta: ContentMeta; version: number }) {
   return (
     <section className={styles.section} aria-labelledby="herkunft">
@@ -56,8 +56,9 @@ export function AiDraftNotice({ show }: { show: boolean }) {
   }
   return (
     <p className={styles.noticeWarning} role="note">
-      <strong>KI-Entwurf – fachlich prüfen.</strong> Dieser Inhalt wurde von Claude erstellt und
-      noch nicht von einer Fachperson (Trainer/in, Sportwissenschaft) geprüft.
+      <strong>KI-Entwurf – fachlich prüfen.</strong> Dieser Inhalt wurde von einer KI erstellt
+      (Modell unter „Herkunft und Prüfung“) und noch nicht von einer Fachperson (Trainer/in,
+      Sportwissenschaft, Ernährungsfachkraft) geprüft.
     </p>
   );
 }

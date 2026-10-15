@@ -1,19 +1,20 @@
 /**
- * Batch-Ergebnisse verarbeiten (docs/PLAN-PHASE-2.md Abschnitt 4, Schritt 2):
- * - Zuordnung NUR über `custom_id`, nie über die Reihenfolge.
- * - `succeeded` mit Stopp-Grund `end_turn` → JSON lesen → Antwort-Schema (Zod, inkl. Grenzen) → Datei-Schema
- *   (Ü1) → Entwurf. `errored`, `expired`, `canceled` → „erneut versuchen“. Stopp-Grund `refusal`
- *   (Ablehnung) oder `max_tokens` (abgeschnitten) → nicht gespeichert. Alles steht im Bericht.
+ * Batch-Ergebnisse verarbeiten (docs/PLAN-PHASE-2.md Abschnitt 4, Schritt 2; anbieter-neutral seit
+ * docs/PLAN-PHASE-5.md N8):
+ * - Zuordnung NUR über `custom_id` (bei Gemini `metadata.key`), nie über die Reihenfolge.
+ * - `succeeded` mit normalem Ende (`stop`) → JSON lesen → Antwort-Schema (Zod, inkl. Grenzen) → Datei-Schema
+ *   (Ü1) → Entwurf. `errored`, `expired`, `canceled` → „erneut versuchen“. Ablehnung/Sicherheitsfilter
+ *   (`refusal`) oder abgeschnitten (`max_tokens`) → nicht gespeichert. Alles steht im Bericht.
  */
-import type Anthropic from '@anthropic-ai/sdk';
 import type { z } from 'zod';
 
 import type { BatchRecord } from './batch-record';
 import { DRY_RUN_MODEL } from './dry-run';
 import type { ContentKindDefinition, GenerationCell, LibraryContext } from './kinds';
 import { addUsage, emptyUsage, type UsageTotals } from './pricing';
+import type { BatchResult } from './provider/types';
 
-export type BatchResult = Anthropic.Messages.Batches.MessageBatchIndividualResponse;
+export type { BatchResult } from './provider/types';
 
 export type NotSavedReason =
   | 'errored'
@@ -36,8 +37,8 @@ export const NOT_SAVED_DE: Record<NotSavedReason, string> = {
   errored: 'Fehler bei der API – erneut versuchen',
   expired: 'abgelaufen (nicht in 24 Stunden bearbeitet) – erneut versuchen',
   canceled: 'abgebrochen – erneut versuchen',
-  refusal: 'abgelehnt (refusal)',
-  max_tokens: 'abgeschnitten (max_tokens erreicht)',
+  refusal: 'abgelehnt bzw. vom Sicherheitsfilter blockiert (refusal)',
+  max_tokens: 'abgeschnitten (Höchstzahl Ausgabe-Token erreicht)',
   stop_reason: 'unerwarteter Stopp-Grund',
   no_json: 'kein gültiges JSON',
   invalid: 'ungültig (Schema/Grenzen)',
@@ -75,13 +76,6 @@ function zodDetail(error: z.ZodError): string {
     .slice(0, 5)
     .map((issue) => `${issue.path.length > 0 ? `${issue.path.join('.')}: ` : ''}${issue.message}`)
     .join(' · ');
-}
-
-function messageText(message: Anthropic.Messages.Message): string {
-  return message.content
-    .filter((block): block is Anthropic.Messages.TextBlock => block.type === 'text')
-    .map((block) => block.text)
-    .join('');
 }
 
 export interface ProcessInput {
@@ -131,8 +125,8 @@ export function processResults(input: ProcessInput): ProcessedResults {
     const customId = result.custom_id;
     const cell = cells.get(customId);
     if (result.result.type === 'succeeded') {
-      // Abgerechnet wird jede erfolgreiche Antwort – auch abgelehnte oder ungültige.
-      addUsage(usage, result.result.message.usage);
+      // Abgerechnet wird jede gelieferte Antwort – auch abgelehnte oder ungültige.
+      addUsage(usage, result.result.usage);
     }
     const label = cell?.label ?? customId;
     const skip = (reason: NotSavedReason, detail = '') =>
@@ -150,31 +144,29 @@ export function processResults(input: ProcessInput): ProcessedResults {
 
     const outcome = result.result;
     if (outcome.type === 'errored') {
-      skip('errored', outcome.error.error.type);
+      skip('errored', outcome.detail);
       continue;
     }
     if (outcome.type === 'expired' || outcome.type === 'canceled') {
       skip(outcome.type);
       continue;
     }
-    const message = outcome.message;
-    if (message.stop_reason === 'refusal') {
-      const category = message.stop_details?.category;
-      skip('refusal', category ? `Kategorie: ${category}` : '');
+    if (outcome.finish === 'refusal') {
+      skip('refusal', outcome.finishDetail);
       continue;
     }
-    if (message.stop_reason === 'max_tokens') {
-      skip('max_tokens', `max_tokens = ${kind.maxTokens}`);
+    if (outcome.finish === 'max_tokens') {
+      skip('max_tokens', `Höchstzahl = ${kind.maxTokens}`);
       continue;
     }
-    if (message.stop_reason !== 'end_turn') {
-      skip('stop_reason', String(message.stop_reason));
+    if (outcome.finish !== 'stop') {
+      skip('stop_reason', outcome.finishDetail);
       continue;
     }
 
     let data: unknown;
     try {
-      data = JSON.parse(messageText(message));
+      data = JSON.parse(outcome.text);
     } catch (error) {
       skip('no_json', (error as Error).message);
       continue;

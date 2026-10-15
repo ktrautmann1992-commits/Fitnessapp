@@ -1,11 +1,13 @@
 name: content-generate
 
 # Manuell startbar (GitHub-App → Actions → content-generate → Run workflow).
-# Schickt neue Aufträge als EINEN Batch an die Claude Message Batches API, legt den Arbeits-Branch
-# content/batch-<Datum>-<kurz> mit einer Merkdatei an und ENDET sofort (kein Warten). Die Ergebnisse holt
-# content-collect ab. Vorher: Kostenschätzung (schlimmster Fall) gegen CONTENT_MAX_USD – bei Überschreitung
-# wird nichts gesendet. „Probelauf“ geht ohne Schlüssel und ohne Kosten. Details: docs/PLAN-PHASE-2.md
-# Abschnitte 4 und 10, Anleitung: docs/SETUP.md „Inhalte erzeugen und freigeben am Handy“.
+# Schickt neue Aufträge als EINEN Batch an die Google Gemini Batch API (seit 15.10.2026, docs/PLAN-PHASE-5.md
+# N8), legt den Arbeits-Branch content/batch-<Datum>-<kurz> mit einer Merkdatei an und ENDET sofort (kein
+# Warten). Die Ergebnisse holt content-collect ab. Vorher: Kostenschätzung (schlimmster Fall) gegen
+# CONTENT_MAX_USD (Standard 3 $, höchstens 20 $) – bei Überschreitung wird nichts gesendet. „Probelauf“ geht ohne Schlüssel und ohne Kosten.
+# An Gemini gehen nur Inhalts-Prompts (Regeln, Katalog, Matrix) – nie Nutzerdaten.
+# Details: docs/PLAN-PHASE-2.md Abschnitte 4 und 10, Anleitung: docs/SETUP.md „Inhalte erzeugen und
+# freigeben am Handy“.
 on:
   workflow_dispatch:
     inputs:
@@ -17,19 +19,24 @@ on:
           - exercises
           - ingredient-substitutions
           - package-sizes
+          - recipes
         default: plan-templates
       auswahl:
-        description: 'Auswahl aus der Matrix, z. B. „alle“, „muskelaufbau 30-45“, „squat band“ oder (Austausch/Packungen) „meat_sausage“'
+        description: 'Auswahl aus der Matrix, z. B. „alle“, „muskelaufbau 30-45“, „squat band“, (Austausch/Packungen) „meat_sausage“ oder (Rezepte) „fruehstueck vegan schnell“'
         type: string
         default: alle
       anzahl:
-        description: 'Höchstens so viele Anfragen (1–200)'
+        description: 'Höchstens so viele Anfragen (1–200). Klein halten (Kosten)! Erster echter Lauf: 3'
         type: number
-        default: 10
+        default: 3
       probelauf:
         description: 'Probelauf (ohne KI, kostenlos)'
         type: boolean
         default: false
+      modell:
+        description: 'Gemini-Modell (leer = Standard der Art: gemini-3.5-flash-lite für Austausch/Packungen, gemini-3.8-flash für Rezepte/Übungen/Vorlagen; nur Modelle mit Preis in pricing.ts)'
+        type: string
+        default: ''
 
 permissions:
   contents: write
@@ -46,13 +53,13 @@ jobs:
       - name: Voraussetzungen prüfen
         id: secrets
         env:
-          HAS_KEY: ${{ secrets.ANTHROPIC_API_KEY != '' }}
+          HAS_KEY: ${{ secrets.GEMINI_API_KEY != '' }}
           DRY_RUN: ${{ inputs.probelauf }}
         run: |
           if [ "$DRY_RUN" != "true" ] && [ "$HAS_KEY" != "true" ]; then
-            echo "::notice title=content-generate übersprungen::Es fehlt das GitHub-Secret ANTHROPIC_API_KEY – siehe docs/SETUP.md Teil E. Ohne Schlüssel geht nur der Probelauf."
+            echo "::notice title=content-generate übersprungen::Es fehlt das GitHub-Secret GEMINI_API_KEY – siehe docs/SETUP.md Teil E. Ohne Schlüssel geht nur der Probelauf."
             echo "### ⏭️ content-generate übersprungen" >> "$GITHUB_STEP_SUMMARY"
-            echo "Es fehlt das GitHub-Secret ANTHROPIC_API_KEY (docs/SETUP.md Teil E). Ohne Schlüssel geht nur der **Probelauf**." >> "$GITHUB_STEP_SUMMARY"
+            echo "Es fehlt das GitHub-Secret GEMINI_API_KEY (docs/SETUP.md Teil E). Ohne Schlüssel geht nur der **Probelauf**." >> "$GITHUB_STEP_SUMMARY"
             echo "ready=false" >> "$GITHUB_OUTPUT"
           else
             echo "ready=true" >> "$GITHUB_OUTPUT"
@@ -72,16 +79,18 @@ jobs:
       - run: pnpm install --frozen-lockfile
         if: steps.secrets.outputs.ready == 'true'
       # Eingaben nur über Umgebungsvariablen (nie direkt im Skript-Text) – so können sie keine Befehle einschleusen.
-      # Der Schlüssel steht nur in diesem Schritt zur Verfügung.
+      # Der Schlüssel steht nur in diesem Schritt zur Verfügung und NUR in echten Läufen (Probelauf: leer). GitHub
+      # maskiert ihn in allen Ausgaben; das Skript schreibt ihn nie in Dateien, Merkdatei oder Pull Request und
+      # schwärzt ihn zusätzlich in Meldungen. Der Workflow lädt keine Artefakte hoch.
       - name: Batch absenden
         if: steps.secrets.outputs.ready == 'true'
         env:
-          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+          GEMINI_API_KEY: ${{ !inputs.probelauf && secrets.GEMINI_API_KEY || '' }}
           CONTENT_KIND: ${{ inputs.art }}
           CONTENT_SELECTION: ${{ inputs.auswahl }}
           CONTENT_COUNT: ${{ inputs.anzahl }}
           CONTENT_DRY_RUN: ${{ inputs.probelauf }}
-          CONTENT_MODEL: ${{ vars.CONTENT_MODEL }}
+          CONTENT_MODEL: ${{ inputs.modell || vars.CONTENT_MODEL }}
           CONTENT_EFFORT: ${{ vars.CONTENT_EFFORT }}
           CONTENT_MAX_USD: ${{ vars.CONTENT_MAX_USD }}
         run: pnpm --filter @fitnessapp/content generate

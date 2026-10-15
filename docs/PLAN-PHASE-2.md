@@ -364,6 +364,10 @@ Durchsicht durch euch und vor dem Start durch eine Fachperson.
 
 ## 10. Kosten der Batch-Läufe (Preise laut Anthropic, Stand 25.09.2026)
 
+> **Überholt seit 15.10.2026:** Die Pipeline nutzt jetzt **Google Gemini** (Standard je Art `gemini-3.5-flash-lite` bzw. `gemini-3.8-flash`, Deckel 3 $ pro Lauf, höchstens 20 $, Secret
+> `GEMINI_API_KEY`, Denktiefe `minimal|low|medium|high`). Preise, Kostendeckel und Ablauf: `docs/PLAN-PHASE-5.md`
+> Umsetzungsstand N8 und `docs/SETUP.md` Teil E. Der Text unten bleibt zur Nachvollziehbarkeit stehen.
+
 **Modell:** einstellbar über die GitHub-Variable `CONTENT_MODEL`, Standard **Claude Opus 5.5**
 (`claude-opus-5-5`). Normalpreis 4 $ je 1 Mio. Eingabe-Token und 20 $ je 1 Mio. Ausgabe-Token; die Batch-API
 kostet **die Hälfte: 2 $ / 10 $**. Opus 5.5 „denkt“ immer mit; diese Denk-Token zählen als Ausgabe.

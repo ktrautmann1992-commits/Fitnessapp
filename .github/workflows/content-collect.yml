@@ -5,8 +5,10 @@ name: content-collect
 # - Kein offener Batch-Branch (content/batch-*, Merkdatei mit status „submitted“) → Ende nach wenigen
 #   Sekunden, ohne Installation und ohne Schlüssel. (Alle 3 statt jede Stunde: GitHub rundet jeden Lauf auf
 #   eine volle Minute auf.)
-# - Probeläufe gehen ohne Schlüssel; echte Läufe brauchen ANTHROPIC_API_KEY.
-# - Zuordnung nur über custom_id; gültige Antworten werden Entwürfe, alles andere steht im Bericht.
+# - Probeläufe gehen ohne Schlüssel; echte Läufe brauchen GEMINI_API_KEY (Google Gemini Batch API, seit
+#   15.10.2026, docs/PLAN-PHASE-5.md N8). Der Schlüssel wird nie geloggt und landet in keiner Datei.
+# - Zuordnung nur über custom_id (Gemini: metadata.key); gültige Antworten werden Entwürfe (status draft),
+#   alles andere steht im Bericht. Freigabe bleibt menschlich (Pull Request + content-review).
 # - Vor dem Pull Request: content:validate (alle Inhalte), Prettier und Typprüfung. Rot → kein Pull Request.
 # - Danach wird ci für den Branch gestartet (Pull Requests des GITHUB_TOKEN starten ci nicht von selbst).
 # Der Workflow öffnet nur Pull Requests – er genehmigt NIE.
@@ -77,6 +79,6 @@ jobs:
       - name: Ergebnisse abholen, prüfen, Pull Request öffnen
         if: steps.open.outputs.run == 'true'
         env:
-          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+          GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
           GH_TOKEN: ${{ github.token }}
         run: pnpm --filter @fitnessapp/content collect

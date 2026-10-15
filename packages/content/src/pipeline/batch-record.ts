@@ -3,6 +3,10 @@
  * `content/batch-<Datum>-<kurz>`): Batch-ID, Art, Parameter, Kostenschätzung und die Liste der Anfragen.
  * content-collect erkennt offene Läufe an `status: "submitted"`. Nach dem Abholen steht dort `collected`
  * mit Bericht und tatsächlichen Kosten – die Datei bleibt nach dem Merge als Protokoll im Repository.
+ *
+ * Fassung 2 (docs/PLAN-PHASE-5.md N8): Anbieter `gemini`, Batch-Kennung im Gemini-Format (`batches/…`), Denktiefe
+ * als Gemini-`thinkingLevel`. Merkdateien der Fassung 1 (Claude) gab es nur auf Arbeits-Branches; content-collect
+ * meldet sie als ungültig, statt sie mit dem falschen Anbieter abzuholen.
  */
 import { z } from 'zod';
 
@@ -32,11 +36,12 @@ const collectedSchema = z.strictObject({
 });
 
 export const batchRecordSchema = z.strictObject({
-  record_version: z.literal(1),
+  record_version: z.literal(2),
+  provider: z.literal('gemini'),
   status: z.enum(['submitted', 'collected']),
   dry_run: z.boolean(),
   batch_id: z.string().min(1),
-  kind: z.enum(['exercise', 'plan_template', 'ingredient_substitution', 'package_size']),
+  kind: z.enum(['exercise', 'plan_template', 'ingredient_substitution', 'package_size', 'recipe']),
   model: z.string().min(1),
   effort: z.enum(CONTENT_EFFORTS),
   selection: z.string(),
