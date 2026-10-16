@@ -64,6 +64,8 @@ declare
   scheduled date;
   new_session_id uuid;
   plan_row record;
+  competition_row record;
+  profile_level public.experience_level;
   age_years integer;
   latest_flags text[];
   effort_cap integer;
@@ -181,9 +183,33 @@ begin
     if age_years is null then
       raise exception 'Profil fehlt.' using errcode = 'insufficient_privilege';
     end if;
+    -- Wächter WP3 M2: nur mit eigenem GEPLANTEN Wettkampf samt Plan-Bezug (save_competition vor save_training_plan).
+    -- Zeile FOR SHARE – nach der Einwilligung (save_training_plan über plan_health_basis, append_plan_block selbst),
+    -- dieselbe Reihenfolge wie der Widerruf (Einwilligung → competitions). Disziplin aus dem Wettkampf, nicht aus den
+    -- Angaben des Clients.
+    select c.discipline, c.uses_health_data into competition_row
+    from public.competitions c
+    where c.user_id = p_user_id and c.status = 'planned'
+    for share;
+    if not found or competition_row.uses_health_data is not true then
+      raise exception 'Für den Wettkampfplan fehlt der geplante Wettkampf.' using errcode = 'check_violation';
+    end if;
     -- Unter 18 höchstens Halbmarathon (W-G4).
-    if age_years < minor_below_age and plan_row.discipline = 'marathon' then
+    if age_years < minor_below_age and competition_row.discipline = 'marathon' then
       raise exception 'Für diese Distanz gibt es noch keinen Wettkampfplan.' using errcode = 'check_violation';
+    end if;
+    -- Disziplin des Plans = Disziplin des Wettkampfs (wie generateCompetitionPlan).
+    if plan_row.discipline is distinct from competition_row.discipline::text then
+      raise exception 'Der Plan passt nicht zum geplanten Wettkampf.' using errcode = 'check_violation';
+    end if;
+    -- Keine Einheit über dem Distanz-Deckel des langen Laufs (COMPETITION_LONG_RUN.maxMinutes).
+    if exists (
+      select 1 from public.planned_sessions ps
+      where ps.plan_id = p_plan_id and ps.block_no = p_block_no and ps.workout_type is not null
+        and ps.estimated_minutes > case competition_row.discipline
+          when '5k' then 75 when '10k' then 90 when 'half_marathon' then 120 when 'marathon' then 180 end
+    ) then
+      raise exception 'Die Einheit ist für diese Distanz zu lang.' using errcode = 'check_violation';
     end if;
     -- Höchste Anstrengung (Ziel und jeder Schritt): allgemein 8, unter 18 höchstens 7, ab 65 höchstens 6.
     effort_cap := case
@@ -215,9 +241,13 @@ begin
         using errcode = 'check_violation';
     end if;
     -- Harte Einheiten je Kalenderwoche (ganzer Plan, ohne gestrichene): Einsteiger und vorsichtige Startgruppe
-    -- (Flag, unter 18, ab 65) höchstens 1, sonst 2.
+    -- (Flag, unter 18, ab 65) höchstens 1, sonst 2. Level = das strengere aus Profil und Angaben des Plans (Wächter WP3
+    -- M1); „hart“ = harte Art oder Abschnitt ab 6 länger als 20 s (private.workout_is_hard, Wächter H1).
+    select pr.experience_level into profile_level from public.profiles pr where pr.user_id = p_user_id;
     hard_per_week := case
       when plan_row.level is distinct from 'advanced' and plan_row.level is distinct from 'competitive'
+        then hard_sessions_per_week_strict
+      when profile_level = 'beginner'
         then hard_sessions_per_week_strict
       when plan_row.medical_notice or age_years < minor_below_age or age_years >= senior_from_age
         then hard_sessions_per_week_strict
@@ -225,7 +255,8 @@ begin
     end;
     if exists (
       select 1 from public.planned_sessions ps
-      where ps.plan_id = p_plan_id and ps.status <> 'skipped' and ps.workout_type = any (hard_types)
+      where ps.plan_id = p_plan_id and ps.status <> 'skipped' and ps.workout_type is not null
+        and private.workout_is_hard(ps.workout_type, ps.workout_steps)
       group by date_trunc('week', ps.scheduled_on)
       having count(*) > hard_per_week
     ) then

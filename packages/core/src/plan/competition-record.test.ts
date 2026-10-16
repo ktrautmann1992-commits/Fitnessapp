@@ -17,7 +17,7 @@ import {
 import type { CompetitionDiscipline } from './competition-schema';
 import { fullPlan, request, runner } from './competition-test-helpers';
 import { generateTrainingPlan } from './generate';
-import { isHardWorkoutType } from './intensity';
+import { isHardSession, isHardWorkoutType, stepsFitWorkoutType } from './intensity';
 import {
   appendPlanBlockSchema,
   savePlanPayloadSchema,
@@ -446,5 +446,38 @@ describe('Eigenschaft: jeder Wettkampfplan der Engine passt durch die Datenbank-
 
   it('nicht leer: die Pläne enthalten harte Einheiten (sonst prüft die Eigenschaft nichts)', () => {
     expect(hardTotal).toBeGreaterThan(50);
+  });
+});
+
+describe('Wächter WP3 H1: Schritte passen zur Art (stepsFitWorkoutType, isHardSession)', () => {
+  const step = (kind: 'work' | 'easy', seconds: number, effort: number) => ({
+    part: 'main' as const,
+    kind,
+    seconds,
+    effort,
+  });
+  const strides = (n: number, seconds = 20, effort = 7) =>
+    Array.from({ length: n }, () => [step('work', seconds, effort), step('easy', 60, 3)]).flat();
+
+  it('lockere Arten nur bis Anstrengung 4', () => {
+    for (const type of ['easy', 'long', 'recovery'] as const) {
+      expect(stepsFitWorkoutType(type, [step('easy', 1800, 4)])).toBe(true);
+      expect(stepsFitWorkoutType(type, [step('easy', 1800, 5)])).toBe(false);
+    }
+  });
+
+  it('Steigerungen: höchstens 6 × 20 s als Belastung, sonst locker', () => {
+    expect(stepsFitWorkoutType('strides', strides(6))).toBe(true);
+    expect(stepsFitWorkoutType('strides', strides(7))).toBe(false);
+    expect(stepsFitWorkoutType('strides', strides(6, 21))).toBe(false);
+    expect(stepsFitWorkoutType('strides', [step('easy', 20, 7)])).toBe(false);
+  });
+
+  it('harte Arten frei; hart = harte Art oder Abschnitt ab 6 länger als 20 s', () => {
+    expect(stepsFitWorkoutType('intervals', [step('work', 180, 8)])).toBe(true);
+    expect(isHardSession('fartlek', [step('easy', 600, 3)])).toBe(true);
+    expect(isHardSession('easy', [step('work', 21, 6)])).toBe(true);
+    expect(isHardSession('strides', strides(6))).toBe(false);
+    expect(isHardSession(null, null)).toBe(false);
   });
 });

@@ -49,6 +49,12 @@ from unnest(array['11111111-1111-4111-8111-111111111111', '22222222-2222-4222-82
   '33333333-3333-4333-8333-333333333333', '44444444-4444-4444-8444-444444444444',
   '55555555-5555-4555-8555-555555555555']::uuid[]) as u;
 
+-- Geplanter Halbmarathon mit Plan-Bezug (Wächter WP3 M2: Wettkampf-Einheiten nur mit eigenem geplanten Wettkampf).
+insert into public.competitions (user_id, name, discipline, distance_m, race_date, effective_goal, uses_health_data)
+select u, 'Halbmarathon', 'half_marathon', 21097.5, '2027-04-11', 'finish', true
+from unnest(array['11111111-1111-4111-8111-111111111111', '22222222-2222-4222-8222-222222222222',
+  '33333333-3333-4333-8333-333333333333', '44444444-4444-4444-8444-444444444444']::uuid[]) as u;
+
 -- Einheiten wie toSavePlanSession() (packages/core); Tage ab Montag, 12.10. + Versatz.
 create function pg_temp.easy(p_day integer, p_block integer default 1) returns jsonb language sql as $$
   select jsonb_build_object(
@@ -67,6 +73,17 @@ language sql as $$
     jsonb_build_object('part', 'main', 'kind', 'work', 'seconds', p_work_s, 'effort', p_effort),
     jsonb_build_object('part', 'cooldown', 'kind', 'easy', 'seconds', p_minutes * 60 - 600 - p_work_s, 'effort', 3)
   )
+$$;
+-- Steigerungen wie die Engine: 10 min locker, 6 × (20 s zügig + 60 s locker), Rest locker.
+create function pg_temp.strides(p_minutes integer, p_effort integer default 7, p_work_s integer default 20,
+  p_count integer default 6) returns jsonb
+language sql as $$
+  select jsonb_build_array(jsonb_build_object('part', 'warmup', 'kind', 'easy', 'seconds', 600, 'effort', 3))
+    || (select jsonb_agg(x) from generate_series(1, p_count) g,
+          lateral (values (jsonb_build_object('part', 'main', 'kind', 'work', 'seconds', p_work_s, 'effort', p_effort)),
+                          (jsonb_build_object('part', 'main', 'kind', 'easy', 'seconds', 60, 'effort', 3))) v(x))
+    || jsonb_build_array(jsonb_build_object('part', 'cooldown', 'kind', 'easy',
+         'seconds', p_minutes * 60 - 600 - p_count * (p_work_s + 60), 'effort', 3))
 $$;
 create function pg_temp.workout(
   p_day integer, p_type text, p_effort integer, p_phase text default 'build', p_deload boolean default false,
@@ -159,7 +176,7 @@ select is(pg_temp.save(pg_temp.payload(jsonb_build_array(pg_temp.workout(0, 'eas
 select is(pg_temp.save(pg_temp.payload(jsonb_build_array(pg_temp.workout(0, 'strides', 6)))),
   '23514: Ungültige Werte im Plan.', 'Steigerungen sind keine harte Art – Ziel höchstens 4');
 select is(pg_temp.save(pg_temp.payload(jsonb_build_array(pg_temp.workout(0, 'strides', 4, 'base', false, 1, 40,
-    pg_temp.steps(40, 7, 120))))), 'kein Fehler', 'Steigerungen: Ziel 4, Abschnitte 7');
+    pg_temp.strides(40))))), 'kein Fehler', 'Steigerungen: Ziel 4, 6 × 20 s mit 7');
 select is(pg_temp.save(pg_temp.payload(jsonb_build_array(pg_temp.workout(0, 'tempo', 7, 'build', true)))),
   '23514: Ungültige Werte im Plan.', 'harte Art in einer Erholungswoche (Aufbau) abgelehnt');
 select is(pg_temp.save(pg_temp.payload(jsonb_build_array(pg_temp.workout(0, 'race_pace', 6, 'taper', true)))),
@@ -265,6 +282,10 @@ select is(pg_temp.save(pg_temp.payload(jsonb_build_array(pg_temp.workout(0, 'tem
     pg_temp.steps(40, 8))))), '23514: Die geplante Anstrengung ist zu hoch.', 'unter 18: Abschnitt mit 8 abgelehnt');
 select is(pg_temp.save(pg_temp.payload(jsonb_build_array(pg_temp.workout(0, 'tempo', 7), pg_temp.workout(3, 'fartlek', 6)))),
   '23514: Zu viele harte Einheiten in einer Woche.', 'unter 18 (vorsichtig): höchstens 1 harte Einheit je Woche');
+reset role;
+update public.competitions set discipline = 'marathon', distance_m = 42195
+where user_id = '22222222-2222-4222-8222-222222222222';
+set local role authenticated;
 select is(pg_temp.save(pg_temp.payload(jsonb_build_array(pg_temp.workout(0, 'easy', 4)), true, false,
     pg_temp.inputs('advanced', 'marathon'))),
   '23514: Für diese Distanz gibt es noch keinen Wettkampfplan.', 'unter 18: kein Marathon-Wettkampfplan');
@@ -282,7 +303,7 @@ select is(pg_temp.save(pg_temp.payload(jsonb_build_array(pg_temp.workout(0, 'far
   '23514: Mit dem Hinweis aus dem Gesundheits-Check sind keine harten Einheiten möglich.',
   'Arzt-Hinweis: keine harte Art');
 select is(pg_temp.save(pg_temp.payload(jsonb_build_array(pg_temp.workout(0, 'strides', 4, 'base', false, 1, 40,
-    pg_temp.steps(40, 7, 120))), true, true)),
+    pg_temp.strides(40))), true, true)),
   '23514: Mit dem Hinweis aus dem Gesundheits-Check sind keine harten Einheiten möglich.',
   'Arzt-Hinweis: keine Steigerungen (Abschnitt ab 6)');
 select is(pg_temp.save(pg_temp.payload(jsonb_build_array(pg_temp.workout(0, 'easy', 4, 'base')), true, true)),

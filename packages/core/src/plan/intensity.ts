@@ -3,6 +3,8 @@ import { z } from 'zod';
 import {
   COMPETITION_DISTANCE_M,
   COMPETITION_INTENSITY,
+  COMPETITION_WORKOUTS,
+  ENDURANCE_EFFORT,
   COMPETITION_PACE,
   ENDURANCE_OVERLOAD_RULE,
 } from '../constants';
@@ -66,6 +68,41 @@ export const workoutStepsSchema = z
   .array(workoutStepSchema)
   .min(1)
   .max(WORKOUT_STEP_LIMITS.maxSteps);
+
+/**
+ * Passen die Schritte zur Art? (= private.workout_steps_fit_type, Wächter WP3 H1) Lockere Arten (easy, long, recovery)
+ * nur mit Abschnitten bis zur lockeren Anstrengung (ENDURANCE_EFFORT.easyMax); Steigerungen nur mit Belastungs-
+ * Abschnitten (`work`) von höchstens COMPETITION_WORKOUTS.strides.workS Sekunden, höchstens `count` Stück, sonst locker;
+ * harte Arten frei (Deckel je Person prüft der Server mit dem Plan).
+ */
+export function stepsFitWorkoutType(type: WorkoutType, steps: readonly WorkoutStep[]): boolean {
+  if (isHardWorkoutType(type)) return true;
+  const easyMax = ENDURANCE_EFFORT.easyMax;
+  const above = steps.filter((st) => st.effort > easyMax);
+  if (type === 'strides') {
+    const S = COMPETITION_WORKOUTS.strides;
+    return (
+      above.length <= S.count && above.every((st) => st.kind === 'work' && st.seconds <= S.workS)
+    );
+  }
+  return above.length === 0;
+}
+
+/**
+ * Zählt die Einheit als hart (Wochenzahl, Erholungswoche nur im Tapering; = private.workout_is_hard)? Harte Art oder –
+ * unabhängig von der Art – ein Abschnitt ab COMPETITION_INTENSITY.hardEffortMin, der länger dauert als eine Steigerung.
+ */
+export function isHardSession(
+  type: WorkoutType | null | undefined,
+  steps: readonly WorkoutStep[] | null | undefined,
+): boolean {
+  if (isHardWorkoutType(type)) return true;
+  return (steps ?? []).some(
+    (st) =>
+      st.effort >= COMPETITION_INTENSITY.hardEffortMin &&
+      st.seconds > COMPETITION_WORKOUTS.strides.workS,
+  );
+}
 
 /** Wie hart darf es für diese Person werden? `allowed` false → nur lockere Arten (Tabelle 3.3). */
 export interface HardWorkoutLimits {

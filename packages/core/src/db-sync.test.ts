@@ -35,6 +35,9 @@ import {
   COMPETITION_INPUT_LIMITS,
   COMPETITION_INTENSITY,
   COMPETITION_LEAD_WEEKS,
+  COMPETITION_LONG_RUN,
+  COMPETITION_WORKOUTS,
+  ENDURANCE_EFFORT,
   COMPETITION_OWN_START,
   COMPETITION_PACE,
   COMPETITION_RECORD_LIMITS,
@@ -131,6 +134,7 @@ import {
   COMPETITION_STATUSES,
 } from './plan/competition-schema';
 import {
+  COMPETITION_NAME_TRIM_CLASS,
   COMPETITION_PLAN_BASIS_COLUMNS,
   saveCompetitionPayloadSchema,
 } from './plan/competition-record';
@@ -1319,7 +1323,6 @@ describe('Wettkampf in der Datenbank (Phase 10 WP3)', () => {
       expect(insertSessions).toContain(expected);
     }
     expect(I.hardEffortCap.general).toBe(COMPETITION_EFFORT_LIMITS.max);
-    expect(insertSessions).toContain("plan_row.discipline = 'marathon'");
     expect(insertSessions).toContain("group by date_trunc('week', ps.scheduled_on)");
   });
 
@@ -1352,6 +1355,52 @@ describe('Wettkampf in der Datenbank (Phase 10 WP3)', () => {
       const cleared = [...set.matchAll(/([a-z_]+) = null/g)].map((m) => m[1]).sort();
       expect(cleared).toEqual([...COMPETITION_PLAN_BASIS_COLUMNS].sort());
       expect(set).toContain('uses_health_data = false');
+    }
+  });
+
+  it('Wächter WP3 H1: Schritte passen zur Art, „hart“ über die Schritte = ENDURANCE_EFFORT / COMPETITION_WORKOUTS', () => {
+    const fit = fn(tables, 'private.workout_steps_fit_type');
+    const hard = fn(tables, 'private.workout_is_hard');
+    const S = COMPETITION_WORKOUTS.strides;
+    expect(quotedListAfter(fit, 'if p_type in (')).toEqual([...HARD_WORKOUT_TYPES]);
+    expect(quotedListAfter(hard, 'if p_type in (')).toEqual([...HARD_WORKOUT_TYPES]);
+    expect(fit).toContain(`where (st ->> 'effort')::numeric > ${ENDURANCE_EFFORT.easyMax}\n`);
+    expect(fit).toContain(`(st ->> 'seconds')::numeric > ${S.workS})`);
+    expect(fit).toContain(
+      `(st ->> 'effort')::numeric > ${ENDURANCE_EFFORT.easyMax}) <= ${S.count};`,
+    );
+    expect(hard).toContain(
+      `(st ->> 'effort')::numeric >= ${COMPETITION_INTENSITY.hardEffortMin} and (st ->> 'seconds')::numeric > ${S.workS}`,
+    );
+    expect(tables).toContain('and private.workout_steps_fit_type(workout_type, workout_steps)');
+    expect(tables).toContain(
+      "and (not is_deload or training_phase = 'taper' or not private.workout_is_hard(workout_type, workout_steps)))",
+    );
+    expect(insertSessions).toContain(
+      'and private.workout_is_hard(ps.workout_type, ps.workout_steps)',
+    );
+  });
+
+  it('Wächter WP3 M1/M2: Level aus Profil, Wettkampf mit Plan-Bezug, Distanz-Deckel = COMPETITION_LONG_RUN', () => {
+    expect(insertSessions).toContain("when profile_level = 'beginner'");
+    expect(insertSessions).toContain(
+      "where c.user_id = p_user_id and c.status = 'planned'\n    for share;",
+    );
+    const caps = COMPETITION_DISCIPLINES.map(
+      (d) => `when '${d}' then ${COMPETITION_LONG_RUN.maxMinutes[d]}`,
+    ).join(' ');
+    expect(insertSessions).toContain(`case competition_row.discipline\n          ${caps} end`);
+    expect(insertSessions).toContain("competition_row.discipline = 'marathon'");
+  });
+
+  it('Wächter WP3 N4: Leerraum am Rand des Namens = genau die Zeichen von String.prototype.trim()', () => {
+    expect(tables).toContain(`and name !~ '^[${COMPETITION_NAME_TRIM_CLASS}]'`);
+    expect(tables).toContain(`and name !~ '[${COMPETITION_NAME_TRIM_CLASS}]$'`);
+    const re = new RegExp(`^[${COMPETITION_NAME_TRIM_CLASS}]$`, 'u');
+    for (let code = 0; code <= 0xffff; code += 1) {
+      if (code >= 0xd800 && code <= 0xdfff) continue;
+      const c = String.fromCharCode(code);
+      expect(re.test(c), `U+${code.toString(16)}`).toBe(c.trim() === '');
     }
   });
 

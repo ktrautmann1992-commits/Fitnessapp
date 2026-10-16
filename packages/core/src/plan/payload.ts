@@ -23,7 +23,9 @@ import { isAllowedGoalPair } from '../goals/profile';
 import { COMPETITION_PHASES } from './competition-schema';
 import { ENDURANCE_EFFORT_LIMITS } from './generate';
 import {
+  isHardSession,
   isHardWorkoutType,
+  stepsFitWorkoutType,
   type WorkoutStep,
   WORKOUT_TYPES,
   workoutStepsSchema,
@@ -339,6 +341,8 @@ export const savePlanSessionSchema = z
       (s.effort_target ?? 0) >= ENDURANCE_EFFORT_LIMITS.min &&
       ((s.effort_target ?? 0) <= COMPETITION_EFFORT_LIMITS.easyMax || isHardWorkoutType(type)) &&
       (!s.is_deload || !isHardWorkoutType(type) || phase === 'taper') &&
+      stepsFitWorkoutType(type, steps) &&
+      (!s.is_deload || phase === 'taper' || !isHardSession(type, steps)) &&
       steps.reduce((sum, st) => sum + st.seconds, 0) === s.estimated_minutes * 60 &&
       withinStepBytes(steps)
     );

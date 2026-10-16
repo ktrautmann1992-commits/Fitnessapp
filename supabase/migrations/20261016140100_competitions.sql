@@ -107,15 +107,82 @@ $$;
 revoke all on function private.workout_steps_valid(jsonb, integer) from public;
 grant execute on function private.workout_steps_valid(jsonb, integer) to authenticated, service_role;
 
+-- Schritte passen zur Art (Wächter WP3 H1): Lockere Arten (easy, long, recovery) nur mit Abschnitten bis Anstrengung 4
+-- (ENDURANCE_EFFORT_LIMITS.max); Steigerungen (strides) nur mit Belastungs-Abschnitten (kind work) von höchstens 20 s,
+-- höchstens 6 Stück (COMPETITION_WORKOUTS.strides.workS/count), alle übrigen Abschnitte bis 4. Harte Arten: frei
+-- (Deckel je Person in private.insert_plan_sessions). Erwartet gültige Schritte (workout_steps_valid); sonst false.
+create or replace function private.workout_steps_fit_type(p_type public.workout_type, p_steps jsonb)
+returns boolean
+language plpgsql
+immutable
+set search_path = ''
+as $$
+begin
+  if p_type is null or p_steps is null or jsonb_typeof(p_steps) <> 'array' then
+    return false;
+  end if;
+  if p_type in ('fartlek', 'tempo', 'intervals', 'race_pace') then
+    return true;
+  end if;
+  if p_type = 'strides' then
+    return not exists (
+      select 1 from jsonb_array_elements(p_steps) st
+      where (st ->> 'effort')::numeric > 4
+        and (st ->> 'kind' is distinct from 'work' or (st ->> 'seconds')::numeric > 20)
+    )
+    and (select count(*) from jsonb_array_elements(p_steps) st where (st ->> 'effort')::numeric > 4) <= 6;
+  end if;
+  return not exists (select 1 from jsonb_array_elements(p_steps) st where (st ->> 'effort')::numeric > 4);
+exception
+  when others then
+    return false;
+end;
+$$;
+
+revoke all on function private.workout_steps_fit_type(public.workout_type, jsonb) from public;
+grant execute on function private.workout_steps_fit_type(public.workout_type, jsonb) to authenticated, service_role;
+
+-- Zählt eine Einheit als hart (Wochenzahl, Erholungswoche nur im Tapering)? Harte Art ODER – robust, unabhängig von der
+-- Art – ein Abschnitt ab Anstrengung 6 (COMPETITION_INTENSITY.hardEffortMin), der länger als 20 s dauert
+-- (Steigerungen bleiben locker). Nie ein Fehler.
+create or replace function private.workout_is_hard(p_type public.workout_type, p_steps jsonb)
+returns boolean
+language plpgsql
+immutable
+set search_path = ''
+as $$
+begin
+  if p_type in ('fartlek', 'tempo', 'intervals', 'race_pace') then
+    return true;
+  end if;
+  if p_steps is null or jsonb_typeof(p_steps) <> 'array' then
+    return false;
+  end if;
+  return exists (
+    select 1 from jsonb_array_elements(p_steps) st
+    where (st ->> 'effort')::numeric >= 6 and (st ->> 'seconds')::numeric > 20
+  );
+exception
+  when others then
+    return false;
+end;
+$$;
+
+revoke all on function private.workout_is_hard(public.workout_type, jsonb) from public;
+grant execute on function private.workout_is_hard(public.workout_type, jsonb) to authenticated, service_role;
+
 -- ---------------------------------------------------------------------------------------------------------
 -- 2. competitions
 -- ---------------------------------------------------------------------------------------------------------
 create table public.competitions (
   id uuid primary key default gen_random_uuid(),
   user_id uuid not null default auth.uid() references auth.users (id) on delete cascade,
-  -- Name nur Anzeige: 1–80 Zeichen, ohne Leerraum am Rand (competitionInputSchema trimmt).
+  -- Name nur Anzeige: 1–80 Zeichen, ohne Leerraum am Rand – genau die Zeichen, die String.prototype.trim() entfernt
+  -- (competitionInputSchema trimmt; COMPETITION_NAME_TRIM_CLASS, unabhängig von der Locale, Wächter WP3 N4).
   name text not null check (
-    char_length(name) between 1 and 80 and name !~ '^[[:space:]]' and name !~ '[[:space:]]$'
+    char_length(name) between 1 and 80
+    and name !~ '^[\u0009-\u000d \u00a0\u1680\u2000-\u200a\u2028\u2029\u202f\u205f\u3000\ufeff]'
+    and name !~ '[\u0009-\u000d \u00a0\u1680\u2000-\u200a\u2028\u2029\u202f\u205f\u3000\ufeff]$'
   ),
   discipline public.competition_discipline not null,
   -- Aus der Disziplin (setzt save_competition); Rad mit freier Distanz folgt mit WP5.
@@ -222,7 +289,10 @@ alter table public.planned_sessions
       and (not is_deload
         or workout_type not in ('fartlek', 'tempo', 'intervals', 'race_pace')
         or training_phase = 'taper')
-      and private.workout_steps_valid(workout_steps, estimated_minutes))
+      and private.workout_steps_valid(workout_steps, estimated_minutes)
+      -- Wächter WP3 H1: Schritte passen zur Art; „hart“ auch über die Schritte erkannt (Erholungswoche).
+      and private.workout_steps_fit_type(workout_type, workout_steps)
+      and (not is_deload or training_phase = 'taper' or not private.workout_is_hard(workout_type, workout_steps)))
   );
 
 comment on column public.planned_sessions.workout_type is

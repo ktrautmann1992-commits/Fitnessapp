@@ -35,6 +35,13 @@ import { ENDURANCE_START_GROUPS, type EnduranceStartGroup } from './safety';
  * Wettkampf (Countdown) bleibt gratis und ohne Einwilligung speicherbar.
  */
 
+/**
+ * Zeichen, die `String.prototype.trim()` entfernt (ECMAScript WhiteSpace + LineTerminator) – als Klasse für den CHECK
+ * des Namens in der Migration (Postgres-Regex, unabhängig von der Locale; Wächter WP3 N4, db-sync.test.ts).
+ */
+export const COMPETITION_NAME_TRIM_CLASS =
+  '\\u0009-\\u000d \\u00a0\\u1680\\u2000-\\u200a\\u2028\\u2029\\u202f\\u205f\\u3000\\ufeff';
+
 /** Spalten des Plan-Bezugs (beim Widerruf health_data geleert, private.consents_after_revoke). */
 export const COMPETITION_PLAN_BASIS_COLUMNS = [
   'own_start_weekly_minutes',

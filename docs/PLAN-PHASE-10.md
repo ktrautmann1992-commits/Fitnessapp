@@ -696,8 +696,9 @@ Alle Änderungen danach zurückgesetzt (Vergleich mit einer Sicherungskopie des 
 
 **Tests:**
 
-- pgTAP neu `34_competition_sessions.test.sql` (56) und `35_competitions.test.sql` (82); alle 32 Dateien grün
-  (1.514 → 1.652 Tests, lokales Harness Postgres 16 mit Supabase-Shim).
+- pgTAP neu `34_competition_sessions.test.sql` (56) und `35_competitions.test.sql` (82); nach dem Merge von N7 Teil 2
+  (pgTAP 33) und den Wächter-Auflagen (`36_competition_waechter.test.sql`, 26) alle **34 Dateien grün, 1.734 Tests**
+  (lokales Harness Postgres 16 mit Supabase-Shim; vor WP3 1.514, nach N7 Teil 2 + WP3 ohne Auflagen 1.708).
 - **Kreuzprobe Plan = Datenbank (Harness):** 124 Wettkampfpläne der Engine (4 Distanzen × 3 Level × 2–3 Renntage × 3
   Zeitpläne, 36 und 17 Jahre, mit und ohne Flag) samt **794 Folgeblöcken** über `save_training_plan` und
   `append_plan_block` gespeichert – alle angenommen (13.620 Wettkampf-Einheiten, davon 254 harte, Anstrengung bis 8).
@@ -755,10 +756,11 @@ Alle Änderungen danach zurückgesetzt (Vergleich mit einer Sicherungskopie des 
    keinen Weg zu `done`/Ergebnis und kein Einzel-Löschen (Recht auf Löschung).
 5. **Ergebnis-Eintrag** muss ein eigener Ausdauer-Eintrag **vom Renntag** sein; wird er gelöscht, bleibt der Wettkampf
    erledigt (Verweis leer).
-6. **Zahl harter Einheiten je Kalenderwoche über den ganzen Plan** (auch über Blockgrenzen), Level aus den Angaben des
-   Plans, Alter heute (Europe/Berlin) – der Server ist eine Obergrenze; Core plant ohnehin strenger (Wochenbau WP2).
-7. **Steigerungen** (keine harte Art, Ziel ≤ 4, Abschnitte bis 7) bleiben erlaubt; mit Arzt-Hinweis lehnt der Server
-   Abschnitte ab Anstrengung 6 ab (Core stuft sie dort ohnehin auf locker).
+6. **Zahl harter Einheiten je Kalenderwoche über den ganzen Plan** (auch über Blockgrenzen), Level = das strengere aus
+   Profil und Angaben des Plans (Wächter M1), Alter heute (Europe/Berlin) – der Server ist eine Obergrenze; Core plant
+   ohnehin strenger (Wochenbau WP2).
+7. **Steigerungen** (keine harte Art, Ziel ≤ 4, höchstens 6 Abschnitte à 20 s bis 7) bleiben erlaubt; mit Arzt-Hinweis
+   lehnt der Server Abschnitte ab Anstrengung 6 ab (Core stuft sie dort ohnehin auf locker).
 8. **`log_source` `gps`/`gpx_import`**: `save_session_log` nimmt jeden Enum-Wert an; die App sendet bis S1 nur `manual`.
    Ob S1 die Herkunft serverseitig an eine Strecke bindet, entscheidet S1.
 9. **Testmodus (`localDb.competitions`, `local-rules.ts`)**: nicht in WP3 (keine App-UI) – Core liefert dafür
@@ -776,8 +778,58 @@ Alle Änderungen danach zurückgesetzt (Vergleich mit einer Sicherungskopie des 
   „nur Countdown“ ist damit auch speicherbar, wenn die Ampel für die Person „zu kurz“ sagt. Alternative: Speichern nur,
   wenn die Ampel mindestens „knapp“ sagt (dann braucht es den Check auch für den Countdown).
 
+**Nach der Wächter-Prüfung (16.10.2026, `waechter-wp3.md`, Freigabe mit Auflage H1) umgesetzt:**
+
+- **H1 – Schritte passen zur Art:** neue Prüfung `private.workout_steps_fit_type` im CHECK: lockere Arten (easy, long,
+  recovery) nur mit Abschnitten bis Anstrengung 4 (`ENDURANCE_EFFORT.easyMax`), Steigerungen nur mit
+  Belastungs-Abschnitten (`work`) von höchstens 20 s, höchstens 6 Stück (`COMPETITION_WORKOUTS.strides`). Zusätzlich
+  robust `private.workout_is_hard`: jede Einheit mit einem Abschnitt ab 6, der länger als 20 s dauert, zählt als hart –
+  für die Wochenzahl und für „Erholungswoche nur im Tapering“. Gleiche Regeln in Core (`stepsFitWorkoutType`,
+  `isHardSession` in `intensity.ts`; `savePlanSessionSchema` und `generatedCompetitionSessionSchema`), db-sync-Abgleich.
+- **M1:** Level für die Wochenzahl = das strengere aus `profiles.experience_level` und den Angaben des Plans (Gleichheit zu
+  verlangen wäre strenger als die Engine, die nur die Angaben kennt).
+- **M2:** Einheiten mit Art nur, wenn die Person einen eigenen **geplanten** Wettkampf **mit Plan-Bezug** hat (Zeile
+  `for share` nach der Einwilligungs-Sperre – Reihenfolge Einwilligung → Wettkampf wie beim Widerruf). Disziplin für
+  „unter 18 kein Marathon“ aus dem Wettkampf; Disziplin des Plans muss gleich sein; keine Einheit über dem Distanz-Deckel
+  des langen Laufs (`COMPETITION_LONG_RUN.maxMinutes`: 75/90/120/180 min).
+- **N3:** Zahlen oben korrigiert. **N4:** Leerraum am Rand des Namens jetzt genau die Zeichen von
+  `String.prototype.trim()` (`COMPETITION_NAME_TRIM_CLASS`, locale-unabhängig; db-sync prüft alle Zeichen bis U+FFFF).
+- Angriffstests des Wächters (98/99) als `36_competition_waechter.test.sql` übernommen (26 Fälle, erwarten jetzt die
+  Ablehnung). Core: `competition-record.test.ts` +3, `db-sync.test.ts` +3.
+- **Kreuzprobe wiederholt (mit Wettkampf-Zeile und Profil-Level je Person):** 241 Wettkampfpläne (4 Distanzen × 3 Level ×
+  2–3 Renntage × 4 Zeitpläne × 36/17/71 Jahre, mit und ohne Flag) samt 1.620 Folgeblöcken – alle angenommen (26.904
+  Wettkampf-Einheiten, 469 harte, Anstrengung bis 8).
+
+| Nr. | Gegenprobe zu den Auflagen                                              | Rote Tests               |
+| --- | ----------------------------------------------------------------------- | ------------------------ |
+| A1  | Lockere Arten ohne Schritt-Grenze (H1)                                  | 3 (pgTAP 36)             |
+| A2  | Steigerungen beliebig lang (H1)                                         | 1 (36)                   |
+| A3  | Steigerungen beliebig viele (H1)                                        | 1 (36)                   |
+| A4  | Erholungswoche ohne Schritt-Erkennung, zusammen mit A1                  | 4 (36, u. a. W7)         |
+| A5  | Wochenzahl nur nach Art, zusammen mit A1                                | 3 (36)                   |
+| A6  | Level nur aus den Angaben (M1)                                          | 1 (36)                   |
+| A7  | Ohne geplanten Wettkampf mit Plan-Bezug (M2)                            | 3 (36)                   |
+| A8  | Disziplin nicht abgeglichen (M2)                                        | 1 (36)                   |
+| A9  | Ohne Distanz-Deckel (M2)                                                | 1 (36)                   |
+| A10 | Name nur mit ASCII-Leerzeichen geprüft (N4)                             | 2 (36)                   |
+| A11 | Core: Steigerungen ohne Zahl-Grenze                                     | 1 (`competition-record`) |
+| A12 | SQL: Steigerungen 30 s / Halbmarathon-Deckel 150 / Klasse ohne BOM (je) | je 1 (`db-sync`)         |
+
+A4/A5 allein (ohne A1) bleiben grün: Die Art-Prüfung (H1) fängt dieselben Angriffe schon vorher ab – die robuste
+Erkennung ist eine zweite Sicherung.
+
+**Offen (Wächter N1/N2, für WP4 bzw. Fachprüfung):**
+
+- **N1:** Die Wochenzahl harter Einheiten gilt je Plan. Wird ein Plan mitten in der Woche neu erstellt, zählen harte
+  Einheiten des ersetzten Plans in dieser Woche nicht mit (gleiches Muster wie andere Regeln). WP4 („Plan neu
+  erstellen“) beachten, z. B. Woche 0 ohne harte Einheit.
+- **N2:** Ohne Server-Gegenstück bleiben die 80/20-Regel (`hardShareMax`), „ab 65 nur Gehen“ (G7) und „Einsteiger erst
+  ab 3 Ausdauer-Einheiten“ – sie prüft nur Core (Wochenbau). Offene Server-Lücke, bewusst nicht in WP3.
+
 **Offen für WP4:**
 
+- **Wettkampf-Einheiten speichert der Server nur mit eigenem geplanten Wettkampf samt Plan-Bezug** (M2) – Reihenfolge
+  zwingend `save_competition` (mit Plan-Bezug) → `save_training_plan`; dieselbe Disziplin in Wettkampf und Plan.
 - App: Wettkampf anlegen/ändern/absagen/abschließen/löschen über die neuen Funktionen (Fehlertexte für alle Meldungen
   oben), Plan-Bezug beim Erstellen des Wettkampfplans speichern (`toSaveCompetitionPayload` mit
   `feasibility.effectiveGoal`, eigenem Startumfang und `competitionStartReference`), Folgeblöcke aus
