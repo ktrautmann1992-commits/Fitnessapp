@@ -19,13 +19,15 @@ Supplementplan und ein Trainingstagebuch erzeugt – inkl. Zyklus-Berücksichtig
 
 ## Architektur-Grundprinzip: „Vorab generiert, regelbasiert zusammengesetzt“
 - **Keine Echtzeit-KI im Normalbetrieb.** Trainingspläne, Rezepte, Übungsbeschreibungen und Supplement-Texte
-  werden OFFLINE per Claude-API (Batch) erzeugt, gegen ein JSON-Schema validiert, von Menschen freigegeben
+  werden OFFLINE per Gemini-API (Batch) erzeugt, gegen ein JSON-Schema validiert, von Menschen freigegeben
   und als Inhalte in der Datenbank gespeichert.
 - Zur Laufzeit wählt eine **deterministische Regel-Engine** (`packages/core`) passende Vorlagen aus und
   personalisiert sie (Equipment-Tausch, Lasten, Kalorien, Makros, Wochenplanung).
 - Echtzeit-KI nur für: (a) Premium-KI-Funktionen (KI-Coach-Chat, Kalorien per Foto, Körperfoto-Analyse,
   KI-Erklärungen in Worten), (b) Fallback, wenn keine Vorlage passt. Alles hinter Feature-Flag und
   Monatslimit, Kosten pro Nutzer geloggt (siehe „KI-Grenze“).
+- **KI-Anbieter: Google Gemini (API)** für Offline-Inhalte und Premium-KI (Gründer-Entscheidung 14.10.2026).
+  Nur bezahlte API ohne Training mit Nutzerdaten; Auftragsverarbeitungsvertrag mit Google vor dem Livegang.
 
 ## KI-Grenze: Gratis ohne KI, Premium mit KI
 - Alle Funktionen mit Echtzeit-KI sind **ausschließlich Premium**. Gratis läuft komplett über feste Regeln und Datenbank.
@@ -90,7 +92,7 @@ Supplementplan und ein Trainingstagebuch erzeugt – inkl. Zyklus-Berücksichtig
 ## Automatisierung (GitHub Actions statt lokaler Befehle)
 - `ci.yml` – Lint + Tests bei jedem Push/PR
 - `db-migrate.yml` – Supabase-Migrationen bei Merge in `main` (Secrets: SUPABASE_ACCESS_TOKEN, SUPABASE_DB_PASSWORD, SUPABASE_PROJECT_REF)
-- `content-generate.yml` – manuell startbar: Inhalte per Claude Batch-API erzeugen (Secret: ANTHROPIC_API_KEY)
+- `content-generate.yml` – manuell startbar: Inhalte per Gemini-API (Batch) erzeugen (Secret: GEMINI_API_KEY)
 - `content-seed.yml` – manuell startbar: freigegebene Inhalte einspielen
 - `eas-build.yml` – manuell startbar: Android-/iOS-Build über EAS (Secret: EXPO_TOKEN)
 - Vercel baut Web-App und Admin automatisch bei jedem Push (Vorschau-Link im PR)

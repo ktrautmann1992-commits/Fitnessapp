@@ -11,14 +11,17 @@ import { menuLabel, type SessionName } from '@/lib/calendar-format';
 import { createDragLifecycle } from '@/lib/drag-lifecycle';
 import { dayLabel } from '@/lib/plan-format';
 import { useThemeColors } from '@/lib/theme';
+import { useWebHandleDrag } from '@/lib/use-web-drag';
 
 import { Body, Button, Heading, MIN_TOUCH } from './ui';
 
 /**
- * Bausteine des Trainingskalenders (docs/PLAN-AUSWERTUNG.md 3, Etappe A1a). Drag-and-drop ohne neue Bibliothek:
- * react-native-gesture-handler (Pan, erst nach langem Druck aktiv = „LongPress + Pan“) und react-native-reanimated
- * (Karte folgt dem Finger). Läuft nativ und im Web-Export. Auf dem Handy-Browser liegt die Geste nur auf dem Griff ⠿
- * (touch-action: none) – sonst ließe sich die Seite über den Karten nicht mehr scrollen (Risiko 4 im Plan).
+ * Bausteine des Trainingskalenders (docs/PLAN-AUSWERTUNG.md 3, Etappe A1a). Drag-and-drop ohne neue Bibliothek,
+ * react-native-reanimated bewegt die Karte. Nativ: react-native-gesture-handler (Pan, erst nach langem Druck aktiv =
+ * „LongPress + Pan“) auf der ganzen Karte. Im Browser: eigene, kleine Zeiger-Logik nur auf dem Griff ⠿
+ * (lib/web-drag.ts + lib/use-web-drag.ts, touch-action: none nur dort) – sonst ließe sich die Seite über den Karten
+ * nicht mehr scrollen (Risiko 4 im Plan). Die Web-Geste von react-native-gesture-handler blieb nach einem abgelehnten
+ * Ablegen hängen (Umsetzungsstand A1a Punkt 14).
  * Gleichwertiger Weg ohne Ziehen: „Verschieben …“ (Liste aller Tage mit „erlaubt“ oder Grund) und die
  * Bedienhilfen-Aktionen „Einen Tag früher/später“.
  */
@@ -59,12 +62,9 @@ export function DraggableSession({
   const translateY = useSharedValue(0);
   const lifted = useSharedValue(0);
   const web = Platform.OS === 'web';
-  /**
-   * Geste nach dem Ende neu aufbauen (neuer Schlüssel = neuer Griff, neuer Handler): Nach einem abgelehnten Ablegen
-   * blieb im Browser sonst Zustand am alten Griff hängen und das nächste Ziehen startete nicht (lib/drag-lifecycle).
-   */
+  /** Nativ: Geste nach jedem echten Ziehen neu aufbauen (neuer Schlüssel = neuer Handler, lib/drag-lifecycle). */
   const [generation, setGeneration] = useState(0);
-  const [lifecycle] = useState(() => createDragLifecycle({ web }));
+  const [lifecycle] = useState(createDragLifecycle);
   const endRef = useRef(onDragEnd);
   useEffect(() => {
     endRef.current = onDragEnd;
@@ -78,14 +78,13 @@ export function DraggableSession({
     [lifecycle],
   );
 
+  // Ab hier bis `gesture`: nur nativ (react-native-gesture-handler).
   const start = useCallback(() => {
     lifecycle.start();
     lifted.set(1);
-    if (!web) {
-      Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium).catch(() => undefined);
-    }
+    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium).catch(() => undefined);
     onDragStart(session);
-  }, [lifecycle, lifted, onDragStart, session, web]);
+  }, [lifecycle, lifted, onDragStart, session]);
   const update = useCallback(
     (event: { translationY: number; absoluteY: number }) => {
       translateY.set(event.translationY);
@@ -108,6 +107,22 @@ export function DraggableSession({
     if (renewGesture) setGeneration((current) => current + 1);
   }, [lifecycle, lifted, onDragEnd, translateY]);
 
+  // Browser: eigene Zeiger-Logik am Griff. Gleiche Rückrufe und absoluteY-Semantik (clientY = Lage im Fenster, wie
+  // measureInWindow) wie die native Geste; das Ende setzt auf jedem Weg alles zurück.
+  const handleRef = useWebHandleDrag(web && !disabled, DRAG_LONG_PRESS_MS, {
+    onStart: () => {
+      lifted.set(1);
+      onDragStart(session);
+    },
+    onMove: (translationY, absoluteY) => update({ translationY, absoluteY }),
+    onDrop: (absoluteY) => onDrop(session, absoluteY),
+    onEnd: () => {
+      translateY.set(withTiming(0, { duration: 120 }));
+      lifted.set(0);
+      onDragEnd();
+    },
+  });
+
   const gesture = useMemo(
     () =>
       Gesture.Pan()
@@ -119,7 +134,7 @@ export function DraggableSession({
         .onUpdate(update)
         .onEnd(end)
         .onFinalize(finalize)
-        // Nach jedem Ende ein neues Gesture-Objekt (eigene Kennung je Durchgang) für den neu aufgebauten Griff.
+        // Nach jedem echten Ziehen ein neues Gesture-Objekt (eigene Kennung je Durchgang).
         .withTestId(`calendar-drag-${session.id}-${generation}`),
     [disabled, end, finalize, generation, session.id, start, update],
   );
@@ -146,17 +161,16 @@ export function DraggableSession({
     >
       <View style={styles.cardRow}>
         {web ? (
-          <GestureDetector key={generation} gesture={gesture} touchAction="none" userSelect="none">
-            <View
-              accessibilityLabel={t.calendar.handleA11y(session.name_de)}
-              testID={`calendar-handle-${session.scheduled_on}`}
-              style={[styles.handle, { borderColor: theme.border }]}
-            >
-              <Text style={[styles.handleText, { color: theme.textMuted }]} aria-hidden>
-                {t.calendar.handle}
-              </Text>
-            </View>
-          </GestureDetector>
+          <View
+            ref={handleRef}
+            accessibilityLabel={t.calendar.handleA11y(session.name_de)}
+            testID={`calendar-handle-${session.scheduled_on}`}
+            style={[styles.handle, { borderColor: theme.border }]}
+          >
+            <Text style={[styles.handleText, { color: theme.textMuted }]} aria-hidden>
+              {t.calendar.handle}
+            </Text>
+          </View>
         ) : null}
         <View style={styles.cardText}>
           <Text
