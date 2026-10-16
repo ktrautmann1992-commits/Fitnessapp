@@ -2282,3 +2282,163 @@ export const SESSION_ACHIEVEMENT = {
 export const WEEK_EVALUATION = {
   patternBelowFloorMinDays: 3,
 } as const;
+
+// ---------------------------------------------------------------------------------------------------------
+// Phase 10 · Etappe WP1 – Wettkampf, Machbarkeit, Phasen rückwärts (docs/PLAN-PHASE-10.md Abschnitte 3.1–3.3, 5;
+// Gründer-Entscheidungen W-G2 bis W-G6 vom 16.10.2026 „wie empfohlen“). Nur Laufen 5 km bis Marathon (W-G2);
+// Rad und Triathlon folgen mit WP5. Alle Werte ohne harte Quelle: PRODUKTENTSCHEIDUNG – VOR LIVEGANG FACHLICH PRÜFEN
+// (Fachprüfung Trainingswissenschaft, PLAN-PHASE-10 Abschnitt 20 Punkt 5).
+// ---------------------------------------------------------------------------------------------------------
+
+/**
+ * Wettkampf-Distanzen in Metern (nur Anzeige und spätere Pace-Rechnung, WP2). Halbmarathon und Marathon: offizielle
+ * Distanzen laut World Athletics (21,0975 km bzw. 42,195 km). Rad (frei 20–300 km) folgt mit WP5.
+ */
+export const COMPETITION_DISTANCE_M = {
+  '5k': 5000,
+  '10k': 10000,
+  half_marathon: 21097.5,
+  marathon: 42195,
+} as const;
+
+/**
+ * Mindestvorlauf in Wochen bis zum Renntag (Tabelle 3.2, W-G3). Vorsichtige Startgruppe (Flag, ab 65, unter 18)
+ * nutzt die Einsteiger-Spalte (strengste Regel gewinnt). Höchstens `maxLeadWeeks` im Voraus (52 Wochen).
+ * Quelle: PRODUKTENTSCHEIDUNG – VOR LIVEGANG FACHLICH PRÜFEN (Orientierung: übliche Lauf-Trainingspläne; die Werte sind
+ * so gewählt, dass die 10-%-Kette ab dem Startumfang den Mindest-Spitzenumfang erreicht – Test „Tabelle passt zur Kette“).
+ */
+export const COMPETITION_LEAD_WEEKS = {
+  minimum: {
+    '5k': { beginner: 8, advanced: 6, competitive: 4 },
+    '10k': { beginner: 10, advanced: 8, competitive: 6 },
+    half_marathon: { beginner: 16, advanced: 12, competitive: 10 },
+    marathon: { beginner: 24, advanced: 16, competitive: 14 },
+  },
+  maxLeadWeeks: 52,
+} as const;
+
+/**
+ * Mindest-Spitzenumfang je Distanz (Tabelle 3.2): Wochenminuten Laufen in der Spitze und Richtwert für den langen Lauf,
+ * getrennt für „Ankommen“ (`finish`) und „Zielzeit“ (`time`). Die Ampel (competitionFeasibility) prüft in WP1 nur die
+ * WOCHENMINUTEN mit der 10-%-Kette; `longRunMinutes` nutzt erst der Wochenbau (WP2, langer Lauf höchstens 35 % bzw.
+ * 50 % der Woche, Laufen höchstens 180 min, Halbmarathon höchstens 120 min).
+ * Quelle: PRODUKTENTSCHEIDUNG – VOR LIVEGANG FACHLICH PRÜFEN (Plan 3.2: Halbmarathon ca. 150 min/Woche und 90–120 min
+ * langer Lauf, Marathon ca. 240 min/Woche und 150–180 min; 5 km/10 km und Zielzeit-Werte: Vorschlag). „Ankommen“ ist
+ * so gewählt, dass Einsteiger (Start 60 min, +10 %, Erholungsrhythmus W-G3) ihn genau zum Mindestvorlauf erreichen
+ * (Test „Tabelle passt zur Kette“): 5 km 80 (Orientierung „Couch to 5K“: 3 × 25–30 min), 10 km 100, Halbmarathon
+ * 140 statt „ca. 150“ (150 erst mit 17 statt 16 Wochen), Marathon 240.
+ */
+export const COMPETITION_REQUIRED_PEAK = {
+  finish: {
+    '5k': { weeklyMinutes: 80, longRunMinutes: 40 },
+    '10k': { weeklyMinutes: 100, longRunMinutes: 60 },
+    half_marathon: { weeklyMinutes: 140, longRunMinutes: 90 },
+    marathon: { weeklyMinutes: 240, longRunMinutes: 150 },
+  },
+  time: {
+    '5k': { weeklyMinutes: 150, longRunMinutes: 60 },
+    '10k': { weeklyMinutes: 180, longRunMinutes: 75 },
+    half_marathon: { weeklyMinutes: 240, longRunMinutes: 105 },
+    marathon: { weeklyMinutes: 330, longRunMinutes: 165 },
+  },
+} as const;
+
+/**
+ * Phasen rückwärts vom Renntag (Plan 3.1):
+ * - taperMinDays: Tapering mindestens so viele Tage vor dem Renntag (5 km/10 km 7, Halbmarathon 10, Marathon 14). Die
+ *   App plant in ganzen Wochen: Tapering-Wochen = kleinste Zahl n ≥ 1 mit 7 × n + (Wochentag des Rennens − 1) ≥
+ *   taperMinDays. Das Tapering kann deshalb bis zu 6 Tage länger sein als die Obergrenze aus Plan 3.1 (nie kürzer).
+ *   Quelle: Bosquet L et al. (2007), Med Sci Sports Exerc 39(8):1358–1365 (Tapering 8–14 Tage, Umfang −41–60 %,
+ *   Intensität und Häufigkeit halten); Mujika I, Padilla S (2003), Med Sci Sports Exerc 35(7):1182–1187.
+ * - taperFactors: Umfang je Tapering-Woche relativ zur letzten Belastungswoche (schrittweise), Index = Anzahl der
+ *   Tapering-Wochen; raceWeekFactor für die Tage der Rennwoche vor dem Vortag. Ergibt über das ganze Tapering −40 bis
+ *   −55 % (Bosquet 2007). Höhe der Stufen: PRODUKTENTSCHEIDUNG.
+ * - peakWeeks / buildWeeks: Länge der Spitze (Plan 3.1: 2–3 Wochen) und des Aufbaus; reicht die Zeit nicht, wird
+ *   zuerst die Basis, dann der Aufbau, dann die Spitze kürzer. PRODUKTENTSCHEIDUNG.
+ * - recoveryWeeks / recoveryFactors: Erholung nach dem Rennen (Plan 3.1: 5 km/10 km 3–5 Tage, Halbmarathon 1 Woche,
+ *   Marathon 2 Wochen nur locker) in ganzen Wochen nach der Rennwoche, Umfang relativ zur letzten Belastungswoche.
+ *   PRODUKTENTSCHEIDUNG.
+ * - restDaysBeforeRace: Am Vortag keine Einheit (Plan 3.5: „Ruhetag oder 15–20 min locker“ – wir wählen den Ruhetag);
+ *   am Renntag und danach in der Rennwoche ebenfalls keine Einheit. PRODUKTENTSCHEIDUNG.
+ * - buildDeloadAfterLoadWeeks: Erholungsrhythmus in Aufbau und Spitze (W-G3: 3 : 1 für Einsteiger; die vorsichtige
+ *   Startgruppe ebenso, strengste Regel); alle anderen und die Basis wie DELOAD_SCHEDULE. Eine Erholungswoche fällt nie
+ *   in die letzte Woche vor dem Tapering – sie wird dann eine Woche vorgezogen, nie gestrichen.
+ * - okPeakWeeks: „Passt“, wenn der Ziel-Spitzenumfang in mindestens so vielen Belastungswochen vor dem Tapering
+ *   erreicht wird; einmal (letzte Woche vor dem Tapering) = „knapp“. PRODUKTENTSCHEIDUNG.
+ * Alles VOR LIVEGANG FACHLICH PRÜFEN.
+ */
+export const COMPETITION_PERIODIZATION = {
+  taperMinDays: { '5k': 7, '10k': 7, half_marathon: 10, marathon: 14 },
+  taperFactors: { 1: [0.7], 2: [0.75, 0.6] },
+  raceWeekFactor: 0.4,
+  peakWeeks: { '5k': 2, '10k': 2, half_marathon: 3, marathon: 3 },
+  buildWeeks: { '5k': 2, '10k': 2, half_marathon: 4, marathon: 6 },
+  recoveryWeeks: { '5k': 1, '10k': 1, half_marathon: 1, marathon: 2 },
+  recoveryFactors: [0.5, 0.6],
+  restDaysBeforeRace: 1,
+  buildDeloadAfterLoadWeeks: { beginner: 3, cautious: 3 },
+  okPeakWeeks: 2,
+} as const;
+
+/**
+ * Wer bekommt welchen Wettkampfplan (Tabelle 3.3, W-G4) – strengste Regel gewinnt:
+ * - Schwangerschaft: kein Wettkampfplan (Hinweis Ärztin/Arzt); ohne Gesundheits-Check: erst nach dem Check.
+ * - Unter 18: höchstens `minorMaxDiscipline` (Halbmarathon), keine Zielzeit.
+ * - Gesundheits-Flag und ab 65: nur „Ankommen“, Hinweis ärztliche Abklärung (Sporttauglichkeit).
+ * - Zielzeit nur für `timeGoalLevels` (Fortgeschritten, Leistungssport) außerhalb der vorsichtigen Startgruppe und nur
+ *   mit eigener Referenzzeit (W-G6).
+ * Quelle: GRÜNDER-ENTSCHEIDUNG W-G4/W-G6 (16.10.2026) – PRODUKTENTSCHEIDUNG, VOR LIVEGANG FACHLICH PRÜFEN.
+ */
+export const COMPETITION_GROUP_RULES = {
+  minorMaxDiscipline: 'half_marathon',
+  timeGoalLevels: ['advanced', 'competitive'],
+} as const;
+
+/**
+ * Eigener Startumfang (W-G5, „ich laufe schon X min/Woche“): nur für `levels` (Fortgeschritten, Leistungssport)
+ * außerhalb der vorsichtigen Startgruppe, nur mit ausdrücklicher Bestätigung, gedeckelt auf `maxFactor` × Startumfang
+ * der Startgruppe (ENDURANCE_START_RULES). Gibt es einen Bezug aus dem Tagebuch (min(geplant, eingetragen) der letzten
+ * Belastungswoche), gilt dieser statt der eigenen Angabe. Quelle: GRÜNDER-ENTSCHEIDUNG W-G5 (16.10.2026) –
+ * PRODUKTENTSCHEIDUNG, VOR LIVEGANG FACHLICH PRÜFEN.
+ */
+export const COMPETITION_OWN_START = {
+  levels: ['advanced', 'competitive'],
+  maxFactor: 2,
+  minWeeklyMinutes: 10,
+} as const;
+
+/**
+ * Eingabegrenzen Wettkampf (competitionSchema): Name 1–80 Zeichen (nur Anzeige); Ziel- und Referenzzeiten je Distanz
+ * nur als Plausibilitätsgrenze (unten knapp unter den Weltrekorden, oben übliche Zielschluss-Zeiten bzw. Gehtempo);
+ * Referenzzeit höchstens `referenceMaxAgeDays` alt (Plan 3.4: „nicht älter als 6 Monate“), nie in der Zukunft.
+ * Quelle: PRODUKTENTSCHEIDUNG – VOR LIVEGANG FACHLICH PRÜFEN.
+ */
+export const COMPETITION_INPUT_LIMITS = {
+  nameMaxLength: 80,
+  timeS: {
+    '5k': { min: 12 * 60, max: 90 * 60 },
+    '10k': { min: 26 * 60, max: 3 * 60 * 60 },
+    half_marathon: { min: 55 * 60, max: 6 * 60 * 60 },
+    marathon: { min: 2 * 60 * 60, max: 8 * 60 * 60 },
+  },
+  referenceMaxAgeDays: 183,
+} as const;
+
+/**
+ * Bezug aus dem Tagebuch für den Start eines Wettkampfplans (`startReference`, Wächter H1/H2 zu WP1):
+ * - Zod-Grenzen: Wochenumfang 0 (= ohne Bezug) oder `minMinutes` (Einheiten-Minimum, darunter rechnet die Engine wie
+ *   „ohne Bezug“) bis `maxWeeklyMinutes` = 7 Einheiten × 240 min (PLAN_BLOCK_LIMITS.sessionsPerWeek ×
+ *   TRAINING_LIMITS.minutesPerSession.max – mehr kann kein gespeicherter Plan enthalten); längste Einheit 10–240 min und
+ *   nie über dem Wochenumfang.
+ * - Deckel wie beim eigenen Startumfang (W-G5): höchstens `maxFactor` × Startumfang der AKTUELLEN Startgruppe. Der Bezug
+ *   ist ein Wert, den die App aus dem bisherigen Plan liefert – ohne Deckel könnte er die 10-%-Regel aushebeln.
+ * - Startgruppe des Bezugs ist Pflicht: Ist die aktuelle Gruppe strenger (z. B. ab 65, neues Flag), beginnt die Kette
+ *   wieder beim Startumfang und Start-Deckel der neuen Gruppe (wie nextPlanBlock, `stricterGroup`).
+ * Quelle: PRODUKTENTSCHEIDUNG – VOR LIVEGANG FACHLICH PRÜFEN (Deckel wie GRÜNDER-ENTSCHEIDUNG W-G5).
+ */
+export const COMPETITION_START_REFERENCE = {
+  minMinutes: ENDURANCE_SESSION_LIMITS.minSessionMinutes,
+  maxWeeklyMinutes: PLAN_BLOCK_LIMITS.sessionsPerWeek * TRAINING_LIMITS.minutesPerSession.max,
+  maxSessionMinutes: TRAINING_LIMITS.minutesPerSession.max,
+  maxFactor: COMPETITION_OWN_START.maxFactor,
+} as const;

@@ -26,6 +26,13 @@ import {
 } from '../enums';
 import { isBodyweightTemplate } from '../content/checks';
 import { adaptTemplate, type AdaptedSession, isVolumeReduced } from './adapt';
+import {
+  type CompetitionBlockSetup,
+  type CompetitionFeasibility,
+  competitionPlanSetup,
+  type CompetitionRequest,
+  type CompetitionWeekInfo,
+} from './competition';
 import type { PlanLibrary } from './content-pool';
 import { loadWeeksBeforeDeload } from './deload';
 import { equipmentProfile, isBodyweightOnly } from './equipment-profile';
@@ -36,6 +43,7 @@ import {
   planInputsSnapshot,
 } from './inputs';
 import { matchTemplate } from './match';
+import type { MacroCycle } from './periodization';
 import { type PlanSafetyRules, planSafetyRules } from './safety';
 import {
   buildPlanBlock,
@@ -223,11 +231,34 @@ export interface GeneratedPlan {
   readonly safety_rules: PlanSafetyRules;
   /** Plan enthält Entwurfs-Inhalte (nur Testmodus) → Kennzeichnung „Testinhalte“. */
   readonly uses_draft_content: boolean;
+  /**
+   * NUR beim Wettkampfplan (generateCompetitionPlan, Phase 10 WP1) – ohne Wettkampf fehlt der Schlüssel (Plan
+   * byte-gleich zu vorher). Wird nicht gespeichert (keine Spalte bis WP3); Folgeblöcke rechnen neu.
+   */
+  readonly competition?: CompetitionPlanInfo;
+}
+
+/** Wettkampf-Teil eines Plans (Anzeige; nicht gespeichert). */
+export interface CompetitionPlanInfo {
+  readonly feasibility: CompetitionFeasibility;
+  readonly cycle: MacroCycle;
+  /** Plateau des Wochenumfangs (Spitzenumfang des wirksamen Ziels, gedeckelt durch den Wunsch). */
+  readonly peak_target_minutes: number;
+  /** Phase je Woche des ersten Blocks. */
+  readonly block_weeks: readonly CompetitionWeekInfo[];
 }
 
 export type GeneratePlanResult =
   | { readonly ok: true; readonly plan: GeneratedPlan }
   | { readonly ok: false; readonly error: 'invalid_inputs' | 'no_template' };
+
+export type GenerateCompetitionPlanResult =
+  | GeneratePlanResult
+  | {
+      readonly ok: false;
+      readonly error: 'competition_not_feasible';
+      readonly feasibility: CompetitionFeasibility;
+    };
 
 /** Abgeleiteter Ort der Kraft-Tage (beide Orte → „beides“). */
 function strengthLocation(days: readonly PlannedDay[]): TrainingLocation {
@@ -240,6 +271,46 @@ export function generateTrainingPlan(
   rawInputs: PlanInputsInput,
   library: PlanLibrary,
   today: string,
+): GeneratePlanResult {
+  return generatePlan(rawInputs, library, today, null);
+}
+
+/**
+ * Erster Block eines Wettkampfplans (docs/PLAN-PHASE-10.md Abschnitt 5, Etappe WP1): Ampel (competitionFeasibility) →
+ * bei „passt“ oder „knapp“ derselbe Ablauf wie generateTrainingPlan, aber die Wochen des Blocks (Woche 0, Belastung,
+ * Erholung, Tapering, Rennwoche, Erholung nach dem Rennen) kommen aus dem Makrozyklus (periodization.ts). „Zu kurz“ und
+ * „nicht möglich“ erzeugen NIE einen Plan (`competition_not_feasible` mit Ampel und Vorschlägen). Folgeblöcke:
+ * competitionFollowUpBlock() + nextPlanBlock(`competitionWeeks`).
+ */
+export function generateCompetitionPlan(
+  rawInputs: PlanInputsInput,
+  library: PlanLibrary,
+  today: string,
+  request: CompetitionRequest,
+): GenerateCompetitionPlanResult {
+  const setup = competitionPlanSetup(rawInputs, request, today);
+  if (!setup.ok) return setup;
+  const result = generatePlan(rawInputs, library, today, setup.firstBlock);
+  if (!result.ok) return result;
+  return {
+    ok: true,
+    plan: {
+      ...result.plan,
+      competition: {
+        feasibility: setup.feasibility,
+        cycle: setup.cycle,
+        peak_target_minutes: setup.peakTarget,
+        block_weeks: setup.firstBlock.weeks,
+      },
+    },
+  };
+}
+
+function generatePlan(
+  rawInputs: PlanInputsInput,
+  library: PlanLibrary,
+  today: string,
+  competition: CompetitionBlockSetup | null,
 ): GeneratePlanResult {
   const parsed = planInputsSchema.safeParse(rawInputs);
   if (!parsed.success || !isoDateSchema.safeParse(today).success) {
@@ -355,7 +426,17 @@ export function generateTrainingPlan(
       },
       rules,
       enduranceWishWeekly: enduranceDays.reduce((sum, d) => sum + d.minutes, 0),
+      ...(competition
+        ? {
+            enduranceReference: competition.reference,
+            ...(competition.stricterGroup ? { enduranceStricterGroup: true } : {}),
+            ...(competition.startMinutes === undefined
+              ? {}
+              : { enduranceStartMinutes: competition.startMinutes }),
+          }
+        : {}),
     },
+    ...(competition ? { weeks: competition.specs } : {}),
   });
   block.notes.forEach((note) => notes.add(note));
   const sessions = block.sessions;
