@@ -1,8 +1,9 @@
 import type { ConfigContext, ExpoConfig } from 'expo/config';
 
 // Name der App (Anzeige unter dem Icon, im Browser-Tab) – gemeinsam mit packages/ui/src/brand.ts ändern.
-// slug, scheme und bundleIdentifier/package bleiben „fitnessapp“: Daran hängen das Expo-Projekt (expo.dev,
-// docs/SETUP.md Teil D), Anmelde-Links und später die Store-Einträge. Für Nutzer sind sie unsichtbar.
+// slug = Slug des Expo-Projekts „AlphaFive“ auf expo.dev (muss genau dazu passen, docs/SETUP.md Teil D).
+// scheme und bundleIdentifier/package bleiben „fitnessapp“: Daran hängen Anmelde-Links und später die
+// Store-Einträge. Für Nutzer sind sie unsichtbar.
 const APP_NAME = 'Alpha5';
 
 // Markenfarbe „schwarz“ (packages/ui/theme.css, --brand-schwarz) – Hintergrund von Icon und Startbildschirm.
@@ -13,12 +14,17 @@ const BRAND_SCHWARZ = '#0a0c10';
 
 // Projekt-ID von expo.dev (kein Geheimnis). Wird einmalig eingetragen, siehe docs/SETUP.md Teil D.
 // Solange sie leer ist, überspringt der Workflow eas-build den Build mit einem Hinweis.
-const EAS_PROJECT_ID = '';
+const EAS_PROJECT_ID = '7370ffec-3dd0-47bd-91dd-595c67ebae69';
+
+// Besitzer des Expo-Projekts: die Organisation auf expo.dev (kein Geheimnis). Der Build-Schlüssel EXPO_TOKEN gehört
+// einem Robot-Benutzer dieser Organisation (docs/SETUP.md Teil D).
+const EAS_OWNER = 'ktrautmann1992s-team';
 
 export default ({ config }: ConfigContext): ExpoConfig => ({
   ...config,
   name: APP_NAME,
-  slug: 'fitnessapp',
+  owner: EAS_OWNER,
+  slug: 'alphafive',
   version: '0.1.0',
   orientation: 'portrait',
   // 1024 × 1024, ohne Transparenz und ohne Rundung (iOS und die Stores runden selbst).
