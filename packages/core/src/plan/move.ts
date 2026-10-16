@@ -3,6 +3,7 @@ import { z } from 'zod';
 import { isoDateSchema } from '../age';
 import { addDays, startOfIsoWeek } from '../dates';
 import type { SessionFocus } from '../enums';
+import { isHardWorkoutType } from './intensity';
 import type { ReschedulableSession } from './reschedule';
 
 /**
@@ -15,6 +16,7 @@ import type { ReschedulableSession } from './reschedule';
  * - Erholungswoche: nur streichen,
  * - nie zwei Einheiten am Tag (gestrichene belegen keinen Tag; erledigte KONSERVATIV schon, siehe reschedule.ts),
  * - 48 h zwischen Kraft-Einheiten mit gleichen Muskeln (Ganzkörper trifft alles); lockere Ausdauer ist nie ein Konflikt,
+ * - Wettkampfplan (Phase 10 WP2): harte Ausdauer nie neben Kraft mit Beinen, harter Ausdauer oder dem langen Lauf,
  * - erledigte, gestrichene Einheiten und Einheiten ersetzter Pläne sind fest.
  *
  * Alle Gründe sind HARTE Sperren, keine Warnungen. Die 48-h-Regel prüft nur der Core – die Datenbank verhindert das
@@ -37,7 +39,9 @@ export interface MovableSession extends ReschedulableSession {
  * - `other_week`: andere ISO-Woche als der ursprüngliche Termin,
  * - `current`: die Einheit liegt schon an diesem Tag,
  * - `occupied`: belegt (und Tauschen geht nicht, weil die andere Einheit fest ist),
- * - `recovery_48h`: Kraft-Einheit mit gleichen Muskeln am Nachbartag.
+ * - `recovery_48h`: Kraft-Einheit mit gleichen Muskeln am Nachbartag,
+ * - `hard_endurance_48h` (Phase 10 WP2): harte Ausdauer (Fahrtspiel, Tempo, Intervalle, Renntempo) neben Kraft mit
+ *   Beinen (Ganzkörper/Unterkörper), neben einer anderen harten Einheit oder neben dem langen Lauf.
  */
 export type MoveBlockReason =
   | 'not_found'
@@ -47,7 +51,8 @@ export type MoveBlockReason =
   | 'other_week'
   | 'current'
   | 'occupied'
-  | 'recovery_48h';
+  | 'recovery_48h'
+  | 'hard_endurance_48h';
 
 /** Nachbar-Einheit, die die 48-h-Regel verletzen würde (für den Text „Zu nah an deiner … am Mittwoch“). */
 export interface RecoveryConflict {
@@ -108,6 +113,34 @@ export function recoveryFocus(
   return (s.kind ?? 'strength') === 'strength' ? s.focus : null;
 }
 
+/** Belastungs-Merkmale einer Einheit für die erweiterte 48-h-Regel (Plan 3.5/6). */
+interface Load {
+  readonly focus: SessionFocus | null;
+  readonly hard: boolean;
+  readonly long: boolean;
+  readonly legs: boolean;
+}
+
+function loadOf(s: Pick<ReschedulableSession, 'kind' | 'focus' | 'workout_type'>): Load {
+  const strength = (s.kind ?? 'strength') === 'strength';
+  return {
+    focus: recoveryFocus(s),
+    hard: !strength && isHardWorkoutType(s.workout_type),
+    long: !strength && s.workout_type === 'long',
+    legs: strength && (s.focus === 'full_body' || s.focus === 'lower'),
+  };
+}
+
+/**
+ * Erweiterte 48-h-Regel (Phase 10 WP2): harte Ausdauer ↔ Kraft mit Beinen, harte ↔ harte Ausdauer, harte Ausdauer ↔
+ * langer Lauf. Ohne Wettkampf-Arten nie ein Konflikt (bestehendes Verhalten).
+ */
+export function hardEnduranceConflict(a: Load, b: Load): boolean {
+  if (a.hard) return b.hard || b.legs || b.long;
+  if (b.hard) return a.legs || a.long;
+  return false;
+}
+
 /** Montag der ISO-Woche, in der die Einheit verschoben werden darf (Woche des URSPRÜNGLICHEN Tages). */
 export function moveWeekStart(
   session: Pick<ReschedulableSession, 'original_date' | 'scheduled_on'>,
@@ -144,24 +177,34 @@ function dateBlockReason(
  * an einem Nachbartag zählt (auch mehrere, z. B. erledigte des alten Plans neben einer geplanten).
  */
 function recoveryBlock(
-  focus: SessionFocus | null,
+  load: Load,
   date: string,
   placed: readonly {
     readonly id: string;
     readonly date: string;
-    readonly focus: SessionFocus | null;
+    readonly load: Load;
   }[],
-): RecoveryConflict | null {
+): {
+  readonly reason: 'recovery_48h' | 'hard_endurance_48h';
+  readonly conflict: RecoveryConflict;
+} | null {
   const neighbours = new Set([addDays(date, -1), addDays(date, 1)]);
-  const hit = placed.find((p) => neighbours.has(p.date) && recoveryConflict(p.focus, focus));
-  return hit ? { sessionId: hit.id, date: hit.date } : null;
+  const near = placed.filter((p) => neighbours.has(p.date));
+  const strength = near.find((p) => recoveryConflict(p.load.focus, load.focus));
+  if (strength) {
+    return { reason: 'recovery_48h', conflict: { sessionId: strength.id, date: strength.date } };
+  }
+  const hard = near.find((p) => hardEnduranceConflict(load, p.load));
+  return hard
+    ? { reason: 'hard_endurance_48h', conflict: { sessionId: hard.id, date: hard.date } }
+    : null;
 }
 
 /** Einheiten, die ihren Tag belegen, als (id, Tag, Schwerpunkt) – ohne die übergebenen Ausnahmen. */
 function placedSessions(sessions: readonly ReschedulableSession[], without: readonly string[]) {
   return sessions
     .filter((s) => occupies(s) && !without.includes(s.id))
-    .map((s) => ({ id: s.id, date: s.scheduled_on, focus: recoveryFocus(s) }));
+    .map((s) => ({ id: s.id, date: s.scheduled_on, load: loadOf(s) }));
 }
 
 /**
@@ -180,8 +223,7 @@ export function moveBlockReason(
   if (byDate) return { reason: byDate };
   const placed = placedSessions(sessions, [session.id]);
   if (placed.some((p) => p.date === date)) return { reason: 'occupied' };
-  const conflict = recoveryBlock(recoveryFocus(session), date, placed);
-  return conflict ? { reason: 'recovery_48h', conflict } : null;
+  return recoveryBlock(loadOf(session), date, placed);
 }
 
 /**
@@ -213,8 +255,8 @@ export function validateSwap(
   // Stand nach dem Tausch: alle anderen bleiben, a und b wechseln die Tage.
   const placed = [
     ...placedSessions(sessions, [a.id, b.id]),
-    { id: a.id, date: b.scheduled_on, focus: recoveryFocus(a) },
-    { id: b.id, date: a.scheduled_on, focus: recoveryFocus(b) },
+    { id: a.id, date: b.scheduled_on, load: loadOf(a) },
+    { id: b.id, date: a.scheduled_on, load: loadOf(b) },
   ];
   for (const [session, date, partner] of [
     [a, b.scheduled_on, false],
@@ -226,12 +268,12 @@ export function validateSwap(
     ) {
       return { ok: false, reason: 'occupied', partner };
     }
-    const conflict = recoveryBlock(
-      recoveryFocus(session),
+    const blocked = recoveryBlock(
+      loadOf(session),
       date,
       placed.filter((p) => p.id !== session.id),
     );
-    if (conflict) return { ok: false, reason: 'recovery_48h', partner, conflict };
+    if (blocked) return { ok: false, reason: blocked.reason, partner, conflict: blocked.conflict };
   }
   return { ok: true };
 }

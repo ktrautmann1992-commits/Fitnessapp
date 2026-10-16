@@ -2,6 +2,8 @@ import { z } from 'zod';
 
 import { ageInYears, isoDateSchema } from '../age';
 import {
+  COMPETITION_EFFORT_LIMITS,
+  COMPETITION_PACE,
   CONTENT_SCHEMA_LIMITS,
   ENDURANCE_EFFORT,
   ENDURANCE_SESSION_LIMITS,
@@ -33,6 +35,8 @@ import {
   type CompetitionRequest,
   type CompetitionWeekInfo,
 } from './competition';
+import { COMPETITION_PHASES } from './competition-schema';
+import { isHardWorkoutType, WORKOUT_TYPES, workoutStepsSchema } from './intensity';
 import type { PlanLibrary } from './content-pool';
 import { loadWeeksBeforeDeload } from './deload';
 import { equipmentProfile, isBodyweightOnly } from './equipment-profile';
@@ -114,98 +118,150 @@ export const generatedExerciseSchema = z
     'Entweder Wiederholungen oder Dauer.',
   );
 
-export const generatedSessionSchema = z
-  .object({
-    block_no: z
+/**
+ * Schema einer geplanten Einheit. `competition` = Wettkampfplan (Phase 10 WP2): Anstrengung bis
+ * COMPETITION_EFFORT_LIMITS.max (Vorlage für den CHECK aus WP3, heute 1–4) und die Felder Art/Phase/Schritte/Distanz.
+ */
+function sessionSchema(effortMax: number) {
+  // Felder des Wettkampfplans (optional; ohne Wettkampf fehlen sie – Prüfung unverändert).
+  const extra = {
+    workout_type: z.enum(WORKOUT_TYPES).nullable().optional(),
+    training_phase: z.enum(COMPETITION_PHASES).optional(),
+    workout_steps: workoutStepsSchema.nullable().optional(),
+    target_distance_m: z
       .number()
       .int()
-      .min(PLAN_BLOCK_LIMITS.blockNo.min)
-      .max(PLAN_BLOCK_LIMITS.blockNo.max),
-    week_no: z.number().int().min(PLAN_BLOCK_LIMITS.weekNo.min).max(PLAN_BLOCK_LIMITS.weekNo.max),
-    is_intro_week: z.boolean(),
-    is_deload: z.boolean(),
-    kind: z.enum(PLANNED_SESSION_KINDS),
-    template_day_index: z.number().int().min(1).max(7).nullable(),
-    scheduled_on: isoDateSchema,
-    name_de: z.string().min(2).max(60),
-    focus: z.enum(SESSION_FOCUSES).nullable(),
-    endurance_modality: z.enum(ENDURANCE_MODALITIES).nullable(),
-    effort_target: z
-      .number()
-      .int()
-      .min(ENDURANCE_EFFORT_LIMITS.min)
-      .max(ENDURANCE_EFFORT_LIMITS.max)
-      .nullable(),
-    estimated_minutes: z.number().int().min(1).max(600),
-    warmup_de: z.string(),
-    cooldown_de: z.string(),
-    exercises: z.array(generatedExerciseSchema).max(PLAN_BLOCK_LIMITS.exercisesPerSession),
-  })
+      .min(COMPETITION_PACE.distanceM.min)
+      .max(COMPETITION_PACE.distanceM.max)
+      .nullable()
+      .optional(),
+  };
+  return z
+    .object({
+      ...extra,
+      block_no: z
+        .number()
+        .int()
+        .min(PLAN_BLOCK_LIMITS.blockNo.min)
+        .max(PLAN_BLOCK_LIMITS.blockNo.max),
+      week_no: z.number().int().min(PLAN_BLOCK_LIMITS.weekNo.min).max(PLAN_BLOCK_LIMITS.weekNo.max),
+      is_intro_week: z.boolean(),
+      is_deload: z.boolean(),
+      kind: z.enum(PLANNED_SESSION_KINDS),
+      template_day_index: z.number().int().min(1).max(7).nullable(),
+      scheduled_on: isoDateSchema,
+      name_de: z.string().min(2).max(60),
+      focus: z.enum(SESSION_FOCUSES).nullable(),
+      endurance_modality: z.enum(ENDURANCE_MODALITIES).nullable(),
+      effort_target: z.number().int().min(ENDURANCE_EFFORT_LIMITS.min).max(effortMax).nullable(),
+      estimated_minutes: z.number().int().min(1).max(600),
+      warmup_de: z.string(),
+      cooldown_de: z.string(),
+      exercises: z.array(generatedExerciseSchema).max(PLAN_BLOCK_LIMITS.exercisesPerSession),
+    })
+    .refine(
+      (s) => !(s.is_intro_week && s.is_deload),
+      'Einstiegs- und Erholungswoche schließen sich aus.',
+    )
+    .refine(
+      (s) => new Set(s.exercises.map((e) => e.order_no)).size === s.exercises.length,
+      'order_no doppelt.',
+    )
+    .refine(
+      (s) =>
+        s.kind === 'strength'
+          ? s.focus !== null &&
+            s.template_day_index !== null &&
+            s.exercises.length >= 1 &&
+            s.endurance_modality === null &&
+            s.effort_target === null
+          : s.focus === null &&
+            s.template_day_index === null &&
+            s.exercises.length === 0 &&
+            s.endurance_modality !== null &&
+            s.effort_target !== null &&
+            s.estimated_minutes >= ENDURANCE_SESSION_LIMITS.minSessionMinutes &&
+            s.estimated_minutes <= TRAINING_LIMITS.minutesPerSession.max,
+      'Kraft: Schwerpunkt und 1–8 Übungen; Ausdauer: Modalität, Anstrengung, keine Übungen.',
+    );
+}
+
+export const generatedSessionSchema = sessionSchema(ENDURANCE_EFFORT_LIMITS.max);
+
+/**
+ * Einheit eines Wettkampfplans (WP2, Vorlage für die Server-Prüfung in WP3): wie generatedSessionSchema, dazu
+ * Anstrengung > 4 nur bei harter Art, harte Arten nie in einer Erholungswoche (Tapering ausgenommen: „Intensität
+ * bleibt“, Plan 3.1), Schritte ergeben genau die geplanten Minuten, Ausdauer immer mit Art und Phase.
+ */
+export const generatedCompetitionSessionSchema = sessionSchema(COMPETITION_EFFORT_LIMITS.max)
   .refine(
-    (s) => !(s.is_intro_week && s.is_deload),
-    'Einstiegs- und Erholungswoche schließen sich aus.',
+    (s) =>
+      s.kind !== 'endurance' ||
+      (s.effort_target ?? 0) <= COMPETITION_EFFORT_LIMITS.easyMax ||
+      isHardWorkoutType(s.workout_type),
+    'Anstrengung über 4 nur bei harter Art.',
   )
   .refine(
-    (s) => new Set(s.exercises.map((e) => e.order_no)).size === s.exercises.length,
-    'order_no doppelt.',
+    (s) => !isHardWorkoutType(s.workout_type) || !s.is_deload || s.training_phase === 'taper',
+    'Keine harte Einheit in einer Erholungswoche.',
   )
   .refine(
     (s) =>
-      s.kind === 'strength'
-        ? s.focus !== null &&
-          s.template_day_index !== null &&
-          s.exercises.length >= 1 &&
-          s.endurance_modality === null &&
-          s.effort_target === null
-        : s.focus === null &&
-          s.template_day_index === null &&
-          s.exercises.length === 0 &&
-          s.endurance_modality !== null &&
-          s.effort_target !== null &&
-          s.estimated_minutes >= ENDURANCE_SESSION_LIMITS.minSessionMinutes &&
-          s.estimated_minutes <= TRAINING_LIMITS.minutesPerSession.max,
-    'Kraft: Schwerpunkt und 1–8 Übungen; Ausdauer: Modalität, Anstrengung, keine Übungen.',
+      s.kind !== 'endurance' ||
+      (s.workout_type != null &&
+        s.training_phase !== undefined &&
+        s.workout_steps != null &&
+        s.workout_steps.reduce((sum, st) => sum + st.seconds, 0) === s.estimated_minutes * 60),
+    'Ausdauer im Wettkampfplan: Art, Phase und Schritte (Summe = Dauer).',
   );
 
-export const generatedPlanSchema = z
-  .object({
-    template_id: z.string().min(3).nullable(),
-    template_title_de: z.string().min(5).max(100).nullable(),
-    template_version: z.number().int().min(1).nullable(),
-    engine_version: z.literal(PLAN_ENGINE_VERSION),
-    match_quality: z.enum(PLAN_MATCH_QUALITIES),
-    notes: z.array(z.enum(PLAN_NOTES)),
-    uses_health_data: z.boolean(),
-    medical_notice: z.boolean(),
-    start_date: isoDateSchema,
-    sessions: z.array(generatedSessionSchema).min(1),
-  })
-  .refine((p) => !p.medical_notice || p.uses_health_data, {
-    path: ['medical_notice'],
-    message: 'Arzt-Hinweis nur zusammen mit Gesundheitsdaten.',
-  })
-  .refine(
-    (p) =>
-      (p.template_id === null) === (p.template_title_de === null) &&
-      (p.template_id === null) === (p.template_version === null),
-    'Vorlage: alle drei Angaben oder keine.',
-  )
-  .refine(
-    (p) => p.template_id !== null || p.sessions.every((s) => s.kind === 'endurance'),
-    'Ohne Vorlage keine Kraft-Einheit.',
-  )
-  .refine(
-    (p) => new Set(p.sessions.map((s) => s.scheduled_on)).size === p.sessions.length,
-    'Nie zwei Einheiten an einem Tag.',
-  )
-  .refine((p) => {
-    const perWeek = new Map<string, number>();
-    for (const s of p.sessions) {
-      const key = `${s.block_no}:${startOfIsoWeek(s.scheduled_on)}`;
-      perWeek.set(key, (perWeek.get(key) ?? 0) + 1);
-    }
-    return [...perWeek.values()].every((n) => n <= PLAN_BLOCK_LIMITS.sessionsPerWeek);
-  }, 'Zu viele Einheiten in einer Woche.');
+function planSchema<
+  S extends z.ZodType<{ scheduled_on: string; block_no: number; kind: 'strength' | 'endurance' }>,
+>(session: S) {
+  return z
+    .object({
+      template_id: z.string().min(3).nullable(),
+      template_title_de: z.string().min(5).max(100).nullable(),
+      template_version: z.number().int().min(1).nullable(),
+      engine_version: z.literal(PLAN_ENGINE_VERSION),
+      match_quality: z.enum(PLAN_MATCH_QUALITIES),
+      notes: z.array(z.enum(PLAN_NOTES)),
+      uses_health_data: z.boolean(),
+      medical_notice: z.boolean(),
+      start_date: isoDateSchema,
+      sessions: z.array(session).min(1),
+    })
+    .refine((p) => !p.medical_notice || p.uses_health_data, {
+      path: ['medical_notice'],
+      message: 'Arzt-Hinweis nur zusammen mit Gesundheitsdaten.',
+    })
+    .refine(
+      (p) =>
+        (p.template_id === null) === (p.template_title_de === null) &&
+        (p.template_id === null) === (p.template_version === null),
+      'Vorlage: alle drei Angaben oder keine.',
+    )
+    .refine(
+      (p) => p.template_id !== null || p.sessions.every((s) => s.kind === 'endurance'),
+      'Ohne Vorlage keine Kraft-Einheit.',
+    )
+    .refine(
+      (p) => new Set(p.sessions.map((s) => s.scheduled_on)).size === p.sessions.length,
+      'Nie zwei Einheiten an einem Tag.',
+    )
+    .refine((p) => {
+      const perWeek = new Map<string, number>();
+      for (const s of p.sessions) {
+        const key = `${s.block_no}:${startOfIsoWeek(s.scheduled_on)}`;
+        perWeek.set(key, (perWeek.get(key) ?? 0) + 1);
+      }
+      return [...perWeek.values()].every((n) => n <= PLAN_BLOCK_LIMITS.sessionsPerWeek);
+    }, 'Zu viele Einheiten in einer Woche.');
+}
+
+export const generatedPlanSchema = planSchema(generatedSessionSchema);
+/** Wettkampfplan (WP2) – Einheiten nach generatedCompetitionSessionSchema. */
+export const generatedCompetitionPlanSchema = planSchema(generatedCompetitionSessionSchema);
 
 export interface GeneratedPlan {
   /** null = reiner Ausdauer-Plan (keine Vorlage). */
@@ -296,6 +352,8 @@ export function generateCompetitionPlan(
     ok: true,
     plan: {
       ...result.plan,
+      // Der Wettkampfplan IST der angekündigte Plan (WP2) – Hinweis „kommt später“ entfällt.
+      notes: result.plan.notes.filter((note) => note !== 'endurance_basic_only'),
       competition: {
         feasibility: setup.feasibility,
         cycle: setup.cycle,
@@ -491,4 +549,12 @@ function generatePlan(
 /** Wiederverwendbar für Tests und App: ist der Plan innerhalb der Datenbank-Grenzen? */
 export function isPlanWithinLimits(plan: GeneratedPlan): boolean {
   return generatedPlanSchema.safeParse(plan).success;
+}
+
+/**
+ * Wettkampfplan im Rahmen (WP2): Einheiten nach generatedCompetitionSessionSchema. Achtung: Bis WP3 erlaubt die
+ * Datenbank nur Anstrengung 1–4 – ein Wettkampfplan mit harten Einheiten lässt sich erst danach speichern.
+ */
+export function isCompetitionPlanWithinLimits(plan: GeneratedPlan): boolean {
+  return generatedCompetitionPlanSchema.safeParse(plan).success;
 }
