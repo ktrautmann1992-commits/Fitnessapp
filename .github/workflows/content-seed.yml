@@ -10,6 +10,11 @@ name: content-seed
 # 3. Schutz: Würde ein Lauf mehr als 50 % der bisher freigegebenen Übungen oder Vorlagen (je Art) auf
 #    „archived“ setzen, bricht er ab (rot, nichts eingespielt). Nur per Hand mit Häkchen allow_mass_archive
 #    lässt sich das ausdrücklich erlauben – automatische Läufe (Push, db-migrate) nie.
+# 4. Ernährung (Etappe N7 Teil 2): danach seed_nutrition_content mit Lebensmitteln, Rezepten, Packungsgrößen,
+#    Ersatzprodukten und Austausch-Tabelle – nur, was published UND fachlich geprüft ist, mit geschlossenen
+#    Verweisen. Was noch wartet, steht mit Grund in der Zusammenfassung des Laufs. Der Schutz aus 3. gilt
+#    auch hier und wird für ALLE Arten vor dem ersten Einspielen geprüft. Fehlen die Ernährungs-Tabellen
+#    noch (db-migrate nicht durch), wird die Ernährung übersprungen (Hinweis, kein Fehler).
 # Ohne SUPABASE_URL/SUPABASE_SECRET_KEY endet der Workflow nach der Prüfung grün mit Hinweis.
 on:
   push:

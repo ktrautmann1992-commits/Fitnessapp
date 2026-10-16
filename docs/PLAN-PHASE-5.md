@@ -1,6 +1,6 @@
 # Plan Phase 5 – Ernährungs-Engine, Essensplan und Einkaufsliste
 
-**Status:** **freigegeben, Etappen N0 (Plan), N1 (Core: Bedarf, Grenzen, Makros, Timing) und N2a (Inhalte: Schemas, Prüfregeln, Einheiten) umgesetzt** – Stand 11.10.2026. Offene Fragen 16 B: Gründer „Alles wie empfohlen“ (10.10.2026). Gegenprüfung der R2-Blocker durch den Wächter im N0-PR. **N2b Teil 1 (Quelle/Lizenz geklärt, Import-Infrastruktur, Zuordnungs-Vorschlag) umgesetzt** – der Katalog selbst entsteht nach dem Merge über den Workflow `foods-import` (Umsetzungsstand N2b). **N2c (Rezept-Import als Entwurf) und N3 (Core: Essensplan, Meal-Prep, Einkaufsliste, Rezeptsuche) umgesetzt** – Stand 12.10.2026 (Umsetzungsstand N2c/N3). **N4 (App Testmodus: Einrichtung, Tag, Rezept) umgesetzt** – Stand 12.10.2026 (Umsetzungsstand N4). **N2d (Admin-Seiten Ernährung, Sammelfreigabe Rezepte pro Kategorie und Freigabe per ID in `content-review`, Fingerabdruck bestätigter Import-Annahmen) umgesetzt** – Stand 14.10.2026, drei offene Fragen von den Gründern entschieden (Umsetzungsstand N2d). **N5a (App Testmodus: gespeicherter Essensplan, Wochenansicht, „Andere Vorschläge“, „Rezept tauschen“, „Plan aktualisieren“, automatische Neuplanung 6.6) umgesetzt** – Stand 14.10.2026; N5 ist in **N5a** und **N5b** (Einkaufsliste, Meal-Prep-Kochtag, „Zur Einkaufsliste“) geteilt (Umsetzungsstand N5a). **N5b (App Testmodus: Einkaufsliste offline mit eigenen Einträgen und Zeitraum, Neuerzeugung bei Neuplanung W22, „Zur Einkaufsliste“, Meal-Prep-Pläne mit Kochtag und Timern, Auftau-Hinweise; K-a, K-b, K5, K7, N3 K1) umgesetzt** – Stand 14.10.2026; offene Gründer-Entscheidung: Mitteilungen im Hintergrund (`expo-notifications`), Löschfrist weiter offen (Umsetzungsstand N5b). **N5c (App Testmodus: Rezeptsuche mit vorbelegter, erweiterbarer Ernährungsform und gekennzeichneten Treffern, „Zur Einkaufsliste“ für diese Treffer, Ratgeber offline mit R21-Prüfung und „Zahlen aus“) umgesetzt** – Stand 14.10.2026 (Umsetzungsstand N5c). **N6 (PDF P5: Essensplan und Einkaufsliste als PDF, gratis – Dokumentmodell, Renderer-Bausteine `checklist`/`steps`, Druckansichten `ernaehrung/drucken` und `einkaufsliste/drucken`, Knöpfe, nativer Druck, CI-Artefakt) umgesetzt** – Stand 14.10.2026; EAS-Build Android noch von den Gründern zu prüfen (Umsetzungsstand N6). **N9 (Zutaten-Austausch, Prompt D, KONZEPT 6.9, gratis: Austausch-Tabelle mit Regel R23 und Batch-Art, Core `substitute.ts`, Dialog „Zutat austauschen“, Testmodus) umgesetzt** – Stand 14.10.2026; Server-Prüfung S7 und pgTAP mit N7 (Umsetzungsstand N9). **N10 (Bewertung nach dem Essen, Prompt D, KONZEPT 6.10, gratis: Core `ratings.ts` – Daumen runter 8 Wochen, Gründe nur Reihenfolge, `food_dislikes` hart in `filter.ts`; „Wie war’s?“ und Dialog ohne Vorauswahl, Testmodus) umgesetzt** – Stand 14.10.2026; Tabellen mit RLS und pgTAP mit N7 (Umsetzungsstand N10). **N11 (Kühlschrank-Suche „Was habe ich da?“ und Packungsgrößen, Prompt D, KONZEPT 6.11, gratis: Core `fridge-search.ts` nach den harten Filtern, Packungsgrößen als eigene Inhaltsart mit Regel R24 und Batch-Art `package-sizes`, Admin `/admin/packungen`, Testmodus) umgesetzt** – Stand 14.10.2026; Spalte `foods.package_size_g` mit N7 (Umsetzungsstand N11). **N14 (Resteplanung in der App, Testmodus, nur der sichere Teil: Reste-Score im Wochenplan, Hinweis „Nutzt deinen Rest“ ohne Mengen; Packungszahl/Rest zurückgestellt bis G-N13-4 und N11-G3) umgesetzt** – Stand 14.10.2026 (Umsetzungsstand N14). **N7 Teil 1 (Supabase-Datenbank für die Ernährung: Inhalts- und Nutzertabellen mit RLS, `seed_nutrition_content`, `save_meal_plan` mit erneuter Filter-Prüfung und Einwilligungs-Prüfung S9, `replace_shopping_list`, Bewertungen/„mag ich nicht“, Widerruf, Export, Löschung, pgTAP 23–26/28; `current_consent_version` nicht mehr für anon) umgesetzt** – Stand 14.10.2026; Teil 2 (App im Supabase-Modus, `content-seed` Ernährung) wartet auf Freigabe (Umsetzungsstand N7). **Nachtrag „Erweiterungen 2 (11.10.2026)“** in Abschnitt 19 (Fassung 2 nach Wächter-Prüfung, B1/B2 und S1–S14 eingearbeitet): Rezeptbestand aus `alpha5-rezepte.json`, Import in N2b/N2c, Umfang von Prompt C in N3–N6, neue Etappen N9–N14, W1 und P1. Fassung 3 nach Wächter-Nachprüfung `waechter-plan-5-r2.md` (Urteil „mit Auflagen“, alle Befunde eingearbeitet); Fassung 2 nach `waechter-plan-5.md`.
+**Status:** **freigegeben, Etappen N0 (Plan), N1 (Core: Bedarf, Grenzen, Makros, Timing) und N2a (Inhalte: Schemas, Prüfregeln, Einheiten) umgesetzt** – Stand 11.10.2026. Offene Fragen 16 B: Gründer „Alles wie empfohlen“ (10.10.2026). Gegenprüfung der R2-Blocker durch den Wächter im N0-PR. **N2b Teil 1 (Quelle/Lizenz geklärt, Import-Infrastruktur, Zuordnungs-Vorschlag) umgesetzt** – der Katalog selbst entsteht nach dem Merge über den Workflow `foods-import` (Umsetzungsstand N2b). **N2c (Rezept-Import als Entwurf) und N3 (Core: Essensplan, Meal-Prep, Einkaufsliste, Rezeptsuche) umgesetzt** – Stand 12.10.2026 (Umsetzungsstand N2c/N3). **N4 (App Testmodus: Einrichtung, Tag, Rezept) umgesetzt** – Stand 12.10.2026 (Umsetzungsstand N4). **N2d (Admin-Seiten Ernährung, Sammelfreigabe Rezepte pro Kategorie und Freigabe per ID in `content-review`, Fingerabdruck bestätigter Import-Annahmen) umgesetzt** – Stand 14.10.2026, drei offene Fragen von den Gründern entschieden (Umsetzungsstand N2d). **N5a (App Testmodus: gespeicherter Essensplan, Wochenansicht, „Andere Vorschläge“, „Rezept tauschen“, „Plan aktualisieren“, automatische Neuplanung 6.6) umgesetzt** – Stand 14.10.2026; N5 ist in **N5a** und **N5b** (Einkaufsliste, Meal-Prep-Kochtag, „Zur Einkaufsliste“) geteilt (Umsetzungsstand N5a). **N5b (App Testmodus: Einkaufsliste offline mit eigenen Einträgen und Zeitraum, Neuerzeugung bei Neuplanung W22, „Zur Einkaufsliste“, Meal-Prep-Pläne mit Kochtag und Timern, Auftau-Hinweise; K-a, K-b, K5, K7, N3 K1) umgesetzt** – Stand 14.10.2026; offene Gründer-Entscheidung: Mitteilungen im Hintergrund (`expo-notifications`), Löschfrist weiter offen (Umsetzungsstand N5b). **N5c (App Testmodus: Rezeptsuche mit vorbelegter, erweiterbarer Ernährungsform und gekennzeichneten Treffern, „Zur Einkaufsliste“ für diese Treffer, Ratgeber offline mit R21-Prüfung und „Zahlen aus“) umgesetzt** – Stand 14.10.2026 (Umsetzungsstand N5c). **N6 (PDF P5: Essensplan und Einkaufsliste als PDF, gratis – Dokumentmodell, Renderer-Bausteine `checklist`/`steps`, Druckansichten `ernaehrung/drucken` und `einkaufsliste/drucken`, Knöpfe, nativer Druck, CI-Artefakt) umgesetzt** – Stand 14.10.2026; EAS-Build Android noch von den Gründern zu prüfen (Umsetzungsstand N6). **N9 (Zutaten-Austausch, Prompt D, KONZEPT 6.9, gratis: Austausch-Tabelle mit Regel R23 und Batch-Art, Core `substitute.ts`, Dialog „Zutat austauschen“, Testmodus) umgesetzt** – Stand 14.10.2026; Server-Prüfung S7 und pgTAP mit N7 (Umsetzungsstand N9). **N10 (Bewertung nach dem Essen, Prompt D, KONZEPT 6.10, gratis: Core `ratings.ts` – Daumen runter 8 Wochen, Gründe nur Reihenfolge, `food_dislikes` hart in `filter.ts`; „Wie war’s?“ und Dialog ohne Vorauswahl, Testmodus) umgesetzt** – Stand 14.10.2026; Tabellen mit RLS und pgTAP mit N7 (Umsetzungsstand N10). **N11 (Kühlschrank-Suche „Was habe ich da?“ und Packungsgrößen, Prompt D, KONZEPT 6.11, gratis: Core `fridge-search.ts` nach den harten Filtern, Packungsgrößen als eigene Inhaltsart mit Regel R24 und Batch-Art `package-sizes`, Admin `/admin/packungen`, Testmodus) umgesetzt** – Stand 14.10.2026; Spalte `foods.package_size_g` mit N7 (Umsetzungsstand N11). **N14 (Resteplanung in der App, Testmodus, nur der sichere Teil: Reste-Score im Wochenplan, Hinweis „Nutzt deinen Rest“ ohne Mengen; Packungszahl/Rest zurückgestellt bis G-N13-4 und N11-G3) umgesetzt** – Stand 14.10.2026 (Umsetzungsstand N14). **N7 Teil 1 (Supabase-Datenbank für die Ernährung: Inhalts- und Nutzertabellen mit RLS, `seed_nutrition_content`, `save_meal_plan` mit erneuter Filter-Prüfung und Einwilligungs-Prüfung S9, `replace_shopping_list`, Bewertungen/„mag ich nicht“, Widerruf, Export, Löschung, pgTAP 23–26/28; `current_consent_version` nicht mehr für anon) umgesetzt** – Stand 14.10.2026; **Teil 2 (App im Supabase-Modus mit Tagebuch und eigenen Gerichten, `content-seed` Ernährung, Löschfrist 4 Wochen, Server-Plausibilität G-W3) umgesetzt** – Stand 16.10.2026 (Umsetzungsstand N7 Teil 2). **Nachtrag „Erweiterungen 2 (11.10.2026)“** in Abschnitt 19 (Fassung 2 nach Wächter-Prüfung, B1/B2 und S1–S14 eingearbeitet): Rezeptbestand aus `alpha5-rezepte.json`, Import in N2b/N2c, Umfang von Prompt C in N3–N6, neue Etappen N9–N14, W1 und P1. Fassung 3 nach Wächter-Nachprüfung `waechter-plan-5-r2.md` (Urteil „mit Auflagen“, alle Befunde eingearbeitet); Fassung 2 nach `waechter-plan-5.md`.
 **Reihenfolge (Gründer-Entscheidung 09.10.2026):** 4b-A0 (erledigt) → Übungs-Glossar und Übungstausch (erledigt bis T2; T3 später mit Supabase) → **Phase 5** → Phase 4b (A → D → E; B/C später).
 **Testphase:** zuerst nur im **Testmodus** (lokal auf dem Gerät, ohne Supabase). Supabase-Teile (Migrationen, RLS, pgTAP) sind hier vollständig geplant, kommen aber in einer späteren Etappe (N7). Einzige Ausnahme: die kleine CHECK-Migration für den Onboarding-Schritt in N4 (S8).
 
@@ -836,7 +836,7 @@ Zusätzlich: K9 (Unverträglichkeit + „mag ich“ derselben Gruppe → ausgesc
 
 **N6 – PDF P5.** Dokumentmodell, Renderer-Blöcke, Druckansichten, Knöpfe, nativer Druck. _DoD:_ PDF-Tests aus 12.1 (inkl. K4-Formulierung), CI-Artefakt, EAS-Build Android geprüft.
 
-**N7 – Supabase.** _Teil 1 (Datenbank) umgesetzt am 14.10.2026, Teil 2 (App, `content-seed`) als Vorschlag – siehe Umsetzungsstand N7._ Migrationen (Enums eigene Datei + `enums.ts`; Inhaltstabellen + `seed_content`; `nutrition_prefs`-Spalten **+ `nutritionSetupAvailable` im Supabase-Backend auf `true`** (R2-S3); `meal_plans`/`items`/`shopping_*` mit RLS, Spaltenrechten, Indizes; RPCs 7.3 inkl. Faktor-≠-1-Prüfung; Widerruf; Export), pgTAP 23–26 + Ergänzungen, `database.types.ts`, `db-sync.test.ts`, `supabase-backend.ts`, Sync-Warteschlange, geschützter Speicher. **Vorher: Fachprüfung durch eine Ernährungsfachkraft** (Gründer-Entscheidung 6). _DoD:_ `db-test` grün, Live-Test mit zwei Geräten; **Zitat- und Wertprüfung gegen die Originale** (Compendium-Codes/MET-Werte, Koletzko 2018, Janmahasatian 2005, Loucks 2011 brutto/netto, BfR-Koffein, Katch-McArdle, D-A-CH-PAL, Iraki 2019) erledigt und alle „VOR LIVEGANG FACHLICH PRÜFEN“-Stellen in `constants.ts` aufgelöst (aus N1 verschoben, Wächter N1 K6). **Erst wenn echte Konten kommen.** **Zusätzlich (Wächter N2d K9):** Rezept-Seed und Supabase-Tabelle transportieren `ingredients`, `steps_de`, `tip_de`, `no_cook`, Zeiten, `equipment_de`, Titel/Beschreibung und `meta.import_assumptions*` **unverändert** (fehlt `meta`, gälte der Stand als „none“ = unsichere Richtung); ein `db-sync`-/pgTAP-Test vergleicht `importAssumptionsState` vor und nach dem Seed. **Zusätzlich (Wächter N5a S4):** `meal_plans`/`meal_plan_items` speichern weder Planband noch `safetyKey`; 6.6 wird dafür ohne diese Felder umgesetzt. **Zusätzlich (N11):** Packungsgrößen kommen als Inhalt aus `content/package-sizes/` (nur `published`, R24 grün) über `seed_content()` in die Spalte `foods.package_size_g` (bzw. eine Tabelle `food_package_sizes` mit Prüfvermerk, Entscheidung beim Bau von N7) – `content/foods/` bleibt allein `foods-import` vorbehalten (S3); keine Nutzerdaten, keine Tabelle für die Kühlschrank-Suche (die Auswahl wird nie gespeichert). **Zusätzlich (Wächter N10 H8):** `food_dislikes` **ohne** `created_at`/Zeitstempel (sonst ließe sich ein „Daumen runter“ ohne Grund vom selben Tag auf „Unverträglich“ zurückführen); der Leer-Grund `rated_down` (`SLOT_EXCLUSION_REASONS`) wird in `mealPlanPayloadSchema`/`save_meal_plan` zugelassen; `recipe_ratings` mit CHECK `reason in ('taste','effort','cost','satiety')` und CHECK `reason is null or value = 'down'`, Unique `(user_id, recipe_id)`. **Zusätzlich (N13):** keine neue Tabelle oder Spalte – die Resteplanung braucht nur die Packungsgrößen aus N11 (s. o.); geteilte Portionen mit eigenem Beilagen-Faktor werden erst mit P1 (Phase 11) gespeichert, bis dahin bleibt `meal_plan_items` bei einem Faktor je Mahlzeit (die bestehende Prüfung „Faktor ≠ 1 ohne Einwilligung → abgelehnt“ gilt unverändert). **Zusätzlich (N14):** keine neue Tabelle oder Spalte – die Hinweise „Nutzt deinen Rest“ werden aus dem gespeicherten Plan und den Packungsgrößen nachgerechnet, nie gespeichert; Reste aus der Vorwoche (G-N13-5) bräuchten eine Speicherung und sind nicht umgesetzt. Mit Phase 7: `has_entitlement` für die Resteplanung (Premium, 19.9) – serverseitig nur prüfbar, soweit der Server den Plan selbst nachrechnet (Vormerkung).
+**N7 – Supabase.** _Teil 1 (Datenbank) umgesetzt am 14.10.2026, Teil 2 (App, `content-seed`) umgesetzt am 16.10.2026 – siehe Umsetzungsstand N7 und N7 Teil 2._ Migrationen (Enums eigene Datei + `enums.ts`; Inhaltstabellen + `seed_content`; `nutrition_prefs`-Spalten **+ `nutritionSetupAvailable` im Supabase-Backend auf `true`** (R2-S3); `meal_plans`/`items`/`shopping_*` mit RLS, Spaltenrechten, Indizes; RPCs 7.3 inkl. Faktor-≠-1-Prüfung; Widerruf; Export), pgTAP 23–26 + Ergänzungen, `database.types.ts`, `db-sync.test.ts`, `supabase-backend.ts`, Sync-Warteschlange, geschützter Speicher. **Vorher: Fachprüfung durch eine Ernährungsfachkraft** (Gründer-Entscheidung 6). _DoD:_ `db-test` grün, Live-Test mit zwei Geräten; **Zitat- und Wertprüfung gegen die Originale** (Compendium-Codes/MET-Werte, Koletzko 2018, Janmahasatian 2005, Loucks 2011 brutto/netto, BfR-Koffein, Katch-McArdle, D-A-CH-PAL, Iraki 2019) erledigt und alle „VOR LIVEGANG FACHLICH PRÜFEN“-Stellen in `constants.ts` aufgelöst (aus N1 verschoben, Wächter N1 K6). **Erst wenn echte Konten kommen.** **Zusätzlich (Wächter N2d K9):** Rezept-Seed und Supabase-Tabelle transportieren `ingredients`, `steps_de`, `tip_de`, `no_cook`, Zeiten, `equipment_de`, Titel/Beschreibung und `meta.import_assumptions*` **unverändert** (fehlt `meta`, gälte der Stand als „none“ = unsichere Richtung); ein `db-sync`-/pgTAP-Test vergleicht `importAssumptionsState` vor und nach dem Seed. **Zusätzlich (Wächter N5a S4):** `meal_plans`/`meal_plan_items` speichern weder Planband noch `safetyKey`; 6.6 wird dafür ohne diese Felder umgesetzt. **Zusätzlich (N11):** Packungsgrößen kommen als Inhalt aus `content/package-sizes/` (nur `published`, R24 grün) über `seed_content()` in die Spalte `foods.package_size_g` (bzw. eine Tabelle `food_package_sizes` mit Prüfvermerk, Entscheidung beim Bau von N7) – `content/foods/` bleibt allein `foods-import` vorbehalten (S3); keine Nutzerdaten, keine Tabelle für die Kühlschrank-Suche (die Auswahl wird nie gespeichert). **Zusätzlich (Wächter N10 H8):** `food_dislikes` **ohne** `created_at`/Zeitstempel (sonst ließe sich ein „Daumen runter“ ohne Grund vom selben Tag auf „Unverträglich“ zurückführen); der Leer-Grund `rated_down` (`SLOT_EXCLUSION_REASONS`) wird in `mealPlanPayloadSchema`/`save_meal_plan` zugelassen; `recipe_ratings` mit CHECK `reason in ('taste','effort','cost','satiety')` und CHECK `reason is null or value = 'down'`, Unique `(user_id, recipe_id)`. **Zusätzlich (N13):** keine neue Tabelle oder Spalte – die Resteplanung braucht nur die Packungsgrößen aus N11 (s. o.); geteilte Portionen mit eigenem Beilagen-Faktor werden erst mit P1 (Phase 11) gespeichert, bis dahin bleibt `meal_plan_items` bei einem Faktor je Mahlzeit (die bestehende Prüfung „Faktor ≠ 1 ohne Einwilligung → abgelehnt“ gilt unverändert). **Zusätzlich (N14):** keine neue Tabelle oder Spalte – die Hinweise „Nutzt deinen Rest“ werden aus dem gespeicherten Plan und den Packungsgrößen nachgerechnet, nie gespeichert; Reste aus der Vorwoche (G-N13-5) bräuchten eine Speicherung und sind nicht umgesetzt. Mit Phase 7: `has_entitlement` für die Resteplanung (Premium, 19.9) – serverseitig nur prüfbar, soweit der Server den Plan selbst nachrechnet (Vormerkung).
 
 **N8 – Batch-Pipeline Rezepte (optional, später).** `kinds/recipe.ts` (Matrix, Prompts, Structured Output nur mit Katalog-IDs), Probelauf ohne Schlüssel, `content-generate`/`collect` mit `ANTHROPIC_API_KEY`. _DoD:_ Probelauf grün, Kostenschätzung, PR mit Entwürfen. **→ Umgesetzt am 15.10.2026 mit Google Gemini statt Claude (Gründer-Entscheidung 14.10.2026, Secret `GEMINI_API_KEY`) – siehe Umsetzungsstand N8.**
 
@@ -3699,7 +3699,7 @@ Migrationen und pgTAP liefen gegen ein lokales **Postgres 16 mit pgTAP** und ein
 automatisch im Pull Request (Änderungen unter `supabase/`); `database.types.ts` ist von Hand – Abgleich mit dem
 Workflow **`db-types`**. Kein Zugriff auf die Live-Datenbank, keine Secrets, nichts live geschaltet.
 
-**Vorschlag N7 Teil 2 (wartet auf Freigabe):**
+**Vorschlag N7 Teil 2 (freigegeben 16.10.2026, umgesetzt – siehe Umsetzungsstand N7 Teil 2):**
 
 1. **Essensplan im Supabase-Modus ohne Planband/`safetyKey`** (Wächter N5a S4): Auf dem Gerät bleibt der vollständige
    Plan im **geschützten Speicher** (7.5; wie Trainingspläne mit Gesundheitsbezug). Fehlt er (neues Gerät, gelöscht)
@@ -3813,6 +3813,116 @@ Migrationsdateien wurden deshalb direkt geändert (Zeitstempel unverändert, kei
   Grundumsatz aus den gespeicherten Körperdaten, mit Ablehnung), damit die Schutzgrenze auch gegen manipulierte Clients
   greift? _Empfehlung: ja, mit Teil 2._
 - Weiter offen: Zitat-/Wertprüfung aus N1 K6, Live-Test (Teil 8), Premium-Prüfung mit Phase 7 (19.9, 16 B (l)).
+
+### Umsetzungsstand N7 Teil 2 (16.10.2026): App im Supabase-Modus für die Ernährung (ohne Commit)
+
+**Gründer-Entscheidungen 16.10.2026 (alle „wie empfohlen“):** G-N7-1 Teil 2 wie vorgeschlagen; G-N7-2 Löschfrist
+**4 Wochen** (`MEAL_PLAN_RETENTION_WEEKS = 4`), auf dem Server bei jedem Speichern und täglich über `pg_cron`, im
+Testmodus genauso; G-N7-3 Fachprüfung bleibt offen, `seed_nutrition_content` unverändert, die App zeigt einen klaren
+Leer-Zustand; G-W1 ein PR, die App fällt tolerant zurück, bis `db-migrate` durch ist; G-W3 der Server prüft die
+Mindest-Plausibilität der Tageskalorien gegen den Grundumsatz (Formel identisch zum Core).
+
+**Was jetzt gilt:**
+
+1. **Rekonstruktion ohne Planband/`safetyKey` (Vorschlag Nr. 1, Wächter N5a S4):** Core
+   `nutrition/meal-plan-record.ts` – `mealPlanWeekFromRecord` baut den Plan aus den Zeilen (`meal_plan_items` als
+   Payload) und dem Bestand: Mahlzeiten neu über `scalePortion` (Rezept, Version, Faktor, Ersatz, Weglassen, Tausch),
+   Band und Schlüssel aus den aktuellen Zielen, **Modus aus `day_status`** (passt er nicht zum aktuellen Modus, bekommt
+   der Tag den anderen Modus und den Schlüssel `reconstructed:mode_changed` → 6.6 plant ab heute sicher neu),
+   Hinweise wie `finishDay`, keine leeren Plätze. `resolveMealPlanRecord` führt danach die normale Prüfung 6.6 aus. Der
+   vollständige Plan bleibt im **geschützten Speicher** (`nutritionCache`, App: verschlüsselt; Browser: nur
+   `sessionStorage`) und wird nur genutzt, wenn er zu den Zeilen passt (`mealPlanPayloadMatches`). Dokumentierter
+   Unterschied: ein reiner Deckel-Wechsel, bei dem der Plan im neuen Band liegt, plant auf einem neuen Gerät nicht neu
+   (Test „nur Deckel geändert“).
+2. **Speichern (Nr. 2):** `save_meal_plan` + `replace_shopping_list` (nacheinander, nicht atomar – die Liste wird bei
+   jedem Laden aus dem Plan neu abgeglichen). Plan speichern nur online; **Abhaken und Kochtag ohne Gesundheitsbezug
+   offline über die normale Warteschlange** (`set_shopping_item_checked`, `set_cook_day_start`), mit Gesundheitsbezug
+   sofort (`online_only`). Vergangene Tage bleiben beim erneuten Speichern unverändert (`withPreservedPastItems`).
+   Fehler wie im Testmodus (`plan_rejected`, `consent_required`).
+3. **Bestand aus der Datenbank (Nr. 3):** `loadNutritionLibrary` liest `foods`, `recipes`, Packungsgrößen,
+   Ersatzprodukte und Austausch-Tabelle → `validateContent` (`checkedAtSeed`: R17 und der Abgleich mit der
+   Erwartungsliste entfallen, weil `content-seed` sie vorher geprüft hat; alle anderen Regeln laufen) →
+   `selectNutritionContent({ allowDrafts: false })`. Offline aus dem Inhalts-Zwischenspeicher (keine Nutzerdaten).
+   **Ohne freigegebene Rezepte** (Fachprüfung offen, G-N7-3): klarer Leer-Zustand „Die Rezepte werden gerade fachlich
+   geprüft …“ (`awaitingReview`, testID `nutrition-no-recipes`).
+4. **`content-seed` Ernährung (Nr. 4):** `buildNutritionSeedPackage` – nur `published` **und** `expert_reviewed`
+   (Lebensmittel zusätzlich katalog-geprüft, Packungsgrößen mit Prüfvermerk), Verweise geschlossen (Fixpunkt über
+   Ersatzprodukte); was wartet, steht mit Grund in der Zusammenfassung. **Schutz vor Massen-Archivierung** für alle
+   Arten **vor** dem ersten Einspielen (`findNutritionMassArchive`, wie bei Übungen; nur per Hand mit
+   `allow_mass_archive`). Fehlen die Ernährungs-Tabellen (vor `db-migrate`), wird die Ernährung mit Hinweis
+   übersprungen.
+5. **`supportsNutrition = true`** im Supabase-Modus, inkl. Schritt `nutrition_setup` (R2-S3).
+6. **S1-Rückfall entfernt (Nr. 7):** fehlt `delete_stored_intolerances`, kommt der Fehler `delete_unavailable`
+   („Löschen ist gerade nicht möglich – bitte versuche es später erneut.“), nichts wird halb gelöscht; danach wird der
+   Ernährungs-Zwischenspeicher geleert.
+7. **Tagebuch (E1) und eigene Gerichte (E2) im Supabase-Modus:** dieselben Regeln wie im Testmodus vorab, dann über die
+   **verschlüsselte Ernährungs-Warteschlange** (`nutrition-sync.ts`, `NutritionQueue`) an `save_food_log_entries`,
+   `delete_food_log_entry`, `save_custom_meal`, `delete_custom_meal` (je Schlüssel zusammengefasst, Basis-Revision
+   vererbt, höchstens 5 Versuche). **Abgelehnte Fassungen bleiben lokal** (G3) und werden nur auf Wunsch verworfen
+   („Verwerfen“ im Hinweis `NutritionSyncNotice`); ist der geschützte Speicher nicht beschreibbar, wird sofort gesendet.
+   Favoriten direkt (Schnell-Favoriten mit kcal = Gesundheitsbezug → sofort). Abmelde-Nachfrage und Export-Hinweis
+   zählen wartende Ernährungs-Einträge mit. Widerruf, ein fremdes Konto auf dem Gerät und das Löschen der lokalen
+   Daten leeren Ernährungs-Zwischenspeicher und -Warteschlange.
+8. **Löschfrist G-N7-2:** Core `mealPlanRetentionStart(today)` = Montag der laufenden Woche − 4 Wochen. Server:
+   `private.purge_expired_nutrition_weeks(p_user_id)` (security definer, nur `service_role`) am Ende von
+   `save_meal_plan` und `replace_shopping_list` (nur für die speichernde Person) und täglich um 02:23 UTC als
+   `pg_cron`-Job `nutrition-weeks-retention` (für alle). Gibt es `pg_cron` nicht, überspringt die Migration den Job mit
+   Hinweis. Testmodus: beim Laden und nach jedem Speichern (`pruneExpiredNutritionWeeks`). Das Tagebuch ist **nicht**
+   betroffen. **A2/A3:** Für Tage älter als die Frist gibt es keinen gespeicherten Plan mehr → „Dein Tag“ und die
+   Wochenauswertung zeigen dort den bestehenden Hinweis „Für diesen Tag ist kein Essensplan gespeichert …“ (A2 S1);
+   Balken und Auswertung aus dem Tagebuch bleiben.
+9. **G-W3 Mindest-Plausibilität:** `save_meal_plan` lehnt einen Plan ab, wenn ein Tag ab heute mit Status `complete`
+   oder `no_targets` in der Summe (+ 1 kcal Rundung) unter dem Grundumsatz liegt: `private.meal_plan_day_kcal_floor` =
+   max(Mifflin-St Jeor mit dem Grenzen-Offset – divers/keine Angabe +5 –, Katch-McArdle nur mit Körperfett ≤ 90 Tage) ×
+   `MIN_INTAKE_RELATIVE_TO_BMR`; je Feld der neueste Körperwert, künftige Messdaten zählen als heute. **Keine Prüfung**
+   (null, wie Modus `no_targets`) ohne gültige Einwilligung, bei Schwangerschaft oder ohne Größe/Gewicht; `below_floor`
+   bleibt erlaubt (der Core kennzeichnet ihn selbst). Meldung **ohne Werte**: „Der Essensplan liegt an einem Tag unter
+   deinem Grundumsatz – bitte neu erstellen.“ Core-Gegenstück `nutrition/plausibility.ts` (`serverDayKcalFloor`,
+   `mealPlanDaysBelowFloor`; der Faktor kommt aus `limits.ts`, `bmrIntakeFloorKcal`).
+10. **H3:** Ist die Einwilligung ungültig (neue Textfassung oder fehlt), wird ein gespeicherter Plan mit
+    Gesundheitsbezug dieser Woche vor dem Speichern gelöscht (RLS: eigene Zeile) und durch einen Plan ohne
+    Gesundheitsdaten ersetzt – wie im Testmodus. Scheitert das Speichern trotzdem an der Einwilligung, zeigt die App
+    „Einwilligung bestätigen oder Unverträglichkeiten löschen“ (`ConsentBlockedNotice` Variante `save`, Knopf
+    „Einwilligung prüfen“) statt still zu wiederholen; der Löschknopf steht jetzt auch bei `consent_outdated`. **H5:** gelesene Pläne
+    werden mit Zod und den aktuellen Filtern erneut geprüft (Rekonstruktion + 6.6). **H7:** Der Dialog „Unverträglichkeiten
+    löschen“ nennt jetzt auch Pläne/Listen, die nur wegen Körperdaten oder Gesundheits-Check als Gesundheitsdaten
+    gelten. **H9:** archivierte bzw. nicht mehr lesbare Rezepte: ab heute wird neu geplant (`recipe_excluded`), an
+    vergangenen Tagen steht „Rezept nicht mehr verfügbar“ (`UnavailableMealRows`).
+
+**Präzisierungen (sichere Voreinstellung, bei Bedarf entscheiden):**
+
+- Plan und Einkaufsliste werden als zwei Aufrufe gespeichert; bricht der zweite ab, gleicht die App die Liste beim
+  nächsten Laden neu ab.
+- Die Körperdaten-Zeile von „morgen“ zählt auf dem Server als heute (Europe/Berlin). Liegen App und Server um
+  Mitternacht an verschiedenen Tagen, kann G-W3 in seltenen Fällen einmal ablehnen; „neu erstellen“ hilft.
+- `content-seed` spielt nur fachlich geprüfte Inhalte ein (sonst schlüge `seed_nutrition_content` für das ganze Paket
+  fehl); ohne Fachprüfung bleibt die App im Leer-Zustand.
+- `checkedAtSeed` ist eher strenger als im Repo (die Ausnahmeliste der R18-Pflichtregeln fehlt in der App): ein
+  Lebensmittel mit eingecheckter Ausnahme würde in der App aussortiert – dann Claude Bescheid geben.
+- Ernährungs-Zwischenspeicher: Tagebuch-Fenster wie beim Training (`LOG_CACHE_WEEKS`).
+
+**Gegenproben (Regel absichtlich gebrochen → Test rot → zurückgesetzt):** `MEAL_PLAN_RETENTION_WEEKS = 5` → 2 rot
+(Core-Löschfrist, db-sync); divers mit weiblichem Offset → 3 rot (Eigenschaftstest gegen `bmrForFloor`, Grenzfälle,
+Core = pgTAP-Werte); `reconstructedMode` immer aktueller Modus → rot („Modus aus day_status“); Schlüssel trotz
+Moduswechsel normal → rot; SQL ohne G-W3-Block → 8 pgTAP-Tests rot (u. a. 1.748,9 + 1 < 1.750, 16 und 95 Jahre,
+Katch); SQL ohne Löschlauf beim Speichern → 5 pgTAP-Tests rot; Abhaken mit Gesundheitsbezug als nicht sensibel →
+rot (offline über die Warteschlange); Essenspläne im normalen Zwischenspeicher → rot.
+
+**Prüfung (lokal):** `pnpm turbo run lint typecheck test --force` grün (core 4.054, mobile 638, content 434 + 6 übersprungen, web 110, ui 54, db 6 Tests);
+`pnpm format:check` grün; pgTAP im Harness (Postgres 16 + Supabase-Ersatz) **31 Dateien, 1.555 Tests grün** (neu: `33`
+mit 41 Tests; `pg_cron` gibt es im Harness nicht – geprüft wird, dass die Migration dann ohne Fehler durchläuft); mobile
+e2e (Chromium aus `/opt/pw-browsers`, Testmodus): alle 101 grün, 2 übersprungen.
+
+**Offen für die Gründer (N7 Teil 2):**
+
+- **G-N7-4 (neu):** Vor dem Livegang eine neue Fassung des `health_data`-Einwilligungstexts, die Essenspläne,
+  Ernährungstagebuch und die 4-Wochen-Frist nennt (juristisch prüfen) – bis dahin gilt der bisherige Text.
+- **G-N7-3:** Fachprüfung (wer, bis wann) – bis dahin zeigt die App den Leer-Zustand.
+- **G-N7-5 (neu, E1 H4):** Soll der Server „Gegessen“ aus dem Plan gegen den gespeicherten Plan prüfen? _Jetzt:
+  nicht umgesetzt; der Server rechnet die Werte nach (E1-G4), prüft aber nicht, ob die Mahlzeit im Plan stand._
+- `pg_cron` auf dem echten Supabase prüfen (HANDY-ANLEITUNG 7d, Schritt 8); ohne Job greift die Frist nur beim
+  Speichern.
+- Weiter offen: Zitat-/Wertprüfung (N1 K6), Live-Test mit zwei Geräten (HANDY-ANLEITUNG Teil 8, neue Punkte 16–20).
 
 ### N8 – KI-Rezepte offline + Anbieterwechsel auf Google Gemini (umgesetzt, 15.10.2026, ohne Commit)
 

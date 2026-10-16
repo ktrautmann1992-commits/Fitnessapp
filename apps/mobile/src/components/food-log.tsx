@@ -25,6 +25,7 @@ import {
   portionText,
 } from '@/lib/food-log-format';
 import { useThemeColors } from '@/lib/theme';
+import { useApp } from '@/state/app-state';
 import type { FoodLogActions, FoodLogDayView } from '@/state/use-food-log';
 
 /**
@@ -153,6 +154,7 @@ export function FoodLogDaySection({
   return (
     <View style={styles.section} testID="food-log">
       {header}
+      <NutritionSyncNotice />
       {view.entries.length === 0 ? (
         <Body muted testID="food-log-empty">
           {editable ? `${t.foodLog.empty} ${t.foodLog.emptyHint}` : t.foodLog.empty}
@@ -338,3 +340,64 @@ const styles = StyleSheet.create({
   actions: { flexDirection: 'row', gap: spacing.sm },
   action: { flex: 1 },
 });
+
+/**
+ * Ernährungs-Warteschlange (Supabase-Modus, Etappe N7 Teil 2): „wird übertragen“, im Browser nur bis zum Schließen des
+ * Tabs, und abgelehnte Fassungen (Gründer-Frage G3 aus E1: lokal behalten mit Hinweis, Verwerfen nur auf Wunsch). Im
+ * Testmodus nie sichtbar (alles sofort gespeichert). Ohne Inhalte, nur Anzahlen.
+ */
+export function NutritionSyncNotice() {
+  const app = useApp();
+  const [confirming, setConfirming] = useState(false);
+  const [busy, setBusy] = useState(false);
+  const [error, setError] = useState<string>();
+  const { queued, rejected, sessionOnly } = app.nutritionSync;
+  if (queued === 0 && rejected === 0) return null;
+  async function discard() {
+    setBusy(true);
+    setError(undefined);
+    try {
+      await app.discardRejectedNutrition();
+      setConfirming(false);
+    } catch (caught) {
+      setError(errorText(caught));
+    } finally {
+      setBusy(false);
+    }
+  }
+  return (
+    <View style={styles.section}>
+      {queued > 0 ? (
+        <Notice tone="info" testID="nutrition-sync-queued">
+          <Body>{t.foodLog.sync.queued(queued)}</Body>
+          {sessionOnly ? <Body muted>{t.foodLog.sync.sessionOnly}</Body> : null}
+        </Notice>
+      ) : null}
+      {rejected > 0 ? (
+        <Notice tone="warning" testID="nutrition-sync-rejected">
+          <Body>{t.foodLog.sync.rejected(rejected)}</Body>
+          <Button
+            label={t.foodLog.sync.discard}
+            variant="secondary"
+            onPress={() => {
+              setError(undefined);
+              setConfirming(true);
+            }}
+            testID="nutrition-sync-discard"
+          />
+        </Notice>
+      ) : null}
+      <ConfirmDialog
+        visible={confirming}
+        title={t.foodLog.sync.discardTitle}
+        message={t.foodLog.sync.discardText}
+        confirmLabel={t.foodLog.sync.discard}
+        onConfirm={() => void discard()}
+        onCancel={() => setConfirming(false)}
+        loading={busy}
+        error={error}
+        testID="dialog-nutrition-sync-discard"
+      />
+    </View>
+  );
+}

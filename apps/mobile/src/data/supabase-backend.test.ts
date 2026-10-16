@@ -369,11 +369,26 @@ describe('Supabase-Modus: Speichern', () => {
     expect(offline.pendingChanges()).toBe(0);
   });
 
-  it('Ernährungs-Bildschirme im Supabase-Modus erst mit N7 Teil 2: kein Schritt nutrition_setup, kein Bestand (R2-S3)', async () => {
-    const { client } = fakeClient();
+  it('Ernährung im Supabase-Modus seit N7 Teil 2: Schritt nutrition_setup, Bestand aus der Datenbank (R2-S3)', async () => {
+    const { client, calls } = fakeClient(() => ({ data: [] }));
     const backend = createSupabaseBackend(options(client));
-    expect(backend.supportsNutrition).toBe(false);
-    expect(await backend.loadNutritionLibrary({ demo: true })).toBeNull();
+    expect(backend.supportsNutrition).toBe(true);
+    const result = await backend.loadNutritionLibrary({ demo: true });
+    // Ohne freigegebene Inhalte (Fachprüfung offen, G-N7-3): leerer Bestand mit klarem Leer-Zustand, nie Beispiele.
+    expect(result).toMatchObject({ demo: false, demoAvailable: false, awaitingReview: true });
+    expect(result?.library.recipes).toEqual([]);
+    for (const table of [
+      'foods',
+      'recipes',
+      'ingredient_substitutions',
+      'food_package_sizes',
+      'meal_prep_plans',
+      'guides',
+    ]) {
+      const call = calls.find((c) => c.table === table);
+      expect(call?.chain, table).toEqual(['select', 'eq']);
+      expect(call?.args[1], table).toEqual(['status', 'published']);
+    }
   });
 
   it('N7: Bewertung speichern (Upsert je Rezept), zurücknehmen (Löschen), alle löschen – nur eigene Zeilen', async () => {
@@ -564,7 +579,7 @@ describe('Supabase-Modus: Speichern', () => {
     await expect(empty.loadConsentDocuments()).rejects.toMatchObject({ code: 'network' });
   });
 
-  it('Wächter N7 S1: Tabellen/Funktion vor db-migrate fehlen → Anmeldung läuft weiter, Löschen fällt zurück', async () => {
+  it('Wächter N7 S1: Tabellen/Funktion vor db-migrate fehlen → Anmeldung läuft weiter, Löschen meldet „gerade nicht möglich“', async () => {
     expect(isMissingRelation({ code: 'PGRST205' })).toBe(true);
     expect(isMissingRelation({ code: '42P01' })).toBe(true);
     expect(isMissingRelation({ code: '42501' })).toBe(false);
@@ -586,9 +601,15 @@ describe('Supabase-Modus: Speichern', () => {
     expect(result.offline).toBe(false);
     expect(result.rows.recipeRatings).toEqual([]);
     expect(result.rows.foodDislikes).toEqual([]);
-    await backend.deleteStoredIntolerances();
-    const fallback = calls.find((c) => c.table === 'food_preferences' && c.chain[0] === 'delete');
-    expect(fallback?.args).toEqual([[], ['user_id', USER_ID], ['kind', 'intolerance']]);
+    // N7 Teil 2 Nr. 7: kein Rückfall mehr auf das direkte Löschen (dabei blieben Pläne mit Gesundheitsbezug stehen) –
+    // klarer Fehler „Löschen gerade nicht möglich“, nichts halb gelöscht.
+    await expect(backend.deleteStoredIntolerances()).rejects.toMatchObject({
+      code: 'delete_unavailable',
+      sensitive: true,
+    });
+    expect(calls.some((c) => c.table === 'food_preferences' && c.chain[0] === 'delete')).toBe(
+      false,
+    );
     // Andere Fehler bleiben Fehler (kein stilles Verschlucken).
     const broken = fakeClient((call) =>
       call.table === 'recipe_ratings' ? { error: { code: '42501', message: 'denied' } } : {},

@@ -1,7 +1,17 @@
 import {
   addDays,
   buildDataExportFile,
+  customMealPayloadSchema,
+  customMealSaveResultSchema,
   evaluateHealthScreening,
+  type FoodLogEntry,
+  foodLogPayloadEntrySchema,
+  foodLogSaveResponseSchema,
+  type MealPlanWeek,
+  mealPlanRetentionStart,
+  type StoredShoppingList,
+  toMealPlanPayload,
+  toShoppingListPayload,
   foodGroupSchema,
   HEALTH_PLAN_CACHE_MAX_AGE_DAYS,
   healthScreeningAnswersSchema,
@@ -11,6 +21,7 @@ import {
   LOG_CACHE_WEEKS,
   nutritionSetupColumnsSchema,
   type ConsentType,
+  type NutritionLibrary,
   type PlanLibrary,
   type PlanSafetyRules,
   type SessionLogPayload,
@@ -55,6 +66,49 @@ import {
   type SaveLogResponse,
 } from './log-queue';
 import { createMemoryProtectedStore, type ProtectedStore } from './protected-store';
+import { healthConsentStatus } from '../state/flow';
+import { applyFavoriteChange, applyFoodLogDelete, checkFoodLogSave } from './food-log-rows';
+import { applyCustomMealDelete, checkCustomMealSave } from './custom-meal-rows';
+import {
+  applyCookDayStart,
+  applyMealPlanSave,
+  applyShoppingListSave,
+  checkMealPlanSave,
+  checkShoppingListSave,
+  storedMealPlanRow,
+  storedShoppingListRow,
+} from './meal-plan-rows';
+import {
+  applyNutritionQueue,
+  checkedOnlyChanges,
+  customMealRowsFromDb,
+  type DbContentRow,
+  type DbMealPlan,
+  type DbMealPlanItem,
+  type DbNutritionContent,
+  type DbShoppingList,
+  type DbShoppingListItem,
+  EMPTY_NUTRITION_ROWS,
+  foodLogFavoriteRowsFromDb,
+  foodLogRowsFromDb,
+  ForeignNutritionQueueError,
+  fullPlansOf,
+  mealPlanPayloadInputs,
+  mealPlanRowsFromDb,
+  NUTRITION_CONTENT_TABLES,
+  nutritionLibraryFromDb,
+  NutritionQueue,
+  type NutritionQueueOp,
+  type NutritionRejectReason,
+  nutritionQueueKey,
+  type NutritionRows,
+  nutritionRowsOf,
+  type NutritionSendResult,
+  readNutritionCache,
+  shoppingListRowsFromDb,
+  withPreservedPastItems,
+  writeNutritionCache,
+} from './nutrition-sync';
 import {
   applyFoodDislikes,
   applyRecipeRatings,
@@ -313,6 +367,8 @@ function chunks<T>(items: readonly T[], size: number): T[][] {
 
 /** Update ohne betroffene Zeile (Einheit gibt es nicht mehr, z. B. Plan ersetzt) – vom Server abgelehnt. */
 const PLAN_ROW_MISSING = { code: 'plan_row_missing', message: 'Einheit nicht gefunden.' };
+/** Abhaken eines Eintrags, den es nicht mehr gibt (Liste ersetzt) – vom Server abgelehnt. */
+const SHOPPING_ITEM_MISSING = { code: 'shopping_item_missing', message: 'Eintrag nicht gefunden.' };
 /** nutrition_setup ohne Zeile in nutrition_prefs (Schritt „nutrition“ fehlt) – abgelehnt statt ins Leere. */
 const NUTRITION_PREFS_MISSING = {
   code: 'nutrition_prefs_missing',
@@ -544,12 +600,132 @@ export async function executeWriteOp(
         }),
       );
       return;
+    // Etappe N7 Teil 2: Abhaken direkt über die Spalte `checked` (Update-Recht nur auf diese Spalte, RLS).
+    case 'set_shopping_item_checked': {
+      const result = await client
+        .from('shopping_list_items')
+        .update({ checked: op.checked })
+        .eq('list_id', op.listId)
+        .eq('item_key', op.itemKey)
+        .eq('user_id', userId)
+        .select('item_key');
+      check(result);
+      if (!result.data || result.data.length === 0) throw SHOPPING_ITEM_MISSING;
+      return;
+    }
+    // Kochtag-Start (Update-Recht nur auf die Merker und diese Spalte; CHECK: nur mit Meal-Prep-Plan).
+    case 'set_cook_day_start': {
+      const result = await client
+        .from('meal_plans')
+        .update({ cook_day_started_at: op.startedAt })
+        .eq('id', op.planId)
+        .eq('user_id', userId)
+        .select('id');
+      check(result);
+      if (!result.data || result.data.length === 0) throw PLAN_ROW_MISSING;
+      return;
+    }
+    // Favoriten direkt per PostgREST (RLS: eigene Zeilen; Schnell-Favoriten nur mit Einwilligung; Titel per Trigger).
+    case 'upsert_food_log_favorite': {
+      // created_at setzt die Datenbank selbst.
+      const row: Partial<typeof op.row> = { ...op.row };
+      delete row.created_at;
+      check(
+        await client
+          .from('food_log_favorites')
+          .upsert({ ...row, user_id: userId } as typeof op.row, { onConflict: 'user_id,fav_key' }),
+      );
+      return;
+    }
+    case 'delete_food_log_favorite':
+      check(
+        await client
+          .from('food_log_favorites')
+          .delete()
+          .eq('user_id', userId)
+          .eq('fav_key', op.favKey),
+      );
+      return;
   }
 }
 
 function toJson<T>(value: T): Json {
   return value as unknown as Json;
 }
+
+/** Einwilligung fehlt: 42501 mit „Einwilligung“ in der festen Meldung der Funktion (ohne Werte). */
+function isConsentError(error: unknown): boolean {
+  const e = (error ?? {}) as ErrorLike;
+  return e.code === '42501' && /einwilligung/i.test(e.message ?? '');
+}
+
+/**
+ * Fehler beim Speichern von Essensplan bzw. Einkaufsliste (Etappe N7 Teil 2) – immer „sensibel“ (Gesundheitsbezug
+ * möglich), nie mit Werten: Einwilligung fehlt → `consent_required` (Wächter N7 H3: die App zeigt dazu den klaren
+ * Zustand), Netz/Sitzung wie sonst, vorübergehend → `temporary`, alles andere (Form, Rezept nicht freigegeben, Filter,
+ * G-W3 Grundumsatz) → `plan_rejected`.
+ */
+export function toMealPlanSaveError(error: unknown): BackendError {
+  if (error instanceof BackendError) return error;
+  const e = (error ?? {}) as ErrorLike;
+  const db = e.code ?? '';
+  if (isConsentError(error)) {
+    return new BackendError('consent_required', { sensitive: true, cause: error });
+  }
+  const code = /^5[37]/.test(db) ? 'unknown' : classifySupabaseError(error, true);
+  if (code === 'network' || code === 'not_signed_in') {
+    return new BackendError(code, { sensitive: true, cause: error });
+  }
+  if (
+    code === 'rate_limited' ||
+    /^5[37]/.test(db) ||
+    db === '40P01' ||
+    db === '40001' ||
+    (e.status !== undefined && e.status >= 500)
+  ) {
+    return new BackendError('temporary', { sensitive: true, cause: error });
+  }
+  return new BackendError('plan_rejected', { sensitive: true, cause: error });
+}
+
+/** Ergebnis eines gesendeten Ernährungs-Vorgangs (Tagebuch, eigene Gerichte) aus einem Fehler – ohne Werte. */
+export function nutritionSendErrorResult(error: unknown): NutritionSendResult {
+  if (isConsentError(error)) return { kind: 'rejected', reason: 'consent_required' };
+  const kind = classifyLogError(error);
+  if (kind === 'retry') return { kind: 'retry' };
+  if (kind === 'transient') return { kind: 'transient' };
+  return { kind: 'rejected', reason: 'invalid' };
+}
+
+/** Grund einer Ablehnung → fester Fehler-Code für den Bildschirm (Tagebuch bzw. eigene Gerichte). */
+function foodLogRejectCode(reason: NutritionRejectReason): BackendErrorCode {
+  if (reason === 'consent_required') return 'consent_required';
+  if (reason === 'out_of_range') return 'food_log_out_of_range';
+  if (reason === 'day_full') return 'food_log_day_full';
+  return 'food_log_rejected';
+}
+
+function customMealRejectCode(reason: NutritionRejectReason): BackendErrorCode {
+  if (reason === 'consent_required') return 'consent_required';
+  if (reason === 'limit') return 'custom_meal_limit';
+  return 'custom_meal_rejected';
+}
+
+/** Spalten von meal_plan_items, die die App liest (= Felder der Payload). */
+const MEAL_PLAN_ITEM_COLUMNS =
+  'plan_id, date, slot, role, recipe_id, recipe_version, title_de, factor, kcal, protein_g, carbs_g, fat_g, ' +
+  'substitutions, omitted_optional, ingredient_swaps, is_fill, prep_kind, cook_date, storage, meal_prep_plan_id, ' +
+  'day_status';
+
+/** Leerer Bestand (Tabellen fehlen noch bzw. offline ohne Zwischenspeicher). */
+const EMPTY_NUTRITION_CONTENT: DbNutritionContent = {
+  foods: [],
+  recipes: [],
+  ingredient_substitutions: [],
+  food_package_sizes: [],
+  meal_prep_plans: [],
+  guides: [],
+};
 
 interface RowsCache {
   userId: string;
@@ -583,6 +759,12 @@ export interface SupabaseBackendOptions {
   workoutDraftStore?: ProtectedStore;
   logQueueStore?: ProtectedStore;
   logCacheStore?: ProtectedStore;
+  /**
+   * Etappe N7 Teil 2: geschützte Speicher für die Ernährungs-Zeilen (vollständige Essenspläne, Listen, Tagebuch, eigene
+   * Gerichte, Favoriten) und die Ernährungs-Warteschlange. Standard (Tests): nur Arbeitsspeicher.
+   */
+  nutritionCacheStore?: ProtectedStore;
+  nutritionQueueStore?: ProtectedStore;
 }
 
 /** Inhalt des geschützten Tagebuch-Zwischenspeichers (4.6). */
@@ -598,6 +780,7 @@ export function createSupabaseBackend(options: SupabaseBackendOptions): Backend 
   const protectedStore = options.protectedStore ?? createMemoryProtectedStore();
   const logCacheStore = options.logCacheStore ?? createMemoryProtectedStore();
   const drafts = new DraftStore(options.workoutDraftStore ?? createMemoryProtectedStore());
+  const nutritionCacheStore = options.nutritionCacheStore ?? createMemoryProtectedStore();
   let currentUserId: string | null = null;
   /** Zuletzt geladene Einwilligungs-Versionen (für die wirksamen Sicherheitsregeln im Zwischenspeicher). */
   let versions: ConsentVersions | null = null;
@@ -688,6 +871,82 @@ export function createSupabaseBackend(options: SupabaseBackendOptions): Backend 
   });
 
   /**
+   * Ernährungs-Warteschlange (Etappe N7 Teil 2): Tagebuch-Einträge und eigene Gerichte sind (vorsorglich)
+   * Gesundheitsdaten – deshalb NICHT die normale SyncQueue, sondern verschlüsselt im geschützten Speicher
+   * `nutritionQueue` (Browser: sessionStorage). Offline möglich; abgelehnte Fassungen bleiben lokal mit Hinweis
+   * (Gründer-Frage G3 aus E1), nie still verwerfen. Meldungen nur mit der Art, nie mit Inhalten.
+   */
+  const nutritionQueue = new NutritionQueue({
+    store: options.nutritionQueueStore ?? createMemoryProtectedStore(),
+    send: (op) => sendNutritionOp(op),
+    currentUserId: () => currentUserId,
+  });
+
+  async function sendNutritionOp(op: NutritionQueueOp): Promise<NutritionSendResult> {
+    switch (op.kind) {
+      case 'food_log_save': {
+        const payload = foodLogPayloadEntrySchema.safeParse({
+          ...op.entry,
+          write_id: op.writeId,
+          base_revision: op.baseRevision,
+        });
+        if (!payload.success) return { kind: 'rejected', reason: 'invalid' };
+        const { data, error, status } = await client.rpc('save_food_log_entries', {
+          p_entries: toJson([payload.data]),
+        });
+        if (error) return nutritionSendErrorResult({ ...error, status });
+        const parsed = foodLogSaveResponseSchema.safeParse(data);
+        const first = parsed.success ? parsed.data[0] : undefined;
+        if (first === undefined) return { kind: 'transient' };
+        if (first.result === 'saved') return { kind: 'done' };
+        if (first.result === 'conflict') return { kind: 'rejected', reason: 'conflict' };
+        return {
+          kind: 'rejected',
+          reason:
+            first.code === 'out_of_range'
+              ? 'out_of_range'
+              : first.code === 'day_full'
+                ? 'day_full'
+                : 'invalid',
+        };
+      }
+      case 'food_log_delete': {
+        const { data, error, status } = await client.rpc('delete_food_log_entry', {
+          p_id: op.id,
+          p_base_revision: op.baseRevision,
+        });
+        if (error) return nutritionSendErrorResult({ ...error, status });
+        const result = (data as { result?: unknown } | null)?.result;
+        if (result === 'ok') return { kind: 'done' };
+        if (result === 'conflict') return { kind: 'rejected', reason: 'conflict' };
+        return { kind: 'transient' };
+      }
+      case 'custom_meal_save': {
+        const payload = customMealPayloadSchema.safeParse({
+          ...op.meal,
+          write_id: op.writeId,
+          base_revision: op.baseRevision,
+        });
+        if (!payload.success) return { kind: 'rejected', reason: 'invalid' };
+        const { data, error, status } = await client.rpc('save_custom_meal', {
+          p_meal: toJson(payload.data),
+        });
+        if (error) return nutritionSendErrorResult({ ...error, status });
+        const parsed = customMealSaveResultSchema.safeParse(data);
+        if (!parsed.success) return { kind: 'transient' };
+        if (parsed.data.result === 'saved') return { kind: 'done' };
+        if (parsed.data.result === 'conflict') return { kind: 'rejected', reason: 'conflict' };
+        return { kind: 'rejected', reason: parsed.data.code === 'limit' ? 'limit' : 'invalid' };
+      }
+      case 'custom_meal_delete': {
+        const { error, status } = await client.rpc('delete_custom_meal', { p_id: op.id });
+        if (error) return nutritionSendErrorResult({ ...error, status });
+        return { kind: 'done' };
+      }
+    }
+  }
+
+  /**
    * Bereinigung nach einem Widerruf auf einem ANDEREN Gerät bzw. nach H-c (R3, S1): Liegen Warteschlangen-Einträge
    * ODER Entwürfe aus Plänen mit Gesundheits-Check auf dem Gerät und ist die Einwilligung health_data nicht (mehr)
    * gültig, werden beide neutralisiert. false = offline (später erneut).
@@ -722,13 +981,15 @@ export function createSupabaseBackend(options: SupabaseBackendOptions): Backend 
     // 'blocked' = einzelne Einträge warten auf ihren nächsten Versuch (N1) – die Verbindung steht, also hängt
     // close_missed_sessions nicht dahinter (skipped → completed bleibt erlaubt, W8).
     if (logResult !== 'done' && logResult !== 'blocked') return false;
+    // Ernährungs-Warteschlange (N7 Teil 2): Tagebuch und eigene Gerichte.
+    const nutritionDone = (await nutritionQueue.flush().catch(() => 'later' as const)) === 'done';
     try {
       const { error } = await client.rpc('close_missed_sessions');
       if (error && isTransientError(error)) return false;
     } catch {
       // Nur Statuspflege – beim nächsten Laden erneut.
     }
-    return logResult === 'done';
+    return logResult === 'done' && nutritionDone;
   }
 
   function applyContext(): ApplyContext {
@@ -818,6 +1079,14 @@ export function createSupabaseBackend(options: SupabaseBackendOptions): Backend 
     const split = cacheableRows(rows, { allowHealthPlanCache: true });
     // Tagebuch nur im eigenen geschützten Speicher (S4); nie im normalen rowsCache.
     await logCacheStore.write(JSON.stringify({ userId, logs: split.logs } satisfies LogCache));
+    // Ernährungs-Zeilen (N7 Teil 2) nur im eigenen geschützten Speicher – samt vollständiger Essenspläne (damit die
+    // Zeilen der Datenbank beim nächsten Laden wieder dem Plan der Engine zugeordnet werden, G-N7-1).
+    await writeNutritionCache(
+      nutritionCacheStore,
+      userId,
+      nutritionRowsOf(displayRows),
+      options.now(),
+    );
     await writeJson(store, STORAGE_KEYS.rowsCache, {
       userId,
       rows: split.rows,
@@ -995,6 +1264,40 @@ export function createSupabaseBackend(options: SupabaseBackendOptions): Backend 
     );
   }
 
+  /**
+   * Körperdaten (Gesundheitsdaten, nur im Arbeitsspeicher): der neueste Eintrag und je Feld der neueste Eintrag mit
+   * Größe, Gewicht bzw. Körperfett (Etappe N7 Teil 2) – genau die Werte, mit denen die Engine rechnet
+   * (`latestBodyValues` je Feld) und die `save_meal_plan` für die Plausibilität der Tageskalorien liest (G-W3). Sonst
+   * fehlte z. B. eine ältere Größe, wenn der neueste Eintrag nur das Gewicht hat. Aufsteigend nach Datum (bei gleichem
+   * Datum gewinnt in der Engine die spätere Zeile).
+   */
+  async function fetchBodyMetrics(
+    userId: string,
+  ): Promise<{ data: Tables<'body_metrics'>[] | null; error: unknown }> {
+    const newest = (column?: 'height_cm' | 'weight_kg' | 'body_fat_pct') => {
+      const query = client.from('body_metrics').select('*').eq('user_id', userId);
+      return (column === undefined ? query : query.not(column, 'is', null))
+        .order('measured_on', { ascending: false })
+        .limit(1);
+    };
+    const results = await Promise.all([
+      newest(),
+      newest('height_cm'),
+      newest('weight_kg'),
+      newest('body_fat_pct'),
+    ]);
+    const failed = results.find((r) => r.error);
+    if (failed) return { data: null, error: failed.error };
+    const byDate = new Map<string, Tables<'body_metrics'>>();
+    for (const result of results) {
+      for (const row of result.data ?? []) byDate.set(row.measured_on, row);
+    }
+    return {
+      data: [...byDate.values()].sort((a, b) => a.measured_on.localeCompare(b.measured_on)),
+      error: null,
+    };
+  }
+
   /** Aktiver Plan mit Einheiten und Übungen (RLS: nur eigene Zeilen). */
   async function fetchActivePlan(userId: string): Promise<PlanRows> {
     const plan = await client
@@ -1037,13 +1340,119 @@ export function createSupabaseBackend(options: SupabaseBackendOptions): Backend 
   /** Server-Stand + noch nicht gesendete Änderungen, danach Zwischenspeicher aktualisieren. */
   async function refreshRows(userId: string): Promise<UserRows> {
     const serverRows = await fetchRows(userId);
-    const rows = applyWriteOps(
-      serverRows,
-      queue.snapshot().map((entry) => entry.op),
-      applyContext(),
+    await nutritionQueue.load();
+    const rows = withPendingNutrition(
+      applyWriteOps(
+        serverRows,
+        queue.snapshot().map((entry) => entry.op),
+        applyContext(),
+      ),
+      userId,
     );
     await writeCache(userId, rows, 'server');
     return withPendingLogs(rows, userId);
+  }
+
+  /** Noch nicht übertragene Tagebuch-Einträge/eigene Gerichte über den Stand legen (nur eigenes Konto, R5). */
+  function withPendingNutrition(rows: UserRows, userId: string): UserRows {
+    const owner = nutritionQueue.ownerUserId();
+    if (owner !== null && owner !== userId) return rows;
+    return applyNutritionQueue(rows, nutritionQueue.snapshot(), { userId, now: options.now() });
+  }
+
+  /** Vollständige Essenspläne aus dem geschützten Speicher (zum Abgleich mit den Zeilen der Datenbank). */
+  async function cachedFullPlans(userId: string): Promise<Map<string, MealPlanWeek>> {
+    const cached = await readNutritionCache(
+      nutritionCacheStore,
+      userId,
+      options.now(),
+      HEALTH_PLAN_CACHE_MAX_AGE_DAYS,
+    );
+    return cached === null ? new Map() : fullPlansOf(cached);
+  }
+
+  /**
+   * Ernährungs-Zeilen des Kontos (Etappe N7 Teil 2, RLS: nur eigene): Essenspläne und Listen innerhalb der Löschfrist
+   * (G-N7-2), Tagebuch der letzten LOG_CACHE_WEEKS Wochen, Favoriten, eigene Gerichte. Vor `db-migrate` fehlen die
+   * Tabellen ggf. noch – dann leer (G-W1, tolerant). Alles an der Grenze erneut geprüft (Zod, Wächter N7 H5).
+   */
+  async function fetchNutritionRows(userId: string): Promise<NutritionRows> {
+    const cutoff = mealPlanRetentionStart(today());
+    const [plans, lists, entries, favorites, meals] = await Promise.all([
+      client
+        .from('meal_plans')
+        .select(
+          'id, user_id, week_start, engine_version, variant, meal_prep_plan_id, inputs, uses_health_data, ' +
+            'auto_adjusted, recipes_changed, cook_day_started_at, created_at',
+        )
+        .eq('user_id', userId)
+        .gte('week_start', cutoff)
+        .then(emptyIfMissing),
+      client
+        .from('shopping_lists')
+        .select(
+          'id, user_id, week_start, from_date, to_date, plan_key, added_recipes, uses_health_data, created_at, ' +
+            'updated_at',
+        )
+        .eq('user_id', userId)
+        .gte('week_start', cutoff)
+        .then(emptyIfMissing),
+      client
+        .from('food_log_entries')
+        .select('*')
+        .eq('user_id', userId)
+        .gte('eaten_on', logWindowStart())
+        .then(emptyIfMissing),
+      client.from('food_log_favorites').select('*').eq('user_id', userId).then(emptyIfMissing),
+      client.from('custom_meals').select('*').eq('user_id', userId).then(emptyIfMissing),
+    ]);
+    for (const result of [plans, lists, entries, favorites, meals]) {
+      if (result.error) throw result.error;
+    }
+    const planRows = (plans.data ?? []) as unknown as DbMealPlan[];
+    const listRows = (lists.data ?? []) as unknown as DbShoppingList[];
+    const mealRows = (meals.data ?? []) as unknown as Record<string, unknown>[];
+    const planItems: DbMealPlanItem[] = [];
+    for (const ids of chunks(
+      planRows.map((p) => p.id),
+      IN_CHUNK,
+    )) {
+      const result = await client
+        .from('meal_plan_items')
+        .select(MEAL_PLAN_ITEM_COLUMNS)
+        .in('plan_id', ids);
+      if (result.error) throw result.error;
+      planItems.push(...((result.data ?? []) as unknown as DbMealPlanItem[]));
+    }
+    const listItems: DbShoppingListItem[] = [];
+    for (const ids of chunks(
+      listRows.map((l) => l.id),
+      IN_CHUNK,
+    )) {
+      const result = await client.from('shopping_list_items').select('*').in('list_id', ids);
+      if (result.error) throw result.error;
+      listItems.push(...((result.data ?? []) as unknown as DbShoppingListItem[]));
+    }
+    const mealItems: Record<string, unknown>[] = [];
+    for (const ids of chunks(
+      mealRows.map((m) => String(m.id)),
+      IN_CHUNK,
+    )) {
+      const result = await client.from('custom_meal_items').select('*').in('meal_id', ids);
+      if (result.error) throw result.error;
+      mealItems.push(...((result.data ?? []) as unknown as Record<string, unknown>[]));
+    }
+    return {
+      mealPlans: mealPlanRowsFromDb(planRows, planItems, await cachedFullPlans(userId), today()),
+      shoppingLists: shoppingListRowsFromDb(listRows, listItems, today()),
+      foodLogEntries: foodLogRowsFromDb(
+        (entries.data ?? []) as unknown as Record<string, unknown>[],
+      ),
+      foodLogFavorites: foodLogFavoriteRowsFromDb(
+        (favorites.data ?? []) as unknown as Record<string, unknown>[],
+      ),
+      ...customMealRowsFromDb(mealRows, mealItems),
+    };
   }
 
   async function fetchLibrary(): Promise<PlanLibrary> {
@@ -1091,13 +1500,8 @@ export function createSupabaseBackend(options: SupabaseBackendOptions): Backend 
       client.from('user_equipment').select('*').eq('user_id', userId),
       client.from('nutrition_prefs').select('*').eq('user_id', userId).maybeSingle(),
       client.from('food_preferences').select('*').eq('user_id', userId),
-      // Gesundheitsdaten: nur der jeweils neueste Eintrag, nur im Arbeitsspeicher.
-      client
-        .from('body_metrics')
-        .select('*')
-        .eq('user_id', userId)
-        .order('measured_on', { ascending: false })
-        .limit(1),
+      // Gesundheitsdaten: nur die neuesten Einträge (je Feld, wie die Engine sie nutzt), nur im Arbeitsspeicher.
+      fetchBodyMetrics(userId),
       client
         .from('body_measurements')
         .select('*')
@@ -1166,17 +1570,10 @@ export function createSupabaseBackend(options: SupabaseBackendOptions): Backend 
       startWeights: (startWeights.data ?? []) as StartWeightRow[],
       // Übungs-Präferenzen gibt es in der Datenbank erst mit Etappe T3 (supportsExercisePreferences = false).
       exercisePreferences: [],
-      // Essenspläne gibt es in der Datenbank erst mit Etappe N7 (supportsNutrition = false).
-      mealPlans: [],
-      shoppingLists: [],
       recipeRatings: (ratings.data ?? []) as RecipeRatingRow[],
       foodDislikes: (dislikes.data ?? []) as FoodDislikeRow[],
-      // Ernährungstagebuch (E1): Tabellen seit E1, in der App erst mit N7 Teil 2 (supportsNutrition = false).
-      foodLogEntries: [],
-      foodLogFavorites: [],
-      // Eigene Gerichte (E2): Tabellen seit E2, in der App erst mit N7 Teil 2 (supportsNutrition = false).
-      customMeals: [],
-      customMealItems: [],
+      // Essenspläne, Einkaufslisten, Ernährungstagebuch, Favoriten und eigene Gerichte (Etappe N7 Teil 2).
+      ...(await fetchNutritionRows(userId)),
     };
   }
 
@@ -1210,10 +1607,10 @@ export function createSupabaseBackend(options: SupabaseBackendOptions): Backend 
     mode: 'supabase',
     // Übungs-Präferenzen erst mit Etappe T3 (Tabelle exercise_preferences) – bis dahin nur „Nur heute“ (8.2).
     supportsExercisePreferences: false,
-    // Ernährungs-Bildschirme im Supabase-Modus erst mit Etappe N7 Teil 2 (Essensplan/Einkaufsliste aus der Datenbank ohne
-    // Planband, geschützter Speicher, Warteschlange; freigegebene Rezepte nach der Fachprüfung). Die Datenbank (Teil 1)
-    // steht; bis dahin auch kein Schritt nutrition_setup (R2-S3), damit nichts abgefragt wird, was noch nicht wirkt.
-    supportsNutrition: false,
+    // Ernährung im Supabase-Modus seit Etappe N7 Teil 2 (inkl. Schritt nutrition_setup, R2-S3): Essensplan/Einkaufsliste
+    // aus der Datenbank ohne Planband (Rekonstruktion im Core), Bestand aus der Datenbank (nur freigegeben und fachlich
+    // geprüft), Tagebuch und eigene Gerichte über die verschlüsselte Ernährungs-Warteschlange.
+    supportsNutrition: true,
     signIn: {
       kind: 'email_code',
       requestCode: async (email) => {
@@ -1294,8 +1691,16 @@ export function createSupabaseBackend(options: SupabaseBackendOptions): Backend 
         if (cache?.userId !== session.userId) {
           throw new BackendError('network', { cause: error });
         }
+        const nutrition =
+          (await readNutritionCache(
+            nutritionCacheStore,
+            session.userId,
+            options.now(),
+            HEALTH_PLAN_CACHE_MAX_AGE_DAYS,
+          )) ?? EMPTY_NUTRITION_ROWS;
         const cached = {
-          ...upgradeStoredRows(cache.rows),
+          // Ernährungs-Zeilen aus dem geschützten Speicher – erneut geprüft wie der Gerätespeicher (upgradeStoredRows).
+          ...upgradeStoredRows({ ...cache.rows, ...nutrition }),
           ...(await readLogCache(session.userId)),
         };
         const health = await readHealthCache(session.userId);
@@ -1308,8 +1713,9 @@ export function createSupabaseBackend(options: SupabaseBackendOptions): Backend 
             }
           : cached;
         rememberConfirmed(rows);
+        await nutritionQueue.load();
         return {
-          rows: withPendingLogs(rows, session.userId),
+          rows: withPendingNutrition(withPendingLogs(rows, session.userId), session.userId),
           offline: true,
           cachedSafetyRules: health?.safetyRules ?? null,
         };
@@ -1362,7 +1768,8 @@ export function createSupabaseBackend(options: SupabaseBackendOptions): Backend 
         versions: context.versions,
         platform: options.platform,
         now: options.now(),
-        nutritionSetupAvailable: false,
+        // Spalten von nutrition_prefs seit N7 Teil 1; der Schritt wird seit N7 Teil 2 angezeigt.
+        nutritionSetupAvailable: true,
       });
       // 1. Gesundheitsdaten und Einwilligungen sofort senden (nie auf dem Gerät speichern).
       for (const op of planned.ops.filter(isDirectOp)) {
@@ -1412,7 +1819,7 @@ export function createSupabaseBackend(options: SupabaseBackendOptions): Backend 
       currentUserId = null;
     },
 
-    pendingChanges: () => queue.size() + logQueue.size(),
+    pendingChanges: () => queue.size() + logQueue.size() + nutritionQueue.size(),
     flush: () => flushAll().catch(() => false),
 
     clearDeviceData: async () => {
@@ -1563,59 +1970,176 @@ export function createSupabaseBackend(options: SupabaseBackendOptions): Backend 
     },
     revokeHealthData: (deleteLogs, conversion) => revokeHealthData(deleteLogs, conversion),
     deleteStoredIntolerances: async () => {
-      const session = await requireSession();
-      // Etappe N7: eine Transaktion – Unverträglichkeiten UND Essenspläne/Einkaufslisten mit Gesundheitsbezug (wie im
-      // Testmodus, Wächter N3 K5). Geht ohne Einwilligung; Gesundheitsdaten → sofort, nie Warteschlange.
-      let { error } = await client.rpc('delete_stored_intolerances');
-      if (error && isMissingFunction(error)) {
-        // Wächter N7 S1: Funktion vor `db-migrate` noch nicht da – wie vor N7 nur die Unverträglichkeiten löschen
-        // (Essenspläne gibt es in der Datenbank dann ebenfalls noch nicht).
-        ({ error } = await client
-          .from('food_preferences')
-          .delete()
-          .eq('user_id', session.userId)
-          .eq('kind', 'intolerance'));
-      }
+      await requireSession();
+      // Eine Transaktion – Unverträglichkeiten UND Essenspläne/Einkaufslisten mit Gesundheitsbezug (wie im Testmodus,
+      // Wächter N3 K5). Geht ohne Einwilligung; Gesundheitsdaten → sofort, nie Warteschlange.
+      const { error } = await client.rpc('delete_stored_intolerances');
       if (error) {
+        // Etappe N7 Teil 2 Nr. 7: kein Rückfall auf direktes Löschen mehr (dabei blieben Pläne/Listen mit
+        // Gesundheitsbezug stehen). Fehlt die Funktion (App vor db-migrate), klarer Fehler – nichts halb gelöscht.
+        if (isMissingFunction(error)) {
+          throw new BackendError('delete_unavailable', { sensitive: true, cause: error });
+        }
         const code = classifySupabaseError(error, true);
         throw new BackendError(code === 'network' ? 'online_only' : code, {
           sensitive: true,
           cause: error,
         });
       }
+      // Die Datenbank hat Pläne/Listen mit Gesundheitsbezug gelöscht – der geschützte Zwischenspeicher auch.
+      await nutritionCacheStore.clear();
     },
-    // Ernährungs-Bestand aus der Datenbank erst mit Etappe N7.
-    loadNutritionLibrary: async () => null,
-    // Essenspläne in der Datenbank erst mit Etappe N7 (supportsNutrition = false) – nie still ins Leere speichern.
-    saveMealPlan: async () => {
-      throw new BackendError('unknown', { sensitive: true });
+    loadNutritionLibrary: async () => {
+      let library: NutritionLibrary;
+      try {
+        const content = await fetchNutritionContent();
+        // Nur Inhalte (keine Nutzerdaten) – für offline.
+        await writeJson(store, STORAGE_KEYS.nutritionLibrary, content);
+        library = nutritionLibraryFromDb(content);
+      } catch (error) {
+        const cached =
+          classifySupabaseError(error) === 'network'
+            ? await readJson<Partial<DbNutritionContent>>(store, STORAGE_KEYS.nutritionLibrary)
+            : null;
+        if (cached === null) throw toBackendError(error);
+        library = nutritionLibraryFromDb({ ...EMPTY_NUTRITION_CONTENT, ...cached });
+      }
+      return {
+        library,
+        demo: false,
+        demoAvailable: false,
+        // Ohne freigegebene Rezepte (Fachprüfung offen, G-N7-3) ein klarer Leer-Zustand.
+        awaitingReview: library.recipes.length === 0,
+      };
     },
-    // Einkaufslisten und Kochtag ebenfalls erst mit Etappe N7.
-    saveShoppingList: async () => {
-      throw new BackendError('unknown', { sensitive: true });
+    saveMealPlan: async (plan, saveOptions, rows) => saveMealPlanRemote(plan, saveOptions, rows),
+    saveShoppingList: async (list, rows) => saveShoppingListRemote(list, rows),
+    saveCookDayStart: async (weekStart, startedAt, rows) => {
+      const session = await requireSession();
+      const row = storedMealPlanRow(rows, weekStart);
+      if (
+        row === null ||
+        (startedAt !== null && Number.isNaN(Date.parse(startedAt))) ||
+        applyCookDayStart(rows, weekStart, startedAt) === null
+      ) {
+        throw new BackendError('plan_rejected', { sensitive: row?.uses_health_data ?? true });
+      }
+      const op: WriteOp = {
+        kind: 'set_cook_day_start',
+        planId: row.id,
+        weekStart,
+        startedAt,
+        usesHealthData: row.uses_health_data,
+      };
+      return applyNutritionWriteOp(session.userId, op, rows);
     },
-    saveCookDayStart: async () => {
-      throw new BackendError('unknown', { sensitive: true });
+    // Ernährungstagebuch (Etappe E1, N7 Teil 2): dieselben Regeln wie im Testmodus vorab (food-log-rows.ts), dann über
+    // die verschlüsselte Ernährungs-Warteschlange an save_food_log_entries. Werte nie in Meldungen oder Logs.
+    saveFoodLogEntries: async (entries, rows) => saveFoodLogRemote(entries, rows),
+    deleteFoodLogEntry: async (id, rows) => {
+      const session = await requireSession();
+      const existing = rows.foodLogEntries.find((e) => e.id === id);
+      if (existing === undefined) return rows;
+      const queued = await enqueueNutrition(
+        {
+          kind: 'food_log_delete',
+          id,
+          // revision 0 = noch nicht übertragen: die Warteschlange verwirft dann beide Vorgänge (nichts zu löschen).
+          baseRevision: Math.max(existing.revision, 1),
+        },
+        session.userId,
+      );
+      return finishNutritionWrite(
+        session.userId,
+        applyFoodLogDelete(rows, id),
+        [queued],
+        'food_log',
+      );
     },
-    // Ernährungstagebuch (Etappe E1): Tabellen und Funktionen (save_food_log_entries, delete_food_log_entry,
-    // food_log_favorites) gibt es in der Datenbank; die App schaltet sie mit N7 Teil 2 frei (supportsNutrition = false,
-    // dann mit eigener verschlüsselter Warteschlange). Bis dahin nie still ins Leere speichern.
-    saveFoodLogEntries: async () => {
-      throw new BackendError('unknown', { sensitive: true });
+    changeFoodLogFavorite: async (change, rows) => {
+      const session = await requireSession();
+      const versions = await requireVersions();
+      const next = applyFavoriteChange(rows, change, {
+        userId: session.userId,
+        now: options.now(),
+        versions,
+      });
+      if (next === null) {
+        throw new BackendError(
+          change.op === 'set' && rows.foodLogFavorites.length >= 100
+            ? 'favorite_limit'
+            : change.op === 'set' &&
+                change.favorite.source === 'quick' &&
+                healthConsentStatus(rows, versions) !== 'valid'
+              ? 'consent_required'
+              : 'unknown',
+        );
+      }
+      const saved =
+        change.op === 'set'
+          ? next.foodLogFavorites.find((f) => f.fav_key === change.favorite.fav_key)
+          : undefined;
+      const op: WriteOp =
+        change.op === 'set' && saved !== undefined
+          ? { kind: 'upsert_food_log_favorite', row: saved }
+          : {
+              kind: 'delete_food_log_favorite',
+              favKey: change.op === 'remove' ? change.favKey : change.favorite.fav_key,
+            };
+      return applyNutritionWriteOp(session.userId, op, rows);
     },
-    deleteFoodLogEntry: async () => {
-      throw new BackendError('unknown', { sensitive: true });
+    // Eigene Gerichte (Etappe E2, N7 Teil 2): Regeln wie im Testmodus vorab, dann über die Ernährungs-Warteschlange an
+    // save_custom_meal (Werte aus Zutaten rechnet der Server, die App übernimmt sie beim Neuladen). Name und Werte nie in
+    // Meldungen oder Logs.
+    saveCustomMeal: async (meal, rows) => {
+      const session = await requireSession();
+      const versions = await requireVersions();
+      const check = checkCustomMealSave(rows, meal, { versions });
+      if (!check.ok) {
+        throw new BackendError(
+          check.reason === 'consent_required'
+            ? 'consent_required'
+            : check.reason === 'limit'
+              ? 'custom_meal_limit'
+              : 'custom_meal_rejected',
+          { sensitive: true },
+        );
+      }
+      const existing = rows.customMeals.find((m) => m.id === check.meal.id);
+      const queued = await enqueueNutrition(
+        {
+          kind: 'custom_meal_save',
+          meal: check.meal,
+          writeId: options.newId(),
+          baseRevision: existing !== undefined && existing.revision > 0 ? existing.revision : null,
+        },
+        session.userId,
+      );
+      return finishNutritionWrite(session.userId, rows, [queued], 'custom_meal');
     },
-    changeFoodLogFavorite: async () => {
-      throw new BackendError('unknown');
+    deleteCustomMeal: async (id, rows) => {
+      const session = await requireSession();
+      const queued = await enqueueNutrition({ kind: 'custom_meal_delete', id }, session.userId);
+      return finishNutritionWrite(
+        session.userId,
+        applyCustomMealDelete(rows, id),
+        [queued],
+        'custom_meal',
+      );
     },
-    // Eigene Gerichte (Etappe E2): custom_meals, custom_meal_items und save_custom_meal gibt es in der Datenbank; die
-    // App schaltet sie mit N7 Teil 2 frei (wie das Tagebuch). Bis dahin nie still ins Leere speichern.
-    saveCustomMeal: async () => {
-      throw new BackendError('unknown', { sensitive: true });
+    nutritionSync: async () => {
+      await nutritionQueue.load();
+      const owner = currentUserId;
+      const own = owner !== null && nutritionQueue.ownerUserId() === owner;
+      return {
+        queued: own ? nutritionQueue.size() : 0,
+        rejected: own ? nutritionQueue.rejected().length : 0,
+        sessionOnly: nutritionQueue.storeKind === 'session',
+      };
     },
-    deleteCustomMeal: async () => {
-      throw new BackendError('unknown', { sensitive: true });
+    discardRejectedNutrition: async () => {
+      await requireSession();
+      await nutritionQueue.discardRejected();
     },
     // Bewertung nach dem Essen und „mag ich nicht“ je Lebensmittel (Etappe N7, Tabellen recipe_ratings/food_dislikes,
     // RLS: nur eigene Zeilen). Gleiche Prüfung wie im Testmodus (rating-rows.ts); nur online (kein Gesundheitsdatum,
@@ -1684,7 +2208,8 @@ export function createSupabaseBackend(options: SupabaseBackendOptions): Backend 
       return (
         (await logQueue.hasForeign(session.userId)) ||
         (await queue.hasForeign(session.userId)) ||
-        (await drafts.hasForeign(session.userId))
+        (await drafts.hasForeign(session.userId)) ||
+        (await nutritionQueue.hasForeign(session.userId))
       );
     },
     discardForeignDeviceData: async () => {
@@ -1692,6 +2217,7 @@ export function createSupabaseBackend(options: SupabaseBackendOptions): Backend 
       if (await logQueue.hasForeign(session.userId)) await logQueue.clear();
       if (await queue.hasForeign(session.userId)) await queue.clear();
       await drafts.removeWhere((d) => d.ownerUserId !== session.userId);
+      if (await nutritionQueue.hasForeign(session.userId)) await nutritionQueue.clear();
     },
 
     // --- Woche, Verlauf, Export (Etappe D) -----------------------------------------------------------------
@@ -1722,6 +2248,375 @@ export function createSupabaseBackend(options: SupabaseBackendOptions): Backend 
     },
   };
 
+  // --- Ernährung im Supabase-Modus (Etappe N7 Teil 2) ----------------------------------------------------------
+
+  /** Einwilligungs-Versionen (für die Prüfungen wie im Testmodus); ohne geladene Texte geht nichts. */
+  async function requireVersions(): Promise<ConsentVersions> {
+    const known = await knownVersions();
+    if (known === null) throw new BackendError('network');
+    return known;
+  }
+
+  /** Bestand aus der Datenbank (nur freigegebene Inhalte, RLS); fehlt eine Tabelle (vor db-migrate), leer. */
+  async function fetchNutritionContent(): Promise<DbNutritionContent> {
+    const tables = Object.keys(NUTRITION_CONTENT_TABLES) as (keyof DbNutritionContent)[];
+    const results = await Promise.all(
+      tables.map((table) =>
+        client
+          .from(table as 'foods')
+          .select('id, data')
+          .eq('status', 'published')
+          .then(emptyIfMissing),
+      ),
+    );
+    const content: DbNutritionContent = { ...EMPTY_NUTRITION_CONTENT };
+    tables.forEach((table, index) => {
+      const result = results[index];
+      if (result?.error) throw result.error;
+      content[table] = (result?.data ?? []) as unknown as DbContentRow[];
+    });
+    return content;
+  }
+
+  /**
+   * Einfacher Ernährungs-Vorgang (Abhaken, Kochtag-Start, Favorit): Mit Gesundheitsbezug sofort (nur online), sonst
+   * über die normale Warteschlange (offline möglich). Die Anzeige zeigt den neuen Stand sofort.
+   */
+  async function applyNutritionWriteOp(
+    userId: string,
+    op: WriteOp,
+    rows: UserRows,
+  ): Promise<UserRows> {
+    const next = applyWriteOps(rows, [op], displayContext());
+    if (isDirectOp(op)) {
+      try {
+        await executeWriteOp(client, userId, op);
+      } catch (error) {
+        const code = classifySupabaseError(error, true);
+        throw new BackendError(
+          code === 'network'
+            ? 'online_only'
+            : code === 'unknown' && op.kind !== 'upsert_food_log_favorite'
+              ? 'plan_rejected'
+              : code,
+          { sensitive: true, cause: error },
+        );
+      }
+      await writeCache(userId, next);
+      return next;
+    }
+    await writeCache(userId, next);
+    await queue.add([op]);
+    void queue.flush();
+    return next;
+  }
+
+  /**
+   * In die verschlüsselte Ernährungs-Warteschlange legen. Ist der geschützte Speicher nicht beschreibbar (z. B. privates
+   * Browser-Fenster), wird sofort gesendet – klappt das nicht, Fehler `storage_unavailable` (nie still verloren).
+   */
+  async function enqueueNutrition(
+    op: NutritionQueueOp,
+    userId: string,
+  ): Promise<{ key: string; sentDirectly: NutritionSendResult | null }> {
+    const key = nutritionQueueKey(op);
+    try {
+      await nutritionQueue.add(op, userId);
+      return { key, sentDirectly: null };
+    } catch (error) {
+      if (error instanceof ForeignNutritionQueueError) throw new BackendError('foreign_data');
+      const result = await sendNutritionOp(op).catch((): NutritionSendResult => ({
+        kind: 'retry',
+      }));
+      if (result.kind === 'retry' || result.kind === 'transient') {
+        throw new BackendError('storage_unavailable', { sensitive: true });
+      }
+      return { key, sentDirectly: result };
+    }
+  }
+
+  /**
+   * Nach dem Einreihen senden und das Ergebnis GENAU dieser Vorgänge melden: abgelehnt → Fehler-Code ohne Werte (die
+   * Person erfährt es sofort, deshalb nicht zusätzlich als Hinweis behalten); gespeichert → Werte und Revisionen vom
+   * Server übernehmen (E1/E2: „Server rechnet nach“); offline → lokal mit „wird übertragen“.
+   */
+  async function finishNutritionWrite(
+    userId: string,
+    displayRows: UserRows,
+    queued: { key: string; sentDirectly: NutritionSendResult | null }[],
+    area: 'food_log' | 'custom_meal',
+  ): Promise<UserRows> {
+    const fromQueue = queued.filter((q) => q.sentDirectly === null).map((q) => q.key);
+    for (const key of fromQueue) nutritionQueue.lastResults.delete(key);
+    if (fromQueue.length > 0) await nutritionQueue.flush().catch(() => 'later');
+    const results = queued.map((q) => q.sentDirectly ?? nutritionQueue.lastResults.get(q.key));
+    let rejection: NutritionRejectReason | null = null;
+    for (const [index, result] of results.entries()) {
+      if (result?.kind !== 'rejected') continue;
+      const entry = queued[index];
+      if (entry !== undefined && entry.sentDirectly === null) {
+        await nutritionQueue.takeRejected(entry.key);
+      }
+      rejection ??= result.reason;
+    }
+    let next = withPendingNutrition(displayRows, userId);
+    if (results.some((r) => r?.kind === 'done' || r?.kind === 'rejected')) {
+      try {
+        const fresh = await fetchNutritionRows(userId);
+        next = withPendingNutrition(
+          {
+            ...displayRows,
+            foodLogEntries: fresh.foodLogEntries,
+            foodLogFavorites: fresh.foodLogFavorites,
+            customMeals: fresh.customMeals,
+            customMealItems: fresh.customMealItems,
+          },
+          userId,
+        );
+      } catch {
+        // Neu laden gescheitert – der lokale Stand bleibt bis zum nächsten Laden.
+      }
+    }
+    await writeCache(userId, next);
+    if (rejection !== null) {
+      throw new BackendError(
+        area === 'food_log' ? foodLogRejectCode(rejection) : customMealRejectCode(rejection),
+        { sensitive: true },
+      );
+    }
+    return next;
+  }
+
+  async function saveFoodLogRemote(
+    entries: readonly FoodLogEntry[],
+    rows: UserRows,
+  ): Promise<UserRows> {
+    const session = await requireSession();
+    const versions = await requireVersions();
+    const check = checkFoodLogSave(rows, entries, { today: today(), versions });
+    if (!check.ok) {
+      throw new BackendError(
+        check.reason === 'consent_required' ? 'consent_required' : 'food_log_rejected',
+        { sensitive: true },
+      );
+    }
+    const queued: { key: string; sentDirectly: NutritionSendResult | null }[] = [];
+    for (const outcome of check.outcomes) {
+      if (outcome.kind !== 'saved') continue;
+      const existing = rows.foodLogEntries.find((e) => e.id === outcome.entry.id);
+      queued.push(
+        await enqueueNutrition(
+          {
+            kind: 'food_log_save',
+            entry: outcome.entry,
+            writeId: options.newId(),
+            baseRevision:
+              existing !== undefined && existing.revision > 0 ? existing.revision : null,
+          },
+          session.userId,
+        ),
+      );
+    }
+    const next =
+      queued.length === 0
+        ? rows
+        : await finishNutritionWrite(session.userId, rows, queued, 'food_log');
+    // Wie der Server: gültige Einträge gelten, ein ungültiger wird danach gemeldet (Wächter E1 S2).
+    const failed = check.outcomes.find((o) => o.kind !== 'saved');
+    if (failed) {
+      throw new BackendError(
+        failed.kind === 'rejected' && failed.code === 'out_of_range'
+          ? 'food_log_out_of_range'
+          : failed.kind === 'rejected' && failed.code === 'day_full'
+            ? 'food_log_day_full'
+            : 'food_log_rejected',
+        { sensitive: true },
+      );
+    }
+    return next;
+  }
+
+  /**
+   * Essensplan speichern (Etappe N7 Teil 2): dieselben Prüfungen wie im Testmodus vorab (Zod, Woche, Einwilligung),
+   * dann `save_meal_plan` (prüft alles erneut, G-W3, Löschfrist). Braucht Verbindung – angezeigt wird schon vorher der
+   * richtige Plan, das Speichern wird beim nächsten Öffnen bzw. mit „Erneut versuchen“ wiederholt.
+   */
+  async function saveMealPlanRemote(
+    plan: MealPlanWeek,
+    saveOptions: {
+      autoAdjusted: boolean;
+      recipesChanged?: boolean;
+      shoppingList?: StoredShoppingList | undefined;
+    },
+    rows: UserRows,
+  ): Promise<UserRows> {
+    const session = await requireSession();
+    const versions = await requireVersions();
+    const ctx = { today: today(), rows, versions };
+    const check = checkMealPlanSave(plan, ctx);
+    const listCheck =
+      saveOptions.shoppingList === undefined
+        ? null
+        : checkShoppingListSave(saveOptions.shoppingList, ctx);
+    const failed = !check.ok ? check : listCheck !== null && !listCheck.ok ? listCheck : null;
+    if (failed !== null) {
+      throw new BackendError(
+        failed.reason === 'consent_required' ? 'consent_required' : 'plan_rejected',
+        { sensitive: true },
+      );
+    }
+    if (
+      !check.ok ||
+      (listCheck?.ok === true && listCheck.list.weekStart !== check.plan.weekStart)
+    ) {
+      throw new BackendError('plan_rejected', { sensitive: true });
+    }
+    const inputs = mealPlanPayloadInputs(rows);
+    if (inputs === null) throw new BackendError('plan_rejected', { sensitive: true });
+    let payload: ReturnType<typeof toMealPlanPayload>;
+    try {
+      payload = toMealPlanPayload(check.plan, inputs);
+    } catch {
+      throw new BackendError('plan_rejected', { sensitive: true });
+    }
+    const stored = storedMealPlanRow(rows, check.plan.weekStart);
+    // Wächter N7 H9: vergangene Mahlzeiten mit archiviertem Rezept unverändert behalten.
+    payload = withPreservedPastItems(payload, stored?.record, today());
+    // Wächter N7 H3 / N5a K-c: Ohne gültige Einwilligung wird ein gespeicherter Plan mit Gesundheitsbezug dieser Woche
+    // nicht weiterverwendet, sondern durch einen Plan ohne Gesundheitsdaten ersetzt (wie im Testmodus). Der Server
+    // würde sonst die übernommenen vergangenen Tage als Gesundheitsbezug werten und „Einwilligung fehlt“ melden.
+    if (stored?.uses_health_data === true && healthConsentStatus(rows, versions) !== 'valid') {
+      const removed = await client
+        .from('meal_plans')
+        .delete()
+        .eq('user_id', session.userId)
+        .eq('id', stored.id);
+      if (removed.error) throw toMealPlanSaveError(removed.error);
+    }
+    const saved = await client.rpc('save_meal_plan', {
+      p_plan: toJson(payload),
+      p_auto_adjusted: saveOptions.autoAdjusted,
+      p_recipes_changed: saveOptions.recipesChanged ?? false,
+    });
+    if (saved.error) throw toMealPlanSaveError({ ...saved.error, status: saved.status });
+    const planId = String(saved.data);
+    const planUses = await serverUsesHealthData('meal_plans', planId, true);
+    let next = applyMealPlanSave(rows, check.plan, {
+      id: planId,
+      userId: session.userId,
+      now: options.now(),
+      autoAdjusted: saveOptions.autoAdjusted,
+      recipesChanged: saveOptions.recipesChanged ?? false,
+    });
+    next = {
+      ...next,
+      mealPlans: next.mealPlans.map((row) =>
+        row.id === planId
+          ? {
+              ...row,
+              uses_health_data: planUses || row.uses_health_data,
+              record: { usesHealthData: planUses || row.uses_health_data, payload },
+            }
+          : row,
+      ),
+    };
+    // Plan und Einkaufsliste (R2-S4, W22): zwei Funktionen, die Liste direkt danach. Scheitert sie, ist der Plan
+    // gespeichert – die Liste wird beim nächsten Öffnen wieder an den Plan angepasst.
+    if (listCheck?.ok === true) {
+      try {
+        next = await replaceShoppingListRemote(session.userId, listCheck.list, next);
+      } catch (error) {
+        await writeCache(session.userId, next);
+        throw error;
+      }
+    }
+    await writeCache(session.userId, next);
+    return next;
+  }
+
+  /** Gesundheitsbezug eines eben gespeicherten Plans bzw. einer Liste (setzt der Server); im Zweifel `fallback`. */
+  async function serverUsesHealthData(
+    table: 'meal_plans' | 'shopping_lists',
+    id: string,
+    fallback: boolean,
+  ): Promise<boolean> {
+    const { data, error } = await client
+      .from(table)
+      .select('uses_health_data')
+      .eq('id', id)
+      .maybeSingle();
+    return error || data === null ? fallback : data.uses_health_data;
+  }
+
+  async function replaceShoppingListRemote(
+    userId: string,
+    list: StoredShoppingList,
+    rows: UserRows,
+  ): Promise<UserRows> {
+    let payload: ReturnType<typeof toShoppingListPayload>;
+    try {
+      payload = toShoppingListPayload(list);
+    } catch {
+      throw new BackendError('plan_rejected', { sensitive: true });
+    }
+    const saved = await client.rpc('replace_shopping_list', { p_list: toJson(payload) });
+    if (saved.error) throw toMealPlanSaveError({ ...saved.error, status: saved.status });
+    const listId = String(saved.data);
+    const uses = await serverUsesHealthData('shopping_lists', listId, true);
+    const next = applyShoppingListSave(rows, list, { id: listId, userId, now: options.now() });
+    return {
+      ...next,
+      shoppingLists: next.shoppingLists.map((row) =>
+        row.id === listId
+          ? { ...row, id: listId, uses_health_data: uses || row.uses_health_data }
+          : row,
+      ),
+    };
+  }
+
+  /**
+   * Einkaufsliste speichern (Etappe N5b/N7 Teil 2): Ändern sich nur Häkchen, gehen sie direkt an die Spalte `checked`
+   * (ohne Gesundheitsbezug offline über die Warteschlange); sonst `replace_shopping_list`.
+   */
+  async function saveShoppingListRemote(
+    list: StoredShoppingList,
+    rows: UserRows,
+  ): Promise<UserRows> {
+    const session = await requireSession();
+    const versions = await requireVersions();
+    const check = checkShoppingListSave(list, { today: today(), rows, versions });
+    if (!check.ok) {
+      throw new BackendError(
+        check.reason === 'consent_required' ? 'consent_required' : 'plan_rejected',
+        { sensitive: true },
+      );
+    }
+    const stored = storedShoppingListRow(rows, check.list.weekStart);
+    const changes = stored === null ? null : checkedOnlyChanges(stored.list, check.list);
+    if (stored !== null && changes !== null) {
+      if (changes.length === 0) return rows;
+      let next = rows;
+      for (const change of changes) {
+        next = await applyNutritionWriteOp(
+          session.userId,
+          {
+            kind: 'set_shopping_item_checked',
+            listId: stored.id,
+            weekStart: stored.week_start,
+            itemKey: change.itemKey,
+            checked: change.checked,
+            usesHealthData: stored.uses_health_data,
+          },
+          next,
+        );
+      }
+      return next;
+    }
+    const next = await replaceShoppingListRemote(session.userId, check.list, rows);
+    await writeCache(session.userId, next);
+    return next;
+  }
+
   /** Alles Lokale samt Schlüsseln löschen (Abmelden, Konto löschen, Testdaten löschen – 4.1). */
   async function clearLocal(): Promise<void> {
     await queue.clear();
@@ -1730,6 +2625,8 @@ export function createSupabaseBackend(options: SupabaseBackendOptions): Backend 
     await store.removeItem(STORAGE_KEYS.rowsCache);
     await protectedStore.clear();
     await logCacheStore.clear();
+    await nutritionQueue.clear();
+    await nutritionCacheStore.clear();
   }
 
   /**
@@ -1826,6 +2723,11 @@ export function createSupabaseBackend(options: SupabaseBackendOptions): Backend 
       }
       // Die Datenbank löscht alle Pläne mit Gesundheitsbezug – der geschützte Zwischenspeicher sofort auch.
       await protectedStore.clear();
+      // Ebenso Ernährung (N7 Teil 2): Tagebuch, eigene Gerichte, Pläne/Listen mit Gesundheitsbezug, Schnell-Favoriten
+      // löscht der Widerruf auf dem Server; noch nicht übertragene bzw. abgelehnte Fassungen sind Gesundheitsdaten und
+      // würden ohne Einwilligung ohnehin abgelehnt – auf ausdrücklichen Widerruf hin gelöscht.
+      await nutritionQueue.clear();
+      await nutritionCacheStore.clear();
       // 7.4 Schritt 3 (S17): die Gruppen als „mag ich nicht“ schreiben („mag ich“ derselben Gruppe wird ersetzt). Kein
       // Gesundheitsdatum → über die Warteschlange: Bricht die Verbindung ab, bleibt die Umwandlung als wartender
       // Vorgang gespeichert („Umwandlung ausstehend“) und wird bei der nächsten Verbindung gesendet; die Anzeige (Stand +
@@ -1859,6 +2761,7 @@ export function createSupabaseBackend(options: SupabaseBackendOptions): Backend 
 
   void queue.load();
   void logQueue.load();
+  void nutritionQueue.load();
   return backend;
 }
 

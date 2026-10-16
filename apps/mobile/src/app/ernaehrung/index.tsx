@@ -21,6 +21,7 @@ import {
   EmptySlotRow,
   MacroBars,
   MealPlanStateNotices,
+  UnavailableMealRows,
   MealRow,
   NutritionNotices,
 } from '@/components/nutrition';
@@ -236,6 +237,7 @@ export default function NutritionDayScreen() {
         state={planState}
         actions={actions}
         saveFailed={view.saveFailed}
+        saveConsentMissing={view.saveConsentMissing}
         onRetry={view.retrySave}
       />
 
@@ -282,7 +284,13 @@ export default function NutritionDayScreen() {
       <Heading level={2}>{t.nutrition.mealsTitle}</Heading>
       {plan === null ? (
         <Card>
-          <Body>{demoAvailable ? t.nutrition.noRecipesTestMode : t.nutrition.noRecipes}</Body>
+          <Body testID="nutrition-no-recipes">
+            {demoAvailable
+              ? t.nutrition.noRecipesTestMode
+              : view.library.result.awaitingReview === true
+                ? t.nutrition.noRecipesReview
+                : t.nutrition.noRecipes}
+          </Body>
           {demoAvailable && app.backend.mode === 'local' ? (
             <Button
               label={t.nutrition.demoUse}
@@ -337,6 +345,7 @@ export default function NutritionDayScreen() {
           {day.emptySlots.map((empty) => (
             <EmptySlotRow key={empty.slot} empty={empty} />
           ))}
+          <UnavailableMealRows meals={view.week.unavailableMeals} date={day.date} />
         </View>
       )}
       {plan !== null && day !== null && !eatenAllowed && foodLog.supported ? (

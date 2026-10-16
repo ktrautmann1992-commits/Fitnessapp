@@ -305,7 +305,7 @@ describe('Ablauf im Testmodus: neu → gespeichert → Schwangerschaft → autom
     expect(week(after).plan).toEqual(swapped.plan);
     const other = mealPlanWithOtherSuggestions(current.plan, current.planState.input);
     const afterOther = await backend.saveMealPlan(other, { autoAdjusted: false }, omnivore);
-    expect(storedMealPlanRow(afterOther, WEEK)?.plan.variant).toBe(1);
+    expect(storedMealPlanRow(afterOther, WEEK)?.plan?.variant).toBe(1);
 
     // Woche davor: nicht änderbar, nicht speicherbar.
     const previous = week(rows(), TODAY, '2026-09-21');

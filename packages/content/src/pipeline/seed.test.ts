@@ -1,13 +1,22 @@
 import { readFileSync, writeFileSync } from 'node:fs';
 import { join } from 'node:path';
 
-import { estimateSessionMinutes } from '@fitnessapp/core';
+import {
+  type ContentValidationResult,
+  estimateSessionMinutes,
+  validateContent,
+} from '@fitnessapp/core';
+import { demoNutritionContent } from '@fitnessapp/core/demo-nutrition';
 import { afterEach, describe, expect, it, vi } from 'vitest';
 
 import { validateRepository } from '../validate';
 import {
+  buildNutritionSeedPackage,
   buildSeedPackage,
   findMassArchive,
+  findNutritionMassArchive,
+  NUTRITION_SEED_TABLES,
+  type NutritionSeedPackage,
   type PublishedIds,
   runSeed,
   type SeedFetch,
@@ -48,11 +57,34 @@ function okFetch(
   body: unknown = { exercises: 1, plan_templates: 0 },
   published: Partial<PublishedIds> = {},
   seedStatus = 200,
+  nutrition: {
+    published?: Partial<Record<string, string[]>>;
+    missing?: boolean;
+    body?: unknown;
+    status?: number;
+  } = {},
 ) {
   return vi.fn<SeedFetch>(async (url) => {
     const path = new URL(url).pathname;
     if (path.endsWith('/rpc/seed_content')) {
       return new Response(JSON.stringify(body), { status: seedStatus });
+    }
+    if (path.endsWith('/rpc/seed_nutrition_content')) {
+      return new Response(JSON.stringify(nutrition.body ?? { archived: {} }), {
+        status: nutrition.status ?? 200,
+      });
+    }
+    const nutritionTable = Object.values(NUTRITION_SEED_TABLES).find((t) =>
+      path.endsWith(`/rest/v1/${t}`),
+    );
+    if (nutritionTable !== undefined) {
+      if (nutrition.missing === true) {
+        return new Response(JSON.stringify({ code: 'PGRST205' }), { status: 404 });
+      }
+      return new Response(
+        JSON.stringify((nutrition.published?.[nutritionTable] ?? []).map((id) => ({ id }))),
+        { status: 200 },
+      );
     }
     const table = path.endsWith('/plan_templates') ? 'plan_templates' : 'exercises';
     return new Response(JSON.stringify((published[table] ?? []).map((id) => ({ id }))), {
@@ -292,5 +324,192 @@ describe('content-seed: Schutz vor Massen-Archivierung', () => {
     expect(result.status).toBe('failed');
     expect(result.markdown).toContain('nicht lesbar');
     expect(fetchImpl.mock.calls.every(([url]) => !url.endsWith('/rpc/seed_content'))).toBe(true);
+  });
+});
+
+// ---------------------------------------------------------------------------------------------------------
+// Ernährung (Etappe N7 Teil 2): nur freigegeben UND fachlich geprüft, Verweise im Paket, Schutz, eigene Funktion
+// ---------------------------------------------------------------------------------------------------------
+
+/** Beispiel-Bestand (Testwerte) – alles freigegeben und geprüft, außer den genannten IDs. */
+function nutritionResult(
+  options: { notExpert?: string[]; draft?: string[] } = {},
+): ContentValidationResult {
+  const demo = demoNutritionContent();
+  const result = validateContent(demo.files, { nutritionCatalog: demo.catalog });
+  const release = <T extends { id: string; status: string; meta: object }>(item: T): T =>
+    ({
+      ...item,
+      status: options.draft?.includes(item.id) ? 'draft' : 'published',
+      meta: {
+        ...item.meta,
+        expert_reviewed: !(options.notExpert ?? []).includes(item.id),
+        reviewed_by: 'KT',
+        reviewed_at: '2026-10-15',
+        ...('catalog_reviewed_by' in item.meta
+          ? { catalog_reviewed_by: 'KT', catalog_reviewed_at: '2026-10-15' }
+          : {}),
+      },
+    }) as T;
+  return {
+    ...result,
+    foods: result.foods.map(release),
+    recipes: result.recipes.map(release),
+    substitutions: result.substitutions.map(release),
+    packageSizes: result.packageSizes.map(release),
+    mealPrepPlans: result.mealPrepPlans.map(release),
+    guides: result.guides.map(release),
+  };
+}
+
+describe('Ernährungs-Paket (N7 Teil 2)', () => {
+  it('alles freigegeben und geprüft → alles im Paket, nichts wartet', () => {
+    const result = nutritionResult();
+    const { package: pkg, waiting } = buildNutritionSeedPackage(result);
+    expect(waiting).toEqual([]);
+    expect(pkg.foods).toHaveLength(result.foods.length);
+    expect(pkg.recipes).toHaveLength(result.recipes.length);
+    expect(pkg.ingredient_substitutions).toHaveLength(result.substitutions.length);
+    expect(pkg.package_sizes).toHaveLength(result.packageSizes.length);
+    expect(pkg.meal_prep_plans).toHaveLength(result.mealPrepPlans.length);
+    expect(pkg.guides).toHaveLength(result.guides.length);
+    // Inhalte unverändert (data = Datei, Wächter N2d K9).
+    expect(pkg.recipes[0]).toEqual(result.recipes[0]);
+  });
+
+  it('Entwürfe zählen gar nicht; ohne Fachprüfung wartet der Inhalt – und alles, was darauf verweist', () => {
+    const base = nutritionResult();
+    const recipe = base.recipes.find((r) =>
+      base.mealPrepPlans.some((p) => p.recipe_ids.includes(r.id)),
+    );
+    if (!recipe) throw new Error('Rezept im Meal-Prep-Plan erwartet');
+    const food = recipe.ingredients[0]!.food_id;
+    const result = nutritionResult({ notExpert: [food], draft: [base.guides[0]!.id] });
+    const { package: pkg, waiting } = buildNutritionSeedPackage(result);
+    expect(pkg.foods.map((f) => f.id)).not.toContain(food);
+    expect(waiting).toContainEqual({ kind: 'foods', id: food, reason: 'not_expert_reviewed' });
+    expect(
+      pkg.recipes.every((r) =>
+        r.ingredients.every((i) => pkg.foods.some((f) => f.id === i.food_id)),
+      ),
+    ).toBe(true);
+    expect(waiting).toContainEqual({ kind: 'recipes', id: recipe.id, reason: 'reference_waiting' });
+    expect(
+      pkg.meal_prep_plans.every((p) =>
+        p.recipe_ids.every((id) => pkg.recipes.some((r) => r.id === id)),
+      ),
+    ).toBe(true);
+    expect(
+      pkg.ingredient_substitutions.every(
+        (x) =>
+          pkg.foods.some((f) => f.id === x.food_id) &&
+          pkg.foods.some((f) => f.id === x.substitute_food_id),
+      ),
+    ).toBe(true);
+    expect(pkg.package_sizes.every((x) => pkg.foods.some((f) => f.id === x.food_id))).toBe(true);
+    // Ersatzprodukte müssen mitkommen.
+    expect(
+      pkg.foods.every((f) => f.substitutes.every((x) => pkg.foods.some((g) => g.id === x.food_id))),
+    ).toBe(true);
+    // Der Entwurf ist weder im Paket noch in der Warteliste.
+    expect(pkg.guides.map((g) => g.id)).not.toContain(base.guides[0]!.id);
+    expect(waiting.some((w) => w.id === base.guides[0]!.id)).toBe(false);
+  });
+
+  it('ohne Katalog-Prüfung bzw. Prüfvermerk → wartet', () => {
+    const result = nutritionResult();
+    const food = result.foods[0]!;
+    const entry = result.packageSizes[0]!;
+    const changed: ContentValidationResult = {
+      ...result,
+      foods: result.foods.map((f) =>
+        f.id === food.id
+          ? { ...f, meta: { ...f.meta, catalog_reviewed_by: null, catalog_reviewed_at: null } }
+          : f,
+      ),
+      packageSizes: result.packageSizes.map((x) =>
+        x.id === entry.id ? { ...x, meta: { ...x.meta, reviewed_by: null, reviewed_at: null } } : x,
+      ),
+    };
+    const { waiting } = buildNutritionSeedPackage(changed);
+    expect(waiting).toContainEqual({ kind: 'foods', id: food.id, reason: 'not_catalog_reviewed' });
+    expect(waiting).toContainEqual({ kind: 'package_sizes', id: entry.id, reason: 'not_reviewed' });
+  });
+
+  it('findNutritionMassArchive: je Inhaltsart über 50 % → Befund', () => {
+    const empty = Object.fromEntries(
+      Object.keys(NUTRITION_SEED_TABLES).map((k) => [k, []]),
+    ) as unknown as NutritionSeedPackage;
+    const current = {
+      foods: ['a', 'b'],
+      recipes: ['r1', 'r2', 'r3'],
+      ingredient_substitutions: [],
+      package_sizes: [],
+      meal_prep_plans: [],
+      guides: [],
+    };
+    const pkg = {
+      ...empty,
+      foods: [{ id: 'a' }],
+      recipes: [{ id: 'r1' }],
+    } as unknown as NutritionSeedPackage;
+    expect(findNutritionMassArchive(current, pkg)).toEqual([
+      { table: 'recipes', published: 3, wouldArchive: ['r2', 'r3'] },
+    ]);
+  });
+});
+
+describe('content-seed: Ernährung (N7 Teil 2)', () => {
+  it('ruft nach seed_content auch seed_nutrition_content auf (leeres Paket, solange nichts geprüft ist)', async () => {
+    const r = repo();
+    const fetchImpl = okFetch();
+    const result = await runSeed({ repoRoot: r.root, env: SUPABASE, fetchImpl });
+    expect(result.status).toBe('seeded');
+    const calls = fetchImpl.mock.calls.map(([url]) => new URL(url).pathname);
+    expect(calls.indexOf('/rest/v1/rpc/seed_nutrition_content')).toBeGreaterThan(
+      calls.indexOf('/rest/v1/rpc/seed_content'),
+    );
+    const call = fetchImpl.mock.calls.find(([url]) => url.endsWith('/rpc/seed_nutrition_content'))!;
+    const body = JSON.parse(String(call[1].body)) as { p_content: Record<string, unknown[]> };
+    expect(Object.keys(body.p_content).sort()).toEqual(Object.keys(NUTRITION_SEED_TABLES).sort());
+    expect(Object.values(body.p_content).every((list) => list.length === 0)).toBe(true);
+    expect(result.markdown).toContain('Ernährung eingespielt: 0 Lebensmittel, 0 Rezepte');
+  });
+
+  it('Tabellen gibt es noch nicht (vor db-migrate) → Ernährung mit Hinweis übersprungen, Übungen eingespielt', async () => {
+    const r = repo();
+    const fetchImpl = okFetch(undefined, {}, 200, { missing: true });
+    const result = await runSeed({ repoRoot: r.root, env: SUPABASE, fetchImpl });
+    expect(result.status).toBe('seeded');
+    expect(result.markdown).toContain('Ernährung übersprungen');
+    expect(fetchImpl.mock.calls.some(([url]) => url.endsWith('/rpc/seed_nutrition_content'))).toBe(
+      false,
+    );
+    expect(seedCalls(fetchImpl)).toHaveLength(1);
+  });
+
+  it('würde mehr als die Hälfte der freigegebenen Rezepte archivieren → nichts eingespielt (auch keine Übungen)', async () => {
+    const r = repo();
+    const fetchImpl = okFetch(undefined, {}, 200, { published: { recipes: ['r1', 'r2'] } });
+    const result = await runSeed({ repoRoot: r.root, env: SUPABASE, fetchImpl });
+    expect(result.status).toBe('mass_archive_blocked');
+    expect(result.markdown).toContain('Rezepte');
+    expect(seedCalls(fetchImpl)).toHaveLength(0);
+    expect(fetchImpl.mock.calls.some(([url]) => url.endsWith('/rpc/seed_nutrition_content'))).toBe(
+      false,
+    );
+  });
+
+  it('Fehler von seed_nutrition_content → rot mit Meldung (nur Inhalts-IDs)', async () => {
+    const r = repo();
+    const fetchImpl = okFetch(undefined, {}, 200, {
+      status: 400,
+      body: { message: 'Inhalt x ist nicht fachlich geprüft.' },
+    });
+    const result = await runSeed({ repoRoot: r.root, env: SUPABASE, fetchImpl });
+    expect(result.exitCode).toBe(1);
+    expect(result.status).toBe('failed');
+    expect(result.markdown).toContain('Ernährung nicht eingespielt');
+    expect(result.markdown).toContain('nicht fachlich geprüft');
   });
 });

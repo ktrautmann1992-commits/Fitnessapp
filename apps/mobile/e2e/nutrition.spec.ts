@@ -264,11 +264,12 @@ test('B1: veraltete Einwilligung + gespeicherte Unverträglichkeit → kein Plan
   await expect(page.getByTestId('today-nutrition-card')).toContainText(
     'Bitte bestätige die neue Fassung der Einwilligung Gesundheitsdaten',
   );
-  // NK1: veraltet → „Neue Fassung bestätigen“, kein Löschen-Knopf.
+  // NK1: veraltet → „Neue Fassung bestätigen“; seit N7 Teil 2 (Wächter N7 H3) zusätzlich „Unverträglichkeiten
+  // löschen“ – klarer Zustand „Einwilligung erneuern oder Unverträglichkeiten löschen“.
   await expect(page.getByTestId('nutrition-consent-blocked-button')).toHaveText(
     'Neue Fassung bestätigen',
   );
-  await expect(page.getByTestId('nutrition-delete-intolerances')).toHaveCount(0);
+  await expect(page.getByTestId('nutrition-delete-intolerances')).toBeVisible();
   await page.getByTestId('nutrition-consent-blocked-button').click();
   await expect(page).toHaveURL(/health-consent/);
 });

@@ -8,7 +8,9 @@ import {
   mealPlanHasRatedDownRecipes,
   mealPlanWeekEditable,
   type ReplanReason,
+  resolveMealPlanRecord,
   resolveMealPlanWeek,
+  type UnavailableMeal,
   resolveShoppingList,
   type ShoppingListResolution,
   stableHash,
@@ -268,6 +270,11 @@ export type NutritionWeekResult =
        * oder Packungszahlen (G-N13-4/N11-G3 offen). Leer ohne Plan oder ohne Packungsgrößen. Nie gespeichert.
        */
       leftoverHints: readonly LeftoverMealHint[];
+      /**
+       * Supabase-Modus (Etappe N7 Teil 2, Wächter N7 H9): Mahlzeiten vergangener Tage, deren Rezept nicht mehr
+       * verfügbar ist (archiviert = für Nutzer nicht lesbar) – Anzeige „Rezept nicht mehr verfügbar“. Sonst leer.
+       */
+      unavailableMeals: readonly UnavailableMeal[];
     }
   /** Angaben unvollständig (Ziel, Erfahrung oder Ernährungsform fehlt). */
   | { kind: 'incomplete' }
@@ -334,6 +341,7 @@ export function computeNutritionWeek(input: {
         planState: null,
         shopping: null,
         leftoverHints: [],
+        unavailableMeals: [],
       };
     }
     const engineInput: MealPlanEngineInput = {
@@ -360,7 +368,13 @@ export function computeNutritionWeek(input: {
       (!row.uses_health_data || healthConsentStatus(input.rows, input.versions) === 'valid')
         ? row
         : null;
-    const resolved = resolveMealPlanWeek(usable?.plan ?? null, engineInput);
+    // Supabase-Modus (Etappe N7 Teil 2, G-N7-1): Ohne vollständigen Plan auf dem Gerät wird er aus den Zeilen der
+    // Datenbank und dem Bestand neu gebaut (Planband/Abgleich aus den aktuellen Zielen) und danach wie jeder
+    // gespeicherte Plan geprüft (6.6, Wächter N7 H5).
+    const resolved =
+      usable !== null && usable.plan === null && usable.record !== undefined
+        ? resolveMealPlanRecord(usable.record, engineInput)
+        : { ...resolveMealPlanWeek(usable?.plan ?? null, engineInput), unavailable: [] };
     const editable = mealPlanWeekEditable(input.weekStart, input.today);
     // Einkaufsliste wie der Plan (Art. 9): ohne gültige Einwilligung keine Liste mit Gesundheitsbezug weiterverwenden.
     const listRow = storedShoppingListRow(input.rows, input.weekStart);
@@ -418,6 +432,7 @@ export function computeNutritionWeek(input: {
       planState,
       shopping,
       leftoverHints: safeLeftoverMealHints(resolved.plan, input.library, input.allowDrafts),
+      unavailableMeals: resolved.unavailable,
     };
   } catch {
     // Bewusst ohne Details: keine Gesundheitsdaten in Logs oder Fehlermeldungen.

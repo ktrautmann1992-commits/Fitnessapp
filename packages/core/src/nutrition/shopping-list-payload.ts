@@ -6,7 +6,12 @@ import { SHOPPING_CATEGORIES } from '../content/food-schema';
 import { contentIdSchema } from '../content/schemas';
 import { DIET_TYPES } from '../enums';
 import { weekStartSchema } from './schemas';
-import { shoppingListRangeValid, type StoredShoppingList } from './shopping-list-store';
+import { sortShoppingItems } from './shopping-list';
+import {
+  parseStoredShoppingList,
+  shoppingListRangeValid,
+  type StoredShoppingList,
+} from './shopping-list-store';
 
 /**
  * Payload einer Einkaufsliste für `replace_shopping_list` (docs/PLAN-PHASE-5.md 6.5, 7.2, 7.3; Datenbank seit Etappe
@@ -112,5 +117,45 @@ export function toShoppingListPayload(list: StoredShoppingList): ShoppingListPay
       amount_changed: item.amountChanged,
       not_in_plan: item.notInPlan,
     })),
+  });
+}
+
+/**
+ * Liste aus der Datenbank (`shopping_lists`/`shopping_list_items`, Etappe N7 Teil 2) → gespeicherte Liste der App. Die
+ * Zeilen werden erneut geprüft (Payload-Schema und `parseStoredShoppingList`, Wächter N7 H5); `uses_health_data` ist der
+ * Wert des Servers. Reihenfolge der Einträge wie beim Erzeugen (`sortShoppingItems`). null = ungültig → gilt als nicht
+ * vorhanden (die Plan-Einträge werden ohnehin aus dem aktuellen Plan neu erzeugt).
+ */
+export function shoppingListFromPayload(value: unknown): StoredShoppingList | null {
+  const parsed = shoppingListPayloadSchema.safeParse(value);
+  if (!parsed.success) return null;
+  const list = parsed.data;
+  return parseStoredShoppingList({
+    weekStart: list.week_start,
+    from: list.from_date,
+    to: list.to_date,
+    usesHealthData: list.uses_health_data,
+    planKey: list.plan_key,
+    recipes: list.recipes.map((r) => ({
+      recipeId: r.recipe_id,
+      servings: r.servings,
+      ...(r.diet === null ? {} : { diet: r.diet }),
+    })),
+    items: sortShoppingItems(
+      list.items.map((item) => ({
+        itemKey: item.item_key,
+        foodId: item.food_id,
+        labelDe: item.label_de,
+        amount: item.amount,
+        unit: item.unit,
+        category: item.category,
+        isPantry: item.is_pantry,
+        isManual: item.is_manual,
+        checked: item.checked,
+        substituteFor: [...item.substitute_for],
+        amountChanged: item.amount_changed,
+        notInPlan: item.not_in_plan,
+      })),
+    ),
   });
 }
