@@ -35,29 +35,49 @@ async function sessions(page: Page) {
     .sort((a, b) => a.date.localeCompare(b.date));
 }
 
-/** Griff ⠿ lange drücken und auf die Mitte eines anderen Tages ziehen (wie mit dem Finger). */
-async function dragTo(page: Page, from: string, to: string, beforeDrop?: () => Promise<void>) {
+/**
+ * Start- und Zielpunkt für ein Ziehen: Griff und Zieltag sichtbar, Karte in Ruhe, Druckpunkt liegt wirklich auf dem
+ * Griff. Die Karte gleitet nach einem ABGELEHNTEN Ablegen noch 120 ms zurück; zwei direkt aufeinanderfolgende
+ * Messungen fallen in dasselbe Bild und sind gleich, obwohl sie sich noch bewegt – deshalb mit Abstand messen. Sonst
+ * träfe der Druck die Zeile darunter („Griff reagiert nicht“, obwohl er gar nicht gedrückt wurde).
+ */
+async function dragPoints(page: Page, from: string, to: string) {
   const handle = page.getByTestId(`calendar-handle-${from}`);
   const target = page.getByTestId(`calendar-day-${to}`);
   // Wie am Handy: erst so scrollen, dass Start- und Zieltag sichtbar sind (kein Auto-Scroll beim Ziehen).
   await page
     .getByTestId(`calendar-day-${from < to ? from : to}`)
     .evaluate((element) => element.scrollIntoView({ block: 'start' }));
-  // Die Karte gleitet nach dem letzten Ablegen kurz zurück – erst messen, wenn sie ruht.
-  let start = await handle.boundingBox();
+  const measured: { box: Awaited<ReturnType<typeof handle.boundingBox>> } = { box: null };
   await expect
     .poll(async () => {
-      const previous = start;
-      start = await handle.boundingBox();
-      return previous !== null && start !== null && previous.y === start.y;
+      const before = await handle.boundingBox();
+      await page.waitForTimeout(200);
+      const after = await handle.boundingBox();
+      measured.box = after;
+      return before !== null && after !== null && before.y === after.y && before.x === after.x;
     })
     .toBe(true);
+  const start = measured.box;
   const end = await target.boundingBox();
   if (!start || !end) throw new Error('Kalender nicht sichtbar');
+  const x = start.x + start.width / 2;
+  const y = start.y + start.height / 2;
+  const onHandle = await page.evaluate(
+    ([px, py, id]) => document.elementFromPoint(px, py)?.closest(`[data-testid="${id}"]`) != null,
+    [x, y, `calendar-handle-${from}`] as const,
+  );
+  if (!onHandle) throw new Error(`Druckpunkt liegt nicht auf dem Griff ${from}`);
+  return { x, y, endY: end.y + end.height / 2 };
+}
+
+/** Griff ⠿ lange drücken und auf die Mitte eines anderen Tages ziehen (Maus). */
+async function dragTo(page: Page, from: string, to: string, beforeDrop?: () => Promise<void>) {
+  const { x, y, endY } = await dragPoints(page, from, to);
   // Langer Druck (DRAG_LONG_PRESS_MS = 400 ms), dann ziehen. Das Ziehen MUSS beim ersten Druck starten (Ziel-Hinweise
   // erscheinen) – kein erneutes Drücken: Früher startete es im Browser nach einem abgelehnten Ablegen am selben Griff
   // nicht mehr (docs/PLAN-AUSWERTUNG.md, Umsetzungsstand A1a); ein Rückfall soll hier sofort auffallen.
-  await page.mouse.move(start.x + start.width / 2, start.y + start.height / 2);
+  await page.mouse.move(x, y);
   await page.mouse.down();
   await page.waitForTimeout(700);
   const started = await page
@@ -74,12 +94,7 @@ async function dragTo(page: Page, from: string, to: string, beforeDrop?: () => P
   }
   const steps = 12;
   for (let i = 1; i <= steps; i += 1) {
-    await page.mouse.move(
-      start.x + start.width / 2,
-      start.y +
-        start.height / 2 +
-        ((end.y + end.height / 2 - (start.y + start.height / 2)) * i) / steps,
-    );
+    await page.mouse.move(x, y + ((endY - y) * i) / steps);
   }
   if (beforeDrop) await beforeDrop();
   await page.mouse.up();
@@ -169,8 +184,8 @@ test('Ziehen startet nach einem abgelehnten Ablegen sofort wieder, auch wenn der
 }) => {
   // Nachstellung des CI-Fehlers (Chrome 153, lokal sonst nicht auslösbar): Der Browser meldet „lostpointercapture“
   // erst beim NÄCHSTEN Druck. Am selben Griff brach das jeden neuen Druck sofort ab – bis die Seite neu geladen wurde.
-  // Die App baut die Geste nach jedem Ende neu auf (lib/drag-lifecycle.ts); die verspätete Meldung trifft dann den
-  // alten Griff.
+  // Die App zieht im Browser mit eigener Zeiger-Logik (lib/web-drag.ts): Eine Fang-Meldung beim Halten ist immer
+  // veraltet und bricht den neuen Druck nicht ab.
   await page.addInitScript(() => {
     const pending: { target: EventTarget; pointerId: number }[] = [];
     window.addEventListener(
@@ -206,6 +221,51 @@ test('Ziehen startet nach einem abgelehnten Ablegen sofort wieder, auch wenn der
   await expect(
     page.getByRole('link').and(page.getByTestId(`calendar-open-day-${FR}`)),
   ).toBeVisible();
+});
+
+/** Wie dragTo, aber mit dem Finger (echte Touch-Ereignisse über CDP, Gerät „Pixel 7“ mit hasTouch). */
+async function touchDragTo(page: Page, from: string, to: string) {
+  const { x, y: y0, endY: y1 } = await dragPoints(page, from, to);
+  const cdp = await page.context().newCDPSession(page);
+  const touch = (type: 'touchStart' | 'touchMove' | 'touchEnd', y: number) =>
+    cdp.send('Input.dispatchTouchEvent', {
+      type,
+      touchPoints: type === 'touchEnd' ? [] : [{ x, y, id: 1 }],
+    });
+  await touch('touchStart', y0);
+  await page.waitForTimeout(700);
+  const started = await page
+    .locator('[data-testid^="calendar-drop-"]')
+    .first()
+    .waitFor({ state: 'attached', timeout: 2000 })
+    .then(() => true)
+    .catch(() => false);
+  if (!started) {
+    await touch('touchEnd', y0);
+    await cdp.detach();
+    throw new Error(
+      `Ziehen mit dem Finger von ${from} startet nicht (Griff ${from} reagiert nicht)`,
+    );
+  }
+  const steps = 12;
+  for (let i = 1; i <= steps; i += 1) await touch('touchMove', y0 + ((y1 - y0) * i) / steps);
+  await touch('touchEnd', y1);
+  await cdp.detach();
+}
+
+test('Ziehen mit dem Finger (Touch): abgelehnt, sofort erneut, dann tauschen', async ({ page }) => {
+  await setup(page);
+  await touchDragTo(page, DI, DO);
+  await expect(page.getByTestId('calendar-message')).toContainText('Nicht verschoben: Zu nah an');
+  await touchDragTo(page, DI, DO);
+  await expect(page.getByTestId('calendar-message')).toContainText('Nicht verschoben: Zu nah an');
+  await touchDragTo(page, DI, FR);
+  await expect(page.getByTestId('calendar-message')).toContainText('Getauscht: jetzt am Freitag');
+  await expect(page.locator('[data-testid^="calendar-drop-"]')).toHaveCount(0);
+  // Kurzes Antippen des Griffs startet kein Ziehen.
+  await page.getByTestId(`calendar-handle-${DI}`).tap();
+  await page.waitForTimeout(600);
+  await expect(page.locator('[data-testid^="calendar-drop-"]')).toHaveCount(0);
 });
 
 test('„Verschieben …“-Menü: jeder Tag mit „erlaubt“ oder Grund; Auswahl verschiebt, bleibt nach Neuladen', async ({
