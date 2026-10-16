@@ -1,0 +1,52 @@
+{
+  "id": "hartweizengriess",
+  "version": 1,
+  "status": "draft",
+  "name_de": "Hartweizengrieß",
+  "aliases_de": [],
+  "shopping_category": "pasta_rice_grains",
+  "pantry": true,
+  "nutrients_per_100g": {
+    "kcal": 352,
+    "protein_g": 13.36,
+    "carbs_g": 68.92,
+    "sugar_g": 1.0625,
+    "fat_g": 1.48,
+    "sat_fat_g": 0.22,
+    "fiber_g": 4.84,
+    "salt_g": 0.0018,
+    "organic_acids_g": 0,
+    "alcohol_g": 0,
+    "polyols_g": 0
+  },
+  "units": {},
+  "groups": ["gluten"],
+  "animal": [],
+  "meat_kind": [],
+  "pregnancy_caution": false,
+  "alcohol": false,
+  "max_fridge_days": 3,
+  "freezable": true,
+  "substitutes": [],
+  "source": {
+    "db": "bls",
+    "version": "4.0",
+    "ref": "C219300",
+    "name": "Hartweizen Grieß",
+    "category": "cereal_products",
+    "license": "CC BY 4.0",
+    "retrieved_at": "2026-10-16"
+  },
+  "meta": {
+    "origin": "claude_session",
+    "model": "claude-opus-5-5",
+    "batch_id": null,
+    "created_on": "2026-10-16",
+    "expert_reviewed": false,
+    "reviewed_by": null,
+    "reviewed_at": null,
+    "review_note": null,
+    "catalog_reviewed_by": null,
+    "catalog_reviewed_at": null
+  }
+}

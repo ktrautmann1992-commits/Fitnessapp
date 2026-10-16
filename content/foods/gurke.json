@@ -1,0 +1,52 @@
+{
+  "id": "gurke",
+  "version": 1,
+  "status": "draft",
+  "name_de": "Gurke",
+  "aliases_de": [],
+  "shopping_category": "fruit_vegetables",
+  "pantry": false,
+  "nutrients_per_100g": {
+    "kcal": 16,
+    "protein_g": 1.062,
+    "carbs_g": 1.97,
+    "sugar_g": 1.97,
+    "fat_g": 0.2,
+    "sat_fat_g": 0.067,
+    "fiber_g": 0.9,
+    "salt_g": 0.008,
+    "organic_acids_g": 0.26,
+    "alcohol_g": 0,
+    "polyols_g": 0
+  },
+  "units": {},
+  "groups": [],
+  "animal": [],
+  "meat_kind": [],
+  "pregnancy_caution": false,
+  "alcohol": false,
+  "max_fridge_days": 3,
+  "freezable": false,
+  "substitutes": [],
+  "source": {
+    "db": "bls",
+    "version": "4.0",
+    "ref": "G520100",
+    "name": "Gurke roh",
+    "category": "vegetables",
+    "license": "CC BY 4.0",
+    "retrieved_at": "2026-10-16"
+  },
+  "meta": {
+    "origin": "claude_session",
+    "model": "claude-opus-5-5",
+    "batch_id": null,
+    "created_on": "2026-10-16",
+    "expert_reviewed": false,
+    "reviewed_by": null,
+    "reviewed_at": null,
+    "review_note": null,
+    "catalog_reviewed_by": null,
+    "catalog_reviewed_at": null
+  }
+}

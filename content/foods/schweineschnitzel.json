@@ -1,0 +1,52 @@
+{
+  "id": "schweineschnitzel",
+  "version": 1,
+  "status": "draft",
+  "name_de": "Schweineschnitzel",
+  "aliases_de": [],
+  "shopping_category": "meat_sausage",
+  "pantry": false,
+  "nutrients_per_100g": {
+    "kcal": 106,
+    "protein_g": 22.2,
+    "carbs_g": 0,
+    "sugar_g": 0,
+    "fat_g": 1.9,
+    "sat_fat_g": 0.715,
+    "fiber_g": 0,
+    "salt_g": 0.18,
+    "organic_acids_g": 0,
+    "alcohol_g": 0,
+    "polyols_g": 0
+  },
+  "units": {},
+  "groups": [],
+  "animal": ["meat"],
+  "meat_kind": ["pork"],
+  "pregnancy_caution": false,
+  "alcohol": false,
+  "max_fridge_days": 3,
+  "freezable": true,
+  "substitutes": [],
+  "source": {
+    "db": "bls",
+    "version": "4.0",
+    "ref": "U541100",
+    "name": "Schwein Schnitzel (Oberschale) roh",
+    "category": "meat_pork",
+    "license": "CC BY 4.0",
+    "retrieved_at": "2026-10-16"
+  },
+  "meta": {
+    "origin": "claude_session",
+    "model": "claude-opus-5-5",
+    "batch_id": null,
+    "created_on": "2026-10-16",
+    "expert_reviewed": false,
+    "reviewed_by": null,
+    "reviewed_at": null,
+    "review_note": null,
+    "catalog_reviewed_by": null,
+    "catalog_reviewed_at": null
+  }
+}

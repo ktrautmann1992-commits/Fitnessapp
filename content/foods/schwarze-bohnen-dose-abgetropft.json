@@ -1,0 +1,52 @@
+{
+  "id": "schwarze-bohnen-dose-abgetropft",
+  "version": 1,
+  "status": "draft",
+  "name_de": "Schwarze Bohnen (Dose, abgetropft)",
+  "aliases_de": [],
+  "shopping_category": "legumes_canned",
+  "pantry": true,
+  "nutrients_per_100g": {
+    "kcal": 130,
+    "protein_g": 9.0383,
+    "carbs_g": 17.72,
+    "sugar_g": 0.785,
+    "fat_g": 0.597,
+    "sat_fat_g": 0.104,
+    "fiber_g": 7.136,
+    "salt_g": 0.622,
+    "organic_acids_g": 0,
+    "alcohol_g": 0,
+    "polyols_g": 0
+  },
+  "units": {},
+  "groups": ["legumes"],
+  "animal": [],
+  "meat_kind": [],
+  "pregnancy_caution": false,
+  "alcohol": false,
+  "max_fridge_days": 3,
+  "freezable": true,
+  "substitutes": [],
+  "source": {
+    "db": "bls",
+    "version": "4.0",
+    "ref": "H740902",
+    "name": "Gartenbohne reif, Konserve, abgetropft",
+    "category": "legumes",
+    "license": "CC BY 4.0",
+    "retrieved_at": "2026-10-16"
+  },
+  "meta": {
+    "origin": "claude_session",
+    "model": "claude-opus-5-5",
+    "batch_id": null,
+    "created_on": "2026-10-16",
+    "expert_reviewed": false,
+    "reviewed_by": null,
+    "reviewed_at": null,
+    "review_note": null,
+    "catalog_reviewed_by": null,
+    "catalog_reviewed_at": null
+  }
+}

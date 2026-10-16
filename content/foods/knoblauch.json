@@ -1,0 +1,52 @@
+{
+  "id": "knoblauch",
+  "version": 1,
+  "status": "draft",
+  "name_de": "Knoblauch",
+  "aliases_de": [],
+  "shopping_category": "fruit_vegetables",
+  "pantry": false,
+  "nutrients_per_100g": {
+    "kcal": 97,
+    "protein_g": 6.05,
+    "carbs_g": 3,
+    "sugar_g": 2,
+    "fat_g": 0.42,
+    "sat_fat_g": 0.063,
+    "fiber_g": 28.297,
+    "salt_g": 0.01967,
+    "organic_acids_g": 0.222,
+    "alcohol_g": 0,
+    "polyols_g": 0
+  },
+  "units": {},
+  "groups": ["onion_garlic"],
+  "animal": [],
+  "meat_kind": [],
+  "pregnancy_caution": false,
+  "alcohol": false,
+  "max_fridge_days": 3,
+  "freezable": true,
+  "substitutes": [],
+  "source": {
+    "db": "bls",
+    "version": "4.0",
+    "ref": "G490100",
+    "name": "Knoblauch roh",
+    "category": "vegetables",
+    "license": "CC BY 4.0",
+    "retrieved_at": "2026-10-16"
+  },
+  "meta": {
+    "origin": "claude_session",
+    "model": "claude-opus-5-5",
+    "batch_id": null,
+    "created_on": "2026-10-16",
+    "expert_reviewed": false,
+    "reviewed_by": null,
+    "reviewed_at": null,
+    "review_note": null,
+    "catalog_reviewed_by": null,
+    "catalog_reviewed_at": null
+  }
+}
