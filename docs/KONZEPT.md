@@ -446,6 +446,11 @@ besteht. Einkaufsliste nach Abteilungen, Mengen aufgerundet, Häkchen bleiben be
 - Foto standardmäßig **nach der Auswertung löschen**; speichern nur, wenn der Nutzer es aktiv möchte
 - Foto und Schätzung gelten als Gesundheitsdaten → **eigene Einwilligung** (inkl. Hinweis auf Verarbeitung durch den KI-Anbieter)
 - Tages- und Monatslimit über `ai_usage` (Abschnitt 15)
+- **Umgesetzt als Testversion (Etappe E3, 16.10.2026, `docs/PLAN-AUSWERTUNG.md` Umsetzungsstand E3):** ganze Kette
+  (Einwilligung `ai_food_photo`, Beta-Freischaltung + Feature-Flag serverseitig, Limit 8/Tag und 30/Monat atomar,
+  Bildprüfung mit EXIF-Entfernung, Prompt-Injection-Schutz, Abgleich mit dem Katalog im Core, Eintragen mit Herkunft
+  `photo`); es antwortet standardmäßig eine **Attrappe**. Der Gemini-Adapter ist vorbereitet und nur mit
+  `FOOD_PHOTO_PROVIDER=gemini` **und** `GEMINI_API_KEY` aktiv. Das Foto wird **nie gespeichert** (A-G18, kein Bucket).
 
 ### 6.5 Rezepte in der App (Gratis)
 Quelle: `docs/ERWEITERUNGEN-2.md` Abschnitte 1–2. Startbestand aus `alpha5-rezepte.json` (Abschnitt 3).
@@ -1045,6 +1050,11 @@ alle offen, Server-Prüfung mit Phase 7):
 - **Limit erreicht:** klare Meldung („Dein Kontingent für … ist diesen Monat aufgebraucht, ab … wieder verfügbar“),
   keine stille Fehlfunktion. Die Grundfunktion ohne KI (z. B. manuelles Eintragen) bleibt nutzbar.
 - Alle KI-Funktionen hinter Feature-Flag; Kostenübersicht im Admin-Bereich.
+- **Stand E3 (16.10.2026):** `ai_usage` (nur Metadaten, RLS: eigene Zeilen lesen, schreiben nur der Server über
+  `ai_food_photo_reserve`/`ai_food_photo_finish`), Feature-Flags und Beta-Freischaltung in `private.*`
+  (`private.has_entitlement_for` = die eine Stelle für `hasEntitlement()`, Phase 7 ersetzt nur deren Rumpf), Workflow
+  `beta-grant` (freischalten/entziehen/Flag/Status mit Kostensummen statt Admin-Seite). Grenzen in
+  `packages/core/src/constants.ts` (`AI_FOOD_PHOTO`, Preise VOR LIVEGANG PRÜFEN).
 - **KI-Anbieter: Google Gemini (API)** für Offline-Inhalte und Premium-KI (Gründer-Entscheidung 14.10.2026). Offline
   gehen nur Inhalts-Prompts an Gemini; bevor Premium-Funktionen Nutzerdaten (Fotos, Chat, Körperdaten) an Gemini
   senden, braucht es den AVV mit Google und die Prüfungen aus Abschnitt 14 (Gründer-Aufgabe).

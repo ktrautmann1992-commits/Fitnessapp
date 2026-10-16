@@ -2,6 +2,8 @@ import { buildNutritionCatalog } from '@fitnessapp/content/catalog';
 import {
   ageInYears,
   buildDataExportFile,
+  createMockFoodPhotoProvider,
+  runFoodPhotoAnalysis,
   displayPairs,
   displaySwapRules,
   preferenceChainFrom,
@@ -36,6 +38,12 @@ import {
   type PreferenceSwapContext,
 } from './backend';
 import { LOCAL_CONSENT_DOCUMENTS } from './consent-texts';
+import {
+  finishLocal,
+  localPhotoLimit,
+  reserveLocal,
+  type LocalAiUsageRow,
+} from './food-photo-local';
 import { localDataExport } from './data-export';
 import {
   applySaveCompetition,
@@ -125,6 +133,11 @@ interface LocalDb {
    * gelöschte. Kein Tagebuch-Inhalt.
    */
   logCounter?: { day: string; created: number } | null;
+  /**
+   * Gericht per Foto (Etappe E3): Metadaten je Auswertung wie public.ai_usage (Zeitpunkt, Status, Modell, Token,
+   * Kosten) – nie Foto, Info oder Antwort.
+   */
+  aiUsage?: LocalAiUsageRow[];
 }
 
 export interface LocalBackendOptions {
@@ -187,6 +200,7 @@ const SERIALIZED_METHODS = [
   'changeFoodLogFavorite',
   'saveCustomMeal',
   'deleteCustomMeal',
+  'analyzeFoodPhoto',
 ] as const satisfies readonly (keyof Backend)[];
 
 function serializeWrites(backend: Backend): Backend {
@@ -585,6 +599,44 @@ export function createLocalBackend(store: KeyValueStore, options: LocalBackendOp
       });
       await save({ ...db, rows: next });
       return next;
+    },
+
+    // --- Gericht per Foto (Etappe E3): Testmodus immer mit der Attrappe, gleiche Kette wie der Server ---------
+    foodPhotoStatus: async () => {
+      const db = await load();
+      return {
+        availability: 'available',
+        limit: localPhotoLimit(db.aiUsage ?? [], options.now()),
+        mock: true,
+      };
+    },
+    analyzeFoodPhoto: async ({ image, note }) => {
+      const { session } = await requireProfile();
+      return (
+        await runFoodPhotoAnalysis(
+          { note, image },
+          {
+            provider: createMockFoodPhotoProvider(),
+            reserve: async () => {
+              const db = await load();
+              if (!db.rows) throw new BackendError('profile_missing');
+              const reserved = reserveLocal(db.aiUsage ?? [], {
+                rows: db.rows,
+                versions: LOCAL_VERSIONS,
+                now: options.now(),
+                id: options.newId(),
+                userId: session.userId,
+              });
+              await save({ ...db, aiUsage: reserved.usage });
+              return reserved.result;
+            },
+            finish: async (params) => {
+              const db = await load();
+              await save({ ...db, aiUsage: finishLocal(db.aiUsage ?? [], params, options.now()) });
+            },
+          },
+        )
+      ).body;
     },
 
     deleteAccount: async () => {
@@ -988,10 +1040,13 @@ export function createLocalBackend(store: KeyValueStore, options: LocalBackendOp
     logHistoryStart: () => null,
     loadOlderLogs: async () => ({ logs: EMPTY_LOG_ROWS, nextBefore: null }),
     exportMyData: async () => {
-      const { rows, session } = await requireProfile();
-      const file = buildDataExportFile(localDataExport(rows, session.userId, options.now()), {
-        email: session.email,
-      });
+      const { db, rows, session } = await requireProfile();
+      const file = buildDataExportFile(
+        localDataExport(rows, session.userId, options.now(), { aiUsage: db.aiUsage ?? [] }),
+        {
+          email: session.email,
+        },
+      );
       if (!file) throw new BackendError('unknown');
       return file;
     },

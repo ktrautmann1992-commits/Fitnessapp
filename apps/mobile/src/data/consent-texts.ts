@@ -3,7 +3,8 @@ import type { ConsentDocument } from './types';
 /**
  * Einwilligungstexte Version 1 für den TESTMODUS (ohne Supabase).
  *
- * Wörtliche Kopie aus supabase/migrations/20261003120800_seed_consent_documents.sql – consent-texts.test.ts
+ * Wörtliche Kopie aus supabase/migrations/20261003120800_seed_consent_documents.sql (terms, privacy, health_data) und
+ * 20261016160100_ai_food_photo.sql (ai_food_photo, Etappe E3) – consent-texts.test.ts
  * bricht ab, wenn beide auseinanderlaufen. Im Supabase-Modus kommen die Texte immer aus consent_documents.
  * ENTWURF – juristisch prüfen (Entscheidung zu Frage 6).
  */
@@ -81,5 +82,27 @@ Freiwillig: Du kannst die App auch ohne diese Einwilligung nutzen. Dann erhälts
 Widerruf: Du kannst die Einwilligung jederzeit in den Einstellungen widerrufen. Dann löschen wir sofort alle oben genannten Daten – Körperdaten, Körperumfänge, alle Gesundheits-Checks samt Verlauf und Unverträglichkeiten. Deine übrigen Angaben (z. B. Ziel, Ernährungsform, Vorlieben, Mess-Erinnerung) bleiben erhalten. Die Rechtmäßigkeit der Verarbeitung bis zum Widerruf bleibt unberührt.
 
 Neue Fassung: Ändern wir diesen Text, fragen wir dich erneut. Bis du zustimmst, bleiben deine bisherigen Daten sichtbar, können aber nicht ergänzt oder geändert werden.`,
+  },
+  {
+    type: 'ai_food_photo',
+    version: 1,
+    title: 'Einwilligung: Gerichte per Foto auswerten',
+    body: `ENTWURF – juristisch prüfen
+
+Mit „Per Foto“ kannst du ein Foto deiner Mahlzeit auswerten lassen. Die Auswertung schätzt, welche Lebensmittel zu sehen sind und wie viel davon. Weil ein Foto deines Essens Rückschlüsse auf deine Gesundheit und dein Essverhalten zulassen kann, brauchen wir dafür diese gesonderte Einwilligung.
+
+Derzeit Testversion: Es antwortet ein Testprogramm mit festen Beispielen. Dein Foto und deine Info werden dabei an keinen KI-Anbieter übermittelt – auch nicht an Google. Bevor wir eine echte KI einschalten, legen wir dir eine neue Fassung dieses Textes vor (mit Anbieter, Verarbeitungsort und Speicherdauer beim Anbieter) und fragen dich erneut. Ohne deine neue Zustimmung bleibt es bei der Testversion.
+
+Was verarbeitet wird: nur das Foto (auf deinem Gerät verkleinert, Standort und andere Bilddaten werden entfernt) und deine kurze Info zum Gericht (höchstens 120 Zeichen). Dein Name, deine E-Mail-Adresse, Körperdaten, Ziele, dein Gesundheits-Check und Unverträglichkeiten gehören nicht dazu.
+
+Wie lange: Wir speichern das Foto nicht. Es wird nur für die Auswertung verarbeitet und danach sofort verworfen. Je Auswertung speichern wir nur Zeitpunkt, Ergebnis-Status, Menge der verarbeiteten Daten (Token) und Kosten – für dein monatliches Kontingent, ohne Inhalte.
+
+Schätzung ohne Gewähr: Das Ergebnis ist ein Vorschlag. Du prüfst und änderst ihn, bevor etwas in dein Ernährungstagebuch kommt. Die Nährwerte rechnen wir selbst aus unserem Lebensmittel-Katalog.
+
+Rechtsgrundlage: deine ausdrückliche Einwilligung nach Art. 9 Abs. 2 lit. a DSGVO (Schweiz: revDSG).
+
+Freiwillig: Ohne diese Einwilligung kannst du dein Essen weiterhin per Hand eintragen.
+
+Widerruf: Du kannst die Einwilligung jederzeit in den Einstellungen widerrufen. Danach werten wir keine Fotos mehr aus. Was du schon eingetragen hast, bleibt in deinem Ernährungstagebuch (dafür gilt die Einwilligung Gesundheitsdaten). Die Rechtmäßigkeit der Verarbeitung bis zum Widerruf bleibt unberührt.`,
   },
 ];

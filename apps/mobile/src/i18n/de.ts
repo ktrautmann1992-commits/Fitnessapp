@@ -9,6 +9,7 @@ import { deCompetition } from './de-competition';
 import { deCustomMeals } from './de-custom-meals';
 import { deDay } from './de-day';
 import { deFoodLog } from './de-food-log';
+import { deFoodPhoto } from './de-food-photo';
 import { deNutrition } from './de-nutrition';
 import { deWeekEval } from './de-week-eval';
 
@@ -159,6 +160,7 @@ export const de = {
     privacy: 'Datenschutzerklärung',
     health_data: 'Gesundheitsdaten',
     cycle_data: 'Zyklusdaten',
+    ai_food_photo: 'Gerichte per Foto auswerten',
   },
   steps: {
     sex: {
@@ -1537,6 +1539,7 @@ export const de = {
   },
   nutrition: deNutrition,
   foodLog: deFoodLog,
+  foodPhoto: deFoodPhoto,
   customMeals: deCustomMeals,
   competition: deCompetition,
   day: deDay,

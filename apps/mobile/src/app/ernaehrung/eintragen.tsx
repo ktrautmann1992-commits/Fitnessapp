@@ -332,6 +332,15 @@ export default function FoodLogEntryScreen() {
         value={slot}
         onChange={setSlot}
       />
+      <Card>
+        <Body muted>{t.foodPhoto.openHint}</Body>
+        <Button
+          label={t.foodPhoto.open}
+          variant="secondary"
+          onPress={() => router.push(`/ernaehrung/foto?tag=${date}&platz=${slot}` as Href)}
+          testID="food-log-photo"
+        />
+      </Card>
       <ChoiceList
         label={t.foodLog.tabsLabel}
         horizontal

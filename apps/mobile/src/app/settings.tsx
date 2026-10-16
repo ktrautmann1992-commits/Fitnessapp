@@ -37,7 +37,8 @@ import { singleFlight } from '@/lib/single-flight';
 import { useApp } from '@/state/app-state';
 import { healthConsentStatus, lastMeasurementDate } from '@/state/flow';
 
-type DialogKind = 'revoke' | 'delete' | 'clear' | 'recreate' | 'signout' | 'export' | null;
+type DialogKind =
+  'revoke' | 'revoke_photo' | 'delete' | 'clear' | 'recreate' | 'signout' | 'export' | null;
 
 const LISTED_CONSENTS = [
   'terms',
@@ -143,7 +144,12 @@ export default function SettingsScreen() {
     setBusy(true);
     setDialogError(undefined);
     try {
-      if (dialog === 'revoke') {
+      if (dialog === 'revoke_photo') {
+        // Etappe E3: nur die Foto-Einwilligung; Tagebuch-Einträge bleiben (gehören zu health_data).
+        await app.revokeConsent('ai_food_photo');
+        setMessage(t.foodPhoto.revokeDone);
+        setDialog(null);
+      } else if (dialog === 'revoke') {
         // „Tagebuch behalten (empfohlen)“ – Vorgaben aus Gesundheits-Plänen werden neutralisiert (S1, R3).
         const convert = hasIntolerances && convertIntolerances;
         await app.revokeHealthData(false, convert);
@@ -274,46 +280,52 @@ export default function SettingsScreen() {
 
   const reminder = rows.reminder;
   const dialogTexts =
-    dialog === 'revoke'
+    dialog === 'revoke_photo'
       ? {
-          title: t.settings.revokeTitle,
-          text: t.settings.revokeText,
-          confirm: t.settings.revokeKeepLogs,
+          title: t.foodPhoto.revokeTitle,
+          text: t.foodPhoto.revokeText,
+          confirm: t.foodPhoto.revokeConfirm,
         }
-      : dialog === 'signout'
+      : dialog === 'revoke'
         ? {
-            title: t.settings.signOutPendingTitle,
-            text: stillPending
-              ? `${t.settings.signOutPending(pendingCount)} ${t.settings.signOutStillPending}`
-              : t.settings.signOutPending(pendingCount),
-            confirm: t.settings.signOutSendNow,
+            title: t.settings.revokeTitle,
+            text: t.settings.revokeText,
+            confirm: t.settings.revokeKeepLogs,
           }
-        : dialog === 'delete'
+        : dialog === 'signout'
           ? {
-              title: t.settings.deleteTitle,
-              text: t.settings.deleteText,
-              confirm: t.settings.deleteConfirm,
+              title: t.settings.signOutPendingTitle,
+              text: stillPending
+                ? `${t.settings.signOutPending(pendingCount)} ${t.settings.signOutStillPending}`
+                : t.settings.signOutPending(pendingCount),
+              confirm: t.settings.signOutSendNow,
             }
-          : dialog === 'recreate'
+          : dialog === 'delete'
             ? {
-                title: t.plan.recreateTitle,
-                text: t.plan.recreateText,
-                confirm: t.plan.recreateConfirm,
+                title: t.settings.deleteTitle,
+                text: t.settings.deleteText,
+                confirm: t.settings.deleteConfirm,
               }
-            : dialog === 'export'
+            : dialog === 'recreate'
               ? {
-                  title: t.settings.exportDialogTitle,
-                  text: t.settings.exportDialogText,
-                  confirm:
-                    SAVE_TARGET === 'download'
-                      ? t.settings.exportConfirmWeb
-                      : t.settings.exportConfirmNative,
+                  title: t.plan.recreateTitle,
+                  text: t.plan.recreateText,
+                  confirm: t.plan.recreateConfirm,
                 }
-              : {
-                  title: t.settings.clearTitle,
-                  text: t.settings.clearText,
-                  confirm: t.settings.clearConfirm,
-                };
+              : dialog === 'export'
+                ? {
+                    title: t.settings.exportDialogTitle,
+                    text: t.settings.exportDialogText,
+                    confirm:
+                      SAVE_TARGET === 'download'
+                        ? t.settings.exportConfirmWeb
+                        : t.settings.exportConfirmNative,
+                  }
+                : {
+                    title: t.settings.clearTitle,
+                    text: t.settings.clearText,
+                    confirm: t.settings.clearConfirm,
+                  };
 
   return (
     <Screen
@@ -477,6 +489,27 @@ export default function SettingsScreen() {
           ) : null}
         </Card>
       ))}
+      {/* Etappe E3: eigene, getrennte Einwilligung „Gerichte per Foto auswerten“ (Widerruf jederzeit). */}
+      <Card>
+        <Body>{t.consentTypes.ai_food_photo}</Body>
+        <Body muted testID="settings-photo-consent">
+          {consentLine(rows.consents, 'ai_food_photo')}
+        </Body>
+        {activeConsentVersion(records, 'ai_food_photo') !== null ? (
+          <Button
+            label={t.settings.revoke}
+            variant="danger"
+            accessibilityLabel={`${t.consentTypes.ai_food_photo}: ${t.settings.revoke}`}
+            onPress={() => {
+              setDialogError(undefined);
+              setDialog('revoke_photo');
+            }}
+            testID="settings-photo-revoke"
+          />
+        ) : (
+          <Body muted>{t.foodPhoto.settingsNote}</Body>
+        )}
+      </Card>
       <Body muted>{t.settings.baseConsentNote}</Body>
 
       <Heading level={2}>{t.settings.screen}</Heading>

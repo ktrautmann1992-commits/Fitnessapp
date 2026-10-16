@@ -47,6 +47,12 @@ export const DATA_EXPORT_TABLES = [
   'custom_meal_items',
   // Phase 10 · Etappe WP3 · Wettkämpfe (docs/PLAN-PHASE-10.md Abschnitt 7, inkl. Plan-Bezug)
   'competitions',
+  // Etappe E3 · Gericht per Foto: KI-Nutzung (nur Metadaten) und die eigene Beta-Freischaltung (private-Tabelle,
+  // ohne granted_by – Art. 15 erfasst alle personenbezogenen Daten, PLAN-PHASE-4B 4.7)
+  'ai_usage',
+  'beta_entitlements',
+  // Wächter E3 N4: Protokoll der eigenen Freischaltungen (ohne Admin-Identität)
+  'admin_actions',
 ] as const;
 
 export type DataExportTable = (typeof DATA_EXPORT_TABLES)[number];

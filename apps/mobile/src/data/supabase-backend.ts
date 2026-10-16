@@ -39,6 +39,7 @@ import {
   type OlderLogsPage,
 } from './backend';
 import { DraftStore } from './draft-store';
+import { createRemoteFoodPhoto } from './food-photo-remote';
 import { readJson, STORAGE_KEYS, writeJson, type KeyValueStore } from './kv';
 import { upgradeStoredRows } from './legacy-rows';
 import { type ConsentVersions, versionsFromDocuments } from './mapping';
@@ -804,6 +805,13 @@ export interface SupabaseBackendOptions {
    */
   nutritionCacheStore?: ProtectedStore;
   nutritionQueueStore?: ProtectedStore;
+  /**
+   * Etappe E3: Adresse von apps/web (EXPO_PUBLIC_WEB_URL) für POST /api/ernaehrung/foto. null/fehlt = „Per Foto“ nicht
+   * verfügbar (still, wie Premium aus).
+   */
+  webUrl?: string | null;
+  /** Nur Tests: Ersatz für fetch (Foto-Route). */
+  fetchFn?: typeof fetch;
 }
 
 /** Inhalt des geschützten Tagebuch-Zwischenspeichers (4.6). */
@@ -812,7 +820,7 @@ interface LogCache {
   logs: LogRows;
 }
 
-const CONSENT_TYPES_WITH_TEXT = ['terms', 'privacy', 'health_data'] as const;
+const CONSENT_TYPES_WITH_TEXT = ['terms', 'privacy', 'health_data', 'ai_food_photo'] as const;
 
 export function createSupabaseBackend(options: SupabaseBackendOptions): Backend {
   const { client, store } = options;
@@ -1653,6 +1661,13 @@ export function createSupabaseBackend(options: SupabaseBackendOptions): Backend 
     mode: 'supabase',
     // Übungs-Präferenzen erst mit Etappe T3 (Tabelle exercise_preferences) – bis dahin nur „Nur heute“ (8.2).
     supportsExercisePreferences: false,
+    // Gericht per Foto (Etappe E3): Freischaltung, Kontingent und Auswertung über apps/web.
+    ...createRemoteFoodPhoto({
+      client,
+      webUrl: options.webUrl ?? null,
+      now: options.now,
+      ...(options.fetchFn ? { fetchFn: options.fetchFn } : {}),
+    }),
     // Ernährung im Supabase-Modus seit Etappe N7 Teil 2 (inkl. Schritt nutrition_setup, R2-S3): Essensplan/Einkaufsliste
     // aus der Datenbank ohne Planband (Rekonstruktion im Core), Bestand aus der Datenbank (nur freigegeben und fachlich
     // geprüft), Tagebuch und eigene Gerichte über die verschlüsselte Ernährungs-Warteschlange.

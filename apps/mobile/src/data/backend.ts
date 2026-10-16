@@ -2,6 +2,8 @@ import type {
   CompetitionErrorReason,
   ConsentType,
   CustomMeal,
+  FoodPhotoResponse,
+  PhotoLimitState,
   DataExportFile,
   FoodLogEntry,
   MealPlanWeek,
@@ -168,6 +170,23 @@ export interface IntoleranceConversion {
    * die Person der Umwandlung aktiv zugestimmt hat. Ohne Zustimmung wird `null` übergeben und nichts eingelesen.
    */
   rows: UserRows;
+}
+
+/**
+ * Gericht per Foto (Etappe E3, docs/PLAN-AUSWERTUNG.md Abschnitt 9): Ist die Foto-Auswertung für diese Person
+ * freigeschaltet? Die Wahrheit prüft der Server bei jeder Auswertung erneut (Premium/Flag/Einwilligung/Limit).
+ * - `available`: freigeschaltet (Testmodus: immer, mit Attrappe),
+ * - `not_configured`: Supabase-Modus ohne Adresse der Website (EXPO_PUBLIC_WEB_URL) – Funktion nicht verfügbar,
+ * - `flag_off`: Funktion gerade abgeschaltet (Feature-Flag), `no_entitlement`: kein Premium/keine Beta-Freischaltung.
+ */
+export type FoodPhotoAvailability = 'available' | 'not_configured' | 'flag_off' | 'no_entitlement';
+
+export interface FoodPhotoStatus {
+  readonly availability: FoodPhotoAvailability;
+  /** Stand der Limits (aus ai_usage, nur Zeitpunkt/Status); null = nicht verfügbar. */
+  readonly limit: PhotoLimitState | null;
+  /** true = Testversion mit Attrappe (feste Beispielantworten, keine echte KI). */
+  readonly mock: boolean;
 }
 
 export interface Backend {
@@ -365,6 +384,18 @@ export interface Backend {
    * `custom_meal_rejected` – immer ohne Namen und ohne Werte.
    */
   saveCustomMeal(meal: CustomMeal, rows: UserRows): Promise<UserRows>;
+  /**
+   * Gericht per Foto (Etappe E3): Freischaltung und Kontingent. Supabase-Modus: braucht Verbindung (sonst Fehler
+   * `network`). Testmodus: immer verfügbar (Attrappe), Kontingent aus dem Gerätespeicher.
+   */
+  foodPhotoStatus(): Promise<FoodPhotoStatus>;
+  /**
+   * Ein Foto auswerten lassen (Etappe E3). Supabase-Modus: POST /api/ernaehrung/foto in apps/web (Login-Token,
+   * Premium/Limit/Einwilligung prüft der Server); Testmodus: dieselbe Kette mit der Attrappe auf dem Gerät. Das Foto
+   * wird nie gespeichert. Antwort = feste Codes bzw. geprüfte Bestandteile (Zod, `foodPhotoResponseSchema`); ohne
+   * Verbindung Fehler `network`.
+   */
+  analyzeFoodPhoto(input: { image: Uint8Array; note: string | null }): Promise<FoodPhotoResponse>;
   /** Eigenes Gericht löschen – geht immer; eingetragene Tage behalten ihre Werte (Verweis wird leer). */
   deleteCustomMeal(id: string, rows: UserRows): Promise<UserRows>;
   /** Start des Meal-Prep-Kochtags (Timer) setzen bzw. mit null zurücksetzen (Etappe N5b). */

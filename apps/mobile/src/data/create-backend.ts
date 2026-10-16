@@ -11,6 +11,7 @@ import type { Backend } from './backend';
 import { createDeviceProtectedStores } from './device-protected-store';
 import type { KeyValueStore } from './kv';
 import { createLocalBackend } from './local-backend';
+import { readWebUrl } from './food-photo-remote';
 import { createSupabaseBackend } from './supabase-backend';
 import type { ConsentPlatform } from './types';
 
@@ -68,6 +69,8 @@ export function createBackend(): Backend {
       // Etappe N7 Teil 2: Ernährungs-Zeilen und -Warteschlange (Tagebuch, eigene Gerichte) – ebenso geschützt.
       nutritionCacheStore: stores.nutritionCache,
       nutritionQueueStore: stores.nutritionQueue,
+      // Etappe E3: Gericht per Foto über apps/web (fehlt die Adresse, ist „Per Foto“ nicht verfügbar).
+      webUrl: readWebUrl(process.env.EXPO_PUBLIC_WEB_URL),
     });
   }
   // Testmodus: einzige Stelle, an der die Plan-Engine Entwürfe nutzen darf (allowDrafts in createLocalBackend).

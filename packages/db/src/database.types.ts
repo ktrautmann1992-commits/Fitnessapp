@@ -28,6 +28,45 @@ export type Database = {
         };
         Relationships: [];
       };
+      ai_usage: {
+        Row: {
+          cost_eur: number | null;
+          created_at: string;
+          feature: string;
+          finished_at: string | null;
+          id: string;
+          input_tokens: number | null;
+          model: string | null;
+          output_tokens: number | null;
+          status: string;
+          user_id: string;
+        };
+        Insert: {
+          cost_eur?: number | null;
+          created_at?: string;
+          feature: string;
+          finished_at?: string | null;
+          id?: string;
+          input_tokens?: number | null;
+          model?: string | null;
+          output_tokens?: number | null;
+          status?: string;
+          user_id: string;
+        };
+        Update: {
+          cost_eur?: number | null;
+          created_at?: string;
+          feature?: string;
+          finished_at?: string | null;
+          id?: string;
+          input_tokens?: number | null;
+          model?: string | null;
+          output_tokens?: number | null;
+          status?: string;
+          user_id?: string;
+        };
+        Relationships: [];
+      };
       body_measurements: {
         Row: {
           abdomen_cm: number | null;
@@ -2367,6 +2406,23 @@ export type Database = {
       [_ in never]: never;
     };
     Functions: {
+      ai_food_photo_access: { Args: never; Returns: Json };
+      ai_food_photo_finish: {
+        Args: {
+          p_cost_eur: number;
+          p_id: string;
+          p_input_tokens: number;
+          p_model: string;
+          p_output_tokens: number;
+          p_status: string;
+          p_user_id: string;
+        };
+        Returns: Json;
+      };
+      ai_food_photo_reserve: {
+        Args: { p_min_consent_version?: number; p_user_id: string };
+        Returns: Json;
+      };
       append_plan_block: { Args: { p_plan_id: string; p_sessions: Json }; Returns: number };
       cancel_competition: { Args: { p_id: string }; Returns: undefined };
       close_missed_sessions: { Args: never; Returns: number };
@@ -2385,6 +2441,19 @@ export type Database = {
       delete_session_log: { Args: { p_base_revision: number; p_id: string }; Returns: Json };
       delete_stored_intolerances: { Args: never; Returns: undefined };
       export_my_data: { Args: never; Returns: Json };
+      beta_admin: {
+        Args: {
+          p_action: string;
+          p_actor: string;
+          p_daily_limit?: number;
+          p_days?: number;
+          p_email?: string;
+          p_flag?: string;
+          p_monthly_limit?: number;
+        };
+        Returns: Json;
+      };
+      has_entitlement: { Args: { p_entitlement?: string }; Returns: boolean };
       has_valid_consent: {
         Args: { p_type: Database['public']['Enums']['consent_type'] };
         Returns: boolean;
@@ -2460,7 +2529,7 @@ export type Database = {
       competition_goal: 'finish' | 'time';
       competition_status: 'planned' | 'done' | 'cancelled';
       consent_platform: 'ios' | 'android' | 'web';
-      consent_type: 'terms' | 'privacy' | 'health_data' | 'cycle_data';
+      consent_type: 'terms' | 'privacy' | 'health_data' | 'cycle_data' | 'ai_food_photo';
       content_status: 'draft' | 'published' | 'archived';
       cooking_mode: 'daily' | 'meal_prep';
       diet_type: 'omnivore' | 'vegetarian' | 'vegan';
@@ -2673,7 +2742,7 @@ export const Constants = {
       competition_goal: ['finish', 'time'],
       competition_status: ['planned', 'done', 'cancelled'],
       consent_platform: ['ios', 'android', 'web'],
-      consent_type: ['terms', 'privacy', 'health_data', 'cycle_data'],
+      consent_type: ['terms', 'privacy', 'health_data', 'cycle_data', 'ai_food_photo'],
       content_status: ['draft', 'published', 'archived'],
       cooking_mode: ['daily', 'meal_prep'],
       diet_type: ['omnivore', 'vegetarian', 'vegan'],
