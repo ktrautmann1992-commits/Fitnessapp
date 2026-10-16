@@ -5,12 +5,14 @@ import type { AdaptedSession, PlannedExerciseDraft } from './adapt';
 import {
   adjacentPairs,
   baseSessionsFromBlock,
+  blockWeekDays,
   buildPlanBlock,
   chooseTrainingDays,
   cyclicMinGap,
   dosageForWeek,
   hasBackToBackSessions,
   enduranceReferenceFromBlock,
+  enduranceReferenceFromMinutes,
   type GeneratedSession,
   nextPlanBlock,
   type PreviousSession,
@@ -614,5 +616,62 @@ describe('Folgeblock mit Ausdauer und „Tage egal“', () => {
         .flatMap((s) => s.exercises.map((e) => e.exercise_id));
     expect(new Set(ids(1))).toEqual(new Set(['kniebeuge-langhantel']));
     expect(new Set(ids(6))).toEqual(new Set(['goblet-kniebeuge']));
+  });
+});
+
+describe('Vorgegebene Wochen (Wettkampfplan, Phase 10 WP1)', () => {
+  const days = [
+    { weekday: 2, kind: 'endurance' as const, minutes: 40 },
+    { weekday: 6, kind: 'endurance' as const, minutes: 60 },
+  ];
+
+  it('blockWeekDays: ohne ausgeschlossene Tage und ohne Tage vor dem Start', () => {
+    const spec = { weekNo: 1, monday: '2026-10-05', kind: 'load' as const };
+    expect(blockWeekDays(spec, days, null)).toEqual(days);
+    expect(blockWeekDays(spec, days, '2026-10-07').map((d) => d.weekday)).toEqual([6]);
+    expect(
+      blockWeekDays({ ...spec, excludedDates: ['2026-10-10'] }, days, null).map((d) => d.weekday),
+    ).toEqual([2]);
+  });
+
+  it('enduranceReferenceFromMinutes: Summe und längste Einheit, unter 10 Minuten ohne Bezug', () => {
+    expect(enduranceReferenceFromMinutes([30, 0, 45])).toEqual({ volume: 75, sessionCap: 45 });
+    expect(enduranceReferenceFromMinutes([9])).toEqual({ volume: 0, sessionCap: null });
+    expect(enduranceReferenceFromMinutes([])).toEqual({ volume: 0, sessionCap: null });
+  });
+
+  it('buildPlanBlock mit `weeks`: Wochen, Art und Faktor aus der Vorgabe', () => {
+    const rules = planSafetyRules(
+      { experienceLevel: 'advanced', birthDate: '1990-01-01', healthScreening: { flags: [] } },
+      '2026-10-05',
+    );
+    const block = buildPlanBlock({
+      days,
+      today: '2026-10-05',
+      loadWeeks: 4,
+      context: {
+        strength: null,
+        endurance: { goalType: 'endurance', discipline: '5k', experienceLevel: 'advanced', rules },
+        rules,
+        enduranceWishWeekly: 100,
+      },
+      weeks: [
+        { weekNo: 1, monday: '2026-10-05', kind: 'intro', enduranceMaxBudget: 90 },
+        {
+          weekNo: 2,
+          monday: '2026-10-12',
+          kind: 'deload',
+          enduranceVolumeFactor: 0.5,
+          excludedDates: ['2026-10-17'],
+        },
+      ],
+    });
+    expect(
+      block.sessions.map((s) => [s.week_no, s.scheduled_on, s.estimated_minutes, s.is_deload]),
+    ).toEqual([
+      [1, '2026-10-06', 40, false], // Plateau 90, je Einheit höchstens 50 % (45), Rest an Tag 1 bis zum Wunsch
+      [1, '2026-10-10', 45, false],
+      [2, '2026-10-13', 40, true], // floor(0,5 × 85) = 42, nur Dienstag (Wunsch 40); Samstag frei
+    ]);
   });
 });

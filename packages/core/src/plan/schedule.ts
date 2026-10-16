@@ -342,12 +342,12 @@ export function resolveTrainingWeek(
 // Plan-Block
 // ---------------------------------------------------------------------------------------------------------
 
-type WeekKind = 'intro' | 'load' | 'deload';
+export type BlockWeekKind = 'intro' | 'load' | 'deload';
 
 /** Dosierung je Wochenart; RPE immer innerhalb des Deckels der Sicherheitsregeln. */
 export function dosageForWeek(
   item: PlannedExerciseDraft,
-  kind: WeekKind,
+  kind: BlockWeekKind,
   rules: Pick<PlanSafetyRules, 'rpeMax'>,
 ): PlannedExerciseDraft {
   if (kind === 'deload') {
@@ -381,13 +381,63 @@ export interface BlockContext {
   readonly enduranceStricterGroup?: boolean;
   /** Belastungswochen vor diesem Block (für den Geh-Lauf-Wechsel der Einsteiger). */
   readonly loadWeeksBefore?: number;
+  /** Nur Wettkampfplan (W-G5): bestätigter, gedeckelter eigener Startumfang (enduranceWeekVolumes `startMinutes`). */
+  readonly enduranceStartMinutes?: number;
 }
 
 interface WeekPlan {
   readonly weekNo: number;
   readonly monday: string;
   readonly days: readonly PlannedDay[];
-  readonly kind: WeekKind;
+  readonly kind: BlockWeekKind;
+  /** Nur Wettkampfplan: Umfangs-Faktor einer Erholungs-/Tapering-Woche (EnduranceWeekInput.volumeFactor). */
+  readonly enduranceVolumeFactor?: number;
+  /** Nur Wettkampfplan: Plateau des Wochenumfangs (EnduranceWeekInput.maxBudget). */
+  readonly enduranceMaxBudget?: number;
+}
+
+/**
+ * Eine Woche eines vorgegebenen Blocks (Wettkampfplan, Phase 10 WP1: aus macroCycle/competitionBlockWeeks in
+ * periodization.ts). `excludedDates` = Tage ohne Einheit (Vortag, Renntag, Rest der Rennwoche).
+ */
+export interface BlockWeekSpec {
+  readonly weekNo: number;
+  readonly monday: string;
+  readonly kind: BlockWeekKind;
+  readonly enduranceVolumeFactor?: number;
+  readonly enduranceMaxBudget?: number;
+  readonly excludedDates?: readonly string[];
+}
+
+/**
+ * Tage einer vorgegebenen Woche: ohne ausgeschlossene Tage und ohne Tage vor `from` (Erzeugungsdatum; null = alle).
+ * Gleiche Auswahl für den Plan (buildPlanBlock/nextPlanBlock) und die Ampel (competition.ts).
+ */
+export function blockWeekDays(
+  spec: BlockWeekSpec,
+  days: readonly PlannedDay[],
+  from: string | null,
+): PlannedDay[] {
+  const excluded = new Set(spec.excludedDates ?? []);
+  return days.filter((d) => {
+    const date = addDays(spec.monday, d.weekday - 1);
+    return !excluded.has(date) && (from === null || date >= from);
+  });
+}
+
+function specWeek(spec: BlockWeekSpec, days: readonly PlannedDay[], from: string | null): WeekPlan {
+  return {
+    weekNo: spec.weekNo,
+    monday: spec.monday,
+    days: blockWeekDays(spec, days, from),
+    kind: spec.kind,
+    ...(spec.enduranceVolumeFactor === undefined
+      ? {}
+      : { enduranceVolumeFactor: spec.enduranceVolumeFactor }),
+    ...(spec.enduranceMaxBudget === undefined
+      ? {}
+      : { enduranceMaxBudget: spec.enduranceMaxBudget }),
+  };
 }
 
 export interface PlacedBlock {
@@ -424,6 +474,10 @@ function placeWeeks(
   const enduranceWeeks = weeks.map((week) => ({
     kind: (week.weekNo === 0 ? 'week0' : week.kind) as EnduranceWeekKind,
     wishes: week.days.filter((d) => d.kind === 'endurance').map((d) => d.minutes),
+    ...(week.enduranceVolumeFactor === undefined
+      ? {}
+      : { volumeFactor: week.enduranceVolumeFactor }),
+    ...(week.enduranceMaxBudget === undefined ? {} : { maxBudget: week.enduranceMaxBudget }),
   }));
   const volumes = enduranceWeeks.some((w) => w.wishes.length > 0)
     ? enduranceWeekVolumes(enduranceWeeks, {
@@ -431,6 +485,9 @@ function placeWeeks(
         wishWeekly: ctx.enduranceWishWeekly,
         reference: ctx.enduranceReference ?? null,
         stricterGroup: ctx.enduranceStricterGroup ?? false,
+        ...(ctx.enduranceStartMinutes === undefined
+          ? {}
+          : { startMinutes: ctx.enduranceStartMinutes }),
       })
     : null;
   if (volumes?.ramped) notes.add('endurance_volume_ramped');
@@ -520,6 +577,12 @@ export interface BuildPlanBlockOptions {
   readonly today: string;
   readonly loadWeeks: number;
   readonly context: BlockContext;
+  /**
+   * Nur Wettkampfplan (Phase 10 WP1): vorgegebene Wochen aus periodization.ts (competitionBlockWeeks). Dann gelten
+   * nicht die Regeln unten (Woche 0/Einstiegswoche/`loadWeeks`), sondern die Vorgabe; Tage vor `today` entfallen.
+   * Fehlt → unverändert.
+   */
+  readonly weeks?: readonly BlockWeekSpec[];
 }
 
 /**
@@ -532,6 +595,14 @@ export interface BuildPlanBlockOptions {
 export function buildPlanBlock(options: BuildPlanBlockOptions): PlacedBlock {
   const { days, today, loadWeeks, context } = options;
   if (days.length === 0) return { sessions: [], notes: new Set() };
+  if (options.weeks) {
+    return placeWeeks(
+      options.weeks.map((spec) => specWeek(spec, days, today)),
+      context,
+      1,
+      0,
+    );
+  }
   const monday = startOfIsoWeek(today);
   const weekday = isoWeekday(today);
   const remaining = days.filter((d) => d.weekday >= weekday);
@@ -550,7 +621,7 @@ export function buildPlanBlock(options: BuildPlanBlockOptions): PlacedBlock {
     introInWeekZero = true;
   }
   for (let w = 1; w <= loadWeeks + 1; w += 1) {
-    const kind: WeekKind =
+    const kind: BlockWeekKind =
       w === loadWeeks + 1 ? 'deload' : w === 1 && !introInWeekZero ? 'intro' : 'load';
     weeks.push({
       weekNo: w,
@@ -605,10 +676,18 @@ export function enduranceReferenceFromBlock(
         : Math.max(0, Math.min(s.estimated_minutes, Math.floor(logged)));
     })
     .filter((m) => m > 0);
-  const volume = minutes.reduce((sum, m) => sum + m, 0);
-  const cap = minutes.length > 0 ? Math.max(...minutes) : null;
-  // Unter dem Einheiten-Minimum (10 min) wie „ohne Bezug“: sonst würden alle Einheiten des Folgeblocks unter die
-  // Mindestdauer fallen und gestrichen – für immer.
+  return enduranceReferenceFromMinutes(minutes);
+}
+
+/**
+ * Bezug aus den Minuten der Ausdauer-Einheiten EINER Belastungswoche (nur Werte > 0): Summe und längste Einheit; unter
+ * dem Einheiten-Minimum (10 min) wie „ohne Bezug“ – sonst würden alle Einheiten des Folgeblocks unter die Mindestdauer
+ * fallen und gestrichen, für immer. Auch für die Ampel des Wettkampfplans (competition.ts, dieselbe Kette).
+ */
+export function enduranceReferenceFromMinutes(minutes: readonly number[]): EnduranceReference {
+  const positive = minutes.filter((m) => m > 0);
+  const volume = positive.reduce((sum, m) => sum + m, 0);
+  const cap = positive.length > 0 ? Math.max(...positive) : null;
   const min = ENDURANCE_SESSION_LIMITS.minSessionMinutes;
   return {
     volume: volume < min ? 0 : volume,
@@ -689,6 +768,11 @@ export interface NextPlanBlockOptions {
    * Rumpf-Übung. Weggelassen → Kürzen wie Engine-Version 2.
    */
   readonly protectLastCore?: boolean;
+  /**
+   * Nur Wettkampfplan (Phase 10 WP1): Wochen des Folgeblocks aus periodization.ts (nextCompetitionBlockWeeks) statt
+   * `loadWeeks` Belastungswochen + Erholungswoche. Fehlt → unverändert.
+   */
+  readonly competitionWeeks?: readonly BlockWeekSpec[];
 }
 
 /**
@@ -798,13 +882,17 @@ export function nextPlanBlock(
   const primarySessions = versions.get(primary) ?? [];
 
   const weeks: WeekPlan[] = [];
-  for (let w = 1; w <= options.loadWeeks + 1; w += 1) {
-    weeks.push({
-      weekNo: w,
-      monday: addDays(monday, (w - 1) * 7),
-      days,
-      kind: w === options.loadWeeks + 1 ? 'deload' : 'load',
-    });
+  if (options.competitionWeeks) {
+    for (const spec of options.competitionWeeks) weeks.push(specWeek(spec, days, null));
+  } else {
+    for (let w = 1; w <= options.loadWeeks + 1; w += 1) {
+      weeks.push({
+        weekNo: w,
+        monday: addDays(monday, (w - 1) * 7),
+        days,
+        kind: w === options.loadWeeks + 1 ? 'deload' : 'load',
+      });
+    }
   }
   // Rotation ab der Vorlagen-Einheit NACH der letzten geplanten Kraft-Einheit weiterzählen.
   const lastStrength = [...previous]

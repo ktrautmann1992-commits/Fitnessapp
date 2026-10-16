@@ -22,3 +22,6 @@ export * from './update';
 export * from './view';
 export * from './volume';
 export * from './move';
+export * from './competition';
+export * from './competition-schema';
+export * from './periodization';

@@ -290,3 +290,72 @@ describe('enduranceWeekVolumes – 10-%-Regel, Deload, Deckel', () => {
     expect(result.weeks[0]?.minutes).toEqual([33, 33]);
   });
 });
+
+describe('enduranceWeekVolumes – Wettkampf-Erweiterungen (Phase 10 WP1, ohne Angabe wie bisher)', () => {
+  const week = (kind: EnduranceWeekInput['kind'], extra: Partial<EnduranceWeekInput> = {}) => ({
+    kind,
+    wishes: [60, 60, 60],
+    ...extra,
+  });
+  const budgets = (weeks: EnduranceWeekInput[], startMinutes?: number) =>
+    enduranceWeekVolumes(weeks, {
+      group: 'advanced',
+      wishWeekly: 180,
+      ...(startMinutes === undefined ? {} : { startMinutes }),
+    }).weeks.map((w) => w.budget);
+
+  it('volumeFactor ersetzt nur bei Erholungswochen den Faktor 0,6 (Tapering 0,4 → floor)', () => {
+    expect(budgets([week('intro'), week('deload')])).toEqual([120, 72]);
+    expect(budgets([week('intro'), week('deload', { volumeFactor: 0.4 })])).toEqual([120, 48]);
+    expect(budgets([week('intro'), week('deload', { volumeFactor: 0.75 })])).toEqual([120, 90]);
+    // Bei Belastungswochen ohne Wirkung.
+    expect(budgets([week('intro', { volumeFactor: 0.1 }), week('load')])).toEqual([120, 132]);
+  });
+
+  it('maxBudget deckelt Belastungswochen (Plateau), hebt nie und wirkt nicht auf Erholungswochen', () => {
+    expect(
+      budgets([
+        week('intro', { maxBudget: 125 }),
+        week('load', { maxBudget: 125 }),
+        week('load', { maxBudget: 125 }),
+        week('deload', { maxBudget: 10 }),
+      ]),
+    ).toEqual([120, 125, 125, 75]);
+    expect(budgets([week('intro', { maxBudget: 500 }), week('load', { maxBudget: 500 })])).toEqual([
+      120, 132,
+    ]);
+  });
+
+  it('startMinutes ersetzt den Startumfang der Gruppe (nie über dem Wunsch), Kette danach wie immer', () => {
+    expect(budgets([week('intro'), week('load')], 150)).toEqual([150, 165]);
+    expect(budgets([week('intro'), week('load')], 400)).toEqual([180, 180]);
+    expect(budgets([week('intro')], 45.9)).toEqual([45]);
+  });
+});
+
+describe('enduranceWeekVolumes – Grenzen der Wettkampf-Felder (Wächter N2)', () => {
+  const run = (extra: Partial<EnduranceWeekInput>, kind: EnduranceWeekInput['kind'] = 'deload') =>
+    enduranceWeekVolumes(
+      [
+        { kind: 'intro', wishes: [60] },
+        { kind, wishes: [60], ...extra },
+      ],
+      {
+        group: 'advanced',
+        wishWeekly: 60,
+      },
+    );
+  it.each([0, -0.1, 1.01, Number.NaN, Number.POSITIVE_INFINITY])(
+    'volumeFactor %s → Fehler',
+    (f) => {
+      expect(() => run({ volumeFactor: f })).toThrow(RangeError);
+    },
+  );
+  it.each([-1, Number.NaN])('maxBudget %s → Fehler', (b) => {
+    expect(() => run({ maxBudget: b }, 'load')).toThrow(RangeError);
+  });
+  it('Grenzwerte 1 und 0 erlaubt', () => {
+    expect(run({ volumeFactor: 1 }).weeks[1]?.budget).toBe(60);
+    expect(run({ maxBudget: 0 }, 'load').weeks[1]?.budget).toBe(0);
+  });
+});
