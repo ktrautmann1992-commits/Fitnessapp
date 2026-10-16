@@ -144,6 +144,16 @@ export interface EnduranceWeekInput {
   readonly kind: EnduranceWeekKind;
   /** Wunsch-Minuten der Ausdauer-Tage dieser Woche (in Tagesreihenfolge). */
   readonly wishes: readonly number[];
+  /**
+   * Nur Wettkampfplan (Phase 10, WP1), nur bei `deload`: Umfang = floor(Faktor × letzte Belastungswoche) statt
+   * ENDURANCE_DELOAD_VOLUME_FACTOR (Tapering, Rennwoche, Erholung nach dem Rennen). Fehlt → wie bisher.
+   */
+  readonly volumeFactor?: number;
+  /**
+   * Nur Wettkampfplan, nur bei `intro`/`load`: Obergrenze des Wochenumfangs (Spitzenumfang erreicht → Plateau, „kein
+   * immer mehr“, Plan 3.1). Senkt nur, hebt nie. Fehlt → wie bisher.
+   */
+  readonly maxBudget?: number;
 }
 
 /** Bezug für einen Folgeblock (aus planned_sessions der letzten Belastungswoche, ohne gestrichene). */
@@ -267,9 +277,17 @@ export function enduranceWeekVolumes(
      * neuen Gruppe, Deckel je Einheit beginnt wieder beim Start-Deckel (wie eine erste Belastungswoche).
      */
     readonly stricterGroup?: boolean;
+    /**
+     * Nur Wettkampfplan (W-G5): bestätigter eigener Startumfang statt des Startumfangs der Gruppe – schon gedeckelt
+     * (ownStartMinutes in competition.ts). S = min(Wunsch, Angabe). Fehlt → Startumfang der Gruppe wie bisher.
+     */
+    readonly startMinutes?: number;
   },
 ): EnduranceVolumesResult {
-  const S = enduranceStartMinutes(options.group, options.wishWeekly);
+  const S =
+    options.startMinutes === undefined
+      ? enduranceStartMinutes(options.group, options.wishWeekly)
+      : Math.min(Math.floor(options.wishWeekly), Math.floor(options.startMinutes));
   const startCap = enduranceStartSessionCap(options.group);
   const reference = options.reference ?? null;
   const restart = reference !== null && (options.stricterGroup ?? false);
@@ -285,6 +303,16 @@ export function enduranceWeekVolumes(
   let droppedDay = false;
   const results: EnduranceWeekResult[] = [];
   for (const week of weeks) {
+    // Wächter N2: Erholungs-/Tapering-Faktor nie über 100 %, Plateau nie negativ – Programmierfehler laut melden.
+    if (
+      week.volumeFactor !== undefined &&
+      !(Number.isFinite(week.volumeFactor) && week.volumeFactor > 0 && week.volumeFactor <= 1)
+    ) {
+      throw new RangeError('volumeFactor muss größer als 0 und höchstens 1 sein.');
+    }
+    if (week.maxBudget !== undefined && !(Number.isFinite(week.maxBudget) && week.maxBudget >= 0)) {
+      throw new RangeError('maxBudget muss mindestens 0 sein.');
+    }
     const wish = week.wishes.reduce((sum, w) => sum + w, 0);
     let budget: number;
     let cap: number;
@@ -297,11 +325,15 @@ export function enduranceWeekVolumes(
     } else if (week.kind === 'deload') {
       budget = Math.min(
         wish,
-        scaledMinutes(refVolume > 0 ? refVolume : S, ENDURANCE_DELOAD_VOLUME_FACTOR),
+        scaledMinutes(
+          refVolume > 0 ? refVolume : S,
+          week.volumeFactor ?? ENDURANCE_DELOAD_VOLUME_FACTOR,
+        ),
       );
       cap = lastCap ?? startCap ?? Number.POSITIVE_INFINITY;
     } else {
       budget = capWeeklyIncrease(refVolume, wish, S);
+      if (week.maxBudget !== undefined) budget = Math.min(budget, Math.floor(week.maxBudget));
       if (!hadLoadWeek) {
         cap = Math.min(
           startCap ?? Number.POSITIVE_INFINITY,
