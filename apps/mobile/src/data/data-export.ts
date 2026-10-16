@@ -166,6 +166,10 @@ export function localDataExport(
     custom_meal_items: [...rows.customMealItems].sort(
       (a, b) => a.meal_id.localeCompare(b.meal_id) || a.order_no - b.order_no,
     ),
+    // Wettkämpfe (Phase 10 WP3) – Spalten wie competitions, sortiert wie export_my_data() (Renntag, Anlage).
+    competitions: [...rows.competitions].sort(
+      (a, b) => a.race_date.localeCompare(b.race_date) || a.created_at.localeCompare(b.created_at),
+    ),
     // Übungs-Präferenzen (Etappe T2) – in export_my_data() erst mit Etappe T3 (PENDING_DB_EXPORT_TABLES).
     exercise_preferences: rows.exercisePreferences,
   };

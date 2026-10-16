@@ -29,6 +29,20 @@ import {
   CUSTOM_MEAL_LIMITS,
   PINCH_G,
   BODY_METRIC_LIMITS,
+  AGE_PLAN_RULES,
+  COMPETITION_DISTANCE_M,
+  COMPETITION_EFFORT_LIMITS,
+  COMPETITION_INPUT_LIMITS,
+  COMPETITION_INTENSITY,
+  COMPETITION_LEAD_WEEKS,
+  COMPETITION_LONG_RUN,
+  COMPETITION_WORKOUTS,
+  ENDURANCE_EFFORT,
+  COMPETITION_OWN_START,
+  COMPETITION_PACE,
+  COMPETITION_RECORD_LIMITS,
+  COMPETITION_START_REFERENCE,
+  ENDURANCE_OVERLOAD_RULE,
   EQUIPMENT_LIMITS,
   MEASURED_ON_MAX_DAYS_AHEAD,
   MEASUREMENT_REMINDER_INTERVAL_DAYS,
@@ -113,6 +127,25 @@ import {
   setLogSchema,
 } from './log/schemas';
 import { ENDURANCE_EFFORT_LIMITS } from './plan/generate';
+import {
+  COMPETITION_DISCIPLINES,
+  COMPETITION_GOALS,
+  COMPETITION_PHASES,
+  COMPETITION_STATUSES,
+} from './plan/competition-schema';
+import {
+  COMPETITION_NAME_TRIM_CLASS,
+  COMPETITION_PLAN_BASIS_COLUMNS,
+  saveCompetitionPayloadSchema,
+} from './plan/competition-record';
+import {
+  enduranceOverloadThreshold,
+  HARD_WORKOUT_TYPES,
+  WORKOUT_STEP_LIMITS,
+  WORKOUT_TYPES,
+  workoutStepSchema,
+} from './plan/intensity';
+import { ENDURANCE_START_GROUPS } from './plan/safety';
 import {
   savePlanExerciseSchema,
   savePlanFixedSlotSchema,
@@ -218,6 +251,13 @@ describe('Enums', () => {
     ['activity_level', enums.ACTIVITY_LEVELS],
     ['training_time', enums.TRAINING_TIMES],
     ['mealprep_slot_mode', enums.MEALPREP_SLOT_MODES],
+    // Phase 10 · WP3 (20261016140000_competition_enums.sql)
+    ['competition_discipline', COMPETITION_DISCIPLINES],
+    ['competition_goal', COMPETITION_GOALS],
+    ['competition_status', COMPETITION_STATUSES],
+    ['endurance_start_group', ENDURANCE_START_GROUPS],
+    ['workout_type', WORKOUT_TYPES],
+    ['training_phase', COMPETITION_PHASES],
   ] as const)('public.%s entspricht packages/core', (name, values) => {
     expect(enumValues(name)).toEqual([...values]);
   });
@@ -441,6 +481,8 @@ describe('Eingabe der Plan-Funktionen (save_training_plan / append_plan_block)',
   // Jeweils die NEUESTE Fassung der Funktion (create or replace in einer späteren Migration).
   const rpcSql = readMigration('_training_plan_rpcs.sql');
   const kindsSql = readMigration('_plan_session_kinds.sql');
+  // Neueste Fassung von private.insert_plan_sessions (Phase 10 WP3: Felder des Wettkampfplans).
+  const sessionsSql = readMigration('_competition_rpcs.sql');
   // Letzte Fassung von private.assert_plan_inputs (Ziele, Etappe Z1: optionales Nebenziel).
   const goalsSql = readMigration('_plan_inputs_secondary_goal.sql');
   const keysOf = (sql: string, name: string) =>
@@ -450,7 +492,7 @@ describe('Eingabe der Plan-Funktionen (save_training_plan / append_plan_block)',
     ['plan_keys', rpcSql, savePlanPayloadSchema],
     ['allowed_keys', goalsSql, savePlanInputsSchema],
     ['equipment_keys', goalsSql, savePlanHomeEquipmentSchema],
-    ['session_keys', kindsSql, savePlanSessionSchema],
+    ['session_keys', sessionsSql, savePlanSessionSchema],
     ['exercise_keys', kindsSql, savePlanExerciseSchema],
     // verschachtelt: schedule → mode/slots; slots[] → weekday/kind/minutes bzw. kind/minutes
     ['schedule_keys', goalsSql, savePlanScheduleFixedSchema],
@@ -832,9 +874,10 @@ describe('Ernährung in der Datenbank (Phase 5, Etappe N7)', () => {
     expect(body.slice(0, end)).toContain(
       'delete from public.shopping_lists where user_id = new.user_id and uses_health_data;',
     );
-    // Neueste Fassung seit Etappe E2 in *_custom_meal_rpcs.sql (E1: Tagebuch-Einträge, E2: eigene Gerichte).
+    // Neueste Fassung seit Phase 10 WP3 in *_competition_rpcs.sql (E1: Tagebuch-Einträge, E2: eigene Gerichte,
+    // WP3: Plan-Bezug der Wettkämpfe leeren).
     expect(migrationFiles.filter((n) => readMigration(n).includes(marker)).at(-1)).toMatch(
-      /_custom_meal_rpcs\.sql$/,
+      /_competition_rpcs\.sql$/,
     );
   });
 
@@ -1001,10 +1044,10 @@ describe('Ernährungstagebuch in der Datenbank (Etappe E1)', () => {
     }
   });
 
-  it('export_my_data(): neueste Fassung in *_custom_meal_rpcs.sql (E2)', () => {
+  it('export_my_data(): neueste Fassung in *_competition_rpcs.sql (E2, danach Phase 10 WP3)', () => {
     const marker = 'create or replace function public.export_my_data()';
     expect(migrationFiles.filter((n) => readMigration(n).includes(marker)).at(-1)).toMatch(
-      /_custom_meal_rpcs\.sql$/,
+      /_competition_rpcs\.sql$/,
     );
   });
 });
@@ -1164,6 +1207,224 @@ describe('Eigene Gerichte in der Datenbank (Etappe E2)', () => {
   it('Lebensmittel in Zutaten: on delete restrict; Tagebuch-Verweis: on delete set null (nur die Spalte)', () => {
     expect(items).toContain('references public.foods (id) on update cascade on delete restrict');
     expect(tables).toContain('on delete set null (custom_meal_id)');
+  });
+});
+
+describe('Wettkampf in der Datenbank (Phase 10 WP3)', () => {
+  const tables = readMigration('_competitions.sql');
+  const rpcs = readMigration('_competition_rpcs.sql');
+  /** Rumpf einer Funktion (bis zum Ende ihres $$-Blocks). */
+  const fn = (sql: string, name: string) => {
+    const start = sql.indexOf(`create or replace function ${name}(`);
+    if (start < 0) throw new Error(`${name} nicht gefunden`);
+    return sql.slice(start, sql.indexOf('$$;', sql.indexOf('as $$', start)));
+  };
+  const constant = (name: string, value: number) => `${name} constant integer := ${value};`;
+  const save = fn(rpcs, 'public.save_competition');
+  const insertSessions = fn(rpcs, 'private.insert_plan_sessions');
+  const steps = fn(tables, 'private.workout_steps_valid');
+  const R = COMPETITION_START_REFERENCE;
+
+  it('competition_keys = Felder von saveCompetitionPayloadSchema (alle Pflicht)', () => {
+    expect(quotedListAfter(save, 'competition_keys constant text[] := array[').sort()).toEqual(
+      Object.keys(saveCompetitionPayloadSchema.shape).sort(),
+    );
+    expect(save).toContain('if not (c ?& competition_keys)');
+  });
+
+  it('Distanz je Disziplin = COMPETITION_DISTANCE_M', () => {
+    const body = fn(tables, 'private.competition_distance_m');
+    for (const d of COMPETITION_DISCIPLINES) {
+      expect(body).toContain(`when '${d}' then ${COMPETITION_DISTANCE_M[d]}`);
+    }
+    expect(tables).toContain('check (distance_m = private.competition_distance_m(discipline))');
+  });
+
+  it('Ziel-/Referenzzeit plausibel je Distanz = COMPETITION_INPUT_LIMITS.timeS', () => {
+    const body = fn(tables, 'private.competition_time_plausible');
+    for (const d of COMPETITION_DISCIPLINES) {
+      const { min, max } = COMPETITION_INPUT_LIMITS.timeS[d];
+      expect(body).toContain(`when '${d}' then p_time_s between ${min} and ${max}`);
+    }
+  });
+
+  it.each([
+    `char_length(name) between 1 and ${COMPETITION_INPUT_LIMITS.nameMaxLength}`,
+    `own_start_weekly_minutes between ${COMPETITION_OWN_START.minWeeklyMinutes} and ${TRAINING_LIMITS.minutesPerSession.max * 7}`,
+    `start_reference_volume = 0 or start_reference_volume between ${R.minMinutes} and ${R.maxWeeklyMinutes}`,
+    `start_reference_session_cap between ${R.minMinutes} and ${R.maxSessionMinutes}`,
+    'start_reference_session_cap <= start_reference_volume',
+    'long_run_weekday between 1 and 7',
+    "(goal_kind <> 'time' or reference_time_s is not null)",
+    "(effective_goal is distinct from 'time' or goal_kind = 'time')",
+    'uses_health_data = (effective_goal is not null)',
+    `target_distance_m between ${COMPETITION_PACE.distanceM.min} and ${COMPETITION_PACE.distanceM.max}`,
+    `effort_target between ${COMPETITION_EFFORT_LIMITS.min} and ${COMPETITION_EFFORT_LIMITS.max}`,
+    `(effort_target is null or effort_target <= ${ENDURANCE_EFFORT_LIMITS.max})`,
+    `(effort_target <= ${COMPETITION_EFFORT_LIMITS.easyMax} or workout_type in (`,
+    "or training_phase = 'taper')",
+    "create unique index competitions_one_planned_idx on public.competitions (user_id) where status = 'planned';",
+    'on delete set null (result_session_log_id)',
+  ])('Tabellen-SQL enthält „%s“', (expected) => {
+    expect(tables).toContain(expected);
+  });
+
+  it('harte Arten im CHECK und in insert_plan_sessions = HARD_WORKOUT_TYPES', () => {
+    const check = tables.slice(tables.indexOf('add constraint planned_sessions_workout_fields'));
+    expect(quotedListAfter(check, 'workout_type in (')).toEqual([...HARD_WORKOUT_TYPES]);
+    expect(lastQuotedListAfter(check, 'workout_type not in (')).toEqual([...HARD_WORKOUT_TYPES]);
+    expect(
+      quotedListAfter(insertSessions, 'hard_types constant public.workout_type[] := array['),
+    ).toEqual([...HARD_WORKOUT_TYPES]);
+  });
+
+  it('CHECK effort_target: letzte Fassung 1–8 (Phase 3: 1–4 wurde gelockert, nicht umgeschrieben)', () => {
+    const marker = /effort_target between (\d+) and (\d+)/g;
+    const all = [...allSql.matchAll(marker)].map((m) => [Number(m[1]), Number(m[2])]);
+    expect(all.at(0)).toEqual([ENDURANCE_EFFORT_LIMITS.min, ENDURANCE_EFFORT_LIMITS.max]);
+    expect(all.at(-1)).toEqual([COMPETITION_EFFORT_LIMITS.min, COMPETITION_EFFORT_LIMITS.max]);
+    expect(tables).toContain('drop constraint planned_sessions_effort_target_check');
+  });
+
+  it('Schritte (private.workout_steps_valid) = workoutStepSchema / WORKOUT_STEP_LIMITS', () => {
+    const shape = workoutStepSchema.shape;
+    expect(steps).toContain(
+      `jsonb_array_length(p_steps) not between 1 and ${WORKOUT_STEP_LIMITS.maxSteps}`,
+    );
+    expect(steps).toContain(
+      `octet_length(p_steps::text) > ${COMPETITION_RECORD_LIMITS.workoutStepsMaxBytes}`,
+    );
+    expect(steps).toContain(
+      `(select count(*) from jsonb_object_keys(step)) <> ${Object.keys(shape).length}`,
+    );
+    expect(quotedListAfter(steps, 'step ?& array[').sort()).toEqual(Object.keys(shape).sort());
+    expect(quotedListAfter(steps, "(step ->> 'part') not in (")).toEqual([...shape.part.options]);
+    expect(quotedListAfter(steps, "(step ->> 'kind') not in (")).toEqual([...shape.kind.options]);
+    const { min, max } = WORKOUT_STEP_LIMITS.seconds;
+    expect(steps).toContain(`(step -> 'seconds')::numeric not between ${min} and ${max}`);
+    expect(steps).toContain(
+      `(step -> 'effort')::numeric not between ${shape.effort.minValue} and ${shape.effort.maxValue}`,
+    );
+    expect(steps).toContain('return total = p_minutes::bigint * 60;');
+  });
+
+  it('Regeln je Person in insert_plan_sessions = COMPETITION_INTENSITY / AGE_PLAN_RULES', () => {
+    const I = COMPETITION_INTENSITY;
+    for (const expected of [
+      constant('hard_effort_cap_general', I.hardEffortCap.general),
+      constant('hard_effort_cap_minor', I.hardEffortCap.minor),
+      constant('hard_effort_cap_senior', I.hardEffortCap.senior),
+      constant('hard_effort_min', I.hardEffortMin),
+      constant('hard_sessions_per_week_strict', I.hardSessionsPerWeek.strict),
+      constant('hard_sessions_per_week_general', I.hardSessionsPerWeek.general),
+      constant('minor_below_age', AGE_PLAN_RULES.minor.belowAge),
+      constant('senior_from_age', AGE_PLAN_RULES.senior.fromAge),
+    ]) {
+      expect(insertSessions).toContain(expected);
+    }
+    expect(I.hardEffortCap.general).toBe(COMPETITION_EFFORT_LIMITS.max);
+    expect(insertSessions).toContain("group by date_trunc('week', ps.scheduled_on)");
+  });
+
+  it('save_competition: Datumsrahmen und Mindestvorlauf (lockerste Spalte) = COMPETITION_LEAD_WEEKS', () => {
+    const column = COMPETITION_RECORD_LIMITS.leadWeeksServerColumn;
+    const lead = COMPETITION_DISCIPLINES.map(
+      (d) => `when '${d}' then ${COMPETITION_LEAD_WEEKS.minimum[d][column]}`,
+    ).join(' ');
+    expect(save).toContain(`min_lead_weeks := case v_discipline ${lead} end;`);
+    // Lockerste Spalte = kleinster Wert je Distanz (der Server ist nur Untergrenze).
+    for (const d of COMPETITION_DISCIPLINES) {
+      expect(COMPETITION_LEAD_WEEKS.minimum[d][column]).toBe(
+        Math.min(...Object.values(COMPETITION_LEAD_WEEKS.minimum[d])),
+      );
+    }
+    expect(save).toContain(constant('max_lead_days', COMPETITION_LEAD_WEEKS.maxLeadWeeks * 7));
+    expect(save).toContain(
+      constant('reference_max_age_days', COMPETITION_INPUT_LIMITS.referenceMaxAgeDays),
+    );
+    expect(save).toContain(constant('minor_below_age', AGE_PLAN_RULES.minor.belowAge));
+    expect(save).toContain(constant('senior_from_age', AGE_PLAN_RULES.senior.fromAge));
+  });
+
+  it('Widerruf leert genau den Plan-Bezug (COMPETITION_PLAN_BASIS_COLUMNS), zweimal', () => {
+    const body = fn(rpcs, 'private.consents_after_revoke');
+    const updates = body.split('update public.competitions').slice(1);
+    expect(updates).toHaveLength(2);
+    for (const update of updates) {
+      const set = update.slice(0, update.indexOf(';'));
+      const cleared = [...set.matchAll(/([a-z_]+) = null/g)].map((m) => m[1]).sort();
+      expect(cleared).toEqual([...COMPETITION_PLAN_BASIS_COLUMNS].sort());
+      expect(set).toContain('uses_health_data = false');
+    }
+  });
+
+  it('Wächter WP3 H1: Schritte passen zur Art, „hart“ über die Schritte = ENDURANCE_EFFORT / COMPETITION_WORKOUTS', () => {
+    const fit = fn(tables, 'private.workout_steps_fit_type');
+    const hard = fn(tables, 'private.workout_is_hard');
+    const S = COMPETITION_WORKOUTS.strides;
+    expect(quotedListAfter(fit, 'if p_type in (')).toEqual([...HARD_WORKOUT_TYPES]);
+    expect(quotedListAfter(hard, 'if p_type in (')).toEqual([...HARD_WORKOUT_TYPES]);
+    expect(fit).toContain(`where (st ->> 'effort')::numeric > ${ENDURANCE_EFFORT.easyMax}\n`);
+    expect(fit).toContain(`(st ->> 'seconds')::numeric > ${S.workS})`);
+    expect(fit).toContain(
+      `(st ->> 'effort')::numeric > ${ENDURANCE_EFFORT.easyMax}) <= ${S.count};`,
+    );
+    expect(hard).toContain(
+      `(st ->> 'effort')::numeric >= ${COMPETITION_INTENSITY.hardEffortMin} and (st ->> 'seconds')::numeric > ${S.workS}`,
+    );
+    expect(tables).toContain('and private.workout_steps_fit_type(workout_type, workout_steps)');
+    expect(tables).toContain(
+      "and (not is_deload or training_phase = 'taper' or not private.workout_is_hard(workout_type, workout_steps)))",
+    );
+    expect(insertSessions).toContain(
+      'and private.workout_is_hard(ps.workout_type, ps.workout_steps)',
+    );
+  });
+
+  it('Wächter WP3 M1/M2: Level aus Profil, Wettkampf mit Plan-Bezug, Distanz-Deckel = COMPETITION_LONG_RUN', () => {
+    expect(insertSessions).toContain("when profile_level = 'beginner'");
+    expect(insertSessions).toContain(
+      "where c.user_id = p_user_id and c.status = 'planned'\n    for share;",
+    );
+    const caps = COMPETITION_DISCIPLINES.map(
+      (d) => `when '${d}' then ${COMPETITION_LONG_RUN.maxMinutes[d]}`,
+    ).join(' ');
+    expect(insertSessions).toContain(`case competition_row.discipline\n          ${caps} end`);
+    expect(insertSessions).toContain("competition_row.discipline = 'marathon'");
+  });
+
+  it('Wächter WP3 N4: Leerraum am Rand des Namens = genau die Zeichen von String.prototype.trim()', () => {
+    expect(tables).toContain(`and name !~ '^[${COMPETITION_NAME_TRIM_CLASS}]'`);
+    expect(tables).toContain(`and name !~ '[${COMPETITION_NAME_TRIM_CLASS}]$'`);
+    const re = new RegExp(`^[${COMPETITION_NAME_TRIM_CLASS}]$`, 'u');
+    for (let code = 0; code <= 0xffff; code += 1) {
+      if (code >= 0xd800 && code <= 0xdfff) continue;
+      const c = String.fromCharCode(code);
+      expect(re.test(c), `U+${code.toString(16)}`).toBe(c.trim() === '');
+    }
+  });
+
+  it('save_competition mit Plan-Bezug sperrt die Einwilligung vor der Wettkampf-Zeile (Wächter N7 S2)', () => {
+    expect(save.indexOf('private.plan_health_basis()')).toBeGreaterThan(0);
+    expect(save.indexOf('private.plan_health_basis()')).toBeLessThan(save.indexOf('for update'));
+  });
+
+  it('4b endurance_reduce (Risiko 7): neue Fassung hält Abstand zu JEDEM Ziel bis zur CHECK-Grenze', () => {
+    // Seit WP3 erlaubt der CHECK Ziele bis 8 (vorher 1–4, feste Schwelle 7 – PLAN-PHASE-4B R3, Wächter S6). Die neue
+    // Fassung (enduranceOverloadThreshold) muss für jedes erlaubte Ziel ÜBER dem Ziel liegen und für lockere Ziele
+    // unverändert 7 bleiben. Steigt der CHECK erneut, schlägt dieser Test fehl → 4b-Regel neu prüfen.
+    const marker = /effort_target between (\d+) and (\d+)/g;
+    const last = [...allSql.matchAll(marker)].at(-1);
+    const max = Number(last?.[2]);
+    expect(max).toBe(8);
+    for (let target = COMPETITION_EFFORT_LIMITS.min; target <= max; target += 1) {
+      const threshold = enduranceOverloadThreshold(target);
+      expect(threshold, `Ziel ${target}`).toBeGreaterThan(target);
+      expect(threshold, `Ziel ${target}`).toBeLessThanOrEqual(10);
+      if (target <= ENDURANCE_OVERLOAD_RULE.easyTargetMax) {
+        expect(threshold).toBe(ENDURANCE_OVERLOAD_RULE.minEffort);
+      }
+    }
   });
 });
 

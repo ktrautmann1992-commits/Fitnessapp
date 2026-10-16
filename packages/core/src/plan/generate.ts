@@ -36,7 +36,13 @@ import {
   type CompetitionWeekInfo,
 } from './competition';
 import { COMPETITION_PHASES } from './competition-schema';
-import { isHardWorkoutType, WORKOUT_TYPES, workoutStepsSchema } from './intensity';
+import {
+  isHardSession,
+  isHardWorkoutType,
+  stepsFitWorkoutType,
+  WORKOUT_TYPES,
+  workoutStepsSchema,
+} from './intensity';
 import type { PlanLibrary } from './content-pool';
 import { loadWeeksBeforeDeload } from './deload';
 import { equipmentProfile, isBodyweightOnly } from './equipment-profile';
@@ -213,6 +219,16 @@ export const generatedCompetitionSessionSchema = sessionSchema(COMPETITION_EFFOR
         s.workout_steps != null &&
         s.workout_steps.reduce((sum, st) => sum + st.seconds, 0) === s.estimated_minutes * 60),
     'Ausdauer im Wettkampfplan: Art, Phase und Schritte (Summe = Dauer).',
+  )
+  .refine(
+    (s) =>
+      s.workout_type == null ||
+      s.workout_steps == null ||
+      (stepsFitWorkoutType(s.workout_type, s.workout_steps) &&
+        (!s.is_deload ||
+          s.training_phase === 'taper' ||
+          !isHardSession(s.workout_type, s.workout_steps))),
+    'Schritte passen zur Art; nichts Hartes in einer Erholungswoche außer im Tapering (WP3, Wächter H1).',
   );
 
 function planSchema<

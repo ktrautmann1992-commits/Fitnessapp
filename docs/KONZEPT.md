@@ -160,6 +160,13 @@ Verbindlich ist der freigegebene Ablauf in `docs/PLAN-PHASE-1.md` Abschnitt 3 (S
   Distanz-Richtwert nur mit eigener Referenzzeit (Riegel, nur bis Distanzfaktor 4), Zielzeit höchstens 5 % schneller als
   die Vorhersage. „Nur
   Gehen“ (Flag, ab 65) → Ampel höchstens „Knapp“ (G7).
+- **Datenmodell Wettkampf (Phase 10, Etappe WP3, umgesetzt 16.10.2026, `docs/PLAN-PHASE-10.md` Umsetzungsstand WP3):**
+  Tabelle `competitions` (ein geplanter Wettkampf je Person, Speichern nur über `save_competition`), Wettkampf-Felder je
+  Einheit in `planned_sessions` (Art, Phase, Schritte, Distanz-Richtwert; Anstrengung bis 8 nur bei harter Art). Der
+  Server prüft zusätzlich je Person: Wettkampfplan nur mit Gesundheits-Check, nicht in der Schwangerschaft, unter 18
+  höchstens 7 und kein Marathon, ab 65 höchstens 6, mit Arzt-Hinweis keine harten Einheiten, harte Einheiten je Woche
+  (Einsteiger/vorsichtig 1, sonst 2). Der Wettkampf selbst ist kein Gesundheitsdatum; der daraus abgeleitete Plan-Bezug
+  nur mit Einwilligung, beim Widerruf geleert.
 - Ausdauer-Ziel klarer (Gründer-Feedback „Ziel Marathon → Plan für allgemeine Fitness“): Beim Ziel Ausdauer belegt
   „Deine Trainingstage“ Ausdauer-Tage vor (`suggestedTrainingSlots`, Werte `ENDURANCE_GOAL_SUGGESTION`: 3 Ausdauer + 2 Kraft,
   Leistungssport 4 + 2, vorsichtig 2 + 1, Triathlon mehr Ausdauer; Deckel wie oben) – nur ohne gewählte Tage, änderbar
@@ -924,6 +931,16 @@ eigene Zeilen, in Export und Kontolöschung enthalten.
   (Rezept, Wochentag, Kühlschrank/Einfrieren/frisch), geprüft gegen die Haltbarkeitsregeln
 - Paar-Modus: gemeinsame Pläne/Einkaufslisten erst mit dem Partner-Modus (Phase 11), Tabellen dort festlegen
 - `waitlist.source` (`warteliste` | `lead-magnet`) für den Lead-Magnet (Abschnitt 17) – nicht Teil der App-Daten
+
+### Abweichungen ab Phase 10, Etappe WP3 (umgesetzt, siehe `docs/PLAN-PHASE-10.md` Abschnitt 7 und `supabase/migrations/20261016140*`)
+- **`competitions`** (user_id, name 1–80, discipline `5k|10k|half_marathon|marathon`, distance_m aus der Disziplin,
+  race_date, goal_kind `finish|time`, target_time_s, reference_* ganz oder gar nicht, long_run_weekday, status
+  `planned|done|cancelled`, result_session_log_id, Plan-Bezug own_start_weekly_minutes/start_reference_*/effective_goal,
+  uses_health_data): ein geplanter Wettkampf je Person; nur eigene Zeilen lesen, Schreiben nur über `save_competition`,
+  `cancel_competition`, `complete_competition`, `delete_competition`. Kein Standort, nur Name/Datum (Abschnitt 10).
+- **`planned_sessions`** ergänzt um `workout_type`, `training_phase`, `target_distance_m`, `workout_steps` (nur im
+  Wettkampfplan); `effort_target` 1–8 statt 1–4, über 4 nur bei harter Art.
+- **`log_source`** ergänzt um `gps`, `gpx_import` (vorbereitet für Strecken).
 
 ## 13. Monetarisierung
 - **Gratis:** Onboarding, Standard-Plan aus Vorlagen mit einfacher Progression (Gewicht steigt bei geschafften

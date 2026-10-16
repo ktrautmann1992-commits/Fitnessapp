@@ -2585,15 +2585,30 @@ export const COMPETITION_PACE = {
 } as const;
 
 /**
- * Anstrengung geplanter Einheiten im Wettkampfplan (Vorlage für den CHECK in WP3: effort_target 1–8, „> 4 nur bei
- * harter Art“, unter 18 serverseitig ≤ 7 – Wächter N2; heute 1–4 = ENDURANCE_EFFORT_LIMITS, db-sync.test.ts). Die
- * Engine plant höchstens 8 (COMPETITION_INTENSITY.hardEffortCap, „nie alles geben“). Quelle: docs/PLAN-PHASE-10.md
- * Abschnitt 7 – PRODUKTENTSCHEIDUNG.
+ * Anstrengung geplanter Einheiten im Wettkampfplan: CHECK `effort_target between 1 and 8` seit WP3
+ * (20261016140100_competitions.sql), „> 4 (`easyMax`) nur bei harter Art“; serverseitig zusätzlich unter 18 ≤ 7 und ab
+ * 65 ≤ 6 (COMPETITION_INTENSITY.hardEffortCap, private.insert_plan_sessions) – Wächter N2, db-sync.test.ts. Ohne Art
+ * (Pläne ohne Wettkampf) bleibt es bei 1–4 (= ENDURANCE_EFFORT_LIMITS). Die Engine plant höchstens 8 („nie alles
+ * geben“). Quelle: docs/PLAN-PHASE-10.md Abschnitt 7 – PRODUKTENTSCHEIDUNG.
  */
 export const COMPETITION_EFFORT_LIMITS = {
   min: 1,
   max: 8,
   easyMax: ENDURANCE_EFFORT.easyMax,
+} as const;
+
+/**
+ * Datenmodell Wettkampf (Phase 10 WP3, 20261016140100_competitions.sql; Abgleich db-sync.test.ts):
+ * - `workoutStepsMaxBytes`: Größe der Schritte einer Einheit (`planned_sessions.workout_steps` als jsonb-Text). 40
+ *   Schritte (WORKOUT_STEP_LIMITS) brauchen höchstens ca. 2,8 KB – die Grenze schützt nur vor übergroßen Eingaben.
+ * - `leadWeeksServerColumn`: Mindestvorlauf, den der SERVER beim Speichern prüft (save_competition) = lockerste Spalte
+ *   der Tabelle 3.2 (Leistungssport). Die genaue Spalte (Level, vorsichtige Startgruppe) prüft Core (competitionSchema,
+ *   Ampel); der Server kennt das Level des nächsten Plans noch nicht und ist nur die harte Untergrenze.
+ * Quelle: PRODUKTENTSCHEIDUNG (technische Grenzen, keine fachlichen Werte).
+ */
+export const COMPETITION_RECORD_LIMITS = {
+  workoutStepsMaxBytes: 4096,
+  leadWeeksServerColumn: 'competitive',
 } as const;
 
 /**

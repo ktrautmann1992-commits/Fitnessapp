@@ -506,6 +506,14 @@ function insertSessions(
       estimated_minutes: s.estimated_minutes,
       warmup_de: s.warmup_de,
       cooldown_de: s.cooldown_de,
+      // Wettkampfplan (Phase 10 WP3) – ohne Wettkampf null wie in der Datenbank.
+      workout_type: (s.workout_type ?? null) as PlannedSessionRow['workout_type'],
+      training_phase: (s.training_phase ?? null) as PlannedSessionRow['training_phase'],
+      workout_steps:
+        s.workout_steps === undefined || s.workout_steps === null
+          ? null
+          : s.workout_steps.map((st) => ({ ...st })),
+      target_distance_m: s.target_distance_m ?? null,
     });
     for (const e of s.exercises) {
       newExercises.push({ ...e, id: ctx.newId(), session_id: id, user_id: userId });

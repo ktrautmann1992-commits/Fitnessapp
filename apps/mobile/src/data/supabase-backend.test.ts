@@ -1567,6 +1567,8 @@ describe('Supabase-Modus: Tagebuch-Warteschlange', () => {
       // Etappe E2
       'custom_meals',
       'custom_meal_items',
+      // Phase 10 WP3
+      'competitions',
     ];
     const exported = {
       format_version: 1,
