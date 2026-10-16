@@ -1573,6 +1573,7 @@ describe('Supabase-Modus: Tagebuch-Warteschlange', () => {
       // Etappe E3
       'ai_usage',
       'beta_entitlements',
+      'admin_actions',
     ];
     const exported = {
       format_version: 1,

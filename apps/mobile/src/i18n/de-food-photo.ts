@@ -82,7 +82,7 @@ export const deFoodPhoto = {
     'Per Foto gehört zu Premium, weil dafür eine KI läuft. Bis zum Start von Premium können es nur freigeschaltete Testkonten nutzen. Eintragen per Hand bleibt immer gratis.',
   consentTitle: 'Einwilligung nötig',
   consentText:
-    'Für die Auswertung geht nur dein Foto (ohne Standort) und deine kurze Info an Google (Gemini) als Auftragsverarbeiter. Das Foto wird nicht gespeichert. Das Ergebnis ist eine Schätzung.',
+    'Derzeit Testversion: Es antwortet ein Testprogramm mit festen Beispielen – dein Foto geht an keinen KI-Anbieter. Das Foto wird nicht gespeichert, das Ergebnis ist eine Schätzung. Bevor eine echte KI eingeschaltet wird, fragen wir dich erneut.',
   consentRead: 'Einwilligungstext lesen',
   consentAccept: 'Zustimmen und fortfahren',
   limitMonth: (date: string) =>

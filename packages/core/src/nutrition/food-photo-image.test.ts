@@ -148,3 +148,110 @@ describe('Grenzen', () => {
     });
   });
 });
+
+describe('Wächter E3 M1/N3: Metadaten auch nach dem ersten Scan bzw. nach dem Dateiende', () => {
+  const seg = (marker: number, payload: string) => [
+    0xff,
+    marker,
+    ...be16(payload.length + 2),
+    ...[...payload].map((c) => c.charCodeAt(0)),
+  ];
+  const sof = (w: number, h: number) => [
+    0xff,
+    0xc2,
+    ...be16(11),
+    8,
+    ...be16(h),
+    ...be16(w),
+    1,
+    1,
+    0x11,
+    0,
+  ];
+  const sos = [0xff, 0xda, ...be16(8), 1, 1, 0, 0, 0x3f, 0];
+
+  it('progressives JPEG: APP1/COM zwischen den Scans entfernt, FF00 und RST bleiben', () => {
+    const file = bytes(
+      [0xff, 0xd8],
+      sof(320, 240),
+      sos,
+      [0x11, 0xff, 0x00, 0x22, 0xff, 0xd0, 0x33],
+      seg(0xe1, 'Exif\0\0GPSZWISCHEN'),
+      seg(0xfe, 'Kommentar zwischen Scans'),
+      sos,
+      [0x44, 0x55],
+      [0xff, 0xd9],
+    );
+    const r = checkPhotoImage(file);
+    if (!r.ok) throw new Error(r.reason);
+    expect(text(r.bytes)).not.toContain('GPSZWISCHEN');
+    expect(text(r.bytes)).not.toContain('Kommentar');
+    // Beide Scans samt FF00/RST unverändert.
+    expect(text(r.bytes)).toContain(
+      text(Uint8Array.from([0x11, 0xff, 0x00, 0x22, 0xff, 0xd0, 0x33])),
+    );
+    expect(text(r.bytes)).toContain(text(Uint8Array.from([0x44, 0x55, 0xff, 0xd9])));
+    expect([...r.bytes.slice(-2)]).toEqual([0xff, 0xd9]);
+  });
+
+  it('angehängtes zweites JPEG (Motion Photo/MPF/Gain-Map) mit EXIF/GPS wird abgeschnitten', () => {
+    const main = jpeg(640, 480);
+    const second = bytes(
+      [0xff, 0xd8],
+      seg(0xe1, 'Exif\0\0GPSLAT48.1'),
+      sof(16, 16),
+      sos,
+      [1, 2],
+      [0xff, 0xd9],
+    );
+    const file = bytes([...main], [...second]);
+    const r = checkPhotoImage(file);
+    if (!r.ok) throw new Error(r.reason);
+    expect(text(r.bytes)).not.toContain('GPSLAT48.1');
+    expect(r.bytes.length).toBeLessThan(main.length);
+    expect([...r.bytes.slice(-2)]).toEqual([0xff, 0xd9]);
+  });
+
+  it('JPEG ohne Bildende → kaputt (sichere Richtung)', () => {
+    expect(checkPhotoImage(bytes([0xff, 0xd8], sof(10, 10), sos, [1, 2, 3]))).toEqual({
+      ok: false,
+      reason: 'broken',
+    });
+  });
+
+  it('WebP: unbekannte Chunks, ICCP und Daten nach dem RIFF-Ende entfernt', () => {
+    const chunk = (type: string, data: number[]) => [
+      ...[...type].map((c) => c.charCodeAt(0)),
+      ...le32(data.length),
+      ...data,
+      ...(data.length % 2 ? [0] : []),
+    ];
+    const vp8x = chunk('VP8X', [0x20 | 0x08, 0, 0, 0, ...le24(99), ...le24(99)]);
+    const iccp = chunk(
+      'ICCP',
+      [...'ICC Profil Kamera-ID'].map((c) => c.charCodeAt(0)),
+    );
+    const unknown = chunk(
+      'ZZZZ',
+      [...'GPSGEHEIM'].map((c) => c.charCodeAt(0)),
+    );
+    const image = chunk('VP8L', [0x2f, 0, 0, 0, 0, 7]);
+    const body = [...'WEBP'].map((c) => c.charCodeAt(0)).concat(vp8x, iccp, unknown, image);
+    const trailing = [...'Exif\0\0GPSANHANG'].map((c) => c.charCodeAt(0));
+    const file = bytes('RIFF', le32(body.length), body, trailing);
+    const r = checkPhotoImage(file);
+    if (!r.ok) throw new Error(r.reason);
+    const t = text(r.bytes);
+    expect(t).not.toContain('ICC Profil');
+    expect(t).not.toContain('GPSGEHEIM');
+    expect(t).not.toContain('GPSANHANG');
+    expect((r.bytes[20] ?? 0) & 0x2c).toBe(0);
+    const size = (r.bytes[4] ?? 0) | ((r.bytes[5] ?? 0) << 8) | ((r.bytes[6] ?? 0) << 16);
+    expect(size).toBe(r.bytes.length - 8);
+    // RIFF-Größe größer als die Datei → kaputt.
+    expect(checkPhotoImage(bytes('RIFF', le32(body.length + 50), body))).toEqual({
+      ok: false,
+      reason: 'broken',
+    });
+  });
+});

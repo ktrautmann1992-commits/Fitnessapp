@@ -901,6 +901,8 @@ antwortet die Route freundlich „nicht verfügbar“.
 2. **aktion** = `flag_an`, **flag** = `ai_food_photo` → **Run workflow**. (Schaltet „Per Foto“ ein.)
 3. Noch einmal **Run workflow**: **aktion** = `freischalten`, **email** = E-Mail eures Testkontos, **tage** = `30` →
    **Run workflow**. Die Zusammenfassung zeigt nur „Freischaltung gesetzt, gültig bis …“ – nie die E-Mail.
+   Optional **monatslimit** (1–300) bzw. **tageslimit** (1–50) für genau dieses Konto, z. B. `2` zum Testen der
+   Limit-Meldung; leer = Standard (30 im Monat, 8 am Tag).
 4. **aktion** = `status` zeigt: Funktion an/aus, aktive Freischaltungen, Fotos und Kosten diesen Monat (nur Summen).
 5. **Notbremse:** **aktion** = `flag_aus` – ab sofort wertet niemand mehr Fotos aus.
 
@@ -908,9 +910,17 @@ Ohne die GitHub-Secrets `SUPABASE_URL`/`SUPABASE_SECRET_KEY` (Teil B) endet der 
 
 ### L4 – Später: echte KI (Google Gemini) einschalten – JETZT NICHT NÖTIG
 
-Erst, wenn ihr es ausdrücklich wollt **und** vorher erledigt ist: AVV mit Google, juristische Prüfung des
-Einwilligungstexts, bezahlte Gemini-API (keine Nutzung zum Training), Preise auf
-ai.google.dev/gemini-api/docs/pricing geprüft (in `packages/core/src/constants.ts`, `AI_FOOD_PHOTO`).
+Erst, wenn ihr es ausdrücklich wollt **und** vorher erledigt ist (Wächter E3 M3, **Sperre**):
+
+- **Neue Einwilligungsfassung v2** mit dem echten Anbieter, Verarbeitungsort und Speicherdauer beim Anbieter (per
+  Migration, juristisch geprüft). **Technisch erzwungen:** Mit `FOOD_PHOTO_PROVIDER=gemini` reserviert der Server nur,
+  wenn eine Fassung ≥ 2 veröffentlicht ist und die Person ihr zugestimmt hat – sonst „noch nicht verfügbar“. Mit v1
+  (Testversion „ohne Übermittlung“) lässt sich Gemini also nie einschalten.
+- **Bezahlter Tarif** der Gemini-API (nur dort keine Nutzung zum Training) und AVV mit Google.
+- **EU-Verarbeitung:** Die Gemini Developer API (`generativelanguage.googleapis.com`) sichert keinen EU-Standort zu;
+  dafür wäre Vertex AI mit Region `europe-west3` nötig (Adapter-Umbau, Gründer-Entscheidung) – sonst im Text v2 ehrlich
+  benennen.
+- Preise auf ai.google.dev/gemini-api/docs/pricing geprüft (`packages/core/src/constants.ts`, `AI_FOOD_PHOTO`).
 
 1. Schlüssel wie in Teil E (aistudio.google.com → **Get API key**) – ihr könnt denselben oder einen eigenen nehmen.
 2. vercel.com → Projekt **Web** → **Settings** → **Environment Variables**.

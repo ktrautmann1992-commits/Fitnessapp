@@ -25,7 +25,8 @@ export interface FinishParams {
 export interface FoodPhotoStore {
   /** null = Token ungültig/abgelaufen. */
   verifyUser(accessToken: string): Promise<string | null>;
-  reserve(userId: string): Promise<ReserveResult>;
+  /** `minConsentVersion`: echter Anbieter nur mit neuer Einwilligungsfassung (Wächter E3 M3). */
+  reserve(userId: string, minConsentVersion: number): Promise<ReserveResult>;
   finish(params: FinishParams): Promise<void>;
 }
 
@@ -43,7 +44,7 @@ const reserveSchema = z.union([
     remaining_month: z.number().int().min(0),
     remaining_today: z.number().int().min(0),
   }),
-  z.object({ result: z.enum(['flag_off', 'no_entitlement', 'no_consent']) }),
+  z.object({ result: z.enum(['flag_off', 'no_entitlement', 'no_consent', 'not_configured']) }),
   z.object({
     result: z.literal('limit'),
     scope: z.enum(['month', 'day']),
@@ -86,9 +87,12 @@ export function createSupabaseFoodPhotoStore(
       const parsed = userSchema.safeParse(await response.json());
       return parsed.success ? parsed.data.id : null;
     },
-    async reserve(userId) {
+    async reserve(userId, minConsentVersion) {
       const parsed = reserveSchema.safeParse(
-        await rpc('ai_food_photo_reserve', { p_user_id: userId }),
+        await rpc('ai_food_photo_reserve', {
+          p_user_id: userId,
+          p_min_consent_version: minConsentVersion,
+        }),
       );
       if (!parsed.success) throw new FoodPhotoStoreError(500);
       const r = parsed.data;

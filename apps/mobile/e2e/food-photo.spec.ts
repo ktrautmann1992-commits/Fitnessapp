@@ -89,7 +89,7 @@ test('Per Foto: Einwilligung, Foto, Vorschlag ändern, eintragen; Abbrechen spei
   await openPhoto(page);
 
   // Beim ersten Mal: eigene Einwilligung (A-G17).
-  await expect(page.getByTestId('food-photo-consent')).toContainText('Google');
+  await expect(page.getByTestId('food-photo-consent')).toContainText('an keinen KI-Anbieter');
   await page.getByTestId('food-photo-consent-read').click();
   await expect(
     page.getByRole('heading', { name: 'Einwilligung: Gerichte per Foto auswerten' }),

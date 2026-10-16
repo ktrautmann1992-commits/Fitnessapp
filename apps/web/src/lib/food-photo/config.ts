@@ -85,5 +85,10 @@ export function isAllowedAppOrigin(origin: string, env: Env): boolean {
   if (fixed.includes(origin)) return true;
   const team = clean(env.APP_PREVIEW_TEAM);
   if (!/^[a-z0-9-]{1,60}$/.test(team)) return false;
-  return new RegExp(`^https://fitnessapp-[a-z0-9-]{1,80}-${team}\\.vercel\\.app$`).test(origin);
+  // Wächter E3 N1: nur die beiden Vercel-Muster des Projekts „fitnessapp“ – Branch-Vorschau
+  // `fitnessapp-git-<branch>-<team>` und Deployment `fitnessapp-<9 Zeichen Hash>-<team>`. Fremde Projekte mit dem Präfix
+  // „fitnessapp-…“ (z. B. fitnessapp-web, fitnessapp-x) passen nicht.
+  const branch = new RegExp(`^https://fitnessapp-git-[a-z0-9-]{1,63}-${team}\\.vercel\\.app$`);
+  const deployment = new RegExp(`^https://fitnessapp-[a-z0-9]{9}-${team}\\.vercel\\.app$`);
+  return branch.test(origin) || deployment.test(origin);
 }

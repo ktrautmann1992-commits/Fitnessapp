@@ -51,6 +51,8 @@ export const DATA_EXPORT_TABLES = [
   // ohne granted_by – Art. 15 erfasst alle personenbezogenen Daten, PLAN-PHASE-4B 4.7)
   'ai_usage',
   'beta_entitlements',
+  // Wächter E3 N4: Protokoll der eigenen Freischaltungen (ohne Admin-Identität)
+  'admin_actions',
 ] as const;
 
 export type DataExportTable = (typeof DATA_EXPORT_TABLES)[number];

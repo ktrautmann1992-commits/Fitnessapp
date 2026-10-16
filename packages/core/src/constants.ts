@@ -2265,7 +2265,12 @@ export const CUSTOM_MEAL_PORTION_CHOICES = [0.25, 0.5, 0.75, 1, 1.25, 1.5, 2, 3]
  * - `dailyAttemptsMax` 16: Fehlgeschlagene Aufrufe zählen NICHT gegen das Limit (Plan 9), aber höchstens 16 Versuche
  *   je Tag insgesamt – sonst ließe sich mit absichtlich kaputten Antworten beliebig Rechenzeit verbrauchen (Kosten,
  *   Risiko 10). PRODUKTENTSCHEIDUNG (Vorsicht).
- * - `reservationStaleMinutes` 5: eine Reservierung ohne Abschluss (Server abgestürzt) zählt nach 5 Minuten nicht mehr.
+ * - Eine Reservierung ohne Abschluss (Server abgestürzt, Abschluss zweimal gescheitert) zählt WEITER gegen Tages- und
+ *   Monatslimit („fail closed“, Wächter E3 M4) – sicherer als eine kostenlose, nicht erfasste Auswertung.
+ * - Limits je Person: über den Workflow beta-grant einstellbar (`beta_entitlements.monthly_limit`/`daily_limit`,
+ *   Wächter E3 N6); fehlt der Wert, gelten diese Standardwerte. Versuchs-Deckel = 2 × Tageslimit.
+ * - `maxTokens` 1.000.000 und `maxCostEur` 99: Bereich in ai_usage (CHECK) – Werte des Anbieters werden vor dem
+ *   Abschluss darauf begrenzt.
  * - Antwort: höchstens 15 Bestandteile, Mengen 1–1.500 g, Sicherheit 0–1 (Plan 9).
  * - Info-Text höchstens 120 Zeichen, angezeigte Bezeichnungen höchstens 60 Zeichen (Prompt-Injection-Schutz, Plan 9).
  * - Bild: JPEG/PNG/WebP, längste Seite höchstens 1.024 px (auf dem Gerät verkleinert), höchstens 4 MB. ABWEICHUNG
@@ -2283,7 +2288,15 @@ export const AI_FOOD_PHOTO = {
   monthlyLimit: 30,
   dailyLimit: 8,
   dailyAttemptsMax: 16,
-  reservationStaleMinutes: 5,
+  maxTokens: 1_000_000,
+  maxCostEur: 99,
+  /**
+   * Mindest-Fassung der Einwilligung `ai_food_photo` für den ECHTEN Anbieter (Wächter E3 M3): v1 beschreibt nur die
+   * Testversion ohne Übermittlung – Gemini braucht eine neue Fassung (v2) und damit eine erneute Zustimmung.
+   */
+  realProviderMinConsentVersion: 2,
+  /** Erlaubte Limits je Person über beta-grant (Wächter E3 N6; sync: CHECK in beta_entitlements und beta_admin). */
+  customLimits: { monthly: { min: 1, max: 300 }, daily: { min: 1, max: 50 } },
   maxItems: 15,
   amountG: { min: 1, max: 1500 },
   noteMaxChars: 120,

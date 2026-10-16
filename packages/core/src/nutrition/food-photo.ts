@@ -402,15 +402,26 @@ export interface PhotoLimits {
   readonly monthly: number;
   readonly daily: number;
   readonly dailyAttempts: number;
-  readonly staleMinutes: number;
 }
 
 export const DEFAULT_PHOTO_LIMITS: PhotoLimits = {
   monthly: P.monthlyLimit,
   daily: P.dailyLimit,
   dailyAttempts: P.dailyAttemptsMax,
-  staleMinutes: P.reservationStaleMinutes,
 };
+
+/**
+ * Limits einer Person (Wächter E3 N6): eigene Werte aus der Beta-Freischaltung, sonst Standard; Versuchs-Deckel =
+ * 2 × Tageslimit (Standard 16). Gleiche Regel wie `public.ai_food_photo_reserve`.
+ */
+export function photoLimitsFor(custom: {
+  readonly monthly?: number | null;
+  readonly daily?: number | null;
+}): PhotoLimits {
+  const monthly = custom.monthly ?? P.monthlyLimit;
+  const daily = custom.daily ?? P.dailyLimit;
+  return { monthly, daily, dailyAttempts: custom.daily == null ? P.dailyAttemptsMax : 2 * daily };
+}
 
 export interface PhotoLimitState {
   readonly monthUsed: number;
@@ -427,16 +438,15 @@ export interface PhotoLimitState {
 }
 
 /**
- * Stand der Limits. Gezählt werden erfolgreiche Auswertungen und noch laufende Reservierungen (jünger als
- * `staleMinutes`); fehlgeschlagene zählen nicht (Plan 9), aber jeder Versuch zählt für `dailyAttempts`.
+ * Stand der Limits. Gezählt werden erfolgreiche Auswertungen und Reservierungen ohne Abschluss (auch alte – „fail
+ * closed“, Wächter E3 M4); fehlgeschlagene zählen nicht (Plan 9), aber jeder Versuch zählt für `dailyAttempts`.
  */
 export function photoLimitState(
   usage: readonly AiUsageRecord[],
   limits: PhotoLimits,
   now: string,
 ): PhotoLimitState {
-  const nowMs = Date.parse(now);
-  if (Number.isNaN(nowMs)) throw new RangeError('Ungültiger Zeitstempel.');
+  if (Number.isNaN(Date.parse(now))) throw new RangeError('Ungültiger Zeitstempel.');
   const today = isoDateInTimeZone(now, AGE_CHECK_TIME_ZONE);
   const month = today.slice(0, 7);
   let monthUsed = 0;
@@ -447,9 +457,7 @@ export function photoLimitState(
     if (Number.isNaN(at)) continue;
     const day = isoDateInTimeZone(row.created_at, AGE_CHECK_TIME_ZONE);
     if (day === today) attemptsToday += 1;
-    const counts =
-      row.status === 'succeeded' ||
-      (row.status === 'reserved' && nowMs - at < limits.staleMinutes * 60_000);
+    const counts = row.status === 'succeeded' || row.status === 'reserved';
     if (!counts) continue;
     if (day.slice(0, 7) === month) monthUsed += 1;
     if (day === today) dayUsed += 1;

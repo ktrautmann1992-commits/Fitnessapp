@@ -1,8 +1,8 @@
 import {
-  DEFAULT_PHOTO_LIMITS,
   detectPhotoType,
   foodPhotoResponseSchema,
   photoLimitState,
+  photoLimitsFor,
   type AiUsageRecord,
   type FoodPhotoResponse,
 } from '@fitnessapp/core';
@@ -27,6 +27,9 @@ export function readWebUrl(value: string | undefined): string | null {
 const accessSchema = z.object({
   active: z.boolean(),
   reason: z.enum(['ok', 'flag_off', 'no_entitlement']),
+  // Wächter E3 N6: Limits dieser Person (null/fehlt = Standard).
+  monthly_limit: z.number().int().min(1).nullable().optional(),
+  daily_limit: z.number().int().min(1).nullable().optional(),
 });
 const usageRowSchema = z.object({
   created_at: z.string(),
@@ -92,7 +95,14 @@ export function createRemoteFoodPhoto(options: {
         }
         return {
           availability: 'available',
-          limit: photoLimitState(rows, DEFAULT_PHOTO_LIMITS, options.now()),
+          limit: photoLimitState(
+            rows,
+            photoLimitsFor({
+              monthly: parsed.data.monthly_limit ?? null,
+              daily: parsed.data.daily_limit ?? null,
+            }),
+            options.now(),
+          ),
           mock: false,
         };
       } catch (error) {

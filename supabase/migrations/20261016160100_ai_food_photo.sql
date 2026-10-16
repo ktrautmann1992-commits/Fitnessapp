@@ -29,11 +29,11 @@ insert into public.consent_documents (consent_type, version, title_de, body_de, 
 
 Mit „Per Foto“ kannst du ein Foto deiner Mahlzeit auswerten lassen. Die Auswertung schätzt, welche Lebensmittel zu sehen sind und wie viel davon. Weil ein Foto deines Essens Rückschlüsse auf deine Gesundheit und dein Essverhalten zulassen kann, brauchen wir dafür diese gesonderte Einwilligung.
 
-Was gesendet wird: nur das Foto (verkleinert, ohne Standort und ohne andere Bilddaten) und deine kurze Info zum Gericht (höchstens 120 Zeichen). Nicht gesendet werden dein Name, deine E-Mail-Adresse, deine Nutzerkennung, Körperdaten, Ziele, dein Gesundheits-Check und Unverträglichkeiten.
+Derzeit Testversion: Es antwortet ein Testprogramm mit festen Beispielen. Dein Foto und deine Info werden dabei an keinen KI-Anbieter übermittelt – auch nicht an Google. Bevor wir eine echte KI einschalten, legen wir dir eine neue Fassung dieses Textes vor (mit Anbieter, Verarbeitungsort und Speicherdauer beim Anbieter) und fragen dich erneut. Ohne deine neue Zustimmung bleibt es bei der Testversion.
 
-An wen: an Google (Gemini-API) als unseren Auftragsverarbeiter, mit Verarbeitung in der EU, soweit verfügbar. Google darf die Daten nicht zum Training seiner KI verwenden.
+Was verarbeitet wird: nur das Foto (auf deinem Gerät verkleinert, Standort und andere Bilddaten werden entfernt) und deine kurze Info zum Gericht (höchstens 120 Zeichen). Dein Name, deine E-Mail-Adresse, Körperdaten, Ziele, dein Gesundheits-Check und Unverträglichkeiten gehören nicht dazu.
 
-Wie lange: Wir speichern das Foto nicht. Es wird nur für die Auswertung übertragen und danach sofort verworfen. Je Auswertung speichern wir nur Zeitpunkt, Ergebnis-Status, Menge der verarbeiteten Daten (Token) und Kosten – für dein monatliches Kontingent, ohne Inhalte.
+Wie lange: Wir speichern das Foto nicht. Es wird nur für die Auswertung verarbeitet und danach sofort verworfen. Je Auswertung speichern wir nur Zeitpunkt, Ergebnis-Status, Menge der verarbeiteten Daten (Token) und Kosten – für dein monatliches Kontingent, ohne Inhalte.
 
 Schätzung ohne Gewähr: Das Ergebnis ist ein Vorschlag. Du prüfst und änderst ihn, bevor etwas in dein Ernährungstagebuch kommt. Die Nährwerte rechnen wir selbst aus unserem Lebensmittel-Katalog.
 
@@ -88,6 +88,9 @@ create table private.beta_entitlements (
   granted_at timestamptz not null default now(),
   granted_by text not null check (granted_by ~ '^[A-Za-z0-9-]{1,39}$'),
   expires_at timestamptz not null,
+  -- Wächter E3 N6: Limits je Person (null = Standard AI_FOOD_PHOTO.monthlyLimit/dailyLimit). sync: AI_FOOD_PHOTO.customLimits
+  monthly_limit integer check (monthly_limit between 1 and 300),
+  daily_limit integer check (daily_limit between 1 and 50),
   -- höchstens 180 Tage (PLAN-PHASE-4B 6.3)
   check (expires_at > granted_at and expires_at <= granted_at + interval '180 days')
 );
@@ -188,19 +191,17 @@ create policy "Nutzer sehen eigene KI-Nutzung"
   to authenticated
   using (user_id = (select auth.uid()));
 
--- Zählung wie photoLimitState (packages/core): erfolgreiche + laufende Reservierungen (jünger als 5 Minuten) im
--- Kalendermonat bzw. -tag Europe/Berlin; alle Versuche des Tages für den Versuchs-Deckel.
+-- Zählung wie photoLimitState (packages/core): erfolgreiche Auswertungen + Reservierungen OHNE Abschluss (auch alte –
+-- „fail closed“, Wächter E3 M4) im Kalendermonat bzw. -tag Europe/Berlin; alle Versuche des Tages für den Deckel.
 create or replace function private.ai_food_photo_usage(p_user_id uuid)
 returns jsonb
 language sql
 stable
 set search_path = ''
 as $$
-  -- sync: AI_FOOD_PHOTO.reservationStaleMinutes
   with rows as (
     select (u.created_at at time zone 'Europe/Berlin')::date as day,
-           u.status = 'succeeded'
-             or (u.status = 'reserved' and u.created_at > now() - interval '5 minutes') as counts
+           u.status in ('succeeded', 'reserved') as counts
     from public.ai_usage u
     where u.user_id = p_user_id
       and u.feature = 'food_photo'
@@ -236,7 +237,10 @@ begin
   if not private.has_entitlement_for(current_user_id, 'premium') then
     return jsonb_build_object('active', false, 'reason', 'no_entitlement');
   end if;
-  return jsonb_build_object('active', true, 'reason', 'ok');
+  -- Wächter E3 N6: Limits dieser Person (null = Standard) für die Anzeige „Noch 23 Fotos“.
+  return jsonb_build_object('active', true, 'reason', 'ok',
+    'monthly_limit', (select b.monthly_limit from private.beta_entitlements b where b.user_id = current_user_id),
+    'daily_limit', (select b.daily_limit from private.beta_entitlements b where b.user_id = current_user_id));
 end;
 $$;
 revoke all on function public.ai_food_photo_access() from public, anon;
@@ -246,23 +250,29 @@ grant execute on function public.ai_food_photo_access() to authenticated;
 -- 4b. Reservieren (nur service_role) – VOR dem Aufruf des KI-Anbieters, atomar je Person.
 -- Antwort:
 --   {"result": "reserved", "id", "remaining_month", "remaining_today"}
---   {"result": "flag_off" | "no_entitlement" | "no_consent"}
+--   {"result": "flag_off" | "no_entitlement" | "no_consent" | "not_configured"}
+-- p_min_consent_version (Wächter E3 M3): Der echte KI-Anbieter (Gemini) braucht eine NEUE Fassung des
+-- Einwilligungstexts (≥ 2); v1 beschreibt nur die Testversion ohne Übermittlung. Ist sie nicht veröffentlicht,
+-- antwortet die Funktion `not_configured` – Gemini lässt sich mit v1 also nie einschalten.
 --   {"result": "limit", "scope": "month" | "day", "available_from": "JJJJ-MM-TT"}
 -- Sperr-Reihenfolge wie save_food_log_entries (Wächter N7 S2): Einwilligungen FOR SHARE → prüfen → Person
 -- (Advisory-Sperre, keine zwei Reservierungen gleichzeitig) → zählen → schreiben. Ein gleichzeitiger Widerruf wartet
 -- also, bis die Reservierung steht; läuft er zuerst, wird abgelehnt.
 -- ---------------------------------------------------------------------------------------------------------
-create or replace function public.ai_food_photo_reserve(p_user_id uuid)
+create or replace function public.ai_food_photo_reserve(p_user_id uuid, p_min_consent_version integer default 1)
 returns jsonb
 language plpgsql
 security definer
 set search_path = ''
 as $$
 declare
-  -- sync: AI_FOOD_PHOTO in packages/core/src/constants.ts (db-sync.test.ts)
-  monthly_limit constant integer := 30;
-  daily_limit constant integer := 8;
-  daily_attempts_max constant integer := 16;
+  -- sync: AI_FOOD_PHOTO in packages/core/src/constants.ts (db-sync.test.ts); je Person überschreibbar (N6)
+  default_monthly_limit constant integer := 30;
+  default_daily_limit constant integer := 8;
+  default_daily_attempts_max constant integer := 16;
+  monthly_limit integer;
+  daily_limit integer;
+  daily_attempts_max integer;
   -- Datensparsamkeit: eigene Zeilen älter als 400 Tage werden beim Reservieren gelöscht (Kostenübersicht 13 Monate).
   retention_days constant integer := 400;
   usage jsonb;
@@ -280,6 +290,10 @@ begin
   if not private.has_entitlement_for(p_user_id, 'premium') then
     return jsonb_build_object('result', 'no_entitlement');
   end if;
+  if p_min_consent_version is null
+     or p_min_consent_version > coalesce(public.current_consent_version('ai_food_photo'), 0) then
+    return jsonb_build_object('result', 'not_configured');
+  end if;
   -- Einwilligungen sperren, dann prüfen: Foto-KI UND Gesundheitsdaten (das Ergebnis landet im Tagebuch).
   perform 1
   from public.consents c
@@ -295,6 +309,10 @@ begin
   delete from public.ai_usage u
   where u.user_id = p_user_id and u.created_at < now() - make_interval(days => retention_days);
 
+  select coalesce(b.monthly_limit, default_monthly_limit), coalesce(b.daily_limit, default_daily_limit),
+         case when b.daily_limit is null then default_daily_attempts_max else 2 * b.daily_limit end
+  into monthly_limit, daily_limit, daily_attempts_max
+  from private.beta_entitlements b where b.user_id = p_user_id;
   usage := private.ai_food_photo_usage(p_user_id);
   month_used := (usage ->> 'month_used')::integer;
   day_used := (usage ->> 'day_used')::integer;
@@ -318,8 +336,8 @@ begin
                              daily_attempts_max - attempts_today) - 1);
 end;
 $$;
-revoke all on function public.ai_food_photo_reserve(uuid) from public, anon, authenticated;
-grant execute on function public.ai_food_photo_reserve(uuid) to service_role;
+revoke all on function public.ai_food_photo_reserve(uuid, integer) from public, anon, authenticated;
+grant execute on function public.ai_food_photo_reserve(uuid, integer) to service_role;
 
 -- ---------------------------------------------------------------------------------------------------------
 -- 4c. Abschluss (nur service_role): nur eine eigene, noch laufende Reservierung. `succeeded` zählt gegen das Limit,
@@ -377,7 +395,10 @@ create or replace function public.beta_admin(
   p_actor text,
   p_email text default null,
   p_days integer default 90,
-  p_flag text default 'ai_food_photo'
+  p_flag text default 'ai_food_photo',
+  -- Wächter E3 N6: Limits je Person beim Freischalten (null = Standard).
+  p_monthly_limit integer default null,
+  p_daily_limit integer default null
 )
 returns jsonb
 language plpgsql
@@ -404,14 +425,18 @@ begin
       return jsonb_build_object('result', 'not_found');
     end if;
     if p_action = 'grant' then
-      if p_days is null or p_days not between 1 and 180 then
+      if p_days is null or p_days not between 1 and 180
+         or (p_monthly_limit is not null and p_monthly_limit not between 1 and 300)
+         or (p_daily_limit is not null and p_daily_limit not between 1 and 50) then
         return jsonb_build_object('result', 'invalid_input');
       end if;
       expires := now() + make_interval(days => p_days);
-      insert into private.beta_entitlements (user_id, entitlement, granted_at, granted_by, expires_at)
-      values (target, 'premium', now(), p_actor, expires)
+      insert into private.beta_entitlements (user_id, entitlement, granted_at, granted_by, expires_at, monthly_limit,
+                                             daily_limit)
+      values (target, 'premium', now(), p_actor, expires, p_monthly_limit, p_daily_limit)
       on conflict (user_id) do update
-        set granted_at = excluded.granted_at, granted_by = excluded.granted_by, expires_at = excluded.expires_at;
+        set granted_at = excluded.granted_at, granted_by = excluded.granted_by, expires_at = excluded.expires_at,
+            monthly_limit = excluded.monthly_limit, daily_limit = excluded.daily_limit;
       insert into private.admin_actions (action, actor, target_user_id, expires_at)
       values ('beta_grant', p_actor, target, expires);
       return jsonb_build_object('result', 'granted',
@@ -451,5 +476,6 @@ begin
                                                    at time zone 'Europe/Berlin')));
 end;
 $$;
-revoke all on function public.beta_admin(text, text, text, integer, text) from public, anon, authenticated;
-grant execute on function public.beta_admin(text, text, text, integer, text) to service_role;
+revoke all on function public.beta_admin(text, text, text, integer, text, integer, integer)
+  from public, anon, authenticated;
+grant execute on function public.beta_admin(text, text, text, integer, text, integer, integer) to service_role;

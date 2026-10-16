@@ -814,8 +814,8 @@ Test gesperrt).
 JSON-Zeichenkette zwischen Markierungen), `FOOD_PHOTO_RESPONSE_JSON_SCHEMA`, `photoResultSchema`/`parsePhotoResult`
 (strikt, ≤ 15, 1–1.500 g, eigene kcal der KI → ungültig), `sanitizePhotoLabel` (≤ 60 Zeichen, ohne Markup/Links),
 `matchPhotoFood`/`matchPhotoItems` (food_id nur, wenn im Katalog; Name/Suchbegriff; ganzes Wort; eindeutiger Anfang),
-`changePhotoItem`, `addPhotoItem`, `photoEntries`, `photoItemKcal`, `photoLimitState` (Europe/Berlin, 5-Minuten-
-Reservierung, Versuchs-Deckel), `aiFoodPhotoCostEur`, `mockFoodPhotoAnswer` (Fälle `beispiel`, `leer`, `viele`,
+`changePhotoItem`, `addPhotoItem`, `photoEntries`, `photoItemKcal`, `photoLimitState` (Europe/Berlin, offene
+Reservierung zählt, Versuchs-Deckel), `photoLimitsFor`, `aiFoodPhotoCostEur`, `mockFoodPhotoAnswer` (Fälle `beispiel`, `leer`, `viele`,
 `unbekannt`, `menge0`, `boese`, `kcal`, `kaputt`, `zeitlimit` – Auswahl über „test:<fall>“ in der Info),
 `checkPhotoImage` (JPEG/PNG/WebP), `runFoodPhotoAnalysis`, `createMockFoodPhotoProvider`, `foodPhotoResponseSchema`.
 `FOOD_LOG_SOURCES` + `photo` (Form wie `food`, nur Gramm; als Vorlage/Favorit ein normaler Katalog-Eintrag;
@@ -860,7 +860,7 @@ Reservierung, Versuchs-Deckel), `aiFoodPhotoCostEur`, `mockFoodPhotoAnswer` (Fä
   Markierung, leere Antwort, 15/16 Bestandteile, Menge 0/1/1.500/1.501/NaN, KI-kcal, Freitext, Bezeichnung 60 Zeichen,
   Katalog-Abgleich inkl. mehrdeutig und SQL-/Pfad-`food_id`, Bearbeiten, Eintragen photo mit Katalog-Werten, voller
   Tag, Vorlage/Favorit/`rebuildEntry`, Limits: Monatswechsel Mitternacht Berlin (MEZ), 00:30 Berlin am 1. = neuer
-  Monat, letztes Foto des Monats, Tageslimit, Fehlversuche, Reservierung 5 Minuten, Jahreswechsel, Kosten, alle
+  Monat, letztes Foto des Monats, Tageslimit, Fehlversuche, Reservierung ohne Abschluss zählt weiter, Jahreswechsel, Kosten, alle
   Attrappen-Fälle), `food-photo-image.test.ts` (Art, EXIF/GPS/Kommentar/Text-Chunks/XMP entfernt, RIFF-Größe,
   1.024/1.025 px, 4 MB, kaputte Dateien), `food-photo-run.test.ts`, `db-sync.test.ts` (Enum, Seed-Versionen, CHECK-
   Listen, Limits SQL = Core, `ai_usage`-Spalten nur Metadaten, kein Storage, Rechte, `save_food_log_entries` und
@@ -896,10 +896,42 @@ Advisory-Sperre bekommen beide gleichzeitigen Anfragen eine Reservierung; Playwr
 - **E3-G4 Versuchs-Deckel** 16 je Tag inkl. Fehlversuche? Voreinstellung: **ja**.
 - **E3-G5 Bildgröße** 4 MB (Vercel-Grenze) statt 5 MB? Voreinstellung: **4 MB**.
 
+**Nachtrag: Auflagen der Wächter-Prüfung E3 (`waechter-e3.md`, 16.10.2026) – umgesetzt**
+
+- **M1 JPEG:** Metadaten-Marker (APP1–APP15, COM) werden auch zwischen den Scans entfernt; die Entropie-Daten (FF00,
+  RST) bleiben, alles nach dem ERSTEN EOI wird abgeschnitten (angehängte zweite JPEGs, MPF, Gain-Maps samt EXIF/GPS).
+  Ohne EOI = kaputt. **N3 WebP:** nur VP8/VP8L/VP8X/ALPH/ANIM/ANMF, ICCP und unbekannte Chunks weg (Merker EXIF/XMP/ICC
+  gelöscht), Daten nach dem RIFF-Ende abgeschnitten, RIFF-Größe größer als die Datei = kaputt.
+- **M2:** Die Route liest den Körper erst NACH Herkunft, Konfiguration, Bearer-Format, Content-Length-Grenze und
+  `verifyUser` (`readForm` als Funktion an `handleFoodPhoto`). **N2:** Ohne Content-Length wird gestreamt mit hartem
+  Byte-Limit gelesen und bei Überschreitung abgebrochen (`lib/food-photo/form.ts`).
+- **M4 (fail closed):** Abschluss wird einmal wiederholt; scheitert er zweimal, bleibt die Reservierung offen und zählt
+  weiter gegen Tages- und Monatslimit (die 5-Minuten-Regel entfällt in Core und SQL). Token (0–1.000.000) und Kosten
+  (≤ 99 €) werden vor dem Abschluss begrenzt.
+- **M3:** Einwilligungstext v1 beschreibt nur die Testversion („an keinen KI-Anbieter übermittelt … vor einer echten KI
+  fragen wir dich erneut“) und sagt nichts mehr zu EU-Verarbeitung oder Training zu. `ai_food_photo_reserve(uid,
+p_min_consent_version)`: Der Server verlangt mit dem echten Anbieter Fassung ≥ 2 (`AI_FOOD_PHOTO.
+realProviderMinConsentVersion`), sonst `not_configured` – Gemini ist mit v1 nicht aktivierbar (SETUP L4).
+- **N1:** CORS nur `fitnessapp-git-<branch>-<team>.vercel.app` und `fitnessapp-<9 Zeichen>-<team>.vercel.app`.
+- **N4:** Export enthält `admin_actions` der Person (Aktion, Ablauf, Zeitpunkt – ohne `actor`) über
+  `private.my_admin_actions()`; pgTAP 17 zählt die Tabelle mit.
+- **N5:** beta-grant sendet beim Entziehen keine Tage mehr.
+- **N6:** Limits je Person: `beta_entitlements.monthly_limit` (1–300) und `daily_limit` (1–50), gesetzt über beta-grant
+  (`monatslimit`/`tageslimit`), sonst Standard; Versuchs-Deckel = 2 × Tageslimit (`photoLimitsFor`). Die App zeigt das
+  eigene Kontingent (`ai_food_photo_access` liefert die Limits).
+- **N7 (bewusst so, dokumentiert):** Die Herkunft `photo` kann ein angemeldetes Konto mit Gesundheits-Einwilligung auch
+  ohne Premium/Reservierung speichern. Harmlos: Titel und Werte rechnet der Server aus dem Katalog; es ist ein normaler
+  Katalog-Eintrag. Nur eine Statistik „Einträge per Foto“ wäre damit nicht verlässlich – vor einer solchen Auswertung
+  eine Verknüpfung mit `ai_usage` einführen.
+- **Gegenproben** (rot → zurückgesetzt): JPEG-Rest nach SOS ungeprüft (M1-Tests rot), Marker zwischen Scans behalten,
+  WebP-Anhang behalten, Körper vor dem Login gelesen, Byte-Limit entfernt, Abschluss ohne Wiederholung, Reservierung
+  zählt wieder nur 5 Minuten (Core und pgTAP), Token ungekürzt, Mindest-Fassung ignoriert (Web und pgTAP), CORS-Muster
+  alt, Export ohne `admin_actions`, eigenes Limit ignoriert (pgTAP).
+
 **Offen – was für den echten Gemini-Betrieb noch fehlt**
 
-- AVV mit Google, juristische Prüfung des Einwilligungstexts (A-G17), bezahlte Gemini-API (keine Nutzung zum Training),
-  EU-Verarbeitung soweit verfügbar prüfen.
+- **Einwilligungstext v2** (Pflicht, technisch erzwungen), AVV mit Google, juristische Prüfung, bezahlter Tarif;
+  EU-Verarbeitung: Developer API sichert sie nicht zu – Vertex AI `europe-west3` oder ehrlich im Text v2 (Wächter M3).
 - Preise in `AI_FOOD_PHOTO.pricesEurPerMTok` gegen die offizielle Preisseite prüfen (VOR LIVEGANG PRÜFEN).
 - Test mit 30 echten Fotos gegen den Katalog (A-G19: Trefferquote, Kosten, ob `food_id`-Liste im Prompt nötig ist).
 - `GEMINI_API_KEY` + `FOOD_PHOTO_PROVIDER=gemini` im Vercel-Projekt „Web“ (SETUP Teil L4) – jetzt nicht.

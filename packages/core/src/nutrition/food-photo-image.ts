@@ -46,14 +46,23 @@ export function detectPhotoType(bytes: Uint8Array): PhotoMimeType | null {
 
 class BrokenImage extends Error {}
 
-// --- JPEG: Marker-Segmente bis zum Bildbeginn (SOS) durchgehen ---
+// --- JPEG: alle Marker-Segmente bis zum ERSTEN Bildende (EOI) durchgehen ---
 
-/** APP1–APP15 (EXIF, XMP, IPTC, ICC …) und COM werden entfernt; APP0 (JFIF) und alle Bild-Segmente bleiben. */
+/** Metadaten-Marker: APP1–APP15 (EXIF, XMP, MPF, IPTC, ICC …) und COM. APP0 (JFIF) bleibt. */
+const isJpegMetadata = (marker: number) => (marker >= 0xe1 && marker <= 0xef) || marker === 0xfe;
+
+/**
+ * Entfernt APP1–APP15 und COM überall – vor dem ersten Scan UND zwischen den Scans eines progressiven JPEG (Wächter E3
+ * M1). Die Bilddaten (Entropie-Daten mit FF00 und RST-Markern) werden bis zum ersten EOI übernommen; alles danach wird
+ * abgeschnitten (angehängte zweite JPEGs von Motion Photos, MPF-Folgebilder, Gain-Maps – samt deren EXIF/GPS).
+ * Ohne EOI gilt die Datei als kaputt (sichere Richtung).
+ */
 function stripJpeg(bytes: Uint8Array): { bytes: Uint8Array; width: number; height: number } {
-  const out: number[] = [0xff, 0xd8];
+  const parts: Uint8Array[] = [bytes.subarray(0, 2)];
   let width = 0;
   let height = 0;
   let at = 2;
+  let scanned = false;
   while (at < bytes.length) {
     if (bytes[at] !== 0xff) throw new BrokenImage();
     const marker = bytes[at + 1] ?? 0;
@@ -61,28 +70,47 @@ function stripJpeg(bytes: Uint8Array): { bytes: Uint8Array; width: number; heigh
       at += 1; // Füllbyte
       continue;
     }
-    if (marker === 0xd9) throw new BrokenImage(); // Ende vor dem Bild
-    if (marker >= 0xd0 && marker <= 0xd7) throw new BrokenImage();
+    if (marker === 0xd9) {
+      // Erstes Bildende: übernehmen, alles danach abschneiden.
+      if (!scanned || width === 0 || height === 0) throw new BrokenImage();
+      parts.push(bytes.subarray(at, at + 2));
+      return { bytes: concat(parts), width, height };
+    }
+    if ((marker >= 0xd0 && marker <= 0xd7) || marker === 0xd8 || marker === 0x01) {
+      throw new BrokenImage();
+    }
     const length = u16be(bytes, at + 2);
     if (length < 2 || at + 2 + length > bytes.length) throw new BrokenImage();
-    const segment = bytes.subarray(at, at + 2 + length);
     const isSof =
       marker >= 0xc0 && marker <= 0xcf && marker !== 0xc4 && marker !== 0xc8 && marker !== 0xcc;
     if (isSof) {
       height = u16be(bytes, at + 5);
       width = u16be(bytes, at + 7);
     }
-    const drop = (marker >= 0xe1 && marker <= 0xef) || marker === 0xfe;
-    if (!drop) out.push(...segment);
+    if (!isJpegMetadata(marker)) parts.push(bytes.subarray(at, at + 2 + length));
     at += 2 + length;
     if (marker === 0xda) {
-      // Bilddaten bis zum Ende unverändert übernehmen.
-      const rest = bytes.subarray(at);
-      const result = new Uint8Array(out.length + rest.length);
-      result.set(out, 0);
-      result.set(rest, out.length);
-      if (width === 0 || height === 0) throw new BrokenImage();
-      return { bytes: result, width, height };
+      // Entropie-Daten bis zum nächsten echten Marker: FF00 (Byte-Stuffing), RST0–7 und Füllbytes gehören dazu.
+      scanned = true;
+      const start = at;
+      while (at < bytes.length) {
+        if (bytes[at] !== 0xff) {
+          at += 1;
+          continue;
+        }
+        const next = bytes[at + 1];
+        if (next === undefined) throw new BrokenImage();
+        if (next === 0x00 || (next >= 0xd0 && next <= 0xd7)) {
+          at += 2;
+          continue;
+        }
+        if (next === 0xff) {
+          at += 1;
+          continue;
+        }
+        break;
+      }
+      parts.push(bytes.subarray(start, at));
     }
   }
   throw new BrokenImage();
@@ -131,21 +159,30 @@ function stripPng(bytes: Uint8Array): { bytes: Uint8Array; width: number; height
   return { bytes: concat(parts), width, height };
 }
 
-// --- WebP: RIFF-Chunks; EXIF und XMP entfernen, Merker im VP8X-Kopf löschen ---
+// --- WebP: nur bekannte Bild-Chunks, nur bis zum RIFF-Ende (Wächter E3 N3) ---
+
+/**
+ * Erlaubte Chunks: Bild (VP8, VP8L), Kopf (VP8X), Transparenz (ALPH), Animation (ANIM, ANMF). EXIF, XMP, ICCP und alle
+ * unbekannten Chunks fallen weg; die Merker für EXIF (0x08), XMP (0x04) und ICC (0x20) im VP8X-Kopf werden gelöscht.
+ * Daten nach dem RIFF-Ende werden abgeschnitten.
+ */
+const WEBP_KEEP = new Set(['VP8 ', 'VP8L', 'VP8X', 'ALPH', 'ANIM', 'ANMF']);
 
 function stripWebp(bytes: Uint8Array): { bytes: Uint8Array; width: number; height: number } {
+  const riffEnd = 8 + u32le(bytes, 4);
+  if (riffEnd > bytes.length || riffEnd < 12) throw new BrokenImage();
   const chunks: Uint8Array[] = [];
   let at = 12;
   let width = 0;
   let height = 0;
-  while (at + 8 <= bytes.length) {
+  while (at + 8 <= riffEnd) {
     const type = ascii(bytes, at, 4);
     const size = u32le(bytes, at + 4);
     const end = at + 8 + size + (size % 2);
-    if (at + 8 + size > bytes.length) throw new BrokenImage();
-    const chunk = bytes.slice(at, Math.min(end, bytes.length));
+    if (at + 8 + size > riffEnd) throw new BrokenImage();
+    const chunk = bytes.slice(at, Math.min(end, riffEnd));
     if (type === 'VP8X') {
-      chunk[8] = (chunk[8] ?? 0) & ~(0x08 | 0x04); // EXIF- und XMP-Merker
+      chunk[8] = (chunk[8] ?? 0) & ~(0x08 | 0x04 | 0x20); // EXIF-, XMP- und ICC-Merker
       width = u24le(chunk, 12) + 1;
       height = u24le(chunk, 15) + 1;
     } else if (type === 'VP8 ' && width === 0) {
@@ -156,7 +193,7 @@ function stripWebp(bytes: Uint8Array): { bytes: Uint8Array; width: number; heigh
       width = (bits & 0x3fff) + 1;
       height = ((bits >>> 14) & 0x3fff) + 1;
     }
-    if (type !== 'EXIF' && type !== 'XMP ') chunks.push(chunk);
+    if (WEBP_KEEP.has(type)) chunks.push(chunk);
     at = end;
   }
   if (chunks.length === 0 || width === 0 || height === 0) throw new BrokenImage();

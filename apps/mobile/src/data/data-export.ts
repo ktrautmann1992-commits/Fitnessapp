@@ -175,6 +175,7 @@ export function localDataExport(
     // Gericht per Foto (Etappe E3): nur Metadaten je Auswertung; im Testmodus gibt es keine Beta-Freischaltung.
     ai_usage: [...(extra.aiUsage ?? [])],
     beta_entitlements: [],
+    admin_actions: [],
     // Übungs-Präferenzen (Etappe T2) – in export_my_data() erst mit Etappe T3 (PENDING_DB_EXPORT_TABLES).
     exercise_preferences: rows.exercisePreferences,
   };

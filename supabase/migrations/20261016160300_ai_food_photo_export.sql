@@ -1,24 +1,43 @@
 -- Etappe E3 · Datenexport (Art. 15 DSGVO) um Gericht per Foto erweitert: export_my_data() – NEUESTE Fassung
--- (20261016140200_competition_rpcs.sql) unverändert übernommen und nur um zwei Schlüssel ergänzt (echte Obermenge, db-sync.test.ts und pgTAP 37
+-- (20261016140200_competition_rpcs.sql) unverändert übernommen und nur um drei Schlüssel ergänzt (echte Obermenge, db-sync.test.ts und pgTAP 37
 -- prüfen, dass alle bisherigen Bereiche erhalten bleiben):
 -- - `ai_usage`: eigene Zeilen (nur Metadaten: Funktion, Status, Modell, Token, Kosten, Zeitpunkte),
--- - `beta_entitlements`: die eigene Beta-Freischaltung (Art, erteilt, Ablauf – ohne granted_by), PLAN-PHASE-4B 4.7.
+-- - `beta_entitlements`: die eigene Beta-Freischaltung (Art, erteilt, Ablauf, Limits – ohne granted_by), PLAN-4B 4.7,
+-- - `admin_actions`: das Protokoll der eigenen Freischaltungen und Entzüge ohne `actor` (Wächter E3 N4).
 -- export_my_data bleibt security invoker; die private Tabelle liest nur die kleine Hilfsfunktion unten (security definer,
 -- nur die EIGENE Zeile).
 
 create or replace function private.my_beta_entitlements()
-returns table (entitlement text, granted_at timestamptz, expires_at timestamptz)
+returns table (
+  entitlement text, granted_at timestamptz, expires_at timestamptz, monthly_limit integer, daily_limit integer
+)
 language sql
 stable
 security definer
 set search_path = ''
 as $$
-  select b.entitlement, b.granted_at, b.expires_at
+  select b.entitlement, b.granted_at, b.expires_at, b.monthly_limit, b.daily_limit
   from private.beta_entitlements b
   where b.user_id = auth.uid();
 $$;
 revoke all on function private.my_beta_entitlements() from public, anon;
 grant execute on function private.my_beta_entitlements() to authenticated;
+
+-- Wächter E3 N4: eigene Einträge in private.admin_actions (Art. 15) – Aktion und Zeitpunkte, OHNE `actor` (GitHub-Name
+-- der Gründer) und ohne Flag-Aktionen (die haben keinen Personenbezug).
+create or replace function private.my_admin_actions()
+returns table (action text, expires_at timestamptz, created_at timestamptz)
+language sql
+stable
+security definer
+set search_path = ''
+as $$
+  select a.action, a.expires_at, a.created_at
+  from private.admin_actions a
+  where a.target_user_id = auth.uid();
+$$;
+revoke all on function private.my_admin_actions() from public, anon;
+grant execute on function private.my_admin_actions() to authenticated;
 
 create or replace function public.export_my_data()
 returns jsonb
@@ -71,7 +90,9 @@ begin
       'competitions', (select coalesce(jsonb_agg(to_jsonb(t) order by t.race_date, t.created_at), '[]'::jsonb) from public.competitions t where t.user_id = current_user_id),
       -- Etappe E3: KI-Nutzung (nur Metadaten) und die eigene Beta-Freischaltung (private Tabelle, ohne granted_by).
       'ai_usage', (select coalesce(jsonb_agg(to_jsonb(t) order by t.created_at, t.id), '[]'::jsonb) from public.ai_usage t where t.user_id = current_user_id),
-      'beta_entitlements', (select coalesce(jsonb_agg(to_jsonb(t)), '[]'::jsonb) from private.my_beta_entitlements() t)
+      'beta_entitlements', (select coalesce(jsonb_agg(to_jsonb(t)), '[]'::jsonb) from private.my_beta_entitlements() t),
+      -- Wächter E3 N4: Protokoll der eigenen Freischaltungen/Entzüge (ohne Admin-Identität `actor`).
+      'admin_actions', (select coalesce(jsonb_agg(to_jsonb(t) order by t.created_at), '[]'::jsonb) from private.my_admin_actions() t)
     )
   );
 end;

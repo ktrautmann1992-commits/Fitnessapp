@@ -148,4 +148,45 @@ describe('runFoodPhotoAnalysis', () => {
     });
     expect((await runFoodPhotoAnalysis({ note: null, image: jpeg() }, t.deps)).status).toBe(504);
   });
+
+  it('Abschluss scheitert einmal → wiederholt; zweimal → Antwort bleibt, Reservierung offen (fail closed)', async () => {
+    let calls = 0;
+    const codes: string[] = [];
+    const flaky = {
+      provider: createMockFoodPhotoProvider(),
+      reserve: () =>
+        Promise.resolve({
+          result: 'reserved',
+          id: 'r',
+          remainingMonth: 1,
+          remainingToday: 1,
+        } as const),
+      finish: () => {
+        calls += 1;
+        return calls === 1 ? Promise.reject(new Error('HTTP 500')) : Promise.resolve();
+      },
+      report: (c: string) => codes.push(c),
+    };
+    expect((await runFoodPhotoAnalysis({ note: null, image: jpeg() }, flaky)).status).toBe(200);
+    expect(calls).toBe(2);
+    expect(codes).toEqual(['finish_retry']);
+    calls = 0;
+    codes.length = 0;
+    const down = { ...flaky, finish: () => (calls++, Promise.reject(new Error('HTTP 500'))) };
+    expect((await runFoodPhotoAnalysis({ note: null, image: jpeg() }, down)).status).toBe(200);
+    expect(calls).toBe(2);
+    expect(codes).toEqual(['finish_retry', 'finish_failed']);
+  });
+
+  it('Token und Kosten des Anbieters werden auf den Bereich von ai_usage begrenzt', async () => {
+    const provider: FoodPhotoProvider = {
+      model: 'gemini-3.8-flash',
+      isMock: false,
+      analyze: () => Promise.resolve({ text: '{"items":[]}', inputTokens: 5e9, outputTokens: -3 }),
+    };
+    const d = deps(undefined, provider);
+    await runFoodPhotoAnalysis({ note: null, image: jpeg() }, d.deps);
+    expect(d.finished[0]).toMatchObject({ inputTokens: 1_000_000, outputTokens: 0 });
+    expect(d.finished[0]?.costEur).toBeLessThanOrEqual(99);
+  });
 });

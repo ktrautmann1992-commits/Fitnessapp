@@ -19,6 +19,7 @@ import {
   parsePhotoResult,
   photoEntries,
   photoItemKcal,
+  photoLimitsFor,
   photoLimitState,
   photoRequestSchema,
   sanitizeFoodNote,
@@ -361,10 +362,31 @@ describe('photoLimitState (Europe/Berlin)', () => {
     expect(g.blocked).toBe('day');
   });
 
-  it('laufende Reservierung zählt 5 Minuten lang', () => {
-    const r: AiUsageRecord = { created_at: '2026-10-16T12:00:00Z', status: 'reserved' };
-    expect(photoLimitState([r], DEFAULT_PHOTO_LIMITS, '2026-10-16T12:04:59Z').dayUsed).toBe(1);
-    expect(photoLimitState([r], DEFAULT_PHOTO_LIMITS, '2026-10-16T12:05:00Z').dayUsed).toBe(0);
+  it('Reservierung ohne Abschluss zählt weiter – auch nach Stunden (fail closed, Wächter E3 M4)', () => {
+    const r: AiUsageRecord = { created_at: '2026-10-16T06:00:00Z', status: 'reserved' };
+    expect(photoLimitState([r], DEFAULT_PHOTO_LIMITS, '2026-10-16T06:04:59Z').dayUsed).toBe(1);
+    expect(photoLimitState([r], DEFAULT_PHOTO_LIMITS, '2026-10-16T20:00:00Z')).toMatchObject({
+      dayUsed: 1,
+      monthUsed: 1,
+    });
+    expect(photoLimitState([r], DEFAULT_PHOTO_LIMITS, '2026-10-30T20:00:00Z').monthUsed).toBe(1);
+  });
+
+  it('Limits je Person (Wächter E3 N6): eigene Werte, Versuchs-Deckel 2 × Tageslimit, sonst Standard', () => {
+    expect(photoLimitsFor({})).toEqual(DEFAULT_PHOTO_LIMITS);
+    expect(photoLimitsFor({ monthly: 2, daily: null })).toEqual({
+      monthly: 2,
+      daily: 8,
+      dailyAttempts: 16,
+    });
+    expect(photoLimitsFor({ monthly: null, daily: 1 })).toEqual({
+      monthly: 30,
+      daily: 1,
+      dailyAttempts: 2,
+    });
+    const two = Array.from({ length: 2 }, () => ok('2026-10-02T08:00:00Z'));
+    const s = photoLimitState(two, photoLimitsFor({ monthly: 2 }), '2026-10-16T08:00:00Z');
+    expect(s).toMatchObject({ blocked: 'month', availableFrom: '2026-11-01' });
   });
 
   it('Jahreswechsel und ungültige Zeit', () => {

@@ -12,6 +12,7 @@
  * Codes – nie Foto, Info, Antwort, Token oder Nutzer-ID.
  */
 import {
+  AI_FOOD_PHOTO,
   createMockFoodPhotoProvider,
   runFoodPhotoAnalysis,
   type FoodPhotoProvider,
@@ -19,6 +20,7 @@ import {
 } from '@fitnessapp/core';
 
 import { type FoodPhotoConfig, isAllowedAppOrigin, readFoodPhotoConfig } from './config';
+import { FOOD_PHOTO_MAX_BODY_BYTES } from './form';
 import { createGeminiProvider } from './provider';
 import { createSupabaseFoodPhotoStore, type FoodPhotoStore } from './store';
 
@@ -81,8 +83,11 @@ export function corsHeaders(headers: HeaderReader, env: Env): Record<string, str
 export async function handleFoodPhoto(input: {
   env: Env;
   headers: HeaderReader;
-  /** null = Formular nicht lesbar bzw. zu groß. */
-  form: FoodPhotoForm | null;
+  /**
+   * Liest das Formular (null = nicht lesbar bzw. zu groß). Wird erst NACH Herkunft, Konfiguration und Login aufgerufen
+   * (Wächter E3 M2) – ohne Login liest der Server den Körper nie.
+   */
+  readForm: () => Promise<FoodPhotoForm | null>;
   deps?: FoodPhotoDepsFactory;
 }): Promise<FoodPhotoResult> {
   const headers = corsHeaders(input.headers, input.env);
@@ -99,12 +104,17 @@ export async function handleFoodPhoto(input: {
   if (configResult.status !== 'ok') return result(503, { code: 'not_configured' });
   const token = TOKEN.exec(input.headers.get('authorization') ?? '')?.[1];
   if (!token) return result(401, { code: 'unauthorized' });
+  // Content-Length-Grenze vor allem anderen Lesen (fehlt sie, begrenzt readForm beim Lesen).
+  const length = input.headers.get('content-length');
+  if (length !== null && !(Number(length) > 0 && Number(length) <= FOOD_PHOTO_MAX_BODY_BYTES)) {
+    return result(400, { code: 'invalid_request' });
+  }
 
   const { store, provider } = (input.deps ?? defaultFoodPhotoDeps)(configResult.config);
   try {
     const userId = await store.verifyUser(token);
     if (userId === null) return result(401, { code: 'unauthorized' });
-    const form = input.form;
+    const form = await input.readForm();
     if (form === null || form.unexpectedFields || form.image === null) {
       return result(400, { code: 'invalid_request' });
     }
@@ -112,7 +122,9 @@ export async function handleFoodPhoto(input: {
       { note: form.note, image: form.image },
       {
         provider,
-        reserve: () => store.reserve(userId),
+        // Echter Anbieter nur mit neuer Einwilligungsfassung (v2); die Attrappe genügt v1 (Wächter E3 M3).
+        reserve: () =>
+          store.reserve(userId, provider.isMock ? 1 : AI_FOOD_PHOTO.realProviderMinConsentVersion),
         finish: (params) => store.finish({ ...params, userId }),
         report,
       },

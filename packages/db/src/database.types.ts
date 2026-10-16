@@ -2419,7 +2419,10 @@ export type Database = {
         };
         Returns: Json;
       };
-      ai_food_photo_reserve: { Args: { p_user_id: string }; Returns: Json };
+      ai_food_photo_reserve: {
+        Args: { p_min_consent_version?: number; p_user_id: string };
+        Returns: Json;
+      };
       append_plan_block: { Args: { p_plan_id: string; p_sessions: Json }; Returns: number };
       cancel_competition: { Args: { p_id: string }; Returns: undefined };
       close_missed_sessions: { Args: never; Returns: number };
@@ -2442,9 +2445,11 @@ export type Database = {
         Args: {
           p_action: string;
           p_actor: string;
+          p_daily_limit?: number;
           p_days?: number;
           p_email?: string;
           p_flag?: string;
+          p_monthly_limit?: number;
         };
         Returns: Json;
       };

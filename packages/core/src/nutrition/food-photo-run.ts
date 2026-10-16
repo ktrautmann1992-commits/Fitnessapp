@@ -79,6 +79,8 @@ export type FoodPhotoReserve =
       readonly remainingToday: number;
     }
   | { readonly result: 'flag_off' | 'no_entitlement' | 'no_consent' }
+  /** Echter Anbieter ohne passende Einwilligungsfassung (≥ 2, Wächter E3 M3) bzw. nicht eingerichtet. */
+  | { readonly result: 'not_configured' }
   | { readonly result: 'limit'; readonly scope: 'month' | 'day'; readonly availableFrom: string };
 
 export interface FoodPhotoFinish {
@@ -130,6 +132,7 @@ export async function runFoodPhotoAnalysis(
       body: { code: 'limit', scope: reserved.scope, available_from: reserved.availableFrom },
     };
   }
+  if (reserved.result === 'not_configured') return fail(503, 'not_configured');
   if (reserved.result !== 'reserved') return fail(403, reserved.result);
 
   const { provider } = deps;
@@ -176,18 +179,29 @@ export async function runFoodPhotoAnalysis(
   }
   outcome ??= fail(502, 'invalid_answer');
 
-  try {
-    await deps.finish({
-      id: reserved.id,
-      status: succeeded ? 'succeeded' : 'failed',
-      model: provider.model,
-      inputTokens,
-      outputTokens,
-      costEur: aiFoodPhotoCostEur(provider.model, inputTokens, outputTokens) ?? 0,
-    });
-  } catch {
-    // Die Reservierung läuft nach 5 Minuten von selbst ab; die Antwort bleibt gültig.
-    deps.report?.('finish_failed');
+  // Werte des Anbieters auf den Bereich von ai_usage begrenzen (sonst scheitert der Abschluss am CHECK).
+  const clampTokens = (n: number) =>
+    Math.min(AI_FOOD_PHOTO.maxTokens, Math.max(0, Math.round(Number.isFinite(n) ? n : 0)));
+  const finish: FoodPhotoFinish = {
+    id: reserved.id,
+    status: succeeded ? 'succeeded' : 'failed',
+    model: provider.model,
+    inputTokens: clampTokens(inputTokens),
+    outputTokens: clampTokens(outputTokens),
+    costEur: Math.min(
+      AI_FOOD_PHOTO.maxCostEur,
+      aiFoodPhotoCostEur(provider.model, clampTokens(inputTokens), clampTokens(outputTokens)) ?? 0,
+    ),
+  };
+  // Abschluss einmal wiederholen (Wächter E3 M4). Scheitert er zweimal, bleibt die Reservierung offen und zählt
+  // weiter gegen das Limit („fail closed“); die Antwort bleibt gültig.
+  for (let attempt = 0; attempt < 2; attempt += 1) {
+    try {
+      await deps.finish(finish);
+      return outcome;
+    } catch {
+      deps.report?.(attempt === 0 ? 'finish_retry' : 'finish_failed');
+    }
   }
   return outcome;
 }

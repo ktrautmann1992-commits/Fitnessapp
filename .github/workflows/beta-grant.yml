@@ -31,6 +31,16 @@ on:
         required: false
         default: '90'
         type: string
+      monatslimit:
+        description: 'Fotos je Monat für dieses Konto (1–300, leer = Standard 30; nur bei freischalten)'
+        required: false
+        default: ''
+        type: string
+      tageslimit:
+        description: 'Fotos je Tag für dieses Konto (1–50, leer = Standard 8; nur bei freischalten)'
+        required: false
+        default: ''
+        type: string
       flag:
         description: 'Funktion (Feature-Flag)'
         required: true
@@ -56,6 +66,8 @@ jobs:
           AKTION: ${{ inputs.aktion }}
           EMAIL: ${{ inputs.email }}
           TAGE: ${{ inputs.tage }}
+          MONAT: ${{ inputs.monatslimit }}
+          TAG: ${{ inputs.tageslimit }}
           FLAG: ${{ inputs.flag }}
         run: |
           set -euo pipefail
@@ -85,6 +97,15 @@ jobs:
               echo "::error::Tage bitte als ganze Zahl von 1 bis 180."
               exit 1
             fi
+            # Limits je Person (Wächter E3 N6): leer = Standard, sonst ganze Zahl im erlaubten Bereich.
+            if [ -n "$MONAT" ] && { ! printf '%s' "$MONAT" | grep -Eq '^[0-9]{1,3}$' || [ "$MONAT" -lt 1 ] || [ "$MONAT" -gt 300 ]; }; then
+              echo "::error::Monatslimit bitte als ganze Zahl von 1 bis 300 (oder leer)."
+              exit 1
+            fi
+            if [ -n "$TAG" ] && { ! printf '%s' "$TAG" | grep -Eq '^[0-9]{1,2}$' || [ "$TAG" -lt 1 ] || [ "$TAG" -gt 50 ]; }; then
+              echo "::error::Tageslimit bitte als ganze Zahl von 1 bis 50 (oder leer)."
+              exit 1
+            fi
           fi
           echo "action=$action" >> "$GITHUB_OUTPUT"
 
@@ -95,6 +116,8 @@ jobs:
           ACTION: ${{ steps.input.outputs.action }}
           EMAIL: ${{ inputs.email }}
           TAGE: ${{ inputs.tage }}
+          MONAT: ${{ inputs.monatslimit }}
+          TAG: ${{ inputs.tageslimit }}
           FLAG: ${{ inputs.flag }}
           ACTOR: ${{ github.actor }}
         run: |
@@ -103,10 +126,19 @@ jobs:
             echo "::notice title=beta-grant übersprungen::Es fehlen die GitHub-Secrets SUPABASE_URL und/oder SUPABASE_SECRET_KEY. Siehe docs/SETUP.md Teil B."
             exit 0
           fi
-          if [ "$ACTION" = grant ] || [ "$ACTION" = revoke ]; then
+          if [ "$ACTION" = grant ]; then
             echo "::add-mask::$EMAIL"
-            body=$(jq -n --arg a "$ACTION" --arg actor "$ACTOR" --arg e "$EMAIL" --argjson d "${TAGE:-90}" --arg f "$FLAG" \
-              '{p_action: $a, p_actor: $actor, p_email: $e, p_days: $d, p_flag: $f}')
+            # Tage und Limits sind im Schritt vorher geprüft; leere Limits = null (Standard).
+            body=$(jq -n --arg a "$ACTION" --arg actor "$ACTOR" --arg e "$EMAIL" --argjson d "$TAGE" --arg f "$FLAG" \
+              --arg m "$MONAT" --arg t "$TAG" \
+              '{p_action: $a, p_actor: $actor, p_email: $e, p_days: $d, p_flag: $f,
+                p_monthly_limit: (if $m == "" then null else ($m | tonumber) end),
+                p_daily_limit: (if $t == "" then null else ($t | tonumber) end)}')
+          elif [ "$ACTION" = revoke ]; then
+            # Wächter E3 N5: beim Entziehen keine Tage (nicht geprüft, nicht gebraucht).
+            echo "::add-mask::$EMAIL"
+            body=$(jq -n --arg a "$ACTION" --arg actor "$ACTOR" --arg e "$EMAIL" --arg f "$FLAG" \
+              '{p_action: $a, p_actor: $actor, p_email: $e, p_flag: $f}')
           else
             body=$(jq -n --arg a "$ACTION" --arg actor "$ACTOR" --arg f "$FLAG" \
               '{p_action: $a, p_actor: $actor, p_flag: $f}')

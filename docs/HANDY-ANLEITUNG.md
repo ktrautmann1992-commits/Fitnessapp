@@ -529,8 +529,8 @@ Konten dort zunächst **aus** (SETUP Teil L).
 
 1. Vorschau-Link aus dem Pull Request öffnen → Testmodus mit dem Testkonto aus Teil 7c (Einwilligung
    Gesundheitsdaten erteilt) → **Ernährung** → **„Eintragen“** → Kasten **„Per Foto“**.
-2. Beim ersten Mal kommt die **eigene Einwilligung** „Gerichte per Foto auswerten“ (was an wen geht, Foto wird nicht
-   gespeichert, Schätzung). „Einwilligungstext lesen“ zeigt den ganzen Text → **„Zustimmen und fortfahren“**.
+2. Beim ersten Mal kommt die **eigene Einwilligung** „Gerichte per Foto auswerten“ (Testversion ohne Übermittlung an
+   einen KI-Anbieter, Foto wird nicht gespeichert, Schätzung; vor einer echten KI wird erneut gefragt). „Einwilligungstext lesen“ zeigt den ganzen Text → **„Zustimmen und fortfahren“**.
 3. Oben steht **„Noch 30 Fotos in diesem Monat · heute noch 8“** und der Hinweis „Testversion: … Attrappe …“.
 4. Optional eine **kurze Info** (z. B. „halbe Portion“) → **„Foto aufnehmen oder wählen“** → Teller fotografieren (oder
    ein Bild wählen). Alternativ **„Beispielfoto verwenden (Testmodus)“**.
@@ -550,7 +550,8 @@ Konten dort zunächst **aus** (SETUP Teil L).
 
 **Mit Konto (optional, SETUP Teil L2/L3):** Flag einschalten und euer Testkonto per Workflow **beta-grant**
 freischalten → in der App mit Konto dieselben Schritte (es antwortet weiter die Attrappe). Ohne Freischaltung zeigt
-„Per Foto“: „gehört zu Premium … Eintragen per Hand bleibt immer gratis.“ Das Limit (8 am Tag, 30 im Monat) zeigt bei
+„Per Foto“: „gehört zu Premium … Eintragen per Hand bleibt immer gratis.“ Zum Testen des Limits das Konto per
+**beta-grant** mit **monatslimit** `2` freischalten → nach zwei Fotos kommt die Monats-Meldung. Das Limit (8 am Tag, 30 im Monat) zeigt bei
 Erreichen „Für heute sind keine Fotos mehr möglich, ab morgen wieder“ bzw. „… ab 1. November wieder verfügbar“.
 
 **Hinweis:** In der App auf dem Handy (APK/TestFlight) geht in dieser Testversion nur „Beispielfoto verwenden“ (im

@@ -211,7 +211,7 @@ select is(
    where c.contype = 'f' and c.confrelid = 'auth.users'::regclass
      and (c.connamespace = 'public'::regnamespace
           -- E3: die eigene Beta-Freischaltung liegt in private, gehört aber zum Export (PLAN-PHASE-4B 4.7).
-          or c.conrelid = 'private.beta_entitlements'::regclass))::text[],
+          or c.conrelid in ('private.beta_entitlements'::regclass, 'private.admin_actions'::regclass)))::text[],
   'Export enthält genau alle Tabellen mit Fremdschlüssel auf auth.users (+ eigene Beta-Freischaltung)'
 );
 select is_empty(

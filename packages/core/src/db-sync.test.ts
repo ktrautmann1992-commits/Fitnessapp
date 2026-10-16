@@ -1717,16 +1717,27 @@ describe('Gericht per Foto in der Datenbank (Etappe E3)', () => {
   });
 
   it.each([
-    ['monthly_limit constant integer := ', AI_FOOD_PHOTO.monthlyLimit],
-    ['daily_limit constant integer := ', AI_FOOD_PHOTO.dailyLimit],
-    ['daily_attempts_max constant integer := ', AI_FOOD_PHOTO.dailyAttemptsMax],
+    ['default_monthly_limit constant integer := ', AI_FOOD_PHOTO.monthlyLimit],
+    ['default_daily_limit constant integer := ', AI_FOOD_PHOTO.dailyLimit],
+    ['default_daily_attempts_max constant integer := ', AI_FOOD_PHOTO.dailyAttemptsMax],
   ] as const)('ai_food_photo_reserve: „%s%s“ = AI_FOOD_PHOTO', (marker, value) => {
     expect(body('public.ai_food_photo_reserve')).toContain(`${marker}${value};`);
   });
 
-  it('Reservierung zählt wie photoLimitState (5 Minuten, Europe/Berlin)', () => {
+  it('Reservierung zählt wie photoLimitState (ohne Abschluss weiter – fail closed, Europe/Berlin)', () => {
     const usage = body('private.ai_food_photo_usage');
-    expect(usage).toContain(`interval '${AI_FOOD_PHOTO.reservationStaleMinutes} minutes'`);
+    expect(usage).toContain("u.status in ('succeeded', 'reserved') as counts");
+    expect(usage).not.toContain('minutes');
+    // Versuchs-Deckel je Person = 2 × Tageslimit (photoLimitsFor), Mindest-Fassung für den echten Anbieter.
+    expect(body('public.ai_food_photo_reserve')).toContain(
+      'then default_daily_attempts_max else 2 * b.daily_limit end',
+    );
+    expect(body('public.ai_food_photo_reserve')).toContain(
+      "p_min_consent_version > coalesce(public.current_consent_version('ai_food_photo'), 0)",
+    );
+    expect(body('public.ai_food_photo_reserve')).toContain(
+      `default_daily_limit constant integer := ${AI_FOOD_PHOTO.dailyLimit};`,
+    );
     expect(usage).toContain("at time zone 'Europe/Berlin'");
   });
 
@@ -1752,6 +1763,14 @@ describe('Gericht per Foto in der Datenbank (Etappe E3)', () => {
     ]);
   });
 
+  it('Limits je Person (N6): Bereich in beta_entitlements und beta_admin = AI_FOOD_PHOTO.customLimits', () => {
+    const { monthly, daily } = AI_FOOD_PHOTO.customLimits;
+    expect(main).toContain(`check (monthly_limit between ${monthly.min} and ${monthly.max})`);
+    expect(main).toContain(`check (daily_limit between ${daily.min} and ${daily.max})`);
+    expect(main).toContain(`p_monthly_limit not between ${monthly.min} and ${monthly.max}`);
+    expect(main).toContain(`p_daily_limit not between ${daily.min} and ${daily.max}`);
+  });
+
   it('kein Storage-Bucket für Fotos (A-G18: Foto wird nie gespeichert)', () => {
     for (const name of migrationFiles.filter((n) => n >= (migrationFiles[enumsFile] ?? ''))) {
       expect(readMigration(name)).not.toMatch(/storage\.(buckets|objects)/);
@@ -1760,10 +1779,10 @@ describe('Gericht per Foto in der Datenbank (Etappe E3)', () => {
 
   it('reserve/finish/beta_admin nur service_role, Lesen der Nutzung per RLS nur eigene Zeilen', () => {
     expect(main).toContain(
-      'revoke all on function public.ai_food_photo_reserve(uuid) from public, anon, authenticated;',
+      'revoke all on function public.ai_food_photo_reserve(uuid, integer) from public, anon, authenticated;',
     );
     expect(main).toContain(
-      'grant execute on function public.ai_food_photo_reserve(uuid) to service_role;',
+      'grant execute on function public.ai_food_photo_reserve(uuid, integer) to service_role;',
     );
     expect(main).toContain('grant select on table public.ai_usage to authenticated;');
     expect(main).toContain('using (user_id = (select auth.uid()));');

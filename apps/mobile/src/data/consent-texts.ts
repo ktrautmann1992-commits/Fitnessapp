@@ -91,11 +91,11 @@ Neue Fassung: Ändern wir diesen Text, fragen wir dich erneut. Bis du zustimmst,
 
 Mit „Per Foto“ kannst du ein Foto deiner Mahlzeit auswerten lassen. Die Auswertung schätzt, welche Lebensmittel zu sehen sind und wie viel davon. Weil ein Foto deines Essens Rückschlüsse auf deine Gesundheit und dein Essverhalten zulassen kann, brauchen wir dafür diese gesonderte Einwilligung.
 
-Was gesendet wird: nur das Foto (verkleinert, ohne Standort und ohne andere Bilddaten) und deine kurze Info zum Gericht (höchstens 120 Zeichen). Nicht gesendet werden dein Name, deine E-Mail-Adresse, deine Nutzerkennung, Körperdaten, Ziele, dein Gesundheits-Check und Unverträglichkeiten.
+Derzeit Testversion: Es antwortet ein Testprogramm mit festen Beispielen. Dein Foto und deine Info werden dabei an keinen KI-Anbieter übermittelt – auch nicht an Google. Bevor wir eine echte KI einschalten, legen wir dir eine neue Fassung dieses Textes vor (mit Anbieter, Verarbeitungsort und Speicherdauer beim Anbieter) und fragen dich erneut. Ohne deine neue Zustimmung bleibt es bei der Testversion.
 
-An wen: an Google (Gemini-API) als unseren Auftragsverarbeiter, mit Verarbeitung in der EU, soweit verfügbar. Google darf die Daten nicht zum Training seiner KI verwenden.
+Was verarbeitet wird: nur das Foto (auf deinem Gerät verkleinert, Standort und andere Bilddaten werden entfernt) und deine kurze Info zum Gericht (höchstens 120 Zeichen). Dein Name, deine E-Mail-Adresse, Körperdaten, Ziele, dein Gesundheits-Check und Unverträglichkeiten gehören nicht dazu.
 
-Wie lange: Wir speichern das Foto nicht. Es wird nur für die Auswertung übertragen und danach sofort verworfen. Je Auswertung speichern wir nur Zeitpunkt, Ergebnis-Status, Menge der verarbeiteten Daten (Token) und Kosten – für dein monatliches Kontingent, ohne Inhalte.
+Wie lange: Wir speichern das Foto nicht. Es wird nur für die Auswertung verarbeitet und danach sofort verworfen. Je Auswertung speichern wir nur Zeitpunkt, Ergebnis-Status, Menge der verarbeiteten Daten (Token) und Kosten – für dein monatliches Kontingent, ohne Inhalte.
 
 Schätzung ohne Gewähr: Das Ergebnis ist ein Vorschlag. Du prüfst und änderst ihn, bevor etwas in dein Ernährungstagebuch kommt. Die Nährwerte rechnen wir selbst aus unserem Lebensmittel-Katalog.
 

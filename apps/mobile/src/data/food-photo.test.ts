@@ -230,6 +230,19 @@ describe('Per Foto im Supabase-Modus (Ersatz-fetch, kein echtes Netz)', () => {
       now: () => NOW,
     });
     expect((await on.foodPhotoStatus()).limit).toMatchObject({ monthUsed: 1, remainingMonth: 29 });
+    // Wächter E3 N6: eigenes Limit (z. B. Testkonto mit Limit 2) aus der Freischaltung.
+    const two = createRemoteFoodPhoto({
+      client: client({ active: true, reason: 'ok', monthly_limit: 2, daily_limit: null }, [
+        { created_at: NOW, status: 'succeeded' },
+        { created_at: NOW, status: 'reserved' },
+      ]),
+      webUrl: 'https://web.example',
+      now: () => NOW,
+    });
+    expect((await two.foodPhotoStatus()).limit).toMatchObject({
+      blocked: 'month',
+      remainingMonth: 0,
+    });
   });
 
   it('Auswertung: Bearer-Token, Formular mit Bild und Info; Antwort per Zod geprüft', async () => {

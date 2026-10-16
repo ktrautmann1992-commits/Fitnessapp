@@ -5,7 +5,7 @@
 -- dem Katalog), Widerruf, Konto löschen. Datei-Nummer 37 (34–36 belegt der parallele Branch WP3).
 begin;
 create extension if not exists pgtap with schema extensions;
-select plan(90);
+select plan(97);
 
 -- A: Gesundheit + Foto-Einwilligung, wird freigeschaltet. B: nur Gesundheit. C: Foto ohne Gesundheit. D: fremd.
 insert into auth.users (id, email) values
@@ -60,16 +60,16 @@ select ok(
      and p.proname in ('ai_food_photo_reserve', 'ai_food_photo_finish', 'ai_food_photo_access', 'beta_admin',
                        'has_entitlement')),
   'neue Funktionen: security definer, search_path leer');
-select ok(not has_function_privilege('authenticated', 'public.ai_food_photo_reserve(uuid)', 'execute'),
+select ok(not has_function_privilege('authenticated', 'public.ai_food_photo_reserve(uuid, integer)', 'execute'),
   'authenticated: reserve nicht ausführbar (nur Server)');
 select ok(not has_function_privilege('authenticated',
   'public.ai_food_photo_finish(uuid, uuid, text, text, integer, integer, numeric)', 'execute'),
   'authenticated: finish nicht ausführbar (sonst Limit selbst freigeben)');
-select ok(not has_function_privilege('authenticated', 'public.beta_admin(text, text, text, integer, text)', 'execute'),
+select ok(not has_function_privilege('authenticated', 'public.beta_admin(text, text, text, integer, text, integer, integer)', 'execute'),
   'authenticated: beta_admin nicht ausführbar');
 select ok(not has_function_privilege('anon', 'public.ai_food_photo_access()', 'execute'), 'anon: access nein');
 select ok(not has_function_privilege('anon', 'public.has_entitlement(text)', 'execute'), 'anon: has_entitlement nein');
-select ok(has_function_privilege('service_role', 'public.ai_food_photo_reserve(uuid)', 'execute'),
+select ok(has_function_privilege('service_role', 'public.ai_food_photo_reserve(uuid, integer)', 'execute'),
   'service_role: reserve ja');
 select ok(not has_table_privilege('authenticated', 'public.ai_usage', 'insert')
           and not has_table_privilege('authenticated', 'public.ai_usage', 'update')
@@ -101,10 +101,12 @@ select ok(
 -- ---------------------------------------------------------------------------------------------------------
 select is(public.current_consent_version('ai_food_photo'), 1, 'ai_food_photo: Text Version 1 veröffentlicht');
 select ok(
-  (select body_de like '%Google%' and body_de like '%nicht zum Training%' and body_de like '%speichern das Foto nicht%'
+  (select body_de like '%Derzeit Testversion%' and body_de like '%an keinen KI-Anbieter übermittelt%'
+          and body_de like '%fragen dich erneut%' and body_de like '%speichern das Foto nicht%'
           and body_de like '%Schätzung%' and body_de like '%Widerruf%'
+          and body_de not like '%nicht zum Training%' and body_de not like '%in der EU%'
    from public.consent_documents where consent_type = 'ai_food_photo' and version = 1),
-  'Einwilligungstext nennt Empfänger, kein Training, keine Speicherung, Schätzung, Widerruf (A-G17)');
+  'Text v1 (Wächter E3 M3): Testversion ohne Übermittlung, neue Frage vor echter KI, keine Zusagen zum Anbieter');
 
 -- ---------------------------------------------------------------------------------------------------------
 -- Flag und Freischaltung (beta_admin, nur service_role)
@@ -153,7 +155,9 @@ select is((select count(*) from public.ai_usage), 0::bigint, 'abgelehnt → kein
 set local role authenticated;
 set local request.jwt.claims = '{"sub":"11111111-1111-4111-8111-111111111111","role":"authenticated"}';
 insert into public.consents (consent_type, version, platform) values ('ai_food_photo', 1, 'web');
-select is(public.ai_food_photo_access(), '{"active": true, "reason": "ok"}'::jsonb, 'access: A aktiv');
+select is(public.ai_food_photo_access(),
+  '{"active": true, "reason": "ok", "daily_limit": null, "monthly_limit": null}'::jsonb,
+  'access: A aktiv (Standard-Limits)');
 select ok(public.has_entitlement(), 'has_entitlement: A ja');
 reset role;
 
@@ -232,14 +236,15 @@ set local role service_role;
 select is(pg_temp.reserve('11111111-1111-4111-8111-111111111111') ->> 'scope', 'month',
   '00:01 Berlin am Monatsersten zählt zum neuen Monat (nicht UTC)');
 reset role;
--- Abgelaufene Reservierung (älter als 5 Minuten) zählt nicht.
+-- Reservierung ohne Abschluss zählt weiter, auch nach Stunden (fail closed, Wächter E3 M4).
 delete from public.ai_usage;
 insert into public.ai_usage (user_id, feature, status, created_at)
-select '11111111-1111-4111-8111-111111111111', 'food_photo', 'reserved', now() - interval '6 minutes'
+select '11111111-1111-4111-8111-111111111111', 'food_photo', 'reserved',
+       greatest(now() - interval '3 hours', private.berlin_today()::timestamp at time zone 'Europe/Berlin')
 from generate_series(1, 7);
 set local role service_role;
-select is(pg_temp.reserve('11111111-1111-4111-8111-111111111111') ->> 'remaining_today', '7',
-  'Reservierungen älter als 5 Minuten zählen nicht (nur als Versuch)');
+select is(pg_temp.reserve('11111111-1111-4111-8111-111111111111') ->> 'remaining_today', '0',
+  'Reservierungen ohne Abschluss zählen weiter gegen das Tageslimit (fail closed)');
 reset role;
 -- Tageslimit 8.
 delete from public.ai_usage;
@@ -381,6 +386,39 @@ select ok(not public.has_entitlement(), 'has_entitlement: entzogen');
 reset role;
 
 -- ---------------------------------------------------------------------------------------------------------
+-- Wächter E3 M3: echter Anbieter nur mit Einwilligungsfassung ≥ 2; N6: Limits je Person
+-- ---------------------------------------------------------------------------------------------------------
+set local role service_role;
+select public.beta_admin('flag_on', 'gruender-1') is not null as flag_on \gset
+select public.beta_admin('grant', 'gruender-1', 'nutzer-d@example.test', 30) is not null as grant_d \gset
+select is(public.ai_food_photo_reserve('44444444-4444-4444-8444-444444444444', 2), '{"result": "not_configured"}'::jsonb,
+  'Mindest-Fassung 2 ohne veröffentlichten Text v2 → not_configured (Gemini mit v1 nie aktivierbar)');
+select is(public.beta_admin('grant', 'gruender-1', 'nutzer-d@example.test', 30, 'ai_food_photo', 301),
+  '{"result": "invalid_input"}'::jsonb, 'Monatslimit 301 → invalid_input');
+select is(public.beta_admin('grant', 'gruender-1', 'nutzer-d@example.test', 30, 'ai_food_photo', 2, 1) ->> 'result',
+  'granted', 'Freischaltung D mit Monatslimit 2 und Tageslimit 1');
+reset role;
+delete from public.ai_usage where user_id = '44444444-4444-4444-8444-444444444444';
+set local role service_role;
+select is(public.ai_food_photo_reserve('44444444-4444-4444-8444-444444444444') - 'id',
+  '{"result": "reserved", "remaining_month": 1, "remaining_today": 0}'::jsonb, 'eigenes Limit: erstes Foto');
+select is(public.ai_food_photo_reserve('44444444-4444-4444-8444-444444444444') ->> 'scope', 'day',
+  'eigenes Tageslimit 1 greift');
+reset role;
+set local role authenticated;
+set local request.jwt.claims = '{"sub":"44444444-4444-4444-8444-444444444444","role":"authenticated"}';
+select is(public.ai_food_photo_access(),
+  '{"active": true, "reason": "ok", "monthly_limit": 2, "daily_limit": 1}'::jsonb, 'access: eigene Limits für die Anzeige');
+reset role;
+-- Wiederherstellen für die folgenden Prüfungen (Flag aus, D: Freischaltung abgelaufen).
+set local role service_role;
+select public.beta_admin('flag_off', 'gruender-1') is not null as flag_off \gset
+reset role;
+delete from public.ai_usage where user_id = '44444444-4444-4444-8444-444444444444';
+update private.beta_entitlements set granted_at = now() - interval '31 days', expires_at = now() - interval '1 day'
+where user_id = '44444444-4444-4444-8444-444444444444';
+
+-- ---------------------------------------------------------------------------------------------------------
 -- Export (Art. 15): alle bisherigen Bereiche bleiben, dazu ai_usage und die eigene Beta-Freischaltung
 -- ---------------------------------------------------------------------------------------------------------
 set local role authenticated;
@@ -395,8 +433,8 @@ select ok(
     'planned_sessions', 'planned_exercises', 'session_logs', 'exercise_logs', 'set_logs', 'cardio_logs',
     'exercise_start_weights', 'meal_plans', 'meal_plan_items', 'shopping_lists', 'shopping_list_items',
     'recipe_ratings', 'food_dislikes', 'food_log_entries', 'food_log_favorites', 'custom_meals', 'custom_meal_items',
-    'competitions', 'ai_usage', 'beta_entitlements'],
-  'Export: alle bisherigen Bereiche (inkl. competitions aus WP3) plus ai_usage und beta_entitlements');
+    'competitions', 'ai_usage', 'beta_entitlements', 'admin_actions'],
+  'Export: alle bisherigen Bereiche (inkl. competitions aus WP3) plus ai_usage, beta_entitlements, admin_actions');
 set local role authenticated;
 set local request.jwt.claims = '{"sub":"11111111-1111-4111-8111-111111111111","role":"authenticated"}';
 select is(jsonb_array_length(public.export_my_data() -> 'data' -> 'ai_usage'), 2, 'Export: eigene ai_usage-Zeilen');
@@ -404,6 +442,10 @@ select ok(
   (select e ? 'expires_at' and not e ? 'granted_by' and not e ? 'user_id'
    from jsonb_array_elements(public.export_my_data() -> 'data' -> 'beta_entitlements') e),
   'Export: eigene Freischaltung ohne granted_by');
+select ok(
+  (select count(*) > 0 and bool_and(e ? 'action' and not e ? 'actor' and not e ? 'target_user_id')
+   from jsonb_array_elements(public.export_my_data() -> 'data' -> 'admin_actions') e),
+  'Export (N4): eigenes Freischalt-Protokoll ohne Admin-Identität');
 set local request.jwt.claims = '{"sub":"44444444-4444-4444-8444-444444444444","role":"authenticated"}';
 select is(jsonb_array_length(public.export_my_data() -> 'data' -> 'ai_usage'), 0, 'Export: keine fremden Zeilen');
 reset role;

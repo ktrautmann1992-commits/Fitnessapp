@@ -7,6 +7,7 @@ import type { FoodPhotoProvider, FoodPhotoProviderRequest } from '@fitnessapp/co
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 
 import { isAllowedAppOrigin, readFoodPhotoConfig } from './config';
+import { FOOD_PHOTO_MAX_BODY_BYTES, readFoodPhotoForm } from './form';
 import { handleFoodPhoto, type FoodPhotoForm } from './handler';
 import { createGeminiProvider, geminiRequestBody } from './provider';
 import {
@@ -94,6 +95,7 @@ async function call(
     form?: FoodPhotoForm | null;
     h?: Record<string, string>;
     env?: Record<string, string>;
+    readForm?: () => Promise<FoodPhotoForm | null>;
   } = {},
 ) {
   const store = opts.store ?? fakeStore().store;
@@ -101,7 +103,8 @@ async function call(
   return handleFoodPhoto({
     env: opts.env ?? ENV,
     headers: headers(opts.h ?? { authorization: `Bearer ${TOKEN}` }),
-    form: opts.form === undefined ? form() : opts.form,
+    readForm:
+      opts.readForm ?? (() => Promise.resolve(opts.form === undefined ? form() : opts.form)),
     deps: () => ({ store, provider }),
   });
 }
@@ -168,6 +171,7 @@ describe('CORS und Login', () => {
     const o = 'https://fitnessapp-git-e3-meinteam.vercel.app';
     expect(isAllowedAppOrigin(o, ENV)).toBe(false);
     expect(isAllowedAppOrigin(o, { ...ENV, APP_PREVIEW_TEAM: 'meinteam' })).toBe(true);
+    expect(isAllowedAppOrigin('https://fitnessapp-git-xyz-meinteam.vercel.app', ENV)).toBe(false);
     expect(
       isAllowedAppOrigin('https://fitnessapp-x-andere.vercel.app', {
         ...ENV,
@@ -254,7 +258,7 @@ describe('Ablauf mit der Attrappe', () => {
     ]);
     expect(String.fromCharCode(...(seen[0]?.image ?? []))).not.toContain('GPS');
     expect(seen[0]?.prompt.userText).toContain('"halbe Portion"');
-    expect(store.reserve).toHaveBeenCalledWith(USER);
+    expect(store.reserve).toHaveBeenCalledWith(USER, 1);
   });
 
   it('kein Essen → no_food (zählt, Antwort war gültig)', async () => {
@@ -419,7 +423,7 @@ describe('Supabase-Zugriff (Ersatz-fetch)', () => {
     const store = createSupabaseFoodPhotoStore(config, fetchFn);
     expect(await store.verifyUser(TOKEN)).toBe(USER);
     expect(await store.verifyUser('falsch')).toBeNull();
-    expect(await store.reserve(USER)).toEqual({
+    expect(await store.reserve(USER, 1)).toEqual({
       result: 'limit',
       scope: 'day',
       availableFrom: '2026-10-17',
@@ -435,6 +439,10 @@ describe('Supabase-Zugriff (Ersatz-fetch)', () => {
     });
     expect(calls[0]?.headers.apikey).toBe('sb_publishable_x');
     expect(calls[2]?.headers.apikey).toBe('sb_secret_x');
+    expect(JSON.parse(calls[2]?.body ?? '{}')).toEqual({
+      p_user_id: USER,
+      p_min_consent_version: 1,
+    });
     expect(JSON.parse(calls[3]?.body ?? '{}')).toEqual({
       p_id: 'r1',
       p_user_id: USER,
@@ -450,6 +458,96 @@ describe('Supabase-Zugriff (Ersatz-fetch)', () => {
     const store = createSupabaseFoodPhotoStore(config, () =>
       Promise.resolve(Response.json({ result: 'reserved', id: 'keine-uuid' })),
     );
-    await expect(store.reserve(USER)).rejects.toThrow('HTTP 500');
+    await expect(store.reserve(USER, 1)).rejects.toThrow('HTTP 500');
+  });
+});
+
+describe('Wächter E3 M2/N2: Körper erst nach Herkunft und Login lesen, hartes Byte-Limit', () => {
+  it('ohne bzw. mit ungültigem Login, fremder Herkunft oder zu großer Länge wird der Körper nie gelesen', async () => {
+    const cases: Record<string, string>[] = [
+      {},
+      { authorization: 'Bearer kurz' },
+      { authorization: `Bearer ${TOKEN}x` },
+      { authorization: `Bearer ${TOKEN}`, origin: 'https://boese.example' },
+      { authorization: `Bearer ${TOKEN}`, 'content-length': String(FOOD_PHOTO_MAX_BODY_BYTES + 1) },
+      { authorization: `Bearer ${TOKEN}`, 'content-length': '0' },
+    ];
+    for (const h of cases) {
+      const readForm = vi.fn(() => Promise.resolve(form()));
+      const r = await call({ h, readForm });
+      expect(r.status).toBeGreaterThanOrEqual(400);
+      expect(readForm).not.toHaveBeenCalled();
+    }
+    const readForm = vi.fn(() => Promise.resolve(form()));
+    expect((await call({ readForm })).status).toBe(200);
+    expect(readForm).toHaveBeenCalledTimes(1);
+  });
+
+  const multipart = (image: Uint8Array) => {
+    const boundary = 'xGRENZEx';
+    const head = `--${boundary}\r\nContent-Disposition: form-data; name="image"; filename="f"\r\nContent-Type: image/jpeg\r\n\r\n`;
+    const tail = `\r\n--${boundary}\r\nContent-Disposition: form-data; name="note"\r\n\r\nhalbe Portion\r\n--${boundary}--\r\n`;
+    const enc = new TextEncoder();
+    return {
+      type: `multipart/form-data; boundary=${boundary}`,
+      parts: [enc.encode(head), image, enc.encode(tail)],
+    };
+  };
+  const streamed = (parts: Uint8Array[], type: string) =>
+    new Request('https://web.example/api/ernaehrung/foto', {
+      method: 'POST',
+      headers: { 'content-type': type },
+      body: new ReadableStream({
+        start(controller) {
+          for (const p of parts) controller.enqueue(p);
+          controller.close();
+        },
+      }),
+      duplex: 'half',
+    } as RequestInit);
+
+  it('ohne Content-Length (chunked) gestreamt gelesen; über dem Limit abgebrochen', async () => {
+    const ok = multipart(jpeg());
+    const form1 = await readFoodPhotoForm(streamed(ok.parts, ok.type));
+    expect(form1?.note).toBe('halbe Portion');
+    expect(form1?.image?.length).toBe(jpeg().length);
+    const big = multipart(new Uint8Array(2000));
+    expect(await readFoodPhotoForm(streamed(big.parts, big.type), 1000)).toBeNull();
+    expect(await readFoodPhotoForm(streamed(ok.parts, 'text/plain'))).toBeNull();
+  });
+});
+
+describe('Wächter E3 M3: echter Anbieter nur mit neuer Einwilligungsfassung', () => {
+  it('Attrappe reserviert mit Mindest-Fassung 1, echter Anbieter mit 2; ohne v2 → 503 not_configured', async () => {
+    const mock = fakeStore();
+    await call({ store: mock.store });
+    expect(mock.store.reserve).toHaveBeenCalledWith(USER, 1);
+    const real = fakeStore({ result: 'not_configured' });
+    const provider: FoodPhotoProvider = {
+      model: 'gemini-3.5-flash-lite',
+      isMock: false,
+      analyze: vi.fn(),
+    };
+    const r = await call({ store: real.store, provider });
+    expect(real.store.reserve).toHaveBeenCalledWith(USER, 2);
+    expect(r.status).toBe(503);
+    expect(r.body).toEqual({ code: 'not_configured' });
+    expect(provider.analyze).not.toHaveBeenCalled();
+  });
+});
+
+describe('Wächter E3 N1: CORS nur für die eigenen Vorschau-Adressen', () => {
+  const env = { ...ENV, APP_PREVIEW_TEAM: 'meinteam' };
+  it.each([
+    ['https://fitnessapp-git-e3-e4-meinteam.vercel.app', true],
+    ['https://fitnessapp-a1b2c3d4e-meinteam.vercel.app', true],
+    ['https://fitnessapp-web-meinteam.vercel.app', false],
+    ['https://fitnessapp-x-meinteam.vercel.app', false],
+    ['https://fitnessapp-evil-a1b2c3d4e-meinteam.vercel.app', false],
+    ['https://fitnessappx-git-a-meinteam.vercel.app', false],
+    ['https://fitnessapp-git-a-meinteam.vercel.app.evil.example', false],
+    ['http://fitnessapp-git-a-meinteam.vercel.app', false],
+  ])('%s → %s', (origin, allowed) => {
+    expect(isAllowedAppOrigin(origin, env)).toBe(allowed);
   });
 });
