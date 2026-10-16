@@ -177,6 +177,9 @@ select is((select uses_health_data from public.shopping_lists), true,
 reset role;
 insert into public.nutrition_prefs (user_id, diet_type) values ('11111111-1111-4111-8111-111111111111', 'vegan');
 insert into public.recipe_ingredients values ('muesli', 0, 'hafer', 50, 'g', false, true, null);
+-- Seit N7 Teil 2 (Wächter H1) rechnet save_meal_plan die Nährwerte nach: 60 g Hafer (50 g × 1,2) = 300 kcal.
+update public.foods set data = data || '{"units": {}, "nutrients_per_100g": {"kcal": 500, "protein_g": 20, "carbs_g": 80, "fat_g": 10}}'::jsonb
+where id = 'hafer';
 set local role authenticated;
 set local request.jwt.claims = '{"sub":"11111111-1111-4111-8111-111111111111","role":"authenticated"}';
 select lives_ok(
@@ -184,8 +187,8 @@ select lives_ok(
        'meal_prep_plan_id', null, 'inputs', jsonb_build_object('diet', 'vegan', 'meals_per_day', 3,
        'cooking_mode', 'daily', 'mealprep_days', null, 'mealprep_slots', 'lunch'),
        'items', jsonb_build_array(jsonb_build_object('date', '2026-10-14', 'slot', 'breakfast', 'role', null,
-         'recipe_id', 'muesli', 'recipe_version', 1, 'title_de', 'Müsli', 'factor', 1.2, 'kcal', 300, 'protein_g', 10,
-         'carbs_g', 50, 'fat_g', 5, 'substitutions', '[]'::jsonb, 'omitted_optional', '[]'::jsonb,
+         'recipe_id', 'muesli', 'recipe_version', 1, 'title_de', 'Müsli', 'factor', 1.2, 'kcal', 300, 'protein_g', 12,
+         'carbs_g', 48, 'fat_g', 6, 'substitutions', '[]'::jsonb, 'omitted_optional', '[]'::jsonb,
          'ingredient_swaps', '[]'::jsonb, 'is_fill', false, 'prep_kind', 'fresh', 'cook_date', '2026-10-14',
          'storage', null, 'meal_prep_plan_id', null, 'day_status', 'complete')))) $$,
   'A speichert den Plan der Woche'

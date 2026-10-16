@@ -355,7 +355,7 @@ describe('Meal-Prep im Testmodus: Pläne, Wahl, Kochtag-Start, K-b', () => {
     if (!offer?.preview) throw new Error('Angebot erwartet');
     const { store, backend } = seededBackend(data, MONDAY);
     let saved = await backend.saveMealPlan(offer.preview, { autoAdjusted: false }, data);
-    expect(storedMealPlanRow(saved, WEEK)?.plan.mealPrepPlanId).toBe('demo-pasta-woche');
+    expect(storedMealPlanRow(saved, WEEK)?.plan?.mealPrepPlanId).toBe('demo-pasta-woche');
     saved = await backend.saveCookDayStart(WEEK, '2026-09-28T09:00:00.000Z', saved);
     expect(storedMealPlanRow(saved, WEEK)?.cook_day_started_at).toBe('2026-09-28T09:00:00.000Z');
     const reopened = (await localBackendOn(store, MONDAY, 'x').loadRows()).rows;

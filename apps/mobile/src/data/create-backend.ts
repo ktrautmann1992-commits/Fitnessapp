@@ -40,7 +40,8 @@ export function newId(): string {
 export function createBackend(): Backend {
   const platform = consentPlatform();
   const now = () => new Date().toISOString();
-  // Vier eigene geschützte Speicher (Plan mit Gesundheitsbezug, Entwurf, Tagebuch-Warteschlange, -Zwischenspeicher).
+  // Sechs eigene geschützte Speicher (Plan mit Gesundheitsbezug, Entwurf, Tagebuch-Warteschlange, -Zwischenspeicher,
+  // Ernährungs-Zeilen und -Warteschlange, Etappe N7 Teil 2).
   const stores = createDeviceProtectedStores();
   if (supabaseConfig.status === 'ok') {
     const client = createSupabaseClient(supabaseConfig.config, {
@@ -64,6 +65,9 @@ export function createBackend(): Backend {
       workoutDraftStore: stores.workoutDraft,
       logQueueStore: stores.logQueue,
       logCacheStore: stores.logCache,
+      // Etappe N7 Teil 2: Ernährungs-Zeilen und -Warteschlange (Tagebuch, eigene Gerichte) – ebenso geschützt.
+      nutritionCacheStore: stores.nutritionCache,
+      nutritionQueueStore: stores.nutritionQueue,
     });
   }
   // Testmodus: einzige Stelle, an der die Plan-Engine Entwürfe nutzen darf (allowDrafts in createLocalBackend).

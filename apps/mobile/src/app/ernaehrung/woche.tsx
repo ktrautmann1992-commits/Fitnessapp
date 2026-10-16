@@ -5,13 +5,19 @@ import {
   mealPlanWeekEditable,
   type PlannedMealDay,
   startOfIsoWeek,
+  type UnavailableMeal,
 } from '@fitnessapp/core';
 import { fontSize, fontWeight, radius, spacing } from '@fitnessapp/ui';
 import { Redirect, useLocalSearchParams, useRouter, type Href } from 'expo-router';
 import { useState, type ReactNode } from 'react';
 import { Pressable, StyleSheet, Text, View } from 'react-native';
 
-import { ConsentBlockedNotice, DemoBanner, MealPlanStateNotices } from '@/components/nutrition';
+import {
+  ConsentBlockedNotice,
+  DemoBanner,
+  MealPlanStateNotices,
+  UnavailableMealRows,
+} from '@/components/nutrition';
 import { ConfirmDialog, Screen } from '@/components/screen';
 import {
   Body,
@@ -186,7 +192,13 @@ export default function NutritionWeekScreen() {
 
       {plan === null ? (
         <Card>
-          <Body>{demoAvailable ? t.nutrition.noRecipesTestMode : t.nutrition.noRecipes}</Body>
+          <Body testID="nutrition-no-recipes">
+            {demoAvailable
+              ? t.nutrition.noRecipesTestMode
+              : view.library.result.awaitingReview === true
+                ? t.nutrition.noRecipesReview
+                : t.nutrition.noRecipes}
+          </Body>
           {demoAvailable && app.backend.mode === 'local' ? (
             <Button
               label={t.nutrition.demoUse}
@@ -202,6 +214,7 @@ export default function NutritionWeekScreen() {
             state={planState}
             actions={actions}
             saveFailed={view.saveFailed}
+            saveConsentMissing={view.saveConsentMissing}
             onRetry={view.retrySave}
           />
           {message ? (
@@ -233,6 +246,7 @@ export default function NutritionWeekScreen() {
               <WeekDayCard
                 key={day.date}
                 day={day}
+                unavailable={view.week?.kind === 'ready' ? view.week.unavailableMeals : []}
                 today={today}
                 showNumbers={view.showNumbers}
                 leftoverFor={(slot) => {
@@ -272,6 +286,7 @@ export default function NutritionWeekScreen() {
 /** Ein Tag der Woche: Status, Tagessumme (nur mit Zahlen und bei vollständigem Tag), Mahlzeiten. */
 function WeekDayCard({
   day,
+  unavailable,
   today,
   showNumbers,
   leftoverFor,
@@ -279,6 +294,8 @@ function WeekDayCard({
   onOpenRecipe,
 }: {
   day: PlannedMealDay;
+  /** Supabase-Modus (Wächter N7 H9): vergangene Mahlzeiten mit nicht mehr verfügbarem Rezept. */
+  unavailable: readonly UnavailableMeal[];
   today: string;
   showNumbers: boolean;
   /** Etappe N14: Hinweis „Nutzt deinen Rest“ (kurz angezeigt, vollständig vorgelesen – Wächter N14 S2). */
@@ -305,7 +322,9 @@ function WeekDayCard({
             {texts.dayTotal(formatKcal(day.totals.kcal))}
           </Body>
         ) : null}
-        {meals.length === 0 ? <Body muted>{texts.noMeals}</Body> : null}
+        {meals.length === 0 && !unavailable.some((m) => m.date === day.date) ? (
+          <Body muted>{texts.noMeals}</Body>
+        ) : null}
         {meals.map((meal) => {
           const leftover = leftoverFor(meal.slot);
           return (
@@ -338,6 +357,7 @@ function WeekDayCard({
             </Pressable>
           );
         })}
+        <UnavailableMealRows meals={unavailable} date={day.date} />
         <Button
           label={texts.openDay(dayLabel(day.date))}
           variant="secondary"

@@ -1,6 +1,7 @@
 import {
   type MealPlanWeek,
   mealPlanWeekEditable,
+  nutritionWeekRetained,
   parseStoredMealPlanWeek,
   parseStoredShoppingList,
   type StoredShoppingList,
@@ -8,7 +9,12 @@ import {
 
 import { healthConsentStatus } from '../state/flow';
 import type { ConsentVersions } from './mapping';
-import type { MealPlanRow, ShoppingListRow, UserRows } from './types';
+import {
+  mealPlanRowPrepPlanId,
+  type MealPlanRow,
+  type ShoppingListRow,
+  type UserRows,
+} from './types';
 
 /**
  * Essensplan speichern im TESTMODUS (docs/PLAN-PHASE-5.md 7.3 `save_meal_plan`, 7.5, Etappe N5) – dieselben Regeln,
@@ -62,7 +68,7 @@ export function applyMealPlanSave(
     cook_day_started_at:
       before !== null &&
       plan.mealPrepPlanId !== null &&
-      before.plan.mealPrepPlanId === plan.mealPrepPlanId
+      mealPlanRowPrepPlanId(before) === plan.mealPrepPlanId
         ? before.cook_day_started_at
         : null,
     plan,
@@ -144,11 +150,30 @@ export function applyCookDayStart(
   startedAt: string | null,
 ): UserRows | null {
   const row = storedMealPlanRow(rows, weekStart);
-  if (row === null || row.plan.mealPrepPlanId === null) return null;
+  if (row === null || mealPlanRowPrepPlanId(row) === null) return null;
   return {
     ...rows,
     mealPlans: rows.mealPlans.map((p) =>
       p.week_start === weekStart ? { ...p, cook_day_started_at: startedAt } : p,
     ),
   };
+}
+
+/**
+ * Löschfrist (Etappe N7 Teil 2, `MEAL_PLAN_RETENTION_WEEKS`, Gründer-Entscheidung G-N7-2): Pläne und Listen von Wochen
+ * vor der Frist entfernen – im Testmodus beim Laden und Speichern, wie `private.purge_expired_nutrition_weeks` auf dem
+ * Server. Unverändert (gleiche Referenz), wenn nichts abgelaufen ist.
+ */
+export function pruneExpiredNutritionWeeks(rows: UserRows, today: string): UserRows {
+  const mealPlans = rows.mealPlans.filter((p) => nutritionWeekRetained(p.week_start, today));
+  const shoppingLists = rows.shoppingLists.filter((l) =>
+    nutritionWeekRetained(l.week_start, today),
+  );
+  if (
+    mealPlans.length === rows.mealPlans.length &&
+    shoppingLists.length === rows.shoppingLists.length
+  ) {
+    return rows;
+  }
+  return { ...rows, mealPlans, shoppingLists };
 }

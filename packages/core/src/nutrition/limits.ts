@@ -128,10 +128,18 @@ export interface CalorieFloor {
   };
 }
 
+/**
+ * Untergrenze 1 allein: nie unter dem Grundumsatz (`bmrForFloor` × `MIN_INTAKE_RELATIVE_TO_BMR`). Auch für die
+ * Mindest-Plausibilität des Servers (Etappe N7 Teil 2, G-W3, `serverDayKcalFloor`) – so liegt die Konstante nur hier.
+ */
+export function bmrIntakeFloorKcal(bmrForFloor: number): number {
+  return bmrForFloor * MIN_INTAKE_RELATIVE_TO_BMR;
+}
+
 /** Untergrenze je Tag (Plan 4.6 Nr. 1–4). Alle Untergrenzen rechnen mit TagesbedarfGrenze (R2-B1). */
 export function dayFloorKcal(context: CalorieLimitContext): CalorieFloor {
   const ctx = calorieLimitContextSchema.parse(context);
-  const bmr = ctx.bmrForFloor * MIN_INTAKE_RELATIVE_TO_BMR;
+  const bmr = bmrIntakeFloorKcal(ctx.bmrForFloor);
   const deficit = ctx.limitNeeds * (1 - effectiveDeficitCap(ctx));
   const weeklyLoss =
     ctx.limitNeeds - (MAX_WEEKLY_WEIGHT_LOSS_FRACTION * ctx.weightKg * KCAL_PER_KG_BODY_WEIGHT) / 7;

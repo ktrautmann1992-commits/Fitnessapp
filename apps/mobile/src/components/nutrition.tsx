@@ -7,6 +7,7 @@ import {
   nextMealOfDay,
   type NutritionNoticeCode,
   type PlannedMeal,
+  type UnavailableMeal,
   weekEnergySummary,
 } from '@fitnessapp/core';
 import { fontSize, fontWeight, radius, spacing } from '@fitnessapp/ui';
@@ -72,20 +73,29 @@ export function EatingHelpNotice() {
 
 /**
  * Gespeicherte Unverträglichkeiten ohne gültige Einwilligung (Wächter N4 B1): kein Plan, keine Rezepte – nur dieser
- * Hinweis mit „Einwilligung bestätigen“.
+ * Hinweis mit „Einwilligung bestätigen“ ODER „Gespeicherte Unverträglichkeiten löschen“ (beide Fälle, Wächter N7 H3).
+ * `variant="save"`: Das Speichern des Essensplans scheitert an der Einwilligung (H3) – derselbe Weg, eigener Text.
  */
-export function ConsentBlockedNotice({ reason }: { reason: IntoleranceBlockReason }) {
+export function ConsentBlockedNotice({
+  reason,
+  variant = 'blocked',
+}: {
+  reason: IntoleranceBlockReason;
+  variant?: 'blocked' | 'save';
+}) {
   const router = useRouter();
   const app = useApp();
   const [confirming, setConfirming] = useState(false);
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<string>();
+  const hasIntolerances = app.rows?.foodPreferences.some((p) => p.kind === 'intolerance') ?? false;
   async function remove() {
     setBusy(true);
     setError(undefined);
     try {
       await app.deleteStoredIntolerances();
       setConfirming(false);
+      if (variant === 'save') app.retryMealPlanSave();
     } catch (caught) {
       setError(errorText(caught));
     } finally {
@@ -93,14 +103,29 @@ export function ConsentBlockedNotice({ reason }: { reason: IntoleranceBlockReaso
     }
   }
   return (
-    <Notice tone="warning" testID="nutrition-consent-blocked">
-      <Body>{t.nutrition.consentBlocked[reason]}</Body>
+    <Notice
+      tone="warning"
+      testID={variant === 'save' ? 'nutrition-plan-save-consent' : 'nutrition-consent-blocked'}
+    >
+      <Body>
+        {variant === 'save'
+          ? t.nutrition.plan.saveConsentMissing
+          : t.nutrition.consentBlocked[reason]}
+      </Body>
       <Button
-        label={t.nutrition.consentBlockedButton[reason]}
+        label={
+          variant === 'save'
+            ? t.nutrition.plan.saveConsentButton
+            : t.nutrition.consentBlockedButton[reason]
+        }
         onPress={() => router.push('/health-consent')}
-        testID="nutrition-consent-blocked-button"
+        testID={
+          variant === 'save'
+            ? 'nutrition-plan-save-consent-button'
+            : 'nutrition-consent-blocked-button'
+        }
       />
-      {reason === 'consent_missing' ? (
+      {variant === 'blocked' || hasIntolerances ? (
         <Button
           label={t.nutrition.deleteIntolerances}
           variant="danger"
@@ -123,6 +148,31 @@ export function ConsentBlockedNotice({ reason }: { reason: IntoleranceBlockReaso
         testID="dialog-delete-intolerances"
       />
     </Notice>
+  );
+}
+
+/**
+ * Mahlzeiten vergangener Tage, deren Rezept nicht mehr verfügbar ist (Supabase-Modus, Wächter N7 H9) – nur Titel, kein
+ * Öffnen, keine Zahlen.
+ */
+export function UnavailableMealRows({
+  meals,
+  date,
+}: {
+  meals: readonly UnavailableMeal[];
+  date: string;
+}) {
+  const own = meals.filter((m) => m.date === date);
+  if (own.length === 0) return null;
+  return (
+    <View style={styles.list} testID="nutrition-unavailable-meals">
+      {own.map((meal) => (
+        <Body key={`${meal.date}-${meal.slot}`} muted testID={`unavailable-${meal.slot}`}>
+          {t.nutrition.plan.unavailable(meal.titleDe)}
+        </Body>
+      ))}
+      <Body muted>{t.nutrition.plan.unavailableHint}</Body>
+    </View>
   );
 }
 
@@ -151,11 +201,14 @@ export function MealPlanStateNotices({
   state,
   actions,
   saveFailed,
+  saveConsentMissing = false,
   onRetry,
 }: {
   state: MealPlanState | null;
   actions: MealPlanActions | null;
   saveFailed: boolean;
+  /** Speichern scheitert an der Einwilligung (Wächter N7 H3) – klarer Weg statt „Erneut versuchen“. */
+  saveConsentMissing?: boolean;
   /** „Erneut versuchen“ nach gescheitertem automatischem Speichern (Wächter N5a K7). */
   onRetry?: () => void;
 }) {
@@ -225,7 +278,9 @@ export function MealPlanStateNotices({
           {texts.readOnlyWeek}
         </Body>
       ) : null}
-      {saveFailed ? (
+      {saveFailed && saveConsentMissing ? (
+        <ConsentBlockedNotice reason="consent_outdated" variant="save" />
+      ) : saveFailed ? (
         <Notice tone="warning" testID="nutrition-plan-save-failed">
           <Body>{texts.saveFailed}</Body>
           {onRetry ? (
@@ -557,7 +612,11 @@ export function NutritionTodayCard({ nowMinutes }: { nowMinutes: number }) {
           </Body>
         ) : null}
         {week?.kind === 'ready' && week.plan === null ? (
-          <Body muted>{t.nutrition.noRecipes}</Body>
+          <Body muted>
+            {view.library.kind === 'ready' && view.library.result.awaitingReview === true
+              ? t.nutrition.noRecipesReview
+              : t.nutrition.noRecipes}
+          </Body>
         ) : null}
         {foodLog.consentValid ? (
           <>

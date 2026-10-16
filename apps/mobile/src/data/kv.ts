@@ -90,4 +90,19 @@ export const STORAGE_KEYS = {
    * Nutzerdaten.
    */
   nutritionDemo: 'fitnessapp.nutrition-demo.v1',
+  /**
+   * Supabase-Modus (Etappe N7 Teil 2): Ernährungs-Bestand aus der Datenbank (nur freigegebene Inhalte, keine
+   * Nutzerdaten) – damit Rezepte und Plan auch ohne Netz angezeigt werden können.
+   */
+  nutritionLibrary: 'fitnessapp.nutrition-library.v1',
+  /**
+   * Supabase-Modus (Etappe N7 Teil 2): eigene geschützte Speicher (App: AES-256-GCM, Schlüssel im Keychain/Keystore;
+   * Browser: nur sessionStorage) für die Ernährungs-Zeilen des Kontos (vollständige Essenspläne, Einkaufslisten,
+   * Tagebuch, eigene Gerichte, Favoriten – teils Gesundheitsdaten) und die Ernährungs-Warteschlange (Tagebuch-Einträge
+   * und eigene Gerichte offline, abgelehnte Fassungen bleiben lokal, Gründer-Frage G3 aus E1).
+   */
+  nutritionCache: 'fitnessapp.nutrition-cache.v1',
+  nutritionCacheKey: 'fitnessapp.nutrition-cache-key.v1',
+  nutritionQueue: 'fitnessapp.nutrition-queue.v1',
+  nutritionQueueKey: 'fitnessapp.nutrition-queue-key.v1',
 } as const;

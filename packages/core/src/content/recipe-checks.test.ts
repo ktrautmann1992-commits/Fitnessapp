@@ -454,6 +454,22 @@ describe('R17: Nährwerte = Quellauszug', () => {
   });
 });
 
+describe('checkedAtSeed: Inhalte aus der Datenbank (N7 Teil 2)', () => {
+  const food = foods.get('haferflocken') as Food;
+  it('ohne Quellauszug und Erwartungsliste: R17 und der Listen-Abgleich entfallen', () => {
+    expect(checkFoodSource(food, { checkedAtSeed: true })).toEqual([]);
+    expect(checkFoodAllergens(food, foods, { checkedAtSeed: true })).toEqual([]);
+    // Ohne den Schalter bleibt beides rot (Repo-Prüfung unverändert).
+    expect(rulesOf(checkFoodAllergens(food, foods, {}))).toEqual(['R18']);
+  });
+  it('die R18-Pflichtregeln laufen weiter (Haferflocken ohne gluten → rot)', () => {
+    const bare = makeFood({ groups: [] });
+    const { lookup } = withFood(bare);
+    const r18 = checkFoodAllergens(bare, lookup, { checkedAtSeed: true });
+    expect(r18.map((i) => i.message).join()).toMatch(/gluten/);
+  });
+});
+
 describe('R18: Pflichtregeln, Erwartungsliste, Ersatzprodukte', () => {
   it('Haferflocken ohne gluten → rot (W9, Testfall 12.1)', () => {
     const food = makeFood({ groups: [] });
