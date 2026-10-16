@@ -52,6 +52,7 @@ describe('app.config.ts', () => {
     expect(c.ios?.bundleIdentifier).toBe(BUNDLE_ID);
     expect(c.android?.package).toBe(BUNDLE_ID);
     expect(c.slug).toBe('alphafive');
+    expect(c.owner).toBe('ktrautmann1992s-team');
     expect(c.extra?.eas?.projectId).toBe('7370ffec-3dd0-47bd-91dd-595c67ebae69');
   });
 

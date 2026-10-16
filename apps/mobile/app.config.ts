@@ -16,9 +16,14 @@ const BRAND_SCHWARZ = '#0a0c10';
 // Solange sie leer ist, überspringt der Workflow eas-build den Build mit einem Hinweis.
 const EAS_PROJECT_ID = '7370ffec-3dd0-47bd-91dd-595c67ebae69';
 
+// Besitzer des Expo-Projekts: die Organisation auf expo.dev (kein Geheimnis). Der Build-Schlüssel EXPO_TOKEN gehört
+// einem Robot-Benutzer dieser Organisation (docs/SETUP.md Teil D).
+const EAS_OWNER = 'ktrautmann1992s-team';
+
 export default ({ config }: ConfigContext): ExpoConfig => ({
   ...config,
   name: APP_NAME,
+  owner: EAS_OWNER,
   slug: 'alphafive',
   version: '0.1.0',
   orientation: 'portrait',
