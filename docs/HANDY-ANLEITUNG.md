@@ -520,6 +520,43 @@ bleiben unverändert.
    oder „Ohne Werte“, nirgends kcal.
 10. **Einstellungen → Gesundheitsdaten widerrufen** → der Dialog nennt „… samt Schnelleintrag-Favoriten und eigenen
     Gerichten …“ → danach sind die eigenen Gerichte weg; „Eigene Gerichte“ bittet um die Einwilligung.
+## Teil 7j – Gericht per Foto testen (Etappe E3, Testversion mit Attrappe)
+
+„Per Foto“ ist eine **Premium-Funktion mit KI**. In dieser Testversion antwortet eine **Attrappe** mit festen
+Beispielen – es geht kein Foto an Google, es entstehen keine Kosten, ihr braucht keinen Schlüssel. Im **Testmodus**
+ist „Per Foto“ immer freigeschaltet. Nach dem Merge spielt **db-migrate** die neuen Tabellen ein; die Funktion ist für
+Konten dort zunächst **aus** (SETUP Teil L).
+
+1. Vorschau-Link aus dem Pull Request öffnen → Testmodus mit dem Testkonto aus Teil 7c (Einwilligung
+   Gesundheitsdaten erteilt) → **Ernährung** → **„Eintragen“** → Kasten **„Per Foto“**.
+2. Beim ersten Mal kommt die **eigene Einwilligung** „Gerichte per Foto auswerten“ (Testversion ohne Übermittlung an
+   einen KI-Anbieter, Foto wird nicht gespeichert, Schätzung; vor einer echten KI wird erneut gefragt). „Einwilligungstext lesen“ zeigt den ganzen Text → **„Zustimmen und fortfahren“**.
+3. Oben steht **„Noch 30 Fotos in diesem Monat · heute noch 8“** und der Hinweis „Testversion: … Attrappe …“.
+4. Optional eine **kurze Info** (z. B. „halbe Portion“) → **„Foto aufnehmen oder wählen“** → Teller fotografieren (oder
+   ein Bild wählen). Alternativ **„Beispielfoto verwenden (Testmodus)“**.
+5. Es erscheint der **Vorschlag** mit „Schätzung – bitte prüfen“: Hähnchenbrust, Reis, Paprika und „Bitte auswählen“
+   (die Attrappe erkennt eine „helle Soße“, die es im Katalog nicht gibt).
+6. Beim unbekannten Bestandteil ein Lebensmittel suchen und wählen (z. B. „Oliven“ → Olivenöl), eine **Menge ändern**,
+   einen Bestandteil **entfernen**, unten bei Bedarf **„Bestandteil hinzufügen“**.
+7. **„Eintragen“** → „3 Bestandteile eingetragen.“ → **„Zum Tagesverlauf“**: Die Einträge stehen unter der gewählten
+   Mahlzeit, die Werte kommen aus dem Katalog.
+8. **„Noch ein Foto“** → Beispielfoto → **„Abbrechen“** → „Abgebrochen – es wurde nichts gespeichert.“
+9. **Testfälle der Attrappe** (in die Info schreiben): `test:leer` → „Wir erkennen auf dem Foto kein Essen“;
+   `test:kaputt` oder `test:viele` → „keine brauchbare Antwort … zählt nicht gegen dein Kontingent“; `test:zeitlimit` →
+   „hat zu lange gedauert“; `test:boese` → Bezeichnungen mit Code und Links werden bereinigt angezeigt.
+10. **Flugmodus an** → „Per Foto“ zeigt „Fotos brauchen Internet – trag es per Hand ein oder später.“
+11. **Einstellungen** → Karte „Gerichte per Foto auswerten“ → **„Widerrufen“** → danach fragt „Per Foto“ wieder nach der
+    Einwilligung. Was schon eingetragen ist, bleibt im Tagebuch.
+
+**Mit Konto (optional, SETUP Teil L2/L3):** Flag einschalten und euer Testkonto per Workflow **beta-grant**
+freischalten → in der App mit Konto dieselben Schritte (es antwortet weiter die Attrappe). Ohne Freischaltung zeigt
+„Per Foto“: „gehört zu Premium … Eintragen per Hand bleibt immer gratis.“ Zum Testen des Limits das Konto per
+**beta-grant** mit **monatslimit** `2` freischalten → nach zwei Fotos kommt die Monats-Meldung. Das Limit (8 am Tag, 30 im Monat) zeigt bei
+Erreichen „Für heute sind keine Fotos mehr möglich, ab morgen wieder“ bzw. „… ab 1. November wieder verfügbar“.
+
+**Hinweis:** In der App auf dem Handy (APK/TestFlight) geht in dieser Testversion nur „Beispielfoto verwenden“ (im
+Testmodus); die echte Kamera-Auswahl braucht ein neues Paket und einen neuen Build (offener Punkt E3).
+
 ## Teil 7g – „Dein Tag“ testen (Etappe A2, Testmodus)
 Die Tagesauswertung braucht keine Einstellung und keine Datenbank-Änderung. Das Essen erscheint vorerst nur im
 **Testmodus** (mit Konto folgt es mit N7 Teil 2), der Trainingsteil geht in beiden Modi.

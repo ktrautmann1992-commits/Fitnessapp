@@ -54,6 +54,12 @@ Sie werden nicht rot.
 | `WAITLIST_TOKEN_SECRET`                | selbst (I4)   | Vercel-Projekt **Web**, Production + Preview (I5)                          | **JA**  |
 | `SUPABASE_SERVICE_ROLE_KEY`            | Supabase (A7) | Vercel-Projekt **Web**, Production + Preview (I5) – nur für die Warteliste | **JA**  |
 | `NEXT_PUBLIC_SITE_URL` (optional)      | Vercel (C2)   | Vercel-Projekt **Web**, nur bei eigener Domain (I6)                        | nein    |
+| `FOOD_PHOTO_PROVIDER` (später)         | selbst (L4)   | Vercel-Projekt **Web**; nur `gemini` schaltet die echte Foto-KI ein (L4)   | nein    |
+| `GEMINI_API_KEY` (später, Foto-KI)     | Google (E)    | Vercel-Projekt **Web**, nur Production bzw. gezielt Preview (L4)           | **JA**  |
+| `GEMINI_FOOD_PHOTO_MODEL` (optional)   | selbst (L4)   | Vercel-Projekt **Web**, leer = `gemini-3.5-flash-lite`                     | nein    |
+| `APP_WEB_ORIGIN` (optional)            | Vercel (C1)   | Vercel-Projekt **Web** – Adresse der App für „Per Foto“ (L2)               | nein    |
+| `APP_PREVIEW_TEAM` (optional)          | Vercel (C1)   | Vercel-Projekt **Web** – Team-Kürzel der App-Vorschauen (L2)               | nein    |
+| `EXPO_PUBLIC_WEB_URL`                  | Vercel (C2)   | Vercel-Projekt **App** + Expo (D6) – Adresse der Website (L2)              | nein    |
 
 \* Der „Publishable Key“ darf öffentlich in App und Website stehen. Die Daten schützt die Datenbank selbst
 (Row Level Security). Der **Secret Key** dagegen darf **nie** in Vercel-Variablen mit `EXPO_PUBLIC_` oder
@@ -854,6 +860,77 @@ Liste abgehakt sein (Wächter N4 S5). Im Testmodus (Vercel-Vorschau ohne Supabas
 
 So geht's am Handy: In einer Claude-Sitzung schreiben „Hilfe-Stellen Essstörungen: geprüfte Nummern eintragen“ und die
 geprüften Angaben mitschicken → Pull Request prüfen → mergen.
+
+---
+
+## Teil L – Gericht per Foto (Etappe E3, Premium mit KI) – Testversion mit Attrappe
+
+**Stand 16.10.2026 (Gründer-Entscheidung):** „Per Foto“ läuft als **Testversion ohne echte KI**. Es antwortet eine
+**Attrappe** mit festen Beispielen – ohne Schlüssel, ohne Kosten, ohne dass ein Foto Google erreicht. Die ganze Kette
+(Einwilligung, Freischaltung, Limits, Bildprüfung, Vorschlag, Eintragen) ist trotzdem echt. Für den **Testmodus** müsst
+ihr **nichts** einstellen (Teil 7j der HANDY-ANLEITUNG). Die Schritte unten braucht ihr erst für den Test mit Konto bzw.
+später für die echte KI.
+
+Das Foto wird **nie gespeichert** (kein Speicher-Bucket, nur im Arbeitsspeicher der Anfrage). In der Datenbank steht je
+Auswertung nur: Zeitpunkt, Status, Modell, Token, Kosten (`ai_usage`).
+
+### L1 – Datenbank
+
+Nichts zu tun: Nach dem Merge spielt **db-migrate** die Tabellen und Funktionen ein. Die Funktion ist danach
+**ausgeschaltet** (Feature-Flag aus), und niemand ist freigeschaltet.
+
+### L2 – App und Website verbinden (nur für den Test mit Konto)
+
+Die App ruft „Per Foto“ über die Website auf (`/api/ernaehrung/foto`).
+
+1. vercel.com → Projekt **App** → **Settings** → **Environment Variables**.
+2. Name `EXPO_PUBLIC_WEB_URL`, Wert = Adresse der Website (z. B. `https://fitnessapp-web-eight.vercel.app`) →
+   alle drei Umgebungen anhaken → **Save**.
+3. Projekt **Web** → **Settings** → **Environment Variables**:
+   - `APP_WEB_ORIGIN` = Adresse der App (z. B. `https://fitnessapp-alpha-five.vercel.app`) → **Save**.
+   - Optional für App-Vorschauen: `APP_PREVIEW_TEAM` = der letzte Teil einer App-Vorschau-Adresse (bei
+     `https://fitnessapp-git-xyz-meinteam.vercel.app` ist das `meinteam`) → **Save**.
+4. Bei beiden Projekten **Deployments** → oberster Eintrag **⋯** → **Redeploy**.
+
+`SUPABASE_SERVICE_ROLE_KEY` und `NEXT_PUBLIC_SUPABASE_*` im Projekt **Web** sind schon da (Teil I). Fehlt etwas,
+antwortet die Route freundlich „nicht verfügbar“.
+
+### L3 – Testkonto freischalten (Workflow `beta-grant`)
+
+1. GitHub-App → Repository → **Actions** → **beta-grant** → **Run workflow**.
+2. **aktion** = `flag_an`, **flag** = `ai_food_photo` → **Run workflow**. (Schaltet „Per Foto“ ein.)
+3. Noch einmal **Run workflow**: **aktion** = `freischalten`, **email** = E-Mail eures Testkontos, **tage** = `30` →
+   **Run workflow**. Die Zusammenfassung zeigt nur „Freischaltung gesetzt, gültig bis …“ – nie die E-Mail.
+   Optional **monatslimit** (1–300) bzw. **tageslimit** (1–50) für genau dieses Konto, z. B. `2` zum Testen der
+   Limit-Meldung; leer = Standard (30 im Monat, 8 am Tag).
+4. **aktion** = `status` zeigt: Funktion an/aus, aktive Freischaltungen, Fotos und Kosten diesen Monat (nur Summen).
+5. **Notbremse:** **aktion** = `flag_aus` – ab sofort wertet niemand mehr Fotos aus.
+
+Ohne die GitHub-Secrets `SUPABASE_URL`/`SUPABASE_SECRET_KEY` (Teil B) endet der Workflow grün mit Hinweis.
+
+### L4 – Später: echte KI (Google Gemini) einschalten – JETZT NICHT NÖTIG
+
+Erst, wenn ihr es ausdrücklich wollt **und** vorher erledigt ist (Wächter E3 M3, **Sperre**):
+
+- **Neue Einwilligungsfassung v2** mit dem echten Anbieter, Verarbeitungsort und Speicherdauer beim Anbieter (per
+  Migration, juristisch geprüft). **Technisch erzwungen:** Mit `FOOD_PHOTO_PROVIDER=gemini` reserviert der Server nur,
+  wenn eine Fassung ≥ 2 veröffentlicht ist und die Person ihr zugestimmt hat – sonst „noch nicht verfügbar“. Mit v1
+  (Testversion „ohne Übermittlung“) lässt sich Gemini also nie einschalten.
+- **Bezahlter Tarif** der Gemini-API (nur dort keine Nutzung zum Training) und AVV mit Google.
+- **EU-Verarbeitung:** Die Gemini Developer API (`generativelanguage.googleapis.com`) sichert keinen EU-Standort zu;
+  dafür wäre Vertex AI mit Region `europe-west3` nötig (Adapter-Umbau, Gründer-Entscheidung) – sonst im Text v2 ehrlich
+  benennen.
+- Preise auf ai.google.dev/gemini-api/docs/pricing geprüft (`packages/core/src/constants.ts`, `AI_FOOD_PHOTO`).
+
+1. Schlüssel wie in Teil E (aistudio.google.com → **Get API key**) – ihr könnt denselben oder einen eigenen nehmen.
+2. vercel.com → Projekt **Web** → **Settings** → **Environment Variables**.
+3. Name `GEMINI_API_KEY`, Wert einfügen, bei **Environments** nur **Production** (oder gezielt **Preview** für einen
+   Test) → **Save**. Nie mit `NEXT_PUBLIC_` beginnen, nie in den Chat.
+4. Name `FOOD_PHOTO_PROVIDER`, Wert `gemini`, gleiche Umgebung → **Save**. **Erst beides zusammen** schaltet die echte
+   KI ein; fehlt eins, bleibt es bei der Attrappe.
+5. Optional `GEMINI_FOOD_PHOTO_MODEL` (nur Modelle mit hinterlegtem Preis, sonst Standard).
+6. **Deployments** → **⋯** → **Redeploy**.
+7. Zurück zur Attrappe: `FOOD_PHOTO_PROVIDER` löschen → **Redeploy**.
 
 ---
 

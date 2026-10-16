@@ -483,6 +483,7 @@ test('ohne Einwilligung Gesundheitsdaten: keine Körperdaten, kein Gesundheits-C
   await page.goto('/onboarding/body_metrics');
   await expect(page.getByRole('heading', { name: 'Heute', exact: true })).toBeVisible();
   await page.getByRole('button', { name: 'Einstellungen' }).click();
-  await expect(page.getByText('Nicht erteilt')).toBeVisible();
+  // Erste Karte „Nicht erteilt“ = Gesundheitsdaten (seit E3 steht darunter auch „Gerichte per Foto auswerten“).
+  await expect(page.getByText('Nicht erteilt').first()).toBeVisible();
   await expect(page.getByRole('button', { name: 'Gesundheitsdaten: Einwilligen' })).toBeVisible();
 });

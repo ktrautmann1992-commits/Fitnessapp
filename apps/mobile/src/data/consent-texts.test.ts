@@ -7,15 +7,16 @@ import { describe, expect, it } from 'vitest';
 
 import { LOCAL_CONSENT_DOCUMENTS } from './consent-texts';
 
-const migration = readFileSync(
-  fileURLToPath(
-    new URL(
-      '../../../../supabase/migrations/20261003120800_seed_consent_documents.sql',
-      import.meta.url,
-    ),
-  ),
-  'utf8',
-);
+const read = (name: string) =>
+  readFileSync(
+    fileURLToPath(new URL(`../../../../supabase/migrations/${name}`, import.meta.url)),
+    'utf8',
+  );
+/** Phase 1 (terms, privacy, health_data) und Etappe E3 (ai_food_photo). */
+const migration = [
+  read('20261003120800_seed_consent_documents.sql'),
+  read('20261016160100_ai_food_photo.sql'),
+].join('\n');
 
 /** Liest (Art, Version, Titel, Text) aus der Seed-Migration. */
 function seedDocuments() {
@@ -29,9 +30,9 @@ function seedDocuments() {
 }
 
 describe('Einwilligungstexte im Testmodus', () => {
-  it('sind wörtlich identisch mit der Seed-Migration (Version 1)', () => {
+  it('sind wörtlich identisch mit den Seed-Migrationen (Version 1)', () => {
     const seed = seedDocuments();
-    expect(seed).toHaveLength(3);
+    expect(seed).toHaveLength(4);
     expect(LOCAL_CONSENT_DOCUMENTS).toEqual(seed);
   });
 
