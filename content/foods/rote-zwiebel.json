@@ -1,0 +1,52 @@
+{
+  "id": "rote-zwiebel",
+  "version": 1,
+  "status": "draft",
+  "name_de": "Rote Zwiebel",
+  "aliases_de": [],
+  "shopping_category": "fruit_vegetables",
+  "pantry": false,
+  "nutrients_per_100g": {
+    "kcal": 34,
+    "protein_g": 1.156,
+    "carbs_g": 6.01,
+    "sugar_g": 6.01,
+    "fat_g": 0.15,
+    "sat_fat_g": 0.025,
+    "fiber_g": 1.4,
+    "salt_g": 0.022,
+    "organic_acids_g": 0.254,
+    "alcohol_g": 0,
+    "polyols_g": 0
+  },
+  "units": {},
+  "groups": ["onion_garlic"],
+  "animal": [],
+  "meat_kind": [],
+  "pregnancy_caution": false,
+  "alcohol": false,
+  "max_fridge_days": 3,
+  "freezable": true,
+  "substitutes": [],
+  "source": {
+    "db": "bls",
+    "version": "4.0",
+    "ref": "G480100",
+    "name": "Speisezwiebel roh",
+    "category": "vegetables",
+    "license": "CC BY 4.0",
+    "retrieved_at": "2026-10-16"
+  },
+  "meta": {
+    "origin": "claude_session",
+    "model": "claude-opus-5-5",
+    "batch_id": null,
+    "created_on": "2026-10-16",
+    "expert_reviewed": false,
+    "reviewed_by": null,
+    "reviewed_at": null,
+    "review_note": null,
+    "catalog_reviewed_by": null,
+    "catalog_reviewed_at": null
+  }
+}

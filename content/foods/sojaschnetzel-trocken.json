@@ -1,0 +1,52 @@
+{
+  "id": "sojaschnetzel-trocken",
+  "version": 1,
+  "status": "draft",
+  "name_de": "Sojaschnetzel (trocken)",
+  "aliases_de": [],
+  "shopping_category": "chilled_plant_based",
+  "pantry": true,
+  "nutrients_per_100g": {
+    "kcal": 351,
+    "protein_g": 50.2,
+    "carbs_g": 13.46,
+    "sugar_g": 13.46,
+    "fat_g": 6.74,
+    "sat_fat_g": 1.048,
+    "fiber_g": 18.05,
+    "salt_g": 0.004,
+    "organic_acids_g": 0,
+    "alcohol_g": 0,
+    "polyols_g": 0
+  },
+  "units": {},
+  "groups": ["legumes", "soy"],
+  "animal": [],
+  "meat_kind": [],
+  "pregnancy_caution": false,
+  "alcohol": false,
+  "max_fridge_days": 3,
+  "freezable": true,
+  "substitutes": [],
+  "source": {
+    "db": "bls",
+    "version": "4.0",
+    "ref": "H765000",
+    "name": "Sojaschnetzel/Sojagranulat, texturiert, trocken",
+    "category": "soy_products",
+    "license": "CC BY 4.0",
+    "retrieved_at": "2026-10-16"
+  },
+  "meta": {
+    "origin": "claude_session",
+    "model": "claude-opus-5-5",
+    "batch_id": null,
+    "created_on": "2026-10-16",
+    "expert_reviewed": false,
+    "reviewed_by": null,
+    "reviewed_at": null,
+    "review_note": null,
+    "catalog_reviewed_by": null,
+    "catalog_reviewed_at": null
+  }
+}

@@ -1,0 +1,52 @@
+{
+  "id": "wildpreiselbeeren-glas",
+  "version": 1,
+  "status": "draft",
+  "name_de": "Wildpreiselbeeren (Glas)",
+  "aliases_de": [],
+  "shopping_category": "legumes_canned",
+  "pantry": true,
+  "nutrients_per_100g": {
+    "kcal": 176,
+    "protein_g": 0.3,
+    "carbs_g": 42.2,
+    "sugar_g": 42.2,
+    "fat_g": 0.2,
+    "sat_fat_g": 0.048,
+    "fiber_g": 1.3,
+    "salt_g": 0.008,
+    "organic_acids_g": 0.7,
+    "alcohol_g": 0,
+    "polyols_g": 0.001
+  },
+  "units": {},
+  "groups": [],
+  "animal": [],
+  "meat_kind": [],
+  "pregnancy_caution": false,
+  "alcohol": false,
+  "max_fridge_days": 3,
+  "freezable": true,
+  "substitutes": [],
+  "source": {
+    "db": "bls",
+    "version": "4.0",
+    "ref": "F4A1900",
+    "name": "Preiselbeere gezuckert (mit Pektin) Konserve",
+    "category": "fruit",
+    "license": "CC BY 4.0",
+    "retrieved_at": "2026-10-16"
+  },
+  "meta": {
+    "origin": "claude_session",
+    "model": "claude-opus-5-5",
+    "batch_id": null,
+    "created_on": "2026-10-16",
+    "expert_reviewed": false,
+    "reviewed_by": null,
+    "reviewed_at": null,
+    "review_note": null,
+    "catalog_reviewed_by": null,
+    "catalog_reviewed_at": null
+  }
+}

@@ -1,0 +1,52 @@
+{
+  "id": "vollkornspaghetti-trocken",
+  "version": 1,
+  "status": "draft",
+  "name_de": "Vollkornspaghetti (trocken)",
+  "aliases_de": [],
+  "shopping_category": "pasta_rice_grains",
+  "pantry": true,
+  "nutrients_per_100g": {
+    "kcal": 356,
+    "protein_g": 14.3,
+    "carbs_g": 62.9,
+    "sugar_g": 2.8,
+    "fat_g": 2.93,
+    "sat_fat_g": 0.429,
+    "fiber_g": 10.2,
+    "salt_g": 0.01,
+    "organic_acids_g": null,
+    "alcohol_g": 0,
+    "polyols_g": null
+  },
+  "units": {},
+  "groups": ["gluten"],
+  "animal": [],
+  "meat_kind": [],
+  "pregnancy_caution": false,
+  "alcohol": false,
+  "max_fridge_days": 3,
+  "freezable": true,
+  "substitutes": [],
+  "source": {
+    "db": "bls",
+    "version": "4.0",
+    "ref": "E510000",
+    "name": "Vollkornteigwaren eifrei, roh",
+    "category": "cereal_products",
+    "license": "CC BY 4.0",
+    "retrieved_at": "2026-10-16"
+  },
+  "meta": {
+    "origin": "claude_session",
+    "model": "claude-opus-5-5",
+    "batch_id": null,
+    "created_on": "2026-10-16",
+    "expert_reviewed": false,
+    "reviewed_by": null,
+    "reviewed_at": null,
+    "review_note": null,
+    "catalog_reviewed_by": null,
+    "catalog_reviewed_at": null
+  }
+}
