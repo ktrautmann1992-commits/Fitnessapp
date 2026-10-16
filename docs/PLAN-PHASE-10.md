@@ -1174,6 +1174,71 @@ dann gleich, der Fehlercode anders).
 - **S1-G5 – GPX ohne Zeiten (S2a):** Die Tabelle verlangt heute Dauer 1 min–12 h. Für „geplante Route“ aus einer GPX
   ohne Zeiten braucht S2a eine additive Lockerung (z. B. Dauer null nur bei `gpx_import`) – Entscheidung mit S2a.
 
+**Nach der Wächter-Prüfung (16.10.2026, `waechter-s1.md`, „bedingt freigabefähig“) – alle Auflagen in diesem PR:**
+
+- **H1 – Stillstand mit GPS-Rauschen:** Ein Punkt zählt erst als neue Position ab max(3 m, 1 × gemeldete
+  Genauigkeit) (`ROUTE_FILTER.accuracyMoveFactor`). Bewegung wird nicht mehr je Abschnitt, sondern über ein
+  gleitendes Zeitfenster von 20 s auf geglätteten Positionen entschieden (`ROUTE_MOTION`: Mittel über bis zu 5 Punkte
+  je Seite, symmetrisch, am Rand kürzer – gerade Strecken bleiben exakt; neue Funktionen `smoothPositions`,
+  `motionSegments`). Distanz, Kilometerzeiten und die Warnung rechnen mit den geglätteten Positionen, Höhenmeter
+  zählen nur in Bewegung (`elevationGain(points, sport)`). Tests: 10 min Stillstand bei 1 Hz, Genauigkeit 8 m,
+  Rauschen σ 2/3/4/6 m (je 3 Läufe, Laufen/Gehen/Rad) → Distanz ≤ 20 m, Bewegung ≤ 30 s, Höhenmeter ≤ 2, keine
+  Warnung; echtes Gehen mit 4 km/h und Rauschen bleibt (95–110 % der Distanz); Ampel-Halt 60 s wird Pause
+  (das Fenster verwischt Anfang/Ende um je bis zu 10 s – kurze Halte unter ca. 20 s zählen als Bewegung).
+- **M1 – Ausreißer am Anfang:** Passen 5 als Sprung verworfene Punkte zueinander (`ROUTE_FILTER.reanchorPoints`) und
+  wurden bis dahin weniger Punkte behalten, wird der Anfang verworfen und neu verankert. Ausreißer mitten im Lauf
+  bleiben wie bisher ein einzelner verworfener Punkt. Tests: 2-km-Ausreißer als erster bzw. als zwei erste Punkte →
+  Distanz auf 1 % genau.
+- **M2 – Douglas-Peucker:** O(n)-Vorab-Ausdünnung (radial, Toleranz) und bei Gleichstand der Punkt nahe der Mitte
+  (ausgewogene Teilung); Längengrade über ±180° fortlaufend (N6). Test: exakter Zickzack mit 50.000 und 100.000 Punkten
+  unter 3 s (vorher ca. 58 s), deterministisch.
+- **M3 – verknüpfter Eintrag passt zur Strecke (sichere Variante a, Gründer-Frage S1-G6):** neue Prüfung
+  `private.session_log_fits_route` (= `sessionLogFitsRoute` in Core, `TRACKED_ROUTE_LOG_MATCH`): Ausdauer derselben
+  Art, Tag des Beginns bis +1, Distanz höchstens 10 % bzw. 100 m daneben, Dauer zwischen Bewegungszeit − 5 min und
+  Gesamtdauer + 5 min. Gilt beim Verknüpfen (`save_tracked_route`) und bei jeder Änderung des Eintrags
+  (`save_session_log`, Meldung „Der Eintrag passt nicht mehr zur verknüpften Strecke.“ ohne Werte). Die App muss den
+  Eintrag beim Speichern aus der Strecke befüllen.
+- **M4 – Tagesfenster:** Grenztests −1 (abgelehnt), 0 und +1 (ok), +2 (abgelehnt) in pgTAP 42.
+- **N2:** `save_tracked_route` erhöht beim Setzen der Herkunft die `revision` des Eintrags (andere Geräte sehen die
+  Änderung). Folge für S1 App: nach `save_tracked_route` den Eintrag neu laden, sonst meldet das nächste Ändern einen
+  Konflikt (sicher: die Fassung bleibt als Entwurf).
+- **N4:** `toGpx` überspringt Punkte mit NaN/Infinity oder außerhalb ±90/±180, lässt Höhen außerhalb −1.000…10.000 m
+  weg und formatiert fest (`toFixed`, nie Exponent-Schreibweise; `ROUTE_GPX`).
+- **N3 (dokumentiert):** Eine Wiederholung kann selbst Favorit werden und wiederholt werden (Kette). `compareAttempts`
+  vergleicht nur direkte Wiederholungen – unkritisch; die App zeigt den Vergleich je Favorit.
+- **N5 (dokumentiert):** Den Namen zählt Zod in UTF-16-Einheiten, SQL in Code-Points (Zod strenger – sichere Richtung);
+  eine Notiz aus Leerzeichen und ein Name mit U+200B am Rand werden angenommen (wie `String.prototype.trim()`).
+- **N6:** Vereinfachung über die Datumsgrenze behoben (siehe M2). Der Begrenzungsrahmen springt dort weiter über
+  −180/180 – die Karte in S2a muss das beachten. Polyline-Rundung `Math.round` (halbe Werte Richtung +∞) liegt
+  innerhalb der Genauigkeit.
+- **Zahlen:** Core 4.396 → 4.554 (routes 134, db-sync +24); pgTAP 42 jetzt 127 Tests, alle **36 Dateien grün, 1.958
+  Tests**.
+
+| Nr. | Gegenprobe zu den Auflagen                              | Rote Tests                      |
+| --- | ------------------------------------------------------- | ------------------------------- |
+| V1  | H1: Bewegung je Abschnitt ohne Zeitfenster und Glättung | 6 (`track`)                     |
+| V2  | H1: Höhenmeter auch im Stehen                           | 4 (`track`)                     |
+| V3  | H1: Stillstand-Schwelle ohne Genauigkeit                | 1 (`track`)                     |
+| V4  | M1: kein Neuverankern                                   | 2 (`track`)                     |
+| V5  | M2: Gleichstand → erster Punkt (alt)                    | 2 (`simplify`)                  |
+| V6  | M3: Core-Abgleich ohne Distanz                          | 2 (`schema`)                    |
+| V7  | N4: GPX ohne Punkt-Prüfung                              | 1 (`gpx`)                       |
+| V8  | N6: Projektion ohne Längen-Fortlauf                     | 1 (`simplify`)                  |
+| V9  | Distanz-Spielraum 20 % nur im Core                      | 1 (`db-sync`)                   |
+| W1  | M3: `save_session_log` ohne Abgleich mit der Strecke    | 5 (pgTAP 42)                    |
+| W2  | M3: Verknüpfen ohne Distanz/Dauer-Abgleich              | 6 (42) + 1 db-sync              |
+| W3  | M4: Fenster −3 bis +30 Tage (Wächter-Gegenprobe)        | 2 (42) + 1 db-sync              |
+| W4  | M4: Fenster bis +2 statt +1                             | 1 (42) + 1 db-sync              |
+| W5  | N2: revision steigt nicht                               | 9 (42, Folgefehler) + 1 db-sync |
+
+V3 war zunächst grün, weil das Zeitfenster dieselben Fälle als zweite Sicherung abfängt; ein eigener Filter-Test
+macht die Schwelle jetzt direkt sichtbar.
+
+**Gründer-Frage S1-G6 – verknüpfter Eintrag ändern:** Voreinstellung (sicher, Variante a): Änderungen, die nicht mehr
+zur Strecke passen (Art, Tag außerhalb Beginn…+1, Distanz/Dauer außerhalb des Spielraums), werden abgelehnt.
+Alternative b: Bei einer solchen Änderung den Verweis lösen und die Herkunft auf „manual“ setzen (Eintrag frei
+änderbar, Strecke bleibt ohne Eintrag).
+
 **Offen für S1 App (nach S0/W-G13, Development Build):** Aufzeichnung (`expo-location`, Vordergrund-Dienst),
 Rohpunkte verschlüsselt im `protected-store` (alle 30 s, nach dem Speichern löschen), Erklär-Bildschirm vor der
 System-Abfrage, `summarizeTrack` → `toTrackedRoutePayload`, Speichern über die Warteschlange (`save_session_log` zuerst,

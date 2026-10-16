@@ -2722,7 +2722,20 @@ export const COMPETITION_STRENGTH = {
 export const ROUTE_FILTER = {
   maxAccuracyM: 30,
   minMoveM: 3,
+  /**
+   * Wächter S1 H1: Ein Punkt zählt erst als neue Position, wenn er weiter als max(minMoveM, accuracyMoveFactor ×
+   * gemeldete Genauigkeit) vom letzten behaltenen Punkt liegt. Die gemeldete Genauigkeit ist der Radius, in dem die
+   * wahre Position mit ca. 68 % Wahrscheinlichkeit liegt (Android `Location.getAccuracy()`, iOS
+   * `CLLocation.horizontalAccuracy`) – Sprünge darunter sind meist Rauschen. Faktor: PRODUKTENTSCHEIDUNG.
+   */
+  accuracyMoveFactor: 1,
   jumpFactor: 1.5,
+  /**
+   * Wächter S1 M1: Werden `reanchorPoints` Punkte hintereinander als Sprung verworfen, passen sie aber untereinander
+   * zusammen, und sind bis dahin weniger Punkte behalten worden, war der Anfang ein Ausreißer (z. B. Kaltstart des
+   * GPS): Der Anfang wird verworfen und an den verworfenen Punkten neu verankert. Quelle: PRODUKTENTSCHEIDUNG.
+   */
+  reanchorPoints: 5,
 } as const;
 
 /**
@@ -2748,6 +2761,21 @@ export const ROUTE_ELEVATION = {
 export const ROUTE_AUTO_PAUSE_KMH = { run: 3, bike: 5, walk: 1.5 } as const;
 
 /**
+ * Bewegung erkennen (Wächter S1 H1, motionSegments): Positionen werden über höchstens `smoothingPoints` Punkte je
+ * Seite gemittelt (symmetrisch, an Anfang und Ende kürzer – gerade Strecken bleiben exakt). Ein Abschnitt ist in
+ * Bewegung, wenn die geglättete Position über ein gleitendes Zeitfenster von `windowS` Sekunden um den Abschnitt
+ * schneller als ROUTE_AUTO_PAUSE_KMH vorankommt; Distanz und Höhenmeter zählen nur in Bewegung, die Distanz aus den
+ * geglätteten Positionen. So erzeugt Stillstand mit GPS-Rauschen (σ einige Meter) keine Kilometer.
+ * Quellen: Zandbergen PA, Barbeau SJ (2011), „Positional Accuracy of Assisted GPS Data from High-Sensitivity
+ * GPS-enabled Mobile Phones“, J Navigation 64(3):381–399 (Streuung im Stillstand mehrere Meter); Fenster und
+ * Glättung: PRODUKTENTSCHEIDUNG (Fenster 10–20 s laut Wächter-Auflage).
+ */
+export const ROUTE_MOTION = {
+  windowS: 20,
+  smoothingPoints: 5,
+} as const;
+
+/**
  * Warnung „Bitte prüfen“ der Strecke (kein Verwerfen): Ist die Geschwindigkeit über mindestens `windowS` Sekunden
  * (zwischen behaltenen Punkten) höher als CARDIO_PLAUSIBILITY_KMH der Sportart, zeigt die App eine Warnung (z. B.
  * Bergab-Rad mit 70 km/h oder versehentlich im Auto aufgezeichnet). Quelle: PRODUKTENTSCHEIDUNG (wie Ausdauer-Eintrag).
@@ -2764,6 +2792,30 @@ export const ROUTE_SPEED_WARNING = { windowS: 10 } as const;
 export const ROUTE_SIMPLIFY = {
   toleranceM: 5,
   maxToleranceM: 640,
+} as const;
+
+/**
+ * GPX-Export (Wächter S1 N4): Punkte mit ungültigen Koordinaten werden übersprungen, Höhen außerhalb `elevationM`
+ * weggelassen (tiefster Landpunkt ca. −430 m am Toten Meer, höchster 8.849 m Mount Everest). Quelle: U.S. Geological
+ * Survey / National Geographic (2020, Höhe Mount Everest); Rahmen mit Reserve: PRODUKTENTSCHEIDUNG.
+ */
+export const ROUTE_GPX = {
+  elevationM: { min: -1000, max: 10_000 },
+  coordinateDecimals: 6,
+  elevationDecimals: 1,
+} as const;
+
+/**
+ * Tagebuch-Eintrag mit Strecke (Wächter S1 M3, sichere Variante a): Dauer und Distanz des Eintrags müssen zur
+ * verknüpften Strecke passen – Distanz höchstens `distanceShare` (Anteil) oder `distanceMinM` Meter daneben (das
+ * Größere), Dauer zwischen Bewegungszeit − `durationToleranceS` und Gesamtdauer + `durationToleranceS`. Gilt beim
+ * Verknüpfen (save_tracked_route) und bei jeder späteren Änderung des Eintrags (save_session_log). Quelle:
+ * PRODUKTENTSCHEIDUNG.
+ */
+export const TRACKED_ROUTE_LOG_MATCH = {
+  distanceShare: 0.1,
+  distanceMinM: 100,
+  durationToleranceS: 300,
 } as const;
 
 /**

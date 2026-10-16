@@ -115,4 +115,25 @@ describe('toGpx', () => {
   it('Dateiname ohne Namen oder Ort der Strecke', () => {
     expect(gpxFileName('2026-10-16')).toBe('alpha5-strecke-2026-10-16.gpx');
   });
+
+  it('Wächter S1 N4: NaN/Infinity/außerhalb des Bereichs übersprungen, Höhe unplausibel weggelassen, nie Exponent', () => {
+    const xml = toGpx({
+      ...base,
+      points: [
+        { lat: Number.NaN, lng: 6.9 },
+        { lat: 50, lng: Number.POSITIVE_INFINITY },
+        { lat: 91, lng: 6.9 },
+        { lat: 50, lng: -180.5 },
+        { lat: 50.9, lng: 6.9, ele: 1e21 },
+        { lat: -0.0000001, lng: 179.9999999, ele: Number.NaN },
+        { lat: 1e-7, lng: 2, ele: -12.25 },
+      ],
+    });
+    const order = assertWellFormed(xml);
+    expect(order.filter((t) => t === 'trkpt')).toHaveLength(3);
+    expect(xml).not.toMatch(/NaN|Infinity|e\+|e-/);
+    expect(xml).toContain('<trkpt lat="50.9" lon="6.9"/>');
+    expect(xml).toContain('<trkpt lat="0" lon="180"/>');
+    expect(xml).toContain('<trkpt lat="0" lon="2"><ele>-12.3</ele></trkpt>');
+  });
 });

@@ -13,14 +13,56 @@
 -- Fehlermeldungen: feste deutsche Texte ohne Werte (keine Koordinaten, kein „Failing row contains“).
 
 -- ---------------------------------------------------------------------------------------------------------
+-- 0. private.session_log_fits_route: Passt ein Tagebuch-Eintrag zur Strecke? (= sessionLogFitsRoute in
+-- packages/core/src/routes/schema.ts, Wächter S1 M3, sichere Variante a). Ausdauer derselben Art, Tag = Tag des
+-- Beginns (Europe/Berlin) bis 1 Tag danach (TRACKED_ROUTE_LIMITS.sessionLogDayTolerance), Distanz höchstens 10 % bzw.
+-- 100 m daneben (das Größere), Dauer zwischen Bewegungszeit − 300 s und Gesamtdauer + 300 s (TRACKED_ROUTE_LOG_MATCH).
+-- Gilt beim Verknüpfen (save_tracked_route) und bei jeder Änderung des Eintrags (save_session_log). Nie ein Fehler.
+-- ---------------------------------------------------------------------------------------------------------
+create or replace function private.session_log_fits_route(
+  p_route_sport public.endurance_modality,
+  p_route_started_at timestamptz,
+  p_route_duration_s integer,
+  p_route_moving_s integer,
+  p_route_distance_m integer,
+  p_log_kind public.planned_session_kind,
+  p_log_modality public.endurance_modality,
+  p_log_day date,
+  p_log_duration_s integer,
+  p_log_distance_m integer
+)
+returns boolean
+language sql
+immutable
+set search_path = ''
+as $$
+  -- sync: TRACKED_ROUTE_LOG_MATCH (distanceShare 0.1, distanceMinM 100, durationToleranceS 300) und
+  -- TRACKED_ROUTE_LIMITS.sessionLogDayTolerance 1
+  select coalesce(
+    p_log_kind = 'endurance'
+    and p_log_modality = p_route_sport
+    and p_log_day between (p_route_started_at at time zone 'Europe/Berlin')::date
+      and (p_route_started_at at time zone 'Europe/Berlin')::date + 1
+    and abs(p_log_distance_m - p_route_distance_m) <= greatest(100, p_route_distance_m * 0.1)
+    and p_log_duration_s between p_route_moving_s - 300 and p_route_duration_s + 300,
+    false)
+$$;
+
+revoke all on function private.session_log_fits_route(
+  public.endurance_modality, timestamptz, integer, integer, integer, public.planned_session_kind,
+  public.endurance_modality, date, integer, integer
+) from public;
+
+-- ---------------------------------------------------------------------------------------------------------
 -- 1a. save_tracked_route(p_route jsonb) → id
 -- Eingabe = trackedRouteSchema (alle 16 Felder Pflicht, unbekannte abgelehnt). Die id erzeugt das Gerät (Warteschlange):
 -- Gibt es schon eine EIGENE Strecke mit dieser id, kommt sie unverändert zurück (kein Doppel, kein Zähler); gehört die
 -- id einer anderen Person, vergibt der Server eine neue (ohne unterscheidbare Meldung).
 -- - Beginn nicht in der Zukunft und Ende höchstens clock_skew_s nach jetzt (Uhr des Geräts),
 -- - base_route_id: eigene FAVORITEN-Strecke derselben Sportart,
--- - session_log_id: eigener Ausdauer-Eintrag derselben Art, Tag = Tag des Beginns (Europe/Berlin) bis 1 Tag danach,
---   noch ohne Strecke; die Herkunft des Eintrags wird gps (aufgezeichnet) bzw. gpx_import,
+-- - session_log_id: eigener Ausdauer-Eintrag, der zur Strecke passt (private.session_log_fits_route: Art, Tag des
+--   Beginns bis 1 Tag danach, Distanz und Dauer), noch ohne Strecke; die Herkunft des Eintrags wird gps (aufgezeichnet)
+--   bzw. gpx_import, seine revision steigt (Wächter S1 N2: andere Geräte sehen die Änderung),
 -- - Anzahl der Punkte und Begrenzungsrahmen aus der Polyline (private.polyline_summary),
 -- - höchstens max_saves_per_day NEUE Strecken je Kalendertag (Europe/Berlin).
 -- ---------------------------------------------------------------------------------------------------------
@@ -38,7 +80,6 @@ declare
   -- sync: TRACKED_ROUTE_LIMITS in packages/core/src/constants.ts
   max_saves_per_day constant integer := 20;
   clock_skew_s constant integer := 300;
-  session_log_day_tolerance constant integer := 1;
   iso_timestamp_pattern constant text :=
     '^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}(:\d{2}(\.\d{1,6})?)?(Z|[+-]\d{2}:\d{2})$';
   current_user_id uuid := auth.uid();
@@ -52,8 +93,8 @@ declare
   v_session_log_id uuid;
   v_source public.tracked_route_source;
   v_summary numeric[];
-  log_day date;
-  start_day date;
+  log_row record;
+  log_found boolean := false;
   created_today integer;
   saved_id uuid;
 begin
@@ -124,15 +165,19 @@ begin
   -- Tagebuch-Eintrag: eigener Ausdauer-Eintrag derselben Art vom Tag des Beginns (oder 1 Tag danach), noch ohne
   -- Strecke. Gesperrt, damit gleichzeitiges Löschen/Ändern nicht dazwischenkommt.
   if v_session_log_id is not null then
-    select sl.performed_on into log_day
+    select sl.kind, sl.performed_on, cl.modality, cl.duration_s, cl.distance_m into log_row
     from public.session_logs sl
     join public.cardio_logs cl on cl.session_log_id = sl.id
     where sl.id = v_session_log_id and sl.user_id = current_user_id and sl.kind = 'endurance'
       and cl.modality = v_sport
     for update of sl;
-    start_day := (v_started_at at time zone 'Europe/Berlin')::date;
-    if log_day is null
-       or log_day not between start_day and start_day + session_log_day_tolerance
+    log_found := found;
+    if not log_found then
+      raise exception 'Dieser Eintrag passt nicht zur Strecke.' using errcode = 'invalid_parameter_value';
+    end if;
+    if not private.session_log_fits_route(
+         v_sport, v_started_at, v_duration_s, (r ->> 'moving_s')::integer, (r ->> 'distance_m')::integer,
+         log_row.kind, log_row.modality, log_row.performed_on, log_row.duration_s, log_row.distance_m)
        or exists (select 1 from public.tracked_routes t where t.session_log_id = v_session_log_id) then
       raise exception 'Dieser Eintrag passt nicht zur Strecke.' using errcode = 'invalid_parameter_value';
     end if;
@@ -178,7 +223,8 @@ begin
   -- Herkunft des Tagebuch-Eintrags (WP3 Präzisierung 8): nur hier gesetzt, nie vom Gerät.
   if v_session_log_id is not null then
     update public.session_logs sl
-    set source = case v_source when 'recorded' then 'gps' else 'gpx_import' end::public.log_source
+    set source = case v_source when 'recorded' then 'gps' else 'gpx_import' end::public.log_source,
+        revision = sl.revision + 1
     where sl.id = v_session_log_id;
   end if;
   return saved_id;
@@ -359,6 +405,9 @@ declare
   v_is_free boolean;
   -- Herkunft (Phase 10 S1): gps/gpx_import setzt nur save_tracked_route.
   v_source public.log_source;
+  -- Verknüpfte Strecke (Wächter S1 M3).
+  route_row record;
+  route_found boolean := false;
   week_start date;
   planned record;
   linked boolean := false;
@@ -489,6 +538,25 @@ begin
       end if;
       if existing.source is distinct from v_source then
         raise exception 'Ungültige Werte im Tagebuch.' using errcode = 'invalid_parameter_value';
+      end if;
+    end if;
+    -- Verknüpfte Strecke (Wächter S1 M3, sichere Variante a): Art, Tag, Distanz und Dauer müssen weiter zur Strecke
+    -- passen (private.session_log_fits_route) – sonst klare Ablehnung ohne Werte. Sperr-Reihenfolge wie
+    -- save_tracked_route: erst der Eintrag (oben FOR UPDATE), dann die Strecke.
+    if has_existing then
+      select t.sport, t.started_at, t.duration_s, t.moving_s, t.distance_m into route_row
+      from public.tracked_routes t
+      where t.session_log_id = existing.id
+      for share;
+      route_found := found;
+      if route_found then
+        if not private.session_log_fits_route(
+             route_row.sport, route_row.started_at, route_row.duration_s, route_row.moving_s, route_row.distance_m,
+             log_kind, (p_log -> 'cardio' ->> 'modality')::public.endurance_modality, v_performed_on,
+             (p_log -> 'cardio' ->> 'duration_s')::integer, (p_log -> 'cardio' ->> 'distance_m')::integer) then
+          raise exception 'Der Eintrag passt nicht mehr zur verknüpften Strecke.'
+            using errcode = 'invalid_parameter_value';
+        end if;
       end if;
     end if;
     if linked and planned_kind <> log_kind then
@@ -766,6 +834,8 @@ begin
         raise exception 'An diesem Tag ist schon eine Einheit eingetragen.' using errcode = 'unique_violation';
       elsif err_message = 'Das Datum liegt außerhalb des erlaubten Zeitraums.' then
         raise exception 'Das Datum liegt außerhalb des erlaubten Zeitraums.' using errcode = 'invalid_parameter_value';
+      elsif err_message = 'Der Eintrag passt nicht mehr zur verknüpften Strecke.' then
+        raise exception 'Der Eintrag passt nicht mehr zur verknüpften Strecke.' using errcode = 'invalid_parameter_value';
       end if;
       raise exception 'Ungültige Werte im Tagebuch.' using errcode = sqlstate;
   end;

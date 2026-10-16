@@ -955,7 +955,8 @@ eigene Zeilen, in Export und Kontolöschung enthalten.
   Zeilen lesen, kein Partner-Zugriff; Schreiben nur über `save_tracked_route`, `update_tracked_route`,
   `delete_tracked_route`, `delete_all_tracked_routes` (Tageslimit 20). Kein Gesundheitsdatum (W-G15), bleibt beim
   Widerruf; im Export enthalten. `routes` (Vorschläge, Lizenz) bleibt für S2b.
-- **`session_logs.source`** `gps`/`gpx_import` setzt nur `save_tracked_route` (Eintrag mit Strecke verknüpft).
+- **`session_logs.source`** `gps`/`gpx_import` setzt nur `save_tracked_route` (Eintrag mit Strecke verknüpft); ein
+  verknüpfter Eintrag muss zur Strecke passen (Art, Tag, Distanz, Dauer – `private.session_log_fits_route`).
 
 ## 13. Monetarisierung
 - **Gratis:** Onboarding, Standard-Plan aus Vorlagen mit einfacher Progression (Gewicht steigt bei geschafften

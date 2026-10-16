@@ -4,6 +4,7 @@ import { CARDIO_PLAUSIBILITY_KMH, ROUTE_FILTER, TRACKED_ROUTE_LIMITS } from '../
 import { seededRandom } from '../nutrition/test-helpers';
 import { decodePolyline, encodePolyline } from './polyline';
 import {
+  sessionLogFitsRoute,
   summarizeTrack,
   toTrackedRoutePayload,
   trackedRouteDistancePlausible,
@@ -214,7 +215,7 @@ describe('summarizeTrack + toTrackedRoutePayload', () => {
     const s = summarizeTrack(pts, 'walk');
     expect(s.durationS).toBe(43_200);
     expect(s.movingS).toBe(43_200);
-    expect(s.distanceM).toBe(Math.floor(trackDistance(pts)));
+    expect(Math.abs(s.distanceM - Math.floor(trackDistance(pts)))).toBeLessThanOrEqual(1);
     expect(s.kmSplits).toHaveLength(51);
     // Gerade Linie → 2 Punkte nach dem Vereinfachen.
     expect(s.pointCount).toBe(2);
@@ -312,5 +313,46 @@ describe('summarizeTrack + toTrackedRoutePayload', () => {
     expect(p?.elevation_gain_m).toBeNull();
     expect(p?.note).toBeNull();
     expect(last(s.points).t - (s.points[0]?.t ?? 0)).toBe(399_000);
+  });
+});
+
+describe('sessionLogFitsRoute (Wächter S1 M3, Variante a)', () => {
+  const route = {
+    sport: 'run' as const,
+    // 22:30 UTC = 00:30 in Berlin am 17.10. → Tag des Beginns 2026-10-17.
+    started_at: '2026-10-16T22:30:00Z',
+    duration_s: 1800,
+    moving_s: 1700,
+    distance_m: 5000,
+  };
+  const log = {
+    kind: 'endurance' as const,
+    modality: 'run',
+    performedOn: '2026-10-17',
+    durationS: 1800,
+    distanceM: 5000,
+  };
+  it('passt: gleiche Art, Tag des Beginns (Berlin) und +1, Distanz/Dauer im Rahmen', () => {
+    expect(sessionLogFitsRoute(log, route)).toBe(true);
+    expect(sessionLogFitsRoute({ ...log, performedOn: '2026-10-18' }, route)).toBe(true);
+    expect(sessionLogFitsRoute({ ...log, distanceM: 5500, durationS: 1400 }, route)).toBe(true);
+    expect(sessionLogFitsRoute({ ...log, distanceM: 4900, durationS: 2100 }, route)).toBe(true);
+  });
+  it.each([
+    ['Tag −1', { performedOn: '2026-10-16' }],
+    ['Tag +2', { performedOn: '2026-10-19' }],
+    ['andere Art', { modality: 'bike' }],
+    ['Kraft', { kind: 'strength' as const, modality: null }],
+    ['Distanz 11 % daneben', { distanceM: 5501 }],
+    ['Distanz fehlt', { distanceM: null }],
+    ['Dauer zu kurz', { durationS: 1399 }],
+    ['Dauer zu lang', { durationS: 2101 }],
+  ] as const)('passt nicht: %s', (_, changes) => {
+    expect(sessionLogFitsRoute({ ...log, ...changes }, route)).toBe(false);
+  });
+  it('kurze Strecke: mindestens 100 m Spielraum', () => {
+    const short = { ...route, distance_m: 300 };
+    expect(sessionLogFitsRoute({ ...log, distanceM: 400 }, short)).toBe(true);
+    expect(sessionLogFitsRoute({ ...log, distanceM: 401 }, short)).toBe(false);
   });
 });

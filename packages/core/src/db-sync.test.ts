@@ -73,6 +73,7 @@ import {
   CARDIO_PLAUSIBILITY_KMH,
   ROUTE_FILTER,
   TRACKED_ROUTE_LIMITS,
+  TRACKED_ROUTE_LOG_MATCH,
 } from './constants';
 import { serverDayKcalFloor } from './nutrition/plausibility';
 import { AI_USAGE_STATUSES } from './nutrition/food-photo';
@@ -1927,9 +1928,6 @@ describe('Strecken in der Datenbank (Phase 10 S1)', () => {
     expect(save).toContain(`max_saves_per_day constant integer := ${L.maxSavesPerDay};`);
     expect(save).toContain(`clock_skew_s constant integer := ${L.clockSkewS};`);
     expect(save).toContain(
-      `session_log_day_tolerance constant integer := ${L.sessionLogDayTolerance};`,
-    );
-    expect(save).toContain(
       `private.jsonb_number_between(r -> 'duration_s', ${L.durationS.min}, ${L.durationS.max}, 0)`,
     );
     expect(save).toContain(
@@ -1991,6 +1989,36 @@ describe('Strecken in der Datenbank (Phase 10 S1)', () => {
     expect(save).toContain(
       "set source = case v_source when 'recorded' then 'gps' else 'gpx_import' end::public.log_source",
     );
+  });
+
+  it('Wächter S1 M3/M4: Eintrag passt zur Strecke = sessionLogFitsRoute (TRACKED_ROUTE_LOG_MATCH, Tagesfenster)', () => {
+    const fits = rpcs.slice(
+      rpcs.indexOf('create or replace function private.session_log_fits_route('),
+      rpcs.indexOf(
+        '$$;',
+        rpcs.indexOf('create or replace function private.session_log_fits_route('),
+      ),
+    );
+    const M = TRACKED_ROUTE_LOG_MATCH;
+    const day = "(p_route_started_at at time zone 'Europe/Berlin')::date";
+    expect(fits).toContain(
+      `and p_log_day between ${day}\n      and ${day} + ${L.sessionLogDayTolerance}\n`,
+    );
+    expect(fits).toContain(
+      `abs(p_log_distance_m - p_route_distance_m) <= greatest(${M.distanceMinM}, p_route_distance_m * ${M.distanceShare})`,
+    );
+    expect(fits).toContain(
+      `p_log_duration_s between p_route_moving_s - ${M.durationToleranceS} and p_route_duration_s + ${M.durationToleranceS}`,
+    );
+    expect(fits).toContain("p_log_kind = 'endurance'\n    and p_log_modality = p_route_sport");
+    // Beide Wege nutzen dieselbe Prüfung.
+    expect(save).toContain('if not private.session_log_fits_route(');
+    const marker = 'create or replace function public.save_session_log(';
+    const logFn = rpcs.slice(rpcs.indexOf(marker), rpcs.indexOf('$$;', rpcs.indexOf(marker)));
+    expect(logFn).toContain('where t.session_log_id = existing.id');
+    expect(logFn).toContain('if not private.session_log_fits_route(');
+    // N2: revision steigt beim Setzen der Herkunft.
+    expect(save).toContain('revision = sl.revision + 1');
   });
 
   it('export_my_data (S1): Obermenge der E3-Fassung plus tracked_routes', () => {

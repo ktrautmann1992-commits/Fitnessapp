@@ -6,35 +6,72 @@ import { EARTH_RADIUS_M } from './track';
  * Strecke vereinfachen (Plan 11.2/S1): Douglas-Peucker mit ROUTE_SIMPLIFY.toleranceM Metern in einer lokalen,
  * flachen Projektion (Abstandstreue um den mittleren Breitengrad – für Strecken bis 500 km genau genug). Hat das
  * Ergebnis mehr als `maxPoints` Punkte, wird die Toleranz verdoppelt (bis ROUTE_SIMPLIFY.maxToleranceM); reicht auch
- * das nicht, wird gleichmäßig ausgedünnt. Erster und letzter Punkt bleiben immer. Ohne Rekursion (Stapel), damit auch
- * 100.000 Punkte gehen; deterministisch (gleiche Eingabe → gleiche Ausgabe).
+ * das nicht, wird gleichmäßig ausgedünnt. Erster und letzter Punkt bleiben immer. Ohne Rekursion (Stapel), mit
+ * O(n)-Vorab-Ausdünnung (radial) und ausgewogener Teilung bei Gleichstand (Wächter S1 M2) – auch ein exakter Zickzack
+ * mit 100.000 Punkten bleibt schnell; Abweichung höchstens 2 × Toleranz; deterministisch.
  */
 export function simplifyTrack<T extends LatLng>(
   points: readonly T[],
   maxPoints: number = TRACKED_ROUTE_LIMITS.maxPoints,
 ): T[] {
   if (points.length <= 2) return [...points];
-  const xy = project(points);
   for (
     let tolerance: number = ROUTE_SIMPLIFY.toleranceM;
     tolerance <= ROUTE_SIMPLIFY.maxToleranceM;
     tolerance *= 2
   ) {
+    // Wächter S1 M2: zuerst in O(n) radial ausdünnen (Punkte näher als die Toleranz am letzten behaltenen fallen
+    // weg – sie können die Linie höchstens um die Toleranz verschieben), dann Douglas-Peucker.
+    const thinned = radialThin(points, tolerance);
+    const xy = project(thinned);
     const keep = douglasPeucker(xy, tolerance);
-    const result = points.filter((_, i) => keep[i] === 1);
+    const result = thinned.filter((_, i) => keep[i] === 1);
     if (result.length <= maxPoints) return result;
   }
   return thinEvenly(points, maxPoints);
 }
 
+/** Radial ausdünnen in O(n): Punkte näher als `tolerance` Meter am zuletzt behaltenen fallen weg; das Ende bleibt. */
+function radialThin<T extends LatLng>(points: readonly T[], tolerance: number): T[] {
+  const xy = project(points);
+  const tolSq = tolerance * tolerance;
+  const result: T[] = [points[0] as T];
+  let lx = xy[0] as number;
+  let ly = xy[1] as number;
+  for (let i = 1; i < points.length - 1; i += 1) {
+    const dx = (xy[2 * i] as number) - lx;
+    const dy = (xy[2 * i + 1] as number) - ly;
+    if (dx * dx + dy * dy >= tolSq) {
+      result.push(points[i] as T);
+      lx = xy[2 * i] as number;
+      ly = xy[2 * i + 1] as number;
+    }
+  }
+  result.push(points[points.length - 1] as T);
+  return result;
+}
+
+/**
+ * Flache Projektion in Metern um den mittleren Breitengrad. Längengrade fortlaufend (über ±180° hinweg ohne Sprung,
+ * Wächter S1 N6).
+ */
 function project(points: readonly LatLng[]): Float64Array {
   let latSum = 0;
   for (const p of points) latSum += p.lat;
   const cosLat = Math.cos(((latSum / points.length) * Math.PI) / 180);
   const xy = new Float64Array(points.length * 2);
   const k = (Math.PI / 180) * EARTH_RADIUS_M;
+  let lng = 0;
   points.forEach((p, i) => {
-    xy[2 * i] = p.lng * k * cosLat;
+    if (i === 0) {
+      lng = p.lng;
+    } else {
+      let d = p.lng - (points[i - 1] as LatLng).lng;
+      if (d > 180) d -= 360;
+      if (d < -180) d += 360;
+      lng += d;
+    }
+    xy[2 * i] = lng * k * cosLat;
     xy[2 * i + 1] = p.lat * k;
   });
   return xy;
@@ -67,10 +104,12 @@ function douglasPeucker(xy: Float64Array, tolerance: number): Uint8Array {
     const first = stack.pop() as number;
     let maxSq = -1;
     let index = -1;
+    const mid = (first + last) / 2;
     for (let i = first + 1; i < last; i += 1) {
       const d = segmentDistanceSq(xy, i, first, last);
-      // Bei Gleichstand der erste Punkt – deterministisch.
-      if (d > maxSq) {
+      // Bei Gleichstand der Punkt näher an der Mitte (Wächter S1 M2: ausgewogene Teilung statt quadratischer
+      // Laufzeit, z. B. bei einem exakten Zickzack), bei gleicher Nähe der vordere – deterministisch.
+      if (d > maxSq || (d === maxSq && Math.abs(i - mid) < Math.abs(index - mid))) {
         maxSq = d;
         index = i;
       }

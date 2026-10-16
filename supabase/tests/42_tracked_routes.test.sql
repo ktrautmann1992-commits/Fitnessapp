@@ -10,7 +10,7 @@
 -- Zeiten relativ zu now() (Strecken dürfen nicht in der Zukunft liegen); „heute“ = private.berlin_today().
 begin;
 create extension if not exists pgtap with schema extensions;
-select plan(115);
+select plan(127);
 
 -- A und B mit Profil und Einwilligungen, C ohne Profil.
 insert into auth.users (id, email) values
@@ -92,12 +92,21 @@ values
    'completed', 'Freie Kraft-Einheit', gen_random_uuid(), now(), true),
   ('a0000000-0000-4000-8000-000000000004', '11111111-1111-4111-8111-111111111111', 'endurance',
    pg_temp.start_day() - 5, 'completed', 'Lauf', gen_random_uuid(), now(), true),
+  ('a0000000-0000-4000-8000-000000000005', '11111111-1111-4111-8111-111111111111', 'endurance',
+   pg_temp.start_day() - 1, 'completed', 'Lauf', gen_random_uuid(), now(), true),
+  ('a0000000-0000-4000-8000-000000000006', '11111111-1111-4111-8111-111111111111', 'endurance',
+   pg_temp.start_day() + 1, 'completed', 'Lauf', gen_random_uuid(), now(), true),
+  ('a0000000-0000-4000-8000-000000000007', '11111111-1111-4111-8111-111111111111', 'endurance',
+   pg_temp.start_day() + 2, 'completed', 'Lauf', gen_random_uuid(), now(), true),
   ('b0000000-0000-4000-8000-000000000001', '22222222-2222-4222-8222-222222222222', 'endurance', pg_temp.start_day(),
    'completed', 'Lauf', gen_random_uuid(), now(), true);
 insert into public.cardio_logs (session_log_id, user_id, modality, duration_s, distance_m) values
   ('a0000000-0000-4000-8000-000000000001', '11111111-1111-4111-8111-111111111111', 'run', 1800, 5200),
   ('a0000000-0000-4000-8000-000000000002', '11111111-1111-4111-8111-111111111111', 'bike', 1800, 15000),
   ('a0000000-0000-4000-8000-000000000004', '11111111-1111-4111-8111-111111111111', 'run', 1800, 5200),
+  ('a0000000-0000-4000-8000-000000000005', '11111111-1111-4111-8111-111111111111', 'run', 1800, 5200),
+  ('a0000000-0000-4000-8000-000000000006', '11111111-1111-4111-8111-111111111111', 'run', 1800, 5200),
+  ('a0000000-0000-4000-8000-000000000007', '11111111-1111-4111-8111-111111111111', 'run', 1800, 5200),
   ('b0000000-0000-4000-8000-000000000001', '22222222-2222-4222-8222-222222222222', 'run', 1800, 5200);
 
 -- ---------------------------------------------------------------------------------------------------------
@@ -305,15 +314,32 @@ select is(pg_temp.save(pg_temp.route('{"session_log_id": "a0000000-0000-4000-800
   '22023: Dieser Eintrag passt nicht zur Strecke.', 'Eintrag anderer Ausdauer-Art (Rad) abgelehnt');
 select is(pg_temp.save(pg_temp.route('{"session_log_id": "a0000000-0000-4000-8000-000000000004"}')),
   '22023: Dieser Eintrag passt nicht zur Strecke.', 'Eintrag von einem anderen Tag abgelehnt');
+-- Wächter S1 M4: Grenzen des Tagesfensters (Tag des Beginns bis +1, Europe/Berlin)
+select is(pg_temp.save(pg_temp.route('{"session_log_id": "a0000000-0000-4000-8000-000000000005"}')),
+  '22023: Dieser Eintrag passt nicht zur Strecke.', 'Fenster: Eintrag vom Tag VOR dem Beginn abgelehnt');
+select is(pg_temp.save(pg_temp.route('{"session_log_id": "a0000000-0000-4000-8000-000000000007"}')),
+  '22023: Dieser Eintrag passt nicht zur Strecke.', 'Fenster: Eintrag 2 Tage nach dem Beginn abgelehnt');
+select is(pg_temp.save(pg_temp.route('{"session_log_id": "a0000000-0000-4000-8000-000000000006"}')),
+  'kein Fehler', 'Fenster: Eintrag 1 Tag nach dem Beginn ok (Aufzeichnung über Mitternacht)');
+-- Wächter S1 M3: Distanz und Dauer müssen schon beim Verknüpfen passen (TRACKED_ROUTE_LOG_MATCH)
+select is(pg_temp.save(pg_temp.route(jsonb_build_object('session_log_id', 'a0000000-0000-4000-8000-000000000001',
+    'distance_m', 9000, 'km_splits', (select jsonb_agg(190) from generate_series(1, 9))))),
+  '22023: Dieser Eintrag passt nicht zur Strecke.', 'Eintrag mit 5,2 km passt nicht zu einer 9-km-Strecke');
+select is(pg_temp.save(pg_temp.route(jsonb_build_object('session_log_id', 'a0000000-0000-4000-8000-000000000001',
+    'duration_s', 3000, 'moving_s', 2500))),
+  '22023: Dieser Eintrag passt nicht zur Strecke.', 'Eintrag mit 30 min passt nicht zu 2.500 s Bewegung');
 select is(pg_temp.save(pg_temp.route(
     '{"id": "c0000000-0000-4000-8000-000000000003", "session_log_id": "a0000000-0000-4000-8000-000000000001"}')),
   'kein Fehler', 'eigener passender Eintrag ok');
 select is((select source::text from public.session_logs where id = 'a0000000-0000-4000-8000-000000000001'), 'gps',
   'Herkunft des Eintrags = gps (setzt nur der Server)');
+select is((select revision from public.session_logs where id = 'a0000000-0000-4000-8000-000000000001'), 2,
+  'Wächter S1 N2: revision des Eintrags steigt beim Setzen der Herkunft');
 select is(pg_temp.save(pg_temp.route('{"session_log_id": "a0000000-0000-4000-8000-000000000001"}')),
   '22023: Dieser Eintrag passt nicht zur Strecke.', 'zweite Strecke für denselben Eintrag abgelehnt');
 select is(pg_temp.save(pg_temp.route(
-    '{"sport": "bike", "source": "gpx_import", "session_log_id": "a0000000-0000-4000-8000-000000000002"}')),
+    '{"sport": "bike", "source": "gpx_import", "session_log_id": "a0000000-0000-4000-8000-000000000002",
+      "distance_m": 15000, "km_splits": [110, 110, 110, 110, 110, 110, 110, 110, 110, 110, 110, 110, 110, 110, 110]}')),
   'kein Fehler', 'GPX-Strecke mit Rad-Eintrag ok');
 select is((select source::text from public.session_logs where id = 'a0000000-0000-4000-8000-000000000002'),
   'gpx_import', 'Herkunft des Eintrags = gpx_import');
@@ -358,6 +384,34 @@ select is(pg_temp.error_of(format('select public.save_session_log(%L::jsonb)',
   '22023: Ungültige Werte im Tagebuch.', 'Wechsel gps → gpx_import abgelehnt');
 
 -- ---------------------------------------------------------------------------------------------------------
+-- Wächter S1 M3 (sichere Variante a): verknüpfter Eintrag bleibt passend zur Strecke
+-- ---------------------------------------------------------------------------------------------------------
+create function pg_temp.edit_a1(p_rev integer, p_changes jsonb default '{}') returns jsonb language sql as $$
+  select pg_temp.free_run('a0000000-0000-4000-8000-000000000001', 'manual')
+    || jsonb_build_object('base_revision', p_rev, 'performed_on', pg_temp.start_day(),
+                          'planned_date', pg_temp.start_day())
+    || p_changes
+$$;
+select is(pg_temp.error_of(format('select public.save_session_log(%L::jsonb)', pg_temp.edit_a1(2,
+    '{"name_de": "Radfahrt", "cardio": {"modality": "bike", "duration_s": 1800, "distance_m": 5200, "elevation_m": null}}'))),
+  '22023: Der Eintrag passt nicht mehr zur verknüpften Strecke.', 'Wechsel der Art (Lauf → Rad) abgelehnt');
+select is(pg_temp.error_of(format('select public.save_session_log(%L::jsonb)', pg_temp.edit_a1(2,
+    '{"cardio": {"modality": "run", "duration_s": 1800, "distance_m": 99000, "elevation_m": null}}'))),
+  '22023: Der Eintrag passt nicht mehr zur verknüpften Strecke.', 'Distanz 99 km zur 5,2-km-Strecke abgelehnt');
+select is(pg_temp.error_of(format('select public.save_session_log(%L::jsonb)', pg_temp.edit_a1(2,
+    '{"cardio": {"modality": "run", "duration_s": 7200, "distance_m": 5200, "elevation_m": null}}'))),
+  '22023: Der Eintrag passt nicht mehr zur verknüpften Strecke.', 'Dauer 2 h zur 30-min-Strecke abgelehnt');
+select is(pg_temp.error_of(format('select public.save_session_log(%L::jsonb)', pg_temp.edit_a1(2,
+    jsonb_build_object('performed_on', pg_temp.start_day() - 10, 'planned_date', pg_temp.start_day() - 10)))),
+  '22023: Der Eintrag passt nicht mehr zur verknüpften Strecke.', 'Datum 10 Tage früher abgelehnt');
+select is(public.save_session_log(pg_temp.edit_a1(2,
+    '{"cardio": {"modality": "run", "duration_s": 1760, "distance_m": 5150, "elevation_m": null}}')) ->> 'result',
+  'ok', 'kleine Korrektur (passt weiter) ok');
+select results_eq(
+  $$ select source::text, revision from public.session_logs where id = 'a0000000-0000-4000-8000-000000000001' $$,
+  $$ values ('gps', 3) $$, '… Herkunft gps bleibt, revision 3');
+
+-- ---------------------------------------------------------------------------------------------------------
 -- Ändern
 -- ---------------------------------------------------------------------------------------------------------
 select lives_ok($$ select public.update_tracked_route(jsonb_build_object('id', 'c0000000-0000-4000-8000-000000000002',
@@ -392,7 +446,7 @@ select lives_ok($$ select public.delete_tracked_route('c0000000-0000-4000-8000-0
 select results_eq(
   $$ select base_route_id, moving_s from public.tracked_routes where id = 'c0000000-0000-4000-8000-000000000002' $$,
   $$ values (null::uuid, 1750) $$, 'Wiederholung bleibt, Verweis leer');
-select is(public.delete_session_log('a0000000-0000-4000-8000-000000000001', 1) ->> 'result', 'ok',
+select is(public.delete_session_log('a0000000-0000-4000-8000-000000000001', 3) ->> 'result', 'ok',
   'verknüpften Tagebuch-Eintrag löschen');
 select is((select session_log_id from public.tracked_routes where id = 'c0000000-0000-4000-8000-000000000003'),
   null::uuid, 'Strecke bleibt, Verweis auf den Eintrag leer');

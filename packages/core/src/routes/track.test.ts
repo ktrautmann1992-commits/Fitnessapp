@@ -209,7 +209,9 @@ describe('autoPause', () => {
     const pts = filterTrackPoints([...a, ...b], 'run').points;
     const r = autoPause(pts, 'run');
     expect(r.pausedS).toBeCloseTo(300, 6);
-    expect(movingDistance(pts, 'run')).toBeCloseTo(420, 0);
+    // Die Glättung verteilt die 20 m der Lücke teils auf die Nachbar-Abschnitte (in Bewegung): höchstens + 20 m.
+    expect(movingDistance(pts, 'run')).toBeGreaterThanOrEqual(420 - 0.5);
+    expect(movingDistance(pts, 'run')).toBeLessThanOrEqual(440);
   });
 });
 
@@ -339,5 +341,129 @@ describe('hasSpeedWarning', () => {
     expect(hasSpeedWarning([], 'bike')).toBe(false);
     expect(hasSpeedWarning(line({ speedMps: 30, count: 1 }), 'bike')).toBe(false);
     expect(hasSpeedWarning(line({ speedMps: 30, count: 2, stepS: 5 }), 'bike')).toBe(false);
+  });
+});
+
+/** Normalverteiltes Rauschen (Box-Muller) aus dem festen Zufallsgenerator. */
+function gauss(rand: () => number): number {
+  const u = Math.max(rand(), 1e-12);
+  return Math.sqrt(-2 * Math.log(u)) * Math.cos(2 * Math.PI * rand());
+}
+
+describe('Wächter S1 H1: Stillstand mit realistischem GPS-Rauschen', () => {
+  // 10 min bei 1 Hz, gemeldete Genauigkeit 8 m, Höhenrauschen σ 3 m.
+  function standing(sigma: number, seed: number): TrackPoint[] {
+    const rand = seededRandom(seed);
+    return Array.from({ length: 600 }, (_, i) => ({
+      ...offset(START, gauss(rand) * sigma, gauss(rand) * sigma),
+      t: T0 + i * 1000,
+      accuracyM: 8,
+      altitudeM: 50 + gauss(rand) * 3,
+    }));
+  }
+
+  it.each([2, 3, 4, 6])(
+    'σ %i m: Distanz ≤ 20 m, Bewegungszeit ≈ 0, Höhenmeter ≈ 0 (Laufen, Gehen, Rad)',
+    (sigma) => {
+      for (const sport of ['run', 'walk', 'bike'] as const) {
+        for (const seed of [1, 2, 3]) {
+          const f = filterTrackPoints(standing(sigma, seed * 100 + sigma), sport).points;
+          expect(movingDistance(f, sport), `${sport} ${seed}`).toBeLessThanOrEqual(20);
+          expect(autoPause(f, sport).movingS, `${sport} ${seed}`).toBeLessThanOrEqual(30);
+          expect(elevationGain(f, sport).gainM ?? 0, `${sport} ${seed}`).toBeLessThanOrEqual(2);
+          expect(hasSpeedWarning(f, sport)).toBe(false);
+        }
+      }
+    },
+  );
+
+  it('echte langsame Gehbewegung (4 km/h, Rauschen σ 3 m, Genauigkeit 8 m) bleibt erhalten', () => {
+    const rand = seededRandom(4711);
+    const v = 4 / 3.6;
+    const pts: TrackPoint[] = Array.from({ length: 900 }, (_, i) => ({
+      ...offset(START, i * v + gauss(rand) * 3, gauss(rand) * 3),
+      t: T0 + i * 1000,
+      accuracyM: 8,
+      altitudeM: 50 + i * 0.05 + gauss(rand) * 3,
+    }));
+    const f = filterTrackPoints(pts, 'walk').points;
+    const truth = 899 * v;
+    expect(movingDistance(f, 'walk')).toBeGreaterThan(truth * 0.95);
+    expect(movingDistance(f, 'walk')).toBeLessThan(truth * 1.1);
+    expect(autoPause(f, 'walk').movingS).toBeGreaterThan(850);
+    // 45 m Anstieg auf 1 km: grob erkannt (Rauschen ±).
+    const gain = elevationGain(f, 'walk').gainM ?? 0;
+    expect(gain).toBeGreaterThan(30);
+    expect(gain).toBeLessThan(70);
+  });
+
+  it('Laufen mit Halt an der Ampel (60 s Stehen mit Rauschen) → Halt zählt als Pause', () => {
+    const rand = seededRandom(99);
+    const pts: TrackPoint[] = [];
+    let t = T0;
+    let pos = { ...START };
+    for (let i = 0; i < 300; i += 1) {
+      pos = offset(pos, 3, 0);
+      pts.push({ ...offset(pos, gauss(rand) * 3, gauss(rand) * 3), t: (t += 1000), accuracyM: 6 });
+    }
+    for (let i = 0; i < 60; i += 1) {
+      pts.push({ ...offset(pos, gauss(rand) * 3, gauss(rand) * 3), t: (t += 1000), accuracyM: 6 });
+    }
+    for (let i = 0; i < 300; i += 1) {
+      pos = offset(pos, 3, 0);
+      pts.push({ ...offset(pos, gauss(rand) * 3, gauss(rand) * 3), t: (t += 1000), accuracyM: 6 });
+    }
+    const f = filterTrackPoints(pts, 'run').points;
+    const r = autoPause(f, 'run');
+    // Das Zeitfenster (20 s) verwischt Anfang und Ende des Halts um je bis zu 10 s.
+    expect(r.pausedS).toBeGreaterThan(30);
+    expect(r.movingS).toBeGreaterThan(560);
+    expect(movingDistance(f, 'run')).toBeGreaterThan(1800 * 0.95);
+    expect(movingDistance(f, 'run')).toBeLessThan(1800 * 1.08);
+  });
+});
+
+describe('Wächter S1 H1: Stillstand-Schwelle nach Genauigkeit', () => {
+  it('Sprung von 5 m bei Genauigkeit 8 m → Stillstand; bei Genauigkeit 3 m → neue Position', () => {
+    const coarse = line({ speedMps: 0.5, count: 3, stepS: 10, accuracyM: 8 });
+    const f = filterTrackPoints(coarse, 'walk');
+    // 5 m: Stillstand; 10 m vom behaltenen Punkt: neue Position.
+    expect(f.points).toEqual([coarse[0], coarse[2]]);
+    expect(f.dropped.stationary).toBe(1);
+    const fine = line({ speedMps: 0.5, count: 3, stepS: 10, accuracyM: 3 });
+    expect(filterTrackPoints(fine, 'walk').points).toHaveLength(3);
+  });
+});
+
+describe('Wächter S1 M1: Ausreißer als erster Punkt', () => {
+  it('erster Punkt 2 km daneben (Kaltstart, Genauigkeit 10 m) → neu verankert, Distanz ≈ Wahrheit', () => {
+    const run = line({ speedMps: 3.5, count: 1201, accuracyM: 10 });
+    const outlier = {
+      ...(run[0] as TrackPoint),
+      ...offset(START, 0, 2000),
+      t: (run[0] as TrackPoint).t - 1000,
+    };
+    const f = filterTrackPoints([outlier, ...run], 'run');
+    expect(f.points[0]).not.toBe(outlier);
+    const truth = 1200 * 3.5;
+    expect(Math.abs(movingDistance(f.points, 'run') - truth)).toBeLessThan(truth * 0.01);
+    // Höchstens die ersten Sekunden fehlen.
+    expect((f.points[0] as TrackPoint).t - (run[0] as TrackPoint).t).toBeLessThanOrEqual(5000);
+  });
+
+  it('zwei zusammenhängende Ausreißer am Anfang → ebenfalls neu verankert', () => {
+    const run = line({ speedMps: 3.5, count: 600, accuracyM: 10 });
+    const o1 = { ...offset(START, 0, 2000), t: (run[0] as TrackPoint).t - 2000, accuracyM: 10 };
+    const o2 = { ...offset(START, 3, 2000), t: (run[0] as TrackPoint).t - 1000, accuracyM: 10 };
+    const f = filterTrackPoints([o1, o2, ...run], 'run').points;
+    expect(Math.abs(movingDistance(f, 'run') - 599 * 3.5)).toBeLessThan(599 * 3.5 * 0.01);
+  });
+
+  it('Ausreißer mitten im Lauf → nur dieser Punkt fällt raus, kein Neuverankern', () => {
+    const run = line({ speedMps: 3.5, count: 600 });
+    const withOutlier = run.map((p, i) => (i === 300 ? { ...p, ...offset(p, 0, 2000) } : p));
+    const f = filterTrackPoints(withOutlier, 'run');
+    expect(f.dropped.jump).toBe(1);
+    expect(f.points).toHaveLength(599);
   });
 });

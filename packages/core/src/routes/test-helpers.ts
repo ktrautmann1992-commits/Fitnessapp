@@ -45,7 +45,7 @@ export function line(o: LineOptions): TrackPoint[] {
     points.push({
       ...p,
       t: t0 + i * step * 1000,
-      accuracyM: o.accuracyM === undefined ? 5 : o.accuracyM,
+      accuracyM: o.accuracyM === undefined ? 3 : o.accuracyM,
       altitudeM: o.altitude ? o.altitude(i) : null,
     });
   }

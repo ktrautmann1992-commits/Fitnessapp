@@ -90,3 +90,25 @@ describe('simplifyTrack', () => {
     expect(simple.at(-1)).toBe(pts.at(-1));
   });
 });
+
+describe('Wächter S1 M2/N6: Laufzeit und Datumsgrenze', () => {
+  // Exakter Zickzack (Amplitude 20 m, alle Punkte gleich weit von der Sehne): früher quadratisch (ca. 58 s).
+  it.each([50_000, 100_000])('exakter Zickzack mit %i Punkten unter 3 s, deterministisch', (n) => {
+    const pts = Array.from({ length: n }, (_, i) => offset(START, i * 10, i % 2 === 0 ? 0 : 20));
+    const started = performance.now();
+    const simple = simplifyTrack(pts);
+    expect(performance.now() - started).toBeLessThan(3000);
+    expect(simple.length).toBeLessThanOrEqual(TRACKED_ROUTE_LIMITS.maxPoints);
+    expect(simplifyTrack(pts)).toEqual(simple);
+    expect(simple[0]).toBe(pts[0]);
+    expect(simple.at(-1)).toBe(pts.at(-1));
+  });
+
+  it('gerade Strecke über die Datumsgrenze (±180°) → Anfang und Ende', () => {
+    const pts = Array.from({ length: 200 }, (_, i) => {
+      const lng = 179.99 + i * 0.0001;
+      return { lat: -16.5, lng: lng > 180 ? lng - 360 : lng };
+    });
+    expect(simplifyTrack(pts)).toEqual([pts[0], pts[199]]);
+  });
+});

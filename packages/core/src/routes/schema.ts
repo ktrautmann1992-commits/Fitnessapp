@@ -1,6 +1,12 @@
 import { z } from 'zod';
 
-import { CARDIO_PLAUSIBILITY_KMH, ROUTE_FILTER, TRACKED_ROUTE_LIMITS } from '../constants';
+import {
+  CARDIO_PLAUSIBILITY_KMH,
+  ROUTE_FILTER,
+  TRACKED_ROUTE_LIMITS,
+  TRACKED_ROUTE_LOG_MATCH,
+} from '../constants';
+import { addDays, isoDateInTimeZone } from '../dates';
 import {
   ROUTE_DIFFICULTIES,
   TRACKED_ROUTE_SOURCES,
@@ -203,7 +209,7 @@ export function summarizeTrack(raw: readonly TrackPoint[], sport: TrackedRouteSp
     durationS,
     movingS,
     distanceM,
-    elevationGainM: elevationGain(points).gainM,
+    elevationGainM: elevationGain(points, sport).gainM,
     elevationNote: 'gps_elevation_inaccurate',
     kmSplits: kmSplits(points, sport),
     speedWarning: hasSpeedWarning(points, sport),
@@ -259,4 +265,42 @@ export function toTrackedRoutePayload(
     source: details.source,
   });
   return parsed.success ? parsed.data : null;
+}
+
+/** Was vom Tagebuch-Eintrag für den Abgleich mit der Strecke zählt. */
+export interface RouteLinkedLog {
+  readonly kind: 'strength' | 'endurance';
+  /** Ausdauer-Art des cardio-Teils (null ohne cardio-Teil). */
+  readonly modality: string | null;
+  readonly performedOn: string;
+  readonly durationS: number | null;
+  readonly distanceM: number | null;
+}
+
+/**
+ * Passt ein Tagebuch-Eintrag (noch) zur verknüpften Strecke? (Wächter S1 M3, sichere Variante a – gleiche Regel wie
+ * save_tracked_route beim Verknüpfen und save_session_log bei jeder Änderung): Ausdauer derselben Art, Tag = Tag des
+ * Beginns (Europe/Berlin) bis TRACKED_ROUTE_LIMITS.sessionLogDayTolerance Tage danach, Distanz höchstens
+ * TRACKED_ROUTE_LOG_MATCH.distanceShare bzw. distanceMinM daneben, Dauer zwischen Bewegungszeit − Toleranz und
+ * Gesamtdauer + Toleranz.
+ */
+export function sessionLogFitsRoute(
+  log: RouteLinkedLog,
+  route: Pick<TrackedRouteRow, 'sport' | 'started_at' | 'duration_s' | 'moving_s' | 'distance_m'>,
+): boolean {
+  const M = TRACKED_ROUTE_LOG_MATCH;
+  const startDay = isoDateInTimeZone(route.started_at);
+  const lastDay = addDays(startDay, TRACKED_ROUTE_LIMITS.sessionLogDayTolerance);
+  const distanceTolerance = Math.max(M.distanceMinM, route.distance_m * M.distanceShare);
+  return (
+    log.kind === 'endurance' &&
+    log.modality === route.sport &&
+    log.performedOn >= startDay &&
+    log.performedOn <= lastDay &&
+    log.distanceM !== null &&
+    Math.abs(log.distanceM - route.distance_m) <= distanceTolerance &&
+    log.durationS !== null &&
+    log.durationS >= route.moving_s - M.durationToleranceS &&
+    log.durationS <= route.duration_s + M.durationToleranceS
+  );
 }
