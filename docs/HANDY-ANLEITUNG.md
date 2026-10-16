@@ -426,10 +426,20 @@ Gerichte werden in der Datenbank gespeichert. Ihr müsst keine Schlüssel eintra
    Vercel → Projekt „fitnessapp“ → **Deployments** → neuestes → **⋯ → Redeploy** (und bei Bedarf **Actions →
    eas-build → Run workflow**). Meldet die App beim Löschen der Unverträglichkeiten „Löschen ist gerade nicht
    möglich …“, ist db-migrate noch nicht durch – dann warten und erneut versuchen (es wird nichts halb gelöscht).
-8. **Tägliche Löschung prüfen:** Supabase im Handy-Browser → euer Projekt → links **Database → Extensions** → nach
-   „pg_cron“ suchen: Der Schalter sollte **an** sein. Danach links **Integrations → Cron** (bzw. **Database → Cron
-   Jobs**) → es gibt den Job **nutrition-weeks-retention** (täglich 02:23 UTC). Fehlt er: im Lauf von db-migrate nach
-   „pg_cron“ suchen und den Hinweis Claude schicken. Ohne den Job werden alte Wochen nur beim Speichern gelöscht.
+8. **Tägliche Löschung prüfen:**
+   1. GitHub-App → **Actions → db-migrate** → letzter Lauf → **Summary** → Abschnitt „Täglicher Löschlauf“: Dort
+      stehen Zeitplan `23 2 * * *`, Rolle `postgres`, aktiv `t` und der letzte Lauf. Eine gelbe Warnung („Löschlauf
+      fehlt“, „nicht lesbar“, „fehlgeschlagen“) bitte Claude schicken – der Lauf bleibt trotzdem grün, weil die
+      Migrationen schon eingespielt sind.
+   2. Zusätzlich in Supabase (Handy-Browser) → euer Projekt → links **Database → Extensions** → „pg_cron“ suchen:
+      Schalter **an**.
+   3. Links **Integrations → Cron** (bzw. **Database → Cron Jobs**) → Job **nutrition-weeks-retention** antippen →
+      Reiter **History** (bzw. „Runs“): **Am Tag nach dem Merge** (erster Lauf 02:23 UTC = 03:23/04:23 Uhr) steht dort
+      ein Lauf mit Status **succeeded**. Steht dort „failed“, die Zeile (ohne Daten, nur Status und Meldung) Claude
+      schicken.
+   4. Alternativ: links **SQL Editor** → `select status, start_time from cron.job_run_details order by start_time
+      desc limit 3;` → **Run** → oberste Zeile **succeeded**.
+   Ohne den Job werden alte Wochen nur beim Speichern gelöscht (inaktive Konten dann gar nicht – deshalb wichtig).
 9. **Actions → content-seed** → letzter Lauf → **Summary**: Unter „Ernährung“ steht, was eingespielt wurde und was
    noch **wartet** (mit Grund, z. B. „Fachprüfung fehlt“). Solange die Fachprüfung offen ist, wartet alles – das ist
    richtig.

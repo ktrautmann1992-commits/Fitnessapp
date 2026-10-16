@@ -92,6 +92,7 @@ import {
   foodLogFavoriteRowsFromDb,
   foodLogRowsFromDb,
   ForeignNutritionQueueError,
+  NutritionQueueLockedError,
   fullPlansOf,
   mealPlanPayloadInputs,
   mealPlanRowsFromDb,
@@ -2325,6 +2326,10 @@ export function createSupabaseBackend(options: SupabaseBackendOptions): Backend 
       return { key, sentDirectly: null };
     } catch (error) {
       if (error instanceof ForeignNutritionQueueError) throw new BackendError('foreign_data');
+      // Widerruf/Abmelden läuft gerade (M2): nichts senden, nichts behalten – „bitte gleich noch einmal“.
+      if (error instanceof NutritionQueueLockedError) {
+        throw new BackendError('temporary', { sensitive: true });
+      }
       const result = await sendNutritionOp(op).catch((): NutritionSendResult => ({
         kind: 'retry',
       }));
@@ -2619,6 +2624,17 @@ export function createSupabaseBackend(options: SupabaseBackendOptions): Backend 
 
   /** Alles Lokale samt Schlüsseln löschen (Abmelden, Konto löschen, Testdaten löschen – 4.1). */
   async function clearLocal(): Promise<void> {
+    // M2: laufendes Senden der Ernährung abwarten, dann leeren (die Generation verwirft späte Ergebnisse zusätzlich).
+    nutritionQueue.setLocked(true);
+    try {
+      await nutritionQueue.idle();
+      await clearLocalStores();
+    } finally {
+      nutritionQueue.setLocked(false);
+    }
+  }
+
+  async function clearLocalStores(): Promise<void> {
     await queue.clear();
     await logQueue.clear();
     await drafts.clear();
@@ -2692,8 +2708,12 @@ export function createSupabaseBackend(options: SupabaseBackendOptions): Backend 
         )
       : [];
     logQueue.setLocked(true);
+    // Wächter N7 Teil 2 M2: auch die Ernährungs-Warteschlange sperren und ein laufendes Senden abwarten – danach
+    // leert der Widerruf sie (nichts kommt nachträglich zurück auf das Gerät).
+    nutritionQueue.setLocked(true);
     try {
       await logQueue.idle();
+      await nutritionQueue.idle();
       const mode = deleteLogs ? 'delete' : 'neutralize';
       await logQueue.cleanHealthPlanEntries(mode);
       await drafts.cleanHealthPlanDrafts(mode);
@@ -2756,6 +2776,7 @@ export function createSupabaseBackend(options: SupabaseBackendOptions): Backend 
       }
     } finally {
       logQueue.setLocked(false);
+      nutritionQueue.setLocked(false);
     }
   }
 

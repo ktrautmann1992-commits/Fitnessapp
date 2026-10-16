@@ -88,3 +88,47 @@ jobs:
           echo '```' >> "$GITHUB_STEP_SUMMARY"
           supabase migration list --db-url "$DB_URL" >> "$GITHUB_STEP_SUMMARY" 2>&1 || true
           echo '```' >> "$GITHUB_STEP_SUMMARY"
+
+      # Wächter N7 Teil 2 M3: Läuft der tägliche Löschlauf (G-N7-2, pg_cron)? Die Migration richtet ihn ein, fällt aber
+      # bei einem Fehler still zurück (nur NOTICE). Dieser Schritt macht das sichtbar: Job vorhanden, aktiv, Rolle
+      # postgres, letzter Lauf. Bewusst GELB (::warning::) statt rot: Die Migrationen sind zu diesem Zeitpunkt schon
+      # eingespielt, ein roter Lauf würde nur content-seed blockieren (startet nur nach grünem db-migrate) – die
+      # Löschung beim Speichern wirkt ohnehin. Gibt nur Job-Daten aus, keine Secrets und keine Nutzerdaten.
+      - name: Täglichen Löschlauf prüfen (pg_cron)
+        if: steps.secrets.outputs.ready == 'true'
+        env:
+          CLUSTER: ${{ steps.db.outputs.cluster }}
+        run: |
+          set +e
+          enc=$(python3 -c 'import os, urllib.parse; print(urllib.parse.quote(os.environ["SUPABASE_DB_PASSWORD"], safe=""))')
+          echo "::add-mask::$enc"
+          DB_URL="postgresql://postgres.${SUPABASE_PROJECT_REF}:${enc}@${CLUSTER}-${SUPABASE_REGION}.pooler.supabase.com:5432/postgres"
+          job=$(psql "$DB_URL" -At -F '|' -c "select schedule, username, active from cron.job where jobname = 'nutrition-weeks-retention'" 2>/dev/null)
+          rc=$?
+          echo "### Täglicher Löschlauf (Essenspläne/Einkaufslisten, 4 Wochen)" >> "$GITHUB_STEP_SUMMARY"
+          if [ $rc -ne 0 ]; then
+            echo "::warning title=pg_cron nicht lesbar::cron.job ließ sich nicht lesen (pg_cron fehlt?). Alte Wochen werden nur beim Speichern gelöscht – docs/HANDY-ANLEITUNG.md Teil 7d Schritt 8."
+            echo "⚠️ cron.job nicht lesbar – pg_cron im Supabase-Dashboard prüfen (HANDY-ANLEITUNG 7d, Schritt 8)." >> "$GITHUB_STEP_SUMMARY"
+            exit 0
+          fi
+          if [ -z "$job" ]; then
+            echo "::warning title=Löschlauf fehlt::Der pg_cron-Job nutrition-weeks-retention fehlt. Alte Wochen werden nur beim Speichern gelöscht – docs/HANDY-ANLEITUNG.md Teil 7d Schritt 8."
+            echo "⚠️ Job **nutrition-weeks-retention** fehlt (HANDY-ANLEITUNG 7d, Schritt 8)." >> "$GITHUB_STEP_SUMMARY"
+            exit 0
+          fi
+          IFS='|' read -r schedule username active <<< "$job"
+          echo "- Zeitplan: \`$schedule\` (UTC), Rolle: \`$username\`, aktiv: \`$active\`" >> "$GITHUB_STEP_SUMMARY"
+          if [ "$username" != "postgres" ] || [ "$active" != "t" ]; then
+            echo "::warning title=Löschlauf prüfen::nutrition-weeks-retention läuft als '$username', aktiv=$active (erwartet: postgres, aktiv)."
+          fi
+          last=$(psql "$DB_URL" -At -F '|' -c "select d.status, to_char(d.start_time at time zone 'UTC', 'YYYY-MM-DD HH24:MI') from cron.job_run_details d join cron.job j on j.jobid = d.jobid where j.jobname = 'nutrition-weeks-retention' order by d.start_time desc limit 1" 2>/dev/null)
+          if [ -z "$last" ]; then
+            echo "- Letzter Lauf: noch keiner (der erste kommt um 02:23 UTC)" >> "$GITHUB_STEP_SUMMARY"
+          else
+            IFS='|' read -r status started <<< "$last"
+            echo "- Letzter Lauf: \`$status\` ($started UTC)" >> "$GITHUB_STEP_SUMMARY"
+            if [ "$status" != "succeeded" ]; then
+              echo "::warning title=Löschlauf fehlgeschlagen::Der letzte Lauf von nutrition-weeks-retention endete mit '$status' – docs/HANDY-ANLEITUNG.md Teil 7d Schritt 8."
+            fi
+          fi
+          exit 0

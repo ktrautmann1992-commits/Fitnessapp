@@ -685,6 +685,14 @@ export class NutritionQueue {
   };
   private loaded = false;
   private flushing: Promise<'done' | 'later'> | null = null;
+  /**
+   * Generation (Wächter N7 Teil 2 M2): `clear()` erhöht sie. Ein Senden, das vor dem Leeren begann (z. B. Widerruf
+   * während ein Tagebuch-Eintrag unterwegs ist), verwirft danach sein Ergebnis und schreibt NICHTS mehr – sonst läge
+   * eine abgelehnte Fassung (Gesundheitsdatum) nach dem Widerruf wieder auf dem Gerät, ohne Konto-Zuordnung.
+   */
+  private generation = 0;
+  /** Gesperrt (Widerruf, Abmelden): kein neues Senden, kein Einreihen – wie `logQueue.setLocked`. */
+  private locked = false;
   /** Ergebnisse der letzten Sendevorgänge je Schlüssel (für die sofortige Rückmeldung an den Bildschirm). */
   readonly lastResults = new Map<string, NutritionSendResult>();
 
@@ -735,9 +743,19 @@ export class NutritionQueue {
     await this.options.store.write(JSON.stringify(this.state));
   }
 
+  setLocked(locked: boolean): void {
+    this.locked = locked;
+  }
+
+  /** Wartet auf ein laufendes Senden (vor Widerruf/Abmelden, danach `clear()`). */
+  async idle(): Promise<void> {
+    await this.flushing?.catch(() => undefined);
+  }
+
   /** Einreihen; wirft, wenn der geschützte Speicher nicht beschreibbar ist bzw. ein anderes Konto wartet. */
   async add(op: NutritionQueueOp, userId: string): Promise<void> {
     await this.load();
+    if (this.locked) throw new NutritionQueueLockedError();
     if (
       this.state.ownerUserId !== null &&
       this.state.ownerUserId !== userId &&
@@ -770,6 +788,9 @@ export class NutritionQueue {
 
   private async flushNow(): Promise<'done' | 'later'> {
     await this.load();
+    if (this.locked) return this.state.entries.length === 0 ? 'done' : 'later';
+    const generation = this.generation;
+    const stale = () => generation !== this.generation;
     const owner = this.options.currentUserId();
     if (owner === null || (this.state.ownerUserId !== null && this.state.ownerUserId !== owner)) {
       return this.state.entries.length === 0 ? 'done' : 'later';
@@ -784,6 +805,8 @@ export class NutritionQueue {
       } catch {
         result = { kind: 'transient' };
       }
+      // Inzwischen geleert (Widerruf, Abmelden, anderes Konto): Ergebnis verwerfen, nichts speichern (M2).
+      if (stale()) return 'done';
       this.lastResults.set(current.key, result);
       if (result.kind === 'retry') return 'later';
       if (result.kind === 'transient') {
@@ -793,7 +816,7 @@ export class NutritionQueue {
             ...this.state,
             entries: this.state.entries.map((e) => (e === current ? { ...e, attempts } : e)),
           };
-          await this.persist().catch(() => undefined);
+          await this.persistUnlessStale(stale);
           continue;
         }
         result = { kind: 'rejected', reason: 'not_transferred' };
@@ -810,9 +833,17 @@ export class NutritionQueue {
               ]
             : this.state.rejected,
       };
-      await this.persist().catch(() => undefined);
+      await this.persistUnlessStale(stale);
+      if (stale()) return 'done';
+      if (this.locked) return this.state.entries.length === 0 ? 'done' : 'later';
     }
     return this.state.entries.length === 0 ? 'done' : 'later';
+  }
+
+  /** Speichern, außer die Warteschlange wurde inzwischen geleert (dann gilt der leere Stand, M2). */
+  private async persistUnlessStale(stale: () => boolean): Promise<void> {
+    if (stale()) return;
+    await this.persist().catch(() => undefined);
   }
 
   /** Abgelehnte Fassung(en) verwerfen – nur auf ausdrücklichen Wunsch der Person. */
@@ -837,6 +868,8 @@ export class NutritionQueue {
   }
 
   async clear(): Promise<void> {
+    this.generation += 1;
+    this.lastResults.clear();
     this.state = { format: 1, ownerUserId: null, entries: [], rejected: [] };
     this.loaded = true;
     await this.options.store.clear();
@@ -849,6 +882,14 @@ export class NutritionQueue {
       this.state.ownerUserId !== userId &&
       (this.state.entries.length > 0 || this.state.rejected.length > 0)
     );
+  }
+}
+
+/** Die Ernährungs-Warteschlange ist gerade gesperrt (Widerruf/Abmelden läuft). */
+export class NutritionQueueLockedError extends Error {
+  constructor() {
+    super('NutritionQueueLocked');
+    this.name = 'NutritionQueueLockedError';
   }
 }
 

@@ -26,6 +26,7 @@ import {
   mealPlanPayloadMatches,
   type MealPlanRecord,
   mealPlanWeekFromRecord,
+  RECONSTRUCTED_INCOMPLETE_KEY,
   parseMealPlanRecord,
   resolveMealPlanRecord,
 } from './meal-plan-record';
@@ -191,6 +192,49 @@ describe('mealPlanWeekFromRecord: Plan aus den Zeilen (G-N7-1)', () => {
     const back = resolveMealPlanRecord(asRecord(withTargets), noTargets);
     expect(back.action).toBe('replanned');
     expect(back.action === 'replanned' && back.reasons).toContain('mode_changed');
+  });
+
+  it('M1: Tag ab heute ohne Mahlzeiten oder mit below_floor → ab heute neu (caps_changed); vergangene leere Tage bleiben', () => {
+    const i = input({ today: THURSDAY });
+    const plan = buildMealPlanWeek({ ...i, variant: 0 });
+    const FRIDAY = addDays(MONDAY, 4);
+    const TUESDAY = addDays(MONDAY, 1);
+    const base = asRecord(plan);
+    const without = (dates: readonly string[]): MealPlanRecord => ({
+      ...base,
+      payload: {
+        ...base.payload,
+        items: base.payload.items.filter((x) => !dates.includes(x.date)),
+      },
+    });
+    // Freitag leer (ab heute) → markiert, 6.6 plant neu und füllt ihn wieder.
+    const rebuilt = mealPlanWeekFromRecord(without([FRIDAY]), i);
+    expect(rebuilt?.plan.days.find((d) => d.date === FRIDAY)?.safetyKey).toBe(
+      RECONSTRUCTED_INCOMPLETE_KEY,
+    );
+    const resolved = resolveMealPlanRecord(without([FRIDAY]), i);
+    expect(resolved.action === 'replanned' && resolved.reasons).toContain('caps_changed');
+    expect(resolved.plan.days.find((d) => d.date === FRIDAY)?.meals.length).toBeGreaterThan(0);
+    // Dienstag leer (vergangen) → nicht markiert, kein Neuplanen nur deswegen.
+    const past = mealPlanWeekFromRecord(without([TUESDAY]), i);
+    expect(past?.plan.days.find((d) => d.date === TUESDAY)?.safetyKey).not.toBe(
+      RECONSTRUCTED_INCOMPLETE_KEY,
+    );
+    expect(resolveMealPlanRecord(without([TUESDAY]), i).action).toBe('stored');
+    // below_floor ab heute (z. B. von einer veränderten App behauptet) → markiert und neu geplant.
+    const low: MealPlanRecord = {
+      ...base,
+      payload: {
+        ...base.payload,
+        items: base.payload.items.map((x) =>
+          x.date === FRIDAY ? { ...x, day_status: 'below_floor' as const } : x,
+        ),
+      },
+    };
+    expect(
+      mealPlanWeekFromRecord(low, i)?.plan.days.find((d) => d.date === FRIDAY)?.safetyKey,
+    ).toBe(RECONSTRUCTED_INCOMPLETE_KEY);
+    expect(resolveMealPlanRecord(low, i).action).toBe('replanned');
   });
 
   it('Schwangerschaft gesetzt: Rezepte mit pregnancy_caution fallen ab heute heraus (Filter wie 6.6)', () => {

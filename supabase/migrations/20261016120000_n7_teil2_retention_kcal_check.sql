@@ -16,6 +16,10 @@
 --    MIN_INTAKE_RELATIVE_TO_BMR, aus den gespeicherten Körperdaten; Spiegel von serverDayKcalFloor in
 --    packages/core/src/nutrition/plausibility.ts, db-sync.test.ts). Ohne Einwilligung, Größe/Gewicht oder bei
 --    Schwangerschaft: keine Prüfung (Modus no_targets wie im Core). Meldung ohne Werte; Gesundheitsdaten nie in Logs.
+-- 3. Wächter N7 Teil 2 H1: Die Nährwerte jeder Mahlzeit rechnet save_meal_plan selbst (private.meal_plan_item_nutrients
+--    = scalePortion; vergangene Tage aus dem bisherigen Plan) – gespeichert, exportiert und für G-W3 summiert werden
+--    nur diese Werte; weicht die Angabe des Geräts ab (MEAL_PLAN_ITEM_NUTRIENT_TOLERANCE), wird abgelehnt.
+--    (Diese Datei war beim Wächter-Befund noch nicht in main eingespielt und wurde deshalb direkt ergänzt.)
 
 -- ---------------------------------------------------------------------------------------------------------
 -- Grundumsatz für die Schutzgrenzen an einem Tag (G-W3) – nur für save_meal_plan (security definer, Eigentümer).
@@ -127,6 +131,156 @@ revoke all on function private.purge_expired_nutrition_weeks(uuid) from public, 
 grant execute on function private.purge_expired_nutrition_weeks(uuid) to service_role;
 
 -- ---------------------------------------------------------------------------------------------------------
+-- Nährwerte einer Plan-Mahlzeit, vom SERVER gerechnet (Wächter N7 Teil 2 H1, wie E1-G4/E2-G2 „Server rechnet nach“):
+-- Spiegel von scalePortion (packages/core/src/nutrition/scale.ts) mit derselben Reihenfolge der Operationen in double
+-- precision – je Zutat in Rezept-Reihenfolge: Weglassen (omitted_optional) → Tausch (ingredient_swaps; Menge aus der
+-- Austausch-Tabelle wie resolveIngredientSwap/substituteAmount) → Ersatzprodukt (substitutions) → Menge = Rezeptmenge ×
+-- (Faktor ÷ Portionen) bzw. ÷ Portionen bei scales = false → roundAmount (AMOUNT_ROUNDING, Eier ganz, nie 0) →
+-- Gramm → Summe der NICHT optionalen Zutaten (Gramm × Wert / 100). Ergebnis {kcal, Eiweiß, Kohlenhydrate, Fett}
+-- ungerundet; null = nicht berechenbar (Rezept, Lebensmittel, Einheit oder Tausch-Eintrag fehlt – im Core ein Fehler).
+-- Rechnet mit der AKTUELLEN Rezept-Fassung (der Aufrufer prüft die Version). Nicht über die API erreichbar.
+-- ---------------------------------------------------------------------------------------------------------
+create or replace function private.meal_plan_item_nutrients(
+  p_recipe_id text, p_factor double precision, p_substitutions jsonb, p_omitted jsonb, p_swaps jsonb
+)
+returns double precision[]
+language plpgsql
+stable
+set search_path = ''
+as $$
+declare
+  -- sync: AMOUNT_ROUNDING in packages/core/src/constants.ts
+  mass_step constant double precision := 5;
+  small_mass_step constant double precision := 1;
+  small_mass_below constant double precision := 20;
+  piece_step constant double precision := 0.5;
+  spoon_step constant double precision := 0.5;
+  pinch_step constant double precision := 1;
+  servings double precision;
+  ing record;
+  swap jsonb;
+  entry_factor double precision;
+  orig_data jsonb;
+  sub_data jsonb;
+  sub_groups text[];
+  sub_animal text[];
+  food_data jsonb;
+  food_groups text[];
+  food_animal text[];
+  food_id text;
+  amount double precision;
+  unit text;
+  per_unit double precision;
+  grams double precision;
+  raw double precision;
+  step double precision;
+  t_kcal double precision := 0;
+  t_protein double precision := 0;
+  t_carbs double precision := 0;
+  t_fat double precision := 0;
+begin
+  select r.servings::double precision into servings from public.recipes r where r.id = p_recipe_id;
+  if not found then
+    return null;
+  end if;
+  for ing in
+    select ri.position, ri.food_id, ri.amount::double precision as amount, ri.unit, ri.optional, ri.scales, ri.role
+    from public.recipe_ingredients ri
+    where ri.recipe_id = p_recipe_id
+    order by ri.position
+  loop
+    -- Weggelassene optionale Zutat fehlt ganz.
+    if exists (select 1 from jsonb_array_elements(p_omitted) as o(v) where (o.v ->> 'index')::integer = ing.position)
+    then
+      continue;
+    end if;
+    food_id := ing.food_id;
+    amount := ing.amount;
+    unit := ing.unit;
+    -- Zutaten-Tausch (N9): Gramm Ersatz = Gramm Original × Faktor der Tabelle (Eintrag mit derselben Rolle).
+    select v into swap from jsonb_array_elements(p_swaps) as x(v) where (x.v ->> 'index')::integer = ing.position;
+    if swap is not null then
+      select s.factor::double precision into entry_factor
+      from public.ingredient_substitutions s
+      where s.food_id = ing.food_id and s.substitute_food_id = swap ->> 'substitute_food_id'
+        and s.role = ing.role and s.status <> 'archived';
+      if not found then
+        return null;
+      end if;
+      select f.data into orig_data from public.foods f where f.id = ing.food_id;
+      select f.data, f.groups, f.animal into sub_data, sub_groups, sub_animal
+      from public.foods f where f.id = swap ->> 'substitute_food_id';
+      if orig_data is null or sub_data is null then
+        return null;
+      end if;
+      per_unit := private.grams_per_unit(orig_data -> 'units', ing.unit);
+      if per_unit is null or ing.amount * per_unit <= 0 then
+        return null;
+      end if;
+      grams := ing.amount * per_unit * entry_factor;
+      -- substituteAmount: Eier in Stück, sonst die Einheit des Rezepts (nicht Stück), sonst Gramm.
+      if ('eggs' = any (sub_groups) or 'egg' = any (sub_animal))
+         and coalesce((sub_data -> 'units' ->> 'piece_g')::double precision, 0) > 0 then
+        amount := round((grams / (sub_data -> 'units' ->> 'piece_g')::double precision)::numeric, 6);
+        unit := 'piece';
+      else
+        per_unit := case when ing.unit = 'piece' then null
+                         else private.grams_per_unit(sub_data -> 'units', ing.unit) end;
+        if per_unit is not null and per_unit > 0 then
+          amount := round((grams / per_unit)::numeric, 6);
+        else
+          amount := round(grams::numeric, 6);
+          unit := 'g';
+        end if;
+      end if;
+      if not amount > 0 then
+        return null;
+      end if;
+      food_id := swap ->> 'substitute_food_id';
+      swap := null;
+    end if;
+    -- Ersatzprodukt (S4) an dieser Stelle.
+    select coalesce(
+      (select x.v ->> 'substitute_food_id' from jsonb_array_elements(p_substitutions) as x(v)
+       where (x.v ->> 'index')::integer = ing.position limit 1),
+      food_id) into food_id;
+    select f.data, f.groups, f.animal into food_data, food_groups, food_animal from public.foods f where f.id = food_id;
+    if not found then
+      return null;
+    end if;
+    -- Menge skalieren und runden (roundAmount, Plan 6.2).
+    raw := amount * (case when ing.scales then p_factor / servings else 1 / servings end);
+    step := case unit
+      when 'g' then case when raw < small_mass_below then small_mass_step else mass_step end
+      when 'ml' then case when raw < small_mass_below then small_mass_step else mass_step end
+      when 'piece' then case when 'eggs' = any (food_groups) or 'egg' = any (food_animal) then 1 else piece_step end
+      when 'tbsp' then spoon_step
+      when 'tsp' then spoon_step
+      when 'pinch' then pinch_step
+    end;
+    if step is null then
+      return null;
+    end if;
+    amount := case when raw = 0 then 0 else greatest(step, private.js_round(raw / step) * step) end;
+    per_unit := private.grams_per_unit(food_data -> 'units', unit);
+    if per_unit is null then
+      return null;
+    end if;
+    grams := amount * per_unit;
+    if not ing.optional then
+      t_kcal := t_kcal + (grams * (food_data -> 'nutrients_per_100g' ->> 'kcal')::double precision) / 100;
+      t_protein := t_protein + (grams * (food_data -> 'nutrients_per_100g' ->> 'protein_g')::double precision) / 100;
+      t_carbs := t_carbs + (grams * (food_data -> 'nutrients_per_100g' ->> 'carbs_g')::double precision) / 100;
+      t_fat := t_fat + (grams * (food_data -> 'nutrients_per_100g' ->> 'fat_g')::double precision) / 100;
+    end if;
+  end loop;
+  return array[t_kcal, t_protein, t_carbs, t_fat];
+end;
+$$;
+
+revoke all on function private.meal_plan_item_nutrients(text, double precision, jsonb, jsonb, jsonb) from public;
+
+-- ---------------------------------------------------------------------------------------------------------
 -- save_meal_plan(p_plan, p_auto_adjusted, p_recipes_changed) – wie 20261014120600_meal_plan_rpcs.sql, zusätzlich
 -- G-W3 (nach der Einwilligungs-Prüfung) und die Löschfrist (am Ende).
 -- ---------------------------------------------------------------------------------------------------------
@@ -165,6 +319,9 @@ declare
   -- sync: MEAL_PLAN_DAY_KCAL_CHECK in packages/core/src/constants.ts (G-W3)
   checked_day_statuses constant text[] := array['complete', 'no_targets'];
   kcal_tolerance constant numeric := 1;
+  -- sync: MEAL_PLAN_ITEM_NUTRIENT_TOLERANCE in packages/core/src/constants.ts (H1)
+  item_kcal_tolerance constant numeric := 1;
+  item_macro_tolerance_g constant numeric := 0.1;
   current_user_id uuid := auth.uid();
   today date := private.berlin_today();
   prefs record;
@@ -293,7 +450,13 @@ begin
       omitted jsonb,
       swaps jsonb,
       cook_date date,
-      day_status text
+      day_status text,
+      -- H1 (N7 Teil 2): Nährwerte, die der SERVER speichert (nachgerechnet bzw. vom alten Plan übernommen).
+      s_kcal numeric,
+      s_protein numeric,
+      s_carbs numeric,
+      s_fat numeric,
+      s_checked boolean
     ) on commit drop;
     truncate pg_temp.meal_plan_rows;
     insert into pg_temp.meal_plan_rows
@@ -465,6 +628,58 @@ begin
     end if;
 
     -- -----------------------------------------------------------------------------------------------------
+    -- Nährwerte rechnet der SERVER (Wächter N7 Teil 2 H1, wie E1-G4/E2-G2): Gespeichert werden NIE die Werte des
+    -- Geräts, sondern
+    --   a) vergangene Tage: die Werte derselben Mahlzeit aus dem bisherigen Plan dieser Woche (gleicher Tag, Platz,
+    --      Rezept, Version, Faktor und gleiche Zutaten-Änderungen – vom Server damals gerechnet), sonst
+    --   b) aus Rezept (aktuelle Fassung, Version muss passen) × Faktor mit Ersatz, Weglassen und Tausch
+    --      (private.meal_plan_item_nutrients = scalePortion), gerundet wie toMealPlanPayload (round1).
+    -- Bei b) muss die Angabe des Geräts dazu passen (MEAL_PLAN_ITEM_NUTRIENT_TOLERANCE): sonst Ablehnung – eine
+    -- ehrliche App rechnet genauso (db-sync.test.ts, pgTAP 33), eine Abweichung heißt veränderte App oder anderer
+    -- Bestand. Nicht berechenbar → Ablehnung. Meldungen ohne Werte.
+    -- -----------------------------------------------------------------------------------------------------
+    if old_plan.id is not null then
+      update pg_temp.meal_plan_rows r
+      set s_kcal = o.kcal, s_protein = o.protein_g, s_carbs = o.carbs_g, s_fat = o.fat_g, s_checked = false
+      from public.meal_plan_items o
+      where o.plan_id = old_plan.id
+        and r.date < today
+        and o.date = r.date and o.slot = r.slot
+        and o.recipe_id = r.recipe_id and o.recipe_version = r.recipe_version and o.factor = r.factor
+        and o.substitutions = r.substitutions and o.omitted_optional = r.omitted and o.ingredient_swaps = r.swaps;
+    end if;
+    update pg_temp.meal_plan_rows r
+    set s_kcal = private.js_round1(n[1])::numeric, s_protein = private.js_round1(n[2])::numeric,
+      s_carbs = private.js_round1(n[3])::numeric, s_fat = private.js_round1(n[4])::numeric, s_checked = true
+    from (
+      select r2.ord, private.meal_plan_item_nutrients(
+        r2.recipe_id, r2.factor::double precision, r2.substitutions, r2.omitted, r2.swaps) as n
+      from pg_temp.meal_plan_rows r2
+      join public.recipes rc on rc.id = r2.recipe_id and rc.version = r2.recipe_version
+      where r2.s_kcal is null
+    ) as c
+    where c.ord = r.ord and c.n is not null;
+    if exists (select 1 from pg_temp.meal_plan_rows r where r.s_kcal is null) then
+      raise exception 'Nährwerte des Essensplans lassen sich nicht nachrechnen – bitte neu erstellen.'
+        using errcode = 'invalid_parameter_value';
+    end if;
+    if exists (
+      select 1
+      from pg_temp.meal_plan_rows r
+      join lateral (
+        select v from jsonb_array_elements(p_plan -> 'items') with ordinality as x(v, ord) where x.ord = r.ord
+      ) as d on true
+      where r.s_checked
+        and (abs((d.v ->> 'kcal')::numeric - r.s_kcal) > item_kcal_tolerance
+          or abs((d.v ->> 'protein_g')::numeric - r.s_protein) > item_macro_tolerance_g
+          or abs((d.v ->> 'carbs_g')::numeric - r.s_carbs) > item_macro_tolerance_g
+          or abs((d.v ->> 'fat_g')::numeric - r.s_fat) > item_macro_tolerance_g)
+    ) then
+      raise exception 'Die Nährwerte im Essensplan passen nicht zu den Rezepten – bitte neu erstellen.'
+        using errcode = 'invalid_parameter_value';
+    end if;
+
+    -- -----------------------------------------------------------------------------------------------------
     -- Mindest-Plausibilität der Tageskalorien (Etappe N7 Teil 2, G-W3, mealPlanDaysBelowFloor in packages/core):
     -- ab heute kein Tag mit Status complete/no_targets unter dem Grundumsatz aus den GESPEICHERTEN Körperdaten
     -- (private.meal_plan_day_kcal_floor). Ohne Einwilligung, ohne Größe/Gewicht oder bei Schwangerschaft gibt es
@@ -473,10 +688,10 @@ begin
     if basis.consent_ok and exists (
       select 1
       from (
-        select (v ->> 'date')::date as day, sum((v ->> 'kcal')::numeric) as kcal,
-          bool_or((v ->> 'day_status') = any (checked_day_statuses)) as checked
-        from jsonb_array_elements(p_plan -> 'items') as v
-        where (v ->> 'date')::date >= today
+        -- Mit den Werten des SERVERS (H1), nicht mit denen des Geräts.
+        select r.date as day, sum(r.s_kcal) as kcal, bool_or(r.day_status = any (checked_day_statuses)) as checked
+        from pg_temp.meal_plan_rows r
+        where r.date >= today
         group by 1
       ) as d
       where d.checked
@@ -514,13 +729,15 @@ begin
       fat_g, substitutions, omitted_optional, ingredient_swaps, is_fill, prep_kind, cook_date, storage,
       meal_prep_plan_id, day_status
     )
-    select new_plan_id, current_user_id, (v ->> 'date')::date, v ->> 'slot', v ->> 'role', v ->> 'recipe_id',
-      (v ->> 'recipe_version')::integer, v ->> 'title_de', (v ->> 'factor')::numeric, (v ->> 'kcal')::numeric,
-      (v ->> 'protein_g')::numeric, (v ->> 'carbs_g')::numeric, (v ->> 'fat_g')::numeric, v -> 'substitutions',
-      v -> 'omitted_optional', v -> 'ingredient_swaps', (v ->> 'is_fill')::boolean,
-      v ->> 'prep_kind', (v ->> 'cook_date')::date, v ->> 'storage', v ->> 'meal_prep_plan_id',
-      v ->> 'day_status'
-    from jsonb_array_elements(p_plan -> 'items') as v;
+    select new_plan_id, current_user_id, (x.v ->> 'date')::date, x.v ->> 'slot', x.v ->> 'role', x.v ->> 'recipe_id',
+      (x.v ->> 'recipe_version')::integer, x.v ->> 'title_de', (x.v ->> 'factor')::numeric,
+      -- Nährwerte vom Server (H1), nie die Angabe des Geräts.
+      r.s_kcal, r.s_protein, r.s_carbs, r.s_fat, x.v -> 'substitutions',
+      x.v -> 'omitted_optional', x.v -> 'ingredient_swaps', (x.v ->> 'is_fill')::boolean,
+      x.v ->> 'prep_kind', (x.v ->> 'cook_date')::date, x.v ->> 'storage', x.v ->> 'meal_prep_plan_id',
+      x.v ->> 'day_status'
+    from jsonb_array_elements(p_plan -> 'items') with ordinality as x(v, ord)
+    join pg_temp.meal_plan_rows r on r.ord = x.ord;
   exception
     when data_exception or integrity_constraint_violation then
       -- Keine Werte in der Meldung (Fehler der Umwandlungen/CHECKs nennen sonst die Zeile).
@@ -741,7 +958,9 @@ begin
       );
     exception
       when others then
-        raise notice 'pg_cron nicht eingerichtet – Löschfrist wirkt beim Speichern (save_meal_plan/replace_shopping_list).';
+        -- Nur der Fehlercode, nie die Meldung (keine Daten); db-migrate prüft cron.job danach sichtbar (Wächter M3).
+        raise notice 'pg_cron nicht eingerichtet (SQLSTATE %) – Löschfrist wirkt beim Speichern (save_meal_plan/replace_shopping_list).',
+          sqlstate;
     end;
   else
     raise notice 'pg_cron nicht verfügbar – Löschfrist wirkt beim Speichern (save_meal_plan/replace_shopping_list).';

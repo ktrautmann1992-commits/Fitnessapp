@@ -3878,7 +3878,8 @@ Mindest-Plausibilität der Tageskalorien gegen den Grundumsatz (Formel identisch
    (null, wie Modus `no_targets`) ohne gültige Einwilligung, bei Schwangerschaft oder ohne Größe/Gewicht; `below_floor`
    bleibt erlaubt (der Core kennzeichnet ihn selbst). Meldung **ohne Werte**: „Der Essensplan liegt an einem Tag unter
    deinem Grundumsatz – bitte neu erstellen.“ Core-Gegenstück `nutrition/plausibility.ts` (`serverDayKcalFloor`,
-   `mealPlanDaysBelowFloor`; der Faktor kommt aus `limits.ts`, `bmrIntakeFloorKcal`).
+   `mealPlanDaysBelowFloor`; der Faktor kommt aus `limits.ts`, `bmrIntakeFloorKcal`). **Seit der Wächter-Prüfung (H1,
+   unten) summiert der Server dabei seine EIGENEN Nährwerte**, nicht die Angaben des Geräts.
 10. **H3:** Ist die Einwilligung ungültig (neue Textfassung oder fehlt), wird ein gespeicherter Plan mit
     Gesundheitsbezug dieser Woche vor dem Speichern gelöscht (RLS: eigene Zeile) und durch einen Plan ohne
     Gesundheitsdaten ersetzt – wie im Testmodus. Scheitert das Speichern trotzdem an der Einwilligung, zeigt die App
@@ -3912,6 +3913,55 @@ rot (offline über die Warteschlange); Essenspläne im normalen Zwischenspeicher
 `pnpm format:check` grün; pgTAP im Harness (Postgres 16 + Supabase-Ersatz) **31 Dateien, 1.555 Tests grün** (neu: `33`
 mit 41 Tests; `pg_cron` gibt es im Harness nicht – geprüft wird, dass die Migration dann ohne Fehler durchläuft); mobile
 e2e (Chromium aus `/opt/pw-browsers`, Testmodus): alle 101 grün, 2 übersprungen.
+
+**Wächter-Prüfung N7 Teil 2 (16.10.2026): „Freigabe mit Auflagen“, alle Auflagen umgesetzt** (Bericht
+`waechter-n7-teil2.md`):
+
+- **H1 – G-W3 gegen veränderte Apps:** `save_meal_plan` rechnet die Nährwerte jeder Mahlzeit selbst
+  (`private.meal_plan_item_nutrients` = `scalePortion`, gleiche Reihenfolge der Operationen in double precision:
+  Weglassen → Tausch mit Menge aus der Austausch-Tabelle → Ersatzprodukt → Menge × Faktor ÷ Portionen bzw. ÷ Portionen
+  ohne Skalierung → `roundAmount` (Eier ganz, nie 0) → Gramm → Summe der nicht optionalen Zutaten; gerundet wie
+  `toMealPlanPayload`). Vergangene Tage übernehmen die Werte derselben Mahlzeit aus dem bisherigen Plan der Woche (gleicher
+  Tag, Platz, Rezept, Version, Faktor, Zutaten-Änderungen); eine ältere Rezept-Fassung ohne solches Gegenstück ist nicht
+  nachrechenbar → abgelehnt. **Gewählt (sichere Richtung): beides** – gespeichert, exportiert und für G-W3 summiert
+  werden nur die Server-Werte, UND eine Angabe des Geräts, die um mehr als `MEAL_PLAN_ITEM_NUTRIENT_TOLERANCE` (1 kcal,
+  0,1 g) abweicht, lehnt den Plan ab („Die Nährwerte im Essensplan passen nicht zu den Rezepten – bitte neu erstellen.“,
+  ohne Werte). Nachgewiesen: pgTAP 33 (Fälle c1–c5 mit Rundung g/ml/Stück/EL/Prise, Ersatz, Weglassen, Tausch zu Tofu
+  und zu Ei; die erwarteten Werte rechnet `server-meal-values.test.ts` mit dem Core nach); **Angriff „Faktor 0,5,
+  behauptet 5.000 kcal“ → abgelehnt**; mit ehrlichen Werten greift G-W3 auf der Server-Summe; gespeichert werden
+  Server-Werte; vergangener Tag mit veränderter Angabe → Server-Wert bleibt. **Kreuzvergleich im Harness:** 11.070
+  Mahlzeiten aus echten Engine-Plänen (160 Wochen, 1–8 Mahlzeiten, vier Ernährungsprofile inkl. Laktose-/Gluten-
+  Ersatz) und synthetischen Tauschen (6.444 Fälle mit Zutaten-Änderung) mit dem N3-Bestand und `DEMO_SUBSTITUTIONS` –
+  **0 Abweichungen**, 0 nicht berechenbar. Doku in `constants.ts` (`MEAL_PLAN_DAY_KCAL_CHECK`,
+  `MEAL_PLAN_ITEM_NUTRIENT_TOLERANCE`) entsprechend formuliert. Die Migration `20261016120000` war noch nicht in `main`
+  und wurde deshalb direkt ergänzt (kein Zusatz-Zeitstempel); pgTAP 25/26 senden jetzt nachgerechnete Werte.
+- **M1 – leere Tage / `below_floor` ab heute:** `mealPlanWeekFromRecord` gibt solchen Tagen den Schlüssel
+  `RECONSTRUCTED_INCOMPLETE_KEY` → 6.6 plant ab heute neu (`caps_changed`); vergangene leere Tage bleiben (Test).
+  **Server-Regel nicht umgesetzt (dokumentiert):** Die Engine liefert selbst Tage mit `below_floor` (zu wenig passende
+  Rezepte, Meal-Prep-Vorgaben) und leere Tage – eine Ablehnung würde ehrliche Pläne sperren. Eine veränderte App kann
+  einen Tag so kennzeichnen und G-W3 damit umgehen; gespeichert werden trotzdem die Server-Werte, und jedes Gerät plant
+  den Tag beim Rekonstruieren neu. Nebenwirkung: Ein echter `below_floor`-Tag wird auf einem neuen Gerät einmal neu
+  geplant (gleiches Ergebnis, Hinweis „angepasst“).
+- **M2 – Wettlauf Widerruf/Abmelden ↔ Senden:** `NutritionQueue` hat eine Generation (`clear()` erhöht sie, ein
+  Senden aus der alten Generation verwirft sein Ergebnis und speichert nichts) und eine Sperre (`setLocked`/`idle`
+  wie `logQueue`): Widerruf und Löschen der lokalen Daten sperren, warten das laufende Senden ab und leeren dann;
+  Einreihen während der Sperre → `temporary` (nichts gesendet, nichts behalten). Tests: Widerruf während eines hängenden
+  Tagebuch-Sendens → Speicher leer, 0 wartend, 0 abgelehnt; `clear()` während `send` → späte Ablehnung verworfen.
+- **M3 – pg_cron sichtbar:** NOTICE mit `SQLSTATE` (ohne Meldungstext). `db-migrate` hat einen Schritt „Täglichen
+  Löschlauf prüfen“: liest `cron.job` (Job vorhanden, aktiv, Rolle `postgres`) und den letzten Lauf aus
+  `cron.job_run_details`, schreibt alles in die Summary und warnt **gelb** (`::warning::`), nicht rot – die Migrationen
+  sind dann schon eingespielt, rot würde nur `content-seed` blockieren; die Löschung beim Speichern wirkt ohnehin. Keine
+  Secrets in der Ausgabe (Passwort maskiert, nur Job-Daten). Lokal mit nachgebautem `cron`-Schema geprüft (fehlt / leer
+  / ok / falsche Rolle + „failed“). HANDY-ANLEITUNG 7d Schritt 8: Summary lesen, History auf **succeeded** prüfen.
+- **N1** Kommentar im pgTAP-Test korrigiert (Reihenfolge prüft `db-sync.test.ts`). **N2** `content-seed` liest den
+  Bestand seitenweise (`order=id`, `limit`/`offset`, Gesamtzahl aus `Content-Range` mit `Prefer: count=exact`) – für
+  Übungen/Vorlagen und Ernährung; Test mit 2.500 Einträgen und einem Server, der nur 300 je Seite liefert.
+
+**Gegenproben (Wächter-Auflagen):** ohne Abweichungs-Prüfung → 2 pgTAP rot (Angriff 5.000 kcal, Eiweiß 0,2 g);
+Geräte-Werte gespeichert → 2 rot (Server-Werte, vergangener Tag); G-W3 auf der Geräte-Summe ohne Prüfung (alter
+Stand) → rot; Rundungsgrenze 10 statt 20 g in SQL → pgTAP c2 und db-sync rot; Spielraum 2 kcal im Core → 2 rot;
+M1-Bedingung entfernt → rot; Generation entfernt → rot, Generation und Sperre entfernt → beide M2-Tests rot;
+seitenweises Lesen nach der ersten Seite abgebrochen → rot.
 
 **Offen für die Gründer (N7 Teil 2):**
 

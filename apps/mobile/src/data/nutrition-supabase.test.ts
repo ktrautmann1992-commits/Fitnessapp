@@ -574,7 +574,13 @@ interface Call {
 }
 
 function fakeClient(
-  respond: (call: Call) => { data?: unknown; error?: unknown; status?: number } = () => ({}),
+  respond: (call: Call) => {
+    data?: unknown;
+    error?: unknown;
+    status?: number;
+    /** Antwort erst, wenn dieses Versprechen erfüllt ist (hängendes Senden nachstellen). */
+    wait?: Promise<void>;
+  } = () => ({}),
 ) {
   const calls: Call[] = [];
   const builder = (call: Call): unknown =>
@@ -583,8 +589,10 @@ function fakeClient(
       {
         get(_target, prop: string) {
           if (prop === 'then') {
-            const result = { data: null, error: null, ...respond(call) };
-            return (resolve: (value: unknown) => void) => resolve(result);
+            const { wait, ...answer } = respond(call);
+            const result = { data: null, error: null, ...answer };
+            return (resolve: (value: unknown) => void) =>
+              wait === undefined ? resolve(result) : void wait.then(() => resolve(result));
           }
           return (...args: unknown[]) => {
             call.chain.push(prop);
@@ -879,6 +887,60 @@ describe('Supabase-Backend: Ernährungstagebuch über die Warteschlange (E1 mit 
       'weight_kg',
       'body_fat_pct',
     ]);
+  });
+
+  it('M2: Widerruf während ein Tagebuch-Eintrag gesendet wird → danach liegt nichts mehr auf dem Gerät', async () => {
+    let release: () => void = () => undefined;
+    const hanging = new Promise<void>((resolve) => {
+      release = resolve;
+    });
+    const consentError = {
+      code: '42501',
+      message: 'Für das Ernährungstagebuch fehlt die Einwilligung.',
+      details: '',
+      hint: '',
+    };
+    const { backend, nutritionQueueStore } = backendWith((call) =>
+      call.table.startsWith('rpc:save_food_log')
+        ? { error: consentError, wait: hanging }
+        : { data: [] },
+    );
+    const saving = backend.saveFoodLogEntries([ENTRY], data).catch(() => 'abgelehnt');
+    await new Promise((resolve) => setTimeout(resolve, 0));
+    const revoking = backend.revokeHealthData(false, null);
+    await new Promise((resolve) => setTimeout(resolve, 0));
+    // Während der Widerruf läuft, nimmt die Warteschlange nichts Neues an.
+    await expect(backend.saveFoodLogEntries([{ ...ENTRY, id: 'x' }], data)).rejects.toThrow();
+    release();
+    await Promise.all([saving, revoking]);
+    expect((nutritionQueueStore as { peek(): string | null }).peek()).toBeNull();
+    expect(await backend.nutritionSync()).toMatchObject({ queued: 0, rejected: 0 });
+  });
+
+  it('M2: clear() während eines hängenden Sendens → späte Ablehnung wird verworfen, Speicher bleibt leer', async () => {
+    const store = createMemoryProtectedStore();
+    let release: () => void = () => undefined;
+    const queue = new NutritionQueue({
+      store,
+      currentUserId: () => USER_ID,
+      send: () =>
+        new Promise((resolve) => {
+          release = () => resolve({ kind: 'rejected', reason: 'consent_required' });
+        }),
+    });
+    await queue.add(
+      { kind: 'food_log_save', entry: ENTRY, writeId: 'w1', baseRevision: null },
+      USER_ID,
+    );
+    const flushing = queue.flush();
+    await new Promise((resolve) => setTimeout(resolve, 0));
+    await queue.clear();
+    release();
+    await flushing;
+    expect(queue.rejected()).toEqual([]);
+    expect(queue.size()).toBe(0);
+    expect(store.peek()).toBeNull();
+    expect(queue.lastResults.size).toBe(0);
   });
 
   it('Widerruf: Ernährungs-Warteschlange und -Zwischenspeicher gelöscht', async () => {

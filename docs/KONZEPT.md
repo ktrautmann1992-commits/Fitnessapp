@@ -847,8 +847,10 @@ Quelle: `docs/ERWEITERUNGEN-2.md` Abschnitte 1–2. Startbestand aus `alpha5-rez
   Ernährung ein (nur `published` und fachlich geprüft, Schutz vor Massen-Archivierung). **Löschfrist:** Essenspläne und
   Einkaufslisten älter als `MEAL_PLAN_RETENTION_WEEKS` (4) Wochen vor der laufenden Woche werden beim Speichern und
   täglich (`pg_cron`) gelöscht, im Testmodus beim Laden/Speichern; das Tagebuch bleibt. **Server-Plausibilität (G-W3):**
-  `save_meal_plan` lehnt Tage ab heute ab, deren Summe unter dem Grundumsatz für die Schutzgrenzen liegt (dieselbe
-  Formel wie der Core, `nutrition/plausibility.ts`; Meldung ohne Werte). Details: `docs/PLAN-PHASE-5.md`,
+  `save_meal_plan` rechnet die Nährwerte jeder Mahlzeit selbst nach (Rezept × Faktor mit Ersatz, Weglassen, Tausch –
+  wie `scalePortion`), speichert nur diese Werte, lehnt abweichende Angaben ab und lehnt Tage ab heute ab, deren Summe
+  unter dem Grundumsatz für die Schutzgrenzen liegt (dieselbe Formel wie der Core, `nutrition/plausibility.ts`;
+  Meldungen ohne Werte). Details: `docs/PLAN-PHASE-5.md`,
   Umsetzungsstand N7 Teil 2.
 
 ### Erweiterungen (geplant, `docs/ERWEITERUNGEN.md`)

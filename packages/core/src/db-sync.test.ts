@@ -50,7 +50,9 @@ import {
   BODY_FAT_MAX_AGE_DAYS,
   KATCH_MCARDLE,
   MEAL_PLAN_DAY_KCAL_CHECK,
+  MEAL_PLAN_ITEM_NUTRIENT_TOLERANCE,
   MEAL_PLAN_RETENTION_WEEKS,
+  AMOUNT_ROUNDING,
   MIFFLIN_ST_JEOR,
   MIN_INTAKE_RELATIVE_TO_BMR,
 } from './constants';
@@ -1289,14 +1291,41 @@ describe('Essensplan in der Datenbank – N7 Teil 2 (Löschfrist G-N7-2, Tageska
       [...MEAL_PLAN_DAY_KCAL_CHECK.checkedDayStatuses].sort(),
     );
     expect(constant(save, 'kcal_tolerance')).toBe(MEAL_PLAN_DAY_KCAL_CHECK.roundingToleranceKcal);
-    expect(save).toContain("where (v ->> 'date')::date >= today");
+    expect(save).toContain('where r.date >= today');
     expect(save).toContain(
       'd.kcal + kcal_tolerance < private.meal_plan_day_kcal_floor(current_user_id, d.day, today)',
     );
+    // Wächter N7 Teil 2 H1: die Tagessumme stammt vom Server, nicht vom Gerät.
+    expect(save).toContain('sum(r.s_kcal) as kcal');
     // Prüfung nach der Einwilligungs-Sperre (Körperdaten unter derselben Sperre gelesen).
     expect(save.indexOf('basis.consent_ok and exists')).toBeGreaterThan(
       save.indexOf('private.nutrition_health_basis()'),
     );
+  });
+
+  it('H1: Server-Nährwerte – Rundung = AMOUNT_ROUNDING, Spielraum = MEAL_PLAN_ITEM_NUTRIENT_TOLERANCE, gespeichert werden Server-Werte', () => {
+    const fn = fnBody('private.meal_plan_item_nutrients');
+    const dbl = (name: string) => {
+      const match = new RegExp(`${name} constant double precision := (-?[0-9.]+);`).exec(fn);
+      if (!match) throw new Error(`${name} nicht gefunden`);
+      return Number(match[1]);
+    };
+    expect({
+      massStep: dbl('mass_step'),
+      smallMassStep: dbl('small_mass_step'),
+      smallMassBelow: dbl('small_mass_below'),
+      pieceStep: dbl('piece_step'),
+      spoonStep: dbl('spoon_step'),
+      pinchStep: dbl('pinch_step'),
+    }).toEqual(AMOUNT_ROUNDING);
+    // Nur nicht optionale Zutaten zählen (computeRecipeFacts/scalePortion), Prise = PINCH_G über grams_per_unit.
+    expect(fn).toContain('if not ing.optional then');
+    expect(fn).toContain('case when ing.scales then p_factor / servings else 1 / servings end');
+    const save = fnBody('public.save_meal_plan');
+    expect(constant(save, 'item_kcal_tolerance')).toBe(MEAL_PLAN_ITEM_NUTRIENT_TOLERANCE.kcal);
+    expect(constant(save, 'item_macro_tolerance_g')).toBe(MEAL_PLAN_ITEM_NUTRIENT_TOLERANCE.macroG);
+    expect(save).toContain("r.s_kcal, r.s_protein, r.s_carbs, r.s_fat, x.v -> 'substitutions'");
+    expect(save).not.toContain("(v ->> 'kcal')::numeric,\n");
   });
 
   it('G-W3: die erwarteten Werte im pgTAP-Test (33) rechnet packages/core genauso (Core = SQL)', () => {

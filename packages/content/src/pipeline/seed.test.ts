@@ -13,6 +13,8 @@ import { validateRepository } from '../validate';
 import {
   buildNutritionSeedPackage,
   buildSeedPackage,
+  fetchPublishedIds,
+  fetchPublishedNutritionIds,
   findMassArchive,
   findNutritionMassArchive,
   NUTRITION_SEED_TABLES,
@@ -192,7 +194,9 @@ describe('content-seed', () => {
     expect(result.markdown).toContain('Zurückgezogen (archived): 2 Übungen');
     // Vorher wird der freigegebene Bestand gelesen (nur IDs), dann genau einmal seed_content.
     const [readUrl, readInit] = fetchImpl.mock.calls[0]!;
-    expect(readUrl).toBe('https://abc.supabase.co/rest/v1/exercises?select=id&status=eq.published');
+    expect(readUrl).toBe(
+      'https://abc.supabase.co/rest/v1/exercises?select=id&status=eq.published&order=id.asc&limit=1000&offset=0',
+    );
     expect(readInit.method).toBe('GET');
     expect(seedCalls(fetchImpl)).toHaveLength(1);
     const [url, init] = seedCalls(fetchImpl)[0]!;
@@ -511,5 +515,63 @@ describe('content-seed: Ernährung (N7 Teil 2)', () => {
     expect(result.status).toBe('failed');
     expect(result.markdown).toContain('Ernährung nicht eingespielt');
     expect(result.markdown).toContain('nicht fachlich geprüft');
+  });
+});
+
+describe('Bestand seitenweise lesen (Wächter N7 Teil 2 N2)', () => {
+  const access = { url: 'https://abc.supabase.co', secretKey: 'sb_secret_test' };
+  const ids = (n: number, prefix: string) =>
+    Array.from({ length: n }, (_, i) => `${prefix}-${String(i).padStart(5, '0')}`);
+  /** PostgREST-Nachbau: höchstens `cap` Zeilen je Antwort, Content-Range mit Gesamtzahl (oder ohne). */
+  const pagedFetch = (all: Record<string, string[]>, cap: number, withRange = true) =>
+    vi.fn(async (url: string) => {
+      const u = new URL(url);
+      const table = u.pathname.split('/').at(-1) ?? '';
+      const rows = all[table];
+      if (rows === undefined) return new Response('{"code":"PGRST205"}', { status: 404 });
+      const offset = Number(u.searchParams.get('offset') ?? 0);
+      const limit = Math.min(Number(u.searchParams.get('limit') ?? cap), cap);
+      const page = rows.slice(offset, offset + limit);
+      const headers: Record<string, string> = { 'content-type': 'application/json' };
+      if (withRange) {
+        headers['content-range'] =
+          page.length === 0
+            ? `*/${rows.length}`
+            : `${offset}-${offset + page.length - 1}/${rows.length}`;
+      }
+      return new Response(JSON.stringify(page.map((id) => ({ id }))), { status: 200, headers });
+    });
+
+  it('mehr als 1.000 freigegebene Einträge: alle IDs (auch wenn der Server je Seite weniger liefert)', async () => {
+    const all = {
+      exercises: ids(2500, 'ue'),
+      plan_templates: ids(1000, 'pv'),
+      foods: ids(1234, 'lm'),
+      recipes: ids(3, 're'),
+      ingredient_substitutions: [],
+      food_package_sizes: ids(1001, 'pg'),
+      meal_prep_plans: ids(2, 'mp'),
+      guides: ids(1000, 'rg'),
+    };
+    const one = pagedFetch(all, 1000);
+    const read = await fetchPublishedIds(access, one);
+    expect(read.exercises).toEqual(all.exercises);
+    expect(read.plan_templates).toEqual(all.plan_templates);
+    // Server kappt bei 300 Zeilen: weiter bis zur Gesamtzahl aus Content-Range.
+    const capped = pagedFetch(all, 300);
+    const nutrition = await fetchPublishedNutritionIds(access, capped);
+    expect(nutrition?.foods).toEqual(all.foods);
+    expect(nutrition?.package_sizes).toEqual(all.food_package_sizes);
+    expect(nutrition?.ingredient_substitutions).toEqual([]);
+    expect(nutrition?.guides).toEqual(all.guides);
+    // Ohne Content-Range: bis zur ersten kürzeren Seite.
+    const plain = await fetchPublishedIds(access, pagedFetch(all, 1000, false));
+    expect(plain.exercises).toHaveLength(2500);
+  });
+
+  it('Ernährungs-Tabellen fehlen (vor db-migrate) → null', async () => {
+    expect(
+      await fetchPublishedNutritionIds(access, pagedFetch({ exercises: [] }, 1000)),
+    ).toBeNull();
   });
 });

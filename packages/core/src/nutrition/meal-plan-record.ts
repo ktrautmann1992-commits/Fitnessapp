@@ -230,6 +230,9 @@ function dayNotices(
   return sortMealPlanNotices(notices);
 }
 
+/** Abgleich-Schlüssel eines rekonstruierten Tages ab heute ohne Mahlzeiten bzw. mit `below_floor` (M1). */
+export const RECONSTRUCTED_INCOMPLETE_KEY = 'reconstructed:incomplete';
+
 /**
  * Essensplan aus den Datenbank-Zeilen und dem Bestand (s. o.). null = Zeilen ungültig, andere Woche als die Ziele,
  * ältere Engine-Version oder uneinheitlicher Tages-Status → gilt als nicht vorhanden (neu erstellt).
@@ -276,7 +279,14 @@ export function mealPlanWeekFromRecord(
       meals,
       totals,
       band: mode === 'no_targets' ? null : mealPlanBand(targets),
-      safetyKey: sameMode ? daySafetyKey(targets) : 'reconstructed:mode_changed',
+      safetyKey: !sameMode
+        ? 'reconstructed:mode_changed'
+        : // Wächter N7 Teil 2 M1: Ein Tag ab heute ohne Mahlzeiten oder mit `below_floor` kommt so nicht von der Engine
+          // des Geräts, das ihn gerade zeigt (oder ist ein unvollständiger Vorschlag) – ab heute sicher neu planen
+          // (6.6 → `caps_changed`). Vergangene Tage bleiben, wie sie waren.
+          date >= today && (items.length === 0 || stored === 'below_floor')
+          ? RECONSTRUCTED_INCOMPLETE_KEY
+          : daySafetyKey(targets),
       emptySlots: [],
       notices: dayNotices(meals, status, totals, targets, sameMode),
     });

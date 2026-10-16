@@ -9,7 +9,7 @@
 --   G: wie A, Körperfett 10 % vom 16.07. → am 14.10. (90 Tage) Katch 370 + 21,6·72 = 1.925,2; am 15.10. (91 Tage) 1.750
 begin;
 create extension if not exists pgtap with schema extensions;
-select plan(41);
+select plan(56);
 
 create or replace function private.berlin_today()
 returns date
@@ -80,14 +80,38 @@ values ('muesli', 1, 'published', 'Müsli', '{breakfast,main}', 1, true, 'vegan'
 insert into public.recipe_ingredients (recipe_id, position, food_id, amount, unit, optional, scales)
 values ('muesli', 0, 'hafer', 60, 'g', false, true);
 
+-- Seit H1 rechnet der Server die Nährwerte nach: Für eine frei wählbare Tagessumme gibt es je kcal-Wert ein
+-- Lebensmittel mit genau diesen kcal je 100 g und ein Rezept mit 100 g davon (Faktor 1 → kcal = Wert).
+create function pg_temp.recipe_for(p_kcal numeric)
+returns text language plpgsql security definer set search_path = '' as $$
+declare
+  rid text := 'kcal-' || replace(p_kcal::text, '.', '-');
+begin
+  if not exists (select 1 from public.recipes where id = rid) then
+    insert into public.foods (id, version, status, name_de, shopping_category, pantry, groups, animal, meat_kind,
+      pregnancy_caution, alcohol, max_fridge_days, freezable, data)
+    values (rid, 1, 'published', 'Testkost', 'other', false, '{}', '{}', '{}', false, false, 2, true,
+      jsonb_build_object('units', '{}'::jsonb, 'nutrients_per_100g',
+        jsonb_build_object('kcal', p_kcal, 'protein_g', 0, 'carbs_g', 0, 'fat_g', 0)));
+    insert into public.recipes (id, version, status, title_de, meal_types, servings, no_cook, diet, contains_pork, data)
+    values (rid, 1, 'published', 'Testgericht', '{breakfast,main}', 1, true, 'vegan', false, '{}');
+    insert into public.recipe_ingredients (recipe_id, position, food_id, amount, unit, optional, scales)
+    values (rid, 0, rid, 100, 'g', false, true);
+  end if;
+  return rid;
+end;
+$$;
+
 -- Eingabe wie toMealPlanPayload() mit frei wählbarer Tagessumme.
 create function pg_temp.item(
-  p_date text, p_kcal numeric, p_status text default 'complete', p_slot text default 'breakfast'
+  p_date text, p_kcal numeric, p_status text default 'complete', p_slot text default 'breakfast',
+  p_device_kcal numeric default null
 )
 returns jsonb language sql as $$
   select jsonb_build_object(
-    'date', p_date, 'slot', p_slot, 'role', null, 'recipe_id', 'muesli', 'recipe_version', 1,
-    'title_de', 'Müsli', 'factor', 1, 'kcal', p_kcal, 'protein_g', 20, 'carbs_g', 50, 'fat_g', 10,
+    'date', p_date, 'slot', p_slot, 'role', null, 'recipe_id', pg_temp.recipe_for(p_kcal), 'recipe_version', 1,
+    'title_de', 'Testgericht', 'factor', 1, 'kcal', coalesce(p_device_kcal, p_kcal), 'protein_g', 0, 'carbs_g', 0,
+    'fat_g', 0,
     'substitutions', '[]'::jsonb, 'omitted_optional', '[]'::jsonb, 'ingredient_swaps', '[]'::jsonb,
     'is_fill', false, 'prep_kind', 'fresh', 'cook_date', p_date, 'storage', null, 'meal_prep_plan_id', null,
     'day_status', p_status
@@ -330,7 +354,155 @@ end;
 $$;
 select ok(pg_temp.cron_job_ok(), 'pg_cron: täglicher Lauf „nutrition-weeks-retention“ (falls verfügbar)');
 
--- Struktur: Sperr-Reihenfolge unverändert, gleiche Rechte wie zuvor.
+-- ---------------------------------------------------------------------------------------------------------
+-- H1 (Wächter N7 Teil 2): Nährwerte rechnet der Server (private.meal_plan_item_nutrients = scalePortion).
+-- Fixture wie packages/core/src/nutrition/server-meal-values.test.ts; die Zeilen „-- core H1 …“ prüft der Core.
+-- ---------------------------------------------------------------------------------------------------------
+insert into public.foods (id, version, status, name_de, shopping_category, pantry, groups, animal, meat_kind,
+  pregnancy_caution, alcohol, max_fridge_days, freezable, data)
+values
+  ('h-hafer', 1, 'published', 'Hafer', 'other', false, '{}', '{}', '{}', false, false, 2, true,
+   '{"units": {"tbsp_g": 10}, "nutrients_per_100g": {"kcal": 370, "protein_g": 13.5, "carbs_g": 58.7, "fat_g": 7}}'),
+  ('h-milch', 1, 'published', 'Milch', 'other', false, '{}', '{}', '{}', false, false, 2, false,
+   '{"units": {"ml_to_g": 1.03}, "nutrients_per_100g": {"kcal": 64, "protein_g": 3.3, "carbs_g": 4.8, "fat_g": 3.6}, "substitutes": [{"food_id": "h-haferdrink", "for_groups": ["lactose"]}]}'),
+  ('h-haferdrink', 1, 'published', 'Haferdrink', 'other', false, '{}', '{}', '{}', false, false, 2, false,
+   '{"units": {"ml_to_g": 1.02}, "nutrients_per_100g": {"kcal": 46, "protein_g": 0.4, "carbs_g": 7.4, "fat_g": 1.4}}'),
+  ('h-ei', 1, 'published', 'Ei', 'other', false, '{eggs}', '{egg}', '{}', false, false, 2, false,
+   '{"units": {"piece_g": 58}, "nutrients_per_100g": {"kcal": 137, "protein_g": 12.6, "carbs_g": 0.6, "fat_g": 9.3}}'),
+  ('h-salz', 1, 'published', 'Salz', 'other', true, '{}', '{}', '{}', false, false, 2, false,
+   '{"units": {}, "nutrients_per_100g": {"kcal": 0, "protein_g": 0, "carbs_g": 0, "fat_g": 0}}'),
+  ('h-nuss', 1, 'published', 'Nuss', 'other', false, '{}', '{}', '{}', false, false, 2, true,
+   '{"units": {}, "nutrients_per_100g": {"kcal": 600, "protein_g": 25, "carbs_g": 10, "fat_g": 50}}'),
+  ('h-haehnchen', 1, 'published', 'Hähnchen', 'other', false, '{}', '{}', '{}', false, false, 1, true,
+   '{"units": {}, "nutrients_per_100g": {"kcal": 105, "protein_g": 23.5, "carbs_g": 0, "fat_g": 1.2}}'),
+  ('h-tofu', 1, 'published', 'Tofu', 'other', false, '{}', '{}', '{}', false, false, 2, true,
+   '{"units": {}, "nutrients_per_100g": {"kcal": 124, "protein_g": 13.4, "carbs_g": 1.4, "fat_g": 7.4}}');
+insert into public.recipes (id, version, status, title_de, meal_types, servings, no_cook, diet, contains_pork, data)
+values ('h-bowl', 1, 'published', 'Bowl', '{breakfast,main}', 2, false, 'vegan', false, '{}'),
+       ('h-alt', 2, 'published', 'Neue Fassung', '{breakfast,main}', 1, false, 'vegan', false, '{}');
+insert into public.recipe_ingredients (recipe_id, position, food_id, amount, unit, optional, scales, role) values
+  ('h-bowl', 0, 'h-hafer', 75, 'g', false, true, null),
+  ('h-bowl', 1, 'h-milch', 250, 'ml', false, true, null),
+  ('h-bowl', 2, 'h-ei', 1, 'piece', false, true, null),
+  ('h-bowl', 3, 'h-salz', 1, 'pinch', false, false, null),
+  ('h-bowl', 4, 'h-nuss', 15, 'g', true, true, null),
+  ('h-bowl', 5, 'h-haehnchen', 125, 'g', false, true, 'protein'),
+  ('h-bowl', 6, 'h-hafer', 1, 'tbsp', false, true, null),
+  ('h-alt', 0, 'h-hafer', 100, 'g', false, true, null);
+insert into public.ingredient_substitutions (id, version, status, food_id, substitute_food_id, factor, role, data)
+values ('h-haehnchen-zu-h-tofu', 1, 'published', 'h-haehnchen', 'h-tofu', 1.1, 'protein', '{}'),
+       ('h-haehnchen-zu-h-ei', 1, 'published', 'h-haehnchen', 'h-ei', 0.8, 'protein', '{}');
+
+-- A isst vegetarisch (Ei erlaubt).
+update public.nutrition_prefs set diet_type = 'vegetarian' where user_id = 'a0000000-0000-4000-8000-00000000000a';
+
+create function pg_temp.server_values(p_factor numeric, p_subs jsonb, p_omitted jsonb, p_swaps jsonb)
+returns numeric[] language sql security definer set search_path = '' as $$
+  select array[private.js_round1(n[1]), private.js_round1(n[2]), private.js_round1(n[3]), private.js_round1(n[4])]::numeric[]
+  from (select private.meal_plan_item_nutrients('h-bowl', p_factor::double precision, p_subs, p_omitted, p_swaps) as n) x
+$$;
+-- core H1 c1: [484.3, 40.5, 41, 16.6]
+select is(pg_temp.server_values(1.35, '[]', '[]', '[]'), array[484.3, 40.5, 41, 16.6]::numeric[],
+  'H1 c1: Faktor 1,35, Rundung g/ml/Stück/EL, Prise ohne Skalierung, optionale Nuss zählt nicht');
+-- core H1 c2: [242.2, 15.5, 19.8, 10.6]
+select is(pg_temp.server_values(0.5, '[{"index": 1, "food_id": "h-milch", "substitute_food_id": "h-haferdrink"}]',
+    '[{"index": 4, "food_id": "h-nuss"}]',
+    '[{"index": 5, "food_id": "h-haehnchen", "substitute_food_id": "h-tofu"}]'),
+  array[242.2, 15.5, 19.8, 10.6]::numeric[], 'H1 c2: Faktor 0,5 mit Ersatzprodukt, Weglassen und Tausch (× 1,1)');
+-- core H1 c3: [717.7, 41.9, 63.3, 31.4]
+select is(pg_temp.server_values(2, '[]', '[]', '[{"index": 5, "food_id": "h-haehnchen", "substitute_food_id": "h-ei"}]'),
+  array[717.7, 41.9, 63.3, 31.4]::numeric[], 'H1 c3: Faktor 2, Tausch zu Ei (Stück, ganze Eier)');
+-- core H1 c4: [396.6, 32.9, 32.9, 14]
+select is(pg_temp.server_values(1, '[]', '[]', '[]'), array[396.6, 32.9, 32.9, 14]::numeric[], 'H1 c4: Faktor 1');
+-- core H1 c5: [297, 25, 22.4, 11.4]
+select is(pg_temp.server_values(0.73, '[]', '[{"index": 4, "food_id": "h-nuss"}]', '[]'),
+  array[297, 25, 22.4, 11.4]::numeric[], 'H1 c5: Faktor 0,73, kleine Mengen (< 20 g auf 1 g)');
+select ok(
+  not has_function_privilege('authenticated',
+    'private.meal_plan_item_nutrients(text, double precision, jsonb, jsonb, jsonb)', 'execute')
+  and not has_function_privilege('anon',
+    'private.meal_plan_item_nutrients(text, double precision, jsonb, jsonb, jsonb)', 'execute'),
+  'H1: Rechenfunktion nicht über die API aufrufbar'
+);
+
+create function pg_temp.bowl(p_date text, p_factor numeric, p_kcal numeric, p_protein numeric, p_carbs numeric,
+  p_fat numeric, p_slot text default 'dinner', p_recipe text default 'h-bowl', p_version integer default 1)
+returns jsonb language sql as $$
+  select jsonb_build_object(
+    'date', p_date, 'slot', p_slot, 'role', null, 'recipe_id', p_recipe, 'recipe_version', p_version,
+    'title_de', 'Bowl', 'factor', p_factor, 'kcal', p_kcal, 'protein_g', p_protein, 'carbs_g', p_carbs,
+    'fat_g', p_fat, 'substitutions', '[]'::jsonb, 'omitted_optional', '[]'::jsonb, 'ingredient_swaps', '[]'::jsonb,
+    'is_fill', false, 'prep_kind', 'fresh', 'cook_date', p_date, 'storage', null, 'meal_prep_plan_id', null,
+    'day_status', 'complete'
+  )
+$$;
+
+set local role authenticated;
+set local request.jwt.claims = '{"sub":"a0000000-0000-4000-8000-00000000000a","role":"authenticated"}';
+-- Angriff (Wächter-Probe): Faktor 0,5, behauptet 5.000 kcal → abgelehnt (die Werte passen nicht zum Rezept).
+select throws_ok(
+  $$ select public.save_meal_plan(pg_temp.plan(jsonb_build_array(
+       pg_temp.bowl('2026-10-14', 0.5, 5000, 20, 50, 10)))) $$,
+  '22023', 'Die Nährwerte im Essensplan passen nicht zu den Rezepten – bitte neu erstellen.',
+  'H1: Faktor 0,5 mit behaupteten 5.000 kcal abgelehnt (Meldung ohne Werte)'
+);
+-- Mit den richtigen Werten (198,3 kcal bei Faktor 0,5) bleibt der Tag unter dem Grundumsatz → G-W3 greift.
+select throws_ok(
+  $$ select public.save_meal_plan(pg_temp.plan(jsonb_build_array(
+       pg_temp.bowl('2026-10-14', 0.5, (pg_temp.server_values(0.5, '[]', '[]', '[]'))[1],
+         (pg_temp.server_values(0.5, '[]', '[]', '[]'))[2], (pg_temp.server_values(0.5, '[]', '[]', '[]'))[3],
+         (pg_temp.server_values(0.5, '[]', '[]', '[]'))[4])))) $$,
+  '22023', 'Der Essensplan liegt an einem Tag unter deinem Grundumsatz – bitte neu erstellen.',
+  'H1: ehrliche Werte → G-W3 prüft die Server-Summe'
+);
+-- Abweichung innerhalb des Spielraums (1 kcal, 0,1 g): gespeichert werden die Werte des Servers.
+select lives_ok(
+  $$ select public.save_meal_plan(pg_temp.plan(jsonb_build_array(
+       pg_temp.item('2026-10-14', 1500, p_slot => 'breakfast'),
+       pg_temp.bowl('2026-10-14', 1.35, 485.3, 40.4, 41.1, 16.5)))) $$,
+  'H1: Abweichung im Spielraum angenommen'
+);
+select results_eq(
+  $$ select i.kcal, i.protein_g, i.carbs_g, i.fat_g from public.meal_plan_items i
+     where i.recipe_id = 'h-bowl' and i.date = '2026-10-14' $$,
+  $$ values (484.3::numeric, 40.5::numeric, 41::numeric, 16.6::numeric) $$,
+  'H1: gespeichert (und exportiert) werden die Server-Werte, nicht die des Geräts'
+);
+select throws_ok(
+  $$ select public.save_meal_plan(pg_temp.plan(jsonb_build_array(
+       pg_temp.item('2026-10-14', 1500, p_slot => 'breakfast'),
+       pg_temp.bowl('2026-10-14', 1.35, 484.3, 40.7, 41, 16.6)))) $$,
+  '22023', null, 'H1: Eiweiß 0,2 g daneben → abgelehnt'
+);
+-- Vergangener Tag: Werte desselben Gerichts aus dem bisherigen Plan (vom Server gerechnet), nie die des Geräts.
+select lives_ok(
+  $$ select public.save_meal_plan(pg_temp.plan(jsonb_build_array(
+       pg_temp.item('2026-10-13', 300), pg_temp.item('2026-10-14', 1800)))) $$,
+  'H1: Plan mit vergangenem Tag (300 kcal, nachgerechnet) gespeichert'
+);
+select lives_ok(
+  $$ select public.save_meal_plan(pg_temp.plan(jsonb_build_array(
+       pg_temp.item('2026-10-13', 300, p_device_kcal => 9999),
+       pg_temp.item('2026-10-14', 1800)))) $$,
+  'H1: vergangener Tag mit veränderter Angabe angenommen …'
+);
+select is(
+  (select i.kcal from public.meal_plan_items i where i.date = '2026-10-13'), 300::numeric,
+  '… gespeichert bleibt der Server-Wert (300)'
+);
+-- Vergangener Tag mit älterer Rezept-Fassung ohne passende Mahlzeit im bisherigen Plan → nicht nachrechenbar.
+select throws_ok(
+  $$ select public.save_meal_plan(pg_temp.plan(jsonb_build_array(
+       pg_temp.bowl('2026-10-13', 1, 370, 13.5, 58.7, 7, 'breakfast', 'h-alt', 1),
+       pg_temp.item('2026-10-14', 1800)))) $$,
+  '22023', 'Nährwerte des Essensplans lassen sich nicht nachrechnen – bitte neu erstellen.',
+  'H1: alte Rezept-Fassung ohne Gegenstück im bisherigen Plan abgelehnt'
+);
+reset role;
+
+-- Struktur: gleiche Rechte und leerer search_path wie zuvor (die Sperr-Reihenfolge Woche → Einwilligung → Plan prüft
+-- packages/core/src/db-sync.test.ts per Textvergleich).
+
 select ok(
   has_function_privilege('authenticated', 'public.save_meal_plan(jsonb, boolean, boolean)', 'execute')
   and not has_function_privilege('anon', 'public.save_meal_plan(jsonb, boolean, boolean)', 'execute')

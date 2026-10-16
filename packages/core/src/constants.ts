@@ -1772,11 +1772,16 @@ export const MEAL_PLAN_RETENTION_WEEKS = 4;
  * Mindest-Plausibilität der Tageskalorien auf dem Server (Etappe N7 Teil 2, Gründer-Entscheidung G-W3 vom 16.10.2026):
  * `save_meal_plan` lehnt ab heute (Europe/Berlin) jeden Tag ab, dessen Tagessumme unter dem Grundumsatz für die
  * Schutzgrenzen liegt (`serverDayKcalFloor` = `bmrForFloor` × `MIN_INTAKE_RELATIVE_TO_BMR`, dieselbe Formel wie die
- * Untergrenze in `clampCalorieTarget`), berechnet aus den GESPEICHERTEN Körperdaten – damit die Schutzgrenze auch gegen
- * veränderte Apps greift. Geprüft werden Tage mit `checkedDayStatuses`: `complete` liegt nach Bauart im Planband
+ * Untergrenze in `clampCalorieTarget`), berechnet aus den GESPEICHERTEN Körperdaten. Die Tagessumme stammt ebenfalls vom
+ * Server: `save_meal_plan` rechnet jede Mahlzeit aus Rezept × Faktor (Ersatz, Weglassen, Tausch) nach und speichert nur
+ * diese Werte (`MEAL_PLAN_ITEM_NUTRIENT_TOLERANCE`, Wächter N7 Teil 2 H1) – so greift die Prüfung auch gegen veränderte
+ * Apps, soweit sie Tage als `complete`/`no_targets` kennzeichnen. Geprüft werden Tage mit `checkedDayStatuses`: `complete` liegt nach Bauart im Planband
  * (Untergrenze ≥ Grundumsatz); `no_targets` darf es mit Körperdaten und Einwilligung gar nicht geben. Ein Tag
  * `below_floor` ist ausdrücklich als „Unvollständiger Vorschlag“ mit Hinweis gekennzeichnet (die Engine findet nicht
- * genug passende Rezepte) und bleibt erlaubt. Ohne Einwilligung, ohne Größe/Gewicht oder bei Schwangerschaft gibt es
+ * genug passende Rezepte) und bleibt erlaubt – die Engine liefert ihn selbst (z. B. zu wenig passende Rezepte), eine
+ * Ablehnung auf dem Server würde ehrliche Pläne sperren. Eine veränderte App kann einen Tag so kennzeichnen und damit die
+ * Prüfung umgehen; die Werte sind trotzdem die des Servers, und jedes Gerät plant einen solchen Tag ab heute beim
+ * Rekonstruieren neu (`RECONSTRUCTED_INCOMPLETE_KEY`, Wächter N7 Teil 2 M1). Ohne Einwilligung, ohne Größe/Gewicht oder bei Schwangerschaft gibt es
  * keinen Grundumsatz (Modus `no_targets` wie im Core) – dann keine Prüfung.
  * `roundingToleranceKcal`: Die Payload rundet jede Mahlzeit auf 0,1 kcal (`toMealPlanPayload`); bei höchstens zehn
  * Mahlzeiten je Tag fehlen so höchstens 0,5 kcal – 1 kcal Spielraum, sonst würde ein Plan genau auf der Grenze
@@ -1786,6 +1791,16 @@ export const MEAL_PLAN_DAY_KCAL_CHECK = {
   checkedDayStatuses: ['complete', 'no_targets'],
   roundingToleranceKcal: 1,
 } as const;
+
+/**
+ * Nährwerte je Plan-Mahlzeit rechnet der Server nach (Etappe N7 Teil 2, Wächter H1; wie E1-G4/E2-G2 „Server rechnet
+ * nach“): `private.meal_plan_item_nutrients` spiegelt `scalePortion` in derselben Reihenfolge (double precision), die
+ * Payload rundet wie `toMealPlanPayload` auf 0,1. Weicht die Angabe des Geräts um mehr als diesen Spielraum ab, lehnt
+ * `save_meal_plan` den Plan ab (sichere Richtung: veränderte App oder anderer Bestand); gespeichert und exportiert
+ * werden immer die Werte des Servers. Der Spielraum fängt nur Rundungsreste einer Nachkommastelle auf (eine ehrliche App
+ * rechnet genau gleich, db-sync.test.ts und pgTAP 33). PRODUKTENTSCHEIDUNG.
+ */
+export const MEAL_PLAN_ITEM_NUTRIENT_TOLERANCE = { kcal: 1, macroG: 0.1 } as const;
 
 /**
  * Einkaufsliste weitergeben (Plan 19.7 N12, KONZEPT 6.13, Etappe N12) – Bedien- und Übertragungsschutz, keine Grenze

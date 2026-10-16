@@ -283,21 +283,45 @@ function supabaseBase(url: string): URL {
   return base;
 }
 
-/** Liest die IDs aller derzeit freigegebenen Übungen und Vorlagen (Service-Key, nur IDs). */
-export async function fetchPublishedIds(
+/**
+ * Seitengröße beim Lesen des Bestands (Wächter N7 Teil 2 N2): PostgREST liefert auf Supabase höchstens 1.000 Zeilen je
+ * Anfrage (`max-rows`). Gelesen wird deshalb seitenweise (`order=id`, `limit`/`offset`), bis eine Seite kürzer ist –
+ * sonst schätzte der Schutz vor Massen-Archivierung ab 1.000 freigegebenen Einträgen nur aus einer Stichprobe.
+ */
+export const SEED_ID_PAGE_SIZE = 1000;
+/** Obergrenze der Seiten (Schutz vor einer Endlosschleife bei einer fehlerhaften Antwort): 1.000 × 1.000 IDs. */
+const SEED_ID_MAX_PAGES = 1000;
+
+/**
+ * Alle freigegebenen IDs einer Tabelle, seitenweise; null = Tabelle fehlt (nur mit `allowMissing`). Die Gesamtzahl
+ * kommt aus `Content-Range` (`Prefer: count=exact`) – so wird auch weitergelesen, wenn der Server je Seite weniger
+ * als `SEED_ID_PAGE_SIZE` liefert; ohne Angabe endet das Lesen mit der ersten kürzeren Seite.
+ */
+async function readPublishedIds(
   env: SupabaseAccess,
   fetchImpl: SeedFetch,
-): Promise<PublishedIds> {
+  table: string,
+  allowMissing: boolean,
+): Promise<string[] | null> {
   const base = supabaseBase(env.url);
-  const read = async (table: keyof PublishedIds): Promise<string[]> => {
+  const ids: string[] = [];
+  for (let page = 0; page < SEED_ID_MAX_PAGES; page += 1) {
     const endpoint = new URL(`/rest/v1/${table}`, base);
     endpoint.searchParams.set('select', 'id');
     endpoint.searchParams.set('status', 'eq.published');
+    endpoint.searchParams.set('order', 'id.asc');
+    endpoint.searchParams.set('limit', String(SEED_ID_PAGE_SIZE));
+    endpoint.searchParams.set('offset', String(ids.length));
     const response = await fetchImpl(endpoint.toString(), {
       method: 'GET',
-      headers: { Accept: 'application/json', ...authHeaders(env.secretKey) },
+      headers: {
+        Accept: 'application/json',
+        Prefer: 'count=exact',
+        ...authHeaders(env.secretKey),
+      },
     });
     const text = await response.text();
+    if (allowMissing && (response.status === 404 || text.includes('PGRST205'))) return null;
     if (!response.ok) {
       throw new Error(
         `Bestand ${table} nicht lesbar: HTTP ${response.status} – ${text.slice(0, 300)}`,
@@ -310,45 +334,39 @@ export async function fetchPublishedIds(
     ) {
       throw new Error(`Bestand ${table}: unerwartete Antwort.`);
     }
-    return rows.map((row) => (row as { id: string }).id);
-  };
+    ids.push(...rows.map((row) => (row as { id: string }).id));
+    const total = /\/(\d+)$/.exec(response.headers?.get('content-range') ?? '')?.[1];
+    const done =
+      rows.length === 0 ||
+      (total !== undefined ? ids.length >= Number(total) : rows.length < SEED_ID_PAGE_SIZE);
+    if (done) return ids;
+  }
+  throw new Error(`Bestand ${table}: zu viele Seiten.`);
+}
+
+/** Liest die IDs aller derzeit freigegebenen Übungen und Vorlagen (Service-Key, nur IDs, seitenweise). */
+export async function fetchPublishedIds(
+  env: SupabaseAccess,
+  fetchImpl: SeedFetch,
+): Promise<PublishedIds> {
+  const read = async (table: keyof PublishedIds): Promise<string[]> =>
+    (await readPublishedIds(env, fetchImpl, table, false)) ?? [];
   return { exercises: await read('exercises'), plan_templates: await read('plan_templates') };
 }
 
 /**
- * Freigegebene Ernährungs-Inhalte (nur IDs). null = Tabellen gibt es noch nicht (PostgREST 404/PGRST205, vor
- * `db-migrate`) – dann wird die Ernährung übersprungen.
+ * Freigegebene Ernährungs-Inhalte (nur IDs, seitenweise). null = Tabellen gibt es noch nicht (PostgREST 404/PGRST205,
+ * vor `db-migrate`) – dann wird die Ernährung übersprungen.
  */
 export async function fetchPublishedNutritionIds(
   env: SupabaseAccess,
   fetchImpl: SeedFetch,
 ): Promise<PublishedNutritionIds | null> {
-  const base = supabaseBase(env.url);
   const out: Partial<Record<NutritionSeedKind, string[]>> = {};
   for (const kind of Object.keys(NUTRITION_SEED_TABLES) as NutritionSeedKind[]) {
-    const table = NUTRITION_SEED_TABLES[kind];
-    const endpoint = new URL(`/rest/v1/${table}`, base);
-    endpoint.searchParams.set('select', 'id');
-    endpoint.searchParams.set('status', 'eq.published');
-    const response = await fetchImpl(endpoint.toString(), {
-      method: 'GET',
-      headers: { Accept: 'application/json', ...authHeaders(env.secretKey) },
-    });
-    const text = await response.text();
-    if (response.status === 404 || text.includes('PGRST205')) return null;
-    if (!response.ok) {
-      throw new Error(
-        `Bestand ${table} nicht lesbar: HTTP ${response.status} – ${text.slice(0, 300)}`,
-      );
-    }
-    const rows = JSON.parse(text) as unknown;
-    if (
-      !Array.isArray(rows) ||
-      !rows.every((row) => typeof (row as { id?: unknown })?.id === 'string')
-    ) {
-      throw new Error(`Bestand ${table}: unerwartete Antwort.`);
-    }
-    out[kind] = rows.map((row) => (row as { id: string }).id);
+    const ids = await readPublishedIds(env, fetchImpl, NUTRITION_SEED_TABLES[kind], true);
+    if (ids === null) return null;
+    out[kind] = ids;
   }
   return out as PublishedNutritionIds;
 }
