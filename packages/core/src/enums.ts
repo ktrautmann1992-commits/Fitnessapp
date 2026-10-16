@@ -311,6 +311,25 @@ export const LOG_SOURCES = ['manual', 'gps', 'gpx_import'] as const;
 export type LogSource = (typeof LOG_SOURCES)[number];
 
 // ---------------------------------------------------------------------------------------------------------
+// Phase 10 · Etappe S1 · Strecken aufzeichnen (docs/PLAN-PHASE-10.md 12, 20261016220000_tracked_route_enums.sql)
+// ---------------------------------------------------------------------------------------------------------
+
+/**
+ * Sportarten einer Strecke (KONZEPT 10.1: Laufen, Radfahren; dazu Gehen) – Teilmenge von ENDURANCE_MODALITIES, in der
+ * Datenbank Spalte `sport` vom Typ endurance_modality mit CHECK (kein Schwimmen: GPS im Wasser unbrauchbar).
+ */
+export const TRACKED_ROUTE_SPORTS = ['run', 'bike', 'walk'] as const;
+export type TrackedRouteSport = (typeof TRACKED_ROUTE_SPORTS)[number];
+
+/** Schwierigkeit einer Strecke (KONZEPT 10.1: leicht / mittel / schwer) – Enum route_difficulty. */
+export const ROUTE_DIFFICULTIES = ['easy', 'medium', 'hard'] as const;
+export type RouteDifficulty = (typeof ROUTE_DIFFICULTIES)[number];
+
+/** Herkunft einer Strecke: in der App aufgezeichnet (S1) oder aus eigener GPX-Datei (S2a) – Enum tracked_route_source. */
+export const TRACKED_ROUTE_SOURCES = ['recorded', 'gpx_import'] as const;
+export type TrackedRouteSource = (typeof TRACKED_ROUTE_SOURCES)[number];
+
+// ---------------------------------------------------------------------------------------------------------
 // Phase 5 · Ernährung (Etappe N7, 20261014120100_nutrition_enums.sql) – Onboarding-Schritt `nutrition_setup`
 // ---------------------------------------------------------------------------------------------------------
 

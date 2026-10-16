@@ -1574,6 +1574,8 @@ describe('Supabase-Modus: Tagebuch-Warteschlange', () => {
       'ai_usage',
       'beta_entitlements',
       'admin_actions',
+      // Phase 10 S1
+      'tracked_routes',
     ];
     const exported = {
       format_version: 1,

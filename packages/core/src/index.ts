@@ -18,3 +18,4 @@ export * from './export';
 export * from './nutrition';
 export * from './evaluation';
 export * from './retail';
+export * from './routes';

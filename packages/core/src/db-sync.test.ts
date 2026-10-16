@@ -70,6 +70,10 @@ import {
   AMOUNT_ROUNDING,
   MIFFLIN_ST_JEOR,
   MIN_INTAKE_RELATIVE_TO_BMR,
+  CARDIO_PLAUSIBILITY_KMH,
+  ROUTE_FILTER,
+  TRACKED_ROUTE_LIMITS,
+  TRACKED_ROUTE_LOG_MATCH,
 } from './constants';
 import { serverDayKcalFloor } from './nutrition/plausibility';
 import { AI_USAGE_STATUSES } from './nutrition/food-photo';
@@ -160,6 +164,12 @@ import {
   savePlanSessionSchema,
 } from './plan/payload';
 import { trainingSlotItemSchema } from './training-schedule';
+import {
+  POLYLINE_PATTERN,
+  TRACKED_ROUTE_NAME_TRIM_CLASS,
+  trackedRouteSchema,
+  updateTrackedRouteSchema,
+} from './routes/schema';
 
 const migrationsDir = new URL('../../../supabase/migrations/', import.meta.url);
 const migrationFiles = readdirSync(migrationsDir)
@@ -260,6 +270,9 @@ describe('Enums', () => {
     ['endurance_start_group', ENDURANCE_START_GROUPS],
     ['workout_type', WORKOUT_TYPES],
     ['training_phase', COMPETITION_PHASES],
+    // Phase 10 · S1 (20261016220000_tracked_route_enums.sql)
+    ['route_difficulty', enums.ROUTE_DIFFICULTIES],
+    ['tracked_route_source', enums.TRACKED_ROUTE_SOURCES],
   ] as const)('public.%s entspricht packages/core', (name, values) => {
     expect(enumValues(name)).toEqual([...values]);
   });
@@ -625,8 +638,8 @@ describe('Trainingstagebuch (Phase 4 Etappe B)', () => {
     }
   });
 
-  it('neueste save_session_log-Fassung steht in *_free_session_logs.sql (A1b)', () => {
-    expect(saveFile).toMatch(/_free_session_logs\.sql$/);
+  it('neueste save_session_log-Fassung steht in *_tracked_route_rpcs.sql (S1, davor A1b)', () => {
+    expect(saveFile).toMatch(/_tracked_route_rpcs\.sql$/);
     expect(fieldsOf('log_fields').is_free).toBe('boolean|missing');
   });
 
@@ -1052,10 +1065,10 @@ describe('Ernährungstagebuch in der Datenbank (Etappe E1)', () => {
     }
   });
 
-  it('export_my_data(): neueste Fassung in *_ai_food_photo_export.sql (E3, davor WP3 und E2)', () => {
+  it('export_my_data(): neueste Fassung in *_tracked_route_rpcs.sql (S1, davor E3, WP3 und E2)', () => {
     const marker = 'create or replace function public.export_my_data()';
     expect(migrationFiles.filter((n) => readMigration(n).includes(marker)).at(-1)).toMatch(
-      /_ai_food_photo_export\.sql$/,
+      /_tracked_route_rpcs\.sql$/,
     );
   });
 });
@@ -1826,5 +1839,200 @@ describe('Gericht per Foto in der Datenbank (Etappe E3)', () => {
       '        if not private.food_log_device_values_ok(e) then',
       '        v_values := private.food_log_server_values(e, ex_row, v_custom_meal_id, current_user_id);',
     ]);
+  });
+});
+
+describe('Strecken in der Datenbank (Phase 10 S1)', () => {
+  const table = readMigration('_tracked_routes.sql');
+  const rpcs = readMigration('_tracked_route_rpcs.sql');
+  const fn = (sql: string, name: string) => {
+    const start = sql.indexOf(`create or replace function ${name}(`);
+    if (start < 0) throw new Error(`${name} nicht gefunden`);
+    return sql.slice(start, sql.indexOf('$$;', sql.indexOf('as $$', start)));
+  };
+  const save = fn(rpcs, 'public.save_tracked_route');
+  const update = fn(rpcs, 'public.update_tracked_route');
+  const block = table.slice(table.indexOf('create table public.tracked_routes ('));
+  const L = TRACKED_ROUTE_LIMITS;
+
+  it('Enums in eigener Datei VOR der Tabelle', () => {
+    const enumsFile = migrationFiles.findIndex((n) => n.endsWith('_tracked_route_enums.sql'));
+    const tableFile = migrationFiles.findIndex((n) => n.endsWith('_tracked_routes.sql'));
+    const rpcsFile = migrationFiles.findIndex((n) => n.endsWith('_tracked_route_rpcs.sql'));
+    expect(enumsFile).toBeGreaterThanOrEqual(0);
+    expect(tableFile).toBeGreaterThan(enumsFile);
+    expect(rpcsFile).toBeGreaterThan(tableFile);
+  });
+
+  it('Sportart: CHECK = TRACKED_ROUTE_SPORTS (Teilmenge der Ausdauer-Arten, ohne Schwimmen)', () => {
+    expect(quotedListAfter(block, 'check (sport in (')).toEqual([...enums.TRACKED_ROUTE_SPORTS]);
+    for (const sport of enums.TRACKED_ROUTE_SPORTS) {
+      expect(enums.ENDURANCE_MODALITIES).toContain(sport);
+    }
+  });
+
+  it('route_keys = Felder von trackedRouteSchema (alle Pflicht), update_keys = updateTrackedRouteSchema', () => {
+    expect(quotedListAfter(save, 'route_keys constant text[] := array[').sort()).toEqual(
+      Object.keys(trackedRouteSchema.shape).sort(),
+    );
+    expect(save).toContain('if not (r ?& route_keys)');
+    expect(quotedListAfter(update, 'update_keys constant text[] := array[').sort()).toEqual(
+      Object.keys(updateTrackedRouteSchema.shape).sort(),
+    );
+    expect(update).toContain('if not (r ?& update_keys)');
+    // Server-Felder nie in der Eingabe.
+    for (const key of ['user_id', 'point_count', 'bbox', 'created_at', 'updated_at']) {
+      expect(Object.keys(trackedRouteSchema.shape)).not.toContain(key);
+    }
+  });
+
+  it.each([
+    `char_length(name) between 1 and ${L.nameMaxLength}`,
+    `check (char_length(note) between 1 and ${L.noteMaxChars})`,
+    `check (duration_s between ${L.durationS.min} and ${L.durationS.max})`,
+    `check (moving_s between 0 and ${L.durationS.max})`,
+    `check (distance_m between ${L.distanceM.min} and ${L.distanceM.max})`,
+    `check (elevation_gain_m between ${L.elevationGainM.min} and ${L.elevationGainM.max})`,
+    `check (char_length(polyline) between 1 and ${L.polylineMaxChars} and polyline ~ '${POLYLINE_PATTERN.source}')`,
+    `check (point_count between ${L.minPoints} and ${L.maxPoints})`,
+    `check (started_at >= timestamptz '${L.startedAtMin.replace('T', ' ').replace('Z', '+00')}')`,
+  ])('CHECK der Tabelle = TRACKED_ROUTE_LIMITS: %s', (fragment) => {
+    expect(block).toContain(fragment);
+  });
+
+  it('Name: Leerraum am Rand = TRACKED_ROUTE_NAME_TRIM_CLASS (String.prototype.trim())', () => {
+    expect(block).toContain(`name !~ '^[${TRACKED_ROUTE_NAME_TRIM_CLASS}]'`);
+    expect(block).toContain(`name !~ '[${TRACKED_ROUTE_NAME_TRIM_CLASS}]$'`);
+  });
+
+  it('Distanz-Plausibilität = jumpFactor × CARDIO_PLAUSIBILITY_KMH (× 10, ganze Zahlen)', () => {
+    const cases = enums.TRACKED_ROUTE_SPORTS.map(
+      (sport) =>
+        `when '${sport}' then ${Math.round(CARDIO_PLAUSIBILITY_KMH[sport] * ROUTE_FILTER.jumpFactor * 10)}`,
+    );
+    expect(block).toContain(`distance_m * 36 <= (case sport ${cases.join(' ')} end) * duration_s`);
+  });
+
+  it('Polyline-Leser (SQL) = decodePolyline: Zeichen, Länge, 7 Gruppen, ±90/±180, 5 Nachkommastellen', () => {
+    const body = fn(table, 'private.polyline_summary');
+    expect(body).toContain(`char_length(p_polyline) not between 1 and ${L.polylineMaxChars}`);
+    expect(body).toContain(`p_polyline !~ '${POLYLINE_PATTERN.source}'`);
+    expect(body).toContain('if groups > 7 then');
+    const factor = 10 ** L.polylinePrecision;
+    expect(body).toContain(`abs(lat) > ${90 * factor} or abs(lng) > ${180 * factor}`);
+    expect(body).toContain(`round(south / ${factor}.0, ${L.polylinePrecision})`);
+    expect(save).toContain(`v_summary[1] not between ${L.minPoints} and ${L.maxPoints}`);
+  });
+
+  it('save_tracked_route: Tageslimit, Uhr-Spielraum, Eintrag-Toleranz = TRACKED_ROUTE_LIMITS', () => {
+    expect(save).toContain(`max_saves_per_day constant integer := ${L.maxSavesPerDay};`);
+    expect(save).toContain(`clock_skew_s constant integer := ${L.clockSkewS};`);
+    expect(save).toContain(
+      `private.jsonb_number_between(r -> 'duration_s', ${L.durationS.min}, ${L.durationS.max}, 0)`,
+    );
+    expect(save).toContain(
+      `private.jsonb_number_between(r -> 'distance_m', ${L.distanceM.min}, ${L.distanceM.max}, 0)`,
+    );
+  });
+
+  it('Favorit nur eigener Favorit gleicher Sportart; Eintrag nur eigener Ausdauer-Eintrag gleicher Art', () => {
+    expect(save).toContain(
+      'where t.id = v_base_route_id and t.user_id = current_user_id and t.is_favorite and t.sport = v_sport',
+    );
+    expect(save).toContain(
+      "where sl.id = v_session_log_id and sl.user_id = current_user_id and sl.kind = 'endurance'",
+    );
+    expect(save).toContain('and cl.modality = v_sport');
+    // Zusätzlich zusammengesetzte Fremdschlüssel mit user_id.
+    expect(block).toContain(
+      'foreign key (base_route_id, user_id) references public.tracked_routes (id, user_id)',
+    );
+    expect(block).toContain(
+      'foreign key (session_log_id, user_id) references public.session_logs (id, user_id)',
+    );
+  });
+
+  it('RLS: nur eigene Zeilen lesen, kein Schreib-Recht, genau eine Policy', () => {
+    expect(table).toContain('alter table public.tracked_routes enable row level security;');
+    expect(table).toContain('revoke all on table public.tracked_routes from anon, authenticated;');
+    expect(table).toContain('grant select on table public.tracked_routes to authenticated;');
+    expect(table.match(/create policy/g)).toHaveLength(1);
+    expect(table).toContain('using (user_id = (select auth.uid()))');
+    expect(allSql).not.toMatch(
+      /grant (insert|update|delete|all) on table public\.tracked_routes to authenticated/,
+    );
+  });
+
+  it('Widerruf health_data: Strecken bleiben (W-G15) – consents_after_revoke (neueste Fassung) ohne tracked_routes', () => {
+    const marker = 'create or replace function private.consents_after_revoke()';
+    const start = allSql.lastIndexOf(marker);
+    const body = allSql.slice(start, allSql.indexOf('$$;', start));
+    expect(body).not.toContain('tracked_routes');
+    expect(rpcs).not.toContain(marker);
+  });
+
+  it('save_session_log (S1): Herkunft gps/gpx_import nur über save_tracked_route; sonst Zeile für Zeile wie A1b', () => {
+    const marker = 'create or replace function public.save_session_log(';
+    const bodyOf = (sql: string) => {
+      const start = sql.lastIndexOf(marker);
+      return sql.slice(start, sql.indexOf('$$;', start)).split('\n');
+    };
+    const latest = bodyOf(rpcs);
+    const a1b = bodyOf(readMigration('_free_session_logs.sql'));
+    expect(a1b.filter((line) => !latest.includes(line))).toEqual([
+      "          source = (p_log ->> 'source')::public.log_source,",
+      "        intro_week, deload, from_health, v_is_free, new_revision, write_id, (p_log ->> 'source')::public.log_source,",
+    ]);
+    const text = latest.join('\n');
+    expect(text).toContain("if v_source <> 'manual' then");
+    expect(text).toContain('          source = existing.source,');
+    expect(save).toContain(
+      "set source = case v_source when 'recorded' then 'gps' else 'gpx_import' end::public.log_source",
+    );
+  });
+
+  it('Wächter S1 M3/M4: Eintrag passt zur Strecke = sessionLogFitsRoute (TRACKED_ROUTE_LOG_MATCH, Tagesfenster)', () => {
+    const fits = rpcs.slice(
+      rpcs.indexOf('create or replace function private.session_log_fits_route('),
+      rpcs.indexOf(
+        '$$;',
+        rpcs.indexOf('create or replace function private.session_log_fits_route('),
+      ),
+    );
+    const M = TRACKED_ROUTE_LOG_MATCH;
+    const day = "(p_route_started_at at time zone 'Europe/Berlin')::date";
+    expect(fits).toContain(
+      `and p_log_day between ${day}\n      and ${day} + ${L.sessionLogDayTolerance}\n`,
+    );
+    expect(fits).toContain(
+      `abs(p_log_distance_m - p_route_distance_m) <= greatest(${M.distanceMinM}, p_route_distance_m * ${M.distanceShare})`,
+    );
+    expect(fits).toContain(
+      `p_log_duration_s between p_route_moving_s - ${M.durationToleranceS} and p_route_duration_s + ${M.durationToleranceS}`,
+    );
+    expect(fits).toContain("p_log_kind = 'endurance'\n    and p_log_modality = p_route_sport");
+    // Beide Wege nutzen dieselbe Prüfung.
+    expect(save).toContain('if not private.session_log_fits_route(');
+    const marker = 'create or replace function public.save_session_log(';
+    const logFn = rpcs.slice(rpcs.indexOf(marker), rpcs.indexOf('$$;', rpcs.indexOf(marker)));
+    expect(logFn).toContain('where t.session_log_id = existing.id');
+    expect(logFn).toContain('if not private.session_log_fits_route(');
+    // N2: revision steigt beim Setzen der Herkunft.
+    expect(save).toContain('revision = sl.revision + 1');
+  });
+
+  it('export_my_data (S1): Obermenge der E3-Fassung plus tracked_routes', () => {
+    const marker = 'create or replace function public.export_my_data()';
+    const bodyOf = (sql: string) => {
+      const start = sql.lastIndexOf(marker);
+      return sql.slice(start, sql.indexOf('$$;', start)).split('\n');
+    };
+    const latest = bodyOf(rpcs);
+    const e3 = bodyOf(readMigration('_ai_food_photo_export.sql'));
+    expect(e3.filter((line) => !latest.includes(line) && !latest.includes(`${line},`))).toEqual([]);
+    expect(latest.join('\n')).toContain(
+      "'tracked_routes', (select coalesce(jsonb_agg(to_jsonb(t) order by t.started_at, t.created_at), '[]'::jsonb) from public.tracked_routes t where t.user_id = current_user_id)",
+    );
+    expect(DATA_EXPORT_TABLES).toContain('tracked_routes');
   });
 });

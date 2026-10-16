@@ -2149,6 +2149,93 @@ export type Database = {
           },
         ];
       };
+      tracked_routes: {
+        Row: {
+          base_route_id: string | null;
+          bbox: number[];
+          created_at: string;
+          difficulty: Database['public']['Enums']['route_difficulty'] | null;
+          distance_m: number;
+          duration_s: number;
+          elevation_gain_m: number | null;
+          id: string;
+          is_favorite: boolean;
+          km_splits: Json;
+          moving_s: number;
+          name: string;
+          note: string | null;
+          point_count: number;
+          polyline: string;
+          session_log_id: string | null;
+          source: Database['public']['Enums']['tracked_route_source'];
+          sport: Database['public']['Enums']['endurance_modality'];
+          started_at: string;
+          updated_at: string;
+          user_id: string;
+        };
+        Insert: {
+          base_route_id?: string | null;
+          bbox: number[];
+          created_at?: string;
+          difficulty?: Database['public']['Enums']['route_difficulty'] | null;
+          distance_m: number;
+          duration_s: number;
+          elevation_gain_m?: number | null;
+          id?: string;
+          is_favorite?: boolean;
+          km_splits?: Json;
+          moving_s: number;
+          name: string;
+          note?: string | null;
+          point_count: number;
+          polyline: string;
+          session_log_id?: string | null;
+          source: Database['public']['Enums']['tracked_route_source'];
+          sport: Database['public']['Enums']['endurance_modality'];
+          started_at: string;
+          updated_at?: string;
+          user_id?: string;
+        };
+        Update: {
+          base_route_id?: string | null;
+          bbox?: number[];
+          created_at?: string;
+          difficulty?: Database['public']['Enums']['route_difficulty'] | null;
+          distance_m?: number;
+          duration_s?: number;
+          elevation_gain_m?: number | null;
+          id?: string;
+          is_favorite?: boolean;
+          km_splits?: Json;
+          moving_s?: number;
+          name?: string;
+          note?: string | null;
+          point_count?: number;
+          polyline?: string;
+          session_log_id?: string | null;
+          source?: Database['public']['Enums']['tracked_route_source'];
+          sport?: Database['public']['Enums']['endurance_modality'];
+          started_at?: string;
+          updated_at?: string;
+          user_id?: string;
+        };
+        Relationships: [
+          {
+            foreignKeyName: 'tracked_routes_base_route_id_user_id_fkey';
+            columns: ['base_route_id', 'user_id'];
+            isOneToOne: false;
+            referencedRelation: 'tracked_routes';
+            referencedColumns: ['id', 'user_id'];
+          },
+          {
+            foreignKeyName: 'tracked_routes_session_log_id_user_id_fkey';
+            columns: ['session_log_id', 'user_id'];
+            isOneToOne: false;
+            referencedRelation: 'session_logs';
+            referencedColumns: ['id', 'user_id'];
+          },
+        ];
+      };
       training_slots: {
         Row: {
           created_at: string;
@@ -2434,12 +2521,14 @@ export type Database = {
         Args: { p_type: Database['public']['Enums']['consent_type'] };
         Returns: number;
       };
+      delete_all_tracked_routes: { Args: never; Returns: number };
       delete_competition: { Args: { p_id: string }; Returns: undefined };
       delete_custom_meal: { Args: { p_id: string }; Returns: Json };
       delete_my_account: { Args: never; Returns: undefined };
       delete_food_log_entry: { Args: { p_base_revision: number; p_id: string }; Returns: Json };
       delete_session_log: { Args: { p_base_revision: number; p_id: string }; Returns: Json };
       delete_stored_intolerances: { Args: never; Returns: undefined };
+      delete_tracked_route: { Args: { p_id: string }; Returns: undefined };
       export_my_data: { Args: never; Returns: Json };
       beta_admin: {
         Args: {
@@ -2486,6 +2575,7 @@ export type Database = {
       save_custom_meal: { Args: { p_meal: Json }; Returns: Json };
       save_food_log_entries: { Args: { p_entries: Json }; Returns: Json };
       save_session_log: { Args: { p_log: Json }; Returns: Json };
+      save_tracked_route: { Args: { p_route: Json }; Returns: string };
       save_training_plan: { Args: { p_plan: Json }; Returns: string };
       seed_content: { Args: { p_content: Json }; Returns: Json };
       seed_nutrition_content: { Args: { p_content: Json }; Returns: Json };
@@ -2493,6 +2583,7 @@ export type Database = {
         Args: { p_a: string; p_a_on: string; p_b: string; p_b_on: string };
         Returns: undefined;
       };
+      update_tracked_route: { Args: { p_route: Json }; Returns: undefined };
       waitlist_add_unsubscribe_token: {
         Args: { p_token_hash: string; p_waitlist_id: string };
         Returns: undefined;
@@ -2619,6 +2710,7 @@ export type Database = {
       plan_status: 'active' | 'replaced';
       planned_session_kind: 'strength' | 'endurance';
       planned_session_status: 'planned' | 'skipped' | 'completed';
+      route_difficulty: 'easy' | 'medium' | 'hard';
       session_focus: 'full_body' | 'upper' | 'lower';
       session_log_status: 'completed' | 'partial';
       sex: 'male' | 'female' | 'diverse' | 'unspecified';
@@ -2626,6 +2718,7 @@ export type Database = {
       training_phase: 'base' | 'build' | 'peak' | 'taper' | 'race_week' | 'recovery';
       training_slot_kind: 'strength_gym' | 'strength_home' | 'endurance';
       training_time: 'early' | 'morning' | 'midday' | 'afternoon' | 'evening' | 'varies';
+      tracked_route_source: 'recorded' | 'gpx_import';
       workout_type:
         'easy' | 'recovery' | 'long' | 'strides' | 'fartlek' | 'tempo' | 'intervals' | 'race_pace';
     };
@@ -2844,12 +2937,14 @@ export const Constants = {
       planned_session_kind: ['strength', 'endurance'],
       planned_session_status: ['planned', 'skipped', 'completed'],
       session_focus: ['full_body', 'upper', 'lower'],
+      route_difficulty: ['easy', 'medium', 'hard'],
       session_log_status: ['completed', 'partial'],
       sex: ['male', 'female', 'diverse', 'unspecified'],
       training_location: ['gym', 'home', 'both'],
       training_phase: ['base', 'build', 'peak', 'taper', 'race_week', 'recovery'],
       training_slot_kind: ['strength_gym', 'strength_home', 'endurance'],
       training_time: ['early', 'morning', 'midday', 'afternoon', 'evening', 'varies'],
+      tracked_route_source: ['recorded', 'gpx_import'],
       workout_type: [
         'easy',
         'recovery',
