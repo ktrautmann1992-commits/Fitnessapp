@@ -202,6 +202,13 @@ export type CustomMealItemRow = CustomMealItem & {
   order_no: number;
 };
 
+/**
+ * Wettkampf (Phase 10 WP3, Tabelle `competitions`) – Spalten wie die Datenbank (Abgleich mit core.CompetitionRow in
+ * row-types.test.ts). Kein Gesundheitsdatum; der Plan-Bezug (uses_health_data) wird beim Widerruf geleert. Lesen,
+ * Anlegen und der Testmodus folgen mit WP4 – bis dahin immer leer.
+ */
+export type CompetitionRow = Tables<'competitions'>;
+
 /** Alle Zeilen eines Nutzers – im Testmodus der komplette Gerätespeicher, im Supabase-Modus ein Abbild. */
 export interface UserRows {
   profile: ProfileRow | null;
@@ -263,6 +270,8 @@ export interface UserRows {
    */
   customMeals: CustomMealRow[];
   customMealItems: CustomMealItemRow[];
+  /** Wettkämpfe (Phase 10 WP3; App und Testmodus ab WP4 – bis dahin immer leer). */
+  competitions: CompetitionRow[];
 }
 
 export function emptyUserRows(): UserRows {
@@ -296,6 +305,7 @@ export function emptyUserRows(): UserRows {
     foodLogFavorites: [],
     customMeals: [],
     customMealItems: [],
+    competitions: [],
   };
 }
 

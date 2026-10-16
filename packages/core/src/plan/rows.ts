@@ -7,8 +7,10 @@ import type {
   SessionFocus,
 } from '../enums';
 import { equipmentIdSchema } from '../equipment';
+import type { CompetitionPhase } from './competition-schema';
 import { equipmentProfile } from './equipment-profile';
 import { type PlanInputsSnapshot, secondaryGoalEntry } from './inputs';
+import { type WorkoutType, workoutStepsSchema } from './intensity';
 import { savePlanInputsSchema } from './payload';
 import type { StoredSession } from './view';
 
@@ -20,6 +22,10 @@ import type { StoredSession } from './view';
  * Die Zeilen-Typen spiegeln die Spalten der Datenbank (packages/db/src/database.types.ts); dass beide gleich
  * bleiben, prüft apps/mobile/src/data/row-types.test.ts zur Übersetzungszeit.
  */
+
+/** JSON-Wert einer jsonb-Spalte (gleich dem Typ `Json` der generierten Datenbank-Typen). */
+export type JsonValue =
+  string | number | boolean | null | { [key: string]: JsonValue | undefined } | JsonValue[];
 
 /** Zeile aus planned_sessions (ohne created_at/updated_at). */
 export interface PlannedSessionRow {
@@ -42,6 +48,12 @@ export interface PlannedSessionRow {
   estimated_minutes: number;
   warmup_de: string;
   cooldown_de: string;
+  /** Wettkampfplan (Phase 10, WP3) – sonst null. */
+  workout_type: WorkoutType | null;
+  training_phase: CompetitionPhase | null;
+  target_distance_m: number | null;
+  /** Schritte für den Timer (workoutStepsSchema); jsonb. */
+  workout_steps: JsonValue | null;
 }
 
 /** Zeile aus planned_exercises. */
@@ -106,6 +118,7 @@ export function storedSessionFromRows(
     estimated_minutes: s.estimated_minutes,
     warmup_de: s.warmup_de,
     cooldown_de: s.cooldown_de,
+    ...competitionFieldsFromRow(s),
     exercises: plannedExercises
       .filter((e) => e.session_id === s.id)
       .sort((a, b) => a.order_no - b.order_no)
@@ -124,6 +137,23 @@ export function storedSessionFromRows(
         notes_de: e.notes_de,
         target_weight_kg: e.target_weight_kg,
       })),
+  };
+}
+
+/**
+ * Felder des Wettkampfplans (WP3) – nur wenn die Zeile eine Art und Phase hat; sonst KEINE Schlüssel (Einheiten ohne
+ * Wettkampf bleiben byte-gleich). Unlesbare Schritte → null (apply-safety rechnet dann ohne Schritte).
+ */
+function competitionFieldsFromRow(
+  s: PlannedSessionRow,
+): Pick<StoredSession, 'workout_type' | 'training_phase' | 'workout_steps' | 'target_distance_m'> {
+  if (s.workout_type === null || s.training_phase === null) return {};
+  const steps = workoutStepsSchema.safeParse(s.workout_steps);
+  return {
+    workout_type: s.workout_type,
+    training_phase: s.training_phase,
+    workout_steps: steps.success ? steps.data : null,
+    target_distance_m: s.target_distance_m,
   };
 }
 

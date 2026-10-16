@@ -39,6 +39,10 @@ function session(
     estimated_minutes: 45,
     warmup_de: 'Aufwärmen',
     cooldown_de: 'Abwärmen',
+    workout_type: null,
+    training_phase: null,
+    target_distance_m: null,
+    workout_steps: null,
     ...overrides,
   };
 }
@@ -91,6 +95,10 @@ describe('storedSessionFromRows', () => {
     const expected: Record<string, unknown> = { ...s, exercises: expect.any(Array) };
     delete expected.user_id;
     delete expected.plan_id;
+    // Ohne Wettkampf (Art/Phase null) keine Felder des Wettkampfplans – Einheit byte-gleich zu vorher (WP3).
+    for (const key of ['workout_type', 'training_phase', 'target_distance_m', 'workout_steps']) {
+      delete expected[key];
+    }
     expect(stored).toEqual(expected);
     expect(stored.exercises.map((e) => e.exercise_id)).toEqual(['uebung-a', 'uebung-b']);
     expect(stored.exercises[0]).toEqual({
@@ -195,5 +203,68 @@ describe('planSnapshot / profilesFor', () => {
       ],
     });
     expect([...(profiles.get('home')?.available ?? [])]).toEqual(['dumbbells']);
+  });
+});
+
+describe('storedSessionFromRows – Wettkampfplan (Phase 10 WP3)', () => {
+  const steps = [
+    { part: 'warmup', kind: 'easy', seconds: 600, effort: 3 },
+    { part: 'main', kind: 'work', seconds: 1200, effort: 7 },
+    { part: 'cooldown', kind: 'easy', seconds: 600, effort: 3 },
+  ];
+  const endurance = {
+    kind: 'endurance' as const,
+    focus: null,
+    template_day_index: null,
+    endurance_modality: 'run' as const,
+    effort_target: 7,
+    estimated_minutes: 40,
+  };
+
+  it('übernimmt Art, Phase, Schritte und Distanz, wenn Art und Phase gesetzt sind', () => {
+    const stored = storedSessionFromRows(
+      [],
+      session('s1', '2026-10-05', {
+        ...endurance,
+        workout_type: 'tempo',
+        training_phase: 'build',
+        workout_steps: steps,
+        target_distance_m: 7500,
+      }),
+    );
+    expect(stored).toMatchObject({
+      workout_type: 'tempo',
+      training_phase: 'build',
+      workout_steps: steps,
+      target_distance_m: 7500,
+    });
+  });
+
+  it('unlesbare Schritte → null (Art bleibt, apply-safety rechnet ohne Schritte)', () => {
+    const stored = storedSessionFromRows(
+      [],
+      session('s1', '2026-10-05', {
+        ...endurance,
+        workout_type: 'tempo',
+        training_phase: 'build',
+        workout_steps: [{ part: 'main', kind: 'sprint', seconds: 1, effort: 11 }],
+      }),
+    );
+    expect(stored.workout_type).toBe('tempo');
+    expect(stored.workout_steps).toBeNull();
+  });
+
+  it('ohne Art oder ohne Phase: keine Felder des Wettkampfplans (Schlüssel fehlen)', () => {
+    for (const overrides of [
+      { training_phase: 'build' as const },
+      { workout_type: 'easy' as const },
+    ]) {
+      const stored = storedSessionFromRows(
+        [],
+        session('s1', '2026-10-05', { ...endurance, ...overrides }),
+      );
+      expect(Object.keys(stored)).not.toContain('workout_type');
+      expect(Object.keys(stored)).not.toContain('workout_steps');
+    }
   });
 });

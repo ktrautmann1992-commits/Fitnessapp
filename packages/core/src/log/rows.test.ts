@@ -56,6 +56,10 @@ function plannedSession(
     estimated_minutes: 45,
     warmup_de: '',
     cooldown_de: '',
+    workout_type: null,
+    training_phase: null,
+    target_distance_m: null,
+    workout_steps: null,
     ...overrides,
   };
 }

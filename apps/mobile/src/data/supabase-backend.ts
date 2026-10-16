@@ -1575,6 +1575,8 @@ export function createSupabaseBackend(options: SupabaseBackendOptions): Backend 
       foodDislikes: (dislikes.data ?? []) as FoodDislikeRow[],
       // Essenspläne, Einkaufslisten, Ernährungstagebuch, Favoriten und eigene Gerichte (Etappe N7 Teil 2).
       ...(await fetchNutritionRows(userId)),
+      // Wettkämpfe (Phase 10 WP3): Tabelle seit WP3, in der App erst mit WP4.
+      competitions: [],
     };
   }
 

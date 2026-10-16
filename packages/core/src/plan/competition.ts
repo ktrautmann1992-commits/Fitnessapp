@@ -48,6 +48,7 @@ import {
   trailingLoadWeeks,
 } from './periodization';
 import {
+  ENDURANCE_START_GROUPS,
   type EnduranceStartGroup,
   isStricterGroup,
   planSafetyRules,
@@ -128,7 +129,7 @@ export const competitionStartReferenceSchema = z
   .strictObject({
     volume: z.number().int().min(0).max(R.maxWeeklyMinutes),
     sessionCap: z.number().int().min(R.minMinutes).max(R.maxSessionMinutes).nullable(),
-    startGroup: z.enum(['cautious', 'beginner', 'advanced', 'competitive']),
+    startGroup: z.enum(ENDURANCE_START_GROUPS),
   })
   .refine((r) => r.volume === 0 || r.volume >= R.minMinutes, {
     path: ['volume'],
