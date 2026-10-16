@@ -26,6 +26,7 @@ import {
   BODY_MEASUREMENT_LIMITS,
   CONTENT_SCHEMA_LIMITS,
   FOOD_LOG_LIMITS,
+  AI_FOOD_PHOTO,
   CUSTOM_MEAL_LIMITS,
   PINCH_G,
   BODY_METRIC_LIMITS,
@@ -71,6 +72,7 @@ import {
   MIN_INTAKE_RELATIVE_TO_BMR,
 } from './constants';
 import { serverDayKcalFloor } from './nutrition/plausibility';
+import { AI_USAGE_STATUSES } from './nutrition/food-photo';
 import {
   ANIMAL_KINDS,
   GELATIN_ORIGINS,
@@ -352,8 +354,13 @@ describe('Listen', () => {
     expect([...columns].sort()).toEqual(MEASUREMENT_SITES.map((s) => s.column).sort());
   });
 
-  it('CURRENT_CONSENT_VERSIONS = höchste Version im Seed', () => {
-    const seed = readMigration('_seed_consent_documents.sql');
+  it('CURRENT_CONSENT_VERSIONS = höchste Version im Seed (auch spätere Texte, z. B. ai_food_photo in E3)', () => {
+    // Alle Einfügungen in consent_documents über alle Migrationen (Phase 1 + E3).
+    const seed = allSql
+      .split('insert into public.consent_documents')
+      .slice(1)
+      .map((part) => part.slice(0, part.indexOf('on conflict')))
+      .join('\n');
     const highest: Record<string, number> = {};
     for (const match of seed.matchAll(/\(\s*'([a-z_]+)',\s*(\d+),/g)) {
       const type = match[1] as string;
@@ -905,9 +912,10 @@ describe('Ernährungstagebuch in der Datenbank (Etappe E1)', () => {
     return allSql.slice(start, allSql.indexOf('$$;', allSql.indexOf('as $$', start)));
   };
   const save = newest('public.save_food_log_entries');
-  // CHECK-Bedingungen der Einträge: Herkunft und Form neu gefasst in *_custom_meals.sql (E2, nur erweitert).
-  const entriesE2 = readMigration('_custom_meals.sql').slice(
-    readMigration('_custom_meals.sql').indexOf('alter table public.food_log_entries'),
+  // CHECK-Bedingungen der Einträge: Herkunft und Form neu gefasst in *_custom_meals.sql (E2) und *_food_log_photo.sql
+  // (E3, je nur erweitert) – geprüft wird die NEUESTE Fassung.
+  const entriesE2 = readMigration('_food_log_photo.sql').slice(
+    readMigration('_food_log_photo.sql').indexOf('alter table public.food_log_entries'),
   );
   const L = FOOD_LOG_LIMITS;
 
@@ -1044,10 +1052,10 @@ describe('Ernährungstagebuch in der Datenbank (Etappe E1)', () => {
     }
   });
 
-  it('export_my_data(): neueste Fassung in *_competition_rpcs.sql (E2, danach Phase 10 WP3)', () => {
+  it('export_my_data(): neueste Fassung in *_ai_food_photo_export.sql (E3, davor WP3 und E2)', () => {
     const marker = 'create or replace function public.export_my_data()';
     expect(migrationFiles.filter((n) => readMigration(n).includes(marker)).at(-1)).toMatch(
-      /_competition_rpcs\.sql$/,
+      /_ai_food_photo_export\.sql$/,
     );
   });
 });
@@ -1688,5 +1696,135 @@ describe('Essensplan in der Datenbank – N7 Teil 2 (Löschfrist G-N7-2, Tageska
       if (sql === null) expect(core, label).toBeNull();
       else expect(core, label).toBeCloseTo(sql, 9);
     }
+  });
+});
+
+describe('Gericht per Foto in der Datenbank (Etappe E3)', () => {
+  const main = readMigration('_ai_food_photo.sql');
+  const enumsFile = migrationFiles.findIndex((n) => n.endsWith('_ai_food_photo_enums.sql'));
+  const mainFile = migrationFiles.findIndex((n) => n.endsWith('_ai_food_photo.sql'));
+  const photoFile = migrationFiles.findIndex((n) => n.endsWith('_food_log_photo.sql'));
+  const body = (name: string) => {
+    const start = allSql.lastIndexOf(`create or replace function ${name}(`);
+    if (start < 0) throw new Error(`${name} nicht gefunden`);
+    return allSql.slice(start, allSql.indexOf('$$;', allSql.indexOf('as $$', start)));
+  };
+
+  it('Enum-Wert in eigener Datei VOR seiner Verwendung', () => {
+    expect(enumsFile).toBeGreaterThanOrEqual(0);
+    expect(mainFile).toBeGreaterThan(enumsFile);
+    expect(photoFile).toBeGreaterThan(mainFile);
+  });
+
+  it.each([
+    ['default_monthly_limit constant integer := ', AI_FOOD_PHOTO.monthlyLimit],
+    ['default_daily_limit constant integer := ', AI_FOOD_PHOTO.dailyLimit],
+    ['default_daily_attempts_max constant integer := ', AI_FOOD_PHOTO.dailyAttemptsMax],
+  ] as const)('ai_food_photo_reserve: „%s%s“ = AI_FOOD_PHOTO', (marker, value) => {
+    expect(body('public.ai_food_photo_reserve')).toContain(`${marker}${value};`);
+  });
+
+  it('Reservierung zählt wie photoLimitState (ohne Abschluss weiter – fail closed, Europe/Berlin)', () => {
+    const usage = body('private.ai_food_photo_usage');
+    expect(usage).toContain("u.status in ('succeeded', 'reserved') as counts");
+    expect(usage).not.toContain('minutes');
+    // Versuchs-Deckel je Person = 2 × Tageslimit (photoLimitsFor), Mindest-Fassung für den echten Anbieter.
+    expect(body('public.ai_food_photo_reserve')).toContain(
+      'then default_daily_attempts_max else 2 * b.daily_limit end',
+    );
+    expect(body('public.ai_food_photo_reserve')).toContain(
+      "p_min_consent_version > coalesce(public.current_consent_version('ai_food_photo'), 0)",
+    );
+    expect(body('public.ai_food_photo_reserve')).toContain(
+      `default_daily_limit constant integer := ${AI_FOOD_PHOTO.dailyLimit};`,
+    );
+    expect(usage).toContain("at time zone 'Europe/Berlin'");
+  });
+
+  it('ai_usage: CHECK-Listen = AI_FOOD_PHOTO.feature / AI_USAGE_STATUSES, keine Inhalts-Spalten', () => {
+    expect(quotedListAfter(main, 'check (feature in (')).toEqual([AI_FOOD_PHOTO.feature]);
+    expect(quotedListAfter(main, 'check (status in (')).toEqual([...AI_USAGE_STATUSES]);
+    const table = main.slice(
+      main.indexOf('create table public.ai_usage'),
+      main.indexOf('comment on table public.ai_usage'),
+    );
+    const columns = [...table.matchAll(/^ {2}([a-z_]+) [a-z]/gm)].map((m) => m[1]);
+    expect(columns).toEqual([
+      'id',
+      'user_id',
+      'feature',
+      'status',
+      'model',
+      'input_tokens',
+      'output_tokens',
+      'cost_eur',
+      'created_at',
+      'finished_at',
+    ]);
+  });
+
+  it('Limits je Person (N6): Bereich in beta_entitlements und beta_admin = AI_FOOD_PHOTO.customLimits', () => {
+    const { monthly, daily } = AI_FOOD_PHOTO.customLimits;
+    expect(main).toContain(`check (monthly_limit between ${monthly.min} and ${monthly.max})`);
+    expect(main).toContain(`check (daily_limit between ${daily.min} and ${daily.max})`);
+    expect(main).toContain(`p_monthly_limit not between ${monthly.min} and ${monthly.max}`);
+    expect(main).toContain(`p_daily_limit not between ${daily.min} and ${daily.max}`);
+  });
+
+  it('kein Storage-Bucket für Fotos (A-G18: Foto wird nie gespeichert)', () => {
+    for (const name of migrationFiles.filter((n) => n >= (migrationFiles[enumsFile] ?? ''))) {
+      expect(readMigration(name)).not.toMatch(/storage\.(buckets|objects)/);
+    }
+  });
+
+  it('reserve/finish/beta_admin nur service_role, Lesen der Nutzung per RLS nur eigene Zeilen', () => {
+    expect(main).toContain(
+      'revoke all on function public.ai_food_photo_reserve(uuid, integer) from public, anon, authenticated;',
+    );
+    expect(main).toContain(
+      'grant execute on function public.ai_food_photo_reserve(uuid, integer) to service_role;',
+    );
+    expect(main).toContain('grant select on table public.ai_usage to authenticated;');
+    expect(main).toContain('using (user_id = (select auth.uid()));');
+    expect(main).not.toMatch(
+      /grant (insert|update|delete|all) on table public\.ai_usage to authenticated/,
+    );
+  });
+
+  it('export_my_data (E3): Obermenge der Vorgänger-Fassung – jede bisherige Zeile steht unverändert darin', () => {
+    const marker = 'create or replace function public.export_my_data()';
+    const withFn = migrationFiles.filter((n) => readMigration(n).includes(marker));
+    const fnOf = (name: string) => {
+      const sql = readMigration(name);
+      const start = sql.lastIndexOf(marker);
+      return sql.slice(start, sql.indexOf('$$;', start)).split('\n');
+    };
+    const latest = fnOf(withFn.at(-1) ?? '');
+    const previous = fnOf(withFn.at(-2) ?? '');
+    // Nur das schließende „)“ der letzten Zeile bekommt ein Komma.
+    const missing = previous.filter(
+      (line) => !latest.includes(line) && !latest.includes(`${line},`),
+    );
+    expect(missing).toEqual([]);
+    expect(latest.join('\n')).toContain("'ai_usage', (select coalesce(");
+    expect(latest.join('\n')).toContain("'beta_entitlements', (select coalesce(");
+  });
+
+  it('save_food_log_entries: photo wie food (Werte aus dem Katalog), sonst unverändert', () => {
+    const save = body('public.save_food_log_entries');
+    expect(save).toContain("if v_source in ('food', 'recipe', 'custom_meal', 'photo') then");
+    expect(save).toContain("if v_source in ('food', 'photo') then");
+    expect(save).toContain(`'{"source": "food"}'::jsonb`);
+    // Alle Zeilen der E2-Fassung stehen weiter darin, bis auf die drei erweiterten.
+    const e2 = readMigration('_custom_meal_rpcs.sql');
+    const start = e2.indexOf('create or replace function public.save_food_log_entries(');
+    const old = e2.slice(start, e2.indexOf('$$;', start)).split('\n');
+    const missing = old.filter((line) => !save.split('\n').includes(line));
+    expect(missing).toEqual([
+      "      if v_source = 'food' then",
+      "      if v_source in ('food', 'recipe', 'custom_meal') then",
+      '        if not private.food_log_device_values_ok(e) then',
+      '        v_values := private.food_log_server_values(e, ex_row, v_custom_meal_id, current_user_id);',
+    ]);
   });
 });

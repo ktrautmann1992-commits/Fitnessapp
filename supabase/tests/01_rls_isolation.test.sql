@@ -236,7 +236,7 @@ select throws_ok(
 select throws_ok($$ select public.delete_my_account() $$, '42501', null, 'anon: delete_my_account nicht aufrufbar');
 select is(
   (select count(*) from public.consent_documents),
-  3::bigint, 'anon: liest die drei veröffentlichten Einwilligungstexte'
+  4::bigint, 'anon: liest die vier veröffentlichten Einwilligungstexte (E3: ai_food_photo)'
 );
 -- N7: current_consent_version ist nicht mehr für anon ausführbar (Advisor); die App liest die Version vor dem Login
 -- direkt aus consent_documents (RLS: nur veröffentlichte Texte) – gleiches Ergebnis.
