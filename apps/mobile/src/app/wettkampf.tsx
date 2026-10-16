@@ -8,6 +8,8 @@ import {
   type FeasibilitySuggestion,
   freeSessionDates,
   isCompetitionDiscipline,
+  CARDIO_LOG_LIMITS,
+  COMPETITION_OWN_START,
   ownStartAllowedLevel,
   SESSION_LOG_LIMITS,
 } from '@fitnessapp/core';
@@ -38,9 +40,13 @@ import {
   draftFeasibility,
   draftFromStored,
   isCompetitionPlan,
+  competitionPlanFitFromRows,
+  competitionSaveOptions,
+  timeGoalOffered,
   plannedCompetition,
   resavePayload,
   resultLogCandidate,
+  resultLogToReuse,
 } from '@/data/competition';
 import { newId } from '@/data/create-backend';
 import { activePlan } from '@/data/training-plan';
@@ -123,7 +129,6 @@ function formFrom(
 function draftOf(
   form: FormState,
   today: string,
-  ownStartAllowed: boolean,
 ): { draft: CompetitionDraft | null; errors: FormErrors } {
   const errors: FormErrors = {};
   const raceDate = isoFromDateParts(form.date.day, form.date.month, form.date.year);
@@ -148,9 +153,15 @@ function draftOf(
     errors.target = C.errorsForm.referenceMissing;
   }
   let ownStart: CompetitionDraft['ownStart'] = null;
-  if (ownStartAllowed && form.ownStart.trim() !== '') {
+  // Auch wenn das Feld beim aktuellen Level ausgeblendet ist, bleibt die gespeicherte Angabe Teil des Datensatzes
+  // (Wächter WP4 M4b) – ob sie gilt, entscheidet packages/core (ownStartMinutes, Hinweis own_start_ignored).
+  if (form.ownStart.trim() !== '') {
     const minutes = Number(form.ownStart.trim());
-    if (!/^\d{1,4}$/.test(form.ownStart.trim()) || minutes < 10 || !form.ownStartConfirmed) {
+    if (
+      !/^\d{1,4}$/.test(form.ownStart.trim()) ||
+      minutes < COMPETITION_OWN_START.minWeeklyMinutes ||
+      !form.ownStartConfirmed
+    ) {
       errors.ownStart = C.errorsForm.ownStart;
     } else {
       ownStart = { weeklyMinutes: minutes, confirmed: true };
@@ -172,20 +183,6 @@ function draftOf(
     },
     errors,
   };
-}
-
-/** Bleibt der Plan-Bezug gültig (nur Name bzw. Wunsch-Tag geändert)? */
-function samePlanBasis(a: CompetitionDraft, b: CompetitionDraft): boolean {
-  const x = a.competition;
-  const y = b.competition;
-  return (
-    x.discipline === y.discipline &&
-    x.raceDate === y.raceDate &&
-    (x.goal ?? 'finish') === (y.goal ?? 'finish') &&
-    (x.targetTimeS ?? null) === (y.targetTimeS ?? null) &&
-    JSON.stringify(x.reference ?? null) === JSON.stringify(y.reference ?? null) &&
-    JSON.stringify(a.ownStart) === JSON.stringify(b.ownStart)
-  );
 }
 
 type Mode = 'view' | 'form' | 'result';
@@ -218,6 +215,7 @@ export default function CompetitionScreen() {
   const [message, setMessage] = useState<{ tone: 'success' | 'info' | 'danger'; text: string }>();
   const [notFeasible, setNotFeasible] = useState<CompetitionFeasibility | null>(null);
   const [confirmPlan, setConfirmPlan] = useState(false);
+  const [confirmBasic, setConfirmBasic] = useState(false);
   const [cancelDialog, setCancelDialog] = useState(false);
   const [recreateDialog, setRecreateDialog] = useState(false);
   const [deleteDialog, setDeleteDialog] = useState<string | null>(null);
@@ -226,12 +224,11 @@ export default function CompetitionScreen() {
   const [resultEffort, setResultEffort] = useState<number | null>(null);
   const [resultNotes, setResultNotes] = useState('');
   const [resultError, setResultError] = useState<string>();
+  /** ID des eben gespeicherten Ergebnis-Eintrags (für den erneuten Versuch ohne zweiten Eintrag, M6). */
+  const [savedResultLog, setSavedResultLog] = useState<string | null>(null);
 
   const ownStartAllowed = ownStartAllowedLevel(level);
-  const parsed = useMemo(
-    () => draftOf(form, today, ownStartAllowed),
-    [form, today, ownStartAllowed],
-  );
+  const parsed = useMemo(() => draftOf(form, today), [form, today]);
   const feasibility = useMemo(
     () =>
       rows && parsed.draft
@@ -256,6 +253,9 @@ export default function CompetitionScreen() {
   if (route !== '/today' || !rows) return <Redirect href={route as Href} />;
 
   const competitionPlanActive = isCompetitionPlan(active);
+  const timeGoal = timeGoalOffered(rows, app.safetyRules);
+  // Passt der laufende Plan noch zum Wettkampf (Plan-Bezug, Disziplin, Phasen zum Renntag)? Regel in core.
+  const planFit = competitionPlanFitFromRows(rows, active);
   const offline = app.offline;
   function goBack() {
     if (router.canGoBack()) router.back();
@@ -322,9 +322,17 @@ export default function CompetitionScreen() {
       setTouched(true);
       return;
     }
-    // Plan-Bezug unverändert gültig → mitschicken (save_competition ersetzt den ganzen Datensatz, WP3).
+    // Regel in data/competition.ts (Wächter WP4 H1/M4): unveränderter Plan-Bezug → mitschicken; bei aktivem
+    // Wettkampfplan und geänderten Angaben gibt es „nur speichern“ gar nicht.
+    const options = competitionSaveOptions({
+      stored: planned?.stored ?? null,
+      draft: parsed.draft,
+      competitionPlanActive,
+      feasibilityUsable: false,
+    });
+    if (options.saveOnly === null) return;
     const payload =
-      planned && samePlanBasis(parsed.draft, draftFromStored(planned.stored))
+      options.saveOnly === 'resave' && planned
         ? resavePayload(planned.stored, parsed.draft)
         : countdownPayload(parsed.draft, planned?.stored.id ?? null);
     if (!payload) {
@@ -337,6 +345,33 @@ export default function CompetitionScreen() {
       await app.saveCompetition(payload);
       setMode('view');
       setMessage({ tone: 'success', text: planned ? C.saved : C.savedCountdown });
+    } catch (caught) {
+      setError(errorText(caught));
+    } finally {
+      setBusy(false);
+    }
+  }
+
+  /** „Speichern und Plan ohne Wettkampf neu erstellen“: Wettkampf ohne Plan-Bezug, dann Grundlagen-Plan (H1). */
+  async function saveAndRecreateBasic() {
+    setConfirmBasic(false);
+    if (!parsed.draft) return;
+    const payload = countdownPayload(parsed.draft, planned?.stored.id ?? null);
+    if (!payload) {
+      setError(C.errors.invalid);
+      return;
+    }
+    setBusy(true);
+    setError(undefined);
+    try {
+      await app.saveCompetition(payload);
+      const outcome = await app.createPlan();
+      setMode('view');
+      setMessage(
+        outcome.ok
+          ? { tone: 'success', text: C.savedWithBasicPlan }
+          : { tone: 'danger', text: createPlanErrorText(outcome.code) },
+      );
     } catch (caught) {
       setError(errorText(caught));
     } finally {
@@ -378,9 +413,13 @@ export default function CompetitionScreen() {
   const existingLog = raceDate ? resultLogCandidate(rows, raceDate) : null;
 
   async function saveResult() {
-    if (!raceEntry || !raceDate || !app.session) return;
+    if (!raceEntry || !raceDate || !app.session || !rows) return;
     const total = secondsFromParts(resultTime.hours, resultTime.minutes, resultTime.seconds);
-    if (total === null || total < 60 || total > 12 * 3600) {
+    if (
+      total === null ||
+      total < CARDIO_LOG_LIMITS.durationS.min ||
+      total > CARDIO_LOG_LIMITS.durationS.max
+    ) {
       setResultError(C.result.timeInvalid);
       return;
     }
@@ -390,6 +429,20 @@ export default function CompetitionScreen() {
     }
     setResultError(undefined);
     setBusy(true);
+    // Schon gespeichert (nur das Abschließen scheiterte)? Dann nur noch verknüpfen (Wächter WP4 M6).
+    const reuse = resultLogToReuse(rows, raceDate, savedResultLog, C.result.resultLine(''));
+    if (reuse !== null) {
+      try {
+        await app.completeCompetition(raceEntry.stored.id, reuse);
+        setMode('view');
+        setMessage({ tone: 'success', text: C.result.saved });
+      } catch (caught) {
+        setResultError(errorText(caught));
+      } finally {
+        setBusy(false);
+      }
+      return;
+    }
     try {
       const now = new Date().toISOString();
       const minutesTotal = Math.max(1, Math.round(total / 60));
@@ -419,6 +472,7 @@ export default function CompetitionScreen() {
       draft = setSessionFields(draft, { sessionRpe: resultEffort, notes }, now);
       const outcome = await app.submitWorkout(draft);
       if (outcome.kind === 'saved') {
+        setSavedResultLog(draft.logId);
         await app.completeCompetition(raceEntry.stored.id, draft.logId);
         setMode('view');
         setMessage({ tone: 'success', text: C.result.saved });
@@ -525,10 +579,14 @@ export default function CompetitionScreen() {
     const result = feasibility?.kind === 'result' ? feasibility.result : null;
     const shown = notFeasible ?? (result?.ok ? result.feasibility : null);
     const usable = shown !== null && (shown.status === 'ok' || shown.status === 'tight');
-    const changedBasis =
-      planned !== null &&
-      parsed.draft !== null &&
-      !samePlanBasis(parsed.draft, draftFromStored(planned.stored));
+    const saveOptions = parsed.draft
+      ? competitionSaveOptions({
+          stored: planned?.stored ?? null,
+          draft: parsed.draft,
+          competitionPlanActive,
+          feasibilityUsable: usable && feasibility?.kind === 'result',
+        })
+      : null;
     const goalChange =
       parsed.draft !== null &&
       rows.goals?.goal_type === 'endurance' &&
@@ -540,7 +598,7 @@ export default function CompetitionScreen() {
         footer={
           <View style={{ gap: 8 }}>
             <FieldError message={error} testID="competition-error" />
-            {usable && feasibility?.kind === 'result' ? (
+            {saveOptions?.recreateCompetitionPlan ? (
               <Button
                 label={planned && competitionPlanActive ? C.recreatePlan : C.createPlan}
                 onPress={() => (active ? setConfirmPlan(true) : void createPlan())}
@@ -549,16 +607,27 @@ export default function CompetitionScreen() {
                 testID="competition-create-plan"
               />
             ) : null}
-            <Button
-              label={planned && !changedBasis ? C.save : C.saveCountdown}
-              variant="secondary"
-              onPress={() => {
-                setTouched(true);
-                void saveOnly();
-              }}
-              disabled={offline || busy}
-              testID="competition-save-countdown"
-            />
+            {saveOptions?.recreateBasicPlan ? (
+              <Button
+                label={C.recreateBasicPlan}
+                variant="secondary"
+                onPress={() => setConfirmBasic(true)}
+                disabled={offline || busy}
+                testID="competition-recreate-basic"
+              />
+            ) : null}
+            {saveOptions === null || saveOptions.saveOnly !== null ? (
+              <Button
+                label={saveOptions?.saveOnly === 'resave' ? C.save : C.saveCountdown}
+                variant="secondary"
+                onPress={() => {
+                  setTouched(true);
+                  void saveOnly();
+                }}
+                disabled={offline || busy}
+                testID="competition-save-countdown"
+              />
+            ) : null}
             <Button
               label={C.cancelForm}
               variant="secondary"
@@ -605,7 +674,10 @@ export default function CompetitionScreen() {
           <ChoiceList<CompetitionGoal>
             label={C.goal}
             horizontal
-            options={(['finish', 'time'] as const).map((value) => ({
+            options={(timeGoal || form.goal === 'time'
+              ? (['finish', 'time'] as const)
+              : (['finish'] as const)
+            ).map((value) => ({
               value,
               label: C.goals[value],
             }))}
@@ -614,6 +686,11 @@ export default function CompetitionScreen() {
               update({ goal, ...(goal === 'time' ? { withReference: true } : {}) })
             }
           />
+          {!timeGoal ? (
+            <Body muted testID="competition-time-goal-not-offered">
+              {C.timeGoalNotOffered}
+            </Body>
+          ) : null}
           {form.goal === 'time' ? (
             <>
               <Body muted>{C.goalTimeHint}</Body>
@@ -729,6 +806,21 @@ export default function CompetitionScreen() {
             testID="competition-without"
           />
         ) : null}
+        {saveOptions?.saveOnly === null ? (
+          <Notice tone="info" testID="competition-plan-change">
+            {C.planChangeNeedsRecreate}
+          </Notice>
+        ) : null}
+        <ConfirmDialog
+          visible={confirmBasic}
+          title={C.confirmRecreateTitle}
+          message={C.confirmBasicText}
+          confirmLabel={C.recreateBasicPlan}
+          confirmVariant="primary"
+          onConfirm={() => void saveAndRecreateBasic()}
+          onCancel={() => setConfirmBasic(false)}
+          loading={busy}
+        />
         <ConfirmDialog
           visible={confirmPlan}
           title={C.confirmRecreateTitle}
@@ -797,9 +889,13 @@ export default function CompetitionScreen() {
               ) : null}
               {shownEntry.row.status === 'planned' ? (
                 <Body muted testID="competition-plan-state">
-                  {competitionPlanActive && shownEntry.stored.effectiveGoal !== null
+                  {planFit === 'fits'
                     ? C.planIsCompetition
-                    : C.planIsBasic}
+                    : planFit !== null
+                      ? offline && planFit === 'no_basis'
+                        ? C.planOfflineUnknown
+                        : C.planMismatch
+                      : C.planIsBasic}
                 </Body>
               ) : null}
               {shownEntry.row.status === 'done' ? (

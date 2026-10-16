@@ -6,7 +6,19 @@ import {
   type CompetitionRequest,
   type CompetitionStartReference,
   competitionFeasibility,
+  COMPETITION_GROUP_RULES,
   competitionFollowUpBlock,
+  competitionPaceProfile,
+  competitionPlanFit,
+  type CompetitionPlanFit,
+  competitionPlanWeek,
+  type CompetitionPlanWeek,
+  type PaceProfile,
+  prepareSessionForDisplay,
+  shortDaysWithoutHard,
+  startOfIsoWeek,
+  hardWorkoutLimits,
+  type StoredSession,
   competitionToShow,
   dropPastSessions,
   experienceLevelSchema,
@@ -15,6 +27,7 @@ import {
   generateCompetitionPlan,
   isCompetitionDiscipline,
   isBodyweightTemplateId,
+  isStricterGroup,
   loadWeeksBeforeDeload,
   nextPlanBlock,
   type PlanInputsInput,
@@ -31,6 +44,7 @@ import {
   toSaveCompetitionPayload,
 } from '@fitnessapp/core';
 
+import { competitionDisplayLevel } from './competition-level';
 import type { ConsentVersions } from './mapping';
 import { type ActivePlan, planInputsFromRows, startGroupOf } from './training-plan';
 import type { CompetitionRow, UserRows } from './types';
@@ -61,6 +75,8 @@ export function plannedCompetition(rows: UserRows): CompetitionEntry | null {
   const stored = row ? storedCompetitionFromRow(row) : null;
   return row && stored ? { row, stored } : null;
 }
+
+const LEVEL_ORDER: readonly ExperienceLevel[] = ['beginner', 'advanced', 'competitive'];
 
 /** Ist der aktive Plan ein Wettkampfplan (Einheiten mit Art und Phase, WP3)? */
 export function isCompetitionPlan(active: ActivePlan | null): boolean {
@@ -280,7 +296,14 @@ export type CompetitionFollowUp =
    * Plan-Bezug nach Widerruf leer) → „Plan neu erstellen“ statt Folgeblock von der Spitze aus (WP1 M4, sichere
    * Voreinstellung).
    */
-  | { kind: 'ended'; reason: 'cycle_finished' | 'not_available' | 'no_competition' };
+  | {
+      kind: 'ended';
+      /**
+       * `unreachable` (Wächter WP4 M7): Level bzw. Startgruppe sind strenger geworden und die Ampel sagt für den
+       * Wettkampf jetzt „zu kurz“/„nicht möglich“ – nicht still mit kleinerem Umfang weiter, sondern Hinweis.
+       */
+      reason: 'cycle_finished' | 'not_available' | 'no_competition' | 'unreachable';
+    };
 
 /**
  * Folgeblock eines Wettkampfplans (WP1/WP3): Makrozyklus aus dem gespeicherten Wettkampf (storedCompetitionFromRow) +
@@ -337,6 +360,30 @@ export function competitionFollowUpFromRows(
       ? { kind: 'ended', reason: 'no_competition' }
       : { kind: 'ended', reason: follow.reason };
   }
+  // Wächter WP4 M7: Ist die Gruppe bzw. das Level strenger als beim Erstellen, die Ampel neu prüfen – reicht die Zeit
+  // nach den neuen Regeln nicht mehr, endet der Wettkampfplan mit Hinweis („Plan neu erstellen“).
+  const stricter =
+    isStricterGroup(rules.enduranceStartGroup, startGroupOf(active, rows.profile.birth_date)) ||
+    LEVEL_ORDER.indexOf(inputs.experienceLevel) < LEVEL_ORDER.indexOf(snapshot.experienceLevel);
+  if (stricter) {
+    const check = competitionFeasibility(
+      inputs,
+      {
+        competition: planned.stored.competition,
+        ownStart: planned.stored.ownStart,
+        startReference: startReferenceFromRows(rows, active, today),
+        longRunWeekday: planned.stored.longRunWeekday,
+      },
+      today,
+    );
+    if (
+      !check.ok ||
+      check.feasibility.status === 'too_short' ||
+      check.feasibility.status === 'not_available'
+    ) {
+      return { kind: 'ended', reason: 'unreachable' };
+    }
+  }
   const loadWeeksBefore = new Set(
     active.sessions
       .filter((s) => s.week_no >= 1 && !s.is_deload)
@@ -370,4 +417,220 @@ export function resultLogCandidate(rows: UserRows, raceDate: string): string | n
     .filter((l) => l.kind === 'endurance' && l.performed_on === raceDate)
     .sort((a, b) => b.created_at.localeCompare(a.created_at));
   return logs[0]?.id ?? null;
+}
+
+// ---------------------------------------------------------------------------------------------------------
+// Passt der Plan noch zum Wettkampf? Was darf beim Ändern gespeichert werden? (Wächter WP4 H1/M4)
+// ---------------------------------------------------------------------------------------------------------
+
+/**
+ * Stand des aktiven Plans gegenüber dem geplanten Wettkampf: `null` = kein Wettkampfplan aktiv (Grundlagen-Plan) bzw.
+ * kein geplanter Wettkampf; sonst `competitionPlanFit` aus packages/core (Plan-Bezug, Disziplin, Phasen zum Renntag).
+ * Nur bei `fits` zeigt die App Phasen-Band und Pace.
+ */
+export function competitionPlanFitFromRows(
+  rows: UserRows,
+  active: ActivePlan | null,
+): CompetitionPlanFit | null {
+  if (!active || !isCompetitionPlan(active)) return null;
+  const planned = plannedCompetition(rows);
+  if (!planned) return null;
+  return competitionPlanFit({
+    sessions: active.sessions,
+    planStart: active.plan.start_date,
+    planDiscipline: planSnapshot(active.plan)?.discipline ?? null,
+    competition: {
+      discipline: planned.stored.competition.discipline,
+      raceDate: planned.stored.competition.raceDate,
+      effectiveGoal: planned.stored.effectiveGoal,
+    },
+  });
+}
+
+/**
+ * Bleibt der Plan-Bezug gültig? Nur der Name darf sich ändern. Distanz, Renntag, Ziel, Zielzeit, Referenz, eigener
+ * Startumfang (immer der gespeicherte Wert, unabhängig vom aktuellen Level) und der Wunsch-Tag des langen Laufs sind
+ * plan-relevant – sonst rechnete ein Folgeblock einen anderen Makrozyklus als die Ampel beim Erstellen.
+ */
+export function planBasisChanged(stored: StoredCompetition, draft: CompetitionDraft): boolean {
+  const x = stored.competition;
+  const y = draft.competition;
+  return !(
+    x.discipline === y.discipline &&
+    x.raceDate === y.raceDate &&
+    (x.goal ?? 'finish') === (y.goal ?? 'finish') &&
+    (x.targetTimeS ?? null) === (y.targetTimeS ?? null) &&
+    JSON.stringify(x.reference ?? null) === JSON.stringify(y.reference ?? null) &&
+    (stored.ownStart?.weeklyMinutes ?? null) === (draft.ownStart?.weeklyMinutes ?? null) &&
+    (stored.longRunWeekday ?? null) === (draft.longRunWeekday ?? null)
+  );
+}
+
+/** Was „Mein Wettkampf → Ändern“ beim Speichern anbieten darf. */
+export interface CompetitionSaveOptions {
+  /** Nur den Wettkampf speichern (Countdown bzw. unveränderter Plan-Bezug). */
+  saveOnly: 'resave' | 'countdown' | null;
+  /** „Speichern und (Wettkampf-)Plan neu erstellen“ – nur bei passender Ampel. */
+  recreateCompetitionPlan: boolean;
+  /** „Speichern und Plan ohne Wettkampf neu erstellen“ (bei aktivem Wettkampfplan, wenn er nicht mehr passt). */
+  recreateBasicPlan: boolean;
+}
+
+/**
+ * Regel (Wächter WP4 H1): Läuft ein Wettkampfplan und ändern sich plan-relevante Angaben, gibt es KEIN „nur Countdown
+ * speichern“ – der alte Plan passte sonst nicht mehr zum Renntag (z. B. langer Lauf am Vortag, kein Tapering). Dann nur
+ * „… und Plan neu erstellen“ (Ampel grün/gelb) oder „… und Plan ohne Wettkampf neu erstellen“.
+ */
+export function competitionSaveOptions(params: {
+  stored: StoredCompetition | null;
+  draft: CompetitionDraft;
+  competitionPlanActive: boolean;
+  feasibilityUsable: boolean;
+}): CompetitionSaveOptions {
+  const { stored, draft, competitionPlanActive, feasibilityUsable } = params;
+  const changed = stored === null || planBasisChanged(stored, draft);
+  if (!changed) {
+    return {
+      saveOnly: stored?.effectiveGoal !== null ? 'resave' : 'countdown',
+      recreateCompetitionPlan: feasibilityUsable,
+      recreateBasicPlan: false,
+    };
+  }
+  if (stored !== null && competitionPlanActive) {
+    return {
+      saveOnly: null,
+      recreateCompetitionPlan: feasibilityUsable,
+      recreateBasicPlan: true,
+    };
+  }
+  return {
+    saveOnly: 'countdown',
+    recreateCompetitionPlan: feasibilityUsable,
+    recreateBasicPlan: false,
+  };
+}
+
+/** Was „Heute“ zum Wettkampfplan zeigt – nur bei `fits` Phasen-Band und Pace (Wächter WP4 H1). */
+export interface CompetitionPlanView {
+  fit: CompetitionPlanFit | null;
+  week: CompetitionPlanWeek | null;
+  paceProfile: PaceProfile | null;
+  /** Wettkampfplan aktiv, passt aber nicht (mehr) zum geplanten Wettkampf → Hinweis + „Plan neu erstellen“. */
+  mismatch: boolean;
+  /** Aufbau/Spitze ohne harte Einheit, weil die Tage zu kurz sind (Wächter WP4 M8, G10) → erklärender Hinweis. */
+  shortDays: boolean;
+}
+
+export function competitionPlanView(
+  rows: UserRows,
+  active: ActivePlan | null,
+  date: string,
+  /** Offline-Zwischenspeicher ohne Plan-Bezug: „passt nicht“ wäre falsch – dann nur nichts zeigen (Wächter N5). */
+  offline = false,
+  /** Aktuelle Sicherheitsregeln (für den Hinweis „Tage zu kurz“); null = kein Hinweis. */
+  rules: PlanSafetyRules | null = null,
+): CompetitionPlanView {
+  const fit = competitionPlanFitFromRows(rows, active);
+  const planned = plannedCompetition(rows);
+  if (fit !== 'fits' || !planned || !active) {
+    return {
+      fit,
+      week: null,
+      paceProfile: null,
+      mismatch: fit !== null && !(offline && fit === 'no_basis'),
+      shortDays: false,
+    };
+  }
+  const monday = startOfIsoWeek(date);
+  const shortDays =
+    rules !== null &&
+    shortDaysWithoutHard(
+      active.sessions.filter((s) => startOfIsoWeek(s.scheduled_on) === monday),
+      hardWorkoutLimits(rules, competitionDisplayLevel(rows, planSnapshot(active.plan))).allowed,
+    );
+  return {
+    fit,
+    week: competitionPlanWeek(
+      active.sessions,
+      active.plan.start_date,
+      planned.stored.competition.raceDate,
+      date,
+    ),
+    paceProfile: competitionPaceProfile(planned.stored.competition),
+    mismatch: false,
+    shortDays,
+  };
+}
+
+/**
+ * Namen der Ausdauer-Einheiten so, wie sie nach den AKTUELLEN Regeln angezeigt werden (Wächter WP4 M2): Kalender und
+ * Wochenübersicht zeigen dann „Lockerer Dauerlauf“ statt des gespeicherten „Intervalle“, wenn eine harte Einheit wegen
+ * Flag, Schwangerschaft oder strengerem Level locker wird. Gleicher Weg wie „Heute“ (prepareSessionForDisplay mit
+ * competitionWeek). Ohne Regeln (offline ohne Zwischenspeicher) bleiben die gespeicherten Namen.
+ */
+export function displayedSessionNames(
+  rows: UserRows,
+  active: ActivePlan | null,
+  rules: PlanSafetyRules | null,
+): Map<string, string> {
+  const names = new Map<string, string>();
+  if (!active || !rules || !rows.profile) return names;
+  const previousStartGroup = startGroupOf(active, rows.profile.birth_date);
+  const level = competitionDisplayLevel(rows, planSnapshot(active.plan));
+  for (const s of active.sessions) {
+    if (s.kind !== 'endurance') continue;
+    const shown = prepareSessionForDisplay(s, {
+      rules,
+      previousStartGroup,
+      library: null,
+      ...(s.workout_type ? { competitionWeek: { sessions: active.sessions, level } } : {}),
+    }).session;
+    if (shown.name_de !== s.name_de) names.set(s.id, shown.name_de);
+  }
+  return names;
+}
+
+/** Einheiten mit den angezeigten Namen (nur Anzeige – IDs, Tage und Status bleiben). */
+export function withDisplayedNames<T extends Pick<StoredSession, 'id' | 'name_de'>>(
+  sessions: readonly T[],
+  names: ReadonlyMap<string, string>,
+): T[] {
+  return sessions.map((s) => {
+    const name = names.get(s.id);
+    return name === undefined ? s : { ...s, name_de: name };
+  });
+}
+
+/**
+ * Ergebnis idempotent (Wächter WP4 M6): Gibt es schon den Ergebnis-Eintrag dieses Ablaufs (gemerkte ID bzw. freier
+ * Ausdauer-Eintrag vom Renntag, dessen Notiz mit `resultPrefix` beginnt), wird er wiederverwendet – nie ein zweiter
+ * Tagebuch-Eintrag, wenn nach dem Speichern nur das Abschließen scheiterte.
+ */
+export function resultLogToReuse(
+  rows: Pick<UserRows, 'sessionLogs'>,
+  raceDate: string,
+  savedLogId: string | null,
+  resultPrefix: string,
+): string | null {
+  if (savedLogId !== null && rows.sessionLogs.some((l) => l.id === savedLogId)) return savedLogId;
+  const own = rows.sessionLogs
+    .filter(
+      (l) =>
+        l.kind === 'endurance' &&
+        l.is_free === true &&
+        l.performed_on === raceDate &&
+        (l.notes ?? '').startsWith(resultPrefix),
+    )
+    .sort((a, b) => b.created_at.localeCompare(a.created_at));
+  return own[0]?.id ?? null;
+}
+
+/**
+ * Darf „Zielzeit“ überhaupt angeboten werden (Plan 8 „nur wenn erlaubt“, Wächter N8)? Nur Fortgeschritten/
+ * Leistungssport außerhalb der vorsichtigen Startgruppe (Flag, unter 18, ab 65, ohne Check) – wie die Ampel
+ * (goal_time_not_allowed). Unbekannte Regeln → nein.
+ */
+export function timeGoalOffered(rows: UserRows, rules: PlanSafetyRules | null): boolean {
+  if (!rules || rules.enduranceStartGroup === 'cautious' || rules.medicalNotice) return false;
+  return (COMPETITION_GROUP_RULES.timeGoalLevels as readonly string[]).includes(currentLevel(rows));
 }

@@ -1,4 +1,8 @@
-import { COMPETITION_PERIODIZATION, COMPETITION_START_LOOKBACK_DAYS } from '../constants';
+import {
+  COMPETITION_PERIODIZATION,
+  COMPETITION_START_LOOKBACK_DAYS,
+  COMPETITION_WORKOUTS,
+} from '../constants';
 import { addDays, daysBetween, startOfIsoWeek } from '../dates';
 import type {
   CompetitionDiscipline,
@@ -15,6 +19,7 @@ import {
 } from './intensity';
 import type { EnduranceStartGroup } from './safety';
 import { competitionStartReference, type CompetitionStartReference } from './competition';
+import { macroCycle } from './periodization';
 import type { PreviousSession } from './schedule';
 
 /**
@@ -207,4 +212,78 @@ export function recentCompetitionStartReference(
   const recent = previous.filter((s) => s.scheduled_on < today && s.scheduled_on >= from);
   if (recent.length === 0) return null;
   return competitionStartReference(recent, previousStartGroup, loggedMinutes);
+}
+
+/**
+ * Passt der aktive Plan noch zum geplanten Wettkampf (Wächter WP4 H1)? Ein Wettkampfplan ist nur gültig mit Plan-Bezug
+ * (`effectiveGoal`), gleicher Disziplin wie der Wettkampf und wenn die gespeicherten Phasen der Einheiten zum
+ * Makrozyklus des AKTUELLEN Renntags passen (Phasen hängen nur von Disziplin, Renntag und Planstart ab) – und keine
+ * Einheit auf dem Vortag, dem Renntag oder im Rest der Rennwoche liegt. Sonst darf die App weder Phasen-Band noch Pace
+ * zeigen, sondern „Dein Plan passt nicht mehr zu deinem Wettkampf – Plan neu erstellen“.
+ */
+export type CompetitionPlanFit = 'fits' | 'no_basis' | 'discipline' | 'schedule';
+
+export function competitionPlanFit(params: {
+  readonly sessions: readonly {
+    readonly scheduled_on: string;
+    readonly status?: string;
+    readonly training_phase?: CompetitionPhase | null;
+  }[];
+  readonly planStart: string;
+  readonly planDiscipline: string | null;
+  readonly competition: {
+    readonly discipline: CompetitionDiscipline;
+    readonly raceDate: string;
+    readonly effectiveGoal: string | null;
+  };
+}): CompetitionPlanFit {
+  const { competition } = params;
+  if (competition.effectiveGoal === null) return 'no_basis';
+  if (params.planDiscipline !== competition.discipline) return 'discipline';
+  const cycle = macroCycle(
+    {
+      discipline: competition.discipline,
+      raceDate: competition.raceDate,
+      // Phasen hängen nicht vom Level ab (nur die Erholungswochen) – hier gleichgültig.
+      experienceLevel: 'advanced',
+      group: 'advanced',
+      cautious: false,
+    },
+    params.planStart,
+  );
+  if (!cycle) return 'schedule';
+  const phaseOf = new Map(cycle.weeks.map((w) => [w.monday, w.phase] as const));
+  const excluded = new Set(cycle.excludedDates);
+  for (const s of params.sessions) {
+    if (!s.training_phase || s.status === 'skipped') continue;
+    if (phaseOf.get(startOfIsoWeek(s.scheduled_on)) !== s.training_phase) return 'schedule';
+    if (excluded.has(s.scheduled_on)) return 'schedule';
+  }
+  return 'fits';
+}
+
+/**
+ * Erklärung, warum im Aufbau/in der Spitze keine harte Einheit kommt (Wächter WP4 M8, Gründer-Frage G10): Harte
+ * Einheiten sind für die Person erlaubt, die Woche hat aber keine, und jede Ausdauer-Einheit außer der längsten ist
+ * kürzer als die Mindestdauer einer harten Einheit (COMPETITION_WORKOUTS.hardMinMinutes, 25 min). Nur Anzeige.
+ */
+export function shortDaysWithoutHard(
+  weekSessions: readonly {
+    readonly kind: string;
+    readonly status?: string;
+    readonly estimated_minutes: number;
+    readonly workout_type?: WorkoutType | null;
+    readonly training_phase?: CompetitionPhase | null;
+  }[],
+  hardAllowed: boolean,
+): boolean {
+  if (!hardAllowed) return false;
+  const endurance = weekSessions.filter((s) => s.kind === 'endurance' && s.status !== 'skipped');
+  if (endurance.length < 2) return false;
+  if (!endurance.some((s) => s.training_phase === 'build' || s.training_phase === 'peak')) {
+    return false;
+  }
+  if (endurance.some((s) => isHardWorkoutType(s.workout_type ?? null))) return false;
+  const sorted = [...endurance].sort((a, b) => b.estimated_minutes - a.estimated_minutes);
+  return sorted.slice(1).every((s) => s.estimated_minutes < COMPETITION_WORKOUTS.hardMinMinutes);
 }

@@ -13,6 +13,12 @@ import {
   type GoalType,
 } from '../enums';
 import { NUTRITION_PARAM_SCHEMAS, type NutritionPrintTextParams } from './nutrition-print-texts';
+import {
+  type WorkoutStep,
+  workoutStepSchema,
+  WORKOUT_TYPES,
+  type WorkoutType,
+} from '../plan/intensity';
 import { printDataValueSchema } from './print-values';
 
 /**
@@ -132,6 +138,10 @@ export interface PrintTextParams extends NutritionPrintTextParams {
   /** Anstrengung 0–10 in Worten. */
   'value.effort': { effort: number };
   'value.dateWithWeekday': { date: string };
+  /** Wettkampfplan (WP4): Art der Einheit, harte mit Wort. */
+  'endurance.workout': { type: WorkoutType; hard: boolean };
+  /** Wettkampfplan (WP4): Ablauf der Schritte (die App formuliert ihn wie in der Plan-Ansicht). */
+  'endurance.steps': { steps: WorkoutStep[] };
   'endurance.heading': Record<string, never>;
   'endurance.effortHint': Record<string, never>;
   'notes.heading': Record<string, never>;
@@ -336,6 +346,8 @@ const PARAM_SCHEMAS = {
   'value.rpe': z.strictObject({ rpe: z.number().min(0).max(10) }),
   'value.effort': z.strictObject({ effort: z.number().int().min(0).max(10) }),
   'value.dateWithWeekday': z.strictObject({ date: isoDateSchema }),
+  'endurance.workout': z.strictObject({ type: z.enum(WORKOUT_TYPES), hard: z.boolean() }),
+  'endurance.steps': z.strictObject({ steps: z.array(workoutStepSchema).max(40) }),
   'endurance.heading': empty,
   'endurance.effortHint': empty,
   'notes.heading': empty,

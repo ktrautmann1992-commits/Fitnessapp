@@ -149,6 +149,29 @@ test('Wettkampf: Ampel, Plan mit Phasen, Pace, Intervall-Timer, Countdown, Ergeb
   expect(sessions.length).toBeGreaterThan(0);
   expect(sessions.every((s) => s.workout_type !== null && s.training_phase !== null)).toBe(true);
 
+  // --- Datum vorverlegen bei laufendem Wettkampfplan (Wächter WP4 H1): kein „nur Countdown“ -----------------
+  await page.getByTestId('competition-edit').click();
+  await heading(page, 'Wettkampf ändern');
+  await expect(page.getByTestId('competition-save-countdown')).toBeVisible();
+  await fillDate(page, 'Renntag', '17', '01', '2027');
+  await expect(page.getByTestId('competition-plan-change')).toContainText(
+    'wird der Plan beim Speichern neu erstellt',
+  );
+  await expect(page.getByTestId('competition-save-countdown')).toHaveCount(0);
+  await expect(page.getByTestId('competition-create-plan')).toHaveText(
+    'Speichern und Plan neu erstellen',
+  );
+  await expect(page.getByTestId('competition-recreate-basic')).toHaveText(
+    'Speichern und Plan ohne Wettkampf neu erstellen',
+  );
+  // Nur der Name: normal speichern (Plan-Bezug bleibt).
+  await fillDate(page, 'Renntag', '31', '01', '2027');
+  await expect(page.getByTestId('competition-plan-change')).toHaveCount(0);
+  await page.getByRole('button', { name: 'Abbrechen', exact: true }).click();
+  await expect(page.getByTestId('competition-plan-state')).toHaveText(
+    'Dein Plan ist der Wettkampfplan für diesen Wettkampf.',
+  );
+
   // --- Plan auf „Heute“: Phasen-Band, Countdown, Art, Pace, Distanz-Richtwert -----------------------------
   await page.getByRole('button', { name: 'Zurück' }).click();
   await page.getByRole('button', { name: 'Zurück zu Heute' }).click();
@@ -176,12 +199,16 @@ test('Wettkampf: Ampel, Plan mit Phasen, Pace, Intervall-Timer, Countdown, Ergeb
   await page.getByTestId('interval-start').click();
   await expect(page.getByTestId('interval-step')).toHaveText('Aufwärmen: 5 min locker');
   await expect(page.getByTestId('interval-step-no')).toHaveText('Schritt 1 von 3');
-  await expect(page.getByTestId('interval-live')).toHaveText('Jetzt: Aufwärmen: 5 min locker');
+  await expect(page.getByTestId('interval-live')).toHaveText(
+    'Jetzt: Schritt 1 von 3: Aufwärmen: 5 min locker',
+  );
   // Schrittwechsel nach 5 Minuten (Ansage über die Live-Region).
   await page.clock.fastForward('05:01');
   await expect(page.getByTestId('interval-step')).toHaveText('Hauptteil: 32 min locker');
   await expect(page.getByTestId('interval-step-no')).toHaveText('Schritt 2 von 3');
-  await expect(page.getByTestId('interval-live')).toHaveText('Jetzt: Hauptteil: 32 min locker');
+  await expect(page.getByTestId('interval-live')).toHaveText(
+    'Jetzt: Schritt 2 von 3: Hauptteil: 32 min locker',
+  );
   // Pause: Zeit läuft nicht weiter.
   await page.getByTestId('interval-pause').click();
   await expect(page.getByTestId('interval-step-no')).toHaveText('Schritt 2 von 3 · Pausiert');

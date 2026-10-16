@@ -1,3 +1,4 @@
+import { stepLines } from './competition-format';
 import {
   type PrintBlock,
   type PrintDocument,
@@ -140,6 +141,9 @@ const TEXTS: Translators = {
   'value.rpe': ({ rpe }) => formatDecimal(rpe),
   'value.effort': ({ effort }) => p.effort(effort, effortWord(effort)),
   'value.dateWithWeekday': ({ date }) => dayLabel(date),
+  'endurance.workout': ({ type, hard }) =>
+    t.competition.workoutTypeLine(t.competition.workoutTypes[type], hard),
+  'endurance.steps': ({ steps }) => stepLines(steps).join('; '),
   'endurance.heading': () => p.enduranceHeading,
   'endurance.effortHint': () => p.effortHint,
   'notes.heading': () => p.notesHeading,

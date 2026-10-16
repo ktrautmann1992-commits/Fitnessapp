@@ -224,6 +224,15 @@ export const deCompetition = {
   createPlan: 'Wettkampfplan erstellen',
   recreatePlan: 'Speichern und Plan neu erstellen',
   saveCountdown: 'Nur Countdown speichern (ohne Plan)',
+  recreateBasicPlan: 'Speichern und Plan ohne Wettkampf neu erstellen',
+  confirmBasicText:
+    'Der Wettkampf wird ohne Wettkampfplan gespeichert, dein Plan ab heute durch einen Grundlagen-Plan ersetzt. Eingetragene Trainings bleiben im Tagebuch.',
+  savedWithBasicPlan: 'Gespeichert. Dein Plan ist jetzt ein Grundlagen-Plan ohne Wettkampf.',
+  planChangeNeedsRecreate:
+    'Dein Wettkampfplan ist auf die bisherigen Angaben ausgelegt (Renntag, Distanz, Ziel, langer Lauf). Damit er passt, wird der Plan beim Speichern neu erstellt – mit oder ohne Wettkampf.',
+  planMismatch:
+    'Dein Plan passt nicht mehr zu deinem Wettkampf. Erstelle den Plan neu – mit Wettkampf (wenn die Ampel passt) oder ohne.',
+  planOfflineUnknown: 'Offline: Ob dein Wettkampfplan noch passt, sehen wir erst mit Verbindung.',
   save: 'Speichern',
   cancelForm: 'Abbrechen',
   withoutCompetition: 'Ohne Wettkampfplan weiter',
@@ -266,6 +275,8 @@ export const deCompetition = {
   // Phasen-Band
   phases: PHASES,
   phaseTexts: PHASE_TEXTS,
+  shortDaysHint:
+    'Diese Woche ist alles locker: Tempo- oder Intervall-Einheiten brauchen mindestens 25 Minuten (mit Auf- und Abwärmen). Plane an einem Lauftag mehr Zeit ein (Einstellungen → Angaben ändern → Trainingstage), wenn du sie möchtest.',
   phaseBand: (phase: string, week: number, total: number) =>
     `${phase} · Woche ${week} von ${total}`,
   phaseBandIntro: (phase: string, total: number) =>
@@ -320,7 +331,7 @@ export const deCompetition = {
       `${minutes} ${minutes === 1 ? 'Minute' : 'Minuten'} eingetragen – prüfe die Angaben unten und speichere.`,
     stopConfirmTitle: 'Timer abbrechen?',
     stopConfirmText:
-      'Die bisher gelaufene Zeit übernehmen wir als Dauer. Du kannst sie vor dem Speichern noch ändern.',
+      'Die bisher gelaufene Zeit übernehmen wir als Dauer (auf ganze Minuten gerundet, mindestens 1 Minute). Du kannst sie vor dem Speichern noch ändern.',
     stopConfirm: 'Abbrechen und eintragen',
     keepRunning: 'Weiterlaufen',
   },
@@ -361,6 +372,13 @@ export const deCompetition = {
   planEndedTitle: 'Dein Wettkampfplan ist zu Ende',
   planEndedText:
     'Der Wettkampfplan geht nicht weiter (Wettkampf vorbei, abgesagt oder deine Angaben haben sich geändert). Erstelle einen neuen Plan – wir starten wieder vorsichtig.',
+  goalUnreachableTitle: 'Dein Wettkampfziel ist so nicht mehr erreichbar',
+  goalUnreachableText:
+    'Nach deinen neuen Angaben (z. B. Erfahrung oder Gesundheits-Check) reicht die Zeit bis zum Renntag nicht mehr, um sicher genug Umfang aufzubauen. Erstelle den Plan neu – die Ampel unter „Mein Wettkampf“ zeigt dir Vorschläge (kürzere Distanz, späteres Datum).',
+  createdWithoutCompetitionOther:
+    'Plan erstellt – ohne Wettkampfplan, weil dein Wettkampf dafür nicht (mehr) passt (z. B. Renntag vorbei). Details unter Einstellungen → Mein Wettkampf.',
+  timeGoalNotOffered:
+    'Eine Zielzeit planen wir für dich nicht (z. B. als Einsteiger, mit Hinweis aus dem Gesundheits-Check, unter 18 oder ab 65) – dein Ziel ist „Ankommen“.',
   createdWithoutCompetition:
     'Plan erstellt – ohne Wettkampfplan, weil die Ampel gerade nicht passt. Details unter Einstellungen → Mein Wettkampf.',
   errors: ERRORS,

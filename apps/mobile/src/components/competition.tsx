@@ -31,6 +31,7 @@ import {
   stepTitle,
   suggestionText,
 } from '@/lib/competition-format';
+import { INTERVAL_TIMER_AWAKE_TAG, useScreenAwake } from '@/lib/keep-awake';
 import { alertStepChange } from '@/lib/step-alert';
 import { useThemeColors } from '@/lib/theme';
 
@@ -182,7 +183,14 @@ export function CountdownCard({
 // Phasen-Band
 // ---------------------------------------------------------------------------------------------------------
 
-export function PhaseBand({ week }: { week: CompetitionPlanWeek }) {
+export function PhaseBand({
+  week,
+  shortDays = false,
+}: {
+  week: CompetitionPlanWeek;
+  /** Aufbau/Spitze ohne harte Einheit wegen kurzer Tage (Wächter WP4 M8). */
+  shortDays?: boolean;
+}) {
   const theme = useThemeColors();
   return (
     <View
@@ -191,6 +199,11 @@ export function PhaseBand({ week }: { week: CompetitionPlanWeek }) {
     >
       <Text style={[styles.bandText, { color: theme.text }]}>{phaseBandText(week)}</Text>
       {week.phase ? <Body muted>{C.phaseTexts[week.phase]}</Body> : null}
+      {shortDays ? (
+        <Body muted testID="competition-short-days">
+          {C.shortDaysHint}
+        </Body>
+      ) : null}
     </View>
   );
 }
@@ -240,6 +253,8 @@ export function IntervalTimer({
   const elapsed = clockElapsedS(clock, now);
   const position = intervalPosition(steps, elapsed);
   const running = started && !paused && !position.finished;
+  // Bildschirm bleibt an, solange der Timer läuft – unabhängig von der Einstellung (Wächter WP4 M5).
+  useScreenAwake(running, INTERVAL_TIMER_AWAKE_TAG);
   const lastIndex = useRef<number | null>(null);
   const [announcement, setAnnouncement] = useState('');
 
@@ -256,12 +271,15 @@ export function IntervalTimer({
     if (lastIndex.current === key) return;
     const first = lastIndex.current === null;
     lastIndex.current = key;
+    // Mit „Schritt X von N“, damit zwei gleiche Schritte hintereinander erneut angesagt werden (Wächter N2).
     const text = position.finished
       ? C.timer.announceFinished
-      : C.timer.announce(stepTitle(position.step));
+      : C.timer.announce(
+          `${C.timer.stepOf(position.index + 1, steps.length)}: ${stepTitle(position.step)}`,
+        );
     setAnnouncement(text);
     if (!first) alertStepChange(text);
-  }, [position.finished, position.index, position.step, started]);
+  }, [position.finished, position.index, position.step, started, steps.length]);
 
   function start() {
     const at = Date.now();

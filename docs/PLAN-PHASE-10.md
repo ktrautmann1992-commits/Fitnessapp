@@ -1014,6 +1014,63 @@ sicheren Voreinstellungen der Core- und Datenbank-Konstanten, WP4 ändert daran 
 - **G19 – Onboarding:** Voreinstellung: Datum im Onboarding, Wettkampf mit Ampel danach („Heute“/Einstellungen).
   Alternative: eigener Onboarding-Schritt „Wettkampf“ nach Gesundheits-Check und Trainingstagen.
 
+**Nach der Wächter-Prüfung (16.10.2026, `waechter-wp4.md`, Freigabe mit Auflagen) umgesetzt:**
+
+- **H1 – Wettkampf ändern bei laufendem Wettkampfplan:** Regel in `data/competition.ts` (`competitionSaveOptions`):
+  Ändern sich Distanz, Renntag, Ziel, Zielzeit, Referenz, eigener Startumfang oder Wunsch-Tag, solange ein
+  Wettkampfplan läuft, gibt es **kein** „Nur Countdown speichern“ mehr – nur „Speichern und Plan neu erstellen“ (Ampel
+  grün/gelb) oder „Speichern und Plan ohne Wettkampf neu erstellen“, beide mit Bestätigung und Hinweis. Neu in Core
+  `competitionPlanFit` (Plan-Bezug, gleiche Disziplin, gespeicherte Phasen = Makrozyklus des aktuellen Renntags, keine
+  Einheit vom Vortag bis zum Ende der Rennwoche): Phasen-Band und Pace zeigt „Heute“ nur bei `fits`
+  (`competitionPlanView`); sonst Hinweis „Dein Plan passt nicht mehr zu deinem Wettkampf“ (offline ohne Plan-Bezug: nichts
+  Falsches, nur kein Band). „Mein Wettkampf“ zeigt den Stand ebenso. Der Countdown-Hinweis zur Rennwoche bleibt – er gilt
+  dem Rennen, nicht dem Plan.
+- **M1 – PDF:** `ExportDisplayContext.competitionLevel` → dieselbe Aufbereitung wie „Heute“ (`competitionWeek` →
+  `applyCompetitionWeekLimits` + `applyCurrentEnduranceRules`) in Wochenübersicht und Ausdauer-Tabelle; neue Codes
+  `endurance.workout` (Art, „hart“ mit Wort) und `endurance.steps` (Ablauf).
+- **M2 – Kalender/Wochenübersicht:** Namen über `displayedSessionNames` (gleicher Anzeigeweg) statt des gespeicherten
+  Namens, auch im Menü „Verschieben …“ und in den Meldungen.
+- **M3:** App-Test über `sessionDisplay` (zwei harte Einheiten einer Woche, Profil Einsteiger → die zweite locker, auch
+  die Timer-Schritte).
+- **M4:** `planBasisChanged` in `data/competition.ts`; Wunsch-Tag zählt als plan-relevant (wie Datum), der gespeicherte
+  eigene Startumfang wird unabhängig vom aktuellen Level verglichen und bleibt im Datensatz (ob er gilt, entscheidet
+  Core – Hinweis `own_start_ignored` statt stillem Leeren).
+- **M5:** Intervall-Timer hält den Bildschirm an, solange er läuft – unabhängig von der Einstellung (eigener Tag in
+  `useScreenAwake`, damit das Freigeben die Sperre des Trainingsmodus nicht aufhebt).
+- **M6:** Ergebnis idempotent (`resultLogToReuse`): gemerkter bzw. eigener Ergebnis-Eintrag vom Renntag wird
+  wiederverwendet – nach einem gescheiterten Abschließen entsteht kein zweiter Tagebuch-Eintrag.
+- **M7:** Folgeblock nach strengerer Gruppe bzw. strengerem Level: Ampel neu (`competitionFeasibility` mit aktuellen
+  Angaben und Tagebuch-Bezug); „zu kurz“/„nicht möglich“ → kein Folgeblock, Hinweis „Dein Wettkampfziel ist so nicht
+  mehr erreichbar“ mit „Plan neu erstellen“.
+- **M8:** Hinweis im Phasen-Band, wenn Aufbau/Spitze wegen kurzer Tage (unter 25 min) keine harte Einheit hat
+  (`shortDaysWithoutHard`, G10 bleibt Gründer-Frage).
+- **N1** Android nur Live-Region (iOS `announceForAccessibility`), **N2** Ansage mit „Schritt X von N“, **N3**
+  Bestätigungstext nennt „mindestens 1 Minute“, **N4** eigener Text, wenn gar keine Ampel möglich war (Renntag vorbei),
+  **N5** offline kein falsches „Grundlagen-Plan“, **N6** Grenzen aus Core (`CARDIO_LOG_LIMITS`,
+  `COMPETITION_OWN_START`), **N7** Test-Fixture `uuidBackend`, **N8** „Zielzeit“ nur, wenn erlaubt (`timeGoalOffered`),
+  sonst Hinweis. **N9** (TalkBack und unsichtbare Live-Region) nur am Gerät prüfbar (EAS) – offen.
+- **H2 / G8 – bekannte Einschränkung bis zur Gründer-Entscheidung G8:** Die Ampel rechnet den langen Lauf „Ankommen“
+  weiter mit 40/50/70/120 min (5 km/10 km/Halbmarathon/Marathon) statt Plan 3.2 (Halbmarathon 90–120, Marathon
+  150–180 min). Konstanten unverändert; Livegang an G8 gebunden.
+
+| Nr.    | Gegenprobe (gebrochen → rot → zurückgesetzt)     | Rote Tests                                    |
+| ------ | ------------------------------------------------ | --------------------------------------------- |
+| GP-H1a | „Nur Countdown“ auch bei laufendem Wettkampfplan | 1 (`competition-waechter`)                    |
+| GP-H1b | Phasen-Abgleich in `competitionPlanFit` entfernt | 1 (core `competition-plan-fit`)               |
+| GP-H1c | Phasen-Band/Pace auch ohne `fits`                | 1 (`competition-waechter`)                    |
+| GP-H1d | Einheit im Rennwochen-Fenster erlaubt            | 1 (core `competition-plan-fit`)               |
+| GP-M1  | PDF ohne `competitionWeek`                       | 1 (core `training-plan-document-competition`) |
+| GP-M2  | Namen ohne Wochenzahl-Grenze                     | 1 (`competition-waechter`)                    |
+| GP-M3  | `sessionDisplay` ohne `competitionWeek`          | 1 (`competition-waechter`)                    |
+| GP-M4  | Wunsch-Tag nicht plan-relevant                   | 1 (`competition-waechter`)                    |
+| GP-M6  | kein Wiederverwenden des Ergebnis-Eintrags       | 1 (`competition-waechter`)                    |
+| GP-M7  | keine neue Ampel bei strengerem Level            | 1 (`competition-waechter`)                    |
+| GP-M8  | Hinweis „Tage zu kurz“ ohne Dauer-Prüfung        | 1 (core `competition-plan-fit`)               |
+| GP-N8  | Zielzeit auch für vorsichtige Gruppe             | 1 (`competition-waechter`)                    |
+
+Playwright: Schritt „Renntag vorverlegen bei laufendem Wettkampfplan“ (kein „Nur Countdown“, Hinweis, zwei
+Neu-erstellen-Knöpfe; zurück auf das alte Datum → Hinweis weg). Timer-Ansage jetzt mit „Schritt X von N“.
+
 **Offen:** Fachprüfung aller Konstanten und Bausteine (Abschnitt 20 Punkt 5), G8–G14, M4 (`restDaysAfterRace`), WP3 N2
 (80/20, „ab 65 nur Gehen“, „Einsteiger ab 3 Einheiten“ ohne Server-Gegenstück), Premium-Prüfung mit Phase 7 (W-G10),
 Live-Test im Supabase-Modus (Teil 8 der HANDY-ANLEITUNG), Vibration/Bildschirm-an nur in der echten App prüfbar (EAS).

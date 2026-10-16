@@ -107,7 +107,7 @@ export type CreatePlanOutcome =
        * Es gibt einen geplanten Wettkampf mit Plan-Bezug, die Ampel passt aber gerade nicht – deshalb ein Grundlagen-Plan
        * (nie gestaucht, WP4). Hinweis auf „Mein Wettkampf“.
        */
-      withoutCompetition?: boolean;
+      withoutCompetition?: 'not_feasible' | 'not_possible';
     }
   | { ok: false; code: BackendErrorCode | 'incomplete' | 'invalid_inputs' };
 
@@ -366,6 +366,8 @@ export type MoveOutcome =
 export const PLAN_RECREATE_NEEDED = 'plan_recreate_needed' as const;
 /** Meldung: Wettkampfplan endet (Zyklus fertig, Wettkampf vorbei/abgesagt, Regel neu) → Plan neu erstellen (WP4). */
 export const COMPETITION_PLAN_ENDED = 'competition_plan_ended' as const;
+/** Meldung: strengere Regeln, Ziel nicht mehr erreichbar → Plan neu erstellen (Wächter WP4 M7). */
+export const COMPETITION_GOAL_UNREACHABLE = 'competition_goal_unreachable' as const;
 
 const AppContext = createContext<AppContextValue | null>(null);
 
@@ -1155,7 +1157,7 @@ export function AppStateProvider({ children }: { children: ReactNode }) {
       const today = todayIso();
       // Geplanter Wettkampf MIT Plan-Bezug und passender Distanz → wieder ein Wettkampfplan (Ampel neu gerechnet).
       const planned = plannedCompetition(rows);
-      let withoutCompetition = false;
+      let withoutCompetition: 'not_feasible' | 'not_possible' | null = null;
       if (
         planned &&
         planned.stored.effectiveGoal !== null &&
@@ -1181,8 +1183,14 @@ export function AppStateProvider({ children }: { children: ReactNode }) {
           refreshPending();
           return { ok: true, plan: build.result.plan };
         }
-        // Ampel rot bzw. nicht möglich: nie stauchen – Grundlagen-Plan mit Hinweis.
-        withoutCompetition = true;
+        // Ampel rot bzw. nicht möglich: nie stauchen – Grundlagen-Plan mit Hinweis. Eigener Text, wenn gar keine Ampel
+        // möglich war (Renntag vorbei, Angaben ungültig – Wächter N4).
+        withoutCompetition =
+          typeof build !== 'string' &&
+          !build.result.ok &&
+          build.result.error === 'competition_not_feasible'
+            ? 'not_feasible'
+            : 'not_possible';
       }
       const result = generatePlanFromRows(rows, versions, loaded, today);
       if (!result.ok) {
@@ -1199,7 +1207,7 @@ export function AppStateProvider({ children }: { children: ReactNode }) {
       setRows(next);
       setPlanMessage(null);
       refreshPending();
-      return withoutCompetition
+      return withoutCompetition !== null
         ? { ok: true, plan: result.plan, withoutCompetition }
         : { ok: true, plan: result.plan };
     } catch (error) {
@@ -1398,7 +1406,11 @@ export function AppStateProvider({ children }: { children: ReactNode }) {
     );
     if (competition.kind === 'ended') {
       appendFailedRef.current = active.plan.id;
-      setPlanMessage(COMPETITION_PLAN_ENDED);
+      setPlanMessage(
+        competition.reason === 'unreachable'
+          ? COMPETITION_GOAL_UNREACHABLE
+          : COMPETITION_PLAN_ENDED,
+      );
       return;
     }
     if (competition.kind === 'none') return;

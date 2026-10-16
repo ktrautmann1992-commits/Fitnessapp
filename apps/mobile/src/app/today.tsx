@@ -2,8 +2,6 @@ import {
   addDays,
   blockWeekFor,
   competitionCountdown,
-  competitionPaceProfile,
-  competitionPlanWeek,
   type DaySwap,
   followUpBlockState,
   nextPlannedSession,
@@ -33,7 +31,12 @@ import {
   type SwapTarget,
   swapTargetFor,
 } from '@/data/exercise-swap';
-import { competitionEntry, isCompetitionPlan } from '@/data/competition';
+import {
+  competitionEntry,
+  competitionPlanView,
+  displayedSessionNames,
+  withDisplayedNames,
+} from '@/data/competition';
 import { logForSession } from '@/data/log-rows';
 import type { WorkoutDraft } from '@/data/workout-draft';
 import { startKind, trainedTodayOther, workoutView } from '@/data/workout-session';
@@ -45,6 +48,7 @@ import { workoutTargetLines } from '@/lib/workout-format';
 import { dayLabel, weekdayName } from '@/lib/plan-format';
 import { planTitleText } from '@/lib/plan-title';
 import {
+  COMPETITION_GOAL_UNREACHABLE,
   COMPETITION_PLAN_ENDED,
   PLAN_CHANGE_DROPPED,
   PLAN_RECREATE_NEEDED,
@@ -143,9 +147,12 @@ export default function TodayScreen() {
       outcome.ok
         ? {
             tone: 'success',
-            text: outcome.withoutCompetition
-              ? t.competition.createdWithoutCompetition
-              : t.plan.created,
+            text:
+              outcome.withoutCompetition === 'not_feasible'
+                ? t.competition.createdWithoutCompetition
+                : outcome.withoutCompetition === 'not_possible'
+                  ? t.competition.createdWithoutCompetitionOther
+                  : t.plan.created,
           }
         : { tone: 'danger', text: createPlanErrorText(outcome.code) },
     );
@@ -239,6 +246,16 @@ export default function TodayScreen() {
         <Notice tone="warning">
           <Body>{t.plan.droppedChange}</Body>
           <Button label={t.common.close} variant="link" onPress={app.clearPlanMessage} />
+        </Notice>
+      ) : null}
+      {app.planMessage === COMPETITION_GOAL_UNREACHABLE ? (
+        <Notice
+          tone="warning"
+          title={t.competition.goalUnreachableTitle}
+          testID="competition-goal-unreachable"
+        >
+          <Body>{t.competition.goalUnreachableText}</Body>
+          <Button label={t.plan.recreate} onPress={() => void create()} loading={busy} />
         </Notice>
       ) : null}
       {app.planMessage === COMPETITION_PLAN_ENDED ? (
@@ -430,7 +447,12 @@ export default function TodayScreen() {
   const plan = active.plan;
   const ownerUserId = app.session?.userId ?? null;
   const week = blockWeekFor(active.sessions, today);
-  const days = weekOverview(active.sessions, today, selected);
+  // Wochenübersicht mit den angezeigten (sicheren) Namen (Wächter WP4 M2).
+  const days = weekOverview(
+    withDisplayedNames(active.sessions, displayedSessionNames(rows, active, rules)),
+    today,
+    selected,
+  );
   const selectedSession = sessionOn(active.sessions, selected);
   // Nächste Einheit nach dem gewählten Tag – frühestens heute (vergangene Tage verweisen auf heute und später).
   const next = nextPlannedSession(
@@ -439,20 +461,10 @@ export default function TodayScreen() {
   );
   const followUp = followUpBlockState(active.sessions, today);
   // Wettkampfplan (WP4): Phasen-Band „Aufbau · Woche 6 von 14“ für den gewählten Tag, Pace aus der Referenzzeit.
-  const planned = rows.competitions.find((c) => c.status === 'planned');
-  const planWeek =
-    competition && isCompetitionPlan(active)
-      ? competitionPlanWeek(
-          active.sessions,
-          plan.start_date,
-          competition.stored.competition.raceDate,
-          selected,
-        )
-      : null;
-  const paceProfile =
-    competition && planned && isCompetitionPlan(active)
-      ? competitionPaceProfile(competition.stored.competition)
-      : null;
+  // Nur ein passender Wettkampfplan zeigt Phasen-Band und Pace (Regel in data/competition.ts, Wächter WP4 H1).
+  const planView = competitionPlanView(rows, active, selected, app.offline, rules);
+  const planWeek = planView.week;
+  const paceProfile = planView.paceProfile;
   const templateVersion = lib?.templates.find((tpl) => tpl.id === plan.template_id)?.version;
   const offer = rules ? planOffer(rows, app.versions, active, rules, today, templateVersion) : null;
   // EIN Anzeigeweg (prepareSessionForDisplay im Core): Sicherheitsregeln → Präferenzen → „Nur heute“-Tausche.
@@ -636,7 +648,17 @@ export default function TodayScreen() {
         </Notice>
       ) : null}
 
-      {planWeek ? <PhaseBand week={planWeek} /> : null}
+      {planWeek ? <PhaseBand week={planWeek} shortDays={planView.shortDays} /> : null}
+      {planView.mismatch ? (
+        <Notice tone="warning" testID="competition-plan-mismatch">
+          <Body>{t.competition.planMismatch}</Body>
+          <Button
+            label={t.competition.openCompetition}
+            variant="secondary"
+            onPress={() => router.push('/wettkampf' as Href)}
+          />
+        </Notice>
+      ) : null}
       {week ? (
         <View style={{ gap: 4 }} testID="plan-week-header">
           <Heading level={2}>

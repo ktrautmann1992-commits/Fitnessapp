@@ -19,7 +19,7 @@ import { CalendarDay, DraggableSession, LiveRegion, MoveMenu } from '@/component
 import { CountdownCard } from '@/components/competition';
 import { Screen } from '@/components/screen';
 import { Body, Button, Card, Heading, LoadingState, Notice } from '@/components/ui';
-import { competitionEntry } from '@/data/competition';
+import { competitionEntry, displayedSessionNames, withDisplayedNames } from '@/data/competition';
 import { activePlan, moveTargetsInRows, validateMoveInRows } from '@/data/training-plan';
 import { t } from '@/i18n';
 import {
@@ -79,9 +79,19 @@ export default function CalendarScreen() {
 
   const rows = app.rows;
   const active = useMemo(() => (rows ? activePlan(rows) : null), [rows]);
+  // Angezeigte (sichere) Namen statt der gespeicherten (Wächter WP4 M2) – auch in Meldungen und im Menü.
+  const shownNames = useMemo(
+    () => (rows ? displayedSessionNames(rows, active, app.safetyRules) : new Map<string, string>()),
+    [rows, active, app.safetyRules],
+  );
   const names = useMemo(
-    () => new Map((rows?.plannedSessions ?? []).map((s) => [s.id, s.name_de] as const)),
-    [rows],
+    () =>
+      new Map(
+        (rows?.plannedSessions ?? []).map(
+          (s) => [s.id, shownNames.get(s.id) ?? s.name_de] as const,
+        ),
+      ),
+    [rows, shownNames],
   );
   const nameOf = useCallback((id: string) => names.get(id) ?? null, [names]);
   const dragTargets = useMemo(
@@ -294,7 +304,7 @@ export default function CalendarScreen() {
   );
   const lastWeek = startOfIsoWeek(lastDate);
   const shownWeek = week < firstWeek ? firstWeek : week > lastWeek ? lastWeek : week;
-  const days = weekOverview(active.sessions, today, shownWeek);
+  const days = weekOverview(withDisplayedNames(active.sessions, shownNames), today, shownWeek);
   /** Einträge je Tag (Etappe A1b: freie und nachgetragene Einheiten erscheinen im Kalender). */
   const logsOn = (date: string) => rows.sessionLogs.filter((l) => l.performed_on === date);
   const empty = days.every(
@@ -535,7 +545,9 @@ export default function CalendarScreen() {
       </Screen>
       <MoveMenu
         visible={menuSession !== null}
-        title={menuSession ? t.calendar.menuTitle(menuSession.name_de) : ''}
+        title={
+          menuSession ? t.calendar.menuTitle(nameOf(menuSession.id) ?? menuSession.name_de) : ''
+        }
         targets={menuTargets}
         nameOf={nameOf}
         onPick={(date) => {
