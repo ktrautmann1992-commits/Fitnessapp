@@ -2457,3 +2457,170 @@ export const COMPETITION_START_REFERENCE = {
   maxSessionMinutes: TRAINING_LIMITS.minutesPerSession.max,
   maxFactor: COMPETITION_OWN_START.maxFactor,
 } as const;
+
+// ---------------------------------------------------------------------------------------------------------
+// Phase 10 · Etappe WP2 – Einheiten, Intensität, Wochenbau (docs/PLAN-PHASE-10.md Abschnitte 3.3–3.6 und 6;
+// Gründer-Entscheidungen W-G6/W-G7/W-G8 und G2/G3/G7 vom 16.10.2026 „wie empfohlen“). Gilt NUR im Wettkampfplan –
+// Pläne ohne Wettkampf bleiben unverändert. Alle Werte ohne harte Quelle: PRODUKTENTSCHEIDUNG – VOR LIVEGANG FACHLICH
+// PRÜFEN (Fachprüfung Trainingswissenschaft, PLAN-PHASE-10 Abschnitt 20 Punkt 5).
+// ---------------------------------------------------------------------------------------------------------
+
+/**
+ * Langer Lauf (Gründer-Entscheidung G2, Plan 3.5):
+ * - eigene Steigerungsregel: längste Einheit einer Belastungswoche ≤ floor(1,1 × längste Einheit der letzten
+ *   Belastungswoche) (wie die 10-%-Regel, MAX_WEEKLY_ENDURANCE_VOLUME_INCREASE_FRACTION); in der ersten Belastungswoche
+ *   höchstens der Start-Deckel je Einheit (ENDURANCE_SESSION_LIMITS: Einsteiger 30, vorsichtig 20, sonst 90 = erste
+ *   Belastungswoche); Erholungs-/Tapering-Wochen nie länger als die letzte Belastungswoche;
+ * - `maxShareOfWeek`: höchstens 50 % der Wochenminuten bei ≥ 2 Einheiten (G2 statt „35 % bei ≥ 4 Einheiten“ aus 3.5);
+ * - `maxMinutes`: Laufen höchstens 180 min, Halbmarathon-Plan höchstens 120 min (Plan 3.5); 5 km/10 km: Vorschlag;
+ * - Die Ampel prüft den langen Lauf mit: gefordert ist min(Richtwert COMPETITION_REQUIRED_PEAK.longRunMinutes,
+ *   floor(maxShareOfWeek × Spitzen-Wochenumfang)) – mehr ist wegen G3 (Plateau beim Spitzenumfang) und der 50-%-Regel
+ *   nie erreichbar (Gründer-Frage G8).
+ * Quelle: GRÜNDER-ENTSCHEIDUNG G2 (16.10.2026) – PRODUKTENTSCHEIDUNG, VOR LIVEGANG FACHLICH PRÜFEN.
+ */
+export const COMPETITION_LONG_RUN = {
+  maxShareOfWeek: 0.5,
+  maxMinutes: { '5k': 75, '10k': 90, half_marathon: 120, marathon: 180 },
+} as const;
+
+/**
+ * Intensität ohne Pulsuhr (Plan 3.4, W-G7): Anstrengung 0–10 (Borg CR10) und Sprechtest (TALK_TEST_BANDS).
+ * - `hardEffortMin` 6: ab hier zählt Zeit als „hart“ für die 80/20-Regel (Plan 3.4: „Anstrengung ≥ 6“, Seiler 2010:
+ *   oberhalb der ersten Schwelle; Sprechtest „nur kurze Sätze“ endet bei TALK_TEST_BANDS.shortSentencesMax),
+ * - `hardShareMax` = ENDURANCE_HIGH_INTENSITY_SHARE (0,2): höchstens 20 % der Wochenminuten hart (Seiler S (2010), Int J
+ *   Sports Physiol Perform 5(3):276–291). Einsteiger und die vorsichtige Startgruppe zählen nur die harten Abschnitte
+ *   (Plan 3.4), alle anderen den ganzen Hauptteil einer harten Einheit (inkl. Trabpausen) – strenger,
+ * - `effort`: Anstrengung je Art (Plan 3.4): locker 3–4 (ENDURANCE_EFFORT), Erholungslauf 2, Steigerungen 7 (nur
+ *   20 s), Fahrtspiel 6, Tempo 7, Intervalle 8 (nie „alles geben“), Renntempo je Distanz,
+ * - `hardEffortCap`: höchste Anstrengung harter Abschnitte: allgemein 8 (kein Maximaltest), unter 18 7 (Tabelle 3.3),
+ *   ab 65 6 („zügig“, Tabelle 3.3 – heute ohnehin nur Gehen, G7). Gesundheits-Flag, Schwangerschaft, ohne Check und
+ *   „nur Gehen“: keine harten Einheiten.
+ * - `hardSessionsPerWeek`: Einsteiger und vorsichtige Startgruppe höchstens 1 (ab Aufbau), sonst 2 (Tabelle 3.3);
+ *   Einsteiger erst ab 3 Ausdauer-Einheiten in der Woche (Plan 6: „nur 2 Tage → kein Tempo + langer Lauf“).
+ * Quelle: Borg GA (1982); Foster C et al. (2008); Seiler S (2010); Tabelle 3.3 (GRÜNDER-ENTSCHEIDUNG W-G4) –
+ * Werte PRODUKTENTSCHEIDUNG, VOR LIVEGANG FACHLICH PRÜFEN.
+ */
+export const COMPETITION_INTENSITY = {
+  hardEffortMin: 6,
+  hardShareMax: ENDURANCE_HIGH_INTENSITY_SHARE,
+  effort: {
+    recovery: 2,
+    strides: 7,
+    fartlek: 6,
+    tempo: 7,
+    intervals: 8,
+    racePace: { '5k': 8, '10k': 7, half_marathon: 6, marathon: 6 },
+  },
+  hardEffortCap: { general: 8, minor: 7, senior: 6 },
+  hardSessionsPerWeek: { strict: 1, general: 2 },
+  beginnerMinEnduranceSessions: 3,
+} as const;
+
+/**
+ * Aufbau der Einheiten (feste Bausteine, W-G8), alle Zeiten in Sekunden bzw. Minuten:
+ * - harte Einheit erst ab `hardMinMinutes` (25 min: Aufwärmen `hardWarmupMinutes` + Hauptteil + Abwärmen
+ *   `hardCooldownMinutes`); passt der kleinste Hauptteil nicht (Dauer oder 80/20-Budget), wird sie locker,
+ * - lockere Einheit ab `easyWarmupFromMinutes`: 5 min Aufwärmen und 5 min Abwärmen locker-unten,
+ * - Steigerungen: `strides.count` × `strides.workS` zügig, je `strides.restS` locker (nur Basis/Aufbau,
+ *   Fortgeschrittene, Plan 3.1/3.4),
+ * - Fahrtspiel 1 min zügig / 2 min locker, Tempo am Stück (Einsteiger 2 Teile mit 2 min Trabpause), Intervalle 3 min /
+ *   2 min Trabpause, Renntempo-Abschnitte je Distanz mit 2 min locker; jeweils höchstens `maxReps` Wiederholungen bzw.
+ *   `tempoMaxMinutes` am Stück.
+ * Quelle: übliche Lauf-Trainingspraxis (z. B. Daniels J, „Daniels' Running Formula“, 3. Aufl. 2014 – Intervalle 3–5
+ * min, Tempo 20 min) – Werte PRODUKTENTSCHEIDUNG, VOR LIVEGANG FACHLICH PRÜFEN.
+ */
+export const COMPETITION_WORKOUTS = {
+  hardMinMinutes: 25,
+  hardWarmupMinutes: 10,
+  hardCooldownMinutes: 5,
+  easyWarmupFromMinutes: 20,
+  easyWarmupMinutes: 5,
+  strides: { count: 6, workS: 20, restS: 60, minCount: 4 },
+  fartlek: { workS: 60, restS: 120, minReps: 4, maxReps: 8 },
+  tempo: {
+    minMinutes: 10,
+    maxMinutes: { beginner: 16, advanced: 25, competitive: 30 },
+    beginnerRestS: 120,
+  },
+  intervals: { workS: 180, restS: 120, minReps: 3, maxReps: 6 },
+  racePace: {
+    workS: { '5k': 180, '10k': 300, half_marathon: 600, marathon: 900 },
+    restS: 120,
+    minReps: 2,
+    maxReps: 4,
+  },
+} as const;
+
+/**
+ * Pace-Richtwerte (W-G6, Plan 3.4/3.6) – NUR mit eigener Referenzzeit (Wettkampf oder Testlauf, ≤ 6 Monate):
+ * - Riegel-Formel T₂ = T₁ × (D₂/D₁)^1,06 (Riegel PS (1981), „Athletic records and human endurance“, Am Sci 69:285–290),
+ * - Spannen in s/km relativ zum vorhergesagten Renntempo: locker/lang = 10 km + 60–90 s, Erholung = 10 km + 90–120 s,
+ *   Tempo = 10 km + 10–25 s (zwischen 10-km- und Halbmarathon-Tempo), Intervalle = 5 km + 0–10 s (nie schneller),
+ *   Renntempo = Renntempo + 0–5 s; Fahrtspiel/Steigerungen nach Gefühl (keine Pace),
+ * - Distanz-Richtwert = Dauer ÷ langsames Ende der Spanne, abgerundet auf 0,5 km (vorsichtig kürzer), nur 0,1–60 km
+ *   (Grenze von target_distance_m, WP3),
+ * - Zielzeit-Plausibilität: Zielzeit höchstens `goalTimeMaxImprovement` (5 %) schneller als die Riegel-Vorhersage aus
+ *   der Referenzzeit, sonst Ziel „Ankommen“ und höchstens „knapp“ (Plan 3.2).
+ * - `maxRiegelDistanceFactor` 4 (Wächter M3): Riegel nur, wenn Referenz- und Zieldistanz höchstens um den Faktor 4
+ *   auseinanderliegen (z. B. Marathon erst ab 10-km-Referenz, Halbmarathon ab 5,3 km). Darüber sagt Riegel für
+ *   Freizeitläufer zu schnelle Zeiten voraus (Riegel 1981 beschreibt die Formel für Dauern von ca. 3,5–230 min; Vickers AJ,
+ *   Vertosick EA (2016), „An empirical study of race times in recreational endurance runners“, BMC Sports Sci Med Rehabil
+ *   8:26 – Quelle vor Livegang prüfen) → keine Zielzeit-Plausibilität (Ziel „Ankommen“) und keine Pace auf dieser Basis.
+ * Quelle: Riegel 1981; Spannen, 5 % und Faktor 4: PRODUKTENTSCHEIDUNG – VOR LIVEGANG FACHLICH PRÜFEN.
+ */
+export const COMPETITION_PACE = {
+  riegelExponent: 1.06,
+  spansSPerKm: {
+    easy: { base: '10k', fast: 60, slow: 90 },
+    long: { base: '10k', fast: 60, slow: 90 },
+    recovery: { base: '10k', fast: 90, slow: 120 },
+    tempo: { base: '10k', fast: 10, slow: 25 },
+    intervals: { base: '5k', fast: 0, slow: 10 },
+    race_pace: { base: 'race', fast: 0, slow: 5 },
+  },
+  distanceRoundingM: 500,
+  distanceM: { min: 100, max: 60000 },
+  goalTimeMaxImprovement: 0.05,
+  maxRiegelDistanceFactor: 4,
+} as const;
+
+/**
+ * Anstrengung geplanter Einheiten im Wettkampfplan (Vorlage für den CHECK in WP3: effort_target 1–8, „> 4 nur bei
+ * harter Art“, unter 18 serverseitig ≤ 7 – Wächter N2; heute 1–4 = ENDURANCE_EFFORT_LIMITS, db-sync.test.ts). Die
+ * Engine plant höchstens 8 (COMPETITION_INTENSITY.hardEffortCap, „nie alles geben“). Quelle: docs/PLAN-PHASE-10.md
+ * Abschnitt 7 – PRODUKTENTSCHEIDUNG.
+ */
+export const COMPETITION_EFFORT_LIMITS = {
+  min: 1,
+  max: 8,
+  easyMax: ENDURANCE_EFFORT.easyMax,
+} as const;
+
+/**
+ * Neue Fassung der 4b-Regel `endurance_reduce` (Risiko 7, PLAN-PHASE-4B R3, Wächter S6) – VORSCHLAG für 4b: Ein
+ * Ausdauer-Eintrag zählt als „zu hart“, wenn die eingetragene Anstrengung ≥ max(`minEffort`, Ziel + `margin`) ist
+ * (lockere Ziele ≤ 4 → genau die bisherige feste 7). Harte Ziele (> 4) vorsichtiger (Wächter N4): ≥ Ziel +
+ * `hardMargin`, höchstens `hardMaxEffort` (Tempo 7 → 9, Intervalle 8 → 9). Steigerungen werden am Ziel des Hauptteils
+ * (locker) gemessen. Quelle: PLAN-PHASE-4B (feste 7 = „sehr anstrengend“, Borg CR10) – Abstände: PRODUKTENTSCHEIDUNG,
+ * VOR LIVEGANG FACHLICH PRÜFEN.
+ */
+export const ENDURANCE_OVERLOAD_RULE = {
+  minEffort: 7,
+  margin: 3,
+  hardMargin: 2,
+  hardMaxEffort: 9,
+  easyTargetMax: ENDURANCE_EFFORT.easyMax,
+} as const;
+
+/**
+ * Kraft im Wettkampfplan (Plan 3.5): in Spitze, Tapering und Rennwoche höchstens `maxStrengthSessionsPerWeek`
+ * Kraft-Einheit; Übungen mit Bein-Muskeln (`legMuscles` als Hauptmuskel) dort nur in Erholungs-Dosierung
+ * (deloadDosage: halbe Sätze, RPE −2) – „ohne schwere Beine“. Harte Ausdauer nie am Tag vor oder nach einem Kraft-Tag
+ * mit Beinen (Ganzkörper oder Unterkörper; über die Wochengrenze hinweg zählt jeder Kraft-Tag, vorsichtig).
+ * Quelle: PRODUKTENTSCHEIDUNG (Plan 3.5) – VOR LIVEGANG FACHLICH PRÜFEN.
+ */
+export const COMPETITION_STRENGTH = {
+  limitedPhases: ['peak', 'taper', 'race_week'],
+  maxStrengthSessionsPerWeek: 1,
+  legMuscles: ['glutes', 'quadriceps', 'hamstrings', 'adductors', 'calves'],
+} as const;

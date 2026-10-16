@@ -889,6 +889,8 @@ export const de = {
       current: 'Hier liegt die Einheit schon.',
       occupied: 'Belegt – dort liegt schon eine feste Einheit.',
       recovery_48h: 'Zu nah an einer Kraft-Einheit mit denselben Muskeln.',
+      hard_endurance_48h:
+        'Zu nah an einer harten Einheit, dem langen Lauf oder einem Kraft-Tag mit Beinen – dazwischen braucht es einen lockeren Tag.',
     },
     recoveryWith: (name: string, day: string) =>
       `Zu nah an deiner Einheit „${name}“ am ${day} – dieselben Muskeln brauchen 48 Stunden Pause.`,
@@ -902,6 +904,8 @@ export const de = {
       current: 'Das ist dieselbe Einheit.',
       occupied: 'Sie ist fest.',
       recovery_48h: 'Sie käme zu nah an eine Kraft-Einheit mit denselben Muskeln.',
+      hard_endurance_48h:
+        'Sie käme zu nah an eine harte Einheit, den langen Lauf oder einen Kraft-Tag mit Beinen.',
     },
     moved: (day: string) => `Verschoben auf ${day}`,
     swapped: (day: string, other: string, otherDay: string) =>

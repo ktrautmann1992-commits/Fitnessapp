@@ -1,5 +1,6 @@
 import { addDays, startOfIsoWeek } from '../dates';
 import type { PlannedSessionKind, PlannedSessionStatus, SessionFocus } from '../enums';
+import type { WorkoutType } from './intensity';
 import { moveBlockReason } from './move';
 
 /**
@@ -25,6 +26,11 @@ export interface ReschedulableSession {
   /** Kraft: Schwerpunkt; Ausdauer: null. */
   readonly focus: SessionFocus | null;
   readonly is_deload: boolean;
+  /**
+   * Nur Wettkampfplan (Phase 10 WP2): Art der Ausdauer-Einheit – harte Arten und der lange Lauf zählen für die
+   * erweiterte 48-h-Regel (`hard_endurance_48h`). Fehlt → wie bisher (lockere Ausdauer, nie ein Konflikt).
+   */
+  readonly workout_type?: WorkoutType | null;
 }
 
 export type RescheduleResult =
@@ -35,7 +41,8 @@ export type RescheduleResult =
 /**
  * Sucht den nächsten freien Tag ab heute in derselben ISO-Woche wie der ursprünglich geplante Tag
  * (`coalesce(original_date, scheduled_on)`), der die Erholungsregel einhält (Kraft nur gegen Kraft-Nachbarn;
- * Ausdauer darf auf jeden freien Tag); sonst streichen. Nie zwei Einheiten am Tag. Seit Etappe A1a über
+ * lockere Ausdauer darf auf jeden freien Tag; harte Ausdauer des Wettkampfplans nie neben Kraft mit Beinen, harter
+ * Ausdauer oder dem langen Lauf – Phase 10 WP2); sonst streichen (verpasste harte Einheit: „streichen statt stapeln“). Nie zwei Einheiten am Tag. Seit Etappe A1a über
  * `moveBlockReason()` (move.ts) – dieselbe Regel wie der Kalender; an einem Nachbartag zählt JEDE Einheit (vorher nur
  * eine je Tag, konservativer).
  * In der Erholungswoche wird immer gestrichen. `sessions` = alle Einheiten der Person (auch anderer Pläne).

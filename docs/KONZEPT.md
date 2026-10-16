@@ -148,8 +148,18 @@ Verbindlich ist der freigegebene Ablauf in `docs/PLAN-PHASE-1.md` Abschnitt 3 (S
   Umsetzungsstand WP1):** Laufen 5 km bis Marathon. `competitionFeasibility` → Passt / Knapp / Zu kurz / Nicht möglich
   mit Vorschlägen (kürzere Distanz, späteres Datum, ohne Wettkampf weiter) – mit derselben 10-%-Kette wie der Plan, nie
   gestaucht. `macroCycle` plant rückwärts Basis → Aufbau → Spitze → Tapering → Rennwoche → Erholung (Erholungswochen fest,
-  3 : 1 im Aufbau für Einsteiger, nie direkt vor dem Tapering). Noch ohne App und ohne Speicherung (WP3/WP4), Einheiten
-  bis WP2 locker.
+  3 : 1 im Aufbau für Einsteiger, nie direkt vor dem Tapering). Noch ohne App und ohne Speicherung (WP3/WP4).
+- **Einheiten, Intensität, Wochenbau (Phase 10, Etappe WP2, Core umgesetzt 16.10.2026, `docs/PLAN-PHASE-10.md`
+  Umsetzungsstand WP2):** Nur im Wettkampfplan – Pläne ohne Wettkampf bleiben byte-gleich. Arten locker, Erholungslauf,
+  langer Lauf, Steigerungen, Fahrtspiel, Tempo, Intervalle, Renntempo als feste Textbausteine mit Schritten (Timer ab
+  WP4). Langer Lauf mit eigener Steigerungsregel (+10 % je Belastungswoche ab Start-Deckel, ≤ 50 % der Woche, Laufen
+  ≤ 180 min, Halbmarathon ≤ 120 min) – die Ampel prüft ihn mit. 80/20: höchstens 20 % der Wochenminuten mit Anstrengung
+  ≥ 6. Harte Einheiten erst ab Aufbau (Einsteiger/unter 18 höchstens 1, sonst 2 je Woche; Flag, ab 65, Schwangerschaft
+  keine), nie an zwei Tagen hintereinander, nie neben dem langen Lauf oder einem Kraft-Tag mit Beinen (auch beim
+  Verschieben: Grund `hard_endurance_48h`). Spitze/Tapering höchstens 1 Kraft-Einheit, Beine leicht. Pace und
+  Distanz-Richtwert nur mit eigener Referenzzeit (Riegel, nur bis Distanzfaktor 4), Zielzeit höchstens 5 % schneller als
+  die Vorhersage. „Nur
+  Gehen“ (Flag, ab 65) → Ampel höchstens „Knapp“ (G7).
 - Ausdauer-Ziel klarer (Gründer-Feedback „Ziel Marathon → Plan für allgemeine Fitness“): Beim Ziel Ausdauer belegt
   „Deine Trainingstage“ Ausdauer-Tage vor (`suggestedTrainingSlots`, Werte `ENDURANCE_GOAL_SUGGESTION`: 3 Ausdauer + 2 Kraft,
   Leistungssport 4 + 2, vorsichtig 2 + 1, Triathlon mehr Ausdauer; Deckel wie oben) – nur ohne gewählte Tage, änderbar
