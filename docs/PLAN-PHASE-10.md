@@ -1015,6 +1015,172 @@ hard`, höchstens 5.000 Punkte nach Vereinfachung, Dauer 1 min–12 h wie `cardi
 - **Zustände:** keine Berechtigung, GPS schwach („Suche GPS …“), Akku-Sparmodus-Hinweis, zu kurz (< 1 min oder
   < 100 m → nicht speichern, fragen), Speicherfehler (bleibt lokal), Web (Hinweis + Demo).
 
+### Umsetzungsstand S1 Teil 1 – Core und Datenbank (16.10.2026)
+
+**Umfang:** nur Rechenlogik (`packages/core/src/routes/`) und Datenmodell – **keine App-Oberfläche, keine nativen
+Module** (die App-Seite folgt nach dem Spike S0 und W-G13 mit einem Development Build). Alles nur additiv.
+
+**Core (`packages/core/src/routes/`, Konstanten in `constants.ts` mit Quelle):**
+
+- `track.ts`: `filterTrackPoints` (ungültige Koordinaten, Genauigkeit über 30 m, Zeit nicht nach dem letzten Punkt –
+  doppelt/rückwärts –, Stillstand unter 3 m, Sprung schneller als `ROUTE_FILTER.jumpFactor` 1,5 ×
+  `CARDIO_PLAUSIBILITY_KMH`; Zählung der Gründe ohne Koordinaten), `trackDistance`/`haversineM` (mittlerer Erdradius),
+  `elevationGain` (gleitender Mittelwert über 5 Punkte + Hysterese 4 m, Hinweis-Code `gps_elevation_inaccurate` immer
+  gesetzt), `autoPause` (`ROUTE_AUTO_PAUSE_KMH`: Laufen 3, Rad 5, Gehen 1,5 km/h), `kmSplits` (Bewegungszeit je
+  vollem km, Differenz gerundeter Zeitpunkte → Summe nie über der Bewegungszeit), `movingDistance`, `hasSpeedWarning`
+  (mindestens 10 s schneller als `CARDIO_PLAUSIBILITY_KMH` → „Bitte prüfen“, nie verwerfen).
+- `simplify.ts`: `simplifyTrack` – Douglas-Peucker ohne Rekursion (Stapel), Toleranz 5 m in flacher Projektion;
+  über 5.000 Punkte Toleranz verdoppeln (bis 640 m), danach gleichmäßig ausdünnen; deterministisch, Anfang/Ende bleiben.
+- `polyline.ts`: `encodePolyline`/`decodePolyline` (Google-Format, 5 Nachkommastellen, ungültig → `null`, nie ein
+  Fehler), `boundingBox`.
+- `gpx.ts`: `toGpx` (GPX 1.1, Reihenfolge laut Schema, `escapeXml` für & < > " ' und Entfernen von Zeichen, die XML 1.0
+  nicht erlaubt), `gpxFileName` (ohne Namen/Ort der Strecke).
+- `compare.ts`: `compareAttempts` – nur die Favoriten-Strecke selbst und Wiederholungen mit `base_route_id` = Favorit,
+  gleiche Person, gleiche Sportart; zeitlich sortiert (nie nach Zeit – keine Rangliste), Vergleich nur mit dem
+  vorherigen vergleichbaren Lauf (Distanz ±10 %), Codes `first | faster | slower | same | not_comparable`, neutrale
+  Texte („Heute 1:20 min schneller als beim letzten Mal.“), keine Bestzeit, keine Serie (W-G16).
+- `schema.ts`: `trackedRouteSchema` (Eingabe von `save_tracked_route`, strikt, 16 Felder: Name 1–80 getrimmt, Notiz
+  1–280 Code-Points oder null, Sportart `run | bike | walk`, Schwierigkeit `easy | medium | hard` oder null, Dauer
+  1 min–12 h, Bewegung ≤ Dauer, Distanz 0–500 km und plausibel, Höhenmeter bis 10.000, Polyline 2–5.000 Punkte und
+  höchstens 60.000 Zeichen, Kilometerzeiten = volle km mit Summe ≤ Bewegung, Beginn ab 2020 mit Zeitzone, keine
+  Wiederholung von sich selbst), `updateTrackedRouteSchema`, `TrackedRouteRow`, `summarizeTrack` (Rohpunkte →
+  Zahlen, Linie, Warnung, „zu kurz“), `toTrackedRoutePayload` (→ geprüfte Eingabe oder `null`).
+- Konstanten: `ROUTE_FILTER`, `ROUTE_ELEVATION`, `ROUTE_AUTO_PAUSE_KMH`, `ROUTE_SPEED_WARNING`, `ROUTE_SIMPLIFY`,
+  `TRACKED_ROUTE_LIMITS`, `ROUTE_COMPARE`; Enums `TRACKED_ROUTE_SPORTS`, `ROUTE_DIFFICULTIES`, `TRACKED_ROUTE_SOURCES`.
+
+**Datenbank (Migrationen `20261016220000_tracked_route_enums.sql`, `20261016220100_tracked_routes.sql`,
+`20261016220200_tracked_route_rpcs.sql`):**
+
+- Enums `route_difficulty`, `tracked_route_source`; Sportart als `endurance_modality` mit CHECK `run | bike | walk`
+  (passt ohne Umrechnung zum Tagebuch).
+- Tabelle `tracked_routes` wie Plan (Spalten oben) mit CHECKs = Zod; zusätzlich: Distanz-Plausibilität in ganzen
+  Zahlen (`distance_m × 36 ≤ km/h × 10 × duration_s`, km/h = 1,5 × Plausibilität), `private.polyline_summary` (Polyline
+  lesen wie `decodePolyline`) – CHECK „Anzahl und Rahmen passen zur Polyline“, `private.km_splits_valid`, Name ohne
+  Leerraum am Rand (gleiche Zeichen wie beim Wettkampf). `base_route_id` und `session_log_id` als **zusammengesetzte
+  Fremdschlüssel mit `user_id`** (nur eigene Zeilen, `on delete set null` nur für die Spalte); höchstens eine Strecke
+  je Tagebuch-Eintrag (Teil-Index).
+- RLS: genau eine Policy „nur eigene Zeilen lesen“, `authenticated` nur SELECT, `anon` nichts, **kein Partner-Zugriff**.
+- Funktionen (`security definer`, `search_path = ''`, nur `authenticated`, feste Fehlertexte ohne Werte):
+  `save_tracked_route(p_route)` (Felder = `trackedRouteSchema`; Anzahl Punkte und Rahmen rechnet der Server; Beginn +
+  Dauer höchstens 5 min nach jetzt; Favoriten-Wiederholung nur auf eigene Favoriten derselben Sportart; Tagebuch-Eintrag
+  nur eigener Ausdauer-Eintrag derselben Art vom Tag des Beginns bis 1 Tag danach, noch ohne Strecke; Tageslimit
+  **20 neue Strecken** je Tag, `private.tracked_route_daily_counts`; Gerät-id: gleiche eigene id → dieselbe Strecke
+  ohne Änderung, fremde id → neue id), `update_tracked_route(p_route)` (nur Name, Schwierigkeit, Favorit, Notiz),
+  `delete_tracked_route(p_id)`, `delete_all_tracked_routes()` (→ Anzahl).
+- **Herkunft im Tagebuch (WP3 Präzisierung 8, entschieden – sichere Variante, ohne App-Bruch):** `log_source`
+  `gps`/`gpx_import` setzt **nur** `save_tracked_route` am verknüpften Eintrag. `save_session_log` (neueste Fassung
+  A1b Zeile für Zeile übernommen) lehnt `gps`/`gpx_import` für neue Einträge und jeden Wechsel der Herkunft ab; beim
+  Ändern bleibt die gespeicherte Herkunft (die heutige App sendet weiter `manual`). Reihenfolge in der App:
+  erst `save_session_log`, dann `save_tracked_route` mit `session_log_id`.
+- **Export:** `export_my_data()` = E3-Fassung Zeile für Zeile + `tracked_routes` (36 Bereiche im App-Export:
+  35 + `tracked_routes`); `DATA_EXPORT_TABLES`, Testmodus-Export (leer) und e2e angepasst.
+- **Konto löschen:** Kaskade (Strecken und Zähler). **Widerruf `health_data`:** `consents_after_revoke` unverändert –
+  Strecken bleiben (W-G15), verknüpfte Einträge wie bisher (neutralisiert bzw. mit „auch löschen“ gelöscht → Verweis
+  leer, Strecke bleibt).
+- `packages/db/database.types.ts` von Hand nachgezogen (Tabelle, Enums, vier Funktionen).
+
+**Tests:**
+
+- Core neu (`routes/*.test.ts`, 110 Tests): 0/1/2 Punkte, Stillstand (Distanz 0), GPS-Sprung, Funkloch 5 min (in
+  Bewegung bzw. stehend), doppelte Zeitstempel, Zeit rückwärts, 12 h und 12 h + 5 s, 100.000 Rohpunkte (unter 3 s,
+  höchstens 5.000 Punkte), Bergab-Rad 70 km/h (Warnung, nicht verworfen, speicherbar), Polyline-Rundreise (2.000
+  Zufallsstrecken) und Google-Beispiel, GPX wohlgeformt und escaped (zusätzlich einmal mit `xmllint` geprüft),
+  Kilometerzeiten bei 0,99 und 1,01 km; Eigenschaftstests (Filter idempotent, Summe der Kilometerzeiten ≤ Bewegung,
+  Zufallsaufzeichnungen ergeben immer eine gültige Eingabe oder `null`, Vereinfachung innerhalb der Toleranz);
+  Datenschutz-Test (kein `console`/Netz im Strecken-Code, Fehler ohne Koordinaten). `db-sync.test.ts` +23 (Enums,
+  Feldlisten, alle Grenzen, Plausibilität, Polyline-Leser, Tageslimit, RLS, Widerruf, `save_session_log`-Obermenge,
+  Export-Obermenge). Core gesamt 4.396 → 4.529.
+- pgTAP neu `42_tracked_routes.test.sql` (115): Polyline-Leser gegen Google-Beispiel und Core-Vektor, Zugriff (anon,
+  ohne Login, ohne Profil, genau eine Policy, Rechte), alle Grenzen, Warteschlange, fremde id, Favoriten- und
+  Eintrag-Regeln, Herkunft, Ändern/Löschen fremder Strecken, Verweise beim Löschen, Widerruf, Export, Tageslimit,
+  direktes Schreiben, CHECK auch für `service_role`, `delete_all`, Konto löschen. Alle **36 Dateien grün, 1.946 Tests**
+  (vorher 35/1.831). 39–41 bleiben für E4 frei.
+- `pnpm turbo run lint typecheck test --force` grün (18/18), `pnpm format:check` grün, mobile e2e `history.spec.ts`
+  grün (Export 36 Bereiche).
+
+**Gegenproben (Regel absichtlich gebrochen → rot → zurückgesetzt; `git status` danach unverändert):**
+
+| Nr. | Gebrochene Regel                                                     | Rote Tests                        |
+| --- | -------------------------------------------------------------------- | --------------------------------- |
+| G1  | RLS: alle Zeilen lesbar                                              | 7 (pgTAP 42)                      |
+| G2  | Wiederholung ohne Favoriten-Prüfung                                  | 1 (42)                            |
+| G3  | Wiederholung ohne Prüfung der Person                                 | 1 (42)                            |
+| G4  | Eintrag ohne Prüfung der Person                                      | 1 (42)                            |
+| G5  | Eintrag ohne Prüfung der Ausdauer-Art                                | 3 (42)                            |
+| G6  | Eintrag ohne Tages-Fenster                                           | 1 (42)                            |
+| G7  | zweite Strecke je Eintrag: Funktions-Prüfung entfernt (Index bleibt) | 1 (42)                            |
+| G8  | `save_session_log` nimmt jede Herkunft an                            | 6 (42)                            |
+| G9  | `save_session_log` überschreibt die gespeicherte Herkunft            | 1 (42)                            |
+| G10 | Export ohne `tracked_routes`                                         | 2 (pgTAP 17) + 3 (42) + 2 db-sync |
+| G11 | Tageslimit 21 nur im SQL                                             | 2 (42) + 1 db-sync                |
+| G12 | CHECK Polyline ↔ Anzahl/Rahmen entfernt                              | 1 (42)                            |
+| G13 | 5.001 Punkte erlaubt                                                 | 1 (42) + 2 db-sync                |
+| G14 | `authenticated` darf direkt schreiben                                | 2 (42)                            |
+| G15 | Distanz-Plausibilität Laufen × 10 nur im SQL                         | 1 (42) + 1 db-sync                |
+| G16 | Widerruf löscht Strecken                                             | 4 (42) + 2 db-sync                |
+| G17 | Beginn in der Zukunft erlaubt                                        | 1 (42)                            |
+| G18 | `update_tracked_route` ohne Prüfung der Person                       | 2 (42)                            |
+| G19 | `delete_tracked_route` ohne Prüfung der Person                       | 2 (42)                            |
+| G20 | fremde id übernommen (keine neue id)                                 | 42 bricht ab (Plan nicht erfüllt) |
+| C1  | Filter ohne Genauigkeits-Regel                                       | 1 (`track`)                       |
+| C2  | Filter ohne Sprung-Regel                                             | 4 (`track`, `schema`)             |
+| C3  | Filter ohne Zeit-Regel                                               | 2 (`track`)                       |
+| C4  | Vergleich auch mit fremden Läufen                                    | 1 (`compare`)                     |
+| C5  | Vergleich als Rangliste (nach Zeit sortiert)                         | 5 (`compare`)                     |
+| C6  | Zod ohne Distanz-Plausibilität                                       | 1 (`schema`)                      |
+| C7  | Tageslimit 25 nur im Core                                            | 1 (`db-sync`)                     |
+| C8  | `DATA_EXPORT_TABLES` ohne `tracked_routes`                           | 2 (`db-sync`)                     |
+| C9  | GPX ohne Escape von &                                                | 2 (`gpx`)                         |
+| C10 | `console.log` im Strecken-Code                                       | 1 (`privacy`)                     |
+| C11 | Name bis 100 nur im Core                                             | 1 (`db-sync`)                     |
+| C12 | Kilometerzeiten ohne Pausen-Ausschluss                               | 3 (`track`, `schema`)             |
+| M1  | App-Export (Testmodus) ohne `tracked_routes`                         | 2 (mobile `data-export`)          |
+
+G7 nur mit der Funktions-Prüfung rot, weil der Teil-Index dieselbe Regel als zweite Sicherung hält (die Meldung ist
+dann gleich, der Fehlercode anders).
+
+**Präzisierungen (vom Plan nicht ausdrücklich festgelegt, vorsichtig gelöst):**
+
+1. **Distanz = Bewegungsdistanz:** Abschnitte in der Pause zählen weder Zeit noch Distanz (GPS-Rauschen im Stehen
+   addiert sonst Meter). Ein Funkloch mit Lauftempo zählt voll (gerade Linie), ein langsames Funkloch nicht.
+2. **Kilometerzeiten = Bewegungszeit** je vollem km; ein Rest unter 1 km hat keine Zeit. Vergleich ebenfalls mit der
+   Bewegungszeit.
+3. **Sprung-Schwelle 1,5 × Plausibilität** (Laufen 37,5, Rad 105, Gehen 15 km/h) – so bleibt 70 km/h bergab erhalten
+   (nur Warnung); der Server prüft den Durchschnitt über die ganze Dauer gegen dieselbe Schwelle.
+4. **Punkte und Rahmen rechnet der Server** aus der Polyline (nicht aus der Eingabe); ein CHECK hält beides auch bei
+   direkten Schreibvorgängen (`service_role`) zusammen.
+5. **Gerät-id für die Warteschlange** (wie im Tagebuch): erneutes Senden erzeugt keine zweite Strecke und zählt nicht.
+6. **Neue Funktion `update_tracked_route`** (im Plan nur speichern/löschen): ohne sie ließe sich eine Strecke später
+   nicht als Favorit markieren oder umbenennen. Linie, Zeiten, Herkunft und Verweise sind nicht änderbar.
+7. **Schwierigkeit optional** (null = nicht angegeben). **Kein Mindestweg auf dem Server:** „unter 100 m → fragen“
+   macht die App; der Server nimmt 0 m (z. B. 1 min Stillstand) an.
+8. **Wiederholung:** nur eigene Favoriten derselben Sportart; ein Favorit, der zurückgenommen wird, behält seine
+   Wiederholungen (Vergleich nur solange Favorit). Löschen des Favoriten → Wiederholungen bleiben, Verweis leer.
+9. **Beginn:** Ende höchstens 5 min nach jetzt (Uhr des Geräts), sonst kein Datumsfenster – das Fenster für den
+   Tagebuch-Eintrag (14 Tage) prüft weiter `save_session_log`. Löschen der Strecke lässt die Herkunft `gps` des
+   Eintrags stehen (Gründer-Frage S1-G1).
+10. **GPX aus gespeicherten Strecken** hat keine Zeit je Punkt (der Server speichert keine), nur die Startzeit in den
+    Metadaten.
+
+**Gründer-Fragen (sichere Voreinstellung gilt, bis ihr anders entscheidet):**
+
+- **S1-G1 – Herkunft nach Löschen der Strecke:** Voreinstellung: Der Tagebuch-Eintrag behält „gps“ (er wurde per GPS
+  aufgezeichnet). Alternative: zurück auf „manual“.
+- **S1-G2 – Tageslimit:** Voreinstellung 20 neue Strecken je Tag (Schutz gegen Missbrauch, wie 10 Einträge im
+  Tagebuch). Kein Gesamtlimit je Person – bei Bedarf (Speicher) später additiv.
+- **S1-G3 – Pausen zählen nicht zur Distanz:** siehe Präzisierung 1 (Alternative: Distanz immer, Zeit nur in Bewegung).
+- **S1-G4 – Vergleichbarkeit:** ±10 % Distanz, „etwa gleich schnell“ bis 5 s Unterschied, Vergleich nur mit dem
+  vorherigen Lauf (keine „beste Zeit“, W-G16).
+- **S1-G5 – GPX ohne Zeiten (S2a):** Die Tabelle verlangt heute Dauer 1 min–12 h. Für „geplante Route“ aus einer GPX
+  ohne Zeiten braucht S2a eine additive Lockerung (z. B. Dauer null nur bei `gpx_import`) – Entscheidung mit S2a.
+
+**Offen für S1 App (nach S0/W-G13, Development Build):** Aufzeichnung (`expo-location`, Vordergrund-Dienst),
+Rohpunkte verschlüsselt im `protected-store` (alle 30 s, nach dem Speichern löschen), Erklär-Bildschirm vor der
+System-Abfrage, `summarizeTrack` → `toTrackedRoutePayload`, Speichern über die Warteschlange (`save_session_log` zuerst,
+dann `save_tracked_route`), Liste „Meine Strecken“ mit Linien-Skizze, GPX-Export als Datei, Löschen einzeln/alle,
+Vergleich mit `compareAttempts`/`attemptCompareText`, Testmodus `localDb.trackedRoutes` mit denselben Regeln
+(`local-rules.ts`) inkl. Demo-Aufzeichnung im Web (W-G14), Supabase-Modus lesen.
+
 ### S2a – Karte, GPX-Import, eigene Strecken auf der Karte (Gratis)
 
 - Karte (MapLibre) für jede gespeicherte Strecke, Start/Ziel-Markierung, Kilometer-Punkte, Attribution.

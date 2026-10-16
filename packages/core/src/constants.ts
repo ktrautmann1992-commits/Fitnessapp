@@ -2702,3 +2702,109 @@ export const COMPETITION_STRENGTH = {
   maxStrengthSessionsPerWeek: 1,
   legMuscles: ['glutes', 'quadriceps', 'hamstrings', 'adductors', 'calves'],
 } as const;
+
+// ---------------------------------------------------------------------------------------------------------
+// Phase 10 · Etappe S1 · Strecken aufzeichnen (docs/PLAN-PHASE-10.md 11.2 und 12, KONZEPT 10.1)
+// Gleiche Werte in supabase/migrations/20261016220100_tracked_routes.sql bzw. *_tracked_route_rpcs.sql
+// (Abgleich in db-sync.test.ts).
+// ---------------------------------------------------------------------------------------------------------
+
+/**
+ * Rohpunkte filtern (filterTrackPoints): Punkte mit einer gemeldeten Genauigkeit über `maxAccuracyM` fallen raus
+ * (Plan S1: „Genauigkeit > 30 m raus“); ein Punkt näher als `minMoveM` am zuletzt behaltenen gilt als Stillstand und
+ * fällt raus (sonst summiert das GPS-Rauschen im Stehen Meter auf); ein Sprung, dessen Geschwindigkeit seit dem zuletzt
+ * behaltenen Punkt über `jumpFactor` × CARDIO_PLAUSIBILITY_KMH der Sportart liegt, fällt raus (GPS-Sprung).
+ * Quellen: Plan S1 (30 m); typische Genauigkeit von Handy-GPS unter freiem Himmel ca. 5 m (U.S. Government, GPS.gov
+ * „GPS Accuracy“, smartphones „typically accurate to within a 4.9 m radius under open sky“); `minMoveM` und
+ * `jumpFactor`: PRODUKTENTSCHEIDUNG (Sprung-Schwelle bewusst über der Warn-Schwelle, damit z. B. eine schnelle
+ * Bergab-Fahrt nur eine Warnung auslöst und nicht verworfen wird).
+ */
+export const ROUTE_FILTER = {
+  maxAccuracyM: 30,
+  minMoveM: 3,
+  jumpFactor: 1.5,
+} as const;
+
+/**
+ * Höhenmeter per GPS (elevationGain): gleitender Mittelwert über `smoothingWindow` Punkte, dann zählt ein Anstieg erst,
+ * wenn er `thresholdM` über dem letzten Tiefpunkt liegt (Hysterese gegen GPS-Rauschen; Plan S1: Schwelle 3–5 m). Die
+ * App zeigt immer den Hinweis „Höhenmeter per GPS sind ungenau“.
+ * Quellen: Plan S1; Menaspà P et al. (2014), „Validity of the Garmin Edge 500 and Polar CS600 global positioning
+ * system devices for measuring cumulative elevation gain“, Int J Sports Physiol Perform 9(6) (GPS-Höhe streut um
+ * mehrere Meter); Fenster und Schwelle: PRODUKTENTSCHEIDUNG.
+ */
+export const ROUTE_ELEVATION = {
+  smoothingWindow: 5,
+  thresholdM: 4,
+} as const;
+
+/**
+ * Automatische Pause (autoPause): Ein Abschnitt zwischen zwei behaltenen Punkten langsamer als `minKmh` der Sportart
+ * zählt als Pause (keine Bewegungszeit, keine Distanz). Plan S1: „unter Gehtempo = Pause“ – für Gehen selbst eine
+ * Schwelle deutlich unter dem langsamen Gehen.
+ * Quellen: Bohannon RW (1997), „Comfortable and maximum walking speed of adults aged 20–79 years“, Age Ageing 26(1):15–19
+ * (bequemes Gehen ca. 4,5–5,3 km/h); Schwellen selbst: PRODUKTENTSCHEIDUNG.
+ */
+export const ROUTE_AUTO_PAUSE_KMH = { run: 3, bike: 5, walk: 1.5 } as const;
+
+/**
+ * Warnung „Bitte prüfen“ der Strecke (kein Verwerfen): Ist die Geschwindigkeit über mindestens `windowS` Sekunden
+ * (zwischen behaltenen Punkten) höher als CARDIO_PLAUSIBILITY_KMH der Sportart, zeigt die App eine Warnung (z. B.
+ * Bergab-Rad mit 70 km/h oder versehentlich im Auto aufgezeichnet). Quelle: PRODUKTENTSCHEIDUNG (wie Ausdauer-Eintrag).
+ */
+export const ROUTE_SPEED_WARNING = { windowS: 10 } as const;
+
+/**
+ * Vereinfachen (simplifyTrack, Douglas-Peucker): Toleranz `toleranceM` Meter; hat das Ergebnis mehr als
+ * TRACKED_ROUTE_LIMITS.maxPoints Punkte, wird die Toleranz jeweils verdoppelt (höchstens bis `maxToleranceM`, danach
+ * wird gleichmäßig ausgedünnt). Quellen: Douglas DH, Peucker TK (1973), „Algorithms for the reduction of the number of
+ * points required to represent a digitized line or its caricature“, Cartographica 10(2):112–122; Toleranz:
+ * PRODUKTENTSCHEIDUNG (in der Größenordnung der GPS-Genauigkeit).
+ */
+export const ROUTE_SIMPLIFY = {
+  toleranceM: 5,
+  maxToleranceM: 640,
+} as const;
+
+/**
+ * Gespeicherte Strecke (tracked_routes, save_tracked_route) – Plan S1 „Datenmodell“:
+ * - Name 1–80 Zeichen (ohne Leerraum am Rand), Notiz höchstens 280 Zeichen (wie das Tagebuch),
+ * - 2 bis `maxPoints` Punkte nach dem Vereinfachen (Plan: höchstens 5.000), Polyline-Genauigkeit 5 Nachkommastellen
+ *   (ca. 1 m; Google „Encoded Polyline Algorithm Format“), Länge höchstens `polylineMaxChars` (je Punkt höchstens
+ *   12 Zeichen: 2 × 6 Zeichen bei einer Änderung von bis zu 360° → 5.000 × 12),
+ * - Dauer, Distanz, Höhenmeter wie CARDIO_LOG_LIMITS (1 min–12 h, bis 500 km, bis 10.000 m),
+ * - Distanz-Plausibilität: Durchschnitt über die ganze Dauer höchstens ROUTE_FILTER.jumpFactor ×
+ *   CARDIO_PLAUSIBILITY_KMH (so schnell kann keine gefilterte Strecke sein),
+ * - Beginn höchstens `clockSkewS` Sekunden in der Zukunft (Uhr des Geräts) und nicht vor `startedAtMin`,
+ * - Tagebuch-Eintrag: Tag des Eintrags = Tag des Beginns (Europe/Berlin) bis `sessionLogDayTolerance` Tag danach
+ *   (Aufzeichnung über Mitternacht),
+ * - Schutz gegen Missbrauch: höchstens `maxSavesPerDay` NEUE Strecken je Kalendertag (gezählt werden Erstellungen,
+ *   auch später gelöschte; wie SESSION_LOG_LIMITS.maxLogsPerDay).
+ * Quelle: Plan S1; Tageslimit und Toleranzen: PRODUKTENTSCHEIDUNG.
+ */
+export const TRACKED_ROUTE_LIMITS = {
+  nameMaxLength: 80,
+  noteMaxChars: 280,
+  minPoints: 2,
+  maxPoints: 5_000,
+  polylinePrecision: 5,
+  polylineMaxChars: 60_000,
+  durationS: CARDIO_LOG_LIMITS.durationS,
+  distanceM: CARDIO_LOG_LIMITS.distanceM,
+  elevationGainM: CARDIO_LOG_LIMITS.elevationM,
+  clockSkewS: 300,
+  startedAtMin: '2020-01-01T00:00:00Z',
+  sessionLogDayTolerance: 1,
+  maxSavesPerDay: 20,
+} as const;
+
+/**
+ * Zeitvergleich auf einer Favoriten-Strecke (compareAttempts, W-G16): nur eigene Läufe derselben Favoriten-Strecke und
+ * Sportart; vergleichbar nur, wenn die Distanz höchstens `distanceTolerance` (Anteil) von der Favoriten-Strecke
+ * abweicht (abgebrochene oder abgekürzte Läufe werden nicht verglichen); Unterschiede bis `sameWithinS` Sekunden
+ * heißen „gleich schnell“. Keine Bestzeiten, Ranglisten oder Serien. Quelle: PRODUKTENTSCHEIDUNG (W-G16).
+ */
+export const ROUTE_COMPARE = {
+  distanceTolerance: 0.1,
+  sameWithinS: 5,
+} as const;

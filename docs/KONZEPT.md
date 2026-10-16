@@ -947,6 +947,16 @@ eigene Zeilen, in Export und Kontolöschung enthalten.
   Wettkampfplan); `effort_target` 1–8 statt 1–4, über 4 nur bei harter Art.
 - **`log_source`** ergänzt um `gps`, `gpx_import` (vorbereitet für Strecken).
 
+### Abweichungen ab Phase 10, Etappe S1 Teil 1 (umgesetzt, siehe `docs/PLAN-PHASE-10.md` Abschnitt 12 und `supabase/migrations/20261016220*`)
+- **`tracked_routes`** statt der Kern-Tabelle `routes` für EIGENE Strecken (user_id, name 1–80, sport `run|bike|walk`,
+  started_at, duration_s 1 min–12 h, moving_s, distance_m, elevation_gain_m, polyline (vereinfacht, höchstens 5.000
+  Punkte), point_count und bbox (rechnet der Server), km_splits, difficulty `easy|medium|hard`, is_favorite,
+  base_route_id (eigener Favorit), note, session_log_id (eigener Eintrag), source `recorded|gpx_import`): nur eigene
+  Zeilen lesen, kein Partner-Zugriff; Schreiben nur über `save_tracked_route`, `update_tracked_route`,
+  `delete_tracked_route`, `delete_all_tracked_routes` (Tageslimit 20). Kein Gesundheitsdatum (W-G15), bleibt beim
+  Widerruf; im Export enthalten. `routes` (Vorschläge, Lizenz) bleibt für S2b.
+- **`session_logs.source`** `gps`/`gpx_import` setzt nur `save_tracked_route` (Eintrag mit Strecke verknüpft).
+
 ## 13. Monetarisierung
 - **Gratis:** Onboarding, Standard-Plan aus Vorlagen mit einfacher Progression (Gewicht steigt bei geschafften
   Wiederholungen), Trainingstagebuch, Grundberechnung Kalorien/Makros, Supplement-Übersicht, außerdem alles aus der
