@@ -144,6 +144,12 @@ Verbindlich ist der freigegebene Ablauf in `docs/PLAN-PHASE-1.md` Abschnitt 3 (S
   Belastungswoche (`Math.floor`), Erholungswoche 60 %, je Einheit höchstens 50 % der Woche, am Start höchstens 90 min,
   Start-Deckel je Einheit 30/20 min, Einheiten unter 10 min entfallen. Reine Ausdauer-Pläne haben keine Vorlage.
 - Wettkampf-Periodisierung, Intervalle, Zonen, Strecken bleiben Phase 10.
+- **Wettkampf, Ampel und Phasen rückwärts (Phase 10, Etappe WP1, Core umgesetzt 16.10.2026, `docs/PLAN-PHASE-10.md`
+  Umsetzungsstand WP1):** Laufen 5 km bis Marathon. `competitionFeasibility` → Passt / Knapp / Zu kurz / Nicht möglich
+  mit Vorschlägen (kürzere Distanz, späteres Datum, ohne Wettkampf weiter) – mit derselben 10-%-Kette wie der Plan, nie
+  gestaucht. `macroCycle` plant rückwärts Basis → Aufbau → Spitze → Tapering → Rennwoche → Erholung (Erholungswochen fest,
+  3 : 1 im Aufbau für Einsteiger, nie direkt vor dem Tapering). Noch ohne App und ohne Speicherung (WP3/WP4), Einheiten
+  bis WP2 locker.
 - Ausdauer-Ziel klarer (Gründer-Feedback „Ziel Marathon → Plan für allgemeine Fitness“): Beim Ziel Ausdauer belegt
   „Deine Trainingstage“ Ausdauer-Tage vor (`suggestedTrainingSlots`, Werte `ENDURANCE_GOAL_SUGGESTION`: 3 Ausdauer + 2 Kraft,
   Leistungssport 4 + 2, vorsichtig 2 + 1, Triathlon mehr Ausdauer; Deckel wie oben) – nur ohne gewählte Tage, änderbar
