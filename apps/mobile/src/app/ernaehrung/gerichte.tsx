@@ -6,6 +6,7 @@ import { View } from 'react-native';
 import { NutritionGate, nutritionReady } from '@/components/nutrition';
 import { ConfirmDialog, Screen } from '@/components/screen';
 import { Body, Button, Card, Heading, LoadingState, Notice } from '@/components/ui';
+import { NutritionSyncNotice } from '@/components/food-log';
 import { t } from '@/i18n';
 import { customMealAccess, customMealDetailText } from '@/lib/custom-meal-format';
 import { errorText } from '@/lib/error-text';
@@ -97,6 +98,8 @@ export default function CustomMealsScreen() {
   return shell(
     <>
       {access.edit ? <Body>{t.customMeals.intro}</Body> : consentNotice}
+      {/* Supabase-Modus (N7 Teil 2): wartende bzw. abgelehnte Gerichte und Einträge. */}
+      <NutritionSyncNotice />
       {!showNumbers ? <Body muted>{t.foodLog.numbersHidden}</Body> : null}
       {access.edit ? (
         <Button

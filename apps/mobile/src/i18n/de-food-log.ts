@@ -127,6 +127,24 @@ export const deFoodLog = {
   todayLine: (count: string) => `Gegessen heute: ${count}`,
   todayNone: 'Heute noch nichts eingetragen.',
   todayAdd: 'Essen eintragen',
+  /** Ernährungs-Warteschlange (Supabase-Modus, N7 Teil 2; Gründer-Frage G3 aus E1). */
+  sync: {
+    queued: (n: number) =>
+      n === 1
+        ? '1 Eintrag wird übertragen, sobald du wieder online bist.'
+        : `${n} Einträge werden übertragen, sobald du wieder online bist.`,
+    sessionOnly:
+      'Im Browser bleiben noch nicht übertragene Einträge nur, bis du diesen Tab schließt.',
+    rejected: (n: number) =>
+      n === 1
+        ? '1 Eintrag konnte nicht gespeichert werden (z. B. auf einem anderen Gerät geändert, zu alt oder ohne Einwilligung). Er liegt nur noch auf diesem Gerät.'
+        : `${n} Einträge konnten nicht gespeichert werden (z. B. auf einem anderen Gerät geändert, zu alt oder ohne Einwilligung). Sie liegen nur noch auf diesem Gerät.`,
+    discard: 'Verwerfen',
+    discardTitle: 'Nicht gespeicherte Einträge verwerfen?',
+    discardText:
+      'Die Einträge werden von diesem Gerät gelöscht. Was schon gespeichert ist, bleibt unverändert.',
+    discarded: 'Verworfen.',
+  },
   errors: {
     outOfRange: 'Eintragen geht nur für heute und bis zu 14 Tage zurück.',
     dayFull: 'An diesem Tag sind schon 40 Einträge – mehr geht nicht.',

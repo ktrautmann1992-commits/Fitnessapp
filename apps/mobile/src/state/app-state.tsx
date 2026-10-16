@@ -41,6 +41,7 @@ import {
   type BackendErrorCode,
   type LogSaveOutcome,
   type NutritionLibraryResult,
+  type NutritionSyncState,
   type PreferenceSwapContext,
 } from '@/data/backend';
 import { createBackend, deviceStore, newId } from '@/data/create-backend';
@@ -257,6 +258,15 @@ export interface AppContextValue {
   ) => Promise<void>;
   /** Das automatische Speichern des Essensplans ist gescheitert. */
   mealPlanSaveFailed: boolean;
+  /**
+   * … und zwar, weil die Einwilligung Gesundheitsdaten fehlt bzw. eine neue Fassung hat (Wächter N7 H3) – dann klarer
+   * Zustand „Einwilligung erneuern oder Unverträglichkeiten löschen“ statt „Erneut versuchen“.
+   */
+  mealPlanSaveConsentMissing: boolean;
+  /** Ernährungs-Warteschlange (Supabase-Modus, N7 Teil 2): wartend, abgelehnt, nur im Browser-Tab. */
+  nutritionSync: NutritionSyncState;
+  /** Abgelehnte Tagebuch-Einträge/eigene Gerichte auf diesem Gerät verwerfen (Gründer-Frage G3 aus E1). */
+  discardRejectedNutrition: () => Promise<void>;
   /** „Erneut versuchen“ nach gescheitertem automatischem Speichern (Wächter N5a K7). */
   retryMealPlanSave: () => void;
   /** Zähler der Versuche (ändert sich bei „Erneut versuchen“, damit das automatische Speichern neu läuft). */
@@ -339,6 +349,12 @@ export function AppStateProvider({ children }: { children: ReactNode }) {
     kind: 'idle',
   });
   const [mealPlanSaveFailed, setMealPlanSaveFailed] = useState(false);
+  const [mealPlanSaveConsentMissing, setMealPlanSaveConsentMissing] = useState(false);
+  const [nutritionSync, setNutritionSync] = useState<NutritionSyncState>({
+    queued: 0,
+    rejected: 0,
+    sessionOnly: false,
+  });
   const [mealPlanSaveAttempt, setMealPlanSaveAttempt] = useState(0);
   /** Automatisch gespeicherte Essenspläne: Woche | Angaben-Fingerabdruck (nur Arbeitsspeicher, Etappe N5). */
   const persistedMealPlansRef = useRef(new Set<string>());
@@ -352,7 +368,24 @@ export function AppStateProvider({ children }: { children: ReactNode }) {
   const refreshPending = useCallback(() => {
     setPendingChanges(backend.pendingChanges());
     setPendingLogSessionIds(backend.pendingLogSessionIds());
+    void backend
+      .nutritionSync()
+      .then((state) =>
+        setNutritionSync((before) =>
+          before.queued === state.queued &&
+          before.rejected === state.rejected &&
+          before.sessionOnly === state.sessionOnly
+            ? before
+            : state,
+        ),
+      )
+      .catch(() => undefined);
   }, [backend]);
+
+  const discardRejectedNutrition = useCallback(async () => {
+    await backend.discardRejectedNutrition();
+    refreshPending();
+  }, [backend, refreshPending]);
 
   const reloadDrafts = useCallback(async () => {
     try {
@@ -613,6 +646,7 @@ export function AppStateProvider({ children }: { children: ReactNode }) {
       }
       setRows(await backend.saveMealPlan(plan, options, rows));
       setMealPlanSaveFailed(false);
+      setMealPlanSaveConsentMissing(false);
     },
     [backend, rows],
   );
@@ -651,9 +685,11 @@ export function AppStateProvider({ children }: { children: ReactNode }) {
           setRows(await backend.saveShoppingList(options.shoppingList, rows));
         }
         setMealPlanSaveFailed(false);
-      } catch {
+        setMealPlanSaveConsentMissing(false);
+      } catch (error) {
         // Ohne Details (Gesundheitsdaten); der angezeigte Plan bleibt der nach den aktuellen Angaben.
         setMealPlanSaveFailed(true);
+        setMealPlanSaveConsentMissing(errorCode(error) === 'consent_required');
       }
     },
     [backend, rows],
@@ -662,6 +698,7 @@ export function AppStateProvider({ children }: { children: ReactNode }) {
   const retryMealPlanSave = useCallback(() => {
     persistedMealPlansRef.current.clear();
     setMealPlanSaveFailed(false);
+    setMealPlanSaveConsentMissing(false);
     setMealPlanSaveAttempt((n) => n + 1);
   }, []);
 
@@ -671,8 +708,9 @@ export function AppStateProvider({ children }: { children: ReactNode }) {
         throw new BackendError('not_signed_in');
       }
       setRows(await backend.saveShoppingList(list, rows));
+      refreshPending();
     },
-    [backend, rows],
+    [backend, refreshPending, rows],
   );
 
   const saveCookDayStart = useCallback(
@@ -681,8 +719,9 @@ export function AppStateProvider({ children }: { children: ReactNode }) {
         throw new BackendError('not_signed_in');
       }
       setRows(await backend.saveCookDayStart(weekStart, startedAt, rows));
+      refreshPending();
     },
-    [backend, rows],
+    [backend, refreshPending, rows],
   );
 
   const saveRecipeRating = useCallback(
@@ -719,6 +758,7 @@ export function AppStateProvider({ children }: { children: ReactNode }) {
       }
       try {
         setRows(await backend.saveFoodLogEntries(entries, rows));
+        refreshPending();
       } catch (error) {
         // Teilerfolg (Wächter E1 S2, Nachprüfung H2): gültige Einträge sind gespeichert, ein anderer wurde abgelehnt –
         // den gespeicherten Stand trotzdem anzeigen, dann den Fehler melden.
@@ -731,10 +771,11 @@ export function AppStateProvider({ children }: { children: ReactNode }) {
           const reloaded = await backend.loadRows().catch(() => null);
           if (reloaded) setRows(reloaded.rows);
         }
+        refreshPending();
         throw error;
       }
     },
-    [backend, rows],
+    [backend, refreshPending, rows],
   );
 
   const deleteFoodLogEntry = useCallback(
@@ -743,8 +784,9 @@ export function AppStateProvider({ children }: { children: ReactNode }) {
         throw new BackendError('not_signed_in');
       }
       setRows(await backend.deleteFoodLogEntry(id, rows));
+      refreshPending();
     },
-    [backend, rows],
+    [backend, refreshPending, rows],
   );
 
   const changeFoodLogFavorite = useCallback(
@@ -753,8 +795,9 @@ export function AppStateProvider({ children }: { children: ReactNode }) {
         throw new BackendError('not_signed_in');
       }
       setRows(await backend.changeFoodLogFavorite(change, rows));
+      refreshPending();
     },
-    [backend, rows],
+    [backend, refreshPending, rows],
   );
 
   const saveCustomMeal = useCallback(
@@ -763,8 +806,9 @@ export function AppStateProvider({ children }: { children: ReactNode }) {
         throw new BackendError('not_signed_in');
       }
       setRows(await backend.saveCustomMeal(meal, rows));
+      refreshPending();
     },
-    [backend, rows],
+    [backend, refreshPending, rows],
   );
 
   const deleteCustomMeal = useCallback(
@@ -773,8 +817,9 @@ export function AppStateProvider({ children }: { children: ReactNode }) {
         throw new BackendError('not_signed_in');
       }
       setRows(await backend.deleteCustomMeal(id, rows));
+      refreshPending();
     },
-    [backend, rows],
+    [backend, refreshPending, rows],
   );
 
   const revokeHealthData = useCallback(
@@ -1193,7 +1238,10 @@ export function AppStateProvider({ children }: { children: ReactNode }) {
 
   const pendingCount = useCallback(async () => {
     const pending = await backend.pendingWorkouts();
-    return pending.queued + pending.drafts;
+    // Ernährungs-Warteschlange (N7 Teil 2): wartende und abgelehnte Tagebuch-Einträge/eigene Gerichte gingen beim
+    // Abmelden verloren – deshalb mitgezählt (R6).
+    const nutrition = await backend.nutritionSync().catch(() => ({ queued: 0, rejected: 0 }));
+    return pending.queued + pending.drafts + nutrition.queued + nutrition.rejected;
   }, [backend]);
 
   const signOut = useCallback(
@@ -1287,6 +1335,9 @@ export function AppStateProvider({ children }: { children: ReactNode }) {
       saveMealPlan,
       persistMealPlan,
       mealPlanSaveFailed,
+      mealPlanSaveConsentMissing,
+      nutritionSync,
+      discardRejectedNutrition,
       retryMealPlanSave,
       mealPlanSaveAttempt,
       saveShoppingList,
@@ -1360,6 +1411,9 @@ export function AppStateProvider({ children }: { children: ReactNode }) {
       saveMealPlan,
       persistMealPlan,
       mealPlanSaveFailed,
+      mealPlanSaveConsentMissing,
+      nutritionSync,
+      discardRejectedNutrition,
       retryMealPlanSave,
       mealPlanSaveAttempt,
       saveShoppingList,

@@ -4,6 +4,7 @@ import { isoDateSchema } from '../age';
 import {
   INGREDIENT_SUBSTITUTION_LIMITS,
   MEAL_PLAN_ENGINE_VERSION,
+  MEAL_PLAN_RETENTION_WEEKS,
   MEAL_PLAN_UPDATE_MIN_CHANGE,
   MEAL_SLOT_TIMES,
 } from '../constants';
@@ -275,6 +276,20 @@ export function mealPlanMatchesRecipes(
 export function mealPlanWeekEditable(weekStart: string, today: string): boolean {
   const current = startOfIsoWeek(isoDateSchema.parse(today));
   return weekStart === current || weekStart === addDays(current, 7);
+}
+
+/**
+ * Löschfrist (Etappe N7 Teil 2, `MEAL_PLAN_RETENTION_WEEKS`, Gründer-Entscheidung G-N7-2): erster Montag, dessen Woche
+ * noch gespeichert bleibt – die laufende Woche und die vier Wochen davor. Ältere Pläne und Einkaufslisten löscht der
+ * Server (`private.purge_expired_nutrition_weeks`) bzw. der Testmodus beim Laden und Speichern.
+ */
+export function mealPlanRetentionStart(today: string): string {
+  return addDays(startOfIsoWeek(isoDateSchema.parse(today)), -7 * MEAL_PLAN_RETENTION_WEEKS);
+}
+
+/** Bleibt die Woche ab `weekStart` (Montag) gespeichert? (sonst nach der Löschfrist gelöscht) */
+export function nutritionWeekRetained(weekStart: string, today: string): boolean {
+  return isoDateSchema.parse(weekStart) >= mealPlanRetentionStart(today);
 }
 
 /** Variante für „Andere Vorschläge“ (6.3 Nr. 7): + 1, nach der höchsten wieder 0 (Schema 0–10 000). */

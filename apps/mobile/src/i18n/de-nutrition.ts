@@ -21,7 +21,7 @@ export const deNutrition = {
     'Die Ernährung kommt bald auch für Konten. Bis dahin kannst du sie im Testmodus ausprobieren.',
   consentBlocked: {
     consent_outdated:
-      'Bitte bestätige die neue Fassung der Einwilligung Gesundheitsdaten – sonst können wir deine Unverträglichkeiten nicht berücksichtigen. Bis dahin zeigen wir keinen Essensplan und keine Rezepte.',
+      'Bitte bestätige die neue Fassung der Einwilligung Gesundheitsdaten oder lösche die gespeicherten Unverträglichkeiten – sonst können wir sie nicht berücksichtigen. Bis dahin zeigen wir keinen Essensplan und keine Rezepte.',
     consent_missing:
       'Es sind noch Unverträglichkeiten gespeichert, aber deine Einwilligung Gesundheitsdaten fehlt. Erteile die Einwilligung oder lösche die gespeicherten Unverträglichkeiten. Bis dahin zeigen wir keinen Essensplan und keine Rezepte.',
   },
@@ -32,13 +32,16 @@ export const deNutrition = {
   deleteIntolerances: 'Gespeicherte Unverträglichkeiten löschen',
   deleteIntolerancesTitle: 'Unverträglichkeiten löschen?',
   deleteIntolerancesText:
-    'Deine gespeicherten Unverträglichkeiten werden endgültig gelöscht und beim Essensplan nicht mehr berücksichtigt. Essenspläne und Einkaufslisten mit Gesundheitsbezug werden mit gelöscht (auch eigene Einträge) und neu erstellt. Du kannst Lebensmittel stattdessen unter „mag ich nicht“ ausschließen (Einstellungen → Ernährung ändern).',
+    'Deine gespeicherten Unverträglichkeiten werden endgültig gelöscht und beim Essensplan nicht mehr berücksichtigt. Alle Essenspläne und Einkaufslisten mit Gesundheitsbezug werden mit gelöscht (auch eigene Einträge) und neu erstellt – auch die, die nur wegen deiner Körperdaten oder deines Gesundheits-Checks als Gesundheitsdaten gelten. Du kannst Lebensmittel stattdessen unter „mag ich nicht“ ausschließen (Einstellungen → Ernährung ändern).',
   deleteIntolerancesConfirm: 'Löschen',
   deleteIntolerancesDone: 'Gespeicherte Unverträglichkeiten gelöscht.',
   setupNeeded:
     'Richte deine Ernährung kurz ein: Wie aktiv ist dein Alltag und wann trainierst du meistens?',
   setupButton: 'Ernährung einrichten',
   noRecipes: 'Für deine Angaben gibt es noch keine Rezepte.',
+  /** Supabase-Modus (N7 Teil 2, G-N7-3): noch keine freigegebenen Rezepte – klarer Leer-Zustand. */
+  noRecipesReview:
+    'Noch keine Rezepte: Unsere Rezepte werden gerade fachlich geprüft und erscheinen hier, sobald sie freigegeben sind. Dein Tagesziel siehst du schon.',
   noRecipesTestMode:
     'Noch keine Rezepte: Der Lebensmittel-Katalog wird gerade importiert. Zum Ausprobieren kannst du Beispiel-Rezepte mit Testwerten verwenden.',
   demoUse: 'Beispiel-Rezepte mit Testwerten verwenden',
@@ -250,6 +253,14 @@ export const deNutrition = {
     },
     saveFailed:
       'Dein Essensplan konnte gerade nicht gespeichert werden. Angezeigt wird trotzdem der Plan nach deinen aktuellen Angaben.',
+    /** Wächter N7 H3: Speichern scheitert an der Einwilligung (neue Fassung bzw. fehlt) – klarer Weg statt Wiederholen. */
+    saveConsentMissing:
+      'Dein Essensplan kann gerade nicht gespeichert werden: Er beruht auf Gesundheitsdaten (z. B. Unverträglichkeiten), und deine Einwilligung Gesundheitsdaten fehlt oder hat eine neue Fassung. Bestätige die Einwilligung oder lösche die gespeicherten Unverträglichkeiten.',
+    saveConsentButton: 'Einwilligung prüfen',
+    /** Wächter N7 H9: Rezept eines vergangenen Tages ist zurückgezogen (archiviert) und nicht mehr lesbar. */
+    unavailable: (title: string) => `${title} – Rezept nicht mehr verfügbar`,
+    unavailableHint:
+      'Dieses Rezept wurde überarbeitet oder zurückgezogen. Vergangene Tage bleiben, wie sie waren.',
     actionFailed: 'Das hat nicht geklappt. Bitte versuche es noch einmal.',
     readOnlyWeek: 'Diese Woche liegt zurück und lässt sich nicht mehr ändern.',
     weekView: 'Wochenansicht',

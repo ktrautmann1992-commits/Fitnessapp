@@ -71,7 +71,8 @@ export function roundShoppingAmount(amount: number, unit: ShoppingUnit): number 
 
 const categoryRank = (c: ShoppingCategory) => SHOPPING_CATEGORIES.indexOf(c);
 
-function sortItems(items: ShoppingListItem[]): ShoppingListItem[] {
+/** Reihenfolge der Einträge: Vorrat zuletzt, dann Abteilung, Bezeichnung, Schlüssel. */
+export function sortShoppingItems(items: ShoppingListItem[]): ShoppingListItem[] {
   return items.sort(
     (a, b) =>
       Number(a.isPantry) - Number(b.isPantry) ||
@@ -191,7 +192,7 @@ export function buildShoppingList(
       push(foodId, null, null);
     }
   }
-  return { from, to, usesHealthData: plan.usesHealthData, items: sortItems(items) };
+  return { from, to, usesHealthData: plan.usesHealthData, items: sortShoppingItems(items) };
 }
 
 /**
@@ -242,7 +243,7 @@ export function mergeShoppingList(
       items.push({ ...item, notInPlan: true, amountChanged: false });
     }
   }
-  return { ...fresh, items: sortItems(items) };
+  return { ...fresh, items: sortShoppingItems(items) };
 }
 
 const manualItemSchema = z.strictObject({
@@ -279,7 +280,7 @@ export function addManualShoppingItem<L extends ShoppingList>(
     amountChanged: false,
     notInPlan: false,
   };
-  return { ...list, items: sortItems([...list.items, item]) };
+  return { ...list, items: sortShoppingItems([...list.items, item]) };
 }
 
 export function removeManualShoppingItem<L extends ShoppingList>(list: L, itemKey: string): L {

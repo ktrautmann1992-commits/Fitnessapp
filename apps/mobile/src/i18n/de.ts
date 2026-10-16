@@ -39,6 +39,7 @@ export const de = {
   errors: {
     generic: 'Etwas ist schiefgelaufen. Bitte versuche es noch einmal.',
     temporary: 'Das hat gerade nicht geklappt. Bitte versuche es gleich noch einmal.',
+    deleteUnavailable: 'Löschen ist gerade nicht möglich – bitte versuche es später erneut.',
     network: 'Keine Verbindung – deine Angaben sind gespeichert, wir versuchen es gleich nochmal.',
     networkRetry: 'Keine Verbindung. Bitte versuche es erneut, sobald du online bist.',
     networkSensitive:
@@ -1132,8 +1133,8 @@ export const de = {
     signOutPendingTitle: 'Noch nicht übertragen',
     signOutPending: (count: number) =>
       count === 1
-        ? '1 Training ist noch nicht übertragen.'
-        : `${count} Trainings sind noch nicht übertragen.`,
+        ? '1 Eintrag (Training oder Ernährung) ist noch nicht übertragen.'
+        : `${count} Einträge (Training oder Ernährung) sind noch nicht übertragen.`,
     signOutSendNow: 'Jetzt senden',
     signOutAnyway: 'Trotzdem abmelden (gehen verloren)',
     signOutStillPending:
@@ -1195,6 +1196,10 @@ export const de = {
       count === 1
         ? '1 Training ist noch nicht übertragen und fehlt in der Datei.'
         : `${count} Trainings sind noch nicht übertragen und fehlen in der Datei.`,
+    exportPendingNutrition: (count: number) =>
+      count === 1
+        ? '1 Eintrag aus Ernährungstagebuch oder eigenen Gerichten ist noch nicht übertragen und fehlt in der Datei.'
+        : `${count} Einträge aus Ernährungstagebuch oder eigenen Gerichten sind noch nicht übertragen und fehlen in der Datei.`,
     exportTestMode:
       'Testmodus: Die Datei enthält die Angaben auf diesem Gerät (ohne E-Mail), auch deine ausgeschlossenen Übungen.',
     exportDeviceOnly:

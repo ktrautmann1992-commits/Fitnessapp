@@ -17,7 +17,7 @@ export function createDeviceProtectedStore(
 ): ProtectedStore {
   return createSessionProtectedStore(browserSessionStorage(), PROTECTED_STORE_KEYS[name].dataKey, {
     // Entwurf und Warteschlange: Schreibfehler melden (nie stilles Verwerfen).
-    strict: name === 'workoutDraft' || name === 'logQueue',
+    strict: name === 'workoutDraft' || name === 'logQueue' || name === 'nutritionQueue',
   });
 }
 
@@ -27,6 +27,8 @@ export function createDeviceProtectedStores(): ProtectedStores {
     workoutDraft: createDeviceProtectedStore('workoutDraft'),
     logQueue: createDeviceProtectedStore('logQueue'),
     logCache: createDeviceProtectedStore('logCache'),
+    nutritionCache: createDeviceProtectedStore('nutritionCache'),
+    nutritionQueue: createDeviceProtectedStore('nutritionQueue'),
   };
 }
 

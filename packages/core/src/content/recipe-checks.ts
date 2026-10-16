@@ -39,6 +39,13 @@ export interface NutritionCatalogContext {
   readonly expectations?: AllergenExpectations;
   /** Eingecheckte Ausnahmeliste (Begründung + Quelle). */
   readonly exceptions?: readonly AllergenException[];
+  /**
+   * Inhalte aus der Datenbank (App im Supabase-Modus, Etappe N7 Teil 2): Quellauszug (R17) und Erwartungsliste (R18)
+   * gibt es dort nicht – `content-seed` hat sie VOR dem Einspielen mit den echten Begleitdaten geprüft (ohne Fehler
+   * wird nichts eingespielt). Dann entfallen nur diese beiden Abgleiche; alle anderen Regeln (u. a. die R18-Pflichtregeln
+   * ohne Ausnahmeliste – also eher strenger) laufen wie immer.
+   */
+  readonly checkedAtSeed?: true;
 }
 
 type Target = Parameters<typeof makeIssue>[1];
@@ -135,6 +142,7 @@ function fmtNutrient(value: number | null | undefined): string {
 /** R17: Nährwerte und Bezeichnung = Quellauszug (B6b). Die Herkunftsprüfung des Auszugs kommt in N2b. */
 export function checkFoodSource(food: Food, catalog: NutritionCatalogContext): ContentIssue[] {
   const target = foodTarget(food);
+  if (catalog.checkedAtSeed === true) return [];
   if (catalog.sourceRows === undefined) {
     return [
       makeIssue(
@@ -241,7 +249,9 @@ export function checkFoodAllergens(
     );
   }
 
-  if (catalog.expectations === undefined) {
+  if (catalog.checkedAtSeed === true) {
+    // Erwartungsliste beim Einspielen geprüft (content-seed) – siehe NutritionCatalogContext.checkedAtSeed.
+  } else if (catalog.expectations === undefined) {
     issues.push(
       makeIssue(
         'R18',

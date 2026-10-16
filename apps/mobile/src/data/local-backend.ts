@@ -70,6 +70,7 @@ import {
   applyShoppingListSave,
   checkMealPlanSave,
   checkShoppingListSave,
+  pruneExpiredNutritionWeeks,
 } from './meal-plan-rows';
 import { createMemoryProtectedStore, type ProtectedStore } from './protected-store';
 import { readJson, STORAGE_KEYS, writeJson, type KeyValueStore } from './kv';
@@ -491,8 +492,12 @@ export function createLocalBackend(store: KeyValueStore, options: LocalBackendOp
     loadRows: async () => {
       const { db } = await requireUser();
       if (!db.rows) return { rows: emptyUserRows(), offline: false };
-      // Wie close_missed_sessions() beim Laden: verpasste Einheiten nach Wochenende → gestrichen.
-      const rows = closeMissedSessionRows(db.rows, options.today());
+      // Wie close_missed_sessions() beim Laden: verpasste Einheiten nach Wochenende → gestrichen. Löschfrist alter
+      // Essenspläne/Einkaufslisten wie auf dem Server (G-N7-2).
+      const rows = pruneExpiredNutritionWeeks(
+        closeMissedSessionRows(db.rows, options.today()),
+        options.today(),
+      );
       if (rows !== db.rows) await save({ ...db, rows });
       return { rows, offline: false };
     },
@@ -741,6 +746,8 @@ export function createLocalBackend(store: KeyValueStore, options: LocalBackendOp
           now,
         });
       }
+      // Löschfrist wie save_meal_plan auf dem Server (G-N7-2).
+      next = pruneExpiredNutritionWeeks(next, options.today());
       await save({ ...db, rows: next });
       return next;
     },
@@ -757,11 +764,14 @@ export function createLocalBackend(store: KeyValueStore, options: LocalBackendOp
           { sensitive: true },
         );
       }
-      const next = applyShoppingListSave(rows, check.list, {
-        id: options.newId(),
-        userId: session.userId,
-        now: options.now(),
-      });
+      const next = pruneExpiredNutritionWeeks(
+        applyShoppingListSave(rows, check.list, {
+          id: options.newId(),
+          userId: session.userId,
+          now: options.now(),
+        }),
+        options.today(),
+      );
       await save({ ...db, rows: next });
       return next;
     },
@@ -898,6 +908,9 @@ export function createLocalBackend(store: KeyValueStore, options: LocalBackendOp
       return { queued: 0, drafts: owner ? (await drafts.forOwner(owner)).length : 0 };
     },
     pendingLogSessionIds: () => [],
+    // Keine Ernährungs-Warteschlange im Testmodus (alles sofort im Gerätespeicher).
+    nutritionSync: async () => ({ queued: 0, rejected: 0, sessionOnly: false }),
+    discardRejectedNutrition: async () => undefined,
     hasForeignDeviceData: async () => {
       const db = await load();
       return db.session ? drafts.hasForeign(db.session.userId) : false;
