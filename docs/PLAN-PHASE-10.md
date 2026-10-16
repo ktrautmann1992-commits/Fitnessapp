@@ -123,15 +123,15 @@ Phase 10 bringt zwei Dinge:
 
 **Kommt NICHT in Phase 10:**
 
-| Thema | Wann |
-| --- | --- |
-| Puls-Zonen, Herzfrequenz speichern | Phase 8 (Gesundheitsdatum, eigene Einwilligung) |
+| Thema                                                          | Wann                                              |
+| -------------------------------------------------------------- | ------------------------------------------------- |
+| Puls-Zonen, Herzfrequenz speichern                             | Phase 8 (Gesundheitsdatum, eigene Einwilligung)   |
 | Automatische Plan-Anpassung bei verpassten Wochen, neuem Datum | 4b (Premium), Auslöser `competition_date_changed` |
-| Wearable-Import (Strava, Garmin, Health) | Phase 8 |
-| Navigation mit Abbiegehinweisen | nicht geplant – GPX an die Uhr |
-| Offline-Karten zum Herunterladen | später (S2b oder danach) |
-| Teilen, Segmente, Ranglisten, öffentliche Strecken | **nie** (CLAUDE.md) |
-| KI-Trainingspläne, KI-Erklärungen | Premium-KI, eigene Phase |
+| Wearable-Import (Strava, Garmin, Health)                       | Phase 8                                           |
+| Navigation mit Abbiegehinweisen                                | nicht geplant – GPX an die Uhr                    |
+| Offline-Karten zum Herunterladen                               | später (S2b oder danach)                          |
+| Teilen, Segmente, Ranglisten, öffentliche Strecken             | **nie** (CLAUDE.md)                               |
+| KI-Trainingspläne, KI-Erklärungen                              | Premium-KI, eigene Phase                          |
 
 ---
 
@@ -163,12 +163,12 @@ Die App rechnet vom Renntag zurück und füllt die Wochen von hinten:
 
 **Mindestvorlauf** (Vorschlag, Wochen bis zum Renntag, W-G3):
 
-| Distanz | Einsteiger | Fortgeschritten | Leistungssport |
-| --- | --- | --- | --- |
-| 5 km | 8 | 6 | 4 |
-| 10 km | 10 | 8 | 6 |
-| Halbmarathon | 16 | 12 | 10 |
-| Marathon | 24 | 16 | 14 |
+| Distanz      | Einsteiger | Fortgeschritten | Leistungssport |
+| ------------ | ---------- | --------------- | -------------- |
+| 5 km         | 8          | 6               | 4              |
+| 10 km        | 10         | 8               | 6              |
+| Halbmarathon | 16         | 12              | 10             |
+| Marathon     | 24         | 16              | 14             |
 
 **Machbarkeit:** Für jede Distanz gibt es einen **Mindest-Spitzenumfang** für „Ankommen“ (Wochenminuten und längste
 Einheit, z. B. Halbmarathon ca. 150 min/Woche und 90–120 min langer Lauf, Marathon ca. 240 min/Woche und 150–180
@@ -191,15 +191,15 @@ und Leistungssport, gedeckelt und mit Bestätigung (W-G5).
 
 ### 3.3 Wer bekommt welchen Plan (strengste Regel gewinnt)
 
-| Personengruppe | Wettkampfplan |
-| --- | --- |
-| Schwangerschaft | **kein** Wettkampfplan, Hinweis Ärztin/Arzt |
-| Ohne Gesundheits-Check | erst nach dem Check; bis dahin Grundlagen-Plan |
-| Gesundheits-Flag | nur „Ankommen“, nur locker (keine Tempo-/Intervall-Einheiten), Hinweis ärztliche Abklärung (Sporttauglichkeit) |
-| Ab 65 | nur „Ankommen“, harte Einheiten nur als „zügig“ (Anstrengung ≤ 6), Hinweis ärztliche Abklärung |
-| Unter 18 | höchstens Halbmarathon (W-G4), Anstrengung ≤ 7, keine Zielzeit |
-| Einsteiger | höchstens 1 harte Einheit/Woche ab Aufbau, Marathon nur mit 24 Wochen und Hinweis |
-| Fortgeschritten / Leistungssport | bis 2 harte Einheiten/Woche, Zielzeit möglich |
+| Personengruppe                   | Wettkampfplan                                                                                                  |
+| -------------------------------- | -------------------------------------------------------------------------------------------------------------- |
+| Schwangerschaft                  | **kein** Wettkampfplan, Hinweis Ärztin/Arzt                                                                    |
+| Ohne Gesundheits-Check           | erst nach dem Check; bis dahin Grundlagen-Plan                                                                 |
+| Gesundheits-Flag                 | nur „Ankommen“, nur locker (keine Tempo-/Intervall-Einheiten), Hinweis ärztliche Abklärung (Sporttauglichkeit) |
+| Ab 65                            | nur „Ankommen“, harte Einheiten nur als „zügig“ (Anstrengung ≤ 6), Hinweis ärztliche Abklärung                 |
+| Unter 18                         | höchstens Halbmarathon (W-G4), Anstrengung ≤ 7, keine Zielzeit                                                 |
+| Einsteiger                       | höchstens 1 harte Einheit/Woche ab Aufbau, Marathon nur mit 24 Wochen und Hinweis                              |
+| Fortgeschritten / Leistungssport | bis 2 harte Einheiten/Woche, Zielzeit möglich                                                                  |
 
 Wochen-Deckel aus Phase 3 bleiben (höchstens 5 Einheiten für Einsteiger/vorsichtig/unter 18/ab 65).
 
@@ -272,7 +272,7 @@ mit dem Satz „Die Anstrengung hat Vorrang – bei Hitze, Wind und Steigungen l
 - `competitionFeasibility(inputs, today)` → `ok | tight | too_short` + Gründe + Vorschläge (kürzere Distanz,
   frühestes Datum). Nutzt **dieselbe** 10-%-Kette (`increasedMinutes`) wie `enduranceWeekVolumes`.
 - `macroCycle(inputs, planStart)` → Liste der Wochen mit Phase (`base | build | peak | taper | race_week |
-  recovery`) und Erholungswochen. Reine Funktion, wird **nicht gespeichert**, sondern bei jedem Folgeblock neu
+recovery`) und Erholungswochen. Reine Funktion, wird **nicht gespeichert**, sondern bei jedem Folgeblock neu
   gerechnet (gleiche Eingaben → gleiches Ergebnis).
 - Anbindung an `generateTrainingPlan`: Hat das Ziel einen gültigen Wettkampf, bekommt jeder Block seine Phasen aus
   `macroCycle`; Folgeblöcke wie heute über `append_plan_block`.
@@ -421,14 +421,14 @@ Wettkampf am Montag (Carb-Loading in der Vorwoche), Wettkampf abgesagt (Tage nor
 Jede Kachel-Anfrage verrät dem Anbieter die **IP-Adresse und den Kartenausschnitt** (also ungefähr, wo man ist).
 Deshalb: EU-Anbieter oder eigene Datei, Auftragsverarbeitung (AVV), Datenschutzerklärung.
 
-| Option | Kosten (ca.) | Grenzen / Bedingungen | Eignung |
-| --- | --- | --- | --- |
-| `tile.openstreetmap.org` | 0 € | Nutzungsbedingungen verbieten App-Massennutzung, Vorladen, Offline; kein SLA, kann sperren | **nicht nutzen** |
-| OpenFreeMap (Vektor, ohne Schlüssel) | 0 € | spendenfinanziert, kein SLA, keine Garantie | **Testphase** |
-| MapTiler Cloud | Free nur nicht-kommerziell (ca. 100.000 Anfragen/Monat, Logo); bezahlt ab ca. 25–30 USD/Monat | Konto + Schlüssel, Geocoding dabei | Livegang, wenn wenig Aufwand wichtig ist |
-| Stadia Maps | Free nur nicht-kommerziell; bezahlt ab ca. 20 USD/Monat | Konto + Schlüssel | Alternative |
-| **Protomaps (eine PMTiles-Datei DACH) auf Cloudflare R2, EU** | wenige €/Monat (Speicher einige GB, keine Ausgangsgebühren) | einmal einrichten, Aktualisierung per GitHub Action, keine Anfrage-Limits | **Livegang (Empfehlung)** |
-| Mapbox | Freikontingent, dann teuer | eigene Lizenz, mit MapLibre nicht vorgesehen | nicht nutzen |
+| Option                                                        | Kosten (ca.)                                                                                  | Grenzen / Bedingungen                                                                      | Eignung                                  |
+| ------------------------------------------------------------- | --------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------ | ---------------------------------------- |
+| `tile.openstreetmap.org`                                      | 0 €                                                                                           | Nutzungsbedingungen verbieten App-Massennutzung, Vorladen, Offline; kein SLA, kann sperren | **nicht nutzen**                         |
+| OpenFreeMap (Vektor, ohne Schlüssel)                          | 0 €                                                                                           | spendenfinanziert, kein SLA, keine Garantie                                                | **Testphase**                            |
+| MapTiler Cloud                                                | Free nur nicht-kommerziell (ca. 100.000 Anfragen/Monat, Logo); bezahlt ab ca. 25–30 USD/Monat | Konto + Schlüssel, Geocoding dabei                                                         | Livegang, wenn wenig Aufwand wichtig ist |
+| Stadia Maps                                                   | Free nur nicht-kommerziell; bezahlt ab ca. 20 USD/Monat                                       | Konto + Schlüssel                                                                          | Alternative                              |
+| **Protomaps (eine PMTiles-Datei DACH) auf Cloudflare R2, EU** | wenige €/Monat (Speicher einige GB, keine Ausgangsgebühren)                                   | einmal einrichten, Aktualisierung per GitHub Action, keine Anfrage-Limits                  | **Livegang (Empfehlung)**                |
+| Mapbox                                                        | Freikontingent, dann teuer                                                                    | eigene Lizenz, mit MapLibre nicht vorgesehen                                               | nicht nutzen                             |
 
 - **Attribution** immer sichtbar: „© OpenStreetMap-Mitwirkende“ (ODbL) plus Stil-Anbieter.
 - **Bibliothek:** MapLibre – nativ `@maplibre/maplibre-react-native` (Kompatibilität mit Expo SDK 57 und der neuen
@@ -475,7 +475,7 @@ Deshalb: EU-Anbieter oder eigene Datei, Auftragsverarbeitung (AVV), Datenschutze
   per GPS sind ungenau“), `autoPause` (unter Gehtempo = Pause), `kmSplits`, `simplifyTrack`, `encodePolyline` /
   `decodePolyline`, `compareAttempts` (nur eigene Läufe derselben Favoriten-Strecke), `toGpx` (GPX 1.1).
 - Zod: `trackedRouteSchema` (Name 1–80, Notiz ≤ 280, Art `run | bike | walk`, Schwierigkeit `easy | medium |
-  hard`, höchstens 5.000 Punkte nach Vereinfachung, Dauer 1 min–12 h wie `cardio_logs`).
+hard`, höchstens 5.000 Punkte nach Vereinfachung, Dauer 1 min–12 h wie `cardio_logs`).
 - **Tests:** 0/1/2 Punkte, Stillstand (Distanz 0), GPS-Sprung, Funkloch 5 min, doppelte Zeitstempel, Zeit
   rückwärts, 12 h, 100.000 Rohpunkte (Laufzeit), Bergab-Rad mit 70 km/h (Warnung, nicht verwerfen),
   Polyline-Rundreise, GPX-Export gültig (Schema), Kilometerzeiten bei 0,99 und 1,01 km.
@@ -488,8 +488,8 @@ Deshalb: EU-Anbieter oder eigene Datei, Auftragsverarbeitung (AVV), Datenschutze
   `session_log_id` (nullable, `on delete set null`), `source` (`recorded | gpx_import`), `created_at`.
 - RLS: nur eigene Zeilen; Schreiben über `save_tracked_route` / `delete_tracked_route` /
   `delete_all_tracked_routes` (Prüfung wie Zod, Tageslimit gegen Missbrauch). Export: JSON in `export_my_data`
-  + GPX je Strecke in der App. Konto löschen: Kaskade. Widerruf `health_data`: Strecken bleiben (kein
-  Gesundheitsdatum, W-G15), verknüpfte Einträge werden wie bisher neutralisiert.
+  - GPX je Strecke in der App. Konto löschen: Kaskade. Widerruf `health_data`: Strecken bleiben (kein
+    Gesundheitsdatum, W-G15), verknüpfte Einträge werden wie bisher neutralisiert.
 - pgTAP: fremde Strecken unsichtbar, `anon` nichts, Grenzen, Löschen, Export, Partner-Modus sieht nichts.
 
 **App:**
