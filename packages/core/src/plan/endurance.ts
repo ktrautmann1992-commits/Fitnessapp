@@ -1,4 +1,5 @@
 import {
+  COMPETITION_LONG_RUN,
   ENDURANCE_BEGINNER_WALK_RUN_WEEKS,
   ENDURANCE_DELOAD_VOLUME_FACTOR,
   ENDURANCE_EFFORT,
@@ -154,6 +155,16 @@ export interface EnduranceWeekInput {
    * immer mehr“, Plan 3.1). Senkt nur, hebt nie. Fehlt → wie bisher.
    */
   readonly maxBudget?: number;
+  /**
+   * Nur Wettkampfplan (Phase 10 WP2, Gründer-Entscheidung G2): langer Lauf am Tag `index` (Position in `wishes`).
+   * Eigene Steigerungsregel: längste Einheit ≤ floor(1,1 × längste Einheit der letzten Belastungswoche), in der ersten
+   * Belastungswoche ≤ Start-Deckel (bzw. 90 min), in Erholungs-/Tapering-Wochen nie über der letzten Belastungswoche;
+   * höchstens 50 % der Woche (bei ≥ 2 Einheiten) und `maxMinutes` (Plan 3.5). Die übrigen Einheiten teilen den Rest
+   * (nie länger als der lange Lauf). Woche 0 und `index` −1: kein langer Lauf, aber keine Einheit über `maxMinutes`
+   * (Erholungswochen: über der längsten der letzten Belastungswoche). Fehlt → Verteilung wie bisher.
+   */
+  readonly longRun?: { readonly index: number; readonly maxMinutes: number };
+  // index −1 = Wettkampf-Woche ohne langen Lauf: nur die Deckel (maxMinutes, Erholungswoche ≤ letzte längste Einheit).
 }
 
 /** Bezug für einen Folgeblock (aus planned_sessions der letzten Belastungswoche, ohne gestrichene). */
@@ -254,6 +265,52 @@ export function distributeEnduranceMinutes(
 }
 
 /**
+ * Verteilung mit langem Lauf (Wettkampfplan, G2): langer Lauf = min(Wunsch des Tages, Deckel je Einheit, Deckel des
+ * langen Laufs, `maxMinutes`, bei ≥ 2 Einheiten floor(50 % des Budgets)); der Rest geht nach
+ * distributeEnduranceMinutes an die übrigen Tage, je höchstens so lang wie der lange Lauf. Unter 10 Minuten fällt der
+ * lange Lauf weg (dann normale Verteilung mit Deckel ≤ Deckel des langen Laufs). Summe immer ≤ `budget`.
+ */
+export function distributeWithLongRun(
+  budget: number,
+  wishes: readonly number[],
+  sessionCap: number,
+  longRun: { readonly index: number; readonly limit: number; readonly maxMinutes: number },
+): { minutes: number[]; dropped: number } {
+  const n = wishes.length;
+  const total = wishes.reduce((sum, w) => sum + w, 0);
+  const li = longRun.index;
+  if (n === 0 || total <= 0 || budget <= 0 || li < 0 || li >= n) {
+    return distributeEnduranceMinutes(budget, wishes, Math.min(sessionCap, longRun.limit));
+  }
+  const B = Math.min(Math.floor(budget), total);
+  const share = n >= 2 ? Math.floor(B * COMPETITION_LONG_RUN.maxShareOfWeek) : B;
+  const long = Math.max(
+    0,
+    Math.floor(
+      Math.min(wishes[li] as number, sessionCap, longRun.limit, longRun.maxMinutes, share, B),
+    ),
+  );
+  const others = wishes.filter((_, i) => i !== li);
+  if (long < ENDURANCE_SESSION_LIMITS.minSessionMinutes) {
+    const rest = distributeEnduranceMinutes(B, others, Math.min(sessionCap, longRun.limit));
+    const minutes = [...rest.minutes];
+    minutes.splice(li, 0, 0);
+    return { minutes, dropped: rest.dropped + 1 };
+  }
+  const rest = distributeEnduranceMinutes(B - long, others, Math.min(sessionCap, long));
+  const minutes = [...rest.minutes];
+  // 50 % der TATSÄCHLICHEN Woche (Rundung/Deckel der übrigen Tage können Minuten kosten): langer Lauf ≤ Summe der
+  // übrigen Einheiten, solange es sie gibt.
+  const othersSum = rest.minutes.reduce((sum, m) => sum + m, 0);
+  const finalLong = othersSum > 0 ? Math.min(long, othersSum) : long;
+  minutes.splice(li, 0, finalLong >= ENDURANCE_SESSION_LIMITS.minSessionMinutes ? finalLong : 0);
+  return {
+    minutes,
+    dropped: rest.dropped + (finalLong >= ENDURANCE_SESSION_LIMITS.minSessionMinutes ? 0 : 1),
+  };
+}
+
+/**
  * Wochenumfänge eines Blocks (Erweiterungsplan 5.5 Punkte 1–6):
  * - Startumfang S = min(Wunsch, Startumfang der Gruppe); Woche 0 bekommt höchstens den Anteil von S für ihre
  *   Resttage und ist nie Bezug; ebenso nie Bezug ist eine angebrochene Startwoche 1 (Wunsch-Minuten der Woche unter
@@ -300,6 +357,9 @@ export function enduranceWeekVolumes(
   let lastCap: number | null =
     reference && !restart && startCap !== null ? (reference.sessionCap ?? startCap) : null;
   let hadLoadWeek = reference !== null && !restart;
+  // Längste Einheit der letzten Belastungswoche (langer Lauf, G2); null = noch keine.
+  let lastLongest: number | null =
+    reference && !restart && reference.sessionCap !== null ? reference.sessionCap : null;
   let droppedDay = false;
   const results: EnduranceWeekResult[] = [];
   for (const week of weeks) {
@@ -345,7 +405,36 @@ export function enduranceWeekVolumes(
         cap = Number.POSITIVE_INFINITY;
       }
     }
-    const { minutes, dropped } = distributeEnduranceMinutes(budget, week.wishes, cap);
+    const firstLong = Math.min(
+      startCap ?? Number.POSITIVE_INFINITY,
+      ENDURANCE_SESSION_LIMITS.firstLoadWeekMaxMinutes,
+    );
+    const longLimit =
+      lastLongest === null
+        ? firstLong
+        : week.kind === 'deload'
+          ? lastLongest
+          : increasedMinutes(lastLongest);
+    let distributed: { minutes: number[]; dropped: number };
+    if (week.longRun && week.longRun.index >= 0 && week.kind !== 'week0') {
+      distributed = distributeWithLongRun(budget, week.wishes, cap, {
+        index: week.longRun.index,
+        limit: longLimit,
+        maxMinutes: week.longRun.maxMinutes,
+      });
+    } else if (week.longRun) {
+      // Wettkampf-Woche ohne langen Lauf (Woche 0, Rennwoche, Erholung nach dem Rennen): keine Einheit über dem Deckel
+      // der Distanz und in Erholungswochen keine über der längsten der letzten Belastungswoche.
+      const extra = week.kind === 'deload' && lastLongest !== null ? lastLongest : Infinity;
+      distributed = distributeEnduranceMinutes(
+        budget,
+        week.wishes,
+        Math.min(cap, week.longRun.maxMinutes, extra),
+      );
+    } else {
+      distributed = distributeEnduranceMinutes(budget, week.wishes, cap);
+    }
+    const { minutes, dropped } = distributed;
     if (dropped > 0) droppedDay = true;
     // Angebrochene Startwoche (Plan beginnt mitten in der Woche, weniger Ausdauer-Wunsch als eine volle Woche): wie
     // Woche 0 nie Bezug – sonst bekäme die erste volle Woche nur ~1,1 × dieses Teil-Umfangs, verteilt auf ALLE
@@ -356,6 +445,8 @@ export function enduranceWeekVolumes(
     if ((week.kind === 'intro' || week.kind === 'load') && !partialWeek) {
       refVolume = minutes.reduce((sum, m) => sum + m, 0);
       if (startCap !== null) lastCap = cap;
+      const longest = Math.max(0, ...minutes);
+      if (longest > 0) lastLongest = longest;
       hadLoadWeek = true;
     }
     results.push({ minutes, budget, sessionCap: cap });

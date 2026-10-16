@@ -1,4 +1,6 @@
 import {
+  COMPETITION_LONG_RUN,
+  COMPETITION_STRENGTH,
   DEFAULT_TRAINING_DAYS,
   ENDURANCE_SESSION_LIMITS,
   INTRO_WEEK_RPE_REDUCTION,
@@ -27,6 +29,7 @@ import {
   reAdaptExercises,
 } from './adapt';
 import { applyCurrentSafetyRules } from './apply-safety';
+import type { CompetitionDiscipline, CompetitionPhase } from './competition-schema';
 import { deloadDosage } from './deload';
 import {
   ENDURANCE_TEXTS_DE,
@@ -34,12 +37,21 @@ import {
   type EnduranceContext,
   enduranceEffort,
   type EnduranceReference,
+  type EnduranceVariant,
   enduranceVariant,
   type EnduranceWeekKind,
   enduranceWeekVolumes,
   maxEnduranceSessions,
 } from './endurance';
+import { weekWorkouts } from './endurance-workouts';
 import type { EquipmentProfile } from './equipment-profile';
+import {
+  type HardWorkoutLimits,
+  isHardWorkoutType,
+  type PaceProfile,
+  type WorkoutStep,
+  type WorkoutType,
+} from './intensity';
 import { type EnduranceStartGroup, isStricterGroup, type PlanSafetyRules } from './safety';
 
 /**
@@ -71,6 +83,15 @@ export interface GeneratedSession {
   readonly cooldown_de: string;
   /** Kraft: 1–8 Übungen; Ausdauer: keine. */
   readonly exercises: readonly PlannedExerciseDraft[];
+  /**
+   * NUR im Wettkampfplan (Phase 10 WP2; Spalten kommen mit WP3) – ohne Wettkampf fehlen die Schlüssel (Plan
+   * byte-gleich): Art der Ausdauer-Einheit, Phase der Woche, Schritte für den Timer, Distanz-Richtwert (nur mit
+   * Referenzzeit).
+   */
+  readonly workout_type?: WorkoutType | null;
+  readonly training_phase?: CompetitionPhase;
+  readonly workout_steps?: readonly WorkoutStep[] | null;
+  readonly target_distance_m?: number | null;
 }
 
 /** Ein Tag der aufgelösten Trainingswoche. */
@@ -383,7 +404,76 @@ export interface BlockContext {
   readonly loadWeeksBefore?: number;
   /** Nur Wettkampfplan (W-G5): bestätigter, gedeckelter eigener Startumfang (enduranceWeekVolumes `startMinutes`). */
   readonly enduranceStartMinutes?: number;
+  /** Nur Wettkampfplan, Folgeblock: harte/lange Einheiten und Kraft-Tage mit Beinen des bisherigen Plans (48-h-Regel). */
+  readonly competitionNeighbours?: CompetitionNeighbours;
 }
+
+/** Bisherige Einheiten an der Blockgrenze (Datum) – harte Ausdauer, langer Lauf, Kraft mit Beinen. */
+export interface CompetitionNeighbours {
+  readonly hard: readonly string[];
+  readonly long: readonly string[];
+  readonly legs: readonly string[];
+}
+
+/**
+ * Wochenbau einer Woche des Wettkampfplans (Phase 10 WP2): Phase, Art der Woche und alles, was weekWorkouts braucht.
+ * Gleich für Plan und Ampel (competition.ts); kommt aus competitionBlocks (periodization.ts).
+ */
+export interface CompetitionWeekWorkouts {
+  readonly phase: CompetitionPhase;
+  /** Erholungswoche im Training (nicht Tapering/Rennwoche/Erholung nach dem Rennen). */
+  readonly recoveryWeek: boolean;
+  readonly discipline: CompetitionDiscipline;
+  readonly level: 'beginner' | 'advanced' | 'competitive';
+  readonly limits: HardWorkoutLimits;
+  /** Wunsch-Tag des langen Laufs (ISO-Wochentag) oder null = automatisch (längster Wunsch, bei Gleichstand später). */
+  readonly longRunWeekday: number | null;
+  readonly pace: PaceProfile | null;
+}
+
+/** Phasen mit langem Lauf (Plan 3.5): nicht in der Rennwoche und nicht in der Erholung nach dem Rennen. */
+const LONG_RUN_PHASES: readonly CompetitionPhase[] = ['base', 'build', 'peak', 'taper'];
+
+/**
+ * Tag des langen Laufs unter den Ausdauer-Tagen einer Woche: Wunsch-Tag, wenn er dabei ist; sonst der Tag mit dem
+ * längsten Wunsch, bei Gleichstand der spätere (Standard: Wochenende, Plan 3.5). -1 = kein Ausdauer-Tag.
+ */
+export function chooseLongRunIndex(
+  enduranceDays: readonly PlannedDay[],
+  preferredWeekday: number | null,
+): number {
+  if (enduranceDays.length === 0) return -1;
+  const preferred = enduranceDays.findIndex((d) => d.weekday === preferredWeekday);
+  if (preferredWeekday !== null && preferred >= 0) return preferred;
+  let best = 0;
+  enduranceDays.forEach((d, i) => {
+    const b = enduranceDays[best] as PlannedDay;
+    if (d.minutes > b.minutes || (d.minutes === b.minutes && d.weekday > b.weekday)) best = i;
+  });
+  return best;
+}
+
+/**
+ * Langer Lauf einer Wettkampf-Woche für enduranceWeekVolumes (Gründer-Entscheidung G2) – dieselbe Auswahl im Plan
+ * (placeWeeks) und in der Ampel (competition.ts). `index` −1 = kein langer Lauf (Woche 0, Rennwoche, Erholung nach dem
+ * Rennen), es gelten nur die Deckel; undefined = ohne Wettkampf (Verhalten wie bisher).
+ */
+export function competitionLongRun(
+  workouts: CompetitionWeekWorkouts | undefined,
+  weekNo: number,
+  weekDays: readonly PlannedDay[],
+): { readonly index: number; readonly maxMinutes: number } | undefined {
+  if (!workouts) return undefined;
+  const maxMinutes = COMPETITION_LONG_RUN.maxMinutes[workouts.discipline];
+  if (weekNo === 0 || !LONG_RUN_PHASES.includes(workouts.phase)) return { index: -1, maxMinutes };
+  const endurance = weekDays.filter((d) => d.kind === 'endurance');
+  return { index: chooseLongRunIndex(endurance, workouts.longRunWeekday), maxMinutes };
+}
+
+const LEG_FOCUSES: readonly (SessionFocus | null)[] = ['full_body', 'lower'];
+/** Kraft-Einheit mit Beinen (48-h-Regel erweitert, Plan 3.5): Ganzkörper oder Unterkörper. */
+export const isLegStrength = (s: Pick<GeneratedSession, 'kind' | 'focus'>) =>
+  s.kind === 'strength' && LEG_FOCUSES.includes(s.focus);
 
 interface WeekPlan {
   readonly weekNo: number;
@@ -394,6 +484,8 @@ interface WeekPlan {
   readonly enduranceVolumeFactor?: number;
   /** Nur Wettkampfplan: Plateau des Wochenumfangs (EnduranceWeekInput.maxBudget). */
   readonly enduranceMaxBudget?: number;
+  /** Nur Wettkampfplan (WP2): Arten, langer Lauf, Kraft in Spitze/Tapering. */
+  readonly workouts?: CompetitionWeekWorkouts;
 }
 
 /**
@@ -407,6 +499,8 @@ export interface BlockWeekSpec {
   readonly enduranceVolumeFactor?: number;
   readonly enduranceMaxBudget?: number;
   readonly excludedDates?: readonly string[];
+  /** Nur Wettkampfplan (WP2): Wochenbau (Arten, langer Lauf, Kraft in Spitze/Tapering). */
+  readonly workouts?: CompetitionWeekWorkouts;
 }
 
 /**
@@ -437,6 +531,7 @@ function specWeek(spec: BlockWeekSpec, days: readonly PlannedDay[], from: string
     ...(spec.enduranceMaxBudget === undefined
       ? {}
       : { enduranceMaxBudget: spec.enduranceMaxBudget }),
+    ...(spec.workouts === undefined ? {} : { workouts: spec.workouts }),
   };
 }
 
@@ -478,6 +573,10 @@ function placeWeeks(
       ? {}
       : { volumeFactor: week.enduranceVolumeFactor }),
     ...(week.enduranceMaxBudget === undefined ? {} : { maxBudget: week.enduranceMaxBudget }),
+    ...(() => {
+      const longRun = competitionLongRun(week.workouts, week.weekNo, week.days);
+      return longRun ? { longRun } : {};
+    })(),
   }));
   const volumes = enduranceWeeks.some((w) => w.wishes.length > 0)
     ? enduranceWeekVolumes(enduranceWeeks, {
@@ -498,6 +597,7 @@ function placeWeeks(
   let rotation = rotationStart;
   let loadWeek = ctx.loadWeeksBefore ?? 0;
   let enduranceIndex = 0;
+  const competitionDays: { week: number; index: number; variant: EnduranceVariant }[] = [];
 
   weeks.forEach((week, w) => {
     if (week.weekNo >= 1 && week.kind !== 'deload') loadWeek += 1;
@@ -519,6 +619,7 @@ function placeWeeks(
         const variant = enduranceVariant(ctx.endurance, loadWeek, enduranceIndex);
         enduranceIndex += 1;
         if (variant === 'brisk_walk') notes.add('endurance_walk');
+        if (week.workouts) competitionDays.push({ week: w, index: sessions.length, variant });
         sessions.push({
           ...common,
           kind: 'endurance',
@@ -567,7 +668,149 @@ function placeWeeks(
       });
     }
   });
+  if (weeks.some((week) => week.workouts)) {
+    return { sessions: competitionWeekBuild(weeks, sessions, competitionDays, ctx), notes };
+  }
   return { sessions, notes };
+}
+
+/**
+ * Wochenbau des Wettkampfplans (Plan 3.4/3.5, Etappe WP2) auf den platzierten Einheiten: Kraft in Spitze, Tapering
+ * und Rennwoche höchstens 1 Einheit (Oberkörper bevorzugt) und Bein-Übungen dort in Erholungs-Dosierung; dann je
+ * Woche die Arten (weekWorkouts) – harte Einheiten nie neben Kraft mit Beinen, nie neben harten oder langen
+ * Einheiten (auch über Wochen- und Blockgrenzen). Minuten bleiben unverändert (Plan = Ampel).
+ */
+function competitionWeekBuild(
+  weeks: readonly WeekPlan[],
+  placed: readonly GeneratedSession[],
+  competitionDays: readonly { week: number; index: number; variant: EnduranceVariant }[],
+  ctx: BlockContext,
+): GeneratedSession[] {
+  const S = COMPETITION_STRENGTH;
+  const limited = new Set<string>();
+  weeks.forEach((week) => {
+    if (week.workouts && (S.limitedPhases as readonly string[]).includes(week.workouts.phase)) {
+      limited.add(week.monday);
+    }
+  });
+  // 1. Kraft in Spitze/Tapering/Rennwoche: höchstens eine Einheit je Woche, ohne schwere Beine.
+  const keep = new Map<string, number>();
+  placed.forEach((s, i) => {
+    if (s.kind !== 'strength') return;
+    const monday = startOfIsoWeek(s.scheduled_on);
+    if (!limited.has(monday)) return;
+    const current = keep.get(monday);
+    const better =
+      current === undefined ||
+      (isLegStrength(placed[current] as GeneratedSession) && !isLegStrength(s));
+    if (better) keep.set(monday, i);
+  });
+  const legMuscles: readonly string[] = S.legMuscles;
+  const library = ctx.strength?.library;
+  const sessions: (GeneratedSession | null)[] = placed.map((s, i) => {
+    if (s.kind !== 'strength') return s;
+    const monday = startOfIsoWeek(s.scheduled_on);
+    if (!limited.has(monday)) return s;
+    // COMPETITION_STRENGTH.maxStrengthSessionsPerWeek = 1: nur die gewählte Einheit bleibt.
+    if (keep.get(monday) !== i) return null;
+    if (s.is_deload) return s;
+    const exercises = s.exercises.map((e) => {
+      const exercise = library?.get(e.exercise_id);
+      const legs = exercise?.primary_muscles.some((m) => legMuscles.includes(m)) ?? false;
+      return legs ? deloadDosage(e) : e;
+    });
+    return { ...s, exercises, estimated_minutes: adaptedSessionMinutes({ exercises }) };
+  });
+  const kept = sessions.filter((s): s is GeneratedSession => s !== null);
+  const byIndex = new Map<number, number>();
+  {
+    let k = 0;
+    sessions.forEach((s, i) => {
+      if (s !== null) byIndex.set(i, k++);
+    });
+  }
+  const out = [...kept];
+  const neighbours = ctx.competitionNeighbours ?? { hard: [], long: [], legs: [] };
+  const hardDates = new Set(neighbours.hard);
+  const longDates = new Set(neighbours.long);
+  const legDates = new Set([
+    ...neighbours.legs,
+    ...kept.filter((s) => isLegStrength(s)).map((s) => s.scheduled_on),
+  ]);
+  const lastDate =
+    kept
+      .map((s) => s.scheduled_on)
+      .sort()
+      .at(-1) ?? '';
+  const easyWeekOf = (week: WeekPlan) => week.weekNo === 0 || week.kind !== 'load';
+  weeks.forEach((week, w) => {
+    const spec = week.workouts;
+    if (!spec) return;
+    const items = competitionDays
+      .filter((d) => d.week === w)
+      .map((d) => ({ ...d, at: byIndex.get(d.index) as number }));
+    if (items.length === 0) return;
+    const strengthWeekdays = new Set(
+      week.days.filter((d) => isStrengthKind(d.kind)).map((d) => d.weekday),
+    );
+    const blocked = new Set<string>();
+    for (const item of items) {
+      const date = (out[item.at] as GeneratedSession).scheduled_on;
+      const near = [addDays(date, -1), addDays(date, 1)];
+      const ahead = addDays(date, 1);
+      if (
+        near.some((d) => legDates.has(d) || hardDates.has(d) || longDates.has(d)) ||
+        // Über das Ende des Blocks hinaus: jeder Kraft-Tag des Musters zählt (vorsichtig).
+        (ahead > lastDate && strengthWeekdays.has(isoWeekday(ahead)))
+      ) {
+        blocked.add(date);
+      }
+    }
+    const endurance = week.days.filter((d) => d.kind === 'endurance');
+    const longIndex = competitionLongRun(spec, week.weekNo, week.days)?.index ?? -1;
+    // (index −1 = keine lange Einheit in dieser Woche)
+    const longWeekday = longIndex >= 0 ? (endurance[longIndex] as PlannedDay).weekday : null;
+    const planned = weekWorkouts({
+      phase: spec.phase,
+      recoveryWeek: spec.recoveryWeek,
+      level: spec.level,
+      limits: spec.limits,
+      discipline: spec.discipline,
+      easyEffort: enduranceEffort(ctx.rules, easyWeekOf(week)),
+      days: items.map((item) => ({
+        date: (out[item.at] as GeneratedSession).scheduled_on,
+        minutes: (out[item.at] as GeneratedSession).estimated_minutes,
+        variant: item.variant,
+      })),
+      longRunDate: longWeekday === null ? null : addDays(week.monday, longWeekday - 1),
+      blockedDates: blocked,
+      pace: spec.pace,
+    });
+    planned.forEach((workout, k) => {
+      const item = items[k];
+      if (!item) return;
+      const session = out[item.at] as GeneratedSession;
+      const run = item.variant === 'easy_run';
+      out[item.at] = {
+        ...session,
+        name_de: run
+          ? workout.name_de
+          : workout.type === 'long'
+            ? `${ENDURANCE_TEXTS_DE.names[item.variant]} (lang)`
+            : session.name_de,
+        warmup_de: run ? workout.warmup_de : session.warmup_de,
+        cooldown_de: run ? workout.cooldown_de : session.cooldown_de,
+        effort_target: workout.effort_target,
+        workout_type: workout.type,
+        training_phase: spec.phase,
+        workout_steps: workout.steps,
+        target_distance_m: workout.target_distance_m,
+      };
+      if (isHardWorkoutType(workout.type)) hardDates.add(workout.date);
+      if (workout.type === 'long') longDates.add(workout.date);
+    });
+  });
+  return out;
 }
 
 export interface BuildPlanBlockOptions {
@@ -923,6 +1166,21 @@ export function nextPlanBlock(
       enduranceReference: enduranceReferenceFromBlock(previous, options.loggedEnduranceMinutes),
       enduranceStricterGroup: isStricterGroup(group, options.previousStartGroup),
       loadWeeksBefore: options.loadWeeksBefore ?? 0,
+      ...(options.competitionWeeks
+        ? {
+            competitionNeighbours: {
+              hard: previous
+                .filter((s) => s.status !== 'skipped' && isHardWorkoutType(s.workout_type))
+                .map((s) => s.scheduled_on),
+              long: previous
+                .filter((s) => s.status !== 'skipped' && s.workout_type === 'long')
+                .map((s) => s.scheduled_on),
+              legs: previous
+                .filter((s) => s.status !== 'skipped' && isLegStrength(s))
+                .map((s) => s.scheduled_on),
+            },
+          }
+        : {}),
     },
     blockNo,
     lastIndex + 1,

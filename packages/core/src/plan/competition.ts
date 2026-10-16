@@ -5,6 +5,7 @@ import {
   AGE_PLAN_RULES,
   COMPETITION_GROUP_RULES,
   COMPETITION_LEAD_WEEKS,
+  COMPETITION_LONG_RUN,
   COMPETITION_OWN_START,
   COMPETITION_PERIODIZATION,
   COMPETITION_REQUIRED_PEAK,
@@ -22,6 +23,7 @@ import {
   type CompetitionInput,
   competitionOwnStartSchema,
   type CompetitionPhase,
+  type CompetitionReference,
   competitionWindowSchema,
   latestRaceDate,
   ownStartAllowedLevel,
@@ -33,9 +35,11 @@ import {
   enduranceWeekVolumes,
 } from './endurance';
 import { type PlanInputs, type PlanInputsInput, planInputsSchema } from './inputs';
+import { goalTimePlausible, hardWorkoutLimits } from './intensity';
 import {
   type CompetitionBlock,
   competitionBlocks,
+  type CompetitionWorkoutBase,
   type CycleRestart,
   isLoadWeek,
   type MacroCycle,
@@ -52,6 +56,8 @@ import {
 import {
   blockWeekDays,
   type BlockWeekSpec,
+  chooseLongRunIndex,
+  competitionLongRun,
   enduranceReferenceFromBlock,
   enduranceReferenceFromMinutes,
   type PlannedDay,
@@ -80,6 +86,21 @@ export function requiredPeak(
   goal: CompetitionGoal = 'finish',
 ): { readonly weeklyMinutes: number; readonly longRunMinutes: number } {
   return COMPETITION_REQUIRED_PEAK[goal][discipline];
+}
+
+/**
+ * Geforderter langer Lauf (Gründer-Entscheidung G2, Präzisierung WP2): Richtwert aus COMPETITION_REQUIRED_PEAK, aber
+ * höchstens 50 % des Spitzen-Wochenumfangs – mehr ist mit Plateau (G3) und 50-%-Regel (G2) nie erreichbar.
+ */
+export function requiredLongRun(
+  discipline: CompetitionDiscipline,
+  goal: CompetitionGoal = 'finish',
+): number {
+  const peak = requiredPeak(discipline, goal);
+  return Math.min(
+    peak.longRunMinutes,
+    Math.floor(peak.weeklyMinutes * COMPETITION_LONG_RUN.maxShareOfWeek),
+  );
 }
 
 /** Spalte für den Mindestvorlauf: vorsichtige Startgruppe wie Einsteiger (strengste Regel gewinnt). */
@@ -144,6 +165,8 @@ export function competitionStartReference(
 export const competitionRequestSchema = z.strictObject({
   ownStart: competitionOwnStartSchema.nullable().default(null),
   startReference: competitionStartReferenceSchema.nullable().default(null),
+  /** Wunsch-Tag des langen Laufs (ISO-Wochentag 1–7), null = automatisch (WP2, Plan 3.5). */
+  longRunWeekday: z.number().int().min(1).max(7).nullable().default(null),
 });
 
 export interface CompetitionRequest {
@@ -154,6 +177,8 @@ export interface CompetitionRequest {
    * Plans – am besten über competitionStartReference() aus den gespeicherten Einheiten.
    */
   readonly startReference?: CompetitionStartReference | null;
+  /** Wunsch-Tag des langen Laufs (1 = Montag … 7 = Sonntag); fehlt/null = automatisch (Standard: Wochenende). */
+  readonly longRunWeekday?: number | null;
 }
 
 export type OwnStartNotice = 'own_start_capped' | 'own_start_ignored' | 'own_start_journal_used';
@@ -194,6 +219,8 @@ export const FEASIBILITY_REASONS = [
   'peak_reached_late',
   'goal_time_not_allowed',
   'goal_time_not_reachable',
+  'long_run_not_reachable',
+  'long_run_day_too_short',
 ] as const;
 export type FeasibilityReason = (typeof FEASIBILITY_REASONS)[number];
 
@@ -205,6 +232,7 @@ export const FEASIBILITY_NOTICES = [
   'own_start_ignored',
   'own_start_journal_used',
   'start_reference_capped',
+  'walk_only_plan',
 ] as const;
 export type FeasibilityNotice = (typeof FEASIBILITY_NOTICES)[number];
 
@@ -212,6 +240,8 @@ export type FeasibilitySuggestion =
   | { readonly kind: 'shorter_distance'; readonly discipline: CompetitionDiscipline }
   | { readonly kind: 'later_date'; readonly raceDate: string }
   | { readonly kind: 'more_training_time'; readonly weeklyMinutes: number }
+  /** Am Tag des langen Laufs mehr Zeit einplanen (Minuten, WP2). */
+  | { readonly kind: 'longer_long_run_day'; readonly minutes: number }
   | { readonly kind: 'health_check' }
   | { readonly kind: 'without_competition' };
 
@@ -235,6 +265,10 @@ export interface CompetitionFeasibility {
   readonly plannedPeakMinutes: number;
   /** Startumfang der Kette (Gruppe, eigene Angabe oder null bei Bezug aus dem Tagebuch). */
   readonly startMinutes: number | null;
+  /** Geforderter langer Lauf des wirksamen Ziels (requiredLongRun, WP2). */
+  readonly requiredLongRunMinutes: number;
+  /** Längste geplante Einheit einer Belastungswoche vor dem Tapering (0 = keine). */
+  readonly plannedLongRunMinutes: number;
 }
 
 export type CompetitionFeasibilityResult =
@@ -259,6 +293,11 @@ interface Context {
   readonly ownNotice: OwnStartNotice | null;
   readonly minor: boolean;
   readonly senior: boolean;
+  /** Wunsch-Tag des langen Laufs (null = automatisch). */
+  readonly longRunWeekday: number | null;
+  /** Referenzzeit (Pace, Zielzeit-Plausibilität) und Zielzeit des Wettkampfs. */
+  readonly raceReference: CompetitionReference | null;
+  readonly targetTimeS: number | null;
 }
 
 function buildContext(
@@ -266,8 +305,10 @@ function buildContext(
   request: {
     ownStart: { weeklyMinutes: number } | null;
     startReference: CompetitionStartReference | null;
+    longRunWeekday: number | null;
   },
   today: string,
+  competition: Competition,
 ): Context {
   const rules = planSafetyRules(inputs, today);
   const group = rules.enduranceStartGroup;
@@ -302,7 +343,28 @@ function buildContext(
     ownNotice: own.notice,
     minor: age < AGE_PLAN_RULES.minor.belowAge,
     senior: age >= AGE_PLAN_RULES.senior.fromAge,
+    longRunWeekday: request.longRunWeekday,
+    raceReference: competition.reference,
+    targetTimeS: competition.targetTimeS,
   };
+}
+
+/** Wochenbau-Angaben für eine Disziplin (gleich in Ampel und Plan). */
+function workoutBase(ctx: Context, discipline: CompetitionDiscipline): CompetitionWorkoutBase {
+  return {
+    discipline,
+    level: ctx.level,
+    limits: hardWorkoutLimits(ctx.rules, ctx.level),
+    longRunWeekday: ctx.longRunWeekday,
+    pace: ctx.raceReference ? { reference: ctx.raceReference, discipline } : null,
+  };
+}
+
+/** Wunsch-Minuten des Tages, an dem der lange Lauf liegt (volle Woche). */
+function longRunDayWish(ctx: Context): number {
+  const endurance = ctx.days.filter((d) => d.kind === 'endurance');
+  const index = chooseLongRunIndex(endurance, ctx.longRunWeekday);
+  return index < 0 ? 0 : (endurance[index]?.minutes ?? 0);
 }
 
 /** Startumfang der Kette (wie enduranceWeekVolumes). */
@@ -362,6 +424,14 @@ function enduranceInputs(
     wishes: blockWeekDays(spec, days, from)
       .filter((d) => d.kind === 'endurance')
       .map((d) => d.minutes),
+    ...(() => {
+      const longRun = competitionLongRun(
+        spec.workouts,
+        spec.weekNo,
+        blockWeekDays(spec, days, from),
+      );
+      return longRun ? { longRun } : {};
+    })(),
     ...(spec.enduranceVolumeFactor === undefined
       ? {}
       : { volumeFactor: spec.enduranceVolumeFactor }),
@@ -376,6 +446,8 @@ export interface SimulatedWeek {
   readonly load: boolean;
   /** Geplante Ausdauer-Minuten der Woche (Summe der Einheiten). */
   readonly minutes: number;
+  /** Längste Ausdauer-Einheit der Woche (langer Lauf, WP2). */
+  readonly longestMinutes: number;
 }
 
 /**
@@ -384,8 +456,13 @@ export interface SimulatedWeek {
  * Ausdauer-Tage, die in der letzten Belastungswoche eine Einheit hatten (unter 10 Minuten gestrichene Tage fehlen danach
  * – bestehende Regel aus Phase 3), und rechnet den Wunsch-Umfang aus diesen Tagen.
  */
-function simulate(ctx: Context, cycle: MacroCycle, peakTarget: number): SimulatedWeek[] {
-  const blocks = competitionBlocks(cycle, peakTarget);
+function simulate(
+  ctx: Context,
+  cycle: MacroCycle,
+  peakTarget: number,
+  discipline: CompetitionDiscipline = cycle.discipline,
+): SimulatedWeek[] {
+  const blocks = competitionBlocks(cycle, peakTarget, undefined, workoutBase(ctx, discipline));
   const result: SimulatedWeek[] = [];
   let reference: EnduranceReference | null = ctx.reference;
   let lastLoad: readonly number[] = [];
@@ -420,6 +497,7 @@ function simulate(ctx: Context, cycle: MacroCycle, peakTarget: number): Simulate
         phase: week.phase,
         load: isLoadWeek(week),
         minutes: minutes.reduce((sum, m) => sum + m, 0),
+        longestMinutes: Math.max(0, ...minutes),
       });
     }
     // Wie nextPlanBlock: Bezug = letzte Belastungswoche (enduranceReferenceFromBlock), Tage = Muster dieser Woche.
@@ -436,6 +514,7 @@ interface Evaluation {
   readonly effectiveGoal: CompetitionGoal;
   readonly reasons: FeasibilityReason[];
   readonly plannedPeak: number;
+  readonly plannedLongRun: number;
   readonly cycle: MacroCycle | null;
   readonly peakTarget: number;
 }
@@ -474,6 +553,7 @@ function evaluate(
       effectiveGoal: 'finish',
       reasons: blocked,
       plannedPeak: 0,
+      plannedLongRun: 0,
       cycle: null,
       peakTarget: 0,
     };
@@ -481,7 +561,12 @@ function evaluate(
   const reasons: FeasibilityReason[] = [];
   const allowed = timeGoalAllowed(ctx);
   if (requestedGoal === 'time' && !allowed) reasons.push('goal_time_not_allowed');
-  const planGoal: CompetitionGoal = requestedGoal === 'time' && allowed ? 'time' : 'finish';
+  // Zielzeit-Plausibilität gegen die Referenzzeit (Riegel, WP2): sonst „Ankommen“ (höchstens „knapp“).
+  const plausible =
+    requestedGoal !== 'time' || goalTimePlausible(ctx.raceReference, discipline, ctx.targetTimeS);
+  if (requestedGoal === 'time' && allowed && !plausible) reasons.push('goal_time_not_reachable');
+  const planGoal: CompetitionGoal =
+    requestedGoal === 'time' && allowed && plausible ? 'time' : 'finish';
   const lead = Math.floor(daysBetween(ctx.today, raceDate) / 7);
   const minLead = minimumLeadWeeks(discipline, leadLevel(ctx.level, ctx.group));
   const tooLittleTime = ctx.wishWeekly < finish;
@@ -494,20 +579,26 @@ function evaluate(
       effectiveGoal: 'finish',
       reasons,
       plannedPeak: 0,
+      plannedLongRun: 0,
       cycle,
       peakTarget: 0,
     };
   }
-  const weeks = simulate(ctx, cycle, peakTargetFor(ctx, discipline, planGoal)).filter(
+  const weeks = simulate(ctx, cycle, peakTargetFor(ctx, discipline, planGoal), discipline).filter(
     (w) => w.load,
   );
-  const at = (minutes: number) => weeks.filter((w) => w.minutes >= minutes).length;
+  // Wochenumfang UND langer Lauf in derselben Belastungswoche (G2: die Ampel prüft den langen Lauf mit).
+  const at = (minutes: number, long: number) =>
+    weeks.filter((w) => w.minutes >= minutes && w.longestMinutes >= long).length;
   const okWeeks = COMPETITION_PERIODIZATION.okPeakWeeks;
+  const finishLong = requiredLongRun(discipline, 'finish');
   const timeOk =
-    planGoal === 'time' && at(requiredPeak(discipline, 'time').weeklyMinutes) >= okWeeks;
+    planGoal === 'time' &&
+    at(requiredPeak(discipline, 'time').weeklyMinutes, requiredLongRun(discipline, 'time')) >=
+      okWeeks;
   if (planGoal === 'time' && !timeOk) reasons.push('goal_time_not_reachable');
   const effectiveGoal: CompetitionGoal = timeOk ? 'time' : 'finish';
-  const finishWeeks = at(finish);
+  const finishWeeks = at(finish, finishLong);
   let status: FeasibilityStatus;
   if (timeOk || finishWeeks >= okWeeks) {
     status = 'ok';
@@ -516,19 +607,26 @@ function evaluate(
     reasons.push('peak_reached_late');
   } else {
     status = 'too_short';
-    reasons.push('peak_not_reachable');
+    if (at(finish, 0) === 0) reasons.push('peak_not_reachable');
+    else reasons.push('long_run_not_reachable');
     if (tooLittleTime) reasons.push('weekly_time_too_low');
+    if (longRunDayWish(ctx) < finishLong) reasons.push('long_run_day_too_short');
   }
   // Gewünschte Zielzeit nicht möglich → höchstens „knapp“ (Ziel „Ankommen“, Plan 3.2).
   if (requestedGoal === 'time' && effectiveGoal === 'finish' && status === 'ok') status = 'tight';
+  // G7: Lauf-Wettkampf, aber der Plan ist nur zügiges Gehen (Flag, ab 65) → höchstens „knapp“ (Hinweis walk_only_plan).
+  if (ctx.rules.enduranceWalkOnly && status === 'ok') status = 'tight';
   const peakTarget = peakTargetFor(ctx, discipline, effectiveGoal);
   const planned =
-    effectiveGoal === planGoal ? weeks : simulate(ctx, cycle, peakTarget).filter((w) => w.load);
+    effectiveGoal === planGoal
+      ? weeks
+      : simulate(ctx, cycle, peakTarget, discipline).filter((w) => w.load);
   return {
     status,
     effectiveGoal,
     reasons,
     plannedPeak: planned.reduce((max, w) => Math.max(max, w.minutes), 0),
+    plannedLongRun: planned.reduce((max, w) => Math.max(max, w.longestMinutes), 0),
     cycle,
     peakTarget,
   };
@@ -561,7 +659,10 @@ function suggestionsFor(
     // Spitzenumfang, hilft kein Datum (der Umfang steigt nie über den Wunsch) – dann keine Suche.
     const goalForDate: CompetitionGoal = status === 'tight' ? competition.goal : 'finish';
     const reachable =
-      ctx.wishWeekly >= requiredPeak(competition.discipline, goalForDate).weeklyMinutes;
+      ctx.wishWeekly >= requiredPeak(competition.discipline, goalForDate).weeklyMinutes &&
+      longRunDayWish(ctx) >= requiredLongRun(competition.discipline, goalForDate) &&
+      // G7: „nur Gehen“ bleibt höchstens „knapp“ – ein späteres Datum macht daraus nie „passt“.
+      !(status === 'tight' && ctx.rules.enduranceWalkOnly);
     if (status !== 'not_available' && reachable) {
       const wanted = (s: FeasibilityStatus) => (status === 'tight' ? s === 'ok' : usable(s));
       const latest = latestRaceDate(ctx.today);
@@ -576,6 +677,12 @@ function suggestionsFor(
       out.push({
         kind: 'more_training_time',
         weeklyMinutes: requiredPeak(competition.discipline, 'finish').weeklyMinutes,
+      });
+    }
+    if (reasons.includes('long_run_day_too_short')) {
+      out.push({
+        kind: 'longer_long_run_day',
+        minutes: requiredLongRun(competition.discipline, 'finish'),
       });
     }
   }
@@ -593,6 +700,7 @@ function noticesFor(ctx: Context, competition: Competition): FeasibilityNotice[]
   if (ctx.minor) notices.add('minor_no_target_time');
   if (ctx.ownNotice) notices.add(ctx.ownNotice);
   if (ctx.referenceCapped) notices.add('start_reference_capped');
+  if (ctx.rules.enduranceWalkOnly) notices.add('walk_only_plan');
   return FEASIBILITY_NOTICES.filter((n) => notices.has(n));
 }
 
@@ -619,6 +727,7 @@ function parse(
   const extra = competitionRequestSchema.safeParse({
     ownStart: request.ownStart ?? null,
     startReference: request.startReference ?? null,
+    longRunWeekday: request.longRunWeekday ?? null,
   });
   if (!inputs.success || !competition.success || !extra.success) return null;
   const plan = inputs.data;
@@ -626,7 +735,7 @@ function parse(
   // Wettkampfplan nur beim Hauptziel Ausdauer; die Disziplin des Ziels ist die des Wettkampfs.
   if (plan.goalType !== 'endurance' || plan.discipline !== competition.data.discipline) return null;
   return {
-    ctx: buildContext(plan, extra.data, today),
+    ctx: buildContext(plan, extra.data, today, competition.data),
     competition: competition.data,
   };
 }
@@ -651,6 +760,8 @@ function feasibilityOf(
       .weeklyMinutes,
     plannedPeakMinutes: evaluation.plannedPeak,
     startMinutes: ctx.reference ? null : chainStart(ctx),
+    requiredLongRunMinutes: requiredLongRun(competition.discipline, evaluation.effectiveGoal),
+    plannedLongRunMinutes: evaluation.plannedLongRun,
   };
   return { feasibility, evaluation };
 }
@@ -732,7 +843,12 @@ export function competitionPlanSetup(
   if (!usable(feasibility.status) || evaluation.cycle === null) {
     return { ok: false, error: 'competition_not_feasible', feasibility };
   }
-  const first = competitionBlocks(evaluation.cycle, evaluation.peakTarget)[0];
+  const first = competitionBlocks(
+    evaluation.cycle,
+    evaluation.peakTarget,
+    undefined,
+    workoutBase(parsed.ctx, parsed.competition.discipline),
+  )[0];
   if (!first) return { ok: false, error: 'competition_not_feasible', feasibility };
   return {
     ok: true,
@@ -797,7 +913,12 @@ export function competitionFollowUpBlock(
   });
   if (!cycle) return { ok: false, reason: 'cycle_finished' };
   const peakTarget = peakTargetFor(ctx, competition.discipline, goal);
-  const block = nextCompetitionBlock(cycle, peakTarget, lastScheduledOn);
+  const block = nextCompetitionBlock(
+    cycle,
+    peakTarget,
+    lastScheduledOn,
+    workoutBase(ctx, competition.discipline),
+  );
   if (!block) return { ok: false, reason: 'cycle_finished' };
   return { ok: true, block: setupOf(block, ctx, false) };
 }

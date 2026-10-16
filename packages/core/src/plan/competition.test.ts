@@ -39,6 +39,16 @@ const runs = (n: number, minutes = 90) => ({
     .map((weekday) => ({ weekday, kind: 'endurance' as const, minutes })),
 });
 
+/** Wie runs(n, minutes), aber der Sonntag (Tag des langen Laufs) mit `long` Minuten (WP2: langer Lauf ≤ Wunsch). */
+const runsWithLong = (n: number, minutes: number, long: number) => ({
+  mode: 'fixed' as const,
+  slots: [2, 4, 6, 7, 3, 5, 1].slice(0, n).map((weekday) => ({
+    weekday,
+    kind: 'endurance' as const,
+    minutes: weekday === 7 ? long : minutes,
+  })),
+});
+
 function runner(
   discipline: CompetitionDiscipline,
   overrides: Partial<PlanInputsInput> & { level?: Level; flags?: Flag[] | null } = {},
@@ -99,13 +109,14 @@ describe('Tabellen', () => {
     expect([...finish].sort((a, b) => a - b)).toEqual(finish);
   });
 
-  it('Tabelle passt zur Kette: Einsteiger erreichen „Ankommen“ genau zum Mindestvorlauf (jeder Wochentag)', () => {
+  it('Tabelle passt zur Kette: Einsteiger erreichen „Ankommen“ (Wochenumfang UND langer Lauf, WP2) genau zum Mindestvorlauf (jeder Wochentag)', () => {
     for (const d of COMPETITION_DISCIPLINES) {
       for (let start = 0; start < 7; start += 1) {
         for (let race = 0; race < 7; race += 1) {
           const today = addDays(MONDAY, start);
+          // WP2: Sonntag 150 min, damit der lange Lauf nicht am Wunsch scheitert (geprüft wird die Kette).
           const f = feasibility(
-            runner(d),
+            runner(d, { schedule: runsWithLong(4, 90, 150) }),
             { raceDate: addDays(weeks(LEAD[d].beginner, today), race) },
             today,
           );
@@ -211,8 +222,10 @@ describe('competitionFeasibility – Mindestvorlauf und Datum', () => {
   });
 
   it('Einsteiger Marathon: 23 Wochen zu kurz, 24 und 25 Wochen Plan mit Hinweis', () => {
+    // WP2: der lange Lauf (120 min gefordert) braucht am Sonntag genug Zeit – mit 90 min ginge es nie (eigener Test).
+    const marathoner = runner('marathon', { schedule: runsWithLong(4, 90, 150) });
     const at = (n: number, extraDays = 0) =>
-      feasibility(runner('marathon'), { raceDate: addDays(weeks(n), extraDays) });
+      feasibility(marathoner, { raceDate: addDays(weeks(n), extraDays) });
     expect(at(23, 6).status).toBe('too_short');
     expect(at(23, 6).reasons).toContain('lead_time_below_minimum');
     expect(['ok', 'tight']).toContain(at(24).status);
@@ -317,11 +330,13 @@ describe('competitionFeasibility – Personengruppen (Tabelle 3.3, W-G4)', () =>
     });
     expect(beginner.reasons).toContain('goal_time_not_allowed');
     expect(beginner.effectiveGoal).toBe('finish');
-    const advanced = runner('10k', { level: 'advanced', schedule: runs(4, 60) });
+    // WP2: langer Lauf für die Zielzeit 75 min → Sonntag 90 min; Zielzeit höchstens 5 % schneller als Riegel (48 statt
+    // 50 min Referenz – 45 min wären 10 % und nicht plausibel, eigener Test).
+    const advanced = runner('10k', { level: 'advanced', schedule: runsWithLong(4, 60, 90) });
     const time = feasibility(advanced, {
       raceDate: weeks(20),
       goal: 'time',
-      targetTimeS: 45 * 60,
+      targetTimeS: 48 * 60,
       reference,
     });
     expect(time).toMatchObject({ status: 'ok', effectiveGoal: 'time', requiredWeeklyMinutes: 180 });
@@ -329,7 +344,7 @@ describe('competitionFeasibility – Personengruppen (Tabelle 3.3, W-G4)', () =>
     const short = feasibility(advanced, {
       raceDate: weeks(8),
       goal: 'time',
-      targetTimeS: 45 * 60,
+      targetTimeS: 48 * 60,
       reference,
     });
     expect(short.effectiveGoal).toBe('finish');
@@ -345,16 +360,22 @@ describe('competitionFeasibility – Zeitbudget und Startumfang', () => {
       raceDate: weeks(30),
     });
     expect(f.status).toBe('too_short');
-    expect(f.reasons).toEqual(['peak_not_reachable', 'weekly_time_too_low']);
+    expect(f.reasons).toEqual([
+      'peak_not_reachable',
+      'weekly_time_too_low',
+      'long_run_day_too_short',
+    ]);
     expect(f.suggestions).toContainEqual({
       kind: 'more_training_time',
       weeklyMinutes: requiredPeak('half_marathon').weeklyMinutes,
     });
+    expect(f.suggestions).toContainEqual({ kind: 'longer_long_run_day', minutes: 70 });
     expect(f.suggestions.some((s) => s.kind === 'later_date')).toBe(false);
   });
 
   it('7 Ausdauer-Tage: auf die Höchstzahl der Startgruppe gedeckelt (Einsteiger 4), Plan möglich', () => {
-    const f = feasibility(runner('half_marathon', { schedule: runs(7, 40) }), {
+    // WP2: je Tag 75 min, damit der lange Lauf (70 min) Platz hat – mit 40 min wäre es „zu kurz“ (langer Lauf).
+    const f = feasibility(runner('half_marathon', { schedule: runs(7, 75) }), {
       raceDate: weeks(20),
     });
     expect(f.status).toBe('ok');

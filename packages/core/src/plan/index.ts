@@ -25,3 +25,5 @@ export * from './move';
 export * from './competition';
 export * from './competition-schema';
 export * from './periodization';
+export * from './endurance-workouts';
+export * from './intensity';

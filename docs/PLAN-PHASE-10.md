@@ -2,7 +2,7 @@
 
 **Status:** Freigegeben (16.10.2026). Gründer-Entscheidungen W-G1 bis W-G16 (Abschnitt 19): **alle wie empfohlen**
 (ausgefülltes Entscheidungs-PDF vom 16.10.2026). Umsetzung je Etappe als Pull Request mit Wächter-Prüfung.
-**Stand 16.10.2026:** A1a, A1b, E1, A2, E2, A3 (PLAN-AUSWERTUNG) sind gemergt; Expo-Projekt „AlphaFive“ wird verbunden
+**Stand 16.10.2026:** WP1 (Core) als PR #83, WP2 (Core) im Anschluss umgesetzt (Abschnitt 6). A1a, A1b, E1, A2, E2, A3 (PLAN-AUSWERTUNG) sind gemergt; Expo-Projekt „AlphaFive“ wird verbunden
 (PR #79). Damit können WP1/WP2 (Core) sofort starten, WP3/WP4 danach, S0 sobald die erste APK läuft.
 
 **Grundlage:** `CLAUDE.md`, `docs/PROMPTS.md` (Phase 10, „Erweiterung Phase 10 – Strecken aufzeichnen“, Phase 8,
@@ -319,15 +319,16 @@ recovery`) und Erholungswochen. Reine Funktion, wird **nicht gespeichert**, sond
 
 **Gegenproben (Regel absichtlich gebrochen → rot → zurückgesetzt):** G1 Erholungswoche nicht vorgezogen (3 Tests rot), G2 Tapering immer 1 Woche (5), G3 Mindestvorlauf ignoriert (2), G4 Plateau hebt statt deckelt (11), G5 „zu kurz“ erzeugt einen Plan (1, Eigenschaftstest), G6 unter 18 bis Marathon (1), G7 eigener Startumfang bis 3 × (2), G8 Erholungswoche ohne Angabe 50 % statt 60 % (6, u. a. Regressions-Prüfsumme), G9 kein 3 : 1 im Aufbau (5), G10 Vortag nicht frei (4), G11 Zielzeit für die vorsichtige Gruppe (2), G12 Folgeblock-Muster in der Ampel ignoriert (1, „Plan = Vorschau“), G13 Schwangerschaft erlaubt (3), G14 Zielzeit ohne Referenzzeit (1), G15 10-%-Regel auf 15 % gelockert (3 in `generate-competition.test.ts`, dazu der bestehende Schutzgrenzen-Test).
 
-**Gründer-Fragen (sichere Voreinstellung gilt, bis ihr anders entscheidet):**
+**Gründer-Fragen – entschieden 16.10.2026: G1–G7 alle „wie empfohlen“** (G2 und G7 umgesetzt in WP2, siehe
+Umsetzungsstand WP2):
 
-- **G1 – Halbmarathon „Ankommen“:** Voreinstellung 140 min/Woche (Einsteiger schaffen es in 16 Wochen). Alternative 150 min wie im Plan – dann bräuchten Einsteiger 17 Wochen (Tabelle 3.2 anpassen).
-- **G2 – Langer Lauf vs. Deckel je Einheit (für WP2, Fachprüfung):** Voreinstellung WP1 prüft nur Wochenminuten. In WP2 muss der lange Lauf eine eigene Steigerungsregel bekommen (z. B. +10 % je Belastungswoche ab dem Start-Deckel und höchstens 50 % der Woche) – oder Marathon-Einsteiger brauchen deutlich mehr als 24 Wochen. Die Ampel kann dadurch in WP2 strenger werden.
-- **G3 – Plateau:** Voreinstellung Spitzenumfang des Ziels (z. B. Halbmarathon 140 min, auch wenn 5 h/Woche angegeben sind). Alternative: bis zur Wunsch-Zeit steigern (mit 10-%-Regel).
-- **G4 – Vortag:** Voreinstellung Ruhetag. Alternative 15–20 min locker (3.5).
-- **G5 – Vorsichtige Gruppe im Aufbau 3 : 1** (W-G3 nennt nur Einsteiger): Voreinstellung ja (strengste Regel).
-- **G6 – Vierter Ampel-Zustand „nicht möglich“** (statt „zu kurz“) für Schwangerschaft, fehlenden Gesundheits-Check und unter 18 ab Marathon: Voreinstellung ja.
-- **G7 – Lauf-Wettkampf, aber der Plan ist nur zügiges Gehen** (Gesundheits-Flag, ab 65: bestehende Regel `enduranceWalkOnly` aus Phase 3; Tabelle 3.3 erlaubt ab 65 eigentlich lockeres Laufen und „zügige“ statt harter Einheiten). Heute sagt die Ampel z. B. für eine 70-Jährige beim Marathon „passt“, der Plan enthält aber nur Gehen. Vorschlag (Wächter M3, vor WP4 umsetzen): höchstens „knapp“ und Hinweis `walk_only_plan` („Dein Plan besteht aus zügigem Gehen – geeignet, um den Wettkampf zu gehen/walken“); Alternative: lockeres Laufen für diese Gruppe nach ärztlicher Freigabe. Bis zur Entscheidung: unverändert (WP1 ändert keine Phase-3-Regel).
+- **G1 – _(entschieden 16.10.2026: wie empfohlen)_ Halbmarathon „Ankommen“:** Voreinstellung 140 min/Woche (Einsteiger schaffen es in 16 Wochen). Alternative 150 min wie im Plan – dann bräuchten Einsteiger 17 Wochen (Tabelle 3.2 anpassen).
+- **G2 – _(entschieden 16.10.2026: wie empfohlen)_ Langer Lauf vs. Deckel je Einheit (für WP2, Fachprüfung):** Voreinstellung WP1 prüft nur Wochenminuten. In WP2 muss der lange Lauf eine eigene Steigerungsregel bekommen (z. B. +10 % je Belastungswoche ab dem Start-Deckel und höchstens 50 % der Woche) – oder Marathon-Einsteiger brauchen deutlich mehr als 24 Wochen. Die Ampel kann dadurch in WP2 strenger werden.
+- **G3 – _(entschieden 16.10.2026: wie empfohlen)_ Plateau:** Voreinstellung Spitzenumfang des Ziels (z. B. Halbmarathon 140 min, auch wenn 5 h/Woche angegeben sind). Alternative: bis zur Wunsch-Zeit steigern (mit 10-%-Regel).
+- **G4 – _(entschieden 16.10.2026: wie empfohlen)_ Vortag:** Voreinstellung Ruhetag. Alternative 15–20 min locker (3.5).
+- **G5 – _(entschieden 16.10.2026: wie empfohlen)_ Vorsichtige Gruppe im Aufbau 3 : 1** (W-G3 nennt nur Einsteiger): Voreinstellung ja (strengste Regel).
+- **G6 – _(entschieden 16.10.2026: wie empfohlen)_ Vierter Ampel-Zustand „nicht möglich“** (statt „zu kurz“) für Schwangerschaft, fehlenden Gesundheits-Check und unter 18 ab Marathon: Voreinstellung ja.
+- **G7 – _(entschieden 16.10.2026: wie empfohlen)_ Lauf-Wettkampf, aber der Plan ist nur zügiges Gehen** (Gesundheits-Flag, ab 65: bestehende Regel `enduranceWalkOnly` aus Phase 3; Tabelle 3.3 erlaubt ab 65 eigentlich lockeres Laufen und „zügige“ statt harter Einheiten). Heute sagt die Ampel z. B. für eine 70-Jährige beim Marathon „passt“, der Plan enthält aber nur Gehen. Vorschlag (Wächter M3, vor WP4 umsetzen): höchstens „knapp“ und Hinweis `walk_only_plan` („Dein Plan besteht aus zügigem Gehen – geeignet, um den Wettkampf zu gehen/walken“); Alternative: lockeres Laufen für diese Gruppe nach ärztlicher Freigabe. Bis zur Entscheidung: unverändert (WP1 ändert keine Phase-3-Regel).
 
 **Nach der Wächter-Prüfung (16.10.2026, `waechter-wp1.md`, Freigabe mit Auflagen) umgesetzt:**
 
@@ -342,13 +343,14 @@ recovery`) und Erholungswochen. Reine Funktion, wird **nicht gespeichert**, sond
 
 **Offen vor WP4 (Wächter, nur dokumentiert):**
 
-- **M3:** Ampel „passt“ bei Lauf-Wettkampf, Plan nur zügiges Gehen (Flag, ab 65) → Gründer-Frage G7.
+- **M3:** Ampel „passt“ bei Lauf-Wettkampf, Plan nur zügiges Gehen (Flag, ab 65) → Gründer-Frage G7. **Erledigt in WP2**
+  (höchstens „knapp“, Hinweis `walk_only_plan`).
 - **M4:** Ruhetage nach dem Rennen je Distanz (`restDaysAfterRace`, Vorschlag 5 km/10 km 2, Halbmarathon 3, Marathon 5–7 Tage) statt 50 % des Spitzenumfangs ab dem Tag danach; dazu der Grundlagen-Block nach `cycle_finished`, der heute von der Spitze aus +10 % rechnet (Vorschlag: Bezug auf den Startumfang begrenzen). Beides mit den Faktoren in die Fachprüfung.
-- **N3:** Lange Läufe werden bis WP2 nicht geprüft – die Ampel kann „passt“ sagen, obwohl z. B. kein 150-min-Lauf erreichbar ist (G2); WP2 macht die Ampel strenger. Im PR-Text als bekannte Einschränkung nennen.
+- **N3:** **Erledigt in WP2** (die Ampel prüft den langen Lauf). Lange Läufe werden bis WP2 nicht geprüft – die Ampel kann „passt“ sagen, obwohl z. B. kein 150-min-Lauf erreichbar ist (G2); WP2 macht die Ampel strenger. Im PR-Text als bekannte Einschränkung nennen.
 
 **Offen:**
 
-- WP2: Einheiten-Arten je Phase, 80/20, langer Lauf (G2), Pace/Riegel, Zielzeit-Plausibilität gegen die Referenzzeit, Kraft in Spitze/Tapering (3.5), harte Einheiten heben `effort_target` über 4 (4b-Regel `endurance_reduce`, Risiko 7).
+- ~~WP2: Einheiten-Arten je Phase, 80/20, langer Lauf (G2), Pace/Riegel, Zielzeit-Plausibilität gegen die Referenzzeit, Kraft in Spitze/Tapering (3.5), harte Einheiten heben `effort_target` über 4 (4b-Regel `endurance_reduce`, Risiko 7).~~ Umgesetzt, siehe Umsetzungsstand WP2.
 - WP3: Tabelle `competitions` mit den Grenzen aus `COMPETITION_INPUT_LIMITS` (db-sync), gespeichert werden müssen auch bestätigter eigener Startumfang, Tagebuch-Bezug beim Erstellen (mit `startGroup`) und `effectiveGoal` – sonst rechnet ein Folgeblock einen anderen Makrozyklus.
 - WP4: App (Ampel, Phase je Woche, Countdown); bis dahin ruft niemand `generateCompetitionPlan` auf.
 - Folgeblock nach dem Ende des Makrozyklus läuft als normaler Grundlagen-Block und bezieht sich auf die letzte Belastungswoche (Spitze) – nach 3–5 Wochen Tapering/Erholung evtl. zu hoch; mit 4b bzw. WP4 klären (Vorschlag: Bezug auf den Startumfang begrenzen).
@@ -376,6 +378,178 @@ recovery`) und Erholungswochen. Reine Funktion, wird **nicht gespeichert**, sond
   Beispielwerten, 1 vs. 7 Tage, nur 2 Ausdauer-Tage (dann kein Tempo + langer Lauf in derselben Woche für
   Einsteiger), Tausch/Verschieben einer Intervall-Einheit neben Bein-Tag gesperrt.
 - Keine Migration, keine App.
+
+### Umsetzungsstand WP2 (16.10.2026)
+
+**Was gilt (nur im Wettkampfplan – Pläne ohne Wettkampf bleiben byte-gleich):**
+
+- **Einheiten-Bausteine** `packages/core/src/plan/endurance-workouts.ts` (W-G8, feste deutsche Texte, keine KI): Arten
+  `easy`, `recovery`, `long`, `strides`, `fartlek`, `tempo`, `intervals`, `race_pace` (`WORKOUT_TYPES`) mit Namen,
+  Auf-/Abwärmen, Hauptteil-Text, Sprechtest-Texten (`talkTestText`, `TALK_TEST_BANDS`) und Ausweich-Text (Laufband).
+  Jede Einheit hat **Schritte** `{ part: warmup|main|cooldown, kind: work|easy|rest, seconds, effort }` (Zod
+  `workoutStepsSchema`: 1–40 Schritte, 10 s–4 h, Anstrengung 0–10) – Summe = geplante Dauer (Timer in WP4).
+  `easyWorkout`, `structuredWorkout` (null = passt nicht → locker), `weekWorkouts` (Wochenbau).
+- **Intensität** `plan/intensity.ts`: `isHardWorkoutType` (Fahrtspiel, Tempo, Intervalle, Renntempo),
+  `hardWorkoutLimits`/`hardEffortCapFor` (Tabelle 3.3 aus den wirksamen Sicherheitsregeln), `hardSeconds` und
+  `weeklyHardBudgetSeconds` (80/20), `riegelTime`, `predictedTimeS`, `paceTargets`, `distanceHint`,
+  `goalTimePlausible`, `PACE_NOTICE_DE` („Die Anstrengung hat Vorrang …“), dazu die neue Fassung der 4b-Regel
+  `enduranceOverloadThreshold`/`isEnduranceOverload` (Vorschlag, noch nicht benutzt).
+- **Langer Lauf (G2)** in `enduranceWeekVolumes` (`EnduranceWeekInput.longRun`, `distributeWithLongRun`): längste
+  Einheit einer Belastungswoche ≤ floor(1,1 × längste Einheit der letzten Belastungswoche), erste Belastungswoche ≤
+  Start-Deckel (Einsteiger 30, vorsichtig 20, sonst 90), Erholungs-/Tapering-Wochen nie länger als die letzte
+  Belastungswoche, ≤ 50 % der tatsächlichen Woche, ≤ 75/90/120/180 min (5 km/10 km/Halbmarathon/Marathon). Tag:
+  Wunsch-Tag (`CompetitionRequest.longRunWeekday`, 1–7) oder automatisch der Tag mit dem längsten Wunsch (Gleichstand: der
+  spätere, also Wochenende). Die übrigen Einheiten teilen den Rest und sind nie länger als der lange Lauf.
+- **Ampel** (`competition.ts`): prüft Wochenumfang **und** langen Lauf in derselben Belastungswoche
+  (`requiredLongRun`: Ankommen 40/50/70/120 min, Zielzeit 60/75/105/165 min); neue Gründe `long_run_not_reachable`,
+  `long_run_day_too_short`, Vorschlag `longer_long_run_day`; neue Felder `requiredLongRunMinutes`,
+  `plannedLongRunMinutes`. **G7:** „nur Gehen“ (Flag, ab 65) → höchstens „knapp“, Hinweis `walk_only_plan`.
+  **Zielzeit-Plausibilität:** Zielzeit höchstens 5 % schneller als die Riegel-Vorhersage aus der Referenzzeit, sonst
+  `goal_time_not_reachable` → „Ankommen“, höchstens „knapp“. Plan = Ampel-Vorschau bleibt (dieselbe Funktion
+  `competitionLongRun` in Plan und Ampel; `SimulatedWeek.longestMinutes`).
+- **Wochenbau** (`schedule.ts`, `competitionWeekBuild`, Vorgabe `BlockWeekSpec.workouts` aus `competitionBlocks`):
+  harte Einheiten nur in Aufbau, Spitze und Tapering (Tapering höchstens 1 – „Intensität bleibt“), nie in einer
+  Erholungswoche, der Rennwoche oder der Erholung nach dem Rennen; Einsteiger/vorsichtige Startgruppe höchstens 1, sonst 2
+  je Woche; Einsteiger erst ab 3 Ausdauer-Einheiten; bei ≥ 3 Einheiten bleibt immer eine lockere; nie an zwei Tagen
+  hintereinander, nie am Tag vor oder nach dem langen Lauf, nie neben Kraft mit Beinen (Ganzkörper/Unterkörper; über das
+  Blockende hinaus zählt jeder Kraft-Tag des Musters, beim Folgeblock die bisherigen Einheiten); nur im Lauf (nicht im
+  Geh-Lauf-Wechsel/Gehen). Arten: Aufbau Einsteiger Fahrtspiel, sonst Tempo + Intervalle; Spitze Einsteiger Tempo (2
+  Teile), sonst Renntempo + Intervalle; Tapering Fahrtspiel bzw. Renntempo; Basis Steigerungen (Fortgeschrittene, ab 3
+  Tagen); Erholung nach dem Rennen Erholungsläufe. **80/20:** harte Zeit ≤ floor(20 % der Wochenminuten); passt die
+  kleinste Struktur nicht, wird die Einheit locker. **Kraft** in Spitze, Tapering und Rennwoche höchstens 1 Einheit je
+  Woche (ohne Beine bevorzugt), Bein-Übungen dort in Erholungs-Dosierung. **Minuten bleiben unverändert** (die Arten
+  ändern nur den Inhalt) – die 10-%-Kette und die Ampel-Vorschau gelten weiter.
+- **Neue Felder je Einheit** (nur Wettkampfplan, optional; Spalten mit WP3): `workout_type`, `training_phase`,
+  `workout_steps`, `target_distance_m` (nur mit Referenzzeit, nur durchgehende Läufe, abgerundet auf 0,5 km,
+  0,1–60 km). `generatedCompetitionSessionSchema`/`generatedCompetitionPlanSchema`/`isCompetitionPlanWithinLimits`:
+  Anstrengung 1–9 (Vorlage CHECK WP3), > 4 nur bei harter Art, harte Art nie in einer Erholungswoche außer im Tapering,
+  Ausdauer immer mit Art, Phase und Schritten (Summe = Dauer). `generatedSessionSchema` prüft unverändert 1–4.
+- **Sicherheit sofort** (`apply-safety.ts`, `applyCurrentEnduranceRules`): Einheiten mit Art – harte Arten und
+  Steigerungen werden locker (Art, Name, Schritte, Anstrengung), wenn harte Einheiten nicht mehr erlaubt sind (Flag,
+  Schwangerschaft, ohne Check, nur Gehen), die Variante wechselt oder der Start-Deckel kürzt; unter 18 höchstens 7.
+  Fehlt `medicalNotice`, gilt vorsichtig „keine harten Einheiten“. Einheiten ohne Art: unverändert.
+- **48-h-Regel erweitert** (`move.ts`, `reschedule.ts`): neuer Grund `hard_endurance_48h` (harte Ausdauer ↔ Kraft mit
+  Beinen, ↔ harte Ausdauer, ↔ langer Lauf) in `validateMove`, `validateSwap`, `moveTargets`, `rescheduleSession`
+  (verpasste harte Einheit: verschieben nur auf einen erlaubten Tag, sonst streichen). `ReschedulableSession.workout_type`
+  ist optional – ohne Art wie bisher. Damit die App-Typprüfung grün bleibt, stehen in `apps/mobile/src/i18n/de.ts` zwei
+  Texte für den neuen Grund (sonst keine App-Änderung).
+- **Konstanten** (`constants.ts`, alle „PRODUKTENTSCHEIDUNG – VOR LIVEGANG FACHLICH PRÜFEN“ mit Quellen Borg 1982, Foster
+  2008, Seiler 2010, Riegel 1981, Daniels 2014): `COMPETITION_LONG_RUN`, `COMPETITION_INTENSITY`, `COMPETITION_WORKOUTS`,
+  `COMPETITION_PACE`, `COMPETITION_EFFORT_LIMITS`, `ENDURANCE_OVERLOAD_RULE`, `COMPETITION_STRENGTH`.
+- Der Hinweis `endurance_basic_only` („Wettkampfplan kommt später“) entfällt im Wettkampfplan.
+- **Keine Migration, keine neue Engine-Version, keine App** (außer den zwei Texten oben). `generateCompetitionPlan`
+  ruft weiterhin niemand auf (WP4).
+
+**Tests:** neu `intensity.test.ts` (10), `endurance-workouts.test.ts` (19, u. a. 80/20 je Phase bei 1–7 Tagen),
+`endurance-long-run.test.ts` (8, u. a. Eigenschaft der Verteilung, „ohne `longRun` wie bisher“), `competition-wp2.test.ts`
+(6), `move-hard.test.ts` (6), `apply-safety-competition.test.ts` (5), `generate-competition-workouts.test.ts` (5:
+Eigenschaftstest **400 Läufe** mit Varianten ohne Zusatz / eigener Startumfang / Tagebuch-Bezug / „Tage egal“ /
+Gruppenwechsel ab Block 2, mit und ohne Referenzzeit und Wunsch-Tag – geprüft am ganzen Plan: 10-%-Kette, Start-Deckel,
+Erholungsrhythmus, langer Lauf (Steigerung, 50 %, Deckel), 80/20 je Woche, harte Einheiten (Anzahl, Phase, Abstand,
+Gruppen, Anstrengung), Kraft in Spitze/Tapering, Plan = Ampel-Vorschau (Minuten **und** längste Einheit), „Ampel
+ehrlich“ (passt = 2 Wochen mit Umfang und langem Lauf), G7; dazu 4 feste Beispiele). Gemeinsame Helfer
+`competition-test-helpers.ts` (aus dem WP1-Test herausgelöst; der Helfer gibt jetzt `loadWeeksBefore` wie die App weiter).
+Angepasst (bewusst strengere Ampel): `competition.test.ts` – Marathon-/Zielzeit-/Tabellen-Fälle brauchen am Tag des
+langen Laufs genug Wunsch-Zeit (z. B. Sonntag 150 statt 90 min), Zielzeit 48 statt 45 min (45 ist 10 % schneller als die
+50-min-Referenz und damit nicht plausibel), 1 Tag mit 60 min nennt zusätzlich `long_run_day_too_short`;
+`generate-competition.test.ts` prüft die Blöcke mit dem Wettkampf-Schema (Anstrengung > 4). „Tabelle passt zur Kette“
+gilt weiter – jetzt für Wochenumfang **und** langen Lauf. Core gesamt 4.119 → 4.178 Tests (+59, Zahlen laut Vitest).
+
+**Regression „ohne Wettkampf byte-gleich“:** fester Prüfsummen-Test aus WP1 grün (4.536 Ausdauer-Pläne + Folgeblock);
+zusätzlich ein Raster aus 5.040 Plänen **mit Kraft** (7 Starttage × Level × Ziel × Disziplin × Gesundheits-Check × Alter ×
+5 Zeitpläne inkl. „Tage egal“) + Folgeblock gegen den WP1-Stand (`11e1d92`) gerechnet: gleiche SHA-256. `pnpm
+plan:examples` vor/nach zeichengleich.
+
+**Präzisierungen (vom Plan nicht ausdrücklich festgelegt, vorsichtig gelöst):**
+
+1. **Geforderter langer Lauf = min(Richtwert, 50 % des Spitzen-Wochenumfangs)** – mit G2 (≤ 50 %) und G3 (Plateau beim
+   Spitzenumfang) ist mehr nie erreichbar: Ankommen 40/50/70/120 statt der Richtwerte 40/60/90/150 → Gründer-Frage G8.
+   Die Tabelle 3.2 passt damit weiter (Einsteiger erreichen Umfang und langen Lauf genau zum Mindestvorlauf, wenn der Tag
+   des langen Laufs genug Wunsch-Zeit hat).
+2. **35 % aus 3.5 entfällt** zugunsten von G2 (≤ 50 % der Woche bei ≥ 2 Einheiten). Bezug ist die tatsächliche Woche
+   (nicht das Budget) – Rundung kann sonst 1 Minute kosten (vom Eigenschaftstest gefunden).
+3. **Steigerung des langen Laufs** vom tatsächlich Gelaufenen der letzten Belastungswoche (nicht vom Deckel), wie die
+   10-%-Regel. Für Fortgeschrittene ohne Start-Deckel startet die Kette bei 90 min (erste Belastungswoche), praktisch
+   begrenzt die 50-%-Regel. Woche 0, Rennwoche und Erholung nach dem Rennen haben keinen langen Lauf, aber keine Einheit
+   über dem Distanz-Deckel (Erholungswochen: über der letzten längsten).
+4. **80/20-Zählweise:** Einsteiger und vorsichtige Startgruppe nur die harten Abschnitte (Plan 3.4), alle anderen den
+   ganzen Hauptteil vom ersten bis zum letzten harten Abschnitt inkl. Trabpausen (strenger) → Gründer-Frage G9.
+   Steigerungen zählen mit.
+5. **Harte Einheit nie am Tag vor UND nach dem langen Lauf** (Plan: „nie am Tag vor“) – vorsichtiger. Über die Woche als
+   Kreis (So ↔ Mo) geprüft, damit es auch an der Wochengrenze passt.
+6. **Mindestdauer harte Einheit 25 min** (10 min Aufwärmen, 5 min Abwärmen); kürzere Tage bleiben locker. Folge: Bei
+   vielen kurzen Tagen (z. B. Halbmarathon „Ankommen“ mit 4 Tagen: 70 + 26/25/19 min) gibt es kaum harte Einheiten →
+   Gründer-Frage G10.
+7. **Kraft „ohne schwere Beine“** = höchstens 1 Kraft-Einheit in Spitze, Tapering und Rennwoche (Oberkörper bevorzugt),
+   Bein-Übungen (Hauptmuskel Gesäß, Quadrizeps, Beinbeuger, Adduktoren, Waden) in Erholungs-Dosierung (halbe Sätze,
+   RPE −2) statt weglassen → Gründer-Frage G11.
+8. **Tapering-Einheiten sind `is_deload`** (WP1) – harte Einheiten im Tapering sind trotzdem erlaubt („Intensität
+   bleibt“, 3.1). Das Schema unterscheidet über `training_phase = taper`; die Server-Prüfung in WP3 muss das genauso tun.
+9. **Ab 65** („zügig ≤ 6“, Tabelle 3.3) greift nicht, weil der Plan für diese Gruppe nur Gehen ist (Phase-3-Regel,
+   G7); der Deckel 6 steht als Konstante bereit. Unter 18: Anstrengung ≤ 7, höchstens 1 harte Einheit je Woche
+   (vorsichtige Startgruppe, strengste Regel).
+10. **Pace** für locker/lang/Erholung/Tempo/Intervalle/Renntempo, Fahrtspiel und Steigerungen nach Gefühl. Renntempo
+    aus der Riegel-Vorhersage (nicht aus der Zielzeit – vorsichtiger). Distanz-Richtwert nur für durchgehende Läufe.
+11. **Zielzeit-Plausibilität 5 %** gegen die Riegel-Vorhersage (Gründer-Frage G12).
+12. **Wunsch-Tag des langen Laufs** neu als optionale Angabe `longRunWeekday` (1–7, Zod); WP3 muss ihn mit dem Wettkampf
+    speichern (sonst rechnet ein Folgeblock mit dem automatischen Tag).
+13. **4b `endurance_reduce`:** Vorschlag „zu hart“ ab max(7, Ziel + 3), höchstens 10 (lockere Ziele unverändert 7) – als
+    Funktion bereit, Entscheidung im 4b-Plan. Der `db-sync`-Test bleibt bis WP3 unverändert (CHECK 1–4).
+
+**Gegenproben (Regel absichtlich gebrochen → rot → zurückgesetzt):**
+
+| Nr. | Gebrochene Regel                                                 | Rote Tests | Gefunden von                                                |
+| --- | ---------------------------------------------------------------- | ---------- | ----------------------------------------------------------- |
+| W1  | Langer Lauf +20 % statt +10 % je Belastungswoche                 | 2          | Eigenschaftstest Wochenbau, `endurance-long-run`            |
+| W2  | Langer Lauf ohne 50-%-Deckel der tatsächlichen Woche             | 3          | Eigenschaftstest, `endurance-long-run`                      |
+| W3  | Langer Lauf ohne Distanz-Deckel (75/90/120/180)                  | 2          | Eigenschaftstest, `endurance-long-run`                      |
+| W4  | 80/20 auf 30 % gelockert                                         | 6          | Eigenschaftstest, 80/20 je Phase (`endurance-workouts`)     |
+| W5  | Harte Einheit neben dem langen Lauf erlaubt                      | 2          | Eigenschaftstest, Wochenbau 7 Tage                          |
+| W6  | Harte Einheiten an zwei Tagen hintereinander                     | 2          | Eigenschaftstest, Wochenbau 7 Tage                          |
+| W7  | Harte Einheit neben Kraft mit Beinen (Planung)                   | 2          | Eigenschaftstest, Beispiel am Plan                          |
+| W8  | Harte Einheit in einer Erholungswoche                            | 3          | Eigenschaftstest, Wochenbau                                 |
+| W9  | Gesundheits-Flag/ohne Check/nur Gehen erlauben harte Einheiten   | 2          | Grenzen je Gruppe, Beispiel Flag                            |
+| W10 | Einsteiger mit 2 Tagen bekommen Tempo + langen Lauf              | 2          | Eigenschaftstest, Wochenbau 2 Tage                          |
+| W11 | Unter 18 Anstrengung 8 statt 7                                   | 3          | Grenzen je Gruppe, Bausteine, apply-safety                  |
+| W12 | Ampel prüft den langen Lauf nicht                                | 2          | Ampel WP2 (Marathon 90 min), Eigenschaft „Ampel ehrlich“    |
+| W13 | G7: „nur Gehen“ darf „passt“ sein                                | 3          | Ampel G7, Eigenschaftstest                                  |
+| W14 | Zielzeit ohne Plausibilität gegen die Referenzzeit               | 1          | Zielzeit-Plausibilität (Riegel)                             |
+| W15 | Kraft in Spitze/Tapering unbegrenzt                              | 1          | Beispiel Kraft in Spitze/Tapering                           |
+| W16 | Kalender ohne `hard_endurance_48h`                               | 5          | `move-hard.test.ts`                                         |
+| W17 | apply-safety stuft harte Einheiten bei neuem Flag nicht herunter | 1          | `apply-safety-competition`                                  |
+| W18 | Ampel ohne langen Lauf in der Kette (Plan ≠ Ampel)               | 24         | Plan = Ampel-Vorschau, Tabelle passt zur Kette, Ampel-Fälle |
+| W19 | Tapering mit 2 harten Einheiten                                  | 1          | Wochenbau Tapering                                          |
+
+Alle Änderungen danach zurückgesetzt (Vergleich mit einer Sicherungskopie des Quellcodes: identisch).
+
+**Gründer-Fragen (sichere Voreinstellung gilt, bis ihr anders entscheidet):**
+
+- **G8 – Langer Lauf „Ankommen“:** Voreinstellung 40/50/70/120 min (5 km/10 km/Halbmarathon/Marathon) = höchstens 50 %
+  des Spitzenumfangs (G2 + G3). Plan 3.2 nennt Halbmarathon 90–120 und Marathon 150–180 min. Alternative A: Plateau
+  beim Doppelten des langen Laufs (Halbmarathon 180, Marathon 300 min/Woche – Einsteiger bräuchten dann deutlich mehr
+  als 16 bzw. 24 Wochen, Tabelle 3.2 anpassen). Alternative B: langer Lauf bis 60 % der Woche. Fachprüfung.
+- **G9 – 80/20-Zählweise:** Voreinstellung Einsteiger/vorsichtig nur harte Abschnitte, alle anderen der ganze Hauptteil
+  inkl. Trabpausen (strenger). Alternative: für alle nur die harten Abschnitte (mehr Intervalle möglich).
+- **G10 – Mindestdauer harte Einheit 25 min:** Voreinstellung 25 min; kurze Tage bleiben locker (bei vielen kurzen Tagen
+  kaum Tempo/Intervalle). Alternative: kürzeres Aufwärmen (dann mehr harte Einheiten, aber weniger Vorbereitung).
+- **G11 – Kraft in Spitze/Tapering:** Voreinstellung 1 Einheit je Woche, Beine in Erholungs-Dosierung. Alternative:
+  Bein-Übungen ganz weglassen.
+- **G12 – Zielzeit-Plausibilität:** Voreinstellung höchstens 5 % schneller als die Riegel-Vorhersage. Alternative 3 %
+  (vorsichtiger) oder 8 %.
+
+**Offen:**
+
+- **WP3:** Spalten `workout_type`, `training_phase`, `target_distance_m`, `workout_steps` (Schema `workoutStepsSchema`),
+  CHECK `effort_target` 1–9 mit „> 4 nur bei harter Art“ und „harte Art in Erholungswoche nur im Tapering“
+  (`training_phase`), `longRunWeekday` am Wettkampf speichern; erst dann lässt sich ein Wettkampfplan mit harten Einheiten
+  speichern (`toSavePlanPayload` überträgt die neuen Felder noch nicht). `db-sync.test.ts` schlägt dann absichtlich fehl
+  → 4b-Regel `endurance_reduce` neu fassen (Vorschlag oben, PLAN-PHASE-4B).
+- **WP4:** Anzeige von Art, Schritten, Pace (immer mit `PACE_NOTICE_DE`), Distanz-Richtwert, Sprechtest; Intervall-Timer
+  aus `workout_steps`; Texte zu `long_run_not_reachable`, `long_run_day_too_short`, `longer_long_run_day`,
+  `walk_only_plan`; die gespeicherte Einheit (`StoredSession`) muss `workout_type`/`workout_steps` mitbringen, damit
+  `prepareSessionForDisplay` → `applyCurrentEnduranceRules` die Wettkampf-Regeln anwendet.
+- Bisher offen aus WP1: M4 (Ruhetage nach dem Rennen), Grundlagen-Block nach `cycle_finished`, Fachprüfung aller neuen
+  Konstanten (Abschnitt 20 Punkt 5) – inkl. der Bausteine aus WP2.
 
 ---
 

@@ -9,6 +9,13 @@ import {
   enduranceStartSessionCap,
   type EnduranceVariant,
 } from './endurance';
+import { easyWorkout } from './endurance-workouts';
+import {
+  hardEffortCapFor,
+  isHardWorkoutType,
+  type WorkoutStep,
+  type WorkoutType,
+} from './intensity';
 import {
   type EnduranceStartGroup,
   isExerciseAllowed,
@@ -102,6 +109,9 @@ export interface EnduranceSessionLike {
   readonly estimated_minutes: number;
   readonly warmup_de: string;
   readonly cooldown_de: string;
+  /** Nur Wettkampfplan (WP2): Art und Schritte; fehlen → Verhalten wie bisher. */
+  readonly workout_type?: WorkoutType | null;
+  readonly workout_steps?: readonly WorkoutStep[] | null;
 }
 
 const VARIANT_BY_MODALITY: Readonly<Record<EnduranceModality, EnduranceVariant>> = {
@@ -136,7 +146,8 @@ export function applyCurrentEnduranceRules<T extends EnduranceSessionLike>(
     | 'pregnancyNotice'
     | 'noHealthCheck'
     | 'enduranceStartGroup'
-  >,
+  > &
+    Partial<Pick<PlanSafetyRules, 'medicalNotice'>>,
   ctx: {
     /**
      * Startgruppe beim Erstellen des Plans. Bei einem gespeicherten Plan IMMER `planStartGroup(plan, birthDate)`
@@ -146,6 +157,9 @@ export function applyCurrentEnduranceRules<T extends EnduranceSessionLike>(
   },
 ): T {
   if (session.kind !== 'endurance') return session;
+  if (session.workout_type !== undefined && session.workout_type !== null) {
+    return applyCompetitionRules(session, rules, ctx);
+  }
   let variant = enduranceVariantOf(session);
   if (rules.enduranceWalkOnly || rules.pregnancyNotice) {
     if (variant === 'easy_run' || variant === 'walk_run') variant = 'brisk_walk';
@@ -169,5 +183,87 @@ export function applyCurrentEnduranceRules<T extends EnduranceSessionLike>(
       rules.enduranceEffortMax,
     ),
     estimated_minutes: minutes,
+  };
+}
+
+/**
+ * Wettkampfplan (Phase 10 WP2, Plan 6 „apply-safety“): Strengeres wirkt sofort auch auf Arten und Schritte. Harte
+ * Arten und Steigerungen werden locker, wenn harte Einheiten nicht (mehr) erlaubt sind (Flag, Schwangerschaft, ohne
+ * Check, „nur Gehen“ – hardEffortCapFor), die Variante wechselt (Gehen) oder der Start-Deckel die Einheit kürzt; sonst
+ * Anstrengung harter Abschnitte höchstens bis zum Deckel der Gruppe (unter 18: 7), lockere höchstens
+ * `enduranceEffortMax`. Fehlt `medicalNotice` in den Regeln, gilt vorsichtig „keine harten Einheiten“. Lockerungen nie.
+ */
+function applyCompetitionRules<T extends EnduranceSessionLike>(
+  session: T,
+  rules: Pick<
+    PlanSafetyRules,
+    | 'enduranceEffortMax'
+    | 'enduranceWalkOnly'
+    | 'pregnancyNotice'
+    | 'noHealthCheck'
+    | 'enduranceStartGroup'
+  > &
+    Partial<Pick<PlanSafetyRules, 'medicalNotice'>>,
+  ctx: { readonly previousStartGroup: EnduranceStartGroup },
+): T {
+  const before = enduranceVariantOf(session);
+  let variant = before;
+  if (rules.enduranceWalkOnly || rules.pregnancyNotice) {
+    if (variant === 'easy_run' || variant === 'walk_run') variant = 'brisk_walk';
+    if (variant === 'easy_bike') variant = 'ergometer';
+  } else if (rules.noHealthCheck && variant === 'easy_run') {
+    variant = 'walk_run';
+  }
+  let minutes = session.estimated_minutes;
+  const startCap = enduranceStartSessionCap(rules.enduranceStartGroup);
+  if (startCap !== null && isStricterGroup(rules.enduranceStartGroup, ctx.previousStartGroup)) {
+    minutes = Math.min(minutes, startCap);
+  }
+  const cap = hardEffortCapFor({ ...rules, medicalNotice: rules.medicalNotice ?? true });
+  const type = session.workout_type as WorkoutType;
+  const structured = isHardWorkoutType(type) || type === 'strides';
+  const changed = variant !== before || minutes !== session.estimated_minutes;
+  const easyMax = rules.enduranceEffortMax;
+  if (structured && (cap === 0 || changed)) {
+    const effort = Math.min(session.effort_target ?? easyMax, easyMax);
+    const easy = easyWorkout('easy', minutes, effort);
+    return {
+      ...session,
+      name_de: ENDURANCE_TEXTS_DE.names[variant],
+      endurance_modality: ENDURANCE_VARIANT_MODALITY[variant],
+      warmup_de: ENDURANCE_TEXTS_DE.warmup[variant],
+      cooldown_de: ENDURANCE_TEXTS_DE.cooldown[variant],
+      effort_target: effort,
+      estimated_minutes: minutes,
+      workout_type: 'easy',
+      workout_steps: easy.steps,
+    };
+  }
+  const effortTarget = isHardWorkoutType(type)
+    ? Math.min(session.effort_target ?? cap, cap)
+    : Math.min(session.effort_target ?? easyMax, easyMax);
+  const steps = changed
+    ? easyWorkout(
+        type === 'long' || type === 'recovery' ? type : 'easy',
+        minutes,
+        Math.min(effortTarget, easyMax),
+      ).steps
+    : (session.workout_steps ?? null)?.map((st) => ({
+        ...st,
+        effort: Math.min(st.effort, st.kind === 'work' ? cap : easyMax),
+      }));
+  return {
+    ...session,
+    ...(variant !== before
+      ? {
+          name_de: ENDURANCE_TEXTS_DE.names[variant],
+          warmup_de: ENDURANCE_TEXTS_DE.warmup[variant],
+          cooldown_de: ENDURANCE_TEXTS_DE.cooldown[variant],
+        }
+      : {}),
+    endurance_modality: ENDURANCE_VARIANT_MODALITY[variant],
+    effort_target: effortTarget,
+    estimated_minutes: minutes,
+    workout_steps: steps ?? null,
   };
 }

@@ -4,7 +4,10 @@ import type { ExperienceLevel } from '../enums';
 import type { CompetitionDiscipline, CompetitionPhase } from './competition-schema';
 import { loadWeeksBeforeDeload } from './deload';
 import type { EnduranceStartGroup } from './safety';
-import type { BlockWeekSpec } from './schedule';
+import type { BlockWeekSpec, CompetitionWeekWorkouts } from './schedule';
+
+/** Wochenbau-Angaben ohne Phase (je Woche aus dem Makrozyklus ergänzt). */
+export type CompetitionWorkoutBase = Omit<CompetitionWeekWorkouts, 'phase' | 'recoveryWeek'>;
 
 /**
  * Periodisierung rückwärts vom Renntag (docs/PLAN-PHASE-10.md Abschnitte 3.1 und 5, Etappe WP1). Reine Funktionen,
@@ -228,6 +231,7 @@ export function competitionBlocks(
   cycle: MacroCycle,
   peakTarget: number,
   fromMonday?: string,
+  workouts?: CompetitionWorkoutBase,
 ): CompetitionBlock[] {
   const groups: MacroWeek[][] = [];
   let current: MacroWeek[] = [];
@@ -251,11 +255,15 @@ export function competitionBlocks(
     const specs = weeks.map((week, k): BlockWeekSpec => {
       const weekNo = hasWeekZero ? k : k + 1;
       const first = !followUp && blockIndex === 0 && k === 0;
+      const build = workouts
+        ? { workouts: { ...workouts, phase: week.phase, recoveryWeek: week.deload } }
+        : {};
       if (week.deload || week.volumeFactor !== null) {
         return {
           weekNo,
           monday: week.monday,
           kind: 'deload',
+          ...build,
           ...(week.volumeFactor === null ? {} : { enduranceVolumeFactor: week.volumeFactor }),
           ...(week.phase === 'race_week' || week.phase === 'taper'
             ? { excludedDates: cycle.excludedDates }
@@ -267,6 +275,7 @@ export function competitionBlocks(
         monday: week.monday,
         kind: first ? 'intro' : 'load',
         enduranceMaxBudget: peakTarget,
+        ...build,
       };
     });
     return { weeks, specs };
@@ -282,9 +291,10 @@ export function nextCompetitionBlock(
   cycle: MacroCycle,
   peakTarget: number,
   lastScheduledOn: string,
+  workouts?: CompetitionWorkoutBase,
 ): CompetitionBlock | null {
   const fromMonday = addDays(startOfIsoWeek(lastScheduledOn), 7);
-  return competitionBlocks(cycle, peakTarget, fromMonday)[0] ?? null;
+  return competitionBlocks(cycle, peakTarget, fromMonday, workouts)[0] ?? null;
 }
 
 /**
