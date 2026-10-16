@@ -1,0 +1,729 @@
+# Plan Phase 10 – Ausdauer-Wettkampf & Strecken
+
+**Status:** Freigegeben (16.10.2026). Gründer-Entscheidungen W-G1 bis W-G16 (Abschnitt 19): **alle wie empfohlen**
+(ausgefülltes Entscheidungs-PDF vom 16.10.2026). Umsetzung je Etappe als Pull Request mit Wächter-Prüfung.
+**Stand 16.10.2026:** A1a, A1b, E1, A2, E2, A3 (PLAN-AUSWERTUNG) sind gemergt; Expo-Projekt „AlphaFive“ wird verbunden
+(PR #79). Damit können WP1/WP2 (Core) sofort starten, WP3/WP4 danach, S0 sobald die erste APK läuft.
+
+**Grundlage:** `CLAUDE.md`, `docs/PROMPTS.md` (Phase 10, „Erweiterung Phase 10 – Strecken aufzeichnen“, Phase 8,
+Phase 4b), `docs/KONZEPT.md` (4, 5, 6.6, 9, 10, 10.1, 11, 12, 13), `docs/PLAN-PHASE-3*.md`,
+`docs/PLAN-PHASE-4*.md`, `docs/PLAN-PHASE-5.md` (19.7 W1, 19.8, 13, 16), `docs/PLAN-ZIELE.md`,
+`docs/PLAN-AUSWERTUNG.md`, Code-Stand vom 15.10.2026.
+**Reihenfolge laut Gründer-Entscheidung 13.10.2026:** Phase 10 direkt nach Phase 5, vor Phase 4b.
+
+---
+
+## 0. Kurzfassung
+
+Phase 10 bringt zwei Dinge:
+
+1. **Wettkampfplan:** Ihr gebt einen Wettkampf ein (z. B. Halbmarathon am 12.04.2027). Die App plant **rückwärts
+   vom Renntag**: Basis → Aufbau → Spitze → Tapering → Renntag → Erholung. Dazu kommen neue Einheiten-Arten
+   (langer Lauf, Tempo, Intervalle), Intensität ohne Pulsuhr (Anstrengung 0–10 und Sprechtest), auf Wunsch
+   Pace-Richtwerte, ein **Countdown** und die **Wettkampf-Ernährung** (Carb-Loading, Renntag, Gel-/Trinkplan).
+2. **Strecken:** GPS-Aufzeichnung von Läufen und Radfahrten in der App (Distanz, Höhenmeter, Pace), Speichern mit
+   Name, Favorit, Schwierigkeit, Zeitvergleich auf Favoriten, automatischer Tagebuch-Eintrag, Karte,
+   GPX-Import und -Export. Alles privat.
+
+**Das Wichtigste vorweg:**
+
+- **Keine Echtzeit-KI.** Alles läuft über feste Regeln in `packages/core` – gratis im Betrieb.
+- **Sicherheit vor Zielzeit:** Die 10-%-Regel, die Erholungswochen und alle Gesundheits-Regeln gelten weiter.
+  Reicht die Zeit bis zum Wettkampf nicht, **staucht die App den Plan nie**, sondern sagt es ehrlich („zu knapp“)
+  und schlägt eine kürzere Distanz oder ein späteres Datum vor.
+- **GPS-Aufzeichnung braucht eine echte App** (Development Build über EAS), nicht Expo Go. Im Handy-Browser
+  (Vercel-Vorschau) geht nur Karte, GPX-Import/-Export und eine **Demo-Aufzeichnung** zum Testen.
+  Achtung: In `apps/mobile/app.config.ts` ist die Expo-Projekt-ID noch leer – der Workflow `eas-build` überspringt
+  Builds. Ohne SETUP Teil D (und für iPhone Teil D2, Apple-Konto) könnt ihr die Aufzeichnung nicht testen.
+- **Karten kosten evtl. laufend Geld.** Die öffentlichen OpenStreetMap-Kacheln (`tile.openstreetmap.org`) dürfen wir
+  laut Nutzungsbedingungen **nicht** für eine App nutzen. Empfehlung: in der Testphase kostenlos über OpenFreeMap,
+  vor dem Livegang eigene Kartendatei (Protomaps) für wenige Euro im Monat (Abschnitt 11.1).
+- **11 Etappen** (W0, WP1–WP5, W1, S0, S1, S2a, S2b), die meisten unabhängig. Empfohlener Start: Core-Teile parallel
+  zu E1, App-Teile nach A1b (Abschnitt 18).
+
+---
+
+## 1. Ist-Stand (geprüft am 15.10.2026)
+
+### 1.1 Plan-Engine Ausdauer (`packages/core/src/plan/endurance.ts`, Engine-Version 2)
+
+- **Disziplinen** (`ENDURANCE_DISCIPLINES`): 5 km, 10 km, Halbmarathon, Marathon, Triathlon Sprint/Olympisch/
+  Mittel/Lang, Rad, Schwimmen. Wirken heute nur auf die **Art** der Einheit (Laufen, Rad, Schwimmen, Triathlon im
+  Wechsel).
+- **Nur lockere Einheiten** (6 Varianten: lockerer Dauerlauf, Geh-Lauf-Wechsel, zügiges Gehen, lockeres Rad,
+  Ergometer, lockeres Schwimmen). Anstrengung 3–4 von 10 (`ENDURANCE_EFFORT`), Sprechtest-Text.
+- **Umfang:** Startumfang 60/120/150 min, vorsichtig 45 (`ENDURANCE_START_RULES`); +10 % je Woche gegen die letzte
+  Belastungswoche (`Math.floor`, `increasedMinutes`, `capWeeklyIncrease`); Erholungswoche 60 %
+  (`ENDURANCE_DELOAD_VOLUME_FACTOR`); je Einheit höchstens 50 % der Woche, erste Belastungswoche höchstens 90 min,
+  Start-Deckel 30/20 min, unter 10 min fällt weg (`ENDURANCE_SESSION_LIMITS`). Geh-Lauf-Wechsel für Einsteiger in
+  den ersten 4 Wochen, ohne Gesundheits-Check immer.
+- **Sicherheit:** Schwangerschaft nur Gehen/Ergometer/Schwimmen (nie Rad draußen), Flag/ab 65 zügiges Gehen,
+  Wochen-Deckel für Einsteiger/vorsichtig/unter 18/ab 65 (höchstens 5 Einheiten).
+- **Block:** Woche 0–6 (`PLAN_BLOCK_LIMITS.weekNo`), 4 bzw. 5 Belastungswochen + 1 Erholungswoche, Folgeblock über
+  `append_plan_block` mit Bezug aus der letzten Belastungswoche (`EnduranceReference`).
+- Konstanten für 80/20 (`ENDURANCE_HIGH_INTENSITY_SHARE = 0.2`) gibt es schon, sie werden aber **nicht benutzt**.
+- Die App sagt heute: „Dein Wettkampfplan rückwärts ab Renndatum (lange Läufe, Tempo, Tapering) kommt in einem
+  späteren Update.“ (`apps/mobile/src/i18n/de.ts`).
+
+### 1.2 Datenbank
+
+- `goals.target_date` (Wettkampf- oder Zieldatum, optional) wird im Onboarding abgefragt, aber **nirgends genutzt**.
+- `planned_sessions`: `kind`, `endurance_modality` (run/walk/bike/swim), `effort_target` mit **CHECK 1–4**,
+  `estimated_minutes` bei Ausdauer 10–240. Eine Einheit je Tag. **Keine geplante Distanz.**
+- `cardio_logs`: Art, Dauer 1 min–12 h, Distanz ≤ 500 km, Höhenmeter ≤ 10.000; **keine Herzfrequenz** (Phase 8).
+- `session_logs.source` = Enum `log_source` mit nur `manual` (vorbereitet für weitere Quellen).
+- Keine Tabellen `competitions`, `tracked_routes`, `routes`. Keine PostGIS-Erweiterung.
+
+### 1.3 Tagebuch und Trainingsmodus
+
+- Ausdauer-Eintrag mit Dauer, Distanz, Höhenmetern; Pace/km/h werden gerechnet (`log/cardio.ts`), Warnung bei
+  unplausiblem Tempo (`CARDIO_PLAUSIBILITY_KMH`), Sprechtest-Stufen (`TALK_TEST_BANDS`).
+- Der 10-%-Bezug zählt mit Tagebuch nur `min(geplant, eingetragen)` je Einheit.
+- Trainingsmodus offline (verschlüsselter Entwurf, Warteschlange), Bildschirm-an (`expo-keep-awake`), Vibration
+  (`expo-haptics`). Kein Intervall-Timer.
+- **A1a/A1b (PLAN-AUSWERTUNG):** `moveTargets()` behandelt lockere Ausdauer „nie als Konflikt“; A1b bringt **freie
+  Einheiten** (`session_logs.is_free`) – die brauchen wir für GPS-Einträge ohne geplante Einheit und für das
+  Wettkampf-Ergebnis. „Trainingsziel erreicht“ rechnet Ausdauer nur über die Dauer („kein Distanz-Ziel“).
+
+### 1.4 Ernährung
+
+- `CARBS.enduranceGPerKg` (3/5/6 g/kg nach Trainingsminuten) und Ziel-Profil „Ausdauer → Abnehmen −10 %,
+  Wettkampfwoche ohne Defizit folgt mit Phase 10“ (`constants.ts`).
+- Rezepte der Kategorie `wettkampf` werden im automatischen Essensplan **ausgeschlossen** (`filter.ts`, Grund
+  `competition`); nur Suche und Ratgeber „Wettkampf-Ernährung“ (aus `alpha5-rezepte.json`) zeigen sie.
+- `CARB_LOADING_DAYS` und die Wettkampf-Logik aus W1 (PLAN-PHASE-5 19.7) fehlen noch.
+- `clampCalorieTarget` ist die **einzige** Stelle mit Schutzgrenzen (Strukturtest K2).
+
+### 1.5 App-Technik
+
+- Kein Standort, keine Karte, keine Berechtigungstexte (`app.config.ts`: „Keine NS…UsageDescription-Texte“).
+- `eas.json` hat ein Profil `development` (Development Build) und `preview` (APK). **`EAS_PROJECT_ID` ist leer.**
+- Plattform-Aufteilung `*.native.tsx` / `*.tsx` gibt es schon (z. B. `print-preview.native.tsx`) – Muster für Karte.
+
+### 1.6 Abhängigkeiten zu anderen Plänen
+
+- **4b (danach):** Auslöser `competition_date_changed` ist reserviert. Die 4b-Regel `endurance_reduce` geht von
+  `effort_target` ≤ 4 aus (Wächter S6, Test in `db-sync.test.ts`) – sie muss nach Phase 10 neu gefasst werden.
+- **Phase 8 (später):** Herzfrequenz, Wearable-Import, Puls-Zonen.
+- **PLAN-ZIELE (F12, F15):** Z3–Z6 eigentlich vor Phase 10; Nebenziel Ausdauer bekommt das Datum ab Phase 10.
+- **Phase 11b (Challenges):** keine Challenge im Tapering (KONZEPT 11.3) – braucht die Phase aus WP1.
+
+---
+
+## 2. Umfang und Abgrenzung
+
+**Kommt in Phase 10:**
+
+- Wettkampf anlegen, Machbarkeits-Prüfung, Periodisierung rückwärts, neue Einheiten-Arten, Intensität ohne Puls,
+  Pace-Richtwerte (optional), Countdown, Ergebnis eintragen.
+- Wettkampf-Ernährung W1 (wie PLAN-PHASE-5 19.7).
+- GPS-Aufzeichnung, Strecken speichern, Favoriten, Zeitvergleich, Auto-Tagebuch, Karte, GPX-Import/-Export.
+- Optional (W-G2): Rad und Triathlon Sprint/Olympisch als zweite Welle (WP5).
+- Optional/später (W-G12): Strecken-Vorschläge mit Standortsuche (S2b).
+
+**Kommt NICHT in Phase 10:**
+
+| Thema | Wann |
+| --- | --- |
+| Puls-Zonen, Herzfrequenz speichern | Phase 8 (Gesundheitsdatum, eigene Einwilligung) |
+| Automatische Plan-Anpassung bei verpassten Wochen, neuem Datum | 4b (Premium), Auslöser `competition_date_changed` |
+| Wearable-Import (Strava, Garmin, Health) | Phase 8 |
+| Navigation mit Abbiegehinweisen | nicht geplant – GPX an die Uhr |
+| Offline-Karten zum Herunterladen | später (S2b oder danach) |
+| Teilen, Segmente, Ranglisten, öffentliche Strecken | **nie** (CLAUDE.md) |
+| KI-Trainingspläne, KI-Erklärungen | Premium-KI, eigene Phase |
+
+---
+
+## 3. Fachliche Regeln Wettkampfplan (Vorschläge – VOR LIVEGANG FACHLICH PRÜFEN)
+
+Alle Zahlen kommen als Konstanten mit Quellenkommentar nach `packages/core/src/constants.ts`
+(„PRODUKTENTSCHEIDUNG – fachlich prüfen“, wo keine harte Quelle existiert).
+
+### 3.1 Phasen rückwärts vom Renntag
+
+Die App rechnet vom Renntag zurück und füllt die Wochen von hinten:
+
+1. **Erholung nach dem Rennen** (nach dem Renntag): 5 km/10 km 3–5 Tage locker, Halbmarathon 1 Woche, Marathon 2
+   Wochen nur locker, keine harten Einheiten.
+2. **Tapering** (vor dem Renntag): 5 km/10 km 7–10 Tage, Halbmarathon 10–14 Tage, Marathon 2–3 Wochen. Umfang
+   schrittweise −40 bis −60 %, Intensität bleibt, Häufigkeit bleibt (mind. ~80 % der Einheiten). Quelle: Bosquet L
+   et al. (2007), Med Sci Sports Exerc 39(8):1358–1365; Mujika I, Padilla S (2003).
+3. **Spitze** (2–3 Wochen vor dem Tapering): höchster Umfang, wettkampfnahe Einheiten.
+4. **Aufbau**: harte Einheiten kommen dazu (siehe 3.4), Umfang steigt weiter mit ≤ 10 %.
+5. **Basis**: alle übrigen Wochen am Anfang, nur locker plus kurze Steigerungsläufe (Fortgeschrittene).
+
+- Erholungswochen bleiben fest (heute 4 bzw. 5 Belastungswochen + 1 Erholungswoche). Im Aufbau/in der Spitze
+  Empfehlung 3 : 1 für Einsteiger (W-G3). Eine Erholungswoche fällt **nie** in die letzte Woche vor dem Tapering
+  (dann wird sie vorgezogen, nie gestrichen).
+- Liegt der Wettkampf weit weg (> 24 Wochen), verlängert sich die Basis; der Umfang steigt nur bis zum nötigen
+  Spitzenumfang und bleibt dann (kein „immer mehr“).
+
+### 3.2 Mindestvorlauf und Machbarkeit (Ampel)
+
+**Mindestvorlauf** (Vorschlag, Wochen bis zum Renntag, W-G3):
+
+| Distanz | Einsteiger | Fortgeschritten | Leistungssport |
+| --- | --- | --- | --- |
+| 5 km | 8 | 6 | 4 |
+| 10 km | 10 | 8 | 6 |
+| Halbmarathon | 16 | 12 | 10 |
+| Marathon | 24 | 16 | 14 |
+
+**Machbarkeit:** Für jede Distanz gibt es einen **Mindest-Spitzenumfang** für „Ankommen“ (Wochenminuten und längste
+Einheit, z. B. Halbmarathon ca. 150 min/Woche und 90–120 min langer Lauf, Marathon ca. 240 min/Woche und 150–180
+min langer Lauf – PRODUKTENTSCHEIDUNG). Die App rechnet aus dem Startumfang mit der 10-%-Kette (inkl.
+Erholungswochen und Tapering), ob dieser Umfang rechtzeitig erreichbar ist.
+
+Beispiel Einsteiger Marathon: Start 60 min → 66 → 72 → 79 → … → nach 15 Belastungswochen ca. 236 min; mit 4
+Erholungswochen und 3 Wochen Tapering sind das **ca. 22 Wochen**. Deshalb 24 Wochen Mindestvorlauf.
+
+Ergebnis als Ampel (`competitionFeasibility()`):
+
+- **Passt:** Plan wird erstellt.
+- **Knapp:** Plan wird erstellt, Ziel ist „Ankommen“; Zielzeit nicht möglich; Hinweis.
+- **Zu kurz:** kein Wettkampfplan. Vorschläge: kürzere Distanz, späteres Datum oder „Ohne Wettkampf weiter“
+  (bisheriger Grundlagen-Plan). Der Plan wird **nie** gestaucht.
+
+**Startumfang:** wie heute aus der Startgruppe; gibt es Tagebuch-Einträge der letzten 4 Wochen, zählt
+`min(geplant, eingetragen)` (wie der 10-%-Bezug). Eigene Angabe „ich laufe schon X min/Woche“ nur für Fortgeschrittene
+und Leistungssport, gedeckelt und mit Bestätigung (W-G5).
+
+### 3.3 Wer bekommt welchen Plan (strengste Regel gewinnt)
+
+| Personengruppe | Wettkampfplan |
+| --- | --- |
+| Schwangerschaft | **kein** Wettkampfplan, Hinweis Ärztin/Arzt |
+| Ohne Gesundheits-Check | erst nach dem Check; bis dahin Grundlagen-Plan |
+| Gesundheits-Flag | nur „Ankommen“, nur locker (keine Tempo-/Intervall-Einheiten), Hinweis ärztliche Abklärung (Sporttauglichkeit) |
+| Ab 65 | nur „Ankommen“, harte Einheiten nur als „zügig“ (Anstrengung ≤ 6), Hinweis ärztliche Abklärung |
+| Unter 18 | höchstens Halbmarathon (W-G4), Anstrengung ≤ 7, keine Zielzeit |
+| Einsteiger | höchstens 1 harte Einheit/Woche ab Aufbau, Marathon nur mit 24 Wochen und Hinweis |
+| Fortgeschritten / Leistungssport | bis 2 harte Einheiten/Woche, Zielzeit möglich |
+
+Wochen-Deckel aus Phase 3 bleiben (höchstens 5 Einheiten für Einsteiger/vorsichtig/unter 18/ab 65).
+
+### 3.4 Einheiten-Arten und Intensität ohne Pulsuhr
+
+**Arten** (neues Enum `workout_type`, Vorschlag):
+
+- `easy` lockerer Dauerlauf (Anstrengung 3–4, ganze Sätze)
+- `recovery` Erholungslauf (2–3)
+- `long` langer Lauf (3–4, gleichmäßig)
+- `strides` locker + 4–6 kurze Steigerungen (Basis, Fortgeschrittene)
+- `fartlek` Fahrtspiel nach Gefühl (5–6)
+- `tempo` zügiger Dauerlauf an der Schwelle (6–7, nur kurze Sätze)
+- `intervals` Intervalle (8, nur einzelne Wörter; nie „alles geben“)
+- `race_pace` Abschnitte im geplanten Renntempo (Spitze)
+- später WP5: `brick` Koppeltraining Rad → Lauf, `technique` Schwimmtechnik
+
+**Intensität:** Anstrengung 0–10 (Borg CR10) + Sprechtest (`TALK_TEST_BANDS` gibt es schon). Kein Maximaltest
+(CLAUDE.md, Phase 3: „Nie Maximaltests“). **80/20:** höchstens 20 % der Wochenminuten mit Anstrengung ≥ 6
+(`ENDURANCE_HIGH_INTENSITY_SHARE`); Einsteiger zählen nur den harten Teil der Einheit.
+
+**Pace-Richtwerte (optional, W-G6):** nur wenn die Person eine **eigene Referenzzeit** angibt (letzter Wettkampf
+oder Testlauf aus dem Tagebuch, nicht älter als 6 Monate). Umrechnung mit der Riegel-Formel T₂ = T₁ × (D₂/D₁)^1,06
+(Riegel PS 1981, Am Sci 69:285–290), daraus Spannen je Art (z. B. locker = Renntempo 10 km + 60–90 s/km). Immer
+mit dem Satz „Die Anstrengung hat Vorrang – bei Hitze, Wind und Steigungen langsamer.“
+
+**Puls:** nicht in Phase 10 (W-G7). Herzfrequenz ist Gesundheitsdatum und wird erst ab Phase 8 gespeichert.
+
+### 3.5 Wochenbau
+
+- Langer Lauf am Wunsch-Tag (Standard: Wochenende), höchstens 35 % der Wochenminuten (bei ≤ 3 Einheiten
+  höchstens 50 % wie heute), Laufen höchstens 180 min, Halbmarathon-Plan höchstens 120 min.
+- Harte Einheiten nie an zwei Tagen hintereinander, nie am Tag vor dem langen Lauf, nie neben einem Kraft-Tag mit
+  Beinen (48-h-Regel erweitert: **harte** Ausdauer zählt wie Kraft-Beine; lockere bleibt konfliktfrei).
+- Erholungswoche: keine harten Einheiten, Umfang 60 % wie heute.
+- **Renntag** ist keine geplante Trainingseinheit, sondern der Wettkampf selbst (Tabelle `competitions`) – so
+  greifen weder die 240-min-Grenze noch die 10-%-Regel. Der Tag davor ist Ruhetag oder 15–20 min locker.
+- Kraft im Wettkampfplan: bleibt möglich, in Spitze und Tapering höchstens 1 Kraft-Einheit ohne schwere Beine
+  (PRODUKTENTSCHEIDUNG).
+
+### 3.6 Distanz- und Pace-Ziele je Einheit (Änderung zu PLAN-AUSWERTUNG „kein Distanz-Ziel“)
+
+- **Dauer bleibt das Hauptziel** jeder Einheit (sicherer, unabhängig von Gelände und Wetter).
+- Neu: optionaler **Distanz-Richtwert** (`target_distance_m`), nur wenn eine Referenzzeit da ist, gerundet auf
+  0,5 km; immer beim langen Lauf und beim Renntag angezeigt.
+- `sessionAchievement()` (A2/A3) rechnet weiter über die Dauer; die Distanz wird nur angezeigt (W-G6). Bei
+  Intervallen zählt „Teile geschafft“ (z. B. 5 von 6).
+
+---
+
+## 4. Etappe W0 – Plan, Ist-Stand, Grundlagen
+
+- Dieses Dokument als `docs/PLAN-PHASE-10.md`, PROMPTS-Status, Querverweise in KONZEPT 4/10/10.1/12, PLAN-PHASE-4B
+  (Auslöser, neue Fassung `endurance_reduce`), PLAN-AUSWERTUNG 2.5 (Distanz-Richtwert), PLAN-ZIELE (F15).
+- Quellen für alle neuen Konstanten gegen das Original prüfen (Bosquet 2007, Mujika 2003, Riegel 1981, Seiler 2010,
+  Thomas 2016, Burke 2011, Jeukendrup 2014).
+- Fachprüfung anstoßen (Trainingswissenschaft: Tabellen 3.2/3.3/3.5; Ernährung: W1).
+- _DoD:_ Wächter-Prüfung des Plans, Gründer-Entscheidungen eingetragen.
+
+---
+
+## 5. Etappe WP1 – Core: Wettkampf, Machbarkeit, Phasen rückwärts
+
+**Dateien:** `packages/core/src/plan/competition.ts`, `periodization.ts`, Schemas in `plan/competition-schema.ts`.
+
+- `competitionSchema` (Zod, strikt): Name (1–80 Zeichen, nur Anzeige), Disziplin, Distanz (aus der Disziplin, für
+  Rad frei 20–300 km), Renntag (heute + Mindestvorlauf bis heute + 52 Wochen), Ziel `finish` | `time`,
+  Zielzeit (nur bei `time`, plausibel je Distanz), Referenzzeit optional (Distanz + Zeit + Datum).
+- `minimumLeadWeeks(discipline, level)`, `requiredPeak(discipline)`.
+- `competitionFeasibility(inputs, today)` → `ok | tight | too_short` + Gründe + Vorschläge (kürzere Distanz,
+  frühestes Datum). Nutzt **dieselbe** 10-%-Kette (`increasedMinutes`) wie `enduranceWeekVolumes`.
+- `macroCycle(inputs, planStart)` → Liste der Wochen mit Phase (`base | build | peak | taper | race_week |
+  recovery`) und Erholungswochen. Reine Funktion, wird **nicht gespeichert**, sondern bei jedem Folgeblock neu
+  gerechnet (gleiche Eingaben → gleiches Ergebnis).
+- Anbindung an `generateTrainingPlan`: Hat das Ziel einen gültigen Wettkampf, bekommt jeder Block seine Phasen aus
+  `macroCycle`; Folgeblöcke wie heute über `append_plan_block`.
+- **Tests (Grenzfälle):** Renntag genau am Mindestvorlauf, 1 Tag darunter, 52 Wochen; Renntag Sonntag/Montag
+  (Wochengrenze); Planstart mitten in der Woche (Woche 0); Einsteiger Marathon 23/24/25 Wochen; vorsichtige Gruppe;
+  unter 18 und Marathon (abgelehnt); 1 vs. 7 Ausdauer-Tage; sehr leicht/schwer und sehr jung/alt (nur über die
+  Startgruppe); Folgeblock mit strengerer Gruppe (`stricterGroup`). **Eigenschaftstests:** keine Woche über
+  `floor(1,1 × letzte Belastungswoche)`; jede 4./5. Woche Erholung; Tapering nie kürzer als die Tabelle; „zu kurz“
+  erzeugt nie einen Plan.
+- Keine Migration, keine App.
+
+---
+
+## 6. Etappe WP2 – Core: Einheiten, Intensität, Wochenbau
+
+**Dateien:** `plan/endurance-workouts.ts`, `plan/intensity.ts`, Erweiterung `endurance.ts`, `move.ts` (aus A1a),
+`reschedule.ts`.
+
+- Einheiten-Bausteine als **feste Textbausteine** in Core (wie `ENDURANCE_TEXTS_DE`), ca. 20 Stück je Lauf (W-G8):
+  Aufwärmen, Hauptteil mit Schritten (`{ kind: 'work' | 'easy' | 'rest', minutes | seconds, effort }`),
+  Abwärmen, Sprechtest-Text, Ausweich-Text (Laufband). Keine KI.
+- `weekWorkouts(phase, level, rules, days, volume)` verteilt Arten nach 3.4/3.5 und 80/20.
+- `paceTargets(reference, workoutType)` (Riegel, Spannen), `distanceHint(minutes, pace)`.
+- Sicherheitsregeln aus 3.3 in `apply-safety.ts`: harte Arten werden bei vorsichtigen Gruppen zu `easy` bzw.
+  `fartlek ≤ 6` heruntergestuft (Strengeres wirkt sofort, Lockerungen erst nach Bestätigung – wie bisher).
+- **48-h-Regel erweitert:** harte Ausdauer ↔ Kraft mit Beinen; harte ↔ harte Ausdauer. `moveTargets()` (A1a) und
+  `rescheduleSession()` bekommen den Grund `hard_endurance_48h`. Verpasste harte Einheit: verschieben nur, wenn die
+  Regel passt, sonst **streichen statt stapeln**.
+- **Tests:** 80/20 je Woche (Eigenschaftstest), nie zwei harte Tage in Folge, langer Lauf ≤ Deckel, Erholungswoche
+  ohne harte Einheit, vorsichtige Gruppen ohne harte Einheit, Pace ohne Referenz = null, Riegel-Rechnung mit
+  Beispielwerten, 1 vs. 7 Tage, nur 2 Ausdauer-Tage (dann kein Tempo + langer Lauf in derselben Woche für
+  Einsteiger), Tausch/Verschieben einer Intervall-Einheit neben Bein-Tag gesperrt.
+- Keine Migration, keine App.
+
+---
+
+## 7. Etappe WP3 – Datenmodell (nur additiv, RLS, pgTAP)
+
+**Neue Tabelle `competitions`** (Nutzerdaten, kein Gesundheitsdatum):
+
+- `id`, `user_id` (Kaskade bei Konto löschen), `name` (1–80), `discipline`, `distance_m`, `race_date`,
+  `goal_kind` (`finish | time`), `target_time_s` (nullable), `reference_*` (Distanz, Zeit, Datum, nullable),
+  `status` (`planned | done | cancelled`), `result_session_log_id` (nullable, `on delete set null`),
+  `created_at`, `updated_at`.
+- Höchstens **ein** geplanter Hauptwettkampf je Person (Teil-Index), W-G9.
+- RLS: nur eigene Zeilen lesen; Schreiben über `save_competition` / `cancel_competition` (`security definer`,
+  `search_path = ''`, Prüfungen wie Zod). `goals.target_date` wird beim Speichern mitgeführt (Abwärtskompatibilität).
+
+**Erweiterung `planned_sessions`** (alle Spalten nullable, alte Zeilen bleiben gültig):
+
+- `workout_type` (Enum), `training_phase` (Enum), `target_distance_m` (100–60.000), `workout_steps jsonb`
+  (Schema aus WP2, Größe begrenzt, CHECK auf Struktur über Funktion).
+- `effort_target`: CHECK von 1–4 auf **1–9** erweitern (nur Lockerung, alte Zeilen gültig) plus neue Bedingung
+  „> 4 nur bei harter Art“. **Folge:** der 4b-Test in `db-sync.test.ts` schlägt absichtlich fehl → die 4b-Regel
+  `endurance_reduce` wird im 4b-Plan mit Abstand zum Ziel neu gefasst (Eintrag in PLAN-PHASE-4B).
+- `save_training_plan` / `append_plan_block` nehmen die neuen Felder an und prüfen sie serverseitig
+  (Art ↔ Anstrengung, Erholungswoche ohne harte Art).
+
+**Weitere Änderungen:**
+
+- `log_source` um `gps` und `gpx_import` erweitern (`ALTER TYPE … ADD VALUE`, additiv).
+- `export_my_data()` enthält `competitions` (und ab S1 `tracked_routes`).
+- **pgTAP:** fremde Zeilen unsichtbar, `anon` nichts, Grenzen, ein Hauptwettkampf, Export, Konto löschen.
+- `db-sync.test.ts`: neue Grenzen identisch in `constants.ts` und Migration.
+- **Testmodus:** `localDb.competitions` mit denselben Regeln (`local-rules.ts`), Export, „Testdaten löschen“.
+
+---
+
+## 8. Etappe WP4 – App: Wettkampf, Plan-Ansicht, Countdown
+
+- **Wettkampf anlegen:** im Onboarding-Schritt „Ziel“ (das bestehende Datumsfeld wird zu „Wettkampf eintragen“)
+  und unter Einstellungen → „Mein Wettkampf“. Felder: Disziplin, Datum, Name (optional), Ziel „Ankommen“ oder
+  „Zielzeit“ (nur wenn erlaubt), Referenzzeit (optional, mit Erklärung).
+- **Machbarkeits-Ampel** sofort beim Datum (grün/gelb/rot mit Text und Vorschlägen; rot: „Plan ohne Wettkampf
+  weiter“ oder „Datum/Distanz ändern“). Farben nie allein – immer mit Wort.
+- **Plan-Ansicht:** Phasen-Band oben („Aufbau · Woche 6 von 14“), Einheiten mit Art, Dauer, Anstrengung,
+  Distanz-Richtwert, Pace-Spanne (wenn vorhanden).
+- **Trainingsmodus Intervalle:** Schritt-für-Schritt-Timer (Aufwärmen → 6 × 3 min zügig / 2 min locker →
+  Abwärmen), Vibration beim Wechsel, Bildschirm bleibt an, offline, Pause/Weiter, „Abbrechen und eintragen“.
+- **Countdown:** Karte auf „Heute“ und im Kalender („Noch 23 Tage bis zum Halbmarathon“), Renntag im Kalender
+  markiert, Rennwoche mit Hinweis „Nichts Neues ausprobieren“.
+- **Ergebnis eintragen** am Renntag oder danach: Zeit, Gefühl (Anstrengung), Notiz → freie Einheit (A1b) mit
+  Verweis auf den Wettkampf; danach „Erholung nach dem Rennen“ und Frage nach dem nächsten Ziel.
+- **Datum ändern / Wettkampf absagen:** „Plan neu erstellen“ (bis 4b ohne Automatik), mit Bestätigung.
+- **Zustände:** Laden, kein Wettkampf (Einladung), zu kurz (rot mit Vorschlägen), Wettkampf vorbei ohne Ergebnis,
+  abgesagt, offline (Anlegen erst online; Plan und Timer offline), Fehler vom Server mit Text.
+- Texte in `i18n/de.ts`, Barrierefreiheit (Timer mit Ansage über `accessibilityLiveRegion`), hell/dunkel.
+- Playwright im Testmodus: Wettkampf anlegen → Ampel → Plan mit Phasen → Intervall-Timer.
+
+---
+
+## 9. Etappe WP5 – Rad und Triathlon (zweite Welle, W-G2)
+
+- **Rad:** Distanz 20–300 km (Radmarathon/Jedermann-Rennen), lockere Ausfahrten, lange Ausfahrt (bis 300 min,
+  dafür eigener Deckel), Sweet-Spot/Tempo, Ergometer als Ausweich. Wochenumfang in Minuten, 10-%-Regel gleich.
+- **Triathlon Sprint/Olympisch:** Disziplinen im Wechsel; **Koppeltraining** als **eine** Einheit mit zwei Teilen
+  (Rad → Lauf), weil die Datenbank nur eine Einheit je Tag erlaubt (kein Doppeltag). Schwimmen: Technik und
+  locker nach Dauer; Freiwasser nur mit Sicherheitshinweis (nie allein, Neopren, Begleitung).
+- **Mittel- und Langdistanz:** Empfehlung **nicht** als Plan anbieten (Hinweis: Trainer bzw. Verein), W-G2.
+- Gleiche Core-Struktur wie WP1/WP2, eigene Tests (Umfang je Disziplin, Koppeleinheit zählt in beide
+  Disziplinen-Minuten, 10-%-Regel über die Summe).
+
+---
+
+## 10. Etappe W1 – Wettkampf-Ernährung (wie PLAN-PHASE-5 19.7)
+
+Übernommen aus PLAN-PHASE-5 19.7 W1 und 19.8, ergänzt um Renntag und Gel-/Trinkplan.
+
+**Core (`packages/core/src/nutrition/competition.ts`):**
+
+- `competitionDays(competition, week)` → je Tag `carb_loading | race_eve | race_day | post_race | normal`.
+- **Carb-Loading nur bei erwarteter Wettkampfdauer ≥ 90 min** (aus Distanz und Referenz-/Zielzeit, sonst
+  vorsichtige Schätzung je Distanz und Level). `CARB_LOADING_DAYS = { min: 1, max: 2 }` (Burke 2011, Thomas 2016,
+  **VOR LIVEGANG FACHLICH PRÜFEN**).
+- An Carb-Loading-Tagen: Zielanpassung = Erhalt (kein Defizit), **4b-Versatz = 0**, Makros zu mehr Kohlenhydraten,
+  **Fett ≥ 20 % der Energie, Eiweiß ≥ Minimum aus 4.7**; die Werte „8–10 g/kg“ nur, soweit die Energie es zulässt,
+  sonst Hinweis. Alles als **Eingabe** in `nutritionTargetsForWeek` → `clampCalorieTarget` bleibt die einzige
+  Stelle mit Schutzgrenzen (Strukturtest K2 erweitert).
+- `no_targets` (Schwangerschaft, keine Einwilligung): nur allgemeine Hinweise. `maintenance_only`/unter 18: nur
+  Makro-Verschiebung im Erhaltungsband.
+- **Renntag:** Frühstück 2–4 h vorher (Richtwert 1–4 g KH/kg, Thomas 2016) als Text und Rezeptvorschlag aus
+  Kategorie `wettkampf`; „nichts Neues am Renntag“.
+- **Gel-/Trinkplan** `raceFuelingPlan(expectedMinutes, level)`: unter 60 min nichts nötig; 60–150 min ca.
+  30–60 g KH/Stunde; über 150 min bis 60–90 g/Stunde nur für Fortgeschrittene/Leistungssport mit Hinweis
+  „vorher im langen Lauf testen“ (Jeukendrup 2014, Sports Med 44 Suppl 1). Trinken nach Durst, Richtwert
+  400–800 ml/Stunde, Hinweis auf Hitze und Salz; **keine Marken**, keine Koffein-Empfehlung im Plan
+  (Supplement-Modul), keine Health Claims („unterstützt“, nicht „verbessert“).
+- Unter 18: Gel-Plan nur allgemein („Kohlenhydrate in kleinen Mengen, z. B. Banane“).
+- Filter: Rezepte `wettkampf` sind an den Wettkampftagen **erlaubt**, sonst weiter ausgeschlossen (`filter.ts`).
+
+**App:** Wettkampftage im Essensplan markiert, Ratgeber „Wettkampf-Ernährung“ verlinkt, Gel-/Trinkplan als
+Zeitleiste am Renntag (offline), Schalter „Kalorienzahlen anzeigen“ gilt überall. Tagesauswertung (A2): Carb-Loading-
+Tag zeigt das angepasste Tagesziel mit Satz „Heute mehr Kohlenhydrate – so geplant“.
+
+**_DoD:_** Eigenschaftstest „Carb-Loading-Tag ≥ Untergrenze und ≤ Obergrenze, Fett ≥ 20 %, Eiweiß ≥ Minimum“,
+Fälle unter 18, `maintenance_only`, Fettverlust, `no_targets`, Wettkampf < 90 min (kein Carb-Loading),
+Wettkampf am Montag (Carb-Loading in der Vorwoche), Wettkampf abgesagt (Tage normal); Strukturtest K2 grün.
+**Premium/Gratis:** siehe W-G10.
+
+---
+
+## 11. Strecken: Technik-Entscheidungen
+
+### 11.1 Karten-Kacheln: Anbieter, Kosten, Lizenz (Stand bitte vor Vertragsabschluss prüfen)
+
+Jede Kachel-Anfrage verrät dem Anbieter die **IP-Adresse und den Kartenausschnitt** (also ungefähr, wo man ist).
+Deshalb: EU-Anbieter oder eigene Datei, Auftragsverarbeitung (AVV), Datenschutzerklärung.
+
+| Option | Kosten (ca.) | Grenzen / Bedingungen | Eignung |
+| --- | --- | --- | --- |
+| `tile.openstreetmap.org` | 0 € | Nutzungsbedingungen verbieten App-Massennutzung, Vorladen, Offline; kein SLA, kann sperren | **nicht nutzen** |
+| OpenFreeMap (Vektor, ohne Schlüssel) | 0 € | spendenfinanziert, kein SLA, keine Garantie | **Testphase** |
+| MapTiler Cloud | Free nur nicht-kommerziell (ca. 100.000 Anfragen/Monat, Logo); bezahlt ab ca. 25–30 USD/Monat | Konto + Schlüssel, Geocoding dabei | Livegang, wenn wenig Aufwand wichtig ist |
+| Stadia Maps | Free nur nicht-kommerziell; bezahlt ab ca. 20 USD/Monat | Konto + Schlüssel | Alternative |
+| **Protomaps (eine PMTiles-Datei DACH) auf Cloudflare R2, EU** | wenige €/Monat (Speicher einige GB, keine Ausgangsgebühren) | einmal einrichten, Aktualisierung per GitHub Action, keine Anfrage-Limits | **Livegang (Empfehlung)** |
+| Mapbox | Freikontingent, dann teuer | eigene Lizenz, mit MapLibre nicht vorgesehen | nicht nutzen |
+
+- **Attribution** immer sichtbar: „© OpenStreetMap-Mitwirkende“ (ODbL) plus Stil-Anbieter.
+- **Bibliothek:** MapLibre – nativ `@maplibre/maplibre-react-native` (Kompatibilität mit Expo SDK 57 und der neuen
+  Architektur im Spike S0 prüfen), Web `maplibre-gl` (nur auf der Kartenseite nachladen). Aufteilung
+  `map.native.tsx` / `map.tsx`.
+- **Kosten-Bremse:** Karte nur auf Strecken-Seiten, keine Kartenvorschau in Listen (statt dessen kleine
+  Linien-Skizze aus der Strecke selbst, ohne Kacheln).
+
+### 11.2 GPS-Aufzeichnung
+
+- `expo-location` + `expo-task-manager`, Aufzeichnung im **Development Build** (Expo Go kann keinen
+  Hintergrundbetrieb). Neue Berechtigungstexte in `app.config.ts`.
+- **Ziel: nur „Beim Verwenden der App“** plus sichtbare Aufzeichnung (iOS: blauer Standort-Hinweis,
+  Android: Vordergrund-Dienst mit Benachrichtigung „Aufzeichnung läuft“). So vermeiden wir die strenge
+  Play-Prüfung für „Standort im Hintergrund“. Ob `expo-location` das ohne Hintergrund-Berechtigung zulässt, prüft
+  der Spike S0; sonst braucht es „Immer erlauben“ mit Begründung und die Play-Erklärung (W-G13).
+- Standort **nur während einer Aufzeichnung**, nie sonst.
+- **Web:** `navigator.geolocation` läuft nur bei offenem Bildschirm, gesperrtes Handy stoppt die Aufzeichnung.
+  Empfehlung: im Web keine echte Aufzeichnung, sondern Hinweis „Aufzeichnen geht in der App“ und im Testmodus eine
+  **Demo-Aufzeichnung** aus einer Beispiel-GPX (W-G14).
+- **Speicherung:** keine PostGIS-Erweiterung nötig (keine räumlichen Abfragen über Personen hinweg). Die Strecke
+  wird vereinfacht (Douglas-Peucker) und als komprimierte Linie (Polyline) gespeichert; Rohpunkte mit Genauigkeit
+  und Zeitstempeln bleiben nur während der Aufzeichnung verschlüsselt auf dem Gerät und werden nach dem Speichern
+  gelöscht. Kilometerzeiten werden beim Speichern gerechnet und mitgespeichert (für den Zeitvergleich).
+
+---
+
+## 12. Etappen S0, S1, S2a, S2b – Strecken
+
+### S0 – Spike: Development Build, GPS, Karte (klein, technischer Test)
+
+- Voraussetzung: SETUP Teil D (Expo-Projekt-ID) erledigt; für iPhone Teil D2 (Apple-Konto).
+- `expo-location`, `expo-task-manager`, MapLibre einbauen, Berechtigungstexte, Testbildschirm nur im Testmodus.
+- Prüfen: Hintergrund mit „Beim Verwenden“, Akku über 60 min, Genauigkeit, Tunnel/Funkloch, Absturz während der
+  Aufzeichnung (Wiederaufnahme), Web-Export baut weiter.
+- _Ergebnis:_ kurzer Bericht im PR + Entscheidung W-G13. **Kein** Nutzer-Feature.
+
+### S1 – Strecken aufzeichnen (Gratis, privat, KONZEPT 10.1)
+
+**Core (`packages/core/src/routes/`):**
+
+- `filterTrackPoints` (Genauigkeit > 30 m raus, Sprünge über `CARDIO_PLAUSIBILITY_KMH` raus, Zeit rückwärts raus),
+  `trackDistance` (Haversine), `elevationGain` (Glättung + Schwelle 3–5 m gegen GPS-Rauschen, Hinweis „Höhenmeter
+  per GPS sind ungenau“), `autoPause` (unter Gehtempo = Pause), `kmSplits`, `simplifyTrack`, `encodePolyline` /
+  `decodePolyline`, `compareAttempts` (nur eigene Läufe derselben Favoriten-Strecke), `toGpx` (GPX 1.1).
+- Zod: `trackedRouteSchema` (Name 1–80, Notiz ≤ 280, Art `run | bike | walk`, Schwierigkeit `easy | medium |
+  hard`, höchstens 5.000 Punkte nach Vereinfachung, Dauer 1 min–12 h wie `cardio_logs`).
+- **Tests:** 0/1/2 Punkte, Stillstand (Distanz 0), GPS-Sprung, Funkloch 5 min, doppelte Zeitstempel, Zeit
+  rückwärts, 12 h, 100.000 Rohpunkte (Laufzeit), Bergab-Rad mit 70 km/h (Warnung, nicht verwerfen),
+  Polyline-Rundreise, GPX-Export gültig (Schema), Kilometerzeiten bei 0,99 und 1,01 km.
+
+**Datenmodell (additiv, RLS):** Tabelle `tracked_routes` (KONZEPT 12):
+
+- `id`, `user_id` (Kaskade), `name`, `sport`, `started_at`, `duration_s`, `moving_s`, `distance_m`,
+  `elevation_gain_m`, `polyline` (Text, Längen-CHECK), `point_count`, `bbox`, `km_splits jsonb`, `difficulty`,
+  `is_favorite`, `base_route_id` (Wiederholung einer Favoriten-Strecke, nullable, `on delete set null`), `note`,
+  `session_log_id` (nullable, `on delete set null`), `source` (`recorded | gpx_import`), `created_at`.
+- RLS: nur eigene Zeilen; Schreiben über `save_tracked_route` / `delete_tracked_route` /
+  `delete_all_tracked_routes` (Prüfung wie Zod, Tageslimit gegen Missbrauch). Export: JSON in `export_my_data`
+  + GPX je Strecke in der App. Konto löschen: Kaskade. Widerruf `health_data`: Strecken bleiben (kein
+  Gesundheitsdatum, W-G15), verknüpfte Einträge werden wie bisher neutralisiert.
+- pgTAP: fremde Strecken unsichtbar, `anon` nichts, Grenzen, Löschen, Export, Partner-Modus sieht nichts.
+
+**App:**
+
+- „Strecke aufzeichnen“ (Start/Pause/Stopp, große Zahlen: Zeit, Distanz, Pace bzw. km/h), Bildschirm an,
+  Aufzeichnung läuft weiter bei gesperrtem Handy (nativ).
+- Erste Nutzung: eigener Erklär-Bildschirm **vor** der System-Abfrage („Wir nutzen deinen Standort nur während du
+  aufzeichnest. Deine Strecken sehen nur du.“). Abgelehnt → klarer Zustand mit Weg zu den Einstellungen.
+- Speichern: Name, Favorit, Schwierigkeit, Notiz. **Automatischer Tagebuch-Eintrag:** passt eine heute geplante
+  Ausdauer-Einheit gleicher Art ohne Eintrag → Frage „Zu ‚Lockerer Dauerlauf‘ zählen?“ (Standard Ja); sonst freie
+  Einheit (A1b). Quelle `gps`. Für die 10-%-Regel gilt weiter `min(geplant, eingetragen)`.
+- Favoriten: „Erneut laufen“ → neue Aufzeichnung mit `base_route_id`; Vergleich der eigenen Zeiten (Liste und
+  Kilometerzeiten), **ohne** Ranglisten oder Vergleich mit anderen; Text neutral („Heute 1:20 min schneller“, kein
+  Druck, keine Serien).
+- Liste „Meine Strecken“ mit Linien-Skizze, Löschen einzeln/alle, GPX-Export (Datei speichern wie Datenexport –
+  kein Teilen-Dialog nach außen; die Datei gehört der Person).
+- **Offline:** Aufzeichnung braucht kein Internet; Punkte werden alle 30 s verschlüsselt zwischengespeichert
+  (`protected-store`), nach Absturz „Aufzeichnung fortsetzen oder speichern?“; Speichern über die Warteschlange.
+- **Zustände:** keine Berechtigung, GPS schwach („Suche GPS …“), Akku-Sparmodus-Hinweis, zu kurz (< 1 min oder
+  < 100 m → nicht speichern, fragen), Speicherfehler (bleibt lokal), Web (Hinweis + Demo).
+
+### S2a – Karte, GPX-Import, eigene Strecken auf der Karte (Gratis)
+
+- Karte (MapLibre) für jede gespeicherte Strecke, Start/Ziel-Markierung, Kilometer-Punkte, Attribution.
+- **GPX-Import** eigener Dateien (Datei wählen): sicherer XML-Parser **ohne** externe Entitäten (Schutz vor
+  „XML-Bomben“), höchstens 5 MB und 50.000 Punkte, mehrere Spuren/Segmente zusammengeführt, GPX ohne Zeiten
+  erlaubt (dann nur Strecke, keine Zeit). Original-Datei wird nicht gespeichert, nur die vereinfachte Strecke.
+- Importierte Strecke = „geplante Route“ zum Nachlaufen (Favorit möglich) oder vergangene Aktivität (mit Zeiten →
+  Tagebuch-Eintrag als freie Einheit, Quelle `gpx_import`, nur bis 14 Tage zurück wie A1b).
+- Tests: kaputtes XML, Billion-Laughs, riesige Datei, Wegpunkte ohne Spur, Route (`rte`) statt Spur (`trk`),
+  Höhe fehlt, Zeitzonen.
+- Web voll nutzbar (Karte, Import, Export) – gut zum Testen in der Vercel-Vorschau.
+
+### S2b – Strecken-Vorschläge und Standortsuche (Premium laut KONZEPT 13, später – W-G12)
+
+- Vorschläge im Umkreis nach Disziplin, Distanz, Höhenmetern, Untergrund (KONZEPT 10).
+- Empfohlene Quelle: **vorab berechnete Strecken** aus OpenStreetMap (z. B. ausgeschilderte Lauf- und Radrouten),
+  per GitHub Action erzeugt, redaktionell freigegeben, als Inhaltstabelle `routes` (`published`, mit Lizenz ODbL
+  und Quelle). **Keine** Live-Abfragen an öffentliche Overpass-/Nominatim-Server im Betrieb (Nutzungsbedingungen:
+  max. 1 Anfrage/s, keine Massennutzung). ODbL-Share-Alike für die abgeleitete Datenbank juristisch prüfen.
+- Standortsuche (Ortsname → Karte) über den gewählten Kartenanbieter oder eigene Ortsliste; Standort wird nicht
+  gespeichert.
+- Erst nach 4b bzw. mit Phase 7 (Premium-Prüfung serverseitig).
+
+---
+
+## 13. Datenschutz und Sicherheit (gilt für alle Etappen)
+
+- **Standortdaten sind streng privat:** RLS, nur eigene Zeilen, keine Aggregation, kein Teilen, keine Ranglisten,
+  keine öffentlichen Profile; Partner-Modus (Phase 11) **ohne** Strecken, solange nicht ausdrücklich beschlossen.
+- **Nie an Analytics, Werbung, Affiliate oder Logs:** Test, der Payloads, Fehlermeldungen und Log-Aufrufe auf
+  Koordinaten prüft; keine Fremd-SDKs mit Standortzugriff. Postgres-Einstellung
+  `log_parameter_max_length_on_error = 0` bleibt.
+- **Datenminimierung:** nur vereinfachte Linie, keine Rohpunkte auf dem Server, keine Hintergrund-Ortung außerhalb
+  der Aufzeichnung, kein Standort in Wettkämpfen (nur Name/Datum).
+- **Einwilligung:** Standort ist kein Art.-9-Gesundheitsdatum; Rechtsgrundlage Vertrag (die Person startet die
+  Aufzeichnung selbst) + System-Berechtigung + Erklär-Bildschirm. Herzfrequenz kommt nicht hinzu (Phase 8).
+  DSFA-Ergänzung „Standortverläufe“ und Datenschutzerklärung (Kartenanbieter als Empfänger) – W-G15.
+- **Export und Löschung:** JSON-Export enthält `competitions` und `tracked_routes`, GPX je Strecke; Löschen
+  einzeln, alle Strecken, Konto (Kaskade).
+- **Gesundheit:** Wettkampfplan nur nach Gesundheits-Check, Hinweise zur ärztlichen Abklärung (3.3), keine
+  Maximaltests, Kalorien-Schutzgrenzen unverändert, 10-%-Regel und Erholungswochen nicht abschaltbar.
+
+---
+
+## 14. Gratis / Premium und Kosten
+
+- **KONZEPT 13** sagt: „Wettkampfvorbereitung“ und „Strecken-Vorschläge“ = Premium; „Strecken aufzeichnen,
+  Favoriten, Schwierigkeit“ = gratis. Premium-Inhalte sind ohne KI.
+- In der **Testphase alles offen** (wie Phase 5). Server-Prüfung mit Phase 7 (`has_entitlement` in
+  `save_competition` bzw. beim Speichern eines Wettkampfplans). Feature-Flag/`beta-grant` gibt es erst mit 4b –
+  deshalb kein eigener Mechanismus in Phase 10.
+- **Laufende Kosten:** keine KI-Kosten. Karten: Testphase 0 € (OpenFreeMap), Livegang wenige €/Monat (Protomaps
+  auf R2) oder ca. 20–30 USD/Monat (MapTiler/Stadia). EAS: begrenzte Gratis-Builds pro Monat (Stand prüfen),
+  Apple Developer 99 USD/Jahr, Google Play 25 USD einmalig (SETUP D2).
+
+---
+
+## 15. Definition of Done (je Etappe, CLAUDE.md)
+
+1. Typen + Zod-Schemas (Wettkampf, Einheiten-Schritte, Strecke, GPX-Import).
+2. Migration nur additiv, mit RLS und pgTAP (Workflow `db-test`); Grenzen gleich in `constants.ts`
+   (`db-sync.test.ts`).
+3. Core-Logik in `packages/core` mit Tests inkl. Grenzfällen (sehr leicht/schwer, sehr jung/alt, 1 vs. 7 Tage,
+   Mindestvorlauf ±1 Tag, GPS-Sonderfälle); neue Werte mit Quelle bzw. „PRODUKTENTSCHEIDUNG – VOR LIVEGANG
+   FACHLICH PRÜFEN“.
+4. UI mobil + Web-Export (Karte/Import im Web, Aufzeichnung nativ + Demo im Web); Playwright im Testmodus.
+5. Lade-, Leer-, Fehler-, Offline- und Berechtigungs-Zustände.
+6. Texte auf Deutsch (`i18n/de.ts`), keine Health Claims, Barrierefreiheit, hell/dunkel.
+7. Doku: dieser Plan (Umsetzungsstand), KONZEPT 4/6.6/10/10.1/12, PLAN-PHASE-4B, PLAN-AUSWERTUNG 2.5,
+   HANDY-ANLEITUNG („Wettkampf testen“, „Strecken testen“), SETUP (Kartenanbieter, Standorttexte), `.env.example`.
+8. Pull Request mit deutscher Zusammenfassung und „So testest du es am Handy“; Wächter-Prüfung.
+
+---
+
+## 16. So testet ihr es am Handy
+
+**WP4 (Vercel-Vorschau, Testmodus):**
+
+1. Link aus dem Pull Request → „Ohne Konto testen“ → Ziel Ausdauer, Halbmarathon, Datum in 16 Wochen.
+2. Ampel grün → Plan zeigt Phasen („Basis · Woche 1 von 16“), lange Läufe am Wochenende.
+3. Datum auf 6 Wochen ändern → rot, Vorschläge erscheinen; „Ohne Wettkampf weiter“ testen.
+4. Eine Intervall-Einheit öffnen → Timer starten → Schritte wechseln mit Vibration (am Handy).
+5. Einstellungen → Gesundheits-Check mit Flag → Plan hat keine harten Einheiten mehr.
+
+**W1:** Wettkampf in 5 Tagen anlegen → Essensplan zeigt Carb-Loading-Tage und Renntag; „Kalorienzahlen aus“ →
+nirgends kcal; Wettkampf 5 km → kein Carb-Loading.
+
+**S1 (nur echte App):**
+
+1. GitHub-App → **Actions → eas-build → Run workflow** → Plattform `android`, Profil `preview` (APK) bzw.
+   `development` → Link aus dem Build öffnen → APK installieren. iPhone: Profil `production` → TestFlight.
+2. App öffnen → „Strecke aufzeichnen“ → Erklär-Bildschirm → „Beim Verwenden erlauben“.
+3. 10 Minuten gehen, Handy sperren, zurück → Strecke läuft weiter; Stopp → Speichern als Favorit.
+4. Tagebuch zeigt den Eintrag; „Erneut laufen“ → Zeiten werden verglichen.
+5. Flugmodus während der Aufzeichnung → geht weiter; nach dem Speichern online → wird hochgeladen.
+6. Einstellungen → Meine Daten → Export enthält die Strecke; Strecke löschen → weg.
+
+**S2a (Vercel-Vorschau):** Strecken → „GPX importieren“ → Beispieldatei aus dem PR → Karte erscheint mit
+„© OpenStreetMap-Mitwirkende“; GPX-Export herunterladen.
+
+---
+
+## 17. Risiken
+
+1. **Zu ehrgeizige Ziele** (Marathon in 8 Wochen). _Gegenmittel:_ Ampel, nie stauchen, Vorschläge.
+2. **Fachliche Fehler in den Zahlen.** _Gegenmittel:_ Konstanten mit Quellen, Fachprüfung vor Livegang.
+3. **GPS-Hintergrund und Store-Prüfung** (Play-Erklärung, Apple-Begründung). _Gegenmittel:_ Spike S0, nur „Beim
+   Verwenden“, klare Texte.
+4. **Akku und Genauigkeit.** _Gegenmittel:_ Filter, Glättung, Hinweis zu Höhenmetern, Test über 60 min.
+5. **Kartenkosten steigen mit Nutzern.** _Gegenmittel:_ eigene PMTiles-Datei, keine Kacheln in Listen.
+6. **EAS noch nicht eingerichtet** → Aufzeichnung nicht testbar. _Gegenmittel:_ früh SETUP Teil D erledigen.
+7. **Konflikt mit 4b** (`effort_target` > 4). _Gegenmittel:_ Test schlägt bewusst fehl, Regel im 4b-Plan neu.
+8. **Parallele Arbeit** (A1a/A1b ändern `move.ts`, E1/A2 ändern Tagesziele). _Gegenmittel:_ Reihenfolge Abschnitt 18.
+9. **Lizenz OSM/ODbL bei S2b.** _Gegenmittel:_ juristische Prüfung vor S2b.
+10. **Druck durch Zeitvergleich.** _Gegenmittel:_ neutrale Texte, keine Serien, keine Abzeichen für Bestzeiten.
+
+---
+
+## 18. Zeitplan (relativ zu den laufenden Etappen)
+
+Laufend bzw. als Nächstes: **N8** (Gemini, umgesetzt, ohne Commit), **A1a** Kalender (in Arbeit) → **A1b** →
+**E1** → **A2** → **E2** → **A3** (PLAN-AUSWERTUNG). Offen außerdem: N7 Teil 2, Z3–Z6 (PLAN-ZIELE, F12).
+
+**Empfohlene Reihenfolge (je Schritt ein Pull Request):**
+
+1. **Jetzt:** W0 (dieser Plan) freigeben. **Parallel ihr:** SETUP Teil D/D2 (EAS, Apple), Fachprüfung anfragen.
+2. A1a fertig → **A1b** (freie Einheiten sind Voraussetzung für S1 und das Wettkampf-Ergebnis).
+3. **Parallel zu E1:** **WP1** und **WP2** (nur Core, keine Konflikte mit der Ernährungs-App).
+4. Nach A1b, parallel zu A2: **WP3** (Migration) → **WP4** (App Wettkampf, Countdown, Intervall-Timer).
+5. Sobald EAS läuft: **S0** (Spike) → **S1** (Aufzeichnung) → **S2a** (Karte, GPX).
+6. Nach A2: **W1** (Wettkampf-Ernährung; der Kalorienbalken kennt dann die Carb-Loading-Tage).
+7. Dann E2 → A3, danach **WP5** (Rad/Triathlon, falls gewünscht) und **Phase 4b**.
+8. **S2b** (Vorschläge, Premium) nach 4b bzw. mit Phase 7.
+
+**Wann startet Phase 10?** Die Entscheidung vom 13.10. („direkt nach Phase 5“) bleibt sinngemäß: Phase 5 ist bis auf
+N7 Teil 2 und W1 fertig; W1 gehört zu Phase 10. Empfehlung: **Core-Etappen WP1/WP2 sofort nach A1b bzw. parallel zu
+E1 starten**, App-Etappen nach A1b. Z3–Z6 (PLAN-ZIELE) und N7 Teil 2 laufen dazwischen, wenn ihr sie vorzieht
+(W-G1).
+
+Grobe Größe: W0 + 10 Etappen ≈ 10–12 Pull Requests; WP5 und S2b sind abtrennbar.
+
+---
+
+## 19. Was wir von euch brauchen (Gründer-Entscheidungen)
+
+**Entschieden 16.10.2026: W-G1 bis W-G16 alle „Ja, wie empfohlen“.** Die Empfehlungen unten gelten damit verbindlich.
+
+Format: _Worum es geht – Warum wir fragen – Empfehlung._
+
+- **W-G1 Start und Reihenfolge.** Wann Phase 10 im Verhältnis zu A1a–A3, Z3–Z6 und N7 Teil 2 kommt. – Die
+  Entscheidung vom 13.10. kannte die Auswertungs-Etappen noch nicht. – **Empfehlung:** Reihenfolge aus 18
+  (Core parallel zu E1, App nach A1b, W1 nach A2).
+- **W-G2 Disziplinen.** Welche Wettkämpfe Phase 10 plant. – Jede Disziplin braucht eigene Regeln und Fachprüfung.
+  – **Empfehlung:** zuerst Laufen 5 km bis Marathon; Rad und Triathlon Sprint/Olympisch als zweite Welle (WP5);
+  Mittel-/Langdistanz und Schwimm-Wettkämpfe **nicht** als Plan (Hinweis Trainer/Verein).
+- **W-G3 Mindestvorlauf und Erholungsrhythmus.** Tabelle 3.2 und 3 : 1 für Einsteiger im Aufbau. – Das schützt
+  vor Überlastung, schließt aber kurzfristige Anmeldungen aus. – **Empfehlung:** wie Tabelle, fachlich prüfen.
+- **W-G4 Vorsichtige Gruppen.** Tabelle 3.3 (kein Plan in der Schwangerschaft, nur „Ankommen“ bei Flag/ab 65,
+  unter 18 höchstens Halbmarathon). – Gesundheitsschutz vs. Wunsch nach Wettkampf. – **Empfehlung:** wie Tabelle.
+- **W-G5 Eigener Startumfang.** Darf man „ich laufe schon 3 h pro Woche“ angeben? – Sonst starten Erfahrene zu
+  niedrig; Selbstangaben sind aber oft zu hoch. – **Empfehlung:** nur Fortgeschritten/Leistungssport, gedeckelt
+  (höchstens das Doppelte des Startumfangs) und mit Bestätigung; sonst Tagebuch-Werte.
+- **W-G6 Ziel „Ankommen“ oder Zielzeit, Distanz-Richtwert.** – Zielzeit braucht eine Referenzzeit; Distanz-Ziele
+  ändern die Auswertung (PLAN-AUSWERTUNG 2.5). – **Empfehlung:** Standard „Ankommen“; Zielzeit und Pace nur mit
+  eigener Referenzzeit (kein Maximaltest); Dauer bleibt das Ziel, Distanz nur Richtwert.
+- **W-G7 Puls-Zonen.** Jetzt optional (manuell) oder erst mit Phase 8? – Puls ist Gesundheitsdatum, Formeln
+  (220 − Alter) sind ungenau. – **Empfehlung:** erst Phase 8; Phase 10 nur Anstrengung, Sprechtest, Pace.
+- **W-G8 Einheiten-Texte.** Feste Textbausteine im Code oder Batch-Inhalte über die Content-Pipeline? – Batch
+  braucht Freigabe-Aufwand, Bausteine sind schneller prüfbar. – **Empfehlung:** ca. 20 feste Bausteine je
+  Disziplin im Core, fachlich geprüft; Batch erst, wenn es viele Varianten braucht.
+- **W-G9 Mehrere Wettkämpfe.** Einer oder mehrere gleichzeitig? – Mehrere Rennen brauchen Prioritäten (A/B/C) und
+  machen die Planung komplizierter. – **Empfehlung:** ein Hauptwettkampf; Vorbereitungsrennen später.
+- **W-G10 Gratis oder Premium.** KONZEPT 13 sagt: Wettkampfvorbereitung Premium, Aufzeichnung gratis. – Das
+  bestimmt die spätere Server-Prüfung. – **Empfehlung:** gratis: Wettkampf anlegen, Countdown, Ampel, Ratgeber,
+  Aufzeichnung, Favoriten, Karte, GPX; Premium: periodisierter Plan, Wettkampf-Ernährung im Essensplan,
+  Strecken-Vorschläge. In der Testphase alles offen.
+- **W-G11 Kartenanbieter.** Testphase und Livegang. – Laufende Kosten, Datenschutz (IP an Anbieter),
+  Nutzungsbedingungen. – **Empfehlung:** Testphase OpenFreeMap (0 €, kein Konto); vor Livegang Protomaps-Datei
+  auf Cloudflare R2 (EU) oder – wenn ihr keinen Einrichtungsaufwand wollt – MapTiler bezahlt.
+- **W-G12 Strecken-Vorschläge (S2b).** Jetzt oder später? – Aufwendig (Datenaufbereitung, ODbL-Prüfung),
+  Premium. – **Empfehlung:** später (nach 4b/mit Phase 7); Phase 10 liefert Aufzeichnung, Karte, GPX.
+- **W-G13 Standort-Berechtigung.** „Beim Verwenden“ oder „Immer“? – „Immer“ löst strengere Store-Prüfungen aus
+  (Google-Erklärung mit Video). – **Empfehlung:** „Beim Verwenden“ mit sichtbarer Aufzeichnung; „Immer“ nur, wenn
+  der Spike S0 zeigt, dass es nicht anders geht.
+- **W-G14 Aufzeichnen im Browser.** – Im Browser bricht die Aufzeichnung beim Sperren des Handys ab. –
+  **Empfehlung:** im Web nicht anbieten (Hinweis „in der App“), dafür Demo-Aufzeichnung im Testmodus.
+- **W-G15 Standort als Datenkategorie.** Eigene Einwilligung oder nicht? – Standortverläufe sind sehr persönlich,
+  aber kein Art.-9-Gesundheitsdatum. – **Empfehlung:** keine Art.-9-Einwilligung; Erklär-Bildschirm,
+  System-Berechtigung, DSFA-Ergänzung, Strecken bleiben beim Widerruf der Gesundheits-Einwilligung; juristisch
+  bestätigen lassen.
+- **W-G16 Zeitvergleich und Bestzeiten.** Wie sichtbar? – Motivation vs. Druck (keine Community, keine Serien). –
+  **Empfehlung:** nur eigene Zeiten auf derselben Favoriten-Strecke, neutrale Texte, keine Abzeichen für Bestzeiten.
+
+---
+
+## 20. Was ihr selbst tun müsst
+
+1. **Expo einrichten** (SETUP Teil D): Projekt auf expo.dev, Projekt-ID eintragen lassen, Secret `EXPO_TOKEN`.
+   Ohne das gibt es keine APK und keine Aufzeichnung zum Testen.
+2. **Apple Developer Program** (99 USD/Jahr) und App Store Connect für TestFlight (SETUP Teil D2); Google Play
+   (25 USD einmalig), sobald ihr über den Play Store testen wollt.
+3. **Kartenanbieter wählen (W-G11):** Testphase ohne Konto. Für den Livegang: Konto bei Cloudflare (R2, Region EU)
+   bzw. MapTiler/Stadia anlegen und den Schlüssel selbst als **Vercel Environment Variable** und **Expo Secret**
+   eintragen (Name kommt im PR, z. B. `EXPO_PUBLIC_MAP_STYLE_URL`) – nie im Chat schicken. AVV mit dem Anbieter
+   abschließen.
+4. **Store-Texte zur Standortberechtigung** freigeben (Entwurf kommt mit S0/S1): iOS-Begründungstext, Play
+   Console → App-Inhalte → Standort bzw. Vordergrund-Dienst „Standort“ erklären; Datenschutz-Angaben in beiden
+   Stores um „Standort (genau), nur für App-Funktion, nicht verknüpft mit Werbung“ ergänzen.
+5. **Fachprüfung Training:** Sportwissenschaftlerin/Lauftrainer prüft Tabellen 3.2, 3.3, 3.5 und die
+   Einheiten-Bausteine (vor Livegang).
+6. **Fachprüfung Ernährung:** Ernährungsfachkraft prüft W1 (Carb-Loading 1–2 Tage, g/kg, Gel-/Trinkplan, Texte
+   ohne Health Claims).
+7. **Juristische Prüfung:** Datenschutzerklärung (Standort, Kartenanbieter), DSFA-Ergänzung, ODbL-Attribution;
+   vor S2b ODbL-Share-Alike.
+8. **Test-Läufe draußen:** mit der APK 2–3 echte Läufe/Radfahrten (Handy gesperrt, Funkloch, 60+ Minuten) und
+   Rückmeldung im PR.
