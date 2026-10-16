@@ -214,7 +214,7 @@ jobs:
             echo "| --- | --- | --- |"
             while IFS='|' read -r platform link extra; do
               [ -z "$platform" ] && continue
-              [ -n "$link" ] || link="expo.dev → Projekt fitnessapp → Builds"
+              [ -n "$link" ] || link="expo.dev → Projekt AlphaFive → Builds"
               sub="nein"; [ -n "$extra" ] && sub="ja (nach dem Build)"
               echo "| $platform | $link | $sub |"
             done < <(cat "$RUNNER_TEMP/eas-links.txt" 2>/dev/null || true)

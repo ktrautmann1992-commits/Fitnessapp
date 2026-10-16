@@ -200,7 +200,7 @@ jobs:
             elif [ "$STATUS" = "success" ]; then
               echo "### ✅ iPhone-Zugangsdaten bei EAS eingerichtet"
               echo ""
-              echo "Prüfen: expo.dev → Projekt fitnessapp → **Credentials** → iOS → de.fitnessapp.app: Distribution Certificate und Provisioning Profile sind da."
+              echo "Prüfen: expo.dev → Projekt AlphaFive → **Credentials** → iOS → de.fitnessapp.app: Distribution Certificate und Provisioning Profile sind da."
               echo "Weiter: Workflow **eas-build** mit Plattform ios, Profil production, Einreichen ja."
               echo "Wurde für die Einrichtung ein Admin-Schlüssel benutzt: jetzt widerrufen und die ASC-Secrets löschen (SETUP D2 A4)."
             else
