@@ -41,13 +41,13 @@ export interface PlanSafetyRules {
 /** Startgruppe Ausdauer: vorsichtig (Flag, ohne Check, Schwangerschaft, unter 18, ab 65) oder Level. */
 export type EnduranceStartGroup = 'cautious' | ExperienceLevel;
 
-/** Reihenfolge von streng nach locker (kleinerer Startumfang = strenger). */
-const START_GROUP_ORDER: readonly EnduranceStartGroup[] = [
-  'cautious',
-  'beginner',
-  'advanced',
-  'competitive',
-];
+/**
+ * Startgruppen von streng nach locker (kleinerer Startumfang = strenger). Gleich dem Datenbank-Enum
+ * `endurance_start_group` (Wettkampf, Tagebuch-Bezug – WP3, db-sync.test.ts).
+ */
+export const ENDURANCE_START_GROUPS = ['cautious', 'beginner', 'advanced', 'competitive'] as const;
+
+const START_GROUP_ORDER: readonly EnduranceStartGroup[] = ENDURANCE_START_GROUPS;
 
 /** Ist `next` eine strengere Startgruppe als `previous`? */
 export function isStricterGroup(next: EnduranceStartGroup, previous: EnduranceStartGroup): boolean {

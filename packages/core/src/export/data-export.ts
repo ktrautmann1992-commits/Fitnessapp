@@ -45,6 +45,8 @@ export const DATA_EXPORT_TABLES = [
   // Etappe E2 · Eigene Gerichte (docs/PLAN-AUSWERTUNG.md Abschnitt 7)
   'custom_meals',
   'custom_meal_items',
+  // Phase 10 · Etappe WP3 · Wettkämpfe (docs/PLAN-PHASE-10.md Abschnitt 7, inkl. Plan-Bezug)
+  'competitions',
 ] as const;
 
 export type DataExportTable = (typeof DATA_EXPORT_TABLES)[number];

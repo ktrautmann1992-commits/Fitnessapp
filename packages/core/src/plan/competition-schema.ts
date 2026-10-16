@@ -12,7 +12,8 @@ import type { ExperienceLevel } from '../enums';
 
 /**
  * Wettkampf-Eingaben (docs/PLAN-PHASE-10.md Abschnitt 5, Etappe WP1), an der Grenze mit Zod geprüft.
- * Noch keine Tabelle `competitions` (kommt mit WP3) – die Schemas sind die Vorlage für deren CHECK-Grenzen.
+ * Gespeichert in der Tabelle `competitions` (WP3, plan/competition-record.ts) – dieselben Grenzen als CHECK
+ * (db-sync.test.ts).
  */
 
 /**
@@ -26,6 +27,13 @@ export type CompetitionDiscipline = (typeof COMPETITION_DISCIPLINES)[number];
 /** Ziel: „Ankommen“ (Standard, W-G6) oder Zielzeit (nur mit Referenzzeit). */
 export const COMPETITION_GOALS = ['finish', 'time'] as const;
 export type CompetitionGoal = (typeof COMPETITION_GOALS)[number];
+
+/**
+ * Stand eines gespeicherten Wettkampfs (Tabelle `competitions`, WP3): geplant (höchstens einer je Person, W-G9),
+ * erledigt (mit oder ohne Ergebnis-Eintrag), abgesagt.
+ */
+export const COMPETITION_STATUSES = ['planned', 'done', 'cancelled'] as const;
+export type CompetitionStatus = (typeof COMPETITION_STATUSES)[number];
 
 /** Phasen rückwärts vom Renntag (Plan 3.1). `recovery` = Erholung NACH dem Rennen. */
 export const COMPETITION_PHASES = [

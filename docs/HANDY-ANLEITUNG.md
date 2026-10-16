@@ -418,6 +418,23 @@ Ernährung erst mit Teil 2. Ihr müsst nichts einstellen und keine Schlüssel ei
    `shopping_lists`, `recipe_ratings`, `food_dislikes` u. a. Leer ist richtig – Rezepte kommen erst nach der
    Fachprüfung (Gründer-Entscheidung 6), Nutzerdaten erst mit Teil 2.
 
+## Teil 7j – Datenbank für den Wettkampf prüfen (Phase 10, Etappe WP3)
+In der App ändert sich dadurch **nichts Sichtbares** (Wettkampf anlegen kommt mit WP4). Ihr müsst nichts einstellen und
+keine Schlüssel eintragen. Prüfen könnt ihr am Handy:
+
+1. GitHub-App → Pull Request öffnen → unten **Checks**: **db-test** (Migrationen + Datenbank-Tests) und **ci** sind
+   grün. Falls db-test rot ist: nicht mergen, Claude im Chat Bescheid geben.
+2. **Nach dem Merge:** **Actions → db-migrate** → Lauf öffnen und warten, bis er grün ist (er testet zuerst, spielt
+   danach ein; vorhandene Pläne und Einträge bleiben unverändert).
+3. Supabase im Handy-Browser → euer Projekt → links **Table Editor** → Tabelle **`competitions`** ist da und leer.
+   Leer ist richtig – Wettkämpfe legt erst die App ab WP4 an.
+4. Im **Table Editor** → **`planned_sessions`** → nach rechts wischen: neue Spalten `workout_type`, `training_phase`,
+   `target_distance_m`, `workout_steps`. Bei allen bisherigen Plänen stehen dort **NULL** – richtig so.
+5. Optional: Supabase → links **Advisors** → **Security Advisor** → **Refresh**. **Erwartet** sind Hinweise, dass
+   angemeldete Nutzer `save_competition`, `cancel_competition`, `complete_competition` und `delete_competition`
+   („security definer“) ausführen dürfen – sie prüfen Login und alle Werte selbst. Andere neue Meldungen bitte Claude
+   schicken.
+
 ## Teil 7f – Ernährungstagebuch testen (Etappe E1, Testmodus)
 Das Tagebuch läuft vorerst nur im **Testmodus** (mit Konto folgt es mit N7 Teil 2). Ihr müsst nichts einstellen.
 Nach dem Merge spielt **db-migrate** (erst nach grünem db-test) zwei neue, leere Tabellen ein (`food_log_entries`,

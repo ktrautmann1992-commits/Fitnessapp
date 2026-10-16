@@ -156,6 +156,89 @@ export type Database = {
           },
         ];
       };
+      competitions: {
+        Row: {
+          created_at: string;
+          discipline: Database['public']['Enums']['competition_discipline'];
+          distance_m: number;
+          effective_goal: Database['public']['Enums']['competition_goal'] | null;
+          goal_kind: Database['public']['Enums']['competition_goal'];
+          id: string;
+          long_run_weekday: number | null;
+          name: string;
+          own_start_weekly_minutes: number | null;
+          race_date: string;
+          reference_date: string | null;
+          reference_discipline: Database['public']['Enums']['competition_discipline'] | null;
+          reference_time_s: number | null;
+          result_session_log_id: string | null;
+          start_reference_session_cap: number | null;
+          start_reference_start_group: Database['public']['Enums']['endurance_start_group'] | null;
+          start_reference_volume: number | null;
+          status: Database['public']['Enums']['competition_status'];
+          target_time_s: number | null;
+          updated_at: string;
+          user_id: string;
+          uses_health_data: boolean;
+        };
+        Insert: {
+          created_at?: string;
+          discipline: Database['public']['Enums']['competition_discipline'];
+          distance_m: number;
+          effective_goal?: Database['public']['Enums']['competition_goal'] | null;
+          goal_kind?: Database['public']['Enums']['competition_goal'];
+          id?: string;
+          long_run_weekday?: number | null;
+          name: string;
+          own_start_weekly_minutes?: number | null;
+          race_date: string;
+          reference_date?: string | null;
+          reference_discipline?: Database['public']['Enums']['competition_discipline'] | null;
+          reference_time_s?: number | null;
+          result_session_log_id?: string | null;
+          start_reference_session_cap?: number | null;
+          start_reference_start_group?: Database['public']['Enums']['endurance_start_group'] | null;
+          start_reference_volume?: number | null;
+          status?: Database['public']['Enums']['competition_status'];
+          target_time_s?: number | null;
+          updated_at?: string;
+          user_id?: string;
+          uses_health_data?: boolean;
+        };
+        Update: {
+          created_at?: string;
+          discipline?: Database['public']['Enums']['competition_discipline'];
+          distance_m?: number;
+          effective_goal?: Database['public']['Enums']['competition_goal'] | null;
+          goal_kind?: Database['public']['Enums']['competition_goal'];
+          id?: string;
+          long_run_weekday?: number | null;
+          name?: string;
+          own_start_weekly_minutes?: number | null;
+          race_date?: string;
+          reference_date?: string | null;
+          reference_discipline?: Database['public']['Enums']['competition_discipline'] | null;
+          reference_time_s?: number | null;
+          result_session_log_id?: string | null;
+          start_reference_session_cap?: number | null;
+          start_reference_start_group?: Database['public']['Enums']['endurance_start_group'] | null;
+          start_reference_volume?: number | null;
+          status?: Database['public']['Enums']['competition_status'];
+          target_time_s?: number | null;
+          updated_at?: string;
+          user_id?: string;
+          uses_health_data?: boolean;
+        };
+        Relationships: [
+          {
+            foreignKeyName: 'competitions_result_session_log_id_user_id_fkey';
+            columns: ['result_session_log_id', 'user_id'];
+            isOneToOne: false;
+            referencedRelation: 'session_logs';
+            referencedColumns: ['id', 'user_id'];
+          },
+        ];
+      };
       consent_documents: {
         Row: {
           body_de: string;
@@ -1445,11 +1528,15 @@ export type Database = {
           plan_id: string;
           scheduled_on: string;
           status: Database['public']['Enums']['planned_session_status'];
+          target_distance_m: number | null;
           template_day_index: number | null;
+          training_phase: Database['public']['Enums']['training_phase'] | null;
           updated_at: string;
           user_id: string;
           warmup_de: string;
           week_no: number;
+          workout_steps: Json | null;
+          workout_type: Database['public']['Enums']['workout_type'] | null;
         };
         Insert: {
           block_no: number;
@@ -1468,11 +1555,15 @@ export type Database = {
           plan_id: string;
           scheduled_on: string;
           status?: Database['public']['Enums']['planned_session_status'];
+          target_distance_m?: number | null;
           template_day_index?: number | null;
+          training_phase?: Database['public']['Enums']['training_phase'] | null;
           updated_at?: string;
           user_id: string;
           warmup_de: string;
           week_no: number;
+          workout_steps?: Json | null;
+          workout_type?: Database['public']['Enums']['workout_type'] | null;
         };
         Update: {
           block_no?: number;
@@ -1491,11 +1582,15 @@ export type Database = {
           plan_id?: string;
           scheduled_on?: string;
           status?: Database['public']['Enums']['planned_session_status'];
+          target_distance_m?: number | null;
           template_day_index?: number | null;
+          training_phase?: Database['public']['Enums']['training_phase'] | null;
           updated_at?: string;
           user_id?: string;
           warmup_de?: string;
           week_no?: number;
+          workout_steps?: Json | null;
+          workout_type?: Database['public']['Enums']['workout_type'] | null;
         };
         Relationships: [
           {
@@ -2273,11 +2368,17 @@ export type Database = {
     };
     Functions: {
       append_plan_block: { Args: { p_plan_id: string; p_sessions: Json }; Returns: number };
+      cancel_competition: { Args: { p_id: string }; Returns: undefined };
       close_missed_sessions: { Args: never; Returns: number };
+      complete_competition: {
+        Args: { p_id: string; p_session_log_id: string | null };
+        Returns: undefined;
+      };
       current_consent_version: {
         Args: { p_type: Database['public']['Enums']['consent_type'] };
         Returns: number;
       };
+      delete_competition: { Args: { p_id: string }; Returns: undefined };
       delete_my_account: { Args: never; Returns: undefined };
       delete_food_log_entry: { Args: { p_base_revision: number; p_id: string }; Returns: Json };
       delete_session_log: { Args: { p_base_revision: number; p_id: string }; Returns: Json };
@@ -2311,6 +2412,7 @@ export type Database = {
         Args: { p_auto_adjusted?: boolean; p_plan: Json; p_recipes_changed?: boolean };
         Returns: string;
       };
+      save_competition: { Args: { p_competition: Json }; Returns: string };
       save_custom_meal: { Args: { p_meal: Json }; Returns: Json };
       save_food_log_entries: { Args: { p_entries: Json }; Returns: Json };
       save_session_log: { Args: { p_log: Json }; Returns: Json };
@@ -2353,6 +2455,9 @@ export type Database = {
       alternative_reason: 'other_equipment' | 'easier' | 'harder' | 'home';
       app_locale: 'de-DE' | 'de-AT' | 'de-CH';
       caution_tag: 'high_impact' | 'spinal_loading' | 'overhead' | 'long_supine' | 'high_skill';
+      competition_discipline: '5k' | '10k' | 'half_marathon' | 'marathon';
+      competition_goal: 'finish' | 'time';
+      competition_status: 'planned' | 'done' | 'cancelled';
       consent_platform: 'ios' | 'android' | 'web';
       consent_type: 'terms' | 'privacy' | 'health_data' | 'cycle_data';
       content_status: 'draft' | 'published' | 'archived';
@@ -2370,6 +2475,7 @@ export type Database = {
         | 'cycling'
         | 'swimming';
       endurance_modality: 'run' | 'walk' | 'bike' | 'swim';
+      endurance_start_group: 'cautious' | 'beginner' | 'advanced' | 'competitive';
       equipment_category:
         'free_weights' | 'bench' | 'bodyweight' | 'bands' | 'cardio' | 'other' | 'machines';
       equipment_location: 'home' | 'gym';
@@ -2379,7 +2485,7 @@ export type Database = {
       food_preference_kind: 'like' | 'dislike' | 'intolerance';
       goal_type: 'fat_loss' | 'definition' | 'muscle_gain' | 'general_fitness' | 'endurance';
       load_type: 'weight' | 'bodyweight' | 'band' | 'time';
-      log_source: 'manual';
+      log_source: 'manual' | 'gps' | 'gpx_import';
       mealprep_slot_mode: 'lunch' | 'lunch_dinner';
       movement_pattern:
         | 'squat'
@@ -2447,8 +2553,11 @@ export type Database = {
       session_log_status: 'completed' | 'partial';
       sex: 'male' | 'female' | 'diverse' | 'unspecified';
       training_location: 'gym' | 'home' | 'both';
+      training_phase: 'base' | 'build' | 'peak' | 'taper' | 'race_week' | 'recovery';
       training_slot_kind: 'strength_gym' | 'strength_home' | 'endurance';
       training_time: 'early' | 'morning' | 'midday' | 'afternoon' | 'evening' | 'varies';
+      workout_type:
+        'easy' | 'recovery' | 'long' | 'strides' | 'fartlek' | 'tempo' | 'intervals' | 'race_pace';
     };
     CompositeTypes: {
       [_ in never]: never;
@@ -2559,6 +2668,9 @@ export const Constants = {
       alternative_reason: ['other_equipment', 'easier', 'harder', 'home'],
       app_locale: ['de-DE', 'de-AT', 'de-CH'],
       caution_tag: ['high_impact', 'spinal_loading', 'overhead', 'long_supine', 'high_skill'],
+      competition_discipline: ['5k', '10k', 'half_marathon', 'marathon'],
+      competition_goal: ['finish', 'time'],
+      competition_status: ['planned', 'done', 'cancelled'],
       consent_platform: ['ios', 'android', 'web'],
       consent_type: ['terms', 'privacy', 'health_data', 'cycle_data'],
       content_status: ['draft', 'published', 'archived'],
@@ -2577,6 +2689,7 @@ export const Constants = {
         'swimming',
       ],
       endurance_modality: ['run', 'walk', 'bike', 'swim'],
+      endurance_start_group: ['cautious', 'beginner', 'advanced', 'competitive'],
       equipment_category: [
         'free_weights',
         'bench',
@@ -2593,7 +2706,7 @@ export const Constants = {
       food_preference_kind: ['like', 'dislike', 'intolerance'],
       goal_type: ['fat_loss', 'definition', 'muscle_gain', 'general_fitness', 'endurance'],
       load_type: ['weight', 'bodyweight', 'band', 'time'],
-      log_source: ['manual'],
+      log_source: ['manual', 'gps', 'gpx_import'],
       mealprep_slot_mode: ['lunch', 'lunch_dinner'],
       movement_pattern: [
         'squat',
@@ -2664,8 +2777,19 @@ export const Constants = {
       session_log_status: ['completed', 'partial'],
       sex: ['male', 'female', 'diverse', 'unspecified'],
       training_location: ['gym', 'home', 'both'],
+      training_phase: ['base', 'build', 'peak', 'taper', 'race_week', 'recovery'],
       training_slot_kind: ['strength_gym', 'strength_home', 'endurance'],
       training_time: ['early', 'morning', 'midday', 'afternoon', 'evening', 'varies'],
+      workout_type: [
+        'easy',
+        'recovery',
+        'long',
+        'strides',
+        'fartlek',
+        'tempo',
+        'intervals',
+        'race_pace',
+      ],
     },
   },
 } as const;

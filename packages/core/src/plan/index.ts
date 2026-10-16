@@ -27,3 +27,4 @@ export * from './competition-schema';
 export * from './periodization';
 export * from './endurance-workouts';
 export * from './intensity';
+export * from './competition-record';

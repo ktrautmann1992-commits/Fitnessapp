@@ -2,6 +2,9 @@ import { z } from 'zod';
 
 import {
   BARBELL_PLATE_MAX_KG,
+  COMPETITION_EFFORT_LIMITS,
+  COMPETITION_PACE,
+  COMPETITION_RECORD_LIMITS,
   EQUIPMENT_LIMITS,
   PLAN_BLOCK_LIMITS,
   PLAN_SAVE_LIMITS,
@@ -17,7 +20,14 @@ import {
 } from '../enums';
 import { BARBELL_ID, equipmentIdSchema } from '../equipment';
 import { isAllowedGoalPair } from '../goals/profile';
+import { COMPETITION_PHASES } from './competition-schema';
 import { ENDURANCE_EFFORT_LIMITS } from './generate';
+import {
+  isHardWorkoutType,
+  type WorkoutStep,
+  WORKOUT_TYPES,
+  workoutStepsSchema,
+} from './intensity';
 import {
   barbellBarKgSchema,
   enduranceDisciplineSchema,
@@ -69,6 +79,14 @@ export interface SavePlanSession {
   readonly warmup_de: string;
   readonly cooldown_de: string;
   readonly exercises: readonly SavePlanExercise[];
+  /**
+   * NUR im Wettkampfplan (Phase 10, Spalten seit WP3): Art, Phase der Woche, Schritte, Distanz-Richtwert. Ohne
+   * Wettkampf fehlen die Schlüssel – die Eingabe bleibt byte-gleich zu vorher.
+   */
+  readonly workout_type?: string | null;
+  readonly training_phase?: string | null;
+  readonly workout_steps?: readonly WorkoutStep[] | null;
+  readonly target_distance_m?: number | null;
 }
 
 export interface SavePlanPayload {
@@ -103,6 +121,23 @@ export function toSavePlanSession(s: GeneratedSession): SavePlanSession {
     estimated_minutes: s.estimated_minutes,
     warmup_de: s.warmup_de,
     cooldown_de: s.cooldown_de,
+    // Wettkampfplan (WP3): nur wenn die Engine die Felder gesetzt hat – sonst keine neuen Schlüssel.
+    ...(s.workout_type === undefined && s.training_phase === undefined
+      ? {}
+      : {
+          workout_type: s.workout_type ?? null,
+          training_phase: s.training_phase ?? null,
+          workout_steps:
+            s.workout_steps === undefined || s.workout_steps === null
+              ? null
+              : s.workout_steps.map((st) => ({
+                  part: st.part,
+                  kind: st.kind,
+                  seconds: st.seconds,
+                  effort: st.effort,
+                })),
+          target_distance_m: s.target_distance_m ?? null,
+        }),
     exercises: s.exercises.map((e) => ({
       order_no: e.order_no,
       exercise_id: e.exercise_id,
@@ -224,9 +259,21 @@ export const savePlanExerciseSchema = z.strictObject({
   target_weight_kg: z.number().nullable(),
 });
 
+/** Größe eines JSON-Werts wie `jsonb::text` (Grenze COMPETITION_RECORD_LIMITS.workoutStepsMaxBytes). */
+function withinStepBytes(steps: unknown): boolean {
+  return jsonbTextBytes(steps) <= COMPETITION_RECORD_LIMITS.workoutStepsMaxBytes;
+}
+
 /**
  * Eine Einheit: Kraft mit Schwerpunkt, Vorlagen-Einheit und 1–8 Übungen; Ausdauer mit Modalität und Anstrengung,
  * ohne Übungen (gleiche Regeln wie die CHECKs von planned_sessions und private.insert_plan_sessions()).
+ *
+ * Wettkampfplan (Phase 10, WP3 – CHECK planned_sessions_workout_fields): optionale Felder `workout_type`,
+ * `training_phase`, `workout_steps`, `target_distance_m`. Ohne Art (alle null/fehlend) Anstrengung 1–4 wie bisher;
+ * mit Art nur Ausdauer, Art + Phase + Schritte zusammen (Summe = Dauer, Größe begrenzt), Anstrengung 1–8 und über 4 nur
+ * bei harter Art, harte Art in einer Erholungswoche nur im Tapering, Distanz nur mit Art. Die Regeln je Person (unter
+ * 18 ≤ 7, ab 65 ≤ 6, Gesundheits-Flag ohne harte Einheiten, Zahl harter Einheiten je Woche) prüft der Server
+ * zusätzlich mit dem Plan (private.insert_plan_sessions).
  */
 export const savePlanSessionSchema = z
   .strictObject({
@@ -243,13 +290,23 @@ export const savePlanSessionSchema = z
     effort_target: z
       .number()
       .int()
-      .min(ENDURANCE_EFFORT_LIMITS.min)
-      .max(ENDURANCE_EFFORT_LIMITS.max)
+      .min(COMPETITION_EFFORT_LIMITS.min)
+      .max(COMPETITION_EFFORT_LIMITS.max)
       .nullable(),
     estimated_minutes: z.number().int(),
     warmup_de: z.string(),
     cooldown_de: z.string(),
     exercises: z.array(savePlanExerciseSchema).max(PLAN_BLOCK_LIMITS.exercisesPerSession),
+    workout_type: z.enum(WORKOUT_TYPES).nullable().optional(),
+    training_phase: z.enum(COMPETITION_PHASES).nullable().optional(),
+    workout_steps: workoutStepsSchema.nullable().optional(),
+    target_distance_m: z
+      .number()
+      .int()
+      .min(COMPETITION_PACE.distanceM.min)
+      .max(COMPETITION_PACE.distanceM.max)
+      .nullable()
+      .optional(),
   })
   .refine(
     (s) =>
@@ -265,7 +322,27 @@ export const savePlanSessionSchema = z
           s.endurance_modality !== null &&
           s.effort_target !== null,
     'Kraft: Schwerpunkt und Übungen; Ausdauer: Modalität und Anstrengung, keine Übungen.',
-  );
+  )
+  .refine((s) => {
+    const type = s.workout_type ?? null;
+    const phase = s.training_phase ?? null;
+    const steps = s.workout_steps ?? null;
+    const distance = s.target_distance_m ?? null;
+    if (type === null && phase === null && steps === null && distance === null) {
+      return s.effort_target === null || s.effort_target <= ENDURANCE_EFFORT_LIMITS.max;
+    }
+    return (
+      s.kind === 'endurance' &&
+      type !== null &&
+      phase !== null &&
+      steps !== null &&
+      (s.effort_target ?? 0) >= ENDURANCE_EFFORT_LIMITS.min &&
+      ((s.effort_target ?? 0) <= COMPETITION_EFFORT_LIMITS.easyMax || isHardWorkoutType(type)) &&
+      (!s.is_deload || !isHardWorkoutType(type) || phase === 'taper') &&
+      steps.reduce((sum, st) => sum + st.seconds, 0) === s.estimated_minutes * 60 &&
+      withinStepBytes(steps)
+    );
+  }, 'Wettkampf-Einheit: Art, Phase und Schritte zusammen; Anstrengung über 4 nur bei harter Art.');
 
 /** Ein Gerät zu Hause in den Angaben (= equipment_keys in private.assert_plan_inputs()). */
 export const savePlanHomeEquipmentSchema = z

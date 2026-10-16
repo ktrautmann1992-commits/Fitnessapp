@@ -1177,6 +1177,8 @@ export function createSupabaseBackend(options: SupabaseBackendOptions): Backend 
       // Eigene Gerichte (E2): Tabellen seit E2, in der App erst mit N7 Teil 2 (supportsNutrition = false).
       customMeals: [],
       customMealItems: [],
+      // Wettkämpfe (Phase 10 WP3): Tabelle seit WP3, in der App erst mit WP4.
+      competitions: [],
     };
   }
 

@@ -4,6 +4,7 @@ import { describe, expectTypeOf, it } from 'vitest';
 
 import type {
   CardioLogRow,
+  CompetitionRow,
   CustomMealItemRow,
   CustomMealRow,
   ExerciseLogRow,
@@ -40,6 +41,10 @@ describe('Zeilen-Typen: packages/core = Datenbank', () => {
     expectTypeOf<keyof FoodLogFavoriteRow>().toEqualTypeOf<keyof Tables<'food_log_favorites'>>();
     expectTypeOf<FoodLogEntryRow>().toExtend<Tables<'food_log_entries'>>();
     expectTypeOf<FoodLogFavoriteRow>().toExtend<Tables<'food_log_favorites'>>();
+  });
+
+  it('Wettkampf (Phase 10 WP3): core = Datenbank', () => {
+    expectTypeOf<core.CompetitionRow>().toEqualTypeOf<CompetitionRow>();
   });
 
   it('Eigene Gerichte (E2): gleiche Spalten wie die Datenbank, Werte-Listen enger', () => {
