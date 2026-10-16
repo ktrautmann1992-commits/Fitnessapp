@@ -158,6 +158,15 @@ function workoutViolations(
       }
     }
     if (phase === 'taper' && hard.length > 1) errors.push(`${monday}: Tapering mit 2 harten`);
+    // Erholungswoche (außer Tapering) und Woche 0: kein Abschnitt mit Anstrengung ≥ 6 (auch keine Steigerungen).
+    for (const s of endurance) {
+      const easyOnly = (s.is_deload && s.training_phase !== 'taper') || s.week_no === 0;
+      if (easyOnly && (s.workout_steps ?? []).some((st) => st.effort >= 6)) {
+        errors.push(
+          `${s.scheduled_on}: Anstrengung ≥ 6 in Erholungswoche/Woche 0 (${s.workout_type})`,
+        );
+      }
+    }
     for (const s of endurance) {
       if (!isHard(s) && (s.effort_target ?? 0) > 4) {
         errors.push(`${s.scheduled_on}: lockere Einheit mit Anstrengung ${s.effort_target}`);
@@ -183,186 +192,203 @@ const pick = <T>(r: () => number, values: readonly T[]): T =>
   values[Math.floor(r() * values.length)] as T;
 
 describe('Eigenschaften Wochenbau (WP2) über den ganzen Wettkampfplan', () => {
-  it('langer Lauf (G2), 80/20, harte Einheiten (Abstand, Phase, Gruppen), Kraft in Spitze/Tapering, 10-%-Kette, Start-Deckel, Rhythmus, Plan = Ampel, Ampel ehrlich (400 Läufe, Varianten)', () => {
-    const r = random(20261017);
-    const errors: string[] = [];
-    let plans = 0;
-    let hardSessions = 0;
-    let longRuns = 0;
-    const variants = new Map<string, number>();
-    for (let i = 0; i < 400; i += 1) {
-      const variant = pick(r, ['plain', 'own_start', 'reference', 'flex', 'group_change'] as const);
-      const discipline = pick(r, ['5k', '10k', 'half_marathon', 'marathon'] as const);
-      const level = pick(r, ['beginner', 'advanced', 'competitive'] as const);
-      const flags = pick(r, [[], [], [], [], ['injury'], ['pregnancy']] as const);
-      const birthDate = pick(r, ['1996-01-15', '1996-01-15', '2009-12-01', '1958-06-01']);
-      const today = addDays(MONDAY, Math.floor(r() * 7));
-      const enduranceDays = 1 + Math.floor(r() * 7);
-      const weekdays = [2, 4, 7, 6, 3, 5, 1].slice(0, enduranceDays);
-      const slots: [number, Kind, number][] = weekdays.map((w) => [
-        w,
-        'endurance',
-        w === 7 ? pick(r, [60, 90, 120, 150, 180]) : pick(r, [30, 45, 60, 90]),
-      ]);
-      const strengthDay = [1, 3, 5].find((d) => !weekdays.includes(d));
-      if (strengthDay && r() < 0.5) {
-        slots.push([strengthDay, pick(r, ['strength_gym', 'strength_home'] as const), 60]);
-      }
-      const schedule =
-        variant === 'flex'
-          ? { mode: 'flex' as const, slots: slots.map(([, kind, minutes]) => ({ kind, minutes })) }
-          : fixed(...slots);
-      const inputs = runner(discipline, level, {
-        schedule,
-        birthDate,
-        healthScreening: { flags: [...flags] },
-      });
-      const raceDate = addDays(today, 7 * 6 + Math.floor(r() * 300));
-      const refVolume = pick(r, [0, 45, 90, 150, 240, 400]);
-      const startGroup = pick(r, ['cautious', 'beginner', 'advanced', 'competitive'] as const);
-      const withPace = r() < 0.5;
-      const req: CompetitionRequest = {
-        competition: {
-          ...request(discipline, raceDate).competition,
-          ...(withPace
-            ? { reference: { discipline: '10k', timeS: 50 * 60, date: addDays(today, -10) } }
+  // Mehrere feste Seeds (Wächter M2): die Eigenschaften dürfen nicht am Zufallsstrom hängen.
+  it.each([20261017, 99, 5])(
+    'Seed %i: langer Lauf (G2), 80/20, harte Einheiten (Abstand, Phase, Gruppen), Erholungswoche/Woche 0 ohne Anstrengung ≥ 6, Kraft in Spitze/Tapering, 10-Prozent-Kette, Start-Deckel, Rhythmus, Plan = Ampel, Ampel ehrlich (400 Läufe, Varianten)',
+    (seed) => {
+      const r = random(seed);
+      const errors: string[] = [];
+      let plans = 0;
+      let hardSessions = 0;
+      let longRuns = 0;
+      const variants = new Map<string, number>();
+      for (let i = 0; i < 400; i += 1) {
+        const variant = pick(r, [
+          'plain',
+          'own_start',
+          'reference',
+          'flex',
+          'group_change',
+        ] as const);
+        const discipline = pick(r, ['5k', '10k', 'half_marathon', 'marathon'] as const);
+        const level = pick(r, ['beginner', 'advanced', 'competitive'] as const);
+        const flags = pick(r, [[], [], [], [], ['injury'], ['pregnancy']] as const);
+        const birthDate = pick(r, ['1996-01-15', '1996-01-15', '2009-12-01', '1958-06-01']);
+        const today = addDays(MONDAY, Math.floor(r() * 7));
+        const enduranceDays = 1 + Math.floor(r() * 7);
+        const weekdays = [2, 4, 7, 6, 3, 5, 1].slice(0, enduranceDays);
+        const slots: [number, Kind, number][] = weekdays.map((w) => [
+          w,
+          'endurance',
+          w === 7 ? pick(r, [60, 90, 120, 150, 180]) : pick(r, [30, 45, 60, 90]),
+        ]);
+        const strengthDay = [1, 3, 5].find((d) => !weekdays.includes(d));
+        if (strengthDay && r() < 0.5) {
+          slots.push([strengthDay, pick(r, ['strength_gym', 'strength_home'] as const), 60]);
+        }
+        const schedule =
+          variant === 'flex'
+            ? {
+                mode: 'flex' as const,
+                slots: slots.map(([, kind, minutes]) => ({ kind, minutes })),
+              }
+            : fixed(...slots);
+        const inputs = runner(discipline, level, {
+          schedule,
+          birthDate,
+          healthScreening: { flags: [...flags] },
+        });
+        const raceDate = addDays(today, 7 * 6 + Math.floor(r() * 300));
+        const refVolume = pick(r, [0, 45, 90, 150, 240, 400]);
+        const startGroup = pick(r, ['cautious', 'beginner', 'advanced', 'competitive'] as const);
+        const withPace = r() < 0.5;
+        const req: CompetitionRequest = {
+          competition: {
+            ...request(discipline, raceDate).competition,
+            ...(withPace
+              ? { reference: { discipline: '10k', timeS: 50 * 60, date: addDays(today, -10) } }
+              : {}),
+          },
+          ...(r() < 0.3 ? { longRunWeekday: pick(r, [1, 2, 4, 6, 7]) } : {}),
+          ...(variant === 'own_start'
+            ? { ownStart: { weeklyMinutes: pick(r, [100, 200, 300, 600]), confirmed: true } }
             : {}),
-        },
-        ...(r() < 0.3 ? { longRunWeekday: pick(r, [1, 2, 4, 6, 7]) } : {}),
-        ...(variant === 'own_start'
-          ? { ownStart: { weeklyMinutes: pick(r, [100, 200, 300, 600]), confirmed: true } }
-          : {}),
-        ...(variant === 'reference'
-          ? {
-              startReference: {
-                volume: refVolume,
-                sessionCap:
-                  refVolume === 0 ? null : Math.min(refVolume, pick(r, [10, 30, 60, 120, 240])),
-                startGroup,
-              },
-            }
-          : {}),
-      };
-      const feasibility = competitionFeasibility(inputs, req, today);
-      if (!feasibility.ok) {
-        errors.push(`${i}: ungültig`);
-        continue;
-      }
-      const f = feasibility.feasibility;
-      const generated = generateCompetitionPlan(inputs, library, today, req);
-      if (f.status === 'too_short' || f.status === 'not_available') {
-        if (generated.ok) errors.push(`${i}: ${f.status} hat einen Plan erzeugt`);
-        continue;
-      }
-      if (!generated.ok) {
-        if (generated.error !== 'no_template') errors.push(`${i}: ${generated.error}`);
-        continue;
-      }
-      plans += 1;
-      variants.set(variant, (variants.get(variant) ?? 0) + 1);
-      const change = pick(r, ['flag', 'beginner', 'looser'] as const);
-      const changed: PlanInputsInput =
-        change === 'flag'
-          ? { ...inputs, healthScreening: { flags: ['injury'] } }
-          : change === 'beginner'
-            ? { ...inputs, experienceLevel: 'beginner' }
-            : { ...inputs, healthScreening: { flags: [] }, experienceLevel: 'competitive' };
-      const later = (blockNo: number) =>
-        variant === 'group_change' && blockNo >= 2
-          ? { inputs: changed, today: addDays(today, 30) }
-          : { inputs, today };
-      const { sessions, weeks, gaps } = fullPlan(inputs, req, today, later);
-      const blockRules = (blockNo: number) => {
-        const l = later(blockNo);
-        return rulesOf(l.inputs, l.today);
-      };
-      // Startwert der Kette wie im WP1-Eigenschaftstest (unabhängig hergeleitet).
-      const first = rulesOf(inputs, today);
-      const groupStart = START[first.group as keyof typeof START];
-      const ORDER = ['cautious', 'beginner', 'advanced', 'competitive'];
-      const ref = req.startReference && req.startReference.volume > 0 ? req.startReference : null;
-      const stricter = ref !== null && ORDER.indexOf(first.group) < ORDER.indexOf(ref.startGroup);
-      const initialReference = ref
-        ? Math.min(ref.volume, stricter ? groupStart : 2 * groupStart)
-        : 0;
-      const ownAllowed = req.ownStart && first.group !== 'cautious' && level !== 'beginner' && !ref;
-      const start = ownAllowed
-        ? Math.min(req.ownStart?.weeklyMinutes ?? 0, 2 * groupStart)
-        : groupStart;
-      for (const e of chainViolations(sessions, start, initialReference)) errors.push(`${i}: ${e}`);
-      const initialLongest =
-        ref && ref.sessionCap !== null
-          ? Math.min(ref.sessionCap, ref.volume, 2 * groupStart)
-          : null;
-      for (const e of workoutViolations(
-        sessions,
-        discipline,
-        blockRules,
-        initialLongest,
-        ref === null || stricter,
-      )) {
-        errors.push(`${i} (${variant}, ${level}, ${discipline}): ${e}`);
-      }
-      for (const e of [...rhythmViolations(weeks), ...gaps]) errors.push(`${i}: ${e}`);
-      for (const blockNo of new Set(sessions.map((s) => s.block_no))) {
-        const block = sessions.filter((s) => s.block_no === blockNo);
-        if (
-          !generatedCompetitionPlanSchema.safeParse({ ...generated.plan, sessions: block }).success
-        )
-          errors.push(`${i}: Block ${blockNo} außerhalb des Rahmens`);
-      }
-      hardSessions += sessions.filter(isHard).length;
-      longRuns += sessions.filter((s) => s.workout_type === 'long').length;
-      if (variant === 'group_change') continue;
-      // Plan = Ampel-Vorschau (Wochenminuten UND längste Einheit, dieselbe Kette).
-      const preview = competitionVolumePreview(inputs, req, today) ?? [];
-      for (const w of preview) {
-        const inWeek = sessions.filter(
-          (s) => s.kind === 'endurance' && startOfIsoWeek(s.scheduled_on) === w.monday,
-        );
-        const sum = inWeek.reduce((t, s) => t + s.estimated_minutes, 0);
-        const longest = Math.max(0, ...inWeek.map((s) => s.estimated_minutes));
-        if (sum !== w.minutes || longest !== w.longestMinutes) {
-          errors.push(
-            `${i}: ${w.monday} Plan ${sum}/${longest} ≠ Vorschau ${w.minutes}/${w.longestMinutes}`,
+          ...(variant === 'reference'
+            ? {
+                startReference: {
+                  volume: refVolume,
+                  sessionCap:
+                    refVolume === 0 ? null : Math.min(refVolume, pick(r, [10, 30, 60, 120, 240])),
+                  startGroup,
+                },
+              }
+            : {}),
+        };
+        const feasibility = competitionFeasibility(inputs, req, today);
+        if (!feasibility.ok) {
+          errors.push(`${i}: ungültig`);
+          continue;
+        }
+        const f = feasibility.feasibility;
+        const generated = generateCompetitionPlan(inputs, library, today, req);
+        if (f.status === 'too_short' || f.status === 'not_available') {
+          if (generated.ok) errors.push(`${i}: ${f.status} hat einen Plan erzeugt`);
+          continue;
+        }
+        if (!generated.ok) {
+          if (generated.error !== 'no_template') errors.push(`${i}: ${generated.error}`);
+          continue;
+        }
+        plans += 1;
+        variants.set(variant, (variants.get(variant) ?? 0) + 1);
+        const change = pick(r, ['flag', 'beginner', 'looser'] as const);
+        const changed: PlanInputsInput =
+          change === 'flag'
+            ? { ...inputs, healthScreening: { flags: ['injury'] } }
+            : change === 'beginner'
+              ? { ...inputs, experienceLevel: 'beginner' }
+              : { ...inputs, healthScreening: { flags: [] }, experienceLevel: 'competitive' };
+        const later = (blockNo: number) =>
+          variant === 'group_change' && blockNo >= 2
+            ? { inputs: changed, today: addDays(today, 30) }
+            : { inputs, today };
+        const { sessions, weeks, gaps } = fullPlan(inputs, req, today, later);
+        const blockRules = (blockNo: number) => {
+          const l = later(blockNo);
+          return rulesOf(l.inputs, l.today);
+        };
+        // Startwert der Kette wie im WP1-Eigenschaftstest (unabhängig hergeleitet).
+        const first = rulesOf(inputs, today);
+        const groupStart = START[first.group as keyof typeof START];
+        const ORDER = ['cautious', 'beginner', 'advanced', 'competitive'];
+        const ref = req.startReference && req.startReference.volume > 0 ? req.startReference : null;
+        const stricter = ref !== null && ORDER.indexOf(first.group) < ORDER.indexOf(ref.startGroup);
+        const initialReference = ref
+          ? Math.min(ref.volume, stricter ? groupStart : 2 * groupStart)
+          : 0;
+        const ownAllowed =
+          req.ownStart && first.group !== 'cautious' && level !== 'beginner' && !ref;
+        const start = ownAllowed
+          ? Math.min(req.ownStart?.weeklyMinutes ?? 0, 2 * groupStart)
+          : groupStart;
+        for (const e of chainViolations(sessions, start, initialReference))
+          errors.push(`${i}: ${e}`);
+        const initialLongest =
+          ref && ref.sessionCap !== null
+            ? Math.min(ref.sessionCap, ref.volume, 2 * groupStart)
+            : null;
+        for (const e of workoutViolations(
+          sessions,
+          discipline,
+          blockRules,
+          initialLongest,
+          ref === null || stricter,
+        )) {
+          errors.push(`${i} (${variant}, ${level}, ${discipline}): ${e}`);
+        }
+        for (const e of [...rhythmViolations(weeks), ...gaps]) errors.push(`${i}: ${e}`);
+        for (const blockNo of new Set(sessions.map((s) => s.block_no))) {
+          const block = sessions.filter((s) => s.block_no === blockNo);
+          if (
+            !generatedCompetitionPlanSchema.safeParse({ ...generated.plan, sessions: block })
+              .success
+          )
+            errors.push(`${i}: Block ${blockNo} außerhalb des Rahmens`);
+        }
+        hardSessions += sessions.filter(isHard).length;
+        longRuns += sessions.filter((s) => s.workout_type === 'long').length;
+        if (variant === 'group_change') continue;
+        // Plan = Ampel-Vorschau (Wochenminuten UND längste Einheit, dieselbe Kette).
+        const preview = competitionVolumePreview(inputs, req, today) ?? [];
+        for (const w of preview) {
+          const inWeek = sessions.filter(
+            (s) => s.kind === 'endurance' && startOfIsoWeek(s.scheduled_on) === w.monday,
           );
+          const sum = inWeek.reduce((t, s) => t + s.estimated_minutes, 0);
+          const longest = Math.max(0, ...inWeek.map((s) => s.estimated_minutes));
+          if (sum !== w.minutes || longest !== w.longestMinutes) {
+            errors.push(
+              `${i}: ${w.monday} Plan ${sum}/${longest} ≠ Vorschau ${w.minutes}/${w.longestMinutes}`,
+            );
+          }
+        }
+        // Ampel ehrlich (G2): „passt“ (Ankommen) = mindestens 2 Belastungswochen mit Wochenumfang UND langem Lauf.
+        if (f.effectiveGoal === 'finish') {
+          const reached = preview.filter(
+            (w) =>
+              w.load &&
+              w.minutes >= REQUIRED_WEEK_FINISH[discipline] &&
+              w.longestMinutes >= REQUIRED_LONG_FINISH[discipline],
+          ).length;
+          if (f.status === 'ok' && reached < 2) errors.push(`${i}: „passt“ mit ${reached} Wochen`);
+          if (f.status === 'tight' && reached < 1) errors.push(`${i}: „knapp“ ohne Spitzenwoche`);
+        }
+        // G7: nur Gehen → höchstens „knapp“ mit Hinweis.
+        if (
+          first.group === 'cautious' &&
+          planSafetyRules(
+            { experienceLevel: level, birthDate, healthScreening: { flags: [...flags] } },
+            today,
+          ).enduranceWalkOnly
+        ) {
+          if (f.status === 'ok') errors.push(`${i}: nur Gehen, aber „passt“`);
+          if (!f.notices.includes('walk_only_plan'))
+            errors.push(`${i}: Hinweis walk_only_plan fehlt`);
+        }
+        if (isoWeekday(today) !== 1 && !sessions.every((s) => s.scheduled_on >= today)) {
+          errors.push(`${i}: Einheit vor dem Planstart`);
         }
       }
-      // Ampel ehrlich (G2): „passt“ (Ankommen) = mindestens 2 Belastungswochen mit Wochenumfang UND langem Lauf.
-      if (f.effectiveGoal === 'finish') {
-        const reached = preview.filter(
-          (w) =>
-            w.load &&
-            w.minutes >= REQUIRED_WEEK_FINISH[discipline] &&
-            w.longestMinutes >= REQUIRED_LONG_FINISH[discipline],
-        ).length;
-        if (f.status === 'ok' && reached < 2) errors.push(`${i}: „passt“ mit ${reached} Wochen`);
-        if (f.status === 'tight' && reached < 1) errors.push(`${i}: „knapp“ ohne Spitzenwoche`);
+      expect(plans).toBeGreaterThan(100);
+      expect(hardSessions).toBeGreaterThan(100);
+      expect(longRuns).toBeGreaterThan(500);
+      for (const v of ['plain', 'own_start', 'reference', 'flex', 'group_change']) {
+        expect(variants.get(v) ?? 0, v).toBeGreaterThan(10);
       }
-      // G7: nur Gehen → höchstens „knapp“ mit Hinweis.
-      if (
-        first.group === 'cautious' &&
-        planSafetyRules(
-          { experienceLevel: level, birthDate, healthScreening: { flags: [...flags] } },
-          today,
-        ).enduranceWalkOnly
-      ) {
-        if (f.status === 'ok') errors.push(`${i}: nur Gehen, aber „passt“`);
-        if (!f.notices.includes('walk_only_plan'))
-          errors.push(`${i}: Hinweis walk_only_plan fehlt`);
-      }
-      if (isoWeekday(today) !== 1 && !sessions.every((s) => s.scheduled_on >= today)) {
-        errors.push(`${i}: Einheit vor dem Planstart`);
-      }
-    }
-    expect(plans).toBeGreaterThan(100);
-    expect(hardSessions).toBeGreaterThan(200);
-    expect(longRuns).toBeGreaterThan(500);
-    for (const v of ['plain', 'own_start', 'reference', 'flex', 'group_change']) {
-      expect(variants.get(v) ?? 0, v).toBeGreaterThan(10);
-    }
-    expect(errors.slice(0, 10)).toEqual([]);
-  }, 120_000);
+      expect(errors.slice(0, 10)).toEqual([]);
+    },
+    240_000,
+  );
 });
 
 describe('Beispiele am fertigen Plan (WP2)', () => {

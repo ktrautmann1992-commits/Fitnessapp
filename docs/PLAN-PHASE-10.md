@@ -422,7 +422,7 @@ Umsetzungsstand WP2):
 - **Neue Felder je Einheit** (nur Wettkampfplan, optional; Spalten mit WP3): `workout_type`, `training_phase`,
   `workout_steps`, `target_distance_m` (nur mit Referenzzeit, nur durchgehende Läufe, abgerundet auf 0,5 km,
   0,1–60 km). `generatedCompetitionSessionSchema`/`generatedCompetitionPlanSchema`/`isCompetitionPlanWithinLimits`:
-  Anstrengung 1–9 (Vorlage CHECK WP3), > 4 nur bei harter Art, harte Art nie in einer Erholungswoche außer im Tapering,
+  Anstrengung 1–8 (Vorlage CHECK WP3, Wächter N2), > 4 nur bei harter Art, harte Art nie in einer Erholungswoche außer im Tapering,
   Ausdauer immer mit Art, Phase und Schritten (Summe = Dauer). `generatedSessionSchema` prüft unverändert 1–4.
 - **Sicherheit sofort** (`apply-safety.ts`, `applyCurrentEnduranceRules`): Einheiten mit Art – harte Arten und
   Steigerungen werden locker (Art, Name, Schritte, Anstrengung), wenn harte Einheiten nicht mehr erlaubt sind (Flag,
@@ -453,7 +453,7 @@ Angepasst (bewusst strengere Ampel): `competition.test.ts` – Marathon-/Zielzei
 langen Laufs genug Wunsch-Zeit (z. B. Sonntag 150 statt 90 min), Zielzeit 48 statt 45 min (45 ist 10 % schneller als die
 50-min-Referenz und damit nicht plausibel), 1 Tag mit 60 min nennt zusätzlich `long_run_day_too_short`;
 `generate-competition.test.ts` prüft die Blöcke mit dem Wettkampf-Schema (Anstrengung > 4). „Tabelle passt zur Kette“
-gilt weiter – jetzt für Wochenumfang **und** langen Lauf. Core gesamt 4.119 → 4.178 Tests (+59, Zahlen laut Vitest).
+gilt weiter – jetzt für Wochenumfang **und** langen Lauf. Core gesamt 4.119 → 4.178 Tests (+59, Zahlen laut Vitest); nach den Wächter-Auflagen siehe unten.
 
 **Regression „ohne Wettkampf byte-gleich“:** fester Prüfsummen-Test aus WP1 grün (4.536 Ausdauer-Pläne + Folgeblock);
 zusätzlich ein Raster aus 5.040 Plänen **mit Kraft** (7 Starttage × Level × Ziel × Disziplin × Gesundheits-Check × Alter ×
@@ -493,7 +493,7 @@ plan:examples` vor/nach zeichengleich.
 11. **Zielzeit-Plausibilität 5 %** gegen die Riegel-Vorhersage (Gründer-Frage G12).
 12. **Wunsch-Tag des langen Laufs** neu als optionale Angabe `longRunWeekday` (1–7, Zod); WP3 muss ihn mit dem Wettkampf
     speichern (sonst rechnet ein Folgeblock mit dem automatischen Tag).
-13. **4b `endurance_reduce`:** Vorschlag „zu hart“ ab max(7, Ziel + 3), höchstens 10 (lockere Ziele unverändert 7) – als
+13. **4b `endurance_reduce`:** Vorschlag „zu hart“ bei lockeren Zielen ab max(7, Ziel + 3) = 7 (unverändert), bei harten Zielen ab Ziel + 2, höchstens 9 (Wächter N4) – als
     Funktion bereit, Entscheidung im 4b-Plan. Der `db-sync`-Test bleibt bis WP3 unverändert (CHECK 1–4).
 
 **Gegenproben (Regel absichtlich gebrochen → rot → zurückgesetzt):**
@@ -522,9 +522,46 @@ plan:examples` vor/nach zeichengleich.
 
 Alle Änderungen danach zurückgesetzt (Vergleich mit einer Sicherungskopie des Quellcodes: identisch).
 
+**Nach der Wächter-Prüfung (16.10.2026, `waechter-wp2.md`, Freigabe mit Auflagen) umgesetzt:**
+
+- **M1:** In Erholungswochen und in Woche 0 keine Steigerungen (und keine harten Einheiten) mehr –
+  `WeekWorkoutInput.weekZero`; der Eigenschaftstest prüft „kein Abschnitt mit Anstrengung ≥ 6 bei `is_deload` außer
+  Tapering und in Woche 0“.
+- **M2:** Die 50-%-Regel der tatsächlichen Woche gilt in **allen** Wettkampf-Wochen mit ≥ 2 Einheiten (auch Woche 0,
+  Rennwoche, Erholung nach dem Rennen) – `halfWeekCap` in `enduranceWeekVolumes`, gleich in Plan und Ampel. Der
+  Eigenschaftstest läuft mit 3 festen Seeds (je 400 Läufe, zusammen ca. 30 s) und ist bei allen grün.
+- **M3:** Riegel nur bis Distanzfaktor 4 (`COMPETITION_PACE.maxRiegelDistanceFactor`, `riegelReliable`): sonst keine
+  Zielzeit-Plausibilität (Ziel „Ankommen“, höchstens „knapp“, Grund `goal_time_not_reachable`, Hinweis
+  `reference_distance_too_far`) und keine Pace auf dieser Basis. Test 5 km (20:00) → Marathon 3:05 und 3:20.
+- **M4:** G8 als offen und **vor WP4 zu entscheiden** markiert (im PR-Text als bekannte Einschränkung nennen).
+- **N1:** Direkter Test über `nextPlanBlock` (`schedule-competition-boundary.test.ts`): harte Einheit am letzten Sonntag →
+  Montag des Folgeblocks nicht hart; letzter Tag des Blocks vor einem Kraft-Tag des Musters bleibt locker.
+- **N2:** Wettkampf-Schema auf Anstrengung ≤ 8 gesenkt; WP3-Vorgaben ergänzt (CHECK ≤ 8, unter 18 ≤ 7, Zahl je Woche).
+- **N3:** `applyCompetitionWeekLimits(sessions, rules, level)` (`apply-safety.ts`): wird Level/Gruppe strenger, bleiben
+  je Woche nur die frühesten erlaubten harten Einheiten, überzählige werden locker. Zusätzlich zu
+  `applyCurrentEnduranceRules` aufrufen (WP4).
+- **N4:** Vorschlag `endurance_reduce` für harte Ziele vorsichtiger: ab Ziel + 2, höchstens 9.
+- **N5:** `long_run_day_too_short` steht als Ursache vor den Umfangs-Gründen.
+- **N6:** Wunsch-Tag ohne Ausdauer → automatisch, mit Hinweis `long_run_day_not_endurance`.
+- Core danach 4.188 Tests (+10; der Eigenschaftstest zählt je Seed). Zeitgrenze der beiden Eigenschaftstests auf 240 s
+  erhöht (unter `turbo` parallel lief der WP1-Test sonst in die 60-s-Grenze).
+- Byte-Gleichheit ohne Wettkampf erneut bestätigt (Prüfsummen-Test, Raster 5.040 Pläne mit Kraft gegen `origin/main`,
+  `pnpm plan:examples` zeichengleich).
+
+| Nr. | Gegenprobe zu den Auflagen                                    | Rote Tests |
+| --- | ------------------------------------------------------------- | ---------- |
+| X1  | Steigerungen in Erholungswoche/Woche 0 wieder erlaubt (M1)    | 4          |
+| X2  | 50-%-Regel nur in Wochen mit langem Lauf (M2)                 | 3          |
+| X3  | Riegel ohne Faktor-4-Grenze (M3)                              | 2          |
+| X4  | Blockgrenze ohne bisherige Einheiten (N1)                     | 2          |
+| X5  | Blockende ohne Kraft-Muster (N1)                              | 3          |
+| X6  | Zahl harter Einheiten bei strengerem Level nicht gesenkt (N3) | 2          |
+| X7  | Wunsch-Tag ohne Ausdauer still (N6)                           | 1          |
+| X8  | Wettkampf-Schema wieder bis 9 (N2)                            | 1          |
+
 **Gründer-Fragen (sichere Voreinstellung gilt, bis ihr anders entscheidet):**
 
-- **G8 – Langer Lauf „Ankommen“:** Voreinstellung 40/50/70/120 min (5 km/10 km/Halbmarathon/Marathon) = höchstens 50 %
+- **G8 – OFFEN, VOR WP4 ZU ENTSCHEIDEN (bevor die App die Ampel zeigt; Wächter M4) – Langer Lauf „Ankommen“:** Voreinstellung 40/50/70/120 min (5 km/10 km/Halbmarathon/Marathon) = höchstens 50 %
   des Spitzenumfangs (G2 + G3). Plan 3.2 nennt Halbmarathon 90–120 und Marathon 150–180 min. Alternative A: Plateau
   beim Doppelten des langen Laufs (Halbmarathon 180, Marathon 300 min/Woche – Einsteiger bräuchten dann deutlich mehr
   als 16 bzw. 24 Wochen, Tabelle 3.2 anpassen). Alternative B: langer Lauf bis 60 % der Woche. Fachprüfung.
@@ -534,13 +571,17 @@ Alle Änderungen danach zurückgesetzt (Vergleich mit einer Sicherungskopie des 
   kaum Tempo/Intervalle). Alternative: kürzeres Aufwärmen (dann mehr harte Einheiten, aber weniger Vorbereitung).
 - **G11 – Kraft in Spitze/Tapering:** Voreinstellung 1 Einheit je Woche, Beine in Erholungs-Dosierung. Alternative:
   Bein-Übungen ganz weglassen.
-- **G12 – Zielzeit-Plausibilität:** Voreinstellung höchstens 5 % schneller als die Riegel-Vorhersage. Alternative 3 %
+- **G12 – Zielzeit-Plausibilität:** Voreinstellung höchstens 5 % schneller als die Riegel-Vorhersage, und Riegel nur, wenn
+  Referenz- und Zieldistanz höchstens um den Faktor 4 auseinanderliegen (Wächter M3; Marathon also erst mit
+  Halbmarathon-Referenz – 10 km sind Faktor 4,22; Halbmarathon ab 10-km-Referenz). Darüber: keine Zielzeit, kein
+  Renntempo, Hinweis `reference_distance_too_far`. Alternative: größerer Exponent (1,08–1,10) statt Grenze. Alternative 3 %
   (vorsichtiger) oder 8 %.
 
 **Offen:**
 
 - **WP3:** Spalten `workout_type`, `training_phase`, `target_distance_m`, `workout_steps` (Schema `workoutStepsSchema`),
-  CHECK `effort_target` 1–9 mit „> 4 nur bei harter Art“ und „harte Art in Erholungswoche nur im Tapering“
+  CHECK `effort_target` 1–8 mit „> 4 nur bei harter Art“, serverseitig unter 18 ≤ 7 und Zahl harter Einheiten je Woche
+  (Einsteiger/vorsichtig 1, sonst 2) (Wächter N2), und „harte Art in Erholungswoche nur im Tapering“
   (`training_phase`), `longRunWeekday` am Wettkampf speichern; erst dann lässt sich ein Wettkampfplan mit harten Einheiten
   speichern (`toSavePlanPayload` überträgt die neuen Felder noch nicht). `db-sync.test.ts` schlägt dann absichtlich fehl
   → 4b-Regel `endurance_reduce` neu fassen (Vorschlag oben, PLAN-PHASE-4B).
@@ -569,7 +610,7 @@ Alle Änderungen danach zurückgesetzt (Vergleich mit einer Sicherungskopie des 
 
 - `workout_type` (Enum), `training_phase` (Enum), `target_distance_m` (100–60.000), `workout_steps jsonb`
   (Schema aus WP2, Größe begrenzt, CHECK auf Struktur über Funktion).
-- `effort_target`: CHECK von 1–4 auf **1–9** erweitern (nur Lockerung, alte Zeilen gültig) plus neue Bedingung
+- `effort_target`: CHECK von 1–4 auf **1–8** erweitern (WP2: die Engine plant höchstens 8; unter 18 serverseitig ≤ 7) (nur Lockerung, alte Zeilen gültig) plus neue Bedingung
   „> 4 nur bei harter Art“. **Folge:** der 4b-Test in `db-sync.test.ts` schlägt absichtlich fehl → die 4b-Regel
   `endurance_reduce` wird im 4b-Plan mit Abstand zum Ziel neu gefasst (Eintrag in PLAN-PHASE-4B).
 - `save_training_plan` / `append_plan_block` nehmen die neuen Felder an und prüfen sie serverseitig

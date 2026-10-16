@@ -487,5 +487,5 @@ describe('Eigenschaften über den ganzen Wettkampfplan', () => {
       expect(variants.get(v) ?? 0, v).toBeGreaterThan(10);
     }
     expect(errors.slice(0, 10)).toEqual([]);
-  }, 60_000);
+  }, 240_000); // unter Last (turbo parallel) deutlich langsamer als allein (~12 s)
 });

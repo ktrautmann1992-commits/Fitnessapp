@@ -773,6 +773,7 @@ function competitionWeekBuild(
     const planned = weekWorkouts({
       phase: spec.phase,
       recoveryWeek: spec.recoveryWeek,
+      weekZero: week.weekNo === 0,
       level: spec.level,
       limits: spec.limits,
       discipline: spec.discipline,

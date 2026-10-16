@@ -157,7 +157,8 @@ Verbindlich ist der freigegebene Ablauf in `docs/PLAN-PHASE-1.md` Abschnitt 3 (S
   ≥ 6. Harte Einheiten erst ab Aufbau (Einsteiger/unter 18 höchstens 1, sonst 2 je Woche; Flag, ab 65, Schwangerschaft
   keine), nie an zwei Tagen hintereinander, nie neben dem langen Lauf oder einem Kraft-Tag mit Beinen (auch beim
   Verschieben: Grund `hard_endurance_48h`). Spitze/Tapering höchstens 1 Kraft-Einheit, Beine leicht. Pace und
-  Distanz-Richtwert nur mit eigener Referenzzeit (Riegel), Zielzeit höchstens 5 % schneller als die Vorhersage. „Nur
+  Distanz-Richtwert nur mit eigener Referenzzeit (Riegel, nur bis Distanzfaktor 4), Zielzeit höchstens 5 % schneller als
+  die Vorhersage. „Nur
   Gehen“ (Flag, ab 65) → Ampel höchstens „Knapp“ (G7).
 - Ausdauer-Ziel klarer (Gründer-Feedback „Ziel Marathon → Plan für allgemeine Fitness“): Beim Ziel Ausdauer belegt
   „Deine Trainingstage“ Ausdauer-Tage vor (`suggestedTrainingSlots`, Werte `ENDURANCE_GOAL_SUGGESTION`: 3 Ausdauer + 2 Kraft,

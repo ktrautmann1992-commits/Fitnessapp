@@ -81,6 +81,31 @@ describe('Riegel (Riegel 1981) und Pace-Richtwerte', () => {
   });
 });
 
+describe('Riegel nur bis Faktor 4 (Wächter M3)', () => {
+  const ref5k = { discipline: '5k', timeS: 20 * 60, date: '2026-10-01' } as const;
+  it('5 km → Marathon (Faktor 8,4): keine Zielzeit-Plausibilität, kein Renntempo; 5 km → 10 km weiter', () => {
+    // Riegel sagt 3:11:48 voraus – selbst 3:20 gilt nicht als plausibel, weil die Hochrechnung zu unsicher ist.
+    expect(goalTimePlausible(ref5k, 'marathon', 200 * 60)).toBe(false);
+    expect(goalTimePlausible(ref5k, 'marathon', 185 * 60)).toBe(false);
+    const marathon = { reference: ref5k, discipline: 'marathon' } as const;
+    expect(paceTargets(marathon, 'race_pace')).toBeNull();
+    expect(paceTargets(marathon, 'easy')).not.toBeNull(); // Basis 10 km: Faktor 2
+    expect(paceTargets(marathon, 'intervals')).not.toBeNull();
+    // Halbmarathon aus 5 km: Faktor 4,22 > 4 → kein Renntempo; aus 10 km (2,1) schon.
+    expect(paceTargets({ reference: ref5k, discipline: 'half_marathon' }, 'race_pace')).toBeNull();
+    expect(
+      paceTargets({ reference: ref10k, discipline: 'half_marathon' }, 'race_pace'),
+    ).not.toBeNull();
+    // Marathon aus 10 km: Faktor 4,22 → ebenfalls nicht; umgekehrt (Marathon-Referenz → 5 km) auch nicht.
+    expect(goalTimePlausible(ref10k, 'marathon', 300 * 60)).toBe(false);
+    const refMarathon = { discipline: 'marathon', timeS: 4 * 3600, date: '2026-10-01' } as const;
+    expect(paceTargets({ reference: refMarathon, discipline: 'marathon' }, 'intervals')).toBeNull();
+    expect(
+      paceTargets({ reference: refMarathon, discipline: 'marathon' }, 'race_pace'),
+    ).not.toBeNull();
+  });
+});
+
 describe('Harte Einheiten je Personengruppe (Tabelle 3.3)', () => {
   it('Flag, Schwangerschaft, ohne Check, ab 65 (nur Gehen): keine; unter 18: ≤ 7 und 1/Woche; Einsteiger 1; sonst 2 und ≤ 8', () => {
     const blocked = { allowed: false, effortCap: 0, perWeek: 0 };
@@ -161,14 +186,15 @@ describe('80/20-Zählung (Seiler 2010, Plan 3.4)', () => {
 });
 
 describe('4b endurance_reduce – neue Fassung mit Abstand zum Ziel (Risiko 7)', () => {
-  it('lockere Ziele wie bisher 7; Tempo (7) ab 10; Intervalle (8) ab 10; nie über 10', () => {
+  it('lockere Ziele wie bisher 7; Tempo (7) und Intervalle (8) ab 9', () => {
     for (const target of [null, 1, 2, 3, 4]) expect(enduranceOverloadThreshold(target)).toBe(7);
-    expect(enduranceOverloadThreshold(6)).toBe(9);
-    expect(enduranceOverloadThreshold(7)).toBe(10);
-    expect(enduranceOverloadThreshold(8)).toBe(10);
+    // Harte Ziele vorsichtiger (Wächter N4): Ziel + 2, höchstens 9.
+    expect(enduranceOverloadThreshold(6)).toBe(8);
+    expect(enduranceOverloadThreshold(7)).toBe(9);
+    expect(enduranceOverloadThreshold(8)).toBe(9);
     expect(isEnduranceOverload(4, 7)).toBe(true);
     expect(isEnduranceOverload(4, 6)).toBe(false);
-    expect(isEnduranceOverload(8, 9)).toBe(false);
-    expect(isEnduranceOverload(8, 10)).toBe(true);
+    expect(isEnduranceOverload(8, 8)).toBe(false);
+    expect(isEnduranceOverload(8, 9)).toBe(true);
   });
 });

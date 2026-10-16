@@ -13,7 +13,7 @@ import {
 } from './competition';
 import type { CompetitionDiscipline } from './competition-schema';
 import { library } from './competition-test-helpers';
-import { generateCompetitionPlan } from './generate';
+import { generateCompetitionPlan, generatedCompetitionSessionSchema } from './generate';
 import type { PlanInputsInput } from './inputs';
 import { MONDAY, person } from './test-library';
 
@@ -90,7 +90,7 @@ describe('Ampel prüft den langen Lauf (G2)', () => {
       { raceDate: weeks(30) },
     );
     expect(f.status).toBe('too_short');
-    expect(f.reasons).toEqual(['long_run_not_reachable', 'long_run_day_too_short']);
+    expect(f.reasons).toEqual(['long_run_day_too_short', 'long_run_not_reachable']);
     expect(f.suggestions).toContainEqual({ kind: 'longer_long_run_day', minutes: 120 });
     expect(f.suggestions.some((s) => s.kind === 'later_date')).toBe(false);
     expect(f.plannedLongRunMinutes).toBeLessThan(120);
@@ -115,6 +115,13 @@ describe('Ampel prüft den langen Lauf (G2)', () => {
     const long = plan.plan.sessions.filter((s) => s.workout_type === 'long');
     expect(long.length).toBeGreaterThan(0);
     expect(long.every((s) => new Date(`${s.scheduled_on}T12:00:00Z`).getUTCDay() === 2)).toBe(true);
+    // Wächter N6: Wunsch-Tag ohne Ausdauer (Mittwoch) → automatisch, aber mit Hinweis.
+    expect(check(inputs, { raceDate: weeks(20) }, { longRunWeekday: 3 }).notices).toContain(
+      'long_run_day_not_endurance',
+    );
+    expect(check(inputs, { raceDate: weeks(20) }, { longRunWeekday: 2 }).notices).not.toContain(
+      'long_run_day_not_endurance',
+    );
     for (const bad of [0, 8, 2.5]) {
       expect(competitionFeasibility(inputs, { ...req, longRunWeekday: bad }, MONDAY)).toEqual({
         ok: false,
@@ -172,5 +179,56 @@ describe('Zielzeit-Plausibilität gegen die Referenzzeit (Riegel)', () => {
       }).effectiveGoal;
     expect(hm(105 * 60)).toBe('time');
     expect(hm(104 * 60)).toBe('finish');
+  });
+});
+
+describe('Riegel-Grenze Faktor 4 in der Ampel (Wächter M3)', () => {
+  it('5 km in 20:00 → Marathon 3:05 bzw. 3:20: keine Zielzeit, Ziel „Ankommen“, höchstens knapp, Hinweis', () => {
+    const ref5k = { discipline: '5k' as const, timeS: 20 * 60, date: addDays(MONDAY, -30) };
+    for (const target of [185 * 60, 200 * 60]) {
+      const f = check(runner('marathon'), {
+        raceDate: weeks(30),
+        goal: 'time',
+        targetTimeS: target,
+        reference: ref5k,
+      });
+      expect(f.effectiveGoal).toBe('finish');
+      expect(f.status).toBe('tight');
+      expect(f.reasons).toContain('goal_time_not_reachable');
+      expect(f.notices).toContain('reference_distance_too_far');
+    }
+    const hmRef = {
+      discipline: 'half_marathon' as const,
+      timeS: 95 * 60,
+      date: addDays(MONDAY, -30),
+    };
+    const ok = check(runner('marathon', { schedule: STANDARD }), {
+      raceDate: weeks(30),
+      goal: 'finish',
+      reference: hmRef,
+    });
+    expect(ok.notices).not.toContain('reference_distance_too_far');
+  });
+});
+
+describe('Wettkampf-Schema (Wächter N2, Vorlage für den CHECK in WP3)', () => {
+  it('Anstrengung höchstens 8; über 4 nur bei harter Art', () => {
+    const plan = generateCompetitionPlan(runner('half_marathon'), library, MONDAY, {
+      competition: { name: 'Lauf', discipline: 'half_marathon', raceDate: weeks(20) },
+    });
+    if (!plan.ok) throw new Error('kein Plan');
+    const easy = plan.plan.sessions.find((x) => x.kind === 'endurance');
+    if (!easy) throw new Error('keine Ausdauer');
+    expect(generatedCompetitionSessionSchema.safeParse(easy).success).toBe(true);
+    expect(generatedCompetitionSessionSchema.safeParse({ ...easy, effort_target: 5 }).success).toBe(
+      false,
+    );
+    const hard = { ...easy, workout_type: 'intervals' as const, is_deload: false };
+    expect(generatedCompetitionSessionSchema.safeParse({ ...hard, effort_target: 8 }).success).toBe(
+      true,
+    );
+    expect(generatedCompetitionSessionSchema.safeParse({ ...hard, effort_target: 9 }).success).toBe(
+      false,
+    );
   });
 });

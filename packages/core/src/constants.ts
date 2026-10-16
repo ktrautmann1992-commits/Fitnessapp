@@ -2517,7 +2517,12 @@ export const COMPETITION_WORKOUTS = {
  *   (Grenze von target_distance_m, WP3),
  * - Zielzeit-Plausibilität: Zielzeit höchstens `goalTimeMaxImprovement` (5 %) schneller als die Riegel-Vorhersage aus
  *   der Referenzzeit, sonst Ziel „Ankommen“ und höchstens „knapp“ (Plan 3.2).
- * Quelle: Riegel 1981; Spannen und 5 %: PRODUKTENTSCHEIDUNG – VOR LIVEGANG FACHLICH PRÜFEN.
+ * - `maxRiegelDistanceFactor` 4 (Wächter M3): Riegel nur, wenn Referenz- und Zieldistanz höchstens um den Faktor 4
+ *   auseinanderliegen (z. B. Marathon erst ab 10-km-Referenz, Halbmarathon ab 5,3 km). Darüber sagt Riegel für
+ *   Freizeitläufer zu schnelle Zeiten voraus (Riegel 1981 beschreibt die Formel für Dauern von ca. 3,5–230 min; Vickers AJ,
+ *   Vertosick EA (2016), „An empirical study of race times in recreational endurance runners“, BMC Sports Sci Med Rehabil
+ *   8:26 – Quelle vor Livegang prüfen) → keine Zielzeit-Plausibilität (Ziel „Ankommen“) und keine Pace auf dieser Basis.
+ * Quelle: Riegel 1981; Spannen, 5 % und Faktor 4: PRODUKTENTSCHEIDUNG – VOR LIVEGANG FACHLICH PRÜFEN.
  */
 export const COMPETITION_PACE = {
   riegelExponent: 1.06,
@@ -2532,27 +2537,36 @@ export const COMPETITION_PACE = {
   distanceRoundingM: 500,
   distanceM: { min: 100, max: 60000 },
   goalTimeMaxImprovement: 0.05,
+  maxRiegelDistanceFactor: 4,
 } as const;
 
 /**
- * Anstrengung geplanter Einheiten im Wettkampfplan (Vorlage für den CHECK in WP3: effort_target 1–9, „> 4 nur bei
- * harter Art“; heute 1–4 = ENDURANCE_EFFORT_LIMITS, db-sync.test.ts). Die Engine plant höchstens 8
- * (COMPETITION_INTENSITY.hardEffortCap). Quelle: docs/PLAN-PHASE-10.md Abschnitt 7 – PRODUKTENTSCHEIDUNG.
+ * Anstrengung geplanter Einheiten im Wettkampfplan (Vorlage für den CHECK in WP3: effort_target 1–8, „> 4 nur bei
+ * harter Art“, unter 18 serverseitig ≤ 7 – Wächter N2; heute 1–4 = ENDURANCE_EFFORT_LIMITS, db-sync.test.ts). Die
+ * Engine plant höchstens 8 (COMPETITION_INTENSITY.hardEffortCap, „nie alles geben“). Quelle: docs/PLAN-PHASE-10.md
+ * Abschnitt 7 – PRODUKTENTSCHEIDUNG.
  */
 export const COMPETITION_EFFORT_LIMITS = {
   min: 1,
-  max: 9,
+  max: 8,
   easyMax: ENDURANCE_EFFORT.easyMax,
 } as const;
 
 /**
  * Neue Fassung der 4b-Regel `endurance_reduce` (Risiko 7, PLAN-PHASE-4B R3, Wächter S6) – VORSCHLAG für 4b: Ein
- * Ausdauer-Eintrag zählt als „zu hart“, wenn die eingetragene Anstrengung ≥ max(`minEffort`, Ziel + `margin`) ist,
- * höchstens 10. Für lockere Ziele (≤ 4) ist das genau die bisherige feste 7; Intervalle (Ziel 8) zählen erst bei 10.
- * Quelle: PLAN-PHASE-4B (feste 7 = „sehr anstrengend“, Borg CR10) – Abstand 3: PRODUKTENTSCHEIDUNG, VOR LIVEGANG
- * FACHLICH PRÜFEN.
+ * Ausdauer-Eintrag zählt als „zu hart“, wenn die eingetragene Anstrengung ≥ max(`minEffort`, Ziel + `margin`) ist
+ * (lockere Ziele ≤ 4 → genau die bisherige feste 7). Harte Ziele (> 4) vorsichtiger (Wächter N4): ≥ Ziel +
+ * `hardMargin`, höchstens `hardMaxEffort` (Tempo 7 → 9, Intervalle 8 → 9). Steigerungen werden am Ziel des Hauptteils
+ * (locker) gemessen. Quelle: PLAN-PHASE-4B (feste 7 = „sehr anstrengend“, Borg CR10) – Abstände: PRODUKTENTSCHEIDUNG,
+ * VOR LIVEGANG FACHLICH PRÜFEN.
  */
-export const ENDURANCE_OVERLOAD_RULE = { minEffort: 7, margin: 3, maxEffort: 10 } as const;
+export const ENDURANCE_OVERLOAD_RULE = {
+  minEffort: 7,
+  margin: 3,
+  hardMargin: 2,
+  hardMaxEffort: 9,
+  easyTargetMax: ENDURANCE_EFFORT.easyMax,
+} as const;
 
 /**
  * Kraft im Wettkampfplan (Plan 3.5): in Spitze, Tapering und Rennwoche höchstens `maxStrengthSessionsPerWeek`

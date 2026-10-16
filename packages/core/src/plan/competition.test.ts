@@ -360,10 +360,11 @@ describe('competitionFeasibility – Zeitbudget und Startumfang', () => {
       raceDate: weeks(30),
     });
     expect(f.status).toBe('too_short');
+    // Wächter N5: der zu kurze Tag des langen Laufs steht als Ursache vorn.
     expect(f.reasons).toEqual([
+      'long_run_day_too_short',
       'peak_not_reachable',
       'weekly_time_too_low',
-      'long_run_day_too_short',
     ]);
     expect(f.suggestions).toContainEqual({
       kind: 'more_training_time',

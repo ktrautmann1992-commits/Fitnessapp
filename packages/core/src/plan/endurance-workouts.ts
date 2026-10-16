@@ -282,6 +282,8 @@ export interface WeekWorkoutInput {
   readonly phase: CompetitionPhase;
   /** Erholungswoche im Training (nicht Tapering): keine harten Einheiten. */
   readonly recoveryWeek: boolean;
+  /** Woche 0 (angebrochene Startwoche, Einstieg): weder harte Einheiten noch Steigerungen (Wächter M1). */
+  readonly weekZero?: boolean;
   readonly level: ExperienceLevel;
   readonly limits: HardWorkoutLimits;
   readonly discipline: CompetitionDiscipline;
@@ -327,7 +329,8 @@ function weekdayNeighbours(a: string, b: string): boolean {
  * - nie zwei harte Tage hintereinander, nie direkt vor oder nach dem langen Lauf, nie neben Kraft mit Beinen
  *   (`blockedDates`), nur im Lauf-Variante (nicht im Geh-Lauf-Wechsel oder beim Gehen),
  * - 80/20: harte Minuten ≤ floor(20 % der Wochenminuten); passt keine Struktur ins Budget → locker,
- * - Steigerungen in der Basis für Fortgeschrittene/Leistungssport (zählen mit ins 80/20-Budget),
+ * - Steigerungen in der Basis für Fortgeschrittene/Leistungssport (zählen mit ins 80/20-Budget), nie in einer
+ *   Erholungswoche oder in Woche 0,
  * - Erholung nach dem Rennen: Erholungsläufe.
  */
 export function weekWorkouts(input: WeekWorkoutInput): PlannedWorkout[] {
@@ -351,7 +354,9 @@ export function weekWorkouts(input: WeekWorkoutInput): PlannedWorkout[] {
     hardBudgetS: budgetS,
   });
   const runnable = (d: WeekEnduranceDay) => d.variant === 'easy_run';
-  const hardTypes = input.recoveryWeek ? [] : hardTypesFor(phase, input.level);
+  // Erholungswoche und Woche 0: nichts mit Anstrengung ≥ 6 (Plan 3.5; Wächter M1).
+  const easyOnly = input.recoveryWeek || input.weekZero === true;
+  const hardTypes = easyOnly ? [] : hardTypesFor(phase, input.level);
   const n = days.length;
   const minSessions = input.level === 'beginner' ? I.beginnerMinEnduranceSessions : 2;
   let hardCount = 0;
@@ -388,7 +393,7 @@ export function weekWorkouts(input: WeekWorkoutInput): PlannedWorkout[] {
       chosen.push(d.date);
     }
   }
-  if (phase === 'base' && input.level !== 'beginner' && limits.allowed && n >= 3) {
+  if (!easyOnly && phase === 'base' && input.level !== 'beginner' && limits.allowed && n >= 3) {
     const easyDay = days
       .filter((d) => runnable(d) && d.date !== longDate && !types.has(d.date))
       .sort((a, b) => b.minutes - a.minutes || (a.date < b.date ? -1 : 1))[0];

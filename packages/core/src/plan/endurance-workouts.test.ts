@@ -213,6 +213,19 @@ describe('weekWorkouts – Wochenbau (Plan 3.4/3.5, 80/20)', () => {
       pace: null,
     });
     expect(walkRun.some((x) => HARD.includes(x.type) || x.type === 'strides')).toBe(false);
+    // Wächter M1: keine Steigerungen in einer Erholungswoche der Basis und in Woche 0 – nichts mit Anstrengung ≥ 6.
+    for (const c of [
+      { phase: 'base' as const, recoveryWeek: true },
+      { phase: 'base' as const, weekZero: true },
+      { phase: 'build' as const, weekZero: true },
+    ]) {
+      const w = week(days, c);
+      expect(
+        w.some((x) => x.steps.some((st) => st.effort >= 6)),
+        JSON.stringify(c),
+      ).toBe(false);
+    }
+    expect(week(days, { phase: 'base' }).some((x) => x.type === 'strides')).toBe(true);
     expect(week(days, { phase: 'recovery' }).every((x) => x.type === 'recovery')).toBe(true);
   });
 

@@ -5,6 +5,7 @@
 import { describe, expect, it } from 'vitest';
 
 import {
+  halfWeekCap,
   distributeEnduranceMinutes,
   distributeWithLongRun,
   type EnduranceWeekInput,
@@ -129,7 +130,21 @@ describe('enduranceWeekVolumes mit langem Lauf (G2)', () => {
       ],
       { group: 'competitive', wishWeekly: 180 },
     );
-    for (const w of r.weeks) expect(Math.max(...w.minutes)).toBeLessThanOrEqual(75);
+    for (const w of r.weeks) {
+      expect(Math.max(...w.minutes)).toBeLessThanOrEqual(75);
+      // Wächter M2: auch hier höchstens 50 % der tatsächlichen Woche.
+      expect(Math.max(...w.minutes)).toBeLessThanOrEqual(Math.floor(sum(w.minutes) / 2));
+    }
+  });
+
+  it('halfWeekCap: längste Einheit ≤ Summe der übrigen (ab 2 Einheiten), 1 Einheit unverändert', () => {
+    expect(halfWeekCap({ minutes: [30, 31], dropped: 0 }).minutes).toEqual([30, 30]);
+    expect(halfWeekCap({ minutes: [10, 0, 60], dropped: 1 })).toEqual({
+      minutes: [10, 0, 10],
+      dropped: 1,
+    });
+    expect(halfWeekCap({ minutes: [45, 45, 48], dropped: 0 }).minutes).toEqual([45, 45, 48]);
+    expect(halfWeekCap({ minutes: [0, 90], dropped: 1 }).minutes).toEqual([0, 90]);
   });
 
   it('ohne `longRun` genau wie bisher (Pläne ohne Wettkampf byte-gleich)', () => {

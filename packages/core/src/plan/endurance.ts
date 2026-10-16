@@ -265,6 +265,26 @@ export function distributeEnduranceMinutes(
 }
 
 /**
+ * 50-%-Regel der TATSÄCHLICHEN Woche (Wettkampfplan, G2; Wächter M2): bei ≥ 2 Einheiten ist die längste Einheit nie
+ * länger als alle übrigen zusammen. Rundung und Deckel der übrigen Tage können sonst 1–3 Minuten kosten. Nur kürzen;
+ * fällt sie dadurch unter 10 Minuten, entfällt sie. Wird in jeder Wettkampf-Woche angewandt (auch Woche 0, Rennwoche,
+ * Erholung nach dem Rennen) – in Plan und Ampel gleich.
+ */
+export function halfWeekCap(result: { minutes: number[]; dropped: number }): {
+  minutes: number[];
+  dropped: number;
+} {
+  const minutes = [...result.minutes];
+  const active = minutes.filter((m) => m > 0);
+  if (active.length < 2) return { minutes, dropped: result.dropped };
+  const max = Math.max(...active);
+  // Übrige Einheiten sind je ≥ 10 Minuten (kürzere fallen schon in der Verteilung weg) – ihre Summe auch.
+  const others = active.reduce((sum, m) => sum + m, 0) - max;
+  if (max > others) minutes[minutes.indexOf(max)] = others;
+  return { minutes, dropped: result.dropped };
+}
+
+/**
  * Verteilung mit langem Lauf (Wettkampfplan, G2): langer Lauf = min(Wunsch des Tages, Deckel je Einheit, Deckel des
  * langen Laufs, `maxMinutes`, bei ≥ 2 Einheiten floor(50 % des Budgets)); der Rest geht nach
  * distributeEnduranceMinutes an die übrigen Tage, je höchstens so lang wie der lange Lauf. Unter 10 Minuten fällt der
@@ -292,7 +312,9 @@ export function distributeWithLongRun(
   );
   const others = wishes.filter((_, i) => i !== li);
   if (long < ENDURANCE_SESSION_LIMITS.minSessionMinutes) {
-    const rest = distributeEnduranceMinutes(B, others, Math.min(sessionCap, longRun.limit));
+    const rest = halfWeekCap(
+      distributeEnduranceMinutes(B, others, Math.min(sessionCap, longRun.limit)),
+    );
     const minutes = [...rest.minutes];
     minutes.splice(li, 0, 0);
     return { minutes, dropped: rest.dropped + 1 };
@@ -426,10 +448,12 @@ export function enduranceWeekVolumes(
       // Wettkampf-Woche ohne langen Lauf (Woche 0, Rennwoche, Erholung nach dem Rennen): keine Einheit über dem Deckel
       // der Distanz und in Erholungswochen keine über der längsten der letzten Belastungswoche.
       const extra = week.kind === 'deload' && lastLongest !== null ? lastLongest : Infinity;
-      distributed = distributeEnduranceMinutes(
-        budget,
-        week.wishes,
-        Math.min(cap, week.longRun.maxMinutes, extra),
+      distributed = halfWeekCap(
+        distributeEnduranceMinutes(
+          budget,
+          week.wishes,
+          Math.min(cap, week.longRun.maxMinutes, extra),
+        ),
       );
     } else {
       distributed = distributeEnduranceMinutes(budget, week.wishes, cap);

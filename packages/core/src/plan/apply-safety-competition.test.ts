@@ -4,7 +4,7 @@
  */
 import { describe, expect, it } from 'vitest';
 
-import { applyCurrentEnduranceRules } from './apply-safety';
+import { applyCompetitionWeekLimits, applyCurrentEnduranceRules } from './apply-safety';
 import { structuredWorkout } from './endurance-workouts';
 import { planSafetyRules } from './safety';
 
@@ -93,5 +93,36 @@ describe('applyCurrentEnduranceRules – Wettkampfplan', () => {
     ) as Omit<typeof full, 'medicalNotice'>;
     const out = applyCurrentEnduranceRules(session, partial, { previousStartGroup: 'advanced' });
     expect(out.workout_type).toBe('easy');
+  });
+});
+
+describe('applyCompetitionWeekLimits – Zahl harter Einheiten je Woche (Wächter N3)', () => {
+  const at = (date: string, type: 'intervals' | 'tempo' | 'easy') => ({
+    ...session,
+    scheduled_on: date,
+    workout_type: type,
+    workout_steps: type === 'easy' ? null : session.workout_steps,
+  });
+  const week = [
+    at('2026-10-06', 'tempo'),
+    at('2026-10-08', 'intervals'),
+    at('2026-10-11', 'easy'),
+    at('2026-10-13', 'intervals'),
+  ];
+  it('Fortgeschritten → Einsteiger: je Woche nur noch die früheste harte Einheit, überzählige locker', () => {
+    const out = applyCompetitionWeekLimits(week, rulesFor([]), 'beginner');
+    expect(out.map((s) => s.workout_type)).toEqual(['tempo', 'easy', 'easy', 'intervals']);
+    const downgraded = out[1];
+    expect(downgraded?.effort_target).toBeLessThanOrEqual(4);
+    expect(total(downgraded?.workout_steps)).toBe(60 * 60);
+    expect(downgraded?.name_de).toBe('Lockerer Dauerlauf');
+  });
+  it('Fortgeschritten bleibt bei 2; Flag → 0 harte Einheiten', () => {
+    expect(applyCompetitionWeekLimits(week, rulesFor([]), 'advanced')).toEqual(week);
+    expect(
+      applyCompetitionWeekLimits(week, rulesFor(['injury']), 'advanced').some(
+        (s) => s.workout_type === 'tempo' || s.workout_type === 'intervals',
+      ),
+    ).toBe(false);
   });
 });

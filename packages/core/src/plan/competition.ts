@@ -35,7 +35,7 @@ import {
   enduranceWeekVolumes,
 } from './endurance';
 import { type PlanInputs, type PlanInputsInput, planInputsSchema } from './inputs';
-import { goalTimePlausible, hardWorkoutLimits } from './intensity';
+import { goalTimePlausible, hardWorkoutLimits, riegelReliable } from './intensity';
 import {
   type CompetitionBlock,
   competitionBlocks,
@@ -214,13 +214,14 @@ export const FEASIBILITY_REASONS = [
   'health_check_required',
   'minor_distance_limit',
   'lead_time_below_minimum',
+  // Vor den Umfangs-Gründen (Wächter N5): ist der Tag des langen Laufs zu kurz, ist er die Ursache.
+  'long_run_day_too_short',
   'peak_not_reachable',
   'weekly_time_too_low',
   'peak_reached_late',
   'goal_time_not_allowed',
   'goal_time_not_reachable',
   'long_run_not_reachable',
-  'long_run_day_too_short',
 ] as const;
 export type FeasibilityReason = (typeof FEASIBILITY_REASONS)[number];
 
@@ -233,6 +234,8 @@ export const FEASIBILITY_NOTICES = [
   'own_start_journal_used',
   'start_reference_capped',
   'walk_only_plan',
+  'reference_distance_too_far',
+  'long_run_day_not_endurance',
 ] as const;
 export type FeasibilityNotice = (typeof FEASIBILITY_NOTICES)[number];
 
@@ -701,6 +704,17 @@ function noticesFor(ctx: Context, competition: Competition): FeasibilityNotice[]
   if (ctx.ownNotice) notices.add(ctx.ownNotice);
   if (ctx.referenceCapped) notices.add('start_reference_capped');
   if (ctx.rules.enduranceWalkOnly) notices.add('walk_only_plan');
+  // Wächter M3: Referenz zu weit von der Renn-Distanz entfernt → keine Zielzeit/kein Renntempo aus Riegel.
+  if (ctx.raceReference && !riegelReliable(ctx.raceReference, competition.discipline)) {
+    notices.add('reference_distance_too_far');
+  }
+  // Wächter N6: Wunsch-Tag des langen Laufs ist kein Ausdauer-Tag → automatisch gewählt, mit Hinweis.
+  if (
+    ctx.longRunWeekday !== null &&
+    !ctx.days.some((d) => d.kind === 'endurance' && d.weekday === ctx.longRunWeekday)
+  ) {
+    notices.add('long_run_day_not_endurance');
+  }
   return FEASIBILITY_NOTICES.filter((n) => notices.has(n));
 }
 

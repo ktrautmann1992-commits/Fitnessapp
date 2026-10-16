@@ -156,6 +156,19 @@ export function riegelTime(timeS: number, fromM: number, toM: number): number {
   return timeS * (toM / fromM) ** COMPETITION_PACE.riegelExponent;
 }
 
+/**
+ * Darf Riegel von der Referenz auf diese Distanz hochgerechnet werden? Nur bis zum Faktor 4 in beide Richtungen
+ * (COMPETITION_PACE.maxRiegelDistanceFactor, Wächter M3) – darüber zu optimistisch.
+ */
+export function riegelReliable(
+  reference: CompetitionReference,
+  discipline: CompetitionDiscipline,
+): boolean {
+  const from = COMPETITION_DISTANCE_M[reference.discipline];
+  const to = COMPETITION_DISTANCE_M[discipline];
+  return Math.max(from / to, to / from) <= COMPETITION_PACE.maxRiegelDistanceFactor;
+}
+
 /** Vorhergesagte Zeit (s) für eine Wettkampf-Distanz aus der Referenzzeit. */
 export function predictedTimeS(
   reference: CompetitionReference,
@@ -185,7 +198,8 @@ export const PACE_NOTICE_DE =
   'Die Anstrengung hat Vorrang – bei Hitze, Wind und Steigungen langsamer.';
 
 /**
- * Pace-Spanne je Art (Plan 3.4): aus der Referenzzeit mit Riegel; Fahrtspiel und Steigerungen nach Gefühl (null).
+ * Pace-Spanne je Art (Plan 3.4): aus der Referenzzeit mit Riegel; Fahrtspiel und Steigerungen nach Gefühl (null);
+ * null auch, wenn die Basis-Distanz mehr als Faktor 4 von der Referenz entfernt ist (riegelReliable).
  * Ohne Referenz immer null (W-G6: kein Maximaltest, keine geschätzte Pace).
  */
 export function paceTargets(profile: PaceProfile | null, type: WorkoutType): PaceSpan | null {
@@ -196,6 +210,7 @@ export function paceTargets(profile: PaceProfile | null, type: WorkoutType): Pac
   if (!span) return null;
   const target: CompetitionDiscipline =
     span.base === 'race' ? profile.discipline : (span.base as CompetitionDiscipline);
+  if (!riegelReliable(profile.reference, target)) return null;
   const perKm = predictedTimeS(profile.reference, target) / (COMPETITION_DISTANCE_M[target] / 1000);
   return { fastSPerKm: Math.round(perKm + span.fast), slowSPerKm: Math.round(perKm + span.slow) };
 }
@@ -215,7 +230,7 @@ export function distanceHint(minutes: number, pace: PaceSpan | null): number | n
 
 /**
  * Zielzeit-Plausibilität gegen die Referenzzeit (Plan 3.2/3.4): plausibel, wenn die Zielzeit höchstens 5 % schneller
- * ist als die Riegel-Vorhersage. Ohne Referenz nie plausibel (Zielzeit braucht eine Referenz, W-G6).
+ * ist als die Riegel-Vorhersage. Ohne Referenz oder mit zu weit entfernter Referenz-Distanz (Faktor > 4) nie plausibel.
  */
 export function goalTimePlausible(
   reference: CompetitionReference | null,
@@ -223,6 +238,7 @@ export function goalTimePlausible(
   targetTimeS: number | null,
 ): boolean {
   if (reference === null || targetTimeS === null) return false;
+  if (!riegelReliable(reference, discipline)) return false;
   const predicted = predictedTimeS(reference, discipline);
   return targetTimeS >= predicted * (1 - COMPETITION_PACE.goalTimeMaxImprovement);
 }
@@ -232,13 +248,15 @@ export function goalTimePlausible(
 // ---------------------------------------------------------------------------------------------------------
 
 /**
- * Ab welcher eingetragenen Anstrengung ist ein Ausdauer-Eintrag „zu hart“ (Vorschlag für 4b R3)? max(7, Ziel + 3),
- * höchstens 10. Lockere Ziele (≤ 4) → 7 wie bisher; ohne Ziel 7.
+ * Ab welcher eingetragenen Anstrengung ist ein Ausdauer-Eintrag „zu hart“ (Vorschlag für 4b R3)? Lockere Ziele (≤ 4)
+ * und ohne Ziel: max(7, Ziel + 3) = 7 wie bisher; harte Ziele: Ziel + 2, höchstens 9 (Wächter N4).
  */
 export function enduranceOverloadThreshold(effortTarget: number | null): number {
   const R = ENDURANCE_OVERLOAD_RULE;
-  if (effortTarget === null) return R.minEffort;
-  return Math.min(R.maxEffort, Math.max(R.minEffort, effortTarget + R.margin));
+  if (effortTarget === null || effortTarget <= R.easyTargetMax) {
+    return Math.max(R.minEffort, (effortTarget ?? 0) + R.margin);
+  }
+  return Math.min(R.hardMaxEffort, Math.max(R.minEffort, effortTarget + R.hardMargin));
 }
 
 /** Zählt der Eintrag für `endurance_reduce`? (Vorschlag 4b, mit Abstand zum Ziel statt fester 7.) */

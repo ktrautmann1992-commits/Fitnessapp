@@ -2,7 +2,8 @@ import { REST_RANGES_S } from '../constants';
 import type { Exercise } from '../content/schemas';
 import { clampRpe, type PlannedExerciseDraft } from './adapt';
 import { type EquipmentProfile, findSubstitute } from './equipment-profile';
-import type { EnduranceModality, PlannedSessionKind } from '../enums';
+import { startOfIsoWeek } from '../dates';
+import type { EnduranceModality, ExperienceLevel, PlannedSessionKind } from '../enums';
 import {
   ENDURANCE_TEXTS_DE,
   ENDURANCE_VARIANT_MODALITY,
@@ -12,6 +13,7 @@ import {
 import { easyWorkout } from './endurance-workouts';
 import {
   hardEffortCapFor,
+  hardWorkoutLimits,
   isHardWorkoutType,
   type WorkoutStep,
   type WorkoutType,
@@ -266,4 +268,60 @@ function applyCompetitionRules<T extends EnduranceSessionLike>(
     estimated_minutes: minutes,
     workout_steps: steps ?? null,
   };
+}
+
+/**
+ * Anzahl harter Einheiten je ISO-Woche nach den AKTUELLEN Regeln (Wächter N3): Wird Level oder Startgruppe strenger
+ * (z. B. Fortgeschritten → Einsteiger: 1 statt 2 je Woche), bleiben die frühesten erlaubten harten Einheiten der Woche,
+ * überzählige werden locker (Art, Name, Schritte, Anstrengung). Danach für jede Einheit applyCurrentEnduranceRules.
+ * Nur senken, nie lockern; Einheiten ohne Art bleiben unverändert.
+ */
+export function applyCompetitionWeekLimits<
+  T extends EnduranceSessionLike & { readonly scheduled_on: string },
+>(
+  sessions: readonly T[],
+  rules: Pick<
+    PlanSafetyRules,
+    | 'enduranceEffortMax'
+    | 'enduranceWalkOnly'
+    | 'pregnancyNotice'
+    | 'noHealthCheck'
+    | 'enduranceStartGroup'
+    | 'medicalNotice'
+  >,
+  level: ExperienceLevel,
+): T[] {
+  const perWeek = hardWorkoutLimits(rules, level).perWeek;
+  const kept = new Map<string, number>();
+  const order = sessions
+    .map((s, i) => ({ s, i }))
+    .sort((a, b) =>
+      a.s.scheduled_on < b.s.scheduled_on
+        ? -1
+        : a.s.scheduled_on > b.s.scheduled_on
+          ? 1
+          : a.i - b.i,
+    );
+  const downgrade = new Set<number>();
+  for (const { s, i } of order) {
+    if (s.kind !== 'endurance' || !isHardWorkoutType(s.workout_type)) continue;
+    const week = startOfIsoWeek(s.scheduled_on);
+    const count = kept.get(week) ?? 0;
+    if (count >= perWeek) downgrade.add(i);
+    else kept.set(week, count + 1);
+  }
+  return sessions.map((s, i) => {
+    if (!downgrade.has(i)) return s;
+    const variant = enduranceVariantOf(s);
+    const effort = Math.min(s.effort_target ?? rules.enduranceEffortMax, rules.enduranceEffortMax);
+    return {
+      ...s,
+      name_de: ENDURANCE_TEXTS_DE.names[variant],
+      warmup_de: ENDURANCE_TEXTS_DE.warmup[variant],
+      cooldown_de: ENDURANCE_TEXTS_DE.cooldown[variant],
+      effort_target: effort,
+      workout_type: 'easy',
+      workout_steps: easyWorkout('easy', s.estimated_minutes, effort).steps,
+    };
+  });
 }
