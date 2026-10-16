@@ -47,6 +47,11 @@ describe('Zeilen-Typen: packages/core = Datenbank', () => {
     expectTypeOf<core.CompetitionRow>().toEqualTypeOf<CompetitionRow>();
   });
 
+  it('Strecken (Phase 10 S1): gleiche Spalten wie die Datenbank, Werte-Listen enger', () => {
+    expectTypeOf<keyof core.TrackedRouteRow>().toEqualTypeOf<keyof Tables<'tracked_routes'>>();
+    expectTypeOf<core.TrackedRouteRow>().toExtend<Tables<'tracked_routes'>>();
+  });
+
   it('Eigene Gerichte (E2): gleiche Spalten wie die Datenbank, Werte-Listen enger', () => {
     expectTypeOf<keyof CustomMealRow>().toEqualTypeOf<keyof Tables<'custom_meals'>>();
     expectTypeOf<keyof CustomMealItemRow>().toEqualTypeOf<keyof Tables<'custom_meal_items'>>();

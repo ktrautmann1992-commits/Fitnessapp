@@ -506,6 +506,26 @@ Mit Konto (Supabase-Modus, nach dem Merge und `db-migrate` aus WP3): gleiche Sch
 `competitions`** zeigt euren Wettkampf (Plan-Bezug nur mit Einwilligung), **`planned_sessions`** die Spalten
 `workout_type`, `training_phase`, `workout_steps`, `target_distance_m` beim Wettkampfplan.
 
+## Teil 7s – Datenbank für Strecken prüfen (Phase 10, Etappe S1 Teil 1)
+In der App ändert sich dadurch **nichts Sichtbares** (Strecken aufzeichnen kommt erst nach dem Spike S0 mit der
+echten App). Ihr müsst nichts einstellen und keine Schlüssel eintragen. Prüfen könnt ihr am Handy:
+
+1. GitHub-App → Pull Request öffnen → unten **Checks**: **db-test** (Migrationen + Datenbank-Tests) und **ci** sind
+   grün. Falls db-test rot ist: nicht mergen, Claude im Chat Bescheid geben.
+2. **Nach dem Merge:** **Actions → db-migrate** → Lauf öffnen und warten, bis er grün ist (vorhandene Einträge, Pläne
+   und Wettkämpfe bleiben unverändert).
+3. Supabase im Handy-Browser → euer Projekt → links **Table Editor** → Tabelle **`tracked_routes`** ist da und leer.
+   Leer ist richtig – Strecken speichert erst die App.
+4. Supabase → links **Authentication** → **Policies** → bis zur Tabelle `tracked_routes` wischen: genau **eine**
+   Regel „Nutzer sehen eigene Strecken“ (nur Lesen der eigenen Zeilen). Mehr Regeln
+   dürfen dort nicht stehen – Strecken sind streng privat.
+5. Optional: Supabase → links **Advisors** → **Security Advisor** → **Refresh**. **Erwartet** sind Hinweise, dass
+   angemeldete Nutzer `save_tracked_route`, `update_tracked_route`, `delete_tracked_route` und
+   `delete_all_tracked_routes` („security definer“) ausführen dürfen – sie prüfen Login und alle Werte selbst. Andere
+   neue Meldungen bitte Claude schicken.
+6. Optional in der Vorschau (Testmodus): **Einstellungen → Meine Daten exportieren** → **Datei herunterladen** → in
+   der Datei steht der neue, leere Bereich `tracked_routes`.
+
 ## Teil 7f – Ernährungstagebuch testen (Etappe E1, Testmodus)
 Das Tagebuch läuft im **Testmodus** und seit N7 Teil 2 auch mit Konto (Teil 7d, Schritt 11). Ihr müsst nichts einstellen.
 Nach dem Merge spielt **db-migrate** (erst nach grünem db-test) zwei neue, leere Tabellen ein (`food_log_entries`,
