@@ -151,13 +151,12 @@ function confirm(c: Case, extra: Partial<ConfirmedDifference> = {}): ConfirmedDi
 const verdictOf = (out: ImportOutput) => reviewVerdict(out.report);
 
 describe('Liste „bestätigte Datenunterschiede“: Datei und Schema', () => {
-  it('eingecheckte Datei ist gültig, liegt außerhalb von content/foods/ und ist (noch) leer', () => {
+  it('eingecheckte Datei ist gültig und liegt außerhalb von content/foods/', () => {
     expect(CONFIRMED_DIFFERENCES_PATH.startsWith('content/food-mapping/')).toBe(true);
     const entries = parseConfirmedDifferences(
       JSON.parse(readFileSync(join(REAL_REPO_ROOT, CONFIRMED_DIFFERENCES_PATH), 'utf8')),
     );
-    expect(entries).toEqual([]);
-    // Jeder künftige Eintrag muss zu einer Zutat der Zuordnung mit derselben Quell-ID gehören.
+    // Jeder Eintrag muss zu einer Zutat der Zuordnung mit derselben Quell-ID gehören.
     const mapping = parseFoodMapping(
       JSON.parse(readFileSync(join(REAL_REPO_ROOT, FOOD_MAPPING_PATH), 'utf8')),
     );
