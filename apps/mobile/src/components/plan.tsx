@@ -2,7 +2,9 @@ import {
   type DisplayContext,
   type DisplaySession,
   exerciseMark,
+  type PaceProfile,
   type PlanSafetyRules,
+  sessionPaceInfo,
   type StoredSession,
   type WeekDay,
 } from '@fitnessapp/core';
@@ -10,10 +12,12 @@ import { fontSize, fontWeight, radius, spacing } from '@fitnessapp/ui';
 import { Pressable, StyleSheet, Text, View } from 'react-native';
 
 import { t } from '@/i18n';
+import { workoutInfoLines } from '@/lib/competition-format';
 import { dayLabel, enduranceLines, exerciseLines, weekdayShort } from '@/lib/plan-format';
 import { keyPatternTexts, markText } from '@/lib/swap-format';
 import { useThemeColors } from '@/lib/theme';
 
+import { StepList } from './competition';
 import { Body, Button, Card, Heading, MIN_TOUCH, Notice } from './ui';
 
 /**
@@ -39,6 +43,7 @@ export function SessionCard({
   targets,
   onOpenExercise,
   swap,
+  paceProfile = null,
 }: {
   /** Gespeicherte Einheit (vor den aktuellen Sicherheitsregeln). */
   original: StoredSession;
@@ -59,6 +64,8 @@ export function SessionCard({
    * Übungstausch (Etappe T2): „Tauschen“ an jeder Übung (nur wenn `enabled`), „Tausch zurücknehmen“ bei „heute
    * getauscht“, Link „Ausschlüsse ansehen“ zu den Einstellungen (null = keine Präferenzen, z. B. Supabase vor T3).
    */
+  /** Wettkampfplan (WP4): Basis der Pace-Richtwerte (Referenzzeit des Wettkampfs); null = keine Pace. */
+  paceProfile?: PaceProfile | null;
   swap?: {
     enabled: boolean;
     /** Termin nach heute („für dieses Training getauscht“). */
@@ -85,9 +92,18 @@ export function SessionCard({
       </View>
       {session.kind === 'endurance' ? (
         <View style={styles.block} testID="plan-endurance">
+          {/* Wettkampfplan (WP4): Art, Pace-Spanne (immer mit Hinweis), Distanz-Richtwert, Ablauf der Schritte. */}
+          {workoutInfoLines(session, sessionPaceInfo(session, paceProfile)).map((line) => (
+            <Body key={line} testID="plan-workout-info">
+              {line}
+            </Body>
+          ))}
           {enduranceLines(session, rules).map((line) => (
             <Body key={line}>{line}</Body>
           ))}
+          {session.workout_steps && session.workout_steps.length > 1 ? (
+            <StepList steps={session.workout_steps} />
+          ) : null}
         </View>
       ) : shown.libraryMissing ? (
         <Notice tone="warning" title={t.plan.libraryMissingTitle} testID="plan-library-missing">

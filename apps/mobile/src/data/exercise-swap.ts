@@ -12,6 +12,8 @@ import {
   type ExercisePair,
   type ExercisePreference,
   type ExercisePreferenceKind,
+  type ExperienceLevel,
+  experienceLevelSchema,
   type PlanLibrary,
   type PlanSafetyRules,
   preferenceChainFrom,
@@ -118,6 +120,10 @@ export function sessionDisplay(input: SessionDisplayInput): SessionDisplay {
   const shown = prepareSessionForDisplay(session, {
     rules,
     previousStartGroup: startGroupOf(active, birthDate),
+    // Wettkampfplan (WP4): Zahl harter Einheiten je Woche nach dem AKTUELLEN Level (Wächter N3 zu WP2).
+    ...(session.workout_type
+      ? { competitionWeek: { sessions: active.sessions, level: displayLevel(rows, snapshot) } }
+      : {}),
     library: lookup,
     ...(library ? { substituteLibrary: library.exercises } : {}),
     ...(profile ? { profile } : {}),
@@ -142,6 +148,20 @@ export function sessionDisplay(input: SessionDisplayInput): SessionDisplay {
     swapReady: library !== null,
     daySwapActive: daySwapApplies(session, { today, catchUpToday }),
   };
+}
+
+/** Strengeres Level aus Profil und Angaben des Plans (wie der Server, Wächter WP3 M1); unbekannt → Einsteiger. */
+function displayLevel(
+  rows: Pick<UserRows, 'profile'>,
+  snapshot: ReturnType<typeof planSnapshot>,
+): ExperienceLevel {
+  const order: readonly ExperienceLevel[] = ['beginner', 'advanced', 'competitive'];
+  const profile = experienceLevelSchema.safeParse(rows.profile?.experience_level);
+  const levels = [
+    profile.success ? profile.data : 'beginner',
+    snapshot?.experienceLevel ?? 'beginner',
+  ];
+  return order[Math.min(...levels.map((l) => order.indexOf(l)))] ?? 'beginner';
 }
 
 /**

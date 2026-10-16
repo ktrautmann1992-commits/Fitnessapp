@@ -16,6 +16,8 @@ export interface Person {
   level: RegExp;
   goal: string;
   discipline?: string;
+  /** Wettkampf-Datum im Schritt „Ziel“ (TT, MM, JJJJ) – optional (Phase 10 WP4). */
+  targetDate?: [string, string, string];
   /** Feste Tage: [Wochentag, Art, Minuten]; leer = Vorschlag (Ziel Ausdauer) übernehmen. */
   days: [string, string, number][];
 }
@@ -67,6 +69,12 @@ export async function onboard(page: Page, person: Person) {
   await page.getByRole('radio', { name: person.goal }).click();
   if (person.discipline) {
     await page.getByRole('radio', { name: person.discipline, exact: true }).click();
+  }
+  if (person.targetDate) {
+    const [day, month, year] = person.targetDate;
+    await page.getByLabel('Wettkampf-Datum (optional): Tag').fill(day);
+    await page.getByLabel('Wettkampf-Datum (optional): Monat').fill(month);
+    await page.getByLabel('Wettkampf-Datum (optional): Jahr').fill(year);
   }
   await next(page);
   await heading(page, 'Deine Trainingstage');

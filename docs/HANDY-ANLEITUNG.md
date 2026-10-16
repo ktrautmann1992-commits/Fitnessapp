@@ -454,7 +454,7 @@ Gerichte werden in der Datenbank gespeichert. Ihr müsst keine Schlüssel eintra
     `private` und sind für angemeldete Nutzer nicht aufrufbar. Andere neue Meldungen bitte Claude schicken.
 
 ## Teil 7j – Datenbank für den Wettkampf prüfen (Phase 10, Etappe WP3)
-In der App ändert sich dadurch **nichts Sichtbares** (Wettkampf anlegen kommt mit WP4). Ihr müsst nichts einstellen und
+In der App ändert sich dadurch **nichts Sichtbares** (Wettkampf anlegen kam mit WP4 – testen siehe Teil 7k). Ihr müsst nichts einstellen und
 keine Schlüssel eintragen. Prüfen könnt ihr am Handy:
 
 1. GitHub-App → Pull Request öffnen → unten **Checks**: **db-test** (Migrationen + Datenbank-Tests) und **ci** sind
@@ -469,6 +469,42 @@ keine Schlüssel eintragen. Prüfen könnt ihr am Handy:
    angemeldete Nutzer `save_competition`, `cancel_competition`, `complete_competition` und `delete_competition`
    („security definer“) ausführen dürfen – sie prüfen Login und alle Werte selbst. Andere neue Meldungen bitte Claude
    schicken.
+
+## Teil 7k – Wettkampf, Plan-Ansicht, Countdown und Intervall-Timer testen (Phase 10, Etappe WP4, Testmodus)
+Ihr müsst nichts einstellen. Alles geht im Handy-Browser über die Vercel-Vorschau; Vibration und „Bildschirm bleibt an“
+prüft ihr zusätzlich in der echten App (Teil 9).
+
+1. Vorschau-Link aus dem Pull Request öffnen → **Einstellungen → Testdaten löschen** (falls schon getestet) →
+   „Testmodus starten“ → Onboarding mit **Gesundheits-Check (alles „Nein“)**, Erfahrung **Fortgeschritten**, Ziel
+   **Ausdauer → Halbmarathon**, „Ohne Vorschlag planen“ → **Mo 60, Mi 60 und Sa 90 Minuten Ausdauer**. Im Schritt „Ziel“
+   könnt ihr ein **Wettkampf-Datum** eintragen – dann lädt „Heute“ euch später zum Wettkampf ein.
+2. „Heute“ → **Einstellungen → Mein Wettkampf → Wettkampf eintragen**. Renntag **in 6 Wochen** eintragen → die Ampel
+   zeigt **„✕ Zu kurz“** mit Grund und Vorschlägen. Bei „Späterer Renntag“ auf **Übernehmen** tippen → **„✓ Passt“**.
+3. Ziel **Zielzeit** wählen, sehr schnelle Zeit eingeben (z. B. 1:30:00) und eine **Referenzzeit** (10 km in 50:00, Datum
+   vor wenigen Wochen) → **„! Knapp“**, „Ziel im Plan: Ankommen“. Zurück auf **Ankommen** → „✓ Passt“.
+4. **Wettkampfplan erstellen** → „Plan neu erstellen“ bestätigen → „Dein Wettkampfplan ist fertig“.
+5. **Zurück zu Heute**: oben Countdown („Noch … Tage bis zum Halbmarathon“) und das Phasen-Band („Basis · …“). Die
+   Einheit zeigt **Art**, **Pace-Richtwert** mit dem Satz „Die Anstrengung hat Vorrang …“, **Distanz-Richtwert** und den
+   **Ablauf** (Aufwärmen, Hauptteil, Abwärmen). In späteren Wochen (Wochenübersicht/Kalender) gibt es Steigerungen bzw. ab
+   dem Aufbau Tempo und Intervalle („6 × 3 min zügig …“).
+6. **Ausdauer starten** → **Timer starten**: Schritt, große Restzeit, „Danach: …“. **Pause** → Zeit steht, **Weiter** →
+   läuft. **Abbrechen und eintragen** → Bestätigen → die gelaufenen Minuten stehen unten bei der Dauer → **Training
+   speichern**. Im Browser vibriert nichts (Hinweis steht dabei); in der App vibriert das Handy beim Schrittwechsel, mit
+   VoiceOver/TalkBack wird der neue Schritt angesagt.
+7. **Kalender**: Countdown oben; mit **Nächste Woche ›** bis zum Renntag blättern → „◆ Renntag: Halbmarathon“.
+8. **Mein Wettkampf → Ändern** (z. B. Name) → „Speichern“. **Wettkampf absagen** → bestätigen → die App fragt „Plan ohne
+   Wettkampf neu erstellen?“ → einmal **Abbrechen** testen, einmal bestätigen (neuer Grundlagen-Plan).
+9. Ergebnis eintragen geht ab dem Renntag (im Test nicht ohne Weiteres erreichbar – der automatische Test stellt dafür
+   die Uhr vor): „Mein Wettkampf“ → **Ergebnis eintragen** → Zeit, Anstrengung, Notiz → danach „Erholung nach dem
+   Rennen“ und „Nächstes Ziel planen“.
+10. Ohne Einwilligung (neuer Testmodus, „Ohne Einwilligung fortfahren“): Ampel **„✕ Nicht möglich“** mit Vorschlag
+    „Gesundheits-Check“; **Nur Countdown speichern** geht trotzdem.
+11. Flugmodus an → „Heute“, Plan und Timer funktionieren; „Mein Wettkampf → Ändern/Absagen“ ist gesperrt mit Hinweis.
+12. Einmal hell und einmal dunkel ansehen; die Ampel hat immer Zeichen **und** Wort.
+
+Mit Konto (Supabase-Modus, nach dem Merge und `db-migrate` aus WP3): gleiche Schritte; Supabase → **Table Editor →
+`competitions`** zeigt euren Wettkampf (Plan-Bezug nur mit Einwilligung), **`planned_sessions`** die Spalten
+`workout_type`, `training_phase`, `workout_steps`, `target_distance_m` beim Wettkampfplan.
 
 ## Teil 7f – Ernährungstagebuch testen (Etappe E1, Testmodus)
 Das Tagebuch läuft im **Testmodus** und seit N7 Teil 2 auch mit Konto (Teil 7d, Schritt 11). Ihr müsst nichts einstellen.

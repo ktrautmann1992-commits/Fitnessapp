@@ -28,3 +28,6 @@ export * from './periodization';
 export * from './endurance-workouts';
 export * from './intensity';
 export * from './competition-record';
+export * from './competition-view';
+export * from './competition-rules';
+export * from './interval-timer';

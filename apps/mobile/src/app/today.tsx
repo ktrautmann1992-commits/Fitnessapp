@@ -1,6 +1,9 @@
 import {
   addDays,
   blockWeekFor,
+  competitionCountdown,
+  competitionPaceProfile,
+  competitionPlanWeek,
   type DaySwap,
   followUpBlockState,
   nextPlannedSession,
@@ -14,6 +17,7 @@ import { Redirect, useFocusEffect, useRouter, type Href } from 'expo-router';
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import { Platform, View } from 'react-native';
 
+import { CountdownCard, PhaseBand } from '@/components/competition';
 import { NutritionTodayCard } from '@/components/nutrition';
 import { MedicalNotice, SessionCard, WeekOverview } from '@/components/plan';
 import { ConfirmDialog, Screen } from '@/components/screen';
@@ -29,6 +33,7 @@ import {
   type SwapTarget,
   swapTargetFor,
 } from '@/data/exercise-swap';
+import { competitionEntry, isCompetitionPlan } from '@/data/competition';
 import { logForSession } from '@/data/log-rows';
 import type { WorkoutDraft } from '@/data/workout-draft';
 import { startKind, trainedTodayOther, workoutView } from '@/data/workout-session';
@@ -39,7 +44,12 @@ import { formatDateDe, todayIso } from '@/lib/format';
 import { workoutTargetLines } from '@/lib/workout-format';
 import { dayLabel, weekdayName } from '@/lib/plan-format';
 import { planTitleText } from '@/lib/plan-title';
-import { PLAN_CHANGE_DROPPED, PLAN_RECREATE_NEEDED, useApp } from '@/state/app-state';
+import {
+  COMPETITION_PLAN_ENDED,
+  PLAN_CHANGE_DROPPED,
+  PLAN_RECREATE_NEEDED,
+  useApp,
+} from '@/state/app-state';
 import { healthConsentStatus, isReminderDue, resolveEntryRoute } from '@/state/flow';
 
 /**
@@ -110,6 +120,18 @@ export default function TodayScreen() {
   );
   const lib = library.kind === 'ready' ? library.library : null;
   const rules = app.safetyRules;
+  const competition = competitionEntry(rows, today);
+  const countdown = competition
+    ? competitionCountdown(
+        {
+          status: competition.row.status,
+          discipline: competition.stored.competition.discipline,
+          raceDate: competition.stored.competition.raceDate,
+          resultSessionLogId: competition.stored.resultSessionLogId,
+        },
+        today,
+      )
+    : null;
 
   async function create() {
     setBusy(true);
@@ -119,7 +141,12 @@ export default function TodayScreen() {
     setSelected(today);
     setMessage(
       outcome.ok
-        ? { tone: 'success', text: t.plan.created }
+        ? {
+            tone: 'success',
+            text: outcome.withoutCompetition
+              ? t.competition.createdWithoutCompetition
+              : t.plan.created,
+          }
         : { tone: 'danger', text: createPlanErrorText(outcome.code) },
     );
   }
@@ -214,6 +241,12 @@ export default function TodayScreen() {
           <Button label={t.common.close} variant="link" onPress={app.clearPlanMessage} />
         </Notice>
       ) : null}
+      {app.planMessage === COMPETITION_PLAN_ENDED ? (
+        <Notice tone="info" title={t.competition.planEndedTitle} testID="competition-plan-ended">
+          <Body>{t.competition.planEndedText}</Body>
+          <Button label={t.plan.recreate} onPress={() => void create()} loading={busy} />
+        </Notice>
+      ) : null}
       {app.planMessage === PLAN_RECREATE_NEEDED ? (
         <Notice tone="warning" testID="plan-recreate-needed">
           <Body>{t.plan.recreateNeeded}</Body>
@@ -268,6 +301,28 @@ export default function TodayScreen() {
       ))}
       {app.offline ? <Notice tone="warning">{t.plan.offline}</Notice> : null}
       {isReminderDue(rows, today) ? <Notice tone="info">{t.today.measurementDue}</Notice> : null}
+      {/* Wettkampf (WP4): Countdown bzw. Einladung, wenn im Onboarding ein Datum angegeben wurde. */}
+      {competition && countdown ? (
+        <CountdownCard
+          countdown={countdown}
+          discipline={competition.stored.competition.discipline}
+          name={competition.stored.competition.name}
+          onOpen={() => router.push('/wettkampf' as Href)}
+        />
+      ) : rows.goals?.goal_type === 'endurance' &&
+        rows.goals.target_date !== null &&
+        rows.goals.target_date > today &&
+        !rows.competitions.some((c) => c.status === 'planned') ? (
+        <Notice tone="info" title={t.competition.invite} testID="competition-invite">
+          <Body>{t.competition.inviteText(dayLabel(rows.goals.target_date))}</Body>
+          <Button
+            label={t.competition.add}
+            variant="secondary"
+            onPress={() => router.push('/wettkampf?neu=1' as Href)}
+            testID="competition-invite-open"
+          />
+        </Notice>
+      ) : null}
     </>
   );
 
@@ -383,6 +438,21 @@ export default function TodayScreen() {
     selected < today ? addDays(today, -1) : selected,
   );
   const followUp = followUpBlockState(active.sessions, today);
+  // Wettkampfplan (WP4): Phasen-Band „Aufbau · Woche 6 von 14“ für den gewählten Tag, Pace aus der Referenzzeit.
+  const planned = rows.competitions.find((c) => c.status === 'planned');
+  const planWeek =
+    competition && isCompetitionPlan(active)
+      ? competitionPlanWeek(
+          active.sessions,
+          plan.start_date,
+          competition.stored.competition.raceDate,
+          selected,
+        )
+      : null;
+  const paceProfile =
+    competition && planned && isCompetitionPlan(active)
+      ? competitionPaceProfile(competition.stored.competition)
+      : null;
   const templateVersion = lib?.templates.find((tpl) => tpl.id === plan.template_id)?.version;
   const offer = rules ? planOffer(rows, app.versions, active, rules, today, templateVersion) : null;
   // EIN Anzeigeweg (prepareSessionForDisplay im Core): Sicherheitsregeln → Präferenzen → „Nur heute“-Tausche.
@@ -566,6 +636,7 @@ export default function TodayScreen() {
         </Notice>
       ) : null}
 
+      {planWeek ? <PhaseBand week={planWeek} /> : null}
       {week ? (
         <View style={{ gap: 4 }} testID="plan-week-header">
           <Heading level={2}>
@@ -597,6 +668,7 @@ export default function TodayScreen() {
               selected === today ? t.plan.todaySession : t.plan.sessionOn(dayLabel(selected))
             }
             {...(targets && selectedSession.status === 'planned' ? { targets } : {})}
+            paceProfile={paceProfile}
             onOpenExercise={(exerciseId) =>
               router.push(`/uebungen/${encodeURIComponent(exerciseId)}` as Href)
             }

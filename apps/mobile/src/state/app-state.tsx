@@ -19,6 +19,9 @@ import {
   swapRequestSchema,
   toSavePlanPayload,
   generatedPlanSchema,
+  generatedCompetitionPlanSchema,
+  type CompetitionFeasibility,
+  type SaveCompetitionPayload,
   type CustomMeal,
   type FoodLogEntry,
 } from '@fitnessapp/core';
@@ -44,6 +47,14 @@ import {
   type NutritionSyncState,
   type PreferenceSwapContext,
 } from '@/data/backend';
+import {
+  buildCompetitionPlan,
+  type CompetitionDraft,
+  competitionFollowUpFromRows,
+  draftFromStored,
+  type PlanBlocker,
+  plannedCompetition,
+} from '@/data/competition';
 import { createBackend, deviceStore, newId } from '@/data/create-backend';
 import { createDaySwapStore, prunedDaySwaps, withoutHealthPlanSwaps } from '@/data/day-swaps';
 import type { FavoriteChange } from '@/data/food-log-rows';
@@ -89,8 +100,25 @@ type LoadStatus =
 
 /** Ergebnis von „Plan erstellen“ (Fehler als fester Code, Texte in i18n). */
 export type CreatePlanOutcome =
-  | { ok: true; plan: GeneratedPlan }
+  | {
+      ok: true;
+      plan: GeneratedPlan;
+      /**
+       * Es gibt einen geplanten Wettkampf mit Plan-Bezug, die Ampel passt aber gerade nicht – deshalb ein Grundlagen-Plan
+       * (nie gestaucht, WP4). Hinweis auf „Mein Wettkampf“.
+       */
+      withoutCompetition?: boolean;
+    }
   | { ok: false; code: BackendErrorCode | 'incomplete' | 'invalid_inputs' };
+
+/** Ergebnis von „Wettkampfplan erstellen“ (Etappe WP4). */
+export type CompetitionPlanOutcome =
+  | { ok: true; plan: GeneratedPlan }
+  /** Ampel „zu kurz“/„nicht möglich“ – kein Plan (nie gestaucht). */
+  | { ok: false; kind: 'not_feasible'; feasibility: CompetitionFeasibility }
+  | { ok: false; kind: 'blocked'; blocker: PlanBlocker | 'invalid_inputs' | 'no_template' }
+  /** Fehler vom Backend (Text über errorText). */
+  | { ok: false; kind: 'error'; error: unknown };
 
 /** Rückmeldung nach dem Speichern eines Trainings (Texte in i18n workout.*). */
 export type WorkoutMessage =
@@ -210,8 +238,24 @@ export interface AppContextValue {
   /** Einmalige Meldung (z. B. verworfene Verschiebung). */
   planMessage: string | null;
   clearPlanMessage: () => void;
-  /** Plan nach den aktuellen Angaben erzeugen und speichern (ersetzt den aktiven Plan). */
+  /**
+   * Plan nach den aktuellen Angaben erzeugen und speichern (ersetzt den aktiven Plan). Mit geplantem Wettkampf samt
+   * Plan-Bezug als Wettkampfplan (save_competition → save_training_plan), sonst bzw. bei roter Ampel Grundlagen-Plan.
+   */
   createPlan: () => Promise<CreatePlanOutcome>;
+  /**
+   * Wettkampfplan erstellen (WP4): ggf. Ziel-Distanz anpassen, dann save_competition MIT Plan-Bezug, dann
+   * save_training_plan (Reihenfolge zwingend, Wächter WP3 M2). Nur online.
+   */
+  createCompetitionPlan: (
+    draft: CompetitionDraft,
+    competitionId: string | null,
+  ) => Promise<CompetitionPlanOutcome>;
+  /** Wettkampf ohne neuen Plan speichern (Countdown bzw. unveränderter Plan-Bezug). Fehler werfen. */
+  saveCompetition: (payload: SaveCompetitionPayload) => Promise<void>;
+  cancelCompetition: (id: string) => Promise<void>;
+  completeCompetition: (id: string, sessionLogId: string | null) => Promise<void>;
+  deleteCompetition: (id: string) => Promise<void>;
   /** Einheit verschieben (5.11): freier Tag dieser Woche, sonst streichen. */
   moveSession: (sessionId: string) => Promise<RescheduleResult>;
   /**
@@ -320,6 +364,8 @@ export type MoveOutcome =
   | { kind: 'blocked'; reason: MoveBlockReason };
 /** Meldung: Folgeblock ließ sich nicht anhängen → Plan neu erstellen. */
 export const PLAN_RECREATE_NEEDED = 'plan_recreate_needed' as const;
+/** Meldung: Wettkampfplan endet (Zyklus fertig, Wettkampf vorbei/abgesagt, Regel neu) → Plan neu erstellen (WP4). */
+export const COMPETITION_PLAN_ENDED = 'competition_plan_ended' as const;
 
 const AppContext = createContext<AppContextValue | null>(null);
 
@@ -1068,6 +1114,37 @@ export function AppStateProvider({ children }: { children: ReactNode }) {
     return cachedRules ?? effectiveSafetyRules(rows, versions, todayIso());
   }, [cachedRules, rows, versions]);
 
+  /**
+   * Wettkampfplan speichern: Ziel-Distanz (falls anders), save_competition mit Plan-Bezug, save_training_plan. Liefert
+   * die neuen Zeilen; Fehler werfen. Schlägt der zweite Aufruf fehl, bleibt der Wettkampf mit Plan-Bezug stehen
+   * (harmlos – beim nächsten Versuch überschrieben, WP3 „Offen für WP4“).
+   */
+  const saveCompetitionPlan = useCallback(
+    async (
+      current: UserRows,
+      build: { competition: SaveCompetitionPayload; goalDisciplineChange: boolean },
+      plan: GeneratedPlan,
+    ): Promise<UserRows> => {
+      let next = current;
+      if (build.goalDisciplineChange) {
+        next = await backend.saveStep(
+          {
+            step: 'goal',
+            goal: {
+              goalType: 'endurance',
+              discipline: build.competition.discipline,
+              targetDate: build.competition.race_date,
+            },
+          },
+          { answers, rows: next, versions },
+        );
+      }
+      next = await backend.saveCompetition(build.competition, next);
+      return backend.savePlan(toSavePlanPayload(plan), next);
+    },
+    [answers, backend, versions],
+  );
+
   const createPlan = useCallback(async (): Promise<CreatePlanOutcome> => {
     if (!rows) return { ok: false, code: 'not_signed_in' };
     try {
@@ -1075,7 +1152,39 @@ export function AppStateProvider({ children }: { children: ReactNode }) {
       const loaded = await backend.loadPlanLibrary({ allowCached: false });
       if (!loaded) return { ok: false, code: 'network' };
       setLibrary({ kind: 'ready', library: loaded });
-      const result = generatePlanFromRows(rows, versions, loaded, todayIso());
+      const today = todayIso();
+      // Geplanter Wettkampf MIT Plan-Bezug und passender Distanz → wieder ein Wettkampfplan (Ampel neu gerechnet).
+      const planned = plannedCompetition(rows);
+      let withoutCompetition = false;
+      if (
+        planned &&
+        planned.stored.effectiveGoal !== null &&
+        rows.goals?.goal_type === 'endurance' &&
+        rows.goals.discipline === planned.stored.competition.discipline
+      ) {
+        const build = buildCompetitionPlan(
+          rows,
+          versions,
+          activePlan(rows),
+          loaded,
+          draftFromStored(planned.stored),
+          planned.stored.id,
+          today,
+        );
+        if (typeof build !== 'string' && build.result.ok) {
+          if (!generatedCompetitionPlanSchema.safeParse(build.result.plan).success) {
+            return { ok: false, code: 'invalid_inputs' };
+          }
+          const next = await saveCompetitionPlan(rows, build, build.result.plan);
+          setRows(next);
+          setPlanMessage(null);
+          refreshPending();
+          return { ok: true, plan: build.result.plan };
+        }
+        // Ampel rot bzw. nicht möglich: nie stauchen – Grundlagen-Plan mit Hinweis.
+        withoutCompetition = true;
+      }
+      const result = generatePlanFromRows(rows, versions, loaded, today);
       if (!result.ok) {
         return {
           ok: false,
@@ -1090,11 +1199,89 @@ export function AppStateProvider({ children }: { children: ReactNode }) {
       setRows(next);
       setPlanMessage(null);
       refreshPending();
-      return { ok: true, plan: result.plan };
+      return withoutCompetition
+        ? { ok: true, plan: result.plan, withoutCompetition }
+        : { ok: true, plan: result.plan };
     } catch (error) {
       return { ok: false, code: errorCode(error) };
     }
-  }, [backend, refreshPending, rows, versions]);
+  }, [backend, refreshPending, rows, saveCompetitionPlan, versions]);
+
+  const createCompetitionPlan = useCallback(
+    async (
+      draft: CompetitionDraft,
+      competitionId: string | null,
+    ): Promise<CompetitionPlanOutcome> => {
+      if (!rows) return { ok: false, kind: 'error', error: new BackendError('not_signed_in') };
+      try {
+        const loaded = await backend.loadPlanLibrary({ allowCached: false });
+        if (!loaded) return { ok: false, kind: 'error', error: new BackendError('online_only') };
+        setLibrary({ kind: 'ready', library: loaded });
+        const build = buildCompetitionPlan(
+          rows,
+          versions,
+          activePlan(rows),
+          loaded,
+          draft,
+          competitionId,
+          todayIso(),
+        );
+        if (typeof build === 'string') return { ok: false, kind: 'blocked', blocker: build };
+        const result = build.result;
+        if (!result.ok) {
+          if (result.error === 'competition_not_feasible') {
+            return { ok: false, kind: 'not_feasible', feasibility: result.feasibility };
+          }
+          return { ok: false, kind: 'blocked', blocker: result.error };
+        }
+        // Zod an der Grenze: Wettkampf-Grenzen (Anstrengung 1–8 nur mit harter Art usw.) vor dem Senden.
+        if (!generatedCompetitionPlanSchema.safeParse(result.plan).success) {
+          return { ok: false, kind: 'blocked', blocker: 'invalid_inputs' };
+        }
+        const next = await saveCompetitionPlan(rows, build, result.plan);
+        setRows(next);
+        setPlanMessage(null);
+        refreshPending();
+        return { ok: true, plan: result.plan };
+      } catch (error) {
+        // Stand neu laden (z. B. Wettkampf gespeichert, Plan abgelehnt) – die Anzeige zeigt nie Veraltetes.
+        await loadUser().catch(() => undefined);
+        return { ok: false, kind: 'error', error };
+      }
+    },
+    [backend, loadUser, refreshPending, rows, saveCompetitionPlan, versions],
+  );
+
+  const competitionWrite = useCallback(
+    async (run: (current: UserRows) => Promise<UserRows>) => {
+      if (!rows) throw new BackendError('not_signed_in');
+      try {
+        setRows(await run(rows));
+      } catch (error) {
+        await loadUser().catch(() => undefined);
+        throw error;
+      }
+    },
+    [loadUser, rows],
+  );
+  const saveCompetition = useCallback(
+    (payload: SaveCompetitionPayload) =>
+      competitionWrite((current) => backend.saveCompetition(payload, current)),
+    [backend, competitionWrite],
+  );
+  const cancelCompetition = useCallback(
+    (id: string) => competitionWrite((current) => backend.cancelCompetition(id, current)),
+    [backend, competitionWrite],
+  );
+  const completeCompetition = useCallback(
+    (id: string, sessionLogId: string | null) =>
+      competitionWrite((current) => backend.completeCompetition(id, sessionLogId, current)),
+    [backend, competitionWrite],
+  );
+  const deleteCompetition = useCallback(
+    (id: string) => competitionWrite((current) => backend.deleteCompetition(id, current)),
+    [backend, competitionWrite],
+  );
 
   const moveSession = useCallback(
     async (sessionId: string): Promise<RescheduleResult> => {
@@ -1199,7 +1386,26 @@ export function AppStateProvider({ children }: { children: ReactNode }) {
     ) {
       return;
     }
-    const sessions = nextBlockFromRows(rows, active, safetyRules, library.library, today);
+    // Wettkampfplan (WP4): Folgeblock aus dem gespeicherten Wettkampf (Makrozyklus neu gerechnet). Endet der Zyklus
+    // bzw. passt der Wettkampf nicht mehr → „Plan neu erstellen“ statt eines Grundlagen-Blocks von der Spitze aus.
+    const competition = competitionFollowUpFromRows(
+      rows,
+      versions,
+      active,
+      safetyRules,
+      library.library,
+      today,
+    );
+    if (competition.kind === 'ended') {
+      appendFailedRef.current = active.plan.id;
+      setPlanMessage(COMPETITION_PLAN_ENDED);
+      return;
+    }
+    if (competition.kind === 'none') return;
+    const sessions =
+      competition.kind === 'block'
+        ? competition.sessions
+        : nextBlockFromRows(rows, active, safetyRules, library.library, today);
     if (!sessions) return;
     appendingRef.current = true;
     try {
@@ -1222,7 +1428,7 @@ export function AppStateProvider({ children }: { children: ReactNode }) {
     } finally {
       appendingRef.current = false;
     }
-  }, [backend, library, loadUser, offline, rows, safetyRules]);
+  }, [backend, library, loadUser, offline, rows, safetyRules, versions]);
 
   /** Day-Swaps des Kontos vom Gerät entfernen (Abmelden, Konto löschen). */
   const forgetDaySwaps = useCallback(async () => {
@@ -1303,6 +1509,11 @@ export function AppStateProvider({ children }: { children: ReactNode }) {
       planMessage,
       clearPlanMessage: () => setPlanMessage(null),
       createPlan,
+      createCompetitionPlan,
+      saveCompetition,
+      cancelCompetition,
+      completeCompetition,
+      deleteCompetition,
       moveSession,
       moveSessionTo,
       appendNextBlockIfDue,
@@ -1380,6 +1591,11 @@ export function AppStateProvider({ children }: { children: ReactNode }) {
       safetyRules,
       planMessage,
       createPlan,
+      createCompetitionPlan,
+      saveCompetition,
+      cancelCompetition,
+      completeCompetition,
+      deleteCompetition,
       moveSession,
       moveSessionTo,
       appendNextBlockIfDue,
