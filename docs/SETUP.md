@@ -158,12 +158,16 @@ Die Landingpage verlinkt auf die Web-Version der App. Ohne Eintrag zeigt der Kno
 ## Teil D – Expo (echte Apps für Android und iPhone)
 
 1. **expo.dev** öffnen → **Sign up** (oder **Log in**).
-2. **Projects** → **Create a project**. **Name:** `fitnessapp`, **Slug:** `fitnessapp`.
+2. **Projects** → **Create a project**. **Name:** `AlphaFive`, **Slug:** `alphafive`.
    Der Slug muss genau so heißen → **Create**.
 3. In der Projektübersicht steht die **ID** (Format `1234abcd-…`). Kopieren. Sie ist **kein** Geheimnis.
-4. Oben rechts auf dein **Profilbild → Account settings → Access tokens → Create token**.
-   Name: `github-actions` → **Create** → kopieren. Das ist `EXPO_TOKEN`. Trage es als GitHub Secret ein (Teil B).
+4. Das Projekt gehört der Organisation **`ktrautmann1992s-team`**. Den Schlüssel deshalb als **Robot-Benutzer** der
+   Organisation anlegen: Organisation → **Organization settings → Access tokens → + Add robot** → Name
+   `github-actions`, Rolle **Developer** → beim Robot **Create token** → kopieren (wird nur einmal angezeigt). Das ist
+   `EXPO_TOKEN`. Trage es als GitHub Secret ein (Teil B).
 5. In einer Claude-Code-Sitzung schreiben: **„Trag die Expo-Projekt-ID `…` in apps/mobile/app.config.ts ein.“**
+   **Erledigt (16.10.2026):** Projekt „AlphaFive“, Besitzer `ktrautmann1992s-team`, Slug `alphafive`, ID
+   `7370ffec-3dd0-47bd-91dd-595c67ebae69`.
 6. Für die echten Apps auch die Datenbank-Werte hinterlegen: expo.dev → Projekt → **Environment variables** →
    **Add variable**:
    - `EXPO_PUBLIC_SUPABASE_URL` (Visibility: **Plain text**, Environments: **development**, **preview** und
