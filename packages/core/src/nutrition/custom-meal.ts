@@ -535,9 +535,18 @@ export function rebuildEntry(
     return { ok: true, entry };
   }
   const target = { id: entry.id, date: entry.eaten_on, slot: entry.slot };
+  // Titel (und bei Foto-Bestandteilen die Herkunft 'photo', E3) bleiben beim Neu-Rechnen erhalten.
   const keep = (build: FoodLogBuild): FoodLogBuild =>
-    build.ok ? { ok: true, entry: { ...build.entry, title_de: entry.title_de } } : build;
-  if (entry.source === 'food' && 'amount' in change && entry.unit !== null) {
+    build.ok
+      ? entry.source === 'photo'
+        ? finishFoodLogEntry({ ...build.entry, title_de: entry.title_de, source: 'photo' })
+        : { ok: true, entry: { ...build.entry, title_de: entry.title_de } }
+      : build;
+  if (
+    (entry.source === 'food' || entry.source === 'photo') &&
+    'amount' in change &&
+    entry.unit !== null
+  ) {
     const food = entry.food_id === null ? undefined : sources.foods.get(entry.food_id);
     if (food) return keep(entryFromFood(food, change.amount, entry.unit, target));
     return rescaleEntry(entry, change, null);

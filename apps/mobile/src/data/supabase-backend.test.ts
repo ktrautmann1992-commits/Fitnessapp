@@ -566,7 +566,8 @@ describe('Supabase-Modus: Speichern', () => {
     const store = createMemoryStore();
     const backend = createSupabaseBackend(options(client, store));
     const docs = await backend.loadConsentDocuments();
-    expect(docs).toHaveLength(3);
+    // terms, privacy, health_data und (Etappe E3) ai_food_photo.
+    expect(docs).toHaveLength(4);
     // N7: ohne current_consent_version (für anon gesperrt) – höchste veröffentlichte Version direkt aus der Tabelle.
     expect(calls.some((c) => c.table.startsWith('rpc:'))).toBe(false);
     const query = calls.find((c) => c.table === 'consent_documents');
@@ -1569,6 +1570,9 @@ describe('Supabase-Modus: Tagebuch-Warteschlange', () => {
       'custom_meal_items',
       // Phase 10 WP3
       'competitions',
+      // Etappe E3
+      'ai_usage',
+      'beta_entitlements',
     ];
     const exported = {
       format_version: 1,

@@ -17,8 +17,17 @@ export const APP_LOCALES = ['de-DE', 'de-AT', 'de-CH'] as const;
 export type AppLocale = (typeof APP_LOCALES)[number];
 export const DEFAULT_LOCALE: AppLocale = 'de-DE';
 
-/** Einwilligungsarten (getrennt, versioniert). */
-export const CONSENT_TYPES = ['terms', 'privacy', 'health_data', 'cycle_data'] as const;
+/**
+ * Einwilligungsarten (getrennt, versioniert). `ai_food_photo` seit Etappe E3 (Gericht per Foto, Art. 9 +
+ * Übermittlung an Google als Auftragsverarbeiter – eigene, getrennte Einwilligung, docs/PLAN-AUSWERTUNG.md 2.7).
+ */
+export const CONSENT_TYPES = [
+  'terms',
+  'privacy',
+  'health_data',
+  'cycle_data',
+  'ai_food_photo',
+] as const;
 export type ConsentType = (typeof CONSENT_TYPES)[number];
 
 /** Gerät, auf dem eine Einwilligung erteilt wurde. */

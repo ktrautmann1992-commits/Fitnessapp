@@ -1,6 +1,6 @@
 # Plan „Kalender, Tages- und Wochenauswertung“ (Gründer-Wünsche 15.10.2026)
 
-**Status:** Freigegeben am 15.10.2026 – alle Entscheidungen A-G1 bis A-G20 „wie empfohlen“ (Abschnitt 14). Umsetzung etappenweise, jede Etappe mit Wächter-Prüfung. **A1a (Trainingskalender mit Drag-and-drop und Tauschen) umgesetzt** – Stand 15.10.2026 (Umsetzungsstand A1a am Ende von Abschnitt 3). **A1b (Nachtragen und freie Einheit) umgesetzt** – Stand 15.10.2026 (Umsetzungsstand A1b am Ende von Abschnitt 4). **A2 (Tagesauswertung „Dein Tag“) umgesetzt** – Stand 15.10.2026 (Umsetzungsstand A2 am Ende von Abschnitt 6). **A3 (Wochenauswertung) umgesetzt** – Stand 15.10.2026 (Umsetzungsstand A3 am Ende von Abschnitt 8).
+**Status:** Freigegeben am 15.10.2026 – alle Entscheidungen A-G1 bis A-G20 „wie empfohlen“ (Abschnitt 14). Umsetzung etappenweise, jede Etappe mit Wächter-Prüfung. **A1a (Trainingskalender mit Drag-and-drop und Tauschen) umgesetzt** – Stand 15.10.2026 (Umsetzungsstand A1a am Ende von Abschnitt 3). **A1b (Nachtragen und freie Einheit) umgesetzt** – Stand 15.10.2026 (Umsetzungsstand A1b am Ende von Abschnitt 4). **A2 (Tagesauswertung „Dein Tag“) umgesetzt** – Stand 15.10.2026 (Umsetzungsstand A2 am Ende von Abschnitt 6). **A3 (Wochenauswertung) umgesetzt** – Stand 15.10.2026 (Umsetzungsstand A3 am Ende von Abschnitt 8). **E3 (Gericht per Foto) als Testversion mit Attrappe umgesetzt** – Stand 16.10.2026 (Umsetzungsstand E3 am Ende von Abschnitt 9).
 
 **Grundlage:** `CLAUDE.md`, `docs/KONZEPT.md` (4, 6.1–6.3, 11.3, 12), `docs/PLAN-PHASE-3.md` 5.11, `docs/PLAN-PHASE-4.md` (3.1–3.6, 5.6, Frage 6), `docs/PLAN-PHASE-4B.md`, `docs/PLAN-PHASE-5.md` (4.6, 4.6.1, 4.9, 6.2, 7.1, 13 X0–X2), `docs/PLAN-ZIELE.md` (3, K6, F7, F14), `docs/DESIGN.md`, Code-Stand vom 15.10.2026.
 
@@ -767,6 +767,144 @@ Entspricht KONZEPT 6.4 und 15. **Premium**, Echtzeit-KI, Anbieter laut Gründer-
 2. Dann mit echtem Schlüssel in der Vercel-Vorschau und freigeschaltetem Testkonto: Teller fotografieren, Info „halbe Portion“ → Vorschlag prüfen.
 3. Limit testen: Konto mit Limit 2 → drittes Foto zeigt die Meldung.
 4. Einwilligung widerrufen → Knopf „Per Foto“ fragt wieder.
+
+### Umsetzungsstand E3 (16.10.2026)
+
+**Gründer-Entscheidung 16.10.2026:** E3 als **Testversion ohne echte KI**. Die komplette Kette ist gebaut; der
+Anbieter-Adapter nutzt standardmäßig eine **Attrappe** (feste, deterministische Beispielantworten inkl. bösartiger
+Testfälle). Der echte Gemini-Adapter ist als Code vorbereitet und nur aktiv, wenn `FOOD_PHOTO_PROVIDER=gemini` **und**
+`GEMINI_API_KEY` gesetzt sind. In Tests/CI gibt es keine echten Netzaufrufe (Ersatz-`fetch`, globales `fetch` im
+Test gesperrt).
+
+**Was jetzt gilt**
+
+- **Ablauf:** Ernährung → „Eintragen“ → Kasten **„Per Foto“** (`ernaehrung/foto.tsx`) → beim ersten Mal eigene
+  Einwilligung `ai_food_photo` (Text v1, A-G17) → „Noch 30 Fotos in diesem Monat · heute noch 8“ → optional kurze Info
+  (≤ 120 Zeichen) → Foto (Browser: Kamera/Datei, auf dem Gerät auf 1.024 px verkleinert und als JPEG neu gezeichnet =
+  ohne EXIF) bzw. im Testmodus „Beispielfoto verwenden“ → **Vorschlag** „Schätzung – bitte prüfen“: Bestandteile aus dem
+  Katalog mit Menge, „unsicher“ unter 0,5, „Bitte auswählen“ mit Suche, Menge ändern, entfernen, hinzufügen (≤ 15) →
+  **„Eintragen“** schreibt je Bestandteil einen Tagebuch-Eintrag mit Herkunft **`photo`** (alles oder nichts);
+  **„Abbrechen“** speichert nichts.
+- **Server** (`apps/web`, `POST /api/ernaehrung/foto`, `fra1`, Node): CORS nur eigene App (`APP_WEB_ORIGIN`,
+  Produktionsadresse, Vorschauen nur mit `APP_PREVIEW_TEAM`), Login per Supabase-JWT (`/auth/v1/user`), Formular streng
+  (`image` + optional `note`), dann `runFoodPhotoAnalysis` (packages/core): Info prüfen → Bild prüfen (Art am Inhalt,
+  ≤ 4 MB, ≤ 1.024 px, EXIF/XMP/IPTC/Kommentare/Text-Chunks entfernt) → **Reservierung in der Datenbank**
+  (`ai_food_photo_reserve`, nur service_role: Flag → Premium/Beta → Einwilligungen `ai_food_photo` UND `health_data`
+  FOR SHARE → Advisory-Sperre → Tages-/Monatslimit Europe/Berlin → Zeile) → Anbieter (Attrappe bzw. Gemini, 20 s,
+  ungültig → einmal neu) → **Abschluss** (`ai_food_photo_finish`: Token, Kosten, `succeeded`/`failed`; fehlgeschlagen
+  zählt nicht) → Antwort nur mit geprüften Bestandteilen (Zod `foodPhotoResponseSchema`). Logs nur feste Codes.
+- **Testmodus:** dieselbe Kette auf dem Gerät mit der Attrappe; Freischaltung immer an, Kontingent aus dem
+  Gerätespeicher (nur Metadaten wie `ai_usage`).
+- **Supabase-Modus:** Freischaltung über `ai_food_photo_access()`, Kontingent aus den eigenen `ai_usage`-Zeilen (RLS),
+  Auswertung über die Route (braucht `EXPO_PUBLIC_WEB_URL`, sonst „noch nicht verfügbar“).
+- **Zustände:** Laden, kein Premium (Erklärung + „Per Hand eintragen“), Funktion abgeschaltet, nicht eingerichtet,
+  keine Gesundheits-Einwilligung, keine Foto-Einwilligung, Limit Tag/Monat („… ab 1. November wieder verfügbar.
+  Eintragen per Hand geht weiter.“), offline („Fotos brauchen Internet …“), Auswertung läuft, kein Essen erkannt,
+  Zeitlimit/Anbieter nicht erreichbar/unbrauchbare Antwort („zählt nicht gegen dein Kontingent“), Bild unlesbar, App
+  ohne Fotoauswahl (Hinweis), gespeichert.
+- **Datenschutz:** Foto **nie gespeichert** (A-G18) – **kein** Storage-Bucket `food-photos-tmp` und kein Aufräum-Job
+  (der Plan sah ihn nur für die Dauer der Auswertung vor; die Verarbeitung im Arbeitsspeicher der Anfrage macht ihn
+  überflüssig). `ai_usage` nur Funktion, Status, Modell, Token, Kosten, Zeitpunkte. Export: `ai_usage` und die eigene
+  Beta-Freischaltung (ohne `granted_by`). Konto löschen: Kaskade; Protokoll `private.admin_actions` behält nur
+  „Verweis leer“. Widerruf `ai_food_photo`: keine neuen Fotos; Tagebuch bleibt (gehört zu `health_data`), Widerruf
+  `health_data` löscht auch Foto-Einträge.
+
+**Core** (`packages/core/src/nutrition/food-photo.ts`, `food-photo-image.ts`, `food-photo-run.ts`, `constants.ts`
+`AI_FOOD_PHOTO`): `sanitizeFoodNote`, `photoRequestSchema`, `buildFoodPhotoPrompt` (feste Anweisung, Info als
+JSON-Zeichenkette zwischen Markierungen), `FOOD_PHOTO_RESPONSE_JSON_SCHEMA`, `photoResultSchema`/`parsePhotoResult`
+(strikt, ≤ 15, 1–1.500 g, eigene kcal der KI → ungültig), `sanitizePhotoLabel` (≤ 60 Zeichen, ohne Markup/Links),
+`matchPhotoFood`/`matchPhotoItems` (food_id nur, wenn im Katalog; Name/Suchbegriff; ganzes Wort; eindeutiger Anfang),
+`changePhotoItem`, `addPhotoItem`, `photoEntries`, `photoItemKcal`, `photoLimitState` (Europe/Berlin, 5-Minuten-
+Reservierung, Versuchs-Deckel), `aiFoodPhotoCostEur`, `mockFoodPhotoAnswer` (Fälle `beispiel`, `leer`, `viele`,
+`unbekannt`, `menge0`, `boese`, `kcal`, `kaputt`, `zeitlimit` – Auswahl über „test:<fall>“ in der Info),
+`checkPhotoImage` (JPEG/PNG/WebP), `runFoodPhotoAnalysis`, `createMockFoodPhotoProvider`, `foodPhotoResponseSchema`.
+`FOOD_LOG_SOURCES` + `photo` (Form wie `food`, nur Gramm; als Vorlage/Favorit ein normaler Katalog-Eintrag;
+`rebuildEntry` behält `photo`). `CONSENT_TYPES` + `ai_food_photo`, `CURRENT_CONSENT_VERSIONS.ai_food_photo = 1`.
+`DATA_EXPORT_TABLES` + `ai_usage`, `beta_entitlements`.
+
+**Migrationen** (rein additiv, ab 20261016160000):
+
+- `20261016160000_ai_food_photo_enums.sql` – `consent_type` + `ai_food_photo` (eigene Datei vor der Verwendung).
+- `20261016160100_ai_food_photo.sql` – Einwilligungstext v1, `private.has_valid_consent_for`, `private.feature_flags`
+  (Flag `ai_food_photo` **aus**), `private.beta_entitlements`, `private.admin_actions`, `private.has_entitlement_for`
+  (die eine Stelle für Premium, Phase 7 ersetzt nur den Rumpf), `public.has_entitlement`, `public.ai_usage` (RLS: eigene
+  Zeilen lesen, kein Schreiben für Nutzer), `public.ai_food_photo_access`, `public.ai_food_photo_reserve`,
+  `public.ai_food_photo_finish`, `public.beta_admin` (nur service_role, Antworten ohne Personenbezug, `status` mit
+  Kostensummen). Aufbewahrung `ai_usage`: 400 Tage (beim Reservieren aufgeräumt).
+- `20261016160200_food_log_photo.sql` – Herkunft `photo` (CHECK Herkunft + Form), `save_food_log_entries` neueste
+  Fassung nur erweitert: `photo` wird wie `food` geprüft und **aus dem Katalog gerechnet**, gespeichert als `photo`.
+- `20261016160300_ai_food_photo_export.sql` – `export_my_data()` neueste Fassung + `ai_usage`, `beta_entitlements`
+  (über `private.my_beta_entitlements()`, nur die eigene Zeile).
+- Workflow `.github/workflows/beta-grant.yml` (PLAN-PHASE-4B 6.3: Eingaben nur über `env:`, E-Mail erst geprüft, dann
+  maskiert, `jq -n`, nur feste Felder in der Zusammenfassung).
+
+**Präzisierungen** (vom Plan nicht festgelegt, vorsichtig entschieden):
+
+1. **Bildgröße 4 MB statt 5 MB:** Vercel nimmt je Anfrage höchstens 4,5 MB an.
+2. **Versuchs-Deckel 16 je Tag** (auch fehlgeschlagene): Fehlversuche zählen nicht gegen das Limit, dürfen aber nicht
+   unbegrenzt Kosten erzeugen.
+3. **„Kein Essen erkannt“ zählt** gegen das Kontingent (gültige, bezahlte Antwort). Gründer-Frage E3-G3.
+4. **Gesundheits-Einwilligung zusätzlich Pflicht:** Das Ergebnis landet im Tagebuch (A-G12).
+5. **Kostenübersicht** als `beta-grant` → `status` (Summen) statt Admin-Seite – der Admin-Bereich (Stufe A) zeigt
+   bewusst keine Nutzerdaten (PLAN-PHASE-4B 6.3).
+6. **App (iPhone/Android):** Fotoauswahl braucht `expo-image-picker` + `expo-image-manipulator` und einen neuen Build –
+   in dieser Testversion nur im Browser; in der App im Testmodus „Beispielfoto verwenden“.
+7. **Abgleich in der App:** Die Route liefert nur geprüfte Bestandteile; `matchPhotoItems` läuft im Core auf dem Gerät
+   mit dem geladenen Katalog. Die Werte rechnet beim Speichern ohnehin der Server aus dem Katalog nach.
+8. **Prompt:** `food_id` immer `null` (kein Katalog an Gemini – weniger Daten, weniger Token); die Zuordnung macht der
+   Core über Namen.
+
+**Tests**
+
+- Core: `food-photo.test.ts` (Info 120/121, Emoji, Steuerzeichen/Links/Markup, 5 bösartige Infos bleiben in der
+  Markierung, leere Antwort, 15/16 Bestandteile, Menge 0/1/1.500/1.501/NaN, KI-kcal, Freitext, Bezeichnung 60 Zeichen,
+  Katalog-Abgleich inkl. mehrdeutig und SQL-/Pfad-`food_id`, Bearbeiten, Eintragen photo mit Katalog-Werten, voller
+  Tag, Vorlage/Favorit/`rebuildEntry`, Limits: Monatswechsel Mitternacht Berlin (MEZ), 00:30 Berlin am 1. = neuer
+  Monat, letztes Foto des Monats, Tageslimit, Fehlversuche, Reservierung 5 Minuten, Jahreswechsel, Kosten, alle
+  Attrappen-Fälle), `food-photo-image.test.ts` (Art, EXIF/GPS/Kommentar/Text-Chunks/XMP entfernt, RIFF-Größe,
+  1.024/1.025 px, 4 MB, kaputte Dateien), `food-photo-run.test.ts`, `db-sync.test.ts` (Enum, Seed-Versionen, CHECK-
+  Listen, Limits SQL = Core, `ai_usage`-Spalten nur Metadaten, kein Storage, Rechte, `save_food_log_entries` und
+  `export_my_data` je Obermenge der Vorgänger-Fassung).
+- Web: `handler.test.ts` (36 Tests: Attrappe Standard, Gemini nur mit Flag UND Schlüssel, CORS, Login, Eingaben vor der
+  Reservierung, Flag/Premium/Einwilligung/Limit, Retry, Zeitlimit, Fehler zählen nicht, bösartige Antwort bereinigt,
+  Logs ohne Info/Token/Nutzer-ID, Gemini-Anfrage nur Anweisung + Info + Bild, Schlüssel nur im Kopf).
+- App: `food-photo.test.ts` (Testmodus-Kette, Metadaten, Limits, Widerruf, Export, Konto löschen, Supabase-Seite mit
+  Ersatz-fetch), Einwilligungstexte = Migration.
+- pgTAP `37_ai_food_photo.test.sql` (90 Tests; 34–36 belegt WP3) und Anpassungen in 01/17 (vier Einwilligungstexte,
+  Export inkl. Beta-Freischaltung). Alle Dateien grün gegen Postgres 16 + pgTAP mit Supabase-Ersatz.
+- Zwei Verbindungen (Harness): zwei gleichzeitige Reservierungen beim 8. Foto → genau eine; Widerruf während einer
+  Reservierung wartet und wirkt danach.
+- Playwright (Testmodus, Handy): `food-photo.spec.ts` – Einwilligung → echte Bilddatei → Vorschlag → zuordnen, Menge,
+  entfernen → eintragen (3 × `photo`), Abbrechen speichert nichts, kein Essen; Tages- und Monatslimit; offline;
+  Widerruf in den Einstellungen.
+
+**Gegenproben** (gebrochen → rot → zurückgesetzt): Core – Markup nicht entfernt, KI-kcal erlaubt, 16 Bestandteile,
+Fehlversuche zählen, Monat in UTC, `food_id` ungeprüft, Herkunft nicht `photo`, kein zweiter Versuch, EXIF nicht
+entfernt, 121 Zeichen; Web – Gemini ohne Flag, Login übergangen, fremde Herkunft, Info im Log; App – Testmodus ohne
+Einwilligungs-Prüfung, Antwort ohne Zod; pgTAP – ohne Flag-, Premium-, Gesundheits-Einwilligungs-Prüfung, `finish`
+für Nutzer, RLS `using (true)`, Fehlversuche zählen, Monatsgrenze UTC, Tageslimit 9, zweiter Abschluss, E-Mail ohne
+Prüfung, `photo` in Stück, `photo` mit Gerätewerten, Export ohne `ai_usage`, Export mit `granted_by`; Harness – ohne
+Advisory-Sperre bekommen beide gleichzeitigen Anfragen eine Reservierung; Playwright – ohne Offline-Prüfung.
+
+**Gründer-Fragen** (sichere Voreinstellung umgesetzt):
+
+- **E3-G1 Fotoauswahl in der App:** `expo-image-picker` + `expo-image-manipulator` mit dem nächsten EAS-Build
+  aufnehmen? Voreinstellung: **noch nicht** (Testversion nur im Browser).
+- **E3-G2 Widerruf `ai_food_photo`:** `ai_usage`-Metadaten behalten (Kontingent, Kosten, keine Inhalte)?
+  Voreinstellung: **behalten** (400 Tage, mit Konto gelöscht, im Export).
+- **E3-G3 „Kein Essen erkannt“** zählt gegen das Kontingent? Voreinstellung: **ja** (gültige, bezahlte Antwort).
+- **E3-G4 Versuchs-Deckel** 16 je Tag inkl. Fehlversuche? Voreinstellung: **ja**.
+- **E3-G5 Bildgröße** 4 MB (Vercel-Grenze) statt 5 MB? Voreinstellung: **4 MB**.
+
+**Offen – was für den echten Gemini-Betrieb noch fehlt**
+
+- AVV mit Google, juristische Prüfung des Einwilligungstexts (A-G17), bezahlte Gemini-API (keine Nutzung zum Training),
+  EU-Verarbeitung soweit verfügbar prüfen.
+- Preise in `AI_FOOD_PHOTO.pricesEurPerMTok` gegen die offizielle Preisseite prüfen (VOR LIVEGANG PRÜFEN).
+- Test mit 30 echten Fotos gegen den Katalog (A-G19: Trefferquote, Kosten, ob `food_id`-Liste im Prompt nötig ist).
+- `GEMINI_API_KEY` + `FOOD_PHOTO_PROVIDER=gemini` im Vercel-Projekt „Web“ (SETUP Teil L4) – jetzt nicht.
+- Echte Premium-Prüfung mit Phase 7 (`private.has_entitlement_for` ersetzen), Fotoauswahl in der App (E3-G1),
+  Live-Test mit Konto (Teil 8 der HANDY-ANLEITUNG).
 
 ---
 

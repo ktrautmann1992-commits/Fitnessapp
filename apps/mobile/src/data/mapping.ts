@@ -496,6 +496,7 @@ export function versionsFromDocuments(
     privacy: null,
     health_data: null,
     cycle_data: null,
+    ai_food_photo: null,
   };
   for (const doc of documents) {
     const current = versions[doc.type];

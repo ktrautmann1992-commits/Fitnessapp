@@ -35,10 +35,17 @@ import { gramsPerUnit } from './units';
 // ---------------------------------------------------------------------------------------------------------
 
 /**
- * Herkunft eines Eintrags. `custom_meal` seit Etappe E2 (eigenes Gericht); später kommen `photo` (E3) und `product`
- * (E4) dazu.
+ * Herkunft eines Eintrags. `custom_meal` seit Etappe E2 (eigenes Gericht), `photo` seit E3 (Bestandteil aus „Per
+ * Foto“ – Form wie `food`, nur in Gramm, Werte aus dem Katalog); später kommt `product` (E4) dazu.
  */
-export const FOOD_LOG_SOURCES = ['plan_item', 'food', 'recipe', 'quick', 'custom_meal'] as const;
+export const FOOD_LOG_SOURCES = [
+  'plan_item',
+  'food',
+  'recipe',
+  'quick',
+  'custom_meal',
+  'photo',
+] as const;
 export type FoodLogSource = (typeof FOOD_LOG_SOURCES)[number];
 
 /** Plätze = Plätze des Essensplans + `other` (frei eingetragen, angezeigt unter „Snack“). */
@@ -205,6 +212,11 @@ function refineShape(
   }
   switch (value.source) {
     case 'food':
+    case 'photo':
+      // E3: Ein Bestandteil aus „Per Foto“ ist ein Katalog-Lebensmittel in Gramm (nie Favorit).
+      if (value.source === 'photo' && (mode === 'favorite' || value.unit !== 'g')) {
+        issue('Foto-Eintrag nur in Gramm.');
+      }
       if (value.food_id === null || value.recipe_id !== null) issue('Lebensmittel fehlt.');
       if (value.amount === null || value.unit === null || value.portion !== null) {
         issue('Menge und Einheit fehlen.');
@@ -328,6 +340,8 @@ export function foodLogKey(
 ): string {
   switch (entry.source) {
     case 'food':
+    case 'photo':
+      // Foto-Bestandteile sind Katalog-Lebensmittel: gleicher Schlüssel wie „food“ (Zuletzt, Favoriten).
       return `food|${entry.food_id ?? ''}`;
     case 'recipe':
     case 'plan_item':
@@ -538,7 +552,9 @@ export function entryFromTemplate(
     id: target.id,
     eaten_on: target.date,
     slot: target.slot,
-    source: template.source,
+    // Ein Foto-Bestandteil als Vorlage („Zuletzt“) wird ein normaler Katalog-Eintrag – ohne neues Foto keine Herkunft
+    // „photo“.
+    source: template.source === 'photo' ? 'food' : template.source,
     food_id: template.food_id,
     recipe_id: template.recipe_id,
     custom_meal_id: template.custom_meal_id ?? null,
@@ -785,7 +801,8 @@ export function favoriteFromEntry(entry: FoodLogEntry): FoodLogFavorite | null {
   if (entry.source === 'plan_item' || entry.source === 'custom_meal') return null;
   const parsed = foodLogFavoriteSchema.safeParse({
     fav_key: foodLogKey(entry),
-    source: entry.source,
+    // Foto-Bestandteil → Favorit aus dem Katalog (gleicher Schlüssel food|id).
+    source: entry.source === 'photo' ? 'food' : entry.source,
     food_id: entry.food_id,
     recipe_id: entry.recipe_id,
     title_de: entry.title_de,

@@ -2252,6 +2252,56 @@ export const CUSTOM_MEAL_LIMITS = {
 
 /** Portionen beim Eintragen eines eigenen Gerichts (Plan 7: 0,25–3). PRODUKTENTSCHEIDUNG. */
 export const CUSTOM_MEAL_PORTION_CHOICES = [0.25, 0.5, 0.75, 1, 1.25, 1.5, 2, 3] as const;
+
+// ---------------------------------------------------------------------------------------------------------
+// Etappe E3 · Gericht per Foto (Premium, Echtzeit-KI; docs/PLAN-AUSWERTUNG.md Abschnitt 9, KONZEPT 6.4 und 15).
+// Identisch als SQL-Konstante in 20261016160100_ai_food_photo.sql (Abgleich in db-sync.test.ts).
+// ---------------------------------------------------------------------------------------------------------
+
+/**
+ * Grenzen und Kosten der Foto-Auswertung (E3):
+ * - `monthlyLimit` 30 Fotos je Kalendermonat, `dailyLimit` 8 je Kalendertag (A-G15, beides Europe/Berlin).
+ *   PRODUKTENTSCHEIDUNG – als Konstante änderbar.
+ * - `dailyAttemptsMax` 16: Fehlgeschlagene Aufrufe zählen NICHT gegen das Limit (Plan 9), aber höchstens 16 Versuche
+ *   je Tag insgesamt – sonst ließe sich mit absichtlich kaputten Antworten beliebig Rechenzeit verbrauchen (Kosten,
+ *   Risiko 10). PRODUKTENTSCHEIDUNG (Vorsicht).
+ * - `reservationStaleMinutes` 5: eine Reservierung ohne Abschluss (Server abgestürzt) zählt nach 5 Minuten nicht mehr.
+ * - Antwort: höchstens 15 Bestandteile, Mengen 1–1.500 g, Sicherheit 0–1 (Plan 9).
+ * - Info-Text höchstens 120 Zeichen, angezeigte Bezeichnungen höchstens 60 Zeichen (Prompt-Injection-Schutz, Plan 9).
+ * - Bild: JPEG/PNG/WebP, längste Seite höchstens 1.024 px (auf dem Gerät verkleinert), höchstens 4 MB. ABWEICHUNG
+ *   vom Plan (5 MB): Vercel nimmt je Anfrage höchstens 4,5 MB an – 4 MB lassen Platz für den Info-Text. Ein
+ *   verkleinertes Foto (1.024 px, JPEG) hat typisch 100–400 KB.
+ * - `timeoutMs` 20 s je Aufruf, `retriesOnInvalid` 1 (ungültige Antwort → einmal neu, sonst Fehler).
+ * - Kosten: Modell `gemini-3.5-flash-lite` (A-G19, austauschbar per GEMINI_FOOD_PHOTO_MODEL), Normalpreis laut
+ *   Preisvergleichsseiten 0,30 $ / 2,50 $ je 1 Mio. Token (Stand 15.10.2026, wie packages/content/src/pipeline/
+ *   pricing.ts). Gespeichert wird VORSICHTIG 1 $ = 1 € (eher zu hoch). Schätzung je Foto: Bild ≈ 260–1.300 + Anweisung
+ *   ≈ 600 Eingabe-Token, Antwort ≈ 300 → ≈ 0,0006–0,0013 € je Foto, bei 30 Fotos höchstens ≈ 4 Cent je Person und
+ *   Monat. PREISE VOR LIVEGANG PRÜFEN (offizielle Preisseite ai.google.dev/gemini-api/docs/pricing).
+ */
+export const AI_FOOD_PHOTO = {
+  feature: 'food_photo',
+  monthlyLimit: 30,
+  dailyLimit: 8,
+  dailyAttemptsMax: 16,
+  reservationStaleMinutes: 5,
+  maxItems: 15,
+  amountG: { min: 1, max: 1500 },
+  noteMaxChars: 120,
+  labelMaxChars: 60,
+  imageMimeTypes: ['image/jpeg', 'image/png', 'image/webp'],
+  maxImageBytes: 4_000_000,
+  maxImagePx: 1024,
+  timeoutMs: 20_000,
+  retriesOnInvalid: 1,
+  maxOutputTokens: 1024,
+  defaultModel: 'gemini-3.5-flash-lite',
+  /** € je 1 Mio. Token (PREISE VOR LIVEGANG PRÜFEN; 1 $ = 1 € vorsichtig). */
+  pricesEurPerMTok: {
+    'gemini-3.5-flash-lite': { input: 0.3, output: 2.5 },
+    'gemini-3.1-flash-lite': { input: 0.25, output: 1.5 },
+    'gemini-3.8-flash': { input: 1.5, output: 7.5 },
+  },
+} as const;
 /**
  * Farbzonen des Kalorienbalkens in der Tagesauswertung (docs/PLAN-AUSWERTUNG.md 2.1, 2.2, A-G5, Etappe A2).
  * Alle Grenzen eines Tages kommen aus `nutritionTargetsForWeek` (Untergrenze, Planband, Obergrenze, Ziel) – hier steht

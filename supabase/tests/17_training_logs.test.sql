@@ -206,11 +206,13 @@ select throws_ok(
 select lives_ok($$ select public.export_my_data() $$, 'A exportiert (security invoker, alle Leserechte vorhanden)');
 select is(
   (select array_agg(k order by k) from jsonb_object_keys(public.export_my_data() -> 'data') k),
-  (select array_agg(distinct c.conrelid::regclass::text order by c.conrelid::regclass::text)
-   from pg_constraint c
+  (select array_agg(distinct r.relname::text order by r.relname::text)
+   from pg_constraint c join pg_class r on r.oid = c.conrelid
    where c.contype = 'f' and c.confrelid = 'auth.users'::regclass
-     and c.connamespace = 'public'::regnamespace)::text[],
-  'Export enthält genau alle Tabellen mit Fremdschlüssel auf auth.users'
+     and (c.connamespace = 'public'::regnamespace
+          -- E3: die eigene Beta-Freischaltung liegt in private, gehört aber zum Export (PLAN-PHASE-4B 4.7).
+          or c.conrelid = 'private.beta_entitlements'::regclass))::text[],
+  'Export enthält genau alle Tabellen mit Fremdschlüssel auf auth.users (+ eigene Beta-Freischaltung)'
 );
 select is_empty(
   $$ select c.relname::text from pg_catalog.pg_class c

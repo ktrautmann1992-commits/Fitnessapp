@@ -1,0 +1,144 @@
+name: beta-grant
+
+# Beta-Freischaltung und Feature-Flags bis Phase 7 (docs/PLAN-PHASE-4B.md 6.3, docs/PLAN-AUSWERTUNG.md Etappe E3, A-G20).
+# Nur per Hand: GitHub-App → Actions → beta-grant → „Run workflow“. Nur wer Schreibrechte am Repository hat, kann ihn
+# starten; GitHub merkt sich, wer. Ruft public.beta_admin(...) (Migration 20261016160100_ai_food_photo.sql) mit den
+# GitHub-Secrets SUPABASE_URL und SUPABASE_SECRET_KEY auf. Ohne Secrets endet der Workflow grün mit Hinweis.
+#
+# Sicherheit (PLAN-PHASE-4B 6.3, Wächter S-n2):
+# - Eingaben und github.actor nur über env:, nie als ${{ }} im run-Text (die E-Mail ist Freitext).
+# - E-Mail VOR jeder Ausgabe gegen ein festes Muster geprüft, erst danach maskiert (kein Einschleusen von Befehlen).
+# - JSON nur mit jq -n --arg/--argjson, Antwort nur über feste Felder in die Zusammenfassung – nie E-Mail oder user_id.
+on:
+  workflow_dispatch:
+    inputs:
+      aktion:
+        description: 'Was soll passieren?'
+        required: true
+        type: choice
+        options:
+          - status
+          - freischalten
+          - entziehen
+          - flag_an
+          - flag_aus
+      email:
+        description: 'E-Mail des Kontos (nur bei freischalten/entziehen)'
+        required: false
+        type: string
+      tage:
+        description: 'Gültigkeit in Tagen (1–180, nur bei freischalten)'
+        required: false
+        default: '90'
+        type: string
+      flag:
+        description: 'Funktion (Feature-Flag)'
+        required: true
+        type: choice
+        options:
+          - ai_food_photo
+
+permissions:
+  contents: read
+
+concurrency:
+  group: beta-grant
+  cancel-in-progress: false
+
+jobs:
+  beta:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - name: Eingaben prüfen
+        id: input
+        env:
+          AKTION: ${{ inputs.aktion }}
+          EMAIL: ${{ inputs.email }}
+          TAGE: ${{ inputs.tage }}
+          FLAG: ${{ inputs.flag }}
+        run: |
+          set -euo pipefail
+          case "$AKTION" in
+            freischalten) action=grant ;;
+            entziehen) action=revoke ;;
+            flag_an) action=flag_on ;;
+            flag_aus) action=flag_off ;;
+            status) action=status ;;
+            *) echo "::error::Unbekannte Aktion."; exit 1 ;;
+          esac
+          case "$FLAG" in
+            ai_food_photo) ;;
+            *) echo "::error::Unbekannte Funktion."; exit 1 ;;
+          esac
+          if [ "$action" = grant ] || [ "$action" = revoke ]; then
+            # Erst prüfen (ohne Echo), dann maskieren.
+            if ! printf '%s' "$EMAIL" | grep -Eq '^[A-Za-z0-9._%+-]{1,64}@[A-Za-z0-9.-]{1,253}\.[A-Za-z]{2,}$' \
+              || [ "$(printf '%s' "$EMAIL" | wc -l)" != "0" ]; then
+              echo "::error::Die E-Mail-Adresse hat kein gültiges Format."
+              exit 1
+            fi
+            echo "::add-mask::$EMAIL"
+          fi
+          if [ "$action" = grant ]; then
+            if ! printf '%s' "$TAGE" | grep -Eq '^[0-9]{1,3}$' || [ "$TAGE" -lt 1 ] || [ "$TAGE" -gt 180 ]; then
+              echo "::error::Tage bitte als ganze Zahl von 1 bis 180."
+              exit 1
+            fi
+          fi
+          echo "action=$action" >> "$GITHUB_OUTPUT"
+
+      - name: beta_admin aufrufen
+        env:
+          SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
+          SUPABASE_SECRET_KEY: ${{ secrets.SUPABASE_SECRET_KEY }}
+          ACTION: ${{ steps.input.outputs.action }}
+          EMAIL: ${{ inputs.email }}
+          TAGE: ${{ inputs.tage }}
+          FLAG: ${{ inputs.flag }}
+          ACTOR: ${{ github.actor }}
+        run: |
+          set -euo pipefail
+          if [ -z "${SUPABASE_URL:-}" ] || [ -z "${SUPABASE_SECRET_KEY:-}" ]; then
+            echo "::notice title=beta-grant übersprungen::Es fehlen die GitHub-Secrets SUPABASE_URL und/oder SUPABASE_SECRET_KEY. Siehe docs/SETUP.md Teil B."
+            exit 0
+          fi
+          if [ "$ACTION" = grant ] || [ "$ACTION" = revoke ]; then
+            echo "::add-mask::$EMAIL"
+            body=$(jq -n --arg a "$ACTION" --arg actor "$ACTOR" --arg e "$EMAIL" --argjson d "${TAGE:-90}" --arg f "$FLAG" \
+              '{p_action: $a, p_actor: $actor, p_email: $e, p_days: $d, p_flag: $f}')
+          else
+            body=$(jq -n --arg a "$ACTION" --arg actor "$ACTOR" --arg f "$FLAG" \
+              '{p_action: $a, p_actor: $actor, p_flag: $f}')
+          fi
+          umask 077
+          headers="$RUNNER_TEMP/headers.txt"
+          {
+            echo "apikey: $SUPABASE_SECRET_KEY"
+            echo "Content-Type: application/json"
+            case "$SUPABASE_SECRET_KEY" in eyJ*) echo "Authorization: Bearer $SUPABASE_SECRET_KEY" ;; esac
+          } > "$headers"
+          status=$(curl -sS -o "$RUNNER_TEMP/antwort.json" -w '%{http_code}' -X POST \
+            -H @"$headers" --data "$body" "${SUPABASE_URL%/}/rest/v1/rpc/beta_admin")
+          rm -f "$headers"
+          if [ "$status" != "200" ]; then
+            echo "::error title=beta-grant fehlgeschlagen::HTTP $status – ist die Migration eingespielt (db-migrate)?"
+            exit 1
+          fi
+          # Nur feste Felder – nie E-Mail oder user_id.
+          result=$(jq -r '.result // "unbekannt"' "$RUNNER_TEMP/antwort.json")
+          case "$result" in
+            granted) text="Freischaltung gesetzt, gültig bis $(jq -r '.expires_on' "$RUNNER_TEMP/antwort.json")." ;;
+            revoked) text="Freischaltung entzogen." ;;
+            not_found) text="Kein Konto mit dieser E-Mail." ;;
+            flag_on) text="Funktion $FLAG eingeschaltet." ;;
+            flag_off) text="Funktion $FLAG ausgeschaltet." ;;
+            invalid_input) text="Ungültige Eingabe." ;;
+            status)
+              text=$(jq -r '"Funktion \(.flag): \(if .flag_enabled then "an" else "aus" end) · aktive Freischaltungen: \(.active_grants) · Fotos diesen Monat: \(.photos_this_month) (fehlgeschlagen: \(.failed_this_month)) · Kosten diesen Monat: \(.cost_eur_this_month) €"' "$RUNNER_TEMP/antwort.json") ;;
+            *) text="Unbekannte Antwort." ;;
+          esac
+          rm -f "$RUNNER_TEMP/antwort.json"
+          echo "$text"
+          echo "### beta-grant" >> "$GITHUB_STEP_SUMMARY"
+          echo "$text" >> "$GITHUB_STEP_SUMMARY"

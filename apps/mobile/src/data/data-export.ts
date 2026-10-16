@@ -17,6 +17,8 @@ export function localDataExport(
   rows: UserRows,
   userId: string,
   exportedAt: string,
+  /** Testmodus: Gericht per Foto (E3) – Metadaten wie ai_usage (liegen außerhalb von UserRows im Gerätespeicher). */
+  extra: { aiUsage?: readonly unknown[] } = {},
 ): {
   format_version: number;
   exported_at: string;
@@ -170,6 +172,9 @@ export function localDataExport(
     competitions: [...rows.competitions].sort(
       (a, b) => a.race_date.localeCompare(b.race_date) || a.created_at.localeCompare(b.created_at),
     ),
+    // Gericht per Foto (Etappe E3): nur Metadaten je Auswertung; im Testmodus gibt es keine Beta-Freischaltung.
+    ai_usage: [...(extra.aiUsage ?? [])],
+    beta_entitlements: [],
     // Übungs-Präferenzen (Etappe T2) – in export_my_data() erst mit Etappe T3 (PENDING_DB_EXPORT_TABLES).
     exercise_preferences: rows.exercisePreferences,
   };
