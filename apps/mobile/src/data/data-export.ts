@@ -1,10 +1,11 @@
 import {
   DATA_EXPORT_FORMAT_VERSION,
   type DataExportTable,
+  type MealPlanWeek,
   type PendingDbExportTable,
 } from '@fitnessapp/core';
 
-import type { UserRows } from './types';
+import type { MealPlanRow, UserRows } from './types';
 
 /**
  * Testmodus: Datenexport aus dem Gerätespeicher in DERSELBEN Form wie export_my_data() (docs/PLAN-PHASE-4.md 3.7) –
@@ -50,15 +51,17 @@ export function localDataExport(
     cardio_logs: rows.cardioLogs,
     exercise_start_weights: rows.startWeights,
     // Essenspläne (Etappe N5) – Spalten wie meal_plans/meal_plan_items (Datenbank seit N7, 20261014120500_meal_plans.sql).
-    meal_plans: rows.mealPlans.map((row) => ({
+    // Testmodus: Jede Zeile hat den vollständigen Plan (nur der Supabase-Modus kennt Zeilen ohne ihn – dort exportiert der
+    // Server, export_my_data).
+    meal_plans: localMealPlans(rows).map(({ row, plan }) => ({
       id: row.id,
       user_id: row.user_id,
       week_start: row.week_start,
       status: 'active',
-      engine_version: row.plan.engineVersion,
-      variant: row.plan.variant,
+      engine_version: plan.engineVersion,
+      variant: plan.variant,
       uses_health_data: row.uses_health_data,
-      meal_prep_plan_id: row.plan.mealPrepPlanId,
+      meal_prep_plan_id: plan.mealPrepPlanId,
       created_at: row.created_at,
       auto_adjusted: row.auto_adjusted,
       recipes_changed: row.recipes_changed,
@@ -66,10 +69,10 @@ export function localDataExport(
       // Testmodus: Gespeichert ist der ganze Schnappschuss (u. a. Planband je Tag, Abgleich-Schlüssel mit Modus und
       // Ausschlüssen, Zutaten in Gramm, leere Plätze, Hinweise) – Art. 15 verlangt alles Gespeicherte (Wächter N5a S4).
       // Ab N7 speichert die Datenbank weder Planband noch Abgleich-Schlüssel.
-      plan_snapshot: row.plan,
+      plan_snapshot: plan,
     })),
-    meal_plan_items: rows.mealPlans.flatMap((row) =>
-      row.plan.days.flatMap((day) =>
+    meal_plan_items: localMealPlans(rows).flatMap(({ row, plan }) =>
+      plan.days.flatMap((day) =>
         day.meals.map((meal) => ({
           plan_id: row.id,
           user_id: row.user_id,
@@ -193,4 +196,9 @@ function nutritionPrefsExport(rows: UserRows): unknown[] {
       show_energy_numbers: setup.show_energy_numbers,
     },
   ];
+}
+
+/** Pläne mit vollständigem Plan (Testmodus: alle). */
+function localMealPlans(rows: UserRows): { row: MealPlanRow; plan: MealPlanWeek }[] {
+  return rows.mealPlans.flatMap((row) => (row.plan === null ? [] : [{ row, plan: row.plan }]));
 }

@@ -100,6 +100,25 @@ insert into public.meal_prep_plans (id, version, status, title_de, recipe_ids, d
 values ('mp-test', 1, 'published', 'Meal-Prep-Test', '{porridge}', '{}');
 insert into public.food_dislikes (user_id, food_id) values ('44444444-4444-4444-8444-444444444444', 'tofu');
 
+-- Tausch nur an Zutaten mit Rolle (resolveIngredientSwap, seit N7 Teil 2 auch in der Server-Rechnung).
+update public.recipe_ingredients set role = 'protein' where recipe_id = 'haehnchen-pfanne' and position = 0;
+-- Seit N7 Teil 2 (Wächter H1) rechnet save_meal_plan die Nährwerte nach: Einheiten und Nährwerte für alle
+-- Lebensmittel (die Werte selbst prüft 33_n7_teil2_retention_kcal_check.test.sql gegen packages/core).
+update public.foods set data = data || jsonb_build_object(
+  'units', '{"ml_to_g": 1}'::jsonb,
+  'nutrients_per_100g', '{"kcal": 100, "protein_g": 5, "carbs_g": 10, "fat_g": 3}'::jsonb);
+
+-- Nährwerte einer Mahlzeit wie das Gerät (= Server-Rechnung); nicht berechenbar → feste Werte (Ablehnung erwartet).
+create function pg_temp.values_for(p_recipe text, p_factor numeric, p_subs jsonb, p_omitted jsonb, p_swaps jsonb)
+returns double precision[] language sql security definer set search_path = '' as $$
+  select coalesce(
+    (select array[private.js_round1(n[1]), private.js_round1(n[2]), private.js_round1(n[3]), private.js_round1(n[4])]
+     from (select private.meal_plan_item_nutrients(p_recipe, p_factor::double precision, p_subs, p_omitted, p_swaps)
+             as n) as x
+     where n is not null and n[1] is not null),
+    array[400.5, 20, 50, 10]::double precision[])
+$$;
+
 -- Eingabe wie toMealPlanPayload() (packages/core/src/nutrition/meal-plan-payload.ts).
 create function pg_temp.item(
   p_date text, p_recipe text, p_slot text default 'breakfast', p_factor numeric default 1,
@@ -109,7 +128,11 @@ create function pg_temp.item(
 returns jsonb language sql as $$
   select jsonb_build_object(
     'date', p_date, 'slot', p_slot, 'role', null, 'recipe_id', p_recipe, 'recipe_version', p_version,
-    'title_de', 'Gericht', 'factor', p_factor, 'kcal', 400.5, 'protein_g', 20, 'carbs_g', 50, 'fat_g', 10,
+    'title_de', 'Gericht', 'factor', p_factor,
+    'kcal', (pg_temp.values_for(p_recipe, p_factor, p_subs, p_omitted, p_swaps))[1],
+    'protein_g', (pg_temp.values_for(p_recipe, p_factor, p_subs, p_omitted, p_swaps))[2],
+    'carbs_g', (pg_temp.values_for(p_recipe, p_factor, p_subs, p_omitted, p_swaps))[3],
+    'fat_g', (pg_temp.values_for(p_recipe, p_factor, p_subs, p_omitted, p_swaps))[4],
     'substitutions', p_subs, 'omitted_optional', p_omitted, 'ingredient_swaps', p_swaps, 'is_fill', false,
     'prep_kind', 'fresh', 'cook_date', coalesce(p_cook, p_date), 'storage', null, 'meal_prep_plan_id', p_prep_plan,
     'day_status', p_status

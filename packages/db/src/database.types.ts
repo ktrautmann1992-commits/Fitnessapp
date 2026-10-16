@@ -2379,6 +2379,7 @@ export type Database = {
         Returns: number;
       };
       delete_competition: { Args: { p_id: string }; Returns: undefined };
+      delete_custom_meal: { Args: { p_id: string }; Returns: Json };
       delete_my_account: { Args: never; Returns: undefined };
       delete_food_log_entry: { Args: { p_base_revision: number; p_id: string }; Returns: Json };
       delete_session_log: { Args: { p_base_revision: number; p_id: string }; Returns: Json };

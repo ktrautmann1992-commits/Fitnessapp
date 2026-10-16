@@ -15,6 +15,7 @@ import type {
   GoalType,
   HealthFlag,
   HealthScreeningAnswers,
+  MealPlanRecord,
   MealPlanWeek,
   StoredShoppingList,
   NutritionSetupColumns,
@@ -88,9 +89,11 @@ export type ExercisePreferenceRow = ExercisePreference & { user_id: string };
 export type NutritionSetupRow = NutritionSetupColumns & { user_id: string };
 
 /**
- * Gespeicherter Essensplan einer Woche (docs/PLAN-PHASE-5.md 6.3, 7.2, 7.5, Etappe N5) – NUR im Testmodus (Supabase-
- * Modus bis N7 Teil 2 immer leer; Tabellen meal_plans/meal_plan_items gibt es seit N7). Höchstens ein Plan je Woche (der aktive).
- * `plan` ist der vollständige Plan der Engine (Schnappschuss, geprüft mit `parseStoredMealPlanWeek`).
+ * Gespeicherter Essensplan einer Woche (docs/PLAN-PHASE-5.md 6.3, 7.2, 7.5, Etappe N5; Supabase-Modus seit N7 Teil 2).
+ * Höchstens ein Plan je Woche (der aktive). `plan` ist der vollständige Plan der Engine (Schnappschuss, geprüft mit
+ * `parseStoredMealPlanWeek`). Im Supabase-Modus kommt dazu `record` – die Zeilen aus `meal_plans`/`meal_plan_items`
+ * (ohne Planband/`safetyKey`, Wächter N5a S4); `plan` ist dort nur gesetzt, wenn der geschützte Speicher des Geräts den
+ * vollständigen Plan zu genau diesen Zeilen hat, sonst baut ihn `resolveMealPlanRecord` neu (G-N7-1).
  * SENSIBEL, wenn `uses_health_data` (Ziele, Flags oder Unverträglichkeiten eingeflossen, 7.1) – nie loggen; beim
  * Widerruf health_data gelöscht.
  */
@@ -112,12 +115,20 @@ export interface MealPlanRow {
    * Meal-Prep-Plan der Woche derselbe bleibt; null = nicht gestartet.
    */
   cook_day_started_at: string | null;
-  plan: MealPlanWeek;
+  /** Vollständiger Plan der Engine; null = nur die Zeilen aus der Datenbank (`record`) sind bekannt. */
+  plan: MealPlanWeek | null;
+  /** Nur Supabase-Modus: Zeilen aus der Datenbank (Payload von `save_meal_plan` + Gesundheitsbezug vom Server). */
+  record?: MealPlanRecord;
+}
+
+/** Gewählter Meal-Prep-Plan der Woche – aus dem vollständigen Plan bzw. den Zeilen der Datenbank. */
+export function mealPlanRowPrepPlanId(row: MealPlanRow): string | null {
+  return row.plan?.mealPrepPlanId ?? row.record?.payload.meal_prep_plan_id ?? null;
 }
 
 /**
- * Gespeicherte Einkaufsliste einer Woche (docs/PLAN-PHASE-5.md 6.5, 7.2, Etappe N5b) – NUR im Testmodus (Supabase-
- * Modus bis N7 Teil 2 immer leer; Tabellen shopping_lists/shopping_list_items seit N7). Höchstens eine Liste je Woche. `list` ist der
+ * Gespeicherte Einkaufsliste einer Woche (docs/PLAN-PHASE-5.md 6.5, 7.2, Etappe N5b; Supabase-Modus seit N7 Teil 2
+ * aus shopping_lists/shopping_list_items, `shoppingListFromPayload`). Höchstens eine Liste je Woche. `list` ist der
  * Stand aus packages/core (`parseStoredShoppingList`); die Plan-Einträge werden beim Öffnen immer aus dem aktuellen
  * Plan neu erzeugt. SENSIBEL, wenn `uses_health_data` (Ersatzprodukte und fehlende Zutaten lassen auf
  * Unverträglichkeiten schließen) – nie loggen; beim Widerruf samt eigener Einträge gelöscht (K10).
@@ -236,24 +247,26 @@ export interface UserRows {
   startWeights: StartWeightRow[];
   /** Übungs-Präferenzen (Testmodus ab Etappe T2; Supabase-Modus bis T3 immer leer). */
   exercisePreferences: ExercisePreferenceRow[];
-  /** Essenspläne je Woche (Testmodus ab Etappe N5; Supabase-Modus bis N7 Teil 2 immer leer). */
+  /**
+   * Essenspläne je Woche (Testmodus ab Etappe N5; Supabase-Modus seit N7 Teil 2 aus meal_plans/meal_plan_items). Nur
+   * Wochen innerhalb der Löschfrist (`nutritionWeekRetained`, G-N7-2).
+   */
   mealPlans: MealPlanRow[];
-  /** Einkaufslisten je Woche (Testmodus ab Etappe N5b; Supabase-Modus bis N7 Teil 2 immer leer). */
+  /** Einkaufslisten je Woche (Testmodus ab Etappe N5b; Supabase-Modus seit N7 Teil 2). */
   shoppingLists: ShoppingListRow[];
   /** Bewertungen nach dem Essen (Testmodus ab Etappe N10; Supabase-Modus seit N7 aus recipe_ratings). */
   recipeRatings: RecipeRatingRow[];
   /** „Mag ich nicht“ je Lebensmittel (Testmodus ab Etappe N10; Supabase-Modus seit N7 aus food_dislikes). */
   foodDislikes: FoodDislikeRow[];
   /**
-   * Ernährungstagebuch (Testmodus ab Etappe E1; Supabase-Modus mit N7 Teil 2 – bis dahin immer leer, Tabelle und
-   * Funktionen gibt es seit E1). SENSIBEL.
+   * Ernährungstagebuch (Testmodus ab Etappe E1; Supabase-Modus seit N7 Teil 2: die letzten LOG_CACHE_WEEKS Wochen,
+   * dazu noch nicht übertragene Einträge der verschlüsselten Warteschlange). SENSIBEL.
    */
   foodLogEntries: FoodLogEntryRow[];
-  /** Favoriten des Tagebuchs (Testmodus ab E1; Supabase-Modus mit N7 Teil 2, bis dahin leer). */
+  /** Favoriten des Tagebuchs (Testmodus ab E1; Supabase-Modus seit N7 Teil 2). */
   foodLogFavorites: FoodLogFavoriteRow[];
   /**
-   * Eigene Gerichte und ihre Zutaten (Testmodus ab E2; Supabase-Modus mit N7 Teil 2 – bis dahin leer, Tabellen und
-   * save_custom_meal gibt es seit E2). Name = Freitext, SENSIBEL.
+   * Eigene Gerichte und ihre Zutaten (Testmodus ab E2; Supabase-Modus seit N7 Teil 2). Name = Freitext, SENSIBEL.
    */
   customMeals: CustomMealRow[];
   customMealItems: CustomMealItemRow[];

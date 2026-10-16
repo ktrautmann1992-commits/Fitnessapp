@@ -201,6 +201,13 @@ export function isValidOp(op: WriteOp, context: { today: string; profile: Profil
     case 'update_planned_session':
     case 'swap_planned_sessions':
       return false;
+    // Ernährung (Etappe N7 Teil 2): nur im Supabase-Modus als Vorgang; der Testmodus hat eigene Wege
+    // (meal-plan-rows.ts, food-log-rows.ts).
+    case 'set_shopping_item_checked':
+    case 'set_cook_day_start':
+    case 'upsert_food_log_favorite':
+    case 'delete_food_log_favorite':
+      return false;
   }
 }
 

@@ -262,7 +262,7 @@ test('Entwurf nach Neu laden, beforeunload-Warnung und Abmelden mit Nachfrage', 
   await page.getByRole('button', { name: 'Einstellungen' }).click();
   await page.getByRole('button', { name: 'Abmelden' }).click();
   await expect(page.getByTestId('dialog-signout')).toContainText(
-    '1 Training ist noch nicht übertragen.',
+    '1 Eintrag (Training oder Ernährung) ist noch nicht übertragen.',
   );
   await page.getByRole('button', { name: 'Jetzt senden' }).click();
   await expect(page.getByTestId('dialog-signout')).toContainText('immer noch nicht alles');

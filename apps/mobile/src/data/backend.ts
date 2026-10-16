@@ -111,6 +111,18 @@ export interface PendingWorkouts {
   drafts: number;
 }
 
+/**
+ * Stand der Ernährungs-Warteschlange (Supabase-Modus, Etappe N7 Teil 2): Tagebuch-Einträge und eigene Gerichte, die
+ * noch nicht übertragen bzw. abgelehnt wurden (Gründer-Frage G3 aus E1: abgelehnte bleiben lokal mit Hinweis).
+ * Testmodus: immer 0.
+ */
+export interface NutritionSyncState {
+  queued: number;
+  rejected: number;
+  /** Browser: geschützter Speicher nur sessionStorage – endet mit dem Tab (Hinweis). */
+  sessionOnly: boolean;
+}
+
 /** Online nachgeladene ältere Tagebuch-Einträge (Verlauf, Etappe D) – nur im Arbeitsspeicher, nie im Gerätespeicher. */
 export interface OlderLogsPage {
   logs: LogRows;
@@ -140,6 +152,11 @@ export interface NutritionLibraryResult {
    * import) – Angebot „Beispiel-Rezepte mit Testwerten verwenden“.
    */
   demoAvailable: boolean;
+  /**
+   * Supabase-Modus (N7 Teil 2): In der Datenbank gibt es noch keine freigegebenen Rezepte (Fachprüfung offen, G-N7-3) –
+   * klarer Leer-Zustand statt Beispiel-Rezepten.
+   */
+  awaitingReview?: boolean;
 }
 
 /** Widerruf health_data mit Umwandlung der Unverträglichkeiten (docs/PLAN-PHASE-5.md 7.4, R2-K4). */
@@ -154,10 +171,9 @@ export interface IntoleranceConversion {
 export interface Backend {
   readonly mode: BackendMode;
   /**
-   * Ernährung (Phase 5): Testmodus ab Etappe N4. Supabase-Modus: Datenbank seit Etappe N7 (Teil 1: Tabellen, RLS,
-   * Funktionen, Spalten von nutrition_prefs, Bewertungen/Abneigungen); die Bildschirme schaltet erst N7 Teil 2 frei
-   * (Essensplan/Einkaufsliste aus der Datenbank ohne Planband, geschützter Speicher, Warteschlange). Steuert den
-   * Onboarding-Schritt `nutrition_setup` (R2-S3) und die Ernährungs-Bildschirme.
+   * Ernährung (Phase 5): Testmodus ab Etappe N4, Supabase-Modus seit Etappe N7 Teil 2 (Essensplan/Einkaufsliste aus der
+   * Datenbank ohne Planband, Bestand aus der Datenbank, Tagebuch und eigene Gerichte mit verschlüsselter Warteschlange).
+   * Steuert den Onboarding-Schritt `nutrition_setup` (R2-S3) und die Ernährungs-Bildschirme.
    */
   readonly supportsNutrition: boolean;
   /**
@@ -255,13 +271,15 @@ export interface Backend {
   revokeHealthData(deleteLogs: boolean, conversion: IntoleranceConversion | null): Promise<void>;
   /**
    * Gespeicherte Unverträglichkeiten löschen (Recht auf Löschung, Wächter N4 NK2) – geht immer, auch ohne Einwilligung
-   * (Löschen braucht keine). Supabase: sofort, nur online (Gesundheitsdaten nie in die Warteschlange) – seit N7 über
-   * `delete_stored_intolerances`, das im selben Schritt Essenspläne/Einkaufslisten mit Gesundheitsbezug löscht.
+   * (Löschen braucht keine). Supabase: sofort, nur online (Gesundheitsdaten nie in die Warteschlange) – über
+   * `delete_stored_intolerances`, das im selben Schritt Essenspläne/Einkaufslisten mit Gesundheitsbezug löscht. Fehlt die
+   * Funktion noch (vor `db-migrate`), Fehler `delete_unavailable` – nie halb löschen (N7 Teil 2 Nr. 7).
    */
   deleteStoredIntolerances(): Promise<void>;
   /**
    * Ernährungs-Bestand (Phase 5): Testmodus aus dem Bündel (Entwürfe erlaubt, `selectNutritionContent`), auf Wunsch
-   * Beispiel-Rezepte mit Testwerten (`demo`); Supabase-Modus bis Etappe N7 null.
+   * Beispiel-Rezepte mit Testwerten (`demo`); Supabase-Modus seit N7 Teil 2 aus der Datenbank (nur freigegebene, fachlich
+   * geprüfte Inhalte; offline der zuletzt geladene Stand).
    */
   loadNutritionLibrary(options: {
     demo: boolean;
@@ -273,9 +291,9 @@ export interface Backend {
   }): Promise<NutritionLibraryResult | null>;
   /**
    * Essensplan einer Woche speichern (Etappe N5, docs/PLAN-PHASE-5.md 7.3/7.5): ersetzt den Plan derselben Woche.
-   * Testmodus: Gerätespeicher mit denselben Regeln wie `save_meal_plan` (meal-plan-rows.ts); Supabase-Modus erst mit
-   * N7 Teil 2 (die Datenbank-Funktion save_meal_plan gibt es seit N7 Teil 1; bis dahin nicht unterstützt,
-   * `supportsNutrition = false`). `autoAdjusted` = automatisch neu geplant
+   * Testmodus: Gerätespeicher mit denselben Regeln wie `save_meal_plan` (meal-plan-rows.ts); Supabase-Modus seit N7
+   * Teil 2 über `save_meal_plan` (braucht Verbindung; G-W3 und die Löschfrist prüft der Server). `autoAdjusted` =
+   * automatisch neu geplant
    * (6.6, Hinweis bis „Verstanden“); `recipesChanged` = neu erstellt wegen neuer Rezept-Version (K-b). Mit
    * `shoppingList` wird die neu erzeugte Einkaufsliste der Woche im SELBEN Schritt gespeichert (R2-S4, W22).
    * Fehler `plan_rejected` bzw. `consent_required`.
@@ -291,8 +309,8 @@ export interface Backend {
   ): Promise<UserRows>;
   /**
    * Einkaufsliste einer Woche speichern (Etappe N5b, 6.5/7.3): Abhaken, eigene Einträge, Zeitraum, „Zur
-   * Einkaufsliste“. Testmodus: Gerätespeicher (meal-plan-rows.ts, geht ohne Netz); Supabase-Modus erst mit N7 Teil 2
-   * (replace_shopping_list gibt es seit N7 Teil 1).
+   * Einkaufsliste“. Testmodus: Gerätespeicher (meal-plan-rows.ts, geht ohne Netz); Supabase-Modus seit N7 Teil 2:
+   * nur Häkchen → Spalte `checked` (ohne Gesundheitsbezug offline über die Warteschlange), sonst `replace_shopping_list`.
    */
   saveShoppingList(list: StoredShoppingList, rows: UserRows): Promise<UserRows>;
   /**
@@ -316,8 +334,8 @@ export interface Backend {
   /**
    * Ernährungstagebuch (Etappe E1, docs/PLAN-AUSWERTUNG.md 5): Einträge neu anlegen bzw. ganz ersetzen (gleiche id).
    * Testmodus: Gerätespeicher mit denselben Regeln wie save_food_log_entries (food-log-rows.ts) – geht ohne Netz.
-   * Supabase-Modus erst mit N7 Teil 2 (Datenbank-Funktion seit E1; bis dahin nicht unterstützt,
-   * `supportsNutrition = false`). Fehler `consent_required`, `food_log_out_of_range`, `food_log_day_full`,
+   * Supabase-Modus seit N7 Teil 2: verschlüsselte Ernährungs-Warteschlange → `save_food_log_entries` (offline möglich,
+   * abgelehnte Fassungen bleiben lokal mit Hinweis). Fehler `consent_required`, `food_log_out_of_range`, `food_log_day_full`,
    * `food_log_rejected` – immer ohne Werte (Gesundheitsdaten).
    */
   saveFoodLogEntries(entries: readonly FoodLogEntry[], rows: UserRows): Promise<UserRows>;
@@ -327,8 +345,8 @@ export interface Backend {
   changeFoodLogFavorite(change: FavoriteChange, rows: UserRows): Promise<UserRows>;
   /**
    * Eigenes Gericht anlegen bzw. ganz ersetzen (Etappe E2, docs/PLAN-AUSWERTUNG.md 7). Testmodus: Gerätespeicher mit
-   * denselben Regeln wie save_custom_meal (custom-meal-rows.ts) – geht ohne Netz. Supabase-Modus erst mit N7 Teil 2
-   * (Datenbank-Funktion seit E2; bis dahin nicht unterstützt). Fehler `consent_required`, `custom_meal_limit`,
+   * denselben Regeln wie save_custom_meal (custom-meal-rows.ts) – geht ohne Netz. Supabase-Modus seit N7 Teil 2 über
+   * die Ernährungs-Warteschlange → `save_custom_meal` (Werte aus Zutaten rechnet der Server). Fehler `consent_required`, `custom_meal_limit`,
    * `custom_meal_rejected` – immer ohne Namen und ohne Werte.
    */
   saveCustomMeal(meal: CustomMeal, rows: UserRows): Promise<UserRows>;
@@ -338,6 +356,10 @@ export interface Backend {
   saveCookDayStart(weekStart: string, startedAt: string | null, rows: UserRows): Promise<UserRows>;
   /** Wartende Trainings und Entwürfe (R6). */
   pendingWorkouts(): Promise<PendingWorkouts>;
+  /** Ernährungs-Warteschlange (Supabase-Modus, N7 Teil 2): wartend, abgelehnt, nur im Browser-Tab. */
+  nutritionSync(): Promise<NutritionSyncState>;
+  /** Abgelehnte Tagebuch-Einträge/eigene Gerichte auf diesem Gerät verwerfen (nur auf ausdrücklichen Wunsch). */
+  discardRejectedNutrition(): Promise<void>;
   /** Planned-Session-IDs mit noch nicht übertragenem Training (Anzeige „wird übertragen“). */
   pendingLogSessionIds(): readonly string[];
   /** Liegen Einträge eines anderen Kontos auf dem Gerät (R5)? */
@@ -406,6 +428,11 @@ export type BackendErrorCode =
   | 'custom_meal_rejected'
   /** Vorübergehend (Zeitlimit, Sperrkonflikt, Server 5xx, Drosselung) – „bitte gleich noch einmal“. */
   | 'temporary'
+  /**
+   * Löschen gerade nicht möglich (Etappe N7 Teil 2, ersetzt den S1-Rückfall): Die Datenbank-Funktion fehlt noch (App
+   * vor `db-migrate`) – nie halb löschen, „bitte später erneut versuchen“.
+   */
+  | 'delete_unavailable'
   | 'unknown';
 
 /**

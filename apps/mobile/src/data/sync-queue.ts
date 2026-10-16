@@ -47,6 +47,15 @@ export function queueKey(op: WriteOp): string {
     // Eigenes Startgewicht: neuester Wert je Übung gewinnt (PLAN-PHASE-4 4.3).
     case 'set_exercise_start_weight':
       return `${op.kind}:${op.exerciseId}`;
+    // Ernährung (Etappe N7 Teil 2): letzter Stand je Eintrag, Plan bzw. Favorit gewinnt.
+    case 'set_shopping_item_checked':
+      return `${op.kind}:${op.listId}:${op.itemKey}`;
+    case 'set_cook_day_start':
+      return `${op.kind}:${op.planId}`;
+    case 'upsert_food_log_favorite':
+      return `food_log_favorite:${op.row.fav_key}`;
+    case 'delete_food_log_favorite':
+      return `food_log_favorite:${op.favKey}`;
     default:
       return op.kind;
   }

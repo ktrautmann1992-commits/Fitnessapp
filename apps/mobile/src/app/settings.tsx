@@ -641,6 +641,14 @@ export default function SettingsScreen() {
                   ...(app.pendingLogSessionIds.length > 0
                     ? [t.settings.exportPending(app.pendingLogSessionIds.length)]
                     : []),
+                  // N7 Teil 2: wartende Tagebuch-Einträge/eigene Gerichte stehen erst nach dem Senden in der Datei.
+                  ...(app.nutritionSync.queued + app.nutritionSync.rejected > 0
+                    ? [
+                        t.settings.exportPendingNutrition(
+                          app.nutritionSync.queued + app.nutritionSync.rejected,
+                        ),
+                      ]
+                    : []),
                 ],
               }
             : dialog === 'signout'

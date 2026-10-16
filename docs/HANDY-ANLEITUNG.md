@@ -418,6 +418,41 @@ Ernährung erst mit Teil 2. Ihr müsst nichts einstellen und keine Schlüssel ei
    `shopping_lists`, `recipe_ratings`, `food_dislikes` u. a. Leer ist richtig – Rezepte kommen erst nach der
    Fachprüfung (Gründer-Entscheidung 6), Nutzerdaten erst mit Teil 2.
 
+### Teil 7d (Fortsetzung) – Ernährung mit Konto (Etappe N7 Teil 2)
+Ab jetzt läuft die Ernährung auch **mit Konto** (Supabase-Modus): Essensplan, Einkaufsliste, Tagebuch und eigene
+Gerichte werden in der Datenbank gespeichert. Ihr müsst keine Schlüssel eintragen.
+
+7. **Nach dem Merge:** GitHub-App → **Actions → db-migrate** → Lauf öffnen → **warten, bis er grün ist**. Erst dann
+   Vercel → Projekt „fitnessapp“ → **Deployments** → neuestes → **⋯ → Redeploy** (und bei Bedarf **Actions →
+   eas-build → Run workflow**). Meldet die App beim Löschen der Unverträglichkeiten „Löschen ist gerade nicht
+   möglich …“, ist db-migrate noch nicht durch – dann warten und erneut versuchen (es wird nichts halb gelöscht).
+8. **Tägliche Löschung prüfen:**
+   1. GitHub-App → **Actions → db-migrate** → letzter Lauf → **Summary** → Abschnitt „Täglicher Löschlauf“: Dort
+      stehen Zeitplan `23 2 * * *`, Rolle `postgres`, aktiv `t` und der letzte Lauf. Eine gelbe Warnung („Löschlauf
+      fehlt“, „nicht lesbar“, „fehlgeschlagen“) bitte Claude schicken – der Lauf bleibt trotzdem grün, weil die
+      Migrationen schon eingespielt sind.
+   2. Zusätzlich in Supabase (Handy-Browser) → euer Projekt → links **Database → Extensions** → „pg_cron“ suchen:
+      Schalter **an**.
+   3. Links **Integrations → Cron** (bzw. **Database → Cron Jobs**) → Job **nutrition-weeks-retention** antippen →
+      Reiter **History** (bzw. „Runs“): **Am Tag nach dem Merge** (erster Lauf 02:23 UTC = 03:23/04:23 Uhr) steht dort
+      ein Lauf mit Status **succeeded**. Steht dort „failed“, die Zeile (ohne Daten, nur Status und Meldung) Claude
+      schicken.
+   4. Alternativ: links **SQL Editor** → `select status, start_time from cron.job_run_details order by start_time
+      desc limit 3;` → **Run** → oberste Zeile **succeeded**.
+   Ohne den Job werden alte Wochen nur beim Speichern gelöscht (inaktive Konten dann gar nicht – deshalb wichtig).
+9. **Actions → content-seed** → letzter Lauf → **Summary**: Unter „Ernährung“ steht, was eingespielt wurde und was
+   noch **wartet** (mit Grund, z. B. „Fachprüfung fehlt“). Solange die Fachprüfung offen ist, wartet alles – das ist
+   richtig.
+10. Vorschau-Link öffnen → **mit Konto** anmelden → **Ernährung**: Solange keine Rezepte freigegeben sind, steht dort
+    „Noch keine Rezepte: Unsere Rezepte werden gerade fachlich geprüft …“ (kein Fehler). Tagebuch und eigene
+    Gerichte gehen trotzdem.
+11. **Tagebuch offline:** Flugmodus an → etwas eintragen → im Tagebuch steht „1 Eintrag wird übertragen, sobald du
+    wieder online bist.“ → Flugmodus aus → nach wenigen Sekunden ist der Hinweis weg. Im Browser steht zusätzlich,
+    dass noch nicht Übertragenes nur bis zum Schließen des Tabs bleibt.
+12. Supabase → **Advisors → Security Advisor → Refresh**: Neu erwartet ist höchstens ein Hinweis zu
+    `purge_expired_nutrition_weeks` bzw. `meal_plan_day_kcal_floor` („security definer“). Beide liegen im Schema
+    `private` und sind für angemeldete Nutzer nicht aufrufbar. Andere neue Meldungen bitte Claude schicken.
+
 ## Teil 7j – Datenbank für den Wettkampf prüfen (Phase 10, Etappe WP3)
 In der App ändert sich dadurch **nichts Sichtbares** (Wettkampf anlegen kommt mit WP4). Ihr müsst nichts einstellen und
 keine Schlüssel eintragen. Prüfen könnt ihr am Handy:
@@ -436,7 +471,7 @@ keine Schlüssel eintragen. Prüfen könnt ihr am Handy:
    schicken.
 
 ## Teil 7f – Ernährungstagebuch testen (Etappe E1, Testmodus)
-Das Tagebuch läuft vorerst nur im **Testmodus** (mit Konto folgt es mit N7 Teil 2). Ihr müsst nichts einstellen.
+Das Tagebuch läuft im **Testmodus** und seit N7 Teil 2 auch mit Konto (Teil 7d, Schritt 11). Ihr müsst nichts einstellen.
 Nach dem Merge spielt **db-migrate** (erst nach grünem db-test) zwei neue, leere Tabellen ein (`food_log_entries`,
 `food_log_favorites`) – vorhandene Daten bleiben unverändert.
 
@@ -460,7 +495,7 @@ Nach dem Merge spielt **db-migrate** (erst nach grünem db-test) zwei neue, leer
 11. „Heute“ zeigt auf der Karte „Essen heute“: „Gegessen heute: … Einträge“ und „Essen eintragen“.
 
 ## Teil 7i – Eigene Gerichte testen (Etappe E2, Testmodus)
-Eigene Gerichte laufen wie das Tagebuch vorerst nur im **Testmodus** (mit Konto folgen sie mit N7 Teil 2). Ihr müsst
+Eigene Gerichte laufen wie das Tagebuch im **Testmodus** und seit N7 Teil 2 auch mit Konto. Ihr müsst
 nichts einstellen. Nach dem Merge spielt **db-migrate** (erst nach grünem db-test) zwei neue, leere Tabellen ein
 (`custom_meals`, `custom_meal_items`) und erweitert das Tagebuch um die Herkunft „eigenes Gericht“ – vorhandene Daten
 bleiben unverändert.
@@ -648,6 +683,19 @@ Passwörter oder Codes. Claude trägt es dann im Umsetzungsstand von `docs/PLAN-
     `alpha5-meine-daten-<Datum>-2.json`, die erste bleibt unverändert. Auf dem **iPhone** einmal mit
     **„Auf meinem iPhone“** und einmal mit **iCloud Drive** prüfen (beide Male „Die Datei wurde gespeichert.“ und die
     Datei ist in der Dateien-App zu sehen).
+
+**Prüfpunkte Ernährung mit Konto (N7 Teil 2)** – erst, wenn Rezepte nach der Fachprüfung eingespielt sind (16–18),
+19–20 gehen schon vorher:
+16. Handy A: **Ernährung** → Plan wird erstellt → Handy B neu laden → **derselbe Plan** (gleiche Gerichte).
+17. Handy A: **Einkaufsliste** → Flugmodus an → zwei Einträge abhaken → Flugmodus aus → Handy B neu laden → beide
+    abgehakt. (Mit Unverträglichkeiten geht Abhaken nur online – dann kommt „Dafür brauchst du kurz Verbindung.“)
+18. Handy B: Seite neu laden, ohne etwas zu ändern → der Plan bleibt gleich (kein neuer Vorschlag), auch nach
+    Ab- und wieder Anmelden.
+19. Handy A: Tagebuch → im Flugmodus „Banane“ eintragen → Einstellungen → **Abmelden** → Nachfrage „1 Eintrag
+    (Training oder Ernährung) ist noch nicht übertragen.“ → **Abbrechen** → Flugmodus aus → Handy B zeigt die Banane.
+20. Handy B Flugmodus an → einen Tagebuch-Eintrag ändern. Handy A ändert denselben Eintrag (online). Handy B Flugmodus
+    aus → B zeigt „1 Eintrag konnte nicht gespeichert werden (z. B. auf einem anderen Gerät geändert …)“ und behält
+    seine Fassung, bis ihr **Verwerfen** tippt; danach zeigt B nach dem Neuladen die Fassung von A.
 
 **Vorschlag (noch nicht gebaut): automatischer Smoke-Test.** Ein manuell startbarer GitHub-Workflow könnte die
 Punkte 2–7 ohne Handys gegen Supabase prüfen (Playwright im Supabase-Modus mit einem eigenen Test-Konto). Dafür

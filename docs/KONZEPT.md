@@ -382,8 +382,8 @@ besteht. Einkaufsliste nach Abteilungen, Mengen aufgerundet, Häkchen bleiben be
   („vor/nach Training“ steht an der Plan-Mahlzeit). „Kalorienzahlen aus“: Eintragen geht weiter, ohne kcal-Anzeige und
   ohne kcal-Feld. Nur mit Einwilligung `health_data` (vorsorglich Art. 9); der Widerruf löscht die Einträge und die
   Schnell-Favoriten, Favoriten aus Lebensmitteln/Rezepten (ohne Werte gespeichert) bleiben. Grenzen `FOOD_LOG_LIMITS` in `constants.ts`, Logik `packages/core/src/nutrition/food-log.ts`, Datenbank
-  `food_log_entries`/`food_log_favorites` mit `save_food_log_entries`/`delete_food_log_entry`. Testmodus fertig; der
-  Supabase-Modus folgt mit N7 Teil 2. Die Tagesübersicht „Ziel gegen Gegessenes“ (Kalorienbalken) kommt mit A2.
+  `food_log_entries`/`food_log_favorites` mit `save_food_log_entries`/`delete_food_log_entry`. Testmodus und
+  Supabase-Modus (N7 Teil 2, offline über eine verschlüsselte Warteschlange) fertig. Die Tagesübersicht „Ziel gegen Gegessenes“ (Kalorienbalken) kommt mit A2.
 
 - **Tagesauswertung (Etappe A2, 15.10.2026):** Der Kalorienbalken „Dein Tag“ baut auf dem Tagebuch auf (Abschnitt 5,
   „Tagesauswertung“); bei „Kalorienzahlen aus“ und in Schwangerschaft/Stillzeit ohne Balken, nur die Mahlzeiten-Anzahl.
@@ -403,7 +403,7 @@ besteht. Einkaufsliste nach Abteilungen, Mengen aufgerundet, Häkchen bleiben be
   ohne Werte, nirgends kcal. Datenschutz: Der Name ist Freitext – nur mit Einwilligung `health_data`, beim Widerruf
   gelöscht (Gründer-Entscheidung E2-G1, 15.10.2026), im Export, Konto löschen per Kaskade, nie in Logs,
   Fehlermeldungen oder testIDs. Logik `packages/core/src/nutrition/custom-meal.ts`, Grenzen `CUSTOM_MEAL_LIMITS`,
-  Datenbank `custom_meals`/`custom_meal_items` mit `save_custom_meal`/`delete_custom_meal`; die Werte aus Zutaten und die Werte der Tagebuch-Einträge (Lebensmittel, Rezept, eigenes Gericht) rechnet der Server mit derselben Rechnung nach (Entscheidung E1-G4/E2-G2). Testmodus fertig; Supabase-Modus mit N7 Teil 2.
+  Datenbank `custom_meals`/`custom_meal_items` mit `save_custom_meal`/`delete_custom_meal`; die Werte aus Zutaten und die Werte der Tagebuch-Einträge (Lebensmittel, Rezept, eigenes Gericht) rechnet der Server mit derselben Rechnung nach (Entscheidung E1-G4/E2-G2). Testmodus und Supabase-Modus (N7 Teil 2) fertig.
 
 ### 6.3 Gerichte vor, während und nach dem Training (Premium, ohne KI)
 - Für **jede geplante Einheit** berechnet die Ernährungs-Engine **Zielmengen** (kcal, Eiweiß, Kohlenhydrate, Fett, bei
@@ -858,8 +858,17 @@ Quelle: `docs/ERWEITERUNGEN-2.md` Abschnitte 1–2. Startbestand aus `alpha5-rez
   Nutzertabellen, **Konto löschen** entfernt sie per Kaskade.
 - **Einwilligungstexte vor dem Login:** `current_consent_version` ist nicht mehr für `anon` ausführbar; die App liest
   die höchste veröffentlichte Version direkt aus `consent_documents`.
-- **Noch nicht angebunden (N7 Teil 2):** Essensplan, Einkaufsliste und Rezept-Bestand im Supabase-Modus der App,
-  Einspielen der Ernährungs-Inhalte im Workflow `content-seed`.
+- **N7 Teil 2 (umgesetzt 16.10.2026, `supabase/migrations/20261016120000_*`):** Essensplan, Einkaufsliste,
+  Rezept-Bestand, Tagebuch und eigene Gerichte im Supabase-Modus der App; der Core rekonstruiert den Plan aus den Zeilen
+  (ohne Planband/Abgleich-Schlüssel, Modus aus `day_status`) und prüft ihn danach wie 6.6. `content-seed` spielt die
+  Ernährung ein (nur `published` und fachlich geprüft, Schutz vor Massen-Archivierung). **Löschfrist:** Essenspläne und
+  Einkaufslisten älter als `MEAL_PLAN_RETENTION_WEEKS` (4) Wochen vor der laufenden Woche werden beim Speichern und
+  täglich (`pg_cron`) gelöscht, im Testmodus beim Laden/Speichern; das Tagebuch bleibt. **Server-Plausibilität (G-W3):**
+  `save_meal_plan` rechnet die Nährwerte jeder Mahlzeit selbst nach (Rezept × Faktor mit Ersatz, Weglassen, Tausch –
+  wie `scalePortion`), speichert nur diese Werte, lehnt abweichende Angaben ab und lehnt Tage ab heute ab, deren Summe
+  unter dem Grundumsatz für die Schutzgrenzen liegt (dieselbe Formel wie der Core, `nutrition/plausibility.ts`;
+  Meldungen ohne Werte). Details: `docs/PLAN-PHASE-5.md`,
+  Umsetzungsstand N7 Teil 2.
 
 ### Erweiterungen (geplant, `docs/ERWEITERUNGEN.md`)
 Alle Tabellen mit RLS (jeder sieht nur eigene Zeilen; Ausnahmen: Katalog-/Inhaltstabellen für alle lesbar, Pflege nur

@@ -62,5 +62,7 @@ export function createDeviceProtectedStores(): ProtectedStores {
     workoutDraft: createDeviceProtectedStore('workoutDraft'),
     logQueue: createDeviceProtectedStore('logQueue'),
     logCache: createDeviceProtectedStore('logCache'),
+    nutritionCache: createDeviceProtectedStore('nutritionCache'),
+    nutritionQueue: createDeviceProtectedStore('nutritionQueue'),
   };
 }

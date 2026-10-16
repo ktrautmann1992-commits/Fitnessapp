@@ -42,6 +42,8 @@ export interface NutritionView {
   setupMissing: boolean;
   /** Das automatische Speichern des Essensplans ist gescheitert (Etappe N5). */
   saveFailed: boolean;
+  /** … weil die Einwilligung Gesundheitsdaten fehlt bzw. neu zu bestätigen ist (Wächter N7 H3). */
+  saveConsentMissing: boolean;
   /** „Erneut versuchen“ (Wächter N5a K7). */
   retrySave: () => void;
   /** Heute (Gerätezeit; wechselt um Mitternacht, Wächter N5a K5). */
@@ -79,7 +81,13 @@ export function useNutritionWeek(date?: string): NutritionView {
         : null,
     [backend, library, rows, today, versions, weekStart],
   );
-  const { persistMealPlan, mealPlanSaveFailed, retryMealPlanSave, mealPlanSaveAttempt } = app;
+  const {
+    persistMealPlan,
+    mealPlanSaveFailed,
+    mealPlanSaveConsentMissing,
+    retryMealPlanSave,
+    mealPlanSaveAttempt,
+  } = app;
   const pending = useMemo(() => {
     if (week?.kind !== 'ready' || week.plan === null || week.planState === null) return null;
     if (!week.planState.editable) return null;
@@ -109,6 +117,7 @@ export function useNutritionWeek(date?: string): NutritionView {
 
   return {
     saveFailed: mealPlanSaveFailed,
+    saveConsentMissing: mealPlanSaveFailed && mealPlanSaveConsentMissing,
     retrySave: retryMealPlanSave,
     today,
     library: nutritionLibrary,

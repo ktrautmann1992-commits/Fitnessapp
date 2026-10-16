@@ -10,6 +10,7 @@ import {
   RECIPE_RATING_RULES,
   recipeRatingSchema,
   nutritionSetupColumnsSchema,
+  parseMealPlanRecord,
   parseStoredMealPlanWeek,
   parseStoredShoppingList,
   BARBELL_PLATE_MAX_KG,
@@ -53,7 +54,8 @@ function storedNutritionSetup(stored: UserRows): NutritionSetupRow | null {
  * Essenspläne (Etappe N5): vorher gab es keine; der Gerätespeicher ist nicht vertrauenswürdig – nur vollständige Pläne
  * der aktuellen Engine-Version (`parseStoredMealPlanWeek`, Zod strikt) des eigenen Kontos, je Woche höchstens einer.
  * Ein ungültiger Plan wird verworfen und beim Öffnen neu erstellt (sichere Richtung: der neue Plan nutzt die
- * aktuellen Angaben).
+ * aktuellen Angaben). Supabase-Modus (N7 Teil 2): eine Zeile darf statt des vollständigen Plans nur die Zeilen der
+ * Datenbank tragen (`record`, ebenfalls erneut geprüft, `parseMealPlanRecord`).
  */
 function storedMealPlans(stored: UserRows): MealPlanRow[] {
   const list: unknown = (stored as { mealPlans?: unknown }).mealPlans;
@@ -64,32 +66,41 @@ function storedMealPlans(stored: UserRows): MealPlanRow[] {
     if (typeof item !== 'object' || item === null) return [];
     const row = item as Record<string, unknown>;
     const plan = parseStoredMealPlanWeek(row.plan);
+    const record = row.record === undefined ? null : parseMealPlanRecord(row.record);
+    const weekStart = plan?.weekStart ?? record?.payload.week_start ?? null;
     if (
-      plan === null ||
+      (plan === null && record === null) ||
+      weekStart === null ||
+      (plan !== null && record !== null && plan.weekStart !== record.payload.week_start) ||
       typeof row.id !== 'string' ||
       typeof row.user_id !== 'string' ||
       (owner !== undefined && row.user_id !== owner) ||
-      row.week_start !== plan.weekStart ||
-      seen.has(plan.weekStart) ||
+      row.week_start !== weekStart ||
+      seen.has(weekStart) ||
       typeof row.created_at !== 'string' ||
       typeof row.auto_adjusted !== 'boolean'
     ) {
       return [];
     }
-    seen.add(plan.weekStart);
+    seen.add(weekStart);
     return [
       {
         id: row.id,
         user_id: row.user_id,
-        week_start: plan.weekStart,
-        // Gesundheitsbezug steht im Plan selbst (die Zeile kann ihn nicht abschwächen).
-        uses_health_data: plan.usesHealthData,
+        week_start: weekStart,
+        // Gesundheitsbezug steht im Plan selbst (die Zeile kann ihn nicht abschwächen) – im Supabase-Modus zusätzlich
+        // der Wert des Servers (sichere Richtung: ODER).
+        uses_health_data:
+          plan?.usesHealthData === true ||
+          record?.usesHealthData === true ||
+          (record !== null && row.uses_health_data === true),
         created_at: row.created_at,
         auto_adjusted: row.auto_adjusted,
         // Vor Etappe N5b gab es beide Felder nicht.
         recipes_changed: row.recipes_changed === true,
         cook_day_started_at: isTimestamp(row.cook_day_started_at) ? row.cook_day_started_at : null,
         plan,
+        ...(record === null ? {} : { record }),
       },
     ];
   });

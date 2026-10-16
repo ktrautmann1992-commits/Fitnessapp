@@ -58,7 +58,16 @@ import {
   RECIPE_SERVINGS_PICKER,
   SHOPPING_LIST_EXTRAS,
   SHOPPING_LIST_ROUNDING,
+  BODY_FAT_MAX_AGE_DAYS,
+  KATCH_MCARDLE,
+  MEAL_PLAN_DAY_KCAL_CHECK,
+  MEAL_PLAN_ITEM_NUTRIENT_TOLERANCE,
+  MEAL_PLAN_RETENTION_WEEKS,
+  AMOUNT_ROUNDING,
+  MIFFLIN_ST_JEOR,
+  MIN_INTAKE_RELATIVE_TO_BMR,
 } from './constants';
+import { serverDayKcalFloor } from './nutrition/plausibility';
 import {
   ANIMAL_KINDS,
   GELATIN_ORIGINS,
@@ -1366,6 +1375,269 @@ describe('Wettkampf in der Datenbank (Phase 10 WP3)', () => {
       if (target <= ENDURANCE_OVERLOAD_RULE.easyTargetMax) {
         expect(threshold).toBe(ENDURANCE_OVERLOAD_RULE.minEffort);
       }
+    }
+  });
+});
+
+describe('Essensplan in der Datenbank – N7 Teil 2 (Löschfrist G-N7-2, Tageskalorien G-W3)', () => {
+  const teil2 = readMigration('_n7_teil2_retention_kcal_check.sql');
+  const fnBody = (name: string) => {
+    const marker = `create or replace function ${name}(`;
+    const start = allSql.lastIndexOf(marker);
+    if (start < 0) throw new Error(`${name} nicht gefunden`);
+    return allSql.slice(start, allSql.indexOf('$$;', allSql.indexOf('as $$', start)));
+  };
+  const keysOf = (body: string, name: string) =>
+    quotedListAfter(body, `${name} constant text[] := array[`).sort();
+  const constant = (body: string, name: string) => {
+    const match = new RegExp(`${name} constant (?:numeric|integer) := (-?[0-9.]+);`).exec(body);
+    if (!match) throw new Error(`${name} nicht gefunden`);
+    return Number(match[1]);
+  };
+
+  it('neueste Fassung von save_meal_plan/replace_shopping_list steht in *_n7_teil2_retention_kcal_check.sql', () => {
+    for (const name of ['public.save_meal_plan', 'public.replace_shopping_list']) {
+      const marker = `create or replace function ${name}(`;
+      expect(migrationFiles.filter((n) => readMigration(n).includes(marker)).at(-1)).toMatch(
+        /_n7_teil2_retention_kcal_check\.sql$/,
+      );
+    }
+    expect(teil2).toContain('create or replace function public.save_meal_plan(');
+  });
+
+  it.each([
+    ['plan_keys', mealPlanPayloadSchema.shape],
+    ['input_keys', mealPlanPayloadSchema.shape.inputs.shape],
+    ['item_keys', mealPlanItemPayloadSchema.shape],
+    ['pair_keys', mealPlanItemPayloadSchema.shape.substitutions.element.shape],
+    ['omit_keys', mealPlanItemPayloadSchema.shape.omitted_optional.element.shape],
+  ] as const)('neueste save_meal_plan: %s = Felder des strikten Zod-Schemas', (name, shape) => {
+    expect(keysOf(fnBody('public.save_meal_plan'), name)).toEqual(Object.keys(shape).sort());
+  });
+
+  it.each([
+    ['list_keys', shoppingListPayloadSchema.shape],
+    ['recipe_keys', shoppingListRecipePayloadSchema.shape],
+    ['item_keys', shoppingListItemPayloadSchema.shape],
+  ] as const)(
+    'neueste replace_shopping_list: %s = Felder des strikten Zod-Schemas',
+    (name, shape) => {
+      expect(keysOf(fnBody('public.replace_shopping_list'), name)).toEqual(
+        Object.keys(shape).sort(),
+      );
+    },
+  );
+
+  it('neueste Fassungen: Größe, Sperren (Woche → Einwilligung → Plan) und Rechte wie N7 Teil 1', () => {
+    const save = fnBody('public.save_meal_plan');
+    const list = fnBody('public.replace_shopping_list');
+    expect(save).toContain(`payload_max_bytes constant integer := ${MEAL_PLAN_PAYLOAD_MAX_BYTES};`);
+    expect(list).toContain(
+      `payload_max_bytes constant integer := ${SHOPPING_LIST_PAYLOAD_MAX_BYTES};`,
+    );
+    expect(save).toContain(`engine_version_max constant integer := ${MEAL_PLAN_ENGINE_VERSION}`);
+    for (const body of [save, list]) {
+      const lock = body.indexOf("pg_advisory_xact_lock(hashtext('nutrition_week|'");
+      const basis = body.indexOf('private.nutrition_health_basis()');
+      expect(lock).toBeGreaterThan(0);
+      expect(basis).toBeGreaterThan(lock);
+    }
+    expect(teil2).toContain(
+      'revoke all on function public.save_meal_plan(jsonb, boolean, boolean) from public, anon;',
+    );
+    expect(teil2).toContain(
+      'grant execute on function public.save_meal_plan(jsonb, boolean, boolean) to authenticated;',
+    );
+    expect(teil2).toContain(
+      'revoke all on function public.replace_shopping_list(jsonb) from public, anon;',
+    );
+    expect(teil2).toContain(
+      'grant execute on function public.replace_shopping_list(jsonb) to authenticated;',
+    );
+  });
+
+  it('Löschfrist: retention_weeks = MEAL_PLAN_RETENTION_WEEKS; Speichern löscht danach (für die Person)', () => {
+    const purge = fnBody('private.purge_expired_nutrition_weeks');
+    expect(constant(purge, 'retention_weeks')).toBe(MEAL_PLAN_RETENTION_WEEKS);
+    expect(purge).toContain(
+      "date_trunc('week', private.berlin_today())::date - 7 * retention_weeks",
+    );
+    for (const name of ['public.save_meal_plan', 'public.replace_shopping_list']) {
+      const body = fnBody(name);
+      const call = body.indexOf('perform private.purge_expired_nutrition_weeks(current_user_id);');
+      expect(call, name).toBeGreaterThan(0);
+      // Erst nach dem Speichern (danach steht nur noch das Ergebnis).
+      expect(body.indexOf('insert into public.', call), name).toBe(-1);
+    }
+    expect(teil2).toContain("'select private.purge_expired_nutrition_weeks()'");
+  });
+
+  it('G-W3: Konstanten und Formel des Grundumsatzes = packages/core (Mifflin „Grenzen“, Katch, 90 Tage)', () => {
+    const floor = fnBody('private.meal_plan_day_kcal_floor');
+    expect(constant(floor, 'kg_factor')).toBe(MIFFLIN_ST_JEOR.kgFactor);
+    expect(constant(floor, 'cm_factor')).toBe(MIFFLIN_ST_JEOR.cmFactor);
+    expect(constant(floor, 'age_factor')).toBe(MIFFLIN_ST_JEOR.ageFactor);
+    expect(constant(floor, 'offset_male')).toBe(MIFFLIN_ST_JEOR.sexOffset.male);
+    expect(constant(floor, 'offset_female')).toBe(MIFFLIN_ST_JEOR.sexOffset.female);
+    expect(constant(floor, 'offset_unknown')).toBe(MIFFLIN_ST_JEOR.limitsSexOffsetUnknown);
+    expect(constant(floor, 'katch_intercept')).toBe(KATCH_MCARDLE.intercept);
+    expect(constant(floor, 'katch_ffm_factor')).toBe(KATCH_MCARDLE.ffmFactor);
+    expect(constant(floor, 'body_fat_max_age_days')).toBe(BODY_FAT_MAX_AGE_DAYS);
+    expect(constant(floor, 'min_intake_relative_to_bmr')).toBe(MIN_INTAKE_RELATIVE_TO_BMR);
+    expect(floor).toContain('kg_factor * v_weight + cm_factor * v_height - age_factor * v_age');
+    expect(floor).toContain(
+      "case v_sex when 'male' then offset_male when 'female' then offset_female else offset_unknown end",
+    );
+    expect(floor).toContain('katch_intercept + katch_ffm_factor * (v_weight * (1 - v_fat / 100))');
+    expect(floor).toContain('p_day - v_fat_on between 0 and body_fat_max_age_days');
+    expect(floor).toContain('least(b.measured_on, p_today)');
+    expect(floor).toContain(
+      'greatest(v_mifflin, coalesce(v_katch, v_mifflin)) * min_intake_relative_to_bmr',
+    );
+    expect(floor).toContain("'pregnancy' = any (h.flags)");
+  });
+
+  it('G-W3: geprüfte Tages-Status und Rundungs-Spielraum = MEAL_PLAN_DAY_KCAL_CHECK; nur ab heute, nur mit Einwilligung', () => {
+    const save = fnBody('public.save_meal_plan');
+    expect(keysOf(save, 'checked_day_statuses')).toEqual(
+      [...MEAL_PLAN_DAY_KCAL_CHECK.checkedDayStatuses].sort(),
+    );
+    expect(constant(save, 'kcal_tolerance')).toBe(MEAL_PLAN_DAY_KCAL_CHECK.roundingToleranceKcal);
+    expect(save).toContain('where r.date >= today');
+    expect(save).toContain(
+      'd.kcal + kcal_tolerance < private.meal_plan_day_kcal_floor(current_user_id, d.day, today)',
+    );
+    // Wächter N7 Teil 2 H1: die Tagessumme stammt vom Server, nicht vom Gerät.
+    expect(save).toContain('sum(r.s_kcal) as kcal');
+    // Prüfung nach der Einwilligungs-Sperre (Körperdaten unter derselben Sperre gelesen).
+    expect(save.indexOf('basis.consent_ok and exists')).toBeGreaterThan(
+      save.indexOf('private.nutrition_health_basis()'),
+    );
+  });
+
+  it('H1: Server-Nährwerte – Rundung = AMOUNT_ROUNDING, Spielraum = MEAL_PLAN_ITEM_NUTRIENT_TOLERANCE, gespeichert werden Server-Werte', () => {
+    const fn = fnBody('private.meal_plan_item_nutrients');
+    const dbl = (name: string) => {
+      const match = new RegExp(`${name} constant double precision := (-?[0-9.]+);`).exec(fn);
+      if (!match) throw new Error(`${name} nicht gefunden`);
+      return Number(match[1]);
+    };
+    expect({
+      massStep: dbl('mass_step'),
+      smallMassStep: dbl('small_mass_step'),
+      smallMassBelow: dbl('small_mass_below'),
+      pieceStep: dbl('piece_step'),
+      spoonStep: dbl('spoon_step'),
+      pinchStep: dbl('pinch_step'),
+    }).toEqual(AMOUNT_ROUNDING);
+    // Nur nicht optionale Zutaten zählen (computeRecipeFacts/scalePortion), Prise = PINCH_G über grams_per_unit.
+    expect(fn).toContain('if not ing.optional then');
+    expect(fn).toContain('case when ing.scales then p_factor / servings else 1 / servings end');
+    const save = fnBody('public.save_meal_plan');
+    expect(constant(save, 'item_kcal_tolerance')).toBe(MEAL_PLAN_ITEM_NUTRIENT_TOLERANCE.kcal);
+    expect(constant(save, 'item_macro_tolerance_g')).toBe(MEAL_PLAN_ITEM_NUTRIENT_TOLERANCE.macroG);
+    expect(save).toContain("r.s_kcal, r.s_protein, r.s_carbs, r.s_fat, x.v -> 'substitutions'");
+    expect(save).not.toContain("(v ->> 'kcal')::numeric,\n");
+  });
+
+  it('G-W3: die erwarteten Werte im pgTAP-Test (33) rechnet packages/core genauso (Core = SQL)', () => {
+    const pgtap = readFileSync(
+      new URL('../../../supabase/tests/33_n7_teil2_retention_kcal_check.test.sql', import.meta.url),
+      'utf8',
+    );
+    const expected = (label: string): number | null => {
+      const re = new RegExp(`\\s+(null|[0-9.]+(?:::numeric)?), '${label}`);
+      const match = re.exec(pgtap);
+      if (!match) throw new Error(`Test „${label}“ nicht gefunden`);
+      return match[1] === 'null' ? null : Number(String(match[1]).replace('::numeric', ''));
+    };
+    const base = {
+      birthDate: '1990-01-01',
+      sex: 'male' as const,
+      today: '2026-10-14',
+      date: '2026-10-14',
+      healthDataConsent: true,
+      healthFlags: [],
+      bodyMetricsRows: [{ measuredOn: '2026-10-01', heightCm: 180, weightKg: 80 }],
+    };
+    const cases: [string, Parameters<typeof serverDayKcalFloor>[0]][] = [
+      ['A: Mifflin-St Jeor', base],
+      [
+        'E: 16. Geburtstag am Tag selbst',
+        {
+          ...base,
+          birthDate: '2010-10-14',
+          sex: 'female',
+          bodyMetricsRows: [{ measuredOn: '2026-10-01', heightCm: 160, weightKg: 50 }],
+        },
+      ],
+      [
+        'E: am Tag davor noch 15 Jahre',
+        {
+          ...base,
+          birthDate: '2010-10-14',
+          sex: 'female',
+          date: '2026-10-13',
+          bodyMetricsRows: [{ measuredOn: '2026-10-01', heightCm: 160, weightKg: 50 }],
+        },
+      ],
+      [
+        'F: 95 Jahre, 300 kg, ohne Geschlecht',
+        {
+          ...base,
+          birthDate: '1931-01-01',
+          sex: null,
+          bodyMetricsRows: [{ measuredOn: '2026-10-01', heightCm: 200, weightKg: 300 }],
+        },
+      ],
+      [
+        'G: Körperfett 90 Tage alt',
+        {
+          ...base,
+          bodyMetricsRows: [
+            { measuredOn: '2026-10-01', heightCm: 180, weightKg: 80 },
+            { measuredOn: '2026-07-16', bodyFatPct: 10 },
+          ],
+        },
+      ],
+      [
+        'G: Körperfett 91 Tage alt',
+        {
+          ...base,
+          date: '2026-10-15',
+          bodyMetricsRows: [
+            { measuredOn: '2026-10-01', heightCm: 180, weightKg: 80 },
+            { measuredOn: '2026-07-16', bodyFatPct: 10 },
+          ],
+        },
+      ],
+      [
+        'C: Schwangerschaft',
+        {
+          ...base,
+          sex: 'female',
+          healthFlags: ['pregnancy', 'conservative_plan'],
+          bodyMetricsRows: [{ measuredOn: '2026-10-01', heightCm: 170, weightKg: 70 }],
+        },
+      ],
+      ['D: ohne Größe', { ...base, bodyMetricsRows: [{ measuredOn: '2026-10-01', weightKg: 80 }] }],
+      [
+        'D: Größe aus älterer Zeile',
+        {
+          ...base,
+          bodyMetricsRows: [
+            { measuredOn: '2026-10-01', weightKg: 80 },
+            { measuredOn: '2026-10-15', weightKg: 90 },
+            { measuredOn: '2026-09-01', heightCm: 170 },
+          ],
+        },
+      ],
+    ];
+    for (const [label, input] of cases) {
+      const core = serverDayKcalFloor(input);
+      const sql = expected(label);
+      if (sql === null) expect(core, label).toBeNull();
+      else expect(core, label).toBeCloseTo(sql, 9);
     }
   });
 });

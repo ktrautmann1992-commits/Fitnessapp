@@ -49,6 +49,8 @@ export function errorText(error: unknown): string {
       return t.customMeals.errors.rejected;
     case 'temporary':
       return t.errors.temporary;
+    case 'delete_unavailable':
+      return t.errors.deleteUnavailable;
     case 'unknown':
       return t.errors.generic;
   }

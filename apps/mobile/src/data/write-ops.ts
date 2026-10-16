@@ -25,6 +25,7 @@ import type {
   BodyMeasurementsRow,
   BodyMetricsRow,
   ExercisePreferenceRow,
+  FoodLogFavoriteRow,
   FoodPreferenceRow,
   GoalsRow,
   MeasurementReminderRow,
@@ -115,7 +116,38 @@ export type WriteOp =
    */
   | { kind: 'upsert_exercise_preference'; row: ExercisePreferenceRow }
   /** Übungs-Präferenz entfernen („Wieder zulassen“, „Entfernen“, Rückgängig). */
-  | { kind: 'delete_exercise_preference'; exerciseId: string; location: EquipmentLocation };
+  | { kind: 'delete_exercise_preference'; exerciseId: string; location: EquipmentLocation }
+  /**
+   * Eintrag der Einkaufsliste abhaken bzw. zurücksetzen (Etappe N7 Teil 2: Spalte `shopping_list_items.checked`, direkt
+   * per PostgREST). Listen OHNE Gesundheitsbezug offline über die Warteschlange (Schlüssel je Liste und Eintrag), mit
+   * Gesundheitsbezug sofort (Ersatzprodukte lassen auf Unverträglichkeiten schließen).
+   */
+  | {
+      kind: 'set_shopping_item_checked';
+      listId: string;
+      weekStart: string;
+      itemKey: string;
+      checked: boolean;
+      usesHealthData: boolean;
+    }
+  /**
+   * Start des Meal-Prep-Kochtags setzen bzw. zurücksetzen (Etappe N7 Teil 2: Spalte `meal_plans.cook_day_started_at`).
+   * Pläne ohne Gesundheitsbezug offline über die Warteschlange, sonst sofort.
+   */
+  | {
+      kind: 'set_cook_day_start';
+      planId: string;
+      weekStart: string;
+      startedAt: string | null;
+      usesHealthData: boolean;
+    }
+  /**
+   * Favorit (Stern) des Ernährungstagebuchs setzen (Etappe N7 Teil 2: `food_log_favorites`, direkt per PostgREST). Kein
+   * Gesundheitsdatum (A-G14) – außer Schnell-Favoriten (Bezeichnung + kcal, Wächter E1 G1): die sofort.
+   */
+  | { kind: 'upsert_food_log_favorite'; row: FoodLogFavoriteRow }
+  /** Favorit entfernen (Schlüssel eines Schnell-Favoriten enthält kcal → sofort, nie in die Warteschlange). */
+  | { kind: 'delete_food_log_favorite'; favKey: string };
 
 export type ProfilePatch = Pick<
   TablesUpdate<'profiles'>,
@@ -156,7 +188,13 @@ export function isSensitiveOp(op: WriteOp): boolean {
     case 'append_plan_block':
     case 'update_planned_session':
     case 'swap_planned_sessions':
+    case 'set_shopping_item_checked':
+    case 'set_cook_day_start':
       return op.usesHealthData;
+    case 'upsert_food_log_favorite':
+      return op.row.source === 'quick';
+    case 'delete_food_log_favorite':
+      return op.favKey.startsWith('quick|');
     default:
       return false;
   }
@@ -169,7 +207,13 @@ export function isSensitiveOp(op: WriteOp): boolean {
  */
 export function needsHealthConsent(op: WriteOp): boolean {
   return (
-    isSensitiveOp(op) && op.kind !== 'update_planned_session' && op.kind !== 'swap_planned_sessions'
+    isSensitiveOp(op) &&
+    op.kind !== 'update_planned_session' &&
+    op.kind !== 'swap_planned_sessions' &&
+    // Abhaken, Kochtag-Start und Entfernen eines Favoriten ändern nur Vorhandenes bzw. löschen (Recht auf Löschung).
+    op.kind !== 'set_shopping_item_checked' &&
+    op.kind !== 'set_cook_day_start' &&
+    op.kind !== 'delete_food_log_favorite'
   );
 }
 
@@ -362,6 +406,43 @@ function applyOne(rows: UserRows, op: WriteOp, ctx: ApplyContext): UserRows {
               }
             : s,
         ),
+      };
+    case 'set_shopping_item_checked':
+      return {
+        ...rows,
+        shoppingLists: rows.shoppingLists.map((row) =>
+          row.id === op.listId
+            ? {
+                ...row,
+                list: {
+                  ...row.list,
+                  items: row.list.items.map((item) =>
+                    item.itemKey === op.itemKey ? { ...item, checked: op.checked } : item,
+                  ),
+                },
+              }
+            : row,
+        ),
+      };
+    case 'set_cook_day_start':
+      return {
+        ...rows,
+        mealPlans: rows.mealPlans.map((row) =>
+          row.id === op.planId ? { ...row, cook_day_started_at: op.startedAt } : row,
+        ),
+      };
+    case 'upsert_food_log_favorite':
+      return {
+        ...rows,
+        foodLogFavorites: [
+          ...rows.foodLogFavorites.filter((f) => f.fav_key !== op.row.fav_key),
+          op.row,
+        ],
+      };
+    case 'delete_food_log_favorite':
+      return {
+        ...rows,
+        foodLogFavorites: rows.foodLogFavorites.filter((f) => f.fav_key !== op.favKey),
       };
     case 'swap_planned_sessions': {
       // Wie swap_planned_sessions: Tage tauschen, Ursprungstag nur beim ERSTEN Verschieben setzen.
@@ -607,7 +688,8 @@ export interface CacheableRows {
 
 /**
  * Was im Supabase-Modus auf das Gerät darf (PLAN-PHASE-3 Abschnitt 9): nie Körperdaten, Umfänge, Checks,
- * Unverträglichkeiten; Pläne mit Gesundheitsbezug nur getrennt für den geschützten Zwischenspeicher.
+ * Unverträglichkeiten; Pläne mit Gesundheitsbezug nur getrennt für den geschützten Zwischenspeicher; Ernährungs-Zeilen
+ * des Kontos nie im normalen Zwischenspeicher (N7 Teil 2, eigener geschützter Speicher).
  */
 export function cacheableRows(
   rows: UserRows,
@@ -624,6 +706,14 @@ export function cacheableRows(
       ...other,
       // Tagebuch nie im normalen Zwischenspeicher (S4) – nur getrennt im geschützten logCache.
       ...EMPTY_LOG_ROWS,
+      // Ernährung (Etappe N7 Teil 2): Essenspläne/Listen (teils mit Gesundheitsbezug), Ernährungstagebuch, eigene
+      // Gerichte und Favoriten (Schnell-Favoriten mit kcal) nur im geschützten Speicher `nutritionCache`.
+      mealPlans: [],
+      shoppingLists: [],
+      foodLogEntries: [],
+      foodLogFavorites: [],
+      customMeals: [],
+      customMealItems: [],
     },
     healthPlans: options.allowHealthPlanCache && health.plans.length > 0 ? health : null,
     logs: logRowsOf(rows),

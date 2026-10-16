@@ -29,6 +29,8 @@ export const PROTECTED_STORE_NAMES = [
   'workoutDraft',
   'logQueue',
   'logCache',
+  'nutritionCache',
+  'nutritionQueue',
 ] as const;
 export type ProtectedStoreName = (typeof PROTECTED_STORE_NAMES)[number];
 
@@ -41,6 +43,15 @@ export const PROTECTED_STORE_KEYS: Record<
   workoutDraft: { dataKey: STORAGE_KEYS.workoutDraft, keyName: STORAGE_KEYS.workoutDraftKey },
   logQueue: { dataKey: STORAGE_KEYS.logQueue, keyName: STORAGE_KEYS.logQueueKey },
   logCache: { dataKey: STORAGE_KEYS.logCache, keyName: STORAGE_KEYS.logCacheKey },
+  // Etappe N7 Teil 2: Ernährungs-Zeilen und -Warteschlange (je eigener Schlüssel).
+  nutritionCache: {
+    dataKey: STORAGE_KEYS.nutritionCache,
+    keyName: STORAGE_KEYS.nutritionCacheKey,
+  },
+  nutritionQueue: {
+    dataKey: STORAGE_KEYS.nutritionQueue,
+    keyName: STORAGE_KEYS.nutritionQueueKey,
+  },
 };
 
 export type ProtectedStores = Record<ProtectedStoreName, ProtectedStore>;
@@ -54,6 +65,8 @@ export function createMemoryProtectedStores(): Record<
     workoutDraft: createMemoryProtectedStore(),
     logQueue: createMemoryProtectedStore(),
     logCache: createMemoryProtectedStore(),
+    nutritionCache: createMemoryProtectedStore(),
+    nutritionQueue: createMemoryProtectedStore(),
   };
 }
 
