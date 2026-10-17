@@ -28,6 +28,7 @@ import {
   openCameraSettings,
 } from '@/components/barcode-scanner';
 import { ProductCard, UserFoodProductForm } from '@/components/food-product';
+import { TestBarcode } from '@/components/test-barcode';
 import { NutritionGate, nutritionReady } from '@/components/nutrition';
 import { ConfirmDialog, Screen } from '@/components/screen';
 import {
@@ -116,7 +117,10 @@ export default function FoodProductScreen() {
   const [lastSaved, setLastSaved] = useState<FoodLogEntry | null>(null);
   const [busy, setBusy] = useState(false);
   const [canScan] = useState(barcodeScanSupported);
-  const [scanProblem, setScanProblem] = useState<'denied' | 'unavailable' | null>(null);
+  const [showTestBarcodes, setShowTestBarcodes] = useState(false);
+  const [scanProblem, setScanProblem] = useState<'denied' | 'unavailable' | 'interrupted' | null>(
+    null,
+  );
   const { backend } = app;
   const userProducts = app.rows?.userFoodProducts ?? [];
 
@@ -416,7 +420,7 @@ export default function FoodProductScreen() {
               ) : null}
             </>
           ) : (
-            <Body>{t.foodProduct.scan.unavailable}</Body>
+            <Body>{t.foodProduct.scan[scanProblem]}</Body>
           )}
         </Notice>
       ) : null}
@@ -439,6 +443,29 @@ export default function FoodProductScreen() {
               testID={`food-product-testcode-${c.key}`}
             />
           ))}
+          <Button
+            label={
+              showTestBarcodes ? t.foodProduct.testBarcodesHide : t.foodProduct.testBarcodesShow
+            }
+            variant="secondary"
+            expanded={showTestBarcodes}
+            onPress={() => setShowTestBarcodes((v) => !v)}
+            testID="food-product-testbarcodes-toggle"
+          />
+          {showTestBarcodes ? (
+            <View style={{ gap: 12 }} testID="food-product-testbarcodes">
+              <Body muted>{t.foodProduct.testBarcodesHint}</Body>
+              {MOCK_PRODUCT_CASES.map((c) => (
+                <View key={c.key} style={{ gap: 2 }}>
+                  <Body>{`${c.label}: ${c.code}`}</Body>
+                  <TestBarcode
+                    code={c.code}
+                    label={`${t.foodProduct.testBarcodeLabel} ${c.label}`}
+                  />
+                </View>
+              ))}
+            </View>
+          ) : null}
         </View>
       ) : null}
     </Card>

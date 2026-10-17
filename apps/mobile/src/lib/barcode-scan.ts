@@ -17,7 +17,9 @@ export type BarcodeScanResult =
   /** Kamera-Erlaubnis verweigert → Nummer eintippen + Hinweis, wo man die Erlaubnis ändert. */
   | { readonly kind: 'denied' }
   /** Keine Kamera, Kamera belegt, Leser lädt nicht … → Nummer eintippen. */
-  | { readonly kind: 'unavailable' };
+  | { readonly kind: 'unavailable' }
+  /** Kamera unterbrochen (Seite im Hintergrund, Kamera vom System beendet) → zurück zur Nummer. */
+  | { readonly kind: 'interrupted' };
 
 /** Was der Browser mitbringt – als Parameter, damit Tests ohne echten Browser auskommen. */
 export interface WebScanEnvironment {

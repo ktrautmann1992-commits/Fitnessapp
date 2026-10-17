@@ -1,6 +1,7 @@
 import { describe, expect, it } from 'vitest';
 
 import {
+  ean13BarPattern,
   expandUpcE,
   gs1CheckDigit,
   normalizeBarcode,
@@ -94,7 +95,18 @@ describe('scannedBarcodeDigits / normalizeScannedBarcode', () => {
     });
   });
 
-  it('UPC-A (12) → EAN-13; iOS liefert UPC-A teils schon mit führender 0', () => {
+  it('expo-camera iOS: ean13 mit 12 Ziffern (führende 0 abgeschnitten) → 0…', () => {
+    expect(normalizeScannedBarcode('036000291452', 'ean13')).toEqual({
+      ok: true,
+      code: '0036000291452',
+      digits: '036000291452',
+    });
+    // Falsche Prüfziffer bleibt falsch, 11 Ziffern bleiben ungültig.
+    expect(normalizeScannedBarcode('036000291453', 'ean13')).toMatchObject({ ok: false });
+    expect(scannedBarcodeDigits('03600029145', 'ean13')).toBeNull();
+  });
+
+  it('UPC-A (12) → EAN-13; manche Leser liefern UPC-A schon mit führender 0', () => {
     expect(normalizeScannedBarcode('036000291452', 'upc_a')).toMatchObject({
       ok: true,
       code: '0036000291452',
@@ -179,5 +191,41 @@ describe('scannedBarcodeDigits / normalizeScannedBarcode', () => {
       expect(digits).toBe(code);
       expect(scanned).toEqual(normalizeBarcode(code));
     }
+  });
+});
+
+describe('ean13BarPattern (Testmodus: Strichcodes der Testnummern anzeigen)', () => {
+  it('95 Module, Rand- und Mittelzeichen', () => {
+    const bits = ean13BarPattern('4006381333931');
+    expect(bits).toHaveLength(95);
+    expect(bits?.startsWith('101')).toBe(true);
+    expect(bits?.endsWith('101')).toBe(true);
+    expect(bits?.slice(45, 50)).toBe('01010');
+  });
+
+  it('bekanntes Muster: 4006381333931 (Parität LGLLGG)', () => {
+    expect(ean13BarPattern('4006381333931')).toBe(
+      '101' +
+        '0001101' + // 0 L
+        '0100111' + // 0 G
+        '0101111' + // 6 L
+        '0111101' + // 3 L
+        '0001001' + // 8 G
+        '0110011' + // 1 G
+        '01010' +
+        '1000010' +
+        '1000010' +
+        '1000010' +
+        '1110100' +
+        '1000010' +
+        '1100110' +
+        '101',
+    );
+  });
+
+  it('ungültige Nummer → null', () => {
+    expect(ean13BarPattern('4006381333932')).toBeNull();
+    expect(ean13BarPattern('96385074')).toBeNull();
+    expect(ean13BarPattern('abc')).toBeNull();
   });
 });

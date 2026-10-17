@@ -52,6 +52,33 @@ type DetectorClass = new (options: { formats: string[] }) => Detector;
 
 const noop = () => undefined;
 
+/**
+ * ZXing einmal je Seite vorbereiten (gleiche `overrides` = gleiches Modul, kein zweites Laden). Schlägt das Laden
+ * fehl (z. B. kurz offline), wird beim nächsten Versuch neu angefangen.
+ */
+let zxingReady: Promise<DetectorClass> | null = null;
+
+function loadZxing(): Promise<DetectorClass> {
+  zxingReady ??= (async () => {
+    const zxing = await import('barcode-detector/ponyfill');
+    const wasm = scannerWasmPath(zxing.ZXING_WASM_VERSION);
+    await zxing.prepareZXingModule({
+      overrides: {
+        locateFile: (path: string, prefix: string) =>
+          path.endsWith('.wasm') ? wasm : prefix + path,
+        print: noop,
+        printErr: noop,
+      },
+      fireImmediately: true,
+    });
+    return zxing.BarcodeDetector as unknown as DetectorClass;
+  })().catch((error: unknown) => {
+    zxingReady = null;
+    throw error;
+  });
+  return zxingReady;
+}
+
 async function createDetector(): Promise<Detector> {
   const builtIn = (window as { BarcodeDetector?: unknown }).BarcodeDetector;
   if (await prefersBuiltInDetector(builtIn)) {
@@ -59,17 +86,8 @@ async function createDetector(): Promise<Detector> {
   }
   // Nachladen nur hier (eigenes Bündel, ~1 MB WebAssembly). Die WebAssembly-Datei kommt von unserer Domain statt vom
   // voreingestellten CDN; Ausgaben des Lesers gehen nicht in die Konsole.
-  const zxing = await import('barcode-detector/ponyfill');
-  const wasm = scannerWasmPath(zxing.ZXING_WASM_VERSION);
-  await zxing.prepareZXingModule({
-    overrides: {
-      locateFile: (path: string, prefix: string) => (path.endsWith('.wasm') ? wasm : prefix + path),
-      print: noop,
-      printErr: noop,
-    },
-    fireImmediately: true,
-  });
-  return new zxing.BarcodeDetector({ formats: [...WEB_SCAN_FORMATS] }) as unknown as Detector;
+  const ZXingDetector = await loadZxing();
+  return new ZXingDetector({ formats: [...WEB_SCAN_FORMATS] });
 }
 
 export function BarcodeScanner({
@@ -93,6 +111,7 @@ export function BarcodeScanner({
     let timer: ReturnType<typeof setTimeout> | undefined;
     const stop = () => {
       stopped = true;
+      document.removeEventListener('visibilitychange', onVisibility);
       if (timer !== undefined) clearTimeout(timer);
       for (const track of stream?.getTracks() ?? []) track.stop();
       stream = null;
@@ -104,6 +123,13 @@ export function BarcodeScanner({
       stop();
       resultRef.current(result);
     };
+    // Seite im Hintergrund (App gewechselt, Bildschirm aus) oder Kamera vom System beendet → Kamera aus, zurück zur
+    // Nummer. Nie im Hintergrund weiterfilmen.
+    const interrupted = () => finish({ kind: 'interrupted' });
+    function onVisibility() {
+      if (document.hidden) interrupted();
+    }
+    document.addEventListener('visibilitychange', onVisibility);
     // Leser parallel zur Kamera-Frage laden (spart Wartezeit); Fehler erst auswerten, wenn die Kamera läuft.
     const detectorPromise = createDetector().then(
       (detector) => ({ detector }),
@@ -123,6 +149,7 @@ export function BarcodeScanner({
         for (const track of stream.getTracks()) track.stop();
         return;
       }
+      for (const track of stream.getTracks()) track.addEventListener('ended', interrupted);
       const video = videoRef.current;
       if (!video) {
         finish({ kind: 'unavailable' });

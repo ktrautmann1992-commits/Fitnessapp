@@ -985,9 +985,16 @@ Open Food Facts verlangt, dass jede Anfrage eine Kontaktadresse nennt. Ohne sie 
 Nichts einzustellen. Im Browser lädt die App den Strichcode-Leser (ZXing, WebAssembly) von **eurer eigenen
 Vercel-Adresse** (`/scanner/…`), nie von einem fremden Server. Für die **App** (APK/TestFlight) ist einmal ein **neuer
 Build** nötig: **Actions → eas-build → Run workflow** (Android: Plattform android, Profil preview; iPhone: Teil D2).
-Ältere Builds zeigen den Kamera-Knopf nicht. Vor dem Livegang: App-Store-Datenschutzangaben prüfen (Kamera wird nur
-auf dem Gerät genutzt, es werden keine Bilder erhoben) und in der Datenschutzerklärung erwähnen, dass Android den
-Strichcode mit Google ML Kit **auf dem Gerät** liest (ML-Kit-Bedingungen zu Nutzungsstatistiken prüfen).
+Ältere Builds zeigen den Kamera-Knopf nicht.
+
+Nach dem ersten neuen APK: Android → **Einstellungen → Apps → Alpha5 → Berechtigungen** – erwartet ist nur
+**Kamera** (kein Mikrofon, keine Fotos/Dateien).
+
+**PFLICHT vor dem Livegang:** Auf Android liest die App den Strichcode mit Googles **ML Kit** (auf dem Gerät); dazu
+bindet `expo-camera` die Google-Bibliothek `play-services-code-scanner` ein. Den automatischen Download der
+Google-Scan-Oberfläche haben wir abgeschaltet, ganz entfernen lässt sich die Bibliothek nicht. Klärt mit der
+Rechtsprüfung, ob dabei Nutzungs- oder Diagnosedaten an Google gehen, und passt Datenschutzerklärung,
+App-Store-Datenschutzangaben und Play-Store-„Datensicherheit“ an (docs/PLAN-E4.md, Nachtrag Wächter E4b, M2).
 
 ---
 

@@ -1,4 +1,5 @@
 import type { ConfigContext, ExpoConfig } from 'expo/config';
+import { AndroidConfig, type ConfigPlugin, withAndroidManifest } from 'expo/config-plugins';
 
 // Name der App (Anzeige unter dem Icon, im Browser-Tab) – gemeinsam mit packages/ui/src/brand.ts ändern.
 // slug = Slug des Expo-Projekts „AlphaFive“ auf expo.dev (muss genau dazu passen, docs/SETUP.md Teil D).
@@ -24,7 +25,38 @@ const EAS_OWNER = 'ktrautmann1992s-team';
 export const CAMERA_PERMISSION_TEXT =
   'Alpha5 nutzt die Kamera nur, um den Strichcode von Lebensmitteln zu lesen. Es werden keine Fotos gespeichert.';
 
-export default ({ config }: ConfigContext): ExpoConfig => ({
+/**
+ * expo-camera trägt in sein Android-Manifest `com.google.mlkit.vision.DEPENDENCIES = barcode_ui` ein. Das lässt Google
+ * Play-Dienste das Modul des Google-Code-Scanners (eigene Scan-Oberfläche von Google, `launchScanner`) schon bei der
+ * Installation herunterladen. Wir nutzen diese Oberfläche nicht – nur den eingebauten ML-Kit-Leser in `CameraView`
+ * (gebündelt, ohne Download). Deshalb wird der Eintrag beim Zusammenführen der Manifeste entfernt
+ * (`tools:node="remove"`). Die Bibliothek `play-services-code-scanner` selbst bleibt (expo-camera braucht sie beim
+ * Kompilieren); ohne den Eintrag lädt sie nur, wenn jemand `launchScanner` aufruft – das tut die App nie.
+ * Etappe E4b, Wächter M2; docs/PLAN-E4.md Umsetzungsstand E4b.
+ */
+export const MLKIT_DEPENDENCIES_META = 'com.google.mlkit.vision.DEPENDENCIES';
+
+const withoutGoogleCodeScannerDownload: ConfigPlugin = (cfg) =>
+  withAndroidManifest(cfg, (mod) => {
+    const application = AndroidConfig.Manifest.getMainApplicationOrThrow(mod.modResults);
+    const metaData = (application['meta-data'] ?? []).filter(
+      (entry) => entry.$['android:name'] !== MLKIT_DEPENDENCIES_META,
+    );
+    metaData.push({
+      $: { 'android:name': MLKIT_DEPENDENCIES_META, 'tools:node': 'remove' } as {
+        'android:name': string;
+        'android:value'?: string;
+      },
+    });
+    application['meta-data'] = metaData;
+    mod.modResults.manifest.$['xmlns:tools'] ??= 'http://schemas.android.com/tools';
+    return mod;
+  });
+
+export default ({ config }: ConfigContext): ExpoConfig =>
+  withoutGoogleCodeScannerDownload(appConfig(config));
+
+const appConfig = (config: ConfigContext['config']): ExpoConfig => ({
   ...config,
   name: APP_NAME,
   owner: EAS_OWNER,

@@ -155,9 +155,11 @@ export function scannedBarcodeDigits(raw: unknown, format: unknown): string | nu
     case 'ean8':
       return digits.length === 8 ? digits : null;
     case 'ean13':
-      return digits.length === 13 ? digits : null;
+      // expo-camera auf iOS meldet UPC-A als `ean13` und schneidet bei JEDEM EAN-13 mit führender 0 diese 0 ab
+      // (BarcodeScannerUtils.swift) – dann kommen 12 Ziffern. normalizeBarcode prüft die Prüfziffer und ergänzt die 0.
+      return digits.length === 13 || digits.length === 12 ? digits : null;
     case 'upca':
-      // Manche Geräte (iOS) liefern UPC-A schon als EAN-13 mit führender 0.
+      // Andere Leser liefern UPC-A schon als EAN-13 mit führender 0.
       return digits.length === 12 || (digits.length === 13 && digits.startsWith('0'))
         ? digits
         : null;
@@ -178,4 +180,75 @@ export function normalizeScannedBarcode(
   const digits = scannedBarcodeDigits(raw, format);
   if (digits === null) return { ok: false, reason: 'invalid', digits: null };
   return { ...normalizeBarcode(digits), digits };
+}
+
+// ---------------------------------------------------------------------------------------------------------
+// Strichcode zeichnen (nur Testmodus, Etappe E4b / Wächter N4): Die Testnummern der Attrappe lassen sich so am
+// zweiten Handy anzeigen und mit der Kamera scannen – ohne echte Packung.
+// ---------------------------------------------------------------------------------------------------------
+
+const EAN_L = [
+  '0001101',
+  '0011001',
+  '0010011',
+  '0111101',
+  '0100011',
+  '0110001',
+  '0101111',
+  '0111011',
+  '0110111',
+  '0001011',
+];
+const EAN_G = [
+  '0100111',
+  '0110011',
+  '0011011',
+  '0100001',
+  '0011101',
+  '0111001',
+  '0000101',
+  '0010001',
+  '0001001',
+  '0010111',
+];
+const EAN_R = [
+  '1110010',
+  '1100110',
+  '1101100',
+  '1000010',
+  '1011100',
+  '1001110',
+  '1010000',
+  '1000100',
+  '1001000',
+  '1110100',
+];
+const EAN_PARITY = [
+  'LLLLLL',
+  'LLGLGG',
+  'LLGGLG',
+  'LLGGGL',
+  'LGLLGG',
+  'LGGLLG',
+  'LGGGLL',
+  'LGLGLG',
+  'LGLGGL',
+  'LGGLGL',
+];
+
+/**
+ * EAN-13 → 95 Module („1“ = Strich, „0“ = Lücke), ohne Ruhezone. Kodierung nach GS1 General Specifications 5.2.2
+ * (Zeichensätze A/B/C, Parität aus der ersten Ziffer). Nur für gültige 13-stellige Nummern (Prüfziffer), sonst null.
+ */
+export function ean13BarPattern(code: string): string | null {
+  if (!/^\d{13}$/.test(code) || !hasValidCheckDigit(code)) return null;
+  const d = [...code].map(Number);
+  const parity = EAN_PARITY[d[0] ?? 0] ?? 'LLLLLL';
+  let bits = '101';
+  for (let i = 1; i <= 6; i += 1) {
+    bits += (parity[i - 1] === 'G' ? EAN_G : EAN_L)[d[i] ?? 0];
+  }
+  bits += '01010';
+  for (let i = 7; i <= 12; i += 1) bits += EAN_R[d[i] ?? 0];
+  return `${bits}101`;
 }

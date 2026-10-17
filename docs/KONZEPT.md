@@ -1110,6 +1110,12 @@ alle offen, Server-Prüfung mit Phase 7):
   Supabase-Werten oder ein Store-Build (TestFlight/Play Store) erstellt wird. Bis dahin nur Namen ohne Nummern, nur im
   Testmodus (`apps/mobile/src/i18n/de-nutrition.ts`, Vermerk „VOR VERÖFFENTLICHUNG PRÜFEN“; Checkliste `docs/SETUP.md`
   Teil K)
+- **Strichcode-Kamera (E4b, Pflicht vor dem Livegang):** `expo-camera` bindet auf Android Googles ML Kit
+  (`com.google.mlkit:barcode-scanning`, Erkennung auf dem Gerät) und `play-services-code-scanner` ein. Klären und
+  schriftlich festhalten, ob dabei Daten an Google gehen (ML-Kit-Bedingungen: Nutzungs-/Diagnosedaten, Google-Play-
+  Dienste), ggf. Datenschutzerklärung und Play-Store-Datensicherheitsangaben anpassen. Bildinhalte verlassen das Gerät
+  nach unserer Prüfung nicht. Lizenzhinweise Software von Dritten (zxing-cpp Apache 2.0: Lizenztext mitliefern?)
+  prüfen. `docs/PLAN-E4.md` Umsetzungsstand E4b
 - Standortberechtigung im Hintergrund (Strecken): Begründungstexte für App Store und Play Store
 - Mitgliedschafts-Erinnerung: nur Erinnerung an selbst eingetragene Fristen, keine Rechtsberatung zur Kündigung
 - Erweiterungen Teil 2: Lizenz der Nährwertdatenbank (Namensnennung) für alle 236 Zutaten; Ratgeber- und Rezepttexte

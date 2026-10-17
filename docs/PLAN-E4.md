@@ -860,7 +860,7 @@ Kamerabilder bleiben im Arbeitsspeicher, werden nie gespeichert, gesendet oder g
 
 - **Core** (`nutrition/barcode.ts`): `scannedBarcodeFormat` (Namen aus `BarcodeDetector` und `expo-camera`),
   `expandUpcE` (UPC-E → UPC-A nach GS1, Prüfziffer muss passen, Nummernsystem 0/1), `scannedBarcodeDigits` (Länge muss
-  zum Format passen; UPC-A auch als 13 Ziffern mit führender 0, wie iOS sie liefert) und `normalizeScannedBarcode`
+  zum Format passen; UPC-A auch als 13 Ziffern mit führender 0; `ean13` auch mit 12 Ziffern, weil expo-camera auf iOS UPC-A als `ean13` meldet und die führende 0 abschneidet) und `normalizeScannedBarcode`
   (= `normalizeBarcode` danach). QR-/Code-128-Codes werden ignoriert. Tests `barcode.test.ts` (40, inkl.
   Eigenschaftstest „Scan = Eintippen“ mit 2.000 Nummern).
 - **Browser** (`components/barcode-scanner.tsx`, Logik in `lib/barcode-scan.ts`): Knopf, wenn HTTPS + `getUserMedia`
@@ -896,12 +896,42 @@ demselben Build zu bringen. Wenn E3-G1 vor dem nächsten EAS-Build fertig wird, 
 
 **Neuer EAS-Build nötig** (Android-APK und iOS/TestFlight, HANDY-ANLEITUNG Teil 7l). Die Web-Vorschau braucht nichts.
 
-**Vormerkungen / vor dem Livegang:** App-Store-Datenschutzangaben prüfen (Kamera nur auf dem Gerät, keine Bilder
-erhoben); Android liest mit **Google ML Kit (gebündelt, auf dem Gerät)** – ML-Kit-Bedingungen zu anonymen
-Nutzungsstatistiken prüfen und in der Datenschutzerklärung erwähnen; auf echten Geräten testen (iPhone Chrome/Safari,
-Android Chrome, APK, TestFlight), besonders bei wenig Licht und kleinen EAN-8-Codes; beim Aktualisieren von
-`barcode-detector` die Version von `zxing-wasm` in `apps/mobile/package.json` angleichen (sonst bricht der Build mit
-Hinweis ab).
+**Nachtrag Wächter-Prüfung E4b (17.10.2026)** – Urteil „bedingt freigabefähig“, Auflagen:
+
+- **H1 umgesetzt:** expo-camera auf iOS meldet UPC-A als `ean13` und schneidet bei jedem EAN-13 die führende 0 ab
+  (`BarcodeScannerUtils.swift`) – es kommen 12 Ziffern. `scannedBarcodeDigits` nimmt bei `ean13` jetzt auch 12
+  Ziffern an; `normalizeBarcode` prüft die Prüfziffer und ergänzt die 0. Test „expo-camera iOS: ean13 mit 12 Ziffern“.
+- **M1 umgesetzt:** Browser-Kamera endet sofort, wenn die Seite in den Hintergrund geht (`visibilitychange`) oder das
+  System die Kamera beendet (`ended` am Track) → zurück zur Nummer mit Hinweis „Die Kamera wurde beendet …“. Zwei
+  Playwright-Tests.
+- **M2 teils umgesetzt, Rest PFLICHT-VORMERKUNG:** expo-camera zieht auf Android **`com.google.mlkit:barcode-scanning`
+  (gebündelt, Erkennung auf dem Gerät) UND `play-services-code-scanner`** und setzt im Manifest
+  `com.google.mlkit.vision.DEPENDENCIES = barcode_ui` (Download der Google-Scan-Oberfläche über die Play-Dienste bei der
+  Installation). Umgesetzt: Dieser Eintrag wird per Config-Plugin in `app.config.ts` mit `tools:node="remove"`
+  entfernt (die App nutzt die Google-Oberfläche `launchScanner` nie; geprüft in `native-config.test.ts`). **Nicht
+  sicher machbar:** `play-services-code-scanner` per Gradle ausschließen (expo-camera braucht die Klassen beim
+  Kompilieren) und die Nutzungs-/Diagnosedaten von ML Kit abschalten (keine dokumentierte Option in expo-camera).
+  **Vor dem Livegang verbindlich klären** (Gründer + Rechtsprüfung, KONZEPT 14, SETUP M5): Welche Daten gehen dabei an
+  Google, Datenschutzerklärung und Play-Store-Datensicherheit anpassen. Nach dem ersten Build mit Gerät prüfen, dass
+  das Scannen ohne den Eintrag funktioniert (Bündel-Modell braucht keinen Download).
+- **N1 umgesetzt:** Seite „Lizenzen und Quellen“ (App und Website) um „Software von Dritten“: zxing-cpp (Apache 2.0),
+  zxing-wasm (MIT, C++-Anbindung Apache 2.0), barcode-detector (MIT), expo-camera (MIT). Ob der Apache-Lizenztext
+  mitgeliefert werden muss, prüft die Rechtsprüfung.
+- **N2 Doku:** Der Workflow `eas-build` startet den Build ohne zu warten (`--no-wait`), eine Prüfung der APK im Workflow
+  wäre aufwendig. Stattdessen nach dem ersten APK-Build einmal die Berechtigungen prüfen (`aapt dump permissions
+<apk>` bzw. Android → Einstellungen → Apps → Alpha5 → Berechtigungen): erwartet nur Kamera (+ Internet, Vibration),
+  kein Mikrofon, keine Fotos/Speicher.
+- **N3 umgesetzt:** ZXing wird einmal je Seite vorbereitet (`loadZxing`, gemerktes Versprechen), bei einem Fehler beim
+  nächsten Versuch neu.
+- **N4 umgesetzt:** Im Testmodus zeigt „Produkt (Barcode)“ → **„Strichcodes der Testnummern anzeigen“** alle Testnummern
+  als Strichcode (Core `ean13BarPattern`, gezeichnet mit react-native-svg, schwarz auf weiß) – auf einem zweiten Handy
+  öffnen und scannen (HANDY-ANLEITUNG 7l).
+- **N5 umgesetzt:** HANDY-ANLEITUNG: Chrome auf dem iPhone – Seite neu laden und erneut erlauben.
+
+**Weitere Vormerkungen:** App-Store-Datenschutzangaben prüfen (Kamera nur auf dem Gerät, keine Bilder erhoben); auf
+echten Geräten testen (iPhone Chrome/Safari, Android Chrome, APK, TestFlight), besonders bei wenig Licht und kleinen
+EAN-8-Codes; beim Aktualisieren von `barcode-detector` die Version von `zxing-wasm` in `apps/mobile/package.json`
+angleichen (sonst bricht der Build mit Hinweis ab).
 
 ---
 

@@ -10,7 +10,7 @@ import { fileURLToPath } from 'node:url';
 import type { ExpoConfig } from 'expo/config';
 import { beforeAll, describe, expect, it } from 'vitest';
 
-import appConfig, { CAMERA_PERMISSION_TEXT } from '../../app.config';
+import appConfig, { CAMERA_PERMISSION_TEXT, MLKIT_DEPENDENCIES_META } from '../../app.config';
 
 const APP_DIR = join(dirname(fileURLToPath(import.meta.url)), '..', '..');
 const require = createRequire(join(APP_DIR, 'package.json'));
@@ -175,7 +175,10 @@ describe('expo config --type introspect (nach allen Config-Plugins, offline)', (
           manifest: {
             manifest: {
               'uses-permission'?: { $: Record<string, string> }[];
-              application: { $: Record<string, string> }[];
+              application: {
+                $: Record<string, string>;
+                'meta-data'?: { $: Record<string, string> }[];
+              }[];
             };
           };
         };
@@ -220,6 +223,16 @@ describe('expo config --type introspect (nach allen Config-Plugins, offline)', (
     expect(application['android:dataExtractionRules']).toBe(
       '@xml/secure_store_data_extraction_rules',
     );
+  });
+
+  it('AndroidManifest: Download des Google-Code-Scanners (barcode_ui) wird entfernt (E4b, Wächter M2)', () => {
+    const manifest = result._internal.modResults.android.manifest.manifest;
+    const meta = (manifest.application[0]?.['meta-data'] ?? []).filter(
+      (entry) => entry.$['android:name'] === MLKIT_DEPENDENCIES_META,
+    );
+    expect(meta).toEqual([
+      { $: { 'android:name': MLKIT_DEPENDENCIES_META, 'tools:node': 'remove' } },
+    ]);
   });
 });
 

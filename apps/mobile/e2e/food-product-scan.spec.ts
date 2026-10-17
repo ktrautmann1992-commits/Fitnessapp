@@ -318,3 +318,65 @@ test('Abbrechen beendet die Kamera', async ({ page }) => {
   await expect(page.getByTestId('food-product-code')).toBeVisible();
   await expect.poll(async () => (await scanState(page)).tracksLive).toBe(0);
 });
+
+test('Kamera vom System beendet (Track „ended“): Kamera aus, Hinweis, zurück zur Nummer', async ({
+  page,
+}) => {
+  test.setTimeout(120_000);
+  await fakeCamera(page, { camera: 'canvas', builtInDetector: false, code: '' });
+  await openProduct(page);
+  await page.getByTestId('food-product-scan').click();
+  await expect(page.getByTestId('food-product-scan-ready')).toBeVisible();
+  // track.stop() allein löst kein „ended“ aus (Spezifikation) – das System (z. B. Kamera getrennt) schon.
+  await page.evaluate(() => {
+    const s = (window as unknown as { __scan: { tracks: MediaStreamTrack[] } }).__scan;
+    for (const track of s.tracks) {
+      track.stop();
+      track.dispatchEvent(new Event('ended'));
+    }
+  });
+  await expect(page.getByTestId('food-product-scan-interrupted')).toContainText(
+    'Die Kamera wurde beendet',
+  );
+  await expect(page.getByTestId('food-product-scanner')).toHaveCount(0);
+  await expect(page.getByTestId('food-product-code')).toBeVisible();
+});
+
+test('Seite im Hintergrund (visibilitychange): Kamera sofort aus, zurück zur Nummer', async ({
+  page,
+}) => {
+  test.setTimeout(120_000);
+  await fakeCamera(page, { camera: 'canvas', builtInDetector: false, code: '' });
+  await openProduct(page);
+  await page.getByTestId('food-product-scan').click();
+  await expect(page.getByTestId('food-product-scan-ready')).toBeVisible();
+  await expect.poll(async () => (await scanState(page)).tracksLive).toBeGreaterThan(0);
+  await page.evaluate(() => {
+    Object.defineProperty(document, 'hidden', { configurable: true, get: () => true });
+    document.dispatchEvent(new Event('visibilitychange'));
+  });
+  await expect.poll(async () => (await scanState(page)).tracksLive).toBe(0);
+  await page.evaluate(() => {
+    Object.defineProperty(document, 'hidden', { configurable: true, get: () => false });
+  });
+  await expect(page.getByTestId('food-product-scan-interrupted')).toBeVisible();
+  await expect(page.getByTestId('food-product-scanner')).toHaveCount(0);
+  // Erneut scannen geht.
+  await page.getByTestId('food-product-scan').click();
+  await expect(page.getByTestId('food-product-scan-ready')).toBeVisible();
+});
+
+test('Testmodus: Strichcodes der Testnummern zum Scannen am zweiten Handy', async ({ page }) => {
+  test.setTimeout(120_000);
+  await fakeCamera(page, { camera: 'none', builtInDetector: false });
+  await openProduct(page);
+  await expect(page.getByTestId('food-product-testbarcodes')).toHaveCount(0);
+  await page.getByTestId('food-product-testbarcodes-toggle').click();
+  const list = page.getByTestId('food-product-testbarcodes');
+  await expect(list).toContainText('zweiten Handy');
+  await expect(list.locator('svg')).toHaveCount(MOCK_PRODUCT_CASES.length);
+  // EAN-13 hat 30 Striche (12 Ziffern × 2 + Rand-/Mittelzeichen 3 × 2), dazu das weiße Hintergrund-Rechteck.
+  await expect(list.locator('svg').first().locator('rect')).toHaveCount(31);
+  await page.getByTestId('food-product-testbarcodes-toggle').click();
+  await expect(page.getByTestId('food-product-testbarcodes')).toHaveCount(0);
+});

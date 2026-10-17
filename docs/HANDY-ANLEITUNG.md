@@ -751,9 +751,13 @@ Zwischenspeicher. Ohne die Variable bzw. mit Flag aus zeigt die App „Die Produ
 
 Neu auf „Produkt (Barcode)“: der Knopf **„Mit der Kamera scannen“**. Er erscheint nur, wenn euer Gerät es kann. Die
 Kamerabilder bleiben auf dem Handy und werden nicht gespeichert oder gesendet – weiter geht nur die Nummer. Danach läuft
-alles wie beim Eintippen (Teil 7k). Im Testmodus findet die Attrappe nur die Testnummern; zum Ausprobieren eignet sich
-deshalb ein Strichcode einer **Testnummer** (z. B. aus der Liste auf einem zweiten Bildschirm) oder einer echten Packung
-(dann kommt im Testmodus „Dieses Produkt kennen wir noch nicht“ – das zeigt, dass die Nummer erkannt wurde).
+alles wie beim Eintippen (Teil 7k). Im Testmodus findet die Attrappe nur die Testnummern.
+
+**Strichcodes zum Scannen ohne Packung:** Auf einem **zweiten Handy** (oder Tablet/Laptop) den Vorschau-Link öffnen →
+Testmodus → „Produkt (Barcode)“ → unter den Testnummern **„Strichcodes der Testnummern anzeigen“**. Dort steht jede
+Testnummer als Strichcode (schwarz auf weiß). Diesen Bildschirm mit dem ersten Handy scannen – z. B. „Gefunden, Werte
+plausibel“ → das Testprodukt erscheint. Bildschirm hell stellen, nicht spiegeln lassen. Eine echte Packung geht auch;
+im Testmodus kommt dann „Dieses Produkt kennen wir noch nicht“ – das zeigt, dass die Nummer erkannt wurde.
 
 **iPhone, Chrome (Vorschau-Link):**
 
@@ -765,8 +769,11 @@ deshalb ein Strichcode einer **Testnummer** (z. B. aus der Liste auf einem zweit
    im Feld, das Produkt bzw. der passende Hinweis erscheint.
 4. **„Abbrechen und Nummer eintippen“** schließt die Kamera.
 5. Erlaubnis verweigern: Es kommt „Ohne Kamera-Erlaubnis kannst du die Nummer eintippen“ mit dem Weg zur Einstellung.
-   Wieder erlauben: **iPhone-Einstellungen → Chrome → Kamera** einschalten, danach die Seite neu laden. (In Safari
-   geht es gleich; dort: Einstellungen → Safari → Kamera.)
+   Wieder erlauben: **iPhone-Einstellungen → Chrome → Kamera** einschalten, danach die Seite neu laden. Oft reicht
+   auch: **Seite neu laden** (Pfeil im Chrome-Menü bzw. Adresse antippen → Eingabe) und beim nächsten „Mit der Kamera
+   scannen“ **erneut „Erlauben“** tippen. (In Safari geht es gleich; dort: Einstellungen → Safari → Kamera.)
+6. Während die Kamera läuft, zu einer anderen App wechseln → die Kamera geht aus; zurück in Chrome steht „Die Kamera
+   wurde beendet …“ – einfach noch einmal scannen.
 
 **Android, Chrome (Vorschau-Link):** gleiche Schritte; Android nutzt den eingebauten Leser von Chrome. Erlaubnis
 ändern: links neben der Adresse auf das Symbol tippen → **Berechtigungen** → **Kamera**.
