@@ -183,3 +183,37 @@ export function hasGoal(selection: GoalSelectionInput, goal: GoalType): boolean 
   const { primary, secondary } = parseSelection(selection);
   return primary === goal || secondary === goal;
 }
+
+/**
+ * Grund, aus dem ein Nebenziel zum Hauptziel nicht wählbar ist (Tabelle 4.2, App-Schritt „Ziel“ in Etappe Z4: nicht
+ * erlaubte Nebenziele ausgegraut mit Grund). `null` = erlaubt.
+ * - `same`: dasselbe Ziel doppelt
+ * - `overlap`: Definition zusammen mit Abnehmen bzw. Muskelaufbau („Definition verbindet schon …“)
+ * - `fitness_secondary`: Fitness als Nebenziel (steckt in jedem Plan)
+ * - `primary_preferred`: Kraft-Ziel neben dem Hauptziel Fitness – besser als Hauptziel wählen
+ */
+export const GOAL_PAIR_BLOCK_REASONS = [
+  'same',
+  'overlap',
+  'fitness_secondary',
+  'primary_preferred',
+] as const;
+export type GoalPairBlockReason = (typeof GOAL_PAIR_BLOCK_REASONS)[number];
+
+const OVERLAPS_DEFINITION: readonly GoalType[] = ['fat_loss', 'muscle_gain'];
+
+export function goalPairBlockReason(
+  primary: GoalType,
+  secondary: GoalType,
+): GoalPairBlockReason | null {
+  if (isAllowedGoalPair(primary, secondary)) return null;
+  if (primary === secondary) return 'same';
+  if (secondary === 'general_fitness') return 'fitness_secondary';
+  if (
+    (primary === 'definition' && OVERLAPS_DEFINITION.includes(secondary)) ||
+    (secondary === 'definition' && OVERLAPS_DEFINITION.includes(primary))
+  ) {
+    return 'overlap';
+  }
+  return 'primary_preferred';
+}

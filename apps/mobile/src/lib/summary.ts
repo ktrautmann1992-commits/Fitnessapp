@@ -67,9 +67,13 @@ export function summaryLines(answers: OnboardingAnswers, hasHealthConsent: boole
     const discipline = answers.goal.discipline
       ? ` · ${t.steps.goal.disciplines[answers.goal.discipline]}`
       : '';
+    // Haupt- und Nebenziel (Etappe Z4): „Abnehmen + Muskelaufbau“. Ein Wunschgewicht erscheint hier nicht (F13).
+    const secondary = answers.goal.secondaryGoalType
+      ? ` + ${t.steps.goal.options[answers.goal.secondaryGoalType]}`
+      : '';
     lines.push({
       label: d.labels.goal,
-      value: `${t.steps.goal.options[answers.goal.goalType]}${discipline}`,
+      value: `${t.steps.goal.options[answers.goal.goalType]}${secondary}${discipline}`,
     });
   }
   if (answers.trainingSchedule) {

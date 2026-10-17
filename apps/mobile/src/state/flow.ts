@@ -11,7 +11,7 @@ import {
   resumeStep,
 } from '@fitnessapp/core';
 
-import { consentRecordsFromRows, type ConsentVersions } from '../data/mapping';
+import { consentRecordsFromRows, type ConsentVersions, losesWeight } from '../data/mapping';
 import type { AuthSession, StepSave, UserRows } from '../data/types';
 
 /**
@@ -74,7 +74,10 @@ export function deriveOnboardingState(
     nutritionSetupAvailable,
     // Schritt weight_goal (Etappe Z3/Z4): nur bei Abnehmen als Haupt- oder Nebenziel; noch kein Ziel = offen.
     losesWeight: rows.goals
-      ? rows.goals.goal_type === 'fat_loss' || rows.goals.secondary_goal_type === 'fat_loss'
+      ? losesWeight({
+          goalType: rows.goals.goal_type,
+          secondaryGoalType: rows.goals.secondary_goal_type ?? null,
+        })
       : undefined,
   };
 }
@@ -136,10 +139,11 @@ export function lastMeasurementDate(rows: UserRows): string | null {
 
 /**
  * „Angaben ändern“ aus den Einstellungen (docs/PLAN-PHASE-3.md 10.4): dieselben Schritte nacheinander, danach
- * zurück zu „Heute“ (dort „Plan neu erstellen?“). Equipment nur mit „Kraft zu Hause“; der Gesundheits-Check
- * („wiederholen“) führt direkt zurück.
+ * zurück zu „Heute“ (dort „Plan neu erstellen?“). Wunschgewicht nur mit Abnehmen und Einwilligung (Etappe Z4,
+ * docs/PLAN-ZIELE.md 6 Nr. 3), Equipment nur mit „Kraft zu Hause“; der Gesundheits-Check („wiederholen“) führt direkt
+ * zurück.
  */
-const EDIT_CHAIN = ['experience', 'goal', 'time_budget', 'equipment'] as const;
+const EDIT_CHAIN = ['experience', 'goal', 'weight_goal', 'time_budget', 'equipment'] as const;
 
 /**
  * „Ernährung ändern“ (docs/PLAN-PHASE-5.md 8.2 Nr. 7, Etappe N4): Ernährungsform/Vorlieben → Kochmodus → Alltag und
@@ -151,6 +155,8 @@ export function nextEditRoute(
   step: OnboardingStep,
   save: StepSave,
   nutritionSetupAvailable = false,
+  /** Einwilligung health_data gültig (Schritt `weight_goal` nur dann, Gesundheitsdatum). */
+  healthDataConsent = false,
 ): EntryRoute | `${EntryRoute}?edit=1` {
   const nutritionIndex = (NUTRITION_EDIT_CHAIN as readonly string[]).indexOf(step);
   if (nutritionIndex >= 0) {
@@ -161,7 +167,13 @@ export function nextEditRoute(
   }
   const index = (EDIT_CHAIN as readonly string[]).indexOf(step);
   if (index < 0 || index === EDIT_CHAIN.length - 1) return '/today';
-  const next = EDIT_CHAIN[index + 1];
+  let next = EDIT_CHAIN[index + 1];
+  if (
+    next === 'weight_goal' &&
+    !(healthDataConsent && save.step === 'goal' && losesWeight(save.goal))
+  ) {
+    next = 'time_budget';
+  }
   if (next === 'equipment' && !(save.step === 'time_budget' && hasHomeStrength(save.schedule))) {
     return '/today';
   }

@@ -48,7 +48,12 @@ export function useStep(step: OnboardingStep): StepController {
     try {
       const route = await app.saveStep(save);
       if (editing) {
-        const target = nextEditRoute(step, save, app.backend.supportsNutrition);
+        const target = nextEditRoute(
+          step,
+          save,
+          app.backend.supportsNutrition,
+          state.healthDataConsent === true,
+        );
         // Zurück zum vorhandenen „Heute“ (nicht ein zweites darüberlegen); sonst nächster Schritt.
         if (target === '/today') {
           router.dismissTo('/today');

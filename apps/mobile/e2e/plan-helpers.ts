@@ -66,7 +66,7 @@ export async function onboard(page: Page, person: Person) {
   await page.getByRole('radio', { name: person.level }).click();
   await next(page);
   await heading(page, 'Dein Ziel');
-  await page.getByRole('radio', { name: person.goal }).click();
+  await page.getByRole('radio', { name: person.goal, exact: true }).click();
   if (person.discipline) {
     await page.getByRole('radio', { name: person.discipline, exact: true }).click();
   }
@@ -77,6 +77,11 @@ export async function onboard(page: Page, person: Person) {
     await page.getByLabel('Wettkampf-Datum (optional): Jahr').fill(year);
   }
   await next(page);
+  if (person.goal === 'Abnehmen' && person.consent) {
+    // Schritt „Wunschgewicht“ (Etappe Z4): Standard „ohne festes Ziel“.
+    await heading(page, 'Wie möchtest du abnehmen?');
+    await next(page);
+  }
   await heading(page, 'Deine Trainingstage');
   if (person.goal === 'Ausdauer' && person.days.length > 0) {
     // Ziel Ausdauer belegt Tage vor – hier eigene Tage planen.

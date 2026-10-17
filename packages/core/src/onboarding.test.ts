@@ -17,11 +17,17 @@ import {
   WEIGHT_GOAL_STEP_ENABLED,
 } from './onboarding';
 
-const full: OnboardingState = { healthDataConsent: true, hasHomeStrength: true };
+/** Voller Ablauf ohne Abnehmen (Schritt `weight_goal` entfällt); mit Abnehmen siehe eigener Block unten. */
+const full: OnboardingState = {
+  healthDataConsent: true,
+  hasHomeStrength: true,
+  losesWeight: false,
+};
 const noConsentGym: OnboardingState = { healthDataConsent: false, hasHomeStrength: false };
 /**
  * Alle Schritte außer dem seit Etappe B2 nie anwendbaren Trainingsort, dem Schritt `nutrition_setup`, der nur mit
- * `nutritionSetupAvailable: true` (Testmodus bis N7) anwendbar ist, und dem bis Etappe Z4 abgeschalteten `weight_goal`.
+ * `nutritionSetupAvailable: true` (Testmodus bis N7) anwendbar ist, und `weight_goal` (nur mit Abnehmen, `full` nimmt ab
+ * nicht ab).
  */
 const ALL_SHOWN = ONBOARDING_STEPS.filter(
   (step) => step !== 'training_location' && step !== 'nutrition_setup' && step !== 'weight_goal',
@@ -81,8 +87,9 @@ describe('Schritt-Reihenfolge', () => {
     ]);
   });
 
-  it('noch unbeantwortete Fragen zählen die abhängigen Schritte mit', () => {
-    expect(applicableSteps({})).toHaveLength(11);
+  it('noch unbeantwortete Fragen zählen die abhängigen Schritte mit (inkl. weight_goal)', () => {
+    expect(applicableSteps({})).toHaveLength(12);
+    expect(applicableSteps({})).toContain('weight_goal');
   });
 });
 
@@ -215,14 +222,27 @@ describe('Schritt weight_goal (docs/PLAN-ZIELE.md 6 Nr. 2, Etappe Z3, Wächter K
     expect(HEALTH_DATA_STEPS).toContain('weight_goal');
   });
 
-  it('bis Etappe Z4 abgeschaltet: nie anwendbar, auch mit Abnehmen und Einwilligung', () => {
-    expect(WEIGHT_GOAL_STEP_ENABLED).toBe(false);
+  it('seit Etappe Z4 eingeschaltet: nur bei Abnehmen (bzw. Ziel noch offen) und nicht ohne Einwilligung', () => {
+    expect(WEIGHT_GOAL_STEP_ENABLED).toBe(true);
+    const losing = { ...full, losesWeight: true };
+    expect(isStepApplicable('weight_goal', losing)).toBe(true);
+    expect(applicableSteps(losing)).toEqual([
+      ...ALL_SHOWN.slice(0, 7),
+      'weight_goal',
+      ...ALL_SHOWN.slice(7),
+    ]);
+    expect(nextStep('goal', losing)).toBe('weight_goal');
+    expect(nextStep('weight_goal', losing)).toBe('time_budget');
+    expect(previousStep('time_budget', losing)).toBe('weight_goal');
+    expect(progress('weight_goal', losing)).toEqual({ current: 8, total: 12, fraction: 8 / 12 });
+    // Ziel noch offen: zählt mit (wie die anderen Felder).
+    expect(isStepApplicable('weight_goal', { healthDataConsent: true })).toBe(true);
+    // Ohne Abnehmen bzw. ohne Einwilligung: nie (Gesundheitsdatum, Plan 5.2).
     for (const state of [
       full,
       fullTestMode,
-      {},
-      { ...full, losesWeight: true },
-      { ...fullTestMode, losesWeight: true },
+      { ...losing, healthDataConsent: false },
+      { ...noConsentGym, losesWeight: true },
     ]) {
       expect(isStepApplicable('weight_goal', state)).toBe(false);
       expect(applicableSteps(state)).not.toContain('weight_goal');
@@ -231,7 +251,8 @@ describe('Schritt weight_goal (docs/PLAN-ZIELE.md 6 Nr. 2, Etappe Z3, Wächter K
     }
   });
 
-  it('gespeicherter Schritt weight_goal (alter bzw. künftiger Stand) → resumeStep geht beim nächsten weiter', () => {
+  it('gespeicherter Schritt weight_goal: mit Abnehmen dort fortsetzen, sonst beim nächsten weiter', () => {
+    expect(resumeStep('weight_goal', { ...full, losesWeight: true })).toBe('weight_goal');
     expect(resumeStep('weight_goal', full)).toBe('time_budget');
     expect(progress('weight_goal', full)).toEqual(progress('time_budget', full));
   });
