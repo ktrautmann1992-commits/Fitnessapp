@@ -953,6 +953,13 @@ Entspricht X1 aus PLAN-PHASE-5 Abschnitt 13 und KONZEPT 6.1. Gratis, ohne KI.
 
 Empfehlung: erst nach A3, wenn sich zeigt, dass Katalog + eigene Gerichte nicht reichen (Frage A-G16).
 
+**Bau-Plan E4 (freigegeben 17.10.2026, E4-G1 bis E4-G13 wie empfohlen):** [`docs/PLAN-E4.md`](PLAN-E4.md) – Recherche Open Food Facts
+(API, 15 Abfragen/Minute je IP, User-Agent-Pflicht, ODbL/DbCL/CC BY-SA), Ablauf, Route `POST /api/ernaehrung/produkt`,
+gemeinsamer Zwischenspeicher `food_products` ohne Personenbezug, eigene Produkte `user_food_products`, Herkunft
+`product` mit Server-Nachrechnung, Plausibilitätsprüfung im Core, Kamera (E4b, neuer EAS-Build), Lizenz/Impressum,
+Datenschutz, Migrationen ab `20261016200000`, pgTAP ab `39_`, Gründer-Fragen E4-G1 bis E4-G13. Etappen: **E4a**
+Nummer + Zwischenspeicher + Tagebuch (ohne neuen Build), **E4b** Kamera.
+
 ---
 
 ## 11. Etappe A1c – Zusätzliche Einheit planen (optional, später)
