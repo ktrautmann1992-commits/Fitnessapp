@@ -1,8 +1,17 @@
 import type { Exercise } from '../content/schemas';
 import { addDays, isoWeekday, startOfIsoWeek } from '../dates';
-import type { EquipmentLocation, MovementPattern, PlannedSessionStatus } from '../enums';
+import type {
+  EquipmentLocation,
+  ExperienceLevel,
+  MovementPattern,
+  PlannedSessionStatus,
+} from '../enums';
 import type { TrainingSchedule } from '../training-schedule';
-import { applyCurrentEnduranceRules, applyCurrentSafetyRules } from './apply-safety';
+import {
+  applyCompetitionWeekLimits,
+  applyCurrentEnduranceRules,
+  applyCurrentSafetyRules,
+} from './apply-safety';
 import { isBodyweightTemplateId, type PlanLibrary } from './content-pool';
 import { type EquipmentProfile, isExerciseFeasible } from './equipment-profile';
 import { applyDaySwaps, type DaySwap, type DaySwapLayerResult } from './day-swaps';
@@ -64,6 +73,15 @@ export interface DisplayContext {
    * Plan-Untergrenze damit nicht vergessen.
    */
   readonly swap?: DisplaySwapOptions;
+  /**
+   * Wettkampfplan (Phase 10 WP4, Wächter N3 zu WP2): alle Einheiten des Plans und das AKTUELLE Level – dann gilt vor
+   * applyCurrentEnduranceRules zusätzlich applyCompetitionWeekLimits (wird das Level bzw. die Gruppe strenger, bleiben je
+   * Woche nur die frühesten erlaubten harten Einheiten). Ohne Angabe bzw. für Einheiten ohne Art: unverändert.
+   */
+  readonly competitionWeek?: {
+    readonly sessions: readonly StoredSession[];
+    readonly level: ExperienceLevel;
+  };
 }
 
 /** „Nur heute“ vor dem Training (nie im PDF). */
@@ -139,7 +157,11 @@ export function prepareSessionForDisplay<T extends StoredSession>(
   session: T,
   ctx: DisplayContext,
 ): DisplaySession<T> {
-  const endurance = applyCurrentEnduranceRules(session, ctx.rules, {
+  const limited =
+    ctx.competitionWeek && session.kind === 'endurance' && session.workout_type
+      ? weekLimited(session, ctx.competitionWeek, ctx.rules)
+      : session;
+  const endurance = applyCurrentEnduranceRules(limited, ctx.rules, {
     previousStartGroup: ctx.previousStartGroup,
   });
   const library = ctx.library ?? new Map<string, Exercise>();
@@ -225,6 +247,21 @@ export function prepareSessionForDisplay<T extends StoredSession>(
     missingKeyPattern: prefs?.missingKeyPattern ?? [],
     emptyByPreference: prefs?.emptyByPreference ?? false,
   };
+}
+
+/** Die Einheit nach applyCompetitionWeekLimits über die Einheiten ihrer Kalenderwoche (gleiche ID). */
+function weekLimited<T extends StoredSession>(
+  session: T,
+  week: NonNullable<DisplayContext['competitionWeek']>,
+  rules: PlanSafetyRules,
+): T {
+  const monday = startOfIsoWeek(session.scheduled_on);
+  const sameWeek = week.sessions.filter(
+    (s) => s.id !== session.id && startOfIsoWeek(s.scheduled_on) === monday,
+  );
+  const limited = applyCompetitionWeekLimits([...sameWeek, session], rules, week.level);
+  const mine = limited.find((s) => s.id === session.id);
+  return mine ? ({ ...session, ...mine } as T) : session;
 }
 
 /**

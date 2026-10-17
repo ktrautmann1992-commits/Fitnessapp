@@ -4,7 +4,14 @@ import { isoDateSchema } from '../age';
 import { PRINT_EXPORT } from '../constants';
 import type { Exercise } from '../content/schemas';
 import { addDays, isoWeekday, startOfIsoWeek } from '../dates';
-import type { EnduranceDiscipline, EquipmentLocation, GoalType, PlanNote } from '../enums';
+import type {
+  EnduranceDiscipline,
+  EquipmentLocation,
+  ExperienceLevel,
+  GoalType,
+  PlanNote,
+} from '../enums';
+import { isHardWorkoutType } from '../plan/intensity';
 import { prescriptionForDisplay, type ProgressResult } from '../log/progression';
 import type { PlannedExerciseDraft } from '../plan/adapt';
 import type { EquipmentProfile } from '../plan/equipment-profile';
@@ -107,6 +114,11 @@ export interface ExportDisplayContext {
   readonly library: ReadonlyMap<string, Exercise> | null;
   readonly substituteLibrary?: ReadonlyMap<string, Exercise>;
   readonly profiles: ReadonlyMap<EquipmentLocation, Pick<EquipmentProfile, 'available'>>;
+  /**
+   * Wettkampfplan (Phase 10 WP4, Wächter WP4 M1): aktuelles (strengeres) Level – dann gilt wie in der App
+   * applyCompetitionWeekLimits über die Einheiten der Woche vor applyCurrentEnduranceRules. Fehlt = wie bisher.
+   */
+  readonly competitionLevel?: ExperienceLevel;
   /**
    * Übungs-Tausch (docs/PLAN-UEBUNGEN-GLOSSAR-TAUSCH.md 7.3.2, Etappe T1): Präferenzen („Ab jetzt immer“) wirken wie
    * in der App, je Einheit am eigenen Ort; `swapRules` = displaySwapRules(…). NIE Day-Swaps („Nur heute“ ist kein
@@ -289,11 +301,7 @@ function weekCell(
         }),
       ];
     }
-    const shown = prepareSessionForDisplay(session, {
-      rules: display.rules,
-      previousStartGroup: display.previousStartGroup,
-      library: display.library,
-    }).session;
+    const shown = shownEndurance(session, sessions, display);
     return [
       text('endurance.modality', { modality: shown.endurance_modality }),
       text('value.minutes', { minutes: shown.estimated_minutes }),
@@ -648,6 +656,22 @@ function rowMm(row: PrintTableRow, orientation: PrintOrientation): number {
 // Ausdauer
 // ---------------------------------------------------------------------------------------------------------
 
+/** Ausdauer-Einheit wie in der App aufbereiten (Sicherheitsregeln, Wochenzahl harter Einheiten im Wettkampfplan). */
+function shownEndurance(
+  session: StoredSession,
+  all: readonly StoredSession[],
+  display: ExportDisplayContext,
+): StoredSession {
+  return prepareSessionForDisplay(session, {
+    rules: display.rules,
+    previousStartGroup: display.previousStartGroup,
+    library: display.library,
+    ...(display.competitionLevel && session.workout_type
+      ? { competitionWeek: { sessions: all, level: display.competitionLevel } }
+      : {}),
+  }).session;
+}
+
 function enduranceBlocks(
   block: readonly StoredSession[],
   display: ExportDisplayContext,
@@ -664,16 +688,25 @@ function enduranceBlocks(
     { header: label('col.effort'), role: 'value' },
   ];
   const rows: PrintTableRow[] = sessions.map((original) => {
-    const s = prepareSessionForDisplay(original, {
-      rules: display.rules,
-      previousStartGroup: display.previousStartGroup,
-      library: display.library,
-    }).session;
+    const s = shownEndurance(original, block, display);
     return {
       header: [text('value.dateWithWeekday', { date: s.scheduled_on })],
       cells: [
         [text('week.row', { weekNo: s.week_no, intro: s.is_intro_week, deload: s.is_deload })],
-        [content(s.name_de)],
+        [
+          content(s.name_de),
+          ...(s.workout_type
+            ? [
+                text('endurance.workout', {
+                  type: s.workout_type,
+                  hard: isHardWorkoutType(s.workout_type),
+                }),
+              ]
+            : []),
+          ...(s.workout_steps && s.workout_steps.length > 1
+            ? [text('endurance.steps', { steps: [...s.workout_steps] })]
+            : []),
+        ],
         [text('value.minutes', { minutes: s.estimated_minutes })],
         s.effort_target !== null ? [text('value.effort', { effort: s.effort_target })] : [],
       ],

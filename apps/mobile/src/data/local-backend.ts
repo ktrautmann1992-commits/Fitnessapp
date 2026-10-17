@@ -46,6 +46,14 @@ import {
 } from './food-photo-local';
 import { localDataExport } from './data-export';
 import {
+  applySaveCompetition,
+  cancelInRows,
+  checkSaveInRows,
+  completeInRows,
+  deleteInRows,
+  detachResultLog,
+} from './competition-rows';
+import {
   applyCustomMealDelete,
   applyCustomMealSave,
   checkCustomMealSave,
@@ -170,6 +178,10 @@ const SERIALIZED_METHODS = [
   'clearDeviceData',
   'savePlan',
   'appendPlanBlock',
+  'saveCompetition',
+  'cancelCompetition',
+  'completeCompetition',
+  'deleteCompetition',
   'updatePlannedSession',
   'submitWorkout',
   'deleteSessionLog',
@@ -640,6 +652,54 @@ export function createLocalBackend(store: KeyValueStore, options: LocalBackendOp
     savePlan: async (payload) => applyPlanOp({ kind: 'save_training_plan', payload }),
     appendPlanBlock: async (planId, usesHealthData, sessions) =>
       applyPlanOp({ kind: 'append_plan_block', planId, usesHealthData, sessions }),
+    // Wettkampf (Etappe WP4): dieselben Regeln wie save/cancel/complete/delete_competition (packages/core).
+    saveCompetition: async (payload) => {
+      const { db, rows, session } = await requireProfile();
+      const check = checkSaveInRows(rows, payload, {
+        today: options.today(),
+        versions: LOCAL_VERSIONS,
+      });
+      if (!check.ok) {
+        throw new BackendError('competition_rejected', { competitionReason: check.reason });
+      }
+      const next = applySaveCompetition(rows, payload, {
+        userId: session.userId,
+        now: options.now(),
+        newId: options.newId,
+      }).rows;
+      await save({ ...db, rows: next });
+      return next;
+    },
+    cancelCompetition: async (id) => {
+      const { db, rows } = await requireProfile();
+      const result = cancelInRows(rows, id, options.now());
+      if (!result.ok) {
+        throw new BackendError('competition_rejected', { competitionReason: result.reason });
+      }
+      await save({ ...db, rows: result.rows });
+      return result.rows;
+    },
+    completeCompetition: async (id, sessionLogId) => {
+      const { db, rows } = await requireProfile();
+      const result = completeInRows(rows, id, sessionLogId, {
+        today: options.today(),
+        now: options.now(),
+      });
+      if (!result.ok) {
+        throw new BackendError('competition_rejected', { competitionReason: result.reason });
+      }
+      await save({ ...db, rows: result.rows });
+      return result.rows;
+    },
+    deleteCompetition: async (id) => {
+      const { db, rows } = await requireProfile();
+      const result = deleteInRows(rows, id);
+      if (!result.ok) {
+        throw new BackendError('competition_rejected', { competitionReason: result.reason });
+      }
+      await save({ ...db, rows: result.rows });
+      return result.rows;
+    },
     updatePlannedSession: async (update) =>
       applyPlanOp({ kind: 'update_planned_session', ...update }),
     swapPlannedSessions: async (swap) => applyPlanOp({ kind: 'swap_planned_sessions', ...swap }),
@@ -733,7 +793,11 @@ export function createLocalBackend(store: KeyValueStore, options: LocalBackendOp
       const existing = rows.sessionLogs.find((l) => l.id === id);
       if (!existing) return 'ok';
       if (existing.revision !== baseRevision) return 'conflict';
-      await save({ ...db, rows: deleteSessionLogRows(rows, id, options.today()) });
+      // Ergebnis eines Wettkampfs: Verweis wird leer, der Wettkampf bleibt erledigt (on delete set null).
+      await save({
+        ...db,
+        rows: detachResultLog(deleteSessionLogRows(rows, id, options.today()), id),
+      });
       return 'ok';
     },
     updateExercisePreferences: (changes, at) => updatePreferences(changes, at),

@@ -20,6 +20,7 @@ import { Redirect, useLocalSearchParams, useRouter, type Href } from 'expo-route
 import { useEffect, useMemo, useState } from 'react';
 import { Platform, StyleSheet, View } from 'react-native';
 
+import { IntervalTimer } from '@/components/competition';
 import { MedicalNotice } from '@/components/plan';
 import { ConfirmDialog, Screen } from '@/components/screen';
 import { focusTestId, SwapDialog, type SwapDecision, SwapFeedback } from '@/components/swap';
@@ -51,6 +52,7 @@ import {
   workoutSwapTarget,
 } from '@/data/exercise-swap';
 import { backfillDatesFromRows } from '@/data/backfill';
+import { sessionDisplay } from '@/data/exercise-swap';
 import { logForSession } from '@/data/log-rows';
 import { activePlan } from '@/data/training-plan';
 import {
@@ -243,6 +245,21 @@ export default function WorkoutScreen() {
 
   const active = activePlan(rows);
   const session = active?.sessions.find((s) => s.id === sessionId) ?? null;
+  // Intervall-Timer (WP4): Schritte der ANGEZEIGTEN Einheit (aktuelle Sicherheitsregeln angewendet) – ohne Bibliothek,
+  // also auch offline.
+  const timerSteps =
+    session && active && rules && session.kind === 'endurance' && session.workout_steps
+      ? (sessionDisplay({
+          rows,
+          active,
+          library: null,
+          rules,
+          session,
+          today,
+          daySwaps: null,
+          ownerUserId: null,
+        }).shown.session.workout_steps ?? null)
+      : null;
   const footerBack = (
     <Button label={t.workout.back} variant="secondary" onPress={() => goToday()} />
   );
@@ -624,6 +641,25 @@ export default function WorkoutScreen() {
         <Notice tone="info">{t.workout.alternativesLocked}</Notice>
       ) : null}
 
+      {isEndurance &&
+      current.cardio &&
+      timerSteps &&
+      timerSteps.length > 0 &&
+      !current.editing &&
+      current.backfill !== true ? (
+        <IntervalTimer
+          steps={timerSteps}
+          onLog={(minutes) =>
+            update(
+              setCardioFields(
+                current,
+                { hours: String(Math.floor(minutes / 60)), minutes: String(minutes % 60) },
+                now(),
+              ),
+            )
+          }
+        />
+      ) : null}
       {isEndurance && current.cardio ? (
         <EnduranceCard
           cardio={current.cardio}
