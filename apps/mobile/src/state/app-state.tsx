@@ -24,6 +24,7 @@ import {
   type CompetitionFeasibility,
   type SaveCompetitionPayload,
   type CustomMeal,
+  type UserFoodProduct,
   type FoodLogEntry,
 } from '@fitnessapp/core';
 import {
@@ -336,6 +337,10 @@ export interface AppContextValue {
   saveCustomMeal: (meal: CustomMeal) => Promise<void>;
   /** Eigenes Gericht löschen (geht immer). */
   deleteCustomMeal: (id: string) => Promise<void>;
+  /** Eigenes Produkt anlegen bzw. ändern (Etappe E4a). */
+  saveUserFoodProduct: (product: UserFoodProduct) => Promise<void>;
+  /** Eigenes Produkt löschen (geht immer). */
+  deleteUserFoodProduct: (id: string) => Promise<void>;
 
   // --- Übungstausch (docs/PLAN-UEBUNGEN-GLOSSAR-TAUSCH.md, Etappe T2) ---
   /** „Nur heute“-Tausche vor dem Training (Gerätespeicher, nur dieses Konto; geprüft bei jeder Anzeige im Core). */
@@ -871,6 +876,28 @@ export function AppStateProvider({ children }: { children: ReactNode }) {
         throw new BackendError('not_signed_in');
       }
       setRows(await backend.deleteCustomMeal(id, rows));
+      refreshPending();
+    },
+    [backend, refreshPending, rows],
+  );
+
+  const saveUserFoodProduct = useCallback(
+    async (product: UserFoodProduct) => {
+      if (!rows) {
+        throw new BackendError('not_signed_in');
+      }
+      setRows(await backend.saveUserFoodProduct(product, rows));
+      refreshPending();
+    },
+    [backend, refreshPending, rows],
+  );
+
+  const deleteUserFoodProduct = useCallback(
+    async (id: string) => {
+      if (!rows) {
+        throw new BackendError('not_signed_in');
+      }
+      setRows(await backend.deleteUserFoodProduct(id, rows));
       refreshPending();
     },
     [backend, refreshPending, rows],
@@ -1585,6 +1612,8 @@ export function AppStateProvider({ children }: { children: ReactNode }) {
       changeFoodLogFavorite,
       saveCustomMeal,
       deleteCustomMeal,
+      saveUserFoodProduct,
+      deleteUserFoodProduct,
     }),
     [
       backend,
@@ -1666,6 +1695,8 @@ export function AppStateProvider({ children }: { children: ReactNode }) {
       changeFoodLogFavorite,
       saveCustomMeal,
       deleteCustomMeal,
+      saveUserFoodProduct,
+      deleteUserFoodProduct,
     ],
   );
 

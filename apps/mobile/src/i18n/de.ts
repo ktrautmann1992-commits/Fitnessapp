@@ -10,6 +10,7 @@ import { deCustomMeals } from './de-custom-meals';
 import { deDay } from './de-day';
 import { deFoodLog } from './de-food-log';
 import { deFoodPhoto } from './de-food-photo';
+import { deFoodProduct } from './de-food-product';
 import { deGoalChoice, deWeightGoal } from './de-goals';
 import { deNutrition } from './de-nutrition';
 import { deWeekEval } from './de-week-eval';
@@ -1128,7 +1129,7 @@ export const de = {
     reconsent: 'Neu einwilligen',
     revokeTitle: 'Einwilligung widerrufen?',
     revokeText:
-      'Der Widerruf löscht alle Körper- und Gesundheitsdaten: Körperdaten, Körperumfänge, alle Gesundheits-Checks, Unverträglichkeiten, alle Trainingspläne, die auf dem Gesundheits-Check beruhen, und dein Ernährungstagebuch samt Schnelleintrag-Favoriten und eigenen Gerichten (Favoriten aus Lebensmitteln und Rezepten bleiben). Deine übrigen Angaben bleiben erhalten.',
+      'Der Widerruf löscht alle Körper- und Gesundheitsdaten: Körperdaten, Körperumfänge, alle Gesundheits-Checks, Unverträglichkeiten, alle Trainingspläne, die auf dem Gesundheits-Check beruhen, und dein Ernährungstagebuch samt Schnelleintrag-Favoriten, eigenen Gerichten, eigenen Produkten und Produkt-Favoriten (Favoriten aus Lebensmitteln und Rezepten bleiben). Deine übrigen Angaben bleiben erhalten.',
     revokeDone: 'Einwilligung widerrufen. Deine Gesundheitsdaten wurden gelöscht.',
     revokeLogs:
       'Dein Tagebuch bleibt; Vorgaben aus dem Gesundheits-Check werden daraus entfernt. Du kannst die Einträge aus Plänen mit Gesundheits-Check aber auch löschen.',
@@ -1545,6 +1546,7 @@ export const de = {
   nutrition: deNutrition,
   foodLog: deFoodLog,
   foodPhoto: deFoodPhoto,
+  foodProduct: deFoodProduct,
   customMeals: deCustomMeals,
   competition: deCompetition,
   day: deDay,

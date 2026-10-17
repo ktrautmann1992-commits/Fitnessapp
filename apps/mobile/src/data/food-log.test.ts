@@ -268,6 +268,7 @@ describe('Tagebuch im Testmodus (E1)', () => {
         'kcal',
         'last_write_id',
         'portion',
+        'product_code',
         'protein_g',
         'recipe_id',
         'revision',
@@ -277,6 +278,7 @@ describe('Tagebuch im Testmodus (E1)', () => {
         'unit',
         'updated_at',
         'user_id',
+        'user_product_id',
       ].sort(),
     );
     expect(file.data.food_log_favorites).toEqual([]);

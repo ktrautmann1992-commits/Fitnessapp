@@ -77,6 +77,8 @@ export const deFoodLog = {
   searchLabel: 'Lebensmittel oder Rezept suchen',
   searchHint: 'Mindestens 2 Buchstaben, z. B. „Banane“.',
   searchFoods: 'Lebensmittel',
+  // Etappe E4a: nur die eigenen Produkte (nie Produkte aus Open Food Facts in der Katalog-Suche).
+  searchOwnProducts: 'Deine Produkte',
   searchRecipes: 'Rezepte',
   searchNone: 'Dazu haben wir nichts gefunden.',
   searchNoneQuick: 'Schnelleintrag stattdessen',

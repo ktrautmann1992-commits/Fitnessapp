@@ -1,5 +1,7 @@
 import type { Metadata } from 'next';
 
+import Link from 'next/link';
+
 import { P, RechtsSeite } from '../_components/Recht';
 
 export const metadata: Metadata = { title: 'Impressum' };
@@ -52,6 +54,12 @@ export default function Impressum() {
           teilnehmt (§ 36 VSBG) – z. B. „Wir sind nicht bereit oder verpflichtet, an
           Streitbeilegungsverfahren vor einer Verbraucherschlichtungsstelle teilzunehmen.“
         </P>
+      </p>
+
+      <h2>Lizenzen und Quellen</h2>
+      <p>
+        Quellenangaben zu Nährwerten (BLS, Open Food Facts) stehen auf der Seite{' '}
+        <Link href="/lizenzen">Lizenzen und Quellen</Link>.
       </p>
 
       <h2>Österreich und Schweiz</h2>

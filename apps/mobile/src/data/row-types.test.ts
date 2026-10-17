@@ -15,6 +15,7 @@ import type {
   SessionLogRow,
   SetLogRow,
   StartWeightRow,
+  UserFoodProductRow,
 } from './types';
 
 /**
@@ -50,6 +51,11 @@ describe('Zeilen-Typen: packages/core = Datenbank', () => {
   it('Strecken (Phase 10 S1): gleiche Spalten wie die Datenbank, Werte-Listen enger', () => {
     expectTypeOf<keyof core.TrackedRouteRow>().toEqualTypeOf<keyof Tables<'tracked_routes'>>();
     expectTypeOf<core.TrackedRouteRow>().toExtend<Tables<'tracked_routes'>>();
+  });
+
+  it('Eigene Produkte (E4a): gleiche Spalten wie die Datenbank, Werte-Listen enger', () => {
+    expectTypeOf<keyof UserFoodProductRow>().toEqualTypeOf<keyof Tables<'user_food_products'>>();
+    expectTypeOf<UserFoodProductRow>().toExtend<Tables<'user_food_products'>>();
   });
 
   it('Eigene Gerichte (E2): gleiche Spalten wie die Datenbank, Werte-Listen enger', () => {

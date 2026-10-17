@@ -398,6 +398,17 @@ besteht. Einkaufsliste nach Abteilungen, Mengen aufgerundet, Häkchen bleiben be
   „Tagesauswertung“); bei „Kalorienzahlen aus“ und in Schwangerschaft/Stillzeit ohne Balken, nur die Mahlzeiten-Anzahl.
 - **Wochenauswertung (Etappe A3, 15.10.2026):** Tagesbalken der Woche, Durchschnitt je eingetragenem Tag (keine
   Wochen-Bilanz), Muster-Hinweis ab 3 Tagen unter der Untergrenze (Abschnitt 5, „Wochenauswertung“).
+- **Produkt per Barcode-Nummer (Etappe E4a, 17.10.2026, `docs/PLAN-E4.md` Umsetzungsstand E4a):** Ernährung →
+  Eintragen → „Produkt (Barcode)“: Nummer unter dem Strichcode eintippen (Prüfziffer, Laden-/Waagencodes → Suche);
+  Abfrage nur über unseren Server (`POST /api/ernaehrung/produkt`, Login + Einwilligung `health_data`, an Open Food
+  Facts geht nur die Nummer); gemeinsamer Zwischenspeicher `food_products` ohne Personenbezug (30 Tage frisch, nach 90
+  Tagen gelöscht); je Person 60 Abfragen pro Stunde und 200 pro Tag, insgesamt 10 pro Minute. Zweistufige Prüfung im
+  Core (`food-product.ts`: „Werte prüfen“ mit Pflicht-Haken bzw. „unbrauchbar“), Menge in g/ml mit Portion/Packung,
+  Herkunft `product` – Werte rechnet der Server aus dem Speicher nach. Marke nur in der Produktansicht, „Zuletzt“ und
+  Favoriten. Keine Produktbilder, kein Nutri-Score. Quellenangabe „Open Food Facts, ODbL 1.0“ in der Produktansicht,
+  Seite „Lizenzen und Quellen“ (App und Website). Unbekannt/unbrauchbar → **eigenes Produkt** (Abschnitt 6.2). Noch ohne
+  Kamera (E4b, neuer Build). Feature-Flag `food_product_lookup` (Standard aus) und Vercel-Variable `OFF_CONTACT_EMAIL`
+  (SETUP Teil M).
 
 ### 6.2 Standardgerichte (Gratis)
 - Eigene Gerichte anlegen („Mein Porridge“, „Shake nach dem Training“) mit kcal und Makros – direkt eingegeben oder aus Zutaten berechnet
@@ -413,6 +424,14 @@ besteht. Einkaufsliste nach Abteilungen, Mengen aufgerundet, Häkchen bleiben be
   gelöscht (Gründer-Entscheidung E2-G1, 15.10.2026), im Export, Konto löschen per Kaskade, nie in Logs,
   Fehlermeldungen oder testIDs. Logik `packages/core/src/nutrition/custom-meal.ts`, Grenzen `CUSTOM_MEAL_LIMITS`,
   Datenbank `custom_meals`/`custom_meal_items` mit `save_custom_meal`/`delete_custom_meal`; die Werte aus Zutaten und die Werte der Tagebuch-Einträge (Lebensmittel, Rezept, eigenes Gericht) rechnet der Server mit derselben Rechnung nach (Entscheidung E1-G4/E2-G2). Testmodus und Supabase-Modus (N7 Teil 2) fertig.
+- **Eigene Produkte (Etappe E4a, 17.10.2026):** Ernährung → Eigene Gerichte → „Eigene Produkte“ bzw. direkt aus der
+  Produktabfrage („Eigenes Produkt anlegen“, aus Open Food Facts vorausgefüllt): Name (bis 60), Marke und Nummer
+  freiwillig, Werte je 100 g bzw. 100 ml (kcal 0–900, Eiweiß/Kohlenhydrate/Fett Pflicht, Zucker/Salz/Portion
+  freiwillig), Rückfrage, wenn Energie und Makros nicht zusammenpassen. Höchstens 200, nur für die Person, gehen der
+  Abfrage vor (auch offline). Im Tagebuch fester Titel „Eigenes Produkt“ + Verweis (wie eigene Gerichte). Nicht bei
+  „Kalorienzahlen aus“ (Gründer-Entscheidung E4-G8). Widerruf `health_data` löscht eigene Produkte und
+  Produkt-Favoriten (E4-G10), im Export, Konto löschen per Kaskade. Datenbank `user_food_products` mit
+  `save_user_food_product`/`delete_user_food_product`.
 
 ### 6.3 Gerichte vor, während und nach dem Training (Premium, ohne KI)
 - Für **jede geplante Einheit** berechnet die Ernährungs-Engine **Zielmengen** (kcal, Eiweiß, Kohlenhydrate, Fett, bei

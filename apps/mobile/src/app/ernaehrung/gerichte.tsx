@@ -89,8 +89,22 @@ export default function CustomMealsScreen() {
       />
     </Notice>
   );
+  // Etappe E4a: eigene Produkte (je 100 g/ml) – auch ohne gültige Einwilligung erreichbar (Löschen geht immer).
+  const productsButton = (
+    <Button
+      label={t.foodProduct.ownTitle}
+      variant="secondary"
+      onPress={() => router.push('/ernaehrung/produkte' as Href)}
+      testID="custom-meals-products"
+    />
+  );
   if (!access.edit && meals.length === 0) {
-    return shell(consentNotice);
+    return shell(
+      <>
+        {consentNotice}
+        {productsButton}
+      </>,
+    );
   }
   const showNumbers = view.showNumbers;
   const canAdd = access.edit && canAddCustomMeal(meals);
@@ -100,6 +114,7 @@ export default function CustomMealsScreen() {
       {access.edit ? <Body>{t.customMeals.intro}</Body> : consentNotice}
       {/* Supabase-Modus (N7 Teil 2): wartende bzw. abgelehnte Gerichte und Einträge. */}
       <NutritionSyncNotice />
+      {productsButton}
       {!showNumbers ? <Body muted>{t.foodLog.numbersHidden}</Body> : null}
       {access.edit ? (
         <Button

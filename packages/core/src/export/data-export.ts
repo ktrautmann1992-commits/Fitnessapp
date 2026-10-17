@@ -55,6 +55,10 @@ export const DATA_EXPORT_TABLES = [
   'admin_actions',
   // Phase 10 · Etappe S1 · eigene Strecken (docs/PLAN-PHASE-10.md 12/13; GPX je Strecke erzeugt die App)
   'tracked_routes',
+  // Etappe E4a · eigene Produkte und die eigenen Abfrage-Zähler der Produktabfrage (ohne Nummern; docs/PLAN-E4.md
+  // 3.6) – der gemeinsame Zwischenspeicher food_products gehört niemandem und ist nicht dabei
+  'user_food_products',
+  'food_product_lookup_counts',
   // Ziele · Etappe Z3 · Wunschgewicht (docs/PLAN-ZIELE.md 5.2; Gesundheitsdatum, das Nebenziel steht in goals)
   'weight_goals',
 ] as const;

@@ -934,6 +934,54 @@ Erst, wenn ihr es ausdrücklich wollt **und** vorher erledigt ist (Wächter E3 M
 
 ---
 
+## Teil M – Produkt per Barcode-Nummer (Etappe E4a, gratis, ohne KI)
+
+**Stand 17.10.2026:** Man tippt die Nummer unter dem Strichcode ein (noch **ohne Kamera**, die kommt mit E4b). Der
+Server fragt **Open Food Facts** (freie Produktdatenbank, Lizenz ODbL) – nie das Handy direkt. Im **Testmodus** müsst
+ihr **nichts** einstellen: Es antwortet eine **Attrappe** mit festen Testnummern (Teil 7k der HANDY-ANLEITUNG).
+
+An Open Food Facts geht **nur die Nummer** – keine Nutzer-ID, keine E-Mail, kein Login. Gespeichert wird global (ohne
+Personenbezug) nur das Produkt selbst, 30 Tage frisch, nach 90 Tagen gelöscht. Je Person höchstens 60 Abfragen pro
+Stunde und 200 pro Tag, insgesamt höchstens 10 Anfragen pro Minute an Open Food Facts.
+
+### M1 – Datenbank
+
+Nichts zu tun: Nach dem Merge spielt **db-migrate** alles ein. Die Funktion ist danach **ausgeschaltet** (Flag
+`food_product_lookup` aus).
+
+### M2 – Kontaktadresse eintragen (Vercel, Projekt „Web“)
+
+Open Food Facts verlangt, dass jede Anfrage eine Kontaktadresse nennt. Ohne sie fragt der Server **nie** an.
+
+1. vercel.com im Handy-Browser → Projekt **Web** → **Settings** → **Environment Variables**.
+2. Name `OFF_CONTACT_EMAIL`, Wert = eine **Funktionsadresse** (z. B. `kontakt@eure-domain.de`, kein privates Postfach)
+   → alle drei Umgebungen anhaken → **Save**. Die Adresse ist nicht geheim.
+3. Prüft, dass `EXPO_PUBLIC_WEB_URL` (Projekt **App**) und `APP_WEB_ORIGIN` (Projekt **Web**) gesetzt sind – wie in
+   Teil L2. `SUPABASE_SERVICE_ROLE_KEY` und `NEXT_PUBLIC_SUPABASE_*` sind schon da (Teil I).
+4. **Deployments** → oberster Eintrag **⋯** → **Redeploy**.
+
+### M3 – Einschalten (Workflow `beta-grant`)
+
+1. GitHub-App → Repository → **Actions** → **beta-grant** → **Run workflow**.
+2. **aktion** = `flag_an`, **flag** = `food_product_lookup` → **Run workflow**. Ab jetzt für **alle** Konten mit
+   Gesundheits-Einwilligung (gratis, keine Freischaltung je Person – `freischalten` wird abgelehnt).
+3. **aktion** = `status`, **flag** = `food_product_lookup` zeigt nur Summen: Funktion an/aus, Produkte im Speicher,
+   Abfragen heute, ob Open Food Facts gerade pausiert ist.
+4. **Notbremse:** **aktion** = `flag_aus` – ab sofort keine Anfrage mehr an Open Food Facts. Schon eingetragene
+   Produkte im Tagebuch bleiben.
+
+### M4 – VOR LIVEGANG PRÜFEN
+
+- **Feldnamen und Antwortform** der Open-Food-Facts-API v2 (`/api/v2/product/<Nummer>`) gegen die aktuelle
+  Dokumentation prüfen (`packages/core/src/constants.ts`, `OPEN_FOOD_FACTS`; aus der Entwicklungsumgebung war
+  openfoodfacts.org nicht erreichbar – gebaut nach der dokumentierten Form, getestet nur mit Attrappen).
+- Nutzungsbedingungen und Abfragegrenzen von Open Food Facts erneut lesen (Stand der Recherche: 15 Produktabfragen
+  pro Minute je IP; wir bleiben mit höchstens 10 pro Minute darunter).
+- **Lizenz-Hinweis** (ODbL/DbCL) auf der Seite „Lizenzen und Quellen“ juristisch prüfen lassen.
+- Datenschutzerklärung Abschnitt 8 (Produktabfrage) juristisch prüfen lassen.
+
+---
+
 ## Inhalte erzeugen und freigeben am Handy
 
 Alle Inhalte (Übungen, Plan-Vorlagen) liegen als Dateien im Repository. Der Weg ist immer:

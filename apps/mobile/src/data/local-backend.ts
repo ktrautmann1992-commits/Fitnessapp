@@ -2,6 +2,8 @@ import { buildNutritionCatalog } from '@fitnessapp/content/catalog';
 import {
   ageInYears,
   buildDataExportFile,
+  chargeProductUse,
+  isNewProductUse,
   createMockFoodPhotoProvider,
   runFoodPhotoAnalysis,
   displayPairs,
@@ -22,6 +24,7 @@ import {
   validateContent,
   type ConsentType,
   type ContentFile,
+  type FoodProductRecord,
   type FoodGroupId,
   foodGroupSchema,
   type NutritionContentFile,
@@ -53,6 +56,16 @@ import {
   deleteInRows,
   detachResultLog,
 } from './competition-rows';
+import {
+  localProductFor,
+  runLocalProductLookup,
+  type LocalProductLookupCount,
+} from './food-product-local';
+import {
+  applyUserFoodProductDelete,
+  applyUserFoodProductSave,
+  checkUserFoodProductSave,
+} from './user-food-product-rows';
 import {
   applyCustomMealDelete,
   applyCustomMealSave,
@@ -138,6 +151,12 @@ interface LocalDb {
    * Kosten) – nie Foto, Info oder Antwort.
    */
   aiUsage?: LocalAiUsageRow[];
+  /**
+   * Produktabfrage (Etappe E4a, Testmodus mit Attrappe): Zwischenspeicher OHNE Personenbezug (wie food_products) und
+   * Zähler je Stunde ohne Nummer (wie food_product_lookup_counts).
+   */
+  foodProducts?: Record<string, FoodProductRecord>;
+  productLookups?: LocalProductLookupCount[];
 }
 
 export interface LocalBackendOptions {
@@ -201,6 +220,9 @@ const SERIALIZED_METHODS = [
   'saveCustomMeal',
   'deleteCustomMeal',
   'analyzeFoodPhoto',
+  'lookupFoodProduct',
+  'saveUserFoodProduct',
+  'deleteUserFoodProduct',
 ] as const satisfies readonly (keyof Backend)[];
 
 function serializeWrites(backend: Backend): Backend {
@@ -642,6 +664,50 @@ export function createLocalBackend(store: KeyValueStore, options: LocalBackendOp
       ).body;
     },
 
+    // --- Produktabfrage (Etappe E4a): Testmodus immer mit der Attrappe, gleiche Kette wie der Server ---------
+    lookupFoodProduct: async (code) => {
+      const { db, rows, session } = await requireProfile();
+      const result = await runLocalProductLookup(
+        { foodProducts: db.foodProducts ?? {}, productLookups: db.productLookups ?? [] },
+        { rows, versions: LOCAL_VERSIONS, userId: session.userId, now: options.now(), code },
+      );
+      await save({
+        ...db,
+        foodProducts: { ...result.state.foodProducts },
+        productLookups: [...result.state.productLookups],
+      });
+      return result.response;
+    },
+    // Eigene Produkte (Etappe E4a): dieselben Regeln wie save_user_food_product (user-food-product-rows.ts); im
+    // Testmodus ohne Netz. Name, Marke und Werte nie in Meldungen oder Logs.
+    saveUserFoodProduct: async (product) => {
+      const { db, rows, session } = await requireProfile();
+      const check = checkUserFoodProductSave(rows, product, { versions: LOCAL_VERSIONS });
+      if (!check.ok) {
+        throw new BackendError(
+          check.reason === 'consent_required'
+            ? 'consent_required'
+            : check.reason === 'limit'
+              ? 'user_product_limit'
+              : 'user_product_rejected',
+          { sensitive: true },
+        );
+      }
+      const next = applyUserFoodProductSave(rows, check.product, {
+        userId: session.userId,
+        now: options.now(),
+        newId: options.newId,
+      });
+      await save({ ...db, rows: next });
+      return next;
+    },
+    deleteUserFoodProduct: async (id) => {
+      const { db, rows } = await requireProfile();
+      const next = applyUserFoodProductDelete(rows, id);
+      await save({ ...db, rows: next });
+      return next;
+    },
+
     deleteAccount: async () => {
       await requireUser();
       await save({ session: null, rows: null });
@@ -924,6 +990,8 @@ export function createLocalBackend(store: KeyValueStore, options: LocalBackendOp
       const check = checkFoodLogSave(rows, entries, {
         today: options.today(),
         versions: LOCAL_VERSIONS,
+        // E4a: Produkt-Einträge rechnet der Testmodus wie der Server aus dem Zwischenspeicher nach.
+        products: localProductFor({ foodProducts: db.foodProducts ?? {} }, options.now()),
       });
       if (!check.ok) {
         throw new BackendError(
@@ -931,8 +999,25 @@ export function createLocalBackend(store: KeyValueStore, options: LocalBackendOp
           { sensitive: true },
         );
       }
+      // Wächter M1: neue Nutzung einer Nummer zählt wie eine Abfrage (wie private.food_product_charge).
+      let lookups = [...(db.productLookups ?? [])];
+      const outcomes = check.outcomes.map((o) => {
+        if (o.kind !== 'saved') return o;
+        const previous = rows.foodLogEntries.find((e) => e.id === o.entry.id) ?? null;
+        if (!isNewProductUse(o.entry, previous)) return o;
+        const charged = chargeProductUse(
+          lookups.filter((c) => c.user_id === session.userId),
+          options.now(),
+        );
+        if (charged === null) return { kind: 'rejected' as const, code: 'product_limit' as const };
+        lookups = [
+          ...lookups.filter((c) => c.user_id !== session.userId),
+          ...charged.map((c) => ({ ...c, user_id: session.userId })),
+        ];
+        return o;
+      });
       // Wie der Server: gültige Einträge werden gespeichert, auch wenn ein anderer abgelehnt wird (Wächter E1 S2).
-      const saved = check.outcomes.flatMap((o) => (o.kind === 'saved' ? [o.entry] : []));
+      const saved = outcomes.flatMap((o) => (o.kind === 'saved' ? [o.entry] : []));
       const next =
         saved.length === 0
           ? rows
@@ -941,8 +1026,8 @@ export function createLocalBackend(store: KeyValueStore, options: LocalBackendOp
               now: options.now(),
               newId: options.newId,
             });
-      if (saved.length > 0) await save({ ...db, rows: next });
-      const failed = check.outcomes.find((o) => o.kind !== 'saved');
+      if (saved.length > 0) await save({ ...db, rows: next, productLookups: lookups });
+      const failed = outcomes.find((o) => o.kind !== 'saved');
       if (failed) {
         // Danach melden (ohne Werte); die gespeicherten Einträge bleiben.
         const code =
@@ -950,7 +1035,11 @@ export function createLocalBackend(store: KeyValueStore, options: LocalBackendOp
             ? 'food_log_out_of_range'
             : failed.kind === 'rejected' && failed.code === 'day_full'
               ? 'food_log_day_full'
-              : 'food_log_rejected';
+              : failed.kind === 'rejected' && failed.code === 'product_unavailable'
+                ? 'food_log_product_unavailable'
+                : failed.kind === 'rejected' && failed.code === 'product_limit'
+                  ? 'food_log_product_limit'
+                  : 'food_log_rejected';
         throw new BackendError(code, { sensitive: true });
       }
       return next;
@@ -973,13 +1062,31 @@ export function createLocalBackend(store: KeyValueStore, options: LocalBackendOp
           change.op === 'set' && rows.foodLogFavorites.length >= 100
             ? 'favorite_limit'
             : change.op === 'set' &&
-                change.favorite.source === 'quick' &&
+                (change.favorite.source === 'quick' || change.favorite.source === 'product') &&
                 healthConsentStatus(rows, LOCAL_VERSIONS) !== 'valid'
               ? 'consent_required'
               : 'unknown',
         );
       }
-      await save({ ...db, rows: next });
+      // Wächter M1: ein NEUER Produkt-Favorit mit Nummer zählt wie eine Abfrage.
+      let lookups = db.productLookups ?? [];
+      if (
+        change.op === 'set' &&
+        change.favorite.source === 'product' &&
+        change.favorite.product_code !== null &&
+        !rows.foodLogFavorites.some((f) => f.fav_key === change.favorite.fav_key)
+      ) {
+        const charged = chargeProductUse(
+          lookups.filter((c) => c.user_id === session.userId),
+          options.now(),
+        );
+        if (charged === null) throw new BackendError('food_log_product_limit', { sensitive: true });
+        lookups = [
+          ...lookups.filter((c) => c.user_id !== session.userId),
+          ...charged.map((c) => ({ ...c, user_id: session.userId })),
+        ];
+      }
+      await save({ ...db, rows: next, productLookups: lookups });
       return next;
     },
     // Eigene Gerichte (Etappe E2): dieselben Regeln wie save_custom_meal (custom-meal-rows.ts); im Testmodus immer
@@ -1045,7 +1152,10 @@ export function createLocalBackend(store: KeyValueStore, options: LocalBackendOp
     exportMyData: async () => {
       const { db, rows, session } = await requireProfile();
       const file = buildDataExportFile(
-        localDataExport(rows, session.userId, options.now(), { aiUsage: db.aiUsage ?? [] }),
+        localDataExport(rows, session.userId, options.now(), {
+          aiUsage: db.aiUsage ?? [],
+          productLookups: (db.productLookups ?? []).filter((c) => c.user_id === session.userId),
+        }),
         {
           email: session.email,
         },

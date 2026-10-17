@@ -1,6 +1,6 @@
 # Plan „Kalender, Tages- und Wochenauswertung“ (Gründer-Wünsche 15.10.2026)
 
-**Status:** Freigegeben am 15.10.2026 – alle Entscheidungen A-G1 bis A-G20 „wie empfohlen“ (Abschnitt 14). Umsetzung etappenweise, jede Etappe mit Wächter-Prüfung. **A1a (Trainingskalender mit Drag-and-drop und Tauschen) umgesetzt** – Stand 15.10.2026 (Umsetzungsstand A1a am Ende von Abschnitt 3). **A1b (Nachtragen und freie Einheit) umgesetzt** – Stand 15.10.2026 (Umsetzungsstand A1b am Ende von Abschnitt 4). **A2 (Tagesauswertung „Dein Tag“) umgesetzt** – Stand 15.10.2026 (Umsetzungsstand A2 am Ende von Abschnitt 6). **A3 (Wochenauswertung) umgesetzt** – Stand 15.10.2026 (Umsetzungsstand A3 am Ende von Abschnitt 8). **E3 (Gericht per Foto) als Testversion mit Attrappe umgesetzt** – Stand 16.10.2026 (Umsetzungsstand E3 am Ende von Abschnitt 9).
+**Status:** Freigegeben am 15.10.2026 – alle Entscheidungen A-G1 bis A-G20 „wie empfohlen“ (Abschnitt 14). Umsetzung etappenweise, jede Etappe mit Wächter-Prüfung. **A1a (Trainingskalender mit Drag-and-drop und Tauschen) umgesetzt** – Stand 15.10.2026 (Umsetzungsstand A1a am Ende von Abschnitt 3). **A1b (Nachtragen und freie Einheit) umgesetzt** – Stand 15.10.2026 (Umsetzungsstand A1b am Ende von Abschnitt 4). **A2 (Tagesauswertung „Dein Tag“) umgesetzt** – Stand 15.10.2026 (Umsetzungsstand A2 am Ende von Abschnitt 6). **A3 (Wochenauswertung) umgesetzt** – Stand 15.10.2026 (Umsetzungsstand A3 am Ende von Abschnitt 8). **E3 (Gericht per Foto) als Testversion mit Attrappe umgesetzt** – Stand 16.10.2026 (Umsetzungsstand E3 am Ende von Abschnitt 9). **E4a (Produkt per Barcode-Nummer, Open Food Facts) umgesetzt** – Stand 17.10.2026 (Umsetzungsstand E4a am Ende von Abschnitt 10; Flag aus).
 
 **Grundlage:** `CLAUDE.md`, `docs/KONZEPT.md` (4, 6.1–6.3, 11.3, 12), `docs/PLAN-PHASE-3.md` 5.11, `docs/PLAN-PHASE-4.md` (3.1–3.6, 5.6, Frage 6), `docs/PLAN-PHASE-4B.md`, `docs/PLAN-PHASE-5.md` (4.6, 4.6.1, 4.9, 6.2, 7.1, 13 X0–X2), `docs/PLAN-ZIELE.md` (3, K6, F7, F14), `docs/DESIGN.md`, Code-Stand vom 15.10.2026.
 
@@ -959,6 +959,20 @@ gemeinsamer Zwischenspeicher `food_products` ohne Personenbezug, eigene Produkte
 `product` mit Server-Nachrechnung, Plausibilitätsprüfung im Core, Kamera (E4b, neuer EAS-Build), Lizenz/Impressum,
 Datenschutz, Migrationen ab `20261016200000`, pgTAP ab `39_`, Gründer-Fragen E4-G1 bis E4-G13. Etappen: **E4a**
 Nummer + Zwischenspeicher + Tagebuch (ohne neuen Build), **E4b** Kamera.
+
+### Umsetzungsstand E4a (17.10.2026)
+
+**E4a umgesetzt** (ohne Kamera, ohne neuen Build): Ernährung → Eintragen → „Produkt (Barcode)“ → Nummer eintippen →
+Abfrage über `POST /api/ernaehrung/produkt` (nur mit Login und Einwilligung `health_data`, Nummer nur im Körper) →
+Produktansicht mit Quellenangabe „Open Food Facts, ODbL 1.0“ → Menge → Eintragen (Herkunft `product`, Werte rechnet der
+Server aus dem Zwischenspeicher nach). Nicht gefunden/unbrauchbar → eigenes Produkt (`user_food_products`, höchstens
+200, nur für die Person, nicht bei „Kalorienzahlen aus“). Widerruf löscht eigene Produkte und Produkt-Favoriten;
+Export enthält eigene Produkte und die eigenen Abfrage-Zähler (ohne Nummern). Migrationen `20261017100000` bis
+`20261017100300`, pgTAP 39–41. Feature-Flag `food_product_lookup` **aus**; ohne Vercel-Variable `OFF_CONTACT_EMAIL`
+fragt der Server nie bei Open Food Facts an. Testmodus mit Attrappe (Testnummern in der App). Details, Präzisierungen
+und Gegenproben: [`PLAN-E4.md`](PLAN-E4.md) „Umsetzungsstand E4a“; Einschalten: SETUP Teil M; Testen: HANDY-ANLEITUNG
+Teil 7k. Wächter-Auflagen M1 (neue Nutzung einer Nummer zählt auf die Limits, Migration `20261017100400`), N1, N2, N4
+umgesetzt; Zusammenführung mit Z3 (H1) über `20261017210000_revoke_export_union.sql` erledigt; N3/N5–N7 vorgemerkt (PLAN-E4 „Nachtrag Wächter-Prüfung E4a“).
 
 ---
 

@@ -448,6 +448,16 @@ export default function SettingsScreen() {
         ) : null}
       </Card>
 
+      {/* Etappe E4a: Namensnennung der Nährwert-Quellen (BLS, Open Food Facts). */}
+      <Card>
+        <Button
+          label={t.foodProduct.licenses.open}
+          variant="secondary"
+          onPress={() => router.push('/lizenzen' as Href)}
+          testID="settings-licenses"
+        />
+      </Card>
+
       <Heading level={2}>{t.settings.consents}</Heading>
       {LISTED_CONSENTS.map((type) => (
         <Card key={type}>
