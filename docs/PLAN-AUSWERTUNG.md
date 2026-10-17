@@ -953,7 +953,7 @@ Entspricht X1 aus PLAN-PHASE-5 Abschnitt 13 und KONZEPT 6.1. Gratis, ohne KI.
 
 Empfehlung: erst nach A3, wenn sich zeigt, dass Katalog + eigene Gerichte nicht reichen (Frage A-G16).
 
-**Bau-Plan E4 (Entwurf 16.10.2026, wartet auf Freigabe):** [`docs/PLAN-E4.md`](PLAN-E4.md) – Recherche Open Food Facts
+**Bau-Plan E4 (freigegeben 17.10.2026, E4-G1 bis E4-G13 wie empfohlen):** [`docs/PLAN-E4.md`](PLAN-E4.md) – Recherche Open Food Facts
 (API, 15 Abfragen/Minute je IP, User-Agent-Pflicht, ODbL/DbCL/CC BY-SA), Ablauf, Route `POST /api/ernaehrung/produkt`,
 gemeinsamer Zwischenspeicher `food_products` ohne Personenbezug, eigene Produkte `user_food_products`, Herkunft
 `product` mit Server-Nachrechnung, Plausibilitätsprüfung im Core, Kamera (E4b, neuer EAS-Build), Lizenz/Impressum,

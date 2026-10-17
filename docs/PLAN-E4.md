@@ -1,7 +1,7 @@
 # Bau-Plan Etappe E4 – Barcode und Open Food Facts (gratis, ohne KI)
 
-**Status:** Entwurf vom 16.10.2026 – **wartet auf Freigabe der Gründer** (Fragen E4-G1 bis E4-G13 in Abschnitt 10).
-Noch kein Code, keine Migration.
+**Status:** **Freigegeben (17.10.2026)** – Gründer-Entscheidung: E4-G1 bis E4-G13 alle „wie empfohlen“ (Abschnitt 10).
+Bau zuerst E4a (Nummer eintippen), danach E4b (Kamera, mit neuem EAS-Build).
 
 **Grundlage:** `CLAUDE.md`; `docs/PLAN-AUSWERTUNG.md` Abschnitt 10 (Skizze E4), 2.4, 2.7, 12, 13, 14 (A-G2, A-G9,
 A-G12, A-G14, A-G16) sowie die Umsetzungsstände E1, E2 (Server rechnet nach, fester Titel + Verweis, Widerruf) und E3
@@ -172,7 +172,7 @@ sie im Handy-Browser** (Links in 1.7). Für den Betrieb spielt die Sperre keine 
 - ODbL 1.0 (Lizenztext): [spdx.org/licenses/ODbL-1.0.html](https://spdx.org/licenses/ODbL-1.0.html) bzw.
   [opendatacommons.org/licenses/odbl/1-0/](https://opendatacommons.org/licenses/odbl/1-0/)
 - OSMF-Leitfaden „Produced Work“:
-  [osmfoundation.org/wiki/Licence/Community_Guidelines/Produced_Work_-_Guideline](https://osmfoundation.org/wiki/Licence/Community_Guidelines/Produced_Work_-_Guideline)
+  [osmfoundation.org/wiki/Licence/Community*Guidelines/Produced_Work*-\_Guideline](https://osmfoundation.org/wiki/Licence/Community_Guidelines/Produced_Work_-_Guideline)
 - BarcodeDetector: [caniuse.com/mdn-api_barcodedetector_detect](https://caniuse.com/mdn-api_barcodedetector_detect),
   [developer.mozilla.org/docs/Web/API/Barcode_Detection_API](https://developer.mozilla.org/docs/Web/API/Barcode_Detection_API)
 - expo-camera (SDK 57): [docs.expo.dev/versions/v57.0.0/sdk/camera/](https://docs.expo.dev/versions/v57.0.0/sdk/camera/);
