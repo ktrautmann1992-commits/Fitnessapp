@@ -14,6 +14,7 @@ import { nutritionTargetsForWeek } from '../nutrition/targets';
 import { inputs as nutritionInputs } from '../nutrition/test-helpers';
 import { goalEnergyDirection, hasGoal, isAllowedGoalPair } from './profile';
 import {
+  goalStepAfterWeightGoalReached,
   goalsAfterWeightGoalReached,
   WEIGHT_GOAL_REACHED_CHOICES,
   weightGoalCard,
@@ -214,6 +215,49 @@ describe('goalsAfterWeightGoalReached: „Wie geht es weiter?“ (F10)', () => {
     expect(WEIGHT_GOAL_REACHED_CHOICES).toEqual(['maintain', 'muscle_gain', 'new_weight_goal']);
   });
 
+  it('Schritt-Angaben (Wächter Z5 N3): Datum in der Vergangenheit entfällt, Disziplin nur mit Ausdauer, Zod-geprüft', () => {
+    const base = {
+      goalType: 'endurance' as const,
+      secondaryGoalType: 'fat_loss' as const,
+      discipline: '10k' as const,
+    };
+    // Wettkampfdatum gestern → entfällt (sonst lehnte der Schritt „Datum in der Vergangenheit“ ab).
+    expect(
+      goalStepAfterWeightGoalReached({ ...base, targetDate: '2026-10-11' }, 'maintain', TODAY),
+    ).toEqual({
+      goalType: 'endurance',
+      secondaryGoalType: null,
+      discipline: '10k',
+      targetDate: null,
+    });
+    // Heute und künftig bleibt es.
+    expect(
+      goalStepAfterWeightGoalReached({ ...base, targetDate: TODAY }, 'muscle_gain', TODAY),
+    ).toEqual({
+      goalType: 'endurance',
+      secondaryGoalType: 'muscle_gain',
+      discipline: '10k',
+      targetDate: TODAY,
+    });
+    // Ohne Ausdauer: Disziplin und Datum entfallen.
+    expect(
+      goalStepAfterWeightGoalReached(
+        { goalType: 'fat_loss', secondaryGoalType: null, discipline: null, targetDate: null },
+        'muscle_gain',
+        TODAY,
+      ),
+    ).toEqual({
+      goalType: 'muscle_gain',
+      secondaryGoalType: null,
+      discipline: null,
+      targetDate: null,
+    });
+    // Ungültiges Datum → nichts speichern (null statt Fehler).
+    expect(
+      goalStepAfterWeightGoalReached({ ...base, targetDate: '2027-02-31' }, 'maintain', TODAY),
+    ).toBeNull();
+  });
+
   it('verbotene Auswahl wird abgelehnt (Zod an der Grenze)', () => {
     expect(() =>
       goalsAfterWeightGoalReached({ primary: 'definition', secondary: 'fat_loss' }, 'maintain'),
@@ -261,9 +305,40 @@ describe('Neues Abnehmziel → Essensplan wird automatisch neu geplant (Plan 4.6
       day && [day.mode, `dc=${day.deficitCap}`, `sc=${day.surplusCap}`, 'ex='].join('|'),
     );
     const withGoal = nutritionTargetsForWeek(person({ weightGoal: goal() }), TODAY).days[0];
-    // Mit Ziel: Stand und Hash der Anpassung – keine Zahl zu Körperdaten im Schlüssel.
-    expect(withGoal && daySafetyKey(withGoal)).toMatch(/\|wg=active:\d+$/);
-    expect(withGoal && daySafetyKey(withGoal).split('wg=')[1]).not.toContain('.');
+    // Mit Ziel: Stand und Kennung des Ziels (Hash) – kein Zielgewicht oder Datum im Klartext.
+    const key = withGoal ? daySafetyKey(withGoal) : '';
+    expect(key).toMatch(/\|wg=active:\d+$/);
+    expect(key.split('wg=')[1]).not.toMatch(/\.|80|2026|2027/);
+  });
+
+  it('neues Gewicht bei aktivem Ziel → keine Neuplanung, solange im Band (Wächter Z5 H1); Gegenprobe', () => {
+    const withGoal = { weightGoal: goal(SUNDAY) };
+    const plan = buildMealPlanWeek(data(SUNDAY, withGoal));
+    const weighed = (kg: number) =>
+      needsAutomaticReplan(
+        plan,
+        data(THURSDAY, {
+          ...withGoal,
+          bodyMetricsRows: [
+            { measuredOn: '2026-10-10', heightCm: 180, weightKg: 90 },
+            { measuredOn: THURSDAY, heightCm: null, weightKg: kg },
+          ],
+        }),
+      );
+    // 90 → 89,8 kg: Anpassung ändert sich leicht, Ziel und Stand nicht → kein `weight_goal_changed`, keine Neuplanung.
+    const small = weighed(89.8);
+    expect(small.reasons).not.toContain('weight_goal_changed');
+    expect(small.needed).toBe(false);
+    // Gegenprobe: deutlich anderes Gewicht → Tag fällt aus dem Band → Neuplanung über `out_of_band`, nicht über das Ziel.
+    const big = weighed(130);
+    expect(big.reasons).toContain('out_of_band');
+    expect(big.reasons).not.toContain('weight_goal_changed');
+    // Gegenprobe Ziel geändert (anderer Zeitraum, gleiches Gewicht) → `weight_goal_changed`.
+    const changed = needsAutomaticReplan(
+      plan,
+      data(THURSDAY, { weightGoal: goal(SUNDAY, { targetDate: addDays(SUNDAY, 140) }) }),
+    );
+    expect(changed.reasons).toContain('weight_goal_changed');
   });
 
   it('Ziel erreicht (Erhalt) → ebenfalls Neuplanung; entferntes Ziel → zurück zum Standard', () => {

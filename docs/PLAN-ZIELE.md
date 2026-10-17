@@ -1,6 +1,6 @@
 # Plan „Ziele erweitern“: Abnehmen mit oder ohne konkretes Ziel, Erreichbarkeits-Ampel, zwei Ziele
 
-**Status:** Plan **Wächter-geprüft (Auflagen eingearbeitet)**. **Z1 und Z2 umgesetzt und Wächter-geprüft** (Abschnitte 11 und 12). **Z3 umgesetzt am 17.10.2026, Wächter-geprüft (M1, N1, N4, N5 eingearbeitet; N2/N3 für Z4 vorgemerkt)** (Abschnitt 13). **Z4 umgesetzt am 17.10.2026 (App: Haupt- und Nebenziel, Wunschgewicht mit Ampel), Wächter-geprüft (Auflagen M1–M5, N1–N13 eingearbeitet)** (Abschnitt 14). **Z5 und Z6 umgesetzt am 17.10.2026 (Einstellungen, Karten, Planname, Ernährungs-Hinweise, Doku), Wächter-Prüfung steht aus** (Abschnitt 15). **F8 entschieden am 17.10.2026:** Ziel-BMI hart 20, ab 70 Jahren 22 (Abschnitt 0). Die Wächter-Prüfung vom 13.10.2026 ergab „Freigabe mit Auflagen“ (Blocker B1, Soll S1–S20, Kann K1–K10). Die Nachprüfung (Runde 2, gleicher Tag) ergab erneut „Freigabe mit Auflagen“ ohne Blocker (Soll N1–N4, Kann K-a bis K-f). Alle Auflagen beider Runden sind in diesem Dokument eingearbeitet, Übersicht in Abschnitt 10. Gründer-Entscheidungen vom 13.10.2026 in Abschnitt 0.
+**Status:** Plan **Wächter-geprüft (Auflagen eingearbeitet)**. **Z1 und Z2 umgesetzt und Wächter-geprüft** (Abschnitte 11 und 12). **Z3 umgesetzt am 17.10.2026, Wächter-geprüft (M1, N1, N4, N5 eingearbeitet; N2/N3 für Z4 vorgemerkt)** (Abschnitt 13). **Z4 umgesetzt am 17.10.2026 (App: Haupt- und Nebenziel, Wunschgewicht mit Ampel), Wächter-geprüft (Auflagen M1–M5, N1–N13 eingearbeitet)** (Abschnitt 14). **Z5 und Z6 umgesetzt am 17.10.2026 (Einstellungen, Karten, Planname, Ernährungs-Hinweise, Doku), Wächter-geprüft (H1, M1, N1–N3, N7, N8 eingearbeitet; N4–N6 dokumentiert)** (Abschnitt 15). **F8 entschieden am 17.10.2026:** Ziel-BMI hart 20, ab 70 Jahren 22 (Abschnitt 0). Die Wächter-Prüfung vom 13.10.2026 ergab „Freigabe mit Auflagen“ (Blocker B1, Soll S1–S20, Kann K1–K10). Die Nachprüfung (Runde 2, gleicher Tag) ergab erneut „Freigabe mit Auflagen“ ohne Blocker (Soll N1–N4, Kann K-a bis K-f). Alle Auflagen beider Runden sind in diesem Dokument eingearbeitet, Übersicht in Abschnitt 10. Gründer-Entscheidungen vom 13.10.2026 in Abschnitt 0.
 **Gründer-Wunsch (wörtlich):** „Baue folgendes beim Ziel Abnehmen noch ein: Auswahl Abnehmen ohne konkretes Ziel, Abnehmen mit konkretem Ziel mit dem Gewicht in kg abnehmen in welcher Zeit. Und auf einer Skala von rot bis grün soll angegeben werden wie gut das erreichbar ist. Zudem sollte man 2 Ziele auswählen können. Die Übungen im Trainingsplan sollen für beide Ziele passen.“
 **Etappen:** Z0–Z6 (Abschnitt 7).
 
@@ -943,8 +943,13 @@ Abweichungen und Präzisierungen:
    auf „Heute“ und in der Tagesansicht gibt es sie nicht.
 6. **Neuplanung (4.6 N5):** Ein Tagesziel kann trotz neuem Ziel noch im alten Planband liegen (Beispiel: −10 kg in
    26 Wochen, 538 → 423 kcal Defizit). Deshalb bekommt der Abgleich-Schlüssel bei konkretem Ziel einen Teil
-   `wg=<Stand>:<Hash der Anpassung>`; jede Änderung von Stand oder Anpassung plant ab heute neu. Ohne Ziel bleibt der
-   Schlüssel byte-gleich – bestehende Pläne werden durch Z5 nicht neu geplant (Test). Die Zahl steht nie im Schlüssel.
+   `wg=<Stand>:<Kennung des Ziels>` (Hash aus `startDate`, `targetDate`, `targetWeightKg`, Eingabeart; Feld
+   `weightGoalKey` der Tagesziele). Neu, geändert, erreicht, abgelaufen, ruhend oder entfernt → Neuplanung ab heute.
+   **Nach Wächter Z5 H1** hängt die Kennung nicht am aktuellen Gewicht (vorher Hash der Anpassung: jede Wägung plante neu):
+   Eine neue Gewichtsangabe bei unverändertem Ziel plant nur neu, wenn ein Tag aus dem Planband fällt (`out_of_band`;
+   Test 90 → 89,8 kg keine Neuplanung, Gegenprobe 130 kg `out_of_band`, anderer Zeitraum `weight_goal_changed`). Ohne Ziel
+   bleibt der Schlüssel byte-gleich – bestehende Pläne werden durch Z5 nicht neu geplant (Test). Zielgewicht und Daten
+   stehen nicht im Klartext im Schlüssel (Wächter Z5 N1).
 7. **Vormerkung Wächter Z2 K-6 entschieden:** kein eigener Ernährungs-Hinweis; bei Gewicht älter als 90 Tage zeigt „Dein
    Abnehm-Ziel“ „Dein Gewicht ist älter als 3 Monate. Trag es bitte neu ein, damit wir dein Ziel richtig planen.“ mit
    Knopf (die Ernährung zeigt wie bisher `weight_outdated`).
@@ -953,6 +958,22 @@ Abweichungen und Präzisierungen:
    Der Vorlagenname („Vorlage: …“) bleibt darunter.
 9. **Partner-Modus:** Es gibt noch keinen eigenen Plan; die feste Regel „`weight_goals` immer ausgeschlossen“ steht in
    `KONZEPT.md` §11 und im Phase-11-Prompt in `PROMPTS.md`.
+
+10. **Sichtbarkeit (Wächter Z5 M1):** Wunschgewicht und Zeitraum stehen nur unter Einstellungen; auf „Heute“ erscheinen
+    nur die Karten „erreicht“/„Zeitraum vorbei“ ohne Zahlen (Text in den Einstellungen, KONZEPT §1 und DSFA angepasst).
+
+### Wächter-Prüfung Z5/Z6 (17.10.2026): „Freigabe mit Auflagen“
+
+| Nr.   | Auflage (kurz)                                                       | Umsetzung                                                                                                                      |
+| ----- | -------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------ |
+| H1    | Jede neue Gewichtsangabe bei aktivem Ziel plante den Essensplan neu  | Kennung des Ziels statt Hash der Anpassung (Nr. 6), Test „neues Gewicht im Band → keine Neuplanung“ mit Gegenproben            |
+| M1    | „nur unter Einstellungen sichtbar“ ungenau                           | Texte präzisiert (Nr. 10)                                                                                                      |
+| N1    | „nie im Schlüssel“                                                   | „nicht im Klartext“ (Nr. 6)                                                                                                    |
+| N2    | Rückmeldung nach „Gewicht halten“/„Muskelaufbau“ unter Einstellungen | Unter „Dein Abnehm-Ziel“ geht es danach zurück zu „Heute“ (dort das Angebot „Plan neu erstellen?“)                             |
+| N3    | Ziel-Angaben nach „erreicht“ ungeprüft                               | `goalStepAfterWeightGoalReached` (Core) prüft mit `createGoalStepSchema(today)`; ein vergangenes Wettkampfdatum entfällt; Test |
+| N4–N6 | siehe Wächter-Bericht                                                | nur dokumentiert, keine Codeänderung                                                                                           |
+| N7    | Planname in vergangenen Wochen                                       | in „Woche“ nur, wenn die Woche Einheiten des aktiven Plans hat                                                                 |
+| N8    | Stand bei jedem Rendern neu gerechnet                                | `useMemo` auf „Heute“, „Dein Abnehm-Ziel“ und im Formular                                                                      |
 
 **Z6 (Doku):** `KONZEPT.md` §1, §2, §4, §6, §11, §12 (Abweichungen Z4/Z5), §14 (DSFA-Ergänzung `weight_goals`),
 `PLAN-PHASE-5.md` 4.5/4.7/4.9, `PLAN-PHASE-4B.md` (Nachtrag Plateau-Regel, S10, Z2 K-2), `PLAN-PHASE-10.md` 1.6

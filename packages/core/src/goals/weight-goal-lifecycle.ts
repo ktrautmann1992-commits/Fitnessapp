@@ -1,6 +1,7 @@
 import { meetsMinimumAge } from '../age';
 import { startOfIsoWeek } from '../dates';
-import type { GoalType } from '../enums';
+import type { EnduranceDiscipline, GoalType } from '../enums';
+import { createGoalStepSchema } from '../validation';
 import { nutritionInputsSchema, type NutritionInputsInput } from '../nutrition/schemas';
 import { nutritionTargetsForWeek } from '../nutrition/targets';
 import {
@@ -109,4 +110,48 @@ export function goalsAfterWeightGoalReached(
       : { primary: main, secondary: enduranceRole === 'secondary' ? 'endurance' : null };
   // Sicherheitsnetz: nie ein verbotenes Paar (Tabelle 4.2) – sonst das Hauptziel allein.
   return isAllowedGoalPair(next.primary, next.secondary) ? next : { ...next, secondary: null };
+}
+
+/** Gespeicherte Ziel-Angaben (Schritt „Dein Ziel“, Tabelle `goals`). */
+export interface GoalStepValues {
+  readonly goalType: GoalType;
+  readonly secondaryGoalType: GoalType | null;
+  readonly discipline: EnduranceDiscipline | null;
+  readonly targetDate: string | null;
+}
+
+/**
+ * Neue Angaben für den Schritt „Dein Ziel“ nach der Wahl „Gewicht halten“ bzw. „Muskelaufbau“ (Wächter Z5 N3): Ziele aus
+ * `goalsAfterWeightGoalReached`; Disziplin und Wettkampfdatum bleiben nur, solange Ausdauer ein Ziel ist; ein
+ * Wettkampfdatum in der Vergangenheit entfällt. Das Ergebnis ist mit `createGoalStepSchema(today)` geprüft (Zod an der
+ * Grenze) – `null`, wenn das nicht gelingt (dann speichert die App nichts).
+ */
+export function goalStepAfterWeightGoalReached(
+  current: GoalStepValues,
+  choice: Exclude<WeightGoalReachedChoice, 'new_weight_goal'>,
+  today: string,
+): GoalStepValues | null {
+  const next = goalsAfterWeightGoalReached(
+    { primary: current.goalType, secondary: current.secondaryGoalType },
+    choice,
+  );
+  if (next === null) return null;
+  const endurance = next.primary === 'endurance' || next.secondary === 'endurance';
+  const targetDate =
+    endurance && current.targetDate !== null && current.targetDate >= today
+      ? current.targetDate
+      : null;
+  const parsed = createGoalStepSchema(today).safeParse({
+    goalType: next.primary,
+    secondaryGoalType: next.secondary,
+    discipline: endurance ? current.discipline : null,
+    targetDate,
+  });
+  if (!parsed.success) return null;
+  return {
+    goalType: parsed.data.goalType,
+    secondaryGoalType: parsed.data.secondaryGoalType,
+    discipline: parsed.data.discipline ?? null,
+    targetDate: parsed.data.targetDate ?? null,
+  };
 }

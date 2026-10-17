@@ -58,9 +58,15 @@ export default function WeekScreen() {
   const summary = weekLogSummary(sessions, logs, pager.weekStart, today);
   const pending = new Set(app.pendingLogSessionIds);
   const isCurrent = pager.weekStart === startOfIsoWeek(today);
-  // Planname mit beiden Zielen (Etappe Z5) – ohne Wunschgewicht oder Tempo.
+  // Planname mit beiden Zielen (Etappe Z5) – ohne Wunschgewicht oder Tempo; nur für Wochen des aktiven Plans
+  // (Wächter Z5 N7: eine vergangene Woche eines früheren Plans bekommt nicht den heutigen Namen).
   const active = activePlan(app.rows);
-  const planName = active ? planNameLine(active.plan) : null;
+  const weekEnd = addDays(pager.weekStart, 6);
+  const planName =
+    active &&
+    active.sessions.some((s) => s.scheduled_on >= pager.weekStart && s.scheduled_on <= weekEnd)
+      ? planNameLine(active.plan)
+      : null;
   const empty = summary.days.every((d) => d.status === 'rest');
 
   const itemLines = (item: DayItem): string[] =>

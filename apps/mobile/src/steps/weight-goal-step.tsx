@@ -15,7 +15,7 @@ import {
 } from '@fitnessapp/core';
 import { fontSize, fontWeight, radius, spacing } from '@fitnessapp/ui';
 import { useLocalSearchParams, useRouter, type Href } from 'expo-router';
-import { useState } from 'react';
+import { useMemo, useState } from 'react';
 import { Pressable, StyleSheet, Text, View } from 'react-native';
 
 import { FeasibilityScale } from '@/components/feasibility-scale';
@@ -70,10 +70,13 @@ function lifecycleStatus(person: NutritionInputsInput) {
 }
 
 /** Eingaben der Ernährungs-Engine für die Ampel (Ruhetag; Trainings der Woche spielen keine Rolle). */
-function personInputs(ctl: StepController): NutritionInputsInput | null {
-  const rows = ctl.app.rows;
+function personInputs(
+  rows: StepController['app']['rows'],
+  versions: StepController['app']['versions'],
+  today: string,
+): NutritionInputsInput | null {
   if (!rows) return null;
-  return nutritionInputsFromRows(rows, ctl.app.versions, ctl.today, startOfIsoWeek(ctl.today));
+  return nutritionInputsFromRows(rows, versions, today, startOfIsoWeek(today));
 }
 
 function availabilityOf(person: NutritionInputsInput): WeightGoalAvailability | null {
@@ -106,7 +109,12 @@ function issueText(code: WeightGoalIssueCode): string {
 }
 
 export function WeightGoalStep({ ctl }: { ctl: StepController }) {
-  const person = personInputs(ctl);
+  const { rows, versions } = ctl.app;
+  // Wächter Z5 N8: nur neu rechnen, wenn sich Angaben oder Tag ändern.
+  const person = useMemo(
+    () => personInputs(rows, versions, ctl.today),
+    [rows, versions, ctl.today],
+  );
   if (person === null) {
     return (
       <Screen title={W.title} progress={ctl.progress}>
@@ -157,7 +165,10 @@ function WeightGoalForm({
   // Unverändert → „Weiter“ behält das gespeicherte Ziel genau so (Wächter Z4 N10, Etappe Z5).
   const [touched, setTouched] = useState(false);
   // Stand des gespeicherten Ziels heute (erreicht/abgelaufen) – Regel aus packages/core.
-  const lifecycle = saved === null ? 'none' : lifecycleStatus(person);
+  const lifecycle = useMemo(
+    () => (saved === null ? 'none' : lifecycleStatus(person)),
+    [saved, person],
+  );
   const ended = saved !== null && weightGoalPeriodEnded(saved, ctl.today);
   const formNotice =
     saved === null || mode !== 'concrete'

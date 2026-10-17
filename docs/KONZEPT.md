@@ -19,8 +19,9 @@ keine Ranglisten, keine öffentlichen Profile – Strecken, Fotos, Abzeichen und
   einer festen Liste erlaubter Paare (Tabelle 4.2 dort). Die Trainingsvorlage folgt dem Hauptziel, das Nebenziel ergänzt
   (z. B. Ausdauer-Tage, mehr Eiweiß, kleineres Defizit). Abnehmen wahlweise **ohne festes Ziel** (Standard) oder **mit
   konkretem Ziel** (Wunschgewicht + Zeitraum) mit Planbarkeits-Ampel Rot → Grün; ein konkretes Ziel macht den Plan nie
-  schneller als ohne (F5). Keine Gewichtsprognose, keine Kurve, kein Countdown (F7); das Ziel ist nur unter
-  Einstellungen sichtbar (F13).
+  schneller als ohne (F5). Keine Gewichtsprognose, keine Kurve, kein Countdown (F7); Wunschgewicht und
+  Zeitraum stehen nur unter Einstellungen; auf „Heute“ erscheinen nur die Karten „erreicht“/„Zeitraum vorbei“ ohne
+  Zahlen (F13).
 - Ausdauer-Disziplinen: 5 km, 10 km, Halbmarathon, Marathon, Triathlon (Sprint, Olympisch, Mitteldistanz, Langdistanz), Radfahren, Schwimmen
 - Optional Wettkampfdatum → Periodisierung rückwärts vom Wettkampf
 
@@ -363,7 +364,8 @@ Regeln in `packages/core/src/content/glossary.ts`, Grenzen in `GLOSSARY_LIMITS`.
   (Haupt- + Nebenziel, `GOAL_PAIR_RULES`; Energie-Richtung aus dem Vorzeichen). Ein konkretes Abnehmziel kann das
   Defizit nur **verkleinern** (geplantes Tempo = min(benötigt, Standard), danach immer `clampCalorieTarget`); erreicht →
   Erhalt bis zur Wahl, Zeitraum vorbei → Standard-Tempo und Angebot „Verlängern“ (nie automatisch). Ein neues,
-  geändertes, erreichtes, abgelaufenes oder entferntes Ziel plant den Essensplan ab heute automatisch neu (Z5). Hinweise
+  geändertes, erreichtes, abgelaufenes oder entferntes Ziel plant den Essensplan ab heute automatisch neu (Z5); eine neue
+  Gewichtsangabe bei unverändertem Ziel nur, wenn ein Tag aus dem Planband fällt. Hinweise
   dazu nur einmal je Woche in der Ernährungs-Übersicht der Woche (Wächter K10), nie im Trainings- oder Ernährungs-PDF.
 - Makros: Eiweiß nach g/kg je Ziel; Kohlenhydrate bei Ausdauer an Trainingslast periodisiert; Rest Fett (Mindestmenge einhalten)
 - Timing: Mahlzeit vor dem Training (2–3 h vorher) bzw. Snack (30–60 min vorher), Mahlzeit nach dem Training mit Eiweiß + Kohlenhydraten; an Tagen mit langen Einheiten Verpflegung während des Trainings
@@ -1022,7 +1024,9 @@ eigene Zeilen, in Export und Kontolöschung enthalten.
   mitgeführtes, nicht mehr passendes Nebenziel alter App-Stände auf.
 - **Z5:** keine Migration. „Erreicht“ und „Zeitraum vorbei“ bleiben zustandslos aus Messungen bzw. Datum abgeleitet
   (keine Spalte). Der Abgleich-Schlüssel des Essensplans (`safetyKey`, nur auf dem Gerät) bekommt bei konkretem Ziel einen
-  Teil `wg=<Stand>:<Hash>` (ohne Zahl); ohne Ziel bleibt er unverändert.
+  Teil `wg=<Stand>:<Kennung des Ziels>` – Hash aus Start, Zieldatum, Zielgewicht und Eingabeart, nicht im Klartext, und
+  unabhängig vom aktuellen Gewicht (Wächter Z5 H1: eine neue Gewichtsangabe plant nur neu, wenn ein Tag aus dem Planband
+  fällt). Ohne Ziel bleibt er unverändert.
 
 ## 13. Monetarisierung
 - **Gratis:** Onboarding, Standard-Plan aus Vorlagen mit einfacher Progression (Gewicht steigt bei geschafften
@@ -1081,7 +1085,8 @@ alle offen, Server-Prüfung mit Phase 7):
   oder Nebenziel (sonst automatisch gelöscht), Löschung beim Widerruf und mit dem Konto, im Datenexport enthalten. Nie in
   Analytics, Logs, Crash-Reports, Trainings- oder Ernährungs-PDF, nie im Partner-Modus. Risiko „Druck durch Zahlen“
   (Essstörungen): harte Ziel-BMI-Untergrenze (20, ab 70 J. 22), Tempo nie schneller als ohne Ziel, keine Prognose, kein
-  Fortschrittsbalken, Ziel nur unter Einstellungen sichtbar, fester Hilfe-Hinweis, keine Abzeichen. Restrisiko: Das
+  Fortschrittsbalken, Wunschgewicht und Zeitraum nur unter Einstellungen (auf „Heute“ nur die Karten
+  „erreicht“/„Zeitraum vorbei“ ohne Zahlen), fester Hilfe-Hinweis, keine Abzeichen. Restrisiko: Das
   Wunschgewicht steht im Klartext in der Datenbank (wie `body_metrics`) – vor Livegang mit der DSFA bewerten.
 - Abgrenzung zum Medizinprodukt (MDR): keine Diagnosen, keine Therapieaussagen
 - Health-Claims-Verordnung, Kennzeichnung Werbung/Affiliate (UWG)

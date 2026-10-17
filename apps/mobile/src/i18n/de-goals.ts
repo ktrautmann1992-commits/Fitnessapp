@@ -187,14 +187,14 @@ export const deWeightGoal = {
 
 /**
  * Einstellungen „Dein Abnehm-Ziel“, Karten „erreicht“/„Zeitraum vorbei“ und Hinweise in „Ernährung“ (docs/PLAN-ZIELE.md
- * 6 Nr. 3–4, F10, F13, K10; Etappe Z5). Das Ziel ist nur unter Einstellungen sichtbar (F13): Karten und Hinweise
+ * 6 Nr. 3–4, F10, F13, K10; Etappe Z5). Wunschgewicht und Zeitraum stehen nur unter Einstellungen (F13): Karten und Hinweise
  * nennen nie Zielgewicht, Fortschritt, Restmenge oder ein Datum; kein Konfetti, kein Abzeichen, keine Prognose (F7).
  */
 export const deWeightGoalLife = {
   settings: {
     title: 'Dein Abnehm-Ziel',
     entryText:
-      'Ohne festes Ziel oder mit Wunschgewicht und Zeitraum. Nur hier sichtbar – nicht auf „Heute“.',
+      'Ohne festes Ziel oder mit Wunschgewicht und Zeitraum. Wunschgewicht und Zeitraum siehst du nur hier; auf „Heute“ erscheint nur eine Karte, wenn dein Ziel erreicht oder der Zeitraum vorbei ist – ohne Zahlen.',
     open: 'Dein Abnehm-Ziel',
     none: 'Ohne festes Ziel – wir planen in gesundem Tempo.',
     noneHint:

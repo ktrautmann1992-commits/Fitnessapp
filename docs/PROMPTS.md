@@ -198,7 +198,7 @@ Abweichungen in `docs/PLAN-ZIELE.md` Abschnitt 13.
 „Wie möchtest du abnehmen?“ (`weight_goal`, `WEIGHT_GOAL_STEP_ENABLED = true`) mit Erreichbarkeits-Ampel
 (`FeasibilityScale`, `role="meter"`), Token `caution`, Vormerkungen Z3 N2/N3 erledigt, Playwright `goals.spec.ts`.
 Umsetzungsnotizen in `docs/PLAN-ZIELE.md` Abschnitt 14, Handy-Test in `docs/HANDY-ANLEITUNG.md` Teil 7z2.
-**Stand 17.10.2026: Z5 und Z6 umgesetzt (Wächter-Prüfung steht aus; keine Migration)** – Einstellungen → „Dein
+**Stand 17.10.2026: Z5 und Z6 umgesetzt, Wächter-geprüft (H1, M1, N1–N3, N7, N8 eingearbeitet; keine Migration)** – Einstellungen → „Dein
 Abnehm-Ziel“ (`/abnehmziel`: ansehen, bearbeiten, entfernen, verlängern), Karten „Wunschgewicht erreicht“ (Gewicht
 halten / Muskelaufbau / neues Wunschgewicht) und „Zeitraum vorbei“ (Verlängern / ohne festes Ziel) auf „Heute“, Hinweise
 einmal je Woche in der Ernährungs-Übersicht (K10), Planname mit zwei Zielen auf „Heute“, in der Woche und im

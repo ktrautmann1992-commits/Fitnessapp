@@ -1,6 +1,5 @@
 import {
-  goalsAfterWeightGoalReached,
-  hasGoal,
+  goalStepAfterWeightGoalReached,
   startOfIsoWeek,
   type WeightGoalNoticeCode,
   type WeightGoalOverview,
@@ -16,6 +15,7 @@ import { nutritionInputsFromRows } from '@/data/nutrition-plan';
 import type { UserRows } from '@/data/types';
 import { t } from '@/i18n';
 import { errorText } from '@/lib/error-text';
+import { todayIso } from '@/lib/format';
 import { useApp } from '@/state/app-state';
 import type { ConsentVersions } from '@/data/mapping';
 
@@ -80,25 +80,27 @@ export function WeightGoalLifecycleCard({
 
   function changeGoals(choice: 'maintain' | 'muscle_gain') {
     if (goals === null) return;
-    const next = goalsAfterWeightGoalReached(
-      { primary: goals.goal_type, secondary: goals.secondary_goal_type ?? null },
+    // Zod-geprüft in packages/core (Wächter Z5 N3): ein vergangenes Wettkampfdatum entfällt statt zu scheitern.
+    const goal = goalStepAfterWeightGoalReached(
+      {
+        goalType: goals.goal_type,
+        secondaryGoalType: goals.secondary_goal_type ?? null,
+        discipline: goals.discipline,
+        targetDate: goals.target_date,
+      },
       choice,
+      todayIso(),
     );
-    if (next === null) return;
-    const endurance = hasGoal(next, 'endurance');
-    void run(
-      () =>
-        app.saveStep({
-          step: 'goal',
-          goal: {
-            goalType: next.primary,
-            secondaryGoalType: next.secondary,
-            discipline: endurance ? goals.discipline : null,
-            targetDate: endurance ? goals.target_date : null,
-          },
-        }),
-      L.cards.reached.done,
-    );
+    if (goal === null) {
+      setMessage({ tone: 'danger', text: L.settings.saveFailed });
+      return;
+    }
+    void run(async () => {
+      await app.saveStep({ step: 'goal', goal });
+      // Unter „Dein Abnehm-Ziel“ gibt es danach kein Abnehmziel mehr (Wächter Z5 N2): zurück zu „Heute“, dort steht
+      // die Meldung bzw. das Angebot „Plan neu erstellen?“.
+      if (zurueck === 'abnehmziel') router.dismissTo('/today');
+    }, L.cards.reached.done);
   }
 
   const feedback = message ? (

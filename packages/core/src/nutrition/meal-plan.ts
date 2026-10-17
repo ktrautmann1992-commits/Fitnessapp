@@ -241,10 +241,12 @@ export const WEIGHT_GOAL_KEY_PREFIX = 'wg=';
 
 /**
  * Abgleich-Schlüssel für 6.6 (Modus, Deckel, Rezept-Ausschlüsse) – ohne Zahlen zu Körperdaten. Mit konkretem
- * Abnehmziel (Etappe Z5) kommt ein Teil `wg=<Stand>:<Hash der Anpassung>` dazu: Ein neues, geändertes, erreichtes,
- * abgelaufenes oder entferntes Ziel verschiebt das Band und plant den Essensplan ab heute automatisch neu (Plan 4.6
- * N5, Grund `weight_goal_changed`). Die Anpassung steht nur als Hash darin, nie als Zahl. Ohne Ziel bleibt der
- * Schlüssel genau wie vorher – bestehende Pläne werden durch diese Etappe nicht neu geplant.
+ * Abnehmziel (Etappe Z5) kommt ein Teil `wg=<Stand>:<Kennung des Ziels>` dazu: Ein neues, geändertes, erreichtes,
+ * abgelaufenes oder entferntes Ziel plant den Essensplan ab heute automatisch neu (Plan 4.6 N5, Grund
+ * `weight_goal_changed`). Die Kennung ist ein Hash aus Start, Zieldatum, Zielgewicht und Eingabeart – nie im Klartext –
+ * und hängt NICHT am aktuellen Gewicht (Wächter Z5 H1): Eine neue Gewichtsangabe bei aktivem Ziel plant nur neu, wenn
+ * ein Tag aus dem Planband fällt (`out_of_band`). Ohne Ziel bleibt der Schlüssel genau wie vorher – bestehende Pläne
+ * werden durch diese Etappe nicht neu geplant.
  */
 export function daySafetyKey(day: NutritionDayTargets): string {
   const parts = [
@@ -254,10 +256,7 @@ export function daySafetyKey(day: NutritionDayTargets): string {
     `ex=${[...day.recipeExclusions].sort().join(',')}`,
   ];
   if (day.weightGoalStatus !== null) {
-    const adjustment = day.goalAdjustment === null ? '-' : day.goalAdjustment.toFixed(4);
-    parts.push(
-      `${WEIGHT_GOAL_KEY_PREFIX}${day.weightGoalStatus}:${stableHashKey('weight_goal', adjustment)}`,
-    );
+    parts.push(`${WEIGHT_GOAL_KEY_PREFIX}${day.weightGoalStatus}:${day.weightGoalKey ?? '-'}`);
   }
   return parts.join('|');
 }

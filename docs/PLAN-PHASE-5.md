@@ -307,7 +307,8 @@ So wird das absolute Defizit an langen Trainingstagen nicht größer (Energiever
 Haupt- + Nebenziel, `GOAL_PAIR_RULES`); für Einzelziele gelten genau die Werte dieser Tabelle (Invarianten-Test). Die
 Energie-Richtung (Defizit/Erhalt/Überschuss) folgt aus dem Vorzeichen. Ein konkretes Abnehmziel kann die Anpassung nur
 Richtung 0 verschieben (F5), danach gilt unverändert 4.6. Neues/geändertes/erreichtes/abgelaufenes/entferntes Ziel →
-automatische Neuplanung ab heute (6.6, Grund `weight_goal_changed`, Etappe Z5).
+automatische Neuplanung ab heute (6.6, Grund `weight_goal_changed`, Etappe Z5). Eine neue Gewichtsangabe bei
+unverändertem Ziel plant – wie ohne Ziel – nur neu, wenn ein Tag aus dem Planband fällt (`out_of_band`, Wächter Z5 H1).
 
 ### 4.6 Schutzgrenzen (`limits.ts`, nicht abschaltbar)
 

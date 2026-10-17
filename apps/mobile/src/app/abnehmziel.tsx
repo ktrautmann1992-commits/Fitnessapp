@@ -1,6 +1,6 @@
 import { hasGoal } from '@fitnessapp/core';
 import { Redirect, useRouter, type Href } from 'expo-router';
-import { type ReactNode, useState } from 'react';
+import { type ReactNode, useMemo, useState } from 'react';
 
 import { EatingHelpNotice } from '@/components/nutrition';
 import { ConfirmDialog, Screen } from '@/components/screen';
@@ -33,6 +33,13 @@ export default function WeightGoalSettingsScreen() {
   const [confirmRemove, setConfirmRemove] = useState(false);
   const [busy, setBusy] = useState(false);
   const [message, setMessage] = useState<{ tone: 'success' | 'danger'; text: string } | null>(null);
+
+  const { rows: memoRows, versions } = app;
+  // Wächter Z5 N8: Stand nur neu rechnen, wenn sich Angaben oder Tag ändern.
+  const overview = useMemo(
+    () => (memoRows ? weightGoalOverviewFromRows(memoRows, versions, today) : null),
+    [memoRows, versions, today],
+  );
 
   if (app.status.kind === 'loading') {
     return (
@@ -116,9 +123,8 @@ export default function WeightGoalSettingsScreen() {
     );
   }
 
-  const overview = weightGoalOverviewFromRows(rows, app.versions, today);
   const summary = weightGoalSummary(goal);
-  const status = overview.status;
+  const status = overview?.status ?? 'none';
 
   async function remove() {
     setBusy(true);
@@ -136,7 +142,7 @@ export default function WeightGoalSettingsScreen() {
 
   return shell(
     <>
-      <WeightGoalLifecycleCard overview={overview} zurueck="abnehmziel" />
+      {overview ? <WeightGoalLifecycleCard overview={overview} zurueck="abnehmziel" /> : null}
       <Card>
         <Body testID="weight-goal-settings-target">{summary.target}</Body>
         <Body muted testID="weight-goal-settings-period">
@@ -175,7 +181,7 @@ export default function WeightGoalSettingsScreen() {
           />
         </Notice>
       ) : null}
-      {overview.weightOutdated ? (
+      {overview?.weightOutdated ? (
         <Notice tone="info" testID="weight-goal-settings-weight-outdated">
           <Body>{S.weightOutdated}</Body>
           <Button
