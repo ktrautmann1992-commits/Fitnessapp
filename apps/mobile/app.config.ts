@@ -20,6 +20,10 @@ const EAS_PROJECT_ID = '7370ffec-3dd0-47bd-91dd-595c67ebae69';
 // einem Robot-Benutzer dieser Organisation (docs/SETUP.md Teil D).
 const EAS_OWNER = 'ktrautmann1992s-team';
 
+// Text der iOS-Kamera-Abfrage (NSCameraUsageDescription), Wortlaut aus docs/PLAN-E4.md 5.2.
+export const CAMERA_PERMISSION_TEXT =
+  'Alpha5 nutzt die Kamera nur, um den Strichcode von Lebensmitteln zu lesen. Es werden keine Fotos gespeichert.';
+
 export default ({ config }: ConfigContext): ExpoConfig => ({
   ...config,
   name: APP_NAME,
@@ -45,10 +49,13 @@ export default ({ config }: ConfigContext): ExpoConfig => ({
       // Bestätigung in der Rechts-Checkliste Phase 12.
       usesNonExemptEncryption: false,
     },
-    // Keine NS…UsageDescription-Texte: Die App nutzt keine Kamera, keine Fotos, keinen Standort, kein Face ID,
-    // keine Health-Daten. Drucken (expo-print), Ordner-Auswahl (expo-file-system), Vibration (expo-haptics),
+    // Einziger NS…UsageDescription-Text: Kamera (NSCameraUsageDescription, Strichcode scannen, Etappe E4b) – gesetzt
+    // vom Plugin expo-camera unten. Sonst keine: keine Fotos, kein Mikrofon, kein Standort, kein Face ID, keine
+    // Health-Daten. Drucken (expo-print), Ordner-Auswahl (expo-file-system), Vibration (expo-haptics),
     // Bildschirm-an (expo-keep-awake), Schlüsselbund (expo-secure-store) und expo-crypto brauchen keine
     // Berechtigung. Kommt später eine dazu (z. B. HealthKit, Phase 8), hier deutschen Text ergänzen.
+    // Kamera ist keine „Required Reason API“ (kein Eintrag unten); Kamerabilder verlassen das Gerät nicht, sind also
+    // keine „gesammelten Daten“ im Sinne von NSPrivacyCollectedDataTypes.
     //
     // Datenschutz-Manifest (PrivacyInfo.xcprivacy), Pflicht für den App Store. Gründe für „Required Reason
     // APIs“ = Vereinigung der Manifeste der eingebauten Bibliotheken (React Native, expo-constants,
@@ -105,7 +112,8 @@ export default ({ config }: ConfigContext): ExpoConfig => ({
     allowBackup: false,
     // Nicht gebraucht: Die Ordner-Auswahl beim Export (Storage Access Framework) braucht keine
     // Speicher-Berechtigung; SYSTEM_ALERT_WINDOW (Einblendung über anderen Apps) kommt nur aus der Vorlage.
-    // Bleiben: INTERNET (Supabase) und VIBRATE (Pausentimer, expo-haptics).
+    // Bleiben: INTERNET (Supabase), VIBRATE (Pausentimer, expo-haptics) und CAMERA (Strichcode scannen, expo-camera,
+    // Etappe E4b). Kein RECORD_AUDIO (Plugin-Option recordAudioAndroid: false).
     blockedPermissions: [
       'android.permission.READ_EXTERNAL_STORAGE',
       'android.permission.WRITE_EXTERNAL_STORAGE',
@@ -129,6 +137,17 @@ export default ({ config }: ConfigContext): ExpoConfig => ({
     'expo-router',
     // Kein Face ID (die App fragt keine Biometrie ab) → kein NSFaceIDUsageDescription; Android-Sicherungsregeln an.
     ['expo-secure-store', { faceIDPermission: false, configureAndroidBackup: true }],
+    // Strichcode scannen (Etappe E4b, docs/PLAN-E4.md 5.2): nur Kamera, kein Mikrofon. Die Erkennung läuft auf dem
+    // Gerät; es werden keine Fotos gespeichert oder gesendet. Neues natives Modul → neuer EAS-Build nötig.
+    [
+      'expo-camera',
+      {
+        cameraPermission: CAMERA_PERMISSION_TEXT,
+        microphonePermission: false,
+        recordAudioAndroid: false,
+        barcodeScannerEnabled: true,
+      },
+    ],
     [
       'expo-splash-screen',
       // SDK 57: Startbildschirm nur noch über dieses Plugin (das alte Feld `splash` gibt es nicht mehr).

@@ -20,6 +20,24 @@ export const deFoodProduct = {
   codeLabel: 'Nummer unter dem Strichcode',
   codeHint: 'Die 8 oder 13 Ziffern unter dem Strichcode',
   search: 'Produkt suchen',
+  // Kamera (Etappe E4b, Plan 5): Bilder werden nie gespeichert oder gesendet – nur die Nummer.
+  scan: {
+    button: 'Mit der Kamera scannen',
+    title: 'Strichcode scannen',
+    starting: 'Kamera startet …',
+    hint: 'Halte den Strichcode in den Rahmen – er wird automatisch erkannt.',
+    privacy:
+      'Die Kamerabilder bleiben auf deinem Gerät und werden nicht gespeichert – nur die Nummer zählt.',
+    cancel: 'Abbrechen und Nummer eintippen',
+    previewLabel: 'Kamera-Vorschau',
+    denied: 'Ohne Kamera-Erlaubnis kannst du die Nummer eintippen.',
+    deniedHowToWeb:
+      'Erlaubnis ändern: In Chrome auf Android tippst du links neben der Adresse auf das Symbol → Berechtigungen → Kamera. Auf dem iPhone: Einstellungen → Chrome (bzw. Safari) → Kamera; danach die Seite neu laden.',
+    deniedHowToApp: 'Erlaubnis ändern: Einstellungen → Alpha5 → Kamera.',
+    openSettings: 'Einstellungen öffnen',
+    unavailable:
+      'Die Kamera ließ sich nicht starten (keine Kamera gefunden oder gerade von einer anderen App genutzt) – tipp die Nummer ein.',
+  },
   searching: 'Suche Produkt …',
   invalidCode: 'Die Nummer stimmt nicht – bitte noch einmal abtippen.',
   notFoodCode:

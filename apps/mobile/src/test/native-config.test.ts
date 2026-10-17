@@ -10,15 +10,19 @@ import { fileURLToPath } from 'node:url';
 import type { ExpoConfig } from 'expo/config';
 import { beforeAll, describe, expect, it } from 'vitest';
 
-import appConfig from '../../app.config';
+import appConfig, { CAMERA_PERMISSION_TEXT } from '../../app.config';
 
 const APP_DIR = join(dirname(fileURLToPath(import.meta.url)), '..', '..');
 const require = createRequire(join(APP_DIR, 'package.json'));
 
 const BUNDLE_ID = 'de.fitnessapp.app';
 
-// Nur diese Android-Berechtigungen darf die App haben (Supabase, Pausentimer-Vibration).
-const ALLOWED_ANDROID_PERMISSIONS = ['android.permission.INTERNET', 'android.permission.VIBRATE'];
+// Nur diese Android-Berechtigungen darf die App haben (Supabase, Pausentimer-Vibration, Strichcode-Kamera E4b).
+const ALLOWED_ANDROID_PERMISSIONS = [
+  'android.permission.INTERNET',
+  'android.permission.VIBRATE',
+  'android.permission.CAMERA',
+];
 const BLOCKED_ANDROID_PERMISSIONS = [
   'android.permission.READ_EXTERNAL_STORAGE',
   'android.permission.WRITE_EXTERNAL_STORAGE',
@@ -60,9 +64,26 @@ describe('app.config.ts', () => {
     expect(config().ios?.config?.usesNonExemptEncryption).toBe(false);
   });
 
-  it('keine Berechtigungstexte in der Info.plist (die App nutzt keine geschützten Dienste)', () => {
+  it('keine Berechtigungstexte von Hand in der Info.plist (Kamera-Text kommt vom Plugin)', () => {
     const infoPlist = config().ios?.infoPlist ?? {};
     expect(Object.keys(infoPlist).filter((key) => key.endsWith('UsageDescription'))).toEqual([]);
+  });
+
+  it('expo-camera: deutscher Kamera-Text, kein Mikrofon, kein RECORD_AUDIO (E4b)', () => {
+    const plugin = config().plugins?.find(
+      (entry) => Array.isArray(entry) && entry[0] === 'expo-camera',
+    );
+    expect(plugin).toEqual([
+      'expo-camera',
+      {
+        cameraPermission: CAMERA_PERMISSION_TEXT,
+        microphonePermission: false,
+        recordAudioAndroid: false,
+        barcodeScannerEnabled: true,
+      },
+    ]);
+    expect(CAMERA_PERMISSION_TEXT).toMatch(/Strichcode/);
+    expect(CAMERA_PERMISSION_TEXT).toMatch(/keine Fotos gespeichert/);
   });
 
   it('expo-secure-store ohne Face ID, mit Android-Sicherungsregeln', () => {
@@ -174,9 +195,12 @@ describe('expo config --type introspect (nach allen Config-Plugins, offline)', (
     result = JSON.parse(out) as Introspect;
   }, 60_000);
 
-  it('Info.plist: keine Berechtigungstexte, Exportkontrolle false', () => {
+  it('Info.plist: nur der deutsche Kamera-Text (kein Mikrofon), Exportkontrolle false', () => {
     const plist = result._internal.modResults.ios.infoPlist;
-    expect(Object.keys(plist).filter((key) => key.endsWith('UsageDescription'))).toEqual([]);
+    expect(Object.keys(plist).filter((key) => key.endsWith('UsageDescription'))).toEqual([
+      'NSCameraUsageDescription',
+    ]);
+    expect(plist.NSCameraUsageDescription).toBe(CAMERA_PERMISSION_TEXT);
     expect(plist.ITSAppUsesNonExemptEncryption).toBe(false);
   });
 

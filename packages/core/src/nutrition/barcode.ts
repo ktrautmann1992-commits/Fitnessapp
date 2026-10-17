@@ -90,3 +90,92 @@ export const barcodeSchema = z.string().refine((value) => {
   const check = normalizeBarcode(value);
   return BARCODE_PATTERN.test(value) && check.ok && check.code === value;
 }, 'Ungültige Nummer.');
+
+// ---------------------------------------------------------------------------------------------------------
+// Kamera (Etappe E4b, docs/PLAN-E4.md 4.2 und 5): Der Scanner liefert Text + Format. Dieselbe Prüfung wie beim
+// Eintippen (normalizeBarcode); nur UPC-E (komprimiert) wird vorher auf UPC-A erweitert.
+// ---------------------------------------------------------------------------------------------------------
+
+/**
+ * Formate, die die App annimmt – Namen aus der Browser-Schnittstelle `BarcodeDetector` (`ean_13`, `ean_8`, `upc_a`,
+ * `upc_e`, auch vom ZXing-Polyfill) und aus `expo-camera` (`ean13`, `ean8`, `upc_a`, `upc_e`). Alles andere (QR-Code,
+ * Code 128 …) ist keine Lebensmittel-Nummer und wird ignoriert.
+ */
+export const SCANNED_BARCODE_FORMATS = ['ean13', 'ean8', 'upca', 'upce'] as const;
+export type ScannedBarcodeFormat = (typeof SCANNED_BARCODE_FORMATS)[number];
+
+/** `ean_13`, `EAN-13`, `ean13` … → `ean13`; unbekannt → null. */
+export function scannedBarcodeFormat(format: unknown): ScannedBarcodeFormat | null {
+  if (typeof format !== 'string' || format.length > 32) return null;
+  const key = format.toLowerCase().replace(/[^a-z0-9]/gu, '');
+  return (SCANNED_BARCODE_FORMATS as readonly string[]).includes(key)
+    ? (key as ScannedBarcodeFormat)
+    : null;
+}
+
+/**
+ * UPC-E → UPC-A (12 Ziffern mit Prüfziffer). Eingabe: 6 Ziffern (Nummernsystem 0, ohne Prüfziffer), 7 (Nummernsystem
+ * + 6, ohne Prüfziffer) oder 8 (Nummernsystem + 6 + Prüfziffer – die muss zur erweiterten Nummer passen). Nur
+ * Nummernsystem 0 oder 1. Regel nach der letzten der sechs Ziffern (GS1 General Specifications, Abschnitt 5.2.2.4.2
+ * „UPC-E“; VOR LIVEGANG PRÜFEN): 0–2 → Hersteller d1 d2 d6 0 0, Artikel 0 0 d3 d4 d5; 3 → d1 d2 d3 0 0, 0 0 0 d4 d5;
+ * 4 → d1 d2 d3 d4 0, 0 0 0 0 d5; 5–9 → d1 d2 d3 d4 d5, 0 0 0 0 d6. Ungültig → null.
+ */
+export function expandUpcE(input: string): string | null {
+  if (!/^\d{6,8}$/.test(input)) return null;
+  const system = input.length === 6 ? '0' : input.charAt(0);
+  if (system !== '0' && system !== '1') return null;
+  const d = input.length === 6 ? input : input.slice(1, 7);
+  const last = d.charAt(5);
+  let body: string;
+  if (last === '0' || last === '1' || last === '2') {
+    body = `${d.slice(0, 2)}${last}0000${d.slice(2, 5)}`;
+  } else if (last === '3') {
+    body = `${d.slice(0, 3)}00000${d.slice(3, 5)}`;
+  } else if (last === '4') {
+    body = `${d.slice(0, 4)}00000${d.charAt(4)}`;
+  } else {
+    body = `${d.slice(0, 5)}0000${last}`;
+  }
+  const withoutCheck = `${system}${body}`;
+  const check = gs1CheckDigit(withoutCheck);
+  if (input.length === 8 && input.charCodeAt(7) - 48 !== check) return null;
+  return `${withoutCheck}${check}`;
+}
+
+/**
+ * Ziffern, die die App für einen Scan ins Nummernfeld schreibt (UPC-E erweitert), oder null (falsches Format, falsche
+ * Länge zum Format, Buchstaben, zu lang). Die eigentliche Prüfung macht danach `normalizeBarcode`.
+ */
+export function scannedBarcodeDigits(raw: unknown, format: unknown): string | null {
+  const kind = scannedBarcodeFormat(format);
+  if (kind === null || typeof raw !== 'string' || raw.length > BARCODE_INPUT_MAX_CHARS) return null;
+  const digits = raw.trim();
+  if (!/^\d+$/.test(digits)) return null;
+  switch (kind) {
+    case 'ean8':
+      return digits.length === 8 ? digits : null;
+    case 'ean13':
+      return digits.length === 13 ? digits : null;
+    case 'upca':
+      // Manche Geräte (iOS) liefern UPC-A schon als EAN-13 mit führender 0.
+      return digits.length === 12 || (digits.length === 13 && digits.startsWith('0'))
+        ? digits
+        : null;
+    case 'upce':
+      if (digits.length === 12 || (digits.length === 13 && digits.startsWith('0'))) return digits;
+      return expandUpcE(digits);
+  }
+}
+
+/**
+ * Scan → Normalform, gleiche Ergebnisse wie `normalizeBarcode` (`invalid` | `not_food` | ok). Ein Scanner meldet auch
+ * Fehllesungen; die Kamera läuft bei `invalid` weiter, bei `ok` und `not_food` endet sie.
+ */
+export function normalizeScannedBarcode(
+  raw: unknown,
+  format: unknown,
+): BarcodeCheck & { readonly digits: string | null } {
+  const digits = scannedBarcodeDigits(raw, format);
+  if (digits === null) return { ok: false, reason: 'invalid', digits: null };
+  return { ...normalizeBarcode(digits), digits };
+}
