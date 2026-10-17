@@ -20,6 +20,31 @@ export const deFoodProduct = {
   codeLabel: 'Nummer unter dem Strichcode',
   codeHint: 'Die 8 oder 13 Ziffern unter dem Strichcode',
   search: 'Produkt suchen',
+  testBarcodesShow: 'Strichcodes der Testnummern anzeigen',
+  testBarcodesHide: 'Strichcodes ausblenden',
+  testBarcodesHint:
+    'Zum Ausprobieren der Kamera: diese Seite auf einem zweiten Handy öffnen und den Strichcode dort scannen.',
+  testBarcodeLabel: 'Strichcode der Testnummer',
+  // Kamera (Etappe E4b, Plan 5): Bilder werden nie gespeichert oder gesendet – nur die Nummer.
+  scan: {
+    button: 'Mit der Kamera scannen',
+    title: 'Strichcode scannen',
+    starting: 'Kamera startet …',
+    hint: 'Halte den Strichcode in den Rahmen – er wird automatisch erkannt.',
+    privacy:
+      'Die Kamerabilder bleiben auf deinem Gerät und werden nicht gespeichert – nur die Nummer zählt.',
+    cancel: 'Abbrechen und Nummer eintippen',
+    previewLabel: 'Kamera-Vorschau',
+    denied: 'Ohne Kamera-Erlaubnis kannst du die Nummer eintippen.',
+    deniedHowToWeb:
+      'Erlaubnis ändern: In Chrome auf Android tippst du links neben der Adresse auf das Symbol → Berechtigungen → Kamera. Auf dem iPhone: Einstellungen → Chrome (bzw. Safari) → Kamera; danach die Seite neu laden.',
+    deniedHowToApp: 'Erlaubnis ändern: Einstellungen → Alpha5 → Kamera.',
+    openSettings: 'Einstellungen öffnen',
+    interrupted:
+      'Die Kamera wurde beendet (App gewechselt oder Kamera getrennt). Scann noch einmal oder tipp die Nummer ein.',
+    unavailable:
+      'Die Kamera ließ sich nicht starten (keine Kamera gefunden oder gerade von einer anderen App genutzt) – tipp die Nummer ein.',
+  },
   searching: 'Suche Produkt …',
   invalidCode: 'Die Nummer stimmt nicht – bitte noch einmal abtippen.',
   notFoodCode:
@@ -186,6 +211,9 @@ export const deFoodProduct = {
     method:
       'Wir übernehmen die Werte je 100 g/ml unverändert und rechnen nur so um: kJ → kcal (÷ 4,184), Natrium → Salz (× 2,5), Portionswerte → je 100 g, Runden auf ganze kcal und 0,1 g; Texte werden gekürzt und von Steuerzeichen bereinigt. Die Original-Daten erhältst du bei Open Food Facts (world.openfoodfacts.org/data).',
     images: 'Produktbilder von Open Food Facts zeigen wir nicht.',
+    softwareTitle: 'Software von Dritten (Strichcode-Leser)',
+    software:
+      'Strichcode lesen im Browser: zxing-cpp (github.com/zxing-cpp/zxing-cpp), Lizenz Apache 2.0 (apache.org/licenses/LICENSE-2.0); zxing-wasm (Lizenz MIT, C++-Anbindung Apache 2.0) und barcode-detector (Lizenz MIT), beide von Ze-Zheng Wu. In der App: expo-camera (Expo), Lizenz MIT. Die Kamerabilder werden nur auf deinem Gerät ausgewertet.',
     draft: 'Entwurf – Wortlaut wird vor dem Start rechtlich geprüft.',
   },
 } as const;

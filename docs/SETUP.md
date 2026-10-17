@@ -936,7 +936,7 @@ Erst, wenn ihr es ausdrücklich wollt **und** vorher erledigt ist (Wächter E3 M
 
 ## Teil M – Produkt per Barcode-Nummer (Etappe E4a, gratis, ohne KI)
 
-**Stand 17.10.2026:** Man tippt die Nummer unter dem Strichcode ein (noch **ohne Kamera**, die kommt mit E4b). Der
+**Stand 17.10.2026:** Man tippt die Nummer unter dem Strichcode ein oder scannt ihn mit der Kamera (E4b, Teil M5). Der
 Server fragt **Open Food Facts** (freie Produktdatenbank, Lizenz ODbL) – nie das Handy direkt. Im **Testmodus** müsst
 ihr **nichts** einstellen: Es antwortet eine **Attrappe** mit festen Testnummern (Teil 7k der HANDY-ANLEITUNG).
 
@@ -979,6 +979,22 @@ Open Food Facts verlangt, dass jede Anfrage eine Kontaktadresse nennt. Ohne sie 
   pro Minute je IP; wir bleiben mit höchstens 10 pro Minute darunter).
 - **Lizenz-Hinweis** (ODbL/DbCL) auf der Seite „Lizenzen und Quellen“ juristisch prüfen lassen.
 - Datenschutzerklärung Abschnitt 8 (Produktabfrage) juristisch prüfen lassen.
+
+### M5 – Kamera (Etappe E4b)
+
+Nichts einzustellen. Im Browser lädt die App den Strichcode-Leser (ZXing, WebAssembly) von **eurer eigenen
+Vercel-Adresse** (`/scanner/…`), nie von einem fremden Server. Für die **App** (APK/TestFlight) ist einmal ein **neuer
+Build** nötig: **Actions → eas-build → Run workflow** (Android: Plattform android, Profil preview; iPhone: Teil D2).
+Ältere Builds zeigen den Kamera-Knopf nicht.
+
+Nach dem ersten neuen APK: Android → **Einstellungen → Apps → Alpha5 → Berechtigungen** – erwartet ist nur
+**Kamera** (kein Mikrofon, keine Fotos/Dateien).
+
+**PFLICHT vor dem Livegang:** Auf Android liest die App den Strichcode mit Googles **ML Kit** (auf dem Gerät); dazu
+bindet `expo-camera` die Google-Bibliothek `play-services-code-scanner` ein. Den automatischen Download der
+Google-Scan-Oberfläche haben wir abgeschaltet, ganz entfernen lässt sich die Bibliothek nicht. Klärt mit der
+Rechtsprüfung, ob dabei Nutzungs- oder Diagnosedaten an Google gehen, und passt Datenschutzerklärung,
+App-Store-Datenschutzangaben und Play-Store-„Datensicherheit“ an (docs/PLAN-E4.md, Nachtrag Wächter E4b, M2).
 
 ---
 
