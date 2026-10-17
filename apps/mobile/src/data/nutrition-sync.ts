@@ -17,10 +17,12 @@ import {
   selectNutritionContent,
   shoppingListFromPayload,
   type StoredShoppingList,
+  type UserFoodProduct,
   validateContent,
 } from '@fitnessapp/core';
 
 import type { ProtectedStore } from './protected-store';
+import { userFoodProductRowsFrom } from './user-food-product-rows';
 import type {
   CustomMealItemRow,
   CustomMealRow,
@@ -28,6 +30,7 @@ import type {
   FoodLogFavoriteRow,
   MealPlanRow,
   ShoppingListRow,
+  UserFoodProductRow,
   UserRows,
 } from './types';
 
@@ -275,6 +278,13 @@ export function customMealRowsFromDb(
   return { customMeals, customMealItems };
 }
 
+/** Eigene Produkte aus der Datenbank (Etappe E4a) – je Produkt erneut geprüft (`userFoodProductSchema`). */
+export function userFoodProductRowsFromDb(
+  rows: readonly Record<string, unknown>[],
+): UserFoodProductRow[] {
+  return userFoodProductRowsFrom(rows, undefined);
+}
+
 // ---------------------------------------------------------------------------------------------------------
 // Bestand aus der Datenbank (Vorschlag N7 Teil 2 Nr. 3)
 // ---------------------------------------------------------------------------------------------------------
@@ -411,6 +421,7 @@ export const NUTRITION_ROW_KEYS = [
   'foodLogFavorites',
   'customMeals',
   'customMealItems',
+  'userFoodProducts',
 ] as const satisfies readonly (keyof UserRows)[];
 
 export type NutritionRows = Pick<UserRows, (typeof NUTRITION_ROW_KEYS)[number]>;
@@ -423,6 +434,7 @@ export function nutritionRowsOf(rows: UserRows): NutritionRows {
     foodLogFavorites: rows.foodLogFavorites,
     customMeals: rows.customMeals,
     customMealItems: rows.customMealItems,
+    userFoodProducts: rows.userFoodProducts,
   };
 }
 
@@ -433,6 +445,7 @@ export const EMPTY_NUTRITION_ROWS: NutritionRows = {
   foodLogFavorites: [],
   customMeals: [],
   customMealItems: [],
+  userFoodProducts: [],
 };
 
 interface NutritionCache {
@@ -495,7 +508,15 @@ export type NutritionQueueOp =
   | { kind: 'food_log_save'; entry: FoodLogEntry; writeId: string; baseRevision: number | null }
   | { kind: 'food_log_delete'; id: string; baseRevision: number }
   | { kind: 'custom_meal_save'; meal: CustomMeal; writeId: string; baseRevision: number | null }
-  | { kind: 'custom_meal_delete'; id: string };
+  | { kind: 'custom_meal_delete'; id: string }
+  // E4a: eigene Produkte (Name/Marke = Freitext, SENSIBEL) – wie eigene Gerichte.
+  | {
+      kind: 'user_product_save';
+      product: UserFoodProduct;
+      writeId: string;
+      baseRevision: number | null;
+    }
+  | { kind: 'user_product_delete'; id: string };
 
 export interface NutritionQueueEntry {
   key: string;
@@ -512,7 +533,11 @@ export type NutritionRejectReason =
   | 'day_full'
   | 'limit'
   | 'invalid'
-  | 'not_transferred';
+  | 'not_transferred'
+  /** E4a: Produkt nicht (mehr) im Zwischenspeicher – „Produkt neu abrufen“. */
+  | 'product_unavailable'
+  /** E4a (Wächter M1): Limit der Produkt-Nutzung erreicht. */
+  | 'product_limit';
 
 /** Abgelehnte Fassung – bleibt lokal (Gründer-Frage G3 aus E1: „lokal behalten mit Hinweis“, nie still verwerfen). */
 export interface RejectedNutritionWrite {
@@ -524,10 +549,29 @@ export interface RejectedNutritionWrite {
 export const NUTRITION_QUEUE_MAX_ATTEMPTS = 5;
 
 export function nutritionQueueKey(op: NutritionQueueOp): string {
-  return op.kind === 'food_log_save' || op.kind === 'food_log_delete'
-    ? `food_log:${op.kind === 'food_log_save' ? op.entry.id : op.id}`
-    : `custom_meal:${op.kind === 'custom_meal_save' ? op.meal.id : op.id}`;
+  switch (op.kind) {
+    case 'food_log_save':
+      return `food_log:${op.entry.id}`;
+    case 'food_log_delete':
+      return `food_log:${op.id}`;
+    case 'custom_meal_save':
+      return `custom_meal:${op.meal.id}`;
+    case 'custom_meal_delete':
+      return `custom_meal:${op.id}`;
+    case 'user_product_save':
+      return `user_product:${op.product.id}`;
+    case 'user_product_delete':
+      return `user_product:${op.id}`;
+  }
 }
+
+const isSave = (
+  op: NutritionQueueOp,
+): op is Extract<
+  NutritionQueueOp,
+  { kind: 'food_log_save' | 'custom_meal_save' | 'user_product_save' }
+> =>
+  op.kind === 'food_log_save' || op.kind === 'custom_meal_save' || op.kind === 'user_product_save';
 
 /**
  * Vorgang einreihen (rein): Eine neuere Fassung desselben Eintrags ersetzt die ältere und übernimmt deren
@@ -541,19 +585,14 @@ export function enqueueNutritionOp(
   const key = nutritionQueueKey(op);
   const previous = entries.filter((e) => e.key === key);
   const others = entries.filter((e) => e.key !== key);
-  const lastSave = [...previous]
-    .reverse()
-    .find((e) => e.op.kind === 'food_log_save' || e.op.kind === 'custom_meal_save');
-  const hadDelete = previous.some(
-    (e) => e.op.kind === 'food_log_delete' || e.op.kind === 'custom_meal_delete',
-  );
+  const lastSave = [...previous].reverse().find((e) => isSave(e.op));
+  const hadDelete = previous.some((e) => e.op.kind.endsWith('_delete'));
   const inheritedBase = (fallback: number | null): number | null =>
-    lastSave && (lastSave.op.kind === 'food_log_save' || lastSave.op.kind === 'custom_meal_save')
-      ? lastSave.op.baseRevision
-      : fallback;
+    lastSave && isSave(lastSave.op) ? lastSave.op.baseRevision : fallback;
   switch (op.kind) {
     case 'food_log_save':
-    case 'custom_meal_save': {
+    case 'custom_meal_save':
+    case 'user_product_save': {
       const keepDelete = hadDelete ? previous.filter((e) => e.op.kind.endsWith('_delete')) : [];
       const base = hadDelete ? null : inheritedBase(op.baseRevision);
       return [...others, ...keepDelete, { key, op: { ...op, baseRevision: base } }];
@@ -572,9 +611,11 @@ export function enqueueNutritionOp(
           : op.baseRevision;
       return [...others, { key, op: { ...op, baseRevision: base } }];
     }
-    case 'custom_meal_delete': {
+    case 'custom_meal_delete':
+    case 'user_product_delete': {
       if (
-        lastSave?.op.kind === 'custom_meal_save' &&
+        lastSave !== undefined &&
+        (lastSave.op.kind === 'custom_meal_save' || lastSave.op.kind === 'user_product_save') &&
         lastSave.op.baseRevision === null &&
         !hadDelete
       ) {
@@ -652,6 +693,34 @@ export function applyNutritionQueue(
           foodLogEntries: next.foodLogEntries.map((e) =>
             e.custom_meal_id === op.id ? { ...e, custom_meal_id: null } : e,
           ),
+        };
+        break;
+      case 'user_product_save': {
+        const existing = next.userFoodProducts.find((p) => p.id === op.product.id);
+        next = {
+          ...next,
+          userFoodProducts: [
+            ...next.userFoodProducts.filter((p) => p.id !== op.product.id),
+            {
+              ...op.product,
+              user_id: ctx.userId,
+              revision: op.baseRevision ?? 0,
+              last_write_id: op.writeId,
+              created_at: existing?.created_at ?? ctx.now,
+              updated_at: ctx.now,
+            },
+          ],
+        };
+        break;
+      }
+      case 'user_product_delete':
+        next = {
+          ...next,
+          userFoodProducts: next.userFoodProducts.filter((p) => p.id !== op.id),
+          foodLogEntries: next.foodLogEntries.map((e) =>
+            e.user_product_id === op.id ? { ...e, user_product_id: null } : e,
+          ),
+          foodLogFavorites: next.foodLogFavorites.filter((f) => f.user_product_id !== op.id),
         };
         break;
     }

@@ -4,6 +4,8 @@ import type {
   CustomMeal,
   FoodPhotoResponse,
   PhotoLimitState,
+  ProductLookupResponse,
+  UserFoodProduct,
   DataExportFile,
   FoodLogEntry,
   MealPlanWeek,
@@ -398,6 +400,22 @@ export interface Backend {
   analyzeFoodPhoto(input: { image: Uint8Array; note: string | null }): Promise<FoodPhotoResponse>;
   /** Eigenes Gericht löschen – geht immer; eingetragene Tage behalten ihre Werte (Verweis wird leer). */
   deleteCustomMeal(id: string, rows: UserRows): Promise<UserRows>;
+  /**
+   * Produkt per Barcode-Nummer abfragen (Etappe E4a, docs/PLAN-E4.md 3.2). Supabase-Modus: POST
+   * /api/ernaehrung/produkt in apps/web (Nummer im Körper, nie in der Adresse; Login, Einwilligung health_data, Limits
+   * und Feature-Flag prüft der Server; ohne EXPO_PUBLIC_WEB_URL `not_configured`). Testmodus: dieselbe Kette mit der
+   * Attrappe (Testnummern, ausgedachte Testwerte, kein Netz). Antwort Zod-geprüft (`productLookupResponseSchema`);
+   * ohne Verbindung Fehler `network`.
+   */
+  lookupFoodProduct(code: string): Promise<ProductLookupResponse>;
+  /**
+   * Eigenes Produkt anlegen bzw. ganz ersetzen (Etappe E4a, Plan 2.3/3.4). Testmodus: Gerätespeicher mit denselben
+   * Regeln wie save_user_food_product (user-food-product-rows.ts); Supabase-Modus über die Ernährungs-Warteschlange.
+   * Fehler `consent_required`, `user_product_limit`, `user_product_rejected` – ohne Namen und ohne Werte.
+   */
+  saveUserFoodProduct(product: UserFoodProduct, rows: UserRows): Promise<UserRows>;
+  /** Eigenes Produkt löschen – geht immer; eingetragene Tage behalten ihre Werte (Verweis wird leer). */
+  deleteUserFoodProduct(id: string, rows: UserRows): Promise<UserRows>;
   /** Start des Meal-Prep-Kochtags (Timer) setzen bzw. mit null zurücksetzen (Etappe N5b). */
   saveCookDayStart(weekStart: string, startedAt: string | null, rows: UserRows): Promise<UserRows>;
   /** Wartende Trainings und Entwürfe (R6). */
@@ -472,6 +490,14 @@ export type BackendErrorCode =
   | 'custom_meal_limit'
   /** Eigene Gerichte (E2): ungültige Angaben (ohne Namen, ohne Werte gemeldet). */
   | 'custom_meal_rejected'
+  /** Produkt (E4a): nicht (mehr) im Zwischenspeicher bzw. gesperrt – „Produkt neu abrufen“. */
+  | 'food_log_product_unavailable'
+  /** Produkt (E4a, Wächter M1): neue Nutzung einer Nummer zählt wie eine Abfrage – Limit je Stunde/Tag erreicht. */
+  | 'food_log_product_limit'
+  /** Eigene Produkte (E4a): höchstens 200 (USER_FOOD_PRODUCT_LIMITS.maxProducts). */
+  | 'user_product_limit'
+  /** Eigene Produkte (E4a): ungültige Angaben (ohne Namen, ohne Werte gemeldet). */
+  | 'user_product_rejected'
   /** Vorübergehend (Zeitlimit, Sperrkonflikt, Server 5xx, Drosselung) – „bitte gleich noch einmal“. */
   | 'temporary'
   /** Wettkampf abgelehnt (save/cancel/complete/delete_competition) – Grund in `competitionReason`. */

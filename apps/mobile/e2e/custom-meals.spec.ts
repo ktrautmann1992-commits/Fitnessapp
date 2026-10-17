@@ -353,7 +353,7 @@ test('Kalorienzahlen aus (nirgends kcal), ohne Werte, 100 Gerichte, Widerruf lö
   // Widerruf: Hinweis vorher, Gerichte und Tagebuch weg.
   await page.goto('/settings');
   await page.getByRole('button', { name: 'Gesundheitsdaten: Widerrufen' }).click();
-  await expect(page.getByText(/samt Schnelleintrag-Favoriten und eigenen Gerichten/)).toBeVisible();
+  await expect(page.getByText(/samt Schnelleintrag-Favoriten, eigenen Gerichten/)).toBeVisible();
   await page.getByRole('button', { name: 'Tagebuch behalten (empfohlen)' }).click();
   await expect(
     page.getByText('Einwilligung widerrufen. Deine Gesundheitsdaten wurden gelöscht.'),

@@ -54,4 +54,4 @@ export const SITE_DESCRIPTION =
 export const GRATIS_REZEPTE_PDF = '/downloads/Alpha5-Gratis-Rezepte.pdf';
 
 /** Öffentliche Seiten (für die Sitemap). */
-export const PUBLIC_PATHS = ['/', '/impressum', '/datenschutz', '/agb'] as const;
+export const PUBLIC_PATHS = ['/', '/impressum', '/datenschutz', '/agb', '/lizenzen'] as const;

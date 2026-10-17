@@ -32,6 +32,9 @@ import {
   searchFoodLogCatalog,
   type Food,
   type Recipe,
+  entryFromUserProduct,
+  normalizeFoodText,
+  productEntryDisplayTitle,
 } from '@fitnessapp/core';
 import { Redirect, useLocalSearchParams, useRouter, type Href } from 'expo-router';
 import { useMemo, useState, type ReactNode } from 'react';
@@ -50,9 +53,10 @@ import {
   Notice,
   TextField,
 } from '@/components/ui';
+import { BackendError } from '@/data/backend';
 import { newId } from '@/data/create-backend';
 import { entryFromRow } from '@/data/food-log-rows';
-import type { FoodLogEntryRow } from '@/data/types';
+import type { FoodLogEntryRow, UserFoodProductRow } from '@/data/types';
 import { t } from '@/i18n';
 import { recentDetailText } from '@/lib/custom-meal-format';
 import { errorText } from '@/lib/error-text';
@@ -68,6 +72,7 @@ import {
   unitText,
 } from '@/lib/food-log-format';
 import { formatDecimal, parseDecimal } from '@/lib/format';
+import { setProductHandoff } from '@/lib/product-handoff';
 import { useToday } from '@/lib/use-today';
 import { useApp } from '@/state/app-state';
 import { resolveEntryRoute } from '@/state/flow';
@@ -117,8 +122,15 @@ export default function FoodLogEntryScreen() {
   const [pending, setPending] = useState<FoodLogEntry | null>(null);
   const [busy, setBusy] = useState(false);
   const meals = useCustomMeals();
-  const titleOf = (entry: Pick<FoodLogEntry, 'source' | 'custom_meal_id' | 'title_de'>) =>
-    foodLogDisplayTitle(entry, meals);
+  // E4a: Produkt zum erneuten Abrufen, wenn der Zwischenspeicher-Eintrag fehlt (Server: product_unavailable).
+  const [refetch, setRefetch] = useState<{ code: string; amount: number } | null>(null);
+  const userProducts: readonly UserFoodProductRow[] = app.rows?.userFoodProducts ?? [];
+  const titleOf = (
+    entry: Pick<FoodLogEntry, 'source' | 'custom_meal_id' | 'title_de' | 'user_product_id'>,
+  ) =>
+    entry.source === 'product'
+      ? productEntryDisplayTitle(entry, userProducts)
+      : foodLogDisplayTitle(entry, meals);
 
   if (app.status.kind === 'loading') {
     return (
@@ -179,6 +191,7 @@ export default function FoodLogEntryScreen() {
     }
     setBusy(true);
     setMessage(null);
+    setRefetch(null);
     try {
       await actions.save([entry]);
       setLastSaved(editId ? null : entry);
@@ -188,9 +201,23 @@ export default function FoodLogEntryScreen() {
       });
     } catch (error) {
       setMessage({ text: errorText(error), tone: 'danger' });
+      if (
+        error instanceof BackendError &&
+        error.code === 'food_log_product_unavailable' &&
+        entry.product_code !== null &&
+        entry.amount !== null
+      ) {
+        setRefetch({ code: entry.product_code, amount: entry.amount });
+      }
     } finally {
       setBusy(false);
     }
+  }
+
+  /** Produktansicht öffnen (Nummer/eigenes Produkt nur im Arbeitsspeicher, nie in der Adresse). */
+  function openProduct(handoff: { code?: string; ownId?: string; amount?: number }) {
+    setProductHandoff(handoff);
+    router.push(`/ernaehrung/produkt?tag=${date}&platz=${slot}` as Href);
   }
 
   function submit(build: FoodLogBuild) {
@@ -224,6 +251,14 @@ export default function FoodLogEntryScreen() {
         <Notice tone={message.tone} testID="food-log-entry-message">
           {message.text}
         </Notice>
+      ) : null}
+      {refetch ? (
+        <Button
+          label={t.foodProduct.search}
+          variant="secondary"
+          onPress={() => openProduct(refetch)}
+          testID="food-log-product-refetch"
+        />
       ) : null}
       {lastSaved && lastSaved.source !== 'plan_item' && lastSaved.source !== 'custom_meal' ? (
         <Button
@@ -291,6 +326,7 @@ export default function FoodLogEntryScreen() {
   const recent = recentEntries(all);
   const favorites = orderFavorites(rows.foodLogFavorites, all);
   const mealById = (id: string | null) => meals.find((m) => m.id === id) ?? null;
+  const ownById = (id: string | null) => userProducts.find((p) => p.id === id) ?? null;
   const pickCustom = (meal: CustomMeal, portion: number) =>
     submit(entryFromCustomMeal(meal, portion, target()));
   const preselectedRecipe =
@@ -341,6 +377,15 @@ export default function FoodLogEntryScreen() {
           testID="food-log-photo"
         />
       </Card>
+      <Card>
+        <Body muted>{t.foodProduct.openHint}</Body>
+        <Button
+          label={t.foodProduct.open}
+          variant="secondary"
+          onPress={() => openProduct({})}
+          testID="food-log-product"
+        />
+      </Card>
       <ChoiceList
         label={t.foodLog.tabsLabel}
         horizontal
@@ -368,8 +413,11 @@ export default function FoodLogEntryScreen() {
               : recentDetailText(item, meals, showNumbers)
           }
           available={(item) =>
-            item.source !== 'custom_meal' ||
-            ('custom_meal_id' in item && mealById(item.custom_meal_id) !== null)
+            (item.source !== 'custom_meal' ||
+              ('custom_meal_id' in item && mealById(item.custom_meal_id) !== null)) &&
+            (item.source !== 'product' ||
+              item.user_product_id === null ||
+              ownById(item.user_product_id) !== null)
           }
           onPick={(item) => {
             // Eigenes Gericht (E2): neu aus dem aktuellen Gericht mit derselben Portion.
@@ -378,6 +426,16 @@ export default function FoodLogEntryScreen() {
               if (meal) pickCustom(meal, item.portion ?? 1);
               return;
             }
+            // Eigenes Produkt (E4a): neu aus dem aktuellen Produkt mit derselben Menge.
+            if (item.source === 'product' && item.user_product_id !== null) {
+              const own = ownById(item.user_product_id);
+              if (own && item.amount !== null) {
+                submit(entryFromUserProduct(own, item.amount, target()));
+              }
+              return;
+            }
+            // Produkt aus Open Food Facts: gleiche Menge; die Werte rechnet der Server aus dem Zwischenspeicher nach
+            // (fehlt er, kommt „Produkt neu abrufen“).
             submit(entryFromTemplate(templateOf(item), target()));
           }}
         />
@@ -415,15 +473,35 @@ export default function FoodLogEntryScreen() {
           busy={busy}
           testID="food-log-favorites"
           titleOf={titleOf}
-          available={(item) => !('fav_key' in item) || favoriteAvailable(item, library)}
-          onPick={(item) =>
+          favoriteTitleOf={(item) =>
+            item.source === 'product' && item.user_product_id !== null
+              ? (ownById(item.user_product_id)?.name_de ?? item.title_de)
+              : item.title_de
+          }
+          available={(item) =>
+            !('fav_key' in item) ||
+            (item.source === 'product'
+              ? item.user_product_id === null || ownById(item.user_product_id) !== null
+              : favoriteAvailable(item, library))
+          }
+          onPick={(item) => {
+            // E4a: Produkt-Favoriten speichern keine Werte – über die Produktansicht (neu abfragen bzw. eigenes
+            // Produkt) mit der gemerkten Menge.
+            if ('fav_key' in item && item.source === 'product') {
+              openProduct({
+                ...(item.product_code !== null ? { code: item.product_code } : {}),
+                ...(item.user_product_id !== null ? { ownId: item.user_product_id } : {}),
+                ...(item.amount !== null ? { amount: item.amount } : {}),
+              });
+              return;
+            }
             // Favoriten aus Katalog/Rezept speichern keine Werte – neu aus dem Bestand gerechnet (Wächter E1 S1).
             submit(
               'fav_key' in item
                 ? entryFromFavorite(item, library, target())
                 : entryFromTemplate(templateOf(item), target()),
-            )
-          }
+            );
+          }}
         />
       ) : null}
       {tab === 'search' ? (
@@ -431,6 +509,8 @@ export default function FoodLogEntryScreen() {
           foods={library.foods}
           recipes={library.recipes}
           preselectedRecipe={preselectedRecipe}
+          ownProducts={userProducts}
+          onOwnProduct={(id) => openProduct({ ownId: id })}
           busy={busy}
           onQuick={() => setTab('quick')}
           onFood={(food, amount, unit) => submit(entryFromFood(food, amount, unit, target()))}
@@ -463,6 +543,7 @@ function TemplateList({
   busy,
   testID,
   titleOf,
+  favoriteTitleOf = (item) => item.title_de,
   detailOf = (item) => templateDetailText(item, showNumbers),
   available = () => true,
   onPick,
@@ -472,8 +553,10 @@ function TemplateList({
   showNumbers: boolean;
   busy: boolean;
   testID: string;
-  /** Anzeigetitel (eigene Gerichte: Name, E2). */
+  /** Anzeigetitel (eigene Gerichte: Name, E2; eigene Produkte: Name, E4a). */
   titleOf: (item: FoodLogEntryRow) => string;
+  /** Anzeigetitel eines Favoriten (E4a: eigenes Produkt mit Namen). */
+  favoriteTitleOf?: (item: FoodLogFavorite) => string;
   /** Detailzeile (Standard: Werte der Vorlage). */
   detailOf?: (item: FoodLogEntryRow | FoodLogFavorite) => string;
   available?: (item: FoodLogEntryRow | FoodLogFavorite) => boolean;
@@ -491,7 +574,7 @@ function TemplateList({
       {items.map((item, index) => {
         const key = 'fav_key' in item ? item.fav_key : item.id;
         const ok = available(item);
-        const title = 'fav_key' in item ? item.title_de : titleOf(item);
+        const title = 'fav_key' in item ? favoriteTitleOf(item) : titleOf(item);
         // testID nur mit Position – der Schlüssel enthält kcal (Wächter E1 H7, nichts davon ins DOM).
         return (
           <Card key={key}>
@@ -516,6 +599,8 @@ function SearchTab({
   foods,
   recipes,
   preselectedRecipe,
+  ownProducts,
+  onOwnProduct,
   busy,
   onQuick,
   onFood,
@@ -524,6 +609,9 @@ function SearchTab({
   foods: ReadonlyMap<string, Food>;
   recipes: readonly Recipe[];
   preselectedRecipe: Recipe | null;
+  /** E4a: „Deine Produkte“ – nur die eigenen Produkte (nie Produkte aus Open Food Facts, keine Marken anderer). */
+  ownProducts: readonly UserFoodProductRow[];
+  onOwnProduct: (id: string) => void;
   busy: boolean;
   onQuick: () => void;
   onFood: (food: Food, amount: number, unit: FoodLogUnit) => void;
@@ -538,6 +626,12 @@ function SearchTab({
     [foods, query, recipes],
   );
   const searched = query.trim().length >= 2;
+  // „Deine Produkte“ (E4a): nur eigene Produkte nach Namen – eigener Abschnitt, nie im Katalog vermischt.
+  const ownHits = searched
+    ? ownProducts
+        .filter((p) => normalizeFoodText(p.name_de).includes(normalizeFoodText(query.trim())))
+        .slice(0, 10)
+    : [];
   return (
     <View style={{ gap: 8 }} testID="food-log-search">
       <TextField
@@ -566,8 +660,23 @@ function SearchTab({
           onSubmit={(servings) => onRecipe(selected.recipe, servings)}
         />
       ) : null}
+      {selected === null && ownHits.length > 0 ? (
+        <View style={{ gap: 4 }} testID="food-log-search-own-products">
+          <Heading level={2}>{t.foodLog.searchOwnProducts}</Heading>
+          {ownHits.map((product, index) => (
+            <Button
+              key={product.id}
+              label={product.name_de}
+              variant="secondary"
+              disabled={busy}
+              onPress={() => onOwnProduct(product.id)}
+              testID={`food-log-search-own-product-${index}`}
+            />
+          ))}
+        </View>
+      ) : null}
       {searched && selected === null ? (
-        result.foods.length === 0 && result.recipes.length === 0 ? (
+        result.foods.length === 0 && result.recipes.length === 0 && ownHits.length === 0 ? (
           <View style={{ gap: 8 }} testID="food-log-search-none">
             <Body muted>{t.foodLog.searchNone}</Body>
             <Button label={t.foodLog.searchNoneQuick} variant="secondary" onPress={onQuick} />

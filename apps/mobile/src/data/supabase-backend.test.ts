@@ -1576,6 +1576,9 @@ describe('Supabase-Modus: Tagebuch-Warteschlange', () => {
       'admin_actions',
       // Phase 10 S1
       'tracked_routes',
+      // Etappe E4a
+      'user_food_products',
+      'food_product_lookup_counts',
       // Ziele Z3
       'weight_goals',
     ];

@@ -2,6 +2,8 @@
 
 **Status:** **Freigegeben (17.10.2026)** – Gründer-Entscheidung: E4-G1 bis E4-G13 alle „wie empfohlen“ (Abschnitt 10).
 Bau zuerst E4a (Nummer eintippen), danach E4b (Kamera, mit neuem EAS-Build).
+**E4a umgesetzt – Stand 17.10.2026** (Umsetzungsstand E4a am Ende von Abschnitt 8; Feature-Flag aus, Testmodus mit
+Attrappe). E4b (Kamera) folgt.
 
 **Grundlage:** `CLAUDE.md`; `docs/PLAN-AUSWERTUNG.md` Abschnitt 10 (Skizze E4), 2.4, 2.7, 12, 13, 14 (A-G2, A-G9,
 A-G12, A-G14, A-G16) sowie die Umsetzungsstände E1, E2 (Server rechnet nach, fester Titel + Verweis, Widerruf) und E3
@@ -713,6 +715,140 @@ Playwright: Marke in einer testID, Quellenangabe entfernt.
 **E4b (Kamera):** Android/Chrome-Vorschau → „Mit der Kamera scannen“ → Strichcode vor die Kamera → Produkt erscheint.
 iPhone/Safari: mit Polyfill gleich, sonst nur Nummer. App: neuen Build über GitHub-App → Actions → `eas-build` → „Run
 workflow“ → APK installieren bzw. TestFlight → Kamera-Erlaubnis → scannen.
+
+### Umsetzungsstand E4a (17.10.2026)
+
+**Umgesetzt** (Branch `claude/e4a-produkt`): Nummer unter dem Strichcode eintippen → Abfrage über unseren Server bei
+Open Food Facts → Produktansicht → Menge → Eintragen (Herkunft `product`). Noch **ohne Kamera** und ohne neue native
+Abhängigkeit (E4b). Gebaut nach der **dokumentierten** API-Form v2 – aus der Entwicklungsumgebung war
+openfoodfacts.org gesperrt; alle Feldnamen sind in `OPEN_FOOD_FACTS` als **„VOR LIVEGANG PRÜFEN“** markiert, getestet
+wird ausschließlich mit Attrappen (kein echter Netzaufruf in Tests und CI, globales `fetch` in Tests gesperrt).
+
+**Core** (`packages/core`): `nutrition/barcode.ts` (GS1-Prüfziffer, UPC-A → EAN-13, GTIN-14 mit Indikator 0 → EAN-13,
+Laden-/Waagen- und Nicht-Lebensmittel-Präfixe 02x/04x/05x/2xx/977–979/98x–99x sowie EAN-8 mit 0/2 → `not_food`),
+`nutrition/food-product.ts` (Bereinigung, `parseOffAnswer`, `normalizeOffProduct`, zweistufige Prüfung
+`checkProductNutrients` ok/review/blocked inkl. Atwater, kJ↔kcal, Portions-Umrechnung, Ethanol-Dichte, Salz aus
+Natrium; Einträge `entryFromProduct`/`entryFromUserProduct`, Server-Spiegel `serverProductEntry`,
+`rebuildProductEntry`; eigene Produkte mit Zod), `nutrition/food-product-lookup.ts` (Ablauf der Route
+`runProductLookup` ohne Next/Netz, Speicher-Zeile, Limits, Attrappe `MOCK_PRODUCT_CASES` mit 9 Testnummern
+`400999900001x`). Grenzen in `constants.ts`: `OPEN_FOOD_FACTS`, `FOOD_PRODUCT_LOOKUP_LIMITS` (60/Std., 200/Tag,
+global 10/Min., 30/90 Tage, „nicht gefunden“ 1 Tag), `FOOD_PRODUCT_CHECK`, `USER_FOOD_PRODUCT_LIMITS` (200 Produkte) –
+je mit Quelle bzw. PRODUKTENTSCHEIDUNG.
+
+**Web** (`apps/web`): `POST /api/ernaehrung/produkt` (Region fra1, 15 s): CORS nur eigene App, **Login vor dem Lesen
+des Körpers**, Körper ≤ 256 Byte (Nummer nur im Körper, nie in der URL/im Log), Einwilligung `health_data` (E4-G12),
+Limits atomar in der Datenbank, Anfrage an OFF nur mit `User-Agent: Alpha5/0.1.0 (<OFF_CONTACT_EMAIL>)` + `Accept`
+(keine Nutzer-ID, kein Token, keine Weiterleitung, 6 s, ≤ 512 KB), 429/503 → 5 Minuten Pause. Ohne
+`OFF_CONTACT_EMAIL` → `not_configured`, **nie** eine Anfrage. Seite `/lizenzen` (ODbL/DbCL, BLS), Link im Fuß und im
+Impressum, Datenschutzerklärung Abschnitt 8 „Produktabfrage“ (Entwurf).
+
+**Datenbank** (rein additiv, Zeitstempel ab `20261017100000` statt der im Plan genannten `20261016200000`):
+`20261017100000_food_products.sql` (Speicher ohne Personenbezug, RLS ohne Policy, nur `service_role`; Zähler je Person
+und Stunde **ohne Nummer**; globaler Deckel; Flag `food_product_lookup` **aus**; `food_product_lookup`,
+`food_product_upsert`, `food_product_off_backoff`; Aufräumen per pg_cron `food-products-retention` (02:37 UTC) und beim
+Zugriff; Flag über `beta_admin(..., p_flag => 'food_product_lookup')`), `20261017100100_user_food_products.sql`
+(eigene Produkte, RLS, `save_/delete_user_food_product`, höchstens 200), `20261017100200_food_log_product.sql`
+(Herkunft `product`, `product_code`/`user_product_id`, Favoriten `product`/`own_product` nur als Verweis + Menge,
+`save_food_log_entries` als echte Obermenge mit `product_unavailable`), `20261017100300_food_product_revoke_export.sql`
+(Widerruf löscht eigene Produkte und Produkt-Favoriten, Export + `user_food_products` und eigene Zähler).
+
+**App** (`apps/mobile`): Ernährung → Eintragen → Karte „Produkt (Barcode)“ (`/ernaehrung/produkt`), alle Zustände aus
+2.1 (laden, nicht gefunden, unbrauchbar, „Werte prüfen“ mit Pflicht-Haken, Ladencode, offline, Limit Stunde/Tag, nicht
+erreichbar, nicht eingeschaltet, keine Einwilligung); eigene Produkte zuerst (auch offline); „Eigenes Produkt
+anlegen“ vorausgefüllt (Name/Marke/Nummer, Werte nur wenn nicht gesperrt); Verwaltung unter Ernährung → Eigene
+Gerichte → „Eigene Produkte“ (`/ernaehrung/produkte`); Zuletzt/Favoriten mit Marke; „Produkt neu abrufen“, wenn die
+Speicher-Zeile fehlt; Einstellungen → „Lizenzen und Quellen“. Testmodus: Attrappe im Gerät mit Testnummern-Liste.
+„Kalorienzahlen aus“: keine Zahlen, keine eigenen Produkte (E4-G8).
+
+**Präzisierungen gegenüber dem Plan** (bitte im Wächter bestätigen):
+
+1. Werte vom Server über eine **neue** Funktion `private.food_log_product_values` statt einer Erweiterung von
+   `private.food_log_server_values` (die bleibt unverändert; `save_food_log_entries` ist Obermenge und ruft beide).
+2. Flag `food_product_lookup` ist **global** (gratis, keine Freischaltung je Person); `beta-grant` lehnt
+   `freischalten`/`entziehen` dafür ab, `status` zeigt nur Summen.
+3. Eigene Produkte werden über einen Knopf in „Eigene Gerichte“ verwaltet (kein eigener Reiter im Eintragen).
+4. Zusätzliche Präfixe 04x/05x (GS1: firmeninterne Nummern, Gutscheine) als `not_food`.
+5. Funktionsnamen: `public.food_product_lookup(uid, code)` (Einwilligung → Limits → Speicher → Reservierung beim
+   globalen Deckel) und `public.food_product_off_backoff()` statt `food_product_lookup_reserve`/`off_request_backoff`.
+6. Texte in `apps/mobile/src/i18n/de-food-product.ts` (statt `de-nutrition.ts`); Testmodus hat keinen globalen
+   Deckel (Attrappe im Gerät).
+7. Attrappe: kein Link „Bei Open Food Facts ansehen“ (ausgedachte Testnummern); der Link mit IP-Hinweis erscheint nur
+   bei echten Antworten.
+
+**Tests:** Core 4.702 (davon 121 in `food-product.test.ts` mit Eigenschaftstests, `db-sync.test.ts` 397), Web 186
+(davon 29 in `food-product/handler.test.ts`), App 672 (davon 17 in `food-product.test.ts`), pgTAP 39 Dateien/2.131
+Tests (neu 39–41, angepasst 17 und 30), Playwright komplett 107 grün, darunter neu `food-product.spec.ts` (3 Tests, 5×
+wiederholt stabil), `history.spec.ts` (Export jetzt 38 Tabellen), `nutrition-food-log`/`custom-meals` (neuer
+Widerrufstext). Harness: Kreuzvergleich Core ↔ SQL (3 Läufe, zusammen 7.776 Fälle, 0 Abweichungen);
+Nebenläufigkeit: 10 gleichzeitige Abfragen beim Zähler 59 → genau 1 erlaubt (Zähler 60); 20 Personen gleichzeitig →
+genau 10 Anfragen an OFF; Widerruf während `save_user_food_product` wartet (2,6 s) und löscht danach.
+
+**Gegenproben (gebrochen → rot → zurückgesetzt):** Core: kcal-Grenze 905 → 2.000, EAN-8 mit 2 abgefragt,
+Einheiten-Prüfung in `serverProductEntry` entfernt, Obermenge `save_food_log_entries` (Zeile entfernt → db-sync rot).
+Web: Kontaktadresse nicht geprüft, Körper 4 KB erlaubt. pgTAP: Einwilligung nicht geprüft, Policy + Leserecht auf
+`food_products`, Limit 205 statt 200, Widerruf ohne Löschen eigener Produkte, Gerätewerte übernommen. App: Widerruf
+ohne Löschen der Produkt-Favoriten (Test erst ergänzt, weil er grün blieb). Harness: Kreuzvergleich mit geändertem
+Titel-Trenner (287 Abweichungen) bzw. Rundung (746); ohne Advisory-Sperre → 5 Abfragen scheitern erst an der
+CHECK-Grenze statt sauber „Limit“; ohne `FOR SHARE` → Widerruf wartet nicht, eigenes Produkt bleibt. Playwright:
+„Eintragen“ ohne Haken bei „Werte prüfen“ möglich → rot; Marke in einer testID → rot; dabei gefunden: die Testnummer
+„kJ als kcal“ brachte „kcal“ in DOM und testID bei „Zahlen aus“ → umbenannt in „Energie-Einheiten vertauscht“.
+
+**Offen / vor dem Livegang:** API-Felder und Nutzungsbedingungen von Open Food Facts prüfen (SETUP Teil M4);
+Lizenz-Hinweis, Datenschutz-Abschnitt und Einwilligungstext `health_data` (nennt Produkte noch nicht ausdrücklich)
+juristisch prüfen; `database.types.ts` per Workflow `db-types` gegenprüfen; E4b (Kamera).
+
+### Nachtrag Wächter-Prüfung E4a (17.10.2026): Auflagen umgesetzt bzw. vorgemerkt
+
+Urteil „Freigabe mit Auflagen“. Stand nach dem Merge von `main` (WP4 #89, content-review #91):
+
+- **M1 umgesetzt – Speicher nicht an den Limits vorbei auslesbar.** Neue Migration
+  `20261017100400_food_product_use_limit.sql`: Jede **neue** Nutzung einer Nummer zählt wie eine Abfrage auf
+  `private.food_product_lookup_counts` (ohne Nummer), nämlich ein neuer Produkt-Eintrag, eine geänderte Nummer an einem
+  Eintrag und ein neuer Produkt-Favorit. Nicht gezählt werden: Menge/Mahlzeit ändern, vorhandenen Favoriten erneut
+  setzen, eigene Produkte. Beim Limit (60/Stunde, 200/Tag) wird der Eintrag mit dem neuen Code `product_limit`
+  abgelehnt (App: „sehr viele Produkte abgefragt bzw. eingetragen …“) bzw. der Favorit nicht gespeichert – ohne Titel
+  oder Werte aus dem Speicher. Umgesetzt als Trigger (`private.food_product_charge`, Advisory-Sperre
+  `food_product_lookup|<Person>`); Sperr-Reihenfolge Einwilligung → `food_log|<Person>` → `food_product_lookup|<Person>`.
+  `save_food_log_entries` (20261017100200, noch nicht eingespielt) übersetzt die Meldung in `product_limit`. Gewählt
+  wurde „zählen“ statt „nur nach eigener Abfrage der letzten 90 Tage“: Das braucht keine personenbezogene Liste
+  abgefragter Nummern. **Folge (Gründer-Info):** Nachschlagen und Eintragen zählen zusammen, praktisch also etwa 30
+  verschiedene Produkte pro Stunde bzw. 100 pro Tag. Der Testmodus rechnet gleich (`chargeProductUse`,
+  `isNewProductUse` im Core). Tests: pgTAP `44_food_product_use_limit.test.sql` (19), Core, App. Gegenproben:
+  Eintrag bzw. Favorit zählt nicht, Upsert zählt doppelt, Menge ändern zählt, Code nicht übersetzt, App ohne
+  „neu?“-Prüfung → jeweils rot.
+- **N1 umgesetzt:** Die Route misst die OFF-Felder in UTF-8-Bytes (`offFieldsBytes`, TextEncoder) gegen
+  `offFieldsCheckBytes` 14 KB – Puffer zur Datenbank-Grenze von 16 KB, deren jsonb-Textform länger ist. Gegenprobe:
+  Messung in Zeichen → Emoji-Antwort wird gespeichert → rot.
+- **N2 umgesetzt:** `AbortSignal.timeout(5000)` für jeden Supabase-Aufruf der Route (`supabaseTimeoutMs`). Die App
+  wartet auf die Route höchstens `clientTimeoutMs` 16 s und meldet dann „bitte gleich noch einmal“. Hier bewusst nicht
+  5 s, weil die Route selbst bis zu 6 s auf OFF wartet und `maxDuration` 15 s hat. Gegenprobe: Signal entfernt → rot.
+- **N4 umgesetzt:** `retrieved_at` im gemeinsamen Speicher nur stundengenau (Core `recordFromProduct`/
+  `notFoundRecord` und `food_product_upsert` mit `date_trunc('hour', …)`). Bei der Rechtsprüfung trotzdem den Satz
+  „ohne Bezug zu Personen“ in Datenschutz-Abschnitt 8 prüfen (bei sehr wenig Nutzung bleibt eine grobe zeitliche
+  Zuordnung denkbar).
+- **Vorgemerkt (nicht umgesetzt):**
+  - **N3:** `not_configured` (503) kommt vor der Login-Prüfung; der Konfigurationsstand ist also ohne Login
+    sichtbar. Unkritisch – bei Gelegenheit die Reihenfolge Login → Konfiguration tauschen.
+  - **N5:** In der Offline-Warteschlange kann ein Tagebuch-Eintrag vor dem erneut gespeicherten eigenen Produkt beim
+    Server ankommen. Er verliert dann nur den Verweis (fester Titel, Gerätewerte), Daten gehen nicht verloren. Gleiches
+    Muster wie bei eigenen Gerichten; später gemeinsam lösen.
+  - **N6:** `database.types.ts` ist von Hand ergänzt – vor dem Merge den Workflow `db-types` laufen lassen.
+  - **N7:** Der Einwilligungstext `health_data` nennt Produkte und Nummern noch nicht. Vor dem Einschalten des Flags
+    anpassen (neue Fassung) und rechtlich prüfen.
+- **H1 umgesetzt (nach dem Merge von Z3, PR #92):** Neue Migration `20261017210000_revoke_export_union.sql` mit
+  Zeitstempel nach beiden Vorgängern. Sie fasst `private.consents_after_revoke()` und `public.export_my_data()` als
+  **Vereinigung** von E4a (`20261017100300`) und Z3 (`20261017200200`) neu; die Vorgänger bleiben unverändert.
+  - Der Widerruf löscht `weight_goals`, `user_food_products` und die Produkt-Favoriten, jeweils am Anfang und in der
+    Wiederholung.
+  - Der Export enthält `user_food_products`, `food_product_lookup_counts` und `weight_goals`.
+  - Der Kommentar von `user_food_products` beginnt jetzt mit „SENSIBEL (Art. 9 vorsorglich, Freitext)“; der
+    SENSIBEL-Test von Z3 führt die Tabelle damit in der Liste der ganz gelöschten Tabellen.
+  - `db-sync.test.ts` prüft die Obermenge gegen **beide** Vorgänger.
+  - pgTAP `45_revoke_export_union.test.sql` (14 Tests): Widerruf löscht beides, fremde Daten bleiben, Export.
+  - Das E4a-pgTAP `43_food_product_use_limit` heißt jetzt `44_…` (Nummer 43 hat Z3).
+  - App: Export jetzt 39 Tabellen; Widerruf im Gerät löscht `userFoodProducts` und `weightGoal`.
+  - Gegenproben: Löschung von `weight_goals` bzw. `user_food_products` aus der Vereinigung entfernt → pgTAP und
+    db-sync rot.
 
 ---
 

@@ -470,6 +470,8 @@ export function entryFromCustomMeal(
     food_id: null,
     recipe_id: null,
     custom_meal_id: meal.id,
+    product_code: null,
+    user_product_id: null,
     title_de: CUSTOM_MEAL_ENTRY_TITLE,
     amount: null,
     unit: null,
@@ -533,6 +535,26 @@ export function rebuildEntry(
 ): FoodLogBuild {
   if ('amount' in change ? change.amount === entry.amount : change.portion === entry.portion) {
     return { ok: true, entry };
+  }
+  if (entry.source === 'product') {
+    // E4a: Produkt-Einträge ändern nur die Menge (g/ml); hier verhältnisgleich aus dem Schnappschuss – mit dem Produkt
+    // aus Speicher bzw. eigenem Produkt rechnet `rebuildProductEntry` (food-product.ts), endgültig der Server.
+    if (!('amount' in change) || entry.amount === null || entry.unit === null) {
+      return { ok: false, reason: 'invalid' };
+    }
+    if (entry.unit === 'piece' || !isValidFoodLogAmount(change.amount, entry.unit)) {
+      return { ok: false, reason: 'amount' };
+    }
+    const factor = change.amount / entry.amount;
+    const s = (v: number | null) => (v === null ? null : round1(v * factor));
+    return finishFoodLogEntry({
+      ...entry,
+      amount: change.amount,
+      kcal: entry.kcal === null ? null : Math.round(entry.kcal * factor),
+      protein_g: s(entry.protein_g),
+      carbs_g: s(entry.carbs_g),
+      fat_g: s(entry.fat_g),
+    });
   }
   const target = { id: entry.id, date: entry.eaten_on, slot: entry.slot };
   // Titel (und bei Foto-Bestandteilen die Herkunft 'photo', E3) bleiben beim Neu-Rechnen erhalten.

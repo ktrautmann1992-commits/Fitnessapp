@@ -630,6 +630,45 @@ Erreichen „Für heute sind keine Fotos mehr möglich, ab morgen wieder“ bzw.
 **Hinweis:** In der App auf dem Handy (APK/TestFlight) geht in dieser Testversion nur „Beispielfoto verwenden“ (im
 Testmodus); die echte Kamera-Auswahl braucht ein neues Paket und einen neuen Build (offener Punkt E3).
 
+## Teil 7k – Produkt per Barcode-Nummer testen (Etappe E4a, Testmodus mit Attrappe)
+
+„Produkt (Barcode)“ ist **gratis und ohne KI**. Noch **ohne Kamera** – man tippt die Nummer unter dem Strichcode ein.
+Im **Testmodus** antwortet eine **Attrappe** im Handy mit ausgedachten Testwerten (keine Daten von Open Food Facts,
+kein Netz nötig). Ihr müsst **nichts einstellen**. Für Konten ist die Funktion nach dem Merge zunächst **aus** (SETUP
+Teil M).
+
+1. Vorschau-Link aus dem Pull Request öffnen → Testmodus mit dem Testkonto aus Teil 7c (Einwilligung Gesundheitsdaten
+   erteilt) → **Ernährung** → **„Eintragen“** → Karte **„Produkt (Barcode)“**.
+2. Unter dem Eingabefeld steht **„Testnummern (nur im Testmodus)“**. Auf **„Gefunden, Werte plausibel: …“** tippen →
+   **„Produkt suchen“** → „Testprodukt Müsli (Testwerte)“ mit Nährwerten je 100 g, Hinweis „Testmodus: Antwort einer
+   Attrappe …“ und unten die Quelle „Produktdaten: Open Food Facts …, Lizenz ODbL 1.0“.
+3. **„1 Portion (50 g)“** → Mahlzeit wählen → **„Eintragen“** → „Eingetragen.“ → **„Fertig“** → im Tagesverlauf steht
+   der Eintrag mit 190 kcal.
+4. Wieder „Produkt (Barcode)“ → **„Werte prüfen“** → gelber Hinweis; „Eintragen“ geht erst nach dem Haken **„Ich habe
+   die Werte mit der Packung verglichen“**.
+5. **„Werte unbrauchbar“** → „Für dieses Produkt fehlen verlässliche Nährwerte“ → **„Eigenes Produkt anlegen“**: Name
+   und Nummer sind schon ausgefüllt → Werte von einer echten Packung eintragen → **„Speichern“** → eintragen.
+6. **„Nicht gefunden“** → „Dieses Produkt kennen wir noch nicht.“ → eigenes Produkt anlegen (z. B. „Hofjoghurt“, 70
+   kcal, 4 / 5 / 3,5 g, Portion 150) → „Eintragen“. Dieselbe Nummer noch einmal → es erscheint direkt **„Dein eigenes
+   Produkt mit dieser Nummer“** (ohne Abfrage).
+7. Eine Nummer mit einer falschen letzten Ziffer (z. B. `4000000000010`) → „Die Nummer stimmt nicht“. Eine Nummer, die
+   mit 2 beginnt (z. B. `2012345678903`, Frischetheke) → „Dieser Code gilt nur im Laden …“.
+8. **„Zeitlimit“** bzw. **„Open Food Facts überlastet“** → ruhiger Hinweis „gerade nicht erreichbar“, eigenes Produkt
+   als Ausweg.
+9. **Flugmodus an** → „Produkt suchen“ → „Für die Produktabfrage brauchst du Internet …“; eigene Produkte gehen weiter.
+10. **Ernährung → Eigene Gerichte → „Eigene Produkte“**: Liste (z. B. „1 von 200 Produkten“), Ändern, Löschen.
+11. **Einstellungen → „Lizenzen und Quellen“**: Hinweise zu Open Food Facts (ODbL/DbCL) und zum
+    Bundeslebensmittelschlüssel. Auf der Website steht dieselbe Seite unter `/lizenzen` (Link im Fuß).
+12. **Einstellungen → Kalorienzahlen anzeigen** aus: Produkte zeigen keine Zahlen („Nährwerte ausgeblendet“),
+    eintragen geht weiter; eigene Produkte anlegen geht dann nicht.
+13. **Einstellungen → Gesundheitsdaten → „Widerrufen“**: Der Hinweis nennt jetzt auch „eigenen Produkten und
+    Produkt-Favoriten“ – danach sind beide weg.
+
+**Mit Konto (später, SETUP Teil M):** Vercel-Variable `OFF_CONTACT_EMAIL` eintragen und Flag per **beta-grant**
+(`flag_an`, `food_product_lookup`) einschalten → eine Packung aus dem Schrank nehmen, die 13 Ziffern eintippen → Name,
+Marke und Werte mit der Packung vergleichen → eintragen. Dieselbe Nummer noch einmal kommt sofort aus dem
+Zwischenspeicher. Ohne die Variable bzw. mit Flag aus zeigt die App „Die Produktabfrage ist noch nicht eingeschaltet“.
+
 ## Teil 7g – „Dein Tag“ testen (Etappe A2, Testmodus)
 Die Tagesauswertung braucht keine Einstellung und keine Datenbank-Änderung. Das Essen erscheint vorerst nur im
 **Testmodus** (mit Konto folgt es mit N7 Teil 2), der Trainingsteil geht in beiden Modi.

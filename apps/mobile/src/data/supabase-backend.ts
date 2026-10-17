@@ -3,6 +3,8 @@ import {
   buildDataExportFile,
   customMealPayloadSchema,
   customMealSaveResultSchema,
+  userFoodProductPayloadSchema,
+  userFoodProductSaveResultSchema,
   evaluateHealthScreening,
   type FoodLogEntry,
   foodLogPayloadEntrySchema,
@@ -40,6 +42,8 @@ import {
 } from './backend';
 import { DraftStore } from './draft-store';
 import { createRemoteFoodPhoto } from './food-photo-remote';
+import { createRemoteFoodProduct } from './food-product-remote';
+import { applyUserFoodProductDelete, checkUserFoodProductSave } from './user-food-product-rows';
 import { readJson, STORAGE_KEYS, writeJson, type KeyValueStore } from './kv';
 import { upgradeStoredRows } from './legacy-rows';
 import { type ConsentVersions, versionsFromDocuments } from './mapping';
@@ -84,6 +88,7 @@ import {
   applyNutritionQueue,
   checkedOnlyChanges,
   customMealRowsFromDb,
+  userFoodProductRowsFromDb,
   type DbContentRow,
   type DbMealPlan,
   type DbMealPlanItem,
@@ -781,6 +786,8 @@ function foodLogRejectCode(reason: NutritionRejectReason): BackendErrorCode {
   if (reason === 'consent_required') return 'consent_required';
   if (reason === 'out_of_range') return 'food_log_out_of_range';
   if (reason === 'day_full') return 'food_log_day_full';
+  if (reason === 'product_unavailable') return 'food_log_product_unavailable';
+  if (reason === 'product_limit') return 'food_log_product_limit';
   return 'food_log_rejected';
 }
 
@@ -788,6 +795,12 @@ function customMealRejectCode(reason: NutritionRejectReason): BackendErrorCode {
   if (reason === 'consent_required') return 'consent_required';
   if (reason === 'limit') return 'custom_meal_limit';
   return 'custom_meal_rejected';
+}
+
+function userProductRejectCode(reason: NutritionRejectReason): BackendErrorCode {
+  if (reason === 'consent_required') return 'consent_required';
+  if (reason === 'limit') return 'user_product_limit';
+  return 'user_product_rejected';
 }
 
 /** Spalten von meal_plan_items, die die App liest (= Felder der Payload). */
@@ -993,7 +1006,11 @@ export function createSupabaseBackend(options: SupabaseBackendOptions): Backend 
               ? 'out_of_range'
               : first.code === 'day_full'
                 ? 'day_full'
-                : 'invalid',
+                : first.code === 'product_unavailable'
+                  ? 'product_unavailable'
+                  : first.code === 'product_limit'
+                    ? 'product_limit'
+                    : 'invalid',
         };
       }
       case 'food_log_delete': {
@@ -1026,6 +1043,28 @@ export function createSupabaseBackend(options: SupabaseBackendOptions): Backend 
       }
       case 'custom_meal_delete': {
         const { error, status } = await client.rpc('delete_custom_meal', { p_id: op.id });
+        if (error) return nutritionSendErrorResult({ ...error, status });
+        return { kind: 'done' };
+      }
+      case 'user_product_save': {
+        const payload = userFoodProductPayloadSchema.safeParse({
+          ...op.product,
+          write_id: op.writeId,
+          base_revision: op.baseRevision,
+        });
+        if (!payload.success) return { kind: 'rejected', reason: 'invalid' };
+        const { data, error, status } = await client.rpc('save_user_food_product', {
+          p_product: toJson(payload.data),
+        });
+        if (error) return nutritionSendErrorResult({ ...error, status });
+        const parsed = userFoodProductSaveResultSchema.safeParse(data);
+        if (!parsed.success) return { kind: 'transient' };
+        if (parsed.data.result === 'saved') return { kind: 'done' };
+        if (parsed.data.result === 'conflict') return { kind: 'rejected', reason: 'conflict' };
+        return { kind: 'rejected', reason: parsed.data.code === 'limit' ? 'limit' : 'invalid' };
+      }
+      case 'user_product_delete': {
+        const { error, status } = await client.rpc('delete_user_food_product', { p_id: op.id });
         if (error) return nutritionSendErrorResult({ ...error, status });
         return { kind: 'done' };
       }
@@ -1464,7 +1503,7 @@ export function createSupabaseBackend(options: SupabaseBackendOptions): Backend 
    */
   async function fetchNutritionRows(userId: string): Promise<NutritionRows> {
     const cutoff = mealPlanRetentionStart(today());
-    const [plans, lists, entries, favorites, meals] = await Promise.all([
+    const [plans, lists, entries, favorites, meals, userProducts] = await Promise.all([
       client
         .from('meal_plans')
         .select(
@@ -1491,8 +1530,10 @@ export function createSupabaseBackend(options: SupabaseBackendOptions): Backend 
         .then(emptyIfMissing),
       client.from('food_log_favorites').select('*').eq('user_id', userId).then(emptyIfMissing),
       client.from('custom_meals').select('*').eq('user_id', userId).then(emptyIfMissing),
+      // Eigene Produkte (Etappe E4a) – Tabelle fehlt vor db-migrate: leer.
+      client.from('user_food_products').select('*').eq('user_id', userId).then(emptyIfMissing),
     ]);
-    for (const result of [plans, lists, entries, favorites, meals]) {
+    for (const result of [plans, lists, entries, favorites, meals, userProducts]) {
       if (result.error) throw result.error;
     }
     const planRows = (plans.data ?? []) as unknown as DbMealPlan[];
@@ -1538,6 +1579,9 @@ export function createSupabaseBackend(options: SupabaseBackendOptions): Backend 
         (favorites.data ?? []) as unknown as Record<string, unknown>[],
       ),
       ...customMealRowsFromDb(mealRows, mealItems),
+      userFoodProducts: userFoodProductRowsFromDb(
+        (userProducts.data ?? []) as unknown as Record<string, unknown>[],
+      ),
     };
   }
 
@@ -1708,6 +1752,8 @@ export function createSupabaseBackend(options: SupabaseBackendOptions): Backend 
     // Übungs-Präferenzen erst mit Etappe T3 (Tabelle exercise_preferences) – bis dahin nur „Nur heute“ (8.2).
     supportsExercisePreferences: false,
     // Gericht per Foto (Etappe E3): Freischaltung, Kontingent und Auswertung über apps/web.
+    // Produktabfrage (Etappe E4a): über apps/web (Nummer im Körper; Flag, Einwilligung, Limits prüft der Server).
+    ...createRemoteFoodProduct({ client, webUrl: options.webUrl ?? null }),
     ...createRemoteFoodPhoto({
       client,
       webUrl: options.webUrl ?? null,
@@ -2209,7 +2255,7 @@ export function createSupabaseBackend(options: SupabaseBackendOptions): Backend 
           change.op === 'set' && rows.foodLogFavorites.length >= 100
             ? 'favorite_limit'
             : change.op === 'set' &&
-                change.favorite.source === 'quick' &&
+                (change.favorite.source === 'quick' || change.favorite.source === 'product') &&
                 healthConsentStatus(rows, versions) !== 'valid'
               ? 'consent_required'
               : 'unknown',
@@ -2265,6 +2311,44 @@ export function createSupabaseBackend(options: SupabaseBackendOptions): Backend 
         applyCustomMealDelete(rows, id),
         [queued],
         'custom_meal',
+      );
+    },
+    // Eigene Produkte (Etappe E4a): Regeln wie im Testmodus vorab, dann über die Ernährungs-Warteschlange an
+    // save_user_food_product (offline möglich). Name, Marke und Werte nie in Meldungen oder Logs.
+    saveUserFoodProduct: async (product, rows) => {
+      const session = await requireSession();
+      const versions = await requireVersions();
+      const check = checkUserFoodProductSave(rows, product, { versions });
+      if (!check.ok) {
+        throw new BackendError(
+          check.reason === 'consent_required'
+            ? 'consent_required'
+            : check.reason === 'limit'
+              ? 'user_product_limit'
+              : 'user_product_rejected',
+          { sensitive: true },
+        );
+      }
+      const existing = rows.userFoodProducts.find((p) => p.id === check.product.id);
+      const queued = await enqueueNutrition(
+        {
+          kind: 'user_product_save',
+          product: check.product,
+          writeId: options.newId(),
+          baseRevision: existing !== undefined && existing.revision > 0 ? existing.revision : null,
+        },
+        session.userId,
+      );
+      return finishNutritionWrite(session.userId, rows, [queued], 'user_product');
+    },
+    deleteUserFoodProduct: async (id, rows) => {
+      const session = await requireSession();
+      const queued = await enqueueNutrition({ kind: 'user_product_delete', id }, session.userId);
+      return finishNutritionWrite(
+        session.userId,
+        applyUserFoodProductDelete(rows, id),
+        [queued],
+        'user_product',
       );
     },
     nutritionSync: async () => {
@@ -2488,7 +2572,7 @@ export function createSupabaseBackend(options: SupabaseBackendOptions): Backend 
     userId: string,
     displayRows: UserRows,
     queued: { key: string; sentDirectly: NutritionSendResult | null }[],
-    area: 'food_log' | 'custom_meal',
+    area: 'food_log' | 'custom_meal' | 'user_product',
   ): Promise<UserRows> {
     const fromQueue = queued.filter((q) => q.sentDirectly === null).map((q) => q.key);
     for (const key of fromQueue) nutritionQueue.lastResults.delete(key);
@@ -2514,6 +2598,7 @@ export function createSupabaseBackend(options: SupabaseBackendOptions): Backend 
             foodLogFavorites: fresh.foodLogFavorites,
             customMeals: fresh.customMeals,
             customMealItems: fresh.customMealItems,
+            userFoodProducts: fresh.userFoodProducts,
           },
           userId,
         );
@@ -2524,7 +2609,11 @@ export function createSupabaseBackend(options: SupabaseBackendOptions): Backend 
     await writeCache(userId, next);
     if (rejection !== null) {
       throw new BackendError(
-        area === 'food_log' ? foodLogRejectCode(rejection) : customMealRejectCode(rejection),
+        area === 'food_log'
+          ? foodLogRejectCode(rejection)
+          : area === 'custom_meal'
+            ? customMealRejectCode(rejection)
+            : userProductRejectCode(rejection),
         { sensitive: true },
       );
     }

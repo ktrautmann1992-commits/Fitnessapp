@@ -204,9 +204,14 @@ export function isSensitiveOp(op: WriteOp): boolean {
     case 'set_cook_day_start':
       return op.usesHealthData;
     case 'upsert_food_log_favorite':
-      return op.row.source === 'quick';
+      // E4a: Produkt-Favoriten (Marken verraten Konsum) wie Schnell-Favoriten – nur mit Einwilligung, sensibel.
+      return op.row.source === 'quick' || op.row.source === 'product';
     case 'delete_food_log_favorite':
-      return op.favKey.startsWith('quick|');
+      return (
+        op.favKey.startsWith('quick|') ||
+        op.favKey.startsWith('product|') ||
+        op.favKey.startsWith('own_product|')
+      );
     default:
       return false;
   }
@@ -689,11 +694,16 @@ export function applyHealthDataRevocation(
     // Ernährungstagebuch (Etappe E1, A-G12): alle Einträge; Schnell-Favoriten (Bezeichnung + kcal) gehen mit
     // (Wächter E1 G1), Katalog-/Rezept-Favoriten bleiben (A-G14) – wie consents_after_revoke.
     foodLogEntries: [],
-    foodLogFavorites: rows.foodLogFavorites.filter((f) => f.source !== 'quick'),
+    // E4a (E4-G10): Produkt-Favoriten (Marken verraten Konsum) gehen ebenfalls mit.
+    foodLogFavorites: rows.foodLogFavorites.filter(
+      (f) => f.source !== 'quick' && f.source !== 'product',
+    ),
     // Eigene Gerichte (Etappe E2): Name = Freitext, Werte selbst eingegeben – sichere Voreinstellung wie die
     // Schnell-Favoriten: gelöscht, samt Zutaten (wie consents_after_revoke).
     customMeals: [],
     customMealItems: [],
+    // Eigene Produkte (Etappe E4a, E4-G10): Name/Marke = Freitext – gelöscht wie eigene Gerichte.
+    userFoodProducts: [],
     // Wettkämpfe (Phase 10): der Wettkampf bleibt (kein Gesundheitsdatum, W-G15), der Plan-Bezug wird geleert – wie
     // private.consents_after_revoke.
     competitions: rows.competitions.map(withoutPlanBasis),
