@@ -747,6 +747,42 @@ Teil M).
 Marke und Werte mit der Packung vergleichen → eintragen. Dieselbe Nummer noch einmal kommt sofort aus dem
 Zwischenspeicher. Ohne die Variable bzw. mit Flag aus zeigt die App „Die Produktabfrage ist noch nicht eingeschaltet“.
 
+## Teil 7l – Strichcode mit der Kamera scannen (Etappe E4b)
+
+Neu auf „Produkt (Barcode)“: der Knopf **„Mit der Kamera scannen“**. Er erscheint nur, wenn euer Gerät es kann. Die
+Kamerabilder bleiben auf dem Handy und werden nicht gespeichert oder gesendet – weiter geht nur die Nummer. Danach läuft
+alles wie beim Eintippen (Teil 7k). Im Testmodus findet die Attrappe nur die Testnummern; zum Ausprobieren eignet sich
+deshalb ein Strichcode einer **Testnummer** (z. B. aus der Liste auf einem zweiten Bildschirm) oder einer echten Packung
+(dann kommt im Testmodus „Dieses Produkt kennen wir noch nicht“ – das zeigt, dass die Nummer erkannt wurde).
+
+**iPhone, Chrome (Vorschau-Link):**
+
+1. Vorschau-Link aus dem Pull Request in **Chrome** öffnen → Testmodus → **Ernährung** → **„Eintragen“** →
+   **„Produkt (Barcode)“** → **„Mit der Kamera scannen“**.
+2. Beim ersten Mal fragt das iPhone nach der Kamera → **„Erlauben“**. Der Leser lädt kurz (etwa 1 MB, nur beim
+   ersten Mal) – „Kamera startet …“.
+3. Strichcode in den Rahmen halten (gut beleuchtet, 10–20 cm Abstand) → die Kamera geht von selbst aus, die Nummer steht
+   im Feld, das Produkt bzw. der passende Hinweis erscheint.
+4. **„Abbrechen und Nummer eintippen“** schließt die Kamera.
+5. Erlaubnis verweigern: Es kommt „Ohne Kamera-Erlaubnis kannst du die Nummer eintippen“ mit dem Weg zur Einstellung.
+   Wieder erlauben: **iPhone-Einstellungen → Chrome → Kamera** einschalten, danach die Seite neu laden. (In Safari
+   geht es gleich; dort: Einstellungen → Safari → Kamera.)
+
+**Android, Chrome (Vorschau-Link):** gleiche Schritte; Android nutzt den eingebauten Leser von Chrome. Erlaubnis
+ändern: links neben der Adresse auf das Symbol tippen → **Berechtigungen** → **Kamera**.
+
+**Android-App (APK) bzw. iPhone-App (TestFlight):** Die Kamera braucht einen **neuen App-Build** – ältere Builds zeigen
+den Knopf einfach nicht (kein Absturz), dort geht nur „Nummer eintippen“.
+
+1. GitHub-App → Repository → **Actions** → **eas-build** → **Run workflow** → Plattform **android**, Profil
+   **preview** → **Run workflow**. Für das iPhone: Plattform **ios**, Profil **production** (TestFlight, SETUP Teil
+   D2).
+2. Nach dem Build (etwa 15–30 Minuten) den Link aus dem Workflow bzw. von expo.dev öffnen → APK installieren bzw. in
+   TestFlight aktualisieren.
+3. App öffnen → „Produkt (Barcode)“ → **„Mit der Kamera scannen“** → Abfrage „Alpha5 nutzt die Kamera nur, um den
+   Strichcode von Lebensmitteln zu lesen …“ → **Erlauben** → scannen.
+4. Verweigert → Hinweis mit **„Einstellungen öffnen“** (dort Kamera für Alpha5 einschalten).
+
 ## Teil 7g – „Dein Tag“ testen (Etappe A2, Testmodus)
 Die Tagesauswertung braucht keine Einstellung und keine Datenbank-Änderung. Das Essen erscheint vorerst nur im
 **Testmodus** (mit Konto folgt es mit N7 Teil 2), der Trainingsteil geht in beiden Modi.
