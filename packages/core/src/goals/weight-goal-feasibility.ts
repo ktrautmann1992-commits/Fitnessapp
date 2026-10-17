@@ -84,10 +84,6 @@ export const WEIGHT_GOAL_INVALID_REASONS = [
 ] as const;
 export type WeightGoalInvalidReason = (typeof WEIGHT_GOAL_INVALID_REASONS)[number];
 
-/** Erlaubte Hinweise zum Ziel (kein Fehler): Ziel-BMI 18,5 bis unter 20 (vorläufig, F8). */
-export const WEIGHT_GOAL_INPUT_NOTICES = ['low_target_bmi'] as const;
-export type WeightGoalInputNotice = (typeof WEIGHT_GOAL_INPUT_NOTICES)[number];
-
 export interface WeightGoalBody {
   readonly weightKg: number;
   readonly weightMeasuredOn: string;
@@ -139,10 +135,23 @@ function availabilityOf(inputs: NutritionInputs): WeightGoalAvailability {
   };
 }
 
-/** Ist das Zielgewicht bei dieser Größe zulässig (Ziel-BMI ≥ Untergrenze, vorläufig F8)? Mit der NEUESTEN Größe. */
-export function isTargetBmiAllowed(targetWeightKg: number, heightCm: number): boolean {
+/** Harte Untergrenze des Ziel-BMI für dieses Alter (Gründer-Entscheidung F8: 20, ab 70 Jahren 22). */
+export function minTargetBmiFor(ageYears: number): number {
+  const limits = WEIGHT_GOAL_LIMITS.minTargetBmi;
+  return ageYears >= limits.seniorFromAge ? limits.senior : limits.default;
+}
+
+/**
+ * Ist das Zielgewicht bei dieser Größe zulässig (Ziel-BMI ≥ Untergrenze, F8)? Mit der NEUESTEN Größe und dem Alter am
+ * Zieldatum (`ageAtTargetYears`, das strengere Alter im Zeitraum).
+ */
+export function isTargetBmiAllowed(
+  targetWeightKg: number,
+  heightCm: number,
+  ageAtTargetYears: number,
+): boolean {
   return (
-    bodyMassIndex(targetWeightKg, heightCm) >= WEIGHT_GOAL_LIMITS.minTargetBmi - WEIGHT_GOAL_EPS
+    bodyMassIndex(targetWeightKg, heightCm) >= minTargetBmiFor(ageAtTargetYears) - WEIGHT_GOAL_EPS
   );
 }
 
@@ -359,7 +368,6 @@ export interface WeightGoalRated {
   /** Knopf „Zeitraum auf N Wochen setzen“ = max(N, 4) – nur bei Orange und Rot und wenn N ≤ 104. */
   readonly suggestedWeeks: number | null;
   readonly pointer: { readonly raw: number; readonly display: number };
-  readonly notices: readonly WeightGoalInputNotice[];
 }
 
 export type WeightGoalFeasibility =
@@ -377,7 +385,12 @@ const feasibilityGoalSchema = z.object({
 /** Harte Fehler zu Menge und Zeitraum (Plan 2.3) mit der neuesten Größe und dem neuesten Gewicht. */
 export function weightGoalInvalidReasons(
   body: Pick<WeightGoalBody, 'weightKg' | 'heightCm'>,
-  goal: { readonly targetWeightKg: number; readonly days: number },
+  goal: {
+    readonly targetWeightKg: number;
+    readonly days: number;
+    /** Alter am Zieldatum (F8: ab 70 Jahren gilt Ziel-BMI 22). */
+    readonly ageAtTargetYears: number;
+  },
 ): WeightGoalInvalidReason[] {
   const reasons: WeightGoalInvalidReason[] = [];
   const kg = body.weightKg - goal.targetWeightKg;
@@ -388,7 +401,7 @@ export function weightGoalInvalidReasons(
     goal.targetWeightKg > BODY_METRIC_LIMITS.weightKg.max
   ) {
     reasons.push('target_out_of_range');
-  } else if (!isTargetBmiAllowed(goal.targetWeightKg, body.heightCm)) {
+  } else if (!isTargetBmiAllowed(goal.targetWeightKg, body.heightCm, goal.ageAtTargetYears)) {
     reasons.push('target_bmi_too_low');
   }
   if (goal.days < WEIGHT_GOAL_DAYS.min || goal.days > WEIGHT_GOAL_DAYS.max) {
@@ -411,7 +424,11 @@ export function weightGoalFeasibility(
   if (!availability.available) return { state: 'unavailable', reason: availability.reason };
   const { body } = availability;
   const days = daysBetween(inputs.today, goal.targetDate);
-  const reasons = weightGoalInvalidReasons(body, { targetWeightKg: goal.targetWeightKg, days });
+  const reasons = weightGoalInvalidReasons(body, {
+    targetWeightKg: goal.targetWeightKg,
+    days,
+    ageAtTargetYears: ageInYears(inputs.birthDate, goal.targetDate),
+  });
   if (reasons.length > 0) return { state: 'invalid', reasons };
 
   const w0 = body.weightKg;
@@ -454,10 +471,6 @@ export function weightGoalFeasibility(
   }
   const safeWeeksOverMax = safeWeeks === null || safeWeeks > WEIGHT_GOAL_LIMITS.weeks.max;
   const showsButton = level !== 'green' && level !== 'yellow';
-  const notices: WeightGoalInputNotice[] =
-    bodyMassIndex(wZiel, body.heightCm) < WEIGHT_GOAL_LIMITS.lowTargetBmiNotice - WEIGHT_GOAL_EPS
-      ? ['low_target_bmi']
-      : [];
   return {
     state: 'rated',
     level,
@@ -476,6 +489,5 @@ export function weightGoalFeasibility(
         ? Math.max(safeWeeks, WEIGHT_GOAL_LIMITS.weeks.min)
         : null,
     pointer: weightGoalPointer(requiredPace, level),
-    notices,
   };
 }

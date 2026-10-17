@@ -72,6 +72,10 @@ export function deriveOnboardingState(
     hasHomeStrength:
       slots.length > 0 ? slots.some((slot) => slot.kind === 'strength_home') : undefined,
     nutritionSetupAvailable,
+    // Schritt weight_goal (Etappe Z3/Z4): nur bei Abnehmen als Haupt- oder Nebenziel; noch kein Ziel = offen.
+    losesWeight: rows.goals
+      ? rows.goals.goal_type === 'fat_loss' || rows.goals.secondary_goal_type === 'fat_loss'
+      : undefined,
   };
 }
 

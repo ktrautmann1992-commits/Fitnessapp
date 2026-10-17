@@ -1013,6 +1013,7 @@ export type Database = {
           created_at: string;
           discipline: Database['public']['Enums']['endurance_discipline'] | null;
           goal_type: Database['public']['Enums']['goal_type'];
+          secondary_goal_type: Database['public']['Enums']['goal_type'] | null;
           target_date: string | null;
           training_location: Database['public']['Enums']['training_location'] | null;
           updated_at: string;
@@ -1022,6 +1023,7 @@ export type Database = {
           created_at?: string;
           discipline?: Database['public']['Enums']['endurance_discipline'] | null;
           goal_type: Database['public']['Enums']['goal_type'];
+          secondary_goal_type?: Database['public']['Enums']['goal_type'] | null;
           target_date?: string | null;
           training_location?: Database['public']['Enums']['training_location'] | null;
           updated_at?: string;
@@ -1031,6 +1033,7 @@ export type Database = {
           created_at?: string;
           discipline?: Database['public']['Enums']['endurance_discipline'] | null;
           goal_type?: Database['public']['Enums']['goal_type'];
+          secondary_goal_type?: Database['public']['Enums']['goal_type'] | null;
           target_date?: string | null;
           training_location?: Database['public']['Enums']['training_location'] | null;
           updated_at?: string;
@@ -2487,6 +2490,39 @@ export type Database = {
             referencedColumns: ['id'];
           },
         ];
+      };
+      weight_goals: {
+        Row: {
+          amount_mode: string;
+          created_at: string;
+          start_date: string;
+          target_date: string;
+          target_weight_kg: number;
+          time_mode: string;
+          updated_at: string;
+          user_id: string;
+        };
+        Insert: {
+          amount_mode: string;
+          created_at?: string;
+          start_date: string;
+          target_date: string;
+          target_weight_kg: number;
+          time_mode: string;
+          updated_at?: string;
+          user_id?: string;
+        };
+        Update: {
+          amount_mode?: string;
+          created_at?: string;
+          start_date?: string;
+          target_date?: string;
+          target_weight_kg?: number;
+          time_mode?: string;
+          updated_at?: string;
+          user_id?: string;
+        };
+        Relationships: [];
       };
     };
     Views: {

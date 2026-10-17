@@ -13,8 +13,12 @@ import { ExperienceStep, HealthConsentStep, SexStep } from '@/steps/profile-step
 import { EquipmentStep, GoalStep, TrainingScheduleStep } from '@/steps/training-steps';
 import { useStep, type StepController } from '@/steps/use-step';
 
-/** „training_location“ ist seit Etappe B2 nie anwendbar (Ort aus den Trainingstagen abgeleitet). */
-type ShownStep = Exclude<OnboardingStep, 'training_location'>;
+/**
+ * „training_location“ ist seit Etappe B2 nie anwendbar (Ort aus den Trainingstagen abgeleitet). „weight_goal“ ist bis
+ * Etappe Z4 abgeschaltet (WEIGHT_GOAL_STEP_ENABLED in packages/core, docs/PLAN-ZIELE.md 6 Nr. 2) – Z4 ergänzt den
+ * Bildschirm hier.
+ */
+type ShownStep = Exclude<OnboardingStep, 'training_location' | 'weight_goal'>;
 
 const STEP_SCREENS: Record<ShownStep, ComponentType<{ ctl: StepController }>> = {
   sex: SexStep,
@@ -56,6 +60,7 @@ export default function OnboardingStepRoute() {
   // Nicht anwendbare Schritte (z. B. Körperdaten ohne Einwilligung) gibt es nicht – zurück zum Startpunkt.
   if (
     step === 'training_location' ||
+    step === 'weight_goal' ||
     !isStepApplicable(
       step,
       deriveOnboardingState(app.rows, app.versions, app.backend.supportsNutrition),

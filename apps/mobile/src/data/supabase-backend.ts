@@ -128,6 +128,7 @@ import {
   type ConsentPlatform,
   type ExerciseLogRow,
   type FoodDislikeRow,
+  type GoalsRow,
   type NutritionPrefsRow,
   type RecipeRatingRow,
   type SessionLogRow,
@@ -137,6 +138,7 @@ import {
   type PlannedSessionRow,
   type UserPlanRow,
   type UserRows,
+  type WeightGoalRow,
 } from './types';
 import {
   applyHealthDataRevocation,
@@ -412,6 +414,15 @@ export function isMissingRelation(error: unknown): boolean {
   return code === 'PGRST205' || code === '42P01';
 }
 
+/**
+ * Spalte fehlt (PostgREST PGRST204 „Could not find the … column“, Postgres 42703) – z. B. goals.secondary_goal_type im
+ * Zeitfenster zwischen App-Deploy und `db-migrate` (Etappe Z3).
+ */
+export function isMissingColumn(error: unknown): boolean {
+  const code = (error as ErrorLike | null)?.code;
+  return code === 'PGRST204' || code === '42703';
+}
+
 export function isMissingFunction(error: unknown): boolean {
   const code = (error as ErrorLike | null)?.code;
   return code === 'PGRST202' || code === '42883';
@@ -464,9 +475,37 @@ export async function executeWriteOp(
       }
       return;
     }
-    case 'upsert_goals':
-      check(await client.from('goals').upsert(op.row, { onConflict: 'user_id' }));
+    case 'upsert_goals': {
+      const result = await client.from('goals').upsert(op.row, { onConflict: 'user_id' });
+      // Zeitfenster vor `db-migrate` (Etappe Z3): Die Spalte secondary_goal_type gibt es noch nicht. Ohne Nebenziel ist
+      // die Zeile ohne die Spalte gleichwertig – dann einmal ohne sie senden; mit Nebenziel bleibt es ein Fehler.
+      if (
+        result.error &&
+        isMissingColumn(result.error) &&
+        (op.row.secondary_goal_type ?? null) === null
+      ) {
+        const withoutSecondary: Partial<GoalsRow> = { ...op.row };
+        delete withoutSecondary.secondary_goal_type;
+        check(
+          await client
+            .from('goals')
+            .upsert(withoutSecondary as GoalsRow, { onConflict: 'user_id' }),
+        );
+        return;
+      }
+      check(result);
       return;
+    }
+    // Wunschgewicht (Etappe Z3): RLS verlangt die Einwilligung, der Trigger das Abnehmziel (Wächter S13).
+    case 'upsert_weight_goal':
+      check(await client.from('weight_goals').upsert(op.row, { onConflict: 'user_id' }));
+      return;
+    case 'delete_weight_goal': {
+      const result = await client.from('weight_goals').delete().eq('user_id', userId);
+      // Vor `db-migrate` gibt es die Tabelle nicht – dann gibt es auch nichts zu löschen.
+      if (!(result.error && isMissingRelation(result.error))) check(result);
+      return;
+    }
     // Löschen + Einfügen atomar und mit allen Regeln (fest ODER „Tag egal“, lückenlos) in der Datenbank-Funktion
     // (Migration 20261005120000_training_slots.sql).
     case 'replace_training_slots':
@@ -1501,6 +1540,7 @@ export function createSupabaseBackend(options: SupabaseBackendOptions): Backend 
       reminder,
       ratingsResult,
       dislikesResult,
+      weightGoalResult,
     ] = await Promise.all([
       client.from('profiles').select('*').eq('user_id', userId).maybeSingle(),
       client.from('consents').select('*').eq('user_id', userId),
@@ -1530,10 +1570,14 @@ export function createSupabaseBackend(options: SupabaseBackendOptions): Backend 
         .select('user_id, recipe_id, value, reason, rated_on')
         .eq('user_id', userId),
       client.from('food_dislikes').select('user_id, food_id').eq('user_id', userId),
+      // Wunschgewicht (Etappe Z3): Gesundheitsdatum, nur im Arbeitsspeicher (cacheableRows).
+      client.from('weight_goals').select('*').eq('user_id', userId).limit(1),
     ]);
     // Etappe N7 (Wächter N7 S1): vor `db-migrate` gibt es die Tabellen noch nicht – dann leer, Anmeldung läuft weiter.
     const ratings = emptyIfMissing(ratingsResult);
     const dislikes = emptyIfMissing(dislikesResult);
+    // Etappe Z3: vor `db-migrate` gibt es weight_goals noch nicht – dann kein Wunschgewicht.
+    const weightGoal = emptyIfMissing(weightGoalResult);
     const plan = await fetchActivePlan(userId);
     const startWeights = await client
       .from('exercise_start_weights')
@@ -1555,6 +1599,7 @@ export function createSupabaseBackend(options: SupabaseBackendOptions): Backend 
       reminder,
       ratings,
       dislikes,
+      weightGoal,
     ]) {
       if (result.error) {
         throw result.error;
@@ -1573,6 +1618,7 @@ export function createSupabaseBackend(options: SupabaseBackendOptions): Backend 
       bodyMetrics: metrics.data ?? [],
       bodyMeasurements: measurements.data ?? [],
       healthScreenings: screening.data ?? [],
+      weightGoal: ((weightGoal.data ?? [])[0] as WeightGoalRow | undefined) ?? null,
       reminder: reminder.data,
       ...plan,
       ...logs,

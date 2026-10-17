@@ -47,6 +47,13 @@ export const weightGoalSchema = z
   })
   .refine(
     (goal) => {
+      // Ungültige Datumsangaben melden die Felder selbst; hier nicht rechnen (safeParse darf nie werfen, Etappe Z3).
+      if (
+        !isoDateSchema.safeParse(goal.startDate).success ||
+        !isoDateSchema.safeParse(goal.targetDate).success
+      ) {
+        return true;
+      }
       const days = daysBetween(goal.startDate, goal.targetDate);
       return days >= WEIGHT_GOAL_DAYS.min && days <= WEIGHT_GOAL_DAYS.max;
     },

@@ -41,6 +41,7 @@ const goals = (patch: Record<string, unknown> = {}): WriteOp => ({
   row: {
     user_id: USER_ID,
     goal_type: 'endurance',
+    secondary_goal_type: null,
     discipline: 'marathon',
     target_date: null,
     training_location: 'gym',

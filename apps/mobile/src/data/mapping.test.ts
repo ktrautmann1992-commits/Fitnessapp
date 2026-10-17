@@ -28,7 +28,12 @@ function ctx(patch: Partial<PlanContext> = {}): PlanContext {
 }
 
 const fullAnswers: OnboardingAnswers = {
-  goal: { goalType: 'endurance', discipline: 'marathon', targetDate: '2027-04-01' },
+  goal: {
+    goalType: 'endurance',
+    secondaryGoalType: null,
+    discipline: 'marathon',
+    targetDate: '2027-04-01',
+  },
   trainingSchedule: {
     mode: 'fixed',
     slots: [
@@ -143,6 +148,7 @@ describe('Onboarding → Tabellenzeilen', () => {
     expect(toGoalsRow(USER_ID, fullAnswers)).toEqual({
       user_id: USER_ID,
       goal_type: 'endurance',
+      secondary_goal_type: null,
       discipline: 'marathon',
       target_date: '2027-04-01',
       training_location: 'both',
@@ -215,7 +221,12 @@ describe('Onboarding → Tabellenzeilen', () => {
 
   it('Disziplin wird außerhalb von Ausdauer nie gespeichert', () => {
     const row = toGoalsRow(USER_ID, {
-      goal: { goalType: 'fat_loss', discipline: 'marathon', targetDate: null },
+      goal: {
+        goalType: 'fat_loss',
+        secondaryGoalType: null,
+        discipline: 'marathon',
+        targetDate: null,
+      },
     });
     expect(row.discipline).toBeNull();
   });
@@ -344,7 +355,14 @@ describe('planSave: nächster Schritt nach packages/core', () => {
       },
       {
         userId: USER_ID,
-        answers: { goal: { goalType: 'muscle_gain', discipline: null, targetDate: null } },
+        answers: {
+          goal: {
+            goalType: 'muscle_gain',
+            secondaryGoalType: null,
+            discipline: null,
+            targetDate: null,
+          },
+        },
         rows: base,
         versions: VERSIONS,
         platform: 'web',
@@ -362,7 +380,14 @@ describe('planSave: nächster Schritt nach packages/core', () => {
       },
       {
         userId: USER_ID,
-        answers: { goal: { goalType: 'muscle_gain', discipline: null, targetDate: null } },
+        answers: {
+          goal: {
+            goalType: 'muscle_gain',
+            secondaryGoalType: null,
+            discipline: null,
+            targetDate: null,
+          },
+        },
         rows: base,
         versions: VERSIONS,
         platform: 'web',

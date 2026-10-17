@@ -11,6 +11,7 @@ import type { NutritionInputsInput } from '../nutrition/schemas';
 import { inputs as nutritionInputs } from '../nutrition/test-helpers';
 import {
   hasPlannableDeficit,
+  minTargetBmiFor,
   pointerZone,
   restDayStandardDeficitKcal,
   weightGoalAvailability,
@@ -145,14 +146,14 @@ describe('Rechenbeispiele 3.3 (wörtlich, mit den echten Funktionen)', () => {
     expect(after.level).toBe('green');
   });
 
-  it('D: Ziel-BMI 18,4 → Fehler, keine Stufe (Grenze vorläufig, F8)', () => {
-    // 180 cm: BMI 18,4 = 59,6 kg
-    const r = rate(
-      person({ bodyMetricsRows: [{ measuredOn: '2026-10-10', heightCm: 180, weightKg: 70 }] }),
-      59.6,
-      30,
-    );
-    expect(r).toEqual({ state: 'invalid', reasons: ['target_bmi_too_low'] });
+  it('D: Ziel-BMI 18,4 und 19,9 → Fehler, keine Stufe (F8: Untergrenze 20)', () => {
+    const p = person({
+      bodyMetricsRows: [{ measuredOn: '2026-10-10', heightCm: 180, weightKg: 70 }],
+    });
+    // 180 cm: BMI 18,4 = 59,6 kg; BMI 19,9 ≈ 64,4 kg; BMI 20 = 64,8 kg
+    expect(rate(p, 59.6, 30)).toEqual({ state: 'invalid', reasons: ['target_bmi_too_low'] });
+    expect(rate(p, 64.4, 30)).toEqual({ state: 'invalid', reasons: ['target_bmi_too_low'] });
+    expect(rate(p, 64.8, 30).state).toBe('rated');
   });
 
   it('E: 17 J. → gesperrt; F: Schwangerschaft → gesperrt', () => {
@@ -571,15 +572,33 @@ describe('Verfügbarkeit und unzulässige Ziele (Plan 2.3)', () => {
     expect(old.capacity.kcal).toBeGreaterThan(0);
   });
 
-  it('Ziel-BMI 18,49 / 18,5 / 19,99 / 20 (vorläufig F8); Hinweis unter 20', () => {
+  it('Ziel-BMI unter 70 J.: 18,5 / 19,99 → Fehler, 20 → bewertet (F8)', () => {
     const p = person({
       bodyMetricsRows: [{ measuredOn: '2026-10-10', heightCm: 200, weightKg: 100 }],
     });
     // 200 cm: BMI = kg / 4
-    expect(rate(p, 73.96, 52)).toEqual({ state: 'invalid', reasons: ['target_bmi_too_low'] });
-    expect(rated(rate(p, 74, 52)).notices).toEqual(['low_target_bmi']);
-    expect(rated(rate(p, 79.96, 52)).notices).toEqual(['low_target_bmi']);
-    expect(rated(rate(p, 80, 52)).notices).toEqual([]);
+    expect(rate(p, 74, 52)).toEqual({ state: 'invalid', reasons: ['target_bmi_too_low'] });
+    expect(rate(p, 79.96, 52)).toEqual({ state: 'invalid', reasons: ['target_bmi_too_low'] });
+    expect(rate(p, 80, 52).state).toBe('rated');
+    expect(minTargetBmiFor(16)).toBe(20);
+    expect(minTargetBmiFor(69)).toBe(20);
+  });
+
+  it('Ziel-BMI ab 70 J. (Alter am Zieldatum): 21,99 → Fehler, 22 → bewertet; mit 69 J. gilt 20 (F8)', () => {
+    const body = { bodyMetricsRows: [{ measuredOn: '2026-10-10', heightCm: 200, weightKg: 100 }] };
+    // 70 J. am 01.09.2026 – schon heute 70
+    const p70 = person({ ...body, birthDate: '1956-09-01' });
+    expect(rate(p70, 87.96, 52)).toEqual({ state: 'invalid', reasons: ['target_bmi_too_low'] });
+    expect(rate(p70, 88, 52).state).toBe('rated');
+    // 69 J. bis 31.08.2027: Zieldatum 26 Wochen später (12.04.2027) → Grenze 20
+    const p69 = person({ ...body, birthDate: '1957-09-01' });
+    expect(rate(p69, 80, 26).state).toBe('rated');
+    expect(rate(p69, 79.96, 26)).toEqual({ state: 'invalid', reasons: ['target_bmi_too_low'] });
+    // dieselbe Person, Zieldatum nach dem 70. Geburtstag (52 Wochen → 11.10.2027) → Grenze 22
+    expect(rate(p69, 80, 52)).toEqual({ state: 'invalid', reasons: ['target_bmi_too_low'] });
+    expect(rate(p69, 88, 52).state).toBe('rated');
+    expect(minTargetBmiFor(70)).toBe(22);
+    expect(minTargetBmiFor(100)).toBe(22);
   });
 
   it('Menge: Ziel = aktuelles Gewicht, 0,9 kg und 1 kg; Zielgewicht außerhalb 30–300 kg', () => {
@@ -623,8 +642,9 @@ describe('Verfügbarkeit und unzulässige Ziele (Plan 2.3)', () => {
       expect(r.capacity.kcal).toBeCloseTo(kcal, 6);
       expect(r.capacityKgPerWeek).toBeLessThanOrEqual(0.01 * kg + 1e-9);
     }
-    // 45 kg bei 156 cm: BMI 18,49 → unzulässig; 45,1 kg (BMI 18,53) → bewertet
+    // 156 cm: 45 kg (BMI 18,49) und 48,6 kg (BMI 19,97) → unzulässig (F8); 48,7 kg (BMI 20,01) → bewertet
     expect(at(156, 46, 45)).toEqual({ state: 'invalid', reasons: ['target_bmi_too_low'] });
-    expect(at(156, 46.5, 45.1).state).toBe('rated');
+    expect(at(156, 50, 48.6)).toEqual({ state: 'invalid', reasons: ['target_bmi_too_low'] });
+    expect(at(156, 50, 48.7).state).toBe('rated');
   });
 });

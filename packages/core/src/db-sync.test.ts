@@ -30,6 +30,7 @@ import {
   CUSTOM_MEAL_LIMITS,
   PINCH_G,
   BODY_METRIC_LIMITS,
+  WEIGHT_GOAL_LIMITS,
   AGE_PLAN_RULES,
   COMPETITION_DISTANCE_M,
   COMPETITION_EFFORT_LIMITS,
@@ -123,6 +124,12 @@ import {
 import { EQUIPMENT } from './equipment';
 import { FOOD_GROUPS } from './food-groups';
 import { GOAL_COMBINATIONS } from './goals/profile';
+import {
+  WEIGHT_GOAL_AMOUNT_MODES,
+  WEIGHT_GOAL_DAYS,
+  WEIGHT_GOAL_TIME_MODES,
+  weightGoalSchema,
+} from './goals/weight-goal-schema';
 import { HEALTH_FLAGS, HEALTH_SCREENING_QUESTIONS } from './health-screening';
 import { ONBOARDING_STEPS } from './onboarding';
 import {
@@ -894,10 +901,10 @@ describe('Ernährung in der Datenbank (Phase 5, Etappe N7)', () => {
     expect(body.slice(0, end)).toContain(
       'delete from public.shopping_lists where user_id = new.user_id and uses_health_data;',
     );
-    // Neueste Fassung seit Phase 10 WP3 in *_competition_rpcs.sql (E1: Tagebuch-Einträge, E2: eigene Gerichte,
-    // WP3: Plan-Bezug der Wettkämpfe leeren).
+    // Neueste Fassung seit Ziele Z3 in *_weight_goals_revoke_export.sql (davor WP3 *_competition_rpcs.sql; E1:
+    // Tagebuch-Einträge, E2: eigene Gerichte, WP3: Plan-Bezug der Wettkämpfe leeren, Z3: Wunschgewicht).
     expect(migrationFiles.filter((n) => readMigration(n).includes(marker)).at(-1)).toMatch(
-      /_competition_rpcs\.sql$/,
+      /_weight_goals_revoke_export\.sql$/,
     );
   });
 
@@ -1065,10 +1072,10 @@ describe('Ernährungstagebuch in der Datenbank (Etappe E1)', () => {
     }
   });
 
-  it('export_my_data(): neueste Fassung in *_tracked_route_rpcs.sql (S1, davor E3, WP3 und E2)', () => {
+  it('export_my_data(): neueste Fassung in *_weight_goals_revoke_export.sql (Z3, davor S1, E3, WP3 und E2)', () => {
     const marker = 'create or replace function public.export_my_data()';
     expect(migrationFiles.filter((n) => readMigration(n).includes(marker)).at(-1)).toMatch(
-      /_tracked_route_rpcs\.sql$/,
+      /_weight_goals_revoke_export\.sql$/,
     );
   });
 });
@@ -2034,5 +2041,131 @@ describe('Strecken in der Datenbank (Phase 10 S1)', () => {
       "'tracked_routes', (select coalesce(jsonb_agg(to_jsonb(t) order by t.started_at, t.created_at), '[]'::jsonb) from public.tracked_routes t where t.user_id = current_user_id)",
     );
     expect(DATA_EXPORT_TABLES).toContain('tracked_routes');
+  });
+});
+
+describe('Ziele in der Datenbank (Etappe Z3, docs/PLAN-ZIELE.md 5.1/5.2)', () => {
+  const goalsSql = readMigration('_goals_secondary.sql');
+  const table = readMigration('_weight_goals.sql');
+  const revokeExport = readMigration('_weight_goals_revoke_export.sql');
+  const newest = (marker: string) => {
+    const start = allSql.lastIndexOf(marker);
+    return allSql.slice(start, allSql.indexOf('$$;', start));
+  };
+  const revokeMarker = 'create or replace function private.consents_after_revoke()';
+  const exportMarker = 'create or replace function public.export_my_data()';
+
+  it('goals.secondary_goal_type: Paar-CHECK über private.goal_pair_allowed (= GOAL_COMBINATIONS), Disziplin bei Ausdauer als Haupt- oder Nebenziel', () => {
+    expect(goalsSql).toContain(
+      'alter table public.goals add column secondary_goal_type public.goal_type;',
+    );
+    expect(goalsSql).toContain(
+      'secondary_goal_type is null or private.goal_pair_allowed(goal_type, secondary_goal_type)',
+    );
+    // Ohne `'endurance' in (…)`: NULL im CHECK gilt als erfüllt.
+    expect(goalsSql).toContain(
+      "discipline is null or goal_type = 'endurance' or secondary_goal_type is not distinct from 'endurance'",
+    );
+    expect(goalsSql).toContain("like '%discipline IS NULL%'");
+  });
+
+  it('weight_goals: CHECKs = weightGoalSchema (Wächter Z2 K-5)', () => {
+    const { min, max } = BODY_METRIC_LIMITS.weightKg;
+    expect(table).toContain(
+      `target_weight_kg numeric(4, 1) not null check (target_weight_kg between ${min} and ${max})`,
+    );
+    expect(WEIGHT_GOAL_LIMITS.targetStep).toBe(0.1); // numeric(4, 1)
+    expect(table).toContain(
+      `check (target_date between start_date + ${WEIGHT_GOAL_DAYS.min} and start_date + ${WEIGHT_GOAL_DAYS.max})`,
+    );
+    expect(quotedListAfter(table, 'amount_mode in (')).toEqual([...WEIGHT_GOAL_AMOUNT_MODES]);
+    expect(quotedListAfter(table, 'time_mode in (')).toEqual([...WEIGHT_GOAL_TIME_MODES]);
+    // Spalten = Felder des gespeicherten Ziels (camelCase → snake_case), kein Startgewicht (Wächter K9).
+    const columns = [...table.matchAll(/^ {2}([a-z_]+) (?:uuid|numeric|date|text|timestamptz)/gm)]
+      .map((m) => m[1] as string)
+      .filter((c) => !['user_id', 'created_at', 'updated_at'].includes(c))
+      .sort();
+    const fields = Object.keys(weightGoalSchema.shape)
+      .map((k) => k.replace(/[A-Z]/g, (c) => `_${c.toLowerCase()}`))
+      .sort();
+    expect(columns).toEqual(fields);
+    expect(table).not.toContain('start_weight');
+  });
+
+  it('weight_goals: RLS wie body_metrics (Schreiben nur mit Einwilligung), Trigger „nur mit Abnehmziel“ und Löschen bei goals-Update/-Delete (S13)', () => {
+    expect(table).toContain('alter table public.weight_goals enable row level security;');
+    expect(table).toContain('revoke all on table public.weight_goals from anon, authenticated;');
+    expect(table.split("public.has_valid_consent('health_data')")).toHaveLength(3);
+    expect(table).toContain('before insert or update on public.weight_goals');
+    expect(table).toContain('after update or delete on public.goals');
+    expect(table).toContain('Ein Wunschgewicht gibt es nur beim Ziel Abnehmen.');
+  });
+
+  it('Widerruf und Export: neueste Fassungen sind Obermengen der Vorgänger (Zeile für Zeile, S16)', () => {
+    for (const marker of [revokeMarker, exportMarker]) {
+      const withFn = migrationFiles.filter((n) => readMigration(n).includes(marker));
+      expect(withFn.at(-1)).toMatch(/_weight_goals_revoke_export\.sql$/);
+      const bodyOf = (name: string) => {
+        const sql = readMigration(name);
+        const start = sql.lastIndexOf(marker);
+        return sql.slice(start, sql.indexOf('$$;', start)).split('\n');
+      };
+      const latest = bodyOf(withFn.at(-1) ?? '');
+      const previous = bodyOf(withFn.at(-2) ?? '');
+      expect(
+        previous.filter((line) => !latest.includes(line) && !latest.includes(`${line},`)),
+      ).toEqual([]);
+    }
+    expect(revokeExport).toContain(
+      "'weight_goals', (select coalesce(jsonb_agg(to_jsonb(t)), '[]'::jsonb) from public.weight_goals t where t.user_id = current_user_id)",
+    );
+  });
+
+  it('SENSIBEL-Test (Wächter S16, N4): jede Tabelle mit Kommentar-Anfang „SENSIBEL (Art. 9“ wird beim Widerruf ganz gelöscht und exportiert; teilweise sensible nur in fester Ausnahmeliste', () => {
+    // Letzter Kommentar je Tabelle (eine spätere Migration kann ihn ändern).
+    const comments = new Map<string, string>();
+    for (const m of allSql.matchAll(/comment on table public\.([a-z_]+) is\s+'([^']*)'/g)) {
+      comments.set(m[1] as string, m[2] as string);
+    }
+    const revoke = newest(revokeMarker);
+    const exported = [...newest(exportMarker).matchAll(/'([a-z_]+)', \(select coalesce/g)].map(
+      (m) => m[1],
+    );
+    const sensitive = [...comments]
+      .filter(([, c]) => c.startsWith('SENSIBEL (Art. 9'))
+      .map(([t]) => t);
+    expect(sensitive.sort()).toEqual(
+      ['body_measurements', 'body_metrics', 'health_screening', 'weight_goals'].sort(),
+    );
+    for (const name of sensitive) {
+      expect(revoke, name).toContain(`delete from public.${name} where user_id = new.user_id;`);
+      expect(exported, name).toContain(name);
+      expect(DATA_EXPORT_TABLES as readonly string[], name).toContain(name);
+    }
+    // Teilweise sensible Tabellen (Ausnahmeliste) mit ihrer Teil-Löschung. Kommt eine neue Tabelle mit „SENSIBEL“ im
+    // Kommentar dazu, muss sie hier (oder oben) eingetragen werden.
+    const partial: Record<string, string> = {
+      food_preferences:
+        "delete from public.food_preferences where user_id = new.user_id and kind = 'intolerance';",
+      user_plans: 'delete from public.user_plans where user_id = new.user_id and uses_health_data;',
+      meal_plans: 'delete from public.meal_plans where user_id = new.user_id and uses_health_data;',
+      shopping_lists:
+        'delete from public.shopping_lists where user_id = new.user_id and uses_health_data;',
+      food_log_entries: 'delete from public.food_log_entries where user_id = new.user_id;',
+    };
+    const mentioned = [...comments]
+      .filter(([, c]) => c.includes('SENSIBEL') && !c.startsWith('SENSIBEL (Art. 9'))
+      .map(([t]) => t);
+    for (const name of mentioned) {
+      expect(Object.keys(partial), name).toContain(name);
+    }
+    for (const [name, line] of Object.entries(partial)) {
+      expect(revoke, name).toContain(line);
+      expect(exported, name).toContain(name);
+    }
+  });
+
+  it('Gesundheitsdaten bleiben aus dem Partner-Modus und aus anon heraus (K7): kein Recht für anon', () => {
+    expect(table).not.toMatch(/grant [a-z, ]+ on table public\.weight_goals to anon/);
   });
 });
