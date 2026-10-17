@@ -198,6 +198,14 @@ Abweichungen in `docs/PLAN-ZIELE.md` Abschnitt 13.
 „Wie möchtest du abnehmen?“ (`weight_goal`, `WEIGHT_GOAL_STEP_ENABLED = true`) mit Erreichbarkeits-Ampel
 (`FeasibilityScale`, `role="meter"`), Token `caution`, Vormerkungen Z3 N2/N3 erledigt, Playwright `goals.spec.ts`.
 Umsetzungsnotizen in `docs/PLAN-ZIELE.md` Abschnitt 14, Handy-Test in `docs/HANDY-ANLEITUNG.md` Teil 7z2.
+**Stand 17.10.2026: Z5 und Z6 umgesetzt, Wächter-geprüft (H1, M1, N1–N3, N7, N8 eingearbeitet; keine Migration)** – Einstellungen → „Dein
+Abnehm-Ziel“ (`/abnehmziel`: ansehen, bearbeiten, entfernen, verlängern), Karten „Wunschgewicht erreicht“ (Gewicht
+halten / Muskelaufbau / neues Wunschgewicht) und „Zeitraum vorbei“ (Verlängern / ohne festes Ziel) auf „Heute“, Hinweise
+einmal je Woche in der Ernährungs-Übersicht (K10), Planname mit zwei Zielen auf „Heute“, in der Woche und im
+Trainings-PDF, automatische Neuplanung des Essensplans bei neuem Abnehmziel (`weight_goal_changed`), Wächter Z4 N10
+(„Weiter“ ohne Änderung behält das Ziel), Playwright `weight-goal-settings.spec.ts`. Z6: KONZEPT (§1, §2, §4, §6, §11,
+§12, §14 DSFA), PLAN-PHASE-5, PLAN-PHASE-4B, PLAN-PHASE-10. Notizen in `docs/PLAN-ZIELE.md` Abschnitt 15, Handy-Test
+in `docs/HANDY-ANLEITUNG.md` Teil 7z3.
 Reihenfolge (F12): **Z1**
 (Core: Ziel-Profil, zwei Ziele, dazu kleine Migration `assert_plan_inputs` mit optionalem Nebenziel-Schlüssel) und
 **Z2** (Core: Abnehmziel und Ampel) jetzt parallel zu Phase 5 → nach Phase 5: **Z3** (Datenmodell, Migration mit RLS,
@@ -395,6 +403,9 @@ Aussagen trifft.
 **Ergänzung aus den Erweiterungen Teil 2:** Mit dem Partner-Modus kommt die Oberfläche des **Paar-Modus beim Kochen**
 (Premium, `docs/KONZEPT.md` 6.12) auf Basis der Logik aus Etappe N13 sowie die gemeinsame Einkaufsliste aus Prompt F –
 Etappe P1 in `docs/PLAN-PHASE-5.md` Abschnitt 19.
+**Feste Regel aus PLAN-ZIELE (Wächter K7, F13):** Das Wunschgewicht (`weight_goals`), die Planbarkeits-Ampel und
+Ziel-Ereignisse sind vom Partner-Modus **immer ausgeschlossen** – auch wenn „Ernährung“ freigegeben ist. Die
+Fortschrittsansicht zeigt **keinen** Fortschrittsbalken zum Zielgewicht und keine Kurve mit Ziellinie (F13, F7).
 
 ## Phase 11b – Monats-Challenges
 ```

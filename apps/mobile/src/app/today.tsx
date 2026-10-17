@@ -46,7 +46,8 @@ import { createPlanErrorText, errorText } from '@/lib/error-text';
 import { formatDateDe, todayIso } from '@/lib/format';
 import { workoutTargetLines } from '@/lib/workout-format';
 import { dayLabel, weekdayName } from '@/lib/plan-format';
-import { planTitleText } from '@/lib/plan-title';
+import { planNameLine, planTitleText } from '@/lib/plan-title';
+import { WeightGoalLifecycleCard, weightGoalOverviewFromRows } from '@/components/weight-goal';
 import {
   COMPETITION_GOAL_UNREACHABLE,
   COMPETITION_PLAN_ENDED,
@@ -99,6 +100,12 @@ export default function TodayScreen() {
 
   const rows = app.rows;
   const active = useMemo(() => (rows ? activePlan(rows) : null), [rows]);
+  // Stand des Abnehmziels heute (Etappe Z5) – nur neu rechnen, wenn sich Angaben oder Tag ändern (Wächter Z5 N8).
+  const { versions } = app;
+  const weightGoal = useMemo(
+    () => (rows ? weightGoalOverviewFromRows(rows, versions, today) : null),
+    [rows, versions, today],
+  );
   // Bildschirm verlassen → „Rückgängig“ verschwindet (8.2; rückgängig geht dann über die Einstellungen).
   useFocusEffect(useCallback(() => () => setSwapFeedback(null), []));
 
@@ -325,6 +332,8 @@ export default function TodayScreen() {
       ))}
       {app.offline ? <Notice tone="warning">{t.plan.offline}</Notice> : null}
       {isReminderDue(rows, today) ? <Notice tone="info">{t.today.measurementDue}</Notice> : null}
+      {/* Etappe Z5 (F10): Karte nur bei „erreicht“ bzw. „Zeitraum vorbei“ – ohne Zahlen, kein Fortschritt (F13). */}
+      {weightGoal ? <WeightGoalLifecycleCard overview={weightGoal} zurueck="heute" /> : null}
       {/* Wettkampf (WP4): Countdown bzw. Einladung, wenn im Onboarding ein Datum angegeben wurde. */}
       {competition && countdown ? (
         <CountdownCard
@@ -872,6 +881,7 @@ export default function TodayScreen() {
       />
 
       <Card>
+        {planNameLine(plan) ? <Body testID="plan-name">{planNameLine(plan)}</Body> : null}
         <Body muted>{planTitleText(plan)}</Body>
         <Body>{t.plan.quality[plan.match_quality]}</Body>
         {plan.uses_health_data ? (

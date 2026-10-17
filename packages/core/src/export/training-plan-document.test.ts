@@ -212,12 +212,31 @@ describe('buildTrainingPlanDocument – Deckblatt', () => {
     );
     expect(name).toMatchObject({
       text: {
-        params: { goal: 'muscle_gain', discipline: null, strengthDays: 3, enduranceDays: 0 },
+        params: {
+          goal: 'muscle_gain',
+          secondary: null,
+          discipline: null,
+          strengthDays: 3,
+          enduranceDays: 0,
+        },
       },
     });
     const json = JSON.stringify(doc);
     expect(json).not.toMatch(/Einsteiger|Fortgeschritten|beginner|advanced|competitive/);
     expect(json).not.toContain('Muskelaufbau ·');
+  });
+
+  it('Planname mit zwei Zielen (docs/PLAN-ZIELE.md 4.6, Etappe Z5) – nie Wunschgewicht oder Tempo', () => {
+    const doc = build(person({ goalType: 'fat_loss', secondaryGoalType: 'muscle_gain' }));
+    const name = doc.sections.find(
+      (b) => b.type === 'heading' && b.text.kind === 'text' && b.text.code === 'plan.name',
+    );
+    expect(name).toMatchObject({
+      text: { params: { goal: 'fat_loss', secondary: 'muscle_gain' } },
+    });
+    // Der Trainingsplan kennt keine Körperdaten: kein Wunschgewicht, kein Zieldatum, kein Tempo (Regel B1).
+    const json = JSON.stringify(doc);
+    expect(json).not.toMatch(/weight_goal|weightGoal|targetWeight|target_weight|pace|Tempo/i);
   });
 
   it('neutraler Arzt-Hinweis und Fußzeile auf JEDEM Dokument, auch ohne Gesundheitsangaben (B1)', () => {

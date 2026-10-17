@@ -13,6 +13,7 @@ describe('translatePrintText', () => {
       translatePrintText(
         printText('plan.name', {
           goal: 'muscle_gain',
+          secondary: null,
           discipline: null,
           strengthDays: 3,
           enduranceDays: 0,
@@ -23,6 +24,7 @@ describe('translatePrintText', () => {
       translatePrintText(
         printText('plan.name', {
           goal: 'endurance',
+          secondary: null,
           discipline: '10k',
           strengthDays: 2,
           enduranceDays: 3,
@@ -31,9 +33,27 @@ describe('translatePrintText', () => {
     ).toBe('Ausdauer-Grundlage – 10 km · 2 × Kraft, 3 × Ausdauer');
     expect(
       translatePrintText(
-        printText('plan.name', { goal: null, discipline: null, strengthDays: 1, enduranceDays: 0 }),
+        printText('plan.name', {
+          goal: null,
+          secondary: null,
+          discipline: null,
+          strengthDays: 1,
+          enduranceDays: 0,
+        }),
       ),
     ).toBe('Trainingsplan · 1 Tag');
+    // Zwei Ziele (Etappe Z5).
+    expect(
+      translatePrintText(
+        printText('plan.name', {
+          goal: 'fat_loss',
+          secondary: 'endurance',
+          discipline: null,
+          strengthDays: 2,
+          enduranceDays: 1,
+        }),
+      ),
+    ).toBe('Abnehmen + Ausdauer · 2 × Kraft, 1 × Ausdauer');
   });
 
   it('Werte deutsch formatiert', () => {

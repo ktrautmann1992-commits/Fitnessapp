@@ -39,10 +39,28 @@ describe('Druck-Dokument (Zod)', () => {
         code: 'plan.name',
         params: {
           goal: 'muscle_gain',
+          secondary: null,
           discipline: null,
           strengthDays: 3,
           enduranceDays: 0,
           level: 'beginner',
+        },
+      },
+      // Planname ohne Nebenziel-Feld bzw. mit unbekanntem Nebenziel (Etappe Z5).
+      {
+        kind: 'text',
+        code: 'plan.name',
+        params: { goal: 'fat_loss', discipline: null, strengthDays: 3, enduranceDays: 0 },
+      },
+      {
+        kind: 'text',
+        code: 'plan.name',
+        params: {
+          goal: 'fat_loss',
+          secondary: 'kraft',
+          discipline: null,
+          strengthDays: 3,
+          enduranceDays: 0,
         },
       },
       { kind: 'data', value: 'Zeile\u0007' },
