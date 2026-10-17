@@ -71,7 +71,7 @@ async function finishTrainingAndNutrition(page: Page, options: { intolerance: bo
   await next(page);
 
   await expect(page.getByRole('heading', { name: 'Dein Ziel' })).toBeVisible();
-  await page.getByRole('radio', { name: 'Ausdauer' }).click();
+  await page.getByRole('radio', { name: 'Ausdauer', exact: true }).click();
   await page.getByRole('radio', { name: 'Halbmarathon' }).click();
   await next(page);
 
@@ -295,7 +295,8 @@ test('mit Einwilligung: Körperdaten, Umfänge, Gesundheits-Check mit Arzt-Hinwe
   page,
 }) => {
   await startUntilSex(page);
-  await expect(page.getByText('Schritt 1 von 12')).toBeVisible();
+  // 13 Schritte, solange das Ziel offen ist (Schritt „Wunschgewicht“ zählt mit, Etappe Z4).
+  await expect(page.getByText('Schritt 1 von 13')).toBeVisible();
   await page.getByRole('radio', { name: 'weiblich' }).click();
   await page
     .getByRole('radiogroup', { name: 'Interesse am Zyklus-Modul später?' })
@@ -319,7 +320,7 @@ test('mit Einwilligung: Körperdaten, Umfänge, Gesundheits-Check mit Arzt-Hinwe
   await page.getByRole('button', { name: 'Einwilligen und weiter' }).click();
 
   await expect(page.getByRole('heading', { name: 'Körperdaten' })).toBeVisible();
-  await expect(page.getByText('Schritt 3 von 12')).toBeVisible();
+  await expect(page.getByText('Schritt 3 von 13')).toBeVisible();
   await page.getByLabel('Größe in cm').fill('17');
   await next(page);
   await expect(page.getByText('Größe: mindestens 100 cm.')).toBeVisible();

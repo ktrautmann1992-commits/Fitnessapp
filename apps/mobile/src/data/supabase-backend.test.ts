@@ -233,6 +233,45 @@ describe('Supabase-Modus: Speichern', () => {
     expect(JSON.stringify(store.dump())).not.toContain('170');
   });
 
+  describe('Wunschgewicht nach dem Ziel (Wächter Z4 M1: Ziel liegt noch in der Warteschlange)', () => {
+    const goalSave: StepSave = {
+      step: 'goal',
+      goal: { goalType: 'fat_loss', secondaryGoalType: null, discipline: null, targetDate: null },
+    };
+    const weightSave: StepSave = {
+      step: 'weight_goal',
+      weightGoal: {
+        targetWeightKg: 60,
+        startDate: TODAY,
+        targetDate: '2027-01-09',
+        amountMode: 'target_weight',
+        timeMode: 'weeks',
+      },
+    };
+
+    it('online: erst das wartende Ziel senden, dann das Wunschgewicht', async () => {
+      const { client, calls } = fakeClient();
+      const backend = createSupabaseBackend(options(client));
+      const afterGoal = await backend.saveStep(goalSave, context);
+      await backend.saveStep(weightSave, { ...context, rows: afterGoal });
+      const tables = calls.map((c) => c.table);
+      expect(tables.indexOf('goals')).toBeGreaterThanOrEqual(0);
+      expect(tables.indexOf('goals')).toBeLessThan(tables.indexOf('weight_goals'));
+    });
+
+    it('Ziel hängt (Netzaussetzer): Wunschgewicht wird nicht gesendet, Meldung „Erneut versuchen“', async () => {
+      const { client, calls } = fakeClient((call) =>
+        call.table === 'goals' ? { error: networkError } : {},
+      );
+      const backend = createSupabaseBackend(options(client));
+      const afterGoal = await backend.saveStep(goalSave, context);
+      await expect(
+        backend.saveStep(weightSave, { ...context, rows: afterGoal }),
+      ).rejects.toMatchObject({ code: 'network', sensitive: true });
+      expect(calls.some((c) => c.table === 'weight_goals')).toBe(false);
+    });
+  });
+
   it('Nicht-Gesundheitsdaten offline → Warteschlange + Zwischenspeicher, kein Fehler', async () => {
     const { client } = fakeClient(() => ({ error: networkError }));
     const store = createMemoryStore();

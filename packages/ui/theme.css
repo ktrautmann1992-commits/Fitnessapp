@@ -13,7 +13,8 @@
  * Pflicht-Variablen (alle müssen im :root-Block stehen):
  * - Farben (hell im :root-Block, dunkel im Dunkel-Block):
  *   --color-background, --color-surface, --color-text, --color-text-muted, --color-primary,
- *   --color-primary-text, --color-link, --color-border, --color-success, --color-warning, --color-danger
+ *   --color-primary-text, --color-link, --color-border, --color-success, --color-warning, --color-caution,
+ *   --color-danger
  *   Erlaubt: #RGB, #RRGGBB, #RRGGBBAA, rgb()/rgba(), hsl()/hsla().
  * - Abstände: --space-xs, --space-sm, --space-md, --space-lg, --space-xl, --space-xxl (in px)
  * - Ecken-Rundung: --radius-sm, --radius-md, --radius-lg, --radius-pill (in px)
@@ -55,6 +56,7 @@
   --color-border: var(--brand-grau-dunkel);
   --color-success: #15803d; /* keine Markenfarbe – bleibt grün, damit „erledigt“ eindeutig ist */
   --color-warning: #a15c00; /* Signal-Orange abgedunkelt, damit es als Text auf Hell lesbar ist */
+  --color-caution: #eab308; /* Gelb, NUR als Fläche (Ampel „ehrgeizig“) – als Text auf Hell nicht lesbar */
   --color-danger: #b91c1c; /* keine Markenfarbe – Rot für Fehler und „löschen“ */
 
   /* Abstände (4er-Raster) */
@@ -102,6 +104,7 @@
     --color-border: var(--brand-graphit-hell);
     --color-success: #4ade80;
     --color-warning: var(--brand-signal);
+    --color-caution: #fde047;
     --color-danger: #f87171;
   }
 }
@@ -118,5 +121,6 @@
   --color-border: var(--brand-graphit-hell);
   --color-success: #4ade80;
   --color-warning: var(--brand-signal);
+  --color-caution: #fde047;
   --color-danger: #f87171;
 }

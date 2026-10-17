@@ -51,6 +51,7 @@ export function planSave(
     hasHealthConsent,
     reminderIntervalDays: input.rows.reminder?.interval_days,
     onboardingCompleted: input.rows.profile?.onboarding_completed_at != null,
+    hasStoredWeightGoal: input.rows.weightGoal !== null,
   });
   return { ops, answers, next };
 }

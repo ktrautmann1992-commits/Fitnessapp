@@ -98,7 +98,10 @@ export async function onboardNutrition(page: Page, person: NutritionPerson = {})
   await page.getByRole('radio', { name: /^Einsteiger/ }).click();
   await next(page);
   await heading(page, 'Dein Ziel');
-  await page.getByRole('radio', { name: 'Abnehmen' }).click();
+  await page.getByRole('radio', { name: 'Abnehmen', exact: true }).click();
+  await next(page);
+  // Abnehmen mit Einwilligung → Schritt „Wunschgewicht“ (Etappe Z4); Standard „ohne festes Ziel“.
+  await heading(page, 'Wie möchtest du abnehmen?');
   await next(page);
   await heading(page, 'Deine Trainingstage');
   await planDays(page, [

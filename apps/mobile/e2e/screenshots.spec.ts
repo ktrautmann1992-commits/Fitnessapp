@@ -94,9 +94,30 @@ for (const scheme of ['light', 'dark'] as const) {
     await page.getByRole('radio', { name: /^Fortgeschritten/ }).click();
     await shot('erfahrung');
     await next();
-    await page.getByRole('radio', { name: 'Ausdauer' }).click();
+    await page.getByRole('radio', { name: 'Ausdauer', exact: true }).click();
     await page.getByRole('radio', { name: 'Marathon', exact: true }).click();
     await shot('ziel');
+    // Zwei Ziele und Wunschgewicht mit Ampel (Etappe Z4): Nebenziel Abnehmen, danach wieder ohne Nebenziel weiter.
+    await page.getByRole('radio', { name: /^Zweites Ziel: Abnehmen$/ }).click();
+    await shot('ziel-zwei-ziele');
+    await next();
+    await heading('Wie möchtest du abnehmen?');
+    await shot('wunschgewicht');
+    const concrete = page.getByRole('radio', { name: 'Mit konkretem Ziel' });
+    if ((await concrete.getAttribute('aria-disabled')) !== 'true') {
+      await concrete.click();
+      await page.getByLabel('kg abnehmen ab heute').fill('3');
+      await page.getByLabel('Wochen', { exact: true }).fill('6');
+      const scale = page.getByTestId('feasibility-scale');
+      await scale.scrollIntoViewIfNeeded();
+      await shot('wunschgewicht-ampel');
+      await page.getByLabel('Wochen', { exact: true }).fill('16');
+      await scale.scrollIntoViewIfNeeded();
+      await shot('wunschgewicht-ampel-ruhig');
+    }
+    await page.getByRole('button', { name: 'Zurück' }).click();
+    await heading('Dein Ziel');
+    await page.getByRole('radio', { name: /^Kein zweites Ziel/ }).click();
     await next();
     await shot('trainingstage-vorschlag');
     await page.getByRole('button', { name: 'Ohne Vorschlag planen' }).click();

@@ -543,6 +543,44 @@ müsst nichts einstellen und keine Schlüssel eintragen. Prüfen könnt ihr am H
 6. Optional in der Vorschau (Testmodus): **Einstellungen → Meine Daten exportieren** → **Datei herunterladen** → in
    der Datei steht der neue, leere Bereich `weight_goals`.
 
+## Teil 7z2 – Zwei Ziele und Wunschgewicht mit Ampel testen (Ziele, Etappe Z4, Testmodus)
+Ihr müsst nichts einstellen. Nach dem Merge spielt **db-migrate** einen kleinen Datenbank-Trigger ein (räumt ein
+unpassendes zweites Ziel alter App-Stände auf) – in der GitHub-App unter **Actions → db-migrate** warten, bis der Lauf
+grün ist (vorher müssen im Pull Request **db-test** und **ci** grün sein). Getestet mit **Chrome am iPhone** (Vorschau-Link aus dem Pull
+Request). Am besten in einem **Inkognito-Tab**: Chrome → unten rechts **⋯** → **Neuer Inkognito-Tab** (oder vorher in der
+App Einstellungen → **„Testdaten löschen“**).
+
+1. Vorschau-Link öffnen → **„Los geht's“** → Geburtsdatum **01.09.1991** → **Testmodus starten** → Zustimmen →
+   **männlich** → Einwilligung Gesundheitsdaten **erteilen** → Größe **180**, Gewicht **90** → Umfänge
+   **Überspringen** → Gesundheits-Check **alles „Nein“** → Erfahrung **Einsteiger**.
+2. Schritt **„Dein Ziel“**: oben „Was ist dir am wichtigsten?“ → **Muskelaufbau**. Darunter erscheint
+   **„Zweites Ziel (optional)“**. **Prüfen:** „Definition“ und „Fitness & Gesundheit“ sind **ausgegraut** und lassen sich
+   nicht antippen, darunter steht der Grund (z. B. „Definition verbindet schon Fettverlust und Muskelerhalt.“).
+3. Zweites Ziel **Ausdauer** antippen → Disziplin und Wettkampf-Datum erscheinen (optional). Dann zweites Ziel
+   **Abnehmen** → Satz „… Entspricht „Definition“ – zusätzlich kannst du ein Wunschgewicht festlegen.“
+4. Hauptziel auf **Abnehmen** ändern → das zweite Ziel springt auf „Kein zweites Ziel“ (doppelt geht nicht). So
+   lassen → **Weiter**.
+5. Neuer Schritt **„Wie möchtest du abnehmen?“** – vorausgewählt „In gesundem Tempo, ohne festes Ziel“. **„Mit konkretem
+   Ziel“** antippen → Feld „kg abnehmen ab heute“ **10**, „Wochen“ **12**.
+6. **Prüfen (Ampel):** Zeiger im **orangen** Bereich, Titel „Sehr ehrgeizig – wir planen etwas langsamer“, Text „Sicher
+   planbar sind für dich etwa **22 Wochen**.“ und „Benötigt etwa 1 % deines Gewichts pro Woche.“ Keine kcal, kein
+   Datum, keine Gewichtsprognose.
+7. Knopf **„Zeitraum auf 22 Wochen setzen“** → Wochen stehen auf 22, Zeiger wandert nach **gelb**, Titel „Ehrgeizig,
+   aber machbar“.
+8. Oben auf **„Zielgewicht“** umschalten → **60** eingeben → **Weiter** → rote Meldung „Dieses Zielgewicht liegt unter
+   dem Bereich, den wir planen …“ (Ziel-BMI unter 20), es geht nicht weiter. Auf **80** ändern → **Weiter** → „Deine
+   Trainingstage“. Mit **Zurück** steht das Ziel wieder im Formular.
+9. **Ohne Einwilligung:** neuer Inkognito-Tab, wie Schritt 1, aber „Ohne Einwilligung fortfahren“ → Ziel **Abnehmen** → Hinweis
+   „Wunschgewicht nur mit Einwilligung“ mit Knopf „Einwilligung erteilen“; **Weiter** führt direkt zu „Deine
+   Trainingstage“ (kein Wunschgewicht-Schritt).
+10. **Dunkel:** iPhone → Einstellungen → Anzeige & Helligkeit → **Dunkel** → Schritte 5–7 wiederholen: Balken und
+    Texte gut lesbar.
+11. **Optional mit VoiceOver** (Einstellungen → Bedienungshilfen → VoiceOver): Auf der Ampel liest das iPhone einen
+    ganzen Satz vor, z. B. „Planbarkeit: sehr ehrgeizig. Benötigt etwa 1 % deines Gewichts pro Woche. Sicher
+    planbar sind etwa 22 Wochen.“
+
+Falls etwas nicht so aussieht: Screenshot machen und Claude im Chat schicken.
+
 ## Teil 7f – Ernährungstagebuch testen (Etappe E1, Testmodus)
 Das Tagebuch läuft im **Testmodus** und seit N7 Teil 2 auch mit Konto (Teil 7d, Schritt 11). Ihr müsst nichts einstellen.
 Nach dem Merge spielt **db-migrate** (erst nach grünem db-test) zwei neue, leere Tabellen ein (`food_log_entries`,

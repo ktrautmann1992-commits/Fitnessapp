@@ -4,6 +4,8 @@ import {
   BARBELL_DEFAULT_BAR_KG,
   BARBELL_ID,
   createGoalStepSchema,
+  goalPairBlockReason,
+  hasGoal,
   isAllowedGoalPair,
   DEFAULT_SLOT_MINUTES,
   ENDURANCE_DISCIPLINES,
@@ -32,6 +34,7 @@ import {
   type TrainingSlotKind,
 } from '@fitnessapp/core';
 import { fontSize, fontWeight, radius, spacing } from '@fitnessapp/ui';
+import { useRouter } from 'expo-router';
 import { useState } from 'react';
 import { Pressable, StyleSheet, Text, View } from 'react-native';
 
@@ -52,49 +55,59 @@ import { datePartsFromIso, formatKg, isoFromDateParts, parseDecimal } from '@/li
 import { scheduleSummaryText, slotKindLabel } from '@/lib/summary';
 import { useThemeColors } from '@/lib/theme';
 import { fieldErrorsFromIssues, type FieldErrors } from '@/lib/validation-errors';
+import { healthConsentStatus } from '@/state/flow';
 
 import type { StepController } from './use-step';
 
+/** Nebenziel-Auswahl: „kein zweites Ziel“ oder ein Ziel (Tabelle 4.2). */
+type SecondaryChoice = GoalType | 'none';
+
 export function GoalStep({ ctl }: { ctl: StepController }) {
+  const router = useRouter();
+  const g = t.steps.goal;
   const saved = ctl.app.answers.goal;
   const [goalType, setGoalType] = useState<GoalType | undefined>(saved?.goalType);
+  const [secondary, setSecondary] = useState<GoalType | null>(
+    saved?.goalType !== undefined && isAllowedGoalPair(saved.goalType, saved.secondaryGoalType)
+      ? (saved.secondaryGoalType ?? null)
+      : null,
+  );
   const [discipline, setDiscipline] = useState<EnduranceDiscipline | null>(
     saved?.discipline ?? null,
   );
   const [date, setDate] = useState(() => datePartsFromIso(saved?.targetDate));
   const [errors, setErrors] = useState<FieldErrors>({});
 
+  const hasEndurance = goalType === 'endurance' || secondary === 'endurance';
+  const losesWeight =
+    goalType !== undefined && hasGoal({ primary: goalType, secondary }, 'fat_loss');
+  const consentValid =
+    ctl.app.rows !== null && healthConsentStatus(ctl.app.rows, ctl.app.versions) === 'valid';
+
+  function choosePrimary(value: GoalType) {
+    setGoalType(value);
+    // Ein Nebenziel bleibt, solange es zum neuen Hauptziel passt (Tabelle 4.2); sonst entfällt es.
+    if (secondary !== null && !isAllowedGoalPair(value, secondary)) setSecondary(null);
+  }
+
   function next() {
-    const isEndurance = goalType === 'endurance';
     const anyDatePart = date.day + date.month + date.year !== '';
     const targetDate =
-      isEndurance && anyDatePart ? isoFromDateParts(date.day, date.month, date.year) : null;
-    if (isEndurance && anyDatePart && targetDate === null) {
+      hasEndurance && anyDatePart ? isoFromDateParts(date.day, date.month, date.year) : null;
+    if (hasEndurance && anyDatePart && targetDate === null) {
       setErrors({ targetDate: t.age.incomplete });
       return;
     }
-    // Nebenziel (Etappe Z3): Die Auswahl kommt mit Etappe Z4. Bis dahin bleibt ein gespeichertes Nebenziel erhalten,
-    // solange es zum gewählten Hauptziel passt (sonst entfällt es); seine Disziplin ebenso.
-    const secondaryGoalType =
-      goalType !== undefined &&
-      saved?.secondaryGoalType != null &&
-      isAllowedGoalPair(goalType, saved.secondaryGoalType)
-        ? saved.secondaryGoalType
-        : null;
     const parsed = createGoalStepSchema(ctl.today).safeParse({
       goalType,
-      secondaryGoalType,
-      discipline: isEndurance
-        ? discipline
-        : secondaryGoalType === 'endurance'
-          ? (saved?.discipline ?? null)
-          : null,
+      secondaryGoalType: secondary,
+      discipline: hasEndurance ? discipline : null,
       targetDate,
     });
     if (!parsed.success) {
       setErrors(
         fieldErrorsFromIssues(parsed.error.issues, {
-          goalType: t.steps.goal.required,
+          goalType: g.required,
           targetDate: t.age.invalid,
         }),
       );
@@ -112,44 +125,101 @@ export function GoalStep({ ctl }: { ctl: StepController }) {
     });
   }
 
+  const combination =
+    goalType !== undefined && secondary !== null
+      ? g.combinations[`${goalType}>${secondary}`]
+      : undefined;
+
   return (
     <Screen
-      title={t.steps.goal.title}
+      title={g.title}
       progress={ctl.progress}
       footer={
         <StepFooter onBack={ctl.goBack} onNext={next} loading={ctl.saving} error={ctl.error} />
       }
     >
       <ChoiceList
-        options={GOAL_TYPES.map((value) => ({ value, label: t.steps.goal.options[value] }))}
+        label={g.primaryLabel}
+        options={GOAL_TYPES.map((value) => ({
+          value,
+          label: g.options[value],
+          description: g.descriptions[value],
+        }))}
         value={goalType}
-        onChange={setGoalType}
+        onChange={choosePrimary}
         error={errors.goalType}
       />
-      {goalType === 'endurance' ? (
+      {goalType !== undefined ? (
+        <View style={{ gap: spacing.sm }} testID="goal-secondary">
+          <ChoiceList<SecondaryChoice>
+            label={g.secondaryLabel}
+            horizontal
+            options={[
+              { value: 'none', label: g.noSecondary },
+              ...GOAL_TYPES.filter((value) => value !== goalType).map((value) => {
+                const reason = goalPairBlockReason(goalType, value);
+                const name = g.options[value];
+                return {
+                  value,
+                  label: name,
+                  description: reason === null ? undefined : g.blockedReasons[reason],
+                  disabled: reason !== null,
+                  accessibilityLabel:
+                    reason === null
+                      ? g.secondaryA11y(name)
+                      : g.secondaryBlockedA11y(name, g.blockedReasons[reason]),
+                  testID: `goal-secondary-${value}`,
+                };
+              }),
+            ]}
+            value={secondary ?? 'none'}
+            onChange={(value) => setSecondary(value === 'none' ? null : value)}
+            error={errors.secondaryGoalType}
+          />
+          <Body muted>{g.secondaryIntro}</Body>
+          {combination ? (
+            <Notice testID="goal-combination">
+              <Body>{combination}</Body>
+            </Notice>
+          ) : null}
+        </View>
+      ) : null}
+      {hasEndurance ? (
         <Card>
+          {goalType !== 'endurance' ? <Body muted>{g.enduranceSecondary}</Body> : null}
           <ChoiceList
-            label={t.steps.goal.discipline}
+            label={g.discipline}
             horizontal
             options={ENDURANCE_DISCIPLINES.map((value) => ({
               value,
-              label: t.steps.goal.disciplines[value],
+              label: g.disciplines[value],
             }))}
             value={discipline}
             onChange={(value) => setDiscipline(value === discipline ? null : value)}
             error={errors.discipline}
           />
           <DateInput
-            label={t.steps.goal.targetDate}
+            label={g.targetDate}
             value={date}
             onChange={setDate}
             error={errors.targetDate}
           />
           {/* Phase 10 WP4: Wettkampf mit Ampel und Plan unter „Mein Wettkampf“ (das Datum wird dort vorgeschlagen). */}
           <Body muted testID="goal-competition-hint">
-            {t.steps.goal.targetDateHint}
+            {g.targetDateHint}
           </Body>
         </Card>
+      ) : null}
+      {losesWeight && !consentValid ? (
+        // Ohne Einwilligung Gesundheitsdaten kein Wunschgewicht (Plan 2.3): gesperrt mit Erklärung und Abhilfe.
+        <Notice title={g.weightGoalLockedTitle} testID="goal-weight-goal-locked">
+          <Body>{g.weightGoalLocked}</Body>
+          <Button
+            label={g.weightGoalLockedButton}
+            variant="secondary"
+            onPress={() => router.push('/health-consent')}
+          />
+        </Notice>
       ) : null}
     </Screen>
   );
@@ -309,7 +379,12 @@ export function TrainingScheduleStep({ ctl }: { ctl: StepController }) {
   const { answers } = ctl.app;
   const saved = answers.trainingSchedule;
   const goalType = answers.goal?.goalType;
-  const discipline = answers.goal?.goalType === 'endurance' ? answers.goal.discipline : null;
+  // Nebenziel (Etappe Z4): Ausdauer als Nebenziel belegt Ausdauer-Tage vor (Hauptziel zuerst, Plan 4.3).
+  const secondaryGoalType = answers.goal?.secondaryGoalType ?? null;
+  const discipline =
+    goalType === 'endurance' || secondaryGoalType === 'endurance'
+      ? (answers.goal?.discipline ?? null)
+      : null;
   const screening = answers.healthScreening;
   const ageYears = answers.birthDate ? ageInYears(answers.birthDate, ctl.today) : null;
   // Vorsichtig = ohne Gesundheits-Check oder mit Flag (wie die Plan-Engine).
@@ -321,6 +396,7 @@ export function TrainingScheduleStep({ ctl }: { ctl: StepController }) {
       ? null
       : suggestedTrainingSlots({
           goalType,
+          secondaryGoalType,
           discipline,
           experienceLevel: answers.experienceLevel,
           ageYears,
@@ -454,6 +530,7 @@ export function TrainingScheduleStep({ ctl }: { ctl: StepController }) {
   const hints = parsed.success
     ? scheduleHints(parsed.data, {
         goalType,
+        secondaryGoalType,
         weeklySessionCap: weeklySessionCap({
           experienceLevel: answers.experienceLevel,
           ageYears,

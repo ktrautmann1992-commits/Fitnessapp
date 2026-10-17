@@ -135,7 +135,6 @@ import {
   type ConsentPlatform,
   type ExerciseLogRow,
   type FoodDislikeRow,
-  type GoalsRow,
   type NutritionPrefsRow,
   type RecipeRatingRow,
   type SessionLogRow,
@@ -421,15 +420,6 @@ export function isMissingRelation(error: unknown): boolean {
   return code === 'PGRST205' || code === '42P01';
 }
 
-/**
- * Spalte fehlt (PostgREST PGRST204 „Could not find the … column“, Postgres 42703) – z. B. goals.secondary_goal_type im
- * Zeitfenster zwischen App-Deploy und `db-migrate` (Etappe Z3).
- */
-export function isMissingColumn(error: unknown): boolean {
-  const code = (error as ErrorLike | null)?.code;
-  return code === 'PGRST204' || code === '42703';
-}
-
 export function isMissingFunction(error: unknown): boolean {
   const code = (error as ErrorLike | null)?.code;
   return code === 'PGRST202' || code === '42883';
@@ -487,6 +477,21 @@ function onlineOnlyError(error: unknown): BackendError {
   return new BackendError(code === 'network' ? 'online_only' : code, { cause: error });
 }
 
+/**
+ * Ereignis zu einem vom Server abgelehnten, verworfenen Vorgang der Warteschlange (oder keines):
+ * - Verschiebung abgelehnt (Einheit ersetzt, Tag belegt …) → Plan neu laden und melden.
+ * - Ziel abgelehnt mit 23514 (CHECK, z. B. Paar-CHECK mit einem Nebenziel, das ein älterer App-Stand stehen ließ –
+ *   Wächter Z3 N3) → verständliche Meldung „Bitte App aktualisieren“ statt stillem Verwerfen.
+ * Rein, getestet.
+ */
+export function droppedOpEvent(op: WriteOp, error: unknown): BackendEvent | null {
+  if (op.kind === 'update_planned_session') return { kind: 'plan_change_dropped' };
+  if (op.kind === 'upsert_goals' && (error as ErrorLike | null)?.code === '23514') {
+    return { kind: 'goals_rejected' };
+  }
+  return null;
+}
+
 /** Doppelte aktive Einwilligung (unique index) – beim erneuten Senden kein Fehler. */
 function isDuplicate(error: ErrorLike | null): boolean {
   return error?.code === '23505';
@@ -518,27 +523,11 @@ export async function executeWriteOp(
       }
       return;
     }
-    case 'upsert_goals': {
-      const result = await client.from('goals').upsert(op.row, { onConflict: 'user_id' });
-      // Zeitfenster vor `db-migrate` (Etappe Z3): Die Spalte secondary_goal_type gibt es noch nicht. Ohne Nebenziel ist
-      // die Zeile ohne die Spalte gleichwertig – dann einmal ohne sie senden; mit Nebenziel bleibt es ein Fehler.
-      if (
-        result.error &&
-        isMissingColumn(result.error) &&
-        (op.row.secondary_goal_type ?? null) === null
-      ) {
-        const withoutSecondary: Partial<GoalsRow> = { ...op.row };
-        delete withoutSecondary.secondary_goal_type;
-        check(
-          await client
-            .from('goals')
-            .upsert(withoutSecondary as GoalsRow, { onConflict: 'user_id' }),
-        );
-        return;
-      }
-      check(result);
+    // Seit Etappe Z4 ohne Rückfall bei fehlender Spalte (Wächter Z3 N2): Ein zweiter Versuch ohne secondary_goal_type
+    // ließe ein vorhandenes Nebenziel in der Datenbank stehen, während die App „kein Nebenziel“ zeigt.
+    case 'upsert_goals':
+      check(await client.from('goals').upsert(op.row, { onConflict: 'user_id' }));
       return;
-    }
     // Wunschgewicht (Etappe Z3): RLS verlangt die Einwilligung, der Trigger das Abnehmziel (Wächter S13).
     case 'upsert_weight_goal':
       check(await client.from('weight_goals').upsert(op.row, { onConflict: 'user_id' }));
@@ -899,13 +888,11 @@ export function createSupabaseBackend(options: SupabaseBackendOptions): Backend 
       const code = classifySupabaseError(error);
       return code === 'network' || code === 'not_signed_in';
     },
-    onDropped: (op) => {
+    onDropped: (op, error) => {
       // Nur die Art des Vorgangs – nie Inhalte (keine Nutzerdaten in Logs).
       console.warn(`Änderung verworfen (${op.kind}): vom Server abgelehnt.`);
-      if (op.kind === 'update_planned_session') {
-        // Verschiebung abgelehnt (Einheit ersetzt, Tag belegt …) → App lädt den Plan neu und meldet es.
-        emit({ kind: 'plan_change_dropped' });
-      }
+      const event = droppedOpEvent(op, error);
+      if (event) emit(event);
     },
     currentUserId: () => currentUserId,
   });
@@ -1924,6 +1911,15 @@ export function createSupabaseBackend(options: SupabaseBackendOptions): Backend 
         // Spalten von nutrition_prefs seit N7 Teil 1; der Schritt wird seit N7 Teil 2 angezeigt.
         nutritionSetupAvailable: true,
       });
+      // 0. Wunschgewicht braucht das Abnehmziel in `goals` (Trigger weight_goals_require_fat_loss). Das Ziel läuft über
+      //    die Warteschlange – deshalb vorher die Warteschlange senden; hängt ein Ziel noch fest (offline), nicht
+      //    senden, sondern „Erneut versuchen“ melden (sonst 23514 bei einem Netzaussetzer).
+      if (planned.ops.some((op) => op.kind === 'upsert_weight_goal')) {
+        await queue.flush();
+        if (queue.snapshot().some((entry) => entry.op.kind === 'upsert_goals')) {
+          throw new BackendError('network', { sensitive: true });
+        }
+      }
       // 1. Gesundheitsdaten und Einwilligungen sofort senden (nie auf dem Gerät speichern).
       for (const op of planned.ops.filter(isDirectOp)) {
         try {

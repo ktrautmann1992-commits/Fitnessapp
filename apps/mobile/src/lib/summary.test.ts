@@ -106,3 +106,51 @@ describe('Equipment kompakt', () => {
     );
   });
 });
+
+describe('Zusammenfassung: Haupt- und Nebenziel (Etappe Z4)', () => {
+  it('„Abnehmen + Muskelaufbau“, mit Disziplin beim Nebenziel Ausdauer; nie ein Wunschgewicht (F13)', () => {
+    const goalLine = (answers: Parameters<typeof summaryLines>[0]) =>
+      summaryLines(answers, true).find((line) => line.label === 'Ziel')?.value;
+    expect(
+      goalLine({
+        goal: {
+          goalType: 'fat_loss',
+          secondaryGoalType: 'muscle_gain',
+          discipline: null,
+          targetDate: null,
+        },
+        weightGoal: {
+          targetWeightKg: 80,
+          startDate: '2026-10-12',
+          targetDate: '2027-03-15',
+          amountMode: 'kg_to_lose',
+          timeMode: 'weeks',
+        },
+      }),
+    ).toBe('Abnehmen + Muskelaufbau');
+    expect(
+      goalLine({
+        goal: {
+          goalType: 'fat_loss',
+          secondaryGoalType: 'endurance',
+          discipline: '10k',
+          targetDate: null,
+        },
+      }),
+    ).toBe('Abnehmen + Ausdauer · 10 km');
+    const all = summaryLines(
+      {
+        goal: { goalType: 'fat_loss', secondaryGoalType: null, discipline: null, targetDate: null },
+        weightGoal: {
+          targetWeightKg: 80,
+          startDate: '2026-10-12',
+          targetDate: '2027-03-15',
+          amountMode: 'kg_to_lose',
+          timeMode: 'weeks',
+        },
+      },
+      true,
+    );
+    expect(JSON.stringify(all)).not.toMatch(/80/);
+  });
+});

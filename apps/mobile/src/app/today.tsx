@@ -50,6 +50,7 @@ import { planTitleText } from '@/lib/plan-title';
 import {
   COMPETITION_GOAL_UNREACHABLE,
   COMPETITION_PLAN_ENDED,
+  GOALS_REJECTED,
   PLAN_CHANGE_DROPPED,
   PLAN_RECREATE_NEEDED,
   useApp,
@@ -240,6 +241,12 @@ export default function TodayScreen() {
       {app.backend.mode === 'local' || lib?.containsDrafts ? (
         <Notice tone="info" testID="plan-test-content">
           {t.plan.testContent}
+        </Notice>
+      ) : null}
+      {app.planMessage === GOALS_REJECTED ? (
+        <Notice tone="warning" testID="goals-rejected">
+          <Body>{t.steps.goal.rejected}</Body>
+          <Button label={t.common.close} variant="link" onPress={app.clearPlanMessage} />
         </Notice>
       ) : null}
       {app.planMessage === PLAN_CHANGE_DROPPED ? (

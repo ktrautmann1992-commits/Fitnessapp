@@ -192,7 +192,13 @@ Abschnitt 12.
 (Nebenziel, Paar- und Disziplin-CHECK, Onboarding-Schritt `weight_goal`), `20261017200100_weight_goals.sql` (Wunschgewicht,
 Art. 9, RLS, Trigger „nur mit Abnehmziel“ und Datensparsamkeit), `20261017200200_weight_goals_revoke_export.sql`
 (Widerruf, Export) mit pgTAP 43, SENSIBEL-Test in `db-sync.test.ts`, Testmodus und Supabase-Schreibwege, F8 im Core.
-Abweichungen in `docs/PLAN-ZIELE.md` Abschnitt 13. Reihenfolge (F12): **Z1**
+Abweichungen in `docs/PLAN-ZIELE.md` Abschnitt 13.
+**Stand 17.10.2026: Z4 umgesetzt, Wächter-geprüft (M1–M5, N1–N13 eingearbeitet; Trigger-Migration `20261017220000_goals_secondary_autoclear.sql` mit pgTAP 46; EAS-Build offen)** – App: Schritt „Dein Ziel“ mit Haupt- und Nebenziel
+(verbotene Paare ausgegraut mit Grund, Kombinationssatz, Disziplin/Datum auch beim Nebenziel Ausdauer), neuer Schritt
+„Wie möchtest du abnehmen?“ (`weight_goal`, `WEIGHT_GOAL_STEP_ENABLED = true`) mit Erreichbarkeits-Ampel
+(`FeasibilityScale`, `role="meter"`), Token `caution`, Vormerkungen Z3 N2/N3 erledigt, Playwright `goals.spec.ts`.
+Umsetzungsnotizen in `docs/PLAN-ZIELE.md` Abschnitt 14, Handy-Test in `docs/HANDY-ANLEITUNG.md` Teil 7z2.
+Reihenfolge (F12): **Z1**
 (Core: Ziel-Profil, zwei Ziele, dazu kleine Migration `assert_plan_inputs` mit optionalem Nebenziel-Schlüssel) und
 **Z2** (Core: Abnehmziel und Ampel) jetzt parallel zu Phase 5 → nach Phase 5: **Z3** (Datenmodell, Migration mit RLS,
 Testmodus, Export) → **Z4** (Onboarding mit Ampel, nach F8) → **Z5/Z6** (Einstellungen, Anzeigen, PDF, Doku) → dann

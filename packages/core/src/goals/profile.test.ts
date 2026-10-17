@@ -17,7 +17,9 @@ import { applyGoalAdjustment, type CalorieLimitContext, dayCeilingKcal } from '.
 import {
   energyDirectionOf,
   GOAL_COMBINATIONS,
+  GOAL_PAIR_BLOCK_REASONS,
   goalEnergyAdjustment,
+  goalPairBlockReason,
   goalEnergyDirection,
   goalProfile,
   goalProteinGPerKg,
@@ -339,5 +341,30 @@ describe('Rollen, gleichwertige Paare, Hinweise', () => {
         expected ? ['concurrent_training'] : [],
       );
     }
+  });
+});
+
+describe('goalPairBlockReason (Tabelle 4.2, Etappe Z4)', () => {
+  it('liefert genau bei verbotenen Paaren einen Grund', () => {
+    for (const primary of GOAL_TYPES) {
+      for (const secondary of GOAL_TYPES) {
+        const reason = goalPairBlockReason(primary, secondary);
+        expect(reason === null).toBe(isAllowedGoalPair(primary, secondary));
+        if (reason !== null) expect(GOAL_PAIR_BLOCK_REASONS).toContain(reason);
+      }
+    }
+  });
+
+  it('ordnet die Gründe wie in Tabelle 4.2 zu', () => {
+    expect(goalPairBlockReason('fat_loss', 'fat_loss')).toBe('same');
+    expect(goalPairBlockReason('fat_loss', 'definition')).toBe('overlap');
+    expect(goalPairBlockReason('definition', 'muscle_gain')).toBe('overlap');
+    expect(goalPairBlockReason('muscle_gain', 'definition')).toBe('overlap');
+    expect(goalPairBlockReason('fat_loss', 'general_fitness')).toBe('fitness_secondary');
+    expect(goalPairBlockReason('endurance', 'general_fitness')).toBe('fitness_secondary');
+    expect(goalPairBlockReason('general_fitness', 'muscle_gain')).toBe('primary_preferred');
+    expect(goalPairBlockReason('general_fitness', 'definition')).toBe('primary_preferred');
+    expect(goalPairBlockReason('muscle_gain', 'fat_loss')).toBeNull();
+    expect(goalPairBlockReason('general_fitness', 'endurance')).toBeNull();
   });
 });

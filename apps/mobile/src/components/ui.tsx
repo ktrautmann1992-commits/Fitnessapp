@@ -268,6 +268,11 @@ export interface Choice<T extends string | number> {
   value: T;
   label: string;
   description?: string | undefined;
+  /** Nicht wählbar (ausgegraut); der Grund steht in `description` bzw. `accessibilityLabel`. */
+  disabled?: boolean;
+  /** Eigener Name für den Screenreader (z. B. „Zweites Ziel: Definition – nicht wählbar …“). */
+  accessibilityLabel?: string;
+  testID?: string;
 }
 
 export function ChoiceList<T extends string | number>({
@@ -306,6 +311,9 @@ export function ChoiceList<T extends string | number>({
             selected={value === option.value}
             onPress={() => onChange(option.value)}
             compact={horizontal}
+            disabled={option.disabled}
+            accessibilityLabel={option.accessibilityLabel}
+            testID={option.testID}
           />
         ))}
       </View>
@@ -324,6 +332,7 @@ export function OptionButton({
   filled = false,
   accessibilityLabel,
   disabled = false,
+  testID,
 }: {
   role: 'radio' | 'checkbox';
   label: string;
@@ -333,8 +342,9 @@ export function OptionButton({
   compact?: boolean;
   /** Ausgewählt = gefüllt in der Hauptfarbe (zusätzlich zum Häkchen), z. B. Gewichte zum Antippen. */
   filled?: boolean;
-  accessibilityLabel?: string;
-  disabled?: boolean;
+  accessibilityLabel?: string | undefined;
+  disabled?: boolean | undefined;
+  testID?: string | undefined;
 }) {
   const theme = useThemeColors();
   const solid = filled && selected;
@@ -344,8 +354,10 @@ export function OptionButton({
       accessibilityLabel={accessibilityLabel ?? label}
       accessibilityState={{ checked: selected, disabled }}
       aria-checked={selected}
+      aria-disabled={disabled || undefined}
       disabled={disabled}
       onPress={onPress}
+      testID={testID}
       style={({ pressed }) => [
         compact ? styles.chip : styles.option,
         {

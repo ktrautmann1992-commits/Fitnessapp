@@ -52,6 +52,7 @@ function makeCss({ omit = [], extraRoot = '', dark = null } = {}) {
     '--color-border': 'hsl(220, 13%, 91%)',
     '--color-success': '#15803d',
     '--color-warning': '#b45309',
+    '--color-caution': '#eab308',
     '--color-danger': '#b91c1c',
     '--space-xs': '4px',
     '--space-sm': '8px',

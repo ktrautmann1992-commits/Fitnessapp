@@ -52,6 +52,7 @@ Stehen in `theme.css` als `--brand-…` und in der App als `brandColors` (z. B. 
 | `--color-border`       | grau-dunkel `#b4bdd0`      | graphit-hell `#262c3a` | Linien, kein Text                                 |
 | `--color-success`      | `#15803d` (grün)           | `#4ade80`              | hell 4,6 · dunkel 10,1                            |
 | `--color-warning`      | `#a15c00` (Signal dunkler) | signal `#ffb020`       | hell 4,8 · dunkel 10,7                            |
+| `--color-caution`      | `#eab308` (Gelb)           | `#fde047`              | nur Fläche, nie Text (auf Weiß 1,9 : 1)           |
 | `--color-danger`       | `#b91c1c` (rot)            | `#f87171`              | hell 6,5 (auf Weiß) · dunkel 6,4 (Karte)          |
 
 Bewusste Entscheidungen:
@@ -62,6 +63,10 @@ Bewusste Entscheidungen:
   `--color-primary` nie als Textfarbe auf dem Hintergrund verwenden.
 - **Signal `#ffb020` ist auf Hell als Text nicht lesbar** (1,7 : 1). Im hellen Modus ist die Warnfarbe daher ein
   abgedunkeltes Signal-Orange `#a15c00`; im Dunkelmodus Signal selbst.
+- **Gelb `caution` nur als Fläche** (Etappe Z4, Erreichbarkeits-Ampel beim Abnehmziel, Stufe „ehrgeizig“): Gelb hat auf
+  Weiß zu wenig Kontrast für Text. Texte daneben stehen immer in `--color-text`; der Zeiger der Ampel hat einen Rahmen
+  in Textfarbe (≥ 3 : 1, WCAG 1.4.11). Die vier Ampel-Stufen nutzen `danger` (rot), `warning` (orange), `caution`
+  (gelb) und `success` (grün), immer zusätzlich mit Wort und Zeichen.
 - **Grün und Rot gibt es in der Palette nicht.** `success` und `danger` bleiben Grün und Rot, damit „erledigt“,
   „Achtung“ und „Fehler/löschen“ klar unterscheidbar sind (immer zusätzlich mit Text, nie nur über die Farbe).
 
@@ -137,6 +142,7 @@ Alle folgenden Variablen **müssen** in der Datei stehen. Namen bitte genau so s
 | `--color-border`       | Rahmen und Trennlinien                                        |
 | `--color-success`      | Erfolg, „erledigt“ (z. B. grüner Punkt „Datenbank verbunden“) |
 | `--color-warning`      | Warnung, „Achtung“                                            |
+| `--color-caution`      | Gelb, nur als Fläche (Ampel „ehrgeizig“), nie als Textfarbe   |
 | `--color-danger`       | Fehler, „löschen“                                             |
 
 Erlaubte Schreibweisen: `#1A2B3C`, `#ABC`, `#1A2B3C80` (mit Transparenz), `rgb(…)`, `rgba(…)`, `hsl(…)`, `hsla(…)`.
@@ -184,6 +190,7 @@ Farbwerte austauschen, Namen und Aufbau so lassen (Werte = aktuelles Alpha5-Sche
   --color-border: #b4bdd0;
   --color-success: #15803d;
   --color-warning: #a15c00;
+  --color-caution: #eab308;
   --color-danger: #b91c1c;
 
   /* Abstände */
@@ -226,6 +233,7 @@ Farbwerte austauschen, Namen und Aufbau so lassen (Werte = aktuelles Alpha5-Sche
     --color-border: #262c3a;
     --color-success: #4ade80;
     --color-warning: #ffb020;
+    --color-caution: #fde047;
     --color-danger: #f87171;
   }
 }
@@ -242,6 +250,7 @@ Farbwerte austauschen, Namen und Aufbau so lassen (Werte = aktuelles Alpha5-Sche
   --color-border: #262c3a;
   --color-success: #4ade80;
   --color-warning: #ffb020;
+  --color-caution: #fde047;
   --color-danger: #f87171;
 }
 ```
