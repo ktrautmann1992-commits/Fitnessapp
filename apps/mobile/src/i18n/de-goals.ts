@@ -184,3 +184,95 @@ export const deWeightGoal = {
     about: 'Etwa-Werte: Wir rechnen neu, sobald du ein neues Gewicht einträgst.',
   },
 } as const;
+
+/**
+ * Einstellungen „Dein Abnehm-Ziel“, Karten „erreicht“/„Zeitraum vorbei“ und Hinweise in „Ernährung“ (docs/PLAN-ZIELE.md
+ * 6 Nr. 3–4, F10, F13, K10; Etappe Z5). Das Ziel ist nur unter Einstellungen sichtbar (F13): Karten und Hinweise
+ * nennen nie Zielgewicht, Fortschritt, Restmenge oder ein Datum; kein Konfetti, kein Abzeichen, keine Prognose (F7).
+ */
+export const deWeightGoalLife = {
+  settings: {
+    title: 'Dein Abnehm-Ziel',
+    entryText:
+      'Ohne festes Ziel oder mit Wunschgewicht und Zeitraum. Nur hier sichtbar – nicht auf „Heute“.',
+    open: 'Dein Abnehm-Ziel',
+    none: 'Ohne festes Ziel – wir planen in gesundem Tempo.',
+    noneHint:
+      'Mit einem konkreten Ziel legst du Wunschgewicht und Zeitraum fest. Schneller als ohne festes Ziel planen wir nie.',
+    set: 'Konkretes Ziel festlegen',
+    target: (kg: string) => `Wunschgewicht: ${kg} kg`,
+    periodWeeks: (weeks: string, from: string) => `Zeitraum: ${weeks}, gespeichert am ${from}`,
+    periodDate: (until: string, from: string) => `Zeitraum: bis ${until}, gespeichert am ${from}`,
+    edit: 'Ziel bearbeiten',
+    newWeight: 'Neues Gewicht eintragen',
+    remove: 'Ziel entfernen',
+    removeTitle: 'Ziel entfernen?',
+    removeText:
+      'Wir planen dann wieder in gesundem Tempo, ohne festes Ziel. Dein Essensplan wird ab heute angepasst.',
+    removeConfirm: 'Ziel entfernen',
+    removed: 'Dein Ziel ist entfernt. Wir planen in gesundem Tempo, ohne festes Ziel.',
+    saved: 'Gespeichert. Wir planen ab heute neu.',
+    notFatLoss: 'Ein Wunschgewicht gibt es nur beim Ziel Abnehmen.',
+    changeGoal: 'Ziel ändern',
+    noConsent:
+      'Ein konkretes Abnehmziel braucht dein Gewicht – dafür brauchen wir deine Einwilligung zu Gesundheitsdaten.',
+    consentButton: 'Einwilligung erteilen',
+    status: {
+      active: 'Wir planen dein Ziel in deiner Ernährung ein – nie schneller als ohne festes Ziel.',
+      paused:
+        'Dein Ziel ruht gerade. Wir planen ohne Kaloriendefizit, bis sich deine Angaben ändern.',
+      invalid: 'Dein Zielgewicht passt nicht mehr zu deinen Angaben. Bitte passe es an.',
+      no_deficit:
+        'Derzeit planen wir für dich kein Kaloriendefizit. Wir empfehlen „ohne festes Ziel“.',
+    },
+    adjust: 'Ziel anpassen',
+    weightOutdated:
+      'Dein Gewicht ist älter als 3 Monate. Trag es bitte neu ein, damit wir dein Ziel richtig planen.',
+    weightOutdatedButton: 'Gewicht aktualisieren',
+    saveFailed: 'Das hat nicht geklappt. Bitte versuche es noch einmal.',
+  },
+  /** Karten auf „Heute“ und unter Einstellungen (F10). */
+  cards: {
+    reached: {
+      title: 'Wunschgewicht erreicht',
+      text: 'Du hast dein Wunschgewicht erreicht. Wie geht es weiter? Bis du wählst, planen wir ohne Kaloriendefizit.',
+      maintain: 'Gewicht halten',
+      maintainHint: 'Ziel „Fitness & Gesundheit“, ohne Kaloriendefizit.',
+      muscleGain: 'Muskelaufbau',
+      muscleGainHint: 'Ziel „Muskelaufbau“ – Krafttraining und ausreichend Energie.',
+      newGoal: 'Neues Wunschgewicht',
+      done: 'Dein Ziel ist geändert. Unten kannst du deinen Trainingsplan neu erstellen.',
+    },
+    datePassed: {
+      title: 'Dein Zeitraum ist vorbei',
+      text: 'Dein Zeitraum ist vorbei. Wir planen jetzt im gesunden Standard-Tempo. Verlängern oder ohne festes Ziel weitermachen?',
+      extend: 'Verlängern',
+      none: 'Ohne festes Ziel weitermachen',
+      done: 'Wir planen weiter in gesundem Tempo, ohne festes Ziel.',
+    },
+  },
+  /** Formular (Wächter Z4 N10): erreicht/abgelaufen – kein stilles Verlängern, kein Blockieren. */
+  form: {
+    reached:
+      'Du hast dein Wunschgewicht erreicht. Mit „Weiter“ bleibt alles, wie es ist. Für ein neues Ziel gib ein neues Wunschgewicht und einen Zeitraum ein.',
+    datePassed:
+      'Dein Zeitraum ist vorbei. Mit „Weiter“ bleibt alles, wie es ist (Standard-Tempo). Zum Verlängern wähle einen neuen Zeitraum ab heute.',
+    extend: 'Verlängern: Wähle einen neuen Zeitraum ab heute. Wir planen ab heute neu.',
+    saveButton: 'Speichern',
+  },
+  /** Hinweise in der Ernährungs-Übersicht der Woche (einmal je Woche, Wächter K10). */
+  nutrition: {
+    title: 'Dein Abnehm-Ziel',
+    weight_goal_pace_capped:
+      'Für dein Wunschziel planen wir etwas langsamer, damit es sicher bleibt.',
+    weight_goal_reached:
+      'Du hast dein Wunschgewicht erreicht. Wir planen ohne Kaloriendefizit, bis du wählst, wie es weitergeht.',
+    weight_goal_date_passed: 'Dein Zeitraum ist vorbei. Wir planen im gesunden Standard-Tempo.',
+    weight_goal_invalid: 'Dein Zielgewicht passt nicht mehr zu deinen Angaben. Bitte passe es an.',
+    weight_goal_no_deficit:
+      'Derzeit planen wir für dich kein Kaloriendefizit. Wir empfehlen „ohne festes Ziel“.',
+    open: 'Ziel ansehen',
+    adjust: 'Ziel anpassen',
+    change: 'Ziel ändern',
+  },
+} as const;

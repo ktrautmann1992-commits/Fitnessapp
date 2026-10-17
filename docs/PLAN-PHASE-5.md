@@ -303,6 +303,12 @@ So wird das absolute Defizit an langen Trainingstagen nicht größer (Energiever
 | `general_fitness` | 0 %                                                   | Erhalt                                                                  |
 | `endurance`       | 0 %                                                   | Erhalt; Kohlenhydrate nach Trainingslast (4.7)                          |
 
+**Seit Ziele Z1/Z2 (`docs/PLAN-ZIELE.md` 2.4, 4.4, 4.5):** Die Anpassung kommt aus dem **Ziel-Profil** (`goalProfile`,
+Haupt- + Nebenziel, `GOAL_PAIR_RULES`); für Einzelziele gelten genau die Werte dieser Tabelle (Invarianten-Test). Die
+Energie-Richtung (Defizit/Erhalt/Überschuss) folgt aus dem Vorzeichen. Ein konkretes Abnehmziel kann die Anpassung nur
+Richtung 0 verschieben (F5), danach gilt unverändert 4.6. Neues/geändertes/erreichtes/abgelaufenes/entferntes Ziel →
+automatische Neuplanung ab heute (6.6, Grund `weight_goal_changed`, Etappe Z5).
+
 ### 4.6 Schutzgrenzen (`limits.ts`, nicht abschaltbar)
 
 `clampCalorieTarget(proposed, ctx)` ist die **einzige Stelle mit Schutzgrenzen** (S10, R2-S5). Sie läuft bei jeder Berechnung neu – auch wenn sich Gewicht, Flags oder Alter ändern, und auch für 4b-Anpassungen (der Versatz ist Teil von `proposed`).
@@ -375,6 +381,8 @@ mit `BandObergrenze(d) = dayCeilingKcal(d)` in **jedem** Modus (4.6, H3); ohne �
 
 - **Eiweiß** g/kg je Ziel: `fat_loss` 2,0 · `definition` 2,2 · `muscle_gain` 1,8 · `general_fitness` 1,4 · `endurance` 1,4. Obergrenze 2,2 g/kg.
   Quellen: Morton RW et al. (2018), Br J Sports Med 52(6):376–384; Jäger R et al. (2017), ISSN Position Stand, J Int Soc Sports Nutr 14:20; Thomas DT, Erdman KA, Burke LM (2016), ACSM/AND/DC Joint Position Statement, Med Sci Sports Exerc 48(3):543–568.
+- **Zwei Ziele (`docs/PLAN-ZIELE.md` 4.4):** Eiweiß und Kohlenhydrat-Regel kommen aus dem Ziel-Profil
+  (`goalProteinGPerKg`, `goalUsesEnduranceCarbs`); Einzelziele unverändert. Ein konkretes Abnehmziel ändert das Eiweiß nicht.
 - **Referenzgewicht bei BMI ≥ 30:** Eiweiß rechnet mit dem Gewicht bei BMI 25 für die Größe. PRODUKTENTSCHEIDUNG.
 - **Ab 65 (S16):** 1,2–1,6 g/kg. Quelle: Bauer J et al. (2013), PROT-AGE, J Am Med Dir Assoc 14(8):542–559 (Gesunde 1,0–1,2, Aktive 1,2–1,5 g/kg; wir planen für Trainierende ab 1,2, gedeckelt bei 1,6 wegen Nierenfunktion im Alter – PRODUKTENTSCHEIDUNG).
 - **Unter 18, `medication`, `medical_clearance_recommended`, kein Gesundheits-Check (S16, B4):** Eiweiß höchstens 1,6 g/kg (PRODUKTENTSCHEIDUNG, vorsichtig).
@@ -400,6 +408,10 @@ mit `BandObergrenze(d) = dayCeilingKcal(d)` in **jedem** Modus (4.6, H3); ohne �
 - **Lange Einheiten** (Ausdauer ≥ 90 min): Hinweis-Code `long_session_fueling` („Bei langen Einheiten etwa 30–60 g Kohlenhydrate pro Stunde, z. B. Banane, und regelmäßig trinken.“). Quelle: Thomas 2016; Jeukendrup A (2014), Sports Med 44 Suppl 1:S25–S33.
 
 ### 4.9 Sonderfälle (`eligibility.ts`) – strengste Regel gewinnt
+
+Seit Ziele Z1 gelten die Sonderfälle für die **Energie-Richtung des Ziel-Profils** (statt `DEFICIT_GOALS`), also auch für
+Kombinationen mit Abnehmen oder Definition (`docs/PLAN-ZIELE.md` 4.4). Ein konkretes Abnehmziel ruht bei
+`maintenance_only`/`no_targets` (z. B. Schwangerschaft, unter 18) und lockert keine Grenze.
 
 | Fall                                                                                                                 | Regel                                                                                                                                                                                                                                                                                                                                                                                                                     | Hinweis (fester Text, keine Diagnose)                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                               |
 | -------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |

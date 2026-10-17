@@ -18,6 +18,8 @@ import { t } from '@/i18n';
 import { formatDateDe, todayIso } from '@/lib/format';
 import { dayStatusText, kmText, weekRangeText } from '@/lib/history-format';
 import { dayLabel } from '@/lib/plan-format';
+import { planNameLine } from '@/lib/plan-title';
+import { activePlan } from '@/data/training-plan';
 import { useThemeColors } from '@/lib/theme';
 import { useApp } from '@/state/app-state';
 import { resolveEntryRoute } from '@/state/flow';
@@ -56,6 +58,9 @@ export default function WeekScreen() {
   const summary = weekLogSummary(sessions, logs, pager.weekStart, today);
   const pending = new Set(app.pendingLogSessionIds);
   const isCurrent = pager.weekStart === startOfIsoWeek(today);
+  // Planname mit beiden Zielen (Etappe Z5) – ohne Wunschgewicht oder Tempo.
+  const active = activePlan(app.rows);
+  const planName = active ? planNameLine(active.plan) : null;
   const empty = summary.days.every((d) => d.status === 'rest');
 
   const itemLines = (item: DayItem): string[] =>
@@ -89,6 +94,11 @@ export default function WeekScreen() {
         <Body testID="week-range">
           {weekRangeText(summary.weekStart, addDays(summary.weekStart, 6))}
         </Body>
+        {planName ? (
+          <Body muted testID="week-plan-name">
+            {planName}
+          </Body>
+        ) : null}
       </View>
       <View style={styles.pager}>
         <View style={styles.pagerButton}>

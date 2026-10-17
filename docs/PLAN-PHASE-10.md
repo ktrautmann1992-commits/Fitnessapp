@@ -107,6 +107,13 @@ Phase 10 bringt zwei Dinge:
   `effort_target` ≤ 4 aus (Wächter S6, Test in `db-sync.test.ts`) – sie muss nach Phase 10 neu gefasst werden.
 - **Phase 8 (später):** Herzfrequenz, Wearable-Import, Puls-Zonen.
 - **PLAN-ZIELE (F12, F15):** Z3–Z6 eigentlich vor Phase 10; Nebenziel Ausdauer bekommt das Datum ab Phase 10.
+  **Nachtrag Z6 (17.10.2026), umgesetzt sind Z1–Z5:** Ausdauer kann Haupt- **oder** Nebenziel sein (Ziel-Profil
+  `goalProfile().enduranceRole`). Offen für Phase 10: (1) Wettkampfplan und `save_competition`/`cancel_competition`/
+  `delete_competition` gleichen `goals.target_date` bisher nur beim **Hauptziel** Ausdauer ab – entscheiden, ob ein
+  Wettkampf auch mit Ausdauer als Nebenziel möglich ist (Vorrang „Hauptziel zuerst“ in der Woche beachten). (2)
+  **Wettkampfwoche ohne Defizit:** Bei „Ausdauer → Abnehmen“ (−10 %) und jeder Kombination mit Abnehmen gilt in der
+  Wettkampfwoche (Tapering, Carb-Loading, Wettkampftag) Erhalt – ein konkretes Abnehmziel ruht dort, nie ein Aufholen
+  danach. (3) Ein Abnehmziel ändert den Trainingsplan nie (keine Körperdaten im Plan).
 - **Phase 11b (Challenges):** keine Challenge im Tapering (KONZEPT 11.3) – braucht die Phase aus WP1.
 
 ---

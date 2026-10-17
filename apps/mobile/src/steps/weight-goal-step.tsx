@@ -4,6 +4,8 @@ import {
   WEIGHT_GOAL_AMOUNT_MODES,
   WEIGHT_GOAL_TIME_MODES,
   weightGoalAvailability,
+  weightGoalOverview,
+  weightGoalPeriodEnded,
   type NutritionInputsInput,
   type WeightGoal,
   type WeightGoalAvailability,
@@ -12,7 +14,7 @@ import {
   type WeightGoalIssueCode,
 } from '@fitnessapp/core';
 import { fontSize, fontWeight, radius, spacing } from '@fitnessapp/ui';
-import { useRouter, type Href } from 'expo-router';
+import { useLocalSearchParams, useRouter, type Href } from 'expo-router';
 import { useState } from 'react';
 import { Pressable, StyleSheet, Text, View } from 'react-native';
 
@@ -55,7 +57,17 @@ import type { StepController } from './use-step';
  */
 
 const W = t.steps.weightGoal;
+const L = t.weightGoalLife;
 type Mode = 'none' | 'concrete';
+
+/** Stand des gespeicherten Ziels heute; bei einem Rechenfehler „none“ (keine Details, keine Gesundheitsdaten in Logs). */
+function lifecycleStatus(person: NutritionInputsInput) {
+  try {
+    return weightGoalOverview(person).status;
+  } catch {
+    return 'none';
+  }
+}
 
 /** Eingaben der Ernährungs-Engine für die Ampel (Ruhetag; Trainings der Woche spielen keine Rolle). */
 function personInputs(ctl: StepController): NutritionInputsInput | null {
@@ -129,6 +141,8 @@ function WeightGoalForm({
   availability: WeightGoalAvailability;
 }) {
   const router = useRouter();
+  // „Verlängern“ aus der Karte bzw. den Einstellungen (Etappe Z5, F10): ausdrücklich, nie automatisch.
+  const { verlaengern } = useLocalSearchParams<{ verlaengern?: string }>();
   const saved: WeightGoal | null = ctl.app.answers.weightGoal ?? null;
   const currentWeightKg = availability.available ? availability.body.weightKg : null;
   // Gespeichertes Ziel → „mit konkretem Ziel“ (auch wenn es gerade ruht, z. B. Schwangerschaft; dann gesperrt).
@@ -140,6 +154,21 @@ function WeightGoalForm({
   );
   const [submitted, setSubmitted] = useState(false);
   const [confirmHidden, setConfirmHidden] = useState(false);
+  // Unverändert → „Weiter“ behält das gespeicherte Ziel genau so (Wächter Z4 N10, Etappe Z5).
+  const [touched, setTouched] = useState(false);
+  // Stand des gespeicherten Ziels heute (erreicht/abgelaufen) – Regel aus packages/core.
+  const lifecycle = saved === null ? 'none' : lifecycleStatus(person);
+  const ended = saved !== null && weightGoalPeriodEnded(saved, ctl.today);
+  const formNotice =
+    saved === null || mode !== 'concrete'
+      ? null
+      : verlaengern === '1' && ended
+        ? L.form.extend
+        : lifecycle === 'reached'
+          ? L.form.reached
+          : ended
+            ? L.form.datePassed
+            : null;
 
   const evaluation = mode === 'concrete' ? evaluate(draft, person) : null;
   const rating =
@@ -173,7 +202,10 @@ function WeightGoalForm({
   }
   formError ??= fieldErrors.form;
 
-  const update = (patch: Partial<WeightGoalDraft>) => setDraft((prev) => ({ ...prev, ...patch }));
+  const update = (patch: Partial<WeightGoalDraft>) => {
+    setTouched(true);
+    setDraft((prev) => ({ ...prev, ...patch }));
+  };
 
   function chooseMode(next: Mode) {
     if (next === 'concrete' && mode !== 'concrete' && !showEnergyNumbers(ctl.app.rows)) {
@@ -181,6 +213,7 @@ function WeightGoalForm({
       setConfirmHidden(true);
       return;
     }
+    if (next !== mode) setTouched(true);
     setMode(next);
   }
 
@@ -192,6 +225,8 @@ function WeightGoalForm({
       availability,
       evaluated:
         evaluation?.kind === 'evaluated' && evaluation.result.ok ? evaluation.result.goal : null,
+      // „Verlängern“ verlangt immer eine neue Eingabe (ausdrücklich, F10).
+      pristine: !touched && verlaengern !== '1',
     });
     if (decision.kind === 'invalid') {
       setSubmitted(true);
@@ -224,6 +259,7 @@ function WeightGoalForm({
         <StepFooter
           onBack={ctl.goBack}
           onNext={next}
+          {...(ctl.returnTo !== null ? { nextLabel: L.form.saveButton } : {})}
           loading={ctl.saving}
           error={ctl.error ?? (mode === 'concrete' ? formError : undefined)}
         />
@@ -240,6 +276,11 @@ function WeightGoalForm({
         value={mode}
         onChange={chooseMode}
       />
+      {formNotice !== null ? (
+        <Notice tone="info" testID="weight-goal-form-lifecycle">
+          {formNotice}
+        </Notice>
+      ) : null}
       {blockedReason !== null ? (
         <Notice tone="info" title={W.blockedTitle} testID={`weight-goal-blocked-${blockedReason}`}>
           <Body>{W.blocked[blockedReason]}</Body>
@@ -341,6 +382,7 @@ function WeightGoalForm({
         confirmVariant="primary"
         onConfirm={() => {
           setConfirmHidden(false);
+          setTouched(true);
           setMode('concrete');
         }}
         onCancel={() => setConfirmHidden(false)}

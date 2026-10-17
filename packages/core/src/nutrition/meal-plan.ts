@@ -236,14 +236,38 @@ export function mealTargetKcal(
   return (info.share * (band.min + band.max)) / 2;
 }
 
-/** Abgleich-Schlüssel für 6.6 (Modus, Deckel, Rezept-Ausschlüsse) – ohne Zahlen zu Körperdaten. */
+/** Teil des Abgleich-Schlüssels zum konkreten Abnehmziel (Präfix, docs/PLAN-ZIELE.md 4.6, Etappe Z5). */
+export const WEIGHT_GOAL_KEY_PREFIX = 'wg=';
+
+/**
+ * Abgleich-Schlüssel für 6.6 (Modus, Deckel, Rezept-Ausschlüsse) – ohne Zahlen zu Körperdaten. Mit konkretem
+ * Abnehmziel (Etappe Z5) kommt ein Teil `wg=<Stand>:<Hash der Anpassung>` dazu: Ein neues, geändertes, erreichtes,
+ * abgelaufenes oder entferntes Ziel verschiebt das Band und plant den Essensplan ab heute automatisch neu (Plan 4.6
+ * N5, Grund `weight_goal_changed`). Die Anpassung steht nur als Hash darin, nie als Zahl. Ohne Ziel bleibt der
+ * Schlüssel genau wie vorher – bestehende Pläne werden durch diese Etappe nicht neu geplant.
+ */
 export function daySafetyKey(day: NutritionDayTargets): string {
-  return [
+  const parts = [
     day.mode,
     `dc=${day.deficitCap}`,
     `sc=${day.surplusCap}`,
     `ex=${[...day.recipeExclusions].sort().join(',')}`,
-  ].join('|');
+  ];
+  if (day.weightGoalStatus !== null) {
+    const adjustment = day.goalAdjustment === null ? '-' : day.goalAdjustment.toFixed(4);
+    parts.push(
+      `${WEIGHT_GOAL_KEY_PREFIX}${day.weightGoalStatus}:${stableHashKey('weight_goal', adjustment)}`,
+    );
+  }
+  return parts.join('|');
+}
+
+/** Schlüssel ohne den Teil zum Abnehmziel (Deckel-Vergleich). */
+export function daySafetyKeyWithoutWeightGoal(key: string): string {
+  return key
+    .split('|')
+    .filter((part) => !part.startsWith(WEIGHT_GOAL_KEY_PREFIX))
+    .join('|');
 }
 
 // ---------------------------------------------------------------------------------------------------------

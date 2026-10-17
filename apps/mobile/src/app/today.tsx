@@ -46,7 +46,8 @@ import { createPlanErrorText, errorText } from '@/lib/error-text';
 import { formatDateDe, todayIso } from '@/lib/format';
 import { workoutTargetLines } from '@/lib/workout-format';
 import { dayLabel, weekdayName } from '@/lib/plan-format';
-import { planTitleText } from '@/lib/plan-title';
+import { planNameLine, planTitleText } from '@/lib/plan-title';
+import { WeightGoalLifecycleCard, weightGoalOverviewFromRows } from '@/components/weight-goal';
 import {
   COMPETITION_GOAL_UNREACHABLE,
   COMPETITION_PLAN_ENDED,
@@ -325,6 +326,11 @@ export default function TodayScreen() {
       ))}
       {app.offline ? <Notice tone="warning">{t.plan.offline}</Notice> : null}
       {isReminderDue(rows, today) ? <Notice tone="info">{t.today.measurementDue}</Notice> : null}
+      {/* Etappe Z5 (F10): Karte nur bei „erreicht“ bzw. „Zeitraum vorbei“ – ohne Zahlen, kein Fortschritt (F13). */}
+      <WeightGoalLifecycleCard
+        overview={weightGoalOverviewFromRows(rows, app.versions, today)}
+        zurueck="heute"
+      />
       {/* Wettkampf (WP4): Countdown bzw. Einladung, wenn im Onboarding ein Datum angegeben wurde. */}
       {competition && countdown ? (
         <CountdownCard
@@ -872,6 +878,7 @@ export default function TodayScreen() {
       />
 
       <Card>
+        {planNameLine(plan) ? <Body testID="plan-name">{planNameLine(plan)}</Body> : null}
         <Body muted>{planTitleText(plan)}</Body>
         <Body>{t.plan.quality[plan.match_quality]}</Body>
         {plan.uses_health_data ? (

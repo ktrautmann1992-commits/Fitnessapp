@@ -14,6 +14,7 @@ import {
   stepWeeks,
   weeksText,
   weightGoalSaveDecision,
+  weightGoalSummary,
 } from './weight-goal-format';
 
 /** Beispiel A (docs/PLAN-ZIELE.md 3.3): Mann, 35 J., 180 cm, 90 kg, Alltagsfaktor 1,45, Check ohne Befund. */
@@ -187,10 +188,24 @@ describe('Formular (Plan 2.2)', () => {
       amountMode: 'target_weight',
       amountText: '80',
     });
-    // Datum vorbei → Wochen (mindestens 4), Datum-Modus nur mit Datum in der Zukunft.
+    // Zeitraum vorbei → Feld leer, kein vorgeschlagener neuer Zeitraum (Wächter Z4 N10, Etappe Z5); Datum-Modus nur
+    // mit Datum in der Zukunft. Zieldatum genau heute zählt als vorbei.
     expect(
       draftFromWeightGoal({ ...goal, timeMode: 'date', targetDate: '2026-10-01' }, 90, TODAY),
-    ).toMatchObject({ timeMode: 'weeks', weeksText: '4' });
+    ).toMatchObject({ timeMode: 'weeks', weeksText: '', date: { day: '', month: '', year: '' } });
+    expect(draftFromWeightGoal({ ...goal, targetDate: TODAY }, 90, TODAY)).toMatchObject({
+      timeMode: 'weeks',
+      weeksText: '',
+    });
+    // Noch 1 Tag → mindestens 4 Wochen (wie bisher).
+    expect(draftFromWeightGoal({ ...goal, targetDate: '2026-10-13' }, 90, TODAY).weeksText).toBe(
+      '4',
+    );
+    // Erreicht (aktuelles Gewicht ≤ Ziel) → Zielgewicht statt „kg abnehmen“, kein Fehler.
+    expect(draftFromWeightGoal(goal, 79.5, TODAY)).toMatchObject({
+      amountMode: 'target_weight',
+      amountText: '80',
+    });
     expect(draftFromWeightGoal({ ...goal, timeMode: 'date' }, 90, TODAY)).toMatchObject({
       timeMode: 'date',
       date: { day: '01', month: '03', year: '2027' },
@@ -254,6 +269,84 @@ describe('Was „Weiter“ speichert (weightGoalSaveDecision, Wächter Z4 M3)', 
         weightGoalSaveDecision({ mode: 'none', saved, availability, evaluated: fresh }),
       ).toEqual({ kind: 'save', weightGoal: null });
     }
+  });
+
+  it('Formular unverändert → gespeichertes Ziel genau so (Wächter Z4 N10: kein stilles Verlängern, kein Blockieren)', () => {
+    const expired = { ...saved, startDate: '2026-08-01', targetDate: '2026-10-01' };
+    for (const goal of [saved, expired]) {
+      for (const availability of [available, blocked('pregnancy'), blocked('weight_outdated')]) {
+        expect(
+          weightGoalSaveDecision({
+            mode: 'concrete',
+            saved: goal,
+            availability,
+            evaluated: null,
+            pristine: true,
+          }),
+        ).toEqual({ kind: 'save', weightGoal: goal });
+      }
+    }
+    // Geändert → neues Ziel (startDate heute) bzw. ungültig; ohne Einwilligung nie; „ohne festes Ziel“ löscht.
+    expect(
+      weightGoalSaveDecision({
+        mode: 'concrete',
+        saved: expired,
+        availability: available,
+        evaluated: null,
+        pristine: false,
+      }),
+    ).toEqual({ kind: 'invalid' });
+    expect(
+      weightGoalSaveDecision({
+        mode: 'concrete',
+        saved,
+        availability: blocked('no_consent'),
+        evaluated: null,
+        pristine: true,
+      }),
+    ).toEqual({ kind: 'save', weightGoal: null });
+    expect(
+      weightGoalSaveDecision({
+        mode: 'none',
+        saved,
+        availability: available,
+        evaluated: null,
+        pristine: true,
+      }),
+    ).toEqual({ kind: 'save', weightGoal: null });
+    // Ohne gespeichertes Ziel hilft „unverändert“ nicht: Eingabe nötig.
+    expect(
+      weightGoalSaveDecision({
+        mode: 'concrete',
+        saved: null,
+        availability: available,
+        evaluated: null,
+        pristine: true,
+      }),
+    ).toEqual({ kind: 'invalid' });
+  });
+
+  it('Einstellungen: Wunschgewicht und Zeitraum wie eingegeben, ohne Restmenge oder Prognose (F7, F13)', () => {
+    expect(weightGoalSummary({ ...saved, startDate: TODAY, targetDate: '2027-04-12' })).toEqual({
+      target: 'Wunschgewicht: 80 kg',
+      period: 'Zeitraum: 26 Wochen, gespeichert am 12.10.2026',
+    });
+    expect(
+      weightGoalSummary({
+        ...saved,
+        targetWeightKg: 79.5,
+        startDate: TODAY,
+        targetDate: '2027-01-02',
+        timeMode: 'date',
+      }),
+    ).toEqual({
+      target: 'Wunschgewicht: 79,5 kg',
+      period: 'Zeitraum: bis 02.01.2027, gespeichert am 12.10.2026',
+    });
+    // Ab 27 Wochen zusätzlich in Monaten (Dauer, kein Kalendermonat).
+    expect(weightGoalSummary({ ...saved, startDate: TODAY, targetDate: '2027-06-14' }).period).toBe(
+      'Zeitraum: 35 Wochen (etwa 8 Monate), gespeichert am 12.10.2026',
+    );
   });
 
   it('verfügbar: neues Ziel; ungültige Eingabe → nichts speichern', () => {

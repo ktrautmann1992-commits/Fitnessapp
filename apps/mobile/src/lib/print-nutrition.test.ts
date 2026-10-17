@@ -121,6 +121,32 @@ describe('Essensplan und Einkaufsliste als PDF – Zusammenstecken (N6)', () => 
     expect(visible(off.html)).not.toMatch(/kcal|Tagessumme/);
   });
 
+  it('Mit Wunschgewicht und zwei Zielen: kein Zielgewicht, kein Zeitraum, kein Tempo, kein Ziel „wegen …“ (Etappe Z5, N6)', () => {
+    const base = rows();
+    const data = week({
+      ...base,
+      goals: base.goals ? { ...base.goals, secondary_goal_type: 'muscle_gain' } : null,
+      weightGoal: {
+        user_id: USER_ID,
+        target_weight_kg: 66.5,
+        start_date: '2026-10-01',
+        target_date: '2027-02-18',
+        amount_mode: 'target_weight',
+        time_mode: 'date',
+      },
+    });
+    // Das Ziel wirkt (Ernährung rechnet damit) …
+    expect(data.targets.days.some((d) => d.weightGoalStatus === 'active')).toBe(true);
+    for (const kind of ['nutrition_plan', 'shopping_list'] as const) {
+      const result = buildNutritionPrint(input(data, { kind }));
+      if (!result.ok) throw new Error(result.error);
+      // … steht aber nie im PDF.
+      expect(visible(result.html)).not.toMatch(
+        /66[,.]5|18\.02\.2027|Wunschgewicht|Zielgewicht|Abnehm|Tempo|planbar|langsamer|\d+ Wochen/i,
+      );
+    }
+  });
+
   it('Schwangerschaft: auch bei „Zahlen an“ keine kcal (B5)', () => {
     const data = week(rows({ flags: ['pregnancy', 'conservative_plan'] }));
     const result = buildNutritionPrint(input(data, { showNumbers: true }));

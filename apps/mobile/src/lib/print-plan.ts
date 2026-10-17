@@ -136,6 +136,8 @@ export function buildPlanPrint(input: PlanPrintInput): PlanPrintResult {
       inputs: snapshot
         ? {
             goalType: snapshot.goalType,
+            // Nebenziel im Plannamen (Etappe Z5) – nie Wunschgewicht oder Tempo (Regel B1).
+            secondaryGoalType: snapshot.secondaryGoalType ?? null,
             discipline: snapshot.discipline,
             schedule: snapshot.schedule,
           }

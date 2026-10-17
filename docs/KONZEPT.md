@@ -15,6 +15,12 @@ keine Ranglisten, keine öffentlichen Profile – Strecken, Fotos, Abzeichen und
 ## 1. Zielgruppe & Ziele
 - DACH, Einsteiger, Fortgeschrittene, ambitionierte/professionelle Ausdauersportler
 - Ziele: Fettverlust, Definition, Muskelaufbau, Allgemeine Fitness, Ausdauer
+- **Zwei Ziele** (seit Ziele Z1–Z5, `docs/PLAN-ZIELE.md`, Gründer-Entscheidung F1): Hauptziel + optionales Nebenziel aus
+  einer festen Liste erlaubter Paare (Tabelle 4.2 dort). Die Trainingsvorlage folgt dem Hauptziel, das Nebenziel ergänzt
+  (z. B. Ausdauer-Tage, mehr Eiweiß, kleineres Defizit). Abnehmen wahlweise **ohne festes Ziel** (Standard) oder **mit
+  konkretem Ziel** (Wunschgewicht + Zeitraum) mit Planbarkeits-Ampel Rot → Grün; ein konkretes Ziel macht den Plan nie
+  schneller als ohne (F5). Keine Gewichtsprognose, keine Kurve, kein Countdown (F7); das Ziel ist nur unter
+  Einstellungen sichtbar (F13).
 - Ausdauer-Disziplinen: 5 km, 10 km, Halbmarathon, Marathon, Triathlon (Sprint, Olympisch, Mitteldistanz, Langdistanz), Radfahren, Schwimmen
 - Optional Wettkampfdatum → Periodisierung rückwärts vom Wettkampf
 
@@ -31,7 +37,11 @@ Verbindlich ist der freigegebene Ablauf in `docs/PLAN-PHASE-1.md` Abschnitt 3 (S
 3. Körperdaten: Größe, Gewicht, optional Körperfett, Ruhepuls; danach **optional** Körperumfänge mit Mess-Anleitung (Abschnitt 11.1)
 4. Gesundheits-Check (Herz-Kreislauf, Schwangerschaft, Verletzungen/Beschwerden, Medikamente ja/nein)
 5. Trainingserfahrung (Einsteiger / Fortgeschritten / Leistungssport)
-6. Ziel + ggf. Disziplin + Wettkampfdatum
+6. Ziel + ggf. Disziplin + Wettkampfdatum – seit Ziele Z4 Haupt- und optionales Nebenziel (Disziplin/Datum, sobald
+   Ausdauer Haupt- oder Nebenziel ist)
+   6a. „Wie möchtest du abnehmen?“ (`weight_goal`, nur bei Abnehmen als Haupt- oder Nebenziel und mit Einwilligung
+   Gesundheitsdaten): ohne festes Ziel / mit konkretem Ziel (Menge + Zeitraum, Ampel). Später unter Einstellungen →
+   „Dein Abnehm-Ziel“ (Z5: bearbeiten, entfernen, verlängern)
 7. Trainingstage (seit Phase 3, Etappe B2 – `docs/PLAN-PHASE-3-ERWEITERUNG.md`): je Wochentag Trainingsart (Kraft im Studio / Kraft zu Hause / Ausdauer mit Untertitel nach Disziplin) und Dauer (20/30/45/60/90 min oder eigene 10–240) – oder „Tage egal“ mit Anzahl je Art und Dauer; Live-Zusammenfassung und freundliche Hinweise (nie blockierend)
 8. Trainingsort: **entfällt als eigener Schritt** – abgeleitet aus den Trainingstagen (nur Studio / nur zu Hause / beides / nur Ausdauer)
 9. Equipment zu Hause (nur bei mindestens einem Tag „Kraft zu Hause“): Gewichte zum Antippen (Mehrfachauswahl) + eigene Werte – Kurzhanteln (je Hantel), Langhantel = Stange (10/15/20 kg oder eigene 5–25) + Scheiben je Paar (≤ 25 kg), Kettlebells (kg), Flachbank, Schrägbank, Klimmzugstange, Widerstandsbänder, Rudergerät, Ergometer, Laufband, Sonstiges (Freitext)
@@ -93,7 +103,11 @@ Verbindlich ist der freigegebene Ablauf in `docs/PLAN-PHASE-1.md` Abschnitt 3 (S
   `ingredient_substitutions` (6.9), **Packungsgrößen** der Zutaten (6.11); später Rezept-Ergänzungen.
 
 ## 4. Trainingsplan-Engine (`packages/core/plan`)
-1. **Matching:** passende Vorlage nach Ziel, Level, Tagen, Dauer, Equipment-Profil (Scoring, beste Übereinstimmung)
+1. **Matching:** passende Vorlage nach Ziel, Level, Tagen, Dauer, Equipment-Profil (Scoring, beste Übereinstimmung).
+   Mit zwei Zielen (`docs/PLAN-ZIELE.md` 4.3): Vorlage nach dem **Hauptziel** (Ziel-Profil `templateGoal`), keine
+   gemischten Vorlagen; Nebenziel Ausdauer belegt zusätzlich Ausdauer-Tage vor („Hauptziel zuerst“). Der Trainingsplan
+   kennt kein Wunschgewicht und kein Tempo; Planname mit beiden Zielen („Abnehmen + Muskelaufbau · 3 Tage“) auf
+   „Heute“, in der Woche und im PDF (Z5). Ein geändertes Nebenziel führt zum Angebot „Plan neu erstellen?“.
 2. **Equipment-Anpassung:** Übung nicht machbar → Alternative aus Bibliothek mit gleichem Bewegungsmuster/Muskelgruppe
 3. **Terminierung:** Einheiten auf bevorzugte Wochentage, Erholungsabstände beachten
 4. **Laststeuerung:** Startgewichte aus Selbsteinschätzung bzw. erstem Testtraining; danach doppelte Progression (erst Wiederholungen, dann Gewicht); RPE-Ziel pro Satz
@@ -345,7 +359,12 @@ Regeln in `packages/core/src/content/glossary.ts`, Grenzen in `GLOSSARY_LIMITS`.
 ## 6. Ernährungs-Engine (`packages/core/nutrition`)
 - Grundumsatz: Mifflin-St Jeor (bzw. Katch-McArdle, wenn Körperfett bekannt)
 - Gesamtumsatz: Grundumsatz × Alltagsfaktor + Trainingsenergie der geplanten Einheiten (tagesgenau)
-- Zielanpassung: Defizit/Überschuss je Ziel, mit Schutzgrenzen aus CLAUDE.md
+- Zielanpassung: Defizit/Überschuss je Ziel, mit Schutzgrenzen aus CLAUDE.md. Seit Ziele Z1/Z2 aus dem **Ziel-Profil**
+  (Haupt- + Nebenziel, `GOAL_PAIR_RULES`; Energie-Richtung aus dem Vorzeichen). Ein konkretes Abnehmziel kann das
+  Defizit nur **verkleinern** (geplantes Tempo = min(benötigt, Standard), danach immer `clampCalorieTarget`); erreicht →
+  Erhalt bis zur Wahl, Zeitraum vorbei → Standard-Tempo und Angebot „Verlängern“ (nie automatisch). Ein neues,
+  geändertes, erreichtes, abgelaufenes oder entferntes Ziel plant den Essensplan ab heute automatisch neu (Z5). Hinweise
+  dazu nur einmal je Woche in der Ernährungs-Übersicht der Woche (Wächter K10), nie im Trainings- oder Ernährungs-PDF.
 - Makros: Eiweiß nach g/kg je Ziel; Kohlenhydrate bei Ausdauer an Trainingslast periodisiert; Rest Fett (Mindestmenge einhalten)
 - Timing: Mahlzeit vor dem Training (2–3 h vorher) bzw. Snack (30–60 min vorher), Mahlzeit nach dem Training mit Eiweiß + Kohlenhydraten; an Tagen mit langen Einheiten Verpflegung während des Trainings
 - Wettkampf: Carb-Loading-Tage, Frühstück am Wettkampftag, Gel-/Trinkplan
@@ -695,7 +714,9 @@ Quelle: `docs/ERWEITERUNGEN-2.md` Abschnitte 1–2. Startbestand aus `alpha5-rez
 - Gewicht, Körperumfänge, Fotos (privat), persönliche Rekorde, Wochenumfang, Konsistenz
 - Partner-Modus: gemeinsame Einkaufsliste/Wochenplan, gegenseitige Freigaben. Das ist **kein öffentliches Teilen**:
   genau zwei Personen, beidseitige Zustimmung, nur ausdrücklich freigegebene Bereiche, jederzeit beendbar. Körperfotos,
-  Gesundheits- und Zyklusdaten sind davon ausgeschlossen, solange nicht ausdrücklich anders beschlossen.
+  Gesundheits- und Zyklusdaten sind davon ausgeschlossen, solange nicht ausdrücklich anders beschlossen. **Feste Regel
+  (Ziele, Wächter K7):** Das Wunschgewicht (`weight_goals`) und die Planbarkeits-Ampel sind **immer** ausgeschlossen –
+  auch wenn „Ernährung“ freigegeben ist.
   Darauf baut der **Paar-Modus beim Kochen** auf (Abschnitt 6.12, Premium): eigener Bereich mit eigener
   Art.-9-Einwilligung beider Personen; gemeinsame Mahlzeiten mit eigener Portion je Person und gemeinsamer
   Einkaufsliste – keine Zahlen zu Zielen oder Körperdaten, Portionen lassen aber Rückschlüsse zu.
@@ -996,6 +1017,13 @@ eigene Zeilen, in Export und Kontolöschung enthalten.
 - **Onboarding-Schritt `weight_goal`** in der CHECK-Liste von `profiles.onboarding_step` (Bildschirm erst mit Z4).
 - **Ziel-BMI-Untergrenze** (Gründer-Entscheidung F8, 17.10.2026): 20, ab 70 Jahren 22 (Alter am Zieldatum).
 
+### Abweichungen ab Ziele, Etappen Z4/Z5 (umgesetzt, siehe `docs/PLAN-ZIELE.md` Abschnitte 14 und 15)
+- **Z4:** Trigger `goals_clear_stale_secondary` (`…20261017220000_goals_secondary_autoclear.sql`) räumt ein unverändert
+  mitgeführtes, nicht mehr passendes Nebenziel alter App-Stände auf.
+- **Z5:** keine Migration. „Erreicht“ und „Zeitraum vorbei“ bleiben zustandslos aus Messungen bzw. Datum abgeleitet
+  (keine Spalte). Der Abgleich-Schlüssel des Essensplans (`safetyKey`, nur auf dem Gerät) bekommt bei konkretem Ziel einen
+  Teil `wg=<Stand>:<Hash>` (ohne Zahl); ohne Ziel bleibt er unverändert.
+
 ## 13. Monetarisierung
 - **Gratis:** Onboarding, Standard-Plan aus Vorlagen mit einfacher Progression (Gewicht steigt bei geschafften
   Wiederholungen), Trainingstagebuch, Grundberechnung Kalorien/Makros, Supplement-Übersicht, außerdem alles aus der
@@ -1046,6 +1074,15 @@ alle offen, Server-Prüfung mit Phase 7):
 
 ## 14. Rechtliches (vor Launch prüfen lassen)
 - DSGVO Art. 9 Einwilligung, Datenschutzfolgenabschätzung, AV-Verträge (Supabase, Vercel, RevenueCat, Stripe)
+- **DSFA-Ergänzung `weight_goals` (Ziele Z3–Z6):** Zweck: Ernährungsplanung mit konkretem Abnehmziel (nur auf Wunsch,
+  Standard „ohne festes Ziel“). Daten: Zielgewicht, Start- und Zieldatum, Eingabeart – kein Startgewicht (Datensparsamkeit,
+  K9). Rechtsgrundlage: ausdrückliche Einwilligung `health_data` (Art. 9 Abs. 2 a). Schutz: RLS nur eigene Zeile,
+  Schreiben nur mit gültiger Einwilligung (Trigger mit Sperre gegen gleichzeitigen Widerruf), nur bei Abnehmen als Haupt-
+  oder Nebenziel (sonst automatisch gelöscht), Löschung beim Widerruf und mit dem Konto, im Datenexport enthalten. Nie in
+  Analytics, Logs, Crash-Reports, Trainings- oder Ernährungs-PDF, nie im Partner-Modus. Risiko „Druck durch Zahlen“
+  (Essstörungen): harte Ziel-BMI-Untergrenze (20, ab 70 J. 22), Tempo nie schneller als ohne Ziel, keine Prognose, kein
+  Fortschrittsbalken, Ziel nur unter Einstellungen sichtbar, fester Hilfe-Hinweis, keine Abzeichen. Restrisiko: Das
+  Wunschgewicht steht im Klartext in der Datenbank (wie `body_metrics`) – vor Livegang mit der DSFA bewerten.
 - Abgrenzung zum Medizinprodukt (MDR): keine Diagnosen, keine Therapieaussagen
 - Health-Claims-Verordnung, Kennzeichnung Werbung/Affiliate (UWG)
 - App-Store-Richtlinien: In-App-Kauf für digitale Abos, HealthKit-Daten nicht für Werbung

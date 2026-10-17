@@ -2,10 +2,12 @@ import * as core from '@fitnessapp/core';
 import { planStartGroup, toSavePlanPayload } from '@fitnessapp/core';
 import { describe, expect, it, vi } from 'vitest';
 
+import { toWeightGoalRow } from '@/data/mapping';
 import { activePlan, effectiveSafetyRules, generatePlanFromRows } from '@/data/training-plan';
+import type { UserRows } from '@/data/types';
 import { t } from '@/i18n';
 
-import { planPersonRows, seededBackend, TODAY, VERSIONS } from '../test/fixtures';
+import { planPersonRows, seededBackend, TODAY, USER_ID, VERSIONS } from '../test/fixtures';
 import {
   buildPlanPrint,
   DEFAULT_PRINT_FORM,
@@ -22,8 +24,11 @@ vi.mock('@fitnessapp/core', async (importOriginal) => {
 });
 
 /** Gespeicherter Plan im Testmodus (wie nach dem Onboarding). */
-async function savedPlan(options: Parameters<typeof planPersonRows>[0] = {}) {
-  const rows = planPersonRows(options);
+async function savedPlan(
+  options: Parameters<typeof planPersonRows>[0] = {},
+  patch: (rows: UserRows) => UserRows = (rows) => rows,
+) {
+  const rows = patch(planPersonRows(options));
   const setup = seededBackend(rows, TODAY, `${TODAY}T08:00:00.000Z`);
   const library = await setup.backend.loadPlanLibrary({ allowCached: false });
   if (!library) throw new Error('Bibliothek fehlt');
@@ -101,6 +106,39 @@ describe('Plan als PDF – Zusammenstecken (P3/P4)', () => {
     if (!result.ok) throw new Error('kein Dokument');
     expect(result.html).not.toMatch(/Gesundheit|Verletzung|vorsichtig|Einsteiger/i);
     expect(result.html).toContain(t.print.medical);
+  });
+
+  it('Zwei Ziele mit Wunschgewicht: Planname „Abnehmen + Muskelaufbau“, nie Zielgewicht, Zeitraum oder Tempo (Etappe Z5)', async () => {
+    const plan = await savedPlan({ goal: 'fat_loss' }, (rows) => ({
+      ...rows,
+      goals: rows.goals ? { ...rows.goals, secondary_goal_type: 'muscle_gain' } : null,
+      bodyMetrics: [
+        {
+          id: 'bm-1',
+          user_id: USER_ID,
+          measured_on: '2026-10-01',
+          height_cm: 180,
+          weight_kg: 90,
+          body_fat_pct: null,
+          resting_heart_rate_bpm: null,
+        },
+      ],
+      weightGoal: toWeightGoalRow(USER_ID, {
+        targetWeightKg: 83.5,
+        startDate: TODAY,
+        targetDate: core.addDays(TODAY, 154),
+        amountMode: 'target_weight',
+        timeMode: 'date',
+      }),
+    }));
+    const result = buildPlanPrint({ ...plan, today: TODAY, form: form(), target: 'web' });
+    if (!result.ok) throw new Error('kein Dokument');
+    expect(result.html).toContain('Abnehmen + Muskelaufbau ·');
+    const targetDate = core.addDays(TODAY, 154).split('-').reverse().join('.');
+    expect(result.html).not.toContain(targetDate);
+    expect(result.html).not.toMatch(
+      /83[,.]5|90 kg|Wunschgewicht|Zielgewicht|Tempo|planbar|Wochen\)/i,
+    );
   });
 
   it('Name nur auf Wunsch und nie im Titel', async () => {

@@ -1,6 +1,6 @@
 # Plan „Ziele erweitern“: Abnehmen mit oder ohne konkretes Ziel, Erreichbarkeits-Ampel, zwei Ziele
 
-**Status:** Plan **Wächter-geprüft (Auflagen eingearbeitet)**. **Z1 und Z2 umgesetzt und Wächter-geprüft** (Abschnitte 11 und 12). **Z3 umgesetzt am 17.10.2026, Wächter-geprüft (M1, N1, N4, N5 eingearbeitet; N2/N3 für Z4 vorgemerkt)** (Abschnitt 13). **Z4 umgesetzt am 17.10.2026 (App: Haupt- und Nebenziel, Wunschgewicht mit Ampel), Wächter-geprüft (Auflagen M1–M5, N1–N13 eingearbeitet)** (Abschnitt 14). **F8 entschieden am 17.10.2026:** Ziel-BMI hart 20, ab 70 Jahren 22 (Abschnitt 0). Die Wächter-Prüfung vom 13.10.2026 ergab „Freigabe mit Auflagen“ (Blocker B1, Soll S1–S20, Kann K1–K10). Die Nachprüfung (Runde 2, gleicher Tag) ergab erneut „Freigabe mit Auflagen“ ohne Blocker (Soll N1–N4, Kann K-a bis K-f). Alle Auflagen beider Runden sind in diesem Dokument eingearbeitet, Übersicht in Abschnitt 10. Gründer-Entscheidungen vom 13.10.2026 in Abschnitt 0.
+**Status:** Plan **Wächter-geprüft (Auflagen eingearbeitet)**. **Z1 und Z2 umgesetzt und Wächter-geprüft** (Abschnitte 11 und 12). **Z3 umgesetzt am 17.10.2026, Wächter-geprüft (M1, N1, N4, N5 eingearbeitet; N2/N3 für Z4 vorgemerkt)** (Abschnitt 13). **Z4 umgesetzt am 17.10.2026 (App: Haupt- und Nebenziel, Wunschgewicht mit Ampel), Wächter-geprüft (Auflagen M1–M5, N1–N13 eingearbeitet)** (Abschnitt 14). **Z5 und Z6 umgesetzt am 17.10.2026 (Einstellungen, Karten, Planname, Ernährungs-Hinweise, Doku), Wächter-Prüfung steht aus** (Abschnitt 15). **F8 entschieden am 17.10.2026:** Ziel-BMI hart 20, ab 70 Jahren 22 (Abschnitt 0). Die Wächter-Prüfung vom 13.10.2026 ergab „Freigabe mit Auflagen“ (Blocker B1, Soll S1–S20, Kann K1–K10). Die Nachprüfung (Runde 2, gleicher Tag) ergab erneut „Freigabe mit Auflagen“ ohne Blocker (Soll N1–N4, Kann K-a bis K-f). Alle Auflagen beider Runden sind in diesem Dokument eingearbeitet, Übersicht in Abschnitt 10. Gründer-Entscheidungen vom 13.10.2026 in Abschnitt 0.
 **Gründer-Wunsch (wörtlich):** „Baue folgendes beim Ziel Abnehmen noch ein: Auswahl Abnehmen ohne konkretes Ziel, Abnehmen mit konkretem Ziel mit dem Gewicht in kg abnehmen in welcher Zeit. Und auf einer Skala von rot bis grün soll angegeben werden wie gut das erreichbar ist. Zudem sollte man 2 Ziele auswählen können. Die Übungen im Trainingsplan sollen für beide Ziele passen.“
 **Etappen:** Z0–Z6 (Abschnitt 7).
 
@@ -892,10 +892,71 @@ Abweichungen und Präzisierungen:
 
 - **EAS-Build Android** (Zeiger-Animation, „Bewegung reduzieren“, VoiceOver/TalkBack-Ansage) steht aus – am Handy über die
   Action `eas-build` prüfen.
-- **Vormerkung Z5 (Wächter Z4 N10):** Bearbeiten eines abgelaufenen oder schon erreichten Ziels im Formular (heute:
-  abgelaufenes Datum → 4 Wochen ab heute; „erreicht“ wird im Formular nicht erkannt) zusammen mit den Karten
-  „erreicht“/„abgelaufen“ regeln.
+- **Vormerkung Z5 (Wächter Z4 N10) – erledigt in Z5 (Abschnitt 15 Nr. 2):** Bearbeiten eines abgelaufenen oder schon
+  erreichten Ziels im Formular (heute: abgelaufenes Datum → 4 Wochen ab heute; „erreicht“ wird im Formular nicht
+  erkannt) zusammen mit den Karten „erreicht“/„abgelaufen“ regeln.
 - Wettkampf (`save_competition` usw.) gleicht `goals.target_date` weiter nur beim **Hauptziel** Ausdauer ab
   (Abschnitt 13, offen für Phase 10).
-- App-Texte der Ernährungs-Hinweise `weight_goal_*` und der Einstellungs-Eintrag „Dein Abnehm-Ziel“ kommen mit Z5.
+- App-Texte der Ernährungs-Hinweise `weight_goal_*` und der Einstellungs-Eintrag „Dein Abnehm-Ziel“ kommen mit Z5 – **erledigt** (Abschnitt 15).
 - Wächter Z2 K-8 (Grün vs. `pace_capped` am Geburtstag) unverändert vorgemerkt.
+
+---
+
+## 15. Umsetzung Z5 und Z6 (17.10.2026): Einstellungen, Karten, Planname, Ernährungs-Hinweise, Doku
+
+Z5 ist umgesetzt wie in Abschnitt 6 Nr. 3–4 und 7 beschrieben. **Keine Migration** (Datenmodell seit Z3). Neue Fachlogik
+nur in `packages/core`:
+
+- `goals/weight-goal-lifecycle.ts`: `weightGoalOverview` (Stand heute = Tages-Stand aus `nutritionTargetsForWeek`, dazu
+  `weightOutdated`), `weightGoalCard` (nur `reached`/`date_passed`), `weightGoalPeriodEnded`, `goalsAfterWeightGoalReached`
+  (Auswahl nach erreichtem Ziel). Tests `weight-goal-lifecycle.test.ts` (Grenzfälle Zieldatum heute/gestern, 80,1 → 79,9 →
+  80,2, Schwangerschaft, Größe geändert, Beispiel G, Gewicht 90/91 Tage alt, Alter 16/100, alle erlaubten Paare).
+- `nutrition/meal-plan.ts`/`replan.ts`: automatische Neuplanung bei neuem Abnehmziel (4.6 N5), Grund `weight_goal_changed`.
+- `export/document.ts`/`training-plan-document.ts`: Planname mit Nebenziel (`plan.name` mit `secondary`).
+
+App: Einstellungen → **„Dein Abnehm-Ziel“** (`app/abnehmziel.tsx`), Karten (`components/weight-goal.tsx`) auf „Heute“
+und dort, Hinweise in Ernährung → Woche, Planname auf „Heute“ (`plan-name`), in der Woche und im Trainings-PDF
+(`lib/plan-name.ts`, gleiche Formulierung). Tests: Vitest (Core + App, u. a. PDF ohne Zielgewicht/Zeitraum/Tempo für
+Training **und** Ernährung), Playwright `e2e/weight-goal-settings.spec.ts` (Bearbeiten, Entfernen, Verlängern, Widerruf,
+erreicht, Nebenziel → „Plan neu erstellen?“).
+
+Abweichungen und Präzisierungen:
+
+1. **Eigener Bildschirm statt Eintrag mit Formular:** „Dein Abnehm-Ziel“ zeigt Wunschgewicht und den Zeitraum, **wie
+   eingegeben** („12 Wochen“ bzw. „bis TT.MM.JJJJ“, mit Speichertag) – keine Restmenge, kein „noch“, kein Countdown (F7,
+   K-e). Bearbeiten öffnet dasselbe Formular wie im Onboarding (`/onboarding/weight_goal?edit=1&zurueck=abnehmziel`,
+   feste Liste der Rücksprünge in `use-step.ts`), Knopf „Speichern“. Dazu „Neues Gewicht eintragen“ (sonst gäbe es
+   außerhalb der Wochenauswertung keinen Weg, „erreicht“ auszulösen) und „Ziel entfernen“ mit Rückfrage.
+2. **Wächter Z4 N10:** Ein **unverändertes** Formular speichert das gespeicherte Ziel genau so (`weightGoalSaveDecision`
+   mit `pristine`) – auch in „Angaben ändern“. Ein abgelaufenes Ziel wird so **nie still verlängert** (Feld „Wochen“
+   bleibt leer, Hinweis „Dein Zeitraum ist vorbei …“), ein erreichtes Ziel **blockiert nicht** („Weiter“ geht, Hinweis
+   „Du hast dein Wunschgewicht erreicht …“), und kein Speichern setzt ungewollt ein neues Startdatum. Verlängern
+   (`&verlaengern=1`) verlangt immer eine neue Eingabe.
+3. **Auswahl nach „erreicht“** (F10, `goalsAfterWeightGoalReached`): „Gewicht halten“ → Fitness (Anpassung 0), Ausdauer
+   bleibt als Nebenziel bzw. als Hauptziel allein; „Muskelaufbau“ → Muskelaufbau (+ Ausdauer) bzw. „Ausdauer →
+   Muskelaufbau“; „Neues Wunschgewicht“ → Formular. Abnehmen entfällt, das Wunschgewicht löscht der Trigger. Danach
+   erscheint auf „Heute“ das bestehende Angebot „Plan neu erstellen?“.
+4. **Karten** stehen auf „Heute“ **und** unter „Dein Abnehm-Ziel“ – ohne Zahlen, ohne Konfetti, ohne Abzeichen. Alle
+   anderen Stände (aktiv, ruht, ungültig, kein Defizit, Gewicht alt) nur unter Einstellungen bzw. in Ernährung → Woche.
+5. **Ernährungs-Hinweise (K10):** nur in **Ernährung → Woche**, einmal je Woche aus `weightGoalNotices` (Core), mit
+   Knopf zu „Dein Abnehm-Ziel“. Kein eigener „Verstanden“-Speicher: Die Codes kommen ohnehin höchstens einmal je Woche;
+   auf „Heute“ und in der Tagesansicht gibt es sie nicht.
+6. **Neuplanung (4.6 N5):** Ein Tagesziel kann trotz neuem Ziel noch im alten Planband liegen (Beispiel: −10 kg in
+   26 Wochen, 538 → 423 kcal Defizit). Deshalb bekommt der Abgleich-Schlüssel bei konkretem Ziel einen Teil
+   `wg=<Stand>:<Hash der Anpassung>`; jede Änderung von Stand oder Anpassung plant ab heute neu. Ohne Ziel bleibt der
+   Schlüssel byte-gleich – bestehende Pläne werden durch Z5 nicht neu geplant (Test). Die Zahl steht nie im Schlüssel.
+7. **Vormerkung Wächter Z2 K-6 entschieden:** kein eigener Ernährungs-Hinweis; bei Gewicht älter als 90 Tage zeigt „Dein
+   Abnehm-Ziel“ „Dein Gewicht ist älter als 3 Monate. Trag es bitte neu ein, damit wir dein Ziel richtig planen.“ mit
+   Knopf (die Ernährung zeigt wie bisher `weight_outdated`).
+8. **Planname:** „Dein Plan: Abnehmen + Muskelaufbau · 3 Tage“ (Hauptziel Ausdauer mit Ausdauer-Tagen: „Ausdauer-Grundlage
+   – 10 km + Abnehmen“). „Heute“ und Woche zählen die Tage aus dem Schnappschuss, das PDF wie bisher aus den Einheiten.
+   Der Vorlagenname („Vorlage: …“) bleibt darunter.
+9. **Partner-Modus:** Es gibt noch keinen eigenen Plan; die feste Regel „`weight_goals` immer ausgeschlossen“ steht in
+   `KONZEPT.md` §11 und im Phase-11-Prompt in `PROMPTS.md`.
+
+**Z6 (Doku):** `KONZEPT.md` §1, §2, §4, §6, §11, §12 (Abweichungen Z4/Z5), §14 (DSFA-Ergänzung `weight_goals`),
+`PLAN-PHASE-5.md` 4.5/4.7/4.9, `PLAN-PHASE-4B.md` (Nachtrag Plateau-Regel, S10, Z2 K-2), `PLAN-PHASE-10.md` 1.6
+(Nebenziel Ausdauer, Wettkampfwoche ohne Defizit), `PROMPTS.md`, `HANDY-ANLEITUNG.md` Teil 7z3.
+
+**Offen / Vormerkungen:** EAS-Build Android (aus Z4); Wächter Z2 K-8 unverändert; Wettkampf beim Nebenziel Ausdauer
+(Phase 10).
