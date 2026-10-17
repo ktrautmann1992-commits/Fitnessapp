@@ -24,6 +24,7 @@ import {
 import type {
   BodyMeasurementsRow,
   BodyMetricsRow,
+  CompetitionRow,
   ExercisePreferenceRow,
   FoodLogFavoriteRow,
   FoodPreferenceRow,
@@ -608,6 +609,20 @@ function splitPlans(rows: PlanRows): { health: PlanRows; other: PlanRows } {
   };
 }
 
+/** Plan-Bezug leeren (Widerruf health_data, private.consents_after_revoke; Zwischenspeicher ohne Gesundheitsbezug). */
+export function withoutPlanBasis(row: CompetitionRow): CompetitionRow {
+  if (!row.uses_health_data && row.effective_goal === null) return row;
+  return {
+    ...row,
+    own_start_weekly_minutes: null,
+    start_reference_volume: null,
+    start_reference_session_cap: null,
+    start_reference_start_group: null,
+    effective_goal: null,
+    uses_health_data: false,
+  };
+}
+
 /**
  * Widerruf von health_data – spiegelt den Datenbank-Trigger private.consents_after_revoke(): löscht Körperdaten,
  * Umfänge, alle Gesundheits-Checks, Unverträglichkeiten und ALLE Pläne mit uses_health_data (aktiv und ersetzt)
@@ -653,6 +668,9 @@ export function applyHealthDataRevocation(
     // Schnell-Favoriten: gelöscht, samt Zutaten (wie consents_after_revoke).
     customMeals: [],
     customMealItems: [],
+    // Wettkämpfe (Phase 10): der Wettkampf bleibt (kein Gesundheitsdatum, W-G15), der Plan-Bezug wird geleert – wie
+    // private.consents_after_revoke.
+    competitions: rows.competitions.map(withoutPlanBasis),
     ...other,
   });
 }
@@ -714,6 +732,8 @@ export function cacheableRows(
       foodLogFavorites: [],
       customMeals: [],
       customMealItems: [],
+      // Wettkämpfe ohne Plan-Bezug (aus dem Gesundheits-Check abgeleitet) – Countdown geht offline weiter.
+      competitions: rows.competitions.map(withoutPlanBasis),
     },
     healthPlans: options.allowHealthPlanCache && health.plans.length > 0 ? health : null,
     logs: logRowsOf(rows),

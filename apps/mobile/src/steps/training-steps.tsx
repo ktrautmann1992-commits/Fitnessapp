@@ -130,6 +130,10 @@ export function GoalStep({ ctl }: { ctl: StepController }) {
             onChange={setDate}
             error={errors.targetDate}
           />
+          {/* Phase 10 WP4: Wettkampf mit Ampel und Plan unter „Mein Wettkampf“ (das Datum wird dort vorgeschlagen). */}
+          <Body muted testID="goal-competition-hint">
+            {t.steps.goal.targetDateHint}
+          </Body>
         </Card>
       ) : null}
     </Screen>

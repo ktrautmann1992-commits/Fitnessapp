@@ -167,11 +167,20 @@ Verbindlich ist der freigegebene Ablauf in `docs/PLAN-PHASE-1.md` Abschnitt 3 (S
   höchstens 7 und kein Marathon, ab 65 höchstens 6, mit Arzt-Hinweis keine harten Einheiten, harte Einheiten je Woche
   (Einsteiger/vorsichtig 1, sonst 2). Der Wettkampf selbst ist kein Gesundheitsdatum; der daraus abgeleitete Plan-Bezug
   nur mit Einwilligung, beim Widerruf geleert.
+- **Wettkampf in der App (Phase 10, Etappe WP4, umgesetzt 16.10.2026, `docs/PLAN-PHASE-10.md` Umsetzungsstand WP4):**
+  Einstellungen → „Mein Wettkampf“: Wettkampf eintragen, Ampel sofort beim Datum (Zeichen + Wort, Gründe, Vorschläge),
+  „Wettkampfplan erstellen“ nur bei „Passt“/„Knapp“ (erst `save_competition` mit Plan-Bezug, dann der Plan) oder „Nur
+  Countdown“. „Heute“ zeigt Countdown und Phasen-Band („Aufbau · Woche 6 von 14“), jede Einheit Art, Ablauf, Pace und
+  Distanz-Richtwert (nur mit Referenzzeit, immer mit „Die Anstrengung hat Vorrang …“); der Kalender markiert den Renntag.
+  Trainingsmodus mit Intervall-Timer (Schritt für Schritt, Pause/Weiter, „Abbrechen und eintragen“, Vibration in der
+  App, Ansage für den Bildschirmleser). Ergebnis ab dem Renntag als freie Einheit; Absagen mit Bestätigung, danach
+  „Plan neu erstellen“. Endet der Wettkampfplan, schlägt die App einen neuen (vorsichtigen) Plan vor statt eines
+  Folgeblocks von der Spitze aus.
 - Ausdauer-Ziel klarer (Gründer-Feedback „Ziel Marathon → Plan für allgemeine Fitness“): Beim Ziel Ausdauer belegt
   „Deine Trainingstage“ Ausdauer-Tage vor (`suggestedTrainingSlots`, Werte `ENDURANCE_GOAL_SUGGESTION`: 3 Ausdauer + 2 Kraft,
   Leistungssport 4 + 2, vorsichtig 2 + 1, Triathlon mehr Ausdauer; Deckel wie oben) – nur ohne gewählte Tage, änderbar
   („Ohne Vorschlag planen“). Der Plan heißt „Ausdauer-Grundlage – <Disziplin>“ (`planTitle`, nur Anzeige; gespeichert bleibt
-  `template_title_de`). Hinweis: Wettkampfplan rückwärts ab Renndatum kommt in Phase 10.
+  `template_title_de`). Den Wettkampfplan rückwärts ab Renntag gibt es seit Phase 10 WP4 unter „Mein Wettkampf“.
 
 **Training nur mit dem eigenen Körpergewicht (Engine-Version 3, `docs/PLAN-KOERPERGEWICHT.md`, Etappen K1–K4):**
 - Sind alle Kraft-Tage zu Hause und gibt es dort keine Kraft-Geräte (freie Gewichte, Bänder, Maschinen; Bank,
