@@ -4,6 +4,7 @@ name: content-review
 # (freigeben = published, zurückziehen = archived, zurück auf Entwurf = draft), trägt Prüfer und Datum ein,
 # prüft ALLE Inhalte (content:validate, Prettier, Typprüfung) und öffnet einen Pull Request. Danach wird
 # ci für den Branch gestartet. Freigabe ist erst der MERGE durch einen Menschen – der Workflow genehmigt nie.
+# IDs = „alle“: alle Übungen und Plan-Vorlagen im Status „draft“ in einem Pull Request freigeben (nur published).
 # Details: docs/PLAN-PHASE-2.md Abschnitte 4 und 6.
 #
 # Art „recipe“ = Sammelfreigabe Rezepte pro Kategorie (docs/PLAN-PHASE-5.md 19.5, Etappe N2d): setzt „published“
@@ -24,7 +25,7 @@ on:
           - recipe
         default: ids
       ids:
-        description: 'Nur bei Art „ids“: IDs (mit Komma oder Leerzeichen getrennt), z. B. „goblet-kniebeuge, liegestuetz“ oder „ruehrei, pasta-woche“ – Training und Ernährung nicht mischen'
+        description: 'Nur bei Art „ids“: IDs (mit Komma oder Leerzeichen getrennt), z. B. „goblet-kniebeuge, liegestuetz“ oder „ruehrei, pasta-woche“ – Training und Ernährung nicht mischen. „alle“ = alle Übungen und Plan-Vorlagen im Entwurf freigeben'
         type: string
         required: false
       status:

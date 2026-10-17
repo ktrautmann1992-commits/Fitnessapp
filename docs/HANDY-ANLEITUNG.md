@@ -88,6 +88,7 @@ Vercel zeigt die App im Handy-Browser, Expo baut die echten Apps in der Cloud.
 - **In der echten App** (APK/TestFlight) liegt ein Plan, der auf dem Gesundheits-Check beruht, nur **verschlüsselt** auf dem Handy (für Training ohne Netz); im Browser nur, solange der Tab offen ist. Gelöscht wird er beim Widerruf, Abmelden und Konto löschen. Für diese Version neu installieren (neue Bausteine für die Verschlüsselung).
   - Gut zu wissen: Widerruft ihr auf einem **anderen** Gerät, sieht ein Handy, das gerade **offline** ist, den Plan noch, bis es wieder online lädt. Spätestens nach **14 Tagen ohne Verbindung** löscht die App den Zwischenspeicher von selbst.
 - **Mit Supabase** erscheint ein Plan erst, wenn Inhalte freigegeben sind (`content-review` → Merge → `content-seed`); vorher zeigt „Heute“ richtigerweise „kein freigegebener Plan“.
+  - Alles auf einmal freigeben: **Actions → content-review → Run workflow** → Art `ids`, IDs `alle`, Neuer Status `published`, Prüfer = dein Name → Pull Request prüfen und **mergen**. Danach spielt `content-seed` die Inhalte automatisch ein (braucht die GitHub-Secrets `SUPABASE_URL` und `SUPABASE_SECRET_KEY`).
 
 ## Teil 7 – Woche, Verlauf und Export testen (Phase 4, Etappe D, Testmodus)
 1. Vorschau-Link aus dem Pull Request öffnen (Testmodus). Schon einmal durchgeklickt? **Einstellungen → Testdaten löschen**.
