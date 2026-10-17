@@ -4,7 +4,7 @@
 -- Speicher 30 Tage frisch, 90 Tage bis zum Löschen, „nicht gefunden“ 1 Tag; CHECKs; Export der eigenen Zähler.
 begin;
 create extension if not exists pgtap with schema extensions;
-select plan(65);
+select plan(66);
 
 insert into auth.users (id, email) values
   ('11111111-1111-4111-8111-111111111111', 'nutzer-a@example.test'),
@@ -151,6 +151,9 @@ select is((select requests from private.off_request_budget), 1, 'globaler Deckel
 select is((select lookups from private.food_product_lookup_counts
            where user_id = '11111111-1111-4111-8111-111111111111'), 1, 'Person: 1 Abfrage gezählt (ohne Nummer)');
 select is(public.food_product_upsert(pg_temp.rec('4006381333931')), '{"result": "ok"}'::jsonb, 'Speichern');
+select ok((select retrieved_at = date_trunc('hour', retrieved_at) and retrieved_at > now() - interval '1 hour'
+           from public.food_products where code = '4006381333931'),
+  'Wächter N4: Abrufzeit nur auf die volle Stunde genau');
 select ok(
   (select r ->> 'result' = 'cached' and not (r ->> 'stale')::boolean
           and (r -> 'record' ->> 'kcal')::integer = 380 and r -> 'record' ->> 'name_de' = 'Testmüsli'

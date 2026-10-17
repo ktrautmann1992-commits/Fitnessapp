@@ -2278,6 +2278,33 @@ describe('Produktabfrage und eigene Produkte in der Datenbank (Etappe E4a)', () 
     );
   });
 
+  it('Wächter M1: neue Nutzung einer Nummer (Eintrag, Favorit) zählt auf die Abfrage-Limits', () => {
+    const use = readMigration('_food_product_use_limit.sql');
+    const charge = body(use, 'private.food_product_charge');
+    expect(charge).toContain(`per_hour constant integer := ${FOOD_PRODUCT_LOOKUP_LIMITS.perHour};`);
+    expect(charge).toContain(`per_day constant integer := ${FOOD_PRODUCT_LOOKUP_LIMITS.perDay};`);
+    // Dieselbe Sperre und dieselbe Zähl-Tabelle wie die Abfrage (ohne Nummer).
+    expect(charge).toContain(
+      "pg_advisory_xact_lock(hashtext('food_product_lookup|' || p_user_id::text))",
+    );
+    expect(charge).toContain(
+      'insert into private.food_product_lookup_counts (user_id, hour_start, lookups)',
+    );
+    expect(charge).not.toMatch(/product_code|p_code/);
+    expect(use).toMatch(
+      /create trigger food_log_entries_product_charge\s+before insert or update of product_code on public\.food_log_entries/,
+    );
+    expect(use).toMatch(
+      /create trigger food_log_favorites_product_charge\s+before insert or update of product_code on public\.food_log_favorites/,
+    );
+    // Trigger laufen alphabetisch: zuerst before_write (sperrt die Einwilligung), dann product_charge.
+    expect('food_log_favorites_before_write' < 'food_log_favorites_product_charge').toBe(true);
+    expect(body(logProduct, 'public.save_food_log_entries')).toContain(
+      "when err_message = 'Produkt-Limit erreicht.' then 'product_limit'",
+    );
+    expect(charge).toContain("raise exception 'Produkt-Limit erreicht.'");
+  });
+
   it('save_food_log_entries (E4a): echte Obermenge der E3-Fassung', () => {
     const e3 = body(readMigration('_food_log_photo.sql'), 'public.save_food_log_entries');
     expect(missingLines(e3, body(logProduct, 'public.save_food_log_entries'))).toEqual([]);

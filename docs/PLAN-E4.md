@@ -797,6 +797,59 @@ CHECK-Grenze statt sauber „Limit“; ohne `FOR SHARE` → Widerruf wartet nich
 Lizenz-Hinweis, Datenschutz-Abschnitt und Einwilligungstext `health_data` (nennt Produkte noch nicht ausdrücklich)
 juristisch prüfen; `database.types.ts` per Workflow `db-types` gegenprüfen; E4b (Kamera).
 
+### Nachtrag Wächter-Prüfung E4a (17.10.2026): Auflagen umgesetzt bzw. vorgemerkt
+
+Urteil „Freigabe mit Auflagen“. Stand nach dem Merge von `main` (WP4 #89, content-review #91):
+
+- **M1 umgesetzt – Speicher nicht an den Limits vorbei auslesbar.** Neue Migration
+  `20261017100400_food_product_use_limit.sql`: Jede **neue** Nutzung einer Nummer zählt wie eine Abfrage auf
+  `private.food_product_lookup_counts` (ohne Nummer), nämlich ein neuer Produkt-Eintrag, eine geänderte Nummer an einem
+  Eintrag und ein neuer Produkt-Favorit. Nicht gezählt werden: Menge/Mahlzeit ändern, vorhandenen Favoriten erneut
+  setzen, eigene Produkte. Beim Limit (60/Stunde, 200/Tag) wird der Eintrag mit dem neuen Code `product_limit`
+  abgelehnt (App: „sehr viele Produkte abgefragt bzw. eingetragen …“) bzw. der Favorit nicht gespeichert – ohne Titel
+  oder Werte aus dem Speicher. Umgesetzt als Trigger (`private.food_product_charge`, Advisory-Sperre
+  `food_product_lookup|<Person>`); Sperr-Reihenfolge Einwilligung → `food_log|<Person>` → `food_product_lookup|<Person>`.
+  `save_food_log_entries` (20261017100200, noch nicht eingespielt) übersetzt die Meldung in `product_limit`. Gewählt
+  wurde „zählen“ statt „nur nach eigener Abfrage der letzten 90 Tage“: Das braucht keine personenbezogene Liste
+  abgefragter Nummern. **Folge (Gründer-Info):** Nachschlagen und Eintragen zählen zusammen, praktisch also etwa 30
+  verschiedene Produkte pro Stunde bzw. 100 pro Tag. Der Testmodus rechnet gleich (`chargeProductUse`,
+  `isNewProductUse` im Core). Tests: pgTAP `43_food_product_use_limit.test.sql` (19), Core, App. Gegenproben:
+  Eintrag bzw. Favorit zählt nicht, Upsert zählt doppelt, Menge ändern zählt, Code nicht übersetzt, App ohne
+  „neu?“-Prüfung → jeweils rot.
+- **N1 umgesetzt:** Die Route misst die OFF-Felder in UTF-8-Bytes (`offFieldsBytes`, TextEncoder) gegen
+  `offFieldsCheckBytes` 14 KB – Puffer zur Datenbank-Grenze von 16 KB, deren jsonb-Textform länger ist. Gegenprobe:
+  Messung in Zeichen → Emoji-Antwort wird gespeichert → rot.
+- **N2 umgesetzt:** `AbortSignal.timeout(5000)` für jeden Supabase-Aufruf der Route (`supabaseTimeoutMs`). Die App
+  wartet auf die Route höchstens `clientTimeoutMs` 16 s und meldet dann „bitte gleich noch einmal“. Hier bewusst nicht
+  5 s, weil die Route selbst bis zu 6 s auf OFF wartet und `maxDuration` 15 s hat. Gegenprobe: Signal entfernt → rot.
+- **N4 umgesetzt:** `retrieved_at` im gemeinsamen Speicher nur stundengenau (Core `recordFromProduct`/
+  `notFoundRecord` und `food_product_upsert` mit `date_trunc('hour', …)`). Bei der Rechtsprüfung trotzdem den Satz
+  „ohne Bezug zu Personen“ in Datenschutz-Abschnitt 8 prüfen (bei sehr wenig Nutzung bleibt eine grobe zeitliche
+  Zuordnung denkbar).
+- **Vorgemerkt (nicht umgesetzt):**
+  - **N3:** `not_configured` (503) kommt vor der Login-Prüfung; der Konfigurationsstand ist also ohne Login
+    sichtbar. Unkritisch – bei Gelegenheit die Reihenfolge Login → Konfiguration tauschen.
+  - **N5:** In der Offline-Warteschlange kann ein Tagebuch-Eintrag vor dem erneut gespeicherten eigenen Produkt beim
+    Server ankommen. Er verliert dann nur den Verweis (fester Titel, Gerätewerte), Daten gehen nicht verloren. Gleiches
+    Muster wie bei eigenen Gerichten; später gemeinsam lösen.
+  - **N6:** `database.types.ts` ist von Hand ergänzt – vor dem Merge den Workflow `db-types` laufen lassen.
+  - **N7:** Der Einwilligungstext `health_data` nennt Produkte und Nummern noch nicht. Vor dem Einschalten des Flags
+    anpassen (neue Fassung) und rechtlich prüfen.
+- **H1 vorgemerkt – zweiter Schritt, nachdem `claude/z3-ziele` in `main` ist:** E4a und Z3 fassen beide
+  `private.consents_after_revoke()` und `public.export_my_data()` neu. Dafür braucht es eine **neue** Migration mit
+  Zeitstempel nach `20261017200200` als Vereinigung beider Seiten:
+  - Widerruf löscht `weight_goals`, `user_food_products` und die Produkt-Favoriten, jeweils am Anfang und in der
+    Wiederholung.
+  - Der Export enthält `weight_goals`, `user_food_products` und `food_product_lookup_counts`.
+
+  Außerdem nötig:
+  - `db-sync.test.ts` auf die neue Datei umstellen und die Obermenge gegen beide Vorgänger prüfen.
+  - Den SENSIBEL-Kommentar von `user_food_products` angleichen (`SENSIBEL (Art. 9 vorsorglich, Freitext) …`).
+  - Die Konflikte in den Export-Listen, Typen, `write-ops.ts` und `history.spec.ts` (Tabellenzahl 38 → 39) auflösen.
+  - Einen gemeinsamen pgTAP-Test „Widerruf löscht beides“ ergänzen.
+
+  Bis dahin E4a und Z3 nicht beide ohne diese Vereinigung einspielen.
+
 ---
 
 ## 9. Aufwand und Etappen

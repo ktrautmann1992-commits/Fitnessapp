@@ -535,7 +535,9 @@ export type NutritionRejectReason =
   | 'invalid'
   | 'not_transferred'
   /** E4a: Produkt nicht (mehr) im Zwischenspeicher – „Produkt neu abrufen“. */
-  | 'product_unavailable';
+  | 'product_unavailable'
+  /** E4a (Wächter M1): Limit der Produkt-Nutzung erreicht. */
+  | 'product_limit';
 
 /** Abgelehnte Fassung – bleibt lokal (Gründer-Frage G3 aus E1: „lokal behalten mit Hinweis“, nie still verwerfen). */
 export interface RejectedNutritionWrite {

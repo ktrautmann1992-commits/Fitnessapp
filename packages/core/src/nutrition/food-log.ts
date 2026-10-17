@@ -1047,6 +1047,8 @@ export const FOOD_LOG_REJECT_CODES = [
   'day_full',
   // E4a: Produkt aus Open Food Facts nicht (mehr) im Zwischenspeicher bzw. gesperrt – „Produkt neu abrufen“.
   'product_unavailable',
+  // E4a (Wächter M1): neue Nutzung einer Nummer zählt wie eine Abfrage – Limit je Stunde/Tag erreicht.
+  'product_limit',
 ] as const;
 export type FoodLogRejectCode = (typeof FOOD_LOG_REJECT_CODES)[number];
 

@@ -2,6 +2,8 @@ import { buildNutritionCatalog } from '@fitnessapp/content/catalog';
 import {
   ageInYears,
   buildDataExportFile,
+  chargeProductUse,
+  isNewProductUse,
   createMockFoodPhotoProvider,
   runFoodPhotoAnalysis,
   displayPairs,
@@ -994,8 +996,25 @@ export function createLocalBackend(store: KeyValueStore, options: LocalBackendOp
           { sensitive: true },
         );
       }
+      // Wächter M1: neue Nutzung einer Nummer zählt wie eine Abfrage (wie private.food_product_charge).
+      let lookups = [...(db.productLookups ?? [])];
+      const outcomes = check.outcomes.map((o) => {
+        if (o.kind !== 'saved') return o;
+        const previous = rows.foodLogEntries.find((e) => e.id === o.entry.id) ?? null;
+        if (!isNewProductUse(o.entry, previous)) return o;
+        const charged = chargeProductUse(
+          lookups.filter((c) => c.user_id === session.userId),
+          options.now(),
+        );
+        if (charged === null) return { kind: 'rejected' as const, code: 'product_limit' as const };
+        lookups = [
+          ...lookups.filter((c) => c.user_id !== session.userId),
+          ...charged.map((c) => ({ ...c, user_id: session.userId })),
+        ];
+        return o;
+      });
       // Wie der Server: gültige Einträge werden gespeichert, auch wenn ein anderer abgelehnt wird (Wächter E1 S2).
-      const saved = check.outcomes.flatMap((o) => (o.kind === 'saved' ? [o.entry] : []));
+      const saved = outcomes.flatMap((o) => (o.kind === 'saved' ? [o.entry] : []));
       const next =
         saved.length === 0
           ? rows
@@ -1004,8 +1023,8 @@ export function createLocalBackend(store: KeyValueStore, options: LocalBackendOp
               now: options.now(),
               newId: options.newId,
             });
-      if (saved.length > 0) await save({ ...db, rows: next });
-      const failed = check.outcomes.find((o) => o.kind !== 'saved');
+      if (saved.length > 0) await save({ ...db, rows: next, productLookups: lookups });
+      const failed = outcomes.find((o) => o.kind !== 'saved');
       if (failed) {
         // Danach melden (ohne Werte); die gespeicherten Einträge bleiben.
         const code =
@@ -1015,7 +1034,9 @@ export function createLocalBackend(store: KeyValueStore, options: LocalBackendOp
               ? 'food_log_day_full'
               : failed.kind === 'rejected' && failed.code === 'product_unavailable'
                 ? 'food_log_product_unavailable'
-                : 'food_log_rejected';
+                : failed.kind === 'rejected' && failed.code === 'product_limit'
+                  ? 'food_log_product_limit'
+                  : 'food_log_rejected';
         throw new BackendError(code, { sensitive: true });
       }
       return next;
@@ -1044,7 +1065,25 @@ export function createLocalBackend(store: KeyValueStore, options: LocalBackendOp
               : 'unknown',
         );
       }
-      await save({ ...db, rows: next });
+      // Wächter M1: ein NEUER Produkt-Favorit mit Nummer zählt wie eine Abfrage.
+      let lookups = db.productLookups ?? [];
+      if (
+        change.op === 'set' &&
+        change.favorite.source === 'product' &&
+        change.favorite.product_code !== null &&
+        !rows.foodLogFavorites.some((f) => f.fav_key === change.favorite.fav_key)
+      ) {
+        const charged = chargeProductUse(
+          lookups.filter((c) => c.user_id === session.userId),
+          options.now(),
+        );
+        if (charged === null) throw new BackendError('food_log_product_limit', { sensitive: true });
+        lookups = [
+          ...lookups.filter((c) => c.user_id !== session.userId),
+          ...charged.map((c) => ({ ...c, user_id: session.userId })),
+        ];
+      }
+      await save({ ...db, rows: next, productLookups: lookups });
       return next;
     },
     // Eigene Gerichte (Etappe E2): dieselben Regeln wie save_custom_meal (custom-meal-rows.ts); im Testmodus immer

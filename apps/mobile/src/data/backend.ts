@@ -492,6 +492,8 @@ export type BackendErrorCode =
   | 'custom_meal_rejected'
   /** Produkt (E4a): nicht (mehr) im Zwischenspeicher bzw. gesperrt – „Produkt neu abrufen“. */
   | 'food_log_product_unavailable'
+  /** Produkt (E4a, Wächter M1): neue Nutzung einer Nummer zählt wie eine Abfrage – Limit je Stunde/Tag erreicht. */
+  | 'food_log_product_limit'
   /** Eigene Produkte (E4a): höchstens 200 (USER_FOOD_PRODUCT_LIMITS.maxProducts). */
   | 'user_product_limit'
   /** Eigene Produkte (E4a): ungültige Angaben (ohne Namen, ohne Werte gemeldet). */

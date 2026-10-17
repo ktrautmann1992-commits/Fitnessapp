@@ -748,6 +748,7 @@ function foodLogRejectCode(reason: NutritionRejectReason): BackendErrorCode {
   if (reason === 'out_of_range') return 'food_log_out_of_range';
   if (reason === 'day_full') return 'food_log_day_full';
   if (reason === 'product_unavailable') return 'food_log_product_unavailable';
+  if (reason === 'product_limit') return 'food_log_product_limit';
   return 'food_log_rejected';
 }
 
@@ -968,7 +969,9 @@ export function createSupabaseBackend(options: SupabaseBackendOptions): Backend 
                 ? 'day_full'
                 : first.code === 'product_unavailable'
                   ? 'product_unavailable'
-                  : 'invalid',
+                  : first.code === 'product_limit'
+                    ? 'product_limit'
+                    : 'invalid',
         };
       }
       case 'food_log_delete': {

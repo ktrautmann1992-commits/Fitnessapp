@@ -47,6 +47,8 @@ export function errorText(error: unknown): string {
       return t.customMeals.errors.limit;
     case 'custom_meal_rejected':
       return t.customMeals.errors.rejected;
+    case 'food_log_product_limit':
+      return t.foodProduct.errors.productLimit;
     case 'food_log_product_unavailable':
       return t.foodProduct.errors.unavailable;
     case 'user_product_limit':

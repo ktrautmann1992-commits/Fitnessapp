@@ -6,6 +6,7 @@
  *   Server nie. Antworten an der Grenze mit Zod geprüft. Fehler nur mit HTTP-Status (keine Inhalte, keine Token).
  */
 import {
+  FOOD_PRODUCT_LOOKUP_LIMITS,
   type FoodProductRecord,
   foodProductRecordSchema,
   type ProductLookupBegin,
@@ -60,6 +61,8 @@ export function createSupabaseFoodProductStore(
       method: 'POST',
       headers: serviceHeaders(),
       body: JSON.stringify(body),
+      // Wächter N2: hängende Datenbank darf die Route nicht bis zum Vercel-Limit blockieren.
+      signal: AbortSignal.timeout(FOOD_PRODUCT_LOOKUP_LIMITS.supabaseTimeoutMs),
     });
     if (!response.ok) throw new FoodProductStoreError(response.status);
     return response.json();
@@ -68,6 +71,7 @@ export function createSupabaseFoodProductStore(
     async verifyUser(accessToken) {
       const response = await fetchFn(`${config.supabaseUrl}/auth/v1/user`, {
         headers: { apikey: config.supabasePublishableKey, Authorization: `Bearer ${accessToken}` },
+        signal: AbortSignal.timeout(FOOD_PRODUCT_LOOKUP_LIMITS.supabaseTimeoutMs),
       });
       if (response.status === 401 || response.status === 403) return null;
       if (!response.ok) throw new FoodProductStoreError(response.status);

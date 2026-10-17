@@ -3,6 +3,7 @@ import { describe, expect, it, vi } from 'vitest';
 import {
   FOOD_PRODUCT_CHECK,
   FOOD_PRODUCT_LOOKUP_LIMITS,
+  OPEN_FOOD_FACTS,
   USER_FOOD_PRODUCT_LIMITS,
 } from '../constants';
 import { gs1CheckDigit, hasValidCheckDigit, normalizeBarcode } from './barcode';
@@ -37,7 +38,10 @@ import {
   type ProductForEntry,
 } from './food-product';
 import {
+  chargeProductUse,
+  offFieldsBytes,
   countProductLookup,
+  isNewProductUse,
   lookupHourStart,
   MOCK_PRODUCT_CASES,
   mockOffFetch,
@@ -1079,9 +1083,57 @@ describe('runProductLookup (Plan 3.2)', () => {
     const r = await runProductLookup({ code: EAN }, d);
     // Unbekannte nutriments-Schlüssel fallen weg – die Antwort bleibt klein und wird gespeichert.
     expect(r.status).toBe(200);
-    expect(JSON.stringify(offFieldsForStorage(big.body.product)).length).toBeLessThan(
-      FOOD_PRODUCT_LOOKUP_LIMITS.offFieldsMaxBytes,
+    expect(offFieldsBytes(offFieldsForStorage(big.body.product))).toBeLessThan(
+      FOOD_PRODUCT_LOOKUP_LIMITS.offFieldsCheckBytes,
     );
+  });
+
+  it('Wächter N4: Abrufzeit im Speicher nur auf die volle Stunde genau', () => {
+    expect(notFoundRecord(EAN, '2026-10-17T10:47:12.345Z').retrieved_at).toBe(
+      '2026-10-17T10:00:00.000Z',
+    );
+    const p = normalizeOffProduct(
+      off({ 'energy-kcal_100g': 380, proteins_100g: 10, carbohydrates_100g: 60, fat_100g: 9 }),
+      EAN,
+    );
+    expect(recordFromProduct(p, {}, '2026-10-17T23:59:59.999Z').retrieved_at).toBe(
+      '2026-10-17T23:00:00.000Z',
+    );
+  });
+
+  it('Wächter N1: Größe in UTF-8-Bytes (nicht Zeichen), Puffer für die jsonb-Textform', () => {
+    expect(offFieldsBytes({ a: 'ä' })).toBe(10); // {"a":"ä"} = 9 Zeichen, ä = 2 Byte
+    expect(offFieldsBytes({ a: '😀' })).toBe(12);
+    expect(FOOD_PRODUCT_LOOKUP_LIMITS.offFieldsCheckBytes).toBeLessThanOrEqual(14 * 1024);
+    // Schlimmster Fall der jsonb-Textform: je Schlüssel/Wert „: “ und „, “ – höchstens 2 Byte mehr je Paar; bei
+    // 14 KB bleibt Platz für > 1.000 Paare bis 16 KB.
+    expect(
+      FOOD_PRODUCT_LOOKUP_LIMITS.offFieldsMaxBytes - FOOD_PRODUCT_LOOKUP_LIMITS.offFieldsCheckBytes,
+    ).toBeGreaterThanOrEqual(2048);
+  });
+
+  it('Wächter N1: Emoji-lastige Antwort über 14 KB Bytes (unter 14 K Zeichen) → nicht gespeichert', async () => {
+    const product: Record<string, unknown> = {
+      nutriments: {
+        'energy-kcal_100g': 380,
+        proteins_100g: 10,
+        carbohydrates_100g: 60,
+        fat_100g: 9,
+      },
+    };
+    for (const f of OPEN_FOOD_FACTS.fields) if (f !== 'nutriments') product[f] = '😀'.repeat(500);
+    const fields = offFieldsForStorage(product);
+    expect(JSON.stringify(fields).length).toBeLessThan(
+      FOOD_PRODUCT_LOOKUP_LIMITS.offFieldsCheckBytes,
+    );
+    expect(offFieldsBytes(fields)).toBeGreaterThan(FOOD_PRODUCT_LOOKUP_LIMITS.offFieldsCheckBytes);
+    const { d, stored, reports } = deps(
+      { result: 'fetch', record: null },
+      { fetchOff: () => Promise.resolve({ kind: 'answer', body: { status: 1, product } }) },
+    );
+    expect((await runProductLookup({ code: EAN }, d)).body).toEqual({ code: 'unavailable' });
+    expect(stored).toEqual([]);
+    expect(reports).toContain('off_too_large');
   });
 
   it('productForEntryOf: nicht gefunden → null, sonst die Werte des Speichers', () => {
@@ -1229,6 +1281,37 @@ describe('Regeln von food_product_lookup als reine Funktionen (Testmodus)', () =
     );
     expect(counts).toEqual([{ hour_start: '2026-10-17T10:00:00.000Z', lookups: 3 }]);
     expect(lookupHourStart('2026-10-17T10:59:59.999Z')).toBe('2026-10-17T10:00:00.000Z');
+  });
+
+  it('Wächter M1: neue Nutzung einer Nummer zählt wie eine Abfrage; Limit → null', () => {
+    const now = '2026-10-17T10:30:00.000Z';
+    expect(chargeProductUse([], now)).toEqual([
+      { hour_start: '2026-10-17T10:00:00.000Z', lookups: 1 },
+    ]);
+    expect(
+      chargeProductUse([{ hour_start: '2026-10-17T10:00:00.000Z', lookups: 59 }], now),
+    ).toEqual([{ hour_start: '2026-10-17T10:00:00.000Z', lookups: 60 }]);
+    expect(
+      chargeProductUse([{ hour_start: '2026-10-17T10:00:00.000Z', lookups: 60 }], now),
+    ).toBeNull();
+    // Tag: 200 (Europe/Berlin) über mehrere Stunden.
+    expect(
+      chargeProductUse(
+        [
+          { hour_start: '2026-10-17T06:00:00.000Z', lookups: 60 },
+          { hour_start: '2026-10-17T07:00:00.000Z', lookups: 60 },
+          { hour_start: '2026-10-17T08:00:00.000Z', lookups: 60 },
+          { hour_start: '2026-10-17T09:00:00.000Z', lookups: 20 },
+        ],
+        now,
+      ),
+    ).toBeNull();
+    expect(isNewProductUse({ product_code: '4006381333931' }, null)).toBe(true);
+    expect(
+      isNewProductUse({ product_code: '4006381333931' }, { product_code: '4006381333931' }),
+    ).toBe(false);
+    expect(isNewProductUse({ product_code: '4006381333931' }, { product_code: null })).toBe(true);
+    expect(isNewProductUse({ product_code: null }, null)).toBe(false);
   });
 
   it('Speicher: frisch 30 Tage / „nicht gefunden“ 1 Tag; abgelaufen nach 90 Tagen', () => {

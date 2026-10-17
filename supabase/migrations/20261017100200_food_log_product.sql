@@ -744,6 +744,8 @@ begin
           'result', 'rejected',
           'code', case when err_message = 'Das Datum liegt außerhalb des erlaubten Zeitraums.' then 'out_of_range'
                        when err_message = 'Produkt nicht verfügbar.' then 'product_unavailable'
+                       -- E4a M1: Limit der Produkt-Nutzung (Trigger aus 20261017100400_food_product_use_limit.sql)
+                       when err_message = 'Produkt-Limit erreicht.' then 'product_limit'
                        else 'invalid' end));
     end;
   end loop;

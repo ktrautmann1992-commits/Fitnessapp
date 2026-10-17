@@ -104,7 +104,8 @@ export function recordFromProduct(
     check_reasons: product.check.reasons,
     normalizer_version: FOOD_PRODUCT_CHECK.normalizerVersion,
     off_last_modified: product.off_last_modified,
-    retrieved_at: retrievedAt,
+    // Wächter N4: nur auf die volle Stunde genau (kein genauer Abfrage-Zeitpunkt im gemeinsamen Speicher).
+    retrieved_at: lookupHourStart(retrievedAt),
   };
 }
 
@@ -132,7 +133,8 @@ export function notFoundRecord(code: string, retrievedAt: string): FoodProductRe
     check_reasons: [],
     normalizer_version: FOOD_PRODUCT_CHECK.normalizerVersion,
     off_last_modified: null,
-    retrieved_at: retrievedAt,
+    // Wächter N4: nur auf die volle Stunde genau (kein genauer Abfrage-Zeitpunkt im gemeinsamen Speicher).
+    retrieved_at: lookupHourStart(retrievedAt),
   };
 }
 
@@ -203,6 +205,34 @@ export function countProductLookup(
   return current
     ? kept.map((c) => (c === current ? { ...c, lookups: c.lookups + 1 } : c))
     : [...kept, { hour_start: hour, lookups: 1 }];
+}
+
+/**
+ * Größe der OFF-Felder in UTF-8-Bytes (wie die Datenbank `octet_length` misst – nicht in UTF-16-Zeichen; Umlaute und
+ * Emojis zählen mehrfach). Wächter E4a N1.
+ */
+export function offFieldsBytes(fields: unknown): number {
+  return new TextEncoder().encode(JSON.stringify(fields)).length;
+}
+
+/**
+ * Neue Nutzung einer Nummer im Tagebuch bzw. als Favorit (Wächter-Auflage M1, Spiegel von
+ * private.food_product_charge): zählt wie eine Abfrage. Limit erreicht → null (Eintrag `product_limit`), sonst die
+ * neuen Zähler.
+ */
+export function chargeProductUse(
+  counts: readonly ProductLookupCount[],
+  now: string,
+): ProductLookupCount[] | null {
+  return productLookupLimit(counts, now) === null ? countProductLookup(counts, now) : null;
+}
+
+/** Ist das eine NEUE Nutzung einer Nummer? (neuer Eintrag bzw. andere Nummer als bisher; Menge ändern zählt nicht) */
+export function isNewProductUse(
+  entry: { readonly product_code: string | null },
+  previous: { readonly product_code: string | null } | null,
+): boolean {
+  return entry.product_code !== null && previous?.product_code !== entry.product_code;
 }
 
 /** Speicher-Zeile noch frisch? Gefunden 30 Tage, „nicht gefunden“ 1 Tag (wie food_product_lookup). */
@@ -385,7 +415,7 @@ export async function runProductLookup(
     return fail(200, 'not_found');
   }
   const offFields = offFieldsForStorage(answer.product);
-  if (JSON.stringify(offFields).length > FOOD_PRODUCT_LOOKUP_LIMITS.offFieldsMaxBytes) {
+  if (offFieldsBytes(offFields) > FOOD_PRODUCT_LOOKUP_LIMITS.offFieldsCheckBytes) {
     return fallback('off_too_large');
   }
   const product = normalizeOffProduct(offFields, code);

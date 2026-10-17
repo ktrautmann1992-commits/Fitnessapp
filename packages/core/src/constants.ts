@@ -2385,7 +2385,9 @@ export const OPEN_FOOD_FACTS = {
  *   `negativeCacheDays` 1 („nicht gefunden“ gilt 1 Tag), höchstens `purgeBatch` 500 Zeilen je Aufräumen.
  * - Zähler je Person ohne Nummer, `countsRetentionDays` 2.
  * - Anfrage an unsere Route höchstens `maxBodyBytes` 256 Byte (`{ "code": "…" }`), unveränderte OFF-Felder im
- *   Speicher höchstens `offFieldsMaxBytes` 16 KB.
+ *   Speicher höchstens `offFieldsMaxBytes` 16 KB (CHECK `octet_length(off_fields::text)`). Die Route prüft vorher die
+ *   UTF-8-Bytes von `JSON.stringify` gegen `offFieldsCheckBytes` 14 KB – Puffer, weil die Textform von jsonb Leerzeichen
+ *   nach „:“ und „,“ einfügt und damit länger ist (Wächter E4a N1).
  */
 export const FOOD_PRODUCT_LOOKUP_LIMITS = {
   perHour: 60,
@@ -2398,6 +2400,14 @@ export const FOOD_PRODUCT_LOOKUP_LIMITS = {
   countsRetentionDays: 2,
   maxBodyBytes: 256,
   offFieldsMaxBytes: 16_384,
+  offFieldsCheckBytes: 14_336,
+  /**
+   * Zeitlimit je Aufruf der Route an Supabase (Login prüfen, RPCs) – Wächter E4a N2. Route insgesamt höchstens 15 s
+   * (Vercel maxDuration); die App wartet `clientTimeoutMs` 16 s, damit die Antwort der Route zuerst ankommt.
+   * PRODUKTENTSCHEIDUNG.
+   */
+  supabaseTimeoutMs: 5_000,
+  clientTimeoutMs: 16_000,
 } as const;
 
 /**

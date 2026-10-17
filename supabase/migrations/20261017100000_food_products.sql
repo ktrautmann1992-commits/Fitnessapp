@@ -369,7 +369,8 @@ declare
 begin
   begin
     perform private.assert_log_fields(p, fields);
-    v_retrieved := (p ->> 'retrieved_at')::timestamptz;
+    -- Wächter N4: auf die volle Stunde abgerundet (kein genauer Abfrage-Zeitpunkt im gemeinsamen Speicher).
+    v_retrieved := date_trunc('hour', (p ->> 'retrieved_at')::timestamptz);
     if v_retrieved > now() + interval '5 minutes' or v_retrieved < now() - interval '90 days'
        or (jsonb_typeof(p -> 'kcal') = 'number' and (p ->> 'kcal')::numeric <> trunc((p ->> 'kcal')::numeric)) then
       raise exception 'Ungültiger Speicher-Eintrag.' using errcode = 'invalid_parameter_value';

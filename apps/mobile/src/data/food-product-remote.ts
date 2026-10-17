@@ -1,4 +1,8 @@
-import { productLookupResponseSchema, type ProductLookupResponse } from '@fitnessapp/core';
+import {
+  FOOD_PRODUCT_LOOKUP_LIMITS,
+  productLookupResponseSchema,
+  type ProductLookupResponse,
+} from '@fitnessapp/core';
 import type { AppSupabaseClient } from '@fitnessapp/db';
 
 import { BackendError } from './backend';
@@ -31,12 +35,18 @@ export function createRemoteFoodProduct(options: {
           method: 'POST',
           headers: { Authorization: `Bearer ${token}`, 'Content-Type': 'application/json' },
           body: JSON.stringify({ code }),
+          // Wächter N2: nie endlos warten (Route höchstens 15 s, danach „bitte gleich noch einmal“).
+          signal: AbortSignal.timeout(FOOD_PRODUCT_LOOKUP_LIMITS.clientTimeoutMs),
         });
       } catch (cause) {
+        const name = (cause as Error | undefined)?.name;
         throw new BackendError(
-          cause instanceof TypeError || NETWORK.test((cause as Error | undefined)?.message ?? '')
-            ? 'network'
-            : 'unknown',
+          name === 'TimeoutError' || name === 'AbortError'
+            ? 'temporary'
+            : cause instanceof TypeError ||
+                NETWORK.test((cause as Error | undefined)?.message ?? '')
+              ? 'network'
+              : 'unknown',
           { sensitive: true },
         );
       }

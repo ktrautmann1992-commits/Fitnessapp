@@ -170,6 +170,8 @@ export const deFoodProduct = {
     unavailable:
       'Dieses Produkt ist nicht mehr im Zwischenspeicher – bitte das Produkt neu abrufen und noch einmal eintragen.',
     limit: `Höchstens ${n(U.maxProducts)} eigene Produkte.`,
+    productLimit:
+      'Du hast in letzter Zeit sehr viele Produkte abgefragt bzw. eingetragen – in einer Stunde (bzw. ab morgen) geht es wieder. Eigene Produkte und die Suche gehen weiter.',
     rejected: 'Das Produkt konnte nicht gespeichert werden – bitte die Angaben prüfen.',
   },
   // Lizenzen und Quellen (Einstellungen)

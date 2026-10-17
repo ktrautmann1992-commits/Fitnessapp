@@ -1,6 +1,7 @@
 import { readFileSync } from 'node:fs';
 
 import {
+  FOOD_PRODUCT_LOOKUP_LIMITS,
   type FoodProductRecord,
   MOCK_PRODUCT_CASES,
   mockOffFetch,
@@ -388,6 +389,41 @@ describe('Supabase-Zugriff (store.ts) – Ersatz-fetch', () => {
     expect(JSON.parse(String(calls[1]?.init.body))).toEqual({ p_user_id: USER, p_code: CODE });
     expect(JSON.stringify(calls[1]?.init.headers)).not.toContain(TOKEN);
     expect(JSON.stringify(calls[0]?.init.headers)).not.toContain('sec');
+  });
+
+  it('Wächter N2: jeder Supabase-Aufruf mit Zeitlimit 5 s – hängende Datenbank → Fehler statt Warten', async () => {
+    // AbortSignal.timeout wird ersetzt: das Signal löst sofort aus (statt 5 s echter Wartezeit im Test).
+    const timeout = vi.spyOn(AbortSignal, 'timeout').mockImplementation(() => {
+      const c = new AbortController();
+      queueMicrotask(() => c.abort(new DOMException('Zeitlimit', 'TimeoutError')));
+      return c.signal;
+    });
+    const fetchFn = vi.fn(
+      (_url: RequestInfo | URL, init?: RequestInit) =>
+        new Promise<Response>((_resolve, reject) => {
+          init?.signal?.addEventListener('abort', () => reject(init.signal?.reason as Error));
+        }),
+    ) as unknown as typeof fetch;
+    const store = createSupabaseFoodProductStore(
+      {
+        supabaseUrl: 'https://p.supabase.co',
+        supabasePublishableKey: 'pub',
+        supabaseServiceKey: 'sec',
+      },
+      fetchFn,
+    );
+    try {
+      await expect(store.verifyUser(TOKEN)).rejects.toThrow('Zeitlimit');
+      await expect(store.begin(USER, CODE)).rejects.toThrow('Zeitlimit');
+      await expect(store.upsert({} as never)).rejects.toThrow('Zeitlimit');
+      await expect(store.backoff()).rejects.toThrow('Zeitlimit');
+      expect(timeout.mock.calls).toEqual(
+        Array.from({ length: 4 }, () => [FOOD_PRODUCT_LOOKUP_LIMITS.supabaseTimeoutMs]),
+      );
+      expect(FOOD_PRODUCT_LOOKUP_LIMITS.supabaseTimeoutMs).toBe(5_000);
+    } finally {
+      timeout.mockRestore();
+    }
   });
 
   it('unerwartete Antwort der Datenbank → Fehler (kein ungeprüftes Weiterreichen)', async () => {

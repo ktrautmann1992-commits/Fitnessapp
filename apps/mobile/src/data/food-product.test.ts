@@ -7,6 +7,7 @@
  */
 import {
   entryFromProduct,
+  FOOD_PRODUCT_LOOKUP_LIMITS,
   entryFromUserProduct,
   favoriteFromEntry,
   MOCK_PRODUCT_CASES,
@@ -187,6 +188,39 @@ describe('Eintragen mit Herkunft product (Server rechnet nach – im Testmodus g
     const row = entryFromRow(saved.foodLogEntries[0]!);
     const next = await backend.saveFoodLogEntries([{ ...row, amount: 100, kcal: 0 }], saved);
     expect(next.foodLogEntries[0]).toMatchObject({ kcal: 380, amount: 100 });
+  });
+
+  it('Wächter M1: neue Nutzung einer Nummer zählt wie eine Abfrage – beim Limit product_limit, Ändern zählt nicht', async () => {
+    const { backend, store, view } = await withProduct();
+    const counts = () =>
+      (
+        JSON.parse(store.dump()['fitnessapp.local.v1'] ?? '{}') as {
+          productLookups?: { lookups: number }[];
+        }
+      ).productLookups ?? [];
+    const sum = () => counts().reduce((a, c) => a + c.lookups, 0);
+    expect(sum()).toBe(1); // die Abfrage
+    const built = entryFromProduct(forEntry(view), 50, target(8));
+    if (!built.ok) throw new Error(built.reason);
+    const saved = await backend.saveFoodLogEntries([built.entry], rows());
+    expect(sum()).toBe(2); // neuer Eintrag zählt
+    const row = entryFromRow(saved.foodLogEntries[0]!);
+    const changed = await backend.saveFoodLogEntries([{ ...row, amount: 100 }], saved);
+    expect(sum()).toBe(2); // Menge ändern zählt nicht
+    const fav = favoriteFromEntry(built.entry);
+    if (fav === null) throw new Error('kein Favorit');
+    const withFav = await backend.changeFoodLogFavorite({ op: 'set', favorite: fav }, changed);
+    expect(sum()).toBe(3); // neuer Favorit zählt
+    await backend.changeFoodLogFavorite({ op: 'set', favorite: { ...fav, amount: 60 } }, withFav);
+    expect(sum()).toBe(3); // vorhandenen Favoriten erneut setzen zählt nicht
+    // Limit erreicht (60 in dieser Stunde) → neuer Eintrag abgelehnt, nichts gezählt.
+    const raw = JSON.parse(store.dump()['fitnessapp.local.v1'] ?? '{}') as Record<string, unknown>;
+    const full = counts().map((c) => ({ ...c, lookups: 60 }));
+    await store.setItem('fitnessapp.local.v1', JSON.stringify({ ...raw, productLookups: full }));
+    const again = entryFromProduct(forEntry(view), 50, target(9));
+    if (!again.ok) throw new Error(again.reason);
+    await expectCode(backend.saveFoodLogEntries([again.entry], rows()), 'food_log_product_limit');
+    expect(sum()).toBe(60);
   });
 
   it('Produkt-Favorit: nur Verweis + Menge; ohne Einwilligung keiner', async () => {
@@ -458,5 +492,27 @@ describe('Supabase-Seite: Route POST /api/ernaehrung/produkt (Ersatz-fetch)', ()
       fetchFn: (() => Promise.reject(new TypeError('Failed to fetch'))) as unknown as typeof fetch,
     });
     await expectCode(offline.lookupFoodProduct('1'), 'network');
+  });
+
+  it('Wächter N2: Zeitlimit für die Route – hängende Antwort → temporary statt endlos warten', async () => {
+    const timeout = vi.spyOn(AbortSignal, 'timeout').mockImplementation(() => {
+      const c = new AbortController();
+      queueMicrotask(() => c.abort(new DOMException('Zeitlimit', 'TimeoutError')));
+      return c.signal;
+    });
+    try {
+      const hanging = createRemoteFoodProduct({
+        client,
+        webUrl: 'https://web.example.test',
+        fetchFn: ((_url: RequestInfo | URL, init?: RequestInit) =>
+          new Promise<Response>((_resolve, reject) => {
+            init?.signal?.addEventListener('abort', () => reject(init.signal?.reason as Error));
+          })) as unknown as typeof fetch,
+      });
+      await expectCode(hanging.lookupFoodProduct(code('plausibel')), 'temporary');
+      expect(timeout).toHaveBeenCalledWith(FOOD_PRODUCT_LOOKUP_LIMITS.clientTimeoutMs);
+    } finally {
+      timeout.mockRestore();
+    }
   });
 });
