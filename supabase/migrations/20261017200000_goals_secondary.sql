@@ -26,6 +26,7 @@ alter table public.goals add constraint goals_secondary_goal_pair_check check (
 do $$
 declare
   old_name text;
+  dropped integer := 0;
 begin
   for old_name in
     select c.conname
@@ -36,7 +37,12 @@ begin
       and pg_catalog.pg_get_constraintdef(c.oid) not like '%secondary_goal_type%'
   loop
     execute format('alter table public.goals drop constraint %I', old_name);
+    dropped := dropped + 1;
   end loop;
+  -- Genau ein alter Disziplin-CHECK erwartet (Wächter Z3 N4) – sonst lieber abbrechen als still weitermachen.
+  if dropped <> 1 then
+    raise exception 'Erwartet genau einen alten Disziplin-CHECK auf goals, gefunden: %', dropped;
+  end if;
 end;
 $$;
 

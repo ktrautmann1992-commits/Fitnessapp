@@ -188,7 +188,7 @@ Abweichungen und Wächter-Auflagen (S-1 bis S-3, K-1 bis K-7; S-3 ist Auflage f�
 (`goals/weight-goal*.ts`, `weightGoal` in `nutritionTargetsForWeek`, optional, Standard `null`), keine Migration, keine App.
 Abweichungen und Wächter-Auflagen (S-1, K-1 bis K-7; K-2/K-5/K-6 als Vormerkungen für 4b, Z3, Z5) in `docs/PLAN-ZIELE.md`
 Abschnitt 12.
-**Stand 17.10.2026: Z3 umgesetzt (Wächter-Prüfung steht aus)** – Migrationen `20261017200000_goals_secondary.sql`
+**Stand 17.10.2026: Z3 umgesetzt, Wächter-geprüft (M1, N1, N4, N5 eingearbeitet; N2/N3 Vormerkung Z4)** – Migrationen `20261017200000_goals_secondary.sql`
 (Nebenziel, Paar- und Disziplin-CHECK, Onboarding-Schritt `weight_goal`), `20261017200100_weight_goals.sql` (Wunschgewicht,
 Art. 9, RLS, Trigger „nur mit Abnehmziel“ und Datensparsamkeit), `20261017200200_weight_goals_revoke_export.sql`
 (Widerruf, Export) mit pgTAP 43, SENSIBEL-Test in `db-sync.test.ts`, Testmodus und Supabase-Schreibwege, F8 im Core.

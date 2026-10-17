@@ -427,7 +427,11 @@ export function weightGoalFeasibility(
   const reasons = weightGoalInvalidReasons(body, {
     targetWeightKg: goal.targetWeightKg,
     days,
-    ageAtTargetYears: ageInYears(inputs.birthDate, goal.targetDate),
+    // Zieldatum vor heute (ungültige Eingabe, Fehler `period_out_of_range`): Alter heute – nie eine Ausnahme (Z3 N1).
+    ageAtTargetYears: ageInYears(
+      inputs.birthDate,
+      goal.targetDate > inputs.today ? goal.targetDate : inputs.today,
+    ),
   });
   if (reasons.length > 0) return { state: 'invalid', reasons };
 

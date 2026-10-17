@@ -17,7 +17,8 @@
 create table public.weight_goals (
   user_id uuid primary key default auth.uid() references auth.users (id) on delete cascade,
   target_weight_kg numeric(4, 1) not null check (target_weight_kg between 30 and 300),
-  start_date date not null,
+  -- Nie vor 2026-01-01 (= WEIGHT_GOAL_START_DATE_MIN, Wächter Z3 N1).
+  start_date date not null check (start_date >= date '2026-01-01'),
   target_date date not null,
   amount_mode text not null check (amount_mode in ('kg_to_lose', 'target_weight')),
   time_mode text not null check (time_mode in ('weeks', 'date')),
@@ -65,16 +66,31 @@ create trigger weight_goals_set_updated_at
   for each row execute function private.set_updated_at();
 
 -- ---------------------------------------------------------------------------------------------------------
--- Nur mit Abnehmziel (Wächter S13): Abnehmen muss Haupt- oder Nebenziel der goals-Zeile DESSELBEN Nutzers sein.
--- Rechte des Aufrufers (RLS: nur die eigene goals-Zeile ist sichtbar). Die goals-Zeile wird FOR SHARE gesperrt: Ein
--- gleichzeitiges Ändern des Ziels wartet, und dessen Lösch-Trigger sieht danach das neue Wunschgewicht.
+-- Einwilligung gesperrt, dann nur mit Abnehmziel (Wächter S13, Wächter Z3 M1).
+-- 1. Die eigene gültige Einwilligung health_data wird FOR SHARE gesperrt und danach erneut geprüft (Muster
+--    private.food_log_favorites_before_write, Wächter N7 S2): Ein gleichzeitiger Widerruf wartet auf dieses Speichern
+--    und löscht das Wunschgewicht danach (consents_after_revoke); kommt der Widerruf zuerst, wird hier abgelehnt. Die
+--    RLS-Prüfung allein sähe die Einwilligung noch im alten Stand.
+-- 2. Abnehmen muss Haupt- oder Nebenziel der goals-Zeile DESSELBEN Nutzers sein; die Zeile wird FOR SHARE gesperrt,
+--    damit ein gleichzeitiges Ändern des Ziels wartet und dessen Lösch-Trigger danach das neue Wunschgewicht sieht.
+-- security definer (Sperren ohne eigene Schreibrechte auf consents); Schreiben deshalb nur als der Nutzer selbst
+-- (new.user_id = auth.uid()), wie die RLS-Policies.
 -- ---------------------------------------------------------------------------------------------------------
 create or replace function private.weight_goals_require_fat_loss()
 returns trigger
 language plpgsql
+security definer
 set search_path = ''
 as $$
 begin
+  perform 1
+  from public.consents c
+  where c.user_id = new.user_id and c.consent_type = 'health_data' and c.revoked_at is null
+  order by c.id
+  for share;
+  if new.user_id is distinct from auth.uid() or not public.has_valid_consent('health_data') then
+    raise exception 'Einwilligung Gesundheitsdaten fehlt.' using errcode = 'insufficient_privilege';
+  end if;
   if not exists (
     select 1
     from public.goals g
@@ -88,7 +104,7 @@ begin
 end;
 $$;
 
-revoke all on function private.weight_goals_require_fat_loss() from public;
+revoke all on function private.weight_goals_require_fat_loss() from public, anon, authenticated;
 
 create trigger weight_goals_require_fat_loss
   before insert or update on public.weight_goals

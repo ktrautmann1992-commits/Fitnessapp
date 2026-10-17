@@ -31,6 +31,7 @@ import {
   PINCH_G,
   BODY_METRIC_LIMITS,
   WEIGHT_GOAL_LIMITS,
+  WEIGHT_GOAL_START_DATE_MIN,
   AGE_PLAN_RULES,
   COMPETITION_DISTANCE_M,
   COMPETITION_EFFORT_LIMITS,
@@ -2067,6 +2068,8 @@ describe('Ziele in der Datenbank (Etappe Z3, docs/PLAN-ZIELE.md 5.1/5.2)', () =>
       "discipline is null or goal_type = 'endurance' or secondary_goal_type is not distinct from 'endurance'",
     );
     expect(goalsSql).toContain("like '%discipline IS NULL%'");
+    // N4: genau ein alter CHECK, sonst Abbruch
+    expect(goalsSql).toContain('if dropped <> 1 then');
   });
 
   it('weight_goals: CHECKs = weightGoalSchema (Wächter Z2 K-5)', () => {
@@ -2075,6 +2078,9 @@ describe('Ziele in der Datenbank (Etappe Z3, docs/PLAN-ZIELE.md 5.1/5.2)', () =>
       `target_weight_kg numeric(4, 1) not null check (target_weight_kg between ${min} and ${max})`,
     );
     expect(WEIGHT_GOAL_LIMITS.targetStep).toBe(0.1); // numeric(4, 1)
+    expect(table).toContain(
+      `start_date date not null check (start_date >= date '${WEIGHT_GOAL_START_DATE_MIN}')`,
+    );
     expect(table).toContain(
       `check (target_date between start_date + ${WEIGHT_GOAL_DAYS.min} and start_date + ${WEIGHT_GOAL_DAYS.max})`,
     );
@@ -2095,7 +2101,19 @@ describe('Ziele in der Datenbank (Etappe Z3, docs/PLAN-ZIELE.md 5.1/5.2)', () =>
   it('weight_goals: RLS wie body_metrics (Schreiben nur mit Einwilligung), Trigger „nur mit Abnehmziel“ und Löschen bei goals-Update/-Delete (S13)', () => {
     expect(table).toContain('alter table public.weight_goals enable row level security;');
     expect(table).toContain('revoke all on table public.weight_goals from anon, authenticated;');
-    expect(table.split("public.has_valid_consent('health_data')")).toHaveLength(3);
+    // Zwei Policies (insert, update) und der Trigger (Wächter Z3 M1).
+    expect(table.split("public.has_valid_consent('health_data')")).toHaveLength(4);
+    // M1: im Trigger zuerst die eigene gültige Einwilligung FOR SHARE sperren, dann erneut prüfen, dann das Abnehmziel.
+    const trigger = table.slice(
+      table.indexOf('create or replace function private.weight_goals_require_fat_loss()'),
+    );
+    const lock = trigger.indexOf("c.consent_type = 'health_data' and c.revoked_at is null");
+    expect(lock).toBeGreaterThan(0);
+    expect(trigger.indexOf('for share', lock)).toBeLessThan(trigger.indexOf('has_valid_consent'));
+    expect(trigger.indexOf('has_valid_consent')).toBeLessThan(
+      trigger.indexOf('from public.goals g'),
+    );
+    expect(trigger).toContain('security definer');
     expect(table).toContain('before insert or update on public.weight_goals');
     expect(table).toContain('after update or delete on public.goals');
     expect(table).toContain('Ein Wunschgewicht gibt es nur beim Ziel Abnehmen.');

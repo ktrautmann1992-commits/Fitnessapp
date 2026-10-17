@@ -2166,6 +2166,13 @@ export const WEIGHT_GOAL_AGE_ITERATIONS = 3;
  *   VOR LIVEGANG GEGEN ORIGINAL PRÜFEN. Einen eigenen Hinweis „Ziel-BMI 18,5 bis unter 20“ gibt es seitdem nicht mehr
  *   (das Band ist gesperrt).
  */
+/**
+ * Frühester Starttag eines gespeicherten Abnehmziels (Wächter Z3 N1): Das Feature gibt es erst seit 2026; ältere
+ * Werte sind Tippfehler oder Manipulation. Identisch als CHECK `weight_goals.start_date` in der Datenbank
+ * (20261017200100_weight_goals.sql, Abgleich in db-sync.test.ts). PRODUKTENTSCHEIDUNG.
+ */
+export const WEIGHT_GOAL_START_DATE_MIN = '2026-01-01';
+
 export const WEIGHT_GOAL_LIMITS = {
   minKg: 1,
   kgStep: 0.5,

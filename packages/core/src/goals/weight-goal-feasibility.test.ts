@@ -584,6 +584,16 @@ describe('Verfügbarkeit und unzulässige Ziele (Plan 2.3)', () => {
     expect(minTargetBmiFor(69)).toBe(20);
   });
 
+  it('Zieldatum vor heute (auch vor dem Geburtsdatum): Fehler `period_out_of_range`, nie eine Ausnahme (Z3 N1/N5)', () => {
+    const young = person({ birthDate: '2008-10-12' });
+    for (const targetDate of [addDays(TODAY, -1), '2008-01-01']) {
+      expect(weightGoalFeasibility(young, { targetWeightKg: 80, targetDate })).toEqual({
+        state: 'invalid',
+        reasons: ['period_out_of_range'],
+      });
+    }
+  });
+
   it('Ziel-BMI ab 70 J. (Alter am Zieldatum): 21,99 → Fehler, 22 → bewertet; mit 69 J. gilt 20 (F8)', () => {
     const body = { bodyMetricsRows: [{ measuredOn: '2026-10-10', heightCm: 200, weightKg: 100 }] };
     // 70 J. am 01.09.2026 – schon heute 70

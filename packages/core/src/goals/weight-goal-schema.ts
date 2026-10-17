@@ -1,7 +1,7 @@
 import { z } from 'zod';
 
 import { isoDateSchema } from '../age';
-import { BODY_METRIC_LIMITS, WEIGHT_GOAL_LIMITS } from '../constants';
+import { BODY_METRIC_LIMITS, WEIGHT_GOAL_LIMITS, WEIGHT_GOAL_START_DATE_MIN } from '../constants';
 import { daysBetween } from '../dates';
 
 /**
@@ -40,7 +40,10 @@ export const weightGoalSchema = z
       .refine((kg) => isMultipleOf(kg, WEIGHT_GOAL_LIMITS.targetStep), {
         message: 'Das Zielgewicht hat höchstens eine Nachkommastelle.',
       }),
-    startDate: isoDateSchema,
+    // Nie vor WEIGHT_GOAL_START_DATE_MIN (= CHECK weight_goals.start_date, Wächter Z3 N1).
+    startDate: isoDateSchema.refine((date) => date >= WEIGHT_GOAL_START_DATE_MIN, {
+      message: 'Das Startdatum ist ungültig.',
+    }),
     targetDate: isoDateSchema,
     amountMode: z.enum(WEIGHT_GOAL_AMOUNT_MODES),
     timeMode: z.enum(WEIGHT_GOAL_TIME_MODES),

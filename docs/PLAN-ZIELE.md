@@ -1,6 +1,6 @@
 # Plan „Ziele erweitern“: Abnehmen mit oder ohne konkretes Ziel, Erreichbarkeits-Ampel, zwei Ziele
 
-**Status:** Plan **Wächter-geprüft (Auflagen eingearbeitet)**. **Z1 und Z2 umgesetzt und Wächter-geprüft** (Abschnitte 11 und 12). **Z3 umgesetzt am 17.10.2026** (Abschnitt 13, Wächter-Prüfung steht aus). **F8 entschieden am 17.10.2026:** Ziel-BMI hart 20, ab 70 Jahren 22 (Abschnitt 0). Die Wächter-Prüfung vom 13.10.2026 ergab „Freigabe mit Auflagen“ (Blocker B1, Soll S1–S20, Kann K1–K10). Die Nachprüfung (Runde 2, gleicher Tag) ergab erneut „Freigabe mit Auflagen“ ohne Blocker (Soll N1–N4, Kann K-a bis K-f). Alle Auflagen beider Runden sind in diesem Dokument eingearbeitet, Übersicht in Abschnitt 10. Gründer-Entscheidungen vom 13.10.2026 in Abschnitt 0.
+**Status:** Plan **Wächter-geprüft (Auflagen eingearbeitet)**. **Z1 und Z2 umgesetzt und Wächter-geprüft** (Abschnitte 11 und 12). **Z3 umgesetzt am 17.10.2026, Wächter-geprüft (M1, N1, N4, N5 eingearbeitet; N2/N3 für Z4 vorgemerkt)** (Abschnitt 13). **F8 entschieden am 17.10.2026:** Ziel-BMI hart 20, ab 70 Jahren 22 (Abschnitt 0). Die Wächter-Prüfung vom 13.10.2026 ergab „Freigabe mit Auflagen“ (Blocker B1, Soll S1–S20, Kann K1–K10). Die Nachprüfung (Runde 2, gleicher Tag) ergab erneut „Freigabe mit Auflagen“ ohne Blocker (Soll N1–N4, Kann K-a bis K-f). Alle Auflagen beider Runden sind in diesem Dokument eingearbeitet, Übersicht in Abschnitt 10. Gründer-Entscheidungen vom 13.10.2026 in Abschnitt 0.
 **Gründer-Wunsch (wörtlich):** „Baue folgendes beim Ziel Abnehmen noch ein: Auswahl Abnehmen ohne konkretes Ziel, Abnehmen mit konkretem Ziel mit dem Gewicht in kg abnehmen in welcher Zeit. Und auf einer Skala von rot bis grün soll angegeben werden wie gut das erreichbar ist. Zudem sollte man 2 Ziele auswählen können. Die Übungen im Trainingsplan sollen für beide Ziele passen.“
 **Etappen:** Z0–Z6 (Abschnitt 7).
 
@@ -733,7 +733,7 @@ Z3 ist umgesetzt wie in Abschnitt 7 beschrieben. Migrationen (nur additiv):
 - `20261017200200_weight_goals_revoke_export.sql`: `consents_after_revoke` (Basis `*_competition_rpcs.sql`) und
   `export_my_data` (Basis `*_tracked_route_rpcs.sql`), jeweils Zeile für Zeile übernommen und nur ergänzt.
 
-pgTAP `43_goals_secondary_weight_goals.test.sql` (56 Tests), SENSIBEL-Test und Abgleich der CHECKs in `db-sync.test.ts`,
+pgTAP `43_goals_secondary_weight_goals.test.sql` (61 Tests), SENSIBEL-Test und Abgleich der CHECKs in `db-sync.test.ts`,
 Testmodus und Supabase-Schreibwege in `apps/mobile/src/data` (Test `goals-z3.test.ts`). Abweichungen und Präzisierungen:
 
 1. **F8 gleich mit umgesetzt** (Gründer-Entscheidung vom 17.10.2026): `WEIGHT_GOAL_LIMITS.minTargetBmi` mit
@@ -776,9 +776,25 @@ Testmodus und Supabase-Schreibwege in `apps/mobile/src/data` (Test `goals-z3.tes
 12. **`database.types.ts`** von Hand ergänzt (wie bisher, Abgleich in `database.types.test.ts`); nach dem Merge kann die
     Action zur Typ-Erzeugung sie bestätigen.
 
+### Wächter-Prüfung Z3 (17.10.2026): Auflagen
+
+| Nr. | Auflage (kurz)                                                       | Umsetzung                                                                                                                                                                                                                                                                                                                                                 |
+| --- | -------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| M1  | Widerruf gleichzeitig mit Speichern: RLS sieht die alte Einwilligung | `weight_goals_require_fat_loss` (jetzt `security definer`) sperrt zuerst die eigene gültige `consents`-Zeile `FOR SHARE`, prüft danach `has_valid_consent` erneut (sonst 42501), erst dann das Abnehmziel. Muster `food_log_favorites_before_write`. Schreiben nur als der Nutzer selbst. pgTAP (Aufbau, Reihenfolge, service_role) und `db-sync.test.ts` |
+| N1  | `start_date` ohne Untergrenze; Alter am Zieldatum kann werfen        | CHECK `start_date >= date '2026-01-01'` = `WEIGHT_GOAL_START_DATE_MIN` in `weightGoalSchema`; Alter an max(Zieldatum, Tag d bzw. heute) – ein abgelaufenes Ziel oder ein Zieldatum vor heute wirft nie. Tests                                                                                                                                             |
+| N2  | siehe Wächter-Bericht                                                | **Vormerkung Z4**                                                                                                                                                                                                                                                                                                                                         |
+| N3  | siehe Wächter-Bericht                                                | **Vormerkung Z4**                                                                                                                                                                                                                                                                                                                                         |
+| N4  | Drop des alten Disziplin-CHECKs ohne Zählung                         | Treffer werden gezählt, bei ≠ 1 bricht die Migration ab                                                                                                                                                                                                                                                                                                   |
+| N5  | Grenzfälle Alter/Datum                                               | Tests: geboren 29.02. (70. Geburtstag im Nicht-Schaltjahr am 01.03.), Zieldatum vor heute bzw. vor dem Geburtsdatum                                                                                                                                                                                                                                       |
+
 **Offen / Vormerkungen:**
 
-- Wächter-Prüfung Z3 steht aus.
+- **Vormerkung (M1-Lücke bei bestehenden Tabellen):** `body_metrics`, `body_measurements` und `health_screening` prüfen
+  die Einwilligung nur per RLS (`has_valid_consent` ohne Sperre). Ein Speichern, das gleichzeitig mit einem Widerruf
+  läuft, kann dort nach dem Löschen noch eine Zeile hinterlassen. Abhilfe wie bei `weight_goals` (Einwilligung
+  `FOR SHARE` sperren, erneut prüfen) in einer eigenen Etappe.
+- **Vormerkung Z4 (Wächter Z3 N2):** Der Rückfall in `apps/mobile/src/data/supabase-backend.ts` (zweiter `goals`-Upsert ohne `secondary_goal_type` bei PGRST204) lässt bei veraltetem PostgREST-Schema-Cache ein vorhandenes Nebenziel in der Datenbank stehen, während die App `null` zeigt. Vor Z4 unmöglich (niemand kann ein Nebenziel wählen); den Rückfall in Z4 entfernen.
+- **Vormerkung Z4 (Wächter Z3 N3):** Alte App-Stände (zwischengespeicherter Web-Build, alte APK) senden kein `secondary_goal_type`; ein vorhandenes Nebenziel bleibt stehen. Wählt jemand dort ein Hauptziel, das nicht zum Nebenziel passt, kommt 23514 und das Ziel lässt sich nicht ändern. In Z4 eine verständliche Meldung („Bitte App aktualisieren“) für 23514 bei `goals` vorsehen.
 - `save_competition`/`cancel_competition`/`delete_competition` (Phase 10 WP3) gleichen `goals.target_date` nur beim
   **Hauptziel** Ausdauer ab. Mit Ausdauer als Nebenziel (ab Z4) in Phase 10 bzw. Z4 entscheiden, ob das auch dann gilt.
 - `start_date` prüft die Datenbank nicht gegen „heute“ (der Plan verlangt es nicht; Zod setzt es). Bei Bedarf in Z4/Z5

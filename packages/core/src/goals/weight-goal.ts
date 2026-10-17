@@ -254,7 +254,11 @@ export function weightGoalPreStatus(input: {
       !isTargetBmiAllowed(
         input.goal.targetWeightKg,
         input.heightCm,
-        ageInYears(input.birthDate, input.goal.targetDate),
+        // Alter am Zieldatum, bei abgelaufenem Ziel am Tag d (nie vor dem Geburtsdatum, Wächter Z3 N1).
+        ageInYears(
+          input.birthDate,
+          input.goal.targetDate > input.date ? input.goal.targetDate : input.date,
+        ),
       ))
   ) {
     return 'invalid';

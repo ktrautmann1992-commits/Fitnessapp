@@ -4,7 +4,7 @@
 -- Widerruf löscht, Export enthält beides.
 begin;
 create extension if not exists pgtap with schema extensions;
-select plan(56);
+select plan(61);
 
 insert into auth.users (id, email) values
   ('11111111-1111-4111-8111-111111111111', 'nutzer-a@example.test'),
@@ -145,9 +145,13 @@ select throws_ok(
 );
 
 -- Verlängern nach Ablauf (Wächter S15): jedes Speichern setzt start_date = heute neu → CHECK hält.
-update public.weight_goals set start_date = '2025-01-01', target_date = '2025-02-01';
 select throws_ok(
-  $$ update public.weight_goals set target_date = '2027-06-01' $$,
+  $$ update public.weight_goals set start_date = '2025-12-31', target_date = '2026-02-01' $$,
+  '23514', null, 'start_date vor 2026-01-01 abgelehnt (= WEIGHT_GOAL_START_DATE_MIN, Wächter Z3 N1)'
+);
+update public.weight_goals set start_date = '2026-01-01', target_date = '2026-02-01';
+select throws_ok(
+  $$ update public.weight_goals set target_date = '2028-01-15' $$,
   '23514', null, 'nur das Datum verlängern ohne neuen Start (> 728 Tage) scheitert'
 );
 select lives_ok(
@@ -169,7 +173,7 @@ select is_empty($$ delete from public.weight_goals returning 1 $$, 'B löscht da
 select throws_ok(
   $$ insert into public.weight_goals (user_id, target_weight_kg, start_date, target_date, amount_mode, time_mode)
      values ('11111111-1111-4111-8111-111111111111', 80, '2026-10-17', '2027-01-09', 'kg_to_lose', 'weeks') $$,
-  '23514', null, 'B kann kein Wunschgewicht für A anlegen (fremde goals-Zeile unsichtbar)'
+  '42501', null, 'B kann kein Wunschgewicht für A anlegen (nur als der Nutzer selbst)'
 );
 -- B hat kein Ziel → auch für sich selbst kein Wunschgewicht
 select throws_ok(
@@ -204,6 +208,37 @@ insert into public.weight_goals (target_weight_kg, start_date, target_date, amou
 values (80, '2026-10-17', '2027-01-09', 'kg_to_lose', 'weeks');
 delete from public.goals;
 select is_empty($$ select 1 from public.weight_goals $$, 'goals-Zeile gelöscht: Wunschgewicht gelöscht');
+
+-- ---------------------------------------------------------------------------------------------------------
+-- 5b. Einwilligung gesperrt, dann geprüft (Wächter Z3 M1): Die Trigger-Funktion sperrt die eigene gültige
+-- Einwilligung FOR SHARE und prüft danach erneut – ein gleichzeitiger Widerruf wartet auf das Speichern und löscht
+-- danach (gleichzeitige Sitzungen kann pgTAP nicht nachstellen; geprüft werden Aufbau und Reihenfolge).
+-- ---------------------------------------------------------------------------------------------------------
+reset role;
+select ok(
+  (select prosecdef from pg_proc where oid = 'private.weight_goals_require_fat_loss()'::regprocedure),
+  'Trigger-Funktion ist security definer (Sperre auf consents ohne eigenes Schreibrecht)'
+);
+select ok(
+  (select position('for share' in prosrc) > 0
+      and position('for share' in prosrc) < position('has_valid_consent' in prosrc)
+      and position('has_valid_consent' in prosrc) < position('public.goals' in prosrc)
+   from pg_proc where oid = 'private.weight_goals_require_fat_loss()'::regprocedure),
+  'Reihenfolge: Einwilligung sperren → erneut prüfen → Abnehmziel prüfen'
+);
+select ok(
+  not has_function_privilege('authenticated', 'private.weight_goals_require_fat_loss()', 'execute'),
+  'Trigger-Funktion nicht direkt aufrufbar'
+);
+set local role service_role;
+select throws_ok(
+  $$ insert into public.weight_goals (user_id, target_weight_kg, start_date, target_date, amount_mode, time_mode)
+     values ('22222222-2222-4222-8222-222222222222', 80, '2026-10-17', '2027-01-09', 'kg_to_lose', 'weeks')
+     on conflict (user_id) do update set target_weight_kg = excluded.target_weight_kg $$,
+  '42501', null, 'auch service_role schreibt kein Wunschgewicht ohne Login des Nutzers'
+);
+set local role authenticated;
+set local request.jwt.claims = '{"sub":"11111111-1111-4111-8111-111111111111","role":"authenticated"}';
 
 -- ---------------------------------------------------------------------------------------------------------
 -- 6. Export und Widerruf
