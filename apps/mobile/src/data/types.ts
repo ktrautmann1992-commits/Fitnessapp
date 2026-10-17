@@ -25,6 +25,9 @@ import type {
   RecipeRating,
   Sex,
   TrainingSchedule,
+  WeightGoal,
+  WeightGoalAmountMode,
+  WeightGoalTimeMode,
 } from '@fitnessapp/core';
 import type { Tables } from '@fitnessapp/db';
 
@@ -59,6 +62,15 @@ export type FoodPreferenceRow = WithoutTimestamps<Tables<'food_preferences'>>;
 export type BodyMetricsRow = WithoutTimestamps<Tables<'body_metrics'>>;
 export type BodyMeasurementsRow = WithoutTimestamps<Tables<'body_measurements'>>;
 export type HealthScreeningRow = Tables<'health_screening'>;
+/**
+ * Wunschgewicht (docs/PLAN-ZIELE.md 5.2/5.3, Etappe Z3) – Spalten wie `weight_goals`, Modi als Werte-Listen aus
+ * packages/core statt `string`. SENSIBEL (Art. 9 DSGVO): nur mit Einwilligung health_data, beim Widerruf gelöscht, nie
+ * im normalen Zwischenspeicher, nie in Logs oder Analytics (Wächter K7). Nur mit Abnehmziel (Wächter S13).
+ */
+export type WeightGoalRow = Omit<
+  WithoutTimestamps<Tables<'weight_goals'>>,
+  'amount_mode' | 'time_mode'
+> & { amount_mode: WeightGoalAmountMode; time_mode: WeightGoalTimeMode };
 export type MeasurementReminderRow = WithoutTimestamps<Tables<'measurement_reminders'>>;
 /** Trainingsplan (Phase 3). Mit uses_health_data = true SENSIBEL (Art. 9 DSGVO, PLAN-PHASE-3 Abschnitt 9). */
 export type UserPlanRow = Tables<'user_plans'>;
@@ -227,6 +239,11 @@ export interface UserRows {
   bodyMeasurements: BodyMeasurementsRow[];
   /** SENSIBEL (Art. 9 DSGVO) */
   healthScreenings: HealthScreeningRow[];
+  /**
+   * Wunschgewicht (Etappe Z3; höchstens eins, nur mit Abnehmziel). SENSIBEL (Art. 9 DSGVO) – im Supabase-Modus nur im
+   * Arbeitsspeicher. Der Bildschirm dazu kommt mit Etappe Z4.
+   */
+  weightGoal: WeightGoalRow | null;
   reminder: MeasurementReminderRow | null;
   /**
    * Trainingspläne (aktiv und ersetzt), Einheiten und Übungen – wie die Tabellen user_plans, planned_sessions,
@@ -287,6 +304,7 @@ export function emptyUserRows(): UserRows {
     bodyMetrics: [],
     bodyMeasurements: [],
     healthScreenings: [],
+    weightGoal: null,
     reminder: null,
     plans: [],
     plannedSessions: [],
@@ -325,6 +343,8 @@ export interface ConsentDocument {
 
 export interface GoalAnswer {
   goalType: GoalType;
+  /** Nebenziel (docs/PLAN-ZIELE.md 4, Etappe Z3); null = keins. Auswahl in der App ab Etappe Z4. */
+  secondaryGoalType: GoalType | null;
   discipline: EnduranceDiscipline | null;
   targetDate: string | null;
 }
@@ -352,6 +372,11 @@ export interface OnboardingAnswers {
   healthScreening?: HealthScreeningAnswer;
   experienceLevel?: ExperienceLevel;
   goal?: GoalAnswer;
+  /**
+   * Konkretes Abnehmziel (Schritt `weight_goal`, Etappe Z3/Z4): normalisiert wie `weightGoalSchema`; null = „ohne
+   * festes Ziel“. Gesundheitsdatum – im Supabase-Modus nur im Arbeitsspeicher.
+   */
+  weightGoal?: WeightGoal | null;
   /** Der Trainingsort wird daraus abgeleitet (deriveTrainingLocation). */
   trainingSchedule?: TrainingScheduleAnswer;
   equipment?: EquipmentItemInput[];
@@ -375,6 +400,8 @@ export type StepSave =
   | { step: 'health_screening'; answers: HealthScreeningAnswers; acknowledgedAt: string | null }
   | { step: 'experience'; experienceLevel: ExperienceLevel }
   | { step: 'goal'; goal: GoalAnswer }
+  /** null = „ohne festes Ziel“ (ein gespeichertes Wunschgewicht wird gelöscht). */
+  | { step: 'weight_goal'; weightGoal: WeightGoal | null }
   | { step: 'time_budget'; schedule: TrainingScheduleAnswer }
   | { step: 'equipment'; items: EquipmentItemInput[] }
   | { step: 'nutrition'; nutrition: NutritionStep }

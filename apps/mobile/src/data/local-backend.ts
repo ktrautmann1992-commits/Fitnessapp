@@ -343,7 +343,10 @@ export function createLocalBackend(store: KeyValueStore, options: LocalBackendOp
       throw new BackendError('consent_required', { sensitive: true });
     }
     // Wertebereiche, Messdatum (höchstens heute + 1 Tag) usw. wie die CHECK-Bedingungen der Datenbank.
-    if (!rows.profile || !isValidOp(op, { today: options.today(), profile: rows.profile })) {
+    if (
+      !rows.profile ||
+      !isValidOp(op, { today: options.today(), profile: rows.profile, goals: rows.goals })
+    ) {
       throw new BackendError('unknown', { sensitive: isSensitiveOp(op) });
     }
     if (op.kind === 'grant_consent' && op.version !== CURRENT_CONSENT_VERSIONS[op.consentType]) {

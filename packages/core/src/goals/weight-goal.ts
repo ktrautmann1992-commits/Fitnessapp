@@ -1,6 +1,6 @@
 import { z } from 'zod';
 
-import { isoDateSchema } from '../age';
+import { ageInYears, isoDateSchema } from '../age';
 import { KCAL_PER_KG_BODY_WEIGHT, WEIGHT_GOAL_LIMITS } from '../constants';
 import { addDays, daysBetween } from '../dates';
 import type { BodyMetricsRow, NutritionInputsInput } from '../nutrition/schemas';
@@ -10,7 +10,6 @@ import {
   WEIGHT_GOAL_EPS,
   type WeightGoalBlockReason,
   weightGoalFeasibility,
-  type WeightGoalInputNotice,
   type WeightGoalInvalidReason,
   type WeightGoalRated,
   weightGoalAvailability,
@@ -80,7 +79,6 @@ export type WeightGoalEvaluation =
       /** Normalisiertes Ziel zum Speichern (`startDate` = heute, Wächter S15). */
       readonly goal: WeightGoal;
       readonly rating: WeightGoalRated;
-      readonly notices: readonly WeightGoalInputNotice[];
     };
 
 const BLOCK_PATH: readonly string[] = [];
@@ -155,7 +153,6 @@ export function evaluateWeightGoalInput(
       timeMode: input.time.mode,
     }),
     rating,
-    notices: rating.notices,
   };
 }
 
@@ -212,6 +209,8 @@ export interface WeightGoalDayInput {
   /** Gerechneter Tag d. */
   readonly date: string;
   readonly today: string;
+  /** Geburtsdatum: Ziel-BMI-Untergrenze nach dem Alter am Zieldatum (F8). */
+  readonly birthDate: string;
   /** Modus des Tages (`nutritionEligibility`). */
   readonly mode: 'full' | 'maintenance_only';
   /** Abnehmen ist Haupt- oder Nebenziel. */
@@ -240,8 +239,10 @@ export interface WeightGoalDayInput {
  * Einheitliche Reihenfolge (Wächter Z2 K-3): vor Start → ungültig → ruht.
  */
 export function weightGoalPreStatus(input: {
-  readonly goal: Pick<WeightGoal, 'targetWeightKg' | 'startDate'>;
+  readonly goal: Pick<WeightGoal, 'targetWeightKg' | 'startDate' | 'targetDate'>;
   readonly date: string;
+  /** Geburtsdatum: Ziel-BMI-Untergrenze nach dem Alter am Zieldatum (F8). */
+  readonly birthDate: string;
   readonly losesWeight: boolean;
   readonly heightCm: number | null;
   readonly mode: 'full' | 'maintenance_only' | 'no_targets';
@@ -249,7 +250,16 @@ export function weightGoalPreStatus(input: {
   if (input.date < input.goal.startDate) return null;
   if (
     !input.losesWeight ||
-    (input.heightCm !== null && !isTargetBmiAllowed(input.goal.targetWeightKg, input.heightCm))
+    (input.heightCm !== null &&
+      !isTargetBmiAllowed(
+        input.goal.targetWeightKg,
+        input.heightCm,
+        // Alter am Zieldatum, bei abgelaufenem Ziel am Tag d (nie vor dem Geburtsdatum, Wächter Z3 N1).
+        ageInYears(
+          input.birthDate,
+          input.goal.targetDate > input.date ? input.goal.targetDate : input.date,
+        ),
+      ))
   ) {
     return 'invalid';
   }

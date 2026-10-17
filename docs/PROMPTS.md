@@ -178,8 +178,8 @@ vom 13.10.2026, kein eigener Prompt): Abnehmen ohne oder mit konkretem Ziel (kg 
 von Rot bis Grün, Haupt- und Nebenziel. Gründer-Entscheidungen F1, F5 („nie schneller als heute“), F7 (nur
 Planungsdauer) und F12 stehen in Abschnitt 0, die übrigen Fragen „wie empfohlen“. Wächter-Urteil „Freigabe mit
 Auflagen“ (B1, S1–S20, K1–K10), Runde 2 erneut „Freigabe mit Auflagen“ ohne Blocker (N1–N4, K-a bis K-f),
-alle eingearbeitet (Abschnitt 10). **Offen: F8** (Untergrenze Zielgewicht; vorläufig
-BMI 18,5, Wächter empfiehlt hart 20, ab 70 J. 22) – Gründer-Entscheidung, nötig vor Z4.
+alle eingearbeitet (Abschnitt 10). **F8 entschieden (17.10.2026):** Ziel-BMI hart 20, ab 70 J. 22 (Wächter-Empfehlung
+S12, GLIM 2019) – damit ist Z0 vollständig erledigt.
 **Stand 13.10.2026: Z1 umgesetzt, Wächter-geprüft (Auflagen eingearbeitet)** – Ziel-Profil `packages/core/src/goals/profile.ts`,
 `GOAL_PAIR_RULES`, Nebenziel in Plan und Ernährung (optional, Standard `null`, Payload ohne Schlüssel bei `null`),
 Migration `20261013120000_plan_inputs_secondary_goal.sql` (`goal_pair_allowed`, `assert_plan_inputs`) mit pgTAP 27.
@@ -187,7 +187,12 @@ Abweichungen und Wächter-Auflagen (S-1 bis S-3, K-1 bis K-7; S-3 ist Auflage f�
 **Stand 13.10.2026: Z2 umgesetzt, Wächter-geprüft (Auflagen eingearbeitet)** – Abnehmziel und Ampel nur im Core
 (`goals/weight-goal*.ts`, `weightGoal` in `nutritionTargetsForWeek`, optional, Standard `null`), keine Migration, keine App.
 Abweichungen und Wächter-Auflagen (S-1, K-1 bis K-7; K-2/K-5/K-6 als Vormerkungen für 4b, Z3, Z5) in `docs/PLAN-ZIELE.md`
-Abschnitt 12. Reihenfolge (F12): **Z1**
+Abschnitt 12.
+**Stand 17.10.2026: Z3 umgesetzt, Wächter-geprüft (M1, N1, N4, N5 eingearbeitet; N2/N3 Vormerkung Z4)** – Migrationen `20261017200000_goals_secondary.sql`
+(Nebenziel, Paar- und Disziplin-CHECK, Onboarding-Schritt `weight_goal`), `20261017200100_weight_goals.sql` (Wunschgewicht,
+Art. 9, RLS, Trigger „nur mit Abnehmziel“ und Datensparsamkeit), `20261017200200_weight_goals_revoke_export.sql`
+(Widerruf, Export) mit pgTAP 43, SENSIBEL-Test in `db-sync.test.ts`, Testmodus und Supabase-Schreibwege, F8 im Core.
+Abweichungen in `docs/PLAN-ZIELE.md` Abschnitt 13. Reihenfolge (F12): **Z1**
 (Core: Ziel-Profil, zwei Ziele, dazu kleine Migration `assert_plan_inputs` mit optionalem Nebenziel-Schlüssel) und
 **Z2** (Core: Abnehmziel und Ampel) jetzt parallel zu Phase 5 → nach Phase 5: **Z3** (Datenmodell, Migration mit RLS,
 Testmodus, Export) → **Z4** (Onboarding mit Ampel, nach F8) → **Z5/Z6** (Einstellungen, Anzeigen, PDF, Doku) → dann

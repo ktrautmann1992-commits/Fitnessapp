@@ -16,9 +16,11 @@ import {
   BARBELL_PLATE_MAX_KG,
   scheduleFromLegacyGoals,
   type TrainingLocation,
+  goalTypeSchema,
+  isAllowedGoalPair,
 } from '@fitnessapp/core';
 
-import { toTrainingSlotRows } from './mapping';
+import { toTrainingSlotRows, toWeightGoalRow, weightGoalFromRow } from './mapping';
 import type {
   CustomMealItemRow,
   CustomMealRow,
@@ -33,6 +35,7 @@ import type {
   NutritionSetupRow,
   UserEquipmentRow,
   UserRows,
+  WeightGoalRow,
 } from './types';
 
 /**
@@ -386,6 +389,47 @@ function storedCustomMeals(
   };
 }
 
+/**
+ * Nebenziel (Etappe Z3): vorher gab es die Spalte nicht – fehlt sie, gilt „kein Nebenziel“. Ein ungültiger Wert
+ * (kein Ziel-Typ, verbotenes Paar) wird verworfen, ebenso eine Disziplin ohne Ausdauer-Ziel (CHECKs der Datenbank).
+ */
+function storedGoals(goals: GoalsRow | null): GoalsRow | null {
+  if (goals === null) return null;
+  const raw: unknown = (goals as { secondary_goal_type?: unknown }).secondary_goal_type;
+  const parsed = goalTypeSchema.safeParse(raw);
+  const secondary =
+    parsed.success && isAllowedGoalPair(goals.goal_type, parsed.data) ? parsed.data : null;
+  const endurance = goals.goal_type === 'endurance' || secondary === 'endurance';
+  return {
+    ...goals,
+    secondary_goal_type: secondary,
+    discipline: endurance ? goals.discipline : null,
+  };
+}
+
+/**
+ * Wunschgewicht (Etappe Z3): vorher gab es keins; der Gerätespeicher ist nicht vertrauenswürdig – nur ein gültiges Ziel
+ * (`weightGoalSchema`, Zod strikt) des eigenen Kontos und nur mit Abnehmziel (wie der Datenbank-Trigger, Wächter S13),
+ * sonst null („ohne festes Ziel“).
+ */
+function storedWeightGoal(stored: UserRows, goals: GoalsRow | null): WeightGoalRow | null {
+  const value: unknown = (stored as { weightGoal?: unknown }).weightGoal;
+  if (typeof value !== 'object' || value === null) return null;
+  const row = value as WeightGoalRow;
+  const owner = stored.profile?.user_id;
+  if (typeof row.user_id !== 'string' || (owner !== undefined && row.user_id !== owner)) {
+    return null;
+  }
+  if (
+    goals === null ||
+    (goals.goal_type !== 'fat_loss' && goals.secondary_goal_type !== 'fat_loss')
+  ) {
+    return null;
+  }
+  const goal = weightGoalFromRow(row);
+  return goal === null ? null : toWeightGoalRow(row.user_id, goal);
+}
+
 /** goals-Felder des Gerätespeichers aus App-Versionen vor Etappe B2. */
 interface LegacyGoalsFields {
   sessions_per_week?: number | null;
@@ -398,7 +442,8 @@ interface LegacyGoalsFields {
  * Gerätespeicher des Testmodus und der Offline-Zwischenspeicher des Supabase-Modus – dieselben Regeln wie die
  * Migration 20261005120000_training_slots.sql (Erweiterungsplan 4.2/4.3):
  * - altes Zeitbudget in goals → Trainingstage (scheduleFromLegacyGoals), die alten Felder entfallen,
- * - Langhantel: Werte über 25 kg (früher wohl Gesamtgewichte) entfernen, bar_kg ergänzen (leer = 20 kg).
+ * - Langhantel: Werte über 25 kg (früher wohl Gesamtgewichte) entfernen, bar_kg ergänzen (leer = 20 kg),
+ * - Ziele (Etappe Z3): fehlendes Nebenziel → null, Wunschgewicht nur gültig und nur mit Abnehmziel.
  * Rein und getestet (legacy-rows.test.ts); bereits neue Stände bleiben unverändert.
  */
 export function upgradeStoredRows(stored: UserRows): UserRows {
@@ -426,12 +471,15 @@ export function upgradeStoredRows(stored: UserRows): UserRows {
     foodLogFavorites: storedFoodLogFavorites(stored),
     ...storedCustomMeals(stored, storedFoodLogEntries(stored)),
   };
+  rows.goals = storedGoals(stored.goals ?? null);
+  rows.weightGoal = storedWeightGoal(stored, rows.goals);
   const goals = stored.goals as (GoalsRow & LegacyGoalsFields) | null;
   if (
     goals &&
     ('sessions_per_week' in goals || 'minutes_per_session' in goals || 'preferred_days' in goals)
   ) {
-    const { sessions_per_week, minutes_per_session, preferred_days, ...current } = goals;
+    const { sessions_per_week, minutes_per_session, preferred_days, ...rest } = goals;
+    const current = storedGoals(rest) ?? rest;
     rows.goals = current;
     const schedule = scheduleFromLegacyGoals({
       sessions_per_week,

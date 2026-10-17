@@ -967,6 +967,16 @@ eigene Zeilen, in Export und Kontolöschung enthalten.
 - **`session_logs.source`** `gps`/`gpx_import` setzt nur `save_tracked_route` (Eintrag mit Strecke verknüpft); ein
   verknüpfter Eintrag muss zur Strecke passen (Art, Tag, Distanz, Dauer – `private.session_log_fits_route`).
 
+### Abweichungen ab Ziele, Etappe Z3 (umgesetzt, siehe `docs/PLAN-ZIELE.md` Abschnitt 13 und `supabase/migrations/20261017200*`)
+- **`goals.secondary_goal_type`** (Nebenziel, null = keins): nur erlaubte Paare (`private.goal_pair_allowed` =
+  `GOAL_COMBINATIONS`); Disziplin, wenn Ausdauer Haupt- **oder** Nebenziel ist. Kein Gesundheitsdatum.
+- **`weight_goals`** (user_id, target_weight_kg 30–300 mit 0,1 kg, start_date = Tag des Speicherns, target_date 4–104
+  Wochen danach, amount_mode `kg_to_lose|target_weight`, time_mode `weeks|date`) – **sensibel** (`health_data`), kein
+  Startgewicht. Nur mit Abnehmziel (Trigger); wird gelöscht, wenn Abnehmen weder Haupt- noch Nebenziel ist, beim Widerruf
+  und mit dem Konto; im Export enthalten; nie im Partner-Modus.
+- **Onboarding-Schritt `weight_goal`** in der CHECK-Liste von `profiles.onboarding_step` (Bildschirm erst mit Z4).
+- **Ziel-BMI-Untergrenze** (Gründer-Entscheidung F8, 17.10.2026): 20, ab 70 Jahren 22 (Alter am Zieldatum).
+
 ## 13. Monetarisierung
 - **Gratis:** Onboarding, Standard-Plan aus Vorlagen mit einfacher Progression (Gewicht steigt bei geschafften
   Wiederholungen), Trainingstagebuch, Grundberechnung Kalorien/Makros, Supplement-Übersicht, außerdem alles aus der

@@ -13,6 +13,7 @@ import {
   WEIGHT_GOAL_ISSUE_MESSAGES,
   type WeightGoalDayInput,
   weightGoalDayAdjustment,
+  weightGoalPreStatus,
   weightGoalReached,
 } from './weight-goal';
 import { weightGoalSchema } from './weight-goal-schema';
@@ -238,6 +239,13 @@ describe('gespeichertes Ziel (weightGoalSchema, Plan 5.2)', () => {
     expect(weightGoalSchema.safeParse({ ...goal, targetWeightKg: 29.9 }).success).toBe(false);
     expect(weightGoalSchema.safeParse({ ...goal, targetWeightKg: 300 }).success).toBe(true);
     expect(weightGoalSchema.safeParse({ ...goal, targetWeightKg: 80.05 }).success).toBe(false);
+    // Startdatum nie vor WEIGHT_GOAL_START_DATE_MIN (= CHECK weight_goals.start_date, Wächter Z3 N1).
+    const early = { ...goal, startDate: '2025-12-31', targetDate: '2026-02-01' };
+    expect(weightGoalSchema.safeParse(early).success).toBe(false);
+    expect(weightGoalSchema.safeParse({ ...early, startDate: '2026-01-01' }).success).toBe(true);
+    // Ungültige Datumsangaben (z. B. aus einer Datenbank- oder Gerätezeile): Fehler, nie eine Ausnahme (Etappe Z3).
+    expect(weightGoalSchema.safeParse({ ...goal, startDate: '03.10.2026' }).success).toBe(false);
+    expect(weightGoalSchema.safeParse({ ...goal, targetDate: '2026-02-30' }).success).toBe(false);
     expect(weightGoalSchema.safeParse({ ...goal, startWeightKg: 90 }).success).toBe(false);
   });
 });
@@ -254,6 +262,7 @@ describe('Wirkung je Tag (Plan 2.4)', () => {
     goal,
     date: TODAY,
     today: TODAY,
+    birthDate: '1991-09-01',
     mode: 'full',
     losesWeight: true,
     standardAdjustment: -0.2,
@@ -324,6 +333,34 @@ describe('Wirkung je Tag (Plan 2.4)', () => {
       expect(r.adjustment).toBe(-0.2);
       expect(r.slowerThanRequired).toBe(true);
     }
+  });
+
+  it('Ziel-BMI zur Laufzeit nach dem Alter am Zieldatum (F8): 69 J. → Grenze 20, 70 J. → Grenze 22', () => {
+    // 180 cm, Ziel 68 kg ≈ BMI 20,99; Zieldatum = heute + 70 Tage (21.12.2026)
+    const g = { ...goal, targetWeightKg: 68 };
+    expect(weightGoalDayAdjustment({ ...base, goal: g, birthDate: '1956-12-22' })?.status).not.toBe(
+      'invalid',
+    );
+    expect(weightGoalDayAdjustment({ ...base, goal: g, birthDate: '1956-12-21' })?.status).toBe(
+      'invalid',
+    );
+  });
+
+  it('geboren am 29.02.: 70. Geburtstag im Nicht-Schaltjahr erst am 01.03. – Grenze 22 ab dem Zieldatum 01.03. (Z3 N5)', () => {
+    const pre = (targetDate: string, date = '2026-01-05') =>
+      weightGoalPreStatus({
+        goal: { targetWeightKg: 68, startDate: '2026-01-05', targetDate }, // 180 cm: BMI ≈ 20,99
+        date,
+        birthDate: '1956-02-29',
+        losesWeight: true,
+        heightCm: 180,
+        mode: 'full',
+      });
+    expect(pre('2026-02-28')).toBe('ok'); // noch 69 → Grenze 20
+    expect(pre('2026-03-01')).toBe('invalid'); // 70 → Grenze 22
+    // Abgelaufenes Ziel (Tag d nach dem Zieldatum): Alter am Tag d, nie eine Ausnahme (Z3 N1).
+    expect(pre('2026-02-28', '2026-03-02')).toBe('invalid');
+    expect(() => pre('2026-02-28', '2027-06-01')).not.toThrow();
   });
 
   it('Tage vor startDate: kein Ziel (Wächter Z2 K-1)', () => {

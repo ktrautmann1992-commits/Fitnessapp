@@ -46,7 +46,7 @@ import {
 
 import { todayIso } from '../lib/format';
 import { healthConsentStatus } from '../state/flow';
-import type { ConsentVersions } from './mapping';
+import { type ConsentVersions, weightGoalFromRow } from './mapping';
 import { storedMealPlanRow, storedShoppingListRow } from './meal-plan-rows';
 import { dislikedFoodsFromRows, ratingsFromRows } from './rating-rows';
 import { healthScreeningForPlan } from './training-plan';
@@ -130,14 +130,22 @@ export function nutritionInputsFromRows(
   const level = experienceLevelSchema.safeParse(profile?.experience_level);
   if (!profile || !level.success || !rows.goals) return null;
   const consent = healthConsentStatus(rows, versions) === 'valid';
+  const secondary = rows.goals.secondary_goal_type ?? null;
   return {
     today,
     birthDate: profile.birth_date,
     sex: profile.sex,
     goalType: rows.goals.goal_type,
+    // Nebenziel und Wunschgewicht (Etappe Z3; Auswahl in der App ab Z4). Ältere Stände ohne Spalte: kein Nebenziel.
+    secondaryGoalType: secondary,
     experienceLevel: level.data,
-    discipline: rows.goals.goal_type === 'endurance' ? rows.goals.discipline : null,
+    discipline:
+      rows.goals.goal_type === 'endurance' || secondary === 'endurance'
+        ? rows.goals.discipline
+        : null,
     healthDataConsent: consent,
+    // Nur mit gültiger Einwilligung und nur gültig (weightGoalFromRow, Wächter Z2 K-5) – sonst „ohne festes Ziel“.
+    weightGoal: consent ? weightGoalFromRow(rows.weightGoal) : null,
     bodyMetricsRows: consent
       ? rows.bodyMetrics
           .filter((r) => r.height_cm !== null || r.weight_kg !== null || r.body_fat_pct !== null)
