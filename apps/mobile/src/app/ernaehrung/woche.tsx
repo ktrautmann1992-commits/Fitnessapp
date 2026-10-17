@@ -19,6 +19,7 @@ import {
   UnavailableMealRows,
 } from '@/components/nutrition';
 import { ConfirmDialog, Screen } from '@/components/screen';
+import { WeightGoalNutritionNotices } from '@/components/weight-goal';
 import {
   Body,
   Button,
@@ -189,6 +190,8 @@ export default function NutritionWeekScreen() {
         </View>
       </View>
       <Heading level={2}>{texts.range(formatDateDe(weekStart), formatDateDe(last))}</Heading>
+      {/* Etappe Z5 (K10): Hinweise zum Abnehmziel einmal je Woche, nur hier. */}
+      <WeightGoalNutritionNotices notices={view.week.targets.weightGoalNotices} />
 
       {plan === null ? (
         <Card>

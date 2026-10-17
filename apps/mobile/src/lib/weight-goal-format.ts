@@ -11,11 +11,19 @@ import {
   type WeightGoalRated,
   type WeightGoalTimeMode,
   type WeightGoalZone,
+  weightGoalPeriodEnded,
 } from '@fitnessapp/core';
 
 import { t } from '@/i18n';
 
-import { datePartsFromIso, formatDecimal, isoFromDateParts, parseDecimal } from './format';
+import {
+  datePartsFromIso,
+  formatDateDe,
+  formatDecimal,
+  formatKg,
+  isoFromDateParts,
+  parseDecimal,
+} from './format';
 
 /**
  * Anzeige und Formular des konkreten Abnehmziels (Etappe Z4, docs/PLAN-ZIELE.md 2.2, 3.1, 3.4). Nur Darstellung und
@@ -150,7 +158,9 @@ export function parseWeightGoalDraft(draft: WeightGoalDraft): DraftParse {
 /**
  * Gespeichertes Ziel → Formular zum Bearbeiten (Plan 2.2, Wächter Runde 2 K-e): Im Modus „kg abnehmen“ steht
  * „aktuelles Gewicht − Zielgewicht“ im Feld (nur hier, kein Fortschritt). Passt die Differenz nicht in 0,5-kg-Schritte,
- * zeigt das Formular das Zielgewicht. Zeitraum ab heute (jedes Speichern plant ab heute neu, Wächter S15).
+ * zeigt das Formular das Zielgewicht. Zeitraum ab heute (jedes Speichern plant ab heute neu, Wächter S15). Ist der
+ * Zeitraum vorbei, bleibt das Feld leer (Wächter Z4 N10, Etappe Z5): kein vorgeschlagener neuer Zeitraum, Verlängern ist
+ * eine ausdrückliche Wahl.
  */
 export function draftFromWeightGoal(
   goal: WeightGoal,
@@ -169,12 +179,13 @@ export function draftFromWeightGoal(
     Math.max(Math.round(daysLeft / 7), WEIGHT_GOAL_LIMITS.weeks.min),
     WEIGHT_GOAL_LIMITS.weeks.max,
   );
-  const dateMode = goal.timeMode === 'date' && daysLeft > 0;
+  const ended = weightGoalPeriodEnded(goal, today);
+  const dateMode = goal.timeMode === 'date' && !ended;
   return {
     amountMode: asKg ? 'kg_to_lose' : 'target_weight',
     amountText: formatDecimal(asKg ? diff : goal.targetWeightKg),
     timeMode: dateMode ? 'date' : 'weeks',
-    weeksText: dateMode ? '' : String(weeks),
+    weeksText: dateMode || ended ? '' : String(weeks),
     date: dateMode ? datePartsFromIso(goal.targetDate) : { day: '', month: '', year: '' },
   };
 }
@@ -190,8 +201,11 @@ export function stepWeeks(text: string, delta: 1 | -1): string {
 /**
  * Was „Weiter“ speichert (Plan 2.3, Wächter Z4 M3) – reine Regel:
  * - „ohne festes Ziel“ → kein Ziel (`null`, ein gespeichertes wird gelöscht).
- * - Konkretes Ziel gerade gesperrt (z. B. Schwangerschaft, Gewicht zu alt): ein gespeichertes Ziel RUHT und bleibt;
- *   ohne Einwilligung gibt es keins (der Widerruf löscht es) → `null`.
+ * - ohne Einwilligung gibt es keins (der Widerruf löscht es) → `null`.
+ * - Formular unverändert (`pristine`) mit gespeichertem Ziel → das gespeicherte Ziel GENAU SO (Wächter Z4 N10, Etappe
+ *   Z5): kein stilles Verlängern eines abgelaufenen Ziels, kein Blockieren eines erreichten Ziels („Weiter“ in „Angaben
+ *   ändern“ geht immer), kein neues Startdatum.
+ * - Konkretes Ziel gerade gesperrt (z. B. Schwangerschaft, Gewicht zu alt): ein gespeichertes Ziel RUHT und bleibt.
  * - Konkretes Ziel verfügbar: das neue, geprüfte Ziel; ist die Eingabe (noch) ungültig → `invalid` (nichts speichern).
  */
 export type WeightGoalSaveDecision =
@@ -203,13 +217,42 @@ export function weightGoalSaveDecision(input: {
   readonly availability: WeightGoalAvailability;
   /** Geprüftes neues Ziel (`evaluateWeightGoalInput` ok) oder null. */
   readonly evaluated: WeightGoal | null;
+  /** Weder Modus noch ein Feld wurde geändert (Standard: false). */
+  readonly pristine?: boolean;
 }): WeightGoalSaveDecision {
   if (input.mode === 'none') return { kind: 'save', weightGoal: null };
+  const noConsent = !input.availability.available && input.availability.reason === 'no_consent';
+  if (noConsent) return { kind: 'save', weightGoal: null };
+  if (input.pristine === true && input.saved !== null) {
+    return { kind: 'save', weightGoal: input.saved };
+  }
   if (!input.availability.available) {
-    const rests = input.saved !== null && input.availability.reason !== 'no_consent';
-    return { kind: 'save', weightGoal: rests ? input.saved : null };
+    return { kind: 'save', weightGoal: input.saved };
   }
   return input.evaluated === null
     ? { kind: 'invalid' }
     : { kind: 'save', weightGoal: input.evaluated };
+}
+
+/**
+ * Gespeichertes Ziel in den Einstellungen (Etappe Z5, F13: nur dort sichtbar): Wunschgewicht und der gewählte Zeitraum
+ * – so, wie die Person ihn eingegeben hat (Wochen bzw. ihr Datum), mit dem Speichertag. Keine Restmenge, kein
+ * Fortschritt, kein Countdown, keine Prognose (F7).
+ */
+export function weightGoalSummary(goal: WeightGoal): {
+  readonly target: string;
+  readonly period: string;
+} {
+  const S = t.weightGoalLife.settings;
+  const from = formatDateDe(goal.startDate);
+  return {
+    target: S.target(formatKg(goal.targetWeightKg)),
+    period:
+      goal.timeMode === 'date'
+        ? S.periodDate(formatDateDe(goal.targetDate), from)
+        : S.periodWeeks(
+            weeksText(Math.round(daysBetween(goal.startDate, goal.targetDate) / 7)),
+            from,
+          ),
+  };
 }

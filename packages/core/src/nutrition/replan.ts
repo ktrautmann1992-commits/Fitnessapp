@@ -3,6 +3,7 @@ import {
   buildMealPlanWeek,
   CandidatePool,
   daySafetyKey,
+  daySafetyKeyWithoutWeightGoal,
   dayWithinPlanBand,
   type MealPlanInput,
   type MealPlanWeek,
@@ -24,6 +25,8 @@ export const REPLAN_REASONS = [
   'out_of_band',
   'recipe_excluded',
   'leftover_expired',
+  /** Konkretes Abnehmziel neu, geändert, erreicht, abgelaufen oder entfernt (docs/PLAN-ZIELE.md 4.6, Etappe Z5). */
+  'weight_goal_changed',
 ] as const;
 export type ReplanReason = (typeof REPLAN_REASONS)[number];
 
@@ -58,7 +61,16 @@ export function needsAutomaticReplan(plan: MealPlanWeek, input: ReplanInput): Re
     const targets = input.targets.days.find((d) => d.date === day.date);
     if (targets === undefined) continue;
     if (targets.mode !== day.mode) reasons.add('mode_changed');
-    else if (daySafetyKey(targets) !== day.safetyKey) reasons.add('caps_changed');
+    else {
+      const key = daySafetyKey(targets);
+      if (key !== day.safetyKey) {
+        reasons.add(
+          daySafetyKeyWithoutWeightGoal(key) === daySafetyKeyWithoutWeightGoal(day.safetyKey)
+            ? 'weight_goal_changed'
+            : 'caps_changed',
+        );
+      }
+    }
     // Genau die Garantie von `buildMealPlanWeek` (Wächter N3 NB1, B2): sonst plante jeder frische Plan sofort neu.
     if (!dayWithinPlanBand(day, mealPlanBand(targets))) reasons.add('out_of_band');
     const exclude = targets.recipeExclusions.includes('pregnancy_caution');

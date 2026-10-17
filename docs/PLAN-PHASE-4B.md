@@ -391,6 +391,18 @@ Bezeichnungen: `L` = `loadWeeksBeforeDeload(level, vorsichtig)` des Plans (5 bzw
 - **Wirkung:** Vorschlag „auf X−1 Trainingstage umstellen“, wobei der Tag mit den meisten Ausfällen wegfällt (Anzeige mit Begründung).
 - **Nicht bei:** einem Trainingstag pro Woche (dann nur der Hinweis „Kürzere Einheiten?“ ohne Plan-Änderung), Ruhezeit 28 Tage nach Ablehnung, offenem Vorschlag.
 
+**Nachtrag Ziele (docs/PLAN-ZIELE.md 2.4 Nr. 9, Wächter S10 und Z2 K-2; Z6 am 17.10.2026):** Sobald `calorie_adjust`
+aktiv wird, gilt verbindlich:
+
+- Die „Plateau“-Regel nutzt die **Energie-Richtung des Ziel-Profils** (Haupt- + Nebenziel, `goalEnergyDirection`) und
+  liest **kein** Abnehmziel (`weightGoal`). Zieldatum und benötigtes Tempo lösen nie einen Versatz aus und begründen ihn
+  nie (kein „Aufholen“). Ein negativer Versatz darf das durch F5 verkleinerte Defizit nur bis zur Schutzgrenze vergrößern
+  – er läuft wie jeder Versatz durch `clampCalorieTarget`; die Tempo-Obergrenze bleibt die Standard-Anpassung des Profils.
+- Test: Der Versatz ist für dieselbe Person mit denselben Messwerten **mit und ohne Abnehmziel identisch**.
+- `weight_goal_pace_capped` vergleicht heute das begrenzte Ziel mit dem Vorschlag **inklusive** Versatz (Wächter Z2 K-2):
+  im 4b-Nachtrag den Vergleich ohne Versatz führen oder nur „Grenze hebt über den Ziel-Vorschlag“ werten.
+- Auslöser „Ziel geändert“ gilt auch für Nebenziel und Abnehmziel.
+
 **Reserviert (in 4b nicht aktiv, nur Typ und Versatz-Begrenzung):**
 
 - **`calorie_adjust`:** `clampCalorieAdjustment(currentOffsetKcal, proposedOffsetKcal)` in **`packages/core/src/nutrition/limits.ts`**. **Die Datei kommt aus Phase 5** (Etappe N1, `docs/PLAN-PHASE-5.md` 4.1 und 4.6), weil Phase 5 vor 4b A umgesetzt wird; `adjust/` ruft sie nur auf (Wächter K1, PLAN-PHASE-5 S10 und R2-S5). Sie kennt **keine** Schutzgrenzen und braucht keinen Kontext (kein `tdee`, `bmr`, `weightKg`, keine Flags). Grenzen dieser Funktion:

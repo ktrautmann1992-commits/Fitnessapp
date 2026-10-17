@@ -11,7 +11,7 @@ import { deDay } from './de-day';
 import { deFoodLog } from './de-food-log';
 import { deFoodPhoto } from './de-food-photo';
 import { deFoodProduct } from './de-food-product';
-import { deGoalChoice, deWeightGoal } from './de-goals';
+import { deGoalChoice, deWeightGoal, deWeightGoalLife } from './de-goals';
 import { deNutrition } from './de-nutrition';
 import { deWeekEval } from './de-week-eval';
 
@@ -491,6 +491,10 @@ export const de = {
     enduranceOnly: 'Ausdauer-Plan',
     enduranceBase: (discipline: string | null) =>
       discipline ? `Ausdauer-Grundlage – ${discipline}` : 'Ausdauer-Grundlage',
+    /** Haupt- und Nebenziel im Plannamen (Etappe Z5): „Abnehmen + Muskelaufbau“. */
+    goalsJoined: (primary: string, secondary: string) => `${primary} + ${secondary}`,
+    /** Planname mit Zielen auf „Heute“ und in der Woche (Etappe Z5). */
+    nameLine: (name: string) => `Dein Plan: ${name}`,
     quality: {
       exact: 'Passt genau zu deinen Angaben.',
       close: 'Passt mit Anpassungen an deine Angaben.',
@@ -1544,6 +1548,8 @@ export const de = {
     title: 'Diese Seite gibt es nicht.',
   },
   nutrition: deNutrition,
+  /** Abnehm-Ziel: Einstellungen, Karten, Ernährungs-Hinweise (Etappe Z5). */
+  weightGoalLife: deWeightGoalLife,
   foodLog: deFoodLog,
   foodPhoto: deFoodPhoto,
   foodProduct: deFoodProduct,

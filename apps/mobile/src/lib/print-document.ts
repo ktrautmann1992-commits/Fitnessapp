@@ -13,6 +13,7 @@ import { t } from '@/i18n';
 
 import { formatDateDe, formatDecimal, formatKg } from './format';
 import { dayLabel, repsRange } from './plan-format';
+import { planNameText } from './plan-name';
 import { NUTRITION_PRINT_TEXTS } from './print-nutrition-texts';
 
 /**
@@ -50,19 +51,8 @@ const TEXTS: Translators = {
   'doc.title': () => p.docTitle,
   'doc.footer': () => p.footer,
   'cover.heading': () => p.coverHeading,
-  'plan.name': ({ goal, discipline, strengthDays, enduranceDays }) => {
-    const name =
-      goal === null
-        ? p.goalFallback
-        : goal === 'endurance' && enduranceDays > 0
-          ? t.plan.enduranceBase(discipline ? t.steps.goal.disciplines[discipline] : null)
-          : t.steps.goal.options[goal];
-    const days =
-      strengthDays > 0 && enduranceDays > 0
-        ? p.daysMixed(strengthDays, enduranceDays)
-        : p.days(strengthDays + enduranceDays);
-    return p.planName(name, days);
-  },
+  // Mit Nebenziel „Abnehmen + Muskelaufbau · 3 Tage“ (Etappe Z5) – gleiche Formulierung wie „Heute“ und Woche.
+  'plan.name': (params) => planNameText(params),
   'cover.label.period': () => p.labelPeriod,
   'cover.label.days': () => p.labelDays,
   'cover.label.locations': () => p.labelLocations,
