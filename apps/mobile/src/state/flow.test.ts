@@ -260,4 +260,26 @@ describe('nextEditRoute („Angaben ändern“ aus den Einstellungen)', () => {
       }),
     ).toBe('/today');
   });
+
+  it('Ziel → Wunschgewicht nur mit Abnehmen (Haupt- oder Nebenziel) und Einwilligung (Etappe Z4)', () => {
+    const goal = (goalType: 'fat_loss' | 'muscle_gain', secondaryGoalType: 'fat_loss' | null) => ({
+      step: 'goal' as const,
+      goal: { goalType, secondaryGoalType, discipline: null, targetDate: null },
+    });
+    expect(nextEditRoute('goal', goal('fat_loss', null), false, true)).toBe(
+      '/onboarding/weight_goal?edit=1',
+    );
+    expect(nextEditRoute('goal', goal('muscle_gain', 'fat_loss'), false, true)).toBe(
+      '/onboarding/weight_goal?edit=1',
+    );
+    expect(nextEditRoute('goal', goal('muscle_gain', null), false, true)).toBe(
+      '/onboarding/time_budget?edit=1',
+    );
+    expect(nextEditRoute('goal', goal('fat_loss', null), false, false)).toBe(
+      '/onboarding/time_budget?edit=1',
+    );
+    expect(nextEditRoute('weight_goal', { step: 'weight_goal', weightGoal: null })).toBe(
+      '/onboarding/time_budget?edit=1',
+    );
+  });
 });

@@ -88,6 +88,11 @@ export interface SessionSwap {
 export type BackendEvent =
   /** Eine wartende Verschiebung wurde vom Server abgelehnt und verworfen → Plan neu laden + Meldung. */
   | { kind: 'plan_change_dropped' }
+  /**
+   * Das Ziel wurde vom Server abgelehnt (23514, z. B. gespeichertes Nebenziel eines älteren App-Stands passt nicht –
+   * Wächter Z3 N3) → neu laden + Meldung „Bitte App aktualisieren“.
+   */
+  | { kind: 'goals_rejected' }
   /** Ein Training wurde übertragen (neu laden). `orphaned` = Plan hatte sich geändert (B4). */
   | { kind: 'log_saved'; orphaned: boolean; key: string; writeId: string }
   /** Ein Training kam als Konflikt bzw. Ablehnung zurück – es liegt als Entwurf vor (4.3). */

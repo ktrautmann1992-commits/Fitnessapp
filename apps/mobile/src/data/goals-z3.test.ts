@@ -23,7 +23,7 @@ import {
   type PlanContext,
 } from './mapping';
 import { nutritionInputsFromRows } from './nutrition-plan';
-import { executeWriteOp } from './supabase-backend';
+import { droppedOpEvent, executeWriteOp } from './supabase-backend';
 import { planInputsFromRows } from './training-plan';
 import type { GoalsRow, StepSave, UserRows, WeightGoalRow } from './types';
 import {
@@ -425,26 +425,25 @@ describe('Supabase-Modus: Schreibwege', () => {
     expect(calls[1]?.args[1]).toEqual(['user_id', USER_ID]);
   });
 
-  it('goals vor `db-migrate` (Spalte fehlt, PGRST204): ohne Nebenziel ein zweiter Versuch ohne die Spalte, mit Nebenziel Fehler', async () => {
+  it('goals ohne Rückfall bei fehlender Spalte (Etappe Z4, Wächter Z3 N2): ein Versuch, Fehler wird gemeldet', async () => {
     const missing = {
       code: 'PGRST204',
       message: "Could not find the 'secondary_goal_type' column",
     };
-    const first = fakeClient((table, attempt) =>
-      table === 'goals' && attempt === 1 ? { error: missing } : {},
-    );
-    await executeWriteOp(first.client, USER_ID, { kind: 'upsert_goals', row: goals() });
-    expect(first.calls).toHaveLength(2);
-    expect(first.calls[1]?.args[0]?.[0]).not.toHaveProperty('secondary_goal_type');
-    expect(first.calls[1]?.args[0]?.[0]).toMatchObject({ goal_type: 'fat_loss' });
-
-    const withSecondary = fakeClient(() => ({ error: missing }));
+    const client = fakeClient(() => ({ error: missing }));
     await expect(
-      executeWriteOp(withSecondary.client, USER_ID, {
-        kind: 'upsert_goals',
-        row: goals({ secondary_goal_type: 'muscle_gain' }),
-      }),
+      executeWriteOp(client.client, USER_ID, { kind: 'upsert_goals', row: goals() }),
     ).rejects.toBe(missing);
-    expect(withSecondary.calls).toHaveLength(1);
+    expect(client.calls).toHaveLength(1);
+    expect(client.calls[0]?.args[0]?.[0]).toHaveProperty('secondary_goal_type', null);
+  });
+
+  it('verworfenes Ziel mit 23514 → Ereignis „goals_rejected“ (Wächter Z3 N3), sonst keines', () => {
+    const op: WriteOp = { kind: 'upsert_goals', row: goals() };
+    expect(
+      droppedOpEvent(op, { code: '23514', message: 'goals_secondary_goal_pair_check' }),
+    ).toEqual({ kind: 'goals_rejected' });
+    expect(droppedOpEvent(op, { code: '42501' })).toBeNull();
+    expect(droppedOpEvent({ kind: 'delete_weight_goal' }, { code: '23514' })).toBeNull();
   });
 });

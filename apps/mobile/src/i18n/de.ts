@@ -10,6 +10,7 @@ import { deCustomMeals } from './de-custom-meals';
 import { deDay } from './de-day';
 import { deFoodLog } from './de-food-log';
 import { deFoodPhoto } from './de-food-photo';
+import { deGoalChoice, deWeightGoal } from './de-goals';
 import { deNutrition } from './de-nutrition';
 import { deWeekEval } from './de-week-eval';
 
@@ -271,7 +272,11 @@ export const de = {
       targetDate: 'Wettkampf-Datum (optional)',
       targetDateHint:
         'Nach dem Einrichten trägst du deinen Wettkampf unter Einstellungen → Mein Wettkampf ein – mit Ampel, Countdown und Wettkampfplan.',
+      // Haupt- und Nebenziel (Etappe Z4, docs/PLAN-ZIELE.md 4.2 und 6 Nr. 1).
+      ...deGoalChoice,
     },
+    // Konkretes Abnehmziel mit Ampel (Etappe Z4, docs/PLAN-ZIELE.md 2, 3 und 6 Nr. 2).
+    weightGoal: deWeightGoal,
     trainingSchedule: {
       title: 'Deine Trainingstage',
       intro:

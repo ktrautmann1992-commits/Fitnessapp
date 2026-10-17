@@ -26,6 +26,7 @@ export const COLOR_VARS = /** @type {const} */ ({
   border: '--color-border',
   success: '--color-success',
   warning: '--color-warning',
+  caution: '--color-caution',
   danger: '--color-danger',
 });
 

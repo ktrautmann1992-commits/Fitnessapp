@@ -94,7 +94,7 @@ for (const scheme of ['light', 'dark'] as const) {
     await page.getByRole('radio', { name: /^Fortgeschritten/ }).click();
     await shot('erfahrung');
     await next();
-    await page.getByRole('radio', { name: 'Ausdauer' }).click();
+    await page.getByRole('radio', { name: 'Ausdauer', exact: true }).click();
     await page.getByRole('radio', { name: 'Marathon', exact: true }).click();
     await shot('ziel');
     await next();

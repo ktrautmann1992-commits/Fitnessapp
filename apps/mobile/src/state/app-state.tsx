@@ -357,6 +357,8 @@ export interface AppContextValue {
 
 /** Meldung nach verworfener Verschiebung (Text in i18n, hier nur der Schlüssel). */
 export const PLAN_CHANGE_DROPPED = 'plan_change_dropped' as const;
+/** Meldung: Ziel vom Server abgelehnt (23514, älterer App-Stand – Wächter Z3 N3) → „Bitte App aktualisieren“. */
+export const GOALS_REJECTED = 'goals_rejected' as const;
 
 /** Ergebnis von moveSessionTo (Kalender, Etappe A1a). */
 export type MoveOutcome =
@@ -548,6 +550,9 @@ export function AppStateProvider({ children }: { children: ReactNode }) {
     return backend.subscribe((event) => {
       if (event.kind === 'plan_change_dropped') {
         setPlanMessage(PLAN_CHANGE_DROPPED);
+        void loadUser().catch(() => undefined);
+      } else if (event.kind === 'goals_rejected') {
+        setPlanMessage(GOALS_REJECTED);
         void loadUser().catch(() => undefined);
       } else if (event.kind === 'session_expired') {
         setSessionExpired(true);

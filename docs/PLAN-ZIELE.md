@@ -1,6 +1,6 @@
 # Plan „Ziele erweitern“: Abnehmen mit oder ohne konkretes Ziel, Erreichbarkeits-Ampel, zwei Ziele
 
-**Status:** Plan **Wächter-geprüft (Auflagen eingearbeitet)**. **Z1 und Z2 umgesetzt und Wächter-geprüft** (Abschnitte 11 und 12). **Z3 umgesetzt am 17.10.2026, Wächter-geprüft (M1, N1, N4, N5 eingearbeitet; N2/N3 für Z4 vorgemerkt)** (Abschnitt 13). **F8 entschieden am 17.10.2026:** Ziel-BMI hart 20, ab 70 Jahren 22 (Abschnitt 0). Die Wächter-Prüfung vom 13.10.2026 ergab „Freigabe mit Auflagen“ (Blocker B1, Soll S1–S20, Kann K1–K10). Die Nachprüfung (Runde 2, gleicher Tag) ergab erneut „Freigabe mit Auflagen“ ohne Blocker (Soll N1–N4, Kann K-a bis K-f). Alle Auflagen beider Runden sind in diesem Dokument eingearbeitet, Übersicht in Abschnitt 10. Gründer-Entscheidungen vom 13.10.2026 in Abschnitt 0.
+**Status:** Plan **Wächter-geprüft (Auflagen eingearbeitet)**. **Z1 und Z2 umgesetzt und Wächter-geprüft** (Abschnitte 11 und 12). **Z3 umgesetzt am 17.10.2026, Wächter-geprüft (M1, N1, N4, N5 eingearbeitet; N2/N3 für Z4 vorgemerkt)** (Abschnitt 13). **Z4 umgesetzt am 17.10.2026 (App: Haupt- und Nebenziel, Wunschgewicht mit Ampel; Wächter-Prüfung steht aus)** (Abschnitt 14). **F8 entschieden am 17.10.2026:** Ziel-BMI hart 20, ab 70 Jahren 22 (Abschnitt 0). Die Wächter-Prüfung vom 13.10.2026 ergab „Freigabe mit Auflagen“ (Blocker B1, Soll S1–S20, Kann K1–K10). Die Nachprüfung (Runde 2, gleicher Tag) ergab erneut „Freigabe mit Auflagen“ ohne Blocker (Soll N1–N4, Kann K-a bis K-f). Alle Auflagen beider Runden sind in diesem Dokument eingearbeitet, Übersicht in Abschnitt 10. Gründer-Entscheidungen vom 13.10.2026 in Abschnitt 0.
 **Gründer-Wunsch (wörtlich):** „Baue folgendes beim Ziel Abnehmen noch ein: Auswahl Abnehmen ohne konkretes Ziel, Abnehmen mit konkretem Ziel mit dem Gewicht in kg abnehmen in welcher Zeit. Und auf einer Skala von rot bis grün soll angegeben werden wie gut das erreichbar ist. Zudem sollte man 2 Ziele auswählen können. Die Übungen im Trainingsplan sollen für beide Ziele passen.“
 **Etappen:** Z0–Z6 (Abschnitt 7).
 
@@ -496,7 +496,7 @@ comment … 'SENSIBEL (Art. 9 DSGVO). Nur mit Einwilligung health_data; wird bei
 - DoD: `db-test` grün, Widerruf löscht `weight_goals` (Testmodus und DB), Export enthält beides, Legacy-Gerätestände laden, Verlängern nach Ablauf gelingt (S15), Insert ohne Abnehmziel scheitert (S13).
 - Die Migration ist harmlos (nur neue Spalte bzw. Tabelle) und läuft beim Merge über `db-migrate.yml`.
 
-**Z4 – App: Onboarding mit Ampel.**
+**Z4 – App: Onboarding mit Ampel.** **Umgesetzt am 17.10.2026** (Abschnitt 14).
 
 - Voraussetzung: F8 entschieden (Ziel-BMI-Grenze ist ab hier für Nutzer sichtbar) – **erfüllt am 17.10.2026** (20, ab 70 J. 22; im Core seit Z3).
 - Inhalt: `GoalStep` neu, `WeightGoalStep`, `FeasibilityScale`, Token `caution` (`packages/ui`, `DESIGN.md`), `WEIGHT_GOAL_STEP_ENABLED = true`, Zustände, Texte.
@@ -793,9 +793,82 @@ Testmodus und Supabase-Schreibwege in `apps/mobile/src/data` (Test `goals-z3.tes
   die Einwilligung nur per RLS (`has_valid_consent` ohne Sperre). Ein Speichern, das gleichzeitig mit einem Widerruf
   läuft, kann dort nach dem Löschen noch eine Zeile hinterlassen. Abhilfe wie bei `weight_goals` (Einwilligung
   `FOR SHARE` sperren, erneut prüfen) in einer eigenen Etappe.
-- **Vormerkung Z4 (Wächter Z3 N2):** Der Rückfall in `apps/mobile/src/data/supabase-backend.ts` (zweiter `goals`-Upsert ohne `secondary_goal_type` bei PGRST204) lässt bei veraltetem PostgREST-Schema-Cache ein vorhandenes Nebenziel in der Datenbank stehen, während die App `null` zeigt. Vor Z4 unmöglich (niemand kann ein Nebenziel wählen); den Rückfall in Z4 entfernen.
-- **Vormerkung Z4 (Wächter Z3 N3):** Alte App-Stände (zwischengespeicherter Web-Build, alte APK) senden kein `secondary_goal_type`; ein vorhandenes Nebenziel bleibt stehen. Wählt jemand dort ein Hauptziel, das nicht zum Nebenziel passt, kommt 23514 und das Ziel lässt sich nicht ändern. In Z4 eine verständliche Meldung („Bitte App aktualisieren“) für 23514 bei `goals` vorsehen.
+- **Vormerkung Z4 (Wächter Z3 N2) – erledigt in Z4 (Abschnitt 14):** Der Rückfall in `apps/mobile/src/data/supabase-backend.ts` (zweiter `goals`-Upsert ohne `secondary_goal_type` bei PGRST204) lässt bei veraltetem PostgREST-Schema-Cache ein vorhandenes Nebenziel in der Datenbank stehen, während die App `null` zeigt. Vor Z4 unmöglich (niemand kann ein Nebenziel wählen); den Rückfall in Z4 entfernen.
+- **Vormerkung Z4 (Wächter Z3 N3) – erledigt in Z4 (Abschnitt 14):** Alte App-Stände (zwischengespeicherter Web-Build, alte APK) senden kein `secondary_goal_type`; ein vorhandenes Nebenziel bleibt stehen. Wählt jemand dort ein Hauptziel, das nicht zum Nebenziel passt, kommt 23514 und das Ziel lässt sich nicht ändern. In Z4 eine verständliche Meldung („Bitte App aktualisieren“) für 23514 bei `goals` vorsehen.
 - `save_competition`/`cancel_competition`/`delete_competition` (Phase 10 WP3) gleichen `goals.target_date` nur beim
   **Hauptziel** Ausdauer ab. Mit Ausdauer als Nebenziel (ab Z4) in Phase 10 bzw. Z4 entscheiden, ob das auch dann gilt.
 - `start_date` prüft die Datenbank nicht gegen „heute“ (der Plan verlangt es nicht; Zod setzt es). Bei Bedarf in Z4/Z5
   ergänzen.
+
+---
+
+## 14. Umsetzung Z4 (17.10.2026): App – Haupt- und Nebenziel, Wunschgewicht mit Ampel
+
+Z4 ist umgesetzt wie in Abschnitt 6 und 7 beschrieben. **Keine Migration** (Datenmodell kam mit Z3), keine neue Fachlogik
+in der App: Paare, Sperrgründe, Ampel, sichere Dauer, Zeiger und Grenzen kommen aus `packages/core`.
+
+- **Core:** `WEIGHT_GOAL_STEP_ENABLED = true` (Tests in `onboarding.test.ts` angepasst: Schritt nur bei Abnehmen bzw.
+  offenem Ziel und nicht ohne Einwilligung). Neu `goalPairBlockReason(primary, secondary)` in `goals/profile.ts`
+  (`same`, `overlap`, `fitness_secondary`, `primary_preferred`; Test: Grund genau bei verbotenen Paaren).
+- **Design:** Token `caution` (Gelb, nur Fläche; hell `#eab308`, dunkel `#fde047`) in `packages/ui/theme.css`,
+  `theme-parser.mjs`, `tokens.generated.ts`, `docs/DESIGN.md`.
+- **App:**
+  - `GoalStep` (`steps/training-steps.tsx`): Hauptziel mit Kurzbeschreibung, darunter „Zweites Ziel (optional)“ als
+    Chips; verbotene Paare ausgegraut mit Grund (sichtbar und im Screenreader-Namen); Kombinationssatz je erlaubtem
+    Paar (`i18n/de-goals.ts`); Disziplin und Datum, sobald Ausdauer Haupt- **oder** Nebenziel ist (F15). Ein Nebenziel,
+    das zum neuen Hauptziel nicht passt, entfällt beim Wechsel.
+  - `WeightGoalStep` (`steps/weight-goal-step.tsx`): „ohne festes Ziel“ (Standard) / „mit konkretem Ziel“; Menge „kg
+    abnehmen“ ↔ „Zielgewicht“, Zeitraum „Wochen“ (Feld mit −/+) ↔ „bis Datum“ (F9); Ampel live; Stillzeit- (K5) und
+    Essstörungs-Hinweis fest; ruhige Rückfrage bei ausgeblendeten Kalorienzahlen (K6); gesperrte Zustände aus 2.3 mit
+    Grund und – wo möglich – Knopf zur Abhilfe (Einwilligung, Gewicht, Gesundheits-Check).
+  - `FeasibilityScale` (`components/feasibility-scale.tsx`): Verlauf Rot → Grün (`react-native-svg`), Zeiger mit Rahmen in
+    Textfarbe, animiert mit `react-native-reanimated`, ohne Animation bei „Bewegung reduzieren“ (`useReducedMotion`);
+    Titel, Zeichen je Stufe (Haken, „!“, „!!“, Stopp-Achteck), Beschriftung; `role="meter"` mit
+    `aria-valuemin/max/now/valuetext`; Ansage nur bei Stufenwechsel (150 ms entprellt; Live-Region bzw. iOS
+    `announceForAccessibility`).
+  - Darstellung/Formular rein und getestet in `lib/weight-goal-format.ts` (Beispiel A wörtlich, keine Prognose-Wörter).
+  - „Deine Trainingstage“ übergibt jetzt das Nebenziel an Vorbelegung und Hinweise (Z1-Logik wird sichtbar).
+  - Zusammenfassung „Geschafft!“: „Abnehmen + Muskelaufbau“ (nie ein Wunschgewicht, F13).
+- **Vormerkungen Z3:** N2 – Rückfall bei PGRST204 in `supabase-backend.ts` entfernt (ein Versuch, Fehler wird gemeldet);
+  N3 – ein vom Server mit 23514 abgelehntes `goals`-Speichern löst das Ereignis `goals_rejected` aus (`droppedOpEvent`),
+  „Heute“ zeigt „… Bitte aktualisiere die App …“ statt stillem Verwerfen.
+- **Tests:** Vitest (Core + App), Playwright `e2e/goals.spec.ts` (Haupt-/Nebenziel und verbotene Paare; „10 kg in
+  12 Wochen“ → Orange „etwa 22 Wochen“ → Knopf → Gelb; Ziel-BMI zu niedrig → Fehler; ohne Einwilligung gesperrt;
+  `role="meter"` mit aria-Werten). Bestehende Specs: `nutrition-helpers.ts` und `plan-helpers.ts` durchlaufen den neuen
+  Schritt; Ziel-Auswahl mit `exact: true`; `onboarding.spec.ts` zählt „Schritt 1 von 13“, solange das Ziel offen ist (der Schritt
+  „Wunschgewicht“ zählt mit).
+
+Abweichungen und Präzisierungen:
+
+1. **Ohne Einwilligung „gesperrt“** heißt: Der Schritt `weight_goal` ist nicht anwendbar (Gesundheitsdatum, wie in Z3
+   festgelegt). Sichtbar wird die Sperre im Schritt „Dein Ziel“ (Hinweis „Wunschgewicht nur mit Einwilligung“ mit Knopf
+   „Einwilligung erteilen“). Ein direkter Aufruf des Schritts leitet zurück.
+2. **Das Hauptziel selbst** steht nicht in der Nebenziel-Liste (statt ausgegraut „doppelt“); alle übrigen verbotenen
+   Paare stehen ausgegraut mit Grund da. Die Nebenziel-Liste erscheint erst nach Wahl des Hauptziels.
+3. **Fehler je Feld** erscheinen nach dem ersten „Weiter“, danach live. Die Ampel zeigt nur bei gültiger Eingabe eine
+   Stufe, sonst „Noch keine Bewertung – …“.
+4. **Ruhendes Ziel:** Ist ein gespeichertes Ziel gerade gesperrt (z. B. Schwangerschaft, Gewicht älter als 90 Tage),
+   bleibt es bei „Weiter“ gespeichert (Plan 2.3 „ruht“); „ohne festes Ziel“ entfernt es. Ohne Einwilligung gibt es keins
+   (der Widerruf löscht es).
+5. **Bearbeiten:** Passt „aktuelles Gewicht − Zielgewicht“ nicht in 0,5-kg-Schritte, zeigt das Formular das Zielgewicht.
+   Zeitraum immer ab heute (S15); ein abgelaufenes Datum wird zu 4 Wochen.
+6. **„Angaben ändern“** führt nach „Dein Ziel“ durch „Wie möchtest du abnehmen?“, wenn Abnehmen Haupt- oder Nebenziel ist
+   und die Einwilligung gilt (`nextEditRoute`, Plan 6 Nr. 3). Der eigene Einstellungs-Eintrag „Dein Abnehm-Ziel“ folgt
+   mit Z5.
+7. **Monatsangabe** ab 27 Wochen: Wochen × 7 / 30,44 Tage, gerundet („etwa 7 Monate“).
+8. **Wächter Z1 S-3:** Satz für „Fitness → Ausdauer“ eingeschränkt („Bei Energie und Eiweiß wie das Ziel ‚Ausdauer‘. In
+   deiner Woche planen wir zuerst Kraft-Tage, dann Ausdauer.“).
+9. **Prüfung mit axe** ist nicht eingerichtet (kein Paket im Repository). Geprüft wird stattdessen über Rollen und
+   aria-Werte in Playwright (`getByRole('meter')`, `aria-disabled`, Namen der Chips). Screenshots hell und dunkel wurden
+   in der Sitzung erzeugt und angesehen, aber nicht als Datei eingecheckt. EAS-Build Android (Zeiger-Animation,
+   „Bewegung reduzieren“) steht aus – am Handy über die Action `eas-build` prüfen.
+10. **N2-Folge:** Läuft eine neue App vor `db-migrate` (Spalte fehlt), wird das `goals`-Speichern aus der Warteschlange
+    verworfen (Meldung in der Konsole ohne Inhalte). Da die Z3-Migration vor Z4 läuft, ist das Zeitfenster praktisch
+    geschlossen.
+
+**Offen / Vormerkungen:**
+
+- Wettkampf (`save_competition` usw.) gleicht `goals.target_date` weiter nur beim **Hauptziel** Ausdauer ab
+  (Abschnitt 13, offen für Phase 10).
+- App-Texte der Ernährungs-Hinweise `weight_goal_*` und der Einstellungs-Eintrag „Dein Abnehm-Ziel“ kommen mit Z5.
+- Wächter Z2 K-8 (Grün vs. `pace_capped` am Geburtstag) unverändert vorgemerkt.
