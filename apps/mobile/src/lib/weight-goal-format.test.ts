@@ -6,7 +6,6 @@ import {
 import { describe, expect, it } from 'vitest';
 
 import {
-  dateDraftFromWeeks,
   draftFromWeightGoal,
   EMPTY_WEIGHT_GOAL_DRAFT,
   feasibilityView,
@@ -14,6 +13,7 @@ import {
   parseWeightGoalDraft,
   stepWeeks,
   weeksText,
+  weightGoalSaveDecision,
 } from './weight-goal-format';
 
 /** Beispiel A (docs/PLAN-ZIELE.md 3.3): Mann, 35 J., 180 cm, 90 kg, Alltagsfaktor 1,45, Check ohne Befund. */
@@ -54,7 +54,7 @@ describe('Ampel-Texte (Plan 3.1, Wächter S4, S20, K8)', () => {
     expect(view.text).toBe('Sicher planbar sind für dich etwa 22 Wochen.');
     expect(view.detail).toBe('Benötigt etwa 1 % deines Gewichts pro Woche.');
     expect(view.a11y).toBe(
-      'Erreichbarkeit: sehr ehrgeizig. Benötigt etwa 1 % deines Gewichts pro Woche. Sicher planbar sind etwa 22 Wochen.',
+      'Planbarkeit: sehr ehrgeizig. Benötigt etwa 1 % deines Gewichts pro Woche. Sicher planbar sind etwa 22 Wochen.',
     );
     expect(view.applyWeeks).toBe(22);
     // Zeiger in der Orange-Zone [20; 40).
@@ -68,14 +68,14 @@ describe('Ampel-Texte (Plan 3.1, Wächter S4, S20, K8)', () => {
     expect(view.title).toBe('Ehrgeizig, aber machbar');
     expect(view.applyWeeks).toBeNull();
     expect(view.a11y).toBe(
-      'Erreichbarkeit: ehrgeizig. Benötigt etwa 0,5 % deines Gewichts pro Woche.',
+      'Planbarkeit: ehrgeizig. Benötigt etwa 0,5 % deines Gewichts pro Woche.',
     );
     expect(view.percent).toBeGreaterThanOrEqual(40);
     expect(view.percent).toBeLessThan(60);
   });
 
   it('Grün (26 Wochen) und Rot (6 Wochen)', () => {
-    expect(feasibilityView(rate(10, 26)).title).toBe('Gut erreichbar');
+    expect(feasibilityView(rate(10, 26)).title).toBe('Gut planbar');
     const red = feasibilityView(rate(10, 6));
     expect(red.level).toBe('red');
     expect(red.text).toBe(
@@ -88,7 +88,9 @@ describe('Ampel-Texte (Plan 3.1, Wächter S4, S20, K8)', () => {
     for (const weeks of [6, 12, 21, 22, 26]) {
       const view = feasibilityView(rate(10, weeks));
       for (const text of [view.title, view.text, view.detail, view.a11y]) {
-        expect(text).not.toMatch(/erreicht am|garantiert|wirst|\d{1,2}\.\d{1,2}\.\d{4}|kcal/);
+        expect(text).not.toMatch(
+          /erreichbar|erreicht am|garantiert|wirst|\d{1,2}\.\d{1,2}\.\d{4}|kcal/,
+        );
       }
     }
   });
@@ -155,7 +157,7 @@ describe('Formular (Plan 2.2)', () => {
         timeMode: 'date',
         date: { day: '30', month: '02', year: '2027' },
       }),
-    ).toMatchObject({ kind: 'unreadable', errors: { time: expect.any(String) } });
+    ).toMatchObject({ kind: 'unreadable', errors: { time: 'Dieses Datum gibt es nicht.' } });
     expect(
       parseWeightGoalDraft({
         ...EMPTY_WEIGHT_GOAL_DRAFT,
@@ -195,13 +197,76 @@ describe('Formular (Plan 2.2)', () => {
     });
   });
 
-  it('Wochen-Stepper bleibt in 4–104; Datum aus Wochen', () => {
+  it('Wochen-Stepper bleibt in 4–104', () => {
     expect(stepWeeks('', 1)).toBe('4');
     expect(stepWeeks('4', -1)).toBe('4');
     expect(stepWeeks('12', 1)).toBe('13');
     expect(stepWeeks('104', 1)).toBe('104');
     expect(stepWeeks('300', -1)).toBe('104');
-    expect(dateDraftFromWeeks('12', TODAY)).toEqual({ day: '04', month: '01', year: '2027' });
-    expect(dateDraftFromWeeks('', TODAY)).toEqual({ day: '', month: '', year: '' });
+  });
+});
+
+describe('Was „Weiter“ speichert (weightGoalSaveDecision, Wächter Z4 M3)', () => {
+  const saved = {
+    targetWeightKg: 80,
+    startDate: '2026-10-01',
+    targetDate: '2027-03-01',
+    amountMode: 'kg_to_lose' as const,
+    timeMode: 'weeks' as const,
+  };
+  const fresh = { ...saved, startDate: TODAY };
+  const available = {
+    available: true as const,
+    body: { weightKg: 90, weightMeasuredOn: TODAY, heightCm: 180, bodyFat: null },
+  };
+  const blocked = (reason: 'pregnancy' | 'no_consent' | 'weight_outdated') => ({
+    available: false as const,
+    reason,
+  });
+
+  it('Schwangerschaft bzw. altes Gewicht: gespeichertes Ziel ruht und bleibt', () => {
+    for (const reason of ['pregnancy', 'weight_outdated'] as const) {
+      expect(
+        weightGoalSaveDecision({
+          mode: 'concrete',
+          saved,
+          availability: blocked(reason),
+          evaluated: null,
+        }),
+      ).toEqual({ kind: 'save', weightGoal: saved });
+    }
+  });
+
+  it('ohne Einwilligung → kein Ziel', () => {
+    expect(
+      weightGoalSaveDecision({
+        mode: 'concrete',
+        saved,
+        availability: blocked('no_consent'),
+        evaluated: null,
+      }),
+    ).toEqual({ kind: 'save', weightGoal: null });
+  });
+
+  it('„ohne festes Ziel“ → null, auch mit gespeichertem Ziel oder Sperre', () => {
+    for (const availability of [available, blocked('pregnancy')]) {
+      expect(
+        weightGoalSaveDecision({ mode: 'none', saved, availability, evaluated: fresh }),
+      ).toEqual({ kind: 'save', weightGoal: null });
+    }
+  });
+
+  it('verfügbar: neues Ziel; ungültige Eingabe → nichts speichern', () => {
+    expect(
+      weightGoalSaveDecision({
+        mode: 'concrete',
+        saved,
+        availability: available,
+        evaluated: fresh,
+      }),
+    ).toEqual({ kind: 'save', weightGoal: fresh });
+    expect(
+      weightGoalSaveDecision({ mode: 'concrete', saved, availability: available, evaluated: null }),
+    ).toEqual({ kind: 'invalid' });
   });
 });

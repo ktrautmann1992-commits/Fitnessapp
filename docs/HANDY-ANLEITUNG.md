@@ -544,8 +544,11 @@ müsst nichts einstellen und keine Schlüssel eintragen. Prüfen könnt ihr am H
    der Datei steht der neue, leere Bereich `weight_goals`.
 
 ## Teil 7z2 – Zwei Ziele und Wunschgewicht mit Ampel testen (Ziele, Etappe Z4, Testmodus)
-Ihr müsst nichts einstellen, keine Datenbank-Änderung. Getestet mit **Chrome am iPhone** (Vorschau-Link aus dem Pull
-Request). Am besten in einem **neuen Tab** (oder vorher Einstellungen → „Testdaten löschen“).
+Ihr müsst nichts einstellen. Nach dem Merge spielt **db-migrate** einen kleinen Datenbank-Trigger ein (räumt ein
+unpassendes zweites Ziel alter App-Stände auf) – in der GitHub-App unter **Actions → db-migrate** warten, bis der Lauf
+grün ist (vorher müssen im Pull Request **db-test** und **ci** grün sein). Getestet mit **Chrome am iPhone** (Vorschau-Link aus dem Pull
+Request). Am besten in einem **Inkognito-Tab**: Chrome → unten rechts **⋯** → **Neuer Inkognito-Tab** (oder vorher in der
+App Einstellungen → **„Testdaten löschen“**).
 
 1. Vorschau-Link öffnen → **„Los geht's“** → Geburtsdatum **01.09.1991** → **Testmodus starten** → Zustimmen →
    **männlich** → Einwilligung Gesundheitsdaten **erteilen** → Größe **180**, Gewicht **90** → Umfänge
@@ -567,13 +570,13 @@ Request). Am besten in einem **neuen Tab** (oder vorher Einstellungen → „Tes
 8. Oben auf **„Zielgewicht“** umschalten → **60** eingeben → **Weiter** → rote Meldung „Dieses Zielgewicht liegt unter
    dem Bereich, den wir planen …“ (Ziel-BMI unter 20), es geht nicht weiter. Auf **80** ändern → **Weiter** → „Deine
    Trainingstage“. Mit **Zurück** steht das Ziel wieder im Formular.
-9. **Ohne Einwilligung:** neuer Tab, wie Schritt 1, aber „Ohne Einwilligung fortfahren“ → Ziel **Abnehmen** → Hinweis
+9. **Ohne Einwilligung:** neuer Inkognito-Tab, wie Schritt 1, aber „Ohne Einwilligung fortfahren“ → Ziel **Abnehmen** → Hinweis
    „Wunschgewicht nur mit Einwilligung“ mit Knopf „Einwilligung erteilen“; **Weiter** führt direkt zu „Deine
    Trainingstage“ (kein Wunschgewicht-Schritt).
 10. **Dunkel:** iPhone → Einstellungen → Anzeige & Helligkeit → **Dunkel** → Schritte 5–7 wiederholen: Balken und
     Texte gut lesbar.
 11. **Optional mit VoiceOver** (Einstellungen → Bedienungshilfen → VoiceOver): Auf der Ampel liest das iPhone einen
-    ganzen Satz vor, z. B. „Erreichbarkeit: sehr ehrgeizig. Benötigt etwa 1 % deines Gewichts pro Woche. Sicher
+    ganzen Satz vor, z. B. „Planbarkeit: sehr ehrgeizig. Benötigt etwa 1 % deines Gewichts pro Woche. Sicher
     planbar sind etwa 22 Wochen.“
 
 Falls etwas nicht so aussieht: Screenshot machen und Claude im Chat schicken.

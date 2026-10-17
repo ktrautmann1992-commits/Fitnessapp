@@ -1,11 +1,11 @@
 import {
-  addDays,
   daysBetween,
   isMultipleOf,
   isoDateSchema,
   WEIGHT_GOAL_LIMITS,
   type WeightGoal,
   type WeightGoalAmountMode,
+  type WeightGoalAvailability,
   type WeightGoalFormInput,
   type WeightGoalLevel,
   type WeightGoalRated,
@@ -134,8 +134,10 @@ export function parseWeightGoalDraft(draft: WeightGoalDraft): DraftParse {
     else errors.time = W.issues.invalid_number;
   } else if (draft.timeMode === 'date' && anyDatePart) {
     const iso = isoFromDateParts(draft.date.day, draft.date.month, draft.date.year);
-    if (iso === null || !isoDateSchema.safeParse(iso).success) {
+    if (iso === null) {
       errors.time = W.incompleteDate;
+    } else if (!isoDateSchema.safeParse(iso).success) {
+      errors.time = W.invalidDate;
     } else {
       time = { mode: 'date', date: iso };
     }
@@ -185,13 +187,29 @@ export function stepWeeks(text: string, delta: 1 | -1): string {
   return String(next);
 }
 
-/** Datum für den Modus „bis Datum“ aus Wochen (beim Umschalten vorbelegen). */
-export function dateDraftFromWeeks(
-  weeksTextValue: string,
-  today: string,
-): { day: string; month: string; year: string } {
-  const weeks = /^\d{1,3}$/.test(weeksTextValue.trim()) ? Number(weeksTextValue.trim()) : null;
-  return weeks === null
-    ? { day: '', month: '', year: '' }
-    : datePartsFromIso(addDays(today, weeks * 7));
+/**
+ * Was „Weiter“ speichert (Plan 2.3, Wächter Z4 M3) – reine Regel:
+ * - „ohne festes Ziel“ → kein Ziel (`null`, ein gespeichertes wird gelöscht).
+ * - Konkretes Ziel gerade gesperrt (z. B. Schwangerschaft, Gewicht zu alt): ein gespeichertes Ziel RUHT und bleibt;
+ *   ohne Einwilligung gibt es keins (der Widerruf löscht es) → `null`.
+ * - Konkretes Ziel verfügbar: das neue, geprüfte Ziel; ist die Eingabe (noch) ungültig → `invalid` (nichts speichern).
+ */
+export type WeightGoalSaveDecision =
+  { readonly kind: 'save'; readonly weightGoal: WeightGoal | null } | { readonly kind: 'invalid' };
+
+export function weightGoalSaveDecision(input: {
+  readonly mode: 'none' | 'concrete';
+  readonly saved: WeightGoal | null;
+  readonly availability: WeightGoalAvailability;
+  /** Geprüftes neues Ziel (`evaluateWeightGoalInput` ok) oder null. */
+  readonly evaluated: WeightGoal | null;
+}): WeightGoalSaveDecision {
+  if (input.mode === 'none') return { kind: 'save', weightGoal: null };
+  if (!input.availability.available) {
+    const rests = input.saved !== null && input.availability.reason !== 'no_consent';
+    return { kind: 'save', weightGoal: rests ? input.saved : null };
+  }
+  return input.evaluated === null
+    ? { kind: 'invalid' }
+    : { kind: 'save', weightGoal: input.evaluated };
 }

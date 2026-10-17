@@ -5,6 +5,7 @@ import {
   BARBELL_ID,
   createGoalStepSchema,
   goalPairBlockReason,
+  hasGoal,
   isAllowedGoalPair,
   DEFAULT_SLOT_MINUTES,
   ENDURANCE_DISCIPLINES,
@@ -78,7 +79,8 @@ export function GoalStep({ ctl }: { ctl: StepController }) {
   const [errors, setErrors] = useState<FieldErrors>({});
 
   const hasEndurance = goalType === 'endurance' || secondary === 'endurance';
-  const losesWeight = goalType === 'fat_loss' || secondary === 'fat_loss';
+  const losesWeight =
+    goalType !== undefined && hasGoal({ primary: goalType, secondary }, 'fat_loss');
   const consentValid =
     ctl.app.rows !== null && healthConsentStatus(ctl.app.rows, ctl.app.versions) === 'valid';
 

@@ -61,8 +61,8 @@ select throws_ok(
   $$ update public.goals set secondary_goal_type = 'fat_loss' $$, '23514', null, 'dasselbe Ziel doppelt verboten'
 );
 select throws_ok(
-  $$ update public.goals set goal_type = 'definition', secondary_goal_type = 'muscle_gain' $$,
-  '23514', null, 'Definition + Muskelaufbau verboten'
+  $$ update public.goals set goal_type = 'definition', secondary_goal_type = 'fat_loss' $$,
+  '23514', null, 'Definition + Abnehmen verboten (Nebenziel neu gesetzt; unverändert mitgeführt räumt Test 46 auf)'
 );
 select throws_ok(
   $$ update public.goals set secondary_goal_type = 'muscle_gain', discipline = '5k' $$,

@@ -11,7 +11,7 @@ import {
   resumeStep,
 } from '@fitnessapp/core';
 
-import { consentRecordsFromRows, type ConsentVersions } from '../data/mapping';
+import { consentRecordsFromRows, type ConsentVersions, losesWeight } from '../data/mapping';
 import type { AuthSession, StepSave, UserRows } from '../data/types';
 
 /**
@@ -74,7 +74,10 @@ export function deriveOnboardingState(
     nutritionSetupAvailable,
     // Schritt weight_goal (Etappe Z3/Z4): nur bei Abnehmen als Haupt- oder Nebenziel; noch kein Ziel = offen.
     losesWeight: rows.goals
-      ? rows.goals.goal_type === 'fat_loss' || rows.goals.secondary_goal_type === 'fat_loss'
+      ? losesWeight({
+          goalType: rows.goals.goal_type,
+          secondaryGoalType: rows.goals.secondary_goal_type ?? null,
+        })
       : undefined,
   };
 }
@@ -167,11 +170,7 @@ export function nextEditRoute(
   let next = EDIT_CHAIN[index + 1];
   if (
     next === 'weight_goal' &&
-    !(
-      healthDataConsent &&
-      save.step === 'goal' &&
-      (save.goal.goalType === 'fat_loss' || save.goal.secondaryGoalType === 'fat_loss')
-    )
+    !(healthDataConsent && save.step === 'goal' && losesWeight(save.goal))
   ) {
     next = 'time_budget';
   }

@@ -34,13 +34,13 @@ import { t } from '@/i18n';
 import { formatKg } from '@/lib/format';
 import { useThemeColors } from '@/lib/theme';
 import {
-  dateDraftFromWeeks,
   draftFromWeightGoal,
   EMPTY_WEIGHT_GOAL_DRAFT,
   feasibilityView,
   parseWeightGoalDraft,
   stepWeeks,
   type WeightGoalDraft,
+  weightGoalSaveDecision,
 } from '@/lib/weight-goal-format';
 import { stepRoute } from '@/state/flow';
 
@@ -146,8 +146,16 @@ function WeightGoalForm({
     evaluation?.kind === 'evaluated' && evaluation.result.ok ? evaluation.result.rating : null;
   const view = rating ? feasibilityView(rating) : null;
 
-  // Fehler je Feld (erst nach „Weiter“, danach live).
+  // Kein Defizit planbar (S1) und Ziel-BMI zu niedrig sofort zeigen (Wächter Z4 M4), alle anderen Fehler je Feld erst
+  // nach „Weiter“, danach live.
+  const liveIssue =
+    evaluation?.kind === 'evaluated' && !evaluation.result.ok
+      ? (evaluation.result.issues.find(
+          (issue) => issue.code === 'no_deficit' || issue.code === 'target_bmi_too_low',
+        )?.code ?? null)
+      : null;
   const fieldErrors: Record<string, string> = {};
+  if (liveIssue === 'target_bmi_too_low') fieldErrors.amount = issueText(liveIssue);
   let formError: string | undefined;
   if (submitted && evaluation) {
     if (evaluation.kind === 'partial') {
@@ -177,20 +185,19 @@ function WeightGoalForm({
   }
 
   function next() {
-    if (mode === 'none' || !availability.available) {
-      // Gesperrt (z. B. Schwangerschaft): ein vorhandenes Ziel ruht und bleibt gespeichert (Plan 2.3); ohne
-      // Einwilligung gibt es keins (der Widerruf löscht es).
-      const keep =
-        mode === 'concrete' && saved !== null && !availability.available
-          ? availability.reason !== 'no_consent'
-          : false;
-      void ctl.submit({ step: 'weight_goal', weightGoal: keep ? saved : null });
+    // Regel „neu / ruht / löschen“ rein und getestet in weightGoalSaveDecision (Plan 2.3).
+    const decision = weightGoalSaveDecision({
+      mode,
+      saved,
+      availability,
+      evaluated:
+        evaluation?.kind === 'evaluated' && evaluation.result.ok ? evaluation.result.goal : null,
+    });
+    if (decision.kind === 'invalid') {
+      setSubmitted(true);
       return;
     }
-    setSubmitted(true);
-    if (evaluation?.kind === 'evaluated' && evaluation.result.ok) {
-      void ctl.submit({ step: 'weight_goal', weightGoal: evaluation.result.goal });
-    }
+    void ctl.submit({ step: 'weight_goal', weightGoal: decision.weightGoal });
   }
 
   function remedy(reason: WeightGoalBlockReason) {
@@ -270,7 +277,6 @@ function WeightGoalForm({
               error={fieldErrors.amount}
               testID="weight-goal-amount"
             />
-            {fieldErrors.amount === W.issues.target_bmi_too_low ? <EatingHelpNotice /> : null}
           </Card>
           <Card>
             <ChoiceList
@@ -281,13 +287,8 @@ function WeightGoalForm({
                 label: W.timeModes[value],
               }))}
               value={draft.timeMode}
-              onChange={(timeMode) =>
-                update(
-                  timeMode === 'date' && draft.timeMode === 'weeks'
-                    ? { timeMode, date: dateDraftFromWeeks(draft.weeksText, ctl.today) }
-                    : { timeMode },
-                )
-              }
+              // Beim Umschalten bleibt das Datum leer (kein vorgeschlagenes Kalenderdatum, Wächter Z4 N3).
+              onChange={(timeMode) => update({ timeMode })}
             />
             {draft.timeMode === 'weeks' ? (
               <WeeksStepper
@@ -306,13 +307,29 @@ function WeightGoalForm({
           </Card>
           <FeasibilityScale
             view={view}
-            pendingText={evaluation?.kind === 'partial' ? W.scale.pending : W.scale.pendingInvalid}
+            pendingText={
+              liveIssue !== null
+                ? issueText(liveIssue)
+                : evaluation?.kind === 'partial'
+                  ? W.scale.pending
+                  : W.scale.pendingInvalid
+            }
+            pendingAction={
+              liveIssue === 'no_deficit'
+                ? { label: W.scale.useNone, onPress: () => setMode('none') }
+                : null
+            }
             onApply={(weeks) => update({ timeMode: 'weeks', weeksText: String(weeks) })}
           />
-          <Notice tone="info" testID="weight-goal-breastfeeding">
-            {W.breastfeeding}
-          </Notice>
-          <EatingHelpNotice />
+          {/* Stillzeit-Hinweis (K5) nur, wenn nicht männlich (Wächter Z4 N13). */}
+          {person.sex !== 'male' ? (
+            <Notice tone="info" testID="weight-goal-breastfeeding">
+              {W.breastfeeding}
+            </Notice>
+          ) : null}
+          <View testID="weight-goal-eating-help">
+            <EatingHelpNotice />
+          </View>
         </>
       ) : null}
 

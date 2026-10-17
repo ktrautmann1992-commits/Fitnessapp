@@ -1,10 +1,11 @@
 import { expect, test, type Page } from '@playwright/test';
 
+import { onboardNutrition, patchDb } from './nutrition-helpers';
 import { heading, next } from './plan-helpers';
 
 /**
  * Ziele · Etappe Z4 (docs/PLAN-ZIELE.md 6 und 7 Z4): Haupt- und Nebenziel, konkretes Abnehmziel mit
- * Erreichbarkeits-Ampel. Testmodus, Web-Export, Handy-Ansicht. Fester Tag: Montag, 12.10.2026 – Geburtsdatum
+ * Planbarkeits-Ampel. Testmodus, Web-Export, Handy-Ansicht. Fester Tag: Montag, 12.10.2026 – Geburtsdatum
  * 01.09.1991 (35 J.), damit die Person genau Beispiel A aus Plan 3.3 ist (Mann, 180 cm, 90 kg, Alltag 1,45).
  */
 
@@ -132,7 +133,7 @@ test('Abnehmziel „10 kg in 12 Wochen“: Ampel Orange (etwa 22 Wochen) → Zei
   await page.getByRole('radio', { name: 'Mit konkretem Ziel' }).click();
 
   // Teil-Eingabe → noch keine Bewertung; Hinweise Stillzeit und Essstörungen stehen fest auf dem Bildschirm.
-  const meter = page.getByRole('meter', { name: 'Erreichbarkeit' });
+  const meter = page.getByRole('meter', { name: 'Planbarkeit' });
   await expect(meter).toBeVisible();
   await expect(meter).toHaveAttribute('aria-valuemin', '0');
   await expect(meter).toHaveAttribute('aria-valuemax', '100');
@@ -140,8 +141,10 @@ test('Abnehmziel „10 kg in 12 Wochen“: Ampel Orange (etwa 22 Wochen) → Zei
   await expect(page.getByTestId('feasibility-pending')).toHaveText(
     'Noch keine Bewertung – gib Menge und Zeitraum ein.',
   );
-  await expect(page.getByTestId('weight-goal-breastfeeding')).toBeVisible();
-  await expect(page.getByText('Wenn Essen oder Gewicht dich belasten')).toBeVisible();
+  // Stillzeit-Hinweis nur, wenn nicht männlich (Wächter Z4 N13); Hilfe-Hinweis genau einmal (N7).
+  await expect(page.getByTestId('weight-goal-breastfeeding')).toHaveCount(0);
+  await expect(page.getByTestId('weight-goal-eating-help')).toHaveCount(1);
+  await expect(page.getByText('Wenn Essen oder Gewicht dich belasten')).toHaveCount(1);
 
   // Standard laut F9: „kg abnehmen“ + „Wochen“.
   await expect(page.getByRole('radio', { name: 'kg abnehmen' })).toHaveAttribute(
@@ -172,7 +175,7 @@ test('Abnehmziel „10 kg in 12 Wochen“: Ampel Orange (etwa 22 Wochen) → Zei
   expect(now).toBeLessThan(40);
   await expect(meter).toHaveAttribute(
     'aria-valuetext',
-    'Erreichbarkeit: sehr ehrgeizig. Benötigt etwa 1 % deines Gewichts pro Woche. Sicher planbar sind etwa 22 Wochen.',
+    'Planbarkeit: sehr ehrgeizig. Benötigt etwa 1 % deines Gewichts pro Woche. Sicher planbar sind etwa 22 Wochen.',
   );
   // Ansage bei Stufenwechsel über die dauerhafte Live-Region.
   await expect(page.getByTestId('feasibility-announcer')).toHaveText(/sehr ehrgeizig/);
@@ -185,19 +188,20 @@ test('Abnehmziel „10 kg in 12 Wochen“: Ampel Orange (etwa 22 Wochen) → Zei
   const yellow = Number(await meter.getAttribute('aria-valuenow'));
   expect(yellow).toBeGreaterThanOrEqual(40);
   expect(yellow).toBeLessThan(60);
-  await expect(page.getByTestId('feasibility-announcer')).toHaveText(/Erreichbarkeit: ehrgeizig/);
+  await expect(page.getByTestId('feasibility-announcer')).toHaveText(/Planbarkeit: ehrgeizig/);
 
   // Ziel-BMI unter der Grenze (F8: 20 → bei 180 cm unter 64,8 kg) → Fehler, Speichern unmöglich.
   await page.getByRole('radio', { name: 'Zielgewicht' }).click();
   await expect(page.getByText('Dein aktuelles Gewicht: 90 kg')).toBeVisible();
   await page.getByLabel('Zielgewicht in kg').fill('60');
-  await expect(page.getByTestId('feasibility-pending')).toHaveText(
-    'Noch keine Bewertung – bitte prüfe deine Eingaben.',
+  // Sofort, nicht erst nach „Weiter“ (Wächter Z4 M4): in der Ampel und am Feld.
+  await expect(page.getByTestId('feasibility-pending')).toContainText(
+    'Dieses Zielgewicht liegt unter dem Bereich, den wir planen.',
   );
-  await next(page);
   await expect(
     page.getByText('Dieses Zielgewicht liegt unter dem Bereich, den wir planen.', { exact: false }),
-  ).toBeVisible();
+  ).toHaveCount(2);
+  await next(page);
   await heading(page, 'Wie möchtest du abnehmen?');
 
   // Gültiges Zielgewicht → speichern → weiter.
@@ -232,4 +236,70 @@ test('ohne Einwilligung: Wunschgewicht gesperrt mit Erklärung, Schritt entfäll
   await page.goto('/onboarding/weight_goal');
   await heading(page, 'Deine Trainingstage');
   await expect(page.getByRole('heading', { name: 'Wie möchtest du abnehmen?' })).toHaveCount(0);
+});
+
+test('„Angaben ändern“ führt über das Wunschgewicht; Rückfrage bei ausgeblendeten Kalorienzahlen (K6)', async ({
+  page,
+}) => {
+  // Frau, 170 cm, 70 kg, Abnehmen, Onboarding fertig; dann „Kalorienzahlen anzeigen“ aus.
+  await onboardNutrition(page);
+  await patchDb(page, (value) => ({
+    ...value,
+    rows: {
+      ...value.rows,
+      nutritionSetup: { ...(value.rows.nutritionSetup as object), show_energy_numbers: false },
+    },
+  }));
+  await page.getByRole('button', { name: 'Einstellungen' }).click();
+  await page.getByRole('button', { name: 'Angaben ändern' }).click();
+  await heading(page, 'Deine Trainingserfahrung');
+  await next(page);
+  await heading(page, 'Dein Ziel');
+  await next(page);
+  await heading(page, 'Wie möchtest du abnehmen?');
+
+  // K6: ruhige Rückfrage, Abbrechen lässt „ohne festes Ziel“.
+  const concrete = page.getByRole('radio', { name: 'Mit konkretem Ziel' });
+  await concrete.click();
+  const dialog = page.getByTestId('weight-goal-hidden-numbers');
+  await expect(dialog).toContainText('Du hast Kalorienzahlen ausgeblendet.');
+  await dialog.getByRole('button', { name: 'Abbrechen' }).click();
+  await expect(concrete).toHaveAttribute('aria-checked', 'false');
+  await concrete.click();
+  await page
+    .getByTestId('weight-goal-hidden-numbers')
+    .getByRole('button', { name: 'Ja, festes Ziel' })
+    .click();
+  await expect(concrete).toHaveAttribute('aria-checked', 'true');
+  await expect(page.getByTestId('weight-goal-breastfeeding')).toBeVisible();
+
+  // „bis Datum“: Feld bleibt leer (kein vorgeschlagenes Datum, N3); 31.02. gibt es nicht (N8).
+  await page.getByLabel('kg abnehmen ab heute').fill('3');
+  await page.getByRole('radio', { name: 'bis Datum' }).click();
+  await expect(page.getByLabel('Bis zum: Tag')).toHaveValue('');
+  await page.getByLabel('Bis zum: Tag').fill('31');
+  await page.getByLabel('Bis zum: Monat').fill('02');
+  await page.getByLabel('Bis zum: Jahr').fill('2027');
+  await next(page);
+  await expect(page.getByText('Dieses Datum gibt es nicht.')).toBeVisible();
+  await page.getByRole('radio', { name: 'in Wochen' }).click();
+  await page.getByLabel('Wochen', { exact: true }).fill('12');
+  await expect(page.getByTestId('feasibility-scale')).toContainText(/Gut planbar|Ehrgeizig/);
+  await next(page);
+
+  // Kette geht weiter zu den Trainingstagen und zurück zu „Heute“.
+  await heading(page, 'Deine Trainingstage');
+  await next(page);
+  await heading(page, 'Heute');
+
+  // Gespeichert: erneut „Angaben ändern“ → konkretes Ziel steht im Formular (ohne Rückfrage).
+  await page.getByRole('button', { name: 'Einstellungen' }).click();
+  await page.getByRole('button', { name: 'Angaben ändern' }).click();
+  await heading(page, 'Deine Trainingserfahrung');
+  await next(page);
+  await heading(page, 'Dein Ziel');
+  await next(page);
+  await heading(page, 'Wie möchtest du abnehmen?');
+  await expect(concrete).toHaveAttribute('aria-checked', 'true');
+  await expect(page.getByLabel('kg abnehmen ab heute')).toHaveValue('3');
 });

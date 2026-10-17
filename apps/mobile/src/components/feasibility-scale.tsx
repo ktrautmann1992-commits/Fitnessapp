@@ -17,7 +17,7 @@ import type { FeasibilityView } from '@/lib/weight-goal-format';
 import { Body, Button } from './ui';
 
 /**
- * Erreichbarkeits-Ampel für das konkrete Abnehmziel (docs/PLAN-ZIELE.md 3.1 und 3.4, Etappe Z4). Nur Anzeige: Stufe,
+ * Planbarkeits-Ampel für das konkrete Abnehmziel (docs/PLAN-ZIELE.md 3.1 und 3.4, Etappe Z4). Nur Anzeige: Stufe,
  * Texte und Zeigerposition kommen aus packages/core (`weightGoalFeasibility`) über `feasibilityView`.
  *
  * - Balken mit Verlauf von Rot (links, „zu schnell“) nach Grün (rechts, „ruhig“), Zeiger in der Zone der Stufe.
@@ -89,11 +89,14 @@ function LevelSymbol({ zone }: { zone: WeightGoalZone }) {
 export function FeasibilityScale({
   view,
   pendingText,
+  pendingAction = null,
   onApply,
 }: {
   /** null = noch keine Bewertung (Teil-Eingabe oder ungültige Eingabe). */
   view: FeasibilityView | null;
   pendingText: string;
+  /** Empfehlung ohne Bewertung, z. B. „Ohne festes Ziel planen“ bei „kein Defizit planbar“ (Wächter S1). */
+  pendingAction?: { label: string; onPress: () => void } | null;
   /** Knopf „Zeitraum auf N Wochen setzen“. */
   onApply: (weeks: number) => void;
 }) {
@@ -119,7 +122,12 @@ export function FeasibilityScale({
   const level = view?.level ?? null;
   const sentence = view?.a11y ?? '';
   useEffect(() => {
-    if (level === null || level === lastLevel.current) return;
+    if (level === null) {
+      // „Noch keine Bewertung“: Stufe vergessen, damit dieselbe Stufe danach wieder angesagt wird (Wächter Z4 N5).
+      lastLevel.current = null;
+      return;
+    }
+    if (level === lastLevel.current) return;
     const timer = setTimeout(() => {
       lastLevel.current = level;
       setAnnouncement(sentence);
@@ -160,11 +168,14 @@ export function FeasibilityScale({
           <Svg width="100%" height={BAR_HEIGHT}>
             <Defs>
               <LinearGradient id="feasibility-gradient" x1="0" y1="0" x2="1" y2="0">
+                {/* Harte Übergänge genau an den Zonengrenzen 0,2 / 0,4 / 0,6 (Plan 3.1, Wächter Z4 N4). */}
                 <Stop offset="0" stopColor={colors.red} />
                 <Stop offset="0.2" stopColor={colors.red} />
-                <Stop offset="0.3" stopColor={colors.orange} />
-                <Stop offset="0.5" stopColor={colors.yellow} />
-                <Stop offset="0.7" stopColor={colors.green} />
+                <Stop offset="0.2" stopColor={colors.orange} />
+                <Stop offset="0.4" stopColor={colors.orange} />
+                <Stop offset="0.4" stopColor={colors.yellow} />
+                <Stop offset="0.6" stopColor={colors.yellow} />
+                <Stop offset="0.6" stopColor={colors.green} />
                 <Stop offset="1" stopColor={colors.green} />
               </LinearGradient>
             </Defs>
@@ -233,9 +244,19 @@ export function FeasibilityScale({
           <Body muted>{S.about}</Body>
         </View>
       ) : (
-        <Body muted testID="feasibility-pending">
-          {pendingText}
-        </Body>
+        <View style={styles.result}>
+          <Body muted testID="feasibility-pending">
+            {pendingText}
+          </Body>
+          {pendingAction ? (
+            <Button
+              label={pendingAction.label}
+              variant="secondary"
+              onPress={pendingAction.onPress}
+              testID="feasibility-pending-action"
+            />
+          ) : null}
+        </View>
       )}
 
       {/* Dauerhafte, unsichtbare Live-Region: neu eingefügte Regionen lesen Bildschirmleser oft nicht vor. */}

@@ -6,9 +6,11 @@ import {
   deriveTrainingLocation,
   equipmentIdSchema,
   foodGroupSchema,
+  hasGoal,
   healthScreeningAnswersSchema,
   HEALTH_FLAGS,
   type HealthFlag,
+  isAllowedGoalPair,
   isOnboardingStep,
   MEASUREMENT_REMINDER_INTERVAL_DAYS,
   MEASUREMENT_SITES,
@@ -69,6 +71,11 @@ export interface PlanContext {
   reminderIntervalDays?: number | undefined;
   /** Onboarding schon abgeschlossen (Bearbeiten aus den Einstellungen). */
   onboardingCompleted?: boolean | undefined;
+  /**
+   * Ist ein Wunschgewicht gespeichert (Zeile `weight_goals`)? `false` → „ohne festes Ziel“ braucht kein Löschen (spart
+   * den Online-Vorgang, Etappe Z4). Ohne Angabe wird vorsichtshalber gelöscht.
+   */
+  hasStoredWeightGoal?: boolean | undefined;
 }
 
 /** Übernimmt einen gespeicherten Schritt in die Antworten (für Anzeige und für planStepWrites). */
@@ -135,7 +142,11 @@ export function progressPatch(
 
 /** Ist Abnehmen Haupt- oder Nebenziel (docs/PLAN-ZIELE.md 2.1)? */
 export function losesWeight(goal: Pick<GoalAnswer, 'goalType' | 'secondaryGoalType'>): boolean {
-  return goal.goalType === 'fat_loss' || goal.secondaryGoalType === 'fat_loss';
+  // Regel aus packages/core (`hasGoal`); ein ungültiges Paar (alter Stand) zählt nur mit dem Hauptziel.
+  const secondary = isAllowedGoalPair(goal.goalType, goal.secondaryGoalType)
+    ? (goal.secondaryGoalType ?? null)
+    : null;
+  return hasGoal({ primary: goal.goalType, secondary }, 'fat_loss');
 }
 
 /** Ist Ausdauer Haupt- oder Nebenziel (Disziplin nur dann, CHECK goals_discipline_check)? */
@@ -351,11 +362,13 @@ export function planStepWrites(save: StepSave, ctx: PlanContext): WriteOp[] {
     // Konkretes Abnehmziel (Etappe Z3; Bildschirm ab Z4). null = „ohne festes Ziel“ → ein gespeichertes Ziel wird
     // gelöscht. Nach abgeschlossenem Onboarding (Einstellungen) bleibt der Fortschritt unverändert.
     case 'weight_goal': {
-      const op: WriteOp =
-        save.weightGoal === null
-          ? { kind: 'delete_weight_goal' }
-          : { kind: 'upsert_weight_goal', row: toWeightGoalRow(userId, save.weightGoal) };
-      return ctx.onboardingCompleted ? [op] : [op, progressOp];
+      const ops: WriteOp[] =
+        save.weightGoal !== null
+          ? [{ kind: 'upsert_weight_goal', row: toWeightGoalRow(userId, save.weightGoal) }]
+          : ctx.hasStoredWeightGoal === false
+            ? []
+            : [{ kind: 'delete_weight_goal' }];
+      return ctx.onboardingCompleted ? ops : [...ops, progressOp];
     }
     case 'time_budget':
       // Trainingstage + abgeleiteter Ort in goals (der Schritt „Trainingsort“ entfällt).

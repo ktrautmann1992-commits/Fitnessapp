@@ -1865,6 +1865,15 @@ export function createSupabaseBackend(options: SupabaseBackendOptions): Backend 
         // Spalten von nutrition_prefs seit N7 Teil 1; der Schritt wird seit N7 Teil 2 angezeigt.
         nutritionSetupAvailable: true,
       });
+      // 0. Wunschgewicht braucht das Abnehmziel in `goals` (Trigger weight_goals_require_fat_loss). Das Ziel läuft über
+      //    die Warteschlange – deshalb vorher die Warteschlange senden; hängt ein Ziel noch fest (offline), nicht
+      //    senden, sondern „Erneut versuchen“ melden (sonst 23514 bei einem Netzaussetzer).
+      if (planned.ops.some((op) => op.kind === 'upsert_weight_goal')) {
+        await queue.flush();
+        if (queue.snapshot().some((entry) => entry.op.kind === 'upsert_goals')) {
+          throw new BackendError('network', { sensitive: true });
+        }
+      }
       // 1. Gesundheitsdaten und Einwilligungen sofort senden (nie auf dem Gerät speichern).
       for (const op of planned.ops.filter(isDirectOp)) {
         try {

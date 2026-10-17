@@ -1,7 +1,7 @@
 /**
- * Texte zu Haupt- und Nebenziel und zum konkreten Abnehmziel mit Erreichbarkeits-Ampel (docs/PLAN-ZIELE.md 2.3, 3.1,
+ * Texte zu Haupt- und Nebenziel und zum konkreten Abnehmziel mit Planbarkeits-Ampel (docs/PLAN-ZIELE.md 2.3, 3.1,
  * 3.4, 4.2, 6; Etappe Z4). Regeln für die Texte (Plan 6 Nr. 6): keine Heilversprechen, keine wertenden Wörter, kein
- * „Du wirst X kg verlieren“, kein „garantiert“, kein „erreichbar am“, kein Kalenderdatum zur Dauer (Wächter S20).
+ * „Du wirst X kg verlieren“, kein „garantiert“, kein „erreichbar“ (Wächter Z4 N1: „planbar“), kein Kalenderdatum zur Dauer (Wächter S20).
  * Immer „wir planen …“ und „etwa“. Prozentwerte nur in der Detail- bzw. Screenreader-Zeile (Wächter K8).
  */
 
@@ -57,7 +57,7 @@ export const deGoalChoice = {
   weightGoalLockedButton: 'Einwilligung erteilen',
   /** Wächter Z3 N3: alter App-Stand hat noch ein zweites Ziel gespeichert, das nicht passt (Fehler 23514). */
   rejected:
-    'Dein Ziel konnte nicht gespeichert werden: Es passt nicht zu einem zweiten Ziel, das ein älterer App-Stand gespeichert hat. Bitte aktualisiere die App (im Browser: Seite neu laden) und wähle dein Ziel unter Einstellungen → Angaben ändern noch einmal.',
+    'Dein Ziel konnte nicht gespeichert werden. Bitte lade die App neu (im Browser: Seite neu laden) und wähle dein Ziel unter Einstellungen → Angaben ändern noch einmal.',
 } as const;
 
 /** Schritt „Wunschgewicht“ (weight_goal, Plan 2 und 3). */
@@ -107,6 +107,7 @@ export const deWeightGoal = {
   dateField: 'Bis zum',
   required: 'Bitte gib eine Menge und einen Zeitraum ein.',
   incompleteDate: 'Bitte das Datum vollständig eingeben (TT.MM.JJJJ).',
+  invalidDate: 'Dieses Datum gibt es nicht.',
   /** Fehler je Code (Plan 2.3). */
   issues: {
     not_below_current:
@@ -145,7 +146,7 @@ export const deWeightGoal = {
     },
     levels: {
       green: {
-        title: 'Gut erreichbar',
+        title: 'Gut planbar',
         text: 'Ein ruhiges Tempo, das sich gut durchhalten lässt.',
       },
       yellow: {
@@ -174,10 +175,12 @@ export const deWeightGoal = {
     detail: (percent: string) => `Benötigt etwa ${percent} % deines Gewichts pro Woche.`,
     apply: (n: number) => `Zeitraum auf ${n} Wochen setzen`,
     a11y: (word: string, detail: string, safe: string | null) =>
-      `Erreichbarkeit: ${word}. ${detail}${safe ? ` ${safe}` : ''}`,
+      `Planbarkeit: ${word}. ${detail}${safe ? ` ${safe}` : ''}`,
     a11ySafe: (weeks: string) => `Sicher planbar sind etwa ${weeks}.`,
     a11yOverMax: 'Sicher planbar ist es erst in über 2 Jahren.',
-    meterLabel: 'Erreichbarkeit',
+    meterLabel: 'Planbarkeit',
+    /** Kein Defizit planbar (Wächter S1) bzw. Ziel-BMI zu niedrig: sofort in der Ampel, mit Empfehlung. */
+    useNone: 'Ohne festes Ziel planen',
     about: 'Etwa-Werte: Wir rechnen neu, sobald du ein neues Gewicht einträgst.',
   },
 } as const;
