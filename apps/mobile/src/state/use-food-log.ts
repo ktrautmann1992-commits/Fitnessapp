@@ -10,6 +10,7 @@ import {
   isFavoriteEntry,
   markPlanItemEaten,
   type PlannedMeal,
+  productEntryDisplayTitle,
 } from '@fitnessapp/core';
 import { useCallback, useMemo } from 'react';
 
@@ -41,7 +42,10 @@ export interface FoodLogDayView {
    * Anzeigetitel (Etappe E2): bei eigenen Gerichten der aktuelle Name aus den eigenen Gerichten, nach dem Löschen
    * „Eigenes Gericht“ – nur für den Bildschirm, nie für testIDs oder Meldungen an den Server.
    */
-  displayTitle: (entry: Pick<FoodLogEntry, 'source' | 'custom_meal_id' | 'title_de'>) => string;
+  displayTitle: (
+    entry: Pick<FoodLogEntry, 'source' | 'custom_meal_id' | 'title_de'> &
+      Partial<Pick<FoodLogEntry, 'user_product_id'>>,
+  ) => string;
 }
 
 export function useFoodLogDay(date: string, showNumbers: boolean): FoodLogDayView {
@@ -61,7 +65,14 @@ export function useFoodLogDay(date: string, showNumbers: boolean): FoodLogDayVie
       intake: dayIntakeView(entries, showNumbers),
       planItem: (slot) => entries.find((e) => e.source === 'plan_item' && e.slot === slot) ?? null,
       isFavorite: (entry) => isFavoriteEntry(favorites, entry),
-      displayTitle: (entry) => foodLogDisplayTitle(entry, rows?.customMeals ?? []),
+      // E4a: eigene Produkte zeigen ihren aktuellen Namen (nur Anzeige; im Tagebuch steht „Eigenes Produkt“).
+      displayTitle: (entry) =>
+        entry.source === 'product'
+          ? productEntryDisplayTitle(
+              { ...entry, user_product_id: entry.user_product_id ?? null },
+              rows?.userFoodProducts ?? [],
+            )
+          : foodLogDisplayTitle(entry, rows?.customMeals ?? []),
     };
   }, [app.backend.supportsNutrition, app.versions, date, rows, showNumbers, today]);
 }

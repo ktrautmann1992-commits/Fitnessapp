@@ -25,6 +25,7 @@ import type {
   RecipeRating,
   Sex,
   TrainingSchedule,
+  UserFoodProduct,
 } from '@fitnessapp/core';
 import type { Tables } from '@fitnessapp/db';
 
@@ -195,6 +196,18 @@ export type CustomMealRow = Omit<CustomMeal, 'items'> & {
   updated_at: string;
 };
 
+/**
+ * Eigenes Produkt (Etappe E4a, docs/PLAN-E4.md 3.4) – Spalten wie `user_food_products`. Name und Marke sind Freitext:
+ * nur mit Einwilligung health_data, beim Widerruf gelöscht, nie loggen, nie in testIDs.
+ */
+export type UserFoodProductRow = UserFoodProduct & {
+  user_id: string;
+  revision: number;
+  last_write_id: string;
+  created_at: string;
+  updated_at: string;
+};
+
 /** Zutat eines eigenen Gerichts – Spalten wie `custom_meal_items`. */
 export type CustomMealItemRow = CustomMealItem & {
   meal_id: string;
@@ -270,6 +283,8 @@ export interface UserRows {
    */
   customMeals: CustomMealRow[];
   customMealItems: CustomMealItemRow[];
+  /** Eigene Produkte (Etappe E4a; Testmodus und Supabase-Modus). Name/Marke = Freitext, SENSIBEL. */
+  userFoodProducts: UserFoodProductRow[];
   /** Wettkämpfe (Phase 10 WP3; App und Testmodus ab WP4 – bis dahin immer leer). */
   competitions: CompetitionRow[];
 }
@@ -305,6 +320,7 @@ export function emptyUserRows(): UserRows {
     foodLogFavorites: [],
     customMeals: [],
     customMealItems: [],
+    userFoodProducts: [],
     competitions: [],
   };
 }

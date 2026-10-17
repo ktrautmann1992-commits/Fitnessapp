@@ -216,7 +216,7 @@ test('Nachtragen bis 14 Tage, Kalorienzahlen aus, Widerruf löscht das Tagebuch 
   await page.getByRole('button', { name: 'Gesundheitsdaten: Widerrufen' }).click();
   await expect(
     page.getByText(
-      /dein Ernährungstagebuch samt Schnelleintrag-Favoriten und eigenen Gerichten \(Favoriten aus Lebensmitteln und Rezepten bleiben\)/,
+      /dein Ernährungstagebuch samt Schnelleintrag-Favoriten, eigenen Gerichten, eigenen Produkten und Produkt-Favoriten \(Favoriten aus Lebensmitteln und Rezepten bleiben\)/,
     ),
   ).toBeVisible();
   await page.getByRole('button', { name: 'Tagebuch behalten (empfohlen)' }).click();

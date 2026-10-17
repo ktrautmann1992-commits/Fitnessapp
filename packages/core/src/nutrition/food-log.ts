@@ -11,6 +11,7 @@ import type { Food, FoodLookup } from '../content/food-schema';
 import type { Recipe } from '../content/recipe-schema';
 import { contentIdSchema } from '../content/schemas';
 import { addDays, daysBetween } from '../dates';
+import { barcodeSchema } from './barcode';
 import { MEAL_PLAN_SLOT_KEYS } from './meal-plan-payload';
 import type { PlannedMeal } from './meal-plan';
 import { computeRecipeFacts, type RecipeNutrients } from './recipe-nutrients';
@@ -36,7 +37,9 @@ import { gramsPerUnit } from './units';
 
 /**
  * Herkunft eines Eintrags. `custom_meal` seit Etappe E2 (eigenes Gericht), `photo` seit E3 (Bestandteil aus „Per
- * Foto“ – Form wie `food`, nur in Gramm, Werte aus dem Katalog); später kommt `product` (E4) dazu.
+ * Foto“ – Form wie `food`, nur in Gramm, Werte aus dem Katalog), `product` seit E4a (Produkt per Barcode-Nummer aus
+ * Open Food Facts bzw. eigenes Produkt – Menge in g/ml, Werte rechnet der Server aus dem Zwischenspeicher bzw. dem
+ * eigenen Produkt nach, docs/PLAN-E4.md 3.5).
  */
 export const FOOD_LOG_SOURCES = [
   'plan_item',
@@ -45,6 +48,7 @@ export const FOOD_LOG_SOURCES = [
   'quick',
   'custom_meal',
   'photo',
+  'product',
 ] as const;
 export type FoodLogSource = (typeof FOOD_LOG_SOURCES)[number];
 
@@ -77,6 +81,13 @@ export type QuickEntryLabel = (typeof QUICK_ENTRY_LABELS)[number];
  * in 20261015160000_custom_meals.sql).
  */
 export const CUSTOM_MEAL_ENTRY_TITLE = 'Eigenes Gericht';
+
+/**
+ * Titel eines Tagebuch-Eintrags aus einem EIGENEN Produkt (Etappe E4a, Plan 3.4/3.5): immer dieser feste Text, nie der
+ * Name oder die Marke, die die Person eingetippt hat (Freitext) – angezeigt wird der Name über `user_product_id`. Auch
+ * nach dem Löschen des eigenen Produkts (beide Verweise leer). Sync: CHECK in 20261017100200_food_log_product.sql.
+ */
+export const USER_PRODUCT_ENTRY_TITLE = 'Eigenes Produkt';
 
 /** Gruppen im Tagesverlauf (Plan 5): Frühstück, Hauptmahlzeit, Mittag, Abend, Snack. */
 export const FOOD_LOG_GROUPS = ['breakfast', 'main', 'lunch', 'dinner', 'snack'] as const;
@@ -145,6 +156,12 @@ const entryFields = {
   recipe_id: contentIdSchema.nullable(),
   /** Verweis auf das eigene Gericht (E2); null bei anderen Herkünften und nach dem Löschen des Gerichts. */
   custom_meal_id: z.uuid().nullable(),
+  /**
+   * E4a: Nummer des Produkts aus Open Food Facts (normalisiert, Prüfziffer gültig) bzw. Verweis auf ein eigenes Produkt
+   * – nur bei Herkunft `product`, sonst null. Fehlen sie (Einträge älterer App-Fassungen), gelten sie als null.
+   */
+  product_code: barcodeSchema.nullable().default(null),
+  user_product_id: z.uuid().nullable().default(null),
   title_de: titleSchema,
   amount: z.number().finite().nullable(),
   unit: z.enum(FOOD_LOG_UNITS).nullable(),
@@ -162,6 +179,9 @@ type EntryShape = {
   readonly recipe_id: string | null;
   /** Nur Einträge haben ihn (Favoriten nicht) – fehlt er, gilt null. */
   readonly custom_meal_id?: string | null;
+  /** E4a: Produkt-Verweise (fehlen sie, gilt null). */
+  readonly product_code?: string | null;
+  readonly user_product_id?: string | null;
   readonly title_de: string;
   readonly amount: number | null;
   readonly unit: FoodLogUnit | null;
@@ -209,6 +229,11 @@ function refineShape(
     mode === 'favorite' ? values.every((v) => v === null) : values.every((v) => v !== null);
   if (value.source !== 'custom_meal' && (value.custom_meal_id ?? null) !== null) {
     issue('Verweis nur bei eigenem Gericht.');
+  }
+  const productCode = value.product_code ?? null;
+  const userProductId = value.user_product_id ?? null;
+  if (value.source !== 'product' && (productCode !== null || userProductId !== null)) {
+    issue('Verweis nur bei Produkt.');
   }
   switch (value.source) {
     case 'food':
@@ -269,6 +294,25 @@ function refineShape(
         issue('Makros nur zusammen mit kcal.');
       }
       break;
+    case 'product':
+      // E4a: Produkt aus Open Food Facts (Nummer) ODER eigenes Produkt (Verweis) – nie beides. Nach dem Löschen eines
+      // eigenen Produkts sind beide leer (fester Titel). Menge in g bzw. ml, alle Werte (aus Zwischenspeicher bzw.
+      // eigenem Produkt; Favoriten ohne Werte).
+      if (value.food_id !== null || value.recipe_id !== null) issue('Ungültiges Produkt.');
+      if (productCode !== null && userProductId !== null) issue('Ungültiges Produkt.');
+      if (mode === 'favorite' && productCode === null && userProductId === null) {
+        issue('Favorit ohne Produkt.');
+      }
+      if (productCode === null && value.title_de !== USER_PRODUCT_ENTRY_TITLE) {
+        issue('Ungültige Bezeichnung.');
+      }
+      if (value.amount === null || value.unit === null || value.portion !== null) {
+        issue('Menge und Einheit fehlen.');
+      } else if (value.unit === 'piece' || !isValidFoodLogAmount(value.amount, value.unit)) {
+        issue('Ungültige Menge.');
+      }
+      if (!allValues) issue(mode === 'favorite' ? 'Favorit ohne Werte.' : 'Nährwerte fehlen.');
+      break;
   }
 }
 
@@ -311,8 +355,11 @@ const favoriteFields = {
   protein_g: entryFields.protein_g,
   carbs_g: entryFields.carbs_g,
   fat_g: entryFields.fat_g,
+  // E4a: Produkt-Favoriten (Schlüssel product|<Nummer> bzw. own_product|<id>), nur Verweis + Menge, keine Werte.
+  product_code: entryFields.product_code,
+  user_product_id: entryFields.user_product_id,
 };
-export const FOOD_LOG_FAVORITE_SOURCES = ['food', 'recipe', 'quick'] as const;
+export const FOOD_LOG_FAVORITE_SOURCES = ['food', 'recipe', 'quick', 'product'] as const;
 export const foodLogFavoriteSchema = z
   .strictObject({
     fav_key: z.string().min(1).max(200),
@@ -335,7 +382,14 @@ export type FoodLogFavorite = z.infer<typeof foodLogFavoriteSchema>;
 export function foodLogKey(
   entry: Pick<
     EntryShape,
-    'source' | 'food_id' | 'recipe_id' | 'custom_meal_id' | 'title_de' | 'kcal'
+    | 'source'
+    | 'food_id'
+    | 'recipe_id'
+    | 'custom_meal_id'
+    | 'title_de'
+    | 'kcal'
+    | 'product_code'
+    | 'user_product_id'
   >,
 ): string {
   switch (entry.source) {
@@ -351,6 +405,11 @@ export function foodLogKey(
     case 'custom_meal':
       // Je Gericht (nie der Name im Schlüssel); ein gelöschtes Gericht hat keinen Schlüssel-Inhalt.
       return `custom|${entry.custom_meal_id ?? ''}`;
+    case 'product':
+      // E4a: je Nummer bzw. je eigenem Produkt (nie Name oder Marke im Schlüssel; sync: CHECK fav_key).
+      return (entry.product_code ?? null) !== null
+        ? `product|${entry.product_code ?? ''}`
+        : `own_product|${entry.user_product_id ?? ''}`;
   }
 }
 
@@ -433,6 +492,8 @@ export function entryFromPlanItem(
     food_id: null,
     recipe_id: meal.recipeId,
     custom_meal_id: null,
+    product_code: null,
+    user_product_id: null,
     title_de: meal.titleDe,
     amount: null,
     unit: null,
@@ -466,6 +527,8 @@ export function entryFromFood(
     food_id: food.id,
     recipe_id: null,
     custom_meal_id: null,
+    product_code: null,
+    user_product_id: null,
     title_de: food.name_de,
     amount,
     unit,
@@ -496,6 +559,8 @@ export function entryFromRecipe(
     food_id: null,
     recipe_id: recipe.id,
     custom_meal_id: null,
+    product_code: null,
+    user_product_id: null,
     title_de: recipe.title_de,
     amount: null,
     unit: null,
@@ -528,6 +593,8 @@ export function quickEntry(input: QuickEntryInput, target: FoodLogTarget): FoodL
     food_id: null,
     recipe_id: null,
     custom_meal_id: null,
+    product_code: null,
+    user_product_id: null,
     title_de: input.label,
     amount: null,
     unit: null,
@@ -558,6 +625,8 @@ export function entryFromTemplate(
     food_id: template.food_id,
     recipe_id: template.recipe_id,
     custom_meal_id: template.custom_meal_id ?? null,
+    product_code: template.product_code ?? null,
+    user_product_id: template.user_product_id ?? null,
     title_de: template.title_de,
     amount: template.amount,
     unit: template.unit,
@@ -776,6 +845,8 @@ export function recentEntries<T extends Timed>(
     // Plan-Mahlzeiten nicht; eigene Gerichte nur, solange es das Gericht gibt (gelöscht = Verweis null).
     .filter((e) => e.source !== 'plan_item')
     .filter((e) => e.source !== 'custom_meal' || e.custom_meal_id !== null)
+    // E4a: eigene Produkte nur, solange es das Produkt gibt (gelöscht = beide Verweise leer).
+    .filter((e) => e.source !== 'product' || e.product_code !== null || e.user_product_id !== null)
     .sort(
       (a, b) =>
         lastUse(b).localeCompare(lastUse(a)) ||
@@ -809,6 +880,9 @@ export function favoriteFromEntry(entry: FoodLogEntry): FoodLogFavorite | null {
     amount: entry.amount,
     unit: entry.unit,
     portion: entry.portion,
+    // E4a: Produkt-Favorit = Verweis (Nummer bzw. eigenes Produkt) + Menge, keine Werte; den Titel setzt der Server.
+    product_code: entry.product_code,
+    user_product_id: entry.user_product_id,
     // Katalog/Rezept: nur Verweis + Menge/Portion, keine Werte (S1); Schnelleintrag: Bezeichnung + kcal.
     kcal: entry.source === 'quick' ? entry.kcal : null,
     protein_g: entry.source === 'quick' ? entry.protein_g : null,
@@ -843,6 +917,10 @@ export function entryFromFavorite(
     }
     case 'quick':
       return entryFromTemplate(favorite, target);
+    case 'product':
+      // E4a: Produkt-Favoriten speichern keine Werte – die App öffnet die Produktansicht (neu abfragen bzw. eigenes
+      // Produkt) und trägt von dort ein (`entryFromProduct`/`entryFromUserProduct`).
+      return { ok: false, reason: 'invalid' };
   }
 }
 
@@ -854,6 +932,7 @@ export function favoriteAvailable(
   if (favorite.source === 'food')
     return favorite.food_id !== null && library.foods.has(favorite.food_id);
   if (favorite.source === 'recipe') return library.recipes.some((r) => r.id === favorite.recipe_id);
+  // E4a: Produkt-Favoriten gehen über die Produktansicht (immer anzeigbar).
   return true;
 }
 
@@ -962,7 +1041,13 @@ export const PLAN_ITEM_PORTIONS: readonly number[] = FOOD_LOG_PORTION_CHOICES;
 // ---------------------------------------------------------------------------------------------------------
 
 /** Gründe, aus denen der Server einen einzelnen Eintrag ablehnt (die übrigen Einträge des Aufrufs gelten). */
-export const FOOD_LOG_REJECT_CODES = ['invalid', 'out_of_range', 'day_full'] as const;
+export const FOOD_LOG_REJECT_CODES = [
+  'invalid',
+  'out_of_range',
+  'day_full',
+  // E4a: Produkt aus Open Food Facts nicht (mehr) im Zwischenspeicher bzw. gesperrt – „Produkt neu abrufen“.
+  'product_unavailable',
+] as const;
 export type FoodLogRejectCode = (typeof FOOD_LOG_REJECT_CODES)[number];
 
 /**

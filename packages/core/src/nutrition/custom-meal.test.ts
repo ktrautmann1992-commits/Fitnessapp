@@ -536,6 +536,8 @@ describe('entryFromCustomMeal – Schnappschuss mit festem Titel', () => {
       food_id: null,
       recipe_id: null,
       custom_meal_id: ID(1),
+      product_code: null,
+      user_product_id: null,
       title_de: CUSTOM_MEAL_ENTRY_TITLE,
       amount: null,
       unit: null,

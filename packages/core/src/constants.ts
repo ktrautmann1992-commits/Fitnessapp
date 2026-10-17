@@ -2315,6 +2315,151 @@ export const AI_FOOD_PHOTO = {
     'gemini-3.8-flash': { input: 1.5, output: 7.5 },
   },
 } as const;
+
+// ---------------------------------------------------------------------------------------------------------
+// Etappe E4a · Barcode-Nummer und Open Food Facts (gratis, ohne KI; docs/PLAN-E4.md, Gründer-Entscheidung
+// 17.10.2026: E4-G1 bis E4-G13 „wie empfohlen“). Identisch als SQL-Konstante bzw. CHECK in
+// 20261017100000_food_products.sql, 20261017100100_user_food_products.sql und 20261017100200_food_log_product.sql
+// (Abgleich in db-sync.test.ts).
+// ---------------------------------------------------------------------------------------------------------
+
+/**
+ * Schnittstelle Open Food Facts (Plan 1.1/1.2). Recherche über die Websuche am 16.10.2026 – die Original-Seiten sind
+ * in der Bau-Sitzung gesperrt (Netz-Proxy). Pfad, Feldnamen und Antwortform: VOR LIVEGANG PRÜFEN (Handtest gegen
+ * world.openfoodfacts.net, Plan 1.1 „Testumgebung“; Links in docs/PLAN-E4.md 1.7).
+ * - `apiVersion` v2 mit `fields` (Plan-Empfehlung); ein Wechsel auf v3 ist eine Zeile (`productPath`).
+ * - `fields`: nur die benötigten Felder – keine Bilder, Zutaten, Allergene, Nutri-Score, NOVA, Eco-Score,
+ *   Mitwirkende (E4-G6, E4-G9). `nutriments` enthält die Werte je 100 g/ml (`_100g`), je Portion (`_serving`), die
+ *   `_modifier`-Felder („<“) und zubereitete Werte (`_prepared_100g`).
+ * - `userAgentApp`: User-Agent `Alpha5/<Version> (<OFF_CONTACT_EMAIL>)` ist Pflicht (Plan 1.2). Ohne Kontaktadresse
+ *   fragt der Server NIE an (Route antwortet `not_configured`).
+ * - `timeoutMs` 6 s, `maxResponseBytes` 512 KB, keine Weiterleitungen (Plan 3.2 Nr. 9).
+ * - `backoffMinutes` 5: nach HTTP 429/503 fragt der Server 5 Minuten lang gar nicht (Schutz vor einer IP-Sperre).
+ * - Quelle und Lizenz (Plan 1.3, 6.1): Datenbank ODbL 1.0, einzelne Inhalte DbCL 1.0. Bilder (CC BY-SA) zeigen wir
+ *   nicht (E4-G6).
+ */
+export const OPEN_FOOD_FACTS = {
+  apiVersion: 'v2',
+  baseUrl: 'https://world.openfoodfacts.org',
+  /** VOR LIVEGANG PRÜFEN: `GET <baseUrl><productPath><Nummer>?fields=…` */
+  productPath: '/api/v2/product/',
+  /** VOR LIVEGANG PRÜFEN (Feld-Doku, Plan 1.1). */
+  fields: [
+    'code',
+    'product_name',
+    'product_name_de',
+    'generic_name_de',
+    'brands',
+    'quantity',
+    'product_quantity',
+    'product_quantity_unit',
+    'serving_size',
+    'serving_quantity',
+    'nutrition_data_per',
+    'nutriments',
+    'last_modified_t',
+  ],
+  userAgentApp: 'Alpha5',
+  timeoutMs: 6000,
+  maxResponseBytes: 512 * 1024,
+  backoffMinutes: 5,
+  sourceDb: 'open_food_facts',
+  license: 'ODbL-1.0',
+  contentsLicense: 'DbCL-1.0',
+  /** Öffentliche Produktseite (Link „Bei Open Food Facts ansehen“, nur nach Hinweis, E4-G11). */
+  productPageUrl: 'https://world.openfoodfacts.org/product/',
+  homeUrl: 'https://world.openfoodfacts.org',
+  dataUrl: 'https://world.openfoodfacts.org/data',
+  odblUrl: 'https://opendatacommons.org/licenses/odbl/1-0/',
+  dbclUrl: 'https://opendatacommons.org/licenses/dbcl/1-0/',
+} as const;
+
+/**
+ * Grenzen der Produktabfrage (E4-G13, Plan 3.2/3.3):
+ * - je Person `perHour` 60 und `perDay` 200 Abfragen (Kalendertag und Stunde Europe/Berlin) – Zwischenspeicher-Treffer
+ *   zählen mit (die Nummer verrät Konsum, auch aus dem Speicher). PRODUKTENTSCHEIDUNG.
+ * - Server gesamt `globalPerMinute` 10 OFF-Abfragen je Minute: OFF erlaubt 15 Produkt-Abfragen je Minute JE IP-ADRESSE
+ *   (Plan 1.2, Quelle: OFF-API-Einführung und Issue #8818, Stand 16.10.2026 – VOR LIVEGANG PRÜFEN); alle Abfragen kommen
+ *   von unserem Server, also teilen sich alle Personen das Kontingent – 10 lässt Abstand.
+ * - Zwischenspeicher: `cacheFreshDays` 30 (danach neu abgefragt), `cacheDeleteDays` 90 (ohne Auffrischung gelöscht),
+ *   `negativeCacheDays` 1 („nicht gefunden“ gilt 1 Tag), höchstens `purgeBatch` 500 Zeilen je Aufräumen.
+ * - Zähler je Person ohne Nummer, `countsRetentionDays` 2.
+ * - Anfrage an unsere Route höchstens `maxBodyBytes` 256 Byte (`{ "code": "…" }`), unveränderte OFF-Felder im
+ *   Speicher höchstens `offFieldsMaxBytes` 16 KB.
+ */
+export const FOOD_PRODUCT_LOOKUP_LIMITS = {
+  perHour: 60,
+  perDay: 200,
+  globalPerMinute: 10,
+  cacheFreshDays: 30,
+  cacheDeleteDays: 90,
+  negativeCacheDays: 1,
+  purgeBatch: 500,
+  countsRetentionDays: 2,
+  maxBodyBytes: 256,
+  offFieldsMaxBytes: 16_384,
+} as const;
+
+/**
+ * Plausibilitätsprüfung für Produkte (Plan 4.3/4.4, E4-G3 zweistufig) – dieselbe Prüfung für OFF-Produkte und eigene
+ * Produkte. Werte je 100 g bzw. 100 ml.
+ * Quellen:
+ * - `kjPerKcal` 4,184: LMIV (VO (EU) Nr. 1169/2011) Anhang XIV, 1 kcal = 4,184 kJ.
+ * - `saltPerSodium` 2,5: LMIV Anhang I Nr. 11 (Salz = Natrium × 2,5).
+ * - Atwater-Faktoren: `RECIPE_CHECK_LIMITS.atwater` (LMIV Anhang XIV: Eiweiß/Kohlenhydrate 4, Fett 9, Ballaststoffe 2,
+ *   Polyole 2,4, Alkohol 7 kcal/g).
+ * - `ethanolDensity` 0,789 g/ml (Dichte von Ethanol bei 20 °C) – OFF `alcohol_100g` ist laut Recherche % vol
+ *   (VOR LIVEGANG PRÜFEN), nur für die Atwater-Prüfung, nie angezeigt.
+ * PRODUKTENTSCHEIDUNG – VOR LIVEGANG FACHLICH PRÜFEN:
+ * - gesperrt (`blocked`): kcal über `kcalMax` 905 (reines Fett 900 + Rundung), ein Makro bzw. Salz über `macroMaxG`
+ *   100, Summe Eiweiß + Kohlenhydrate + Fett + Ballaststoffe + Salz über `macroSumMaxG` (102 bei g, 110 bei ml – Sirup
+ *   und Öl sind schwerer als Wasser), kJ/kcal außerhalb `kjPerKcalRange` 3,8–4,6 (kJ als kcal eingetragen; erst ab
+ *   `kjCheckMinKcal` 10 kcal, darunter macht die Rundung das Verhältnis unbrauchbar), fehlende Werte, nur zubereitet.
+ * - „Werte prüfen“ (`review`): Atwater weicht um mehr als `atwaterTolerance` 20 % (mindestens `atwaterAbsMinKcal`
+ *   10 kcal) ab – weiter als R4 (15 %), weil Packungen gerundet deklariert werden; Zucker über Kohlenhydrate bzw.
+ *   gesättigte über Fett um mehr als `subsetToleranceG` 0,5 g; Umrechnungen (kJ → kcal, Portion → 100 g, Einheit
+ *   angenommen).
+ * - Portion bzw. Packung nur `amountG` 1–2.000 (wie FOOD_LOG_LIMITS.amountMass), sonst kein Knopf.
+ * - Hinweis „Angaben vom …“, wenn der OFF-Stand älter als `staleYears` 3 Jahre ist (keine Stufe).
+ * - Texte aus OFF: Name ≤ `nameMaxChars` 80, Marke ≤ `brandMaxChars` 40, Packung ≤ `quantityMaxChars` 30 Zeichen.
+ * - `normalizerVersion`: Fassung dieser Regeln – ändert sie sich, rechnet der Server Zwischenspeicher-Zeilen bei der
+ *   nächsten Abfrage aus den unveränderten OFF-Feldern neu.
+ */
+export const FOOD_PRODUCT_CHECK = {
+  kcalMax: 905,
+  macroMaxG: 100,
+  macroSumMaxG: { g: 102, ml: 110 },
+  kjPerKcal: 4.184,
+  kjPerKcalRange: { min: 3.8, max: 4.6 },
+  kjCheckMinKcal: 10,
+  saltPerSodium: 2.5,
+  ethanolDensity: 0.789,
+  atwaterTolerance: 0.2,
+  atwaterAbsMinKcal: 10,
+  subsetToleranceG: 0.5,
+  amountG: { min: 1, max: 2000 },
+  staleYears: 3,
+  nameMaxChars: 80,
+  brandMaxChars: 40,
+  quantityMaxChars: 30,
+  normalizerVersion: 1,
+} as const;
+
+/**
+ * Eigene Produkte (Plan 2.3/3.4, E4-G8, E4-G13): höchstens `maxProducts` 200 je Person (PRODUKTENTSCHEIDUNG), Name
+ * 1–60 und Marke 0–40 Zeichen (gleiche Zeichenregeln wie eigene Gerichte, E2 H1), kcal 0–900 je 100 g/ml (reines Fett),
+ * Makros, Zucker und Salz 0–100 g je 100 (eine Nachkommastelle), Portion 1–2.000 g/ml (eine Nachkommastelle),
+ * Summe Eiweiß + Kohlenhydrate + Fett + Salz höchstens `FOOD_PRODUCT_CHECK.macroSumMaxG`. 4 KB je Speichervorgang.
+ */
+export const USER_FOOD_PRODUCT_LIMITS = {
+  maxProducts: 200,
+  nameMaxChars: 60,
+  brandMaxChars: 40,
+  kcal: { min: 0, max: 900 },
+  per100G: { min: 0, max: 100 },
+  servingG: { min: 1, max: 2000 },
+  maxPayloadBytes: 4000,
+} as const;
 /**
  * Farbzonen des Kalorienbalkens in der Tagesauswertung (docs/PLAN-AUSWERTUNG.md 2.1, 2.2, A-G5, Etappe A2).
  * Alle Grenzen eines Tages kommen aus `nutritionTargetsForWeek` (Untergrenze, Planband, Obergrenze, Ziel) – hier steht

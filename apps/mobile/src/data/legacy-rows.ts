@@ -19,6 +19,7 @@ import {
 } from '@fitnessapp/core';
 
 import { toTrainingSlotRows } from './mapping';
+import { userFoodProductRowsFrom, withValidUserProductRefs } from './user-food-product-rows';
 import type {
   CustomMealItemRow,
   CustomMealRow,
@@ -425,7 +426,14 @@ export function upgradeStoredRows(stored: UserRows): UserRows {
     foodDislikes: storedFoodDislikes(stored),
     foodLogFavorites: storedFoodLogFavorites(stored),
     ...storedCustomMeals(stored, storedFoodLogEntries(stored)),
+    // Vor Etappe E4a gab es keine eigenen Produkte; nur gültige des eigenen Kontos (Zod, strikt, höchstens 200).
+    userFoodProducts: userFoodProductRowsFrom(
+      (stored as { userFoodProducts?: unknown }).userFoodProducts,
+      stored.profile?.user_id,
+    ),
   };
+  // Verweise auf verworfene eigene Produkte: Tagebuch-Verweis leer, Produkt-Favorit weg.
+  Object.assign(rows, withValidUserProductRefs(rows));
   const goals = stored.goals as (GoalsRow & LegacyGoalsFields) | null;
   if (
     goals &&

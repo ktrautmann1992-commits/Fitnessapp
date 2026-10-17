@@ -1,6 +1,8 @@
 name: beta-grant
 
 # Beta-Freischaltung und Feature-Flags bis Phase 7 (docs/PLAN-PHASE-4B.md 6.3, docs/PLAN-AUSWERTUNG.md Etappe E3, A-G20).
+# Seit E4a auch das Flag food_product_lookup (Produktabfrage per Barcode-Nummer, Migration 20261017100000_food_products.sql;
+# gratis, nur flag_an/flag_aus/status – keine Freischaltung je Person).
 # Nur per Hand: GitHub-App → Actions → beta-grant → „Run workflow“. Nur wer Schreibrechte am Repository hat, kann ihn
 # starten; GitHub merkt sich, wer. Ruft public.beta_admin(...) (Migration 20261016160100_ai_food_photo.sql) mit den
 # GitHub-Secrets SUPABASE_URL und SUPABASE_SECRET_KEY auf. Ohne Secrets endet der Workflow grün mit Hinweis.
@@ -47,6 +49,7 @@ on:
         type: choice
         options:
           - ai_food_photo
+          - food_product_lookup
 
 permissions:
   contents: read
@@ -81,6 +84,13 @@ jobs:
           esac
           case "$FLAG" in
             ai_food_photo) ;;
+            food_product_lookup)
+              # E4a: gratis, keine Freischaltung je Person – nur flag_an/flag_aus/status.
+              if [ "$action" = grant ] || [ "$action" = revoke ]; then
+                echo "::error::Die Produktabfrage hat keine Freischaltung je Person – nur flag_an, flag_aus oder status."
+                exit 1
+              fi
+              ;;
             *) echo "::error::Unbekannte Funktion."; exit 1 ;;
           esac
           if [ "$action" = grant ] || [ "$action" = revoke ]; then
@@ -167,7 +177,12 @@ jobs:
             flag_off) text="Funktion $FLAG ausgeschaltet." ;;
             invalid_input) text="Ungültige Eingabe." ;;
             status)
-              text=$(jq -r '"Funktion \(.flag): \(if .flag_enabled then "an" else "aus" end) · aktive Freischaltungen: \(.active_grants) · Fotos diesen Monat: \(.photos_this_month) (fehlgeschlagen: \(.failed_this_month)) · Kosten diesen Monat: \(.cost_eur_this_month) €"' "$RUNNER_TEMP/antwort.json") ;;
+              if [ "$FLAG" = food_product_lookup ]; then
+                text=$(jq -r '"Funktion \(.flag): \(if .flag_enabled then "an" else "aus" end) · Produkte im Speicher: \(.cached_products) · Abfragen heute: \(.lookups_today) · Open Food Facts gerade gesperrt (Pause): \(if .off_blocked then "ja" else "nein" end)"' "$RUNNER_TEMP/antwort.json")
+              else
+                text=$(jq -r '"Funktion \(.flag): \(if .flag_enabled then "an" else "aus" end) · aktive Freischaltungen: \(.active_grants) · Fotos diesen Monat: \(.photos_this_month) (fehlgeschlagen: \(.failed_this_month)) · Kosten diesen Monat: \(.cost_eur_this_month) €"' "$RUNNER_TEMP/antwort.json")
+              fi
+              ;;
             *) text="Unbekannte Antwort." ;;
           esac
           rm -f "$RUNNER_TEMP/antwort.json"

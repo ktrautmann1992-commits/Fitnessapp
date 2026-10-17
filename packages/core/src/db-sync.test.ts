@@ -26,6 +26,10 @@ import {
   BODY_MEASUREMENT_LIMITS,
   CONTENT_SCHEMA_LIMITS,
   FOOD_LOG_LIMITS,
+  FOOD_PRODUCT_CHECK,
+  FOOD_PRODUCT_LOOKUP_LIMITS,
+  OPEN_FOOD_FACTS,
+  USER_FOOD_PRODUCT_LIMITS,
   AI_FOOD_PHOTO,
   CUSTOM_MEAL_LIMITS,
   PINCH_G,
@@ -101,6 +105,14 @@ import {
 import { RECIPE_UNITS } from './nutrition/units';
 import * as enums from './enums';
 import { DATA_EXPORT_TABLES } from './export/data-export';
+import { BARCODE_PATTERN } from './nutrition/barcode';
+import {
+  FOOD_PRODUCT_BASE_UNITS,
+  FOOD_PRODUCT_CHECK_LEVELS,
+  FOOD_PRODUCT_CHECK_REASONS,
+  userFoodProductPayloadSchema,
+} from './nutrition/food-product';
+import { foodProductRecordSchema } from './nutrition/food-product-lookup';
 import {
   FOOD_LOG_FAVORITE_SOURCES,
   FOOD_LOG_REJECT_CODES,
@@ -111,6 +123,7 @@ import {
   foodLogPayloadEntrySchema,
   QUICK_ENTRY_LABELS,
   CUSTOM_MEAL_ENTRY_TITLE,
+  USER_PRODUCT_ENTRY_TITLE,
 } from './nutrition/food-log';
 import {
   CUSTOM_MEAL_MODES,
@@ -894,10 +907,10 @@ describe('Ernährung in der Datenbank (Phase 5, Etappe N7)', () => {
     expect(body.slice(0, end)).toContain(
       'delete from public.shopping_lists where user_id = new.user_id and uses_health_data;',
     );
-    // Neueste Fassung seit Phase 10 WP3 in *_competition_rpcs.sql (E1: Tagebuch-Einträge, E2: eigene Gerichte,
-    // WP3: Plan-Bezug der Wettkämpfe leeren).
+    // Neueste Fassung seit E4a in *_food_product_revoke_export.sql (E1: Tagebuch-Einträge, E2: eigene Gerichte,
+    // WP3: Plan-Bezug der Wettkämpfe leeren, E4a: eigene Produkte und Produkt-Favoriten).
     expect(migrationFiles.filter((n) => readMigration(n).includes(marker)).at(-1)).toMatch(
-      /_competition_rpcs\.sql$/,
+      /_food_product_revoke_export\.sql$/,
     );
   });
 
@@ -927,8 +940,17 @@ describe('Ernährungstagebuch in der Datenbank (Etappe E1)', () => {
   const save = newest('public.save_food_log_entries');
   // CHECK-Bedingungen der Einträge: Herkunft und Form neu gefasst in *_custom_meals.sql (E2) und *_food_log_photo.sql
   // (E3, je nur erweitert) – geprüft wird die NEUESTE Fassung.
-  const entriesE2 = readMigration('_food_log_photo.sql').slice(
-    readMigration('_food_log_photo.sql').indexOf('alter table public.food_log_entries'),
+  // Seit E4a (*_food_log_product.sql) steht dort die neueste Fassung beider CHECKs (und der Favoriten-Herkunft).
+  const productSql = readMigration('_food_log_product.sql');
+  const entriesE2 = productSql.slice(
+    productSql.indexOf(
+      'alter table public.food_log_entries drop constraint food_log_entries_source_check',
+    ),
+  );
+  const favoritesE4 = productSql.slice(
+    productSql.indexOf(
+      'alter table public.food_log_favorites drop constraint food_log_favorites_source_check',
+    ),
   );
   const L = FOOD_LOG_LIMITS;
 
@@ -938,7 +960,7 @@ describe('Ernährungstagebuch in der Datenbank (Etappe E1)', () => {
     ['unit in (', entries, [...FOOD_LOG_UNITS]],
     ['title_de in (', entries, [...QUICK_ENTRY_LABELS]],
     ['title_de in (', entriesE2, [...QUICK_ENTRY_LABELS]],
-    ["source in ('food'", favorites, [...FOOD_LOG_FAVORITE_SOURCES]],
+    ["source in ('food'", favoritesE4, [...FOOD_LOG_FAVORITE_SOURCES]],
     ['unit in (', favorites, [...FOOD_LOG_UNITS]],
     ['title_de in (', favorites, [...QUICK_ENTRY_LABELS]],
   ] as const)('CHECK-Liste „%s“ entspricht packages/core', (marker, sql, expected) => {
@@ -967,7 +989,12 @@ describe('Ernährungstagebuch in der Datenbank (Etappe E1)', () => {
 
   it('Favoriten: Spalten = foodLogFavoriteSchema (+ user_id, created_at)', () => {
     for (const key of Object.keys(foodLogFavoriteSchema.shape)) {
-      expect(favorites).toContain(`  ${key} `);
+      // E4a: product_code/user_product_id kommen per „add column“ dazu.
+      expect(
+        favorites.includes(`  ${key} `) ||
+          productSql.includes(`alter table public.food_log_favorites add column ${key} `),
+        key,
+      ).toBe(true);
     }
   });
 
@@ -1048,8 +1075,20 @@ describe('Ernährungstagebuch in der Datenbank (Etappe E1)', () => {
     const body = newest('private.consents_after_revoke');
     const line = 'delete from public.food_log_entries where user_id = new.user_id;';
     expect(body.split(line)).toHaveLength(3);
-    // Wächter E1 G1: nur Schnell-Favoriten (Bezeichnung + kcal) gehen mit; Katalog-/Rezept-Favoriten bleiben.
-    expect(body.split('food_log_favorites')).toHaveLength(2);
+    // Wächter E1 G1: nur Schnell-Favoriten (Bezeichnung + kcal) gehen mit; Katalog-/Rezept-Favoriten bleiben. E4a
+    // (E4-G10): dazu Produkt-Favoriten – jede Lösch-Anweisung auf den Favoriten ist auf quick/product beschränkt.
+    const favDeletes = body.split('delete from public.food_log_favorites').length - 1;
+    expect(favDeletes).toBe(
+      body.split(
+        "delete from public.food_log_favorites where user_id = new.user_id and source = 'quick';",
+      ).length -
+        1 +
+        body.split(
+          "delete from public.food_log_favorites where user_id = new.user_id and source = 'product';",
+        ).length -
+        1,
+    );
+    expect(body.split('food_log_favorites')).toHaveLength(favDeletes + 1);
     expect(body).toContain(
       "delete from public.food_log_favorites where user_id = new.user_id and source = 'quick';",
     );
@@ -1065,10 +1104,10 @@ describe('Ernährungstagebuch in der Datenbank (Etappe E1)', () => {
     }
   });
 
-  it('export_my_data(): neueste Fassung in *_tracked_route_rpcs.sql (S1, davor E3, WP3 und E2)', () => {
+  it('export_my_data(): neueste Fassung in *_food_product_revoke_export.sql (E4a, davor S1, E3, WP3 und E2)', () => {
     const marker = 'create or replace function public.export_my_data()';
     expect(migrationFiles.filter((n) => readMigration(n).includes(marker)).at(-1)).toMatch(
-      /_tracked_route_rpcs\.sql$/,
+      /_food_product_revoke_export\.sql$/,
     );
   });
 });
@@ -2034,5 +2073,266 @@ describe('Strecken in der Datenbank (Phase 10 S1)', () => {
       "'tracked_routes', (select coalesce(jsonb_agg(to_jsonb(t) order by t.started_at, t.created_at), '[]'::jsonb) from public.tracked_routes t where t.user_id = current_user_id)",
     );
     expect(DATA_EXPORT_TABLES).toContain('tracked_routes');
+  });
+});
+
+describe('Produktabfrage und eigene Produkte in der Datenbank (Etappe E4a)', () => {
+  const products = readMigration('_food_products.sql');
+  const own = readMigration('_user_food_products.sql');
+  const logProduct = readMigration('_food_log_product.sql');
+  const revokeExport = readMigration('_food_product_revoke_export.sql');
+  const L = FOOD_PRODUCT_LOOKUP_LIMITS;
+  const C = FOOD_PRODUCT_CHECK;
+  const U = USER_FOOD_PRODUCT_LIMITS;
+  const body = (sql: string, name: string) => {
+    const start = sql.lastIndexOf(`create or replace function ${name}(`);
+    if (start < 0) throw new Error(`${name} nicht gefunden`);
+    return sql.slice(start, sql.indexOf('$$;', sql.indexOf('as $$', start)));
+  };
+  /** Jede Zeile der alten Fassung steht in derselben Reihenfolge in der neuen (nur eingefügte Zeilen). */
+  const missingLines = (older: string, newer: string, allowComma = false) => {
+    const next = newer.split('\n');
+    let at = 0;
+    const missing: string[] = [];
+    for (const line of older.split('\n')) {
+      let found = -1;
+      for (let i = at; i < next.length; i += 1) {
+        if (next[i] === line || (allowComma && next[i] === `${line},`)) {
+          found = i;
+          break;
+        }
+      }
+      if (found < 0) missing.push(line);
+      else at = found + 1;
+    }
+    return missing;
+  };
+  const table = (sql: string, name: string) =>
+    sql.slice(sql.indexOf(`create table ${name}`), sql.indexOf(`comment on table ${name}`));
+
+  it.each([
+    [products, 'per_hour constant integer := ', L.perHour],
+    [products, 'per_day constant integer := ', L.perDay],
+    [products, 'fresh_days constant integer := ', L.cacheFreshDays],
+    [products, 'negative_days constant integer := ', L.negativeCacheDays],
+    [products, 'delete_days constant integer := ', L.cacheDeleteDays],
+    [products, 'purge_batch constant integer := ', L.purgeBatch],
+    [products, 'counts_retention_days constant integer := ', L.countsRetentionDays],
+    [products, 'per_minute constant integer := ', L.globalPerMinute],
+    [products, 'backoff_minutes constant integer := ', OPEN_FOOD_FACTS.backoffMinutes],
+    [own, 'max_products constant integer := ', U.maxProducts],
+    [own, 'payload_max_bytes constant integer := ', U.maxPayloadBytes],
+  ] as const)('Grenze im SQL: „%#“ = packages/core', (sql, marker, value) => {
+    expect(sql).toContain(`${marker}${value};`);
+  });
+
+  it('food_products: CHECK-Grenzen = FOOD_PRODUCT_CHECK / FOOD_PRODUCT_LOOKUP_LIMITS', () => {
+    const t = table(products, 'public.food_products');
+    expect(t).toContain(`kcal integer check (kcal between 0 and ${C.kcalMax})`);
+    for (const col of [
+      'protein_g',
+      'carbs_g',
+      'fat_g',
+      'sugar_g',
+      'sat_fat_g',
+      'fiber_g',
+      'salt_g',
+    ]) {
+      expect(t).toContain(`${col} numeric check (${col} between 0 and ${C.macroMaxG} and`);
+    }
+    for (const col of ['serving_g', 'package_g']) {
+      expect(t).toContain(`${col} between ${C.amountG.min} and ${C.amountG.max}`);
+    }
+    expect(t).toContain(`char_length(name_de) between 1 and ${C.nameMaxChars}`);
+    expect(t).toContain(`char_length(brand_de) between 1 and ${C.brandMaxChars}`);
+    expect(t).toContain(`char_length(quantity_label) between 1 and ${C.quantityMaxChars}`);
+    expect(t).toContain(`octet_length(off_fields::text) <= ${L.offFieldsMaxBytes}`);
+    expect(t).toContain(`source_db = '${OPEN_FOOD_FACTS.sourceDb}'`);
+    expect(t).toContain(`source_license = '${OPEN_FOOD_FACTS.license}'`);
+    expect(t).toContain(`source_url = '${OPEN_FOOD_FACTS.homeUrl}'`);
+  });
+
+  it('food_products: CHECK-Listen = Stufen, Grund-Codes, Bezug (packages/core)', () => {
+    const t = table(products, 'public.food_products');
+    expect(quotedListAfter(t, 'check (check_level in (')).toEqual([...FOOD_PRODUCT_CHECK_LEVELS]);
+    expect(quotedListAfter(t, 'check_reasons <@ array[')).toEqual([...FOOD_PRODUCT_CHECK_REASONS]);
+    expect(quotedListAfter(t, 'check (base_unit in (')).toEqual([...FOOD_PRODUCT_BASE_UNITS]);
+    expect(quotedListAfter(own, 'check (base_unit in (')).toEqual([...FOOD_PRODUCT_BASE_UNITS]);
+  });
+
+  it('food_products: Spalten = FoodProductRecord (+ feste Quelle), KEINE user_id; nicht direkt lesbar', () => {
+    const t = table(products, 'public.food_products');
+    const columns = [...t.matchAll(/^ {2}([a-z_]+) [a-z]/gm)].map((m) => m[1]);
+    expect(columns).toEqual([
+      ...Object.keys(foodProductRecordSchema.shape).filter(
+        (k) => k !== 'off_last_modified' && k !== 'retrieved_at',
+      ),
+      'source_db',
+      'source_license',
+      'source_url',
+      'off_last_modified',
+      'retrieved_at',
+    ]);
+    expect(columns).not.toContain('user_id');
+    expect(products).toContain(
+      'revoke all on table public.food_products from public, anon, authenticated;',
+    );
+    expect(products).not.toMatch(/create policy [^;]* on public\.food_products/);
+  });
+
+  it('OFF-Daten getrennt vom BLS-Katalog: keine Migration verknüpft food_products mit foods/recipes', () => {
+    expect(allSql).not.toMatch(/references public\.food_products/);
+    expect(table(products, 'public.food_products')).not.toContain('references');
+    for (const name of migrationFiles.filter((n) => readMigration(n).includes('food_products'))) {
+      expect(readMigration(name)).not.toMatch(/insert into public\.(foods|recipes)\b/);
+    }
+  });
+
+  it('Nummer: barcode_ok = BARCODE_PATTERN + GS1-Prüfziffer', () => {
+    const fn = body(products, 'private.barcode_ok');
+    expect(fn).toContain("p_code ~ '^([0-9]{8}|[0-9]{13,14})$'");
+    expect(BARCODE_PATTERN.source).toBe('^(\\d{8}|\\d{13,14})$');
+    expect(fn).toContain('case when i % 2 = 1 then 3 else 1 end');
+  });
+
+  it('Sperr-Reihenfolge: Einwilligung FOR SHARE → prüfen → Advisory-Sperre → Zeilen (Wächter N7 S2)', () => {
+    for (const [fn, check] of [
+      [body(products, 'public.food_product_lookup'), 'has_valid_consent_for'],
+      [body(own, 'public.save_user_food_product'), "has_valid_consent('health_data')"],
+    ] as const) {
+      expect(fn.indexOf('for share')).toBeGreaterThan(0);
+      expect(fn.indexOf('for share')).toBeLessThan(fn.indexOf(check));
+      expect(fn.indexOf(check)).toBeLessThan(fn.indexOf('pg_advisory_xact_lock'));
+    }
+    const del = body(own, 'public.delete_user_food_product');
+    expect(del).not.toContain('has_valid_consent');
+    expect(del.indexOf('pg_advisory_xact_lock')).toBeLessThan(
+      del.indexOf('public.food_log_entries'),
+    );
+  });
+
+  it('Rechte: Abfrage/Speichern/Sperre nur service_role; eigene Produkte nur lesen', () => {
+    for (const sig of [
+      'public.food_product_lookup(uuid, text)',
+      'public.food_product_upsert(jsonb)',
+      'public.food_product_off_backoff()',
+    ]) {
+      expect(products).toContain(`revoke all on function ${sig} from public, anon, authenticated;`);
+      expect(products).toContain(`grant execute on function ${sig} to service_role;`);
+    }
+    expect(own).toContain('grant select on table public.user_food_products to authenticated;');
+    expect(own).not.toMatch(
+      /grant (insert|update|delete|all) on table public\.user_food_products to authenticated/,
+    );
+  });
+
+  it('save_user_food_product: Feldliste = userFoodProductPayloadSchema, null genau bei nullable-Feldern', () => {
+    const match = /product_fields constant jsonb := '([^']*)'/.exec(own);
+    if (!match) throw new Error('product_fields nicht gefunden');
+    const fields = JSON.parse(match[1] as string) as Record<string, string>;
+    const shape = userFoodProductPayloadSchema.shape as Record<
+      string,
+      { safeParse: (value: unknown) => { success: boolean } }
+    >;
+    expect(Object.keys(fields).sort()).toEqual(Object.keys(shape).sort());
+    for (const [key, types] of Object.entries(fields)) {
+      expect(types.split('|').includes('null'), key).toBe(shape[key]?.safeParse(null).success);
+    }
+  });
+
+  it('user_food_products: Grenzen und Zeichenregeln = USER_FOOD_PRODUCT_LIMITS / eigene Gerichte', () => {
+    const t = table(own, 'public.user_food_products');
+    expect(t).toContain(`char_length(name_de) between 1 and ${U.nameMaxChars}`);
+    expect(t).toContain(`char_length(brand_de) between 1 and ${U.brandMaxChars}`);
+    expect(t).toContain(
+      `kcal integer not null check (kcal between ${U.kcal.min} and ${U.kcal.max})`,
+    );
+    expect(t).toContain(`protein_g between ${U.per100G.min} and ${U.per100G.max}`);
+    expect(t).toContain(`serving_g between ${U.servingG.min} and ${U.servingG.max}`);
+    expect(t).toContain(
+      `<= case when base_unit = 'ml' then ${C.macroSumMaxG.ml} else ${C.macroSumMaxG.g} end`,
+    );
+    expect(t.split(`!~ '[${CUSTOM_MEAL_NAME_FORBIDDEN_CLASS}]'`)).toHaveLength(3);
+    expect(t.split(`!~ '^[${CUSTOM_MEAL_NAME_EDGE_SPACE_CLASS}]'`)).toHaveLength(3);
+    expect(t).toContain('user_id uuid not null references auth.users (id) on delete cascade');
+  });
+
+  it('Tagebuch: fester Titel ohne Nummer, Werte vom Server, product_unavailable, Titel ≤ 100 Zeichen', () => {
+    expect(logProduct).toContain(
+      `(product_code is not null or title_de = '${USER_PRODUCT_ENTRY_TITLE}')`,
+    );
+    const values = body(logProduct, 'private.food_log_product_values');
+    expect(values).toContain("jsonb_build_object('unavailable', true)");
+    expect(values).toContain('factor := v_amount / 100;');
+    expect(values).toContain(
+      `then r_name else r_name || ' · ' || r_brand end, ${FOOD_LOG_LIMITS.titleMaxChars}))`,
+    );
+    expect(values).toContain('private.js_round(r_kcal * factor)');
+    expect(values).not.toMatch(/\brecord;/);
+    const save = body(logProduct, 'public.save_food_log_entries');
+    expect(save).toContain(
+      "when err_message = 'Produkt nicht verfügbar.' then 'product_unavailable'",
+    );
+    expect(save).toContain(
+      'v_values := private.food_log_product_values(e, ex_row, v_user_product_id, current_user_id);',
+    );
+  });
+
+  it('save_food_log_entries (E4a): echte Obermenge der E3-Fassung', () => {
+    const e3 = body(readMigration('_food_log_photo.sql'), 'public.save_food_log_entries');
+    expect(missingLines(e3, body(logProduct, 'public.save_food_log_entries'))).toEqual([]);
+  });
+
+  it('Favoriten-Trigger (E4a): echte Obermenge der E1-Fassung, Produkt-Favoriten mit Einwilligung FOR SHARE', () => {
+    const e1 = body(readMigration('_food_log.sql'), 'private.food_log_favorites_before_write');
+    const e4 = body(logProduct, 'private.food_log_favorites_before_write');
+    expect(missingLines(e1, e4)).toEqual([]);
+    const product = e4.slice(
+      e4.indexOf("if new.source = 'product' then"),
+      e4.indexOf('return new;'),
+    );
+    expect(product.indexOf('for share')).toBeGreaterThan(0);
+    expect(product.indexOf('for share')).toBeLessThan(
+      product.indexOf("has_valid_consent('health_data')"),
+    );
+    expect(product).toContain(`'${USER_PRODUCT_ENTRY_TITLE}'`);
+    expect(product).toContain('new.kcal is null and new.protein_g is null');
+  });
+
+  it('beta_admin (E4a): echte Obermenge der E3-Fassung', () => {
+    const e3 = body(readMigration('_ai_food_photo.sql'), 'public.beta_admin');
+    expect(missingLines(e3, body(products, 'public.beta_admin'))).toEqual([]);
+  });
+
+  it('Widerruf (E4-G10): Obermenge der WP3-Fassung, eigene Produkte und Produkt-Favoriten am Anfang und am Ende', () => {
+    const wp3 = body(readMigration('_competition_rpcs.sql'), 'private.consents_after_revoke');
+    const e4 = body(revokeExport, 'private.consents_after_revoke');
+    expect(missingLines(wp3, e4)).toEqual([]);
+    expect(
+      e4.split('delete from public.user_food_products where user_id = new.user_id;'),
+    ).toHaveLength(3);
+    expect(
+      e4.split(
+        "delete from public.food_log_favorites where user_id = new.user_id and source = 'product';",
+      ),
+    ).toHaveLength(3);
+  });
+
+  it('export_my_data (E4a): Obermenge der S1-Fassung plus eigene Produkte und Zähler', () => {
+    const s1 = body(readMigration('_tracked_route_rpcs.sql'), 'public.export_my_data');
+    const e4 = body(revokeExport, 'public.export_my_data');
+    expect(missingLines(s1, e4, true)).toEqual([]);
+    expect(e4).toContain("'user_food_products', (select coalesce(");
+    expect(e4).toContain('from private.my_food_product_lookup_counts() t)');
+    expect(e4).not.toContain('public.food_products');
+    expect(DATA_EXPORT_TABLES).toContain('user_food_products');
+    expect(DATA_EXPORT_TABLES).toContain('food_product_lookup_counts');
+  });
+
+  it('Feature-Flag food_product_lookup startet AUS; pg_cron wie N7', () => {
+    expect(products).toContain(
+      "insert into private.feature_flags (key, enabled) values ('food_product_lookup', false)",
+    );
+    expect(products).toContain("'food-products-retention'");
   });
 });

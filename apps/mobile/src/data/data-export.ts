@@ -18,7 +18,11 @@ export function localDataExport(
   userId: string,
   exportedAt: string,
   /** Testmodus: Gericht per Foto (E3) – Metadaten wie ai_usage (liegen außerhalb von UserRows im Gerätespeicher). */
-  extra: { aiUsage?: readonly unknown[] } = {},
+  extra: {
+    aiUsage?: readonly unknown[];
+    /** Testmodus: Zähler der Produktabfrage (E4a) – Stunde und Anzahl, ohne Nummern. */
+    productLookups?: readonly { hour_start: string; lookups: number }[];
+  } = {},
 ): {
   format_version: number;
   exported_at: string;
@@ -178,6 +182,14 @@ export function localDataExport(
     admin_actions: [],
     // Strecken (Phase 10 S1): in der App erst mit der Aufzeichnung (nach S0, Development Build) – im Testmodus leer.
     tracked_routes: [],
+    // Etappe E4a: eigene Produkte (Spalten wie user_food_products) und die Zähler der Produktabfrage (Stunde, Anzahl –
+    // ohne Nummern, wie private.my_food_product_lookup_counts()). Der Zwischenspeicher gehört niemandem.
+    user_food_products: [...rows.userFoodProducts].sort(
+      (a, b) => a.created_at.localeCompare(b.created_at) || a.id.localeCompare(b.id),
+    ),
+    food_product_lookup_counts: [...(extra.productLookups ?? [])]
+      .map((c) => ({ hour_start: c.hour_start, lookups: c.lookups }))
+      .sort((a, b) => a.hour_start.localeCompare(b.hour_start)),
     // Übungs-Präferenzen (Etappe T2) – in export_my_data() erst mit Etappe T3 (PENDING_DB_EXPORT_TABLES).
     exercise_preferences: rows.exercisePreferences,
   };

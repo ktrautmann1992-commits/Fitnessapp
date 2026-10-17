@@ -6,6 +6,8 @@ import {
   foodLogEntrySchema,
   type FoodLogFavorite,
   foodLogFavoriteSchema,
+  type ProductForEntry,
+  serverProductEntry,
   upsertFavorite,
 } from '@fitnessapp/core';
 
@@ -46,9 +48,18 @@ export type FoodLogSaveCheck =
 
 export function checkFoodLogSave(
   rows: Pick<UserRows, 'consents' | 'profile' | 'foodLogEntries'> &
-    Partial<Pick<UserRows, 'customMeals'>>,
+    Partial<Pick<UserRows, 'customMeals' | 'userFoodProducts'>>,
   entries: readonly unknown[],
-  ctx: { today: string; versions: ConsentVersions },
+  ctx: {
+    today: string;
+    versions: ConsentVersions;
+    /**
+     * E4a: Zwischenspeicher der Produkte (Testmodus). Gesetzt → Produkt-Einträge werden wie save_food_log_entries
+     * nachgerechnet (`serverProductEntry`, fehlend/gesperrt → `product_unavailable`). Fehlt er (Vorab-Prüfung im
+     * Supabase-Modus), rechnet nur der Server.
+     */
+    products?: (code: string) => ProductForEntry | null;
+  },
 ): FoodLogSaveCheck {
   if (healthConsentStatus(rows as UserRows, ctx.versions) !== 'valid') {
     return { ok: false, reason: 'consent_required' };
@@ -73,7 +84,7 @@ export function checkFoodLogSave(
     // leer und der Eintrag mit seinen Werten gespeichert – wie save_food_log_entries seit der Wächter-Nachprüfung E2 S1:
     // neuer Eintrag = Werte des Geräts (Grenzen per Zod wie die CHECKs), Ändern = Schnappschuss (rebuildEntry). Die
     // Werte selbst rechnet im Testmodus immer packages/core aus dem Bestand.
-    const entry =
+    let entry =
       parsed.data.custom_meal_id !== null &&
       !(rows.customMeals ?? []).some((m) => m.id === parsed.data.custom_meal_id)
         ? { ...parsed.data, custom_meal_id: null }
@@ -99,6 +110,26 @@ export function checkFoodLogSave(
     if (otherPlanItem !== undefined) {
       outcomes.push({ kind: 'conflict', reason: 'plan_item_exists', id: otherPlanItem.id });
       continue;
+    }
+    // E4a: Produkt – Werte und Titel wie der Server aus dem Zwischenspeicher bzw. dem eigenen Produkt (Plan 3.5).
+    if (entry.source === 'product' && ctx.products !== undefined) {
+      const productCode = entry.product_code;
+      const userProductId = entry.user_product_id;
+      const server = serverProductEntry(entry, existing ?? null, {
+        product: productCode !== null ? ctx.products(productCode) : null,
+        userProduct:
+          userProductId !== null
+            ? ((rows.userFoodProducts ?? []).find((p) => p.id === userProductId) ?? null)
+            : null,
+      });
+      if (server.kind !== 'ok') {
+        outcomes.push({
+          kind: 'rejected',
+          code: server.kind === 'unavailable' ? 'product_unavailable' : 'invalid',
+        });
+        continue;
+      }
+      entry = server.entry;
     }
     const next = [...current.filter((row) => row.id !== entry.id), entry];
     if (
@@ -157,8 +188,18 @@ export function applyFavoriteChange(
   }
   const parsed = foodLogFavoriteSchema.safeParse(change.favorite);
   if (!parsed.success) return null;
-  // Schnell-Favoriten (Bezeichnung + kcal) nur mit gültiger Einwilligung (Wächter E1 G1, wie die RLS-Policy).
-  if (parsed.data.source === 'quick' && healthConsentStatus(rows, ctx.versions) !== 'valid') {
+  // Schnell-Favoriten (Bezeichnung + kcal) nur mit gültiger Einwilligung (Wächter E1 G1, wie die RLS-Policy); E4a:
+  // ebenso Produkt-Favoriten (E4-G10) – ein eigenes Produkt muss es geben.
+  if (
+    (parsed.data.source === 'quick' || parsed.data.source === 'product') &&
+    healthConsentStatus(rows, ctx.versions) !== 'valid'
+  ) {
+    return null;
+  }
+  if (
+    parsed.data.user_product_id !== null &&
+    !rows.userFoodProducts.some((p) => p.id === parsed.data.user_product_id)
+  ) {
     return null;
   }
   const before = rows.foodLogFavorites.find((f) => f.fav_key === parsed.data.fav_key);
@@ -181,6 +222,8 @@ export function entryFromRow(row: FoodLogEntryRow): FoodLogEntry {
     food_id: row.food_id,
     recipe_id: row.recipe_id,
     custom_meal_id: row.custom_meal_id,
+    product_code: row.product_code,
+    user_product_id: row.user_product_id,
     title_de: row.title_de,
     amount: row.amount,
     unit: row.unit,
