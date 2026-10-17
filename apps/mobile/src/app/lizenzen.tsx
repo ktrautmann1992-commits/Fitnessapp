@@ -7,7 +7,7 @@ import { t } from '@/i18n';
 /**
  * Einstellungen → „Lizenzen und Quellen“ (Etappe E4a, docs/PLAN-E4.md 6.1): Namensnennung der Nährwert-Quellen –
  * BLS 4.0 (Max Rubner-Institut, CC BY 4.0) und Open Food Facts (ODbL 1.0 / DbCL 1.0, Muster-Hinweis nach ODbL 4.3) –
- * und die Methode unserer Änderungen an OFF-Daten (ODbL 4.6 b). Gleicher Inhalt wie die Website (/lizenzen). Ohne
+ * und die Methode unserer Änderungen an OFF-Daten (ODbL 4.6 b); dazu Software von Dritten (Strichcode-Leser, E4b). Gleicher Inhalt wie die Website (/lizenzen). Ohne
  * Anmeldung erreichbar (keine Daten). Wortlaut vor dem Livegang juristisch prüfen.
  */
 export default function LicensesScreen() {
@@ -35,6 +35,10 @@ export default function LicensesScreen() {
       <Heading level={2}>{L.methodTitle}</Heading>
       <Card>
         <Body testID="licenses-method">{L.method}</Body>
+      </Card>
+      <Heading level={2}>{L.softwareTitle}</Heading>
+      <Card>
+        <Body testID="licenses-software">{L.software}</Body>
       </Card>
     </Screen>
   );

@@ -3,7 +3,8 @@
 **Status:** **Freigegeben (17.10.2026)** – Gründer-Entscheidung: E4-G1 bis E4-G13 alle „wie empfohlen“ (Abschnitt 10).
 Bau zuerst E4a (Nummer eintippen), danach E4b (Kamera, mit neuem EAS-Build).
 **E4a umgesetzt – Stand 17.10.2026** (Umsetzungsstand E4a am Ende von Abschnitt 8; Feature-Flag aus, Testmodus mit
-Attrappe). E4b (Kamera) folgt.
+Attrappe). **E4b umgesetzt – Stand 17.10.2026** (Umsetzungsstand E4b am Ende von Abschnitt 8; braucht einen neuen
+EAS-Build für die App).
 
 **Grundlage:** `CLAUDE.md`; `docs/PLAN-AUSWERTUNG.md` Abschnitt 10 (Skizze E4), 2.4, 2.7, 12, 13, 14 (A-G2, A-G9,
 A-G12, A-G14, A-G16) sowie die Umsetzungsstände E1, E2 (Server rechnet nach, fester Titel + Verweis, Widerruf) und E3
@@ -850,6 +851,88 @@ Urteil „Freigabe mit Auflagen“. Stand nach dem Merge von `main` (WP4 #89, co
   - Gegenproben: Löschung von `weight_goals` bzw. `user_food_products` aus der Vereinigung entfernt → pgTAP und
     db-sync rot.
 
+### Umsetzungsstand E4b (17.10.2026)
+
+**Umgesetzt** (Branch `claude/e4b-kamera`): Knopf **„Mit der Kamera scannen“** auf „Produkt (Barcode)“, nur wenn das
+Gerät es kann. Der erkannte Code steht danach im Nummernfeld und läuft durch **dieselbe Prüfung und denselben Ablauf**
+wie beim Eintippen (Prüfziffer, Ladencodes ohne Abfrage, eigene Produkte zuerst, Server-Abfrage, Produktansicht).
+Kamerabilder bleiben im Arbeitsspeicher, werden nie gespeichert, gesendet oder geloggt.
+
+- **Core** (`nutrition/barcode.ts`): `scannedBarcodeFormat` (Namen aus `BarcodeDetector` und `expo-camera`),
+  `expandUpcE` (UPC-E → UPC-A nach GS1, Prüfziffer muss passen, Nummernsystem 0/1), `scannedBarcodeDigits` (Länge muss
+  zum Format passen; UPC-A auch als 13 Ziffern mit führender 0; `ean13` auch mit 12 Ziffern, weil expo-camera auf iOS UPC-A als `ean13` meldet und die führende 0 abschneidet) und `normalizeScannedBarcode`
+  (= `normalizeBarcode` danach). QR-/Code-128-Codes werden ignoriert. Tests `barcode.test.ts` (40, inkl.
+  Eigenschaftstest „Scan = Eintippen“ mit 2.000 Nummern).
+- **Browser** (`components/barcode-scanner.tsx`, Logik in `lib/barcode-scan.ts`): Knopf, wenn HTTPS + `getUserMedia`
+  und ein Leser da sind. Eingebauter `BarcodeDetector` nur, wenn `getSupportedFormats()` `ean_13` enthält (Chrome
+  Android), sonst **ZXing-Polyfill** `barcode-detector` 3.2.2 / `zxing-wasm` 3.1.3 – damit geht es auch in **Chrome
+  und Safari auf dem iPhone** (beide WebKit). Der Polyfill ist ein eigenes Bündel (`ponyfill-….js`, 44 KB) und wird
+  erst beim Knopfdruck nachgeladen; die WebAssembly-Datei (~1 MB) kommt von **unserer Domain**
+  (`/scanner/<Version>/zxing_reader.wasm`, beim Bauen von `scripts/copy-scanner-wasm.mjs` aus `node_modules` kopiert,
+  SHA-256 gegen die Angabe im Paket geprüft) – **nie vom voreingestellten CDN jsDelivr**. Ausgaben des Lesers gehen
+  nicht in die Konsole. Rückkamera, kein Ton, Leseversuch alle 200 ms, erster gültiger Code (bzw. Ladencode) beendet
+  die Kamera sofort; Abbrechen und Verlassen des Bildschirms beenden sie auch.
+- **App** (`components/barcode-scanner.native.tsx`): `expo-camera` ~57.0.6 (passend zu SDK 57), `CameraView` mit
+  `barcodeTypes` `ean13`, `ean8`, `upc_a`, `upc_e`. Fehlt das native Modul (alter Build), liefert
+  `requireOptionalNativeModule('ExpoCamera')` null → kein Knopf, kein Absturz; `expo-camera` wird erst dann geladen.
+  `app.config.ts`: Plugin `expo-camera` mit deutschem Text (Wortlaut 5.2), `microphonePermission: false`,
+  `recordAudioAndroid: false`. Android-Berechtigungen jetzt INTERNET, VIBRATE, **CAMERA** (geprüft in
+  `native-config.test.ts` gegen `expo config --type introspect`: Info.plist nur `NSCameraUsageDescription`, kein
+  Mikrofon, kein RECORD_AUDIO). expo-camera bringt kein eigenes Datenschutz-Manifest mit; Kamera ist keine „Required
+  Reason API“.
+- **Verweigert:** „Ohne Kamera-Erlaubnis kannst du die Nummer eintippen.“ + Weg zur Einstellung (Browser: Chrome
+  Android/iPhone-Einstellungen; App: Knopf „Einstellungen öffnen“). Keine Kamera/belegt/Leser lädt nicht → „Die Kamera
+  ließ sich nicht starten … tipp die Nummer ein“. Texte in `i18n/de-food-product.ts` (`scan`).
+- **Tests:** Core 4.845 (neu 40), App 788 (neu 19 in `lib/barcode-scan.test.ts`, `native-config.test.ts` angepasst
+  und +1), Playwright `food-product-scan.spec.ts` (6 Tests, 5× wiederholt stabil): ohne Kamera kein Knopf; eingebauter
+  Leser als Ersatz-Objekt (Fehllesung übersprungen, Formate, Kamera danach aus, ZXing nicht geladen); **echter
+  ZXing-Scan** eines auf eine Zeichenfläche gezeichneten EAN-13 (Leser erst nach dem Knopfdruck, von 127.0.0.1, keine
+  fremde Adresse) → Produktansicht → eintragen; verweigert → Hinweis → Nummer eintippen; keine Kamera; Abbrechen
+  beendet die Kamera.
+
+**Nicht mit eingebaut – E3-G1:** `expo-image-picker`/`expo-image-manipulator` sind noch nicht im Projekt (Foto in der
+App zeigt weiter den Hinweis). Sie bringen weitere Berechtigungen (Fotos) und eigenen Code; der Plan empfahl, sie mit
+demselben Build zu bringen. Wenn E3-G1 vor dem nächsten EAS-Build fertig wird, beide zusammen bauen, sonst zwei Builds.
+
+**Neuer EAS-Build nötig** (Android-APK und iOS/TestFlight, HANDY-ANLEITUNG Teil 7l). Die Web-Vorschau braucht nichts.
+
+**Nachtrag Wächter-Prüfung E4b (17.10.2026)** – Urteil „bedingt freigabefähig“, Auflagen:
+
+- **H1 umgesetzt:** expo-camera auf iOS meldet UPC-A als `ean13` und schneidet bei jedem EAN-13 die führende 0 ab
+  (`BarcodeScannerUtils.swift`) – es kommen 12 Ziffern. `scannedBarcodeDigits` nimmt bei `ean13` jetzt auch 12
+  Ziffern an; `normalizeBarcode` prüft die Prüfziffer und ergänzt die 0. Test „expo-camera iOS: ean13 mit 12 Ziffern“.
+- **M1 umgesetzt:** Browser-Kamera endet sofort, wenn die Seite in den Hintergrund geht (`visibilitychange`) oder das
+  System die Kamera beendet (`ended` am Track) → zurück zur Nummer mit Hinweis „Die Kamera wurde beendet …“. Zwei
+  Playwright-Tests.
+- **M2 teils umgesetzt, Rest PFLICHT-VORMERKUNG:** expo-camera zieht auf Android **`com.google.mlkit:barcode-scanning`
+  (gebündelt, Erkennung auf dem Gerät) UND `play-services-code-scanner`** und setzt im Manifest
+  `com.google.mlkit.vision.DEPENDENCIES = barcode_ui` (Download der Google-Scan-Oberfläche über die Play-Dienste bei der
+  Installation). Umgesetzt: Dieser Eintrag wird per Config-Plugin in `app.config.ts` mit `tools:node="remove"`
+  entfernt (die App nutzt die Google-Oberfläche `launchScanner` nie; geprüft in `native-config.test.ts`). **Nicht
+  sicher machbar:** `play-services-code-scanner` per Gradle ausschließen (expo-camera braucht die Klassen beim
+  Kompilieren) und die Nutzungs-/Diagnosedaten von ML Kit abschalten (keine dokumentierte Option in expo-camera).
+  **Vor dem Livegang verbindlich klären** (Gründer + Rechtsprüfung, KONZEPT 14, SETUP M5): Welche Daten gehen dabei an
+  Google, Datenschutzerklärung und Play-Store-Datensicherheit anpassen. Nach dem ersten Build mit Gerät prüfen, dass
+  das Scannen ohne den Eintrag funktioniert (Bündel-Modell braucht keinen Download).
+- **N1 umgesetzt:** Seite „Lizenzen und Quellen“ (App und Website) um „Software von Dritten“: zxing-cpp (Apache 2.0),
+  zxing-wasm (MIT, C++-Anbindung Apache 2.0), barcode-detector (MIT), expo-camera (MIT). Ob der Apache-Lizenztext
+  mitgeliefert werden muss, prüft die Rechtsprüfung.
+- **N2 Doku:** Der Workflow `eas-build` startet den Build ohne zu warten (`--no-wait`), eine Prüfung der APK im Workflow
+  wäre aufwendig. Stattdessen nach dem ersten APK-Build einmal die Berechtigungen prüfen (`aapt dump permissions
+<apk>` bzw. Android → Einstellungen → Apps → Alpha5 → Berechtigungen): erwartet nur Kamera (+ Internet, Vibration),
+  kein Mikrofon, keine Fotos/Speicher.
+- **N3 umgesetzt:** ZXing wird einmal je Seite vorbereitet (`loadZxing`, gemerktes Versprechen), bei einem Fehler beim
+  nächsten Versuch neu.
+- **N4 umgesetzt:** Im Testmodus zeigt „Produkt (Barcode)“ → **„Strichcodes der Testnummern anzeigen“** alle Testnummern
+  als Strichcode (Core `ean13BarPattern`, gezeichnet mit react-native-svg, schwarz auf weiß) – auf einem zweiten Handy
+  öffnen und scannen (HANDY-ANLEITUNG 7l).
+- **N5 umgesetzt:** HANDY-ANLEITUNG: Chrome auf dem iPhone – Seite neu laden und erneut erlauben.
+
+**Weitere Vormerkungen:** App-Store-Datenschutzangaben prüfen (Kamera nur auf dem Gerät, keine Bilder erhoben); auf
+echten Geräten testen (iPhone Chrome/Safari, Android Chrome, APK, TestFlight), besonders bei wenig Licht und kleinen
+EAN-8-Codes; beim Aktualisieren von `barcode-detector` die Version von `zxing-wasm` in `apps/mobile/package.json`
+angleichen (sonst bricht der Build mit Hinweis ab).
+
 ---
 
 ## 9. Aufwand und Etappen
@@ -857,7 +940,7 @@ Urteil „Freigabe mit Auflagen“. Stand nach dem Merge von `main` (WP4 #89, co
 | Etappe  | Inhalt                                                                                                                                                                                        | Neuer App-Build? | Grobe Größe                                                  |
 | ------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ---------------- | ------------------------------------------------------------ |
 | **E4a** | Nummer eintippen, Route, `food_products`, Limits, Prüfung im Core, eigene Produkte, Tagebuch `product`, Favoriten/Zuletzt, Widerruf/Export, Seite „Lizenzen und Quellen“, Datenschutz-Entwurf | nein             | etwa wie E2 + E3-Route (größte Teile: SQL-Obermengen, Tests) |
-| **E4b** | Kamera im Browser (`BarcodeDetector` + ggf. ZXing-Polyfill), `expo-camera` in der App, Berechtigungstexte                                                                                     | **ja (EAS)**     | klein bis mittel; Build am besten zusammen mit E3-G1         |
+| **E4b** | Kamera im Browser (`BarcodeDetector` + ggf. ZXing-Polyfill), `expo-camera` in der App, Berechtigungstexte (umgesetzt 17.10.2026)                                                              | **ja (EAS)**     | klein bis mittel; Build am besten zusammen mit E3-G1         |
 
 Reihenfolge: E4a → Wächter-Prüfung → E4b. E4a ist allein voll nutzbar (Nummer eintippen dauert ~5 Sekunden). Die
 Rechtsprüfung (6.2) kann parallel laufen. Bis dahin bleibt das Feature-Flag in Produktion aus.

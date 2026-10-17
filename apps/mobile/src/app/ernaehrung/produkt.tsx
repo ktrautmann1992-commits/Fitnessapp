@@ -21,7 +21,14 @@ import { Redirect, useLocalSearchParams, useRouter, type Href } from 'expo-route
 import { useCallback, useEffect, useRef, useState, type ReactNode } from 'react';
 import { View } from 'react-native';
 
+import {
+  barcodeScanSupported,
+  BarcodeScanner,
+  CAMERA_SETTINGS_HELP,
+  openCameraSettings,
+} from '@/components/barcode-scanner';
 import { ProductCard, UserFoodProductForm } from '@/components/food-product';
+import { TestBarcode } from '@/components/test-barcode';
 import { NutritionGate, nutritionReady } from '@/components/nutrition';
 import { ConfirmDialog, Screen } from '@/components/screen';
 import {
@@ -38,6 +45,7 @@ import { BackendError } from '@/data/backend';
 import { newId } from '@/data/create-backend';
 import { userFoodProductFromRow } from '@/data/user-food-product-rows';
 import { t } from '@/i18n';
+import type { BarcodeScanResult } from '@/lib/barcode-scan';
 import { errorText } from '@/lib/error-text';
 import {
   buildErrorText,
@@ -59,6 +67,7 @@ type Message = { text: string; tone: 'success' | 'danger' | 'warning' | 'info' }
 
 type Phase =
   | { kind: 'idle' }
+  | { kind: 'scanning' }
   | { kind: 'searching' }
   | { kind: 'result'; response: ProductLookupResponse }
   | { kind: 'own'; id: string }
@@ -70,7 +79,9 @@ type Phase =
  * bei Open Food Facts) → Produktansicht → Menge → „Eintragen“ (Herkunft `product`; Werte rechnet der Server nach).
  * Unbekannt/unbrauchbar → eigenes Produkt anlegen (nur für die Person). Zustände: Laden, nicht gefunden, unbrauchbar,
  * „Werte prüfen“ (Haken Pflicht), Laden-/Waagencode, offline, Limit, nicht erreichbar, nicht eingerichtet, keine
- * Einwilligung. Die Nummer steht nie in der Adresse (Übergabe im Arbeitsspeicher, `product-handoff.ts`). Bei
+ * Einwilligung. Kamera (Etappe E4b, Plan 5): Knopf „Mit der Kamera scannen“ nur, wenn das Gerät es kann; der erkannte
+ * Code landet im Nummernfeld und läuft durch dieselbe Prüfung und denselben Ablauf; Kamera verweigert → Hinweis und
+ * Nummer eintippen. Kamerabilder werden nie gespeichert oder gesendet. Die Nummer steht nie in der Adresse (Übergabe im Arbeitsspeicher, `product-handoff.ts`). Bei
  * „Kalorienzahlen aus“ keine Zahlen. testIDs ohne Nummer, Name oder Marke.
  */
 export default function FoodProductScreen() {
@@ -105,12 +116,18 @@ export default function FoodProductScreen() {
   const [pending, setPending] = useState<FoodLogEntry | null>(null);
   const [lastSaved, setLastSaved] = useState<FoodLogEntry | null>(null);
   const [busy, setBusy] = useState(false);
+  const [canScan] = useState(barcodeScanSupported);
+  const [showTestBarcodes, setShowTestBarcodes] = useState(false);
+  const [scanProblem, setScanProblem] = useState<'denied' | 'unavailable' | 'interrupted' | null>(
+    null,
+  );
   const { backend } = app;
   const userProducts = app.rows?.userFoodProducts ?? [];
 
   const lookup = useCallback(
     async (raw: string, options: { skipOwn: boolean }) => {
       setMessage(null);
+      setScanProblem(null);
       setLastSaved(null);
       setReviewConfirmed(false);
       const checked = normalizeBarcode(raw);
@@ -155,6 +172,21 @@ export default function FoodProductScreen() {
       }
     },
     [app.rows?.userFoodProducts, backend, online],
+  );
+
+  // Kamera fertig: Code ins Nummernfeld und derselbe Ablauf wie beim Eintippen (Prüfung, eigene Produkte zuerst …).
+  const onScanResult = useCallback(
+    (result: BarcodeScanResult) => {
+      if (result.kind === 'code') {
+        setScanProblem(null);
+        setCode(result.digits);
+        void lookup(result.digits, { skipOwn: false });
+        return;
+      }
+      setScanProblem(result.kind);
+      setPhase({ kind: 'idle' });
+    },
+    [lookup],
   );
 
   // Favorit/„Produkt neu abrufen“: sofort abfragen (Nummer aus dem Arbeitsspeicher, nie aus der Adresse).
@@ -359,6 +391,39 @@ export default function FoodProductScreen() {
         onSubmitEditing={() => void lookup(code, { skipOwn: false })}
         testID="food-product-code"
       />
+      {canScan ? (
+        <Button
+          label={t.foodProduct.scan.button}
+          variant="secondary"
+          disabled={busy || phase.kind === 'searching'}
+          onPress={() => {
+            setMessage(null);
+            setScanProblem(null);
+            setPhase({ kind: 'scanning' });
+          }}
+          testID="food-product-scan"
+        />
+      ) : null}
+      {scanProblem !== null ? (
+        <Notice tone="info" testID={`food-product-scan-${scanProblem}`}>
+          {scanProblem === 'denied' ? (
+            <>
+              <Body>{t.foodProduct.scan.denied}</Body>
+              <Body muted>{CAMERA_SETTINGS_HELP}</Body>
+              {openCameraSettings !== null ? (
+                <Button
+                  label={t.foodProduct.scan.openSettings}
+                  variant="link"
+                  onPress={openCameraSettings}
+                  testID="food-product-scan-settings"
+                />
+              ) : null}
+            </>
+          ) : (
+            <Body>{t.foodProduct.scan[scanProblem]}</Body>
+          )}
+        </Notice>
+      ) : null}
       <Button
         label={t.foodProduct.search}
         loading={phase.kind === 'searching'}
@@ -378,10 +443,48 @@ export default function FoodProductScreen() {
               testID={`food-product-testcode-${c.key}`}
             />
           ))}
+          <Button
+            label={
+              showTestBarcodes ? t.foodProduct.testBarcodesHide : t.foodProduct.testBarcodesShow
+            }
+            variant="secondary"
+            expanded={showTestBarcodes}
+            onPress={() => setShowTestBarcodes((v) => !v)}
+            testID="food-product-testbarcodes-toggle"
+          />
+          {showTestBarcodes ? (
+            <View style={{ gap: 12 }} testID="food-product-testbarcodes">
+              <Body muted>{t.foodProduct.testBarcodesHint}</Body>
+              {MOCK_PRODUCT_CASES.map((c) => (
+                <View key={c.key} style={{ gap: 2 }}>
+                  <Body>{`${c.label}: ${c.code}`}</Body>
+                  <TestBarcode
+                    code={c.code}
+                    label={`${t.foodProduct.testBarcodeLabel} ${c.label}`}
+                  />
+                </View>
+              ))}
+            </View>
+          ) : null}
         </View>
       ) : null}
     </Card>
   );
+
+  // --- Kamera ------------------------------------------------------------------------------------------------
+  if (phase.kind === 'scanning') {
+    return shell(
+      <>
+        <BarcodeScanner onResult={onScanResult} />
+        <Button
+          label={t.foodProduct.scan.cancel}
+          variant="secondary"
+          onPress={() => setPhase({ kind: 'idle' })}
+          testID="food-product-scan-cancel"
+        />
+      </>,
+    );
+  }
 
   // --- Eigenes Produkt anlegen/ändern -------------------------------------------------------------------
   if (phase.kind === 'create') {

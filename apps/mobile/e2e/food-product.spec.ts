@@ -224,4 +224,6 @@ test('Kalorienzahlen aus: keine kcal im DOM, kein eigenes Produkt; Lizenzen und 
   await expect(page.getByTestId('licenses-off')).toContainText('Open Database License (ODbL 1.0');
   await expect(page.getByTestId('licenses-off')).toContainText('DbCL 1.0');
   await expect(page.getByTestId('licenses-bls')).toContainText('Bundeslebensmittelschlüssel');
+  await expect(page.getByTestId('licenses-software')).toContainText('zxing-cpp');
+  await expect(page.getByTestId('licenses-software')).toContainText('Apache 2.0');
 });

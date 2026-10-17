@@ -48,3 +48,7 @@ apps/mobile/src/generated/
 
 # PDF-Vorschau (CI-Artefakt, pnpm --filter @fitnessapp/mobile pdf:preview)
 pdf-vorschau/
+
+# Strichcode-Leser (ZXing-WebAssembly) für den Web-Export: beim Bauen aus node_modules kopiert
+# (apps/mobile/scripts/copy-scanner-wasm.mjs)
+apps/mobile/public/scanner/

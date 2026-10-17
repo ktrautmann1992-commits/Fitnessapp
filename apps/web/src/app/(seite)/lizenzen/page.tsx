@@ -11,7 +11,7 @@ export const metadata: Metadata = { title: 'Lizenzen und Quellen' };
  * Lizenzen und Quellen (Etappe E4a, docs/PLAN-E4.md 6.1): Namensnennung der Nährwert-Quellen – BLS (Max Rubner-
  * Institut, CC BY 4.0) und Open Food Facts (ODbL 1.0 / DbCL 1.0, Muster-Hinweis nach ODbL 4.3) – und die Methode
  * unserer Änderungen an OFF-Daten (ODbL 4.6 b). Gleicher Inhalt wie in der App (Einstellungen → „Lizenzen und
- * Quellen“). Wortlaut vor dem Livegang juristisch prüfen (Plan 6.2).
+ * Quellen“), dazu Software von Dritten (Strichcode-Leser, E4b). Wortlaut vor dem Livegang juristisch prüfen (Plan 6.2).
  */
 export default function Lizenzen() {
   return (
@@ -44,6 +44,17 @@ export default function Lizenzen() {
       <p>
         Produktbilder von Open Food Facts zeigen wir nicht. Angaben von Open Food Facts sind ohne
         Gewähr – bitte mit der Packung vergleichen.
+      </p>
+
+      <h2>Software von Dritten (Strichcode-Leser)</h2>
+      <p>
+        Strichcode lesen im Browser: zxing-cpp (
+        <a href="https://github.com/zxing-cpp/zxing-cpp">github.com/zxing-cpp/zxing-cpp</a>), Lizenz
+        Apache 2.0 (
+        <a href="https://www.apache.org/licenses/LICENSE-2.0">apache.org/licenses/LICENSE-2.0</a>);
+        zxing-wasm (Lizenz MIT, C++-Anbindung Apache 2.0) und barcode-detector (Lizenz MIT), beide
+        von Ze-Zheng Wu. In der App: expo-camera (Expo), Lizenz MIT. Die Kamerabilder werden nur auf
+        deinem Gerät ausgewertet.
       </p>
 
       <h2>Datenschutz</h2>

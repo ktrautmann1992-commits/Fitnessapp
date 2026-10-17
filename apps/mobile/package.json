@@ -5,8 +5,8 @@
   "main": "expo-router/entry",
   "scripts": {
     "content:bundle": "node ../../scripts/bundle-content.mjs src/generated/content-files.ts --empty-if-supabase",
-    "dev": "node ../../scripts/bundle-content.mjs src/generated/content-files.ts --empty-if-supabase && expo start",
-    "build": "node ../../scripts/bundle-content.mjs src/generated/content-files.ts --empty-if-supabase && expo export --platform web",
+    "dev": "node ../../scripts/bundle-content.mjs src/generated/content-files.ts --empty-if-supabase && node scripts/copy-scanner-wasm.mjs && expo start",
+    "build": "node ../../scripts/bundle-content.mjs src/generated/content-files.ts --empty-if-supabase && node scripts/copy-scanner-wasm.mjs && expo export --platform web",
     "lint": "eslint .",
     "typecheck": "node ../../scripts/bundle-content.mjs src/generated/content-files.ts --empty-if-supabase && tsc --noEmit",
     "test": "node ../../scripts/bundle-content.mjs src/generated/content-files.ts --empty-if-supabase && vitest run --passWithNoTests",
@@ -21,7 +21,9 @@
     "@fitnessapp/db": "workspace:*",
     "@fitnessapp/ui": "workspace:*",
     "@react-native-async-storage/async-storage": "2.2.0",
+    "barcode-detector": "3.2.2",
     "expo": "~57.0.26",
+    "expo-camera": "~57.0.6",
     "expo-constants": "~57.0.20",
     "expo-crypto": "~57.0.3",
     "expo-file-system": "~57.0.7",
@@ -46,7 +48,8 @@
     "react-native-url-polyfill": "^4.0.0",
     "react-native-web": "~0.21.0",
     "react-native-worklets": "0.10.1",
-    "zod": "^4.6.5"
+    "zod": "^4.6.5",
+    "zxing-wasm": "3.1.3"
   },
   "devDependencies": {
     "@playwright/test": "1.63.0",
