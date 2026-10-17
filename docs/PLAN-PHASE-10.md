@@ -563,7 +563,7 @@ Alle Änderungen danach zurückgesetzt (Vergleich mit einer Sicherungskopie des 
 
 **Gründer-Fragen (sichere Voreinstellung gilt, bis ihr anders entscheidet):**
 
-- **G8 – OFFEN, VOR WP4 ZU ENTSCHEIDEN (bevor die App die Ampel zeigt; Wächter M4) – Langer Lauf „Ankommen“:** Voreinstellung 40/50/70/120 min (5 km/10 km/Halbmarathon/Marathon) = höchstens 50 %
+- **G8 – Voreinstellung gilt (17.10.2026: Gründer-Auftrag „alle Etappen bauen“ ohne Gegenentscheidung; jederzeit änderbar, Fachprüfung offen) – Langer Lauf „Ankommen“:** Voreinstellung 40/50/70/120 min (5 km/10 km/Halbmarathon/Marathon) = höchstens 50 %
   des Spitzenumfangs (G2 + G3). Plan 3.2 nennt Halbmarathon 90–120 und Marathon 150–180 min. Alternative A: Plateau
   beim Doppelten des langen Laufs (Halbmarathon 180, Marathon 300 min/Woche – Einsteiger bräuchten dann deutlich mehr
   als 16 bzw. 24 Wochen, Tabelle 3.2 anpassen). Alternative B: langer Lauf bis 60 % der Woche. Fachprüfung.
