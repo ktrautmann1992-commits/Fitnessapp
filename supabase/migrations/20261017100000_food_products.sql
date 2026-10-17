@@ -370,11 +370,13 @@ begin
   begin
     perform private.assert_log_fields(p, fields);
     -- Wächter N4: auf die volle Stunde abgerundet (kein genauer Abfrage-Zeitpunkt im gemeinsamen Speicher).
-    v_retrieved := date_trunc('hour', (p ->> 'retrieved_at')::timestamptz);
+    -- Grenzen am genauen Wert prüfen, erst danach abrunden (sonst rutscht „Zukunft“ kurz vor der vollen Stunde durch).
+    v_retrieved := (p ->> 'retrieved_at')::timestamptz;
     if v_retrieved > now() + interval '5 minutes' or v_retrieved < now() - interval '90 days'
        or (jsonb_typeof(p -> 'kcal') = 'number' and (p ->> 'kcal')::numeric <> trunc((p ->> 'kcal')::numeric)) then
       raise exception 'Ungültiger Speicher-Eintrag.' using errcode = 'invalid_parameter_value';
     end if;
+    v_retrieved := date_trunc('hour', v_retrieved);
     insert into public.food_products as fp (
       code, found, off_fields, name_de, brand_de, quantity_label, base_unit, kcal, protein_g, carbs_g, fat_g,
       sugar_g, sat_fat_g, fiber_g, salt_g, serving_g, package_g, check_level, check_reasons, normalizer_version,

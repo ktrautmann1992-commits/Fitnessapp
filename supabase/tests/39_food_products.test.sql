@@ -4,7 +4,7 @@
 -- Speicher 30 Tage frisch, 90 Tage bis zum Löschen, „nicht gefunden“ 1 Tag; CHECKs; Export der eigenen Zähler.
 begin;
 create extension if not exists pgtap with schema extensions;
-select plan(66);
+select plan(67);
 
 insert into auth.users (id, email) values
   ('11111111-1111-4111-8111-111111111111', 'nutzer-a@example.test'),
@@ -276,6 +276,9 @@ select throws_ok($$ select public.food_product_upsert(pg_temp.rec('4006381333931
   '23514', 'Ungültiger Speicher-Eintrag.', 'unbekannter Grund-Code abgelehnt');
 select throws_ok($$ select public.food_product_upsert(pg_temp.rec('4006381333931', true, now() + interval '1 hour')) $$,
   '23514', 'Ungültiger Speicher-Eintrag.', 'Abrufzeit in der Zukunft abgelehnt');
+-- Unabhängig von der Uhrzeit: geprüft wird der genaue Wert vor dem Abrunden auf die Stunde.
+select throws_ok($$ select public.food_product_upsert(pg_temp.rec('4006381333931', true, now() + interval '6 minutes')) $$,
+  '23514', 'Ungültiger Speicher-Eintrag.', 'Abrufzeit 6 Minuten in der Zukunft abgelehnt (vor dem Abrunden geprüft)');
 select throws_ok($$ select public.food_product_upsert(pg_temp.rec('4006381333931')
                      || jsonb_build_object('off_fields', jsonb_build_object('x', repeat('y', 17000)))) $$,
   '23514', 'Ungültiger Speicher-Eintrag.', 'OFF-Felder über 16 KB abgelehnt');
