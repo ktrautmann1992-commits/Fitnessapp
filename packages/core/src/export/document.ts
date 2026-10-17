@@ -49,9 +49,14 @@ export interface PrintTextParams extends NutritionPrintTextParams {
   /** Fußzeile jeder Seite (neutral, für alle gleich). */
   'doc.footer': Record<string, never>;
   'cover.heading': Record<string, never>;
-  /** Planname ohne Level (B1), z. B. „Muskelaufbau · 3 Tage“. goal null = Angaben nicht lesbar. */
+  /**
+   * Planname ohne Level (B1), z. B. „Muskelaufbau · 3 Tage“ bzw. mit Nebenziel „Abnehmen + Muskelaufbau · 3 Tage“
+   * (docs/PLAN-ZIELE.md 4.6, Etappe Z5). goal null = Angaben nicht lesbar. Nie Wunschgewicht oder Tempo (B1).
+   */
   'plan.name': {
     goal: GoalType | null;
+    /** Nebenziel; null = keins. */
+    secondary: GoalType | null;
     discipline: EnduranceDiscipline | null;
     strengthDays: number;
     enduranceDays: number;
@@ -270,6 +275,7 @@ const PARAM_SCHEMAS = {
   'cover.heading': empty,
   'plan.name': z.strictObject({
     goal: z.enum(GOAL_TYPES).nullable(),
+    secondary: z.enum(GOAL_TYPES).nullable(),
     discipline: z.enum(ENDURANCE_DISCIPLINES).nullable(),
     strengthDays: count,
     enduranceDays: count,

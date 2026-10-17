@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 
-import { PLAN_NOTES, SCHEDULE_HINTS } from '@fitnessapp/core';
+import { PLAN_NOTES, SCHEDULE_HINTS, WEIGHT_GOAL_NOTICE_CODES } from '@fitnessapp/core';
 
 import { t } from '@/i18n';
 
@@ -18,5 +18,12 @@ describe('Texte für Hinweis-Codes', () => {
   it.each(PLAN_NOTES)('Plan-Hinweis: %s', (code) => {
     const text = (t.plan.notes as Record<string, string | undefined>)[code];
     expect(typeof text).toBe('string');
+  });
+
+  // Etappe Z5: Hinweise zum Abnehmziel in der Ernährungs-Übersicht – neutral, ohne Zahlen und ohne Prognose (F7).
+  it.each(WEIGHT_GOAL_NOTICE_CODES)('Abnehmziel: %s', (code) => {
+    const text = (t.weightGoalLife.nutrition as Record<string, string | undefined>)[code];
+    expect(typeof text).toBe('string');
+    expect(text).not.toMatch(/\d|garantiert|wirst|erreichbar am/);
   });
 });

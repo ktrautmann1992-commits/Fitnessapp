@@ -581,6 +581,46 @@ App Einstellungen → **„Testdaten löschen“**).
 
 Falls etwas nicht so aussieht: Screenshot machen und Claude im Chat schicken.
 
+## Teil 7z3 – „Dein Abnehm-Ziel“ in den Einstellungen testen (Ziele, Etappe Z5, Testmodus)
+Ihr müsst nichts einstellen – diese Etappe hat **keine** Datenbank-Änderung. Getestet mit **Chrome am iPhone**
+(Vorschau-Link aus dem Pull Request), am besten in einem **Inkognito-Tab**: Chrome → unten rechts **⋯** → **Neuer
+Inkognito-Tab**.
+
+1. Vorschau-Link öffnen → **„Los geht's“** → Geburtsdatum **15.05.1990** → **Testmodus starten** → Zustimmen →
+   **weiblich** → Einwilligung Gesundheitsdaten **erteilen** → Größe **170**, Gewicht **70** → Umfänge
+   **Überspringen** → Gesundheits-Check **alles „Nein“** → Erfahrung **Einsteiger** → Ziel **Abnehmen** → „Wie möchtest
+   du abnehmen?“ **ohne festes Ziel** lassen → Trainingstage z. B. Mo/Mi/Fr Kraft im Studio → Ernährung beliebig →
+   **„Zum Plan“**.
+2. **Prüfen (Heute):** In der Plan-Karte steht **„Dein Plan: Abnehmen · 3 Tage“**. Kein Wunschgewicht, kein Balken.
+3. Unten **Einstellungen** → Abschnitt **„Dein Abnehm-Ziel“** → Knopf **„Dein Abnehm-Ziel“** → „Ohne festes Ziel – wir
+   planen in gesundem Tempo.“ → **„Konkretes Ziel festlegen“** → „Mit konkretem Ziel“ → **3** kg, **12** Wochen →
+   **Speichern**. **Prüfen:** „Wunschgewicht: 67 kg“ und „Zeitraum: 12 Wochen, gespeichert am …“ (heutiges Datum).
+4. **Bearbeiten:** **„Ziel bearbeiten“** → Wochen auf **20** → **Speichern** → „Zeitraum: 20 Wochen …“.
+5. Mit **Zurück** zu **Heute**: **kein** Wunschgewicht, keine Zahl zum Ziel (nur unter Einstellungen sichtbar).
+   **Ernährung → Woche:** Kasten „Dein Abnehm-Ziel“ erscheint höchstens einmal (nur wenn wir langsamer planen müssen).
+6. **Erreicht:** Einstellungen → „Dein Abnehm-Ziel“ → **„Neues Gewicht eintragen“** → Größe 170, Gewicht **66** →
+   **Speichern**. Auf **Heute** erscheint die Karte **„Wunschgewicht erreicht“** – ohne Zahlen, ohne Konfetti – mit
+   „Gewicht halten“, „Muskelaufbau“, „Neues Wunschgewicht“. **„Gewicht halten“** antippen → „Dein Ziel ist geändert …“
+   und darunter **„Plan neu erstellen?“**. Der Eintrag „Dein Abnehm-Ziel“ in den Einstellungen ist jetzt weg (Ziel
+   „Fitness & Gesundheit“).
+7. **Entfernen:** neuer Inkognito-Tab, Schritte 1 und 3 wiederholen → **„Ziel entfernen“** → Rückfrage →
+   **„Ziel entfernen“** → „Dein Ziel ist entfernt …“ und wieder „Ohne festes Ziel“.
+8. **Verlängern:** Ein abgelaufenes Ziel lässt sich am Handy nicht einfach herstellen (der Zeitraum ist mindestens
+   4 Wochen). Diesen Fall prüft der automatische Test (Karte „Dein Zeitraum ist vorbei“ → **„Verlängern“** → neuer
+   Zeitraum nötig; „Angaben ändern“ verlängert nie still). Wer mag: Ziel mit 4 Wochen anlegen und nach 4 Wochen
+   nachsehen.
+9. **Zweites Ziel → Plan neu erstellen?:** Einstellungen → **„Angaben ändern“** → Weiter → bei „Dein Ziel“ zweites Ziel
+   **Muskelaufbau** → Weiter bis „Heute“ → Kasten **„Deine Angaben haben sich geändert – Plan neu erstellen?“** →
+   **„Plan neu erstellen“** → Plan-Karte: **„Dein Plan: Abnehmen + Muskelaufbau · 3 Tage“**; ebenso oben in
+   **„Woche“**.
+10. **PDF:** Heute → „Als PDF speichern“ → in der Vorschau steht „Abnehmen + Muskelaufbau · 3 Tage“, **nie** ein
+    Wunschgewicht, Zeitraum oder Tempo.
+11. **Widerruf:** Ziel wie in Schritt 3 anlegen → Einstellungen → **„Gesundheitsdaten: Widerrufen“** → **„Tagebuch
+    behalten (empfohlen)“** → „Dein Abnehm-Ziel“ öffnen → nur noch der Hinweis zur Einwilligung, das Wunschgewicht ist
+    gelöscht.
+
+Falls etwas nicht so aussieht: Screenshot machen und Claude im Chat schicken.
+
 ## Teil 7f – Ernährungstagebuch testen (Etappe E1, Testmodus)
 Das Tagebuch läuft im **Testmodus** und seit N7 Teil 2 auch mit Konto (Teil 7d, Schritt 11). Ihr müsst nichts einstellen.
 Nach dem Merge spielt **db-migrate** (erst nach grünem db-test) zwei neue, leere Tabellen ein (`food_log_entries`,

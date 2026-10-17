@@ -14,6 +14,7 @@ import { nutritionEligibility } from './eligibility';
 import { dayEnergy, sessionsForDay } from './energy';
 import { applyGoalAdjustment, clampCalorieTarget, dayLimitContext } from './limits';
 import { nutritionMacros } from './macros';
+import { stableHashKey } from './stable-hash';
 import {
   type CalorieCapCode,
   type NutritionNoticeCode,
@@ -87,6 +88,12 @@ export interface NutritionDayTargets {
   readonly weightGoalStatus: WeightGoalDayStatus | null;
   /** Das Ziel wird an diesem Tag langsamer geplant als benötigt (Standard-Tempo oder eine Schutzgrenze bremst). */
   readonly weightGoalPaceCapped: boolean;
+  /**
+   * Kennung des gespeicherten Ziels (Hash aus Start, Zieldatum, Zielgewicht und Eingabeart, nie im Klartext) – nur an
+   * Tagen mit Ziel-Stand. Für den Abgleich des Essensplans (Etappe Z5, Wächter H1): Neuplanung, wenn sich Ziel oder
+   * Stand ändern, aber nicht bei jeder neuen Gewichtsangabe (die läuft weiter über das Planband).
+   */
+  readonly weightGoalKey?: string;
 }
 
 export interface NutritionWeekTargets {
@@ -148,6 +155,19 @@ export function nutritionTargetsForWeek(
     return value;
   };
   const weightGoalNotices = new Set<WeightGoalNoticeCode>();
+  const goalKey =
+    weightGoal === null
+      ? null
+      : String(
+          stableHashKey(
+            'weight_goal',
+            weightGoal.startDate,
+            weightGoal.targetDate,
+            weightGoal.targetWeightKg,
+            weightGoal.amountMode,
+            weightGoal.timeMode,
+          ),
+        );
 
   const days: NutritionDayTargets[] = [];
   let usesHealthData = false;
@@ -220,6 +240,7 @@ export function nutritionTargetsForWeek(
         // Schwangerschaft u. Ä.: Das Ziel ruht (Plan 2.3) – außer vor dem Start bzw. wenn es ungültig ist.
         weightGoalStatus: noTargetsStatus,
         weightGoalPaceCapped: false,
+        ...(noTargetsStatus !== null && goalKey !== null ? { weightGoalKey: goalKey } : {}),
       });
       continue;
     }
@@ -323,6 +344,7 @@ export function nutritionTargetsForWeek(
       goalAdjustment: adjustment,
       weightGoalStatus: goalDay?.status ?? null,
       weightGoalPaceCapped: paceCapped,
+      ...(goalDay !== null && goalKey !== null ? { weightGoalKey: goalKey } : {}),
     });
   }
   return {

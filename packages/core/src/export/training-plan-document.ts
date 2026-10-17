@@ -102,6 +102,8 @@ export interface TrainingPlanForExport {
   /** Angaben des Plans (user_plans.inputs); null = nicht lesbar. */
   readonly inputs: {
     readonly goalType: GoalType;
+    /** Nebenziel (docs/PLAN-ZIELE.md 4.6, Etappe Z5); fehlt/null = keins. */
+    readonly secondaryGoalType?: GoalType | null;
     readonly discipline: EnduranceDiscipline | null;
     readonly schedule: TrainingSchedule;
   } | null;
@@ -269,6 +271,7 @@ function coverBlocks(
       level: 2,
       text: text('plan.name', {
         goal: plan.inputs?.goalType ?? null,
+        secondary: plan.inputs?.goalType ? (plan.inputs.secondaryGoalType ?? null) : null,
         discipline: plan.inputs?.discipline ?? null,
         strengthDays,
         enduranceDays,

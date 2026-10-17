@@ -378,6 +378,23 @@ export default function SettingsScreen() {
         />
       </Card>
 
+      {/* Etappe Z5: Abnehm-Ziel nur hier sichtbar (docs/PLAN-ZIELE.md F13) – nur bei Abnehmen als Haupt- oder Nebenziel. */}
+      {rows.goals &&
+      (rows.goals.goal_type === 'fat_loss' || rows.goals.secondary_goal_type === 'fat_loss') ? (
+        <>
+          <Heading level={2}>{t.weightGoalLife.settings.title}</Heading>
+          <Card>
+            <Body muted>{t.weightGoalLife.settings.entryText}</Body>
+            <Button
+              label={t.weightGoalLife.settings.open}
+              variant="secondary"
+              onPress={() => router.push('/abnehmziel' as Href)}
+              testID="settings-weight-goal"
+            />
+          </Card>
+        </>
+      ) : null}
+
       {supportsNutrition ? (
         <>
           <Heading level={2}>{t.nutrition.settings.title}</Heading>
