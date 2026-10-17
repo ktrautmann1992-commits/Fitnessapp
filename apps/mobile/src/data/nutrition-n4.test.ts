@@ -102,7 +102,10 @@ async function onboardedUntilCooking() {
   await save({ step: 'sex', sex: 'female', cycleModuleInterest: null });
   await save({ step: 'health_consent', granted: true });
   await save({ step: 'experience', experienceLevel: 'beginner' });
-  await save({ step: 'goal', goal: { goalType: 'fat_loss', discipline: null, targetDate: null } });
+  await save({
+    step: 'goal',
+    goal: { goalType: 'fat_loss', secondaryGoalType: null, discipline: null, targetDate: null },
+  });
   await save({
     step: 'time_budget',
     schedule: { mode: 'flex', slots: [{ kind: 'strength_gym', minutes: 45 }] },

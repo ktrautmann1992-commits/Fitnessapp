@@ -813,7 +813,7 @@ Urteil „Freigabe mit Auflagen“. Stand nach dem Merge von `main` (WP4 #89, co
   wurde „zählen“ statt „nur nach eigener Abfrage der letzten 90 Tage“: Das braucht keine personenbezogene Liste
   abgefragter Nummern. **Folge (Gründer-Info):** Nachschlagen und Eintragen zählen zusammen, praktisch also etwa 30
   verschiedene Produkte pro Stunde bzw. 100 pro Tag. Der Testmodus rechnet gleich (`chargeProductUse`,
-  `isNewProductUse` im Core). Tests: pgTAP `43_food_product_use_limit.test.sql` (19), Core, App. Gegenproben:
+  `isNewProductUse` im Core). Tests: pgTAP `44_food_product_use_limit.test.sql` (19), Core, App. Gegenproben:
   Eintrag bzw. Favorit zählt nicht, Upsert zählt doppelt, Menge ändern zählt, Code nicht übersetzt, App ohne
   „neu?“-Prüfung → jeweils rot.
 - **N1 umgesetzt:** Die Route misst die OFF-Felder in UTF-8-Bytes (`offFieldsBytes`, TextEncoder) gegen
@@ -835,20 +835,20 @@ Urteil „Freigabe mit Auflagen“. Stand nach dem Merge von `main` (WP4 #89, co
   - **N6:** `database.types.ts` ist von Hand ergänzt – vor dem Merge den Workflow `db-types` laufen lassen.
   - **N7:** Der Einwilligungstext `health_data` nennt Produkte und Nummern noch nicht. Vor dem Einschalten des Flags
     anpassen (neue Fassung) und rechtlich prüfen.
-- **H1 vorgemerkt – zweiter Schritt, nachdem `claude/z3-ziele` in `main` ist:** E4a und Z3 fassen beide
-  `private.consents_after_revoke()` und `public.export_my_data()` neu. Dafür braucht es eine **neue** Migration mit
-  Zeitstempel nach `20261017200200` als Vereinigung beider Seiten:
-  - Widerruf löscht `weight_goals`, `user_food_products` und die Produkt-Favoriten, jeweils am Anfang und in der
+- **H1 umgesetzt (nach dem Merge von Z3, PR #92):** Neue Migration `20261017210000_revoke_export_union.sql` mit
+  Zeitstempel nach beiden Vorgängern. Sie fasst `private.consents_after_revoke()` und `public.export_my_data()` als
+  **Vereinigung** von E4a (`20261017100300`) und Z3 (`20261017200200`) neu; die Vorgänger bleiben unverändert.
+  - Der Widerruf löscht `weight_goals`, `user_food_products` und die Produkt-Favoriten, jeweils am Anfang und in der
     Wiederholung.
-  - Der Export enthält `weight_goals`, `user_food_products` und `food_product_lookup_counts`.
-
-  Außerdem nötig:
-  - `db-sync.test.ts` auf die neue Datei umstellen und die Obermenge gegen beide Vorgänger prüfen.
-  - Den SENSIBEL-Kommentar von `user_food_products` angleichen (`SENSIBEL (Art. 9 vorsorglich, Freitext) …`).
-  - Die Konflikte in den Export-Listen, Typen, `write-ops.ts` und `history.spec.ts` (Tabellenzahl 38 → 39) auflösen.
-  - Einen gemeinsamen pgTAP-Test „Widerruf löscht beides“ ergänzen.
-
-  Bis dahin E4a und Z3 nicht beide ohne diese Vereinigung einspielen.
+  - Der Export enthält `user_food_products`, `food_product_lookup_counts` und `weight_goals`.
+  - Der Kommentar von `user_food_products` beginnt jetzt mit „SENSIBEL (Art. 9 vorsorglich, Freitext)“; der
+    SENSIBEL-Test von Z3 führt die Tabelle damit in der Liste der ganz gelöschten Tabellen.
+  - `db-sync.test.ts` prüft die Obermenge gegen **beide** Vorgänger.
+  - pgTAP `45_revoke_export_union.test.sql` (14 Tests): Widerruf löscht beides, fremde Daten bleiben, Export.
+  - Das E4a-pgTAP `43_food_product_use_limit` heißt jetzt `44_…` (Nummer 43 hat Z3).
+  - App: Export jetzt 39 Tabellen; Widerruf im Gerät löscht `userFoodProducts` und `weightGoal`.
+  - Gegenproben: Löschung von `weight_goals` bzw. `user_food_products` aus der Vereinigung entfernt → pgTAP und
+    db-sync rot.
 
 ---
 

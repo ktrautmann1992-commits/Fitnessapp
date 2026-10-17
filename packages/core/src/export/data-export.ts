@@ -59,6 +59,8 @@ export const DATA_EXPORT_TABLES = [
   // 3.6) – der gemeinsame Zwischenspeicher food_products gehört niemandem und ist nicht dabei
   'user_food_products',
   'food_product_lookup_counts',
+  // Ziele · Etappe Z3 · Wunschgewicht (docs/PLAN-ZIELE.md 5.2; Gesundheitsdatum, das Nebenziel steht in goals)
+  'weight_goals',
 ] as const;
 
 export type DataExportTable = (typeof DATA_EXPORT_TABLES)[number];

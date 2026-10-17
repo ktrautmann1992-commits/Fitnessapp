@@ -527,6 +527,22 @@ echten App). Ihr müsst nichts einstellen und keine Schlüssel eintragen. Prüfe
 6. Optional in der Vorschau (Testmodus): **Einstellungen → Meine Daten exportieren** → **Datei herunterladen** → in
    der Datei steht der neue, leere Bereich `tracked_routes`.
 
+## Teil 7z – Datenbank für zwei Ziele und Wunschgewicht prüfen (Ziele, Etappe Z3)
+In der App ändert sich dadurch **nichts Sichtbares** (Nebenziel und Wunschgewicht wählt ihr erst mit Etappe Z4). Ihr
+müsst nichts einstellen und keine Schlüssel eintragen. Prüfen könnt ihr am Handy:
+
+1. GitHub-App → Pull Request öffnen → unten **Checks**: **db-test** (Migrationen + Datenbank-Tests) und **ci** sind
+   grün. Falls db-test rot ist: nicht mergen, Claude im Chat Bescheid geben.
+2. **Nach dem Merge:** **Actions → db-migrate** → Lauf öffnen und warten, bis er grün ist (vorhandene Ziele bleiben
+   unverändert).
+3. Supabase im Handy-Browser → euer Projekt → links **Table Editor** → **`goals`** → nach rechts wischen: neue Spalte
+   `secondary_goal_type`, überall **NULL** – richtig so.
+4. Im **Table Editor**: Tabelle **`weight_goals`** ist da und leer.
+5. Supabase → links **Authentication** → **Policies** → bis `weight_goals` wischen: genau **vier** Regeln (sehen,
+   speichern und ändern nur mit Einwilligung, löschen).
+6. Optional in der Vorschau (Testmodus): **Einstellungen → Meine Daten exportieren** → **Datei herunterladen** → in
+   der Datei steht der neue, leere Bereich `weight_goals`.
+
 ## Teil 7f – Ernährungstagebuch testen (Etappe E1, Testmodus)
 Das Tagebuch läuft im **Testmodus** und seit N7 Teil 2 auch mit Konto (Teil 7d, Schritt 11). Ihr müsst nichts einstellen.
 Nach dem Merge spielt **db-migrate** (erst nach grünem db-test) zwei neue, leere Tabellen ein (`food_log_entries`,

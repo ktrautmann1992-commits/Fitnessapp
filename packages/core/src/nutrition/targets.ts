@@ -188,6 +188,7 @@ export function nutritionTargetsForWeek(
           : weightGoalPreStatus({
               goal: weightGoal,
               date,
+              birthDate: inputs.birthDate,
               losesWeight: hasGoal(goals, 'fat_loss'),
               heightCm: body.height?.value ?? null,
               mode: 'no_targets',
@@ -253,6 +254,7 @@ export function nutritionTargetsForWeek(
             goal: weightGoal,
             date,
             today: inputs.today,
+            birthDate: inputs.birthDate,
             mode,
             losesWeight: hasGoal(goals, 'fat_loss'),
             standardAdjustment,

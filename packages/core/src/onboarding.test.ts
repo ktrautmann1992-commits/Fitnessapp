@@ -4,6 +4,7 @@ import {
   applicableSteps,
   firstStep,
   formatProgressDe,
+  HEALTH_DATA_STEPS,
   isOnboardingStep,
   isStepApplicable,
   isStepSkippable,
@@ -13,16 +14,17 @@ import {
   previousStep,
   progress,
   resumeStep,
+  WEIGHT_GOAL_STEP_ENABLED,
 } from './onboarding';
 
 const full: OnboardingState = { healthDataConsent: true, hasHomeStrength: true };
 const noConsentGym: OnboardingState = { healthDataConsent: false, hasHomeStrength: false };
 /**
- * Alle Schritte außer dem seit Etappe B2 nie anwendbaren Trainingsort und dem Schritt `nutrition_setup`, der nur mit
- * `nutritionSetupAvailable: true` (Testmodus bis N7) anwendbar ist.
+ * Alle Schritte außer dem seit Etappe B2 nie anwendbaren Trainingsort, dem Schritt `nutrition_setup`, der nur mit
+ * `nutritionSetupAvailable: true` (Testmodus bis N7) anwendbar ist, und dem bis Etappe Z4 abgeschalteten `weight_goal`.
  */
 const ALL_SHOWN = ONBOARDING_STEPS.filter(
-  (step) => step !== 'training_location' && step !== 'nutrition_setup',
+  (step) => step !== 'training_location' && step !== 'nutrition_setup' && step !== 'weight_goal',
 );
 /** Testmodus (lokales Backend): Speicherort für `nutrition_setup` vorhanden (R2-S3). */
 const fullTestMode: OnboardingState = { ...full, nutritionSetupAvailable: true };
@@ -204,5 +206,33 @@ describe('Schritt nutrition_setup (docs/PLAN-PHASE-5.md 8.1, R2-S3, W21)', () =>
     expect(
       isStepApplicable('nutrition_setup', { ...noConsentGym, nutritionSetupAvailable: true }),
     ).toBe(true);
+  });
+});
+
+describe('Schritt weight_goal (docs/PLAN-ZIELE.md 6 Nr. 2, Etappe Z3, Wächter K4)', () => {
+  it('steht direkt nach „goal“ und gehört zu den Gesundheitsdaten-Schritten', () => {
+    expect(ONBOARDING_STEPS.indexOf('weight_goal')).toBe(ONBOARDING_STEPS.indexOf('goal') + 1);
+    expect(HEALTH_DATA_STEPS).toContain('weight_goal');
+  });
+
+  it('bis Etappe Z4 abgeschaltet: nie anwendbar, auch mit Abnehmen und Einwilligung', () => {
+    expect(WEIGHT_GOAL_STEP_ENABLED).toBe(false);
+    for (const state of [
+      full,
+      fullTestMode,
+      {},
+      { ...full, losesWeight: true },
+      { ...fullTestMode, losesWeight: true },
+    ]) {
+      expect(isStepApplicable('weight_goal', state)).toBe(false);
+      expect(applicableSteps(state)).not.toContain('weight_goal');
+      expect(nextStep('goal', state)).toBe('time_budget');
+      expect(previousStep('time_budget', state)).toBe('goal');
+    }
+  });
+
+  it('gespeicherter Schritt weight_goal (alter bzw. künftiger Stand) → resumeStep geht beim nächsten weiter', () => {
+    expect(resumeStep('weight_goal', full)).toBe('time_budget');
+    expect(progress('weight_goal', full)).toEqual(progress('time_budget', full));
   });
 });

@@ -98,9 +98,15 @@ export function planInputsFromRows(
   const level = experienceLevelSchema.safeParse(profile?.experience_level);
   const schedule = scheduleFromSlots(rows.trainingSlots);
   if (!profile || !level.success || !rows.goals || !schedule) return null;
+  // Nebenziel (Etappe Z3; Auswahl in der App ab Z4). Ältere Stände ohne Spalte: kein Nebenziel.
+  const secondary = rows.goals.secondary_goal_type ?? null;
   return {
     goalType: rows.goals.goal_type,
-    discipline: rows.goals.goal_type === 'endurance' ? rows.goals.discipline : null,
+    secondaryGoalType: secondary,
+    discipline:
+      rows.goals.goal_type === 'endurance' || secondary === 'endurance'
+        ? rows.goals.discipline
+        : null,
     experienceLevel: level.data,
     schedule,
     homeEquipment: rows.userEquipment

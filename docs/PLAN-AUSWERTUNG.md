@@ -972,7 +972,7 @@ Export enthält eigene Produkte und die eigenen Abfrage-Zähler (ohne Nummern). 
 fragt der Server nie bei Open Food Facts an. Testmodus mit Attrappe (Testnummern in der App). Details, Präzisierungen
 und Gegenproben: [`PLAN-E4.md`](PLAN-E4.md) „Umsetzungsstand E4a“; Einschalten: SETUP Teil M; Testen: HANDY-ANLEITUNG
 Teil 7k. Wächter-Auflagen M1 (neue Nutzung einer Nummer zählt auf die Limits, Migration `20261017100400`), N1, N2, N4
-umgesetzt; N3/N5–N7 und die Zusammenführung mit Z3 (H1) vorgemerkt (PLAN-E4 „Nachtrag Wächter-Prüfung E4a“).
+umgesetzt; Zusammenführung mit Z3 (H1) über `20261017210000_revoke_export_union.sql` erledigt; N3/N5–N7 vorgemerkt (PLAN-E4 „Nachtrag Wächter-Prüfung E4a“).
 
 ---
 

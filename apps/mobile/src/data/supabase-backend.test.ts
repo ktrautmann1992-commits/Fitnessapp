@@ -1579,6 +1579,8 @@ describe('Supabase-Modus: Tagebuch-Warteschlange', () => {
       // Etappe E4a
       'user_food_products',
       'food_product_lookup_counts',
+      // Ziele Z3
+      'weight_goals',
     ];
     const exported = {
       format_version: 1,

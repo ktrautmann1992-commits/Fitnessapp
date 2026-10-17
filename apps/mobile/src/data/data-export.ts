@@ -190,6 +190,8 @@ export function localDataExport(
     food_product_lookup_counts: [...(extra.productLookups ?? [])]
       .map((c) => ({ hour_start: c.hour_start, lookups: c.lookups }))
       .sort((a, b) => a.hour_start.localeCompare(b.hour_start)),
+    // Wunschgewicht (Etappe Z3) – Spalten wie weight_goals.
+    weight_goals: one(rows.weightGoal),
     // Übungs-Präferenzen (Etappe T2) – in export_my_data() erst mit Etappe T3 (PENDING_DB_EXPORT_TABLES).
     exercise_preferences: rows.exercisePreferences,
   };

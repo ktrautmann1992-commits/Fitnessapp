@@ -7,6 +7,7 @@ import type { GoalsRow, TrainingSlotRow, UserEquipmentRow, UserRows } from './ty
 const goals: GoalsRow = {
   user_id: USER_ID,
   goal_type: 'endurance',
+  secondary_goal_type: null,
   discipline: null,
   target_date: null,
   training_location: 'gym',

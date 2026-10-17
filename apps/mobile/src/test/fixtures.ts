@@ -98,6 +98,7 @@ export function planPersonRows(options: PlanPersonOptions = {}): UserRows {
     goals: {
       user_id: USER_ID,
       goal_type: options.goal ?? 'muscle_gain',
+      secondary_goal_type: null,
       discipline: null,
       target_date: null,
       training_location: 'gym',

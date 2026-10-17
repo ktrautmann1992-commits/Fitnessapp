@@ -1,7 +1,7 @@
 import { hasHomeStrength, nextStep, type OnboardingState } from '@fitnessapp/core';
 
 import { deriveOnboardingState, healthConsentStatus } from '../state/flow';
-import { applyStepToAnswers, planStepWrites, type ConsentVersions } from './mapping';
+import { applyStepToAnswers, losesWeight, planStepWrites, type ConsentVersions } from './mapping';
 import type { ConsentPlatform, OnboardingAnswers, StepSave, UserRows } from './types';
 import type { WriteOp } from './write-ops';
 
@@ -38,6 +38,7 @@ export function planSave(
       save.step === 'health_consent' ? save.granted || hasHealthConsent : before.healthDataConsent,
     hasHomeStrength:
       save.step === 'time_budget' ? hasHomeStrength(save.schedule) : before.hasHomeStrength,
+    losesWeight: save.step === 'goal' ? losesWeight(save.goal) : before.losesWeight,
   };
   const next = nextStep(save.step, after);
   const ops = planStepWrites(save, {

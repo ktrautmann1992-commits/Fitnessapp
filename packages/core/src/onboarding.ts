@@ -17,6 +17,10 @@ export const ONBOARDING_STEPS = [
   'health_screening',
   'experience',
   'goal',
+  // Konkretes Abnehmziel mit Ampel (docs/PLAN-ZIELE.md 6 Nr. 2, Etappe Z3/Z4): nur bei Abnehmen als Haupt- oder Nebenziel
+  // und mit Einwilligung health_data. Liste und CHECK kommen gemeinsam in Z3 (Wächter K4); der Bildschirm folgt in Z4,
+  // bis dahin nie anwendbar (WEIGHT_GOAL_STEP_ENABLED).
+  'weight_goal',
   // „Deine Trainingstage“ (Art + Dauer je Tag, Erweiterungsplan 3.2); Name bleibt wegen der CHECK-Bedingung.
   'time_budget',
   // Nie anwendbar seit Etappe B2 (Ort abgeleitet), siehe isStepApplicable().
@@ -51,7 +55,15 @@ export const HEALTH_DATA_STEPS = [
   'body_metrics',
   'body_measurements',
   'health_screening',
+  'weight_goal',
 ] as const satisfies readonly OnboardingStep[];
+
+/**
+ * Schalter für den Schritt `weight_goal` (docs/PLAN-ZIELE.md 6 Nr. 2, Wächter K4): In Etappe Z3 stehen Schritt-Liste
+ * und CHECK-Bedingung schon bereit, der Bildschirm kommt erst mit Z4 – bis dahin ist der Schritt nie anwendbar, damit
+ * die App keinen Schritt zeigt oder speichert, den es noch nicht gibt. Z4 setzt ihn auf `true`.
+ */
+export const WEIGHT_GOAL_STEP_ENABLED: boolean = false;
 
 /**
  * Bisherige Antworten, die den Ablauf beeinflussen. `undefined` = noch nicht beantwortet; dann wird der
@@ -70,6 +82,11 @@ export interface OnboardingState {
    * anwendbar“ (sicherer Standard: der Supabase-Modus zeigt den Schritt nicht und speichert nichts ins Leere).
    */
   nutritionSetupAvailable?: boolean | undefined;
+  /**
+   * Ist Abnehmen Haupt- oder Nebenziel (docs/PLAN-ZIELE.md 6 Nr. 2)? Nur dann folgt der Schritt `weight_goal`.
+   * `undefined` (Ziel noch offen) zählt mit, wie bei den anderen Feldern.
+   */
+  losesWeight?: boolean | undefined;
 }
 
 export function isOnboardingStep(value: unknown): value is OnboardingStep {
@@ -82,6 +99,12 @@ export function isStepSkippable(step: OnboardingStep): boolean {
 
 /** Wird dieser Schritt bei diesem Stand gezeigt? */
 export function isStepApplicable(step: OnboardingStep, state: OnboardingState): boolean {
+  // Konkretes Abnehmziel: bis Etappe Z4 abgeschaltet (Wächter K4), danach nur bei Abnehmen und mit Einwilligung.
+  if (step === 'weight_goal') {
+    return (
+      WEIGHT_GOAL_STEP_ENABLED && state.losesWeight !== false && state.healthDataConsent !== false
+    );
+  }
   if ((HEALTH_DATA_STEPS as readonly OnboardingStep[]).includes(step)) {
     return state.healthDataConsent !== false;
   }

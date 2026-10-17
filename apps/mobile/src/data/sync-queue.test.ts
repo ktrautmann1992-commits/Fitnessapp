@@ -10,6 +10,7 @@ const goals = (goal_type: 'fat_loss' | 'muscle_gain'): WriteOp => ({
   row: {
     user_id: 'u',
     goal_type,
+    secondary_goal_type: null,
     discipline: null,
     target_date: null,
     training_location: null,

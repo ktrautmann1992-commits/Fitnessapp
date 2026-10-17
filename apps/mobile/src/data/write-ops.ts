@@ -38,6 +38,7 @@ import type {
   UserEquipmentRow,
   UserPlanRow,
   UserRows,
+  WeightGoalRow,
 } from './types';
 
 /**
@@ -65,6 +66,14 @@ export type WriteOp =
   | { kind: 'upsert_body_measurements'; row: BodyMeasurementsInsert }
   | { kind: 'insert_health_screening'; row: HealthScreeningInsert }
   | { kind: 'upsert_measurement_reminder'; row: MeasurementReminderRow }
+  /**
+   * Wunschgewicht anlegen bzw. ersetzen (Etappe Z3, Tabelle weight_goals). Gesundheitsdatum: nur mit Einwilligung, nie
+   * in die Warteschlange. `start_date` = Tag des Speicherns (Wächter S15, setzt packages/core). Nur mit Abnehmziel
+   * (Wächter S13; Datenbank-Trigger, im Testmodus local-rules.ts).
+   */
+  | { kind: 'upsert_weight_goal'; row: WeightGoalRow }
+  /** Wunschgewicht löschen („ohne festes Ziel“). Sofort gesendet, braucht keine Einwilligung (Recht auf Löschung). */
+  | { kind: 'delete_weight_goal' }
   /**
    * Neuen Trainingsplan speichern (public.save_training_plan) – ersetzt den aktiven Plan. Nie in die Warteschlange
    * (Erzeugen braucht einmal Verbindung). `payload` = toSavePlanPayload() aus packages/core (nur Plan-Spalten).
@@ -181,6 +190,8 @@ export function isSensitiveOp(op: WriteOp): boolean {
     case 'upsert_body_metrics':
     case 'upsert_body_measurements':
     case 'insert_health_screening':
+    case 'upsert_weight_goal':
+    case 'delete_weight_goal':
       return true;
     case 'replace_food_preferences':
       return op.scope === 'intolerance';
@@ -219,7 +230,8 @@ export function needsHealthConsent(op: WriteOp): boolean {
     // Abhaken, Kochtag-Start und Entfernen eines Favoriten ändern nur Vorhandenes bzw. löschen (Recht auf Löschung).
     op.kind !== 'set_shopping_item_checked' &&
     op.kind !== 'set_cook_day_start' &&
-    op.kind !== 'delete_food_log_favorite'
+    op.kind !== 'delete_food_log_favorite' &&
+    op.kind !== 'delete_weight_goal'
   );
 }
 
@@ -295,7 +307,19 @@ function applyOne(rows: UserRows, op: WriteOp, ctx: ApplyContext): UserRows {
       };
     }
     case 'upsert_goals':
-      return { ...rows, goals: op.row };
+      return {
+        ...rows,
+        goals: op.row,
+        // Wie der Datenbank-Trigger goals_drop_weight_goal (Wächter S13): ohne Abnehmen kein Wunschgewicht.
+        weightGoal:
+          op.row.goal_type === 'fat_loss' || op.row.secondary_goal_type === 'fat_loss'
+            ? rows.weightGoal
+            : null,
+      };
+    case 'upsert_weight_goal':
+      return { ...rows, weightGoal: op.row };
+    case 'delete_weight_goal':
+      return { ...rows, weightGoal: null };
     case 'replace_training_slots':
       return { ...rows, trainingSlots: [...op.rows] };
     case 'replace_user_equipment':
@@ -630,7 +654,7 @@ export function withoutPlanBasis(row: CompetitionRow): CompetitionRow {
 
 /**
  * Widerruf von health_data – spiegelt den Datenbank-Trigger private.consents_after_revoke(): löscht Körperdaten,
- * Umfänge, alle Gesundheits-Checks, Unverträglichkeiten und ALLE Pläne mit uses_health_data (aktiv und ersetzt)
+ * Umfänge, alle Gesundheits-Checks, das Wunschgewicht (Etappe Z3), Unverträglichkeiten und ALLE Pläne mit uses_health_data (aktiv und ersetzt)
  * samt allen Einheiten und Übungen sowie alle Essenspläne mit uses_health_data (Etappe N5). Pläne ohne Gesundheitsbezug bleiben unverändert (PLAN-PHASE-3 8.2/9).
  */
 export function applyHealthDataRevocation(
@@ -656,6 +680,8 @@ export function applyHealthDataRevocation(
     bodyMetrics: [],
     bodyMeasurements: [],
     healthScreenings: [],
+    // Wunschgewicht (Etappe Z3) – wie consents_after_revoke.
+    weightGoal: null,
     foodPreferences: revokedFoodPreferences(
       rows.foodPreferences,
       options.dislikeGroups,
@@ -730,6 +756,8 @@ export function cacheableRows(
       bodyMetrics: [],
       bodyMeasurements: [],
       healthScreenings: [],
+      // Wunschgewicht (Etappe Z3): Gesundheitsdatum, nie im normalen Zwischenspeicher.
+      weightGoal: null,
       foodPreferences: rows.foodPreferences.filter((row) => row.kind !== 'intolerance'),
       ...other,
       // Tagebuch nie im normalen Zwischenspeicher (S4) – nur getrennt im geschützten logCache.

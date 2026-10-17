@@ -9,6 +9,7 @@ import {
   experienceLevelSchema,
   foodPreferenceSchema,
   goalTypeSchema,
+  isAllowedGoalPair,
   isoDateSchema,
   MEASUREMENT_SITES,
   measurementReminderIntervalSchema,
@@ -45,12 +46,13 @@ import {
   exercisePreferenceSchema,
   type PlanSafetyRules,
   preferenceLimitReached,
+  weightGoalSchema,
 } from '@fitnessapp/core';
 
 import type { ConsentVersions } from './mapping';
 import { preferencesFromRows } from './exercise-swap';
 import { healthPlanBasis, healthScreeningForPlan, planSnapshot } from './training-plan';
-import type { PlannedSessionRow, ProfileRow, UserRows } from './types';
+import type { GoalsRow, PlannedSessionRow, ProfileRow, UserRows } from './types';
 import type { LogRejectReason } from './workout-draft';
 import { kindsForScope, type WriteOp } from './write-ops';
 
@@ -60,7 +62,15 @@ import { kindsForScope, type WriteOp } from './write-ops';
  * werden, den die echte Datenbank ablehnen würde (z. B. Größe 500 cm, Messdatum übermorgen).
  * Gibt true zurück, wenn der Vorgang gültig ist. Rein und getestet (local-rules.test.ts).
  */
-export function isValidOp(op: WriteOp, context: { today: string; profile: ProfileRow }): boolean {
+export function isValidOp(
+  op: WriteOp,
+  context: {
+    today: string;
+    profile: ProfileRow;
+    /** Aktuelle goals-Zeile (Wunschgewicht nur mit Abnehmziel, Trigger weight_goals_require_fat_loss). */
+    goals?: GoalsRow | null;
+  },
+): boolean {
   switch (op.kind) {
     case 'update_profile': {
       const { patch } = op;
@@ -83,10 +93,16 @@ export function isValidOp(op: WriteOp, context: { today: string; profile: Profil
       return true;
     case 'upsert_goals': {
       const row = op.row;
+      // Ältere Aufrufer ohne Spalte (vor Etappe Z3): kein Nebenziel.
+      const secondary = row.secondary_goal_type ?? null;
       return (
         goalTypeSchema.safeParse(row.goal_type).success &&
+        // Paar-CHECK (private.goal_pair_allowed = GOAL_COMBINATIONS) und Disziplin-CHECK (Ausdauer Haupt- oder Nebenziel).
+        (secondary === null ||
+          (goalTypeSchema.safeParse(secondary).success &&
+            isAllowedGoalPair(row.goal_type, secondary))) &&
         (row.discipline === null ||
-          (row.goal_type === 'endurance' &&
+          ((row.goal_type === 'endurance' || secondary === 'endurance') &&
             enduranceDisciplineSchema.safeParse(row.discipline).success)) &&
         (row.target_date === null ||
           (isoDateSchema.safeParse(row.target_date).success && row.target_date >= '2000-01-01')) &&
@@ -185,6 +201,25 @@ export function isValidOp(op: WriteOp, context: { today: string; profile: Profil
     }
     case 'insert_health_screening':
       // Antworten und Arzt-Hinweis prüft local-backend.ts (Flags wie der Datenbank-Trigger).
+      return true;
+    // Wunschgewicht (Etappe Z3): eigene Zeile, CHECKs = weightGoalSchema, nur mit Abnehmziel (Wächter S13).
+    case 'upsert_weight_goal': {
+      const { row } = op;
+      const goals = context.goals ?? null;
+      return (
+        row.user_id === context.profile.user_id &&
+        goals !== null &&
+        (goals.goal_type === 'fat_loss' || goals.secondary_goal_type === 'fat_loss') &&
+        weightGoalSchema.safeParse({
+          targetWeightKg: row.target_weight_kg,
+          startDate: row.start_date,
+          targetDate: row.target_date,
+          amountMode: row.amount_mode,
+          timeMode: row.time_mode,
+        }).success
+      );
+    }
+    case 'delete_weight_goal':
       return true;
     case 'upsert_measurement_reminder':
       return (

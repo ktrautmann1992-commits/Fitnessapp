@@ -2,6 +2,7 @@ import {
   type DataExportFile,
   type DaySwap,
   followUpBlockState,
+  isAllowedGoalPair,
   type PreferenceChange,
   removeDaySwap as removeDaySwapEntry,
   upsertDaySwap,
@@ -1161,6 +1162,12 @@ export function AppStateProvider({ children }: { children: ReactNode }) {
             step: 'goal',
             goal: {
               goalType: 'endurance',
+              // Nebenziel (Etappe Z3) bleibt, solange es zum Hauptziel Ausdauer passt.
+              secondaryGoalType:
+                answers.goal?.secondaryGoalType != null &&
+                isAllowedGoalPair('endurance', answers.goal.secondaryGoalType)
+                  ? answers.goal.secondaryGoalType
+                  : null,
               discipline: build.competition.discipline,
               targetDate: build.competition.race_date,
             },
