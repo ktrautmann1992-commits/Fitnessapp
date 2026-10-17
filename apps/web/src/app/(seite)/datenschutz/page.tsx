@@ -130,7 +130,28 @@ export default function Datenschutz() {
         <P>Kategorien im Detail, Speicherdauer, Löschfristen</P>
       </p>
 
-      <h2>8. Deine Rechte</h2>
+      <h2>8. App: Produktabfrage per Barcode-Nummer (Open Food Facts)</h2>
+      <p>
+        Wenn du in der App die Nummer unter einem Strichcode eingibst, fragt{' '}
+        <strong>nur unser Server</strong> (Vercel, Frankfurt) bei Open Food Facts (französischer
+        Verein, Server in Frankreich) nach. Open Food Facts erhält dabei nur die Nummer – von der
+        Adresse unseres Servers, mit unserem App-Namen und einer Funktions-Kontaktadresse. Dein
+        Name, deine Nutzer-ID und deine IP-Adresse werden nicht übermittelt. Die Nummer steht nicht
+        in Adressen oder Server-Protokollen.
+      </p>
+      <p>
+        Die Antwort (Name, Marke, Nährwerte) speichern wir höchstens 90 Tage in einem gemeinsamen
+        Zwischenspeicher <strong>ohne Bezug zu Personen</strong>. Je Person zählen wir nur die
+        Anzahl der Abfragen je Stunde (ohne Nummern, 2 Tage), um Missbrauch zu begrenzen. Die
+        Abfrage ist nur mit deiner Einwilligung in die Verarbeitung von Gesundheitsdaten möglich,
+        weil sie deinem Ernährungstagebuch dient. Was du einträgst und eigene Produkte, die du
+        anlegst, gehören zu deinem Tagebuch (Abschnitt 7) und werden beim Widerruf gelöscht. Öffnest
+        du in der App den Link „Bei Open Food Facts ansehen“, verlässt du die App; Open Food Facts
+        sieht dann deine IP-Adresse.{' '}
+        <P>bei der rechtlichen Prüfung bestätigen (kein Auftragsverarbeiter)</P>
+      </p>
+
+      <h2>9. Deine Rechte</h2>
       <ul>
         <li>Auskunft (Art. 15), Berichtigung (Art. 16), Löschung (Art. 17)</li>
         <li>Einschränkung (Art. 18), Datenübertragbarkeit (Art. 20), Widerspruch (Art. 21)</li>
@@ -142,7 +163,7 @@ export default function Datenschutz() {
       </ul>
       <p>In der App kannst du deine Daten jederzeit exportieren und dein Konto löschen.</p>
 
-      <h2>9. Änderungen</h2>
+      <h2>10. Änderungen</h2>
       <p>
         <P>Hinweis zur Aktualisierung dieser Erklärung</P>
       </p>

@@ -742,6 +742,7 @@ export type Database = {
           kcal: number | null;
           last_write_id: string;
           portion: number | null;
+          product_code: string | null;
           protein_g: number | null;
           recipe_id: string | null;
           revision: number;
@@ -751,6 +752,7 @@ export type Database = {
           unit: string | null;
           updated_at: string;
           user_id: string;
+          user_product_id: string | null;
         };
         Insert: {
           amount?: number | null;
@@ -764,6 +766,7 @@ export type Database = {
           kcal?: number | null;
           last_write_id: string;
           portion?: number | null;
+          product_code?: string | null;
           protein_g?: number | null;
           recipe_id?: string | null;
           revision?: number;
@@ -773,6 +776,7 @@ export type Database = {
           unit?: string | null;
           updated_at?: string;
           user_id: string;
+          user_product_id?: string | null;
         };
         Update: {
           amount?: number | null;
@@ -786,6 +790,7 @@ export type Database = {
           kcal?: number | null;
           last_write_id?: string;
           portion?: number | null;
+          product_code?: string | null;
           protein_g?: number | null;
           recipe_id?: string | null;
           revision?: number;
@@ -795,6 +800,7 @@ export type Database = {
           unit?: string | null;
           updated_at?: string;
           user_id?: string;
+          user_product_id?: string | null;
         };
         Relationships: [
           {
@@ -818,6 +824,13 @@ export type Database = {
             referencedRelation: 'recipes';
             referencedColumns: ['id'];
           },
+          {
+            foreignKeyName: 'food_log_entries_user_product_fkey';
+            columns: ['user_product_id', 'user_id'];
+            isOneToOne: false;
+            referencedRelation: 'user_food_products';
+            referencedColumns: ['id', 'user_id'];
+          },
         ];
       };
       food_log_favorites: {
@@ -830,12 +843,14 @@ export type Database = {
           food_id: string | null;
           kcal: number | null;
           portion: number | null;
+          product_code: string | null;
           protein_g: number | null;
           recipe_id: string | null;
           source: string;
           title_de: string;
           unit: string | null;
           user_id: string;
+          user_product_id: string | null;
         };
         Insert: {
           amount?: number | null;
@@ -846,12 +861,14 @@ export type Database = {
           food_id?: string | null;
           kcal?: number | null;
           portion?: number | null;
+          product_code?: string | null;
           protein_g?: number | null;
           recipe_id?: string | null;
           source: string;
           title_de: string;
           unit?: string | null;
           user_id?: string;
+          user_product_id?: string | null;
         };
         Update: {
           amount?: number | null;
@@ -862,12 +879,14 @@ export type Database = {
           food_id?: string | null;
           kcal?: number | null;
           portion?: number | null;
+          product_code?: string | null;
           protein_g?: number | null;
           recipe_id?: string | null;
           source?: string;
           title_de?: string;
           unit?: string | null;
           user_id?: string;
+          user_product_id?: string | null;
         };
         Relationships: [
           {
@@ -883,6 +902,13 @@ export type Database = {
             isOneToOne: false;
             referencedRelation: 'recipes';
             referencedColumns: ['id'];
+          },
+          {
+            foreignKeyName: 'food_log_favorites_user_product_fkey';
+            columns: ['user_product_id', 'user_id'];
+            isOneToOne: false;
+            referencedRelation: 'user_food_products';
+            referencedColumns: ['id', 'user_id'];
           },
         ];
       };
@@ -945,6 +971,90 @@ export type Database = {
           food_group?: string;
           kind?: Database['public']['Enums']['food_preference_kind'];
           user_id?: string;
+        };
+        Relationships: [];
+      };
+      food_products: {
+        Row: {
+          base_unit: string | null;
+          brand_de: string | null;
+          carbs_g: number | null;
+          check_level: string | null;
+          check_reasons: string[];
+          code: string;
+          fat_g: number | null;
+          fiber_g: number | null;
+          found: boolean;
+          kcal: number | null;
+          name_de: string | null;
+          normalizer_version: number;
+          off_fields: Json | null;
+          off_last_modified: string | null;
+          package_g: number | null;
+          protein_g: number | null;
+          quantity_label: string | null;
+          retrieved_at: string;
+          salt_g: number | null;
+          sat_fat_g: number | null;
+          serving_g: number | null;
+          source_db: string;
+          source_license: string;
+          source_url: string;
+          sugar_g: number | null;
+        };
+        Insert: {
+          base_unit?: string | null;
+          brand_de?: string | null;
+          carbs_g?: number | null;
+          check_level?: string | null;
+          check_reasons?: string[];
+          code: string;
+          fat_g?: number | null;
+          fiber_g?: number | null;
+          found: boolean;
+          kcal?: number | null;
+          name_de?: string | null;
+          normalizer_version: number;
+          off_fields?: Json | null;
+          off_last_modified?: string | null;
+          package_g?: number | null;
+          protein_g?: number | null;
+          quantity_label?: string | null;
+          retrieved_at: string;
+          salt_g?: number | null;
+          sat_fat_g?: number | null;
+          serving_g?: number | null;
+          source_db?: string;
+          source_license?: string;
+          source_url?: string;
+          sugar_g?: number | null;
+        };
+        Update: {
+          base_unit?: string | null;
+          brand_de?: string | null;
+          carbs_g?: number | null;
+          check_level?: string | null;
+          check_reasons?: string[];
+          code?: string;
+          fat_g?: number | null;
+          fiber_g?: number | null;
+          found?: boolean;
+          kcal?: number | null;
+          name_de?: string | null;
+          normalizer_version?: number;
+          off_fields?: Json | null;
+          off_last_modified?: string | null;
+          package_g?: number | null;
+          protein_g?: number | null;
+          quantity_label?: string | null;
+          retrieved_at?: string;
+          salt_g?: number | null;
+          sat_fat_g?: number | null;
+          serving_g?: number | null;
+          source_db?: string;
+          source_license?: string;
+          source_url?: string;
+          sugar_g?: number | null;
         };
         Relationships: [];
       };
@@ -2310,6 +2420,69 @@ export type Database = {
           },
         ];
       };
+      user_food_products: {
+        Row: {
+          base_unit: string;
+          based_on_off: boolean;
+          brand_de: string | null;
+          carbs_g: number;
+          code: string | null;
+          created_at: string;
+          fat_g: number;
+          id: string;
+          kcal: number;
+          last_write_id: string;
+          name_de: string;
+          protein_g: number;
+          revision: number;
+          salt_g: number | null;
+          serving_g: number | null;
+          sugar_g: number | null;
+          updated_at: string;
+          user_id: string;
+        };
+        Insert: {
+          base_unit: string;
+          based_on_off?: boolean;
+          brand_de?: string | null;
+          carbs_g: number;
+          code?: string | null;
+          created_at?: string;
+          fat_g: number;
+          id?: string;
+          kcal: number;
+          last_write_id: string;
+          name_de: string;
+          protein_g: number;
+          revision?: number;
+          salt_g?: number | null;
+          serving_g?: number | null;
+          sugar_g?: number | null;
+          updated_at?: string;
+          user_id: string;
+        };
+        Update: {
+          base_unit?: string;
+          based_on_off?: boolean;
+          brand_de?: string | null;
+          carbs_g?: number;
+          code?: string | null;
+          created_at?: string;
+          fat_g?: number;
+          id?: string;
+          kcal?: number;
+          last_write_id?: string;
+          name_de?: string;
+          protein_g?: number;
+          revision?: number;
+          salt_g?: number | null;
+          serving_g?: number | null;
+          sugar_g?: number | null;
+          updated_at?: string;
+          user_id?: string;
+        };
+        Relationships: [];
+      };
       user_plans: {
         Row: {
           created_at: string;
@@ -2565,6 +2738,7 @@ export type Database = {
       delete_session_log: { Args: { p_base_revision: number; p_id: string }; Returns: Json };
       delete_stored_intolerances: { Args: never; Returns: undefined };
       delete_tracked_route: { Args: { p_id: string }; Returns: undefined };
+      delete_user_food_product: { Args: { p_id: string }; Returns: Json };
       export_my_data: { Args: never; Returns: Json };
       beta_admin: {
         Args: {
@@ -2578,6 +2752,9 @@ export type Database = {
         };
         Returns: Json;
       };
+      food_product_lookup: { Args: { p_code: string; p_user_id: string }; Returns: Json };
+      food_product_off_backoff: { Args: never; Returns: Json };
+      food_product_upsert: { Args: { p: Json }; Returns: Json };
       has_entitlement: { Args: { p_entitlement?: string }; Returns: boolean };
       has_valid_consent: {
         Args: { p_type: Database['public']['Enums']['consent_type'] };
@@ -2613,6 +2790,7 @@ export type Database = {
       save_session_log: { Args: { p_log: Json }; Returns: Json };
       save_tracked_route: { Args: { p_route: Json }; Returns: string };
       save_training_plan: { Args: { p_plan: Json }; Returns: string };
+      save_user_food_product: { Args: { p_product: Json }; Returns: Json };
       seed_content: { Args: { p_content: Json }; Returns: Json };
       seed_nutrition_content: { Args: { p_content: Json }; Returns: Json };
       swap_planned_sessions: {

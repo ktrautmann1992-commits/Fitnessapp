@@ -131,9 +131,13 @@ select is(
    from pg_proc p where p.oid = 'private.consents_after_revoke()'::regprocedure),
   2, 'Widerruf löscht Tagebuch-Einträge am Anfang und am Ende (Wächter N7 S2)'
 );
+-- E4a (E4-G10): zusätzlich Produkt-Favoriten; jede Lösch-Anweisung auf food_log_favorites ist auf quick/product
+-- beschränkt – Katalog-/Rezept-Favoriten bleiben weiter.
 select ok(
   (select position('delete from public.food_log_favorites where user_id = new.user_id and source = ''quick''' in p.prosrc) > 0
-     and (length(p.prosrc) - length(replace(p.prosrc, 'food_log_favorites', ''))) / length('food_log_favorites') = 1
+     and (length(p.prosrc) - length(replace(p.prosrc, 'food_log_favorites', ''))) / length('food_log_favorites')
+       = (length(p.prosrc) - length(replace(p.prosrc, 'delete from public.food_log_favorites where user_id = new.user_id and source = ''quick'';', ''))) / length('delete from public.food_log_favorites where user_id = new.user_id and source = ''quick'';')
+         + (length(p.prosrc) - length(replace(p.prosrc, 'delete from public.food_log_favorites where user_id = new.user_id and source = ''product'';', ''))) / length('delete from public.food_log_favorites where user_id = new.user_id and source = ''product'';')
    from pg_proc p where p.oid = 'private.consents_after_revoke()'::regprocedure),
   'Widerruf löscht nur Schnell-Favoriten (Wächter E1 G1); Katalog-/Rezept-Favoriten bleiben (A-G14)'
 );

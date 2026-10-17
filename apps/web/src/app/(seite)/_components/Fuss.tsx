@@ -13,6 +13,7 @@ export function Fuss() {
           <Link href="/impressum">Impressum</Link>
           <Link href="/datenschutz">Datenschutz</Link>
           <Link href="/agb">AGB</Link>
+          <Link href="/lizenzen">Lizenzen</Link>
           <a href={appUrl}>App im Browser testen</a>
         </nav>
       </div>
