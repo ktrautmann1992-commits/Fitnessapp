@@ -23,38 +23,43 @@ import { ensureGitIdentity, type PipelineTools } from './tools';
 
 const MAX_IDS = 100;
 
-export const reviewInputSchema = z.object({
-  ids: z
-    .string()
-    .transform((raw) => [
-      ...new Set(
-        raw
-          .split(/[\s,;]+/)
-          .map((id) => id.trim())
-          .filter((id) => id.length > 0),
+/** Schema der Eingaben; `maxIds` ist nur bei „alle“ (review-ids.ts) größer als MAX_IDS. */
+export function createReviewInputSchema(maxIds: number) {
+  return z.object({
+    ids: z
+      .string()
+      .transform((raw) => [
+        ...new Set(
+          raw
+            .split(/[\s,;]+/)
+            .map((id) => id.trim())
+            .filter((id) => id.length > 0),
+        ),
+      ])
+      .pipe(
+        z
+          .array(
+            z
+              .string()
+              .regex(
+                /^[a-z0-9]+(?:-[a-z0-9]+)*$/,
+                'IDs: nur Kleinbuchstaben, Ziffern und Bindestriche.',
+              ),
+          )
+          .min(1, 'Mindestens eine ID angeben.')
+          .max(maxIds, `Höchstens ${maxIds} IDs auf einmal.`),
       ),
-    ])
-    .pipe(
-      z
-        .array(
-          z
-            .string()
-            .regex(
-              /^[a-z0-9]+(?:-[a-z0-9]+)*$/,
-              'IDs: nur Kleinbuchstaben, Ziffern und Bindestriche.',
-            ),
-        )
-        .min(1, 'Mindestens eine ID angeben.')
-        .max(MAX_IDS, `Höchstens ${MAX_IDS} IDs auf einmal.`),
-    ),
-  status: z.enum(CONTENT_STATUSES, { error: 'Zielstatus: published, archived oder draft.' }),
-  reviewer: z
-    .string()
-    .trim()
-    .min(2, 'Prüfer: Name oder Kürzel angeben (mindestens 2 Zeichen).')
-    .max(100, 'Prüfer: höchstens 100 Zeichen.')
-    .regex(/^[^\n\r\t]+$/, 'Prüfer: keine Zeilenumbrüche.'),
-});
+    status: z.enum(CONTENT_STATUSES, { error: 'Zielstatus: published, archived oder draft.' }),
+    reviewer: z
+      .string()
+      .trim()
+      .min(2, 'Prüfer: Name oder Kürzel angeben (mindestens 2 Zeichen).')
+      .max(100, 'Prüfer: höchstens 100 Zeichen.')
+      .regex(/^[^\n\r\t]+$/, 'Prüfer: keine Zeilenumbrüche.'),
+  });
+}
+
+export const reviewInputSchema = createReviewInputSchema(MAX_IDS);
 export type ReviewInput = z.infer<typeof reviewInputSchema>;
 
 export interface ReviewDeps {
@@ -100,8 +105,12 @@ function fail(markdown: string): ReviewResult {
   return { exitCode: 1, markdown: `### ❌ content-review\n\n${markdown}\n` };
 }
 
-export async function runReview(rawInput: unknown, deps: ReviewDeps): Promise<ReviewResult> {
-  const parsedInput = reviewInputSchema.safeParse(rawInput);
+export async function runReview(
+  rawInput: unknown,
+  deps: ReviewDeps,
+  options: { readonly maxIds?: number } = {},
+): Promise<ReviewResult> {
+  const parsedInput = createReviewInputSchema(options.maxIds ?? MAX_IDS).safeParse(rawInput);
   if (!parsedInput.success) {
     return fail(zodMessage(parsedInput.error));
   }

@@ -190,7 +190,7 @@ test('Ausdauer ohne Gesundheits-Check: Geh-Lauf-Wechsel, Anstrengung, vorsichtig
     page.getByText('Ohne Gesundheits-Check planen wir vorsichtig.', { exact: true }),
   ).toBeVisible();
   await expect(page.getByTestId('plan-notes')).toContainText(
-    'Dein Wettkampfplan rückwärts ab Renndatum (lange Läufe, Tempo, Tapering) kommt in einem späteren Update.',
+    'Das ist dein Grundlagen-Plan (locker). Einen Wettkampfplan rückwärts ab Renntag mit langen Läufen, Tempo und Tapering erstellst du unter Einstellungen → Mein Wettkampf.',
   );
   await expect(page.getByTestId('plan-exercise')).toHaveCount(0);
   const rows = await storedRows(page);
@@ -263,7 +263,7 @@ test('Ziel Marathon: Trainingstage mit Ausdauer vorbelegt → „Ausdauer-Grundl
   await heading(page, 'Heute');
   await expect(page.getByText('Ausdauer-Grundlage – Marathon', { exact: true })).toBeVisible();
   await expect(page.getByTestId('plan-notes')).toContainText(
-    'Dein Wettkampfplan rückwärts ab Renndatum (lange Läufe, Tempo, Tapering) kommt in einem späteren Update.',
+    'Das ist dein Grundlagen-Plan (locker). Einen Wettkampfplan rückwärts ab Renntag mit langen Läufen, Tempo und Tapering erstellst du unter Einstellungen → Mein Wettkampf.',
   );
   // Woche: Ausdauer-Einheit am Freitag (Vorschlag Mo Kraft, Di Ausdauer, Do Kraft, Fr + Sa Ausdauer).
   const week = page.getByTestId('plan-week');

@@ -5,9 +5,12 @@
  *   wie die Sammelfreigabe; Gründer-Entscheidungen 14.10.2026). Lebensmittel lehnt dieser Weg ab.
  * - Art „recipe“ → `runRecipeCategoryRelease` (Sammelfreigabe pro Kategorie).
  * Gemischte Läufe (Übung und Rezept zugleich) werden abgelehnt – die Regeln und Häkchen sind verschieden.
+ * - Art „ids“ mit dem Wort „alle“ → alle Übungen und Plan-Vorlagen im Status „draft“ auf einmal freigeben
+ *   (nur Zielstatus published, nur Training; Gründer-Wunsch 17.10.2026 – 122 IDs am Handy nicht tippbar).
+ *   Freigabe bleibt der Merge durch einen Menschen.
  * Eingaben ohne Wirkung werden in der Zusammenfassung genannt (Wächter N2d K4).
  */
-import { existsSync } from 'node:fs';
+import { existsSync, readdirSync, readFileSync } from 'node:fs';
 import { join } from 'node:path';
 
 import { FOODS_FOLDER } from '../foods/catalog-loader';
@@ -31,6 +34,50 @@ export interface ReviewEnvInput {
 }
 
 export const REVIEW_KINDS = ['ids', 'recipe'] as const;
+
+/** Stichwort in „ids“: alle Übungen und Plan-Vorlagen im Entwurf freigeben. */
+export const ALL_TRAINING_KEYWORD = 'alle';
+
+/** IDs aller Übungen und Plan-Vorlagen im Status „draft“ (auf dem aktuellen Stand – vorher auf main wechseln). */
+export function draftTrainingIds(repoRoot: string): string[] {
+  const ids: string[] = [];
+  for (const folder of Object.values(CONTENT_FOLDERS)) {
+    const dir = join(repoRoot, 'content', folder);
+    if (!existsSync(dir)) continue;
+    for (const file of readdirSync(dir)
+      .filter((name) => name.endsWith('.json'))
+      .sort()) {
+      const data = JSON.parse(readFileSync(join(dir, file), 'utf8')) as { status?: unknown };
+      if (data.status === 'draft') ids.push(file.slice(0, -'.json'.length));
+    }
+  }
+  return ids;
+}
+
+async function runAllTrainingRelease(
+  input: ReviewEnvInput,
+  deps: ReviewDeps,
+): Promise<ReviewResult> {
+  if (input.status.trim() !== 'published') {
+    return {
+      exitCode: 1,
+      markdown:
+        '### ❌ content-review\n\nNichts geändert: „alle“ gibt es nur zum Freigeben (Neuer Status = published). Zurückziehen bitte per ID.\n',
+    };
+  }
+  checkoutBaseBranch(deps);
+  const ids = draftTrainingIds(deps.repoRoot);
+  if (ids.length === 0) {
+    return {
+      exitCode: 0,
+      markdown:
+        '### ⏭️ content-review: nichts zu tun\n\nKeine Übung und keine Plan-Vorlage ist mehr im Entwurf.\n',
+    };
+  }
+  return runReview({ ids: ids.join(' '), status: input.status, reviewer: input.reviewer }, deps, {
+    maxIds: ids.length,
+  });
+}
 
 type Target = 'training' | 'nutrition';
 
@@ -124,6 +171,12 @@ export async function runContentReview(
       exitCode: 1,
       markdown: `### ❌ content-review\n\nArt „${kind}“ unbekannt – erlaubt: ${REVIEW_KINDS.join(', ')}.\n`,
     };
+  }
+  if (input.ids.trim().toLowerCase() === ALL_TRAINING_KEYWORD) {
+    return withNotes(
+      await runAllTrainingRelease(input, deps),
+      ignoredInputNotes(input, 'training'),
+    );
   }
   const ids = reviewInputSchema.shape.ids.safeParse(input.ids);
   // Klassifizieren auf dem Stand von main – genau dem Stand, den die Freigabe danach liest (Wächter N2d K7).

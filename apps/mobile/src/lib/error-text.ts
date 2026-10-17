@@ -57,6 +57,8 @@ export function errorText(error: unknown): string {
       return t.errors.temporary;
     case 'delete_unavailable':
       return t.errors.deleteUnavailable;
+    case 'competition_rejected':
+      return t.competition.errors[error.competitionReason ?? 'invalid'];
     case 'unknown':
       return t.errors.generic;
   }

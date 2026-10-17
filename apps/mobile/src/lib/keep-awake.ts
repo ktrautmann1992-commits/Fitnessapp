@@ -12,6 +12,12 @@ import { readJson, STORAGE_KEYS, writeJson } from '@/data/kv';
  */
 
 const TAG = 'alpha5-workout';
+/**
+ * Eigener Tag für den Intervall-Timer (Wächter WP4 M5): Solange der Timer läuft, bleibt der Bildschirm IMMER an –
+ * unabhängig von der Einstellung (ohne Bildschirm-an pausiert das Handy die App und es gäbe keine Ansage/Vibration beim
+ * Schrittwechsel). Eigener Tag, damit das Freigeben nicht die Sperre des Trainingsmodus aufhebt.
+ */
+export const INTERVAL_TIMER_AWAKE_TAG = 'alpha5-interval-timer';
 
 /** Einstellung „Bildschirm im Training anlassen“ (Standard: an), gespeichert nur auf diesem Gerät. */
 export function useKeepAwakeSetting(): {
@@ -42,7 +48,7 @@ export function useKeepAwakeSetting(): {
 }
 
 /** Bildschirm an, solange `active`. Im Browser nach dem Zurückkehren in den Tab erneut anfordern. */
-export function useScreenAwake(active: boolean): void {
+export function useScreenAwake(active: boolean, tag: string = TAG): void {
   useEffect(() => {
     if (!active) return;
     let held = false;
@@ -53,11 +59,11 @@ export function useScreenAwake(active: boolean): void {
     const acquire = () => {
       if (pending) return;
       pending = true;
-      activateKeepAwakeAsync(TAG).then(
+      activateKeepAwakeAsync(tag).then(
         () => {
           pending = false;
           // Erst nach dem Verlassen angekommen → gleich wieder freigeben.
-          if (cancelled) deactivateKeepAwake(TAG).catch(() => undefined);
+          if (cancelled) deactivateKeepAwake(tag).catch(() => undefined);
           else held = true;
         },
         () => {
@@ -75,7 +81,7 @@ export function useScreenAwake(active: boolean): void {
     return () => {
       cancelled = true;
       if (web) document.removeEventListener('visibilitychange', onVisible);
-      if (held) deactivateKeepAwake(TAG).catch(() => undefined);
+      if (held) deactivateKeepAwake(tag).catch(() => undefined);
     };
-  }, [active]);
+  }, [active, tag]);
 }

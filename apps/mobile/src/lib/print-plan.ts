@@ -9,6 +9,7 @@ import {
 } from '@fitnessapp/core';
 import { renderPrintHtml } from '@fitnessapp/ui/print';
 
+import { competitionDisplayLevel } from '@/data/competition-level';
 import { preferencesFromRows } from '@/data/exercise-swap';
 import { type ActivePlan, planSnapshot, profilesFor, startGroupOf } from '@/data/training-plan';
 import type { UserRows } from '@/data/types';
@@ -149,6 +150,8 @@ export function buildPlanPrint(input: PlanPrintInput): PlanPrintResult {
       library: library.displayExercises ?? library.exercises,
       substituteLibrary: library.exercises,
       profiles: profilesFor(snapshot),
+      // Wettkampfplan (WP4, Wächter M1): Wochenzahl harter Einheiten nach dem aktuellen Level – wie „Heute“.
+      competitionLevel: competitionDisplayLevel(rows, snapshot),
       // „Ab jetzt immer“ gilt auch im PDF (Etappe T2), mit der Plan-Untergrenze (Wächter T1-S2); NIE Day-Swaps.
       swap: {
         swapRules: displaySwapRules(active.plan, birthDate, rules),

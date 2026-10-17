@@ -13,6 +13,7 @@ import type { PipelineSettings } from './config';
 import { runGenerate } from './generate';
 import { exerciseKind } from './kinds/exercise';
 import { runReview } from './review';
+import { draftTrainingIds, runContentReview } from './review-ids';
 import {
   createTempRepo,
   fakeTools,
@@ -542,5 +543,52 @@ describe('content-review', () => {
     expect(result.exitCode).toBe(0);
     expect(result.markdown).toContain('nichts zu tun');
     expect(tools.ghCalls).toEqual([]);
+  });
+
+  it('„alle“ gibt alle Übungen und Vorlagen im Entwurf in einem Pull Request frei – genehmigt nie', async () => {
+    const r = repo();
+    const tools = fakeTools(r.root);
+    const drafts = draftTrainingIds(r.root);
+    expect(drafts.length).toBeGreaterThan(100);
+    const input = {
+      kind: 'ids',
+      ids: ' Alle ',
+      status: 'published',
+      reviewer: 'KT',
+      category: '-',
+      expertReviewed: 'false',
+      confirmAssumptions: 'false',
+    };
+    const result = await runContentReview(input, {
+      repoRoot: r.root,
+      tools,
+      now,
+      randomShort: () => 'all001',
+    });
+    expect(result.exitCode, result.markdown).toBe(0);
+    for (const path of [
+      'content/exercises/goblet-kniebeuge.json',
+      'content/plan-templates/fitness-einsteiger-3t-zuhause.json',
+    ]) {
+      const file = JSON.parse(r.showRemote(result.branch!, path));
+      expect(file.status).toBe('published');
+      expect(file.meta.reviewed_by).toBe('KT');
+    }
+    expect(JSON.parse(r.showRemote('main', 'content/exercises/goblet-kniebeuge.json')).status).toBe(
+      'draft',
+    );
+    expect(neverApproves(tools.ghCalls)).toBe(true);
+
+    // Nur Freigabe: „alle“ zurückziehen oder auf Entwurf setzen geht nicht.
+    const archive = await runContentReview(
+      { ...input, status: 'archived' },
+      {
+        repoRoot: r.root,
+        tools: fakeTools(r.root),
+        now,
+      },
+    );
+    expect(archive.exitCode).toBe(1);
+    expect(archive.markdown).toContain('nur zum Freigeben');
   });
 });

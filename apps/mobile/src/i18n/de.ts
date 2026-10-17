@@ -5,6 +5,7 @@
  * erfüllen (siehe i18n/index.ts). Fachliche Texte, die zur Logik gehören (Gesundheits-Fragen,
  * Mess-Anleitungen, Geräte- und Lebensmittelnamen), stehen in packages/core und werden dort gepflegt.
  */
+import { deCompetition } from './de-competition';
 import { deCustomMeals } from './de-custom-meals';
 import { deDay } from './de-day';
 import { deFoodLog } from './de-food-log';
@@ -268,7 +269,9 @@ export const de = {
         cycling: 'Radfahren',
         swimming: 'Schwimmen',
       },
-      targetDate: 'Wettkampf- oder Zieldatum (optional)',
+      targetDate: 'Wettkampf-Datum (optional)',
+      targetDateHint:
+        'Nach dem Einrichten trägst du deinen Wettkampf unter Einstellungen → Mein Wettkampf ein – mit Ampel, Countdown und Wettkampfplan.',
     },
     trainingSchedule: {
       title: 'Deine Trainingstage',
@@ -492,7 +495,7 @@ export const de = {
     notesTitle: 'Gut zu wissen',
     notes: {
       goal_endurance_not_yet:
-        'Dein Wettkampfplan rückwärts ab Renndatum (lange Läufe, Tempo, Tapering) kommt in einem späteren Update. Ausdauer-Tage planst du unter Einstellungen → Angaben ändern → Trainingstage ein.',
+        'Für einen Ausdauer- bzw. Wettkampfplan brauchst du Ausdauer-Tage. Du planst sie unter Einstellungen → Angaben ändern → Trainingstage ein.',
       days_rotated:
         'Bei 1–2 Kraft-Tagen wechseln die Einheiten von Woche zu Woche – so kommt jede Muskelgruppe dran. Der Umfang ist geringer.',
       days_capped:
@@ -524,7 +527,7 @@ export const de = {
       week_total_capped:
         'Mehr als 5 Einheiten pro Woche planen wir für dich noch nicht – mindestens 2 Ruhetage helfen beim Erholen.',
       endurance_basic_only:
-        'Dein Wettkampfplan rückwärts ab Renndatum (lange Läufe, Tempo, Tapering) kommt in einem späteren Update.',
+        'Das ist dein Grundlagen-Plan (locker). Einen Wettkampfplan rückwärts ab Renntag mit langen Läufen, Tempo und Tapering erstellst du unter Einstellungen → Mein Wettkampf.',
     },
     // Feste Hinweise aus der Vorlage (planInfoNotices in packages/core, docs/PLAN-KOERPERGEWICHT.md K4).
     infoNotices: {
@@ -1540,6 +1543,7 @@ export const de = {
   foodPhoto: deFoodPhoto,
   foodProduct: deFoodProduct,
   customMeals: deCustomMeals,
+  competition: deCompetition,
   day: deDay,
   weekEval: deWeekEval,
 } as const;

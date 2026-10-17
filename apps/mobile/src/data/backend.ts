@@ -1,4 +1,5 @@
 import type {
+  CompetitionErrorReason,
   ConsentType,
   CustomMeal,
   FoodPhotoResponse,
@@ -14,6 +15,7 @@ import type {
   PreferenceChange,
   PlanLibrary,
   PlanSafetyRules,
+  SaveCompetitionPayload,
   SavePlanPayload,
   SavePlanSession,
   SessionLogPayload,
@@ -254,6 +256,19 @@ export interface Backend {
    * Verschiebungen werden vorher gesendet. Ohne Verbindung → BackendError „online_only“.
    */
   swapPlannedSessions(swap: SessionSwap, rows: UserRows): Promise<UserRows>;
+  // --- Wettkampf (Phase 10, Etappe WP4) ------------------------------------------------------------------
+  /**
+   * Wettkampf anlegen (`id` null) bzw. den eigenen GEPLANTEN als Ganzes ändern (public.save_competition; Testmodus:
+   * checkSaveCompetition aus packages/core). Mit Plan-Bezug zwingend VOR savePlan des Wettkampfplans (Wächter WP3 M2).
+   * Nur online (Supabase), nie Warteschlange. Fehler `competition_rejected` mit Grund.
+   */
+  saveCompetition(payload: SaveCompetitionPayload, rows: UserRows): Promise<UserRows>;
+  /** Geplanten Wettkampf absagen (public.cancel_competition). Nur online. */
+  cancelCompetition(id: string, rows: UserRows): Promise<UserRows>;
+  /** Wettkampf abschließen, optional mit eigenem Ausdauer-Eintrag vom Renntag (public.complete_competition). */
+  completeCompetition(id: string, sessionLogId: string | null, rows: UserRows): Promise<UserRows>;
+  /** Wettkampf endgültig löschen (public.delete_competition, Recht auf Löschung). */
+  deleteCompetition(id: string, rows: UserRows): Promise<UserRows>;
   /** Hintergrund-Ereignisse abonnieren; Rückgabe = abbestellen. */
   subscribe(listener: (event: BackendEvent) => void): () => void;
 
@@ -483,6 +498,8 @@ export type BackendErrorCode =
   | 'user_product_rejected'
   /** Vorübergehend (Zeitlimit, Sperrkonflikt, Server 5xx, Drosselung) – „bitte gleich noch einmal“. */
   | 'temporary'
+  /** Wettkampf abgelehnt (save/cancel/complete/delete_competition) – Grund in `competitionReason`. */
+  | 'competition_rejected'
   /**
    * Löschen gerade nicht möglich (Etappe N7 Teil 2, ersetzt den S1-Rückfall): Die Datenbank-Funktion fehlt noch (App
    * vor `db-migrate`) – nie halb löschen, „bitte später erneut versuchen“.
@@ -504,10 +521,17 @@ export class BackendError extends Error {
   readonly sensitive: boolean;
   /** Nur bei abgelehntem Verschieben/Tauschen (`plan_rejected`): Ursache für den passenden Text. */
   readonly moveReason: MoveRejectReason | null;
+  /** Nur bei `competition_rejected`: Grund für den passenden Text (fester Code, ohne Werte). */
+  readonly competitionReason: CompetitionErrorReason | null;
 
   constructor(
     code: BackendErrorCode,
-    options: { sensitive?: boolean; cause?: unknown; moveReason?: MoveRejectReason } = {},
+    options: {
+      sensitive?: boolean;
+      cause?: unknown;
+      moveReason?: MoveRejectReason;
+      competitionReason?: CompetitionErrorReason;
+    } = {},
   ) {
     // Bewusst ohne Werte in der Meldung – keine Gesundheitsdaten in Fehlern oder Logs.
     super(`BackendError: ${code}`);
@@ -515,6 +539,7 @@ export class BackendError extends Error {
     this.code = code;
     this.sensitive = options.sensitive ?? false;
     this.moveReason = options.moveReason ?? null;
+    this.competitionReason = options.competitionReason ?? null;
     if (options.cause !== undefined) {
       (this as { cause?: unknown }).cause = options.cause;
     }

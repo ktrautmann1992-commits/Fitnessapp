@@ -26,6 +26,7 @@ import {
 } from '@fitnessapp/core';
 
 import type { PreferenceSwapContext } from './backend';
+import { competitionDisplayLevel } from './competition-level';
 import {
   type ActivePlan,
   allSessions,
@@ -118,6 +119,15 @@ export function sessionDisplay(input: SessionDisplayInput): SessionDisplay {
   const shown = prepareSessionForDisplay(session, {
     rules,
     previousStartGroup: startGroupOf(active, birthDate),
+    // Wettkampfplan (WP4): Zahl harter Einheiten je Woche nach dem AKTUELLEN Level (Wächter N3 zu WP2).
+    ...(session.workout_type
+      ? {
+          competitionWeek: {
+            sessions: active.sessions,
+            level: competitionDisplayLevel(rows, snapshot),
+          },
+        }
+      : {}),
     library: lookup,
     ...(library ? { substituteLibrary: library.exercises } : {}),
     ...(profile ? { profile } : {}),

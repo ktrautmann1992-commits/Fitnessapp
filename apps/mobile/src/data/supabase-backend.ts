@@ -22,6 +22,7 @@ import {
   isoDateInTimeZone,
   LOG_CACHE_WEEKS,
   nutritionSetupColumnsSchema,
+  type CompetitionErrorReason,
   type ConsentType,
   type NutritionLibrary,
   type PlanLibrary,
@@ -130,6 +131,7 @@ import {
   type AuthSession,
   type CardioLogRow,
   type ConsentDocument,
+  type CompetitionRow,
   type ConsentPlatform,
   type ExerciseLogRow,
   type FoodDislikeRow,
@@ -430,6 +432,42 @@ function emptyIfMissing<T>(result: { data: T[] | null; error: unknown }): {
   return result.error !== null && isMissingRelation(result.error)
     ? { data: [], error: null }
     : result;
+}
+
+/**
+ * Feste Fehlertexte der Wettkampf-Funktionen (20261016140200_competition_rpcs.sql) → Grund (gleiche Gründe wie der
+ * Testmodus, packages/core competition-rules.ts). Die Meldungen enthalten keine Werte.
+ */
+const COMPETITION_MESSAGES: readonly [RegExp, CompetitionErrorReason][] = [
+  [/^Es gibt schon einen geplanten Wettkampf/, 'competition_exists'],
+  [/^(Der Renntag liegt außerhalb|Bis zum Renntag ist zu wenig Zeit)/, 'race_date'],
+  [/^Die Referenzzeit ist zu alt/, 'reference_date'],
+  [/^Ein Wettkampfplan braucht den Gesundheits-Check/, 'health_check_required'],
+  [
+    /^(In der Schwangerschaft|Für diese Distanz|Eine Zielzeit ist hier nicht möglich)/,
+    'not_allowed',
+  ],
+  [/^Wettkampf nicht gefunden/, 'not_found'],
+  [/^(Nur geplante Wettkämpfe|Ein abgesagter Wettkampf)/, 'not_planned'],
+  [/^(Der Wettkampf liegt noch in der Zukunft|Dieser Eintrag passt nicht)/, 'result_rejected'],
+];
+
+/** Fehler von save/cancel/complete/delete_competition: Netz → „online_only“ (Anlegen nur online), sonst Grund. */
+export function toCompetitionError(error: unknown): BackendError {
+  if (error instanceof BackendError) return error;
+  const e = (error ?? {}) as ErrorLike;
+  // Datenbank-Codes zuerst: 57014 meldet „…statement timeout“ und ist kein Netzfehler (wie toMoveError).
+  if (/^5[37]/.test(e.code ?? '') || (e.status !== undefined && e.status >= 500)) {
+    return new BackendError('temporary', { cause: error });
+  }
+  const code = classifySupabaseError(error);
+  if (code === 'network') return new BackendError('online_only', { cause: error });
+  if (code === 'not_signed_in' || code === 'rate_limited') {
+    return new BackendError(code, { cause: error });
+  }
+  const message = e.message ?? '';
+  const reason = COMPETITION_MESSAGES.find(([pattern]) => pattern.test(message))?.[1] ?? 'invalid';
+  return new BackendError('competition_rejected', { cause: error, competitionReason: reason });
 }
 
 /** Fehler eines Schreibvorgangs, der nur online geht (ohne Netz → „online_only“, sonst fester Code). */
@@ -1542,6 +1580,7 @@ export function createSupabaseBackend(options: SupabaseBackendOptions): Backend 
       reminder,
       ratingsResult,
       dislikesResult,
+      competitionsResult,
     ] = await Promise.all([
       client.from('profiles').select('*').eq('user_id', userId).maybeSingle(),
       client.from('consents').select('*').eq('user_id', userId),
@@ -1571,10 +1610,13 @@ export function createSupabaseBackend(options: SupabaseBackendOptions): Backend 
         .select('user_id, recipe_id, value, reason, rated_on')
         .eq('user_id', userId),
       client.from('food_dislikes').select('user_id, food_id').eq('user_id', userId),
+      // Wettkämpfe (Phase 10 WP3/WP4) – kein Gesundheitsdatum; der Plan-Bezug kommt nie in den normalen Zwischenspeicher.
+      client.from('competitions').select('*').eq('user_id', userId),
     ]);
     // Etappe N7 (Wächter N7 S1): vor `db-migrate` gibt es die Tabellen noch nicht – dann leer, Anmeldung läuft weiter.
     const ratings = emptyIfMissing(ratingsResult);
     const dislikes = emptyIfMissing(dislikesResult);
+    const competitions = emptyIfMissing(competitionsResult);
     const plan = await fetchActivePlan(userId);
     const startWeights = await client
       .from('exercise_start_weights')
@@ -1596,6 +1638,7 @@ export function createSupabaseBackend(options: SupabaseBackendOptions): Backend 
       reminder,
       ratings,
       dislikes,
+      competitions,
     ]) {
       if (result.error) {
         throw result.error;
@@ -1624,8 +1667,8 @@ export function createSupabaseBackend(options: SupabaseBackendOptions): Backend 
       foodDislikes: (dislikes.data ?? []) as FoodDislikeRow[],
       // Essenspläne, Einkaufslisten, Ernährungstagebuch, Favoriten und eigene Gerichte (Etappe N7 Teil 2).
       ...(await fetchNutritionRows(userId)),
-      // Wettkämpfe (Phase 10 WP3): Tabelle seit WP3, in der App erst mit WP4.
-      competitions: [],
+      // Wettkämpfe (Phase 10 WP4): eigene Zeilen (RLS), vor `db-migrate` leer.
+      competitions: (competitions.data ?? []) as CompetitionRow[],
     };
   }
 
@@ -1932,6 +1975,39 @@ export function createSupabaseBackend(options: SupabaseBackendOptions): Backend 
       } catch (error) {
         throw toPlanError(error, usesHealthData);
       }
+      return refreshRows(session.userId);
+    },
+
+    // Wettkampf (Etappe WP4): immer sofort, nie Warteschlange (Anlegen nur online). Danach neu laden.
+    saveCompetition: async (payload) => {
+      const session = await requireSession();
+      const { error } = await client.rpc('save_competition', {
+        p_competition: { ...payload } as Json,
+      });
+      if (error) throw toCompetitionError(error);
+      return refreshRows(session.userId);
+    },
+    cancelCompetition: async (id) => {
+      const session = await requireSession();
+      const { error } = await client.rpc('cancel_competition', { p_id: id });
+      if (error) throw toCompetitionError(error);
+      return refreshRows(session.userId);
+    },
+    completeCompetition: async (id, sessionLogId) => {
+      const session = await requireSession();
+      // Wartende Trainings zuerst senden (das Ergebnis ist ein Tagebuch-Eintrag vom Renntag).
+      await logQueue.flush().catch(() => 'later');
+      const { error } = await client.rpc('complete_competition', {
+        p_id: id,
+        p_session_log_id: sessionLogId,
+      });
+      if (error) throw toCompetitionError(error);
+      return refreshRows(session.userId);
+    },
+    deleteCompetition: async (id) => {
+      const session = await requireSession();
+      const { error } = await client.rpc('delete_competition', { p_id: id });
+      if (error) throw toCompetitionError(error);
       return refreshRows(session.userId);
     },
 

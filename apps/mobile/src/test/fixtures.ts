@@ -141,3 +141,21 @@ export function localBackendOn(
     newId: () => `id-${today}-${++counter}`,
   });
 }
+
+/**
+ * Testmodus mit UUIDs als IDs (Wächter WP4 N7): Wettkampf-IDs gehen durch `saveCompetitionPayloadSchema` (z.uuid) –
+ * mit den sonst üblichen „id-…“-IDs ließe sich ein Wettkampf in Tests nicht ändern.
+ */
+export function uuidBackend(rows: UserRows, today = TODAY, now = NOW) {
+  const store = createMemoryStore({
+    'fitnessapp.local.v1': JSON.stringify({ session: { userId: USER_ID, email: null }, rows }),
+  });
+  let counter = 0;
+  const backend = createLocalBackend(store, {
+    platform: 'web',
+    today: () => today,
+    now: () => now,
+    newId: () => `00000000-0000-4000-8000-${String(++counter).padStart(12, '0')}`,
+  });
+  return { store, backend };
+}
