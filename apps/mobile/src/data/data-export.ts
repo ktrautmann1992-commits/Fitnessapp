@@ -176,6 +176,8 @@ export function localDataExport(
     ai_usage: [...(extra.aiUsage ?? [])],
     beta_entitlements: [],
     admin_actions: [],
+    // Strecken (Phase 10 S1): in der App erst mit der Aufzeichnung (nach S0, Development Build) – im Testmodus leer.
+    tracked_routes: [],
     // Übungs-Präferenzen (Etappe T2) – in export_my_data() erst mit Etappe T3 (PENDING_DB_EXPORT_TABLES).
     exercise_preferences: rows.exercisePreferences,
   };
