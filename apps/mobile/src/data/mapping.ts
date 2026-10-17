@@ -20,6 +20,8 @@ import {
   scheduleFromSlots,
   scheduleToSlots,
   type TrainingSchedule,
+  type WeightGoal,
+  weightGoalSchema,
 } from '@fitnessapp/core';
 import type { Json } from '@fitnessapp/db';
 
@@ -33,6 +35,7 @@ import type {
 import type {
   ConsentRow,
   FoodPreferenceRow,
+  GoalAnswer,
   GoalsRow,
   NutritionPrefsRow,
   OnboardingAnswers,
@@ -40,6 +43,7 @@ import type {
   TrainingSlotRow,
   UserEquipmentRow,
   UserRows,
+  WeightGoalRow,
 } from './types';
 
 /**
@@ -97,7 +101,14 @@ export function applyStepToAnswers(answers: OnboardingAnswers, save: StepSave): 
     case 'experience':
       return { ...answers, experienceLevel: save.experienceLevel };
     case 'goal':
-      return { ...answers, goal: save.goal };
+      return {
+        ...answers,
+        goal: save.goal,
+        // Wie der Datenbank-Trigger (Wächter S13): ohne Abnehmen als Haupt- oder Nebenziel kein Wunschgewicht.
+        ...(losesWeight(save.goal) ? {} : { weightGoal: null }),
+      };
+    case 'weight_goal':
+      return { ...answers, weightGoal: save.weightGoal };
     case 'time_budget':
       return { ...answers, trainingSchedule: save.schedule };
     case 'equipment':
@@ -122,6 +133,16 @@ export function progressPatch(
     : { onboarding_step: nextStep };
 }
 
+/** Ist Abnehmen Haupt- oder Nebenziel (docs/PLAN-ZIELE.md 2.1)? */
+export function losesWeight(goal: Pick<GoalAnswer, 'goalType' | 'secondaryGoalType'>): boolean {
+  return goal.goalType === 'fat_loss' || goal.secondaryGoalType === 'fat_loss';
+}
+
+/** Ist Ausdauer Haupt- oder Nebenziel (Disziplin nur dann, CHECK goals_discipline_check)? */
+function hasEndurance(goal: Pick<GoalAnswer, 'goalType' | 'secondaryGoalType'>): boolean {
+  return goal.goalType === 'endurance' || goal.secondaryGoalType === 'endurance';
+}
+
 export function toGoalsRow(userId: string, answers: OnboardingAnswers): GoalsRow {
   if (!answers.goal) {
     throw new Error('Ziel fehlt – Ziel wird vor den Trainingstagen gespeichert.');
@@ -129,13 +150,44 @@ export function toGoalsRow(userId: string, answers: OnboardingAnswers): GoalsRow
   return {
     user_id: userId,
     goal_type: answers.goal.goalType,
-    discipline: answers.goal.goalType === 'endurance' ? answers.goal.discipline : null,
+    // Nebenziel seit Etappe Z3 (Spalte goals.secondary_goal_type); null = keins.
+    secondary_goal_type: answers.goal.secondaryGoalType,
+    discipline: hasEndurance(answers.goal) ? answers.goal.discipline : null,
     target_date: answers.goal.targetDate,
     // Abgeleitet aus den Trainingstagen (Erweiterungsplan 3.1); null = nur Ausdauer bzw. noch offen.
     training_location: answers.trainingSchedule
       ? deriveTrainingLocation(answers.trainingSchedule)
       : null,
   };
+}
+
+/** Normalisiertes Abnehmziel (packages/core, `weightGoalSchema`) → Zeile von weight_goals (Etappe Z3). */
+export function toWeightGoalRow(userId: string, goal: WeightGoal): WeightGoalRow {
+  return {
+    user_id: userId,
+    target_weight_kg: goal.targetWeightKg,
+    start_date: goal.startDate,
+    target_date: goal.targetDate,
+    amount_mode: goal.amountMode,
+    time_mode: goal.timeMode,
+  };
+}
+
+/**
+ * Zeile von weight_goals → Abnehmziel für die Ernährungs-Engine. Geprüft mit `weightGoalSchema` (Zod an der Grenze):
+ * Passt die Zeile nicht (z. B. alter oder manipulierter Gerätestand), gibt es KEIN Ziel (null) – die Engine plant dann
+ * „ohne festes Ziel“, statt dass die ganze Ernährungswoche scheitert (Wächter Z2 K-5).
+ */
+export function weightGoalFromRow(row: WeightGoalRow | null): WeightGoal | null {
+  if (row === null) return null;
+  const parsed = weightGoalSchema.safeParse({
+    targetWeightKg: Number(row.target_weight_kg),
+    startDate: row.start_date,
+    targetDate: row.target_date,
+    amountMode: row.amount_mode,
+    timeMode: row.time_mode,
+  });
+  return parsed.success ? parsed.data : null;
 }
 
 /** Trainingstage → Zeilen von training_slots (slot_no 1…n, wie replace_training_slots). */
@@ -296,6 +348,15 @@ export function planStepWrites(save: StepSave, ctx: PlanContext): WriteOp[] {
       ];
     case 'goal':
       return [{ kind: 'upsert_goals', row: toGoalsRow(userId, answers) }, progressOp];
+    // Konkretes Abnehmziel (Etappe Z3; Bildschirm ab Z4). null = „ohne festes Ziel“ → ein gespeichertes Ziel wird
+    // gelöscht. Nach abgeschlossenem Onboarding (Einstellungen) bleibt der Fortschritt unverändert.
+    case 'weight_goal': {
+      const op: WriteOp =
+        save.weightGoal === null
+          ? { kind: 'delete_weight_goal' }
+          : { kind: 'upsert_weight_goal', row: toWeightGoalRow(userId, save.weightGoal) };
+      return ctx.onboardingCompleted ? [op] : [op, progressOp];
+    }
     case 'time_budget':
       // Trainingstage + abgeleiteter Ort in goals (der Schritt „Trainingsort“ entfällt).
       return [
@@ -414,9 +475,15 @@ export function answersFromRows(rows: UserRows): OnboardingAnswers {
   if (goals) {
     answers.goal = {
       goalType: goals.goal_type,
+      // Ältere Stände ohne Spalte (vor Etappe Z3): kein Nebenziel.
+      secondaryGoalType: goals.secondary_goal_type ?? null,
       discipline: goals.discipline,
       targetDate: goals.target_date,
     };
+  }
+  const weightGoal = weightGoalFromRow(rows.weightGoal);
+  if (weightGoal !== null) {
+    answers.weightGoal = weightGoal;
   }
   const schedule = scheduleFromSlots(rows.trainingSlots);
   if (schedule) {

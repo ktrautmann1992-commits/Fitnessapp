@@ -4,6 +4,7 @@ import {
   BARBELL_DEFAULT_BAR_KG,
   BARBELL_ID,
   createGoalStepSchema,
+  isAllowedGoalPair,
   DEFAULT_SLOT_MINUTES,
   ENDURANCE_DISCIPLINES,
   EQUIPMENT,
@@ -72,9 +73,22 @@ export function GoalStep({ ctl }: { ctl: StepController }) {
       setErrors({ targetDate: t.age.incomplete });
       return;
     }
+    // Nebenziel (Etappe Z3): Die Auswahl kommt mit Etappe Z4. Bis dahin bleibt ein gespeichertes Nebenziel erhalten,
+    // solange es zum gewählten Hauptziel passt (sonst entfällt es); seine Disziplin ebenso.
+    const secondaryGoalType =
+      goalType !== undefined &&
+      saved?.secondaryGoalType != null &&
+      isAllowedGoalPair(goalType, saved.secondaryGoalType)
+        ? saved.secondaryGoalType
+        : null;
     const parsed = createGoalStepSchema(ctl.today).safeParse({
       goalType,
-      discipline: isEndurance ? discipline : null,
+      secondaryGoalType,
+      discipline: isEndurance
+        ? discipline
+        : secondaryGoalType === 'endurance'
+          ? (saved?.discipline ?? null)
+          : null,
       targetDate,
     });
     if (!parsed.success) {
@@ -91,6 +105,7 @@ export function GoalStep({ ctl }: { ctl: StepController }) {
       step: 'goal',
       goal: {
         goalType: parsed.data.goalType,
+        secondaryGoalType: parsed.data.secondaryGoalType,
         discipline: parsed.data.discipline ?? null,
         targetDate: parsed.data.targetDate ?? null,
       },

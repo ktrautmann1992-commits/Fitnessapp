@@ -221,7 +221,7 @@ describe('Abnehmziel und Ampel (docs/PLAN-ZIELE.md 3.2, Etappe Z2)', () => {
     ]);
   });
 
-  it('Grenzen laut Plan: mind. 1 kg, 4–104 Wochen, Ziel-BMI 18,5 vorläufig (F8), Hinweis unter 20, Kapazität > 1 kcal', async () => {
+  it('Grenzen laut Plan: mind. 1 kg, 4–104 Wochen, Ziel-BMI 20 bzw. ab 70 J. 22 (F8), Kapazität > 1 kcal', async () => {
     const {
       WEIGHT_GOAL_LIMITS: L,
       WEIGHT_GOAL_MIN_CAPACITY_KCAL,
@@ -229,11 +229,11 @@ describe('Abnehmziel und Ampel (docs/PLAN-ZIELE.md 3.2, Etappe Z2)', () => {
     } = await import('./constants');
     expect(L.minKg).toBe(1);
     expect(L.weeks).toEqual({ min: 4, max: 104 });
-    expect(L.minTargetBmi).toBe(18.5);
-    // Nie unter der WHO-Untergewichtsgrenze, auch wenn F8 die Grenze anhebt.
-    expect(L.minTargetBmi).toBeGreaterThanOrEqual(BMI_LIMITS.underweight);
-    expect(L.lowTargetBmiNotice).toBe(BMI_LIMITS.lowNormal);
-    expect(L.lowTargetBmiNotice).toBeGreaterThan(L.minTargetBmi);
+    expect(L.minTargetBmi).toEqual({ default: 20, senior: 22, seniorFromAge: 70 });
+    // Nie unter der WHO-Untergewichtsgrenze; GLIM 2019: 20 = BMI_LIMITS.lowNormal (Gründer-Entscheidung F8).
+    expect(L.minTargetBmi.default).toBeGreaterThan(BMI_LIMITS.underweight);
+    expect(L.minTargetBmi.default).toBe(BMI_LIMITS.lowNormal);
+    expect(L.minTargetBmi.senior).toBeGreaterThan(L.minTargetBmi.default);
     expect(WEIGHT_GOAL_MIN_CAPACITY_KCAL).toBe(1);
   });
 

@@ -169,7 +169,7 @@ describe('Testmodus: Gesundheitsdaten nur mit Einwilligung', () => {
     await save(backend, { step: 'experience', experienceLevel: 'beginner' });
     await save(backend, {
       step: 'goal',
-      goal: { goalType: 'fat_loss', discipline: null, targetDate: null },
+      goal: { goalType: 'fat_loss', secondaryGoalType: null, discipline: null, targetDate: null },
     });
     await save(backend, {
       step: 'time_budget',
@@ -217,7 +217,7 @@ describe('Testmodus: Gesundheitsdaten nur mit Einwilligung', () => {
     const { backend } = await signedInWithProfile();
     await save(backend, {
       step: 'goal',
-      goal: { goalType: 'fat_loss', discipline: null, targetDate: null },
+      goal: { goalType: 'fat_loss', secondaryGoalType: null, discipline: null, targetDate: null },
     });
     const rows = await save(backend, {
       step: 'nutrition',
@@ -329,6 +329,8 @@ describe('Testmodus: Gerätespeicher älterer App-Versionen (vor Etappe B2)', ()
     expect(rows.goals).toEqual({
       user_id: userId,
       goal_type: 'muscle_gain',
+      // Etappe Z3: fehlende Spalte → kein Nebenziel
+      secondary_goal_type: null,
       discipline: null,
       target_date: null,
       training_location: 'home',

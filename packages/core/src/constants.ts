@@ -2157,19 +2157,28 @@ export const WEIGHT_GOAL_AGE_ITERATIONS = 3;
  * - `kgStep` 0,5 (Eingabe „kg abnehmen“) und `targetStep` 0,1 (Zielgewicht wie `body_metrics.weight_kg numeric(4,1)`).
  * - `weeks` 4–104: Zeitraum zwischen 4 Wochen und 2 Jahren (in Tagen 28–728, gleiche Regel wie der künftige
  *   Datums-CHECK von `weight_goals`, Plan 5.2). PRODUKTENTSCHEIDUNG.
- * - `minTargetBmi` 18,5 und `lowTargetBmiNotice` 20 (= BMI_LIMITS.lowNormal):
- *   **VORLÄUFIG – Entscheidung Gründer (F8).** Quelle für 18,5: WHO-BMI-Klassifikation (Untergewicht < 18,5).
- *   Gegenposition (Wächter S12): Cederholm T et al. (2019), „GLIM criteria for the diagnosis of malnutrition“, Clin
- *   Nutr 38(1):1–9 – BMI < 20 unter 70 J. bzw. < 22 ab 70 J. als phänotypisches Kriterium; Empfehlung des Wächters:
- *   hart 20, ab 70 J. hart 22. Muss vor Etappe Z4 (erste sichtbare App-Stelle) entschieden sein.
+ * - `minTargetBmi`: harte Untergrenze des Ziel-BMI, **Gründer-Entscheidung F8 vom 17.10.2026** (Wächter-Empfehlung
+ *   S12): `default` 20, ab `seniorFromAge` 70 Jahren `senior` 22. Maßgeblich ist das Alter am Zieldatum (das höhere,
+ *   strengere Alter im Zeitraum; `minTargetBmiFor` in goals/weight-goal-feasibility.ts). Quelle: Cederholm T et al. (2019), „GLIM criteria for the
+ *   diagnosis of malnutrition – A consensus report from the global clinical nutrition community“, Clin Nutr
+ *   38(1):1–9 – BMI < 20 unter 70 J. bzw. < 22 ab 70 J. als phänotypisches Kriterium für Mangelernährung; ein bewusst
+ *   angesteuertes Ziel dort planen wir nicht. Zum Vergleich WHO: Untergewicht < 18,5 (die Grenze liegt darüber).
+ *   VOR LIVEGANG GEGEN ORIGINAL PRÜFEN. Einen eigenen Hinweis „Ziel-BMI 18,5 bis unter 20“ gibt es seitdem nicht mehr
+ *   (das Band ist gesperrt).
  */
+/**
+ * Frühester Starttag eines gespeicherten Abnehmziels (Wächter Z3 N1): Das Feature gibt es erst seit 2026; ältere
+ * Werte sind Tippfehler oder Manipulation. Identisch als CHECK `weight_goals.start_date` in der Datenbank
+ * (20261017200100_weight_goals.sql, Abgleich in db-sync.test.ts). PRODUKTENTSCHEIDUNG.
+ */
+export const WEIGHT_GOAL_START_DATE_MIN = '2026-01-01';
+
 export const WEIGHT_GOAL_LIMITS = {
   minKg: 1,
   kgStep: 0.5,
   targetStep: 0.1,
   weeks: { min: 4, max: 104 },
-  minTargetBmi: 18.5,
-  lowTargetBmiNotice: BMI_LIMITS.lowNormal,
+  minTargetBmi: { default: 20, senior: 22, seniorFromAge: 70 },
 } as const;
 
 // ---------------------------------------------------------------------------------------------------------
