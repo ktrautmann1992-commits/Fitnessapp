@@ -368,6 +368,14 @@ export default function SettingsScreen() {
             setDialog('recreate');
           }}
         />
+        {/* Phase 10 WP4: Wettkampf mit Ampel, Countdown und Wettkampfplan. */}
+        <Button
+          label={t.competition.settingsLink}
+          variant="secondary"
+          accessibilityHint={t.competition.settingsLinkHint}
+          onPress={() => router.push('/wettkampf' as Href)}
+          testID="settings-competition"
+        />
       </Card>
 
       {supportsNutrition ? (

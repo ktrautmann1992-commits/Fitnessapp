@@ -22,6 +22,11 @@ import {
   addDays,
   appendPlanBlockSchema,
   generatedSessionSchema,
+  generatedCompetitionSessionSchema,
+  checkCompetitionSessions,
+  type PersonRuleSession,
+  workoutStepsSchema,
+  WORKOUT_TYPES,
   PLAN_SAVE_LIMITS,
   type PlanLibrary,
   type SavePlanSession,
@@ -46,7 +51,7 @@ import {
 
 import type { ConsentVersions } from './mapping';
 import { preferencesFromRows } from './exercise-swap';
-import { healthPlanBasis } from './training-plan';
+import { healthPlanBasis, healthScreeningForPlan, planSnapshot } from './training-plan';
 import type { GoalsRow, PlannedSessionRow, ProfileRow, UserRows } from './types';
 import type { LogRejectReason } from './workout-draft';
 import { kindsForScope, type WriteOp } from './write-ops';
@@ -325,7 +330,10 @@ function sessionsValid(
 ): boolean {
   return sessions.every(
     (s) =>
-      generatedSessionSchema.safeParse(s).success &&
+      // Wettkampf-Einheiten (WP3): Anstrengung bis 8 nur mit harter Art usw. (= CHECK planned_sessions_workout_fields).
+      (s.workout_type
+        ? generatedCompetitionSessionSchema.safeParse(s).success
+        : generatedSessionSchema.safeParse(s).success) &&
       s.block_no === frame.blockNo &&
       s.scheduled_on >= frame.earliest &&
       s.scheduled_on <= frame.latest &&
@@ -347,6 +355,67 @@ function sessionsValid(
 function noCollisions(existing: readonly PlannedSessionRow[], dates: readonly string[]): boolean {
   const taken = new Set(existing.filter((s) => s.status === 'planned').map((s) => s.scheduled_on));
   return new Set(dates).size === dates.length && dates.every((d) => !taken.has(d));
+}
+
+/** Einheit für die Regeln je Person (Schritte aus der Zeile gelesen wie die Datenbank). */
+function personSession(s: {
+  kind: string;
+  scheduled_on: string;
+  status: string;
+  estimated_minutes: number;
+  effort_target: number | null;
+  workout_type?: string | null;
+  workout_steps?: unknown;
+}): PersonRuleSession {
+  const steps = workoutStepsSchema.safeParse(s.workout_steps);
+  const type = WORKOUT_TYPES.find((w) => w === s.workout_type) ?? null;
+  return {
+    kind: s.kind,
+    scheduled_on: s.scheduled_on,
+    status: s.status,
+    estimated_minutes: s.estimated_minutes,
+    effort_target: s.effort_target,
+    // Unbekannte Art: wie „mit Art“ behandeln (die Schema-Prüfung lehnt sie ohnehin ab).
+    workout_type: s.workout_type && !type ? 'intervals' : type,
+    workout_steps: steps.success ? steps.data : null,
+  };
+}
+
+/**
+ * Regeln je Person für Wettkampf-Einheiten wie private.insert_plan_sessions (WP3, Wächter M1/M2): Check, keine
+ * Schwangerschaft, eigener geplanter Wettkampf mit Plan-Bezug, gleiche Disziplin, Deckel je Alter, Arzt-Hinweis,
+ * harte Einheiten je Kalenderwoche über den ganzen Plan.
+ */
+function competitionSessionsAllowed(
+  block: readonly SavePlanSession[],
+  planSessions: readonly PersonRuleSession[],
+  plan: { usesHealthData: boolean; medicalNotice: boolean; inputs: unknown },
+  ctx: PlanRuleContext,
+): boolean {
+  const { rows } = ctx;
+  if (!rows.profile) return false;
+  const snapshot = planSnapshot({ inputs: plan.inputs });
+  const competition = rows.competitions.find((c) => c.status === 'planned') ?? null;
+  const profileLevel = experienceLevelSchema.safeParse(rows.profile.experience_level);
+  return checkCompetitionSessions(
+    block.map((s) => personSession({ ...s, status: 'planned' })),
+    planSessions,
+    {
+      today: ctx.today,
+      birthDate: rows.profile.birth_date,
+      plan: {
+        usesHealthData: plan.usesHealthData,
+        medicalNotice: plan.medicalNotice,
+        level: snapshot?.experienceLevel ?? null,
+        discipline: snapshot?.discipline ?? null,
+      },
+      profileLevel: profileLevel.success ? profileLevel.data : null,
+      pregnancy: healthScreeningForPlan(rows, ctx.versions)?.flags.includes('pregnancy') ?? false,
+      competition: competition
+        ? { discipline: competition.discipline, usesHealthData: competition.uses_health_data }
+        : null,
+    },
+  ).ok;
 }
 
 export function isValidPlanOp(op: WriteOp, ctx: PlanRuleContext): boolean {
@@ -391,6 +460,20 @@ export function isValidPlanOp(op: WriteOp, ctx: PlanRuleContext): boolean {
       ) {
         return false;
       }
+      if (
+        !competitionSessionsAllowed(
+          plan.sessions,
+          plan.sessions.map((s) => personSession({ ...s, status: 'planned' })),
+          {
+            usesHealthData: plan.uses_health_data,
+            medicalNotice: plan.medical_notice,
+            inputs: plan.inputs,
+          },
+          ctx,
+        )
+      ) {
+        return false;
+      }
       // Der bisherige aktive Plan verliert seine geplanten Einheiten ab gestern.
       const old = rows.plans.find((p) => p.status === 'active');
       const remaining = rows.plannedSessions.filter(
@@ -427,8 +510,22 @@ export function isValidPlanOp(op: WriteOp, ctx: PlanRuleContext): boolean {
         [lastDate, today].sort().at(-1) as string,
         PLAN_SAVE_LIMITS.scheduleMaxDaysAhead,
       );
+      const planSessions = [
+        ...own.map(personSession),
+        ...op.sessions.map((s) => personSession({ ...s, status: 'planned' })),
+      ];
       return (
         sessionsValid(op.sessions, ctx, { blockNo: lastBlock + 1, earliest, latest }) &&
+        competitionSessionsAllowed(
+          op.sessions,
+          planSessions,
+          {
+            usesHealthData: plan.uses_health_data,
+            medicalNotice: plan.medical_notice,
+            inputs: plan.inputs,
+          },
+          ctx,
+        ) &&
         noCollisions(
           rows.plannedSessions,
           op.sessions.map((s) => s.scheduled_on),

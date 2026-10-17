@@ -1,5 +1,6 @@
 import {
   addDays,
+  competitionCountdown,
   entryDateBlock,
   isBackfilledLog,
   type MoveTarget,
@@ -15,8 +16,10 @@ import { AccessibilityInfo, Platform, StyleSheet, View } from 'react-native';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 
 import { CalendarDay, DraggableSession, LiveRegion, MoveMenu } from '@/components/calendar';
+import { CountdownCard } from '@/components/competition';
 import { Screen } from '@/components/screen';
 import { Body, Button, Card, Heading, LoadingState, Notice } from '@/components/ui';
+import { competitionEntry, displayedSessionNames, withDisplayedNames } from '@/data/competition';
 import { activePlan, moveTargetsInRows, validateMoveInRows } from '@/data/training-plan';
 import { t } from '@/i18n';
 import {
@@ -26,6 +29,7 @@ import {
   nutritionHintNeeded,
   outcomeText,
 } from '@/lib/calendar-format';
+import { disciplineText } from '@/lib/competition-format';
 import { berlinTodayIso, todayIso } from '@/lib/format';
 import { weekRangeText } from '@/lib/history-format';
 import { dayLabel, weekdayShort } from '@/lib/plan-format';
@@ -75,9 +79,19 @@ export default function CalendarScreen() {
 
   const rows = app.rows;
   const active = useMemo(() => (rows ? activePlan(rows) : null), [rows]);
+  // Angezeigte (sichere) Namen statt der gespeicherten (Wächter WP4 M2) – auch in Meldungen und im Menü.
+  const shownNames = useMemo(
+    () => (rows ? displayedSessionNames(rows, active, app.safetyRules) : new Map<string, string>()),
+    [rows, active, app.safetyRules],
+  );
   const names = useMemo(
-    () => new Map((rows?.plannedSessions ?? []).map((s) => [s.id, s.name_de] as const)),
-    [rows],
+    () =>
+      new Map(
+        (rows?.plannedSessions ?? []).map(
+          (s) => [s.id, shownNames.get(s.id) ?? s.name_de] as const,
+        ),
+      ),
+    [rows, shownNames],
   );
   const nameOf = useCallback((id: string) => names.get(id) ?? null, [names]);
   const dragTargets = useMemo(
@@ -224,6 +238,19 @@ export default function CalendarScreen() {
     return <Redirect href={route as Href} />;
   }
 
+  const race = competitionEntry(rows, today);
+  const raceCountdown = race
+    ? competitionCountdown(
+        {
+          status: race.row.status,
+          discipline: race.stored.competition.discipline,
+          raceDate: race.stored.competition.raceDate,
+          resultSessionLogId: race.stored.resultSessionLogId,
+        },
+        today,
+      )
+    : null;
+
   const back = (
     <Button
       label={t.calendar.back}
@@ -235,6 +262,17 @@ export default function CalendarScreen() {
   if (!active) {
     return (
       <Screen title={t.calendar.title} testID="calendar" footer={back}>
+        {/* Wettkampf (WP4): Countdown; der Renntag ist im Kalender markiert (mit Wort, nie nur Farbe). */}
+        {race && raceCountdown ? (
+          <CountdownCard
+            countdown={raceCountdown}
+            discipline={race.stored.competition.discipline}
+            name={race.stored.competition.name}
+            onOpen={drag !== null ? null : () => router.push('/wettkampf' as Href)}
+            testID="calendar-countdown"
+          />
+        ) : null}
+
         <LiveRegion text={live.text} version={live.version} />
         {feedback ? (
           <Notice tone={feedback.tone} testID="calendar-message" silent>
@@ -257,13 +295,16 @@ export default function CalendarScreen() {
   const currentWeek = startOfIsoWeek(today);
   // Etappe A1b: zurückblättern bis zur Woche, in der das Nachtragen endet (heute − 14 Tage).
   const firstWeek = startOfIsoWeek(addDays(today, -SESSION_LOG_LIMITS.backdateDays));
+  // Bis zum Renntag blättern (Renntag markiert), auch wenn erst der erste Block geplant ist.
   const lastDate = active.sessions.reduce(
     (last, s) => (s.scheduled_on > last ? s.scheduled_on : last),
-    today,
+    race && race.row.status === 'planned' && race.stored.competition.raceDate > today
+      ? race.stored.competition.raceDate
+      : today,
   );
   const lastWeek = startOfIsoWeek(lastDate);
   const shownWeek = week < firstWeek ? firstWeek : week > lastWeek ? lastWeek : week;
-  const days = weekOverview(active.sessions, today, shownWeek);
+  const days = weekOverview(withDisplayedNames(active.sessions, shownNames), today, shownWeek);
   /** Einträge je Tag (Etappe A1b: freie und nachgetragene Einheiten erscheinen im Kalender). */
   const logsOn = (date: string) => rows.sessionLogs.filter((l) => l.performed_on === date);
   const empty = days.every(
@@ -348,6 +389,17 @@ export default function CalendarScreen() {
           onPress={() => router.push(`/wochenauswertung?woche=${shownWeek}` as Href)}
           testID="calendar-week-evaluation"
         />
+
+        {/* Wettkampf (WP4): Countdown im Kalender. */}
+        {race && raceCountdown ? (
+          <CountdownCard
+            countdown={raceCountdown}
+            discipline={race.stored.competition.discipline}
+            name={race.stored.competition.name}
+            onOpen={drag !== null ? null : () => router.push('/wettkampf' as Href)}
+            testID="calendar-countdown"
+          />
+        ) : null}
 
         <LiveRegion text={live.text} version={live.version} />
         {feedback ? (
@@ -462,6 +514,16 @@ export default function CalendarScreen() {
                     />
                   );
                 })}
+                {race && race.stored.competition.raceDate === day.date ? (
+                  <Body
+                    testID={`calendar-race-day-${day.date}`}
+                    accessibilityLabel={t.competition.calendarRaceDayA11y(
+                      disciplineText(race.stored.competition.discipline),
+                    )}
+                  >
+                    {`◆ ${t.competition.calendarRaceDay(disciplineText(race.stored.competition.discipline))}`}
+                  </Body>
+                ) : null}
                 {entryBlock === null ? (
                   <Button
                     label={t.backfill.add}
@@ -483,7 +545,9 @@ export default function CalendarScreen() {
       </Screen>
       <MoveMenu
         visible={menuSession !== null}
-        title={menuSession ? t.calendar.menuTitle(menuSession.name_de) : ''}
+        title={
+          menuSession ? t.calendar.menuTitle(nameOf(menuSession.id) ?? menuSession.name_de) : ''
+        }
         targets={menuTargets}
         nameOf={nameOf}
         onPick={(date) => {

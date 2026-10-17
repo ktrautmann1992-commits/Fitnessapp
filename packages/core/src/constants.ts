@@ -2523,6 +2523,13 @@ export const COMPETITION_START_REFERENCE = {
   maxFactor: COMPETITION_OWN_START.maxFactor,
 } as const;
 
+/**
+ * Tagebuch-Bezug beim Erstellen eines Wettkampfplans in der App (WP4): nur Einheiten der letzten 28 Tage vor heute
+ * (Plan 3.2: „gibt es Tagebuch-Einträge der letzten 4 Wochen, zählt min(geplant, eingetragen)“). Künftige und nur
+ * geplante Wochen zählen nie. Quelle: docs/PLAN-PHASE-10.md 3.2 – PRODUKTENTSCHEIDUNG, VOR LIVEGANG FACHLICH PRÜFEN.
+ */
+export const COMPETITION_START_LOOKBACK_DAYS = 28;
+
 // ---------------------------------------------------------------------------------------------------------
 // Phase 10 · Etappe WP2 – Einheiten, Intensität, Wochenbau (docs/PLAN-PHASE-10.md Abschnitte 3.3–3.6 und 6;
 // Gründer-Entscheidungen W-G6/W-G7/W-G8 und G2/G3/G7 vom 16.10.2026 „wie empfohlen“). Gilt NUR im Wettkampfplan –

@@ -2,7 +2,8 @@
 
 **Status:** Freigegeben (16.10.2026). Gründer-Entscheidungen W-G1 bis W-G16 (Abschnitt 19): **alle wie empfohlen**
 (ausgefülltes Entscheidungs-PDF vom 16.10.2026). Umsetzung je Etappe als Pull Request mit Wächter-Prüfung.
-**Stand 16.10.2026:** WP1 (Core) als PR #83, WP2 (Core) als PR #84, WP3 (Datenmodell) im Anschluss umgesetzt (Abschnitt 7). A1a, A1b, E1, A2, E2, A3 (PLAN-AUSWERTUNG) sind gemergt; Expo-Projekt „AlphaFive“ wird verbunden
+**Stand 16.10.2026:** WP1 (Core) als PR #83, WP2 (Core) als PR #84, WP3 (Datenmodell) als PR #86, WP4 (App: Wettkampf,
+Plan-Ansicht, Countdown, Intervall-Timer) im Anschluss umgesetzt (Abschnitte 7 und 8). A1a, A1b, E1, A2, E2, A3 (PLAN-AUSWERTUNG) sind gemergt; Expo-Projekt „AlphaFive“ wird verbunden
 (PR #79). Damit können WP1/WP2 (Core) sofort starten, WP3/WP4 danach, S0 sobald die erste APK läuft.
 
 **Grundlage:** `CLAUDE.md`, `docs/PROMPTS.md` (Phase 10, „Erweiterung Phase 10 – Strecken aufzeichnen“, Phase 8,
@@ -352,7 +353,8 @@ Umsetzungsstand WP2):
 
 - ~~WP2: Einheiten-Arten je Phase, 80/20, langer Lauf (G2), Pace/Riegel, Zielzeit-Plausibilität gegen die Referenzzeit, Kraft in Spitze/Tapering (3.5), harte Einheiten heben `effort_target` über 4 (4b-Regel `endurance_reduce`, Risiko 7).~~ Umgesetzt, siehe Umsetzungsstand WP2.
 - ~~WP3: Tabelle `competitions` mit den Grenzen aus `COMPETITION_INPUT_LIMITS` (db-sync), gespeichert werden müssen auch bestätigter eigener Startumfang, Tagebuch-Bezug beim Erstellen (mit `startGroup`) und `effectiveGoal` – sonst rechnet ein Folgeblock einen anderen Makrozyklus.~~ Umgesetzt, siehe Umsetzungsstand WP3.
-- WP4: App (Ampel, Phase je Woche, Countdown); bis dahin ruft niemand `generateCompetitionPlan` auf.
+- ~~WP4: App (Ampel, Phase je Woche, Countdown); bis dahin ruft niemand `generateCompetitionPlan` auf.~~ Umgesetzt, siehe
+  Umsetzungsstand WP4.
 - Folgeblock nach dem Ende des Makrozyklus läuft als normaler Grundlagen-Block und bezieht sich auf die letzte Belastungswoche (Spitze) – nach 3–5 Wochen Tapering/Erholung evtl. zu hoch; mit 4b bzw. WP4 klären (Vorschlag: Bezug auf den Startumfang begrenzen).
 - Fachprüfung aller neuen Konstanten (Abschnitt 20 Punkt 5).
 
@@ -561,7 +563,7 @@ Alle Änderungen danach zurückgesetzt (Vergleich mit einer Sicherungskopie des 
 
 **Gründer-Fragen (sichere Voreinstellung gilt, bis ihr anders entscheidet):**
 
-- **G8 – OFFEN, VOR WP4 ZU ENTSCHEIDEN (bevor die App die Ampel zeigt; Wächter M4) – Langer Lauf „Ankommen“:** Voreinstellung 40/50/70/120 min (5 km/10 km/Halbmarathon/Marathon) = höchstens 50 %
+- **G8 – Voreinstellung gilt (17.10.2026: Gründer-Auftrag „alle Etappen bauen“ ohne Gegenentscheidung; jederzeit änderbar, Fachprüfung offen) – Langer Lauf „Ankommen“:** Voreinstellung 40/50/70/120 min (5 km/10 km/Halbmarathon/Marathon) = höchstens 50 %
   des Spitzenumfangs (G2 + G3). Plan 3.2 nennt Halbmarathon 90–120 und Marathon 150–180 min. Alternative A: Plateau
   beim Doppelten des langen Laufs (Halbmarathon 180, Marathon 300 min/Woche – Einsteiger bräuchten dann deutlich mehr
   als 16 bzw. 24 Wochen, Tabelle 3.2 anpassen). Alternative B: langer Lauf bis 60 % der Woche. Fachprüfung.
@@ -865,6 +867,213 @@ Erkennung ist eine zweite Sicherung.
   abgesagt, offline (Anlegen erst online; Plan und Timer offline), Fehler vom Server mit Text.
 - Texte in `i18n/de.ts`, Barrierefreiheit (Timer mit Ansage über `accessibilityLiveRegion`), hell/dunkel.
 - Playwright im Testmodus: Wettkampf anlegen → Ampel → Plan mit Phasen → Intervall-Timer.
+
+### Umsetzungsstand WP4 (16.10.2026)
+
+**Was gilt (Gründer-Entscheidungen W-G1 bis W-G16 und G1–G7 wie empfohlen; G8–G14 weiter offen – es gelten die
+sicheren Voreinstellungen der Core- und Datenbank-Konstanten, WP4 ändert daran nichts):**
+
+- **„Mein Wettkampf“** (`apps/mobile/src/app/wettkampf.tsx`, erreichbar über Einstellungen → „Mein Wettkampf“, die
+  Countdown-Karte auf „Heute“/im Kalender und die Einladung auf „Heute“): Formular mit Distanz (5 km bis Halbmarathon/
+  Marathon, W-G2), Renntag, Name (optional, sonst die Distanz), Ziel „Ankommen“/„Zielzeit“ (Zielzeit nur mit
+  Referenzzeit), Referenzzeit (Distanz, Zeit, Datum, mit Erklärung), Wunsch-Tag des langen Laufs (automatisch oder
+  Mo–So) und – nur Fortgeschritten/Leistungssport – bisheriger Umfang mit Bestätigung (W-G5). Zustände: Laden, kein
+  Wettkampf (Einladung), geplant (Countdown, Übersicht, „Ändern“, „Wettkampf absagen“), Renntag/vorbei ohne Ergebnis
+  („Ergebnis eintragen“), erledigt (Erholung, „Nächstes Ziel planen“), frühere Wettkämpfe (abgesagt/erledigt, einzeln
+  löschbar – Recht auf Löschung), offline (Anlegen/Ändern gesperrt mit Hinweis; Plan und Timer gehen offline), Fehler
+  vom Server mit festem Text je Grund.
+- **Ampel sofort beim Datum** (`FeasibilityCard`): `draftFeasibility` → `competitionFeasibility` mit demselben
+  Tagebuch-Bezug wie beim Erstellen. Jede Stufe mit Zeichen **und** Wort („✓ Passt“, „! Knapp“, „✕ Zu kurz“,
+  „✕ Nicht möglich“), Erklärtext, alle Gründe und Hinweise als Text (u. a. `walk_only_plan`,
+  `reference_distance_too_far`, `long_run_day_not_endurance`, `start_reference_capped`, `long_run_not_reachable`,
+  `long_run_day_too_short`), Zahlen (Vorlauf, Spitzenumfang, längster Lauf, Ziel im Plan) und Vorschläge; „Späterer
+  Renntag“, „Kürzere Distanz“, „Gesundheits-Check“ und „Ohne Wettkampfplan weiter“ lassen sich übernehmen.
+  „Wettkampfplan erstellen“ gibt es nur bei „Passt“/„Knapp“ – der Plan wird nie gestaucht.
+- **Wettkampfplan erstellen** (`createCompetitionPlan` in `state/app-state.tsx`, Glue `data/competition.ts`):
+  `generateCompetitionPlan` mit Tagebuch-Bezug (`recentCompetitionStartReference`: nur Einheiten der letzten 28 Tage vor
+  heute, je Einheit min(geplant, eingetragen), Startgruppe über `planStartGroup`), dann **zwingend** in dieser
+  Reihenfolge: ggf. Ziel-Distanz anpassen (mit Hinweis), `save_competition` **mit Plan-Bezug** (wirksames Ziel aus der
+  Ampel, eigener Startumfang so wie eingegeben, Tagebuch-Bezug mit Startgruppe), `save_training_plan` (Wächter WP3 M2).
+  Zod an der Grenze (`generatedCompetitionPlanSchema`, `saveCompetitionPayloadSchema`). Ersetzt den aktiven Plan nur nach
+  Bestätigung. „Nur Countdown speichern“ speichert den Wettkampf ohne Plan-Bezug (kein Gesundheitsdatum, geht auch ohne
+  Einwilligung); wird nur Name bzw. Wunsch-Tag geändert, schickt die App den gespeicherten Plan-Bezug unverändert mit
+  (`resavePayload`, WP3 Präzisierung 3).
+- **„Plan neu erstellen“** (bestehender Weg auf „Heute“/in den Einstellungen): Gibt es einen geplanten Wettkampf mit
+  Plan-Bezug und passender Ziel-Distanz, wird wieder ein Wettkampfplan erstellt (Ampel neu gerechnet, Wettkampf mit
+  frischem Bezug gespeichert); ist die Ampel dann rot, entsteht ein Grundlagen-Plan mit Hinweis („ohne Wettkampfplan,
+  weil die Ampel gerade nicht passt“).
+- **Folgeblöcke** (`competitionFollowUpFromRows`): Makrozyklus aus dem gespeicherten Wettkampf
+  (`storedCompetitionFromRow` → `competitionFollowUpBlock`), Schedule/Level aus dem Schnappschuss des Plans, Gesundheit und
+  Alter nach heute, dann `nextPlanBlock(competitionWeeks)`. Endet der Zyklus (`cycle_finished`), gilt eine Regel aus
+  Tabelle 3.3 neu (`not_available`) oder fehlt der geplante Wettkampf mit Plan-Bezug (abgesagt, erledigt, Widerruf),
+  hängt die App **keinen** Grundlagen-Block von der Spitze aus an, sondern meldet „Dein Wettkampfplan ist zu Ende – Plan
+  neu erstellen“ (sichere Voreinstellung zu WP1 M4, Gründer-Frage G16).
+- **Supabase-Modus:** `competitions` wird mitgeladen (vor `db-migrate` leer), `save/cancel/complete/delete_competition`
+  per RPC – immer sofort, nie Warteschlange; Netz → „Dafür brauchst du kurz Verbindung“, Server-Meldungen → fester Grund
+  (`toCompetitionError`). Im normalen Offline-Zwischenspeicher steht der Wettkampf **ohne** Plan-Bezug (`withoutPlanBasis`
+  in `cacheableRows`) – Countdown offline, Gesundheitsbezug nie unverschlüsselt.
+- **Testmodus:** `localDb.competitions` mit denselben Regeln wie der Server, als reine Core-Funktionen
+  (`packages/core/src/plan/competition-rules.ts`: `checkSaveCompetition` – Datumsfenster, Server-Mindestvorlauf der
+  lockersten Spalte, Referenz 183 Tage, ein geplanter Wettkampf, Plan-Bezug nur mit Einwilligung und Check,
+  Tabelle 3.3; `checkCancelCompetition`, `checkCompleteCompetition`; `checkCompetitionSessions` = Regeln je Person aus
+  `insert_plan_sessions`: Check, Schwangerschaft, eigener geplanter Wettkampf mit Plan-Bezug, gleiche Disziplin,
+  Distanz-Deckel, Anstrengung 8/unter 18 7/ab 65 6, Arzt-Hinweis, harte Einheiten je Kalenderwoche über den ganzen Plan).
+  `local-rules.ts` prüft Wettkampf-Einheiten jetzt mit `generatedCompetitionSessionSchema` (vorher hätte der Testmodus
+  jede Einheit über Anstrengung 4 abgelehnt). Widerruf leert den Plan-Bezug (wie `consents_after_revoke`), Löschen eines
+  Tagebuch-Eintrags leert nur den Ergebnis-Verweis, „Testdaten löschen“ und Export wie bisher (WP3).
+- **Anzeige der Einheiten** (`SessionCard`, `lib/competition-format.ts`): Art mit Wort (bei harten Arten „(hart)“),
+  Pace-Spanne nur mit Referenzzeit und nur beim Laufen (`sessionPaceInfo`), **immer** mit `PACE_NOTICE_DE`,
+  Distanz-Richtwert („etwa 12,5 km – die Dauer ist dein Ziel“), Sprechtest wie bisher, Ablauf der Schritte
+  („6 × 3 min zügig (Anstrengung 8), dazwischen 2 min locker“, `intervalBlocks`). Vor jeder Anzeige
+  `prepareSessionForDisplay` mit den gespeicherten Feldern und neu `competitionWeek` → `applyCompetitionWeekLimits`
+  zusätzlich zu `applyCurrentEnduranceRules` (Level = das strengere aus Profil und Plan, wie der Server).
+- **Phasen-Band** auf „Heute“ (`competitionPlanWeek`): „Aufbau · Woche 6 von 14“, angebrochene Startwoche als
+  „Einstiegswoche“, danach „Erholung nach dem Rennen“, mit Satz zur Phase (Rennwoche: „Nichts Neues ausprobieren“).
+- **Countdown** (`competitionCountdown`) auf „Heute“ und im Kalender („Noch 23 Tage bis zum Halbmarathon“, Rennwoche mit
+  Hinweis, Renntag, „Wie lief es?“, Erholung). Im Kalender ist der Renntag mit „◆ Renntag: Halbmarathon“ markiert (Wort,
+  nie nur Farbe); man kann bis zur Rennwoche blättern. Steht im Ziel ein Datum (Onboarding) ohne Wettkampf, lädt „Heute“
+  mit vorbelegtem Datum zum Eintragen ein.
+- **Intervall-Timer** im Trainingsmodus (`IntervalTimer`, Core `interval-timer.ts`): aus den Schritten der angezeigten
+  Einheit (aktuelle Regeln angewendet, ohne Bibliothek – also offline), Zeitstempel statt Zähler (Pause, Neuzeichnen,
+  Bildschirmsperre verfälschen nichts), Schritt X von N, große Restzeit, Sprechtest, „Teil 2 von 6“, „Teile geschafft“,
+  „Danach: …“, Pause/Weiter, „Abbrechen und eintragen“ (mit Bestätigung; gelaufene Zeit gerundet, mindestens 1 min, als
+  Dauer in den Entwurf – gespeichert wird wie bisher mit „Training speichern“). Schrittwechsel: Ansage über eine
+  dauerhafte Live-Region (`accessibilityLiveRegion`/`aria-live`), in der App zusätzlich Vibration (`expo-haptics`) und
+  `announceForAccessibility` (`lib/step-alert.native.ts`), im Browser still (`lib/step-alert.ts`). Bildschirm bleibt an
+  über die bestehende Einstellung (`expo-keep-awake` war schon Abhängigkeit – kein neuer Native-Build nötig).
+- **Ergebnis eintragen** (ab dem Renntag): Zeit (h/min/s), Gefühl (Anstrengung 0–10), Notiz → freie Ausdauer-Einheit
+  vom Renntag (A1b, `createFreeDraft`, Distanz der Disziplin) → `complete_competition` mit Verweis. Ohne Ergebnis
+  abschließen geht immer; liegt der Renntag mehr als 14 Tage zurück, nur das (Fenster A1b). Offline bzw. Eintrag noch in
+  der Warteschlange: Hinweis, später „Eintrag vom Renntag als Ergebnis übernehmen“.
+- **Absagen:** mit Bestätigung; war der Plan ein Wettkampfplan, fragt die App danach „Plan ohne Wettkampf neu
+  erstellen?“ (bis 4b ohne Automatik). Datum/Distanz ändern bei aktivem Wettkampfplan: „Speichern und Plan neu
+  erstellen“ (mit Bestätigung) oder nur Countdown speichern.
+- **Onboarding:** Das Datumsfeld im Schritt „Ziel“ heißt jetzt „Wettkampf-Datum (optional)“ mit Hinweis auf „Mein
+  Wettkampf“ (Präzisierung 1). Texte der Plan-Hinweise `endurance_basic_only`/`goal_endurance_not_yet` verweisen auf
+  „Mein Wettkampf“ statt „kommt später“.
+- **Keine Migration** (WP3 reicht), keine neue Abhängigkeit, nichts an Ernährung oder `apps/web`.
+
+**Tests:**
+
+- Core (Vitest): neu `competition-view.test.ts` (18: Countdown inkl. Rennen am Montag, Erholung je Distanz,
+  `competitionToShow`, Phasen-Band mit/ohne Woche 0, Pace nur mit Referenz und nur beim Laufen, Tagebuch-Bezug nur
+  Vergangenes/28 Tage), `interval-timer.test.ts` (13: Pause/Weiter, Uhr springt zurück, Schrittgrenzen, „Teile
+  geschafft“, Ende, ein Schritt, Minuten zum Eintragen, Übersicht aus echten Bausteinen), `competition-rules.test.ts`
+  (17: Server-Mindestvorlauf ±1 Tag, 52 Wochen, Referenz 183 Tage, Plan-Bezug/Einwilligung, Tabelle 3.3, ein geplanter
+  Wettkampf, Ändern ohne neues Datum, Absagen/Abschließen, Regeln je Person am ganzen Plan der Engine und Angriffe),
+  `view-competition.test.ts` (3: Wochenzahl harter Einheiten beim Anzeigen).
+- App (Vitest): `data/competition.test.ts` (14, u. a. Reihenfolge save_competition → save_training_plan im Testmodus,
+  Countdown reicht nicht für einen Wettkampfplan, zweiter Wettkampf abgelehnt, Folgeblock aus dem gespeicherten
+  Wettkampf wird angenommen, nach Absage „Plan neu erstellen“), `data/competition-rows.test.ts` (4),
+  `data/competition-errors.test.ts` (15, Server-Meldungen → Grund), `lib/competition-format.test.ts` (9).
+- Playwright im Testmodus (`e2e/competition.spec.ts`, 3 Tests): Wettkampf anlegen → rot („✕ Zu kurz“, Grund,
+  Vorschläge, kein „erstellen“) → Vorschlag übernehmen → grün → Zielzeit ohne passende Referenz → gelb („! Knapp“, Ziel
+  im Plan „Ankommen“) → grün → Plan erstellen (Bestätigung) → „Heute“ mit Phasen-Band, Countdown, Art, Pace, Hinweis,
+  Distanz-Richtwert, Ablauf → Trainingsmodus: Timer starten, Schrittwechsel mit Ansage, Pause (Zeit steht), Weiter,
+  „Abbrechen und eintragen“ (7 Minuten im Entwurf), speichern → Kalender mit Countdown und markiertem Renntag → Renntag:
+  Ergebnis (1:58:20, Anstrengung 7, Notiz) als freie Einheit mit Verweis → Erholung → neuer Wettkampf nur als
+  Countdown → absagen (Angebot „Plan ohne Wettkampf neu erstellen“) → löschen. Zweiter Test: ohne Einwilligung
+  Einladung aus dem Onboarding-Datum, „✕ Nicht möglich“ mit Gesundheits-Check-Vorschlag, Countdown ohne Plan-Bezug.
+  Dritter Test: Gesundheits-Flag → „! Knapp“ mit Hinweisen `walk_only_plan` und ärztliche Abklärung, Wettkampfplan nur
+  mit lockeren Arten, Arzt-Hinweis auf „Heute“, keine Pace/kein Distanz-Richtwert beim Gehen. Ganze mobile E2E-Suite
+  lokal grün (103 + 1 Tests).
+
+**Präzisierungen (vom Plan nicht ausdrücklich festgelegt, vorsichtig gelöst):**
+
+1. **Onboarding:** Statt das Datumsfeld im Schritt „Ziel“ durch das ganze Wettkampf-Formular zu ersetzen, bleibt es
+   ein optionales Datum (umbenannt) – die Ampel braucht Trainingstage und Gesundheits-Check, die erst danach abgefragt
+   werden. „Heute“ lädt dann mit vorbelegtem Datum ein (Gründer-Frage G19).
+2. **Ergebnis-Zeit:** Das Tagebuch kennt nur ganze Minuten; die genaue Zeit (mit Sekunden) steht als Notiz im Eintrag
+   („Ergebnis: 1:58:20“). Keine Migration (Gründer-Frage G15).
+3. **Ende des Wettkampfplans:** kein automatischer Grundlagen-Block, sondern „Plan neu erstellen“ (Start wieder bei der
+   Startgruppe bzw. dem Tagebuch-Bezug) – vorsichtiger als ein Bezug auf die Spitze (WP1 M4, Gründer-Frage G16).
+4. **Ziel-Distanz:** Wählt man im Formular eine andere Distanz als im Ziel (z. B. Vorschlag „kürzere Distanz“), wird das
+   Ziel beim Erstellen des Wettkampfplans mit angepasst (Hinweis vorher sichtbar; Server verlangt gleiche Disziplin,
+   Gründer-Frage G18).
+5. **Timer-Zustand** lebt nur, solange der Trainingsmodus offen ist (Verlassen = neu starten); die eingetragene Dauer
+   liegt sofort im geschützten Entwurf (Gründer-Frage G17).
+6. **Pace** zeigt die App für die Arten aus `COMPETITION_PACE.spansSPerKm` (Fahrtspiel/Steigerungen nach Gefühl);
+   Distanz-Richtwert nur gespeichert (Engine), nie in der App neu gerechnet.
+7. **WP1 M4 (Ruhetage nach dem Rennen):** WP4 braucht keine neue Core-Regel – die Erholungswochen des Makrozyklus
+   (50 %/60 %) bleiben, die App zeigt „Erholung nach dem Rennen“ bis zum Ende dieser Wochen (`postRaceRecoveryEnd`).
+   `restDaysAfterRace` je Distanz bleibt mit der Fachprüfung offen.
+8. **WP3 N1** (Plan mitten in der Woche neu erstellen): Woche 0 hat nie harte Einheiten (WP2 M1); beginnt der neue Plan
+   an einem Montag direkt im Aufbau, zählen harte Einheiten des ersetzten Plans derselben Woche weiterhin nicht mit
+   (Server zählt je Plan) – bekannte Grenze, mit 4b klären.
+
+**Gründer-Fragen (sichere Voreinstellung gilt, bis ihr anders entscheidet; G8–G14 weiter offen):**
+
+- **G15 – Ergebnis-Zeit mit Sekunden:** Voreinstellung: Dauer in ganzen Minuten im Tagebuch, genaue Zeit als Notiz.
+  Alternative: eigene Spalte `result_time_s` am Wettkampf (kleine Migration, Anzeige „Ergebnis 1:58:20“).
+- **G16 – Nach dem Wettkampfplan:** Voreinstellung: kein automatischer Folgeblock, Hinweis „Plan neu erstellen“
+  (startet vorsichtig). Alternative: automatischer Grundlagen-Block mit Bezug auf den Startumfang (WP1 M4).
+- **G17 – Timer beim Verlassen:** Voreinstellung: Timer endet beim Verlassen des Trainingsmodus. Alternative: Stand im
+  Entwurf sichern und fortsetzen.
+- **G18 – Andere Distanz als im Ziel:** Voreinstellung: Ziel wird mit angepasst (mit Hinweis). Alternative: nur die
+  Distanz des Ziels anbieten.
+- **G19 – Onboarding:** Voreinstellung: Datum im Onboarding, Wettkampf mit Ampel danach („Heute“/Einstellungen).
+  Alternative: eigener Onboarding-Schritt „Wettkampf“ nach Gesundheits-Check und Trainingstagen.
+
+**Nach der Wächter-Prüfung (16.10.2026, `waechter-wp4.md`, Freigabe mit Auflagen) umgesetzt:**
+
+- **H1 – Wettkampf ändern bei laufendem Wettkampfplan:** Regel in `data/competition.ts` (`competitionSaveOptions`):
+  Ändern sich Distanz, Renntag, Ziel, Zielzeit, Referenz, eigener Startumfang oder Wunsch-Tag, solange ein
+  Wettkampfplan läuft, gibt es **kein** „Nur Countdown speichern“ mehr – nur „Speichern und Plan neu erstellen“ (Ampel
+  grün/gelb) oder „Speichern und Plan ohne Wettkampf neu erstellen“, beide mit Bestätigung und Hinweis. Neu in Core
+  `competitionPlanFit` (Plan-Bezug, gleiche Disziplin, gespeicherte Phasen = Makrozyklus des aktuellen Renntags, keine
+  Einheit vom Vortag bis zum Ende der Rennwoche): Phasen-Band und Pace zeigt „Heute“ nur bei `fits`
+  (`competitionPlanView`); sonst Hinweis „Dein Plan passt nicht mehr zu deinem Wettkampf“ (offline ohne Plan-Bezug: nichts
+  Falsches, nur kein Band). „Mein Wettkampf“ zeigt den Stand ebenso. Der Countdown-Hinweis zur Rennwoche bleibt – er gilt
+  dem Rennen, nicht dem Plan.
+- **M1 – PDF:** `ExportDisplayContext.competitionLevel` → dieselbe Aufbereitung wie „Heute“ (`competitionWeek` →
+  `applyCompetitionWeekLimits` + `applyCurrentEnduranceRules`) in Wochenübersicht und Ausdauer-Tabelle; neue Codes
+  `endurance.workout` (Art, „hart“ mit Wort) und `endurance.steps` (Ablauf).
+- **M2 – Kalender/Wochenübersicht:** Namen über `displayedSessionNames` (gleicher Anzeigeweg) statt des gespeicherten
+  Namens, auch im Menü „Verschieben …“ und in den Meldungen.
+- **M3:** App-Test über `sessionDisplay` (zwei harte Einheiten einer Woche, Profil Einsteiger → die zweite locker, auch
+  die Timer-Schritte).
+- **M4:** `planBasisChanged` in `data/competition.ts`; Wunsch-Tag zählt als plan-relevant (wie Datum), der gespeicherte
+  eigene Startumfang wird unabhängig vom aktuellen Level verglichen und bleibt im Datensatz (ob er gilt, entscheidet
+  Core – Hinweis `own_start_ignored` statt stillem Leeren).
+- **M5:** Intervall-Timer hält den Bildschirm an, solange er läuft – unabhängig von der Einstellung (eigener Tag in
+  `useScreenAwake`, damit das Freigeben die Sperre des Trainingsmodus nicht aufhebt).
+- **M6:** Ergebnis idempotent (`resultLogToReuse`): gemerkter bzw. eigener Ergebnis-Eintrag vom Renntag wird
+  wiederverwendet – nach einem gescheiterten Abschließen entsteht kein zweiter Tagebuch-Eintrag.
+- **M7:** Folgeblock nach strengerer Gruppe bzw. strengerem Level: Ampel neu (`competitionFeasibility` mit aktuellen
+  Angaben und Tagebuch-Bezug); „zu kurz“/„nicht möglich“ → kein Folgeblock, Hinweis „Dein Wettkampfziel ist so nicht
+  mehr erreichbar“ mit „Plan neu erstellen“.
+- **M8:** Hinweis im Phasen-Band, wenn Aufbau/Spitze wegen kurzer Tage (unter 25 min) keine harte Einheit hat
+  (`shortDaysWithoutHard`, G10 bleibt Gründer-Frage).
+- **N1** Android nur Live-Region (iOS `announceForAccessibility`), **N2** Ansage mit „Schritt X von N“, **N3**
+  Bestätigungstext nennt „mindestens 1 Minute“, **N4** eigener Text, wenn gar keine Ampel möglich war (Renntag vorbei),
+  **N5** offline kein falsches „Grundlagen-Plan“, **N6** Grenzen aus Core (`CARDIO_LOG_LIMITS`,
+  `COMPETITION_OWN_START`), **N7** Test-Fixture `uuidBackend`, **N8** „Zielzeit“ nur, wenn erlaubt (`timeGoalOffered`),
+  sonst Hinweis. **N9** (TalkBack und unsichtbare Live-Region) nur am Gerät prüfbar (EAS) – offen.
+- **H2 / G8 – bekannte Einschränkung bis zur Gründer-Entscheidung G8:** Die Ampel rechnet den langen Lauf „Ankommen“
+  weiter mit 40/50/70/120 min (5 km/10 km/Halbmarathon/Marathon) statt Plan 3.2 (Halbmarathon 90–120, Marathon
+  150–180 min). Konstanten unverändert; Livegang an G8 gebunden.
+
+| Nr.    | Gegenprobe (gebrochen → rot → zurückgesetzt)     | Rote Tests                                    |
+| ------ | ------------------------------------------------ | --------------------------------------------- |
+| GP-H1a | „Nur Countdown“ auch bei laufendem Wettkampfplan | 1 (`competition-waechter`)                    |
+| GP-H1b | Phasen-Abgleich in `competitionPlanFit` entfernt | 1 (core `competition-plan-fit`)               |
+| GP-H1c | Phasen-Band/Pace auch ohne `fits`                | 1 (`competition-waechter`)                    |
+| GP-H1d | Einheit im Rennwochen-Fenster erlaubt            | 1 (core `competition-plan-fit`)               |
+| GP-M1  | PDF ohne `competitionWeek`                       | 1 (core `training-plan-document-competition`) |
+| GP-M2  | Namen ohne Wochenzahl-Grenze                     | 1 (`competition-waechter`)                    |
+| GP-M3  | `sessionDisplay` ohne `competitionWeek`          | 1 (`competition-waechter`)                    |
+| GP-M4  | Wunsch-Tag nicht plan-relevant                   | 1 (`competition-waechter`)                    |
+| GP-M6  | kein Wiederverwenden des Ergebnis-Eintrags       | 1 (`competition-waechter`)                    |
+| GP-M7  | keine neue Ampel bei strengerem Level            | 1 (`competition-waechter`)                    |
+| GP-M8  | Hinweis „Tage zu kurz“ ohne Dauer-Prüfung        | 1 (core `competition-plan-fit`)               |
+| GP-N8  | Zielzeit auch für vorsichtige Gruppe             | 1 (`competition-waechter`)                    |
+
+Playwright: Schritt „Renntag vorverlegen bei laufendem Wettkampfplan“ (kein „Nur Countdown“, Hinweis, zwei
+Neu-erstellen-Knöpfe; zurück auf das alte Datum → Hinweis weg). Timer-Ansage jetzt mit „Schritt X von N“.
+
+**Offen:** Fachprüfung aller Konstanten und Bausteine (Abschnitt 20 Punkt 5), G8–G14, M4 (`restDaysAfterRace`), WP3 N2
+(80/20, „ab 65 nur Gehen“, „Einsteiger ab 3 Einheiten“ ohne Server-Gegenstück), Premium-Prüfung mit Phase 7 (W-G10),
+Live-Test im Supabase-Modus (Teil 8 der HANDY-ANLEITUNG), Vibration/Bildschirm-an nur in der echten App prüfbar (EAS).
 
 ---
 
