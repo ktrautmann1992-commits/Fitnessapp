@@ -3291,3 +3291,94 @@ export const ROUTE_COMPARE = {
   distanceTolerance: 0.1,
   sameWithinS: 5,
 } as const;
+
+// ---------------------------------------------------------------------------------------------------------
+// Phase 4b · Live-Anpassung des Trainingsplans (Premium, OHNE KI) – docs/PLAN-PHASE-4B.md Abschnitte 5.2 und 5.6
+// Alle Werte ohne harte Quelle sind PRODUKTENTSCHEIDUNG – VOR LIVEGANG FACHLICH PRÜFEN (Frage 11).
+// ---------------------------------------------------------------------------------------------------------
+
+/**
+ * Regel-Engine der Live-Anpassung (`packages/core/src/adjust/`). Gratis-Nutzer sind nie betroffen; alle Regeln laufen
+ * nur bei Premium (serverseitig geprüft, Etappe B/C) bzw. im Testmodus mit „Premium simulieren“ (Etappe D).
+ *
+ * - `engineVersion`/`ruleVersion`: Stand der Engine bzw. der Regeln (plan_adjustments.engine_version/rule_version).
+ * - `lookbackDays` 42: Tagebuch-Fenster (3 Wochen + Block-Rand). PRODUKTENTSCHEIDUNG.
+ * - `maxAutomaticPerWeek` 3: höchstens 3 automatische Änderungen je Person und Kalenderwoche, darüber nur Hinweise
+ *   (Plan-Ruhe, Verständlichkeit). PRODUKTENTSCHEIDUNG.
+ * - `cooldownDaysAfterRevert` 14: nach „Rückgängig“ feuert dieselbe Regel für dieselbe Übung bzw. Woche 14 Tage
+ *   nicht. PRODUKTENTSCHEIDUNG.
+ * - `maxPerBatch` 20: höchstens 20 Anpassungen je Aufruf von apply_plan_adjustments (Plan 4.6). PRODUKTENTSCHEIDUNG.
+ * - `maxPlannedSessionsPerAdjustment` 42: betroffene Einheiten je Anpassung (planned_session_ids). Plan 4.4 nannte 14;
+ *   ein Tausch der Erholungswoche ändert bei 7 Trainingstagen bis zu 6 Wochen (Woche n bis D samt Ausdauer-Deckel)
+ *   → 6 × 7. Technische Grenze, PRODUKTENTSCHEIDUNG.
+ * - `fastIncrease` (R1): alle Sätze mit RPE ≤ Ziel − 2 (≥ 2 Wdh. mehr in Reserve als geplant) und alle Arbeitssätze
+ *   bei reps_max → Gewichtsschritt schon nach 1 statt 2 Einheiten. Nie bei vorsichtigem Plan, unter 18
+ *   (AGE_PLAN_RULES.minor), ab 65 (AGE_PLAN_RULES.senior) und bei Einsteigern im ersten Block. Quellen: Helms ER,
+ *   Cronin J, Storey A, Zourdos MC (2016), „Application of the repetitions in reserve-based rating of perceived
+ *   exertion scale for resistance training“, Strength Cond J 38(4):42–49; Zourdos MC et al. (2016), J Strength Cond
+ *   Res 30(1):267–275 (RIR-Skala). Schwelle 2: PRODUKTENTSCHEIDUNG.
+ * - `loadReduce` (R2): die 2 neuesten zählenden Einträge mit gleichem Zustand beide deutlich verfehlt (in ≥ 50 % der
+ *   Arbeitssätze Wdh. < reps_min, Halteübung < 80 % der Dauer oder RPE ≥ Ziel + 1,5 bei Wdh. unter dem Ziel) →
+ *   Gewicht × 0,9 auf die eigene Stufe abgerundet (nie unter die kleinste), Wdh. = reps_min, kein Zusatzsatz;
+ *   Halteübung × 0,9 (≥ 10 s); je Übung höchstens alle 14 Tage. Quelle: Helms et al. (2016); Faktor wie
+ *   DELOAD_DOSAGE.loadFactor; Werte PRODUKTENTSCHEIDUNG.
+ * - `highSessionLoad` (R3 Kraft): Belastungsempfinden der Einheit (session_rpe) ≥ 9 in den 3 neuesten zählenden
+ *   Kraft-Einheiten binnen 14 Tagen → nächste Woche je Übung 1 Satz weniger; Erholungswoche ≤ 2 Wochen entfernt →
+ *   nur Hinweis. Quellen: Foster C (1998), „Monitoring training in athletes with reference to overtraining
+ *   syndrome“, Med Sci Sports Exerc 30(7):1164–1168 (Session-RPE); Foster C et al. (2001), J Strength Cond Res
+ *   15(1):109–115; Bell L et al. (2023), Sports Med Open 9:87 (Delphi-Konsens Deload). Werte PRODUKTENTSCHEIDUNG.
+ * - `enduranceReduce` (R3 Ausdauer): 2 der 3 neuesten zählenden Ausdauer-Einträge binnen 14 Tagen mit Anstrengung
+ *   ≥ enduranceOverloadThreshold(Ziel) (ENDURANCE_OVERLOAD_RULE) → Minuten der nächsten Woche × 0,85 (abgerundet,
+ *   nie unter ENDURANCE_SESSION_LIMITS.minSessionMinutes, nie über dem bisherigen Wert). Quellen: Seiler S (2010),
+ *   „What is best practice for training intensity and duration distribution in endurance athletes?“, Int J Sports
+ *   Physiol Perform 5(3):276–291; Foster (1998). Werte PRODUKTENTSCHEIDUNG.
+ * - `stagnation` (R4): ≥ 3 zählende Einträge über ≥ 21 Tage ohne Schritt → Tausch auf eine gleichwertige Alternative
+ *   (höchstens 1 je Übung und Block), sonst Erholungswoche vorziehen, sonst Hinweis. Quellen: docs/KONZEPT.md 4.1
+ *   („ca. 3 Wochen“); Kassiano W et al. (2022), „Does varying resistance exercises promote superior muscle
+ *   hypertrophy and strength gains? A systematic review“, J Strength Cond Res 36(6):1753–1762. Werte
+ *   PRODUKTENTSCHEIDUNG.
+ * - `adherence` (R5): 3 abgeschlossene Wochen mit < 70 % geschafften Einheiten (≥ 3 geplant) → Vorschlag „ein
+ *   Trainingstag weniger“ (nur mit Bestätigung); Ruhezeit nach Ablehnung 28 Tage; Vorschlag verfällt nach
+ *   `proposalExpiresDays` 14 Tagen. Quelle: docs/KONZEPT.md 4.1; PRODUKTENTSCHEIDUNG (keine belastbare Studie).
+ * - `deloadForward` (Tausch-Regel, Wächter B2): nur wenn die geplante Erholungswoche mindestens 2 Wochen nach der
+ *   nächsten Woche liegt, höchstens 1 je Block, die frühere Erholungswoche bekommt höchstens die Dosierung der
+ *   vorangehenden Belastungswoche. Quellen: DELOAD_SCHEDULE/DELOAD_DOSAGE (Bell et al. 2023); PRODUKTENTSCHEIDUNG.
+ * - `recompute.maxPerUserPerHour` 20: Missbrauchsschutz der API-Route (gleicher Wert als SQL-Konstante, Etappe B).
+ *   PRODUKTENTSCHEIDUNG.
+ * - `calorieStepKcal` (RESERVIERT, Regel `calorie_adjust` nicht aktiv): Schritt je Anpassung, ≤
+ *   ADJUSTMENT_STEP_MAX_KCAL (Phase 5). Alle Kalorien-Schutzgrenzen bleiben ausschließlich in `clampCalorieTarget`
+ *   (nicht abschaltbar). PRODUKTENTSCHEIDUNG.
+ */
+export const LIVE_ADJUSTMENT = {
+  engineVersion: 1,
+  ruleVersion: 1,
+  lookbackDays: 42,
+  maxAutomaticPerWeek: 3,
+  cooldownDaysAfterRevert: 14,
+  maxPerBatch: 20,
+  maxPlannedSessionsPerAdjustment: 42,
+  fastIncrease: { rpeBelowTarget: 2, consecutiveSessionsForStep: 1 },
+  loadReduce: {
+    entries: 2,
+    missedShare: 0.5,
+    rpeAboveTarget: 1.5,
+    holdShare: 0.8,
+    factor: 0.9,
+    holdMinS: 10,
+    cooldownDays: 14,
+  },
+  highSessionLoad: {
+    sessionRpeMin: 9,
+    sessions: 3,
+    windowDays: 14,
+    setsReduction: 1,
+    deloadSoonWeeks: 2,
+  },
+  enduranceReduce: { overloadEntries: 2, latestEntries: 3, windowDays: 14, factor: 0.85 },
+  stagnation: { minEntries: 3, minDays: 21, maxSwapsPerExerciseAndBlock: 1 },
+  adherence: { weeks: 3, minShare: 0.7, minPlanned: 3, declineCooldownDays: 28 },
+  proposalExpiresDays: 14,
+  deloadForward: { minWeeksAfterNext: 2, maxPerBlock: 1 },
+  recompute: { maxPerUserPerHour: 20 },
+  calorieStepKcal: 100,
+} as const;
