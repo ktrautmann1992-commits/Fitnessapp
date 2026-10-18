@@ -170,9 +170,9 @@ describe('checkWeekInvariants – Grundregeln', () => {
   });
 });
 
-describe('Invarianten-Fixtures (adjust/fixtures/invariants.json, für pgTAP 22_week_invariants)', () => {
-  it('20 Fälle, gültige und absichtlich verletzte, jeder Code mindestens einmal', () => {
-    expect(fixtures).toHaveLength(20);
+describe('Invarianten-Fixtures (adjust/fixtures/invariants.json, für pgTAP 50_week_invariants)', () => {
+  it('26 Fälle (20 aus Etappe A, 6 aus Wächter B Auflage 5), gültige und absichtlich verletzte, jeder Code mindestens einmal', () => {
+    expect(fixtures).toHaveLength(26);
     const codes = new Set(fixtures.flatMap((f) => f.expected));
     for (const code of [
       'too_many_load_weeks',

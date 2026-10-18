@@ -1,6 +1,6 @@
 # Plan Phase 4b – Live-Anpassung des Plans (Premium, ohne KI) und Benachrichtigungen
 
-**Status:** Freigegeben am 09.10.2026 – die Gründer übernehmen bei allen offenen Fragen (Abschnitt 13) die Empfehlung. Wächter: freigabefähig (2 Runden). **Etappe A0 und Etappe A (Core: Regel-Engine und Anwendung, 18.10.2026) umgesetzt**, siehe Abschnitt 10 „Umsetzungsstand A“. **Etappe D (App, Testmodus, 18.10.2026) umgesetzt**, siehe „Umsetzungsstand D“. Nächste Etappe: E; B und C später mit Supabase.
+**Status:** Freigegeben am 09.10.2026 – die Gründer übernehmen bei allen offenen Fragen (Abschnitt 13) die Empfehlung. Wächter: freigabefähig (2 Runden). **Etappe A0 und Etappe A (Core: Regel-Engine und Anwendung, 18.10.2026) umgesetzt**, siehe Abschnitt 10 „Umsetzungsstand A“. **Etappe D (App, Testmodus, 18.10.2026) umgesetzt**, siehe „Umsetzungsstand D“. **Etappe B (Datenbank, 18.10.2026) umgesetzt**, siehe „Umsetzungsstand B“ (Pull Request offen). Nächste Etappe: E; B und C später mit Supabase.
 
 **Nachtrag 10.10.2026 (Phase 5, N0):** A0 ist umgesetzt. Reihenfolge laut Gründer-Entscheidung 09.10.2026: A0 → Übungs-Glossar und Übungstausch (erledigt bis T2) → **Phase 5** (`docs/PLAN-PHASE-5.md`) → 4b weiter mit A → D (Testmodus) → E; B und C später. Weil Phase 5 vorher kommt, legt **Phase 5** `packages/core/src/nutrition/limits.ts` an (inkl. `clampCalorieAdjustment()`); 4b ruft nur auf. Die Kalorien-Stellen in diesem Plan (K1, 2.1, 2.2, 5.2, 5.6, 5.8, Etappe A, Abschnitt 11, Frage 3, Risiko 11) sind an Phase 5 (S10, R2-S5) angeglichen.
 
@@ -958,7 +958,7 @@ grün, weil sich Schlüssel und Multimenge gegenseitig absichern).
   - Funktionen aus 4.6 inkl. `beta_admin` und Ratenbegrenzung,
   - Outbox-Ergänzungen per `create or replace` in `save_session_log`, `close_missed_sessions`, `replace_training_slots` und Triggern, jeweils über `private.enqueue_adjustment_event` (nur Premium),
   - Erweiterung von `consents_after_revoke()`, `export_my_data()`, `save_training_plan` (Vorschläge `expired`), `append_plan_block` (Belastungswochen über die Blockgrenze ≤ `L`),
-  - pgTAP `20_plan_adjustments.test.sql`, `21_plan_adjustment_rpcs.test.sql`, `22_week_invariants.test.sql` (aus den Fixtures) plus Ergänzungen in `04_account_deletion`, Widerrufs- und Export-Tests,
+  - pgTAP `20_plan_adjustments.test.sql`, `21_plan_adjustment_rpcs.test.sql`, `22_week_invariants.test.sql` (aus den Fixtures; umgesetzt als 48/49/50, siehe Umsetzungsstand B) plus Ergänzungen in `04_account_deletion`, Widerrufs- und Export-Tests,
   - `database.types.ts`, `db-sync.test.ts` (inkl. SQL-Konstanten der Invarianten und der Ratenbegrenzung, Export-Schlüssel `beta_entitlement`/`adjustment_events`).
 - _DoD:_
   - fremde Anpassungen unsichtbar; `authenticated` kann nicht schreiben, auch nicht die neuen Plan-Spalten;
@@ -978,6 +978,123 @@ grün, weil sich Schlüssel und Multimenge gegenseitig absichern).
   - `has_entitlement` mit abgelaufener Beta = false;
   - Fehler ohne Detail;
   - KONZEPT 12 „Abweichungen ab Phase 4b“.
+
+### Umsetzungsstand B (18.10.2026)
+
+**Was gilt (Migrationen `20261018200000`–`20261018200500`, nur additiv; bestehende Migrationen unverändert):**
+
+- `…_live_adjust_enums.sql`: `adjustment_trigger`, `adjustment_rule`, `adjustment_kind`, `adjustment_status` (= `adjust/types.ts`).
+- `…_live_adjust_tables.sql`: `plan_adjustments` (4.4 inkl. CHECKs: Zustands-Vorgabe ⇔ Übung und Vorgabe,
+  `pending_confirmation` ⇒ Bestätigung, Ablaufdatum nur bei Vorschlägen, ≤ 42 Einheiten, Zustand = `ExerciseProgress`,
+  Erklär-Parameter ohne Freitext, `unique (user_id, rule, input_fingerprint)`, Index `(user_id, created_at desc)`;
+  RLS nur eigene Zeilen lesen), `planned_sessions/planned_exercises.adjustment_id` (zusammengesetzter Fremdschlüssel
+  `(adjustment_id, user_id)`, `on delete set null (adjustment_id)`; Spalten-Rechte unverändert),
+  `private.adjustment_events`, `private.live_adjust_hourly_counts`, Flag `live_adjustment` (aus). Feature-Flags,
+  Beta-Freischaltung, `admin_actions`, `has_entitlement(_for)` gab es schon seit E3 – B nutzt sie weiter.
+- `…_live_adjust_invariants.sql`: `private.week_invariant_violations` (= `checkWeekInvariants`),
+  `private.new_week_invariant_violations` (= `newInvariantViolations`: Multimenge je Schlüssel, Überschreitung
+  `value − limit`), `private.apply_plan_change_json` (= `applyPlanChange`), `private.plan_sessions_json`
+  (= `storedSessionFromRows`, sortiert wie die Engine), `private.plan_load_weeks` (= `loadWeeksBeforeDeload`).
+- `…_live_adjust_rpcs.sql`: `private.enqueue_adjustment_event` (nur Flag + Freischaltung, Fehler nur als Warnung
+  `live_adjust_enqueue_failed`), `live_adjustment_status`, `apply_plan_adjustments`, `confirm_plan_adjustment`,
+  `revert_plan_adjustment`, `claim_adjustment_events` (Ratenbegrenzung 20/Stunde), `mark_adjustment_events_processed`,
+  `private.expire_plan_adjustments` (Sweep und pg_cron stündlich, falls verfügbar), `beta_admin` (+ Flag
+  `live_adjustment` und dessen Status).
+- `…_live_adjust_outbox.sql`: `save_session_log`, `close_missed_sessions`, `replace_training_slots` (neueste Fassungen,
+  je eine Zeile Ereignis), Trigger auf `body_measurements`/`body_metrics` (`measurement_updated`) und
+  `goals`/`weight_goals` (`goal_changed`), `save_training_plan` (Vorschläge verfallen), `append_plan_block`
+  (höchstens L Belastungswochen in Folge über die Blockgrenze, für alle Pläne; keine 10-%-Prüfung auf geplante Minuten).
+- `…_live_adjust_revoke_export.sql`: Widerruf löscht zuerst (und in der Wiederholung am Ende) Anpassungen mit
+  `from_health_plan`/`uses_body_data` und Ereignisse zu Messungen; Export mit `plan_adjustments`, `adjustment_events`
+  (Auslöser, Zeitpunkte, ohne Verweise), `live_adjust_hourly_counts`.
+- Typen: `database.types.ts` (1 Tabelle, 2 Spalten, 4 Enums, 6 neue Funktionen), Zeilen-Typen in Core mit
+  `adjustment_id`; `plan_adjustments` aus `PENDING_DB_EXPORT_TABLES` in `DATA_EXPORT_TABLES` (plus
+  `adjustment_events`, `live_adjust_hourly_counts`; im Testmodus leer).
+
+**Präzisierungen gegenüber dem Plan:**
+
+1. **pgTAP-Nummern** 48 (`48_plan_adjustments`), 49 (`49_plan_adjustment_rpcs`), 50 (`50_week_invariants`) statt
+   20/21/22 – 20–47 sind belegt. `50_week_invariants` erzeugt `adjust/fixtures/invariants-sql.ts` aus
+   `invariants.json` (volle Verstoß-Liste von Core je Fall, Codes, `fromMonday`, zusätzlich Woche 0 vorangestellt, 11 Vorher/Nachher-Paare inkl. Verschlimmerung); `db-sync.test.ts` prüft die Aktualität.
+2. **Aufruf-Form** `apply_plan_adjustments(p_user, p_batch)`: `p_batch = { plan_id, trigger, max_load_weeks,
+adjustments[] }`, Einträge mit den Feldnamen von `adjustmentProposalSchema` (camelCase, alle Pflicht). Ergebnis
+   `{ result: ok, applied, duplicates }` oder ein fester Code ohne Änderung: `not_entitled`, `invalid_input`,
+   `plan_changed` (Plan nicht mehr aktiv bzw. `change_before` ≠ Plan), `not_eligible` (S1), `weekly_limit`,
+   `invariant_violation`. `max_load_weeks` muss genau `private.plan_load_weeks` sein (vorsichtig = ohne
+   Gesundheitsbezug oder mit Arzt-Hinweis – genau wie `planSafetyRules().cautious`).
+3. **Zusätzlich nachgerechnet:** Wochen-Deckel 3 automatische Änderungen (wie die Engine, Datum des Zeitstempels),
+   `load_reduce`-Vorher = gespeicherter Zustand des Basis-Eintrags, Vorher = aktueller Plan, ein `deload_forward` je
+   Block (auch zurückgenommene), kein `deload_forward` im Wettkampfplan, `from_health_plan` = Plan. Die
+   Invarianten-Prüfung läuft für JEDE Plan-Änderung des Aufrufs (wie die Schlussprüfung der Engine), nur neue bzw.
+   verschlimmerte Verstöße ab der Woche der frühesten Änderung.
+4. **R1 großer Sprung (Wächter-Auflage B2):** Der Server lässt bei `fast_increase` höchstens +10 % zu (4.6). Core erzeugt
+   R1 deshalb nur bei Gewichtsschritten ≤ `LIVE_ADJUSTMENT.fastIncrease.maxStepFraction` (0,1 =
+   `LOAD_PROGRESSION.maxIncreaseFraction`); ein größerer Sprung nach dem Puffer (z. B. Kurzhantel 4 → 6 kg) kommt nur
+   über die normale Progression (zwei Einheiten). Gratis unverändert; `plan:examples`, `nutrition:examples` und
+   `adjust:examples` zeichengleich. Zusätzlich verlangt der Server genau EINEN Schritt (Gewicht hoch ohne Zusatzsatz,
+   sonst Zusatzsatz an, sonst höchstens +1 Wdh.) und Wdh. ≤ `reps_max` + Puffer des Basis-Eintrags, in dem die Übung
+   vorkommen muss (Wächter-Auflage B3). Das Vorher von R1 (= normaler Fortschritt aus `nextLoad()`) lässt sich in SQL
+   nicht nachrechnen – es ist nur an den Basis-Eintrag gebunden, nicht an dessen gespeicherten Zustand.
+   **Für Etappe C (verbindlich):** Antwortet `apply_plan_adjustments` mit `invalid_input` (oder einem anderen festen
+   Code), protokolliert die Route das nur über `mark_adjustment_events_processed(ids, '<code>')` – ohne Inhalte; nach 5
+   Versuchen bleibt das Ereignis stehen und erscheint im Status von `beta-grant`.
+5. **Bestätigen nach Planwechsel** (Umsetzungsstand D Nr. 2: erst neuer Plan, dann bestätigen): `save_training_plan`
+   lässt Vorschläge „weniger Trainingstage“ des GERADE ersetzten Plans offen; `confirm_plan_adjustment(id, true)` nimmt
+   sie noch 60 Minuten an, danach verfallen sie (`expire_plan_adjustments`). Alle anderen offenen Vorschläge früherer
+   Pläne verfallen sofort. Kein zusätzlicher Verweis in `save_training_plan` (Feldliste unverändert).
+6. **Ereignisse:** verarbeitete werden gelöscht (daher kein `processed_at`); `claimed_at` als Sperrfrist (5 min) gegen
+   parallele Läufe; ab 5 Versuchen bleibt ein Ereignis stehen. Ein Ereignis je (Person, Auslöser, Verweis) auch ohne
+   Verweis (`nulls not distinct`). Der Sweep (`p_user = null`) ruft zuerst `expire_plan_adjustments()` auf – keine
+   zusätzliche öffentliche Funktion.
+7. **Rücknahme:** `created_at` je Anpassung = Uhrzeit des Schreibens (`clock_timestamp()`), damit „neuer“ auch innerhalb
+   eines Aufrufs eindeutig ist. Beim Zurückschreiben entfällt das Kennzeichen `adjustment_id` dieser Anpassung.
+8. **`change_before/after` ≤ 32 KB** statt 4 KB (bis 42 Einheiten mit je 8 Übungen).
+9. **Export-Schlüssel** der Beta-Freischaltung bleibt `beta_entitlements` (seit E3); neu `adjustment_events` und
+   `live_adjust_hourly_counts`.
+10. **Engine-Eingabe unverändert:** `storedSessionFromRows` übernimmt `adjustment_id` nicht (Kennzeichen kommen aus
+    `plan_adjustments`).
+11. **Wettkampf-Einheiten (Wächter-Auflage B1):** Neue `workout_steps` nur bei lockeren Arten (`easy`, `recovery`,
+    `long` – deren Anstrengung begrenzt der CHECK `workout_steps_fit_type` auf ≤ 4); harte Einheiten, Steigerungen,
+    Koppeltraining und Technik behalten ihre Schritte. `target_distance_m` nachher `null` oder ≤ vorher.
+12. **Widerruf** löscht neben Ereignissen zu Messungen auch die zu Zielen (`goal_changed`, sichere Voreinstellung,
+    Wächter-Auflage B6).
+13. **Testmodus wie Server (Wächter-Auflage B4):** `local-rules.ts` lehnt `append_plan_block` wie die Datenbank ab, wenn
+    der Folgeblock mehr als L Belastungswochen in Folge ergibt (`appendKeepsLoadWeeks`, `checkWeekInvariants` ab dem
+    neuen Block).
+14. **Fixtures (Wächter-Auflage B5):** 26 statt 20 Fälle – zusätzlich mit ids als `sessionRef` und `order_no`,
+    `carriedLoadWeeks`, getauschte Woche mit Ausdauer, Verstoß in einer Tapering-Woche, zweiter Tausch mit
+    `fromMonday`, Woche 0 mit Ausdauer.
+
+**Tests:** pgTAP 44 → 47 Dateien, 2.286 → 2.525 Tests (neu 48: 67, 49: 99, 50: 67; 04 +6, 17 angepasst); Core
+db-sync +13, R1 +1, Fixtures 26; Mobile `local-rules` +2; alle Migrationen frisch und auf einer Datenbank mit Bestandsdaten (Stand vor B plus Beispielzeilen) grün.
+
+**Gegenproben (Regel gebrochen → rot → zurückgesetzt):**
+
+| Nr. | Gebrochene Regel                                                | Rote pgTAP-Tests                 |
+| --- | --------------------------------------------------------------- | -------------------------------- |
+| G1  | `apply_plan_adjustments` ohne Premium-Prüfung                   | 30 (49)                          |
+| G2  | `apply_plan_adjustments` ohne Invarianten-Prüfung               | 15 (49)                          |
+| G3  | Ratenbegrenzung 25 statt 20 (21. Aufruf)                        | 1 (48) + db-sync                 |
+| G4  | `beta_admin` für `authenticated` ausführbar                     | 1 (48), 1 (37)                   |
+| G5  | Rücknahme ohne „nur in umgekehrter Reihenfolge“                 | 4 (49)                           |
+| G6  | Widerruf löscht `from_health_plan`/`uses_body_data` nicht       | 1 (48)                           |
+| G7  | `authenticated` darf `plan_adjustments` schreiben               | 1 (48), 2 (49)                   |
+| G8  | SQL-10-%-Regel mit 20 %                                         | 2 (50)                           |
+| G9  | Woche 0 zählt als Belastungswoche (SQL, S-n1)                   | 4 (50), 1 (48)                   |
+| G10 | `append_plan_block` ohne L-Prüfung                              | 3 (48)                           |
+| G11 | Ereignisse auch für Gratis-Konten (S2)                          | 6 (48)                           |
+| G12 | Einheit von heute änderbar (S1)                                 | 2 (49)                           |
+| G13 | Einheit mit Eintrag änderbar (S1)                               | 2 (49)                           |
+| G14 | Neu-Vergleich nur über den Schlüssel (Überschreitung ignoriert) | 1 (50)                           |
+| G15 | neue Schritte auch bei harten Wettkampf-Arten (Auflage B1)      | 1 (49)                           |
+| G16 | Distanz-Richtwert darf steigen (Auflage B1)                     | 3 (49)                           |
+| G17 | R1 mit Gewicht hoch UND Zusatzsatz (Auflage B3)                 | 3 (49)                           |
+| G18 | Widerruf behält `goal_changed`-Ereignisse (Auflage B6)          | 1 (48)                           |
+| G19 | Core: R1 ohne 10-%-Grenze (Auflage B2)                          | 1 (Core `state-rules.test.ts`)   |
+| G20 | Testmodus: `append_plan_block` mit falschem L (Auflage B4)      | 1 (Mobile `local-rules.test.ts`) |
+
+**Offen / nicht lokal geprüft:** Supabase CLI und `db-migrate` (nur lokales Postgres 16 mit Shim), pg_cron (lokal nicht
+vorhanden – Einrichtung wie N7/E4a), Workflow `beta-grant` kennt das Flag `live_adjustment` noch nicht (Etappe C).
 
 **C – Server und Workflows**
 

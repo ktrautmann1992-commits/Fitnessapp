@@ -3332,7 +3332,9 @@ export const ROUTE_COMPARE = {
  *   (AGE_PLAN_RULES.minor), ab 65 (AGE_PLAN_RULES.senior) und bei Einsteigern im ersten Block. Quellen: Helms ER,
  *   Cronin J, Storey A, Zourdos MC (2016), „Application of the repetitions in reserve-based rating of perceived
  *   exertion scale for resistance training“, Strength Cond J 38(4):42–49; Zourdos MC et al. (2016), J Strength Cond
- *   Res 30(1):267–275 (RIR-Skala). Schwelle 2: PRODUKTENTSCHEIDUNG.
+ *   Res 30(1):267–275 (RIR-Skala). Schwelle 2: PRODUKTENTSCHEIDUNG. `maxStepFraction` 0,1 (= LOAD_PROGRESSION.maxIncreaseFraction,
+ *   Server-Grenze in apply_plan_adjustments, Wächter B Auflage 2): R1 beschleunigt nur Gewichtsschritte ≤ 10 %; ein
+ *   größerer Sprung nach dem Puffer kommt nur über die normale Progression (zwei Einheiten).
  * - `loadReduce` (R2): die 2 neuesten zählenden Einträge mit gleichem Zustand beide deutlich verfehlt (in ≥ 50 % der
  *   Arbeitssätze Wdh. < reps_min, Halteübung < 80 % der Dauer oder RPE ≥ Ziel + 1,5 bei Wdh. unter dem Ziel) →
  *   Gewicht × 0,9 auf die eigene Stufe abgerundet (nie unter die kleinste), Wdh. = reps_min, kein Zusatzsatz;
@@ -3373,7 +3375,7 @@ export const LIVE_ADJUSTMENT = {
   cooldownDaysAfterRevert: 14,
   maxPerBatch: 20,
   maxPlannedSessionsPerAdjustment: 42,
-  fastIncrease: { rpeBelowTarget: 2, consecutiveSessionsForStep: 1 },
+  fastIncrease: { rpeBelowTarget: 2, consecutiveSessionsForStep: 1, maxStepFraction: 0.1 },
   loadReduce: {
     entries: 2,
     missedShare: 0.5,

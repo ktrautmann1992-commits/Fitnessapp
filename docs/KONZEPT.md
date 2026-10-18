@@ -1069,6 +1069,24 @@ eigene Zeilen, in Export und Kontolöschung enthalten.
 - Mess-Erinnerung am Fälligkeitstag um 08:00 Ortszeit, nur mit gültiger `health_data`-Einwilligung; Text fest
   „Alpha5: Zeit für dein Mess-Update“, nie Werte. Im Browser keine Benachrichtigungen, nur ein Hinweis.
 
+### Abweichungen ab Phase 4b, Etappe B (umgesetzt, siehe `docs/PLAN-PHASE-4B.md` Umsetzungsstand B und `supabase/migrations/20261018200*`)
+- **`plan_adjustments`** (Live-Anpassung, Premium): Auslöser, Regel, Art, Status, vorher/nachher (Zustands-Vorgabe bzw.
+  Plan-Änderung bzw. Vorschlag), Erklär-Parameter ohne Freitext, `input_fingerprint` (eindeutig je Person und Regel),
+  `uses_body_data`/`from_health_plan`. RLS: nur eigene Zeilen **lesen**; geschrieben wird nur über
+  `apply_plan_adjustments` (nur `service_role`), `confirm_plan_adjustment` und `revert_plan_adjustment`. Teilweise
+  sensibel: Anpassungen aus Gesundheits-Plänen bzw. mit Körperdaten löscht der Widerruf `health_data`.
+- **`planned_sessions.adjustment_id`, `planned_exercises.adjustment_id`**: Kennzeichen „angepasst“ (für `authenticated`
+  nicht änderbar; die Spalten-Rechte bleiben `scheduled_on`, `status`).
+- **Privat (nur `service_role`):** `private.adjustment_events` (Ereignis-Liste, entsteht **nur bei Premium**, ohne Werte,
+  verarbeitet → gelöscht, spätestens nach 30 Tagen), `private.live_adjust_hourly_counts` (Ratenbegrenzung 20/Stunde,
+  24 h). Feature-Flag `live_adjustment` (Standard aus) in `private.feature_flags`; Premium bis Phase 7 über die
+  Beta-Freischaltung aus E3 (`private.has_entitlement_for`).
+- **Wochen-Invarianten in SQL** (`private.week_invariant_violations`, gleiche Entscheidung wie `checkWeekInvariants` in
+  Core, bewiesen über die Fixtures in `supabase/tests/50_week_invariants.test.sql`). `append_plan_block` lehnt seitdem
+  für **alle** Pläne einen Folgeblock ab, der mehr als `loadWeeksBeforeDeload` Belastungswochen in Folge ergibt.
+- **Export** enthält `plan_adjustments`, `adjustment_events` (Auslöser, Zeitpunkte, ohne Verweise) und
+  `live_adjust_hourly_counts`; die Beta-Freischaltung steht seit E3 unter `beta_entitlements`.
+
 ### Abweichungen ab Ziele, Etappe Z3 (umgesetzt, siehe `docs/PLAN-ZIELE.md` Abschnitt 13 und `supabase/migrations/20261017200*`)
 - **`goals.secondary_goal_type`** (Nebenziel, null = keins): nur erlaubte Paare (`private.goal_pair_allowed` =
   `GOAL_COMBINATIONS`); Disziplin, wenn Ausdauer Haupt- **oder** Nebenziel ist. Kein Gesundheitsdatum.
