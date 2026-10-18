@@ -371,11 +371,21 @@ describe('Struktur (Wächter N1 K2, erweitert in N3, N9, N11 und N13): Essenspla
       // N13 (19.8 Nr. 1): Portionsfaktor und Reste – nur Planband über den Tagesausgleich, keine eigenen Grenzen.
       'portion-factor.ts',
       'leftovers.ts',
+      // W1 (19.8 Nr. 1): Wettkampf-Ernährung liefert nur Eingaben (Tage, Renn-Einheit, Kohlenhydrat-Richtwert).
+      'competition.ts',
     ]) {
       expect(
         readFileSync(join(root, 'packages/core/src/nutrition', file), 'utf8').length,
       ).toBeGreaterThan(0);
     }
+  });
+
+  it('W1: Wettkampf-Ernährung ruft keine Grenzen auf und liest weder Planband noch Unter-/Obergrenze noch Ziel-kcal', () => {
+    const root = join(import.meta.dirname, '../../../..');
+    const source = readFileSync(join(root, 'packages/core/src/nutrition/competition.ts'), 'utf8');
+    expect(source).not.toMatch(
+      /\b(clampCalorieTarget|dayLimitContext|applyGoalAdjustment|floorKcal|ceilingKcal|tdeeKcal|bmrKcal|targetKcal|band|mealPlanBand|planBand)\b/,
+    );
   });
 
   it('N13: Portionsfaktor und Reste lesen weder Planband noch Unter-/Obergrenze noch Ziel-kcal direkt (nur über mealTargetKcal und den Ausgleich in meal-plan.ts)', () => {

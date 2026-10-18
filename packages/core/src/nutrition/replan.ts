@@ -3,6 +3,7 @@ import {
   buildMealPlanWeek,
   CandidatePool,
   daySafetyKey,
+  daySafetyKeyWithoutCompetition,
   daySafetyKeyWithoutWeightGoal,
   dayWithinPlanBand,
   type MealPlanInput,
@@ -27,6 +28,8 @@ export const REPLAN_REASONS = [
   'leftover_expired',
   /** Konkretes Abnehmziel neu, geändert, erreicht, abgelaufen oder entfernt (docs/PLAN-ZIELE.md 4.6, Etappe Z5). */
   'weight_goal_changed',
+  /** Wettkampftage neu, verschoben oder abgesagt (Etappe W1, docs/PLAN-PHASE-10.md Abschnitt 10). */
+  'competition_changed',
 ] as const;
 export type ReplanReason = (typeof REPLAN_REASONS)[number];
 
@@ -64,11 +67,19 @@ export function needsAutomaticReplan(plan: MealPlanWeek, input: ReplanInput): Re
     else {
       const key = daySafetyKey(targets);
       if (key !== day.safetyKey) {
-        reasons.add(
-          daySafetyKeyWithoutWeightGoal(key) === daySafetyKeyWithoutWeightGoal(day.safetyKey)
-            ? 'weight_goal_changed'
-            : 'caps_changed',
-        );
+        const base = (k: string) =>
+          daySafetyKeyWithoutCompetition(daySafetyKeyWithoutWeightGoal(k));
+        if (base(key) !== base(day.safetyKey)) reasons.add('caps_changed');
+        else {
+          if (
+            daySafetyKeyWithoutCompetition(key) !== daySafetyKeyWithoutCompetition(day.safetyKey)
+          ) {
+            reasons.add('weight_goal_changed');
+          }
+          if (daySafetyKeyWithoutWeightGoal(key) !== daySafetyKeyWithoutWeightGoal(day.safetyKey)) {
+            reasons.add('competition_changed');
+          }
+        }
       }
     }
     // Genau die Garantie von `buildMealPlanWeek` (Wächter N3 NB1, B2): sonst plante jeder frische Plan sofort neu.

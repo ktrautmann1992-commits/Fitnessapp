@@ -1,5 +1,6 @@
 import { ageInYears, meetsMinimumAge } from '../age';
-import { WEIGHT_OUTDATED_AFTER_DAYS } from '../constants';
+import { NUTRITION_AGE_RULES, WEIGHT_OUTDATED_AFTER_DAYS } from '../constants';
+import type { ExperienceLevel } from '../enums';
 import { addDays, daysBetween } from '../dates';
 import { goalEnergyDirection, hasGoal } from '../goals/profile';
 import {
@@ -9,7 +10,18 @@ import {
   weightGoalPreStatus,
 } from '../goals/weight-goal';
 import { hasPlannableDeficit, weightGoalCapacity } from '../goals/weight-goal-feasibility';
+import type { CompetitionDiscipline } from '../plan/competition-schema';
 import { latestBodyValues } from './body-data';
+import {
+  type CompetitionDay,
+  type CompetitionDayKind,
+  competitionCarbsGPerKg,
+  competitionDayFor,
+  type ExpectedRaceMinutesSource,
+  raceDaySession,
+  type RaceFuelingPlan,
+  raceFuelingPlan,
+} from './competition';
 import { nutritionEligibility } from './eligibility';
 import { dayEnergy, sessionsForDay } from './energy';
 import { applyGoalAdjustment, clampCalorieTarget, dayLimitContext } from './limits';
@@ -47,6 +59,37 @@ export interface NutritionDaySession {
   readonly kind: 'strength' | 'endurance';
   readonly enduranceModality: 'run' | 'walk' | 'bike' | 'swim' | null;
   readonly minutes: number;
+}
+
+/**
+ * Wettkampf-Bezug eines Tages (Etappe W1, docs/PLAN-PHASE-10.md Abschnitt 10). Nur an Tagen rund um einen Wettkampf
+ * gesetzt (sonst fehlt das Feld – ohne Wettkampf ist die Ausgabe genau wie vorher).
+ */
+export interface NutritionCompetitionDay {
+  /** `normal` nur an Tagen der Wettkampfwoche ohne eigene Rolle (dann `noDeficit`). */
+  readonly kind: CompetitionDayKind;
+  readonly competitionId: string;
+  readonly discipline: CompetitionDiscipline;
+  readonly raceDate: string;
+  readonly expectedMinutes: number;
+  readonly minutesSource: ExpectedRaceMinutesSource;
+  /** Carb-Loading-Tag laut Regel (≥ 90 min, 1–2 Tage vor dem Renntag). */
+  readonly carbLoading: boolean;
+  /** Die Makros wurden zu mehr Kohlenhydraten verschoben (nicht im Modus `no_targets`, nicht unter 18). */
+  readonly carbsShifted: boolean;
+  /** Carb-Loading-Richtwert (8 g/kg) erreicht? null ohne Verschiebung. */
+  readonly carbLoadingReached: boolean | null;
+  /** Ohne Defizit geplant (Wettkampfwoche, Plan 10 1.6 Nr. 2); ein Abnehmziel ruht. */
+  readonly noDeficit: boolean;
+  /** Renntag: geschätzte Renn-Energie ist im Tagesbedarf (heute/künftig, kein Ergebnis-Eintrag vorhanden). */
+  readonly raceEnergyIncluded: boolean;
+  /** Ein aktives Abnehmziel ruht an diesem Tag wegen des Wettkampfs (läuft danach von selbst weiter, N4). */
+  readonly weightGoalPaused?: true;
+  /**
+   * Nur am Renntag: Gel-/Trinkplan (feste Bausteine). Ohne Ziele (`no_targets`) und unter 18 nur allgemein; Gramm fürs
+   * Frühstück nur mit Körpergewicht (Einwilligung). Die App zeigt Gramm nur mit „Kalorienzahlen anzeigen“.
+   */
+  readonly fueling?: RaceFuelingPlan;
 }
 
 export interface NutritionDayTargets {
@@ -94,6 +137,8 @@ export interface NutritionDayTargets {
    * Stand ändern, aber nicht bei jeder neuen Gewichtsangabe (die läuft weiter über das Planband).
    */
   readonly weightGoalKey?: string;
+  /** Wettkampf-Bezug (Etappe W1); fehlt an Tagen ohne Wettkampf-Bezug. */
+  readonly competition?: NutritionCompetitionDay;
 }
 
 export interface NutritionWeekTargets {
@@ -109,6 +154,8 @@ export interface NutritionWeekTargets {
 }
 
 const EPS = 1e-9;
+/** Unter 18 (wie `nutritionEligibility`): Gel-/Trinkplan nur allgemein (Plan 10 Abschnitt 10). */
+const MINOR_BELOW_AGE = NUTRITION_AGE_RULES.minorBelowAge;
 
 const WEIGHT_GOAL_STATUS_NOTICE: Partial<Record<WeightGoalDayStatus, WeightGoalNoticeCode>> = {
   invalid: 'weight_goal_invalid',
@@ -200,6 +247,17 @@ export function nutritionTargetsForWeek(
       enduranceModality: s.enduranceModality,
       minutes: s.minutes,
     }));
+    // Wettkampf (Etappe W1): Art des Tages; ohne Wettkämpfe gar nicht gerechnet (Ausgabe wie vorher).
+    const competitionDay =
+      inputs.competitions.length === 0
+        ? null
+        : competitionDayFor(inputs.competitions, date, inputs.experienceLevel);
+    const competition =
+      competitionDay !== null &&
+      competitionDay.competition !== null &&
+      (competitionDay.kind !== 'normal' || competitionDay.noDeficit)
+        ? competitionDay
+        : null;
 
     if (eligibility.mode === 'no_targets' || bodyForDay === null) {
       const pre =
@@ -241,10 +299,27 @@ export function nutritionTargetsForWeek(
         weightGoalStatus: noTargetsStatus,
         weightGoalPaceCapped: false,
         ...(noTargetsStatus !== null && goalKey !== null ? { weightGoalKey: goalKey } : {}),
+        // `no_targets`: nur die Art des Tages (allgemeine Hinweise), keine Verschiebung, keine Zahlen.
+        ...(competition === null
+          ? {}
+          : {
+              competition: competitionView(competition, {
+                carbsShifted: false,
+                carbLoadingReached: null,
+                raceEnergyIncluded: false,
+                ...fuelingFor(competition, inputs.experienceLevel, {
+                  generalOnly: true,
+                  weightKg: null,
+                }),
+              }),
+            }),
       });
       continue;
     }
 
+    // Renntag (W1): Der Wettkampf ist keine geplante Einheit (Plan 10 3.5) – seine geschätzte Energie geht nur hier als
+    // Eingabe in den Tagesbedarf (Deckel TRAINING_KCAL_DAY_MAX wie immer), nicht in Timing oder `sessions`.
+    const race = competition === null ? null : raceDaySession(competition, inputs.today);
     const energy = dayEnergy({
       day: date,
       weightKg: bodyForDay.weightKg,
@@ -253,7 +328,7 @@ export function nutritionTargetsForWeek(
       sex: inputs.sex,
       bodyFat: body.bodyFat,
       activityLevel: inputs.activityLevel,
-      sessions: counted,
+      sessions: race === null ? counted : [...counted, race],
     });
     const notices: NutritionNoticeCode[] = [...eligibility.notices, ...timing.notices];
     if (
@@ -268,7 +343,7 @@ export function nutritionTargetsForWeek(
     const mode = eligibility.mode;
     const standardAdjustment = applyGoalAdjustment(goals, inputs.experienceLevel, mode);
     // Konkretes Abnehmziel (F5): kann die Anpassung nur Richtung 0 verschieben, nie darüber hinaus.
-    const goalDay: WeightGoalDayResult | null =
+    const rawGoalDay: WeightGoalDayResult | null =
       weightGoal === null
         ? null
         : weightGoalDayAdjustment({
@@ -286,9 +361,25 @@ export function nutritionTargetsForWeek(
             bodyMetricsRows: inputs.bodyMetricsRows,
             noDeficit: noDeficit(date, ageYears),
           });
-    const adjustment =
+    // Wettkampfwoche ohne Defizit (Plan 10 1.6 Nr. 2): Ein aktives Abnehmziel ruht an diesen Tagen.
+    const raceWeekNoDeficit = competition?.noDeficit === true;
+    const carbsShifted = competition?.carbLoading === true && ageYears >= MINOR_BELOW_AGE;
+    const weightGoalPaused = raceWeekNoDeficit && rawGoalDay?.status === 'active';
+    const goalDay: WeightGoalDayResult | null = weightGoalPaused
+      ? { status: 'paused', adjustment: 0, slowerThanRequired: false }
+      : rawGoalDay;
+    const profileAdjustment =
       goalDay === null ? standardAdjustment : Math.max(standardAdjustment, goalDay.adjustment);
-    const proposed = energy.baseNeeds * (1 + adjustment) + energy.training.netKcal + adjustmentKcal;
+    // Erhalt statt Defizit; ein Überschuss des Ziel-Profils bleibt (Grenzen gelten unverändert in clampCalorieTarget).
+    const adjustment = raceWeekNoDeficit ? Math.max(profileAdjustment, 0) : profileAdjustment;
+    // 4b-Versatz (19.7 W1, G1): an Carb-Loading-Tagen 0, an den übrigen Tagen ohne Defizit nie negativ.
+    const dayOffsetKcal =
+      competition?.carbLoading === true
+        ? 0
+        : raceWeekNoDeficit
+          ? Math.max(adjustmentKcal, 0)
+          : adjustmentKcal;
+    const proposed = energy.baseNeeds * (1 + adjustment) + energy.training.netKcal + dayOffsetKcal;
     const context = dayLimitContext({
       energy,
       eligibility,
@@ -319,6 +410,10 @@ export function nutritionTargetsForWeek(
       proteinCap: eligibility.proteinCap,
       // Tagessumme kann über 24 h liegen (mehrere Einheiten, Datenfehler) – nie die ganze Woche abbrechen (S2).
       trainingMinutes: Math.min(energy.training.minutes, MINUTES_PER_DAY),
+      // Carb-Loading (W1): mehr Kohlenhydrate nur innerhalb des Tagesziels (Fett ≥ 20 %, Eiweiß unverändert) – unter 18
+      // keine Verschiebung (Wächter W1 M1, W1-G4), nur Erhalt und der allgemeine Hinweis.
+      carbsTargetGPerKg:
+        carbsShifted && competition !== null ? competitionCarbsGPerKg(competition) : null,
     });
     days.push({
       date,
@@ -345,6 +440,20 @@ export function nutritionTargetsForWeek(
       weightGoalStatus: goalDay?.status ?? null,
       weightGoalPaceCapped: paceCapped,
       ...(goalDay !== null && goalKey !== null ? { weightGoalKey: goalKey } : {}),
+      ...(competition === null
+        ? {}
+        : {
+            competition: competitionView(competition, {
+              carbsShifted,
+              carbLoadingReached: carbsShifted ? (macros.carbsTargetReached ?? false) : null,
+              ...(weightGoalPaused ? { weightGoalPaused: true } : {}),
+              raceEnergyIncluded: race !== null,
+              ...fuelingFor(competition, inputs.experienceLevel, {
+                generalOnly: ageYears < MINOR_BELOW_AGE,
+                weightKg: bodyForDay.weightKg,
+              }),
+            }),
+          }),
     });
   }
   return {
@@ -352,5 +461,37 @@ export function nutritionTargetsForWeek(
     days,
     usesHealthData,
     weightGoalNotices: sortWeightGoalNotices(weightGoalNotices),
+  };
+}
+
+/** Gel-/Trinkplan nur am Renntag (sonst kein Feld). */
+function fuelingFor(
+  day: CompetitionDay,
+  level: ExperienceLevel,
+  options: { readonly generalOnly: boolean; readonly weightKg: number | null },
+): { fueling?: RaceFuelingPlan } {
+  if (day.kind !== 'race_day' || day.competition === null) return {};
+  return { fueling: raceFuelingPlan(day.competition.expectedMinutes, level, options) };
+}
+
+function competitionView(
+  day: CompetitionDay,
+  extra: Pick<
+    NutritionCompetitionDay,
+    'carbsShifted' | 'carbLoadingReached' | 'raceEnergyIncluded' | 'fueling' | 'weightGoalPaused'
+  >,
+): NutritionCompetitionDay {
+  const c = day.competition;
+  if (c === null) throw new RangeError('Wettkampf-Tag ohne Wettkampf.');
+  return {
+    kind: day.kind,
+    competitionId: c.id,
+    discipline: c.discipline,
+    raceDate: c.raceDate,
+    expectedMinutes: c.expectedMinutes,
+    minutesSource: c.minutesSource,
+    carbLoading: day.carbLoading,
+    noDeficit: day.noDeficit,
+    ...extra,
   };
 }

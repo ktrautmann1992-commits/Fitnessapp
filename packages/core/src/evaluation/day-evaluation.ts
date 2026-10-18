@@ -42,7 +42,12 @@ export type DayEvaluationNotice =
   /** Der Essensplan dieses Tages erreicht die Untergrenze nicht (bestehender Hinweis `day_below_floor`, 2.3). */
   | 'plan_below_floor'
   /** „Trainingstag – dein Ziel ist heute höher.“ (2.4) – nur mit Zahlen. */
-  | 'training_day';
+  | 'training_day'
+  /**
+   * Carb-Loading-Tag (Etappe W1, docs/PLAN-PHASE-10.md Abschnitt 10): „Heute mehr Kohlenhydrate – so geplant.“ – nur mit
+   * Zahlen und Tagesziel (das angepasste Ziel steht im Balken).
+   */
+  | 'carb_loading_day';
 
 /**
  * Darf der Essensplan eines Tages in die Auswertung („x von y Mahlzeiten“, „Gegessen“, `below_floor`)? Nur ein
@@ -182,6 +187,14 @@ export function dayEvaluation(input: DayEvaluationInput): DayEvaluation {
     targets.sessions.length > 0
   ) {
     notices.push('training_day');
+  }
+  if (
+    showNumbers &&
+    targets !== null &&
+    targets.targetKcal !== null &&
+    targets.competition?.carbsShifted === true
+  ) {
+    notices.push('carb_loading_day');
   }
 
   return {

@@ -149,7 +149,11 @@ export default function WeightGoalSettingsScreen() {
           {summary.period}
         </Body>
         {status === 'active' || status === 'paused' ? (
-          <Body testID={`weight-goal-settings-status-${status}`}>{S.status[status]}</Body>
+          <Body testID={`weight-goal-settings-status-${status}`}>
+            {status === 'paused' && overview?.pausedForCompetition === true
+              ? S.status.pausedCompetition
+              : S.status[status]}
+          </Body>
         ) : null}
         <Button
           label={S.edit}

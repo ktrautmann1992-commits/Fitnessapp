@@ -4,6 +4,7 @@ import {
   BMI_LIMITS,
   BODY_METRIC_LIMITS,
   CARBS,
+  COMPETITION_NUTRITION,
   FAT_ENERGY_SHARE,
   KCAL_PER_GRAM,
   NUTRITION_ROUNDING,
@@ -36,6 +37,17 @@ export const macroInputsSchema = z
       .number()
       .min(0)
       .max(24 * 60),
+    /**
+     * Wettkampf-Ernährung (Etappe W1, Plan 10 Abschnitt 10): Kohlenhydrat-Richtwert in g/kg, der zusätzlich angestrebt
+     * wird (Carb-Loading 8 g/kg) – NUR als Verschiebung innerhalb der Energie: Fett nie unter 20 %, Eiweiß unverändert
+     * (≥ Minimum); reicht die Energie nicht, bleibt es beim Rest (`carbsTargetReached: false`). null = keiner.
+     */
+    carbsTargetGPerKg: z
+      .number()
+      .min(0)
+      .max(COMPETITION_NUTRITION.carbLoadingGPerKg.max)
+      .nullable()
+      .default(null),
   })
   .refine((m) => m.proteinMin <= m.proteinCap, { path: ['proteinMin'] })
   .refine((m) => isAllowedGoalPair(m.goalType, m.secondaryGoalType), {
@@ -52,6 +64,8 @@ export interface Macros {
   /** Referenzgewicht für Eiweiß (bei BMI ≥ 30 das Gewicht bei BMI 25). */
   readonly referenceWeightKg: number;
   readonly notices: readonly NutritionNoticeCode[];
+  /** Nur mit `carbsTargetGPerKg`: Liegen die gerundeten Kohlenhydrate auf diesem Richtwert (±2,5 g Rundung)? */
+  readonly carbsTargetReached?: boolean;
 }
 
 /** Gewicht, mit dem Eiweiß rechnet: ab BMI 30 das Gewicht bei BMI 25 für die Größe (PRODUKTENTSCHEIDUNG). */
@@ -92,13 +106,20 @@ export function nutritionMacros(input: MacroInputs): Macros {
 
   // Ausdauer (Haupt- oder Nebenziel, Ziel-Profil): Richtwert nach Trainingsminuten; reicht der Rest nicht, Fett
   // bis zur Untergrenze senken.
-  if (goalUsesEnduranceCarbs(selection)) {
-    const wanted = enduranceCarbsGPerKg(m.trainingMinutes) * m.weightKg;
-    if (carbsRest() < wanted) {
-      const share =
-        (kcal - KCAL_PER_GRAM.protein * perKg * ref - KCAL_PER_GRAM.carbs * wanted) / kcal;
-      fatShare = Math.min(fatShare, Math.max(FAT_ENERGY_SHARE.min, share));
-      if (carbsRest() < wanted - 1e-9) notices.add('endurance_carbs_below_target');
+  // Wettkampf (W1): ein zusätzlicher Richtwert (Carb-Loading) verschiebt genauso – nur Fett bis zur Untergrenze.
+  const enduranceWanted = goalUsesEnduranceCarbs(selection)
+    ? enduranceCarbsGPerKg(m.trainingMinutes) * m.weightKg
+    : 0;
+  const extraWanted = (m.carbsTargetGPerKg ?? 0) * m.weightKg;
+  const wanted = Math.max(enduranceWanted, extraWanted);
+  if (wanted > 0 && carbsRest() < wanted) {
+    const share =
+      (kcal - KCAL_PER_GRAM.protein * perKg * ref - KCAL_PER_GRAM.carbs * wanted) / kcal;
+    fatShare = Math.min(fatShare, Math.max(FAT_ENERGY_SHARE.min, share));
+    // Der Hinweis zum Ausdauer-Richtwert nur, wenn dieser Richtwert selbst verfehlt wird (der Carb-Loading-Richtwert
+    // meldet sich über `carbsTargetReached`).
+    if (enduranceWanted > 0 && carbsRest() < enduranceWanted - 1e-9) {
+      notices.add('endurance_carbs_below_target');
     }
   }
   // Richtwert 130 g: erst Fett bis 20 %, dann Eiweiß bis 1,6 g/kg; danach nur Hinweis (R2-K1).
@@ -132,5 +153,8 @@ export function nutritionMacros(input: MacroInputs): Macros {
     proteinGPerKg: perKg,
     referenceWeightKg: ref,
     notices: sortNotices(notices),
+    ...(m.carbsTargetGPerKg === null
+      ? {}
+      : { carbsTargetReached: carbsG >= extraWanted - STEP / 2 - 1e-9 }),
   };
 }

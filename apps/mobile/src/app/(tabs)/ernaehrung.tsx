@@ -1,5 +1,6 @@
 import {
   addDays,
+  competitionGuideId,
   evaluationMealPlanUsable,
   isoDateSchema,
   type MealSlotId,
@@ -25,6 +26,7 @@ import {
   MealRow,
   NutritionNotices,
 } from '@/components/nutrition';
+import { CompetitionNutritionCard } from '@/components/competition-nutrition';
 import { CustomMealDaySection } from '@/components/custom-meals';
 import { FoodLogDaySection, PlanMealEaten } from '@/components/food-log';
 import { useReadableGuides } from '@/components/guides';
@@ -204,6 +206,7 @@ export default function NutritionDayScreen() {
   const foods = view.library.result.library.foods;
   const foodName = (id: string) => foods.get(id)?.name_de ?? id;
   const notices = visibleNotices(dayTargets.notices, view.showNumbers);
+  const competitionGuide = competitionGuideId(readable ?? []);
   const numbers = view.showNumbers && dayTargets.targetKcal !== null;
   const status = day?.status ?? (dayTargets.mode === 'no_targets' ? 'no_targets' : null);
   const dayDate = dayTargets.date;
@@ -267,6 +270,16 @@ export default function NutritionDayScreen() {
         </Heading>
         {status ? <Body muted>{t.nutrition.dayStatus[status]}</Body> : null}
       </View>
+      {/* Etappe W1: Wettkampf-Ernährung (Carb-Loading, Vorabend, Renntag mit Zeitleiste, Nach dem Rennen). */}
+      <CompetitionNutritionCard
+        day={dayTargets}
+        showNumbers={view.showNumbers}
+        onOpenGuide={
+          competitionGuide === null
+            ? null
+            : () => router.push(`/ratgeber/${encodeURIComponent(competitionGuide)}` as Href)
+        }
+      />
       <MealPlanStateNotices
         state={planState}
         actions={actions}
