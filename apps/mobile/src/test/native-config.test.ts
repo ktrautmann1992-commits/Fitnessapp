@@ -10,7 +10,11 @@ import { fileURLToPath } from 'node:url';
 import type { ExpoConfig } from 'expo/config';
 import { beforeAll, describe, expect, it } from 'vitest';
 
-import appConfig, { CAMERA_PERMISSION_TEXT, MLKIT_DEPENDENCIES_META } from '../../app.config';
+import appConfig, {
+  CAMERA_PERMISSION_TEXT,
+  MLKIT_DEPENDENCIES_META,
+  PUSH_ENTITLEMENT,
+} from '../../app.config';
 
 const APP_DIR = join(dirname(fileURLToPath(import.meta.url)), '..', '..');
 const require = createRequire(join(APP_DIR, 'package.json'));
@@ -84,6 +88,21 @@ describe('app.config.ts', () => {
     ]);
     expect(CAMERA_PERMISSION_TEXT).toMatch(/Strichcode/);
     expect(CAMERA_PERMISSION_TEXT).toMatch(/keine Fotos gespeichert/);
+  });
+
+  it('expo-notifications: nur lokal – Symbol, keine Töne, keine Hintergrund-Push-Nachrichten (Etappe E)', () => {
+    const plugin = config().plugins?.find(
+      (entry) => Array.isArray(entry) && entry[0] === 'expo-notifications',
+    );
+    expect(plugin).toEqual([
+      'expo-notifications',
+      {
+        icon: './assets/images/android-icon-monochrome.png',
+        sounds: [],
+        enableBackgroundRemoteNotifications: false,
+      },
+    ]);
+    expect(existsSync(join(APP_DIR, 'assets/images/android-icon-monochrome.png'))).toBe(true);
   });
 
   it('expo-secure-store ohne Face ID, mit Android-Sicherungsregeln', () => {
@@ -170,7 +189,7 @@ describe('expo config --type introspect (nach allen Config-Plugins, offline)', (
   type Introspect = {
     _internal: {
       modResults: {
-        ios: { infoPlist: Record<string, unknown> };
+        ios: { infoPlist: Record<string, unknown>; entitlements?: Record<string, unknown> };
         android: {
           manifest: {
             manifest: {
@@ -223,6 +242,25 @@ describe('expo config --type introspect (nach allen Config-Plugins, offline)', (
     expect(application['android:dataExtractionRules']).toBe(
       '@xml/secure_store_data_extraction_rules',
     );
+  });
+
+  it('iOS: keine Push-Fähigkeit (aps-environment entfernt), kein remote-notification (Etappe E)', () => {
+    const ios = result._internal.modResults.ios;
+    // Ohne Entitlements wäre die Prüfung wertlos (z. B. geänderte introspect-Ausgabe).
+    expect(ios.entitlements).toBeDefined();
+    expect(ios.entitlements).not.toHaveProperty(PUSH_ENTITLEMENT);
+    expect((ios.infoPlist.UIBackgroundModes as string[] | undefined) ?? []).not.toContain(
+      'remote-notification',
+    );
+  });
+
+  it('AndroidManifest: Benachrichtigungs-Symbol gesetzt (Etappe E)', () => {
+    const manifest = result._internal.modResults.android.manifest.manifest;
+    const meta = (manifest.application[0]?.['meta-data'] ?? []).map((entry) => entry.$);
+    expect(meta).toContainEqual({
+      'android:name': 'expo.modules.notifications.default_notification_icon',
+      'android:resource': '@drawable/notification_icon',
+    });
   });
 
   it('AndroidManifest: Download des Google-Code-Scanners (barcode_ui) wird entfernt (E4b, Wächter M2)', () => {

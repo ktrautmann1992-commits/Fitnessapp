@@ -7,6 +7,7 @@ import { Redirect, useRouter, type Href } from 'expo-router';
 import { useEffect, useState } from 'react';
 
 import { ConsentSettings } from '@/components/consent-settings';
+import { NotificationSettings } from '@/components/notifications';
 import { EatingHelpNotice } from '@/components/nutrition';
 import { ConfirmDialog, Screen } from '@/components/screen';
 import {
@@ -364,6 +365,9 @@ export default function SettingsScreen() {
           loading={savingReminder}
         />
       </Card>
+
+      {/* Etappe E (docs/PLAN-PHASE-4B.md 8.1 Nr. 4): lokale Benachrichtigungen; im Browser nur ein Hinweis. */}
+      <NotificationSettings rows={rows} />
 
       {app.backend.mode === 'local' ? (
         <>

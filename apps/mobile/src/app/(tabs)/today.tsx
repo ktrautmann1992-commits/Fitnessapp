@@ -57,6 +57,7 @@ import {
   useApp,
 } from '@/state/app-state';
 import { healthConsentStatus, isReminderDue, HOME_ROUTE, resolveEntryRoute } from '@/state/flow';
+import { MeasurementNotificationOffer } from '@/components/notifications';
 
 /**
  * „Heute“ (docs/PLAN-PHASE-3.md 10.2/10.3): heutige Einheit mit Arzt-Hinweis, Wochenübersicht, Verschieben,
@@ -332,6 +333,8 @@ export default function TodayScreen() {
       ))}
       {app.offline ? <Notice tone="warning">{t.plan.offline}</Notice> : null}
       {isReminderDue(rows, today) ? <Notice tone="info">{t.today.measurementDue}</Notice> : null}
+      {/* Etappe E: einmaliges Angebot nach der ersten Messung (nur App, nie im Onboarding). */}
+      <MeasurementNotificationOffer />
       {/* Etappe Z5 (F10): Karte nur bei „erreicht“ bzw. „Zeitraum vorbei“ – ohne Zahlen, kein Fortschritt (F13). */}
       {weightGoal ? <WeightGoalLifecycleCard overview={weightGoal} zurueck="heute" /> : null}
       {/* Wettkampf (WP4): Countdown bzw. Einladung, wenn im Onboarding ein Datum angegeben wurde. */}

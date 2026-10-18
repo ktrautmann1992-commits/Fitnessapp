@@ -776,7 +776,9 @@ Quelle: `docs/ERWEITERUNGEN-2.md` Abschnitte 1–2. Startbestand aus `alpha5-rez
 - **Mess-Update:** Erinnerung in festem Abstand (Standard alle 4 Wochen = 28 Tage, einstellbar 7–90) zum Nachmessen, zusammen mit Gewicht
 - Verlaufsdiagramme pro Umfang; Werte fließen in die Live-Anpassung (Abschnitt 4.1)
 - Umgesetzt in Phase 1 (Etappe A): Tabellen `body_measurements` und `measurement_reminders`, an die `health_data`-Einwilligung
-  gebunden (siehe Abschnitt 12, Abweichungen). Push-Erinnerung, Verlaufsdiagramme und Anleitungsbilder folgen später.
+  gebunden (siehe Abschnitt 12, Abweichungen). Verlaufsdiagramme und Anleitungsbilder folgen später.
+- Umgesetzt in Phase 4b (Etappe E): Mess-Erinnerung als **lokale** Benachrichtigung (statt Push, siehe Abschnitt 12,
+  Abweichungen ab Phase 4b).
 
 ### 11.2 Körperfoto-Analyse (Premium, KI)
 - Fotos in festen Posen (vorne, seitlich, hinten) mit Umriss-Hilfe auf dem Kamerabild; Erinnerung zusammen mit dem Mess-Update
@@ -1054,6 +1056,18 @@ eigene Zeilen, in Export und Kontolöschung enthalten.
   Widerruf; im Export enthalten. `routes` (Vorschläge, Lizenz) bleibt für S2b.
 - **`session_logs.source`** `gps`/`gpx_import` setzt nur `save_tracked_route` (Eintrag mit Strecke verknüpft); ein
   verknüpfter Eintrag muss zur Strecke passen (Art, Tag, Distanz, Dauer – `private.session_log_fits_route`).
+
+### Abweichungen ab Phase 4b, Etappe E (umgesetzt, siehe `docs/PLAN-PHASE-4B.md` Abschnitt 7 und Umsetzungsstand E)
+- **Lokal statt Push** (Gründer-Entscheidung Frage 8, Abweichung von PROMPTS „Mess-Erinnerungen per Push“):
+  Mess-Erinnerung und Pausenende sind **lokale** Benachrichtigungen (`expo-notifications`), die die App auf dem Gerät
+  plant – ohne Push-Token, ohne Server und ohne Versand über Expo, Apple oder Google mit Nutzerbezug. Datensparsamer:
+  kein Auftragsverarbeiter, keine neue Tabelle, **keine Migration**. iOS ohne Push-Fähigkeit (`aps-environment`
+  entfernt). Server-Push (z. B. „Dein Plan wurde angepasst“) erst später, falls gewünscht – dann Push-Token als
+  personenbezogenes Datum und Expo Push Service als Auftragsverarbeiter.
+- **`measurement_reminders.enabled`** bleibt der Schalter für den Hinweis auf „Heute“ (Standard an). Die Benachrichtigung
+  ist eine eigene **Geräte-Einstellung** (Opt-in, Standard aus, nur auf dem Gerät, beim Abmelden zurückgesetzt).
+- Mess-Erinnerung am Fälligkeitstag um 08:00 Ortszeit, nur mit gültiger `health_data`-Einwilligung; Text fest
+  „Alpha5: Zeit für dein Mess-Update“, nie Werte. Im Browser keine Benachrichtigungen, nur ein Hinweis.
 
 ### Abweichungen ab Ziele, Etappe Z3 (umgesetzt, siehe `docs/PLAN-ZIELE.md` Abschnitt 13 und `supabase/migrations/20261017200*`)
 - **`goals.secondary_goal_type`** (Nebenziel, null = keins): nur erlaubte Paare (`private.goal_pair_allowed` =

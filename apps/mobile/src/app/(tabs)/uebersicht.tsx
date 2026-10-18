@@ -10,6 +10,7 @@ import { useEffect, useMemo } from 'react';
 
 import { DashboardTile, ShortcutCell, ShortcutGrid, ShortcutTile } from '@/components/dashboard';
 import { Screen } from '@/components/screen';
+import { MeasurementNotificationOffer } from '@/components/notifications';
 import { Body, Button, LoadingState, Notice } from '@/components/ui';
 import { weightGoalOverviewFromRows } from '@/components/weight-goal';
 import { displayedSessionNames } from '@/data/competition';
@@ -99,6 +100,8 @@ function Overview({ rows, today }: { rows: UserRows; today: string }) {
   return (
     <Screen title={t.dashboard.title} testID="overview">
       <Body muted>{greeting(new Date().getHours())}</Body>
+      {/* Etappe E: einmaliges Angebot nach der ersten Messung (nur App, nie im Onboarding). */}
+      <MeasurementNotificationOffer />
       {urgent ? (
         // Deutlich wie auf „Heute“: strengere Regeln bzw. Plan abgelaufen → neu erstellen.
         <Notice
