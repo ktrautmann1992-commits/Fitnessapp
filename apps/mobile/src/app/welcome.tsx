@@ -82,14 +82,25 @@ export default function WelcomeScreen() {
               label={t.welcome.start}
               accessibilityHint={t.welcome.startHint}
               onPress={() => router.push('/age')}
+              testID="welcome-start"
             />
+            {/* Zweiter Weg (docs/PLAN-DASHBOARD.md 2.1): Anmelden mit Code – nur mit Datenbank. */}
             {backend.mode === 'supabase' ? (
-              <Button
-                label={t.welcome.haveAccount}
-                variant="onDark"
-                onPress={() => router.push('/account?login=1')}
-              />
-            ) : null}
+              <>
+                <Text style={styles.note}>{t.welcome.loginNote}</Text>
+                <Button
+                  label={t.welcome.haveAccount}
+                  accessibilityHint={t.welcome.haveAccountHint}
+                  variant="onDark"
+                  onPress={() => router.push('/account?login=1')}
+                  testID="welcome-login"
+                />
+              </>
+            ) : (
+              <Text style={styles.note} testID="welcome-test-login-note">
+                {t.welcome.testModeLoginNote}
+              </Text>
+            )}
             <Text style={styles.note}>{t.welcome.minAgeNote}</Text>
           </View>
         </View>

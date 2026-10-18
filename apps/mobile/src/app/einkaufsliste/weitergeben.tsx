@@ -30,7 +30,7 @@ import { COPY_AVAILABLE, copyText, type ShareOutcome, shareText } from '@/lib/sh
 import { useThemeColors } from '@/lib/theme';
 import { useToday } from '@/lib/use-today';
 import { useApp } from '@/state/app-state';
-import { resolveEntryRoute } from '@/state/flow';
+import { HOME_ROUTE, resolveEntryRoute } from '@/state/flow';
 import { useNutritionWeek } from '@/state/use-nutrition';
 
 type Action = 'share' | 'copy';
@@ -113,7 +113,7 @@ export default function ShoppingListShareScreen() {
     versions: app.versions,
     nutritionSetupAvailable: app.backend.supportsNutrition,
   });
-  if (route !== '/today' || !app.rows) {
+  if (route !== HOME_ROUTE || !app.rows) {
     return <Redirect href={route as Href} />;
   }
 

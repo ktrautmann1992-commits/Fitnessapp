@@ -3,7 +3,6 @@ import {
   blockWeekFor,
   competitionCountdown,
   type DaySwap,
-  followUpBlockState,
   nextPlannedSession,
   planInfoNotices,
   type PreferenceChange,
@@ -40,7 +39,8 @@ import {
 import { logForSession } from '@/data/log-rows';
 import type { WorkoutDraft } from '@/data/workout-draft';
 import { startKind, trainedTodayOther, workoutView } from '@/data/workout-session';
-import { activePlan, planOffer, rescheduleInRows } from '@/data/training-plan';
+import { planNoticeFor } from '@/data/training-attention';
+import { activePlan, rescheduleInRows } from '@/data/training-plan';
 import { t } from '@/i18n';
 import { createPlanErrorText, errorText } from '@/lib/error-text';
 import { formatDateDe, todayIso } from '@/lib/format';
@@ -56,7 +56,7 @@ import {
   PLAN_RECREATE_NEEDED,
   useApp,
 } from '@/state/app-state';
-import { healthConsentStatus, isReminderDue, resolveEntryRoute } from '@/state/flow';
+import { healthConsentStatus, isReminderDue, HOME_ROUTE, resolveEntryRoute } from '@/state/flow';
 
 /**
  * „Heute“ (docs/PLAN-PHASE-3.md 10.2/10.3): heutige Einheit mit Arzt-Hinweis, Wochenübersicht, Verschieben,
@@ -122,7 +122,7 @@ export default function TodayScreen() {
     versions: app.versions,
     nutritionSetupAvailable: app.backend.supportsNutrition,
   });
-  if (route !== '/today' || !rows) {
+  if (route !== HOME_ROUTE || !rows) {
     return <Redirect href={route as Href} />;
   }
   const consent = healthConsentStatus(rows, app.versions);
@@ -475,14 +475,20 @@ export default function TodayScreen() {
     active.sessions,
     selected < today ? addDays(today, -1) : selected,
   );
-  const followUp = followUpBlockState(active.sessions, today);
   // Wettkampfplan (WP4): Phasen-Band „Aufbau · Woche 6 von 14“ für den gewählten Tag, Pace aus der Referenzzeit.
   // Nur ein passender Wettkampfplan zeigt Phasen-Band und Pace (Regel in data/competition.ts, Wächter WP4 H1).
   const planView = competitionPlanView(rows, active, selected, app.offline, rules);
   const planWeek = planView.week;
   const paceProfile = planView.paceProfile;
-  const templateVersion = lib?.templates.find((tpl) => tpl.id === plan.template_id)?.version;
-  const offer = rules ? planOffer(rows, app.versions, active, rules, today, templateVersion) : null;
+  // „Plan neu erstellen?“ – dieselbe Auswertung wie die Übersicht (data/training-attention.ts, Wächter H1).
+  const notice = planNoticeFor({
+    rows,
+    versions: app.versions,
+    active,
+    rules,
+    library: lib,
+    today,
+  });
   // EIN Anzeigeweg (prepareSessionForDisplay im Core): Sicherheitsregeln → Präferenzen → „Nur heute“-Tausche.
   const display =
     selectedSession && rules
@@ -639,24 +645,24 @@ export default function TodayScreen() {
   return (
     <Screen title={t.today.title} testID="today" footer={footer}>
       {header}
-      {offer?.offer || followUp === 'ended' ? (
+      {notice.kind !== 'none' ? (
         <Notice
-          tone={offer?.stricter || followUp === 'ended' ? 'danger' : 'info'}
+          tone={notice.kind === 'offer' ? 'info' : 'danger'}
           title={
-            followUp === 'ended'
+            notice.kind === 'ended'
               ? t.plan.endedTitle
-              : offer?.stricter
+              : notice.kind === 'stricter'
                 ? t.plan.offerStricterTitle
                 : t.plan.offerTitle
           }
           testID="plan-offer"
         >
           <Body>
-            {followUp === 'ended'
+            {notice.kind === 'ended'
               ? t.plan.endedText
-              : offer?.stricter
+              : notice.kind === 'stricter'
                 ? t.plan.offerStricterText
-                : offer?.reasons.length === 1 && offer.reasons[0] === 'template_version'
+                : notice.versionOnly
                   ? t.plan.offerVersion
                   : t.plan.offerText}
           </Body>

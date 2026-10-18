@@ -13,7 +13,7 @@ import { errorText } from '@/lib/error-text';
 import { placeText } from '@/lib/swap-format';
 import { useThemeColors } from '@/lib/theme';
 import { useApp } from '@/state/app-state';
-import { resolveEntryRoute } from '@/state/flow';
+import { HOME_ROUTE, resolveEntryRoute } from '@/state/flow';
 
 /**
  * Einstellungen → „Ausgeschlossene Übungen“ (docs/PLAN-UEBUNGEN-GLOSSAR-TAUSCH.md 8.2, Etappe T2): je Ort Übung, Grund
@@ -56,7 +56,7 @@ export default function ExclusionsScreen() {
     versions: app.versions,
     nutritionSetupAvailable: app.backend.supportsNutrition,
   });
-  if (route !== '/today' || !rows) {
+  if (route !== HOME_ROUTE || !rows) {
     return <Redirect href={route as Href} />;
   }
   const back = () => (router.canGoBack() ? router.back() : router.replace('/settings' as Href));

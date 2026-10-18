@@ -3,12 +3,17 @@
   Vorlage für den Web-Export der App (expo export, output 'single'). Basis: Standard-Vorlage von Expo
   (@expo/cli/static/template/index.html), ergänzt um das Apple-Touch-Icon für „Zum Home-Bildschirm“.
   Titel, Sprache, Favicon und Skripte setzt Expo beim Export ein.
+  viewport-fit=cover: Die App reicht bis unter die Home-Leiste des iPhones; die sicheren Ränder (env(safe-area-inset-*))
+  liest react-native-safe-area-context im Browser aus – Menüleiste und Fußknöpfe bleiben darüber (Wächter N8).
 -->
 <html lang="%LANG_ISO_CODE%">
   <head>
     <meta charset="utf-8" />
     <meta httpEquiv="X-UA-Compatible" content="IE=edge" />
-    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1, shrink-to-fit=no, viewport-fit=cover"
+    />
     <title>%WEB_TITLE%</title>
     <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png" />
     <link

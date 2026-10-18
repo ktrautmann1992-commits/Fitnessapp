@@ -11,6 +11,7 @@ export const deNutrition = {
   hfiCoeliac:
     'Bei hereditärer Fruktoseintoleranz oder Zöliakie können wir keine Garantie geben – prüfe immer die Zutatenliste der gekauften Produkte.',
   back: 'Zurück',
+  toToday: 'Zu heute',
   loading: 'Ernährung wird geladen …',
   loadFailed: 'Die Ernährung konnte nicht geladen werden.',
   computeFailed:

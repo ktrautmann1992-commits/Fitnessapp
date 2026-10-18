@@ -257,6 +257,8 @@ test('„Ab jetzt immer“: Grund Pflicht, Rückgängig, alle Einheiten, PDF, Ei
   await page.goto('/settings');
   await heading(page, 'Einstellungen');
   await expect(page.getByTestId('settings-exclusions')).toBeVisible();
+  await page.goto('/konto');
+  await heading(page, 'Mein Konto');
   await page.getByTestId('settings-export').click();
   const downloadPromise = page.waitForEvent('download');
   await page.getByRole('button', { name: 'Datei herunterladen' }).click();
@@ -267,6 +269,7 @@ test('„Ab jetzt immer“: Grund Pflicht, Rückgängig, alle Einheiten, PDF, Ei
   expect(file.data.exercise_preferences?.[0]?.kind).toBe('dislike');
 
   // Wieder zulassen (mit Bestätigung) → Liste leer, Übung sofort zurück.
+  await page.goto('/settings');
   await page.getByTestId('settings-exclusions').click();
   await heading(page, 'Ausgeschlossene Übungen');
   await page.getByRole('button', { name: `${PUSHUP_RAISED} zu Hause wieder zulassen` }).click();
@@ -427,9 +430,14 @@ test('Abmelden entfernt die „Nur heute“-Tausche des Kontos vom Gerät (Wäch
     .toBe('swap-feedback');
   const before = await page.evaluate((key) => window.localStorage.getItem(key), DAY_SWAPS);
   expect(JSON.parse(before ?? '[]')).toHaveLength(1);
-  await page.getByRole('button', { name: 'Einstellungen' }).click();
-  await heading(page, 'Einstellungen');
-  await page.getByRole('button', { name: 'Abmelden' }).click();
+  await page.getByRole('tab', { name: 'Mehr' }).click();
+  await page.getByTestId('more-account').click();
+  await heading(page, 'Mein Konto');
+  await page.getByTestId('konto-signout').click();
+  await page
+    .getByTestId('dialog-signout_confirm')
+    .getByRole('button', { name: 'Abmelden' })
+    .click();
   await expect(page.getByRole('button', { name: "Los geht's" })).toBeVisible();
   expect(await page.evaluate((key) => window.localStorage.getItem(key), DAY_SWAPS)).toBeNull();
 });

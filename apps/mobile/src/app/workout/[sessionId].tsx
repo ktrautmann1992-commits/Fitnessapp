@@ -102,7 +102,7 @@ import {
   perPieceText,
 } from '@/lib/workout-format';
 import { useApp } from '@/state/app-state';
-import { resolveEntryRoute } from '@/state/flow';
+import { HOME_ROUTE, resolveEntryRoute } from '@/state/flow';
 import { useThemeColors } from '@/lib/theme';
 
 /**
@@ -239,7 +239,7 @@ export default function WorkoutScreen() {
     versions: app.versions,
     nutritionSetupAvailable: app.backend.supportsNutrition,
   });
-  if (route !== '/today' || !rows) {
+  if (route !== HOME_ROUTE || !rows) {
     return <Redirect href={route as Href} />;
   }
 

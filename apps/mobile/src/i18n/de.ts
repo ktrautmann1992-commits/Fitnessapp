@@ -7,6 +7,14 @@
  */
 import { deCompetition } from './de-competition';
 import { deCustomMeals } from './de-custom-meals';
+import {
+  deConsentsPage,
+  deDashboard,
+  deKonto,
+  deMore,
+  deProgressHub,
+  deTabs,
+} from './de-dashboard';
 import { deDay } from './de-day';
 import { deFoodLog } from './de-food-log';
 import { deFoodPhoto } from './de-food-photo';
@@ -96,9 +104,13 @@ export const de = {
       text: 'Wochenplan mit Rezepten und Einkaufsliste, dazu Sätze und Gewichte festhalten.',
       label: 'Bald verfügbar: Ernährungsplan und Trainingstagebuch',
     },
-    start: "Los geht's",
+    start: "Neu hier – Los geht's",
     startHint: 'Startet die Fragen zu deinem Plan',
-    haveAccount: 'Ich habe schon ein Konto – Anmelden',
+    haveAccount: 'Anmelden',
+    haveAccountHint: 'Du hast schon ein Konto? Wir schicken dir einen Code per E-Mail.',
+    loginNote: 'Schon ein Konto? Anmelden mit Code per E-Mail – ohne Passwort.',
+    testModeLoginNote:
+      'Testmodus: Anmelden gibt es erst, wenn die App mit der Datenbank verbunden ist. Bis dahin bleiben deine Angaben nur auf diesem Gerät.',
     minAgeNote: 'Nutzung ab 16 Jahren',
   },
   age: {
@@ -129,13 +141,21 @@ export const de = {
     emailPlaceholder: 'name@beispiel.de',
     emailInvalid: 'Bitte eine gültige E-Mail-Adresse eingeben.',
     sendCode: 'Code senden',
+    sendCodeIn: (seconds: number) => `Code senden (in ${seconds} s)`,
     codeSent: (email: string) => `Wir haben dir einen Code an ${email} geschickt.`,
     code: '6-stelliger Code',
     codeInvalid: 'Bitte den 6-stelligen Code aus der E-Mail eingeben.',
     verify: 'Anmelden',
     resend: 'Code erneut senden',
+    resendIn: (seconds: number) => `Code erneut senden (in ${seconds} s)`,
+    resendInA11y: (seconds: number) =>
+      `Code erneut senden, möglich in ${seconds} ${seconds === 1 ? 'Sekunde' : 'Sekunden'}`,
+    resent: 'Wir haben dir einen neuen Code geschickt.',
+    spamHint:
+      'Keine E-Mail da? Schau auch im Spam- oder Werbung-Ordner nach. Der Code gilt nur kurze Zeit.',
+    loginIntro:
+      'Gib die E-Mail-Adresse deines Kontos ein. Wir schicken dir einen 6-stelligen Code – ein Passwort brauchst du nicht.',
     otherEmail: 'Andere E-Mail-Adresse',
-    laterProviders: '„Mit Apple anmelden“ und „Mit Google anmelden“ folgen später.',
     testTitle: 'Testmodus',
     testIntro:
       'Die App ist noch nicht mit der Datenbank verbunden. Du kannst sie trotzdem vollständig ausprobieren: Alle Angaben bleiben nur auf diesem Gerät gespeichert.',
@@ -1557,6 +1577,13 @@ export const de = {
   competition: deCompetition,
   day: deDay,
   weekEval: deWeekEval,
+  /** Menüleiste, Übersicht, Fortschritt, Mehr, Mein Konto (docs/PLAN-DASHBOARD.md). */
+  tabs: deTabs,
+  dashboard: deDashboard,
+  progressHub: deProgressHub,
+  more: deMore,
+  konto: deKonto,
+  consentsPage: deConsentsPage,
 } as const;
 
 /** Typ, den jede Übersetzung erfüllen muss (Texte als string, Funktionen mit gleicher Signatur). */

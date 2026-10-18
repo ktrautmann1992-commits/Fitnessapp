@@ -116,7 +116,7 @@ test('Studio 3 Tage: Plan auf „Heute“, Wochenübersicht, Verschieben und Str
   expect(moved?.original_date).toBe('2026-10-09');
 
   // Neu laden: gleicher Stand aus dem Gerätespeicher.
-  await page.goto('/');
+  await page.goto('/today');
   await heading(page, 'Heute');
   await expect(page.getByText('Deine Einheit heute')).toBeVisible();
   // Schon einmal verschoben, in derselben Woche nichts mehr frei → würde gestrichen.
@@ -384,7 +384,7 @@ test('veraltete Einwilligung: zuerst Neu-Einwilligung, Ablehnen → Plan ohne Ge
     }
     window.localStorage.setItem(key, JSON.stringify(db));
   }, LOCAL_DB);
-  await page.goto('/');
+  await page.goto('/today');
   await heading(page, 'Heute');
   // Ganz oben, vor allem anderen.
   const first = page.getByTestId('today').getByRole('alert').first();
@@ -467,7 +467,7 @@ test('verpasste Einheit: Plan am Montag, Uhr Mittwoch → Montags-Einheit versch
   await page.getByRole('button', { name: 'Zum Plan' }).click();
   await heading(page, 'Heute');
   await page.clock.setFixedTime(WEDNESDAY);
-  await page.goto('/');
+  await page.goto('/today');
   await heading(page, 'Heute');
   const week = page.getByTestId('plan-week');
   await week.getByRole('button', { name: /^Montag/ }).click();
@@ -503,7 +503,7 @@ test('verpasste Einheit mit freiem Tag: Mo/Fr, Uhr Mittwoch → Montags-Einheit 
   await page.getByRole('button', { name: 'Zum Plan' }).click();
   await heading(page, 'Heute');
   await page.clock.setFixedTime(WEDNESDAY);
-  await page.goto('/');
+  await page.goto('/today');
   await heading(page, 'Heute');
   const week = page.getByTestId('plan-week');
   await week.getByRole('button', { name: /^Montag/ }).click();

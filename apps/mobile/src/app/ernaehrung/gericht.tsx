@@ -43,7 +43,7 @@ import { entryAmountText, unitText } from '@/lib/food-log-format';
 import { formatDecimal, parseDecimal } from '@/lib/format';
 import { useToday } from '@/lib/use-today';
 import { useApp } from '@/state/app-state';
-import { healthConsentStatus, resolveEntryRoute } from '@/state/flow';
+import { healthConsentStatus, HOME_ROUTE, resolveEntryRoute } from '@/state/flow';
 import { useCustomMealActions } from '@/state/use-custom-meals';
 import { useNutritionWeek } from '@/state/use-nutrition';
 
@@ -75,7 +75,7 @@ export default function CustomMealFormScreen() {
     versions: app.versions,
     nutritionSetupAvailable: app.backend.supportsNutrition,
   });
-  if (route !== '/today' || !app.rows) {
+  if (route !== HOME_ROUTE || !app.rows) {
     return <Redirect href={route as Href} />;
   }
   const rows = app.rows;

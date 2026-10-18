@@ -541,7 +541,7 @@ export function NutritionTodayCard({ nowMinutes }: { nowMinutes: number }) {
       label={texts.open}
       accessibilityLabel={texts.openA11y}
       variant="secondary"
-      onPress={() => router.push('/ernaehrung' as Href)}
+      onPress={() => router.navigate('/ernaehrung' as Href)}
       testID="today-nutrition"
     />
   );
