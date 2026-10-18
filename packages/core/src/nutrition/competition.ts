@@ -250,11 +250,14 @@ export function competitionDays(
  * Geschätzte Renn-Einheit für die Trainingsenergie des Renntags (Plan 10 3.5: der Renntag ist keine geplante Einheit).
  * Nur als zusätzliche Eingabe der Energie (Laufen, Anstrengung unbekannt → Ersatz-MET); der Deckel
  * `TRAINING_KCAL_DAY_MAX` gilt wie immer. Gibt es schon einen Ergebnis-Eintrag, zählt dieser (freie Einheit) – dann
- * null, damit nichts doppelt zählt.
+ * null, damit nichts doppelt zählt. Ein freier Eintrag OHNE Verknüpfung als Ergebnis zählt zusätzlich (Wächter W1 N10):
+ * das hebt das Tagesziel nur an, gedeckelt durch `TRAINING_KCAL_DAY_MAX` und die Obergrenze – nie unter eine Grenze.
  */
-export function raceDaySession(day: CompetitionDay): NutritionSession | null {
+export function raceDaySession(day: CompetitionDay, today: string): NutritionSession | null {
   if (day.kind !== 'race_day' || day.competition === null) return null;
   if (day.competition.resultSessionLogId !== null) return null;
+  // Vergangener Renntag ohne Ergebnis (Wächter W1 N5): keine Schätzung im Nachhinein – ob gelaufen, ist unbekannt.
+  if (day.date < isoDateSchema.parse(today)) return null;
   return {
     sessionId: `race:${day.competition.id}`,
     planId: 'competition',
@@ -282,12 +285,13 @@ export function competitionCarbsGPerKg(day: CompetitionDay): number | null {
 // ---------------------------------------------------------------------------------------------------------
 
 export interface GramRange {
+  /** 0 = „bis `max`“ (z. B. 60–120 min: bis 30 g/h). */
   readonly min: number;
   readonly max: number;
 }
 
 /** Stufe des Plans während des Rennens. `general` = nur allgemein (unter 18, `no_targets`), ohne Gramm. */
-export type RaceFuelingStage = 'none' | 'general' | 'moderate' | 'high';
+export type RaceFuelingStage = 'none' | 'general' | 'light' | 'moderate' | 'high';
 
 export const RACE_FUELING_NOTICES = [
   /** „Nichts Neues am Renntag“ – immer. */
@@ -341,15 +345,22 @@ const STEP_ROUND_G = 5;
 const roundDown = (value: number) => Math.floor(value / STEP_ROUND_G) * STEP_ROUND_G;
 const roundUp = (value: number) => Math.ceil(value / STEP_ROUND_G) * STEP_ROUND_G;
 
-/** Kohlenhydrate fürs Frühstück 2–4 h vorher: 1–4 g/kg (Thomas 2016), auf 5 g nach innen gerundet. */
+/**
+ * Kohlenhydrate fürs Frühstück 2–4 h vorher (Wächter W1 N6): etwa 1 g/kg je Stunde Abstand, begrenzt auf 1–4 g/kg
+ * (Thomas 2016) – bei 2–4 h also 2–4 g/kg; auf 5 g nach innen gerundet. Zuordnung je Stunde: Fachprüfung vorgemerkt.
+ */
 export function raceBreakfastCarbs(weightKg: number): GramRange {
   const w = z.number().positive().max(500).parse(weightKg);
-  const { min, max } = COMPETITION_NUTRITION.raceBreakfast.carbsGPerKg;
-  return { min: roundUp(min * w), max: Math.max(roundUp(min * w), roundDown(max * w)) };
+  const B = COMPETITION_NUTRITION.raceBreakfast;
+  const perKg = (hours: number) =>
+    Math.min(Math.max(hours * B.carbsGPerKgPerHourBefore, B.carbsGPerKg.min), B.carbsGPerKg.max);
+  const low = roundUp(perKg(B.hoursBefore.min) * w);
+  return { min: low, max: Math.max(low, roundDown(perKg(B.hoursBefore.max) * w)) };
 }
 
 /**
- * Gel-/Trinkplan (Plan 10 Abschnitt 10, Jeukendrup 2014): unter 60 min nichts nötig; 60–150 min ca. 30–60 g/h; darüber
+ * Gel-/Trinkplan (Plan 10 Abschnitt 10, Jeukendrup 2014): unter 60 min nichts nötig; 60–120 min bis 30 g/h, 120–150 min
+ * 30–60 g/h; darüber
  * 60–90 g/h nur für Fortgeschrittene/Leistungssport (mit „vorher im langen Lauf testen“), Einsteiger 30–60 g/h; unter 18
  * und ohne Ziele nur allgemein. Trinken nach Durst (400–800 ml/h). Zeitleiste: Frühstück 2–4 h vorher, Start, Portionen alle 30 min,
  * Ziel, Mahlzeit nach dem Rennen innerhalb 1–2 h. Keine Marken, kein Koffein.
@@ -371,6 +382,9 @@ export function raceFuelingPlan(
   } else if (options.generalOnly) {
     stage = 'general';
     notices.push('general_only');
+  } else if (expectedMinutes <= F.lightUpToMinutes) {
+    stage = 'light';
+    perHour = { min: 0, max: F.lightGPerHourMax };
   } else if (expectedMinutes <= F.moderateUpToMinutes) {
     stage = 'moderate';
     perHour = F.moderateGPerHour;
@@ -425,9 +439,13 @@ export function raceFuelingPlan(
 }
 
 /**
- * Ratgeber „Wettkampf-Ernährung“ für den Link in der App: der erste (bereits für die Person lesbare) Ratgeber, dessen ID
- * „wettkampf“ enthält; null, wenn es keinen gibt (dann kein Link).
+ * Feste IDs des Ratgebers „Wettkampf-Ernährung“ (Wächter W1 N9): `wettkampf` aus dem Import der Gründer-Datei
+ * (packages/content alpha5.ts), sonst der Beispiel-Ratgeber des Testmodus. Reihenfolge = Vorrang.
  */
+export const COMPETITION_GUIDE_IDS = ['wettkampf', 'demo-wettkampf'] as const;
+
+/** Ratgeber für den Link in der App: erste feste ID, die unter den (lesbaren) Ratgebern ist; sonst null (kein Link). */
 export function competitionGuideId(guides: readonly { readonly id: string }[]): string | null {
-  return guides.find((g) => g.id.includes('wettkampf'))?.id ?? null;
+  const ids = new Set(guides.map((g) => g.id));
+  return COMPETITION_GUIDE_IDS.find((id) => ids.has(id)) ?? null;
 }

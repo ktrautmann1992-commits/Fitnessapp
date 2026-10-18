@@ -32,6 +32,11 @@ export interface WeightGoalOverview {
    * kleineres Defizit), die App bittet um ein neues Gewicht, damit das Ziel richtig geplant wird.
    */
   readonly weightOutdated: boolean;
+  /**
+   * Das Ziel ruht heute nur wegen eines Wettkampfs (Wettkampfwoche ohne Defizit, Etappe W1, Wächter N4) und läuft danach
+   * von selbst weiter. Fehlt sonst.
+   */
+  readonly pausedForCompetition?: true;
 }
 
 const NO_GOAL: WeightGoalOverview = { status: 'none', weightOutdated: false };
@@ -53,7 +58,11 @@ export function weightGoalOverview(rawInputs: NutritionInputsInput): WeightGoalO
   const day = week.days.find((d) => d.date === inputs.today);
   const status = day?.weightGoalStatus ?? null;
   if (day === undefined || status === null) return NO_GOAL;
-  return { status, weightOutdated: day.notices.includes('weight_outdated') };
+  return {
+    status,
+    weightOutdated: day.notices.includes('weight_outdated'),
+    ...(day.competition?.weightGoalPaused === true ? { pausedForCompetition: true } : {}),
+  };
 }
 
 /**

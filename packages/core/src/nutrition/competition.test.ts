@@ -232,17 +232,25 @@ describe('raceFuelingPlan (Gel-/Trinkplan, Jeukendrup 2014)', () => {
     expect(plan.notices).toEqual(['nothing_new', 'no_fuel_needed']);
   });
 
-  it('60–150 min: 30–60 g/h, Portionen alle 30 min (15–30 g), 400–800 ml/h', () => {
-    const plan = raceFuelingPlan(120, 'beginner', { generalOnly: false });
-    expect(plan.stage).toBe('moderate');
-    expect(plan.carbsGPerHour).toEqual({ min: 30, max: 60 });
+  it('60–120 min: bis 30 g/h (Portionen bis 15 g), 400–800 ml/h (Jeukendrup 2014: 1–2 h bis 30 g/h)', () => {
+    const plan = raceFuelingPlan(120, 'competitive', { generalOnly: false });
+    expect(plan.stage).toBe('light');
+    expect(plan.carbsGPerHour).toEqual({ min: 0, max: 30 });
     expect(plan.drinkMlPerHour).toEqual({ min: 400, max: 800 });
     const fuel = plan.steps.filter((s) => s.kind === 'fuel');
     expect(fuel.map((s) => s.fromMinute)).toEqual([30, 60, 90]);
-    expect(fuel.every((s) => s.carbsG?.min === 15 && s.carbsG.max === 30)).toBe(true);
+    expect(fuel.every((s) => s.carbsG?.min === 0 && s.carbsG.max === 15)).toBe(true);
     expect(plan.notices).toEqual(['nothing_new', 'test_in_long_run', 'heat_and_salt']);
-    expect(raceFuelingPlan(150, 'competitive', { generalOnly: false }).stage).toBe('moderate');
-    expect(raceFuelingPlan(60, 'beginner', { generalOnly: false }).stage).toBe('moderate');
+    expect(raceFuelingPlan(60, 'beginner', { generalOnly: false }).stage).toBe('light');
+  });
+
+  it('121–150 min: 30–60 g/h, Portionen 15–30 g (2–3 h bis 60 g/h)', () => {
+    for (const minutes of [121, 150]) {
+      const plan = raceFuelingPlan(minutes, 'competitive', { generalOnly: false });
+      expect(plan.stage).toBe('moderate');
+      expect(plan.carbsGPerHour).toEqual({ min: 30, max: 60 });
+      expect(plan.steps.find((s) => s.kind === 'fuel')?.carbsG).toEqual({ min: 15, max: 30 });
+    }
   });
 
   it('über 150 min: 60–90 g/h nur für Fortgeschrittene/Leistungssport, Einsteiger bleiben bei 30–60 g/h mit Hinweis', () => {
@@ -276,7 +284,8 @@ describe('raceFuelingPlan (Gel-/Trinkplan, Jeukendrup 2014)', () => {
       kind: 'breakfast',
       fromMinute: -240,
       toMinute: -120,
-      carbsG: { min: 65, max: 250 },
+      // 2–4 h vorher → etwa 2–4 g/kg (1 g/kg je Stunde, N6): 126 → 130, 252 → 250.
+      carbsG: { min: 130, max: 250 },
     });
     expect(plan.steps.at(-1)).toEqual({
       kind: 'recovery_meal',
@@ -290,7 +299,7 @@ describe('raceFuelingPlan (Gel-/Trinkplan, Jeukendrup 2014)', () => {
   it('raceBreakfastCarbs: sehr leicht und sehr schwer, immer innerhalb 1–4 g/kg', () => {
     for (const kg of [30, 40, 63, 80, 150, 300]) {
       const range = raceBreakfastCarbs(kg);
-      expect(range.min).toBeGreaterThanOrEqual(kg);
+      expect(range.min).toBeGreaterThanOrEqual(2 * kg);
       expect(range.max).toBeLessThanOrEqual(4 * kg);
       expect(range.min).toBeLessThanOrEqual(range.max);
     }
@@ -308,7 +317,9 @@ describe('competitionGuideId', () => {
     expect(competitionGuideId([{ id: 'demo-unterwegs' }, { id: 'demo-wettkampf' }])).toBe(
       'demo-wettkampf',
     );
-    expect(competitionGuideId([{ id: 'unterwegs' }])).toBeNull();
+    // Feste ID hat Vorrang; ähnliche IDs zählen nicht (Wächter N9).
+    expect(competitionGuideId([{ id: 'demo-wettkampf' }, { id: 'wettkampf' }])).toBe('wettkampf');
+    expect(competitionGuideId([{ id: 'wettkampf-alt' }, { id: 'unterwegs' }])).toBeNull();
   });
 });
 
@@ -432,6 +443,16 @@ describe('nutritionTargetsForWeek mit Wettkampf', () => {
     );
     expect(logged.competition?.raceEnergyIncluded).toBe(false);
     expect(logged.trainingKcal).toBe(Math.round(6 * 80 * (118 / 60)));
+    // Vergangener Renntag ohne Ergebnis (N5): keine geschätzte Renn-Energie.
+    const past = dayOf(
+      week({ ...base, today: NEXT_MONDAY, competitions: [competition()] }),
+      SUNDAY,
+    );
+    expect(past.competition?.raceEnergyIncluded).toBe(false);
+    expect(past.trainingKcal).toBe(0);
+    // Heute ist Renntag: zählt.
+    const today = dayOf(week({ ...base, today: SUNDAY, competitions: [competition()] }), SUNDAY);
+    expect(today.competition?.raceEnergyIncluded).toBe(true);
   });
 
   it('Renntag trägt den Gel-/Trinkplan: Erwachsene mit Gramm, unter 18 und ohne Ziele nur allgemein', () => {
@@ -444,7 +465,7 @@ describe('nutritionTargetsForWeek mit Wettkampf', () => {
       stage: 'moderate',
       notices: ['nothing_new', 'beginner_moderate_only', 'test_in_long_run', 'heat_and_salt'],
     });
-    expect(adult.competition?.fueling?.steps[0]?.carbsG).toEqual({ min: 80, max: 320 });
+    expect(adult.competition?.fueling?.steps[0]?.carbsG).toEqual({ min: 160, max: 320 });
     // Nur am Renntag.
     expect(
       dayOf(week(inputs({ competitions: [competition()] })), SATURDAY).competition?.fueling,
@@ -480,7 +501,39 @@ describe('nutritionTargetsForWeek mit Wettkampf', () => {
     expect(race.notices).toContain('training_energy_capped');
   });
 
-  it('unter 18 (Fettverlust → nur Erhalt): nur Makro-Verschiebung im Erhaltungsband', () => {
+  it.each([
+    ['16 Jahre', '2010-01-01', false],
+    ['17 Jahre (18. Geburtstag erst nach dem Wettkampf)', '2008-10-20', false],
+    ['18 Jahre (Geburtstag am Carb-Loading-Tag)', '2008-10-16', true],
+  ])(
+    'unter 18 keine Carb-Loading-Verschiebung, nur Erhalt (W1-G4): %s',
+    (_, birthDate, shifted) => {
+      const targets = week(
+        inputs({ birthDate, goalType: 'endurance', competitions: [competition()] }),
+      );
+      const friday = dayOf(targets, FRIDAY);
+      const wednesday = dayOf(targets, '2026-10-14');
+      expect(friday.competition?.carbLoading).toBe(true);
+      expect(friday.competition?.carbsShifted).toBe(shifted);
+      expect(friday.competition?.carbLoadingReached).toBe(shifted ? false : null);
+      if (!shifted) {
+        expect(friday.targetKcal).toBe(wednesday.targetKcal);
+        expect([friday.proteinG, friday.fatG, friday.carbsG]).toEqual([
+          wednesday.proteinG,
+          wednesday.fatG,
+          wednesday.carbsG,
+        ]);
+      } else {
+        // Ab dem 18. Geburtstag (tagesgenau) gilt die Verschiebung; Fett bleibt ≥ 20 %.
+        expect(9 * friday.fatG!).toBeGreaterThanOrEqual(0.2 * friday.targetKcal! - 1e-9);
+        expect(friday.carbsG! / friday.targetKcal!).toBeGreaterThan(
+          wednesday.carbsG! / wednesday.targetKcal!,
+        );
+      }
+    },
+  );
+
+  it('unter 18 (Fettverlust → nur Erhalt): Erhaltungsband, keine Verschiebung', () => {
     const teen = inputs({
       birthDate: '2010-01-01',
       goalType: 'fat_loss',
@@ -489,7 +542,7 @@ describe('nutritionTargetsForWeek mit Wettkampf', () => {
     const targets = week(teen);
     const friday = dayOf(targets, FRIDAY);
     expect(friday.mode).toBe('maintenance_only');
-    expect(friday.competition?.carbsShifted).toBe(true);
+    expect(friday.competition?.carbsShifted).toBe(false);
     expect(friday.targetKcal).toBe(dayOf(targets, '2026-10-14').targetKcal);
     const limits = independentLimits({ birthDate: '2010-01-01' }, FRIDAY)!;
     expect(friday.targetKcal!).toBeGreaterThanOrEqual(limits.lower);
@@ -726,6 +779,16 @@ describe('Essensplan an Wettkampftagen (filter.ts, meal-plan.ts)', () => {
     );
     // Ohne Wettkampf bleibt der Schlüssel wie bisher.
     expect(daySafetyKey(dayOf(before.targets, FRIDAY))).not.toContain('wk=');
-    expect(daySafetyKey(dayOf(after.targets, FRIDAY))).toContain('wk=carb_loading');
+    expect(daySafetyKey(dayOf(after.targets, FRIDAY))).toContain('wk=carb_loading:cl');
+  });
+
+  it('Zielzeit 85 → 95 min: Vorabend wird Carb-Loading-Tag → Neuplanung `competition_changed` (M3)', () => {
+    const fast = competition({ targetTimeS: 85 * 60 });
+    const slower = competition({ targetTimeS: 95 * 60 });
+    const before = plan([fast]);
+    const after = plan([slower]);
+    expect(daySafetyKey(dayOf(before.targets, SATURDAY))).toMatch(/wk=race_eve$/);
+    expect(daySafetyKey(dayOf(after.targets, SATURDAY))).toMatch(/wk=race_eve:cl$/);
+    expect(needsAutomaticReplan(before.week, after.input).reasons).toContain('competition_changed');
   });
 });

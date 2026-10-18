@@ -261,7 +261,10 @@ export function daySafetyKey(day: NutritionDayTargets): string {
   // Etappe W1: Wettkampftage (Carb-Loading, Vorabend, Renntag, Nach dem Rennen) planen neu, sobald ein Wettkampf
   // dazukommt, sich verschiebt oder abgesagt wird (Grund `competition_changed`). Ohne Wettkampf unverändert.
   if (day.competition !== undefined && day.competition.kind !== 'normal') {
-    parts.push(`${COMPETITION_KEY_PREFIX}${day.competition.kind}`);
+    // `:cl` = Carb-Loading gilt (Wächter W1 M3): z. B. Zielzeit 85 → 95 min macht den Vorabend zum Carb-Loading-Tag.
+    parts.push(
+      `${COMPETITION_KEY_PREFIX}${day.competition.kind}${day.competition.carbLoading ? ':cl' : ''}`,
+    );
   }
   return parts.join('|');
 }
@@ -1097,7 +1100,11 @@ export function pickDailyMeal(
       reasons:
         withoutRatings.length > 0
           ? ['rated_down']
-          : ctx.pool.emptyReasons(exclude, { slot, maxMinutes }),
+          : ctx.pool.emptyReasons(exclude, {
+              slot,
+              maxMinutes,
+              competitionDay: isCompetitionMealDay(ctx.targets),
+            }),
     };
   }
   const type = mealTypeForSlot(slot);

@@ -75,14 +75,16 @@ export interface NutritionCompetitionDay {
   readonly minutesSource: ExpectedRaceMinutesSource;
   /** Carb-Loading-Tag laut Regel (≥ 90 min, 1–2 Tage vor dem Renntag). */
   readonly carbLoading: boolean;
-  /** Die Makros wurden zu mehr Kohlenhydraten verschoben (nicht im Modus `no_targets`). */
+  /** Die Makros wurden zu mehr Kohlenhydraten verschoben (nicht im Modus `no_targets`, nicht unter 18). */
   readonly carbsShifted: boolean;
   /** Carb-Loading-Richtwert (8 g/kg) erreicht? null ohne Verschiebung. */
   readonly carbLoadingReached: boolean | null;
   /** Ohne Defizit geplant (Wettkampfwoche, Plan 10 1.6 Nr. 2); ein Abnehmziel ruht. */
   readonly noDeficit: boolean;
-  /** Renntag: geschätzte Renn-Energie ist im Tagesbedarf (kein Ergebnis-Eintrag vorhanden). */
+  /** Renntag: geschätzte Renn-Energie ist im Tagesbedarf (heute/künftig, kein Ergebnis-Eintrag vorhanden). */
   readonly raceEnergyIncluded: boolean;
+  /** Ein aktives Abnehmziel ruht an diesem Tag wegen des Wettkampfs (läuft danach von selbst weiter, N4). */
+  readonly weightGoalPaused?: true;
   /**
    * Nur am Renntag: Gel-/Trinkplan (feste Bausteine). Ohne Ziele (`no_targets`) und unter 18 nur allgemein; Gramm fürs
    * Frühstück nur mit Körpergewicht (Einwilligung). Die App zeigt Gramm nur mit „Kalorienzahlen anzeigen“.
@@ -317,7 +319,7 @@ export function nutritionTargetsForWeek(
 
     // Renntag (W1): Der Wettkampf ist keine geplante Einheit (Plan 10 3.5) – seine geschätzte Energie geht nur hier als
     // Eingabe in den Tagesbedarf (Deckel TRAINING_KCAL_DAY_MAX wie immer), nicht in Timing oder `sessions`.
-    const race = competition === null ? null : raceDaySession(competition);
+    const race = competition === null ? null : raceDaySession(competition, inputs.today);
     const energy = dayEnergy({
       day: date,
       weightKg: bodyForDay.weightKg,
@@ -361,10 +363,11 @@ export function nutritionTargetsForWeek(
           });
     // Wettkampfwoche ohne Defizit (Plan 10 1.6 Nr. 2): Ein aktives Abnehmziel ruht an diesen Tagen.
     const raceWeekNoDeficit = competition?.noDeficit === true;
-    const goalDay: WeightGoalDayResult | null =
-      raceWeekNoDeficit && rawGoalDay?.status === 'active'
-        ? { status: 'paused', adjustment: 0, slowerThanRequired: false }
-        : rawGoalDay;
+    const carbsShifted = competition?.carbLoading === true && ageYears >= MINOR_BELOW_AGE;
+    const weightGoalPaused = raceWeekNoDeficit && rawGoalDay?.status === 'active';
+    const goalDay: WeightGoalDayResult | null = weightGoalPaused
+      ? { status: 'paused', adjustment: 0, slowerThanRequired: false }
+      : rawGoalDay;
     const profileAdjustment =
       goalDay === null ? standardAdjustment : Math.max(standardAdjustment, goalDay.adjustment);
     // Erhalt statt Defizit; ein Überschuss des Ziel-Profils bleibt (Grenzen gelten unverändert in clampCalorieTarget).
@@ -407,8 +410,10 @@ export function nutritionTargetsForWeek(
       proteinCap: eligibility.proteinCap,
       // Tagessumme kann über 24 h liegen (mehrere Einheiten, Datenfehler) – nie die ganze Woche abbrechen (S2).
       trainingMinutes: Math.min(energy.training.minutes, MINUTES_PER_DAY),
-      // Carb-Loading (W1): mehr Kohlenhydrate nur innerhalb des Tagesziels (Fett ≥ 20 %, Eiweiß unverändert).
-      carbsTargetGPerKg: competition === null ? null : competitionCarbsGPerKg(competition),
+      // Carb-Loading (W1): mehr Kohlenhydrate nur innerhalb des Tagesziels (Fett ≥ 20 %, Eiweiß unverändert) – unter 18
+      // keine Verschiebung (Wächter W1 M1, W1-G4), nur Erhalt und der allgemeine Hinweis.
+      carbsTargetGPerKg:
+        carbsShifted && competition !== null ? competitionCarbsGPerKg(competition) : null,
     });
     days.push({
       date,
@@ -439,10 +444,9 @@ export function nutritionTargetsForWeek(
         ? {}
         : {
             competition: competitionView(competition, {
-              carbsShifted: competition.carbLoading,
-              carbLoadingReached: competition.carbLoading
-                ? (macros.carbsTargetReached ?? false)
-                : null,
+              carbsShifted,
+              carbLoadingReached: carbsShifted ? (macros.carbsTargetReached ?? false) : null,
+              ...(weightGoalPaused ? { weightGoalPaused: true } : {}),
               raceEnergyIncluded: race !== null,
               ...fuelingFor(competition, inputs.experienceLevel, {
                 generalOnly: ageYears < MINOR_BELOW_AGE,
@@ -474,7 +478,7 @@ function competitionView(
   day: CompetitionDay,
   extra: Pick<
     NutritionCompetitionDay,
-    'carbsShifted' | 'carbLoadingReached' | 'raceEnergyIncluded' | 'fueling'
+    'carbsShifted' | 'carbLoadingReached' | 'raceEnergyIncluded' | 'fueling' | 'weightGoalPaused'
   >,
 ): NutritionCompetitionDay {
   const c = day.competition;

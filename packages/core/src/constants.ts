@@ -1281,13 +1281,17 @@ export const CARB_LOADING_DAYS = { min: 1, max: 2 } as const;
  * - `carbLoadingGPerKg` 8–10 g/kg: Ratgeber-Wert; angestrebt wird der untere Wert und nur, soweit die Energie (Erhalt)
  *   es zulässt – sonst Hinweis (Plan 10, 19.7 W1). Burke 2011 nennt 10–12 g/kg; 8–10 ist die vorsichtigere Spanne
  *   (PRODUKTENTSCHEIDUNG).
- * - `raceBreakfast`: Frühstück 2–4 h vor dem Start mit 1–4 g Kohlenhydraten/kg (Thomas 2016: 1–4 g/kg 1–4 h vorher;
- *   Plan 10: 2–4 h). Gramm nur mit Körpergewicht (Einwilligung) und „Kalorienzahlen anzeigen“.
+ * - `raceBreakfast`: Frühstück 2–4 h vor dem Start (Plan 10). Menge nach dem Abstand: etwa `carbsGPerKgPerHourBefore`
+ *   (1 g/kg) je Stunde vorher, begrenzt auf 1–4 g/kg – bei 2–4 h also 2–4 g/kg (Thomas 2016: „1–4 g/kg 1–4 h before
+ *   exercise“; Zuordnung je Stunde: PRODUKTENTSCHEIDUNG, Fachprüfung vorgemerkt). Gramm nur mit Körpergewicht
+ *   (Einwilligung), nicht unter 18 und nur mit „Kalorienzahlen anzeigen“.
  * - `fueling`: Kohlenhydrate während des Rennens nach erwarteter Dauer (Jeukendrup A (2014), „A step towards
- *   personalized sports nutrition: carbohydrate intake during exercise“, Sports Med 44 Suppl 1:S25–S33): unter
- *   `noneBelowMinutes` (60) nichts nötig; bis `moderateUpToMinutes` (150) ca. 30–60 g/h; darüber 60–90 g/h NUR für
- *   `highLevels` (Fortgeschritten/Leistungssport) mit Hinweis „vorher im langen Lauf testen“ – Einsteiger bleiben bei
- *   30–60 g/h. Portionen alle `intervalMinutes` (30, PRODUKTENTSCHEIDUNG). Unter 18 nur allgemein (keine Gramm).
+ *   personalized sports nutrition: carbohydrate intake during exercise“, Sports Med 44 Suppl 1:S25–S33; Empfehlungen
+ *   nach Dauer: 30–75 min kleine Mengen/Mundspülung, 1–2 h bis 30 g/h, 2–3 h bis 60 g/h, > 2,5 h bis 90 g/h mit
+ *   Glukose-Fruktose-Mischung): unter `noneBelowMinutes` (60) nichts nötig; bis `lightUpToMinutes` (120) bis
+ *   `lightGPerHourMax` (30) g/h; bis `moderateUpToMinutes` (150) 30–60 g/h; darüber 60–90 g/h NUR für `highLevels`
+ *   (Fortgeschritten/Leistungssport) mit Hinweis „vorher im langen Lauf testen“ – Einsteiger bleiben bei 30–60 g/h.
+ *   Portionen alle `intervalMinutes` (30, PRODUKTENTSCHEIDUNG). Unter 18 nur allgemein (keine Gramm).
  * - `drinkMlPerHour` 400–800 ml: Trinken nach Durst als Richtwert (Thomas 2016; Sawka MN et al. (2007), ACSM Position
  *   Stand Exercise and Fluid Replacement, Med Sci Sports Exerc 39(2):377–390), mit Hinweis auf Hitze und Salz. Keine
  *   Marken, kein Koffein im Plan (Supplement-Modul).
@@ -1302,9 +1306,15 @@ export const COMPETITION_NUTRITION = {
   carbLoadingFromMinutes: 90,
   twoLoadingDaysFromMinutes: 150,
   carbLoadingGPerKg: { min: 8, max: 10 },
-  raceBreakfast: { hoursBefore: { min: 2, max: 4 }, carbsGPerKg: { min: 1, max: 4 } },
+  raceBreakfast: {
+    hoursBefore: { min: 2, max: 4 },
+    carbsGPerKg: { min: 1, max: 4 },
+    carbsGPerKgPerHourBefore: 1,
+  },
   fueling: {
     noneBelowMinutes: 60,
+    lightUpToMinutes: 120,
+    lightGPerHourMax: 30,
     moderateUpToMinutes: 150,
     moderateGPerHour: { min: 30, max: 60 },
     highGPerHour: { min: 60, max: 90 },

@@ -64,6 +64,27 @@ describe('weightGoalOverview: Stand heute (Plan 6 Nr. 4)', () => {
     expect(weightGoalCard(o)).toBeNull();
   });
 
+  it('Wettkampfwoche (W1, Wächter N4): ruht wegen Wettkampf, danach wieder aktiv', () => {
+    const race = {
+      competitions: [
+        {
+          id: 'c1',
+          status: 'planned' as const,
+          discipline: '10k' as const,
+          raceDate: '2026-10-18',
+        },
+      ],
+    };
+    expect(weightGoalOverview(person({ weightGoal: goal(), ...race }))).toEqual({
+      status: 'paused',
+      weightOutdated: false,
+      pausedForCompetition: true,
+    });
+    expect(
+      weightGoalOverview(person({ weightGoal: goal(), ...race, today: '2026-10-20' })),
+    ).toEqual({ status: 'active', weightOutdated: false });
+  });
+
   it('erreicht: 80,1 → 79,9 → 80,2 bei Ziel 80,0 bleibt „erreicht“ (S8) → Karte „reached“', () => {
     const rows = [
       { measuredOn: '2026-10-09', heightCm: 180, weightKg: 90 },

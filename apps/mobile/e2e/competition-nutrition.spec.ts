@@ -70,7 +70,7 @@ test('Wettkampf-Ernährung: Carb-Loading, Vorabend, Renntag mit Zeitleiste, Woch
   const timeline = page.getByTestId('competition-timeline');
   await expect(timeline).toContainText('Dein Renntag – Zeitleiste');
   await expect(timeline).toContainText('2 Std. bis 4 Std. vor dem Start');
-  await expect(timeline).toContainText('etwa 70–280 g Kohlenhydrate');
+  await expect(timeline).toContainText('etwa 140–280 g Kohlenhydrate');
   await expect(timeline).toContainText('Nach 30 min');
   await expect(timeline).toContainText('etwa 15–30 g Kohlenhydrate');
   await expect(timeline).toContainText('Trinken: Richtwert 400–800 ml pro Stunde.');

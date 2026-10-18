@@ -39,6 +39,12 @@ export function competitionDayA11y(c: NutritionCompetitionDay): string {
 
 const range = (min: number, max: number) => [formatNumberDe(min), formatNumberDe(max)] as const;
 
+/** „etwa 15–30 g …“ bzw. bei Untergrenze 0 „bis 15 g …“ (60–120 min: bis 30 g/h, Jeukendrup 2014). */
+function gramsText(min: number, max: number): string {
+  const [a, b] = range(min, max);
+  return min === 0 ? t.competitionNutrition.upToCarbs(b) : t.competitionNutrition.fuelCarbs(a, b);
+}
+
 /**
  * Textzeilen für den Tag (Ernährung → Tag): Art des Tages, Carb-Loading (mit Zahlen: „Tagesziel bleibt gleich …“,
  * Richtwert nicht erreicht), ohne Ziele nur der feste Carb-Loading-Hinweis, Wettkampfwoche ohne Defizit, Renn-Energie
@@ -48,7 +54,12 @@ export function competitionDayLines(day: NutritionDayTargets, showNumbers: boole
   const c = day.competition;
   if (c === undefined) return [];
   const texts = t.competitionNutrition;
-  const lines: string[] = [texts.kinds[c.kind].text];
+  // Ohne Verschiebung (unter 18, ohne Ziele) kein „Heute mehr Kohlenhydrate – so geplant“ (Wächter W1 M1).
+  const lines: string[] = [
+    c.kind === 'carb_loading' && !c.carbsShifted
+      ? texts.carbLoadingGeneral
+      : texts.kinds[c.kind].text,
+  ];
   const numbers = showNumbers && day.targetKcal !== null;
   if (c.carbLoading) {
     if (!c.carbsShifted) lines.push(CARB_LOADING_NOTICE_DE);
@@ -58,6 +69,7 @@ export function competitionDayLines(day: NutritionDayTargets, showNumbers: boole
     }
   }
   if (c.noDeficit && day.mode !== 'no_targets') lines.push(texts.noDeficit);
+  if (c.weightGoalPaused === true) lines.push(texts.weightGoalPaused);
   if (numbers && c.raceEnergyIncluded) lines.push(texts.raceEnergy);
   if (c.kind === 'race_day' || c.kind === 'race_eve' || c.kind === 'carb_loading') {
     lines.push(
@@ -80,6 +92,7 @@ export function raceTimelineRows(plan: RaceFuelingPlan, showNumbers: boolean): T
     const key = `${step.kind}-${index}`;
     const carbs =
       showNumbers && step.carbsG !== null ? range(step.carbsG.min, step.carbsG.max) : null;
+    const grams = showNumbers ? step.carbsG : null;
     switch (step.kind) {
       case 'breakfast':
         return {
@@ -99,7 +112,7 @@ export function raceTimelineRows(plan: RaceFuelingPlan, showNumbers: boolean): T
           detail:
             carbs === null
               ? texts.fuelExamples
-              : `${texts.fuelCarbs(carbs[0], carbs[1])} (${texts.fuelExamples})`,
+              : `${gramsText(grams?.min ?? 0, grams?.max ?? 0)} (${texts.fuelExamples})`,
         };
       case 'finish':
         return { key, title: texts.steps.finish(durationText(step.fromMinute)), detail: null };
@@ -123,7 +136,7 @@ export function raceFuelingLines(plan: RaceFuelingPlan, showNumbers: boolean): s
   if (plan.carbsGPerHour !== null) {
     if (showNumbers) {
       const [min, max] = range(plan.carbsGPerHour.min, plan.carbsGPerHour.max);
-      lines.push(texts.perHour(min, max));
+      lines.push(plan.carbsGPerHour.min === 0 ? texts.perHourUpTo(max) : texts.perHour(min, max));
     } else {
       lines.push(texts.numbersHidden);
     }

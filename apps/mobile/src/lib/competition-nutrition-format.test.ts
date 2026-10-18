@@ -93,6 +93,36 @@ describe('Tag rund um den Wettkampf', () => {
     );
   });
 
+  it('unter 18: keine Verschiebung, kein „so geplant“, kein g/kg-Satz – fester Hinweis; am Renntag Milliliter ja, Gramm nein', () => {
+    const teen = { birthDate: '2010-01-01' };
+    const lines = competitionDayLines(day(FRIDAY, teen), true);
+    expect(lines).toContain(CARB_LOADING_NOTICE_DE);
+    expect(lines.join(' ')).not.toMatch(/so geplant|g\/kg|pro kg|\d+\s*g\b|Tagesziel bleibt/);
+    const plan = day(SUNDAY, teen).competition!.fueling!;
+    const text = [
+      ...raceTimelineRows(plan, true).flatMap((r) => [r.title, r.detail ?? '']),
+      ...raceFuelingLines(plan, true),
+    ].join(' ');
+    expect(text).not.toMatch(/\d+\s*g\b/);
+    expect(text).toContain('400–800 ml');
+  });
+
+  it('Abnehm-Ziel ruht wegen Wettkampf: eigener Satz (N4)', () => {
+    const paused = day(FRIDAY, {
+      goalType: 'fat_loss',
+      weightGoal: {
+        targetWeightKg: 75,
+        startDate: '2026-10-05',
+        targetDate: '2027-04-05',
+        amountMode: 'kg_to_lose',
+        timeMode: 'weeks',
+      },
+    });
+    expect(competitionDayLines(paused, true)).toContain(
+      'Dein Abnehm-Ziel ruht wegen deines Wettkampfs und läuft danach von selbst weiter – ohne Aufholen.',
+    );
+  });
+
   it('ohne Wettkampf keine Zeilen', () => {
     expect(competitionDayLines(day(FRIDAY, { competitions: [] }), true)).toEqual([]);
   });
@@ -104,7 +134,7 @@ describe('Zeitleiste am Renntag', () => {
     const rows = raceTimelineRows(plan, true);
     expect(rows[0]).toMatchObject({
       title: expect.stringContaining('2 Std. bis 4 Std. vor dem Start') as string,
-      detail: 'etwa 80–320 g Kohlenhydrate',
+      detail: 'etwa 160–320 g Kohlenhydrate',
     });
     expect(rows.filter((r) => r.title.startsWith('Nach '))).toHaveLength(5);
     expect(rows.find((r) => r.title.startsWith('Nach 30 min'))?.detail).toBe(
@@ -126,6 +156,16 @@ describe('Zeitleiste am Renntag', () => {
     ].join(' ');
     expect(text).not.toMatch(/\d+\s*g\b/);
     expect(text).toContain('400–800 ml');
+  });
+
+  it('60–120 min: „bis 30 g pro Stunde“, Portionen „bis 15 g“', () => {
+    const plan = raceFuelingPlan(100, 'competitive', { generalOnly: false });
+    expect(raceFuelingLines(plan, true)).toContain(
+      'Richtwert unterwegs: bis 30 g Kohlenhydrate pro Stunde.',
+    );
+    expect(
+      raceTimelineRows(plan, true).find((r) => r.title.startsWith('Nach 30 min'))?.detail,
+    ).toBe('bis 15 g Kohlenhydrate (z. B. Gel, Banane oder Sportgetränk)');
   });
 
   it('kurzer Wettkampf: nichts nötig; keine Marken, kein Koffein', () => {

@@ -71,8 +71,11 @@ export const deCompetitionNutrition = {
   dayLabel: (symbol: string, label: string, discipline: string) =>
     `${symbol} ${label}: ${discipline}`,
   dayA11y: (label: string, discipline: string) => `${label}, ${discipline}`,
-  noDeficit:
-    'Rund um deinen Wettkampf planen wir ohne Defizit. Ein Abnehm-Ziel ruht in dieser Zeit und läuft danach normal weiter.',
+  noDeficit: 'Rund um deinen Wettkampf planen wir ohne Defizit.',
+  weightGoalPaused:
+    'Dein Abnehm-Ziel ruht wegen deines Wettkampfs und läuft danach von selbst weiter – ohne Aufholen.',
+  carbLoadingGeneral:
+    'Vor deinem Wettkampf: Iss, was du kennst und gut verträgst. Mehr Kohlenhydrate planen wir hier nicht ein.',
   carbLoadingNumbers: 'Dein Tagesziel bleibt gleich – mehr Kohlenhydrate, etwas weniger Fett.',
   carbLoadingNotReached:
     'Die oft genannten 8–10 g Kohlenhydrate pro kg Körpergewicht passen nicht in dein Tagesziel. Mehr planen wir bewusst nicht.',
@@ -93,6 +96,8 @@ export const deCompetitionNutrition = {
   fuelExamples: 'z. B. Gel, Banane oder Sportgetränk',
   perHour: (min: string, max: string) =>
     `Richtwert unterwegs: ${min}–${max} g Kohlenhydrate pro Stunde.`,
+  perHourUpTo: (max: string) => `Richtwert unterwegs: bis ${max} g Kohlenhydrate pro Stunde.`,
+  upToCarbs: (max: string) => `bis ${max} g Kohlenhydrate`,
   drink: (min: string, max: string) => `Trinken: Richtwert ${min}–${max} ml pro Stunde.`,
   numbersHidden: 'Mengen in Gramm sind ausgeblendet („Kalorienzahlen anzeigen“ ist aus).',
   notices: NOTICES,
