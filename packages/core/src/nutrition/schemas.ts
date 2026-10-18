@@ -26,6 +26,7 @@ import { foodGroupSchema } from '../food-groups';
 import { HEALTH_FLAGS } from '../health-screening';
 import { isAllowedGoalPair } from '../goals/profile';
 import { weightGoalSchema } from '../goals/weight-goal-schema';
+import { nutritionCompetitionsSchema } from './competition';
 import {
   enduranceDisciplineSchema,
   experienceLevelSchema,
@@ -157,6 +158,11 @@ export const nutritionInputsSchema = z
         (sessions) => new Set(sessions.map((s) => s.sessionId)).size === sessions.length,
         'Jede Einheit nur einmal.',
       ),
+    /**
+     * Wettkämpfe (Tabelle `competitions`, Etappe W1, docs/PLAN-PHASE-10.md Abschnitt 10): optional, Standard leer –
+     * ohne Wettkampf rechnet die Engine genau wie vorher. Kein Gesundheitsdatum.
+     */
+    competitions: nutritionCompetitionsSchema,
   })
   .refine((inputs) => isAllowedGoalPair(inputs.goalType, inputs.secondaryGoalType), {
     path: ['secondaryGoalType'],

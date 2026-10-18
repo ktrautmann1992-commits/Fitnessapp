@@ -221,6 +221,9 @@ export const deWeightGoalLife = {
       active: 'Wir planen dein Ziel in deiner Ernährung ein – nie schneller als ohne festes Ziel.',
       paused:
         'Dein Ziel ruht gerade. Wir planen ohne Kaloriendefizit, bis sich deine Angaben ändern.',
+      /** Etappe W1 (Wächter N4): Ruhe nur wegen eines Wettkampfs. */
+      pausedCompetition:
+        'Dein Ziel ruht wegen deines Wettkampfs und läuft danach von selbst weiter – ohne Aufholen.',
       invalid: 'Dein Zielgewicht passt nicht mehr zu deinen Angaben. Bitte passe es an.',
       no_deficit:
         'Derzeit planen wir für dich kein Kaloriendefizit. Wir empfehlen „ohne festes Ziel“.',

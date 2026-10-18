@@ -3,6 +3,7 @@ import {
   isoDateSchema,
   mealsInDayOrder,
   mealPlanWeekEditable,
+  type NutritionCompetitionDay,
   type PlannedMealDay,
   startOfIsoWeek,
   type UnavailableMeal,
@@ -31,6 +32,7 @@ import {
   Notice,
 } from '@/components/ui';
 import { t } from '@/i18n';
+import { competitionDayLabel } from '@/lib/competition-nutrition-format';
 import { formatDateDe } from '@/lib/format';
 import { useToday } from '@/lib/use-today';
 import {
@@ -249,6 +251,11 @@ export default function NutritionWeekScreen() {
               <WeekDayCard
                 key={day.date}
                 day={day}
+                competition={
+                  view.week?.kind === 'ready'
+                    ? view.week.targets.days.find((d) => d.date === day.date)?.competition
+                    : undefined
+                }
                 unavailable={view.week?.kind === 'ready' ? view.week.unavailableMeals : []}
                 today={today}
                 showNumbers={view.showNumbers}
@@ -289,6 +296,7 @@ export default function NutritionWeekScreen() {
 /** Ein Tag der Woche: Status, Tagessumme (nur mit Zahlen und bei vollständigem Tag), Mahlzeiten. */
 function WeekDayCard({
   day,
+  competition,
   unavailable,
   today,
   showNumbers,
@@ -297,6 +305,8 @@ function WeekDayCard({
   onOpenRecipe,
 }: {
   day: PlannedMealDay;
+  /** Etappe W1: Wettkampf-Bezug des Tages (Carb-Loading, Vorabend, Renntag, Nach dem Rennen) – nur mit Wort und Zeichen. */
+  competition: NutritionCompetitionDay | undefined;
   /** Supabase-Modus (Wächter N7 H9): vergangene Mahlzeiten mit nicht mehr verfügbarem Rezept. */
   unavailable: readonly UnavailableMeal[];
   today: string;
@@ -315,6 +325,9 @@ function WeekDayCard({
     <Card>
       <View style={styles.list} testID={`week-day-${day.date}`}>
         <Heading level={2}>{label}</Heading>
+        {competition !== undefined && competition.kind !== 'normal' ? (
+          <Body testID={`week-competition-${day.date}`}>{competitionDayLabel(competition)}</Body>
+        ) : null}
         <Body muted>
           {day.date < today
             ? `${t.nutrition.dayStatus[day.status]} · ${texts.past}`

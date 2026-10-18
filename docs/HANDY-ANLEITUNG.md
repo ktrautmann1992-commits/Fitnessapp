@@ -507,6 +507,37 @@ Mit Konto (Supabase-Modus, nach dem Merge und `db-migrate` aus WP3): gleiche Sch
 `competitions`** zeigt euren Wettkampf (Plan-Bezug nur mit Einwilligung), **`planned_sessions`** die Spalten
 `workout_type`, `training_phase`, `workout_steps`, `target_distance_m` beim Wettkampfplan.
 
+## Teil 7w – Wettkampf-Ernährung testen (Phase 10, Etappe W1, Testmodus)
+Ihr müsst nichts einstellen – diese Etappe hat **keine** Datenbank-Änderung. Getestet mit **Chrome am iPhone**
+(Vorschau-Link aus dem Pull Request), am besten in einem **Inkognito-Tab**: Chrome → unten rechts **⋯** → **Neuer
+Inkognito-Tab**. Hinweis: Einen Wettkampf in wenigen Tagen lässt die App nicht anlegen (Mindestvorlauf) – deshalb
+springt ihr über „Mein Wettkampf“ direkt zum Renntag in der Zukunft.
+
+1. Vorschau-Link öffnen → **„Los geht's“** → Geburtsdatum **15.05.1990** → **Testmodus starten** → Zustimmen →
+   **weiblich** → Einwilligung Gesundheitsdaten **erteilen** → Größe **170**, Gewicht **70** → Umfänge
+   **Überspringen** → Gesundheits-Check **alles „Nein“** → Erfahrung **Einsteiger** → Ziel **Ausdauer → Halbmarathon**
+   → Trainingstage z. B. Mo/Mi/Sa Ausdauer → Ernährung beliebig → **„Zum Plan“**. Gibt es noch keine Rezepte:
+   Ernährung → **„Beispiel-Rezepte mit Testwerten verwenden“**.
+2. **Einstellungen → Mein Wettkampf → Wettkampf eintragen** → Distanz **Halbmarathon**, Renntag in **ca. 17 Wochen**
+   → **„Nur Countdown speichern“**.
+3. In „Mein Wettkampf“ auf **„Ernährung zum Renntag“** tippen. **Prüfen (Renntag):** Karte **„◆ Renntag:
+   Halbmarathon“**, darunter **„Dein Renntag – Zeitleiste“**: Frühstück 2 bis 4 Std. vor dem Start (mit Gramm), „Nach
+   30 min … etwa 15–30 g Kohlenhydrate (z. B. Gel, Banane oder Sportgetränk)“, Ziel, Mahlzeit danach, „Trinken:
+   Richtwert 400–800 ml pro Stunde“, „Nichts Neues am Renntag“. Unten der Knopf **Ratgeber „Wettkampf-Ernährung“**.
+4. **„← Vortag“** → **„◇ Vorabend“** („nichts Neues ausprobieren“). Noch einmal **„← Vortag“** → **„▲ Carb-Loading-Tag“**
+   mit „Heute mehr Kohlenhydrate – so geplant“, „Dein Tagesziel bleibt gleich …“ und „ohne Defizit“.
+5. **Wochenansicht:** Die Wochenansicht zeigt nur diese und die nächste Woche. Liegt euer Wettkampf dort, sind die Tage
+   mit Zeichen und Wort markiert (▲ Carb-Loading-Tag, ◇ Vorabend, ◆ Renntag) – bei 17 Wochen Vorlauf prüft das der
+   automatische Test (Playwright), ihr seht es kurz vor dem echten Wettkampf.
+6. **Kalorienzahlen aus:** **Einstellungen → Kalorienzahlen anzeigen** aus → wieder zum Renntag (Schritt
+   3): **nirgends kcal oder Gramm**, stattdessen „Mengen in Gramm sind ausgeblendet …“; die Milliliter bleiben.
+7. **5 km statt Halbmarathon:** Mein Wettkampf → **Ändern** → Distanz **5 km** → speichern → „Ernährung zum Renntag“ →
+   zwei Tage zurück: **kein** Carb-Loading-Tag (nur „Wettkampfwoche“); am Renntag „Bei weniger als einer Stunde …“.
+8. **Absagen:** Mein Wettkampf → **Wettkampf absagen** → in der Ernährung gibt es keine Wettkampf-Karte mehr.
+
+„Dein Tag“ (Tagesauswertung) zeigt an einem Carb-Loading-Tag den Satz „Heute mehr Kohlenhydrate – so geplant.“
+(Kalender → Tag antippen → „Dein Tag“; nur mit „Kalorienzahlen anzeigen“).
+
 ## Teil 7s – Datenbank für Strecken prüfen (Phase 10, Etappe S1 Teil 1)
 In der App ändert sich dadurch **nichts Sichtbares** (Strecken aufzeichnen kommt erst nach dem Spike S0 mit der
 echten App). Ihr müsst nichts einstellen und keine Schlüssel eintragen. Prüfen könnt ihr am Handy:

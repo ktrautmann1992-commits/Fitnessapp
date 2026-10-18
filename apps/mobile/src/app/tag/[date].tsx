@@ -357,6 +357,11 @@ function FoodSection({
         </Body>
       ) : null}
       {notices.includes('training_day') ? <Body muted>{t.day.trainingDay}</Body> : null}
+      {notices.includes('carb_loading_day') ? (
+        <Body muted testID="day-carb-loading">
+          {t.day.carbLoadingDay}
+        </Body>
+      ) : null}
       {notices.includes('plan_below_floor') ? (
         <Body muted testID="day-plan-below-floor">
           {t.nutrition.planNotices.day_below_floor}

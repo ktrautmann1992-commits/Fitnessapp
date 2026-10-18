@@ -6,6 +6,7 @@
  * Mess-Anleitungen, Geräte- und Lebensmittelnamen), stehen in packages/core und werden dort gepflegt.
  */
 import { deCompetition } from './de-competition';
+import { deCompetitionNutrition } from './de-competition-nutrition';
 import { deCustomMeals } from './de-custom-meals';
 import {
   deConsentsPage,
@@ -1575,6 +1576,8 @@ export const de = {
   foodProduct: deFoodProduct,
   customMeals: deCustomMeals,
   competition: deCompetition,
+  /** Wettkampf-Ernährung (Phase 10, Etappe W1). */
+  competitionNutrition: deCompetitionNutrition,
   day: deDay,
   weekEval: deWeekEval,
   /** Menüleiste, Übersicht, Fortschritt, Mehr, Mein Konto (docs/PLAN-DASHBOARD.md). */
