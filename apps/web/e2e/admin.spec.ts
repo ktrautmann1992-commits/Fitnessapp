@@ -1,9 +1,28 @@
 /// <reference types="node" />
+import { readdirSync, readFileSync } from 'node:fs';
+import { join } from 'node:path';
+
 import { expect, type Page, test } from '@playwright/test';
 
 import { CONFIGURED_URL, E2E_ADMIN_PASSWORD, LOCKED_URL } from './test-env';
 
 /** Redaktionsbereich (Stufe A) gegen `next start` – Handy-Ansicht 390 × 844. */
+
+/**
+ * Anzahl je Status der Übungen im Inhaltsstand (content/exercises), den der Redaktionsbereich zeigt – so passt die
+ * Statuszeile, egal ob der Bestand schon freigegeben ist.
+ */
+function exerciseStatusCounts(): Record<'draft' | 'published' | 'archived', number> {
+  const dir = join(__dirname, '../../../content/exercises');
+  const counts = { draft: 0, published: 0, archived: 0 };
+  for (const name of readdirSync(dir).filter((n) => n.endsWith('.json'))) {
+    const { status } = JSON.parse(readFileSync(join(dir, name), 'utf8')) as {
+      status: keyof typeof counts;
+    };
+    counts[status] += 1;
+  }
+  return counts;
+}
 
 async function login(page: Page, password = E2E_ADMIN_PASSWORD) {
   await page.goto('/admin/login');
@@ -149,7 +168,13 @@ test.describe('mit Zugangsdaten', () => {
     const exerciseCards = page.getByRole('list', { name: 'Übungen' }).getByRole('listitem');
     await expect(exerciseCards).toHaveCount(80);
     await expect(exerciseCards.first().getByText('KI-Entwurf – fachlich prüfen')).toBeVisible();
-    await expect(page.getByText('80 Entwürfe · 0 freigegeben · 0 zurückgezogen')).toBeVisible();
+    const counts = exerciseStatusCounts();
+    expect(counts.draft + counts.published + counts.archived).toBe(80);
+    await expect(
+      page.getByText(
+        `${counts.draft} Entwürfe · ${counts.published} freigegeben · ${counts.archived} zurückgezogen`,
+      ),
+    ).toBeVisible();
 
     // Filter: Bewegungsmuster Kniebeuge.
     await page.getByText('Suche und Filter').click();

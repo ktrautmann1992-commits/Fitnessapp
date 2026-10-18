@@ -1,3 +1,6 @@
+import { readdirSync, readFileSync } from 'node:fs';
+import { join } from 'node:path';
+
 import { expect, type Page } from '@playwright/test';
 
 /**
@@ -140,4 +143,23 @@ export async function planDays(page: Page, days: [string, string, number][]) {
     await page.getByRole('radio', { name: new RegExp(`^${day}: ${kind}`) }).click();
     await page.getByRole('radio', { name: `${day}: ${minutes} Minuten` }).click();
   }
+}
+
+/**
+ * Freigabe-Status des Inhaltsstands (content/exercises bzw. content/plan-templates), den der Web-Export im Testmodus
+ * bündelt: id → Status. So prüfen die Tests die Kennzeichnung „Testinhalt“ passend zum Stand – Entwürfe
+ * gekennzeichnet, freigegebene Inhalte nicht –, egal ob der Bestand schon freigegeben ist.
+ */
+export function repoContentStatus(folder: 'exercises' | 'plan-templates'): Map<string, string> {
+  const dir = join(__dirname, '../../../content', folder);
+  const status = new Map<string, string>();
+  for (const name of readdirSync(dir)) {
+    if (!name.endsWith('.json')) continue;
+    const data = JSON.parse(readFileSync(join(dir, name), 'utf8')) as {
+      id: string;
+      status: string;
+    };
+    status.set(data.id, data.status);
+  }
+  return status;
 }
