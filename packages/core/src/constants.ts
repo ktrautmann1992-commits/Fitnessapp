@@ -818,6 +818,22 @@ export const CALIBRATION_MISSING_RPE = 10;
 /** Pausentimer: Anpassen in 15-s-Schritten, 0–600 s. Quelle: PRODUKTENTSCHEIDUNG; Pausen selbst aus REST_RANGES_S. */
 export const REST_TIMER = { stepS: 15, minS: 0, maxS: 600 } as const;
 
+/**
+ * Lokale Benachrichtigungen (docs/PLAN-PHASE-4B.md Abschnitt 7, Etappe E; keine Push-Nachrichten, kein Server).
+ * - `measurementHour`/`measurementMinute`: Mess-Erinnerung am Fälligkeitstag um 08:00 Uhr Ortszeit (Gründer-
+ *   Entscheidung Frage 9). Ist 08:00 am Fälligkeitstag schon vorbei, kommt sie einmalig am nächsten Morgen um 08:00
+ *   (`measurementLateDays` = 1); danach keine weitere, der Hinweis auf „Heute“ bleibt.
+ * - `restEndMinLeadMs`: Pausenende nur planen, wenn noch mindestens so viel Pause übrig ist (sonst wäre die Meldung
+ *   schon da, bevor das Handy gesperrt ist).
+ * Quelle: PRODUKTENTSCHEIDUNG.
+ */
+export const NOTIFICATIONS = {
+  measurementHour: 8,
+  measurementMinute: 0,
+  measurementLateDays: 1,
+  restEndMinLeadMs: 1000,
+} as const;
+
 /** So viele Wochen Einträge liegen im (geschützten) Gerätespeicher. Quelle: PRODUKTENTSCHEIDUNG. */
 export const LOG_CACHE_WEEKS = 12;
 

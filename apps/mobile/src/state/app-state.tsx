@@ -86,10 +86,12 @@ import type {
   StepSave,
   UserRows,
 } from '@/data/types';
+import { appNotifications } from '@/lib/app-notifications';
 import { berlinTodayIso, todayIso } from '@/lib/format';
+import { deviceTimeZone } from '@/lib/notifications';
 import { supabaseConfig } from '@/lib/supabase';
 
-import { resolveEntryRoute, type EntryRoute } from './flow';
+import { healthConsentStatus, resolveEntryRoute, type EntryRoute } from './flow';
 
 /**
  * Zentraler App-Zustand: Betriebsart, Sitzung, Einwilligungstexte und die Zeilen des Nutzers.
@@ -590,6 +592,36 @@ export function AppStateProvider({ children }: { children: ReactNode }) {
     return () => window.removeEventListener('beforeunload', onBeforeUnload);
   }, [hasUnsent]);
 
+  // Lokale Mess-Erinnerung (docs/PLAN-PHASE-4B.md 7, Etappe E): beim App-Start (nach dem Laden), nach einer Messung
+  // (neues next_due_on), bei geändertem Abstand oder Schalter und nach Widerruf bzw. erneuter Einwilligung neu planen
+  // bzw. stornieren. Fragt nie nach der Erlaubnis; im Browser ein No-op.
+  const lastReminderSync = useRef<string | null>(null);
+  useEffect(() => {
+    if (status.kind !== 'ready' || !rows) {
+      lastReminderSync.current = null;
+      return;
+    }
+    const key = [
+      rows.profile?.user_id ?? '',
+      rows.reminder?.enabled ?? '',
+      rows.reminder?.next_due_on ?? '',
+      healthConsentStatus(rows, versions),
+    ].join('|');
+    if (key === lastReminderSync.current) return;
+    lastReminderSync.current = key;
+    void appNotifications
+      .syncMeasurement({ rows, versions, nowMs: Date.now(), timeZone: deviceTimeZone() })
+      .catch(() => undefined);
+  }, [status.kind, rows, versions]);
+
+  /** Widerruf gescheitert (Einwilligung gilt weiter): die vorher stornierte Mess-Erinnerung wieder planen (Wächter N4). */
+  const replanMeasurementAfterFailedRevoke = useCallback(() => {
+    lastReminderSync.current = null;
+    void appNotifications
+      .syncMeasurement({ rows, versions, nowMs: Date.now(), timeZone: deviceTimeZone() })
+      .catch(() => undefined);
+  }, [rows, versions]);
+
   const setPendingBirthDate = useCallback(async (birthDate: string | null) => {
     setPendingBirthDateState(birthDate);
     if (birthDate === null) {
@@ -647,10 +679,16 @@ export function AppStateProvider({ children }: { children: ReactNode }) {
 
   const revokeConsent = useCallback(
     async (type: ConsentType) => {
-      await backend.revokeConsent(type);
+      if (type === 'health_data') await appNotifications.cancelMeasurement().catch(() => undefined);
+      try {
+        await backend.revokeConsent(type);
+      } catch (error) {
+        if (type === 'health_data') replanMeasurementAfterFailedRevoke();
+        throw error;
+      }
       await loadUser();
     },
-    [backend, loadUser],
+    [backend, loadUser, replanMeasurementAfterFailedRevoke],
   );
 
   // --- Ernährung (Etappe N4) ---------------------------------------------------------------------------------
@@ -905,18 +943,26 @@ export function AppStateProvider({ children }: { children: ReactNode }) {
 
   const revokeHealthData = useCallback(
     async (deleteLogs: boolean, convertIntolerances: boolean) => {
-      // Day-Swaps zu Plänen mit Gesundheitsbezug mit entfernen (wie die Entwürfe, PLAN-UEBUNGEN-GLOSSAR-TAUSCH 9).
-      const owner = rows?.profile?.user_id;
-      if (rows && owner) {
-        const kept = withoutHealthPlanSwaps(rows, await daySwapStore.load(owner));
-        await daySwapStore.save(owner, kept);
-        setDaySwaps(kept);
+      // Etappe E (Wächter S5): Mess-Erinnerung sofort stornieren – im selben Ablauf, der auch den healthPlanCache leert.
+      // measurement_reminders.enabled bleibt; nach erneuter Einwilligung plant die App sie wieder ein.
+      await appNotifications.cancelMeasurement().catch(() => undefined);
+      try {
+        // Day-Swaps zu Plänen mit Gesundheitsbezug mit entfernen (wie die Entwürfe, PLAN-UEBUNGEN-GLOSSAR-TAUSCH 9).
+        const owner = rows?.profile?.user_id;
+        if (rows && owner) {
+          const kept = withoutHealthPlanSwaps(rows, await daySwapStore.load(owner));
+          await daySwapStore.save(owner, kept);
+          setDaySwaps(kept);
+        }
+        // 7.4 (R2-K4): Die Unverträglichkeiten werden nur bei aktiver Zustimmung an das Backend gegeben.
+        await backend.revokeHealthData(deleteLogs, convertIntolerances && rows ? { rows } : null);
+      } catch (error) {
+        replanMeasurementAfterFailedRevoke();
+        throw error;
       }
-      // 7.4 (R2-K4): Die Unverträglichkeiten werden nur bei aktiver Zustimmung an das Backend gegeben (Arbeitsspeicher).
-      await backend.revokeHealthData(deleteLogs, convertIntolerances && rows ? { rows } : null);
       await loadUser();
     },
-    [backend, daySwapStore, loadUser, rows],
+    [backend, daySwapStore, loadUser, replanMeasurementAfterFailedRevoke, rows],
   );
 
   const deleteStoredIntolerances = useCallback(async () => {
@@ -1490,6 +1536,8 @@ export function AppStateProvider({ children }: { children: ReactNode }) {
   const deleteAccount = useCallback(async () => {
     await backend.deleteAccount();
     await forgetDaySwaps();
+    // Etappe E: alle geplanten Benachrichtigungen stornieren, Geräte-Einstellung zurücksetzen.
+    await appNotifications.reset().catch(() => undefined);
     resetUser();
   }, [backend, forgetDaySwaps, resetUser]);
 
@@ -1509,6 +1557,7 @@ export function AppStateProvider({ children }: { children: ReactNode }) {
       }
       await backend.signOut();
       await forgetDaySwaps();
+      await appNotifications.reset().catch(() => undefined);
       resetUser();
       return { kind: 'signed_out' };
     },
@@ -1524,6 +1573,7 @@ export function AppStateProvider({ children }: { children: ReactNode }) {
 
   const clearDeviceData = useCallback(async () => {
     await backend.clearDeviceData();
+    await appNotifications.reset().catch(() => undefined);
     setPendingBirthDateState(null);
     resetUser();
   }, [backend, resetUser]);

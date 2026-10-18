@@ -6,6 +6,7 @@ import { useEffect } from 'react';
 import { Platform, View } from 'react-native';
 import { SafeAreaProvider, SafeAreaView } from 'react-native-safe-area-context';
 
+import { NotificationRouter } from '@/components/notification-router';
 import { TopBanner } from '@/components/screen';
 import { useThemeColors } from '@/lib/theme';
 import { useBrandFonts } from '@/lib/use-brand-fonts';
@@ -37,6 +38,7 @@ export default function RootLayout() {
   return (
     <SafeAreaProvider>
       <AppStateProvider>
+        <NotificationRouter />
         <StatusBar style={onDark ? 'light' : 'auto'} />
         <SafeAreaView
           edges={['top']}

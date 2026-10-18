@@ -1127,9 +1127,11 @@ nur in GitHub-Secrets bzw. auf expo.dev.
 „E: Punkt 1–9 ok, Punkt 4 iPhone Fehler: …“ – ohne Passwörter oder Codes)
 1. **Start:** App-Name **Alpha5** unter dem Symbol, Logo-Symbol (Android auch rund und als „Designtes Symbol“),
    Startbildschirm Logo auf Schwarz, App startet ohne Absturz; hell und dunkel.
-2. **Keine Berechtigungs-Abfragen:** Beim ganzen Durchklicken fragt die App **nie** nach Kamera, Fotos, Standort,
-   Face ID, Kontakten oder Mitteilungen. Android: Einstellungen → Apps → Alpha5 → Berechtigungen zeigt
-   „Keine Berechtigungen“ (Internet und Vibration zählen nicht als Berechtigung).
+2. **Keine Berechtigungs-Abfragen:** Beim ganzen Durchklicken fragt die App **nie** nach Fotos, Standort, Face ID
+   oder Kontakten – und **nie ungefragt** nach Mitteilungen: Die Mitteilungs-Abfrage kommt erst, wenn ihr eine
+   Erinnerung mit „Ja“ annehmt bzw. in den Einstellungen einschaltet (Teil 9a), nie beim Start oder im Onboarding.
+   Android: Einstellungen → Apps → Alpha5 → Berechtigungen zeigt höchstens Kamera und Benachrichtigungen (Internet und
+   Vibration zählen nicht als Berechtigung).
 3. **Testmodus und Anmeldung:** „Ohne Konto testen“ funktioniert; mit Supabase-Werten auf expo.dev (SETUP D6)
    klappt die Anmeldung per E-Mail-Code.
 4. **Pausentimer vibriert** am Ende der Pause (Etappe C2) – App offen lassen; Ton aus/Vibration an.
@@ -1154,6 +1156,33 @@ nur in GitHub-Secrets bzw. auf expo.dev.
     (Kästchen, keine kcal). Auch im **Flugmodus**; Abbrechen des Dialogs zeigt keinen Fehler. Nativ gibt es keine
     Vorschau in der App – das Dokument erscheint direkt im Druckdialog. **Noch nicht geprüft** (Claude kann keinen
     EAS-Build starten): bitte einmal Android (A + B oben) und Ergebnis schreiben, z. B. „N6 Android ok“.
+
+## Teil 9a – Benachrichtigungen testen (Phase 4b, Etappe E)
+Mess-Erinnerung und Pausenende sind **lokale** Benachrichtigungen: nur auf dem Handy geplant, ohne Server, ohne Werte
+im Text, standardmäßig aus.
+
+**Im Handy-Browser (Vercel-Vorschau, Testmodus)** – geht sofort:
+1. Vorschau-Link öffnen → **Ohne Konto testen** → Onboarding bis **Geschafft!** → **Zum Plan**.
+2. **Einstellungen** → Abschnitt **Benachrichtigungen**: Es steht nur der Hinweis „Im Browser gibt es keine
+   Benachrichtigungen …“ – keine Schalter. Der Schalter **Erinnerung an Körperumfänge** weiter unten bleibt wie bisher.
+
+**In der echten App (APK bzw. TestFlight)** – erst mit dem **nächsten** Build (Teil 9 A–C; neues natives Modul,
+diese Änderung baut noch keine APK):
+1. **Ohne Konto testen** → Onboarding: Es kommt **keine** Mitteilungs-Abfrage.
+2. Training starten (Kraft): oben die Frage **„Pausenende melden?“** → **Ja, melden** → jetzt erst fragt das Handy
+   nach Mitteilungen → **Erlauben**. Satz abhaken (Pause läuft) → Handy sperren bzw. App schließen → zum Pausenende
+   kommt „Pause vorbei – nächster Satz“. App vor dem Ende wieder öffnen → keine Mitteilung (nur die Pausen-Leiste).
+3. Einstellungen → Benachrichtigungen → **Mess-Erinnerung als Benachrichtigung** einschalten (braucht die Einwilligung
+   in Gesundheitsdaten) → **Test: Mess-Erinnerung in 2 Minuten** (nur im Testmodus) → Bildschirm sperren → nach ca.
+   2 Minuten kommt „Alpha5: Zeit für dein Mess-Update“ (ohne Werte) → antippen → die Messung öffnet sich.
+4. Einstellungen → Einwilligung Gesundheitsdaten **widerrufen** → Test-Knopf meldet „nur mit deiner Einwilligung“; eine
+   geplante Erinnerung kommt nicht mehr.
+5. Auf einem zweiten Handy (noch nie gefragt) bei der Abfrage **Nicht erlauben** wählen: Die App läuft normal weiter,
+   in den Einstellungen steht, wie man Mitteilungen in den System-Einstellungen erlaubt.
+6. **Verspätung messen (Android):** Pause auf 1:30 stellen, Satz abhaken, sofort sperren und mit der Uhr stoppen, wann
+   „Pause vorbei“ kommt – einmal mit Ladekabel, einmal ohne und im Energiesparmodus. Wie viele Sekunden zu spät?
+   (Android plant ohne exakte Wecker „ungefähr“, die App weist darauf hin.)
+Ergebnis bitte Claude schreiben, z. B. „E Android: 1–5 ok, Pause 4 s / 70 s zu spät“ (ohne Passwörter oder Codes).
 
 ## Tipps
 - Eine Sitzung = eine Aufgabe. Lieber mehrere kurze Sitzungen als eine endlose.

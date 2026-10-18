@@ -85,6 +85,11 @@ export const STORAGE_KEYS = {
   /** Geräte-Einstellung „Bildschirm im Training anlassen“ (true/false, keine Nutzerdaten). */
   keepAwake: 'fitnessapp.keep-awake.v1',
   /**
+   * Geräte-Einstellung lokale Benachrichtigungen (docs/PLAN-PHASE-4B.md 7, Etappe E): Opt-in Mess-Erinnerung und
+   * Pausenende sowie „schon gefragt“ (true/false, keine Nutzerdaten). Abmelden und Konto löschen setzen sie zurück.
+   */
+  notificationPrefs: 'fitnessapp.notification-prefs.v1',
+  /**
    * Testmodus (Etappe N4): „Beispiel-Rezepte mit Testwerten verwenden“ (true/false), solange das Bündel noch keine
    * Rezepte hat. Der Wert "force" (nur von den E2E-Tests gesetzt) erzwingt sie auch bei echten Rezepten. Keine
    * Nutzerdaten.

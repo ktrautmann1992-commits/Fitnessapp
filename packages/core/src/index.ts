@@ -20,3 +20,4 @@ export * from './evaluation';
 export * from './retail';
 export * from './routes';
 export * from './dashboard';
+export * from './notifications';
