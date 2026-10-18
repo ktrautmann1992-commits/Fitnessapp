@@ -16,7 +16,8 @@
     "content:validate": "pnpm --filter @fitnessapp/content validate",
     "content:import-alpha5": "pnpm --filter @fitnessapp/content import-alpha5",
     "plan:examples": "pnpm --filter @fitnessapp/content plan:examples",
-    "nutrition:examples": "pnpm --filter @fitnessapp/content nutrition:examples"
+    "nutrition:examples": "pnpm --filter @fitnessapp/content nutrition:examples",
+    "adjust:examples": "pnpm --filter @fitnessapp/content adjust:examples"
   },
   "devDependencies": {
     "@eslint/js": "^10.0.1",

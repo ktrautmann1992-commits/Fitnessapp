@@ -14,6 +14,7 @@ export * from './goals';
 export * from './content';
 export * from './plan';
 export * from './log';
+export * from './adjust';
 export * from './export';
 export * from './nutrition';
 export * from './evaluation';

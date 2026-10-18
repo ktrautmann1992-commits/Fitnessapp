@@ -259,6 +259,41 @@ Verbindlich ist der freigegebene Ablauf in `docs/PLAN-PHASE-1.md` Abschnitt 3 (S
 - **Technik:** Neuberechnung ereignisgesteuert auf dem Server (Datenbank-Trigger bzw. Server-Funktion), Ergebnis sofort
   in der App sichtbar; offline eingetragene Daten lösen die Neuberechnung beim nächsten Sync aus. Premium-Prüfung serverseitig.
 
+**Umsetzung ab Phase 4b (`docs/PLAN-PHASE-4B.md`, Etappe A: Core in `packages/core/src/adjust`):** Regel-Engine
+`computeLiveAdjustments()` – rein, deterministisch, **ohne KI**; ohne Premium (`entitled = false`) entsteht nichts, Gratis
+behält genau die Progression aus Punkt 4. Startwerte in `LIVE_ADJUSTMENT` (`constants.ts`, Quellen, PRODUKTENTSCHEIDUNG –
+vor dem Livegang fachlich prüfen). Server (Etappen B/C) und App-Testmodus (Etappe D) folgen; Etappe A ändert weder
+Datenbank noch App.
+- **Zustands-Vorgaben** (gelten nur für den neuesten zählenden Eintrag der Übung, sonst veraltet): R1 schneller steigern
+  (alle Sätze bei reps_max und jeder Satz mit RPE ≤ Ziel − 2 → Schritt schon nach einer Einheit; 10-%-Deckel und Puffer
+  bleiben; nie bei vorsichtigem Plan, unter 18, ab 65, Einsteigern im ersten Block); R2 Gewicht senken (zweimal deutlich
+  verfehlt → roher Zustand −10 %, Wdh. = reps_min, ohne Zusatzsatz; die Anzeige rundet auf die eigene Stufe ab, nie unter
+  die kleinste; je Übung höchstens alle 14 Tage; eigenes leichteres Gewicht hat Vorrang). R2 schlägt R1. Die einzige
+  Stelle, an der der Zustand sinken darf, ist `progressFromLogs(…, { stateOverride })`.
+- **Plan-Änderungen nur an Einheiten ab morgen**, die noch `planned` sind und keinen Tagebuch-Eintrag haben
+  (`eligiblePlannedSessions()`): R3 Kraft (3 neueste Krafteinheiten binnen 14 Tagen mit Belastung ≥ 9 → nächste Woche je
+  Übung 1 Satz weniger; Erholungswoche ≤ 2 Wochen entfernt → nur Hinweis), R3 Ausdauer (2 der 3 neuesten Einträge über
+  der Schwelle `enduranceOverloadThreshold(Ziel)` → nächste Woche × 0,85, Folgewochen nur gesenkt), R4 Stillstand
+  (≥ 3 Einträge über ≥ 21 Tage ohne Schritt → Tausch auf eine gleichwertige, erlaubte, nicht schwerere Alternative,
+  höchstens einmal je Übung und Block), R5 weniger Trainingstage (< 70 % über 3 abgeschlossene Wochen → nur Vorschlag
+  mit Bestätigung). Höchstens 3 automatische Änderungen je Woche, darüber nur Hinweise.
+- **Tausch-Regel „Erholungswoche vorziehen“** (R3 zweimal in Folge bzw. R4 ohne Alternative): nur wenn die geplante
+  Erholungswoche D mindestens 2 Wochen nach der nächsten Woche n liegt, höchstens einmal je Block und nur, wenn alle
+  Einheiten der Wochen n bis D noch unberührt sind. Woche n wird Erholungswoche (Sätze halbiert, RPE −2, Ausdauer
+  floor(0,6 × laufende Woche)); die Wochen dazwischen werden in der Ausdauer neu auf +10 % gedeckelt (nur senken); die
+  frühere Erholungswoche D wird Belastungswoche mit **höchstens der Dosierung der Woche davor**. Der Folgeblock zählt die
+  übrigen Belastungswochen mit (`carriedLoadWeeks = trailingLoadWeeks(plan)`), damit nie mehr als 4 bzw. 5
+  Belastungswochen in Folge entstehen. Im **Wettkampfplan** wird nicht getauscht (Phasen, Tapering und langer Lauf hängen
+  am Makrozyklus); dort reduziert die Ausdauer-Regel nur lockere Einheiten.
+- **Wochen-Invarianten** (`checkWeekInvariants()`, gleiche Prüfung später in SQL): nie mehr als L Belastungswochen in Folge
+  (Woche 0 zählt nicht, Einstiegswoche zählt), Ausdauer je Belastungswoche ≤ floor(1,1 × Bezug), Erholungswochen
+  reduziert, getauschte Woche nie über der Vorwoche. Jeder heute erzeugbare Plan (auch Wettkampf- und
+  Körpergewichtspläne) erfüllt sie ohne Anpassung (Regressionstest).
+- **Folgeblock:** `restoreTemporaryChanges()` setzt vorübergehend gekürzte Kraft-Sätze vor `baseSessionsFromBlock()`
+  zurück; der Ausdauer-Bezug bleibt die tatsächlich geplante letzte Belastungswoche (vorsichtig).
+- **Erklärungen** aus festen Bausteinen (`ADJUST_TEXTS_DE`), nur Zahlen, Daten und Übungsnamen, keine Aussagen über
+  Körper oder Gesundheit. **Kalorien** (`calorie_adjust`) bleiben reserviert; Schutzgrenzen nur in `clampCalorieTarget`.
+
 ## 5. Tagesansicht & Trainingstagebuch
 
 **App-Aufbau seit 18.10.2026 (`docs/PLAN-DASHBOARD.md`):** Ohne Sitzung zeigt die App den **Startbildschirm** mit zwei

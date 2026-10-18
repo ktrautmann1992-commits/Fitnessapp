@@ -385,3 +385,45 @@ describe('nextLoad (doppelte Progression)', () => {
     ).toMatchObject({ kind: 'increase_weight', weightKg: 500 });
   });
 });
+
+describe('Phase 4b: consecutiveSessionsForStep (R1, nur Premium)', () => {
+  it('ohne Option unverändert (2 Einheiten); mit 1 schon nach einer geschafften Einheit – an BEIDEN Stellen', () => {
+    // Gratis: eine Einheit ab reps_max reicht nicht.
+    expect(nextLoad(weight, [done(12)], { incrementKind: 'barbell' })).toEqual({ kind: 'keep' });
+    expect(
+      nextLoad(weight, [done(12)], { incrementKind: 'barbell', consecutiveSessionsForStep: 1 }),
+    ).toMatchObject({ kind: 'increase_weight', weightKg: 52.5 });
+    // Zweite Stelle (Volle-Satzzahl-Regel W7): die eine Einheit muss die Vorlagen-Satzzahl haben.
+    const short: PerformedSession = {
+      plannedSets: 2,
+      sets: [
+        { reps: 12, rpe: 7 },
+        { reps: 12, rpe: 7 },
+      ],
+    };
+    expect(
+      nextLoad(weight, [short], { incrementKind: 'barbell', consecutiveSessionsForStep: 1 }),
+    ).toEqual({ kind: 'keep' });
+    // Vorher geschafft, zuletzt nicht: mit 1 zählt nur die letzte.
+    expect(
+      nextLoad(weight, [done(12), done(10)], {
+        incrementKind: 'barbell',
+        consecutiveSessionsForStep: 1,
+      }),
+    ).toEqual({ kind: 'keep' });
+  });
+
+  it('Option 2 entspricht genau dem Gratis-Verhalten (Schnappschuss-gleich)', () => {
+    const histories = [
+      [done(12)],
+      [done(12), done(12)],
+      [done(11), done(12)],
+      [done(12, 2), done(12)],
+    ];
+    for (const h of histories) {
+      expect(
+        nextLoad(weight, h, { incrementKind: 'barbell', consecutiveSessionsForStep: 2 }),
+      ).toEqual(nextLoad(weight, h, { incrementKind: 'barbell' }));
+    }
+  });
+});

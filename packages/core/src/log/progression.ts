@@ -89,6 +89,15 @@ export interface ProgressOptions {
   readonly startWeightKg?: number | null;
   /** Startgewicht über der absoluten Schwelle bestätigt. */
   readonly startWeightConfirmed?: boolean;
+  /**
+   * Phase 4b (Premium, docs/PLAN-PHASE-4B.md 5.4): Zustands-Vorgabe einer Live-Anpassung (R1/R2) – nur übergeben, wenn
+   * activeStateOverride() sie für den NEUESTEN zählenden Eintrag liefert. Sie ersetzt das Ergebnis von nextLoad(); danach
+   * laufen Orts-Rundung (`effective`), Wiedereinstieg und Anzeige-Regeln wie bisher. Einzige Stelle, an der der Zustand
+   * sinken darf (R2). Weggelassen → Gratis-Ergebnis, unverändert.
+   */
+  readonly stateOverride?: ExerciseProgress | null;
+  /** Phase 4b, R1: Einheiten in Folge für die nächste Stufe (nextLoad); weggelassen → Gratis-Regel. */
+  readonly consecutiveSessionsForStep?: number;
 }
 
 /**
@@ -331,11 +340,12 @@ function shownProgress(entry: ExerciseLogEntry, fallback: ExerciseProgress): Exe
   };
 }
 
-function stepOptions(ctx: ProgressionContext) {
+function stepOptions(ctx: ProgressionContext, consecutiveSessionsForStep?: number) {
   return {
     incrementKind: ctx.incrementKind,
     ...(ctx.steps ? { steps: ctx.steps } : {}),
     allowExtraSet: ctx.allowExtraSet ?? true,
+    ...(consecutiveSessionsForStep === undefined ? {} : { consecutiveSessionsForStep }),
   };
 }
 
@@ -481,6 +491,26 @@ export function progressFromLogs(
   const counting = own.filter(isCountingEntry);
   const latest = counting.at(-1) ?? (own.at(-1) as ExerciseLogEntry);
 
+  // Live-Anpassung (Premium): die Vorgabe ersetzt das Ergebnis von nextLoad(); nur mit zählendem Eintrag.
+  if (options.stateOverride && counting.length > 0) {
+    const override = options.stateOverride;
+    const before = latest.state?.weightKg ?? null;
+    const largeJump =
+      ctx.loadType === 'weight' &&
+      before !== null &&
+      before > 0 &&
+      override.weightKg !== null &&
+      (override.weightKg - before) / before > LOAD_PROGRESSION.largeJumpFraction + EPS;
+    const first = largeJump
+      ? clampRpe(ctx.rpeTarget - LOAD_PROGRESSION.largeJumpRpeReduction, ctx.rpeTarget)
+      : null;
+    return finish(override, 'logs', {
+      step: null,
+      hint: null,
+      firstSessionRpeTarget: first !== null && first < ctx.rpeTarget ? first : null,
+    });
+  }
+
   if (needsCalibration(latest.state, ctx)) {
     const calibrated = calibrateFromSets(latest.sets, latest.weightConfirmed, ctx);
     if (calibrated.kind === 'calibrated') return finish(calibrated.progress, 'calibration');
@@ -509,7 +539,11 @@ export function progressFromLogs(
     ...(previous && sameProgress(previous.state, latestState) ? [previous] : []),
     latest,
   ].map((e) => toPerformed(e, latestState, ctx));
-  const step = nextLoad(toState(latestState, ctx), history, stepOptions(ctx));
+  const step = nextLoad(
+    toState(latestState, ctx),
+    history,
+    stepOptions(ctx, options.consecutiveSessionsForStep),
+  );
   return finish(applyStep(latestState, step), 'logs', {
     step,
     hint: hintOf(step),
