@@ -1093,6 +1093,14 @@ export interface NextPlanBlockOptions {
    * `loadWeeks` Belastungswochen + Erholungswoche. Fehlt → unverändert.
    */
   readonly competitionWeeks?: readonly BlockWeekSpec[];
+  /**
+   * Phase 4b (Tausch-Regel `deload_forward`, docs/PLAN-PHASE-4B.md 5.2 Punkt 5): Belastungswochen, die der bisherige
+   * Block NACH seiner (vorgezogenen) Erholungswoche schon hatte – `trailingLoadWeeks(plan)` aus dem TATSÄCHLICHEN Plan.
+   * Der Folgeblock hat dann nur `loadWeeks − carriedLoadWeeks` Belastungswochen vor seiner Erholungswoche, damit nie mehr
+   * als `loadWeeks` Belastungswochen in Folge entstehen. Weggelassen bzw. 0 → unverändert (ohne Live-Anpassung immer 0).
+   * Gilt nur ohne `competitionWeeks` (der Wettkampfplan rechnet seinen Rhythmus selbst über CycleRestart).
+   */
+  readonly carriedLoadWeeks?: number;
 }
 
 /**
@@ -1205,12 +1213,14 @@ export function nextPlanBlock(
   if (options.competitionWeeks) {
     for (const spec of options.competitionWeeks) weeks.push(specWeek(spec, days, null));
   } else {
-    for (let w = 1; w <= options.loadWeeks + 1; w += 1) {
+    const carried = Math.max(0, Math.floor(options.carriedLoadWeeks ?? 0));
+    const loadWeeks = Math.max(0, options.loadWeeks - carried);
+    for (let w = 1; w <= loadWeeks + 1; w += 1) {
       weeks.push({
         weekNo: w,
         monday: addDays(monday, (w - 1) * 7),
         days,
-        kind: w === options.loadWeeks + 1 ? 'deload' : 'load',
+        kind: w === loadWeeks + 1 ? 'deload' : 'load',
       });
     }
   }

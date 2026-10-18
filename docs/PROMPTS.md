@@ -109,6 +109,9 @@ Kalorienänderungen nur innerhalb der Schutzgrenzen aus CLAUDE.md. Premium-Prüf
 Gründer-Entscheidung 09.10.2026: Übungs-Glossar/Übungstausch (erledigt bis T2) → **Phase 5** → danach 4b weiter mit
 A → D (Testmodus) → E; B und C später, wenn echte Konten mit Supabase kommen. **Gründer-Entscheidung 13.10.2026:** Nach Phase 5 kommt zuerst **Phase 10** (Ausdauer-Wettkampf & Strecken), danach 4b. Kalorien-Anpassungen aus 4b laufen nur
 als Versatz durch die Schutzgrenzen der Ernährungs-Engine aus Phase 5 (`nutrition/limits.ts`).
+**Stand 18.10.2026:** **Etappe A (Core: Regel-Engine und Anwendung) umgesetzt** – `packages/core/src/adjust/`, ohne
+Migration und ohne sichtbare App-Änderung; CI-Zusammenfassung „Beispiel-Anpassungen“ (`pnpm adjust:examples`). Weiter mit
+**D (Testmodus)** → E; B und C später mit Supabase. Umsetzungsstand und offene Punkte: `docs/PLAN-PHASE-4B.md` Abschnitt 10.
 
 ## Phase 5 – Ernährungs-Engine, Essensplan, Einkaufsliste
 ```

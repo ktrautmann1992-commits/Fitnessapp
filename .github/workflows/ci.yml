@@ -57,6 +57,10 @@ jobs:
       # (Schutzgrenzen, Sonderfälle) als Tabelle „Beispiel-Ernährung“ in der Zusammenfassung des Laufs (Summary).
       - name: Beispiel-Ernährung (Ernährungs-Engine)
         run: pnpm nutrition:examples
+      # Live-Anpassung (docs/PLAN-PHASE-4B.md, Etappe A): ausgedachte Tagebuch-Folgen für Test-Personen und die
+      # Anpassung mit Erklärsatz (u. a. „Erholungswoche vorgezogen“ mit Wochen-Übersicht) als „Beispiel-Anpassungen“.
+      - name: Beispiel-Anpassungen (Live-Anpassung)
+        run: pnpm adjust:examples
       - name: Lint, Typen, Tests
         run: pnpm check
       # PDF-Export (docs/PLAN-PDF-EXPORT.md §8 P1+P2): Trainingsplan für ausgedachte Beispiel-Personen als Druck-HTML.

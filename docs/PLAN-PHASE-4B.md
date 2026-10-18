@@ -1,6 +1,6 @@
 # Plan Phase 4b – Live-Anpassung des Plans (Premium, ohne KI) und Benachrichtigungen
 
-**Status:** Freigegeben am 09.10.2026 – die Gründer übernehmen bei allen offenen Fragen (Abschnitt 13) die Empfehlung. Wächter: freigabefähig (2 Runden). Umsetzung startet mit Etappe A0.
+**Status:** Freigegeben am 09.10.2026 – die Gründer übernehmen bei allen offenen Fragen (Abschnitt 13) die Empfehlung. Wächter: freigabefähig (2 Runden). **Etappe A0 und Etappe A (Core: Regel-Engine und Anwendung, 18.10.2026) umgesetzt**, siehe Abschnitt 10 „Umsetzungsstand A“. Nächste Etappe: D (Testmodus), dann E; B und C später mit Supabase.
 
 **Nachtrag 10.10.2026 (Phase 5, N0):** A0 ist umgesetzt. Reihenfolge laut Gründer-Entscheidung 09.10.2026: A0 → Übungs-Glossar und Übungstausch (erledigt bis T2) → **Phase 5** (`docs/PLAN-PHASE-5.md`) → 4b weiter mit A → D (Testmodus) → E; B und C später. Weil Phase 5 vorher kommt, legt **Phase 5** `packages/core/src/nutrition/limits.ts` an (inkl. `clampCalorieAdjustment()`); 4b ruft nur auf. Die Kalorien-Stellen in diesem Plan (K1, 2.1, 2.2, 5.2, 5.6, 5.8, Etappe A, Abschnitt 11, Frage 3, Risiko 11) sind an Phase 5 (S10, R2-S5) angeglichen.
 
@@ -176,14 +176,14 @@ Postgres und `enums.ts`, Abgleich in `db-sync.test.ts`, eigene Migrationsdatei *
 
 ### 4.4 Neue Tabellen
 
-| Tabelle                             | Spalten (Kurzform)                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                              | Regeln                                                                                                                                                                                                                                                                                                                                                                                    |
-| ----------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `plan_adjustments`                  | `id`, `user_id` (cascade auf `auth.users`), `plan_id` mit `(plan_id, user_id)` → `user_plans` **on delete cascade**, `trigger`, `rule`, `kind`, `status`, `requires_confirmation` (bool), `exercise_id` (nullable, → `exercises`, `on delete restrict`), `planned_session_ids` uuid[] (≤ 14), `basis_session_log_id` (uuid, nullable, **ohne** Fremdschlüssel, nur Vergleichswert), `basis_performed_on` (date), `state_before`/`state_after` (jsonb, strikt: `weightKg`, `targetReps`, `extraSet`, `durationS`), `change_before`/`change_after` (jsonb, strikt je Regel, ≤ 4 KB), `explain_params` (jsonb, nur Zahlen und Codes, **kein Freitext**), `effective_from` (date), `expires_on` (date, nur bei Vorschlägen), `engine_version`, `rule_version` (smallint), `input_fingerprint` (text, Hash der Eingaben, Idempotenz), `uses_body_data` (bool not null), `from_health_plan` (bool not null), `decided_at`, `created_at`, `updated_at` | `authenticated` darf nur **lesen** (eigene Zeilen). Schreiben nur über die Funktionen in 4.6. `unique (user_id, rule, input_fingerprint)` sorgt dafür, dass dieselbe Lage nie zweimal angepasst wird. CHECK: `kind = 'state_override'` ⇔ `exercise_id` und `state_after` gesetzt. CHECK: `status = 'pending_confirmation'` ⇒ `requires_confirmation`. Index `(user_id, created_at desc)`. |
-| `private.adjustment_events`         | `id` bigserial, `user_id`, `trigger`, `ref_id` (uuid, z. B. Eintrag), `created_at`, `processed_at`, `attempts` smallint, `last_error_code` text (fester Code, kein Inhalt)                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                      | Nur `service_role`. Entsteht **nur bei Premium** (Flag an und Entitlement, Wächter S2). Wird bei Verarbeitung bzw. spätestens nach 30 Tagen gelöscht. Enthält **keine Werte**, nur Verweise. Ein Event je `(user_id, trigger, ref_id)` (`on conflict do nothing`).                                                                                                                        |
-| `private.live_adjust_hourly_counts` | `user_id` (cascade), `hour_start` timestamptz, `count` smallint, pk `(user_id, hour_start)`                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                     | Nur `service_role`. Geteilter Zähler für die Ratenbegrenzung (Wächter S3, Muster `session_log_daily_counts`). Aufräumen nach 24 h im Sweep.                                                                                                                                                                                                                                               |
-| `private.feature_flags`             | `key` text pk (`live_adjustment`, später weitere), `enabled` bool, `updated_at`, `updated_by` text (GitHub-Name aus dem Workflow)                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                               | Nur `service_role`, geschaltet über den Workflow `beta-grant`. Kein Nutzerbezug.                                                                                                                                                                                                                                                                                                          |
-| `private.beta_entitlements`         | `user_id` pk (cascade), `entitlement` (`premium`), `granted_at`, `granted_by` text (GitHub-Name), `expires_at` (Pflicht, ≤ 180 Tage), `note` (≤ 100 Zeichen, kein Gesundheitsbezug)                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                             | Nur `service_role`. Brücke bis Phase 7, dann ersetzt durch die echte `entitlements`-Tabelle aus den Abo-Webhooks.                                                                                                                                                                                                                                                                         |
-| `private.admin_actions`             | `id` bigserial, `action` (`beta_grant`, `beta_revoke`, `flag_on`, `flag_off`), `actor` text (GitHub-Name), `target_user_id` uuid (nullable, → `auth.users` **on delete set null**), `expires_at`, `created_at`                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                  | Nur `service_role`. Protokoll jeder Aktion (Wächter B1, Nachvollziehbarkeit). Keine E-Mail, kein Freitext. Aufbewahrung 1 Jahr, Aufräumen im Sweep.                                                                                                                                                                                                                                       |
+| Tabelle                             | Spalten (Kurzform)                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    | Regeln                                                                                                                                                                                                                                                                                                                                                                                    |
+| ----------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `plan_adjustments`                  | `id`, `user_id` (cascade auf `auth.users`), `plan_id` mit `(plan_id, user_id)` → `user_plans` **on delete cascade**, `trigger`, `rule`, `kind`, `status`, `requires_confirmation` (bool), `exercise_id` (nullable, → `exercises`, `on delete restrict`), `planned_session_ids` uuid[] (≤ 42, `LIVE_ADJUSTMENT.maxPlannedSessionsPerAdjustment`; Umsetzungsstand A), `basis_session_log_id` (uuid, nullable, **ohne** Fremdschlüssel, nur Vergleichswert), `basis_performed_on` (date), `state_before`/`state_after` (jsonb, strikt: `weightKg`, `targetReps`, `extraSet`, `durationS`), `change_before`/`change_after` (jsonb, strikt je Regel, ≤ 4 KB), `explain_params` (jsonb, nur Zahlen und Codes, **kein Freitext**), `effective_from` (date), `expires_on` (date, nur bei Vorschlägen), `engine_version`, `rule_version` (smallint), `input_fingerprint` (text, Hash der Eingaben, Idempotenz), `uses_body_data` (bool not null), `from_health_plan` (bool not null), `decided_at`, `created_at`, `updated_at` | `authenticated` darf nur **lesen** (eigene Zeilen). Schreiben nur über die Funktionen in 4.6. `unique (user_id, rule, input_fingerprint)` sorgt dafür, dass dieselbe Lage nie zweimal angepasst wird. CHECK: `kind = 'state_override'` ⇔ `exercise_id` und `state_after` gesetzt. CHECK: `status = 'pending_confirmation'` ⇒ `requires_confirmation`. Index `(user_id, created_at desc)`. |
+| `private.adjustment_events`         | `id` bigserial, `user_id`, `trigger`, `ref_id` (uuid, z. B. Eintrag), `created_at`, `processed_at`, `attempts` smallint, `last_error_code` text (fester Code, kein Inhalt)                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                            | Nur `service_role`. Entsteht **nur bei Premium** (Flag an und Entitlement, Wächter S2). Wird bei Verarbeitung bzw. spätestens nach 30 Tagen gelöscht. Enthält **keine Werte**, nur Verweise. Ein Event je `(user_id, trigger, ref_id)` (`on conflict do nothing`).                                                                                                                        |
+| `private.live_adjust_hourly_counts` | `user_id` (cascade), `hour_start` timestamptz, `count` smallint, pk `(user_id, hour_start)`                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                           | Nur `service_role`. Geteilter Zähler für die Ratenbegrenzung (Wächter S3, Muster `session_log_daily_counts`). Aufräumen nach 24 h im Sweep.                                                                                                                                                                                                                                               |
+| `private.feature_flags`             | `key` text pk (`live_adjustment`, später weitere), `enabled` bool, `updated_at`, `updated_by` text (GitHub-Name aus dem Workflow)                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                     | Nur `service_role`, geschaltet über den Workflow `beta-grant`. Kein Nutzerbezug.                                                                                                                                                                                                                                                                                                          |
+| `private.beta_entitlements`         | `user_id` pk (cascade), `entitlement` (`premium`), `granted_at`, `granted_by` text (GitHub-Name), `expires_at` (Pflicht, ≤ 180 Tage), `note` (≤ 100 Zeichen, kein Gesundheitsbezug)                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                   | Nur `service_role`. Brücke bis Phase 7, dann ersetzt durch die echte `entitlements`-Tabelle aus den Abo-Webhooks.                                                                                                                                                                                                                                                                         |
+| `private.admin_actions`             | `id` bigserial, `action` (`beta_grant`, `beta_revoke`, `flag_on`, `flag_off`), `actor` text (GitHub-Name), `target_user_id` uuid (nullable, → `auth.users` **on delete set null**), `expires_at`, `created_at`                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                        | Nur `service_role`. Protokoll jeder Aktion (Wächter B1, Nachvollziehbarkeit). Keine E-Mail, kein Freitext. Aufbewahrung 1 Jahr, Aufräumen im Sweep.                                                                                                                                                                                                                                       |
 
 **Neue Spalten in bestehenden Tabellen:**
 
@@ -234,6 +234,8 @@ Postgres und `enums.ts`, Abgleich in `db-sync.test.ts`, eigene Migrationsdatei *
    - **Zustands-Vorgabe:** nur, solange seit `created_at` kein neuerer Eintrag dieser Übung existiert.
    - **Plan-Änderung:** nur, solange alle betroffenen Einheiten noch `planned`, ab morgen und ohne Eintrag sind. Dann wird `change_before` zurückgeschrieben.
    - **`deload_forward`** wird nur als Ganzes zurückgenommen (vorgezogene **und** getauschte Woche). Ist eine der beiden Wochen schon begonnen, ist Rückgängig nicht mehr möglich. So entsteht nie ein Plan ohne Erholungswoche.
+   - **Nur in umgekehrter Reihenfolge** (Wächter-Auflage zu Etappe A, wie `canRevert()` in Core): Rückgängig ist gesperrt, solange eine **neuere** wirksame Plan-Änderung Einheiten derselben Wochen getroffen hat, und solange die Einheiten nicht mehr genau auf `change_after` stehen. Außerdem rechnet die Funktion die Wochen-Invarianten für den Plan **nach** dem Zurückschreiben nach (ab der ersten betroffenen Woche, nur neu entstehende Verstöße); bei Verstoß `invariant_violation` ohne Änderung.
+   - **„Neu entstanden“** (gilt für `revert_plan_adjustment` und `apply_plan_adjustments`, wie `newInvariantViolations()` in Core): Verstöße werden je Schlüssel Regel‑Code | Messgröße (Minuten, Sätze, RPE, Wochen, Anzahl) | Block | Woche | Einheit | Stelle (`order_no`) | Übung verglichen, als **Multimenge** (je Schlüssel die Überschreitungen absteigend paarweise; ein zusätzlicher gleicher Verstoß ist neu). Neu ist ein Verstoß auch, wenn seine **Überschreitung `value − limit` wächst** – etwa weil nur die Grenze sinkt (gesenkte Bezugswoche). Der Wochen-Satz-Deckel der getauschten Woche hat den eigenen Code `swapped_week_sets_total`. Grund: Sonst hebt z. B. die Rücknahme einer älteren Ausdauer-Kürzung unter einer neueren vorgezogenen Erholungswoche deren Minuten über floor(0,6 × Bezug).
    - Ergebnis `reverted`. Zurückgenommene Regeln feuern für dieselbe Lage nicht erneut: `input_fingerprint` bleibt belegt, und es gibt eine Ruhezeit `LIVE_ADJUSTMENT.cooldownDaysAfterRevert`.
 6. **Ereignisse schreiben (Outbox):**
    - `save_session_log` (`session_logged`, `ref_id` = Eintrag),
@@ -781,6 +783,171 @@ Offline gilt die zuletzt geladene Anpassung weiter, und die Anzeige rechnet mit 
   - Alle Tests aus 5.8 grün inkl. beider Eigenschaftstests und des Regressionstests „jeder heute erzeugbare Plan erfüllt die Wochen-Invarianten“ (Woche 0 nicht gezählt, S-n1); Gratis-Eingaben ergeben unverändert das Phase-4-Ergebnis (Schnappschuss der „Beispiel-Progression“ und des Folgeblocks unverändert).
   - Keine Migration, keine sichtbare App-Änderung.
   - KONZEPT 4.1 „Umsetzung ab Phase 4b“ ergänzt (inkl. Tausch-Regel).
+
+- _Umsetzungsstand A (18.10.2026, Pull Request offen):_ siehe unten „Umsetzungsstand A“.
+
+### Umsetzungsstand A (18.10.2026)
+
+**Was gilt (nur additiv; Gratis-Ergebnis unverändert, keine Migration, keine sichtbare App-Änderung, kein Server):**
+
+- **Neuer Ordner `packages/core/src/adjust/`** (Export über `src/index.ts`): `types.ts` (Aufzählungen 4.3 – bis Etappe B
+  nur in Core, Abgleich mit Postgres dann in `db-sync.test.ts`), `weeks.ts` (`planWeeks()`, `eligiblePlannedSessions()`),
+  `invariants.ts` (`checkWeekInvariants()`), `plan-changes.ts` (Vorher/Nachher-Bausteine und `applyPlanChange()`),
+  `rules/` (R1/R2 `state-rules.ts`, R3 `plan-rules.ts`, R4 `stagnation.ts`, R5 `fewer-days.ts`), `engine.ts`
+  (`computeLiveAdjustments()`), `apply.ts` (`activeStateOverride()`, `restoreTemporaryChanges()`,
+  `applyAdjustmentsToPlan()`, `adjustmentMarks()`, `canRevert()`), `explain.ts` (feste Textbausteine `ADJUST_TEXTS_DE`,
+  `explainAdjustment()`, `renderExplanation()`), `schemas.ts` (Zod 5.7), `inputs.ts` (`LiveAdjustmentInputs`,
+  `liveAdjustmentInputsSchema`, Zeilen-Abbildung `liveEntriesFromRows()`/`liveSessionLogsFromRows()` auf Basis von A0),
+  `fingerprint.ts` (`inputFingerprint()`, FNV-1a über kanonisches JSON).
+- **Bestehender Code (nur Optionen, ohne Option byte-gleich):** `nextLoad(…, { consecutiveSessionsForStep })` an beiden
+  Stellen in `loads.ts`; `progressFromLogs(…, { stateOverride, consecutiveSessionsForStep })` in `log/progression.ts`
+  (Vorgabe ersetzt nextLoad(), danach Orts-Rundung, Wiedereinstieg und Anzeige wie bisher; großer Sprung → erste Einheit
+  RPE −1); `nextPlanBlock(…, { carriedLoadWeeks })` in `schedule.ts` (Folgeblock `L − carried` Belastungswochen, nur ohne
+  `competitionWeeks`).
+- **`LIVE_ADJUSTMENT`** in `constants.ts` mit Quellen (Helms 2016, Zourdos 2016, Foster 1998/2001, Bell 2023, Seiler 2010,
+  Kassiano 2022, KONZEPT 4.1) und PRODUKTENTSCHEIDUNG – VOR LIVEGANG FACHLICH PRÜFEN.
+- **Invarianten-Fixtures** `adjust/fixtures/invariants.json` (20 Fälle, 11 gültig, 9 absichtlich verletzt, jeder Code
+  mindestens einmal), erzeugt von `fixtures/invariant-cases.ts`; ein Test prüft, dass die Datei aktuell ist. Etappe B
+  übersetzt sie in `22_week_invariants.test.sql`. Die Fälle kommen aus echten Plänen und sind damit an Inhaltsstand und
+  Engine gekoppelt; wie sie neu geschrieben werden, steht im Kopf von `write-invariant-fixtures.ts`.
+- **CI-Zusammenfassung „Beispiel-Anpassungen“:** eigenes Skript `pnpm adjust:examples`
+  (`packages/content/src/adjust-examples.ts`, Schritt in `ci.yml` nach „Beispiel-Ernährung“) mit Anna (Gewicht senken),
+  Ben (Sätze −1, dann „Erholungswoche vorgezogen“ mit Wochen-Übersicht vorher/nachher und Folgeblock), Clara (Übung
+  getauscht) und David (Vorschlag weniger Trainingstage). Bewusst NICHT in `plan:examples`, damit dessen Ausgabe
+  zeichengleich bleibt.
+- **KONZEPT 4.1** „Umsetzung ab Phase 4b“ ergänzt (inkl. Tausch-Regel), PROMPTS-Status nachgezogen.
+
+**Präzisierungen gegenüber dem Plan:**
+
+1. **R2 Rohwert und Stufen:** Gespeichert wird der ROHE Zustand `ceil(0,25 kg; 0,9 × Gewicht)` – nie mehr als −10 % –,
+   mindestens die kleinste eigene Stufe bzw. 0,5 kg. Das Abrunden „auf die nächste eigene Stufe des Orts“ macht wie seit
+   Phase 4 die Anzeige (`effective`/`prescriptionForDisplay`). So gelten 5.2 R2 und die Server-Grenze „höchstens auf
+   0,9 × vorher“ (4.6) gleichzeitig; bei groben Kurzhantel-Stufen (10 → 8 kg) zeigt die Anzeige trotzdem 8 kg.
+2. **„Deutlich verfehlt“:** nicht eingetragene bzw. nicht abgehakte Sätze zählen als verfehlt; Bezug ist die geplante
+   Satzzahl der Fassung. „49 %“ ist mit ganzen Sätzen nicht darstellbar – getestet sind 2 von 4 (feuert) und 1 von 3.
+3. **R3 Abstand zur Erholungswoche** wird ab der laufenden Woche k gemessen: D − k ≤ 2 → Hinweis, sonst Sätze −1. Das ist
+   dieselbe Bedingung wie „D − n ≥ 2“ der Tausch-Regel. „Zweimal in Folge“ = eine wirksame `volume_reduce` hat schon
+   Einheiten der laufenden Woche k getroffen. Woche n darf weder Woche 0 noch Einstiegs- noch Erholungswoche sein.
+4. **R3 Ausdauer** zählt nur zählende Einträge der letzten 14 Tage (wie Kraft); Ziel = `effort_target` der geplanten
+   Einheit (ohne Planbezug: lockeres Ziel → 7). Einheiten werden nie gestrichen (Minimum 10 min); reicht das für die
+   Neu-Deckelung der Folgewochen nicht, gibt es keine Änderung, nur den Hinweis.
+5. **Tausch-Regel im Detail (nach Wächter-Auflage 2):** Jede Einheit der Woche D bekommt die Dosierung der
+   **entsprechenden Einheit** in D − 1 (`swappedCounterpart`: gleiche Vorlagen-Einheit, bei mehreren die am selben
+   Wochentag; sonst gleicher Wochentag) – gleiche Übung an gleicher Stelle → genau deren Sätze und RPE; sonst die
+   kleinste Dosierung der Übung in D − 1; kommt die Übung in D − 1 nicht vor, bleibt die Erholungs-Dosierung. Danach
+   höchstens so viele Kraft-Sätze wie D − 1 insgesamt (Wochen-Deckel, nötig bei wechselnder Rotation). Ausdauer je
+   Wochentag die Minuten aus D − 1. Woche n bekommt `floor(0,6 × Woche k)`; die Wochen dazwischen (und nach D im selben
+   Block) werden nur gesenkt. Dieselben Regeln prüft `checkWeekInvariants()`.
+6. **Erholungswoche, RPE:** RPE-Ziel ≤ max(5, größtes RPE-Ziel der Übung in einer Belastungswoche davor − 2) wie im Plan
+   (Wächter-Auflage 3; 30.150 Erholungswochen-Übungen aller heute erzeugbaren Pläne geprüft, kein Gegenbeispiel – die
+   Sicherheitsregeln deckeln schon die Vorlage, nicht erst die Woche). Sätze ≤ ceil(0,5 × größte Satzzahl der Übung in
+   einer Belastungswoche davor).
+7. **Bezug der 10-%-Kette** in `checkWeekInvariants()` wie `enduranceWeekVolumes()`: Woche 0, Erholungswochen und die
+   angebrochene erste Woche eines Plans ohne Woche 0 sind nie Bezug; eine Belastungswoche unter 10 Ausdauer-Minuten gilt
+   als „ohne Bezug“ (Neustart mit dem Startumfang). Erholungswochen im Tapering, in der Rennwoche und in der Erholung nach
+   dem Rennen dürfen bis zum größten Wettkampf-Faktor (0,75) gehen, sonst 0,6. `fromMonday` meldet nur Verstöße ab der
+   ersten geänderten Woche (Bezüge laufen ab Planbeginn).
+8. **Wettkampfpläne (Phase 10):** kein `deload_forward` (Phasen, Tapering, langer Lauf und CycleRestart hängen am
+   Makrozyklus) – stattdessen Sätze −1 bzw. Hinweis. `endurance_reduce` senkt nur lockere Arten (locker, Erholung, lang)
+   und erzeugt ihre Schritte neu (`easyWorkout`), der Distanz-Richtwert der gekürzten Einheit entfällt (`null`); harte
+   Einheiten, Steigerungen, Koppeltraining (Brick) und Technik bleiben. `carriedLoadWeeks` gilt nur ohne
+   `competitionWeeks`; der Wettkampf-Folgeblock zählt seine Belastungswochen ohnehin über `trailingLoadWeeks()`.
+9. **`trailingLoadWeeks()`** gab es schon (Phase 10, `plan/periodization.ts`) und zählt genau das Gewünschte (Kalenderwochen
+   am Planende ohne Erholungs-/Woche-0) – Etappe A nutzt sie, statt eine zweite Funktion anzulegen.
+10. **`restoreTemporaryChanges()`** setzt nur Kraft-Sätze/RPE zurück (`volume_reduce` sowie die jetzt als Erholungswoche
+    markierten Einheiten eines `deload_forward`); `is_deload`, die getauschte Woche D (hat schon eine Belastungs-Dosierung)
+    und alle Ausdauer-Minuten bleiben wie geplant. Der Test aus 5.8 „erbt keine reduzierten … Minuten“ ist damit
+    vorsichtig umgesetzt: Der Folgeblock steigert nie über die tatsächlich geplanten Minuten (Plan 5.2 Punkt 5 und 5.4).
+11. **`planned_session_ids`** je Anpassung bis 42 statt 14 (`LIVE_ADJUSTMENT.maxPlannedSessionsPerAdjustment`, Tabelle
+    4.4 angepasst): ein Tausch bei 7 Trainingstagen ändert bis zu 6 Wochen. Die Engine verwirft Vorschläge mit mehr
+    Einheiten (nur Hinweis). Die Neu-Deckelung der Ausdauer (`recapEndurance`) bleibt im Block der geänderten Woche
+    (5.2 „Folgewochen desselben Blocks“); reicht das wegen schon erzeugter späterer Blöcke nicht, gibt es nur den Hinweis.
+12. **R4:** Stillstand = ≥ 3 zählende Einträge mit unverändertem Zustand, erster bis neuester Eintrag ≥ 21 Tage, und
+    progressFromLogs() bleibt bei „keep“ (Hinweise `no_heavier_weight`, `stronger_band`, `harder_variant` sind kein
+    Stillstand). Kandidaten nur aus den direkten Alternativen der Übung (gleiches Muster, gleiche Art Halten/Wdh., nicht
+    schwerer, aktuelle Sicherheitsregeln, nicht schon in der Einheit). Ist der Ort einer Einheit unbekannt
+    (`sessionLocations` fehlt), muss die Alternative an JEDEM Ort machbar sein.
+13. **R5:** „Geschafft“ = Status `completed` oder ein Eintrag zur Einheit; „geplant“ = alle Einheiten der drei Wochen
+    (einen eigenen Status „entfallen“ gibt es nicht). Wegfallen soll der Wochentag mit den meisten Ausfällen (Gleichstand:
+    weniger geschafft, dann der spätere Tag). Ein offener Vorschlag gilt 14 Tage als offen, danach als abgelaufen.
+14. **Wochen-Deckel:** gezählt werden alle automatischen Anpassungen, die in dieser Kalenderwoche angelegt wurden (auch
+    zurückgenommene); Reihenfolge bei Überlauf: Senken, Erholungswoche, Sätze −1, Ausdauer, Tausch, Steigern.
+15. **Erklärtexte** liegen bis Etappe D als `ADJUST_TEXTS_DE`/`ADJUST_HINTS_DE` in Core (für die CI-Zusammenfassung);
+    D übernimmt sie nach `apps/mobile/src/i18n/de.ts` (Bereich `adjust`). Reservierte Regeln haben schon einen Baustein.
+16. **Invarianten im Engine-Pfad (Wächter-Auflage 5):** `violationsAfter()` und die Schlussprüfung zählen nur NEU
+    entstehende bzw. verschlimmerte Verstöße (`newInvariantViolations`, Vergleich vorher/nachher als Multimenge je Regel,
+    Messgröße, Woche, Einheit und Stelle; verschlimmert = Überschreitung `value − limit` wächst, auch bei sinkender
+    Grenze; Nachprüfung des Wächters). Ein Altverstoß am Blockrand blockiert damit nicht still jede spätere Anpassung.
+17. **Reihenfolge der Einheiten (Wächter-Auflage 6):** Die Engine sortiert die Einheiten nach Datum; R1 (erster Block) und
+    R4 (laufender Block) sortieren selbst – unsortierte Eingaben aus Zeilen ergeben dasselbe Ergebnis (Test).
+18. **Rücknahme (Wächter-Auflage 1):** `canRevert()` erlaubt Rückgängig nur, wenn keine neuere wirksame Plan-Änderung
+    dieselben Wochen trifft, die Einheiten noch auf `change_after` stehen und das Zurückschreiben keinen neuen
+    Invarianten-Verstoß erzeugt (4.6 Punkt 5 für Etappe B festgeschrieben).
+19. **Kalorien:** keine eigene Logik; `LIVE_ADJUSTMENT.calorieStepKcal` (100) ≤ `ADJUSTMENT_STEP_MAX_KCAL` (Test), Typ
+    `calorie_adjust` bleibt reserviert. Die Vormerkungen aus PLAN-ZIELE (S10, Z2 K-2) und Phase 10 W1 (Carb-Loading:
+    Versatz 0) gelten erst mit dem Nachtrag, der die Regel aktiviert.
+
+**Tests (Core 4.975 → 5.063, alle grün):** neu `adjust/` mit 10 Testdateien – R1/R2 (`state-rules.test.ts`), R3 und
+Tausch-Regel inkl. S1 und Wettkampfplan (`plan-rules.test.ts`), R4 (`stagnation.test.ts`), R5 (`fewer-days.test.ts`),
+Konflikte/Idempotenz/Anwendung (`engine.test.ts`), Folgeblock (`follow-up.test.ts`), Invarianten und Fixtures
+(`invariants.test.ts`), Erklärungen/Schemas/Zeilen (`explain.test.ts`), **beide Eigenschaftstests** (300 Eintragsfolgen,
+300 Pläne über zwei Blöcke, dazu ein mehrwöchiger Lauf über die Engine mit zufälligen Rücknahmen über drei Blöcke,
+`properties.test.ts`) und der **Regressionstest S-n1** (`invariants-regression.test.ts`:
+Level × vorsichtig × 1–7 Tage × Startwochentag × Kraft/gemischt/Ausdauer/Körpergewicht mit drei Folgeblöcken, dazu
+Wettkampfpläne 5 km bis Marathon, Rad, Triathlon Sprint/Olympisch – auch vorsichtig – über den ganzen Makrozyklus);
+`loads.test.ts` (+2). Content +2 (`adjust-examples.test.ts`). `pnpm plan:examples` und `pnpm nutrition:examples` vor/nach
+zeichengleich; `pnpm turbo run lint typecheck test` (core, db, mobile, content) und `pnpm format:check` grün.
+
+**Gegenproben (Regel absichtlich gebrochen → rot → zurückgesetzt):**
+
+| Nr. | Gebrochene Regel                                            | Rote Tests |
+| --- | ----------------------------------------------------------- | ---------- |
+| G1  | Getauschte Woche D mit 1 Satz mehr als D − 1 (B2)           | 6          |
+| G2  | Folgeblock ignoriert `carriedLoadWeeks`                     | 5          |
+| G3  | Woche 0 zählt als Belastungswoche (S-n1)                    | 4          |
+| G4  | 10-%-Prüfung der Ausdauer fehlt                             | 2          |
+| G5  | Ausdauer-Folgewochen nicht neu gedeckelt                    | 2          |
+| G6  | Heutige Einheit änderbar (S1)                               | 1          |
+| G7  | Einheit mit Eintrag änderbar (S1)                           | 2          |
+| G8  | R2 senkt um 20 % statt 10 %                                 | 3          |
+| G9  | R1 ohne RPE-Bedingung                                       | 1          |
+| G10 | Tausch auch bei D − n = 1                                   | 1          |
+| G11 | Zweiter Tausch im selben Block                              | 1          |
+| G12 | Gratis bekommt Anpassungen                                  | 3          |
+| G13 | Kalorien-Schritt 200 kcal (> 150)                           | 1          |
+| G14 | Wochen-Deckel 3 fehlt                                       | 2          |
+| G15 | Erholungswoche ohne Satz-Prüfung                            | 2          |
+| G16 | Rücknahme trotz neuerer Änderung (ohne Plan-Abgleich)       | 1          |
+| G17 | Rücknahme ohne Neuer-Prüfung, Plan-Abgleich und Invarianten | 2          |
+| G18 | Getauschte Woche ohne Wochen-Deckel der Sätze               | 1          |
+| G19 | Getauschte Woche: Maximum statt entsprechender Einheit      | 1          |
+| G20 | Erholungswoche RPE nur „nicht höher“ statt −2               | 1          |
+
+| G21 | Neu-Vergleich nur über den Wert (Grenze sinkt, Überschreitung wächst) | 1 |
+| G22+G23 | Schlüssel ohne Einheit/Stelle **und** Map statt Multimenge | 2 |
+
+G1–G15 vor, G16–G20 nach den Wächter-Auflagen, G21–G23 nach der Nachprüfung gemessen (G22 bzw. G23 allein bleiben
+grün, weil sich Schlüssel und Multimenge gegenseitig absichern).
+
+**Offen (sichere Voreinstellung gilt):**
+
+- **Folgeblock nach dem Makrozyklus** (PLAN-PHASE-10 „Offen“: Bezug Spitzenwoche, Vorschlag „auf den Startumfang
+  begrenzen“): bleibt in A unverändert, weil sonst Gratis-Pläne anders würden; die 10-%-Kette ist eingehalten
+  (Regressionstest). Entscheidung mit WP-Nachtrag bzw. D.
+- **WP3 N1** (Plan mitten in der Woche neu, harte Einheiten des ersetzten Plans): keine 4b-Regel betroffen; bleibt
+  bekannte Grenze. `competition_date_changed` bleibt reserviert („Datum ändern“ weiter ohne Automatik).
+- **Tagebuch-Bezug am Blockrand:** Wurde in der letzten Belastungswoche fast nichts trainiert (< 10 min), startet der
+  Folgeblock wieder beim Startumfang. Die SQL-Nachrechnung (B) prüft die 10-%-Kette daher nur ab der ersten geänderten
+  Woche (`fromMonday`); scheitert sie trotzdem, verwirft die Route den Vorschlag (sicher: keine Änderung).
+- **10-%-Kette und `append_plan_block` (für Etappe B festhalten):** `append_plan_block` prüft nur „höchstens L
+  Belastungswochen in Folge“, **keine** 10-%-Prüfung auf geplante Minuten – der Folgeblock rechnet seinen Bezug aus dem
+  Tagebuch (`loggedEnduranceMinutes`), den die Datenbank aus den geplanten Minuten nicht kennt. Wird die letzte
+  Belastungswoche eines Wettkampf-Blocks gekürzt und danach (fast) nichts eingetragen, startet der Folgeblock wieder beim
+  Startumfang und kann über floor(1,1 × geplanter Vorwoche) liegen (Wächter-Skript comp2: 13 von 292 Fällen, alle mit
+  „nichts eingetragen“). Das ist das heutige Gratis-Verhalten (Neustart ohne Bezug), keine Folge der Anpassung.
+- **Effort-Ziel der getauschten Wochen:** `effort_target` bleibt unverändert (vorgezogene Erholungswoche behält das
+  lockere Ziel 3–4 der Belastungswoche, nie höher). Fachprüfung zusammen mit Frage 11.
+- **Alle Werte** in `LIVE_ADJUSTMENT` gehen in die fachliche Prüfung vor dem Livegang (Frage 11).
 
 **B – Datenbank**
 
