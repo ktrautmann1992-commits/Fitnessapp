@@ -5,6 +5,7 @@
  * erfüllen (siehe i18n/index.ts). Fachliche Texte, die zur Logik gehören (Gesundheits-Fragen,
  * Mess-Anleitungen, Geräte- und Lebensmittelnamen), stehen in packages/core und werden dort gepflegt.
  */
+import { deAdjust } from './de-adjust';
 import { deCompetition } from './de-competition';
 import { deCompetitionNutrition } from './de-competition-nutrition';
 import { deCustomMeals } from './de-custom-meals';
@@ -1624,6 +1625,8 @@ export const de = {
     testScheduled: 'Test-Erinnerung in 2 Minuten geplant – jetzt den Bildschirm sperren.',
     testNeedsPermission: 'Bitte zuerst die Mess-Erinnerung als Benachrichtigung einschalten.',
   },
+  /** Live-Anpassung des Plans (Phase 4b, Etappe D). */
+  adjust: deAdjust,
 } as const;
 
 /** Typ, den jede Übersetzung erfüllen muss (Texte als string, Funktionen mit gleicher Signatur). */

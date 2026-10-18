@@ -263,6 +263,32 @@ describe('planWorkoutExercise', () => {
     expect(plan.heavierReferenceKg).toBe(11);
   });
 
+  it('Live-Anpassung (4b): Zustands-Vorgabe ersetzt nextLoad(); ohne Vorgabe unverändert (Gratis)', () => {
+    const entries = [entry('goblet-kniebeuge', '2026-10-05', 20, 8)];
+    const override = { weightKg: 18, targetReps: 8, extraSet: false, durationS: null };
+    const free = planWorkoutExercise(
+      goblet,
+      planned('goblet-kniebeuge'),
+      ref,
+      context({ entries }),
+    );
+    const other = planWorkoutExercise(
+      goblet,
+      planned('goblet-kniebeuge'),
+      ref,
+      context({ entries, stateOverrides: new Map([['liegestuetz', override]]) }),
+    );
+    expect(other).toEqual(free);
+    const adjusted = planWorkoutExercise(
+      goblet,
+      planned('goblet-kniebeuge'),
+      ref,
+      context({ entries, stateOverrides: new Map([['goblet-kniebeuge', override]]) }),
+    );
+    expect(adjusted.state).toEqual(override);
+    expect(adjusted.prescription).toMatchObject({ weightKg: 18, targetReps: 8 });
+  });
+
   it('nach einer geschafften Einheit: +1 Wiederholung; Erholungswoche ×0,9 ohne Schritt', () => {
     const entries = [entry('goblet-kniebeuge', '2026-10-05', 20, 8)];
     const plan = planWorkoutExercise(

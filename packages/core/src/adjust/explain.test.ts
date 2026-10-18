@@ -1,37 +1,29 @@
 import { describe, expect, it } from 'vitest';
 
 import { ADJUSTMENT_STEP_MAX_KCAL, LIVE_ADJUSTMENT } from '../constants';
-import { findTextRuleHits } from '../content/text-rules';
 import { clampCalorieAdjustment } from '../nutrition/limits';
-import { ADJUST_HINTS_DE, ADJUST_TEXTS_DE, explainAdjustment, renderExplanation } from './explain';
+import {
+  ADJUSTMENT_HINT_CODES,
+  EXPLAIN_KEYS,
+  explainAdjustment,
+  renderExplanation,
+} from './explain';
 import { liveEntriesFromRows, liveSessionLogsFromRows } from './inputs';
 import { explainParamsSchema, stateOverrideSchema } from './schemas';
 import { ADJUSTMENT_RULES } from './types';
 
-/** Begriffe über Körper und Gesundheit – in Erklärungen verboten (nur Aussagen über das Training). */
-const FORBIDDEN = [
-  'krankheit',
-  'schmerz',
-  'verletz',
-  'gesund',
-  'körper',
-  'gewicht verlier',
-  'abnehm',
-  'arzt',
-  'zyklus',
-];
-
 describe('Erklärungen (Plan 5.5)', () => {
-  it('jede Regel aus adjustment_rule (auch reservierte) hat einen Text', () => {
-    for (const rule of ADJUSTMENT_RULES) expect(ADJUST_TEXTS_DE[rule]).toBeTruthy();
-  });
-
-  it('kein Text enthält verbotene Wörter (Textregeln Ü6 und Körper-/Gesundheitsbegriffe)', () => {
-    for (const text of [...Object.values(ADJUST_TEXTS_DE), ...Object.values(ADJUST_HINTS_DE)]) {
-      expect(findTextRuleHits(text)).toEqual([]);
-      for (const word of FORBIDDEN)
-        expect(text.toLowerCase().includes(word), `${word}: ${text}`).toBe(false);
-    }
+  // Die deutschen Bausteine liegen seit Etappe D nur in der App (apps/mobile/src/i18n/de-adjust.ts); dort prüft
+  // live-adjust-texts.test.ts, dass jeder Schlüssel einen Text hat und kein Text verbotene Wörter enthält.
+  it('jede Regel aus adjustment_rule (auch reservierte) hat einen Schlüssel; Hinweis-Codes vollständig', () => {
+    for (const rule of ADJUSTMENT_RULES) expect(EXPLAIN_KEYS).toContain(rule);
+    expect(new Set(EXPLAIN_KEYS).size).toBe(EXPLAIN_KEYS.length);
+    expect([...ADJUSTMENT_HINT_CODES].sort()).toEqual([
+      'deload_soon',
+      'rest_this_week',
+      'shorter_sessions',
+      'weekly_limit_reached',
+    ]);
   });
 
   it('Satz mit Übungsnamen aus der Bibliothek, deutschen Zahlen und Datum', () => {
@@ -45,16 +37,23 @@ describe('Erklärungen (Plan 5.5)', () => {
       stateBefore: null,
       stateAfter: null,
     });
-    expect(
-      renderExplanation(key, params, new Map([['bankdruecken-langhantel', 'Bankdrücken']])),
-    ).toBe('Bankdrücken war zweimal deutlich zu schwer – nächstes Mal 56,25 kg statt 62,5 kg.');
-    const fewer = renderExplanation('fewer_days', { done: 5, planned: 9, days: 2 }, new Map());
-    expect(fewer).toBe(
-      'Du hast in den letzten 3 Wochen 5 von 9 Einheiten geschafft. Möchtest du auf 2 Tage umstellen?',
-    );
+    expect(key).toBe('load_reduce');
     expect(
       renderExplanation(
-        'volume_reduce',
+        '{exercise}: {weight_after} kg statt {weight_before} kg.',
+        params,
+        new Map([['bankdruecken-langhantel', 'Bankdrücken']]),
+      ),
+    ).toBe('Bankdrücken: 56,25 kg statt 62,5 kg.');
+    const fewer = renderExplanation(
+      '{done} von {planned}, {days} Tage, {unbekannt}.',
+      { done: 5, planned: 9, days: 2 },
+      new Map(),
+    );
+    expect(fewer).toBe('5 von 9, 2 Tage, .');
+    expect(
+      renderExplanation(
+        'Woche ab {week_start}, {sets_reduction} Satz weniger',
         { week_start: '2026-10-19', sets_reduction: 1 },
         new Map(),
       ),

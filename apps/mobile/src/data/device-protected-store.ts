@@ -29,6 +29,7 @@ export function createDeviceProtectedStores(): ProtectedStores {
     logCache: createDeviceProtectedStore('logCache'),
     nutritionCache: createDeviceProtectedStore('nutritionCache'),
     nutritionQueue: createDeviceProtectedStore('nutritionQueue'),
+    liveAdjust: createDeviceProtectedStore('liveAdjust'),
   };
 }
 

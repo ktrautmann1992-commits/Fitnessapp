@@ -5,6 +5,7 @@
  * Feste Daten (nicht „heute“), damit die Tabelle stabil bleibt. Keine echten Nutzerdaten.
  */
 import {
+  ADJUST_EXPLAIN_DE,
   type AdjustmentProposal,
   applyPlanChange,
   computeLiveAdjustments,
@@ -235,7 +236,7 @@ function asStored(p: AdjustmentProposal, createdAt: string): StoredAdjustment {
 function explanation(p: AdjustmentProposal, library: PlanLibrary): string {
   const names = new Map([...library.exercises.values()].map((e) => [e.id, e.name_de] as const));
   const { key, params } = explainAdjustment(p);
-  return renderExplanation(key, params, names);
+  return renderExplanation(ADJUST_EXPLAIN_DE[key], params, names);
 }
 
 const RULE_DE: Record<string, string> = {

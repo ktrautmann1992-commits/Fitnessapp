@@ -29,6 +29,9 @@ import {
   profilesFor,
   rescheduleSession,
   type RescheduleResult,
+  restoreTemporaryChanges,
+  type StoredAdjustment,
+  trailingLoadWeeks,
   type SavePlanSession,
   scheduleFromSlots,
   toAppendBlockPayload,
@@ -219,6 +222,11 @@ export function startGroupOf(active: ActivePlan, birthDate: string) {
  * Folgeblock (Abschnitt 5.10) aus dem SCHNAPPSCHUSS des Plans plus den AKTUELLEN Sicherheitsregeln. Die
  * Startgruppe beim Erstellen kommt ausschließlich aus planStartGroup() (nach dem Neuladen gibt es keine
  * safety_rules). Einheiten vor heute entfallen (die Datenbank nimmt sie nicht an). null = nichts anzuhängen.
+ *
+ * Live-Anpassung (Phase 4b, docs/PLAN-PHASE-4B.md 5.2 Punkt 5 und 5.4): Mit Anpassungen des Plans zählt
+ * `carriedLoadWeeks = trailingLoadWeeks()` die Belastungswochen nach einer vorgezogenen Erholungswoche aus dem
+ * TATSÄCHLICHEN Plan, danach setzt restoreTemporaryChanges() vorübergehende Kraft-Reduktionen für die Basis zurück.
+ * Ohne Anpassungen (Gratis) bleibt der Folgeblock byte-gleich.
  */
 export function nextBlockFromRows(
   rows: UserRows,
@@ -226,6 +234,7 @@ export function nextBlockFromRows(
   rules: PlanSafetyRules,
   library: PlanLibrary,
   today: string,
+  adjustments: readonly StoredAdjustment[] = [],
 ): SavePlanSession[] | null {
   const snapshot = planSnapshot(active.plan);
   if (!snapshot || !rows.profile || active.sessions.length === 0) return null;
@@ -239,7 +248,11 @@ export function nextBlockFromRows(
       ).size,
     0,
   );
-  const sessions = nextPlanBlock(active.sessions, {
+  const live = adjustments.length > 0;
+  // Reihenfolge verbindlich (Plan 5.2 Punkt 5): erst zählen, dann zurücksetzen.
+  const carried = live ? trailingLoadWeeks(active.sessions) : 0;
+  const base = live ? restoreTemporaryChanges(active.sessions, adjustments) : active.sessions;
+  const sessions = nextPlanBlock(base, {
     schedule: snapshot.schedule,
     loadWeeks: loadWeeksBeforeDeload(snapshot.experienceLevel, rules.cautious),
     rules,
@@ -254,6 +267,7 @@ export function nextBlockFromRows(
     previousStartGroup: startGroupOf(active, rows.profile.birth_date),
     // Körpergewicht-Vorlage: beim Kürzen bleibt die letzte Rumpf-Übung (wie beim Erstellen, Engine-Version 3).
     protectLastCore: isBodyweightTemplateId(library, active.plan.template_id),
+    ...(live ? { carriedLoadWeeks: carried } : {}),
   });
   const upcoming = dropPastSessions(sessions, today);
   return upcoming.length > 0 ? toAppendBlockPayload(upcoming) : null;

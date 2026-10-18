@@ -974,6 +974,42 @@ einfügen. Plan dazu: `docs/PLAN-DASHBOARD.md`.
    sind vom Gerät gelöscht (neu anmelden mit Code holt sie wieder).
 6. **E-Mail-Adresse ändern** gibt es noch nicht (vorgemerkt, `docs/PLAN-DASHBOARD.md` Abschnitt 5).
 
+## Teil 7n – Live-Anpassung des Plans testen (Phase 4b, Etappe D, Testmodus, 18.10.2026)
+Die Live-Anpassung ist später **Premium**. Im Testmodus schaltet ihr sie mit **„Premium simulieren (nur Test)“** ein –
+die App rechnet die Regeln dann nach jedem gespeicherten Training auf dem Handy, **ohne KI**. Mit Konto (Supabase) gibt
+es den Schalter nicht; dort kommt die Live-Anpassung erst mit den Etappen B und C (Prüfung auf dem Server).
+
+Getestet mit **Chrome am iPhone** (Vorschau-Link aus dem Pull Request), am besten in einem **Inkognito-Tab**: Chrome →
+unten rechts **⋯** → **Neuer Inkognito-Tab**. Wichtig: Im Browser bleiben die Anpassungen nur, **solange der Tab offen
+ist** (geschützter Speicher) – Tab schließen = Anpassungen weg, der Plan ist dann wieder wie vorher.
+
+1. Vorschau-Link öffnen → **„Los geht's“** → Geburtsdatum **15.05.1990** → **Testmodus starten** → Zustimmen →
+   Einwilligung Gesundheitsdaten **erteilen** → Gesundheits-Check **alles „Nein“** → Erfahrung beliebig → Ziel
+   **Muskelaufbau** → **Mo, Mi, Fr Kraft im Studio** → Ernährung beliebig → **„Zum Plan“**.
+2. **Einstellungen** → Abschnitt **„Live-Anpassung (Premium)“** → Haken **„Premium simulieren (nur Test)“** setzen.
+   **Prüfen:** Der Abschnitt steht nur im Testmodus. Darunter **„Warum hat sich mein Plan geändert?“** → „Noch keine
+   Anpassungen – dein Plan läuft wie geplant.“
+3. **Gewicht senken:** Die Regeln greifen erst ab der **zweiten Planwoche** (die Einstiegswoche zählt nicht). Trainiert
+   (bzw. über **Kalender → + Einheit** nachgetragen) eine Übung **zweimal hintereinander** mit deutlich weniger
+   Wiederholungen als das untere Ziel (z. B. Ziel 12, eingetragen 8/8/7) → **Training speichern**. **Prüfen:** Bei der
+   nächsten Einheit mit dieser Übung steht **„↻ angepasst“** mit „Übung: 20 kg → 18 kg“, die Vorgabe ist leichter →
+   **„Warum?“** → Erklärsatz „… war zweimal deutlich zu schwer – nächstes Mal 18 kg statt 20 kg.“ → **„Rückgängig“** →
+   „Anpassung zurückgenommen“, die Vorgabe ist wieder wie vorher.
+4. **Sehr anstrengende Woche:** drei Kraft-Einheiten einer Woche mit **Belastung 9** beenden → in der Woche danach
+   steht „↻ angepasst – Ein Satz weniger“, jede Übung hat einen Satz weniger. Passiert das **zwei Wochen in Folge**, wird
+   die **Erholungswoche vorgezogen** („Erholungswoche: ab … statt ab …“); die frühere Erholungswoche ist dann eine
+   normale Woche mit denselben Sätzen wie die Woche davor.
+5. **Weniger Trainingstage:** Schafft ihr über drei Wochen deutlich weniger als 70 % der Einheiten, erscheint auf
+   **Heute** oben die Karte **„Weniger Trainingstage?“** → **Ansehen** → wegfallenden Tag wählen → **Umstellen** →
+   „Umgestellt: Dein neuer Plan hat 2 Trainingstage.“ Euer Verlauf bleibt vollständig. **„Nein danke“** lässt alles,
+   wie es ist.
+6. Haken **„Premium simulieren“** wieder entfernen → bisherige Anpassungen bleiben sichtbar (mit Hinweis), neue kommen
+   nicht dazu.
+7. **Einstellungen → Einwilligungen → Gesundheitsdaten widerrufen** → die Anpassungen sind gelöscht.
+
+Die Fälle über mehrere Wochen (Schritte 4 und 5, Stillstand → Übung getauscht, abgelaufener Vorschlag) prüft der
+automatische Test `e2e/live-adjust.spec.ts` mit festem Datum – im Pull Request unter **Checks → ci** grün.
+
 ## Teil 7e – Neue Rezepte per KI erzeugen (Phase 5, Etappe N8, Gemini offline)
 
 Die KI (Google Gemini) schreibt **nur Entwürfe** – offline über die Batch-API, nie in der App. Nutzerdaten gehen nie an

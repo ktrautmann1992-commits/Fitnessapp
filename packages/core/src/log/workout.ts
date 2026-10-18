@@ -252,6 +252,11 @@ export interface PlanExerciseContext {
   readonly swap: WorkoutSwapOptions;
   /** V9 nach der Präferenz-Schicht (Wächter S3); fehlt es, zählt V9 die gespeicherten Übungen. */
   readonly weekPreferenceLayer?: WeekPreferenceLayer;
+  /**
+   * Phase 4b (Premium, docs/PLAN-PHASE-4B.md 5.4): wirksame Zustands-Vorgaben je Übung (activeStateOverride() für den
+   * NEUESTEN zählenden Eintrag). Fehlt die Übung bzw. das Feld → Gratis-Ergebnis, unverändert.
+   */
+  readonly stateOverrides?: ReadonlyMap<string, ExerciseProgress>;
 }
 
 export interface WorkoutSwapOptions {
@@ -307,6 +312,9 @@ export function planWorkoutExercise(
     // Ein gespeichertes Startgewicht über der absoluten Schwelle wurde beim Eintragen bestätigt (die App speichert
     // es erst nach der Bestätigung).
     startWeightConfirmed: startWeight !== null,
+    ...(ctx.stateOverrides?.has(exercise.id)
+      ? { stateOverride: ctx.stateOverrides.get(exercise.id) ?? null }
+      : {}),
   });
   const prescription = prescriptionForDisplay(
     {

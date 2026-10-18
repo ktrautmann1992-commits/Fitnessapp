@@ -110,4 +110,11 @@ export const STORAGE_KEYS = {
   nutritionCacheKey: 'fitnessapp.nutrition-cache-key.v1',
   nutritionQueue: 'fitnessapp.nutrition-queue.v1',
   nutritionQueueKey: 'fitnessapp.nutrition-queue-key.v1',
+  /**
+   * Live-Anpassung (Phase 4b, Etappe D, docs/PLAN-PHASE-4B.md 8.3): Anpassungen des Plans (plan_adjustments) – aus
+   * Gesundheits-Plänen mittelbar Gesundheitsdaten, deshalb NUR im eigenen geschützten Speicher (App: AES-256-GCM,
+   * Schlüssel im Keychain/Keystore; Browser: nur sessionStorage). Beim Widerruf health_data geleert.
+   */
+  liveAdjust: 'fitnessapp.live-adjust.v1',
+  liveAdjustKey: 'fitnessapp.live-adjust-key.v1',
 } as const;
