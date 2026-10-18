@@ -1,5 +1,10 @@
 import type { ConfigContext, ExpoConfig } from 'expo/config';
-import { AndroidConfig, type ConfigPlugin, withAndroidManifest } from 'expo/config-plugins';
+import {
+  AndroidConfig,
+  type ConfigPlugin,
+  withAndroidManifest,
+  withEntitlementsPlist,
+} from 'expo/config-plugins';
 
 // Name der App (Anzeige unter dem Icon, im Browser-Tab) – gemeinsam mit packages/ui/src/brand.ts ändern.
 // slug = Slug des Expo-Projekts „AlphaFive“ auf expo.dev (muss genau dazu passen, docs/SETUP.md Teil D).
@@ -53,8 +58,22 @@ const withoutGoogleCodeScannerDownload: ConfigPlugin = (cfg) =>
     return mod;
   });
 
+/**
+ * Lokale Benachrichtigungen (Etappe E, docs/PLAN-PHASE-4B.md 7): Das Plugin expo-notifications trägt auf iOS immer
+ * `aps-environment` (Push-Fähigkeit) in die Entitlements ein. Wir planen nur LOKALE Benachrichtigungen – kein
+ * Push-Token, kein Apple-Push-Dienst. Lokale Benachrichtigungen brauchen die Push-Fähigkeit nicht; ohne den Eintrag
+ * schaltet EAS sie für die App-ID auch nicht ein (Datensparsamkeit, Gründer-Frage 8).
+ */
+export const PUSH_ENTITLEMENT = 'aps-environment';
+
+const withoutPushEntitlement: ConfigPlugin = (cfg) =>
+  withEntitlementsPlist(cfg, (mod) => {
+    delete mod.modResults[PUSH_ENTITLEMENT];
+    return mod;
+  });
+
 export default ({ config }: ConfigContext): ExpoConfig =>
-  withoutGoogleCodeScannerDownload(appConfig(config));
+  withoutPushEntitlement(withoutGoogleCodeScannerDownload(appConfig(config)));
 
 const appConfig = (config: ConfigContext['config']): ExpoConfig => ({
   ...config,
@@ -146,6 +165,14 @@ const appConfig = (config: ConfigContext['config']): ExpoConfig => ({
     // Speicher-Berechtigung; SYSTEM_ALERT_WINDOW (Einblendung über anderen Apps) kommt nur aus der Vorlage.
     // Bleiben: INTERNET (Supabase), VIBRATE (Pausentimer, expo-haptics) und CAMERA (Strichcode scannen, expo-camera,
     // Etappe E4b). Kein RECORD_AUDIO (Plugin-Option recordAudioAndroid: false).
+    // Aus der Bibliothek expo-notifications (Etappe E, erst beim Bauen eingemischt): POST_NOTIFICATIONS (Android 13+,
+    // die App fragt erst nach „Ja“ bzw. Einschalten) und RECEIVE_BOOT_COMPLETED (geplante Erinnerungen überstehen einen
+    // Neustart). Keine Berechtigung für exakte Wecker (SCHEDULE_EXACT_ALARM/USE_EXACT_ALARM): Android plant dann
+    // „ungefähr“ (setAndAllowWhileIdle) – das Pausenende kann im Energiesparen später kommen (Hinweis in der App).
+    // Außerdem bringt die Bibliothek einen Firebase-Messaging-Dienst (ExpoFirebaseMessagingService) und ggf. dessen
+    // Berechtigungen mit. Ohne google-services.json wird Firebase nie gestartet, es gibt kein Push-Token. Bewusst KEIN
+    // Plugin, das den Dienst aus dem Manifest entfernt (ohne echten Build nicht prüfbar). Vor der ersten Play-Einreichung
+    // die fertige APK mit `aapt dump permissions` prüfen (docs/PLAN-PHASE-4B.md Umsetzungsstand E).
     blockedPermissions: [
       'android.permission.READ_EXTERNAL_STORAGE',
       'android.permission.WRITE_EXTERNAL_STORAGE',
@@ -178,6 +205,17 @@ const appConfig = (config: ConfigContext['config']): ExpoConfig => ({
         microphonePermission: false,
         recordAudioAndroid: false,
         barcodeScannerEnabled: true,
+      },
+    ],
+    // Lokale Benachrichtigungen (Etappe E): Mess-Erinnerung und Pausenende, nur auf dem Gerät geplant. Android-Kanal
+    // „Erinnerungen“ legt die App selbst an (lib/notification-driver.native.ts). Symbol: weißes Logo auf transparent
+    // (wie das Android-13-Symbol). Keine Hintergrund-Push-Nachrichten. Neues natives Modul → neuer EAS-Build nötig.
+    [
+      'expo-notifications',
+      {
+        icon: './assets/images/android-icon-monochrome.png',
+        sounds: [],
+        enableBackgroundRemoteNotifications: false,
       },
     ],
     [

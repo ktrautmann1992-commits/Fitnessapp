@@ -1587,6 +1587,43 @@ export const de = {
   more: deMore,
   konto: deKonto,
   consentsPage: deConsentsPage,
+  /**
+   * Lokale Benachrichtigungen (docs/PLAN-PHASE-4B.md Abschnitt 7, Etappe E). Die Texte der Benachrichtigungen sind fest
+   * und enthalten NIE Werte (keine Maße, kein Gewicht – DSGVO Art. 9, Sperrbildschirm).
+   */
+  notifications: {
+    measurementTitle: 'Alpha5: Zeit für dein Mess-Update',
+    restEndTitle: 'Pause vorbei – nächster Satz',
+    why: 'Wir erinnern dich ans Messen und ans Pausenende – nichts sonst.',
+    settingsTitle: 'Benachrichtigungen',
+    settingsText:
+      'Nur auf diesem Gerät geplant – ohne Server und ohne Werte im Text. Standardmäßig aus.',
+    measurement: 'Mess-Erinnerung als Benachrichtigung (08:00 Uhr am Fälligkeitstag)',
+    restEnd: 'Pausenende melden, wenn das Handy gesperrt ist',
+    measurementNeedsConsent:
+      'Die Mess-Erinnerung gibt es nur mit deiner Einwilligung in Gesundheitsdaten (ohne sie kannst du nicht messen).',
+    measurementReminderOff:
+      'Die Mess-Erinnerung unten ist aus – dann kommt auch keine Benachrichtigung.',
+    denied:
+      'Benachrichtigungen sind für Alpha5 nicht erlaubt. Du kannst sie in den System-Einstellungen deines Handys unter „Apps“ → „Alpha5“ → „Benachrichtigungen“ erlauben. Der Hinweis auf „Heute“ bleibt so oder so.',
+    openSystemSettings: 'System-Einstellungen öffnen',
+    web: 'Im Browser gibt es keine Benachrichtigungen. Die fällige Messung siehst du auf „Heute“, die Pause in der Pausen-Leiste. In der App (Android/iPhone) kannst du Benachrichtigungen hier einschalten.',
+    offerTitle: 'Erinnerung zum Messen?',
+    offerText: (days: number) =>
+      `Sollen wir dich ${days === 1 ? 'morgen' : `in ${days} Tagen`} per Benachrichtigung ans nächste Messen erinnern?`,
+    androidDelay:
+      'Auf manchen Android-Handys kann die Meldung etwas später kommen (Energiesparen) – die Pausen-Leiste in der App zeigt immer die genaue Zeit.',
+    offerYes: 'Ja, erinnern',
+    offerNo: 'Nein danke',
+    restOfferTitle: 'Pausenende melden?',
+    restOfferText:
+      'Pausenende melden, wenn das Handy gesperrt ist? Du bekommst dann eine Benachrichtigung, sobald die Pause vorbei ist.',
+    restOfferYes: 'Ja, melden',
+    restOfferNo: 'Nein danke',
+    testButton: 'Test: Mess-Erinnerung in 2 Minuten',
+    testScheduled: 'Test-Erinnerung in 2 Minuten geplant – jetzt den Bildschirm sperren.',
+    testNeedsPermission: 'Bitte zuerst die Mess-Erinnerung als Benachrichtigung einschalten.',
+  },
 } as const;
 
 /** Typ, den jede Übersetzung erfüllen muss (Texte als string, Funktionen mit gleicher Signatur). */

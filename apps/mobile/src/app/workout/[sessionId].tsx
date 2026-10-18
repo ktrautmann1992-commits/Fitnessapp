@@ -24,6 +24,7 @@ import { useEffect, useMemo, useState } from 'react';
 import { Platform, StyleSheet, View } from 'react-native';
 
 import { IntervalTimer } from '@/components/competition';
+import { RestEndNotificationOffer } from '@/components/notifications';
 import { MedicalNotice } from '@/components/plan';
 import { ConfirmDialog, Screen } from '@/components/screen';
 import { focusTestId, SwapDialog, type SwapDecision, SwapFeedback } from '@/components/swap';
@@ -596,6 +597,8 @@ export default function WorkoutScreen() {
       {isEndurance ? null : <Body muted>{progressText}</Body>}
       {isFree && !isEndurance ? <Body muted>{t.backfill.freeSkipHint}</Body> : null}
       {active?.plan.medical_notice ? <MedicalNotice /> : null}
+      {/* Etappe E: einmalige Frage beim ersten Start des Trainingsmodus (nur App, nur mit Pausen). */}
+      {isEndurance ? null : <RestEndNotificationOffer />}
       {Platform.OS === 'web' ? (
         <Notice tone="info" testID="workout-tab-hint">
           {t.workout.tabHint}
