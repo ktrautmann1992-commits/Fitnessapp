@@ -252,12 +252,13 @@ test('Export: Hinweis vor dem Herunterladen, Datei mit Tagebuch, Konto und Einwi
   // (Etappe N10; in export_my_data ab N7) + food_log_entries, food_log_favorites (Etappe E1) + custom_meals,
   // custom_meal_items (Etappe E2) + competitions (Phase 10 WP3) + ai_usage, beta_entitlements,
   // admin_actions (Etappe E3) + tracked_routes (Phase 10 S1) + user_food_products, food_product_lookup_counts
-  // (Etappe E4a) + weight_goals (Ziele Z3).
-  expect(Object.keys(file.data)).toHaveLength(39);
+  // (Etappe E4a) + weight_goals (Ziele Z3) + plan_adjustments (Live-Anpassung, Phase 4b Etappe D; in export_my_data ab B).
+  expect(Object.keys(file.data)).toHaveLength(40);
   expect(Object.keys(file.data)).toEqual(
     expect.arrayContaining([
       'user_food_products',
       'food_product_lookup_counts',
+      'plan_adjustments',
       'weight_goals',
       'tracked_routes',
       'competitions',

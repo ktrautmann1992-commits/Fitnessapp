@@ -41,6 +41,7 @@ import {
   type OlderLogsPage,
 } from './backend';
 import { DraftStore } from './draft-store';
+import { requestLiveAdjustment } from './live-adjust-remote';
 import { createRemoteFoodPhoto } from './food-photo-remote';
 import { createRemoteFoodProduct } from './food-product-remote';
 import { applyUserFoodProductDelete, checkUserFoodProductSave } from './user-food-product-rows';
@@ -853,6 +854,12 @@ export interface SupabaseBackendOptions {
   webUrl?: string | null;
   /** Nur Tests: Ersatz für fetch (Foto-Route). */
   fetchFn?: typeof fetch;
+  /**
+   * Live-Anpassung (Phase 4b, 8.2 Schritt 4) – nur VORBEREITET: erst mit den Etappen B und C (Datenbank, Route) einschalten.
+   * Bis dahin fehlt die Option, im Supabase-Modus wird nichts gerechnet und nichts aufgerufen. Ohne `webUrl` nie ein
+   * Aufruf. Der Schalter „Premium simulieren“ gehört nur zum Testmodus (Wächter K2) und hat hier kein Feld.
+   */
+  liveAdjustServer?: boolean;
 }
 
 /** Inhalt des geschützten Tagebuch-Zwischenspeichers (4.6). */
@@ -1100,6 +1107,14 @@ export function createSupabaseBackend(options: SupabaseBackendOptions): Backend 
       if (error && isTransientError(error)) return false;
     } catch {
       // Nur Statuspflege – beim nächsten Laden erneut.
+    }
+    // 8.2 Schritt 4: Live-Anpassung anstoßen (still, nie blockierend; danach lädt loadRows neu = Schritt 5).
+    if (options.liveAdjustServer === true) {
+      await requestLiveAdjustment({
+        client,
+        webUrl: options.webUrl ?? null,
+        fetchFn: options.fetchFn ?? ((url, init) => fetch(url, init)),
+      });
     }
     return logResult === 'done' && nutritionDone;
   }

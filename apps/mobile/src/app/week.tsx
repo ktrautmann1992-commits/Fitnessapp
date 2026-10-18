@@ -232,6 +232,15 @@ export default function WeekScreen() {
         onPress={() => router.push('/uebungen' as Href)}
         testID="week-glossary"
       />
+      {/* Live-Anpassung (Phase 4b, 8.1 Punkt 2): nur, wenn es sie gibt (Testmodus mit „Premium simulieren“). */}
+      {app.liveAdjust.available && app.liveAdjust.adjustments.length > 0 ? (
+        <Button
+          label={t.adjust.open}
+          variant="secondary"
+          onPress={() => router.push('/plan/changes' as Href)}
+          testID="week-adjust-changes"
+        />
+      ) : null}
     </Screen>
   );
 }

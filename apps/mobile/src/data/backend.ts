@@ -22,6 +22,7 @@ import type {
 } from '@fitnessapp/core';
 
 import type { FavoriteChange } from './food-log-rows';
+import type { LocalAdjustment } from './live-adjust';
 import type { LogRows } from './log-rows';
 import type { ConsentVersions } from './mapping';
 import type {
@@ -59,6 +60,11 @@ export interface SnapshotResult {
    * Deckel auch ohne Netz greifen (die Gesundheits-Checks selbst liegen nie auf dem Gerät).
    */
   cachedSafetyRules?: PlanSafetyRules | null;
+  /**
+   * Nur Testmodus (Live-Anpassung, Etappe D): Schalter und Anpassungen aus DEMSELBEN Ladeschritt wie `rows` (Wächter D
+   * M4) – die Anzeige und der Folgeblock sehen nie Zeilen ohne die passenden Anpassungen.
+   */
+  liveAdjust?: { simulatePremium: boolean; adjustments: LocalAdjustment[] };
 }
 
 /** Einheit verschieben oder streichen (nur Datum und Status, wie der Datenbank-Trigger es erlaubt). */
@@ -196,8 +202,32 @@ export interface FoodPhotoStatus {
   readonly mock: boolean;
 }
 
+/**
+ * Live-Anpassung im TESTMODUS (Phase 4b, Etappe D, docs/PLAN-PHASE-4B.md 8.1 Punkt 5, Wächter K2): Nur das lokale
+ * Backend hat dieses Feld – der Supabase-Modus kennt weder Schalter noch Anpassungen, bis Etappe B/C die
+ * Premium-Prüfung auf dem Server bauen (dort ist die Live-Anpassung bis dahin ausgeblendet). Alle Vorgänge laufen
+ * nacheinander mit den übrigen Schreibvorgängen des Testmodus.
+ */
+export interface LiveAdjustTestMode {
+  /** Schalter „Premium simulieren (nur Test)“ – lebt ausschließlich im Gerätespeicher des Testmodus (localDb). */
+  simulatePremium(): Promise<boolean>;
+  /** Einschalten rechnet sofort (wie „manual_recheck“); Ausschalten behält die bisherigen Anpassungen. */
+  setSimulatePremium(enabled: boolean): Promise<void>;
+  /** Anpassungen des Kontos aus dem geschützten Speicher (alle Pläne, alle Status). */
+  adjustments(): Promise<LocalAdjustment[]>;
+  /** Rückgängig (nur wenn canRevert() es erlaubt, 4.6 Punkt 5); sonst `not_allowed` ohne Änderung. */
+  revert(id: string): Promise<'reverted' | 'not_allowed'>;
+  /**
+   * Vorschlag annehmen bzw. ablehnen (confirm_plan_adjustment): nur offen und nicht abgelaufen, sonst `expired`. Beim
+   * Annehmen von „weniger Trainingstage“ erstellt die App vorher den neuen Plan (8.1 Punkt 3).
+   */
+  decide(id: string, accept: boolean): Promise<'confirmed' | 'declined' | 'expired'>;
+}
+
 export interface Backend {
   readonly mode: BackendMode;
+  /** Nur Testmodus (Wächter K2): Live-Anpassung mit „Premium simulieren“. Supabase-Modus: fehlt. */
+  readonly liveAdjust?: LiveAdjustTestMode;
   /**
    * Ernährung (Phase 5): Testmodus ab Etappe N4, Supabase-Modus seit Etappe N7 Teil 2 (Essensplan/Einkaufsliste aus der
    * Datenbank ohne Planband, Bestand aus der Datenbank, Tagebuch und eigene Gerichte mit verschlüsselter Warteschlange).

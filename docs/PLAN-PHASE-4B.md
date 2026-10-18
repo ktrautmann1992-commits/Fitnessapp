@@ -1,6 +1,6 @@
 # Plan Phase 4b – Live-Anpassung des Plans (Premium, ohne KI) und Benachrichtigungen
 
-**Status:** Freigegeben am 09.10.2026 – die Gründer übernehmen bei allen offenen Fragen (Abschnitt 13) die Empfehlung. Wächter: freigabefähig (2 Runden). **Etappe A0 und Etappe A (Core: Regel-Engine und Anwendung, 18.10.2026) umgesetzt**, siehe Abschnitt 10 „Umsetzungsstand A“. Nächste Etappe: D (Testmodus), dann E; B und C später mit Supabase.
+**Status:** Freigegeben am 09.10.2026 – die Gründer übernehmen bei allen offenen Fragen (Abschnitt 13) die Empfehlung. Wächter: freigabefähig (2 Runden). **Etappe A0 und Etappe A (Core: Regel-Engine und Anwendung, 18.10.2026) umgesetzt**, siehe Abschnitt 10 „Umsetzungsstand A“. **Etappe D (App, Testmodus, 18.10.2026) umgesetzt**, siehe „Umsetzungsstand D“. Nächste Etappe: E; B und C später mit Supabase.
 
 **Nachtrag 10.10.2026 (Phase 5, N0):** A0 ist umgesetzt. Reihenfolge laut Gründer-Entscheidung 09.10.2026: A0 → Übungs-Glossar und Übungstausch (erledigt bis T2) → **Phase 5** (`docs/PLAN-PHASE-5.md`) → 4b weiter mit A → D (Testmodus) → E; B und C später. Weil Phase 5 vorher kommt, legt **Phase 5** `packages/core/src/nutrition/limits.ts` an (inkl. `clampCalorieAdjustment()`); 4b ruft nur auf. Die Kalorien-Stellen in diesem Plan (K1, 2.1, 2.2, 5.2, 5.6, 5.8, Etappe A, Abschnitt 11, Frage 3, Risiko 11) sind an Phase 5 (S10, R2-S5) angeglichen.
 
@@ -795,7 +795,7 @@ Offline gilt die zuletzt geladene Anpassung weiter, und die Anzeige rechnet mit 
   `invariants.ts` (`checkWeekInvariants()`), `plan-changes.ts` (Vorher/Nachher-Bausteine und `applyPlanChange()`),
   `rules/` (R1/R2 `state-rules.ts`, R3 `plan-rules.ts`, R4 `stagnation.ts`, R5 `fewer-days.ts`), `engine.ts`
   (`computeLiveAdjustments()`), `apply.ts` (`activeStateOverride()`, `restoreTemporaryChanges()`,
-  `applyAdjustmentsToPlan()`, `adjustmentMarks()`, `canRevert()`), `explain.ts` (feste Textbausteine `ADJUST_TEXTS_DE`,
+  `applyAdjustmentsToPlan()`, `adjustmentMarks()`, `canRevert()`), `explain.ts` (feste Textbausteine, seit Etappe D als `ADJUST_EXPLAIN_DE` in `texts-de.ts`,
   `explainAdjustment()`, `renderExplanation()`), `schemas.ts` (Zod 5.7), `inputs.ts` (`LiveAdjustmentInputs`,
   `liveAdjustmentInputsSchema`, Zeilen-Abbildung `liveEntriesFromRows()`/`liveSessionLogsFromRows()` auf Basis von A0),
   `fingerprint.ts` (`inputFingerprint()`, FNV-1a über kanonisches JSON).
@@ -872,8 +872,9 @@ Offline gilt die zuletzt geladene Anpassung weiter, und die Anzeige rechnet mit 
     weniger geschafft, dann der spätere Tag). Ein offener Vorschlag gilt 14 Tage als offen, danach als abgelaufen.
 14. **Wochen-Deckel:** gezählt werden alle automatischen Anpassungen, die in dieser Kalenderwoche angelegt wurden (auch
     zurückgenommene); Reihenfolge bei Überlauf: Senken, Erholungswoche, Sätze −1, Ausdauer, Tausch, Steigern.
-15. **Erklärtexte** liegen bis Etappe D als `ADJUST_TEXTS_DE`/`ADJUST_HINTS_DE` in Core (für die CI-Zusammenfassung);
-    D übernimmt sie nach `apps/mobile/src/i18n/de.ts` (Bereich `adjust`). Reservierte Regeln haben schon einen Baustein.
+15. **Erklärtexte** liegen als `ADJUST_EXPLAIN_DE`/`ADJUST_HINTS_DE` in Core (`adjust/texts-de.ts`, seit Etappe D unter
+    diesem Namen; fachliche Texte zur Logik, auch für die CI-Zusammenfassung); `apps/mobile/src/i18n/de.ts` bindet sie
+    im Bereich `adjust` ein (nicht doppelt). Reservierte Regeln haben schon einen Baustein.
 16. **Invarianten im Engine-Pfad (Wächter-Auflage 5):** `violationsAfter()` und die Schlussprüfung zählen nur NEU
     entstehende bzw. verschlimmerte Verstöße (`newInvariantViolations`, Vergleich vorher/nachher als Multimenge je Regel,
     Messgröße, Woche, Einheit und Stelle; verschlimmert = Überschreitung `value − limit` wächst, auch bei sinkender
@@ -1003,6 +1004,88 @@ grün, weil sich Schlüssel und Multimenge gegenseitig absichern).
     - ohne „Premium simulieren“ passiert nichts;
   - Screenshots hell und dunkel; alle Zustände aus 8.4;
   - `docs/` aktualisiert.
+
+### Umsetzungsstand D (18.10.2026)
+
+**Was gilt (Testmodus; keine Migration, keine Server-Änderung):**
+
+- **Rechnen im Testmodus** (Gründer-Entscheidung 09.10.2026): `local-backend.ts` rechnet `computeLiveAdjustments()`
+  nach jedem gespeicherten Training und beim Laden (= Sync, NACH `close_missed_sessions`) – **nur** mit „Premium
+  simulieren (nur Test)“. Der Schalter lebt ausschließlich in `localDb` (`simulatePremium`) und im Feld
+  `Backend.liveAdjust`, das nur das lokale Backend hat (Wächter K2; `supabase-backend.ts` hat weder Feld noch Funktion,
+  Test). Einschalten rechnet sofort (wie `manual_recheck`), Ausschalten behält die Anpassungen (Hinweis 8.4).
+- **Speicher (8.3):** Anpassungen nur im eigenen geschützten Speicher `liveAdjust` (App AES-256-GCM, Browser
+  `sessionStorage`), Zod-geprüft beim Lesen, je Konto. Gelöscht bei Widerruf `health_data`, Abmelden, Konto löschen,
+  Testdaten löschen. Der gespeicherte Plan in `localDb` bleibt unverändert; `overlayPlanAdjustments()` legt die
+  wirksamen Plan-Änderungen über JEDEN Stand, den das Testmodus-Backend herausgibt, und die Prüfungen (save_session_log,
+  Verschieben, Präferenzen) sehen denselben Plan wie die Anzeige – so wie `apply_plan_adjustments` (Etappe B) die
+  Plan-Spalten schreibt.
+- **Bildschirme (8.1):** Kennzeichen „↻ angepasst“ mit Zeilen (Bildschirmleser: „Gewicht angepasst von 20 auf 18
+  Kilogramm“) und „Warum?“ auf „Heute“ und im Trainingsmodus; Karte „Weniger Trainingstage?“ oben auf „Heute“;
+  `app/plan/changes.tsx` (Liste nach Wochen, Erklärsatz, vorher → nachher, „Rückgängig“ nur mit `canRevert()`);
+  `app/plan/weniger-tage.tsx` (Zahlen, wegfallender Tag änderbar, „Umstellen“ = `flush` → Trainingstage ohne den Tag
+  speichern → neuer Plan → bestätigen; „Nein danke“); Einstellungen „Live-Anpassung (Premium)“ nur im Testmodus; Link
+  auch unter „Woche“. Zustände 8.4: Laden, leer, „Neu berechnen gescheitert“ still, Vorschlag abgelaufen, Rückgängig
+  nicht mehr möglich, Premium beendet (Testmodus: Schalter aus), Offline (nur Supabase-Modus erreichbar).
+- **Zustands-Vorgaben:** `PlanExerciseContext.stateOverrides` (Core, `planWorkoutExercise` → `progressFromLogs`
+  `stateOverride`) aus `activeStateOverride()`; ohne Anpassung byte-gleich.
+- **Folgeblock:** `nextBlockFromRows(…, adjustments)` zählt `carriedLoadWeeks = trailingLoadWeeks()` aus dem
+  tatsächlichen Plan und setzt danach `restoreTemporaryChanges()` zurück; ohne Anpassungen unverändert.
+- **Supabase-Modus nur vorbereitet:** `live-adjust-remote.ts` (`live_adjustment_status()` → `POST /api/live-anpassung`
+  mit Login-Token, still) hängt als Schritt 4 nach `close_missed_sessions` in `flushAll()`, aber nur mit der Option
+  `liveAdjustServer` (in `create-backend.ts` NICHT gesetzt, bis B/C) und nie ohne `EXPO_PUBLIC_WEB_URL`.
+- **Texte:** Erklärsätze und Hinweise als fachliche Texte in Core (`adjust/texts-de.ts`, `ADJUST_EXPLAIN_DE`/
+  `ADJUST_HINTS_DE`, Test auf verbotene Wörter); `apps/mobile/src/i18n/de-adjust.ts` bindet sie unter `t.adjust` ein
+  (nicht doppelt), die CI-Zusammenfassung nutzt sie aus Core. `renderExplanation(template, …)` setzt die Parameter ein.
+
+**Präzisierungen gegenüber dem Plan:**
+
+1. **Widerruf leert ALLE Anpassungen** im Testmodus (nicht nur `from_health_plan`/`uses_body_data`, 4.7) – sichere
+   Richtung, wie im Plan 8.3 empfohlen („Speicher, der beim Widerruf geleert wird“). Etappe B löscht serverseitig wie 4.7.
+2. **Bestätigungs-Reihenfolge R5:** erst neuer Plan, dann `decide(id, true)` (wie 8.1 Punkt 3). Ein Vorschlag eines
+   ersetzten Plans wird erst beim nächsten Rechnen `expired`, damit die Bestätigung direkt nach dem Planwechsel gilt.
+   „Tage egal“-Pläne: der letzte Eintrag fällt weg (`scheduleWithFewerDays`, Core).
+3. **Neue Core-Bausteine (für App und später die Route):** `progressionContextsForPlan()` (Kontext je Übung aus der
+   nächsten geplanten Einheit, Ort aus `sessionLocations`, sonst Studio) und `scheduleWithFewerDays()`/
+   `droppableWeekdays()`; je mit Tests.
+4. **Erklärsätze in Core** (Wächter D M3): `ADJUST_TEXTS_DE` heißt jetzt `ADJUST_EXPLAIN_DE` und liegt in
+   `adjust/texts-de.ts`; die App re-exportiert, keine Paketgrenze wird überschritten.
+5. **Browser:** Anpassungen nur, solange der Tab offen ist (`sessionStorage`); danach gilt wieder der ursprüngliche
+   Plan (nie eine Änderung ohne Erklärung). Hinweis in den Einstellungen und in HANDY-ANLEITUNG Teil 7n.
+6. **PDF-Kennzeichen** (optional) nicht umgesetzt – das PDF zeigt den angepassten Plan ohne Markierung und ohne Gründe.
+7. **Hinweise der Engine** (`deload_soon`, `rest_this_week` …) haben Texte, werden in D aber noch nicht angezeigt (sie
+   sind nicht gespeichert); Anzeige mit Etappe B/C.
+
+**Wächter-Auflagen D (eingearbeitet, 18.10.2026):**
+
+- **M1 „Umstellen“ nie halb:** `data/live-adjust-fewer-days.ts` `applyFewerDays()` – Vorschlag offen, nicht abgelaufen
+  und passend zur aktuellen Tageszahl (`change_before.days`), neuer Plan zuerst auf einer KOPIE der Zeilen mit den neuen
+  Trainingstagen erzeugt und mit Zod geprüft; erst dann Warteschlange senden, Tage speichern, Plan speichern (scheitert
+  das, werden die alten Tage zurückgeschrieben); Erfolg nur bei `confirmed`. Wettkampfpläne werden nicht umgestellt.
+- **M2:** Lesefehler des geschützten Speichers → leere Liste bzw. ursprünglicher Plan; Löschen scheitert nie hörbar.
+- **M4:** `loadRows()` des Testmodus liefert Schalter und Anpassungen im selben Schritt wie die Zeilen; der Folgeblock
+  hängt nur an, wenn der Stand der Anpassungen sicher ist (`followUpAdjustments()` → null bei „loading“/„error“).
+- **N1** Halteübung „etwas kürzer halten“; **N3** Export im Testmodus mit `plan_adjustments` (in `export_my_data()` mit
+  B, `PENDING_DB_EXPORT_TABLES`); **N6** vorher → nachher „je Übung 1 Satz weniger“ bzw. Minuten je Einheit; **N7**
+  Datum und Woche aus `createdAt` in der Zeitzone des Geräts, Wochen-Überschrift „Angepasst in der Woche ab …“.
+- **N4 (bekannte Testmodus-Grenze):** Im Browser leben die Anpassungen in `sessionStorage` (Tab zu = weg, Plan wieder wie
+  vorher; danach rechnet die App die Lage neu, auch zurückgenommene Anpassungen können wiederkommen). In der App sind sie
+  verschlüsselt dauerhaft.
+
+**Tests:** Core 5.063 → 5.069 (`contexts.test.ts`, `fewer-days-schedule.test.ts`, `workout.test.ts` +1; Text-Tests
+nach `apps/mobile`), App 819 → 831 (`data/live-adjust.test.ts` 9: Gratis unverändert, nur geschützter Speicher,
+Rückgängig, Widerruf leert, Folgeblock nach `deload_forward` ≤ L in Folge (mit Gegenprobe ohne `carriedLoadWeeks` > L),
+K2, Reihenfolge nach dem Sync, ohne `EXPO_PUBLIC_WEB_URL` kein Aufruf; `i18n/live-adjust-texts.test.ts` 3), Content
+unverändert grün. Playwright `e2e/live-adjust.spec.ts` (7, festes Datum): ohne Schalter nichts; zweimal verfehlt →
+18 kg statt 20 kg mit Erklärung und Rückgängig; Belastung 9 → Satz weniger, zwei Wochen → Erholungswoche ab 26.10.
+statt 09.11., Woche 09.11. mit der Dosierung von 02.11.; Stillstand → Face Pulls getauscht, heutiger Entwurf bleibt und
+lässt sich speichern; zu wenig Einheiten → Vorschlag, „Umstellen“ (Mittwoch statt vorgeschlagen Freitag) → neuer Plan
+Mo/Fr, Tagebuch bleibt; Ablehnen, Schalter aus, abgelaufener Vorschlag. Screenshots hell/dunkel nur mit
+`SCREENSHOT_DIR` (wie `screenshots.spec.ts`).
+
+**Gegenproben (Regel gebrochen → rot → zurückgesetzt):** Schalter im Supabase-Backend (`liveAdjust` vorhanden) → 1 rot;
+Rechnen ohne „Premium simulieren“ → 1 rot; Widerruf leert den Speicher nicht → 1 rot; Folgeblock ohne
+`carriedLoadWeeks` → Gegenprobe im Test selbst (> L).
 
 **E – Benachrichtigungen (gratis)**
 

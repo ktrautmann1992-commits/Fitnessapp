@@ -291,7 +291,7 @@ Datenbank noch App.
   Körpergewichtspläne) erfüllt sie ohne Anpassung (Regressionstest).
 - **Folgeblock:** `restoreTemporaryChanges()` setzt vorübergehend gekürzte Kraft-Sätze vor `baseSessionsFromBlock()`
   zurück; der Ausdauer-Bezug bleibt die tatsächlich geplante letzte Belastungswoche (vorsichtig).
-- **Erklärungen** aus festen Bausteinen (`ADJUST_TEXTS_DE`), nur Zahlen, Daten und Übungsnamen, keine Aussagen über
+- **Erklärungen** aus festen Bausteinen (`ADJUST_EXPLAIN_DE`/`ADJUST_HINTS_DE` in `packages/core/src/adjust/texts-de.ts`), nur Zahlen, Daten und Übungsnamen, keine Aussagen über
   Körper oder Gesundheit. **Kalorien** (`calorie_adjust`) bleiben reserviert; Schutzgrenzen nur in `clampCalorieTarget`.
 
 ## 5. Tagesansicht & Trainingstagebuch

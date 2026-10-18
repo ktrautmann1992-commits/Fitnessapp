@@ -31,6 +31,7 @@ export const PROTECTED_STORE_NAMES = [
   'logCache',
   'nutritionCache',
   'nutritionQueue',
+  'liveAdjust',
 ] as const;
 export type ProtectedStoreName = (typeof PROTECTED_STORE_NAMES)[number];
 
@@ -52,6 +53,8 @@ export const PROTECTED_STORE_KEYS: Record<
     dataKey: STORAGE_KEYS.nutritionQueue,
     keyName: STORAGE_KEYS.nutritionQueueKey,
   },
+  // Etappe 4b D: Anpassungen des Plans (Live-Anpassung, 8.3).
+  liveAdjust: { dataKey: STORAGE_KEYS.liveAdjust, keyName: STORAGE_KEYS.liveAdjustKey },
 };
 
 export type ProtectedStores = Record<ProtectedStoreName, ProtectedStore>;
@@ -67,6 +70,7 @@ export function createMemoryProtectedStores(): Record<
     logCache: createMemoryProtectedStore(),
     nutritionCache: createMemoryProtectedStore(),
     nutritionQueue: createMemoryProtectedStore(),
+    liveAdjust: createMemoryProtectedStore(),
   };
 }
 

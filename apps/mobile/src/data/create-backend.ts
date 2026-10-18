@@ -80,5 +80,7 @@ export function createBackend(): Backend {
     now,
     newId,
     draftStore: stores.workoutDraft,
+    // Live-Anpassung (Phase 4b, Etappe D, 8.3): Anpassungen nur im eigenen geschützten Speicher.
+    liveAdjustStore: stores.liveAdjust,
   });
 }
