@@ -33,8 +33,8 @@ afterEach(() => {
   }
 });
 
-function repo(): TempRepo {
-  const created = createTempRepo();
+function repo(options: Parameters<typeof createTempRepo>[0] = {}): TempRepo {
+  const created = createTempRepo(options);
   repos.push(created);
   return created;
 }
@@ -112,6 +112,16 @@ describe('Einspiel-Paket', () => {
     const pkg = buildSeedPackage(validateRepository({ cwd: r.root }).result);
     expect(pkg.exercises.map((exercise) => exercise.id)).toEqual(['goblet-kniebeuge']);
     expect(pkg.plan_templates).toEqual([]);
+  });
+
+  it('Startbestand komplett freigegeben: ohne roten Fehler, alle Übungen und Vorlagen im Paket', () => {
+    const r = repo({ contentStatus: 'published' });
+    const { result } = validateRepository({ cwd: r.root });
+    expect(result.issues.filter((issue) => issue.severity === 'error')).toEqual([]);
+    const pkg = buildSeedPackage(result);
+    expect(pkg.exercises.map((e) => e.id)).toEqual(result.exercises.map((e) => e.id));
+    expect(pkg.exercises).toHaveLength(80);
+    expect(pkg.plan_templates).toHaveLength(42);
   });
 
   it('berechnet die Dauer je Einheit mit estimateSessionMinutes', () => {
