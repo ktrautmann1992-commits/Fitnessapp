@@ -326,6 +326,8 @@ Zeitplan vor/nach Training/vor dem Schlafen, Ausschluss bei Gegenanzeigen mit Hi
 ärztliche Rücksprache, affiliate_links mit Kennzeichnung "Anzeige". Empfehlungslogik darf
 Affiliate-Daten nicht lesen. Klick-Tracking ohne Gesundheitsdaten.
 ```
+**Stand 18.10.2026:** Plan: `docs/PLAN-PHASE-6.md`, Entwurf zur Freigabe (Etappen SU0–SU6, Gründer-Fragen SU-G1 bis
+SU-G19; Wächter Runde 1 „mit Auflagen“ eingearbeitet). Umsetzung erst nach Freigabe.
 
 ## Phase 7 – Abos & Gratisversion
 ```
