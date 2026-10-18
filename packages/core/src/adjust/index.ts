@@ -1,0 +1,17 @@
+/**
+ * Live-Anpassung des Trainingsplans (Phase 4b, Premium, OHNE KI) – docs/PLAN-PHASE-4B.md Abschnitt 5.
+ * `trailingLoadWeeks()` (Belastungswochen am Planende für `carriedLoadWeeks`) kommt aus plan/periodization.ts.
+ */
+export * from './types';
+export * from './weeks';
+export * from './invariants';
+export * from './plan-changes';
+export * from './inputs';
+export * from './schemas';
+export * from './fingerprint';
+export * from './engine';
+export * from './apply';
+export * from './explain';
+export { latestCountingSessionLogId } from './rules/common';
+export { clearlyMissed, fastIncreaseExcluded, reducedState } from './rules/state-rules';
+export { stagnationAlternative, stagnationStart } from './rules/stagnation';

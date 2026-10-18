@@ -165,6 +165,11 @@ export interface NextLoadOptions {
   readonly allowExtraSet?: boolean;
   /** Erholungswoche: keine Steigerung. */
   readonly isDeload?: boolean;
+  /**
+   * Phase 4b, Regel R1 `fast_increase` (Premium, docs/PLAN-PHASE-4B.md 5.2): Einheiten in Folge für die nächste
+   * Stufe (1 statt LOAD_PROGRESSION.consecutiveSessionsForStep). Weggelassen → Gratis-Regel (2), unverändert.
+   */
+  readonly consecutiveSessionsForStep?: number;
 }
 
 /** Hat die Einheit das Ziel erreicht (alle Sätze, RPE ≤ Ziel oder ohne Angabe)? */
@@ -202,11 +207,9 @@ export function nextLoad(
 ): ProgressionStep {
   if (options.isDeload || history.length === 0) return { kind: 'keep' };
   const last = history.at(-1) as PerformedSession;
+  const inRow = options.consecutiveSessionsForStep ?? LOAD_PROGRESSION.consecutiveSessionsForStep;
   const twoInRow =
-    history.length >= LOAD_PROGRESSION.consecutiveSessionsForStep &&
-    history
-      .slice(-LOAD_PROGRESSION.consecutiveSessionsForStep)
-      .every((h) => sessionAchieved(state, h));
+    history.length >= inRow && history.slice(-inRow).every((h) => sessionAchieved(state, h));
 
   if (state.loadType === 'time') {
     const duration = state.durationS ?? TEMPLATE_DOSAGE_LIMITS.durationS.min;
@@ -237,7 +240,7 @@ export function nextLoad(
     TEMPLATE_DOSAGE_LIMITS.reps.max,
   );
   const fullVersion = history
-    .slice(-LOAD_PROGRESSION.consecutiveSessionsForStep)
+    .slice(-inRow)
     .some((h) => (h.plannedSets ?? state.sets) >= state.templateSets);
   const setsCap = Math.min(
     state.templateSets + LOAD_PROGRESSION.extraSets,
