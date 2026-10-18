@@ -383,6 +383,14 @@ nach docs/KONZEPT.md Abschnitt 10 mit MapLibre/OpenStreetMap, Standortsuche, Fil
 **Ergänzung aus den Erweiterungen Teil 2:** Wettkampftage im Essensplan mit den *Wettkampftag*-Rezepten aus
 `alpha5-rezepte.json` (Carb-Loading nur ab ca. 90 Min. Wettkampfdauer, immer innerhalb der Schutzgrenzen über
 `clampCalorieTarget`), Ratgeber „Wettkampf-Ernährung“ verlinken – Etappe W1 in `docs/PLAN-PHASE-5.md` Abschnitt 19.
+**Stand 18.10.2026: W1 (Wettkampf-Ernährung) umgesetzt, keine Migration** – Core `packages/core/src/nutrition/competition.ts`
+(Tage Carb-Loading/Vorabend/Renntag/Nach dem Rennen, erwartete Dauer, Carb-Loading nur ab 90 min mit 1–2 Tagen,
+Renn-Energie als Eingabe, Gel-/Trinkplan als feste Bausteine), Einbindung in `nutritionTargetsForWeek` (Wettkampfwoche
+ohne Defizit, Abnehmziel ruht, Makro-Verschiebung nur innerhalb des Tagesziels, Schutzgrenzen unverändert in
+`clampCalorieTarget`), Rezepte `wettkampf` nur an Wettkampftagen, Neuplanung `competition_changed`; App: Karte in
+Ernährung → Tag mit Zeitleiste am Renntag, Markierung in der Woche, Satz in „Dein Tag“, Link aus „Mein Wettkampf“,
+Playwright `competition-nutrition.spec.ts`. Notizen in `docs/PLAN-PHASE-10.md` Abschnitt 10 (Umsetzungsstand W1),
+Handy-Test in `docs/HANDY-ANLEITUNG.md` Teil 7w. Fachprüfung Ernährung vor Livegang offen.
 
 ### Erweiterung Phase 10 – Strecken aufzeichnen
 ```

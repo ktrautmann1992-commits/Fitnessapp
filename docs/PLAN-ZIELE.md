@@ -980,4 +980,6 @@ Abweichungen und Präzisierungen:
 (Nebenziel Ausdauer, Wettkampfwoche ohne Defizit), `PROMPTS.md`, `HANDY-ANLEITUNG.md` Teil 7z3.
 
 **Offen / Vormerkungen:** EAS-Build Android (aus Z4); Wächter Z2 K-8 unverändert; Wettkampf beim Nebenziel Ausdauer
-(Phase 10).
+(Phase 10). **Erledigt mit W1 (18.10.2026):** In der Wettkampfwoche (Rennwoche, Carb-Loading-Tage davor, Tag danach) plant
+die Ernährung ohne Defizit, ein konkretes Abnehmziel ruht (`paused`), danach kein Aufholen (`docs/PLAN-PHASE-10.md`
+Abschnitt 10).

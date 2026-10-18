@@ -258,14 +258,29 @@ export function daySafetyKey(day: NutritionDayTargets): string {
   if (day.weightGoalStatus !== null) {
     parts.push(`${WEIGHT_GOAL_KEY_PREFIX}${day.weightGoalStatus}:${day.weightGoalKey ?? '-'}`);
   }
+  // Etappe W1: Wettkampftage (Carb-Loading, Vorabend, Renntag, Nach dem Rennen) planen neu, sobald ein Wettkampf
+  // dazukommt, sich verschiebt oder abgesagt wird (Grund `competition_changed`). Ohne Wettkampf unverändert.
+  if (day.competition !== undefined && day.competition.kind !== 'normal') {
+    parts.push(`${COMPETITION_KEY_PREFIX}${day.competition.kind}`);
+  }
   return parts.join('|');
 }
+
+export const COMPETITION_KEY_PREFIX = 'wk=';
 
 /** Schlüssel ohne den Teil zum Abnehmziel (Deckel-Vergleich). */
 export function daySafetyKeyWithoutWeightGoal(key: string): string {
   return key
     .split('|')
     .filter((part) => !part.startsWith(WEIGHT_GOAL_KEY_PREFIX))
+    .join('|');
+}
+
+/** Schlüssel ohne den Wettkampf-Teil (Etappe W1). */
+export function daySafetyKeyWithoutCompetition(key: string): string {
+  return key
+    .split('|')
+    .filter((part) => !part.startsWith(COMPETITION_KEY_PREFIX))
     .join('|');
 }
 
@@ -466,6 +481,8 @@ interface ScoreArgs {
   } | null;
   /** Portionen, die der Kandidat abdeckt (Meal-Prep-Kochtermin: alle Tage), für den Reste-Score. */
   readonly portions: number;
+  /** Wettkampftag (W1): Rezepte der Kategorie `wettkampf` bekommen den Bonus wie passende Trainings-Tags. */
+  readonly competitionDay: boolean;
 }
 
 /** Geschätzte Gramm je Lebensmittel für die geplanten Portionen (Reste-Score, 19.7 N13). */
@@ -527,6 +544,8 @@ function scoreCandidate(
   ) {
     score += W.roleTag;
   }
+  // Wettkampf (W1): nur Reihenfolge – ob das Rezept passt, entscheidet der Filter (`slotFitReasons`).
+  if (args.competitionDay && categories.includes('wettkampf')) score += W.roleTag;
   score -= W.repeat * (state.uses.get(c.recipe.id)?.length ?? 0);
   const protein = mainProteinFood(c, foods);
   if (protein !== null && state.mainProteins.get(args.dayIndex - 1)?.has(protein) === true) {
@@ -983,6 +1002,7 @@ function slotCandidates(
   const exclude =
     options.excludePregnancy ?? ctx.targets.recipeExclusions.includes('pregnancy_caution');
   const dates = options.ratingDates ?? [ctx.targets.date];
+  const competitionDay = isCompetitionMealDay(ctx.targets);
   return ctx.pool.allowed(exclude).filter(
     (c) =>
       (options.ignoreRatings === true ||
@@ -991,8 +1011,19 @@ function slotCandidates(
         slot,
         mealPrep: options.mealPrep ?? false,
         maxMinutes: options.maxMinutes ?? null,
+        // Wettkampf-Rezepte nur an genau diesem einen Tag (vorgekochte Plätze decken mehrere Tage ab → nie).
+        competitionDay: competitionDay && options.ratingDates === undefined,
       }).length === 0,
   );
+}
+
+/**
+ * Tag, an dem Rezepte der Kategorie `wettkampf` in den Plan dürfen (Etappe W1, Plan 10 Abschnitt 10 und 19.7 W1
+ * „Wettkampftag-Rezepte im Plan der Tage davor“): Carb-Loading-Tage, Vorabend und Renntag.
+ */
+export function isCompetitionMealDay(day: Pick<NutritionDayTargets, 'competition'>): boolean {
+  const kind = day.competition?.kind;
+  return kind === 'carb_loading' || kind === 'race_eve' || kind === 'race_day';
 }
 
 function scoreArgs(
@@ -1021,6 +1052,7 @@ function scoreArgs(
         ? null
         : { available: tracker.available(ctx.targets.date), packageSizes: tracker.packageSizes },
     portions,
+    competitionDay: isCompetitionMealDay(ctx.targets),
   };
 }
 

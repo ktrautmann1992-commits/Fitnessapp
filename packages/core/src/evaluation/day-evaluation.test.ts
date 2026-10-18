@@ -169,6 +169,29 @@ describe('Essen', () => {
     expect(dayEvaluation(input()).notices).not.toContain('training_day');
   });
 
+  it('Carb-Loading-Tag (W1): „Heute mehr Kohlenhydrate – so geplant“ nur mit Zahlen und Tagesziel', () => {
+    // Halbmarathon am Mittwoch (Einsteiger, 165 min): Montag Carb-Loading, Dienstag Vorabend.
+    const race = {
+      competitions: [
+        {
+          id: 'c1',
+          status: 'planned' as const,
+          discipline: 'half_marathon' as const,
+          raceDate: addDays(MONDAY, 2),
+        },
+      ],
+    };
+    const targets = targetsFor(race);
+    expect(targets.competition?.kind).toBe('carb_loading');
+    expect(dayEvaluation(input({ targets })).notices).toContain('carb_loading_day');
+    expect(dayEvaluation(input({ targets, showNumbers: false })).notices).not.toContain(
+      'carb_loading_day',
+    );
+    const noConsent = targetsFor({ ...race, healthDataConsent: false });
+    expect(dayEvaluation(input({ targets: noConsent })).notices).not.toContain('carb_loading_day');
+    expect(dayEvaluation(input()).notices).not.toContain('carb_loading_day');
+  });
+
   it('ohne Einwilligung bzw. Tagebuch nicht verfügbar: Einträge werden ignoriert', () => {
     const r = dayEvaluation(input({ foodLog: { available: false, entries: [entry(2000)] } }));
     expect(r.food).toMatchObject({ available: false, entryCount: 0 });

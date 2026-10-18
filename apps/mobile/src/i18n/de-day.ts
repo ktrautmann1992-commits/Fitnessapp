@@ -58,6 +58,8 @@ export const deDay = {
   /** Außerhalb des Nachtrage-Fensters (14 Tage) – kein Versprechen „nachtragen“ (Wächter A2 H3). */
   entriesBasis: 'Laut deinen Einträgen.',
   trainingDay: 'Trainingstag – dein Ziel ist an diesem Tag höher.',
+  /** Carb-Loading-Tag (Phase 10, Etappe W1): angepasstes Tagesziel, ruhig formuliert. */
+  carbLoadingDay: 'Heute mehr Kohlenhydrate – so geplant.',
   noEntries: 'Nichts eingetragen.',
   noValues: 'Deine Einträge haben keine Kalorienangabe – dafür gibt es keinen Balken.',
   noTarget: 'Ohne Tagesziel gibt es keinen Kalorienbalken.',

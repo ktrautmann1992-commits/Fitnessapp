@@ -40,6 +40,8 @@ import {
   type NutritionLibrary,
   type NutritionSessionInput,
   nutritionTargetsForWeek,
+  type NutritionCompetitionInput,
+  nutritionCompetitionSchema,
   type NutritionWeekTargets,
   startOfIsoWeek,
 } from '@fitnessapp/core';
@@ -117,6 +119,35 @@ function planSessionsForWeek(
 }
 
 /**
+ * Wettkämpfe für die Ernährung (Phase 10, Etappe W1): alle Zeilen aus `competitions` (abgesagte rechnet core als
+ * „normal“). Nur Felder, die die Ernährung braucht – kein Plan-Bezug, kein Gesundheitsdatum. Eine unlesbare Zeile wird
+ * weggelassen (dann gibt es für sie keine Wettkampftage; Schutzgrenzen gelten ohnehin immer).
+ */
+export function nutritionCompetitionsFromRows(rows: UserRows): NutritionCompetitionInput[] {
+  return rows.competitions.flatMap((row): NutritionCompetitionInput[] => {
+    const parsed = nutritionCompetitionSchema.safeParse({
+      id: row.id,
+      status: row.status,
+      discipline: row.discipline,
+      raceDate: row.race_date,
+      targetTimeS: row.goal_kind === 'time' ? row.target_time_s : null,
+      reference:
+        row.reference_discipline !== null &&
+        row.reference_time_s !== null &&
+        row.reference_date !== null
+          ? {
+              discipline: row.reference_discipline,
+              timeS: row.reference_time_s,
+              date: row.reference_date,
+            }
+          : null,
+      resultSessionLogId: row.result_session_log_id,
+    });
+    return parsed.success ? [parsed.data] : [];
+  });
+}
+
+/**
  * Eingaben der Engine; null = Angaben unvollständig (Profil, Ziel oder Erfahrung fehlt). Körperdaten-Datum nach der
  * Regel aus core (`measuredOnForEngine`, Wächter N1 K3).
  */
@@ -161,6 +192,8 @@ export function nutritionInputsFromRows(
     trainingTime: rows.nutritionSetup?.training_time ?? null,
     mealsPerDay: rows.nutritionPrefs?.meals_per_day ?? 3,
     sessions: sessionsForWeek(rows, weekStart),
+    // Etappe W1: Wettkampftage (Carb-Loading, Renntag …) – ohne Wettkampf genau wie vorher.
+    competitions: nutritionCompetitionsFromRows(rows),
   };
 }
 

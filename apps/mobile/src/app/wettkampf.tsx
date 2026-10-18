@@ -914,6 +914,17 @@ export default function CompetitionScreen() {
                   testID="competition-open-result"
                 />
               ) : null}
+              {/* Etappe W1: Wettkampf-Ernährung (Carb-Loading, Renntag mit Zeitleiste) – geht auch offline. */}
+              {app.backend.supportsNutrition &&
+              (countdown.kind === 'upcoming' || countdown.kind === 'race_day') ? (
+                <Button
+                  label={t.competitionNutrition.openRaceDay}
+                  accessibilityLabel={t.competitionNutrition.openRaceDayA11y}
+                  variant="secondary"
+                  onPress={() => router.push(`/ernaehrung?tag=${shownEntry.row.race_date}` as Href)}
+                  testID="competition-open-nutrition"
+                />
+              ) : null}
               <Button
                 label={C.edit}
                 variant="secondary"

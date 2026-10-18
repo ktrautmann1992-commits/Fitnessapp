@@ -3,7 +3,8 @@
 **Status:** Freigegeben (16.10.2026). Gründer-Entscheidungen W-G1 bis W-G16 (Abschnitt 19): **alle wie empfohlen**
 (ausgefülltes Entscheidungs-PDF vom 16.10.2026). Umsetzung je Etappe als Pull Request mit Wächter-Prüfung.
 **Stand 16.10.2026:** WP1 (Core) als PR #83, WP2 (Core) als PR #84, WP3 (Datenmodell) als PR #86, WP4 (App: Wettkampf,
-Plan-Ansicht, Countdown, Intervall-Timer) im Anschluss umgesetzt (Abschnitte 7 und 8). A1a, A1b, E1, A2, E2, A3 (PLAN-AUSWERTUNG) sind gemergt; Expo-Projekt „AlphaFive“ wird verbunden
+Plan-Ansicht, Countdown, Intervall-Timer) im Anschluss umgesetzt (Abschnitte 7 und 8). **18.10.2026:** W1
+(Wettkampf-Ernährung) umgesetzt, keine Migration (Abschnitt 10, Umsetzungsstand W1). A1a, A1b, E1, A2, E2, A3 (PLAN-AUSWERTUNG) sind gemergt; Expo-Projekt „AlphaFive“ wird verbunden
 (PR #79). Damit können WP1/WP2 (Core) sofort starten, WP3/WP4 danach, S0 sobald die erste APK läuft.
 
 **Grundlage:** `CLAUDE.md`, `docs/PROMPTS.md` (Phase 10, „Erweiterung Phase 10 – Strecken aufzeichnen“, Phase 8,
@@ -1131,6 +1132,84 @@ Tag zeigt das angepasste Tagesziel mit Satz „Heute mehr Kohlenhydrate – so g
 Fälle unter 18, `maintenance_only`, Fettverlust, `no_targets`, Wettkampf < 90 min (kein Carb-Loading),
 Wettkampf am Montag (Carb-Loading in der Vorwoche), Wettkampf abgesagt (Tage normal); Strukturtest K2 grün.
 **Premium/Gratis:** siehe W-G10.
+
+### Umsetzungsstand W1 (18.10.2026)
+
+**Was gilt (keine Migration, keine Echtzeit-KI; alle Zahlen „VOR LIVEGANG FACHLICH PRÜFEN“):**
+
+- **Konstanten** (`constants.ts`): `CARB_LOADING_DAYS = { min: 1, max: 2 }` (Burke 2011, Thomas 2016) und
+  `COMPETITION_NUTRITION` (Carb-Loading ab 90 min, zwei Tage ab 150 min, Richtwert 8–10 g/kg, Frühstück 2–4 h vorher mit
+  1–4 g/kg, Gel-Stufen < 60 / ≤ 150 / > 150 min mit 30–60 bzw. 60–90 g/h nur für Fortgeschrittene/Leistungssport,
+  Portionen alle 30 min, Trinken 400–800 ml/h, Erholungsmahlzeit 1–2 h danach, vorsichtige Dauer-Schätzung je Distanz
+  und Level; Quellen Jeukendrup 2014, Sawka 2007, Kerksick 2017).
+- **Core** `packages/core/src/nutrition/competition.ts`: `nutritionCompetitionSchema` (Zod, nur Felder für die Ernährung,
+  kein Gesundheitsdatum), `expectedRaceMinutes` (Zielzeit → Referenzzeit mit Riegel, nur Faktor ≤ 4 → Schätzung),
+  `carbLoadingDayCount`, `competitionDays(competitions, weekStart, level)` / `competitionDayFor` (je Tag
+  `carb_loading | race_eve | race_day | post_race | normal`, dazu `carbLoading` und `noDeficit`), `raceDaySession`,
+  `competitionCarbsGPerKg`, `raceFuelingPlan(expectedMinutes, level, { generalOnly, weightKg })` (Stufe, g/h, ml/h,
+  Zeitleiste, feste Hinweis-Codes), `raceBreakfastCarbs`, `competitionGuideId`.
+- **Ernährungs-Engine:** neue optionale Eingabe `competitions` (Standard leer – ohne Wettkampf ist die Ausgabe
+  byte-gleich, `nutrition:examples` und `plan:examples` vor/nach zeichengleich). Je Tag optional `competition`
+  (Art, Disziplin, erwartete Dauer und Quelle, `carbLoading`, `carbsShifted`, `carbLoadingReached`, `noDeficit`,
+  `raceEnergyIncluded`, am Renntag `fueling`). Tage ohne Defizit: Anpassung `max(Anpassung, 0)`, 4b-Versatz an
+  Carb-Loading-Tagen 0 und an den übrigen Tagen ohne Defizit nie negativ; ein aktives Abnehmziel steht dort auf
+  `paused`. Carb-Loading: Makros mit `carbsTargetGPerKg = 8` – Eiweiß unverändert, Fett nur bis 20 %, Rest
+  Kohlenhydrate, sonst `carbLoadingReached: false`. Renntag: geschätzte Renn-Einheit (Laufen, Ersatz-MET) nur als
+  Energie-Eingabe, Deckel `TRAINING_KCAL_DAY_MAX` wie immer; mit Ergebnis-Eintrag zählt nur der Eintrag.
+  `clampCalorieTarget` bleibt die einzige Stelle mit Schutzgrenzen (Strukturtest K2 um `competition.ts` erweitert).
+- **Essensplan:** Rezepte der Kategorie `wettkampf` an Carb-Loading-Tagen, Vorabend und Renntag erlaubt (nie als
+  Ergänzungs-Snack oder vorgekocht) und mit Bonus wie passende Trainings-Tags; sonst weiter ausgeschlossen
+  (`slotFitReasons({ competitionDay })`). Abgleich-Schlüssel mit Teil `wk=<Art>` nur an Wettkampftagen → neuer
+  Neuplanungs-Grund `competition_changed` (neu, verschoben, abgesagt).
+- **Tagesauswertung (A2):** Hinweis `carb_loading_day` („Heute mehr Kohlenhydrate – so geplant.“), nur mit Zahlen.
+- **App:** Karte „Wettkampf-Ernährung“ in Ernährung → Tag (`components/competition-nutrition.tsx`, Texte
+  `i18n/de-competition-nutrition.ts`, Formatierung `lib/competition-nutrition-format.ts`) mit Art („▲ Carb-Loading-Tag“,
+  „◇ Vorabend“, „◆ Renntag“, „○ Nach dem Rennen“, „· Wettkampfwoche“ – Zeichen und Wort), Zeitleiste am Renntag (offline,
+  aus den Tageszielen), Hinweis zur ärztlichen Abklärung (Vorerkrankungen, Schwangerschaft, Medikamente), Link zum
+  Ratgeber, wenn einer lesbar ist. Markierung in Ernährung → Woche, Satz in „Dein Tag“, Knopf „Ernährung zum Renntag“
+  in „Mein Wettkampf“. „Kalorienzahlen anzeigen“ aus → keine kcal und keine Gramm (Milliliter bleiben).
+- **Tests:** Core `competition.test.ts` (53, u. a. Eigenschaftstest über 300 zufällige Personen: Carb-Loading-Tag in
+  [Untergrenze; Obergrenze] auch gegen unabhängige Grenzen, Fett ≥ 20 %, Eiweiß = ohne Verschiebung ≥ Minimum; Fälle unter
+  18, `maintenance_only`, Fettverlust, `no_targets` (ohne Einwilligung, Schwangerschaft), < 90 min, Rennen am Montag,
+  abgesagt, Abnehmziel ruht ohne Aufholen, 4b-Versatz, 300 kg am Deckel, 18. Geburtstag am Renntag, Essensplan nur an
+  Wettkampftagen, Neuplanung), `day-evaluation.test.ts` (+1), `limits.test.ts` (+1, K2). App
+  `competition-nutrition-format.test.ts` (14). Playwright `competition-nutrition.spec.ts`. Gegenproben (Regel gebrochen →
+  rot → zurückgesetzt): Erhalt in der Wettkampfwoche entfernt (4 rot), Carb-Loading erst über 90 min (1), Wettkampf-Rezepte
+  an jedem Tag (1), Renn-Energie trotz Ergebnis (1), Abnehmziel ruht nicht (1), abgesagt zählt (3), 60–90 g/h auch für
+  Einsteiger (1), 4b-Versatz an Carb-Loading-Tagen (1).
+
+**Präzisierungen (vom Plan nicht ausdrücklich festgelegt, vorsichtig gelöst):**
+
+1. **Carb-Loading-Tage = die Tage direkt vor dem Renntag, inkl. Vorabend:** 90–149 min → nur der Vorabend, ab 150 min
+   Vorabend und Tag davor. Der Vorabend heißt auch dann „Vorabend“ (mit Verschiebung).
+2. **„Wettkampfwoche ohne Defizit“ (1.6 Nr. 2)** = Kalenderwoche des Renntags, dazu Carb-Loading-Tage bzw. Vorabend davor
+   (Rennen am Montag) und der Tag danach („Nach dem Rennen“). Frühere Tapering-Wochen bleiben mit dem Ziel des Profils
+   (Gründer-Frage W1-G1). Ein Überschuss (Muskelaufbau) bleibt; 4b-Versatz siehe oben.
+3. **Kein Aufholen:** Das Abnehmziel ruht nur (Status `paused`); danach rechnet es wie ohne Wettkampf (zustandslos, die
+   Anpassung bleibt in [Standard; 0]) – Test „Woche davor und danach gleich“.
+4. **Renn-Energie** mit Ersatz-MET Laufen 7,0 (vorsichtig niedrig) statt eigener Renn-Konstante (W1-G2); sie zählt nicht
+   als „Einheit“ (kein Timing vor/nach dem Training, kein Hinweis „Trainingstag“).
+5. **`no_targets`** (keine Einwilligung, Schwangerschaft): Art des Tages und fester Carb-Loading-Hinweis
+   (`CARB_LOADING_NOTICE_DE`), Gel-Plan nur allgemein (wie unter 18), keine Gramm.
+6. **Eiweiß an Carb-Loading-Tagen unverändert** (nicht abgesenkt) – so ist „Eiweiß ≥ Minimum“ immer erfüllt; das
+   Ziel 8 g/kg wird dadurch seltener erreicht (Hinweis).
+7. **Frühstücks-Gramm** nur mit Körpergewicht und nicht unter 18; Gramm in der App nur mit „Kalorienzahlen anzeigen“.
+8. **Wettkampf-Rezepte:** Der Bestand hat noch keine Rezepte mit Kategorie `wettkampf` (Beispiel-Rezepte auch nicht) –
+   die Regel greift, sobald freigegebene Rezepte sie tragen (Test mit markiertem Fixture-Rezept).
+9. **Kein Wettkampf in wenigen Tagen über die App** (Mindestvorlauf): Handy-Test springt über „Ernährung zum Renntag“
+   in die Zukunft; die Wochenansicht zeigt nur diese/nächste Woche (Playwright legt den Wettkampf direkt im
+   Gerätespeicher an).
+
+**Gründer-Fragen (sichere Voreinstellung gilt, bis ihr anders entscheidet):**
+
+- **W1-G1 – Ohne Defizit auch im ganzen Tapering?** Voreinstellung: nur Rennwoche (+ Carb-Loading-Tage davor, Tag danach).
+  Alternative: alle Tapering-Wochen (Marathon bis 3 Wochen ohne Defizit).
+- **W1-G2 – Renn-Energie:** Voreinstellung: 7,0 MET (Laufen „zügig“, eher zu niedrig). Alternative: eigene, höhere
+  Renn-MET je Distanz (Fachprüfung).
+- **W1-G3 – Premium (W-G10):** Testphase offen; mit Phase 7 Wettkampf-Ernährung im Essensplan Premium, Ratgeber gratis.
+
+**Offen:** Fachprüfung Ernährung (Abschnitt 20 Nr. 6), Rezepte mit Kategorie `wettkampf` freigeben, PDF des Essensplans
+ohne Wettkampf-Markierung (später), Premium-Prüfung mit Phase 7.
 
 ---
 

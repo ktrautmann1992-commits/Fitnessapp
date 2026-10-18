@@ -1263,6 +1263,65 @@ export const CARBS = {
   ],
 } as const;
 
+/**
+ * Wettkampf-Ernährung (docs/PLAN-PHASE-10.md Abschnitt 10, Etappe W1; PLAN-PHASE-5 19.7 W1, 19.8): Anzahl der
+ * Carb-Loading-Tage direkt vor dem Renntag. Quellen: Burke LM et al. (2011), „Carbohydrates for training and
+ * competition“, J Sports Sci 29 Suppl 1:S17–S27 (36–48 h bei Belastungen > 90 min); Thomas DT et al. (2016),
+ * Med Sci Sports Exerc 48(3):543–568. VOR LIVEGANG FACHLICH PRÜFEN.
+ */
+export const CARB_LOADING_DAYS = { min: 1, max: 2 } as const;
+
+/**
+ * Regeln der Wettkampf-Ernährung (W1). Alle Werte VOR LIVEGANG FACHLICH PRÜFEN (Fachprüfung Ernährung, Plan 10
+ * Abschnitt 20 Nr. 6). Die Energie bleibt verbindlich: Alles geht als Eingabe in `nutritionTargetsForWeek`, die
+ * Schutzgrenzen gelten weiter nur in `clampCalorieTarget` (Strukturtest K2).
+ * - `carbLoadingFromMinutes` 90: Carb-Loading nur bei erwarteter Wettkampfdauer ≥ 90 min (Burke 2011; Thomas 2016).
+ * - `twoLoadingDaysFromMinutes` 150: ab dieser erwarteten Dauer `CARB_LOADING_DAYS.max` Tage, darunter `min`
+ *   (PRODUKTENTSCHEIDUNG, Orientierung Burke 2011: 36–48 h).
+ * - `carbLoadingGPerKg` 8–10 g/kg: Ratgeber-Wert; angestrebt wird der untere Wert und nur, soweit die Energie (Erhalt)
+ *   es zulässt – sonst Hinweis (Plan 10, 19.7 W1). Burke 2011 nennt 10–12 g/kg; 8–10 ist die vorsichtigere Spanne
+ *   (PRODUKTENTSCHEIDUNG).
+ * - `raceBreakfast`: Frühstück 2–4 h vor dem Start mit 1–4 g Kohlenhydraten/kg (Thomas 2016: 1–4 g/kg 1–4 h vorher;
+ *   Plan 10: 2–4 h). Gramm nur mit Körpergewicht (Einwilligung) und „Kalorienzahlen anzeigen“.
+ * - `fueling`: Kohlenhydrate während des Rennens nach erwarteter Dauer (Jeukendrup A (2014), „A step towards
+ *   personalized sports nutrition: carbohydrate intake during exercise“, Sports Med 44 Suppl 1:S25–S33): unter
+ *   `noneBelowMinutes` (60) nichts nötig; bis `moderateUpToMinutes` (150) ca. 30–60 g/h; darüber 60–90 g/h NUR für
+ *   `highLevels` (Fortgeschritten/Leistungssport) mit Hinweis „vorher im langen Lauf testen“ – Einsteiger bleiben bei
+ *   30–60 g/h. Portionen alle `intervalMinutes` (30, PRODUKTENTSCHEIDUNG). Unter 18 nur allgemein (keine Gramm).
+ * - `drinkMlPerHour` 400–800 ml: Trinken nach Durst als Richtwert (Thomas 2016; Sawka MN et al. (2007), ACSM Position
+ *   Stand Exercise and Fluid Replacement, Med Sci Sports Exerc 39(2):377–390), mit Hinweis auf Hitze und Salz. Keine
+ *   Marken, kein Koffein im Plan (Supplement-Modul).
+ * - `recoveryMealWithinHours` 1–2: Mahlzeit mit Kohlenhydraten und Eiweiß nach dem Rennen (Kerksick CM et al. (2017),
+ *   J Int Soc Sports Nutr 14:33; Thomas 2016).
+ * - `noDeficitDaysAfterRace` 1: Der Tag nach dem Rennen („Nach dem Rennen“) gehört noch zur Wettkampfzeit ohne Defizit
+ *   (Plan 10 1.6 Nr. 2: Wettkampfwoche ohne Defizit; PRODUKTENTSCHEIDUNG).
+ * - `estimatedMinutes`: vorsichtige Schätzung der Wettkampfdauer je Distanz und Level, wenn weder Zielzeit noch eine
+ *   verlässliche Referenzzeit vorliegen (eher langsame Zeiten üblicher Läuferinnen und Läufer, PRODUKTENTSCHEIDUNG).
+ */
+export const COMPETITION_NUTRITION = {
+  carbLoadingFromMinutes: 90,
+  twoLoadingDaysFromMinutes: 150,
+  carbLoadingGPerKg: { min: 8, max: 10 },
+  raceBreakfast: { hoursBefore: { min: 2, max: 4 }, carbsGPerKg: { min: 1, max: 4 } },
+  fueling: {
+    noneBelowMinutes: 60,
+    moderateUpToMinutes: 150,
+    moderateGPerHour: { min: 30, max: 60 },
+    highGPerHour: { min: 60, max: 90 },
+    highLevels: ['advanced', 'competitive'],
+    intervalMinutes: 30,
+  },
+  drinkMlPerHour: { min: 400, max: 800 },
+  recoveryMealWithinHours: { min: 1, max: 2 },
+  noDeficitDaysAfterRace: 1,
+  estimatedMinutes: {
+    '5k': { beginner: 40, advanced: 30, competitive: 24 },
+    '10k': { beginner: 80, advanced: 60, competitive: 48 },
+    half_marathon: { beginner: 165, advanced: 130, competitive: 105 },
+    marathon: { beginner: 330, advanced: 270, competitive: 225 },
+  },
+} as const;
+
 /** Energie je Gramm (Atwater-Faktoren, auch LMIV Anhang XIV): Eiweiß 4, Kohlenhydrate 4, Fett 9 kcal/g. */
 export const KCAL_PER_GRAM = { protein: 4, carbs: 4, fat: 9 } as const;
 

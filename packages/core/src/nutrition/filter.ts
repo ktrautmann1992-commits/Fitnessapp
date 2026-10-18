@@ -349,11 +349,17 @@ export interface SlotFitOptions {
   readonly maxMinutes?: number | null;
   /** Ergänzungs-Snack: `no_cook` + `snack` nötig (Plan 6.2). */
   readonly fill?: boolean;
+  /**
+   * Tag rund um einen Wettkampf (Carb-Loading, Vorabend, Renntag – Etappe W1, Plan 10 Abschnitt 10): Rezepte der
+   * Kategorie `wettkampf` sind hier erlaubt (sonst weiter ausgeschlossen).
+   */
+  readonly competitionDay?: boolean;
 }
 
 /**
  * Passt ein (für die Person zugelassenes) Rezept an diesen Platz? Wettkampf-Rezepte (Kategorie `wettkampf`)
- * kommen nie automatisch in den Wochenplan (19.6, W1 mit Phase 10).
+ * kommen nur an Wettkampftagen (`competitionDay`, Etappe W1) automatisch in den Wochenplan (19.6), nie als
+ * Ergänzungs-Snack oder vorgekocht.
  */
 export function slotFitReasons(recipe: Recipe, options: SlotFitOptions): SlotExclusionReason[] {
   const reasons: SlotExclusionReason[] = [];
@@ -367,7 +373,12 @@ export function slotFitReasons(recipe: Recipe, options: SlotFitOptions): SlotExc
   ) {
     reasons.push('prep_time');
   }
-  if (recipe.categories?.includes('wettkampf') === true) reasons.push('competition');
+  if (
+    recipe.categories?.includes('wettkampf') === true &&
+    (options.competitionDay !== true || options.fill === true || options.mealPrep === true)
+  ) {
+    reasons.push('competition');
+  }
   if (options.fill === true && !recipe.no_cook) reasons.push('not_no_cook');
   return reasons;
 }
