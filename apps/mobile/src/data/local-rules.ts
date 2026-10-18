@@ -412,7 +412,11 @@ function competitionSessionsAllowed(
       profileLevel: profileLevel.success ? profileLevel.data : null,
       pregnancy: healthScreeningForPlan(rows, ctx.versions)?.flags.includes('pregnancy') ?? false,
       competition: competition
-        ? { discipline: competition.discipline, usesHealthData: competition.uses_health_data }
+        ? {
+            discipline: competition.discipline,
+            distanceM: competition.distance_m,
+            usesHealthData: competition.uses_health_data,
+          }
         : null,
     },
   ).ok;

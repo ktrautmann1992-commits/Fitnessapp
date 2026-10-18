@@ -3,6 +3,7 @@ import { z } from 'zod';
 import { ageInYears, isoDateSchema } from '../age';
 import {
   AGE_PLAN_RULES,
+  COMPETITION_CYCLING,
   COMPETITION_GROUP_RULES,
   COMPETITION_LEAD_WEEKS,
   COMPETITION_LONG_RUN,
@@ -10,6 +11,7 @@ import {
   COMPETITION_PERIODIZATION,
   COMPETITION_REQUIRED_PEAK,
   COMPETITION_START_REFERENCE,
+  COMPETITION_TRIATHLON,
   ENDURANCE_START_RULES,
   MIN_AGE_YEARS,
 } from '../constants';
@@ -17,7 +19,6 @@ import { addDays, daysBetween, startOfIsoWeek } from '../dates';
 import type { ExperienceLevel } from '../enums';
 import {
   type Competition,
-  COMPETITION_DISCIPLINES,
   type CompetitionDiscipline,
   type CompetitionGoal,
   type CompetitionInput,
@@ -25,8 +26,11 @@ import {
   type CompetitionPhase,
   type CompetitionReference,
   competitionWindowSchema,
+  isRunCompetitionDiscipline,
+  isTriathlonCompetitionDiscipline,
   latestRaceDate,
   ownStartAllowedLevel,
+  RUN_COMPETITION_DISCIPLINES,
 } from './competition-schema';
 import {
   type EnduranceReference,
@@ -73,31 +77,54 @@ import {
  * enduranceReferenceFromBlock – nie gestaucht.
  */
 
-/** Mindestvorlauf in Wochen (Tabelle 3.2). */
+/**
+ * Distanzklasse eines Rad-Wettkampfs (COMPETITION_CYCLING.classes, WP5): erste Klasse, deren `maxKm` die Distanz
+ * abdeckt. Ohne Distanz (sollte das Schema nie liefern) vorsichtig die längste Klasse.
+ */
+export function cyclingClass(distanceKm: number | null) {
+  const classes = COMPETITION_CYCLING.classes;
+  const last = classes[classes.length - 1] as (typeof classes)[number];
+  if (distanceKm === null) return last;
+  return classes.find((c) => distanceKm <= c.maxKm) ?? last;
+}
+
+/** Mindestvorlauf in Wochen (Tabelle 3.2; WP5: Triathlon je Distanz, Rad je Distanzklasse). */
 export function minimumLeadWeeks(
   discipline: CompetitionDiscipline,
   level: ExperienceLevel,
+  distanceKm: number | null = null,
 ): number {
+  if (discipline === 'cycling') return cyclingClass(distanceKm).lead[level];
   return COMPETITION_LEAD_WEEKS.minimum[discipline][level];
 }
 
-/** Mindest-Spitzenumfang je Distanz und Ziel (Wochenminuten, Richtwert langer Lauf). */
+/**
+ * Mindest-Spitzenumfang je Distanz und Ziel (Wochenminuten, Richtwert langer Lauf). WP5: Rad und Triathlon nur
+ * „Ankommen“ (eine Zielzeit gibt es dort nicht – das Schema lässt sie nicht zu), Rad je Distanzklasse.
+ */
 export function requiredPeak(
   discipline: CompetitionDiscipline,
   goal: CompetitionGoal = 'finish',
+  distanceKm: number | null = null,
 ): { readonly weeklyMinutes: number; readonly longRunMinutes: number } {
-  return COMPETITION_REQUIRED_PEAK[goal][discipline];
+  if (discipline === 'cycling') return cyclingClass(distanceKm).finish;
+  if (goal === 'time' && isRunCompetitionDiscipline(discipline)) {
+    return COMPETITION_REQUIRED_PEAK.time[discipline];
+  }
+  return COMPETITION_REQUIRED_PEAK.finish[discipline];
 }
 
 /**
  * Geforderter langer Lauf (Gründer-Entscheidung G2, Präzisierung WP2): Richtwert aus COMPETITION_REQUIRED_PEAK, aber
- * höchstens 50 % des Spitzen-Wochenumfangs – mehr ist mit Plateau (G3) und 50-%-Regel (G2) nie erreichbar.
+ * höchstens 50 % des Spitzen-Wochenumfangs – mehr ist mit Plateau (G3) und 50-%-Regel (G2) nie erreichbar. WP5: bei
+ * Rad und Triathlon die lange Ausfahrt.
  */
 export function requiredLongRun(
   discipline: CompetitionDiscipline,
   goal: CompetitionGoal = 'finish',
+  distanceKm: number | null = null,
 ): number {
-  const peak = requiredPeak(discipline, goal);
+  const peak = requiredPeak(discipline, goal, distanceKm);
   return Math.min(
     peak.longRunMinutes,
     Math.floor(peak.weeklyMinutes * COMPETITION_LONG_RUN.maxShareOfWeek),
@@ -114,11 +141,36 @@ export function earliestRaceDate(
   today: string,
   discipline: CompetitionDiscipline,
   level: ExperienceLevel,
+  distanceKm: number | null = null,
 ): string {
-  return addDays(today, minimumLeadWeeks(discipline, level) * 7);
+  return addDays(today, minimumLeadWeeks(discipline, level, distanceKm) * 7);
+}
+
+/**
+ * Darf eine Person unter 18 für diese Distanz einen Wettkampfplan bekommen (Tabelle 3.3, W-G4; WP5 sinngemäß)?
+ * Laufen höchstens Halbmarathon, Triathlon nur Sprint, Rad höchstens 100 km (COMPETITION_GROUP_RULES).
+ */
+export function minorPlanAllowed(
+  discipline: CompetitionDiscipline,
+  distanceKm: number | null = null,
+): boolean {
+  const G = COMPETITION_GROUP_RULES;
+  if (discipline === 'cycling') {
+    return distanceKm !== null && distanceKm <= G.minorMaxCyclingKm;
+  }
+  if (isTriathlonCompetitionDiscipline(discipline)) {
+    return (G.minorTriathlon as readonly string[]).includes(discipline);
+  }
+  return (
+    RUN_COMPETITION_DISCIPLINES.indexOf(discipline) <=
+    RUN_COMPETITION_DISCIPLINES.indexOf(G.minorMaxDiscipline)
+  );
 }
 
 const R = COMPETITION_START_REFERENCE;
+
+/** Hinweis `beginner_long_event` beim Rad über dieser Distanz (= Obergrenze der zweiten Distanzklasse, 120 km). */
+const BEGINNER_LONG_RIDE_KM = COMPETITION_CYCLING.classes[1].maxKm;
 
 /**
  * Bezug aus dem Tagebuch (competitionStartReference: enduranceReferenceFromBlock mit eingetragenen Minuten) – Grenze
@@ -223,6 +275,8 @@ export const FEASIBILITY_REASONS = [
   'goal_time_not_allowed',
   'goal_time_not_reachable',
   'long_run_not_reachable',
+  /** WP5: Triathlon braucht mindestens 3 Ausdauer-Tage je Woche (COMPETITION_TRIATHLON.minEnduranceDays). */
+  'triathlon_days_too_few',
 ] as const;
 export type FeasibilityReason = (typeof FEASIBILITY_REASONS)[number];
 
@@ -237,11 +291,20 @@ export const FEASIBILITY_NOTICES = [
   'walk_only_plan',
   'reference_distance_too_far',
   'long_run_day_not_endurance',
+  /** WP5 Triathlon: Freiwasser nur mit Sicherheitsregeln (nie allein, Neopren, Begleitung). */
+  'open_water_safety',
+  /** WP5: Einsteiger mit Triathlon Olympisch oder Rad über 120 km – wie beim Marathon ein ausdrücklicher Hinweis. */
+  'beginner_long_event',
 ] as const;
 export type FeasibilityNotice = (typeof FEASIBILITY_NOTICES)[number];
 
 export type FeasibilitySuggestion =
-  | { readonly kind: 'shorter_distance'; readonly discipline: CompetitionDiscipline }
+  /** Kürzere Distanz; beim Rad (WP5) mit `distanceKm` (Obergrenze der nächstkleineren Distanzklasse). */
+  | {
+      readonly kind: 'shorter_distance';
+      readonly discipline: CompetitionDiscipline;
+      readonly distanceKm?: number;
+    }
   | { readonly kind: 'later_date'; readonly raceDate: string }
   | { readonly kind: 'more_training_time'; readonly weeklyMinutes: number }
   /** Am Tag des langen Laufs mehr Zeit einplanen (Minuten, WP2). */
@@ -304,6 +367,17 @@ interface Context {
   readonly targetTimeS: number | null;
 }
 
+/** Disziplin und (nur Rad, WP5) Distanz in km – was Tabellen und Regeln je Wettkampf brauchen. */
+interface Target {
+  readonly discipline: CompetitionDiscipline;
+  readonly distanceKm: number | null;
+}
+
+const targetOf = (c: Pick<Competition, 'discipline' | 'distanceKm'>): Target => ({
+  discipline: c.discipline,
+  distanceKm: c.distanceKm,
+});
+
 function buildContext(
   inputs: PlanInputs,
   request: {
@@ -360,7 +434,11 @@ function workoutBase(ctx: Context, discipline: CompetitionDiscipline): Competiti
     level: ctx.level,
     limits: hardWorkoutLimits(ctx.rules, ctx.level),
     longRunWeekday: ctx.longRunWeekday,
-    pace: ctx.raceReference ? { reference: ctx.raceReference, discipline } : null,
+    // Pace nur beim Laufen (WP5: Rad und Triathlon ohne Referenzzeit).
+    pace:
+      ctx.raceReference && isRunCompetitionDiscipline(discipline)
+        ? { reference: ctx.raceReference, discipline }
+        : null,
   };
 }
 
@@ -381,11 +459,7 @@ function chainStart(ctx: Context): number {
 /**
  * Plateau des Wochenumfangs: bis zum Spitzenumfang des Ziels, nie unter dem Start (bzw. Bezug), nie über dem Wunsch.
  */
-function peakTargetFor(
-  ctx: Context,
-  discipline: CompetitionDiscipline,
-  goal: CompetitionGoal,
-): number {
+function peakTargetFor(ctx: Context, target: Target, goal: CompetitionGoal): number {
   const base = ctx.reference
     ? ctx.referenceStricter
       ? Math.min(ctx.reference.volume, ENDURANCE_START_RULES.startWeeklyMinutes[ctx.group])
@@ -393,7 +467,7 @@ function peakTargetFor(
     : chainStart(ctx);
   return Math.min(
     Math.floor(ctx.wishWeekly),
-    Math.max(base, requiredPeak(discipline, goal).weeklyMinutes),
+    Math.max(base, requiredPeak(target.discipline, goal, target.distanceKm).weeklyMinutes),
   );
 }
 
@@ -523,15 +597,19 @@ interface Evaluation {
   readonly peakTarget: number;
 }
 
-function notAvailableReasons(ctx: Context, discipline: CompetitionDiscipline): FeasibilityReason[] {
+function notAvailableReasons(ctx: Context, target: Target): FeasibilityReason[] {
   const reasons: FeasibilityReason[] = [];
   if (ctx.inputs.healthScreening?.flags.includes('pregnancy')) reasons.push('pregnancy');
   if (ctx.inputs.healthScreening === null) reasons.push('health_check_required');
-  const maxIndex = COMPETITION_DISCIPLINES.indexOf(COMPETITION_GROUP_RULES.minorMaxDiscipline);
-  if (ctx.minor && COMPETITION_DISCIPLINES.indexOf(discipline) > maxIndex) {
+  if (ctx.minor && !minorPlanAllowed(target.discipline, target.distanceKm)) {
     reasons.push('minor_distance_limit');
   }
   return reasons;
+}
+
+/** Ausdauer-Tage einer vollen Woche (Triathlon: mindestens 3, WP5). */
+function enduranceDayCount(ctx: Context): number {
+  return ctx.days.filter((d) => d.kind === 'endurance').length;
 }
 
 /** Zielzeit erlaubt? Fortgeschritten/Leistungssport außerhalb der vorsichtigen Startgruppe (Flag, ab 65, unter 18). */
@@ -545,12 +623,13 @@ function timeGoalAllowed(ctx: Context): boolean {
 /** Ampel ohne Vorschläge (auch für die Suche nach Vorschlägen). */
 function evaluate(
   ctx: Context,
-  discipline: CompetitionDiscipline,
+  target: Target,
   raceDate: string,
   requestedGoal: CompetitionGoal,
 ): Evaluation {
-  const finish = requiredPeak(discipline, 'finish').weeklyMinutes;
-  const blocked = notAvailableReasons(ctx, discipline);
+  const { discipline, distanceKm } = target;
+  const finish = requiredPeak(discipline, 'finish', distanceKm).weeklyMinutes;
+  const blocked = notAvailableReasons(ctx, target);
   if (blocked.length > 0) {
     return {
       status: 'not_available',
@@ -572,11 +651,17 @@ function evaluate(
   const planGoal: CompetitionGoal =
     requestedGoal === 'time' && allowed && plausible ? 'time' : 'finish';
   const lead = Math.floor(daysBetween(ctx.today, raceDate) / 7);
-  const minLead = minimumLeadWeeks(discipline, leadLevel(ctx.level, ctx.group));
+  const minLead = minimumLeadWeeks(discipline, leadLevel(ctx.level, ctx.group), distanceKm);
   const tooLittleTime = ctx.wishWeekly < finish;
-  const cycle = lead >= minLead ? cycleFor(ctx, discipline, raceDate, ctx.today) : null;
+  // WP5: Triathlon braucht je Disziplin mindestens einen Tag – sonst kein Plan (ein späteres Datum hilft nicht).
+  const tooFewDays =
+    isTriathlonCompetitionDiscipline(discipline) &&
+    enduranceDayCount(ctx) < COMPETITION_TRIATHLON.minEnduranceDays;
+  const cycle =
+    lead >= minLead && !tooFewDays ? cycleFor(ctx, discipline, raceDate, ctx.today) : null;
   if (cycle === null) {
-    reasons.push('lead_time_below_minimum');
+    if (lead < minLead) reasons.push('lead_time_below_minimum');
+    if (tooFewDays) reasons.push('triathlon_days_too_few');
     if (tooLittleTime) reasons.push('weekly_time_too_low');
     return {
       status: 'too_short',
@@ -588,14 +673,14 @@ function evaluate(
       peakTarget: 0,
     };
   }
-  const weeks = simulate(ctx, cycle, peakTargetFor(ctx, discipline, planGoal), discipline).filter(
+  const weeks = simulate(ctx, cycle, peakTargetFor(ctx, target, planGoal), discipline).filter(
     (w) => w.load,
   );
   // Wochenumfang UND langer Lauf in derselben Belastungswoche (G2: die Ampel prüft den langen Lauf mit).
   const at = (minutes: number, long: number) =>
     weeks.filter((w) => w.minutes >= minutes && w.longestMinutes >= long).length;
   const okWeeks = COMPETITION_PERIODIZATION.okPeakWeeks;
-  const finishLong = requiredLongRun(discipline, 'finish');
+  const finishLong = requiredLongRun(discipline, 'finish', distanceKm);
   const timeOk =
     planGoal === 'time' &&
     at(requiredPeak(discipline, 'time').weeklyMinutes, requiredLongRun(discipline, 'time')) >=
@@ -620,7 +705,7 @@ function evaluate(
   if (requestedGoal === 'time' && effectiveGoal === 'finish' && status === 'ok') status = 'tight';
   // G7: Lauf-Wettkampf, aber der Plan ist nur zügiges Gehen (Flag, ab 65) → höchstens „knapp“ (Hinweis walk_only_plan).
   if (ctx.rules.enduranceWalkOnly && status === 'ok') status = 'tight';
-  const peakTarget = peakTargetFor(ctx, discipline, effectiveGoal);
+  const peakTarget = peakTargetFor(ctx, target, effectiveGoal);
   const planned =
     effectiveGoal === planGoal
       ? weeks
@@ -638,6 +723,35 @@ function evaluate(
 
 const usable = (status: FeasibilityStatus) => status === 'ok' || status === 'tight';
 
+/**
+ * Kürzere Ziele derselben Sportart, längstes zuerst (Vorschlag „kürzere Distanz“): Laufen die kürzeren Lauf-Distanzen,
+ * Triathlon Olympisch → Sprint, Rad die Obergrenzen der kleineren Distanzklassen (WP5). Nie über die Sportart hinweg.
+ */
+function shorterTargets(target: Target): Target[] {
+  const { discipline } = target;
+  if (isRunCompetitionDiscipline(discipline)) {
+    return RUN_COMPETITION_DISCIPLINES.slice(0, RUN_COMPETITION_DISCIPLINES.indexOf(discipline))
+      .reverse()
+      .map((d) => ({ discipline: d, distanceKm: null }));
+  }
+  if (discipline === 'triathlon_olympic') {
+    return [{ discipline: 'triathlon_sprint', distanceKm: null }];
+  }
+  if (discipline === 'cycling' && target.distanceKm !== null) {
+    const km = target.distanceKm;
+    // Obergrenzen der kleineren Distanzklassen und die Grenze für unter 18 (100 km) – längste zuerst.
+    const options = new Set<number>([
+      ...COMPETITION_CYCLING.classes.map((c) => c.maxKm),
+      COMPETITION_GROUP_RULES.minorMaxCyclingKm,
+    ]);
+    return [...options]
+      .filter((max) => max < km && max >= COMPETITION_CYCLING.distanceKm.min)
+      .sort((a, b) => b - a)
+      .map((max) => ({ discipline: 'cycling', distanceKm: max }));
+  }
+  return [];
+}
+
 function suggestionsFor(
   ctx: Context,
   competition: Competition,
@@ -649,29 +763,40 @@ function suggestionsFor(
   if (reasons.includes('health_check_required')) out.push({ kind: 'health_check' });
   const blockedForGroup =
     reasons.includes('pregnancy') || reasons.includes('health_check_required');
+  const target = targetOf(competition);
   if (!blockedForGroup) {
-    // Kürzere Distanz am selben Tag (längste, die passt bzw. knapp ist).
-    const index = COMPETITION_DISCIPLINES.indexOf(competition.discipline);
-    for (let i = index - 1; i >= 0; i -= 1) {
-      const shorter = COMPETITION_DISCIPLINES[i] as CompetitionDiscipline;
+    // Kürzere Distanz am selben Tag (längste, die passt bzw. knapp ist) – nur innerhalb derselben Sportart (WP5).
+    for (const shorter of shorterTargets(target)) {
       if (usable(evaluate(ctx, shorter, competition.raceDate, 'finish').status)) {
-        out.push({ kind: 'shorter_distance', discipline: shorter });
+        out.push(
+          shorter.distanceKm === null
+            ? { kind: 'shorter_distance', discipline: shorter.discipline }
+            : {
+                kind: 'shorter_distance',
+                discipline: shorter.discipline,
+                distanceKm: shorter.distanceKm,
+              },
+        );
         break;
       }
     }
     // Frühester späterer Renntag (bei „knapp“: frühester, der passt). Reicht die Wunsch-Zeit nie für den
-    // Spitzenumfang, hilft kein Datum (der Umfang steigt nie über den Wunsch) – dann keine Suche.
+    // Spitzenumfang, hilft kein Datum (der Umfang steigt nie über den Wunsch) – dann keine Suche. Zu wenige
+    // Triathlon-Tage (WP5) heilt auch kein Datum.
     const goalForDate: CompetitionGoal = status === 'tight' ? competition.goal : 'finish';
     const reachable =
-      ctx.wishWeekly >= requiredPeak(competition.discipline, goalForDate).weeklyMinutes &&
-      longRunDayWish(ctx) >= requiredLongRun(competition.discipline, goalForDate) &&
+      ctx.wishWeekly >=
+        requiredPeak(competition.discipline, goalForDate, target.distanceKm).weeklyMinutes &&
+      longRunDayWish(ctx) >=
+        requiredLongRun(competition.discipline, goalForDate, target.distanceKm) &&
       // G7: „nur Gehen“ bleibt höchstens „knapp“ – ein späteres Datum macht daraus nie „passt“.
-      !(status === 'tight' && ctx.rules.enduranceWalkOnly);
+      !(status === 'tight' && ctx.rules.enduranceWalkOnly) &&
+      !reasons.includes('triathlon_days_too_few');
     if (status !== 'not_available' && reachable) {
       const wanted = (s: FeasibilityStatus) => (status === 'tight' ? s === 'ok' : usable(s));
       const latest = latestRaceDate(ctx.today);
       for (let d = addDays(competition.raceDate, 1); d <= latest; d = addDays(d, 1)) {
-        if (wanted(evaluate(ctx, competition.discipline, d, goalForDate).status)) {
+        if (wanted(evaluate(ctx, target, d, goalForDate).status)) {
           out.push({ kind: 'later_date', raceDate: d });
           break;
         }
@@ -680,13 +805,14 @@ function suggestionsFor(
     if (reasons.includes('weekly_time_too_low')) {
       out.push({
         kind: 'more_training_time',
-        weeklyMinutes: requiredPeak(competition.discipline, 'finish').weeklyMinutes,
+        weeklyMinutes: requiredPeak(competition.discipline, 'finish', target.distanceKm)
+          .weeklyMinutes,
       });
     }
     if (reasons.includes('long_run_day_too_short')) {
       out.push({
         kind: 'longer_long_run_day',
-        minutes: requiredLongRun(competition.discipline, 'finish'),
+        minutes: requiredLongRun(competition.discipline, 'finish', target.distanceKm),
       });
     }
   }
@@ -700,6 +826,15 @@ function noticesFor(ctx: Context, competition: Competition): FeasibilityNotice[]
   if (ctx.rules.medicalNotice || ctx.senior) notices.add('medical_clearance');
   if (ctx.level === 'beginner' && competition.discipline === 'marathon') {
     notices.add('beginner_marathon');
+  }
+  if (isTriathlonCompetitionDiscipline(competition.discipline)) notices.add('open_water_safety');
+  if (
+    ctx.level === 'beginner' &&
+    (competition.discipline === 'triathlon_olympic' ||
+      (competition.discipline === 'cycling' &&
+        (competition.distanceKm ?? Infinity) > BEGINNER_LONG_RIDE_KM))
+  ) {
+    notices.add('beginner_long_event');
   }
   if (ctx.minor) notices.add('minor_no_target_time');
   if (ctx.ownNotice) notices.add(ctx.ownNotice);
@@ -760,8 +895,13 @@ function feasibilityOf(
   withSuggestions = true,
 ): { feasibility: CompetitionFeasibility; evaluation: Evaluation } {
   const { ctx, competition } = parsed;
-  const evaluation = evaluate(ctx, competition.discipline, competition.raceDate, competition.goal);
-  const minLead = minimumLeadWeeks(competition.discipline, leadLevel(ctx.level, ctx.group));
+  const target = targetOf(competition);
+  const evaluation = evaluate(ctx, target, competition.raceDate, competition.goal);
+  const minLead = minimumLeadWeeks(
+    competition.discipline,
+    leadLevel(ctx.level, ctx.group),
+    target.distanceKm,
+  );
   const feasibility: CompetitionFeasibility = {
     status: evaluation.status,
     effectiveGoal: evaluation.effectiveGoal,
@@ -771,11 +911,18 @@ function feasibilityOf(
     leadWeeks: Math.floor(daysBetween(ctx.today, competition.raceDate) / 7),
     minimumLeadWeeks: minLead,
     earliestRaceDate: addDays(ctx.today, minLead * 7),
-    requiredWeeklyMinutes: requiredPeak(competition.discipline, evaluation.effectiveGoal)
-      .weeklyMinutes,
+    requiredWeeklyMinutes: requiredPeak(
+      competition.discipline,
+      evaluation.effectiveGoal,
+      target.distanceKm,
+    ).weeklyMinutes,
     plannedPeakMinutes: evaluation.plannedPeak,
     startMinutes: ctx.reference ? null : chainStart(ctx),
-    requiredLongRunMinutes: requiredLongRun(competition.discipline, evaluation.effectiveGoal),
+    requiredLongRunMinutes: requiredLongRun(
+      competition.discipline,
+      evaluation.effectiveGoal,
+      target.distanceKm,
+    ),
     plannedLongRunMinutes: evaluation.plannedLongRun,
   };
   return { feasibility, evaluation };
@@ -916,7 +1063,7 @@ export function competitionFollowUpBlock(
   const now = today >= planStart ? parse(rawInputs, request, today, planStart) : null;
   if (!now) return { ok: false, reason: 'invalid_inputs' };
   const { ctx, competition } = now;
-  if (notAvailableReasons(ctx, competition.discipline).length > 0) {
+  if (notAvailableReasons(ctx, targetOf(competition)).length > 0) {
     return { ok: false, reason: 'not_available' };
   }
   const goal: CompetitionGoal =
@@ -927,7 +1074,7 @@ export function competitionFollowUpBlock(
     loadWeeksBefore: trailingLoadWeeks(options.previous),
   });
   if (!cycle) return { ok: false, reason: 'cycle_finished' };
-  const peakTarget = peakTargetFor(ctx, competition.discipline, goal);
+  const peakTarget = peakTargetFor(ctx, targetOf(competition), goal);
   const block = nextCompetitionBlock(
     cycle,
     peakTarget,

@@ -1,7 +1,7 @@
 import { z } from 'zod';
 
 import { isoDateSchema } from '../age';
-import { CARB_LOADING_DAYS, COMPETITION_NUTRITION } from '../constants';
+import { CARB_LOADING_DAYS, COMPETITION_CYCLING, COMPETITION_NUTRITION } from '../constants';
 import { addDays, daysBetween, startOfIsoWeek } from '../dates';
 import type { ExperienceLevel } from '../enums';
 import {
@@ -9,6 +9,8 @@ import {
   type CompetitionDiscipline,
   competitionDisciplineSchema,
   competitionReferenceSchema,
+  cyclingDistanceKmSchema,
+  isRunCompetitionDiscipline,
 } from '../plan/competition-schema';
 import { predictedTimeS, riegelReliable } from '../plan/intensity';
 import type { NutritionSession } from './schemas';
@@ -35,6 +37,8 @@ export const nutritionCompetitionSchema = z.strictObject({
   id: z.string().min(1).max(100),
   status: z.enum(COMPETITION_STATUSES),
   discipline: competitionDisciplineSchema,
+  /** WP5: Rad-Distanz in km (erwartete Dauer über COMPETITION_CYCLING.estimatedSpeedKmh), sonst null. */
+  distanceKm: cyclingDistanceKmSchema.nullable().default(null),
   raceDate: isoDateSchema,
   targetTimeS: z
     .number()
@@ -57,6 +61,10 @@ export const nutritionCompetitionsSchema = z
   .refine(
     (list) => new Set(list.map((c) => c.id)).size === list.length,
     'Jeder Wettkampf nur einmal.',
+  )
+  .refine(
+    (list) => list.every((c) => (c.discipline === 'cycling') === (c.distanceKm !== null)),
+    'Die Distanz in Kilometern gibt es genau beim Rad (WP5).',
   );
 
 // ---------------------------------------------------------------------------------------------------------
@@ -76,11 +84,17 @@ export interface ExpectedRaceMinutes {
  * je Distanz und Level“). Reihenfolge: Zielzeit → Referenzzeit mit Riegel (nur innerhalb Faktor 4, `riegelReliable`) →
  * `COMPETITION_NUTRITION.estimatedMinutes`.
  */
-const raceDurationInputSchema = nutritionCompetitionSchema.pick({
-  discipline: true,
-  targetTimeS: true,
-  reference: true,
-});
+const raceDurationInputSchema = nutritionCompetitionSchema
+  .pick({
+    discipline: true,
+    targetTimeS: true,
+    reference: true,
+    distanceKm: true,
+  })
+  .refine((c) => (c.discipline === 'cycling') === (c.distanceKm !== null), {
+    path: ['distanceKm'],
+    message: 'Die Distanz in Kilometern gibt es genau beim Rad.',
+  });
 
 export function expectedRaceMinutes(
   raw: z.input<typeof raceDurationInputSchema>,
@@ -90,22 +104,33 @@ export function expectedRaceMinutes(
     discipline: raw.discipline,
     targetTimeS: raw.targetTimeS,
     reference: raw.reference,
+    distanceKm: raw.distanceKm,
   });
   const clamp = (minutes: number) => Math.min(Math.max(Math.round(minutes), 1), MAX_RACE_MINUTES);
   if (competition.targetTimeS !== null) {
     return { minutes: clamp(competition.targetTimeS / 60), source: 'target_time' };
   }
+  const { discipline } = competition;
   if (
     competition.reference !== null &&
-    riegelReliable(competition.reference, competition.discipline)
+    isRunCompetitionDiscipline(discipline) &&
+    riegelReliable(competition.reference, discipline)
   ) {
     return {
-      minutes: clamp(predictedTimeS(competition.reference, competition.discipline) / 60),
+      minutes: clamp(predictedTimeS(competition.reference, discipline) / 60),
       source: 'reference',
     };
   }
+  if (discipline === 'cycling') {
+    // WP5: Distanz ÷ vorsichtiges Freizeit-Tempo je Level (COMPETITION_CYCLING.estimatedSpeedKmh).
+    const km = competition.distanceKm ?? COMPETITION_CYCLING.distanceKm.max;
+    return {
+      minutes: clamp((km / COMPETITION_CYCLING.estimatedSpeedKmh[level]) * 60),
+      source: 'estimate',
+    };
+  }
   return {
-    minutes: COMPETITION_NUTRITION.estimatedMinutes[competition.discipline][level],
+    minutes: COMPETITION_NUTRITION.estimatedMinutes[discipline][level],
     source: 'estimate',
   };
 }
@@ -264,7 +289,8 @@ export function raceDaySession(day: CompetitionDay, today: string): NutritionSes
     planStatus: 'active',
     scheduledOn: day.date,
     kind: 'endurance',
-    enduranceModality: 'run',
+    // WP5: Rad und Triathlon mit dem (niedrigeren) Rad-Ersatz-MET – vorsichtig, wie W1-G2 beim Laufen.
+    enduranceModality: isRunCompetitionDiscipline(day.competition.discipline) ? 'run' : 'bike',
     effortTarget: null,
     minutes: day.competition.expectedMinutes,
     isDeload: false,

@@ -106,6 +106,7 @@ describe('checkSaveCompetition (= save_competition)', () => {
         id: '11111111-1111-4111-8111-111111111111',
         status: 'planned' as const,
         discipline: 'half_marathon' as const,
+        distance_m: 21097.5,
         race_date: '2026-11-01', // inzwischen unter dem Mindestvorlauf – Ändern ohne neues Datum bleibt erlaubt
         reference_discipline: null,
         reference_time_s: null,
@@ -192,7 +193,7 @@ describe('checkCompetitionSessions (= Regeln je Person in insert_plan_sessions)'
     },
     profileLevel: 'advanced',
     pregnancy: false,
-    competition: { discipline: 'half_marathon', usesHealthData: true },
+    competition: { discipline: 'half_marathon', distanceM: 21097.5, usesHealthData: true },
     ...over,
   });
 
@@ -212,7 +213,9 @@ describe('checkCompetitionSessions (= Regeln je Person in insert_plan_sessions)'
       checkCompetitionSessions(
         sessions,
         sessions,
-        person({ competition: { discipline: 'half_marathon', usesHealthData: false } }),
+        person({
+          competition: { discipline: 'half_marathon', distanceM: 21097.5, usesHealthData: false },
+        }),
       ),
     ).toMatchObject({ reason: 'not_found' });
     expect(
@@ -231,7 +234,7 @@ describe('checkCompetitionSessions (= Regeln je Person in insert_plan_sessions)'
       checkCompetitionSessions(
         sessions,
         sessions,
-        person({ competition: { discipline: '10k', usesHealthData: true } }),
+        person({ competition: { discipline: '10k', distanceM: 10000, usesHealthData: true } }),
       ),
     ).toMatchObject({ reason: 'invalid' });
   });

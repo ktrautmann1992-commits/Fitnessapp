@@ -7,9 +7,14 @@ import {
   COMPETITION_LONG_RUN,
   COMPETITION_RECORD_LIMITS,
 } from '../constants';
+import { minimumLeadWeeks, minorPlanAllowed } from './competition';
 import { addDays, startOfIsoWeek } from '../dates';
 import type { ExperienceLevel } from '../enums';
-import { type SaveCompetitionPayload, saveCompetitionPayloadSchema } from './competition-record';
+import {
+  competitionDistanceM,
+  type SaveCompetitionPayload,
+  saveCompetitionPayloadSchema,
+} from './competition-record';
 import type { CompetitionDiscipline, CompetitionStatus } from './competition-schema';
 import { isHardSession, isHardWorkoutType, type WorkoutStep, type WorkoutType } from './intensity';
 
@@ -30,7 +35,10 @@ export const COMPETITION_ERROR_REASONS = [
   'reference_date',
   /** Plan-Bezug ohne gültige Einwilligung bzw. ohne Gesundheits-Check. */
   'health_check_required',
-  /** Tabelle 3.3: Schwangerschaft, unter 18 kein Marathon, Zielzeit nicht erlaubt. */
+  /**
+   * Tabelle 3.3: Schwangerschaft, unter 18 kein Marathon (WP5: kein Triathlon Olympisch, Rad höchstens 100 km),
+   * Zielzeit nicht erlaubt.
+   */
   'not_allowed',
   /** Wettkampf fehlt, gehört jemand anderem, ist nicht (mehr) geplant bzw. schon abgesagt. */
   'not_found',
@@ -62,6 +70,8 @@ export interface SaveCompetitionContext {
     readonly id: string;
     readonly status: CompetitionStatus;
     readonly discipline: CompetitionDiscipline;
+    /** Distanz in Metern (Rad: frei, WP5) – eine Änderung prüft den Renntag neu (Mindestvorlauf je Distanzklasse). */
+    readonly distance_m: number;
     readonly race_date: string;
     readonly reference_discipline: CompetitionDiscipline | null;
     readonly reference_time_s: number | null;
@@ -69,11 +79,17 @@ export interface SaveCompetitionContext {
   }[];
 }
 
-/** Server-Mindestvorlauf: lockerste Spalte (Leistungssport, COMPETITION_RECORD_LIMITS.leadWeeksServerColumn). */
-export function serverMinimumLeadWeeks(discipline: CompetitionDiscipline): number {
-  return COMPETITION_LEAD_WEEKS.minimum[discipline][
-    COMPETITION_RECORD_LIMITS.leadWeeksServerColumn
-  ];
+/**
+ * Server-Mindestvorlauf: lockerste Spalte (Leistungssport, COMPETITION_RECORD_LIMITS.leadWeeksServerColumn); Rad je
+ * Distanzklasse (WP5).
+ */
+export function serverMinimumLeadWeeks(
+  discipline: CompetitionDiscipline,
+  distanceKm: number | null = null,
+): number {
+  const column = COMPETITION_RECORD_LIMITS.leadWeeksServerColumn;
+  if (discipline === 'cycling') return minimumLeadWeeks(discipline, column, distanceKm);
+  return COMPETITION_LEAD_WEEKS.minimum[discipline][column];
 }
 
 /** = public.save_competition (Reihenfolge der Prüfungen wie dort). */
@@ -86,7 +102,10 @@ export function checkSaveCompetition(
   if (payload.effective_goal !== null) {
     if (!ctx.usesHealthData) return fail('health_check_required');
     if (ctx.pregnancy) return fail('not_allowed');
-    if (age < AGE_PLAN_RULES.minor.belowAge && payload.discipline === 'marathon') {
+    if (
+      age < AGE_PLAN_RULES.minor.belowAge &&
+      !minorPlanAllowed(payload.discipline, payload.distance_km ?? null)
+    ) {
       return fail('not_allowed');
     }
     if (
@@ -105,7 +124,9 @@ export function checkSaveCompetition(
     if (!existing) return fail('not_found');
     if (existing.status !== 'planned') return fail('not_planned');
     datesChanged =
-      existing.race_date !== payload.race_date || existing.discipline !== payload.discipline;
+      existing.race_date !== payload.race_date ||
+      existing.discipline !== payload.discipline ||
+      existing.distance_m !== competitionDistanceM(payload.discipline, payload.distance_km ?? null);
     referenceChanged =
       existing.reference_discipline !== payload.reference_discipline ||
       existing.reference_time_s !== payload.reference_time_s ||
@@ -114,7 +135,13 @@ export function checkSaveCompetition(
   if (datesChanged) {
     const latest = addDays(ctx.today, COMPETITION_LEAD_WEEKS.maxLeadWeeks * 7);
     if (payload.race_date <= ctx.today || payload.race_date > latest) return fail('race_date');
-    if (payload.race_date < addDays(ctx.today, serverMinimumLeadWeeks(payload.discipline) * 7)) {
+    if (
+      payload.race_date <
+      addDays(
+        ctx.today,
+        serverMinimumLeadWeeks(payload.discipline, payload.distance_km ?? null) * 7,
+      )
+    ) {
       return fail('race_date');
     }
   }
@@ -201,6 +228,8 @@ export interface PersonRuleContext {
   /** Eigener GEPLANTER Wettkampf (null = keiner) – Plan-Bezug = uses_health_data. */
   readonly competition: {
     readonly discipline: CompetitionDiscipline;
+    /** Distanz in Metern (= competitions.distance_m; Rad frei, WP5). */
+    readonly distanceM: number;
     readonly usesHealthData: boolean;
   } | null;
 }
@@ -224,8 +253,9 @@ export function checkCompetitionSessions(
   const senior = age >= AGE_PLAN_RULES.senior.fromAge;
   const competition = ctx.competition;
   if (!competition || !competition.usesHealthData) return fail('not_found');
-  // Unter 18 höchstens Halbmarathon (W-G4, COMPETITION_GROUP_RULES.minorMaxDiscipline).
-  if (minor && competition.discipline === 'marathon') return fail('not_allowed');
+  // Unter 18 höchstens Halbmarathon (W-G4); WP5: Triathlon nur Sprint, Rad höchstens 100 km (minorPlanAllowed).
+  const distanceKm = competition.discipline === 'cycling' ? competition.distanceM / 1000 : null;
+  if (minor && !minorPlanAllowed(competition.discipline, distanceKm)) return fail('not_allowed');
   if (ctx.plan.discipline !== competition.discipline) return fail('invalid');
   const maxMinutes = COMPETITION_LONG_RUN.maxMinutes[competition.discipline];
   if (typed.some((s) => s.estimated_minutes > maxMinutes)) return fail('invalid');

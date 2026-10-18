@@ -1,11 +1,14 @@
 import {
+  brickSplit,
   type CompetitionCountdown,
   type CompetitionDiscipline,
   type CompetitionFeasibility,
   type CompetitionPlanWeek,
   type FeasibilitySuggestion,
   intervalBlocks,
+  isRunCompetitionDiscipline,
   type SessionPaceInfo,
+  type Sport,
   type WorkoutStep,
 } from '@fitnessapp/core';
 
@@ -20,7 +23,12 @@ import { formatDateDe } from './format';
 
 const C = t.competition;
 
-export function disciplineText(discipline: CompetitionDiscipline): string {
+/** Distanz als Wort („Halbmarathon“, „Triathlon Sprint“); Rad mit Kilometern („Radrennen 120 km“, WP5). */
+export function disciplineText(
+  discipline: CompetitionDiscipline,
+  distanceKm: number | null = null,
+): string {
+  if (discipline === 'cycling' && distanceKm !== null) return C.cyclingWithDistance(distanceKm);
   return C.disciplines[discipline];
 }
 
@@ -75,13 +83,36 @@ export function stepKindText(step: WorkoutStep): string {
   return C.stepKinds[step.kind];
 }
 
-/** Ein Schritt für den Timer: „Hauptteil: 3 min zügig“. */
-export function stepTitle(step: WorkoutStep): string {
-  return `${C.stepParts[step.part]}: ${stepDurationText(step.seconds)} ${stepKindText(step)}`;
+/**
+ * Ein Schritt für den Timer: „Hauptteil: 3 min zügig“; mit Sportart (Koppeltraining, WP5) „Hauptteil (Laufen): 12 min
+ * locker“.
+ */
+export function stepTitle(step: WorkoutStep, sport: Sport | null = null): string {
+  const part = sport
+    ? `${C.stepParts[step.part]} (${C.stepSports[sport]})`
+    : C.stepParts[step.part];
+  return `${part}: ${stepDurationText(step.seconds)} ${stepKindText(step)}`;
 }
 
-/** Übersicht der Schritte (Plan-Ansicht), z. B. „6 × 3 min zügig (Anstrengung 8), dazwischen 2 min locker“. */
-export function stepLines(steps: readonly WorkoutStep[]): string[] {
+/**
+ * Übersicht der Schritte (Plan-Ansicht), z. B. „6 × 3 min zügig (Anstrengung 8), dazwischen 2 min locker“. Mit
+ * Sportart je Schritt (Koppeltraining, WP5): jeder Schritt eine Zeile mit „(Rad)“ bzw. „(Laufen)“.
+ */
+export function stepLines(
+  steps: readonly WorkoutStep[],
+  sports: readonly Sport[] | null = null,
+): string[] {
+  if (sports !== null) {
+    return steps.map((s, i) =>
+      C.stepLineSport(
+        C.stepParts[s.part],
+        C.stepSports[sports[i] ?? 'run'],
+        stepDurationText(s.seconds),
+        stepKindText(s),
+        s.effort,
+      ),
+    );
+  }
   return intervalBlocks(steps).map((block) => {
     if (block.kind === 'single') {
       const s = block.step;
@@ -102,14 +133,24 @@ export function stepLines(steps: readonly WorkoutStep[]): string[] {
   });
 }
 
-/** Zusatz-Zeilen einer Wettkampf-Einheit: Art, Pace (immer mit Hinweis), Distanz-Richtwert. */
+/**
+ * Zusatz-Zeilen einer Wettkampf-Einheit: Art, beim Koppeltraining die zwei Teile (WP5), Pace (immer mit Hinweis),
+ * Distanz-Richtwert.
+ */
 export function workoutInfoLines(
-  session: { readonly workout_type?: keyof typeof C.workoutTypes | null },
+  session: {
+    readonly workout_type?: keyof typeof C.workoutTypes | null;
+    readonly estimated_minutes?: number;
+  },
   info: SessionPaceInfo,
 ): string[] {
   const type = session.workout_type;
   if (!type) return [];
   const lines = [C.workoutTypeLine(C.workoutTypes[type], info.hard)];
+  if (type === 'brick' && session.estimated_minutes !== undefined) {
+    const split = brickSplit(session.estimated_minutes);
+    lines.push(C.brickLine(split.bike, split.run));
+  }
   if (info.pace) {
     lines.push(C.paceLine(paceText(info.pace.fastSPerKm), paceText(info.pace.slowSPerKm)));
     lines.push(C.paceNotice);
@@ -132,8 +173,9 @@ export function phaseBandText(week: CompetitionPlanWeek): string {
 export function countdownText(
   countdown: CompetitionCountdown,
   discipline: CompetitionDiscipline,
+  distanceKm: number | null = null,
 ): string {
-  const distance = disciplineText(discipline);
+  const distance = disciplineText(discipline, distanceKm);
   switch (countdown.kind) {
     case 'upcoming':
       return C.countdown(countdown.daysLeft, distance);
@@ -152,7 +194,9 @@ export function countdownText(
 export function suggestionText(suggestion: FeasibilitySuggestion): string {
   switch (suggestion.kind) {
     case 'shorter_distance':
-      return C.suggestions.shorter_distance(disciplineText(suggestion.discipline));
+      return C.suggestions.shorter_distance(
+        disciplineText(suggestion.discipline, suggestion.distanceKm ?? null),
+      );
     case 'later_date':
       return C.suggestions.later_date(formatDateDe(suggestion.raceDate));
     case 'more_training_time':
@@ -172,15 +216,21 @@ export function feasibilityHeadline(feasibility: Pick<CompetitionFeasibility, 's
   return `${s.symbol} ${s.label}`;
 }
 
-/** Zahlen zur Ampel (Vorlauf, Umfang, langer Lauf) – nur, wenn sie etwas sagen. */
-export function feasibilityFacts(f: CompetitionFeasibility): string[] {
+/** Zahlen zur Ampel (Vorlauf, Umfang, langer Lauf bzw. lange Ausfahrt) – nur, wenn sie etwas sagen. */
+export function feasibilityFacts(
+  f: CompetitionFeasibility,
+  discipline: CompetitionDiscipline | null = null,
+): string[] {
   if (f.status === 'not_available') return [];
   const lines = [C.leadInfo(f.leadWeeks, f.minimumLeadWeeks)];
   if (f.plannedPeakMinutes > 0) {
     lines.push(C.peakInfo(f.plannedPeakMinutes, f.requiredWeeklyMinutes));
   }
   if (f.plannedLongRunMinutes > 0) {
-    lines.push(C.longRunInfo(f.plannedLongRunMinutes, f.requiredLongRunMinutes));
+    const ride = discipline !== null && !isRunCompetitionDiscipline(discipline);
+    lines.push(
+      (ride ? C.longRideInfo : C.longRunInfo)(f.plannedLongRunMinutes, f.requiredLongRunMinutes),
+    );
   }
   if (f.status === 'ok' || f.status === 'tight') lines.push(C.effectiveGoal[f.effectiveGoal]);
   return lines;

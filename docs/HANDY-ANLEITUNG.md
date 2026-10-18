@@ -538,6 +538,50 @@ springt ihr über „Mein Wettkampf“ direkt zum Renntag in der Zukunft.
 „Dein Tag“ (Tagesauswertung) zeigt an einem Carb-Loading-Tag den Satz „Heute mehr Kohlenhydrate – so geplant.“
 (Kalender → Tag antippen → „Dein Tag“; nur mit „Kalorienzahlen anzeigen“).
 
+## Teil 7w2 – Rad und Triathlon testen (Phase 10, Etappe WP5, Testmodus)
+Im Testmodus müsst ihr nichts einstellen. Getestet mit **Chrome am iPhone** (Vorschau-Link aus dem Pull Request), am
+besten in einem **Inkognito-Tab**: Chrome → unten rechts **⋯** → **Neuer Inkognito-Tab**. Für jeden Durchgang einen
+neuen Inkognito-Tab öffnen (dann startet ihr ohne alte Testdaten).
+
+1. Vorschau-Link öffnen → **„Los geht's“** → Geburtsdatum **15.05.1990** → **Testmodus starten** → Zustimmen →
+   Geschlecht beliebig → Einwilligung Gesundheitsdaten **erteilen** → Größe/Gewicht beliebig → Umfänge **Überspringen**
+   → Gesundheits-Check **alles „Nein“** → Erfahrung **Fortgeschritten** → Ziel **Ausdauer → Triathlon Langdistanz** →
+   **„Ohne Vorschlag planen“** → **Di, Do, Sa je 60 Minuten** und **So 90 Minuten Ausdauer** → Ernährung beliebig →
+   **„Zum Plan“**.
+2. **Einstellungen → Mein Wettkampf → Wettkampf eintragen.** **Prüfen:** blauer Hinweis „Dein Ziel ist Triathlon
+   Langdistanz. Dafür erstellen wir keinen Wettkampfplan … Trainer oder Verein“. In der Distanz-Auswahl gibt es
+   **keine** Mittel-/Langdistanz und kein Schwimmen, vorbelegt ist **Triathlon olympisch**.
+3. **Triathlon Sprint** antippen → statt Zielzeit/Referenzzeit steht „Bei Rad und Triathlon planen wir auf
+   „Ankommen“ …“, der Tag heißt „Tag für die lange Ausfahrt“. Renntag **in ca. 12 Wochen** (z. B. Sonntag) → Ampel
+   **„✓ Passt“** mit dem Hinweis „Freiwasser nur mit Sicherheit: nie allein schwimmen …“ und „Längste Ausfahrt im
+   Plan“.
+4. **Wettkampfplan erstellen** → „Plan neu erstellen“ → „Dein Wettkampfplan ist fertig“. **Heute** bzw. im **Kalender**
+   wechseln sich Schwimmen, Laufen und Rad ab; der Sonntag ist die **Lange Ausfahrt**. Eine Schwimm-Einheit antippen
+   (Kalender) bzw. am Schwimm-Tag auf „Heute“: **„Art: Schwimmtechnik“** und der Kasten **„Sicherheit beim Schwimmen“**
+   (nie allein, Neoprenanzug, Begleitung).
+5. **Koppeltraining** (Rad → Lauf, eine Einheit mit zwei Teilen) kommt erst im **Aufbau** (nach einigen Wochen), wenn ein
+   Rad-Tag mindestens 25 Minuten hat – im Kalender weiterblättern. Die Einheit zeigt „Zwei Teile in einer Einheit: Teil 1
+   Rad … Teil 2 Laufen …“, der Ablauf „Hauptteil (Rad)“ und „Hauptteil (Laufen)“; im Trainingsmodus sagt der Timer
+   den Wechsel aufs Laufen an. (Den Sprung über Wochen prüft der automatische Test.)
+6. **Nur 2 Ausdauer-Tage:** neuer Inkognito-Tab, Schritt 1 mit nur **Sa 60 und So 90 Minuten** → Mein Wettkampf →
+   Triathlon Sprint → Ampel **„✕ Zu kurz“** mit „mindestens 3 Ausdauer-Tage pro Woche – je einen für Schwimmen, Rad und
+   Laufen“; „Wettkampfplan erstellen“ gibt es nicht.
+7. **Rad:** neuer Inkognito-Tab, Schritt 1 mit Ziel **Ausdauer → Radfahren** (Tage wie oben) → Mein Wettkampf →
+   **Radrennen** ist vorbelegt, darunter das Feld **„Distanz in km (20–300)“**. Renntag **in ca. 17 Wochen**, Distanz
+   **250** → Ampel **„✕ Zu kurz“** mit Vorschlag **„Kürzere Distanz: Radrennen 120 km“** → **Übernehmen** → **„✓ Passt“**.
+   Distanz **400** → Fehlertext „Bitte ganze Kilometer zwischen 20 und 300 eingeben.“
+8. Wettkampfplan erstellen → „Mein Wettkampf“ zeigt „Distanz: Radrennen 120 km“ und „Noch … Tage bis zum Radrennen 120
+   km“; alle Einheiten sind Rad (Lockere Ausfahrt, Lange Ausfahrt, ab dem Aufbau „Sweet-Spot auf dem Rad“).
+9. **Unter 18:** neuer Inkognito-Tab mit Geburtsdatum **01.12.2009**, Ziel Triathlon → Triathlon **olympisch**, Renntag
+   **in ca. 30 Wochen** → Ampel
+   **„✕ Nicht möglich“** mit „Unter 18 planen wir … beim Triathlon nur den Sprint …“ und Vorschlag „Kürzere Distanz:
+   Triathlon Sprint“.
+
+Mit Konto (Supabase-Modus): Die Datenbank bekommt zwei neue Migrationen (`…_wp5_enums.sql`,
+`…_wp5_rad_triathlon.sql`). Sie laufen nach dem Merge automatisch über die GitHub Action **db-migrate** – ihr müsst
+nichts tun. Prüfen in der GitHub-App: **Actions → db-migrate** → letzter Lauf grün. Danach in Supabase → **Table
+Editor → `competitions`**: beim Rad steht die Distanz in `distance_m` (z. B. 120000).
+
 ## Teil 7s – Datenbank für Strecken prüfen (Phase 10, Etappe S1 Teil 1)
 In der App ändert sich dadurch **nichts Sichtbares** (Strecken aufzeichnen kommt erst nach dem Spike S0 mit der
 echten App). Ihr müsst nichts einstellen und keine Schlüssel eintragen. Prüfen könnt ihr am Handy:

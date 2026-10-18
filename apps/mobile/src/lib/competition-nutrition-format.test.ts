@@ -212,12 +212,29 @@ describe('nutritionCompetitionsFromRows', () => {
         id: 'c1',
         status: 'planned',
         discipline: 'half_marathon',
+        distanceKm: null,
         raceDate: SUNDAY,
         targetTimeS: null,
         reference: { discipline: '10k', timeS: 3000, date: '2026-09-01' },
         resultSessionLogId: null,
       },
     ]);
+    // WP5: Rad mit Distanz aus distance_m (erwartete Dauer aus km und Tempo).
+    expect(
+      nutritionCompetitionsFromRows(
+        rowsWith({
+          competitions: [
+            row({
+              discipline: 'cycling',
+              distance_m: 120_000,
+              reference_discipline: null,
+              reference_time_s: null,
+              reference_date: null,
+            }),
+          ],
+        }),
+      )[0]?.distanceKm,
+    ).toBe(120);
     expect(
       nutritionCompetitionsFromRows(
         rowsWith({ competitions: [row({ goal_kind: 'time', target_time_s: 6300 })] }),

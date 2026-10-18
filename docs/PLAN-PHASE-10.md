@@ -4,7 +4,8 @@
 (ausgefülltes Entscheidungs-PDF vom 16.10.2026). Umsetzung je Etappe als Pull Request mit Wächter-Prüfung.
 **Stand 16.10.2026:** WP1 (Core) als PR #83, WP2 (Core) als PR #84, WP3 (Datenmodell) als PR #86, WP4 (App: Wettkampf,
 Plan-Ansicht, Countdown, Intervall-Timer) im Anschluss umgesetzt (Abschnitte 7 und 8). **18.10.2026:** W1
-(Wettkampf-Ernährung) umgesetzt, keine Migration (Abschnitt 10, Umsetzungsstand W1). A1a, A1b, E1, A2, E2, A3 (PLAN-AUSWERTUNG) sind gemergt; Expo-Projekt „AlphaFive“ wird verbunden
+(Wettkampf-Ernährung) umgesetzt, keine Migration (Abschnitt 10, Umsetzungsstand W1). **18.10.2026:** WP5 (Rad und Triathlon
+Sprint/Olympisch) umgesetzt, Migrationen `20261018120000`/`20261018120100` (Abschnitt 9, Umsetzungsstand WP5). A1a, A1b, E1, A2, E2, A3 (PLAN-AUSWERTUNG) sind gemergt; Expo-Projekt „AlphaFive“ wird verbunden
 (PR #79). Damit können WP1/WP2 (Core) sofort starten, WP3/WP4 danach, S0 sobald die erste APK läuft.
 
 **Grundlage:** `CLAUDE.md`, `docs/PROMPTS.md` (Phase 10, „Erweiterung Phase 10 – Strecken aufzeichnen“, Phase 8,
@@ -1095,6 +1096,126 @@ Live-Test im Supabase-Modus (Teil 8 der HANDY-ANLEITUNG), Vibration/Bildschirm-a
 - **Mittel- und Langdistanz:** Empfehlung **nicht** als Plan anbieten (Hinweis: Trainer bzw. Verein), W-G2.
 - Gleiche Core-Struktur wie WP1/WP2, eigene Tests (Umfang je Disziplin, Koppeleinheit zählt in beide
   Disziplinen-Minuten, 10-%-Regel über die Summe).
+
+### Umsetzungsstand WP5 (18.10.2026)
+
+**Was gilt (W-G2 wie entschieden; keine Echtzeit-KI; alle neuen Zahlen „PRODUKTENTSCHEIDUNG – VOR LIVEGANG FACHLICH
+PRÜFEN“; ohne Rad/Triathlon-Wettkampf ist die Ausgabe byte-gleich):**
+
+- **Disziplinen** (`plan/competition-schema.ts`): `COMPETITION_DISCIPLINES` = Laufen 5 km bis Marathon + **`cycling`** +
+  **`triathlon_sprint`**, **`triathlon_olympic`** (Reihenfolge = Postgres-Enum). `RUN_COMPETITION_DISCIPLINES` (nur dort
+  Zielzeit, Referenzzeit, Riegel, Pace). **Mittel-/Langdistanz und Schwimm-Wettkämpfe bekommen keinen Plan**
+  (`COMPETITION_NO_PLAN_DISCIPLINES`, `competitionPlanOffer()` → `coach`; Zod lehnt sie ab; die App zeigt „Trainer bzw.
+  Verein“). `competitionInputSchema` hat neu `distanceKm` – **genau beim Rad**, 20–300 ganze km; Rad und Triathlon
+  **nur „Ankommen“, ohne Referenzzeit**.
+- **Konstanten** (`constants.ts`, Block „Etappe WP5“ und die bestehenden Tabellen je Disziplin erweitert):
+  `COMPETITION_CYCLING` (Distanzklassen bis 60/120/200/300 km mit Mindestvorlauf und Spitzenumfang „Ankommen“
+  120/180/270/360 min/Woche, lange Ausfahrt 60/90/135/180 min; Tempo-Schätzung für die Ernährung),
+  `COMPETITION_TRIATHLON` (mindestens 3 Ausdauer-Tage, Wochenmuster, Koppeltraining, Schwimmtechnik),
+  `COMPETITION_BIKE_WORKOUTS` (Sweet-Spot, Renntempo auf dem Rad), Triathlon in `COMPETITION_DISTANCE_M` (25,75/51,5 km),
+  `COMPETITION_LEAD_WEEKS` (Sprint 19/11/7, Olympisch 26/18/16 Wochen), `COMPETITION_REQUIRED_PEAK` (Sprint 180/75,
+  Olympisch 300/120 min), `COMPETITION_PERIODIZATION` (Tapering Rad 10, Sprint 7, Olympisch 10 Tage; Spitze/Aufbau/Erholung),
+  `COMPETITION_LONG_RUN.maxMinutes` (Rad 300, Sprint 120, Olympisch 180), Renntempo je Disziplin, Dauer-Schätzung
+  Triathlon, `COMPETITION_GROUP_RULES` (unter 18: Triathlon nur Sprint, Rad höchstens 100 km).
+- **Ampel** (`plan/competition.ts`): dieselbe Kette wie beim Laufen – die **10-%-Regel gilt über die Summe aller
+  Ausdauer-Minuten** (Schwimmen + Rad + Laufen), Erholungswochen, Tapering, Plateau, „nie gestaucht“. Rad: Mindestvorlauf
+  und Spitzenumfang je Distanzklasse (`cyclingClass`, `minimumLeadWeeks/requiredPeak/requiredLongRun(…, distanceKm)`).
+  Neu: Grund **`triathlon_days_too_few`** (unter 3 Ausdauer-Tagen „zu kurz“, kein späteres Datum), Hinweise
+  **`open_water_safety`** (jeder Triathlon) und **`beginner_long_event`** (Einsteiger: Olympisch bzw. Rad über 120 km),
+  Vorschlag „kürzere Distanz“ **nur in derselben Sportart** (Olympisch → Sprint, Rad → kleinere Distanzklasse bzw.
+  100 km, dann mit `distanceKm`). Tabelle 3.3 sinngemäß: Schwangerschaft/ohne Check „nicht möglich“, Flag/ab 65 höchstens
+  „knapp“ mit `walk_only_plan` (Rad nur Ergometer, Laufen → zügiges Gehen, kein Koppeltraining), unter 18 „nicht möglich“
+  für Olympisch bzw. Rad über 100 km (`minorPlanAllowed`).
+- **Wochenbau** (`plan/multisport.ts`, `endurance-workouts.ts`, `schedule.ts` nur im Wettkampfplan): Rad = alle Tage Rad
+  (lockere Ausfahrt, **lange Ausfahrt**, ab Aufbau **Sweet-Spot** bzw. Fahrtspiel, in Spitze/Tapering Renntempo; Ausweichen
+  Ergometer/Rollentrainer). Triathlon (`triathlonWeekSports`): lange Einheit = **Rad**, übrige Tage im Wechsel Schwimmen,
+  Laufen, Rad, Laufen, Schwimmen, Rad; **Koppeltraining (`brick`) als EINE Einheit mit zwei Teilen** (Rad → Lauf,
+  `brickSplit`: Lauf 30 % der Dauer, 10–30 min) in Aufbau und Spitze, höchstens 1 je Woche, nicht in Erholungswoche/Woche
+  0, am längsten Rad-Tag ohne lange Ausfahrt ab 25 min, locker (≤ 4); **Schwimmtechnik (`technique`)** am ersten
+  Schwimm-Tag der Woche (Technikübungen + locker), sonst lockeres Schwimmen nach Dauer. Harte Einheiten nur Rad/Laufen
+  (nie Schwimmen, nie Koppeltraining), sonst alle WP2-Regeln (Zahl je Woche, 80/20, 48 h, Phasen). **Minuten je
+  Disziplin**: `sportMinutes()` – das Koppeltraining zählt mit dem Rad-Teil zu Rad und mit dem Lauf-Teil zu Laufen;
+  Summe = Ausdauer-Minuten der Woche (darauf wirkt die 10-%-Regel).
+- **Sicherheit Schwimmen:** `MULTISPORT_TEXTS_DE.openWater` (nie allein, Begleitung, Neoprenanzug, Badekappe/Boje, nur
+  erlaubte und bewachte Stellen; im Zweifel Becken) – in der Ampel (Triathlon) und bei **jeder** Schwimm-Einheit
+  (`sessionSafetyNotices`, auch ohne Wettkampf) auf „Heute“/Kalender und im Trainingsmodus.
+- **apply-safety:** Koppeltraining wird bei jeder Änderung (Ergometer statt Rad, kürzer) eine lockere Einheit;
+  Schwimmtechnik bleibt mit neu gerechneten Schritten gültig.
+- **Datenmodell** (Migrationen **`20261018120000_wp5_enums.sql`** und **`20261018120100_wp5_rad_triathlon.sql`**, nur
+  additiv bzw. `create or replace` mit gleicher Signatur, RLS unverändert): Enum-Werte `cycling`, `triathlon_sprint`,
+  `triathlon_olympic`, `brick`, `technique`; CHECK `competitions_distance` neu gefasst (Rad 20–300 km in ganzen km, sonst
+  aus der Disziplin), neue CHECKs `competitions_multisport` (Rad/Triathlon nur „Ankommen“ ohne Referenz, Referenz nur
+  Laufen) und `planned_sessions_multisport` (Koppeltraining nur Rad-Einheit, Technik nur Schwimmen); Hilfsfunktionen
+  `private.competition_server_lead_weeks` (lockerste Spalte je Disziplin/Distanzklasse) und
+  `private.competition_minor_allowed`; `save_competition` mit **optionalem** Feld `distance_km` (ältere App-Stände ohne das
+  Feld bleiben gültig – die App lässt es ohne Rad weg), `private.insert_plan_sessions` mit Distanz-Deckel und
+  unter-18-Regel je Disziplin. `database.types.ts` nachgezogen.
+- **Ernährung (W1):** erwartete Renndauer Rad = km ÷ vorsichtiges Tempo je Level (20/25/28 km/h), Triathlon feste
+  Schätzung; geschätzte Renn-Energie mit dem (niedrigeren) Rad-Ersatz-MET. Laufen unverändert.
+- **App:** „Mein Wettkampf“ mit 7 Distanzen (Radrennen mit Feld „Distanz in km (20–300)“, Triathlon Sprint/olympisch),
+  Hinweis-Text zu Mittel-/Langdistanz und Schwimmen, eigener Hinweis bei einem Ziel ohne Wettkampfplan, „Bei Rad und
+  Triathlon planen wir auf ‚Ankommen‘“ statt Zielzeit/Referenz, „Tag für die lange Ausfahrt“, „Längste Ausfahrt im Plan“,
+  Countdown/Kalender „Radrennen 120 km“, Einheit „Koppeltraining (Rad → Lauf)“ mit „Zwei Teile in einer Einheit …“,
+  Ablauf und Timer mit „(Rad)“/„(Laufen)“, Kasten „Sicherheit beim Schwimmen“. Ergebnis eintragen: Rad/Triathlon als
+  Rad-Eintrag (Triathlon ohne Distanz).
+
+**Tests:** Core neu `multisport-competition.test.ts` (25: Tabellen und Distanzklassen an den Grenzen, „Tabelle passt zur
+Kette“ für Sprint/Olympisch und alle Rad-Klassen über 49 Wochentag-Kombinationen inkl. 1 Tag darunter = zu kurz, 1/2/7
+Tage, Hinweise, Vorschläge, Mittel-/Langdistanz, Schwangerschaft/ohne Check/Flag/ab 65/unter 18, Koppeltraining-Aufteilung
+und Minuten je Disziplin, Bausteine Rad/Schwimmen, Wochenbau, Freiwasser, apply-safety, Speichern, Server-Regeln,
+Ernährung, ganzer Plan) und `generate-multisport.test.ts` (Eigenschaftstest **2 Seeds × 400 Läufe** über den GANZEN Plan:
+10-%-Regel über die Summe, Rhythmus, Plan = Ampel-Vorschau, Summe je Disziplin, Koppeltraining/Technik nur wo erlaubt,
+harte Einheiten, 80/20, Deckel, Eingabe-Prüfung und Regeln je Person). Angepasst: `competition-schema/-record/-rules`,
+`competition.test.ts` (Tabellen-Tests auf Laufen), `periodization.test.ts`, `db-sync.test.ts` (+7 WP5). pgTAP neu
+`47_wp5_rad_triathlon.test.sql` (47). App `data/competition-wp5.test.ts` (6) und Playwright
+`e2e/competition-wp5.spec.ts` (2). Zahlen siehe PR.
+
+**Regression „ohne Rad/Triathlon byte-gleich“:** `pnpm plan:examples` und `pnpm nutrition:examples` vor/nach zeichengleich;
+die festen Prüfsummen-Tests aus WP1/WP2 grün; zusätzlich Raster aus 1.274 Lauf-Ampeln und ganzen Lauf-Wettkampfplänen
+(4 Distanzen × 3 Level × 4 Zeitpläne × 4 Vorläufe × 2 Starttage × 3 Alter) gegen den Stand vor WP5: gleiche SHA-256.
+
+**Präzisierungen (vom Plan nicht ausdrücklich festgelegt, vorsichtig gelöst):**
+
+1. **Lange Ausfahrt bis 300 min** steht als Deckel in den Konstanten, wirkt aber höchstens mit **240 min**, weil ein
+   Trainingstag und eine Einheit in der Datenbank höchstens 240 min haben (TRAINING_LIMITS, CHECK) – Gründer-Frage
+   WP5-G1.
+2. **Rad-Distanzklassen** statt einer Formel: Mindestvorlauf und Spitzenumfang je Klasse (bis 60/120/200/300 km).
+   Einsteiger-Mindestvorlauf genau aus der Kette (Start 60 min), Fortgeschritten/Leistungssport 2 Wochen über der Kette
+   (wie Marathon in Tabelle 3.2). 300 km für Einsteiger: 30 Wochen.
+3. **Rad und Triathlon nur „Ankommen“** – ohne Zielzeit, Referenzzeit, Pace und Distanz-Richtwert (Riegel gilt für
+   Laufzeiten; Pace beim Rad/Schwimmen ohne Messgerät nicht sinnvoll). Anstrengung und Sprechtest bleiben das Maß.
+4. **Triathlon ab 3 Ausdauer-Tagen**, sonst „zu kurz“ mit eigenem Grund (je Disziplin ein Tag). Koppeltraining erst ab 4
+   Tagen (am Rad-Tag ohne lange Ausfahrt, ab 25 min) – bei 3 Tagen bleibt der einzige Lauf-Tag ein Lauf.
+5. **Koppeltraining locker** (Anstrengung wie ein lockerer Tag) – Ziel ist der Wechsel, nicht die Härte; es zählt nicht
+   als harte Einheit. Aufteilung Lauf 30 % (10–30 min) → Gründer-Frage WP5-G2.
+6. **Kein hartes Schwimmen**: Schwimmen nur Technik und locker nach Dauer (Plan 9); harte Einheiten nur Rad/Laufen.
+7. **Unter 18** (Tabelle 3.3 „analog“): Triathlon nur Sprint, Rad höchstens 100 km, Anstrengung ≤ 7, höchstens 1 harte
+   Einheit je Woche (wie Laufen). Den Countdown ohne Plan-Bezug kann auch eine Person unter 18 für längere Distanzen
+   speichern (wie beim Marathon) – Gründer-Frage WP5-G3.
+8. **Flag/ab 65:** wie beim Laufen (G7) höchstens „knapp“, Plan nur locker: Rad nur **Ergometer** (nie Rad im Freien,
+   Phase 3), Laufen → zügiges Gehen, Schwimmen locker im Becken, **kein Koppeltraining**.
+9. **Freiwasser-Hinweis bei jeder Schwimm-Einheit**, auch im Grundlagen-Plan ohne Wettkampf (Sicherheit, rein additive
+   Anzeige; Plan-Ausgabe unverändert).
+10. **Sweet-Spot** = Art `tempo` mit Rad-Texten (Anstrengung 6, zwei Abschnitte mit 5 min locker) – kein neuer Enum-Wert;
+    Steigerungen und Intervalle gibt es auf dem Rad nicht.
+11. **`distance_km` optional** in `save_competition` (Pflicht sind weiter die 15 bisherigen Felder): So funktioniert das
+    Speichern eines Lauf-Wettkampfs auch dann, wenn App und Datenbank kurz nicht denselben Stand haben.
+12. **Ergebnis eintragen:** Rad und Triathlon als Rad-Eintrag im Tagebuch (Triathlon ohne Distanz, weil ein Eintrag nur
+    eine Sportart kennt) – Gründer-Frage WP5-G4.
+13. **Folgeblock ohne Tagebuch-Einträge** beginnt (wie bisher beim Laufen) wieder beim Startumfang der Gruppe; dann sind
+    die Einheiten kürzer und Koppeltraining/harte Einheiten kommen später. Unverändert übernommen.
+
+**Gründer-Fragen (sichere Voreinstellung gilt, bis ihr anders entscheidet):**
+
+- **WP5-G1 – Lange Ausfahrt über 240 min:** Voreinstellung 240 min (Tageslimit). Alternative: Trainingstage und Einheiten
+  bis 300 min erlauben (kleine Migration: CHECK `training_slots`/`planned_sessions`, Eingaben in der App).
+- **WP5-G2 – Koppeltraining:** Voreinstellung locker, Lauf-Teil 30 % (10–30 min), ab 25 min, nur Aufbau/Spitze, höchstens
+  1 je Woche. Alternative: zügiger Lauf-Teil im Renntempo (dann als harte Einheit gezählt).
+- **WP5-G3 – Unter 18:** Voreinstellung Triathlon nur Sprint, Rad bis 100 km. Alternative: Olympisch ab 17 Jahren.
+- **WP5-G4 – Ergebnis Triathlon:** Voreinstellung ein Rad-Eintrag ohne Distanz. Alternative: drei Einträge (Schwimmen,
+  Rad, Laufen) bzw. eigene Spalte für die Gesamtzeit (Migration).
+- **WP5-G5 – Spitzenumfang:** Voreinstellung Sprint 180, Olympisch 300 min/Woche, Rad 120–360 min je Klasse („Ankommen“,
+  Fachprüfung). Alternative: niedrigere Werte (kürzerer Mindestvorlauf, weniger Reserve).
 
 ---
 

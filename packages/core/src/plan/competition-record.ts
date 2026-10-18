@@ -19,6 +19,9 @@ import {
   type CompetitionOwnStart,
   COMPETITION_GOALS,
   type CompetitionStatus,
+  cyclingDistanceKmSchema,
+  type RunCompetitionDiscipline,
+  runCompetitionDisciplineSchema,
 } from './competition-schema';
 import { ENDURANCE_START_GROUPS, type EnduranceStartGroup } from './safety';
 
@@ -57,11 +60,15 @@ export interface CompetitionRow {
   user_id: string;
   name: string;
   discipline: CompetitionDiscipline;
-  /** Aus der Disziplin (COMPETITION_DISTANCE_M), setzt der Server. */
+  /**
+   * Aus der Disziplin (COMPETITION_DISTANCE_M), setzt der Server; beim Rad (WP5) die eingegebene Distanz
+   * (`distance_km` × 1000).
+   */
   distance_m: number;
   race_date: string;
   goal_kind: CompetitionGoal;
   target_time_s: number | null;
+  /** Spalte vom Typ `competition_discipline`; gültig ist nur eine Lauf-Distanz (CHECK competitions_multisport, WP5). */
   reference_discipline: CompetitionDiscipline | null;
   reference_time_s: number | null;
   reference_date: string | null;
@@ -84,10 +91,16 @@ export interface SaveCompetitionPayload {
   readonly id: string | null;
   readonly name: string;
   readonly discipline: CompetitionDiscipline;
+  /**
+   * WP5: Rad-Distanz in ganzen km (20–300); fehlt bzw. null = Distanz aus der Disziplin. toSaveCompetitionPayload lässt
+   * das Feld ohne Rad weg – so nimmt auch ein Server vor der WP5-Migration Lauf-Wettkämpfe weiter an
+   * (save_competition: `distance_km` erlaubt, aber nicht Pflicht).
+   */
+  readonly distance_km?: number | null;
   readonly race_date: string;
   readonly goal_kind: CompetitionGoal;
   readonly target_time_s: number | null;
-  readonly reference_discipline: CompetitionDiscipline | null;
+  readonly reference_discipline: RunCompetitionDiscipline | null;
   readonly reference_time_s: number | null;
   readonly reference_date: string | null;
   readonly long_run_weekday: number | null;
@@ -103,16 +116,18 @@ const R = COMPETITION_START_REFERENCE;
 function inputFromPayload(p: {
   readonly name: string;
   readonly discipline: CompetitionDiscipline;
+  readonly distance_km?: number | null;
   readonly race_date: string;
   readonly goal_kind: CompetitionGoal;
   readonly target_time_s: number | null;
-  readonly reference_discipline: CompetitionDiscipline | null;
+  readonly reference_discipline: RunCompetitionDiscipline | null;
   readonly reference_time_s: number | null;
   readonly reference_date: string | null;
 }): CompetitionInput {
   return {
     name: p.name,
     discipline: p.discipline,
+    distanceKm: p.distance_km ?? null,
     raceDate: p.race_date,
     goal: p.goal_kind,
     targetTimeS: p.target_time_s,
@@ -148,10 +163,12 @@ export const saveCompetitionPayloadSchema = z
     id: z.uuid().nullable(),
     name: z.string().min(1).max(COMPETITION_INPUT_LIMITS.nameMaxLength),
     discipline: competitionDisciplineSchema,
+    // Optional (WP5): ältere Eingaben ohne das Feld bleiben gültig – wie required_keys in save_competition.
+    distance_km: cyclingDistanceKmSchema.nullable().optional(),
     race_date: isoDateSchema,
     goal_kind: z.enum(COMPETITION_GOALS),
     target_time_s: z.number().int().positive().nullable(),
-    reference_discipline: competitionDisciplineSchema.nullable(),
+    reference_discipline: runCompetitionDisciplineSchema.nullable(),
     reference_time_s: z.number().int().positive().nullable(),
     reference_date: isoDateSchema.nullable(),
     long_run_weekday: z.number().int().min(1).max(7).nullable(),
@@ -266,6 +283,7 @@ export function toSaveCompetitionPayload(params: {
     id: params.id,
     name: c.name,
     discipline: c.discipline,
+    ...(c.distanceKm === null ? {} : { distance_km: c.distanceKm }),
     race_date: c.raceDate,
     goal_kind: c.goal,
     target_time_s: c.targetTimeS,
@@ -307,6 +325,7 @@ export function storedCompetitionFromRow(
     | 'status'
     | 'name'
     | 'discipline'
+    | 'distance_m'
     | 'race_date'
     | 'goal_kind'
     | 'target_time_s'
@@ -326,6 +345,7 @@ export function storedCompetitionFromRow(
     id: null,
     name: row.name,
     discipline: row.discipline,
+    distance_km: row.discipline === 'cycling' ? row.distance_m / 1000 : null,
     race_date: row.race_date,
     goal_kind: row.goal_kind,
     target_time_s: row.target_time_s,
@@ -357,7 +377,17 @@ export function storedCompetitionFromRow(
   };
 }
 
-/** Distanz der Disziplin in Metern (= competitions.distance_m, CHECK in der Migration). */
-export function competitionDistanceM(discipline: CompetitionDiscipline): number {
+/**
+ * Distanz in Metern (= competitions.distance_m, CHECK in der Migration): aus der Disziplin; beim Rad (WP5) die
+ * eingegebene Distanz in km × 1000 (ohne Distanz: RangeError – Programmierfehler laut melden).
+ */
+export function competitionDistanceM(
+  discipline: CompetitionDiscipline,
+  distanceKm: number | null = null,
+): number {
+  if (discipline === 'cycling') {
+    if (distanceKm === null) throw new RangeError('Rad braucht eine Distanz in km.');
+    return distanceKm * 1000;
+  }
   return COMPETITION_DISTANCE_M[discipline];
 }
