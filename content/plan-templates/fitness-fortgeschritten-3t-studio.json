@@ -1,7 +1,7 @@
 {
   "id": "fitness-fortgeschritten-3t-studio",
   "version": 1,
-  "status": "draft",
+  "status": "published",
   "title_de": "Allgemeine Fitness · Fortgeschritten · 3 Tage · Studio",
   "description_de": "Pro Woche drei Ganzkörper-Einheiten im Studio, je 45–60 Minuten. Ziel allgemeine Fitness: alle großen Bewegungsmuster in moderatem Umfang, damit Kraft und Belastbarkeit im Alltag zunehmen. Für Fortgeschrittene: mehr Sätze und höhere Intensität bei weiterhin sauberer Technik, ohne Maximalversuche. Zwischen zwei Einheiten möglichst einen Ruhetag einplanen.",
   "goal_type": "general_fitness",
@@ -347,8 +347,8 @@
     "batch_id": null,
     "created_on": "2026-10-03",
     "expert_reviewed": false,
-    "reviewed_by": null,
-    "reviewed_at": null,
+    "reviewed_by": "Karsten",
+    "reviewed_at": "2026-10-18",
     "review_note": null
   }
 }

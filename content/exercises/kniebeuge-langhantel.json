@@ -1,7 +1,7 @@
 {
   "id": "kniebeuge-langhantel",
   "version": 1,
-  "status": "draft",
+  "status": "published",
   "name_de": "Kniebeuge mit Langhantel",
   "name_en": "Barbell Back Squat",
   "aliases_de": ["Back Squat"],
@@ -56,8 +56,8 @@
     "batch_id": null,
     "created_on": "2026-10-03",
     "expert_reviewed": false,
-    "reviewed_by": null,
-    "reviewed_at": null,
+    "reviewed_by": "Karsten",
+    "reviewed_at": "2026-10-18",
     "review_note": null
   }
 }
