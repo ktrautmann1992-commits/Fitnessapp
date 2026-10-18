@@ -1,6 +1,6 @@
 import { expect, test, type Page } from '@playwright/test';
 
-import { heading, onboard } from './plan-helpers';
+import { heading, onboard, repoContentStatus } from './plan-helpers';
 
 /**
  * Übungs-Glossar im TESTMODUS (docs/PLAN-UEBUNGEN-GLOSSAR-TAUSCH.md Etappe G1) mit festem Datum Mittwoch, 07.10.2026:
@@ -52,8 +52,13 @@ test('Glossar: Suche mit Umlaut-Toleranz, Filter, Trefferzahl, Detailseite', asy
   const total = Number((await count(page).innerText()).split(' ')[0]);
   expect(total).toBeGreaterThan(20);
   await expect(items(page)).toHaveCount(total);
-  // Testmodus: Entwürfe sind gekennzeichnet.
-  await expect(items(page).first()).toContainText('Testinhalt – noch nicht fachlich geprüft');
+  // Testmodus: genau die Entwürfe sind gekennzeichnet (freigegebene Übungen nicht).
+  const exerciseStatus = repoContentStatus('exercises');
+  expect(total).toBe(exerciseStatus.size);
+  const drafts = [...exerciseStatus.values()].filter((status) => status === 'draft').length;
+  await expect(
+    items(page).filter({ hasText: 'Testinhalt – noch nicht fachlich geprüft' }),
+  ).toHaveCount(drafts);
 
   // Umlaut-tolerant: „rumaenisch“ findet „Rumänisches Kreuzheben …“.
   const search = page.getByLabel('Übungen suchen');
@@ -94,7 +99,14 @@ test('Glossar: Suche mit Umlaut-Toleranz, Filter, Trefferzahl, Detailseite', asy
   await items(page).filter({ hasText: 'mit Kurzhanteln' }).click();
   await heading(page, 'Rumänisches Kreuzheben mit Kurzhanteln');
   await expect(page.getByTestId('glossary-features')).toContainText('Hüfte/Gesäß · Kurzhanteln');
-  await expect(page.getByTestId('glossary-test-content')).toBeVisible();
+  // Entwurf → „Testinhalt“; freigegeben (ohne Fachprüfung) → „nicht fachlich geprüft“.
+  if (exerciseStatus.get('rumaenisches-kreuzheben-kurzhantel') === 'draft') {
+    await expect(page.getByTestId('glossary-test-content')).toBeVisible();
+    await expect(page.getByTestId('glossary-not-reviewed')).toHaveCount(0);
+  } else {
+    await expect(page.getByTestId('glossary-not-reviewed')).toBeVisible();
+    await expect(page.getByTestId('glossary-test-content')).toHaveCount(0);
+  }
   await heading(page, "So geht's");
   await heading(page, 'Tipps');
   await heading(page, 'Häufige Fehler');

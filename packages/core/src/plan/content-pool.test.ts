@@ -9,15 +9,39 @@ import { isBodyweightTemplateId, planLibraryFromContent, selectPlanContent } fro
 import { loadRepoContentFiles, repoLibrary } from './test-library';
 
 describe('selectPlanContent', () => {
-  it('Startbestand (alle draft): nur mit allowDrafts nutzbar', () => {
-    const result = validateContent(loadRepoContentFiles());
+  it('Startbestand als Entwurf: nur mit allowDrafts nutzbar', () => {
+    const result = validateContent(loadRepoContentFiles({ status: 'draft' }));
     const live = selectPlanContent(result, { allowDrafts: false });
     expect(live.templates).toHaveLength(0);
     expect(live.exercises.size).toBe(0);
-    const test = repoLibrary();
+    const test = selectPlanContent(result, { allowDrafts: true });
     expect(test.templates).toHaveLength(42); // 24 Startbestand + 18 Körpergewicht (K2)
     expect(test.exercises.size).toBe(80); // 52 Startbestand + 27 Körpergewicht (K1) + Handtuch-Latziehen (K2)
     expect(test.containsDrafts).toBe(true);
+  });
+
+  it('Startbestand freigegeben: live vollständig nutzbar, ohne Entwurfs-Kennzeichen', () => {
+    const result = validateContent(loadRepoContentFiles({ status: 'published' }));
+    for (const allowDrafts of [false, true]) {
+      const library = selectPlanContent(result, { allowDrafts });
+      expect(library.templates).toHaveLength(42);
+      expect(library.exercises.size).toBe(80);
+      expect(library.containsDrafts).toBe(false);
+    }
+  });
+
+  it('echter Inhaltsstand: live genau die freigegebenen Inhalte, Testmodus alles', () => {
+    const result = validateContent(loadRepoContentFiles());
+    const live = selectPlanContent(result, { allowDrafts: false });
+    const publishedExercises = result.exercises.filter((e) => e.status === 'published');
+    expect([...live.exercises.keys()].sort()).toEqual(publishedExercises.map((e) => e.id).sort());
+    expect(live.containsDrafts).toBe(false);
+    const test = repoLibrary();
+    expect(test.templates).toHaveLength(42);
+    expect(test.exercises.size).toBe(80);
+    expect(test.containsDrafts).toBe(
+      [...result.exercises, ...result.templates].some((item) => item.status === 'draft'),
+    );
   });
 
   it('archived nie, Probelauf nie, roter Befund nie', () => {

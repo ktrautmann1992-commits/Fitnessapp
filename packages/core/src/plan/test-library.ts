@@ -1,6 +1,8 @@
 /**
  * Testhilfe (nur in *.test.ts): lädt den echten Inhaltsstand aus `content/` und prüft ihn mit validateContent –
- * so laufen die Plan-Tests gegen die 52 Übungen und 24 Vorlagen des Startbestands (alle `draft`).
+ * so laufen die Plan-Tests gegen die Übungen und Vorlagen des Startbestands. Der Freigabe-Status im Repository
+ * (`draft` oder nach Freigabe `published`) darf die Tests nicht ändern: Tests, die ein bestimmtes Status-Verhalten
+ * prüfen, setzen ihn mit `status` selbst (in-memory, die Dateien bleiben unverändert).
  */
 import { readdirSync, readFileSync } from 'node:fs';
 
@@ -11,7 +13,23 @@ import { type PlanLibrary, selectPlanContent } from './content-pool';
 
 const contentDir = new URL('../../../../content/', import.meta.url);
 
-export function loadRepoContentFiles(): ContentFile[] {
+/** Prüfer und Datum für in-memory freigegebene Kopien. */
+export const TEST_REVIEW = { reviewed_by: 'test', reviewed_at: '2026-10-18' } as const;
+
+/**
+ * Inhalt mit erzwungenem Status (in-memory): `draft` ohne Prüfer, `published` mit Prüfer und Datum (Pflicht laut
+ * Schema). Ohne `status` bleibt der Inhalt unverändert.
+ */
+export function withStatus<T>(data: T, status?: 'draft' | 'published'): T {
+  if (status === undefined) return data;
+  const item = data as { status: string; meta: Record<string, unknown> };
+  const review = status === 'published' ? TEST_REVIEW : { reviewed_by: null, reviewed_at: null };
+  return { ...item, status, meta: { ...item.meta, ...review } } as T;
+}
+
+export function loadRepoContentFiles(
+  options: { status?: 'draft' | 'published' } = {},
+): ContentFile[] {
   const files: ContentFile[] = [];
   for (const [kind, folder] of [
     ['exercise', 'exercises'],
@@ -23,7 +41,10 @@ export function loadRepoContentFiles(): ContentFile[] {
       files.push({
         kind,
         fileName,
-        data: JSON.parse(readFileSync(new URL(fileName, dir), 'utf8')),
+        data: withStatus(
+          JSON.parse(readFileSync(new URL(fileName, dir), 'utf8')) as unknown,
+          options.status,
+        ),
       });
     }
   }
@@ -32,10 +53,17 @@ export function loadRepoContentFiles(): ContentFile[] {
 
 let cached: PlanLibrary | undefined;
 
-/** Startbestand als Bibliothek im Testmodus (Entwürfe erlaubt). */
+/** Startbestand (Status wie im Repository) als Bibliothek im Testmodus (Entwürfe erlaubt). */
 export function repoLibrary(): PlanLibrary {
   cached ??= selectPlanContent(validateContent(loadRepoContentFiles()), { allowDrafts: true });
   return cached;
+}
+
+/** Startbestand mit erzwungenem Status als Bibliothek im Testmodus (Entwürfe erlaubt). */
+export function repoLibraryWithStatus(status: 'draft' | 'published'): PlanLibrary {
+  return selectPlanContent(validateContent(loadRepoContentFiles({ status })), {
+    allowDrafts: true,
+  });
 }
 
 /** Montag, 05.10.2026 – fester Stichtag für die Tests. */
