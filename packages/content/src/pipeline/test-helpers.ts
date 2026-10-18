@@ -3,7 +3,7 @@
  * gefälschtes gh, gefälschter Gemini-Client (keine echten Netzaufrufe). Wird nur von *.test.ts genutzt.
  */
 import { execFileSync } from 'node:child_process';
-import { cpSync, mkdtempSync, readFileSync, rmSync } from 'node:fs';
+import { cpSync, mkdtempSync, readdirSync, readFileSync, rmSync, writeFileSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { dirname, join, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
@@ -28,8 +28,47 @@ export interface TempRepo {
   cleanup(): void;
 }
 
+/**
+ * Freigabe-Status der kopierten Übungen und Plan-Vorlagen im Test-Repository:
+ * - `draft` (Standard): alles Entwurf ohne Prüfer – der Ausgangszustand, von dem die Pipeline-Tests ausgehen
+ *   (Freigabe, V3-Blockade, Einspielen nur freigegebener Inhalte). So hängen die Tests nicht davon ab, ob der
+ *   echte Bestand unter content/ schon freigegeben ist.
+ * - `published`: alles freigegeben (Prüfer und Datum gesetzt).
+ */
+export type TempRepoContentStatus = 'draft' | 'published';
+
+/** Prüfer und Datum, mit denen `contentStatus: 'published'` freigibt. */
+export const TEMP_REPO_REVIEW = { reviewed_by: 'Test', reviewed_at: '2026-10-03' } as const;
+
+/**
+ * Setzt Status und Prüfvermerk einer Inhaltsdatei per Textersetzung (Formatierung bleibt wie im Repository,
+ * Prettier-Prüfungen der Pipeline bleiben also grün). Jede Datei hat genau ein `status`, `reviewed_by` und
+ * `reviewed_at` (geprüft).
+ */
+export function setContentStatus(text: string, status: 'draft' | 'published'): string {
+  const value = (v: string | null) => (v === null ? 'null' : JSON.stringify(v));
+  const review =
+    status === 'published' ? TEMP_REPO_REVIEW : { reviewed_by: null, reviewed_at: null };
+  let result = text;
+  for (const [key, replacement] of [
+    ['status', value(status)],
+    ['reviewed_by', value(review.reviewed_by)],
+    ['reviewed_at', value(review.reviewed_at)],
+  ] as const) {
+    const pattern = new RegExp(`("${key}": )(null|"[^"]*")`, 'g');
+    const matches = result.match(pattern) ?? [];
+    if (matches.length !== 1) {
+      throw new Error(`setContentStatus: „${key}“ ${matches.length}-mal statt genau einmal`);
+    }
+    result = result.replace(pattern, `$1${replacement}`);
+  }
+  return result;
+}
+
 /** Legt ein Repository mit dem echten Startbestand an; main ist nach origin gepusht. */
-export function createTempRepo(options: { withContent?: boolean } = {}): TempRepo {
+export function createTempRepo(
+  options: { withContent?: boolean; contentStatus?: TempRepoContentStatus } = {},
+): TempRepo {
   const origin = mkdtempSync(join(tmpdir(), 'content-origin-'));
   const root = mkdtempSync(join(tmpdir(), 'content-repo-'));
   git(origin, ['init', '--quiet', '--bare', '--initial-branch=main']);
@@ -39,12 +78,15 @@ export function createTempRepo(options: { withContent?: boolean } = {}): TempRep
   git(root, ['config', 'commit.gpgsign', 'false']);
   cpSync(join(REAL_REPO_ROOT, '.prettierrc.json'), join(root, '.prettierrc.json'));
   if (options.withContent !== false) {
-    cpSync(join(REAL_REPO_ROOT, 'content/exercises'), join(root, 'content/exercises'), {
-      recursive: true,
-    });
-    cpSync(join(REAL_REPO_ROOT, 'content/plan-templates'), join(root, 'content/plan-templates'), {
-      recursive: true,
-    });
+    const status = options.contentStatus ?? 'draft';
+    for (const folder of ['content/exercises', 'content/plan-templates']) {
+      cpSync(join(REAL_REPO_ROOT, folder), join(root, folder), { recursive: true });
+      for (const name of readdirSync(join(root, folder))) {
+        if (!name.endsWith('.json')) continue;
+        const file = join(root, folder, name);
+        writeFileSync(file, setContentStatus(readFileSync(file, 'utf8'), status));
+      }
+    }
   }
   git(root, ['add', '-A']);
   git(root, ['commit', '--quiet', '-m', 'Startbestand']);

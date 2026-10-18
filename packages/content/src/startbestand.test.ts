@@ -1,6 +1,6 @@
 /**
- * Prüft den Startbestand im Repository (content/): vollständige Matrix, Kennzeichnung als KI-Entwurf und
- * KEINE roten Fehler – auch nicht an Entwürfen (strenger als content:validate, das Entwürfe nur meldet).
+ * Prüft den Startbestand im Repository (content/): vollständige Matrix, KI-Kennzeichnung, Freigabe nur mit
+ * Prüfvermerk und KEINE roten Fehler – auch nicht an Entwürfen (strenger als content:validate, das Entwürfe nur meldet).
  */
 import { readFileSync } from 'node:fs';
 import { join } from 'node:path';
@@ -74,16 +74,21 @@ describe('Startbestand (content/)', () => {
     }
   });
 
-  it('alles Entwurf und als KI-Entwurf gekennzeichnet (ohne Prüfung)', () => {
+  it('jeder Inhalt ist Entwurf (ohne Prüfvermerk) oder freigegeben (mit Prüfer und Datum); KI-Kennzeichnung bleibt', () => {
     for (const item of [...result.exercises, ...result.templates]) {
-      expect(item.status).toBe('draft');
-      expect(item.version).toBe(1);
-      expect(item.meta).toMatchObject({
+      expect(['draft', 'published'], item.id).toContain(item.status);
+      expect(item.version, item.id).toBe(1);
+      expect(item.meta, item.id).toMatchObject({
         origin: 'claude_session',
         model: 'claude-opus-5-5',
         expert_reviewed: false,
-        reviewed_by: null,
       });
+      if (item.status === 'draft') {
+        expect(item.meta, item.id).toMatchObject({ reviewed_by: null, reviewed_at: null });
+      } else {
+        expect(item.meta.reviewed_by?.trim(), item.id).toBeTruthy();
+        expect(item.meta.reviewed_at, item.id).toMatch(/^\d{4}-\d{2}-\d{2}$/);
+      }
     }
   });
 
