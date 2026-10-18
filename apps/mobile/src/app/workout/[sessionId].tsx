@@ -26,6 +26,7 @@ import { Platform, StyleSheet, View } from 'react-native';
 import { IntervalTimer } from '@/components/competition';
 import { RestEndNotificationOffer } from '@/components/notifications';
 import { MedicalNotice } from '@/components/plan';
+import { SessionAdjustedNotice } from '@/components/live-adjust';
 import { ConfirmDialog, Screen } from '@/components/screen';
 import { focusTestId, SwapDialog, type SwapDecision, SwapFeedback } from '@/components/swap';
 import {
@@ -91,6 +92,7 @@ import {
   startKind,
   workoutView,
 } from '@/data/workout-session';
+import { stateOverridesFor } from '@/data/live-adjust';
 import { t } from '@/i18n';
 import { errorText } from '@/lib/error-text';
 import { berlinTodayIso, formatDecimal, formatKg, parseDecimal, todayIso } from '@/lib/format';
@@ -176,9 +178,11 @@ export default function WorkoutScreen() {
             // „Nur heute“-Tausche vor dem Training: Der neue Entwurf übernimmt die getauschte Übung (5.1).
             daySwaps: app.daySwaps,
             ownerUserId,
+            // Live-Anpassung (Phase 4b): wirksame Zustands-Vorgaben (Testmodus mit „Premium simulieren“).
+            stateOverrides: rows ? stateOverridesFor(rows, app.liveAdjust.adjustments) : undefined,
           })
         : null,
-    [app.daySwaps, ownerUserId, lib, rows, rules, sessionId, today],
+    [app.daySwaps, app.liveAdjust.adjustments, ownerUserId, lib, rows, rules, sessionId, today],
   );
   // Neuer Entwurf erst beim ersten Tipp gespeichert (vorher bleibt nichts liegen, wenn man nur hineinschaut).
   const initialDraft = useMemo<WorkoutDraft | null>(() => {
@@ -551,6 +555,7 @@ export default function WorkoutScreen() {
           ? workoutView(nextRows, lib, rules, sessionId, today, {
               daySwaps: app.daySwaps,
               ownerUserId,
+              stateOverrides: stateOverridesFor(nextRows, app.liveAdjust.adjustments),
             })
           : null;
       const replanned = nextView ? replannedTarget(nextView, exercise) : null;
@@ -599,6 +604,7 @@ export default function WorkoutScreen() {
       {active?.plan.medical_notice ? <MedicalNotice /> : null}
       {/* Etappe E: einmalige Frage beim ersten Start des Trainingsmodus (nur App, nur mit Pausen). */}
       {isEndurance ? null : <RestEndNotificationOffer />}
+      {view && !current.editing ? <SessionAdjustedNotice session={view.stored} /> : null}
       {Platform.OS === 'web' ? (
         <Notice tone="info" testID="workout-tab-hint">
           {t.workout.tabHint}

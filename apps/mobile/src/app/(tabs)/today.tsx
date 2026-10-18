@@ -15,6 +15,7 @@ import { useCallback, useEffect, useMemo, useState } from 'react';
 import { Platform, View } from 'react-native';
 
 import { CountdownCard, PhaseBand } from '@/components/competition';
+import { FewerDaysCard, SessionAdjustedNotice } from '@/components/live-adjust';
 import { NutritionTodayCard } from '@/components/nutrition';
 import { MedicalNotice, SessionCard, WeekOverview } from '@/components/plan';
 import { ConfirmDialog, Screen } from '@/components/screen';
@@ -36,6 +37,7 @@ import {
   displayedSessionNames,
   withDisplayedNames,
 } from '@/data/competition';
+import { stateOverridesFor } from '@/data/live-adjust';
 import { logForSession } from '@/data/log-rows';
 import type { WorkoutDraft } from '@/data/workout-draft';
 import { startKind, trainedTodayOther, workoutView } from '@/data/workout-session';
@@ -525,6 +527,8 @@ export default function TodayScreen() {
           excludeLogId: logForSession(rows, selectedSession.id)?.id ?? null,
           daySwaps: app.daySwaps,
           ownerUserId,
+          // Live-Anpassung (Phase 4b): wirksame Zustands-Vorgaben (Testmodus mit „Premium simulieren“).
+          stateOverrides: stateOverridesFor(rows, app.liveAdjust.adjustments),
         })
       : null;
   const targets = view?.items.map(workoutTargetLines);
@@ -649,6 +653,8 @@ export default function TodayScreen() {
   return (
     <Screen title={t.today.title} testID="today" footer={footer}>
       {header}
+      {/* Live-Anpassung (Phase 4b, 8.1): offener Vorschlag „Weniger Trainingstage?“ oben. */}
+      <FewerDaysCard today={today} />
       {notice.kind !== 'none' ? (
         <Notice
           tone={notice.kind === 'offer' ? 'info' : 'danger'}
@@ -728,6 +734,10 @@ export default function TodayScreen() {
               onViewExclusions: viewExclusions,
             }}
           />
+          {/* Live-Anpassung (Phase 4b, 8.1): Kennzeichen „angepasst“ mit Link zur Erklärung. */}
+          {selectedSession.status === 'planned' ? (
+            <SessionAdjustedNotice session={selectedSession} />
+          ) : null}
           {/* Vom Core verworfene „Nur heute“-Tausche still aus dem Speicher räumen (8.2). */}
           <DaySwapCleanup dropped={shown.droppedDaySwaps ?? []} />
           {swapFeedback ? (

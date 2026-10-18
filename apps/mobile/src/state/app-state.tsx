@@ -60,6 +60,8 @@ import {
 import { createBackend, deviceStore, newId } from '@/data/create-backend';
 import { createDaySwapStore, prunedDaySwaps, withoutHealthPlanSwaps } from '@/data/day-swaps';
 import type { FavoriteChange } from '@/data/food-log-rows';
+import { followUpAdjustments, type LocalAdjustment } from '@/data/live-adjust';
+import { applyFewerDays } from '@/data/live-adjust-fewer-days';
 import {
   draftToPayload,
   isValidPayload,
@@ -151,6 +153,23 @@ export type NutritionLibraryState =
   /** Supabase-Modus vor Etappe N7. */
   | { kind: 'unsupported' }
   | { kind: 'error' };
+
+/**
+ * Live-Anpassung (Phase 4b, Etappe D): nur im Testmodus mit Schalter „Premium simulieren“ (Wächter K2). Im
+ * Supabase-Modus `available: false` – ausgeblendet, bis Etappe B/C die Premium-Prüfung auf dem Server bauen.
+ */
+export interface LiveAdjustState {
+  available: boolean;
+  simulatePremium: boolean;
+  /** Alle Anpassungen des Kontos (alle Pläne), aus dem geschützten Speicher. */
+  adjustments: readonly LocalAdjustment[];
+  status: 'loading' | 'ready' | 'error';
+}
+
+/** Ergebnis von „Umstellen“ (weniger Trainingstage, 8.1 Punkt 3). */
+export type FewerDaysOutcome =
+  | { ok: true; days: number }
+  | { ok: false; code: BackendErrorCode | 'expired' | 'not_possible' | 'incomplete' };
 
 /** Bibliothek der Plan-Engine (für Anzeige und Folgeblock). */
 type LibraryState =
@@ -360,6 +379,20 @@ export interface AppContextValue {
     changes: readonly PreferenceChange[],
     at: PreferenceSwapContext | null,
   ) => Promise<UserRows>;
+
+  // --- Live-Anpassung (Phase 4b, Etappe D) ---
+  liveAdjust: LiveAdjustState;
+  /** Testmodus: „Premium simulieren (nur Test)“ an/aus (Einschalten rechnet sofort). */
+  setSimulatePremium: (enabled: boolean) => Promise<void>;
+  /** Rückgängig (nur wenn erlaubt); danach neu laden. */
+  revertAdjustment: (id: string) => Promise<'reverted' | 'not_allowed'>;
+  /** Vorschlag ablehnen („Nein danke“). */
+  declineProposal: (id: string) => Promise<'declined' | 'expired' | 'confirmed'>;
+  /**
+   * „Umstellen“: Tagebuch-Warteschlange senden, Trainingstage ohne den gewählten Wochentag speichern, neuen Plan
+   * erstellen (Tagebuch bleibt), dann den Vorschlag bestätigen (8.1 Punkt 3).
+   */
+  acceptFewerDays: (id: string, dropWeekday: number) => Promise<FewerDaysOutcome>;
 }
 
 /** Meldung nach verworfener Verschiebung (Text in i18n, hier nur der Schlüssel). */
@@ -414,6 +447,13 @@ export function AppStateProvider({ children }: { children: ReactNode }) {
     sessionOnly: false,
   });
   const [mealPlanSaveAttempt, setMealPlanSaveAttempt] = useState(0);
+  // Testmodus: bis zum ersten Laden „loading“ – solange hängt der Folgeblock nicht an (Wächter D M4).
+  const [liveAdjust, setLiveAdjust] = useState<LiveAdjustState>(() => ({
+    available: backend.liveAdjust !== undefined,
+    simulatePremium: false,
+    adjustments: [],
+    status: backend.liveAdjust !== undefined ? 'loading' : 'ready',
+  }));
   /** Automatisch gespeicherte Essenspläne: Woche | Angaben-Fingerabdruck (nur Arbeitsspeicher, Etappe N5). */
   const persistedMealPlansRef = useRef(new Set<string>());
   const appendingRef = useRef(false);
@@ -474,6 +514,21 @@ export function AppStateProvider({ children }: { children: ReactNode }) {
     [daySwapStore],
   );
 
+  /** Live-Anpassung (Testmodus): Schalter und Anpassungen aus dem Backend; Fehler still (der Plan bleibt gültig). */
+  const reloadLiveAdjust = useCallback(async () => {
+    const live = backend.liveAdjust;
+    if (!live) return;
+    try {
+      const [simulatePremium, adjustments] = await Promise.all([
+        live.simulatePremium(),
+        live.adjustments(),
+      ]);
+      setLiveAdjust({ available: true, simulatePremium, adjustments, status: 'ready' });
+    } catch {
+      setLiveAdjust((current) => ({ ...current, available: true, status: 'error' }));
+    }
+  }, [backend]);
+
   const loadUser = useCallback(async (): Promise<UserRows> => {
     const result = await backend.loadRows();
     setRows(result.rows);
@@ -482,8 +537,14 @@ export function AppStateProvider({ children }: { children: ReactNode }) {
     refreshPending();
     await reloadDrafts();
     await reloadDaySwaps(result.rows);
+    if (result.liveAdjust) {
+      // Testmodus: Anpassungen aus demselben Ladeschritt wie die Zeilen (Wächter D M4).
+      setLiveAdjust({ available: true, ...result.liveAdjust, status: 'ready' });
+    } else {
+      await reloadLiveAdjust();
+    }
     return result.rows;
-  }, [backend, refreshPending, reloadDaySwaps, reloadDrafts]);
+  }, [backend, refreshPending, reloadDaySwaps, reloadDrafts, reloadLiveAdjust]);
 
   /** Lädt Texte, Sitzung und Daten (Status bleibt bis zum Ende unverändert). */
   const load = useCallback(async () => {
@@ -1015,7 +1076,13 @@ export function AppStateProvider({ children }: { children: ReactNode }) {
     setNutritionLibrary({ kind: 'idle' });
     setMealPlanSaveFailed(false);
     persistedMealPlansRef.current.clear();
-  }, []);
+    setLiveAdjust({
+      available: backend.liveAdjust !== undefined,
+      simulatePremium: false,
+      adjustments: [],
+      status: backend.liveAdjust !== undefined ? 'loading' : 'ready',
+    });
+  }, [backend]);
 
   // --- Übungstausch (Etappe T2) -----------------------------------------------------------------------------
   const addDaySwap = useCallback(
@@ -1232,73 +1299,78 @@ export function AppStateProvider({ children }: { children: ReactNode }) {
     [answers, backend, versions],
   );
 
-  const createPlan = useCallback(async (): Promise<CreatePlanOutcome> => {
-    if (!rows) return { ok: false, code: 'not_signed_in' };
-    try {
-      // Erzeugen braucht die vollständige Bibliothek (Vorlagen) – offline nicht möglich.
-      const loaded = await backend.loadPlanLibrary({ allowCached: false });
-      if (!loaded) return { ok: false, code: 'network' };
-      setLibrary({ kind: 'ready', library: loaded });
-      const today = todayIso();
-      // Geplanter Wettkampf MIT Plan-Bezug und passender Distanz → wieder ein Wettkampfplan (Ampel neu gerechnet).
-      const planned = plannedCompetition(rows);
-      let withoutCompetition: 'not_feasible' | 'not_possible' | null = null;
-      if (
-        planned &&
-        planned.stored.effectiveGoal !== null &&
-        rows.goals?.goal_type === 'endurance' &&
-        rows.goals.discipline === planned.stored.competition.discipline
-      ) {
-        const build = buildCompetitionPlan(
-          rows,
-          versions,
-          activePlan(rows),
-          loaded,
-          draftFromStored(planned.stored),
-          planned.stored.id,
-          today,
-        );
-        if (typeof build !== 'string' && build.result.ok) {
-          if (!generatedCompetitionPlanSchema.safeParse(build.result.plan).success) {
-            return { ok: false, code: 'invalid_inputs' };
+  const createPlanFor = useCallback(
+    async (rows: UserRows | null): Promise<CreatePlanOutcome> => {
+      if (!rows) return { ok: false, code: 'not_signed_in' };
+      try {
+        // Erzeugen braucht die vollständige Bibliothek (Vorlagen) – offline nicht möglich.
+        const loaded = await backend.loadPlanLibrary({ allowCached: false });
+        if (!loaded) return { ok: false, code: 'network' };
+        setLibrary({ kind: 'ready', library: loaded });
+        const today = todayIso();
+        // Geplanter Wettkampf MIT Plan-Bezug und passender Distanz → wieder ein Wettkampfplan (Ampel neu gerechnet).
+        const planned = plannedCompetition(rows);
+        let withoutCompetition: 'not_feasible' | 'not_possible' | null = null;
+        if (
+          planned &&
+          planned.stored.effectiveGoal !== null &&
+          rows.goals?.goal_type === 'endurance' &&
+          rows.goals.discipline === planned.stored.competition.discipline
+        ) {
+          const build = buildCompetitionPlan(
+            rows,
+            versions,
+            activePlan(rows),
+            loaded,
+            draftFromStored(planned.stored),
+            planned.stored.id,
+            today,
+          );
+          if (typeof build !== 'string' && build.result.ok) {
+            if (!generatedCompetitionPlanSchema.safeParse(build.result.plan).success) {
+              return { ok: false, code: 'invalid_inputs' };
+            }
+            const next = await saveCompetitionPlan(rows, build, build.result.plan);
+            setRows(next);
+            setPlanMessage(null);
+            refreshPending();
+            return { ok: true, plan: build.result.plan };
           }
-          const next = await saveCompetitionPlan(rows, build, build.result.plan);
-          setRows(next);
-          setPlanMessage(null);
-          refreshPending();
-          return { ok: true, plan: build.result.plan };
+          // Ampel rot bzw. nicht möglich: nie stauchen – Grundlagen-Plan mit Hinweis. Eigener Text, wenn gar keine Ampel
+          // möglich war (Renntag vorbei, Angaben ungültig – Wächter N4).
+          withoutCompetition =
+            typeof build !== 'string' &&
+            !build.result.ok &&
+            build.result.error === 'competition_not_feasible'
+              ? 'not_feasible'
+              : 'not_possible';
         }
-        // Ampel rot bzw. nicht möglich: nie stauchen – Grundlagen-Plan mit Hinweis. Eigener Text, wenn gar keine Ampel
-        // möglich war (Renntag vorbei, Angaben ungültig – Wächter N4).
-        withoutCompetition =
-          typeof build !== 'string' &&
-          !build.result.ok &&
-          build.result.error === 'competition_not_feasible'
-            ? 'not_feasible'
-            : 'not_possible';
+        const result = generatePlanFromRows(rows, versions, loaded, today);
+        if (!result.ok) {
+          return {
+            ok: false,
+            code: result.error === 'no_template' ? 'no_template' : result.error,
+          };
+        }
+        // Zod an der Grenze: Datenbank-Grenzen prüfen, bevor gespeichert wird.
+        if (!generatedPlanSchema.safeParse(result.plan).success) {
+          return { ok: false, code: 'invalid_inputs' };
+        }
+        const next = await backend.savePlan(toSavePlanPayload(result.plan), rows);
+        setRows(next);
+        setPlanMessage(null);
+        refreshPending();
+        return withoutCompetition !== null
+          ? { ok: true, plan: result.plan, withoutCompetition }
+          : { ok: true, plan: result.plan };
+      } catch (error) {
+        return { ok: false, code: errorCode(error) };
       }
-      const result = generatePlanFromRows(rows, versions, loaded, today);
-      if (!result.ok) {
-        return {
-          ok: false,
-          code: result.error === 'no_template' ? 'no_template' : result.error,
-        };
-      }
-      // Zod an der Grenze: Datenbank-Grenzen prüfen, bevor gespeichert wird.
-      if (!generatedPlanSchema.safeParse(result.plan).success) {
-        return { ok: false, code: 'invalid_inputs' };
-      }
-      const next = await backend.savePlan(toSavePlanPayload(result.plan), rows);
-      setRows(next);
-      setPlanMessage(null);
-      refreshPending();
-      return withoutCompetition !== null
-        ? { ok: true, plan: result.plan, withoutCompetition }
-        : { ok: true, plan: result.plan };
-    } catch (error) {
-      return { ok: false, code: errorCode(error) };
-    }
-  }, [backend, refreshPending, rows, saveCompetitionPlan, versions]);
+    },
+    [backend, refreshPending, saveCompetitionPlan, versions],
+  );
+
+  const createPlan = useCallback(() => createPlanFor(rows), [createPlanFor, rows]);
 
   const createCompetitionPlan = useCallback(
     async (
@@ -1499,10 +1571,21 @@ export function AppStateProvider({ children }: { children: ReactNode }) {
       return;
     }
     if (competition.kind === 'none') return;
+    // Wächter D M4: Ohne sicheren Stand der Anpassungen kein Folgeblock (sonst ohne carriedLoadWeeks).
+    const adjustments = followUpAdjustments(rows, liveAdjust);
+    if (adjustments === null) return;
     const sessions =
       competition.kind === 'block'
         ? competition.sessions
-        : nextBlockFromRows(rows, active, safetyRules, library.library, today);
+        : nextBlockFromRows(
+            rows,
+            active,
+            safetyRules,
+            library.library,
+            today,
+            // Live-Anpassung: carriedLoadWeeks + restoreTemporaryChanges (Plan 5.2 Punkt 5).
+            adjustments,
+          );
     if (!sessions) return;
     appendingRef.current = true;
     try {
@@ -1525,7 +1608,61 @@ export function AppStateProvider({ children }: { children: ReactNode }) {
     } finally {
       appendingRef.current = false;
     }
-  }, [backend, library, loadUser, offline, rows, safetyRules, versions]);
+  }, [backend, library, liveAdjust, loadUser, offline, rows, safetyRules, versions]);
+
+  // --- Live-Anpassung (Etappe D) ------------------------------------------------------------------------------
+  const setSimulatePremium = useCallback(
+    async (enabled: boolean) => {
+      const live = backend.liveAdjust;
+      if (!live) return;
+      await live.setSimulatePremium(enabled);
+      await loadUser();
+    },
+    [backend, loadUser],
+  );
+
+  const revertAdjustment = useCallback(
+    async (id: string) => {
+      const live = backend.liveAdjust;
+      if (!live) return 'not_allowed' as const;
+      const result = await live.revert(id);
+      await loadUser().catch(() => undefined);
+      return result;
+    },
+    [backend, loadUser],
+  );
+
+  const declineProposal = useCallback(
+    async (id: string) => {
+      const live = backend.liveAdjust;
+      if (!live) return 'expired' as const;
+      const result = await live.decide(id, false);
+      await reloadLiveAdjust();
+      return result;
+    },
+    [backend, reloadLiveAdjust],
+  );
+
+  const acceptFewerDays = useCallback(
+    async (id: string, dropWeekday: number): Promise<FewerDaysOutcome> => {
+      if (!backend.liveAdjust || !rows) return { ok: false, code: 'not_signed_in' };
+      // Wächter D M1: Plan erst auf einer Kopie erzeugen, dann speichern; Bestätigung ausgewertet (data/…-fewer-days.ts).
+      const outcome = await applyFewerDays(backend, {
+        rows,
+        versions,
+        proposal: liveAdjust.adjustments.find((a) => a.id === id),
+        dropWeekday,
+        today: todayIso(),
+      });
+      if (outcome.rows) {
+        setRows(outcome.rows);
+        setPlanMessage(null);
+      }
+      await loadUser().catch(() => undefined);
+      return outcome.ok ? { ok: true, days: outcome.days } : { ok: false, code: outcome.code };
+    },
+    [backend, liveAdjust.adjustments, loadUser, rows, versions],
+  );
 
   /** Day-Swaps des Kontos vom Gerät entfernen (Abmelden, Konto löschen). */
   const forgetDaySwaps = useCallback(async () => {
@@ -1664,6 +1801,11 @@ export function AppStateProvider({ children }: { children: ReactNode }) {
       deleteCustomMeal,
       saveUserFoodProduct,
       deleteUserFoodProduct,
+      liveAdjust,
+      setSimulatePremium,
+      revertAdjustment,
+      declineProposal,
+      acceptFewerDays,
     }),
     [
       backend,
@@ -1747,6 +1889,11 @@ export function AppStateProvider({ children }: { children: ReactNode }) {
       deleteCustomMeal,
       saveUserFoodProduct,
       deleteUserFoodProduct,
+      liveAdjust,
+      setSimulatePremium,
+      revertAdjustment,
+      declineProposal,
+      acceptFewerDays,
     ],
   );
 

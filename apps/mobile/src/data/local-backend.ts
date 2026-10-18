@@ -85,6 +85,13 @@ import {
   checkRecipeRatingSave,
 } from './rating-rows';
 import { preferencesFromRows, sessionDisplay } from './exercise-swap';
+import {
+  type LocalAdjustment,
+  LiveAdjustStore,
+  overlayPlanAdjustments,
+  recomputeLiveAdjustments,
+  revertAllowed,
+} from './live-adjust';
 import { checkSessionLog, isValidOp, isValidPlanOp, isValidPreferenceOp } from './local-rules';
 import {
   applySessionLog,
@@ -157,6 +164,12 @@ interface LocalDb {
    */
   foodProducts?: Record<string, FoodProductRecord>;
   productLookups?: LocalProductLookupCount[];
+  /**
+   * Live-Anpassung (Phase 4b, Etappe D): Schalter „Premium simulieren (nur Test)“. Lebt AUSSCHLIESSLICH hier im
+   * Testmodus (Wächter K2) – kein Gesundheitsdatum, nur ein Schalter. Die Anpassungen selbst liegen im geschützten
+   * Speicher `liveAdjust`, nie hier.
+   */
+  simulatePremium?: boolean;
 }
 
 export interface LocalBackendOptions {
@@ -176,6 +189,11 @@ export interface LocalBackendOptions {
    * Standard (Tests): Arbeitsspeicher.
    */
   draftStore?: ProtectedStore;
+  /**
+   * Live-Anpassung (Etappe D, docs/PLAN-PHASE-4B.md 8.3): geschützter Speicher der Anpassungen (App verschlüsselt,
+   * Browser sessionStorage). Standard (Tests): Arbeitsspeicher.
+   */
+  liveAdjustStore?: ProtectedStore;
 }
 
 /**
@@ -242,6 +260,58 @@ function serializeWrites(backend: Backend): Backend {
     const start = backend.signIn.start;
     wrapped.signIn = { kind: 'test_mode', start: () => serial(start) };
   }
+  // Live-Anpassung (Etappe D): lesen und schreiben localDb bzw. den geschützten Speicher – ebenfalls nacheinander.
+  const live = backend.liveAdjust;
+  if (live) {
+    wrapped.liveAdjust = {
+      simulatePremium: () => serial(() => live.simulatePremium()),
+      setSimulatePremium: (enabled: boolean) => serial(() => live.setSimulatePremium(enabled)),
+      adjustments: () => serial(() => live.adjustments()),
+      revert: (id: string) => serial(() => live.revert(id)),
+      decide: (id: string, accept: boolean) => serial(() => live.decide(id, accept)),
+    } satisfies NonNullable<Backend['liveAdjust']>;
+  }
+  return wrapped as unknown as Backend;
+}
+
+const isUserRows = (value: unknown): value is UserRows =>
+  typeof value === 'object' &&
+  value !== null &&
+  Array.isArray((value as Partial<UserRows>).plannedSessions) &&
+  Array.isArray((value as Partial<UserRows>).plannedExercises) &&
+  Array.isArray((value as Partial<UserRows>).plans);
+
+/**
+ * Live-Anpassung (Etappe D): JEDER Stand, den das Testmodus-Backend herausgibt, trägt die wirksamen Plan-Änderungen
+ * (overlayPlanAdjustments) – so wie im Supabase-Modus die Plan-Spalten schon geändert vom Server kommen. Gespeichert
+ * bleibt der ursprüngliche Plan. Ohne Anpassungen unverändert (Gratis).
+ */
+function withPlanOverlay(
+  backend: Backend,
+  overlay: (rows: UserRows) => Promise<UserRows>,
+): Backend {
+  const wrapped: Record<string, unknown> = { ...backend };
+  for (const [key, value] of Object.entries(backend)) {
+    if (typeof value !== 'function') continue;
+    const method = value as (...args: unknown[]) => unknown;
+    wrapped[key] = (...args: unknown[]) => {
+      const result = method(...args);
+      if (!(result instanceof Promise)) return result;
+      return result.then(async (resolved: unknown) => {
+        if (isUserRows(resolved)) return overlay(resolved);
+        if (
+          typeof resolved === 'object' &&
+          resolved !== null &&
+          'offline' in resolved &&
+          isUserRows((resolved as { rows?: unknown }).rows)
+        ) {
+          const snapshot = resolved as unknown as { rows: UserRows };
+          return { ...snapshot, rows: await overlay(snapshot.rows) };
+        }
+        return resolved;
+      });
+    };
+  }
   return wrapped as unknown as Backend;
 }
 
@@ -255,6 +325,48 @@ const LOCAL_VERSIONS: ConsentVersions = versionsFromDocuments(LOCAL_CONSENT_DOCU
 export function createLocalBackend(store: KeyValueStore, options: LocalBackendOptions): Backend {
   let library: PlanLibrary | null = null;
   const drafts = new DraftStore(options.draftStore ?? createMemoryProtectedStore());
+  const liveStore = new LiveAdjustStore(options.liveAdjustStore ?? createMemoryProtectedStore());
+
+  /** Anpassungen des Kontos (geschützter Speicher); ohne Konto leer. */
+  async function adjustmentsOf(owner: string | null | undefined): Promise<LocalAdjustment[]> {
+    return owner ? liveStore.load(owner) : [];
+  }
+
+  /** Stand mit wirksamen Plan-Änderungen (nur für Anzeige und Prüfungen; gespeichert wird der ursprüngliche Plan). */
+  async function overlaid(rows: UserRows): Promise<UserRows> {
+    try {
+      const list = await adjustmentsOf(rows.profile?.user_id);
+      return list.length === 0 ? rows : overlayPlanAdjustments(rows, list);
+    } catch {
+      // Wächter D M2: Ein Fehler der Live-Anpassung blockiert nie das Backend – Rückfall auf den gespeicherten Plan.
+      return rows;
+    }
+  }
+
+  /**
+   * Neu rechnen (Plan 8.2, Testmodus): nach dem gespeicherten Training und beim Laden (= Sync, nach
+   * close_missed_sessions). NUR mit „Premium simulieren“ entstehen Anpassungen; ohne Schalter werden höchstens offene
+   * Vorschläge als abgelaufen markiert. Fehler sind still (der Plan bleibt gültig, 8.4) – nie blockierend.
+   */
+  async function recomputeLive(rows: UserRows, entitled: boolean): Promise<void> {
+    const owner = rows.profile?.user_id;
+    if (!owner) return;
+    try {
+      const stored = await liveStore.load(owner);
+      if (!entitled && stored.length === 0) return;
+      const next = recomputeLiveAdjustments(rows, stored, {
+        library: entitled ? await planLibrary() : null,
+        versions: LOCAL_VERSIONS,
+        today: options.today(),
+        now: options.now(),
+        newId: options.newId,
+        entitled,
+      });
+      if (next !== stored) await liveStore.save(owner, next);
+    } catch {
+      // still – erneuter Versuch beim nächsten Speichern bzw. Laden (8.4 „Neu berechnen gescheitert“).
+    }
+  }
 
   /**
    * Bibliothek des Testmodus. EINZIGE Stelle mit allowDrafts: true (PLAN-PHASE-3 5.2): Entwürfe ohne roten
@@ -313,7 +425,8 @@ export function createLocalBackend(store: KeyValueStore, options: LocalBackendOp
     }
     const ok = isValidPlanOp(op, {
       today: options.today(),
-      rows,
+      // Live-Anpassung: geprüft wird der Plan, den die App anzeigt (mit wirksamen Plan-Änderungen).
+      rows: await overlaid(rows),
       versions: LOCAL_VERSIONS,
       library: await planLibrary(),
     });
@@ -357,6 +470,8 @@ export function createLocalBackend(store: KeyValueStore, options: LocalBackendOp
     // Ein Widerruf darf nie scheitern (Wächter N4 K3): ungültige Alt-Einträge verwirft die Umwandlung in core.
     const next = applyHealthDataRevocation(revoked, { deleteLogs, dislikeGroups });
     await save({ ...db, rows: next });
+    // Live-Anpassung (8.3, 4.7): Anpassungen sind (mittelbar) Gesundheitsdaten – der geschützte Speicher wird geleert.
+    await liveStore.clear();
   }
 
   /** Prüft einen Vorgang wie die RLS-Policies/Trigger der Datenbank und wendet ihn an. */
@@ -397,7 +512,10 @@ export function createLocalBackend(store: KeyValueStore, options: LocalBackendOp
   ): Promise<UserRows> {
     const { db, rows, session } = await requireProfile();
     const library = await planLibrary();
-    const active = activePlan(rows);
+    // Live-Anpassung: Anzeige und Prüfung mit den wirksamen Plan-Änderungen (gespeichert wird ohne).
+    const liveList = await adjustmentsOf(session.userId);
+    const view = (current: UserRows) => overlayPlanAdjustments(current, liveList);
+    const active = activePlan(view(rows));
     const storedSession =
       at && active
         ? active.sessions.find((s) => s.id === at.sessionId && s.kind === 'strength')
@@ -417,7 +535,7 @@ export function createLocalBackend(store: KeyValueStore, options: LocalBackendOp
     function pairFor(current: UserRows, exerciseId: string) {
       if (!active || !rules || !storedSession || !at) return null;
       const shown = sessionDisplay({
-        rows: current,
+        rows: view(current),
         active,
         library,
         rules,
@@ -478,8 +596,64 @@ export function createLocalBackend(store: KeyValueStore, options: LocalBackendOp
     return next;
   }
 
+  const liveAdjust: NonNullable<Backend['liveAdjust']> = {
+    simulatePremium: async () => (await load()).simulatePremium === true,
+    setSimulatePremium: async (enabled) => {
+      const { db } = await requireUser();
+      await save({ ...db, simulatePremium: enabled });
+      // Einschalten rechnet sofort (wie manual_recheck); Ausschalten behält die bisherigen Anpassungen (8.4).
+      if (enabled && db.rows) await recomputeLive(db.rows, true);
+    },
+    adjustments: async () => {
+      const { session } = await requireUser();
+      return liveStore.load(session.userId);
+    },
+    revert: async (id) => {
+      const { rows, session } = await requireProfile();
+      const list = await liveStore.load(session.userId);
+      const target = list.find((a) => a.id === id);
+      if (
+        !target ||
+        !revertAllowed(overlayPlanAdjustments(rows, list), list, target, {
+          versions: LOCAL_VERSIONS,
+          today: options.today(),
+        })
+      ) {
+        return 'not_allowed';
+      }
+      const now = options.now();
+      await liveStore.save(
+        session.userId,
+        list.map((a) => (a.id === id ? { ...a, status: 'reverted', decidedAt: now } : a)),
+      );
+      return 'reverted';
+    },
+    decide: async (id, accept) => {
+      const { session } = await requireProfile();
+      const list = await liveStore.load(session.userId);
+      const target = list.find((a) => a.id === id);
+      const today = options.today();
+      const now = options.now();
+      if (!target || target.status !== 'pending_confirmation') return 'expired';
+      if (target.expiresOn !== null && target.expiresOn < today) {
+        await liveStore.save(
+          session.userId,
+          list.map((a) => (a.id === id ? { ...a, status: 'expired', decidedAt: now } : a)),
+        );
+        return 'expired';
+      }
+      const status = accept ? 'confirmed' : 'declined';
+      await liveStore.save(
+        session.userId,
+        list.map((a) => (a.id === id ? { ...a, status, decidedAt: now } : a)),
+      );
+      return status;
+    },
+  };
+
   const backend: Backend = {
     mode: 'local',
+    liveAdjust,
     supportsExercisePreferences: true,
     // Ernährung im Testmodus ab Etappe N4 (inkl. Schritt nutrition_setup, R2-S3).
     supportsNutrition: true,
@@ -506,6 +680,7 @@ export function createLocalBackend(store: KeyValueStore, options: LocalBackendOp
       await save({ ...db, session: null });
       // Entwürfe samt Schlüssel löschen (4.1) – die App fragt vorher nach (R6).
       await drafts.clear();
+      await liveStore.clear();
     },
 
     loadConsentDocuments: async () => [...LOCAL_CONSENT_DOCUMENTS],
@@ -550,7 +725,16 @@ export function createLocalBackend(store: KeyValueStore, options: LocalBackendOp
         options.today(),
       );
       if (rows !== db.rows) await save({ ...db, rows });
-      return { rows, offline: false };
+      // Plan 8.2 (Testmodus): nach close_missed_sessions neu rechnen – NUR mit „Premium simulieren“.
+      await recomputeLive(rows, db.simulatePremium === true);
+      return {
+        rows,
+        offline: false,
+        liveAdjust: {
+          simulatePremium: db.simulatePremium === true,
+          adjustments: await adjustmentsOf(rows.profile?.user_id),
+        },
+      };
     },
 
     grantConsents: async (types: readonly ConsentType[], versions) => {
@@ -712,6 +896,7 @@ export function createLocalBackend(store: KeyValueStore, options: LocalBackendOp
       await requireUser();
       await save({ session: null, rows: null });
       await drafts.clear();
+      await liveStore.clear();
     },
 
     pendingChanges: () => 0,
@@ -780,6 +965,7 @@ export function createLocalBackend(store: KeyValueStore, options: LocalBackendOp
         await store.removeItem(key);
       }
       await drafts.clear();
+      await liveStore.clear();
     },
 
     // --- Trainingstagebuch: dieselben Regeln wie save_session_log (local-rules.ts checkSessionLog) ----------
@@ -797,9 +983,10 @@ export function createLocalBackend(store: KeyValueStore, options: LocalBackendOp
       const { db, rows, session } = await requireProfile();
       const today = options.today();
       const library = await planLibrary();
+      // Live-Anpassung: geprüft gegen den Plan, den die App anzeigt (z. B. getauschte Übung, Erholungswoche).
       const check = checkSessionLog(payload, {
         today,
-        rows,
+        rows: await overlaid(rows),
         exercises: library.displayExercises ?? library.exercises,
         // Freie Einheit (A1b): nur freigegebene Übungen (wie der Server).
         publishedExercises: library.exercises,
@@ -853,6 +1040,8 @@ export function createLocalBackend(store: KeyValueStore, options: LocalBackendOp
             : (db.logCounter ?? null);
           await save({ ...db, rows: next, logCounter });
           await drafts.remove(draft.key);
+          // Plan 8.2 (Testmodus): nach dem gespeicherten Training neu rechnen – NUR mit „Premium simulieren“.
+          await recomputeLive(next, db.simulatePremium === true);
           return { kind: 'saved', orphaned: check.result === 'orphaned' };
         }
       }
@@ -1155,6 +1344,7 @@ export function createLocalBackend(store: KeyValueStore, options: LocalBackendOp
         localDataExport(rows, session.userId, options.now(), {
           aiUsage: db.aiUsage ?? [],
           productLookups: (db.productLookups ?? []).filter((c) => c.user_id === session.userId),
+          planAdjustments: await liveStore.load(session.userId),
         }),
         {
           email: session.email,
@@ -1164,7 +1354,7 @@ export function createLocalBackend(store: KeyValueStore, options: LocalBackendOp
       return file;
     },
   };
-  return serializeWrites(backend);
+  return serializeWrites(withPlanOverlay(backend, overlaid));
 }
 
 // ---------------------------------------------------------------------------------------------------------

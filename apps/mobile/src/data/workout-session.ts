@@ -2,6 +2,7 @@ import {
   canCatchUp,
   type DaySwap,
   type EquipmentProfile,
+  type ExerciseProgress,
   experienceLevelSchema,
   type PlanLibrary,
   type PlanSafetyRules,
@@ -58,6 +59,11 @@ export function workoutView(
     /** „Nur heute“-Tausche vor dem Training (Etappe T2) – der Entwurf übernimmt die getauschte Übung. */
     daySwaps?: readonly DaySwap[] | null;
     ownerUserId?: string | null;
+    /**
+     * Live-Anpassung (Phase 4b, 5.4): wirksame Zustands-Vorgaben je Übung (stateOverridesFor in live-adjust.ts). Fehlt
+     * → Gratis-Vorgabe, unverändert.
+     */
+    stateOverrides?: ReadonlyMap<string, ExerciseProgress>;
   } = {},
 ): WorkoutView | null {
   const active = activePlan(rows);
@@ -98,6 +104,9 @@ export function workoutView(
     isDeload: stored.is_deload,
     weekSessions,
     weeklySetMax: template ? weeklySetRange(template).max : null,
+    ...(options.stateOverrides && options.stateOverrides.size > 0
+      ? { stateOverrides: options.stateOverrides }
+      : {}),
     // Alternativen und schwerere Variante IMMER mit der Untergrenze des Plans (Etappe T1, Wächter T1-S1): eine
     // Lockerung nach der Erstellung öffnet erst nach „Plan neu erstellen“ etwas (PLAN-PHASE-3 5.4). Ausschlüsse am
     // Ort der Einheit werden nie als Alternative bzw. schwerere Variante vorgeschlagen (Etappe T2).

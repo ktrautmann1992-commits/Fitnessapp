@@ -22,6 +22,8 @@ export function localDataExport(
     aiUsage?: readonly unknown[];
     /** Testmodus: Zähler der Produktabfrage (E4a) – Stunde und Anzahl, ohne Nummern. */
     productLookups?: readonly { hour_start: string; lookups: number }[];
+    /** Testmodus: Anpassungen der Live-Anpassung (geschützter Speicher, Etappe 4b D; 4.7). */
+    planAdjustments?: readonly unknown[];
   } = {},
 ): {
   format_version: number;
@@ -194,6 +196,8 @@ export function localDataExport(
     weight_goals: one(rows.weightGoal),
     // Übungs-Präferenzen (Etappe T2) – in export_my_data() erst mit Etappe T3 (PENDING_DB_EXPORT_TABLES).
     exercise_preferences: rows.exercisePreferences,
+    // Live-Anpassung (Etappe 4b D, 4.7) – in export_my_data() erst mit Etappe B (PENDING_DB_EXPORT_TABLES).
+    plan_adjustments: [...(extra.planAdjustments ?? [])],
   };
   return {
     format_version: DATA_EXPORT_FORMAT_VERSION,
