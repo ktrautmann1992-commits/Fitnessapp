@@ -22,7 +22,7 @@ import { planNameLine } from '@/lib/plan-title';
 import { activePlan } from '@/data/training-plan';
 import { useThemeColors } from '@/lib/theme';
 import { useApp } from '@/state/app-state';
-import { resolveEntryRoute } from '@/state/flow';
+import { HOME_ROUTE, resolveEntryRoute } from '@/state/flow';
 
 /**
  * Woche (docs/PLAN-PHASE-4.md 6.1 Punkt 4, Etappe D): Mo–So mit Status-Zeichen UND Text, Summen, Blättern zu früheren
@@ -49,7 +49,7 @@ export default function WeekScreen() {
     versions: app.versions,
     nutritionSetupAvailable: app.backend.supportsNutrition,
   });
-  if (route !== '/today' || !app.rows) {
+  if (route !== HOME_ROUTE || !app.rows) {
     return <Redirect href={route as Href} />;
   }
   const { sessions, logs } = summaryInputs(app.rows);

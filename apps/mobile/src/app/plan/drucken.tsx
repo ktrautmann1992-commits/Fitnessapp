@@ -28,7 +28,7 @@ import {
   type PrintFormState,
 } from '@/lib/print-plan';
 import { useApp } from '@/state/app-state';
-import { resolveEntryRoute } from '@/state/flow';
+import { HOME_ROUTE, resolveEntryRoute } from '@/state/flow';
 
 /**
  * Plan als PDF (docs/PLAN-PDF-EXPORT.md §3, §4, P3/P4): Hinweis bei Gesundheitsbezug, Einstellungen, Vorschau
@@ -103,7 +103,7 @@ export default function PrintPlanScreen() {
     versions: app.versions,
     nutritionSetupAvailable: app.backend.supportsNutrition,
   });
-  if (route !== '/today' || !rows) {
+  if (route !== HOME_ROUTE || !rows) {
     return <Redirect href={route as Href} />;
   }
 

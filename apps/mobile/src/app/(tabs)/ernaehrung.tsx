@@ -42,7 +42,7 @@ import {
 } from '@/lib/nutrition-format';
 import { dayLabel } from '@/lib/plan-format';
 import { useApp } from '@/state/app-state';
-import { healthConsentStatus, resolveEntryRoute } from '@/state/flow';
+import { healthConsentStatus, HOME_ROUTE, resolveEntryRoute } from '@/state/flow';
 import { useFoodLogActions, useFoodLogDay } from '@/state/use-food-log';
 import { useMealPlanActions, useNutritionWeek } from '@/state/use-nutrition';
 
@@ -105,20 +105,14 @@ export default function NutritionDayScreen() {
     versions: app.versions,
     nutritionSetupAvailable: app.backend.supportsNutrition,
   });
-  if (route !== '/today' || !app.rows) {
+  if (route !== HOME_ROUTE || !app.rows) {
     return <Redirect href={route as Href} />;
   }
   const rows = app.rows;
   const consent = healthConsentStatus(rows, app.versions);
-  const footer = (
-    <Button
-      label={t.nutrition.back}
-      variant="secondary"
-      onPress={() => (router.canGoBack() ? router.back() : router.replace('/today'))}
-    />
-  );
+  // Reiter „Ernährung“ der Menüleiste (docs/PLAN-DASHBOARD.md 3) – kein „Zurück“, die Leiste führt weiter.
   const shell = (children: ReactNode) => (
-    <Screen title={t.nutrition.title} testID="nutrition-day" footer={footer}>
+    <Screen title={t.nutrition.title} testID="nutrition-day">
       {children}
     </Screen>
   );

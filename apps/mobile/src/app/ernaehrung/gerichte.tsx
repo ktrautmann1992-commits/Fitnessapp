@@ -12,7 +12,7 @@ import { customMealAccess, customMealDetailText } from '@/lib/custom-meal-format
 import { errorText } from '@/lib/error-text';
 import { useToday } from '@/lib/use-today';
 import { useApp } from '@/state/app-state';
-import { healthConsentStatus, resolveEntryRoute } from '@/state/flow';
+import { healthConsentStatus, HOME_ROUTE, resolveEntryRoute } from '@/state/flow';
 import { useCustomMealActions, useCustomMeals } from '@/state/use-custom-meals';
 import { useNutritionWeek } from '@/state/use-nutrition';
 
@@ -46,7 +46,7 @@ export default function CustomMealsScreen() {
     versions: app.versions,
     nutritionSetupAvailable: app.backend.supportsNutrition,
   });
-  if (route !== '/today' || !app.rows) {
+  if (route !== HOME_ROUTE || !app.rows) {
     return <Redirect href={route as Href} />;
   }
   const rows = app.rows;

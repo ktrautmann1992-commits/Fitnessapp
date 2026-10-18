@@ -69,7 +69,7 @@ import {
 } from '@/lib/format';
 import { dayLabel } from '@/lib/plan-format';
 import { useApp } from '@/state/app-state';
-import { resolveEntryRoute } from '@/state/flow';
+import { HOME_ROUTE, resolveEntryRoute } from '@/state/flow';
 
 /**
  * „Mein Wettkampf“ (docs/PLAN-PHASE-10.md Abschnitt 8, Etappe WP4): Wettkampf eintragen/ändern mit Ampel sofort beim
@@ -250,7 +250,7 @@ export default function CompetitionScreen() {
     versions: app.versions,
     nutritionSetupAvailable: app.backend.supportsNutrition,
   });
-  if (route !== '/today' || !rows) return <Redirect href={route as Href} />;
+  if (route !== HOME_ROUTE || !rows) return <Redirect href={route as Href} />;
 
   const competitionPlanActive = isCompetitionPlan(active);
   const timeGoal = timeGoalOffered(rows, app.safetyRules);

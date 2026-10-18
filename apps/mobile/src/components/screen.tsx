@@ -24,6 +24,7 @@ import { t } from '@/i18n';
 import { useThemeColors } from '@/lib/theme';
 import { useApp } from '@/state/app-state';
 
+import { useInTabs } from './tab-bar';
 import { Body, Button, FieldError, Heading, ProgressBar } from './ui';
 
 /**
@@ -49,9 +50,11 @@ export function Screen({
   scrollEnabled?: boolean;
 }) {
   const theme = useThemeColors();
+  // In einem Reiter liegt unten die Menüleiste – sie übernimmt den sicheren Rand (kein doppelter Abstand).
+  const inTabs = useInTabs();
   return (
     <SafeAreaView
-      edges={['bottom', 'left', 'right']}
+      edges={inTabs ? ['left', 'right'] : ['bottom', 'left', 'right']}
       style={[styles.safeArea, { backgroundColor: theme.background }]}
       testID={testID}
     >

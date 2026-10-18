@@ -16,7 +16,7 @@ import { decodeRouteParam } from '@/lib/route-param';
 import { placeText } from '@/lib/swap-format';
 import { useThemeColors } from '@/lib/theme';
 import { useApp } from '@/state/app-state';
-import { resolveEntryRoute } from '@/state/flow';
+import { HOME_ROUTE, resolveEntryRoute } from '@/state/flow';
 
 /**
  * Glossar-Detailseite (docs/PLAN-UEBUNGEN-GLOSSAR-TAUSCH.md 8.1, Etappe G1): Name, andere Namen, Merkmale,
@@ -54,7 +54,7 @@ export default function GlossaryDetailScreen() {
     versions: app.versions,
     nutritionSetupAvailable: app.backend.supportsNutrition,
   });
-  if (route !== '/today' || !app.rows) {
+  if (route !== HOME_ROUTE || !app.rows) {
     return <Redirect href={route as Href} />;
   }
   const back = () => (router.canGoBack() ? router.back() : router.replace('/uebungen' as Href));

@@ -30,7 +30,7 @@ export async function patchDb(page: Page, patch: (value: StoredDb) => StoredDb) 
     LOCAL_DB,
     JSON.stringify(value),
   ] as const);
-  await page.goto('/');
+  await page.goto('/today');
 }
 
 export interface NutritionPerson {

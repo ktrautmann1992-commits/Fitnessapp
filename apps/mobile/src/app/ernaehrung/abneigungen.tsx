@@ -8,7 +8,7 @@ import { Body, Button, Card, Heading, LoadingState, Notice } from '@/components/
 import { dislikedFoodsFromRows } from '@/data/rating-rows';
 import { t } from '@/i18n';
 import { useApp } from '@/state/app-state';
-import { resolveEntryRoute } from '@/state/flow';
+import { HOME_ROUTE, resolveEntryRoute } from '@/state/flow';
 
 /**
  * Einstellungen → „Abgelehnte Lebensmittel und Bewertungen“ (KONZEPT 6.10, Etappe N10): „mag ich nicht“ je
@@ -40,7 +40,7 @@ export default function FoodDislikesScreen() {
     versions: app.versions,
     nutritionSetupAvailable: app.backend.supportsNutrition,
   });
-  if (route !== '/today' || !app.rows) {
+  if (route !== HOME_ROUTE || !app.rows) {
     return <Redirect href={route as Href} />;
   }
   const rows = app.rows;

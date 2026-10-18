@@ -852,6 +852,47 @@ es mit N7 Teil 2), der Trainingsteil geht in beiden Modi.
 **Bitte fachlich prüfen lassen (vor dem Livegang):** Muster-Hinweis ab 3 Tagen unter dem Mindestbedarf je Woche
 (A-G13, Konstante `WEEK_EVALUATION` in `packages/core/src/constants.ts`).
 
+## Teil 7m – Startbildschirm, Anmelden, Übersicht und Menüleiste testen (18.10.2026)
+Ihr müsst nichts einstellen – keine Datenbank-Änderung. Getestet mit **Chrome am iPhone** (Vorschau-Link aus dem Pull
+Request), am besten in einem **Inkognito-Tab**: Chrome → unten rechts **⋯** → **Neuer Inkognito-Tab** → Vorschau-Link
+einfügen. Plan dazu: `docs/PLAN-DASHBOARD.md`.
+
+**A) Testmodus (Vorschau-Link ohne Datenbank)**
+
+1. Startbildschirm (dunkel, Alpha5): großer Knopf **„Neu hier – Los geht's“**. Statt „Anmelden“ steht ein kurzer
+   Hinweis, dass Anmelden erst mit der Datenbank geht. Unten ist **keine** Menüleiste.
+2. „Neu hier – Los geht's“ → Geburtsdatum → **„Testmodus starten“** → Onboarding wie bisher → **„Zum Plan“**.
+   Es öffnet sich **„Heute“**, unten die Menüleiste **Übersicht · Training · Ernährung · Fortschritt · Mehr**;
+   „Training“ ist markiert.
+3. **„Übersicht“** antippen: Kacheln **Training heute** (an einem Trainingstag mit **„Training starten“**, sonst
+   „Ruhetag“ und die nächste Einheit), **Ernährung heute**, **Körperdaten** (mit Einwilligung euer zuletzt
+   eingetragenes Gewicht – **nie** ein Wunschgewicht oder ein Balken zum Ziel), **Fortschritt** („Diese Woche: x von
+   y Einheiten erledigt“) und Schnellzugriffe (Rezepte, Übungen, Einkaufsliste, Kalender).
+4. Jede Kachel führt in den bekannten Bereich. **„Training starten“** öffnet den Trainingsmodus **ohne** Menüleiste;
+   oben links in Chrome **‹** (zurück) führt wieder zur Übersicht.
+5. Ein Training anfangen (einen Satz abhaken) und **Übersicht** öffnen → oben der Hinweis **„Im Training wartet etwas
+   auf dich“** → „Zum Training“ zeigt die bekannte Frage „fortsetzen, speichern oder verwerfen?“.
+6. **Einstellungen → Kalorienzahlen anzeigen** aus → die Kachel „Ernährung heute“ zeigt **nirgends kcal**.
+7. **Ohne Einwilligung** (neuer Inkognito-Tab, „Ohne Einwilligung fortfahren“): Kachel „Körperdaten“ zeigt nur den
+   Hinweis auf die Einwilligung, **kein** Gewicht.
+8. **Mehr → Mein Konto**: „Testmodus – kein Konto“, **Einwilligungen**, **Lizenzen**, **Meine Daten** (Export) und
+   **Konto löschen**. **Abmelden** fragt zuerst „Wirklich abmelden?“ – „Abbrechen“ lässt alles, wie es ist.
+9. Hell/dunkel: iPhone **Einstellungen → Anzeige & Helligkeit → Dunkel** → Menüleiste und Kacheln bleiben gut lesbar.
+10. Direkte Adressen funktionieren weiter: Vorschau-Link + `/today`, `/ernaehrung`, `/uebersicht` zeigen die
+    Menüleiste; `/settings`, `/rezepte`, `/history` liegen darüber mit „Zurück“.
+
+**B) Mit Datenbank (nur, wenn die Supabase-Variablen gesetzt sind – Teil 8)**
+
+1. Neuer Inkognito-Tab → Startbildschirm → **„Anmelden“** → E-Mail eingeben → **„Code senden“**.
+2. Hinweis „Schau auch im Spam- oder Werbung-Ordner nach“ ist sichtbar. **„Code erneut senden (in 60 s)“** zählt
+   herunter und ist erst danach antippbar.
+3. Einen **falschen** Code eingeben → „Der Code ist falsch oder abgelaufen …“. Mehrmals schnell neu anfordern →
+   „Zu viele Versuche. Bitte warte ein paar Minuten …“.
+4. Richtigen Code eingeben: **mit fertigem Profil → Übersicht**, **neue E-Mail-Adresse → Geburtsdatum** (Onboarding).
+5. **Mehr → Mein Konto** zeigt eure E-Mail-Adresse. **Abmelden** → Rückfrage → zurück zum Startbildschirm; die Daten
+   sind vom Gerät gelöscht (neu anmelden mit Code holt sie wieder).
+6. **E-Mail-Adresse ändern** gibt es noch nicht (vorgemerkt, `docs/PLAN-DASHBOARD.md` Abschnitt 5).
+
 ## Teil 7e – Neue Rezepte per KI erzeugen (Phase 5, Etappe N8, Gemini offline)
 
 Die KI (Google Gemini) schreibt **nur Entwürfe** – offline über die Batch-API, nie in der App. Nutzerdaten gehen nie an

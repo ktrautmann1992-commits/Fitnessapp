@@ -90,7 +90,7 @@ describe('resolveEntryRoute', () => {
     ).toBe('/onboarding/experience');
   });
 
-  it('fertig → Heute', () => {
+  it('fertig → Übersicht (Startseite)', () => {
     expect(
       resolveEntryRoute({
         nutritionSetupAvailable: false,
@@ -98,7 +98,7 @@ describe('resolveEntryRoute', () => {
         rows: rowsWith({ consents: base, profile: profile({ onboarding_completed_at: NOW }) }),
         versions: VERSIONS,
       }),
-    ).toBe('/today');
+    ).toBe('/uebersicht');
   });
 });
 

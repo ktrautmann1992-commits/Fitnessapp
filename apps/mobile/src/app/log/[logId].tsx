@@ -21,7 +21,7 @@ import { cardioDurationText, effortText, kmText, setLineText } from '@/lib/histo
 import { useThemeColors } from '@/lib/theme';
 import { cardioSpeedTexts } from '@/lib/workout-format';
 import { useApp } from '@/state/app-state';
-import { resolveEntryRoute } from '@/state/flow';
+import { HOME_ROUTE, resolveEntryRoute } from '@/state/flow';
 
 /**
  * Ein Eintrag aus Woche/Verlauf (docs/PLAN-PHASE-4.md 6.1 Punkt 5, Etappe D): ansehen, ändern (Trainingsmodus im
@@ -59,7 +59,7 @@ export default function LogEntryScreen() {
     versions: app.versions,
     nutritionSetupAvailable: app.backend.supportsNutrition,
   });
-  if (route !== '/today' || !app.rows) {
+  if (route !== HOME_ROUTE || !app.rows) {
     return <Redirect href={route as Href} />;
   }
   const rows = app.rows;

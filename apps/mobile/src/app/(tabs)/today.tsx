@@ -56,7 +56,7 @@ import {
   PLAN_RECREATE_NEEDED,
   useApp,
 } from '@/state/app-state';
-import { healthConsentStatus, isReminderDue, resolveEntryRoute } from '@/state/flow';
+import { healthConsentStatus, isReminderDue, HOME_ROUTE, resolveEntryRoute } from '@/state/flow';
 
 /**
  * „Heute“ (docs/PLAN-PHASE-3.md 10.2/10.3): heutige Einheit mit Arzt-Hinweis, Wochenübersicht, Verschieben,
@@ -122,7 +122,7 @@ export default function TodayScreen() {
     versions: app.versions,
     nutritionSetupAvailable: app.backend.supportsNutrition,
   });
-  if (route !== '/today' || !rows) {
+  if (route !== HOME_ROUTE || !rows) {
     return <Redirect href={route as Href} />;
   }
   const consent = healthConsentStatus(rows, app.versions);

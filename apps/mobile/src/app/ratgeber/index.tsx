@@ -11,7 +11,7 @@ import { Body, LoadingState, MIN_TOUCH } from '@/components/ui';
 import { t } from '@/i18n';
 import { useThemeColors } from '@/lib/theme';
 import { useApp } from '@/state/app-state';
-import { resolveEntryRoute } from '@/state/flow';
+import { HOME_ROUTE, resolveEntryRoute } from '@/state/flow';
 import { useNutritionWeek } from '@/state/use-nutrition';
 
 /**
@@ -38,7 +38,7 @@ export default function GuideListScreen() {
     versions: app.versions,
     nutritionSetupAvailable: app.backend.supportsNutrition,
   });
-  if (route !== '/today' || !app.rows) {
+  if (route !== HOME_ROUTE || !app.rows) {
     return <Redirect href={route as Href} />;
   }
   const texts = t.nutrition.guides;
