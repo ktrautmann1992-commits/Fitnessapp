@@ -448,7 +448,8 @@ export function competitionPlanFitFromRows(
 }
 
 /**
- * Bleibt der Plan-Bezug gültig? Nur der Name darf sich ändern. Distanz, Renntag, Ziel, Zielzeit, Referenz, eigener
+ * Bleibt der Plan-Bezug gültig? Nur der Name darf sich ändern. Distanz (auch die Rad-Distanz in km), Renntag, Ziel,
+ * Zielzeit, Referenz, eigener
  * Startumfang (immer der gespeicherte Wert, unabhängig vom aktuellen Level) und der Wunsch-Tag des langen Laufs sind
  * plan-relevant – sonst rechnete ein Folgeblock einen anderen Makrozyklus als die Ampel beim Erstellen.
  */
@@ -457,6 +458,8 @@ export function planBasisChanged(stored: StoredCompetition, draft: CompetitionDr
   const y = draft.competition;
   return !(
     x.discipline === y.discipline &&
+    // WP5: Rad-Distanz (Distanzklasse bestimmt Mindestvorlauf und Spitzenumfang).
+    (x.distanceKm ?? null) === (y.distanceKm ?? null) &&
     x.raceDate === y.raceDate &&
     (x.goal ?? 'finish') === (y.goal ?? 'finish') &&
     (x.targetTimeS ?? null) === (y.targetTimeS ?? null) &&

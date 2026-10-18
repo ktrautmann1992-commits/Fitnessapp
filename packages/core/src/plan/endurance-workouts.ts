@@ -1,4 +1,9 @@
-import { COMPETITION_INTENSITY, COMPETITION_WORKOUTS } from '../constants';
+import {
+  COMPETITION_BIKE_WORKOUTS,
+  COMPETITION_INTENSITY,
+  COMPETITION_TRIATHLON,
+  COMPETITION_WORKOUTS,
+} from '../constants';
 import { isoWeekday } from '../dates';
 import type { ExperienceLevel } from '../enums';
 import { talkTestLevel } from '../log/cardio';
@@ -14,6 +19,7 @@ import {
   type WorkoutStep,
   type WorkoutType,
 } from './intensity';
+import { brickSplit, MULTISPORT_TEXTS_DE, type Sport, sportOfVariant } from './multisport';
 
 /**
  * Einheiten-Bausteine des Wettkampfplans (docs/PLAN-PHASE-10.md Abschnitte 3.4/3.5 und 6, Etappe WP2; W-G8): feste
@@ -91,6 +97,8 @@ export interface WorkoutOptions {
   readonly discipline: CompetitionDiscipline;
   /** 80/20-Budget, das diese Einheit noch nutzen darf (Sekunden, nach der Zählweise von `limits.countWorkOnly`). */
   readonly hardBudgetS: number;
+  /** WP5: Sportart (Standard Laufen). */
+  readonly sport?: Sport;
 }
 
 const W = COMPETITION_WORKOUTS;
@@ -113,13 +121,42 @@ function easySteps(minutes: number, effort: number): WorkoutStep[] {
   ];
 }
 
-/** Lockere Art (easy, recovery, long) – immer möglich. */
+/**
+ * Lockere Art (easy, recovery, long) – immer möglich. WP5: `sport` Rad bzw. Schwimmen mit eigenen Texten (lange
+ * Ausfahrt; Schwimmen ohne „lang“), gleiche Schritte.
+ */
 export function easyWorkout(
   type: 'easy' | 'recovery' | 'long',
   minutes: number,
   easyEffort: number,
+  sport: Sport = 'run',
 ): EnduranceWorkout {
   const effort = type === 'recovery' ? Math.min(I.effort.recovery, easyEffort) : easyEffort;
+  if (sport === 'bike') {
+    const B = MULTISPORT_TEXTS_DE.bike;
+    return {
+      type,
+      name_de: B.names[type],
+      warmup_de: B.warmupEasy,
+      main_de: B.main[type],
+      cooldown_de: B.cooldownEasy,
+      steps: easySteps(minutes, effort),
+      effort_target: effort,
+    };
+  }
+  if (sport === 'swim') {
+    const S = MULTISPORT_TEXTS_DE.swim;
+    const swimType = type === 'long' ? 'easy' : type;
+    return {
+      type: swimType,
+      name_de: S.names[swimType],
+      warmup_de: S.warmup,
+      main_de: S.main.easy,
+      cooldown_de: S.cooldown,
+      steps: easySteps(minutes, effort),
+      effort_target: effort,
+    };
+  }
   return {
     type,
     name_de: WORKOUT_TEXTS_DE.names[type],
@@ -147,8 +184,77 @@ function fitReps(
 }
 
 /**
+ * Schwimmtechnik (WP5, `technique`, locker): Ein- und Ausschwimmen wie eine lockere Einheit, Hauptteil zur Hälfte
+ * Technikübungen (`work`, Anstrengung locker-unten) und lockeres Schwimmen. Unter `technique.minMinutes` null → locker.
+ */
+export function techniqueWorkout(minutes: number, easyEffort: number): EnduranceWorkout | null {
+  const T = COMPETITION_TRIATHLON.technique;
+  if (minutes < T.minMinutes) return null;
+  const base = easySteps(minutes, easyEffort);
+  const main = base.find((st) => st.part === 'main');
+  if (!main) return null;
+  const drillS = Math.floor((main.seconds * T.drillShare) / 60) * 60;
+  if (drillS < 60 || main.seconds - drillS < 60) return null;
+  const drillEffort = Math.min(ENDURANCE_DRILL_EFFORT, easyEffort);
+  const steps: WorkoutStep[] = [];
+  for (const st of base) {
+    if (st.part !== 'main') {
+      steps.push(st);
+      continue;
+    }
+    steps.push(step('main', 'work', drillS, drillEffort));
+    steps.push(step('main', 'easy', st.seconds - drillS, easyEffort));
+  }
+  const S = MULTISPORT_TEXTS_DE.swim;
+  return {
+    type: 'technique',
+    name_de: S.names.technique,
+    warmup_de: S.warmup,
+    main_de: S.main.technique,
+    cooldown_de: S.cooldown,
+    steps,
+    effort_target: easyEffort,
+  };
+}
+
+/** Technikübungen locker-unten (Anstrengung 3, ENDURANCE_EFFORT.easyMin). */
+const ENDURANCE_DRILL_EFFORT = 3;
+
+/**
+ * Koppeltraining Rad → Lauf (WP5, `brick`, locker) als EINE Einheit mit zwei Teilen (brickSplit): Rad mit 5 min
+ * Einrollen, direkt danach Laufen (ab 15 min mit 5 min Auslaufen). Unter `brick.minMinutes` null → locker.
+ */
+export function brickWorkout(minutes: number, easyEffort: number): EnduranceWorkout | null {
+  if (minutes < COMPETITION_TRIATHLON.brick.minMinutes) return null;
+  const { bike, run } = brickSplit(minutes);
+  const warm = W.easyWarmupMinutes * 60;
+  const warmEffort = Math.min(2, easyEffort);
+  const B = MULTISPORT_TEXTS_DE.brick;
+  return {
+    type: 'brick',
+    name_de: B.name,
+    warmup_de: B.warmup,
+    main_de: B.main(bike, run),
+    cooldown_de: B.cooldown,
+    // Lauf-Teil ab 15 min mit 5 min Auslaufen, sonst ganz als Hauptteil (Summe = Dauer).
+    steps: [
+      step('warmup', 'easy', warm, warmEffort),
+      step('main', 'easy', bike * 60 - warm, easyEffort),
+      ...(run * 60 >= 3 * warm
+        ? [
+            step('main', 'easy', run * 60 - warm, easyEffort),
+            step('cooldown', 'easy', warm, warmEffort),
+          ]
+        : [step('main', 'easy', run * 60, easyEffort)]),
+    ],
+    effort_target: easyEffort,
+  };
+}
+
+/**
  * Harte Einheit bzw. Steigerungen mit `minutes` Gesamtdauer (Aufwärmen + Hauptteil + Abwärmen = `minutes`). null =
- * passt nicht (zu kurz, Budget zu klein, harte Einheiten nicht erlaubt) → der Aufrufer plant locker.
+ * passt nicht (zu kurz, Budget zu klein, harte Einheiten nicht erlaubt) → der Aufrufer plant locker. WP5: `sport` Rad –
+ * Fahrtspiel, Sweet-Spot (`tempo`, 2 Abschnitte) und Renntempo mit Rad-Texten; Steigerungen und Intervalle nur Laufen.
  */
 export function structuredWorkout(
   type: 'strides' | 'fartlek' | 'tempo' | 'intervals' | 'race_pace',
@@ -158,6 +264,7 @@ export function structuredWorkout(
   const { limits, easyEffort } = options;
   if (!limits.allowed || limits.effortCap < I.hardEffortMin) return null;
   if (minutes < W.hardMinMinutes) return null;
+  if (options.sport === 'bike') return bikeStructured(type, minutes, options);
   const workOnly = limits.countWorkOnly;
   const budget = Math.max(0, options.hardBudgetS);
   const capped = (e: number) => Math.min(e, limits.effortCap);
@@ -267,6 +374,85 @@ export function structuredWorkout(
   };
 }
 
+/**
+ * Harte Rad-Einheit (WP5, Plan 9 „Sweet-Spot/Tempo“; COMPETITION_BIKE_WORKOUTS): Fahrtspiel (1 min zügig / 2 min locker),
+ * Sweet-Spot (`tempo`, 2 gleiche Abschnitte mit 5 min locker dazwischen) und Renntempo-Abschnitte (10 min). Steigerungen
+ * und Intervalle gibt es auf dem Rad nicht (null). Aufbau, Budget und Deckel wie beim Laufen.
+ */
+function bikeStructured(
+  type: 'strides' | 'fartlek' | 'tempo' | 'intervals' | 'race_pace',
+  minutes: number,
+  options: WorkoutOptions,
+): EnduranceWorkout | null {
+  if (type === 'strides' || type === 'intervals') return null;
+  const { limits, easyEffort } = options;
+  const workOnly = limits.countWorkOnly;
+  const budget = Math.max(0, options.hardBudgetS);
+  const capped = (e: number) => Math.min(e, limits.effortCap);
+  const warmS = W.hardWarmupMinutes * 60;
+  const coolS = W.hardCooldownMinutes * 60;
+  const mainS = minutes * 60 - warmS - coolS;
+  const BW = COMPETITION_BIKE_WORKOUTS;
+  const texts = MULTISPORT_TEXTS_DE.bike;
+  const block: WorkoutStep[] = [];
+  let mainText: string;
+  if (type === 'tempo') {
+    const S = BW.sweetSpot;
+    // Zwei gleiche Abschnitte in ganzen Minuten; mit Trabpause nur, wenn der ganze Hauptteil zählt (wie Laufen).
+    let work = Math.min(S.maxMinutes[options.level] * 60, mainS - S.restS);
+    work = Math.min(work, workOnly ? budget : budget - S.restS);
+    work = Math.floor(work / 120) * 120;
+    if (work < S.minMinutes * 60) return null;
+    const effort = capped(S.effort);
+    if (effort < I.hardEffortMin) return null;
+    block.push(
+      step('main', 'work', work / 2, effort),
+      step('main', 'rest', S.restS, easyEffort),
+      step('main', 'work', work / 2, effort),
+    );
+    mainText = texts.main.tempo(work / 60);
+  } else {
+    const spec =
+      type === 'fartlek'
+        ? { ...W.fartlek, effort: I.effort.fartlek }
+        : {
+            workS: BW.racePaceWorkS,
+            restS: W.racePace.restS,
+            minReps: W.racePace.minReps,
+            maxReps: W.racePace.maxReps,
+            effort: BW.racePaceEffort,
+          };
+    const reps = fitReps(mainS, spec.workS, spec.restS, budget, workOnly, spec.maxReps);
+    if (reps < spec.minReps) return null;
+    const effort = capped(spec.effort);
+    if (effort < I.hardEffortMin) return null;
+    for (let k = 0; k < reps; k += 1) {
+      if (k > 0) block.push(step('main', 'rest', spec.restS, easyEffort));
+      block.push(step('main', 'work', spec.workS, effort));
+    }
+    mainText =
+      type === 'fartlek' ? texts.main.fartlek(reps) : texts.main.race_pace(reps, spec.workS / 60);
+  }
+  const used = block.reduce((sum, st) => sum + st.seconds, 0);
+  const filler = mainS - used;
+  if (filler < 0) return null;
+  const steps: WorkoutStep[] = [
+    step('warmup', 'easy', warmS, easyEffort),
+    ...(filler >= 10 ? [step('main', 'easy', filler, easyEffort)] : []),
+    ...block,
+    step('cooldown', 'easy', coolS + (filler > 0 && filler < 10 ? filler : 0), easyEffort),
+  ];
+  return {
+    type,
+    name_de: texts.names[type],
+    warmup_de: texts.warmupHard,
+    main_de: mainText,
+    cooldown_de: texts.cooldownHard,
+    steps,
+    effort_target: Math.max(...block.filter((st) => st.kind === 'work').map((st) => st.effort)),
+  };
+}
+
 // ---------------------------------------------------------------------------------------------------------
 // Wochenbau (Plan 3.5)
 // ---------------------------------------------------------------------------------------------------------
@@ -276,6 +462,8 @@ export interface WeekEnduranceDay {
   readonly date: string;
   readonly minutes: number;
   readonly variant: EnduranceVariant;
+  /** WP5 Triathlon: Koppeltraining Rad → Lauf an diesem Tag (triathlonWeekSports; Variante Rad). */
+  readonly brick?: boolean;
 }
 
 export interface WeekWorkoutInput {
@@ -302,12 +490,24 @@ export interface PlannedWorkout extends EnduranceWorkout {
   readonly target_distance_m: number | null;
 }
 
-/** Harte Arten je Phase und Level, in Reihenfolge der Vergabe (Plan 3.1/3.4). */
+/**
+ * Harte Arten je Phase und Level, in Reihenfolge der Vergabe (Plan 3.1/3.4). WP5 Rad (Plan 9 „Sweet-Spot/Tempo“):
+ * Aufbau Einsteiger Fahrtspiel, sonst Sweet-Spot; Spitze Einsteiger Sweet-Spot, sonst Sweet-Spot + Renntempo; Tapering
+ * Einsteiger Fahrtspiel, sonst Renntempo.
+ */
 export function hardTypesFor(
   phase: CompetitionPhase,
   level: ExperienceLevel,
+  sport: Sport = 'run',
 ): readonly ('fartlek' | 'tempo' | 'intervals' | 'race_pace')[] {
   const beginner = level === 'beginner';
+  if (sport === 'bike') {
+    if (phase === 'build') return beginner ? ['fartlek'] : ['tempo'];
+    if (phase === 'peak') return beginner ? ['tempo'] : ['tempo', 'race_pace'];
+    if (phase === 'taper') return beginner ? ['fartlek'] : ['race_pace'];
+    return [];
+  }
+  if (sport === 'swim') return [];
   if (phase === 'build') return beginner ? ['fartlek'] : ['tempo', 'intervals'];
   if (phase === 'peak') return beginner ? ['tempo'] : ['race_pace', 'intervals'];
   if (phase === 'taper') return beginner ? ['fartlek'] : ['race_pace'];
@@ -333,30 +533,51 @@ function weekdayNeighbours(a: string, b: string): boolean {
  *   Erholungswoche oder in Woche 0,
  * - Erholung nach dem Rennen: Erholungsläufe.
  */
+/**
+ * Tag der langen Einheit, wie weekWorkouts ihn nimmt: nur in Basis, Aufbau, Spitze und Tapering und nur, wenn der
+ * Wunsch-/Auswahl-Tag die längste Einheit der Woche ist (sonst keiner).
+ */
+export function effectiveLongDate(
+  days: readonly { readonly date: string; readonly minutes: number }[],
+  phase: CompetitionPhase,
+  longRunDate: string | null,
+): string | null {
+  const longest = Math.max(0, ...days.map((d) => d.minutes));
+  const longPhase = phase === 'base' || phase === 'build' || phase === 'peak' || phase === 'taper';
+  return longPhase &&
+    longRunDate !== null &&
+    days.some((d) => d.date === longRunDate && d.minutes >= longest)
+    ? longRunDate
+    : null;
+}
+
 export function weekWorkouts(input: WeekWorkoutInput): PlannedWorkout[] {
   const { days, phase, limits } = input;
   const total = days.reduce((sum, d) => sum + d.minutes, 0);
   let budget = weeklyHardBudgetSeconds(total);
-  const longest = Math.max(0, ...days.map((d) => d.minutes));
-  const longPhase = phase === 'base' || phase === 'build' || phase === 'peak' || phase === 'taper';
-  const longDate =
-    longPhase &&
-    input.longRunDate !== null &&
-    days.some((d) => d.date === input.longRunDate && d.minutes >= longest)
-      ? input.longRunDate
-      : null;
+  const longDate = effectiveLongDate(days, phase, input.longRunDate);
   const types = new Map<string, EnduranceWorkout>();
-  const options = (budgetS: number): WorkoutOptions => ({
+  const options = (budgetS: number, sport: Sport = 'run'): WorkoutOptions => ({
     easyEffort: input.easyEffort,
     limits,
     level: input.level,
     discipline: input.discipline,
     hardBudgetS: budgetS,
+    ...(sport === 'run' ? {} : { sport }),
   });
   const runnable = (d: WeekEnduranceDay) => d.variant === 'easy_run';
+  // WP5: harte Einheiten auch auf dem Rad (nicht Ergometer bei „nur Gehen“ – dort sind harte ohnehin gesperrt), nie
+  // im Koppeltraining und nie beim Schwimmen.
+  const hardCapable = (d: WeekEnduranceDay) =>
+    (d.variant === 'easy_run' || d.variant === 'easy_bike') && d.brick !== true;
   // Erholungswoche und Woche 0: nichts mit Anstrengung ≥ 6 (Plan 3.5; Wächter M1).
   const easyOnly = input.recoveryWeek || input.weekZero === true;
-  const hardTypes = easyOnly ? [] : hardTypesFor(phase, input.level);
+  const typesFor = (sport: Sport) => (easyOnly ? [] : hardTypesFor(phase, input.level, sport));
+  // Laufen wie bisher (WP2); mit Rad-Tagen zusätzlich die Rad-Arten (Rad: nur diese, Triathlon: beide).
+  const sports = new Set(days.filter(hardCapable).map((d) => sportOfVariant(d.variant)));
+  const hardTypes = sports.has('bike')
+    ? [...(sports.has('run') ? typesFor('run') : []), ...typesFor('bike')]
+    : typesFor('run');
   const n = days.length;
   const minSessions = input.level === 'beginner' ? I.beginnerMinEnduranceSessions : 2;
   let hardCount = 0;
@@ -368,11 +589,12 @@ export function weekWorkouts(input: WeekWorkoutInput): PlannedWorkout[] {
     );
   }
   const chosen: string[] = [];
+  const perSport: Record<Sport, number> = { run: 0, bike: 0, swim: 0 };
   if (hardCount > 0) {
     const candidates = days
       .filter(
         (d) =>
-          runnable(d) &&
+          hardCapable(d) &&
           d.date !== longDate &&
           d.minutes >= W.hardMinMinutes &&
           !input.blockedDates.has(d.date) &&
@@ -382,12 +604,17 @@ export function weekWorkouts(input: WeekWorkoutInput): PlannedWorkout[] {
     for (const d of candidates) {
       if (chosen.length >= hardCount) break;
       if (chosen.some((c) => weekdayNeighbours(c, d.date))) continue;
-      const type = hardTypes[chosen.length] ?? hardTypes[0];
-      if (!type) break;
+      const sport = sportOfVariant(d.variant);
+      const sportTypes = typesFor(sport);
+      const type = sportTypes[perSport[sport]] ?? sportTypes[0];
+      if (!type) continue;
       const workout =
-        structuredWorkout(type, d.minutes, options(budget)) ??
-        (type === 'fartlek' ? null : structuredWorkout('fartlek', d.minutes, options(budget)));
+        structuredWorkout(type, d.minutes, options(budget, sport)) ??
+        (type === 'fartlek'
+          ? null
+          : structuredWorkout('fartlek', d.minutes, options(budget, sport)));
       if (!workout) continue;
+      perSport[sport] += 1;
       budget -= hardSeconds(workout.steps, limits.countWorkOnly);
       types.set(d.date, workout);
       chosen.push(d.date);
@@ -401,6 +628,20 @@ export function weekWorkouts(input: WeekWorkoutInput): PlannedWorkout[] {
     // Steigerungen zählen ins 80/20-Budget (oben `options(budget)`); danach wird nichts Hartes mehr vergeben.
     if (easyDay && strides) types.set(easyDay.date, strides);
   }
+  // WP5 Triathlon: Koppeltraining an den markierten Tagen; Schwimmtechnik am ersten Schwimm-Tag der Woche (nicht in
+  // der Rennwoche und der Erholung nach dem Rennen). Beides locker.
+  for (const d of days) {
+    if (d.brick !== true || types.has(d.date)) continue;
+    const brick = brickWorkout(d.minutes, input.easyEffort);
+    if (brick) types.set(d.date, brick);
+  }
+  if (phase !== 'race_week' && phase !== 'recovery') {
+    const swimDay = [...days]
+      .filter((d) => sportOfVariant(d.variant) === 'swim' && !types.has(d.date))
+      .sort((a, b) => (a.date < b.date ? -1 : 1))[0];
+    const technique = swimDay ? techniqueWorkout(swimDay.minutes, input.easyEffort) : null;
+    if (swimDay && technique) types.set(swimDay.date, technique);
+  }
   return days.map((d) => {
     const workout =
       types.get(d.date) ??
@@ -408,6 +649,7 @@ export function weekWorkouts(input: WeekWorkoutInput): PlannedWorkout[] {
         d.date === longDate ? 'long' : phase === 'recovery' ? 'recovery' : 'easy',
         d.minutes,
         input.easyEffort,
+        sportOfVariant(d.variant),
       );
     const pace = paceTargets(input.pace, workout.type);
     const continuous =

@@ -267,6 +267,7 @@ export default function CalendarScreen() {
           <CountdownCard
             countdown={raceCountdown}
             discipline={race.stored.competition.discipline}
+            distanceKm={race.stored.competition.distanceKm}
             name={race.stored.competition.name}
             onOpen={drag !== null ? null : () => router.push('/wettkampf' as Href)}
             testID="calendar-countdown"
@@ -395,6 +396,7 @@ export default function CalendarScreen() {
           <CountdownCard
             countdown={raceCountdown}
             discipline={race.stored.competition.discipline}
+            distanceKm={race.stored.competition.distanceKm}
             name={race.stored.competition.name}
             onOpen={drag !== null ? null : () => router.push('/wettkampf' as Href)}
             testID="calendar-countdown"
@@ -518,10 +520,13 @@ export default function CalendarScreen() {
                   <Body
                     testID={`calendar-race-day-${day.date}`}
                     accessibilityLabel={t.competition.calendarRaceDayA11y(
-                      disciplineText(race.stored.competition.discipline),
+                      disciplineText(
+                        race.stored.competition.discipline,
+                        race.stored.competition.distanceKm,
+                      ),
                     )}
                   >
-                    {`◆ ${t.competition.calendarRaceDay(disciplineText(race.stored.competition.discipline))}`}
+                    {`◆ ${t.competition.calendarRaceDay(disciplineText(race.stored.competition.discipline, race.stored.competition.distanceKm))}`}
                   </Body>
                 ) : null}
                 {entryBlock === null ? (

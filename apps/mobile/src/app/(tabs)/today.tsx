@@ -339,6 +339,7 @@ export default function TodayScreen() {
         <CountdownCard
           countdown={countdown}
           discipline={competition.stored.competition.discipline}
+          distanceKm={competition.stored.competition.distanceKm}
           name={competition.stored.competition.name}
           onOpen={() => router.push('/wettkampf' as Href)}
         />

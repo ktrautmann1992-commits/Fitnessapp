@@ -21,6 +21,7 @@ import {
 import { BARBELL_ID, equipmentIdSchema } from '../equipment';
 import { isAllowedGoalPair } from '../goals/profile';
 import { COMPETITION_PHASES } from './competition-schema';
+import { workoutModalityFits } from './multisport';
 import { ENDURANCE_EFFORT_LIMITS } from './generate';
 import {
   isHardSession,
@@ -344,7 +345,9 @@ export const savePlanSessionSchema = z
       stepsFitWorkoutType(type, steps) &&
       (!s.is_deload || phase === 'taper' || !isHardSession(type, steps)) &&
       steps.reduce((sum, st) => sum + st.seconds, 0) === s.estimated_minutes * 60 &&
-      withinStepBytes(steps)
+      withinStepBytes(steps) &&
+      // WP5: Koppeltraining nur als Rad-Einheit, Schwimmtechnik nur beim Schwimmen.
+      workoutModalityFits(type, s.endurance_modality)
     );
   }, 'Wettkampf-Einheit: Art, Phase und Schritte zusammen; Anstrengung über 4 nur bei harter Art.');
 

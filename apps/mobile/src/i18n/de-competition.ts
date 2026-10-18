@@ -1,10 +1,11 @@
-import type {
-  CompetitionErrorReason,
-  CompetitionPhase,
-  FeasibilityNotice,
-  FeasibilityReason,
-  FeasibilityStatus,
-  WorkoutType,
+import {
+  type CompetitionErrorReason,
+  type CompetitionPhase,
+  type FeasibilityNotice,
+  type FeasibilityReason,
+  type FeasibilityStatus,
+  MULTISPORT_TEXTS_DE,
+  type WorkoutType,
 } from '@fitnessapp/core';
 
 /**
@@ -42,7 +43,8 @@ const REASONS: Record<FeasibilityReason, string> = {
     'In der Schwangerschaft erstellen wir keinen Wettkampfplan. Bitte sprich mit deiner Ärztin oder deinem Arzt, was für dich passt.',
   health_check_required:
     'Ein Wettkampfplan braucht den Gesundheits-Check (mit Einwilligung). Bis dahin trainierst du mit dem Grundlagen-Plan.',
-  minor_distance_limit: 'Unter 18 planen wir höchstens bis zum Halbmarathon.',
+  minor_distance_limit:
+    'Unter 18 planen wir beim Laufen höchstens bis zum Halbmarathon, beim Triathlon nur den Sprint und beim Rad höchstens 100 km.',
   lead_time_below_minimum: 'Bis zum Renntag ist weniger Zeit als der empfohlene Mindestvorlauf.',
   long_run_day_too_short:
     'Am Tag des langen Laufs ist zu wenig Zeit eingeplant, um den langen Lauf aufzubauen.',
@@ -55,6 +57,8 @@ const REASONS: Record<FeasibilityReason, string> = {
   goal_time_not_reachable:
     'Die Zielzeit passt nicht zu deiner Referenzzeit. Wir planen auf „Ankommen“.',
   long_run_not_reachable: 'Der nötige lange Lauf ist bis zum Renntag nicht sicher erreichbar.',
+  triathlon_days_too_few:
+    'Für einen Triathlon-Plan brauchst du mindestens 3 Ausdauer-Tage pro Woche – je einen für Schwimmen, Rad und Laufen (Einstellungen → Angaben ändern → Trainingstage).',
 };
 
 const NOTICES: Record<FeasibilityNotice, string> = {
@@ -77,6 +81,9 @@ const NOTICES: Record<FeasibilityNotice, string> = {
     'Deine Referenzzeit ist über eine sehr andere Distanz gelaufen. Daraus rechnen wir keine Zielzeit und kein Renntempo.',
   long_run_day_not_endurance:
     'An deinem Wunsch-Tag für den langen Lauf ist kein Ausdauer-Tag – wir wählen den Tag automatisch.',
+  open_water_safety: MULTISPORT_TEXTS_DE.openWater,
+  beginner_long_event:
+    'Diese Distanz ist als Einsteiger ein großes Ziel. Höre gut auf deinen Körper und nimm Erholungswochen ernst.',
 };
 
 const PHASES: Record<CompetitionPhase, string> = {
@@ -106,6 +113,8 @@ const WORKOUT_TYPES: Record<WorkoutType, string> = {
   tempo: 'Tempo',
   intervals: 'Intervalle',
   race_pace: 'Renntempo',
+  brick: 'Koppeltraining (Rad → Lauf)',
+  technique: 'Schwimmtechnik',
 };
 
 const ERRORS: Record<CompetitionErrorReason, string> = {
@@ -148,8 +157,21 @@ export const deCompetition = {
     '10k': '10 km',
     half_marathon: 'Halbmarathon',
     marathon: 'Marathon',
+    cycling: 'Radrennen',
+    triathlon_sprint: 'Triathlon Sprint',
+    triathlon_olympic: 'Triathlon olympisch',
   },
-  disciplineHint: 'Rad und Triathlon kommen später.',
+  /** Rad mit Distanz: „Radrennen 120 km“. */
+  cyclingWithDistance: (km: number) => `Radrennen ${km} km`,
+  disciplineHint:
+    'Laufen 5 km bis Marathon, Radrennen (20–300 km) und Triathlon Sprint oder Olympisch. Für Triathlon-Mittel- und Langdistanz sowie Schwimm-Wettkämpfe erstellen wir keinen Plan – lass dich dafür von einem Trainer oder Verein begleiten.',
+  coachHint: (discipline: string) =>
+    `Dein Ziel ist ${discipline}. Dafür erstellen wir keinen Wettkampfplan – so lange Belastungen planst du am besten mit einem Trainer oder Verein. Du kannst hier eine kürzere Distanz eintragen; dein Grundlagen-Plan bleibt.`,
+  cyclingDistance: 'Distanz in km (20–300)',
+  cyclingDistanceHint: 'Ganze Kilometer, z. B. 120 für einen Radmarathon.',
+  multisportFinishOnly:
+    'Bei Rad und Triathlon planen wir auf „Ankommen“ – ohne Zielzeit, Referenzzeit und Pace. Die Anstrengung ist dein Maß.',
+  openWaterTitle: 'Sicherheit beim Schwimmen',
   raceDate: 'Renntag',
   name: 'Name (optional)',
   nameHint: 'Nur für dich, z. B. „Stadtlauf“. Ohne Angabe nehmen wir die Distanz.',
@@ -170,6 +192,7 @@ export const deCompetition = {
   referenceTime: 'Zeit',
   referenceDate: 'Datum des Laufs',
   longRunDay: 'Tag für den langen Lauf',
+  longRideDay: 'Tag für die lange Ausfahrt',
   longRunAuto: 'Automatisch',
   ownStartTitle: 'Bisheriger Umfang (optional)',
   ownStartText:
@@ -185,6 +208,7 @@ export const deCompetition = {
       'Die Referenzzeit darf höchstens 6 Monate alt sein und nicht in der Zukunft liegen.',
     referenceMissing: 'Für eine Zielzeit brauchen wir deine Referenzzeit.',
     ownStart: 'Bitte ganze Minuten (mindestens 10) eingeben und bestätigen.',
+    cyclingDistance: 'Bitte ganze Kilometer zwischen 20 und 300 eingeben.',
     name: 'Höchstens 80 Zeichen.',
   },
   // Ampel
@@ -199,6 +223,8 @@ export const deCompetition = {
     `Höchster Wochenumfang im Plan: ${planned} min (nötig: ${required} min).`,
   longRunInfo: (planned: number, required: number) =>
     `Längster Lauf im Plan: ${planned} min (nötig: ${required} min).`,
+  longRideInfo: (planned: number, required: number) =>
+    `Längste Ausfahrt im Plan: ${planned} min (nötig: ${required} min).`,
   effectiveGoal: { finish: 'Ziel im Plan: Ankommen', time: 'Ziel im Plan: Zielzeit' },
   suggestionsTitle: 'Vorschläge',
   suggestions: {
@@ -290,6 +316,11 @@ export const deCompetition = {
   paceLine: (fast: string, slow: string) => `Pace-Richtwert: ${fast}–${slow} min/km`,
   paceNotice: 'Die Anstrengung hat Vorrang – bei Hitze, Wind und Steigungen langsamer.',
   distanceLine: (km: string) => `Distanz-Richtwert: etwa ${km} km (die Dauer ist dein Ziel)`,
+  brickLine: (bike: number, run: number) =>
+    `Zwei Teile in einer Einheit: Teil 1 Rad ${bike} min, Teil 2 Laufen ${run} min – direkt hintereinander.`,
+  stepSports: { bike: 'Rad', run: 'Laufen', swim: 'Schwimmen' },
+  stepLineSport: (part: string, sport: string, duration: string, kind: string, effort: number) =>
+    `${part} (${sport}): ${duration} ${kind} (Anstrengung ${effort})`,
   stepsTitle: 'Ablauf',
   stepParts: { warmup: 'Aufwärmen', main: 'Hauptteil', cooldown: 'Abwärmen' },
   stepKinds: { work: 'zügig', easy: 'locker', rest: 'locker traben' },

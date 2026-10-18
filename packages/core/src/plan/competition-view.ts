@@ -4,11 +4,12 @@ import {
   COMPETITION_WORKOUTS,
 } from '../constants';
 import { addDays, daysBetween, startOfIsoWeek } from '../dates';
-import type {
-  CompetitionDiscipline,
-  CompetitionPhase,
-  CompetitionReference,
-  CompetitionStatus,
+import {
+  type CompetitionDiscipline,
+  type CompetitionPhase,
+  type CompetitionReference,
+  type CompetitionStatus,
+  isRunCompetitionDiscipline,
 } from './competition-schema';
 import {
   type PaceProfile,
@@ -158,7 +159,8 @@ export function competitionPaceProfile(competition: {
   readonly discipline: CompetitionDiscipline;
   readonly reference: CompetitionReference | null;
 }): PaceProfile | null {
-  return competition.reference === null
+  // Pace nur beim Laufen (WP5: Rad und Triathlon haben keine Referenzzeit).
+  return competition.reference === null || !isRunCompetitionDiscipline(competition.discipline)
     ? null
     : { reference: competition.reference, discipline: competition.discipline };
 }

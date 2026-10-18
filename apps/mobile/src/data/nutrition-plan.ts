@@ -129,6 +129,8 @@ export function nutritionCompetitionsFromRows(rows: UserRows): NutritionCompetit
       id: row.id,
       status: row.status,
       discipline: row.discipline,
+      // WP5: Rad mit Distanz (erwartete Dauer aus km und Tempo).
+      distanceKm: row.discipline === 'cycling' ? row.distance_m / 1000 : null,
       raceDate: row.race_date,
       targetTimeS: row.goal_kind === 'time' ? row.target_time_s : null,
       reference:

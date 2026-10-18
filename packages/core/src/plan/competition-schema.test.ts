@@ -7,7 +7,9 @@ import {
   competitionInputSchema,
   competitionOwnStartSchema,
   competitionSchema,
+  competitionPlanOffer,
   competitionWindowSchema,
+  defaultCompetitionDiscipline,
   isCompetitionDiscipline,
   latestRaceDate,
 } from './competition-schema';
@@ -24,6 +26,7 @@ describe('competitionInputSchema', () => {
       goal: 'finish',
       targetTimeS: null,
       reference: null,
+      distanceKm: null,
     });
   });
 
@@ -40,13 +43,67 @@ describe('competitionInputSchema', () => {
     expect(competitionInputSchema.parse({ ...base, name: '  Lauf  ' }).name).toBe('Lauf');
   });
 
-  it('nur Laufen 5 km bis Marathon (W-G2) – Rad und Triathlon erst mit WP5', () => {
-    expect([...COMPETITION_DISCIPLINES]).toEqual(['5k', '10k', 'half_marathon', 'marathon']);
+  it('Laufen 5 km bis Marathon, mit WP5 Rad und Triathlon Sprint/Olympisch – Mittel-/Langdistanz und Schwimmen nie (W-G2)', () => {
+    expect([...COMPETITION_DISCIPLINES]).toEqual([
+      '5k',
+      '10k',
+      'half_marathon',
+      'marathon',
+      'cycling',
+      'triathlon_sprint',
+      'triathlon_olympic',
+    ]);
+    const withPlan = [
+      '5k',
+      '10k',
+      'half_marathon',
+      'marathon',
+      'cycling',
+      'triathlon_sprint',
+      'triathlon_olympic',
+    ];
     for (const d of ENDURANCE_DISCIPLINES) {
-      const ok = competitionInputSchema.safeParse({ ...base, discipline: d }).success;
-      expect(ok, d).toBe(['5k', '10k', 'half_marathon', 'marathon'].includes(d));
+      const ok = competitionInputSchema.safeParse({
+        ...base,
+        discipline: d,
+        ...(d === 'cycling' ? { distanceKm: 100 } : {}),
+      }).success;
+      expect(ok, d).toBe(withPlan.includes(d));
       expect(isCompetitionDiscipline(d)).toBe(ok);
     }
+    for (const d of ['triathlon_middle', 'triathlon_long', 'swimming'] as const) {
+      expect(competitionPlanOffer(d), d).toBe('coach');
+    }
+    expect(competitionPlanOffer('triathlon_olympic')).toBe('plan');
+    expect(competitionPlanOffer(null)).toBe('none');
+  });
+
+  it('WP5: Rad nur mit Distanz 20–300 km (ganze km), sonst nie eine Distanz; Rad/Triathlon nur „Ankommen“ ohne Referenz', () => {
+    const bike = { ...base, discipline: 'cycling' } as const;
+    expect(competitionInputSchema.safeParse(bike).success).toBe(false);
+    expect(competitionInputSchema.safeParse({ ...bike, distanceKm: 19 }).success).toBe(false);
+    expect(competitionInputSchema.safeParse({ ...bike, distanceKm: 20 }).success).toBe(true);
+    expect(competitionInputSchema.safeParse({ ...bike, distanceKm: 300 }).success).toBe(true);
+    expect(competitionInputSchema.safeParse({ ...bike, distanceKm: 301 }).success).toBe(false);
+    expect(competitionInputSchema.safeParse({ ...bike, distanceKm: 100.5 }).success).toBe(false);
+    expect(competitionInputSchema.safeParse({ ...base, distanceKm: 100 }).success).toBe(false);
+    const tri = { ...base, discipline: 'triathlon_sprint' } as const;
+    expect(competitionInputSchema.safeParse(tri).success).toBe(true);
+    expect(competitionInputSchema.safeParse({ ...tri, reference }).success).toBe(false);
+    expect(
+      competitionInputSchema.safeParse({ ...tri, goal: 'time', targetTimeS: 5400, reference })
+        .success,
+    ).toBe(false);
+    expect(competitionInputSchema.safeParse({ ...bike, distanceKm: 100, reference }).success).toBe(
+      false,
+    );
+    // Referenzzeit nur als Lauf-Distanz.
+    expect(
+      competitionInputSchema.safeParse({
+        ...base,
+        reference: { ...reference, discipline: 'triathlon_sprint' },
+      }).success,
+    ).toBe(false);
   });
 
   it('Zielzeit nur beim Ziel „Zielzeit“ und nur mit Referenzzeit (W-G6)', () => {
@@ -136,5 +193,26 @@ describe('competitionOwnStartSchema (W-G5)', () => {
     expect(
       competitionOwnStartSchema.safeParse({ weeklyMinutes: 90.5, confirmed: true }).success,
     ).toBe(false);
+  });
+});
+
+describe('defaultCompetitionDiscipline (Vorbelegung „Mein Wettkampf“, WP5)', () => {
+  it('Ziel Ausdauer mit Plan-Disziplin → diese; Mittel-/Langdistanz → olympisch; sonst Halbmarathon', () => {
+    const goal = (
+      discipline: (typeof ENDURANCE_DISCIPLINES)[number] | null,
+      goalType = 'endurance',
+    ) => ({
+      goalType,
+      discipline,
+    });
+    for (const d of COMPETITION_DISCIPLINES) expect(defaultCompetitionDiscipline(goal(d))).toBe(d);
+    expect(defaultCompetitionDiscipline(goal('triathlon_middle'))).toBe('triathlon_olympic');
+    expect(defaultCompetitionDiscipline(goal('triathlon_long'))).toBe('triathlon_olympic');
+    expect(defaultCompetitionDiscipline(goal('swimming'))).toBe('half_marathon');
+    expect(defaultCompetitionDiscipline(goal(null))).toBe('half_marathon');
+    expect(defaultCompetitionDiscipline(null)).toBe('half_marathon');
+    // Grenzfall: Disziplin gespeichert, aber Hauptziel nicht Ausdauer → keine Vorbelegung aus der Disziplin.
+    expect(defaultCompetitionDiscipline(goal('cycling', 'muscle_gain'))).toBe('half_marathon');
+    expect(defaultCompetitionDiscipline(goal('triathlon_long', 'fat_loss'))).toBe('half_marathon');
   });
 });

@@ -17,8 +17,25 @@ import {
 import type { EnduranceStartGroup } from './safety';
 
 // Feste Tabellen (Plan 3.1, W-G3) – bewusst nicht aus constants.ts.
-const TAPER_MIN_DAYS = { '5k': 7, '10k': 7, half_marathon: 10, marathon: 14 } as const;
-const RECOVERY_WEEKS = { '5k': 1, '10k': 1, half_marathon: 1, marathon: 2 } as const;
+// WP5 (Plan 9): Rad 10 Tage, Triathlon Sprint 7, Olympisch 10 Tage; Erholung nach dem Rennen je 1 Woche.
+const TAPER_MIN_DAYS = {
+  '5k': 7,
+  '10k': 7,
+  half_marathon: 10,
+  marathon: 14,
+  cycling: 10,
+  triathlon_sprint: 7,
+  triathlon_olympic: 10,
+} as const;
+const RECOVERY_WEEKS = {
+  '5k': 1,
+  '10k': 1,
+  half_marathon: 1,
+  marathon: 2,
+  cycling: 1,
+  triathlon_sprint: 1,
+  triathlon_olympic: 1,
+} as const;
 const PHASE_ORDER = ['base', 'build', 'peak', 'taper', 'race_week', 'recovery'];
 const MONDAY = '2026-10-05';
 

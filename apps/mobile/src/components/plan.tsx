@@ -1,10 +1,13 @@
 import {
+  brickStepSports,
   type DisplayContext,
   type DisplaySession,
   exerciseMark,
+  MULTISPORT_TEXTS_DE,
   type PaceProfile,
   type PlanSafetyRules,
   sessionPaceInfo,
+  sessionSafetyNotices,
   type StoredSession,
   type WeekDay,
 } from '@fitnessapp/core';
@@ -102,7 +105,20 @@ export function SessionCard({
             <Body key={line}>{line}</Body>
           ))}
           {session.workout_steps && session.workout_steps.length > 1 ? (
-            <StepList steps={session.workout_steps} />
+            <StepList
+              steps={session.workout_steps}
+              sports={
+                session.workout_type === 'brick'
+                  ? brickStepSports(session.workout_steps, session.estimated_minutes)
+                  : null
+              }
+            />
+          ) : null}
+          {/* WP5: bei jeder Schwimm-Einheit der Sicherheitshinweis zum Freiwasser (nie allein, Neopren, Begleitung). */}
+          {sessionSafetyNotices(session).includes('open_water') ? (
+            <Notice tone="info" title={t.competition.openWaterTitle} testID="plan-open-water">
+              <Body>{MULTISPORT_TEXTS_DE.openWater}</Body>
+            </Notice>
           ) : null}
         </View>
       ) : shown.libraryMissing ? (

@@ -58,7 +58,7 @@ export function applySaveCompetition(
     user_id: ctx.userId,
     name: payload.name,
     discipline: payload.discipline,
-    distance_m: competitionDistanceM(payload.discipline),
+    distance_m: competitionDistanceM(payload.discipline, payload.distance_km ?? null),
     race_date: payload.race_date,
     goal_kind: payload.goal_kind,
     target_time_s: payload.target_time_s,

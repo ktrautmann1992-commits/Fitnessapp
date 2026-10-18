@@ -29,7 +29,11 @@ import {
   reAdaptExercises,
 } from './adapt';
 import { applyCurrentSafetyRules } from './apply-safety';
-import type { CompetitionDiscipline, CompetitionPhase } from './competition-schema';
+import {
+  type CompetitionDiscipline,
+  type CompetitionPhase,
+  isTriathlonCompetitionDiscipline,
+} from './competition-schema';
 import { deloadDosage } from './deload';
 import {
   ENDURANCE_TEXTS_DE,
@@ -43,7 +47,7 @@ import {
   enduranceWeekVolumes,
   maxEnduranceSessions,
 } from './endurance';
-import { weekWorkouts } from './endurance-workouts';
+import { effectiveLongDate, weekWorkouts } from './endurance-workouts';
 import type { EquipmentProfile } from './equipment-profile';
 import {
   type HardWorkoutLimits,
@@ -52,6 +56,7 @@ import {
   type WorkoutStep,
   type WorkoutType,
 } from './intensity';
+import { type DaySport, triathlonWeekSports } from './multisport';
 import { type EnduranceStartGroup, isStricterGroup, type PlanSafetyRules } from './safety';
 
 /**
@@ -597,7 +602,7 @@ function placeWeeks(
   let rotation = rotationStart;
   let loadWeek = ctx.loadWeeksBefore ?? 0;
   let enduranceIndex = 0;
-  const competitionDays: { week: number; index: number; variant: EnduranceVariant }[] = [];
+  const competitionDays: CompetitionDayItem[] = [];
 
   weeks.forEach((week, w) => {
     if (week.weekNo >= 1 && week.kind !== 'deload') loadWeek += 1;
@@ -619,7 +624,16 @@ function placeWeeks(
         const variant = enduranceVariant(ctx.endurance, loadWeek, enduranceIndex);
         enduranceIndex += 1;
         if (variant === 'brisk_walk') notes.add('endurance_walk');
-        if (week.workouts) competitionDays.push({ week: w, index: sessions.length, variant });
+        if (week.workouts) {
+          competitionDays.push({
+            week: w,
+            index: sessions.length,
+            variant,
+            // WP5 Triathlon: Lauf-Variante dieser Woche (Geh-Lauf-Wechsel der Einsteiger, „nur Gehen“) für die Tage, die
+            // der Wochenbau dem Laufen zuteilt.
+            runVariant: enduranceVariant({ ...ctx.endurance, discipline: null }, loadWeek, 0),
+          });
+        }
         sessions.push({
           ...common,
           kind: 'endurance',
@@ -680,10 +694,31 @@ function placeWeeks(
  * Woche die Arten (weekWorkouts) – harte Einheiten nie neben Kraft mit Beinen, nie neben harten oder langen
  * Einheiten (auch über Wochen- und Blockgrenzen). Minuten bleiben unverändert (Plan = Ampel).
  */
+/** Ausdauer-Tag des Wettkampfplans (Platz in den Einheiten, Variante; Lauf-Variante für den Triathlon, WP5). */
+interface CompetitionDayItem {
+  readonly week: number;
+  readonly index: number;
+  readonly variant: EnduranceVariant;
+  readonly runVariant: EnduranceVariant;
+}
+
+/**
+ * Variante eines Triathlon-Tages (WP5): Schwimmen locker im Becken, Rad draußen bzw. bei „nur Gehen“ (Flag, ab 65 –
+ * nie Rad im Freien, wie Phase 3) Ergometer, Laufen mit der Lauf-Variante der Woche, Koppeltraining auf dem Rad.
+ */
+function triathlonVariant(sport: DaySport, runVariant: EnduranceVariant, walkOnly: boolean) {
+  if (sport === 'swim') return 'easy_swim' as const;
+  if (sport === 'run') return runVariant;
+  return walkOnly ? ('ergometer' as const) : ('easy_bike' as const);
+}
+
+/** Texte der Einheit kommen vom Wochenbau (Art, Sportart) statt aus ENDURANCE_TEXTS_DE (Laufen; WP5 Rad, Schwimmen). */
+const WORKOUT_TEXT_VARIANTS: readonly EnduranceVariant[] = ['easy_run', 'easy_bike', 'easy_swim'];
+
 function competitionWeekBuild(
   weeks: readonly WeekPlan[],
   placed: readonly GeneratedSession[],
-  competitionDays: readonly { week: number; index: number; variant: EnduranceVariant }[],
+  competitionDays: readonly CompetitionDayItem[],
   ctx: BlockContext,
 ): GeneratedSession[] {
   const S = COMPETITION_STRENGTH;
@@ -770,6 +805,25 @@ function competitionWeekBuild(
     const longIndex = competitionLongRun(spec, week.weekNo, week.days)?.index ?? -1;
     // (index −1 = keine lange Einheit in dieser Woche)
     const longWeekday = longIndex >= 0 ? (endurance[longIndex] as PlannedDay).weekday : null;
+    const longRunDate = longWeekday === null ? null : addDays(week.monday, longWeekday - 1);
+    const weekDays = items.map((item) => ({
+      date: (out[item.at] as GeneratedSession).scheduled_on,
+      minutes: (out[item.at] as GeneratedSession).estimated_minutes,
+    }));
+    // WP5 Triathlon: Disziplinen im Wechsel, lange Einheit = Rad, Koppeltraining in Aufbau/Spitze (triathlonWeekSports).
+    const walkOnly = ctx.endurance.rules.enduranceWalkOnly || ctx.endurance.rules.pregnancyNotice;
+    const sports: readonly (DaySport | null)[] = isTriathlonCompetitionDiscipline(spec.discipline)
+      ? triathlonWeekSports(weekDays, effectiveLongDate(weekDays, spec.phase, longRunDate), {
+          phase: spec.phase,
+          recoveryWeek: spec.recoveryWeek,
+          weekZero: week.weekNo === 0,
+          brickAllowed: !walkOnly,
+        })
+      : items.map(() => null);
+    const variants = items.map((item, k) => {
+      const sport = sports[k] ?? null;
+      return sport === null ? item.variant : triathlonVariant(sport, item.runVariant, walkOnly);
+    });
     const planned = weekWorkouts({
       phase: spec.phase,
       recoveryWeek: spec.recoveryWeek,
@@ -778,29 +832,51 @@ function competitionWeekBuild(
       limits: spec.limits,
       discipline: spec.discipline,
       easyEffort: enduranceEffort(ctx.rules, easyWeekOf(week)),
-      days: items.map((item) => ({
-        date: (out[item.at] as GeneratedSession).scheduled_on,
-        minutes: (out[item.at] as GeneratedSession).estimated_minutes,
-        variant: item.variant,
+      days: weekDays.map((d, k) => ({
+        ...d,
+        variant: variants[k] as EnduranceVariant,
+        ...(sports[k] === 'brick' ? { brick: true } : {}),
       })),
-      longRunDate: longWeekday === null ? null : addDays(week.monday, longWeekday - 1),
+      longRunDate,
       blockedDates: blocked,
       pace: spec.pace,
     });
     planned.forEach((workout, k) => {
       const item = items[k];
       if (!item) return;
+      const variant = variants[k] as EnduranceVariant;
       const session = out[item.at] as GeneratedSession;
-      const run = item.variant === 'easy_run';
+      // Texte vom Wochenbau für Laufen, Rad und Schwimmen; Gehen, Geh-Lauf-Wechsel und Ergometer behalten die Texte der
+      // Variante (wie WP2), lange Einheit mit „(lang)“.
+      const own = WORKOUT_TEXT_VARIANTS.includes(variant);
+      const retyped = variant !== item.variant;
       out[item.at] = {
         ...session,
-        name_de: run
+        ...(retyped
+          ? {
+              name_de: ENDURANCE_TEXTS_DE.names[variant],
+              endurance_modality: ENDURANCE_VARIANT_MODALITY[variant],
+              warmup_de: ENDURANCE_TEXTS_DE.warmup[variant],
+              cooldown_de: ENDURANCE_TEXTS_DE.cooldown[variant],
+            }
+          : {}),
+        name_de: own
           ? workout.name_de
           : workout.type === 'long'
-            ? `${ENDURANCE_TEXTS_DE.names[item.variant]} (lang)`
-            : session.name_de,
-        warmup_de: run ? workout.warmup_de : session.warmup_de,
-        cooldown_de: run ? workout.cooldown_de : session.cooldown_de,
+            ? `${ENDURANCE_TEXTS_DE.names[variant]} (lang)`
+            : retyped
+              ? ENDURANCE_TEXTS_DE.names[variant]
+              : session.name_de,
+        warmup_de: own
+          ? workout.warmup_de
+          : retyped
+            ? ENDURANCE_TEXTS_DE.warmup[variant]
+            : session.warmup_de,
+        cooldown_de: own
+          ? workout.cooldown_de
+          : retyped
+            ? ENDURANCE_TEXTS_DE.cooldown[variant]
+            : session.cooldown_de,
         effort_target: workout.effort_target,
         workout_type: workout.type,
         training_phase: spec.phase,

@@ -1329,6 +1329,10 @@ export const COMPETITION_NUTRITION = {
     '10k': { beginner: 80, advanced: 60, competitive: 48 },
     half_marathon: { beginner: 165, advanced: 130, competitive: 105 },
     marathon: { beginner: 330, advanced: 270, competitive: 225 },
+    // WP5: Triathlon inkl. Wechsel (eher langsame Zeiten, PRODUKTENTSCHEIDUNG). Rad: aus der Distanz mit
+    // COMPETITION_CYCLING.estimatedSpeedKmh.
+    triathlon_sprint: { beginner: 110, advanced: 85, competitive: 70 },
+    triathlon_olympic: { beginner: 210, advanced: 165, competitive: 140 },
   },
 } as const;
 
@@ -2610,6 +2614,10 @@ export const COMPETITION_DISTANCE_M = {
   '10k': 10000,
   half_marathon: 21097.5,
   marathon: 42195,
+  // WP5: Gesamtstrecke Schwimmen + Rad + Laufen laut World Triathlon Competition Rules (Sprint 750 m/20 km/5 km,
+  // Standard bzw. Olympisch 1,5 km/40 km/10 km). Rad hat eine freie Distanz (COMPETITION_CYCLING.distanceKm).
+  triathlon_sprint: 25750,
+  triathlon_olympic: 51500,
 } as const;
 
 /**
@@ -2624,6 +2632,11 @@ export const COMPETITION_LEAD_WEEKS = {
     '10k': { beginner: 10, advanced: 8, competitive: 6 },
     half_marathon: { beginner: 16, advanced: 12, competitive: 10 },
     marathon: { beginner: 24, advanced: 16, competitive: 14 },
+    // WP5 (Triathlon Sprint/Olympisch): Einsteiger so, dass die 10-%-Kette ab dem Startumfang den Mindest-
+    // Spitzenumfang genau erreicht (Test „Tabelle passt zur Kette“, multisport-competition.test.ts), Fortgeschritten/
+    // Leistungssport mit 2 Wochen Reserve über der Kette. Rad: je Distanzklasse in COMPETITION_CYCLING.classes.
+    triathlon_sprint: { beginner: 19, advanced: 11, competitive: 7 },
+    triathlon_olympic: { beginner: 26, advanced: 18, competitive: 16 },
   },
   maxLeadWeeks: 52,
 } as const;
@@ -2645,7 +2658,13 @@ export const COMPETITION_REQUIRED_PEAK = {
     '10k': { weeklyMinutes: 100, longRunMinutes: 60 },
     half_marathon: { weeklyMinutes: 140, longRunMinutes: 90 },
     marathon: { weeklyMinutes: 240, longRunMinutes: 150 },
+    // WP5: Summe aller drei Disziplinen; „langer Lauf“ = lange Ausfahrt (Rad). Vorschlag: Sprint 180 min/Woche
+    // (Orientierung 3–4 h/Woche in Einsteiger-Plänen), Olympisch 300 min/Woche (ca. 5 h). Nur „Ankommen“ (WP5:
+    // keine Zielzeit bei Rad und Triathlon). Rad: je Distanzklasse in COMPETITION_CYCLING.classes.
+    triathlon_sprint: { weeklyMinutes: 180, longRunMinutes: 75 },
+    triathlon_olympic: { weeklyMinutes: 300, longRunMinutes: 120 },
   },
+  // Zielzeit nur beim Laufen (WP5: Rad und Triathlon nur „Ankommen“).
   time: {
     '5k': { weeklyMinutes: 150, longRunMinutes: 60 },
     '10k': { weeklyMinutes: 180, longRunMinutes: 75 },
@@ -2679,12 +2698,46 @@ export const COMPETITION_REQUIRED_PEAK = {
  * Alles VOR LIVEGANG FACHLICH PRÜFEN.
  */
 export const COMPETITION_PERIODIZATION = {
-  taperMinDays: { '5k': 7, '10k': 7, half_marathon: 10, marathon: 14 },
+  // WP5: Rad 10 Tage (lange Ausdauerbelastung wie Halbmarathon), Triathlon Sprint 7, Olympisch 10 Tage; Spitze/Aufbau/
+  // Erholung entsprechend (Bosquet 2007 gilt sportartübergreifend für Laufen, Rad und Schwimmen) – PRODUKTENTSCHEIDUNG.
+  taperMinDays: {
+    '5k': 7,
+    '10k': 7,
+    half_marathon: 10,
+    marathon: 14,
+    cycling: 10,
+    triathlon_sprint: 7,
+    triathlon_olympic: 10,
+  },
   taperFactors: { 1: [0.7], 2: [0.75, 0.6] },
   raceWeekFactor: 0.4,
-  peakWeeks: { '5k': 2, '10k': 2, half_marathon: 3, marathon: 3 },
-  buildWeeks: { '5k': 2, '10k': 2, half_marathon: 4, marathon: 6 },
-  recoveryWeeks: { '5k': 1, '10k': 1, half_marathon: 1, marathon: 2 },
+  peakWeeks: {
+    '5k': 2,
+    '10k': 2,
+    half_marathon: 3,
+    marathon: 3,
+    cycling: 3,
+    triathlon_sprint: 2,
+    triathlon_olympic: 3,
+  },
+  buildWeeks: {
+    '5k': 2,
+    '10k': 2,
+    half_marathon: 4,
+    marathon: 6,
+    cycling: 4,
+    triathlon_sprint: 3,
+    triathlon_olympic: 4,
+  },
+  recoveryWeeks: {
+    '5k': 1,
+    '10k': 1,
+    half_marathon: 1,
+    marathon: 2,
+    cycling: 1,
+    triathlon_sprint: 1,
+    triathlon_olympic: 1,
+  },
   recoveryFactors: [0.5, 0.6],
   restDaysBeforeRace: 1,
   buildDeloadAfterLoadWeeks: { beginner: 3, cautious: 3 },
@@ -2703,6 +2756,13 @@ export const COMPETITION_PERIODIZATION = {
 export const COMPETITION_GROUP_RULES = {
   minorMaxDiscipline: 'half_marathon',
   timeGoalLevels: ['advanced', 'competitive'],
+  /**
+   * WP5 (Tabelle 3.3 sinngemäß, „unter 18 Einschränkung analog“): Triathlon nur Sprint (Orientierung: Jugend-Klassen
+   * starten bis zur Sprintdistanz, Deutsche Triathlon Union – Sportordnung, Altersklassen-Distanzen; vor Livegang
+   * prüfen), Rad höchstens 100 km. PRODUKTENTSCHEIDUNG – VOR LIVEGANG FACHLICH PRÜFEN.
+   */
+  minorTriathlon: ['triathlon_sprint'],
+  minorMaxCyclingKm: 100,
 } as const;
 
 /**
@@ -2783,7 +2843,18 @@ export const COMPETITION_START_LOOKBACK_DAYS = 28;
  */
 export const COMPETITION_LONG_RUN = {
   maxShareOfWeek: 0.5,
-  maxMinutes: { '5k': 75, '10k': 90, half_marathon: 120, marathon: 180 },
+  // WP5: lange Ausfahrt (Rad) bis 300 min (Plan 9, eigener Deckel); praktisch begrenzt der Trainingstag
+  // (TRAINING_LIMITS.minutesPerSession.max = 240, CHECK training_slots/planned_sessions) – Gründer-Frage WP5-G1.
+  // Triathlon: lange Ausfahrt Sprint 120, Olympisch 180 min (PRODUKTENTSCHEIDUNG).
+  maxMinutes: {
+    '5k': 75,
+    '10k': 90,
+    half_marathon: 120,
+    marathon: 180,
+    cycling: 300,
+    triathlon_sprint: 120,
+    triathlon_olympic: 180,
+  },
 } as const;
 
 /**
@@ -2812,7 +2883,17 @@ export const COMPETITION_INTENSITY = {
     fartlek: 6,
     tempo: 7,
     intervals: 8,
-    racePace: { '5k': 8, '10k': 7, half_marathon: 6, marathon: 6 },
+    // WP5: Rad (Radmarathon, Jedermann) 6; Triathlon-Lauf Sprint 7, Olympisch 6 (Rad im Triathlon:
+    // COMPETITION_BIKE_WORKOUTS.racePaceEffort).
+    racePace: {
+      '5k': 8,
+      '10k': 7,
+      half_marathon: 6,
+      marathon: 6,
+      cycling: 6,
+      triathlon_sprint: 7,
+      triathlon_olympic: 6,
+    },
   },
   hardEffortCap: { general: 8, minor: 7, senior: 6 },
   hardSessionsPerWeek: { strict: 1, general: 2 },
@@ -2847,7 +2928,16 @@ export const COMPETITION_WORKOUTS = {
   },
   intervals: { workS: 180, restS: 120, minReps: 3, maxReps: 6 },
   racePace: {
-    workS: { '5k': 180, '10k': 300, half_marathon: 600, marathon: 900 },
+    // WP5: Rad 10 min (Ausfahrt im Renntempo); Triathlon-Lauf wie 5 km bzw. 10 km.
+    workS: {
+      '5k': 180,
+      '10k': 300,
+      half_marathon: 600,
+      marathon: 900,
+      cycling: 600,
+      triathlon_sprint: 180,
+      triathlon_olympic: 300,
+    },
     restS: 120,
     minReps: 2,
     maxReps: 4,
@@ -2941,6 +3031,107 @@ export const COMPETITION_STRENGTH = {
   limitedPhases: ['peak', 'taper', 'race_week'],
   maxStrengthSessionsPerWeek: 1,
   legMuscles: ['glutes', 'quadriceps', 'hamstrings', 'adductors', 'calves'],
+} as const;
+
+// ---------------------------------------------------------------------------------------------------------
+// Phase 10 · Etappe WP5 – Rad und Triathlon Sprint/Olympisch (docs/PLAN-PHASE-10.md Abschnitt 9; Gründer-Entscheidung
+// W-G2 vom 16.10.2026 „wie empfohlen“: Rad und Triathlon Sprint/Olympisch als zweite Welle; Mittel-/Langdistanz und
+// Schwimm-Wettkämpfe NICHT als Plan, Hinweis Trainer/Verein). Gleiche Kette wie beim Laufen (10-%-Regel über die
+// SUMME aller Ausdauer-Minuten, Erholungswochen, Tapering). Alle Werte ohne harte Quelle: PRODUKTENTSCHEIDUNG – VOR
+// LIVEGANG FACHLICH PRÜFEN (Fachprüfung Trainingswissenschaft, PLAN-PHASE-10 Abschnitt 20 Punkt 5).
+// ---------------------------------------------------------------------------------------------------------
+
+/**
+ * Rad-Wettkampf (Radmarathon, Jedermann-Rennen) mit freier Distanz `distanceKm` (20–300 km, ganze Kilometer, Plan 9).
+ * Mindestvorlauf und Mindest-Spitzenumfang je Distanzklasse (bis `maxKm`): Wochenminuten Rad und lange Ausfahrt
+ * (höchstens 50 % der Woche, COMPETITION_LONG_RUN). Orientierung: Ausdauer-Grundlage für eine Ausfahrt von etwa 2,5 h
+ * (60 km) bis 12 h (300 km) in Freizeittempo; die lange Ausfahrt erreicht bewusst NICHT die Renndauer (übliche Praxis bei
+ * Radmarathon-Plänen: längste Ausfahrt ca. 50–70 % der Renndistanz für Fortgeschrittene – Einsteiger weniger).
+ * `lead`: Einsteiger genau so, dass die 10-%-Kette ab dem Startumfang (60 min) Spitzenumfang und lange Ausfahrt zum
+ * Mindestvorlauf erreicht (Test „Tabelle passt zur Kette“, jeder Start-/Renn-Wochentag); Fortgeschritten/Leistungssport
+ * mit 2 Wochen Reserve über der Kette (wie Tabelle 3.2 beim Marathon). `estimatedSpeedKmh` nur für die Ernährung (erwartete Renndauer, W1), eher langsam.
+ * Quelle: PRODUKTENTSCHEIDUNG – VOR LIVEGANG FACHLICH PRÜFEN.
+ */
+export const COMPETITION_CYCLING = {
+  distanceKm: { min: 20, max: 300 },
+  classes: [
+    {
+      maxKm: 60,
+      lead: { beginner: 14, advanced: 6, competitive: 6 },
+      finish: { weeklyMinutes: 120, longRunMinutes: 60 },
+    },
+    {
+      maxKm: 120,
+      lead: { beginner: 20, advanced: 12, competitive: 8 },
+      finish: { weeklyMinutes: 180, longRunMinutes: 90 },
+    },
+    {
+      maxKm: 200,
+      lead: { beginner: 25, advanced: 17, competitive: 14 },
+      finish: { weeklyMinutes: 270, longRunMinutes: 135 },
+    },
+    {
+      maxKm: 300,
+      lead: { beginner: 30, advanced: 22, competitive: 18 },
+      finish: { weeklyMinutes: 360, longRunMinutes: 180 },
+    },
+  ],
+  estimatedSpeedKmh: { beginner: 20, advanced: 25, competitive: 28 },
+} as const;
+
+/**
+ * Triathlon Sprint/Olympisch (Plan 9):
+ * - `minEnduranceDays`: Wettkampfplan erst ab 3 Ausdauer-Tagen je Woche (je Disziplin mindestens einer), sonst
+ *   „zu kurz“ mit Grund `triathlon_days_too_few`.
+ * - `dayPattern`: Disziplinen im Wechsel – der Tag der langen Einheit ist Rad (lange Ausfahrt), die übrigen Tage der
+ *   Reihe nach Schwimmen, Laufen, Rad, Laufen, Schwimmen, Rad (3 Tage: je Disziplin einer; 6 Tage: je zwei, dazu die
+ *   lange Ausfahrt). Woche ohne lange Einheit (Woche 0, Rennwoche, Erholung) beginnt ebenfalls mit Schwimmen.
+ * - `brick`: Koppeltraining Rad → Lauf als EINE Einheit mit zwei Teilen (die Datenbank erlaubt eine Einheit je Tag):
+ *   in Aufbau und Spitze höchstens eine je Woche (nicht in Erholungswoche und Woche 0), am längsten Rad-Tag ohne lange
+ *   Ausfahrt ab `minMinutes` (25 min wie die Mindestdauer harter Einheiten, Gründer-Frage G10) – also erst ab 4
+ *   Ausdauer-Tagen; bei 3 Tagen bleibt der einzige Lauf-Tag ein Lauf. Lauf-Teil = `runShare` der Dauer, abgerundet,
+ *   `runMinMinutes`–`runMaxMinutes`, Rest Rad. Locker
+ *   (Anstrengung wie ein lockerer Tag) – die Gewöhnung an den Wechsel ist das Ziel, nicht die Härte. Die Minuten zählen
+ *   in BEIDE Disziplinen (Rad-Teil zu Rad, Lauf-Teil zu Laufen), die 10-%-Regel gilt über die Summe der Woche.
+ * - `technique`: Schwimmtechnik (Technikübungen und locker nach Dauer, Anstrengung locker) ab `minMinutes`, je Woche
+ *   der erste Schwimm-Tag (nicht in der Rennwoche und der Erholung nach dem Rennen); Anteil Technikübungen `drillShare`
+ *   des Hauptteils.
+ * Quellen: World Triathlon Competition Rules (Distanzen); Koppeltraining und Technik: übliche Trainingspraxis (z. B.
+ * Friel J, „The Triathlete's Training Bible“, 4. Aufl. 2016) – Werte PRODUKTENTSCHEIDUNG, VOR LIVEGANG FACHLICH PRÜFEN.
+ */
+export const COMPETITION_TRIATHLON = {
+  minEnduranceDays: 3,
+  dayPattern: ['swim', 'run', 'bike', 'run', 'swim', 'bike'],
+  brick: {
+    phases: ['build', 'peak'],
+    minMinutes: 25,
+    runShare: 0.3,
+    runMinMinutes: 10,
+    runMaxMinutes: 30,
+  },
+  technique: { minMinutes: 20, drillShare: 0.5 },
+} as const;
+
+/**
+ * Harte Rad-Einheiten (Plan 9: „Sweet-Spot/Tempo“), Anstrengung ohne Wattmesser (Borg CR10, wie Laufen):
+ * - `sweetSpot`: zwei Abschnitte „zügig, knapp unter der Schwelle“ (Anstrengung `effort` 6, nur kurze Sätze) mit
+ *   `restS` locker dazwischen; je Abschnitt mindestens `minMinutes`/2, zusammen höchstens `maxMinutes` je Level.
+ *   Einsteiger erst ab dem Aufbau (Tabelle 3.3: höchstens 1 harte Einheit/Woche), im Aufbau Fahrtspiel.
+ * - `racePaceWorkS`/`racePaceEffort`: Abschnitte im Renntempo (Rad im Triathlon und Radmarathon) 10 min, Anstrengung 6.
+ * - Ausweichen: Ergometer bzw. Rollentrainer mit derselben Anstrengung (Plan 9).
+ * Quelle: übliche Rad-Trainingspraxis (Sweet-Spot ca. 84–97 % der Schwellenleistung, z. B. Allen H, Coggan A,
+ * „Training and Racing with a Power Meter“, 3. Aufl. 2019 – hier ohne Watt nach Anstrengung) – Werte PRODUKTENTSCHEIDUNG,
+ * VOR LIVEGANG FACHLICH PRÜFEN.
+ */
+export const COMPETITION_BIKE_WORKOUTS = {
+  sweetSpot: {
+    effort: 6,
+    minMinutes: 16,
+    maxMinutes: { beginner: 20, advanced: 40, competitive: 50 },
+    restS: 300,
+  },
+  racePaceWorkS: 600,
+  racePaceEffort: 6,
 } as const;
 
 // ---------------------------------------------------------------------------------------------------------

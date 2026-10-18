@@ -1,16 +1,22 @@
 import {
+  COMPETITION_CYCLING,
   COMPETITION_DISCIPLINES,
   type CompetitionDiscipline,
   type CompetitionFeasibility,
   type CompetitionGoal,
   competitionCountdown,
   competitionDistanceM,
+  competitionPlanOffer,
+  defaultCompetitionDiscipline,
   type FeasibilitySuggestion,
   freeSessionDates,
-  isCompetitionDiscipline,
+  isRunCompetitionDiscipline,
+  isTriathlonCompetitionDiscipline,
   CARDIO_LOG_LIMITS,
   COMPETITION_OWN_START,
   ownStartAllowedLevel,
+  RUN_COMPETITION_DISCIPLINES,
+  type RunCompetitionDiscipline,
   SESSION_LOG_LIMITS,
 } from '@fitnessapp/core';
 import { Redirect, useLocalSearchParams, useRouter, type Href } from 'expo-router';
@@ -86,12 +92,14 @@ type Time = { hours: string; minutes: string; seconds: string };
 
 interface FormState {
   discipline: CompetitionDiscipline;
+  /** WP5: Rad-Distanz in km (Text aus dem Feld), sonst leer. */
+  distanceKm: string;
   date: Parts;
   name: string;
   goal: CompetitionGoal;
   target: Time;
   withReference: boolean;
-  refDiscipline: CompetitionDiscipline;
+  refDiscipline: RunCompetitionDiscipline;
   refTime: Time;
   refDate: Parts;
   longRunWeekday: number | null;
@@ -100,7 +108,7 @@ interface FormState {
 }
 
 type FormErrors = Partial<
-  Record<'date' | 'name' | 'target' | 'refTime' | 'refDate' | 'ownStart', string>
+  Record<'date' | 'name' | 'target' | 'refTime' | 'refDate' | 'ownStart' | 'distanceKm', string>
 >;
 
 function formFrom(
@@ -111,6 +119,7 @@ function formFrom(
   const ref = c?.reference ?? null;
   return {
     discipline: c?.discipline ?? fallback.discipline,
+    distanceKm: c?.distanceKm !== undefined && c.distanceKm !== null ? String(c.distanceKm) : '',
     date: datePartsFromIso(c?.raceDate ?? fallback.date),
     name: c?.name ?? '',
     goal: c?.goal ?? 'finish',
@@ -134,22 +143,36 @@ function draftOf(
   const raceDate = isoFromDateParts(form.date.day, form.date.month, form.date.year);
   if (raceDate === null || Number.isNaN(Date.parse(raceDate))) errors.date = C.errorsForm.raceDate;
   else if (raceDate <= today) errors.date = C.errorsForm.raceDatePast;
-  const name = form.name.trim() === '' ? disciplineText(form.discipline) : form.name.trim();
+  // WP5: Rad mit Distanz (20–300 ganze km); Rad und Triathlon nur „Ankommen“ ohne Referenzzeit.
+  const run = isRunCompetitionDiscipline(form.discipline);
+  let distanceKm: number | null = null;
+  if (form.discipline === 'cycling') {
+    const text = form.distanceKm.trim();
+    const km = Number(text);
+    const { min, max } = COMPETITION_CYCLING.distanceKm;
+    if (!/^\d{1,3}$/.test(text) || km < min || km > max) {
+      errors.distanceKm = C.errorsForm.cyclingDistance;
+    } else distanceKm = km;
+  }
+  const goal: CompetitionGoal = run ? form.goal : 'finish';
+  const name =
+    form.name.trim() === '' ? disciplineText(form.discipline, distanceKm) : form.name.trim();
   if (name.length > 80) errors.name = C.errorsForm.name;
   const targetTimeS =
-    form.goal === 'time'
+    goal === 'time'
       ? secondsFromParts(form.target.hours, form.target.minutes, form.target.seconds)
       : null;
-  if (form.goal === 'time' && targetTimeS === null) errors.target = C.errorsForm.time;
-  let reference: { discipline: CompetitionDiscipline; timeS: number; date: string } | null = null;
-  if (form.withReference) {
+  if (goal === 'time' && targetTimeS === null) errors.target = C.errorsForm.time;
+  let reference: { discipline: RunCompetitionDiscipline; timeS: number; date: string } | null =
+    null;
+  if (run && form.withReference) {
     const timeS = secondsFromParts(form.refTime.hours, form.refTime.minutes, form.refTime.seconds);
     const date = isoFromDateParts(form.refDate.day, form.refDate.month, form.refDate.year);
     if (timeS === null) errors.refTime = C.errorsForm.time;
     if (date === null) errors.refDate = C.errorsForm.referenceDate;
     if (timeS !== null && date !== null)
       reference = { discipline: form.refDiscipline, timeS, date };
-  } else if (form.goal === 'time') {
+  } else if (goal === 'time') {
     errors.target = C.errorsForm.referenceMissing;
   }
   let ownStart: CompetitionDraft['ownStart'] = null;
@@ -174,9 +197,10 @@ function draftOf(
         name,
         discipline: form.discipline,
         raceDate,
-        goal: form.goal,
+        goal,
         targetTimeS,
         reference,
+        distanceKm,
       },
       longRunWeekday: form.longRunWeekday,
       ownStart,
@@ -197,10 +221,13 @@ export default function CompetitionScreen() {
   const entry = rows ? competitionEntry(rows, today) : null;
   const active = rows ? activePlan(rows) : null;
   const level = rows ? currentLevel(rows) : 'beginner';
-  const goalDiscipline =
-    rows?.goals?.goal_type === 'endurance' && isCompetitionDiscipline(rows.goals.discipline)
-      ? rows.goals.discipline
-      : 'half_marathon';
+  // Ziel-Disziplin ohne Wettkampfplan (Triathlon Mittel-/Langdistanz, Schwimmen – W-G2): Hinweis Trainer/Verein;
+  // vorbelegt wird dann Triathlon Olympisch bzw. der Halbmarathon.
+  const goalOffer =
+    rows?.goals?.goal_type === 'endurance' ? competitionPlanOffer(rows.goals.discipline) : 'none';
+  const goalDiscipline: CompetitionDiscipline = defaultCompetitionDiscipline(
+    rows?.goals ? { goalType: rows.goals.goal_type, discipline: rows.goals.discipline } : null,
+  );
   const [mode, setMode] = useState<Mode>(() => (params.neu === '1' && !planned ? 'form' : 'view'));
   const [form, setForm] = useState<FormState>(() =>
     formFrom(planned ? draftFromStored(planned.stored) : null, {
@@ -287,8 +314,13 @@ export default function CompetitionScreen() {
 
   function applySuggestion(s: FeasibilitySuggestion) {
     if (s.kind === 'later_date') update({ date: datePartsFromIso(s.raceDate) });
-    else if (s.kind === 'shorter_distance') update({ discipline: s.discipline });
-    else if (s.kind === 'health_check') router.push('/onboarding/health_screening?edit=1' as Href);
+    else if (s.kind === 'shorter_distance') {
+      update({
+        discipline: s.discipline,
+        ...(s.distanceKm === undefined ? {} : { distanceKm: String(s.distanceKm) }),
+      });
+    } else if (s.kind === 'health_check')
+      router.push('/onboarding/health_screening?edit=1' as Href);
     else if (s.kind === 'without_competition') {
       setMode('view');
       setMessage({ tone: 'info', text: C.planNotFeasible });
@@ -408,6 +440,9 @@ export default function CompetitionScreen() {
   // --- Ergebnis eintragen -----------------------------------------------------------------------------------
   const raceEntry = planned ?? entry;
   const raceDate = raceEntry?.stored.competition.raceDate ?? null;
+  const isTriathlonRace = isTriathlonCompetitionDiscipline(
+    raceEntry?.stored.competition.discipline,
+  );
   const resultAllowedDates = freeSessionDates(berlinTodayIso());
   const resultTooOld = raceDate !== null && !resultAllowedDates.includes(raceDate);
   const existingLog = raceDate ? resultLogCandidate(rows, raceDate) : null;
@@ -449,7 +484,10 @@ export default function CompetitionScreen() {
       let draft = createFreeDraft({
         ownerUserId: app.session.userId,
         kind: 'endurance',
-        modality: 'run',
+        // WP5: Rad und Triathlon als Rad-Eintrag (Triathlon ohne Distanz), Laufen wie bisher.
+        modality: isRunCompetitionDiscipline(raceEntry.stored.competition.discipline)
+          ? 'run'
+          : 'bike',
         exercises: [],
         performedOn: raceDate,
         today: berlinTodayIso(),
@@ -461,7 +499,15 @@ export default function CompetitionScreen() {
         {
           hours: String(Math.floor(minutesTotal / 60)),
           minutes: String(minutesTotal % 60),
-          distanceKm: kmText(competitionDistanceM(raceEntry.stored.competition.discipline)),
+          // Rad mit eingegebener Distanz; Triathlon ohne Distanz (eine Sportart je Eintrag, WP5).
+          distanceKm: isTriathlonRace
+            ? ''
+            : kmText(
+                competitionDistanceM(
+                  raceEntry.stored.competition.discipline,
+                  raceEntry.stored.competition.distanceKm,
+                ),
+              ),
         },
         now,
       );
@@ -648,9 +694,34 @@ export default function CompetitionScreen() {
               label: C.disciplines[value],
             }))}
             value={form.discipline}
-            onChange={(value) => update({ discipline: value })}
+            onChange={(value) =>
+              update({
+                discipline: value,
+                // Rad und Triathlon nur „Ankommen“ ohne Referenzzeit (WP5).
+                ...(isRunCompetitionDiscipline(value)
+                  ? {}
+                  : { goal: 'finish', withReference: false }),
+              })
+            }
           />
+          {form.discipline === 'cycling' ? (
+            <TextField
+              label={C.cyclingDistance}
+              hint={C.cyclingDistanceHint}
+              value={form.distanceKm}
+              onChangeText={(distanceKm) => update({ distanceKm: distanceKm.replace(/\D/g, '') })}
+              keyboardType="number-pad"
+              maxLength={3}
+              error={shownErrors.distanceKm}
+              testID="competition-distance-km"
+            />
+          ) : null}
           <Body muted>{C.disciplineHint}</Body>
+          {goalOffer === 'coach' && rows.goals?.discipline ? (
+            <Notice tone="info" testID="competition-coach-hint">
+              {C.coachHint(t.steps.goal.disciplines[rows.goals.discipline])}
+            </Notice>
+          ) : null}
           <DateInput
             label={C.raceDate}
             value={form.date}
@@ -670,86 +741,96 @@ export default function CompetitionScreen() {
             testID="competition-name"
           />
         </Card>
-        <Card>
-          <ChoiceList<CompetitionGoal>
-            label={C.goal}
-            horizontal
-            options={(timeGoal || form.goal === 'time'
-              ? (['finish', 'time'] as const)
-              : (['finish'] as const)
-            ).map((value) => ({
-              value,
-              label: C.goals[value],
-            }))}
-            value={form.goal}
-            onChange={(goal) =>
-              update({ goal, ...(goal === 'time' ? { withReference: true } : {}) })
-            }
-          />
-          {!timeGoal ? (
-            <Body muted testID="competition-time-goal-not-offered">
-              {C.timeGoalNotOffered}
-            </Body>
-          ) : null}
-          {form.goal === 'time' ? (
-            <>
-              <Body muted>{C.goalTimeHint}</Body>
-              <Body>{C.targetTime}</Body>
-              <TimeFields
-                value={form.target}
-                onChange={(target) => update({ target })}
-                prefix="competition-target"
-              />
-              <FieldError message={shownErrors.target} />
-            </>
-          ) : null}
-        </Card>
-        <Card>
-          <Heading level={2}>{C.referenceTitle}</Heading>
-          <Body muted>{C.referenceText}</Body>
-          {form.withReference ? (
-            <>
-              <ChoiceList<CompetitionDiscipline>
-                label={C.referenceDiscipline}
-                horizontal
-                options={COMPETITION_DISCIPLINES.map((value) => ({
-                  value,
-                  label: C.disciplines[value],
-                }))}
-                value={form.refDiscipline}
-                onChange={(refDiscipline) => update({ refDiscipline })}
-              />
-              <Body>{C.referenceTime}</Body>
-              <TimeFields
-                value={form.refTime}
-                onChange={(refTime) => update({ refTime })}
-                prefix="competition-reference"
-              />
-              <FieldError message={shownErrors.refTime} />
-              <DateInput
-                label={C.referenceDate}
-                value={form.refDate}
-                onChange={(refDate) => update({ refDate })}
-                error={shownErrors.refDate}
-              />
-              <Button
-                label={C.referenceRemove}
-                variant="link"
-                onPress={() => update({ withReference: false, goal: 'finish' })}
-              />
-            </>
-          ) : (
-            <Button
-              label={C.referenceAdd}
-              variant="secondary"
-              onPress={() => update({ withReference: true })}
-              testID="competition-reference-add"
+        {!isRunCompetitionDiscipline(form.discipline) ? (
+          <Card>
+            <Heading level={2}>{C.goal}</Heading>
+            <Body testID="competition-multisport-finish">{C.multisportFinishOnly}</Body>
+          </Card>
+        ) : null}
+        {isRunCompetitionDiscipline(form.discipline) ? (
+          <Card>
+            <ChoiceList<CompetitionGoal>
+              label={C.goal}
+              horizontal
+              options={(timeGoal || form.goal === 'time'
+                ? (['finish', 'time'] as const)
+                : (['finish'] as const)
+              ).map((value) => ({
+                value,
+                label: C.goals[value],
+              }))}
+              value={form.goal}
+              onChange={(goal) =>
+                update({ goal, ...(goal === 'time' ? { withReference: true } : {}) })
+              }
             />
-          )}
-        </Card>
+            {!timeGoal ? (
+              <Body muted testID="competition-time-goal-not-offered">
+                {C.timeGoalNotOffered}
+              </Body>
+            ) : null}
+            {form.goal === 'time' ? (
+              <>
+                <Body muted>{C.goalTimeHint}</Body>
+                <Body>{C.targetTime}</Body>
+                <TimeFields
+                  value={form.target}
+                  onChange={(target) => update({ target })}
+                  prefix="competition-target"
+                />
+                <FieldError message={shownErrors.target} />
+              </>
+            ) : null}
+          </Card>
+        ) : null}
+        {isRunCompetitionDiscipline(form.discipline) ? (
+          <Card>
+            <Heading level={2}>{C.referenceTitle}</Heading>
+            <Body muted>{C.referenceText}</Body>
+            {form.withReference ? (
+              <>
+                <ChoiceList<RunCompetitionDiscipline>
+                  label={C.referenceDiscipline}
+                  horizontal
+                  options={RUN_COMPETITION_DISCIPLINES.map((value) => ({
+                    value,
+                    label: C.disciplines[value],
+                  }))}
+                  value={form.refDiscipline}
+                  onChange={(refDiscipline) => update({ refDiscipline })}
+                />
+                <Body>{C.referenceTime}</Body>
+                <TimeFields
+                  value={form.refTime}
+                  onChange={(refTime) => update({ refTime })}
+                  prefix="competition-reference"
+                />
+                <FieldError message={shownErrors.refTime} />
+                <DateInput
+                  label={C.referenceDate}
+                  value={form.refDate}
+                  onChange={(refDate) => update({ refDate })}
+                  error={shownErrors.refDate}
+                />
+                <Button
+                  label={C.referenceRemove}
+                  variant="link"
+                  onPress={() => update({ withReference: false, goal: 'finish' })}
+                />
+              </>
+            ) : (
+              <Button
+                label={C.referenceAdd}
+                variant="secondary"
+                onPress={() => update({ withReference: true })}
+                testID="competition-reference-add"
+              />
+            )}
+          </Card>
+        ) : null}
         <Card>
           <ChoiceList<number>
-            label={C.longRunDay}
+            label={isRunCompetitionDiscipline(form.discipline) ? C.longRunDay : C.longRideDay}
             horizontal
             options={[
               { value: 0, label: C.longRunAuto },
@@ -793,10 +874,18 @@ export default function CompetitionScreen() {
             {C.errors.invalid}
           </Notice>
         ) : shown ? (
-          <FeasibilityCard feasibility={shown} onSuggestion={applySuggestion} />
+          <FeasibilityCard
+            feasibility={shown}
+            onSuggestion={applySuggestion}
+            discipline={form.discipline}
+          />
         ) : null}
         {usable && goalChange ? (
-          <Body muted>{C.goalChange(disciplineText(form.discipline))}</Body>
+          <Body muted>
+            {C.goalChange(
+              disciplineText(form.discipline, parsed.draft?.competition.distanceKm ?? null),
+            )}
+          </Body>
         ) : null}
         {shown && !usable ? (
           <Button
@@ -860,6 +949,7 @@ export default function CompetitionScreen() {
           <CountdownCard
             countdown={countdown}
             discipline={comp.discipline}
+            distanceKm={comp.distanceKm}
             name={comp.name}
             onOpen={
               countdown.kind === 'race_day' || countdown.kind === 'awaiting_result'
@@ -873,7 +963,7 @@ export default function CompetitionScreen() {
             <View style={{ gap: 4 }} testID="competition-summary">
               <Heading level={2}>{comp.name}</Heading>
               <Body>{C.summaryDate(dayLabel(comp.raceDate))}</Body>
-              <Body>{`${C.discipline}: ${disciplineText(comp.discipline)}`}</Body>
+              <Body>{`${C.discipline}: ${disciplineText(comp.discipline, comp.distanceKm)}`}</Body>
               <Body>{C.summaryGoal(C.goals[comp.goal])}</Body>
               {comp.targetTimeS !== null ? (
                 <Body>{C.summaryTarget(clockText(comp.targetTimeS))}</Body>

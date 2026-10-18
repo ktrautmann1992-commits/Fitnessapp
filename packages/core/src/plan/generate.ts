@@ -53,6 +53,7 @@ import {
   planInputsSnapshot,
 } from './inputs';
 import { matchTemplate } from './match';
+import { workoutModalityFits } from './multisport';
 import type { MacroCycle } from './periodization';
 import { type PlanSafetyRules, planSafetyRules } from './safety';
 import {
@@ -229,6 +230,10 @@ export const generatedCompetitionSessionSchema = sessionSchema(COMPETITION_EFFOR
           s.training_phase === 'taper' ||
           !isHardSession(s.workout_type, s.workout_steps))),
     'Schritte passen zur Art; nichts Hartes in einer Erholungswoche außer im Tapering (WP3, Wächter H1).',
+  )
+  .refine(
+    (s) => workoutModalityFits(s.workout_type, s.endurance_modality),
+    'Koppeltraining nur als Rad-Einheit, Schwimmtechnik nur beim Schwimmen (WP5).',
   );
 
 function planSchema<

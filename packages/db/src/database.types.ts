@@ -2830,7 +2830,14 @@ export type Database = {
       alternative_reason: 'other_equipment' | 'easier' | 'harder' | 'home';
       app_locale: 'de-DE' | 'de-AT' | 'de-CH';
       caution_tag: 'high_impact' | 'spinal_loading' | 'overhead' | 'long_supine' | 'high_skill';
-      competition_discipline: '5k' | '10k' | 'half_marathon' | 'marathon';
+      competition_discipline:
+        | '5k'
+        | '10k'
+        | 'half_marathon'
+        | 'marathon'
+        | 'cycling'
+        | 'triathlon_sprint'
+        | 'triathlon_olympic';
       competition_goal: 'finish' | 'time';
       competition_status: 'planned' | 'done' | 'cancelled';
       consent_platform: 'ios' | 'android' | 'web';
@@ -2934,7 +2941,16 @@ export type Database = {
       training_time: 'early' | 'morning' | 'midday' | 'afternoon' | 'evening' | 'varies';
       tracked_route_source: 'recorded' | 'gpx_import';
       workout_type:
-        'easy' | 'recovery' | 'long' | 'strides' | 'fartlek' | 'tempo' | 'intervals' | 'race_pace';
+        | 'easy'
+        | 'recovery'
+        | 'long'
+        | 'strides'
+        | 'fartlek'
+        | 'tempo'
+        | 'intervals'
+        | 'race_pace'
+        | 'brick'
+        | 'technique';
     };
     CompositeTypes: {
       [_ in never]: never;
@@ -3045,7 +3061,15 @@ export const Constants = {
       alternative_reason: ['other_equipment', 'easier', 'harder', 'home'],
       app_locale: ['de-DE', 'de-AT', 'de-CH'],
       caution_tag: ['high_impact', 'spinal_loading', 'overhead', 'long_supine', 'high_skill'],
-      competition_discipline: ['5k', '10k', 'half_marathon', 'marathon'],
+      competition_discipline: [
+        '5k',
+        '10k',
+        'half_marathon',
+        'marathon',
+        'cycling',
+        'triathlon_sprint',
+        'triathlon_olympic',
+      ],
       competition_goal: ['finish', 'time'],
       competition_status: ['planned', 'done', 'cancelled'],
       consent_platform: ['ios', 'android', 'web'],
@@ -3168,6 +3192,8 @@ export const Constants = {
         'tempo',
         'intervals',
         'race_pace',
+        'brick',
+        'technique',
       ],
     },
   },

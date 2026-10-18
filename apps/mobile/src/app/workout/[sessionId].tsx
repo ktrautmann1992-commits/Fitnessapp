@@ -1,6 +1,9 @@
 import {
   adjustReps,
   adjustWeight,
+  brickStepSports,
+  MULTISPORT_TEXTS_DE,
+  sessionSafetyNotices,
   type PreferenceChange,
   cardioSpeed,
   cardioDurationS,
@@ -247,9 +250,9 @@ export default function WorkoutScreen() {
   const session = active?.sessions.find((s) => s.id === sessionId) ?? null;
   // Intervall-Timer (WP4): Schritte der ANGEZEIGTEN Einheit (aktuelle Sicherheitsregeln angewendet) – ohne Bibliothek,
   // also auch offline.
-  const timerSteps =
+  const timerSession =
     session && active && rules && session.kind === 'endurance' && session.workout_steps
-      ? (sessionDisplay({
+      ? sessionDisplay({
           rows,
           active,
           library: null,
@@ -258,8 +261,17 @@ export default function WorkoutScreen() {
           today,
           daySwaps: null,
           ownerUserId: null,
-        }).shown.session.workout_steps ?? null)
+        }).shown.session
       : null;
+  const timerSteps = timerSession?.workout_steps ?? null;
+  // WP5: Koppeltraining (Rad → Lauf) – der Timer zeigt, wann der Lauf-Teil beginnt.
+  const timerSports =
+    timerSession && timerSteps && timerSession.workout_type === 'brick'
+      ? brickStepSports(timerSteps, timerSession.estimated_minutes)
+      : null;
+  // WP5: Sicherheitshinweis zum Freiwasser bei jeder Schwimm-Einheit (auch ohne Wettkampf).
+  const openWater =
+    session !== null && sessionSafetyNotices(timerSession ?? session).includes('open_water');
   const footerBack = (
     <Button label={t.workout.back} variant="secondary" onPress={() => goToday()} />
   );
@@ -649,6 +661,7 @@ export default function WorkoutScreen() {
       current.backfill !== true ? (
         <IntervalTimer
           steps={timerSteps}
+          sports={timerSports}
           onLog={(minutes) =>
             update(
               setCardioFields(
@@ -659,6 +672,11 @@ export default function WorkoutScreen() {
             )
           }
         />
+      ) : null}
+      {isEndurance && openWater ? (
+        <Notice tone="info" title={t.competition.openWaterTitle} testID="workout-open-water">
+          <Body>{MULTISPORT_TEXTS_DE.openWater}</Body>
+        </Notice>
       ) : null}
       {isEndurance && current.cardio ? (
         <EnduranceCard
