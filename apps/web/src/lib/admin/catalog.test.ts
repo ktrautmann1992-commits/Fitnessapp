@@ -17,11 +17,26 @@ import {
   volumeBars,
 } from './catalog';
 
-/** Echter Stand aus content/ (beim Test gebündelt wie beim Bauen). */
-const catalog = buildCatalog(CONTENT_BUNDLE.files, CONTENT_BUNDLE.strayFiles);
+/**
+ * Inhaltsdatei mit gesetztem Status (`draft` ohne Prüfer, `published` mit Prüfer und Datum). Die Tests bauen sich
+ * ihren Ausgangszustand selbst – unabhängig davon, ob der echte Bestand unter content/ schon freigegeben ist.
+ */
+function withStatus(file: ContentFile, status: 'draft' | 'published'): ContentFile {
+  if (file.data === undefined) return file;
+  const data = file.data as Record<string, unknown>;
+  const review =
+    status === 'published'
+      ? { reviewed_by: 'KT', reviewed_at: '2026-10-03' }
+      : { reviewed_by: null, reviewed_at: null };
+  return { ...file, data: { ...data, status, meta: { ...(data.meta as object), ...review } } };
+}
+
+/** Echter Stand aus content/ (beim Test gebündelt wie beim Bauen), alles als Entwurf. */
+const draftFiles = CONTENT_BUNDLE.files.map((f) => withStatus(f, 'draft'));
+const catalog = buildCatalog(draftFiles, CONTENT_BUNDLE.strayFiles);
 
 function fileOf(id: string): ContentFile {
-  const file = CONTENT_BUNDLE.files.find((f) => f.fileName === `${id}.json`);
+  const file = draftFiles.find((f) => f.fileName === `${id}.json`);
   if (!file) throw new Error(`Testdatei ${id} fehlt`);
   return file;
 }
@@ -43,6 +58,37 @@ describe('Katalog aus den Repository-Dateien', () => {
       published: 0,
       archived: 0,
     });
+  });
+
+  it('komplett freigegeben: nichts blockiert, alle Übungen und Vorlagen „freigegeben“', () => {
+    const published = buildCatalog(
+      CONTENT_BUNDLE.files.map((f) => withStatus(f, 'published')),
+      CONTENT_BUNDLE.strayFiles,
+    );
+    expect(published.blockingTotal).toBe(0);
+    expect(countByStatus(published.exercises.map((e) => e.exercise.status))).toEqual({
+      draft: 0,
+      published: 80,
+      archived: 0,
+    });
+    expect(
+      filterTemplates(published.templates, parseFilters({ status: 'published' })),
+    ).toHaveLength(42);
+    expect(filterTemplates(published.templates, parseFilters({ status: 'draft' }))).toEqual([]);
+  });
+
+  it('echter Stand: nur Entwurf oder freigegeben, nichts blockiert', () => {
+    const real = buildCatalog(CONTENT_BUNDLE.files, CONTENT_BUNDLE.strayFiles);
+    expect(real.brokenFiles).toEqual([]);
+    expect(real.blockingTotal).toBe(0);
+    for (const entries of [
+      real.exercises.map((e) => e.exercise.status),
+      real.templates.map((t) => t.template.status),
+    ]) {
+      const counts = countByStatus(entries);
+      expect(counts.archived).toBe(0);
+      expect(counts.draft + counts.published).toBe(entries.length);
+    }
   });
 
   it('Übungen nach deutschem Namen sortiert; KI-Kennzeichnung gesetzt', () => {

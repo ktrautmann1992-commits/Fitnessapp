@@ -7,7 +7,7 @@ import { LIBRARY, makeTemplate, META } from '../content/test-fixtures';
 import { planLibraryFromContent } from './content-pool';
 import { generatedPlanSchema, generateTrainingPlan, isPlanWithinLimits } from './generate';
 import { planInputsSchema } from './inputs';
-import { FULL_HOME, MONDAY, person, repoLibrary } from './test-library';
+import { FULL_HOME, MONDAY, person, repoLibrary, repoLibraryWithStatus } from './test-library';
 
 const library = repoLibrary();
 
@@ -34,11 +34,23 @@ describe('generateTrainingPlan – Grundfall', () => {
     expect(p.sessions.filter((s) => s.is_deload)).toHaveLength(3);
     expect(p.uses_health_data).toBe(true);
     expect(p.medical_notice).toBe(false);
-    expect(p.uses_draft_content).toBe(true);
+    expect(p.uses_draft_content).toBe(library.containsDrafts);
     expect(p.sessions.every((s) => s.exercises.every((e) => e.target_weight_kg === null))).toBe(
       true,
     );
     expect(generatedPlanSchema.safeParse(p).success).toBe(true);
+  });
+
+  it('uses_draft_content: true aus Entwürfen, false aus freigegebenen Inhalten', () => {
+    for (const [status, expected] of [
+      ['draft', true],
+      ['published', false],
+    ] as const) {
+      const result = generateTrainingPlan(person(), repoLibraryWithStatus(status), MONDAY);
+      if (!result.ok) throw new Error(result.error);
+      expect(result.plan.template_id, status).toBe('muskelaufbau-einsteiger-3t-studio');
+      expect(result.plan.uses_draft_content, status).toBe(expected);
+    }
   });
 
   it('deterministisch: gleiche Eingaben → gleicher Plan', () => {
