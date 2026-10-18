@@ -1620,6 +1620,10 @@ describe('Supabase-Modus: Tagebuch-Warteschlange', () => {
       'food_product_lookup_counts',
       // Ziele Z3
       'weight_goals',
+      // Phase 4b Etappe B
+      'plan_adjustments',
+      'adjustment_events',
+      'live_adjust_hourly_counts',
     ];
     const exported = {
       format_version: 1,

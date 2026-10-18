@@ -1,7 +1,7 @@
 /**
  * Erzeugt die 20 festen Fälle der Wochen-Invarianten (docs/PLAN-PHASE-4B.md 5.8, Wächter B2) – gültige und absichtlich
  * verletzte Pläne. Ergebnis steht als `invariants.json` im Repository; Etappe B übersetzt die Datei in
- * `supabase/tests/22_week_invariants.test.sql`, damit Core und SQL nachweislich gleich entscheiden. Neu erzeugen:
+ * `supabase/tests/50_week_invariants.test.sql` (Plan: 22; 20–47 belegt), damit Core und SQL nachweislich gleich entscheiden. Neu erzeugen:
  * `pnpm --filter @fitnessapp/content exec tsx ../core/src/adjust/fixtures/write-invariant-fixtures.ts`, danach
  * `pnpm exec prettier --write packages/core/src/adjust/fixtures/invariants.json`.
  */
@@ -16,6 +16,9 @@ import { followUpBlock, liveInputs, planWithFollowUps, stored } from '../test-he
 import { trailingLoadWeeks } from '../../plan/periodization';
 
 export interface FixtureSession {
+  /** Nur in Fällen „mit ids“ (sessionRef = id, Stelle order_no, Vorlagen-Einheit) – sonst wie bisher ohne. */
+  readonly id?: string;
+  readonly template_day_index?: number | null;
   readonly block_no: number;
   readonly week_no: number;
   readonly scheduled_on: string;
@@ -25,6 +28,7 @@ export interface FixtureSession {
   readonly estimated_minutes: number;
   readonly training_phase?: string;
   readonly exercises: readonly {
+    readonly order_no?: number;
     readonly exercise_id: string;
     readonly sets: number;
     readonly rpe_target: number;
@@ -37,14 +41,17 @@ export interface InvariantFixture {
     readonly maxLoadWeeks: number;
     readonly planStart: string;
     readonly swappedWeeks: readonly { readonly blockNo: number; readonly weekNo: number }[];
+    readonly carriedLoadWeeks?: number;
+    readonly fromMonday?: string;
   };
   readonly sessions: readonly FixtureSession[];
   /** Erwartete Verstoß-Codes (sortiert, eindeutig); leer = gültig. */
   readonly expected: readonly string[];
 }
 
-function slim(sessions: readonly StoredSession[]): FixtureSession[] {
+function slim(sessions: readonly StoredSession[], withIds = false): FixtureSession[] {
   return sessions.map((s) => ({
+    ...(withIds ? { id: s.id, template_day_index: s.template_day_index } : {}),
     block_no: s.block_no,
     week_no: s.week_no,
     scheduled_on: s.scheduled_on,
@@ -54,6 +61,7 @@ function slim(sessions: readonly StoredSession[]): FixtureSession[] {
     estimated_minutes: s.estimated_minutes,
     ...(s.training_phase === undefined ? {} : { training_phase: s.training_phase }),
     exercises: s.exercises.map((e) => ({
+      ...(withIds ? { order_no: e.order_no } : {}),
       exercise_id: e.exercise_id,
       sets: e.sets,
       rpe_target: e.rpe_target,
@@ -95,9 +103,11 @@ export function buildInvariantFixtures(): InvariantFixture[] {
     maxLoadWeeks: number,
     planStart: string,
     swappedWeeks: { blockNo: number; weekNo: number }[] = [],
+    extra: { carriedLoadWeeks?: number; fromMonday?: string; withIds?: boolean } = {},
   ) => {
-    const s = slim(sessions as StoredSession[]);
-    const options = { maxLoadWeeks, planStart, swappedWeeks };
+    const { withIds = false, ...more } = extra;
+    const s = slim(sessions as StoredSession[], withIds);
+    const options = { maxLoadWeeks, planStart, swappedWeeks, ...more };
     cases.push({ name, options, sessions: s, expected: codesOf(s, options) });
   };
 
@@ -281,5 +291,70 @@ export function buildInvariantFixtures(): InvariantFixture[] {
     4,
     '2026-10-05',
   );
+  // Wächter B Auflage 5: weitere Fälle für die SQL-Nachrechnung.
+  // Einheiten mit id (sessionRef = id) und Stelle (order_no) – Erholungswoche mit vollen Sätzen.
+  add(
+    'verletzt_erholung_saetze_mit_ids',
+    adv.sessions.map((s) =>
+      s.block_no === 1 && s.is_deload
+        ? { ...s, exercises: s.exercises.map((e) => ({ ...e, sets: e.sets * 2 + 1 })) }
+        : s,
+    ),
+    4,
+    '2026-10-05',
+    [],
+    { withIds: true },
+  );
+  // Nur der Folgeblock mit einer übernommenen Belastungswoche davor (carriedLoadWeeks).
+  add(
+    'verletzt_folgeblock_mit_carried',
+    adv.sessions.filter((s) => s.block_no === 2),
+    4,
+    '2026-10-05',
+    [],
+    { carriedLoadWeeks: 1 },
+  );
+  // Getauschte Woche mit Ausdauer über der Vorwoche (Minuten).
+  let longerOnce = false;
+  add(
+    'verletzt_getauschte_woche_ausdauer',
+    mixed.sessions.map((s) => {
+      if (longerOnce || s.kind !== 'endurance' || s.block_no !== 1 || s.week_no !== 3) return s;
+      longerOnce = true;
+      return { ...s, estimated_minutes: s.estimated_minutes + 2 };
+    }),
+    4,
+    '2026-10-05',
+    [{ blockNo: 1, weekNo: 3 }],
+  );
+  // Verstoß in einer Tapering-Woche (eigener Faktor 0,75): Erholungswoche mit vollem Umfang.
+  const runStored = stored(run10k.sessions as never);
+  const taperWeek = runStored.find((s) => s.is_deload && s.training_phase === 'taper');
+  if (!taperWeek) throw new Error('keine Tapering-Woche');
+  add(
+    'verletzt_tapering_ausdauer',
+    runStored.map((s) =>
+      s.block_no === taperWeek.block_no && s.week_no === taperWeek.week_no && s.kind === 'endurance'
+        ? { ...s, estimated_minutes: s.estimated_minutes * 2 }
+        : s,
+    ),
+    4,
+    run10k.plan.start_date,
+  );
+  // Zweiter Tausch im Block, aber erst ab einer späteren Woche gemeldet (fromMonday nach der ersten Woche des Blocks).
+  add(
+    'gueltig_zweiter_tausch_vor_from_monday',
+    swapped,
+    5,
+    '2026-10-05',
+    [
+      { blockNo: 1, weekNo: 6 },
+      { blockNo: 1, weekNo: 5 },
+    ],
+    { fromMonday: '2026-10-12' },
+  );
+  // Woche 0 mit Ausdauer (Start Donnerstag): zählt nie als Belastungswoche und ist nie Bezug.
+  const weekZero = planOf(mixedInputs, '2026-10-08', 1);
+  add('gueltig_woche0_mit_ausdauer', weekZero.sessions, 4, '2026-10-08');
   return cases;
 }

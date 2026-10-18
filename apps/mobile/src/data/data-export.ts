@@ -194,10 +194,13 @@ export function localDataExport(
       .sort((a, b) => a.hour_start.localeCompare(b.hour_start)),
     // Wunschgewicht (Etappe Z3) – Spalten wie weight_goals.
     weight_goals: one(rows.weightGoal),
+    // Live-Anpassung (4b, 4.7): Anpassungen aus dem geschützten Speicher (Etappe D); Ereignisse und Zähler der
+    // Ratenbegrenzung gibt es nur auf dem Server (Etappe B) – im Testmodus leer.
+    plan_adjustments: [...(extra.planAdjustments ?? [])],
+    adjustment_events: [],
+    live_adjust_hourly_counts: [],
     // Übungs-Präferenzen (Etappe T2) – in export_my_data() erst mit Etappe T3 (PENDING_DB_EXPORT_TABLES).
     exercise_preferences: rows.exercisePreferences,
-    // Live-Anpassung (Etappe 4b D, 4.7) – in export_my_data() erst mit Etappe B (PENDING_DB_EXPORT_TABLES).
-    plan_adjustments: [...(extra.planAdjustments ?? [])],
   };
   return {
     format_version: DATA_EXPORT_FORMAT_VERSION,

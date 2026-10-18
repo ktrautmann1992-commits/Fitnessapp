@@ -213,7 +213,10 @@ select is(
           -- E3: die eigene Beta-Freischaltung liegt in private, gehört aber zum Export (PLAN-PHASE-4B 4.7).
           or c.conrelid in ('private.beta_entitlements'::regclass, 'private.admin_actions'::regclass,
                             -- E4a: eigene Abfrage-Zähler der Produktabfrage (ohne Nummern)
-                            'private.food_product_lookup_counts'::regclass)))::text[],
+                            'private.food_product_lookup_counts'::regclass,
+                            -- 4b Etappe B: offene Ereignisse und Zähler der Live-Anpassung (Wächter K4)
+                            'private.adjustment_events'::regclass, 'private.live_adjust_hourly_counts'::regclass)))
+     ::text[],
   'Export enthält genau alle Tabellen mit Fremdschlüssel auf auth.users (+ eigene Beta-Freischaltung)'
 );
 select is_empty(

@@ -1583,8 +1583,114 @@ export type Database = {
         };
         Relationships: [];
       };
+      plan_adjustments: {
+        Row: {
+          basis_performed_on: string | null;
+          basis_session_log_id: string | null;
+          change_after: Json | null;
+          change_before: Json | null;
+          created_at: string;
+          decided_at: string | null;
+          effective_from: string;
+          engine_version: number;
+          exercise_id: string | null;
+          expires_on: string | null;
+          explain_params: Json;
+          from_health_plan: boolean;
+          id: string;
+          input_fingerprint: string;
+          kind: Database['public']['Enums']['adjustment_kind'];
+          plan_id: string;
+          planned_session_ids: string[];
+          requires_confirmation: boolean;
+          rule: Database['public']['Enums']['adjustment_rule'];
+          rule_version: number;
+          state_after: Json | null;
+          state_before: Json | null;
+          status: Database['public']['Enums']['adjustment_status'];
+          trigger: Database['public']['Enums']['adjustment_trigger'];
+          updated_at: string;
+          user_id: string;
+          uses_body_data: boolean;
+        };
+        Insert: {
+          basis_performed_on?: string | null;
+          basis_session_log_id?: string | null;
+          change_after?: Json | null;
+          change_before?: Json | null;
+          created_at?: string;
+          decided_at?: string | null;
+          effective_from: string;
+          engine_version: number;
+          exercise_id?: string | null;
+          expires_on?: string | null;
+          explain_params?: Json;
+          from_health_plan: boolean;
+          id?: string;
+          input_fingerprint: string;
+          kind: Database['public']['Enums']['adjustment_kind'];
+          plan_id: string;
+          planned_session_ids?: string[];
+          requires_confirmation?: boolean;
+          rule: Database['public']['Enums']['adjustment_rule'];
+          rule_version: number;
+          state_after?: Json | null;
+          state_before?: Json | null;
+          status: Database['public']['Enums']['adjustment_status'];
+          trigger: Database['public']['Enums']['adjustment_trigger'];
+          updated_at?: string;
+          user_id: string;
+          uses_body_data: boolean;
+        };
+        Update: {
+          basis_performed_on?: string | null;
+          basis_session_log_id?: string | null;
+          change_after?: Json | null;
+          change_before?: Json | null;
+          created_at?: string;
+          decided_at?: string | null;
+          effective_from?: string;
+          engine_version?: number;
+          exercise_id?: string | null;
+          expires_on?: string | null;
+          explain_params?: Json;
+          from_health_plan?: boolean;
+          id?: string;
+          input_fingerprint?: string;
+          kind?: Database['public']['Enums']['adjustment_kind'];
+          plan_id?: string;
+          planned_session_ids?: string[];
+          requires_confirmation?: boolean;
+          rule?: Database['public']['Enums']['adjustment_rule'];
+          rule_version?: number;
+          state_after?: Json | null;
+          state_before?: Json | null;
+          status?: Database['public']['Enums']['adjustment_status'];
+          trigger?: Database['public']['Enums']['adjustment_trigger'];
+          updated_at?: string;
+          user_id?: string;
+          uses_body_data?: boolean;
+        };
+        Relationships: [
+          {
+            foreignKeyName: 'plan_adjustments_exercise_id_fkey';
+            columns: ['exercise_id'];
+            isOneToOne: false;
+            referencedRelation: 'exercises';
+            referencedColumns: ['id'];
+          },
+          {
+            foreignKeyName: 'plan_adjustments_plan_id_user_id_fkey';
+            columns: ['plan_id', 'user_id'];
+            isOneToOne: false;
+            referencedRelation: 'user_plans';
+            referencedColumns: ['id', 'user_id'];
+          },
+        ];
+      };
       planned_exercises: {
         Row: {
+          adjustment_id: string | null;
           duration_s: number | null;
           exercise_id: string;
           exercise_name_de: string;
@@ -1603,6 +1709,7 @@ export type Database = {
           user_id: string;
         };
         Insert: {
+          adjustment_id?: string | null;
           duration_s?: number | null;
           exercise_id: string;
           exercise_name_de: string;
@@ -1621,6 +1728,7 @@ export type Database = {
           user_id: string;
         };
         Update: {
+          adjustment_id?: string | null;
           duration_s?: number | null;
           exercise_id?: string;
           exercise_name_de?: string;
@@ -1639,6 +1747,13 @@ export type Database = {
           user_id?: string;
         };
         Relationships: [
+          {
+            foreignKeyName: 'planned_exercises_adjustment_fkey';
+            columns: ['adjustment_id', 'user_id'];
+            isOneToOne: false;
+            referencedRelation: 'plan_adjustments';
+            referencedColumns: ['id', 'user_id'];
+          },
           {
             foreignKeyName: 'planned_exercises_exercise_id_fkey';
             columns: ['exercise_id'];
@@ -1664,6 +1779,7 @@ export type Database = {
       };
       planned_sessions: {
         Row: {
+          adjustment_id: string | null;
           block_no: number;
           cooldown_de: string;
           created_at: string;
@@ -1691,6 +1807,7 @@ export type Database = {
           workout_type: Database['public']['Enums']['workout_type'] | null;
         };
         Insert: {
+          adjustment_id?: string | null;
           block_no: number;
           cooldown_de: string;
           created_at?: string;
@@ -1718,6 +1835,7 @@ export type Database = {
           workout_type?: Database['public']['Enums']['workout_type'] | null;
         };
         Update: {
+          adjustment_id?: string | null;
           block_no?: number;
           cooldown_de?: string;
           created_at?: string;
@@ -1745,6 +1863,13 @@ export type Database = {
           workout_type?: Database['public']['Enums']['workout_type'] | null;
         };
         Relationships: [
+          {
+            foreignKeyName: 'planned_sessions_adjustment_fkey';
+            columns: ['adjustment_id', 'user_id'];
+            isOneToOne: false;
+            referencedRelation: 'plan_adjustments';
+            referencedColumns: ['id', 'user_id'];
+          },
           {
             foreignKeyName: 'planned_sessions_plan_id_user_id_fkey';
             columns: ['plan_id', 'user_id'];
@@ -2720,8 +2845,11 @@ export type Database = {
         Returns: Json;
       };
       append_plan_block: { Args: { p_plan_id: string; p_sessions: Json }; Returns: number };
+      apply_plan_adjustments: { Args: { p_batch: Json; p_user: string }; Returns: Json };
       cancel_competition: { Args: { p_id: string }; Returns: undefined };
+      claim_adjustment_events: { Args: { p_limit?: number; p_user?: string }; Returns: Json };
       close_missed_sessions: { Args: never; Returns: number };
+      confirm_plan_adjustment: { Args: { p_accept: boolean; p_id: string }; Returns: Json };
       complete_competition: {
         Args: { p_id: string; p_session_log_id: string | null };
         Returns: undefined;
@@ -2764,6 +2892,11 @@ export type Database = {
         Args: { p_token_hash: string; p_unsubscribe_token_hash: string };
         Returns: Json;
       };
+      live_adjustment_status: { Args: never; Returns: Json };
+      mark_adjustment_events_processed: {
+        Args: { p_error_code?: string; p_ids: number[] };
+        Returns: number;
+      };
       recent_exercise_logs: { Args: { p_per_exercise?: number }; Returns: Json };
       replace_food_dislikes: { Args: { p_food_ids: Json }; Returns: undefined };
       replace_food_preferences: {
@@ -2779,6 +2912,7 @@ export type Database = {
         };
         Returns: undefined;
       };
+      revert_plan_adjustment: { Args: { p_id: string }; Returns: Json };
       revoke_health_data: { Args: { p_delete_logs: boolean }; Returns: undefined };
       save_meal_plan: {
         Args: { p_auto_adjusted?: boolean; p_plan: Json; p_recipes_changed?: boolean };
@@ -2826,6 +2960,35 @@ export type Database = {
     };
     Enums: {
       activity_level: 'sedentary' | 'light' | 'active' | 'very_active';
+      adjustment_kind: 'state_override' | 'plan_change' | 'proposal';
+      adjustment_rule:
+        | 'fast_increase'
+        | 'load_reduce'
+        | 'volume_reduce'
+        | 'deload_forward'
+        | 'endurance_reduce'
+        | 'stagnation_variation'
+        | 'fewer_days'
+        | 'calorie_adjust'
+        | 'muscle_gain_volume'
+        | 'readiness_lighter';
+      adjustment_status:
+        | 'applied'
+        | 'pending_confirmation'
+        | 'confirmed'
+        | 'declined'
+        | 'expired'
+        | 'reverted'
+        | 'superseded';
+      adjustment_trigger:
+        | 'session_logged'
+        | 'session_missed'
+        | 'measurement_updated'
+        | 'goal_changed'
+        | 'slots_changed'
+        | 'manual_recheck'
+        | 'wearable_data'
+        | 'competition_date_changed';
       admin_role: 'content_admin';
       alternative_reason: 'other_equipment' | 'easier' | 'harder' | 'home';
       app_locale: 'de-DE' | 'de-AT' | 'de-CH';
@@ -3057,6 +3220,38 @@ export const Constants = {
   public: {
     Enums: {
       activity_level: ['sedentary', 'light', 'active', 'very_active'],
+      adjustment_kind: ['state_override', 'plan_change', 'proposal'],
+      adjustment_rule: [
+        'fast_increase',
+        'load_reduce',
+        'volume_reduce',
+        'deload_forward',
+        'endurance_reduce',
+        'stagnation_variation',
+        'fewer_days',
+        'calorie_adjust',
+        'muscle_gain_volume',
+        'readiness_lighter',
+      ],
+      adjustment_status: [
+        'applied',
+        'pending_confirmation',
+        'confirmed',
+        'declined',
+        'expired',
+        'reverted',
+        'superseded',
+      ],
+      adjustment_trigger: [
+        'session_logged',
+        'session_missed',
+        'measurement_updated',
+        'goal_changed',
+        'slots_changed',
+        'manual_recheck',
+        'wearable_data',
+        'competition_date_changed',
+      ],
       admin_role: ['content_admin'],
       alternative_reason: ['other_equipment', 'easier', 'harder', 'home'],
       app_locale: ['de-DE', 'de-AT', 'de-CH'],

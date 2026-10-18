@@ -13557,5 +13557,3334 @@
       }
     ],
     "expected": []
+  },
+  {
+    "name": "verletzt_erholung_saetze_mit_ids",
+    "options": {
+      "maxLoadWeeks": 4,
+      "planStart": "2026-10-05",
+      "swappedWeeks": []
+    },
+    "sessions": [
+      {
+        "id": "s1",
+        "template_day_index": 1,
+        "block_no": 1,
+        "week_no": 1,
+        "scheduled_on": "2026-10-06",
+        "is_deload": false,
+        "is_intro_week": true,
+        "kind": "strength",
+        "estimated_minutes": 41,
+        "exercises": [
+          {
+            "order_no": 1,
+            "exercise_id": "kniebeuge-langhantel",
+            "sets": 4,
+            "rpe_target": 7
+          },
+          {
+            "order_no": 2,
+            "exercise_id": "bankdruecken-langhantel",
+            "sets": 4,
+            "rpe_target": 7
+          },
+          {
+            "order_no": 3,
+            "exercise_id": "latziehen",
+            "sets": 4,
+            "rpe_target": 7
+          },
+          {
+            "order_no": 4,
+            "exercise_id": "beinbeuger-maschine",
+            "sets": 3,
+            "rpe_target": 7.5
+          }
+        ]
+      },
+      {
+        "id": "s2",
+        "template_day_index": 2,
+        "block_no": 1,
+        "week_no": 1,
+        "scheduled_on": "2026-10-09",
+        "is_deload": false,
+        "is_intro_week": true,
+        "kind": "strength",
+        "estimated_minutes": 44,
+        "exercises": [
+          {
+            "order_no": 1,
+            "exercise_id": "rumaenisches-kreuzheben-langhantel",
+            "sets": 4,
+            "rpe_target": 7
+          },
+          {
+            "order_no": 2,
+            "exercise_id": "kabelrudern",
+            "sets": 4,
+            "rpe_target": 7
+          },
+          {
+            "order_no": 3,
+            "exercise_id": "schulterdruecken-kurzhantel",
+            "sets": 3,
+            "rpe_target": 7
+          },
+          {
+            "order_no": 4,
+            "exercise_id": "bulgarische-split-kniebeuge",
+            "sets": 3,
+            "rpe_target": 7
+          },
+          {
+            "order_no": 5,
+            "exercise_id": "fliegende-kabel",
+            "sets": 3,
+            "rpe_target": 7.5
+          }
+        ]
+      },
+      {
+        "id": "s3",
+        "template_day_index": 3,
+        "block_no": 1,
+        "week_no": 2,
+        "scheduled_on": "2026-10-13",
+        "is_deload": false,
+        "is_intro_week": false,
+        "kind": "strength",
+        "estimated_minutes": 41,
+        "exercises": [
+          {
+            "order_no": 1,
+            "exercise_id": "beinpresse",
+            "sets": 4,
+            "rpe_target": 8
+          },
+          {
+            "order_no": 2,
+            "exercise_id": "schraegbankdruecken-kurzhantel",
+            "sets": 4,
+            "rpe_target": 8
+          },
+          {
+            "order_no": 3,
+            "exercise_id": "kurzhantelrudern-einarmig",
+            "sets": 4,
+            "rpe_target": 8
+          },
+          {
+            "order_no": 4,
+            "exercise_id": "hip-thrust-langhantel",
+            "sets": 3,
+            "rpe_target": 8
+          }
+        ]
+      },
+      {
+        "id": "s4",
+        "template_day_index": 1,
+        "block_no": 1,
+        "week_no": 2,
+        "scheduled_on": "2026-10-16",
+        "is_deload": false,
+        "is_intro_week": false,
+        "kind": "strength",
+        "estimated_minutes": 41,
+        "exercises": [
+          {
+            "order_no": 1,
+            "exercise_id": "kniebeuge-langhantel",
+            "sets": 4,
+            "rpe_target": 8
+          },
+          {
+            "order_no": 2,
+            "exercise_id": "bankdruecken-langhantel",
+            "sets": 4,
+            "rpe_target": 8
+          },
+          {
+            "order_no": 3,
+            "exercise_id": "latziehen",
+            "sets": 4,
+            "rpe_target": 8
+          },
+          {
+            "order_no": 4,
+            "exercise_id": "beinbeuger-maschine",
+            "sets": 3,
+            "rpe_target": 8.5
+          }
+        ]
+      },
+      {
+        "id": "s5",
+        "template_day_index": 2,
+        "block_no": 1,
+        "week_no": 3,
+        "scheduled_on": "2026-10-20",
+        "is_deload": false,
+        "is_intro_week": false,
+        "kind": "strength",
+        "estimated_minutes": 44,
+        "exercises": [
+          {
+            "order_no": 1,
+            "exercise_id": "rumaenisches-kreuzheben-langhantel",
+            "sets": 4,
+            "rpe_target": 8
+          },
+          {
+            "order_no": 2,
+            "exercise_id": "kabelrudern",
+            "sets": 4,
+            "rpe_target": 8
+          },
+          {
+            "order_no": 3,
+            "exercise_id": "schulterdruecken-kurzhantel",
+            "sets": 3,
+            "rpe_target": 8
+          },
+          {
+            "order_no": 4,
+            "exercise_id": "bulgarische-split-kniebeuge",
+            "sets": 3,
+            "rpe_target": 8
+          },
+          {
+            "order_no": 5,
+            "exercise_id": "fliegende-kabel",
+            "sets": 3,
+            "rpe_target": 8.5
+          }
+        ]
+      },
+      {
+        "id": "s6",
+        "template_day_index": 3,
+        "block_no": 1,
+        "week_no": 3,
+        "scheduled_on": "2026-10-23",
+        "is_deload": false,
+        "is_intro_week": false,
+        "kind": "strength",
+        "estimated_minutes": 41,
+        "exercises": [
+          {
+            "order_no": 1,
+            "exercise_id": "beinpresse",
+            "sets": 4,
+            "rpe_target": 8
+          },
+          {
+            "order_no": 2,
+            "exercise_id": "schraegbankdruecken-kurzhantel",
+            "sets": 4,
+            "rpe_target": 8
+          },
+          {
+            "order_no": 3,
+            "exercise_id": "kurzhantelrudern-einarmig",
+            "sets": 4,
+            "rpe_target": 8
+          },
+          {
+            "order_no": 4,
+            "exercise_id": "hip-thrust-langhantel",
+            "sets": 3,
+            "rpe_target": 8
+          }
+        ]
+      },
+      {
+        "id": "s7",
+        "template_day_index": 1,
+        "block_no": 1,
+        "week_no": 4,
+        "scheduled_on": "2026-10-27",
+        "is_deload": false,
+        "is_intro_week": false,
+        "kind": "strength",
+        "estimated_minutes": 41,
+        "exercises": [
+          {
+            "order_no": 1,
+            "exercise_id": "kniebeuge-langhantel",
+            "sets": 4,
+            "rpe_target": 8
+          },
+          {
+            "order_no": 2,
+            "exercise_id": "bankdruecken-langhantel",
+            "sets": 4,
+            "rpe_target": 8
+          },
+          {
+            "order_no": 3,
+            "exercise_id": "latziehen",
+            "sets": 4,
+            "rpe_target": 8
+          },
+          {
+            "order_no": 4,
+            "exercise_id": "beinbeuger-maschine",
+            "sets": 3,
+            "rpe_target": 8.5
+          }
+        ]
+      },
+      {
+        "id": "s8",
+        "template_day_index": 2,
+        "block_no": 1,
+        "week_no": 4,
+        "scheduled_on": "2026-10-30",
+        "is_deload": false,
+        "is_intro_week": false,
+        "kind": "strength",
+        "estimated_minutes": 44,
+        "exercises": [
+          {
+            "order_no": 1,
+            "exercise_id": "rumaenisches-kreuzheben-langhantel",
+            "sets": 4,
+            "rpe_target": 8
+          },
+          {
+            "order_no": 2,
+            "exercise_id": "kabelrudern",
+            "sets": 4,
+            "rpe_target": 8
+          },
+          {
+            "order_no": 3,
+            "exercise_id": "schulterdruecken-kurzhantel",
+            "sets": 3,
+            "rpe_target": 8
+          },
+          {
+            "order_no": 4,
+            "exercise_id": "bulgarische-split-kniebeuge",
+            "sets": 3,
+            "rpe_target": 8
+          },
+          {
+            "order_no": 5,
+            "exercise_id": "fliegende-kabel",
+            "sets": 3,
+            "rpe_target": 8.5
+          }
+        ]
+      },
+      {
+        "id": "s9",
+        "template_day_index": 3,
+        "block_no": 1,
+        "week_no": 5,
+        "scheduled_on": "2026-11-03",
+        "is_deload": true,
+        "is_intro_week": false,
+        "kind": "strength",
+        "estimated_minutes": 24,
+        "exercises": [
+          {
+            "order_no": 1,
+            "exercise_id": "beinpresse",
+            "sets": 5,
+            "rpe_target": 6
+          },
+          {
+            "order_no": 2,
+            "exercise_id": "schraegbankdruecken-kurzhantel",
+            "sets": 5,
+            "rpe_target": 6
+          },
+          {
+            "order_no": 3,
+            "exercise_id": "kurzhantelrudern-einarmig",
+            "sets": 5,
+            "rpe_target": 6
+          },
+          {
+            "order_no": 4,
+            "exercise_id": "hip-thrust-langhantel",
+            "sets": 5,
+            "rpe_target": 6
+          }
+        ]
+      },
+      {
+        "id": "s10",
+        "template_day_index": 1,
+        "block_no": 1,
+        "week_no": 5,
+        "scheduled_on": "2026-11-06",
+        "is_deload": true,
+        "is_intro_week": false,
+        "kind": "strength",
+        "estimated_minutes": 24,
+        "exercises": [
+          {
+            "order_no": 1,
+            "exercise_id": "kniebeuge-langhantel",
+            "sets": 5,
+            "rpe_target": 6
+          },
+          {
+            "order_no": 2,
+            "exercise_id": "bankdruecken-langhantel",
+            "sets": 5,
+            "rpe_target": 6
+          },
+          {
+            "order_no": 3,
+            "exercise_id": "latziehen",
+            "sets": 5,
+            "rpe_target": 6
+          },
+          {
+            "order_no": 4,
+            "exercise_id": "beinbeuger-maschine",
+            "sets": 5,
+            "rpe_target": 6.5
+          }
+        ]
+      },
+      {
+        "id": "s11",
+        "template_day_index": 2,
+        "block_no": 2,
+        "week_no": 1,
+        "scheduled_on": "2026-11-10",
+        "is_deload": false,
+        "is_intro_week": false,
+        "kind": "strength",
+        "estimated_minutes": 44,
+        "exercises": [
+          {
+            "order_no": 1,
+            "exercise_id": "rumaenisches-kreuzheben-langhantel",
+            "sets": 4,
+            "rpe_target": 8
+          },
+          {
+            "order_no": 2,
+            "exercise_id": "kabelrudern",
+            "sets": 4,
+            "rpe_target": 8
+          },
+          {
+            "order_no": 3,
+            "exercise_id": "schulterdruecken-kurzhantel",
+            "sets": 3,
+            "rpe_target": 8
+          },
+          {
+            "order_no": 4,
+            "exercise_id": "bulgarische-split-kniebeuge",
+            "sets": 3,
+            "rpe_target": 8
+          },
+          {
+            "order_no": 5,
+            "exercise_id": "fliegende-kabel",
+            "sets": 3,
+            "rpe_target": 8.5
+          }
+        ]
+      },
+      {
+        "id": "s12",
+        "template_day_index": 3,
+        "block_no": 2,
+        "week_no": 1,
+        "scheduled_on": "2026-11-13",
+        "is_deload": false,
+        "is_intro_week": false,
+        "kind": "strength",
+        "estimated_minutes": 41,
+        "exercises": [
+          {
+            "order_no": 1,
+            "exercise_id": "beinpresse",
+            "sets": 4,
+            "rpe_target": 8
+          },
+          {
+            "order_no": 2,
+            "exercise_id": "schraegbankdruecken-kurzhantel",
+            "sets": 4,
+            "rpe_target": 8
+          },
+          {
+            "order_no": 3,
+            "exercise_id": "kurzhantelrudern-einarmig",
+            "sets": 4,
+            "rpe_target": 8
+          },
+          {
+            "order_no": 4,
+            "exercise_id": "hip-thrust-langhantel",
+            "sets": 3,
+            "rpe_target": 8
+          }
+        ]
+      },
+      {
+        "id": "s13",
+        "template_day_index": 1,
+        "block_no": 2,
+        "week_no": 2,
+        "scheduled_on": "2026-11-17",
+        "is_deload": false,
+        "is_intro_week": false,
+        "kind": "strength",
+        "estimated_minutes": 41,
+        "exercises": [
+          {
+            "order_no": 1,
+            "exercise_id": "kniebeuge-langhantel",
+            "sets": 4,
+            "rpe_target": 8
+          },
+          {
+            "order_no": 2,
+            "exercise_id": "bankdruecken-langhantel",
+            "sets": 4,
+            "rpe_target": 8
+          },
+          {
+            "order_no": 3,
+            "exercise_id": "latziehen",
+            "sets": 4,
+            "rpe_target": 8
+          },
+          {
+            "order_no": 4,
+            "exercise_id": "beinbeuger-maschine",
+            "sets": 3,
+            "rpe_target": 8.5
+          }
+        ]
+      },
+      {
+        "id": "s14",
+        "template_day_index": 2,
+        "block_no": 2,
+        "week_no": 2,
+        "scheduled_on": "2026-11-20",
+        "is_deload": false,
+        "is_intro_week": false,
+        "kind": "strength",
+        "estimated_minutes": 44,
+        "exercises": [
+          {
+            "order_no": 1,
+            "exercise_id": "rumaenisches-kreuzheben-langhantel",
+            "sets": 4,
+            "rpe_target": 8
+          },
+          {
+            "order_no": 2,
+            "exercise_id": "kabelrudern",
+            "sets": 4,
+            "rpe_target": 8
+          },
+          {
+            "order_no": 3,
+            "exercise_id": "schulterdruecken-kurzhantel",
+            "sets": 3,
+            "rpe_target": 8
+          },
+          {
+            "order_no": 4,
+            "exercise_id": "bulgarische-split-kniebeuge",
+            "sets": 3,
+            "rpe_target": 8
+          },
+          {
+            "order_no": 5,
+            "exercise_id": "fliegende-kabel",
+            "sets": 3,
+            "rpe_target": 8.5
+          }
+        ]
+      },
+      {
+        "id": "s15",
+        "template_day_index": 3,
+        "block_no": 2,
+        "week_no": 3,
+        "scheduled_on": "2026-11-24",
+        "is_deload": false,
+        "is_intro_week": false,
+        "kind": "strength",
+        "estimated_minutes": 41,
+        "exercises": [
+          {
+            "order_no": 1,
+            "exercise_id": "beinpresse",
+            "sets": 4,
+            "rpe_target": 8
+          },
+          {
+            "order_no": 2,
+            "exercise_id": "schraegbankdruecken-kurzhantel",
+            "sets": 4,
+            "rpe_target": 8
+          },
+          {
+            "order_no": 3,
+            "exercise_id": "kurzhantelrudern-einarmig",
+            "sets": 4,
+            "rpe_target": 8
+          },
+          {
+            "order_no": 4,
+            "exercise_id": "hip-thrust-langhantel",
+            "sets": 3,
+            "rpe_target": 8
+          }
+        ]
+      },
+      {
+        "id": "s16",
+        "template_day_index": 1,
+        "block_no": 2,
+        "week_no": 3,
+        "scheduled_on": "2026-11-27",
+        "is_deload": false,
+        "is_intro_week": false,
+        "kind": "strength",
+        "estimated_minutes": 41,
+        "exercises": [
+          {
+            "order_no": 1,
+            "exercise_id": "kniebeuge-langhantel",
+            "sets": 4,
+            "rpe_target": 8
+          },
+          {
+            "order_no": 2,
+            "exercise_id": "bankdruecken-langhantel",
+            "sets": 4,
+            "rpe_target": 8
+          },
+          {
+            "order_no": 3,
+            "exercise_id": "latziehen",
+            "sets": 4,
+            "rpe_target": 8
+          },
+          {
+            "order_no": 4,
+            "exercise_id": "beinbeuger-maschine",
+            "sets": 3,
+            "rpe_target": 8.5
+          }
+        ]
+      },
+      {
+        "id": "s17",
+        "template_day_index": 2,
+        "block_no": 2,
+        "week_no": 4,
+        "scheduled_on": "2026-12-01",
+        "is_deload": false,
+        "is_intro_week": false,
+        "kind": "strength",
+        "estimated_minutes": 44,
+        "exercises": [
+          {
+            "order_no": 1,
+            "exercise_id": "rumaenisches-kreuzheben-langhantel",
+            "sets": 4,
+            "rpe_target": 8
+          },
+          {
+            "order_no": 2,
+            "exercise_id": "kabelrudern",
+            "sets": 4,
+            "rpe_target": 8
+          },
+          {
+            "order_no": 3,
+            "exercise_id": "schulterdruecken-kurzhantel",
+            "sets": 3,
+            "rpe_target": 8
+          },
+          {
+            "order_no": 4,
+            "exercise_id": "bulgarische-split-kniebeuge",
+            "sets": 3,
+            "rpe_target": 8
+          },
+          {
+            "order_no": 5,
+            "exercise_id": "fliegende-kabel",
+            "sets": 3,
+            "rpe_target": 8.5
+          }
+        ]
+      },
+      {
+        "id": "s18",
+        "template_day_index": 3,
+        "block_no": 2,
+        "week_no": 4,
+        "scheduled_on": "2026-12-04",
+        "is_deload": false,
+        "is_intro_week": false,
+        "kind": "strength",
+        "estimated_minutes": 41,
+        "exercises": [
+          {
+            "order_no": 1,
+            "exercise_id": "beinpresse",
+            "sets": 4,
+            "rpe_target": 8
+          },
+          {
+            "order_no": 2,
+            "exercise_id": "schraegbankdruecken-kurzhantel",
+            "sets": 4,
+            "rpe_target": 8
+          },
+          {
+            "order_no": 3,
+            "exercise_id": "kurzhantelrudern-einarmig",
+            "sets": 4,
+            "rpe_target": 8
+          },
+          {
+            "order_no": 4,
+            "exercise_id": "hip-thrust-langhantel",
+            "sets": 3,
+            "rpe_target": 8
+          }
+        ]
+      },
+      {
+        "id": "s19",
+        "template_day_index": 1,
+        "block_no": 2,
+        "week_no": 5,
+        "scheduled_on": "2026-12-08",
+        "is_deload": true,
+        "is_intro_week": false,
+        "kind": "strength",
+        "estimated_minutes": 24,
+        "exercises": [
+          {
+            "order_no": 1,
+            "exercise_id": "kniebeuge-langhantel",
+            "sets": 2,
+            "rpe_target": 6
+          },
+          {
+            "order_no": 2,
+            "exercise_id": "bankdruecken-langhantel",
+            "sets": 2,
+            "rpe_target": 6
+          },
+          {
+            "order_no": 3,
+            "exercise_id": "latziehen",
+            "sets": 2,
+            "rpe_target": 6
+          },
+          {
+            "order_no": 4,
+            "exercise_id": "beinbeuger-maschine",
+            "sets": 2,
+            "rpe_target": 6.5
+          }
+        ]
+      },
+      {
+        "id": "s20",
+        "template_day_index": 2,
+        "block_no": 2,
+        "week_no": 5,
+        "scheduled_on": "2026-12-11",
+        "is_deload": true,
+        "is_intro_week": false,
+        "kind": "strength",
+        "estimated_minutes": 27,
+        "exercises": [
+          {
+            "order_no": 1,
+            "exercise_id": "rumaenisches-kreuzheben-langhantel",
+            "sets": 2,
+            "rpe_target": 6
+          },
+          {
+            "order_no": 2,
+            "exercise_id": "kabelrudern",
+            "sets": 2,
+            "rpe_target": 6
+          },
+          {
+            "order_no": 3,
+            "exercise_id": "schulterdruecken-kurzhantel",
+            "sets": 2,
+            "rpe_target": 6
+          },
+          {
+            "order_no": 4,
+            "exercise_id": "bulgarische-split-kniebeuge",
+            "sets": 2,
+            "rpe_target": 6
+          },
+          {
+            "order_no": 5,
+            "exercise_id": "fliegende-kabel",
+            "sets": 2,
+            "rpe_target": 6.5
+          }
+        ]
+      }
+    ],
+    "expected": ["deload_sets"]
+  },
+  {
+    "name": "verletzt_folgeblock_mit_carried",
+    "options": {
+      "maxLoadWeeks": 4,
+      "planStart": "2026-10-05",
+      "swappedWeeks": [],
+      "carriedLoadWeeks": 1
+    },
+    "sessions": [
+      {
+        "block_no": 2,
+        "week_no": 1,
+        "scheduled_on": "2026-11-10",
+        "is_deload": false,
+        "is_intro_week": false,
+        "kind": "strength",
+        "estimated_minutes": 44,
+        "exercises": [
+          {
+            "exercise_id": "rumaenisches-kreuzheben-langhantel",
+            "sets": 4,
+            "rpe_target": 8
+          },
+          {
+            "exercise_id": "kabelrudern",
+            "sets": 4,
+            "rpe_target": 8
+          },
+          {
+            "exercise_id": "schulterdruecken-kurzhantel",
+            "sets": 3,
+            "rpe_target": 8
+          },
+          {
+            "exercise_id": "bulgarische-split-kniebeuge",
+            "sets": 3,
+            "rpe_target": 8
+          },
+          {
+            "exercise_id": "fliegende-kabel",
+            "sets": 3,
+            "rpe_target": 8.5
+          }
+        ]
+      },
+      {
+        "block_no": 2,
+        "week_no": 1,
+        "scheduled_on": "2026-11-13",
+        "is_deload": false,
+        "is_intro_week": false,
+        "kind": "strength",
+        "estimated_minutes": 41,
+        "exercises": [
+          {
+            "exercise_id": "beinpresse",
+            "sets": 4,
+            "rpe_target": 8
+          },
+          {
+            "exercise_id": "schraegbankdruecken-kurzhantel",
+            "sets": 4,
+            "rpe_target": 8
+          },
+          {
+            "exercise_id": "kurzhantelrudern-einarmig",
+            "sets": 4,
+            "rpe_target": 8
+          },
+          {
+            "exercise_id": "hip-thrust-langhantel",
+            "sets": 3,
+            "rpe_target": 8
+          }
+        ]
+      },
+      {
+        "block_no": 2,
+        "week_no": 2,
+        "scheduled_on": "2026-11-17",
+        "is_deload": false,
+        "is_intro_week": false,
+        "kind": "strength",
+        "estimated_minutes": 41,
+        "exercises": [
+          {
+            "exercise_id": "kniebeuge-langhantel",
+            "sets": 4,
+            "rpe_target": 8
+          },
+          {
+            "exercise_id": "bankdruecken-langhantel",
+            "sets": 4,
+            "rpe_target": 8
+          },
+          {
+            "exercise_id": "latziehen",
+            "sets": 4,
+            "rpe_target": 8
+          },
+          {
+            "exercise_id": "beinbeuger-maschine",
+            "sets": 3,
+            "rpe_target": 8.5
+          }
+        ]
+      },
+      {
+        "block_no": 2,
+        "week_no": 2,
+        "scheduled_on": "2026-11-20",
+        "is_deload": false,
+        "is_intro_week": false,
+        "kind": "strength",
+        "estimated_minutes": 44,
+        "exercises": [
+          {
+            "exercise_id": "rumaenisches-kreuzheben-langhantel",
+            "sets": 4,
+            "rpe_target": 8
+          },
+          {
+            "exercise_id": "kabelrudern",
+            "sets": 4,
+            "rpe_target": 8
+          },
+          {
+            "exercise_id": "schulterdruecken-kurzhantel",
+            "sets": 3,
+            "rpe_target": 8
+          },
+          {
+            "exercise_id": "bulgarische-split-kniebeuge",
+            "sets": 3,
+            "rpe_target": 8
+          },
+          {
+            "exercise_id": "fliegende-kabel",
+            "sets": 3,
+            "rpe_target": 8.5
+          }
+        ]
+      },
+      {
+        "block_no": 2,
+        "week_no": 3,
+        "scheduled_on": "2026-11-24",
+        "is_deload": false,
+        "is_intro_week": false,
+        "kind": "strength",
+        "estimated_minutes": 41,
+        "exercises": [
+          {
+            "exercise_id": "beinpresse",
+            "sets": 4,
+            "rpe_target": 8
+          },
+          {
+            "exercise_id": "schraegbankdruecken-kurzhantel",
+            "sets": 4,
+            "rpe_target": 8
+          },
+          {
+            "exercise_id": "kurzhantelrudern-einarmig",
+            "sets": 4,
+            "rpe_target": 8
+          },
+          {
+            "exercise_id": "hip-thrust-langhantel",
+            "sets": 3,
+            "rpe_target": 8
+          }
+        ]
+      },
+      {
+        "block_no": 2,
+        "week_no": 3,
+        "scheduled_on": "2026-11-27",
+        "is_deload": false,
+        "is_intro_week": false,
+        "kind": "strength",
+        "estimated_minutes": 41,
+        "exercises": [
+          {
+            "exercise_id": "kniebeuge-langhantel",
+            "sets": 4,
+            "rpe_target": 8
+          },
+          {
+            "exercise_id": "bankdruecken-langhantel",
+            "sets": 4,
+            "rpe_target": 8
+          },
+          {
+            "exercise_id": "latziehen",
+            "sets": 4,
+            "rpe_target": 8
+          },
+          {
+            "exercise_id": "beinbeuger-maschine",
+            "sets": 3,
+            "rpe_target": 8.5
+          }
+        ]
+      },
+      {
+        "block_no": 2,
+        "week_no": 4,
+        "scheduled_on": "2026-12-01",
+        "is_deload": false,
+        "is_intro_week": false,
+        "kind": "strength",
+        "estimated_minutes": 44,
+        "exercises": [
+          {
+            "exercise_id": "rumaenisches-kreuzheben-langhantel",
+            "sets": 4,
+            "rpe_target": 8
+          },
+          {
+            "exercise_id": "kabelrudern",
+            "sets": 4,
+            "rpe_target": 8
+          },
+          {
+            "exercise_id": "schulterdruecken-kurzhantel",
+            "sets": 3,
+            "rpe_target": 8
+          },
+          {
+            "exercise_id": "bulgarische-split-kniebeuge",
+            "sets": 3,
+            "rpe_target": 8
+          },
+          {
+            "exercise_id": "fliegende-kabel",
+            "sets": 3,
+            "rpe_target": 8.5
+          }
+        ]
+      },
+      {
+        "block_no": 2,
+        "week_no": 4,
+        "scheduled_on": "2026-12-04",
+        "is_deload": false,
+        "is_intro_week": false,
+        "kind": "strength",
+        "estimated_minutes": 41,
+        "exercises": [
+          {
+            "exercise_id": "beinpresse",
+            "sets": 4,
+            "rpe_target": 8
+          },
+          {
+            "exercise_id": "schraegbankdruecken-kurzhantel",
+            "sets": 4,
+            "rpe_target": 8
+          },
+          {
+            "exercise_id": "kurzhantelrudern-einarmig",
+            "sets": 4,
+            "rpe_target": 8
+          },
+          {
+            "exercise_id": "hip-thrust-langhantel",
+            "sets": 3,
+            "rpe_target": 8
+          }
+        ]
+      },
+      {
+        "block_no": 2,
+        "week_no": 5,
+        "scheduled_on": "2026-12-08",
+        "is_deload": true,
+        "is_intro_week": false,
+        "kind": "strength",
+        "estimated_minutes": 24,
+        "exercises": [
+          {
+            "exercise_id": "kniebeuge-langhantel",
+            "sets": 2,
+            "rpe_target": 6
+          },
+          {
+            "exercise_id": "bankdruecken-langhantel",
+            "sets": 2,
+            "rpe_target": 6
+          },
+          {
+            "exercise_id": "latziehen",
+            "sets": 2,
+            "rpe_target": 6
+          },
+          {
+            "exercise_id": "beinbeuger-maschine",
+            "sets": 2,
+            "rpe_target": 6.5
+          }
+        ]
+      },
+      {
+        "block_no": 2,
+        "week_no": 5,
+        "scheduled_on": "2026-12-11",
+        "is_deload": true,
+        "is_intro_week": false,
+        "kind": "strength",
+        "estimated_minutes": 27,
+        "exercises": [
+          {
+            "exercise_id": "rumaenisches-kreuzheben-langhantel",
+            "sets": 2,
+            "rpe_target": 6
+          },
+          {
+            "exercise_id": "kabelrudern",
+            "sets": 2,
+            "rpe_target": 6
+          },
+          {
+            "exercise_id": "schulterdruecken-kurzhantel",
+            "sets": 2,
+            "rpe_target": 6
+          },
+          {
+            "exercise_id": "bulgarische-split-kniebeuge",
+            "sets": 2,
+            "rpe_target": 6
+          },
+          {
+            "exercise_id": "fliegende-kabel",
+            "sets": 2,
+            "rpe_target": 6.5
+          }
+        ]
+      }
+    ],
+    "expected": ["too_many_load_weeks"]
+  },
+  {
+    "name": "verletzt_getauschte_woche_ausdauer",
+    "options": {
+      "maxLoadWeeks": 4,
+      "planStart": "2026-10-05",
+      "swappedWeeks": [
+        {
+          "blockNo": 1,
+          "weekNo": 3
+        }
+      ]
+    },
+    "sessions": [
+      {
+        "block_no": 1,
+        "week_no": 1,
+        "scheduled_on": "2026-10-05",
+        "is_deload": false,
+        "is_intro_week": true,
+        "kind": "strength",
+        "estimated_minutes": 41,
+        "exercises": [
+          {
+            "exercise_id": "kniebeuge-langhantel",
+            "sets": 4,
+            "rpe_target": 7
+          },
+          {
+            "exercise_id": "bankdruecken-langhantel",
+            "sets": 4,
+            "rpe_target": 7
+          },
+          {
+            "exercise_id": "latziehen",
+            "sets": 4,
+            "rpe_target": 7
+          },
+          {
+            "exercise_id": "beinbeuger-maschine",
+            "sets": 3,
+            "rpe_target": 7.5
+          }
+        ]
+      },
+      {
+        "block_no": 1,
+        "week_no": 1,
+        "scheduled_on": "2026-10-07",
+        "is_deload": false,
+        "is_intro_week": true,
+        "kind": "endurance",
+        "estimated_minutes": 40,
+        "exercises": []
+      },
+      {
+        "block_no": 1,
+        "week_no": 1,
+        "scheduled_on": "2026-10-10",
+        "is_deload": false,
+        "is_intro_week": true,
+        "kind": "endurance",
+        "estimated_minutes": 50,
+        "exercises": []
+      },
+      {
+        "block_no": 1,
+        "week_no": 2,
+        "scheduled_on": "2026-10-12",
+        "is_deload": false,
+        "is_intro_week": false,
+        "kind": "strength",
+        "estimated_minutes": 44,
+        "exercises": [
+          {
+            "exercise_id": "rumaenisches-kreuzheben-langhantel",
+            "sets": 4,
+            "rpe_target": 8
+          },
+          {
+            "exercise_id": "kabelrudern",
+            "sets": 4,
+            "rpe_target": 8
+          },
+          {
+            "exercise_id": "schulterdruecken-kurzhantel",
+            "sets": 3,
+            "rpe_target": 8
+          },
+          {
+            "exercise_id": "bulgarische-split-kniebeuge",
+            "sets": 3,
+            "rpe_target": 8
+          },
+          {
+            "exercise_id": "fliegende-kabel",
+            "sets": 3,
+            "rpe_target": 8.5
+          }
+        ]
+      },
+      {
+        "block_no": 1,
+        "week_no": 2,
+        "scheduled_on": "2026-10-14",
+        "is_deload": false,
+        "is_intro_week": false,
+        "kind": "endurance",
+        "estimated_minutes": 40,
+        "exercises": []
+      },
+      {
+        "block_no": 1,
+        "week_no": 2,
+        "scheduled_on": "2026-10-17",
+        "is_deload": false,
+        "is_intro_week": false,
+        "kind": "endurance",
+        "estimated_minutes": 49,
+        "exercises": []
+      },
+      {
+        "block_no": 1,
+        "week_no": 3,
+        "scheduled_on": "2026-10-19",
+        "is_deload": false,
+        "is_intro_week": false,
+        "kind": "strength",
+        "estimated_minutes": 41,
+        "exercises": [
+          {
+            "exercise_id": "beinpresse",
+            "sets": 4,
+            "rpe_target": 8
+          },
+          {
+            "exercise_id": "schraegbankdruecken-kurzhantel",
+            "sets": 4,
+            "rpe_target": 8
+          },
+          {
+            "exercise_id": "kurzhantelrudern-einarmig",
+            "sets": 4,
+            "rpe_target": 8
+          },
+          {
+            "exercise_id": "hip-thrust-langhantel",
+            "sets": 3,
+            "rpe_target": 8
+          }
+        ]
+      },
+      {
+        "block_no": 1,
+        "week_no": 3,
+        "scheduled_on": "2026-10-21",
+        "is_deload": false,
+        "is_intro_week": false,
+        "kind": "endurance",
+        "estimated_minutes": 42,
+        "exercises": []
+      },
+      {
+        "block_no": 1,
+        "week_no": 3,
+        "scheduled_on": "2026-10-24",
+        "is_deload": false,
+        "is_intro_week": false,
+        "kind": "endurance",
+        "estimated_minutes": 48,
+        "exercises": []
+      },
+      {
+        "block_no": 1,
+        "week_no": 4,
+        "scheduled_on": "2026-10-26",
+        "is_deload": false,
+        "is_intro_week": false,
+        "kind": "strength",
+        "estimated_minutes": 41,
+        "exercises": [
+          {
+            "exercise_id": "kniebeuge-langhantel",
+            "sets": 4,
+            "rpe_target": 8
+          },
+          {
+            "exercise_id": "bankdruecken-langhantel",
+            "sets": 4,
+            "rpe_target": 8
+          },
+          {
+            "exercise_id": "latziehen",
+            "sets": 4,
+            "rpe_target": 8
+          },
+          {
+            "exercise_id": "beinbeuger-maschine",
+            "sets": 3,
+            "rpe_target": 8.5
+          }
+        ]
+      },
+      {
+        "block_no": 1,
+        "week_no": 4,
+        "scheduled_on": "2026-10-28",
+        "is_deload": false,
+        "is_intro_week": false,
+        "kind": "endurance",
+        "estimated_minutes": 40,
+        "exercises": []
+      },
+      {
+        "block_no": 1,
+        "week_no": 4,
+        "scheduled_on": "2026-10-31",
+        "is_deload": false,
+        "is_intro_week": false,
+        "kind": "endurance",
+        "estimated_minutes": 48,
+        "exercises": []
+      },
+      {
+        "block_no": 1,
+        "week_no": 5,
+        "scheduled_on": "2026-11-02",
+        "is_deload": true,
+        "is_intro_week": false,
+        "kind": "strength",
+        "estimated_minutes": 27,
+        "exercises": [
+          {
+            "exercise_id": "rumaenisches-kreuzheben-langhantel",
+            "sets": 2,
+            "rpe_target": 6
+          },
+          {
+            "exercise_id": "kabelrudern",
+            "sets": 2,
+            "rpe_target": 6
+          },
+          {
+            "exercise_id": "schulterdruecken-kurzhantel",
+            "sets": 2,
+            "rpe_target": 6
+          },
+          {
+            "exercise_id": "bulgarische-split-kniebeuge",
+            "sets": 2,
+            "rpe_target": 6
+          },
+          {
+            "exercise_id": "fliegende-kabel",
+            "sets": 2,
+            "rpe_target": 6.5
+          }
+        ]
+      },
+      {
+        "block_no": 1,
+        "week_no": 5,
+        "scheduled_on": "2026-11-04",
+        "is_deload": true,
+        "is_intro_week": false,
+        "kind": "endurance",
+        "estimated_minutes": 26,
+        "exercises": []
+      },
+      {
+        "block_no": 1,
+        "week_no": 5,
+        "scheduled_on": "2026-11-07",
+        "is_deload": true,
+        "is_intro_week": false,
+        "kind": "endurance",
+        "estimated_minutes": 26,
+        "exercises": []
+      },
+      {
+        "block_no": 2,
+        "week_no": 1,
+        "scheduled_on": "2026-11-09",
+        "is_deload": false,
+        "is_intro_week": false,
+        "kind": "strength",
+        "estimated_minutes": 41,
+        "exercises": [
+          {
+            "exercise_id": "beinpresse",
+            "sets": 4,
+            "rpe_target": 8
+          },
+          {
+            "exercise_id": "schraegbankdruecken-kurzhantel",
+            "sets": 4,
+            "rpe_target": 8
+          },
+          {
+            "exercise_id": "kurzhantelrudern-einarmig",
+            "sets": 4,
+            "rpe_target": 8
+          },
+          {
+            "exercise_id": "hip-thrust-langhantel",
+            "sets": 3,
+            "rpe_target": 8
+          }
+        ]
+      },
+      {
+        "block_no": 2,
+        "week_no": 1,
+        "scheduled_on": "2026-11-11",
+        "is_deload": false,
+        "is_intro_week": false,
+        "kind": "endurance",
+        "estimated_minutes": 40,
+        "exercises": []
+      },
+      {
+        "block_no": 2,
+        "week_no": 1,
+        "scheduled_on": "2026-11-14",
+        "is_deload": false,
+        "is_intro_week": false,
+        "kind": "endurance",
+        "estimated_minutes": 48,
+        "exercises": []
+      },
+      {
+        "block_no": 2,
+        "week_no": 2,
+        "scheduled_on": "2026-11-16",
+        "is_deload": false,
+        "is_intro_week": false,
+        "kind": "strength",
+        "estimated_minutes": 41,
+        "exercises": [
+          {
+            "exercise_id": "kniebeuge-langhantel",
+            "sets": 4,
+            "rpe_target": 8
+          },
+          {
+            "exercise_id": "bankdruecken-langhantel",
+            "sets": 4,
+            "rpe_target": 8
+          },
+          {
+            "exercise_id": "latziehen",
+            "sets": 4,
+            "rpe_target": 8
+          },
+          {
+            "exercise_id": "beinbeuger-maschine",
+            "sets": 3,
+            "rpe_target": 8.5
+          }
+        ]
+      },
+      {
+        "block_no": 2,
+        "week_no": 2,
+        "scheduled_on": "2026-11-18",
+        "is_deload": false,
+        "is_intro_week": false,
+        "kind": "endurance",
+        "estimated_minutes": 40,
+        "exercises": []
+      },
+      {
+        "block_no": 2,
+        "week_no": 2,
+        "scheduled_on": "2026-11-21",
+        "is_deload": false,
+        "is_intro_week": false,
+        "kind": "endurance",
+        "estimated_minutes": 48,
+        "exercises": []
+      },
+      {
+        "block_no": 2,
+        "week_no": 3,
+        "scheduled_on": "2026-11-23",
+        "is_deload": false,
+        "is_intro_week": false,
+        "kind": "strength",
+        "estimated_minutes": 44,
+        "exercises": [
+          {
+            "exercise_id": "rumaenisches-kreuzheben-langhantel",
+            "sets": 4,
+            "rpe_target": 8
+          },
+          {
+            "exercise_id": "kabelrudern",
+            "sets": 4,
+            "rpe_target": 8
+          },
+          {
+            "exercise_id": "schulterdruecken-kurzhantel",
+            "sets": 3,
+            "rpe_target": 8
+          },
+          {
+            "exercise_id": "bulgarische-split-kniebeuge",
+            "sets": 3,
+            "rpe_target": 8
+          },
+          {
+            "exercise_id": "fliegende-kabel",
+            "sets": 3,
+            "rpe_target": 8.5
+          }
+        ]
+      },
+      {
+        "block_no": 2,
+        "week_no": 3,
+        "scheduled_on": "2026-11-25",
+        "is_deload": false,
+        "is_intro_week": false,
+        "kind": "endurance",
+        "estimated_minutes": 40,
+        "exercises": []
+      },
+      {
+        "block_no": 2,
+        "week_no": 3,
+        "scheduled_on": "2026-11-28",
+        "is_deload": false,
+        "is_intro_week": false,
+        "kind": "endurance",
+        "estimated_minutes": 48,
+        "exercises": []
+      },
+      {
+        "block_no": 2,
+        "week_no": 4,
+        "scheduled_on": "2026-11-30",
+        "is_deload": false,
+        "is_intro_week": false,
+        "kind": "strength",
+        "estimated_minutes": 41,
+        "exercises": [
+          {
+            "exercise_id": "beinpresse",
+            "sets": 4,
+            "rpe_target": 8
+          },
+          {
+            "exercise_id": "schraegbankdruecken-kurzhantel",
+            "sets": 4,
+            "rpe_target": 8
+          },
+          {
+            "exercise_id": "kurzhantelrudern-einarmig",
+            "sets": 4,
+            "rpe_target": 8
+          },
+          {
+            "exercise_id": "hip-thrust-langhantel",
+            "sets": 3,
+            "rpe_target": 8
+          }
+        ]
+      },
+      {
+        "block_no": 2,
+        "week_no": 4,
+        "scheduled_on": "2026-12-02",
+        "is_deload": false,
+        "is_intro_week": false,
+        "kind": "endurance",
+        "estimated_minutes": 40,
+        "exercises": []
+      },
+      {
+        "block_no": 2,
+        "week_no": 4,
+        "scheduled_on": "2026-12-05",
+        "is_deload": false,
+        "is_intro_week": false,
+        "kind": "endurance",
+        "estimated_minutes": 48,
+        "exercises": []
+      },
+      {
+        "block_no": 2,
+        "week_no": 5,
+        "scheduled_on": "2026-12-07",
+        "is_deload": true,
+        "is_intro_week": false,
+        "kind": "strength",
+        "estimated_minutes": 24,
+        "exercises": [
+          {
+            "exercise_id": "kniebeuge-langhantel",
+            "sets": 2,
+            "rpe_target": 6
+          },
+          {
+            "exercise_id": "bankdruecken-langhantel",
+            "sets": 2,
+            "rpe_target": 6
+          },
+          {
+            "exercise_id": "latziehen",
+            "sets": 2,
+            "rpe_target": 6
+          },
+          {
+            "exercise_id": "beinbeuger-maschine",
+            "sets": 2,
+            "rpe_target": 6.5
+          }
+        ]
+      },
+      {
+        "block_no": 2,
+        "week_no": 5,
+        "scheduled_on": "2026-12-09",
+        "is_deload": true,
+        "is_intro_week": false,
+        "kind": "endurance",
+        "estimated_minutes": 26,
+        "exercises": []
+      },
+      {
+        "block_no": 2,
+        "week_no": 5,
+        "scheduled_on": "2026-12-12",
+        "is_deload": true,
+        "is_intro_week": false,
+        "kind": "endurance",
+        "estimated_minutes": 26,
+        "exercises": []
+      }
+    ],
+    "expected": ["swapped_week_above_previous"]
+  },
+  {
+    "name": "verletzt_tapering_ausdauer",
+    "options": {
+      "maxLoadWeeks": 4,
+      "planStart": "2026-10-05",
+      "swappedWeeks": []
+    },
+    "sessions": [
+      {
+        "block_no": 1,
+        "week_no": 1,
+        "scheduled_on": "2026-10-06",
+        "is_deload": false,
+        "is_intro_week": true,
+        "kind": "endurance",
+        "estimated_minutes": 30,
+        "training_phase": "base",
+        "exercises": []
+      },
+      {
+        "block_no": 1,
+        "week_no": 1,
+        "scheduled_on": "2026-10-08",
+        "is_deload": false,
+        "is_intro_week": true,
+        "kind": "endurance",
+        "estimated_minutes": 30,
+        "training_phase": "base",
+        "exercises": []
+      },
+      {
+        "block_no": 1,
+        "week_no": 1,
+        "scheduled_on": "2026-10-11",
+        "is_deload": false,
+        "is_intro_week": true,
+        "kind": "endurance",
+        "estimated_minutes": 60,
+        "training_phase": "base",
+        "exercises": []
+      },
+      {
+        "block_no": 1,
+        "week_no": 2,
+        "scheduled_on": "2026-10-13",
+        "is_deload": false,
+        "is_intro_week": false,
+        "kind": "endurance",
+        "estimated_minutes": 30,
+        "training_phase": "base",
+        "exercises": []
+      },
+      {
+        "block_no": 1,
+        "week_no": 2,
+        "scheduled_on": "2026-10-15",
+        "is_deload": false,
+        "is_intro_week": false,
+        "kind": "endurance",
+        "estimated_minutes": 30,
+        "training_phase": "base",
+        "exercises": []
+      },
+      {
+        "block_no": 1,
+        "week_no": 2,
+        "scheduled_on": "2026-10-18",
+        "is_deload": false,
+        "is_intro_week": false,
+        "kind": "endurance",
+        "estimated_minutes": 60,
+        "training_phase": "base",
+        "exercises": []
+      },
+      {
+        "block_no": 1,
+        "week_no": 3,
+        "scheduled_on": "2026-10-20",
+        "is_deload": false,
+        "is_intro_week": false,
+        "kind": "endurance",
+        "estimated_minutes": 30,
+        "training_phase": "base",
+        "exercises": []
+      },
+      {
+        "block_no": 1,
+        "week_no": 3,
+        "scheduled_on": "2026-10-22",
+        "is_deload": false,
+        "is_intro_week": false,
+        "kind": "endurance",
+        "estimated_minutes": 30,
+        "training_phase": "base",
+        "exercises": []
+      },
+      {
+        "block_no": 1,
+        "week_no": 3,
+        "scheduled_on": "2026-10-25",
+        "is_deload": false,
+        "is_intro_week": false,
+        "kind": "endurance",
+        "estimated_minutes": 60,
+        "training_phase": "base",
+        "exercises": []
+      },
+      {
+        "block_no": 1,
+        "week_no": 4,
+        "scheduled_on": "2026-10-27",
+        "is_deload": false,
+        "is_intro_week": false,
+        "kind": "endurance",
+        "estimated_minutes": 30,
+        "training_phase": "base",
+        "exercises": []
+      },
+      {
+        "block_no": 1,
+        "week_no": 4,
+        "scheduled_on": "2026-10-29",
+        "is_deload": false,
+        "is_intro_week": false,
+        "kind": "endurance",
+        "estimated_minutes": 30,
+        "training_phase": "base",
+        "exercises": []
+      },
+      {
+        "block_no": 1,
+        "week_no": 4,
+        "scheduled_on": "2026-11-01",
+        "is_deload": false,
+        "is_intro_week": false,
+        "kind": "endurance",
+        "estimated_minutes": 60,
+        "training_phase": "base",
+        "exercises": []
+      },
+      {
+        "block_no": 1,
+        "week_no": 5,
+        "scheduled_on": "2026-11-03",
+        "is_deload": true,
+        "is_intro_week": false,
+        "kind": "endurance",
+        "estimated_minutes": 18,
+        "training_phase": "base",
+        "exercises": []
+      },
+      {
+        "block_no": 1,
+        "week_no": 5,
+        "scheduled_on": "2026-11-05",
+        "is_deload": true,
+        "is_intro_week": false,
+        "kind": "endurance",
+        "estimated_minutes": 18,
+        "training_phase": "base",
+        "exercises": []
+      },
+      {
+        "block_no": 1,
+        "week_no": 5,
+        "scheduled_on": "2026-11-08",
+        "is_deload": true,
+        "is_intro_week": false,
+        "kind": "endurance",
+        "estimated_minutes": 36,
+        "training_phase": "base",
+        "exercises": []
+      },
+      {
+        "block_no": 2,
+        "week_no": 1,
+        "scheduled_on": "2026-11-10",
+        "is_deload": false,
+        "is_intro_week": false,
+        "kind": "endurance",
+        "estimated_minutes": 30,
+        "training_phase": "base",
+        "exercises": []
+      },
+      {
+        "block_no": 2,
+        "week_no": 1,
+        "scheduled_on": "2026-11-12",
+        "is_deload": false,
+        "is_intro_week": false,
+        "kind": "endurance",
+        "estimated_minutes": 30,
+        "training_phase": "base",
+        "exercises": []
+      },
+      {
+        "block_no": 2,
+        "week_no": 1,
+        "scheduled_on": "2026-11-15",
+        "is_deload": false,
+        "is_intro_week": false,
+        "kind": "endurance",
+        "estimated_minutes": 60,
+        "training_phase": "base",
+        "exercises": []
+      },
+      {
+        "block_no": 2,
+        "week_no": 2,
+        "scheduled_on": "2026-11-17",
+        "is_deload": false,
+        "is_intro_week": false,
+        "kind": "endurance",
+        "estimated_minutes": 30,
+        "training_phase": "base",
+        "exercises": []
+      },
+      {
+        "block_no": 2,
+        "week_no": 2,
+        "scheduled_on": "2026-11-19",
+        "is_deload": false,
+        "is_intro_week": false,
+        "kind": "endurance",
+        "estimated_minutes": 30,
+        "training_phase": "base",
+        "exercises": []
+      },
+      {
+        "block_no": 2,
+        "week_no": 2,
+        "scheduled_on": "2026-11-22",
+        "is_deload": false,
+        "is_intro_week": false,
+        "kind": "endurance",
+        "estimated_minutes": 60,
+        "training_phase": "base",
+        "exercises": []
+      },
+      {
+        "block_no": 2,
+        "week_no": 3,
+        "scheduled_on": "2026-11-24",
+        "is_deload": false,
+        "is_intro_week": false,
+        "kind": "endurance",
+        "estimated_minutes": 30,
+        "training_phase": "base",
+        "exercises": []
+      },
+      {
+        "block_no": 2,
+        "week_no": 3,
+        "scheduled_on": "2026-11-26",
+        "is_deload": false,
+        "is_intro_week": false,
+        "kind": "endurance",
+        "estimated_minutes": 30,
+        "training_phase": "base",
+        "exercises": []
+      },
+      {
+        "block_no": 2,
+        "week_no": 3,
+        "scheduled_on": "2026-11-29",
+        "is_deload": false,
+        "is_intro_week": false,
+        "kind": "endurance",
+        "estimated_minutes": 60,
+        "training_phase": "base",
+        "exercises": []
+      },
+      {
+        "block_no": 2,
+        "week_no": 4,
+        "scheduled_on": "2026-12-01",
+        "is_deload": false,
+        "is_intro_week": false,
+        "kind": "endurance",
+        "estimated_minutes": 30,
+        "training_phase": "base",
+        "exercises": []
+      },
+      {
+        "block_no": 2,
+        "week_no": 4,
+        "scheduled_on": "2026-12-03",
+        "is_deload": false,
+        "is_intro_week": false,
+        "kind": "endurance",
+        "estimated_minutes": 30,
+        "training_phase": "base",
+        "exercises": []
+      },
+      {
+        "block_no": 2,
+        "week_no": 4,
+        "scheduled_on": "2026-12-06",
+        "is_deload": false,
+        "is_intro_week": false,
+        "kind": "endurance",
+        "estimated_minutes": 60,
+        "training_phase": "base",
+        "exercises": []
+      },
+      {
+        "block_no": 2,
+        "week_no": 5,
+        "scheduled_on": "2026-12-08",
+        "is_deload": true,
+        "is_intro_week": false,
+        "kind": "endurance",
+        "estimated_minutes": 18,
+        "training_phase": "base",
+        "exercises": []
+      },
+      {
+        "block_no": 2,
+        "week_no": 5,
+        "scheduled_on": "2026-12-10",
+        "is_deload": true,
+        "is_intro_week": false,
+        "kind": "endurance",
+        "estimated_minutes": 18,
+        "training_phase": "base",
+        "exercises": []
+      },
+      {
+        "block_no": 2,
+        "week_no": 5,
+        "scheduled_on": "2026-12-13",
+        "is_deload": true,
+        "is_intro_week": false,
+        "kind": "endurance",
+        "estimated_minutes": 36,
+        "training_phase": "base",
+        "exercises": []
+      },
+      {
+        "block_no": 3,
+        "week_no": 1,
+        "scheduled_on": "2026-12-15",
+        "is_deload": false,
+        "is_intro_week": false,
+        "kind": "endurance",
+        "estimated_minutes": 30,
+        "training_phase": "base",
+        "exercises": []
+      },
+      {
+        "block_no": 3,
+        "week_no": 1,
+        "scheduled_on": "2026-12-17",
+        "is_deload": false,
+        "is_intro_week": false,
+        "kind": "endurance",
+        "estimated_minutes": 30,
+        "training_phase": "base",
+        "exercises": []
+      },
+      {
+        "block_no": 3,
+        "week_no": 1,
+        "scheduled_on": "2026-12-20",
+        "is_deload": false,
+        "is_intro_week": false,
+        "kind": "endurance",
+        "estimated_minutes": 60,
+        "training_phase": "base",
+        "exercises": []
+      },
+      {
+        "block_no": 3,
+        "week_no": 2,
+        "scheduled_on": "2026-12-22",
+        "is_deload": false,
+        "is_intro_week": false,
+        "kind": "endurance",
+        "estimated_minutes": 30,
+        "training_phase": "build",
+        "exercises": []
+      },
+      {
+        "block_no": 3,
+        "week_no": 2,
+        "scheduled_on": "2026-12-24",
+        "is_deload": false,
+        "is_intro_week": false,
+        "kind": "endurance",
+        "estimated_minutes": 30,
+        "training_phase": "build",
+        "exercises": []
+      },
+      {
+        "block_no": 3,
+        "week_no": 2,
+        "scheduled_on": "2026-12-27",
+        "is_deload": false,
+        "is_intro_week": false,
+        "kind": "endurance",
+        "estimated_minutes": 60,
+        "training_phase": "build",
+        "exercises": []
+      },
+      {
+        "block_no": 3,
+        "week_no": 3,
+        "scheduled_on": "2026-12-29",
+        "is_deload": false,
+        "is_intro_week": false,
+        "kind": "endurance",
+        "estimated_minutes": 30,
+        "training_phase": "build",
+        "exercises": []
+      },
+      {
+        "block_no": 3,
+        "week_no": 3,
+        "scheduled_on": "2026-12-31",
+        "is_deload": false,
+        "is_intro_week": false,
+        "kind": "endurance",
+        "estimated_minutes": 30,
+        "training_phase": "build",
+        "exercises": []
+      },
+      {
+        "block_no": 3,
+        "week_no": 3,
+        "scheduled_on": "2027-01-03",
+        "is_deload": false,
+        "is_intro_week": false,
+        "kind": "endurance",
+        "estimated_minutes": 60,
+        "training_phase": "build",
+        "exercises": []
+      },
+      {
+        "block_no": 3,
+        "week_no": 4,
+        "scheduled_on": "2027-01-05",
+        "is_deload": true,
+        "is_intro_week": false,
+        "kind": "endurance",
+        "estimated_minutes": 18,
+        "training_phase": "peak",
+        "exercises": []
+      },
+      {
+        "block_no": 3,
+        "week_no": 4,
+        "scheduled_on": "2027-01-07",
+        "is_deload": true,
+        "is_intro_week": false,
+        "kind": "endurance",
+        "estimated_minutes": 18,
+        "training_phase": "peak",
+        "exercises": []
+      },
+      {
+        "block_no": 3,
+        "week_no": 4,
+        "scheduled_on": "2027-01-10",
+        "is_deload": true,
+        "is_intro_week": false,
+        "kind": "endurance",
+        "estimated_minutes": 36,
+        "training_phase": "peak",
+        "exercises": []
+      },
+      {
+        "block_no": 4,
+        "week_no": 1,
+        "scheduled_on": "2027-01-12",
+        "is_deload": false,
+        "is_intro_week": false,
+        "kind": "endurance",
+        "estimated_minutes": 30,
+        "training_phase": "peak",
+        "exercises": []
+      },
+      {
+        "block_no": 4,
+        "week_no": 1,
+        "scheduled_on": "2027-01-14",
+        "is_deload": false,
+        "is_intro_week": false,
+        "kind": "endurance",
+        "estimated_minutes": 30,
+        "training_phase": "peak",
+        "exercises": []
+      },
+      {
+        "block_no": 4,
+        "week_no": 1,
+        "scheduled_on": "2027-01-17",
+        "is_deload": false,
+        "is_intro_week": false,
+        "kind": "endurance",
+        "estimated_minutes": 60,
+        "training_phase": "peak",
+        "exercises": []
+      },
+      {
+        "block_no": 5,
+        "week_no": 1,
+        "scheduled_on": "2027-01-19",
+        "is_deload": true,
+        "is_intro_week": false,
+        "kind": "endurance",
+        "estimated_minutes": 42,
+        "training_phase": "taper",
+        "exercises": []
+      },
+      {
+        "block_no": 5,
+        "week_no": 1,
+        "scheduled_on": "2027-01-21",
+        "is_deload": true,
+        "is_intro_week": false,
+        "kind": "endurance",
+        "estimated_minutes": 42,
+        "training_phase": "taper",
+        "exercises": []
+      },
+      {
+        "block_no": 5,
+        "week_no": 1,
+        "scheduled_on": "2027-01-24",
+        "is_deload": true,
+        "is_intro_week": false,
+        "kind": "endurance",
+        "estimated_minutes": 84,
+        "training_phase": "taper",
+        "exercises": []
+      },
+      {
+        "block_no": 5,
+        "week_no": 2,
+        "scheduled_on": "2027-01-26",
+        "is_deload": true,
+        "is_intro_week": false,
+        "kind": "endurance",
+        "estimated_minutes": 24,
+        "training_phase": "race_week",
+        "exercises": []
+      },
+      {
+        "block_no": 5,
+        "week_no": 2,
+        "scheduled_on": "2027-01-28",
+        "is_deload": true,
+        "is_intro_week": false,
+        "kind": "endurance",
+        "estimated_minutes": 24,
+        "training_phase": "race_week",
+        "exercises": []
+      },
+      {
+        "block_no": 5,
+        "week_no": 3,
+        "scheduled_on": "2027-02-02",
+        "is_deload": true,
+        "is_intro_week": false,
+        "kind": "endurance",
+        "estimated_minutes": 16,
+        "training_phase": "recovery",
+        "exercises": []
+      },
+      {
+        "block_no": 5,
+        "week_no": 3,
+        "scheduled_on": "2027-02-04",
+        "is_deload": true,
+        "is_intro_week": false,
+        "kind": "endurance",
+        "estimated_minutes": 16,
+        "training_phase": "recovery",
+        "exercises": []
+      },
+      {
+        "block_no": 5,
+        "week_no": 3,
+        "scheduled_on": "2027-02-07",
+        "is_deload": true,
+        "is_intro_week": false,
+        "kind": "endurance",
+        "estimated_minutes": 28,
+        "training_phase": "recovery",
+        "exercises": []
+      }
+    ],
+    "expected": ["deload_endurance"]
+  },
+  {
+    "name": "gueltig_zweiter_tausch_vor_from_monday",
+    "options": {
+      "maxLoadWeeks": 5,
+      "planStart": "2026-10-05",
+      "swappedWeeks": [
+        {
+          "blockNo": 1,
+          "weekNo": 6
+        },
+        {
+          "blockNo": 1,
+          "weekNo": 5
+        }
+      ],
+      "fromMonday": "2026-10-12"
+    },
+    "sessions": [
+      {
+        "block_no": 1,
+        "week_no": 1,
+        "scheduled_on": "2026-10-06",
+        "is_deload": false,
+        "is_intro_week": true,
+        "kind": "strength",
+        "estimated_minutes": 42,
+        "exercises": [
+          {
+            "exercise_id": "kniebeuge-langhantel",
+            "sets": 3,
+            "rpe_target": 6
+          },
+          {
+            "exercise_id": "bankdruecken-langhantel",
+            "sets": 3,
+            "rpe_target": 6
+          },
+          {
+            "exercise_id": "latziehen",
+            "sets": 3,
+            "rpe_target": 6
+          },
+          {
+            "exercise_id": "beinbeuger-maschine",
+            "sets": 2,
+            "rpe_target": 6.5
+          },
+          {
+            "exercise_id": "seitheben-kurzhantel",
+            "sets": 3,
+            "rpe_target": 6.5
+          },
+          {
+            "exercise_id": "trizepsdruecken-kabel",
+            "sets": 2,
+            "rpe_target": 6.5
+          }
+        ]
+      },
+      {
+        "block_no": 1,
+        "week_no": 1,
+        "scheduled_on": "2026-10-09",
+        "is_deload": false,
+        "is_intro_week": true,
+        "kind": "strength",
+        "estimated_minutes": 42,
+        "exercises": [
+          {
+            "exercise_id": "rumaenisches-kreuzheben-langhantel",
+            "sets": 3,
+            "rpe_target": 6
+          },
+          {
+            "exercise_id": "kabelrudern",
+            "sets": 3,
+            "rpe_target": 6
+          },
+          {
+            "exercise_id": "schulterdruecken-kurzhantel",
+            "sets": 3,
+            "rpe_target": 6
+          },
+          {
+            "exercise_id": "bulgarische-split-kniebeuge",
+            "sets": 3,
+            "rpe_target": 6
+          },
+          {
+            "exercise_id": "fliegende-kabel",
+            "sets": 2,
+            "rpe_target": 6.5
+          },
+          {
+            "exercise_id": "face-pull-kabel",
+            "sets": 2,
+            "rpe_target": 6.5
+          }
+        ]
+      },
+      {
+        "block_no": 1,
+        "week_no": 2,
+        "scheduled_on": "2026-10-13",
+        "is_deload": false,
+        "is_intro_week": false,
+        "kind": "strength",
+        "estimated_minutes": 43,
+        "exercises": [
+          {
+            "exercise_id": "beinpresse",
+            "sets": 3,
+            "rpe_target": 7
+          },
+          {
+            "exercise_id": "schraegbankdruecken-kurzhantel",
+            "sets": 3,
+            "rpe_target": 7
+          },
+          {
+            "exercise_id": "kurzhantelrudern-einarmig",
+            "sets": 3,
+            "rpe_target": 7
+          },
+          {
+            "exercise_id": "hip-thrust-langhantel",
+            "sets": 3,
+            "rpe_target": 7
+          },
+          {
+            "exercise_id": "seitheben-kurzhantel",
+            "sets": 2,
+            "rpe_target": 7.5
+          },
+          {
+            "exercise_id": "face-pull-kabel",
+            "sets": 2,
+            "rpe_target": 7.5
+          }
+        ]
+      },
+      {
+        "block_no": 1,
+        "week_no": 2,
+        "scheduled_on": "2026-10-16",
+        "is_deload": false,
+        "is_intro_week": false,
+        "kind": "strength",
+        "estimated_minutes": 42,
+        "exercises": [
+          {
+            "exercise_id": "kniebeuge-langhantel",
+            "sets": 3,
+            "rpe_target": 7
+          },
+          {
+            "exercise_id": "bankdruecken-langhantel",
+            "sets": 3,
+            "rpe_target": 7
+          },
+          {
+            "exercise_id": "latziehen",
+            "sets": 3,
+            "rpe_target": 7
+          },
+          {
+            "exercise_id": "beinbeuger-maschine",
+            "sets": 2,
+            "rpe_target": 7.5
+          },
+          {
+            "exercise_id": "seitheben-kurzhantel",
+            "sets": 3,
+            "rpe_target": 7.5
+          },
+          {
+            "exercise_id": "trizepsdruecken-kabel",
+            "sets": 2,
+            "rpe_target": 7.5
+          }
+        ]
+      },
+      {
+        "block_no": 1,
+        "week_no": 3,
+        "scheduled_on": "2026-10-20",
+        "is_deload": false,
+        "is_intro_week": false,
+        "kind": "strength",
+        "estimated_minutes": 42,
+        "exercises": [
+          {
+            "exercise_id": "rumaenisches-kreuzheben-langhantel",
+            "sets": 3,
+            "rpe_target": 7
+          },
+          {
+            "exercise_id": "kabelrudern",
+            "sets": 3,
+            "rpe_target": 7
+          },
+          {
+            "exercise_id": "schulterdruecken-kurzhantel",
+            "sets": 3,
+            "rpe_target": 7
+          },
+          {
+            "exercise_id": "bulgarische-split-kniebeuge",
+            "sets": 3,
+            "rpe_target": 7
+          },
+          {
+            "exercise_id": "fliegende-kabel",
+            "sets": 2,
+            "rpe_target": 7.5
+          },
+          {
+            "exercise_id": "face-pull-kabel",
+            "sets": 2,
+            "rpe_target": 7.5
+          }
+        ]
+      },
+      {
+        "block_no": 1,
+        "week_no": 3,
+        "scheduled_on": "2026-10-23",
+        "is_deload": false,
+        "is_intro_week": false,
+        "kind": "strength",
+        "estimated_minutes": 43,
+        "exercises": [
+          {
+            "exercise_id": "beinpresse",
+            "sets": 3,
+            "rpe_target": 7
+          },
+          {
+            "exercise_id": "schraegbankdruecken-kurzhantel",
+            "sets": 3,
+            "rpe_target": 7
+          },
+          {
+            "exercise_id": "kurzhantelrudern-einarmig",
+            "sets": 3,
+            "rpe_target": 7
+          },
+          {
+            "exercise_id": "hip-thrust-langhantel",
+            "sets": 3,
+            "rpe_target": 7
+          },
+          {
+            "exercise_id": "seitheben-kurzhantel",
+            "sets": 2,
+            "rpe_target": 7.5
+          },
+          {
+            "exercise_id": "face-pull-kabel",
+            "sets": 2,
+            "rpe_target": 7.5
+          }
+        ]
+      },
+      {
+        "block_no": 1,
+        "week_no": 4,
+        "scheduled_on": "2026-10-27",
+        "is_deload": true,
+        "is_intro_week": false,
+        "kind": "strength",
+        "estimated_minutes": 29,
+        "exercises": [
+          {
+            "exercise_id": "kniebeuge-langhantel",
+            "sets": 2,
+            "rpe_target": 5
+          },
+          {
+            "exercise_id": "bankdruecken-langhantel",
+            "sets": 2,
+            "rpe_target": 5
+          },
+          {
+            "exercise_id": "latziehen",
+            "sets": 2,
+            "rpe_target": 5
+          },
+          {
+            "exercise_id": "beinbeuger-maschine",
+            "sets": 1,
+            "rpe_target": 5.5
+          },
+          {
+            "exercise_id": "seitheben-kurzhantel",
+            "sets": 2,
+            "rpe_target": 5.5
+          },
+          {
+            "exercise_id": "trizepsdruecken-kabel",
+            "sets": 1,
+            "rpe_target": 5.5
+          }
+        ]
+      },
+      {
+        "block_no": 1,
+        "week_no": 4,
+        "scheduled_on": "2026-10-30",
+        "is_deload": true,
+        "is_intro_week": false,
+        "kind": "strength",
+        "estimated_minutes": 28,
+        "exercises": [
+          {
+            "exercise_id": "rumaenisches-kreuzheben-langhantel",
+            "sets": 2,
+            "rpe_target": 5
+          },
+          {
+            "exercise_id": "kabelrudern",
+            "sets": 2,
+            "rpe_target": 5
+          },
+          {
+            "exercise_id": "schulterdruecken-kurzhantel",
+            "sets": 2,
+            "rpe_target": 5
+          },
+          {
+            "exercise_id": "bulgarische-split-kniebeuge",
+            "sets": 2,
+            "rpe_target": 5
+          },
+          {
+            "exercise_id": "fliegende-kabel",
+            "sets": 1,
+            "rpe_target": 5.5
+          },
+          {
+            "exercise_id": "face-pull-kabel",
+            "sets": 1,
+            "rpe_target": 5.5
+          }
+        ]
+      },
+      {
+        "block_no": 1,
+        "week_no": 5,
+        "scheduled_on": "2026-11-03",
+        "is_deload": false,
+        "is_intro_week": false,
+        "kind": "strength",
+        "estimated_minutes": 43,
+        "exercises": [
+          {
+            "exercise_id": "beinpresse",
+            "sets": 3,
+            "rpe_target": 7
+          },
+          {
+            "exercise_id": "schraegbankdruecken-kurzhantel",
+            "sets": 3,
+            "rpe_target": 7
+          },
+          {
+            "exercise_id": "kurzhantelrudern-einarmig",
+            "sets": 3,
+            "rpe_target": 7
+          },
+          {
+            "exercise_id": "hip-thrust-langhantel",
+            "sets": 3,
+            "rpe_target": 7
+          },
+          {
+            "exercise_id": "seitheben-kurzhantel",
+            "sets": 2,
+            "rpe_target": 7.5
+          },
+          {
+            "exercise_id": "face-pull-kabel",
+            "sets": 2,
+            "rpe_target": 7.5
+          }
+        ]
+      },
+      {
+        "block_no": 1,
+        "week_no": 5,
+        "scheduled_on": "2026-11-06",
+        "is_deload": false,
+        "is_intro_week": false,
+        "kind": "strength",
+        "estimated_minutes": 42,
+        "exercises": [
+          {
+            "exercise_id": "kniebeuge-langhantel",
+            "sets": 3,
+            "rpe_target": 7
+          },
+          {
+            "exercise_id": "bankdruecken-langhantel",
+            "sets": 3,
+            "rpe_target": 7
+          },
+          {
+            "exercise_id": "latziehen",
+            "sets": 3,
+            "rpe_target": 7
+          },
+          {
+            "exercise_id": "beinbeuger-maschine",
+            "sets": 2,
+            "rpe_target": 7.5
+          },
+          {
+            "exercise_id": "seitheben-kurzhantel",
+            "sets": 3,
+            "rpe_target": 7.5
+          },
+          {
+            "exercise_id": "trizepsdruecken-kabel",
+            "sets": 2,
+            "rpe_target": 7.5
+          }
+        ]
+      },
+      {
+        "block_no": 1,
+        "week_no": 6,
+        "scheduled_on": "2026-11-10",
+        "is_deload": false,
+        "is_intro_week": false,
+        "kind": "strength",
+        "estimated_minutes": 30,
+        "exercises": [
+          {
+            "exercise_id": "rumaenisches-kreuzheben-langhantel",
+            "sets": 2,
+            "rpe_target": 5
+          },
+          {
+            "exercise_id": "kabelrudern",
+            "sets": 2,
+            "rpe_target": 5
+          },
+          {
+            "exercise_id": "schulterdruecken-kurzhantel",
+            "sets": 2,
+            "rpe_target": 5
+          },
+          {
+            "exercise_id": "bulgarische-split-kniebeuge",
+            "sets": 2,
+            "rpe_target": 5
+          },
+          {
+            "exercise_id": "fliegende-kabel",
+            "sets": 1,
+            "rpe_target": 5.5
+          },
+          {
+            "exercise_id": "face-pull-kabel",
+            "sets": 2,
+            "rpe_target": 7.5
+          }
+        ]
+      },
+      {
+        "block_no": 1,
+        "week_no": 6,
+        "scheduled_on": "2026-11-13",
+        "is_deload": false,
+        "is_intro_week": false,
+        "kind": "strength",
+        "estimated_minutes": 43,
+        "exercises": [
+          {
+            "exercise_id": "beinpresse",
+            "sets": 3,
+            "rpe_target": 7
+          },
+          {
+            "exercise_id": "schraegbankdruecken-kurzhantel",
+            "sets": 3,
+            "rpe_target": 7
+          },
+          {
+            "exercise_id": "kurzhantelrudern-einarmig",
+            "sets": 3,
+            "rpe_target": 7
+          },
+          {
+            "exercise_id": "hip-thrust-langhantel",
+            "sets": 3,
+            "rpe_target": 7
+          },
+          {
+            "exercise_id": "seitheben-kurzhantel",
+            "sets": 2,
+            "rpe_target": 7.5
+          },
+          {
+            "exercise_id": "face-pull-kabel",
+            "sets": 2,
+            "rpe_target": 7.5
+          }
+        ]
+      }
+    ],
+    "expected": []
+  },
+  {
+    "name": "gueltig_woche0_mit_ausdauer",
+    "options": {
+      "maxLoadWeeks": 4,
+      "planStart": "2026-10-08",
+      "swappedWeeks": []
+    },
+    "sessions": [
+      {
+        "block_no": 1,
+        "week_no": 0,
+        "scheduled_on": "2026-10-10",
+        "is_deload": false,
+        "is_intro_week": true,
+        "kind": "endurance",
+        "estimated_minutes": 60,
+        "exercises": []
+      },
+      {
+        "block_no": 1,
+        "week_no": 1,
+        "scheduled_on": "2026-10-12",
+        "is_deload": false,
+        "is_intro_week": false,
+        "kind": "strength",
+        "estimated_minutes": 41,
+        "exercises": [
+          {
+            "exercise_id": "kniebeuge-langhantel",
+            "sets": 4,
+            "rpe_target": 8
+          },
+          {
+            "exercise_id": "bankdruecken-langhantel",
+            "sets": 4,
+            "rpe_target": 8
+          },
+          {
+            "exercise_id": "latziehen",
+            "sets": 4,
+            "rpe_target": 8
+          },
+          {
+            "exercise_id": "beinbeuger-maschine",
+            "sets": 3,
+            "rpe_target": 8.5
+          }
+        ]
+      },
+      {
+        "block_no": 1,
+        "week_no": 1,
+        "scheduled_on": "2026-10-14",
+        "is_deload": false,
+        "is_intro_week": false,
+        "kind": "endurance",
+        "estimated_minutes": 40,
+        "exercises": []
+      },
+      {
+        "block_no": 1,
+        "week_no": 1,
+        "scheduled_on": "2026-10-17",
+        "is_deload": false,
+        "is_intro_week": false,
+        "kind": "endurance",
+        "estimated_minutes": 50,
+        "exercises": []
+      },
+      {
+        "block_no": 1,
+        "week_no": 2,
+        "scheduled_on": "2026-10-19",
+        "is_deload": false,
+        "is_intro_week": false,
+        "kind": "strength",
+        "estimated_minutes": 44,
+        "exercises": [
+          {
+            "exercise_id": "rumaenisches-kreuzheben-langhantel",
+            "sets": 4,
+            "rpe_target": 8
+          },
+          {
+            "exercise_id": "kabelrudern",
+            "sets": 4,
+            "rpe_target": 8
+          },
+          {
+            "exercise_id": "schulterdruecken-kurzhantel",
+            "sets": 3,
+            "rpe_target": 8
+          },
+          {
+            "exercise_id": "bulgarische-split-kniebeuge",
+            "sets": 3,
+            "rpe_target": 8
+          },
+          {
+            "exercise_id": "fliegende-kabel",
+            "sets": 3,
+            "rpe_target": 8.5
+          }
+        ]
+      },
+      {
+        "block_no": 1,
+        "week_no": 2,
+        "scheduled_on": "2026-10-21",
+        "is_deload": false,
+        "is_intro_week": false,
+        "kind": "endurance",
+        "estimated_minutes": 40,
+        "exercises": []
+      },
+      {
+        "block_no": 1,
+        "week_no": 2,
+        "scheduled_on": "2026-10-24",
+        "is_deload": false,
+        "is_intro_week": false,
+        "kind": "endurance",
+        "estimated_minutes": 49,
+        "exercises": []
+      },
+      {
+        "block_no": 1,
+        "week_no": 3,
+        "scheduled_on": "2026-10-26",
+        "is_deload": false,
+        "is_intro_week": false,
+        "kind": "strength",
+        "estimated_minutes": 41,
+        "exercises": [
+          {
+            "exercise_id": "beinpresse",
+            "sets": 4,
+            "rpe_target": 8
+          },
+          {
+            "exercise_id": "schraegbankdruecken-kurzhantel",
+            "sets": 4,
+            "rpe_target": 8
+          },
+          {
+            "exercise_id": "kurzhantelrudern-einarmig",
+            "sets": 4,
+            "rpe_target": 8
+          },
+          {
+            "exercise_id": "hip-thrust-langhantel",
+            "sets": 3,
+            "rpe_target": 8
+          }
+        ]
+      },
+      {
+        "block_no": 1,
+        "week_no": 3,
+        "scheduled_on": "2026-10-28",
+        "is_deload": false,
+        "is_intro_week": false,
+        "kind": "endurance",
+        "estimated_minutes": 40,
+        "exercises": []
+      },
+      {
+        "block_no": 1,
+        "week_no": 3,
+        "scheduled_on": "2026-10-31",
+        "is_deload": false,
+        "is_intro_week": false,
+        "kind": "endurance",
+        "estimated_minutes": 48,
+        "exercises": []
+      },
+      {
+        "block_no": 1,
+        "week_no": 4,
+        "scheduled_on": "2026-11-02",
+        "is_deload": false,
+        "is_intro_week": false,
+        "kind": "strength",
+        "estimated_minutes": 41,
+        "exercises": [
+          {
+            "exercise_id": "kniebeuge-langhantel",
+            "sets": 4,
+            "rpe_target": 8
+          },
+          {
+            "exercise_id": "bankdruecken-langhantel",
+            "sets": 4,
+            "rpe_target": 8
+          },
+          {
+            "exercise_id": "latziehen",
+            "sets": 4,
+            "rpe_target": 8
+          },
+          {
+            "exercise_id": "beinbeuger-maschine",
+            "sets": 3,
+            "rpe_target": 8.5
+          }
+        ]
+      },
+      {
+        "block_no": 1,
+        "week_no": 4,
+        "scheduled_on": "2026-11-04",
+        "is_deload": false,
+        "is_intro_week": false,
+        "kind": "endurance",
+        "estimated_minutes": 40,
+        "exercises": []
+      },
+      {
+        "block_no": 1,
+        "week_no": 4,
+        "scheduled_on": "2026-11-07",
+        "is_deload": false,
+        "is_intro_week": false,
+        "kind": "endurance",
+        "estimated_minutes": 48,
+        "exercises": []
+      },
+      {
+        "block_no": 1,
+        "week_no": 5,
+        "scheduled_on": "2026-11-09",
+        "is_deload": true,
+        "is_intro_week": false,
+        "kind": "strength",
+        "estimated_minutes": 27,
+        "exercises": [
+          {
+            "exercise_id": "rumaenisches-kreuzheben-langhantel",
+            "sets": 2,
+            "rpe_target": 6
+          },
+          {
+            "exercise_id": "kabelrudern",
+            "sets": 2,
+            "rpe_target": 6
+          },
+          {
+            "exercise_id": "schulterdruecken-kurzhantel",
+            "sets": 2,
+            "rpe_target": 6
+          },
+          {
+            "exercise_id": "bulgarische-split-kniebeuge",
+            "sets": 2,
+            "rpe_target": 6
+          },
+          {
+            "exercise_id": "fliegende-kabel",
+            "sets": 2,
+            "rpe_target": 6.5
+          }
+        ]
+      },
+      {
+        "block_no": 1,
+        "week_no": 5,
+        "scheduled_on": "2026-11-11",
+        "is_deload": true,
+        "is_intro_week": false,
+        "kind": "endurance",
+        "estimated_minutes": 26,
+        "exercises": []
+      },
+      {
+        "block_no": 1,
+        "week_no": 5,
+        "scheduled_on": "2026-11-14",
+        "is_deload": true,
+        "is_intro_week": false,
+        "kind": "endurance",
+        "estimated_minutes": 26,
+        "exercises": []
+      },
+      {
+        "block_no": 2,
+        "week_no": 1,
+        "scheduled_on": "2026-11-16",
+        "is_deload": false,
+        "is_intro_week": false,
+        "kind": "strength",
+        "estimated_minutes": 41,
+        "exercises": [
+          {
+            "exercise_id": "beinpresse",
+            "sets": 4,
+            "rpe_target": 8
+          },
+          {
+            "exercise_id": "schraegbankdruecken-kurzhantel",
+            "sets": 4,
+            "rpe_target": 8
+          },
+          {
+            "exercise_id": "kurzhantelrudern-einarmig",
+            "sets": 4,
+            "rpe_target": 8
+          },
+          {
+            "exercise_id": "hip-thrust-langhantel",
+            "sets": 3,
+            "rpe_target": 8
+          }
+        ]
+      },
+      {
+        "block_no": 2,
+        "week_no": 1,
+        "scheduled_on": "2026-11-18",
+        "is_deload": false,
+        "is_intro_week": false,
+        "kind": "endurance",
+        "estimated_minutes": 40,
+        "exercises": []
+      },
+      {
+        "block_no": 2,
+        "week_no": 1,
+        "scheduled_on": "2026-11-21",
+        "is_deload": false,
+        "is_intro_week": false,
+        "kind": "endurance",
+        "estimated_minutes": 48,
+        "exercises": []
+      },
+      {
+        "block_no": 2,
+        "week_no": 2,
+        "scheduled_on": "2026-11-23",
+        "is_deload": false,
+        "is_intro_week": false,
+        "kind": "strength",
+        "estimated_minutes": 41,
+        "exercises": [
+          {
+            "exercise_id": "kniebeuge-langhantel",
+            "sets": 4,
+            "rpe_target": 8
+          },
+          {
+            "exercise_id": "bankdruecken-langhantel",
+            "sets": 4,
+            "rpe_target": 8
+          },
+          {
+            "exercise_id": "latziehen",
+            "sets": 4,
+            "rpe_target": 8
+          },
+          {
+            "exercise_id": "beinbeuger-maschine",
+            "sets": 3,
+            "rpe_target": 8.5
+          }
+        ]
+      },
+      {
+        "block_no": 2,
+        "week_no": 2,
+        "scheduled_on": "2026-11-25",
+        "is_deload": false,
+        "is_intro_week": false,
+        "kind": "endurance",
+        "estimated_minutes": 40,
+        "exercises": []
+      },
+      {
+        "block_no": 2,
+        "week_no": 2,
+        "scheduled_on": "2026-11-28",
+        "is_deload": false,
+        "is_intro_week": false,
+        "kind": "endurance",
+        "estimated_minutes": 48,
+        "exercises": []
+      },
+      {
+        "block_no": 2,
+        "week_no": 3,
+        "scheduled_on": "2026-11-30",
+        "is_deload": false,
+        "is_intro_week": false,
+        "kind": "strength",
+        "estimated_minutes": 44,
+        "exercises": [
+          {
+            "exercise_id": "rumaenisches-kreuzheben-langhantel",
+            "sets": 4,
+            "rpe_target": 8
+          },
+          {
+            "exercise_id": "kabelrudern",
+            "sets": 4,
+            "rpe_target": 8
+          },
+          {
+            "exercise_id": "schulterdruecken-kurzhantel",
+            "sets": 3,
+            "rpe_target": 8
+          },
+          {
+            "exercise_id": "bulgarische-split-kniebeuge",
+            "sets": 3,
+            "rpe_target": 8
+          },
+          {
+            "exercise_id": "fliegende-kabel",
+            "sets": 3,
+            "rpe_target": 8.5
+          }
+        ]
+      },
+      {
+        "block_no": 2,
+        "week_no": 3,
+        "scheduled_on": "2026-12-02",
+        "is_deload": false,
+        "is_intro_week": false,
+        "kind": "endurance",
+        "estimated_minutes": 40,
+        "exercises": []
+      },
+      {
+        "block_no": 2,
+        "week_no": 3,
+        "scheduled_on": "2026-12-05",
+        "is_deload": false,
+        "is_intro_week": false,
+        "kind": "endurance",
+        "estimated_minutes": 48,
+        "exercises": []
+      },
+      {
+        "block_no": 2,
+        "week_no": 4,
+        "scheduled_on": "2026-12-07",
+        "is_deload": false,
+        "is_intro_week": false,
+        "kind": "strength",
+        "estimated_minutes": 41,
+        "exercises": [
+          {
+            "exercise_id": "beinpresse",
+            "sets": 4,
+            "rpe_target": 8
+          },
+          {
+            "exercise_id": "schraegbankdruecken-kurzhantel",
+            "sets": 4,
+            "rpe_target": 8
+          },
+          {
+            "exercise_id": "kurzhantelrudern-einarmig",
+            "sets": 4,
+            "rpe_target": 8
+          },
+          {
+            "exercise_id": "hip-thrust-langhantel",
+            "sets": 3,
+            "rpe_target": 8
+          }
+        ]
+      },
+      {
+        "block_no": 2,
+        "week_no": 4,
+        "scheduled_on": "2026-12-09",
+        "is_deload": false,
+        "is_intro_week": false,
+        "kind": "endurance",
+        "estimated_minutes": 40,
+        "exercises": []
+      },
+      {
+        "block_no": 2,
+        "week_no": 4,
+        "scheduled_on": "2026-12-12",
+        "is_deload": false,
+        "is_intro_week": false,
+        "kind": "endurance",
+        "estimated_minutes": 48,
+        "exercises": []
+      },
+      {
+        "block_no": 2,
+        "week_no": 5,
+        "scheduled_on": "2026-12-14",
+        "is_deload": true,
+        "is_intro_week": false,
+        "kind": "strength",
+        "estimated_minutes": 24,
+        "exercises": [
+          {
+            "exercise_id": "kniebeuge-langhantel",
+            "sets": 2,
+            "rpe_target": 6
+          },
+          {
+            "exercise_id": "bankdruecken-langhantel",
+            "sets": 2,
+            "rpe_target": 6
+          },
+          {
+            "exercise_id": "latziehen",
+            "sets": 2,
+            "rpe_target": 6
+          },
+          {
+            "exercise_id": "beinbeuger-maschine",
+            "sets": 2,
+            "rpe_target": 6.5
+          }
+        ]
+      },
+      {
+        "block_no": 2,
+        "week_no": 5,
+        "scheduled_on": "2026-12-16",
+        "is_deload": true,
+        "is_intro_week": false,
+        "kind": "endurance",
+        "estimated_minutes": 26,
+        "exercises": []
+      },
+      {
+        "block_no": 2,
+        "week_no": 5,
+        "scheduled_on": "2026-12-19",
+        "is_deload": true,
+        "is_intro_week": false,
+        "kind": "endurance",
+        "estimated_minutes": 26,
+        "exercises": []
+      }
+    ],
+    "expected": []
   }
 ]

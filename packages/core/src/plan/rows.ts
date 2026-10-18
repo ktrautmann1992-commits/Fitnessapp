@@ -54,6 +54,8 @@ export interface PlannedSessionRow {
   target_distance_m: number | null;
   /** Schritte für den Timer (workoutStepsSchema); jsonb. */
   workout_steps: JsonValue | null;
+  /** Live-Anpassung (Phase 4b): letzte Plan-Änderung dieser Einheit (Kennzeichen „angepasst“); sonst null. */
+  adjustment_id: string | null;
 }
 
 /** Zeile aus planned_exercises. */
@@ -74,6 +76,8 @@ export interface PlannedExerciseRow {
   superset_group: string | null;
   notes_de: string | null;
   target_weight_kg: number | null;
+  /** Live-Anpassung (Phase 4b): letzte Plan-Änderung dieser Übung; sonst null. */
+  adjustment_id: string | null;
 }
 
 /** Was die Abbildung von einer user_plans-Zeile braucht (die übrigen Spalten reicht sie unverändert durch). */

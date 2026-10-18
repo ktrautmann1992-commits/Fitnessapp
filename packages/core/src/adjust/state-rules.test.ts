@@ -1,5 +1,6 @@
 import { describe, expect, it } from 'vitest';
 
+import { LIVE_ADJUSTMENT, LOAD_PROGRESSION } from '../constants';
 import { barbellLoadSteps } from '../equipment';
 import { prescriptionForDisplay, progressFromLogs } from '../log/progression';
 import type {
@@ -277,6 +278,21 @@ describe('R1 fast_increase', () => {
     });
     const p = fastIncrease(inputs([e], { contexts: { bench: ctx } }), 'bench', ctx);
     expect(p?.stateAfter).toEqual(st(4, 13));
+  });
+
+  it('Wächter B Auflage 2: großer Sprung nach dem Puffer (4 → 6 kg = +50 %) → kein R1, normale Progression', () => {
+    const ctx: ProgressionContext = { ...dumbbell, steps: [4, 6, 8] };
+    const sets4 = [set(14, 4, 5), set(14, 4, 5), set(14, 4, 5), set(14, 4, 5)];
+    const e = entry('2026-10-14', st(4, 14, true), sets4, { targetWeightKg: 4, targetSets: 4 });
+    expect(fastIncrease(inputs([e], { contexts: { bench: ctx } }), 'bench', ctx)).toBeNull();
+    // Ohne Grenze wäre es ein Sprung nach EINER Einheit; Gratis springt nach zwei Einheiten wie bisher.
+    const fast = progressFromLogs('bench', [e], ctx, {
+      today: TODAY,
+      consecutiveSessionsForStep: LIVE_ADJUSTMENT.fastIncrease.consecutiveSessionsForStep,
+    });
+    expect(fast.progress.weightKg).toBe(6);
+    expect(LIVE_ADJUSTMENT.fastIncrease.maxStepFraction).toBe(LOAD_PROGRESSION.maxIncreaseFraction);
+    // Schritt genau innerhalb der Grenze (60 → 62,5 kg = +4,2 %) bleibt erlaubt (Test oben).
   });
 
   it('500-kg-Deckel: nie ein Gewicht über 500 kg', () => {

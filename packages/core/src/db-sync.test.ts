@@ -82,6 +82,13 @@ import {
   ROUTE_FILTER,
   TRACKED_ROUTE_LIMITS,
   TRACKED_ROUTE_LOG_MATCH,
+  LIVE_ADJUSTMENT,
+  LOAD_PROGRESSION,
+  SESSION_FIT,
+  DELOAD_DOSAGE,
+  DELOAD_SCHEDULE,
+  ENDURANCE_DELOAD_VOLUME_FACTOR,
+  MAX_WEEKLY_ENDURANCE_VOLUME_INCREASE_FRACTION,
 } from './constants';
 import { serverDayKcalFloor } from './nutrition/plausibility';
 import { AI_USAGE_STATUSES } from './nutrition/food-photo';
@@ -138,6 +145,23 @@ import {
   customMealPayloadSchema,
 } from './nutrition/custom-meal';
 import { EQUIPMENT } from './equipment';
+import {
+  ACTIVE_ADJUSTMENT_RULES,
+  ADJUSTMENT_KINDS,
+  ADJUSTMENT_RULES,
+  ADJUSTMENT_STATUSES,
+  ADJUSTMENT_TRIGGERS,
+  RULE_KIND,
+} from './adjust/types';
+import {
+  adjustmentProposalSchema,
+  fewerDaysChangeSchema,
+  planChangeSchema,
+  stateOverrideSchema,
+} from './adjust/schemas';
+import { COMPETITION_DELOAD_MAX_FACTOR } from './adjust/invariants';
+import type { InvariantFixture } from './adjust/fixtures/invariant-cases';
+import { weekInvariantsTestSql } from './adjust/fixtures/invariants-sql';
 import { FOOD_GROUPS } from './food-groups';
 import { GOAL_COMBINATIONS } from './goals/profile';
 import {
@@ -662,8 +686,8 @@ describe('Trainingstagebuch (Phase 4 Etappe B)', () => {
     }
   });
 
-  it('neueste save_session_log-Fassung steht in *_tracked_route_rpcs.sql (S1, davor A1b)', () => {
-    expect(saveFile).toMatch(/_tracked_route_rpcs\.sql$/);
+  it('neueste save_session_log-Fassung steht in *_live_adjust_outbox.sql (4b B, davor S1, A1b)', () => {
+    expect(saveFile).toMatch(/_live_adjust_outbox\.sql$/);
     expect(fieldsOf('log_fields').is_free).toBe('boolean|missing');
   });
 
@@ -918,10 +942,11 @@ describe('Ernährung in der Datenbank (Phase 5, Etappe N7)', () => {
     expect(body.slice(0, end)).toContain(
       'delete from public.shopping_lists where user_id = new.user_id and uses_health_data;',
     );
-    // Neueste Fassung seit der Zusammenführung E4a + Z3 in *_revoke_export_union.sql (E1: Tagebuch-Einträge, E2: eigene
-    // Gerichte, WP3: Plan-Bezug der Wettkämpfe leeren, E4a: eigene Produkte und Produkt-Favoriten, Z3: Wunschgewicht).
+    // Neueste Fassung seit 4b Etappe B in *_live_adjust_revoke_export.sql (davor Zusammenführung E4a + Z3; E1:
+    // Tagebuch-Einträge, E2: eigene Gerichte, WP3: Plan-Bezug der Wettkämpfe leeren, E4a: eigene Produkte und
+    // Produkt-Favoriten, Z3: Wunschgewicht, 4b: Plan-Anpassungen).
     expect(migrationFiles.filter((n) => readMigration(n).includes(marker)).at(-1)).toMatch(
-      /_revoke_export_union\.sql$/,
+      /_live_adjust_revoke_export\.sql$/,
     );
   });
 
@@ -1115,10 +1140,10 @@ describe('Ernährungstagebuch in der Datenbank (Etappe E1)', () => {
     }
   });
 
-  it('export_my_data(): neueste Fassung in *_revoke_export_union.sql (E4a + Z3, davor S1, E3, WP3 und E2)', () => {
+  it('export_my_data(): neueste Fassung in *_live_adjust_revoke_export.sql (4b B, davor E4a + Z3, S1, E3, WP3, E2)', () => {
     const marker = 'create or replace function public.export_my_data()';
     expect(migrationFiles.filter((n) => readMigration(n).includes(marker)).at(-1)).toMatch(
-      /_revoke_export_union\.sql$/,
+      /_live_adjust_revoke_export\.sql$/,
     );
   });
 });
@@ -2595,8 +2620,8 @@ describe('Ziele in der Datenbank (Etappe Z3, docs/PLAN-ZIELE.md 5.1/5.2)', () =>
   it('Widerruf und Export: neueste Fassungen sind Obermengen der Vorgänger (Zeile für Zeile, S16)', () => {
     for (const marker of [revokeMarker, exportMarker]) {
       const withFn = migrationFiles.filter((n) => readMigration(n).includes(marker));
-      // Seit der Zusammenführung E4a + Z3 (Wächter E4a H1): Vereinigung in *_revoke_export_union.sql.
-      expect(withFn.at(-1)).toMatch(/_revoke_export_union\.sql$/);
+      // Seit 4b Etappe B in *_live_adjust_revoke_export.sql (davor Vereinigung E4a + Z3, Wächter E4a H1).
+      expect(withFn.at(-1)).toMatch(/_live_adjust_revoke_export\.sql$/);
       const bodyOf = (name: string) => {
         const sql = readMigration(name);
         const start = sql.lastIndexOf(marker);
@@ -2650,6 +2675,9 @@ describe('Ziele in der Datenbank (Etappe Z3, docs/PLAN-ZIELE.md 5.1/5.2)', () =>
       shopping_lists:
         'delete from public.shopping_lists where user_id = new.user_id and uses_health_data;',
       food_log_entries: 'delete from public.food_log_entries where user_id = new.user_id;',
+      // 4b Etappe B: Anpassungen aus Gesundheits-Plänen bzw. mit Körperdaten (PLAN-PHASE-4B 4.7).
+      plan_adjustments:
+        'delete from public.plan_adjustments where user_id = new.user_id and (uses_body_data or from_health_plan);',
     };
     const mentioned = [...comments]
       .filter(([, c]) => c.includes('SENSIBEL') && !c.startsWith('SENSIBEL (Art. 9'))
@@ -2665,5 +2693,244 @@ describe('Ziele in der Datenbank (Etappe Z3, docs/PLAN-ZIELE.md 5.1/5.2)', () =>
 
   it('Gesundheitsdaten bleiben aus dem Partner-Modus und aus anon heraus (K7): kein Recht für anon', () => {
     expect(table).not.toMatch(/grant [a-z, ]+ on table public\.weight_goals to anon/);
+  });
+});
+
+describe('Live-Anpassung in der Datenbank (Phase 4b Etappe B, docs/PLAN-PHASE-4B.md 4.3–4.7)', () => {
+  const enumsSql = readMigration('_live_adjust_enums.sql');
+  const tables = readMigration('_live_adjust_tables.sql');
+  const invariants = readMigration('_live_adjust_invariants.sql');
+  const rpcs = readMigration('_live_adjust_rpcs.sql');
+  const outbox = readMigration('_live_adjust_outbox.sql');
+  const revokeExport = readMigration('_live_adjust_revoke_export.sql');
+  const body = (sql: string, name: string) => {
+    const start = sql.lastIndexOf(`create or replace function ${name}(`);
+    if (start < 0) throw new Error(`${name} nicht gefunden`);
+    return sql.slice(start, sql.indexOf('$$;', sql.indexOf('as $$', start)));
+  };
+  /** Jede Zeile der alten Fassung steht in derselben Reihenfolge in der neuen (nur eingefügte Zeilen). */
+  const missingLines = (older: string, newer: string) => {
+    const next = newer.split('\n');
+    let at = 0;
+    const missing: string[] = [];
+    for (const line of older.split('\n')) {
+      const found = next.indexOf(line, at);
+      if (found < 0) missing.push(line);
+      else at = found + 1;
+    }
+    return missing;
+  };
+  const constant = (sql: string, name: string) => {
+    const match = new RegExp(`\\b${name} constant [a-z]+ := ([0-9.]+);`).exec(sql);
+    if (!match) throw new Error(`${name} nicht gefunden`);
+    return Number(match[1]);
+  };
+  const apply = body(rpcs, 'public.apply_plan_adjustments');
+  const assertChange = body(rpcs, 'private.assert_plan_change');
+
+  it.each([
+    ['adjustment_trigger', ADJUSTMENT_TRIGGERS],
+    ['adjustment_rule', ADJUSTMENT_RULES],
+    ['adjustment_kind', ADJUSTMENT_KINDS],
+    ['adjustment_status', ADJUSTMENT_STATUSES],
+  ] as const)('Enum public.%s = packages/core/src/adjust/types.ts', (name, values) => {
+    expect(enumValues(name)).toEqual([...values]);
+    expect(enumsSql).toContain(`create type public.${name} as enum (`);
+  });
+
+  it('Reihenfolge: Enums → Tabellen → Invarianten → Funktionen → Outbox → Widerruf/Export (nach allen bisherigen)', () => {
+    const order = [
+      '_live_adjust_enums.sql',
+      '_live_adjust_tables.sql',
+      '_live_adjust_invariants.sql',
+      '_live_adjust_rpcs.sql',
+      '_live_adjust_outbox.sql',
+      '_live_adjust_revoke_export.sql',
+    ].map((suffix) => migrationFiles.findIndex((n) => n.endsWith(suffix)));
+    expect(order.every((i, k) => i > (order[k - 1] ?? -1))).toBe(true);
+    expect(order[0]).toBe(migrationFiles.length - 6);
+  });
+
+  it('apply_plan_adjustments: Feldliste = adjustmentProposalSchema, Arten = RULE_KIND, nur aktive Regeln', () => {
+    const keys = /adjustment_keys constant text\[\] := array\[([^\]]*)\]/.exec(apply)?.[1] ?? '';
+    const sqlKeys = [...keys.matchAll(/'([A-Za-z]+)'/g)].map((m) => m[1]).sort();
+    const options = (
+      adjustmentProposalSchema as unknown as { options: { shape: Record<string, unknown> }[] }
+    ).options;
+    for (const option of options) {
+      expect(Object.keys(option.shape).sort()).toEqual(sqlKeys);
+    }
+    const kinds = JSON.parse(/rule_kinds constant jsonb := '([^']*)'/.exec(apply)?.[1] ?? '{}');
+    expect(kinds).toEqual(RULE_KIND);
+    expect(Object.keys(kinds).sort()).toEqual([...ACTIVE_ADJUSTMENT_RULES].sort());
+    const fewer = /fewer_days_keys constant text\[\] := array\[([^\]]*)\]/.exec(apply)?.[1] ?? '';
+    expect([...fewer.matchAll(/'([a-z_]+)'/g)].map((m) => m[1])).toEqual(
+      Object.keys(fewerDaysChangeSchema.shape),
+    );
+  });
+
+  it('Vorher/Nachher-Felder je Regel ⊆ Zod-Schema (planChangeSchema), Zustands-Vorgabe = stateOverrideSchema', () => {
+    const sessionShape = planChangeSchema.shape.sessions.element.shape;
+    const exerciseShape = sessionShape.exercises.unwrap().element.shape;
+    const sessionKeys = JSON.parse(
+      /rule_session_keys constant jsonb := '([^']*)'/.exec(assertChange)?.[1] ?? '{}',
+    );
+    const exerciseKeys = JSON.parse(
+      /rule_exercise_keys constant jsonb := '([^']*)'/.exec(assertChange)?.[1] ?? '{}',
+    );
+    for (const list of Object.values(sessionKeys) as string[][]) {
+      for (const key of list) expect(Object.keys(sessionShape)).toContain(key);
+    }
+    for (const list of Object.values(exerciseKeys) as string[][]) {
+      for (const key of list) expect(Object.keys(exerciseShape)).toContain(key);
+    }
+    expect(Object.keys(sessionKeys).sort()).toEqual(
+      Object.entries(RULE_KIND)
+        .filter(([, kind]) => kind === 'plan_change')
+        .map(([rule]) => rule)
+        .sort(),
+    );
+    expect(tables).toContain(
+      `= array['${Object.keys(stateOverrideSchema.shape).sort().join("', '")}']`,
+    );
+    expect(tables).toContain(
+      `cardinality(planned_session_ids) <= ${LIVE_ADJUSTMENT.maxPlannedSessionsPerAdjustment}`,
+    );
+  });
+
+  it('SQL-Konstanten = LIVE_ADJUSTMENT und Grenzwerte in constants.ts', () => {
+    expect(constant(apply, 'max_per_batch')).toBe(LIVE_ADJUSTMENT.maxPerBatch);
+    expect(constant(apply, 'max_sessions')).toBe(LIVE_ADJUSTMENT.maxPlannedSessionsPerAdjustment);
+    expect(constant(assertChange, 'max_sessions')).toBe(
+      LIVE_ADJUSTMENT.maxPlannedSessionsPerAdjustment,
+    );
+    expect(constant(apply, 'max_automatic_per_week')).toBe(LIVE_ADJUSTMENT.maxAutomaticPerWeek);
+    expect(constant(apply, 'proposal_expires_days')).toBe(LIVE_ADJUSTMENT.proposalExpiresDays);
+    expect(constant(apply, 'load_reduce_factor')).toBe(LIVE_ADJUSTMENT.loadReduce.factor);
+    expect(constant(apply, 'hold_min_s')).toBe(LIVE_ADJUSTMENT.loadReduce.holdMinS);
+    expect(constant(apply, 'max_increase_fraction')).toBe(LOAD_PROGRESSION.maxIncreaseFraction);
+    expect(constant(apply, 'max_increase_fraction')).toBe(
+      LIVE_ADJUSTMENT.fastIncrease.maxStepFraction,
+    );
+    expect(constant(apply, 'extra_reps_buffer')).toBe(LOAD_PROGRESSION.extraRepsBuffer);
+    expect(constant(assertChange, 'sets_reduction')).toBe(
+      LIVE_ADJUSTMENT.highSessionLoad.setsReduction,
+    );
+    expect(constant(assertChange, 'min_sets_compound')).toBe(SESSION_FIT.minSetsCompound);
+    expect(constant(assertChange, 'min_sets_isolation')).toBe(SESSION_FIT.minSetsIsolation);
+    expect(constant(assertChange, 'min_session_minutes')).toBe(
+      ENDURANCE_SESSION_LIMITS.minSessionMinutes,
+    );
+    // Ratenbegrenzung (Wächter S3).
+    expect(constant(body(rpcs, 'public.claim_adjustment_events'), 'max_per_user_per_hour')).toBe(
+      LIVE_ADJUSTMENT.recompute.maxPerUserPerHour,
+    );
+  });
+
+  it('Wochen-Invarianten: SQL-Konstanten = checkWeekInvariants (DELOAD_DOSAGE, 10-%-Regel, Erholungs-Faktoren)', () => {
+    const fn = body(invariants, 'private.week_invariant_violations');
+    expect(constant(fn, 'deload_sets_factor')).toBe(DELOAD_DOSAGE.setsFactor);
+    expect(constant(fn, 'deload_rpe_reduction')).toBe(DELOAD_DOSAGE.rpeReduction);
+    expect(constant(fn, 'rpe_min')).toBe(TEMPLATE_DOSAGE_LIMITS.rpe.min);
+    expect(constant(fn, 'min_session_minutes')).toBe(ENDURANCE_SESSION_LIMITS.minSessionMinutes);
+    expect(constant(fn, 'increase_percent')).toBe(
+      Math.round((1 + MAX_WEEKLY_ENDURANCE_VOLUME_INCREASE_FRACTION) * 100),
+    );
+    expect(constant(fn, 'deload_volume_percent')).toBe(
+      Math.round(ENDURANCE_DELOAD_VOLUME_FACTOR * 100),
+    );
+    expect(constant(fn, 'competition_deload_percent')).toBe(
+      Math.round(COMPETITION_DELOAD_MAX_FACTOR * 100),
+    );
+    const loadWeeks = body(invariants, 'private.plan_load_weeks');
+    expect(loadWeeks).toContain(
+      `when not p.uses_health_data or p.medical_notice then ${DELOAD_SCHEDULE.cautious}`,
+    );
+    expect(loadWeeks).toContain(
+      `when p.inputs ->> 'experienceLevel' = 'beginner' then ${DELOAD_SCHEDULE.beginner}`,
+    );
+    expect(loadWeeks).toContain(`else ${DELOAD_SCHEDULE.advanced}`);
+  });
+
+  it('pgTAP 50_week_invariants.test.sql ist aus invariants.json aktuell erzeugt (Core = SQL)', () => {
+    const fixtures = JSON.parse(
+      readFileSync(new URL('./adjust/fixtures/invariants.json', import.meta.url), 'utf8'),
+    ) as InvariantFixture[];
+    const file = readFileSync(
+      new URL('../../../supabase/tests/50_week_invariants.test.sql', import.meta.url),
+      'utf8',
+    );
+    expect(file).toBe(weekInvariantsTestSql(fixtures));
+  });
+
+  it('Outbox: neueste Fassungen sind Obermengen der Vorgänger und schreiben nur über enqueue (nur Premium, S2)', () => {
+    const enqueue = body(rpcs, 'private.enqueue_adjustment_event');
+    expect(enqueue).toContain("not private.feature_enabled('live_adjustment')");
+    expect(enqueue).toContain("not private.has_entitlement_for(p_user_id, 'premium')");
+    expect(enqueue).toContain('when others then');
+    for (const [name, previous] of [
+      ['public.save_session_log', '_tracked_route_rpcs.sql'],
+      ['public.replace_training_slots', '_training_slots.sql'],
+      ['public.save_training_plan', '_training_log_rpcs.sql'],
+      ['public.append_plan_block', '_meal_plan_rpcs.sql'],
+    ] as const) {
+      expect(missingLines(body(readMigration(previous), name), body(outbox, name)), name).toEqual(
+        [],
+      );
+      const newest = migrationFiles.filter((n) =>
+        readMigration(n).includes(`create or replace function ${name}(`),
+      );
+      expect(newest.at(-1), name).toMatch(/_live_adjust_outbox\.sql$/);
+    }
+    for (const [name, trigger] of [
+      ['public.save_session_log', 'session_logged'],
+      ['public.close_missed_sessions', 'session_missed'],
+      ['public.replace_training_slots', 'slots_changed'],
+    ] as const) {
+      expect(body(outbox, name)).toContain(
+        `private.enqueue_adjustment_event(current_user_id, '${trigger}'`,
+      );
+    }
+    for (const table of ['body_measurements', 'body_metrics', 'goals', 'weight_goals']) {
+      expect(outbox).toContain(`after insert or update on public.${table}`);
+    }
+    expect(body(outbox, 'public.append_plan_block')).toContain(
+      "v ->> 'code' = 'too_many_load_weeks'",
+    );
+  });
+
+  it('beta_admin (4b): Obermenge der E4a-Fassung bis auf die Flag-Liste; Flag live_adjustment startet AUS', () => {
+    const e4a = body(readMigration('_food_products.sql'), 'public.beta_admin');
+    expect(missingLines(e4a, body(rpcs, 'public.beta_admin'))).toEqual([
+      "     or p_flag is null or p_flag not in ('ai_food_photo') then",
+    ]);
+    expect(tables).toContain(
+      "insert into private.feature_flags (key, enabled) values ('live_adjustment', false)",
+    );
+  });
+
+  it('Widerruf und Export (4.7, K4): Anpassungen zuerst und am Ende gelöscht; Export mit Anpassungen, Ereignissen, Zählern', () => {
+    const revoke = body(revokeExport, 'private.consents_after_revoke');
+    const line =
+      'delete from public.plan_adjustments where user_id = new.user_id and (uses_body_data or from_health_plan);';
+    expect(revoke.split(line)).toHaveLength(3);
+    expect(revoke.indexOf(line)).toBeLessThan(
+      revoke.indexOf(
+        'delete from public.user_plans where user_id = new.user_id and uses_health_data;',
+      ),
+    );
+    const exported = body(revokeExport, 'public.export_my_data');
+    for (const key of [
+      'plan_adjustments',
+      'adjustment_events',
+      'live_adjust_hourly_counts',
+      'beta_entitlements',
+    ]) {
+      expect(exported).toContain(`'${key}', (select coalesce(`);
+    }
+    // Ereignisse im Export ohne Verweise (ref_id) und ohne Fehlercode.
+    const events = body(revokeExport, 'private.my_adjustment_events');
+    expect(events).not.toContain('ref_id');
+    expect(events).not.toContain('last_error_code');
   });
 });

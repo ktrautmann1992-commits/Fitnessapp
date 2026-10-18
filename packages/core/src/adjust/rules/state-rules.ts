@@ -114,6 +114,18 @@ export function fastIncrease(
     return null;
   }
   if (!['increase_weight', 'add_rep', 'add_set'].includes(fast.step.kind)) return null;
+  // Wächter B Auflage 2: höchstens ein Gewichtsschritt ≤ maxStepFraction (Server-Grenze von apply_plan_adjustments);
+  // ein größerer Sprung (nach dem Puffer) bleibt der normalen Progression überlassen.
+  const before = normal.progress.weightKg;
+  const after = fast.progress.weightKg;
+  if (
+    before !== null &&
+    after !== null &&
+    after > before + EPS &&
+    after > before * (1 + LIVE_ADJUSTMENT.fastIncrease.maxStepFraction) + EPS
+  ) {
+    return null;
+  }
   return proposal('fast_increase', inputs, exerciseId, latest, normal.progress, fast.progress, {
     weight_before: normal.progress.weightKg ?? 0,
     weight_after: fast.progress.weightKg ?? 0,

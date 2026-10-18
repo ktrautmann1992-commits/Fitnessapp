@@ -544,9 +544,17 @@ function insertSessions(
           ? null
           : s.workout_steps.map((st) => ({ ...st })),
       target_distance_m: s.target_distance_m ?? null,
+      // Live-Anpassung (4b Etappe B): neue Einheiten ohne Kennzeichen, wie insert_plan_sessions.
+      adjustment_id: null,
     });
     for (const e of s.exercises) {
-      newExercises.push({ ...e, id: ctx.newId(), session_id: id, user_id: userId });
+      newExercises.push({
+        ...e,
+        id: ctx.newId(),
+        session_id: id,
+        user_id: userId,
+        adjustment_id: null,
+      });
     }
   }
   return {

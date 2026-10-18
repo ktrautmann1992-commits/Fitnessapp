@@ -60,6 +60,7 @@ function plannedSession(
     training_phase: null,
     target_distance_m: null,
     workout_steps: null,
+    adjustment_id: null,
     ...overrides,
   };
 }
