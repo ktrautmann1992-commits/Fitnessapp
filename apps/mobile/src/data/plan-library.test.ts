@@ -12,15 +12,23 @@ import {
 
 type Data = Record<string, unknown> & { id: string; status: string };
 
-/** Inhaltsdateien → Zeilen wie in der Datenbank (Übungen + Alternativen, Vorlagen + Einheiten + Übungen). */
+/**
+ * Inhaltsdateien → Zeilen wie in der Datenbank (Übungen + Alternativen, Vorlagen + Einheiten + Übungen). Der
+ * Status wird gesetzt (`publish` = freigegeben mit Prüfer, sonst Entwurf ohne Prüfer) – unabhängig davon, ob der
+ * Inhalt im Repository schon freigegeben ist.
+ */
 function dbRows(publish: boolean, archived: readonly string[] = []) {
   const files = CONTENT_BUNDLE.files.map((f) => f.data as Data);
   const exercises = files.filter((d) => 'movement_pattern' in d);
   const templates = files.filter((d) => 'sessions' in d);
   const status = (d: Data) =>
-    archived.includes(d.id) ? 'archived' : publish ? 'published' : d.status;
-  const meta = (d: Data) =>
-    publish ? { ...(d.meta as object), reviewed_by: 'Test', reviewed_at: '2026-10-01' } : d.meta;
+    archived.includes(d.id) ? 'archived' : publish ? 'published' : 'draft';
+  const meta = (d: Data) => ({
+    ...(d.meta as object),
+    ...(publish
+      ? { reviewed_by: 'Test', reviewed_at: '2026-10-01' }
+      : { reviewed_by: null, reviewed_at: null }),
+  });
   return {
     exercises: exercises.map(({ alternatives: _a, ...e }) => ({
       ...e,
