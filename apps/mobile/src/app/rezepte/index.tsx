@@ -32,7 +32,7 @@ import { t } from '@/i18n';
 import { formatKcal } from '@/lib/nutrition-format';
 import { useThemeColors } from '@/lib/theme';
 import { useApp } from '@/state/app-state';
-import { resolveEntryRoute } from '@/state/flow';
+import { HOME_ROUTE, resolveEntryRoute } from '@/state/flow';
 import { useNutritionWeek } from '@/state/use-nutrition';
 
 const CATEGORY_NAMES = new Map(RECIPE_CATEGORIES.map((c) => [c.id, c.name_de]));
@@ -113,7 +113,7 @@ export default function RecipeSearchScreen() {
     versions: app.versions,
     nutritionSetupAvailable: app.backend.supportsNutrition,
   });
-  if (route !== '/today' || !app.rows) {
+  if (route !== HOME_ROUTE || !app.rows) {
     return <Redirect href={route as Href} />;
   }
   const texts = t.nutrition.search;

@@ -1,0 +1,216 @@
+import { brandColors, fontSize, fontWeight, maxContentWidth, spacing } from '@fitnessapp/ui';
+import { createContext, useContext } from 'react';
+import { Platform, Pressable, StyleSheet, Text, useColorScheme, View } from 'react-native';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import Svg, { Circle, Path, Rect } from 'react-native-svg';
+
+import { t } from '@/i18n';
+import { useThemeColors } from '@/lib/theme';
+
+/**
+ * Untere Menüleiste (docs/PLAN-DASHBOARD.md 3): Übersicht · Training · Ernährung · Fortschritt · Mehr.
+ * Eigene Leiste für Expo Router Tabs – Farben aus den Design-Tokens (hell/dunkel), Tippfläche ≥ 56 px, Symbol und
+ * Beschriftung, für Bildschirmleser Rolle „Tab“ mit „ausgewählt“.
+ */
+
+/** true = Bildschirm liegt in einem Reiter; die Leiste übernimmt den unteren Rand (Screen ohne Abstand unten). */
+export const InTabsContext = createContext(false);
+
+export function useInTabs(): boolean {
+  return useContext(InTabsContext);
+}
+
+export type TabName = 'uebersicht' | 'today' | 'ernaehrung' | 'fortschritt' | 'mehr';
+
+export const TAB_ORDER: readonly TabName[] = [
+  'uebersicht',
+  'today',
+  'ernaehrung',
+  'fortschritt',
+  'mehr',
+];
+
+export function tabLabel(name: TabName): string {
+  switch (name) {
+    case 'uebersicht':
+      return t.tabs.overview;
+    case 'today':
+      return t.tabs.training;
+    case 'ernaehrung':
+      return t.tabs.nutrition;
+    case 'fortschritt':
+      return t.tabs.progress;
+    case 'mehr':
+      return t.tabs.more;
+  }
+}
+
+/** Mindestangaben aus BottomTabBarProps (expo-router/tabs), damit die Leiste ohne Navigator testbar bleibt. */
+export interface TabBarProps {
+  state: { index: number; routes: readonly { key: string; name: string }[] };
+  navigation: {
+    emit: (event: { type: 'tabPress'; target: string; canPreventDefault: true }) => {
+      defaultPrevented: boolean;
+    };
+    navigate: (name: string) => void;
+  };
+}
+
+export function TabBar({ state, navigation }: TabBarProps) {
+  const theme = useThemeColors();
+  const dark = useColorScheme() === 'dark';
+  const insets = useSafeAreaInsets();
+  const routes = state.routes.filter((route): route is { key: string; name: TabName } =>
+    (TAB_ORDER as readonly string[]).includes(route.name),
+  );
+  const focusedName = state.routes[state.index]?.name;
+  return (
+    <View
+      role="tablist"
+      aria-label={t.tabs.label}
+      accessibilityLabel={t.tabs.label}
+      testID="tab-bar"
+      style={[
+        styles.bar,
+        {
+          backgroundColor: theme.surface,
+          borderTopColor: theme.border,
+          paddingBottom: Math.max(insets.bottom, Platform.OS === 'web' ? 0 : spacing.xs),
+        },
+      ]}
+    >
+      <View style={styles.inner}>
+        {routes.map((route) => {
+          const focused = route.name === focusedName;
+          const color = focused ? theme.link : theme.textMuted;
+          const onPress = () => {
+            const event = navigation.emit({
+              type: 'tabPress',
+              target: route.key,
+              canPreventDefault: true,
+            });
+            if (!focused && !event.defaultPrevented) navigation.navigate(route.name);
+          };
+          return (
+            <Pressable
+              key={route.key}
+              accessibilityRole="tab"
+              accessibilityLabel={tabLabel(route.name)}
+              accessibilityState={{ selected: focused }}
+              aria-selected={focused}
+              onPress={onPress}
+              testID={`tab-${route.name}`}
+              style={({ pressed }) => [styles.item, { opacity: pressed ? 0.7 : 1 }]}
+            >
+              <View
+                style={[
+                  styles.pill,
+                  focused && {
+                    backgroundColor: dark ? brandColors.graphitHell : brandColors.eisblau,
+                  },
+                ]}
+              >
+                <TabIcon name={route.name} color={color} />
+              </View>
+              <Text
+                numberOfLines={1}
+                style={[
+                  styles.label,
+                  { color: focused ? theme.text : theme.textMuted },
+                  focused && styles.labelFocused,
+                ]}
+              >
+                {tabLabel(route.name)}
+              </Text>
+            </Pressable>
+          );
+        })}
+      </View>
+    </View>
+  );
+}
+
+/** Svg ist für Bildschirmleser unsichtbar – die Beschriftung trägt der Knopf. */
+const HIDDEN = {
+  'aria-hidden': true,
+  accessibilityElementsHidden: true,
+  importantForAccessibility: 'no-hide-descendants',
+} as const;
+
+/** Einfache Linien-Symbole (24 × 24), eigene Vektoren statt Symbol-Schrift. */
+function TabIcon({ name, color }: { name: TabName; color: string }) {
+  const stroke = {
+    stroke: color,
+    strokeWidth: 2,
+    strokeLinecap: 'round',
+    strokeLinejoin: 'round',
+    fill: 'none',
+  } as const;
+  return (
+    <Svg {...HIDDEN} width={24} height={24} viewBox="0 0 24 24">
+      {name === 'uebersicht' ? (
+        <>
+          <Rect x={3.5} y={3.5} width={7} height={7} rx={1.5} {...stroke} />
+          <Rect x={13.5} y={3.5} width={7} height={7} rx={1.5} {...stroke} />
+          <Rect x={3.5} y={13.5} width={7} height={7} rx={1.5} {...stroke} />
+          <Rect x={13.5} y={13.5} width={7} height={7} rx={1.5} {...stroke} />
+        </>
+      ) : name === 'today' ? (
+        <>
+          <Path d="M6.5 7v10M17.5 7v10M3.5 9.5v5M20.5 9.5v5M6.5 12h11" {...stroke} />
+        </>
+      ) : name === 'ernaehrung' ? (
+        <>
+          <Path d="M7 3v8M4.5 3v5a2.5 2.5 0 0 0 5 0V3M7 11v10" {...stroke} />
+          <Path d="M17 21V3c-2.2 1.2-3.5 3.8-3.5 7v3H17" {...stroke} />
+        </>
+      ) : name === 'fortschritt' ? (
+        <>
+          <Path d="M4 20h16" {...stroke} />
+          <Path d="M7 16v-4M12 16V8M17 16V5" {...stroke} />
+        </>
+      ) : (
+        <>
+          <Circle cx={5.5} cy={12} r={1.6} fill={color} />
+          <Circle cx={12} cy={12} r={1.6} fill={color} />
+          <Circle cx={18.5} cy={12} r={1.6} fill={color} />
+        </>
+      )}
+    </Svg>
+  );
+}
+
+const styles = StyleSheet.create({
+  bar: {
+    borderTopWidth: StyleSheet.hairlineWidth,
+    alignItems: 'center',
+  },
+  inner: {
+    flexDirection: 'row',
+    width: '100%',
+    maxWidth: maxContentWidth,
+  },
+  item: {
+    flex: 1,
+    minHeight: 60,
+    alignItems: 'center',
+    justifyContent: 'center',
+    paddingTop: spacing.xs + 2,
+    paddingBottom: spacing.xs + 2,
+    gap: 2,
+  },
+  pill: {
+    width: 52,
+    height: 30,
+    borderRadius: 15,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  label: {
+    fontSize: fontSize.sm - 2,
+    fontWeight: fontWeight.semibold,
+  },
+  labelFocused: {
+    fontWeight: fontWeight.bold,
+  },
+});

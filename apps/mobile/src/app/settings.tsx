@@ -1,16 +1,12 @@
 import {
-  activeConsentVersion,
-  dataExportFileName,
-  dataExportJson,
   MEASUREMENT_REMINDER_INTERVAL_DAYS,
   measurementReminderIntervalSchema,
   nextMeasurementDue,
-  type ConsentType,
 } from '@fitnessapp/core';
 import { Redirect, useRouter, type Href } from 'expo-router';
-import { useEffect, useMemo, useState } from 'react';
-import { View } from 'react-native';
+import { useEffect, useState } from 'react';
 
+import { ConsentSettings } from '@/components/consent-settings';
 import { EatingHelpNotice } from '@/components/nutrition';
 import { ConfirmDialog, Screen } from '@/components/screen';
 import {
@@ -23,63 +19,28 @@ import {
   Notice,
   TextField,
 } from '@/components/ui';
-import { BackendError } from '@/data/backend';
-import { consentRecordsFromRows } from '@/data/mapping';
 import { activePlan } from '@/data/training-plan';
-import type { ConsentRow } from '@/data/types';
 import { t } from '@/i18n';
 import { createPlanErrorText, errorText } from '@/lib/error-text';
-import { formatDateDe, formatTimestampDe, todayIso } from '@/lib/format';
+import { formatDateDe } from '@/lib/format';
 import { useKeepAwakeSetting } from '@/lib/keep-awake';
 import { planTitleText } from '@/lib/plan-title';
-import { SAVE_TARGET, saveTextFile } from '@/lib/save-file';
-import { singleFlight } from '@/lib/single-flight';
 import { useApp } from '@/state/app-state';
 import { healthConsentStatus, lastMeasurementDate } from '@/state/flow';
 
-type DialogKind =
-  'revoke' | 'revoke_photo' | 'delete' | 'clear' | 'recreate' | 'signout' | 'export' | null;
-
-const LISTED_CONSENTS = [
-  'terms',
-  'privacy',
-  'health_data',
-] as const satisfies readonly ConsentType[];
-
-function consentLine(rows: readonly ConsentRow[], type: ConsentType): string {
-  const ofType = rows.filter((row) => row.consent_type === type);
-  const active = ofType
-    .filter((row) => row.revoked_at === null)
-    .sort((a, b) => b.version - a.version)[0];
-  if (active) {
-    return t.settings.consentGranted(active.version, formatTimestampDe(active.granted_at));
-  }
-  const revoked = ofType
-    .filter((row) => row.revoked_at !== null)
-    .sort((a, b) => (b.revoked_at ?? '').localeCompare(a.revoked_at ?? ''))[0];
-  return revoked?.revoked_at
-    ? t.settings.consentRevoked(formatTimestampDe(revoked.revoked_at))
-    : t.settings.consentNone;
-}
+/**
+ * Abmelden, Datenexport und Konto löschen liegen seit dem 18.10.2026 unter „Mein Konto“ (`/konto`,
+ * docs/PLAN-DASHBOARD.md 2.3); die Einwilligungen teilen sich beide Stellen (components/consent-settings.tsx).
+ */
+type DialogKind = 'clear' | 'recreate' | null;
 
 export default function SettingsScreen() {
   const router = useRouter();
   const app = useApp();
   const [dialog, setDialog] = useState<DialogKind>(null);
   const [busy, setBusy] = useState(false);
-  const { exportData } = app;
-  // Export holen und speichern – ein zweiter Tipp währenddessen startet keinen zweiten Export (Wächter D K2).
-  const runExport = useMemo(
-    () =>
-      singleFlight(async () => {
-        const file = await exportData();
-        return saveTextFile(dataExportFileName(todayIso()), dataExportJson(file));
-      }),
-    [exportData],
-  );
   const [dialogError, setDialogError] = useState<string>();
   const [message, setMessage] = useState<string>();
-  const [exportMessage, setExportMessage] = useState<{ tone: 'success' | 'info'; text: string }>();
   const keepAwake = useKeepAwakeSetting();
   const [reminderEnabled, setReminderEnabled] = useState(app.rows?.reminder?.enabled ?? true);
   const [interval, setIntervalText] = useState(
@@ -88,11 +49,6 @@ export default function SettingsScreen() {
   const [reminderError, setReminderError] = useState<string>();
   const [reminderSaved, setReminderSaved] = useState(false);
   const [savingReminder, setSavingReminder] = useState(false);
-  /**
-   * Widerruf (docs/PLAN-PHASE-5.md 7.4): aktive Wahl „stattdessen unter ‚mag ich nicht‘ ausschließen?“ – nie
-   * vorausgewählt (R2-K4: ohne Zustimmung wird nichts eingelesen und nichts behalten).
-   */
-  const [convertIntolerances, setConvertIntolerances] = useState(false);
   const [numbersSaving, setNumbersSaving] = useState(false);
   const [numbersMessage, setNumbersMessage] = useState<string>();
   const { ensureNutritionLibrary } = app;
@@ -101,9 +57,6 @@ export default function SettingsScreen() {
     // Testmodus: ob Beispiel-Rezepte angeboten werden, hängt vom Bündel ab.
     if (supportsNutrition) void ensureNutritionLibrary();
   }, [ensureNutritionLibrary, supportsNutrition]);
-  /** Abmelden mit Wartendem (R6): Zahl der noch nicht übertragenen Trainings bzw. Entwürfe. */
-  const [pendingCount, setPendingCount] = useState(0);
-  const [stillPending, setStillPending] = useState(false);
 
   if (app.status.kind === 'loading') {
     return (
@@ -117,9 +70,7 @@ export default function SettingsScreen() {
   }
   const rows = app.rows;
   const healthStatus = healthConsentStatus(rows, app.versions);
-  const records = consentRecordsFromRows(rows.consents);
   const currentPlan = activePlan(rows)?.plan ?? null;
-  const hasIntolerances = rows.foodPreferences.some((p) => p.kind === 'intolerance');
   const setup = app.answers.nutritionSetup;
   const nutritionLib = app.nutritionLibrary.kind === 'ready' ? app.nutritionLibrary.result : null;
 
@@ -144,56 +95,10 @@ export default function SettingsScreen() {
     setBusy(true);
     setDialogError(undefined);
     try {
-      if (dialog === 'revoke_photo') {
-        // Etappe E3: nur die Foto-Einwilligung; Tagebuch-Einträge bleiben (gehören zu health_data).
-        await app.revokeConsent('ai_food_photo');
-        setMessage(t.foodPhoto.revokeDone);
-        setDialog(null);
-      } else if (dialog === 'revoke') {
-        // „Tagebuch behalten (empfohlen)“ – Vorgaben aus Gesundheits-Plänen werden neutralisiert (S1, R3).
-        const convert = hasIntolerances && convertIntolerances;
-        await app.revokeHealthData(false, convert);
-        setMessage(
-          convert
-            ? `${t.settings.revokeDone} ${t.nutrition.revoke.converted}`
-            : t.settings.revokeDone,
-        );
-        setDialog(null);
-      } else if (dialog === 'signout') {
-        // „Jetzt senden“ – bleibt danach etwas übrig, wird NICHT abgemeldet, sondern erneut gefragt (R6).
-        const left = await app.sendPending();
-        if (left > 0) {
-          setPendingCount(left);
-          setStillPending(true);
-        } else {
-          setDialog(null);
-          await app.signOut(true);
-          router.replace('/welcome');
-        }
-      } else if (dialog === 'delete') {
-        await app.deleteAccount();
-        setDialog(null);
-        router.replace('/welcome');
-      } else if (dialog === 'clear') {
+      if (dialog === 'clear') {
         await app.clearDeviceData();
         setDialog(null);
         router.replace('/welcome');
-      } else if (dialog === 'export') {
-        // Datenexport (3.7): nur online; die Datei geht direkt in Download-Ordner bzw. den gewählten Ordner –
-        // kein Teilen-Dialog, keine Zwischen-Datei, nichts davon in Logs.
-        const result = await runExport();
-        setExportMessage(
-          result === 'saved'
-            ? {
-                tone: 'success',
-                text:
-                  SAVE_TARGET === 'download'
-                    ? t.settings.exportSavedWeb
-                    : t.settings.exportSavedNative,
-              }
-            : { tone: 'info', text: t.settings.exportCancelled },
-        );
-        setDialog(null);
       } else if (dialog === 'recreate') {
         const outcome = await app.createPlan();
         if (outcome.ok) {
@@ -204,11 +109,7 @@ export default function SettingsScreen() {
         }
       }
     } catch (caught) {
-      setDialogError(
-        dialog === 'export' && !(caught instanceof BackendError)
-          ? t.settings.exportFailed
-          : errorText(caught),
-      );
+      setDialogError(errorText(caught));
     } finally {
       setBusy(false);
     }
@@ -239,93 +140,19 @@ export default function SettingsScreen() {
     }
   }
 
-  async function signOut(force = false) {
-    setBusy(true);
-    try {
-      const result = await app.signOut(force);
-      if (result.kind === 'pending') {
-        setPendingCount(result.count);
-        setStillPending(false);
-        setDialogError(undefined);
-        setDialog('signout');
-        return;
-      }
-      setDialog(null);
-      router.replace('/welcome');
-    } catch (caught) {
-      setMessage(errorText(caught));
-    } finally {
-      setBusy(false);
-    }
-  }
-
-  async function revokeDeletingLogs() {
-    setBusy(true);
-    setDialogError(undefined);
-    try {
-      const convert = hasIntolerances && convertIntolerances;
-      await app.revokeHealthData(true, convert);
-      setMessage(
-        convert
-          ? `${t.settings.revokeDone} ${t.nutrition.revoke.converted}`
-          : t.settings.revokeDone,
-      );
-      setDialog(null);
-    } catch (caught) {
-      setDialogError(errorText(caught));
-    } finally {
-      setBusy(false);
-    }
-  }
-
   const reminder = rows.reminder;
   const dialogTexts =
-    dialog === 'revoke_photo'
+    dialog === 'recreate'
       ? {
-          title: t.foodPhoto.revokeTitle,
-          text: t.foodPhoto.revokeText,
-          confirm: t.foodPhoto.revokeConfirm,
+          title: t.plan.recreateTitle,
+          text: t.plan.recreateText,
+          confirm: t.plan.recreateConfirm,
         }
-      : dialog === 'revoke'
-        ? {
-            title: t.settings.revokeTitle,
-            text: t.settings.revokeText,
-            confirm: t.settings.revokeKeepLogs,
-          }
-        : dialog === 'signout'
-          ? {
-              title: t.settings.signOutPendingTitle,
-              text: stillPending
-                ? `${t.settings.signOutPending(pendingCount)} ${t.settings.signOutStillPending}`
-                : t.settings.signOutPending(pendingCount),
-              confirm: t.settings.signOutSendNow,
-            }
-          : dialog === 'delete'
-            ? {
-                title: t.settings.deleteTitle,
-                text: t.settings.deleteText,
-                confirm: t.settings.deleteConfirm,
-              }
-            : dialog === 'recreate'
-              ? {
-                  title: t.plan.recreateTitle,
-                  text: t.plan.recreateText,
-                  confirm: t.plan.recreateConfirm,
-                }
-              : dialog === 'export'
-                ? {
-                    title: t.settings.exportDialogTitle,
-                    text: t.settings.exportDialogText,
-                    confirm:
-                      SAVE_TARGET === 'download'
-                        ? t.settings.exportConfirmWeb
-                        : t.settings.exportConfirmNative,
-                  }
-                : {
-                    title: t.settings.clearTitle,
-                    text: t.settings.clearText,
-                    confirm: t.settings.clearConfirm,
-                  };
+      : {
+          title: t.settings.clearTitle,
+          text: t.settings.clearText,
+          confirm: t.settings.clearConfirm,
+        };
 
   return (
     <Screen
@@ -403,7 +230,7 @@ export default function SettingsScreen() {
             <Button
               label={t.nutrition.settings.open}
               variant="secondary"
-              onPress={() => router.push('/ernaehrung' as Href)}
+              onPress={() => router.dismissTo('/ernaehrung' as Href)}
               testID="settings-nutrition-open"
             />
             <Button
@@ -475,69 +302,19 @@ export default function SettingsScreen() {
         />
       </Card>
 
-      <Heading level={2}>{t.settings.consents}</Heading>
-      {LISTED_CONSENTS.map((type) => (
-        <Card key={type}>
-          <Body>{t.consentTypes[type]}</Body>
-          <Body muted>{consentLine(rows.consents, type)}</Body>
-          {type === 'health_data' ? (
-            healthStatus === 'valid' ? (
-              <>
-                <Body muted>{t.settings.revokeLogsNote}</Body>
-                <Button
-                  label={t.settings.revoke}
-                  variant="danger"
-                  accessibilityLabel={`${t.consentTypes.health_data}: ${t.settings.revoke}`}
-                  onPress={() => {
-                    setDialogError(undefined);
-                    // Jedes Mal neu und nicht vorausgewählt (7.4, aktive Wahl).
-                    setConvertIntolerances(false);
-                    setDialog('revoke');
-                  }}
-                />
-              </>
-            ) : (
-              <>
-                {healthStatus === 'outdated' ? (
-                  <Notice tone="warning">{t.settings.consentOutdated}</Notice>
-                ) : null}
-                <Button
-                  label={healthStatus === 'outdated' ? t.settings.reconsent : t.settings.grant}
-                  variant="secondary"
-                  accessibilityLabel={`${t.consentTypes.health_data}: ${
-                    healthStatus === 'outdated' ? t.settings.reconsent : t.settings.grant
-                  }`}
-                  onPress={() => router.push('/health-consent')}
-                />
-              </>
-            )
-          ) : activeConsentVersion(records, type) === null ? (
-            <Notice tone="warning">{t.settings.consentOutdated}</Notice>
-          ) : null}
-        </Card>
-      ))}
-      {/* Etappe E3: eigene, getrennte Einwilligung „Gerichte per Foto auswerten“ (Widerruf jederzeit). */}
+      {/* Mein Konto (docs/PLAN-DASHBOARD.md 2.3): Abmelden, Datenexport, Konto löschen. */}
+      <Heading level={2}>{t.settings.account}</Heading>
       <Card>
-        <Body>{t.consentTypes.ai_food_photo}</Body>
-        <Body muted testID="settings-photo-consent">
-          {consentLine(rows.consents, 'ai_food_photo')}
-        </Body>
-        {activeConsentVersion(records, 'ai_food_photo') !== null ? (
-          <Button
-            label={t.settings.revoke}
-            variant="danger"
-            accessibilityLabel={`${t.consentTypes.ai_food_photo}: ${t.settings.revoke}`}
-            onPress={() => {
-              setDialogError(undefined);
-              setDialog('revoke_photo');
-            }}
-            testID="settings-photo-revoke"
-          />
-        ) : (
-          <Body muted>{t.foodPhoto.settingsNote}</Body>
-        )}
+        <Body muted>{t.konto.settingsLinkText}</Body>
+        <Button
+          label={t.konto.settingsLink}
+          variant="secondary"
+          onPress={() => router.push('/konto' as Href)}
+          testID="settings-account"
+        />
       </Card>
-      <Body muted>{t.settings.baseConsentNote}</Body>
+
+      <ConsentSettings rows={rows} />
 
       <Heading level={2}>{t.settings.screen}</Heading>
       <Card>
@@ -588,48 +365,6 @@ export default function SettingsScreen() {
         />
       </Card>
 
-      <Heading level={2}>{t.settings.exportTitle}</Heading>
-      <Card>
-        <Body muted>{t.settings.exportText}</Body>
-        {app.backend.mode === 'local' ? <Body muted>{t.settings.exportTestMode}</Body> : null}
-        <Body muted>{t.settings.exportDeviceOnly}</Body>
-        {app.offline ? <Body muted>{t.errors.onlineOnly}</Body> : null}
-        {exportMessage ? (
-          <Notice tone={exportMessage.tone} testID="settings-export-message">
-            {exportMessage.text}
-          </Notice>
-        ) : null}
-        <Button
-          label={t.settings.exportButton}
-          variant="secondary"
-          onPress={() => {
-            setDialogError(undefined);
-            setExportMessage(undefined);
-            setDialog('export');
-          }}
-          testID="settings-export"
-        />
-      </Card>
-
-      <Heading level={2}>{t.settings.account}</Heading>
-      <View style={{ gap: 8 }}>
-        {app.session.email ? <Body muted>{app.session.email}</Body> : null}
-        <Button
-          label={t.settings.signOut}
-          variant="secondary"
-          onPress={() => void signOut()}
-          disabled={busy}
-        />
-        <Button
-          label={t.settings.deleteAccount}
-          variant="danger"
-          onPress={() => {
-            setDialogError(undefined);
-            setDialog('delete');
-          }}
-        />
-      </View>
-
       {app.backend.mode === 'local' ? (
         <>
           <Heading level={2}>{t.settings.testMode}</Heading>
@@ -663,71 +398,12 @@ export default function SettingsScreen() {
         title={dialogTexts.title}
         message={dialogTexts.text}
         confirmLabel={dialogTexts.confirm}
-        confirmVariant={
-          dialog === 'recreate' || dialog === 'signout' || dialog === 'export'
-            ? 'primary'
-            : 'danger'
-        }
+        confirmVariant={dialog === 'recreate' ? 'primary' : 'danger'}
         onConfirm={() => void confirm()}
         onCancel={() => setDialog(null)}
         loading={busy}
         error={dialogError}
         testID={dialog ? `dialog-${dialog}` : undefined}
-        {...(dialog === 'revoke'
-          ? {
-              // Wahl aus S1 und Hinweise (H6, R3, K4); Ernährung: Unverträglichkeiten und Pläne (7.4, K10).
-              notes: [
-                t.nutrition.revoke.intolerances,
-                t.settings.revokeLogs,
-                t.settings.revokeOtherDevices,
-                t.settings.revokeEarlier,
-              ],
-              children: hasIntolerances ? (
-                <View style={{ gap: 4 }}>
-                  <Checkbox
-                    label={t.nutrition.revoke.convert}
-                    checked={convertIntolerances}
-                    onChange={setConvertIntolerances}
-                    testID="revoke-convert"
-                  />
-                  <Body muted>{t.nutrition.revoke.convertHint}</Body>
-                </View>
-              ) : null,
-              alternative: {
-                label: t.settings.revokeDeleteLogs,
-                variant: 'danger' as const,
-                onPress: () => void revokeDeletingLogs(),
-              },
-            }
-          : dialog === 'export'
-            ? {
-                // Hinweis vor dem Herunterladen (W9) plus wohin die Datei geht und was noch fehlt.
-                notes: [
-                  SAVE_TARGET === 'download'
-                    ? t.settings.exportWhereWeb
-                    : t.settings.exportWhereNative,
-                  ...(app.pendingLogSessionIds.length > 0
-                    ? [t.settings.exportPending(app.pendingLogSessionIds.length)]
-                    : []),
-                  // N7 Teil 2: wartende Tagebuch-Einträge/eigene Gerichte stehen erst nach dem Senden in der Datei.
-                  ...(app.nutritionSync.queued + app.nutritionSync.rejected > 0
-                    ? [
-                        t.settings.exportPendingNutrition(
-                          app.nutritionSync.queued + app.nutritionSync.rejected,
-                        ),
-                      ]
-                    : []),
-                ],
-              }
-            : dialog === 'signout'
-              ? {
-                  alternative: {
-                    label: t.settings.signOutAnyway,
-                    variant: 'danger' as const,
-                    onPress: () => void signOut(true),
-                  },
-                }
-              : {})}
       />
     </Screen>
   );

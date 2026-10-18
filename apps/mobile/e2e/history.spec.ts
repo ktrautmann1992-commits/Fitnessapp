@@ -103,7 +103,7 @@ test('Woche: Status mit Zeichen und Wort, Summen, Blättern, nachgeholt am tats�
     name_de: 'Alte Einheit',
   });
   await writeDb(page, db);
-  await page.goto('/');
+  await page.goto('/today');
   await heading(page, 'Heute');
 
   await page.getByTestId('today-week').click();
@@ -213,8 +213,10 @@ test('Export: Hinweis vor dem Herunterladen, Datei mit Tagebuch, Konto und Einwi
   await heading(page, 'Heute');
   await trainToday(page, 'Griff eng');
 
-  await page.getByRole('button', { name: 'Einstellungen' }).click();
-  await heading(page, 'Einstellungen');
+  // Datenexport liegt seit 18.10.2026 unter „Mein Konto“ (docs/PLAN-DASHBOARD.md 2.3).
+  await page.getByRole('tab', { name: 'Mehr' }).click();
+  await page.getByTestId('more-account').click();
+  await heading(page, 'Mein Konto');
   await page.getByTestId('settings-export').click();
   const dialog = page.getByTestId('dialog-export');
   await expect(dialog).toContainText(

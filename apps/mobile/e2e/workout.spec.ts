@@ -199,7 +199,7 @@ test('Progression nach zwei Einheiten sichtbar: kalibriert, dann eine Wiederholu
 
   // Eine Woche später (gleiche Einheit A): Vorschlag aus dem ersten Eintrag.
   await page.clock.setFixedTime(new Date('2026-10-14T09:00:00+02:00'));
-  await page.goto('/');
+  await page.goto('/today');
   await heading(page, 'Heute');
   await expect(page.getByTestId('plan-exercise').first()).toContainText(
     '3 × 8 Wiederholungen mit 18,5 kg',
@@ -213,7 +213,7 @@ test('Progression nach zwei Einheiten sichtbar: kalibriert, dann eine Wiederholu
 
   // Noch eine Woche später: alle Wiederholungen geschafft → eine Wiederholung mehr.
   await page.clock.setFixedTime(new Date('2026-10-21T09:00:00+02:00'));
-  await page.goto('/');
+  await page.goto('/today');
   await heading(page, 'Heute');
   await expect(page.getByTestId('plan-exercise').first()).toContainText(
     '3 × 9 Wiederholungen mit 18,5 kg',
@@ -246,7 +246,7 @@ test('Entwurf nach Neu laden, beforeunload-Warnung und Abmelden mit Nachfrage', 
   // Der Trainingsmodus ist nach dem Neuladen gleich wieder da (Entwurf aus dem geschützten Speicher) …
   await expect(page.getByTestId('workout-done-0-0')).toHaveAttribute('aria-checked', 'true');
   // … und beim Öffnen der App fragt „Heute“: fortsetzen, speichern oder verwerfen?
-  await page.goto('/');
+  await page.goto('/today');
   await heading(page, 'Heute');
   await expect(page.getByTestId('workout-draft')).toContainText(
     'Du hast ein Training vom 07.10.2026 nicht beendet',
@@ -259,8 +259,13 @@ test('Entwurf nach Neu laden, beforeunload-Warnung und Abmelden mit Nachfrage', 
   await heading(page, 'Heute');
 
   // Abmelden mit offenem Entwurf → Nachfrage; „Jetzt senden“ hilft im Testmodus nicht → erneut fragen.
-  await page.getByRole('button', { name: 'Einstellungen' }).click();
-  await page.getByRole('button', { name: 'Abmelden' }).click();
+  await page.getByRole('tab', { name: 'Mehr' }).click();
+  await page.getByTestId('more-account').click();
+  await page.getByTestId('konto-signout').click();
+  await page
+    .getByTestId('dialog-signout_confirm')
+    .getByRole('button', { name: 'Abmelden' })
+    .click();
   await expect(page.getByTestId('dialog-signout')).toContainText(
     '1 Eintrag (Training oder Ernährung) ist noch nicht übertragen.',
   );
@@ -291,7 +296,7 @@ test('Offline eintragen und später neu laden: Training bleibt gespeichert', asy
   await page.getByTestId('workout-save').click();
   await expect(page.getByTestId('workout-message')).toContainText('Training gespeichert');
   await context.setOffline(false);
-  await page.goto('/');
+  await page.goto('/today');
   await heading(page, 'Heute');
   await expect(page.getByTestId('plan-completed')).toBeVisible();
   expect((await storedRows(page)).sessionLogs).toHaveLength(1);

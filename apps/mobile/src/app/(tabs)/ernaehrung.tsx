@@ -10,8 +10,8 @@ import {
   type PlannedMealDay,
   thawHints,
 } from '@fitnessapp/core';
-import { Redirect, useLocalSearchParams, useRouter, type Href } from 'expo-router';
-import { useState, type ReactNode } from 'react';
+import { Redirect, useLocalSearchParams, useNavigation, useRouter, type Href } from 'expo-router';
+import { useEffect, useState, type ReactNode } from 'react';
 import { View } from 'react-native';
 
 import {
@@ -44,7 +44,7 @@ import {
 } from '@/lib/nutrition-format';
 import { dayLabel } from '@/lib/plan-format';
 import { useApp } from '@/state/app-state';
-import { healthConsentStatus, resolveEntryRoute } from '@/state/flow';
+import { healthConsentStatus, HOME_ROUTE, resolveEntryRoute } from '@/state/flow';
 import { useFoodLogActions, useFoodLogDay } from '@/state/use-food-log';
 import { useMealPlanActions, useNutritionWeek } from '@/state/use-nutrition';
 
@@ -70,6 +70,26 @@ export default function NutritionDayScreen() {
     isoDateSchema.safeParse(params.tag).success ? (params.tag as string) : null,
   );
   const selected = picked ?? today;
+  const navigation = useNavigation();
+  // Reiter bleibt geladen: Ein neuer Tag über die Adresse (`?tag=`, z. B. aus Kalender oder „Dein Tag“) gilt sofort.
+  const tagParam = params.tag;
+  useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect -- Adresse → angezeigter Tag (kein Folge-Render-Zyklus)
+    setSelected(isoDateSchema.safeParse(tagParam).success ? (tagParam as string) : null);
+  }, [tagParam]);
+  // Reiter „Ernährung“ antippen springt auf heute (Wächter N7).
+  useEffect(
+    () =>
+      navigation.addListener('tabPress' as never, () => {
+        setSelected(null);
+        router.setParams({ tag: undefined });
+      }),
+    [navigation, router],
+  );
+  const showToday = () => {
+    setSelected(null);
+    router.setParams({ tag: undefined });
+  };
   const view = useNutritionWeek(selected);
   const actions = useMealPlanActions(view.week);
   // Knopf „Ratgeber“ nur, wenn es anzeigbare Ratgeber gibt (Wächter N5c K6).
@@ -107,18 +127,32 @@ export default function NutritionDayScreen() {
     versions: app.versions,
     nutritionSetupAvailable: app.backend.supportsNutrition,
   });
-  if (route !== '/today' || !app.rows) {
+  if (route !== HOME_ROUTE || !app.rows) {
     return <Redirect href={route as Href} />;
   }
   const rows = app.rows;
   const consent = healthConsentStatus(rows, app.versions);
-  const footer = (
-    <Button
-      label={t.nutrition.back}
-      variant="secondary"
-      onPress={() => (router.canGoBack() ? router.back() : router.replace('/today'))}
-    />
-  );
+  // Reiter „Ernährung“ der Menüleiste (docs/PLAN-DASHBOARD.md 3) – kein „Zurück“, die Leiste führt weiter.
+  // Anderer Tag gewählt (z. B. aus Kalender, Woche oder „Dein Tag“): „Zu heute“ und – falls möglich – „Zurück“.
+  const footer =
+    picked !== null && picked !== today ? (
+      <View style={{ gap: 8 }}>
+        <Button
+          label={t.nutrition.toToday}
+          variant="secondary"
+          onPress={showToday}
+          testID="nutrition-to-today"
+        />
+        {router.canGoBack() ? (
+          <Button
+            label={t.nutrition.back}
+            variant="secondary"
+            onPress={() => router.back()}
+            testID="nutrition-back"
+          />
+        ) : null}
+      </View>
+    ) : undefined;
   const shell = (children: ReactNode) => (
     <Screen title={t.nutrition.title} testID="nutrition-day" footer={footer}>
       {children}

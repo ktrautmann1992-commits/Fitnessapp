@@ -15,7 +15,7 @@ import { logMarkers, logSummaryText } from '@/lib/history-format';
 import { dayLabel } from '@/lib/plan-format';
 import { useThemeColors } from '@/lib/theme';
 import { useApp } from '@/state/app-state';
-import { resolveEntryRoute } from '@/state/flow';
+import { HOME_ROUTE, resolveEntryRoute } from '@/state/flow';
 
 /**
  * Verlauf (docs/PLAN-PHASE-4.md 6.1 Punkt 5, Etappe D): Einheiten nach Wochen, neueste zuerst, je 20 weitere
@@ -43,7 +43,7 @@ export default function HistoryScreen() {
     versions: app.versions,
     nutritionSetupAvailable: app.backend.supportsNutrition,
   });
-  if (route !== '/today' || !app.rows) {
+  if (route !== HOME_ROUTE || !app.rows) {
     return <Redirect href={route as Href} />;
   }
   const since = app.backend.logHistoryStart();

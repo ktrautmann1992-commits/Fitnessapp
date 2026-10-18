@@ -53,7 +53,7 @@ test('Onboarding → Ziel sichtbar → Rezept öffnen → Kalorienzahlen ausblen
   await expect(page.getByTestId('nutrition-day')).not.toContainText(/Champignon|Pilz-/);
 
   // Zurück zu „Heute“: nächste Mahlzeit um 9 Uhr ist das Mittagessen.
-  await page.goto('/');
+  await page.goto('/today');
   await expect(page.getByTestId('today-nutrition-next')).toContainText('Mittagessen');
 
   // Rezept öffnen (aus dem Plan): Portion, „Enthält“, Allergen-Warnung, Nährwerte.
@@ -86,7 +86,7 @@ test('Onboarding → Ziel sichtbar → Rezept öffnen → Kalorienzahlen ausblen
   await page.getByTestId('meal-lunch').click();
   await expect(page.getByTestId('recipe')).toBeVisible();
   await expect(page.getByTestId('recipe')).not.toContainText('kcal');
-  await page.goto('/');
+  await page.goto('/today');
   await expect(page.getByTestId('today-nutrition-card')).toBeVisible();
   await expect(page.getByTestId('today-nutrition-card')).not.toContainText('kcal');
   await expect((await db(page)).rows.nutritionSetup).toMatchObject({ show_energy_numbers: false });
@@ -185,7 +185,7 @@ test('kein Gesundheits-Check → Hinweis + Knopf, ohne Defizit (B4); Schwangersc
   await page.goto('/rezept/porridge-banane');
   await expect(page.getByTestId('recipe-ingredients')).toBeVisible();
   await expect(page.getByTestId('recipe')).not.toContainText('kcal');
-  await page.goto('/');
+  await page.goto('/today');
   await expect(page.getByTestId('today-nutrition-target')).toHaveCount(0);
 });
 
@@ -260,7 +260,7 @@ test('B1: veraltete Einwilligung + gespeicherte Unverträglichkeit → kein Plan
   await page.goto('/ernaehrung');
   await expect(page.getByTestId('nutrition-consent-blocked')).toBeVisible();
   await expect(page.getByTestId('nutrition-meals')).toHaveCount(0);
-  await page.goto('/');
+  await page.goto('/today');
   await expect(page.getByTestId('today-nutrition-card')).toContainText(
     'Bitte bestätige die neue Fassung der Einwilligung Gesundheitsdaten',
   );

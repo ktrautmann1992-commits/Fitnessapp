@@ -16,7 +16,7 @@ import { t } from '@/i18n';
 import { formatAmount, formatKcal } from '@/lib/nutrition-format';
 import { weekdayShort } from '@/lib/plan-format';
 import { useApp } from '@/state/app-state';
-import { resolveEntryRoute } from '@/state/flow';
+import { HOME_ROUTE, resolveEntryRoute } from '@/state/flow';
 import { useMealPlanActions, useNutritionWeek } from '@/state/use-nutrition';
 
 /**
@@ -67,7 +67,7 @@ export default function IngredientSwapScreen() {
     versions: app.versions,
     nutritionSetupAvailable: app.backend.supportsNutrition,
   });
-  if (route !== '/today' || !app.rows) {
+  if (route !== HOME_ROUTE || !app.rows) {
     return <Redirect href={route as Href} />;
   }
   const texts = t.nutrition.ingredientSwap;
