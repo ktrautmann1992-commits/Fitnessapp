@@ -6,7 +6,7 @@
  *    verletzte bleiben verletzt – sonst ist die Änderung fachlich zu klären),
  * 2. neu schreiben: `pnpm --filter @fitnessapp/content exec tsx ../core/src/adjust/fixtures/write-invariant-fixtures.ts`,
  *    danach `pnpm exec prettier --write packages/core/src/adjust/fixtures/invariants.json`,
- * 3. in Etappe B auch `supabase/tests/22_week_invariants.test.sql` neu erzeugen (db-sync prüft die Aktualität).
+ * 3. auch `supabase/tests/50_week_invariants.test.sql` neu erzeugen (`write-invariant-sql.ts`, db-sync prüft die Aktualität).
  * Eine eingefrorene Mini-Bibliothek wäre unabhängiger, hängt aber an denselben Plan-Funktionen; bewusst nicht gewählt,
  * damit die Fixtures echte, heute erzeugbare Pläne zeigen.
  */

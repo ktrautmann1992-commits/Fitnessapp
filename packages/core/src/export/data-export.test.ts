@@ -43,10 +43,13 @@ describe('Datenexport (3.7, W9)', () => {
   });
 
   it('Testmodus-Tabellen vor der Datenbank-Etappe (exercise_preferences) bleiben in der Datei', () => {
-    expect(PENDING_DB_EXPORT_TABLES).toEqual(['exercise_preferences', 'plan_adjustments']);
+    expect(PENDING_DB_EXPORT_TABLES).toEqual(['exercise_preferences']);
     // Noch nicht in export_my_data() (db-sync.test.ts) – also nicht in DATA_EXPORT_TABLES.
     expect(DATA_EXPORT_TABLES as readonly string[]).not.toContain('exercise_preferences');
-    expect(DATA_EXPORT_TABLES as readonly string[]).not.toContain('plan_adjustments');
+    // Live-Anpassung seit 4b Etappe B in export_my_data() (Wächter K4).
+    for (const table of ['plan_adjustments', 'adjustment_events', 'live_adjust_hourly_counts']) {
+      expect(DATA_EXPORT_TABLES as readonly string[]).toContain(table);
+    }
     // Ernährung seit Etappe N7 in export_my_data().
     for (const table of [
       'meal_plans',

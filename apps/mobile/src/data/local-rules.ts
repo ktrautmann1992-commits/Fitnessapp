@@ -32,6 +32,9 @@ import {
   type SavePlanSession,
   savePlanPayloadSchema,
   startOfIsoWeek,
+  type AdjustSession,
+  checkWeekInvariants,
+  loadWeeksBeforeDeload,
   exerciseStartWeightSchema,
   freeSessionPayloadIssue,
   isWithinLogDateWindow,
@@ -52,7 +55,7 @@ import {
 import type { ConsentVersions } from './mapping';
 import { preferencesFromRows } from './exercise-swap';
 import { healthPlanBasis, healthScreeningForPlan, planSnapshot } from './training-plan';
-import type { GoalsRow, PlannedSessionRow, ProfileRow, UserRows } from './types';
+import type { GoalsRow, PlannedSessionRow, ProfileRow, UserPlanRow, UserRows } from './types';
 import type { LogRejectReason } from './workout-draft';
 import { kindsForScope, type WriteOp } from './write-ops';
 
@@ -381,6 +384,52 @@ function personSession(s: {
   };
 }
 
+/** Felder, die die Belastungswochen-Regel braucht (Plan-Zeile bzw. Einheit des Folgeblocks). */
+interface LoadWeekSession {
+  block_no: number;
+  week_no: number;
+  scheduled_on: string;
+  is_deload: boolean;
+  is_intro_week: boolean;
+  kind: string;
+  estimated_minutes: number;
+}
+
+/**
+ * Wie public.append_plan_block seit 4b Etappe B (Wächter B2/S-n1, Auflage 4): höchstens L = loadWeeksBeforeDeload
+ * Belastungswochen in Folge – auch über die Blockgrenze (Woche 0 zählt nicht). L wie private.plan_load_weeks:
+ * vorsichtig = ohne Gesundheitsbezug oder mit Arzt-Hinweis. Gemeldet nur ab dem neuen Block.
+ */
+export function appendKeepsLoadWeeks(
+  plan: Pick<UserPlanRow, 'inputs' | 'uses_health_data' | 'medical_notice' | 'start_date'>,
+  own: readonly LoadWeekSession[],
+  added: readonly LoadWeekSession[],
+): boolean {
+  const inputs = plan.inputs as { experienceLevel?: unknown } | null;
+  const maxLoadWeeks = loadWeeksBeforeDeload(
+    inputs?.experienceLevel === 'beginner' ? 'beginner' : 'advanced',
+    !plan.uses_health_data || plan.medical_notice,
+  );
+  const first = added.map((s) => s.scheduled_on).sort()[0];
+  if (first === undefined) return true;
+  const slim = (s: LoadWeekSession) =>
+    ({
+      block_no: s.block_no,
+      week_no: s.week_no,
+      scheduled_on: s.scheduled_on,
+      is_deload: s.is_deload,
+      is_intro_week: s.is_intro_week,
+      kind: s.kind,
+      estimated_minutes: s.estimated_minutes,
+      exercises: [],
+    }) as unknown as AdjustSession;
+  return !checkWeekInvariants([...own, ...added].map(slim), {
+    maxLoadWeeks,
+    planStart: plan.start_date,
+    fromMonday: startOfIsoWeek(first),
+  }).some((v) => v.code === 'too_many_load_weeks');
+}
+
 /**
  * Regeln je Person für Wettkampf-Einheiten wie private.insert_plan_sessions (WP3, Wächter M1/M2): Check, keine
  * Schwangerschaft, eigener geplanter Wettkampf mit Plan-Bezug, gleiche Disziplin, Deckel je Alter, Arzt-Hinweis,
@@ -533,7 +582,8 @@ export function isValidPlanOp(op: WriteOp, ctx: PlanRuleContext): boolean {
         noCollisions(
           rows.plannedSessions,
           op.sessions.map((s) => s.scheduled_on),
-        )
+        ) &&
+        appendKeepsLoadWeeks(plan, own, op.sessions)
       );
     }
     case 'update_planned_session': {

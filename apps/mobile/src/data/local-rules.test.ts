@@ -1,7 +1,7 @@
 import { describe, expect, it } from 'vitest';
 
 import { profile, TODAY, USER_ID } from '../test/fixtures';
-import { isValidOp } from './local-rules';
+import { appendKeepsLoadWeeks, isValidOp } from './local-rules';
 import type { WriteOp } from './write-ops';
 
 const ctx = { today: TODAY, profile: profile() };
@@ -254,5 +254,49 @@ describe('Testmodus spiegelt die Wertebereiche der Datenbank (packages/core)', (
     });
     expect(isValidOp(reminder(7), ctx)).toBe(true);
     expect(isValidOp(reminder(91), ctx)).toBe(false);
+  });
+});
+
+describe('append_plan_block: höchstens L Belastungswochen in Folge (4b Etappe B, wie der Server)', () => {
+  const week = (block: number, weekNo: number, monday: string, deload = false) => ({
+    block_no: block,
+    week_no: weekNo,
+    scheduled_on: monday,
+    is_deload: deload,
+    is_intro_week: false,
+    kind: 'strength',
+    estimated_minutes: 45,
+  });
+  const own = [week(1, 1, '2026-10-05'), week(1, 2, '2026-10-12'), week(1, 3, '2026-10-19')];
+  const cautious = {
+    inputs: { experienceLevel: 'beginner' },
+    uses_health_data: false,
+    medical_notice: false,
+    start_date: '2026-10-05',
+  };
+  const beginner = { ...cautious, uses_health_data: true };
+
+  it('vorsichtig (L = 4): 4. Belastungswoche gültig, 5. abgelehnt; Erholungswoche dazwischen gültig', () => {
+    expect(appendKeepsLoadWeeks(cautious, own, [week(2, 1, '2026-10-26')])).toBe(true);
+    const four = [...own, week(2, 1, '2026-10-26')];
+    expect(appendKeepsLoadWeeks(cautious, four, [week(3, 1, '2026-11-02')])).toBe(false);
+    expect(
+      appendKeepsLoadWeeks(cautious, four, [
+        week(3, 1, '2026-11-02', true),
+        week(3, 2, '2026-11-09'),
+      ]),
+    ).toBe(true);
+  });
+
+  it('Einsteiger mit Gesundheits-Check (L = 5): 5. Belastungswoche gültig; Woche 0 zählt nicht', () => {
+    const four = [...own, week(2, 1, '2026-10-26')];
+    expect(appendKeepsLoadWeeks(beginner, four, [week(3, 1, '2026-11-02')])).toBe(true);
+    expect(
+      appendKeepsLoadWeeks(
+        cautious,
+        [week(1, 0, '2026-10-04'), ...own],
+        [week(2, 1, '2026-10-26')],
+      ),
+    ).toBe(true);
   });
 });

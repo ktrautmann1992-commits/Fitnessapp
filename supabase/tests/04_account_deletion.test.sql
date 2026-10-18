@@ -1,7 +1,7 @@
 -- Konto löschen (delete_my_account): löscht alle Daten des Aufrufers per Kaskade, fremde Daten bleiben.
 begin;
 create extension if not exists pgtap with schema extensions;
-select plan(36);
+select plan(42);
 
 insert into auth.users (id, email) values
   ('11111111-1111-4111-8111-111111111111', 'nutzer-a@example.test'),
@@ -109,6 +109,29 @@ insert into public.food_dislikes (user_id, food_id)
 select u, 'hafer'
 from unnest(array['11111111-1111-4111-8111-111111111111', '22222222-2222-4222-8222-222222222222']::uuid[]) as u;
 
+-- Phase 4b Etappe B: Live-Anpassung beider Nutzer – Anpassung, Kennzeichen an der Einheit, Beta-Freischaltung,
+-- offenes Ereignis, Zähler der Ratenbegrenzung und ein Protokoll-Eintrag (target_user_id → null).
+insert into public.plan_adjustments (user_id, plan_id, trigger, rule, kind, status, exercise_id, basis_session_log_id,
+  state_before, state_after, effective_from, engine_version, rule_version, input_fingerprint, uses_body_data,
+  from_health_plan)
+select p.user_id, p.id, 'session_logged', 'load_reduce', 'state_override', 'applied', 'uebung-a', null,
+  '{"weightKg": 20, "targetReps": 8, "extraSet": false, "durationS": null}',
+  '{"weightKg": 18, "targetReps": 8, "extraSet": false, "durationS": null}',
+  current_date + 1, 1, 1, 'load_reduce:00000000000000aa', false, true
+from public.user_plans p;
+update public.planned_sessions ps set adjustment_id = a.id from public.plan_adjustments a where a.user_id = ps.user_id;
+insert into private.beta_entitlements (user_id, granted_by, expires_at)
+select u, 'gruender-1', now() + interval '30 days'
+from unnest(array['11111111-1111-4111-8111-111111111111', '22222222-2222-4222-8222-222222222222']::uuid[]) as u;
+insert into private.adjustment_events (user_id, trigger, ref_id)
+select u, 'session_logged', gen_random_uuid()
+from unnest(array['11111111-1111-4111-8111-111111111111', '22222222-2222-4222-8222-222222222222']::uuid[]) as u;
+insert into private.live_adjust_hourly_counts (user_id, hour_start, count)
+select u, date_trunc('hour', now()), 3
+from unnest(array['11111111-1111-4111-8111-111111111111', '22222222-2222-4222-8222-222222222222']::uuid[]) as u;
+insert into private.admin_actions (action, actor, target_user_id)
+values ('beta_grant', 'gruender-1', '11111111-1111-4111-8111-111111111111');
+
 -- Ohne Anmeldung (authenticated ohne Nutzer-ID) passiert nichts.
 set local role authenticated;
 set local request.jwt.claims = '{"role":"authenticated"}';
@@ -148,6 +171,16 @@ select is_empty($$ select 1 from public.shopping_lists where user_id = '11111111
 select is_empty($$ select 1 from public.shopping_list_items where user_id = '11111111-1111-4111-8111-111111111111' $$, 'A: shopping_list_items leer');
 select is_empty($$ select 1 from public.recipe_ratings where user_id = '11111111-1111-4111-8111-111111111111' $$, 'A: recipe_ratings leer');
 select is_empty($$ select 1 from public.food_dislikes where user_id = '11111111-1111-4111-8111-111111111111' $$, 'A: food_dislikes leer');
+
+select is_empty($$ select 1 from public.plan_adjustments where user_id = '11111111-1111-4111-8111-111111111111' $$, 'A: plan_adjustments leer');
+select is_empty($$ select 1 from private.beta_entitlements where user_id = '11111111-1111-4111-8111-111111111111' $$, 'A: beta_entitlements leer');
+select is_empty($$ select 1 from private.adjustment_events where user_id = '11111111-1111-4111-8111-111111111111' $$, 'A: adjustment_events leer');
+select is_empty($$ select 1 from private.live_adjust_hourly_counts where user_id = '11111111-1111-4111-8111-111111111111' $$, 'A: live_adjust_hourly_counts leer');
+select results_eq(
+  $$ select count(*)::int, count(target_user_id)::int from private.admin_actions where actor = 'gruender-1' $$,
+  $$ values (1, 0) $$,
+  'admin_actions: Protokoll bleibt, ohne Personenbezug (target_user_id = null)'
+);
 
 -- B ist unberührt.
 select is(
@@ -190,6 +223,15 @@ select results_eq(
             (select count(*)::int from public.food_dislikes where user_id = '22222222-2222-4222-8222-222222222222') $$,
   $$ values (1, 1, 1, 1) $$,
   'B: Ernährung unverändert'
+);
+select results_eq(
+  $$ select (select count(*)::int from public.plan_adjustments where user_id = '22222222-2222-4222-8222-222222222222'),
+            (select count(*)::int from public.planned_sessions where user_id = '22222222-2222-4222-8222-222222222222' and adjustment_id is not null),
+            (select count(*)::int from private.beta_entitlements where user_id = '22222222-2222-4222-8222-222222222222'),
+            (select count(*)::int from private.adjustment_events where user_id = '22222222-2222-4222-8222-222222222222'),
+            (select count(*)::int from private.live_adjust_hourly_counts where user_id = '22222222-2222-4222-8222-222222222222') $$,
+  $$ values (1, 1, 1, 1, 1) $$,
+  'B: Live-Anpassung unverändert'
 );
 select ok(
   exists (select 1 from public.foods where id = 'hafer') and exists (select 1 from public.recipes where id = 'muesli'),
