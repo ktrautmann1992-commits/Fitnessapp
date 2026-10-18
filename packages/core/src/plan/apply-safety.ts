@@ -10,7 +10,7 @@ import {
   enduranceStartSessionCap,
   type EnduranceVariant,
 } from './endurance';
-import { easyWorkout } from './endurance-workouts';
+import { easyWorkout, techniqueWorkout } from './endurance-workouts';
 import {
   hardEffortCapFor,
   hardWorkoutLimits,
@@ -226,7 +226,9 @@ function applyCompetitionRules<T extends EnduranceSessionLike>(
   const structured = isHardWorkoutType(type) || type === 'strides';
   const changed = variant !== before || minutes !== session.estimated_minutes;
   const easyMax = rules.enduranceEffortMax;
-  if (structured && (cap === 0 || changed)) {
+  // WP5: Koppeltraining (Rad → Lauf) wird bei jeder Änderung (Ergometer statt Rad, kürzer) eine lockere Einheit – die
+  // zwei Teile passen dann nicht mehr.
+  if ((structured && (cap === 0 || changed)) || (type === 'brick' && changed)) {
     const effort = Math.min(session.effort_target ?? easyMax, easyMax);
     const easy = easyWorkout('easy', minutes, effort);
     return {
@@ -245,11 +247,16 @@ function applyCompetitionRules<T extends EnduranceSessionLike>(
     ? Math.min(session.effort_target ?? cap, cap)
     : Math.min(session.effort_target ?? easyMax, easyMax);
   const steps = changed
-    ? easyWorkout(
-        type === 'long' || type === 'recovery' ? type : 'easy',
-        minutes,
-        Math.min(effortTarget, easyMax),
-      ).steps
+    ? type === 'technique'
+      ? (
+          techniqueWorkout(minutes, Math.min(effortTarget, easyMax)) ??
+          easyWorkout('easy', minutes, Math.min(effortTarget, easyMax))
+        ).steps
+      : easyWorkout(
+          type === 'long' || type === 'recovery' ? type : 'easy',
+          minutes,
+          Math.min(effortTarget, easyMax),
+        ).steps
     : (session.workout_steps ?? null)?.map((st) => ({
         ...st,
         effort: Math.min(st.effort, st.kind === 'work' ? cap : easyMax),

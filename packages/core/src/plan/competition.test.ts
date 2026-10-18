@@ -15,7 +15,7 @@ import {
   ownStartMinutes,
   requiredPeak,
 } from './competition';
-import { COMPETITION_DISCIPLINES, type CompetitionDiscipline } from './competition-schema';
+import { type CompetitionDiscipline, RUN_COMPETITION_DISCIPLINES } from './competition-schema';
 import type { PlanInputsInput } from './inputs';
 import type { PreviousSession } from './schedule';
 import { MONDAY, person } from './test-library';
@@ -83,9 +83,10 @@ function feasibility(
 const weeks = (n: number, today = MONDAY) => addDays(today, n * 7);
 const reference = { discipline: '10k', timeS: 50 * 60, date: addDays(MONDAY, -30) } as const;
 
+// Laufen (WP1/WP2); Rad und Triathlon (WP5) in multisport-competition.test.ts.
 describe('Tabellen', () => {
   it('minimumLeadWeeks = Tabelle 3.2; Vorsichtige wie Einsteiger', () => {
-    for (const d of COMPETITION_DISCIPLINES) {
+    for (const d of RUN_COMPETITION_DISCIPLINES) {
       for (const level of ['beginner', 'advanced', 'competitive'] as const) {
         expect(minimumLeadWeeks(d, level)).toBe(LEAD[d][level]);
         expect(earliestRaceDate(MONDAY, d, level)).toBe(weeks(LEAD[d][level]));
@@ -101,16 +102,16 @@ describe('Tabellen', () => {
     expect(requiredPeak('marathon').weeklyMinutes).toBe(240);
     expect(requiredPeak('marathon').longRunMinutes).toBeGreaterThanOrEqual(150);
     expect(requiredPeak('half_marathon').longRunMinutes).toBeLessThanOrEqual(120);
-    for (const d of COMPETITION_DISCIPLINES) {
+    for (const d of RUN_COMPETITION_DISCIPLINES) {
       expect(requiredPeak(d, 'time').weeklyMinutes).toBeGreaterThan(requiredPeak(d).weeklyMinutes);
     }
     // Aufsteigend mit der Distanz.
-    const finish = COMPETITION_DISCIPLINES.map((d) => requiredPeak(d).weeklyMinutes);
+    const finish = RUN_COMPETITION_DISCIPLINES.map((d) => requiredPeak(d).weeklyMinutes);
     expect([...finish].sort((a, b) => a - b)).toEqual(finish);
   });
 
   it('Tabelle passt zur Kette: Einsteiger erreichen „Ankommen“ (Wochenumfang UND langer Lauf, WP2) genau zum Mindestvorlauf (jeder Wochentag)', () => {
-    for (const d of COMPETITION_DISCIPLINES) {
+    for (const d of RUN_COMPETITION_DISCIPLINES) {
       for (let start = 0; start < 7; start += 1) {
         for (let race = 0; race < 7; race += 1) {
           const today = addDays(MONDAY, start);

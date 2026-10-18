@@ -9,7 +9,12 @@ import {
   ENDURANCE_OVERLOAD_RULE,
 } from '../constants';
 import type { ExperienceLevel } from '../enums';
-import type { CompetitionDiscipline, CompetitionReference } from './competition-schema';
+import {
+  type CompetitionDiscipline,
+  type CompetitionReference,
+  isRunCompetitionDiscipline,
+  type RunCompetitionDiscipline,
+} from './competition-schema';
 import type { PlanSafetyRules } from './safety';
 
 /**
@@ -18,7 +23,10 @@ import type { PlanSafetyRules } from './safety';
  * der 4b-Regel `endurance_reduce`. Reine Funktionen, keine KI, kein Puls (W-G7).
  */
 
-/** Einheiten-Arten (Plan 3.4; `brick`/`technique` folgen mit WP5). */
+/**
+ * Einheiten-Arten (Plan 3.4). WP5: `brick` = Koppeltraining Rad → Lauf als EINE Einheit mit zwei Teilen,
+ * `technique` = Schwimmtechnik – beide locker (keine harten Arten). Reihenfolge = Postgres-Enum `workout_type`.
+ */
 export const WORKOUT_TYPES = [
   'easy',
   'recovery',
@@ -28,6 +36,8 @@ export const WORKOUT_TYPES = [
   'tempo',
   'intervals',
   'race_pace',
+  'brick',
+  'technique',
 ] as const;
 export type WorkoutType = (typeof WORKOUT_TYPES)[number];
 
@@ -201,6 +211,8 @@ export function riegelReliable(
   reference: CompetitionReference,
   discipline: CompetitionDiscipline,
 ): boolean {
+  // Riegel nur für Laufen (WP5: Rad und Triathlon ohne Zielzeit und Pace).
+  if (!isRunCompetitionDiscipline(discipline)) return false;
   const from = COMPETITION_DISTANCE_M[reference.discipline];
   const to = COMPETITION_DISTANCE_M[discipline];
   return Math.max(from / to, to / from) <= COMPETITION_PACE.maxRiegelDistanceFactor;
@@ -209,7 +221,7 @@ export function riegelReliable(
 /** Vorhergesagte Zeit (s) für eine Wettkampf-Distanz aus der Referenzzeit. */
 export function predictedTimeS(
   reference: CompetitionReference,
-  discipline: CompetitionDiscipline,
+  discipline: RunCompetitionDiscipline,
 ): number {
   return riegelTime(
     reference.timeS,
@@ -227,7 +239,7 @@ export interface PaceSpan {
 /** Basis für Pace-Richtwerte: Referenzzeit + Renn-Disziplin (null = keine Referenz → keine Pace). */
 export interface PaceProfile {
   readonly reference: CompetitionReference;
-  readonly discipline: CompetitionDiscipline;
+  readonly discipline: RunCompetitionDiscipline;
 }
 
 /** Hinweis zu jeder Pace (Plan 3.4) – immer mit anzeigen. */
@@ -245,8 +257,8 @@ export function paceTargets(profile: PaceProfile | null, type: WorkoutType): Pac
     COMPETITION_PACE.spansSPerKm;
   const span = spans[type];
   if (!span) return null;
-  const target: CompetitionDiscipline =
-    span.base === 'race' ? profile.discipline : (span.base as CompetitionDiscipline);
+  const target: RunCompetitionDiscipline =
+    span.base === 'race' ? profile.discipline : (span.base as RunCompetitionDiscipline);
   if (!riegelReliable(profile.reference, target)) return null;
   const perKm = predictedTimeS(profile.reference, target) / (COMPETITION_DISTANCE_M[target] / 1000);
   return { fastSPerKm: Math.round(perKm + span.fast), slowSPerKm: Math.round(perKm + span.slow) };
@@ -275,7 +287,9 @@ export function goalTimePlausible(
   targetTimeS: number | null,
 ): boolean {
   if (reference === null || targetTimeS === null) return false;
-  if (!riegelReliable(reference, discipline)) return false;
+  if (!isRunCompetitionDiscipline(discipline) || !riegelReliable(reference, discipline)) {
+    return false;
+  }
   const predicted = predictedTimeS(reference, discipline);
   return targetTimeS >= predicted * (1 - COMPETITION_PACE.goalTimeMaxImprovement);
 }

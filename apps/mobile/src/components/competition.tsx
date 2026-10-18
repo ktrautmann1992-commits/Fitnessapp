@@ -12,6 +12,7 @@ import {
   type IntervalClock,
   intervalLoggedMinutes,
   intervalPosition,
+  type Sport,
   talkTestText,
   type WorkoutStep,
 } from '@fitnessapp/core';
@@ -53,10 +54,13 @@ const C = t.competition;
 export function FeasibilityCard({
   feasibility,
   onSuggestion,
+  discipline = null,
 }: {
   feasibility: CompetitionFeasibility;
   /** Vorschlag übernehmen (null = nur anzeigen). */
   onSuggestion: ((suggestion: FeasibilitySuggestion) => void) | null;
+  /** Disziplin (WP5: Rad/Triathlon zeigen „lange Ausfahrt“ statt „langer Lauf“). */
+  discipline?: CompetitionDiscipline | null;
 }) {
   const theme = useThemeColors();
   const status = C.status[feasibility.status];
@@ -95,7 +99,7 @@ export function FeasibilityCard({
           {C.notices[notice]}
         </Body>
       ))}
-      {feasibilityFacts(feasibility).map((line) => (
+      {feasibilityFacts(feasibility, discipline).map((line) => (
         <Body key={line} muted>
           {line}
         </Body>
@@ -139,6 +143,7 @@ export function FeasibilityCard({
 export function CountdownCard({
   countdown,
   discipline,
+  distanceKm = null,
   name,
   onOpen,
   openLabel,
@@ -146,6 +151,8 @@ export function CountdownCard({
 }: {
   countdown: CompetitionCountdown;
   discipline: CompetitionDiscipline;
+  /** Rad (WP5): Distanz in km für „Radrennen 120 km“. */
+  distanceKm?: number | null;
   name: string;
   onOpen: (() => void) | null;
   openLabel?: string;
@@ -155,7 +162,7 @@ export function CountdownCard({
     <Card>
       <View style={styles.block} testID={testID}>
         <Body muted>{`${C.countdownTitle} · ${name}`}</Body>
-        <Heading level={2}>{countdownText(countdown, discipline)}</Heading>
+        <Heading level={2}>{countdownText(countdown, discipline, distanceKm)}</Heading>
         {countdown.kind === 'upcoming' && countdown.raceWeek ? (
           <Body testID={`${testID}-race-week`}>{C.raceWeek}</Body>
         ) : null}
@@ -212,12 +219,19 @@ export function PhaseBand({
 // Ablauf einer Einheit
 // ---------------------------------------------------------------------------------------------------------
 
-export function StepList({ steps }: { steps: readonly WorkoutStep[] }) {
+export function StepList({
+  steps,
+  sports = null,
+}: {
+  steps: readonly WorkoutStep[];
+  /** Sportart je Schritt (Koppeltraining Rad → Lauf, WP5); null = eine Sportart. */
+  sports?: readonly Sport[] | null;
+}) {
   const theme = useThemeColors();
   return (
     <View style={styles.block} testID="plan-workout-steps">
       <Text style={[styles.label, { color: theme.text }]}>{C.stepsTitle}</Text>
-      {stepLines(steps).map((line, index) => (
+      {stepLines(steps, sports).map((line, index) => (
         <Body key={`${index}-${line}`}>• {line}</Body>
       ))}
     </View>
@@ -237,9 +251,12 @@ const TICK_MS = 250;
  */
 export function IntervalTimer({
   steps,
+  sports = null,
   onLog,
 }: {
   steps: readonly WorkoutStep[];
+  /** Sportart je Schritt (Koppeltraining Rad → Lauf, WP5): Anzeige „Hauptteil (Laufen)“ beim Wechsel. */
+  sports?: readonly Sport[] | null;
   /** Gelaufene Minuten als Dauer übernehmen (der Eintrag wird erst mit „Training speichern“ gespeichert). */
   onLog: (minutes: number) => void;
 }) {
@@ -275,11 +292,11 @@ export function IntervalTimer({
     const text = position.finished
       ? C.timer.announceFinished
       : C.timer.announce(
-          `${C.timer.stepOf(position.index + 1, steps.length)}: ${stepTitle(position.step)}`,
+          `${C.timer.stepOf(position.index + 1, steps.length)}: ${stepTitle(position.step, sports?.[position.index] ?? null)}`,
         );
     setAnnouncement(text);
     if (!first) alertStepChange(text);
-  }, [position.finished, position.index, position.step, started, steps.length]);
+  }, [position.finished, position.index, position.step, started, steps.length, sports]);
 
   function start() {
     const at = Date.now();
@@ -325,7 +342,7 @@ export function IntervalTimer({
           <>
             <Body muted>{C.timer.intro}</Body>
             {Platform.OS === 'web' ? <Body muted>{C.timer.webHint}</Body> : null}
-            {stepLines(steps).map((line, index) => (
+            {stepLines(steps, sports).map((line, index) => (
               <Body key={`${index}-${line}`}>• {line}</Body>
             ))}
             {logged !== null ? (
@@ -359,7 +376,7 @@ export function IntervalTimer({
               ]}
             >
               <Text style={[styles.timerStepTitle, { color: theme.text }]} testID="interval-step">
-                {stepTitle(step)}
+                {stepTitle(step, sports?.[position.index] ?? null)}
               </Text>
               <Text
                 style={[styles.timerTime, { color: theme.text }]}
@@ -377,7 +394,9 @@ export function IntervalTimer({
             </View>
             {workText ? <Body testID="interval-parts">{workText}</Body> : null}
             <Body muted>
-              {position.next ? C.timer.next(stepTitle(position.next)) : C.timer.nextLast}
+              {position.next
+                ? C.timer.next(stepTitle(position.next, sports?.[position.index + 1] ?? null))
+                : C.timer.nextLast}
             </Body>
             <Body muted accessibilityLabel={C.timer.total(clockA11y(position.remainingS))}>
               {C.timer.total(clockText(position.remainingS))}

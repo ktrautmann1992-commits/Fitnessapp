@@ -37,7 +37,16 @@ import { MONDAY } from './test-library';
 // Feste Werte (Plan 3.3–3.5, G2) – bewusst nicht aus constants.ts.
 const START_CAP: Partial<Record<string, number>> = { beginner: 30, cautious: 20 };
 const FIRST_LOAD_WEEK_MAX = 90;
-const LONG_MAX = { '5k': 75, '10k': 90, half_marathon: 120, marathon: 180 } as const;
+const LONG_MAX = {
+  '5k': 75,
+  '10k': 90,
+  half_marathon: 120,
+  marathon: 180,
+  // WP5 (Plan 9): lange Ausfahrt Rad bis 300, Triathlon Sprint 120, Olympisch 180.
+  cycling: 300,
+  triathlon_sprint: 120,
+  triathlon_olympic: 180,
+} as const;
 const HARD = ['fartlek', 'tempo', 'intervals', 'race_pace'];
 const REQUIRED_LONG_FINISH = { '5k': 40, '10k': 50, half_marathon: 70, marathon: 120 } as const;
 const REQUIRED_WEEK_FINISH = { '5k': 80, '10k': 100, half_marathon: 140, marathon: 240 } as const;

@@ -37,8 +37,10 @@ import {
   WEIGHT_GOAL_LIMITS,
   WEIGHT_GOAL_START_DATE_MIN,
   AGE_PLAN_RULES,
+  COMPETITION_CYCLING,
   COMPETITION_DISTANCE_M,
   COMPETITION_EFFORT_LIMITS,
+  COMPETITION_GROUP_RULES,
   COMPETITION_INPUT_LIMITS,
   COMPETITION_INTENSITY,
   COMPETITION_LEAD_WEEKS,
@@ -159,6 +161,7 @@ import {
   COMPETITION_GOALS,
   COMPETITION_PHASES,
   COMPETITION_STATUSES,
+  RUN_COMPETITION_DISCIPLINES,
 } from './plan/competition-schema';
 import {
   COMPETITION_NAME_TRIM_CLASS,
@@ -1293,16 +1296,19 @@ describe('Wettkampf in der Datenbank (Phase 10 WP3)', () => {
   const steps = fn(tables, 'private.workout_steps_valid');
   const R = COMPETITION_START_REFERENCE;
 
-  it('competition_keys = Felder von saveCompetitionPayloadSchema (alle Pflicht)', () => {
+  it('competition_keys = Felder von saveCompetitionPayloadSchema (alle Pflicht; WP5 ergänzt distance_km)', () => {
     expect(quotedListAfter(save, 'competition_keys constant text[] := array[').sort()).toEqual(
-      Object.keys(saveCompetitionPayloadSchema.shape).sort(),
+      Object.keys(saveCompetitionPayloadSchema.shape)
+        .filter((k) => k !== 'distance_km')
+        .sort(),
     );
     expect(save).toContain('if not (c ?& competition_keys)');
   });
 
+  // WP3 kannte nur die Lauf-Distanzen; Rad und Triathlon prüft der Block „WP5“ gegen die neue Migration.
   it('Distanz je Disziplin = COMPETITION_DISTANCE_M', () => {
     const body = fn(tables, 'private.competition_distance_m');
-    for (const d of COMPETITION_DISCIPLINES) {
+    for (const d of RUN_COMPETITION_DISCIPLINES) {
       expect(body).toContain(`when '${d}' then ${COMPETITION_DISTANCE_M[d]}`);
     }
     expect(tables).toContain('check (distance_m = private.competition_distance_m(discipline))');
@@ -1310,7 +1316,7 @@ describe('Wettkampf in der Datenbank (Phase 10 WP3)', () => {
 
   it('Ziel-/Referenzzeit plausibel je Distanz = COMPETITION_INPUT_LIMITS.timeS', () => {
     const body = fn(tables, 'private.competition_time_plausible');
-    for (const d of COMPETITION_DISCIPLINES) {
+    for (const d of RUN_COMPETITION_DISCIPLINES) {
       const { min, max } = COMPETITION_INPUT_LIMITS.timeS[d];
       expect(body).toContain(`when '${d}' then p_time_s between ${min} and ${max}`);
     }
@@ -1396,12 +1402,12 @@ describe('Wettkampf in der Datenbank (Phase 10 WP3)', () => {
 
   it('save_competition: Datumsrahmen und Mindestvorlauf (lockerste Spalte) = COMPETITION_LEAD_WEEKS', () => {
     const column = COMPETITION_RECORD_LIMITS.leadWeeksServerColumn;
-    const lead = COMPETITION_DISCIPLINES.map(
+    const lead = RUN_COMPETITION_DISCIPLINES.map(
       (d) => `when '${d}' then ${COMPETITION_LEAD_WEEKS.minimum[d][column]}`,
     ).join(' ');
     expect(save).toContain(`min_lead_weeks := case v_discipline ${lead} end;`);
     // Lockerste Spalte = kleinster Wert je Distanz (der Server ist nur Untergrenze).
-    for (const d of COMPETITION_DISCIPLINES) {
+    for (const d of RUN_COMPETITION_DISCIPLINES) {
       expect(COMPETITION_LEAD_WEEKS.minimum[d][column]).toBe(
         Math.min(...Object.values(COMPETITION_LEAD_WEEKS.minimum[d])),
       );
@@ -1454,7 +1460,7 @@ describe('Wettkampf in der Datenbank (Phase 10 WP3)', () => {
     expect(insertSessions).toContain(
       "where c.user_id = p_user_id and c.status = 'planned'\n    for share;",
     );
-    const caps = COMPETITION_DISCIPLINES.map(
+    const caps = RUN_COMPETITION_DISCIPLINES.map(
       (d) => `when '${d}' then ${COMPETITION_LONG_RUN.maxMinutes[d]}`,
     ).join(' ');
     expect(insertSessions).toContain(`case competition_row.discipline\n          ${caps} end`);
@@ -1493,6 +1499,118 @@ describe('Wettkampf in der Datenbank (Phase 10 WP3)', () => {
         expect(threshold).toBe(ENDURANCE_OVERLOAD_RULE.minEffort);
       }
     }
+  });
+});
+
+describe('Rad und Triathlon in der Datenbank (Phase 10 WP5)', () => {
+  const wp5 = readMigration('_wp5_rad_triathlon.sql');
+  const fn = (sql: string, name: string) => {
+    const start = sql.indexOf(`create or replace function ${name}(`);
+    if (start < 0) throw new Error(`${name} nicht gefunden`);
+    return sql.slice(start, sql.indexOf('$$;', sql.indexOf('as $$', start)));
+  };
+  const save = fn(wp5, 'public.save_competition');
+  const insertSessions = fn(wp5, 'private.insert_plan_sessions');
+  const C = COMPETITION_CYCLING;
+  const column = COMPETITION_RECORD_LIMITS.leadWeeksServerColumn;
+
+  it('neueste Fassung von save_competition und insert_plan_sessions steht in *_wp5_rad_triathlon.sql', () => {
+    for (const name of ['public.save_competition', 'private.insert_plan_sessions']) {
+      const marker = `create or replace function ${name}(`;
+      expect(migrationFiles.filter((n) => readMigration(n).includes(marker)).at(-1)).toMatch(
+        /_wp5_rad_triathlon\.sql$/,
+      );
+    }
+  });
+
+  it('competition_keys = alle Felder (distance_km optional), required_keys = Pflichtfelder', () => {
+    const keys = Object.keys(saveCompetitionPayloadSchema.shape).sort();
+    expect(quotedListAfter(save, 'competition_keys constant text[] := array[').sort()).toEqual(
+      keys,
+    );
+    expect(quotedListAfter(save, 'required_keys constant text[] := array[').sort()).toEqual(
+      keys.filter((k) => k !== 'distance_km'),
+    );
+    expect(save).toContain('if not (c ?& required_keys)');
+    expect(save).toContain(
+      `private.jsonb_number_between(c -> 'distance_km', ${C.distanceKm.min}, ${C.distanceKm.max}, 0)`,
+    );
+  });
+
+  it('Distanz: Triathlon aus der Disziplin (COMPETITION_DISTANCE_M), Rad 20–300 km in ganzen km', () => {
+    const body = fn(wp5, 'private.competition_distance_m');
+    for (const d of COMPETITION_DISCIPLINES) {
+      if (d === 'cycling') {
+        expect(body).not.toContain(`when '${d}'`);
+        continue;
+      }
+      expect(body).toContain(`when '${d}' then ${COMPETITION_DISTANCE_M[d]}`);
+    }
+    expect(wp5).toContain(
+      `then distance_m between ${C.distanceKm.min * 1000} and ${C.distanceKm.max * 1000} and distance_m = trunc(distance_m / 1000) * 1000`,
+    );
+  });
+
+  it('Server-Mindestvorlauf (lockerste Spalte) = COMPETITION_LEAD_WEEKS bzw. COMPETITION_CYCLING.classes', () => {
+    const body = fn(wp5, 'private.competition_server_lead_weeks');
+    for (const d of COMPETITION_DISCIPLINES) {
+      if (d === 'cycling') continue;
+      expect(body).toContain(`when '${d}' then ${COMPETITION_LEAD_WEEKS.minimum[d][column]}`);
+      expect(COMPETITION_LEAD_WEEKS.minimum[d][column]).toBe(
+        Math.min(...Object.values(COMPETITION_LEAD_WEEKS.minimum[d])),
+      );
+    }
+    const classes = C.classes.map((c, i) =>
+      i === C.classes.length - 1
+        ? `else ${c.lead[column]} end`
+        : `when p_distance_m <= ${c.maxKm * 1000} then ${c.lead[column]}`,
+    );
+    expect(body).toContain(classes.join(' '));
+    expect(C.classes.at(-1)?.maxKm).toBe(C.distanceKm.max);
+    for (const c of C.classes) expect(c.lead[column]).toBe(Math.min(...Object.values(c.lead)));
+    expect(save).toContain(
+      'min_lead_weeks := private.competition_server_lead_weeks(v_discipline, v_distance_m);',
+    );
+  });
+
+  it('unter 18 = COMPETITION_GROUP_RULES (Laufen bis Halbmarathon, Triathlon nur Sprint, Rad bis 100 km)', () => {
+    const body = fn(wp5, 'private.competition_minor_allowed');
+    const G = COMPETITION_GROUP_RULES;
+    const runs = RUN_COMPETITION_DISCIPLINES.slice(
+      0,
+      RUN_COMPETITION_DISCIPLINES.indexOf(G.minorMaxDiscipline) + 1,
+    );
+    expect(quotedListAfter(body, 'when p_discipline in (')).toEqual([...runs]);
+    expect(lastQuotedListAfter(body, 'when p_discipline in (')).toEqual([...G.minorTriathlon]);
+    expect(body).toContain(`then p_distance_m <= ${G.minorMaxCyclingKm * 1000}`);
+    for (const sql of [save, insertSessions]) {
+      expect(sql).toContain('private.competition_minor_allowed(');
+      expect(sql).not.toContain("= 'marathon' then");
+    }
+  });
+
+  it('Distanz-Deckel je Disziplin = COMPETITION_LONG_RUN.maxMinutes (alle Disziplinen)', () => {
+    const caps = COMPETITION_DISCIPLINES.map(
+      (d) => `when '${d}' then ${COMPETITION_LONG_RUN.maxMinutes[d]}`,
+    ).join(' ');
+    expect(insertSessions).toContain(`case competition_row.discipline\n          ${caps} end`);
+  });
+
+  it('Rad/Triathlon nur „Ankommen“ ohne Referenz; Referenz nur Laufen; Koppeltraining Rad, Technik Schwimmen', () => {
+    const multisport = wp5.slice(wp5.indexOf('add constraint competitions_multisport'));
+    expect(quotedListAfter(multisport, '(discipline in (')).toEqual([
+      ...RUN_COMPETITION_DISCIPLINES,
+    ]);
+    expect(quotedListAfter(multisport, 'reference_discipline in (')).toEqual([
+      ...RUN_COMPETITION_DISCIPLINES,
+    ]);
+    expect(wp5).toContain("(workout_type is distinct from 'brick' or endurance_modality = 'bike')");
+    expect(wp5).toContain(
+      "(workout_type is distinct from 'technique' or endurance_modality = 'swim')",
+    );
+    // Beide Arten sind locker: nicht in den harten Arten (CHECK und Schritt-Prüfung behandeln sie wie „easy“).
+    expect(HARD_WORKOUT_TYPES as readonly string[]).not.toContain('brick');
+    expect(HARD_WORKOUT_TYPES as readonly string[]).not.toContain('technique');
   });
 });
 

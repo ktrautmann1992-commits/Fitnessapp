@@ -42,7 +42,7 @@ function row(payload: ReturnType<typeof toSaveCompetitionPayload>): CompetitionR
     ...payload,
     id: 'c0000000-0000-4000-8000-000000000001',
     user_id: 'u1',
-    distance_m: competitionDistanceM(payload.discipline),
+    distance_m: competitionDistanceM(payload.discipline, payload.distance_km ?? null),
     status: 'planned',
     result_session_log_id: null,
     uses_health_data: payload.effective_goal !== null,
@@ -71,6 +71,8 @@ describe('toSaveCompetitionPayload / saveCompetitionPayloadSchema', () => {
       start_reference_start_group: null,
       effective_goal: null,
     });
+    // WP5: ohne Rad kein Feld distance_km (ältere Server nehmen die Eingabe so weiter an).
+    expect('distance_km' in payload).toBe(false);
   });
 
   it('mit Plan-Bezug: eigener Startumfang so wie eingegeben, Tagebuch-Bezug, wirksames Ziel, Wunsch-Tag', () => {
@@ -220,6 +222,7 @@ describe('storedCompetitionFromRow', () => {
         goal: 'time',
         targetTimeS: 6600,
         reference: { discipline: '10k', timeS: 2900, date: '2026-09-20' },
+        distanceKm: null,
       },
       ownStart: { weeklyMinutes: 200, confirmed: true },
       startReference: { volume: 150, sessionCap: null, startGroup: 'competitive' },
@@ -374,7 +377,7 @@ describe('Eigenschaft: jeder Wettkampfplan der Engine passt durch die Datenbank-
     raceDate: string;
     birthDate?: string;
   }[] = [];
-  const races: Record<CompetitionDiscipline, string[]> = {
+  const races: Partial<Record<CompetitionDiscipline, string[]>> = {
     '5k': ['2026-12-20', '2027-03-07'],
     '10k': ['2027-01-17', '2027-05-02'],
     half_marathon: ['2027-02-28', '2027-06-13'],
@@ -382,7 +385,7 @@ describe('Eigenschaft: jeder Wettkampfplan der Engine passt durch die Datenbank-
   };
   for (const discipline of Object.keys(races) as CompetitionDiscipline[]) {
     for (const level of ['beginner', 'advanced', 'competitive'] as const) {
-      for (const raceDate of races[discipline]) cases.push({ discipline, level, raceDate });
+      for (const raceDate of races[discipline] ?? []) cases.push({ discipline, level, raceDate });
     }
   }
   cases.push({

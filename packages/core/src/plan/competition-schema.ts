@@ -2,13 +2,14 @@ import { z } from 'zod';
 
 import { isoDateSchema } from '../age';
 import {
+  COMPETITION_CYCLING,
   COMPETITION_INPUT_LIMITS,
   COMPETITION_LEAD_WEEKS,
   COMPETITION_OWN_START,
   TRAINING_LIMITS,
 } from '../constants';
 import { addDays } from '../dates';
-import type { ExperienceLevel } from '../enums';
+import type { EnduranceDiscipline, ExperienceLevel } from '../enums';
 
 /**
  * Wettkampf-Eingaben (docs/PLAN-PHASE-10.md Abschnitt 5, Etappe WP1), an der Grenze mit Zod geprüft.
@@ -16,13 +17,75 @@ import type { ExperienceLevel } from '../enums';
  * (db-sync.test.ts).
  */
 
+/** Lauf-Disziplinen (WP1–WP4): nur hier gibt es Zielzeit, Referenzzeit, Riegel und Pace (W-G6). */
+export const RUN_COMPETITION_DISCIPLINES = ['5k', '10k', 'half_marathon', 'marathon'] as const;
+export type RunCompetitionDiscipline = (typeof RUN_COMPETITION_DISCIPLINES)[number];
+
+/** Triathlon mit Wettkampfplan (WP5, W-G2): Sprint und Olympisch. */
+export const TRIATHLON_COMPETITION_DISCIPLINES = ['triathlon_sprint', 'triathlon_olympic'] as const;
+export type TriathlonCompetitionDiscipline = (typeof TRIATHLON_COMPETITION_DISCIPLINES)[number];
+
 /**
- * Disziplinen mit Wettkampfplan (W-G2): zuerst nur Laufen 5 km bis Marathon. Teilmenge von ENDURANCE_DISCIPLINES;
- * Rad und Triathlon Sprint/Olympisch kommen mit WP5 dazu (dann eigene Distanz für Rad 20–300 km), Mittel-/Langdistanz
- * und Schwimm-Wettkämpfe bekommen keinen Plan (Hinweis Trainer/Verein).
+ * Disziplinen mit Wettkampfplan (W-G2): Laufen 5 km bis Marathon (WP1), dazu mit WP5 Rad (freie Distanz 20–300 km,
+ * `distanceKm`) und Triathlon Sprint/Olympisch. Teilmenge von ENDURANCE_DISCIPLINES; Reihenfolge = Postgres-Enum
+ * `competition_discipline` (WP5 per `add value`).
  */
-export const COMPETITION_DISCIPLINES = ['5k', '10k', 'half_marathon', 'marathon'] as const;
+export const COMPETITION_DISCIPLINES = [
+  ...RUN_COMPETITION_DISCIPLINES,
+  'cycling',
+  ...TRIATHLON_COMPETITION_DISCIPLINES,
+] as const;
 export type CompetitionDiscipline = (typeof COMPETITION_DISCIPLINES)[number];
+
+/**
+ * Ausdauer-Disziplinen OHNE Wettkampfplan (W-G2): Triathlon Mittel-/Langdistanz und Schwimm-Wettkämpfe – die App zeigt
+ * den Hinweis „Trainer bzw. Verein“; der Grundlagen-Plan (Phase 3) bleibt.
+ */
+export const COMPETITION_NO_PLAN_DISCIPLINES = [
+  'triathlon_middle',
+  'triathlon_long',
+  'swimming',
+] as const satisfies readonly EnduranceDiscipline[];
+
+/**
+ * Vorbelegung der Distanz in „Mein Wettkampf“ aus dem Ziel: Hauptziel Ausdauer mit Wettkampf-Disziplin → diese;
+ * Triathlon Mittel-/Langdistanz (kein Plan, W-G2) → die längste Triathlon-Distanz mit Plan (olympisch); sonst
+ * (kein Ausdauer-Ziel, keine Disziplin, Schwimmen) der Halbmarathon wie bisher (WP4).
+ */
+export function defaultCompetitionDiscipline(
+  goal: { readonly goalType: string; readonly discipline: EnduranceDiscipline | null } | null,
+): CompetitionDiscipline {
+  if (goal === null || goal.goalType !== 'endurance') return 'half_marathon';
+  if (isCompetitionDiscipline(goal.discipline)) return goal.discipline;
+  if (goal.discipline === 'triathlon_middle' || goal.discipline === 'triathlon_long') {
+    return 'triathlon_olympic';
+  }
+  return 'half_marathon';
+}
+
+/** Lauf-Disziplin (Zielzeit, Referenzzeit, Pace)? */
+export function isRunCompetitionDiscipline(value: unknown): value is RunCompetitionDiscipline {
+  return (RUN_COMPETITION_DISCIPLINES as readonly unknown[]).includes(value);
+}
+
+/** Triathlon Sprint/Olympisch? */
+export function isTriathlonCompetitionDiscipline(
+  value: unknown,
+): value is TriathlonCompetitionDiscipline {
+  return (TRIATHLON_COMPETITION_DISCIPLINES as readonly unknown[]).includes(value);
+}
+
+/**
+ * Wettkampfplan für diese Ausdauer-Disziplin des Ziels? `plan` = ja; `coach` = bewusst kein Plan (Mittel-/Langdistanz,
+ * Schwimmen – Hinweis Trainer/Verein, W-G2); `none` = keine Disziplin.
+ */
+export function competitionPlanOffer(
+  discipline: EnduranceDiscipline | null | undefined,
+): 'plan' | 'coach' | 'none' {
+  if (discipline === null || discipline === undefined) return 'none';
+  if ((COMPETITION_NO_PLAN_DISCIPLINES as readonly string[]).includes(discipline)) return 'coach';
+  return isCompetitionDiscipline(discipline) ? 'plan' : 'none';
+}
 
 /** Ziel: „Ankommen“ (Standard, W-G6) oder Zielzeit (nur mit Referenzzeit). */
 export const COMPETITION_GOALS = ['finish', 'time'] as const;
@@ -47,21 +110,24 @@ export const COMPETITION_PHASES = [
 export type CompetitionPhase = (typeof COMPETITION_PHASES)[number];
 
 export const competitionDisciplineSchema = z.enum(COMPETITION_DISCIPLINES);
+export const runCompetitionDisciplineSchema = z.enum(RUN_COMPETITION_DISCIPLINES);
 
 /** Ist die Disziplin (aus dem Ziel) eine mit Wettkampfplan? */
 export function isCompetitionDiscipline(value: unknown): value is CompetitionDiscipline {
   return competitionDisciplineSchema.safeParse(value).success;
 }
 
+/** Zeit plausibel je Lauf-Distanz (COMPETITION_INPUT_LIMITS.timeS); Rad und Triathlon kennen keine Zeiten (WP5). */
 function timeWithinLimits(discipline: CompetitionDiscipline, timeS: number): boolean {
+  if (!isRunCompetitionDiscipline(discipline)) return false;
   const limits = COMPETITION_INPUT_LIMITS.timeS[discipline];
   return timeS >= limits.min && timeS <= limits.max;
 }
 
-/** Referenzzeit (letzter Wettkampf oder Testlauf, kein Maximaltest): Distanz + Zeit + Datum. */
+/** Referenzzeit (letzter Wettkampf oder Testlauf, kein Maximaltest): Distanz + Zeit + Datum – nur Laufen. */
 export const competitionReferenceSchema = z
   .strictObject({
-    discipline: competitionDisciplineSchema,
+    discipline: runCompetitionDisciplineSchema,
     timeS: z.number().int().positive(),
     date: isoDateSchema,
   })
@@ -71,9 +137,17 @@ export const competitionReferenceSchema = z
   });
 export type CompetitionReference = z.infer<typeof competitionReferenceSchema>;
 
+/** Rad-Distanz in ganzen Kilometern (COMPETITION_CYCLING.distanceKm, Plan 9: 20–300 km). */
+export const cyclingDistanceKmSchema = z
+  .number()
+  .int()
+  .min(COMPETITION_CYCLING.distanceKm.min)
+  .max(COMPETITION_CYCLING.distanceKm.max);
+
 /**
  * Wettkampf ohne Datumsprüfung gegen „heute“ (strikt): Name nur Anzeige (1–80 Zeichen), Disziplin, Renntag, Ziel,
- * Zielzeit nur bei `time` und plausibel je Distanz, Zielzeit nur mit Referenzzeit (W-G6).
+ * Zielzeit nur bei `time` und plausibel je Distanz, Zielzeit nur mit Referenzzeit (W-G6). WP5: `distanceKm` genau beim
+ * Rad (20–300 km), sonst null; Zielzeit und Referenzzeit nur beim Laufen (Rad und Triathlon: „Ankommen“).
  */
 export const competitionInputSchema = z
   .strictObject({
@@ -83,7 +157,20 @@ export const competitionInputSchema = z
     goal: z.enum(COMPETITION_GOALS).default('finish'),
     targetTimeS: z.number().int().positive().nullable().default(null),
     reference: competitionReferenceSchema.nullable().default(null),
+    distanceKm: cyclingDistanceKmSchema.nullable().default(null),
   })
+  .refine((c) => (c.discipline === 'cycling') === (c.distanceKm !== null), {
+    path: ['distanceKm'],
+    message: 'Die Distanz in Kilometern gibt es genau beim Rad.',
+  })
+  .refine(
+    (c) =>
+      isRunCompetitionDiscipline(c.discipline) || (c.goal === 'finish' && c.reference === null),
+    {
+      path: ['goal'],
+      message: 'Bei Rad und Triathlon gibt es nur das Ziel „Ankommen“, ohne Referenzzeit.',
+    },
+  )
   .refine((c) => (c.goal === 'time') === (c.targetTimeS !== null), {
     path: ['targetTimeS'],
     message: 'Eine Zielzeit gibt es nur beim Ziel „Zielzeit“.',
@@ -133,10 +220,15 @@ export function competitionWindowSchema(today: string) {
  */
 export function competitionSchema(context: {
   readonly today: string;
-  readonly minimumLeadWeeks: (discipline: CompetitionDiscipline) => number;
+  readonly minimumLeadWeeks: (
+    discipline: CompetitionDiscipline,
+    distanceKm: number | null,
+  ) => number;
 }) {
   return competitionWindowSchema(context.today).refine(
-    (c) => c.raceDate >= addDays(context.today, context.minimumLeadWeeks(c.discipline) * 7),
+    (c) =>
+      c.raceDate >=
+      addDays(context.today, context.minimumLeadWeeks(c.discipline, c.distanceKm) * 7),
     { path: ['raceDate'], message: 'Bis zum Renntag ist zu wenig Zeit.' },
   );
 }
