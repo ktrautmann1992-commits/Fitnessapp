@@ -47,7 +47,7 @@ import { PHOTO_PICK_SUPPORTED, pickPhoto } from '@/lib/photo-pick';
 import { useOnline } from '@/lib/use-online';
 import { useToday } from '@/lib/use-today';
 import { useApp } from '@/state/app-state';
-import { resolveEntryRoute } from '@/state/flow';
+import { HOME_ROUTE, resolveEntryRoute } from '@/state/flow';
 import { useFoodLogActions, useFoodLogDay } from '@/state/use-food-log';
 import { useNutritionWeek } from '@/state/use-nutrition';
 
@@ -129,11 +129,12 @@ export default function FoodPhotoScreen() {
     versions: app.versions,
     nutritionSetupAvailable: app.backend.supportsNutrition,
   });
-  if (route !== '/today' || !app.rows) {
+  if (route !== HOME_ROUTE || !app.rows) {
     return <Redirect href={route as Href} />;
   }
   const rows = app.rows;
-  const toDay = () => router.replace(`/ernaehrung?tag=${date}` as Href);
+  // Zurück in den Reiter „Ernährung“ (keine zweite Reiter-Instanz, Wächter M1).
+  const toDay = () => router.dismissTo(`/ernaehrung?tag=${date}` as Href);
   // „Per Hand eintragen“ = zurück zu „Eintragen“ (von dort kommt man hierher), sonst dorthin ersetzen.
   const back = () =>
     router.canGoBack()

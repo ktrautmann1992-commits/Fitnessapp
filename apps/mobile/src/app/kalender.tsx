@@ -34,7 +34,7 @@ import { berlinTodayIso, todayIso } from '@/lib/format';
 import { weekRangeText } from '@/lib/history-format';
 import { dayLabel, weekdayShort } from '@/lib/plan-format';
 import { PLAN_CHANGE_DROPPED, useApp } from '@/state/app-state';
-import { resolveEntryRoute } from '@/state/flow';
+import { HOME_ROUTE, resolveEntryRoute } from '@/state/flow';
 
 interface Feedback {
   tone: 'success' | 'danger' | 'warning';
@@ -234,7 +234,7 @@ export default function CalendarScreen() {
     versions: app.versions,
     nutritionSetupAvailable: app.backend.supportsNutrition,
   });
-  if (route !== '/today' || !rows) {
+  if (route !== HOME_ROUTE || !rows) {
     return <Redirect href={route as Href} />;
   }
 
@@ -423,7 +423,7 @@ export default function CalendarScreen() {
                 <Button
                   label={t.calendar.nutritionButton}
                   variant="link"
-                  onPress={() => router.push('/ernaehrung' as Href)}
+                  onPress={() => router.dismissTo('/ernaehrung' as Href)}
                 />
               </>
             ) : null}

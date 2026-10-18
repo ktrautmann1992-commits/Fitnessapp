@@ -84,12 +84,19 @@ export function deriveOnboardingState(
 
 export type EntryRoute =
   | '/welcome'
+  | '/uebersicht'
   | '/age'
   | '/consents'
   | '/done'
   | '/today'
   | '/ernaehrung'
   | `/onboarding/${OnboardingStep}`;
+
+/**
+ * Startseite nach dem Start bzw. der Anmeldung (docs/PLAN-DASHBOARD.md 3): die Übersicht mit Kacheln. Bildschirme,
+ * die nur mit fertigem Onboarding erreichbar sind, vergleichen `resolveEntryRoute(...)` mit diesem Wert.
+ */
+export const HOME_ROUTE = '/uebersicht' satisfies EntryRoute;
 
 export function stepRoute(step: OnboardingStep): EntryRoute {
   return `/onboarding/${step}`;
@@ -120,7 +127,7 @@ export function resolveEntryRoute(input: {
     );
     return step === null ? '/done' : stepRoute(step);
   }
-  return '/today';
+  return HOME_ROUTE;
 }
 
 /** Ist die Mess-Erinnerung heute fällig? */

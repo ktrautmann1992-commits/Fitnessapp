@@ -260,6 +260,17 @@ Verbindlich ist der freigegebene Ablauf in `docs/PLAN-PHASE-1.md` Abschnitt 3 (S
   in der App sichtbar; offline eingetragene Daten lösen die Neuberechnung beim nächsten Sync aus. Premium-Prüfung serverseitig.
 
 ## 5. Tagesansicht & Trainingstagebuch
+
+**App-Aufbau seit 18.10.2026 (`docs/PLAN-DASHBOARD.md`):** Ohne Sitzung zeigt die App den **Startbildschirm** mit zwei
+Wegen – „Neu hier – Los geht's“ (Altersprüfung → Onboarding) und „Anmelden“ (E-Mail mit 6-stelligem Code, kein
+Passwort, kein Google/Apple; nur mit Datenbank). Danach ist die **Übersicht** (`/uebersicht`) die Startseite: Kacheln
+Training heute, Ernährung heute (kcal nur mit „Kalorienzahlen anzeigen“), Körperdaten (letztes Gewicht nur mit
+Einwilligung, nie Wunschgewicht/Prognose, F13), Fortschritt und Schnellzugriffe. Die **untere Menüleiste** (Expo Router
+Tabs) hat fünf Reiter: **Übersicht · Training (= „Heute“) · Ernährung · Fortschritt · Mehr**; „Mehr“ führt zu **Mein
+Konto** (E-Mail, Abmelden mit Rückfrage, Einwilligungen, Datenexport, Konto löschen, Lizenzen), Einstellungen und den
+übrigen Bereichen. Onboarding, Anmelden, Trainingsmodus und Unterseiten liegen ohne Leiste darüber. Daten der Kacheln:
+`packages/core/src/dashboard.ts`.
+
 - Heute: geplante Einheit mit allen Übungen, Sätzen, Wiederholungen, Zielgewicht, Pause
 - Pro Übung: abhaken / nicht gemacht / tauschen (Auswahl aus gleichwertigen Alternativen, „Nur heute“ oder „Ab jetzt immer“)
 - Pro Satz: Gewicht, Wiederholungen, optional RPE
@@ -277,7 +288,7 @@ und Wort – erledigt, teilweise, verpasst, gestrichen, geplant, entfallen –, 
 und -km, Blättern; nachgeholte Einheiten am tatsächlichen Datum), **Verlauf** (`app/history/`: nach Wochen, je 20 weitere,
 ältere als 12 Wochen online nachladen; Verlauf je Übung mit bestem Satz „Gewicht × Wiederholungen“, keine 1RM),
 **Eintrag** (`app/log/[logId].tsx`: ansehen, ändern im Datumsfenster, löschen nur online) und **Datenexport** „Meine Daten“
-(Einstellungen; JSON aller eigenen Daten inkl. Konto-E-Mail und Einwilligungs-Verlauf; Browser: Download, App: Ordner
+(seit 18.10.2026 unter „Mein Konto“; JSON aller eigenen Daten inkl. Konto-E-Mail und Einwilligungs-Verlauf; Browser: Download, App: Ordner
 wählen – kein Teilen-Dialog). Regeln in `packages/core/src/log/summary.ts` und `packages/core/src/export/data-export.ts`.
 Übungsvideos/Animationen und automatische Einträge aus Strecken/Wearables kommen später (Phase 8/10).
 

@@ -219,7 +219,7 @@ for (const scheme of ['light', 'dark'] as const) {
     await heading('Heute');
     // Trainingsmodus (Phase 4, Etappe C1): Mittwoch ist der Kraft-Tag.
     await page.clock.setFixedTime(new Date('2026-10-07T09:00:00+02:00'));
-    await page.goto('/');
+    await page.goto('/today');
     await heading('Heute');
     await page.getByTestId('workout-start').click();
     await expect(page.getByTestId('workout-exercise-0')).toBeVisible();
@@ -254,14 +254,30 @@ for (const scheme of ['light', 'dark'] as const) {
     await shot('eintrag');
     await page.getByTestId('log-delete').click();
     await shot('eintrag-loeschen');
+    // Übersicht mit Kacheln und Menüleiste (docs/PLAN-DASHBOARD.md).
     await page.goto('/');
-    await heading('Heute');
-    await page.getByRole('button', { name: 'Einstellungen' }).click();
-    await heading('Einstellungen');
-    await shot('einstellungen');
+    await heading('Übersicht');
+    await shot('uebersicht');
+    await page.getByTestId('overview-progress').scrollIntoViewIfNeeded();
+    await shot('uebersicht-unten');
+    await page.getByTestId('tab-fortschritt').click();
+    await heading('Fortschritt');
+    await shot('fortschritt');
+    await page.getByTestId('tab-mehr').click();
+    await heading('Mehr');
+    await shot('mehr');
+    await page.getByTestId('more-account').click();
+    await heading('Mein Konto');
+    await shot('mein-konto');
     await page.getByTestId('settings-export').click();
     await shot('export-dialog');
     await page.getByRole('button', { name: 'Abbrechen' }).click();
+    await page.getByTestId('konto-signout').click();
+    await shot('abmelden-dialog');
+    await page.getByRole('button', { name: 'Abbrechen' }).click();
+    await page.goto('/settings');
+    await heading('Einstellungen');
+    await shot('einstellungen');
     await page.getByRole('button', { name: 'Gesundheitsdaten: Widerrufen' }).click();
     await shot('widerruf-dialog');
     await page.getByRole('button', { name: 'Abbrechen' }).click();
@@ -290,7 +306,7 @@ for (const scheme of ['light', 'dark'] as const) {
     await shot('rezept');
     await page.getByTestId('recipe-contains').scrollIntoViewIfNeeded();
     await shot('rezept-enthaelt');
-    await page.goto('/');
+    await page.goto('/today');
     await heading('Heute');
     await page.getByTestId('today-nutrition-card').scrollIntoViewIfNeeded();
     await shot('heute-essen');

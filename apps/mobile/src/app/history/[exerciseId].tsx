@@ -13,7 +13,7 @@ import { bestSetText } from '@/lib/history-format';
 import { dayLabel } from '@/lib/plan-format';
 import { decodeRouteParam } from '@/lib/route-param';
 import { useApp } from '@/state/app-state';
-import { resolveEntryRoute } from '@/state/flow';
+import { HOME_ROUTE, resolveEntryRoute } from '@/state/flow';
 
 /**
  * Verlauf je Übung (docs/PLAN-PHASE-4.md 5.6/6.1 Punkt 5, Etappe D): je Training der beste Satz als
@@ -46,7 +46,7 @@ export default function ExerciseHistoryScreen() {
     versions: app.versions,
     nutritionSetupAvailable: app.backend.supportsNutrition,
   });
-  if (route !== '/today' || !app.rows) {
+  if (route !== HOME_ROUTE || !app.rows) {
     return <Redirect href={route as Href} />;
   }
   const since = app.backend.logHistoryStart();

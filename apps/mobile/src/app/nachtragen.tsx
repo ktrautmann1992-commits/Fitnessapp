@@ -33,7 +33,7 @@ import { berlinTodayIso } from '@/lib/format';
 import { dayLabel } from '@/lib/plan-format';
 import { isoDateParam } from '@/lib/route-param';
 import { useApp } from '@/state/app-state';
-import { resolveEntryRoute } from '@/state/flow';
+import { HOME_ROUTE, resolveEntryRoute } from '@/state/flow';
 
 /**
  * „+ Einheit“ aus dem Kalender (docs/PLAN-AUSWERTUNG.md 4, Etappe A1b): für einen Tag (heute bis 14 Tage zurück)
@@ -80,7 +80,7 @@ export default function BackfillScreen() {
     versions: app.versions,
     nutritionSetupAvailable: app.backend.supportsNutrition,
   });
-  if (route !== '/today' || !app.rows || !app.session) {
+  if (route !== HOME_ROUTE || !app.rows || !app.session) {
     return <Redirect href={route as Href} />;
   }
   const rows = app.rows;

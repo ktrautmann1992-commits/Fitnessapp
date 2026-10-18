@@ -45,7 +45,7 @@ import {
 import { dayLabel } from '@/lib/plan-format';
 import { useThemeColors } from '@/lib/theme';
 import { useApp } from '@/state/app-state';
-import { resolveEntryRoute } from '@/state/flow';
+import { HOME_ROUTE, resolveEntryRoute } from '@/state/flow';
 import { useMealPlanActions, useNutritionWeek } from '@/state/use-nutrition';
 
 /**
@@ -88,7 +88,7 @@ export default function NutritionWeekScreen() {
     versions: app.versions,
     nutritionSetupAvailable: app.backend.supportsNutrition,
   });
-  if (route !== '/today' || !app.rows) {
+  if (route !== HOME_ROUTE || !app.rows) {
     return <Redirect href={route as Href} />;
   }
   const footer = (
@@ -258,7 +258,7 @@ export default function NutritionWeekScreen() {
                     ? leftoverHintView(hint, (id) => foods.get(id)?.name_de ?? id)
                     : undefined;
                 }}
-                onOpenDay={() => router.push(`/ernaehrung?tag=${day.date}` as Href)}
+                onOpenDay={() => router.dismissTo(`/ernaehrung?tag=${day.date}` as Href)}
                 onOpenRecipe={(recipeId, slot) =>
                   router.push(
                     `/rezept/${encodeURIComponent(recipeId)}?tag=${day.date}&platz=${slot}` as Href,

@@ -28,7 +28,7 @@ import { dayLabel, weekdayName } from '@/lib/plan-format';
 import { useThemeColors } from '@/lib/theme';
 import { useToday } from '@/lib/use-today';
 import { useApp } from '@/state/app-state';
-import { resolveEntryRoute } from '@/state/flow';
+import { HOME_ROUTE, resolveEntryRoute } from '@/state/flow';
 import { useNutritionWeek } from '@/state/use-nutrition';
 
 const TICK_MS = 1000;
@@ -116,7 +116,7 @@ export default function CookDayScreen() {
     versions: app.versions,
     nutritionSetupAvailable: app.backend.supportsNutrition,
   });
-  if (route !== '/today' || !app.rows) {
+  if (route !== HOME_ROUTE || !app.rows) {
     return <Redirect href={route as Href} />;
   }
   const texts = t.nutrition.cookDay;

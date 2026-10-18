@@ -31,7 +31,12 @@ export interface StepController {
 }
 
 /** Erlaubte Rücksprung-Ziele eines einzeln geöffneten Schritts (`?zurueck=…`, feste Liste – kein freier Pfad). */
-export const SINGLE_STEP_RETURNS = { abnehmziel: '/abnehmziel', heute: '/today' } as const;
+export const SINGLE_STEP_RETURNS = {
+  abnehmziel: '/abnehmziel',
+  heute: '/today',
+  // Kachel „Körperdaten“ der Übersicht (docs/PLAN-DASHBOARD.md 2.4).
+  uebersicht: '/uebersicht',
+} as const;
 export type SingleStepReturn = (typeof SINGLE_STEP_RETURNS)[keyof typeof SINGLE_STEP_RETURNS];
 
 export function singleStepReturn(value: string | undefined): SingleStepReturn | null {

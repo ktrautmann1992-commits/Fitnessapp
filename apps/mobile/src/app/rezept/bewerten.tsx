@@ -31,7 +31,7 @@ import { t } from '@/i18n';
 import { formatDateDe } from '@/lib/format';
 import { useToday } from '@/lib/use-today';
 import { useApp } from '@/state/app-state';
-import { resolveEntryRoute } from '@/state/flow';
+import { HOME_ROUTE, resolveEntryRoute } from '@/state/flow';
 import { useNutritionWeek } from '@/state/use-nutrition';
 
 /** Auswahl „kein Grund“ in der Liste (nur Ansicht). */
@@ -78,7 +78,7 @@ export default function RecipeRatingScreen() {
     versions: app.versions,
     nutritionSetupAvailable: app.backend.supportsNutrition,
   });
-  if (route !== '/today' || !app.rows) {
+  if (route !== HOME_ROUTE || !app.rows) {
     return <Redirect href={route as Href} />;
   }
   const rows = app.rows;
@@ -105,7 +105,7 @@ export default function RecipeRatingScreen() {
         <Body muted>{texts.planStays}</Body>
         <Button
           label={texts.toPlan}
-          onPress={() => router.replace(`/ernaehrung?tag=${date ?? today}` as Href)}
+          onPress={() => router.dismissTo(`/ernaehrung?tag=${date ?? today}` as Href)}
           testID="rating-to-plan"
         />
       </>,
