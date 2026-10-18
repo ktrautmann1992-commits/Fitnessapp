@@ -228,3 +228,102 @@ test('Mein Konto: Testmodus, Einwilligungen, Export, Abmelden mit Rückfrage', a
   await expect(page.getByTestId('welcome')).toBeVisible();
   await expect(tabBar(page)).toHaveCount(0);
 });
+
+test('Plan-Hinweise auf der Übersicht: geänderte Angaben, strengere Regeln ohne „Training starten“ (Wächter H1)', async ({
+  page,
+}) => {
+  await onboardStudio(page, true);
+  await page.getByRole('button', { name: 'Zum Plan' }).click();
+  await heading(page, 'Heute');
+
+  // Einstellungen → Angaben ändern → Trainingstage ändern → „Heute“ bietet „Plan neu erstellen?“ an …
+  await page.getByRole('button', { name: 'Einstellungen' }).click();
+  await page.getByRole('button', { name: 'Angaben ändern' }).click();
+  await heading(page, 'Deine Trainingserfahrung');
+  await page.getByRole('button', { name: 'Weiter', exact: true }).click();
+  await heading(page, 'Dein Ziel');
+  await page.getByRole('button', { name: 'Weiter', exact: true }).click();
+  await heading(page, 'Deine Trainingstage');
+  await page.getByRole('checkbox', { name: 'Donnerstag' }).click();
+  await page.getByRole('radio', { name: 'Donnerstag: Ausdauer' }).click();
+  await page.getByRole('radio', { name: 'Donnerstag: 30 Minuten' }).click();
+  await page.getByRole('button', { name: 'Weiter', exact: true }).click();
+  await heading(page, 'Heute');
+  await expect(page.getByTestId('plan-offer')).toContainText('Deine Angaben haben sich geändert');
+  // … und die Übersicht weist darauf hin (normales Angebot: Start bleibt möglich).
+  await tab(page, 'Übersicht').click();
+  await expect(page.getByTestId('overview-attention')).toContainText(
+    'Deine Angaben haben sich geändert',
+  );
+  await expect(page.getByTestId('overview-plan-urgent')).toHaveCount(0);
+  await expect(page.getByTestId('overview-training-start')).toBeVisible();
+
+  // Gesundheits-Check wiederholen mit „Ja“ → strengere Regeln → deutlicher Hinweis, kein „Training starten“.
+  // Eine Stunde später, damit der neue Check nach dem Plan liegt (feste Uhr).
+  await page.clock.setFixedTime(new Date('2026-10-07T10:00:00+02:00'));
+  await page.goto('/settings');
+  await page.getByRole('button', { name: 'Gesundheits-Check wiederholen' }).click();
+  await heading(page, 'Gesundheits-Check');
+  const groups = page.getByRole('radiogroup');
+  const count = await groups.count();
+  for (let i = 0; i < count; i += 1) {
+    await groups
+      .nth(i)
+      .getByRole('radio', { name: i === 0 ? 'Ja' : 'Nein' })
+      .click();
+  }
+  await page.getByRole('button', { name: 'Weiter', exact: true }).click();
+  const ack = page.getByRole('checkbox', { name: /Ich habe den Hinweis gelesen/ });
+  if ((await ack.count()) > 0) {
+    await ack.click();
+    await page.getByRole('button', { name: 'Bestätigen und weiter' }).click();
+  }
+  await page.goto('/today');
+  await expect(page.getByTestId('plan-offer')).toContainText('Bitte Plan neu erstellen');
+  await tab(page, 'Übersicht').click();
+  await expect(page.getByTestId('overview-plan-urgent')).toContainText('Bitte Plan neu erstellen');
+  await expect(page.getByTestId('overview-training-start')).toHaveCount(0);
+  await expect(page.getByTestId('overview-training-no-start')).toContainText(
+    'Bitte erstelle zuerst deinen Plan neu',
+  );
+  await page
+    .getByTestId('overview-plan-urgent')
+    .getByRole('button', { name: 'Zum Training: Plan neu erstellen' })
+    .click();
+  await heading(page, 'Heute');
+});
+
+test('Reiter „Ernährung“: anderer Tag aus der Woche ohne zweite Reiter-Instanz, „Zu heute“, Reiter springt auf heute (Wächter M1/N7)', async ({
+  page,
+}) => {
+  // Beispiel-Rezepte erzwingen, damit es einen Essensplan mit Wochenansicht gibt (unabhängig vom Bündel).
+  await page.evaluate(() =>
+    window.localStorage.setItem('fitnessapp.nutrition-demo.v1', JSON.stringify('force')),
+  );
+  await onboardStudio(page, true);
+  await page.getByRole('button', { name: 'Zum Plan' }).click();
+  await heading(page, 'Heute');
+  await tab(page, 'Ernährung').click();
+  await expect(page.getByTestId('nutrition-day')).toBeVisible();
+  await expect(page.getByTestId('nutrition-to-today')).toHaveCount(0);
+
+  const openFriday = async () => {
+    await page.getByTestId('nutrition-week-view').click();
+    await page.getByTestId('week-open-2026-10-09').click();
+    await expect(page).toHaveURL(/\/ernaehrung\?tag=2026-10-09$/);
+    await expect(page.getByRole('heading', { name: /09\.10\./ })).toBeVisible();
+  };
+  await openFriday();
+  // Genau eine Menüleiste im Dokument (keine zweite Reiter-Instanz über dem Stapel).
+  await expect(page.getByTestId('tab-bar')).toHaveCount(1);
+  await page.getByTestId('nutrition-to-today').click();
+  await expect(page.getByRole('heading', { name: /^Heute, / })).toBeVisible();
+  await expect(page.getByTestId('nutrition-to-today')).toHaveCount(0);
+
+  // Reiter „Ernährung“ antippen springt auf heute.
+  await openFriday();
+  await tab(page, 'Ernährung').click();
+  await expect(page.getByRole('heading', { name: /^Heute, / })).toBeVisible();
+  await expect(page).toHaveURL(/\/ernaehrung$/);
+  await expect(page.getByTestId('tab-bar')).toHaveCount(1);
+});

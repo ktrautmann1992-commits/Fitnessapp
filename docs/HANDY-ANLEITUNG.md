@@ -869,7 +869,13 @@ einfügen. Plan dazu: `docs/PLAN-DASHBOARD.md`.
    eingetragenes Gewicht – **nie** ein Wunschgewicht oder ein Balken zum Ziel), **Fortschritt** („Diese Woche: x von
    y Einheiten erledigt“) und Schnellzugriffe (Rezepte, Übungen, Einkaufsliste, Kalender).
 4. Jede Kachel führt in den bekannten Bereich. **„Training starten“** öffnet den Trainingsmodus **ohne** Menüleiste;
-   oben links in Chrome **‹** (zurück) führt wieder zur Übersicht.
+   der Zurück-Pfeil **‹** von Chrome am iPhone (unten links in der Chrome-Leiste) bzw. „Zurück zu Heute“ in der App
+   führt wieder zurück.
+   - Plan mit **strengeren Regeln** (Einstellungen → „Gesundheits-Check wiederholen“, eine Frage mit „Ja“): Die
+     Übersicht zeigt rot **„Bitte Plan neu erstellen“** und **keinen** „Training starten“-Knopf. Geänderte
+     Trainingstage (Einstellungen → „Angaben ändern“) zeigen den Hinweis „Deine Angaben haben sich geändert …“.
+   - Aus **Kalender**, **Woche** oder **„Dein Tag“** einen anderen Tag in der Ernährung öffnen → unten **„Zu heute“**;
+     der Reiter **„Ernährung“** springt beim Antippen ebenfalls auf heute.
 5. Ein Training anfangen (einen Satz abhaken) und **Übersicht** öffnen → oben der Hinweis **„Im Training wartet etwas
    auf dich“** → „Zum Training“ zeigt die bekannte Frage „fortsetzen, speichern oder verwerfen?“.
 6. **Einstellungen → Kalorienzahlen anzeigen** aus → die Kachel „Ernährung heute“ zeigt **nirgends kcal**.

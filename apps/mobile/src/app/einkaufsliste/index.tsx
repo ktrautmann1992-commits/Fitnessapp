@@ -182,7 +182,7 @@ export default function ShoppingListScreen() {
           <Button
             label={t.nutrition.title}
             variant="secondary"
-            onPress={() => router.push('/ernaehrung' as Href)}
+            onPress={() => router.dismissTo('/ernaehrung' as Href)}
           />
         </Card>
       </>,

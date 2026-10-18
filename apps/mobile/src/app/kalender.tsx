@@ -423,7 +423,7 @@ export default function CalendarScreen() {
                 <Button
                   label={t.calendar.nutritionButton}
                   variant="link"
-                  onPress={() => router.push('/ernaehrung' as Href)}
+                  onPress={() => router.dismissTo('/ernaehrung' as Href)}
                 />
               </>
             ) : null}

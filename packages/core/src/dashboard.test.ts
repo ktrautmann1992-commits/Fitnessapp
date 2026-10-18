@@ -3,15 +3,20 @@ import { describe, expect, it } from 'vitest';
 import {
   type DashboardSession,
   latestBodyWeight,
+  planNotice,
+  type TrainingAttentionFlags,
+  trainingAttentionReasons,
   trainingToday,
   weekTrainingProgress,
 } from './dashboard';
+import type { StoredSession } from './plan/view';
 
+// Nur die Felder, die die Regeln lesen (Tag, Status) – der Rest einer gespeicherten Einheit spielt hier keine Rolle.
 const s = (
   id: string,
   scheduled_on: string,
   status: DashboardSession['status'] = 'planned',
-): DashboardSession => ({ id, scheduled_on, status });
+): StoredSession => ({ id, scheduled_on, status }) as unknown as StoredSession;
 
 // Mittwoch, 2026-10-21; Woche Mo 2026-10-19 bis So 2026-10-25.
 const TODAY = '2026-10-21';
@@ -164,5 +169,96 @@ describe('latestBodyWeight', () => {
         { measured_on: '2026-10-04', weight_kg: Number.NaN },
       ]),
     ).toEqual({ weightKg: 70, measuredOn: '2026-10-01' });
+  });
+});
+
+describe('planNotice', () => {
+  const offer = (o: boolean, stricter = false, reasons: string[] = ['inputs']) =>
+    ({ offer: o, stricter, reasons }) as unknown as Parameters<typeof planNotice>[0];
+
+  it('abgelaufen geht allem vor', () => {
+    expect(planNotice(offer(true, true), 'ended')).toEqual({ kind: 'ended' });
+    expect(planNotice(null, 'ended')).toEqual({ kind: 'ended' });
+  });
+
+  it('strenger vor normalem Angebot', () => {
+    expect(planNotice(offer(true, true), 'not_due')).toEqual({ kind: 'stricter' });
+  });
+
+  it('normales Angebot, nur neue Vorlagen-Version erkannt', () => {
+    expect(planNotice(offer(true), 'due')).toEqual({ kind: 'offer', versionOnly: false });
+    expect(planNotice(offer(true, false, ['template_version']), 'not_due')).toEqual({
+      kind: 'offer',
+      versionOnly: true,
+    });
+  });
+
+  it('kein Angebot (auch ohne Regeln: null) → none', () => {
+    expect(planNotice(offer(false), 'not_due')).toEqual({ kind: 'none' });
+    expect(planNotice(null, 'due')).toEqual({ kind: 'none' });
+  });
+});
+
+describe('trainingAttentionReasons', () => {
+  const none: TrainingAttentionFlags = {
+    planNotice: { kind: 'none' },
+    drafts: 0,
+    workoutMessage: null,
+    planMessage: false,
+    reconsent: false,
+    foreignData: false,
+    sessionExpired: false,
+    competitionMismatch: false,
+    weightGoalCard: false,
+  };
+
+  it('nichts offen → leer', () => {
+    expect(trainingAttentionReasons(none)).toEqual([]);
+  });
+
+  it('positive Rückmeldungen zählen nicht, Probleme schon', () => {
+    for (const kind of ['saved', 'queued', 'orphaned'] as const) {
+      expect(trainingAttentionReasons({ ...none, workoutMessage: kind })).toEqual([]);
+    }
+    for (const kind of ['conflict', 'rejected', 'invalid'] as const) {
+      expect(trainingAttentionReasons({ ...none, workoutMessage: kind })).toEqual([
+        'workout_problem',
+      ]);
+    }
+  });
+
+  it('alles zugleich in fester Reihenfolge (Wichtigstes zuerst)', () => {
+    expect(
+      trainingAttentionReasons({
+        planNotice: { kind: 'stricter' },
+        drafts: 2,
+        workoutMessage: 'rejected',
+        planMessage: true,
+        reconsent: true,
+        foreignData: true,
+        sessionExpired: true,
+        competitionMismatch: true,
+        weightGoalCard: true,
+      }),
+    ).toEqual([
+      'plan_stricter',
+      'reconsent',
+      'foreign_data',
+      'session_expired',
+      'workout_problem',
+      'draft',
+      'plan_message',
+      'competition_mismatch',
+      'weight_goal',
+    ]);
+  });
+
+  it('Plan abgelaufen bzw. normales Angebot', () => {
+    expect(trainingAttentionReasons({ ...none, planNotice: { kind: 'ended' } })).toEqual([
+      'plan_ended',
+    ]);
+    expect(
+      trainingAttentionReasons({ ...none, planNotice: { kind: 'offer', versionOnly: false } }),
+    ).toEqual(['plan_offer']);
   });
 });

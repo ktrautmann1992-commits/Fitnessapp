@@ -141,6 +141,7 @@ export const de = {
     emailPlaceholder: 'name@beispiel.de',
     emailInvalid: 'Bitte eine gültige E-Mail-Adresse eingeben.',
     sendCode: 'Code senden',
+    sendCodeIn: (seconds: number) => `Code senden (in ${seconds} s)`,
     codeSent: (email: string) => `Wir haben dir einen Code an ${email} geschickt.`,
     code: '6-stelliger Code',
     codeInvalid: 'Bitte den 6-stelligen Code aus der E-Mail eingeben.',

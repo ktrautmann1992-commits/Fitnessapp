@@ -230,7 +230,7 @@ export default function SettingsScreen() {
             <Button
               label={t.nutrition.settings.open}
               variant="secondary"
-              onPress={() => router.push('/ernaehrung' as Href)}
+              onPress={() => router.dismissTo('/ernaehrung' as Href)}
               testID="settings-nutrition-open"
             />
             <Button

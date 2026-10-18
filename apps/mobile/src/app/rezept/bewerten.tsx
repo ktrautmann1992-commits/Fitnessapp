@@ -105,7 +105,7 @@ export default function RecipeRatingScreen() {
         <Body muted>{texts.planStays}</Body>
         <Button
           label={texts.toPlan}
-          onPress={() => router.replace(`/ernaehrung?tag=${date ?? today}` as Href)}
+          onPress={() => router.dismissTo(`/ernaehrung?tag=${date ?? today}` as Href)}
           testID="rating-to-plan"
         />
       </>,

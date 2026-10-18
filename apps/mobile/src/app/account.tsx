@@ -1,9 +1,10 @@
 import { useLocalSearchParams, useRouter, type Href } from 'expo-router';
 import { useEffect, useState } from 'react';
-import { AccessibilityInfo, View } from 'react-native';
+import { AccessibilityInfo, Platform, StyleSheet, Text, View } from 'react-native';
 import { z } from 'zod';
 
 import { Screen } from '@/components/screen';
+import { BackendError } from '@/data/backend';
 import { Body, Button, Notice, TextField } from '@/components/ui';
 import { t } from '@/i18n';
 import { errorText } from '@/lib/error-text';
@@ -32,18 +33,22 @@ export default function AccountScreen() {
   const [now, setNow] = useState(() => Date.now());
   const [resent, setResent] = useState(false);
   const secondsLeft = resendSecondsLeft(sentAt, now);
+  /** Text der Ansage für Bildschirmleser – wechselt nur bei 30, 10 und 0 s (Wächter M2). */
+  const [announcement, setAnnouncement] = useState('');
+  const counting = sentAt !== null && secondsLeft > 0;
   useEffect(() => {
-    if (sentAt === null) return;
+    // Uhr nur, solange die Sperre läuft (Wächter N3).
+    if (!counting) return;
     const timer = setInterval(() => setNow(Date.now()), 1000);
     return () => clearInterval(timer);
-  }, [sentAt]);
+  }, [counting]);
   useEffect(() => {
-    // Bildschirmleser: nur grobe Schritte ansagen (nicht jede Sekunde).
-    if (sentAt !== null && announceCountdown(secondsLeft)) {
-      AccessibilityInfo.announceForAccessibility(
-        secondsLeft === 0 ? t.account.resend : t.account.resendInA11y(secondsLeft),
-      );
-    }
+    if (sentAt === null || !announceCountdown(secondsLeft)) return;
+    const text = secondsLeft === 0 ? t.account.resend : t.account.resendInA11y(secondsLeft);
+    // Browser/Android: Live-Region (aria-live="polite"); iPhone-App: Ansage über VoiceOver.
+    // eslint-disable-next-line react-hooks/set-state-in-effect -- Ansage nur bei groben Schritten
+    setAnnouncement(text);
+    if (Platform.OS === 'ios') AccessibilityInfo.announceForAccessibility(text);
   }, [secondsLeft, sentAt]);
 
   const goBack = () => (router.canGoBack() ? router.back() : router.replace('/welcome'));
@@ -102,7 +107,17 @@ export default function AccountScreen() {
       if (resendSecondsLeft(sentAt, Date.now()) > 0) return;
       const again = codeSentTo !== null;
       setResent(false);
-      await requestCode(trimmed);
+      try {
+        await requestCode(trimmed);
+      } catch (caught) {
+        // Zu viele Versuche (429): ebenfalls 60 s sperren, damit niemand weiter ins Limit tippt (Wächter N4).
+        if (caught instanceof BackendError && caught.code === 'rate_limited') {
+          const at = Date.now();
+          setSentAt(at);
+          setNow(at);
+        }
+        throw caught;
+      }
       const at = Date.now();
       setSentAt(at);
       setNow(at);
@@ -133,12 +148,26 @@ export default function AccountScreen() {
           {codeSentTo ? (
             <Button label={t.account.verify} onPress={() => void verify()} loading={busy} />
           ) : (
-            <Button label={t.account.sendCode} onPress={() => void sendCode()} loading={busy} />
+            <Button
+              label={secondsLeft > 0 ? t.account.sendCodeIn(secondsLeft) : t.account.sendCode}
+              onPress={() => void sendCode()}
+              loading={busy}
+              disabled={secondsLeft > 0}
+              testID="account-send"
+            />
           )}
           <Button label={t.common.back} variant="secondary" onPress={goBack} disabled={busy} />
         </View>
       }
     >
+      <Text
+        aria-live="polite"
+        accessibilityLiveRegion="polite"
+        style={styles.liveRegion}
+        testID="account-countdown-live"
+      >
+        {announcement}
+      </Text>
       {codeSentTo ? (
         <>
           <Body>{t.account.codeSent(codeSentTo)}</Body>
@@ -199,3 +228,14 @@ export default function AccountScreen() {
     </Screen>
   );
 }
+
+const styles = StyleSheet.create({
+  // Nur für Bildschirmleser (sichtbar wäre es doppelt zum Knopf „Code erneut senden (in … s)“).
+  liveRegion: {
+    position: 'absolute',
+    width: 1,
+    height: 1,
+    overflow: 'hidden',
+    opacity: 0,
+  },
+});

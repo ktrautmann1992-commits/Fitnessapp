@@ -128,3 +128,21 @@ Anmelden (Testmodus), Übersicht, Menüleiste und Mein Konto; Bildschirmfotos he
   etwas“, Mein Konto); bestehende Specs nur in der Navigation angepasst (Neustart → Übersicht, Export/Abmelden unter
   „Mein Konto“). Bildschirmfotos hell/dunkel in `e2e/screenshots.spec.ts` ergänzt.
 - **Keine Migration**, keine neuen Secrets.
+
+### Nachbesserung nach der Wächter-Prüfung (18.10.2026)
+
+- **H1:** „Plan neu erstellen?“ und „Im Training wartet etwas“ kommen aus einer gemeinsamen Auswertung für „Heute“ und
+  die Übersicht (`planNotice`, `trainingAttentionReasons` in `packages/core/src/dashboard.ts`, App-Seite
+  `src/data/training-attention.ts`). Strengere Regeln bzw. abgelaufener Plan: eigener roter Hinweis auf der Übersicht,
+  **kein** „Training starten“. Geänderte Angaben: Hinweis „Deine Angaben haben sich geändert …“.
+- **M1/N7:** Wege aus dem Stapel in den Reiter „Ernährung“ nutzen `router.dismissTo` (keine zweite Reiter-Instanz);
+  ein gewählter anderer Tag (`?tag=`) zeigt „Zu heute“ (und „Zurück“, wenn möglich); Antippen des Reiters springt
+  auf heute.
+- **M2/N3/N4:** Countdown-Ansage per Live-Region (`aria-live="polite"`, nur bei 30/10/0 s), Uhr stoppt bei 0, nach 429
+  ebenfalls 60 s Sperre (auch „Code senden“).
+- **N1/N2:** Nur warnende Trainings-Rückmeldungen (Konflikt, abgelehnt, ungültig) und der Wettkampf-Hinweis „passt
+  nicht“ zählen für den Sammelhinweis.
+- **N5:** `trainingToday` nutzt `sessionOn`/`nextPlannedSession` aus `plan/view.ts`.
+- **N6:** „Training starten“ nur mit berechneter Vorgabe (`workoutView`), sonst Grund statt Knopf.
+- **N8:** `viewport-fit=cover` in `public/index.html`; die sicheren Ränder liest react-native-safe-area-context im
+  Browser über `env(safe-area-inset-*)` – die Menüleiste bleibt über der Home-Leiste.

@@ -1,9 +1,9 @@
 import {
   latestBodyWeight,
   nextMealOfDay,
+  type PlanNotice,
   trainingToday,
   weekTrainingProgress,
-  weightGoalCard,
 } from '@fitnessapp/core';
 import { Redirect, useRouter, type Href } from 'expo-router';
 import { useEffect, useMemo } from 'react';
@@ -14,9 +14,11 @@ import { Body, Button, LoadingState, Notice } from '@/components/ui';
 import { weightGoalOverviewFromRows } from '@/components/weight-goal';
 import { displayedSessionNames } from '@/data/competition';
 import { sessionDisplay } from '@/data/exercise-swap';
+import { logForSession } from '@/data/log-rows';
+import { trainingAttention } from '@/data/training-attention';
 import { activePlan } from '@/data/training-plan';
 import type { UserRows } from '@/data/types';
-import { startKind } from '@/data/workout-session';
+import { startKind, workoutView } from '@/data/workout-session';
 import { t } from '@/i18n';
 import { formatDateDe } from '@/lib/format';
 import { formatKcal, roleLabel, slotLabel } from '@/lib/nutrition-format';
@@ -70,27 +72,54 @@ function Overview({ rows, today }: { rows: UserRows; today: string }) {
   const router = useRouter();
   const app = useApp();
   const consent = healthConsentStatus(rows, app.versions);
-  const { versions } = app;
-  const weightGoalNeedsAttention = useMemo(
-    () => weightGoalCard(weightGoalOverviewFromRows(rows, versions, today)) !== null,
+  const { versions, safetyRules, offline } = app;
+  const library = app.library.kind === 'ready' ? app.library.library : null;
+  const weightGoal = useMemo(
+    () => weightGoalOverviewFromRows(rows, versions, today),
     [rows, versions, today],
   );
-  // Was „Heute“ zeigt, geht nicht verloren: Wartet dort etwas, weist die Übersicht darauf hin.
-  const attention =
-    app.drafts.length > 0 ||
-    app.foreignData ||
-    app.sessionExpired ||
-    app.planMessage !== null ||
-    app.workoutMessage !== null ||
-    consent === 'outdated' ||
-    weightGoalNeedsAttention;
+  // Was „Heute“ zeigt, geht nicht verloren: dieselbe Auswertung wie „Heute“ (data/training-attention.ts).
+  const { planNotice, reasons } = trainingAttention({
+    rows,
+    versions,
+    rules: safetyRules,
+    library,
+    today,
+    offline,
+    drafts: app.drafts.length,
+    workoutMessage: app.workoutMessage?.kind ?? null,
+    planMessage: app.planMessage,
+    foreignData: app.foreignData,
+    sessionExpired: app.sessionExpired,
+    weightGoal,
+  });
+  const urgent = planNotice.kind === 'stricter' || planNotice.kind === 'ended';
+  const others = reasons.filter((r) => r !== 'plan_stricter' && r !== 'plan_ended');
 
   return (
     <Screen title={t.dashboard.title} testID="overview">
       <Body muted>{greeting(new Date().getHours())}</Body>
-      {attention ? (
+      {urgent ? (
+        // Deutlich wie auf „Heute“: strengere Regeln bzw. Plan abgelaufen → neu erstellen.
+        <Notice
+          tone="danger"
+          title={planNotice.kind === 'ended' ? t.plan.endedTitle : t.plan.offerStricterTitle}
+          testID="overview-plan-urgent"
+        >
+          <Body>{planNotice.kind === 'ended' ? t.plan.endedText : t.plan.offerStricterText}</Body>
+          <Button
+            label={t.dashboard.attention.recreate}
+            onPress={() => router.navigate('/today')}
+          />
+        </Notice>
+      ) : null}
+      {others.length > 0 ? (
         <Notice tone="info" title={t.dashboard.attention.title} testID="overview-attention">
-          <Body>{t.dashboard.attention.text}</Body>
+          <Body>
+            {others.includes('plan_offer') && others.length === 1
+              ? t.dashboard.attention.planOffer
+              : t.dashboard.attention.text}
+          </Body>
           <Button
             label={t.dashboard.attention.open}
             variant="secondary"
@@ -98,7 +127,7 @@ function Overview({ rows, today }: { rows: UserRows; today: string }) {
           />
         </Notice>
       ) : null}
-      <TrainingTile rows={rows} today={today} />
+      <TrainingTile rows={rows} today={today} planNotice={planNotice} />
       <NutritionTile today={today} />
       <BodyTile rows={rows} consent={consent} />
       <ProgressTile rows={rows} today={today} />
@@ -141,7 +170,15 @@ function Overview({ rows, today }: { rows: UserRows; today: string }) {
 }
 
 /** Kachel „Training heute“: heutige Einheit mit „Training starten“, Ruhetag mit nächster Einheit, ohne Plan → Training. */
-function TrainingTile({ rows, today }: { rows: UserRows; today: string }) {
+function TrainingTile({
+  rows,
+  today,
+  planNotice,
+}: {
+  rows: UserRows;
+  today: string;
+  planNotice: PlanNotice;
+}) {
   const router = useRouter();
   const app = useApp();
   const texts = t.dashboard.training;
@@ -197,9 +234,13 @@ function TrainingTile({ rows, today }: { rows: UserRows; today: string }) {
     );
   }
   const draft = app.drafts.some((d) => d.key === session.id);
-  // Direkt starten nur, wenn „Heute“ es auch erlauben würde (Kraft: geprüfte Übungen, nicht leer durch Vorlieben).
-  let canStart = !draft && startKind(rows, session, today) === 'today';
+  // Direkt starten nur, wenn „Heute“ es auch erlauben würde (Wächter N6): heute dran, kein strengerer bzw.
+  // abgelaufener Plan, Kraft nur mit geprüften Übungen (workoutView) und nicht leer durch Vorlieben.
+  const blockedByPlan = planNotice.kind === 'stricter' || planNotice.kind === 'ended';
+  let canStart = !draft && !blockedByPlan && startKind(rows, session, today) === 'today';
+  let reason: string | null = blockedByPlan ? texts.recreateFirst : null;
   if (canStart && session.kind === 'strength') {
+    const ownerUserId = app.session?.userId ?? null;
     const display =
       lib && rules
         ? sessionDisplay({
@@ -210,12 +251,30 @@ function TrainingTile({ rows, today }: { rows: UserRows; today: string }) {
             session,
             today,
             daySwaps: app.daySwaps,
-            ownerUserId: app.session?.userId ?? null,
+            ownerUserId,
           })
         : null;
-    canStart =
-      display !== null && !display.shown.emptyByPreference && !display.shown.libraryMissing;
+    const view =
+      lib && rules
+        ? workoutView(rows, lib, rules, session.id, today, {
+            excludeLogId: logForSession(rows, session.id)?.id ?? null,
+            daySwaps: app.daySwaps,
+            ownerUserId,
+          })
+        : null;
+    if (display?.shown.emptyByPreference) {
+      canStart = false;
+      reason = t.swap.emptyStartDisabled;
+    } else if (display === null || display.shown.libraryMissing || view === null) {
+      canStart = false;
+      reason =
+        app.library.kind === 'ready' || app.library.kind === 'missing'
+          ? t.today.libraryMissingStart
+          : null;
+    }
   }
+  const loadingLibrary =
+    session.kind === 'strength' && (app.library.kind === 'idle' || app.library.kind === 'loading');
   return (
     <DashboardTile title={texts.title} testID="overview-training">
       <Body>{texts.today(nameOf(session))}</Body>
@@ -231,7 +290,11 @@ function TrainingTile({ rows, today }: { rows: UserRows; today: string }) {
           onPress={() => router.push(`/workout/${session.id}` as Href)}
           testID="overview-training-start"
         />
-      ) : session.kind === 'strength' && app.library.kind !== 'ready' && lib === null ? (
+      ) : reason ? (
+        <Body muted testID="overview-training-no-start">
+          {reason}
+        </Body>
+      ) : loadingLibrary ? (
         <LoadingState label={texts.loading} />
       ) : null}
       {toTraining}

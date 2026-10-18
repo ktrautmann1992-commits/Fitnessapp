@@ -133,7 +133,8 @@ export default function FoodPhotoScreen() {
     return <Redirect href={route as Href} />;
   }
   const rows = app.rows;
-  const toDay = () => router.replace(`/ernaehrung?tag=${date}` as Href);
+  // Zurück in den Reiter „Ernährung“ (keine zweite Reiter-Instanz, Wächter M1).
+  const toDay = () => router.dismissTo(`/ernaehrung?tag=${date}` as Href);
   // „Per Hand eintragen“ = zurück zu „Eintragen“ (von dort kommt man hierher), sonst dorthin ersetzen.
   const back = () =>
     router.canGoBack()

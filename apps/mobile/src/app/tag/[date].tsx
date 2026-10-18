@@ -242,7 +242,7 @@ export default function DayScreen() {
             label={t.day.openNutrition}
             accessibilityLabel={t.day.openNutritionA11y(dayLabel(date))}
             variant="secondary"
-            onPress={() => router.push(`/ernaehrung?tag=${date}` as Href)}
+            onPress={() => router.dismissTo(`/ernaehrung?tag=${date}` as Href)}
             testID="day-open-nutrition"
           />
         ) : null}

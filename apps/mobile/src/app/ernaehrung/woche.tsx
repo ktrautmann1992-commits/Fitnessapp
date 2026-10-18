@@ -258,7 +258,7 @@ export default function NutritionWeekScreen() {
                     ? leftoverHintView(hint, (id) => foods.get(id)?.name_de ?? id)
                     : undefined;
                 }}
-                onOpenDay={() => router.push(`/ernaehrung?tag=${day.date}` as Href)}
+                onOpenDay={() => router.dismissTo(`/ernaehrung?tag=${day.date}` as Href)}
                 onOpenRecipe={(recipeId, slot) =>
                   router.push(
                     `/rezept/${encodeURIComponent(recipeId)}?tag=${day.date}&platz=${slot}` as Href,

@@ -26,6 +26,9 @@ export const deDashboard = {
     title: 'Im Training wartet etwas auf dich',
     text: 'Zum Beispiel ein angefangenes Training, eine Rückfrage zu deinem Plan oder ein Hinweis.',
     open: 'Zum Training',
+    planOffer:
+      'Deine Angaben haben sich geändert – im Training kannst du deinen Plan neu erstellen.',
+    recreate: 'Zum Training: Plan neu erstellen',
   },
   training: {
     title: 'Training heute',
@@ -40,6 +43,7 @@ export const deDashboard = {
     next: (day: string, name: string) => `Nächste Einheit: ${day} – ${name}`,
     noUpcoming: 'Keine weitere Einheit im Plan.',
     loading: 'Plan wird geladen …',
+    recreateFirst: 'Bitte erstelle zuerst deinen Plan neu – das geht im Training.',
   },
   nutrition: {
     title: 'Ernährung heute',
