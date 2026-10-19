@@ -1,5 +1,5 @@
 /// <reference types="node" />
-import { readdirSync, readFileSync } from 'node:fs';
+import { existsSync, readdirSync, readFileSync } from 'node:fs';
 import { join } from 'node:path';
 
 import { expect, type Page, test } from '@playwright/test';
@@ -22,6 +22,37 @@ function exerciseStatusCounts(): Record<'draft' | 'published' | 'archived', numb
     counts[status] += 1;
   }
   return counts;
+}
+
+/**
+ * Ernährungs-Bestand im Repository (content/foods, content/recipes), den der Redaktionsbereich beim Bauen bündelt –
+ * so prüft der Test den passenden Zustand, egal ob der Lebensmittel-Katalog (Workflow foods-import) bzw. Rezepte
+ * (alpha5-import) schon im Repository sind. Beide Zustände prüft zusätzlich src/lib/admin/nutrition.test.ts fest.
+ */
+function nutritionContent(): {
+  foods: { id: string; name_de: string }[];
+  recipeCount: number;
+} {
+  const contentDir = join(__dirname, '../../../content');
+  const jsonFiles = (folder: string) => {
+    const dir = join(contentDir, folder);
+    return existsSync(dir)
+      ? readdirSync(dir)
+          .filter((n) => n.endsWith('.json'))
+          .sort()
+      : [];
+  };
+  const foods = jsonFiles('foods')
+    // Begleitdatei (Erwartungsliste, R18), kein Lebensmittel – wie scripts/bundle-content.mjs.
+    .filter((n) => n !== 'allergen-expectations.json')
+    .map(
+      (n) =>
+        JSON.parse(readFileSync(join(contentDir, 'foods', n), 'utf8')) as {
+          id: string;
+          name_de: string;
+        },
+    );
+  return { foods, recipeCount: jsonFiles('recipes').length };
 }
 
 async function login(page: Page, password = E2E_ADMIN_PASSWORD) {
@@ -239,9 +270,11 @@ test.describe('mit Zugangsdaten', () => {
 });
 
 test.describe('Ernährung (N2d)', () => {
-  test('Rezepte, Lebensmittel, Meal-Prep, Ratgeber: nur ansehen, Leerzustand ohne Katalog, Klick-Schritte', async ({
+  test('Rezepte, Lebensmittel, Meal-Prep, Ratgeber: nur ansehen, Katalog oder Leerzustand, Klick-Schritte', async ({
     page,
   }) => {
+    const { foods, recipeCount } = nutritionContent();
+    const catalogMissingNote = page.getByText('Noch kein Lebensmittel-Katalog im Repository.');
     await login(page);
     await expect(page).toHaveURL(/\/admin$/);
     const nav = page.getByRole('navigation', { name: 'Bereiche' });
@@ -253,9 +286,23 @@ test.describe('Ernährung (N2d)', () => {
     await nav.getByRole('link', { name: 'Rezepte' }).click();
     await expect(page).toHaveURL(/\/admin\/rezepte$/);
     await expect(page.getByRole('heading', { level: 1, name: 'Rezepte' })).toBeVisible();
-    // Heute ohne Katalog und ohne Rezepte im Repository (foods-import/alpha5-import noch nicht gelaufen).
-    await expect(page.getByText('Noch kein Lebensmittel-Katalog im Repository.')).toBeVisible();
-    await expect(page.getByRole('heading', { name: 'Noch keine Rezepte' })).toBeVisible();
+    await expect(page.getByText(`${recipeCount} Rezepte · nach Kategorie`)).toBeVisible();
+    // Hinweis „Katalog fehlt“ genau dann, wenn content/foods leer ist.
+    if (foods.length === 0) {
+      await expect(catalogMissingNote).toBeVisible();
+    } else {
+      await expect(catalogMissingNote).toHaveCount(0);
+    }
+    // Begleitdaten (Quellauszug, Listen) des echten Bestands sind lesbar.
+    await expect(
+      page.getByRole('heading', { name: 'Fehler im Quellauszug bzw. in den Listen' }),
+    ).toHaveCount(0);
+    if (recipeCount === 0) {
+      await expect(page.getByRole('heading', { name: 'Noch keine Rezepte' })).toBeVisible();
+    } else {
+      await expect(page.getByRole('heading', { name: 'Noch keine Rezepte' })).toHaveCount(0);
+      await expect(page.getByRole('list', { name: 'Kategorien' })).toBeVisible();
+    }
     await expect(page.getByRole('heading', { name: 'Sammelfreigabe pro Kategorie' })).toBeVisible();
     await expect(page.getByText('content-review', { exact: true }).first()).toBeVisible();
     // Kein Formular, das etwas ändert (der Redaktionsbereich schreibt nicht).
@@ -273,7 +320,25 @@ test.describe('Ernährung (N2d)', () => {
       page.getByRole('heading', { name: 'Checkliste Katalog-Prüfung (R19)' }),
     ).toBeVisible();
     await expect(page.getByText(/Salz bei Aufschnitt und verarbeiteter Ware/)).toBeVisible();
-    await expect(page.getByRole('heading', { name: 'Noch keine Lebensmittel' })).toBeVisible();
+    await expect(page.getByTestId('trefferzahl')).toHaveText(`${foods.length} Lebensmittel`);
+    const foodCards = page.getByRole('list', { name: 'Lebensmittel' }).getByRole('listitem');
+    if (foods.length === 0) {
+      await expect(catalogMissingNote).toBeVisible();
+      await expect(page.getByRole('heading', { name: 'Noch keine Lebensmittel' })).toBeVisible();
+      await expect(foodCards).toHaveCount(0);
+    } else {
+      // Mit Katalog: alle Lebensmittel als Karten, Suche nach ID, Detailseite.
+      await expect(catalogMissingNote).toHaveCount(0);
+      await expect(page.getByRole('heading', { name: 'Noch keine Lebensmittel' })).toHaveCount(0);
+      await expect(foodCards).toHaveCount(foods.length);
+      const food = foods[0]!;
+      await page.goto(`/admin/lebensmittel?q=${encodeURIComponent(food.id)}`);
+      await expect(page.getByTestId('trefferzahl')).toContainText(`von ${foods.length} Treffern`);
+      await foodCards.filter({ hasText: food.name_de }).first().click();
+      await expect(page).toHaveURL(new RegExp(`/admin/lebensmittel/${food.id}$`));
+      await expect(page.getByRole('heading', { level: 1, name: food.name_de })).toBeVisible();
+      await expect(page.getByRole('link', { name: '← Alle Lebensmittel' })).toBeVisible();
+    }
 
     await nav.getByRole('link', { name: 'Meal-Prep' }).click();
     await expect(page.getByRole('heading', { name: 'Noch keine Meal-Prep-Pläne' })).toBeVisible();

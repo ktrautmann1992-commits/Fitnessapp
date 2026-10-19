@@ -2,6 +2,7 @@
 import { expect, test } from '@playwright/test';
 
 import { LEAD_MAGNET_CONSENT, WAITLIST_CONSENT } from '../src/lib/waitlist/consent';
+import { CONFIGURED_URL } from './test-env';
 
 /** Landingpage, Warteliste (ohne Einstellungen), Rechtsseiten, robots/sitemap – Handy-Ansicht 390 × 844. */
 
@@ -102,7 +103,7 @@ test('Warteliste-API: fremde Herkunft abgelehnt, Honeypot meldet Erfolg', async 
   expect(fremd.status()).toBe(403);
   const bot = await request.post('/api/warteliste', {
     data: { email: 'a@b.de', consent: true, website: 'spam' },
-    headers: { origin: 'http://localhost:3100' },
+    headers: { origin: CONFIGURED_URL },
   });
   expect(bot.status()).toBe(200);
 });
@@ -201,12 +202,12 @@ test('Gratis-Rezepte-API: Spamschutz wie Warteliste', async ({ request }) => {
   expect(fremd.status()).toBe(403);
   const bot = await request.post('/api/gratis-rezepte', {
     data: { email: 'a@b.de', consent: true, website: 'spam' },
-    headers: { origin: 'http://localhost:3100' },
+    headers: { origin: CONFIGURED_URL },
   });
   expect(bot.status()).toBe(200);
   const ohne = await request.post('/api/gratis-rezepte', {
     data: { email: 'a@b.de', consent: false, newsletter: true },
-    headers: { origin: 'http://localhost:3100' },
+    headers: { origin: CONFIGURED_URL },
   });
   expect(ohne.status()).toBe(400);
 });
