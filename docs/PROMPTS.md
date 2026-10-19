@@ -363,6 +363,9 @@ apps/web an. Importiere Workouts automatisch ins Tagebuch (Duplikate vermeiden) 
 Werte in daily_metrics. Implementiere den Readiness-Score in packages/core mit Tests.
 ```
 
+**Plan:** `docs/PLAN-PHASE-8.md` (Entwurf zur Freigabe, 19.10.2026) – Etappen WE0–WE8 inkl. Withings-Waagen
+(Gründer-Wunsch 19.10.2026), Gründer-Fragen WE-G1 bis WE-G25.
+
 ## Phase 9 – Zyklus-Modul
 ```
 Setze docs/KONZEPT.md Abschnitt 8 um, opt-in, verschlüsselte Speicherung, eigene Einwilligung.
