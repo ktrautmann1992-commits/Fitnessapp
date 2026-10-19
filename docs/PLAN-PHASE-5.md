@@ -4235,7 +4235,8 @@ p_require_expert_review boolean default true)` – Standard und `null` = Livegan
    erscheint auch in der Testphase – Rezeptansicht `recipe-allergen-warning`, Kühlschrank-Suche
    `fridge-testphase-warning` (`hasTestphase`). PDF-Essensplan (Wächter M1): Kennzeichen ebenfalls über
    `contentReviewMark` – „Testphase – noch nicht fachlich geprüft“ (`recipe.mark.testphase`) auch für von Hand erfasste
-   alpha5-Rezepte. Entwürfe im Testmodus wie bisher („KI-Entwurf – fachlich prüfen“ bzw. „Entwurf …“ + Allergen-Warnung). Der Bestand
+   alpha5-Rezepte; dazu ein eigener Allergen-Hinweis `nutrition.notice.testphaseAllergens` („Testphase: Allergene noch
+   nicht fachlich geprüft …“) auf dem Deckblatt (ab einem Testphase-Rezept) und je Rezept. Entwürfe im Testmodus wie bisher („KI-Entwurf – fachlich prüfen“ bzw. „Entwurf …“ + Allergen-Warnung). Der Bestand
    kommt im Supabase-Modus aus `data` – `meta.expert_reviewed` reist dort ohnehin mit. Für die E2E-Tests: Gerätewert
    `fitnessapp.nutrition-demo.v1 = "force-testphase"` lädt die Beispiel-Inhalte als „freigegeben, nicht fachlich
    geprüft“ (`demoNutritionContentAsTestphase`, Rezepte über `releasedRecipe`, Ratgeber über `planNutritionRelease` wie

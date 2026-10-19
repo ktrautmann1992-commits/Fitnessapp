@@ -52,6 +52,7 @@ export const NUTRITION_PRINT_TEXTS: Translators = {
   'nutrition.notice.products': () => `${r.traces} ${t.nutrition.hfiCoeliac}`,
   'nutrition.notice.testValues': () => p.testValues,
   'nutrition.notice.draftAllergens': () => p.draftAllergens,
+  'nutrition.notice.testphaseAllergens': () => p.testphaseAllergens,
   'mealplan.week.heading': ({ continued }) => (continued ? p.weekHeadingContinued : p.weekHeading),
   'mealplan.col.slot': () => p.colSlot,
   'mealplan.col.day': ({ date }) => `${weekday(date)} ${dayMonth(date)}`,

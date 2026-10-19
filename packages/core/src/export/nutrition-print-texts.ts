@@ -63,6 +63,8 @@ export interface NutritionPrintTextParams {
   'nutrition.notice.testValues': Empty;
   /** 16 B (i): Entwürfe – „Allergene noch nicht fachlich geprüft …“. */
   'nutrition.notice.draftAllergens': Empty;
+  /** Testphase: freigegeben ohne Fachprüfung – Allergene nicht fachlich geprüft (Wächter M2). */
+  'nutrition.notice.testphaseAllergens': Empty;
   'mealplan.week.heading': { continued: boolean };
   'mealplan.col.slot': Empty;
   'mealplan.col.day': { date: string };
@@ -158,6 +160,7 @@ export const NUTRITION_PARAM_SCHEMAS = {
   'nutrition.notice.products': empty,
   'nutrition.notice.testValues': empty,
   'nutrition.notice.draftAllergens': empty,
+  'nutrition.notice.testphaseAllergens': empty,
   'mealplan.week.heading': z.strictObject({ continued: z.boolean() }),
   'mealplan.col.slot': empty,
   'mealplan.col.day': z.strictObject({ date: isoDateSchema }),

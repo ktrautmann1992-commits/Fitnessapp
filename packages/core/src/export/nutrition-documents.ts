@@ -607,11 +607,15 @@ function recipeSection(flow: PageFlow, group: RecipeGroup, foods: FoodLookup): v
     };
     head.push([mark, blockMm(mark)]);
   }
-  if (first.meal.recipeStatus === 'draft' || recipe.status === 'draft') {
+  // Allergen-Hinweis (16 B (i)); Testphase wie in der App auch ohne Entwurf (Wächter M2, sichere Variante).
+  const isDraft = first.meal.recipeStatus === 'draft' || recipe.status === 'draft';
+  if (isDraft || reviewMark === 'testphase') {
     const warning: PrintBlock = {
       type: 'notice',
       title: label('nutrition.notice.title'),
-      text: label('nutrition.notice.draftAllergens'),
+      text: label(
+        isDraft ? 'nutrition.notice.draftAllergens' : 'nutrition.notice.testphaseAllergens',
+      ),
     };
     head.push([warning, blockMm(warning)]);
   }
@@ -791,8 +795,12 @@ export function buildNutritionPlanDocument(
   // B5/16 B (h): Zahlen nur mit „Kalorienzahlen anzeigen“ und nie in einer Woche mit Schwangerschaft/Stillzeit.
   const numbers = options.showEnergyNumbers && !weekHidesEnergyNumbers(input.targets);
   const weekEnd = addDays(plan.weekStart, 6);
-  const hasDraft = groups.some(
-    (g) => g.recipe.status === 'draft' || g.uses.some((u) => u.meal.recipeStatus === 'draft'),
+  const isDraftGroup = (g: (typeof groups)[number]) =>
+    g.recipe.status === 'draft' || g.uses.some((u) => u.meal.recipeStatus === 'draft');
+  const hasDraft = groups.some(isDraftGroup);
+  // Testphase (freigegeben ohne Fachprüfung): eigener Allergen-Hinweis auf dem Deckblatt (Wächter M2).
+  const hasTestphase = groups.some(
+    (g) => !isDraftGroup(g) && contentReviewMark(g.recipe) === 'testphase',
   );
 
   const items: { label: PrintText; value: PrintText }[] = [];
@@ -821,6 +829,15 @@ export function buildNutritionPlanDocument(
             type: 'notice',
             title: label('nutrition.notice.title'),
             text: label('nutrition.notice.draftAllergens'),
+          } as const,
+        ]
+      : []),
+    ...(hasTestphase
+      ? [
+          {
+            type: 'notice',
+            title: label('nutrition.notice.title'),
+            text: label('nutrition.notice.testphaseAllergens'),
           } as const,
         ]
       : []),

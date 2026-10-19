@@ -93,6 +93,10 @@ describe('Testphase: freigegeben ohne Fachprüfung – nutzbar und gekennzeichne
     expect(t.nutrition.fridge.testphaseAllergenWarning).toContain(
       'Allergene noch nicht fachlich geprüft',
     );
+    // PDF: eigener Allergen-Hinweis für Testphase-Rezepte.
+    expect(t.nutrition.print.testphaseAllergens).toBe(
+      'Testphase: Allergene noch nicht fachlich geprüft – bei Allergien bitte nicht verwenden.',
+    );
   });
 
   it('Bestand wie aus der Datenbank (nur freigegeben): Rezepte im Essensplan und in der Suche, alle gekennzeichnet', async () => {

@@ -640,22 +640,37 @@ describe('Essensplan als PDF (Dokumentmodell)', () => {
         count,
         testphase: withCode(doc, 'recipe.mark.testphase').length,
         aiDraft: withCode(doc, 'recipe.mark.aiDraft').length,
+        testphaseAllergens: withCode(doc, 'nutrition.notice.testphaseAllergens').length,
+        draftAllergens: withCode(doc, 'nutrition.notice.draftAllergens').length,
       };
     };
     // Freigegeben ohne Fachprüfung – von Hand (alpha5) und KI: je Rezept „Testphase“, kein „KI-Entwurf“.
     for (const origin of ['manual', 'claude_session'] as const) {
       const m = marks(variant({ origin, expert_reviewed: false }, 'published'));
       expect(m.count, origin).toBeGreaterThan(0);
-      expect(m, origin).toMatchObject({ testphase: m.count, aiDraft: 0 });
+      // Allergen-Hinweis (Wächter M2): Deckblatt + je Rezept, eigener Text, kein Entwurfs-Hinweis.
+      expect(m, origin).toMatchObject({
+        testphase: m.count,
+        aiDraft: 0,
+        testphaseAllergens: m.count + 1,
+        draftAllergens: 0,
+      });
     }
     // Fachlich geprüft → kein Kennzeichen.
     expect(marks(variant({ expert_reviewed: true }, 'published'))).toMatchObject({
       testphase: 0,
       aiDraft: 0,
+      testphaseAllergens: 0,
+      draftAllergens: 0,
     });
     // KI-Entwurf → „KI-Entwurf“ wie bisher; Entwurf von Hand → kein Kennzeichen (Allergen-Hinweis bleibt).
     const ai = marks(variant({ origin: 'claude_session', expert_reviewed: false }, 'draft'));
-    expect(ai).toMatchObject({ testphase: 0, aiDraft: ai.count });
+    expect(ai).toMatchObject({
+      testphase: 0,
+      aiDraft: ai.count,
+      testphaseAllergens: 0,
+      draftAllergens: ai.count + 1,
+    });
     expect(marks(variant({ origin: 'manual', expert_reviewed: false }, 'draft'))).toMatchObject({
       testphase: 0,
       aiDraft: 0,

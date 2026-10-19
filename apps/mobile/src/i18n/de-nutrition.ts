@@ -849,6 +849,8 @@ export const deNutrition = {
       'Beispiel-Rezepte mit TESTWERTEN – keine echten Nährwerte, keine geprüften Allergene. Nur zum Ausprobieren.',
     draftAllergens:
       'Entwürfe: Allergene noch nicht fachlich geprüft – bei Allergien bitte nicht verwenden.',
+    testphaseAllergens:
+      'Testphase: Allergene noch nicht fachlich geprüft – bei Allergien bitte nicht verwenden.',
     weekHeading: 'Wochenübersicht',
     weekHeadingContinued: 'Wochenübersicht (Fortsetzung)',
     colSlot: 'Mahlzeit',
