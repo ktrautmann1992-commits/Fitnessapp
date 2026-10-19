@@ -10,29 +10,36 @@
  * 4. `seed_content(p_content)` per Supabase-Service-Key aufrufen (eine Transaktion, idempotent).
  * 5. Ernährung (Etappe N7 Teil 2, docs/PLAN-PHASE-5.md „Vorschlag N7 Teil 2“ Nr. 4): Paket aus freigegebenen UND
  *    fachlich geprüften Inhalten (`buildNutritionSeedPackage`, Gründer-Entscheidung 6/G-N7-3) – Inhalte, die noch auf
- *    die Fachprüfung warten oder auf so einen Inhalt verweisen, bleiben draußen und stehen im Bericht. Derselbe Schutz
- *    vor Massen-Archivierung je Inhaltsart, dann `seed_nutrition_content(p_content)` (eigene Transaktion). Gibt es die
+ *    die Fachprüfung warten oder auf so einen Inhalt verweisen, bleiben draußen und stehen im Bericht.
+ *    TESTPHASE (Gründer-Entscheidung 19.10.2026): steht in `content/einspiel-regeln.json`
+ *    `"nur_fachlich_geprueft": false`, kommen freigegebene Inhalte auch ohne Fachprüfung mit (Bericht nennt sie) und
+ *    `seed_nutrition_content` wird mit `p_require_expert_review = false` aufgerufen. Fehlt die Datei: Livegang-Regel.
+ *    Derselbe Schutz vor Massen-Archivierung je Inhaltsart, dann `seed_nutrition_content(p_content)` (eigene Transaktion). Gibt es die
  *    Tabellen noch nicht (vor `db-migrate`), wird die Ernährung mit Hinweis übersprungen.
  * Ohne SUPABASE_URL/SUPABASE_SECRET_KEY endet es nach der Prüfung grün mit Hinweis.
  */
 import {
+  type ContentSeedSettings,
   type ContentValidationResult,
   estimateSessionMinutes,
   type Exercise,
   type Food,
   type Guide,
+  guideExpertReviewHits,
   type IngredientSubstitution,
   isCatalogReviewed,
   type MealPrepPlan,
   type PackageSize,
   type PlanTemplate,
   type Recipe,
+  STRICT_CONTENT_SEED_SETTINGS,
 } from '@fitnessapp/core';
 
 import {
   blockingCount,
   formatMarkdownSummary,
   type ReportInput,
+  seedSettingsText,
   validateRepository,
 } from '../validate';
 
@@ -73,7 +80,12 @@ export type NutritionSeedKind = keyof NutritionSeedPackage;
 
 /** Warum ein freigegebener Inhalt (noch) nicht eingespielt wird – ohne Inhalte, nur Art und ID. */
 export type NutritionWaitReason =
-  'not_expert_reviewed' | 'not_catalog_reviewed' | 'not_reviewed' | 'reference_waiting';
+  | 'not_expert_reviewed'
+  | 'not_catalog_reviewed'
+  | 'not_reviewed'
+  | 'reference_waiting'
+  /** Ratgeber mit Dosierungs-Befund (R21H) ohne „fachlich geprüft“ – wartet AUCH in der Testphase (Wächter H1). */
+  | 'dosage_needs_expert';
 
 export interface NutritionWaiting {
   readonly kind: NutritionSeedKind;
@@ -81,26 +93,43 @@ export interface NutritionWaiting {
   readonly reason: NutritionWaitReason;
 }
 
+/** Freigegebener Inhalt, der in der Testphase OHNE Fachprüfung eingespielt wird (nur Art und ID). */
+export interface NutritionUnreviewed {
+  readonly kind: NutritionSeedKind;
+  readonly id: string;
+}
+
 /**
  * Ernährungs-Paket (Etappe N7 Teil 2): nur `published` UND fachlich geprüft (`meta.expert_reviewed`, Gründer-
- * Entscheidung 6) – Lebensmittel zusätzlich mit Katalog-Prüfung (R19), Packungsgrößen mit Prüfvermerk. Dieselben Regeln
+ * Entscheidung 6) – Lebensmittel zusätzlich mit Katalog-Prüfung (R19), Packungsgrößen mit Prüfvermerk.
+ * Testphase (`requireExpertReview: false`, Gründer-Entscheidung 19.10.2026): die Fachprüfung entfällt als Bedingung,
+ * alles andere bleibt gleich; solche Inhalte stehen in `unreviewed`. Ausnahme: Ratgeber mit Dosierungs-Befund (R21H,
+ * `guideExpertReviewHits`) brauchen auch in der Testphase „fachlich geprüft“ (Grund `dosage_needs_expert`, Wächter-
+ * Auflage H1 – in `content:validate` ist R21H nur gelb). Dieselben Regeln
  * wie `seed_nutrition_content` auf dem Server (der lehnt sonst das GANZE Paket ab). Verweise bleiben im Paket: Rezepte,
  * Austausch und Packungsgrößen nur mit eingespielten Lebensmitteln, Lebensmittel nur, wenn auch ihre Ersatzprodukte
  * eingespielt werden (sonst wäre das Lebensmittel in der App rot, R2), Meal-Prep-Pläne nur mit eingespielten Rezepten.
  * Alles andere steht in `waiting` (sichere Richtung: lieber weglassen als ungeprüft ausliefern).
  */
-export function buildNutritionSeedPackage(result: ContentValidationResult): {
+export function buildNutritionSeedPackage(
+  result: ContentValidationResult,
+  options: { readonly requireExpertReview: boolean } = { requireExpertReview: true },
+): {
   package: NutritionSeedPackage;
   waiting: NutritionWaiting[];
+  unreviewed: NutritionUnreviewed[];
 } {
   const waiting: NutritionWaiting[] = [];
+  /** Fachprüfung fehlt: in der Testphase egal, sonst wartet der Inhalt. */
+  const lacksExpertReview = (item: { meta: { expert_reviewed: boolean } }) =>
+    options.requireExpertReview && !item.meta.expert_reviewed;
   const wait = (kind: NutritionSeedKind, id: string, reason: NutritionWaitReason) =>
     waiting.push({ kind, id, reason });
   const published = <T extends { status: string }>(items: readonly T[]) =>
     items.filter((item) => item.status === 'published');
 
   let foods = published(result.foods).filter((food) => {
-    if (!food.meta.expert_reviewed) wait('foods', food.id, 'not_expert_reviewed');
+    if (lacksExpertReview(food)) wait('foods', food.id, 'not_expert_reviewed');
     else if (!isCatalogReviewed(food)) wait('foods', food.id, 'not_catalog_reviewed');
     else return true;
     return false;
@@ -122,7 +151,7 @@ export function buildNutritionSeedPackage(result: ContentValidationResult): {
     references: (item: T) => boolean,
   ) =>
     items.filter((item) => {
-      if (!item.meta.expert_reviewed) wait(kind, item.id, 'not_expert_reviewed');
+      if (lacksExpertReview(item)) wait(kind, item.id, 'not_expert_reviewed');
       else if (!references(item)) wait(kind, item.id, 'reference_waiting');
       else return true;
       return false;
@@ -147,20 +176,38 @@ export function buildNutritionSeedPackage(result: ContentValidationResult): {
     published(result.mealPrepPlans),
     (plan) => plan.recipe_ids.length > 0 && plan.recipe_ids.every((id) => recipeIds.has(id)),
   );
-  const guides = reviewed('guides', published(result.guides), () => true);
-  return {
-    package: {
-      foods,
-      recipes,
-      ingredient_substitutions: substitutions,
-      package_sizes: packageSizes,
-      meal_prep_plans: mealPrepPlans,
-      guides,
-    },
-    waiting: waiting.sort((a, b) =>
-      a.kind === b.kind ? (a.id < b.id ? -1 : 1) : a.kind < b.kind ? -1 : 1,
-    ),
+  const guides = reviewed('guides', published(result.guides), () => true).filter((guide) => {
+    if (guide.meta.expert_reviewed || guideExpertReviewHits(result.issues, guide.id).length === 0) {
+      return true;
+    }
+    wait('guides', guide.id, 'dosage_needs_expert');
+    return false;
+  });
+  const pkg: NutritionSeedPackage = {
+    foods,
+    recipes,
+    ingredient_substitutions: substitutions,
+    package_sizes: packageSizes,
+    meal_prep_plans: mealPrepPlans,
+    guides,
   };
+  // Packungsgrößen haben keine eigene Fachprüfung (nur den Prüfvermerk) – sie zählen hier nicht.
+  const unreviewed = (Object.keys(NUTRITION_SEED_TABLES) as NutritionSeedKind[])
+    .filter((kind) => kind !== 'package_sizes')
+    .flatMap((kind) =>
+      (pkg[kind] as readonly { id: string; meta: { expert_reviewed: boolean } }[])
+        .filter((item) => !item.meta.expert_reviewed)
+        .map((item) => ({ kind, id: item.id })),
+    );
+  return {
+    package: pkg,
+    waiting: waiting.sort(byKindAndId),
+    unreviewed: unreviewed.sort(byKindAndId),
+  };
+}
+
+function byKindAndId(a: { kind: string; id: string }, b: { kind: string; id: string }): number {
+  return a.kind === b.kind ? (a.id < b.id ? -1 : 1) : a.kind < b.kind ? -1 : 1;
 }
 
 export interface SeedEnv {
@@ -248,8 +295,14 @@ export interface SeedResult {
   readonly status: 'blocked' | 'skipped' | 'seeded' | 'failed' | 'mass_archive_blocked';
   readonly markdown: string;
   readonly package?: SeedPackage;
-  /** Ernährungs-Paket und wartende Inhalte (Etappe N7 Teil 2). */
-  readonly nutrition?: { package: NutritionSeedPackage; waiting: NutritionWaiting[] };
+  /** Ernährungs-Paket und wartende Inhalte (Etappe N7 Teil 2); `unreviewed` nur in der Testphase gefüllt. */
+  readonly nutrition?: {
+    package: NutritionSeedPackage;
+    waiting: NutritionWaiting[];
+    unreviewed: NutritionUnreviewed[];
+  };
+  /** Einspiel-Regel dieses Laufs (`content/einspiel-regeln.json`). */
+  readonly seedSettings?: ContentSeedSettings;
 }
 
 function nutritionCountText(pkg: NutritionSeedPackage): string {
@@ -387,6 +440,7 @@ const WAIT_REASON_DE: Record<NutritionWaitReason, string> = {
   not_catalog_reviewed: 'wartet auf die Katalog-Prüfung',
   not_reviewed: 'ohne Prüfvermerk',
   reference_waiting: 'verweist auf einen Inhalt, der noch wartet',
+  dosage_needs_expert: 'Dosierungs-Befund (R21H) – braucht auch in der Testphase die Fachprüfung',
 };
 
 /** Bericht der wartenden Inhalte (nur Art, Anzahl und höchstens 20 IDs je Grund). */
@@ -399,11 +453,32 @@ function waitingMarkdown(waiting: readonly NutritionWaiting[]): string[] {
   }
   return [
     '',
-    `**Ernährung: ${waiting.length} freigegebene Inhalte nicht eingespielt** (Fachprüfung Pflicht vor dem Livegang, G-N7-3):`,
+    `**Ernährung: ${waiting.length} freigegebene Inhalte nicht eingespielt** (mit Grund):`,
     ...[...groups.entries()].map(([key, ids]) => {
       const shown = ids.slice(0, 20).map((id) => `\`${id}\``);
       const more = ids.length > 20 ? ` … (+${ids.length - 20})` : '';
       return `- ${key}: ${ids.length} – ${shown.join(', ')}${more}`;
+    }),
+  ];
+}
+
+/** Testphase: welche freigegebenen Inhalte OHNE Fachprüfung eingespielt werden (Art, Anzahl, höchstens 20 IDs). */
+function unreviewedMarkdown(
+  settings: ContentSeedSettings,
+  unreviewed: readonly NutritionUnreviewed[],
+): string[] {
+  if (settings.nur_fachlich_geprueft) return [];
+  const groups = new Map<NutritionSeedKind, string[]>();
+  for (const u of unreviewed) groups.set(u.kind, [...(groups.get(u.kind) ?? []), u.id]);
+  return [
+    '',
+    `**🧪 Testphase:** ${unreviewed.length} freigegebene Ernährungs-Inhalte ohne Fachprüfung – in der App gekennzeichnet`,
+    '„Testphase – noch nicht fachlich geprüft“. Vor dem Livegang in `content/einspiel-regeln.json`',
+    '`"nur_fachlich_geprueft": true` setzen (docs/HANDY-ANLEITUNG.md, Teil 7t).',
+    ...[...groups.entries()].map(([kind, ids]) => {
+      const shown = ids.slice(0, 20).map((id) => `\`${id}\``);
+      const more = ids.length > 20 ? ` … (+${ids.length - 20})` : '';
+      return `- ${TABLE_DE[kind]}: ${ids.length} – ${shown.join(', ')}${more}`;
     }),
   ];
 }
@@ -422,6 +497,8 @@ function massArchiveMarkdown(findings: readonly MassArchiveFinding[]): string {
     }),
     '',
     'Das passiert z. B., wenn Inhaltsdateien versehentlich gelöscht oder auf „draft“ gesetzt wurden. Bitte prüfen.',
+    'Erwartet ist es direkt nach dem Umstellen von der Testphase auf „nur fachlich geprüft“ (content/einspiel-regeln.json):',
+    'dann werden die noch nicht fachlich geprüften Ernährungs-Inhalte zurückgezogen.',
     'Ist das wirklich gewollt: GitHub-App → **Actions → content-seed → Run workflow** → Häkchen',
     '**allow_mass_archive** setzen → **Run workflow**.',
     '',
@@ -437,13 +514,24 @@ export async function callSeedContent(
   return callSeedFunction(env, 'seed_content', pkg, fetchImpl);
 }
 
-/** Ruft `public.seed_nutrition_content` auf (Etappe N7 Teil 2; eigene Transaktion, idempotent). */
+/**
+ * Ruft `public.seed_nutrition_content` auf (Etappe N7 Teil 2; eigene Transaktion, idempotent). Nur in der Testphase
+ * geht `p_require_expert_review: false` mit; sonst gilt der Standard der Datenbank-Funktion (true = nur fachlich
+ * geprüft) – so funktioniert die Livegang-Regel auch mit einer Datenbank ohne den neuen Parameter.
+ */
 export async function callSeedNutritionContent(
   env: SupabaseAccess,
   pkg: NutritionSeedPackage,
   fetchImpl: SeedFetch,
+  settings: ContentSeedSettings = STRICT_CONTENT_SEED_SETTINGS,
 ): Promise<unknown> {
-  return callSeedFunction(env, 'seed_nutrition_content', pkg, fetchImpl);
+  return callSeedFunction(
+    env,
+    'seed_nutrition_content',
+    pkg,
+    fetchImpl,
+    settings.nur_fachlich_geprueft ? {} : { p_require_expert_review: false },
+  );
 }
 
 async function callSeedFunction(
@@ -451,13 +539,14 @@ async function callSeedFunction(
   name: 'seed_content' | 'seed_nutrition_content',
   pkg: SeedPackage | NutritionSeedPackage,
   fetchImpl: SeedFetch,
+  extraArgs: Record<string, unknown> = {},
 ): Promise<unknown> {
   const base = supabaseBase(env.url);
   const endpoint = new URL(`/rest/v1/rpc/${name}`, base);
   const response = await fetchImpl(endpoint.toString(), {
     method: 'POST',
     headers: { 'Content-Type': 'application/json', ...authHeaders(env.secretKey) },
-    body: JSON.stringify({ p_content: pkg }),
+    body: JSON.stringify({ p_content: pkg, ...extraArgs }),
   });
   const text = await response.text();
   if (!response.ok) {
@@ -493,7 +582,11 @@ export async function runSeed(options: {
     };
   }
   const pkg = buildSeedPackage(report.result);
-  const nutrition = buildNutritionSeedPackage(report.result);
+  const seedSettings = report.seedSettings ?? STRICT_CONTENT_SEED_SETTINGS;
+  const nutrition = buildNutritionSeedPackage(report.result, {
+    requireExpertReview: seedSettings.nur_fachlich_geprueft,
+  });
+  const ruleLine = `Einspiel-Regel: ${seedSettingsText(seedSettings)}.`;
   const counts = `${pkg.exercises.length} Übungen, ${pkg.plan_templates.length} Plan-Vorlagen (nur „published“)`;
   const nutritionCounts = nutritionCountText(nutrition.package);
   const url = options.env.url?.trim();
@@ -504,11 +597,14 @@ export async function runSeed(options: {
       status: 'skipped',
       package: pkg,
       nutrition,
+      seedSettings,
       markdown: [
         '### ⏭️ content-seed übersprungen – Supabase fehlt',
         '',
         `Inhalte geprüft ✅ · Einspiel-Paket: ${counts}; Ernährung: ${nutritionCounts}.`,
+        ruleLine,
         'Es fehlen die GitHub-Secrets SUPABASE_URL und/oder SUPABASE_SECRET_KEY (docs/SETUP.md Teile A und B).',
+        ...unreviewedMarkdown(seedSettings, nutrition.unreviewed),
         ...waitingMarkdown(nutrition.waiting),
         '',
       ].join('\n'),
@@ -534,6 +630,7 @@ export async function runSeed(options: {
           status: 'mass_archive_blocked',
           package: pkg,
           nutrition,
+          seedSettings,
           markdown: massArchiveMarkdown(findings),
         };
       }
@@ -550,6 +647,7 @@ export async function runSeed(options: {
       '',
       `Eingespielt: ${String(r.exercises ?? pkg.exercises.length)} Übungen, ${String(r.plan_templates ?? pkg.plan_templates.length)} Plan-Vorlagen.`,
       `Zurückgezogen (archived): ${String(r.archived_exercises ?? 0)} Übungen, ${String(r.archived_plan_templates ?? 0)} Plan-Vorlagen.`,
+      ruleLine,
     ];
     if (currentNutrition === null) {
       lines.push(
@@ -558,7 +656,9 @@ export async function runSeed(options: {
       );
     } else {
       try {
-        const nr = (await callSeedNutritionContent(access, nutrition.package, fetchImpl)) ?? {};
+        const nr =
+          (await callSeedNutritionContent(access, nutrition.package, fetchImpl, seedSettings)) ??
+          {};
         const archived = ((nr as Record<string, unknown>).archived ?? {}) as Record<
           string,
           unknown
@@ -577,6 +677,7 @@ export async function runSeed(options: {
           status: 'failed',
           package: pkg,
           nutrition,
+          seedSettings,
           markdown: [
             ...lines,
             '',
@@ -593,7 +694,13 @@ export async function runSeed(options: {
       status: 'seeded',
       package: pkg,
       nutrition,
-      markdown: [...lines, ...waitingMarkdown(nutrition.waiting), ''].join('\n'),
+      seedSettings,
+      markdown: [
+        ...lines,
+        ...unreviewedMarkdown(seedSettings, nutrition.unreviewed),
+        ...waitingMarkdown(nutrition.waiting),
+        '',
+      ].join('\n'),
     };
   } catch (error) {
     return {
@@ -601,6 +708,7 @@ export async function runSeed(options: {
       status: 'failed',
       package: pkg,
       nutrition,
+      seedSettings,
       markdown: `### ❌ content-seed fehlgeschlagen – nichts eingespielt (eine Transaktion)\n\n${(error as Error).message}\n`,
     };
   }

@@ -2748,7 +2748,8 @@ describe('Live-Anpassung in der Datenbank (Phase 4b Etappe B, docs/PLAN-PHASE-4B
       '_live_adjust_revoke_export.sql',
     ].map((suffix) => migrationFiles.findIndex((n) => n.endsWith(suffix)));
     expect(order.every((i, k) => i > (order[k - 1] ?? -1))).toBe(true);
-    expect(order[0]).toBe(migrationFiles.length - 6);
+    // Zusammenhängend; spätere Migrationen (z. B. Testphase 19.10.2026) dürfen folgen.
+    expect(order[5]! - order[0]!).toBe(5);
   });
 
   it('apply_plan_adjustments: Feldliste = adjustmentProposalSchema, Arten = RULE_KIND, nur aktive Regeln', () => {

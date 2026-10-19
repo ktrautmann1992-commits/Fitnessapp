@@ -1,4 +1,5 @@
 import {
+  isPublishedWithoutExpertReview,
   type FilteredRecipe,
   FRIDGE_SEARCH,
   type FridgeFoodOption,
@@ -43,6 +44,8 @@ export interface FridgeSearchCard {
   /** kcal je Portion des Grundrezepts; nur anzeigen, wenn „Kalorienzahlen“ an sind. null = nicht berechenbar. */
   kcalPerServing: number | null;
   isDraft: boolean;
+  /** Freigegeben ohne Fachprüfung (Testphase, Gründer 19.10.2026) → kleines Kennzeichen „Testphase …“. */
+  isTestphase: boolean;
 }
 
 export type FridgeSearchResult =
@@ -55,6 +58,8 @@ export type FridgeSearchResult =
       cards: FridgeSearchCard[];
       /** true = mindestens ein Treffer ist ein Entwurf (Allergen-Warnung, 19.8 Nr. 9). */
       hasDrafts: boolean;
+      /** true = mindestens ein Treffer ist freigegeben ohne Fachprüfung (Testphase → Allergen-Warnung, Wächter M2). */
+      hasTestphase: boolean;
     };
 
 export interface FridgeSearchBaseInput {
@@ -110,7 +115,7 @@ export function fridgeSearchResults(
   prepared: Extract<FridgeSearchPrepared, { kind: 'ok' }>,
   foodIds: readonly string[],
   limit?: number,
-): { cards: FridgeSearchCard[]; total: number; hasDrafts: boolean } {
+): { cards: FridgeSearchCard[]; total: number; hasDrafts: boolean; hasTestphase: boolean } {
   // Nur angebotene Lebensmittel zählen (eine veraltete Auswahl nach einer Profiländerung fällt still weg).
   const offered = new Set(prepared.options.map((o) => o.foodId));
   const ids = [...new Set(foodIds)].filter((id) => offered.has(id));
@@ -138,12 +143,14 @@ export function fridgeSearchResults(
       missingMinor: hit.missingMinor.map(name),
       kcalPerServing: kcal,
       isDraft: recipe.status === 'draft',
+      isTestphase: isPublishedWithoutExpertReview(recipe),
     };
   });
   return {
     cards,
     total: hits.length,
     hasDrafts: hits.some((hit) => hit.variant.recipe.status === 'draft'),
+    hasTestphase: hits.some((hit) => isPublishedWithoutExpertReview(hit.variant.recipe)),
   };
 }
 
@@ -153,6 +160,6 @@ export function fridgeSearchForPerson(
 ): FridgeSearchResult {
   const prepared = prepareFridgeSearch(input);
   if (prepared.kind !== 'ok') return prepared;
-  const { cards, hasDrafts } = fridgeSearchResults(prepared, input.foodIds);
-  return { kind: 'ok', options: prepared.options, cards, hasDrafts };
+  const { cards, hasDrafts, hasTestphase } = fridgeSearchResults(prepared, input.foodIds);
+  return { kind: 'ok', options: prepared.options, cards, hasDrafts, hasTestphase };
 }

@@ -1064,6 +1064,7 @@ export type Database = {
           animal: string[];
           created_at: string;
           data: Json;
+          expert_reviewed: boolean;
           freezable: boolean;
           gelatin_origin: string | null;
           groups: string[];
@@ -1083,6 +1084,7 @@ export type Database = {
           animal?: string[];
           created_at?: string;
           data: Json;
+          expert_reviewed?: never;
           freezable: boolean;
           gelatin_origin?: string | null;
           groups?: string[];
@@ -1102,6 +1104,7 @@ export type Database = {
           animal?: string[];
           created_at?: string;
           data?: Json;
+          expert_reviewed?: never;
           freezable?: boolean;
           gelatin_origin?: string | null;
           groups?: string[];
@@ -1155,6 +1158,7 @@ export type Database = {
         Row: {
           created_at: string;
           data: Json;
+          expert_reviewed: boolean;
           id: string;
           status: Database['public']['Enums']['content_status'];
           title_de: string;
@@ -1164,6 +1168,7 @@ export type Database = {
         Insert: {
           created_at?: string;
           data: Json;
+          expert_reviewed?: never;
           id: string;
           status: Database['public']['Enums']['content_status'];
           title_de: string;
@@ -1173,6 +1178,7 @@ export type Database = {
         Update: {
           created_at?: string;
           data?: Json;
+          expert_reviewed?: never;
           id?: string;
           status?: Database['public']['Enums']['content_status'];
           title_de?: string;
@@ -1212,6 +1218,7 @@ export type Database = {
         Row: {
           created_at: string;
           data: Json;
+          expert_reviewed: boolean;
           factor: number;
           food_id: string;
           id: string;
@@ -1224,6 +1231,7 @@ export type Database = {
         Insert: {
           created_at?: string;
           data: Json;
+          expert_reviewed?: never;
           factor: number;
           food_id: string;
           id: string;
@@ -1236,6 +1244,7 @@ export type Database = {
         Update: {
           created_at?: string;
           data?: Json;
+          expert_reviewed?: never;
           factor?: number;
           food_id?: string;
           id?: string;
@@ -1419,6 +1428,7 @@ export type Database = {
         Row: {
           created_at: string;
           data: Json;
+          expert_reviewed: boolean;
           id: string;
           recipe_ids: string[];
           status: Database['public']['Enums']['content_status'];
@@ -1429,6 +1439,7 @@ export type Database = {
         Insert: {
           created_at?: string;
           data: Json;
+          expert_reviewed?: never;
           id: string;
           recipe_ids: string[];
           status: Database['public']['Enums']['content_status'];
@@ -1439,6 +1450,7 @@ export type Database = {
         Update: {
           created_at?: string;
           data?: Json;
+          expert_reviewed?: never;
           id?: string;
           recipe_ids?: string[];
           status?: Database['public']['Enums']['content_status'];
@@ -2006,6 +2018,7 @@ export type Database = {
           created_at: string;
           data: Json;
           diet: Database['public']['Enums']['diet_type'];
+          expert_reviewed: boolean;
           id: string;
           meal_types: string[];
           no_cook: boolean;
@@ -2022,6 +2035,7 @@ export type Database = {
           created_at?: string;
           data: Json;
           diet: Database['public']['Enums']['diet_type'];
+          expert_reviewed?: never;
           id: string;
           meal_types: string[];
           no_cook: boolean;
@@ -2038,6 +2052,7 @@ export type Database = {
           created_at?: string;
           data?: Json;
           diet?: Database['public']['Enums']['diet_type'];
+          expert_reviewed?: never;
           id?: string;
           meal_types?: string[];
           no_cook?: boolean;
@@ -2926,7 +2941,10 @@ export type Database = {
       save_training_plan: { Args: { p_plan: Json }; Returns: string };
       save_user_food_product: { Args: { p_product: Json }; Returns: Json };
       seed_content: { Args: { p_content: Json }; Returns: Json };
-      seed_nutrition_content: { Args: { p_content: Json }; Returns: Json };
+      seed_nutrition_content: {
+        Args: { p_content: Json; p_require_expert_review?: boolean };
+        Returns: Json;
+      };
       swap_planned_sessions: {
         Args: { p_a: string; p_a_on: string; p_b: string; p_b_on: string };
         Returns: undefined;

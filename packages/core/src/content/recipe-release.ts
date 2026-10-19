@@ -309,7 +309,25 @@ function redBlocker(
 }
 
 /** Gelbe Befunde, die eine Fachprüfung verlangen: Ratgeber nur mit „fachlich geprüft“ (Wächter N2d S6). */
-const EXPERT_REVIEW_RULES: readonly ContentRuleId[] = ['R21H'];
+export const GUIDE_EXPERT_REVIEW_RULES: readonly ContentRuleId[] = ['R21H'];
+
+/**
+ * Gelbe Befunde eines Ratgebers, die eine Fachprüfung verlangen (R21H, z. B. Dosierungen). Gilt für die Freigabe
+ * (`planNutritionRelease`) UND fürs Einspielen in der Testphase (`content-seed`): solche Ratgeber kommen nie ohne
+ * „fachlich geprüft“ in die App (Wächter-Auflage Testphase H1).
+ */
+export function guideExpertReviewHits(
+  issues: readonly ContentIssue[],
+  guideId: string,
+): ContentIssue[] {
+  return issues.filter(
+    (issue) =>
+      issue.kind === 'guide' &&
+      issue.id === guideId &&
+      issue.severity === 'warning' &&
+      GUIDE_EXPERT_REVIEW_RULES.includes(issue.rule),
+  );
+}
 
 function expertReviewBlocker(
   issues: readonly ContentIssue[],
@@ -317,13 +335,7 @@ function expertReviewBlocker(
   expertReviewed: boolean,
 ): NutritionReleaseBlocker[] {
   if (expertReviewed) return [];
-  const hits = issues.filter(
-    (issue) =>
-      issue.kind === 'guide' &&
-      issue.id === id &&
-      issue.severity === 'warning' &&
-      EXPERT_REVIEW_RULES.includes(issue.rule),
-  );
+  const hits = guideExpertReviewHits(issues, id);
   return hits.length === 0
     ? []
     : [

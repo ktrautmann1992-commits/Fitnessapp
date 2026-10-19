@@ -274,6 +274,11 @@ export default function FridgeSearchScreen() {
               <Notice tone="warning" testID="fridge-draft-warning">
                 {texts.allergenWarning}
               </Notice>
+            ) : found?.hasTestphase === true ? (
+              // Wächter Testphase M2 (sichere Variante): Treffer ohne Fachprüfung → Allergen-Warnung.
+              <Notice tone="warning" testID="fridge-testphase-warning">
+                {texts.testphaseAllergenWarning}
+              </Notice>
             ) : null}
             <View style={styles.list} testID="fridge-results">
               {cards.map((card) => (
@@ -324,6 +329,7 @@ function FridgeCard({
       ? texts.kcal(formatKcal(card.kcalPerServing))
       : null,
     card.isDraft ? texts.draft : null,
+    card.isTestphase ? texts.testphase : null,
   ].filter((part): part is string => part !== null);
   return (
     <Pressable

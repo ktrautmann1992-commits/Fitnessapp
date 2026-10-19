@@ -4,7 +4,7 @@ import { isoDateSchema } from '../age';
 import { MEAL_SLOT_TIMES, PRINT_EXPORT } from '../constants';
 import type { FoodLookup } from '../content/food-schema';
 import type { Recipe } from '../content/recipe-schema';
-import { needsExpertReviewLabel } from '../content/schemas';
+import { contentReviewMark } from '../content/seed-settings';
 import { addDays, isoWeekday } from '../dates';
 import { mealsInDayOrder } from '../nutrition/day-view';
 import { withoutNutrientAmounts } from '../nutrition/guides';
@@ -596,8 +596,15 @@ function recipeSection(flow: PageFlow, group: RecipeGroup, foods: FoodLookup): v
     };
     head.push([description, blockMm(description)]);
   }
-  if (needsExpertReviewLabel(recipe.meta)) {
-    const mark: PrintBlock = { type: 'paragraph', muted: true, text: label('recipe.mark.aiDraft') };
+  // Kennzeichen wie in der App (contentReviewMark, Wächter Testphase M1): KI-Entwurf bzw. Testphase (freigegeben, ohne
+  // Fachprüfung – auch von Hand erfasste alpha5-Rezepte). Andere Entwürfe: Allergen-Hinweis unten.
+  const reviewMark = contentReviewMark(recipe);
+  if (reviewMark === 'ai_draft' || reviewMark === 'testphase') {
+    const mark: PrintBlock = {
+      type: 'paragraph',
+      muted: true,
+      text: label(reviewMark === 'ai_draft' ? 'recipe.mark.aiDraft' : 'recipe.mark.testphase'),
+    };
     head.push([mark, blockMm(mark)]);
   }
   if (first.meal.recipeStatus === 'draft' || recipe.status === 'draft') {

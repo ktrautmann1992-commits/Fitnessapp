@@ -623,6 +623,44 @@ describe('Essensplan als PDF (Dokumentmodell)', () => {
     expect(drafts).toBeGreaterThan(0);
     expect(withCode(doc, 'nutrition.notice.draftAllergens')).toHaveLength(drafts + 1);
   });
+
+  it('Kennzeichen wie in der App (Wächter Testphase M1): Testphase auch für von Hand erfasste Rezepte', () => {
+    const variant = (meta: Partial<Recipe['meta']>, status: Recipe['status']): Recipe[] =>
+      N3_RECIPES.map((r) => ({
+        ...r,
+        status,
+        meta: { ...r.meta, reviewed_by: 'KT', reviewed_at: '2026-10-15', ...meta },
+      }));
+    const marks = (recipes: readonly Recipe[]) => {
+      const input = planInput(female, omni, recipes);
+      const plan = buildMealPlanWeek(input);
+      const doc = planDoc(plan, input.targets, {}, recipes);
+      const count = new Set(plan.days.flatMap((d) => d.meals.map((m) => m.recipeId))).size;
+      return {
+        count,
+        testphase: withCode(doc, 'recipe.mark.testphase').length,
+        aiDraft: withCode(doc, 'recipe.mark.aiDraft').length,
+      };
+    };
+    // Freigegeben ohne Fachprüfung – von Hand (alpha5) und KI: je Rezept „Testphase“, kein „KI-Entwurf“.
+    for (const origin of ['manual', 'claude_session'] as const) {
+      const m = marks(variant({ origin, expert_reviewed: false }, 'published'));
+      expect(m.count, origin).toBeGreaterThan(0);
+      expect(m, origin).toMatchObject({ testphase: m.count, aiDraft: 0 });
+    }
+    // Fachlich geprüft → kein Kennzeichen.
+    expect(marks(variant({ expert_reviewed: true }, 'published'))).toMatchObject({
+      testphase: 0,
+      aiDraft: 0,
+    });
+    // KI-Entwurf → „KI-Entwurf“ wie bisher; Entwurf von Hand → kein Kennzeichen (Allergen-Hinweis bleibt).
+    const ai = marks(variant({ origin: 'claude_session', expert_reviewed: false }, 'draft'));
+    expect(ai).toMatchObject({ testphase: 0, aiDraft: ai.count });
+    expect(marks(variant({ origin: 'manual', expert_reviewed: false }, 'draft'))).toMatchObject({
+      testphase: 0,
+      aiDraft: 0,
+    });
+  });
 });
 
 // ---------------------------------------------------------------------------------------------------------

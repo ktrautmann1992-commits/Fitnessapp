@@ -2,6 +2,7 @@ import { describe, expect, it } from 'vitest';
 
 import { computeRecipeFacts } from '../nutrition/recipe-nutrients';
 import type { Food } from './food-schema';
+import type { ContentIssue } from './rules';
 import type { Guide } from './guide-schema';
 import { importAssumptionsFingerprint, importAssumptionsState } from './import-meta';
 import type { MealPrepPlan } from './meal-prep-plan-schema';
@@ -14,6 +15,7 @@ import {
 } from './nutrition-fixtures';
 import type { Recipe } from './recipe-schema';
 import {
+  guideExpertReviewHits,
   planNutritionRelease,
   planRecipeRelease,
   recipeReleaseBlockerText,
@@ -562,6 +564,30 @@ describe(
       expect(without?.blockers.map((b) => b.kind)).toEqual(['needs_expert_review']);
       expect(recipeReleaseBlockerText(without!.blockers[0]!)).toContain('fachlich geprüft');
       expect(run(true)?.blockers).toEqual([]);
+    });
+
+    it('guideExpertReviewHits: nur gelbe R21H-Befunde genau dieses Ratgebers (Testphase H1)', () => {
+      const issue = (over: Partial<ContentIssue>): ContentIssue => ({
+        rule: 'R21H',
+        severity: 'warning',
+        kind: 'guide',
+        id: 'wettkampf',
+        status: 'published',
+        message: 'x',
+        ...over,
+      });
+      const hits = guideExpertReviewHits(
+        [
+          issue({}),
+          issue({ id: 'anderer' }),
+          issue({ kind: 'recipe' }),
+          issue({ rule: 'R21', severity: 'error' }),
+          issue({ severity: 'error' }),
+        ],
+        'wettkampf',
+      );
+      expect(hits).toHaveLength(1);
+      expect(guideExpertReviewHits([], 'wettkampf')).toEqual([]);
     });
   },
 );

@@ -15,9 +15,11 @@ import { existsSync, readdirSync, readFileSync } from 'node:fs';
 import { join, relative, resolve } from 'node:path';
 
 import {
+  CONTENT_SEED_SETTINGS_FILE,
   type ContentFile,
   type ContentFileKind,
   type ContentIssue,
+  type ContentSeedSettings,
   type ContentStatus,
   type ContentValidationResult,
   DIET_TYPES,
@@ -25,6 +27,7 @@ import {
   MEAL_TYPES,
   type NutritionContentFile,
   type NutritionContentFileKind,
+  parseContentSeedSettings,
   RECIPE_COVERAGE,
   recipeCoverageReport,
   validateContent,
@@ -136,6 +139,25 @@ function loadFolders<K extends string>(
   return { files, strayFiles };
 }
 
+/**
+ * Einspiel-Regel `content/einspiel-regeln.json` (Testphase, Gründer-Entscheidung 19.10.2026): fehlt die Datei, gilt
+ * „nur fachlich geprüft“; eine kaputte Datei ist ein blockierender Datei-Fehler (und es gilt ebenfalls die strenge Regel).
+ */
+export function loadContentSeedSettings(contentDir: string): {
+  settings: ContentSeedSettings;
+  problems: string[];
+} {
+  const path = join(contentDir, CONTENT_SEED_SETTINGS_FILE);
+  return parseContentSeedSettings(existsSync(path) ? readFileSync(path, 'utf8') : undefined);
+}
+
+/** Einspiel-Regel als ein Satz für Berichte. */
+export function seedSettingsText(settings: ContentSeedSettings): string {
+  return settings.nur_fachlich_geprueft
+    ? 'Ernährung nur fachlich geprüft (Livegang-Regel)'
+    : 'TESTPHASE – freigegebene Ernährungs-Inhalte auch ohne Fachprüfung (content/einspiel-regeln.json)';
+}
+
 /** Repository-Wurzel per git (undefined ohne git). */
 export function gitRepoRoot(cwd: string): string | undefined {
   try {
@@ -212,6 +234,8 @@ export interface ReportInput {
   readonly strayFiles: readonly string[];
   /** Hinweis zur Versionsprüfung (z. B. „Vergleich mit origin/main“). */
   readonly versionNote: string;
+  /** Einspiel-Regel aus `content/einspiel-regeln.json`; fehlt = nur fachlich geprüft. */
+  readonly seedSettings?: ContentSeedSettings;
 }
 
 /** Fehler insgesamt, die das Skript fehlschlagen lassen (inkl. fremder Dateien). */
@@ -231,6 +255,7 @@ export function formatReport(input: ReportInput): string {
     `Plan-Vorlagen: ${result.templates.length} (${countByStatus(result.templates)})`,
     ...nutritionCountLines(result),
     `Versionen: ${versionNote}`,
+    ...(input.seedSettings ? [`Einspielen: ${seedSettingsText(input.seedSettings)}`] : []),
     '',
     ...strayFiles.map(
       (file) =>
@@ -267,6 +292,7 @@ export function formatMarkdownSummary(input: ReportInput): string {
     '',
     `Versionen: ${input.versionNote}`,
     '',
+    ...(input.seedSettings ? [`Einspielen: ${seedSettingsText(input.seedSettings)}`, ''] : []),
     ...(input.strayFiles.length > 0 ? [`🔴 Datei-Fehler: ${input.strayFiles.join(', ')}`, ''] : []),
     ...(rows.length > 0
       ? ['| Regel | Inhalt | Status | Befund |', '| --- | --- | --- | --- |', ...rows]
@@ -402,13 +428,21 @@ export function validateRepository(options: {
   const nutritionFiles = loadNutritionContentFiles(contentDir, readOptions);
   // Lebensmittel-Katalog (Etappe N2b, R17/R18): nur, wenn `content/foods/` existiert.
   const nutrition = loadNutritionCatalog(contentDir);
+  // Einspiel-Regel (Testphase 19.10.2026); kaputte Datei = blockierender Datei-Fehler.
+  const seed = loadContentSeedSettings(contentDir);
   return {
     result: validateContent(
       [...loaded.files, ...nutrition.files, ...nutritionFiles.files],
       nutrition.catalog === undefined ? {} : { nutritionCatalog: nutrition.catalog },
     ),
-    strayFiles: [...loaded.strayFiles, ...nutritionFiles.strayFiles, ...nutrition.problems],
+    strayFiles: [
+      ...loaded.strayFiles,
+      ...nutritionFiles.strayFiles,
+      ...nutrition.problems,
+      ...seed.problems,
+    ],
     versionNote,
+    seedSettings: seed.settings,
   };
 }
 

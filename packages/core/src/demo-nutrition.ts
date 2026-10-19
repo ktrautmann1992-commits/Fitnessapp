@@ -21,6 +21,7 @@ import type { MealPrepPlan } from './content/meal-prep-plan-schema';
 import { catalogFor, FIXTURE_FOODS, RECIPE_META } from './content/nutrition-fixtures';
 import { type PackageSize, packageSizeContentId } from './content/package-size-schema';
 import type { NutritionCatalogContext } from './content/recipe-checks';
+import { planNutritionRelease, releasedRecipe } from './content/recipe-release';
 import type { IngredientRole, Recipe } from './content/recipe-schema';
 import type { IngredientSubstitution } from './content/substitution-schema';
 import { substitutionContentId } from './content/substitution-schema';
@@ -342,5 +343,60 @@ export function demoNutritionContent(): DemoNutritionContent {
       })),
     ],
     catalog: catalogFor(FIXTURE_FOODS),
+  };
+}
+
+/**
+ * Nur für die E2E-Tests der Testphase (Gründer-Entscheidung 19.10.2026): dieselben Beispiel-Inhalte, aber als
+ * „freigegeben, nicht fachlich geprüft“ – so, wie sie in der Testphase aus der Datenbank kommen. Prüfvermerk
+ * „Testmodus“, `expert_reviewed` bleibt false. Dieselben Regeln (validateContent) wie der echte Bestand.
+ * Ratgeber über dieselbe Freigabe-Regel wie der Workflow (`planNutritionRelease`): ein Ratgeber mit Dosierungs-Befund
+ * (R21H, hier `demo-wettkampf`) bleibt ohne „fachlich geprüft“ Entwurf – wie beim Einspielen in der Testphase
+ * (Wächter-Auflage H1).
+ */
+export function demoNutritionContentAsTestphase(): DemoNutritionContent {
+  const demo = demoNutritionContent();
+  const foods = new Map(FIXTURE_FOODS.map((food) => [food.id, food]));
+  const release = { reviewer: 'Testmodus', date: '2026-10-12' } as const;
+  const guideRelease = planNutritionRelease(
+    demo.files,
+    demo.catalog,
+    DEMO_GUIDES.map((guide) => guide.id),
+    { ...release, expertReviewed: false, confirmAssumptions: false },
+  );
+  const releasedGuides = new Map(
+    guideRelease.decisions.flatMap((decision) =>
+      decision.kind === 'guide' && decision.blockers.length === 0
+        ? [[decision.original.id, decision.released] as const]
+        : [],
+    ),
+  );
+  return {
+    ...demo,
+    files: demo.files.map((file): NutritionContentFile => {
+      const data = file.data as { status?: string; meta?: Record<string, unknown> };
+      if (data.status !== 'draft' || data.meta === undefined) return file;
+      if (file.kind === 'guide') {
+        const released = releasedGuides.get((data as Guide).id);
+        return released === undefined ? file : { ...file, data: released };
+      }
+      if (file.kind === 'recipe') {
+        // Wie die echte Sammelfreigabe (content-review) – inkl. bestätigter Import-Annahmen, ohne Fachprüfung.
+        const released = releasedRecipe(data as Recipe, foods, {
+          ...release,
+          expertReviewed: false,
+          confirmAssumptions: true,
+        });
+        return { ...file, data: released };
+      }
+      return {
+        ...file,
+        data: {
+          ...data,
+          status: 'published',
+          meta: { ...data.meta, reviewed_by: release.reviewer, reviewed_at: release.date },
+        },
+      };
+    }),
   };
 }

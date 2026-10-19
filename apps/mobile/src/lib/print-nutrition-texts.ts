@@ -82,6 +82,7 @@ export const NUTRITION_PRINT_TEXTS: Translators = {
   'recipe.label.time': () => p.labelTime,
   'recipe.time': ({ prep, cook }) => r.times(prep, cook),
   'recipe.mark.aiDraft': () => r.aiDraft,
+  'recipe.mark.testphase': () => r.testphase,
   'recipe.ingredients': () => r.ingredients,
   'recipe.col.ingredient': () => p.colIngredient,
   'recipe.col.portion': ({ factor, weekdays }) =>

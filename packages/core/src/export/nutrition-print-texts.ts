@@ -90,6 +90,8 @@ export interface NutritionPrintTextParams {
   'recipe.label.time': Empty;
   'recipe.time': { prep: number; cook: number };
   'recipe.mark.aiDraft': Empty;
+  /** Freigegeben ohne Fachprüfung (Testphase, Gründer-Entscheidung 19.10.2026). */
+  'recipe.mark.testphase': Empty;
   'recipe.ingredients': Empty;
   'recipe.col.ingredient': Empty;
   /** Spalte je Portionsgröße mit den Wochentagen, an denen sie gilt. */
@@ -191,6 +193,7 @@ export const NUTRITION_PARAM_SCHEMAS = {
     cook: z.number().int().min(0).max(RECIPE_SCHEMA_LIMITS.cookMinutes.max),
   }),
   'recipe.mark.aiDraft': empty,
+  'recipe.mark.testphase': empty,
   'recipe.ingredients': empty,
   'recipe.col.ingredient': empty,
   'recipe.col.portion': z.strictObject({ factor: factorSchema, weekdays: weekdaysSchema }),
