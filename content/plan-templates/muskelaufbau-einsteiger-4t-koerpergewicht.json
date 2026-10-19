@@ -1,7 +1,7 @@
 {
   "id": "muskelaufbau-einsteiger-4t-koerpergewicht",
   "version": 1,
-  "status": "draft",
+  "status": "published",
   "title_de": "Muskelaufbau · Einsteiger · 4 Tage · Körpergewicht",
   "description_de": "Pro Woche je zwei Oberkörper- und Unterkörper-Einheiten zu Hause ohne Geräte – nur mit dem eigenen Körpergewicht und Alltagsdingen wie Wand, Türrahmen, Stuhl oder Handtuch, je 30–45 Minuten. Ziel Muskelaufbau: genug Wochensätze je Muskelgruppe; gesteigert wird über Wiederholungen, einen Zusatzsatz und schwerere Varianten. Für Einsteiger: einfache Übungen mit mindestens zwei Wiederholungen Reserve, ohne Sprünge und ohne Übungen über Kopf. Zwei gleiche Einheiten möglichst nicht an zwei Tagen hintereinander. Ehrlich gesagt: Ohne Geräte ist der Trainingsreiz begrenzt, vor allem für Rücken und Beinrückseite. Der Plan hält fit und baut Kraft auf; für maximalen Muskelaufbau sind Geräte besser – schon ein Band oder eine Klimmzugstange hilft.",
   "goal_type": "muscle_gain",
@@ -261,8 +261,8 @@
     "batch_id": null,
     "created_on": "2026-10-05",
     "expert_reviewed": false,
-    "reviewed_by": null,
-    "reviewed_at": null,
+    "reviewed_by": "Karsten",
+    "reviewed_at": "2026-10-18",
     "review_note": null
   }
 }

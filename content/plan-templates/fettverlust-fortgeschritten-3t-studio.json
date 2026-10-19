@@ -1,7 +1,7 @@
 {
   "id": "fettverlust-fortgeschritten-3t-studio",
   "version": 1,
-  "status": "draft",
+  "status": "published",
   "title_de": "Fettverlust · Fortgeschritten · 3 Tage · Studio",
   "description_de": "Pro Woche drei Ganzkörper-Einheiten im Studio, je 45–60 Minuten. Ziel Fettverlust: Krafttraining erhält die Muskulatur, während die Ernährung für das Kaloriendefizit sorgt; kürzere Pausen halten die Einheit kompakt. Für Fortgeschrittene: mehr Sätze und höhere Intensität bei weiterhin sauberer Technik, ohne Maximalversuche. Zwischen zwei Einheiten möglichst einen Ruhetag einplanen.",
   "goal_type": "fat_loss",
@@ -347,8 +347,8 @@
     "batch_id": null,
     "created_on": "2026-10-03",
     "expert_reviewed": false,
-    "reviewed_by": null,
-    "reviewed_at": null,
+    "reviewed_by": "Karsten",
+    "reviewed_at": "2026-10-18",
     "review_note": null
   }
 }

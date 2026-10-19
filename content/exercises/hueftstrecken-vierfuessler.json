@@ -1,7 +1,7 @@
 {
   "id": "hueftstrecken-vierfuessler",
   "version": 1,
-  "status": "draft",
+  "status": "published",
   "name_de": "Hüftstrecken im Vierfüßlerstand",
   "name_en": "Quadruped Hip Extension",
   "aliases_de": ["Donkey Kick"],
@@ -42,8 +42,8 @@
     "batch_id": null,
     "created_on": "2026-10-05",
     "expert_reviewed": false,
-    "reviewed_by": null,
-    "reviewed_at": null,
+    "reviewed_by": "Karsten",
+    "reviewed_at": "2026-10-18",
     "review_note": null
   }
 }

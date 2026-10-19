@@ -16,5 +16,12 @@ export * from './texts-de';
 export * from './contexts';
 export * from './fewer-days-schedule';
 export { latestCountingSessionLogId } from './rules/common';
-export { clearlyMissed, fastIncreaseExcluded, reducedState } from './rules/state-rules';
+export {
+  clearlyMissed,
+  FAST_INCREASE_EXCLUSIONS,
+  type FastIncreaseExclusion,
+  fastIncreaseExclusion,
+  fastIncreaseExcluded,
+  reducedState,
+} from './rules/state-rules';
 export { stagnationAlternative, stagnationStart } from './rules/stagnation';

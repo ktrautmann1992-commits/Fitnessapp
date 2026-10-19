@@ -1,7 +1,7 @@
 {
   "id": "glute-bridge",
   "version": 1,
-  "status": "draft",
+  "status": "published",
   "name_de": "Glute Bridge",
   "name_en": "Glute Bridge",
   "aliases_de": ["Beckenheben"],
@@ -53,8 +53,8 @@
     "batch_id": null,
     "created_on": "2026-10-03",
     "expert_reviewed": false,
-    "reviewed_by": null,
-    "reviewed_at": null,
+    "reviewed_by": "Karsten",
+    "reviewed_at": "2026-10-18",
     "review_note": null
   }
 }

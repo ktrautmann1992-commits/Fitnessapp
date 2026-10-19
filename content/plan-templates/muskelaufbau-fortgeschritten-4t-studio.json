@@ -1,7 +1,7 @@
 {
   "id": "muskelaufbau-fortgeschritten-4t-studio",
   "version": 1,
-  "status": "draft",
+  "status": "published",
   "title_de": "Muskelaufbau · Fortgeschritten · 4 Tage · Studio",
   "description_de": "Pro Woche vier Einheiten im Wechsel Oberkörper/Unterkörper im Studio, je 45–60 Minuten. Ziel Muskelaufbau: genug Wochensätze je Muskelgruppe und Wiederholungsbereiche, die über die Wochen ein langsames Steigern des Gewichts erlauben. Für Fortgeschrittene: mehr Sätze und höhere Intensität bei weiterhin sauberer Technik, ohne Maximalversuche. Nach zwei Trainingstagen in Folge einen Ruhetag einplanen.",
   "goal_type": "muscle_gain",
@@ -429,8 +429,8 @@
     "batch_id": null,
     "created_on": "2026-10-03",
     "expert_reviewed": false,
-    "reviewed_by": null,
-    "reviewed_at": null,
+    "reviewed_by": "Karsten",
+    "reviewed_at": "2026-10-18",
     "review_note": null
   }
 }

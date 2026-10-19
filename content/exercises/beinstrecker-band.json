@@ -1,7 +1,7 @@
 {
   "id": "beinstrecker-band",
   "version": 1,
-  "status": "draft",
+  "status": "published",
   "name_de": "Beinstrecker mit Widerstandsband",
   "name_en": "Banded Leg Extension",
   "aliases_de": [],
@@ -43,8 +43,8 @@
     "batch_id": null,
     "created_on": "2026-10-03",
     "expert_reviewed": false,
-    "reviewed_by": null,
-    "reviewed_at": null,
+    "reviewed_by": "Karsten",
+    "reviewed_at": "2026-10-18",
     "review_note": null
   }
 }
