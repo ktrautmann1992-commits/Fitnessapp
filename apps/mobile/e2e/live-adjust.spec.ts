@@ -10,7 +10,7 @@ import { heading, onboard } from './plan-helpers';
  * Live-Anpassung im TESTMODUS (docs/PLAN-PHASE-4B.md Etappe D, 8.1–8.4) mit festen Daten (Europe/Berlin): Plan ab
  * Montag 05.10.2026 (Einsteiger, Studio Mo/Mi/Fr, Gesundheits-Check ohne Auffälligkeiten). Die Tagebuch-Einträge sind
  * ausgedacht und liegen direkt im Gerätespeicher (wie save_session_log sie speichern würde). Die Regeln rechnet die App
- * auf dem Gerät – NUR mit „Premium simulieren (nur Test)“.
+ * auf dem Gerät – NUR mit „Live-Anpassung einschalten (Testmodus)“ (seit 19.10.2026 Standard an).
  */
 
 const LOCAL_DB = 'fitnessapp.local.v1';
@@ -48,7 +48,7 @@ async function goOn(page: Page, date: string, path = '/today') {
 async function simulatePremium(page: Page, on: boolean) {
   await page.goto('/settings');
   await heading(page, 'Einstellungen');
-  const box = page.getByRole('checkbox', { name: 'Premium simulieren (nur Test)' });
+  const box = page.getByRole('checkbox', { name: 'Live-Anpassung einschalten (Testmodus)' });
   await expect(box).toBeVisible();
   if ((await box.getAttribute('aria-checked')) !== String(on)) await box.click();
   await expect(box).toHaveAttribute('aria-checked', String(on));
@@ -89,11 +89,25 @@ test.beforeEach(async ({ page }) => {
   await heading(page, 'Heute');
 });
 
-test('ohne „Premium simulieren“ passiert nichts (Gratis unverändert)', async ({ page }) => {
+test('Testphase „alles offen“: Schalter steht von Anfang an auf an, mit Kennzeichen', async ({
+  page,
+}) => {
+  await page.goto('/settings');
+  await heading(page, 'Einstellungen');
+  await expect(
+    page.getByRole('checkbox', { name: 'Live-Anpassung einschalten (Testmodus)' }),
+  ).toHaveAttribute('aria-checked', 'true');
+  await expect(page.getByTestId('settings-adjust-test-phase')).toHaveText('Testphase: kostenlos');
+  await expect(page.getByText(/Premium|Abo\b/)).toHaveCount(0);
+});
+
+test('Schalter aus → nichts passiert (Gratis-Weg unverändert)', async ({ page }) => {
+  // Testphase: Standard an – der Gratis-Weg braucht den ausgeschalteten Schalter.
+  await simulatePremium(page, false);
   await seed(page, strengthWeek(['2026-10-12', '2026-10-14', '2026-10-16'], 9));
   await goOn(page, '2026-10-19', '/settings');
   await expect(
-    page.getByRole('checkbox', { name: 'Premium simulieren (nur Test)' }),
+    page.getByRole('checkbox', { name: 'Live-Anpassung einschalten (Testmodus)' }),
   ).toHaveAttribute('aria-checked', 'false');
   await page.goto('/today');
   await heading(page, 'Heute');
@@ -112,6 +126,8 @@ test('ohne „Premium simulieren“ passiert nichts (Gratis unverändert)', asyn
 });
 
 test('zweimal verfehlt → Gewicht gesenkt mit Erklärung und Rückgängig', async ({ page }) => {
+  // Testphase: Schalter steht auf an – hier erst aus, damit „vorher → Einschalten → nachher“ sichtbar bleibt.
+  await simulatePremium(page, false);
   // Wadenheben (Mo und Fr): 20 kg, Ziel 12 – zweimal deutlich darunter.
   await seed(page, [
     {
@@ -252,6 +268,7 @@ test('Stillstand → Übung getauscht; heutige Einheit mit offenem Entwurf bleib
 test('zu wenig Einheiten → Vorschlag; „Umstellen“ erzeugt einen neuen Plan, das Tagebuch bleibt', async ({
   page,
 }) => {
+  await simulatePremium(page, false); // Testphase: Standard an – erst aus, dann einschalten.
   await seed(page, strengthWeek(['2026-10-12', '2026-10-19', '2026-10-26', '2026-10-28'], 7));
   await goOn(page, '2026-11-02');
   await expect(page.getByTestId('fewer-days-card')).toHaveCount(0);

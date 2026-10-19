@@ -26,7 +26,7 @@ const dayMonth = (date: string) =>
 
 export const deFoodPhoto = {
   open: 'Per Foto',
-  openHint: 'Premium: Foto deines Essens auswerten lassen – als Vorschlag zum Prüfen.',
+  openHint: 'Foto deines Essens auswerten lassen – als Vorschlag zum Prüfen.',
   title: 'Gericht per Foto',
   intro:
     'Fotografiere dein Essen. Wir schätzen die Bestandteile und Mengen – du prüfst und änderst alles, bevor etwas eingetragen wird.',
@@ -78,8 +78,9 @@ export const deFoodPhoto = {
   notConfigured:
     'Per Foto ist in dieser Version noch nicht verfügbar. Eintragen per Hand geht wie immer.',
   flagOff: 'Per Foto ist gerade abgeschaltet. Eintragen per Hand geht wie immer.',
+  // Testphase „alles offen“ (KONZEPT 13): kein Abo-/Kauf-Hinweis – kommt nur, wenn der Server die Testphase beendet.
   noPremium:
-    'Per Foto gehört zu Premium, weil dafür eine KI läuft. Bis zum Start von Premium können es nur freigeschaltete Testkonten nutzen. Eintragen per Hand bleibt immer gratis.',
+    'Per Foto ist für dein Konto gerade nicht freigeschaltet. Eintragen per Hand geht wie immer.',
   consentTitle: 'Einwilligung nötig',
   consentText:
     'Derzeit Testversion: Es antwortet ein Testprogramm mit festen Beispielen – dein Foto geht an keinen KI-Anbieter. Das Foto wird nicht gespeichert, das Ergebnis ist eine Schätzung. Bevor eine echte KI eingeschaltet wird, fragen wir dich erneut.',
@@ -102,7 +103,8 @@ export const deFoodPhoto = {
     image_too_large_px: 'Das Foto ist zu groß. Bitte versuch es mit einem anderen.',
     image_broken: 'Dieses Foto können wir nicht lesen. Bitte versuch es mit einem anderen.',
     flag_off: 'Per Foto ist gerade abgeschaltet. Eintragen per Hand geht wie immer.',
-    no_entitlement: 'Per Foto gehört zu Premium. Eintragen per Hand bleibt immer gratis.',
+    no_entitlement:
+      'Per Foto ist für dein Konto gerade nicht freigeschaltet. Eintragen per Hand geht wie immer.',
     no_consent: 'Für Per Foto fehlt die Einwilligung.',
     timeout:
       'Die Auswertung hat zu lange gedauert. Das zählt nicht gegen dein Kontingent – versuch es gleich noch einmal.',

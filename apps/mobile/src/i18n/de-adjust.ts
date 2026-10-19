@@ -66,9 +66,10 @@ export const deAdjust = {
   revertFailed: 'Das hat nicht geklappt. Bitte versuche es noch einmal.',
   offline: 'Dafür brauchst du kurz Verbindung.',
   proposalExpired: 'Dieser Vorschlag ist nicht mehr aktuell.',
-  premiumEnded: 'Neue Anpassungen gibt es mit Premium.',
+  // Testphase „alles offen“ (KONZEPT 13): kein Abo-/Kauf-Hinweis.
+  premiumEnded: 'Neue Anpassungen kommen gerade nicht dazu – die bisherigen bleiben.',
   premiumEndedTest:
-    '„Premium simulieren“ ist aus – die bisherigen Anpassungen bleiben, neue kommen nicht dazu.',
+    '„Live-Anpassung einschalten“ ist aus – die bisherigen Anpassungen bleiben, neue kommen nicht dazu.',
   loadFailed: 'Die Anpassungen lassen sich gerade nicht laden. Dein Plan bleibt gültig.',
   // Vorschlag weniger Trainingstage (R5, nur mit Bestätigung).
   proposalTitle: 'Weniger Trainingstage?',
@@ -91,12 +92,13 @@ export const deAdjust = {
   fewerMissing: 'Diesen Vorschlag gibt es nicht mehr.',
   weekday: (isoWeekday: number) => WEEKDAYS[isoWeekday - 1] ?? '',
   // Einstellungen – Schalter nur im Testmodus (Wächter K2).
-  settingsTitle: 'Live-Anpassung (Premium)',
+  settingsTitle: 'Live-Anpassung',
   settingsText:
-    'Mit Premium passt sich dein Plan nach jedem Training an: Gewicht senken, wenn es zu schwer war, eine leichtere Woche nach viel Belastung, eine neue Übung bei Stillstand. Jede Änderung wird erklärt.',
-  simulate: 'Premium simulieren (nur Test)',
+    'Dein Plan passt sich nach jedem Training an: Gewicht senken, wenn es zu schwer war, eine leichtere Woche nach viel Belastung, eine neue Übung bei Stillstand. Jede Änderung wird erklärt.',
+  // Testmodus: Schalter bleibt (Gratis-Weg testbar), Standard AN (Testphase „alles offen“).
+  simulate: 'Live-Anpassung einschalten (Testmodus)',
   simulateHint:
-    'Nur im Testmodus: Die App rechnet die Regeln nach jedem gespeicherten Training auf diesem Gerät. Im echten Betrieb prüft der Server, ob du Premium hast.',
+    'In der Testphase ist die Live-Anpassung für alle kostenlos und von Anfang an eingeschaltet. Ausschalten zeigt, wie die App ohne sie läuft. Die App rechnet die Regeln nach jedem gespeicherten Training auf diesem Gerät.',
   simulateBrowserHint:
     'Im Browser bleiben die Anpassungen nur, solange dieser Tab offen ist (geschützter Speicher).',
   simulateFailed: 'Der Schalter ließ sich gerade nicht speichern.',
