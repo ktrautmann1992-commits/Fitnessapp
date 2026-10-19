@@ -438,6 +438,17 @@ Store-Texte, Datenschutz-Angaben für App Store/Play Store und eine Checkliste f
 rechtliche Prüfung nach docs/KONZEPT.md Abschnitt 14.
 ```
 
+## Zusatz – Fit im Alter (Entwurf zur Entscheidung)
+```
+Setze docs/PLAN-FIT-IM-ALTER.md um, Etappe für Etappe (FA0–FA6): Ziel active_aging mit eigenen
+Vorlagen (Gleichgewicht, Kraft, Beweglichkeit, Gehen), Sicherheitsprofil (RPE ≤ 6, immer mit Halt,
+keine Sprünge/Bodenübungen), Zusatzfragen im Gesundheits-Check, Selbsttests ohne Normwerte,
+Barrierefreiheit (Große Ansicht, Vorlesen). Erst nach Freigabe der Gründer-Fragen FA-G1 bis FA-G16.
+```
+**Stand 19.10.2026:** Plan `docs/PLAN-FIT-IM-ALTER.md`, Entwurf zur Entscheidung (Gründer-Fragen FA-G1 bis FA-G16;
+Wächter Runde 1 „mit Auflagen“ eingearbeitet, Runde 2 freigabefähig, N1–N5 eingearbeitet). Empfehlung: FA-G1/FA-G10 vor Phase 6 SU3 entscheiden, FA5 jederzeit
+(vor FA4), FA1–FA4 nach Phase 6 SU3/SU4 und vor Phase 8.
+
 ## Später – Fitnessstudios (B2B)
 ```
 Füge organizations und org_memberships hinzu: Studio-Branding, Geräteliste als Equipment-Profil,
