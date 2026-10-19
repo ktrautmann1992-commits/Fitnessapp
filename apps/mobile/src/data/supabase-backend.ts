@@ -1766,6 +1766,15 @@ export function createSupabaseBackend(options: SupabaseBackendOptions): Backend 
     // aus der Datenbank ohne Planband (Rekonstruktion im Core), Bestand aus der Datenbank (nur freigegeben und fachlich
     // geprüft), Tagebuch und eigene Gerichte über die verschlüsselte Ernährungs-Warteschlange.
     supportsNutrition: true,
+    // Testphase „alles offen“ (Wächter N3): nur Anzeige; Fehler und offline → kein Kennzeichen.
+    testPhaseOpen: async () => {
+      try {
+        const { data, error } = await client.rpc('premium_open_active');
+        return !error && data === true;
+      } catch {
+        return false;
+      }
+    },
     signIn: {
       kind: 'email_code',
       requestCode: async (email) => {

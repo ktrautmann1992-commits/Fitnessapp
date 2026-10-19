@@ -59,11 +59,24 @@ function categorize(files: readonly NutritionContentFile[], ids: string[], categ
 // Jeder Aufbau prüft den Bestand dreimal (validateContent + je ein „nachher“ für zwei Vorschauen; vor K2 fünfmal) –
 // unter Last (turbo parallel) trotzdem langsam, daher der großzügige Timeout.
 describe('Redaktionsbereich Ernährung (N2d)', { timeout: 30_000 }, () => {
-  it('echter Stand aus dem Bündel lässt sich aufbauen (heute ohne Katalog: leer, Hinweis „Katalog fehlt“)', () => {
+  it('echter Stand aus dem Bündel lässt sich aufbauen (mit oder ohne Katalog im Repository)', () => {
     const admin = getNutritionAdmin();
     expect(admin.recipes.length).toBeLessThanOrEqual(CONTENT_BUNDLE.nutritionFiles.length);
-    expect(admin.catalogMissing).toBe(admin.foods.length === 0);
+    const bundledFoods = CONTENT_BUNDLE.nutritionFiles.filter((f) => f.kind === 'food').length;
+    expect(admin.foods.length).toBe(bundledFoods);
+    expect(admin.catalogMissing).toBe(bundledFoods === 0);
+    // Die Begleitdaten des echten Bestands (Quellauszug, Listen) sind lesbar – sonst wären alle Lebensmittel rot.
+    expect(admin.catalogProblems).toEqual([]);
     expect(admin.groups.map((g) => g.id)).toContain(NO_CATEGORY);
+  });
+
+  it('ohne Katalog und ohne Rezepte (leeres Repository): Hinweis „Katalog fehlt“, alles leer', () => {
+    const admin = buildNutritionAdmin([], undefined);
+    expect(admin.catalogMissing).toBe(true);
+    expect(admin.foods).toEqual([]);
+    expect(admin.recipes).toEqual([]);
+    expect(admin.catalogProblems).toEqual([]);
+    expect(admin.brokenFiles).toEqual([]);
   });
 
   it('Lebensmittel: Katalog-Prüfung, Erwartungsliste und Verwendung in Rezepten', () => {
@@ -73,6 +86,7 @@ describe('Redaktionsbereich Ernährung (N2d)', { timeout: 30_000 }, () => {
     expect(oats?.expectedGroups).toEqual(['gluten']);
     expect(oats?.usedIn.map((r) => r.id)).toContain('porridge-banane');
     expect(admin.catalogMissing).toBe(false);
+    expect(admin.foods.length).toBe(demo.files.filter((f) => f.kind === 'food').length);
   });
 
   it('Rezepte nach Kategorie: n:m, „ohne Kategorie“, Zählung Entwürfe/rot/Annahmen', () => {

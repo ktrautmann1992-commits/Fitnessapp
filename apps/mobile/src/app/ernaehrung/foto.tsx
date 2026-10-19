@@ -26,6 +26,7 @@ import { View } from 'react-native';
 
 import { NutritionGate, nutritionReady } from '@/components/nutrition';
 import { Screen } from '@/components/screen';
+import { TestPhaseBadge } from '@/components/test-phase';
 import {
   Body,
   Button,
@@ -154,6 +155,7 @@ export default function FoodPhotoScreen() {
         />
       }
     >
+      <TestPhaseBadge testID="food-photo-test-phase" />
       {children}
     </Screen>
   );

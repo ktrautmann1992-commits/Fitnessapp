@@ -43,6 +43,7 @@ import { View } from 'react-native';
 import { CustomMealPicker } from '@/components/custom-meals';
 import { NutritionGate, nutritionReady } from '@/components/nutrition';
 import { ConfirmDialog, Screen } from '@/components/screen';
+import { TestPhaseBadge } from '@/components/test-phase';
 import {
   Body,
   Button,
@@ -369,6 +370,7 @@ export default function FoodLogEntryScreen() {
         onChange={setSlot}
       />
       <Card>
+        <TestPhaseBadge testID="food-log-photo-test-phase" />
         <Body muted>{t.foodPhoto.openHint}</Body>
         <Button
           label={t.foodPhoto.open}

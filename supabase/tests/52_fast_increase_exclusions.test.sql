@@ -8,6 +8,10 @@ begin;
 create extension if not exists pgtap with schema extensions;
 select plan(34);
 
+-- Testphase „alles offen“ (20261019120000_premium_open.sql): Diese Datei prüft den Beta-Weg (Premium nur mit
+-- Freischaltung) – dafür hier premium_open aus; der offene Weg steht in 51_premium_open.test.sql.
+update private.feature_flags set enabled = false where key = 'premium_open';
+
 create or replace function private.berlin_today()
 returns date
 language sql

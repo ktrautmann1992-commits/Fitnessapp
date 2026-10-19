@@ -3,6 +3,8 @@ name: beta-grant
 # Beta-Freischaltung und Feature-Flags bis Phase 7 (docs/PLAN-PHASE-4B.md 6.3, docs/PLAN-AUSWERTUNG.md Etappe E3, A-G20).
 # Seit E4a auch das Flag food_product_lookup (Produktabfrage per Barcode-Nummer, Migration 20261017100000_food_products.sql;
 # gratis, nur flag_an/flag_aus/status – keine Freischaltung je Person).
+# Testphase (Gründer 19.10.2026, Migration 20261019120000_premium_open.sql): Flag premium_open – AN = jedes angemeldete
+# Konto hat Premium (Abos ruhen). Ende der Testphase: flag_aus mit Funktion premium_open. Nur flag_an/flag_aus/status.
 # Nur per Hand: GitHub-App → Actions → beta-grant → „Run workflow“. Nur wer Schreibrechte am Repository hat, kann ihn
 # starten; GitHub merkt sich, wer. Ruft public.beta_admin(...) (Migration 20261016160100_ai_food_photo.sql) mit den
 # GitHub-Secrets SUPABASE_URL und SUPABASE_SECRET_KEY auf. Ohne Secrets endet der Workflow grün mit Hinweis.
@@ -50,6 +52,7 @@ on:
         options:
           - ai_food_photo
           - food_product_lookup
+          - premium_open
 
 permissions:
   contents: read
@@ -88,6 +91,13 @@ jobs:
               # E4a: gratis, keine Freischaltung je Person – nur flag_an/flag_aus/status.
               if [ "$action" = grant ] || [ "$action" = revoke ]; then
                 echo "::error::Die Produktabfrage hat keine Freischaltung je Person – nur flag_an, flag_aus oder status."
+                exit 1
+              fi
+              ;;
+            premium_open)
+              # Testphase: gilt für alle angemeldeten Konten – keine Freischaltung je Person.
+              if [ "$action" = grant ] || [ "$action" = revoke ]; then
+                echo "::error::premium_open gilt für alle Konten – nur flag_an, flag_aus oder status."
                 exit 1
               fi
               ;;
@@ -177,7 +187,9 @@ jobs:
             flag_off) text="Funktion $FLAG ausgeschaltet." ;;
             invalid_input) text="Ungültige Eingabe." ;;
             status)
-              if [ "$FLAG" = food_product_lookup ]; then
+              if [ "$FLAG" = premium_open ]; then
+                text=$(jq -r '"Testphase alles offen (premium_open): \(if .flag_enabled then "an – alle angemeldeten Konten haben Premium" else "aus – nur Beta-Freischaltungen" end) · Konten: \(.accounts) · aktive Beta-Freischaltungen: \(.active_grants) · KI-Aufrufe diesen Monat: \(.ai_calls_this_month) · KI-Kosten diesen Monat: \(.ai_cost_eur_this_month) € · Obergrenze Fotos (alle Konten): \(.photo_calls_cap) Aufrufe bzw. \(.photo_cost_eur_cap) €"' "$RUNNER_TEMP/antwort.json")
+              elif [ "$FLAG" = food_product_lookup ]; then
                 text=$(jq -r '"Funktion \(.flag): \(if .flag_enabled then "an" else "aus" end) · Produkte im Speicher: \(.cached_products) · Abfragen heute: \(.lookups_today) · Open Food Facts gerade gesperrt (Pause): \(if .off_blocked then "ja" else "nein" end)"' "$RUNNER_TEMP/antwort.json")
               else
                 text=$(jq -r '"Funktion \(.flag): \(if .flag_enabled then "an" else "aus" end) · aktive Freischaltungen: \(.active_grants) · Fotos diesen Monat: \(.photos_this_month) (fehlgeschlagen: \(.failed_this_month)) · Kosten diesen Monat: \(.cost_eur_this_month) €"' "$RUNNER_TEMP/antwort.json")

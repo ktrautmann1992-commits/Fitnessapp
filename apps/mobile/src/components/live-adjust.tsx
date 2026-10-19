@@ -3,6 +3,7 @@ import { useRouter, type Href } from 'expo-router';
 import { useMemo, useState } from 'react';
 import { View } from 'react-native';
 
+import { TestPhaseBadge } from '@/components/test-phase';
 import { Body, Button, Card, Checkbox, Heading, Notice } from '@/components/ui';
 import { adjustmentsForSession, openProposal } from '@/data/live-adjust';
 import type { UserRows } from '@/data/types';
@@ -99,8 +100,10 @@ export function proposedDropWeekday(change: FewerDaysChange | null): number | nu
 }
 
 /**
- * Einstellungen: Abschnitt „Live-Anpassung (Premium)“. Der Schalter „Premium simulieren (nur Test)“ erscheint NUR im
- * Testmodus (Wächter K2); im Supabase-Modus gibt es den Abschnitt bis Phase 7 bzw. Etappe B/C nicht.
+ * Einstellungen: Abschnitt „Live-Anpassung“ mit Kennzeichen „Testphase: kostenlos“. Der Schalter „Live-Anpassung
+ * einschalten (Testmodus)“ (intern simulatePremium) erscheint NUR im Testmodus (Wächter K2), Standard AN (Testphase
+ * „alles offen“, KONZEPT 13); ausschalten = Gratis-Weg testen. Im Supabase-Modus gibt es den Abschnitt erst mit
+ * Etappe C.
  */
 export function LiveAdjustSettings() {
   const router = useRouter();
@@ -123,6 +126,7 @@ export function LiveAdjustSettings() {
     <>
       <Heading level={2}>{t.adjust.settingsTitle}</Heading>
       <Card>
+        <TestPhaseBadge testID="settings-adjust-test-phase" />
         <Body muted>{t.adjust.settingsText}</Body>
         <Checkbox
           label={t.adjust.simulate}

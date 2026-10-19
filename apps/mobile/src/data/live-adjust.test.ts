@@ -134,16 +134,35 @@ function longestLoadRun(
   return best;
 }
 
-describe('Testmodus: Live-Anpassung nur mit „Premium simulieren“', () => {
-  it('ohne Schalter passiert nichts (Gratis unverändert): keine Anpassung, gleicher Plan', async () => {
+describe('Testmodus: Live-Anpassung nur mit Schalter „Live-Anpassung einschalten“ (Standard an)', () => {
+  it('Schalter aus passiert nichts (Gratis unverändert): keine Anpassung, gleicher Plan', async () => {
     const device = await setup();
     expect(await logStrength(device, '2026-10-12', '2026-10-16', 9)).toBe(3);
     const backend = backendOn(device, '2026-10-16');
+    // Testphase „alles offen“: Standard AN – der Gratis-Weg braucht den ausdrücklich ausgeschalteten Schalter.
+    await backend.liveAdjust?.setSimulatePremium(false);
+    expect(await backend.liveAdjust?.simulatePremium()).toBe(false);
     const before = await readJson<{ rows: UserRows }>(device.store, STORAGE_KEYS.localDb);
     const { rows } = await backend.loadRows();
     expect(await backend.liveAdjust?.adjustments()).toEqual([]);
     expect(device.live.peek()).toBeNull();
     expect(rows.plannedExercises).toEqual(before?.rows.plannedExercises);
+  });
+
+  it('Testphase „alles offen“ (KONZEPT 13): ohne gespeicherten Schalter gilt AN – Anpassung beim Laden', async () => {
+    const device = await setup();
+    await logStrength(device, '2026-10-12', '2026-10-16', 9);
+    const backend = backendOn(device, '2026-10-16');
+    expect(
+      (await readJson<{ simulatePremium?: boolean }>(device.store, STORAGE_KEYS.localDb))
+        ?.simulatePremium,
+    ).toBeUndefined();
+    expect(await backend.liveAdjust?.simulatePremium()).toBe(true);
+    const { liveAdjust } = await backend.loadRows();
+    expect(liveAdjust?.simulatePremium).toBe(true);
+    expect((await backend.liveAdjust?.adjustments())?.map((a) => a.rule)).toEqual([
+      'volume_reduce',
+    ]);
   });
 
   it('nach dem Sync (Laden) bzw. Einschalten: Sätze −1 nächste Woche; NUR im geschützten Speicher', async () => {
