@@ -1,0 +1,52 @@
+{
+  "id": "dinkelmehl-type-630",
+  "version": 1,
+  "status": "draft",
+  "name_de": "Dinkelmehl Type 630",
+  "aliases_de": [],
+  "shopping_category": "spices_baking",
+  "pantry": true,
+  "nutrients_per_100g": {
+    "kcal": 352,
+    "protein_g": 13.17,
+    "carbs_g": 68.35,
+    "sugar_g": 0.44354,
+    "fat_g": 1.38,
+    "sat_fat_g": 0.15,
+    "fiber_g": 6.52,
+    "salt_g": 0.0018,
+    "organic_acids_g": 0,
+    "alcohol_g": 0,
+    "polyols_g": 0
+  },
+  "units": {},
+  "groups": ["gluten"],
+  "animal": [],
+  "meat_kind": [],
+  "pregnancy_caution": false,
+  "alcohol": false,
+  "max_fridge_days": 3,
+  "freezable": true,
+  "substitutes": [],
+  "source": {
+    "db": "bls",
+    "version": "4.0",
+    "ref": "C234000",
+    "name": "Dinkel Mehl, Type 630",
+    "category": "cereal_products",
+    "license": "CC BY 4.0",
+    "retrieved_at": "2026-10-19"
+  },
+  "meta": {
+    "origin": "claude_session",
+    "model": "claude-opus-5-5",
+    "batch_id": null,
+    "created_on": "2026-10-19",
+    "expert_reviewed": false,
+    "reviewed_by": null,
+    "reviewed_at": null,
+    "review_note": null,
+    "catalog_reviewed_by": null,
+    "catalog_reviewed_at": null
+  }
+}
