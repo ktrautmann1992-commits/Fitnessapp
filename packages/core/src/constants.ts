@@ -3532,3 +3532,19 @@ export const CAFFEINE_LIMITS = {
   latestTrainingStartMinutes: TRAINING_TIME_START_MINUTES.afternoon,
   pregnancyDailyMaxMg: PREGNANCY_CAFFEINE_MAX_MG,
 } as const;
+
+/**
+ * Supplement-Inhalte `content/supplements/<id>.json` (docs/PLAN-PHASE-6.md Abschnitt 6, Etappe SU2).
+ * - `textWarnChars` 600: Texte darüber sind am Handy schwer lesbar → gelber Hinweis SK7H (Plan 6, SK7).
+ *   PRODUKTENTSCHEIDUNG.
+ * - `textMaxChars` 1.000: harte Schema-Grenze (SK1) je Text. PRODUKTENTSCHEIDUNG.
+ * - `sourceYear`: Erscheinungsjahr einer Quelle (Plausibilität im Schema). PRODUKTENTSCHEIDUNG.
+ * - `maxSources` / `maxClaims`: Obergrenzen je Eintrag (Schema). PRODUKTENTSCHEIDUNG.
+ */
+export const SUPPLEMENT_CONTENT_LIMITS = {
+  textWarnChars: 600,
+  textMaxChars: 1000,
+  sourceYear: { min: 1950, max: 2100 },
+  maxSources: 12,
+  maxClaims: 6,
+} as const;

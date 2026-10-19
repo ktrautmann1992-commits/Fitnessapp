@@ -42,7 +42,7 @@ describe('Einstellungen', () => {
     expect(empty).toEqual({ model: undefined, effort: undefined, maxUsd: 3 });
   });
 
-  it('Standard je Art: günstiges Flash-Lite für einfache Arten, Flash für Rezepte/Übungen/Vorlagen', () => {
+  it('Standard je Art: günstiges Flash-Lite für einfache Arten, Flash für Rezepte/Übungen/Vorlagen/Supplemente', () => {
     const defaults = Object.fromEntries(
       Object.values(CONTENT_KINDS).map((kind) => [
         kind.kind,
@@ -55,6 +55,7 @@ describe('Einstellungen', () => {
       recipe: { model: MODEL_FLASH, effort: 'medium', maxUsd: 3 },
       ingredient_substitution: { model: MODEL_FLASH_LITE, effort: 'low', maxUsd: 3 },
       package_size: { model: MODEL_FLASH_LITE, effort: 'low', maxUsd: 3 },
+      supplement: { model: MODEL_FLASH, effort: 'medium', maxUsd: 3 },
     });
     // Jedes Standardmodell hat einen Preis (sonst bräche jeder echte Lauf ab).
     for (const kind of Object.values(CONTENT_KINDS)) {

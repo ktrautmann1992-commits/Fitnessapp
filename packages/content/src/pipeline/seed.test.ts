@@ -1,4 +1,4 @@
-import { readFileSync, writeFileSync } from 'node:fs';
+import { cpSync, readFileSync, writeFileSync } from 'node:fs';
 import { join } from 'node:path';
 
 import {
@@ -24,7 +24,7 @@ import {
   type SeedFetch,
   type SeedPackage,
 } from './seed';
-import { createTempRepo, type TempRepo } from './test-helpers';
+import { createTempRepo, REAL_REPO_ROOT, type TempRepo } from './test-helpers';
 
 const repos: TempRepo[] = [];
 afterEach(() => {
@@ -217,6 +217,35 @@ describe('content-seed', () => {
     expect(headers.Authorization).toBeUndefined();
     const body = JSON.parse(String(init.body)) as { p_content: { exercises: { id: string }[] } };
     expect(body.p_content.exercises.map((exercise) => exercise.id)).toEqual(['goblet-kniebeuge']);
+  });
+
+  it('Supplemente (SU2): werden mitgeprüft, aber NICHT eingespielt – auch freigegebene nicht', async () => {
+    const r = repo();
+    cpSync(join(REAL_REPO_ROOT, 'content', 'supplements'), join(r.root, 'content', 'supplements'), {
+      recursive: true,
+    });
+    edit(r, 'content/supplements/creatine.json', publish);
+    edit(r, 'content/exercises/goblet-kniebeuge.json', publish);
+    const skipped = await runSeed({ repoRoot: r.root, env: {}, fetchImpl: okFetch() });
+    expect(skipped.status).toBe('skipped');
+    expect(skipped.markdown).toContain(
+      'Supplemente: 18 geprüft (davon 1 freigegeben) – werden noch nicht eingespielt',
+    );
+    const fetchImpl = okFetch({ exercises: 1, plan_templates: 0 });
+    const seeded = await runSeed({ repoRoot: r.root, env: SUPABASE, fetchImpl });
+    expect(seeded.status).toBe('seeded');
+    expect(seeded.markdown).toContain('Supplemente: 18 geprüft');
+    for (const [url, init] of fetchImpl.mock.calls) {
+      expect(String(url)).not.toContain('supplement');
+      expect(String(init.body ?? '')).not.toContain('creatine');
+    }
+    // Ein Schemafehler an einem Supplement-Entwurf blockiert das Einspielen wie bei allen Inhalten (SK1).
+    edit(r, 'content/supplements/bcaa.json', (data) => {
+      data.dose_g = 5;
+    });
+    const blocked = await runSeed({ repoRoot: r.root, env: SUPABASE, fetchImpl: okFetch() });
+    expect(blocked.status).toBe('blocked');
+    expect(blocked.markdown).toContain('SK1');
   });
 
   it('alter service_role-Schlüssel (JWT) zusätzlich als Bearer', async () => {

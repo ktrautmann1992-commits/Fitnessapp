@@ -1,0 +1,23 @@
+{
+  "id": "collagen",
+  "version": 1,
+  "status": "draft",
+  "name_de": "Kollagen-Pulver",
+  "evidence_level": "c",
+  "category": "food",
+  "summary_de": "Kollagen ist ein Eiweiß aus Bindegewebe, Haut und Knochen von Tieren. Als Pulver oder Trinkampulle wird es für Gelenke, Sehnen und Haut angeboten.",
+  "how_to_de": null,
+  "claim_ids": [],
+  "sources": [],
+  "not_recommended_reason_de": "Die Studienlage reicht für eine Empfehlung nicht aus. Für dein Eiweißziel zählt Kollagen nur eingeschränkt, weil ihm eine unentbehrliche Aminosäure fehlt.",
+  "meta": {
+    "origin": "claude_session",
+    "model": "claude-opus-5-5",
+    "batch_id": null,
+    "created_on": "2026-10-19",
+    "expert_reviewed": false,
+    "reviewed_by": null,
+    "reviewed_at": null,
+    "review_note": null
+  }
+}

@@ -1,0 +1,40 @@
+{
+  "id": "protein_powder",
+  "version": 1,
+  "status": "draft",
+  "name_de": "Proteinpulver",
+  "evidence_level": "a",
+  "category": "food",
+  "summary_de": "Proteinpulver ist ein Lebensmittel: Es liefert Eiweiß, zum Beispiel aus Milch (Molke oder Kasein) oder aus Pflanzen wie Erbse, Reis oder Soja. Sinnvoll ist es nur, wenn du dein Eiweißziel über normale Mahlzeiten schwer erreichst. Normale Mahlzeiten gehen vor.",
+  "how_to_de": "Eine Portion mit {dose} Eiweiß rührst du in Wasser, Milch oder einen Pflanzendrink. Wähle ein Pulver mit kurzer Zutatenliste und ohne zugesetztes Koffein.",
+  "claim_ids": ["protein_muscle_mass"],
+  "sources": [
+    {
+      "authors": "Jäger R, Kerksick CM, Campbell BI et al.",
+      "year": 2017,
+      "title": "International Society of Sports Nutrition Position Stand: protein and exercise",
+      "journal": "J Int Soc Sports Nutr 14:20",
+      "doi": "10.1186/s12970-017-0177-8",
+      "pmid": null
+    },
+    {
+      "authors": "Morton RW, Murphy KT, McKellar SR et al.",
+      "year": 2018,
+      "title": "A systematic review, meta-analysis and meta-regression of the effect of protein supplementation on resistance training-induced gains in muscle mass and strength in healthy adults",
+      "journal": "Br J Sports Med 52(6):376–384",
+      "doi": "10.1136/bjsports-2017-097608",
+      "pmid": null
+    }
+  ],
+  "not_recommended_reason_de": null,
+  "meta": {
+    "origin": "claude_session",
+    "model": "claude-opus-5-5",
+    "batch_id": null,
+    "created_on": "2026-10-19",
+    "expert_reviewed": false,
+    "reviewed_by": null,
+    "reviewed_at": null,
+    "review_note": null
+  }
+}

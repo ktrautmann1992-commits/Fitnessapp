@@ -5,7 +5,8 @@ empfohlen“**. Wächter-Prüfung Runde 1: „mit Auflagen“ – alle Befunde (
 (Abschnitt 0). Umsetzung je Etappe als Pull Request mit Wächter-Prüfung.
 **Stand 19.10.2026:** SU0 erledigt (Plan freigegeben, Entscheidungen eingetragen; Quellen-, Fach- und Rechtsprüfung
 laufen parallel, Abschnitt 18). SU1 (Core: Regeln, Dosis, Zeitplan, Texte) umgesetzt, keine Migration, keine
-sichtbare App-Änderung (Abschnitt 5, Umsetzungsstand SU1).
+sichtbare App-Änderung (Abschnitt 5, Umsetzungsstand SU1). SU2 (Inhalte: Schema, Prüfregeln SK1–SK7, Pipeline-Art,
+Startbestand 5 + 13 Entwürfe) umgesetzt, noch nicht eingespielt (Abschnitt 6, Umsetzungsstand SU2).
 
 **Grundlage:** `CLAUDE.md` (Supplements, Affiliate & Werbung, Gesundheitsdaten, KI-Grenze), `docs/KONZEPT.md`
 (3, 6, 6.13, 7, 12, 13, 14, 15), `docs/PROMPTS.md` Phase 6, `docs/ERWEITERUNGEN.md` (Sponsor bei Challenges),
@@ -640,6 +641,92 @@ geprüft (SU0/Abschnitt 18); alle Werte bleiben „VOR LIVEGANG FACHLICH PRÜFEN
 - **Ratgeber-Regel R21H** bleibt: Ratgeber nennen keine Supplement-Dosis, sondern verweisen auf das Modul.
 
 _DoD:_ Schema, Prüfregeln mit Tests, Pipeline-Art mit Probelauf ohne Schlüssel, Startbestand als Entwurf.
+
+### Umsetzungsstand SU2 (19.10.2026)
+
+**Was gilt:**
+
+- **Schema** `packages/core/src/content/supplement-schema.ts` (`supplementContentSchema`, Zod strikt): `id`, `version`,
+  `status`, `name_de`, `evidence_level` (`a`/`b`/`c`, bei Koffein `null`), `category` (`sport`, `food`, `diet_season`,
+  `safety_info`), `summary_de`, `how_to_de` (Platzhalter; `null` bei Stufe C), `claim_ids[]`, `sources[]` (`authors`,
+  `year`, `title`, `journal`, `doi`, `pmid` – DOI im Format `10.xxxx/…`, PMID nur Ziffern), `not_recommended_reason_de`
+  (nur Stufe C), `meta` (gleiches Herkunftsschema wie alle Inhalte: `origin`, `model`, `reviewed_by`,
+  `expert_reviewed` …). Freigegeben nur mit Prüfer. Höchstens 1.000 Zeichen je Text (`SUPPLEMENT_CONTENT_LIMITS` in
+  `constants.ts`).
+- **Liste „Nicht empfohlen“** `NOT_RECOMMENDED_SUPPLEMENTS` (ID → Kategorie) im selben Schema-Modul, **nicht** in
+  `supplement-ids.ts` – so kann das Affiliate-Modul (SU5) diese Stoffe nicht einmal benennen. `SUPPLEMENT_CONTENT_IDS` =
+  `SUPPLEMENT_IDS` + diese Liste.
+- **Prüfregeln** `packages/core/src/content/supplement-checks.ts`, eingebunden in `validateContent` (damit in
+  `pnpm content:validate`, ci, content-collect/-review/-seed und im Redaktionsbereich):
+  - **SK1** Schema (rot, blockiert immer – wie Ü1/R1).
+  - **SK2** ID bekannt, keine Doppelung (zwei Dateien mit gleicher ID), Kategorie wie im Core (`SUPPLEMENT_CATEGORIES`
+    bzw. `NOT_RECOMMENDED_SUPPLEMENTS`).
+  - **SK3** `checkSupplementText` (alle Listen aus SU1) in Name, Beschreibung, Anwendung und Grund. Quellen-Titel sind
+    Zitate und werden nicht geprüft.
+  - **SK4** jede `claim_id` steht in `APPROVED_CLAIMS` (Kandidaten wie `creatine_strength_55plus` nie), gehört zu
+    diesem Supplement, ihre Mindestmenge wird von der Core-Dosis erfüllt (`claimConditionMet`: Kreatin `dailyG` ≥ 3 g,
+    Omega-3 Untergrenze ≥ 250 mg, Vitamin D Richtwert ≥ 15 % NRV) und ihr Pflichthinweis ist nicht leer
+    (`claimRequiredInfo`).
+  - **SK5** keine Ziffern, Einheiten oder Zahlwörter im Freitext; nur Platzhalter, die der Core für dieses Supplement
+    füllt (`SUPPLEMENT_CONTENT_PLACEHOLDERS`: Kreatin `{dose}` `{gain}`, Proteinpulver/Vitamin D/Omega-3 `{dose}`,
+    Koffein `{dose}` `{daily}` `{cup}` `{cups}` `{time}`, Stufe C keine). Im Namen sind Ziffern erlaubt („Omega-3“),
+    Platzhalter nicht.
+  - **SK6** Stufe A/B mit mindestens einer Quelle; jede Quelle mit DOI oder PMID; keine doppelte Quelle.
+  - **SK7** Stufe wie im Core (`SUPPLEMENT_EVIDENCE`; Koffein `null`; Liste „Nicht empfohlen“ `c`); Stufe C und Koffein
+    ohne `claim_ids`; Koffein-Texte ohne Zweck oder Stufe (gleiche Wortliste wie der SU1-Test); Stufe C ohne Anwendung
+    und mit Grund, sonst Anwendung Pflicht und kein Grund.
+  - **SK7H** (gelb) Text länger als 600 Zeichen.
+  - Rot blockiert wie bei allen Inhalten nur freigegebene Einträge (SK1 immer); dazu gelten DATEI, VERSION und
+    PROBELAUF.
+- **Pipeline-Art** `supplement` (`packages/content/src/pipeline/kinds/supplement.ts`, Workflow-Eingabe `supplements`,
+  Standard `gemini-3.8-flash`, Denktiefe `medium`, 6.000 Token): eine Zelle je ID, Auswahl über `empfohlen` /
+  `nicht_empfohlen` oder die ID. Das Modell schreibt **nur** Name, Beschreibung und Anwendung bzw. Grund; Stufe,
+  Kategorie und Angaben setzt der Code aus dem Core; `sources` bleibt leer (eine KI erfindet leicht DOIs – Quellen trägt
+  ein Mensch ein, bis dahin meldet SK6 den Entwurf rot). Probelauf ohne Schlüssel: zwei gültige Entwürfe
+  (`probelauf-creatine`, `probelauf-bcaa`), eine ungültige und eine abgelehnte Antwort, bis zum Pull Request
+  (Ende-zu-Ende-Test).
+- **Seed:** `content-seed` prüft die Supplemente mit (ein Schemafehler blockiert wie überall), spielt sie aber **nicht**
+  ein – auch freigegebene nicht – und nennt im Bericht nur die Anzahl. Einspielen kommt mit SU3.
+- **content-review:** kennt die Supplemente noch nicht (eine Supplement-ID meldet „nicht gefunden“, nichts wird
+  geändert). Freigabe per Workflow folgt mit SU3, wenn es die Tabelle gibt.
+- **Startbestand** `content/supplements/` (18 Dateien, alle `draft`, `origin: claude_session`, `expert_reviewed:
+false`, in der App „KI-Entwurf – fachlich prüfen“): Startliste `creatine`, `protein_powder`, `vitamin_d`, `omega3`,
+  `caffeine`; „Nicht empfohlen“ `bcaa`, `glutamine`, `l_carnitine`, `cla`, `fat_burner`, `testo_booster`,
+  `pre_workout`, `hmb`, `ashwagandha`, `collagen`, `multivitamin`, `iron`, `melatonin`. Quellen (nur DOI):
+  Kreider 2017, Maughan 2018, Jäger 2017, Morton 2018, DGE 2012 (Ann Nutr Metab), EFSA 2016 (Vitamin D), EFSA 2012
+  (UL Vitamin D; UL EPA/DHA), EFSA 2010 (Fette), EFSA 2015 (Koffein), Drake 2013, Wolfe 2017 (BCAA).
+
+**Präzisierungen (vom Plan nicht ausdrücklich festgelegt, vorsichtig gelöst):**
+
+1. **IDs der Liste „Nicht empfohlen“:** Plan 6 verlangt `id` ∈ `SUPPLEMENT_IDS`, der Startbestand aber etwa 12
+   Einträge außerhalb davon. Gelöst mit der getrennten Liste `NOT_RECOMMENDED_SUPPLEMENTS` (SK2 kennt beide).
+   **Für SU3 vormerken:** Die Aufzählung `supplement_id` (7.1) braucht diese IDs ebenfalls, oder die Tabelle
+   `supplements` nutzt `text` mit Prüfung gegen die Liste.
+2. **Natriumbicarbonat** steht nicht in Stufe C: Die Studienlage für kurze, sehr intensive Belastungen ist gut
+   (Maughan 2018); „Nicht empfohlen“ wegen Magen-Darm-Beschwerden wäre mit Stufe C („keine ausreichende Studienlage“)
+   falsch beschriftet. Einordnung in der Fachprüfung (wie Nitrat/Beta-Alanin, zweite Welle). Damit 13 statt 14
+   Einträge.
+3. **Namen ohne verbotene Wörter:** „Fatburner“, „Testo-Booster“ und „Pre-Workout-Booster“ verstoßen selbst gegen 3.8
+   Nr. 2. Sie heißen „Abnehm-Kapseln und -Pulver“, „Tribulus, D-Asparaginsäure und ähnliche Mischungen“ und
+   „Pre-Workout-Mischungen“ (IDs bleiben `fat_burner`, `testo_booster`, `pre_workout`).
+4. **Kategorie bei Stufe C:** Melatonin, Ashwagandha und die Mischungen als `sport` (dort begegnen sie Nutzerinnen und
+   Nutzern), Kollagen als `food`, Multivitamin und Eisen als `diet_season`. Nie `safety_info`.
+5. **SK7 deckt zusätzlich ab:** Stufe C hat keine Anwendung (`how_to_de: null`), sonst ist sie Pflicht – „nicht
+   empfohlen“ und eine Anleitung zur Einnahme passen nicht zusammen.
+6. **Doppelte Quellen** (gleiche DOI, Groß-/Kleinschreibung egal) sind SK6 rot.
+7. **Probelauf-IDs** (`probelauf-…`) sind im Schema erlaubt (Bindestrich), SK2 meldet sie als unbekannt – rot am
+   Entwurf, nie freigebbar (PROBELAUF).
+
+**Tests:** Core 5.307 → 5.357 (48 in `supplement-checks.test.ts`: jede Regel positiv und negativ, Grenzfälle 600/601 und 1.000/1.001
+Zeichen, Kreatin 3 g / 2,99 g, Omega-3 249 mg, Vitamin D 0,74/0,75 µg, falsche Einheit, leerer Pflichthinweis,
+Blockieren nur bei „published“, PROBELAUF, Versionsregel; `rules.test.ts` Regeltabelle). Content: Startbestand
+(`supplements-startbestand.test.ts`: genau die bekannten IDs, keine Befunde – auch keine gelben –, alle Entwurf aus der
+Claude-Sitzung, jede zugelassene Angabe genau einmal), Pipeline (Zellen, Antwort → Datei, Anfrage-Text, Probelauf
+Ende-zu-Ende), Seed (geprüft, nicht eingespielt, SK1 blockiert), `content:validate` (Ordner, fremde Datei).
+
+**Nicht verifiziert:** DOIs wurden aus der Sitzung heraus nicht online geprüft (kein Netzzugang zu doi.org/Crossref);
+eingetragen sind nur Quellen, deren DOI sicher bekannt ist. Vor der Freigabe gegen das Original prüfen (Abschnitt 18).
+Alle Texte sind KI-Entwürfe – Fachprüfung und Rechtsprüfung (Health-Claims) stehen aus.
 
 ---
 
