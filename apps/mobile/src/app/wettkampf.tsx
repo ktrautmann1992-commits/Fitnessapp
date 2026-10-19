@@ -41,18 +41,21 @@ import { EffortSlider } from '@/components/workout';
 import {
   type CompetitionDraft,
   competitionEntry,
+  competitionOverview,
   countdownPayload,
   currentLevel,
   draftFeasibility,
+  type DraftFeasibility,
   draftFromStored,
+  type OverviewPlanState,
   isCompetitionPlan,
-  competitionPlanFitFromRows,
   competitionSaveOptions,
   timeGoalOffered,
   plannedCompetition,
   resavePayload,
   resultLogCandidate,
   resultLogToReuse,
+  shownFeasibility,
 } from '@/data/competition';
 import { newId } from '@/data/create-backend';
 import { activePlan } from '@/data/training-plan';
@@ -263,6 +266,20 @@ export default function CompetitionScreen() {
         : null,
     [active, app.versions, parsed.draft, rows, today],
   );
+  // Übersicht: Ampel für den gespeicherten Wettkampf, wenn der Plan kein passender Wettkampfplan ist (gleiche Rechnung).
+  const overview = useMemo(
+    () =>
+      rows
+        ? competitionOverview({
+            rows,
+            versions: app.versions,
+            active,
+            today,
+            offline: app.offline,
+          })
+        : null,
+    [active, app.offline, app.versions, rows, today],
+  );
 
   if (app.status.kind === 'loading') {
     return (
@@ -281,8 +298,6 @@ export default function CompetitionScreen() {
 
   const competitionPlanActive = isCompetitionPlan(active);
   const timeGoal = timeGoalOffered(rows, app.safetyRules);
-  // Passt der laufende Plan noch zum Wettkampf (Plan-Bezug, Disziplin, Phasen zum Renntag)? Regel in core.
-  const planFit = competitionPlanFitFromRows(rows, active);
   const offline = app.offline;
   function goBack() {
     if (router.canGoBack()) router.back();
@@ -291,6 +306,13 @@ export default function CompetitionScreen() {
   const back = <Button label={t.common.back} variant="secondary" onPress={() => goBack()} />;
   function update(patch: Partial<FormState>) {
     setForm((current) => ({ ...current, ...patch }));
+    setNotFeasible(null);
+    setError(undefined);
+  }
+
+  /** Zurück zur Übersicht; Ablehnung und Fehler gehörten zum Formular. */
+  function showOverview() {
+    setMode('view');
     setNotFeasible(null);
     setError(undefined);
   }
@@ -322,20 +344,27 @@ export default function CompetitionScreen() {
     } else if (s.kind === 'health_check')
       router.push('/onboarding/health_screening?edit=1' as Href);
     else if (s.kind === 'without_competition') {
-      setMode('view');
+      showOverview();
       setMessage({ tone: 'info', text: C.planNotFeasible });
     }
   }
 
-  async function createPlan() {
+  /** Vorschlag aus der Ampel in der Übersicht: Datum/Distanz → Formular mit übernommenem Vorschlag. */
+  function applyOverviewSuggestion(s: FeasibilitySuggestion) {
+    if (s.kind === 'later_date' || s.kind === 'shorter_distance') openForm();
+    applySuggestion(s);
+  }
+
+  /** Wettkampfplan erstellen – derselbe Ablauf aus dem Formular und aus der Übersicht. */
+  async function createPlan(draft: CompetitionDraft | null) {
     setConfirmPlan(false);
-    if (!parsed.draft) return;
+    if (!draft) return;
     setBusy(true);
     setError(undefined);
-    const outcome = await app.createCompetitionPlan(parsed.draft, planned?.stored.id ?? null);
+    const outcome = await app.createCompetitionPlan(draft, planned?.stored.id ?? null);
     setBusy(false);
     if (outcome.ok) {
-      setMode('view');
+      showOverview();
       setMessage({ tone: 'success', text: C.created });
       return;
     }
@@ -375,7 +404,7 @@ export default function CompetitionScreen() {
     setError(undefined);
     try {
       await app.saveCompetition(payload);
-      setMode('view');
+      showOverview();
       setMessage({ tone: 'success', text: planned ? C.saved : C.savedCountdown });
     } catch (caught) {
       setError(errorText(caught));
@@ -398,7 +427,7 @@ export default function CompetitionScreen() {
     try {
       await app.saveCompetition(payload);
       const outcome = await app.createPlan();
-      setMode('view');
+      showOverview();
       setMessage(
         outcome.ok
           ? { tone: 'success', text: C.savedWithBasicPlan }
@@ -469,7 +498,7 @@ export default function CompetitionScreen() {
     if (reuse !== null) {
       try {
         await app.completeCompetition(raceEntry.stored.id, reuse);
-        setMode('view');
+        showOverview();
         setMessage({ tone: 'success', text: C.result.saved });
       } catch (caught) {
         setResultError(errorText(caught));
@@ -520,11 +549,11 @@ export default function CompetitionScreen() {
       if (outcome.kind === 'saved') {
         setSavedResultLog(draft.logId);
         await app.completeCompetition(raceEntry.stored.id, draft.logId);
-        setMode('view');
+        showOverview();
         setMessage({ tone: 'success', text: C.result.saved });
       } else if (outcome.kind === 'queued') {
         setMessage({ tone: 'info', text: C.result.queued });
-        setMode('view');
+        showOverview();
       } else if (outcome.kind === 'invalid') {
         setResultError(C.result.timeInvalid);
       } else {
@@ -595,7 +624,7 @@ export default function CompetitionScreen() {
               void run(
                 () => app.completeCompetition(raceEntry.stored.id, existingLog),
                 C.result.done,
-                () => setMode('view'),
+                () => showOverview(),
               )
             }
             testID="competition-result-link"
@@ -610,7 +639,7 @@ export default function CompetitionScreen() {
               void run(
                 () => app.completeCompetition(raceEntry.stored.id, null),
                 C.result.done,
-                () => setMode('view'),
+                () => showOverview(),
               )
             }
             testID="competition-result-without"
@@ -622,15 +651,13 @@ export default function CompetitionScreen() {
 
   if (mode === 'form') {
     const shownErrors = touched ? parsed.errors : {};
-    const result = feasibility?.kind === 'result' ? feasibility.result : null;
-    const shown = notFeasible ?? (result?.ok ? result.feasibility : null);
-    const usable = shown !== null && (shown.status === 'ok' || shown.status === 'tight');
+    const { shown, usable, canCreate } = shownFeasibility(feasibility, notFeasible);
     const saveOptions = parsed.draft
       ? competitionSaveOptions({
           stored: planned?.stored ?? null,
           draft: parsed.draft,
           competitionPlanActive,
-          feasibilityUsable: usable && feasibility?.kind === 'result',
+          feasibilityUsable: canCreate,
         })
       : null;
     const goalChange =
@@ -647,7 +674,7 @@ export default function CompetitionScreen() {
             {saveOptions?.recreateCompetitionPlan ? (
               <Button
                 label={planned && competitionPlanActive ? C.recreatePlan : C.createPlan}
-                onPress={() => (active ? setConfirmPlan(true) : void createPlan())}
+                onPress={() => (active ? setConfirmPlan(true) : void createPlan(parsed.draft))}
                 loading={busy}
                 disabled={offline}
                 testID="competition-create-plan"
@@ -677,7 +704,7 @@ export default function CompetitionScreen() {
             <Button
               label={C.cancelForm}
               variant="secondary"
-              onPress={() => setMode('view')}
+              onPress={showOverview}
               disabled={busy}
             />
           </View>
@@ -865,21 +892,12 @@ export default function CompetitionScreen() {
         </Card>
 
         {/* Ampel sofort beim Datum (Plan 8). */}
-        {feasibility?.kind === 'blocked' ? (
-          <Notice tone="info" testID="competition-blocked">
-            {C.blocked[feasibility.blocker]}
-          </Notice>
-        ) : result && !result.ok && !notFeasible ? (
-          <Notice tone="warning" testID="competition-invalid">
-            {C.errors.invalid}
-          </Notice>
-        ) : shown ? (
-          <FeasibilityCard
-            feasibility={shown}
-            onSuggestion={applySuggestion}
-            discipline={form.discipline}
-          />
-        ) : null}
+        <FeasibilitySection
+          feasibility={feasibility}
+          rejected={notFeasible}
+          onSuggestion={applySuggestion}
+          discipline={form.discipline}
+        />
         {usable && goalChange ? (
           <Body muted>
             {C.goalChange(
@@ -916,7 +934,7 @@ export default function CompetitionScreen() {
           message={C.confirmRecreateText}
           confirmLabel={C.confirmRecreate}
           confirmVariant="primary"
-          onConfirm={() => void createPlan()}
+          onConfirm={() => void createPlan(parsed.draft)}
           onCancel={() => setConfirmPlan(false)}
           loading={busy}
         />
@@ -941,6 +959,10 @@ export default function CompetitionScreen() {
       )
     : null;
   const comp = shownEntry?.stored.competition;
+  const overviewAmpel = shownEntry?.row.status === 'planned' ? (overview?.ampel ?? null) : null;
+  const overviewShown = overviewAmpel
+    ? shownFeasibility(overviewAmpel.feasibility, notFeasible)
+    : null;
   return (
     <Screen title={C.title} testID="competition" footer={back}>
       {header}
@@ -977,15 +999,9 @@ export default function CompetitionScreen() {
                   )}
                 </Body>
               ) : null}
-              {shownEntry.row.status === 'planned' ? (
+              {shownEntry.row.status === 'planned' && overview ? (
                 <Body muted testID="competition-plan-state">
-                  {planFit === 'fits'
-                    ? C.planIsCompetition
-                    : planFit !== null
-                      ? offline && planFit === 'no_basis'
-                        ? C.planOfflineUnknown
-                        : C.planMismatch
-                      : C.planIsBasic}
+                  {PLAN_STATE_TEXT[overview.planState]}
                 </Body>
               ) : null}
               {shownEntry.row.status === 'done' ? (
@@ -995,6 +1011,29 @@ export default function CompetitionScreen() {
               ) : null}
             </View>
           </Card>
+          {/* Ampel direkt in der Übersicht (Grundlagen-Plan bzw. Plan passt nicht mehr) – wie im Formular. */}
+          {overviewAmpel && overviewShown ? (
+            <View style={{ gap: 8 }} testID="competition-overview-ampel">
+              <FeasibilitySection
+                feasibility={overviewAmpel.feasibility}
+                rejected={notFeasible}
+                onSuggestion={offline ? null : applyOverviewSuggestion}
+                discipline={overviewAmpel.draft.competition.discipline}
+              />
+              {overviewShown.canCreate ? (
+                <Button
+                  label={C.createPlan}
+                  onPress={() =>
+                    active ? setConfirmPlan(true) : void createPlan(overviewAmpel.draft)
+                  }
+                  loading={busy}
+                  disabled={offline}
+                  testID="competition-overview-create-plan"
+                />
+              ) : null}
+              <FieldError message={error} testID="competition-overview-error" />
+            </View>
+          ) : null}
           {shownEntry.row.status === 'planned' ? (
             <>
               {countdown.kind === 'race_day' || countdown.kind === 'awaiting_result' ? (
@@ -1065,6 +1104,16 @@ export default function CompetitionScreen() {
         </View>
       ) : null}
       <ConfirmDialog
+        visible={confirmPlan}
+        title={C.confirmRecreateTitle}
+        message={C.confirmRecreateText}
+        confirmLabel={C.confirmRecreate}
+        confirmVariant="primary"
+        onConfirm={() => void createPlan(overviewAmpel?.draft ?? null)}
+        onCancel={() => setConfirmPlan(false)}
+        loading={busy}
+      />
+      <ConfirmDialog
         visible={cancelDialog}
         title={C.cancelTitle}
         message={C.cancelText}
@@ -1106,6 +1155,51 @@ export default function CompetitionScreen() {
       />
     </Screen>
   );
+}
+
+/** Text zum Plan-Stand in der Übersicht (Regel in data/competition.ts `competitionOverview`). */
+const PLAN_STATE_TEXT: Record<OverviewPlanState, string> = {
+  competition: C.planIsCompetition,
+  basic: C.planIsBasic,
+  basic_race_over: C.planIsBasicRaceOver,
+  mismatch: C.planMismatchOverview,
+  mismatch_race_over: C.planMismatchRaceOver,
+  offline_unknown: C.planOfflineUnknown,
+};
+
+/**
+ * Ampel mit Blocker- und Fehlerzustand – gleich im Formular und in der Übersicht: Blocker (Angaben fehlen, Ziel nicht
+ * Ausdauer) → Hinweis; ungültige Angaben → Warnung; sonst Ampel mit Wort und Zeichen, Gründen und Vorschlägen.
+ */
+function FeasibilitySection({
+  feasibility,
+  rejected,
+  onSuggestion,
+  discipline,
+}: {
+  feasibility: DraftFeasibility | null;
+  rejected: CompetitionFeasibility | null;
+  onSuggestion: ((suggestion: FeasibilitySuggestion) => void) | null;
+  discipline: CompetitionDiscipline;
+}) {
+  if (feasibility?.kind === 'blocked') {
+    return (
+      <Notice tone="info" testID="competition-blocked">
+        {C.blocked[feasibility.blocker]}
+      </Notice>
+    );
+  }
+  if (feasibility?.kind === 'result' && !feasibility.result.ok && !rejected) {
+    return (
+      <Notice tone="warning" testID="competition-invalid">
+        {C.errors.invalid}
+      </Notice>
+    );
+  }
+  const { shown } = shownFeasibility(feasibility, rejected);
+  return shown ? (
+    <FeasibilityCard feasibility={shown} onSuggestion={onSuggestion} discipline={discipline} />
+  ) : null;
 }
 
 /** Zeit als drei Felder (Stunden, Minuten, Sekunden). */

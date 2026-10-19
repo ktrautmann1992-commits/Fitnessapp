@@ -214,6 +214,8 @@ export const deCompetition = {
   // Ampel
   feasibilityTitle: 'Machbarkeit',
   feasibilityA11y: (label: string, text: string) => `Ampel: ${label}. ${text}`,
+  feasibilityExplain:
+    'Ampel: Wir prüfen, ob die Zeit bis zum Renntag für einen sicheren Wettkampfplan reicht.',
   status: STATUS,
   reasons: REASONS,
   notices: NOTICES,
@@ -257,7 +259,10 @@ export const deCompetition = {
   planChangeNeedsRecreate:
     'Dein Wettkampfplan ist auf die bisherigen Angaben ausgelegt (Renntag, Distanz, Ziel, langer Lauf). Damit er passt, wird der Plan beim Speichern neu erstellt – mit oder ohne Wettkampf.',
   planMismatch:
-    'Dein Plan passt nicht mehr zu deinem Wettkampf. Erstelle den Plan neu – mit Wettkampf (wenn die Ampel passt) oder ohne.',
+    'Dein Plan passt nicht mehr zu deinem Wettkampf. Erstelle den Plan neu – mit Wettkampf (die Ampel „Machbarkeit“ unter „Mein Wettkampf“ zeigt, ob das geht) oder ohne.',
+  planMismatchOverview:
+    'Dein Plan passt nicht mehr zu deinem Wettkampf. Die Ampel „Machbarkeit“ darunter zeigt, ob ein neuer Wettkampfplan bis zum Renntag sicher machbar ist.',
+  planMismatchRaceOver: 'Dein Plan passt nicht mehr zu deinem Wettkampf.',
   planOfflineUnknown: 'Offline: Ob dein Wettkampfplan noch passt, sehen wir erst mit Verbindung.',
   save: 'Speichern',
   cancelForm: 'Abbrechen',
@@ -274,7 +279,7 @@ export const deCompetition = {
   savedCountdown: 'Wettkampf gespeichert. Der Countdown steht auf „Heute“ und im Kalender.',
   saved: 'Gespeichert.',
   planNotFeasible:
-    'Der Wettkampfplan ist gerade nicht möglich (siehe Ampel). Dein bisheriger Plan bleibt.',
+    'Mit diesen Angaben ist gerade kein Wettkampfplan möglich. Nichts wurde geändert – dein bisheriger Plan bleibt.',
   // Übersicht
   summaryDate: (date: string) => `Renntag: ${date}`,
   summaryGoal: (goal: string) => `Ziel: ${goal}`,
@@ -283,7 +288,8 @@ export const deCompetition = {
     `Referenz: ${distance} in ${time} (${date})`,
   planIsCompetition: 'Dein Plan ist der Wettkampfplan für diesen Wettkampf.',
   planIsBasic:
-    'Dein aktueller Plan ist ein Grundlagen-Plan. Erstelle den Wettkampfplan, wenn die Ampel passt.',
+    'Dein aktueller Plan ist ein Grundlagen-Plan. Die Ampel „Machbarkeit“ darunter zeigt, ob ein Wettkampfplan bis zum Renntag sicher machbar ist.',
+  planIsBasicRaceOver: 'Dein aktueller Plan ist ein Grundlagen-Plan.',
   // Countdown
   countdownTitle: 'Countdown',
   countdown: (days: number, distance: string) =>
