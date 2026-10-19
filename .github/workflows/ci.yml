@@ -61,6 +61,10 @@ jobs:
       # Anpassung mit Erklärsatz (u. a. „Erholungswoche vorgezogen“ mit Wochen-Übersicht) als „Beispiel-Anpassungen“.
       - name: Beispiel-Anpassungen (Live-Anpassung)
         run: pnpm adjust:examples
+      # Supplement-Modul (docs/PLAN-PHASE-6.md, Etappe SU1): Einordnung (passt/Info/ab 18/nicht für dich), Dosis und
+      # Koffein-Sicherheits-Info für zehn ausgedachte Test-Personen als „Beispiel-Empfehlungen (Supplemente)“.
+      - name: Beispiel-Empfehlungen (Supplemente)
+        run: pnpm supplements:examples
       - name: Lint, Typen, Tests
         run: pnpm check
       # PDF-Export (docs/PLAN-PDF-EXPORT.md §8 P1+P2): Trainingsplan für ausgedachte Beispiel-Personen als Druck-HTML.
