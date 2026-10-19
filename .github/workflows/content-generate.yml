@@ -20,9 +20,10 @@ on:
           - ingredient-substitutions
           - package-sizes
           - recipes
+          - supplements
         default: plan-templates
       auswahl:
-        description: 'Auswahl aus der Matrix, z. B. „alle“, „muskelaufbau 30-45“, „squat band“, (Austausch/Packungen) „meat_sausage“ oder (Rezepte) „fruehstueck vegan schnell“'
+        description: 'Auswahl aus der Matrix, z. B. „alle“, „muskelaufbau 30-45“, „squat band“, (Austausch/Packungen) „meat_sausage“, (Rezepte) „fruehstueck vegan schnell“ oder (Supplemente) „nicht_empfohlen“'
         type: string
         default: alle
       anzahl:
@@ -34,7 +35,7 @@ on:
         type: boolean
         default: false
       modell:
-        description: 'Gemini-Modell (leer = Standard der Art: gemini-3.5-flash-lite für Austausch/Packungen, gemini-3.8-flash für Rezepte/Übungen/Vorlagen; nur Modelle mit Preis in pricing.ts)'
+        description: 'Gemini-Modell (leer = Standard der Art: gemini-3.5-flash-lite für Austausch/Packungen, gemini-3.8-flash für Rezepte/Übungen/Vorlagen/Supplemente; nur Modelle mit Preis in pricing.ts)'
         type: string
         default: ''
 

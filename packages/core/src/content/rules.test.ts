@@ -47,6 +47,13 @@ describe('Regeltabelle (Plan Abschnitt 7, Phase 5 Abschnitte 5.3, 19.4 und 19.7)
       'R21',
       'R23',
       'R24',
+      'SK1',
+      'SK2',
+      'SK3',
+      'SK4',
+      'SK5',
+      'SK6',
+      'SK7',
     ]);
     expect(yellow).toEqual([
       'Ü5',
@@ -63,6 +70,7 @@ describe('Regeltabelle (Plan Abschnitt 7, Phase 5 Abschnitte 5.3, 19.4 und 19.7)
       'R21H',
       'R22',
       'R23H',
+      'SK7H',
     ]);
   });
 });
@@ -80,6 +88,9 @@ describe('isBlockingIssue', () => {
     expect(isBlockingIssue(makeIssue('R15', at('draft'), 'x'))).toBe(true);
     expect(isBlockingIssue(makeIssue('DATEI', at(null), 'x'))).toBe(true);
     expect(isBlockingIssue(makeIssue('VERSION', at('draft'), 'x'))).toBe(true);
+    expect(isBlockingIssue(makeIssue('SK1', at('draft'), 'x'))).toBe(true);
+    expect(isBlockingIssue(makeIssue('SK3', at('draft'), 'x'))).toBe(false);
+    expect(isBlockingIssue(makeIssue('SK3', at('published'), 'x'))).toBe(true);
   });
 
   it('andere rote Fehler blockieren nur freigegebene Inhalte', () => {

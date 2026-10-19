@@ -192,6 +192,42 @@ describe('runValidate', () => {
     expect(result.output).toContain('plan-templates/vorlage.yaml: keine JSON-Datei');
   });
 
+  it('Supplemente (SU2): Ordner supplements/ wird geprüft – Entwurf mit SK3 Exit 0, Schemafehler (SK1) und fremde Datei Exit 1', () => {
+    const supplement = {
+      id: 'bcaa',
+      version: 1,
+      status: 'draft',
+      name_de: 'BCAA',
+      evidence_level: 'c',
+      category: 'sport',
+      summary_de: 'BCAA sind Aminosäuren, die in eiweißhaltigen Lebensmitteln stecken.',
+      how_to_de: null,
+      claim_ids: [],
+      sources: [],
+      not_recommended_reason_de: 'Das steigert nichts, deshalb keine Empfehlung.',
+      meta: META,
+    };
+    const draft = runValidate(
+      ['--content', contentDir({ 'supplements/bcaa.json': supplement })],
+      tmpdir(),
+    );
+    expect(draft.exitCode).toBe(0);
+    expect(draft.output).toContain('Supplemente: 1 (1 Entwürfe');
+    expect(draft.output).toContain('ROT  SK3     Supplement bcaa (Entwurf)');
+    const schema = runValidate(
+      ['--content', contentDir({ 'supplements/bcaa.json': { ...supplement, dose_g: 5 } })],
+      tmpdir(),
+    );
+    expect(schema.exitCode).toBe(1);
+    expect(schema.output).toContain('SK1');
+    const stray = runValidate(
+      ['--content', contentDir({ 'supplements/notiz.txt': 'x' })],
+      tmpdir(),
+    );
+    expect(stray.exitCode).toBe(1);
+    expect(stray.output).toContain('supplements/notiz.txt: keine JSON-Datei');
+  });
+
   it('gelbe Hinweise allein: Exit 0', () => {
     const dir = contentDir({
       'exercises/kniebeuge-test.json': exercise({ equipment_ids: ['barbell'] }),
@@ -253,6 +289,7 @@ describe('Berichte', () => {
         guides: [],
         substitutions: [],
         packageSizes: [],
+        supplements: [],
         issues: [],
         blocking: [],
       },

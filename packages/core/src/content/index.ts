@@ -20,5 +20,7 @@ export * from './rules';
 export * from './schemas';
 export * from './substitution-checks';
 export * from './substitution-schema';
+export * from './supplement-checks';
+export * from './supplement-schema';
 export * from './text-rules';
 export * from './validate';
