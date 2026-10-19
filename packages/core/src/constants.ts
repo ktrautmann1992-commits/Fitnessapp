@@ -3410,3 +3410,135 @@ export const LIVE_ADJUSTMENT = {
   recompute: { maxPerUserPerHour: 20 },
   calorieStepKcal: 100,
 } as const;
+
+// ---------------------------------------------------------------------------------------------------------
+// Phase 6 · Supplement-Modul (docs/PLAN-PHASE-6.md Abschnitt 3, Etappe SU1)
+//
+// Regeln der Supplement-Engine (`packages/core/src/supplements/`). ALLE Werte sind Startwerte und VOR LIVEGANG
+// FACHLICH PRÜFEN (Ernährungsfachkraft/Sportmedizin, Plan Abschnitt 18). Die Quellen stammen aus dem Plan und wurden
+// in SU1 ohne Zugriff auf die Originalarbeiten übernommen (Prüfung gegen das Original: SU0, Plan Abschnitt 4).
+// Produktentscheidungen sind als PRODUKTENTSCHEIDUNG markiert. Keine Zahl steht in einem Text – Texte nutzen
+// Platzhalter, die der Core aus diesen Werten füllt (Plan 3.8 Nr. 3).
+// ---------------------------------------------------------------------------------------------------------
+
+/**
+ * Version der Supplement-Check-Fragen (Plan 3.4). Bei geänderten Fragen hochzählen (Spalte `version` in SU3).
+ * PRODUKTENTSCHEIDUNG.
+ */
+export const SUPPLEMENT_SCREENING_VERSION = 1;
+
+/**
+ * Mindestfassung der Einwilligung `health_data` für den Supplement-Check und persönliche Supplement-Hinweise (Plan
+ * 11.1, Wächter B1): v1 nennt die neuen Datenarten und den Zweck „Shop-Links ausblenden“ nicht. Der Seed von v2 kommt
+ * mit SU3; bis dahin bleibt `CURRENT_CONSENT_VERSIONS.health_data` bei 1 und das Modul im Info-Modus.
+ * Quelle: Art. 9 Abs. 2 lit. a i. V. m. Art. 4 Nr. 11 DSGVO (bestimmte, informierte Einwilligung).
+ */
+export const SUPPLEMENT_HEALTH_CONSENT_MIN_VERSION = 2;
+
+/**
+ * Supplement-Regeln (Plan 3.2, 3.3, 3.5, 3.7). VOR LIVEGANG FACHLICH PRÜFEN.
+ * - `adultFromAge` 18: unter 18 keine Sport-Supplemente, keine persönliche Dosis, keine Shop-Links (SU-G3). Quelle:
+ *   Maughan RJ, Burke LM, Dvorak J et al. (2018), „IOC consensus statement: dietary supplements and the
+ *   high-performance athlete“, Br J Sports Med 52(7):439–455 (junge Sportler: Fokus auf das Essen);
+ *   gleicher Wert wie AGE_PLAN_RULES.minor (Training) und NUTRITION_AGE_RULES (Ernährung).
+ * - `creatine.dailyG` 3 g täglich, ohne Ladephase, auch an Ruhetagen: Kreider RB et al. (2017), „International
+ *   Society of Sports Nutrition position stand: safety and efficacy of creatine supplementation in exercise, sport,
+ *   and medicine“, J Int Soc Sports Nutr 14:18 (3–5 g/Tag); 3 g = Bedingung der zugelassenen Angabe (VO (EU)
+ *   432/2012, Wortlaut im EU-Register prüfen). Keine Ladephase: PRODUKTENTSCHEIDUNG.
+ * - `creatine.weightGainKg` 1–2 kg Wasser in den ersten Wochen (Kreider 2017) – fester Hinweis.
+ * - `creatine.goals`: „passt“ bei Haupt- oder Nebenziel Muskelaufbau/Definition, beim Ziel Ausdauer nur mit
+ *   Intervall-/Sprint-Einheiten (Plan 3.2; Kreider 2017). PRODUKTENTSCHEIDUNG.
+ * - `proteinPowder.servingProteinG` 20–30 g Eiweiß je Portion: Jäger R et al. (2017), „International Society of
+ *   Sports Nutrition Position Stand: protein and exercise“, J Int Soc Sports Nutr 14:20 (0,25–0,4 g/kg je Mahlzeit,
+ *   absolut etwa 20–40 g); obere Grenze 30 g: PRODUKTENTSCHEIDUNG. Nie mehr, als bis zum Tagesziel fehlt.
+ * - `proteinPowder.gap`: Eiweiß-Lücke aus dem Tagebuch, wenn der Schnitt der letzten `windowDays` (7) Tage mit
+ *   mindestens `minDaysWithEntries` (4) Tagen mit Einträgen unter `minShare` des Eiweißziels liegt – gleicher Wert
+ *   wie MEAL_PLAN_FILL.proteinMinShare (90 %, Phase 5). Plan 3.7 (Wächter S7). PRODUKTENTSCHEIDUNG.
+ * - `vitaminD.generalUg` 20 µg (800 IE) täglich als allgemeiner Richtwert (nur Info, SU-G15): DGE-Schätzwert bei
+ *   fehlender Eigenbildung (Deutsche Gesellschaft für Ernährung (2012), „Neue Referenzwerte für Vitamin D“, Ernährungs
+ *   Umschau 59(3) – Heft/Seiten VOR LIVEGANG FACHLICH PRÜFEN); BfR (2021) Höchstmengenvorschlag 20 µg je Tagesdosis
+ *   für Nahrungsergänzungsmittel; EFSA (2012) UL 100 µg/Tag (Erwachsene).
+ * - `vitaminD.iuPerUg` 40: 1 µg Vitamin D = 40 IE (Umrechnung, u. a. DGE/EFSA).
+ * - `vitaminD.nrvUg` 5 µg: Nährstoffbezugswert (NRV) laut VO (EU) 1169/2011 Anhang XIII Teil A;
+ *   `claimMinNrvShare` 15 %: Bedingung „Quelle von Vitamin D“ für zugelassene Angaben (VO (EG) 1924/2006 Anhang,
+ *   VO (EU) 432/2012).
+ * - `vitaminD.lowSunMonths` Oktober bis März: in DACH reicht die Sonne in diesen Monaten meist nicht für die
+ *   Eigenbildung (DGE 2012, s. o.) – nur ein zusätzlicher Info-Satz, nie eine Empfehlung. PRODUKTENTSCHEIDUNG.
+ * - `omega3.epaDhaMgPerDay` 250–500 mg EPA+DHA täglich: 250 mg = Bedingung der zugelassenen Angabe (VO (EU)
+ *   432/2012); EFSA (2012), „Scientific Opinion related to the Tolerable Upper Intake Level of EPA, DHA and DPA“,
+ *   EFSA Journal 10(7):2815 (bis 5 g/Tag unbedenklich); Obergrenze 500 mg: PRODUKTENTSCHEIDUNG.
+ */
+export const SUPPLEMENT_RULES = {
+  adultFromAge: 18,
+  creatine: {
+    dailyG: 3,
+    weightGainKg: { min: 1, max: 2 },
+    goals: ['muscle_gain', 'definition'],
+    enduranceGoalNeedsIntervals: true,
+  },
+  proteinPowder: {
+    servingProteinG: { min: 20, max: 30 },
+    gap: { windowDays: 7, minDaysWithEntries: 4, minShare: 0.9 },
+  },
+  vitaminD: {
+    generalUg: 20,
+    iuPerUg: 40,
+    nrvUg: 5,
+    claimMinNrvShare: 0.15,
+    lowSunMonths: [10, 11, 12, 1, 2, 3],
+  },
+  omega3: { epaDhaMgPerDay: { min: 250, max: 500 } },
+} as const satisfies {
+  adultFromAge: number;
+  creatine: {
+    dailyG: number;
+    weightGainKg: { min: number; max: number };
+    goals: readonly GoalType[];
+    enduranceGoalNeedsIntervals: boolean;
+  };
+  proteinPowder: {
+    servingProteinG: { min: number; max: number };
+    gap: { windowDays: number; minDaysWithEntries: number; minShare: number };
+  };
+  vitaminD: {
+    generalUg: number;
+    iuPerUg: number;
+    nrvUg: number;
+    claimMinNrvShare: number;
+    lowSunMonths: readonly number[];
+  };
+  omega3: { epaDhaMgPerDay: { min: number; max: number } };
+};
+
+/**
+ * Koffein – nur neutrale Sicherheits-Info, keine Empfehlung, keine Stufe, kein Zweck, keine Shop-Links (Plan 3.5,
+ * Wächter B2.3, SU-G5a). VOR LIVEGANG FACHLICH PRÜFEN.
+ * - `mgPerKg` 3 mg je kg, höchstens `singleDoseMaxMg` 200 mg auf einmal, abgerundet auf `roundingMg` 10 mg:
+ *   EFSA (2015), „Scientific Opinion on the safety of caffeine“, EFSA Journal 13(5):4102 (Einzeldosis bis 200 mg und
+ *   bis 400 mg am Tag für gesunde Erwachsene unbedenklich); 3 mg/kg: PRODUKTENTSCHEIDUNG (untere Spanne aus Guest NS et
+ *   al. (2021), „International society of sports nutrition position stand: caffeine and exercise performance“,
+ *   J Int Soc Sports Nutr 18:1). Abrunden = sichere Richtung.
+ * - `generalCups` 1–2 Tassen Kaffee auf einmal: Satz ohne Körpergewicht (PRODUKTENTSCHEIDUNG, passend zu
+ *   `cupFilterCoffeeMg` 90 mg je Tasse Filterkaffee, EFSA 2015).
+ * - `dailyMaxMg` 400 mg am Tag aus allen Quellen (EFSA 2015). Persönlich (mit Gewicht) zusätzlich
+ *   `dailyMgPerKg` 5,7 mg je kg, auf 10 mg abgerundet, höchstens 400 mg: EFSA 2015 leitet die 400 mg für Erwachsene
+ *   von etwa 5,7 mg/kg bei 70 kg ab – so bekommen leichte Menschen keine zu hohe Tagesgrenze (Wächter SU1, Befund 3).
+ *   Übertragung auf jedes Körpergewicht: PRODUKTENTSCHEIDUNG, VOR LIVEGANG FACHLICH PRÜFEN.
+ * - `latestTrainingStartMinutes` 960 (16:00): Koffein nur, wenn die Einheit vorher liegt. Quelle: Drake C et al.
+ *   (2013), „Caffeine effects on sleep taken 0, 3, or 6 hours before going to bed“, J Clin Sleep Med
+ *   9(11):1195–1200 (Koffein bis 6 h vor dem Schlafen stört den Schlaf); 16 Uhr bei üblicher Schlafenszeit um 22 Uhr:
+ *   PRODUKTENTSCHEIDUNG. Gleicher Wert wie TRAINING_TIME_START_MINUTES.afternoon (Wächter K9).
+ * - `pregnancyDailyMaxMg`: BfR-Hinweis 200 mg am Tag in Schwangerschaft und Stillzeit (= PREGNANCY_CAFFEINE_MAX_MG,
+ *   Phase 5).
+ */
+export const CAFFEINE_LIMITS = {
+  mgPerKg: 3,
+  singleDoseMaxMg: 200,
+  roundingMg: 10,
+  generalCups: { min: 1, max: 2 },
+  cupFilterCoffeeMg: 90,
+  dailyMaxMg: 400,
+  dailyMgPerKg: 5.7,
+  latestTrainingStartMinutes: TRAINING_TIME_START_MINUTES.afternoon,
+  pregnancyDailyMaxMg: PREGNANCY_CAFFEINE_MAX_MG,
+} as const;

@@ -63,11 +63,24 @@ function proposal(
   };
 }
 
-/** R1 ist ausgeschlossen: vorsichtiger Plan, unter 18, ab 65, Einsteiger im ersten Block (Frage 5). */
-export function fastIncreaseExcluded(inputs: LiveAdjustmentInputs): boolean {
+/**
+ * Gründe, aus denen R1 nie greift (Frage 5): vorsichtiger Plan, unter 18, ab 65, Einsteiger im ersten Block. Der Server
+ * prüft dieselbe Liste in `private.fast_increase_exclusion` (Nachtrag R1-Ausschlüsse; db-sync.test.ts gleicht ab).
+ */
+export const FAST_INCREASE_EXCLUSIONS = [
+  'cautious_plan',
+  'minor',
+  'senior',
+  'beginner_first_block',
+] as const;
+export type FastIncreaseExclusion = (typeof FAST_INCREASE_EXCLUSIONS)[number];
+
+/** Erster zutreffender Ausschlussgrund für R1 (Reihenfolge wie FAST_INCREASE_EXCLUSIONS) oder null. */
+export function fastIncreaseExclusion(inputs: LiveAdjustmentInputs): FastIncreaseExclusion | null {
   const age = ageInYears(inputs.person.birthDate, inputs.today);
-  if (inputs.rules.cautious) return true;
-  if (age < AGE_PLAN_RULES.minor.belowAge || age >= AGE_PLAN_RULES.senior.fromAge) return true;
+  if (inputs.rules.cautious) return 'cautious_plan';
+  if (age < AGE_PLAN_RULES.minor.belowAge) return 'minor';
+  if (age >= AGE_PLAN_RULES.senior.fromAge) return 'senior';
   if (inputs.plan.experienceLevel === 'beginner') {
     // Eingabe kann unsortiert sein (Wächter-Auflage 6): nach Datum sortieren.
     const sorted = [...inputs.plan.sessions].sort((a, b) =>
@@ -75,9 +88,14 @@ export function fastIncreaseExcluded(inputs: LiveAdjustmentInputs): boolean {
     );
     const upcoming = sorted.filter((s) => s.scheduled_on >= inputs.today);
     const current = upcoming[0] ?? sorted.at(-1);
-    if (!current || current.block_no <= 1) return true;
+    if (!current || current.block_no <= 1) return 'beginner_first_block';
   }
-  return false;
+  return null;
+}
+
+/** R1 ist ausgeschlossen: vorsichtiger Plan, unter 18, ab 65, Einsteiger im ersten Block (Frage 5). */
+export function fastIncreaseExcluded(inputs: LiveAdjustmentInputs): boolean {
+  return fastIncreaseExclusion(inputs) !== null;
 }
 
 /**

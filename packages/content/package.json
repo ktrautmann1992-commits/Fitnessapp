@@ -13,6 +13,7 @@
     "plan:examples": "tsx src/plan-examples-cli.ts",
     "nutrition:examples": "tsx src/nutrition-examples-cli.ts",
     "adjust:examples": "tsx src/adjust-examples-cli.ts",
+    "supplements:examples": "tsx src/supplement-examples-cli.ts",
     "foods:import": "tsx src/foods-import-cli.ts",
     "sources:integrity": "tsx src/sources-integrity-cli.ts",
     "import-alpha5": "tsx src/import-alpha5-cli.ts",
