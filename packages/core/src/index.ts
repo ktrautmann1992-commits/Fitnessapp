@@ -22,3 +22,15 @@ export * from './retail';
 export * from './routes';
 export * from './dashboard';
 export * from './notifications';
+// Supplement-Modul (docs/PLAN-PHASE-6.md, Etappe SU1). Im Ordner `supplements/` gibt es bewusst KEIN index.ts
+// (Wächter S1): Die Dateien werden hier einzeln weitergereicht; Affiliate (SU5) wird hier nie weitergereicht.
+export * from './supplement-ids';
+export * from './supplements/screening';
+export * from './supplements/inputs';
+export * from './supplements/protein-gap';
+export * from './supplements/eligibility';
+export * from './supplements/dosage';
+export * from './supplements/schedule';
+export * from './supplements/claims';
+export * from './supplements/notices';
+export * from './supplements/text-rules';
