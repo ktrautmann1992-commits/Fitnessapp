@@ -160,6 +160,7 @@ import {
   stateOverrideSchema,
 } from './adjust/schemas';
 import { COMPETITION_DELOAD_MAX_FACTOR } from './adjust/invariants';
+import { FAST_INCREASE_EXCLUSIONS } from './adjust/rules/state-rules';
 import type { InvariantFixture } from './adjust/fixtures/invariant-cases';
 import { weekInvariantsTestSql } from './adjust/fixtures/invariants-sql';
 import { FOOD_GROUPS } from './food-groups';
@@ -2746,9 +2747,13 @@ describe('Live-Anpassung in der Datenbank (Phase 4b Etappe B, docs/PLAN-PHASE-4B
       '_live_adjust_rpcs.sql',
       '_live_adjust_outbox.sql',
       '_live_adjust_revoke_export.sql',
+      '_live_adjust_r1_exclusions.sql',
     ].map((suffix) => migrationFiles.findIndex((n) => n.endsWith(suffix)));
+    // Unabhängig von der Gesamtzahl: alle vorhanden, in dieser Reihenfolge; die sechs B-Dateien lückenlos hintereinander,
+    // der R1-Nachtrag danach (spätere Migrationen anderer Etappen dürfen dazwischen und danach liegen).
+    expect(order.every((i) => i >= 0)).toBe(true);
     expect(order.every((i, k) => i > (order[k - 1] ?? -1))).toBe(true);
-    expect(order[0]).toBe(migrationFiles.length - 6);
+    expect(order[5]! - order[0]!).toBe(5);
   });
 
   it('apply_plan_adjustments: Feldliste = adjustmentProposalSchema, Arten = RULE_KIND, nur aktive Regeln', () => {
@@ -2850,6 +2855,53 @@ describe('Live-Anpassung in der Datenbank (Phase 4b Etappe B, docs/PLAN-PHASE-4B
       `when p.inputs ->> 'experienceLevel' = 'beginner' then ${DELOAD_SCHEDULE.beginner}`,
     );
     expect(loadWeeks).toContain(`else ${DELOAD_SCHEDULE.advanced}`);
+  });
+
+  it('R1-Ausschlüsse (Nachtrag): Server-Liste = FAST_INCREASE_EXCLUSIONS, Grenzen = AGE_PLAN_RULES, Aufruf abgelehnt', () => {
+    const r1 = readMigration('_live_adjust_r1_exclusions.sql');
+    const helper = body(r1, 'private.fast_increase_exclusion');
+    // Gründe in derselben Reihenfolge wie Core (erster zutreffender gewinnt), keine weiteren.
+    const reasons = [...helper.matchAll(/return '([a-z_]+)';/g)].map((m) => m[1]);
+    expect([...new Set(reasons)]).toEqual([...FAST_INCREASE_EXCLUSIONS]);
+    expect(helper).toContain('return null;');
+    expect(constant(helper, 'minor_below_age')).toBe(AGE_PLAN_RULES.minor.belowAge);
+    expect(constant(helper, 'senior_from_age')).toBe(AGE_PLAN_RULES.senior.fromAge);
+    const levels =
+      /non_beginner_levels constant text\[\] := array\[([^\]]*)\]/.exec(helper)?.[1] ?? '';
+    expect([...levels.matchAll(/'([a-z_]+)'/g)].map((m) => m[1])).toEqual(
+      enums.EXPERIENCE_LEVELS.filter((level) => level !== 'beginner'),
+    );
+    // Vorsichtig wie plan_load_weeks (Plan) UND wie planSafetyRules (aktueller Check, Einwilligung).
+    expect(helper).toContain('if not v_plan.uses_health_data or v_plan.medical_notice then');
+    expect(helper).toContain('if not found or cardinality(latest_flags) > 0');
+    expect(helper).toContain("or not private.has_valid_consent_for(p_user, 'health_data') then");
+    expect(helper).toContain('extract(year from age(p_today, pr.birth_date))');
+    expect(r1).toContain(
+      'revoke all on function private.fast_increase_exclusion(uuid, uuid, date) from public, anon, authenticated;',
+    );
+    // apply_plan_adjustments: neueste Fassung hier, Obermenge der Etappe-B-Fassung (nur eingefügte Zeilen).
+    const newest = body(r1, 'public.apply_plan_adjustments');
+    expect(missingLines(apply, newest)).toEqual([]);
+    expect(
+      migrationFiles
+        .filter((n) =>
+          readMigration(n).includes('create or replace function public.apply_plan_adjustments('),
+        )
+        .at(-1),
+    ).toMatch(/_live_adjust_r1_exclusions\.sql$/);
+    expect(newest).toContain(
+      'r1_exclusion := private.fast_increase_exclusion(p_user, v_plan_id, today);',
+    );
+    expect(newest).toContain("perform private.adjust_assert(r1_exclusion is null, 'not_allowed');");
+    expect(newest).toContain("if err = 'not_allowed' then");
+    // Prüfung vor der Idempotenz: auch ein Duplikat lehnt den Aufruf ab.
+    expect(newest.indexOf("'not_allowed');")).toBeLessThan(newest.indexOf('-- Idempotenz'));
+    expect(r1).toContain(
+      'revoke all on function public.apply_plan_adjustments(uuid, jsonb) from public, anon, authenticated;',
+    );
+    expect(r1).toContain(
+      'grant execute on function public.apply_plan_adjustments(uuid, jsonb) to service_role;',
+    );
   });
 
   it('pgTAP 50_week_invariants.test.sql ist aus invariants.json aktuell erzeugt (Core = SQL)', () => {

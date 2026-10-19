@@ -14,7 +14,14 @@ import { person } from '../plan/test-library';
 import { activeStateOverride } from './apply';
 import { computeLiveAdjustments } from './engine';
 import type { LiveExerciseEntry } from './inputs';
-import { clearlyMissed, fastIncrease, loadReduce, reducedState } from './rules/state-rules';
+import {
+  clearlyMissed,
+  FAST_INCREASE_EXCLUSIONS,
+  fastIncrease,
+  fastIncreaseExclusion,
+  loadReduce,
+  reducedState,
+} from './rules/state-rules';
 import { BENCH, liveInputs, planWithFollowUps, storedFrom, testEnv } from './test-helpers';
 import { adjustmentProposalSchema } from './schemas';
 
@@ -269,6 +276,58 @@ describe('R1 fast_increase', () => {
         BENCH,
       ),
     ).not.toBeNull();
+  });
+
+  it('Ausschlussgrund je Fall (Liste = Server private.fast_increase_exclusion), Grenzen 18 und 65 am Geburtstag', () => {
+    const cautious = planSafetyRules(
+      { experienceLevel: 'advanced', birthDate: '1990-01-15', healthScreening: null },
+      TODAY,
+    );
+    const flagged = planSafetyRules(
+      {
+        experienceLevel: 'advanced',
+        birthDate: '1990-01-15',
+        healthScreening: { flags: ['medication', 'conservative_plan'] },
+      },
+      TODAY,
+    );
+    const byBirth = (birthDate: string) =>
+      fastIncreaseExclusion(inputs([], { person: { birthDate } }));
+    expect(fastIncreaseExclusion(inputs([]))).toBeNull();
+    expect(fastIncreaseExclusion(inputs([], { rules: cautious }))).toBe('cautious_plan');
+    expect(fastIncreaseExclusion(inputs([], { rules: flagged }))).toBe('cautious_plan');
+    // 18. Geburtstag heute → erlaubt, einen Tag davor → minor; 65. Geburtstag heute → senior, einen Tag davor erlaubt.
+    expect(byBirth('2008-10-17')).toBe('minor');
+    expect(byBirth('2008-10-16')).toBeNull();
+    expect(byBirth('1961-10-17')).toBeNull();
+    expect(byBirth('1961-10-16')).toBe('senior');
+    expect(byBirth('2010-05-01')).toBe('minor');
+    expect(byBirth('1931-05-01')).toBe('senior');
+    expect(fastIncreaseExclusion(inputs([], { level: 'beginner' }))).toBe('beginner_first_block');
+    expect(
+      fastIncreaseExclusion(inputs([], { level: 'beginner', today: '2026-11-30' })),
+    ).toBeNull();
+    // Einsteiger ohne Einheiten → ausgeschlossen; nach der letzten Einheit zählt deren Block.
+    expect(
+      fastIncreaseExclusion(
+        liveInputs([], { today: TODAY, level: 'beginner', contexts: { bench: BENCH } }),
+      ),
+    ).toBe('beginner_first_block');
+    expect(
+      fastIncreaseExclusion(inputs([], { level: 'beginner', today: '2027-06-01' })),
+    ).toBeNull();
+    // Reihenfolge: vorsichtig vor Alter vor Einsteiger.
+    expect(
+      fastIncreaseExclusion(
+        inputs([], { rules: cautious, level: 'beginner', person: { birthDate: '2010-05-01' } }),
+      ),
+    ).toBe('cautious_plan');
+    expect(FAST_INCREASE_EXCLUSIONS).toEqual([
+      'cautious_plan',
+      'minor',
+      'senior',
+      'beginner_first_block',
+    ]);
   });
 
   it('großer Sprung (Kurzhantel 4 → 6 kg) bleibt beim Puffer: nur +1 Wdh.', () => {
