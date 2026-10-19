@@ -31,6 +31,7 @@ import {
   OPEN_FOOD_FACTS,
   USER_FOOD_PRODUCT_LIMITS,
   AI_FOOD_PHOTO,
+  AI_GLOBAL_BUDGET,
   CUSTOM_MEAL_LIMITS,
   PINCH_G,
   BODY_METRIC_LIMITS,
@@ -2748,7 +2749,8 @@ describe('Live-Anpassung in der Datenbank (Phase 4b Etappe B, docs/PLAN-PHASE-4B
       '_live_adjust_revoke_export.sql',
     ].map((suffix) => migrationFiles.findIndex((n) => n.endsWith(suffix)));
     expect(order.every((i, k) => i > (order[k - 1] ?? -1))).toBe(true);
-    expect(order[0]).toBe(migrationFiles.length - 6);
+    // Ein zusammenhängender Block (unabhängig davon, wie viele Migrationen später dazukommen – Wächter N4).
+    expect(order.at(-1)).toBe((order[0] ?? -1) + 5);
   });
 
   it('apply_plan_adjustments: Feldliste = adjustmentProposalSchema, Arten = RULE_KIND, nur aktive Regeln', () => {
@@ -2932,5 +2934,84 @@ describe('Live-Anpassung in der Datenbank (Phase 4b Etappe B, docs/PLAN-PHASE-4B
     const events = body(revokeExport, 'private.my_adjustment_events');
     expect(events).not.toContain('ref_id');
     expect(events).not.toContain('last_error_code');
+  });
+});
+
+describe('Testphase „alles offen“ (Gründer 19.10.2026, KONZEPT 13)', () => {
+  const open = readMigration('_premium_open.sql');
+  const body = (sql: string, name: string) => {
+    const start = sql.lastIndexOf(`create or replace function ${name}(`);
+    if (start < 0) throw new Error(`${name} nicht gefunden`);
+    return sql.slice(start, sql.indexOf('$$;', sql.indexOf('as $$', start)));
+  };
+  /** Jede Zeile der alten Fassung steht in derselben Reihenfolge in der neuen (nur eingefügte Zeilen). */
+  const missingLines = (older: string, newer: string) => {
+    const next = newer.split('\n');
+    let at = 0;
+    const missing: string[] = [];
+    for (const line of older.split('\n')) {
+      const found = next.indexOf(line, at);
+      if (found < 0) missing.push(line);
+      else at = found + 1;
+    }
+    return missing;
+  };
+  const newestFile = (name: string) =>
+    migrationFiles
+      .filter((n) => readMigration(n).includes(`create or replace function ${name}(`))
+      .at(-1);
+
+  it('Flag premium_open startet AN (per Migration gesetzt)', () => {
+    expect(open).toContain(
+      "insert into private.feature_flags (key, enabled) values ('premium_open', true)",
+    );
+  });
+
+  it.each([
+    [
+      'private.has_entitlement_for',
+      '_ai_food_photo.sql',
+      "private.feature_enabled('premium_open')",
+    ],
+    ['public.ai_food_photo_reserve', '_ai_food_photo.sql', "hashtext('ai_food_photo|global')"],
+    ['public.beta_admin', '_live_adjust_rpcs.sql', "if p_flag = 'premium_open' then"],
+  ] as const)(
+    '%s: Obermenge der Vorgänger-Fassung; spätere Fassungen behalten die Testphase',
+    (name, previous, key) => {
+      expect(missingLines(body(readMigration(previous), name), body(open, name))).toEqual([]);
+      // Wächter N4: unabhängig von parallelen Branches – nur eigene Reihenfolge prüfen.
+      const files = migrationFiles.filter((n) =>
+        readMigration(n).includes(`create or replace function ${name}(`),
+      );
+      const own = files.findIndex((n) => n.endsWith('_premium_open.sql'));
+      expect(own).toBeGreaterThan(files.findIndex((n) => n.endsWith(previous)));
+      for (const later of files.slice(own)) expect(body(readMigration(later), name)).toContain(key);
+      expect(newestFile(name)).toBeDefined();
+    },
+  );
+
+  it('globale KI-Kostenbremse (M1) = AI_GLOBAL_BUDGET, nur solange premium_open an ist', () => {
+    const { monthlyCallsCap, monthlyCostEurCap } = AI_GLOBAL_BUDGET.food_photo;
+    expect(open).toContain(
+      `insert into private.ai_budget (feature, monthly_calls_cap, monthly_cost_eur_cap) values ('food_photo', ${monthlyCallsCap}, ${monthlyCostEurCap})`,
+    );
+    const reserve = body(open, 'public.ai_food_photo_reserve');
+    expect(reserve.indexOf("if private.feature_enabled('premium_open') then")).toBeLessThan(
+      reserve.indexOf("hashtext('ai_food_photo|global')"),
+    );
+    expect(reserve).toContain("return jsonb_build_object('result', 'flag_off');");
+  });
+
+  it('Premium offen nur für premium, nur mit Flag und nur für bestehende Konten; Limits ohne Beta-Zeile = Standard', () => {
+    const entitlement = body(open, 'private.has_entitlement_for');
+    expect(entitlement).toContain("p_entitlement = 'premium'");
+    expect(entitlement).toContain("private.feature_enabled('premium_open')");
+    expect(entitlement).toContain('select 1 from auth.users u');
+    const reserve = body(open, 'public.ai_food_photo_reserve');
+    expect(reserve).toContain('monthly_limit := coalesce(monthly_limit, default_monthly_limit);');
+    expect(reserve).toContain('daily_limit := coalesce(daily_limit, default_daily_limit);');
+    expect(body(open, 'public.beta_admin')).toContain(
+      'return private.premium_open_flag_admin(p_action, p_actor);',
+    );
   });
 });

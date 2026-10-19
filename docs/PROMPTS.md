@@ -330,6 +330,8 @@ Affiliate-Daten nicht lesen. Klick-Tracking ohne Gesundheitsdaten.
 SU-G19; Wächter Runde 1 „mit Auflagen“ eingearbeitet). Umsetzung erst nach Freigabe.
 
 ## Phase 7 – Abos & Gratisversion
+**Ruht bis Ende der Testphase** (Gründer-Entscheidung 19.10.2026, `docs/KONZEPT.md` Abschnitt 13): keine Abos, keine
+Rechtsanwälte, bis der Test vollständig abgeschlossen ist. Bis dahin ist alles offen (Flag `premium_open`).
 ```
 Integriere RevenueCat (iOS/Android) und Stripe (Web) mit gemeinsamer Entitlement-Tabelle über
 Webhooks in apps/web. Setze Gratis- und Premium-Umfang nach docs/KONZEPT.md Abschnitt 13 um,

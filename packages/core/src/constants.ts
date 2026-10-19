@@ -2414,6 +2414,16 @@ export const AI_FOOD_PHOTO = {
   },
 } as const;
 
+/**
+ * Globale KI-Kostenbremse in der Testphase „alles offen“ (Gründer 19.10.2026, KONZEPT 13/15, Wächter M1): Obergrenze
+ * je Kalendermonat (Europe/Berlin) über ALLE Konten, solange das Flag premium_open an ist. Vorsichtig gewählt:
+ * 2000 Fotos ≈ 2 € bei gemini-3.5-flash-lite (≈ 1 Ct je Foto als obere Schätzung → 10 € Deckel). Erreicht → die
+ * Funktion antwortet wie „gerade abgeschaltet“. sync: private.ai_budget in 20261019120000_premium_open.sql.
+ */
+export const AI_GLOBAL_BUDGET = {
+  food_photo: { monthlyCallsCap: 2000, monthlyCostEurCap: 10 },
+} as const;
+
 // ---------------------------------------------------------------------------------------------------------
 // Etappe E4a · Barcode-Nummer und Open Food Facts (gratis, ohne KI; docs/PLAN-E4.md, Gründer-Entscheidung
 // 17.10.2026: E4-G1 bis E4-G13 „wie empfohlen“). Identisch als SQL-Konstante bzw. CHECK in

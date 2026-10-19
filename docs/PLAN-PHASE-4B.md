@@ -1245,6 +1245,11 @@ In D rechnet die App im Testmodus die Regeln aus `packages/core/src/adjust/` dir
 gespeicherten Training bzw. Sync), nur mit „Premium simulieren“ (nur Testmodus, K2). Im Supabase-Modus bleibt die
 Premium-Prüfung ausschließlich serverseitig (CLAUDE.md „KI-Grenze“) – ohne B/C ist die Live-Anpassung dort ausgeblendet.
 
+**Nachtrag 19.10.2026 – Testphase „alles offen“ (KONZEPT 13):** Der Testmodus-Schalter heißt jetzt „Live-Anpassung
+einschalten (Testmodus)“ (intern weiter `simulatePremium`, K2 unverändert) und ist **standardmäßig an**; nur ein
+ausdrücklich ausgeschalteter Schalter zeigt den Gratis-Weg. Auf dem Server gibt Flag `premium_open` jedem angemeldeten
+Konto `premium` – die Live-Anpassung mit Konto braucht trotzdem weiter Etappe C und das Flag `live_adjustment`.
+
 **Gründer-Entscheidung 09.10.2026 – erst Übungs-Glossar und Übungstausch:** Nach A0 kommt vor der weiteren
 4b-Umsetzung ein eigenes Feature „Übungs-Glossar und Übungstausch“ mit eigenem Plan
 `docs/PLAN-UEBUNGEN-GLOSSAR-TAUSCH.md` (folgt). Danach geht 4b mit Etappe A weiter. Reihenfolge damit:

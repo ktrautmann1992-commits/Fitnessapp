@@ -20,7 +20,7 @@ import {
   talkTestLevel,
 } from '@fitnessapp/core';
 import { Redirect, useLocalSearchParams, useRouter, type Href } from 'expo-router';
-import { useEffect, useMemo, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import { Platform, StyleSheet, View } from 'react-native';
 
 import { IntervalTimer } from '@/components/competition';
@@ -140,6 +140,8 @@ export default function WorkoutScreen() {
   const [swapFor, setSwapFor] = useState<{ index: number; target: SwapTarget } | null>(null);
   const [swapBusy, setSwapBusy] = useState(false);
   const [swapError, setSwapError] = useState<string>();
+  // Fokus-Ziel nach dem Schließen des Tausch-Dialogs (Wächter M2): erst nach dem Ende der Animation setzen.
+  const focusAfterSwap = useRef<string | null>(null);
   const [swapFeedback, setSwapFeedback] = useState<{
     text: string;
     tone: 'success' | 'info' | 'danger';
@@ -414,7 +416,13 @@ export default function WorkoutScreen() {
     const index = swapFor?.index;
     setSwapFor(null);
     setSwapError(undefined);
-    if (index !== undefined) setTimeout(() => focusTestId(`workout-swap-${index}`), 50);
+    focusAfterSwap.current = index !== undefined ? `workout-swap-${index}` : null;
+  }
+
+  function swapClosed() {
+    const id = focusAfterSwap.current;
+    focusAfterSwap.current = null;
+    if (id) focusTestId(id);
   }
 
   async function confirmSwap(decision: SwapDecision) {
@@ -451,6 +459,8 @@ export default function WorkoutScreen() {
         tone: 'success',
         undo: { index, previous: exercise.alternative, preferences },
       });
+      // Fokus auf die Rückmeldung (K6), wenn der Dialog zu ist.
+      focusAfterSwap.current = 'swap-feedback';
       setSwapFor(null);
     } catch (caught) {
       setSwapError(caught instanceof BackendError ? errorText(caught) : t.swap.failed);
@@ -814,6 +824,7 @@ export default function WorkoutScreen() {
         error={swapError}
         onConfirm={(decision) => void confirmSwap(decision)}
         onCancel={closeSwap}
+        onClosed={swapClosed}
         onOpenGuide={(exerciseId) => {
           // Sicher: Der Entwurf ist bei jedem Tipp gespeichert (8.1).
           setSwapFor(null);

@@ -1107,6 +1107,17 @@ eigene Zeilen, in Export und Kontolöschung enthalten.
   fällt). Ohne Ziel bleibt er unverändert.
 
 ## 13. Monetarisierung
+**Testphase (Gründer-Entscheidung 19.10.2026): alles offen, Abos ruhen.** Bis der Test vollständig abgeschlossen ist,
+gibt es keine Abos und keine Kauf-/Abo-Hinweise: Wer die App oder den Web-Link hat, kann alles uneingeschränkt und
+kostenlos testen. Umsetzung: Feature-Flag `premium_open` (Standard **an**, Migration `20261019120000_premium_open.sql`)
+– der Server (`private.has_entitlement_for`, Abschnitt 15) gibt jedem angemeldeten, nicht gelöschten Konto Premium; die
+Prüfung bleibt serverseitig. Unverändert gelten die Flags der einzelnen Funktionen, Einwilligungen und die KI-Limits je
+Person (`ai_usage`) und eine globale KI-Kostenbremse (Abschnitt 15). In der App steht an späteren Premium-Funktionen
+das Kennzeichen „Testphase: kostenlos“ – nur, wenn der Server die Testphase meldet (`premium_open_active()`); im
+Testmodus ist „Live-Anpassung einschalten“ standardmäßig an (ausschalten = Gratis-Weg prüfen). Ende der Testphase:
+Workflow `beta-grant` → Funktion `premium_open` → `flag_aus` (danach gilt wieder nur die Beta-Freischaltung). Phase 7
+(Abos, Rechtstexte) ruht bis dahin. Die Aufteilung unten bleibt der Plan für danach.
+
 - **Gratis:** Onboarding, Standard-Plan aus Vorlagen mit einfacher Progression (Gewicht steigt bei geschafften
   Wiederholungen), Trainingstagebuch, Grundberechnung Kalorien/Makros, Supplement-Übersicht, außerdem alles aus der
   Tabelle unten mit „Ja“ bei Gratis
@@ -1221,6 +1232,14 @@ alle offen, Server-Prüfung mit Phase 7):
   (`private.has_entitlement_for` = die eine Stelle für `hasEntitlement()`, Phase 7 ersetzt nur deren Rumpf), Workflow
   `beta-grant` (freischalten/entziehen/Flag/Status mit Kostensummen statt Admin-Seite). Grenzen in
   `packages/core/src/constants.ts` (`AI_FOOD_PHOTO`, Preise VOR LIVEGANG PRÜFEN).
+- **Testphase „alles offen“ (19.10.2026, Abschnitt 13):** `private.has_entitlement_for` gibt bei Flag `premium_open`
+  jedem angemeldeten Konto `premium`; `ai_food_photo_reserve` nimmt ohne Beta-Zeile die Standard-Limits (30/Monat,
+  8/Tag). **Globale Kostenbremse** (Wächter M1), solange `premium_open` an ist: Tabelle `private.ai_budget` mit
+  Obergrenze je Kalendermonat über alle Konten (Gericht per Foto: 2000 Aufrufe bzw. 10 €, sync `AI_GLOBAL_BUDGET`),
+  geprüft unter eigener Advisory-Sperre; erreicht → „gerade abgeschaltet“, kein KI-Aufruf. Ändern per Migration.
+  Status über `beta-grant` → `premium_open` → `status`.
+- **Pflicht vor dem Einschalten von Gemini** (`FOOD_PHOTO_PROVIDER=gemini`): Budget-Warnung in Google Cloud
+  einrichten (Schritte in `docs/HANDY-ANLEITUNG.md` Teil 7t) – zusätzlich zur Kostenbremse in der Datenbank.
 - **KI-Anbieter: Google Gemini (API)** für Offline-Inhalte und Premium-KI (Gründer-Entscheidung 14.10.2026). Offline
   gehen nur Inhalts-Prompts an Gemini; bevor Premium-Funktionen Nutzerdaten (Fotos, Chat, Körperdaten) an Gemini
   senden, braucht es den AVV mit Google und die Prüfungen aus Abschnitt 14 (Gründer-Aufgabe).
