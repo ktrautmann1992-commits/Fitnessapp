@@ -368,6 +368,12 @@ Werte in daily_metrics. Implementiere den Readiness-Score in packages/core mit T
 Setze docs/KONZEPT.md Abschnitt 8 um, opt-in, verschlüsselte Speicherung, eigene Einwilligung.
 Schnelle tägliche Erfassung. Adaptive Anpassung über Symptome/Energie, keine starren Phasenregeln.
 ```
+**Stand 19.10.2026:** Plan: `docs/PLAN-PHASE-9.md`, Entwurf zur Freigabe (Etappen ZY0–ZY6, Gründer-Fragen ZY-G1 bis
+ZY-G17; Wächter Runde 2 freigabefähig, N1–N3 eingearbeitet). Kernpunkte: eigene Einwilligung `cycle_data`, Verschlüsselung in
+der Datenbank (Schlüssel im Supabase Vault), „Heute leichter“ nach Tagesform plus Knopf für alle, Warnsignale mit
+Arzt-Hinweis (Flag `cycle_warnings`), keine Vorhersage und keine Verhütungsfunktion (kein Medizinprodukt). Testphase
+alles offen (`premium_open`), Zyklus-Modul im Supabase-Modus aber nur für per `beta-grant` freigeschaltete Konten
+(Flag `cycle_module`) bis zur Rechtsprüfung vor dem öffentlichen Livegang. Umsetzung erst nach Freigabe.
 
 ## Phase 9b – Studio und Mitgliedschaft
 ```
