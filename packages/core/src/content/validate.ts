@@ -23,6 +23,8 @@ import { type ContentIssue, isBlockingIssue, makeIssue } from './rules';
 import { type Exercise, exerciseSchema, type PlanTemplate, planTemplateSchema } from './schemas';
 import { checkIngredientSubstitution, checkSubstitutionLibrary } from './substitution-checks';
 import { type IngredientSubstitution, ingredientSubstitutionSchema } from './substitution-schema';
+import { checkSupplementContent } from './supplement-checks';
+import { type SupplementContent, supplementContentSchema } from './supplement-schema';
 
 export { canonicalJson } from './canonical-json';
 
@@ -52,7 +54,11 @@ export function isNutritionKind(kind: AnyContentFileKind): kind is NutritionCont
     kind === 'package_size'
   );
 }
-export type AnyContentFileKind = ContentFileKind | NutritionContentFileKind;
+/** Supplement-Inhalte (docs/PLAN-PHASE-6.md Abschnitt 6, Etappe SU2): `content/supplements/<id>.json`, Regeln SK1–SK7. */
+export type SupplementContentFileKind = 'supplement';
+
+export type AnyContentFileKind =
+  ContentFileKind | NutritionContentFileKind | SupplementContentFileKind;
 
 export interface ContentFile {
   readonly kind: ContentFileKind;
@@ -71,6 +77,11 @@ export interface ContentFile {
  */
 export interface NutritionContentFile extends Omit<ContentFile, 'kind'> {
   readonly kind: NutritionContentFileKind;
+}
+
+/** Inhaltsdatei eines Supplements (`content/supplements/<id>.json`). */
+export interface SupplementContentFile extends Omit<ContentFile, 'kind'> {
+  readonly kind: SupplementContentFileKind;
 }
 
 export interface ContentValidationOptions {
@@ -95,6 +106,8 @@ export interface ContentValidationResult {
   readonly substitutions: readonly IngredientSubstitution[];
   /** Packungsgrößen mit gültigem Schema (19.7 N11). */
   readonly packageSizes: readonly PackageSize[];
+  /** Supplement-Inhalte mit gültigem Schema (Phase 6, SU2) – nur geprüft, eingespielt erst ab SU3. */
+  readonly supplements: readonly SupplementContent[];
   /** Alle Befunde (rot und gelb). */
   readonly issues: readonly ContentIssue[];
   /** Befunde, die das Prüfskript fehlschlagen lassen (siehe isBlockingIssue). */
@@ -168,13 +181,15 @@ export function checkVersionChange(
   return [];
 }
 
-function schemaIssues(file: ContentFile | NutritionContentFile, error: z.ZodError): ContentIssue[] {
+type AnyContentFile = ContentFile | NutritionContentFile | SupplementContentFile;
+
+function schemaIssues(file: AnyContentFile, error: z.ZodError): ContentIssue[] {
   const target = {
     kind: file.kind,
     id: readId(file.data, file.fileName),
     status: readStatus(file.data),
   };
-  const rule = isNutritionKind(file.kind) ? 'R1' : 'Ü1';
+  const rule = file.kind === 'supplement' ? 'SK1' : isNutritionKind(file.kind) ? 'R1' : 'Ü1';
   return error.issues.map((issue) =>
     makeIssue(
       rule,
@@ -231,6 +246,7 @@ const SCHEMAS = {
   guide: guideSchema,
   ingredient_substitution: ingredientSubstitutionSchema,
   package_size: packageSizeSchema,
+  supplement: supplementContentSchema,
 } as const;
 
 /**
@@ -239,7 +255,7 @@ const SCHEMAS = {
  * Begleitdaten (Quellauszug, Erwartungs- und Ausnahmeliste) kommen über `options.nutritionCatalog`.
  */
 export function validateContent(
-  files: readonly (ContentFile | NutritionContentFile)[],
+  files: readonly AnyContentFile[],
   options: ContentValidationOptions = {},
 ): ContentValidationResult {
   const issues: ContentIssue[] = [];
@@ -251,6 +267,7 @@ export function validateContent(
   const guides: Guide[] = [];
   const substitutions: IngredientSubstitution[] = [];
   const packageSizes: PackageSize[] = [];
+  const supplements: SupplementContent[] = [];
   const seenIds = new Map<string, string>();
 
   for (const file of files) {
@@ -279,7 +296,12 @@ export function validateContent(
     const firstFile = seenIds.get(key);
     if (firstFile !== undefined) {
       issues.push(
-        makeIssue('DATEI', target, `ID „${content.id}“ ist doppelt (auch in „${firstFile}“).`),
+        makeIssue(
+          file.kind === 'supplement' ? 'SK2' : 'DATEI',
+          target,
+          `ID „${content.id}“ ist doppelt (auch in „${firstFile}“).`,
+          file.kind === 'supplement' ? 'id' : undefined,
+        ),
       );
       continue;
     }
@@ -300,6 +322,8 @@ export function validateContent(
       substitutions.push(content as IngredientSubstitution);
     } else if (file.kind === 'package_size') {
       packageSizes.push(content as PackageSize);
+    } else if (file.kind === 'supplement') {
+      supplements.push(content as SupplementContent);
     } else {
       guides.push(content as Guide);
     }
@@ -340,6 +364,9 @@ export function validateContent(
     issues.push(...checkPackageSize(entry, foodLookup));
   }
   issues.push(...checkPackageSizeLibrary(packageSizes));
+  for (const supplement of supplements) {
+    issues.push(...checkSupplementContent(supplement));
+  }
 
   return {
     exercises,
@@ -350,6 +377,7 @@ export function validateContent(
     guides,
     substitutions,
     packageSizes,
+    supplements,
     issues,
     blocking: issues.filter(isBlockingIssue),
   };

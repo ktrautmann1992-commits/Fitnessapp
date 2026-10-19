@@ -9,6 +9,7 @@ import type { ContentStatus } from '../enums';
  * Phase 5 (docs/PLAN-PHASE-5.md 5.3): R1–R19 für Lebensmittel und Rezepte (R1 Schema und R15 Version blockieren
  * wie Ü1/VERSION immer); R20–R22 für Meal-Prep-Pläne, Ratgeber und Kategorien (19.4); R23 für die Austausch-Tabelle
  * (19.7 N9); R24 für die Packungsgrößen (19.7 N11).
+ * Phase 6 (docs/PLAN-PHASE-6.md Abschnitt 6): SK1–SK7 für Supplement-Inhalte (SK1 Schema blockiert immer, SK7H gelb).
  */
 export const CONTENT_RULES = {
   DATEI: { severity: 'error', title: 'Datei: gültiges JSON, Dateiname = ID, ID eindeutig' },
@@ -189,6 +190,44 @@ export const CONTENT_RULES = {
     title:
       'Packungsgröße: Lebensmittel existiert und ist katalog-geprüft (freigegeben nur mit freigegebenem), Packung nicht kleiner als ein Stück, je Lebensmittel nur ein Eintrag, ID = packung-<Lebensmittel>',
   },
+  // Supplement-Inhalte (docs/PLAN-PHASE-6.md Abschnitt 6, Etappe SU2)
+  SK1: {
+    severity: 'error',
+    title: 'Supplement: Schema korrekt (Pflichtfelder, Formate, Textlängen)',
+  },
+  SK2: {
+    severity: 'error',
+    title:
+      'Supplement: ID bekannt (SUPPLEMENT_IDS oder Liste „Nicht empfohlen“), keine Doppelung, Kategorie wie im Core',
+  },
+  SK3: {
+    severity: 'error',
+    title:
+      'Supplement: Textregeln (keine Heil-, Gesundheits- oder Leistungsversprechen, keine Diagnose-Wörter, keine Marken)',
+  },
+  SK4: {
+    severity: 'error',
+    title:
+      'Supplement: Angaben nur aus APPROVED_CLAIMS, zum Supplement passend, Bedingung erfüllt, Pflichthinweis vorhanden',
+  },
+  SK5: {
+    severity: 'error',
+    title:
+      'Supplement: keine Zahlen, Einheiten oder Zahlwörter im Freitext, nur erlaubte Platzhalter',
+  },
+  SK6: {
+    severity: 'error',
+    title: 'Supplement: Stufe A/B mit Quelle, jede Quelle mit DOI oder PMID',
+  },
+  SK7: {
+    severity: 'error',
+    title:
+      'Supplement: Stufe wie im Core (Koffein ohne Stufe, ohne Zweck), Stufe C und Koffein ohne Angaben, Anwendung nicht bei Stufe C, Grund nur bei Stufe C',
+  },
+  SK7H: {
+    severity: 'warning',
+    title: 'Supplement: Text länger als 600 Zeichen – am Handy kürzen',
+  },
 } as const satisfies Record<string, { severity: IssueSeverity; title: string }>;
 
 export type ContentRuleId = keyof typeof CONTENT_RULES;
@@ -207,7 +246,8 @@ export type ContentKind =
   | 'meal_prep_plan'
   | 'guide'
   | 'ingredient_substitution'
-  | 'package_size';
+  | 'package_size'
+  | 'supplement';
 
 export interface ContentIssue {
   readonly rule: ContentRuleId;
@@ -223,7 +263,7 @@ export interface ContentIssue {
 }
 
 /** Regeln, die IMMER blockieren – auch bei Entwürfen (Plan Abschnitt 7, „Was liegen darf“). */
-const ALWAYS_BLOCKING: readonly ContentRuleId[] = ['DATEI', 'Ü1', 'VERSION', 'R1', 'R15'];
+const ALWAYS_BLOCKING: readonly ContentRuleId[] = ['DATEI', 'Ü1', 'VERSION', 'R1', 'R15', 'SK1'];
 
 /**
  * true = der Befund lässt `content:validate` (und damit ci, content-review, content-collect, content-seed)

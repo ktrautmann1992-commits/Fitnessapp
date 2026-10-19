@@ -6,7 +6,8 @@
  * Plausibilitäts-Checks und Seed-Abbildung kommen aus packages/core bzw. seed-package.ts.
  * Seit Etappe N9 gibt es die Austausch-Tabelle (`ingredient_substitution`, docs/PLAN-PHASE-5.md 19.7) als erste
  * Ernährungs-Art; eine Antwort kann dort mehrere Dateien ergeben (`toContents`). Seit N11 auch die Packungsgrößen
- * (`package_size`), seit N8 die Rezepte (`recipe`) – ohne Umbau von generate/collect/review.
+ * (`package_size`), seit N8 die Rezepte (`recipe`), seit Phase 6 SU2 die Supplemente (`supplement`) – ohne Umbau
+ * von generate/collect/review.
  */
 import type {
   ContentFileKind,
@@ -16,6 +17,7 @@ import type {
   PackageSize,
   PlanTemplate,
   Recipe,
+  SupplementContent,
 } from '@fitnessapp/core';
 import type { z } from 'zod';
 
@@ -23,7 +25,7 @@ import type { ContentEffort } from '../config';
 
 /** Inhaltsarten der Pipeline: Training (Phase 2), Austausch-Tabelle (N9), Packungsgrößen (N11), Rezepte (N8). */
 export type PipelineContentKind =
-  ContentFileKind | 'ingredient_substitution' | 'package_size' | 'recipe';
+  ContentFileKind | 'ingredient_substitution' | 'package_size' | 'recipe' | 'supplement';
 
 /** Was die Pipeline über den aktuellen Inhaltsstand weiß (aus `content/`). */
 export interface LibraryContext {
@@ -39,6 +41,8 @@ export interface LibraryContext {
   readonly packageSizes: readonly PackageSize[];
   /** Rezepte mit gültigem Schema (alle Status, N8) – damit neue Rezepte nichts wiederholen. */
   readonly recipes: readonly Recipe[];
+  /** Supplement-Inhalte mit gültigem Schema (alle Status, Phase 6 SU2). */
+  readonly supplements: readonly SupplementContent[];
   /** Belegte IDs (Dateinamen ohne `.json`) je Art – auch von Dateien mit Fehlern. */
   readonly takenIds: Readonly<Record<PipelineContentKind, ReadonlySet<string>>>;
 }

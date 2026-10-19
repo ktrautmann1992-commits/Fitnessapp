@@ -45,6 +45,19 @@ const EXAMPLES: Readonly<Record<string, { bad: string; good: string }>> = {
   },
   Leistungsplus: { bad: 'Ein echtes Leistungsplus.', good: 'Leistungssport braucht Planung.' },
   'Fett verbrennen': { bad: 'So kannst du Fett verbrennen.', good: 'Fett ist ein Nährstoff.' },
+  // Wächter SU2 M4
+  effektiv: { bad: 'Das ist sehr effektiv.', good: 'Das ist sehr einfach.' },
+  verbrennt: { bad: 'Verbrennt Fett im Schlaf.', good: 'Brennnesseltee ist ein Tee.' },
+  'mehr Kraft/Muskeln/Ausdauer/Energie/Power': {
+    bad: 'Für mehr Kraft im Training.',
+    good: 'Mehr dazu steht im Plan.',
+  },
+  'erhöht … Kraft/Muskeln': {
+    bad: 'Das erhöht deine Maximalkraft.',
+    good: 'Das erhöht die Menge im Glas.',
+  },
+  'hilft bei': { bad: 'Das hilft dir beim Training.', good: 'Hilfe bekommst du in der App.' },
+  'gegen …': { bad: 'Gegen Muskelkater im Winter.', good: 'Gegenüber dem Essen ist es klein.' },
 };
 
 describe('SUPPLEMENT_FORBIDDEN_TERMS (Plan 3.8 Nr. 2)', () => {
@@ -80,6 +93,11 @@ describe('SUPPLEMENT_FORBIDDEN_TERMS (Plan 3.8 Nr. 2)', () => {
     ['Du fühlst dich gestärkt.', 'stärkt'],
     ['stärker werden', 'stärkt'],
     ['Das stärkte dich.', 'stärkt'],
+    // Wächter SU2 M4: alle Formen von „Wirkung“
+    ['So ist es am wirksamsten.', 'Wirkung'],
+    ['So wirkt es am besten.', 'Wirkung'],
+    ['Die Wirkungsweise ist bekannt.', 'Wirkung'],
+    ['Das hilft gegen Müdigkeit.', 'gegen …'],
   ])('abgeleitete Form „%s“ → %s (Wächter SU1, Befund 2)', (text, label) => {
     expect(checkSupplementText(text).map((hit) => hit.label)).toContain(label);
   });
@@ -93,6 +111,26 @@ describe('SUPPLEMENT_FORBIDDEN_TERMS (Plan 3.8 Nr. 2)', () => {
     ['Angabe in IE', ['Einheit']],
     ['zwölf Wochen', ['Zahlwort']],
     ['Nimm {dose} mg', ['Einheit']],
+    // Wächter SU2 M1
+    ['zwanzig Tassen', ['Zahlwort']],
+    ['dreißig Kapseln', ['Zahlwort']],
+    ['dreissig Kapseln', ['Zahlwort']],
+    ['neunzig Tage', ['Zahlwort']],
+    ['einundzwanzig Tage', ['Zahlwort']],
+    ['fünfundneunzig Tage', ['Zahlwort']],
+    ['dreizehn Wochen', ['Zahlwort']],
+    ['siebzehn Wochen', ['Zahlwort']],
+    ['neunzehn Wochen', ['Zahlwort']],
+    ['dreihundert Kapseln', ['Zahlwort']],
+    ['achthundert Einheiten', ['Zahlwort']],
+    ['zweitausend Schritte', ['Zahlwort']],
+    ['ein Dutzend Kapseln', ['Zahlwort']],
+    ['einen halben Teelöffel', ['Mengenwort']],
+    ['vor dem Halbmarathon', ['Mengenwort']],
+    ['die doppelte Menge', ['Mengenwort']],
+    ['dreißig gr Eiweiß', ['Einheit', 'Zahlwort']],
+    ['achthundert Internationale Einheiten', ['Einheit', 'Zahlwort']],
+    ['eine internationale Einheit', ['Einheit']],
   ])('Mengen-Wörter: „%s“ (Wächter SU1, Befund 5)', (text, labels) => {
     const hits = checkSupplementText(text).filter((hit) => hit.kind === 'number');
     expect(hits.map((hit) => hit.label)).toEqual(labels);
@@ -106,6 +144,12 @@ describe('SUPPLEMENT_FORBIDDEN_TERMS (Plan 3.8 Nr. 2)', () => {
       'Angaben stehen in der App.',
       'Achte auf deine Ernährung.',
       'Elfmeter und Achtung.',
+      // Wächter SU2 M1: keine Fehltreffer in normalen Wörtern
+      'Halte die Packung kühl und halten sie dunkel.',
+      'Deshalb zählt es mit.',
+      'Grüner Tee und Zwanglosigkeit.',
+      'Einheit des Trainings.',
+      'Sie ziehen zehnmal nicht um.',
     ]) {
       expect(checkSupplementText(text)).toEqual([]);
     }

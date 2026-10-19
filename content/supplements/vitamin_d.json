@@ -1,0 +1,56 @@
+{
+  "id": "vitamin_d",
+  "version": 1,
+  "status": "draft",
+  "name_de": "Vitamin D",
+  "evidence_level": "b",
+  "category": "diet_season",
+  "summary_de": "Vitamin D bildet dein Körper vor allem selbst, wenn Sonne auf die Haut scheint. Über das Essen kommt nur wenig dazu, etwa aus fettem Fisch, Eiern oder Pilzen. Ob du zusätzlich etwas brauchst, hängt von Jahreszeit, Zeit im Freien und Ernährung ab.",
+  "how_to_de": "Als allgemeiner Richtwert gelten {dose} am Tag, wenn Sonne und Ernährung nicht reichen. Höher dosierte Präparate nimm nur nach ärztlicher Rücksprache.",
+  "claim_ids": ["vitamin_d_bones", "vitamin_d_muscle"],
+  "sources": [
+    {
+      "authors": "German Nutrition Society (DGE)",
+      "year": 2012,
+      "title": "New reference values for vitamin D",
+      "journal": "Ann Nutr Metab 60(4):241–246",
+      "doi": "10.1159/000337547",
+      "pmid": null
+    },
+    {
+      "authors": "EFSA Panel on Dietetic Products, Nutrition and Allergies (NDA)",
+      "year": 2016,
+      "title": "Dietary reference values for vitamin D",
+      "journal": "EFSA Journal 14(10):4547",
+      "doi": "10.2903/j.efsa.2016.4547",
+      "pmid": null
+    },
+    {
+      "authors": "EFSA Panel on Dietetic Products, Nutrition and Allergies (NDA)",
+      "year": 2012,
+      "title": "Scientific Opinion on the Tolerable Upper Intake Level of vitamin D",
+      "journal": "EFSA Journal 10(7):2813",
+      "doi": "10.2903/j.efsa.2012.2813",
+      "pmid": null
+    },
+    {
+      "authors": "EFSA Panel on Nutrition, Novel Foods and Food Allergens (NDA)",
+      "year": 2023,
+      "title": "Scientific opinion on the tolerable upper intake level for vitamin D, including the derivation of a conversion factor for calcidiol monohydrate",
+      "journal": "EFSA Journal 21(8):e08145",
+      "doi": "10.2903/j.efsa.2023.8145",
+      "pmid": null
+    }
+  ],
+  "not_recommended_reason_de": null,
+  "meta": {
+    "origin": "claude_session",
+    "model": "claude-opus-5-5",
+    "batch_id": null,
+    "created_on": "2026-10-19",
+    "expert_reviewed": false,
+    "reviewed_by": null,
+    "reviewed_at": null,
+    "review_note": null
+  }
+}

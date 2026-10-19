@@ -51,7 +51,22 @@ export const SUPPLEMENT_FORBIDDEN_TERMS: readonly SupplementTermRule[] = [
     pattern: '(?:ge)?st(?:ä|ae)rk(?:t|te|ter|en|end|ung|er)',
     wholeWord: false,
   },
-  { label: 'Wirkung', pattern: 'wirk(?:ung|ungen|t|en|sam)', wholeWord: true },
+  // Alle Wortformen („wirksamsten“, „Wirkungsweise“), Wächter SU2 M4.
+  { label: 'Wirkung', pattern: 'wirk(?:ung|sam|t|en)\\p{L}*', wholeWord: false },
+  { label: 'effektiv', pattern: 'effektiv', wholeWord: false },
+  { label: 'verbrennt', pattern: 'verbrenn', wholeWord: false },
+  {
+    label: 'mehr Kraft/Muskeln/Ausdauer/Energie/Power',
+    pattern: 'mehr\\s+(?:kraft|muskel|ausdauer|energie|power)',
+    wholeWord: false,
+  },
+  {
+    label: 'erhöht … Kraft/Muskeln',
+    pattern: 'erh(?:ö|oe)h\\p{L}*\\s+(?:\\p{L}+\\s+){0,3}?\\p{L}*(?:kraft|muskel)',
+    wholeWord: false,
+  },
+  { label: 'hilft bei', pattern: 'hilf(?:t|en)\\s+(?:dir\\s+|dich\\s+)?beim?', wholeWord: true },
+  { label: 'gegen …', pattern: 'gegen\\s+\\p{L}+', wholeWord: false },
   { label: 'fördert', pattern: 'f(?:ö|oe)rder(?:t|n|e|st)', wholeWord: true },
   {
     label: 'erhöht die Leistung',
@@ -69,15 +84,25 @@ export const SUPPLEMENT_FORBIDDEN_TERMS: readonly SupplementTermRule[] = [
 export const SUPPLEMENT_AMOUNT_WORDS: readonly SupplementTermRule[] = [
   {
     label: 'Einheit',
-    pattern: '(?:mg|g|kg|µg|μg|ug|mcg|ie|i\\.\\s?e\\.|milligramm|gramm|mikrogramm|kilogramm)',
+    pattern:
+      '(?:mg|g|gr|kg|µg|μg|ug|mcg|ie|i\\.\\s?e\\.|milligramm|gramm|mikrogramm|kilogramm|internationale\\s+einheit(?:en)?)',
     wholeWord: true,
   },
   {
     label: 'Zahlwort',
     pattern:
-      '(?:eins|zwei|drei|vier|f(?:ü|ue)nf|sechs|sieben|acht|neun|zehn|elf|zw(?:ö|oe)lf|hundert|tausend)',
+      '(?:eins|zwei|drei|vier|f(?:ü|ue)nf|sechs|sieben|acht|neun|zehn|elf|zw(?:ö|oe)lf' +
+      // dreizehn–neunzehn (Wächter SU2 M1)
+      '|(?:drei|vier|f(?:ü|ue)nf|sech|sieb|acht|neun)zehn' +
+      // zwanzig–neunzig, auch „einundzwanzig“ … „neunundneunzig“
+      '|(?:(?:ein|zwei|drei|vier|f(?:ü|ue)nf|sechs|sieben|acht|neun)und)?(?:zwanzig|drei(?:ß|ss)ig|vierzig|f(?:ü|ue)nfzig|sechzig|siebzig|achtzig|neunzig)' +
+      '|dutzend)',
     wholeWord: true,
   },
+  // Alles mit hundert/tausend, auch „dreihundert“, „achthundert“ (ohne Wortgrenze am Ende).
+  { label: 'Zahlwort', pattern: '\\p{L}*(?:hundert|tausend)', wholeWord: false },
+  // Mengen ohne Zahl: halb, halbe, Halbmarathon; doppelt, doppelte (Wächter SU2 M1).
+  { label: 'Mengenwort', pattern: '(?:halb|doppel)\\p{L}*', wholeWord: false },
 ];
 
 export type SupplementTextHitKind =

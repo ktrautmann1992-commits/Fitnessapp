@@ -307,6 +307,37 @@ describe('Probelauf Ende-zu-Ende: generate → collect (ohne Netz, ohne Schlüss
     expect(neverApproves(tools.ghCalls)).toBe(true);
   });
 
+  it('Supplemente (SU2): Probelauf ohne Schlüssel bis zum Pull Request, zwei Entwürfe', async () => {
+    const r = repo();
+    const tools = fakeTools(r.root);
+    const generated = await runGenerate(
+      { kind: 'supplements', selection: 'alle', count: 10, dryRun: true, settings },
+      { repoRoot: r.root, tools, now, randomShort: () => 'sup001' },
+    );
+    expect(generated.status).toBe('submitted');
+    if (generated.status !== 'submitted') return;
+    expect(generated.record.kind).toBe('supplement');
+    r.git(['checkout', '--quiet', 'main']);
+    const collected = await runCollect({ repoRoot: r.root, tools, now });
+    expect(collected.exitCode).toBe(0);
+    const outcome = collected.outcomes[0]!;
+    expect(outcome.status).toBe('pr_opened');
+    expect([...outcome.saved!].sort()).toEqual(['probelauf-bcaa', 'probelauf-creatine']);
+    const draft = JSON.parse(
+      r.showRemote(generated.branch, 'content/supplements/probelauf-creatine.json'),
+    );
+    expect(draft).toMatchObject({
+      status: 'draft',
+      evidence_level: 'a',
+      claim_ids: ['creatine_performance'],
+      sources: [],
+    });
+    expect(draft.meta.model).toBe('probelauf-ohne-ki');
+    expect(outcome.markdown).toContain('ungültig (Schema/Grenzen)');
+    expect(outcome.markdown).toContain('(refusal)');
+    expect(neverApproves(tools.ghCalls)).toBe(true);
+  });
+
   it('Rezepte (N8): echter Lauf ohne katalog-geprüfte Lebensmittel sendet nichts', async () => {
     const r = repo();
     const client = mockClient();

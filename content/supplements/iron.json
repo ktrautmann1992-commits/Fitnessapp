@@ -1,0 +1,23 @@
+{
+  "id": "iron",
+  "version": 1,
+  "status": "draft",
+  "name_de": "Eisen-Präparate",
+  "evidence_level": "c",
+  "category": "diet_season",
+  "summary_de": "Eisen steckt zum Beispiel in Fleisch, Hülsenfrüchten, Vollkorn und grünem Gemüse. Präparate gibt es als Tablette, Kapsel oder Saft.",
+  "how_to_de": null,
+  "claim_ids": [],
+  "sources": [],
+  "not_recommended_reason_de": "Ob du zusätzlich Eisen brauchst, zeigt nur eine Blutuntersuchung. Zu viel Eisen kann schaden. Nimm es deshalb nur nach ärztlicher Rücksprache.",
+  "meta": {
+    "origin": "claude_session",
+    "model": "claude-opus-5-5",
+    "batch_id": null,
+    "created_on": "2026-10-19",
+    "expert_reviewed": false,
+    "reviewed_by": null,
+    "reviewed_at": null,
+    "review_note": null
+  }
+}

@@ -730,6 +730,9 @@ Quelle: `docs/ERWEITERUNGEN-2.md` Abschnitte 1–2. Startbestand aus `alpha5-rez
 - Datenfeld pro Supplement: Evidenzstufe, Begründungstext, Gegenanzeigen-Flags (Schwangerschaft, Nierenerkrankung, Medikamente, Alter <18)
 - Gegenanzeige erkannt → keine Empfehlung, Hinweis auf ärztliche Rücksprache
 - Affiliate-Links pro Supplement (mehrere Shops), klar als Werbung gekennzeichnet
+- Umsetzung: `docs/PLAN-PHASE-6.md`. Texte liegen als Inhalte unter `content/supplements/<id>.json` (Name,
+  Beschreibung, Anwendung mit Platzhaltern, IDs zugelassener Angaben, Quellen mit DOI/PMID, Grund bei „Nicht
+  empfohlen“; Prüfregeln SK1–SK7). Dosis, Gegenanzeigen, Zeitpunkte und Pflichthinweise stehen nur im Core.
 
 ## 8. Zyklus-Modul (opt-in)
 - Zyklusstart, Länge, Symptome, Energie, Schlaf – täglich in Sekunden erfassbar

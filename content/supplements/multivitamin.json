@@ -1,0 +1,23 @@
+{
+  "id": "multivitamin",
+  "version": 1,
+  "status": "draft",
+  "name_de": "Multivitamin-Präparate",
+  "evidence_level": "c",
+  "category": "diet_season",
+  "summary_de": "Multivitamin-Präparate enthalten viele Vitamine und oft auch Mineralstoffe in einer Tablette oder Brausetablette.",
+  "how_to_de": null,
+  "claim_ids": [],
+  "sources": [],
+  "not_recommended_reason_de": "Wer abwechslungsreich isst, braucht sie meist nicht. Manche Präparate enthalten hohe Mengen, die sich mit anderen Ergänzungen und angereicherten Lebensmitteln summieren. Nimm sie nur, wenn eine Ärztin oder ein Arzt dazu rät.",
+  "meta": {
+    "origin": "claude_session",
+    "model": "claude-opus-5-5",
+    "batch_id": null,
+    "created_on": "2026-10-19",
+    "expert_reviewed": false,
+    "reviewed_by": null,
+    "reviewed_at": null,
+    "review_note": null
+  }
+}
