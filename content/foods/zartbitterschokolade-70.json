@@ -1,0 +1,52 @@
+{
+  "id": "zartbitterschokolade-70",
+  "version": 1,
+  "status": "draft",
+  "name_de": "Zartbitterschokolade (70 %)",
+  "aliases_de": [],
+  "shopping_category": "other",
+  "pantry": true,
+  "nutrients_per_100g": {
+    "kcal": 563,
+    "protein_g": 9.1,
+    "carbs_g": 33.7,
+    "sugar_g": 30,
+    "fat_g": 41.33,
+    "sat_fat_g": 24.97,
+    "fiber_g": 10.11,
+    "salt_g": 0.02,
+    "organic_acids_g": 0,
+    "alcohol_g": 0,
+    "polyols_g": 0
+  },
+  "units": {},
+  "groups": [],
+  "animal": [],
+  "meat_kind": [],
+  "pregnancy_caution": false,
+  "alcohol": false,
+  "max_fridge_days": 3,
+  "freezable": true,
+  "substitutes": [],
+  "source": {
+    "db": "bls",
+    "version": "4.0",
+    "ref": "S570000",
+    "name": "Bitterschokolade",
+    "category": "sugar_sweets",
+    "license": "CC BY 4.0",
+    "retrieved_at": "2026-10-19"
+  },
+  "meta": {
+    "origin": "claude_session",
+    "model": "claude-opus-5-5",
+    "batch_id": null,
+    "created_on": "2026-10-19",
+    "expert_reviewed": false,
+    "reviewed_by": null,
+    "reviewed_at": null,
+    "review_note": null,
+    "catalog_reviewed_by": null,
+    "catalog_reviewed_at": null
+  }
+}

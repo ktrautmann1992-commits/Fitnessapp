@@ -1,0 +1,52 @@
+{
+  "id": "beeren-mischung-tk",
+  "version": 1,
+  "status": "draft",
+  "name_de": "Beeren-Mischung (TK)",
+  "aliases_de": [],
+  "shopping_category": "frozen",
+  "pantry": false,
+  "nutrients_per_100g": {
+    "kcal": 50,
+    "protein_g": 1.1,
+    "carbs_g": 7.9,
+    "sugar_g": 7,
+    "fat_g": 0.3,
+    "sat_fat_g": 0.032,
+    "fiber_g": 3.5,
+    "salt_g": 0.002,
+    "organic_acids_g": 1.8,
+    "alcohol_g": 0,
+    "polyols_g": 0.9
+  },
+  "units": {},
+  "groups": [],
+  "animal": [],
+  "meat_kind": [],
+  "pregnancy_caution": false,
+  "alcohol": false,
+  "max_fridge_days": 3,
+  "freezable": true,
+  "substitutes": [],
+  "source": {
+    "db": "bls",
+    "version": "4.0",
+    "ref": "F092100",
+    "name": "Beerenmischung mit Sauerkirschen, ungesüßt, roh",
+    "category": "fruit",
+    "license": "CC BY 4.0",
+    "retrieved_at": "2026-10-19"
+  },
+  "meta": {
+    "origin": "claude_session",
+    "model": "claude-opus-5-5",
+    "batch_id": null,
+    "created_on": "2026-10-19",
+    "expert_reviewed": false,
+    "reviewed_by": null,
+    "reviewed_at": null,
+    "review_note": null,
+    "catalog_reviewed_by": null,
+    "catalog_reviewed_at": null
+  }
+}
