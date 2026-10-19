@@ -776,7 +776,8 @@ Konten dort zunächst **aus** (SETUP Teil L).
 
 **Mit Konto (optional, SETUP Teil L2/L3):** Flag einschalten und euer Testkonto per Workflow **beta-grant**
 freischalten → in der App mit Konto dieselben Schritte (es antwortet weiter die Attrappe). Ohne Freischaltung zeigt
-„Per Foto“: „gehört zu Premium … Eintragen per Hand bleibt immer gratis.“ Zum Testen des Limits das Konto per
+„Per Foto“ nach dem Ende der Testphase: „Per Foto ist für dein Konto gerade nicht freigeschaltet …“ – in der Testphase
+(Teil 7t) braucht es keine Freischaltung, nur das Flag. Zum Testen des Limits das Konto per
 **beta-grant** mit **monatslimit** `2` freischalten → nach zwei Fotos kommt die Monats-Meldung. Das Limit (8 am Tag, 30 im Monat) zeigt bei
 Erreichen „Für heute sind keine Fotos mehr möglich, ab morgen wieder“ bzw. „… ab 1. November wieder verfügbar“.
 
@@ -975,9 +976,9 @@ einfügen. Plan dazu: `docs/PLAN-DASHBOARD.md`.
 6. **E-Mail-Adresse ändern** gibt es noch nicht (vorgemerkt, `docs/PLAN-DASHBOARD.md` Abschnitt 5).
 
 ## Teil 7n – Live-Anpassung des Plans testen (Phase 4b, Etappe D, Testmodus, 18.10.2026)
-Die Live-Anpassung ist später **Premium**. Im Testmodus schaltet ihr sie mit **„Premium simulieren (nur Test)“** ein –
-die App rechnet die Regeln dann nach jedem gespeicherten Training auf dem Handy, **ohne KI**. Mit Konto (Supabase) gibt
-es den Schalter nicht; dort kommt die Live-Anpassung erst mit den Etappen B und C (Prüfung auf dem Server).
+Die Live-Anpassung ist in der **Testphase kostenlos** (Teil 7t). Im Testmodus ist **„Live-Anpassung einschalten
+(Testmodus)“** von Anfang an **an** – die App rechnet die Regeln nach jedem gespeicherten Training auf dem Handy,
+**ohne KI**. Mit Konto (Supabase) gibt es den Schalter nicht; dort kommt die Live-Anpassung erst mit Etappe C.
 
 Getestet mit **Chrome am iPhone** (Vorschau-Link aus dem Pull Request), am besten in einem **Inkognito-Tab**: Chrome →
 unten rechts **⋯** → **Neuer Inkognito-Tab**. Wichtig: Im Browser bleiben die Anpassungen nur, **solange der Tab offen
@@ -986,8 +987,8 @@ ist** (geschützter Speicher) – Tab schließen = Anpassungen weg, der Plan ist
 1. Vorschau-Link öffnen → **„Los geht's“** → Geburtsdatum **15.05.1990** → **Testmodus starten** → Zustimmen →
    Einwilligung Gesundheitsdaten **erteilen** → Gesundheits-Check **alles „Nein“** → Erfahrung beliebig → Ziel
    **Muskelaufbau** → **Mo, Mi, Fr Kraft im Studio** → Ernährung beliebig → **„Zum Plan“**.
-2. **Einstellungen** → Abschnitt **„Live-Anpassung (Premium)“** → Haken **„Premium simulieren (nur Test)“** setzen.
-   **Prüfen:** Der Abschnitt steht nur im Testmodus. Darunter **„Warum hat sich mein Plan geändert?“** → „Noch keine
+2. **Einstellungen** → Abschnitt **„Live-Anpassung“** mit Kennzeichen **„Testphase: kostenlos“** → Haken
+   **„Live-Anpassung einschalten (Testmodus)“** ist schon gesetzt. **Prüfen:** Der Abschnitt steht nur im Testmodus. Darunter **„Warum hat sich mein Plan geändert?“** → „Noch keine
    Anpassungen – dein Plan läuft wie geplant.“
 3. **Gewicht senken:** Die Regeln greifen erst ab der **zweiten Planwoche** (die Einstiegswoche zählt nicht). Trainiert
    (bzw. über **Kalender → + Einheit** nachgetragen) eine Übung **zweimal hintereinander** mit deutlich weniger
@@ -1003,8 +1004,8 @@ ist** (geschützter Speicher) – Tab schließen = Anpassungen weg, der Plan ist
    **Heute** oben die Karte **„Weniger Trainingstage?“** → **Ansehen** → wegfallenden Tag wählen → **Umstellen** →
    „Umgestellt: Dein neuer Plan hat 2 Trainingstage.“ Euer Verlauf bleibt vollständig. **„Nein danke“** lässt alles,
    wie es ist.
-6. Haken **„Premium simulieren“** wieder entfernen → bisherige Anpassungen bleiben sichtbar (mit Hinweis), neue kommen
-   nicht dazu.
+6. Haken **„Live-Anpassung einschalten“** entfernen (= so läuft die App ohne Live-Anpassung) → bisherige Anpassungen
+   bleiben sichtbar (mit Hinweis), neue kommen nicht dazu.
 7. **Einstellungen → Einwilligungen → Gesundheitsdaten widerrufen** → die Anpassungen sind gelöscht.
 
 Die Fälle über mehrere Wochen (Schritte 4 und 5, Stillstand → Übung getauscht, abgelaufener Vorschlag) prüft der
@@ -1056,6 +1057,43 @@ Skript (Details `docs/SETUP.md` Teil E, Schritt 3a).
 7. Passt alles: auf grünes **ci** warten → **Merge pull request** → **Delete branch**. Die Rezepte sind jetzt
    **Entwürfe** in `main`. Freigeben: **Actions → content-review** → Art `ids` → IDs der Rezepte → `published`.
    Vor dem Livegang prüft zusätzlich eine Ernährungsfachkraft.
+
+## Teil 7t – Testphase: alles offen (Gründer-Entscheidung 19.10.2026)
+
+Bis der Test abgeschlossen ist, gibt es **keine Abos**: Jedes angemeldete Konto hat alles, was später Premium ist. In
+der App steht dort das Kennzeichen **„Testphase: kostenlos“** (nur solange der Server die Testphase meldet), nirgends
+ein Kauf- oder Abo-Hinweis. Für KI gilt zusätzlich eine **Obergrenze über alle Konten** (Gericht per Foto: 2000
+Aufrufe bzw. 10 € im Monat); ist sie erreicht, zeigt die App „gerade abgeschaltet“. Nach dem Merge
+schaltet **db-migrate** das automatisch ein (Flag `premium_open` = an). Ihr müsst nichts tun.
+
+**Status ansehen oder Testphase beenden** (GitHub-App):
+1. Repository öffnen → **Actions** → **beta-grant** → **Run workflow**.
+2. **aktion** `status` (oder später `flag_aus`), **flag** `premium_open` → **Run workflow**.
+3. Den Lauf öffnen → Zusammenfassung: an/aus, Anzahl Konten, Beta-Freischaltungen, KI-Aufrufe und KI-Kosten im Monat.
+
+**Trotz „offen“ noch nicht nutzbar** (bewusst, aus Sicherheits- bzw. Kostengründen, Flags bleiben aus):
+- **Live-Anpassung mit Konto:** braucht Etappe C (Rechnen auf dem Server) und danach das Flag `live_adjustment`. Im
+  Testmodus geht sie schon (Teil 7n).
+- **Gericht per Foto mit Konto:** Flag `ai_food_photo` ist aus → „gerade abgeschaltet“. Einschalten per beta-grant
+  (`flag_an`, flag `ai_food_photo`) → dann antwortet die **Attrappe**. Echte KI erst mit `FOOD_PHOTO_PROVIDER=gemini`
+  + `GEMINI_API_KEY` in Vercel, neuer Einwilligungstext (Version 2) und AV-Vertrag mit Google. Limits bleiben 30 im
+  Monat und 8 am Tag je Konto. Im Testmodus geht die Attrappe (Teil 7j).
+- **Produkt per Barcode online (Open Food Facts):** Flag `food_product_lookup` aus (Rechtsprüfung) und
+  `OFF_CONTACT_EMAIL` in Vercel nötig. Im Testmodus antwortet die Attrappe (Teil 7k).
+- **Kamera-Fotoauswahl in der installierten App:** braucht einen neuen Build (offener Punkt E3); im Browser geht sie.
+- **Noch nicht gebaut:** Supplement-Modul (Phase 6, Plan zur Freigabe), Zyklus, Wearables, Partner-/Paar-Modus,
+  Strecken in der App, KI-Coach, Körperfoto-Analyse, KI-Erklärungen.
+
+**Pflicht, bevor echte KI (Gemini) eingeschaltet wird – Budget-Warnung in Google Cloud** (Handy-Browser):
+
+1. console.cloud.google.com öffnen und anmelden → oben links **☰** → **Abrechnung** (Billing).
+2. Das Rechnungskonto des Gemini-Projekts wählen → **Budgets und Benachrichtigungen** → **Budget erstellen**.
+3. Name z. B. „Alpha5 KI“, **Projekte:** nur das Gemini-Projekt → **Weiter**.
+4. **Betrag:** fester Betrag, z. B. **10 €** im Monat → **Weiter**.
+5. **Schwellenwerte:** 50 %, 90 % und 100 % → **E-Mail-Benachrichtigungen an Abrechnungsadministratoren** anhaken →
+   **Fertigstellen**.
+
+Die Warnung stoppt nichts von selbst – abschalten geht sofort per beta-grant (`flag_aus`, flag `ai_food_photo`).
 
 ## Teil 8 – Live-Test mit Supabase (Pflicht vor „MVP fertig“, W13) – **offen, braucht euch**
 Diesen Test kann Claude in der Cloud-Sitzung nicht machen (kein echtes Konto, keine zwei Handys). Bitte einmal

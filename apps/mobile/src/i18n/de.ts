@@ -40,6 +40,8 @@ export const de = {
     optional: 'optional',
     close: 'Schließen',
     toStart: 'Zur Startseite',
+    // Testphase „alles offen“ (Gründer 19.10.2026, KONZEPT 13): Kennzeichen statt Premium-/Abo-Hinweis.
+    testPhaseFree: 'Testphase: kostenlos',
     progress: (current: number, total: number) => `Schritt ${current} von ${total}`,
   },
   banner: {

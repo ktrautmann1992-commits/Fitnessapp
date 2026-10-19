@@ -11,7 +11,7 @@ import {
   weekOverview,
 } from '@fitnessapp/core';
 import { Redirect, useFocusEffect, useRouter, type Href } from 'expo-router';
-import { useCallback, useEffect, useMemo, useState } from 'react';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { Platform, View } from 'react-native';
 
 import { CountdownCard, PhaseBand } from '@/components/competition';
@@ -83,6 +83,8 @@ export default function TodayScreen() {
   const [swapTarget, setSwapTarget] = useState<{ target: SwapTarget; index: number } | null>(null);
   const [swapBusy, setSwapBusy] = useState(false);
   const [swapError, setSwapError] = useState<string>();
+  // Fokus-Ziel nach dem Schließen des Tausch-Dialogs (Wächter M2): erst nach dem Ende der Animation setzen.
+  const focusAfterSwap = useRef<string | null>(null);
   const [swapFeedback, setSwapFeedback] = useState<{
     text: string;
     tone: 'success' | 'danger' | 'info';
@@ -559,8 +561,14 @@ export default function TodayScreen() {
     const index = swapTarget?.index;
     setSwapTarget(null);
     setSwapError(undefined);
-    // Fokus zurück auf „Tauschen“ (8.3).
-    if (index !== undefined) setTimeout(() => focusTestId(`plan-swap-${index}`), 50);
+    // Fokus zurück auf „Tauschen“ (8.3) – gesetzt in onClosed, wenn der Dialog wirklich zu ist.
+    focusAfterSwap.current = index !== undefined ? `plan-swap-${index}` : null;
+  }
+
+  function swapClosed() {
+    const id = focusAfterSwap.current;
+    focusAfterSwap.current = null;
+    if (id) focusTestId(id);
   }
 
   async function confirmSwap(decision: SwapDecision) {
@@ -609,6 +617,8 @@ export default function TodayScreen() {
           },
         });
       }
+      // Fokus auf die Rückmeldung (K6), wenn der Dialog zu ist.
+      focusAfterSwap.current = 'swap-feedback';
       setSwapTarget(null);
     } catch (caught) {
       setSwapError(caught instanceof BackendError ? errorText(caught) : t.swap.failed);
@@ -948,6 +958,7 @@ export default function TodayScreen() {
         error={swapError}
         onConfirm={(decision) => void confirmSwap(decision)}
         onCancel={closeSwap}
+        onClosed={swapClosed}
         onOpenGuide={(exerciseId) => {
           setSwapTarget(null);
           router.push(`/uebungen/${encodeURIComponent(exerciseId)}` as Href);

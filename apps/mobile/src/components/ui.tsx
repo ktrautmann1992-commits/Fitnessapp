@@ -507,6 +507,19 @@ export function Notice({
   );
 }
 
+/**
+ * Kleines Kennzeichen (z. B. „Testphase: kostenlos“) – nur Darstellung. Ob es erscheint, entscheidet der Aufrufer
+ * (`TestPhaseBadge` in components/test-phase.tsx fragt den Server).
+ */
+export function Badge({ label, testID }: { label: string; testID?: string }) {
+  const theme = useThemeColors();
+  return (
+    <View testID={testID} style={[styles.badge, { borderColor: theme.primary }]}>
+      <Text style={[styles.badgeText, { color: theme.text }]}>{label}</Text>
+    </View>
+  );
+}
+
 export function Card({ children, style }: { children: ReactNode; style?: StyleProp<ViewStyle> }) {
   const theme = useThemeColors();
   return (
@@ -651,6 +664,14 @@ const styles = StyleSheet.create({
   },
   noticeTitle: { fontSize: fontSize.md, fontWeight: fontWeight.bold },
   card: { borderWidth: 1, borderRadius: radius.md, padding: spacing.md, gap: spacing.sm },
+  badge: {
+    alignSelf: 'flex-start',
+    borderWidth: 1,
+    borderRadius: radius.pill,
+    paddingHorizontal: spacing.sm,
+    paddingVertical: 2,
+  },
+  badgeText: { fontSize: fontSize.sm, fontWeight: fontWeight.semibold },
   centered: { flex: 1, justifyContent: 'center', gap: spacing.md, padding: spacing.lg },
   progress: { gap: spacing.xs },
   progressText: { fontSize: fontSize.sm, fontWeight: fontWeight.semibold },

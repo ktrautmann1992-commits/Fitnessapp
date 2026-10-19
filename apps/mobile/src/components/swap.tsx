@@ -72,6 +72,7 @@ export function SwapDialog({
   onCancel,
   onOpenGuide,
   onAdjustEquipment,
+  onClosed,
 }: {
   /** null = geschlossen. */
   target: SwapTarget | null;
@@ -87,9 +88,30 @@ export function SwapDialog({
   onCancel: () => void;
   onOpenGuide: (exerciseId: string) => void;
   onAdjustEquipment: () => void;
+  /**
+   * Nach dem vollständigen Schließen (Ende der Ausblend-Animation): hier setzt der Aufrufer den Fokus (8.3, Wächter
+   * M2). Vorher würde das Schließen des Dialogs den Fokus wieder wegnehmen (Wettlauf mit setTimeout). Browser und
+   * iOS: Modal `onDismiss`; Android kennt das nicht → nach der Animationsdauer.
+   */
+  onClosed?: () => void;
 }) {
+  const wasOpen = useRef(false);
+  useEffect(() => {
+    const open = target !== null;
+    const closed = wasOpen.current && !open;
+    wasOpen.current = open;
+    if (!closed || Platform.OS !== 'android' || !onClosed) return;
+    const id = setTimeout(onClosed, 300);
+    return () => clearTimeout(id);
+  }, [target, onClosed]);
   return (
-    <Modal visible={target !== null} transparent animationType="fade" onRequestClose={onCancel}>
+    <Modal
+      visible={target !== null}
+      transparent
+      animationType="fade"
+      onRequestClose={onCancel}
+      {...(onClosed ? { onDismiss: onClosed } : {})}
+    >
       {target ? (
         <SwapDialogContent
           // Neuer Tausch = frische Auswahl.
