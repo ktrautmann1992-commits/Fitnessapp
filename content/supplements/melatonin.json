@@ -1,0 +1,23 @@
+{
+  "id": "melatonin",
+  "version": 1,
+  "status": "draft",
+  "name_de": "Melatonin",
+  "evidence_level": "c",
+  "category": "sport",
+  "summary_de": "Melatonin bildet dein Körper selbst, vor allem am Abend, wenn es dunkel wird. Manche Präparate sind in Deutschland Arzneimittel und nur auf Rezept erhältlich.",
+  "how_to_de": null,
+  "claim_ids": [],
+  "sources": [],
+  "not_recommended_reason_de": "Für Training und Erholung reicht die Studienlage für eine Empfehlung nicht aus. Bei Schlafproblemen ist eine ärztliche Abklärung der bessere Weg.",
+  "meta": {
+    "origin": "claude_session",
+    "model": "claude-opus-5-5",
+    "batch_id": null,
+    "created_on": "2026-10-19",
+    "expert_reviewed": false,
+    "reviewed_by": null,
+    "reviewed_at": null,
+    "review_note": null
+  }
+}

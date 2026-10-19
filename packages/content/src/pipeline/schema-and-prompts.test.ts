@@ -7,6 +7,8 @@ import {
   packageSizeSchema,
   planTemplateSchema,
   recipeSchema,
+  SUPPLEMENT_CONTENT_IDS,
+  supplementContentSchema,
 } from '@fitnessapp/core';
 import { demoNutritionContent } from '@fitnessapp/core/demo-nutrition';
 import { describe, expect, it } from 'vitest';
@@ -28,6 +30,7 @@ import {
 import { PACKAGE_SIZE_MAX_TOKENS, packageSizeKind } from './kinds/package-size';
 import { PLAN_TEMPLATE_MAX_TOKENS, planTemplateKind, templateIdFor } from './kinds/plan-template';
 import { recipeKind } from './kinds/recipe';
+import { SUPPLEMENT_MAX_TOKENS, supplementKind } from './kinds/supplement';
 import { buildBatchRequests } from './requests';
 import { REAL_REPO_ROOT } from './test-helpers';
 
@@ -162,6 +165,8 @@ describe('Inhaltsarten', () => {
     expect(findKind('package_size')).toBe(packageSizeKind);
     expect(findKind('recipes')).toBe(recipeKind);
     expect(findKind('recipe')).toBe(recipeKind);
+    expect(findKind('supplements')).toBe(supplementKind);
+    expect(findKind('supplement')).toBe(supplementKind);
     expect(() => findKind('rezepte-live')).toThrow(/Unbekannte Inhaltsart/);
   });
 
@@ -277,11 +282,122 @@ describe('Inhaltsarten', () => {
                 ? Object.keys(packageSizeSchema.shape)
                 : kind.kind === 'recipe'
                   ? Object.keys(recipeSchema.shape).filter((key) => key in content)
-                  : Object.keys(ingredientSubstitutionSchema.shape);
+                  : kind.kind === 'supplement'
+                    ? Object.keys(supplementContentSchema.shape)
+                    : Object.keys(ingredientSubstitutionSchema.shape);
           expect(Object.keys(content)).toEqual(keys);
         }
       }
     }
+  });
+});
+
+describe('Supplemente (Phase 6 SU2)', () => {
+  const META = {
+    origin: 'batch',
+    model: 'gemini-3.8-flash',
+    batch_id: 'batch_x',
+    created_on: '2026-10-19',
+    expert_reviewed: false,
+    reviewed_by: null,
+    reviewed_at: null,
+    review_note: null,
+  };
+
+  it('eine Zelle je bekanntem Supplement; Startbestand ist vollständig vorhanden', () => {
+    const cells = supplementKind.cells(context);
+    expect(cells.map((cell) => cell.targetId)).toEqual([...SUPPLEMENT_CONTENT_IDS]);
+    expect(cells.every((cell) => supplementKind.isPresent(cell, context))).toBe(true);
+    expect(SUPPLEMENT_MAX_TOKENS).toBe(6_000);
+    // Zurückgezogene zählen nicht als vorhanden.
+    const archived = context.supplements.map((entry) => ({
+      ...entry,
+      status: 'archived' as const,
+    }));
+    expect(supplementKind.isPresent(cells[0]!, { ...context, supplements: archived })).toBe(false);
+  });
+
+  it('Antwort nur mit Texten; Stufe, Kategorie und Angaben kommen aus dem Core, Quellen leer', () => {
+    const creatine = supplementKind.cells(context).find((c) => c.targetId === 'creatine')!;
+    const bcaa = supplementKind.cells(context).find((c) => c.targetId === 'bcaa')!;
+    const caffeine = supplementKind.cells(context).find((c) => c.targetId === 'caffeine')!;
+    expect(
+      Object.keys(toOutputJsonSchema(supplementKind.outputSchema(creatine, context))),
+    ).toContain('properties');
+    const [created] = supplementKind.toContents(
+      {
+        name_de: 'Kreatin',
+        summary_de: 'Kreatin bildet dein Körper selbst.',
+        how_to_de: 'Rühre {dose} ein.',
+      },
+      creatine,
+      META,
+    );
+    expect(created!.content).toMatchObject({
+      id: 'creatine',
+      status: 'draft',
+      evidence_level: 'a',
+      category: 'sport',
+      claim_ids: ['creatine_performance'],
+      sources: [],
+      not_recommended_reason_de: null,
+    });
+    const [notRecommended] = supplementKind.toContents(
+      {
+        name_de: 'BCAA',
+        summary_de: 'BCAA sind Aminosäuren aus Eiweiß.',
+        not_recommended_reason_de: 'Für eine Empfehlung reicht die Studienlage nicht aus.',
+      },
+      bcaa,
+      META,
+    );
+    expect(notRecommended!.content).toMatchObject({
+      evidence_level: 'c',
+      how_to_de: null,
+      claim_ids: [],
+    });
+    const [caffeineEntry] = supplementKind.toContents(
+      {
+        name_de: 'Koffein',
+        summary_de: 'Koffein steckt in Kaffee und Tee.',
+        how_to_de: 'Prüfe die Packung.',
+      },
+      caffeine,
+      META,
+    );
+    expect(caffeineEntry!.content).toMatchObject({ evidence_level: null, claim_ids: [] });
+    for (const entry of [created, notRecommended, caffeineEntry]) {
+      expect(supplementContentSchema.safeParse(entry!.content).success).toBe(true);
+    }
+    // Stufe C antwortet ohne Anwendung, die Startliste ohne Grund.
+    expect(
+      supplementKind.outputSchema(bcaa, context).safeParse({
+        name_de: 'BCAA',
+        summary_de: 'BCAA sind Aminosäuren aus Eiweiß.',
+        how_to_de: 'Nimm sie zum Essen.',
+      }).success,
+    ).toBe(false);
+  });
+
+  it('Anfrage-Text: keine Wirkung, keine Zahlen, Platzhalter, verbotene Wörter, Koffein neutral', () => {
+    const system = supplementKind.systemPrompt(context);
+    expect(system).toContain('VO (EG) 1924/2006');
+    expect(system).toContain('KEINE Ziffern');
+    expect(system).toContain('Booster');
+    expect(system).toContain('Koffein: nur neutrale Sicherheits-Info');
+    const cells = supplementKind.cells(context);
+    const creatinePrompt = supplementKind.userPrompt(
+      cells.find((c) => c.targetId === 'creatine')!,
+      context,
+    );
+    expect(creatinePrompt).toContain('{dose}, {gain}');
+    expect(creatinePrompt).toContain('NICHT wiederholen');
+    const bcaaPrompt = supplementKind.userPrompt(
+      cells.find((c) => c.targetId === 'bcaa')!,
+      context,
+    );
+    expect(bcaaPrompt).toContain('Erlaubte Platzhalter: keine');
+    expect(bcaaPrompt).toContain('schreibe keine Wirkung');
   });
 });
 

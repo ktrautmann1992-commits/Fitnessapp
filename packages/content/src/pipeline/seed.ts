@@ -13,6 +13,8 @@
  *    die Fachprüfung warten oder auf so einen Inhalt verweisen, bleiben draußen und stehen im Bericht. Derselbe Schutz
  *    vor Massen-Archivierung je Inhaltsart, dann `seed_nutrition_content(p_content)` (eigene Transaktion). Gibt es die
  *    Tabellen noch nicht (vor `db-migrate`), wird die Ernährung mit Hinweis übersprungen.
+ * 6. Supplemente (docs/PLAN-PHASE-6.md Abschnitt 6, Etappe SU2): werden in Schritt 1 mitgeprüft (SK1–SK7), aber NOCH
+ *    NICHT eingespielt – die Tabelle `supplements` kommt erst mit SU3. Der Bericht nennt nur ihre Anzahl.
  * Ohne SUPABASE_URL/SUPABASE_SECRET_KEY endet es nach der Prüfung grün mit Hinweis.
  */
 import {
@@ -256,6 +258,18 @@ function nutritionCountText(pkg: NutritionSeedPackage): string {
   return (Object.keys(NUTRITION_SEED_TABLES) as NutritionSeedKind[])
     .map((kind) => `${pkg[kind].length} ${TABLE_DE[kind]}`)
     .join(', ');
+}
+
+/**
+ * Hinweis zu den Supplementen (SU2): geprüft, aber noch nicht eingespielt (Datenbank erst mit SU3). Leer ohne Einträge.
+ */
+export function supplementSeedNote(result: Pick<ContentValidationResult, 'supplements'>): string[] {
+  if (result.supplements.length === 0) return [];
+  const published = result.supplements.filter((entry) => entry.status === 'published').length;
+  return [
+    '',
+    `Supplemente: ${result.supplements.length} geprüft (davon ${published} freigegeben) – werden noch nicht eingespielt (Datenbank folgt mit Etappe SU3, docs/PLAN-PHASE-6.md).`,
+  ];
 }
 
 /** Legacy-Schlüssel (`service_role`) sind JWTs; neue Secret Keys (`sb_secret_…`) nur im `apikey`-Header. */
@@ -510,6 +524,7 @@ export async function runSeed(options: {
         `Inhalte geprüft ✅ · Einspiel-Paket: ${counts}; Ernährung: ${nutritionCounts}.`,
         'Es fehlen die GitHub-Secrets SUPABASE_URL und/oder SUPABASE_SECRET_KEY (docs/SETUP.md Teile A und B).',
         ...waitingMarkdown(nutrition.waiting),
+        ...supplementSeedNote(report.result),
         '',
       ].join('\n'),
     };
@@ -593,7 +608,12 @@ export async function runSeed(options: {
       status: 'seeded',
       package: pkg,
       nutrition,
-      markdown: [...lines, ...waitingMarkdown(nutrition.waiting), ''].join('\n'),
+      markdown: [
+        ...lines,
+        ...waitingMarkdown(nutrition.waiting),
+        ...supplementSeedNote(report.result),
+        '',
+      ].join('\n'),
     };
   } catch (error) {
     return {

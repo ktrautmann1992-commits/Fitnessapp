@@ -1027,7 +1027,9 @@ Voraussetzung: Teil H. Wo du die Workflows findest: GitHub-App → Repository �
 2. **Welche Inhalte?** `plan-templates`, `exercises`, `ingredient-substitutions` (Austausch-Tabelle, Etappe N9),
    `package-sizes` (Packungsgrößen, Etappe N11) oder `recipes` (neue Rezepte, Etappe N8) – die drei letzten erst
    sinnvoll, wenn es katalog-geprüfte Lebensmittel gibt (ohne sie meldet der Lauf „gerade nicht möglich“ und sendet
-   nichts). **Modell** (optional): leer lassen = günstiger Standard je Art (Flash-Lite bzw. Flash).
+   nichts). Außerdem `supplements` (Supplement-Texte, Phase 6 SU2): Der Startbestand ist schon da, ein echter Lauf
+   erzeugt nur Einträge, die fehlen oder zurückgezogen sind; Quellen trägt immer ein Mensch nach. **Modell**
+   (optional): leer lassen = günstiger Standard je Art (Flash-Lite bzw. Flash).
 3. **Auswahl** (optional): `alle` oder Begriffe aus der Matrix, getrennt mit Leerzeichen oder Komma:
    - Vorlagen: Ziel `muskelaufbau`/`fettverlust`/`fitness`, Level `einsteiger`/`fortgeschritten`, Tage `3t`/`4t`,
      Ort `studio`/`zuhause`, Minuten `30-45`/`45-60`/`60-75` – z. B. `muskelaufbau 30-45`.

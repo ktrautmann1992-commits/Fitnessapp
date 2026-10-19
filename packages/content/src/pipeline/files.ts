@@ -9,15 +9,24 @@ import { isCatalogReviewed, validateContent } from '@fitnessapp/core';
 import * as prettier from 'prettier';
 
 import { loadNutritionCatalog } from '../foods/catalog-loader';
-import { CONTENT_FOLDERS, loadContentFiles, loadNutritionContentFiles } from '../validate';
+import {
+  CONTENT_FOLDERS,
+  loadContentFiles,
+  loadNutritionContentFiles,
+  loadSupplementContentFiles,
+} from '../validate';
 import type { LibraryContext, PipelineContentKind } from './kinds';
 
-/** Ordner unter `content/` je Pipeline-Art (Training, Austausch-Tabelle N9, Packungsgrößen N11, Rezepte N8). */
+/**
+ * Ordner unter `content/` je Pipeline-Art (Training, Austausch-Tabelle N9, Packungsgrößen N11, Rezepte N8,
+ * Supplemente SU2).
+ */
 export const PIPELINE_FOLDERS: Record<PipelineContentKind, string> = {
   ...CONTENT_FOLDERS,
   ingredient_substitution: 'substitutions',
   package_size: 'package-sizes',
   recipe: 'recipes',
+  supplement: 'supplements',
 };
 
 /** Lädt den Inhaltsstand unter `<repoRoot>/content` als Kontext für die Pipeline. */
@@ -38,14 +47,18 @@ export function loadLibrary(repoRoot: string): LibraryContext {
     [...catalog.files, ...substitutionFiles],
     catalog.catalog === undefined ? {} : { nutritionCatalog: catalog.catalog },
   );
+  // Supplemente (Phase 6 SU2): vorhandene Einträge gegen Wiederholungen.
+  const supplementFiles = loadSupplementContentFiles(contentDir).files;
+  const supplements = validateContent(supplementFiles).supplements;
   const takenIds: Record<PipelineContentKind, Set<string>> = {
     exercise: new Set(),
     plan_template: new Set(),
     ingredient_substitution: new Set(),
     package_size: new Set(),
     recipe: new Set(),
+    supplement: new Set(),
   };
-  for (const file of [...files, ...substitutionFiles]) {
+  for (const file of [...files, ...substitutionFiles, ...supplementFiles]) {
     takenIds[file.kind as PipelineContentKind].add(file.fileName.replace(/\.json$/, ''));
   }
   return {
@@ -55,6 +68,7 @@ export function loadLibrary(repoRoot: string): LibraryContext {
     substitutions: nutrition.substitutions,
     packageSizes: nutrition.packageSizes,
     recipes: nutrition.recipes,
+    supplements,
     takenIds,
   };
 }
