@@ -47,25 +47,28 @@ export const SUPPLEMENT_GROUPS = {
 } as const;
 export type SupplementGroup = keyof typeof SUPPLEMENT_GROUPS;
 
-/** Arbeitsname je Supplement für Anfrage und Bericht (der Name im Inhalt kommt vom Modell bzw. aus der Sitzung). */
+/**
+ * Name je Supplement für Anfrage und Bericht – gleich wie `name_de` im Startbestand (Test). Ohne verbotene Wörter
+ * (kein „Fatburner“, „Booster“), weil der Name auch im Anfrage-Text steht.
+ */
 export const SUPPLEMENT_LABELS_DE: Readonly<Record<string, string>> = {
   creatine: 'Kreatin-Monohydrat',
   caffeine: 'Koffein',
   protein_powder: 'Proteinpulver',
   vitamin_d: 'Vitamin D',
-  omega3: 'Omega-3-Fettsäuren EPA und DHA',
+  omega3: 'Omega-3 (EPA und DHA)',
   bcaa: 'BCAA (verzweigtkettige Aminosäuren)',
   glutamine: 'Glutamin',
   l_carnitine: 'L-Carnitin',
   cla: 'CLA (konjugierte Linolsäure)',
-  fat_burner: 'sogenannte Fatburner (Abnehm-Kapseln und -Pulver)',
-  testo_booster: 'sogenannte Testo-Booster (Tribulus, D-Asparaginsäure u. Ä.)',
+  fat_burner: 'Abnehm-Kapseln und -Pulver',
+  testo_booster: 'Tribulus, D-Asparaginsäure und ähnliche Mischungen',
   pre_workout: 'Pre-Workout-Mischungen',
   hmb: 'HMB (Beta-Hydroxy-Beta-Methylbutyrat)',
-  ashwagandha: 'Ashwagandha',
+  ashwagandha: 'Ashwagandha (Schlafbeere)',
   collagen: 'Kollagen-Pulver',
-  multivitamin: 'Multivitamin-Präparate ohne ärztlichen Grund',
-  iron: 'Eisen-Präparate ohne Blutbild',
+  multivitamin: 'Multivitamin-Präparate',
+  iron: 'Eisen-Präparate',
   melatonin: 'Melatonin',
 };
 
@@ -130,7 +133,7 @@ function systemPrompt(): string {
     `- Verboten (inkl. Wortformen): ${labels(SUPPLEMENT_FORBIDDEN_TERMS)}.`,
     `- Ebenfalls verboten: ${labels(FORBIDDEN_MEDICAL_TERMS)}; ${labels(HEALTH_CLAIM_TERMS)}.`,
     `- Keine Marken- oder Herstellernamen (z. B. ${labels(FORBIDDEN_BRANDS)}).`,
-    '- Koffein: nur neutrale Sicherheits-Info – kein Zweck (nicht „für mehr Leistung“, „Ausdauer“, „Kraft“, „Fokus“, „Energie“), keine Studienlage, keine Wirkung.',
+    '- Koffein: nur neutrale Sicherheits-Info – kein Zweck (nicht „für mehr Leistung“, „Ausdauer“, „Kraft“, „Fokus“, „Energie“, „Power“, „Schwung“, „munter“, „wach“), keine Studienlage, keine Wirkung.',
     '- Sprache: Deutsch, Du-Form, kurze Sätze. Kein Text am Anfang oder Ende mit Leerzeichen; keine Emojis, kein Markdown.',
     '',
     OUTPUT_FORMAT_TEXT,

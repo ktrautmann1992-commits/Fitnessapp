@@ -182,6 +182,31 @@ describe('Supplement-Inhalte: Schema (SK1)', () => {
   });
 });
 
+describe('SK1 – unsichtbare und fremde Zeichen (Wächter SU2 M2)', () => {
+  it.each([
+    ['weiches Trennzeichen', 'Rühre {dose} in Wasser, das ver\u00ADbessert nichts.'],
+    ['Nullbreiten-Leerzeichen', 'Rühre {dose} in Wasser, das ver\u200Bbessert nichts.'],
+    ['Steuerzeichen', 'Rühre {dose} in\u0007 Wasser.'],
+    ['Tabulator', 'Rühre {dose}\tin Wasser.'],
+    ['kyrillisches о', 'Rühre {dose} in Wasser als Leistungsb\u043E\u043Est.'],
+    ['griechisches μ', 'Rühre {dose} in Wasser, etwa \u03BCg.'],
+  ])('%s → Schemafehler (SK1, blockiert immer)', (_label, howTo) => {
+    expect(supplementContentSchema.safeParse(creatine({ how_to_de: howTo })).success).toBe(false);
+    const result = validateContent([
+      { kind: 'supplement', fileName: 'creatine.json', data: creatine({ how_to_de: howTo }) },
+    ]);
+    expect(result.blocking.map((issue) => issue.rule)).toEqual(['SK1']);
+  });
+
+  it('Umlaute, ß, Gedankenstrich, µ und Zeilenumbruch bleiben erlaubt', () => {
+    expect(
+      supplementContentSchema.safeParse(
+        creatine({ summary_de: 'Größe, Maß – Übung und µ.\nZweite Zeile ohne Zahl.' }),
+      ).success,
+    ).toBe(true);
+  });
+});
+
 describe('SK2 – ID bekannt, keine Doppelung, Kategorie', () => {
   it('alle IDs aus SUPPLEMENT_IDS und der Liste „Nicht empfohlen“ sind bekannt, ohne Überschneidung', () => {
     expect(SUPPLEMENT_CONTENT_IDS).toEqual([...SUPPLEMENT_IDS, ...NOT_RECOMMENDED_SUPPLEMENT_IDS]);
@@ -300,6 +325,25 @@ describe('SK5 – keine Zahlen im Freitext, nur erlaubte Platzhalter', () => {
       ),
     ).toEqual([]);
     expect(rules(creatine({ name_de: 'Kreatin {dose}' }))).toEqual(['SK5']);
+  });
+
+  it('Name: Mengen und andere Ziffern rot, nur „-3“ wie in Omega-3 erlaubt (Wächter SU2 M3)', () => {
+    expect(rules(creatine({ name_de: 'Kreatin 5000 mg täglich' }))).toEqual(['SK5', 'SK5']);
+    expect(rules(creatine({ name_de: 'Kreatin dreihundert' }))).toEqual(['SK5']);
+    expect(rules(creatine({ name_de: 'Kreatin-3g' }))).toEqual(['SK5']);
+    expect(rules(creatine({ name_de: 'Vitamin D3' }))).toEqual(['SK5']);
+    expect(rules(creatine({ name_de: 'Kreatin gegen Muskelkater' }))).toEqual(['SK3']);
+    expect(rules(creatine({ name_de: 'Omega-3-Kreatin' }))).toEqual([]);
+  });
+
+  it('doppelte oder einzelne geschweifte Klammern → SK5 (Wächter SU2 N6)', () => {
+    expect(messages(creatine({ how_to_de: 'Rühre {{dose}} in Wasser oder Saft.' }), 'SK5')).toEqual(
+      [
+        'how_to_de: Geschweifte Klammer außerhalb eines Platzhalters (z. B. „{{dose}}“) – nur „{name}“.',
+      ],
+    );
+    expect(rules(creatine({ how_to_de: 'Rühre {dose in Wasser oder Saft.' }))).toContain('SK5');
+    expect(rules(creatine({ how_to_de: 'Rühre {dose} in Wasser oder Saft.' }))).toEqual([]);
   });
 
   it('Ziffern in der Beschreibung sind auch bei Namen wie Omega-3 rot', () => {
@@ -434,12 +478,21 @@ describe('SK7 – Stufe, Koffein, Stufe C', () => {
       'Koffein für mehr Ausdauer.',
       'Koffein mit guter Studienlage.',
       'Koffein für mehr Fokus.',
+      // Wächter SU2 M5
+      'Koffein gibt dir Power.',
+      'Koffein gibt dir Schwung.',
+      'Koffein gegen das Müdesein.',
+      'Koffein macht munter.',
+      'Koffein als Kick vor dem Lauf.',
+      'Koffein als Push vor dem Lauf.',
+      'Koffein hält dich wach.',
     ]) {
       expect(rules(caffeine({ summary_de: text })), text).toContain('SK7');
     }
     expect(CAFFEINE_PURPOSE_PATTERN.test('Kaffee, Tee, Cola und Energydrinks zählen mit.')).toBe(
       false,
     );
+    expect(CAFFEINE_PURPOSE_PATTERN.test('Gilt für Erwachsene, auch beim Wachsen.')).toBe(false);
   });
 
   it('Stufe C: keine Angaben, keine Anwendung, Grund Pflicht', () => {

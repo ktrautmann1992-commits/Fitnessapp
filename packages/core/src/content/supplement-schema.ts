@@ -29,9 +29,10 @@ export type SupplementContentCategory = (typeof SUPPLEMENT_CONTENT_CATEGORIES)[n
 
 /**
  * Einträge der Liste „Nicht empfohlen“ (Plan 3.2, Stufe C) mit ihrer Kategorie. Bewusst NICHT in
- * `supplement-ids.ts`: Diese Stoffe bekommen nie eine Einordnung, nie eine Dosis und nie einen Shop-Link – das
- * Affiliate-Modul (SU5) soll sie nicht einmal benennen können. Natriumbicarbonat fehlt absichtlich (Präzisierung
- * SU2: Studienlage für kurze, sehr intensive Belastungen gut – keine Stufe C; Einordnung in der Fachprüfung).
+ * `supplement-ids.ts`: Das ist das Blatt, das Empfehlung und Affiliate-Modul (SU5) gemeinsam nutzen; dort stehen nur
+ * Supplemente, die eingeordnet werden. Diese Stoffe bekommen nie eine Einordnung, nie eine Dosis und nie einen
+ * Shop-Link. Technisch erzwungen ist das erst mit dem Strukturtest in SU5 (vorgemerkt: keine ID aus dieser Liste und
+ * kein Koffein in der Affiliate-Konfiguration). Natriumbicarbonat fehlt (offene Gründer-Entscheidung, Plan 17).
  */
 export const NOT_RECOMMENDED_SUPPLEMENTS = {
   bcaa: 'sport',
@@ -73,12 +74,28 @@ export function isNotRecommendedSupplementId(id: string): id is NotRecommendedSu
 
 const { textMaxChars, sourceYear, maxSources, maxClaims } = SUPPLEMENT_CONTENT_LIMITS;
 
+/**
+ * Unsichtbare Steuer- und Formatzeichen (z. B. weiches Trennzeichen, Nullbreiten-Leerzeichen) würden die Textregeln
+ * umgehen („ver\u00ADbessert“) – abgelehnt, nur der Zeilenumbruch ist erlaubt (Wächter SU2 M2).
+ */
+const INVISIBLE_CHARACTER = /(?!\n)[\p{Cf}\p{Cc}]/u;
+/** Nur lateinische Schrift plus gemeinsame Zeichen (Ziffern, Satzzeichen, µ) – kein kyrillisches „о“ in „bооst“. */
+const FOREIGN_SCRIPT = /[^\p{Script=Latin}\p{Script=Common}\p{Script=Inherited}]/u;
+
 function text(min: number, max: number) {
   return z
     .string()
     .min(min, `Mindestens ${min} Zeichen.`)
     .max(max, `Höchstens ${max} Zeichen.`)
-    .refine((value) => value === value.trim(), 'Kein Leerzeichen am Anfang oder Ende.');
+    .refine((value) => value === value.trim(), 'Kein Leerzeichen am Anfang oder Ende.')
+    .refine(
+      (value) => !INVISIBLE_CHARACTER.test(value),
+      'Unsichtbares Steuer- oder Formatzeichen (z. B. weiches Trennzeichen) – bitte entfernen.',
+    )
+    .refine(
+      (value) => !FOREIGN_SCRIPT.test(value),
+      'Zeichen aus einer anderen Schrift (z. B. kyrillisch) – nur lateinische Buchstaben.',
+    );
 }
 
 /**

@@ -654,8 +654,10 @@ _DoD:_ Schema, Prüfregeln mit Tests, Pipeline-Art mit Probelauf ohne Schlüssel
   `expert_reviewed` …). Freigegeben nur mit Prüfer. Höchstens 1.000 Zeichen je Text (`SUPPLEMENT_CONTENT_LIMITS` in
   `constants.ts`).
 - **Liste „Nicht empfohlen“** `NOT_RECOMMENDED_SUPPLEMENTS` (ID → Kategorie) im selben Schema-Modul, **nicht** in
-  `supplement-ids.ts` – so kann das Affiliate-Modul (SU5) diese Stoffe nicht einmal benennen. `SUPPLEMENT_CONTENT_IDS` =
-  `SUPPLEMENT_IDS` + diese Liste.
+  `supplement-ids.ts`: Dieses Blatt teilen Empfehlung und Affiliate-Modul (SU5); dort stehen nur Supplemente, die
+  eingeordnet werden. Technisch verhindert das allein noch nichts (das Schema-Modul ist importierbar). **Für SU5
+  vorgemerkt:** Strukturtest „keine ID aus `NOT_RECOMMENDED_SUPPLEMENTS` und kein Koffein in der
+  Affiliate-Konfiguration“. `SUPPLEMENT_CONTENT_IDS` = `SUPPLEMENT_IDS` + diese Liste.
 - **Prüfregeln** `packages/core/src/content/supplement-checks.ts`, eingebunden in `validateContent` (damit in
   `pnpm content:validate`, ci, content-collect/-review/-seed und im Redaktionsbereich):
   - **SK1** Schema (rot, blockiert immer – wie Ü1/R1).
@@ -694,7 +696,8 @@ false`, in der App „KI-Entwurf – fachlich prüfen“): Startliste `creatine`
   `caffeine`; „Nicht empfohlen“ `bcaa`, `glutamine`, `l_carnitine`, `cla`, `fat_burner`, `testo_booster`,
   `pre_workout`, `hmb`, `ashwagandha`, `collagen`, `multivitamin`, `iron`, `melatonin`. Quellen (nur DOI):
   Kreider 2017, Maughan 2018, Jäger 2017, Morton 2018, DGE 2012 (Ann Nutr Metab), EFSA 2016 (Vitamin D), EFSA 2012
-  (UL Vitamin D; UL EPA/DHA), EFSA 2010 (Fette), EFSA 2015 (Koffein), Drake 2013, Wolfe 2017 (BCAA).
+  (UL Vitamin D; UL EPA/DHA), EFSA 2023 (UL Vitamin D, Erwachsene weiter 100 µg), EFSA 2010 (Fette), EFSA 2015
+  (Koffein), Drake 2013, Wolfe 2017 (BCAA); bei Kreider 2017 zusätzlich PMID 28615996.
 
 **Präzisierungen (vom Plan nicht ausdrücklich festgelegt, vorsichtig gelöst):**
 
@@ -702,10 +705,8 @@ false`, in der App „KI-Entwurf – fachlich prüfen“): Startliste `creatine`
    Einträge außerhalb davon. Gelöst mit der getrennten Liste `NOT_RECOMMENDED_SUPPLEMENTS` (SK2 kennt beide).
    **Für SU3 vormerken:** Die Aufzählung `supplement_id` (7.1) braucht diese IDs ebenfalls, oder die Tabelle
    `supplements` nutzt `text` mit Prüfung gegen die Liste.
-2. **Natriumbicarbonat** steht nicht in Stufe C: Die Studienlage für kurze, sehr intensive Belastungen ist gut
-   (Maughan 2018); „Nicht empfohlen“ wegen Magen-Darm-Beschwerden wäre mit Stufe C („keine ausreichende Studienlage“)
-   falsch beschriftet. Einordnung in der Fachprüfung (wie Nitrat/Beta-Alanin, zweite Welle). Damit 13 statt 14
-   Einträge.
+2. **Natriumbicarbonat** fehlt vorerst (13 statt 14 Einträge): Die Studienlage ist gut, Stufe C wäre falsch
+   beschriftet. Das ist **keine** getroffene Entscheidung, sondern offen als SU-G20 (Abschnitt 17) mit Empfehlung.
 3. **Namen ohne verbotene Wörter:** „Fatburner“, „Testo-Booster“ und „Pre-Workout-Booster“ verstoßen selbst gegen 3.8
    Nr. 2. Sie heißen „Abnehm-Kapseln und -Pulver“, „Tribulus, D-Asparaginsäure und ähnliche Mischungen“ und
    „Pre-Workout-Mischungen“ (IDs bleiben `fat_burner`, `testo_booster`, `pre_workout`).
@@ -724,9 +725,26 @@ Blockieren nur bei „published“, PROBELAUF, Versionsregel; `rules.test.ts` Re
 Claude-Sitzung, jede zugelassene Angabe genau einmal), Pipeline (Zellen, Antwort → Datei, Anfrage-Text, Probelauf
 Ende-zu-Ende), Seed (geprüft, nicht eingespielt, SK1 blockiert), `content:validate` (Ordner, fremde Datei).
 
-**Nicht verifiziert:** DOIs wurden aus der Sitzung heraus nicht online geprüft (kein Netzzugang zu doi.org/Crossref);
-eingetragen sind nur Quellen, deren DOI sicher bekannt ist. Vor der Freigabe gegen das Original prüfen (Abschnitt 18).
-Alle Texte sind KI-Entwürfe – Fachprüfung und Rechtsprüfung (Health-Claims) stehen aus.
+**Wächter-Auflagen SU2 (19.10.2026, „freigabefähig mit Auflagen“) umgesetzt:**
+
+- **M1** Mengenwörter: dreizehn–neunzehn, zwanzig–neunzig (auch „einundzwanzig“ … „neunundneunzig“), alles mit
+  hundert/tausend („dreihundert“), „Dutzend“, „halb…“/„doppel…“ (auch „Halbmarathon“), Einheiten „gr“ und
+  „Internationale Einheit(en)“. Keine Fehltreffer bei „halten“, „deshalb“, „zehnmal“.
+- **M2** Schema-Texte lehnen unsichtbare Zeichen (`\p{Cf}`, `\p{Cc}` außer Zeilenumbruch, z. B. weiches Trennzeichen,
+  Nullbreiten-Leerzeichen) und Zeichen außerhalb von Latin/Common/Inherited (z. B. kyrillisches „о“) ab → SK1.
+- **M3** `name_de` wird auf Mengenwörter geprüft; Ziffern nur als „-3“ ohne folgenden Buchstaben (Omega-3).
+- **M4** SK3 zusätzlich: alle Formen von „wirk…“ („wirksamsten“), „effektiv“, „verbrenn…“, „mehr
+  Kraft/Muskeln/Ausdauer/Energie/Power“, „erhöht … Kraft/Muskel“, „hilft (dir) bei(m)“, „gegen …“.
+- **M5** Koffein-Zweckwörter zusätzlich: Power, Schwung, müd…, munter, Kick, Push, wach.
+- **N6** „{{dose}}“ und einzelne Klammern → SK5. **N3** Namen der Pipeline = Namen im Startbestand (Test). **N7/N8**
+  Texte Kreatin, L-Carnitin, Ashwagandha (Satz zu Schwangerschaft/Stillzeit gestrichen – dafür gilt der feste
+  Pflichtsatz) angepasst. **N10** EFSA 2023 bei Vitamin D und im Quellkommentar in `constants.ts`.
+- Bewusst **nicht** rot (Probeskript des Wächters): Quellen-Titel (Zitate, keine eigene Aussage); formal gültige, aber
+  falsche DOI (offline nicht prüfbar – dafür die Quellenprüfung); römische Zahlen („V“, Fehltreffer bei „Vitamin D“);
+  Stufe C ohne Quelle (Plan: Pflicht nur für A/B); Text über 600 Zeichen (gelb laut Plan).
+
+**Quellen:** DOIs am 19.10.2026 per Websuche bestätigt (Wächter). Alle Texte sind KI-Entwürfe – Fachprüfung und
+Rechtsprüfung (Health-Claims) stehen aus.
 
 ---
 
@@ -1154,6 +1172,15 @@ Format: _Worum es geht – Warum wir fragen – Empfehlung._
 - **SU-G19 Sichtbarkeit von `affiliate-report`.** – In einem öffentlichen Repository wären die Klickzahlen öffentlich
   (kein Personenbezug, aber geschäftlich sensibel). – **Empfehlung:** Repository privat halten; sonst nur Summen ohne
   Link-Bezug.
+
+**Offen (neu aus SU2, noch nicht entschieden):**
+
+- **SU-G20 Natriumbicarbonat.** Gehört es in die Liste „Nicht empfohlen“? – Die Studienlage für kurze, sehr
+  intensive Belastungen ist gut (Maughan 2018); die Liste meint bisher Stufe C („keine ausreichende Studienlage“).
+  Mit Stufe C wäre Natron falsch beschriftet, ohne Eintrag fehlt der Hinweis auf Magen-Darm-Beschwerden. Im
+  SU2-Startbestand fehlt es deshalb vorerst. – **Empfehlung:** einen eigenen Grund „nicht empfohlen wegen Risiko oder
+  Nebenwirkungen“ einführen (getrennt von Stufe C) und Natriumbicarbonat damit aufnehmen; Text und Einordnung in der
+  Fachprüfung. Gleiches Muster später ggf. für Pre-Workout-Mischungen und Abnehm-Kapseln.
 
 ---
 

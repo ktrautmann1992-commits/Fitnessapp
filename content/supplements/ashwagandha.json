@@ -9,7 +9,7 @@
   "how_to_de": null,
   "claim_ids": [],
   "sources": [],
-  "not_recommended_reason_de": "Die Studienlage reicht für eine Empfehlung nicht aus. Zur Sicherheit bei längerer Einnahme gibt es offene Fragen, in Schwangerschaft und Stillzeit ist sie nicht geeignet.",
+  "not_recommended_reason_de": "Die Studienlage reicht für eine Empfehlung nicht aus. Zur Sicherheit bei längerer Einnahme gibt es offene Fragen.",
   "meta": {
     "origin": "claude_session",
     "model": "claude-opus-5-5",

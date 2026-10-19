@@ -3447,7 +3447,10 @@ export const SUPPLEMENT_HEALTH_CONSENT_MIN_VERSION = 2;
  * - `vitaminD.generalUg` 20 µg (800 IE) täglich als allgemeiner Richtwert (nur Info, SU-G15): DGE-Schätzwert bei
  *   fehlender Eigenbildung (Deutsche Gesellschaft für Ernährung (2012), „Neue Referenzwerte für Vitamin D“, Ernährungs
  *   Umschau 59(3) – Heft/Seiten VOR LIVEGANG FACHLICH PRÜFEN); BfR (2021) Höchstmengenvorschlag 20 µg je Tagesdosis
- *   für Nahrungsergänzungsmittel; EFSA (2012) UL 100 µg/Tag (Erwachsene).
+ *   für Nahrungsergänzungsmittel; EFSA (2012) UL 100 µg/Tag (Erwachsene), bestätigt von EFSA NDA Panel (2023),
+ *   „Scientific opinion on the tolerable upper intake level for vitamin D, including the derivation of a conversion
+ *   factor for calcidiol monohydrate“, EFSA Journal 21(8):e08145, DOI 10.2903/j.efsa.2023.8145 (Erwachsene weiter
+ *   100 µg/Tag).
  * - `vitaminD.iuPerUg` 40: 1 µg Vitamin D = 40 IE (Umrechnung, u. a. DGE/EFSA).
  * - `vitaminD.nrvUg` 5 µg: Nährstoffbezugswert (NRV) laut VO (EU) 1169/2011 Anhang XIII Teil A;
  *   `claimMinNrvShare` 15 %: Bedingung „Quelle von Vitamin D“ für zugelassene Angaben (VO (EG) 1924/2006 Anhang,

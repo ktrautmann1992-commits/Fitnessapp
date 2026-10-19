@@ -5,7 +5,7 @@
   "name_de": "Kreatin-Monohydrat",
   "evidence_level": "a",
   "category": "sport",
-  "summary_de": "Kreatin bildet dein Körper selbst, außerdem steckt es in Fleisch und Fisch. Kreatin-Monohydrat gehört zu den am besten untersuchten Ergänzungen im Sport. Untersucht wurde es vor allem bei kurzen, intensiven Belastungen wie Krafttraining oder Sprints.",
+  "summary_de": "Kreatin bildet dein Körper selbst, außerdem steckt es in Fleisch und Fisch. Kreatin-Monohydrat ist gut untersucht.",
   "how_to_de": "Am einfachsten ist reines Kreatin-Monohydrat als Pulver ohne weitere Zusätze. Rühre {dose} in Wasser, Saft oder Joghurt. Eine Ladephase mit größeren Mengen brauchst du nicht.",
   "claim_ids": ["creatine_performance"],
   "sources": [
@@ -15,7 +15,7 @@
       "title": "International Society of Sports Nutrition position stand: safety and efficacy of creatine supplementation in exercise, sport, and medicine",
       "journal": "J Int Soc Sports Nutr 14:18",
       "doi": "10.1186/s12970-017-0173-z",
-      "pmid": null
+      "pmid": "28615996"
     },
     {
       "authors": "Maughan RJ, Burke LM, Dvorak J et al.",

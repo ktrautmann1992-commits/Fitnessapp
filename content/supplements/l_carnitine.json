@@ -5,11 +5,11 @@
   "name_de": "L-Carnitin",
   "evidence_level": "c",
   "category": "sport",
-  "summary_de": "L-Carnitin bildet dein Körper selbst, außerdem steckt es vor allem in Fleisch. Es wird oft zum Abnehmen oder für mehr Ausdauer angeboten.",
+  "summary_de": "L-Carnitin bildet dein Körper selbst, außerdem steckt es vor allem in Fleisch. Es wird oft für Abnehm- und Ausdauerziele angeboten.",
   "how_to_de": null,
   "claim_ids": [],
   "sources": [],
-  "not_recommended_reason_de": "Der Körper bildet genug davon selbst. Für eine Ergänzung reicht die Studienlage nicht aus.",
+  "not_recommended_reason_de": "Der Körper bildet in der Regel genug davon selbst. Für eine Ergänzung reicht die Studienlage nicht aus.",
   "meta": {
     "origin": "claude_session",
     "model": "claude-opus-5-5",

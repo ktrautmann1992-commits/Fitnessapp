@@ -15,6 +15,7 @@ import {
 } from '@fitnessapp/core';
 import { describe, expect, it } from 'vitest';
 
+import { SUPPLEMENT_LABELS_DE } from './pipeline/kinds/supplement';
 import { loadSupplementContentFiles } from './validate';
 
 const contentDir = join(import.meta.dirname, '..', '..', '..', 'content');
@@ -30,6 +31,12 @@ describe('Startbestand Supplemente (content/supplements)', () => {
       [...SUPPLEMENT_IDS, ...NOT_RECOMMENDED_SUPPLEMENT_IDS].sort(),
     );
     expect(NOT_RECOMMENDED_SUPPLEMENT_IDS.length).toBeGreaterThanOrEqual(12);
+  });
+
+  it('Namen der Pipeline (Anfrage-Text) = Namen im Startbestand (Wächter SU2 N3)', () => {
+    for (const entry of result.supplements) {
+      expect(SUPPLEMENT_LABELS_DE[entry.id], entry.id).toBe(entry.name_de);
+    }
   });
 
   it('keine Befunde (weder rot noch gelb)', () => {

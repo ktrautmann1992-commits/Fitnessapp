@@ -56,7 +56,10 @@ export const SUPPLEMENT_CONTENT_PLACEHOLDERS: Readonly<
  * SU1-Test der Koffein-Hinweise.
  */
 export const CAFFEINE_PURPOSE_PATTERN =
-  /leistung|studienlage|stufe|passt zu dir|ausdauer|kraft|\benergie\b|fokus|wirk|fett|abnehm/iu;
+  /leistung|studienlage|stufe|passt zu dir|ausdauer|kraft|\benergie\b|fokus|wirk|fett|abnehm|power|schwung|m(?:ü|ue)d|munter|kick|push|(?<![\p{L}\p{N}])wach(?:e|er|en|es|heit|macher)?(?![\p{L}\p{N}])/iu;
+
+/** Erlaubte Ziffern im Namen: nur „-3“ wie in „Omega-3“ (Bindestrich + Ziffern, kein Buchstabe danach), Wächter SU2 M3. */
+const NAME_NUMBER_SUFFIX = /-\p{N}+(?![\p{L}\p{N}])/gu;
 
 /** Nur die Dosis-Werte, die SK4 für die Bedingungen der Angaben braucht (Tests geben eigene Werte vor). */
 export interface SupplementClaimDoseRules {
@@ -193,7 +196,10 @@ export function checkSupplementContent(
 
   // SK3 / SK5 / SK7H – Texte.
   for (const [path, value] of textFields(entry)) {
-    const hits = checkSupplementText(value);
+    // Im Namen ist nur „-3“ (Omega-3) als Ziffer erlaubt; Mengenwörter und andere Ziffern sind rot (SK5).
+    const hits = checkSupplementText(
+      path === 'name_de' ? value.replace(NAME_NUMBER_SUFFIX, '-') : value,
+    );
     for (const hit of hits.filter((h) => WORD_HIT_KINDS.has(h.kind))) {
       add('SK3', `Text enthält ${describeWordHit(hit)}.`, path);
     }
@@ -205,7 +211,18 @@ export function checkSupplementContent(
           path,
         );
       }
+      for (const hit of hits.filter((h) => h.kind === 'number')) {
+        add('SK5', `${hit.label} „${hit.match}“ im Namen – Mengen gehören nie in den Namen.`, path);
+      }
     } else {
+      // Klammern außerhalb eines Platzhalters (z. B. „{{dose}}“, „{“ allein), Wächter SU2 N6.
+      if (/[{}]/u.test(value.replace(PLACEHOLDER_RE, ''))) {
+        add(
+          'SK5',
+          'Geschweifte Klammer außerhalb eines Platzhalters (z. B. „{{dose}}“) – nur „{name}“.',
+          path,
+        );
+      }
       for (const hit of hits.filter(
         (h) => h.kind === 'number' || h.kind === 'unknown_placeholder',
       )) {
