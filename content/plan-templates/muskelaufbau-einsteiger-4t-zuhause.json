@@ -1,7 +1,7 @@
 {
   "id": "muskelaufbau-einsteiger-4t-zuhause",
   "version": 1,
-  "status": "draft",
+  "status": "published",
   "title_de": "Muskelaufbau · Einsteiger · 4 Tage · Zuhause",
   "description_de": "Pro Woche vier Einheiten im Wechsel Oberkörper/Unterkörper zu Hause mit Kurzhanteln und Widerstandsbändern (optional Flachbank und Klimmzugstange), je 45–60 Minuten. Ziel Muskelaufbau: genug Wochensätze je Muskelgruppe und Wiederholungsbereiche, die über die Wochen ein langsames Steigern des Gewichts erlauben. Für Einsteiger: einfache Übungen und Belastungen mit mindestens zwei Wiederholungen Reserve. Nach zwei Trainingstagen in Folge einen Ruhetag einplanen.",
   "goal_type": "muscle_gain",
@@ -429,8 +429,8 @@
     "batch_id": null,
     "created_on": "2026-10-03",
     "expert_reviewed": false,
-    "reviewed_by": null,
-    "reviewed_at": null,
+    "reviewed_by": "Karsten",
+    "reviewed_at": "2026-10-18",
     "review_note": null
   }
 }

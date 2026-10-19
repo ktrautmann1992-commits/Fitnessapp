@@ -1,7 +1,7 @@
 {
   "id": "tuerrahmen-rudern",
   "version": 1,
-  "status": "draft",
+  "status": "published",
   "name_de": "Türrahmen-Rudern",
   "name_en": "Door Frame Row",
   "aliases_de": ["Rudern am Türrahmen"],
@@ -55,8 +55,8 @@
     "batch_id": null,
     "created_on": "2026-10-05",
     "expert_reviewed": false,
-    "reviewed_by": null,
-    "reviewed_at": null,
+    "reviewed_by": "Karsten",
+    "reviewed_at": "2026-10-18",
     "review_note": null
   }
 }

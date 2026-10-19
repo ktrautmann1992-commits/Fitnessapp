@@ -1,7 +1,7 @@
 {
   "id": "fitness-einsteiger-3t-koerpergewicht",
   "version": 1,
-  "status": "draft",
+  "status": "published",
   "title_de": "Allgemeine Fitness · Einsteiger · 3 Tage · Körpergewicht",
   "description_de": "Pro Woche drei Ganzkörper-Einheiten zu Hause ohne Geräte – nur mit dem eigenen Körpergewicht und Alltagsdingen wie Wand, Türrahmen, Stuhl oder Handtuch, je 30–45 Minuten. Ziel allgemeine Fitness: alle großen Bewegungsmuster in moderatem Umfang, damit Kraft und Belastbarkeit im Alltag zunehmen. Für Einsteiger: einfache Übungen mit mindestens zwei Wiederholungen Reserve, ohne Sprünge und ohne Übungen über Kopf. Zwischen zwei Einheiten möglichst einen Ruhetag einplanen. Ehrlich gesagt: Ohne Geräte ist der Trainingsreiz begrenzt, vor allem für Rücken und Beinrückseite. Der Plan hält fit und baut Kraft auf; für maximalen Muskelaufbau sind Geräte besser – schon ein Band oder eine Klimmzugstange hilft.",
   "goal_type": "general_fitness",
@@ -264,8 +264,8 @@
     "batch_id": null,
     "created_on": "2026-10-05",
     "expert_reviewed": false,
-    "reviewed_by": null,
-    "reviewed_at": null,
+    "reviewed_by": "Karsten",
+    "reviewed_at": "2026-10-18",
     "review_note": null
   }
 }

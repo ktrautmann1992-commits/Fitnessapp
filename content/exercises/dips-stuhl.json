@@ -1,7 +1,7 @@
 {
   "id": "dips-stuhl",
   "version": 1,
-  "status": "draft",
+  "status": "published",
   "name_de": "Dips am Stuhl",
   "name_en": "Chair Dip",
   "aliases_de": ["Trizeps-Dips am Stuhl"],
@@ -37,8 +37,8 @@
     "batch_id": null,
     "created_on": "2026-10-05",
     "expert_reviewed": false,
-    "reviewed_by": null,
-    "reviewed_at": null,
+    "reviewed_by": "Karsten",
+    "reviewed_at": "2026-10-18",
     "review_note": null
   }
 }
