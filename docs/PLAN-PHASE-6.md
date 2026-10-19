@@ -1,8 +1,11 @@
 # Plan Phase 6 – Supplement-Modul & Affiliate
 
-**Status:** Entwurf zur Freigabe (18.10.2026). Wächter-Prüfung Runde 1: „mit Auflagen“ – alle Befunde (B1–B3,
-S1–S12, K1–K14) sind eingearbeitet (Abschnitt 0). Die Gründer-Fragen stehen in Abschnitt 17 (SU-G1 bis SU-G19).
-Umsetzung erst nach Freigabe, je Etappe ein Pull Request mit Wächter-Prüfung.
+**Status:** Freigegeben (19.10.2026). Gründer-Entscheidungen SU-G1 bis SU-G19 (Abschnitt 17): **alle „Ja, wie
+empfohlen“**. Wächter-Prüfung Runde 1: „mit Auflagen“ – alle Befunde (B1–B3, S1–S12, K1–K14) sind eingearbeitet
+(Abschnitt 0). Umsetzung je Etappe als Pull Request mit Wächter-Prüfung.
+**Stand 19.10.2026:** SU0 erledigt (Plan freigegeben, Entscheidungen eingetragen; Quellen-, Fach- und Rechtsprüfung
+laufen parallel, Abschnitt 18). SU1 (Core: Regeln, Dosis, Zeitplan, Texte) umgesetzt, keine Migration, keine
+sichtbare App-Änderung (Abschnitt 5, Umsetzungsstand SU1).
 
 **Grundlage:** `CLAUDE.md` (Supplements, Affiliate & Werbung, Gesundheitsdaten, KI-Grenze), `docs/KONZEPT.md`
 (3, 6, 6.13, 7, 12, 13, 14, 15), `docs/PROMPTS.md` Phase 6, `docs/ERWEITERUNGEN.md` (Sponsor bei Challenges),
@@ -263,7 +266,10 @@ neue Schwangerschaft oder ein neues Medikament wirkt sofort.
 | Nierenerkrankung (Supplement-Check)                               | **aus**   | **aus**          | **aus**   | erlaubt                | allgemein              |
 | Herzrhythmusstörungen (Supplement-Check)                          | erlaubt   | erlaubt          | Info      | Info, ohne Herz-Angabe | **aus**                |
 | Koffein-empfindlich oder Schlafprobleme (Supplement-Check)        | erlaubt   | erlaubt          | Info      | erlaubt                | **aus**                |
-| Einheit am Abend (`training_time = evening`)                      | erlaubt   | erlaubt          | Info      | erlaubt                | **aus**                |
+| Einheit am Abend (`training_time = evening`)                      | erlaubt   | erlaubt          | Info      | erlaubt                | **aus**¹               |
+
+¹ Umgesetzt in SU1 (Präzisierung 2): „aus“ heißt hier **nicht** „ärztlich abklären“, sondern die Koffein-Info bleibt
+und sagt „Du trainierst abends: Nimm vor dem Training kein Koffein.“ (wie 3.5, keine Angabe vor dem Training).
 
 - **„Info“** = allgemeine Seite ohne „passt zu dir“, ohne persönliche Dosis und **ohne Shop-Link**.
 - **„ab 18“** = freundlicher Satz „Diese Ergänzung ist erst ab 18 Jahren gedacht.“ – nicht „ärztlich abklären“, damit
@@ -429,6 +435,10 @@ die Texte als kommerzielle Mitteilung (Art. 2 Abs. 2 Nr. 5, Art. 10 Abs. 1 VO 19
 - Fachprüfung und Rechtsprüfung anfragen (Abschnitt 18).
 - _DoD:_ Wächter-Prüfung des Plans (Runde 2), Gründer-Entscheidungen eingetragen.
 
+**Erledigt 19.10.2026:** Plan freigegeben, SU-G1 bis SU-G19 alle „Ja, wie empfohlen“ (Abschnitt 17). Offen und
+parallel (Abschnitt 18): Quellen gegen das Original, Fachprüfung, Rechtsprüfung; Querverweise in KONZEPT 7, 12, 13,
+14 folgen mit den Etappen, die diese Abschnitte berühren (SU3/SU4).
+
 ---
 
 ## 5. Etappe SU1 – Core: Regeln, Dosis, Zeitplan, Texte
@@ -476,6 +486,131 @@ Quelle oder PRODUKTENTSCHEIDUNG.
 
 _DoD:_ alle Funktionen getestet, keine Migration, keine sichtbare App-Änderung, CI-Zusammenfassung
 „Beispiel-Empfehlungen“ (`pnpm supplements:examples`, 10 Beispielpersonen) wie bei `adjust:examples`.
+
+### Umsetzungsstand SU1 (19.10.2026)
+
+**Was gilt:**
+
+- **`packages/core/src/supplement-ids.ts`** (Blatt ohne Importe): `SUPPLEMENT_IDS`, `RATED_SUPPLEMENT_IDS` (alles außer
+  Koffein, feste Reihenfolge), Typen `SupplementId`/`RatedSupplementId`.
+- **`supplements/screening.ts`:** `SUPPLEMENT_FLAGS` (`kidney`, `breastfeeding`, `heart_rhythm`, `caffeine_sensitive`),
+  die vier Fragen (3.4), `supplementScreeningAnswersSchema` (strikt, optional `protein_self_check`
+  `mostly_yes`/`rather_not`), `createSupplementScreeningAnswersSchema(sex)` (Stillzeit nicht bei „männlich“, sonst
+  Pflicht), `supplementScreeningQuestionsFor`, `evaluateSupplementScreening` → Flags.
+- **`supplements/inputs.ts`:** `supplementInputsSchema` (Zod, strikt) – Geburtsdatum + Stichtag (daraus Alter und
+  Monat), Geschlecht, Fassung der Einwilligung `health_data`, Gesundheits-Flags, Supplement-Flags, Gewicht, Haupt- und
+  Nebenziel, Level, Intervall-Einheiten, Ernährungsform, „meidet Fisch“, „meidet Milch“, Trainingszeit, Eiweiß-Lücke,
+  „hat Ernährungsziele“, Wettkampf. **Kein Feld für Shops, Links oder Provisionen** (Test). Ohne Einwilligung v2
+  müssen alle Gesundheitsdaten `null` sein (Schema-Fehler sonst). `hasSupplementConsent`, `isMinorForSupplements`.
+- **`supplements/protein-gap.ts`:** `proteinGapFromLog` (höchstens 7 Tage, mind. 4 mit Einträgen, Schnitt < 90 % des
+  Ziels), `proteinGapFromSelfCheck`, `resolveProteinGap` (Tagebuch vor Selbsteinschätzung).
+- **`supplements/eligibility.ts`:** `recommendSupplements(inputs)` → je Supplement `recommended | info_only | adult_only
+| excluded` mit Grund-Schlüsseln, Hinweis-Schlüsseln, zugelassenen Angaben und Variante (pflanzlich); Koffein nur
+  `safety_info` (Modus `personal | general | pregnancy`) | `safety_info_adult_only` | `safety_info_excluded`;
+  Seiten-Hinweise (`medical_check` bei Herzrhythmus, K5; `pregnancy_midwife`). Tabelle 3.3 als `FLAG_RULES`, strengste
+  Regel gewinnt; `supplementStatusRank`, `caffeineRank`. Dazu `SUPPLEMENT_EVIDENCE`, `SUPPLEMENT_CATEGORIES`.
+- **`supplements/dosage.ts`:** `supplementDose` (Kreatin 3 g/Tag, Proteinpulver 20–30 g Eiweiß je Portion, Omega-3
+  250–500 mg, Vitamin D nur als allgemeiner Richtwert 20 µg = 800 IE), `proteinServingG` (nie über das Tagesziel),
+  `caffeineSingleLimit` (min(3 mg/kg, 200 mg), auf 10 mg abgerundet; ohne Gewicht Tassen-Satz),
+  `caffeinePersonalLimitMg`, `caffeineDailyLimitMg`/`caffeinePersonalDailyLimitMg` (Tagesgrenze min(5,7 mg/kg,
+  400 mg), abgerundet; Wächter-Befund 3), `vitaminDUgToIu`/`vitaminDIuToUg`, `formatSupplementDose`.
+- **`supplements/schedule.ts`:** `SUPPLEMENT_TIMINGS`, `supplementSchedule(recommendation, trainingWeek, chosen)` –
+  Kreatin, Omega-3, Vitamin D täglich zu einer Mahlzeit, Proteinpulver an Trainingstagen nach dem Training, nie Koffein.
+- **`supplements/claims.ts`:** `APPROVED_CLAIMS` (5 Angaben mit `requiredInfoDe`, Mindestmenge, Herz-Sperre),
+  `CANDIDATE_CLAIMS` (Kreatin ab 55, nie angezeigt), `claimBlockText` (Angabe + Pflichthinweis immer zusammen).
+- **`supplements/notices.ts`:** 22 feste Hinweis-Schlüssel mit Texten und Platzhaltern (`{dose}`, `{daily}`, `{cup}`,
+  `{cups}`, `{gain}`, `{time}`, `{age}`), `renderSupplementNotice`, die zwei Pflichtsätze (3.8 Nr. 4).
+- **`supplements/text-rules.ts`:** `SUPPLEMENT_FORBIDDEN_TERMS` (27 Einträge: die Wörter aus 3.8 Nr. 2 inkl.
+  abgeleiteter Formen wie „gesteigerte“, „Energiebooster“, „gestärkt“, „stärker“, dazu „fördert“, „erhöht die
+  Leistung“, „Leistungsplus“, „Fett verbrennen“), `SUPPLEMENT_AMOUNT_WORDS` (Einheiten mg, g, kg, µg, IE, Milligramm,
+  Gramm, Mikrogramm, Kilogramm; Zahlwörter eins–zwölf, hundert, tausend), `checkSupplementText()` (bestehende Listen +
+  neue Wörter + Ziffern, Einheiten und Zahlwörter im Freitext + unbekannte Platzhalter).
+- **Konstanten** in `constants.ts` (alle „VOR LIVEGANG FACHLICH PRÜFEN“, Quellen bzw. PRODUKTENTSCHEIDUNG):
+  `SUPPLEMENT_SCREENING_VERSION`, `SUPPLEMENT_HEALTH_CONSENT_MIN_VERSION` (2), `SUPPLEMENT_RULES`, `CAFFEINE_LIMITS`.
+  `CURRENT_CONSENT_VERSIONS.health_data` bleibt 1 (Seed v2 kommt mit SU3).
+- **Kein `index.ts`** in `supplements/`; das Paket-`index.ts` reicht die Dateien einzeln weiter.
+- **CI:** Schritt „Beispiel-Empfehlungen (Supplemente)“ (`pnpm supplements:examples`, 10 ausgedachte Personen,
+  `packages/content/src/supplement-examples.ts`).
+- **Keine Migration, keine App-Änderung, keine Inhalte, keine Affiliate-Teile.**
+
+**Tests:** 196 neue Core-Tests in 9 Dateien (Stand nach den Wächter-Auflagen) – `eligibility.test.ts` (59:
+Grund-Person, Einwilligung keine/v1/v2/v3, fehlende Checks, Omega-3 ohne Herz-Angabe ohne Einordnung, Alter
+15 Jahre 364 Tage (abgelehnt) / 16 / 17 Jahre 364 Tage / 18 Jahre 0 Tage / 55 / 65 / 90, unter 18 und schwanger bzw.
+stillend, jede Zeile der Tabelle 3.3, Schwangerschaft und Medikamente zusammen, jede Trainingszeit, ohne Gewicht, vegan
+mit/ohne Lücke, Milch, `no_targets`, Ziele für Kreatin, Omega-3 mit/ohne Herz-Flag, Vitamin D je Monat, Doping,
+29/30/300/301 kg), `properties.test.ts` (8: alle 2^9 Flag-Kombinationen; Sperr-Flag nie „passt“; ein Flag mehr nie
+lockerer; unter 18 nie lockerer; fehlende Einwilligung/Check nie „passt“ und nie persönliche Koffein-Grenze;
+Trainingszeit und Monat ändern keinen Status), `dosage.test.ts` (22: Einzelgrenze 30/40/45/66,6/66,7/150/300 kg,
+Tagesgrenze 30/40/70/100/300 kg, ohne Gewicht), `schedule.test.ts` (7: 1 vs. 7 Tage, Ruhetag, nichts gewählt, Flag
+kommt hinzu), `text-rules.test.ts` (72: jedes Wort positiv und negativ, abgeleitete Formen, Einheiten und Zahlwörter,
+alle Hinweise und Fragen, Pflichtsätze, Koffein ohne Stufe/Zweck), `claims.test.ts` (8), `screening.test.ts` (6),
+`protein-gap.test.ts` (6: 3 vs. 4 Tage, 90-%-Grenze), `structure.test.ts` (8). Core 5.111 → 5.307 Tests; Content +4
+(`supplement-examples.test.ts`). `pnpm plan:examples`, `pnpm nutrition:examples`, `pnpm adjust:examples` vor/nach der
+Änderung zeichengleich.
+
+**Strukturtest (SU1-Teil von 9.3):** `supplement-ids.ts` ohne Importe; kein `index.ts` in `supplements/`; Importe in
+`supplements/**` (auch Tests) nur mit direktem Dateipfad, kein Ordner/`index`/Paketname, außerhalb des Pakets nur
+`zod` (Tests: `vitest`); transitiver Importgraph mit `ts.resolveModuleName` (inkl. `export … from`, `import()`,
+`require()`) erreicht weder `affiliate/**` noch `retail/**`; Negativ-Fixtures werden erkannt: `supplements/__fixtures__/forbidden-import.ts` (Ordner-Import) und die Kette
+`chain-a.ts` → `chain-b.ts` → `retail/provider.ts` (nur transitiv sichtbar); `import()`/`require()` mit Variable oder
+Template-Literal mit `${…}` gilt als dynamisch und wird gemeldet. `typescript` ist devDependency von `packages/core`. Prüfung über `apps/mobile`/`apps/web`, Treffpunkt `compose.ts` und ESLint-Regel folgen mit SU5.
+
+**Präzisierungen (vom Plan nicht ausdrücklich festgelegt, vorsichtig gelöst):**
+
+1. **Koffein unter 18:** eigener Status `safety_info_adult_only` (Tabelle 3.3 „ab 18“; Abschnitt 5 nannte nur
+   `safety_info | safety_info_excluded`). Sonst hätte das Alter wie ein Befund geklungen (K2).
+2. **Koffein bei `evening`:** Tabelle 3.3 sagt „aus“, 3.5 „keine Angabe vor dem Training“. Umgesetzt wie 3.5: Status
+   bleibt Sicherheits-Info, Satz „Du trainierst abends: Nimm vor dem Training kein Koffein.“ – „aus“ hieße
+   „ärztlich abklären“ und wäre bei der Uhrzeit falsch. Ohne Trainingszeit (`null`) gilt der 16-Uhr-Satz wie bei
+   `varies`.
+3. **Ohne Einwilligung v2 werden Gesundheitsdaten nicht verwendet** (Schema verlangt `null`). Damit ist ohne
+   Einwilligung alles „Info“, auch wo mit Einwilligung „Nicht für dich“ stünde. Monotonie K14 für die Einwilligung
+   daher so geprüft: nie „passt“, nie persönliche Dosis/Koffein-Grenze, nie lockerer als dieselbe Person ohne Flags.
+   Die Info-Seite trägt immer die Pflichtsätze („in Schwangerschaft und Stillzeit vorher ärztlich abklären“).
+4. **Rangfolge der Koffein-Info:** persönlich < allgemein < nur BfR-Hinweis < ab 18 < ärztlich abklären. Wer
+   schwanger ist und Medikamente nimmt, bekommt „ärztlich abklären“. Unter 18 und schwanger oder stillend: „ab 18“
+   und zusätzlich der BfR-Hinweis (Wächter-Befund 1).
+5. **Kreatin „passt“** bei Haupt- **oder** Nebenziel Muskelaufbau/Definition; beim Ziel Ausdauer nur mit
+   `hasIntervalSessions` (neues Eingabefeld, die App liest es aus dem Plan). Fettabbau und Fitness → Info (Tabelle 3.2).
+   Der Wasser-Hinweis steht auch auf der Info-Seite.
+6. **Proteinpulver-Lücke:** Tagebuch geht vor Selbsteinschätzung (gemessen vor geschätzt). Neue Eingaben
+   `hasNutritionTargets` (Modus `no_targets` → nie „passt“, 3.7) und `avoidsDairy` (pflanzliche Variante). Die Portion
+   wird auf 5 g abgerundet, unter 5 g Rest kein Shake.
+7. **Doping-Hinweis** auf Kreatin **und** Proteinpulver (beide typisch verunreinigt, beide später mit Links), nicht nur
+   auf `sport`.
+8. **Vitamin D:** zusätzlicher Info-Satz Oktober–März („Sonne reicht oft nicht“, DGE 2012) – einzige Wirkung des
+   Monats; nie ein anderer Status. Im Zeitplan erscheint Vitamin D als einziges Info-Supplement, wenn die Person es
+   unter „Meine Supplements“ wählt (es ist per Regel nie „passt“).
+9. **Zeitplan nur für „passt“** (plus Vitamin D): Info, „ab 18“ und „Nicht für dich“ bekommen keine Zeile.
+10. **Pflichthinweise** für `protein_muscle_mass` und die Vitamin-D-Angaben: bis zur Register-Prüfung der allgemeine
+    Satz zur abwechslungsreichen Ernährung (`requiredInfoFromRegister: false`). Vitamin-D-Bedingung 15 % NRV = 0,75 µg.
+11. **Kreatin ab 55** steht als `CANDIDATE_CLAIMS` ohne Text und wird nie angezeigt (SU-G18: erst nach Prüfung).
+12. **Textregeln:** „Mangel“ auch in Zusammensetzungen (Eisenmangel); „Konzentrat“ bleibt erlaubt; „Stärke“
+    (Lebensmittel) erlaubt, „stärkt“ verboten; jede Ziffer im Freitext ist ein Fehler (auch „16 Uhr“, „18 Jahre“ –
+    deshalb Platzhalter `{time}`, `{age}`). Die Pflichtsätze lösen nur „gesund“ aus (vorgeschriebener Wortlaut, eigener
+    Prüfweg), die Angaben nur „Wirkung“ (eigener Prüfweg).
+13. **Strukturtest** prüft zusätzlich `retail/**` (Händler-Anbindung mit „Anzeige“) als verbotenes Ziel.
+14. **Koffein-Tagesgrenze persönlich** (Wächter-Befund 3): min(5,7 mg/kg, 400 mg), auf 10 mg abgerundet (30 kg →
+    170 mg, 40 kg → 220 mg, 70 kg → 390 mg, ab etwa 70,2 kg 400 mg). Der Satz `caffeine_daily` nennt die niedrigere
+    Zahl. Fachprüfung vorgemerkt (Abschnitt 18 Nr. 1).
+15. **Omega-3-Herz-Angabe nur bei persönlicher Einordnung** (Wächter-Befund 4): ohne Einwilligung v2 oder ohne Checks
+    wissen wir nicht, ob ein Herz-Flag vorliegt – die Angabe entfällt dann.
+16. **Mindestalter 16** wird auch im Eingabe-Schema geprüft (Wächter-Befund 7).
+17. **Tabelle 3.3** trägt zur Zeile „Einheit am Abend“ eine Fußnote zu Präzisierung 2 (Wächter-Befund 6).
+
+**Gegenproben (Regel absichtlich gebrochen → rot → zurückgesetzt):** G1 Medikamente sperren Kreatin nicht (2 Tests
+rot), G2 Koffein-Deckel 250 mg (3), G3 Koffein aufgerundet (2), G4 volljährig ab 17 (6), G5 Einwilligung v1 reicht
+(2), G6 Herz-Angabe trotz Herz-Flag (2), G7 Abend-Training ohne Koffein-Satz (2), G8 „Booster“ erlaubt (1), G9
+Tagebuch mit 3 Tagen (1), G10 Vitamin D „passt“ bei vegan (3), G11 Zeitplan für Info-Einträge (1), G12
+`supplement-ids.ts` mit Import (1), G13 Engine importiert `retail/` (1, transitiv), G14 Barrel-Import `'..'` (2), G15
+leerer Pflichthinweis (2). Nach den Wächter-Auflagen: G16 unter 18 und schwanger ohne BfR-Hinweis (2), G17 „boost“
+nur am Wortanfang (1), G18 Tagesgrenze 6 statt 5,7 mg/kg (4), G19 Herz-Angabe ohne Einordnung (1), G20 Einheiten und
+Zahlwörter nicht geprüft (9), G21 Mindestalter nicht geprüft (1), G22 Template-Literal nicht als dynamisch erkannt (1),
+G23 „gestärkt“/„stärker“ erlaubt (2).
+
+**Nicht verifiziert:** Quellen und Wortlaute (EU-Register, DGE, BfR, EFSA, Drake 2013) wurden nicht gegen das Original
+geprüft (SU0/Abschnitt 18); alle Werte bleiben „VOR LIVEGANG FACHLICH PRÜFEN“. CI-Lauf auf GitHub steht aus (lokal:
+`pnpm format:check`, Lint, Typen, Tests für core, db, mobile, content grün).
 
 ---
 
@@ -861,6 +996,8 @@ Grobe Größe: SU0 + 6 Etappen ≈ 6–7 Pull Requests.
 
 ## 17. Was wir von euch brauchen (Gründer-Entscheidungen)
 
+**Entschieden 19.10.2026: SU-G1 bis SU-G19 alle „Ja, wie empfohlen“.** Die Empfehlungen unten gelten damit verbindlich.
+
 Format: _Worum es geht – Warum wir fragen – Empfehlung._
 
 - **SU-G1 Startliste.** Welche Supplements die App kennt. – Jede Aufnahme braucht Quellen, Regeln, Fachprüfung und
@@ -936,8 +1073,9 @@ Format: _Worum es geht – Warum wir fragen – Empfehlung._
 ## 18. Was ihr selbst tun müsst
 
 1. **Fachprüfung:** Ernährungsfachkraft, Sportmedizinerin oder Apotheker prüft Tabellen 3.2, 3.3, 3.5, die
-   Zusatzfragen 3.4, Omega-3 bei Herz-Flags (EMA/PRAC 2023), die Medikamenten-Frage (Pille) und die Texte (vor dem
-   Livegang).
+   Zusatzfragen 3.4, Omega-3 bei Herz-Flags (EMA/PRAC 2023), die Medikamenten-Frage (Pille), die gewichtsabhängige
+   Koffein-Tagesgrenze (5,7 mg je kg, höchstens 400 mg; aus EFSA 2015 400 mg bei 70 kg abgeleitet, SU1) und die Texte
+   (vor dem Livegang).
 2. **Rechtsprüfung:** Health Claims (Wortlaute und Pflichthinweise aus VO 432/2012 und 2017/672, konsolidierte
    Fassung), Koffein-Texte (SU-G5a), Werbe-Kennzeichnung in DE, AT und CH, **Einwilligungstext `health_data` v2**,
    Datenschutzerklärung (Weiterleitung, Zähler, Vercel-Logs), DSFA-Ergänzung.

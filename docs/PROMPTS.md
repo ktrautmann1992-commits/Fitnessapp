@@ -326,10 +326,16 @@ Zeitplan vor/nach Training/vor dem Schlafen, Ausschluss bei Gegenanzeigen mit Hi
 ärztliche Rücksprache, affiliate_links mit Kennzeichnung "Anzeige". Empfehlungslogik darf
 Affiliate-Daten nicht lesen. Klick-Tracking ohne Gesundheitsdaten.
 ```
-**Stand 18.10.2026:** Plan: `docs/PLAN-PHASE-6.md`, Entwurf zur Freigabe (Etappen SU0–SU6, Gründer-Fragen SU-G1 bis
-SU-G19; Wächter Runde 1 „mit Auflagen“ eingearbeitet). Umsetzung erst nach Freigabe.
+**Stand 19.10.2026:** Plan `docs/PLAN-PHASE-6.md` **freigegeben** (Etappen SU0–SU6; Gründer-Entscheidungen SU-G1 bis
+SU-G19 alle „Ja, wie empfohlen“; Wächter Runde 1 „mit Auflagen“ eingearbeitet). **SU0 erledigt.** **SU1 umgesetzt**
+(Core `packages/core/src/supplements/` + `supplement-ids.ts`: Supplement-Check, Einordnung „passt / Info / ab 18 / nicht
+für dich“, Koffein nur als Sicherheits-Info, Dosis, Zeitplan, zugelassene Angaben mit Pflichthinweis, Textregeln,
+Strukturtest; `pnpm supplements:examples` in der CI-Zusammenfassung; keine Migration, keine App-Änderung). Weiter mit
+SU2 (Inhalte) und SU3 (Datenbank).
 
 ## Phase 7 – Abos & Gratisversion
+**Ruht bis Ende der Testphase** (Gründer-Entscheidung 19.10.2026, `docs/KONZEPT.md` Abschnitt 13): keine Abos, keine
+Rechtsanwälte, bis der Test vollständig abgeschlossen ist. Bis dahin ist alles offen (Flag `premium_open`).
 ```
 Integriere RevenueCat (iOS/Android) und Stripe (Web) mit gemeinsamer Entitlement-Tabelle über
 Webhooks in apps/web. Setze Gratis- und Premium-Umfang nach docs/KONZEPT.md Abschnitt 13 um,

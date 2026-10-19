@@ -31,6 +31,7 @@ import {
   OPEN_FOOD_FACTS,
   USER_FOOD_PRODUCT_LIMITS,
   AI_FOOD_PHOTO,
+  AI_GLOBAL_BUDGET,
   CUSTOM_MEAL_LIMITS,
   PINCH_G,
   BODY_METRIC_LIMITS,
@@ -160,6 +161,7 @@ import {
   stateOverrideSchema,
 } from './adjust/schemas';
 import { COMPETITION_DELOAD_MAX_FACTOR } from './adjust/invariants';
+import { FAST_INCREASE_EXCLUSIONS } from './adjust/rules/state-rules';
 import type { InvariantFixture } from './adjust/fixtures/invariant-cases';
 import { weekInvariantsTestSql } from './adjust/fixtures/invariants-sql';
 import { FOOD_GROUPS } from './food-groups';
@@ -2746,9 +2748,12 @@ describe('Live-Anpassung in der Datenbank (Phase 4b Etappe B, docs/PLAN-PHASE-4B
       '_live_adjust_rpcs.sql',
       '_live_adjust_outbox.sql',
       '_live_adjust_revoke_export.sql',
+      '_live_adjust_r1_exclusions.sql',
     ].map((suffix) => migrationFiles.findIndex((n) => n.endsWith(suffix)));
+    // Unabhängig von der Gesamtzahl: alle vorhanden, in dieser Reihenfolge; die sechs B-Dateien lückenlos hintereinander,
+    // der R1-Nachtrag danach (spätere Migrationen anderer Etappen dürfen dazwischen und danach liegen).
+    expect(order.every((i) => i >= 0)).toBe(true);
     expect(order.every((i, k) => i > (order[k - 1] ?? -1))).toBe(true);
-    // Zusammenhängend; spätere Migrationen (z. B. Testphase 19.10.2026) dürfen folgen.
     expect(order[5]! - order[0]!).toBe(5);
   });
 
@@ -2853,6 +2858,53 @@ describe('Live-Anpassung in der Datenbank (Phase 4b Etappe B, docs/PLAN-PHASE-4B
     expect(loadWeeks).toContain(`else ${DELOAD_SCHEDULE.advanced}`);
   });
 
+  it('R1-Ausschlüsse (Nachtrag): Server-Liste = FAST_INCREASE_EXCLUSIONS, Grenzen = AGE_PLAN_RULES, Aufruf abgelehnt', () => {
+    const r1 = readMigration('_live_adjust_r1_exclusions.sql');
+    const helper = body(r1, 'private.fast_increase_exclusion');
+    // Gründe in derselben Reihenfolge wie Core (erster zutreffender gewinnt), keine weiteren.
+    const reasons = [...helper.matchAll(/return '([a-z_]+)';/g)].map((m) => m[1]);
+    expect([...new Set(reasons)]).toEqual([...FAST_INCREASE_EXCLUSIONS]);
+    expect(helper).toContain('return null;');
+    expect(constant(helper, 'minor_below_age')).toBe(AGE_PLAN_RULES.minor.belowAge);
+    expect(constant(helper, 'senior_from_age')).toBe(AGE_PLAN_RULES.senior.fromAge);
+    const levels =
+      /non_beginner_levels constant text\[\] := array\[([^\]]*)\]/.exec(helper)?.[1] ?? '';
+    expect([...levels.matchAll(/'([a-z_]+)'/g)].map((m) => m[1])).toEqual(
+      enums.EXPERIENCE_LEVELS.filter((level) => level !== 'beginner'),
+    );
+    // Vorsichtig wie plan_load_weeks (Plan) UND wie planSafetyRules (aktueller Check, Einwilligung).
+    expect(helper).toContain('if not v_plan.uses_health_data or v_plan.medical_notice then');
+    expect(helper).toContain('if not found or cardinality(latest_flags) > 0');
+    expect(helper).toContain("or not private.has_valid_consent_for(p_user, 'health_data') then");
+    expect(helper).toContain('extract(year from age(p_today, pr.birth_date))');
+    expect(r1).toContain(
+      'revoke all on function private.fast_increase_exclusion(uuid, uuid, date) from public, anon, authenticated;',
+    );
+    // apply_plan_adjustments: neueste Fassung hier, Obermenge der Etappe-B-Fassung (nur eingefügte Zeilen).
+    const newest = body(r1, 'public.apply_plan_adjustments');
+    expect(missingLines(apply, newest)).toEqual([]);
+    expect(
+      migrationFiles
+        .filter((n) =>
+          readMigration(n).includes('create or replace function public.apply_plan_adjustments('),
+        )
+        .at(-1),
+    ).toMatch(/_live_adjust_r1_exclusions\.sql$/);
+    expect(newest).toContain(
+      'r1_exclusion := private.fast_increase_exclusion(p_user, v_plan_id, today);',
+    );
+    expect(newest).toContain("perform private.adjust_assert(r1_exclusion is null, 'not_allowed');");
+    expect(newest).toContain("if err = 'not_allowed' then");
+    // Prüfung vor der Idempotenz: auch ein Duplikat lehnt den Aufruf ab.
+    expect(newest.indexOf("'not_allowed');")).toBeLessThan(newest.indexOf('-- Idempotenz'));
+    expect(r1).toContain(
+      'revoke all on function public.apply_plan_adjustments(uuid, jsonb) from public, anon, authenticated;',
+    );
+    expect(r1).toContain(
+      'grant execute on function public.apply_plan_adjustments(uuid, jsonb) to service_role;',
+    );
+  });
+
   it('pgTAP 50_week_invariants.test.sql ist aus invariants.json aktuell erzeugt (Core = SQL)', () => {
     const fixtures = JSON.parse(
       readFileSync(new URL('./adjust/fixtures/invariants.json', import.meta.url), 'utf8'),
@@ -2933,5 +2985,84 @@ describe('Live-Anpassung in der Datenbank (Phase 4b Etappe B, docs/PLAN-PHASE-4B
     const events = body(revokeExport, 'private.my_adjustment_events');
     expect(events).not.toContain('ref_id');
     expect(events).not.toContain('last_error_code');
+  });
+});
+
+describe('Testphase „alles offen“ (Gründer 19.10.2026, KONZEPT 13)', () => {
+  const open = readMigration('_premium_open.sql');
+  const body = (sql: string, name: string) => {
+    const start = sql.lastIndexOf(`create or replace function ${name}(`);
+    if (start < 0) throw new Error(`${name} nicht gefunden`);
+    return sql.slice(start, sql.indexOf('$$;', sql.indexOf('as $$', start)));
+  };
+  /** Jede Zeile der alten Fassung steht in derselben Reihenfolge in der neuen (nur eingefügte Zeilen). */
+  const missingLines = (older: string, newer: string) => {
+    const next = newer.split('\n');
+    let at = 0;
+    const missing: string[] = [];
+    for (const line of older.split('\n')) {
+      const found = next.indexOf(line, at);
+      if (found < 0) missing.push(line);
+      else at = found + 1;
+    }
+    return missing;
+  };
+  const newestFile = (name: string) =>
+    migrationFiles
+      .filter((n) => readMigration(n).includes(`create or replace function ${name}(`))
+      .at(-1);
+
+  it('Flag premium_open startet AN (per Migration gesetzt)', () => {
+    expect(open).toContain(
+      "insert into private.feature_flags (key, enabled) values ('premium_open', true)",
+    );
+  });
+
+  it.each([
+    [
+      'private.has_entitlement_for',
+      '_ai_food_photo.sql',
+      "private.feature_enabled('premium_open')",
+    ],
+    ['public.ai_food_photo_reserve', '_ai_food_photo.sql', "hashtext('ai_food_photo|global')"],
+    ['public.beta_admin', '_live_adjust_rpcs.sql', "if p_flag = 'premium_open' then"],
+  ] as const)(
+    '%s: Obermenge der Vorgänger-Fassung; spätere Fassungen behalten die Testphase',
+    (name, previous, key) => {
+      expect(missingLines(body(readMigration(previous), name), body(open, name))).toEqual([]);
+      // Wächter N4: unabhängig von parallelen Branches – nur eigene Reihenfolge prüfen.
+      const files = migrationFiles.filter((n) =>
+        readMigration(n).includes(`create or replace function ${name}(`),
+      );
+      const own = files.findIndex((n) => n.endsWith('_premium_open.sql'));
+      expect(own).toBeGreaterThan(files.findIndex((n) => n.endsWith(previous)));
+      for (const later of files.slice(own)) expect(body(readMigration(later), name)).toContain(key);
+      expect(newestFile(name)).toBeDefined();
+    },
+  );
+
+  it('globale KI-Kostenbremse (M1) = AI_GLOBAL_BUDGET, nur solange premium_open an ist', () => {
+    const { monthlyCallsCap, monthlyCostEurCap } = AI_GLOBAL_BUDGET.food_photo;
+    expect(open).toContain(
+      `insert into private.ai_budget (feature, monthly_calls_cap, monthly_cost_eur_cap) values ('food_photo', ${monthlyCallsCap}, ${monthlyCostEurCap})`,
+    );
+    const reserve = body(open, 'public.ai_food_photo_reserve');
+    expect(reserve.indexOf("if private.feature_enabled('premium_open') then")).toBeLessThan(
+      reserve.indexOf("hashtext('ai_food_photo|global')"),
+    );
+    expect(reserve).toContain("return jsonb_build_object('result', 'flag_off');");
+  });
+
+  it('Premium offen nur für premium, nur mit Flag und nur für bestehende Konten; Limits ohne Beta-Zeile = Standard', () => {
+    const entitlement = body(open, 'private.has_entitlement_for');
+    expect(entitlement).toContain("p_entitlement = 'premium'");
+    expect(entitlement).toContain("private.feature_enabled('premium_open')");
+    expect(entitlement).toContain('select 1 from auth.users u');
+    const reserve = body(open, 'public.ai_food_photo_reserve');
+    expect(reserve).toContain('monthly_limit := coalesce(monthly_limit, default_monthly_limit);');
+    expect(reserve).toContain('daily_limit := coalesce(daily_limit, default_daily_limit);');
+    expect(body(open, 'public.beta_admin')).toContain(
+      'return private.premium_open_flag_admin(p_action, p_actor);',
+    );
   });
 });

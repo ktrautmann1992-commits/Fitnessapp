@@ -209,7 +209,7 @@ export interface FoodPhotoStatus {
  * nacheinander mit den übrigen Schreibvorgängen des Testmodus.
  */
 export interface LiveAdjustTestMode {
-  /** Schalter „Premium simulieren (nur Test)“ – lebt ausschließlich im Gerätespeicher des Testmodus (localDb). */
+  /** Schalter „Live-Anpassung einschalten (Testmodus)“; Standard AN (Testphase, KONZEPT 13). */
   simulatePremium(): Promise<boolean>;
   /** Einschalten rechnet sofort (wie „manual_recheck“); Ausschalten behält die bisherigen Anpassungen. */
   setSimulatePremium(enabled: boolean): Promise<void>;
@@ -431,6 +431,12 @@ export interface Backend {
    * `network`). Testmodus: immer verfügbar (Attrappe), Kontingent aus dem Gerätespeicher.
    */
   foodPhotoStatus(): Promise<FoodPhotoStatus>;
+  /**
+   * Testphase „alles offen“ (KONZEPT 13, Wächter N3): Läuft sie für dieses Konto? Nur für das Kennzeichen „Testphase:
+   * kostenlos“. Supabase-Modus: `premium_open_active()` vom Server, bei Fehler/offline false (kein Kennzeichen).
+   * Testmodus: true – ohne Server ist alles offen (Attrappen, Schalter „Live-Anpassung einschalten“).
+   */
+  testPhaseOpen(): Promise<boolean>;
   /**
    * Ein Foto auswerten lassen (Etappe E3). Supabase-Modus: POST /api/ernaehrung/foto in apps/web (Login-Token,
    * Premium/Limit/Einwilligung prüft der Server); Testmodus: dieselbe Kette mit der Attrappe auf dem Gerät. Das Foto

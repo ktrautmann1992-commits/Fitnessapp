@@ -1096,6 +1096,37 @@ db-sync +13, R1 +1, Fixtures 26; Mobile `local-rules` +2; alle Migrationen frisc
 **Offen / nicht lokal geprüft:** Supabase CLI und `db-migrate` (nur lokales Postgres 16 mit Shim), pg_cron (lokal nicht
 vorhanden – Einrichtung wie N7/E4a), Workflow `beta-grant` kennt das Flag `live_adjustment` noch nicht (Etappe C).
 
+**Nachtrag R1-Ausschlüsse auf dem Server (19.10.2026, Sicherheits-Nachtrag zu B):** `apply_plan_adjustments` prüfte bei
+R1 `fast_increase` bisher nur Schrittgröße und Basis-Eintrag, nicht die Ausschlüsse aus 5.2 („Nie bei“, Frage 5). Neu
+(additive Migration `…_live_adjust_r1_exclusions.sql`):
+
+- `private.fast_increase_exclusion(uid, Plan, Stichtag)` liefert den ersten zutreffenden Grund oder `null` – dieselbe
+  Liste und Reihenfolge wie Core `FAST_INCREASE_EXCLUSIONS` / `fastIncreaseExclusion()` (`adjust/rules/state-rules.ts`;
+  `fastIncreaseExcluded()` ruft sie auf, Verhalten unverändert): `cautious_plan`, `minor`, `senior`,
+  `beginner_first_block`. „Vorsichtig“ ist die strengste Lesart aus Plan **und** aktuellem Stand: Plan ohne
+  Gesundheitsbezug oder mit Arzt-Hinweis (wie `plan_load_weeks`) **oder** aktuell keine gültige Einwilligung, kein Check
+  bzw. ein Flag im neuesten Check (wie `planSafetyRules().cautious`, das Core mit dem aktuellen Check rechnet). Alter in
+  vollendeten Jahren am Tag der Anpassung (`berlin_today()`, `age()` wie `ageInYears()`), Grenzen `AGE_PLAN_RULES`.
+  Einsteiger = Stufe aus den Angaben des Plans (unbekannt zählt als Einsteiger); „aktuelle“ Einheit = erste ab heute,
+  sonst die letzte (gleiches Datum: kleinster Block). Fehlende Daten (kein Profil, fremder Plan) → ausgeschlossen.
+- `apply_plan_adjustments` (Fassung aus `…_live_adjust_rpcs.sql`, nur Zeilen eingefügt; Rechte, `search_path` und alle
+  Prüfungen gleich): enthält der Aufruf ein `fast_increase` einer ausgeschlossenen Person, lehnt der Server den
+  **ganzen** Aufruf mit dem neuen festen Code `not_allowed` ab (ohne Änderung, ohne Zeileninhalt). Geprüft nach der
+  Grundform (Formfehler bleiben `invalid_input`), vor der Idempotenz (auch ein Duplikat wird abgelehnt), nach Premium
+  (`not_entitled` bleibt vorn). Für Etappe C gilt Präzisierung 4: auch `not_allowed` nur als Code über
+  `mark_adjustment_events_processed` melden. Normalfall: Core erzeugt R1 in diesen Fällen nie; der Code tritt nur bei
+  abweichendem Client oder geändertem Stand (z. B. neuer Check mit Flag) auf.
+- Tests: pgTAP neu `52_fast_increase_exclusions` (Nr. 51 belegt ein paralleler Branch) (34: jeder Ausschluss abgelehnt und nichts geschrieben, ganzer Aufruf
+  mit gültigem `load_reduce` abgelehnt, erlaubte Grenzfälle genau 18 und 64 Jahre, Einsteiger im zweiten Block,
+  Wettkampf-Stufe → ok; Stichtag Berlin, neuer Check mit Flag, korrigiertes Geburtsdatum); `49` mit Gesundheits-Check
+  ohne Flag für die Testpersonen (sonst wäre R1 dort jetzt ausgeschlossen). Core `state-rules.test.ts` +1 (Grund je
+  Fall, Geburtstags-Grenzen), `db-sync.test.ts` +1 (SQL-Gründe = `FAST_INCREASE_EXCLUSIONS`, Altersgrenzen,
+  Nicht-Einsteiger-Stufen = `EXPERIENCE_LEVELS`, neue Fassung Obermenge der alten). Alle Migrationen frisch und auf
+  Bestandsdaten grün.
+- Gegenproben (alle zurückgesetzt): R1-Ablehnung entfernt, Altersgrenze 66, aktueller Check ignoriert, erster Block nicht erkannt,
+  Arzt-Hinweis des Plans ignoriert, Code nicht durchgereicht → jeweils pgTAP 52 rot (und db-sync, wo die Liste/der Text
+  betroffen ist); Core-Liste ohne `senior` → db-sync rot.
+
 **C – Server und Workflows**
 
 - Inhalt: Routen 6.1 (inkl. CORS und Sperre in Vorschauen), Workflows `live-adjust-sweep.yml` (6.2) und `beta-grant.yml` (6.3), `.env.example`, SETUP.md Teil „Live-Anpassung“ (Klick-Schritte am Handy: Secret erzeugen und in Vercel und GitHub eintragen, `APP_WEB_ORIGIN` und `EXPO_PUBLIC_WEB_URL` setzen, Workflow `beta-grant` mit `flag_an` und `freischalten` für das eigene Konto starten).
@@ -1244,6 +1275,11 @@ ohne Server. Reihenfolge daher **A0 → A → D (Testmodus) → E**; B und C fol
 In D rechnet die App im Testmodus die Regeln aus `packages/core/src/adjust/` direkt auf dem Gerät (nach jedem
 gespeicherten Training bzw. Sync), nur mit „Premium simulieren“ (nur Testmodus, K2). Im Supabase-Modus bleibt die
 Premium-Prüfung ausschließlich serverseitig (CLAUDE.md „KI-Grenze“) – ohne B/C ist die Live-Anpassung dort ausgeblendet.
+
+**Nachtrag 19.10.2026 – Testphase „alles offen“ (KONZEPT 13):** Der Testmodus-Schalter heißt jetzt „Live-Anpassung
+einschalten (Testmodus)“ (intern weiter `simulatePremium`, K2 unverändert) und ist **standardmäßig an**; nur ein
+ausdrücklich ausgeschalteter Schalter zeigt den Gratis-Weg. Auf dem Server gibt Flag `premium_open` jedem angemeldeten
+Konto `premium` – die Live-Anpassung mit Konto braucht trotzdem weiter Etappe C und das Flag `live_adjustment`.
 
 **Gründer-Entscheidung 09.10.2026 – erst Übungs-Glossar und Übungstausch:** Nach A0 kommt vor der weiteren
 4b-Umsetzung ein eigenes Feature „Übungs-Glossar und Übungstausch“ mit eigenem Plan

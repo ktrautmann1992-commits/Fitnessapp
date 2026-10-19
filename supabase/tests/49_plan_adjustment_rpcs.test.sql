@@ -8,6 +8,9 @@
 begin;
 create extension if not exists pgtap with schema extensions;
 select plan(99);
+-- Testphase „alles offen“ (20261019120000_premium_open.sql): Diese Datei prüft den Beta-Weg (Premium nur mit
+-- Freischaltung) – dafür hier premium_open aus; der offene Weg steht in 51_premium_open.test.sql.
+update private.feature_flags set enabled = false where key = 'premium_open';
 
 create or replace function private.berlin_today()
 returns date
@@ -31,6 +34,12 @@ select u, t, 1, 'web'
 from unnest(array['11111111-1111-4111-8111-111111111111', '22222222-2222-4222-8222-222222222222',
   '33333333-3333-4333-8333-333333333333']::uuid[]) u
 cross join unnest(array['terms', 'privacy', 'health_data']::public.consent_type[]) t;
+-- Gesundheits-Check ohne Flag (Plan mit Gesundheitsbezug, nicht vorsichtig – sonst wäre R1 ausgeschlossen).
+insert into public.health_screening (user_id, answers)
+select u, '{"heart_condition": false, "chest_pain_exercise": false, "chest_pain_rest": false, "dizziness": false,
+  "blood_pressure": false, "bone_joint": false, "medication": false, "other_reason": false}'
+from unnest(array['11111111-1111-4111-8111-111111111111', '22222222-2222-4222-8222-222222222222',
+  '33333333-3333-4333-8333-333333333333']::uuid[]) u;
 
 insert into public.exercises (
   id, version, status, name_de, name_en, movement_pattern, primary_muscles, equipment_ids, mechanics,

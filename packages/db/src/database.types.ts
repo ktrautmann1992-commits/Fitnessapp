@@ -2912,6 +2912,7 @@ export type Database = {
         Args: { p_error_code?: string; p_ids: number[] };
         Returns: number;
       };
+      premium_open_active: { Args: never; Returns: boolean };
       recent_exercise_logs: { Args: { p_per_exercise?: number }; Returns: Json };
       replace_food_dislikes: { Args: { p_food_ids: Json }; Returns: undefined };
       replace_food_preferences: {

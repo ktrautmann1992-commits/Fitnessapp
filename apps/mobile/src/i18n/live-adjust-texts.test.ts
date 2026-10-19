@@ -54,6 +54,24 @@ describe('Live-Anpassung: Erklärtexte (Plan 5.5)', () => {
       'Nicht mehr rückgängig machbar, weil du schon trainiert hast.',
     );
     expect(t.adjust.offline).toBe('Dafür brauchst du kurz Verbindung.');
-    expect(t.adjust.premiumEnded).toBe('Neue Anpassungen gibt es mit Premium.');
+    expect(t.adjust.premiumEnded).toBe(
+      'Neue Anpassungen kommen gerade nicht dazu – die bisherigen bleiben.',
+    );
+  });
+
+  it('Testphase „alles offen“ (KONZEPT 13): keine Premium-, Abo- oder Kauf-Hinweise', () => {
+    const texts = [
+      t.adjust.premiumEnded,
+      t.adjust.premiumEndedTest,
+      t.adjust.settingsTitle,
+      t.adjust.settingsText,
+      t.adjust.simulate,
+      t.adjust.simulateHint,
+      t.foodPhoto.openHint,
+      t.foodPhoto.noPremium,
+      t.foodPhoto.errors.no_entitlement,
+    ];
+    for (const text of texts) expect(text).not.toMatch(/premium|\babo|kauf|preis/i);
+    expect(t.common.testPhaseFree).toBe('Testphase: kostenlos');
   });
 });

@@ -6,6 +6,9 @@
 begin;
 create extension if not exists pgtap with schema extensions;
 select plan(97);
+-- Testphase „alles offen“ (20261019120000_premium_open.sql): Diese Datei prüft den Beta-Weg (Premium nur mit
+-- Freischaltung) – dafür hier premium_open aus; der offene Weg steht in 51_premium_open.test.sql.
+update private.feature_flags set enabled = false where key = 'premium_open';
 
 -- A: Gesundheit + Foto-Einwilligung, wird freigeschaltet. B: nur Gesundheit. C: Foto ohne Gesundheit. D: fremd.
 insert into auth.users (id, email) values

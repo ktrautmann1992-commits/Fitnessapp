@@ -165,12 +165,17 @@ interface LocalDb {
   foodProducts?: Record<string, FoodProductRecord>;
   productLookups?: LocalProductLookupCount[];
   /**
-   * Live-Anpassung (Phase 4b, Etappe D): Schalter „Premium simulieren (nur Test)“. Lebt AUSSCHLIESSLICH hier im
-   * Testmodus (Wächter K2) – kein Gesundheitsdatum, nur ein Schalter. Die Anpassungen selbst liegen im geschützten
-   * Speicher `liveAdjust`, nie hier.
+   * Live-Anpassung (Phase 4b, Etappe D): Schalter „Live-Anpassung einschalten (Testmodus)“ (früher „Premium
+   * simulieren“). Lebt AUSSCHLIESSLICH hier im Testmodus (Wächter K2) – kein Gesundheitsdatum, nur ein Schalter. Die
+   * Anpassungen selbst liegen im geschützten Speicher `liveAdjust`, nie hier. Testphase „alles offen“ (KONZEPT 13):
+   * fehlt der Wert, gilt AN (`simulatePremiumOn`); nur ein ausdrückliches `false` (Schalter aus) zeigt den Gratis-Weg.
    */
   simulatePremium?: boolean;
 }
+
+/** Testphase „alles offen“ (Gründer 19.10.2026): Standard AN – nur ein ausdrücklich ausgeschalteter Schalter ist aus. */
+export const simulatePremiumOn = (db: { simulatePremium?: boolean }): boolean =>
+  db.simulatePremium !== false;
 
 export interface LocalBackendOptions {
   platform: ConsentPlatform;
@@ -345,7 +350,7 @@ export function createLocalBackend(store: KeyValueStore, options: LocalBackendOp
 
   /**
    * Neu rechnen (Plan 8.2, Testmodus): nach dem gespeicherten Training und beim Laden (= Sync, nach
-   * close_missed_sessions). NUR mit „Premium simulieren“ entstehen Anpassungen; ohne Schalter werden höchstens offene
+   * close_missed_sessions). NUR mit „Live-Anpassung einschalten“ (Standard an) entstehen Anpassungen; ohne Schalter werden höchstens offene
    * Vorschläge als abgelaufen markiert. Fehler sind still (der Plan bleibt gültig, 8.4) – nie blockierend.
    */
   async function recomputeLive(rows: UserRows, entitled: boolean): Promise<void> {
@@ -597,7 +602,7 @@ export function createLocalBackend(store: KeyValueStore, options: LocalBackendOp
   }
 
   const liveAdjust: NonNullable<Backend['liveAdjust']> = {
-    simulatePremium: async () => (await load()).simulatePremium === true,
+    simulatePremium: async () => simulatePremiumOn(await load()),
     setSimulatePremium: async (enabled) => {
       const { db } = await requireUser();
       await save({ ...db, simulatePremium: enabled });
@@ -725,13 +730,13 @@ export function createLocalBackend(store: KeyValueStore, options: LocalBackendOp
         options.today(),
       );
       if (rows !== db.rows) await save({ ...db, rows });
-      // Plan 8.2 (Testmodus): nach close_missed_sessions neu rechnen – NUR mit „Premium simulieren“.
-      await recomputeLive(rows, db.simulatePremium === true);
+      // Plan 8.2 (Testmodus): nach close_missed_sessions neu rechnen – NUR mit „Live-Anpassung einschalten“ (Standard an).
+      await recomputeLive(rows, simulatePremiumOn(db));
       return {
         rows,
         offline: false,
         liveAdjust: {
-          simulatePremium: db.simulatePremium === true,
+          simulatePremium: simulatePremiumOn(db),
           adjustments: await adjustmentsOf(rows.profile?.user_id),
         },
       };
@@ -809,6 +814,9 @@ export function createLocalBackend(store: KeyValueStore, options: LocalBackendOp
       await save({ ...db, rows: next });
       return next;
     },
+
+    // Testphase „alles offen“ (KONZEPT 13): ohne Server ist im Testmodus alles offen.
+    testPhaseOpen: async () => true,
 
     // --- Gericht per Foto (Etappe E3): Testmodus immer mit der Attrappe, gleiche Kette wie der Server ---------
     foodPhotoStatus: async () => {
@@ -1040,8 +1048,8 @@ export function createLocalBackend(store: KeyValueStore, options: LocalBackendOp
             : (db.logCounter ?? null);
           await save({ ...db, rows: next, logCounter });
           await drafts.remove(draft.key);
-          // Plan 8.2 (Testmodus): nach dem gespeicherten Training neu rechnen – NUR mit „Premium simulieren“.
-          await recomputeLive(next, db.simulatePremium === true);
+          // Plan 8.2 (Testmodus): nach dem gespeicherten Training neu rechnen – NUR mit „Live-Anpassung einschalten“ (Standard an).
+          await recomputeLive(next, simulatePremiumOn(db));
           return { kind: 'saved', orphaned: check.result === 'orphaned' };
         }
       }
