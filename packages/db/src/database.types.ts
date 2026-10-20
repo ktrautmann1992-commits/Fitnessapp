@@ -2840,6 +2840,57 @@ export type Database = {
         };
         Relationships: [];
       };
+      workouts: {
+        Row: {
+          category: Database['public']['Enums']['workout_category'];
+          created_at: string;
+          data: Json;
+          difficulty: number;
+          equipment_ids: string[];
+          exercise_ids: string[];
+          expert_reviewed: boolean;
+          format: Database['public']['Enums']['workout_format'];
+          id: string;
+          minutes: number;
+          status: Database['public']['Enums']['content_status'];
+          title_de: string;
+          updated_at: string;
+          version: number;
+        };
+        Insert: {
+          category: Database['public']['Enums']['workout_category'];
+          created_at?: string;
+          data: Json;
+          difficulty: number;
+          equipment_ids?: string[];
+          exercise_ids: string[];
+          expert_reviewed?: never;
+          format: Database['public']['Enums']['workout_format'];
+          id: string;
+          minutes: number;
+          status: Database['public']['Enums']['content_status'];
+          title_de: string;
+          updated_at?: string;
+          version: number;
+        };
+        Update: {
+          category?: Database['public']['Enums']['workout_category'];
+          created_at?: string;
+          data?: Json;
+          difficulty?: number;
+          equipment_ids?: string[];
+          exercise_ids?: string[];
+          expert_reviewed?: never;
+          format?: Database['public']['Enums']['workout_format'];
+          id?: string;
+          minutes?: number;
+          status?: Database['public']['Enums']['content_status'];
+          title_de?: string;
+          updated_at?: string;
+          version?: number;
+        };
+        Relationships: [];
+      };
     };
     Views: {
       [_ in never]: never;
@@ -2915,6 +2966,7 @@ export type Database = {
         Args: { p_error_code?: string; p_ids: number[] };
         Returns: number;
       };
+      mark_session_log_workout: { Args: { p_log_id: string }; Returns: Json };
       premium_open_active: { Args: never; Returns: boolean };
       recent_exercise_logs: { Args: { p_per_exercise?: number }; Returns: Json };
       replace_food_dislikes: { Args: { p_food_ids: Json }; Returns: undefined };
@@ -2946,6 +2998,10 @@ export type Database = {
       save_user_food_product: { Args: { p_product: Json }; Returns: Json };
       seed_content: { Args: { p_content: Json }; Returns: Json };
       seed_nutrition_content: {
+        Args: { p_content: Json; p_require_expert_review?: boolean };
+        Returns: Json;
+      };
+      seed_workouts: {
         Args: { p_content: Json; p_require_expert_review?: boolean };
         Returns: Json;
       };
@@ -3052,7 +3108,7 @@ export type Database = {
       food_preference_kind: 'like' | 'dislike' | 'intolerance';
       goal_type: 'fat_loss' | 'definition' | 'muscle_gain' | 'general_fitness' | 'endurance';
       load_type: 'weight' | 'bodyweight' | 'band' | 'time';
-      log_source: 'manual' | 'gps' | 'gpx_import';
+      log_source: 'manual' | 'gps' | 'gpx_import' | 'workout';
       mealprep_slot_mode: 'lunch' | 'lunch_dinner';
       movement_pattern:
         | 'squat'
@@ -3136,6 +3192,15 @@ export type Database = {
         | 'race_pace'
         | 'brick'
         | 'technique';
+      workout_category:
+        | 'full_body'
+        | 'core'
+        | 'upper_body'
+        | 'legs_glutes'
+        | 'hiit_cardio'
+        | 'mobility'
+        | 'back_fit';
+      workout_format: 'circuit' | 'interval' | 'sets_reps';
     };
     CompositeTypes: {
       [_ in never]: never;
@@ -3324,7 +3389,7 @@ export const Constants = {
       food_preference_kind: ['like', 'dislike', 'intolerance'],
       goal_type: ['fat_loss', 'definition', 'muscle_gain', 'general_fitness', 'endurance'],
       load_type: ['weight', 'bodyweight', 'band', 'time'],
-      log_source: ['manual', 'gps', 'gpx_import'],
+      log_source: ['manual', 'gps', 'gpx_import', 'workout'],
       mealprep_slot_mode: ['lunch', 'lunch_dinner'],
       movement_pattern: [
         'squat',
@@ -3412,6 +3477,16 @@ export const Constants = {
         'brick',
         'technique',
       ],
+      workout_category: [
+        'full_body',
+        'core',
+        'upper_body',
+        'legs_glutes',
+        'hiit_cardio',
+        'mobility',
+        'back_fit',
+      ],
+      workout_format: ['circuit', 'interval', 'sets_reps'],
     },
   },
 } as const;

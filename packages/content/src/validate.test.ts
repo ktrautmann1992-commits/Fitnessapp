@@ -192,6 +192,56 @@ describe('runValidate', () => {
     expect(result.output).toContain('plan-templates/vorlage.yaml: keine JSON-Datei');
   });
 
+  it('Übungsbilder: Bild ohne Lizenz = blockierender Fehler; mit Lizenz und Bilddatei Exit 0', () => {
+    const image = {
+      kind: 'start_position',
+      file: 'kniebeuge-test-start.webp',
+      alt_de: 'Person steht aufrecht, Füße schulterbreit, Arme vor der Brust.',
+      origin: 'commissioned',
+      license: { name: 'Werkvertrag Illustration vom 01.11.2026', attribution_de: null },
+      source: { creator: 'Beispiel-Illustratorin', obtained_on: '2026-11-01' },
+      reviewed_by: null,
+    };
+    const withoutLicense = Object.fromEntries(
+      Object.entries(image).filter(([key]) => key !== 'license'),
+    );
+    const root = contentDir({
+      'content/exercises/kniebeuge-test.json': exercise(),
+      'content/exercise-media/kniebeuge-test.json': {
+        exercise_id: 'kniebeuge-test',
+        images: [withoutLicense],
+      },
+      'apps/mobile/assets/exercise-media/kniebeuge-test-start.webp': 'x',
+    });
+    const failing = runValidate(['--content', join(root, 'content')], root);
+    expect(failing.exitCode).toBe(1);
+    expect(failing.output).toContain(
+      'exercise-media/kniebeuge-test.json: images.0.license: Lizenzangabe fehlt',
+    );
+
+    const ok = contentDir({
+      'content/exercises/kniebeuge-test.json': exercise(),
+      'content/exercise-media/kniebeuge-test.json': {
+        exercise_id: 'kniebeuge-test',
+        images: [image],
+      },
+      'apps/mobile/assets/exercise-media/kniebeuge-test-start.webp': 'x',
+    });
+    expect(runValidate(['--content', join(ok, 'content')], ok).exitCode).toBe(0);
+
+    // Bilddatei fehlt → blockierend.
+    const missing = contentDir({
+      'content/exercises/kniebeuge-test.json': exercise(),
+      'content/exercise-media/kniebeuge-test.json': {
+        exercise_id: 'kniebeuge-test',
+        images: [image],
+      },
+    });
+    const missingResult = runValidate(['--content', join(missing, 'content')], missing);
+    expect(missingResult.exitCode).toBe(1);
+    expect(missingResult.output).toContain('kniebeuge-test-start.webp fehlt');
+  });
+
   it('Supplemente (SU2): Ordner supplements/ wird geprüft – Entwurf mit SK3 Exit 0, Schemafehler (SK1) und fremde Datei Exit 1', () => {
     const supplement = {
       id: 'bcaa',
@@ -290,6 +340,7 @@ describe('Berichte', () => {
         substitutions: [],
         packageSizes: [],
         supplements: [],
+        workouts: [],
         issues: [],
         blocking: [],
       },

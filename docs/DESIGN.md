@@ -70,6 +70,26 @@ Bewusste Entscheidungen:
 - **Grün und Rot gibt es in der Palette nicht.** `success` und `danger` bleiben Grün und Rot, damit „erledigt“,
   „Achtung“ und „Fehler/löschen“ klar unterscheidbar sind (immer zusätzlich mit Text, nie nur über die Farbe).
 
+### Muskelkarte (Übungen, 20.10.2026)
+
+Eigene, selbst gezeichnete Körper-Silhouette (vorn und hinten, `react-native-svg`, gleich auf Web und Handy) – keine
+fremden Vorlagen oder Bilder. Umrisse: `apps/mobile/src/lib/muscle-map-paths.ts` (nur linke Hälfte, gespiegelt =
+symmetrisch), Baustein: `apps/mobile/src/components/muscle-map.tsx`, Zuordnung Muskel → Ansicht:
+`packages/core/src/content/muscle-map.ts`.
+
+| Stufe                    | Hell                   | Dunkel                    |
+| ------------------------ | ---------------------- | ------------------------- |
+| Hauptmuskeln             | blau `#1f5bff`         | `#4d7dff`                 |
+| Mitbeteiligt             | himmel `#8db0ff`       | `#3b5bab`                 |
+| Nicht beansprucht        | `#c9d0dc`              | `#363e4f`                 |
+| Körper                   | `#e7ebf2`              | `#1d222d`                 |
+| Trennlinien der Regionen | weiß `#ffffff` (Karte) | graphit `#151922` (Karte) |
+
+- **Farbe nie allein:** Unter der Karte steht immer die Legende in Worten („Hauptmuskeln: Brust“, „Mitbeteiligt:
+  Trizeps, vordere Schulter“) mit Farbfeld; Screenreader lesen „Trainiert vor allem: … Mitbeteiligt: …“.
+- **Groß** im Übungsdetail (zwei Ansichten, je 260 px hoch), **klein** im Trainingsmodus rechts neben dem Namen
+  (64 px, Tippfläche ≥ 48 px) – antippen öffnet einen Dialog mit der großen Karte.
+
 ### Icons und Favicons
 
 Alle Icons werden aus dem Logo erzeugt – nie von Hand zeichnen:
@@ -362,3 +382,22 @@ Claude ergänzt den Pull Request, `ci` wird grün, die Vorschau-Links zeigen die
   Startbildschirm und Landingpage-Hero). Nutzenpunkte sind eine Liste mit Häkchen – bewusst keine Karten mit
   Rahmen, damit nichts wie ein Knopf aussieht. Noch nicht verfügbare Funktionen tragen die Plakette „Bald“.
 - **Testmodus-Hinweis:** dezente Plakette (hell: Eisblau, dunkel: Graphit) statt Leiste mit Signal-Linie.
+
+---
+
+## App: Kalorien-Ring und Mahlzeiten-Karten (Ernährung, 20.10.2026)
+
+Bausteine in `apps/mobile/src/components/nutrition-day-overview.tsx` (eigenes Alpha5-Design – kein fremdes Vorbild
+kopiert):
+
+- **`ProgressRing`** (react-native-svg): Spur in `--color-border`, Füllung in `--color-primary` ab 12 Uhr im
+  Uhrzeigersinn, abgerundete Enden. Über dem Ziel eine **zweite Runde in `--color-text`** (neutral, kein Rot/Orange –
+  „zu viel“ ist keine Warnung). Die Grafik ist für Bildschirmleser ausgeblendet; die Ansage kommt in Worten vom Rahmen
+  („1.391 kcal übrig von 2.869 kcal Tagesziel“). Groß 152 px (Strich 12), klein 44 px (Strich 5).
+- **`DayOverviewCard`**: Karte „Übersicht“ – links „Gegessen“, Mitte Ring mit Zahl (Archivo, `--font-size-xl`) und
+  „übrig“/„zu viel“, rechts „Verbrannt“ bzw. „Ziel“; darunter drei Makro-Balken nebeneinander (8 px hoch, Spur
+  `--color-border`, Füllung `--color-primary`, Text „47 / 222 g“ in `--color-text-muted`).
+- **`MealCard`**: Karte je Mahlzeit mit kleinem Ring, Titel, „317 / 606 kcal“, Vorschau (2 Zeilen) und rundem
+  **„+“-Knopf** (48 × 48 px, `--color-primary`, Zeichen in `--color-primary-text`).
+- Farbe nie allein: jede Zahl steht zusätzlich als Text daneben. Alle Werte rechnet `packages/core`
+  (`nutrition/day-ring.ts`); die Bausteine zeigen nur an.

@@ -191,6 +191,15 @@ export interface FreeSessionInput {
   readonly notes: string;
   /** Jetzt (ISO-Zeitstempel mit Zeitzone) – client_updated_at. */
   readonly now: string;
+  /**
+   * Eintrag aus dem Workout-Timer (docs/PLAN-WORKOUTS.md Abschnitt 5): Körpergewicht- und Band-Übungen nach Zeit dürfen
+   * ohne Wiederholungen abgehakt sein (die Zeit steht in der Notiz); Beginn und Ende kommen vom Timer. Gesendet wird
+   * trotzdem mit Herkunft `manual` – „workout“ setzt danach nur mark_session_log_workout (wie save_session_log es
+   * verlangt: neue Einträge immer `manual`).
+   */
+  readonly fromWorkout?: boolean;
+  readonly startedAt?: string | null;
+  readonly finishedAt?: string | null;
 }
 
 export type FreeSessionError =
@@ -236,10 +245,10 @@ export type FreeSessionResult =
       readonly warnings: FreeSessionWarnings;
     };
 
-function setFitsLoadType(set: LoggedSet, loadType: LoadType): boolean {
+function setFitsLoadType(set: LoggedSet, loadType: LoadType, timedAllowed = false): boolean {
   if (loadType === 'weight') return set.reps !== null && set.durationS === null;
   if (loadType === 'time') return set.durationS !== null && set.weightKg === null;
-  return set.reps !== null && set.weightKg === null && set.durationS === null;
+  return (set.reps !== null || timedAllowed) && set.weightKg === null && set.durationS === null;
 }
 
 /** Warnungen eines Satzes ohne Vorgabe und ohne Zustand (nur die absolute Schwelle der Geräte-Art). */
@@ -303,7 +312,9 @@ export function freeSessionLogFromInput(input: FreeSessionInput): FreeSessionRes
       const done = exercise.sets.filter((s) => s.done);
       if (done.length === 0) errors.add('no_sets');
       if (done.length > SESSION_LOG_LIMITS.setsPerExercise.max) errors.add('too_many_sets');
-      if (done.some((s) => !setFitsLoadType(s, exercise.loadType))) errors.add('invalid_set');
+      if (done.some((s) => !setFitsLoadType(s, exercise.loadType, input.fromWorkout === true))) {
+        errors.add('invalid_set');
+      }
       if (freeExerciseNeedsConfirmation(exercise)) errors.add('confirm_weight');
       exercises.push({
         id: exercise.id,
@@ -371,9 +382,10 @@ export function freeSessionLogFromInput(input: FreeSessionInput): FreeSessionRes
     planned_date: input.performedOn,
     kind: input.kind,
     performed_on: input.performedOn,
-    // Beim Nachtragen gibt es keine sinnvolle Uhrzeit – Reihenfolge am Tag über client_updated_at.
-    started_at: null,
-    finished_at: null,
+    // Beim Nachtragen gibt es keine sinnvolle Uhrzeit – Reihenfolge am Tag über client_updated_at. Workout-Timer:
+    // Beginn und Ende des Laufs.
+    started_at: input.startedAt ?? null,
+    finished_at: input.finishedAt ?? null,
     status: sessionLogStatus(input.kind, exercises),
     session_rpe: input.sessionRpe,
     notes: notes === '' ? null : notes,

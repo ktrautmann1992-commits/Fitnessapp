@@ -61,6 +61,12 @@ export default function MoreScreen() {
           onPress={open('/uebungen')}
           testID="more-exercises"
         />
+        <Button
+          label={t.workouts.more}
+          variant="secondary"
+          onPress={open('/workouts')}
+          testID="more-workouts"
+        />
         {nutrition ? (
           <>
             <Button

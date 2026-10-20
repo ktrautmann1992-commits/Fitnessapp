@@ -1,8 +1,16 @@
 import {
   addDays,
+  calorieRing,
   competitionGuideId,
   evaluationMealPlanUsable,
   isoDateSchema,
+  isoWeekNumber,
+  MEAL_CARD_GROUPS,
+  macroProgress,
+  mealCardEntrySlot,
+  mealCardGroup,
+  mealCardIntake,
+  mealCardTargets,
   type MealSlotId,
   mealsInDayOrder,
   type NutritionNoticeCode,
@@ -20,7 +28,6 @@ import {
   DemoBanner,
   EatingHelpNotice,
   EmptySlotRow,
-  MacroBars,
   MealPlanStateNotices,
   UnavailableMealRows,
   MealRow,
@@ -28,15 +35,17 @@ import {
 } from '@/components/nutrition';
 import { CompetitionNutritionCard } from '@/components/competition-nutrition';
 import { CustomMealDaySection } from '@/components/custom-meals';
+import { DayOverviewCard, MealCard } from '@/components/nutrition-day-overview';
 import { FoodLogDaySection, PlanMealEaten } from '@/components/food-log';
 import { useReadableGuides } from '@/components/guides';
 import { Screen } from '@/components/screen';
 import { Body, Button, Card, ErrorState, Heading, LoadingState, Notice } from '@/components/ui';
 import { showEnergyNumbers } from '@/data/nutrition-plan';
 import { t } from '@/i18n';
+import { mealCardPreview, mealCardTitle } from '@/lib/nutrition-day-format';
+import { useOnline } from '@/lib/use-online';
 import { useToday } from '@/lib/use-today';
 import {
-  formatKcal,
   leftoverHintsBySlot,
   leftoverHintView,
   slotLabel,
@@ -109,6 +118,7 @@ export default function NutritionDayScreen() {
       : selected;
   const foodLog = useFoodLogDay(shownDate, view.showNumbers);
   const foodLogActions = useFoodLogActions();
+  const online = useOnline();
   const [eatenMessage, setEatenMessage] = useState<{
     text: string;
     tone: 'success' | 'danger';
@@ -218,6 +228,27 @@ export default function NutritionDayScreen() {
     date: dayDate,
     today,
   });
+  const isToday = dayDate === today;
+  // Tagesübersicht (Ring, Makros, Mahlzeiten-Karten): alle Werte aus packages/core (nutrition/day-ring.ts).
+  const future = foodLog.dateStatus === 'future';
+  const logEntries = foodLog.supported && foodLog.consentValid ? foodLog.entries : [];
+  const intake =
+    foodLog.supported && foodLog.consentValid && foodLog.intake.kind === 'numbers'
+      ? foodLog.intake
+      : null;
+  const ring = numbers
+    ? calorieRing({
+        targetKcal: dayTargets.targetKcal,
+        eatenKcal: future ? 0 : (intake?.kcal ?? 0),
+      })
+    : ({ kind: 'no_target' } as const);
+  const cardTargets = mealCardTargets(numbers ? dayTargets.targetKcal : null, dayTargets.slots);
+  const cardIntake = mealCardIntake(logEntries);
+  const slotIds = dayTargets.slots.map((s) => s.slot);
+  const mainOnly = slotIds.includes('main') && !slotIds.includes('lunch');
+  const canAdd = foodLog.supported && foodLog.consentValid && foodLog.dateStatus === 'ok';
+  const orderedMeals = day ? mealsInDayOrder(day) : [];
+  const hasPlanMeals = day !== null && (day.meals.length > 0 || day.emptySlots.length > 0);
   const canSwap = (meal: PlannedMeal) =>
     actions !== null && !meal.isFill && dayDate >= today && !meal.slot.startsWith('extra');
 
@@ -263,13 +294,19 @@ export default function NutritionDayScreen() {
         </View>
       </View>
       <View style={{ gap: 4 }} testID="nutrition-day-header">
-        <Heading level={2}>
-          {dayTargets.date === today
-            ? `${t.nutrition.today}, ${dayLabel(dayTargets.date)}`
-            : dayLabel(dayTargets.date)}
-        </Heading>
+        <Heading level={2}>{isToday ? t.nutritionDay.today : dayLabel(dayDate)}</Heading>
+        <Body muted testID="nutrition-day-date">
+          {isToday
+            ? t.nutritionDay.dateLine(dayLabel(dayDate), isoWeekNumber(dayDate))
+            : t.nutritionDay.weekLine(isoWeekNumber(dayDate))}
+        </Body>
         {status ? <Body muted>{t.nutrition.dayStatus[status]}</Body> : null}
       </View>
+      {!online ? (
+        <Notice tone="info" testID="nutrition-offline">
+          {t.nutritionDay.offline}
+        </Notice>
+      ) : null}
       {/* Etappe W1: Wettkampf-Ernährung (Carb-Loading, Vorabend, Renntag mit Zeitleiste, Nach dem Rennen). */}
       <CompetitionNutritionCard
         day={dayTargets}
@@ -288,32 +325,22 @@ export default function NutritionDayScreen() {
         onRetry={view.retrySave}
       />
 
-      {numbers && dayTargets.targetKcal !== null ? (
-        <Card>
-          <Body testID="nutrition-target">
-            {t.nutrition.target(formatKcal(dayTargets.targetKcal))}
-          </Body>
-          {day && day.status === 'complete' ? (
-            <Body muted>{t.nutrition.dayTotal(formatKcal(day.totals.kcal))}</Body>
-          ) : null}
-          {dayTargets.proteinG !== null &&
-          dayTargets.carbsG !== null &&
-          dayTargets.fatG !== null ? (
-            <MacroBars
-              planned={{
-                protein: day?.totals.protein_g ?? 0,
-                carbs: day?.totals.carbs_g ?? 0,
-                fat: day?.totals.fat_g ?? 0,
-              }}
-              target={{
-                protein: dayTargets.proteinG,
-                carbs: dayTargets.carbsG,
-                fat: dayTargets.fatG,
-              }}
-            />
-          ) : null}
-          <Body muted>{t.nutrition.estimate}</Body>
-        </Card>
+      {ring.kind === 'ring' ? (
+        <DayOverviewCard
+          ring={ring}
+          future={future}
+          trainingKcal={dayTargets.trainingKcal}
+          macros={{
+            carbs: macroProgress(intake?.carbs_g ?? 0, dayTargets.carbsG),
+            protein: macroProgress(intake?.protein_g ?? 0, dayTargets.proteinG),
+            fat: macroProgress(intake?.fat_g ?? 0, dayTargets.fatG),
+          }}
+          plannedKcal={day && day.status === 'complete' ? day.totals.kcal : null}
+          macrosIncomplete={intake !== null && intake.count > 0 && !intake.macrosComplete}
+          hint={
+            !future && (intake === null || intake.count === 0) ? t.nutritionDay.nothingYet : null
+          }
+        />
       ) : !showEnergyNumbers(rows) ? (
         <Body muted testID="nutrition-numbers-hidden">
           {t.nutrition.numbersHidden}
@@ -328,7 +355,7 @@ export default function NutritionDayScreen() {
       <NoticeActions notices={notices} consentValid={consent === 'valid'} />
       {view.showNumbers ? <CapsExplanation caps={dayTargets.appliedCaps} /> : null}
 
-      <Heading level={2}>{t.nutrition.mealsTitle}</Heading>
+      <Heading level={2}>{t.nutritionDay.mealsTitle}</Heading>
       {plan === null ? (
         <Card>
           <Body testID="nutrition-no-recipes">
@@ -347,54 +374,93 @@ export default function NutritionDayScreen() {
             />
           ) : null}
         </Card>
-      ) : day === null || (day.meals.length === 0 && day.emptySlots.length === 0) ? (
+      ) : !hasPlanMeals ? (
         <Body muted>{t.nutrition.noMeals}</Body>
-      ) : (
-        <View style={{ gap: 8 }} testID="nutrition-meals">
-          {mealsInDayOrder(day).map((meal) => (
-            <View key={meal.slot} style={{ gap: 4 }}>
-              <MealRow
-                meal={meal}
-                showNumbers={view.showNumbers && day.status !== 'no_targets'}
-                foodName={foodName}
-                leftover={(() => {
-                  const hint = leftoverBySlot.get(`${day.date}|${meal.slot}`);
-                  return hint ? leftoverHintView(hint, foodName) : undefined;
-                })()}
-                onOpen={() =>
-                  router.push(
-                    `/rezept/${encodeURIComponent(meal.recipeId)}?tag=${day.date}&platz=${meal.slot}` as Href,
-                  )
-                }
-              />
-              {eatenAllowed ? (
-                <PlanMealEaten
-                  meal={meal}
-                  date={day.date}
-                  view={foodLog}
-                  actions={foodLogActions}
-                  onMessage={setEatenMessage}
-                />
-              ) : null}
-              {canSwap(meal) ? (
-                <Button
-                  label={t.nutrition.plan.swap}
-                  accessibilityLabel={t.nutrition.plan.swapA11y(slotLabel(meal.slot), meal.titleDe)}
-                  variant="secondary"
-                  loading={swapping === meal.slot}
-                  disabled={swapping !== null && swapping !== meal.slot}
-                  onPress={() => void swap(meal)}
-                  testID={`swap-${meal.slot}`}
-                />
-              ) : null}
-            </View>
-          ))}
-          {day.emptySlots.map((empty) => (
-            <EmptySlotRow key={empty.slot} empty={empty} />
-          ))}
+      ) : null}
+      {/* Je Mahlzeit eine Karte (Frühstück, Mittagessen, Abendessen, Snacks) mit Ring, Ziel, Vorschau und „+“. */}
+      <View style={{ gap: 8 }} testID={hasPlanMeals ? 'nutrition-meals' : 'nutrition-meal-cards'}>
+        {MEAL_CARD_GROUPS.map((group) => {
+          const meals = orderedMeals.filter((meal) => mealCardGroup(meal.slot) === group);
+          const empties = (day?.emptySlots ?? []).filter(
+            (empty) => mealCardGroup(empty.slot) === group,
+          );
+          const entries = logEntries.filter((entry) => mealCardGroup(entry.slot) === group);
+          const title = mealCardTitle(group, mainOnly);
+          return (
+            <MealCard
+              key={group}
+              group={group}
+              title={title}
+              eatenKcal={cardIntake[group].kcal}
+              targetKcal={cardTargets[group]}
+              showNumbers={view.showNumbers}
+              preview={mealCardPreview(entries.map((entry) => foodLog.displayTitle(entry)))}
+              onAdd={
+                canAdd
+                  ? () =>
+                      router.push(
+                        `/ernaehrung/eintragen?tag=${dayDate}&platz=${mealCardEntrySlot(group)}` as Href,
+                      )
+                  : null
+              }
+              addA11y={t.nutritionDay.addA11y(
+                title,
+                isToday ? t.nutritionDay.addA11yToday : dayLabel(dayDate),
+              )}
+            >
+              {day !== null
+                ? meals.map((meal) => (
+                    <View key={meal.slot} style={{ gap: 4 }}>
+                      <MealRow
+                        meal={meal}
+                        showNumbers={view.showNumbers && day.status !== 'no_targets'}
+                        foodName={foodName}
+                        leftover={(() => {
+                          const hint = leftoverBySlot.get(`${day.date}|${meal.slot}`);
+                          return hint ? leftoverHintView(hint, foodName) : undefined;
+                        })()}
+                        onOpen={() =>
+                          router.push(
+                            `/rezept/${encodeURIComponent(meal.recipeId)}?tag=${day.date}&platz=${meal.slot}` as Href,
+                          )
+                        }
+                      />
+                      {eatenAllowed ? (
+                        <PlanMealEaten
+                          meal={meal}
+                          date={day.date}
+                          view={foodLog}
+                          actions={foodLogActions}
+                          onMessage={setEatenMessage}
+                        />
+                      ) : null}
+                      {canSwap(meal) ? (
+                        <Button
+                          label={t.nutrition.plan.swap}
+                          accessibilityLabel={t.nutrition.plan.swapA11y(
+                            slotLabel(meal.slot),
+                            meal.titleDe,
+                          )}
+                          variant="secondary"
+                          loading={swapping === meal.slot}
+                          disabled={swapping !== null && swapping !== meal.slot}
+                          onPress={() => void swap(meal)}
+                          testID={`swap-${meal.slot}`}
+                        />
+                      ) : null}
+                    </View>
+                  ))
+                : null}
+              {empties.map((empty) => (
+                <EmptySlotRow key={empty.slot} empty={empty} />
+              ))}
+            </MealCard>
+          );
+        })}
+        {day !== null ? (
           <UnavailableMealRows meals={view.week.unavailableMeals} date={day.date} />
-        </View>
-      )}
+        ) : null}
+      </View>
       {plan !== null && day !== null && !eatenAllowed && foodLog.supported ? (
         <Body muted testID="nutrition-plan-not-stored">
           {t.foodLog.planNotStored}

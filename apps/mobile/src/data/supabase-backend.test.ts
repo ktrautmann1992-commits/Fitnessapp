@@ -1296,6 +1296,53 @@ describe('Supabase-Modus: Tagebuch-Warteschlange', () => {
     expect(s.logQueueStore.peek()).toBeNull();
   });
 
+  it('Workout-Timer: nach dem Speichern Herkunft „workout“ (mark_session_log_workout); offline erst später', async () => {
+    const workoutPayload = logPayload({ planned_session_id: null, is_free: true });
+    const workoutDraft: WorkoutDraft = {
+      ...draftOf(false),
+      key: `frei-${LOG_ID}`,
+      plannedSessionId: null,
+      isFree: true,
+      workoutId: 'bauch-blitz',
+    };
+    let mode: 'offline' | 'mark_offline' | 'mark_rejected' | 'ok' = 'offline';
+    const { backend, s, calls } = make((call) => {
+      if (mode === 'offline') return { error: networkError };
+      if (call.table === 'rpc:mark_session_log_workout') {
+        if (mode === 'mark_offline') return { error: networkError };
+        if (mode === 'mark_rejected') {
+          return { error: { code: '22023', message: 'Ungültige Werte im Tagebuch.' }, status: 400 };
+        }
+        return { data: { result: 'ok' } };
+      }
+      return ok(call);
+    });
+    expect(await backend.submitWorkout(workoutDraft, workoutPayload)).toEqual({ kind: 'queued' });
+    // Gespeichert, aber Markieren scheitert am Netz → bleibt in der Warteschlange (erneut idempotent gesendet).
+    mode = 'mark_offline';
+    await backend.flush();
+    expect(s.logQueueStore.peek()).toContain(`save_session_log:${LOG_ID}`);
+    mode = 'ok';
+    expect(await backend.flush()).toBe(true);
+    expect(s.logQueueStore.peek()).toBeNull();
+    const marks = calls.filter((c) => c.table === 'rpc:mark_session_log_workout');
+    expect(marks.at(-1)?.args[0]?.[0]).toEqual({ p_log_id: LOG_ID });
+    const saves = calls.filter((c) => c.table === 'rpc:save_session_log');
+    const writeIds = saves.map(
+      (c) => (c.args[0]?.[0] as { p_log: SessionLogPayload }).p_log.write_id,
+    );
+    expect(new Set(writeIds).size).toBe(1);
+    // Inhaltlich abgelehnt: Eintrag bleibt gespeichert (nie als abgelehnter Entwurf).
+    mode = 'mark_rejected';
+    expect(
+      await backend.submitWorkout(workoutDraft, { ...workoutPayload, write_id: LOG_ID }),
+    ).toEqual({
+      kind: 'saved',
+      orphaned: false,
+    });
+    expect(await backend.loadDrafts()).toEqual([]);
+  });
+
   it('Freie Einheit (A1b): offline in die Warteschlange (Schlüssel = id), gesendet mit is_free; Ablehnung → Entwurf', async () => {
     const FREE_KEY = `frei-${LOG_ID}`;
     const freePayload = logPayload({

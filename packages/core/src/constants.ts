@@ -767,6 +767,46 @@ export const FREE_SESSION = {
 } as const;
 
 /**
+ * Workout-Bibliothek (docs/PLAN-WORKOUTS.md, Gründer-Wunsch 20.10.2026): vorab erstellte Workouts mit Sternen,
+ * Timer und Eintrag als freie Einheit. Grenzen der Inhalte (Schema W1, Prüfregeln W2–W7) und des Timers.
+ * - `stars` 1–5 (1 = leicht … 5 = sehr schwer), `minutes` 5–60 (Startbestand 10–45): PRODUKTENTSCHEIDUNG.
+ * - `rounds` höchstens 10 und `exercises` höchstens 12: so passt jedes Workout in einen Tagebuch-Eintrag
+ *   (SESSION_LOG_LIMITS.setsPerExercise bzw. exercisesPerSession – je Übung ein Satz pro Runde).
+ * - `reps` 3–30, `sets` 1–6: wie die Plan-Vorlagen (Regel V4; Quellen dort: Schoenfeld 2017, ACSM 2009).
+ *   Halte-/Intervallzeit 10–120 s: Halteübungen wie V4 (10–120 s); Ausdauer-Übungen (z. B. Hampelmann) im selben
+ *   Rahmen – PRODUKTENTSCHEIDUNG.
+ * - Pausen: `restS` 0–180 s je Übung, `roundRestS` 0–300 s zwischen Runden; bei 1–2 Sternen mindestens
+ *   `easyMinRestS` = 10 s nach jeder Übung (Einsteiger, Regel W5) – PRODUKTENTSCHEIDUNG.
+ * - Sterne ↔ Übungen (Regel W5): 1–2 Sterne nur Übungen mit Schwierigkeit ≤ 2 und ohne „high_skill“; 1 Stern ohne
+ *   „high_impact“ (Sprünge) – Belastung passend zu Einsteigern, PRODUKTENTSCHEIDUNG.
+ * - Dauer-Schätzung (Regel W6, gelb): `secondsPerRep` 3 s je Wiederholung (einseitige Übungen doppelt), Abweichung
+ *   höchstens 20 % bzw. 2 Minuten. Grobe Annahme (übliches Tempo 2–4 s je Wiederholung) – PRODUKTENTSCHEIDUNG.
+ * - Sicherheitshinweise in der App (Hinweis, kein Verbot): ab `hardStars` (4) für Einsteiger und bei einem Gesundheits-
+ *   Check mit Auffälligkeiten „erst leichtere Workouts / ärztlich abklären“; Aufwärmen immer (CLAUDE.md, Sicherheit der
+ *   Empfehlungen). `prepareS` = 5 s „Gleich geht's los“ vor der ersten Übung.
+ * VOR LIVEGANG FACHLICH PRÜFEN.
+ */
+export const WORKOUT_LIMITS = {
+  stars: { min: 1, max: 5 },
+  minutes: { min: 5, max: 60 },
+  rounds: { min: 1, max: 10 },
+  exercises: { min: 2, max: 12 },
+  reps: { min: 3, max: 30 },
+  sets: { min: 1, max: 6 },
+  workS: { min: 10, max: 120 },
+  restS: { min: 0, max: 180 },
+  roundRestS: { min: 0, max: 300 },
+  easyMinRestS: 10,
+  easyMaxStars: 2,
+  noImpactMaxStars: 1,
+  easyMaxExerciseDifficulty: 2,
+  hardStars: 4,
+  secondsPerRep: 3,
+  durationTolerance: { share: 0.2, minMinutes: 2 },
+  prepareS: 5,
+} as const;
+
+/**
  * RPE je Satz 5–10 in 0,5er-Schritten, eingegeben als „Wiederholungen in Reserve“ (0 / 1 / 2 / 3 / 4 / 5+).
  * Quelle: Zourdos MC et al. (2016), „Novel resistance training-specific rating of perceived exertion scale
  * measuring repetitions in reserve“, J Strength Cond Res 30(1):267–275.
