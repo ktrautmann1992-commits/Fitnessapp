@@ -16,6 +16,7 @@ import { existsSync, readdirSync, readFileSync } from 'node:fs';
 import { join, relative, resolve } from 'node:path';
 
 import {
+  checkExerciseMediaFiles,
   CONTENT_SEED_SETTINGS_FILE,
   type ContentFile,
   type ContentFileKind,
@@ -24,6 +25,9 @@ import {
   type ContentStatus,
   type ContentValidationResult,
   DIET_TYPES,
+  EXERCISE_MEDIA_ASSET_DIR,
+  EXERCISE_MEDIA_FOLDER,
+  type ExerciseMediaFile,
   isBlockingIssue,
   MEAL_TYPES,
   type NutritionContentFile,
@@ -156,6 +160,48 @@ function loadFolders<K extends string>(
     }
   }
   return { files, strayFiles };
+}
+
+/**
+ * Übungsbilder (`content/exercise-media/<übungs-id>.json`, Nachtrag „Muskelkarte“ in
+ * docs/PLAN-UEBUNGEN-GLOSSAR-TAUSCH.md): jede Zuordnung braucht Lizenz und Quelle, die Übung muss es geben und die
+ * Bilddatei muss unter `apps/mobile/assets/exercise-media/` liegen. Jeder Befund ist ein blockierender Datei-Fehler.
+ */
+export function checkExerciseMediaFolder(
+  contentDir: string,
+  exerciseIds: ReadonlySet<string>,
+  repoRoot: string | undefined,
+): string[] {
+  const dir = join(contentDir, EXERCISE_MEDIA_FOLDER);
+  if (!existsSync(dir)) {
+    return [];
+  }
+  const files: ExerciseMediaFile[] = [];
+  const problems: string[] = [];
+  for (const fileName of readdirSync(dir).sort()) {
+    if (fileName.startsWith('.')) {
+      continue;
+    }
+    if (!fileName.endsWith('.json')) {
+      problems.push(
+        `${EXERCISE_MEDIA_FOLDER}/${fileName}: keine JSON-Datei – Bilder gehören nach ${EXERCISE_MEDIA_ASSET_DIR}/.`,
+      );
+      continue;
+    }
+    try {
+      files.push({ fileName, data: JSON.parse(readFileSync(join(dir, fileName), 'utf8')) });
+    } catch (error) {
+      files.push({ fileName, jsonError: (error as Error).message });
+    }
+  }
+  const assetDir = join(repoRoot ?? resolve(contentDir, '..'), EXERCISE_MEDIA_ASSET_DIR);
+  return [
+    ...problems,
+    ...checkExerciseMediaFiles(files, {
+      exerciseIds,
+      assetExists: (file) => existsSync(join(assetDir, file)),
+    }),
+  ];
 }
 
 /**
@@ -453,6 +499,14 @@ export function validateRepository(options: {
   const seed = loadContentSeedSettings(contentDir);
   // Supplemente (Phase 6 SU2, SK1–SK7).
   const supplementFiles = loadSupplementContentFiles(contentDir, readOptions);
+  // Übungsbilder „Ausgangsposition“ (Bild ohne Lizenz = blockierend).
+  const exerciseIds = new Set(
+    loaded.files.flatMap((file) => {
+      const id = (file.data as { id?: unknown } | undefined)?.id;
+      return file.kind === 'exercise' && typeof id === 'string' ? [id] : [];
+    }),
+  );
+  const mediaProblems = checkExerciseMediaFolder(contentDir, exerciseIds, repoRoot);
   return {
     result: validateContent(
       [...loaded.files, ...nutrition.files, ...nutritionFiles.files, ...supplementFiles.files],
@@ -464,6 +518,7 @@ export function validateRepository(options: {
       ...supplementFiles.strayFiles,
       ...nutrition.problems,
       ...seed.problems,
+      ...mediaProblems,
     ],
     versionNote,
     seedSettings: seed.settings,

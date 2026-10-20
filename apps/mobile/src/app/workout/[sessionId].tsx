@@ -14,6 +14,8 @@ import {
   type EnduranceModality,
   isPlausibleTargetWeight,
   isValidSetWeight,
+  muscleMapHighlights,
+  type MuscleMapHighlights,
   needsWeightConfirmation as needsStartWeightConfirmation,
   restAfterCheckedSet,
   SESSION_LOG_LIMITS,
@@ -25,6 +27,7 @@ import { Platform, StyleSheet, View } from 'react-native';
 
 import { IntervalTimer } from '@/components/competition';
 import { RestEndNotificationOffer } from '@/components/notifications';
+import { MuscleMapThumbnail, StartPositionImage } from '@/components/muscle-map';
 import { MedicalNotice } from '@/components/plan';
 import { SessionAdjustedNotice } from '@/components/live-adjust';
 import { ConfirmDialog, Screen } from '@/components/screen';
@@ -382,6 +385,11 @@ export default function WorkoutScreen() {
     const exercise = findGlossaryExercise(lib, exerciseId);
     return exercise ? { steps: exercise.steps_de, safetyNote: exercise.safety_note_de } : null;
   };
+  /** Muskelkarte (Nachtrag „Muskelkarte“): aus der Bibliothek, auch offline; null = Bibliothek fehlt. */
+  const musclesFor = (exerciseId: string) => {
+    const exercise = findGlossaryExercise(lib, exerciseId);
+    return exercise ? muscleMapHighlights(exercise) : null;
+  };
 
   /** Eintrag im Trainingsmodus: Paar (gespeichert, im Entwurf geplant) – der laufende Entwurf gilt (5.1). */
   function openSwap(index: number) {
@@ -717,6 +725,7 @@ export default function WorkoutScreen() {
           canSwitch={canSwitch}
           onSwap={() => openSwap(index)}
           guide={guideFor(currentTarget(exercise).exerciseId)}
+          muscles={musclesFor(currentTarget(exercise).exerciseId)}
           onOpenGuide={() =>
             router.push(
               `/uebungen/${encodeURIComponent(currentTarget(exercise).exerciseId)}` as Href,
@@ -867,6 +876,7 @@ function ExerciseCard({
   canSwitch,
   onSwap,
   guide,
+  muscles,
   onOpenGuide,
   onSkip,
   onSet,
@@ -886,6 +896,8 @@ function ExerciseCard({
   onSwap: () => void;
   /** Kurz-Anleitung zum Aufklappen (ohne den Trainingsmodus zu verlassen); null = Bibliothek fehlt. */
   guide: { steps: readonly string[]; safetyNote: string } | null;
+  /** Kleine Muskelkarte neben dem Namen, antippbar für groß; null = Bibliothek fehlt. */
+  muscles: MuscleMapHighlights | null;
   onOpenGuide: () => void;
   onSkip: (skipped: boolean) => void;
   onSet: (setIndex: number, patch: Partial<DraftExercise['sets'][number]>) => void;
@@ -917,9 +929,20 @@ function ExerciseCard({
   return (
     <Card>
       <View testID={`workout-exercise-${index}`} style={styles.exercise}>
-        <Heading level={2}>
-          {index + 1}. {target.nameDe}
-        </Heading>
+        <View style={styles.exerciseHead}>
+          <View style={styles.exerciseName}>
+            <Heading level={2}>
+              {index + 1}. {target.nameDe}
+            </Heading>
+          </View>
+          {muscles ? (
+            <MuscleMapThumbnail
+              highlights={muscles}
+              exerciseName={target.nameDe}
+              testID={`workout-muscles-${index}`}
+            />
+          ) : null}
+        </View>
         {exercise.alternative ? (
           <Body muted>{t.workout.alternativeOf(exercise.planned.nameDe)}</Body>
         ) : null}
@@ -948,6 +971,7 @@ function ExerciseCard({
             />
             {guideOpen ? (
               <View style={styles.guide} testID={`workout-howto-panel-${index}`}>
+                <StartPositionImage exerciseId={target.exerciseId} />
                 {guide.steps.map((step, stepIndex) => (
                   <View
                     key={`${stepIndex}-${step}`}
@@ -1327,6 +1351,8 @@ const styles = StyleSheet.create({
   alternatives: { gap: 8 },
   durationField: { flex: 1, minWidth: 120 },
   guide: { gap: 6 },
+  exerciseHead: { flexDirection: 'row', alignItems: 'flex-start', gap: 8 },
+  exerciseName: { flex: 1 },
   guideStep: { flexDirection: 'row', gap: 8 },
   guideNo: { fontWeight: '700', minWidth: 24 },
   guideText: { flex: 1 },
