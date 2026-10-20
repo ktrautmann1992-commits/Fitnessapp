@@ -2,6 +2,7 @@ import { describe, expect, it } from 'vitest';
 
 import {
   dayLabel,
+  longDayLabel,
   enduranceLines,
   exerciseLines,
   repsRange,
@@ -78,5 +79,12 @@ describe('Plan-Texte', () => {
         { pregnancyNotice: true },
       ).at(-1),
     ).toContain('Laufband im Gehtempo');
+  });
+});
+
+describe('longDayLabel', () => {
+  it('schreibt Wochentag, Tag und Monat aus', () => {
+    expect(longDayLabel('2026-10-20')).toBe('Dienstag, 20. Oktober');
+    expect(longDayLabel('2026-03-01')).toBe('Sonntag, 1. März');
   });
 });

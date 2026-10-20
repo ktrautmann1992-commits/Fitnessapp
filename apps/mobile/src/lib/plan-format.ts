@@ -25,6 +25,27 @@ export function dayLabel(date: string): string {
   return `${WEEKDAYS[isoWeekday(date) - 1] ?? ''}, ${day}.${month}.`;
 }
 
+const MONTHS = [
+  'Januar',
+  'Februar',
+  'März',
+  'April',
+  'Mai',
+  'Juni',
+  'Juli',
+  'August',
+  'September',
+  'Oktober',
+  'November',
+  'Dezember',
+] as const;
+
+/** „Dienstag, 20. Oktober“ (Kopf der Übersicht). */
+export function longDayLabel(date: string): string {
+  const [, month, day] = date.split('-');
+  return `${weekdayName(date)}, ${Number(day)}. ${MONTHS[Number(month) - 1] ?? ''}`;
+}
+
 /** „Donnerstag“ */
 export function weekdayName(date: string): string {
   return WEEKDAYS[isoWeekday(date) - 1] ?? '';

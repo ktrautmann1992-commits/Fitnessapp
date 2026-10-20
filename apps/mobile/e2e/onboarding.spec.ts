@@ -407,7 +407,7 @@ test('mit Einwilligung: Körperdaten, Umfänge, Gesundheits-Check mit Arzt-Hinwe
   await expect(page.getByRole('heading', { name: 'Heute', exact: true })).toBeVisible();
   // Neustart nach dem Onboarding → direkt die Übersicht (Startseite seit 18.10.2026).
   await page.goto('/');
-  await expect(page.getByRole('heading', { name: 'Übersicht', exact: true })).toBeVisible();
+  await expect(page.getByTestId('overview-header')).toBeVisible();
 
   await page.getByRole('tab', { name: 'Mehr' }).click();
   await page.getByRole('button', { name: 'Einstellungen' }).click();
@@ -483,7 +483,7 @@ test('ohne Einwilligung Gesundheitsdaten: keine Körperdaten, kein Gesundheits-C
 
   // Direkter Aufruf eines Gesundheits-Schritts ist nicht möglich.
   await page.goto('/onboarding/body_metrics');
-  await expect(page.getByRole('heading', { name: 'Übersicht', exact: true })).toBeVisible();
+  await expect(page.getByTestId('overview-header')).toBeVisible();
   await page.getByRole('tab', { name: 'Mehr' }).click();
   await page.getByRole('button', { name: 'Einstellungen' }).click();
   // Erste Karte „Nicht erteilt“ = Gesundheitsdaten (seit E3 steht darunter auch „Gerichte per Foto auswerten“).

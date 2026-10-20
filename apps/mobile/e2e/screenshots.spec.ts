@@ -256,7 +256,7 @@ for (const scheme of ['light', 'dark'] as const) {
     await shot('eintrag-loeschen');
     // Übersicht mit Kacheln und Menüleiste (docs/PLAN-DASHBOARD.md).
     await page.goto('/');
-    await heading('Übersicht');
+    await expect(page.getByTestId('overview-header')).toBeVisible();
     await shot('uebersicht');
     await page.getByTestId('overview-progress').scrollIntoViewIfNeeded();
     await shot('uebersicht-unten');

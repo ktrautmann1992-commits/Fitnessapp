@@ -57,7 +57,7 @@ test('Wettkampfplan finden: Kachel, Aufbau des Plans, Training, Mehr, Menüleist
 
   // --- Übersicht ohne Wettkampf: Kachel weit oben mit „Wettkampf planen“ ------------------------------------
   await tab(page, 'Übersicht').click();
-  await heading(page, 'Übersicht');
+  await expect(page.getByTestId('overview-header')).toBeVisible();
   const tile = page.getByTestId('overview-competition');
   await expect(tile).toContainText('Mein Wettkampf');
   await expect(page.getByTestId('overview-competition-none')).toBeVisible();
@@ -118,7 +118,7 @@ test('Wettkampfplan finden: Kachel, Aufbau des Plans, Training, Mehr, Menüleist
 
   // --- Übersicht mit Wettkampf ------------------------------------------------------------------------------
   await tab(page, 'Übersicht').click();
-  await heading(page, 'Übersicht');
+  await expect(page.getByTestId('overview-header')).toBeVisible();
   await expect(page.getByTestId('overview-competition-name')).toHaveText(
     'Winterlauf · Halbmarathon',
   );
@@ -156,16 +156,16 @@ test('Wettkampfplan finden: Kachel, Aufbau des Plans, Training, Mehr, Menüleist
   await page.getByRole('button', { name: 'Zurück', exact: true }).click();
   await heading(page, 'Heute');
 
-  // --- Mehr: „Wettkampf“ ganz oben unter „Weitere Bereiche“ ------------------------------------------------
+  // --- Mehr: „Wettkampf“ als erste Kachel unter „Training & Sport“ ------------------------------------------------
   await tab(page, 'Mehr').click();
   await heading(page, 'Mehr');
   const moreWettkampf = page.getByTestId('more-area-wettkampf');
-  await expect(moreWettkampf).toHaveText('Wettkampf');
+  await expect(moreWettkampf).toHaveAccessibleName(/^Wettkampf/);
+  // Design 20.10.2026: „Mein Konto“ steht oben, „Wettkampf“ ist die erste Kachel unter „Training & Sport“.
   const moreY = (await moreWettkampf.boundingBox())?.y ?? 1e9;
   expect(moreY).toBeLessThan(
     (await page.getByTestId('more-area-fortschritt').boundingBox())?.y ?? 0,
   );
-  expect(moreY).toBeLessThan((await page.getByTestId('more-account').boundingBox())?.y ?? 0);
   // Kein doppelter Eintrag weiter unten.
   await expect(page.getByTestId('more-competition')).toHaveCount(0);
   await moreWettkampf.click();
@@ -182,7 +182,7 @@ test('Wettkampfplan finden: Kachel, Aufbau des Plans, Training, Mehr, Menüleist
     'Wettkampf ist jetzt in der Menüleiste.',
   );
   await page.goto('/uebersicht');
-  await heading(page, 'Übersicht');
+  await expect(page.getByTestId('overview-header')).toBeVisible();
   await expect(tab(page, 'Wettkampf')).toBeVisible();
   await tab(page, 'Wettkampf').click();
   await heading(page, 'Mein Wettkampf');
@@ -190,7 +190,7 @@ test('Wettkampfplan finden: Kachel, Aufbau des Plans, Training, Mehr, Menüleist
   await expect(page.getByTestId('competition-outline')).toBeVisible();
   // Zurück (Knopf auf der Seite) → zuvor besuchter Reiter.
   await page.getByRole('button', { name: 'Zurück', exact: true }).click();
-  await heading(page, 'Übersicht');
+  await expect(page.getByTestId('overview-header')).toBeVisible();
   await expect(tab(page, 'Übersicht')).toHaveAttribute('aria-selected', 'true');
 
   // --- 320 px: alles lesbar, kein waagerechtes Scrollen ---------------------------------------------------

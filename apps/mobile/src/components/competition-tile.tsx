@@ -1,8 +1,10 @@
+import { fontSize } from '@fitnessapp/ui';
 import { useRouter, type Href } from 'expo-router';
 import { useMemo } from 'react';
+import { StyleSheet, View } from 'react-native';
 
-import { DashboardTile } from '@/components/dashboard';
-import { Body, Button } from '@/components/ui';
+import { Tile } from '@/components/design';
+import { Body } from '@/components/ui';
 import { type CompetitionTileView, competitionTileView } from '@/data/competition-dashboard';
 import { activePlan } from '@/data/training-plan';
 import type { UserRows } from '@/data/types';
@@ -13,8 +15,8 @@ import { useApp } from '@/state/app-state';
 
 /**
  * Kachel „Mein Wettkampf“ auf der Übersicht (Gründer-Rückmeldung 20.10.2026: „Man findet den Wettkampfplan nicht“).
- * Mit Wettkampf: Name, Distanz, Countdown, Phase und „Woche X von Y“, Ampel kurz, „Wettkampfplan ansehen“. Ohne
- * Wettkampf: kurzer Text und „Wettkampf planen“. Rechnet nichts selbst (data/competition-dashboard.ts → packages/core).
+ * Mit Wettkampf: Name, Distanz, Countdown, Phase und „Woche X von Y“, Ampel kurz; die ganze Kachel ist der Link
+ * „Wettkampfplan ansehen“. Ohne Wettkampf: Link „Wettkampf planen“ mit kurzem Text (Design 20.10.2026). Rechnet nichts selbst (data/competition-dashboard.ts → packages/core).
  * Ladezustand: die Übersicht zeigt die Kachel erst mit geladenen Zeilen; der Fehlerzustand ist ein unlesbarer Wettkampf.
  */
 export function CompetitionTile({ rows, today }: { rows: UserRows; today: string }) {
@@ -34,52 +36,76 @@ export function CompetitionTile({ rows, today }: { rows: UserRows; today: string
     [app.offline, app.safetyRules, app.versions, rows, today],
   );
 
+  const open = (href: string) => () => router.navigate(href as Href);
+  // Design 20.10.2026: Kachel in Wettkampf-Orange mit großem Pokal-Chip; die ganze Kachel ist ein Link.
   if (view.kind === 'none') {
     return (
-      <DashboardTile title={texts.title} testID="overview-competition">
-        <Body testID="overview-competition-none">{texts.none}</Body>
-        <Button
-          label={texts.plan}
+      <View testID="overview-competition">
+        <Tile
+          variant="row"
+          area="wettkampf"
+          icon="trophy"
+          eyebrow={texts.title}
+          title={texts.plan}
+          role="link"
           accessibilityLabel={texts.planA11y}
-          variant="secondary"
-          onPress={() => router.navigate('/wettkampf?neu=1' as Href)}
+          onPress={open('/wettkampf?neu=1')}
           testID="overview-competition-plan"
-        />
-      </DashboardTile>
+        >
+          <Body muted testID="overview-competition-none" style={styles.small}>
+            {texts.none}
+          </Body>
+        </Tile>
+      </View>
     );
   }
   if (view.kind === 'unreadable') {
     return (
-      <DashboardTile title={texts.title} testID="overview-competition">
-        <Body muted testID="overview-competition-error">
-          {texts.unreadable}
-        </Body>
-        <Button
-          label={texts.unreadableOpen}
-          variant="secondary"
-          onPress={() => router.navigate('/wettkampf' as Href)}
-        />
-      </DashboardTile>
+      <View testID="overview-competition">
+        <Tile
+          variant="row"
+          area="wettkampf"
+          icon="trophy"
+          eyebrow={texts.title}
+          title={texts.unreadableOpen}
+          role="link"
+          onPress={open('/wettkampf')}
+        >
+          <Body muted testID="overview-competition-error" style={styles.small}>
+            {texts.unreadable}
+          </Body>
+        </Tile>
+      </View>
     );
   }
   return (
-    <DashboardTile title={texts.title} testID="overview-competition">
-      <Body testID="overview-competition-name">
-        {`${view.name} · ${disciplineText(view.discipline, view.distanceKm)}`}
-      </Body>
-      <Body muted>{texts.raceDate(dayLabel(view.raceDate))}</Body>
-      <Body testID="overview-competition-countdown">{tileCountdown(view)}</Body>
-      {view.week ? (
-        <Body testID="overview-competition-week">{phaseBandText(view.week)}</Body>
-      ) : null}
-      <TileAmpel view={view} />
-      <Button
-        label={texts.open}
+    <View testID="overview-competition">
+      <Tile
+        variant="row"
+        area="wettkampf"
+        icon="trophy"
+        eyebrow={texts.title}
+        title={`${view.name} · ${disciplineText(view.discipline, view.distanceKm)}`}
+        titleTestID="overview-competition-name"
+        role="link"
         accessibilityLabel={texts.openA11y(view.name)}
-        onPress={() => router.navigate('/wettkampf' as Href)}
+        onPress={open('/wettkampf')}
         testID="overview-competition-open"
-      />
-    </DashboardTile>
+      >
+        <Body muted style={styles.small}>
+          {texts.raceDate(dayLabel(view.raceDate))}
+        </Body>
+        <Body testID="overview-competition-countdown" style={styles.small}>
+          {tileCountdown(view)}
+        </Body>
+        {view.week ? (
+          <Body muted testID="overview-competition-week" style={styles.small}>
+            {phaseBandText(view.week)}
+          </Body>
+        ) : null}
+        <TileAmpel view={view} />
+      </Tile>
+    </View>
   );
 }
 
@@ -94,18 +120,26 @@ function TileAmpel({ view }: { view: Extract<CompetitionTileView, { kind: 'compe
   const ampel = view.ampel;
   if (ampel === null) {
     // Nur Countdown gespeichert bzw. Stand offline unbekannt: kein Wettkampfplan aktiv.
-    return view.planState === 'basic' ? <Body muted>{texts.noPlan}</Body> : null;
+    return view.planState === 'basic' ? (
+      <Body muted style={styles.small}>
+        {texts.noPlan}
+      </Body>
+    ) : null;
   }
   if (ampel.kind === 'plan_active') {
     return (
-      <Body testID="overview-competition-ampel" accessibilityLabel={texts.planActiveA11y}>
+      <Body
+        testID="overview-competition-ampel"
+        accessibilityLabel={texts.planActiveA11y}
+        style={styles.small}
+      >
         {texts.planActive}
       </Body>
     );
   }
   if (ampel.kind === 'check') {
     return (
-      <Body muted testID="overview-competition-ampel">
+      <Body muted testID="overview-competition-ampel" style={styles.small}>
         {texts.check}
       </Body>
     );
@@ -113,10 +147,22 @@ function TileAmpel({ view }: { view: Extract<CompetitionTileView, { kind: 'compe
   const s = t.competition.status[ampel.status];
   return (
     <>
-      <Body testID="overview-competition-ampel" accessibilityLabel={texts.feasibilityA11y(s.label)}>
+      <Body
+        testID="overview-competition-ampel"
+        accessibilityLabel={texts.feasibilityA11y(s.label)}
+        style={styles.small}
+      >
         {texts.feasibility(s.symbol, s.label)}
       </Body>
-      {view.planState === 'basic' ? <Body muted>{texts.noPlan}</Body> : null}
+      {view.planState === 'basic' ? (
+        <Body muted style={styles.small}>
+          {texts.noPlan}
+        </Body>
+      ) : null}
     </>
   );
 }
+
+const styles = StyleSheet.create({
+  small: { fontSize: fontSize.sm, lineHeight: 20 },
+});

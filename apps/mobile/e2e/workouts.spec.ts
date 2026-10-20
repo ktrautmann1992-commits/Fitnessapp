@@ -83,10 +83,11 @@ test('Liste filtern: Sterne, Ziel, ohne Geräte, Dauer, zurücksetzen', async ({
   await page.getByTestId('workouts-filter-reset').click();
   await expect(count(page)).toHaveText('27 Workouts');
 
-  // Auch über „Mehr“ erreichbar.
+  // „Workouts“ steht in der Menüleiste – unter „Mehr“ nicht noch einmal (Design 20.10.2026: kein Doppel).
   await page.getByRole('tab', { name: 'Mehr' }).click();
-  await page.getByTestId('more-workouts').click();
-  await heading(page, 'Workouts');
+  await expect(page.getByTestId('more-account')).toBeVisible();
+  await expect(page.getByTestId('more-workouts')).toHaveCount(0);
+  await expect(page.getByTestId('more-area-workouts')).toHaveCount(0);
 });
 
 test('Workout starten, Timer bedienen, abschließen → Eintrag am heutigen Tag, keine Doppel-Einträge', async ({
