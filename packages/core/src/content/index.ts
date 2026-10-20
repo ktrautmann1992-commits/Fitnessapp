@@ -1,6 +1,7 @@
 export * from './allergen-rules';
 export * from './analysis';
 export * from './checks';
+export * from './exercise-media';
 export * from './fit-check';
 export * from './food-schema';
 export * from './glossary';
@@ -10,6 +11,7 @@ export * from './import-meta';
 export * from './import-rules';
 export * from './meal-prep-checks';
 export * from './meal-prep-plan-schema';
+export * from './muscle-map';
 export * from './nutrition-select';
 export * from './package-size-checks';
 export * from './package-size-schema';

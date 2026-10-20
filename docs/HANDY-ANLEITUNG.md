@@ -1169,6 +1169,19 @@ schaltet **db-migrate** das automatisch ein (Flag `premium_open` = an). Ihr müs
 
 Die Warnung stoppt nichts von selbst – abschalten geht sofort per beta-grant (`flag_aus`, flag `ai_food_photo`).
 
+## Teil 7o – Muskelkarte testen (20.10.2026, Testmodus)
+1. Vorschau-Link aus dem Pull Request öffnen (Testmodus) → Onboarding → **Zum Plan**.
+2. Einen Übungsnamen auf „Heute“ antippen (oder **Einstellungen → Übungen (Glossar)** → Übung wählen): Karte
+   **„Beanspruchte Muskeln“** mit Körper **Vorn** und **Hinten**. Hauptmuskeln kräftig blau, mitbeteiligte hellblau,
+   der Rest grau. Darunter in Worten: „Hauptmuskeln: …“ und „Mitbeteiligt: …“.
+3. **Training starten**: Rechts neben jedem Übungsnamen eine kleine Muskelkarte → antippen → große Karte mit Legende →
+   **Schließen**. Der Pausentimer läuft dabei weiter.
+4. Mit Bildschirmleser (VoiceOver/TalkBack): Die Karte wird vorgelesen als „Trainiert vor allem: Brust. Mitbeteiligt:
+   Trizeps, vordere Schulter.“
+5. Alles einmal hell und einmal dunkel ansehen.
+- Ein Bereich **„Ausgangsposition“** (Foto/Illustration der Übung) erscheint erst, wenn es Bilder mit geklärter Lizenz
+  gibt – offene Entscheidung, siehe `docs/PLAN-UEBUNGEN-GLOSSAR-TAUSCH.md`, Nachtrag „Muskelkarte“.
+
 ## Teil 8 – Live-Test mit Supabase (Pflicht vor „MVP fertig“, W13) – **offen, braucht euch**
 Diesen Test kann Claude in der Cloud-Sitzung nicht machen (kein echtes Konto, keine zwei Handys). Bitte einmal
 durchspielen und das Ergebnis Claude im Chat schreiben („W13: Punkt 1–14 ok, Punkt 9 Fehler: …“) – **ohne**

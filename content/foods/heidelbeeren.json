@@ -1,0 +1,52 @@
+{
+  "id": "heidelbeeren",
+  "version": 1,
+  "status": "draft",
+  "name_de": "Heidelbeeren",
+  "aliases_de": [],
+  "shopping_category": "fruit_vegetables",
+  "pantry": false,
+  "nutrients_per_100g": {
+    "kcal": 61,
+    "protein_g": 0.5,
+    "carbs_g": 9.7,
+    "sugar_g": 9.7,
+    "fat_g": 0.6,
+    "sat_fat_g": 0.0558,
+    "fiber_g": 4.9,
+    "salt_g": 0.005,
+    "organic_acids_g": 1.593,
+    "alcohol_g": 0,
+    "polyols_g": 0.002
+  },
+  "units": {},
+  "groups": [],
+  "animal": [],
+  "meat_kind": [],
+  "pregnancy_caution": false,
+  "alcohol": false,
+  "max_fridge_days": 3,
+  "freezable": true,
+  "substitutes": [],
+  "source": {
+    "db": "bls",
+    "version": "4.0",
+    "ref": "F304100",
+    "name": "Heidelbeere roh",
+    "category": "fruit",
+    "license": "CC BY 4.0",
+    "retrieved_at": "2026-10-19"
+  },
+  "meta": {
+    "origin": "claude_session",
+    "model": "claude-opus-5-5",
+    "batch_id": null,
+    "created_on": "2026-10-19",
+    "expert_reviewed": false,
+    "reviewed_by": null,
+    "reviewed_at": null,
+    "review_note": null,
+    "catalog_reviewed_by": null,
+    "catalog_reviewed_at": null
+  }
+}

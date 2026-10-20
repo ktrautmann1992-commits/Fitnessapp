@@ -1,0 +1,52 @@
+{
+  "id": "salatmix",
+  "version": 1,
+  "status": "draft",
+  "name_de": "Salatmix",
+  "aliases_de": [],
+  "shopping_category": "fruit_vegetables",
+  "pantry": false,
+  "nutrients_per_100g": {
+    "kcal": 15,
+    "protein_g": 1.2,
+    "carbs_g": 1.26,
+    "sugar_g": 1.232,
+    "fat_g": 0.1,
+    "sat_fat_g": 0.017,
+    "fiber_g": 1.83,
+    "salt_g": 0.07,
+    "organic_acids_g": 0.188,
+    "alcohol_g": 0,
+    "polyols_g": null
+  },
+  "units": {},
+  "groups": [],
+  "animal": [],
+  "meat_kind": [],
+  "pregnancy_caution": false,
+  "alcohol": false,
+  "max_fridge_days": 3,
+  "freezable": false,
+  "substitutes": [],
+  "source": {
+    "db": "bls",
+    "version": "4.0",
+    "ref": "G108100",
+    "name": "Schnittsalat/Pflücksalat, roh",
+    "category": "vegetables",
+    "license": "CC BY 4.0",
+    "retrieved_at": "2026-10-19"
+  },
+  "meta": {
+    "origin": "claude_session",
+    "model": "claude-opus-5-5",
+    "batch_id": null,
+    "created_on": "2026-10-19",
+    "expert_reviewed": false,
+    "reviewed_by": null,
+    "reviewed_at": null,
+    "review_note": null,
+    "catalog_reviewed_by": null,
+    "catalog_reviewed_at": null
+  }
+}

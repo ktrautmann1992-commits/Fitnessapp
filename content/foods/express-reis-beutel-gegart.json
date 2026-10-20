@@ -1,0 +1,52 @@
+{
+  "id": "express-reis-beutel-gegart",
+  "version": 1,
+  "status": "draft",
+  "name_de": "Express-Reis (Beutel, gegart)",
+  "aliases_de": [],
+  "shopping_category": "pasta_rice_grains",
+  "pantry": true,
+  "nutrients_per_100g": {
+    "kcal": 117,
+    "protein_g": 3.3,
+    "carbs_g": 24.8,
+    "sugar_g": 0.1,
+    "fat_g": 0.35,
+    "sat_fat_g": 0.04,
+    "fiber_g": 0.61,
+    "salt_g": 0.02442,
+    "organic_acids_g": 0,
+    "alcohol_g": 0,
+    "polyols_g": 0
+  },
+  "units": {},
+  "groups": [],
+  "animal": [],
+  "meat_kind": [],
+  "pregnancy_caution": false,
+  "alcohol": false,
+  "max_fridge_days": 1,
+  "freezable": true,
+  "substitutes": [],
+  "source": {
+    "db": "bls",
+    "version": "4.0",
+    "ref": "C352032",
+    "name": "Reis poliert, gekocht",
+    "category": "cereal_products",
+    "license": "CC BY 4.0",
+    "retrieved_at": "2026-10-19"
+  },
+  "meta": {
+    "origin": "claude_session",
+    "model": "claude-opus-5-5",
+    "batch_id": null,
+    "created_on": "2026-10-19",
+    "expert_reviewed": false,
+    "reviewed_by": null,
+    "reviewed_at": null,
+    "review_note": null,
+    "catalog_reviewed_by": null,
+    "catalog_reviewed_at": null
+  }
+}
