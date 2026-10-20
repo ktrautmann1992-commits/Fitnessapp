@@ -69,6 +69,9 @@ export function createBackend(): Backend {
       // Etappe N7 Teil 2: Ernährungs-Zeilen und -Warteschlange (Tagebuch, eigene Gerichte) – ebenso geschützt.
       nutritionCacheStore: stores.nutritionCache,
       nutritionQueueStore: stores.nutritionQueue,
+      // Etappe E4: Strecken-Warteschlange und laufende Aufzeichnung (Standortdaten) – ebenso geschützt.
+      routeQueueStore: stores.routeQueue,
+      routeRecordingStore: stores.routeRecording,
       // Etappe E3: Gericht per Foto über apps/web (fehlt die Adresse, ist „Per Foto“ nicht verfügbar).
       webUrl: readWebUrl(process.env.EXPO_PUBLIC_WEB_URL),
     });
@@ -82,5 +85,7 @@ export function createBackend(): Backend {
     draftStore: stores.workoutDraft,
     // Live-Anpassung (Phase 4b, Etappe D, 8.3): Anpassungen nur im eigenen geschützten Speicher.
     liveAdjustStore: stores.liveAdjust,
+    // Etappe E4: laufende Aufzeichnung (Standortdaten) im eigenen geschützten Speicher.
+    routeRecordingStore: stores.routeRecording,
   });
 }

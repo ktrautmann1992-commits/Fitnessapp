@@ -231,6 +231,96 @@ Lauf und in der abgeschlossenen Trainingseinheit/Verlauf.
 **Tests:** Core (`privacyTrim`, Positivliste, Volumen ohne Körpergewicht); Playwright (Web-Vorschau, Schalter,
 `navigator.share` als Ersatz-Objekt, Download-Rückfall, keine Netzanfrage beim Erzeugen).
 
+### Umsetzungsstand E3–E6 (20.10.2026, Branch `claude/ausdauer-gps`)
+
+**E3 – native Module (ein Build für E4 und E6), Entscheidungen:**
+
+- `expo-location` + `expo-task-manager` (SDK-57-Versionen per `expo install`). **W-G13 entschieden: „Beim Verwenden“
+  - Vordergrund-Dienst reicht** – geprüft im Quelltext von expo-location 57: `startLocationUpdatesAsync` mit
+    `foregroundService` verlangt auf Android nur Vordergrund-Standort + `FOREGROUND_SERVICE_LOCATION` (kein
+    `ACCESS_BACKGROUND_LOCATION`), auf iOS nur „Beim Verwenden“ + Hintergrundmodus `location`. Der Dienst startet nur
+    aus der geöffneten App (Start/Fortsetzen per Tipp) und endet bei Pause/Stopp bzw. wenn die App beendet wird.
+- **Karte ohne natives Karten-Modul:** `@maplibre/maplibre-react-native` (11.x, neue Architektur) ist nicht Teil der
+  von Expo SDK 57 geprüften Module und ließ sich hier ohne Android-SDK nicht bauen – Risiko „Build bricht“. Deshalb
+  `maplibre-gl` 5.6.0 (fest versioniert, SRI-Prüfsumme, jsDelivr) in `react-native-webview` (SDK-57-Version) bzw. im
+  Browser in einem abgeschotteten `iframe` (`sandbox="allow-scripts"`). Ins HTML kommen nur Zahlen (Koordinaten der
+  gespeicherten Linie). Kacheln: OpenFreeMap (Testphase), Attribution „© OpenStreetMap-Mitwirkende“ in der Karte und
+  als Text darunter. Lädt die Karte nicht (offline, CDN), bleiben die Zahlen (Hinweis).
+- **E6 ohne Mediathek:** `react-native-view-shot` (5.1.0) + `expo-sharing` (System-Teilen-Dialog, dort „Bild
+  sichern“). **Kein** `expo-media-library`, keine Foto-Berechtigung, kein Plugin `expo-sharing` (das baut nur eine
+  „Teilen in die App“-Erweiterung, nicht nötig).
+- `app.config.ts`: Plugin `expo-location` (deutsche Texte, kein „Immer“, keine Bewegungsdaten, Benachrichtigungs-Symbol
+  = weißes Logo), `ACCESS_BACKGROUND_LOCATION` zusätzlich in `blockedPermissions`, eigenes Plugin
+  `withOnlyLocationBackgroundMode` (iOS-Hintergrundmodi nur `location`; `fetch` aus expo-task-manager entfernt),
+  Datenschutz-Manifest + `NSPrivacyCollectedDataTypePreciseLocation`. Test `src/test/native-config.test.ts` erweitert.
+- **Prüfung ohne EAS (lokal):** `expo prebuild --platform all --no-install --clean` (danach gelöscht) – AndroidManifest
+  der App: `INTERNET`, `VIBRATE`, `CAMERA`, `ACCESS_FINE_LOCATION`, `ACCESS_COARSE_LOCATION`, `FOREGROUND_SERVICE`,
+  `FOREGROUND_SERVICE_LOCATION`; entfernt (`tools:node="remove"`): `ACCESS_BACKGROUND_LOCATION`,
+  `READ/WRITE_EXTERNAL_STORAGE`, `SYSTEM_ALERT_WINDOW`; dazu beim Zusammenführen aus Bibliotheken wie bisher
+  `POST_NOTIFICATIONS`, `RECEIVE_BOOT_COMPLETED` (expo-notifications; expo-task-manager braucht es ebenfalls) – keine
+  weiteren `uses-permission` in den Manifesten der neuen Module (view-shot, webview, sharing: keine). Info.plist:
+  `NSCameraUsageDescription`, `NSLocationWhenInUseUsageDescription`, `NSLocationAlwaysAndWhenInUseUsageDescription`
+  (nur weil iOS ihn verlangt – die App fragt „Immer“ nie), `UIBackgroundModes = [location]`. `expo install --check`
+  (offline): aktuell; `expo-doctor`: 19/21 grün, 2 brauchen Netz zu exp.host/React Native Directory (in der Sitzung
+  gesperrt). Web-Export baut (Bündel unverändert ohne native Module).
+
+**E4 – App:**
+
+- **Aufzeichnen** (`/ausdauer/aufzeichnen`): Erklär-Bildschirm vor der Systemabfrage, „Suche GPS …“/„GPS schwach“,
+  große Zahlen (Zeit ohne Pausen, Distanz, Ø-Pace bzw. km/h), Pause/Fortsetzen (neues Teilstück – was dazwischen
+  geschieht, zählt nicht: `summarizeRecording`), Stopp mit Rückfrage, 12-h-Grenze, Bildschirm bleibt an. Verweigert →
+  „Einstellungen öffnen“ + „Erneut prüfen“; Standort aus → Hinweis.
+- **Sicherung:** Zustand alle 30 s, bei Pause/Stopp und beim Wechsel in den Hintergrund verschlüsselt im neuen
+  geschützten Speicher `routeRecording` (App AES-GCM, Browser sessionStorage); nach Absturz „Aufzeichnung gefunden –
+  Fortsetzen / Beenden und speichern / Verwerfen“ (nur eigenes Konto, Zod-geprüft). Abmelden/Konto löschen leeren ihn.
+- **Speichern:** Name, Favorit, Schwierigkeit, Notiz; „zu kurz“ (< 1 min) → nur verwerfen/fortsetzen; < 100 m →
+  Rückfrage, dann ohne Tagebuch-Eintrag. Tagebuch: heute geplante Ausdauer gleicher Art ohne Eintrag → „Zu ‚…‘
+  zählen?“ (Standard Ja), sonst freie Einheit (A1b); Werte aus der Strecke (`diaryValuesFromSummary`, passt immer zu
+  `sessionLogFitsRoute`). Reihenfolge wie S1 N2: Eintrag über die Tagebuch-Warteschlange, dann `save_tracked_route`
+  mit Verweis (Herkunft gps), danach neu laden. Die Eintrag-id wird in der Sicherung vermerkt – ein zweiter Versuch
+  legt nie einen zweiten Eintrag an.
+- **Supabase:** neue verschlüsselte **Strecken-Warteschlange** (`routeQueue`): sendet erst, wenn der verknüpfte
+  Eintrag nicht mehr in der Tagebuch-Warteschlange wartet; offline → später; Verknüpfung passt nicht → ohne Verweise
+  erneut; abgelehnt → bleibt mit Hinweis („Erneut versuchen“/„Verwerfen“). App vor `db-migrate` (Spalte fehlt) →
+  einmal ohne Höhenprofil. Liste offline aus dem zuletzt geladenen Stand.
+- **Testmodus:** dieselben Regeln (`tracked-route-rows.ts`: Zod, nicht in der Zukunft, gleiche id, Favorit, Eintrag
+  passt, Herkunft gps + Revision, Tageslimit 20), Export enthält die Strecken, Eintrag löschen leert den Verweis.
+- **Meine Läufe:** Strecken (Linien-Skizze ohne Kacheln) + Einträge ohne GPS, verknüpfte nur einmal
+  (`enduranceActivities`); „wird übertragen“/„nicht gespeichert“; „Alle Strecken löschen“.
+- **Auswertung** (`/ausdauer/[id]`): Karte, Gesamt-/Bewegungszeit, Distanz, Ø-Pace/km/h, Höhenmeter „ca.“ + Hinweis,
+  Kilometer-Balken (`splitBars`), Höhenprofil, neutraler Vergleich auf Favoriten (`compareAttempts`), Bearbeiten,
+  GPX-Datei, „Erneut laufen“, Löschen.
+- **Migration (additiv)** `20261020210000_tracked_route_elevation_profile.sql`: `private.elevation_profile_valid`,
+  Spalte `tracked_routes.elevation_profile` (CHECK, auch für service_role), `save_tracked_route` = S1-Fassung + nur das
+  optionale Feld (db-sync prüft die Obermenge); Export automatisch (`to_jsonb(t)`). pgTAP neu
+  `54_tracked_route_elevation.test.sql` (19 Tests; statt 42 zu erweitern – dort ist das Tageslimit schon ausgeschöpft).
+- **Web (W-G14):** Hinweis „Aufzeichnen geht in der App“, im Testmodus **Demo-Aufzeichnung** (ausgedachte Runde am
+  Rhein im Zeitraffer, Zeit liegt in der Vergangenheit), „Eintragen ohne GPS“ → vorhandenes Nachtragen (A1b).
+- **Übersicht/Mehr:** Kachel „Ausdauer“ (km dieser Woche, letzte Aktivität) als eigene Komponente
+  (`components/endurance-tile.tsx`, eine Zeile in `uebersicht.tsx`), Eintrag unter „Mehr“. Menüleiste unverändert
+  (Reiter wählbar erst mit E2).
+
+**E5:** `enduranceTotals` (Woche Mo–So, Kalendermonat mit Wochenbalken, Tag = Europe/Berlin, je Sportart, neutraler
+Vergleich zur Vorperiode), Umschalter Woche/Monat und Blättern in „Ausdauer“. Keine Migration.
+
+**E6:** `privacyTrim` (200 m, Rest < 100 m → ohne Linie), feste Positivliste `STORY_CARD_FIELDS`
+(`share/story-card.ts`), Volumen nur Zusatzlast. Bild 1080 × 1920 mit Linie (keine Kacheln, EA-4), Logo, Werte.
+App: Ansicht → view-shot → Teilen-Dialog → Datei gelöscht; Browser: Canvas → Web Share bzw. Download. Knöpfe „Als Bild
+teilen“ in der Auswertung je Lauf und in jedem Tagebuch-Eintrag (Kraft und Ausdauer).
+
+**Tests:** Core neu/erweitert (elevation-profile, format, privacy-trim, sketch, activities, recording, story-card,
+db-sync) – Core gesamt 5.474; App 93 Dateien/929 Tests (u. a. `endurance.test.ts`, `route-queue.test.ts`,
+`recording.test.ts`, `story-layout.test.ts`, native-config); pgTAP 51 Dateien/2.664 Tests grün; Playwright
+`endurance.spec.ts` (3 Tests: Demo → speichern → Auswertung → Liste/Summen → Story-Bild mit Web-Share-Ersatz,
+Download, keine Netzanfrage → löschen; Eintrag ohne GPS + Kachel + Mehr; Wiederaufnahme nach Neuladen + „zu kurz“)
+sowie dashboard/history/backfill weiter grün.
+
+**Offen / Risiken:** Gerätetest per Test-APK (HANDY-ANLEITUNG Teil 9b) – Akku 60 min, Sperrbildschirm, Funkloch,
+Hersteller-Energiesparen (manche Android-Hersteller beenden Vordergrund-Dienste trotzdem). Karte braucht jsDelivr und
+OpenFreeMap (kein SLA; vor Livegang eigener Kachel-Server, PLAN-PHASE-10 11.1, und Datenschutzerklärung). „Reiter
+Ausdauer“ kommt mit E2. Play-Store: Erklärung zum Vordergrund-Dienst-Typ `location` im Play-Formular (kein
+Hintergrund-Standort).
+
 ---
 
 ## 9. Datenschutz (alle Etappen)

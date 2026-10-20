@@ -9,6 +9,7 @@ import { Redirect, useRouter, type Href } from 'expo-router';
 import { useEffect, useMemo } from 'react';
 
 import { DashboardTile, ShortcutCell, ShortcutGrid, ShortcutTile } from '@/components/dashboard';
+import { EnduranceTile } from '@/components/endurance-tile';
 import { Screen } from '@/components/screen';
 import { MeasurementNotificationOffer } from '@/components/notifications';
 import { Body, Button, LoadingState, Notice } from '@/components/ui';
@@ -134,6 +135,8 @@ function Overview({ rows, today }: { rows: UserRows; today: string }) {
       <NutritionTile today={today} />
       <BodyTile rows={rows} consent={consent} />
       <ProgressTile rows={rows} today={today} />
+      {/* Etappe E4: Kachel „Ausdauer“ (letzte Aktivität, km dieser Woche). */}
+      <EnduranceTile rows={rows} today={today} />
       <ShortcutGrid label={t.dashboard.shortcuts.title}>
         {app.backend.supportsNutrition ? (
           <ShortcutCell>

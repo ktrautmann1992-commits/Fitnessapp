@@ -95,6 +95,13 @@ export default function MoreScreen() {
           onPress={open('/wettkampf')}
           testID="more-competition"
         />
+        {/* Etappe E4: Ausdauer aufzeichnen (Laufen, Rad, Gehen). */}
+        <Button
+          label={t.endurance.moreEntry}
+          variant="secondary"
+          onPress={open('/ausdauer')}
+          testID="more-endurance"
+        />
       </Card>
       <Heading level={2}>{texts.sections.info}</Heading>
       <Card>

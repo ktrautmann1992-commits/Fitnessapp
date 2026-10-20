@@ -31,6 +31,7 @@ import {
   type NutritionLibrary,
   type PlanLibrary,
   type PreferenceChange,
+  type TrackedRouteRow,
 } from '@fitnessapp/core';
 
 import { healthConsentStatus } from '../state/flow';
@@ -94,6 +95,13 @@ import {
 } from './live-adjust';
 import { checkSessionLog, isValidOp, isValidPlanOp, isValidPreferenceOp } from './local-rules';
 import { markWorkoutSource, workoutsFromBundle } from './workout-library';
+import {
+  applyTrackedRouteDelete,
+  applyTrackedRouteSave,
+  applyTrackedRouteUpdate,
+  detachRouteLogs,
+  type RouteCounter,
+} from './tracked-route-rows';
 import {
   applySessionLog,
   closeMissedSessionRows,
@@ -172,6 +180,13 @@ interface LocalDb {
    * fehlt der Wert, gilt AN (`simulatePremiumOn`); nur ein ausdrückliches `false` (Schalter aus) zeigt den Gratis-Weg.
    */
   simulatePremium?: boolean;
+  /**
+   * Strecken (Etappe E4, Testmodus): Zeilen wie tracked_routes (alle Konten dieses Geräts, gefiltert nach user_id) und
+   * das Tageslimit wie private.tracked_route_daily_counts. Standortdaten liegen im Testmodus wie alle anderen Daten
+   * nur auf diesem Gerät (dokumentierte Ausnahme des Testmodus).
+   */
+  trackedRoutes?: TrackedRouteRow[];
+  routeCounter?: { userId: string } & RouteCounter;
 }
 
 /** Testphase „alles offen“ (Gründer 19.10.2026): Standard AN – nur ein ausdrücklich ausgeschalteter Schalter ist aus. */
@@ -200,6 +215,8 @@ export interface LocalBackendOptions {
    * Browser sessionStorage). Standard (Tests): Arbeitsspeicher.
    */
   liveAdjustStore?: ProtectedStore;
+  /** Laufende Aufzeichnung (Etappe E4, geschützter Speicher `routeRecording`). Standard (Tests): Arbeitsspeicher. */
+  routeRecordingStore?: ProtectedStore;
 }
 
 /**
@@ -247,6 +264,10 @@ const SERIALIZED_METHODS = [
   'lookupFoodProduct',
   'saveUserFoodProduct',
   'deleteUserFoodProduct',
+  'saveTrackedRoute',
+  'updateTrackedRoute',
+  'deleteTrackedRoute',
+  'deleteAllTrackedRoutes',
 ] as const satisfies readonly (keyof Backend)[];
 
 function serializeWrites(backend: Backend): Backend {
@@ -332,6 +353,7 @@ export function createLocalBackend(store: KeyValueStore, options: LocalBackendOp
   let library: PlanLibrary | null = null;
   const drafts = new DraftStore(options.draftStore ?? createMemoryProtectedStore());
   const liveStore = new LiveAdjustStore(options.liveAdjustStore ?? createMemoryProtectedStore());
+  const recordingStore = options.routeRecordingStore ?? createMemoryProtectedStore();
 
   /** Anpassungen des Kontos (geschützter Speicher); ohne Konto leer. */
   async function adjustmentsOf(owner: string | null | undefined): Promise<LocalAdjustment[]> {
@@ -687,6 +709,8 @@ export function createLocalBackend(store: KeyValueStore, options: LocalBackendOp
       // Entwürfe samt Schlüssel löschen (4.1) – die App fragt vorher nach (R6).
       await drafts.clear();
       await liveStore.clear();
+      // Laufende Aufzeichnung (Standortdaten) gehört dem Konto – mit abmelden.
+      await recordingStore.clear();
     },
 
     loadConsentDocuments: async () => [...LOCAL_CONSENT_DOCUMENTS],
@@ -906,6 +930,7 @@ export function createLocalBackend(store: KeyValueStore, options: LocalBackendOp
       await save({ session: null, rows: null });
       await drafts.clear();
       await liveStore.clear();
+      await recordingStore.clear();
     },
 
     pendingChanges: () => 0,
@@ -975,6 +1000,7 @@ export function createLocalBackend(store: KeyValueStore, options: LocalBackendOp
       }
       await drafts.clear();
       await liveStore.clear();
+      await recordingStore.clear();
     },
 
     // --- Trainingstagebuch: dieselben Regeln wie save_session_log (local-rules.ts checkSessionLog) ----------
@@ -1063,9 +1089,15 @@ export function createLocalBackend(store: KeyValueStore, options: LocalBackendOp
       if (!existing) return 'ok';
       if (existing.revision !== baseRevision) return 'conflict';
       // Ergebnis eines Wettkampfs: Verweis wird leer, der Wettkampf bleibt erledigt (on delete set null).
+      const nextRows = detachResultLog(deleteSessionLogRows(rows, id, options.today()), id);
       await save({
         ...db,
-        rows: detachResultLog(deleteSessionLogRows(rows, id, options.today()), id),
+        rows: nextRows,
+        // Strecke mit diesem Eintrag: Verweis leer, Strecke bleibt (on delete set null).
+        trackedRoutes: detachRouteLogs(
+          db.trackedRoutes ?? [],
+          new Set(nextRows.sessionLogs.map((l) => l.id)),
+        ),
       });
       return 'ok';
     },
@@ -1364,6 +1396,7 @@ export function createLocalBackend(store: KeyValueStore, options: LocalBackendOp
           aiUsage: db.aiUsage ?? [],
           productLookups: (db.productLookups ?? []).filter((c) => c.user_id === session.userId),
           planAdjustments: await liveStore.load(session.userId),
+          trackedRoutes: (db.trackedRoutes ?? []).filter((r) => r.user_id === session.userId),
         }),
         {
           email: session.email,
@@ -1372,6 +1405,65 @@ export function createLocalBackend(store: KeyValueStore, options: LocalBackendOp
       if (!file) throw new BackendError('unknown');
       return file;
     },
+
+    // --- Ausdauer: Strecken (Etappe E4) – dieselben Regeln wie save/update/delete_tracked_route -------------------
+    loadTrackedRoutes: async () => {
+      const { db, session } = await requireUser();
+      const routes = (db.trackedRoutes ?? [])
+        .filter((r) => r.user_id === session.userId)
+        .sort((a, b) => b.started_at.localeCompare(a.started_at));
+      return { routes, pending: [], offline: false };
+    },
+    saveTrackedRoute: async (payload) => {
+      const { db, rows, session } = await requireProfile();
+      const today = options.today();
+      const counter =
+        db.routeCounter && db.routeCounter.userId === session.userId ? db.routeCounter : null;
+      const result = applyTrackedRouteSave(
+        payload,
+        { routes: db.trackedRoutes ?? [], rows, counter },
+        { userId: session.userId, now: options.now(), today, newId: options.newId },
+      );
+      if (result.kind === 'repeat') return 'saved';
+      if (result.kind === 'reject') {
+        throw new BackendError(result.reason === 'daily_limit' ? 'route_limit' : 'route_rejected');
+      }
+      await save({
+        ...db,
+        rows: result.rows,
+        trackedRoutes: result.routes,
+        routeCounter: { userId: session.userId, ...result.counter },
+      });
+      return 'saved';
+    },
+    updateTrackedRoute: async (payload) => {
+      const { db, session } = await requireProfile();
+      const next = applyTrackedRouteUpdate(payload, db.trackedRoutes ?? [], {
+        userId: session.userId,
+        now: options.now(),
+      });
+      if (next === 'invalid' || next === 'not_found') throw new BackendError('route_rejected');
+      await save({ ...db, trackedRoutes: next });
+    },
+    deleteTrackedRoute: async (id) => {
+      const { db, session } = await requireUser();
+      const next = applyTrackedRouteDelete(db.trackedRoutes ?? [], id, session.userId);
+      if (next === 'not_found') return;
+      await save({ ...db, trackedRoutes: next });
+    },
+    deleteAllTrackedRoutes: async () => {
+      const { db, session } = await requireUser();
+      const all = db.trackedRoutes ?? [];
+      const own = all.filter((r) => r.user_id === session.userId);
+      await save({ ...db, trackedRoutes: all.filter((r) => r.user_id !== session.userId) });
+      return own.length;
+    },
+    // Keine Warteschlange im Testmodus.
+    retryPendingRoute: async () => undefined,
+    discardPendingRoute: async () => undefined,
+    readRecording: () => recordingStore.read(),
+    writeRecording: (text) => recordingStore.write(text),
+    clearRecording: () => recordingStore.clear(),
   };
   return serializeWrites(withPlanOverlay(backend, overlaid));
 }

@@ -59,6 +59,10 @@ export function errorText(error: unknown): string {
       return t.errors.temporary;
     case 'delete_unavailable':
       return t.errors.deleteUnavailable;
+    case 'route_rejected':
+      return t.endurance.errors.rejected;
+    case 'route_limit':
+      return t.endurance.errors.limit;
     case 'competition_rejected':
       return t.competition.errors[error.competitionReason ?? 'invalid'];
     case 'unknown':

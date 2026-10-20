@@ -12,6 +12,9 @@ import { beforeAll, describe, expect, it } from 'vitest';
 
 import appConfig, {
   CAMERA_PERMISSION_TEXT,
+  IOS_BACKGROUND_MODES,
+  LOCATION_ALWAYS_TEXT,
+  LOCATION_WHEN_IN_USE_TEXT,
   MLKIT_DEPENDENCIES_META,
   PUSH_ENTITLEMENT,
 } from '../../app.config';
@@ -21,16 +24,23 @@ const require = createRequire(join(APP_DIR, 'package.json'));
 
 const BUNDLE_ID = 'de.fitnessapp.app';
 
-// Nur diese Android-Berechtigungen darf die App haben (Supabase, Pausentimer-Vibration, Strichcode-Kamera E4b).
+// Nur diese Android-Berechtigungen darf die App haben (Supabase, Pausentimer-Vibration, Strichcode-Kamera E4b,
+// Ausdauer aufzeichnen E3/E4: Standort „Beim Verwenden“ + Vordergrund-Dienst).
 const ALLOWED_ANDROID_PERMISSIONS = [
   'android.permission.INTERNET',
   'android.permission.VIBRATE',
   'android.permission.CAMERA',
+  'android.permission.ACCESS_COARSE_LOCATION',
+  'android.permission.ACCESS_FINE_LOCATION',
+  'android.permission.FOREGROUND_SERVICE',
+  'android.permission.FOREGROUND_SERVICE_LOCATION',
 ];
 const BLOCKED_ANDROID_PERMISSIONS = [
   'android.permission.READ_EXTERNAL_STORAGE',
   'android.permission.WRITE_EXTERNAL_STORAGE',
   'android.permission.SYSTEM_ALERT_WINDOW',
+  // Kein „Immer erlauben“ (W-G13): Der Vordergrund-Dienst braucht es nicht.
+  'android.permission.ACCESS_BACKGROUND_LOCATION',
 ];
 
 function config(): ExpoConfig {
@@ -103,6 +113,42 @@ describe('app.config.ts', () => {
       },
     ]);
     expect(existsSync(join(APP_DIR, 'assets/images/android-icon-monochrome.png'))).toBe(true);
+  });
+
+  it('expo-location: nur „Beim Verwenden“, Vordergrund-Dienst, kein Hintergrund-Standort, keine Bewegung (E3)', () => {
+    const plugin = config().plugins?.find(
+      (entry) => Array.isArray(entry) && entry[0] === 'expo-location',
+    );
+    expect(plugin).toEqual([
+      'expo-location',
+      {
+        locationWhenInUsePermission: LOCATION_WHEN_IN_USE_TEXT,
+        locationAlwaysAndWhenInUsePermission: LOCATION_ALWAYS_TEXT,
+        locationAlwaysPermission: false,
+        motionUsagePermission: false,
+        isIosBackgroundLocationEnabled: true,
+        isAndroidBackgroundLocationEnabled: false,
+        isAndroidForegroundServiceEnabled: true,
+        isAndroidMotionActivityEnabled: false,
+        androidForegroundServiceIcon: './assets/images/android-icon-monochrome.png',
+      },
+    ]);
+    expect(LOCATION_WHEN_IN_USE_TEXT).toMatch(/nur, während du/);
+    expect(LOCATION_ALWAYS_TEXT).toMatch(/braucht keinen Standort „Immer“/);
+  });
+
+  it('kein Plugin, das eine Teilen-Erweiterung oder Mediathek-Zugriff einbaut (E6: Teilen nur über den System-Dialog)', () => {
+    const names = (config().plugins ?? []).map((entry) =>
+      Array.isArray(entry) ? entry[0] : entry,
+    );
+    expect(names).not.toContain('expo-sharing');
+    expect(names).not.toContain('expo-media-library');
+    const pkg = JSON.parse(readFileSync(join(APP_DIR, 'package.json'), 'utf8')) as {
+      dependencies: Record<string, string>;
+    };
+    expect(Object.keys(pkg.dependencies)).not.toContain('expo-media-library');
+    // Karte über WebView (Etappe E3-Entscheidung): kein natives Karten-Modul.
+    expect(Object.keys(pkg.dependencies)).not.toContain('@maplibre/maplibre-react-native');
   });
 
   it('expo-secure-store ohne Face ID, mit Android-Sicherungsregeln', () => {
@@ -217,12 +263,20 @@ describe('expo config --type introspect (nach allen Config-Plugins, offline)', (
     result = JSON.parse(out) as Introspect;
   }, 60_000);
 
-  it('Info.plist: nur der deutsche Kamera-Text (kein Mikrofon), Exportkontrolle false', () => {
+  it('Info.plist: nur deutsche Kamera- und Standort-Texte (kein Mikrofon, kein „Immer“ allein), Exportkontrolle false', () => {
     const plist = result._internal.modResults.ios.infoPlist;
-    expect(Object.keys(plist).filter((key) => key.endsWith('UsageDescription'))).toEqual([
+    expect(
+      Object.keys(plist)
+        .filter((key) => key.endsWith('UsageDescription'))
+        .sort(),
+    ).toEqual([
       'NSCameraUsageDescription',
+      'NSLocationAlwaysAndWhenInUseUsageDescription',
+      'NSLocationWhenInUseUsageDescription',
     ]);
     expect(plist.NSCameraUsageDescription).toBe(CAMERA_PERMISSION_TEXT);
+    expect(plist.NSLocationWhenInUseUsageDescription).toBe(LOCATION_WHEN_IN_USE_TEXT);
+    expect(plist.NSLocationAlwaysAndWhenInUseUsageDescription).toBe(LOCATION_ALWAYS_TEXT);
     expect(plist.ITSAppUsesNonExemptEncryption).toBe(false);
   });
 
@@ -252,6 +306,21 @@ describe('expo config --type introspect (nach allen Config-Plugins, offline)', (
     expect((ios.infoPlist.UIBackgroundModes as string[] | undefined) ?? []).not.toContain(
       'remote-notification',
     );
+  });
+
+  it('iOS: Hintergrundmodus nur „location“ (Aufzeichnung), kein „fetch“ (E3)', () => {
+    expect(result._internal.modResults.ios.infoPlist.UIBackgroundModes).toEqual([
+      ...IOS_BACKGROUND_MODES,
+    ]);
+  });
+
+  it('AndroidManifest: Symbol der Benachrichtigung „Aufzeichnung läuft“ (E3)', () => {
+    const manifest = result._internal.modResults.android.manifest.manifest;
+    const meta = (manifest.application[0]?.['meta-data'] ?? []).map((entry) => entry.$);
+    expect(meta).toContainEqual({
+      'android:name': 'expo.modules.location.foreground_service_icon',
+      'android:resource': '@drawable/location_foreground_service_icon',
+    });
   });
 
   it('AndroidManifest: Benachrichtigungs-Symbol gesetzt (Etappe E)', () => {

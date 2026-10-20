@@ -3358,6 +3358,62 @@ export const ROUTE_COMPARE = {
   sameWithinS: 5,
 } as const;
 
+/**
+ * Höhenprofil einer Strecke (Etappe E4, docs/PLAN-EINKAUFEN-AUSDAUER.md 6; Spalte tracked_routes.elevation_profile):
+ * höchstens `maxPoints` Stützpunkte [Distanz in m, Höhe in dm]; Höhe geglättet wie elevationGain (ROUTE_ELEVATION),
+ * Distanz = Bewegungsdistanz (Pausen zählen nicht). Höhen außerhalb `heightDm` (= ROUTE_GPX.elevationM × 10) fallen
+ * weg. Quelle: Plan E4 (300 Stützpunkte); Höhenrahmen wie ROUTE_GPX; PRODUKTENTSCHEIDUNG.
+ */
+export const ROUTE_ELEVATION_PROFILE = {
+  maxPoints: 300,
+  heightDm: { min: ROUTE_GPX.elevationM.min * 10, max: ROUTE_GPX.elevationM.max * 10 },
+} as const;
+
+/**
+ * Privatzone des Story-Bilds (Etappe E6, EA-G4, `privacyTrim`): Entlang der Strecke werden die ersten und letzten
+ * `trimM` Meter abgeschnitten (Wohnort/Startpunkt nicht ablesbar); bleibt weniger als `minRemainingM` übrig, zeigt
+ * das Bild keine Linie. Quelle: Plan E6 (200 m, Rest unter 100 m → ohne Linie); PRODUKTENTSCHEIDUNG.
+ */
+export const ROUTE_PRIVACY_TRIM = {
+  trimM: 200,
+  minRemainingM: 100,
+} as const;
+
+/** Kurzname laut Plan E6 (`ROUTE_PRIVACY_TRIM_M = 200`). */
+export const ROUTE_PRIVACY_TRIM_M = ROUTE_PRIVACY_TRIM.trimM;
+
+/**
+ * Aufzeichnung in der App (Etappe E4, Plan S1 „App“/„Zustände“):
+ * - `checkpointIntervalS`: Rohpunkte alle 30 s verschlüsselt sichern (Plan S1 „Offline“),
+ * - `minSaveDistanceM`: unter 100 m nachfragen („zu kurz“, Plan S1); unter 1 min Dauer kein Speichern (Schema),
+ * - `gpsWeakAccuracyM`: schlechter als ROUTE_FILTER.maxAccuracyM → „GPS schwach“ (der Punkt fällt ohnehin heraus),
+ * - `gpsSearchingAfterS`: so lange ohne neuen Punkt → „Suche GPS …“,
+ * - `gpsTimeIntervalMs` / `gpsDistanceIntervalM`: Abfrage-Takt des Geräts (Akku vs. Genauigkeit),
+ * - `maxRawPoints`: Obergrenze der Rohpunkte (12 h bei 1 Punkt/s + Reserve), danach endet die Aufzeichnung,
+ * - `maxDurationS`: 12 h = CARDIO_LOG_LIMITS.durationS.max (länger kann nicht gespeichert werden).
+ * Quelle: Plan S1; Takt und Schwellen: PRODUKTENTSCHEIDUNG.
+ */
+export const ROUTE_RECORDING = {
+  checkpointIntervalS: 30,
+  minSaveDistanceM: 100,
+  gpsWeakAccuracyM: ROUTE_FILTER.maxAccuracyM,
+  gpsSearchingAfterS: 15,
+  gpsTimeIntervalMs: 2_000,
+  gpsDistanceIntervalM: 5,
+  maxRawPoints: 60_000,
+  maxDurationS: CARDIO_LOG_LIMITS.durationS.max,
+} as const;
+
+/**
+ * Story-Bild (Etappe E6, EA-G4/EA-4): 9:16 mit 1080 × 1920 Pixeln, nur Linie (keine Kartenkacheln), höchstens
+ * `maxExerciseNames` Übungsnamen bei Krafteinheiten. Quelle: Plan E6; PRODUKTENTSCHEIDUNG.
+ */
+export const STORY_CARD = {
+  widthPx: 1080,
+  heightPx: 1920,
+  maxExerciseNames: 5,
+} as const;
+
 // ---------------------------------------------------------------------------------------------------------
 // Phase 4b · Live-Anpassung des Trainingsplans (Premium, OHNE KI) – docs/PLAN-PHASE-4B.md Abschnitte 5.2 und 5.6
 // Alle Werte ohne harte Quelle sind PRODUKTENTSCHEIDUNG – VOR LIVEGANG FACHLICH PRÜFEN (Frage 11).

@@ -1700,6 +1700,16 @@ dann `save_tracked_route`), Liste „Meine Strecken“ mit Linien-Skizze, GPX-Ex
 Vergleich mit `compareAttempts`/`attemptCompareText`, Testmodus `localDb.trackedRoutes` mit denselben Regeln
 (`local-rules.ts`) inkl. Demo-Aufzeichnung im Web (W-G14), Supabase-Modus lesen.
 
+### Umsetzungsstand S0 + S1 App (20.10.2026, Etappen E3–E6)
+
+Umgesetzt im Rahmen von `docs/PLAN-EINKAUFEN-AUSDAUER.md` (Abschnitt „Umsetzungsstand E3–E6“): native Module
+(expo-location mit Vordergrund-Dienst, expo-task-manager, react-native-webview für die Karte, view-shot + expo-sharing),
+**W-G13 entschieden: „Beim Verwenden“ + Vordergrund-Dienst, kein `ACCESS_BACKGROUND_LOCATION`**, Aufzeichnen mit
+Erklär-Bildschirm, Wiederaufnahme, Speichern über Tagebuch- und Strecken-Warteschlange, „Meine Strecken“ (dort „Meine
+Läufe“), Auswertung mit Karte (vorgezogener Teil von S2a: Start/Ziel, Attribution; GPX-Import bleibt S2a),
+Höhenprofil (additive Spalte), GPX-Export, Vergleich, Testmodus und Demo-Aufzeichnung im Web (W-G14). Das Gerätetest-
+Ergebnis von S0 (Akku 60 min, Funkloch, Sperrbildschirm) steht noch aus (Test-APK, HANDY-ANLEITUNG Teil 9b).
+
 ### S2a – Karte, GPX-Import, eigene Strecken auf der Karte (Gratis)
 
 - Karte (MapLibre) für jede gespeicherte Strecke, Start/Ziel-Markierung, Kilometer-Punkte, Attribution.
