@@ -84,10 +84,10 @@
   },
   "equipment_de": [],
   "declared_per_serving": {
-    "kcal": 204,
-    "protein_g": 20.3,
-    "carbs_g": 22.7,
-    "fat_g": 3.4
+    "kcal": 226,
+    "protein_g": 24.7,
+    "carbs_g": 21.3,
+    "fat_g": 4.2
   },
   "declared_diet": "omnivore",
   "declared_allergens": ["dairy", "lactose", "beef", "sulphites", "spicy"],

@@ -65,10 +65,10 @@
   },
   "equipment_de": [],
   "declared_per_serving": {
-    "kcal": 201,
-    "protein_g": 8.7,
-    "carbs_g": 30.2,
-    "fat_g": 3.7
+    "kcal": 182,
+    "protein_g": 9.3,
+    "carbs_g": 24.8,
+    "fat_g": 4
   },
   "declared_diet": "vegetarian",
   "declared_allergens": ["dairy", "lactose", "fructose"],

@@ -103,10 +103,10 @@
   },
   "equipment_de": [],
   "declared_per_serving": {
-    "kcal": 647,
-    "protein_g": 16.7,
-    "carbs_g": 118.7,
-    "fat_g": 9.9
+    "kcal": 658,
+    "protein_g": 19.8,
+    "carbs_g": 118,
+    "fat_g": 10.1
   },
   "declared_diet": "vegan",
   "declared_allergens": ["legumes", "celery", "onion_garlic"],

@@ -112,10 +112,10 @@
   },
   "equipment_de": [],
   "declared_per_serving": {
-    "kcal": 528,
-    "protein_g": 60.1,
-    "carbs_g": 13.7,
-    "fat_g": 22.1
+    "kcal": 547,
+    "protein_g": 63.4,
+    "carbs_g": 18.7,
+    "fat_g": 22.2
   },
   "declared_diet": "omnivore",
   "declared_allergens": ["dairy", "lactose", "mushrooms", "onion_garlic"],

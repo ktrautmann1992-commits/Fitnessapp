@@ -147,10 +147,10 @@
   },
   "equipment_de": [],
   "declared_per_serving": {
-    "kcal": 628,
-    "protein_g": 38.3,
-    "carbs_g": 61.1,
-    "fat_g": 21.9
+    "kcal": 629,
+    "protein_g": 40.2,
+    "carbs_g": 61.8,
+    "fat_g": 18.6
   },
   "declared_diet": "vegan",
   "declared_allergens": ["gluten", "legumes", "soy", "mustard", "onion_garlic"],

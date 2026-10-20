@@ -93,10 +93,10 @@
   },
   "equipment_de": [],
   "declared_per_serving": {
-    "kcal": 311,
+    "kcal": 278,
     "protein_g": 24,
-    "carbs_g": 40.3,
-    "fat_g": 5.9
+    "carbs_g": 33,
+    "fat_g": 5.1
   },
   "declared_diet": "omnivore",
   "declared_allergens": ["gluten", "poultry", "legumes", "soy", "histamine"],
