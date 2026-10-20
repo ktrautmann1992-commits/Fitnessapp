@@ -882,7 +882,8 @@ Erkennung ist eine zweite Sicherung.
 **Was gilt (Gründer-Entscheidungen W-G1 bis W-G16 und G1–G7 wie empfohlen; G8–G14 weiter offen – es gelten die
 sicheren Voreinstellungen der Core- und Datenbank-Konstanten, WP4 ändert daran nichts):**
 
-- **„Mein Wettkampf“** (`apps/mobile/src/app/wettkampf.tsx`, erreichbar über Einstellungen → „Mein Wettkampf“, die
+- **„Mein Wettkampf“** (`apps/mobile/src/app/(tabs)/wettkampf.tsx` – seit 20.10.2026 ein wählbarer Reiter, siehe
+  `docs/PLAN-DASHBOARD.md` 9; erreichbar über Einstellungen → „Mein Wettkampf“, die
   Countdown-Karte auf „Heute“/im Kalender und die Einladung auf „Heute“): Formular mit Distanz (5 km bis Halbmarathon/
   Marathon, W-G2), Renntag, Name (optional, sonst die Distanz), Ziel „Ankommen“/„Zielzeit“ (Zielzeit nur mit
   Referenzzeit), Referenzzeit (Distanz, Zeit, Datum, mit Erklärung), Wunsch-Tag des langen Laufs (automatisch oder

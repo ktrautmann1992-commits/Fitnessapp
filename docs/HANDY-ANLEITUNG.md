@@ -1098,8 +1098,8 @@ Onboarding bis **„Zum Plan“**, dann unten **„Übersicht“**.
 
 1. Ganz unten auf der Übersicht **„Bearbeiten“** antippen.
 2. Bei **„Körperdaten anzeigen“** den Haken entfernen → die Kachel verschwindet sofort.
-3. Bei **„Ernährung heute“** **„Nach oben“** antippen → die Kachel steht jetzt ganz oben. (Mit eingeschaltetem
-   TalkBack/VoiceOver sagt das Handy „Ernährung heute ist jetzt an Stelle 1 von 5.“)
+3. Bei **„Ernährung heute“** so oft **„Nach oben“** antippen, bis die Kachel ganz oben steht. (Mit eingeschaltetem
+   TalkBack/VoiceOver sagt das Handy z. B. „Ernährung heute ist jetzt an Stelle 1 von 8.“)
 4. **„Fertig“** → Seite neu laden (Chrome: **⋯ → Neu laden**) → die Reihenfolge bleibt.
 5. Alle Haken entfernen → Hinweis „Alle Kacheln sind ausgeblendet“; Hinweise oben (z. B. „Im Training wartet etwas“)
    bleiben trotzdem sichtbar. **„Bearbeiten“ → „Auf Standard zurücksetzen“** holt alles zurück.
@@ -1114,6 +1114,26 @@ Onboarding bis **„Zum Plan“**, dann unten **„Übersicht“**.
 **Mit Datenbank:** Die Migration `20261020130000_app_layout_settings.sql` spielt `db-migrate` beim Merge ein. Die
 Anordnung gilt dann für euer Konto auf allen Geräten, steht im Datenexport (`app_layout_settings`) und bleibt beim
 Widerruf der Gesundheits-Einwilligung (kein Gesundheitsdatum).
+
+## Teil 7q – Wettkampfplan finden (20.10.2026, Testmodus)
+
+Ihr müsst nichts einstellen. Vorschau-Link aus dem Pull Request im Handy-Browser öffnen, Testmodus starten,
+Onboarding mit Ziel **„Ausdauer“** (z. B. Halbmarathon) bis **„Zum Plan“**, dann unten **„Übersicht“**.
+
+1. Direkt unter „Training heute“ steht die Kachel **„Mein Wettkampf“** → **„Wettkampf planen“** antippen.
+2. Renntag eintragen (z. B. in 4 Monaten), Ampel zeigt **„✓ Passt“** → **„Wettkampfplan erstellen“** → **„Plan neu
+   erstellen“**.
+3. Unter der Zusammenfassung steht **„So ist dein Plan aufgebaut“**: alle Phasen mit Wochen und Datum, **„▶ Du bist
+   hier“** bei der aktuellen Phase, die aktuelle Woche mit **„jetzt“**, Erholungswochen mit **„Erholung“**.
+4. Eine Woche antippen → der Kalender öffnet genau diese Woche. **„Zurück“** führt zum Wettkampf.
+5. **Übersicht:** Die Kachel zeigt jetzt Name, Countdown, Phase und „Woche X von Y“ und **„Wettkampfplan ansehen“**.
+6. **Training:** ganz oben der Knopf **„Wettkampfplan“** (die Countdown-Karte bleibt darunter).
+7. **Mehr:** **„Wettkampf“** steht ganz oben unter „Weitere Bereiche“.
+8. Wer „Wettkampf“ als Knopf unten möchte: **Mehr → „Menüleiste anpassen“** → erst z. B. „Workouts“ herausnehmen, dann
+   **„Wettkampf in der Menüleiste“** antippen.
+
+**Mit Datenbank:** Die Migration `20261020220000_app_layout_competition.sql` spielt `db-migrate` beim Merge ein (nur
+die erlaubten Kacheln/Bereiche für „Übersicht und Menüleiste anpassen“ kommen dazu, keine neuen Daten).
 
 ## Teil 7n – Live-Anpassung des Plans testen (Phase 4b, Etappe D, Testmodus, 18.10.2026)
 Die Live-Anpassung ist in der **Testphase kostenlos** (Teil 7t). Im Testmodus ist **„Live-Anpassung einschalten

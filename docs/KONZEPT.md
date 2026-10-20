@@ -436,7 +436,9 @@ Verbot), Aufwärm-Hinweis immer; Prüfregeln W1–W7 für die Inhalte. Details u
   Warteschlange
 - **Übersicht und Menüleiste anpassen (seit 20.10.2026, `docs/PLAN-DASHBOARD.md` 8):** Kacheln ein-/ausblenden und
   umsortieren, Menüleiste mit 3–6 Knöpfen selbst zusammenstellen (Übersicht links, Mehr rechts fest; Standard mit
-  „Workouts“ und „Einkaufen“); Regeln in `packages/core/src/layout.ts`, gespeichert je Konto (`app_layout_settings`)
+  „Workouts“ und „Einkaufen“); Regeln in `packages/core/src/layout.ts`, gespeichert je Konto (`app_layout_settings`).
+  Seit 20.10.2026 (Gründer-Rückmeldung „Wettkampfplan finden“, `docs/PLAN-DASHBOARD.md` 9): Kachel „Mein Wettkampf“
+  weit oben, „Wettkampf“ als wählbarer Knopf (unter „Mehr“ ganz oben) und „So ist dein Plan aufgebaut“ auf /wettkampf
 - Lebensmittel tauschen (Zutaten-Austausch, Abschnitt 6.9), Barcode-Scanner (Open Food Facts; Lizenz beachten, Abschnitt 6.1)
 - Rezepte, Küche und Einkauf aus den Erweiterungen Teil 2: Abschnitte 6.5–6.13
 

@@ -186,3 +186,38 @@ Anmelden (Testmodus), Übersicht, Menüleiste und Mein Konto; Bildschirmfotos he
 - **Tests:** `layout.test.ts` (Ränder, alle aus, 7. Knopf, ohne Mehr/Übersicht, unbekannte IDs, neue Kachel,
   fehlender Bereich, Idempotenz), `app-layout.test.ts` (Testmodus, Regeln, Export, Widerruf), db-sync (ID-Listen und
   Grenzen = Core), Playwright `dashboard-edit.spec.ts`.
+
+## 9. Wettkampfplan leicht finden (Gründer-Rückmeldung 20.10.2026) – Umsetzungsstand
+
+Rückmeldung: „Man findet den Wettkampfplan nicht. Angeblich unter der Rubrik ‚heute‘. Das sollte auch besser
+ersichtlich sein wie der Plan aufgebaut ist und er sollte leicht zu finden sein.“
+
+- **Kachel „Mein Wettkampf“** (Kachel-ID `competition`, im Standard direkt unter „Training heute“, ein-/ausblendbar
+  und verschiebbar wie alle; `components/competition-tile.tsx`, Daten aus `data/competition-dashboard.ts`
+  `competitionTileView`): mit Wettkampf Name · Distanz, Renntag, Countdown in Tagen und Wochen, Phase + „Woche X von Y“
+  (nur bei passendem Wettkampfplan), Ampel kurz („✓ Wettkampfplan aktiv“ bzw. „Machbarkeit: ✓ Passt/! Knapp/✕ Zu
+  kurz/✕ Nicht möglich“) und **„Wettkampfplan ansehen“**; ohne Wettkampf kurzer Text und **„Wettkampf planen“**
+  (`/wettkampf?neu=1`, öffnet das Formular); Fehlerzustand bei unlesbarem Wettkampf. Bestehende gespeicherte
+  Anordnungen bekommen die Kachel über `normalizeLayout` an ihrer Standardstelle (sichtbar).
+- **Bereich „Wettkampf“** (`wettkampf` in `NAV_AREAS`/`AVAILABLE_AREAS`, Symbol Zielfahne): **nicht** im Standard (die
+  Leiste bleibt bei 6 Knöpfen), unter „Mehr“ ganz oben („Weitere Bereiche“ steht seit 20.10.2026 über „Persönlich“),
+  in „Menüleiste anpassen“ wählbar. Die Seite liegt jetzt als Reiter in `src/app/(tabs)/wettkampf.tsx` – es gibt
+  `/wettkampf` nur einmal (keine zweite Stapel-Route). Aus Stapel-Seiten (Einstellungen, Kalender) wird sie wie bisher
+  per `push` geöffnet, „Zurück“ führt dorthin zurück; aus Reitern führt „Zurück“ zum zuvor besuchten Reiter
+  (`backBehavior="history"`). Bei 6 Knöpfen bleibt die Beschriftung halbfett (passt auf 320 px).
+- **„So ist dein Plan aufgebaut“** auf `/wettkampf` direkt unter der Zusammenfassung (nur bei passendem
+  Wettkampfplan, `CompetitionOutlineCard`): Zeitleiste aller Phasen (Basis, Aufbau, Spitze, Tapering, Rennwoche,
+  Erholung nach dem Rennen) mit Wochen-Spanne, Datum, aktueller Phase („▶ Du bist hier“), je Phase ein Satz „Was
+  passiert hier“, Wochenumfang-Trend und Anzahl Erholungswochen; jede Woche als Kästchen mit Wort („jetzt“,
+  „Erholung“ gestrichelt, „Renntag“, Umfang in % bei Tapering/Rennwoche/Erholung). Tipp auf eine Woche öffnet sie im
+  Kalender (`/kalender?woche=JJJJ-MM-TT`, nur Wochen, die der Kalender zeigt). Daten: **`packages/core`
+  `competitionPlanOutline`** (`plan/competition-outline.ts`, gleicher Makrozyklus wie beim Erstellen; geplante Wochen
+  mit dem gespeicherten Stand, spätere als Vorschau; Wochenzählung wie `competitionPlanWeek`).
+- **Training:** Countdown-Karte bleibt; zusätzlich ganz oben der Knopf **„Wettkampfplan“**, sobald ein Wettkampf
+  angezeigt wird.
+- **Datenbank:** additive Migration `20261020220000_app_layout_competition.sql` (`save_app_layout` mit erweiterten
+  ID-Listen, sonst unverändert; db-sync prüft beides), pgTAP `63_app_layout_competition.test.sql`.
+- **Tests:** Core `competition-outline.test.ts` (sehr kurzer/langer Vorlauf, Rennwoche, vorbei, vor dem Start,
+  gespeicherte Erholungswochen), `layout.test.ts` (neue Kachel in alter Anordnung, Bereich wählbar, nicht im Standard);
+  Mobile `competition-dashboard.test.ts`, `competition-format.test.ts`; Playwright `competition-find.spec.ts`,
+  `dashboard.spec.ts`, `dashboard-edit.spec.ts`.
