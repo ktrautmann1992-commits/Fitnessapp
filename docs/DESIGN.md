@@ -362,3 +362,22 @@ Claude ergänzt den Pull Request, `ci` wird grün, die Vorschau-Links zeigen die
   Startbildschirm und Landingpage-Hero). Nutzenpunkte sind eine Liste mit Häkchen – bewusst keine Karten mit
   Rahmen, damit nichts wie ein Knopf aussieht. Noch nicht verfügbare Funktionen tragen die Plakette „Bald“.
 - **Testmodus-Hinweis:** dezente Plakette (hell: Eisblau, dunkel: Graphit) statt Leiste mit Signal-Linie.
+
+---
+
+## App: Kalorien-Ring und Mahlzeiten-Karten (Ernährung, 20.10.2026)
+
+Bausteine in `apps/mobile/src/components/nutrition-day-overview.tsx` (eigenes Alpha5-Design – kein fremdes Vorbild
+kopiert):
+
+- **`ProgressRing`** (react-native-svg): Spur in `--color-border`, Füllung in `--color-primary` ab 12 Uhr im
+  Uhrzeigersinn, abgerundete Enden. Über dem Ziel eine **zweite Runde in `--color-text`** (neutral, kein Rot/Orange –
+  „zu viel“ ist keine Warnung). Die Grafik ist für Bildschirmleser ausgeblendet; die Ansage kommt in Worten vom Rahmen
+  („1.391 kcal übrig von 2.869 kcal Tagesziel“). Groß 152 px (Strich 12), klein 44 px (Strich 5).
+- **`DayOverviewCard`**: Karte „Übersicht“ – links „Gegessen“, Mitte Ring mit Zahl (Archivo, `--font-size-xl`) und
+  „übrig“/„zu viel“, rechts „Verbrannt“ bzw. „Ziel“; darunter drei Makro-Balken nebeneinander (8 px hoch, Spur
+  `--color-border`, Füllung `--color-primary`, Text „47 / 222 g“ in `--color-text-muted`).
+- **`MealCard`**: Karte je Mahlzeit mit kleinem Ring, Titel, „317 / 606 kcal“, Vorschau (2 Zeilen) und rundem
+  **„+“-Knopf** (48 × 48 px, `--color-primary`, Zeichen in `--color-primary-text`).
+- Farbe nie allein: jede Zahl steht zusätzlich als Text daneben. Alle Werte rechnet `packages/core`
+  (`nutrition/day-ring.ts`); die Bausteine zeigen nur an.

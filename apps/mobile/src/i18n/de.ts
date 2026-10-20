@@ -23,6 +23,7 @@ import { deFoodPhoto } from './de-food-photo';
 import { deFoodProduct } from './de-food-product';
 import { deGoalChoice, deWeightGoal, deWeightGoalLife } from './de-goals';
 import { deNutrition } from './de-nutrition';
+import { deNutritionDay } from './de-nutrition-day';
 import { deWeekEval } from './de-week-eval';
 
 export const de = {
@@ -1572,6 +1573,8 @@ export const de = {
     title: 'Diese Seite gibt es nicht.',
   },
   nutrition: deNutrition,
+  /** Tagesübersicht Ernährung: Kalorien-Ring, Makro-Balken, Mahlzeiten-Karten (20.10.2026). */
+  nutritionDay: deNutritionDay,
   /** Abnehm-Ziel: Einstellungen, Karten, Ernährungs-Hinweise (Etappe Z5). */
   weightGoalLife: deWeightGoalLife,
   foodLog: deFoodLog,
