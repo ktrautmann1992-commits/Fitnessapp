@@ -32,6 +32,8 @@ function exerciseStatusCounts(): Record<'draft' | 'published' | 'archived', numb
 function nutritionContent(): {
   foods: { id: string; name_de: string }[];
   recipeCount: number;
+  mealPrepCount: number;
+  guideCount: number;
 } {
   const contentDir = join(__dirname, '../../../content');
   const jsonFiles = (folder: string) => {
@@ -52,7 +54,12 @@ function nutritionContent(): {
           name_de: string;
         },
     );
-  return { foods, recipeCount: jsonFiles('recipes').length };
+  return {
+    foods,
+    recipeCount: jsonFiles('recipes').length,
+    mealPrepCount: jsonFiles('meal-prep-plans').length,
+    guideCount: jsonFiles('guides').length,
+  };
 }
 
 async function login(page: Page, password = E2E_ADMIN_PASSWORD) {
@@ -273,7 +280,7 @@ test.describe('Ernährung (N2d)', () => {
   test('Rezepte, Lebensmittel, Meal-Prep, Ratgeber: nur ansehen, Katalog oder Leerzustand, Klick-Schritte', async ({
     page,
   }) => {
-    const { foods, recipeCount } = nutritionContent();
+    const { foods, recipeCount, mealPrepCount, guideCount } = nutritionContent();
     const catalogMissingNote = page.getByText('Noch kein Lebensmittel-Katalog im Repository.');
     await login(page);
     await expect(page).toHaveURL(/\/admin$/);
@@ -341,9 +348,14 @@ test.describe('Ernährung (N2d)', () => {
     }
 
     await nav.getByRole('link', { name: 'Meal-Prep' }).click();
-    await expect(page.getByRole('heading', { name: 'Noch keine Meal-Prep-Pläne' })).toBeVisible();
+    // Leerzustand nur, solange der Bestand leer ist (alpha5-Import bringt Entwürfe).
+    await expect(page.getByRole('heading', { name: 'Noch keine Meal-Prep-Pläne' })).toHaveCount(
+      mealPrepCount === 0 ? 1 : 0,
+    );
     await nav.getByRole('link', { name: 'Ratgeber' }).click();
-    await expect(page.getByRole('heading', { name: 'Noch keine Ratgeber' })).toBeVisible();
+    await expect(page.getByRole('heading', { name: 'Noch keine Ratgeber' })).toHaveCount(
+      guideCount === 0 ? 1 : 0,
+    );
     await nav.getByRole('link', { name: 'Austausch' }).click();
     await expect(
       page.getByRole('heading', { name: 'Noch keine Austausch-Einträge' }),
