@@ -2,8 +2,8 @@ import { type CalorieRing, type MacroProgress, type MealCardGroup } from '@fitne
 import { fontSize, fontWeight, radius, spacing } from '@fitnessapp/ui';
 import type { ReactNode } from 'react';
 import { Pressable, StyleSheet, Text, View } from 'react-native';
-import Svg, { Circle } from 'react-native-svg';
 
+import { ProgressRing } from '@/components/design';
 import { Body, Card, MIN_TOUCH } from '@/components/ui';
 import { t } from '@/i18n';
 import { displayFont } from '@/lib/fonts';
@@ -19,58 +19,8 @@ import { useThemeColors } from '@/lib/theme';
  * allein: jede Zahl steht als Text daneben, Ring und Balken haben eine Ansage in Worten.
  */
 
-/** Kreis-Fortschritt: Spur, gefüllter Bogen ab 12 Uhr im Uhrzeigersinn, darüber eine zweite Runde (zu viel). */
-export function ProgressRing({
-  size,
-  stroke,
-  fraction,
-  overFraction = 0,
-  children,
-}: {
-  size: number;
-  stroke: number;
-  fraction: number;
-  overFraction?: number;
-  children?: ReactNode;
-}) {
-  const theme = useThemeColors();
-  const r = (size - stroke) / 2;
-  const c = 2 * Math.PI * r;
-  const arc = (part: number, color: string, key: string) =>
-    part > 0 ? (
-      <Circle
-        key={key}
-        cx={size / 2}
-        cy={size / 2}
-        r={r}
-        stroke={color}
-        strokeWidth={stroke}
-        strokeLinecap={part >= 1 ? 'butt' : 'round'}
-        strokeDasharray={`${c * Math.min(part, 1)} ${c}`}
-        fill="none"
-      />
-    ) : null;
-  return (
-    <View style={{ width: size, height: size }}>
-      {/* Gedreht um −90°: der Bogen beginnt oben (12 Uhr). */}
-      <View style={[StyleSheet.absoluteFill, { transform: [{ rotate: '-90deg' }] }]}>
-        <Svg width={size} height={size} aria-hidden>
-          <Circle
-            cx={size / 2}
-            cy={size / 2}
-            r={r}
-            stroke={theme.border}
-            strokeWidth={stroke}
-            fill="none"
-          />
-          {arc(fraction, theme.primary, 'fill')}
-          {arc(overFraction, theme.text, 'over')}
-        </Svg>
-      </View>
-      {children ? <View style={styles.ringCenter}>{children}</View> : null}
-    </View>
-  );
-}
+/** Ring-Baustein liegt in components/design.tsx (gemeinsam mit Übersicht & Co.); hier weiter importierbar. */
+export { ProgressRing };
 
 /** Karte „Übersicht“: großer Ring, Gegessen / Verbrannt bzw. Ziel, Makro-Balken. */
 export function DayOverviewCard({
@@ -327,15 +277,6 @@ const styles = StyleSheet.create({
   sideValue: { fontSize: fontSize.lg, fontWeight: fontWeight.bold },
   sideLabel: { fontSize: fontSize.sm },
   sideNote: { fontSize: 12, textAlign: 'center' },
-  ringCenter: {
-    position: 'absolute',
-    top: 0,
-    right: 0,
-    bottom: 0,
-    left: 0,
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
   ringValue: { fontSize: fontSize.xl },
   ringLabel: { fontSize: fontSize.sm },
   centerText: { textAlign: 'center' },

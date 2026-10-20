@@ -1,4 +1,4 @@
-import { brandColors, fontSize, fontWeight, radius, spacing } from '@fitnessapp/ui';
+import { brandColors, cardColors, fontSize, fontWeight, radius, spacing } from '@fitnessapp/ui';
 import type { ReactNode, Ref } from 'react';
 import {
   ActivityIndicator,
@@ -14,15 +14,19 @@ import {
 } from 'react-native';
 
 import { t } from '@/i18n';
-import { displayFont } from '@/lib/fonts';
-import { useThemeColors } from '@/lib/theme';
+import { appFont, displayFont } from '@/lib/fonts';
+import { useColorSchemeName, useThemeColors } from '@/lib/theme';
 
 /**
  * Grundbausteine der Oberfläche. Farben, Abstände und Schrift kommen ausschließlich aus den Design-Tokens
  * (@fitnessapp/ui, Quelle packages/ui/theme.css). Alle Tippflächen sind mindestens 48 px hoch.
+ * Aussehen nach dem Entwurf „Übersicht neu“ (20.10.2026): Plus Jakarta Sans, Karten Radius 20 mit zartem Rand,
+ * Pillen-Knöpfe. Weitere Bausteine (Icon, Kacheln, Hero-Karte …): components/design.tsx.
  */
 
 export const MIN_TOUCH = 48;
+/** Höhe der großen Pillen-Knöpfe (Entwurf: „Training starten“ 52 px). */
+export const BUTTON_HEIGHT = 52;
 
 // ---------------------------------------------------------------------------------------------------------
 // Text
@@ -34,7 +38,10 @@ export function Heading({ children, level = 1 }: { children: ReactNode; level?: 
       accessibilityRole="header"
       // Ebene für Screenreader im Browser (sonst gilt jede Überschrift als Ebene 1).
       aria-level={level}
-      style={[level === 1 ? [styles.h1, displayFont()] : styles.h2, { color: theme.text }]}
+      style={[
+        level === 1 ? [styles.h1, displayFont()] : [styles.h2, appFont('bold')],
+        { color: theme.text },
+      ]}
     >
       {children}
     </Text>
@@ -60,7 +67,12 @@ export function Body({
     <Text
       testID={testID}
       accessibilityLabel={accessibilityLabel}
-      style={[styles.body, { color: muted ? theme.textMuted : theme.text }, style]}
+      style={[
+        styles.body,
+        appFont('regular'),
+        { color: muted ? theme.textMuted : theme.text },
+        style,
+      ]}
     >
       {children}
     </Text>
@@ -87,7 +99,7 @@ export function FieldError({
       accessibilityLiveRegion="polite"
       testID={testID}
       nativeID={nativeID}
-      style={[styles.error, { color: theme.danger }]}
+      style={[styles.error, appFont('semibold'), { color: theme.danger }]}
     >
       {message}
     </Text>
@@ -169,6 +181,7 @@ export function Button({
         <Text
           style={[
             variant === 'link' ? styles.linkText : styles.buttonText,
+            appFont(variant === 'link' ? 'semibold' : 'bold'),
             variant === 'onDark' && styles.onDarkText,
             { color: variant === 'link' ? theme.link : textColor },
             variant === 'link' && { textDecorationLine: 'underline' },
@@ -226,8 +239,10 @@ export function TextField({
   const invalid = Boolean(error) || Boolean(describedBy?.text);
   return (
     <View style={[styles.field, style]}>
-      <Text style={[styles.label, { color: theme.text }]}>{label}</Text>
-      {hint ? <Text style={[styles.hint, { color: theme.textMuted }]}>{hint}</Text> : null}
+      <Text style={[styles.label, appFont('semibold'), { color: theme.text }]}>{label}</Text>
+      {hint ? (
+        <Text style={[styles.hint, appFont('regular'), { color: theme.textMuted }]}>{hint}</Text>
+      ) : null}
       <TextInput
         ref={inputRef}
         accessibilityLabel={label}
@@ -249,6 +264,7 @@ export function TextField({
         testID={testID}
         style={[
           styles.input,
+          appFont('regular'),
           {
             color: theme.text,
             backgroundColor: theme.surface,
@@ -300,7 +316,9 @@ export function ChoiceList<T extends string | number>({
       accessibilityRole="radiogroup"
       accessibilityLabel={groupLabel ?? label}
     >
-      {label ? <Text style={[styles.label, { color: theme.text }]}>{label}</Text> : null}
+      {label ? (
+        <Text style={[styles.label, appFont('semibold'), { color: theme.text }]}>{label}</Text>
+      ) : null}
       <View style={horizontal ? styles.chipRow : styles.choiceColumn}>
         {options.map((option) => (
           <OptionButton
@@ -390,8 +408,8 @@ export function OptionButton({
         <Text
           style={[
             compact ? styles.chipText : styles.optionLabel,
+            appFont(selected ? 'bold' : 'semibold'),
             { color: solid ? theme.primaryText : theme.text },
-            selected && { fontWeight: fontWeight.bold },
           ]}
         >
           {compact && selected ? `✓ ${label}` : label}
@@ -400,6 +418,7 @@ export function OptionButton({
           <Text
             style={[
               styles.optionDescription,
+              appFont('regular'),
               { color: solid ? theme.primaryText : theme.textMuted },
               compact && styles.chipDescription,
             ]}
@@ -447,9 +466,13 @@ export function Checkbox({
             },
           ]}
         >
-          {checked ? <Text style={[styles.checkMark, { color: theme.primaryText }]}>✓</Text> : null}
+          {checked ? (
+            <Text style={[styles.checkMark, appFont('bold'), { color: theme.primaryText }]}>✓</Text>
+          ) : null}
         </View>
-        <Text style={[styles.checkboxLabel, { color: theme.text }]}>{label}</Text>
+        <Text style={[styles.checkboxLabel, appFont('regular'), { color: theme.text }]}>
+          {label}
+        </Text>
       </Pressable>
       <FieldError message={error} />
     </View>
@@ -497,7 +520,7 @@ export function Notice({
       {title ? (
         <Text
           accessibilityRole={titleAsHeader ? 'header' : undefined}
-          style={[styles.noticeTitle, { color: theme.text }]}
+          style={[styles.noticeTitle, appFont('bold'), { color: theme.text }]}
         >
           {title}
         </Text>
@@ -515,16 +538,17 @@ export function Badge({ label, testID }: { label: string; testID?: string }) {
   const theme = useThemeColors();
   return (
     <View testID={testID} style={[styles.badge, { borderColor: theme.primary }]}>
-      <Text style={[styles.badgeText, { color: theme.text }]}>{label}</Text>
+      <Text style={[styles.badgeText, appFont('semibold'), { color: theme.text }]}>{label}</Text>
     </View>
   );
 }
 
 export function Card({ children, style }: { children: ReactNode; style?: StyleProp<ViewStyle> }) {
   const theme = useThemeColors();
+  const card = cardColors[useColorSchemeName()];
   return (
     <View
-      style={[styles.card, { backgroundColor: theme.surface, borderColor: theme.border }, style]}
+      style={[styles.card, { backgroundColor: theme.surface, borderColor: card.border }, style]}
     >
       {children}
     </View>
@@ -560,7 +584,9 @@ export function ProgressBar({ current, total }: { current: number; total: number
       accessibilityLabel={label}
       accessibilityValue={{ min: 0, max: total, now: current, text: label }}
     >
-      <Text style={[styles.progressText, { color: theme.textMuted }]}>{label}</Text>
+      <Text style={[styles.progressText, appFont('semibold'), { color: theme.textMuted }]}>
+        {label}
+      </Text>
       <View style={[styles.progressTrack, { backgroundColor: theme.border }]}>
         <View
           style={[
@@ -574,12 +600,12 @@ export function ProgressBar({ current, total }: { current: number; total: number
 }
 
 const styles = StyleSheet.create({
-  h1: { fontSize: fontSize.xl + 2, fontWeight: fontWeight.bold, lineHeight: 34 },
-  h2: { fontSize: fontSize.lg, fontWeight: fontWeight.semibold, lineHeight: 26 },
+  h1: { fontSize: fontSize.xl - 2, fontWeight: fontWeight.extrabold, lineHeight: 32 },
+  h2: { fontSize: fontSize.lg, fontWeight: fontWeight.bold, lineHeight: 26 },
   body: { fontSize: fontSize.md, lineHeight: 24 },
   error: { fontSize: fontSize.sm, lineHeight: 20, fontWeight: fontWeight.semibold },
   button: {
-    minHeight: MIN_TOUCH,
+    minHeight: BUTTON_HEIGHT,
     borderRadius: radius.pill,
     paddingVertical: spacing.sm + 4,
     paddingHorizontal: spacing.lg,
@@ -587,7 +613,7 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
   },
   linkButton: { paddingHorizontal: spacing.sm, minHeight: 44 },
-  buttonText: { fontSize: fontSize.lg, fontWeight: fontWeight.bold, textAlign: 'center' },
+  buttonText: { fontSize: 17, fontWeight: fontWeight.bold, textAlign: 'center' },
   linkText: { fontSize: fontSize.md, fontWeight: fontWeight.semibold, textAlign: 'center' },
   onDarkText: { fontSize: fontSize.md },
   field: { gap: spacing.xs },
@@ -663,7 +689,7 @@ const styles = StyleSheet.create({
     gap: spacing.xs,
   },
   noticeTitle: { fontSize: fontSize.md, fontWeight: fontWeight.bold },
-  card: { borderWidth: 1, borderRadius: radius.md, padding: spacing.md, gap: spacing.sm },
+  card: { borderWidth: 1, borderRadius: radius.lg, padding: spacing.md, gap: spacing.sm },
   badge: {
     alignSelf: 'flex-start',
     borderWidth: 1,
