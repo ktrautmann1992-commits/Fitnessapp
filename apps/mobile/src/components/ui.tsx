@@ -4,7 +4,6 @@ import {
   ActivityIndicator,
   Pressable,
   StyleSheet,
-  Text,
   TextInput,
   View,
   type KeyboardTypeOptions,
@@ -14,8 +13,10 @@ import {
 } from 'react-native';
 
 import { t } from '@/i18n';
+import { Icon, type IconName } from '@/components/design';
 import { appFont, displayFont } from '@/lib/fonts';
 import { useColorSchemeName, useThemeColors } from '@/lib/theme';
+import { Text } from '@/components/text';
 
 /**
  * Grundbausteine der Oberfläche. Farben, Abstände und Schrift kommen ausschließlich aus den Design-Tokens
@@ -122,10 +123,13 @@ export function Button({
   accessibilityHint,
   expanded,
   testID,
+  icon,
 }: {
   label: string;
   onPress: () => void;
   variant?: ButtonVariant;
+  /** Strich-Icon vor der Beschriftung (Deko, z. B. „scan“ beim Scan-Knopf). */
+  icon?: IconName;
   loading?: boolean;
   disabled?: boolean;
   accessibilityLabel?: string;
@@ -178,17 +182,20 @@ export function Button({
       {loading ? (
         <ActivityIndicator color={textColor} />
       ) : (
-        <Text
-          style={[
-            variant === 'link' ? styles.linkText : styles.buttonText,
-            appFont(variant === 'link' ? 'semibold' : 'bold'),
-            variant === 'onDark' && styles.onDarkText,
-            { color: variant === 'link' ? theme.link : textColor },
-            variant === 'link' && { textDecorationLine: 'underline' },
-          ]}
-        >
-          {label}
-        </Text>
+        <View style={styles.buttonInner}>
+          {icon ? <Icon name={icon} size={20} color={textColor} /> : null}
+          <Text
+            style={[
+              variant === 'link' ? styles.linkText : styles.buttonText,
+              appFont(variant === 'link' ? 'semibold' : 'bold'),
+              variant === 'onDark' && styles.onDarkText,
+              { color: variant === 'link' ? theme.link : textColor },
+              variant === 'link' && { textDecorationLine: 'underline' },
+            ]}
+          >
+            {label}
+          </Text>
+        </View>
       )}
     </Pressable>
   );
@@ -613,6 +620,13 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
   },
   linkButton: { paddingHorizontal: spacing.sm, minHeight: 44 },
+  buttonInner: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    gap: spacing.sm,
+    flexShrink: 1,
+  },
   buttonText: { fontSize: 17, fontWeight: fontWeight.bold, textAlign: 'center' },
   linkText: { fontSize: fontSize.md, fontWeight: fontWeight.semibold, textAlign: 'center' },
   onDarkText: { fontSize: fontSize.md },

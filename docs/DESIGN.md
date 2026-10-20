@@ -206,6 +206,30 @@ Bereich → Farbe/Icon zentral in `apps/mobile/src/lib/area-style.ts`. Aktiver M
 Beschriftung in `icon` der Bereichsfarbe. Kennzeilen und Abschnitts-Überschriften stehen nur per Stil
 (`textTransform: 'uppercase'`) in Großbuchstaben – Bildschirmleser lesen den normalen Text.
 
+### Bereiche im neuen Design (Etappe 3)
+
+- **Seitenkopf:** `Screen` nimmt `area` und `icon` – Icon-Chip (40 px) in der Bereichsfarbe neben dem Titel. Training,
+  Kalender, Woche, Verlauf-Unterseiten blau; Ernährung, Rezepte, Meal-Prep grün; Workouts und Timer violett;
+  Einkaufen türkis; Ausdauer und Wettkampf orange; Fortschritt blau; Einstellungen, Konto, Ratgeber, Lizenzen in
+  Markenblau. Onboarding und Einwilligungen bleiben ohne Chip.
+- **Schrift überall:** `components/text.tsx` ersetzt `Text` aus react-native in allen Bildschirmen und hängt auf
+  iPhone/Android den passenden Jakarta-Schnitt zur Stärke an (`fontWeightName` → `appFont`). Neue Bildschirme
+  importieren `Text` aus `@/components/text`.
+- **Karten:** `useThemeColors()` liefert zusätzlich `cardBorder` und `divider` (`--card-…`). Inhalts-Karten (Mahlzeiten,
+  Rezepte, Workouts, Ratgeber, Meal-Prep, Listenzeilen) nutzen `cardBorder` und Radius 20 bzw. 16; Eingabefelder,
+  Auswahlknöpfe und Rahmen von Bedienelementen bleiben bei `--color-border`.
+- **Training:** Kopf der Einheit auf „Heute“ als Hero-Karte (Name bleibt Überschrift), Wochenliste mit Tages-Chips
+  (Einheit: Trainingsblau, Ruhetag neutral, Wort daneben), Link „Wettkampfplan“ als orange Kachel.
+- **Ernährung:** Kalorien-Ring, kleine Ringe und Makro-Balken in Ernährungsgrün; Mahlzeiten ohne Ring mit Chip;
+  „+“ als Icon; Rezeptkarten (Suche, Kühlschrank) mit Rezept-Chip.
+- **Workouts:** Sterne in Workout-Violett, leere Sterne in Nebentext-Grau (≥ 4,5 : 1) – nicht mehr in der Warnfarbe.
+  Timer: Zeit 80 px extra fett auf dunkler Fläche, Rahmen violett (Arbeit) bzw. grün (Pause), immer mit Wort;
+  „Pausiert“ in Signal (auf Dunkel 10,7 : 1).
+- **Einkaufen:** Häkchen-Zeilen ≥ 52 px, Kasten 30 px in Einkaufs-Türkis mit Haken-Icon; Scan-Knopf mit Symbol
+  (`Button` hat dafür `icon`).
+- **Ausdauer/Wettkampf:** Strecken-Skizze, Kilometer-Balken, Höhenprofil, Summen, Phasen-Band, Wochen-Chips und
+  Intervall-Schritte in Orange (`strong`, Text `icon`). Die Karte (OpenStreetMap) zeichnet die Strecke weiter blau.
+
 ### Bausteine (`apps/mobile/src/components/design.tsx`)
 
 | Baustein       | Props (Auszug)                                                                                                                                                                                                                           | Barrierefreiheit                                    |

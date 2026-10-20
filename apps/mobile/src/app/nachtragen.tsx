@@ -150,7 +150,7 @@ export default function BackfillScreen() {
   }
 
   return (
-    <Screen title={t.backfill.title} testID="backfill" footer={back}>
+    <Screen area="training" icon="plus" title={t.backfill.title} testID="backfill" footer={back}>
       <LiveRegion text={live.text} version={live.version} />
       <Body testID="backfill-day">{t.backfill.forDay(dayLabel(date))}</Body>
       {app.offline ? <Notice tone="warning">{t.plan.offline}</Notice> : null}

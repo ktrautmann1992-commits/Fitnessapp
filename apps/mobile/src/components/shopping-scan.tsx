@@ -324,6 +324,7 @@ export function ShoppingScanPanel({
           {canScan ? (
             <Button
               label={texts.camera}
+              icon="scan"
               disabled={disabled || busy}
               onPress={() => {
                 setFeedback(null);

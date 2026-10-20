@@ -17,6 +17,7 @@ import { Platform, View } from 'react-native';
 import { CountdownCard, PhaseBand } from '@/components/competition';
 import { FewerDaysCard, SessionAdjustedNotice } from '@/components/live-adjust';
 import { NutritionTodayCard } from '@/components/nutrition';
+import { Tile } from '@/components/design';
 import { MedicalNotice, SessionCard, WeekOverview } from '@/components/plan';
 import { ConfirmDialog, Screen } from '@/components/screen';
 import { focusTestId, SwapDialog, type SwapDecision, SwapFeedback } from '@/components/swap';
@@ -237,8 +238,13 @@ export default function TodayScreen() {
     <>
       {/* Gründer-Rückmeldung 20.10.2026: Wettkampfplan deutlich oben im Training, wenn ein Wettkampf existiert. */}
       {competition ? (
-        <Button
-          label={t.competition.trainingLink}
+        // Design 20.10.2026: Kachel in Wettkampf-Orange mit Pokal (ganz antippbar, Link).
+        <Tile
+          variant="row"
+          area="wettkampf"
+          icon="trophy"
+          title={t.competition.trainingLink}
+          role="link"
           accessibilityLabel={t.competition.trainingLinkA11y(competition.stored.competition.name)}
           accessibilityHint={t.competition.trainingLinkHint}
           onPress={() => router.navigate('/wettkampf' as Href)}
@@ -433,7 +439,7 @@ export default function TodayScreen() {
   // --- Kein Plan ------------------------------------------------------------------------------------------
   if (!active) {
     return (
-      <Screen title={t.today.title} testID="today" footer={footer}>
+      <Screen area="training" icon="dumbbell" title={t.today.title} testID="today" footer={footer}>
         <Body muted>{t.today.greeting}</Body>
         {header}
         <Card>
@@ -671,7 +677,7 @@ export default function TodayScreen() {
   }
 
   return (
-    <Screen title={t.today.title} testID="today" footer={footer}>
+    <Screen area="training" icon="dumbbell" title={t.today.title} testID="today" footer={footer}>
       {header}
       {/* Live-Anpassung (Phase 4b, 8.1): offener Vorschlag „Weniger Trainingstage?“ oben. */}
       <FewerDaysCard today={today} />
@@ -734,6 +740,7 @@ export default function TodayScreen() {
           {/* Arzt-Hinweis vor JEDER Einheit – das Feld liegt am Plan (auch offline). */}
           {plan.medical_notice ? <MedicalNotice /> : null}
           <SessionCard
+            hero
             original={selectedSession}
             shown={shown}
             rules={rules}

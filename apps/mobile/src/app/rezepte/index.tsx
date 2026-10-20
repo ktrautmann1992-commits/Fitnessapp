@@ -8,7 +8,7 @@ import {
 import { fontSize, fontWeight, radius, spacing } from '@fitnessapp/ui';
 import { Redirect, useRouter, type Href } from 'expo-router';
 import { useMemo, useState, type ReactNode } from 'react';
-import { Pressable, StyleSheet, Text, View } from 'react-native';
+import { Pressable, StyleSheet, View } from 'react-native';
 
 import {
   ConsentBlockedNotice,
@@ -16,6 +16,7 @@ import {
   NutritionGate,
   nutritionReady,
 } from '@/components/nutrition';
+import { IconChip } from '@/components/design';
 import { Screen } from '@/components/screen';
 import {
   Body,
@@ -34,6 +35,7 @@ import { useThemeColors } from '@/lib/theme';
 import { useApp } from '@/state/app-state';
 import { HOME_ROUTE, resolveEntryRoute } from '@/state/flow';
 import { useNutritionWeek } from '@/state/use-nutrition';
+import { Text } from '@/components/text';
 
 const CATEGORY_NAMES = new Map(RECIPE_CATEGORIES.map((c) => [c.id, c.name_de]));
 
@@ -125,7 +127,13 @@ export default function RecipeSearchScreen() {
     />
   );
   const shell = (children: ReactNode) => (
-    <Screen title={texts.title} testID="recipe-search" footer={footer}>
+    <Screen
+      area="ernaehrung"
+      icon="recipe"
+      title={texts.title}
+      testID="recipe-search"
+      footer={footer}
+    >
       {children}
     </Screen>
   );
@@ -334,26 +342,34 @@ function RecipeCard({
       style={({ pressed }) => [
         styles.card,
         {
-          borderColor: theme.border,
+          borderColor: theme.cardBorder,
           backgroundColor: pressed ? theme.background : theme.surface,
         },
       ]}
     >
-      <Text style={[styles.title, { color: theme.text }]}>{card.title}</Text>
-      <Text style={[styles.detail, { color: theme.textMuted }]}>{details.join(' · ')}</Text>
-      {card.outsideProfileDiet ? (
-        <Text
-          style={[styles.marker, { color: theme.text, borderColor: theme.border }]}
-          testID={`recipe-search-hit-${card.id}-outside`}
-        >
-          {texts.outsideDiet(t.nutrition.dietNames[card.outsideProfileDiet])}
-        </Text>
-      ) : null}
+      {/* Design 20.10.2026: Rezeptkarten einheitlich mit grünem Rezept-Chip. */}
+      <View style={styles.cardRow}>
+        <IconChip area="ernaehrung" icon="recipe" size={40} />
+        <View style={styles.cardText}>
+          <Text style={[styles.title, { color: theme.text }]}>{card.title}</Text>
+          <Text style={[styles.detail, { color: theme.textMuted }]}>{details.join(' · ')}</Text>
+          {card.outsideProfileDiet ? (
+            <Text
+              style={[styles.marker, { color: theme.text, borderColor: theme.border }]}
+              testID={`recipe-search-hit-${card.id}-outside`}
+            >
+              {texts.outsideDiet(t.nutrition.dietNames[card.outsideProfileDiet])}
+            </Text>
+          ) : null}
+        </View>
+      </View>
     </Pressable>
   );
 }
 
 const styles = StyleSheet.create({
+  cardRow: { flexDirection: 'row', alignItems: 'flex-start', gap: 12 },
+  cardText: { flex: 1, minWidth: 0, gap: spacing.xs },
   group: { gap: spacing.xs },
   count: { fontSize: fontSize.md },
   chips: { flexDirection: 'row', flexWrap: 'wrap', gap: spacing.sm },
@@ -361,7 +377,7 @@ const styles = StyleSheet.create({
   card: {
     minHeight: MIN_TOUCH,
     borderWidth: 1,
-    borderRadius: radius.md,
+    borderRadius: radius.lg,
     padding: spacing.md,
     gap: spacing.xs,
   },

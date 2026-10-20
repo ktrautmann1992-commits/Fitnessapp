@@ -597,7 +597,13 @@ export default function CompetitionScreen() {
 
   if (mode === 'result' && raceEntry && raceDate) {
     return (
-      <Screen title={C.result.title} testID="competition-result" footer={back}>
+      <Screen
+        area="wettkampf"
+        icon="trophy"
+        title={C.result.title}
+        testID="competition-result"
+        footer={back}
+      >
         {header}
         <Body muted>{`${raceEntry.stored.competition.name} · ${dayLabel(raceDate)}`}</Body>
         <Body muted>{C.result.intro}</Body>
@@ -683,6 +689,8 @@ export default function CompetitionScreen() {
       rows.goals.discipline !== form.discipline;
     return (
       <Screen
+        area="wettkampf"
+        icon="trophy"
         title={planned ? C.formTitleEdit : C.formTitleNew}
         testID="competition-form"
         footer={
@@ -981,7 +989,7 @@ export default function CompetitionScreen() {
     ? shownFeasibility(overviewAmpel.feasibility, notFeasible)
     : null;
   return (
-    <Screen title={C.title} testID="competition" footer={back}>
+    <Screen area="wettkampf" icon="trophy" title={C.title} testID="competition" footer={back}>
       {header}
       {shownEntry && countdown && comp ? (
         <>

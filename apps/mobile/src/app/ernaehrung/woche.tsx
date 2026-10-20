@@ -8,10 +8,10 @@ import {
   startOfIsoWeek,
   type UnavailableMeal,
 } from '@fitnessapp/core';
-import { fontSize, fontWeight, radius, spacing } from '@fitnessapp/ui';
+import { fontSize, fontWeight, spacing } from '@fitnessapp/ui';
 import { Redirect, useLocalSearchParams, useRouter, type Href } from 'expo-router';
 import { useState, type ReactNode } from 'react';
-import { Pressable, StyleSheet, Text, View } from 'react-native';
+import { Pressable, StyleSheet, View } from 'react-native';
 
 import {
   ConsentBlockedNotice,
@@ -49,6 +49,7 @@ import { useThemeColors } from '@/lib/theme';
 import { useApp } from '@/state/app-state';
 import { HOME_ROUTE, resolveEntryRoute } from '@/state/flow';
 import { useMealPlanActions, useNutritionWeek } from '@/state/use-nutrition';
+import { Text } from '@/components/text';
 
 /**
  * Ernährung – Woche (docs/PLAN-PHASE-5.md 8.2 Nr. 3, Etappe N5): Mo–So × Mahlzeiten, Tagessummen (nur mit
@@ -101,7 +102,13 @@ export default function NutritionWeekScreen() {
     />
   );
   const shell = (children: ReactNode) => (
-    <Screen title={t.nutrition.week.title} testID="nutrition-week" footer={footer}>
+    <Screen
+      area="ernaehrung"
+      icon="calendar"
+      title={t.nutrition.week.title}
+      testID="nutrition-week"
+      footer={footer}
+    >
       {children}
     </Screen>
   );
@@ -357,7 +364,7 @@ function WeekDayCard({
               style={({ pressed }) => [
                 styles.meal,
                 {
-                  borderColor: theme.border,
+                  borderColor: theme.cardBorder,
                   backgroundColor: pressed ? theme.background : theme.surface,
                 },
               ]}
@@ -392,7 +399,7 @@ const styles = StyleSheet.create({
   meal: {
     minHeight: MIN_TOUCH,
     borderWidth: 1,
-    borderRadius: radius.md,
+    borderRadius: 16,
     padding: spacing.sm,
     gap: 2,
   },

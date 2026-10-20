@@ -9,7 +9,7 @@ import {
 import { fontSize, fontWeight, radius, spacing } from '@fitnessapp/ui';
 import { Redirect, useLocalSearchParams, useRouter, type Href } from 'expo-router';
 import { useEffect, useRef, useState, type ReactNode } from 'react';
-import { StyleSheet, Text, View } from 'react-native';
+import { StyleSheet, View } from 'react-native';
 
 import { DemoBanner, NutritionGate, nutritionReady } from '@/components/nutrition';
 import { Screen } from '@/components/screen';
@@ -30,6 +30,7 @@ import { useToday } from '@/lib/use-today';
 import { useApp } from '@/state/app-state';
 import { HOME_ROUTE, resolveEntryRoute } from '@/state/flow';
 import { useNutritionWeek } from '@/state/use-nutrition';
+import { Text } from '@/components/text';
 
 const TICK_MS = 1000;
 
@@ -128,7 +129,7 @@ export default function CookDayScreen() {
     />
   );
   const shell = (children: ReactNode) => (
-    <Screen title={texts.title} testID="cook-day" footer={footer}>
+    <Screen area="ernaehrung" icon="box" title={texts.title} testID="cook-day" footer={footer}>
       {children}
     </Screen>
   );

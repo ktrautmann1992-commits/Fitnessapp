@@ -9,7 +9,7 @@ import {
 import { fontSize, fontWeight, radius, spacing } from '@fitnessapp/ui';
 import { Redirect, useRouter, type Href } from 'expo-router';
 import { useState } from 'react';
-import { StyleSheet, Text, View } from 'react-native';
+import { StyleSheet, View } from 'react-native';
 
 import { Screen } from '@/components/screen';
 import { Body, Button, Card, Heading, LoadingState, Notice } from '@/components/ui';
@@ -23,6 +23,7 @@ import { activePlan } from '@/data/training-plan';
 import { useThemeColors } from '@/lib/theme';
 import { useApp } from '@/state/app-state';
 import { HOME_ROUTE, resolveEntryRoute } from '@/state/flow';
+import { Text } from '@/components/text';
 
 /**
  * Woche (docs/PLAN-PHASE-4.md 6.1 Punkt 4, Etappe D): Mo–So mit Status-Zeichen UND Text, Summen, Blättern zu früheren
@@ -84,6 +85,8 @@ export default function WeekScreen() {
 
   return (
     <Screen
+      area="training"
+      icon="calendar"
       title={t.week.title}
       testID="week"
       footer={

@@ -8,7 +8,7 @@ import {
 import { fontSize, fontWeight, spacing } from '@fitnessapp/ui';
 import { Redirect, useLocalSearchParams, useRouter, type Href } from 'expo-router';
 import { useEffect, useState } from 'react';
-import { StyleSheet, Text, View } from 'react-native';
+import { StyleSheet, View } from 'react-native';
 
 import { ConfirmDialog, Screen } from '@/components/screen';
 import { Body, Button, Card, Heading, LoadingState, Notice } from '@/components/ui';
@@ -22,6 +22,7 @@ import { useThemeColors } from '@/lib/theme';
 import { cardioSpeedTexts } from '@/lib/workout-format';
 import { useApp } from '@/state/app-state';
 import { HOME_ROUTE, resolveEntryRoute } from '@/state/flow';
+import { Text } from '@/components/text';
 
 /**
  * Ein Eintrag aus Woche/Verlauf (docs/PLAN-PHASE-4.md 6.1 Punkt 5, Etappe D): ansehen, ändern (Trainingsmodus im
@@ -71,7 +72,13 @@ export default function LogEntryScreen() {
 
   if (!detail) {
     return (
-      <Screen title={t.logEntry.title} testID="log-entry" footer={footer}>
+      <Screen
+        area="training"
+        icon="dumbbell"
+        title={t.logEntry.title}
+        testID="log-entry"
+        footer={footer}
+      >
         {message ? (
           <Notice tone={message.tone} testID="log-message">
             {message.text}
@@ -119,7 +126,7 @@ export default function LogEntryScreen() {
     : null;
 
   return (
-    <Screen title={log.name_de} testID="log-entry" footer={footer}>
+    <Screen area="training" icon="dumbbell" title={log.name_de} testID="log-entry" footer={footer}>
       {message ? (
         <Notice tone={message.tone} testID="log-message">
           {message.text}

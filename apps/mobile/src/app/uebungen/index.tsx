@@ -6,10 +6,10 @@ import {
   type GlossaryGroup,
   searchExercises,
 } from '@fitnessapp/core';
-import { fontSize, fontWeight, radius, spacing } from '@fitnessapp/ui';
+import { fontSize, fontWeight, spacing } from '@fitnessapp/ui';
 import { Redirect, useRouter, type Href } from 'expo-router';
 import { useEffect, useMemo, useState } from 'react';
-import { Pressable, StyleSheet, Text, View } from 'react-native';
+import { Pressable, StyleSheet, View } from 'react-native';
 
 import { Screen } from '@/components/screen';
 import {
@@ -28,6 +28,7 @@ import { listLine } from '@/lib/glossary-format';
 import { useThemeColors } from '@/lib/theme';
 import { useApp } from '@/state/app-state';
 import { HOME_ROUTE, resolveEntryRoute } from '@/state/flow';
+import { Text } from '@/components/text';
 
 type EquipmentChoice = GlossaryEquipmentFilter | 'all';
 const DIFFICULTIES = [
@@ -94,6 +95,8 @@ export default function GlossaryScreen() {
 
   return (
     <Screen
+      area="training"
+      icon="dumbbell"
       title={t.glossary.title}
       intro={t.glossary.intro}
       testID="glossary"
@@ -228,7 +231,7 @@ export default function GlossaryScreen() {
                       styles.item,
                       {
                         backgroundColor: theme.surface,
-                        borderColor: theme.border,
+                        borderColor: theme.cardBorder,
                         opacity: pressed ? 0.85 : 1,
                       },
                     ]}
@@ -260,7 +263,7 @@ const styles = StyleSheet.create({
   item: {
     minHeight: MIN_TOUCH,
     borderWidth: 1,
-    borderRadius: radius.md,
+    borderRadius: 16,
     paddingHorizontal: spacing.md,
     paddingVertical: spacing.sm,
     gap: 2,

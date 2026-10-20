@@ -11,7 +11,7 @@ import {
 import { fontSize, radius, spacing } from '@fitnessapp/ui';
 import { Redirect, useLocalSearchParams, useRouter, type Href } from 'expo-router';
 import { useMemo, useState, type ReactNode } from 'react';
-import { StyleSheet, Text, View } from 'react-native';
+import { StyleSheet, View } from 'react-native';
 
 import { ConsentBlockedNotice, DemoBanner } from '@/components/nutrition';
 import { ConfirmDialog, Screen } from '@/components/screen';
@@ -32,6 +32,7 @@ import { useToday } from '@/lib/use-today';
 import { useApp } from '@/state/app-state';
 import { HOME_ROUTE, resolveEntryRoute } from '@/state/flow';
 import { useNutritionWeek } from '@/state/use-nutrition';
+import { Text } from '@/components/text';
 
 type Action = 'share' | 'copy';
 
@@ -119,7 +120,14 @@ export default function ShoppingListShareScreen() {
 
   const footer = <Button label={t.nutrition.back} variant="secondary" onPress={back} />;
   const shell = (children: ReactNode) => (
-    <Screen title={texts.title} intro={texts.intro} testID="share-screen" footer={footer}>
+    <Screen
+      area="einkaufen"
+      icon="cart"
+      title={texts.title}
+      intro={texts.intro}
+      testID="share-screen"
+      footer={footer}
+    >
       {children}
     </Screen>
   );
@@ -288,7 +296,10 @@ export default function ShoppingListShareScreen() {
           </View>
           <Heading level={2}>{texts.previewTitle}</Heading>
           <View
-            style={[styles.preview, { borderColor: theme.border, backgroundColor: theme.surface }]}
+            style={[
+              styles.preview,
+              { borderColor: theme.cardBorder, backgroundColor: theme.surface },
+            ]}
           >
             <Text
               selectable

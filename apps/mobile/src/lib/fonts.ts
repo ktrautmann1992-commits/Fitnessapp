@@ -38,6 +38,19 @@ export function appFont(weight: FontWeightName = 'regular'): TextStyle {
     : { fontWeight: fontWeight[weight] };
 }
 
+/**
+ * Stärke aus einem React-Native-Stil (`'700'`, `'bold'`, `600` …) → Stufe der App-Schrift (400/600/700/800).
+ * 500 wird halbfett, 900 extra fett; ohne Angabe normal.
+ */
+export function fontWeightName(weight: TextStyle['fontWeight'] | undefined): FontWeightName {
+  const value =
+    weight === 'bold' ? 700 : weight === 'normal' || weight == null ? 400 : Number(weight);
+  if (!Number.isFinite(value) || value < 500) return 'regular';
+  if (value < 700) return 'semibold';
+  if (value < 800) return 'bold';
+  return 'extrabold';
+}
+
 /** Große Überschriften (Bildschirmtitel, Willkommen, große Zahlen): extra fett, leicht enger gesetzt. */
 export function displayFont(): TextStyle {
   return { ...appFont('extrabold'), letterSpacing: -0.5 };

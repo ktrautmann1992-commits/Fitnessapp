@@ -9,7 +9,7 @@ import {
 import { fontSize, fontWeight, radius, spacing } from '@fitnessapp/ui';
 import { Redirect, useRouter, type Href } from 'expo-router';
 import { useMemo, useState, type ReactNode } from 'react';
-import { Pressable, StyleSheet, Text, View } from 'react-native';
+import { Pressable, StyleSheet, View } from 'react-native';
 
 import {
   ConsentBlockedNotice,
@@ -17,6 +17,7 @@ import {
   NutritionGate,
   nutritionReady,
 } from '@/components/nutrition';
+import { IconChip } from '@/components/design';
 import { Screen } from '@/components/screen';
 import {
   Body,
@@ -39,6 +40,7 @@ import { useThemeColors } from '@/lib/theme';
 import { useApp } from '@/state/app-state';
 import { HOME_ROUTE, resolveEntryRoute } from '@/state/flow';
 import { useNutritionWeek } from '@/state/use-nutrition';
+import { Text } from '@/components/text';
 
 /** Auswahl nach Abteilung gruppiert (Reihenfolge der Abteilungen kommt sortiert aus dem Core). */
 function groupByCategory(
@@ -120,7 +122,7 @@ export default function FridgeSearchScreen() {
     />
   );
   const shell = (children: ReactNode) => (
-    <Screen title={texts.title} testID="fridge-search" footer={footer}>
+    <Screen area="ernaehrung" icon="box" title={texts.title} testID="fridge-search" footer={footer}>
       {children}
     </Screen>
   );
@@ -340,12 +342,13 @@ function FridgeCard({
       style={({ pressed }) => [
         styles.card,
         {
-          borderColor: theme.border,
+          borderColor: theme.cardBorder,
           backgroundColor: pressed ? theme.background : theme.surface,
         },
       ]}
     >
       <View style={styles.cardHead}>
+        <IconChip area="ernaehrung" icon="recipe" size={40} />
         <Text style={[styles.title, { color: theme.text }]}>{card.title}</Text>
         <Text
           style={[styles.match, { color: theme.text, borderColor: theme.border }]}
@@ -379,17 +382,17 @@ const styles = StyleSheet.create({
   card: {
     minHeight: MIN_TOUCH,
     borderWidth: 1,
-    borderRadius: radius.md,
+    borderRadius: radius.lg,
     padding: spacing.md,
     gap: spacing.xs,
   },
   cardHead: {
     flexDirection: 'row',
     flexWrap: 'wrap',
-    justifyContent: 'space-between',
-    gap: spacing.xs,
+    alignItems: 'center',
+    gap: spacing.sm,
   },
-  title: { fontSize: fontSize.md, fontWeight: fontWeight.bold, flexShrink: 1 },
+  title: { fontSize: fontSize.md, fontWeight: fontWeight.bold, flex: 1, minWidth: 120 },
   match: {
     alignSelf: 'flex-start',
     fontSize: fontSize.sm,

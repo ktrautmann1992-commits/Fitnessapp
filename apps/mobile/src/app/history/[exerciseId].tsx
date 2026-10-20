@@ -72,6 +72,8 @@ export default function ExerciseHistoryScreen() {
 
   return (
     <Screen
+      area="fortschritt"
+      icon="trend"
       title={name ?? t.history.exercisesTitle}
       testID="exercise-history"
       footer={

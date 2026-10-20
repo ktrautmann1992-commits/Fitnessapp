@@ -13,7 +13,7 @@ import {
 import { fontSize, fontWeight, radius, spacing } from '@fitnessapp/ui';
 import { useRouter, type Href } from 'expo-router';
 import { type ReactNode, useState } from 'react';
-import { Pressable, StyleSheet, Text, View } from 'react-native';
+import { Pressable, StyleSheet, View } from 'react-native';
 
 import { ConfirmDialog } from '@/components/screen';
 import {
@@ -50,6 +50,7 @@ import { useThemeColors } from '@/lib/theme';
 import { useApp } from '@/state/app-state';
 import { useFoodLogDay } from '@/state/use-food-log';
 import { type MealPlanActions, type NutritionView, useNutritionWeek } from '@/state/use-nutrition';
+import { Text } from '@/components/text';
 
 /**
  * Bausteine der Ernährungs-Bildschirme (docs/PLAN-PHASE-5.md 8.2–8.4, Etappe N4). Nur Anzeige – Zahlen und Codes
@@ -452,7 +453,10 @@ export function MealRow({
       testID={`meal-${meal.slot}`}
       style={({ pressed }) => [
         styles.meal,
-        { borderColor: theme.border, backgroundColor: pressed ? theme.background : theme.surface },
+        {
+          borderColor: theme.cardBorder,
+          backgroundColor: pressed ? theme.background : theme.surface,
+        },
       ]}
     >
       <Text style={[styles.slot, { color: theme.textMuted }]}>
@@ -514,7 +518,7 @@ const styles = StyleSheet.create({
   meal: {
     minHeight: MIN_TOUCH,
     borderWidth: 1,
-    borderRadius: radius.md,
+    borderRadius: radius.lg,
     padding: spacing.md,
     gap: 2,
   },

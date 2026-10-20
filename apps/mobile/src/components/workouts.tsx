@@ -1,13 +1,14 @@
 import { findEquipment, WORKOUT_LIMITS, type Workout, workoutTileSummary } from '@fitnessapp/core';
 import { fontSize, fontWeight, radius, spacing } from '@fitnessapp/ui';
-import { Pressable, StyleSheet, Text, View } from 'react-native';
+import { Pressable, StyleSheet, View } from 'react-native';
 
 import { t } from '@/i18n';
 import { useThemeColors } from '@/lib/theme';
 
 import { DashboardTile } from './dashboard';
-import { StatValue } from './design';
+import { IconChip, StatValue, useAreaColors } from './design';
 import { Body, MIN_TOUCH } from './ui';
+import { Text } from '@/components/text';
 
 /**
  * Bausteine der Workout-Bibliothek (docs/PLAN-WORKOUTS.md): Sterne, Karte, Kachel für die Übersicht. Nur Darstellung;
@@ -28,6 +29,7 @@ export function StarRating({
   testID?: string;
 }) {
   const theme = useThemeColors();
+  const violet = useAreaColors('workouts');
   const max = WORKOUT_LIMITS.stars.max;
   const filled = Math.min(max, Math.max(WORKOUT_LIMITS.stars.min, difficulty));
   return (
@@ -42,10 +44,12 @@ export function StarRating({
       <Text
         aria-hidden
         importantForAccessibility="no"
-        style={[styles.stars, size === 'lg' && styles.starsLarge, { color: theme.warning }]}
+        style={[styles.stars, size === 'lg' && styles.starsLarge, { color: violet.icon }]}
       >
+        {/* Design 20.10.2026: Sterne in Workout-Violett (Signal-Orange bleibt Warnungen vorbehalten), leere
+            Sterne in Nebentext-Grau – beide gut lesbar (≥ 4,5 : 1). */}
         {'★'.repeat(filled)}
-        <Text style={{ color: theme.border }}>{'☆'.repeat(max - filled)}</Text>
+        <Text style={{ color: theme.textMuted }}>{'☆'.repeat(max - filled)}</Text>
       </Text>
       <Text
         aria-hidden
@@ -96,10 +100,17 @@ export function WorkoutCard({
       testID={`workout-card-${workout.id}`}
       style={({ pressed }) => [
         styles.card,
-        { backgroundColor: theme.surface, borderColor: theme.border, opacity: pressed ? 0.85 : 1 },
+        {
+          backgroundColor: theme.surface,
+          borderColor: theme.cardBorder,
+          opacity: pressed ? 0.85 : 1,
+        },
       ]}
     >
-      <Text style={[styles.cardTitle, { color: theme.text }]}>{workout.title_de}</Text>
+      <View style={styles.cardHead}>
+        <IconChip area="workouts" icon="stopwatch" size={40} />
+        <Text style={[styles.cardTitle, { color: theme.text }]}>{workout.title_de}</Text>
+      </View>
       <StarRating difficulty={workout.difficulty} />
       <Text style={[styles.cardMeta, { color: theme.textMuted }]}>{meta}</Text>
       {doneToday ? (
@@ -147,6 +158,7 @@ export function WorkoutsTile({
 }
 
 const styles = StyleSheet.create({
+  cardHead: { flexDirection: 'row', alignItems: 'center', gap: 12 },
   starsRow: { flexDirection: 'row', alignItems: 'center', gap: spacing.sm, flexWrap: 'wrap' },
   stars: { fontSize: fontSize.lg, letterSpacing: 2 },
   starsLarge: { fontSize: fontSize.xl },
@@ -154,11 +166,11 @@ const styles = StyleSheet.create({
   card: {
     minHeight: MIN_TOUCH,
     borderWidth: 1,
-    borderRadius: radius.md,
+    borderRadius: radius.lg,
     padding: spacing.md,
     gap: spacing.xs,
   },
-  cardTitle: { fontSize: fontSize.lg, fontWeight: fontWeight.bold },
+  cardTitle: { flex: 1, minWidth: 0, fontSize: fontSize.lg, fontWeight: fontWeight.bold },
   cardMeta: { fontSize: fontSize.sm },
   cardDone: { fontSize: fontSize.sm, fontWeight: fontWeight.bold },
 });

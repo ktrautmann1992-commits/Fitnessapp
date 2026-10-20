@@ -78,7 +78,13 @@ export default function IngredientSwapScreen() {
   const goBack = () => (router.canGoBack() ? router.back() : router.replace(recipeHref));
   const footer = <Button label={t.nutrition.back} variant="secondary" onPress={goBack} />;
   const shell = (children: ReactNode) => (
-    <Screen title={texts.title} testID="ingredient-swap" footer={footer}>
+    <Screen
+      area="ernaehrung"
+      icon="recipe"
+      title={texts.title}
+      testID="ingredient-swap"
+      footer={footer}
+    >
       {children}
     </Screen>
   );

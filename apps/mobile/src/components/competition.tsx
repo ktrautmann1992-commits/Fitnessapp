@@ -20,7 +20,7 @@ import {
 } from '@fitnessapp/core';
 import { fontSize, fontWeight, radius, spacing } from '@fitnessapp/ui';
 import { useEffect, useRef, useState } from 'react';
-import { Platform, Pressable, StyleSheet, Text, View } from 'react-native';
+import { Platform, Pressable, StyleSheet, View } from 'react-native';
 
 import { t } from '@/i18n';
 import {
@@ -41,9 +41,11 @@ import {
 import { INTERVAL_TIMER_AWAKE_TAG, useScreenAwake } from '@/lib/keep-awake';
 import { alertStepChange } from '@/lib/step-alert';
 import { useThemeColors } from '@/lib/theme';
+import { useAreaColors } from '@/components/design';
 
 import { ConfirmDialog } from './screen';
 import { Body, Button, Card, Heading, MIN_TOUCH, Notice } from './ui';
+import { Text } from '@/components/text';
 
 /**
  * Bausteine zum Wettkampf (Etappe WP4, docs/PLAN-PHASE-10.md Abschnitt 8): Ampel, Countdown, Phasen-Band, Ablauf einer
@@ -82,7 +84,7 @@ export function FeasibilityCard({
       accessibilityLabel={C.feasibilityA11y(status.label, status.text)}
       style={[
         styles.feasibility,
-        { backgroundColor: theme.surface, borderColor: theme.border, borderLeftColor: accent },
+        { backgroundColor: theme.surface, borderColor: theme.cardBorder, borderLeftColor: accent },
       ]}
     >
       <Text style={[styles.feasibilityTitle, { color: theme.textMuted }]}>
@@ -208,10 +210,11 @@ export function PhaseBand({
   shortDays?: boolean;
 }) {
   const theme = useThemeColors();
+  const orange = useAreaColors('wettkampf');
   return (
     <View
       testID="competition-phase-band"
-      style={[styles.band, { borderColor: theme.primary, backgroundColor: theme.surface }]}
+      style={[styles.band, { borderColor: orange.strong, backgroundColor: theme.surface }]}
     >
       <Text style={[styles.bandText, { color: theme.text }]}>{phaseBandText(week)}</Text>
       {week.phase ? <Body muted>{C.phaseTexts[week.phase]}</Body> : null}
@@ -241,6 +244,7 @@ export function CompetitionOutlineCard({
   onOpenWeek: (monday: string) => void;
 }) {
   const theme = useThemeColors();
+  const orange = useAreaColors('wettkampf');
   const O = C.outline;
   return (
     <Card>
@@ -260,7 +264,7 @@ export function CompetitionOutlineCard({
                 style={[
                   styles.outlinePhase,
                   {
-                    borderColor: phase.current ? theme.primary : theme.border,
+                    borderColor: phase.current ? orange.strong : theme.border,
                     borderLeftWidth: phase.current ? 6 : 3,
                   },
                 ]}
@@ -279,7 +283,7 @@ export function CompetitionOutlineCard({
                 {phase.current ? (
                   <Text
                     testID="competition-outline-current-phase"
-                    style={[styles.outlineCurrent, { color: theme.link }]}
+                    style={[styles.outlineCurrent, { color: orange.icon }]}
                   >
                     {`▶ ${O.currentPhase}`}
                   </Text>
@@ -317,12 +321,13 @@ function OutlineWeekChip({
   onPress: (() => void) | null;
 }) {
   const theme = useThemeColors();
+  const orange = useAreaColors('wettkampf');
   const label = outlineWeekLabel(week);
   const testID = `competition-outline-week-${week.monday}`;
   const style = [
     styles.outlineWeek,
     {
-      borderColor: week.current ? theme.primary : theme.border,
+      borderColor: week.current ? orange.strong : theme.border,
       borderWidth: week.current ? 2 : 1,
       // Erholungswoche gestrichelt (zusätzlich zum Wort „Erholung“).
       borderStyle: week.recoveryWeek ? ('dashed' as const) : ('solid' as const),
@@ -407,6 +412,7 @@ export function IntervalTimer({
   onLog: (minutes: number) => void;
 }) {
   const theme = useThemeColors();
+  const orange = useAreaColors('wettkampf');
   const [clock, setClock] = useState<IntervalClock>(INTERVAL_CLOCK_IDLE);
   const [now, setNow] = useState(() => Date.now());
   const [stopDialog, setStopDialog] = useState(false);
@@ -516,7 +522,7 @@ export function IntervalTimer({
               style={[
                 styles.timerStep,
                 {
-                  borderColor: step.kind === 'work' ? theme.primary : theme.border,
+                  borderColor: step.kind === 'work' ? orange.strong : theme.border,
                   borderWidth: step.kind === 'work' ? 3 : 1,
                 },
               ]}
@@ -580,7 +586,7 @@ const styles = StyleSheet.create({
   feasibility: {
     borderWidth: 1,
     borderLeftWidth: 6,
-    borderRadius: radius.md,
+    borderRadius: 16,
     padding: spacing.md,
     gap: spacing.xs,
   },

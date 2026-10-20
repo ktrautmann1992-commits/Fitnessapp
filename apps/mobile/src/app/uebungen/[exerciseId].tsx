@@ -2,7 +2,7 @@ import { glossaryEntry } from '@fitnessapp/core';
 import { fontSize, fontWeight, spacing } from '@fitnessapp/ui';
 import { Redirect, useLocalSearchParams, useRouter, type Href } from 'expo-router';
 import { useEffect, useMemo } from 'react';
-import { StyleSheet, Text, View } from 'react-native';
+import { StyleSheet, View } from 'react-native';
 
 import { MuscleMap, StartPositionImage } from '@/components/muscle-map';
 import { Screen } from '@/components/screen';
@@ -18,6 +18,7 @@ import { placeText } from '@/lib/swap-format';
 import { useThemeColors } from '@/lib/theme';
 import { useApp } from '@/state/app-state';
 import { HOME_ROUTE, resolveEntryRoute } from '@/state/flow';
+import { Text } from '@/components/text';
 
 /**
  * Glossar-Detailseite (docs/PLAN-UEBUNGEN-GLOSSAR-TAUSCH.md 8.1, Etappe G1): Name, andere Namen, Merkmale,
@@ -63,14 +64,26 @@ export default function GlossaryDetailScreen() {
 
   if (library.kind === 'idle' || library.kind === 'loading') {
     return (
-      <Screen title={t.glossary.title} testID="glossary-detail" footer={footer}>
+      <Screen
+        area="training"
+        icon="dumbbell"
+        title={t.glossary.title}
+        testID="glossary-detail"
+        footer={footer}
+      >
         <LoadingState />
       </Screen>
     );
   }
   if (!lib || !entry) {
     return (
-      <Screen title={t.glossary.title} testID="glossary-detail" footer={footer}>
+      <Screen
+        area="training"
+        icon="dumbbell"
+        title={t.glossary.title}
+        testID="glossary-detail"
+        footer={footer}
+      >
         <Notice tone={lib ? 'info' : 'warning'} testID="glossary-detail-missing">
           {lib ? t.glossary.notFound : t.glossary.libraryMissing}
         </Notice>
@@ -93,7 +106,13 @@ export default function GlossaryDetailScreen() {
   );
 
   return (
-    <Screen title={entry.name} testID="glossary-detail" footer={footer}>
+    <Screen
+      area="training"
+      icon="dumbbell"
+      title={entry.name}
+      testID="glossary-detail"
+      footer={footer}
+    >
       {entry.isDraft ? (
         <Notice tone="info" testID="glossary-test-content">
           {t.glossary.testContent}

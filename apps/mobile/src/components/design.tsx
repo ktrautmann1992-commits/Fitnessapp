@@ -9,11 +9,12 @@ import {
   type AreaPalette,
 } from '@fitnessapp/ui';
 import type { ReactNode } from 'react';
-import { Pressable, StyleSheet, Text, View, type StyleProp, type ViewStyle } from 'react-native';
+import { Pressable, StyleSheet, View, type StyleProp, type ViewStyle } from 'react-native';
 import Svg, { Circle, Path, Rect } from 'react-native-svg';
 
 import { appFont, displayFont } from '@/lib/fonts';
 import { useColorSchemeName, useThemeColors } from '@/lib/theme';
+import { Text } from '@/components/text';
 
 /**
  * Bausteine des neuen Designs (Entwurf „Übersicht neu“ / „Mehr neu“, Gründer-Freigabe 20.10.2026): Strich-Icons,
@@ -85,6 +86,11 @@ const ICONS = {
   calendar: [{ x: 3, y: 5, w: 18, h: 16, rx: 2 }, { d: 'M3 10h18M8 3v4M16 3v4' }],
   scale: [{ x: 3, y: 3, w: 18, h: 18, rx: 4 }, { d: 'M8 10a4 4 0 0 1 8 0M12 10l1.5-2.5' }],
   user: [{ cx: 12, cy: 8, r: 4 }, { d: 'M4 21a8 8 0 0 1 16 0' }],
+  scan: [
+    {
+      d: 'M4 7V5a1 1 0 0 1 1-1h2M17 4h2a1 1 0 0 1 1 1v2M20 17v2a1 1 0 0 1-1 1h-2M7 20H5a1 1 0 0 1-1-1v-2M8 8v8M11 8v8M14 8v8M17 8v8',
+    },
+  ],
 } satisfies Record<string, readonly Shape[]>;
 
 export type IconName = keyof typeof ICONS;
@@ -379,6 +385,7 @@ export function HeroCard({
   secondaryLabel,
   onSecondary,
   secondaryTestID,
+  titleIsHeading = false,
   children,
   testID,
 }: {
@@ -401,6 +408,8 @@ export function HeroCard({
   secondaryLabel?: string;
   onSecondary?: () => void;
   secondaryTestID?: string;
+  /** true: der Titel ist die Überschrift (z. B. Name der Einheit), die Kennzeile ist nur Text. */
+  titleIsHeading?: boolean;
   children?: ReactNode;
   testID?: string;
 }) {
@@ -417,8 +426,8 @@ export function HeroCard({
             <Icon name={eyebrowIcon} size={16} color={hero.accent} strokeWidth={2.2} />
           ) : null}
           <Text
-            accessibilityRole="header"
-            aria-level={2}
+            accessibilityRole={titleIsHeading ? undefined : 'header'}
+            aria-level={titleIsHeading ? undefined : 2}
             style={[styles.eyebrow, appFont('bold'), { color: hero.accent }]}
           >
             {eyebrow}
@@ -429,7 +438,13 @@ export function HeroCard({
         ) : null}
       </View>
       <View style={styles.heroText}>
-        <Text style={[styles.heroTitle, displayFont(), { color: hero.text }]}>{title}</Text>
+        <Text
+          accessibilityRole={titleIsHeading ? 'header' : undefined}
+          aria-level={titleIsHeading ? 2 : undefined}
+          style={[styles.heroTitle, displayFont(), { color: hero.text }]}
+        >
+          {title}
+        </Text>
         {subtitle ? (
           <Text style={[styles.heroSubtitle, appFont('regular'), { color: hero.muted }]}>
             {subtitle}

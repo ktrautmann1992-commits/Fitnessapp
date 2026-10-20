@@ -271,7 +271,13 @@ export default function CalendarScreen() {
 
   if (!active) {
     return (
-      <Screen title={t.calendar.title} testID="calendar" footer={back}>
+      <Screen
+        area="training"
+        icon="calendar"
+        title={t.calendar.title}
+        testID="calendar"
+        footer={back}
+      >
         {/* Wettkampf (WP4): Countdown; der Renntag ist im Kalender markiert (mit Wort, nie nur Farbe). */}
         {race && raceCountdown ? (
           <CountdownCard
@@ -348,6 +354,8 @@ export default function CalendarScreen() {
   return (
     <GestureHandlerRootView style={styles.root}>
       <Screen
+        area="training"
+        icon="calendar"
         title={t.calendar.title}
         testID="calendar"
         footer={back}

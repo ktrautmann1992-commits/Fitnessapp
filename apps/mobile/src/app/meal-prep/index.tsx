@@ -8,7 +8,7 @@ import {
 import { fontSize, fontWeight, radius, spacing } from '@fitnessapp/ui';
 import { Redirect, useLocalSearchParams, useRouter, type Href } from 'expo-router';
 import { useState, type ReactNode } from 'react';
-import { Pressable, StyleSheet, Text, View } from 'react-native';
+import { Pressable, StyleSheet, View } from 'react-native';
 
 import { DemoBanner, NutritionGate, nutritionReady } from '@/components/nutrition';
 import { Screen } from '@/components/screen';
@@ -21,6 +21,7 @@ import { useToday } from '@/lib/use-today';
 import { useApp } from '@/state/app-state';
 import { HOME_ROUTE, resolveEntryRoute } from '@/state/flow';
 import { useNutritionWeek } from '@/state/use-nutrition';
+import { Text } from '@/components/text';
 
 /**
  * Meal-Prep-Wochenpläne (docs/PLAN-PHASE-5.md 19.6, KONZEPT 6.7, Etappe N5b): Liste in fester Reihenfolge; ein Plan,
@@ -66,7 +67,13 @@ export default function MealPrepListScreen() {
     />
   );
   const shell = (children: ReactNode) => (
-    <Screen title={texts.title} testID="meal-prep-list" footer={footer}>
+    <Screen
+      area="ernaehrung"
+      icon="box"
+      title={texts.title}
+      testID="meal-prep-list"
+      footer={footer}
+    >
       {children}
     </Screen>
   );
@@ -160,7 +167,7 @@ function PlanCard({
     // Ausgegraut, nicht antippbar, ohne Grund (19.6 Nr. 2).
     return (
       <View
-        style={[styles.card, styles.greyed, { borderColor: theme.border }]}
+        style={[styles.card, styles.greyed, { borderColor: theme.cardBorder }]}
         testID={testID}
         accessibilityState={{ disabled: true }}
       >
@@ -206,7 +213,7 @@ const styles = StyleSheet.create({
   card: {
     minHeight: MIN_TOUCH,
     borderWidth: 1,
-    borderRadius: radius.md,
+    borderRadius: radius.lg,
     padding: spacing.md,
     gap: spacing.xs,
   },

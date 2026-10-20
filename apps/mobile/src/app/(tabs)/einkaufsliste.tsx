@@ -12,11 +12,12 @@ import {
   shoppingRecipeOutsideProfileDiet,
   startOfIsoWeek,
 } from '@fitnessapp/core';
-import { fontSize, fontWeight, radius, spacing } from '@fitnessapp/ui';
+import { fontSize, spacing } from '@fitnessapp/ui';
 import { Redirect, useLocalSearchParams, useNavigation, useRouter, type Href } from 'expo-router';
 import { useEffect, useMemo, useState, type ReactNode } from 'react';
-import { Pressable, StyleSheet, Text, View } from 'react-native';
+import { Pressable, StyleSheet, View } from 'react-native';
 
+import { Icon, useAreaColors } from '@/components/design';
 import { ConsentBlockedNotice, DemoBanner } from '@/components/nutrition';
 import { ConfirmDialog, Screen } from '@/components/screen';
 import { ShoppingScanPanel } from '@/components/shopping-scan';
@@ -47,6 +48,7 @@ import {
   useNutritionWeek,
   useShoppingListActions,
 } from '@/state/use-nutrition';
+import { Text } from '@/components/text';
 
 /**
  * Reiter „Einkaufen“ (docs/PLAN-EINKAUFEN-AUSDAUER.md 3, Gründer-Entscheidung EA-G1 vom 20.10.2026): die Einkaufsliste
@@ -143,7 +145,7 @@ export default function ShoppingTabScreen() {
   const texts = t.nutrition.shopping;
   // Reiter: keine „Zurück“-Leiste (die Menüleiste führt weiter).
   const shell = (children: ReactNode) => (
-    <Screen title={texts.tabTitle} testID="shopping-list">
+    <Screen area="einkaufen" icon="cart" title={texts.tabTitle} testID="shopping-list">
       {children}
     </Screen>
   );
@@ -572,6 +574,7 @@ function ShoppingItemRow({
   onRemove: (() => void) | undefined;
 }) {
   const theme = useThemeColors();
+  const teal = useAreaColors('einkaufen');
   const texts = t.nutrition.shopping;
   const text = shoppingItemText(item);
   const marks = [
@@ -582,7 +585,7 @@ function ShoppingItemRow({
   ].filter((m): m is string => m !== null);
   return (
     <View
-      style={[styles.item, { borderColor: theme.border, backgroundColor: theme.surface }]}
+      style={[styles.item, { borderColor: theme.cardBorder, backgroundColor: theme.surface }]}
       testID={`shopping-item-${item.itemKey}`}
     >
       <Pressable
@@ -599,12 +602,15 @@ function ShoppingItemRow({
           style={[
             styles.box,
             {
-              borderColor: item.checked ? theme.primary : theme.textMuted,
-              backgroundColor: item.checked ? theme.primary : theme.surface,
+              // Design 20.10.2026: Häkchen in Einkaufs-Türkis (Kasten ≥ 3 : 1 zur Karte), Haken in Kartenfarbe.
+              borderColor: item.checked ? teal.icon : theme.textMuted,
+              backgroundColor: item.checked ? teal.icon : theme.surface,
             },
           ]}
         >
-          {item.checked ? <Text style={[styles.mark, { color: theme.primaryText }]}>✓</Text> : null}
+          {item.checked ? (
+            <Icon name="check" size={20} strokeWidth={3} color={theme.surface} />
+          ) : null}
         </View>
         <View style={styles.flex}>
           <Text
@@ -644,26 +650,25 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     gap: spacing.sm,
     borderWidth: 1,
-    borderRadius: radius.md,
-    paddingHorizontal: spacing.sm,
+    borderRadius: 16,
+    paddingHorizontal: spacing.sm + 4,
   },
   itemMain: {
     flex: 1,
-    minHeight: MIN_TOUCH,
+    minHeight: MIN_TOUCH + 4,
     flexDirection: 'row',
     alignItems: 'center',
     gap: spacing.sm,
     paddingVertical: spacing.xs,
   },
   box: {
-    width: 28,
-    height: 28,
+    width: 30,
+    height: 30,
     borderWidth: 2,
-    borderRadius: radius.sm,
+    borderRadius: 9,
     alignItems: 'center',
     justifyContent: 'center',
   },
-  mark: { fontSize: fontSize.md, fontWeight: fontWeight.bold },
   itemText: { fontSize: fontSize.md },
   done: { textDecorationLine: 'line-through' },
   itemMarks: { fontSize: fontSize.sm },

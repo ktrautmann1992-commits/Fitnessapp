@@ -5,6 +5,7 @@ import {
   maxContentWidth,
   radius,
   spacing,
+  type AreaId,
 } from '@fitnessapp/ui';
 import { useRef, type ReactNode } from 'react';
 import {
@@ -13,7 +14,6 @@ import {
   Platform,
   ScrollView,
   StyleSheet,
-  Text,
   TextInput,
   useColorScheme,
   View,
@@ -24,8 +24,10 @@ import { t } from '@/i18n';
 import { useThemeColors } from '@/lib/theme';
 import { useApp } from '@/state/app-state';
 
+import { IconChip, type IconName } from './design';
 import { useInTabs } from './tab-bar';
 import { Body, Button, FieldError, Heading, ProgressBar } from './ui';
+import { Text } from '@/components/text';
 
 /**
  * Bildschirm-Rahmen: Inhalt scrollt, Knöpfe (footer) bleiben unten sichtbar.
@@ -39,8 +41,13 @@ export function Screen({
   footer,
   testID,
   scrollEnabled = true,
+  area,
+  icon,
 }: {
   title?: string;
+  /** Bereich (Design 20.10.2026): Seitenkopf mit Icon-Chip in der Bereichsfarbe neben dem Titel. */
+  area?: AreaId;
+  icon?: IconName;
   intro?: string;
   progress?: { current: number; total: number } | undefined;
   children?: ReactNode;
@@ -70,7 +77,16 @@ export function Screen({
         >
           <View style={styles.content}>
             {progress ? <ProgressBar current={progress.current} total={progress.total} /> : null}
-            {title ? <Heading>{title}</Heading> : null}
+            {title && area && icon ? (
+              <View style={styles.titleRow}>
+                <IconChip area={area} icon={icon} size={40} />
+                <View style={styles.titleText}>
+                  <Heading>{title}</Heading>
+                </View>
+              </View>
+            ) : title ? (
+              <Heading>{title}</Heading>
+            ) : null}
             {intro ? <Body muted>{intro}</Body> : null}
             {children}
           </View>
@@ -349,6 +365,8 @@ export function DateInput({
 }
 
 const styles = StyleSheet.create({
+  titleRow: { flexDirection: 'row', alignItems: 'center', gap: 12 },
+  titleText: { flex: 1, minWidth: 0 },
   safeArea: { flex: 1 },
   flex: { flex: 1 },
   scroll: { flexGrow: 1, alignItems: 'center', padding: spacing.lg, paddingBottom: spacing.xl },

@@ -1,10 +1,11 @@
 import { cardColors, fontSize, radius, spacing, type AreaId } from '@fitnessapp/ui';
 import type { ReactNode } from 'react';
-import { Pressable, StyleSheet, Text, View, useWindowDimensions } from 'react-native';
+import { Pressable, StyleSheet, View, useWindowDimensions } from 'react-native';
 
 import { IconChip, type IconName } from '@/components/design';
 import { appFont } from '@/lib/fonts';
 import { useColorSchemeName, useThemeColors } from '@/lib/theme';
+import { Text } from '@/components/text';
 
 /**
  * Bausteine der Übersicht (docs/PLAN-DASHBOARD.md 2.4; Aussehen seit 20.10.2026 wie Entwurf „Übersicht neu“, docs/DESIGN.md):

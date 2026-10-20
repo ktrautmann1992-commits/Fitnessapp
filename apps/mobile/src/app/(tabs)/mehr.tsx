@@ -1,7 +1,7 @@
 import { areasInMore, type NavArea } from '@fitnessapp/core';
 import { cardColors, fontSize, radius, spacing, type AreaId } from '@fitnessapp/ui';
 import { Redirect, useRouter, type Href } from 'expo-router';
-import { Pressable, StyleSheet, Text, View } from 'react-native';
+import { Pressable, StyleSheet, View } from 'react-native';
 
 import { Icon, ListGroup, ListRow, SectionLabel, Tile, type IconName } from '@/components/design';
 import { Screen } from '@/components/screen';
@@ -15,6 +15,7 @@ import { useColorSchemeName, useThemeColors } from '@/lib/theme';
 import { useAppLayout } from '@/state/use-app-layout';
 import { useApp } from '@/state/app-state';
 import { HOME_ROUTE, resolveEntryRoute } from '@/state/flow';
+import { Text } from '@/components/text';
 
 /**
  * Reiter „Mehr“ (docs/PLAN-DASHBOARD.md 2.6; Aussehen seit 20.10.2026 wie Entwurf „Mehr neu“): oben „Mein Konto“,

@@ -7,7 +7,7 @@ import {
   spacing,
 } from '@fitnessapp/ui';
 import { useRouter } from 'expo-router';
-import { Platform, ScrollView, StyleSheet, Text, useWindowDimensions, View } from 'react-native';
+import { Platform, ScrollView, StyleSheet, useWindowDimensions, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 import { Alpha5Mark, BrandGlow, CheckBadge, SoonBadge } from '@/components/brand';
@@ -16,6 +16,7 @@ import { Button } from '@/components/ui';
 import { t } from '@/i18n';
 import { displayFont } from '@/lib/fonts';
 import { useApp } from '@/state/app-state';
+import { Text } from '@/components/text';
 
 /**
  * Willkommensseite – bewusst immer dunkel wie der Hero der Landingpage und der Startbildschirm

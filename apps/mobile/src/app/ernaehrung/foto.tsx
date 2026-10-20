@@ -144,6 +144,8 @@ export default function FoodPhotoScreen() {
   const manual = back;
   const shell = (children: ReactNode) => (
     <Screen
+      area="ernaehrung"
+      icon="utensils"
       title={t.foodPhoto.title}
       testID="food-photo"
       footer={

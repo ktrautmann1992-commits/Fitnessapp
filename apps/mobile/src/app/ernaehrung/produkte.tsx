@@ -56,6 +56,8 @@ export default function UserFoodProductsScreen() {
     router.canGoBack() ? router.back() : router.replace('/ernaehrung/gerichte' as Href);
   const shell = (children: ReactNode) => (
     <Screen
+      area="ernaehrung"
+      icon="box"
       title={t.foodProduct.ownTitle}
       testID="user-products"
       footer={

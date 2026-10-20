@@ -1,6 +1,6 @@
 import type { IntakeTone, WeekTrainingItem } from '@fitnessapp/core';
 import { fontSize, fontWeight, radius, spacing } from '@fitnessapp/ui';
-import { Pressable, StyleSheet, Text, View } from 'react-native';
+import { Pressable, StyleSheet, View } from 'react-native';
 
 import { Body, Button } from '@/components/ui';
 import { t } from '@/i18n';
@@ -9,6 +9,7 @@ import { dayStatusText } from '@/lib/history-format';
 import { dayLabel } from '@/lib/plan-format';
 import { useThemeColors } from '@/lib/theme';
 import type { WeekDayView } from '@/lib/week-evaluation-format';
+import { Text } from '@/components/text';
 
 /**
  * Bausteine der Wochenauswertung (Etappe A3, docs/PLAN-AUSWERTUNG.md Abschnitt 8): je Tag ein kleiner Balken mit Farbe,
@@ -109,7 +110,7 @@ export function WeekTrainingRow({
   const view = achievement ? achievementView(item.name_de, achievement, []) : null;
   return (
     <View
-      style={[styles.item, { borderColor: theme.border, backgroundColor: theme.surface }]}
+      style={[styles.item, { borderColor: theme.cardBorder, backgroundColor: theme.surface }]}
       testID="week-eval-item"
     >
       <Body muted>{dayLabel(entry.date)}</Body>
@@ -166,7 +167,7 @@ const styles = StyleSheet.create({
   fill: { position: 'absolute', left: 0, top: 0, bottom: 0 },
   marker: { position: 'absolute', top: 0, bottom: 0, width: 2, marginLeft: -1 },
   short: { fontSize: fontSize.sm, fontWeight: fontWeight.semibold },
-  item: { borderWidth: 1, borderRadius: radius.md, padding: spacing.md, gap: 4 },
+  item: { borderWidth: 1, borderRadius: 16, padding: spacing.md, gap: 4 },
   itemTitle: { fontSize: fontSize.md, fontWeight: fontWeight.bold },
   level: { fontSize: fontSize.md, fontWeight: fontWeight.semibold },
 });

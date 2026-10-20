@@ -1,5 +1,6 @@
 import { useEffect } from 'react';
-import { AccessibilityInfo, Platform, StyleSheet, Text } from 'react-native';
+import { AccessibilityInfo, Platform, StyleSheet } from 'react-native';
+import { Text } from '@/components/text';
 
 /**
  * Unsichtbare Ansage für Bildschirmleser (Etappe E2: „Ernährung ist jetzt an Stelle 2 von 5“). Browser/Android:

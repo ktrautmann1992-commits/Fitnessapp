@@ -2,7 +2,7 @@ import { type Workout, workoutSafetyHints } from '@fitnessapp/core';
 import { fontSize, fontWeight, spacing } from '@fitnessapp/ui';
 import { Redirect, useLocalSearchParams, useRouter, type Href } from 'expo-router';
 import { useEffect } from 'react';
-import { StyleSheet, Text, View } from 'react-native';
+import { StyleSheet, View } from 'react-native';
 
 import { Screen } from '@/components/screen';
 import { Body, Button, Card, Heading, LoadingState, Notice } from '@/components/ui';
@@ -14,6 +14,7 @@ import { useThemeColors } from '@/lib/theme';
 import { useApp } from '@/state/app-state';
 import { HOME_ROUTE, resolveEntryRoute } from '@/state/flow';
 import { useActiveWorkoutRun, useWorkoutLibrary } from '@/state/use-workouts';
+import { Text } from '@/components/text';
 
 /**
  * Workout im Detail (docs/PLAN-WORKOUTS.md Abschnitt 4): Sterne, Dauer, Ablauf, Geräte, Übungen mit Dosierung,
@@ -58,7 +59,7 @@ export default function WorkoutDetailScreen() {
   );
   if (library.kind !== 'ready') {
     return (
-      <Screen footer={back}>
+      <Screen area="workouts" icon="stopwatch" footer={back}>
         {library.kind === 'error' ? (
           <Notice tone="danger">{t.workouts.loadFailed}</Notice>
         ) : (
@@ -70,7 +71,7 @@ export default function WorkoutDetailScreen() {
   const workout: Workout | undefined = library.workouts.find((w) => w.id === params.id);
   if (!workout) {
     return (
-      <Screen footer={back} testID="workout-detail-missing">
+      <Screen area="workouts" icon="stopwatch" footer={back} testID="workout-detail-missing">
         <Notice tone="warning">{t.workouts.detail.notFound}</Notice>
       </Screen>
     );
@@ -110,6 +111,8 @@ export default function WorkoutDetailScreen() {
 
   return (
     <Screen
+      area="workouts"
+      icon="stopwatch"
       title={workout.title_de}
       testID="workout-detail"
       footer={

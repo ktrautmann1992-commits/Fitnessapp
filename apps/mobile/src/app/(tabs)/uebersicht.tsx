@@ -10,7 +10,7 @@ import {
 import { Redirect, useRouter, type Href } from 'expo-router';
 import { brandColors, fontSize, spacing } from '@fitnessapp/ui';
 import { Fragment, type ReactNode, useEffect, useMemo, useState } from 'react';
-import { ActivityIndicator, StyleSheet, Text, View } from 'react-native';
+import { ActivityIndicator, StyleSheet, View } from 'react-native';
 
 import { CompetitionTile } from '@/components/competition-tile';
 import {
@@ -50,6 +50,7 @@ import { useWorkoutLibrary } from '@/state/use-workouts';
 import { healthConsentStatus, HOME_ROUTE, resolveEntryRoute } from '@/state/flow';
 import { useFoodLogDay } from '@/state/use-food-log';
 import { useNutritionWeek } from '@/state/use-nutrition';
+import { Text } from '@/components/text';
 
 /**
  * Übersicht – Startseite mit Kacheln (docs/PLAN-DASHBOARD.md 2.4, Gründer-Wahl „Kacheln + Menüleiste“ vom 18.10.2026;

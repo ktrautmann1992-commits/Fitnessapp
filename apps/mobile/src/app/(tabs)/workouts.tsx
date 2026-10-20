@@ -104,7 +104,13 @@ export default function WorkoutsScreen() {
     filter.noEquipment;
 
   return (
-    <Screen title={t.workouts.title} intro={t.workouts.intro} testID="workouts">
+    <Screen
+      area="workouts"
+      icon="stopwatch"
+      title={t.workouts.title}
+      intro={t.workouts.intro}
+      testID="workouts"
+    >
       <LiveRegion text={live.text} version={live.version} />
       {library.kind === 'loading' ? <LoadingState label={t.workouts.loading} /> : null}
       {library.kind === 'error' ? (

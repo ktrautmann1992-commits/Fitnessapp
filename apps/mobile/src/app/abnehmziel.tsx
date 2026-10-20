@@ -43,14 +43,14 @@ export default function WeightGoalSettingsScreen() {
 
   if (app.status.kind === 'loading') {
     return (
-      <Screen title={S.title}>
+      <Screen area="fortschritt" icon="scale" title={S.title}>
         <LoadingState />
       </Screen>
     );
   }
   if (app.status.kind === 'error') {
     return (
-      <Screen title={S.title}>
+      <Screen area="fortschritt" icon="scale" title={S.title}>
         <ErrorState message={t.errors.loadFailed} onRetry={() => void app.reload()} />
       </Screen>
     );
@@ -68,7 +68,13 @@ export default function WeightGoalSettingsScreen() {
     />
   );
   const shell = (children: ReactNode) => (
-    <Screen title={S.title} testID="weight-goal-settings" footer={back}>
+    <Screen
+      area="fortschritt"
+      icon="scale"
+      title={S.title}
+      testID="weight-goal-settings"
+      footer={back}
+    >
       {message ? (
         <Notice tone={message.tone} testID="weight-goal-settings-message">
           {message.text}

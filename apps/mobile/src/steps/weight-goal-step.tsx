@@ -16,7 +16,7 @@ import {
 import { fontSize, fontWeight, radius, spacing } from '@fitnessapp/ui';
 import { useLocalSearchParams, useRouter, type Href } from 'expo-router';
 import { useMemo, useState } from 'react';
-import { Pressable, StyleSheet, Text, View } from 'react-native';
+import { Pressable, StyleSheet, View } from 'react-native';
 
 import { FeasibilityScale } from '@/components/feasibility-scale';
 import { EatingHelpNotice } from '@/components/nutrition';
@@ -47,6 +47,7 @@ import {
 import { stepRoute } from '@/state/flow';
 
 import type { StepController } from './use-step';
+import { Text } from '@/components/text';
 
 /**
  * Schritt „Wie möchtest du abnehmen?“ (weight_goal, docs/PLAN-ZIELE.md 2, 3.4 und 6 Nr. 2, Etappe Z4): „ohne festes

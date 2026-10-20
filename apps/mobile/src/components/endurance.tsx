@@ -9,13 +9,15 @@ import {
   splitBars,
 } from '@fitnessapp/core';
 import { fontSize, fontWeight, radius, spacing } from '@fitnessapp/ui';
-import { Pressable, StyleSheet, Text, View } from 'react-native';
+import { Pressable, StyleSheet, View } from 'react-native';
 import Svg, { Circle, Line, Path, Polyline } from 'react-native-svg';
 
 import { Body, Heading, MIN_TOUCH } from '@/components/ui';
 import { t } from '@/i18n';
 import { formatDateDe } from '@/lib/format';
 import { useThemeColors } from '@/lib/theme';
+import { useAreaColors } from '@/components/design';
+import { Text } from '@/components/text';
 
 /**
  * Bausteine für „Ausdauer“ (Etappen E4/E5): Linien-Skizze ohne Kartenkacheln, Kilometer-Balken, Höhenprofil, Summen
@@ -38,6 +40,7 @@ export function RouteSketch({
   testID?: string;
 }) {
   const theme = useThemeColors();
+  const orange = useAreaColors('ausdauer');
   const projected = sketchPoints(points, { width, height, padding: 6, maxPoints: 200 });
   const first = projected[0];
   const last = projected.at(-1);
@@ -52,7 +55,7 @@ export function RouteSketch({
         <Svg width={width} height={height}>
           <Path
             d={sketchPath(projected)}
-            stroke={theme.primary}
+            stroke={orange.strong}
             strokeWidth={2.5}
             fill="none"
             strokeLinejoin="round"
@@ -69,6 +72,7 @@ export function RouteSketch({
 /** Kilometerzeiten als waagerechte Balken (langsamster = 100 %), Zeit als Text daneben. */
 export function SplitBars({ splits }: { splits: readonly number[] }) {
   const theme = useThemeColors();
+  const orange = useAreaColors('ausdauer');
   const bars = splitBars(splits);
   if (bars.length === 0) return <Body muted>{E.detail.splitsEmpty}</Body>;
   return (
@@ -87,7 +91,7 @@ export function SplitBars({ splits }: { splits: readonly number[] }) {
                 styles.barFill,
                 {
                   width: `${Math.max(4, Math.round(bar.share * 100))}%`,
-                  backgroundColor: theme.primary,
+                  backgroundColor: orange.strong,
                 },
               ]}
             />
@@ -110,6 +114,7 @@ export function ElevationChart({
   height?: number;
 }) {
   const theme = useThemeColors();
+  const orange = useAreaColors('ausdauer');
   const pairs = (profile ?? []).filter((p): p is [number, number] => p.length === 2) as [
     number,
     number,
@@ -144,7 +149,7 @@ export function ElevationChart({
           stroke={theme.border}
           strokeWidth={1}
         />
-        <Polyline points={pts} stroke={theme.primary} strokeWidth={2.5} fill="none" />
+        <Polyline points={pts} stroke={orange.strong} strokeWidth={2.5} fill="none" />
       </Svg>
       <View style={styles.axis}>
         <Body muted>{`${minM} m`}</Body>
@@ -157,6 +162,7 @@ export function ElevationChart({
 /** Kopf mit Summen der Woche bzw. des Monats und neutralem Vergleich (E5). */
 export function TotalsView({ summary }: { summary: EndurancePeriodSummary }) {
   const theme = useThemeColors();
+  const orange = useAreaColors('ausdauer');
   const week = summary.period === 'week';
   const T = E.totals;
   const diff = summary.distanceDiffM;
@@ -219,7 +225,7 @@ export function TotalsView({ summary }: { summary: EndurancePeriodSummary }) {
                     styles.barFill,
                     {
                       width: `${Math.round((w.distanceM / maxWeek) * 100)}%`,
-                      backgroundColor: theme.primary,
+                      backgroundColor: orange.strong,
                     },
                   ]}
                 />
@@ -275,7 +281,11 @@ export function ActivityRow({
       testID={`endurance-item-${activity.key}`}
       style={({ pressed }) => [
         styles.row,
-        { borderColor: theme.border, backgroundColor: theme.surface, opacity: pressed ? 0.8 : 1 },
+        {
+          borderColor: theme.cardBorder,
+          backgroundColor: theme.surface,
+          opacity: pressed ? 0.8 : 1,
+        },
       ]}
     >
       {points && points.length > 1 ? (
@@ -323,7 +333,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     gap: spacing.md,
     borderWidth: 1,
-    borderRadius: radius.md,
+    borderRadius: 16,
     padding: spacing.sm,
     minHeight: MIN_TOUCH,
     alignItems: 'center',

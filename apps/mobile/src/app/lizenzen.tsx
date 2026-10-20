@@ -16,6 +16,8 @@ export default function LicensesScreen() {
   const back = () => (router.canGoBack() ? router.back() : router.replace('/settings' as Href));
   return (
     <Screen
+      area="training"
+      icon="info"
       title={L.title}
       testID="licenses"
       footer={

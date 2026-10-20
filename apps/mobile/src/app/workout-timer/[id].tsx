@@ -11,10 +11,18 @@ import {
   type WorkoutTimerStep,
   workoutRunView,
 } from '@fitnessapp/core';
-import { fontSize, fontWeight, radius, spacing } from '@fitnessapp/ui';
+import {
+  areaColors,
+  brandColors,
+  fontSize,
+  fontWeight,
+  heroColors,
+  radius,
+  spacing,
+} from '@fitnessapp/ui';
 import { Redirect, useLocalSearchParams, useRouter, type Href } from 'expo-router';
 import { useEffect, useMemo, useRef, useState } from 'react';
-import { StyleSheet, Text, View } from 'react-native';
+import { StyleSheet, View } from 'react-native';
 
 import { LiveRegion } from '@/components/calendar';
 import { ConfirmDialog, Screen } from '@/components/screen';
@@ -46,6 +54,7 @@ import {
 import { useApp } from '@/state/app-state';
 import { HOME_ROUTE, resolveEntryRoute } from '@/state/flow';
 import { useActiveWorkoutRun, useWorkoutLibrary } from '@/state/use-workouts';
+import { Text } from '@/components/text';
 
 const TICK_MS = 250;
 const RPE_VALUES = Array.from(
@@ -162,6 +171,8 @@ export default function WorkoutTimerScreen() {
   if (!workout || !run || run.ownerUserId !== app.session.userId || !view || !computed) {
     return (
       <Screen
+        area="workouts"
+        icon="stopwatch"
         testID="workout-timer-missing"
         footer={<Button label={t.workouts.detail.back} variant="secondary" onPress={toDetail} />}
       >
@@ -228,6 +239,8 @@ export default function WorkoutTimerScreen() {
     const done = save.kind === 'done' || run.saved;
     return (
       <Screen
+        area="workouts"
+        icon="stopwatch"
         title={summary.complete ? t.workouts.finish.title : t.workouts.finish.titleEarly}
         testID="workout-finish"
         footer={
@@ -335,10 +348,16 @@ export default function WorkoutTimerScreen() {
   const isReps = isWork && step.seconds === null;
   const workStep = isWork ? step : null;
   const next = view.nextWork;
-  const accent = isWork ? theme.primary : theme.success;
+  // Design 20.10.2026: Zeitanzeige immer auf dunkler Fläche (groß, kontrastreich); Arbeit violett, Pause grün –
+  // jeweils mit Wort („Arbeit“/„Pause“), nie nur über die Farbe.
+  const box = heroColors.light;
+  const accent = isWork ? areaColors.dark.workouts.icon : areaColors.dark.ernaehrung.icon;
+  const frame = isWork ? areaColors.light.workouts.strong : areaColors.light.ernaehrung.strong;
 
   return (
     <Screen
+      area="workouts"
+      icon="stopwatch"
       title={workout.title_de}
       testID="workout-timer"
       footer={
@@ -390,7 +409,7 @@ export default function WorkoutTimerScreen() {
         {`${passText(workStep ?? next, view)} · ${t.workouts.timer.progress(view.workDone, view.workTotal)}`}
       </Body>
       <View
-        style={[styles.timerBox, { borderColor: accent, backgroundColor: theme.surface }]}
+        style={[styles.timerBox, { borderColor: frame, backgroundColor: box.background }]}
         testID="workout-timer-box"
       >
         <Text style={[styles.stepLabel, { color: accent }]} testID="workout-timer-kind">
@@ -400,24 +419,27 @@ export default function WorkoutTimerScreen() {
               ? t.workouts.timer.prepare
               : t.workouts.timer.rest}
         </Text>
-        <Text style={[styles.stepTitle, { color: theme.text }]} testID="workout-timer-step">
+        <Text style={[styles.stepTitle, { color: box.text }]} testID="workout-timer-step">
           {stepTitle(step, names)}
         </Text>
         {view.remainingS !== null ? (
           <Text
-            style={[styles.countdown, { color: theme.text }]}
+            style={[styles.countdown, { color: box.text }]}
             accessibilityLabel={t.workouts.timer.remaining(view.remainingS)}
             testID="workout-timer-remaining"
           >
             {clockText(view.remainingS)}
           </Text>
         ) : workStep ? (
-          <Text style={[styles.reps, { color: theme.text }]} testID="workout-timer-reps">
+          <Text style={[styles.reps, { color: box.text }]} testID="workout-timer-reps">
             {doseText(workStep, names)}
           </Text>
         ) : null}
         {paused ? (
-          <Text style={[styles.paused, { color: theme.warning }]} testID="workout-timer-paused">
+          <Text
+            style={[styles.paused, { color: brandColors.signal }]}
+            testID="workout-timer-paused"
+          >
             {t.workouts.timer.paused}
           </Text>
         ) : null}
@@ -471,8 +493,9 @@ const styles = StyleSheet.create({
   stepLabel: { fontSize: fontSize.md, fontWeight: fontWeight.bold, textTransform: 'uppercase' },
   stepTitle: { fontSize: fontSize.xl, fontWeight: fontWeight.bold, textAlign: 'center' },
   countdown: {
-    fontSize: 72,
-    fontWeight: fontWeight.bold,
+    fontSize: 80,
+    lineHeight: 92,
+    fontWeight: fontWeight.extrabold,
     fontVariant: ['tabular-nums'],
   },
   reps: { fontSize: fontSize.xl, fontWeight: fontWeight.bold, textAlign: 'center' },

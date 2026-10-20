@@ -95,6 +95,8 @@ export default function MenuBarScreen() {
   const back = () => (router.canGoBack() ? router.back() : router.replace('/mehr' as Href));
   return (
     <Screen
+      area="training"
+      icon="bar-menu"
       title={texts.title}
       testID="menu-bar"
       footer={
