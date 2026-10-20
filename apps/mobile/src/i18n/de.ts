@@ -22,6 +22,7 @@ import { deFoodLog } from './de-food-log';
 import { deFoodPhoto } from './de-food-photo';
 import { deFoodProduct } from './de-food-product';
 import { deGoalChoice, deWeightGoal, deWeightGoalLife } from './de-goals';
+import { deMuscleMap } from './de-muscle-map';
 import { deNutrition } from './de-nutrition';
 import { deNutritionDay } from './de-nutrition-day';
 import { deWeekEval } from './de-week-eval';
@@ -1391,6 +1392,7 @@ export const de = {
     cancelled: 'Drucken abgebrochen – es wurde nichts gespeichert.',
   },
   /** Übungs-Glossar (docs/PLAN-UEBUNGEN-GLOSSAR-TAUSCH.md 8.1/8.4, Etappe G1) – nur Text, Bilder folgen (G2). */
+  muscleMap: deMuscleMap,
   glossary: {
     title: 'Übungen',
     intro: 'Alle Übungen mit Anleitung, Tipps und Sicherheitshinweisen.',

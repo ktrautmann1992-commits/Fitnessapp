@@ -70,6 +70,26 @@ Bewusste Entscheidungen:
 - **Grün und Rot gibt es in der Palette nicht.** `success` und `danger` bleiben Grün und Rot, damit „erledigt“,
   „Achtung“ und „Fehler/löschen“ klar unterscheidbar sind (immer zusätzlich mit Text, nie nur über die Farbe).
 
+### Muskelkarte (Übungen, 20.10.2026)
+
+Eigene, selbst gezeichnete Körper-Silhouette (vorn und hinten, `react-native-svg`, gleich auf Web und Handy) – keine
+fremden Vorlagen oder Bilder. Umrisse: `apps/mobile/src/lib/muscle-map-paths.ts` (nur linke Hälfte, gespiegelt =
+symmetrisch), Baustein: `apps/mobile/src/components/muscle-map.tsx`, Zuordnung Muskel → Ansicht:
+`packages/core/src/content/muscle-map.ts`.
+
+| Stufe                    | Hell                   | Dunkel                    |
+| ------------------------ | ---------------------- | ------------------------- |
+| Hauptmuskeln             | blau `#1f5bff`         | `#4d7dff`                 |
+| Mitbeteiligt             | himmel `#8db0ff`       | `#3b5bab`                 |
+| Nicht beansprucht        | `#c9d0dc`              | `#363e4f`                 |
+| Körper                   | `#e7ebf2`              | `#1d222d`                 |
+| Trennlinien der Regionen | weiß `#ffffff` (Karte) | graphit `#151922` (Karte) |
+
+- **Farbe nie allein:** Unter der Karte steht immer die Legende in Worten („Hauptmuskeln: Brust“, „Mitbeteiligt:
+  Trizeps, vordere Schulter“) mit Farbfeld; Screenreader lesen „Trainiert vor allem: … Mitbeteiligt: …“.
+- **Groß** im Übungsdetail (zwei Ansichten, je 260 px hoch), **klein** im Trainingsmodus rechts neben dem Namen
+  (64 px, Tippfläche ≥ 48 px) – antippen öffnet einen Dialog mit der großen Karte.
+
 ### Icons und Favicons
 
 Alle Icons werden aus dem Logo erzeugt – nie von Hand zeichnen:

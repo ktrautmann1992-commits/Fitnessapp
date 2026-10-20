@@ -1,0 +1,52 @@
+{
+  "id": "garnelen-tk-roh-geschaelt",
+  "version": 1,
+  "status": "draft",
+  "name_de": "Garnelen (TK, roh, geschält)",
+  "aliases_de": [],
+  "shopping_category": "frozen",
+  "pantry": false,
+  "nutrients_per_100g": {
+    "kcal": 87,
+    "protein_g": 18.6,
+    "carbs_g": 0,
+    "sugar_g": 0,
+    "fat_g": 1.44,
+    "sat_fat_g": 0.31794,
+    "fiber_g": 0,
+    "salt_g": 0.365,
+    "organic_acids_g": 0,
+    "alcohol_g": 0,
+    "polyols_g": 0
+  },
+  "units": {},
+  "groups": ["shellfish"],
+  "animal": ["shellfish"],
+  "meat_kind": [],
+  "pregnancy_caution": false,
+  "alcohol": false,
+  "max_fridge_days": 1,
+  "freezable": true,
+  "substitutes": [],
+  "source": {
+    "db": "bls",
+    "version": "4.0",
+    "ref": "T753100",
+    "name": "Garnele/Granat/Krabbe, roh",
+    "category": "crustaceans_molluscs",
+    "license": "CC BY 4.0",
+    "retrieved_at": "2026-10-19"
+  },
+  "meta": {
+    "origin": "claude_session",
+    "model": "claude-opus-5-5",
+    "batch_id": null,
+    "created_on": "2026-10-19",
+    "expert_reviewed": false,
+    "reviewed_by": null,
+    "reviewed_at": null,
+    "review_note": null,
+    "catalog_reviewed_by": null,
+    "catalog_reviewed_at": null
+  }
+}
