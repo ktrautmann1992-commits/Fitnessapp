@@ -1,0 +1,164 @@
+{
+  "id": "teriyaki-haehnchen-bowl-mit-brokkoli",
+  "version": 1,
+  "status": "draft",
+  "title_de": "Teriyaki-Hähnchen-Bowl mit Brokkoli",
+  "description_de": "Saftiges Hähnchen in Soja-Honig-Glasur mit Basmatireis, Brokkoli und Möhren – asiatisch und perfekt zum Vorkochen.",
+  "section_de": "Mittagessen",
+  "categories": ["post-workout", "meal-prep"],
+  "meal_types": ["main"],
+  "training_tags": ["nach_training"],
+  "servings": 1,
+  "ingredients": [
+    {
+      "food_id": "basmatireis-trocken",
+      "amount": 70,
+      "unit": "g",
+      "optional": false,
+      "display_de": "70 g (trocken)",
+      "scales": true,
+      "role": "carb"
+    },
+    {
+      "food_id": "haehnchenbrustfilet",
+      "amount": 150,
+      "unit": "g",
+      "optional": false,
+      "display_de": "150 g",
+      "scales": true,
+      "heated": true,
+      "role": "protein"
+    },
+    {
+      "food_id": "brokkoli",
+      "amount": 150,
+      "unit": "g",
+      "optional": false,
+      "display_de": "150 g",
+      "scales": true,
+      "role": "vegetable"
+    },
+    {
+      "food_id": "moehre",
+      "amount": 80,
+      "unit": "g",
+      "optional": false,
+      "display_de": "1 Möhre (80 g)",
+      "scales": true,
+      "role": "vegetable"
+    },
+    {
+      "food_id": "sojasauce",
+      "amount": 20,
+      "unit": "g",
+      "optional": false,
+      "display_de": "1½ EL (20 g)",
+      "scales": true,
+      "role": "protein"
+    },
+    {
+      "food_id": "honig",
+      "amount": 10,
+      "unit": "g",
+      "optional": false,
+      "display_de": "1 TL (10 g)",
+      "scales": true,
+      "role": "sweet"
+    },
+    {
+      "food_id": "ingwer",
+      "amount": 5,
+      "unit": "g",
+      "optional": false,
+      "display_de": "1 cm Stück (5 g)",
+      "scales": true,
+      "role": "vegetable"
+    },
+    {
+      "food_id": "knoblauch",
+      "amount": 5,
+      "unit": "g",
+      "optional": false,
+      "display_de": "1 Zehe (5 g)",
+      "scales": true,
+      "role": "vegetable"
+    },
+    {
+      "food_id": "rapsoel",
+      "amount": 10,
+      "unit": "g",
+      "optional": false,
+      "display_de": "1 EL (10 g)",
+      "scales": true,
+      "role": "fat"
+    },
+    {
+      "food_id": "wasser",
+      "amount": 30,
+      "unit": "ml",
+      "optional": false,
+      "display_de": "2 EL",
+      "scales": true,
+      "role": "seasoning"
+    }
+  ],
+  "steps_de": [
+    "Koche den Reis nach Packungsanweisung (ca. 12 Minuten).",
+    "Teile den Brokkoli in Röschen, schneide die Möhre in dünne Scheiben und gare beides die letzten 5 Minuten über dem Reis oder in wenig Wasser.",
+    "Verrühre Sojasauce, Honig, 2 EL Wasser sowie fein geriebenen Ingwer und Knoblauch zu einer Sauce.",
+    "Schneide das Hähnchen in Streifen und brate es im Rapsöl bei hoher Hitze 5–6 Minuten goldbraun.",
+    "Gieße die Sauce dazu und lass sie 1–2 Minuten einkochen, bis das Hähnchen glänzend überzogen ist.",
+    "Richte Reis, Gemüse und Hähnchen in einer Schüssel an."
+  ],
+  "tip_de": "In Meal-Prep-Boxen hält die Bowl 3 Tage im Kühlschrank; Sesam oder Lauchzwiebeln obendrauf geben Extra-Crunch.",
+  "total_minutes": 25,
+  "prep_minutes": 2,
+  "cook_minutes": 23,
+  "no_cook": false,
+  "meal_prep": {
+    "suitable": true,
+    "fridge_days": 1,
+    "freezable": true
+  },
+  "equipment_de": [],
+  "declared_per_serving": {
+    "kcal": 623,
+    "protein_g": 49,
+    "carbs_g": 75,
+    "fat_g": 12.8
+  },
+  "declared_diet": "omnivore",
+  "declared_allergens": [
+    "gluten",
+    "poultry",
+    "legumes",
+    "soy",
+    "fructose",
+    "histamine",
+    "onion_garlic"
+  ],
+  "contains_pork": false,
+  "declared_pregnancy_caution": true,
+  "meta": {
+    "origin": "manual",
+    "model": null,
+    "batch_id": null,
+    "created_on": "2026-10-11",
+    "expert_reviewed": false,
+    "reviewed_by": null,
+    "reviewed_at": null,
+    "review_note": null,
+    "source_file": "alpha5-rezepte.json@1.0",
+    "import_assumptions": [
+      {
+        "ingredient_index": 1,
+        "food_id": "haehnchenbrustfilet",
+        "field": "heated",
+        "value": true,
+        "reason_de": "Schritt 4 gart die Zutat durch: „Schneide das Hähnchen in Streifen und brate es im Rapsöl bei hoher Hitze 5–6 Minuten goldbraun.“"
+      }
+    ],
+    "import_assumptions_confirmed_by": null,
+    "import_hash": "b0801ec14b3d6ee6ec2d3aa8ff5541de27bfcec06ea87194b18a68cfa5ef0ec5"
+  }
+}

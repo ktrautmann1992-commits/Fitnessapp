@@ -1,0 +1,120 @@
+{
+  "id": "one-pan-eiertoast-mit-kaese-und-spinat",
+  "version": 1,
+  "status": "draft",
+  "title_de": "One-Pan-Eiertoast mit Käse und Spinat",
+  "description_de": "Toast und Omelett in einer Pfanne zusammen gebraten und zum herzhaften Sandwich zusammengeklappt.",
+  "section_de": "Frühstück",
+  "categories": ["schnell"],
+  "meal_types": ["breakfast"],
+  "training_tags": [],
+  "servings": 1,
+  "ingredients": [
+    {
+      "food_id": "huehnerei",
+      "amount": 120,
+      "unit": "g",
+      "optional": false,
+      "display_de": "2 Eier (Größe M)",
+      "scales": true,
+      "heated": false,
+      "role": "protein"
+    },
+    {
+      "food_id": "vollkorntoast",
+      "amount": 60,
+      "unit": "g",
+      "optional": false,
+      "display_de": "2 Scheiben (60 g)",
+      "scales": true,
+      "role": "carb"
+    },
+    {
+      "food_id": "gouda-light-gerieben",
+      "amount": 25,
+      "unit": "g",
+      "optional": false,
+      "display_de": "1 kleine Handvoll (25 g)",
+      "scales": true,
+      "role": "protein"
+    },
+    {
+      "food_id": "babyspinat",
+      "amount": 20,
+      "unit": "g",
+      "optional": false,
+      "display_de": "1 Handvoll (20 g)",
+      "scales": true,
+      "role": "vegetable"
+    },
+    {
+      "food_id": "rapsoel",
+      "amount": 5,
+      "unit": "g",
+      "optional": false,
+      "display_de": "1 TL (5 g)",
+      "scales": true,
+      "role": "fat"
+    },
+    {
+      "food_id": "salz",
+      "amount": 1,
+      "unit": "pinch",
+      "optional": false,
+      "display_de": "1 Prise",
+      "scales": true,
+      "role": "seasoning"
+    },
+    {
+      "food_id": "pfeffer",
+      "amount": 1,
+      "unit": "pinch",
+      "optional": false,
+      "display_de": "1 Prise",
+      "scales": true,
+      "role": "seasoning"
+    }
+  ],
+  "steps_de": [
+    "Erhitz das Öl in einer beschichteten Pfanne bei mittlerer Hitze; währenddessen verquirlst du die Eier mit Salz und Pfeffer.",
+    "Gieß die Eier in die Pfanne, leg sofort beide Toastscheiben nebeneinander hinein und dreh sie einmal, damit sie auf beiden Seiten Ei aufsaugen.",
+    "Nach ca. 2 Minuten wendest du das ganze Omelett samt Toast mit einem breiten Pfannenwender.",
+    "Streu Käse und Spinat auf eine Toasthälfte, klapp die überstehenden Omelettränder ein und den Toast zusammen und brate ihn noch 1–2 Minuten, bis der Käse schmilzt."
+  ],
+  "tip_de": "Kauf vorgewaschenen Babyspinat in der Tüte – der kommt ungeschnitten und ohne Waschen direkt in die Pfanne. Statt Spinat passen auch ein paar Tomatenscheiben.",
+  "tags_de": ["Unter 10 Minuten"],
+  "total_minutes": 8,
+  "prep_minutes": 6,
+  "cook_minutes": 2,
+  "no_cook": false,
+  "meal_prep": {
+    "suitable": false,
+    "fridge_days": 0,
+    "freezable": false
+  },
+  "equipment_de": [],
+  "declared_per_serving": {
+    "kcal": 431,
+    "protein_g": 28.6,
+    "carbs_g": 26.2,
+    "fat_g": 22.9
+  },
+  "declared_diet": "vegetarian",
+  "declared_allergens": ["gluten", "dairy", "lactose", "eggs", "histamine"],
+  "contains_pork": false,
+  "declared_pregnancy_caution": true,
+  "meta": {
+    "origin": "manual",
+    "model": null,
+    "batch_id": null,
+    "created_on": "2026-10-11",
+    "expert_reviewed": false,
+    "reviewed_by": null,
+    "reviewed_at": null,
+    "review_note": null,
+    "source_file": "alpha5-rezepte.json@1.0",
+    "import_assumptions": [],
+    "import_assumptions_confirmed_by": null,
+    "import_hash": "4d655d97fbe2b416eb89a98184a9c2b0f10a0393ac5cec40062b6b5e01603c73"
+  }
+}

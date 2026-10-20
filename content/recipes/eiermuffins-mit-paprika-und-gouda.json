@@ -1,0 +1,129 @@
+{
+  "id": "eiermuffins-mit-paprika-und-gouda",
+  "version": 1,
+  "status": "draft",
+  "title_de": "Eiermuffins mit Paprika & Gouda",
+  "description_de": "Herzhafte Ofen-Muffins aus Ei, Hüttenkäse und Gemüse – perfekt zum Vorbereiten, dazu eine Scheibe Vollkornbrot.",
+  "section_de": "Frühstück",
+  "categories": ["meal-prep"],
+  "meal_types": ["breakfast"],
+  "training_tags": [],
+  "servings": 1,
+  "ingredients": [
+    {
+      "food_id": "huehnerei",
+      "amount": 180,
+      "unit": "g",
+      "optional": false,
+      "display_de": "3 Eier (Größe M)",
+      "scales": true,
+      "heated": false,
+      "role": "protein"
+    },
+    {
+      "food_id": "huettenkaese",
+      "amount": 50,
+      "unit": "g",
+      "optional": false,
+      "display_de": "50 g",
+      "scales": true,
+      "role": "protein"
+    },
+    {
+      "food_id": "paprika-rot",
+      "amount": 60,
+      "unit": "g",
+      "optional": false,
+      "display_de": "½ kleine Paprika (60 g)",
+      "scales": true,
+      "role": "vegetable"
+    },
+    {
+      "food_id": "fruehlingszwiebel",
+      "amount": 15,
+      "unit": "g",
+      "optional": false,
+      "display_de": "1 Frühlingszwiebel (15 g)",
+      "scales": true,
+      "role": "vegetable"
+    },
+    {
+      "food_id": "gouda",
+      "amount": 15,
+      "unit": "g",
+      "optional": false,
+      "display_de": "15 g, gerieben",
+      "scales": true,
+      "role": "fat"
+    },
+    {
+      "food_id": "vollkornbrot",
+      "amount": 60,
+      "unit": "g",
+      "optional": false,
+      "display_de": "1 Scheibe (60 g)",
+      "scales": true,
+      "role": "carb"
+    },
+    {
+      "food_id": "salz",
+      "amount": 1,
+      "unit": "pinch",
+      "optional": false,
+      "display_de": "1 Prise",
+      "scales": true,
+      "role": "seasoning"
+    },
+    {
+      "food_id": "pfeffer",
+      "amount": 1,
+      "unit": "pinch",
+      "optional": false,
+      "display_de": "1 Prise",
+      "scales": true,
+      "role": "seasoning"
+    }
+  ],
+  "steps_de": [
+    "Heiz den Backofen auf 180 °C Ober-/Unterhitze vor und fette 4 Mulden eines Muffinblechs leicht ein oder setz Silikonförmchen ein.",
+    "Würfle die Paprika fein und schneide die Frühlingszwiebel in Ringe.",
+    "Verquirle Eier und Hüttenkäse mit Salz und Pfeffer und rühr das Gemüse unter.",
+    "Verteile die Masse auf die Mulden, streu den Gouda darüber und backe die Muffins 18–20 Minuten, bis sie gestockt und goldgelb sind.",
+    "Lass sie 2 Minuten abkühlen, löse sie aus der Form und iss sie mit dem Vollkornbrot."
+  ],
+  "tip_de": "Im Kühlschrank halten die Muffins 3 Tage – gleich die doppelte oder dreifache Menge backen.",
+  "total_minutes": 30,
+  "prep_minutes": 10,
+  "cook_minutes": 20,
+  "no_cook": false,
+  "meal_prep": {
+    "suitable": true,
+    "fridge_days": 3,
+    "freezable": false
+  },
+  "equipment_de": [],
+  "declared_per_serving": {
+    "kcal": 508,
+    "protein_g": 38,
+    "carbs_g": 31.1,
+    "fat_g": 24.3
+  },
+  "declared_diet": "vegetarian",
+  "declared_allergens": ["gluten", "dairy", "lactose", "eggs", "histamine", "onion_garlic"],
+  "contains_pork": false,
+  "declared_pregnancy_caution": true,
+  "meta": {
+    "origin": "manual",
+    "model": null,
+    "batch_id": null,
+    "created_on": "2026-10-11",
+    "expert_reviewed": false,
+    "reviewed_by": null,
+    "reviewed_at": null,
+    "review_note": null,
+    "source_file": "alpha5-rezepte.json@1.0",
+    "import_assumptions": [],
+    "import_assumptions_confirmed_by": null,
+    "import_hash": "58844bf8c25bd97ea755438320acc4ec44106b86a88cf542296bbfc4c3e25623"
+  }
+}

@@ -1,0 +1,154 @@
+{
+  "id": "teriyaki-tofu-bowl-mit-edamame-vegetarisch",
+  "version": 1,
+  "status": "draft",
+  "title_de": "Teriyaki-Tofu-Bowl mit Edamame",
+  "description_de": "Knusprig gebratener Tofu in glänzender Teriyaki-Glasur auf Reis, mit Edamame, Möhre und Sesam.",
+  "section_de": "Mittagessen",
+  "categories": ["post-workout", "meal-prep"],
+  "meal_types": ["main"],
+  "training_tags": ["nach_training"],
+  "servings": 1,
+  "ingredients": [
+    {
+      "food_id": "basmatireis-trocken",
+      "amount": 70,
+      "unit": "g",
+      "optional": false,
+      "display_de": "70 g",
+      "scales": true,
+      "role": "carb"
+    },
+    {
+      "food_id": "tofu-natur",
+      "amount": 150,
+      "unit": "g",
+      "optional": false,
+      "display_de": "150 g",
+      "scales": true,
+      "role": "protein"
+    },
+    {
+      "food_id": "edamame-tk-geschaelt",
+      "amount": 80,
+      "unit": "g",
+      "optional": false,
+      "display_de": "80 g",
+      "scales": true,
+      "role": "protein"
+    },
+    {
+      "food_id": "moehre",
+      "amount": 60,
+      "unit": "g",
+      "optional": false,
+      "display_de": "1 kleine Möhre (60 g)",
+      "scales": true,
+      "role": "vegetable"
+    },
+    {
+      "food_id": "rapsoel",
+      "amount": 5,
+      "unit": "g",
+      "optional": false,
+      "display_de": "1 TL (5 g)",
+      "scales": true,
+      "role": "fat"
+    },
+    {
+      "food_id": "sojasauce",
+      "amount": 15,
+      "unit": "g",
+      "optional": false,
+      "display_de": "1 EL (15 ml)",
+      "scales": true,
+      "role": "protein"
+    },
+    {
+      "food_id": "honig",
+      "amount": 8,
+      "unit": "g",
+      "optional": false,
+      "display_de": "1 TL (8 g)",
+      "scales": true,
+      "role": "sweet"
+    },
+    {
+      "food_id": "ingwer",
+      "amount": 5,
+      "unit": "g",
+      "optional": false,
+      "display_de": "1 TL, gerieben (5 g)",
+      "scales": true,
+      "role": "vegetable"
+    },
+    {
+      "food_id": "sesam",
+      "amount": 5,
+      "unit": "g",
+      "optional": false,
+      "display_de": "1 TL (5 g)",
+      "scales": true,
+      "role": "fat"
+    },
+    {
+      "food_id": "fruehlingszwiebel",
+      "amount": 15,
+      "unit": "g",
+      "optional": false,
+      "display_de": "1 Frühlingszwiebel (15 g)",
+      "scales": true,
+      "role": "vegetable"
+    }
+  ],
+  "steps_de": [
+    "Koch den Reis nach Packungsangabe (ca. 12 Minuten); gib die Edamame in den letzten 4 Minuten mit in den Topf.",
+    "Tupf den Tofu trocken, schneide ihn in Würfel und brate ihn im Rapsöl bei mittlerer bis hoher Hitze 6–8 Minuten rundum knusprig.",
+    "Verrühre Sojasauce, Honig und Ingwer, gieß die Mischung über den Tofu und lass sie 1 Minute einköcheln, bis sie glänzt.",
+    "Raspel die Möhre und schneide die Frühlingszwiebel in Ringe.",
+    "Richte Reis, Edamame, Möhre und Tofu in einer Schüssel an und bestreue alles mit Sesam und Frühlingszwiebel."
+  ],
+  "tip_de": "Für Meal-Prep Reis und Tofu getrennt lagern – hält 3 Tage im Kühlschrank.",
+  "total_minutes": 25,
+  "prep_minutes": 17,
+  "cook_minutes": 8,
+  "no_cook": false,
+  "meal_prep": {
+    "suitable": true,
+    "fridge_days": 1,
+    "freezable": true
+  },
+  "equipment_de": [],
+  "declared_per_serving": {
+    "kcal": 673,
+    "protein_g": 37.5,
+    "carbs_g": 74.7,
+    "fat_g": 24.5
+  },
+  "declared_diet": "vegetarian",
+  "declared_allergens": [
+    "gluten",
+    "legumes",
+    "soy",
+    "sesame",
+    "fructose",
+    "histamine",
+    "onion_garlic"
+  ],
+  "contains_pork": false,
+  "declared_pregnancy_caution": false,
+  "meta": {
+    "origin": "manual",
+    "model": null,
+    "batch_id": null,
+    "created_on": "2026-10-11",
+    "expert_reviewed": false,
+    "reviewed_by": null,
+    "reviewed_at": null,
+    "review_note": null,
+    "source_file": "alpha5-rezepte.json@1.0",
+    "import_assumptions": [],
+    "import_assumptions_confirmed_by": null,
+    "import_hash": "8b8efd3ef53b6ef7c75019e66a12190e8d71d6b8812bda38d5d0a8b794ae8f86"
+  }
+}

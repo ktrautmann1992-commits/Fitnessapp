@@ -13,19 +13,26 @@ name: content-review
 # „Import-Annahmen geprüft“, gespeichert mit Fingerabdruck der Zubereitung). Übersprungene stehen mit Grund im PR.
 # Art „ids“ mit Rezepten (auch ohne Kategorie), Meal-Prep-Plänen oder Ratgebern = Freigabe per ID mit denselben
 # Regeln und Häkchen (Meal-Prep-Plan nur, wenn alle seine Rezepte danach freigegeben sind; Ratgeber nur ohne roten
-# Befund). Lebensmittel nie über diesen Workflow (eigene Katalog-Prüfung).
+# Befund). Lebensmittel nie über Art „ids“.
+#
+# Art „katalog“ = Option „Katalog geprüft“ (docs/PLAN-PHASE-5.md 5.1.1 d, R19, R2-K6): IDs = Lebensmittel-IDs oder
+# „rezepte“ (alle Lebensmittel aus Rezept-Entwürfen, plus Ersatzprodukte). Setzt meta.catalog_reviewed_by = Prüfer,
+# catalog_reviewed_at = heute und gibt das Lebensmittel frei (Status published, Prüfvermerk) – nur ohne roten Befund.
+# Nährwerte und Quelle bleiben unverändert. Commit über die GitHub-API (verifiziert, github-actions[bot]) auf dem Branch
+# content-review/katalog-<Lauf-ID>; sources-integrity lässt dort nur diese Felder zu. Bitte auf main starten.
 on:
   workflow_dispatch:
     inputs:
       art:
-        description: 'Art: „ids“ = einzelne Inhalte per ID (Übungen/Vorlagen oder Rezepte/Meal-Prep-Pläne/Ratgeber), „recipe“ = Sammelfreigabe Rezepte pro Kategorie'
+        description: 'Art: „ids“ = einzelne Inhalte per ID (Übungen/Vorlagen oder Rezepte/Meal-Prep-Pläne/Ratgeber), „recipe“ = Sammelfreigabe Rezepte pro Kategorie, „katalog“ = Lebensmittel „Katalog geprüft“'
         type: choice
         options:
           - ids
           - recipe
+          - katalog
         default: ids
       ids:
-        description: 'Nur bei Art „ids“: IDs (mit Komma oder Leerzeichen getrennt), z. B. „goblet-kniebeuge, liegestuetz“ oder „ruehrei, pasta-woche“ – Training und Ernährung nicht mischen. „alle“ = alle Übungen und Plan-Vorlagen im Entwurf freigeben'
+        description: 'Art „ids“: IDs (mit Komma oder Leerzeichen getrennt), z. B. „goblet-kniebeuge, liegestuetz“ oder „ruehrei, pasta-woche“ – Training und Ernährung nicht mischen; „alle“ = alle Übungen und Plan-Vorlagen im Entwurf. Art „katalog“: Lebensmittel-IDs oder „rezepte“'
         type: string
         required: false
       status:
@@ -97,4 +104,6 @@ jobs:
           REVIEW_EXPERT_REVIEWED: ${{ inputs.fachlich_geprueft }}
           REVIEW_CONFIRM_ASSUMPTIONS: ${{ inputs.annahmen_geprueft }}
           GH_TOKEN: ${{ github.token }}
+          # Art „katalog“: verifizierter Commit über die GitHub-API (GITHUB_REPOSITORY/GITHUB_RUN_ID setzt Actions).
+          GITHUB_TOKEN: ${{ github.token }}
         run: pnpm --filter @fitnessapp/content review

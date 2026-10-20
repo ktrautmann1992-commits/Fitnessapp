@@ -1,0 +1,146 @@
+{
+  "id": "asia-ofenlachs-mit-sesam-brokkoli",
+  "version": 1,
+  "status": "draft",
+  "title_de": "Asia-Ofenlachs mit Sesam-Brokkoli",
+  "description_de": "Lachs mit Soja-Honig-Ingwer-Glasur aus dem Ofen, dazu Sesam-Brokkoli und etwas Reis.",
+  "section_de": "Abendessen",
+  "categories": [],
+  "meal_types": ["main"],
+  "training_tags": [],
+  "servings": 1,
+  "ingredients": [
+    {
+      "food_id": "lachsfilet",
+      "amount": 130,
+      "unit": "g",
+      "optional": false,
+      "display_de": "1 Filet (130 g)",
+      "scales": true,
+      "heated": true,
+      "role": "protein"
+    },
+    {
+      "food_id": "brokkoli",
+      "amount": 200,
+      "unit": "g",
+      "optional": false,
+      "display_de": "200 g",
+      "scales": true,
+      "role": "vegetable"
+    },
+    {
+      "food_id": "basmatireis-trocken",
+      "amount": 50,
+      "unit": "g",
+      "optional": false,
+      "display_de": "50 g (trocken)",
+      "scales": true,
+      "role": "carb"
+    },
+    {
+      "food_id": "sojasauce",
+      "amount": 15,
+      "unit": "g",
+      "optional": false,
+      "display_de": "1 EL (15 g)",
+      "scales": true,
+      "role": "protein"
+    },
+    {
+      "food_id": "honig",
+      "amount": 5,
+      "unit": "g",
+      "optional": false,
+      "display_de": "1 TL (5 g)",
+      "scales": true,
+      "role": "sweet"
+    },
+    {
+      "food_id": "ingwer",
+      "amount": 5,
+      "unit": "g",
+      "optional": false,
+      "display_de": "1 TL, gerieben (5 g)",
+      "scales": true,
+      "role": "vegetable"
+    },
+    {
+      "food_id": "sesam",
+      "amount": 5,
+      "unit": "g",
+      "optional": false,
+      "display_de": "1 TL (5 g)",
+      "scales": true,
+      "role": "fat"
+    },
+    {
+      "food_id": "fruehlingszwiebeln",
+      "amount": 15,
+      "unit": "g",
+      "optional": false,
+      "display_de": "1 Stange (15 g)",
+      "scales": true,
+      "role": "vegetable"
+    }
+  ],
+  "steps_de": [
+    "Heize den Ofen auf 200 °C Ober-/Unterhitze vor und koche den Reis nach Packungsanleitung.",
+    "Verrühre Sojasauce, Honig und Ingwer und bestreiche den Lachs damit.",
+    "Lege Lachs und Brokkoliröschen auf ein Blech mit Backpapier und gare beides 12–15 Minuten im Ofen.",
+    "Röste den Sesam in einer Pfanne ohne Fett 2 Minuten goldbraun.",
+    "Bestreue Brokkoli und Lachs mit Sesam und Frühlingszwiebelringen und serviere den Reis dazu."
+  ],
+  "tip_de": "TK-Lachs vorher über Nacht im Kühlschrank auftauen lassen.",
+  "total_minutes": 25,
+  "prep_minutes": 10,
+  "cook_minutes": 15,
+  "no_cook": false,
+  "meal_prep": {
+    "suitable": false,
+    "fridge_days": 0,
+    "freezable": false
+  },
+  "equipment_de": [],
+  "declared_per_serving": {
+    "kcal": 565,
+    "protein_g": 39.8,
+    "carbs_g": 50.9,
+    "fat_g": 21
+  },
+  "declared_diet": "omnivore",
+  "declared_allergens": [
+    "gluten",
+    "fish",
+    "legumes",
+    "soy",
+    "sesame",
+    "fructose",
+    "histamine",
+    "onion_garlic"
+  ],
+  "contains_pork": false,
+  "declared_pregnancy_caution": true,
+  "meta": {
+    "origin": "manual",
+    "model": null,
+    "batch_id": null,
+    "created_on": "2026-10-11",
+    "expert_reviewed": false,
+    "reviewed_by": null,
+    "reviewed_at": null,
+    "review_note": null,
+    "source_file": "alpha5-rezepte.json@1.0",
+    "import_assumptions": [
+      {
+        "ingredient_index": 0,
+        "food_id": "lachsfilet",
+        "field": "heated",
+        "value": true,
+        "reason_de": "Schritt 3 gart die Zutat durch: „Lege Lachs und Brokkoliröschen auf ein Blech mit Backpapier und gare beides 12–15 Minuten im Ofen.“"
+      }
+    ],
+    "import_assumptions_confirmed_by": null,
+    "import_hash": "87bc91deb867eef9d283b1716e97cf72c6bbff4d7dc6ea437d5862b1b34f8cbc"
+  }
+}

@@ -1,0 +1,91 @@
+{
+  "id": "beeren-quark-mit-mandeln",
+  "version": 1,
+  "status": "draft",
+  "title_de": "Beeren-Quark mit Mandeln",
+  "description_de": "Cremiger Magerquark mit Beeren und einem Hauch Honig – der schnelle Eiweiß-Snack.",
+  "section_de": "Snack",
+  "categories": ["schnell", "post-workout"],
+  "meal_types": ["snack"],
+  "training_tags": ["nach_training"],
+  "servings": 1,
+  "ingredients": [
+    {
+      "food_id": "magerquark",
+      "amount": 150,
+      "unit": "g",
+      "optional": false,
+      "display_de": "150 g",
+      "scales": true,
+      "role": "protein"
+    },
+    {
+      "food_id": "beeren-mischung-tk",
+      "amount": 100,
+      "unit": "g",
+      "optional": false,
+      "display_de": "100 g, aufgetaut",
+      "scales": true,
+      "role": "vegetable"
+    },
+    {
+      "food_id": "honig",
+      "amount": 5,
+      "unit": "g",
+      "optional": false,
+      "display_de": "1 TL (5 g)",
+      "scales": true,
+      "role": "sweet"
+    },
+    {
+      "food_id": "mandeln",
+      "amount": 10,
+      "unit": "g",
+      "optional": false,
+      "display_de": "1 EL, gehackt (10 g)",
+      "scales": true,
+      "role": "fat"
+    }
+  ],
+  "steps_de": [
+    "Taue die Beeren kurz in der Mikrowelle (ca. 1 Minute) oder über Nacht im Kühlschrank auf.",
+    "Rühre den Magerquark mit dem Honig und einem Schuss Wasser cremig.",
+    "Gib die Beeren mitsamt Saft darüber und streue die gehackten Mandeln darauf."
+  ],
+  "tip_de": "Aufgetaute Beeren färben den Quark schön rosa – einfach unterrühren.",
+  "tags_de": ["Unter 10 Minuten"],
+  "total_minutes": 3,
+  "prep_minutes": 3,
+  "cook_minutes": 0,
+  "no_cook": true,
+  "meal_prep": {
+    "suitable": false,
+    "fridge_days": 0,
+    "freezable": false
+  },
+  "equipment_de": [],
+  "declared_per_serving": {
+    "kcal": 221,
+    "protein_g": 21.1,
+    "carbs_g": 18.5,
+    "fat_g": 5.9
+  },
+  "declared_diet": "vegetarian",
+  "declared_allergens": ["dairy", "lactose", "tree_nuts", "fructose"],
+  "contains_pork": false,
+  "declared_pregnancy_caution": false,
+  "meta": {
+    "origin": "manual",
+    "model": null,
+    "batch_id": null,
+    "created_on": "2026-10-11",
+    "expert_reviewed": false,
+    "reviewed_by": null,
+    "reviewed_at": null,
+    "review_note": null,
+    "source_file": "alpha5-rezepte.json@1.0",
+    "import_assumptions": [],
+    "import_assumptions_confirmed_by": null,
+    "import_hash": "b6465b5cb2a43ec1ca6b128ab388111327fae4032871f653d5bf2c45c0cde3cd"
+  }
+}

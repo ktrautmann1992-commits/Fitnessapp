@@ -1,0 +1,130 @@
+{
+  "id": "ruehrei-brot-mit-huettenkaese",
+  "version": 1,
+  "status": "draft",
+  "title_de": "Rührei-Brot mit Hüttenkäse",
+  "description_de": "Klassisches deutsches Frühstück: cremiges Rührei und Hüttenkäse auf Vollkornbrot mit frischer Tomate.",
+  "section_de": "Frühstück",
+  "categories": ["schnell", "post-workout"],
+  "meal_types": ["breakfast"],
+  "training_tags": ["nach_training"],
+  "servings": 1,
+  "ingredients": [
+    {
+      "food_id": "huehnerei",
+      "amount": 120,
+      "unit": "g",
+      "optional": false,
+      "display_de": "2 Eier (Größe M)",
+      "scales": true,
+      "heated": false,
+      "role": "protein"
+    },
+    {
+      "food_id": "vollkornbrot",
+      "amount": 100,
+      "unit": "g",
+      "optional": false,
+      "display_de": "2 Scheiben (100 g)",
+      "scales": true,
+      "role": "carb"
+    },
+    {
+      "food_id": "huettenkaese",
+      "amount": 100,
+      "unit": "g",
+      "optional": false,
+      "display_de": "100 g",
+      "scales": true,
+      "role": "protein"
+    },
+    {
+      "food_id": "tomate",
+      "amount": 100,
+      "unit": "g",
+      "optional": false,
+      "display_de": "1 Tomate (100 g)",
+      "scales": true,
+      "role": "vegetable"
+    },
+    {
+      "food_id": "schnittlauch-frisch",
+      "amount": 5,
+      "unit": "g",
+      "optional": false,
+      "display_de": "einige Halme (5 g)",
+      "scales": true,
+      "role": "vegetable"
+    },
+    {
+      "food_id": "rapsoel",
+      "amount": 5,
+      "unit": "g",
+      "optional": false,
+      "display_de": "1 TL (5 g)",
+      "scales": true,
+      "role": "fat"
+    },
+    {
+      "food_id": "salz",
+      "amount": 1,
+      "unit": "pinch",
+      "optional": false,
+      "display_de": "1 Prise",
+      "scales": true,
+      "role": "seasoning"
+    },
+    {
+      "food_id": "pfeffer",
+      "amount": 1,
+      "unit": "pinch",
+      "optional": false,
+      "display_de": "1 Prise",
+      "scales": true,
+      "role": "seasoning"
+    }
+  ],
+  "steps_de": [
+    "Verquirle die Eier mit Salz und Pfeffer in einer Tasse.",
+    "Erhitze das Rapsöl in einer beschichteten Pfanne bei mittlerer Hitze und gib die Eier hinein.",
+    "Schiebe die Eimasse mit einem Pfannenwender 2–3 Minuten langsam zusammen, bis sie gerade gestockt, aber noch saftig ist.",
+    "Bestreiche die Brotscheiben mit Hüttenkäse und belege sie mit Tomatenscheiben.",
+    "Verteile das Rührei darauf und bestreue alles mit geschnittenem Schnittlauch."
+  ],
+  "tip_de": "Eine Handvoll Babyspinat kurz im Rührei mitgaren – mehr Gemüse ohne Mehraufwand.",
+  "tags_de": ["Unter 10 Minuten"],
+  "total_minutes": 10,
+  "prep_minutes": 10,
+  "cook_minutes": 0,
+  "no_cook": false,
+  "meal_prep": {
+    "suitable": false,
+    "fridge_days": 0,
+    "freezable": false
+  },
+  "equipment_de": [],
+  "declared_per_serving": {
+    "kcal": 546,
+    "protein_g": 36,
+    "carbs_g": 46.5,
+    "fat_g": 22.2
+  },
+  "declared_diet": "vegetarian",
+  "declared_allergens": ["gluten", "dairy", "lactose", "eggs", "histamine", "onion_garlic"],
+  "contains_pork": false,
+  "declared_pregnancy_caution": true,
+  "meta": {
+    "origin": "manual",
+    "model": null,
+    "batch_id": null,
+    "created_on": "2026-10-11",
+    "expert_reviewed": false,
+    "reviewed_by": null,
+    "reviewed_at": null,
+    "review_note": null,
+    "source_file": "alpha5-rezepte.json@1.0",
+    "import_assumptions": [],
+    "import_assumptions_confirmed_by": null,
+    "import_hash": "baa2770787a8c78c9984d609628440510f0af08300d6914cad251e0e88be2074"
+  }
+}

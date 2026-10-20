@@ -1,0 +1,92 @@
+{
+  "id": "lachsschinken-mit-honigmelone-und-huettenkaese",
+  "version": 1,
+  "status": "draft",
+  "title_de": "Lachsschinken mit Honigmelone und Hüttenkäse",
+  "description_de": "Süß-salziger Klassiker: saftige Melonenspalten mit Lachsschinken umwickelt, dazu ein Klecks Hüttenkäse.",
+  "section_de": "Snack",
+  "categories": ["schnell"],
+  "meal_types": ["snack"],
+  "training_tags": [],
+  "servings": 1,
+  "ingredients": [
+    {
+      "food_id": "lachsschinken",
+      "amount": 50,
+      "unit": "g",
+      "optional": false,
+      "display_de": "ca. 5 Scheiben (50 g)",
+      "scales": true,
+      "heated": false,
+      "role": "protein"
+    },
+    {
+      "food_id": "honigmelone",
+      "amount": 150,
+      "unit": "g",
+      "optional": false,
+      "display_de": "1 Spalte ohne Schale (150 g)",
+      "scales": true,
+      "role": "vegetable"
+    },
+    {
+      "food_id": "huettenkaese",
+      "amount": 100,
+      "unit": "g",
+      "optional": false,
+      "display_de": "½ Becher (100 g)",
+      "scales": true,
+      "role": "protein"
+    },
+    {
+      "food_id": "pfeffer",
+      "amount": 1,
+      "unit": "pinch",
+      "optional": false,
+      "display_de": "1 Prise",
+      "scales": true,
+      "role": "seasoning"
+    }
+  ],
+  "steps_de": [
+    "Schneid die Melonenspalte von der Schale und in 5 fingerdicke Stücke.",
+    "Wickel jedes Stück in eine Scheibe Lachsschinken.",
+    "Gib den Hüttenkäse daneben und mahl etwas Pfeffer über alles."
+  ],
+  "tip_de": "Zeitsparer: Fertig geschnittene Melone aus der Obsttheke kaufen – dann bist du in 2 Minuten fertig.",
+  "tags_de": ["Unter 10 Minuten"],
+  "total_minutes": 4,
+  "prep_minutes": 4,
+  "cook_minutes": 0,
+  "no_cook": true,
+  "meal_prep": {
+    "suitable": false,
+    "fridge_days": 0,
+    "freezable": false
+  },
+  "equipment_de": [],
+  "declared_per_serving": {
+    "kcal": 218,
+    "protein_g": 24.5,
+    "carbs_g": 16.6,
+    "fat_g": 5.9
+  },
+  "declared_diet": "omnivore",
+  "declared_allergens": ["dairy", "lactose"],
+  "contains_pork": true,
+  "declared_pregnancy_caution": true,
+  "meta": {
+    "origin": "manual",
+    "model": null,
+    "batch_id": null,
+    "created_on": "2026-10-11",
+    "expert_reviewed": false,
+    "reviewed_by": null,
+    "reviewed_at": null,
+    "review_note": null,
+    "source_file": "alpha5-rezepte.json@1.0",
+    "import_assumptions": [],
+    "import_assumptions_confirmed_by": null,
+    "import_hash": "80fb51def2e50d985bea243d7c4c13db68ac21591954f1ee5fee67d515aa22d4"
+  }
+}

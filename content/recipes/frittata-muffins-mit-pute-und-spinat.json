@@ -1,0 +1,120 @@
+{
+  "id": "frittata-muffins-mit-pute-und-spinat",
+  "version": 1,
+  "status": "draft",
+  "title_de": "Frittata-Muffins mit Pute und Spinat",
+  "description_de": "Herzhafte Ei-Muffins mit Putenbrust, Spinat, Paprika und Gouda aus dem Ofen – warm oder kalt ein idealer Vorrats-Snack.",
+  "section_de": "Snack",
+  "categories": ["meal-prep"],
+  "meal_types": ["snack"],
+  "training_tags": [],
+  "servings": 1,
+  "ingredients": [
+    {
+      "food_id": "huehnerei",
+      "amount": 120,
+      "unit": "g",
+      "optional": false,
+      "display_de": "2 Eier (Größe M)",
+      "scales": true,
+      "heated": false,
+      "role": "protein"
+    },
+    {
+      "food_id": "putenbrust-aufschnitt",
+      "amount": 30,
+      "unit": "g",
+      "optional": false,
+      "display_de": "2 Scheiben (30 g)",
+      "scales": true,
+      "heated": false,
+      "role": "protein"
+    },
+    {
+      "food_id": "spinat",
+      "amount": 30,
+      "unit": "g",
+      "optional": false,
+      "display_de": "1 Handvoll (30 g)",
+      "scales": true,
+      "role": "vegetable"
+    },
+    {
+      "food_id": "paprika-rot",
+      "amount": 30,
+      "unit": "g",
+      "optional": false,
+      "display_de": "30 g",
+      "scales": true,
+      "role": "vegetable"
+    },
+    {
+      "food_id": "gouda",
+      "amount": 10,
+      "unit": "g",
+      "optional": false,
+      "display_de": "1 EL (10 g)",
+      "scales": true,
+      "role": "fat"
+    },
+    {
+      "food_id": "salz",
+      "amount": 1,
+      "unit": "pinch",
+      "optional": false,
+      "display_de": "1 Prise",
+      "scales": true,
+      "role": "seasoning"
+    },
+    {
+      "food_id": "pfeffer",
+      "amount": 1,
+      "unit": "pinch",
+      "optional": false,
+      "display_de": "1 Prise",
+      "scales": true,
+      "role": "seasoning"
+    }
+  ],
+  "steps_de": [
+    "Heize den Ofen auf 180 °C Ober-/Unterhitze vor und fette 2 Mulden eines Muffinblechs leicht ein oder lege Papierförmchen hinein.",
+    "Schneide Putenbrust, Spinat und Paprika klein und verteile alles auf die Mulden.",
+    "Verquirle die Eier mit Salz und Pfeffer und gieße sie darüber.",
+    "Streue den Gouda darauf und backe die Muffins 18–20 Minuten, bis sie fest und goldbraun sind."
+  ],
+  "tip_de": "Gleich ein ganzes Blech backen: Die Muffins halten 4 Tage im Kühlschrank und lassen sich auch einfrieren.",
+  "total_minutes": 25,
+  "prep_minutes": 5,
+  "cook_minutes": 20,
+  "no_cook": false,
+  "meal_prep": {
+    "suitable": true,
+    "fridge_days": 1,
+    "freezable": false
+  },
+  "equipment_de": [],
+  "declared_per_serving": {
+    "kcal": 250,
+    "protein_g": 25.1,
+    "carbs_g": 3.4,
+    "fat_g": 14.7
+  },
+  "declared_diet": "omnivore",
+  "declared_allergens": ["dairy", "lactose", "eggs", "poultry", "histamine"],
+  "contains_pork": false,
+  "declared_pregnancy_caution": true,
+  "meta": {
+    "origin": "manual",
+    "model": null,
+    "batch_id": null,
+    "created_on": "2026-10-11",
+    "expert_reviewed": false,
+    "reviewed_by": null,
+    "reviewed_at": null,
+    "review_note": null,
+    "source_file": "alpha5-rezepte.json@1.0",
+    "import_assumptions": [],
+    "import_assumptions_confirmed_by": null,
+    "import_hash": "90f7a1459ea52d8e54e82d57594ec9e2683add084e643fa92bda8196d6ac6ca7"
+  }
+}

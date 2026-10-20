@@ -1,0 +1,91 @@
+{
+  "id": "skyr-mit-beeren-und-mandeln",
+  "version": 1,
+  "status": "draft",
+  "title_de": "Skyr mit Beeren und Mandeln",
+  "description_de": "Cremiger Skyr mit fruchtigen Beeren, einem Hauch Honig und gerösteten Mandeln – süß, frisch und schnell gemacht.",
+  "section_de": "Snack",
+  "categories": ["schnell", "post-workout"],
+  "meal_types": ["snack"],
+  "training_tags": ["nach_training"],
+  "servings": 1,
+  "ingredients": [
+    {
+      "food_id": "skyr-natur",
+      "amount": 200,
+      "unit": "g",
+      "optional": false,
+      "display_de": "200 g",
+      "scales": true,
+      "role": "protein"
+    },
+    {
+      "food_id": "beerenmischung-tk",
+      "amount": 100,
+      "unit": "g",
+      "optional": false,
+      "display_de": "100 g (aufgetaut)",
+      "scales": true,
+      "role": "vegetable"
+    },
+    {
+      "food_id": "mandeln",
+      "amount": 10,
+      "unit": "g",
+      "optional": false,
+      "display_de": "1 EL, gehackt (10 g)",
+      "scales": true,
+      "role": "fat"
+    },
+    {
+      "food_id": "honig",
+      "amount": 5,
+      "unit": "g",
+      "optional": false,
+      "display_de": "1 TL (5 g)",
+      "scales": true,
+      "role": "sweet"
+    }
+  ],
+  "steps_de": [
+    "Taue die Beeren über Nacht im Kühlschrank oder 2 Minuten in der Mikrowelle auf.",
+    "Röste die gehackten Mandeln in einer trockenen Pfanne 2 Minuten bei mittlerer Hitze.",
+    "Gib den Skyr in eine Schale, verteile Beeren und Mandeln darauf und beträufle alles mit Honig."
+  ],
+  "tip_de": "Der Beerensaft färbt den Skyr – wer mag, rührt ihn einfach unter.",
+  "tags_de": ["Unter 10 Minuten"],
+  "total_minutes": 5,
+  "prep_minutes": 5,
+  "cook_minutes": 0,
+  "no_cook": true,
+  "meal_prep": {
+    "suitable": false,
+    "fridge_days": 0,
+    "freezable": false
+  },
+  "equipment_de": [],
+  "declared_per_serving": {
+    "kcal": 246,
+    "protein_g": 25.1,
+    "carbs_g": 20.5,
+    "fat_g": 6
+  },
+  "declared_diet": "vegetarian",
+  "declared_allergens": ["dairy", "lactose", "tree_nuts", "fructose"],
+  "contains_pork": false,
+  "declared_pregnancy_caution": false,
+  "meta": {
+    "origin": "manual",
+    "model": null,
+    "batch_id": null,
+    "created_on": "2026-10-11",
+    "expert_reviewed": false,
+    "reviewed_by": null,
+    "reviewed_at": null,
+    "review_note": null,
+    "source_file": "alpha5-rezepte.json@1.0",
+    "import_assumptions": [],
+    "import_assumptions_confirmed_by": null,
+    "import_hash": "a79c2ec889785652b9dab5b6fc9bfdd022f586b22a97dc3fb0f4ff74e3a37fb7"
+  }
+}

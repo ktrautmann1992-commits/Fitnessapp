@@ -42,6 +42,10 @@ interface Scenario {
   links: string[];
   /** Lauf-IDs, die echte foods-import-Läufe auf main sind. */
   importRuns: Set<string>;
+  /** Lauf-IDs, die echte content-review-Läufe auf main sind. */
+  reviewRuns: Set<string>;
+  /** Dateien im Vergleichsstand (main). */
+  baseFiles: Map<string, Buffer>;
 }
 
 /** Stand so, wie ihn der Workflow foods-import erzeugt. */
@@ -82,6 +86,8 @@ function workflowScenario(): Scenario {
     fork: false,
     links: [],
     importRuns: new Set(['4711']),
+    reviewRuns: new Set(['815']),
+    baseFiles: new Map(),
   };
 }
 
@@ -96,6 +102,13 @@ function deps(s: Scenario): IntegrityDeps {
           ? { ok: true, reason: 'foods-import.yml auf main' }
           : { ok: false, reason: 'Workflow „.github/workflows/anderer.yml“' },
       ),
+    reviewRunProvenance: (runId) =>
+      Promise.resolve(
+        s.reviewRuns.has(runId)
+          ? { ok: true, reason: 'content-review.yml auf main' }
+          : { ok: false, reason: 'Workflow „.github/workflows/anderer.yml“' },
+      ),
+    readBaseFile: (path) => s.baseFiles.get(path),
     loadMainSources: () => Promise.resolve(s.mainSources),
     download: (def) => {
       s.downloads.push(def.url);
@@ -219,6 +232,120 @@ describe('W18 – sources-integrity', () => {
     s.commits = [FAKE_SHA];
     const result = await run(s);
     expect(result.errors.join('\n')).toMatch(/kein verifizierter Commit von github-actions\[bot\]/);
+  });
+
+  describe('Katalog geprüft (content-review Art „katalog“, R2-K6)', () => {
+    const PATH = 'content/foods/haferflocken.json';
+    const FOOD = {
+      id: 'haferflocken',
+      version: 1,
+      status: 'draft',
+      nutrients_per_100g: { kcal: 370, salt_g: 0.01 },
+      groups: ['gluten'],
+      source: { db: 'bls', ref: 'C133000' },
+      meta: {
+        reviewed_by: null,
+        reviewed_at: null,
+        catalog_reviewed_by: null,
+        catalog_reviewed_at: null,
+      },
+    };
+    const reviewed = (extra: Record<string, unknown> = {}, meta: Record<string, unknown> = {}) => ({
+      ...FOOD,
+      status: 'published',
+      ...extra,
+      meta: {
+        reviewed_by: 'KT',
+        reviewed_at: '2026-10-20',
+        catalog_reviewed_by: 'KT',
+        catalog_reviewed_at: '2026-10-20',
+        ...meta,
+      },
+    });
+    const json = (data: unknown) => Buffer.from(`${JSON.stringify(data, null, 2)}\n`);
+
+    function katalogScenario(head: unknown = reviewed()): Scenario {
+      const s = workflowScenario();
+      s.branch = 'content-review/katalog-815';
+      s.changed = [PATH];
+      s.baseFiles.set(PATH, json(FOOD));
+      s.files.set(PATH, json(head));
+      return s;
+    }
+
+    it('nur Status, Prüfvermerk und catalog_reviewed_* geändert, verifizierter Bot-Commit, Lauf auf main → grün', async () => {
+      const result = await run(katalogScenario());
+      expect(result.errors).toEqual([]);
+      expect(result.notes.join('\n')).toMatch(/Katalog-Prüfung \(content-review\)/);
+      expect(result.fullCheck).toBe(true);
+    });
+
+    it('Nährwert oder Quelle mitgeändert → rot (Feld wird genannt)', async () => {
+      const nutrients = await run(
+        katalogScenario(reviewed({ nutrients_per_100g: { kcal: 380, salt_g: 0.01 } })),
+      );
+      expect(nutrients.errors.join('\n')).toMatch(/geändert: nutrients_per_100g/);
+      const source = await run(katalogScenario(reviewed({ source: { db: 'bls', ref: 'X' } })));
+      expect(source.errors.join('\n')).toMatch(/geändert: source/);
+      const meta = await run(katalogScenario(reviewed({}, { expert_reviewed: true })));
+      expect(meta.errors.join('\n')).toMatch(/geändert: meta.expert_reviewed/);
+    });
+
+    it('catalog_reviewed_* fehlt, Status nicht published oder Datei neu/gelöscht → rot', async () => {
+      const missing = await run(katalogScenario(reviewed({}, { catalog_reviewed_by: null })));
+      expect(missing.errors.join('\n')).toMatch(/catalog_reviewed_by\/at müssen gesetzt sein/);
+      const draft = await run(katalogScenario(reviewed({ status: 'draft' })));
+      expect(draft.errors.join('\n')).toMatch(/erlaubt ist nur/);
+      const fresh = katalogScenario();
+      fresh.baseFiles.clear();
+      expect((await run(fresh)).errors.join('\n')).toMatch(/neue Datei/);
+      const gone = katalogScenario();
+      gone.files.delete(PATH);
+      expect((await run(gone)).errors.join('\n')).toMatch(/gelöscht/);
+    });
+
+    it('Erwartungsliste oder content/sources auf dem Katalog-Branch geändert → rot', async () => {
+      const s = katalogScenario();
+      s.changed = [PATH, 'content/foods/allergen-expectations.json'];
+      expect((await run(s)).errors.join('\n')).toMatch(/nur Lebensmittel-Dateien/);
+      const t = katalogScenario();
+      t.changed = [PATH, `${DIR}/extract.csv`];
+      expect((await run(t)).errors.join('\n')).toMatch(/nur über den Workflow foods-import/);
+    });
+
+    it('Lauf-ID ist kein content-review-Lauf auf main → rot', async () => {
+      const s = katalogScenario();
+      s.reviewRuns.clear();
+      expect((await run(s)).errors.join('\n')).toMatch(/kein Lauf von content-review.yml/);
+    });
+
+    it('Commit nicht verifiziert (Bot-Autor per git config gefälscht) → rot', async () => {
+      const s = katalogScenario();
+      s.commits = [FAKE_SHA];
+      expect((await run(s)).errors.join('\n')).toMatch(/kein verifizierter Commit/);
+    });
+
+    it('catalog_reviewed_* auf anderem Branch gesetzt (z. B. content/review-…, claude/…) → rot', async () => {
+      for (const branch of [
+        'content/review-2026-10-20-abc',
+        'claude/katalog',
+        'content-review/katalog-x',
+      ]) {
+        const s = katalogScenario();
+        s.branch = branch;
+        expect((await run(s)).errors.join('\n')).toMatch(/nur über den Workflow foods-import/);
+      }
+    });
+
+    it('foods-import setzt catalog_reviewed_* → rot; zurücksetzen auf null → grün', async () => {
+      const s = katalogScenario();
+      s.branch = 'foods-import/4711';
+      expect((await run(s)).errors.join('\n')).toMatch(/foods-import setzt catalog_reviewed_by/);
+      const reset = katalogScenario({ ...FOOD, version: 2 });
+      reset.branch = 'foods-import/4711';
+      reset.baseFiles.set(PATH, json(reviewed()));
+      expect((await run(reset)).errors).toEqual([]);
+    });
   });
 
   it('URL in SOURCE.json geändert (nicht in der Allowlist von main) → rot', async () => {

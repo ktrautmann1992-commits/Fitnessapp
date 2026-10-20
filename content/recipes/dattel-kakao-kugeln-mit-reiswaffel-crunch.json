@@ -1,0 +1,92 @@
+{
+  "id": "dattel-kakao-kugeln-mit-reiswaffel-crunch",
+  "version": 1,
+  "status": "draft",
+  "title_de": "Dattel-Kakao-Kugeln mit Reiswaffel-Crunch",
+  "description_de": "Süße Mini-Kugeln aus Datteln und zerbröselten Reiswaffeln liefern konzentrierte Kohlenhydrate im Taschenformat, fast ohne Fett.",
+  "section_de": "30 Min. vorher",
+  "categories": ["schnell", "pre-workout", "meal-prep"],
+  "meal_types": ["snack"],
+  "training_tags": ["vor_training"],
+  "servings": 1,
+  "ingredients": [
+    {
+      "food_id": "datteln-getrocknet-entsteint",
+      "amount": 35,
+      "unit": "g",
+      "optional": false,
+      "display_de": "4 Datteln (35 g)",
+      "scales": true,
+      "role": "sweet"
+    },
+    {
+      "food_id": "reiswaffeln",
+      "amount": 15,
+      "unit": "g",
+      "optional": false,
+      "display_de": "2 Reiswaffeln (15 g)",
+      "scales": true,
+      "role": "carb"
+    },
+    {
+      "food_id": "kakaopulver-stark-entoelt",
+      "amount": 4,
+      "unit": "g",
+      "optional": false,
+      "display_de": "1 TL (4 g)",
+      "scales": true,
+      "role": "seasoning"
+    },
+    {
+      "food_id": "wasser",
+      "amount": 5,
+      "unit": "ml",
+      "optional": false,
+      "display_de": "1–2 TL",
+      "scales": true,
+      "role": "seasoning"
+    }
+  ],
+  "steps_de": [
+    "Weiche die Datteln 5 Minuten in heißem Wasser ein und gieße sie ab.",
+    "Zerbrösele die Reiswaffeln mit den Händen in eine Schüssel.",
+    "Püriere die Datteln mit dem Kakao und 1–2 TL Wasser zu einer klebrigen Masse.",
+    "Knete die Reiswaffelbrösel unter und forme 4 kleine Kugeln."
+  ],
+  "tip_de": "Gut für den Vorrat: Die Kugeln halten in einer Dose im Kühlschrank 5 Tage – einfach die benötigte Menge mitnehmen.",
+  "tags_de": ["Unter 10 Minuten"],
+  "total_minutes": 10,
+  "prep_minutes": 10,
+  "cook_minutes": 0,
+  "no_cook": false,
+  "meal_prep": {
+    "suitable": true,
+    "fridge_days": 3,
+    "freezable": true
+  },
+  "equipment_de": [],
+  "declared_per_serving": {
+    "kcal": 193,
+    "protein_g": 3.1,
+    "carbs_g": 39.9,
+    "fat_g": 0.9
+  },
+  "declared_diet": "vegan",
+  "declared_allergens": ["fructose"],
+  "contains_pork": false,
+  "declared_pregnancy_caution": false,
+  "meta": {
+    "origin": "manual",
+    "model": null,
+    "batch_id": null,
+    "created_on": "2026-10-11",
+    "expert_reviewed": false,
+    "reviewed_by": null,
+    "reviewed_at": null,
+    "review_note": null,
+    "source_file": "alpha5-rezepte.json@1.0",
+    "import_assumptions": [],
+    "import_assumptions_confirmed_by": null,
+    "import_hash": "2d5b39b773f94bc6c86cf1f5ebbd22164f5aa637284a970bc2aaa86f4c9b3fbc"
+  }
+}

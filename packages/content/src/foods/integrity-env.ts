@@ -23,7 +23,13 @@ import { pathToFileURL } from 'node:url';
 import { z } from 'zod';
 
 import { fetchSourceOriginal } from './download';
-import { commitProvenance, githubApi, importRunProvenance } from './github-api';
+import { CONTENT_REVIEW_WORKFLOW_PATH } from './catalog-review-guard';
+import {
+  commitProvenance,
+  githubApi,
+  importRunProvenance,
+  workflowRunProvenance,
+} from './github-api';
 import { type IntegrityDeps, NO_SYMLINK_PATHS } from './integrity';
 import { SOURCES_DIR } from './extract-source';
 import type { SourceDefinition } from './sources';
@@ -157,6 +163,25 @@ export function integrityDepsFromEnv(repoRoot: string, env: NodeJS.ProcessEnv): 
         return { ok: false, reason: 'kein GITHUB_TOKEN – Lauf nicht prüfbar' };
       }
       return importRunProvenance(api, runId);
+    },
+    reviewRunProvenance: async (runId) => {
+      if (api === undefined) {
+        return { ok: false, reason: 'kein GITHUB_TOKEN – Lauf nicht prüfbar' };
+      }
+      return workflowRunProvenance(api, runId, CONTENT_REVIEW_WORKFLOW_PATH);
+    },
+    // Stand am Abzweig vom Vergleichsstand (wie `git diff base...HEAD`), nicht der heutige Stand von main.
+    readBaseFile: (path) => {
+      try {
+        const mergeBase = git(repoRoot, ['merge-base', base, 'HEAD']).trim();
+        return execFileSync('git', ['show', `${mergeBase}:${path}`], {
+          cwd: repoRoot,
+          stdio: ['ignore', 'pipe', 'pipe'],
+          maxBuffer: 64 * 1024 * 1024,
+        });
+      } catch {
+        return undefined;
+      }
     },
     loadMainSources: () => loadSourcesFromRef(repoRoot, base),
     download: async (def) => (await fetchSourceOriginal(def)).data,

@@ -1,0 +1,101 @@
+{
+  "id": "haehnchen-hummus-wrap-roellchen",
+  "version": 1,
+  "status": "draft",
+  "title_de": "Hähnchen-Hummus-Wrap-Röllchen",
+  "description_de": "Ein Vollkorn-Wrap mit Hummus, Hähnchenbrust-Aufschnitt und Gurke, eng gerollt und in mundgerechte Röllchen geschnitten.",
+  "section_de": "Snack",
+  "categories": ["schnell"],
+  "meal_types": ["snack"],
+  "training_tags": [],
+  "servings": 1,
+  "ingredients": [
+    {
+      "food_id": "vollkorn-wrap",
+      "amount": 60,
+      "unit": "g",
+      "optional": false,
+      "display_de": "1 Wrap (60 g)",
+      "scales": true,
+      "role": "carb"
+    },
+    {
+      "food_id": "hummus",
+      "amount": 15,
+      "unit": "g",
+      "optional": false,
+      "display_de": "1 EL (15 g)",
+      "scales": true,
+      "role": "fat"
+    },
+    {
+      "food_id": "haehnchenbrust-aufschnitt",
+      "amount": 60,
+      "unit": "g",
+      "optional": false,
+      "display_de": "3 Scheiben (60 g)",
+      "scales": true,
+      "heated": false,
+      "role": "protein"
+    },
+    {
+      "food_id": "gurke",
+      "amount": 40,
+      "unit": "g",
+      "optional": false,
+      "display_de": "1 Stück (40 g)",
+      "scales": true,
+      "role": "vegetable"
+    },
+    {
+      "food_id": "babyspinat",
+      "amount": 10,
+      "unit": "g",
+      "optional": false,
+      "display_de": "1 kleine Handvoll (10 g)",
+      "scales": true,
+      "role": "vegetable"
+    }
+  ],
+  "steps_de": [
+    "Bestreich den Wrap dünn mit Hummus und leg den Aufschnitt flach darauf.",
+    "Hobel oder schneid die Gurke in dünne Längsstreifen und verteil sie mit dem Spinat auf dem unteren Drittel.",
+    "Roll den Wrap von dort aus fest auf und schneid ihn in 6 Röllchen."
+  ],
+  "tip_de": "Fest in Frischhaltefolie gewickelt hält der ungeschnittene Wrap bis zum Nachmittag – ideal für Büro oder Sporttasche.",
+  "tags_de": ["Unter 10 Minuten"],
+  "total_minutes": 4,
+  "prep_minutes": 4,
+  "cook_minutes": 0,
+  "no_cook": true,
+  "meal_prep": {
+    "suitable": false,
+    "fridge_days": 0,
+    "freezable": false
+  },
+  "equipment_de": [],
+  "declared_per_serving": {
+    "kcal": 288,
+    "protein_g": 19.7,
+    "carbs_g": 32.6,
+    "fat_g": 8.4
+  },
+  "declared_diet": "omnivore",
+  "declared_allergens": ["gluten", "poultry", "legumes", "sesame", "histamine", "onion_garlic"],
+  "contains_pork": false,
+  "declared_pregnancy_caution": true,
+  "meta": {
+    "origin": "manual",
+    "model": null,
+    "batch_id": null,
+    "created_on": "2026-10-11",
+    "expert_reviewed": false,
+    "reviewed_by": null,
+    "reviewed_at": null,
+    "review_note": null,
+    "source_file": "alpha5-rezepte.json@1.0",
+    "import_assumptions": [],
+    "import_assumptions_confirmed_by": null,
+    "import_hash": "dbcb3e25cb034049d127f1819db931a61208a20d5572f61bd1d4c5d67e7d6312"
+  }
+}

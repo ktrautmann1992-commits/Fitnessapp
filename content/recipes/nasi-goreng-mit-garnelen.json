@@ -1,0 +1,166 @@
+{
+  "id": "nasi-goreng-mit-garnelen",
+  "version": 1,
+  "status": "draft",
+  "title_de": "Nasi Goreng mit Garnelen",
+  "description_de": "Indonesischer gebratener Reis mit Garnelen, Gemüse und Spiegelei – leicht scharf und ideal für Reis vom Vortag.",
+  "section_de": "Mittagessen",
+  "categories": ["meal-prep"],
+  "meal_types": ["main"],
+  "training_tags": [],
+  "servings": 1,
+  "ingredients": [
+    {
+      "food_id": "basmatireis-trocken",
+      "amount": 70,
+      "unit": "g",
+      "optional": false,
+      "display_de": "70 g",
+      "scales": true,
+      "role": "carb"
+    },
+    {
+      "food_id": "garnelen-tk-roh-geschaelt",
+      "amount": 150,
+      "unit": "g",
+      "optional": false,
+      "display_de": "150 g",
+      "scales": true,
+      "heated": true,
+      "role": "vegetable"
+    },
+    {
+      "food_id": "huehnerei",
+      "amount": 60,
+      "unit": "g",
+      "optional": false,
+      "display_de": "1 Ei (Größe M)",
+      "scales": true,
+      "heated": false,
+      "role": "protein"
+    },
+    {
+      "food_id": "asia-gemuesemischung-tk",
+      "amount": 150,
+      "unit": "g",
+      "optional": false,
+      "display_de": "150 g",
+      "scales": true,
+      "role": "vegetable"
+    },
+    {
+      "food_id": "lauchzwiebeln",
+      "amount": 20,
+      "unit": "g",
+      "optional": false,
+      "display_de": "1 Lauchzwiebel (20 g)",
+      "scales": true,
+      "role": "vegetable"
+    },
+    {
+      "food_id": "knoblauch",
+      "amount": 3,
+      "unit": "g",
+      "optional": false,
+      "display_de": "1 kleine Zehe (3 g)",
+      "scales": true,
+      "role": "vegetable"
+    },
+    {
+      "food_id": "sojasauce",
+      "amount": 15,
+      "unit": "g",
+      "optional": false,
+      "display_de": "1 EL (15 g)",
+      "scales": true,
+      "role": "protein"
+    },
+    {
+      "food_id": "sambal-oelek",
+      "amount": 5,
+      "unit": "g",
+      "optional": false,
+      "display_de": "1 TL (5 g)",
+      "scales": true,
+      "role": "carb"
+    },
+    {
+      "food_id": "rapsoel",
+      "amount": 10,
+      "unit": "g",
+      "optional": false,
+      "display_de": "2 TL (10 g)",
+      "scales": true,
+      "role": "fat"
+    },
+    {
+      "food_id": "wasser",
+      "amount": 140,
+      "unit": "ml",
+      "optional": false,
+      "display_de": "140 ml",
+      "scales": true,
+      "role": "seasoning"
+    }
+  ],
+  "steps_de": [
+    "Koche den Reis mit 140 ml Wasser 12–15 Minuten und lass ihn offen ausdampfen – oder nimm gekochten Reis vom Vortag.",
+    "Taue die Garnelen kurz unter kaltem Wasser an und tupfe sie trocken.",
+    "Erhitze 1 TL Rapsöl im Wok oder in einer großen Pfanne und brate Garnelen, Knoblauch und Asia-Gemüse 4–5 Minuten bei hoher Hitze.",
+    "Gib den Reis, Sojasauce und Sambal Oelek dazu und brate alles weitere 3 Minuten unter Rühren.",
+    "Brate das Ei im restlichen Öl als Spiegelei und serviere es mit den Lauchzwiebelringen auf dem Reis."
+  ],
+  "tip_de": "Statt Garnelen schmeckt Nasi Goreng auch mit Hähnchenbruststreifen – dann 2 Minuten länger braten.",
+  "total_minutes": 25,
+  "prep_minutes": 2,
+  "cook_minutes": 23,
+  "no_cook": false,
+  "meal_prep": {
+    "suitable": true,
+    "fridge_days": 1,
+    "freezable": false
+  },
+  "equipment_de": [],
+  "declared_per_serving": {
+    "kcal": 593,
+    "protein_g": 41.6,
+    "carbs_g": 65.1,
+    "fat_g": 17.9
+  },
+  "declared_diet": "omnivore",
+  "declared_allergens": [
+    "gluten",
+    "eggs",
+    "shellfish",
+    "legumes",
+    "soy",
+    "histamine",
+    "mushrooms",
+    "onion_garlic",
+    "spicy"
+  ],
+  "contains_pork": false,
+  "declared_pregnancy_caution": true,
+  "meta": {
+    "origin": "manual",
+    "model": null,
+    "batch_id": null,
+    "created_on": "2026-10-11",
+    "expert_reviewed": false,
+    "reviewed_by": null,
+    "reviewed_at": null,
+    "review_note": null,
+    "source_file": "alpha5-rezepte.json@1.0",
+    "import_assumptions": [
+      {
+        "ingredient_index": 1,
+        "food_id": "garnelen-tk-roh-geschaelt",
+        "field": "heated",
+        "value": true,
+        "reason_de": "Schritt 3 gart die Zutat durch: „Erhitze 1 TL Rapsöl im Wok oder in einer großen Pfanne und brate Garnelen, Knoblauch und Asia-Gemüse 4–5 Minuten bei hoher Hitze.“"
+      }
+    ],
+    "import_assumptions_confirmed_by": null,
+    "import_hash": "2455b2f44dfbbab4a3a5975ff045d8630d56fc2820bc8f5759eaa375f020eddb"
+  }
+}

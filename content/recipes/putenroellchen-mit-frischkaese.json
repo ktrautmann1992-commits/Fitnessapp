@@ -1,0 +1,111 @@
+{
+  "id": "putenroellchen-mit-frischkaese",
+  "version": 1,
+  "status": "draft",
+  "title_de": "Putenröllchen mit Frischkäse",
+  "description_de": "Putenbrustscheiben mit Frischkäse und knackigen Gurkenstiften gerollt, dazu Reiswaffeln – der schnelle Snack fürs Büro.",
+  "section_de": "Snack",
+  "categories": ["schnell"],
+  "meal_types": ["snack"],
+  "training_tags": [],
+  "servings": 1,
+  "ingredients": [
+    {
+      "food_id": "putenbrust-aufschnitt",
+      "amount": 80,
+      "unit": "g",
+      "optional": false,
+      "display_de": "5 Scheiben (80 g)",
+      "scales": true,
+      "heated": false,
+      "role": "protein"
+    },
+    {
+      "food_id": "frischkaese-light",
+      "amount": 30,
+      "unit": "g",
+      "optional": false,
+      "display_de": "2 EL (30 g)",
+      "scales": true,
+      "role": "protein"
+    },
+    {
+      "food_id": "gurke",
+      "amount": 80,
+      "unit": "g",
+      "optional": false,
+      "display_de": "1 Stück (80 g)",
+      "scales": true,
+      "role": "vegetable"
+    },
+    {
+      "food_id": "reiswaffeln",
+      "amount": 16,
+      "unit": "g",
+      "optional": false,
+      "display_de": "2 Reiswaffeln (16 g)",
+      "scales": true,
+      "role": "carb"
+    },
+    {
+      "food_id": "schnittlauch-frisch",
+      "amount": 3,
+      "unit": "g",
+      "optional": false,
+      "display_de": "1 TL, gehackt (3 g)",
+      "scales": true,
+      "role": "vegetable"
+    },
+    {
+      "food_id": "pfeffer",
+      "amount": 1,
+      "unit": "pinch",
+      "optional": false,
+      "display_de": "1 Prise",
+      "scales": true,
+      "role": "seasoning"
+    }
+  ],
+  "steps_de": [
+    "Schneide die Gurke in lange, dünne Stifte.",
+    "Verrühre den Frischkäse mit Schnittlauch und Pfeffer.",
+    "Bestreiche die Putenscheiben mit dem Frischkäse, lege je einen Gurkenstift darauf und rolle sie auf.",
+    "Iss die Röllchen mit den Reiswaffeln."
+  ],
+  "tip_de": "Mit Zahnstochern fixiert halten die Röllchen in der Box bis zum Nachmittag.",
+  "tags_de": ["Unter 10 Minuten"],
+  "total_minutes": 5,
+  "prep_minutes": 5,
+  "cook_minutes": 0,
+  "no_cook": true,
+  "meal_prep": {
+    "suitable": false,
+    "fridge_days": 0,
+    "freezable": false
+  },
+  "equipment_de": [],
+  "declared_per_serving": {
+    "kcal": 207,
+    "protein_g": 25.7,
+    "carbs_g": 15.3,
+    "fat_g": 4.4
+  },
+  "declared_diet": "omnivore",
+  "declared_allergens": ["dairy", "lactose", "poultry", "onion_garlic"],
+  "contains_pork": false,
+  "declared_pregnancy_caution": true,
+  "meta": {
+    "origin": "manual",
+    "model": null,
+    "batch_id": null,
+    "created_on": "2026-10-11",
+    "expert_reviewed": false,
+    "reviewed_by": null,
+    "reviewed_at": null,
+    "review_note": null,
+    "source_file": "alpha5-rezepte.json@1.0",
+    "import_assumptions": [],
+    "import_assumptions_confirmed_by": null,
+    "import_hash": "846dc190b1556e48f64568ab2eb200999e4ff4a3497d71dbe0c554c69e2068d4"
+  }
+}

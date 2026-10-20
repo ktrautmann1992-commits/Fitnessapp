@@ -1,0 +1,164 @@
+{
+  "id": "kabeljau-in-senfsauce-mit-spinat",
+  "version": 1,
+  "status": "draft",
+  "title_de": "Kabeljau in Senfsauce mit Spinat",
+  "description_de": "Zarter Kabeljau in cremiger Senfsauce mit Salzkartoffeln und Rahmspinat – norddeutscher Klassiker, leicht gemacht.",
+  "section_de": "Abendessen",
+  "categories": [],
+  "meal_types": ["main"],
+  "training_tags": [],
+  "servings": 1,
+  "ingredients": [
+    {
+      "food_id": "kabeljaufilet",
+      "amount": 180,
+      "unit": "g",
+      "optional": false,
+      "display_de": "180 g",
+      "scales": true,
+      "heated": true,
+      "role": "protein"
+    },
+    {
+      "food_id": "kartoffeln",
+      "amount": 250,
+      "unit": "g",
+      "optional": false,
+      "display_de": "3 mittelgroße Kartoffeln (250 g)",
+      "scales": true,
+      "role": "vegetable"
+    },
+    {
+      "food_id": "spinat",
+      "amount": 150,
+      "unit": "g",
+      "optional": false,
+      "display_de": "150 g (frisch)",
+      "scales": true,
+      "role": "vegetable"
+    },
+    {
+      "food_id": "milch-1-5",
+      "amount": 100,
+      "unit": "g",
+      "optional": false,
+      "display_de": "100 ml",
+      "scales": true,
+      "role": "carb"
+    },
+    {
+      "food_id": "frischkaese-light",
+      "amount": 30,
+      "unit": "g",
+      "optional": false,
+      "display_de": "2 EL (30 g)",
+      "scales": true,
+      "role": "protein"
+    },
+    {
+      "food_id": "senf",
+      "amount": 15,
+      "unit": "g",
+      "optional": false,
+      "display_de": "1 EL (15 g)",
+      "scales": true,
+      "role": "fat"
+    },
+    {
+      "food_id": "zwiebel",
+      "amount": 30,
+      "unit": "g",
+      "optional": false,
+      "display_de": "¼ Zwiebel (30 g)",
+      "scales": true,
+      "role": "vegetable"
+    },
+    {
+      "food_id": "knoblauch",
+      "amount": 3,
+      "unit": "g",
+      "optional": false,
+      "display_de": "½ Zehe (3 g)",
+      "scales": true,
+      "role": "vegetable"
+    },
+    {
+      "food_id": "rapsoel",
+      "amount": 10,
+      "unit": "g",
+      "optional": false,
+      "display_de": "1 EL (10 g)",
+      "scales": true,
+      "role": "fat"
+    },
+    {
+      "food_id": "salz",
+      "amount": 1,
+      "unit": "pinch",
+      "optional": false,
+      "display_de": "1 Prise",
+      "scales": true,
+      "role": "seasoning"
+    },
+    {
+      "food_id": "pfeffer",
+      "amount": 1,
+      "unit": "pinch",
+      "optional": false,
+      "display_de": "1 Prise",
+      "scales": true,
+      "role": "seasoning"
+    }
+  ],
+  "steps_de": [
+    "Schäle die Kartoffeln und koche sie in Salzwasser 20 Minuten gar.",
+    "Würze den Kabeljau mit Salz und Pfeffer und brate ihn in der Hälfte des Rapsöls bei mittlerer Hitze von jeder Seite 3–4 Minuten.",
+    "Dünste in einem kleinen Topf die gewürfelte Zwiebel im restlichen Öl an, gieße die Milch dazu und rühre Senf und Frischkäse ein; 2 Minuten sanft köcheln lassen.",
+    "Lass den Spinat mit gehacktem Knoblauch und 2 EL Senfsauce in einer Pfanne 2 Minuten zusammenfallen und würze ihn mit Salz.",
+    "Richte Fisch, Kartoffeln und Spinat an und gieße die Senfsauce über den Fisch."
+  ],
+  "tip_de": "TK-Kabeljau vorher über Nacht im Kühlschrank auftauen und gut trocken tupfen, dann brät er schön an.",
+  "total_minutes": 25,
+  "prep_minutes": 1,
+  "cook_minutes": 24,
+  "no_cook": false,
+  "meal_prep": {
+    "suitable": false,
+    "fridge_days": 0,
+    "freezable": false
+  },
+  "equipment_de": [],
+  "declared_per_serving": {
+    "kcal": 557,
+    "protein_g": 48.4,
+    "carbs_g": 47.1,
+    "fat_g": 17.5
+  },
+  "declared_diet": "omnivore",
+  "declared_allergens": ["dairy", "lactose", "fish", "mustard", "histamine", "onion_garlic"],
+  "contains_pork": false,
+  "declared_pregnancy_caution": true,
+  "meta": {
+    "origin": "manual",
+    "model": null,
+    "batch_id": null,
+    "created_on": "2026-10-11",
+    "expert_reviewed": false,
+    "reviewed_by": null,
+    "reviewed_at": null,
+    "review_note": null,
+    "source_file": "alpha5-rezepte.json@1.0",
+    "import_assumptions": [
+      {
+        "ingredient_index": 0,
+        "food_id": "kabeljaufilet",
+        "field": "heated",
+        "value": true,
+        "reason_de": "Schritt 2 gart die Zutat durch: „Würze den Kabeljau mit Salz und Pfeffer und brate ihn in der Hälfte des Rapsöls bei mittlerer Hitze von jeder Seite 3–4 Minuten.“"
+      }
+    ],
+    "import_assumptions_confirmed_by": null,
+    "import_hash": "7e1792af5f474d8f4273b979a26f2888e2a844aed5bdf188a038b41d632c7a3d"
+  }
+}
