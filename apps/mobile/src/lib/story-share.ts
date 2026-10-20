@@ -1,5 +1,5 @@
 import type { StoryCard } from '@fitnessapp/core';
-import { brandColors } from '@fitnessapp/ui';
+import { brandColors, fontFamily } from '@fitnessapp/ui';
 import type { RefObject } from 'react';
 import type { View } from 'react-native';
 
@@ -35,7 +35,8 @@ export function drawStory(ctx: CanvasRenderingContext2D, card: StoryCard): void 
   }
   for (const item of layout.texts) {
     ctx.fillStyle = item.muted ? brandColors.grauDunkel : brandColors.weiss;
-    ctx.font = `${item.bold ? '700' : '400'} ${item.size}px Archivo, system-ui, sans-serif`;
+    // App-Schrift (in index.html vorgeladen) – kein Nachladen beim Teilen, Vorschau und Bild gleich.
+    ctx.font = `${item.bold ? '700' : '400'} ${item.size}px '${fontFamily.base}', system-ui, sans-serif`;
     ctx.fillText(item.text, item.x, item.y, STORY_W - item.x - 40);
   }
 }

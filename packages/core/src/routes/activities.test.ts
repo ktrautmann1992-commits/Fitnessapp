@@ -6,6 +6,7 @@ import {
   type EnduranceLogInput,
   type EnduranceRouteInput,
   enduranceTileSummary,
+  enduranceWeekBars,
   enduranceTotals,
   periodRange,
   shiftPeriod,
@@ -169,5 +170,29 @@ describe('enduranceTotals', () => {
       weekCount: 0,
       latest: null,
     });
+  });
+});
+
+describe('enduranceWeekBars', () => {
+  it('sieben Tage Mo–So, Anteil am stärksten Tag, heute markiert', () => {
+    const bars = enduranceWeekBars(activities(), '2026-10-22');
+    expect(bars.days.map((d) => d.day)).toEqual([
+      '2026-10-19',
+      '2026-10-20',
+      '2026-10-21',
+      '2026-10-22',
+      '2026-10-23',
+      '2026-10-24',
+      '2026-10-25',
+    ]);
+    expect(bars.days.map((d) => d.distanceM)).toEqual([5_000, 0, 2_000, 0, 0, 0, 10_000]);
+    expect(bars.days.map((d) => d.share)).toEqual([0.5, 0, 0.2, 0, 0, 0, 1]);
+    expect(bars.todayIndex).toBe(3);
+  });
+
+  it('ohne Aktivitäten: alle Anteile 0 (keine Division durch 0)', () => {
+    const bars = enduranceWeekBars([], '2026-10-25');
+    expect(bars.days.every((d) => d.share === 0)).toBe(true);
+    expect(bars.todayIndex).toBe(6);
   });
 });

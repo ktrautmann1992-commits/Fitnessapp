@@ -7,6 +7,7 @@ import {
   buildTokens,
   extractThemeVariables,
   parseColor,
+  parseFontFamily,
   parseFontWeight,
   parsePixels,
   REQUIRED_VARS,
@@ -199,6 +200,67 @@ describe('buildTokens', () => {
     expect(warnings).toContainEqual(expect.stringContaining('--brand-blau im Dunkelmodus'));
   });
 
+  it('liest freiwillige Größen (--font-size-xs, --font-weight-extrabold) nur, wenn vorhanden', () => {
+    expect(buildTokens(makeCss()).tokens.fontSize).not.toHaveProperty('xs');
+    const { tokens } = buildTokens(
+      makeCss({ extraRoot: '  --font-size-xs: 13px;\n  --font-weight-extrabold: 800;' }),
+    );
+    expect(tokens.fontSize.xs).toBe(13);
+    expect(tokens.fontWeight.extrabold).toBe('800');
+    expect(REQUIRED_VARS).not.toContain('--font-size-xs');
+  });
+
+  it('liest Bereichsfarben (--area-<bereich>-<rolle>) hell und dunkel', () => {
+    const css = makeCss({
+      extraRoot:
+        '  --area-training-surface: #e3ebff;\n  --area-training-icon: #1747cc;\n' +
+        '  --area-ausdauer-surface: #ffedd5;\n  --area-ausdauer-icon: #c2410c;',
+      dark: `:root[data-theme='dark'] { --color-text: #fff; --area-training-icon: #8db0ff; }`,
+    });
+    const { tokens, warnings } = buildTokens(css);
+    expect(tokens.areaColors.light).toEqual({
+      training: { surface: '#E3EBFF', icon: '#1747CC' },
+      ausdauer: { surface: '#FFEDD5', icon: '#C2410C' },
+    });
+    expect(tokens.areaColors.dark.training).toEqual({ surface: '#E3EBFF', icon: '#8DB0FF' });
+    expect(warnings).toContainEqual(
+      expect.stringContaining('--area-ausdauer-icon fehlt im Dunkelmodus'),
+    );
+    expect(renderTokensModule(tokens)).toContain('export type AreaId');
+  });
+
+  it('meldet Bereiche mit unterschiedlichen Rollen und ungültige Namen', () => {
+    const error = catchThemeError(() =>
+      buildTokens(
+        makeCss({
+          extraRoot:
+            '  --area-training-surface: #fff;\n  --area-training-icon: #000;\n' +
+            '  --area-workouts-surface: #fff;\n  --area-solo: #fff;',
+        }),
+      ),
+    );
+    expect(error.problems).toEqual([
+      expect.stringContaining('--area-solo'),
+      expect.stringContaining('--area-workouts-…: alle Bereiche brauchen dieselben Rollen'),
+    ]);
+  });
+
+  it('liest Hero- und Kartenfarben sowie die Schriftfamilie', () => {
+    const css = makeCss({
+      extraRoot:
+        '  --hero-background: #0a0c10;\n  --card-border: #e3e7ef;\n' +
+        "  --font-family-base: 'Plus Jakarta Sans', system-ui, sans-serif;",
+      dark: `:root[data-theme='dark'] { --color-text: #fff; --hero-background: #151922; }`,
+    });
+    const { tokens } = buildTokens(css);
+    expect(tokens.heroColors).toEqual({
+      light: { background: '#0A0C10' },
+      dark: { background: '#151922' },
+    });
+    expect(tokens.cardColors.dark.border).toBe('#E3E7EF');
+    expect(tokens.fontFamily).toEqual({ base: 'Plus Jakarta Sans' });
+  });
+
   it('ignoriert andere Selektoren und Media-Queries', () => {
     const css = `${makeCss()}
       body { --color-primary: #123456; color: var(--color-text); }
@@ -267,6 +329,18 @@ describe('parsePixels', () => {
     expect(() => parsePixels('-4px', 'x')).toThrow(/negativ/);
     expect(() => parsePixels('10%', 'x')).toThrow(/keine gültige Größe/);
     expect(() => parsePixels('', 'x')).toThrow(/keine gültige Größe/);
+  });
+});
+
+describe('parseFontFamily', () => {
+  it('nimmt die erste Schrift ohne Anführungszeichen', () => {
+    expect(parseFontFamily("'Plus Jakarta Sans', system-ui", 'x')).toBe('Plus Jakarta Sans');
+    expect(parseFontFamily('Inter', 'x')).toBe('Inter');
+  });
+
+  it('lehnt leere oder seltsame Werte ab', () => {
+    expect(() => parseFontFamily('', 'x')).toThrow(/keine gültige Schriftliste/);
+    expect(() => parseFontFamily('url(x)', 'x')).toThrow(/keine gültige Schriftliste/);
   });
 });
 

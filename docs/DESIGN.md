@@ -8,6 +8,8 @@ Wer das Aussehen ändern will, ändert nur diese Datei. Alles andere passt sich 
 
 > **Stand jetzt:** Die Datei enthält das Farbschema der Marke **Alpha5** („Nacht & Kobalt“: Blau und Schwarz)
 > aus [`docs/ALPHA5-PAKET.md`](ALPHA5-PAKET.md). Zuordnung und Kontraste: Abschnitt „Marke Alpha5“ unten.
+> Seit 20.10.2026 dazu das **neue App-Design** (Bereichsfarben, Plus Jakarta Sans, Kacheln): Abschnitt
+> „Neues App-Design“ unten.
 
 ---
 
@@ -124,6 +126,111 @@ absetzen – mit den Gründern abstimmen.
 
 ---
 
+## Neues App-Design (Entwurf „Übersicht neu“ / „Mehr neu“, 20.10.2026)
+
+Gründer-Freigabe: „Die Richtung passt.“ Etappe 1 (diese) liefert Tokens, Schrift und Bausteine; die Bildschirme
+Übersicht, Mehr und Menüleiste werden in der nächsten Etappe darauf umgebaut.
+
+### Bereichsfarben
+
+Jeder Bereich hat eine dezente Farbe – **nur in Icon-Chips und kleinen Akzenten** (Kennzeile, Ring, Balken).
+Texte bleiben immer in `--color-text` bzw. `--color-text-muted`. In `theme.css` als `--area-<bereich>-<rolle>`, in
+der App als `areaColors[modus][bereich][rolle]` (Typ `AreaId`, Hook `useAreaColors(area)` in
+`apps/mobile/src/components/design.tsx`).
+
+Rollen: **surface** = Chip-Fläche · **icon** = Strich und Akzent-Text · **strong** = Ring/Balken kräftig ·
+**soft** = Balken zart (nur Deko).
+
+| Bereich (`AreaId`) | Hell: surface / icon / strong / soft          | Dunkel: surface / icon / strong / soft        | icon auf Karte (hell · dunkel) | strong auf Karte |
+| ------------------ | --------------------------------------------- | --------------------------------------------- | ------------------------------ | ---------------- |
+| `training`         | `#E3EBFF` / `#1747CC` / `#1F5BFF` / `#8DB0FF` | `#1C2A4D` / `#8DB0FF` / `#4D7DFF` / `#2E4A8F` | 7,5 · 8,2                      | 5,3 · 4,8        |
+| `workouts`         | `#EDE9FE` / `#6D28D9` / `#7C3AED` / `#C4B5FD` | `#2A1F4A` / `#C4B5FD` / `#9F7AEA` / `#4C3A85` | 7,1 · 9,5                      | 5,7 · 5,4        |
+| `ernaehrung`       | `#DCFCE7` / `#15803D` / `#16A34A` / `#86EFAC` | `#12321F` / `#86EFAC` / `#22C55E` / `#1F6B3D` | 5,0 · 12,5                     | 3,3 · 7,7        |
+| `einkaufen`        | `#CFFAFE` / `#0E7490` / `#0891B2` / `#67E8F9` | `#0E3038` / `#67E8F9` / `#06B6D4` / `#155E6B` | 5,4 · 12,1                     | 3,7 · 7,2        |
+| `ausdauer`         | `#FFEDD5` / `#C2410C` / `#EA580C` / `#FDBA74` | `#3A2312` / `#FF9A5C` / `#F97316` / `#7C3F17` | 5,2 · 8,4                      | 3,6 · 6,3        |
+| `wettkampf`        | `#FDECD8` / `#C2410C` / `#EA580C` / `#FDBA74` | `#3D2614` / `#FF9A5C` / `#F97316` / `#7C3F17` | 5,2 · 8,4                      | 3,6 · 6,3        |
+| `fortschritt`      | wie `training`                                | wie `training`                                | 7,5 · 8,2                      | 5,3 · 4,8        |
+
+Regeln (geprüft in `packages/ui/src/tokens.test.ts`):
+
+- **icon** als Text auf der Karte ≥ 4,5 : 1; als Icon auf der eigenen Chip-Fläche ≥ 3 : 1 (WCAG 1.4.11);
+  **strong** auf der Karte ≥ 3 : 1; `--color-text` auf jeder Chip-Fläche ≥ 4,5 : 1. **soft** ist reine Deko.
+- **Ausdauer-Orange ist keine Warnfarbe.** Signal-Orange `#ffb020` (bzw. `--color-warning`) bleibt für hohe
+  Belastung und Warnungen reserviert. Ausdauer/Wettkampf nutzen ein **rötlicheres Orange** (Farbton ≥ 12° Abstand
+  zu Signal und Warnung, Test „Ausdauer-Orange ist klar von Signal/Warnung getrennt“), immer nur im Chip mit
+  Lauf-/Pokal-Icon, nie als Fläche einer Meldung. Warnungen kommen weiter als `Notice tone="warning"` (Rand links,
+  Wort „Achtung“ o. ä.).
+- Farbe nie allein: Jede Kachel hat Titel in Worten; Icons sind für Bildschirmleser ausgeblendet.
+
+### Hero-Karte und Karten
+
+| Token               | Hell              | Dunkel                 | Einsatz                                    |
+| ------------------- | ----------------- | ---------------------- | ------------------------------------------ |
+| `--hero-background` | schwarz `#0a0c10` | graphit `#151922`      | Fläche „Training heute“                    |
+| `--hero-text`       | weiß              | weiß                   | Titel (19,6 bzw. 16,9 : 1)                 |
+| `--hero-muted`      | `#b4bdd0`         | `#b4bdd0`              | Untertitel, „Woche 3 von 12“ (≥ 8,6 : 1)   |
+| `--hero-accent`     | himmel `#8db0ff`  | himmel `#8db0ff`       | Kennzeile „TRAINING HEUTE“ (≥ 7,6 : 1)     |
+| `--hero-border`     | wie Fläche        | graphit-hell `#262c3a` | Rand – hebt die Karte im Dunkelmodus ab    |
+| `--card-border`     | `#e3e7ef`         | graphit-hell `#262c3a` | zarter Kartenrand (Deko, kein Feld-Rahmen) |
+| `--card-divider`    | `#eef1f6`         | `#1f2430`              | Trennlinien zwischen `ListRow`-Zeilen      |
+
+Maße aus dem Entwurf: Karten weiß, **Radius 20** (`radius.lg`), Rand 1 px `--card-border`, Polster 16; Icon-Chip
+36/40 px mit Radius 12 (`radius.md`), 52 px mit Radius 16; Hero-Polster 20, Pillen-Knopf **52 px** hoch, Schrift 17/700.
+Abschnitts-Überschriften 13 px, fett, Großbuchstaben, Sperrung 0,8, grau.
+
+Hinweis Kontrast: Der zarte Kartenrand erreicht keine 3 : 1 (WCAG 1.4.11). Er ist Deko – antippbare Kacheln sind
+zusätzlich über Titel, Pfeil (`row`) bzw. Fläche erkennbar. Eingabefelder behalten `--color-border` (siehe „Offener
+Punkt: Rahmenkontrast“).
+
+### Schrift: Plus Jakarta Sans
+
+- `--font-family-base: 'Plus Jakarta Sans', system-ui, …` → App `fontFamily.base`. Stärken 400/600/700/**800**
+  (`--font-weight-extrabold`, neu), neue Größe `--font-size-xs: 13px`.
+- **Lokal ausgeliefert, kein Google-Fonts-Server (DSGVO):**
+  - App im Browser: `apps/mobile/public/fonts/plus-jakarta-sans-latin-wght-normal.woff2` (variabel 200–800, aus
+    `@fontsource-variable/plus-jakarta-sans` 5.3.0), `@font-face` in `apps/mobile/public/index.html` für alle Texte.
+  - iPhone/Android: `@expo-google-fonts/plus-jakarta-sans` 0.4.2 – nur die vier Schnitte, einzeln per `require`
+    (`use-brand-fonts.native.ts`). Startbildschirm bleibt, bis die Schrift geladen ist; bei Fehler oder nach 3 s
+    startet die App mit Systemschrift (kein Hänger).
+  - Lizenz SIL OFL 1.1: `apps/mobile/public/fonts/OFL-PlusJakartaSans.txt`, Seite „Lizenzen und Quellen“ (App und
+    Website).
+- In Bausteinen: `appFont('regular' | 'semibold' | 'bold' | 'extrabold')` aus `apps/mobile/src/lib/fonts.ts`
+  **nach** dem eigenen Stil anhängen (iPhone/Android brauchen je Stärke einen eigenen Schriftnamen).
+  `displayFont()` = ExtraBold mit Sperrung −0,5 für Bildschirmtitel und große Zahlen.
+- Website (Landingpage) und Druckansichten bleiben bei **Archivo**.
+
+### Umgesetzte Bildschirme (Etappe 2)
+
+Menüleiste, Übersicht und Mehr nutzen die Bausteine (Details: `docs/PLAN-DASHBOARD.md` Abschnitt 10). Zuordnung
+Bereich → Farbe/Icon zentral in `apps/mobile/src/lib/area-style.ts`. Aktiver Menüknopf: Pille in `surface`, Icon und
+Beschriftung in `icon` der Bereichsfarbe. Kennzeilen und Abschnitts-Überschriften stehen nur per Stil
+(`textTransform: 'uppercase'`) in Großbuchstaben – Bildschirmleser lesen den normalen Text.
+
+### Bausteine (`apps/mobile/src/components/design.tsx`)
+
+| Baustein       | Props (Auszug)                                                                                                                                                                                                                           | Barrierefreiheit                                    |
+| -------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | --------------------------------------------------- |
+| `Icon`         | `name` (`IconName`: dumbbell, stopwatch, utensils, cart, run, trophy, trend, grid, dots, book, recipe, box, settings, info, edit, chevron, play, bar-menu, plus, check, calendar), `size`, `color`, `strokeWidth`, `accessibilityLabel?` | Deko (ausgeblendet); mit Label Rolle „Bild“         |
+| `IconChip`     | `area`, `icon`, `size` 36/40/52                                                                                                                                                                                                          | Deko                                                |
+| `SectionLabel` | `children` (Text), `level` 2/3                                                                                                                                                                                                           | Überschrift                                         |
+| `Tile`         | `area`, `icon`, `title`, `subtitle?`, `eyebrow?`, `variant` header/stacked/row, `onPress?`, `role` button/link, `children`                                                                                                               | ganz antippbar; Name = Kennzeile, Titel, Untertitel |
+| `HeroCard`     | `eyebrow`, `eyebrowIcon?`, `meta?`, `title`, `subtitle?`, `actionLabel?`, `onAction?`, `actionIcon`, `actionRole`, `children`                                                                                                            | Kennzeile = Überschrift; Knopf 52 px                |
+| `ListGroup`    | `children`                                                                                                                                                                                                                               | –                                                   |
+| `ListRow`      | `icon?`, `label`, `description?`, `onPress`, `role` (Standard link), `last`                                                                                                                                                              | ≥ 44 px (52), Name = Text + Beschreibung            |
+| `IconButton`   | `icon`, `accessibilityLabel` (Pflicht), `onPress`                                                                                                                                                                                        | 44 × 44 px                                          |
+| `StatValue`    | `value`, `label`, `size` md (20 px)/lg (22 px), `accessibilityLabel?`                                                                                                                                                                    | Zahl und Beschriftung zusammen                      |
+| `ProgressRing` | `size`, `stroke`, `fraction`, `overFraction?`, `color?`, `trackColor?`, `children`                                                                                                                                                       | Grafik ausgeblendet, Ansage setzt der Rahmen        |
+| `MiniBars`     | `values` (0–1), `area`, `highlightIndex?`, `height`, `accessibilityLabel` (Pflicht)                                                                                                                                                      | Rolle „Bild“ mit Ansage                             |
+
+- `ProgressRing` ist derselbe Baustein wie im Kalorien-Ring (aus `nutrition-day-overview.tsx` hierher verschoben,
+  dort weiter exportiert). Werte (Anteile, Kilometer) rechnet immer der Aufrufer bzw. `packages/core`.
+- `ui.tsx` (gleiche API): `Heading` 1 = 26/800, `Heading` 2 = 20/700, alle Texte in Jakarta; `Card` Radius 20 mit
+  `--card-border`; `Button` 52 px hoch, Schrift 17/700.
+- Tests: `design.test.tsx`, `ui.test.tsx` (Vitest-Gruppe „components“: react-native-web in happy-dom, Helfer
+  `src/test/render.tsx`).
+
+---
+
 ## So funktioniert es
 
 ```
@@ -166,6 +273,10 @@ Alle folgenden Variablen **müssen** in der Datei stehen. Namen bitte genau so s
 | `--color-danger`       | Fehler, „löschen“                                             |
 
 Erlaubte Schreibweisen: `#1A2B3C`, `#ABC`, `#1A2B3C80` (mit Transparenz), `rgb(…)`, `rgba(…)`, `hsl(…)`, `hsla(…)`.
+
+**Freiwillige Variablen** (keine Pflicht; fehlen sie, fehlen sie auch in der App): `--font-size-xs`,
+`--font-weight-extrabold`, `--font-family-<name>`, `--area-<bereich>-<rolle>`, `--hero-<rolle>`, `--card-<rolle>`
+(die letzten drei hell und dunkel, siehe „Neues App-Design“).
 **Nicht** erlaubt: Farbnamen wie `red` oder `blue`.
 
 ### Größen (gelten hell und dunkel gleich)
@@ -347,7 +458,8 @@ Claude ergänzt den Pull Request, `ci` wird grün, die Vorschau-Links zeigen die
 - **Immer hell und dunkel festlegen.** Viele Menschen nutzen den Dunkelmodus, gerade abends beim Training.
 - **Schriften:** Die Landingpage und die Rechtsseiten nutzen **Archivo** (variabel, mit Breiten-Achse),
   **selbst gehostet** über `next/font/local` (`apps/web/src/app/fonts/`, OFL) – kein Nachladen von Google Fonts
-  (DSGVO). App und Redaktionsbereich nutzen weiter die Systemschrift.
+  (DSGVO). Die App nutzt **Plus Jakarta Sans**, ebenfalls lokal (siehe „Neues App-Design“); der Redaktionsbereich
+  die Systemschrift.
 - **Signalfarben** (`success`, `warning`, `danger`) sollten klar unterscheidbar bleiben – auch für Menschen mit
   Rot-Grün-Schwäche. Nie nur über die Farbe informieren, immer auch mit Text oder Symbol.
 
@@ -362,7 +474,8 @@ Claude ergänzt den Pull Request, `ci` wird grün, die Vorschau-Links zeigen die
 
 - Parser: `packages/ui/scripts/theme-parser.mjs` (ohne Abhängigkeiten, getestet in `theme-parser.test.mjs`).
 - Website: `apps/web/src/app/layout.tsx` importiert `@fitnessapp/ui/theme.css`; Seiten nutzen nur `var(--…)`.
-- App: nutzt weiter `colors`, `spacing`, `radius`, `fontSize`, `fontWeight`, `maxContentWidth` aus `@fitnessapp/ui`.
+- App: nutzt `colors`, `spacing`, `radius`, `fontSize`, `fontWeight`, `maxContentWidth` aus `@fitnessapp/ui`, dazu
+  `areaColors` (Typ `AreaId`, `AreaPalette`), `heroColors`, `cardColors`, `fontFamily`.
 - In der App landen die Pflicht-Variablen (`colors`, …) und die Markenfarben `--brand-…` (`brandColors`).
   Weitere Variablen kann nur die Website nutzen.
 - `pnpm --filter @fitnessapp/ui icons` erzeugt alle Icons aus `packages/ui/brand/alpha5-mark.svg` (siehe oben).
@@ -371,11 +484,9 @@ Claude ergänzt den Pull Request, `ci` wird grün, die Vorschau-Links zeigen die
 
 ## App: Schrift und Willkommensseite
 
-- **Schrift Archivo** (OFL) wie auf der Landingpage, ohne Verbindung zu Google:
-  - App im Browser: `apps/mobile/public/fonts/archivo-latin-wdth-normal.woff2`, eingebunden in
-    `apps/mobile/public/index.html` (gilt für alle Texte). Große Überschriften schmal (Breite 75, Stärke 800).
-  - iPhone/Android: `apps/mobile/assets/fonts/Archivo-Bold.ttf` über `expo-font`, nur für Überschriften.
-  - Stile: `apps/mobile/src/lib/fonts.ts`.
+- **Schrift seit 20.10.2026 Plus Jakarta Sans** (siehe „Neues App-Design“), Stile in `apps/mobile/src/lib/fonts.ts`.
+  Archivo liegt in der App nur noch für die Druck-Vorschau im Browser (`public/fonts/archivo-latin-wdth-normal.woff2`,
+  Lizenz `public/fonts/OFL-Archivo.txt`).
 - **Logo in der App:** `apps/mobile/src/components/brand.tsx` (`Alpha5Mark`, Pfade aus `alpha5-mark.svg`,
   über `react-native-svg`).
 - **Willkommensseite** (`apps/mobile/src/app/welcome.tsx`): immer dunkel (Schwarz mit blauem Schein, wie
@@ -388,13 +499,13 @@ Claude ergänzt den Pull Request, `ci` wird grün, die Vorschau-Links zeigen die
 ## App: Kalorien-Ring und Mahlzeiten-Karten (Ernährung, 20.10.2026)
 
 Bausteine in `apps/mobile/src/components/nutrition-day-overview.tsx` (eigenes Alpha5-Design – kein fremdes Vorbild
-kopiert):
+kopiert; `ProgressRing` liegt seit 20.10.2026 in `components/design.tsx` und hat zusätzlich `color`/`trackColor`):
 
 - **`ProgressRing`** (react-native-svg): Spur in `--color-border`, Füllung in `--color-primary` ab 12 Uhr im
   Uhrzeigersinn, abgerundete Enden. Über dem Ziel eine **zweite Runde in `--color-text`** (neutral, kein Rot/Orange –
   „zu viel“ ist keine Warnung). Die Grafik ist für Bildschirmleser ausgeblendet; die Ansage kommt in Worten vom Rahmen
   („1.391 kcal übrig von 2.869 kcal Tagesziel“). Groß 152 px (Strich 12), klein 44 px (Strich 5).
-- **`DayOverviewCard`**: Karte „Übersicht“ – links „Gegessen“, Mitte Ring mit Zahl (Archivo, `--font-size-xl`) und
+- **`DayOverviewCard`**: Karte „Übersicht“ – links „Gegessen“, Mitte Ring mit Zahl (`displayFont`, `--font-size-xl`) und
   „übrig“/„zu viel“, rechts „Verbrannt“ bzw. „Ziel“; darunter drei Makro-Balken nebeneinander (8 px hoch, Spur
   `--color-border`, Füllung `--color-primary`, Text „47 / 222 g“ in `--color-text-muted`).
 - **`MealCard`**: Karte je Mahlzeit mit kleinem Ring, Titel, „317 / 606 kcal“, Vorschau (2 Zeilen) und rundem

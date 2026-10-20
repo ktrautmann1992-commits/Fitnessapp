@@ -18,12 +18,24 @@
     <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png" />
     <link
       rel="preload"
-      href="/fonts/archivo-latin-wdth-normal.woff2"
+      href="/fonts/plus-jakarta-sans-latin-wght-normal.woff2"
       as="font"
       type="font/woff2"
       crossorigin
     />
+    <!--
+      Schriften liegen in public/fonts (OFL, Lizenztexte daneben) – kein Google-Fonts-Server (DSGVO).
+      Plus Jakarta Sans = App-Schrift (--font-family-base in packages/ui/theme.css).
+      Archivo = Überschriften der Druck-Vorschau (wie die PDFs); wird nur geladen, wenn sie dort gebraucht wird.
+    -->
     <style id="alpha5-font">
+      @font-face {
+        font-family: 'Plus Jakarta Sans';
+        src: url('/fonts/plus-jakarta-sans-latin-wght-normal.woff2') format('woff2');
+        font-weight: 200 800;
+        font-style: normal;
+        font-display: swap;
+      }
       @font-face {
         font-family: 'Archivo';
         src: url('/fonts/archivo-latin-wdth-normal.woff2') format('woff2');
@@ -32,10 +44,10 @@
         font-style: normal;
         font-display: swap;
       }
-      /* Markenschrift für die ganze App im Browser (überschreibt die Systemschrift von react-native-web). */
+      /* App-Schrift für die ganze App im Browser (überschreibt die Systemschrift von react-native-web). */
       #root * {
         font-family:
-          'Archivo',
+          'Plus Jakarta Sans',
           system-ui,
           -apple-system,
           'Segoe UI',

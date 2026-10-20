@@ -16,6 +16,20 @@ export const deEndurance = {
         : `Diese Woche: ${km(meters)} · ${count} ${count === 1 ? 'Aktivität' : 'Aktivitäten'}`,
     latest: (name: string, day: string) => `Zuletzt: ${name} (${day})`,
     open: 'Zu Ausdauer',
+    /** Große Zahl der Kachel (Design 20.10.2026) und Beschriftung darunter. */
+    kmValue: (meters: number) => km(meters),
+    statLabel: (count: number) =>
+      count === 0
+        ? 'diese Woche'
+        : `diese Woche · ${count} ${count === 1 ? 'Aktivität' : 'Aktivitäten'}`,
+    /** Ansage der Mini-Balken: „Strecke je Tag: Montag 5 km, Dienstag keine, …“. */
+    barsA11y: (meters: readonly number[]) =>
+      `Strecke je Tag: ${meters
+        .map(
+          (m, i) =>
+            `${['Montag', 'Dienstag', 'Mittwoch', 'Donnerstag', 'Freitag', 'Samstag', 'Sonntag'][i] ?? ''} ${m > 0 ? km(m) : 'keine'}`,
+        )
+        .join(', ')}`,
   },
   moreEntry: 'Ausdauer: Laufen, Rad, Gehen aufzeichnen',
   sports: { run: 'Laufen', bike: 'Rad', walk: 'Gehen', swim: 'Schwimmen' },

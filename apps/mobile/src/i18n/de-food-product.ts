@@ -214,6 +214,9 @@ export const deFoodProduct = {
     softwareTitle: 'Software von Dritten (Strichcode-Leser)',
     software:
       'Strichcode lesen im Browser: zxing-cpp (github.com/zxing-cpp/zxing-cpp), Lizenz Apache 2.0 (apache.org/licenses/LICENSE-2.0); zxing-wasm (Lizenz MIT, C++-Anbindung Apache 2.0) und barcode-detector (Lizenz MIT), beide von Ze-Zheng Wu. In der App: expo-camera (Expo), Lizenz MIT. Die Kamerabilder werden nur auf deinem Gerät ausgewertet.',
+    fontsTitle: 'Schriften',
+    fonts:
+      'App: Plus Jakarta Sans (Tokotype, github.com/tokotype/PlusJakartaSans), Lizenz SIL Open Font License 1.1 (openfontlicense.org); in der App über @expo-google-fonts/plus-jakarta-sans (Expo, Lizenz MIT). Website und Druckansichten: Archivo (Omnibus-Type, github.com/Omnibus-Type/Archivo), Lizenz SIL Open Font License 1.1. Alle Schriften liegen bei uns – beim Anzeigen wird keine Verbindung zu Google aufgebaut.',
     draft: 'Entwurf – Wortlaut wird vor dem Start rechtlich geprüft.',
   },
 } as const;

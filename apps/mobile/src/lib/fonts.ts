@@ -1,27 +1,44 @@
+import { fontFamily, fontWeight } from '@fitnessapp/ui';
 import { isLoaded } from 'expo-font';
 import { Platform, type TextStyle } from 'react-native';
 
 /**
- * Markenschrift Archivo (OFL) – wie auf der Landingpage.
+ * App-Schrift Plus Jakarta Sans (OFL, Entwurf „Übersicht neu“, 20.10.2026) – ohne Verbindung zu Google (DSGVO).
  *
- * - Browser: variable Schrift aus public/fonts, eingebunden in public/index.html (gilt für alle Texte).
- *   Überschriften schmal (Breite 75) und extra fett – wie `.titel-gross` der Landingpage.
- * - iPhone/Android: Archivo Bold aus assets/fonts, geladen über expo-font (use-brand-fonts.native.ts),
- *   nur für Überschriften. Fließtext bleibt in der gut lesbaren Systemschrift.
+ * - Browser: variable Schrift aus public/fonts (200–800), eingebunden in public/index.html für ALLE Texte der App.
+ *   Hier genügt die Schriftstärke.
+ * - iPhone/Android: je Stärke eine eigene Datei aus @expo-google-fonts/plus-jakarta-sans (400/600/700/800), geladen
+ *   über expo-font (use-brand-fonts.native.ts). Eigene Schriften kennen dort keine „fontWeight“ – darum je Stärke
+ *   ein eigener Name und fontWeight 'normal'. Ist die Datei (noch) nicht geladen: Systemschrift in der Stärke.
  */
-export const ARCHIVO_BOLD = 'Archivo-Bold';
+export type FontWeightName = keyof typeof fontWeight;
 
-const WEB_DISPLAY = { fontWeight: '800', fontVariationSettings: "'wdth' 75" } as TextStyle;
-const NATIVE_DISPLAY: TextStyle = { fontFamily: ARCHIVO_BOLD, fontWeight: 'normal' };
-const NATIVE_FALLBACK: TextStyle = { fontWeight: '800' };
+/** Name der Schriftdatei je Stärke (so registriert expo-font sie in use-brand-fonts.native.ts). */
+export const JAKARTA_FILES = {
+  regular: 'PlusJakartaSans_400Regular',
+  semibold: 'PlusJakartaSans_600SemiBold',
+  bold: 'PlusJakartaSans_700Bold',
+  extrabold: 'PlusJakartaSans_800ExtraBold',
+} as const satisfies Record<FontWeightName, string>;
+
+/** Familie aus theme.css (--font-family-base), für Prüfungen und Dokumentation. */
+export const APP_FONT_FAMILY = fontFamily.base;
 
 /**
- * Große Überschriften (Willkommen, Bildschirmtitel). In der App nur mit Archivo, wenn die Schrift wirklich
- * geladen ist – sonst kräftige Systemschrift (kein unbekannter Schriftname, keine Warnung).
+ * Schrift-Stil für eine Stärke. Immer NACH eigenen Stilen mit fontWeight anhängen:
+ * `style={[styles.title, appFont('bold')]}`.
  */
-export function displayFont(): TextStyle {
+export function appFont(weight: FontWeightName = 'regular'): TextStyle {
   if (Platform.OS === 'web') {
-    return WEB_DISPLAY;
+    return { fontWeight: fontWeight[weight] };
   }
-  return isLoaded(ARCHIVO_BOLD) ? NATIVE_DISPLAY : NATIVE_FALLBACK;
+  const file = JAKARTA_FILES[weight];
+  return isLoaded(file)
+    ? { fontFamily: file, fontWeight: 'normal' }
+    : { fontWeight: fontWeight[weight] };
+}
+
+/** Große Überschriften (Bildschirmtitel, Willkommen, große Zahlen): extra fett, leicht enger gesetzt. */
+export function displayFont(): TextStyle {
+  return { ...appFont('extrabold'), letterSpacing: -0.5 };
 }

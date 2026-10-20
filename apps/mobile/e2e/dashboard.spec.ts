@@ -66,7 +66,7 @@ test('Übersicht: Kacheln führen in die Bereiche, Menüleiste auf allen Hauptbe
   // Neu laden → Startseite ist die Übersicht.
   await page.goto('/');
   await expect(page).toHaveURL(/\/uebersicht$/);
-  await heading(page, 'Übersicht');
+  await expect(page.getByTestId('overview-header')).toBeVisible();
   await expect(tab(page, 'Übersicht')).toHaveAttribute('aria-selected', 'true');
   await expect(tab(page, 'Training')).toHaveAttribute('aria-selected', 'false');
   // Seit EA-1 (20.10.2026): „Einkaufen“ statt „Fortschritt“ (der steht als Kachel und unter „Mehr“).
@@ -84,7 +84,8 @@ test('Übersicht: Kacheln führen in die Bereiche, Menüleiste auf allen Hauptbe
   await expect(page.getByTestId('overview-body-weight')).toContainText('80 kg');
   await expect(page.getByTestId('overview-body')).not.toContainText('Wunschgewicht');
   // Fortschritt: Woche Mo–So (Mo liegt vor dem Planstart → Mi + Fr).
-  await expect(page.getByTestId('overview-progress-week')).toHaveText(
+  await expect(page.getByTestId('overview-progress-week')).toHaveAttribute(
+    'aria-label',
     'Diese Woche: 0 von 2 Einheiten erledigt',
   );
   // Ernährung: Kalorienzahlen sind an → Ziel in kcal sichtbar.
@@ -93,14 +94,16 @@ test('Übersicht: Kacheln führen in die Bereiche, Menüleiste auf allen Hauptbe
   // Mein Wettkampf (Gründer-Rückmeldung 20.10.2026): ohne Wettkampf kurzer Text und „Wettkampf planen“.
   await expect(page.getByTestId('overview-competition')).toContainText('Mein Wettkampf');
   await expect(page.getByTestId('overview-competition-none')).toBeVisible();
-  await expect(page.getByTestId('overview-competition-plan')).toHaveText('Wettkampf planen');
+  await expect(page.getByTestId('overview-competition-plan')).toHaveAccessibleName(
+    'Wettkampf planen: Renntag und Distanz eintragen',
+  );
 
   // Training starten → Trainingsmodus ohne Menüleiste.
   await page.getByTestId('overview-training-start').click();
   await expect(page).toHaveURL(/\/workout\//);
   await expect(tabBar(page)).toHaveCount(0);
   await page.goBack();
-  await heading(page, 'Übersicht');
+  await expect(page.getByTestId('overview-header')).toBeVisible();
 
   // Reiter wechseln.
   await tab(page, 'Training').click();
@@ -139,7 +142,7 @@ test('Übersicht: Kacheln führen in die Bereiche, Menüleiste auf allen Hauptbe
   await page.getByTestId('settings-show-numbers').click();
   await expect(page.getByText('Gespeichert.')).toBeVisible();
   await page.goto('/uebersicht');
-  await heading(page, 'Übersicht');
+  await expect(page.getByTestId('overview-header')).toBeVisible();
   await expect(page.getByTestId('overview-nutrition')).toBeVisible();
   await expect(page.getByTestId('overview-nutrition-target')).toHaveCount(0);
   await expect(page.getByTestId('overview-nutrition')).not.toContainText('kcal');
@@ -155,7 +158,7 @@ test('ohne Einwilligung: Körperdaten-Kachel mit Hinweis, kein Gewicht', async (
   await page.getByRole('button', { name: 'Zum Plan' }).click();
   await heading(page, 'Heute');
   await tab(page, 'Übersicht').click();
-  await heading(page, 'Übersicht');
+  await expect(page.getByTestId('overview-header')).toBeVisible();
   await expect(page.getByTestId('overview-body-no-consent')).toContainText(
     'nur mit deiner Einwilligung',
   );

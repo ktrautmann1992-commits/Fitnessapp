@@ -6,7 +6,8 @@ import { t } from '@/i18n';
 import { useThemeColors } from '@/lib/theme';
 
 import { DashboardTile } from './dashboard';
-import { Body, Button, MIN_TOUCH } from './ui';
+import { StatValue } from './design';
+import { Body, MIN_TOUCH } from './ui';
 
 /**
  * Bausteine der Workout-Bibliothek (docs/PLAN-WORKOUTS.md): Sterne, Karte, Kachel für die Übersicht. Nur Darstellung;
@@ -124,11 +125,23 @@ export function WorkoutsTile({
   onOpen: () => void;
 }) {
   const summary = workoutTileSummary(workouts, logs, today);
+  const T = t.workouts.tile;
+  // Design 20.10.2026: die ganze Kachel führt zu „Workouts“ (Link), große Zahl + kurzer Text.
   return (
-    <DashboardTile title={t.workouts.tile.title} testID="tile-workouts">
-      <Body>{t.workouts.tile.text(summary.total, summary.withoutEquipment)}</Body>
-      {summary.doneToday > 0 ? <Body>{t.workouts.tile.doneToday(summary.doneToday)}</Body> : null}
-      <Button label={t.workouts.tile.open} variant="secondary" onPress={onOpen} />
+    <DashboardTile
+      title={T.title}
+      area="workouts"
+      icon="stopwatch"
+      testID="tile-workouts"
+      onPress={onOpen}
+      accessibilityLabel={`${T.title}: ${T.text(summary.total, summary.withoutEquipment)}`}
+    >
+      <StatValue
+        value={String(summary.total)}
+        label={T.statLabel(summary.withoutEquipment)}
+        size="lg"
+      />
+      {summary.doneToday > 0 ? <Body>{T.doneToday(summary.doneToday)}</Body> : null}
     </DashboardTile>
   );
 }

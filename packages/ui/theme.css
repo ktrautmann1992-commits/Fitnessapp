@@ -59,6 +59,52 @@
   --color-caution: #eab308; /* Gelb, NUR als Fläche (Ampel „ehrgeizig“) – als Text auf Hell nicht lesbar */
   --color-danger: #b91c1c; /* keine Markenfarbe – Rot für Fehler und „löschen“ */
 
+  /*
+   * Bereichsfarben (Gründer-Entscheidung 20.10.2026, Entwurf „Übersicht neu“): dezent, NUR in Icon-Chips und Akzenten.
+   * Texte bleiben in --color-text. Rollen: surface = Chip-Fläche, icon = Strich/Akzent-Text (≥ 4,5 : 1 auf der Karte),
+   * strong = Ring/Balken (≥ 3 : 1 auf der Karte), soft = zarter Balken (nur Deko). Regeln: docs/DESIGN.md.
+   * Ausdauer/Wettkampf-Orange ist bewusst rötlicher als Signal #ffb020 (Farbton ≥ 12° Abstand) und nie Warnfarbe.
+   */
+  --area-training-surface: var(--brand-eisblau);
+  --area-training-icon: var(--brand-blau-dunkel);
+  --area-training-strong: var(--brand-blau);
+  --area-training-soft: var(--brand-himmel);
+  --area-workouts-surface: #ede9fe;
+  --area-workouts-icon: #6d28d9;
+  --area-workouts-strong: #7c3aed;
+  --area-workouts-soft: #c4b5fd;
+  --area-ernaehrung-surface: #dcfce7;
+  --area-ernaehrung-icon: #15803d;
+  --area-ernaehrung-strong: #16a34a;
+  --area-ernaehrung-soft: #86efac;
+  --area-einkaufen-surface: #cffafe;
+  --area-einkaufen-icon: #0e7490;
+  --area-einkaufen-strong: #0891b2;
+  --area-einkaufen-soft: #67e8f9;
+  --area-ausdauer-surface: #ffedd5;
+  --area-ausdauer-icon: #c2410c;
+  --area-ausdauer-strong: #ea580c;
+  --area-ausdauer-soft: #fdba74;
+  --area-wettkampf-surface: #fdecd8;
+  --area-wettkampf-icon: #c2410c;
+  --area-wettkampf-strong: #ea580c;
+  --area-wettkampf-soft: #fdba74;
+  --area-fortschritt-surface: var(--brand-eisblau);
+  --area-fortschritt-icon: var(--brand-blau-dunkel);
+  --area-fortschritt-strong: var(--brand-blau);
+  --area-fortschritt-soft: var(--brand-himmel);
+
+  /* „Hero“-Karte (Training heute): dunkel, großer blauer Pillen-Knopf */
+  --hero-background: var(--brand-schwarz);
+  --hero-text: var(--brand-weiss);
+  --hero-muted: var(--brand-grau-dunkel);
+  --hero-accent: var(--brand-himmel);
+  --hero-border: var(--brand-schwarz);
+
+  /* Karten: zarter Rand (Deko, kein Bedienelement-Rahmen) und Trennlinien in Listen */
+  --card-border: #e3e7ef;
+  --card-divider: #eef1f6;
+
   /* Abstände (4er-Raster) */
   --space-xs: 4px;
   --space-sm: 8px;
@@ -73,7 +119,12 @@
   --radius-lg: 20px;
   --radius-pill: 999px;
 
-  /* Schrift */
+  /*
+   * Schrift: Plus Jakarta Sans (OFL), lokal ausgeliefert – kein Google-Fonts-Server (DSGVO). Ersatz: Systemschrift.
+   * App: assets über @expo-google-fonts/plus-jakarta-sans (400/600/700/800), Browser: apps/mobile/public/fonts.
+   */
+  --font-family-base: 'Plus Jakarta Sans', system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+  --font-size-xs: 13px; /* Beschriftungen, Abschnitts-Überschriften (Großbuchstaben) */
   --font-size-sm: 14px;
   --font-size-md: 16px;
   --font-size-lg: 20px;
@@ -82,6 +133,7 @@
   --font-weight-regular: 400;
   --font-weight-semibold: 600;
   --font-weight-bold: 700;
+  --font-weight-extrabold: 800; /* große Zahlen, Bildschirmtitel */
 
   /* Maximale Inhaltsbreite, damit die Web-Version auf Tablet/Desktop nicht zu breit wird */
   --max-content-width: 560px;
@@ -106,6 +158,41 @@
     --color-warning: var(--brand-signal);
     --color-caution: #fde047;
     --color-danger: #f87171;
+    --area-training-surface: #1c2a4d;
+    --area-training-icon: var(--brand-himmel);
+    --area-training-strong: #4d7dff;
+    --area-training-soft: #2e4a8f;
+    --area-workouts-surface: #2a1f4a;
+    --area-workouts-icon: #c4b5fd;
+    --area-workouts-strong: #9f7aea;
+    --area-workouts-soft: #4c3a85;
+    --area-ernaehrung-surface: #12321f;
+    --area-ernaehrung-icon: #86efac;
+    --area-ernaehrung-strong: #22c55e;
+    --area-ernaehrung-soft: #1f6b3d;
+    --area-einkaufen-surface: #0e3038;
+    --area-einkaufen-icon: #67e8f9;
+    --area-einkaufen-strong: #06b6d4;
+    --area-einkaufen-soft: #155e6b;
+    --area-ausdauer-surface: #3a2312;
+    --area-ausdauer-icon: #ff9a5c;
+    --area-ausdauer-strong: #f97316;
+    --area-ausdauer-soft: #7c3f17;
+    --area-wettkampf-surface: #3d2614;
+    --area-wettkampf-icon: #ff9a5c;
+    --area-wettkampf-strong: #f97316;
+    --area-wettkampf-soft: #7c3f17;
+    --area-fortschritt-surface: #1c2a4d;
+    --area-fortschritt-icon: var(--brand-himmel);
+    --area-fortschritt-strong: #4d7dff;
+    --area-fortschritt-soft: #2e4a8f;
+    --hero-background: var(--brand-graphit);
+    --hero-text: var(--brand-weiss);
+    --hero-muted: var(--brand-grau-dunkel);
+    --hero-accent: var(--brand-himmel);
+    --hero-border: var(--brand-graphit-hell);
+    --card-border: var(--brand-graphit-hell);
+    --card-divider: #1f2430;
   }
 }
 
@@ -123,4 +210,39 @@
   --color-warning: var(--brand-signal);
   --color-caution: #fde047;
   --color-danger: #f87171;
+  --area-training-surface: #1c2a4d;
+  --area-training-icon: var(--brand-himmel);
+  --area-training-strong: #4d7dff;
+  --area-training-soft: #2e4a8f;
+  --area-workouts-surface: #2a1f4a;
+  --area-workouts-icon: #c4b5fd;
+  --area-workouts-strong: #9f7aea;
+  --area-workouts-soft: #4c3a85;
+  --area-ernaehrung-surface: #12321f;
+  --area-ernaehrung-icon: #86efac;
+  --area-ernaehrung-strong: #22c55e;
+  --area-ernaehrung-soft: #1f6b3d;
+  --area-einkaufen-surface: #0e3038;
+  --area-einkaufen-icon: #67e8f9;
+  --area-einkaufen-strong: #06b6d4;
+  --area-einkaufen-soft: #155e6b;
+  --area-ausdauer-surface: #3a2312;
+  --area-ausdauer-icon: #ff9a5c;
+  --area-ausdauer-strong: #f97316;
+  --area-ausdauer-soft: #7c3f17;
+  --area-wettkampf-surface: #3d2614;
+  --area-wettkampf-icon: #ff9a5c;
+  --area-wettkampf-strong: #f97316;
+  --area-wettkampf-soft: #7c3f17;
+  --area-fortschritt-surface: #1c2a4d;
+  --area-fortschritt-icon: var(--brand-himmel);
+  --area-fortschritt-strong: #4d7dff;
+  --area-fortschritt-soft: #2e4a8f;
+  --hero-background: var(--brand-graphit);
+  --hero-text: var(--brand-weiss);
+  --hero-muted: var(--brand-grau-dunkel);
+  --hero-accent: var(--brand-himmel);
+  --hero-border: var(--brand-graphit-hell);
+  --card-border: var(--brand-graphit-hell);
+  --card-divider: #1f2430;
 }

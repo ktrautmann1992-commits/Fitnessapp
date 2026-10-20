@@ -221,3 +221,28 @@ ersichtlich sein wie der Plan aufgebaut ist und er sollte leicht zu finden sein.
   gespeicherte Erholungswochen), `layout.test.ts` (neue Kachel in alter Anordnung, Bereich wählbar, nicht im Standard);
   Mobile `competition-dashboard.test.ts`, `competition-format.test.ts`; Playwright `competition-find.spec.ts`,
   `dashboard.spec.ts`, `dashboard-edit.spec.ts`.
+
+## 10. Neues Design für Übersicht, Mehr und Menüleiste (20.10.2026) – Umsetzungsstand
+
+Gründer-Freigabe des Entwurfs „Übersicht neu“ / „Mehr neu“. Farben, Schrift und Bausteine: `docs/DESIGN.md`
+(„Neues App-Design“). Nur Aussehen und Anordnung – Daten, Regeln und Anpassbarkeit bleiben wie in 8 und 9.
+
+- **Menüleiste:** Strich-Icons je Bereich, der aktive Knopf hat eine Pille in der Bereichsfarbe (Fläche + Icon +
+  Beschriftung). Zuordnung zentral in `apps/mobile/src/lib/area-style.ts` (Training → blau, Workouts → violett,
+  Ernährung → grün, Einkaufen → türkis, Wettkampf → orange, Fortschritt → blau, Übersicht/Mehr → Markenblau). Bei 6
+  Knöpfen bekommt jeder Knopf seine Wortbreite plus gleichen Rest – so passen „Wettkampf“ und „Fortschritt“ auf 320 px.
+- **Übersicht:** Kopf mit Datum („Dienstag, 20. Oktober“), Gruß (ohne Namen – die App speichert keinen) und rundem
+  Knopf „Übersicht bearbeiten“. „Training heute“ ist die dunkle Hero-Karte mit „Training starten“ bzw. „Fortsetzen“ und
+  „Zum Training“. „Mein Wettkampf“ ist eine große Kachel (ganz antippbar). Ernährung (Kalorien-Ring aus
+  `calorieRing`, nur mit Kalorienzahlen und Ernährungstagebuch), Ausdauer (km der Woche + Balken je Tag aus
+  `enduranceWeekBars`) und Workouts sind kleine Kacheln und stehen zu zweit nebeneinander, wenn sie in der
+  Reihenfolge der Person aufeinander folgen (ab 360 px Breite). Fortschritt zeigt drei Zahlen (erledigt, geplant, noch
+  offen). Körperdaten und Schnellzugriffe bleiben mit ihren Knöpfen. Ohne Daten: Leerzustand-Text, keine erfundenen Zahlen.
+  Entfallen: der Knopf „Essen eintragen“ direkt auf der Kachel (weiter im Reiter „Ernährung“) und die Zeile „Zuletzt …“
+  in der Ausdauer-Kachel.
+- **Mehr:** „Mein Konto“ oben (Initialen aus der E-Mail-Adresse, im Testmodus Personen-Symbol), Kacheln „Training &
+  Sport“ (Wettkampf, Ausdauer, Fortschritt, Workouts/Training – nur wenn nicht in der Menüleiste –, Übungen) und
+  „Essen“ (Ernährung/Einkaufen wenn nicht in der Leiste, Rezepte, Meal-Prep), Liste „Wissen & Einstellungen“
+  (Ratgeber, Menüleiste anpassen, Einstellungen, Lizenzen). Kein Bereich steht doppelt (Leiste und Mehr).
+- **Tests:** Baustein-Tests (Vitest „components“), E2E prüfen Rollen und Namen statt Schreibweise
+  (Großbuchstaben nur per Stil).

@@ -191,7 +191,8 @@ test('Eintrag ohne GPS erscheint in „Meine Läufe“; Kachel auf der Übersich
   ).toBeVisible();
   await expect(page.getByTestId('totals-distance')).toHaveText('18,00 km');
   await page.goto('/uebersicht');
-  await expect(page.getByTestId('overview-endurance-week')).toHaveText(
+  await expect(page.getByTestId('overview-endurance-week')).toHaveAttribute(
+    'aria-label',
     'Diese Woche: 18 km · 1 Aktivität',
   );
   // Story-Bild auch aus dem Tagebuch-Eintrag (ohne Linie).

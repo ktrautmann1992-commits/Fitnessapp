@@ -89,6 +89,10 @@ export const deDashboard = {
         : `Diese Woche: ${completed} von ${planned} ${planned === 1 ? 'Einheit' : 'Einheiten'} erledigt`,
     open: 'Zum Fortschritt',
     noPlan: 'Sobald du einen Plan hast, siehst du hier deine Woche.',
+    /** Drei Zahlen der Kachel (Design 20.10.2026). */
+    statDone: 'erledigt',
+    statPlanned: 'geplant',
+    statOpen: 'noch offen',
   },
   /** Etappe E2: Übersicht bearbeiten (docs/PLAN-EINKAUFEN-AUSDAUER.md 4). */
   edit: {
@@ -198,6 +202,25 @@ export const deMore = {
     personal: 'Persönlich',
     content: 'Inhalte',
     info: 'Info',
+    /** Gruppen im Design vom 20.10.2026. */
+    sport: 'Training & Sport',
+    food: 'Essen',
+    knowledge: 'Wissen & Einstellungen',
+  },
+  accountShort: 'E-Mail, Einwilligungen, Daten, Abmelden',
+  endurance: 'Ausdauer',
+  /** Kurzer Zusatz unter dem Namen der Kacheln. */
+  details: {
+    wettkampf: 'Plan, Countdown',
+    endurance: 'Laufen, Rad, Gehen',
+    fortschritt: 'Woche, Verlauf',
+    exercises: 'mit Muskelkarte',
+    workouts: 'mit Timer',
+    today: 'Plan und Heute',
+    ernaehrung: 'Tagesplan',
+    einkaufsliste: 'Liste und Scan',
+    recipes: 'passend zum Plan',
+    mealPrep: 'vorkochen',
   },
 } as const;
 

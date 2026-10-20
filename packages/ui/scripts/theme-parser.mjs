@@ -47,6 +47,7 @@ export const PIXEL_GROUPS = /** @type {const} */ ({
     pill: '--radius-pill',
   },
   fontSize: {
+    xs: '--font-size-xs',
     sm: '--font-size-sm',
     md: '--font-size-md',
     lg: '--font-size-lg',
@@ -59,7 +60,30 @@ export const FONT_WEIGHT_VARS = /** @type {const} */ ({
   regular: '--font-weight-regular',
   semibold: '--font-weight-semibold',
   bold: '--font-weight-bold',
+  extrabold: '--font-weight-extrabold',
 });
+
+/**
+ * Freiwillige Größen (nicht Pflicht): fehlen sie, fehlen sie auch in tokens.generated.ts. So bleibt die
+ * „Vorlage zum Kopieren“ aus docs/DESIGN.md gültig.
+ */
+export const OPTIONAL_VARS = new Set(['--font-size-xs', '--font-weight-extrabold']);
+
+/**
+ * Farbgruppen mit eigenem Hell-/Dunkel-Wert (freiwillig, nur für die App-Bausteine):
+ * - `--area-<bereich>-<rolle>` → `areaColors[modus][bereich][rolle]` (Bereichsfarben, z. B. --area-training-icon)
+ * - `--hero-<rolle>` → `heroColors[modus][rolle]` (dunkle „Hero“-Karte)
+ * - `--card-<rolle>` → `cardColors[modus][rolle]` (Kartenrand, Trennlinien)
+ * Namen nur aus Kleinbuchstaben, Ziffern und Bindestrichen; Rollen werden camelCase (accent-soft → accentSoft).
+ */
+export const MODE_COLOR_GROUPS = /** @type {const} */ ({
+  areaColors: { prefix: '--area-', nested: true },
+  heroColors: { prefix: '--hero-', nested: false },
+  cardColors: { prefix: '--card-', nested: false },
+});
+
+/** Schriftfamilien: `--font-family-<name>` → `fontFamily[name]` (nur die erste Schrift der Liste). */
+export const FONT_FAMILY_PREFIX = '--font-family-';
 
 export const MAX_CONTENT_WIDTH_VAR = '--max-content-width';
 
@@ -72,7 +96,14 @@ export const BRAND_PREFIX = '--brand-';
  * @param {string} prop
  */
 export function brandKey(prop) {
-  const rest = prop.slice(BRAND_PREFIX.length);
+  return camelKey(prop.slice(BRAND_PREFIX.length));
+}
+
+/**
+ * kleinbuchstaben-mit-bindestrich → camelCase; null bei ungültigem Namen.
+ * @param {string} rest
+ */
+function camelKey(rest) {
   if (!/^[a-z][a-z0-9]*(-[a-z0-9]+)*$/.test(rest)) return null;
   return rest.replace(/-([a-z0-9])/g, (_, ch) => ch.toUpperCase());
 }
@@ -83,7 +114,7 @@ export const REQUIRED_VARS = [
   ...Object.values(PIXEL_GROUPS).flatMap((group) => Object.values(group)),
   ...Object.values(FONT_WEIGHT_VARS),
   MAX_CONTENT_WIDTH_VAR,
-];
+].filter((name) => !OPTIONAL_VARS.has(name));
 
 /** 1rem = 16px (Browser-Standard). */
 const REM_IN_PX = 16;
@@ -442,6 +473,25 @@ export function parseFontWeight(value, name) {
 }
 
 /**
+ * Erste Schrift einer font-family-Liste ohne Anführungszeichen („'Plus Jakarta Sans', system-ui“ → Plus Jakarta
+ * Sans). Die App kennt keine Ersatzliste; im Browser gilt die ganze Liste aus der CSS.
+ * @param {string} value
+ * @param {string} name
+ */
+export function parseFontFamily(value, name) {
+  const first = (value.split(',')[0] ?? '')
+    .trim()
+    .replace(/^(['"])(.*)\1$/, '$2')
+    .trim();
+  if (!/^[A-Za-z0-9][A-Za-z0-9 -]*$/.test(first)) {
+    throw new Error(
+      `${name}: „${value}“ ist keine gültige Schriftliste (Beispiel: 'Inter', system-ui).`,
+    );
+  }
+  return first;
+}
+
+/**
  * Löst var(--name) bzw. var(--name, ersatz) auf. Gesucht wird erst im eigenen Modus, dann im hellen.
  * @param {string} value
  * @param {(name: string) => string | undefined} lookup
@@ -470,6 +520,10 @@ function resolveVar(value, lookup, name) {
  *   fontWeight: Record<string, string>,
  *   maxContentWidth: number,
  *   brandColors: Record<string, string>,
+ *   areaColors: { light: Record<string, Record<string, string>>, dark: Record<string, Record<string, string>> },
+ *   heroColors: { light: Record<string, string>, dark: Record<string, string> },
+ *   cardColors: { light: Record<string, string>, dark: Record<string, string> },
+ *   fontFamily: Record<string, string>,
  * }} ThemeTokens
  */
 
@@ -594,11 +648,96 @@ export function buildTokens(css) {
     }
   }
 
-  /** @param {Record<string, string>} group */
-  const pixelGroup = (group) =>
+  /**
+   * Pflicht- und freiwillige Werte einer Gruppe; freiwillige, die fehlen, entfallen.
+   * @template T
+   * @param {Record<string, string>} group
+   * @param {(value: string, name: string) => T} parse
+   * @param {T} placeholder
+   */
+  const valueGroup = (group, parse, placeholder) =>
     Object.fromEntries(
-      Object.entries(group).map(([token, prop]) => [token, required(prop, parsePixels, 0)]),
+      Object.entries(group)
+        .filter(([, prop]) => !OPTIONAL_VARS.has(prop) || vars.light.has(prop))
+        .map(([token, prop]) => [token, required(prop, parse, placeholder)]),
     );
+  /** @param {Record<string, string>} group */
+  const pixelGroup = (group) => valueGroup(group, parsePixels, 0);
+
+  /**
+   * Farbgruppe mit Hell-/Dunkel-Wert (Bereichsfarben, Hero, Karte).
+   * @param {string} prefix
+   * @param {boolean} nested  true: --area-<bereich>-<rolle> → [bereich][rolle]
+   */
+  function modeColorGroup(prefix, nested) {
+    /** @type {{ light: Record<string, any>, dark: Record<string, any> }} */
+    const out = { light: {}, dark: {} };
+    for (const prop of vars.light.keys()) {
+      if (!prop.startsWith(prefix)) continue;
+      const rest = prop.slice(prefix.length);
+      const valid = camelKey(rest) !== null && (!nested || rest.includes('-'));
+      if (!valid) {
+        problems.push(
+          nested
+            ? `${prop}: Name nach dem Muster ${prefix}<bereich>-<rolle> aus Kleinbuchstaben, Ziffern und Bindestrichen (z. B. ${prefix}training-icon).`
+            : `${prop}: Name nur aus Kleinbuchstaben, Ziffern und Bindestrichen (z. B. ${prefix}background).`,
+        );
+        continue;
+      }
+      const lightValue = read('light', prop, parseColor);
+      if (lightValue === undefined) continue;
+      const darkValue = read('dark', prop, parseColor);
+      if (darkValue === undefined && vars.dark.size > 0 && !vars.dark.has(prop)) {
+        warnings.push(`${prop} fehlt im Dunkelmodus – der helle Wert wird übernommen.`);
+      }
+      for (const [mode, value] of /** @type {const} */ ([
+        ['light', lightValue],
+        ['dark', darkValue ?? lightValue],
+      ])) {
+        if (nested) {
+          const dash = rest.indexOf('-');
+          const area = /** @type {string} */ (camelKey(rest.slice(0, dash)));
+          const role = /** @type {string} */ (camelKey(rest.slice(dash + 1)));
+          out[mode][area] = { ...(out[mode][area] ?? {}), [role]: value };
+        } else {
+          out[mode][/** @type {string} */ (camelKey(rest))] = value;
+        }
+      }
+    }
+    for (const prop of vars.dark.keys()) {
+      if (prop.startsWith(prefix) && !vars.light.has(prop)) {
+        warnings.push(`${prop} steht nur im Dunkelmodus – bitte auch im :root-Block festlegen.`);
+      }
+    }
+    if (nested) {
+      const areas = Object.entries(out.light);
+      const firstRoles = Object.keys(areas[0]?.[1] ?? {})
+        .sort()
+        .join(', ');
+      for (const [area, roles] of areas) {
+        const list = Object.keys(roles).sort().join(', ');
+        if (list !== firstRoles) {
+          problems.push(
+            `${prefix}${area}-…: alle Bereiche brauchen dieselben Rollen (${firstRoles}), hier: ${list}.`,
+          );
+        }
+      }
+    }
+    return out;
+  }
+
+  /** @type {Record<string, string>} */
+  const fontFamily = {};
+  for (const prop of vars.light.keys()) {
+    if (!prop.startsWith(FONT_FAMILY_PREFIX)) continue;
+    const key = camelKey(prop.slice(FONT_FAMILY_PREFIX.length));
+    if (key === null) {
+      problems.push(`${prop}: Name nur aus Kleinbuchstaben, Ziffern und Bindestrichen.`);
+      continue;
+    }
+    const value = read('light', prop, parseFontFamily);
+    if (value !== undefined) fontFamily[key] = value;
+  }
 
   /** @type {ThemeTokens} */
   const tokens = {
@@ -606,14 +745,13 @@ export function buildTokens(css) {
     spacing: pixelGroup(PIXEL_GROUPS.spacing),
     radius: pixelGroup(PIXEL_GROUPS.radius),
     fontSize: pixelGroup(PIXEL_GROUPS.fontSize),
-    fontWeight: Object.fromEntries(
-      Object.entries(FONT_WEIGHT_VARS).map(([token, prop]) => [
-        token,
-        required(prop, parseFontWeight, '400'),
-      ]),
-    ),
+    fontWeight: valueGroup(FONT_WEIGHT_VARS, parseFontWeight, '400'),
     maxContentWidth: required(MAX_CONTENT_WIDTH_VAR, parsePixels, 0),
     brandColors,
+    areaColors: modeColorGroup(MODE_COLOR_GROUPS.areaColors.prefix, true),
+    heroColors: modeColorGroup(MODE_COLOR_GROUPS.heroColors.prefix, false),
+    cardColors: modeColorGroup(MODE_COLOR_GROUPS.cardColors.prefix, false),
+    fontFamily,
   };
 
   if (problems.length > 0) throw new ThemeError(problems);
@@ -632,6 +770,20 @@ export function renderTokensModule(tokens) {
         ([key, value]) => `${indent}${key}: ${typeof value === 'number' ? value : `'${value}'`},`,
       )
       .join('\n');
+  /** @param {Record<string, Record<string, string>>} obj @param {string} indent */
+  const nestedBody = (obj, indent) =>
+    Object.entries(obj)
+      .map(([key, inner]) => `${indent}${key}: {\n${body(inner, `${indent}  `)}\n${indent}},`)
+      .join('\n');
+  /** @param {string} name @param {{ light: Record<string, string>, dark: Record<string, string> }} group */
+  const modeGroup = (name, group) => `export const ${name} = {
+  light: {
+${body(group.light, '    ')}
+  },
+  dark: {
+${body(group.dark, '    ')}
+  },
+} as const;`;
 
   return `/**
  * AUTOMATISCH ERZEUGT – NICHT VON HAND BEARBEITEN.
@@ -682,5 +834,32 @@ ${body(tokens.brandColors, '  ')}
 } as const;
 
 export type BrandColor = keyof typeof brandColors;
+
+/**
+ * Bereichsfarben (--area-…), hell und dunkel: surface = Fläche des Icon-Chips, icon = Strich und Akzent-Text,
+ * strong = Ring/Balken (kräftig), soft = Balken (zart, nur Deko). Regeln: docs/DESIGN.md „Bereichsfarben“.
+ */
+export const areaColors = {
+  light: {
+${nestedBody(tokens.areaColors.light, '    ')}
+  },
+  dark: {
+${nestedBody(tokens.areaColors.dark, '    ')}
+  },
+} as const;
+
+export type AreaId = keyof (typeof areaColors)['light'];
+export type AreaColorRole = keyof (typeof areaColors)['light'][AreaId];
+
+/** Dunkle „Hero“-Karte (--hero-…), hell und dunkel. */
+${modeGroup('heroColors', tokens.heroColors)}
+
+/** Karten (--card-…): Rand und Trennlinien, hell und dunkel. */
+${modeGroup('cardColors', tokens.cardColors)}
+
+/** Schriftfamilien (--font-family-…, nur der erste Name; Ersatzschrift ist die Systemschrift). */
+export const fontFamily = {
+${body(tokens.fontFamily, '  ')}
+} as const;
 `;
 }

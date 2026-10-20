@@ -45,7 +45,7 @@ async function onboardStudio(page: Page) {
   await page.getByRole('button', { name: 'Zum Plan' }).click();
   await heading(page, 'Heute');
   await page.goto('/uebersicht');
-  await heading(page, 'Übersicht');
+  await expect(page.getByTestId('overview-header')).toBeVisible();
 }
 
 /** Reihenfolge der Kacheln auf der Seite (nach Lage von oben nach unten). */
@@ -119,7 +119,7 @@ test('Übersicht bearbeiten: ausblenden, verschieben mit Ansage, bleibt nach dem
 
   // Neu laden → bleibt.
   await page.reload();
-  await heading(page, 'Übersicht');
+  await expect(page.getByTestId('overview-header')).toBeVisible();
   expect(await tileOrder(page)).toEqual([
     'overview-nutrition',
     'overview-training',
@@ -221,7 +221,7 @@ test('Menüleiste anpassen: 6. Knopf, Regeln mit Grund, verschieben, ausgeblende
 
   // 320 px: alle 6 Beschriftungen ganz lesbar (nicht abgeschnitten).
   await page.goto('/uebersicht');
-  await heading(page, 'Übersicht');
+  await expect(page.getByTestId('overview-header')).toBeVisible();
   await page.setViewportSize({ width: 320, height: 640 });
   expect(await tabs(page)).toHaveLength(6);
   for (const tab of await tabBar(page).getByRole('tab').all()) {

@@ -1,4 +1,5 @@
 import {
+  calorieRing,
   type DashboardTileId,
   latestBodyWeight,
   nextMealOfDay,
@@ -7,16 +8,26 @@ import {
   weekTrainingProgress,
 } from '@fitnessapp/core';
 import { Redirect, useRouter, type Href } from 'expo-router';
+import { brandColors, fontSize, spacing } from '@fitnessapp/ui';
 import { Fragment, type ReactNode, useEffect, useMemo, useState } from 'react';
+import { ActivityIndicator, StyleSheet, Text, View } from 'react-native';
 
 import { CompetitionTile } from '@/components/competition-tile';
-import { DashboardTile, ShortcutCell, ShortcutGrid, ShortcutTile } from '@/components/dashboard';
+import {
+  DashboardTile,
+  ShortcutCell,
+  ShortcutGrid,
+  ShortcutTile,
+  TileCell,
+  TileRow,
+} from '@/components/dashboard';
+import { HeroCard, IconButton, ProgressRing, StatValue, useAreaColors } from '@/components/design';
 import { DashboardEditor } from '@/components/dashboard-edit';
 import { WorkoutsTile } from '@/components/workouts';
 import { EnduranceTile } from '@/components/endurance-tile';
 import { Screen } from '@/components/screen';
 import { MeasurementNotificationOffer } from '@/components/notifications';
-import { Body, Button, LoadingState, Notice } from '@/components/ui';
+import { Body, Button, Heading, LoadingState, Notice } from '@/components/ui';
 import { weightGoalOverviewFromRows } from '@/components/weight-goal';
 import { displayedSessionNames } from '@/data/competition';
 import { sessionDisplay } from '@/data/exercise-swap';
@@ -27,8 +38,11 @@ import type { UserRows } from '@/data/types';
 import { startKind, workoutView } from '@/data/workout-session';
 import { t } from '@/i18n';
 import { formatDateDe } from '@/lib/format';
+import { appFont } from '@/lib/fonts';
+import { ringCenterText } from '@/lib/nutrition-day-format';
 import { formatKcal, roleLabel, slotLabel } from '@/lib/nutrition-format';
-import { dayLabel } from '@/lib/plan-format';
+import { dayLabel, longDayLabel } from '@/lib/plan-format';
+import { useThemeColors } from '@/lib/theme';
 import { useToday } from '@/lib/use-today';
 import { useApp } from '@/state/app-state';
 import { useAppLayout } from '@/state/use-app-layout';
@@ -38,7 +52,9 @@ import { useFoodLogDay } from '@/state/use-food-log';
 import { useNutritionWeek } from '@/state/use-nutrition';
 
 /**
- * Übersicht – Startseite mit Kacheln (docs/PLAN-DASHBOARD.md 2.4, Gründer-Wahl „Kacheln + Menüleiste“ vom 18.10.2026).
+ * Übersicht – Startseite mit Kacheln (docs/PLAN-DASHBOARD.md 2.4, Gründer-Wahl „Kacheln + Menüleiste“ vom 18.10.2026;
+ * Aussehen seit 20.10.2026 wie Entwurf „Übersicht neu“: Kopf mit Datum und Gruß, „Training heute“ als dunkle
+ * Hero-Karte, kleine Kacheln zu zweit nebeneinander, docs/DESIGN.md).
  * Jede Kachel führt in den vorhandenen Bereich; „Heute“ bleibt als Reiter „Training“ vollständig erhalten. Rechnet
  * nichts selbst (packages/core: trainingToday, weekTrainingProgress, latestBodyWeight). Kein Wunschgewicht, kein
  * Fortschritt zum Ziel (docs/PLAN-ZIELE.md F13); Gewicht nur mit gültiger Einwilligung; kcal nur mit „Zahlen an“.
@@ -107,6 +123,20 @@ function Overview({ rows, today }: { rows: UserRows; today: string }) {
   const others = reasons.filter((r) => r !== 'plan_stricter' && r !== 'plan_ended');
 
   const visibleTiles = layout.tiles.filter((x) => x.visible).map((x) => x.id);
+  // Kleine Kacheln stehen zu zweit nebeneinander (Entwurf), wenn sie in der Reihenfolge der Person aufeinander folgen.
+  const small = (id: DashboardTileId) =>
+    id === 'workouts' ||
+    id === 'endurance' ||
+    (id === 'nutrition' && app.backend.supportsNutrition);
+  const groups: DashboardTileId[][] = [];
+  for (const id of visibleTiles) {
+    const last = groups[groups.length - 1];
+    if (small(id) && last && last.length === 1 && small(last[0] as DashboardTileId)) {
+      last.push(id);
+    } else {
+      groups.push([id]);
+    }
+  }
   const tile = (id: DashboardTileId): ReactNode => {
     switch (id) {
       case 'training':
@@ -122,7 +152,7 @@ function Overview({ rows, today }: { rows: UserRows; today: string }) {
         return <BodyTile rows={rows} consent={consent} />;
       case 'progress':
         return <ProgressTile rows={rows} today={today} />;
-      // Etappe E4 (Ausdauer): letzte Aktivität, km dieser Woche.
+      // Etappe E4 (Ausdauer): km dieser Woche mit Balken je Tag.
       case 'endurance':
         return <EnduranceTile rows={rows} today={today} />;
       case 'shortcuts':
@@ -132,6 +162,8 @@ function Overview({ rows, today }: { rows: UserRows; today: string }) {
               <ShortcutCell>
                 <ShortcutTile
                   label={t.dashboard.shortcuts.recipes}
+                  area="ernaehrung"
+                  icon="recipe"
                   onPress={() => router.push('/rezepte' as Href)}
                   testID="overview-recipes"
                 />
@@ -140,6 +172,8 @@ function Overview({ rows, today }: { rows: UserRows; today: string }) {
             <ShortcutCell>
               <ShortcutTile
                 label={t.dashboard.shortcuts.exercises}
+                area="training"
+                icon="dumbbell"
                 onPress={() => router.push('/uebungen' as Href)}
                 testID="overview-exercises"
               />
@@ -148,6 +182,8 @@ function Overview({ rows, today }: { rows: UserRows; today: string }) {
               <ShortcutCell>
                 <ShortcutTile
                   label={t.dashboard.shortcuts.shopping}
+                  area="einkaufen"
+                  icon="cart"
                   onPress={() => router.navigate('/einkaufsliste' as Href)}
                   testID="overview-shopping"
                 />
@@ -156,6 +192,8 @@ function Overview({ rows, today }: { rows: UserRows; today: string }) {
             <ShortcutCell>
               <ShortcutTile
                 label={t.dashboard.shortcuts.calendar}
+                area="training"
+                icon="calendar"
                 onPress={() => router.push('/kalender' as Href)}
                 testID="overview-calendar"
               />
@@ -165,8 +203,8 @@ function Overview({ rows, today }: { rows: UserRows; today: string }) {
     }
   };
   return (
-    <Screen title={t.dashboard.title} testID="overview">
-      <Body muted>{greeting(new Date().getHours())}</Body>
+    <Screen testID="overview">
+      <OverviewHeader today={today} editing={editing} onEdit={() => setEditing(true)} />
       {/* Etappe E: einmaliges Angebot nach der ersten Messung (nur App, nie im Onboarding). */}
       <MeasurementNotificationOffer />
       {urgent ? (
@@ -204,19 +242,49 @@ function Overview({ rows, today }: { rows: UserRows; today: string }) {
           <Body>{t.dashboard.edit.allHiddenHint}</Body>
         </Notice>
       ) : null}
-      {visibleTiles.map((id) => (
-        <Fragment key={id}>{tile(id)}</Fragment>
-      ))}
+      {groups.map((group) =>
+        group.length === 2 ? (
+          <TileRow key={group.join('+')}>
+            {group.map((id) => (
+              <TileCell key={id}>{tile(id)}</TileCell>
+            ))}
+          </TileRow>
+        ) : (
+          <Fragment key={group[0]}>{tile(group[0] as DashboardTileId)}</Fragment>
+        ),
+      )}
+    </Screen>
+  );
+}
+
+/** Kopf wie im Entwurf: Datum, Gruß (ohne Namen – die App speichert keinen) und „Übersicht bearbeiten“. */
+function OverviewHeader({
+  today,
+  editing,
+  onEdit,
+}: {
+  today: string;
+  editing: boolean;
+  onEdit: () => void;
+}) {
+  const theme = useThemeColors();
+  return (
+    <View style={styles.header} testID="overview-header">
+      <View style={styles.headerText}>
+        <Text style={[styles.date, appFont('semibold'), { color: theme.textMuted }]}>
+          {longDayLabel(today)}
+        </Text>
+        <Heading>{greeting(new Date().getHours())}</Heading>
+      </View>
       {!editing ? (
-        <Button
-          label={t.dashboard.edit.open}
-          accessibilityHint={t.dashboard.edit.openHint}
-          variant="secondary"
-          onPress={() => setEditing(true)}
+        <IconButton
+          icon="edit"
+          accessibilityLabel={t.dashboard.edit.title}
+          onPress={onEdit}
           testID="overview-edit-open"
         />
       ) : null}
-    </Screen>
+    </View>
   );
 }
 
@@ -241,47 +309,52 @@ function TrainingTile({
   const names = displayedSessionNames(rows, active, rules);
   const nameOf = (session: { id: string; name_de: string }) =>
     names.get(session.id) ?? session.name_de;
-  const toTraining = (
-    <Button
-      label={texts.open}
-      variant="secondary"
-      onPress={() => router.navigate('/today')}
-      testID="overview-training-open"
-    />
-  );
+  const toTraining = () => router.navigate('/today');
+  // Design 20.10.2026: dunkle Hero-Karte mit großem Pillen-Knopf.
+  const hero = {
+    eyebrow: texts.title,
+    eyebrowIcon: 'dumbbell' as const,
+    testID: 'overview-training',
+  };
 
   if (result.kind === 'no_plan' || !active) {
     return (
-      <DashboardTile title={texts.title} testID="overview-training">
-        <Body>{texts.noPlan}</Body>
-        <Button
-          label={texts.createPlan}
-          onPress={() => router.navigate('/today')}
-          testID="overview-training-create"
-        />
-      </DashboardTile>
+      <HeroCard
+        {...hero}
+        title={texts.noPlan}
+        actionLabel={texts.createPlan}
+        actionIcon={null}
+        onAction={toTraining}
+        actionTestID="overview-training-create"
+      />
     );
   }
   if (result.kind === 'rest') {
     return (
-      <DashboardTile title={texts.title} testID="overview-training">
-        <Body>{texts.rest}</Body>
-        <Body muted>
-          {result.next
+      <HeroCard
+        {...hero}
+        title={texts.rest}
+        subtitle={
+          result.next
             ? texts.next(dayLabel(result.next.scheduled_on), nameOf(result.next))
-            : texts.noUpcoming}
-        </Body>
-        {toTraining}
-      </DashboardTile>
+            : texts.noUpcoming
+        }
+        secondaryLabel={texts.open}
+        onSecondary={toTraining}
+        secondaryTestID="overview-training-open"
+      />
     );
   }
   const session = result.session;
   if (result.done) {
     return (
-      <DashboardTile title={texts.title} testID="overview-training">
-        <Body>{texts.done(nameOf(session))}</Body>
-        {toTraining}
-      </DashboardTile>
+      <HeroCard
+        {...hero}
+        title={texts.done(nameOf(session))}
+        secondaryLabel={texts.open}
+        onSecondary={toTraining}
+        secondaryTestID="overview-training-open"
+      />
     );
   }
   const draft = app.drafts.some((d) => d.key === session.id);
@@ -326,30 +399,27 @@ function TrainingTile({
   }
   const loadingLibrary =
     session.kind === 'strength' && (app.library.kind === 'idle' || app.library.kind === 'loading');
+  const startWorkout = () => router.push(`/workout/${session.id}` as Href);
+  const action = draft
+    ? { actionLabel: texts.continue, actionTestID: 'overview-training-continue' }
+    : canStart
+      ? { actionLabel: texts.start, actionTestID: 'overview-training-start' }
+      : null;
   return (
-    <DashboardTile title={texts.title} testID="overview-training">
-      <Body>{texts.today(nameOf(session))}</Body>
-      {draft ? (
-        <Button
-          label={texts.continue}
-          onPress={() => router.push(`/workout/${session.id}` as Href)}
-          testID="overview-training-continue"
-        />
-      ) : canStart ? (
-        <Button
-          label={texts.start}
-          onPress={() => router.push(`/workout/${session.id}` as Href)}
-          testID="overview-training-start"
-        />
-      ) : reason ? (
-        <Body muted testID="overview-training-no-start">
-          {reason}
-        </Body>
-      ) : loadingLibrary ? (
-        <LoadingState label={texts.loading} />
+    <HeroCard
+      {...hero}
+      title={texts.today(nameOf(session))}
+      {...(action ? { ...action, onAction: startWorkout } : {})}
+      note={!action ? reason : null}
+      noteTestID="overview-training-no-start"
+      secondaryLabel={texts.open}
+      onSecondary={toTraining}
+      secondaryTestID="overview-training-open"
+    >
+      {!action && !reason && loadingLibrary ? (
+        <ActivityIndicator accessibilityLabel={texts.loading} color={brandColors.weiss} />
       ) : null}
-      {toTraining}
-    </DashboardTile>
+    </HeroCard>
   );
 }
 
@@ -379,30 +449,30 @@ function OverviewWorkoutsTile({ today }: { today: string }) {
   );
 }
 
-/** Kachel „Ernährung heute“: nächste Mahlzeit, Einträge; kcal nur mit „Kalorienzahlen anzeigen“. */
+/**
+ * Kachel „Ernährung heute“ (kleine Kachel, ganz antippbar → Ernährung): mit „Kalorienzahlen anzeigen“ und Ernährungs-
+ * tagebuch der Kalorien-Ring (packages/core calorieRing) mit „übrig“, sonst die nächste Mahlzeit; nie erfundene Zahlen.
+ */
 function NutritionTile({ today }: { today: string }) {
   const router = useRouter();
   const app = useApp();
   const view = useNutritionWeek();
   const foodLog = useFoodLogDay(today, view.showNumbers);
+  const ringColors = useAreaColors('ernaehrung');
+  const theme = useThemeColors();
   const texts = t.dashboard.nutrition;
   if (!app.backend.supportsNutrition) return null;
-  const open = (
-    <Button
-      label={texts.open}
-      variant="secondary"
-      onPress={() => router.navigate('/ernaehrung' as Href)}
-      testID="overview-nutrition-open"
-    />
-  );
   if (view.setupMissing) {
     return (
-      <DashboardTile title={texts.title} testID="overview-nutrition">
-        <Body>{texts.setupNeeded}</Body>
-        <Button
-          label={texts.setup}
-          onPress={() => router.push('/onboarding/nutrition_setup?edit=1' as Href)}
-        />
+      <DashboardTile
+        title={texts.title}
+        area="ernaehrung"
+        icon="utensils"
+        testID="overview-nutrition"
+        accessibilityLabel={`${texts.title}: ${texts.setup}`}
+        onPress={() => router.push('/onboarding/nutrition_setup?edit=1' as Href)}
+      >
+        <Body style={styles.small}>{texts.setupNeeded}</Body>
       </DashboardTile>
     );
   }
@@ -417,21 +487,68 @@ function NutritionTile({ today }: { today: string }) {
     view.library.kind === 'loading' ||
     view.library.kind === 'idle' ||
     (view.library.kind === 'ready' && week === null);
+  const targetKcal = targets && view.showNumbers ? targets.targetKcal : null;
+  const intake = foodLog.consentValid && foodLog.intake.kind === 'numbers' ? foodLog.intake : null;
+  const ring =
+    targetKcal !== null && intake !== null
+      ? calorieRing({ targetKcal, eatenKcal: intake.kcal })
+      : null;
+  const center = ring?.kind === 'ring' ? ringCenterText(ring, false) : null;
   return (
-    <DashboardTile title={texts.title} testID="overview-nutrition">
+    <DashboardTile
+      title={texts.title}
+      area="ernaehrung"
+      icon="utensils"
+      testID="overview-nutrition"
+      pressTestID="overview-nutrition-open"
+      accessibilityLabel={center ? `${texts.title}: ${center.a11y}` : texts.open}
+      onPress={() => router.navigate('/ernaehrung' as Href)}
+    >
       {loading ? <LoadingState label={texts.loading} /> : null}
       {view.library.kind === 'error' || week?.kind === 'error' ? (
-        <Body muted>{texts.failed}</Body>
-      ) : null}
-      {week?.kind === 'incomplete' ? <Body muted>{t.nutrition.incomplete}</Body> : null}
-      {week?.kind === 'blocked' ? <Body muted>{texts.blocked}</Body> : null}
-      {targets && view.showNumbers && targets.targetKcal !== null ? (
-        <Body testID="overview-nutrition-target">
-          {texts.target(formatKcal(targets.targetKcal))}
+        <Body muted style={styles.small}>
+          {texts.failed}
         </Body>
       ) : null}
-      {next ? (
-        <Body testID="overview-nutrition-next">
+      {week?.kind === 'incomplete' ? (
+        <Body muted style={styles.small}>
+          {t.nutrition.incomplete}
+        </Body>
+      ) : null}
+      {week?.kind === 'blocked' ? (
+        <Body muted style={styles.small}>
+          {texts.blocked}
+        </Body>
+      ) : null}
+      {ring?.kind === 'ring' && center ? (
+        <View
+          style={styles.ringRow}
+          accessible
+          accessibilityRole="progressbar"
+          accessibilityLabel={center.a11y}
+          testID="overview-nutrition-ring"
+        >
+          <ProgressRing
+            size={64}
+            stroke={7}
+            fraction={ring.fraction}
+            overFraction={ring.overFraction}
+            color={ringColors.strong}
+          >
+            <Text style={[styles.ringPercent, appFont('extrabold'), { color: theme.text }]}>
+              {`${ring.percent} %`}
+            </Text>
+          </ProgressRing>
+          <StatValue value={center.value} label={`kcal ${center.label}`} />
+        </View>
+      ) : null}
+      {targetKcal !== null ? (
+        <Body muted testID="overview-nutrition-target" style={styles.small}>
+          {texts.target(formatKcal(targetKcal))}
+        </Body>
+      ) : null}
+      {!ring && next ? (
+        <Body testID="overview-nutrition-next" style={styles.small}>
           {texts.next(
             roleLabel(next.role)
               ? `${slotLabel(next.slot)} (${roleLabel(next.role)})`
@@ -439,25 +556,20 @@ function NutritionTile({ today }: { today: string }) {
             next.titleDe,
           )}
         </Body>
-      ) : day ? (
-        <Body muted>{texts.allDone}</Body>
-      ) : week?.kind === 'ready' ? (
-        <Body muted>{texts.noPlan}</Body>
+      ) : !ring && day ? (
+        <Body muted style={styles.small}>
+          {texts.allDone}
+        </Body>
+      ) : !ring && week?.kind === 'ready' ? (
+        <Body muted style={styles.small}>
+          {texts.noPlan}
+        </Body>
       ) : null}
       {foodLog.consentValid ? (
-        <>
-          <Body muted testID="overview-food-log">
-            {texts.entries(foodLog.intake.count)}
-          </Body>
-          <Button
-            label={texts.log}
-            variant="secondary"
-            onPress={() => router.push(`/ernaehrung/eintragen?tag=${today}` as Href)}
-            testID="overview-food-log-add"
-          />
-        </>
+        <Body muted testID="overview-food-log" style={styles.small}>
+          {texts.entries(foodLog.intake.count)}
+        </Body>
       ) : null}
-      {open}
     </DashboardTile>
   );
 }
@@ -474,7 +586,7 @@ function BodyTile({
   const texts = t.dashboard.body;
   if (consent !== 'valid') {
     return (
-      <DashboardTile title={texts.title} testID="overview-body">
+      <DashboardTile title={texts.title} area="fortschritt" icon="scale" testID="overview-body">
         <Body muted testID="overview-body-no-consent">
           {consent === 'outdated' ? texts.outdated : texts.noConsent}
         </Body>
@@ -488,7 +600,7 @@ function BodyTile({
   }
   const latest = latestBodyWeight(rows.bodyMetrics);
   return (
-    <DashboardTile title={texts.title} testID="overview-body">
+    <DashboardTile title={texts.title} area="fortschritt" icon="scale" testID="overview-body">
       {latest ? (
         <Body
           testID="overview-body-weight"
@@ -509,23 +621,56 @@ function BodyTile({
   );
 }
 
-/** Kachel „Fortschritt“: Wochenzahlen (erledigt von geplant), Weg zum Fortschritt-Reiter. */
+/** Kachel „Fortschritt“ (breit, ganz antippbar): diese Woche erledigt / geplant / offen (packages/core). */
 function ProgressTile({ rows, today }: { rows: UserRows; today: string }) {
   const router = useRouter();
   const texts = t.dashboard.progress;
   const active = activePlan(rows);
   const week = active ? weekTrainingProgress(active.sessions, today) : null;
+  const summary = week ? texts.week(week.completed, week.planned) : texts.noPlan;
   return (
-    <DashboardTile title={texts.title} testID="overview-progress">
-      <Body testID="overview-progress-week">
-        {week ? texts.week(week.completed, week.planned) : texts.noPlan}
-      </Body>
-      <Button
-        label={texts.open}
-        variant="secondary"
-        onPress={() => router.navigate('/fortschritt' as Href)}
-        testID="overview-progress-open"
-      />
+    <DashboardTile
+      title={texts.title}
+      area="fortschritt"
+      icon="trend"
+      testID="overview-progress"
+      pressTestID="overview-progress-open"
+      accessibilityLabel={`${texts.title}: ${summary}`}
+      onPress={() => router.navigate('/fortschritt' as Href)}
+    >
+      {week && week.planned > 0 ? (
+        <View
+          style={styles.stats}
+          accessible
+          accessibilityLabel={summary}
+          testID="overview-progress-week"
+        >
+          <View style={styles.stat}>
+            <StatValue value={String(week.completed)} label={texts.statDone} />
+          </View>
+          <View style={styles.stat}>
+            <StatValue value={String(week.planned)} label={texts.statPlanned} />
+          </View>
+          <View style={styles.stat}>
+            <StatValue value={String(week.open)} label={texts.statOpen} />
+          </View>
+        </View>
+      ) : (
+        <Body muted testID="overview-progress-week" style={styles.small}>
+          {summary}
+        </Body>
+      )}
     </DashboardTile>
   );
 }
+
+const styles = StyleSheet.create({
+  header: { flexDirection: 'row', alignItems: 'center', gap: spacing.sm },
+  headerText: { flex: 1, minWidth: 0, gap: 2 },
+  date: { fontSize: fontSize.sm },
+  small: { fontSize: fontSize.sm, lineHeight: 20 },
+  ringRow: { flexDirection: 'row', alignItems: 'center', gap: 12, flexWrap: 'wrap' },
+  ringPercent: { fontSize: fontSize.xs },
+  stats: { flexDirection: 'row', gap: spacing.sm },
+  stat: { flex: 1, minWidth: 0 },
+});

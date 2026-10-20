@@ -162,6 +162,7 @@ export const deWorkouts = {
     doneToday: (n: number) =>
       n === 1 ? 'Heute: 1 Workout erledigt' : `Heute: ${n} Workouts erledigt`,
     open: 'Workouts öffnen',
+    statLabel: (withoutEquipment: number) => `Workouts · ${withoutEquipment} ohne Geräte`,
   },
   calendarBadge: 'Workout',
   logEntry:

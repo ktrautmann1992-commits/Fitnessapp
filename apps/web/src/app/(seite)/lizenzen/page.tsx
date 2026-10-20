@@ -57,6 +57,21 @@ export default function Lizenzen() {
         deinem Gerät ausgewertet.
       </p>
 
+      <h2>Schriften</h2>
+      <p>
+        App: Plus Jakarta Sans (Tokotype,{' '}
+        <a href="https://github.com/tokotype/PlusJakartaSans">
+          github.com/tokotype/PlusJakartaSans
+        </a>
+        ), Lizenz SIL Open Font License 1.1 (
+        <a href="https://openfontlicense.org">openfontlicense.org</a>); in der App über
+        @expo-google-fonts/plus-jakarta-sans (Expo, Lizenz MIT). Website und Druckansichten: Archivo
+        (Omnibus-Type,{' '}
+        <a href="https://github.com/Omnibus-Type/Archivo">github.com/Omnibus-Type/Archivo</a>),
+        Lizenz SIL Open Font License 1.1. Alle Schriften liegen bei uns – beim Anzeigen wird keine
+        Verbindung zu Google aufgebaut.
+      </p>
+
       <h2>Datenschutz</h2>
       <p>
         Wie die Produktabfrage mit deinen Daten umgeht, steht in der{' '}
