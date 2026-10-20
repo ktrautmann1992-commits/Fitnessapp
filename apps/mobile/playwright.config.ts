@@ -8,7 +8,7 @@ import { defineConfig, devices } from '@playwright/test';
  * Lokal in der Claude-Cloud-Sitzung liegt Chromium unter /opt/pw-browsers; in GitHub Actions installiert
  * der Workflow ci den passenden Browser (playwright install --with-deps chromium).
  */
-const PORT = 4173;
+const PORT = Number(process.env.E2E_PORT ?? 4173);
 const LOCAL_CHROMIUM = '/opt/pw-browsers/chromium';
 const executablePath =
   process.env.PLAYWRIGHT_CHROMIUM_PATH ??

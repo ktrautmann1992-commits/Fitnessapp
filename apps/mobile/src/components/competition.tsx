@@ -82,6 +82,9 @@ export function FeasibilityCard({
       <Text style={[styles.feasibilityTitle, { color: theme.textMuted }]}>
         {C.feasibilityTitle}
       </Text>
+      <Body muted testID="competition-feasibility-explain">
+        {C.feasibilityExplain}
+      </Body>
       <Text
         style={[styles.feasibilityStatus, { color: theme.text }]}
         testID={`competition-feasibility-${feasibility.status}`}

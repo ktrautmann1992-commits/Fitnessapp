@@ -537,9 +537,16 @@ prüft ihr zusätzlich in der echten App (Teil 9).
    die Uhr vor): „Mein Wettkampf“ → **Ergebnis eintragen** → Zeit, Anstrengung, Notiz → danach „Erholung nach dem
    Rennen“ und „Nächstes Ziel planen“.
 10. Ohne Einwilligung (neuer Testmodus, „Ohne Einwilligung fortfahren“): Ampel **„✕ Nicht möglich“** mit Vorschlag
-    „Gesundheits-Check“; **Nur Countdown speichern** geht trotzdem.
-11. Flugmodus an → „Heute“, Plan und Timer funktionieren; „Mein Wettkampf → Ändern/Absagen“ ist gesperrt mit Hinweis.
-12. Einmal hell und einmal dunkel ansehen; die Ampel hat immer Zeichen **und** Wort.
+    „Gesundheits-Check“; **Nur Countdown speichern** geht trotzdem. Danach zeigt auch die Übersicht „Mein Wettkampf“ die
+    Ampel – ohne Knopf „Wettkampfplan erstellen“.
+11. Ampel in der Übersicht (neuer Testmodus wie Schritt 1): Wettkampf mit Renntag **in gut 10 Wochen** eintragen →
+    „✕ Zu kurz“ → **Nur Countdown speichern**. Die Übersicht zeigt unter dem Wettkampf „Dein aktueller Plan ist ein
+    Grundlagen-Plan …“ und darunter die Ampel **„Machbarkeit“** mit Erklärzeile, Grund und Vorschlägen, aber **keinen**
+    Knopf. Bei „Späterer Renntag“ **Übernehmen** → Formular mit neuem Datum → „✓ Passt“ → **Nur Countdown speichern**.
+    Jetzt steht in der Übersicht der Knopf **Wettkampfplan erstellen** → „Plan neu erstellen“ bestätigen → „Dein
+    Wettkampfplan ist fertig“, die Ampel verschwindet.
+12. Flugmodus an → „Heute“, Plan und Timer funktionieren; „Mein Wettkampf → Ändern/Absagen“ ist gesperrt mit Hinweis.
+13. Einmal hell und einmal dunkel ansehen; die Ampel hat immer Zeichen **und** Wort.
 
 Mit Konto (Supabase-Modus, nach dem Merge und `db-migrate` aus WP3): gleiche Schritte; Supabase → **Table Editor →
 `competitions`** zeigt euren Wettkampf (Plan-Bezug nur mit Einwilligung), **`planned_sessions`** die Spalten
