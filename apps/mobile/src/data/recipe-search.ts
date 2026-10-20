@@ -1,4 +1,5 @@
 import {
+  isPublishedWithoutExpertReview,
   type DietType,
   type NutritionLibrary,
   type RecipeCategoryId,
@@ -33,6 +34,8 @@ export interface RecipeSearchCard {
   /** kcal je Portion des Grundrezepts; nur anzeigen, wenn „Kalorienzahlen“ an sind. null = nicht berechenbar. */
   kcalPerServing: number | null;
   isDraft: boolean;
+  /** Freigegeben ohne Fachprüfung (Testphase, Gründer 19.10.2026) → kleines Kennzeichen „Testphase …“. */
+  isTestphase: boolean;
 }
 
 export type RecipeSearchResult =
@@ -95,6 +98,7 @@ export function recipeSearchForPerson(input: {
         outsideProfileDiet: hit.outsideProfileDiet,
         kcalPerServing: kcal,
         isDraft: recipe.status === 'draft',
+        isTestphase: isPublishedWithoutExpertReview(recipe),
       };
     }),
   };

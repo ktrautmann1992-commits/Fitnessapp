@@ -16,7 +16,8 @@ import { useNutritionWeek } from '@/state/use-nutrition';
 /**
  * Ratgeber lesen (KONZEPT 6.8, docs/PLAN-PHASE-5.md 19.6, Etappe N5c): offline aus dem gebündelten Bestand, ohne
  * Netz und ohne Echtzeit-KI. Nur Ratgeber aus `readableGuides` (freigegeben bzw. Testmodus-Entwurf, kein roter
- * Befund R21 – Health-Claims). „Kalorienzahlen aus“ (bzw. Schwangerschaft/Stillzeit): Absätze mit kcal oder
+ * Befund R21 – Health-Claims); freigegeben ohne Fachprüfung = Hinweis „Testphase – noch nicht fachlich geprüft“
+ * (Gründer-Entscheidung 19.10.2026). „Kalorienzahlen aus“ (bzw. Schwangerschaft/Stillzeit): Absätze mit kcal oder
  * Makro-Gramm ausgeblendet (`guideForDisplay`), feste Hinweise wie beim Carb-Loading bleiben immer sichtbar.
  */
 export default function GuideScreen() {
@@ -68,6 +69,10 @@ export default function GuideScreen() {
       {display.isDraft ? (
         <Notice tone="info" testID="guide-draft">
           {texts.draft}
+        </Notice>
+      ) : display.isTestphase ? (
+        <Notice tone="info" testID="guide-testphase">
+          {texts.testphase}
         </Notice>
       ) : null}
       {display.hiddenCount > 0 ? (

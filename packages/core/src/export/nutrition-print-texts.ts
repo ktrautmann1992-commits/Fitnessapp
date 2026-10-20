@@ -63,6 +63,8 @@ export interface NutritionPrintTextParams {
   'nutrition.notice.testValues': Empty;
   /** 16 B (i): Entwürfe – „Allergene noch nicht fachlich geprüft …“. */
   'nutrition.notice.draftAllergens': Empty;
+  /** Testphase: freigegeben ohne Fachprüfung – Allergene nicht fachlich geprüft (Wächter M2). */
+  'nutrition.notice.testphaseAllergens': Empty;
   'mealplan.week.heading': { continued: boolean };
   'mealplan.col.slot': Empty;
   'mealplan.col.day': { date: string };
@@ -90,6 +92,8 @@ export interface NutritionPrintTextParams {
   'recipe.label.time': Empty;
   'recipe.time': { prep: number; cook: number };
   'recipe.mark.aiDraft': Empty;
+  /** Freigegeben ohne Fachprüfung (Testphase, Gründer-Entscheidung 19.10.2026). */
+  'recipe.mark.testphase': Empty;
   'recipe.ingredients': Empty;
   'recipe.col.ingredient': Empty;
   /** Spalte je Portionsgröße mit den Wochentagen, an denen sie gilt. */
@@ -156,6 +160,7 @@ export const NUTRITION_PARAM_SCHEMAS = {
   'nutrition.notice.products': empty,
   'nutrition.notice.testValues': empty,
   'nutrition.notice.draftAllergens': empty,
+  'nutrition.notice.testphaseAllergens': empty,
   'mealplan.week.heading': z.strictObject({ continued: z.boolean() }),
   'mealplan.col.slot': empty,
   'mealplan.col.day': z.strictObject({ date: isoDateSchema }),
@@ -191,6 +196,7 @@ export const NUTRITION_PARAM_SCHEMAS = {
     cook: z.number().int().min(0).max(RECIPE_SCHEMA_LIMITS.cookMinutes.max),
   }),
   'recipe.mark.aiDraft': empty,
+  'recipe.mark.testphase': empty,
   'recipe.ingredients': empty,
   'recipe.col.ingredient': empty,
   'recipe.col.portion': z.strictObject({ factor: factorSchema, weekdays: weekdaysSchema }),

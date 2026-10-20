@@ -367,6 +367,8 @@ export const deNutrition = {
     notForYou: 'Dieses Rezept passt nicht zu deinen Angaben.',
     aiDraft: 'KI-Entwurf – fachlich prüfen',
     draft: 'Entwurf – fachlich noch nicht geprüft',
+    /** Freigegeben, aber (noch) ohne Fachprüfung – nur in der Testphase (Gründer-Entscheidung 19.10.2026). */
+    testphase: 'Testphase – noch nicht fachlich geprüft',
     allergenWarning: 'Allergene noch nicht fachlich geprüft – bei Allergien bitte nicht verwenden.',
     times: (prep: number, cook: number) =>
       cook > 0
@@ -772,6 +774,7 @@ export const deNutrition = {
     minutes: (n: number) => `${n} Min.`,
     kcal: (kcal: string) => `${kcal} kcal je Portion`,
     draft: 'Entwurf',
+    testphase: 'Testphase – nicht fachlich geprüft',
     cardA11y: (title: string) => `Rezept öffnen: ${title}`,
     outsideDietRecipe:
       'Du hast dieses Rezept über die erweiterte Suche gefunden. Es kommt nie automatisch in deinen Essensplan.',
@@ -816,8 +819,12 @@ export const deNutrition = {
     minutes: (n: number) => `${n} Min.`,
     kcal: (kcal: string) => `${kcal} kcal je Portion`,
     draft: 'Entwurf',
+    testphase: 'Testphase – nicht fachlich geprüft',
     allergenWarning:
       'Entwürfe: Allergene noch nicht fachlich geprüft – bei Allergien bitte nicht verwenden.',
+    /** Testphase (freigegeben ohne Fachprüfung, Wächter M2). */
+    testphaseAllergenWarning:
+      'Testphase: Allergene noch nicht fachlich geprüft – bei Allergien bitte nicht verwenden.',
     cardA11y: (title: string) => `Rezept öffnen: ${title}`,
     toSearch: 'Zur Rezeptsuche',
     more: (n: number) => `Mehr anzeigen (noch ${n})`,
@@ -842,6 +849,8 @@ export const deNutrition = {
       'Beispiel-Rezepte mit TESTWERTEN – keine echten Nährwerte, keine geprüften Allergene. Nur zum Ausprobieren.',
     draftAllergens:
       'Entwürfe: Allergene noch nicht fachlich geprüft – bei Allergien bitte nicht verwenden.',
+    testphaseAllergens:
+      'Testphase: Allergene noch nicht fachlich geprüft – bei Allergien bitte nicht verwenden.',
     weekHeading: 'Wochenübersicht',
     weekHeadingContinued: 'Wochenübersicht (Fortsetzung)',
     colSlot: 'Mahlzeit',
@@ -906,6 +915,7 @@ export const deNutrition = {
     none: 'Es gibt noch keine Ratgeber.',
     notFound: 'Diesen Ratgeber gibt es nicht (mehr).',
     draft: 'Entwurf – fachlich noch nicht geprüft',
+    testphase: 'Testphase – noch nicht fachlich geprüft',
     openA11y: (title: string) => `Ratgeber öffnen: ${title}`,
     hiddenNumbers: 'Zahlenangaben zu Kalorien und Nährstoff-Mengen sind hier ausgeblendet.',
     hiddenInSection: (n: number) =>

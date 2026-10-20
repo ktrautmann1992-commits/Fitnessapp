@@ -18,6 +18,7 @@ export * from './recipe-release';
 export * from './recipe-schema';
 export * from './rules';
 export * from './schemas';
+export * from './seed-settings';
 export * from './substitution-checks';
 export * from './substitution-schema';
 export * from './supplement-checks';

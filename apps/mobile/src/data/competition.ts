@@ -1,4 +1,5 @@
 import {
+  type CompetitionFeasibility,
   type CompetitionFeasibilityResult,
   type CompetitionGoal,
   type CompetitionInput,
@@ -636,4 +637,79 @@ export function resultLogToReuse(
 export function timeGoalOffered(rows: UserRows, rules: PlanSafetyRules | null): boolean {
   if (!rules || rules.enduranceStartGroup === 'cautious' || rules.medicalNotice) return false;
   return (COMPETITION_GROUP_RULES.timeGoalLevels as readonly string[]).includes(currentLevel(rows));
+}
+
+/**
+ * Was die Ampel zeigt und ob ein Wettkampfplan erstellt werden darf – gleich im Formular und in der Übersicht.
+ * Lehnt der Server bzw. Testmodus den Plan als „nicht machbar“ ab, hat dieses Ergebnis Vorrang.
+ */
+export interface ShownFeasibility {
+  shown: CompetitionFeasibility | null;
+  /** Ampel „Passt“ oder „Knapp“. */
+  usable: boolean;
+  /** „Wettkampfplan erstellen“ anbieten (Ampel passt und es gibt Engine-Angaben, kein Blocker). */
+  canCreate: boolean;
+}
+
+export function shownFeasibility(
+  feasibility: DraftFeasibility | null,
+  rejected: CompetitionFeasibility | null,
+): ShownFeasibility {
+  const result = feasibility?.kind === 'result' ? feasibility.result : null;
+  const shown = rejected ?? (result?.ok ? result.feasibility : null);
+  const usable = shown !== null && (shown.status === 'ok' || shown.status === 'tight');
+  return { shown, usable, canCreate: usable && feasibility?.kind === 'result' };
+}
+
+/** Text zum Plan-Stand in der Übersicht „Mein Wettkampf“. */
+export type OverviewPlanState =
+  /** Der aktive Plan ist der passende Wettkampfplan. */
+  | 'competition'
+  /** Grundlagen-Plan, Ampel steht darunter. */
+  | 'basic'
+  /** Grundlagen-Plan, Renntag ist heute oder vorbei (keine Ampel mehr). */
+  | 'basic_race_over'
+  /** Wettkampfplan passt nicht mehr, Ampel steht darunter. */
+  | 'mismatch'
+  /** Wettkampfplan passt nicht mehr, Renntag ist heute oder vorbei. */
+  | 'mismatch_race_over'
+  /** Offline ohne Plan-Bezug: Stand unbekannt (Wächter WP4 N5). */
+  | 'offline_unknown';
+
+export interface CompetitionOverview {
+  planState: OverviewPlanState;
+  /**
+   * Ampel für den gespeicherten Wettkampf – dieselbe Rechnung wie im Formular (`draftFeasibility` mit den gespeicherten
+   * Angaben). `null` = keine Ampel (Wettkampfplan passt, Renntag erreicht oder Stand offline unbekannt).
+   */
+  ampel: { draft: CompetitionDraft; feasibility: DraftFeasibility } | null;
+}
+
+/**
+ * Übersicht „Mein Wettkampf“ bei geplantem Wettkampf: Ist der aktuelle Plan KEIN passender Wettkampfplan, zeigt die
+ * Übersicht die Ampel direkt (Gründer-Feedback 19.10.2026: „Ampel“ war nur im Formular sichtbar). `null` = kein
+ * geplanter Wettkampf.
+ */
+export function competitionOverview(params: {
+  rows: UserRows;
+  versions: ConsentVersions;
+  active: ActivePlan | null;
+  today: string;
+  offline: boolean;
+}): CompetitionOverview | null {
+  const { rows, versions, active, today, offline } = params;
+  const planned = plannedCompetition(rows);
+  if (!planned) return null;
+  const fit = competitionPlanFitFromRows(rows, active);
+  if (fit === 'fits') return { planState: 'competition', ampel: null };
+  if (offline && fit === 'no_basis') return { planState: 'offline_unknown', ampel: null };
+  const basic = fit === null;
+  if (planned.stored.competition.raceDate <= today) {
+    return { planState: basic ? 'basic_race_over' : 'mismatch_race_over', ampel: null };
+  }
+  const draft = draftFromStored(planned.stored);
+  return {
+    planState: basic ? 'basic' : 'mismatch',
+    ampel: { draft, feasibility: draftFeasibility(rows, versions, active, draft, today) },
+  };
 }

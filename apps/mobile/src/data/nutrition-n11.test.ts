@@ -196,6 +196,7 @@ describe('Kühlschrank-Suche in der App (19.7 N11)', () => {
     expect(card?.kcalPerServing).toBeGreaterThan(0);
     expect(card?.isDraft).toBe(true);
     expect(result.hasDrafts).toBe(true);
+    expect(result.hasTestphase).toBe(false);
   });
 
   it('leere Auswahl, nur Gewürze, abgelehntes oder unbekanntes Lebensmittel in der Auswahl → keine Treffer', () => {
@@ -225,6 +226,7 @@ describe('Kühlschrank-Suche in der App (19.7 N11)', () => {
     expect(page.total).toBe(full.total);
     expect(page.cards).toEqual(full.cards.slice(0, 2));
     expect(page.hasDrafts).toBe(full.hasDrafts);
+    expect(page.hasTestphase).toBe(full.hasTestphase);
   });
 
   it('Unverträglichkeiten ohne gültige Einwilligung → blockiert (wie Essensplan und Rezeptsuche)', () => {

@@ -323,6 +323,7 @@ function RecipeCard({
       ? texts.kcal(formatKcal(card.kcalPerServing))
       : null,
     card.isDraft ? texts.draft : null,
+    card.isTestphase ? texts.testphase : null,
   ].filter((part): part is string => part !== null);
   return (
     <Pressable

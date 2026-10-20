@@ -442,8 +442,8 @@ Gerichte werden in der Datenbank gespeichert. Ihr müsst keine Schlüssel eintra
       desc limit 3;` → **Run** → oberste Zeile **succeeded**.
    Ohne den Job werden alte Wochen nur beim Speichern gelöscht (inaktive Konten dann gar nicht – deshalb wichtig).
 9. **Actions → content-seed** → letzter Lauf → **Summary**: Unter „Ernährung“ steht, was eingespielt wurde und was
-   noch **wartet** (mit Grund, z. B. „Fachprüfung fehlt“). Solange die Fachprüfung offen ist, wartet alles – das ist
-   richtig.
+   noch **wartet** (mit Grund, z. B. „Fachprüfung fehlt“). **Testphase (seit 19.10.2026):** Freigegebenes kommt auch
+   ohne Fachprüfung in die App – die Summary zeigt „🧪 Testphase: … ohne Fachprüfung“ (Teil 7t).
 10. Vorschau-Link öffnen → **mit Konto** anmelden → **Ernährung**: Solange keine Rezepte freigegeben sind, steht dort
     „Noch keine Rezepte: Unsere Rezepte werden gerade fachlich geprüft …“ (kein Fehler). Tagebuch und eigene
     Gerichte gehen trotzdem.
@@ -453,6 +453,44 @@ Gerichte werden in der Datenbank gespeichert. Ihr müsst keine Schlüssel eintra
 12. Supabase → **Advisors → Security Advisor → Refresh**: Neu erwartet ist höchstens ein Hinweis zu
     `purge_expired_nutrition_weeks` bzw. `meal_plan_day_kcal_floor` („security definer“). Beide liegen im Schema
     `private` und sind für angemeldete Nutzer nicht aufrufbar. Andere neue Meldungen bitte Claude schicken.
+
+## Teil 7t – Testphase: Rezepte ohne Fachprüfung – und vor dem Livegang zurückstellen (19.10.2026)
+
+Bis zum öffentlichen Start dürfen **freigegebene** Rezepte, Ratgeber usw. auch **ohne** Prüfung durch eine
+Ernährungsfachkraft in die App. Sie tragen dort den Hinweis **„Testphase – noch nicht fachlich geprüft“**. Gesteuert
+wird das von **einer Datei**: `content/einspiel-regeln.json` mit `"nur_fachlich_geprueft": false` (= Testphase).
+
+**A. Testphase prüfen (nach dem Merge dieses Pull Requests)**
+
+1. GitHub-App → **Actions**: Direkt nach dem Merge starten **db-migrate** und **content-seed** gleichzeitig. Ein
+   **roter content-seed-Lauf** kurz nach dem Merge ist möglich und harmlos (die Datenbank kennt die neue Testphase-
+   Einstellung erst, wenn db-migrate fertig ist; eingespielt wird dann nichts). **Es zählt der content-seed-Lauf
+   NACH dem grünen db-migrate** – startet keiner von selbst: **content-seed → Run workflow → Run workflow**.
+2. Diesen Lauf öffnen → **Summary**: „Einspiel-Regel: TESTPHASE …“. Ab dem ersten freigegebenen Rezept steht darunter
+   „🧪 Testphase: … ohne Fachprüfung“ mit den IDs. Ratgeber mit Mengen-/Dosierungsangaben (Prüfhinweis **R21H**) kommen
+   auch in der Testphase **nur mit Fachprüfung** in die App – sie stehen unter „nicht eingespielt“ mit dem Grund
+   „Dosierungs-Befund (R21H)“.
+3. Vorschau-Link → **mit Konto** anmelden → **Ernährung → Rezepte suchen**: Treffer zeigen klein „Testphase – nicht
+   fachlich geprüft“. Rezept antippen → oben der Hinweis **„Testphase – noch nicht fachlich geprüft“** und die
+   Allergen-Warnung. Ratgeber ebenso (auch in der Ratgeber-Liste gekennzeichnet).
+4. Ohne Konto (Testmodus, Beispiel-Rezepte) bleibt alles wie bisher („Entwurf …“ mit Allergen-Warnung).
+
+**B. Vor dem öffentlichen Livegang: auf „nur fachlich geprüft“ umstellen** (erst, wenn die Fachkraft geprüft hat)
+
+1. Handy-Browser → github.com → euer Repository → Ordner **content** → Datei **einspiel-regeln.json** → Stift-Symbol
+   (**Edit**; ggf. „Desktop-Website anfordern“).
+2. `false` durch `true` ersetzen (nur dieses Wort; gern auch den Text bei `"grund"` anpassen, z. B. „Livegang“).
+3. **Commit changes…** → **Create a new branch** wählen → **Propose changes** → **Create pull request**.
+4. Auf grünes **ci** warten → **Merge pull request** → **Delete branch**.
+5. **Actions → content-seed** läuft von selbst: Alles ohne Fachprüfung wird **zurückgezogen** (nicht gelöscht).
+   Ist das mehr als die Hälfte einer Art, wird der Lauf **rot** („zu viele Inhalte würden zurückgezogen“) – das ist
+   hier erwartet: **content-seed → Run workflow** → Häkchen **allow_mass_archive** → **Run workflow**.
+6. Kontrolle in Supabase (Handy-Browser) → Projekt → links **SQL Editor** → einfügen →  **Run**:
+   `select count(*) from recipes where status = 'published' and not expert_reviewed;` → **0**. (Gleiches für `foods`,
+   `guides`, `ingredient_substitutions` und `meal_prep_plans`.)
+
+Zurück in die Testphase geht genauso (Wort wieder `false`). Löscht jemand die Datei, gilt automatisch „nur fachlich
+geprüft“. Ein Tippfehler in der Datei macht `ci` rot – dann wird nichts eingespielt.
 
 ## Teil 7j – Datenbank für den Wettkampf prüfen (Phase 10, Etappe WP3)
 In der App ändert sich dadurch **nichts Sichtbares** (Wettkampf anlegen kam mit WP4 – testen siehe Teil 7k). Ihr müsst nichts einstellen und
@@ -499,9 +537,16 @@ prüft ihr zusätzlich in der echten App (Teil 9).
    die Uhr vor): „Mein Wettkampf“ → **Ergebnis eintragen** → Zeit, Anstrengung, Notiz → danach „Erholung nach dem
    Rennen“ und „Nächstes Ziel planen“.
 10. Ohne Einwilligung (neuer Testmodus, „Ohne Einwilligung fortfahren“): Ampel **„✕ Nicht möglich“** mit Vorschlag
-    „Gesundheits-Check“; **Nur Countdown speichern** geht trotzdem.
-11. Flugmodus an → „Heute“, Plan und Timer funktionieren; „Mein Wettkampf → Ändern/Absagen“ ist gesperrt mit Hinweis.
-12. Einmal hell und einmal dunkel ansehen; die Ampel hat immer Zeichen **und** Wort.
+    „Gesundheits-Check“; **Nur Countdown speichern** geht trotzdem. Danach zeigt auch die Übersicht „Mein Wettkampf“ die
+    Ampel – ohne Knopf „Wettkampfplan erstellen“.
+11. Ampel in der Übersicht (neuer Testmodus wie Schritt 1): Wettkampf mit Renntag **in gut 10 Wochen** eintragen →
+    „✕ Zu kurz“ → **Nur Countdown speichern**. Die Übersicht zeigt unter dem Wettkampf „Dein aktueller Plan ist ein
+    Grundlagen-Plan …“ und darunter die Ampel **„Machbarkeit“** mit Erklärzeile, Grund und Vorschlägen, aber **keinen**
+    Knopf. Bei „Späterer Renntag“ **Übernehmen** → Formular mit neuem Datum → „✓ Passt“ → **Nur Countdown speichern**.
+    Jetzt steht in der Übersicht der Knopf **Wettkampfplan erstellen** → „Plan neu erstellen“ bestätigen → „Dein
+    Wettkampfplan ist fertig“, die Ampel verschwindet.
+12. Flugmodus an → „Heute“, Plan und Timer funktionieren; „Mein Wettkampf → Ändern/Absagen“ ist gesperrt mit Hinweis.
+13. Einmal hell und einmal dunkel ansehen; die Ampel hat immer Zeichen **und** Wort.
 
 Mit Konto (Supabase-Modus, nach dem Merge und `db-migrate` aus WP3): gleiche Schritte; Supabase → **Table Editor →
 `competitions`** zeigt euren Wettkampf (Plan-Bezug nur mit Einwilligung), **`planned_sessions`** die Spalten

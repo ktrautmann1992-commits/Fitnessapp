@@ -1,5 +1,6 @@
 import { checkGuide } from '../content/guide-checks';
 import { type Guide, guideSchema } from '../content/guide-schema';
+import { isPublishedWithoutExpertReview } from '../content/seed-settings';
 import { isDryRunContent } from '../content/validate';
 
 /**
@@ -112,6 +113,8 @@ export interface GuideDisplay {
   /** Summe aller ausgeblendeten Absätze (Hinweis oben „Zahlenangaben ausgeblendet“). */
   readonly hiddenCount: number;
   readonly isDraft: boolean;
+  /** Freigegeben, aber ohne Fachprüfung (Testphase, Gründer-Entscheidung 19.10.2026) → „Testphase – …“. */
+  readonly isTestphase: boolean;
 }
 
 /**
@@ -167,5 +170,6 @@ export function guideForDisplay(guide: Guide, options: { showNumbers: boolean })
       sections.reduce((sum, s) => sum + s.hiddenCount, 0) +
       places.reduce((sum, p) => sum + p.hiddenCount, 0),
     isDraft: guide.status === 'draft',
+    isTestphase: isPublishedWithoutExpertReview(guide),
   };
 }

@@ -4187,3 +4187,84 @@ mit katalog-geprüften Lebensmitteln). Einrichtung Gemini: `docs/SETUP.md` Teil 
   Zeitpunkt festlegen (KONZEPT 14/15).
 - **G-N8-5:** Sollen bei KI-Rezepten die deklarierten Nährwerte/Allergene doch aus dem Katalog vorbelegt werden (weniger
   rote Entwürfe, aber keine Gegenprüfung der KI mehr)? _Empfehlung: nein, so lassen._
+
+## Nachtrag „Testphase (Gründer 19.10.2026)“: Ernährungs-Inhalte ohne Fachprüfung einspielen
+
+**Gründer-Entscheidung 19.10.2026:** In der Testphase sollen von den Gründern freigegebene (`published`)
+Ernährungs-Inhalte – Lebensmittel, Rezepte, Austausch-Einträge, Packungsgrößen, Meal-Prep-Pläne, Ratgeber – auch
+**ohne** „fachlich geprüft“ (`meta.expert_reviewed`) eingespielt und in der App nutzbar sein, sichtbar gekennzeichnet
+**„Testphase – noch nicht fachlich geprüft“**. **Vor dem öffentlichen Livegang gilt wieder Gründer-Entscheidung 6:**
+nur fachlich Geprüftes. Die Gründer bestätigen diese Änderung selbst per Merge.
+
+**Schalter – eine Datei im Repository: `content/einspiel-regeln.json`**
+
+```json
+{ "nur_fachlich_geprueft": false, "grund": "Testphase (Gründer-Entscheidung 19.10.2026) …" }
+```
+
+- `false` = Testphase, `true` = Livegang-Regel. **Fehlt die Datei, gilt `true`** (sichere Richtung); eine kaputte Datei
+  ist in `content:validate` ein **blockierender** Datei-Fehler (und es gilt ebenfalls `true`). Schema und Lesen:
+  `packages/core/src/content/seed-settings.ts` (`contentSeedSettingsSchema`, Zod strict), geladen in
+  `packages/content/src/validate.ts`; jeder Prüfbericht nennt die Regel („Einspielen: …“).
+- **Warum eine Datei statt GitHub-Variable oder Workflow-Eingabe:** (1) Umstellen nur per Pull Request – sichtbar,
+  mit `ci` und menschlichem Merge, im Verlauf nachvollziehbar; eine Repository-Variable ändert sich still und ohne
+  Prüfung. (2) **Alle** Läufe folgen derselben Quelle – Push, nach `db-migrate` und per Hand; eine Workflow-Eingabe
+  gälte nur für Hand-Läufe. (3) Der Merge der Änderung startet `content-seed` von selbst (`paths: content/**`), die
+  Umstellung wirkt also sofort. (4) Am Handy in der GitHub-App/im Browser als Ein-Wort-Änderung machbar
+  (HANDY-ANLEITUNG Teil 7t). Eine Konstante in `packages/core` wäre ebenso sicher, startet aber kein `content-seed`.
+- **Dieser Pull Request setzt `false`** (Testphase) – der Merge durch die Gründer ist die Bestätigung.
+
+**Was sich ändert**
+
+1. **`content-seed`** (`packages/content/src/pipeline/seed.ts`): `buildNutritionSeedPackage(result,
+{ requireExpertReview })` – in der Testphase entfällt NUR die Bedingung „fachlich geprüft“; solche Inhalte stehen in
+   `unreviewed` und im Bericht („🧪 Testphase: … ohne Fachprüfung“). `seed_nutrition_content` wird dann mit
+   `p_require_expert_review: false` aufgerufen; mit der Livegang-Regel ohne diesen Parameter (Standard der Datenbank).
+2. **Datenbank** (Migration `20261019140000_seed_nutrition_testphase.sql`, additiv): `seed_nutrition_content(p_content,
+p_require_expert_review boolean default true)` – Standard und `null` = Livegang-Regel, nur `false` lockert; die alte
+   Signatur `(jsonb)` ist entfernt (sonst wäre der PostgREST-Aufruf mehrdeutig). Neu und immer: `meta.expert_reviewed`
+   muss ein Wahrheitswert sein. Spalte **`expert_reviewed`** (berechnet aus `data.meta.expert_reviewed`, nicht
+   beschreibbar) auf `foods`, `recipes`, `ingredient_substitutions`, `meal_prep_plans`, `guides` – für die
+   Livegang-Prüfabfrage. RLS, Rechte (nur `service_role` darf einspielen) und alle übrigen Regeln unverändert;
+   `database.types.ts` nachgezogen. pgTAP `53_seed_nutrition_testphase.test.sql` (25 Prüfungen), `23` auf die neue
+   Signatur angepasst.
+3. **App:** `contentReviewMark` (core) entscheidet das Kennzeichen: freigegeben ohne Fachprüfung → `testphase`
+   (Rezeptansicht `recipe-testphase`, Ratgeber `guide-testphase` über `GuideDisplay.isTestphase`), Rezept- und
+   Kühlschrank-Suche mit kleinem Kennzeichen „Testphase – nicht fachlich geprüft“ (`isTestphase` der Karten), Ratgeber-
+   Liste mit Kennzeichen (`isPublishedWithoutExpertReview`). Sichere Variante (Wächter M2): die Allergen-Warnung (K6)
+   erscheint auch in der Testphase – Rezeptansicht `recipe-allergen-warning`, Kühlschrank-Suche
+   `fridge-testphase-warning` (`hasTestphase`). PDF-Essensplan (Wächter M1): Kennzeichen ebenfalls über
+   `contentReviewMark` – „Testphase – noch nicht fachlich geprüft“ (`recipe.mark.testphase`) auch für von Hand erfasste
+   alpha5-Rezepte; dazu ein eigener Allergen-Hinweis `nutrition.notice.testphaseAllergens` („Testphase: Allergene noch
+   nicht fachlich geprüft …“) auf dem Deckblatt (ab einem Testphase-Rezept) und je Rezept. Entwürfe im Testmodus wie bisher („KI-Entwurf – fachlich prüfen“ bzw. „Entwurf …“ + Allergen-Warnung). Der Bestand
+   kommt im Supabase-Modus aus `data` – `meta.expert_reviewed` reist dort ohnehin mit. Für die E2E-Tests: Gerätewert
+   `fitnessapp.nutrition-demo.v1 = "force-testphase"` lädt die Beispiel-Inhalte als „freigegeben, nicht fachlich
+   geprüft“ (`demoNutritionContentAsTestphase`, Rezepte über `releasedRecipe`, Ratgeber über `planNutritionRelease` wie
+   bei der echten Freigabe – `demo-wettkampf` mit R21H bleibt dort Entwurf).
+
+**Was ausdrücklich gleich bleibt:** nur `published`; `content:validate` vor jedem Einspielen (ein blockierender Fehler →
+nichts); Katalog-Prüfung der Lebensmittel (R19) und Prüfvermerk der Packungsgrößen; Nährwerte nur aus der amtlichen
+Quelle (Katalog, R17/R18); Ratgeber mit Dosierungs-Befund (R21H) brauchen weiter „fachlich geprüft“ – bei der Freigabe
+(`planNutritionRelease`) UND beim Einspielen: `buildNutritionSeedPackage` lässt einen freigegebenen Ratgeber mit R21H-
+Befund ohne Fachprüfung auch in der Testphase draußen (Grund `dosage_needs_expert`, steht in der Lauf-Zusammenfassung;
+Wächter H1 – in `content:validate` ist R21H nur gelb, deshalb eigene Prüfung über `guideExpertReviewHits` aus core);
+Verweise nur ins eigene Paket; **Schutz vor Massen-Archivierung** (auch beim Zurückschalten); Allergen-Warnungen und
+alle Filter/Schutzgrenzen der App.
+
+**Zurück zur Livegang-Regel (vor dem öffentlichen Start):** `content/einspiel-regeln.json` → `true`, Pull Request,
+Merge. `content-seed` zieht dann alles Ungeprüfte zurück (`archived`, nichts wird gelöscht). Ist das mehr als die
+Hälfte einer Art, stoppt der Schutz (rot) – dann per Hand mit `allow_mass_archive`. Prüfabfrage im SQL-Editor:
+`select 'recipes', count(*) from recipes where status = 'published' and not expert_reviewed union all select 'foods',
+count(*) from foods where status = 'published' and not expert_reviewed union all select 'guides', count(*) from guides
+where status = 'published' and not expert_reviewed union all select 'ingredient_substitutions', count(*) from
+ingredient_substitutions where status = 'published' and not expert_reviewed union all select 'meal_prep_plans', count(*)
+from meal_prep_plans where status = 'published' and not expert_reviewed;` → überall 0. Klick-Schritte: HANDY-ANLEITUNG Teil 7t.
+
+**Tests:** core `seed-settings.test.ts` (Datei fehlt/true/false/kaputt, Kennzeichen, Testphase-Beispielbestand),
+content `seed.test.ts` (+10: Paket mit/ohne Fachprüfung, Katalog/Prüfvermerk/Entwurf bleiben Pflicht, Aufruf-Parameter,
+kaputte Datei → nichts eingespielt, Massen-Archiv-Schutz greift weiter, R21H-Ratgeber wartet auch in der Testphase mit
+Grund im Bericht), core `recipe-release.test.ts` (`guideExpertReviewHits`), core `nutrition-documents.test.ts`
+(PDF-Kennzeichen Testphase/KI-Entwurf), mobile `nutrition-n11.test.ts` (`hasTestphase`), mobile `testphase.test.ts` (Bestand nur
+freigegeben: Essensplan, Suche, Kühlschrank, Ratgeber gekennzeichnet; Erdnuss-Filter unverändert; Gegenprobe Entwürfe),
+Playwright `nutrition-testphase.spec.ts` (Suche, Rezeptansicht mit Allergen-Warnung, Kühlschrank-Warnung,
+Ratgeber-Liste und Ratgeber ohne R21H mit Kennzeichen, `demo-wettkampf` bleibt Entwurf; Gegenprobe Testmodus), pgTAP 53.

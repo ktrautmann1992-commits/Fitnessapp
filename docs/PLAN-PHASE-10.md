@@ -1080,6 +1080,21 @@ sicheren Voreinstellungen der Core- und Datenbank-Konstanten, WP4 ändert daran 
 Playwright: Schritt „Renntag vorverlegen bei laufendem Wettkampfplan“ (kein „Nur Countdown“, Hinweis, zwei
 Neu-erstellen-Knöpfe; zurück auf das alte Datum → Hinweis weg). Timer-Ansage jetzt mit „Schritt X von N“.
 
+**Nachtrag 19.10.2026 – Ampel in der Übersicht (Gründer-Feedback):** Der Hinweis „Erstelle den Wettkampfplan, wenn die
+Ampel passt“ stand in der Übersicht, die Ampel aber nur im Formular („Ändern“). Jetzt zeigt „Mein Wettkampf“ bei einem
+geplanten Wettkampf die Ampel „Machbarkeit“ direkt unter der Zusammenfassung, wenn der aktuelle Plan **kein** passender
+Wettkampfplan ist (Grundlagen-Plan oder „Plan passt nicht mehr“) und der Renntag noch kommt – dieselbe Rechnung wie im
+Formular (`competitionOverview` → `draftFeasibility` mit den gespeicherten Angaben, `shownFeasibility` gemeinsam für
+Formular und Übersicht, `data/competition.ts`). Mit Gründen und Vorschlägen; „Übernehmen“ bei späterem Renntag bzw.
+kürzerer Distanz öffnet das Formular mit dem übernommenen Vorschlag (offline ohne „Übernehmen“). Bei „✓ Passt“/„! Knapp“
+gibt es direkt den Knopf **Wettkampfplan erstellen** (gleicher Ablauf mit Bestätigung „Plan neu erstellen?“, offline
+gesperrt), bei „✕ Zu kurz“/„✕ Nicht möglich“ keinen Knopf. Läuft der passende Wettkampfplan, bleibt die Ampel weg.
+Die Ampel erklärt sich selbst („Ampel: Wir prüfen, ob die Zeit bis zum Renntag für einen sicheren Wettkampfplan
+reicht.“); die Texte „Grundlagen-Plan“, „Plan passt nicht mehr“ und „Wettkampfplan gerade nicht möglich“ verweisen nur
+noch auf eine Ampel, wo sie zu sehen ist (Renntag heute/vorbei: eigener kurzer Text ohne Ampel). Tests:
+`competition-overview.test.ts` (12), Playwright „Übersicht bei Grundlagen-Plan …“ und Ergänzung im Test ohne
+Gesundheits-Check.
+
 **Offen:** Fachprüfung aller Konstanten und Bausteine (Abschnitt 20 Punkt 5), G8–G14, M4 (`restDaysAfterRace`), WP3 N2
 (80/20, „ab 65 nur Gehen“, „Einsteiger ab 3 Einheiten“ ohne Server-Gegenstück), Premium-Prüfung mit Phase 7 (W-G10),
 Live-Test im Supabase-Modus (Teil 8 der HANDY-ANLEITUNG), Vibration/Bildschirm-an nur in der echten App prüfbar (EAS).

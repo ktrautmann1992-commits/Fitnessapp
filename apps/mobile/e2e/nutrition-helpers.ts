@@ -39,6 +39,11 @@ export interface NutritionPerson {
    * hat. Standard: an. Nur der Test „Zustände“ prüft das leere Bündel (falls es noch leer ist).
    */
   forceDemo?: boolean;
+  /**
+   * Testphase (Gründer-Entscheidung 19.10.2026): Beispiel-Inhalte als „freigegeben, nicht fachlich geprüft“ – so, wie
+   * sie in der Testphase aus der Datenbank kommen. Nur zusammen mit forceDemo (Standard an).
+   */
+  testphase?: boolean;
   /** Unverträglichkeit Erdnüsse (Gesundheitsdatum) und zusätzlich „mag ich“ Erdnüsse (W12). */
   peanutIntolerance?: boolean;
   pregnancy?: boolean;
@@ -51,11 +56,13 @@ export async function onboardNutrition(page: Page, person: NutritionPerson = {})
   await page.clock.setFixedTime(new Date('2026-10-12T09:00:00+02:00'));
   await page.goto('/');
   await page.evaluate(
-    ([key, force]) => {
+    ([key, force, testphase]) => {
       window.localStorage.clear();
-      if (force) window.localStorage.setItem(key, JSON.stringify('force'));
+      if (force) {
+        window.localStorage.setItem(key, JSON.stringify(testphase ? 'force-testphase' : 'force'));
+      }
     },
-    [DEMO_KEY, person.forceDemo !== false] as const,
+    [DEMO_KEY, person.forceDemo !== false, person.testphase === true] as const,
   );
   await page.goto('/');
   await page.getByRole('button', { name: "Los geht's" }).click();

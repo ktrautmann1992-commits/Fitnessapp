@@ -112,9 +112,9 @@ select ok(
   'RLS auf allen sieben Inhaltstabellen'
 );
 select ok(
-  not has_function_privilege('authenticated', 'public.seed_nutrition_content(jsonb)', 'execute')
-  and not has_function_privilege('anon', 'public.seed_nutrition_content(jsonb)', 'execute')
-  and has_function_privilege('service_role', 'public.seed_nutrition_content(jsonb)', 'execute'),
+  not has_function_privilege('authenticated', 'public.seed_nutrition_content(jsonb, boolean)', 'execute')
+  and not has_function_privilege('anon', 'public.seed_nutrition_content(jsonb, boolean)', 'execute')
+  and has_function_privilege('service_role', 'public.seed_nutrition_content(jsonb, boolean)', 'execute'),
   'seed_nutrition_content nur für service_role'
 );
 select ok(

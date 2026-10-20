@@ -359,6 +359,11 @@ export interface Backend {
      * Rezepte hat – damit die Tests nicht vom Stand des Katalogs abhängen. Kennzeichnung bleibt.
      */
     force?: boolean;
+    /**
+     * Nur Testmodus und nur E2E-Tests (Testphase, Gründer-Entscheidung 19.10.2026): Beispiel-Inhalte als „freigegeben,
+     * nicht fachlich geprüft“ – so, wie sie in der Testphase aus der Datenbank kommen (Kennzeichen „Testphase“).
+     */
+    testphase?: boolean;
   }): Promise<NutritionLibraryResult | null>;
   /**
    * Essensplan einer Woche speichern (Etappe N5, docs/PLAN-PHASE-5.md 7.3/7.5): ersetzt den Plan derselben Woche.

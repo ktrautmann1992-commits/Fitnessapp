@@ -933,7 +933,10 @@ Quelle: `docs/ERWEITERUNGEN-2.md` Abschnitte 1–2. Startbestand aus `alpha5-rez
   Prüfenden werden beim Einspielen durch „redaktion“ ersetzt und Prüfnotizen entfernt (Wächter N7 H8); die übrigen Spalten
   sind daraus abgeleitet (Server-Prüfungen, Fremdschlüssel). Kategorien als Liste `recipes.categories` (CHECK) statt
   `recipe_categories`/`recipe_category_links`. Eingespielt wird nur **fachlich geprüft** (`meta.expert_reviewed`,
-  Lebensmittel zusätzlich Katalog-Prüfung) – Gründer-Entscheidung 6 serverseitig.
+  Lebensmittel zusätzlich Katalog-Prüfung) – Gründer-Entscheidung 6 serverseitig. **Ausnahme Testphase (Gründer
+  19.10.2026):** `content/einspiel-regeln.json` `"nur_fachlich_geprueft": false` → auch Freigegebenes ohne Fachprüfung,
+  in der App gekennzeichnet „Testphase – noch nicht fachlich geprüft“; vor dem Livegang wieder `true`
+  (PLAN-PHASE-5 „Nachtrag Testphase“).
 - **`nutrition_prefs`** ergänzt um `activity_level`, `training_time` (Enums), `mealprep_slots` (Enum, Standard Mittag),
   `show_energy_numbers` (Standard an), `max_prep_minutes_weekday` (10–120) – kein Gesundheitsdatum.
 - **`meal_plans`** (ein Plan je Person und Woche; `uses_health_data` setzt nur der Server; `inputs` ohne Körperdaten,

@@ -1,4 +1,4 @@
-import { cpSync, readFileSync, writeFileSync } from 'node:fs';
+import { cpSync, mkdirSync, readFileSync, writeFileSync } from 'node:fs';
 import { join } from 'node:path';
 
 import {
@@ -6,7 +6,7 @@ import {
   estimateSessionMinutes,
   validateContent,
 } from '@fitnessapp/core';
-import { demoNutritionContent } from '@fitnessapp/core/demo-nutrition';
+import { DEMO_GUIDES, demoNutritionContent } from '@fitnessapp/core/demo-nutrition';
 import { afterEach, describe, expect, it, vi } from 'vitest';
 
 import { validateRepository } from '../validate';
@@ -554,6 +554,215 @@ describe('content-seed: Ernährung (N7 Teil 2)', () => {
     expect(result.status).toBe('failed');
     expect(result.markdown).toContain('Ernährung nicht eingespielt');
     expect(result.markdown).toContain('nicht fachlich geprüft');
+  });
+});
+
+// ---------------------------------------------------------------------------------------------------------
+// Testphase (Gründer-Entscheidung 19.10.2026): content/einspiel-regeln.json „nur_fachlich_geprueft“
+// ---------------------------------------------------------------------------------------------------------
+
+const TESTPHASE = { requireExpertReview: false } as const;
+
+describe('Ernährungs-Paket in der Testphase', () => {
+  it('freigegeben ohne Fachprüfung → im Paket und in „unreviewed“; Verweise darauf bleiben drin', () => {
+    const base = nutritionResult();
+    const recipe = base.recipes.find((r) =>
+      base.mealPrepPlans.some((p) => p.recipe_ids.includes(r.id)),
+    )!;
+    const food = recipe.ingredients[0]!.food_id;
+    const guide = base.guides[0]!.id;
+    const result = nutritionResult({ notExpert: [food, recipe.id, guide] });
+    const strict = buildNutritionSeedPackage(result);
+    const test = buildNutritionSeedPackage(result, TESTPHASE);
+    // Livegang-Regel (Standard): wartet.
+    expect(strict.waiting).toContainEqual({
+      kind: 'foods',
+      id: food,
+      reason: 'not_expert_reviewed',
+    });
+    expect(strict.unreviewed).toEqual([]);
+    // Testphase: alles drin, nichts wartet, Ungeprüftes ist benannt.
+    expect(test.waiting).toEqual([]);
+    expect(test.package.foods).toHaveLength(result.foods.length);
+    expect(test.package.recipes).toHaveLength(result.recipes.length);
+    expect(test.package.meal_prep_plans).toHaveLength(result.mealPrepPlans.length);
+    expect(test.unreviewed).toEqual(
+      [
+        { kind: 'foods', id: food },
+        { kind: 'guides', id: guide },
+        { kind: 'recipes', id: recipe.id },
+      ].sort((a, b) => (a.kind === b.kind ? (a.id < b.id ? -1 : 1) : a.kind < b.kind ? -1 : 1)),
+    );
+    // Inhalte unverändert – `meta.expert_reviewed = false` kommt so in die Datenbank (data).
+    const seeded = test.package.recipes.find((r) => r.id === recipe.id)!;
+    expect(seeded).toEqual(result.recipes.find((r) => r.id === recipe.id));
+    expect(seeded.meta.expert_reviewed).toBe(false);
+  });
+
+  it('Testphase lockert NUR die Fachprüfung: Entwürfe, Katalog-Prüfung und Prüfvermerk gelten weiter', () => {
+    const base = nutritionResult({ notExpert: [], draft: [] });
+    const food = base.foods[0]!;
+    const entry = base.packageSizes[0]!;
+    const guide = base.guides[0]!.id;
+    const all = nutritionResult({ notExpert: base.recipes.map((r) => r.id), draft: [guide] });
+    const changed: ContentValidationResult = {
+      ...all,
+      foods: all.foods.map((f) =>
+        f.id === food.id
+          ? { ...f, meta: { ...f.meta, catalog_reviewed_by: null, catalog_reviewed_at: null } }
+          : f,
+      ),
+      packageSizes: all.packageSizes.map((x) =>
+        x.id === entry.id ? { ...x, meta: { ...x.meta, reviewed_by: null, reviewed_at: null } } : x,
+      ),
+    };
+    const { package: pkg, waiting } = buildNutritionSeedPackage(changed, TESTPHASE);
+    expect(waiting).toContainEqual({ kind: 'foods', id: food.id, reason: 'not_catalog_reviewed' });
+    expect(waiting).toContainEqual({ kind: 'package_sizes', id: entry.id, reason: 'not_reviewed' });
+    expect(waiting.some((w) => w.reason === 'not_expert_reviewed')).toBe(false);
+    expect(pkg.foods.map((f) => f.id)).not.toContain(food.id);
+    expect(pkg.guides.map((g) => g.id)).not.toContain(guide);
+    expect(pkg.recipes.every((r) => r.status === 'published')).toBe(true);
+    expect(
+      pkg.recipes.every((r) =>
+        r.ingredients.every((i) => pkg.foods.some((f) => f.id === i.food_id)),
+      ),
+    ).toBe(true);
+  });
+});
+
+describe('Testphase: Ratgeber mit Dosierungs-Befund (R21H) brauchen weiter die Fachprüfung (Wächter H1)', () => {
+  // demo-wettkampf nennt „8–10 g Kohlenhydrate pro kg“ (R21H, gelb), demo-unterwegs nicht.
+  it('ohne „fachlich geprüft“ → wartet mit eigenem Grund, auch in der Testphase; der andere Ratgeber kommt mit', () => {
+    const result = nutritionResult({ notExpert: ['demo-wettkampf', 'demo-unterwegs'] });
+    expect(result.issues.some((i) => i.id === 'demo-wettkampf' && i.rule === 'R21H')).toBe(true);
+    const test = buildNutritionSeedPackage(result, TESTPHASE);
+    expect(test.waiting).toEqual([
+      { kind: 'guides', id: 'demo-wettkampf', reason: 'dosage_needs_expert' },
+    ]);
+    expect(test.package.guides.map((g) => g.id)).toEqual(['demo-unterwegs']);
+    expect(test.unreviewed).toContainEqual({ kind: 'guides', id: 'demo-unterwegs' });
+    expect(test.unreviewed).not.toContainEqual({ kind: 'guides', id: 'demo-wettkampf' });
+    // Livegang-Regel: wie bisher „wartet auf die Fachprüfung“.
+    expect(buildNutritionSeedPackage(result).waiting).toContainEqual({
+      kind: 'guides',
+      id: 'demo-wettkampf',
+      reason: 'not_expert_reviewed',
+    });
+  });
+
+  it('fachlich geprüft → kommt mit (Testphase und Livegang)', () => {
+    const result = nutritionResult({ notExpert: ['demo-unterwegs'] });
+    for (const pkg of [
+      buildNutritionSeedPackage(result, TESTPHASE),
+      buildNutritionSeedPackage(result),
+    ]) {
+      expect(pkg.package.guides.map((g) => g.id)).toContain('demo-wettkampf');
+      expect(pkg.waiting.some((w) => w.reason === 'dosage_needs_expert')).toBe(false);
+    }
+  });
+
+  it('runSeed: Grund steht in der Lauf-Zusammenfassung, der Ratgeber geht nicht an die Datenbank', async () => {
+    const r = repo();
+    writeFileSync(
+      join(r.root, 'content/einspiel-regeln.json'),
+      '{ "nur_fachlich_geprueft": false }\n',
+    );
+    const guide = DEMO_GUIDES.find((g) => g.id === 'demo-wettkampf')!;
+    mkdirSync(join(r.root, 'content/guides'), { recursive: true });
+    writeFileSync(
+      join(r.root, 'content/guides/demo-wettkampf.json'),
+      `${JSON.stringify(
+        {
+          ...guide,
+          status: 'published',
+          meta: { ...guide.meta, reviewed_by: 'KT', reviewed_at: '2026-10-15' },
+        },
+        null,
+        2,
+      )}\n`,
+    );
+    const fetchImpl = okFetch();
+    const result = await runSeed({ repoRoot: r.root, env: SUPABASE, fetchImpl });
+    expect(result.status).toBe('seeded');
+    expect(result.nutrition?.waiting).toContainEqual({
+      kind: 'guides',
+      id: 'demo-wettkampf',
+      reason: 'dosage_needs_expert',
+    });
+    expect(result.markdown).toContain('Dosierungs-Befund (R21H)');
+    expect(result.markdown).toContain('`demo-wettkampf`');
+    const call = fetchImpl.mock.calls.find(([url]) => url.endsWith('/rpc/seed_nutrition_content'))!;
+    const body = JSON.parse(String(call[1].body)) as { p_content: NutritionSeedPackage };
+    expect(body.p_content.guides).toEqual([]);
+  });
+});
+
+describe('content-seed: Einspiel-Regel aus content/einspiel-regeln.json', () => {
+  const nutritionBody = (fetchImpl: ReturnType<typeof okFetch>) => {
+    const call = fetchImpl.mock.calls.find(([url]) => url.endsWith('/rpc/seed_nutrition_content'))!;
+    return JSON.parse(String(call[1].body)) as Record<string, unknown>;
+  };
+  const writeRule = (r: TempRepo, text: string) =>
+    writeFileSync(join(r.root, 'content/einspiel-regeln.json'), text);
+
+  it('ohne Datei: Livegang-Regel – Aufruf ohne p_require_expert_review (Standard der Datenbank: true)', async () => {
+    const r = repo();
+    const fetchImpl = okFetch();
+    const result = await runSeed({ repoRoot: r.root, env: SUPABASE, fetchImpl });
+    expect(result.status).toBe('seeded');
+    expect(result.seedSettings).toEqual({ nur_fachlich_geprueft: true });
+    expect(Object.keys(nutritionBody(fetchImpl))).toEqual(['p_content']);
+    expect(result.markdown).toContain('nur fachlich geprüft (Livegang-Regel)');
+    expect(result.markdown).not.toContain('Testphase:');
+  });
+
+  it('„nur_fachlich_geprueft“: true → wie ohne Datei', async () => {
+    const r = repo();
+    writeRule(r, '{ "nur_fachlich_geprueft": true }\n');
+    const fetchImpl = okFetch();
+    const result = await runSeed({ repoRoot: r.root, env: SUPABASE, fetchImpl });
+    expect(result.status).toBe('seeded');
+    expect(nutritionBody(fetchImpl)).not.toHaveProperty('p_require_expert_review');
+  });
+
+  it('„nur_fachlich_geprueft“: false (Testphase) → p_require_expert_review: false und Hinweis im Bericht', async () => {
+    const r = repo();
+    writeRule(r, '{ "nur_fachlich_geprueft": false, "grund": "Testphase" }\n');
+    const fetchImpl = okFetch();
+    const result = await runSeed({ repoRoot: r.root, env: SUPABASE, fetchImpl });
+    expect(result.status).toBe('seeded');
+    expect(nutritionBody(fetchImpl)).toMatchObject({ p_require_expert_review: false });
+    expect(result.markdown).toContain('TESTPHASE');
+    expect(result.markdown).toContain('🧪 Testphase:');
+    expect(result.markdown).toContain('"nur_fachlich_geprueft": true');
+    // Ohne Supabase: dieselbe Regel steht im Bericht.
+    const skipped = await runSeed({ repoRoot: r.root, env: {} });
+    expect(skipped.status).toBe('skipped');
+    expect(skipped.markdown).toContain('TESTPHASE');
+  });
+
+  it('kaputte Datei → blockierender Fehler, nichts eingespielt (auch keine Übungen)', async () => {
+    for (const text of ['{ "nur_fachlich_geprueft": "nein" }', '{', '{}']) {
+      const r = repo();
+      writeRule(r, text);
+      const fetchImpl = okFetch();
+      const result = await runSeed({ repoRoot: r.root, env: SUPABASE, fetchImpl });
+      expect(result.status, text).toBe('blocked');
+      expect(result.exitCode, text).toBe(1);
+      expect(result.markdown, text).toContain('einspiel-regeln.json');
+      expect(fetchImpl, text).not.toHaveBeenCalled();
+    }
+  });
+
+  it('Testphase hebelt den Schutz vor Massen-Archivierung nicht aus', async () => {
+    const r = repo();
+    writeRule(r, '{ "nur_fachlich_geprueft": false }');
+    const fetchImpl = okFetch(undefined, {}, 200, { published: { recipes: ['r1', 'r2'] } });
+    const result = await runSeed({ repoRoot: r.root, env: SUPABASE, fetchImpl });
+    expect(result.status).toBe('mass_archive_blocked');
+    expect(result.markdown).toContain('Testphase');
+    expect(fetchImpl.mock.calls.some(([url]) => url.includes('/rpc/'))).toBe(false);
   });
 });
 

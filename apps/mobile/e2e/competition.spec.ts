@@ -343,6 +343,13 @@ test('Ohne Gesundheits-Check: Einladung aus dem Onboarding-Datum, Ampel „Nicht
     'Noch 102 Tage bis zum 10 km',
   );
   await expect(page.getByTestId('competition-plan-state')).toContainText('Grundlagen-Plan');
+  // Ampel auch in der Übersicht: „Nicht möglich“ mit Grund und Vorschlag, kein Knopf „Wettkampfplan erstellen“.
+  const overviewAmpel = page.getByTestId('competition-overview-ampel');
+  await expect(overviewAmpel.getByTestId('competition-feasibility-not_available')).toHaveText(
+    '✕ Nicht möglich',
+  );
+  await expect(overviewAmpel.getByTestId('competition-reason-health_check_required')).toBeVisible();
+  await expect(page.getByTestId('competition-overview-create-plan')).toHaveCount(0);
   const rows = await storedRows(page);
   expect(rows.competitions[0]).toMatchObject({
     status: 'planned',
@@ -357,6 +364,84 @@ test('Ohne Gesundheits-Check: Einladung aus dem Onboarding-Datum, Ampel „Nicht
     'Noch 102 Tage bis zum 10 km',
   );
   await expect(page.getByTestId('competition-phase-band')).toHaveCount(0);
+});
+
+test('Übersicht bei Grundlagen-Plan: Ampel sichtbar, „Zu kurz“ ohne Knopf, „Passt“ mit Knopf „Wettkampfplan erstellen“', async ({
+  page,
+}) => {
+  await onboard(page, {
+    consent: true,
+    yesQuestion: null,
+    level: /^Fortgeschritten/,
+    goal: 'Ausdauer',
+    discipline: 'Halbmarathon',
+    days: [
+      ['Montag', 'Ausdauer', 60],
+      ['Mittwoch', 'Ausdauer', 60],
+      ['Samstag', 'Ausdauer', 90],
+    ],
+  });
+  await page.getByRole('button', { name: 'Zum Plan' }).click();
+  await heading(page, 'Heute');
+  await page.getByRole('button', { name: 'Einstellungen' }).click();
+  await page.getByTestId('settings-competition').click();
+  await page.getByTestId('competition-add').click();
+  await heading(page, 'Wettkampf eintragen');
+  // 20.12.2026: speicherbar (mindestens 10 Wochen), für Fortgeschrittene aber zu knapp (12 Wochen) → nur Countdown.
+  await fillDate(page, 'Renntag', '20', '12', '2026');
+  await expect(page.getByTestId('competition-feasibility-too_short')).toHaveText('✕ Zu kurz');
+  await page.getByTestId('competition-save-countdown').click();
+
+  // Übersicht: Text verweist auf die sichtbare Ampel, Ampel erklärt sich selbst, kein Knopf bei „Zu kurz“.
+  await heading(page, 'Mein Wettkampf');
+  await expect(page.getByTestId('competition-plan-state')).toHaveText(
+    'Dein aktueller Plan ist ein Grundlagen-Plan. Die Ampel „Machbarkeit“ darunter zeigt, ob ein Wettkampfplan bis zum Renntag sicher machbar ist.',
+  );
+  const ampel = page.getByTestId('competition-overview-ampel');
+  await expect(ampel.getByTestId('competition-feasibility-explain')).toHaveText(
+    'Ampel: Wir prüfen, ob die Zeit bis zum Renntag für einen sicheren Wettkampfplan reicht.',
+  );
+  await expect(ampel.getByTestId('competition-feasibility-too_short')).toHaveText('✕ Zu kurz');
+  await expect(ampel.getByTestId('competition-feasibility')).toHaveAttribute(
+    'aria-label',
+    /^Ampel: Zu kurz\./,
+  );
+  await expect(ampel.getByTestId('competition-reason-lead_time_below_minimum')).toBeVisible();
+  await expect(ampel.getByTestId('competition-suggestion-later_date')).toHaveText(
+    'Späterer Renntag: ab 30.12.2026',
+  );
+  await expect(page.getByTestId('competition-overview-create-plan')).toHaveCount(0);
+
+  // Vorschlag „Späterer Renntag“ → Formular mit übernommenem Datum → als Countdown speichern.
+  await ampel.getByTestId('competition-apply-later_date').click();
+  await heading(page, 'Wettkampf ändern');
+  await expect(page.getByLabel('Renntag: Tag')).toHaveValue('30');
+  await expect(page.getByTestId('competition-feasibility-ok')).toHaveText('✓ Passt');
+  await page.getByTestId('competition-save-countdown').click();
+
+  // „Passt“: Knopf direkt in der Übersicht, gleicher Ablauf mit Bestätigung wie im Formular.
+  await heading(page, 'Mein Wettkampf');
+  await expect(ampel.getByTestId('competition-feasibility-ok')).toHaveText('✓ Passt');
+  const create = page.getByTestId('competition-overview-create-plan');
+  await expect(create).toHaveText('Wettkampfplan erstellen');
+  await create.click();
+  await expect(page.getByText('Plan neu erstellen?')).toBeVisible();
+  await page.getByRole('button', { name: 'Plan neu erstellen' }).click();
+  await expect(page.getByTestId('competition-message')).toContainText(
+    'Dein Wettkampfplan ist fertig',
+  );
+  await expect(page.getByTestId('competition-plan-state')).toHaveText(
+    'Dein Plan ist der Wettkampfplan für diesen Wettkampf.',
+  );
+  // Wettkampfplan aktiv → keine Ampel mehr in der Übersicht.
+  await expect(page.getByTestId('competition-overview-ampel')).toHaveCount(0);
+  const rows = await storedRows(page);
+  expect(rows.competitions).toHaveLength(1);
+  expect(rows.competitions[0]).toMatchObject({
+    status: 'planned',
+    race_date: '2026-12-30',
+    effective_goal: 'finish',
+  });
 });
 
 test('Gesundheits-Flag: Ampel höchstens „Knapp“ mit Hinweis „nur Gehen“, Wettkampfplan ohne harte Einheiten und ohne Pace', async ({
