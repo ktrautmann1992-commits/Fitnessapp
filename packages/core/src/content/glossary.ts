@@ -10,6 +10,7 @@ import {
   isExerciseFeasible,
 } from '../plan/equipment-profile';
 import { isExerciseAllowed, type PlanSafetyRules } from '../plan/safety';
+import { muscleMapHighlights, type MuscleMapHighlights } from './muscle-map';
 import { type Exercise, needsExpertReviewLabel } from './schemas';
 
 /**
@@ -240,6 +241,8 @@ export interface GlossaryEntry {
    * Gesundheitsbezug); null = Regeln unbekannt (keine Aussage).
    */
   readonly availableForMe: boolean | null;
+  /** Muskelkarte: Haupt- und mitbeteiligte Muskeln (Nachtrag „Muskelkarte“). */
+  readonly muscles: MuscleMapHighlights;
   /** Erlaubte, machbare Übungen mit gleichem Muster, nicht schwerer (höchstens GLOSSARY_LIMITS.similarMax). */
   readonly similar: readonly { readonly id: string; readonly name: string }[];
 }
@@ -364,6 +367,7 @@ export function glossaryEntry(exerciseId: string, ctx: GlossaryContext): Glossar
     },
     inMyPlan: ctx.planExerciseIds?.has(exercise.id) ?? false,
     availableForMe: ctx.rules ? isExerciseAllowed(exercise, ctx.rules) : null,
+    muscles: muscleMapHighlights(exercise),
     similar: similarExercises(exercise, ctx).map((e) => ({ id: e.id, name: e.name_de })),
   };
 }

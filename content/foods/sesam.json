@@ -1,0 +1,52 @@
+{
+  "id": "sesam",
+  "version": 1,
+  "status": "draft",
+  "name_de": "Sesam",
+  "aliases_de": [],
+  "shopping_category": "nuts_seeds_dried_fruit",
+  "pantry": true,
+  "nutrients_per_100g": {
+    "kcal": 565,
+    "protein_g": 20.896,
+    "carbs_g": 1.42,
+    "sugar_g": 1.2,
+    "fat_g": 50.4,
+    "sat_fat_g": 7.55,
+    "fiber_g": 11.18,
+    "salt_g": 0.112,
+    "organic_acids_g": 0,
+    "alcohol_g": 0,
+    "polyols_g": null
+  },
+  "units": {},
+  "groups": ["sesame"],
+  "animal": [],
+  "meat_kind": [],
+  "pregnancy_caution": false,
+  "alcohol": false,
+  "max_fridge_days": 3,
+  "freezable": true,
+  "substitutes": [],
+  "source": {
+    "db": "bls",
+    "version": "4.0",
+    "ref": "H420100",
+    "name": "Sesam",
+    "category": "nuts_seeds",
+    "license": "CC BY 4.0",
+    "retrieved_at": "2026-10-19"
+  },
+  "meta": {
+    "origin": "claude_session",
+    "model": "claude-opus-5-5",
+    "batch_id": null,
+    "created_on": "2026-10-19",
+    "expert_reviewed": false,
+    "reviewed_by": null,
+    "reviewed_at": null,
+    "review_note": null,
+    "catalog_reviewed_by": null,
+    "catalog_reviewed_at": null
+  }
+}

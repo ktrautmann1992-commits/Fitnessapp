@@ -366,6 +366,9 @@ describe('glossaryEntry', () => {
     expect(entry?.tips).toEqual(kniebeuge.tips_de);
     expect(entry?.mistakes).toEqual(kniebeuge.common_mistakes_de);
     expect(entry?.safetyNote).toBe(kniebeuge.safety_note_de);
+    // Muskelkarte aus den Muskel-Listen der Übung.
+    expect(entry?.muscles.primary).toEqual(kniebeuge.primary_muscles);
+    expect(entry?.muscles.regions[kniebeuge.primary_muscles[0]!]).toBe('primary');
     expect(glossaryEntry('wandsitzen', ctx())).toMatchObject({
       loadType: 'hold',
       difficulty: 'easy',

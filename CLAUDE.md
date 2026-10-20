@@ -79,7 +79,14 @@ Supplementplan und ein Trainingstagebuch erzeugt – inkl. Zyklus-Berücksichtig
 
 ### Kein Teilen, keine Community
 - Kein Teilen, keine Community, keine Ranglisten, keine öffentlichen Profile. Strecken, Fotos, Abzeichen und Challenges bleiben privat.
-- Erlaubt bleibt nur der Partner-Modus (zwei Personen, beidseitige Zustimmung, nur freigegebene Bereiche) – das ist kein öffentliches Teilen.
+- Erlaubt bleibt der Partner-Modus (zwei Personen, beidseitige Zustimmung, nur freigegebene Bereiche) – das ist kein öffentliches Teilen.
+- **Ausnahme (Gründer-Entscheidung 20.10.2026): Einzelne Lauf-/Ausdauer- und Trainingseinheiten dürfen als Bild geteilt
+  werden** (z. B. Instagram-Story im Hochformat, Facebook, WhatsApp) – nur auf ausdrücklichen Tipp der Person, über den
+  System-Teilen-Dialog bzw. als gespeichertes Bild. Pflicht dabei:
+  - **Privatzone:** Anfang und Ende einer Strecke (ca. 200 m) werden abgeschnitten; Karte abschaltbar.
+  - **Keine Gesundheitsdaten** auf dem Bild (kein Puls, Gewicht, Körperdaten, Zyklus, Gesundheits-Check).
+  - Kein automatisches Teilen, keine Verknüpfung mit Konten sozialer Netzwerke, kein Hochladen auf eigene Server,
+    keine öffentlichen Profile, Ranglisten oder Feeds in der App.
 
 ### Affiliate & Werbung
 - Affiliate-Links immer sichtbar als „Anzeige“/„Werbung“ kennzeichnen.

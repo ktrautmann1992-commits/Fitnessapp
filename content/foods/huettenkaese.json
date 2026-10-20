@@ -1,0 +1,52 @@
+{
+  "id": "huettenkaese",
+  "version": 1,
+  "status": "draft",
+  "name_de": "Hüttenkäse",
+  "aliases_de": [],
+  "shopping_category": "chilled_dairy_eggs",
+  "pantry": false,
+  "nutrients_per_100g": {
+    "kcal": 109,
+    "protein_g": 13.3,
+    "carbs_g": 3.64,
+    "sugar_g": 3.64,
+    "fat_g": 4.3,
+    "sat_fat_g": 2.205,
+    "fiber_g": 0,
+    "salt_g": 0.575,
+    "organic_acids_g": 0.919,
+    "alcohol_g": 0,
+    "polyols_g": 0
+  },
+  "units": {},
+  "groups": ["dairy", "lactose"],
+  "animal": ["dairy"],
+  "meat_kind": [],
+  "pregnancy_caution": false,
+  "alcohol": false,
+  "max_fridge_days": 3,
+  "freezable": true,
+  "substitutes": [],
+  "source": {
+    "db": "bls",
+    "version": "4.0",
+    "ref": "M711300",
+    "name": "Körniger Frischkäse mind. 20 % Fett i. Tr.",
+    "category": "dairy",
+    "license": "CC BY 4.0",
+    "retrieved_at": "2026-10-19"
+  },
+  "meta": {
+    "origin": "claude_session",
+    "model": "claude-opus-5-5",
+    "batch_id": null,
+    "created_on": "2026-10-19",
+    "expert_reviewed": false,
+    "reviewed_by": null,
+    "reviewed_at": null,
+    "review_note": null,
+    "catalog_reviewed_by": null,
+    "catalog_reviewed_at": null
+  }
+}

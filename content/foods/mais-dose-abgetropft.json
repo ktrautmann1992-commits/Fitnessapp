@@ -1,0 +1,52 @@
+{
+  "id": "mais-dose-abgetropft",
+  "version": 1,
+  "status": "draft",
+  "name_de": "Mais (Dose, abgetropft)",
+  "aliases_de": [],
+  "shopping_category": "legumes_canned",
+  "pantry": true,
+  "nutrients_per_100g": {
+    "kcal": 79,
+    "protein_g": 2.71,
+    "carbs_g": 10.84,
+    "sugar_g": 6.22,
+    "fat_g": 1.94,
+    "sat_fat_g": 0.384,
+    "fiber_g": 3.59,
+    "salt_g": 0.3725,
+    "organic_acids_g": 0.151,
+    "alcohol_g": 0,
+    "polyols_g": 0.095
+  },
+  "units": {},
+  "groups": [],
+  "animal": [],
+  "meat_kind": [],
+  "pregnancy_caution": false,
+  "alcohol": false,
+  "max_fridge_days": 3,
+  "freezable": true,
+  "substitutes": [],
+  "source": {
+    "db": "bls",
+    "version": "4.0",
+    "ref": "G570902",
+    "name": "Zuckermais Konserve, abgetropft",
+    "category": "vegetables",
+    "license": "CC BY 4.0",
+    "retrieved_at": "2026-10-19"
+  },
+  "meta": {
+    "origin": "claude_session",
+    "model": "claude-opus-5-5",
+    "batch_id": null,
+    "created_on": "2026-10-19",
+    "expert_reviewed": false,
+    "reviewed_by": null,
+    "reviewed_at": null,
+    "review_note": null,
+    "catalog_reviewed_by": null,
+    "catalog_reviewed_at": null
+  }
+}
