@@ -39,6 +39,7 @@ export function RouteMap({ points }: { points: readonly { lat: number; lng: numb
             incognito
             cacheEnabled
             setSupportMultipleWindows={false}
+            nestedScrollEnabled
             allowsLinkPreview={false}
             onShouldStartLoadWithRequest={(request) =>
               request.url === 'about:blank' || request.url.startsWith('data:')

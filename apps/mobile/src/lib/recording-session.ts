@@ -19,13 +19,39 @@ import { z } from 'zod';
 
 export type RecordingMode = 'gps' | 'demo';
 
-/** Gesicherter Stand: Aufzeichnung + Fortschritt des Speicherns (Tagebuch-Eintrag schon angelegt → nie doppelt). */
+/**
+ * Gesicherter Stand (Format 2, kompakt): Punkte als Zahlen-Tupel [Breite × 1e6, Länge × 1e6, ms seit Beginn des
+ * Teilstücks, Genauigkeit in m, Höhe in dm] – ca. 35 Bytes je Punkt. So bleibt auch eine 12-h-Aufzeichnung (bei 1
+ * Punkt je 2 s) verschlüsselt deutlich unter 2 MB (Android-AsyncStorage liest größere Einträge nicht zuverlässig).
+ */
+const compactPointSchema = z.tuple([
+  z.number().int(),
+  z.number().int(),
+  z.number().int().nonnegative(),
+  z.number().nonnegative().nullable(),
+  z.number().int().nullable(),
+]);
+
 const persistedSchema = z.strictObject({
-  v: z.literal(1),
+  v: z.literal(2),
   mode: z.enum(['gps', 'demo']),
   /** id des schon angelegten Tagebuch-Eintrags (Speichern begonnen); null = noch keiner. */
   diaryLogId: z.uuid().nullable(),
-  state: recordingStateSchema,
+  state: z.strictObject({
+    format: z.literal(1),
+    id: z.string(),
+    ownerUserId: z.string(),
+    sport: z.string(),
+    baseRouteId: z.string().nullable(),
+    status: z.string(),
+    segments: z.array(
+      z.strictObject({
+        startT: z.number().int(),
+        endT: z.number().int().nullable(),
+        p: z.array(compactPointSchema),
+      }),
+    ),
+  }),
 });
 
 export interface PersistedRecording {
@@ -35,8 +61,8 @@ export interface PersistedRecording {
 }
 
 /**
- * Gesicherten Stand prüfen (Zod): kaputt oder anderes Konto → null (nie anbieten). Eine beim Absturz laufende
- * Aufzeichnung wird beim letzten Punkt pausiert – „Fortsetzen“ startet den Standort erst auf Tipp neu.
+ * Gesicherten Stand prüfen (Zod, danach recordingStateSchema): kaputt oder anderes Konto → null (nie anbieten). Eine
+ * beim Absturz laufende Aufzeichnung wird beim letzten Punkt pausiert – „Fortsetzen“ startet den Standort erst auf Tipp.
  */
 export function parsePersistedRecording(
   text: string | null,
@@ -49,20 +75,56 @@ export function parsePersistedRecording(
   } catch {
     return null;
   }
-  const parsed = persistedSchema.safeParse(json);
-  if (!parsed.success || parsed.data.state.ownerUserId !== ownerUserId) return null;
-  const state = parsed.data.state as RecordingState;
+  const outer = persistedSchema.safeParse(json);
+  if (!outer.success) return null;
+  const expanded = {
+    ...outer.data.state,
+    segments: outer.data.state.segments.map((segment) => ({
+      startT: segment.startT,
+      endT: segment.endT,
+      points: segment.p.map(([lat, lng, dt, accuracy, altitude]) => ({
+        lat: lat / 1e6,
+        lng: lng / 1e6,
+        t: segment.startT + dt,
+        accuracyM: accuracy,
+        altitudeM: altitude === null ? null : altitude / 10,
+      })),
+    })),
+  };
+  const parsed = recordingStateSchema.safeParse(expanded);
+  if (!parsed.success || parsed.data.ownerUserId !== ownerUserId) return null;
+  const state = parsed.data as RecordingState;
   const current = state.segments.at(-1);
   const lastT = current?.points.at(-1)?.t ?? current?.startT ?? 0;
   return {
-    mode: parsed.data.mode,
-    diaryLogId: parsed.data.diaryLogId,
+    mode: outer.data.mode,
+    diaryLogId: outer.data.diaryLogId,
     state: state.status === 'recording' ? pauseRecording(state, lastT) : state,
   };
 }
 
 export function serializeRecording(value: PersistedRecording): string {
-  return JSON.stringify({ v: 1, ...value });
+  return JSON.stringify({
+    v: 2,
+    mode: value.mode,
+    diaryLogId: value.diaryLogId,
+    state: {
+      ...value.state,
+      segments: value.state.segments.map((segment) => ({
+        startT: segment.startT,
+        endT: segment.endT,
+        p: segment.points.map((point) => [
+          Math.round(point.lat * 1e6),
+          Math.round(point.lng * 1e6),
+          Math.max(0, Math.round(point.t - segment.startT)),
+          point.accuracyM == null ? null : Math.round(point.accuracyM * 10) / 10,
+          point.altitudeM == null || !Number.isFinite(point.altitudeM)
+            ? null
+            : Math.round(point.altitudeM * 10),
+        ]),
+      })),
+    },
+  });
 }
 
 type Persist = (text: string | null) => Promise<void>;

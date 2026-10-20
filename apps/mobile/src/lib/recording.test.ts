@@ -34,13 +34,32 @@ describe('Sicherung der Aufzeichnung (Wiederaufnahme nach Absturz)', () => {
     expect(parsePersistedRecording(text, 'user-b')).toBeNull();
     expect(parsePersistedRecording('{kaputt', 'user-a')).toBeNull();
     expect(parsePersistedRecording(null, 'user-a')).toBeNull();
-    expect(parsePersistedRecording(JSON.stringify({ v: 2, state: base }), 'user-a')).toBeNull();
+    expect(parsePersistedRecording(JSON.stringify({ v: 1, state: base }), 'user-a')).toBeNull();
     expect(
       parsePersistedRecording(
         text.replace('"diaryLogId":null', '"diaryLogId":"kein-uuid"'),
         'user-a',
       ),
     ).toBeNull();
+  });
+
+  it('kompakt: 12 h mit 1 Punkt je 2 s bleiben unter 1,2 MB; Werte bleiben auf ca. 0,1 m genau', () => {
+    let state = startRecording({ id: ID, ownerUserId: 'user-a', sport: 'run', now: 0 });
+    const points = Array.from({ length: 21_600 }, (_, i) => ({
+      lat: 50.123456 + i * 0.00001,
+      lng: 6.987654 + i * 0.00001,
+      t: (i + 1) * 2000,
+      accuracyM: 4.3,
+      altitudeM: 52.37,
+    }));
+    state = addRecordingPoints(state, points);
+    const text = serializeRecording({ mode: 'gps', diaryLogId: null, state });
+    expect(text.length).toBeLessThan(1_200_000);
+    const restored = parsePersistedRecording(text, 'user-a');
+    const p = restored?.state.segments[0]?.points[100];
+    expect(p?.lat).toBeCloseTo(points[100]!.lat, 6);
+    expect(p?.t).toBe(points[100]!.t);
+    expect(p?.altitudeM).toBeCloseTo(52.4, 6);
   });
 
   it('Sitzung: sichert höchstens alle 30 s, bei force sofort; reset löscht die Sicherung', async () => {
