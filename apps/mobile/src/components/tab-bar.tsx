@@ -13,7 +13,7 @@ import { useThemeColors } from '@/lib/theme';
  * Untere Menüleiste (docs/PLAN-DASHBOARD.md 3; seit 20.10.2026 docs/PLAN-EINKAUFEN-AUSDAUER.md EA-1 und 4): die
  * Knöpfe kommen aus der Anordnung der Person (`useAppLayout`, Regeln in packages/core/src/layout.ts) – Standard
  * Übersicht · Training · Workouts · Ernährung · Einkaufen · Mehr (Workouts nur, wenn der Bereich vorhanden ist).
- * „Fortschritt“ steht als Kachel und unter „Mehr“. Ist ein Bereich ohne Knopf geöffnet, ist kein Knopf markiert.
+ * „Fortschritt“ steht als Kachel und unter „Mehr“, ebenso „Wettkampf“ (wählbar, nicht im Standard). Ist ein Bereich ohne Knopf geöffnet, ist kein Knopf markiert.
  * Bei 6 Knöpfen etwas kleinere Schrift und Symbol-Fläche, damit es auch auf 320 px breiten Handys passt. Farben aus
  * den Design-Tokens (hell/dunkel), Tippfläche ≥ 56 px, für Bildschirmleser Rolle „Tab“ mit „ausgewählt“.
  */
@@ -39,6 +39,8 @@ export function tabLabel(name: TabName): string {
       return t.tabs.nutrition;
     case 'einkaufsliste':
       return t.tabs.shopping;
+    case 'wettkampf':
+      return t.tabs.competition;
     case 'fortschritt':
       return t.tabs.progress;
     case 'mehr':
@@ -122,7 +124,9 @@ export function TabBar({ state, navigation }: TabBarProps) {
                   styles.label,
                   compact && styles.labelCompact,
                   { color: focused ? theme.text : theme.textMuted },
-                  focused && styles.labelFocused,
+                  // Bei 6 Knöpfen bleibt die Schrift halbfett (sonst passt z. B. „Wettkampf“ auf 320 px nicht ganz);
+                  // markiert ist der Knopf dann über Fläche, Farbe und „ausgewählt“.
+                  focused && !compact && styles.labelFocused,
                 ]}
               >
                 {tabLabel(route.name)}
@@ -183,6 +187,12 @@ function TabIcon({ name, color }: { name: TabName; color: string }) {
           <Circle cx={9.5} cy={19.5} r={1.4} fill={color} />
           <Circle cx={17} cy={19.5} r={1.4} fill={color} />
         </>
+      ) : name === 'wettkampf' ? (
+        // Fahne am Ziel (Wettkampf).
+        <>
+          <Path d="M5 21V4" {...stroke} />
+          <Path d="M5 4.5h12.5l-2.5 4 2.5 4H5" {...stroke} />
+        </>
       ) : name === 'fortschritt' ? (
         <>
           <Path d="M4 20h16" {...stroke} />
@@ -234,6 +244,7 @@ const styles = StyleSheet.create({
   },
   labelCompact: {
     fontSize: fontSize.sm - 3,
+    letterSpacing: -0.2,
   },
   labelFocused: {
     fontWeight: fontWeight.bold,

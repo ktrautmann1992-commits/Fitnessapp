@@ -11,6 +11,7 @@ export const AVAILABLE_AREAS: readonly NavArea[] = [
   'workouts',
   'ernaehrung',
   'einkaufsliste',
+  'wettkampf',
   'fortschritt',
   'mehr',
 ];

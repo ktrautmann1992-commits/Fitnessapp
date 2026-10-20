@@ -1,6 +1,7 @@
 import {
   addDays,
   competitionCountdown,
+  isoDateSchema,
   entryDateBlock,
   isBackfilledLog,
   type MoveTarget,
@@ -10,7 +11,7 @@ import {
   weekOverview,
 } from '@fitnessapp/core';
 import { spacing } from '@fitnessapp/ui';
-import { Redirect, useFocusEffect, useRouter, type Href } from 'expo-router';
+import { Redirect, useFocusEffect, useLocalSearchParams, useRouter, type Href } from 'expo-router';
 import { useCallback, useLayoutEffect, useMemo, useRef, useState } from 'react';
 import { AccessibilityInfo, Platform, StyleSheet, View } from 'react-native';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
@@ -56,7 +57,16 @@ export default function CalendarScreen() {
   const router = useRouter();
   const app = useApp();
   const today = todayIso();
-  const [week, setWeek] = useState(() => startOfIsoWeek(today));
+  // ?woche=JJJJ-MM-TT öffnet die Woche dieses Tages (z. B. aus „So ist dein Plan aufgebaut“ auf /wettkampf); außerhalb
+  // des Kalender-Zeitraums gilt wie beim Blättern die nächstliegende Woche.
+  const params = useLocalSearchParams<{ woche?: string }>();
+  const [week, setWeek] = useState(() =>
+    startOfIsoWeek(
+      typeof params.woche === 'string' && isoDateSchema.safeParse(params.woche).success
+        ? params.woche
+        : today,
+    ),
+  );
   const [busy, setBusy] = useState(false);
   const [feedback, setFeedback] = useState<Feedback | null>(null);
   const [menuFor, setMenuFor] = useState<string | null>(null);

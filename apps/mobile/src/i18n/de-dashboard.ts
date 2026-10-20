@@ -14,6 +14,7 @@ export const deTabs = {
   progress: 'Fortschritt',
   shopping: 'Einkaufen',
   workouts: 'Workouts',
+  competition: 'Wettkampf',
   more: 'Mehr',
 } as const;
 
@@ -114,6 +115,7 @@ export const deDashboard = {
     allHiddenHint: 'Über „Bearbeiten“ holst du sie zurück.',
     tiles: {
       training: 'Training heute',
+      competition: 'Mein Wettkampf',
       workouts: 'Workouts',
       nutrition: 'Ernährung heute',
       body: 'Körperdaten',
@@ -121,6 +123,34 @@ export const deDashboard = {
       endurance: 'Ausdauer',
       shortcuts: 'Schnell zu',
     },
+  },
+  /** Kachel „Mein Wettkampf“ (Gründer-Rückmeldung 20.10.2026: Wettkampfplan leicht finden). */
+  competition: {
+    title: 'Mein Wettkampf',
+    none: 'Du hast noch keinen Wettkampf eingetragen. Trag einen Lauf, ein Radrennen oder einen Triathlon ein – wir planen rückwärts vom Renntag.',
+    plan: 'Wettkampf planen',
+    planA11y: 'Wettkampf planen: Renntag und Distanz eintragen',
+    open: 'Wettkampfplan ansehen',
+    openA11y: (name: string) => `Wettkampfplan für ${name} ansehen`,
+    unreadable:
+      'Dein Wettkampf konnte gerade nicht gelesen werden. Öffne „Mein Wettkampf“ und prüfe die Angaben.',
+    unreadableOpen: 'Mein Wettkampf öffnen',
+    raceDate: (date: string) => `Renntag: ${date}`,
+    /** Countdown mit Wochen (ab 14 Tagen), z. B. „Noch 30 Tage (gut 4 Wochen)“. */
+    countdown: (days: number) =>
+      days === 1
+        ? 'Noch 1 Tag'
+        : days < 14
+          ? `Noch ${days} Tage`
+          : days % 7 === 0
+            ? `Noch ${days} Tage (${days / 7} Wochen)`
+            : `Noch ${days} Tage (gut ${Math.floor(days / 7)} Wochen)`,
+    planActive: '✓ Wettkampfplan aktiv',
+    planActiveA11y: 'Wettkampfplan aktiv',
+    feasibility: (symbol: string, label: string) => `Machbarkeit: ${symbol} ${label}`,
+    feasibilityA11y: (label: string) => `Machbarkeit: ${label}`,
+    check: 'Machbarkeit: bitte im Wettkampf prüfen',
+    noPlan: 'Noch kein Wettkampfplan – im Wettkampf siehst du die Ampel und kannst ihn erstellen.',
   },
   shortcuts: {
     title: 'Schnell zu',

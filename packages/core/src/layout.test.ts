@@ -72,6 +72,7 @@ describe('normalizeLayout', () => {
       { id: 'endurance', visible: true },
       { id: 'shortcuts', visible: true },
       { id: 'training', visible: true },
+      { id: 'competition', visible: true },
       { id: 'workouts', visible: true },
       { id: 'nutrition', visible: true },
       { id: 'body', visible: true },
@@ -91,12 +92,53 @@ describe('normalizeLayout', () => {
     expect(layout.tiles.map((t) => t.id)).toEqual([
       'shortcuts',
       'training',
+      'competition',
       'workouts',
       'nutrition',
       'body',
       'progress',
       'endurance',
     ]);
+  });
+
+  it('„Mein Wettkampf“ in einer gespeicherten Anordnung von vor dem 20.10.2026: an der Standardstelle, sichtbar', () => {
+    // Gespeicherte Fassung ohne „competition“ (alle 7 alten Kacheln, eigene Reihenfolge, teils ausgeblendet).
+    const old = {
+      dashboard_tiles: [
+        { id: 'nutrition', visible: true },
+        { id: 'training', visible: true },
+        { id: 'workouts', visible: false },
+        { id: 'body', visible: true },
+        { id: 'progress', visible: true },
+        { id: 'endurance', visible: true },
+        { id: 'shortcuts', visible: true },
+      ],
+      tab_bar: ['uebersicht', 'today', 'workouts', 'ernaehrung', 'einkaufsliste', 'mehr'],
+    };
+    const layout = normalizeLayout(old);
+    expect(layout.tiles.slice(0, 4)).toEqual([
+      { id: 'nutrition', visible: true },
+      { id: 'training', visible: true },
+      { id: 'competition', visible: true },
+      { id: 'workouts', visible: false },
+    ]);
+    expect(layout.tiles).toHaveLength(DASHBOARD_TILES.length);
+    // Standard: direkt hinter „Training heute“ (weit oben).
+    expect(
+      defaultLayout()
+        .tiles.map((t) => t.id)
+        .slice(0, 2),
+    ).toEqual(['training', 'competition']);
+    // Ohne „Training heute“ im Speicher: „Training heute“ und „Mein Wettkampf“ kommen ganz nach oben.
+    expect(
+      normalizeLayout({ ...old, dashboard_tiles: old.dashboard_tiles.slice(2) }).tiles[0],
+    ).toEqual({ id: 'training', visible: true });
+    expect(
+      normalizeLayout({ ...old, dashboard_tiles: old.dashboard_tiles.slice(2) }).tiles[1],
+    ).toEqual({ id: 'competition', visible: true });
+    // Die Menüleiste bleibt, wie sie war (kein neuer Knopf „Wettkampf“).
+    expect(layout.tabs).toEqual(old.tab_bar);
+    expect(normalizeLayout(toStoredLayout(layout))).toEqual(layout);
   });
 
   it('Regeln erzwungen: Übersicht links, Mehr rechts, auch wenn sie fehlen bzw. falsch stehen; höchstens 6', () => {
@@ -123,7 +165,7 @@ describe('normalizeLayout', () => {
     expect(normalizeLayout(stored, WITHOUT_WORKOUTS).tabs).not.toContain('workouts');
     const own = { ...toStoredLayout(defaultLayout(WITHOUT_WORKOUTS)) };
     expect(normalizeLayout(own).tabs).not.toContain('workouts');
-    expect(areasInMore(normalizeLayout(own))).toEqual(['workouts', 'fortschritt']);
+    expect(areasInMore(normalizeLayout(own))).toEqual(['workouts', 'wettkampf', 'fortschritt']);
   });
 
   it('idempotent', () => {
@@ -141,11 +183,15 @@ describe('Kacheln', () => {
     expect(moveTile(layout, 'training', 'up')).toBe(layout);
     expect(moveTile(layout, 'shortcuts', 'down')).toBe(layout);
     const moved = moveTile(layout, 'workouts', 'up');
-    expect(moved.tiles.map((t) => t.id).slice(0, 2)).toEqual(['workouts', 'training']);
-    expect(tilePosition(moved, 'workouts')).toEqual({ index: 1, count: 7 });
+    expect(moved.tiles.map((t) => t.id).slice(0, 3)).toEqual([
+      'training',
+      'workouts',
+      'competition',
+    ]);
+    expect(tilePosition(moved, 'workouts')).toEqual({ index: 2, count: 8 });
     expect(tilePosition(moveTile(moved, 'workouts', 'down'), 'workouts')).toEqual({
-      index: 2,
-      count: 7,
+      index: 3,
+      count: 8,
     });
   });
 
@@ -182,6 +228,11 @@ describe('Menüleiste', () => {
     const added = setTabShown(layout, 'fortschritt', true);
     expect(added.ok && added.layout.tabs).toEqual(['uebersicht', 'today', 'fortschritt', 'mehr']);
     expect(setTabShown(layout, 'today', true)).toEqual({ ok: true, layout });
+    // „Wettkampf“ ist wählbar wie jeder Bereich (vor „Mehr“), aber nur bis 6 Knöpfe.
+    const race = setTabShown(layout, 'wettkampf', true);
+    expect(race.ok && race.layout.tabs).toEqual(['uebersicht', 'today', 'wettkampf', 'mehr']);
+    expect(setTabShown(full, 'wettkampf', true)).toEqual({ ok: false, reason: 'max' });
+    expect(defaultLayout().tabs).not.toContain('wettkampf');
   });
 
   it('verschieben nur zwischen Übersicht und Mehr', () => {
@@ -201,8 +252,12 @@ describe('Menüleiste', () => {
   });
 
   it('„Mehr“ zeigt alle Bereiche ohne Knopf; sameLayout', () => {
-    expect(areasInMore(defaultLayout())).toEqual(['fortschritt']);
-    expect(areasInMore(defaultLayout(WITHOUT_WORKOUTS), WITHOUT_WORKOUTS)).toEqual(['fortschritt']);
+    // „Wettkampf“ ist nicht im Standard, steht unter „Mehr“ als erster Bereich.
+    expect(areasInMore(defaultLayout())).toEqual(['wettkampf', 'fortschritt']);
+    expect(areasInMore(defaultLayout(WITHOUT_WORKOUTS), WITHOUT_WORKOUTS)).toEqual([
+      'wettkampf',
+      'fortschritt',
+    ]);
     expect(sameLayout(defaultLayout(), defaultLayout())).toBe(true);
     expect(sameLayout(defaultLayout(), moveTile(defaultLayout(), 'body', 'up'))).toBe(false);
   });

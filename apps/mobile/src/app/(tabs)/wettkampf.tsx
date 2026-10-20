@@ -23,7 +23,7 @@ import { Redirect, useLocalSearchParams, useRouter, type Href } from 'expo-route
 import { useMemo, useState } from 'react';
 import { View } from 'react-native';
 
-import { CountdownCard, FeasibilityCard } from '@/components/competition';
+import { CompetitionOutlineCard, CountdownCard, FeasibilityCard } from '@/components/competition';
 import { ConfirmDialog, DateInput, Screen } from '@/components/screen';
 import {
   Body,
@@ -57,6 +57,7 @@ import {
   resultLogToReuse,
   shownFeasibility,
 } from '@/data/competition';
+import { competitionOutlineFromRows } from '@/data/competition-dashboard';
 import { newId } from '@/data/create-backend';
 import { activePlan } from '@/data/training-plan';
 import { createFreeDraft, setCardioFields, setSessionFields } from '@/data/workout-draft';
@@ -257,6 +258,15 @@ export default function CompetitionScreen() {
   /** ID des eben gespeicherten Ergebnis-Eintrags (für den erneuten Versuch ohne zweiten Eintrag, M6). */
   const [savedResultLog, setSavedResultLog] = useState<string | null>(null);
 
+  // Seit 20.10.2026 ist /wettkampf ein Reiter und bleibt geladen: „Wettkampf planen“ (?neu=1) öffnet das Formular auch,
+  // wenn die Seite schon einmal offen war (der Anfangswert von `mode` greift dann nicht mehr). Muster „Zustand beim
+  // Rendern anpassen“ statt Effekt: nur ein NEUER Aufruf mit ?neu=1 wechselt ins Formular.
+  const [seenNeu, setSeenNeu] = useState(params.neu);
+  if (params.neu !== seenNeu) {
+    setSeenNeu(params.neu);
+    if (params.neu === '1' && !planned && rows) setMode('form');
+  }
+
   const ownStartAllowed = ownStartAllowedLevel(level);
   const parsed = useMemo(() => draftOf(form, today), [form, today]);
   const feasibility = useMemo(
@@ -265,6 +275,11 @@ export default function CompetitionScreen() {
         ? draftFeasibility(rows, app.versions, active, parsed.draft, today)
         : null,
     [active, app.versions, parsed.draft, rows, today],
+  );
+  // „So ist dein Plan aufgebaut“: Phasen-Zeitleiste nur bei passendem Wettkampfplan (Regel in data/competition-dashboard).
+  const outline = useMemo(
+    () => (rows ? competitionOutlineFromRows(rows, active, app.safetyRules, today) : null),
+    [active, app.safetyRules, rows, today],
   );
   // Übersicht: Ampel für den gespeicherten Wettkampf, wenn der Plan kein passender Wettkampfplan ist (gleiche Rechnung).
   const overview = useMemo(
@@ -312,6 +327,8 @@ export default function CompetitionScreen() {
 
   /** Zurück zur Übersicht; Ablehnung und Fehler gehörten zum Formular. */
   function showOverview() {
+    // ?neu=1 erledigt – so öffnet ein späteres „Wettkampf planen“ das Formular wieder (Reiter bleibt geladen).
+    if (params.neu !== undefined) router.setParams({ neu: undefined });
     setMode('view');
     setNotFeasible(null);
     setError(undefined);
@@ -1011,6 +1028,13 @@ export default function CompetitionScreen() {
               ) : null}
             </View>
           </Card>
+          {/* Gründer-Rückmeldung 20.10.2026: Aufbau des Plans direkt unter der Zusammenfassung. */}
+          {outline && shownEntry.row.status === 'planned' ? (
+            <CompetitionOutlineCard
+              outline={outline}
+              onOpenWeek={(monday) => router.push(`/kalender?woche=${monday}` as Href)}
+            />
+          ) : null}
           {/* Ampel direkt in der Übersicht (Grundlagen-Plan bzw. Plan passt nicht mehr) – wie im Formular. */}
           {overviewAmpel && overviewShown ? (
             <View style={{ gap: 8 }} testID="competition-overview-ampel">

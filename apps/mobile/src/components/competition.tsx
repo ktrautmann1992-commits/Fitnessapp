@@ -6,6 +6,8 @@ import {
   type CompetitionCountdown,
   type CompetitionDiscipline,
   type CompetitionFeasibility,
+  type CompetitionOutlineWeek,
+  type CompetitionPlanOutline,
   type CompetitionPlanWeek,
   type FeasibilitySuggestion,
   INTERVAL_CLOCK_IDLE,
@@ -18,7 +20,7 @@ import {
 } from '@fitnessapp/core';
 import { fontSize, fontWeight, radius, spacing } from '@fitnessapp/ui';
 import { useEffect, useRef, useState } from 'react';
-import { Platform, StyleSheet, Text, View } from 'react-native';
+import { Platform, Pressable, StyleSheet, Text, View } from 'react-native';
 
 import { t } from '@/i18n';
 import {
@@ -27,6 +29,10 @@ import {
   countdownText,
   feasibilityFacts,
   feasibilityHeadline,
+  outlinePhaseDates,
+  outlinePhaseTitle,
+  outlineStatusText,
+  outlineWeekLabel,
   phaseBandText,
   stepLines,
   stepTitle,
@@ -37,7 +43,7 @@ import { alertStepChange } from '@/lib/step-alert';
 import { useThemeColors } from '@/lib/theme';
 
 import { ConfirmDialog } from './screen';
-import { Body, Button, Card, Heading, Notice } from './ui';
+import { Body, Button, Card, Heading, MIN_TOUCH, Notice } from './ui';
 
 /**
  * Bausteine zum Wettkampf (Etappe WP4, docs/PLAN-PHASE-10.md Abschnitt 8): Ampel, Countdown, Phasen-Band, Ablauf einer
@@ -215,6 +221,143 @@ export function PhaseBand({
         </Body>
       ) : null}
     </View>
+  );
+}
+
+// ---------------------------------------------------------------------------------------------------------
+// So ist dein Plan aufgebaut (Zeitleiste der Phasen, Gründer-Rückmeldung 20.10.2026)
+// ---------------------------------------------------------------------------------------------------------
+
+/**
+ * Alle Phasen des Wettkampfplans untereinander (schmale Bildschirme): Name mit Wochen-Spanne, Datum, ein Satz „Was
+ * passiert hier“, Umfangs-Trend und die Wochen als Kästchen (aktuelle Woche, Erholungs- und Rennwoche mit Wort). Tipp
+ * auf eine Woche öffnet sie im Kalender (`onOpenWeek`), sofern der Kalender sie zeigt.
+ */
+export function CompetitionOutlineCard({
+  outline,
+  onOpenWeek,
+}: {
+  outline: CompetitionPlanOutline;
+  onOpenWeek: (monday: string) => void;
+}) {
+  const theme = useThemeColors();
+  const O = C.outline;
+  return (
+    <Card>
+      <View style={styles.block} testID="competition-outline">
+        <Heading level={2}>{O.title}</Heading>
+        <Body testID="competition-outline-status">{outlineStatusText(outline)}</Body>
+        <Body muted>{O.intro(outline.totalWeeks)}</Body>
+        <View style={styles.outlineList} role="list" aria-label={O.title}>
+          {outline.phases.map((phase) => {
+            const title = outlinePhaseTitle(phase);
+            const dates = outlinePhaseDates(phase);
+            return (
+              <View
+                key={`${phase.phase}-${phase.from}`}
+                role="listitem"
+                testID={`competition-outline-phase-${phase.phase}`}
+                style={[
+                  styles.outlinePhase,
+                  {
+                    borderColor: phase.current ? theme.primary : theme.border,
+                    borderLeftWidth: phase.current ? 6 : 3,
+                  },
+                ]}
+              >
+                <Text
+                  accessibilityRole="header"
+                  aria-level={3}
+                  accessibilityLabel={title.a11y}
+                  style={[styles.outlinePhaseTitle, { color: theme.text }]}
+                >
+                  {title.text}
+                </Text>
+                <Body muted accessibilityLabel={dates.a11y}>
+                  {dates.text}
+                </Body>
+                {phase.current ? (
+                  <Text
+                    testID="competition-outline-current-phase"
+                    style={[styles.outlineCurrent, { color: theme.link }]}
+                  >
+                    {`▶ ${O.currentPhase}`}
+                  </Text>
+                ) : null}
+                <Body>{O.phaseTexts[phase.phase]}</Body>
+                <Body muted>
+                  {phase.recoveryWeeks > 0
+                    ? `${O.trends[phase.trend]} · ${O.recoveryCount(phase.recoveryWeeks)}`
+                    : O.trends[phase.trend]}
+                </Body>
+                <View style={styles.outlineWeeks}>
+                  {phase.weeks.map((week) => (
+                    <OutlineWeekChip
+                      key={week.monday}
+                      week={week}
+                      onPress={week.inCalendar ? () => onOpenWeek(week.monday) : null}
+                    />
+                  ))}
+                </View>
+              </View>
+            );
+          })}
+        </View>
+        <Body muted>{O.legend}</Body>
+      </View>
+    </Card>
+  );
+}
+
+function OutlineWeekChip({
+  week,
+  onPress,
+}: {
+  week: CompetitionOutlineWeek;
+  onPress: (() => void) | null;
+}) {
+  const theme = useThemeColors();
+  const label = outlineWeekLabel(week);
+  const testID = `competition-outline-week-${week.monday}`;
+  const style = [
+    styles.outlineWeek,
+    {
+      borderColor: week.current ? theme.primary : theme.border,
+      borderWidth: week.current ? 2 : 1,
+      // Erholungswoche gestrichelt (zusätzlich zum Wort „Erholung“).
+      borderStyle: week.recoveryWeek ? ('dashed' as const) : ('solid' as const),
+      backgroundColor: week.current ? theme.background : theme.surface,
+      opacity: week.past && !week.current ? 0.75 : 1,
+    },
+  ];
+  const content = (
+    <>
+      <Text style={[styles.outlineWeekTitle, { color: theme.text }]} numberOfLines={1}>
+        {label.title}
+      </Text>
+      <Text style={[styles.outlineWeekMarker, { color: theme.textMuted }]} numberOfLines={1}>
+        {label.marker === '' ? ' ' : label.marker}
+      </Text>
+    </>
+  );
+  if (!onPress) {
+    return (
+      <View accessible accessibilityLabel={label.a11y} testID={testID} style={style}>
+        {content}
+      </View>
+    );
+  }
+  return (
+    <Pressable
+      accessibilityRole="button"
+      accessibilityLabel={label.a11y}
+      accessibilityHint={C.outline.weekOpenHint}
+      onPress={onPress}
+      testID={testID}
+      style={({ pressed }) => [...style, pressed ? { opacity: 0.7 } : null]}
+    >
+      {content}
+    </Pressable>
   );
 }
 
@@ -451,6 +594,27 @@ const styles = StyleSheet.create({
     gap: spacing.xs,
   },
   bandText: { fontSize: fontSize.lg, fontWeight: fontWeight.bold },
+  outlineList: { gap: spacing.sm },
+  outlinePhase: {
+    borderWidth: 1,
+    borderRadius: radius.md,
+    padding: spacing.sm,
+    gap: spacing.xs,
+  },
+  outlinePhaseTitle: { fontSize: fontSize.md, fontWeight: fontWeight.bold },
+  outlineCurrent: { fontSize: fontSize.sm, fontWeight: fontWeight.bold },
+  outlineWeeks: { flexDirection: 'row', flexWrap: 'wrap', gap: spacing.xs },
+  outlineWeek: {
+    minWidth: 76,
+    minHeight: MIN_TOUCH,
+    borderRadius: radius.sm,
+    paddingHorizontal: spacing.xs,
+    paddingVertical: 4,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  outlineWeekTitle: { fontSize: fontSize.sm, fontWeight: fontWeight.semibold },
+  outlineWeekMarker: { fontSize: fontSize.sm - 2 },
   timerStep: { borderRadius: radius.md, padding: spacing.md, gap: spacing.xs },
   timerStepTitle: { fontSize: fontSize.lg, fontWeight: fontWeight.bold },
   timerTime: { fontSize: 48, fontWeight: fontWeight.bold, fontVariant: ['tabular-nums'] },
