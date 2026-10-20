@@ -1,7 +1,7 @@
 {
   "id": "unterwegs",
   "version": 1,
-  "status": "published",
+  "status": "draft",
   "title_de": "Unterwegs essen",
   "intro_de": "Unterwegs, in der Kantine oder im Restaurant musst du nicht auf deine Ziele verzichten. Mit ein paar einfachen Faustregeln findest du fast überall eine gute Wahl, ohne zu zählen oder dich einzuschränken. Und wenn es mal das Lieblingsessen ohne Kompromiss sein soll: genieß es einfach und mach bei der nächsten Mahlzeit normal weiter.",
   "sections": [
@@ -195,8 +195,8 @@
     "batch_id": null,
     "created_on": "2026-10-11",
     "expert_reviewed": false,
-    "reviewed_by": "Claude (Testphase, Gründer-Anweisung 20.10.2026)",
-    "reviewed_at": "2026-10-20",
+    "reviewed_by": null,
+    "reviewed_at": null,
     "review_note": null,
     "source_file": "alpha5-rezepte.json@1.0",
     "import_hash": "06677e607c3bddf03cfef18e07b6fe1594aac29f28cf0c65969506cd3c16f660"
