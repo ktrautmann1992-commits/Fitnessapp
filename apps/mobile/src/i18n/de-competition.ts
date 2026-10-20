@@ -1,6 +1,7 @@
 import {
   type CompetitionErrorReason,
   type CompetitionPhase,
+  type CompetitionVolumeTrend,
   type FeasibilityNotice,
   type FeasibilityReason,
   type FeasibilityStatus,
@@ -102,6 +103,23 @@ const PHASE_TEXTS: Record<CompetitionPhase, string> = {
   taper: 'Weniger Umfang, die Intensität bleibt – so gehst du erholt an den Start.',
   race_week: 'Nichts Neues ausprobieren: gewohntes Essen, gewohnte Schuhe, viel Schlaf.',
   recovery: 'Nur locker – dein Körper erholt sich vom Rennen.',
+};
+
+/** „So ist dein Plan aufgebaut“: je Phase ein Satz „Was passiert hier“ (Gründer-Rückmeldung 20.10.2026). */
+const OUTLINE_PHASE_TEXTS: Record<CompetitionPhase, string> = {
+  base: 'Du baust Grundlage auf: vor allem lockere Einheiten, der Umfang steigt langsam.',
+  build: 'Härtere Einheiten kommen dazu (z. B. Tempo oder Intervalle), der lange Lauf wird länger.',
+  peak: 'Dein höchster Umfang mit wettkampfnahen Einheiten – hier wirst du richtig fit.',
+  taper: 'Weniger Umfang, die Intensität bleibt – so gehst du erholt an den Start.',
+  race_week: 'Wenig und locker, nichts Neues ausprobieren – am Ende steht dein Renntag.',
+  recovery: 'Nur locker oder Pause – dein Körper erholt sich vom Rennen.',
+};
+
+const OUTLINE_TRENDS: Record<CompetitionVolumeTrend, string> = {
+  rising: 'Wochenumfang: steigt (höchstens etwa 10 % pro Woche)',
+  holding: 'Wochenumfang: am höchsten, bleibt gleich',
+  falling: 'Wochenumfang: sinkt deutlich',
+  easy: 'Wochenumfang: gering und locker',
 };
 
 const WORKOUT_TYPES: Record<WorkoutType, string> = {
@@ -315,6 +333,50 @@ export const deCompetition = {
     `${phase} · Einstiegswoche (bis zum Renntag ${total} Wochen)`,
   phaseBandWeekOnly: (week: number, total: number) => `Woche ${week} von ${total}`,
   phaseBandAfter: (phase: string) => phase,
+  // Knopf oben im Reiter Training (Gründer-Rückmeldung 20.10.2026)
+  trainingLink: 'Wettkampfplan',
+  trainingLinkA11y: (name: string) => `Wettkampfplan für ${name} ansehen`,
+  trainingLinkHint: 'Zeigt Countdown, Phasen und den Aufbau deines Plans',
+  // „So ist dein Plan aufgebaut“ (Zeitleiste der Phasen)
+  outline: {
+    title: 'So ist dein Plan aufgebaut',
+    intro: (total: number) =>
+      `Wir planen rückwärts vom Renntag: ${total} ${total === 1 ? 'Woche' : 'Wochen'} in Phasen. Erholungswochen sind fest eingeplant. Tippe auf eine Woche, um sie im Kalender zu öffnen.`,
+    now: (week: number, total: number) => `Du bist in Woche ${week} von ${total}.`,
+    nowEntry: (total: number) => `Du bist in der Einstiegswoche (bis zum Renntag ${total} Wochen).`,
+    beforeStart: 'Dein Plan beginnt bald.',
+    raceWeekNow: 'Diese Woche ist Rennwoche.',
+    recoveryNow: 'Das Rennen ist vorbei – jetzt kommt die Erholung.',
+    finished: 'Dein Wettkampfplan ist abgeschlossen.',
+    phaseTexts: OUTLINE_PHASE_TEXTS,
+    trends: OUTLINE_TRENDS,
+    weeks: (first: number, last: number) =>
+      first === last ? `Woche ${first}` : `Wochen ${first}–${last}`,
+    weeksA11y: (first: number, last: number) =>
+      first === last ? `Woche ${first}` : `Wochen ${first} bis ${last}`,
+    dates: (from: string, to: string) => `${from} – ${to}`,
+    datesA11y: (from: string, to: string) => `vom ${from} bis ${to}`,
+    afterRace: 'Danach',
+    currentPhase: 'Du bist hier',
+    recoveryCount: (count: number) =>
+      count === 1 ? 'mit 1 Erholungswoche' : `mit ${count} Erholungswochen`,
+    week: (no: number) => (no === 0 ? 'Einstieg' : `Woche ${no}`),
+    weekCurrent: 'jetzt',
+    weekRecovery: 'Erholung',
+    weekRace: 'Renntag',
+    weekPercent: (percent: number) => `${percent} %`,
+    weekMinutes: (minutes: number) => `${minutes} min`,
+    weekA11y: (parts: readonly string[]) => parts.filter((p) => p !== '').join(', '),
+    weekA11yRecovery: 'Erholungswoche',
+    weekA11yProjected: 'Vorschau',
+    weekA11yCurrent: 'aktuelle Woche',
+    weekA11yRace: 'Rennwoche',
+    weekA11yPercent: (percent: number) => `Umfang etwa ${percent} Prozent`,
+    weekA11yMinutes: (minutes: number) => `${minutes} Minuten Ausdauer geplant`,
+    weekOpenHint: 'Öffnet die Woche im Kalender',
+    legend:
+      'Erholung = Erholungswoche mit weniger Umfang. Prozent = Umfang im Vergleich zur letzten vollen Woche.',
+  },
   // Einheit
   workoutTypes: WORKOUT_TYPES,
   workoutTypeLine: (type: string, hard: boolean) => (hard ? `Art: ${type} (hart)` : `Art: ${type}`),

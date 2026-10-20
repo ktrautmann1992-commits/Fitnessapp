@@ -1,4 +1,4 @@
-import type { CompetitionFeasibility } from '@fitnessapp/core';
+import { type CompetitionFeasibility, competitionPlanOutline } from '@fitnessapp/core';
 import { describe, expect, it } from 'vitest';
 
 import {
@@ -8,6 +8,10 @@ import {
   feasibilityFacts,
   feasibilityHeadline,
   kmText,
+  outlinePhaseDates,
+  outlinePhaseTitle,
+  outlineStatusText,
+  outlineWeekLabel,
   paceText,
   partsFromSeconds,
   phaseBandText,
@@ -136,5 +140,74 @@ describe('Phasen-Band, Countdown, Ampel', () => {
       'Ziel im Plan: Ankommen',
     ]);
     expect(feasibilityFacts({ ...f, status: 'not_available' })).toEqual([]);
+  });
+});
+
+describe('So ist dein Plan aufgebaut (Gründer-Rückmeldung 20.10.2026)', () => {
+  const outline = competitionPlanOutline({
+    cycle: {
+      discipline: 'half_marathon',
+      raceDate: '2027-01-31',
+      experienceLevel: 'advanced',
+      group: 'advanced',
+      cautious: false,
+    },
+    planStart: '2026-10-07',
+    today: '2026-10-21',
+    sessions: [],
+  });
+  if (!outline) throw new Error('kein Zyklus');
+  const phase = (p: string) => outline.phases.find((x) => x.phase === p);
+
+  it('Stand: Woche X von Y, Einstieg, Rennwoche, Erholung, vorbei', () => {
+    expect(outlineStatusText(outline)).toBe('Du bist in Woche 2 von 16.');
+    expect(outlineStatusText({ ...outline, currentWeekNo: 0 })).toBe(
+      'Du bist in der Einstiegswoche (bis zum Renntag 16 Wochen).',
+    );
+    expect(outlineStatusText({ ...outline, status: 'race_week' })).toBe(
+      'Diese Woche ist Rennwoche.',
+    );
+    expect(outlineStatusText({ ...outline, status: 'recovery' })).toContain('Erholung');
+    expect(outlineStatusText({ ...outline, status: 'finished' })).toBe(
+      'Dein Wettkampfplan ist abgeschlossen.',
+    );
+    expect(outlineStatusText({ ...outline, status: 'before_start' })).toBe(
+      'Dein Plan beginnt bald.',
+    );
+  });
+
+  it('Phase: Name mit Wochen-Spanne und Datum (auch für den Bildschirmleser)', () => {
+    const base = phase('base');
+    const race = phase('race_week');
+    const recovery = phase('recovery');
+    if (!base || !race || !recovery) throw new Error('Phase fehlt');
+    expect(outlinePhaseTitle(base)).toEqual({
+      text: 'Basis · Wochen 0–7',
+      a11y: 'Basis, Wochen 0 bis 7',
+    });
+    expect(outlinePhaseTitle(race).text).toBe('Rennwoche · Woche 16');
+    expect(outlinePhaseTitle(recovery).text).toBe('Erholung nach dem Rennen');
+    expect(outlinePhaseDates(base)).toEqual({
+      text: '05.10.2026 – 29.11.2026',
+      a11y: 'vom 05.10.2026 bis 29.11.2026',
+    });
+  });
+
+  it('Woche: Markierung immer mit Wort (jetzt, Erholung, Renntag, Prozent)', () => {
+    const weeks = outline.phases.flatMap((p) => p.weeks);
+    const byNo = (n: number | null) => weeks.find((w) => w.weekNo === n);
+    expect(outlineWeekLabel(byNo(0)!)).toMatchObject({ title: 'Einstieg', marker: '' });
+    expect(outlineWeekLabel(byNo(2)!)).toMatchObject({ title: 'Woche 2', marker: 'jetzt' });
+    expect(outlineWeekLabel(byNo(2)!).a11y).toBe(
+      'Woche 2, vom 19.10.2026 bis 25.10.2026, Basis, aktuelle Woche',
+    );
+    expect(outlineWeekLabel(byNo(5)!)).toMatchObject({ marker: 'Erholung' });
+    expect(outlineWeekLabel(byNo(5)!).a11y).toContain('Erholungswoche, Vorschau');
+    expect(outlineWeekLabel(byNo(15)!)).toMatchObject({ marker: '70 %' });
+    expect(outlineWeekLabel(byNo(16)!)).toMatchObject({ title: 'Woche 16', marker: 'Renntag' });
+    expect(outlineWeekLabel(byNo(null)!)).toMatchObject({ title: 'Danach', marker: '50 %' });
+    expect(outlineWeekLabel({ ...byNo(3)!, plannedMinutes: 210, projected: false }).a11y).toContain(
+      '210 Minuten Ausdauer geplant',
+    );
   });
 });

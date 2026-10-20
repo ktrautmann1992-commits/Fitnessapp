@@ -1162,16 +1162,34 @@ describe('Ernährungstagebuch in der Datenbank (Etappe E1)', () => {
 
 describe('Übersicht und Menüleiste anpassen E2 (docs/PLAN-EINKAUFEN-AUSDAUER.md 4)', () => {
   const sql = readMigration('_app_layout_settings.sql');
+  // Neueste Fassung von save_app_layout (seit 20.10.2026 mit „Mein Wettkampf“/„Wettkampf“).
+  const saveMarker = 'create or replace function public.save_app_layout(p_layout jsonb)';
+  const saveBody = (text: string) => {
+    const start = text.lastIndexOf(saveMarker);
+    return text.slice(start, text.indexOf('$$;', start));
+  };
+  const save = saveBody(allSql);
   const list = (name: string) => {
-    const match = new RegExp(`${name} constant text\\[\\] := array\\[([^\\]]*)\\]`).exec(sql);
+    const match = new RegExp(`${name} constant text\\[\\] := array\\[([^\\]]*)\\]`).exec(save);
     if (!match) throw new Error(name);
     return [...(match[1] as string).matchAll(/'([a-z_]+)'/g)].map((m) => m[1]);
   };
   const constant = (name: string) => {
-    const match = new RegExp(`\\b${name} constant integer := (\\d+);`).exec(sql);
+    const match = new RegExp(`\\b${name} constant integer := (\\d+);`).exec(save);
     if (!match) throw new Error(name);
     return Number(match[1]);
   };
+
+  it('neueste Fassung von save_app_layout in *_app_layout_competition.sql; nur die ID-Listen sind neu', () => {
+    expect(migrationFiles.filter((n) => readMigration(n).includes(saveMarker)).at(-1)).toMatch(
+      /_app_layout_competition\.sql$/,
+    );
+    const withoutLists = (body: string) =>
+      body.replace(/(tile_ids|area_ids) constant text\[\] := array\[[^\]]*\];/g, '$1');
+    expect(withoutLists(save)).toBe(withoutLists(saveBody(sql)));
+    expect(DASHBOARD_TILES).toContain('competition');
+    expect(NAV_AREAS).toContain('wettkampf');
+  });
 
   it('ID-Listen und Grenzen = packages/core (DASHBOARD_TILES, NAV_AREAS, APP_LAYOUT)', () => {
     expect(list('tile_ids')).toEqual([...DASHBOARD_TILES]);
@@ -1183,8 +1201,8 @@ describe('Übersicht und Menüleiste anpassen E2 (docs/PLAN-EINKAUFEN-AUSDAUER.m
       `jsonb_array_length(tab_bar) between ${APP_LAYOUT.tabsMin} and ${APP_LAYOUT.tabsMax}`,
     );
     expect(sql).toContain(`jsonb_array_length(dashboard_tiles) <= ${APP_LAYOUT.storedTilesMax}`);
-    expect(sql).toContain(`tabs ->> 0 is distinct from '${FIXED_FIRST_TAB}'`);
-    expect(sql).toContain(`is distinct from '${FIXED_LAST_TAB}'`);
+    expect(save).toContain(`tabs ->> 0 is distinct from '${FIXED_FIRST_TAB}'`);
+    expect(save).toContain(`is distinct from '${FIXED_LAST_TAB}'`);
   });
 
   it('Schreiben nur über save_app_layout; kein Gesundheitsdatum (nicht im Widerruf), im Export', () => {

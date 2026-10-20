@@ -5,9 +5,12 @@ import { useThemeColors } from '@/lib/theme';
 
 /**
  * Hauptbereiche mit unterer Menüleiste (docs/PLAN-DASHBOARD.md 3). Die Gruppe „(tabs)“ ändert keine Adresse:
- * `/uebersicht`, `/today`, `/workouts`, `/ernaehrung`, `/einkaufsliste` (Reiter „Einkaufen“), `/fortschritt`, `/mehr`. Welche davon
+ * `/uebersicht`, `/today`, `/workouts`, `/ernaehrung`, `/einkaufsliste` (Reiter „Einkaufen“), `/wettkampf`, `/fortschritt`, `/mehr`. Welche davon
  * Knöpfe sind, bestimmt die Anordnung der Person (state/use-app-layout.ts). Alle anderen Bildschirme liegen im Stapel darüber
  * (ohne Leiste, mit „Zurück“) – Onboarding, Anmelden, Training durchführen und Druckansichten bleiben vollflächig.
+ * „Mein Wettkampf“ (`/wettkampf`) liegt seit 20.10.2026 als Reiter hier (wählbarer Knopf, sonst unter „Mehr“) – es gibt
+ * die Seite nur einmal (keine zweite Stapel-Route mit derselben Adresse); „Zurück“ auf der Seite führt zum zuvor
+ * besuchten Reiter bzw. Bildschirm (`backBehavior="history"`).
  */
 export default function TabsLayout() {
   const theme = useThemeColors();
@@ -27,6 +30,7 @@ export default function TabsLayout() {
         <Tabs.Screen name="workouts" options={{ title: tabLabel('workouts') }} />
         <Tabs.Screen name="ernaehrung" options={{ title: tabLabel('ernaehrung') }} />
         <Tabs.Screen name="einkaufsliste" options={{ title: tabLabel('einkaufsliste') }} />
+        <Tabs.Screen name="wettkampf" options={{ title: tabLabel('wettkampf') }} />
         <Tabs.Screen name="fortschritt" options={{ title: tabLabel('fortschritt') }} />
         <Tabs.Screen name="mehr" options={{ title: tabLabel('mehr') }} />
       </Tabs>

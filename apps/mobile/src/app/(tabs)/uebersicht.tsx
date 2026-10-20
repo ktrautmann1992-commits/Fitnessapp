@@ -9,6 +9,7 @@ import {
 import { Redirect, useRouter, type Href } from 'expo-router';
 import { Fragment, type ReactNode, useEffect, useMemo, useState } from 'react';
 
+import { CompetitionTile } from '@/components/competition-tile';
 import { DashboardTile, ShortcutCell, ShortcutGrid, ShortcutTile } from '@/components/dashboard';
 import { DashboardEditor } from '@/components/dashboard-edit';
 import { WorkoutsTile } from '@/components/workouts';
@@ -110,6 +111,9 @@ function Overview({ rows, today }: { rows: UserRows; today: string }) {
     switch (id) {
       case 'training':
         return <TrainingTile rows={rows} today={today} planNotice={planNotice} />;
+      // Gründer-Rückmeldung 20.10.2026: Wettkampfplan leicht finden.
+      case 'competition':
+        return <CompetitionTile rows={rows} today={today} />;
       case 'workouts':
         return <OverviewWorkoutsTile today={today} />;
       case 'nutrition':

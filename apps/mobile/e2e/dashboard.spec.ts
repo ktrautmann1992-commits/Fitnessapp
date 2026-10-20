@@ -90,6 +90,10 @@ test('Übersicht: Kacheln führen in die Bereiche, Menüleiste auf allen Hauptbe
   // Ernährung: Kalorienzahlen sind an → Ziel in kcal sichtbar.
   await expect(page.getByTestId('overview-nutrition')).toContainText('Ernährung heute');
   await expect(page.getByTestId('overview-nutrition-target')).toContainText('kcal');
+  // Mein Wettkampf (Gründer-Rückmeldung 20.10.2026): ohne Wettkampf kurzer Text und „Wettkampf planen“.
+  await expect(page.getByTestId('overview-competition')).toContainText('Mein Wettkampf');
+  await expect(page.getByTestId('overview-competition-none')).toBeVisible();
+  await expect(page.getByTestId('overview-competition-plan')).toHaveText('Wettkampf planen');
 
   // Training starten → Trainingsmodus ohne Menüleiste.
   await page.getByTestId('overview-training-start').click();

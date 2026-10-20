@@ -50,7 +50,13 @@ async function onboardStudio(page: Page) {
 
 /** Reihenfolge der Kacheln auf der Seite (nach Lage von oben nach unten). */
 async function tileOrder(page: Page): Promise<string[]> {
-  const ids = ['overview-training', 'overview-nutrition', 'overview-body', 'overview-progress'];
+  const ids = [
+    'overview-training',
+    'overview-competition',
+    'overview-nutrition',
+    'overview-body',
+    'overview-progress',
+  ];
   const found: { id: string; y: number }[] = [];
   for (const id of ids) {
     if ((await page.getByTestId(id).count()) === 0) continue;
@@ -65,8 +71,10 @@ test('Übersicht bearbeiten: ausblenden, verschieben mit Ansage, bleibt nach dem
 }) => {
   test.setTimeout(120_000);
   await onboardStudio(page);
+  // „Mein Wettkampf“ steht im Standard direkt unter „Training heute“ (Gründer-Rückmeldung 20.10.2026).
   expect(await tileOrder(page)).toEqual([
     'overview-training',
+    'overview-competition',
     'overview-nutrition',
     'overview-body',
     'overview-progress',
@@ -84,14 +92,22 @@ test('Übersicht bearbeiten: ausblenden, verschieben mit Ansage, bleibt nach dem
   await expect(page.getByTestId('overview-body')).toHaveCount(0);
   await expect(page.getByTestId('overview-edit-live')).toHaveText('Körperdaten ist ausgeblendet.');
 
-  // Ernährung zweimal nach oben (Knopf mit Namen für den Bildschirmleser), Ansage der neuen Stelle.
+  // „Mein Wettkampf“ ausblenden (ein-/ausblendbar wie alle Kacheln).
+  await page.getByRole('checkbox', { name: 'Mein Wettkampf anzeigen' }).click();
+  await expect(page.getByTestId('overview-competition')).toHaveCount(0);
+
+  // Ernährung dreimal nach oben (Knopf mit Namen für den Bildschirmleser), Ansage der neuen Stelle.
   await page.getByRole('button', { name: 'Ernährung heute nach oben' }).click();
   await expect(page.getByTestId('overview-edit-live')).toHaveText(
-    'Ernährung heute ist jetzt an Stelle 2 von 7.',
+    'Ernährung heute ist jetzt an Stelle 3 von 8.',
   );
   await page.getByRole('button', { name: 'Ernährung heute nach oben' }).click();
   await expect(page.getByTestId('overview-edit-live')).toHaveText(
-    'Ernährung heute ist jetzt an Stelle 1 von 7.',
+    'Ernährung heute ist jetzt an Stelle 2 von 8.',
+  );
+  await page.getByRole('button', { name: 'Ernährung heute nach oben' }).click();
+  await expect(page.getByTestId('overview-edit-live')).toHaveText(
+    'Ernährung heute ist jetzt an Stelle 1 von 8.',
   );
   await page.getByTestId('overview-edit-done').click();
   await expect(page.getByTestId('overview-edit')).toHaveCount(0);
@@ -137,6 +153,7 @@ test('Übersicht bearbeiten: ausblenden, verschieben mit Ansage, bleibt nach dem
   await page.getByTestId('overview-edit-done').click();
   expect(await tileOrder(page)).toEqual([
     'overview-training',
+    'overview-competition',
     'overview-nutrition',
     'overview-body',
     'overview-progress',
@@ -232,7 +249,7 @@ test('Menüleiste anpassen: 6. Knopf, Regeln mit Grund, verschieben, ausgeblende
   await page.goto('/mehr');
   await heading(page, 'Mehr');
   expect(await tabs(page)).toEqual(['Übersicht', 'Training', 'Mehr']);
-  for (const area of ['workouts', 'ernaehrung', 'einkaufsliste', 'fortschritt']) {
+  for (const area of ['workouts', 'ernaehrung', 'einkaufsliste', 'wettkampf', 'fortschritt']) {
     await expect(page.getByTestId(`more-area-${area}`)).toBeVisible();
   }
   await page.getByTestId('more-area-einkaufsliste').click();
