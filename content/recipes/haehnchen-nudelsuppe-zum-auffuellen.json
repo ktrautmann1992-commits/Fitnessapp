@@ -1,0 +1,128 @@
+{
+  "id": "haehnchen-nudelsuppe-zum-auffuellen",
+  "version": 1,
+  "status": "draft",
+  "title_de": "Hähnchen-Nudelsuppe zum Auffüllen",
+  "description_de": "Salzige Brühe mit Nudeln, Hähnchen und Gemüse – bringt Flüssigkeit, Salz, Kohlenhydrate und reichlich Eiweiß nach einer langen, schweißtreibenden Einheit zurück.",
+  "section_de": "Nach der Einheit",
+  "categories": ["post-workout", "cardio", "meal-prep"],
+  "meal_types": ["snack"],
+  "training_tags": ["nach_training"],
+  "servings": 1,
+  "ingredients": [
+    {
+      "food_id": "gemuesebruehe-zubereitet",
+      "amount": 400,
+      "unit": "g",
+      "optional": false,
+      "display_de": "400 ml",
+      "scales": true,
+      "role": "seasoning"
+    },
+    {
+      "food_id": "suppennudeln-hartweizen",
+      "amount": 75,
+      "unit": "g",
+      "optional": false,
+      "display_de": "75 g",
+      "scales": true,
+      "role": "carb"
+    },
+    {
+      "food_id": "haehnchenbrustfilet",
+      "amount": 80,
+      "unit": "g",
+      "optional": false,
+      "display_de": "80 g",
+      "scales": true,
+      "heated": true,
+      "role": "protein"
+    },
+    {
+      "food_id": "karotte",
+      "amount": 60,
+      "unit": "g",
+      "optional": false,
+      "display_de": "1 kleine Karotte (60 g)",
+      "scales": true,
+      "role": "vegetable"
+    },
+    {
+      "food_id": "erbsen-tk",
+      "amount": 50,
+      "unit": "g",
+      "optional": false,
+      "display_de": "50 g",
+      "scales": true,
+      "role": "vegetable"
+    },
+    {
+      "food_id": "petersilie-frisch",
+      "amount": 5,
+      "unit": "g",
+      "optional": false,
+      "display_de": "1 EL gehackt (5 g)",
+      "scales": true,
+      "role": "vegetable"
+    },
+    {
+      "food_id": "pfeffer",
+      "amount": 1,
+      "unit": "pinch",
+      "optional": false,
+      "display_de": "1 Prise",
+      "scales": true,
+      "role": "seasoning"
+    }
+  ],
+  "steps_de": [
+    "Bringe die Gemüsebrühe in einem Topf zum Kochen.",
+    "Schneide das Hähnchen in kleine Würfel und die Karotte in Scheiben, gib beides in die Brühe und lass es 6 Minuten köcheln.",
+    "Gib Nudeln und Erbsen dazu und gare alles weitere 6–8 Minuten, bis die Nudeln weich sind.",
+    "Schmecke mit Pfeffer ab und streue die Petersilie darüber."
+  ],
+  "tip_de": "Die Brühe gleicht Salzverluste über den Schweiß aus. Gleich die doppelte Menge kochen: Die Suppe hält im Kühlschrank 2 Tage und ist nach dem Training in 3 Minuten aufgewärmt.",
+  "tags_de": ["Ausdauer"],
+  "total_minutes": 20,
+  "prep_minutes": 6,
+  "cook_minutes": 14,
+  "no_cook": false,
+  "meal_prep": {
+    "suitable": true,
+    "fridge_days": 1,
+    "freezable": true
+  },
+  "equipment_de": [],
+  "declared_per_serving": {
+    "kcal": 426,
+    "protein_g": 32,
+    "carbs_g": 64.4,
+    "fat_g": 2.8
+  },
+  "declared_diet": "omnivore",
+  "declared_allergens": ["gluten", "poultry", "legumes", "celery", "onion_garlic"],
+  "contains_pork": false,
+  "declared_pregnancy_caution": true,
+  "meta": {
+    "origin": "manual",
+    "model": null,
+    "batch_id": null,
+    "created_on": "2026-10-11",
+    "expert_reviewed": false,
+    "reviewed_by": null,
+    "reviewed_at": null,
+    "review_note": null,
+    "source_file": "alpha5-rezepte.json@1.0",
+    "import_assumptions": [
+      {
+        "ingredient_index": 2,
+        "food_id": "haehnchenbrustfilet",
+        "field": "heated",
+        "value": true,
+        "reason_de": "Schritt 2 gart die Zutat durch: „Schneide das Hähnchen in kleine Würfel und die Karotte in Scheiben, gib beides in die Brühe und lass es 6 Minuten köcheln.“"
+      }
+    ],
+    "import_assumptions_confirmed_by": null,
+    "import_hash": "b75370b57537ca66c60622b26296bb9fd07fa9717f0ae2265c6e54935183019d"
+  }
+}

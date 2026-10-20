@@ -1,0 +1,130 @@
+{
+  "id": "spinat-omelett-mit-eiklar-und-vollkornbrot",
+  "version": 1,
+  "status": "draft",
+  "title_de": "Spinat-Omelett mit Eiklar und Vollkornbrot",
+  "description_de": "Lockeres Omelett aus Ei und Eiklar mit Spinat und Tomate, dazu kräftiges Vollkornbrot – hochwertiges Eiweiß für die Muskeln und genug Kohlenhydrate für die Regeneration.",
+  "section_de": "Bis 2 Stunden danach",
+  "categories": ["post-workout"],
+  "meal_types": ["snack"],
+  "training_tags": ["nach_training"],
+  "servings": 1,
+  "ingredients": [
+    {
+      "food_id": "huehnerei",
+      "amount": 120,
+      "unit": "g",
+      "optional": false,
+      "display_de": "2 Eier (Größe M)",
+      "scales": true,
+      "heated": false,
+      "role": "protein"
+    },
+    {
+      "food_id": "eiklar",
+      "amount": 100,
+      "unit": "g",
+      "optional": false,
+      "display_de": "100 g (ca. 3 Eiweiß)",
+      "scales": true,
+      "heated": false,
+      "role": "protein"
+    },
+    {
+      "food_id": "babyspinat",
+      "amount": 50,
+      "unit": "g",
+      "optional": false,
+      "display_de": "2 Handvoll (50 g)",
+      "scales": true,
+      "role": "vegetable"
+    },
+    {
+      "food_id": "tomate",
+      "amount": 100,
+      "unit": "g",
+      "optional": false,
+      "display_de": "1 Tomate (100 g)",
+      "scales": true,
+      "role": "vegetable"
+    },
+    {
+      "food_id": "rapsoel",
+      "amount": 3,
+      "unit": "g",
+      "optional": false,
+      "display_de": "1 TL (3 g)",
+      "scales": true,
+      "role": "fat"
+    },
+    {
+      "food_id": "vollkornbrot",
+      "amount": 100,
+      "unit": "g",
+      "optional": false,
+      "display_de": "2 Scheiben (100 g)",
+      "scales": true,
+      "role": "carb"
+    },
+    {
+      "food_id": "salz",
+      "amount": 1,
+      "unit": "pinch",
+      "optional": false,
+      "display_de": "1 Prise",
+      "scales": true,
+      "role": "seasoning"
+    },
+    {
+      "food_id": "pfeffer",
+      "amount": 1,
+      "unit": "pinch",
+      "optional": false,
+      "display_de": "1 Prise",
+      "scales": true,
+      "role": "seasoning"
+    }
+  ],
+  "steps_de": [
+    "Verquirle Eier und Eiklar mit Salz und Pfeffer.",
+    "Erhitze das Öl in einer beschichteten Pfanne und lass den Spinat darin bei mittlerer Hitze 1 Minute zusammenfallen.",
+    "Gieße die Eimasse darüber und lass sie bei niedriger bis mittlerer Hitze mit Deckel 4–5 Minuten stocken.",
+    "Schneide die Tomate in Scheiben und röste das Brot nach Wunsch.",
+    "Klappe das Omelett zusammen und serviere es mit Brot und Tomate."
+  ],
+  "tip_de": "Eiklar aus dem Tetrapak (Kühlregal) spart Zeit und Eigelb-Reste. Wer abends trainiert, hat damit ein schnelles, leichtes Abendessen.",
+  "total_minutes": 12,
+  "prep_minutes": 12,
+  "cook_minutes": 0,
+  "no_cook": false,
+  "meal_prep": {
+    "suitable": false,
+    "fridge_days": 0,
+    "freezable": false
+  },
+  "equipment_de": [],
+  "declared_per_serving": {
+    "kcal": 488,
+    "protein_g": 35.9,
+    "carbs_g": 45,
+    "fat_g": 16.3
+  },
+  "declared_diet": "vegetarian",
+  "declared_allergens": ["gluten", "eggs", "histamine"],
+  "contains_pork": false,
+  "declared_pregnancy_caution": true,
+  "meta": {
+    "origin": "manual",
+    "model": null,
+    "batch_id": null,
+    "created_on": "2026-10-11",
+    "expert_reviewed": false,
+    "reviewed_by": null,
+    "reviewed_at": null,
+    "review_note": null,
+    "source_file": "alpha5-rezepte.json@1.0",
+    "import_assumptions": [],
+    "import_assumptions_confirmed_by": null,
+    "import_hash": "6e5bd7300d4d414821c9fe2ae10cc3b2f88e07bf50fcd2b5febdb6e55cb0692f"
+  }
+}

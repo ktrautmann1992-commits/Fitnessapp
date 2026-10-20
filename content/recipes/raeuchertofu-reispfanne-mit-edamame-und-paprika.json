@@ -1,0 +1,119 @@
+{
+  "id": "raeuchertofu-reispfanne-mit-edamame-und-paprika",
+  "version": 1,
+  "status": "draft",
+  "title_de": "Räuchertofu-Reispfanne mit Edamame und Paprika",
+  "description_de": "Schnelle Pfanne mit Express-Reis, Räuchertofu und Edamame – pflanzliches Eiweiß aus zwei Quellen plus Reis-Kohlenhydrate, warm und trotzdem nicht zu schwer.",
+  "section_de": "Bis 2 Stunden danach",
+  "categories": ["post-workout", "meal-prep"],
+  "meal_types": ["snack"],
+  "training_tags": ["nach_training"],
+  "servings": 1,
+  "ingredients": [
+    {
+      "food_id": "raeuchertofu",
+      "amount": 110,
+      "unit": "g",
+      "optional": false,
+      "display_de": "110 g",
+      "scales": true,
+      "role": "protein"
+    },
+    {
+      "food_id": "express-reis-beutel-gegart",
+      "amount": 125,
+      "unit": "g",
+      "optional": false,
+      "display_de": "½ Beutel (125 g)",
+      "scales": true,
+      "role": "carb"
+    },
+    {
+      "food_id": "edamame-tk-geschaelt",
+      "amount": 60,
+      "unit": "g",
+      "optional": false,
+      "display_de": "60 g",
+      "scales": true,
+      "role": "protein"
+    },
+    {
+      "food_id": "paprika-rot",
+      "amount": 80,
+      "unit": "g",
+      "optional": false,
+      "display_de": "½ Paprika (80 g)",
+      "scales": true,
+      "role": "vegetable"
+    },
+    {
+      "food_id": "fruehlingszwiebeln",
+      "amount": 20,
+      "unit": "g",
+      "optional": false,
+      "display_de": "1 Frühlingszwiebel (20 g)",
+      "scales": true,
+      "role": "vegetable"
+    },
+    {
+      "food_id": "ingwer",
+      "amount": 5,
+      "unit": "g",
+      "optional": false,
+      "display_de": "1 TL, gerieben (5 g)",
+      "scales": true,
+      "role": "vegetable"
+    },
+    {
+      "food_id": "sojasauce",
+      "amount": 15,
+      "unit": "g",
+      "optional": false,
+      "display_de": "1 EL (15 g)",
+      "scales": true,
+      "role": "protein"
+    }
+  ],
+  "steps_de": [
+    "Würfle Räuchertofu und Paprika, schneide die Frühlingszwiebel in Ringe.",
+    "Erhitze eine beschichtete Pfanne ohne Öl und brate den Tofu bei mittlerer bis hoher Hitze 3–4 Minuten an – Räuchertofu bringt genug eigenes Fett mit.",
+    "Gib Paprika, Edamame und Ingwer dazu und brate alles weitere 3 Minuten.",
+    "Füge den Express-Reis hinzu, lockere ihn auf und brate ihn 2–3 Minuten mit.",
+    "Lösche mit Sojasauce ab und bestreue alles mit Frühlingszwiebeln."
+  ],
+  "tip_de": "Gelingt auch in doppelter Menge: Eine Portion kalt in der Box mitnehmen und nach dem Training kurz in der Mikrowelle erwärmen – hält gekühlt 2–3 Tage.",
+  "total_minutes": 12,
+  "prep_minutes": 2,
+  "cook_minutes": 10,
+  "no_cook": false,
+  "meal_prep": {
+    "suitable": true,
+    "fridge_days": 1,
+    "freezable": true
+  },
+  "equipment_de": [],
+  "declared_per_serving": {
+    "kcal": 489,
+    "protein_g": 32.4,
+    "carbs_g": 52.1,
+    "fat_g": 15.8
+  },
+  "declared_diet": "vegan",
+  "declared_allergens": ["gluten", "legumes", "soy", "histamine", "onion_garlic"],
+  "contains_pork": false,
+  "declared_pregnancy_caution": false,
+  "meta": {
+    "origin": "manual",
+    "model": null,
+    "batch_id": null,
+    "created_on": "2026-10-11",
+    "expert_reviewed": false,
+    "reviewed_by": null,
+    "reviewed_at": null,
+    "review_note": null,
+    "source_file": "alpha5-rezepte.json@1.0",
+    "import_assumptions": [],
+    "import_assumptions_confirmed_by": null,
+    "import_hash": "641bdd2d74d74bda910843f99047802ea800db64a1ef9f1ed47ed75924275b29"
+  }
+}

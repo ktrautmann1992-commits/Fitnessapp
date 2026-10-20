@@ -1,0 +1,111 @@
+{
+  "id": "beeren-frozen-joghurt-bark",
+  "version": 1,
+  "status": "draft",
+  "title_de": "Beeren-Frozen-Joghurt-Bark",
+  "description_de": "Knackige Skyr-Tafel mit Himbeeren, Heidelbeeren, Mandeln und Schokostückchen, die etwa 3 Stunden im Gefrierfach fest wird und dann in Stücke gebrochen wird.",
+  "section_de": "Gefroren",
+  "categories": ["schnell", "meal-prep", "protein-dessert"],
+  "meal_types": ["snack"],
+  "training_tags": [],
+  "servings": 1,
+  "ingredients": [
+    {
+      "food_id": "skyr-natur",
+      "amount": 200,
+      "unit": "g",
+      "optional": false,
+      "display_de": "200 g",
+      "scales": true,
+      "role": "protein"
+    },
+    {
+      "food_id": "honig",
+      "amount": 10,
+      "unit": "g",
+      "optional": false,
+      "display_de": "2 TL (10 g)",
+      "scales": true,
+      "role": "sweet"
+    },
+    {
+      "food_id": "himbeeren-tk",
+      "amount": 50,
+      "unit": "g",
+      "optional": false,
+      "display_de": "50 g",
+      "scales": true,
+      "role": "vegetable"
+    },
+    {
+      "food_id": "heidelbeeren",
+      "amount": 30,
+      "unit": "g",
+      "optional": false,
+      "display_de": "30 g",
+      "scales": true,
+      "role": "vegetable"
+    },
+    {
+      "food_id": "mandeln",
+      "amount": 10,
+      "unit": "g",
+      "optional": false,
+      "display_de": "1 EL gehackt (10 g)",
+      "scales": true,
+      "role": "fat"
+    },
+    {
+      "food_id": "zartbitterschokolade-70",
+      "amount": 5,
+      "unit": "g",
+      "optional": false,
+      "display_de": "1 Stück (5 g), gehackt",
+      "scales": true,
+      "role": "fat"
+    }
+  ],
+  "steps_de": [
+    "Leg ein kleines Blech oder einen flachen Teller, der ins Gefrierfach passt, mit Backpapier aus.",
+    "Verrühre Skyr und Honig und streiche die Masse etwa 1 cm dick auf das Backpapier.",
+    "Verteile Himbeeren, Heidelbeeren, gehackte Mandeln und Schokolade darauf und drück sie leicht an.",
+    "Friere die Platte mindestens 3 Stunden ein, bis sie durchgefroren ist.",
+    "Lass sie vor dem Servieren 5 Minuten antauen und brich sie in Stücke."
+  ],
+  "tip_de": "Gefrierzeit: mindestens 3 Stunden. Die Bruchstücke halten in einer Gefrierdose bis zu 2 Wochen – so hast du immer eine Portion parat.",
+  "tags_de": ["Unter 10 Minuten", "Dessert"],
+  "total_minutes": 10,
+  "prep_minutes": 10,
+  "cook_minutes": 0,
+  "no_cook": false,
+  "meal_prep": {
+    "suitable": true,
+    "fridge_days": 3,
+    "freezable": true
+  },
+  "equipment_de": [],
+  "declared_per_serving": {
+    "kcal": 277,
+    "protein_g": 25.4,
+    "carbs_g": 22.6,
+    "fat_g": 8
+  },
+  "declared_diet": "vegetarian",
+  "declared_allergens": ["dairy", "lactose", "tree_nuts", "fructose"],
+  "contains_pork": false,
+  "declared_pregnancy_caution": false,
+  "meta": {
+    "origin": "manual",
+    "model": null,
+    "batch_id": null,
+    "created_on": "2026-10-11",
+    "expert_reviewed": false,
+    "reviewed_by": null,
+    "reviewed_at": null,
+    "review_note": null,
+    "source_file": "alpha5-rezepte.json@1.0",
+    "import_assumptions": [],
+    "import_assumptions_confirmed_by": null,
+    "import_hash": "28b497e61148282104501920f8b36209b067827595baeecdc45ccf153606566f"
+  }
+}

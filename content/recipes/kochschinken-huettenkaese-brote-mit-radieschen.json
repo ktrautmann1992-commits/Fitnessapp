@@ -1,0 +1,120 @@
+{
+  "id": "kochschinken-huettenkaese-brote-mit-radieschen",
+  "version": 1,
+  "status": "draft",
+  "title_de": "Kochschinken-Hüttenkäse-Brote mit Radieschen",
+  "description_de": "Schnelles, kaltes Eiweißfrühstück mit körnigem Frischkäse, Kochschinken und knackigem Gemüse.",
+  "section_de": "Frühstück",
+  "categories": ["schnell"],
+  "meal_types": ["breakfast"],
+  "training_tags": [],
+  "servings": 1,
+  "ingredients": [
+    {
+      "food_id": "vollkornbrot",
+      "amount": 100,
+      "unit": "g",
+      "optional": false,
+      "display_de": "2 große Scheiben (100 g)",
+      "scales": true,
+      "role": "carb"
+    },
+    {
+      "food_id": "huettenkaese",
+      "amount": 150,
+      "unit": "g",
+      "optional": false,
+      "display_de": "150 g",
+      "scales": true,
+      "role": "protein"
+    },
+    {
+      "food_id": "kochschinken",
+      "amount": 60,
+      "unit": "g",
+      "optional": false,
+      "display_de": "3 Scheiben (60 g)",
+      "scales": true,
+      "heated": false,
+      "role": "protein"
+    },
+    {
+      "food_id": "gurke",
+      "amount": 80,
+      "unit": "g",
+      "optional": false,
+      "display_de": "¼ Gurke (80 g)",
+      "scales": true,
+      "role": "vegetable"
+    },
+    {
+      "food_id": "radieschen",
+      "amount": 50,
+      "unit": "g",
+      "optional": false,
+      "display_de": "4 Radieschen (50 g)",
+      "scales": true,
+      "role": "vegetable"
+    },
+    {
+      "food_id": "schnittlauch-frisch",
+      "amount": 5,
+      "unit": "g",
+      "optional": false,
+      "display_de": "1 EL, in Röllchen (5 g)",
+      "scales": true,
+      "role": "vegetable"
+    },
+    {
+      "food_id": "pfeffer",
+      "amount": 1,
+      "unit": "pinch",
+      "optional": false,
+      "display_de": "1 Prise",
+      "scales": true,
+      "role": "seasoning"
+    }
+  ],
+  "steps_de": [
+    "Bestreiche die Brotscheiben dick mit Hüttenkäse.",
+    "Lege je anderthalb Scheiben Kochschinken darauf.",
+    "Schneide Gurke und Radieschen in dünne Scheiben und verteile sie auf den Broten.",
+    "Bestreue alles mit Schnittlauch und Pfeffer."
+  ],
+  "tip_de": "Für unterwegs die Brote zusammenklappen und in Butterbrotpapier wickeln.",
+  "tags_de": ["Unter 10 Minuten"],
+  "total_minutes": 5,
+  "prep_minutes": 5,
+  "cook_minutes": 0,
+  "no_cook": true,
+  "meal_prep": {
+    "suitable": false,
+    "fridge_days": 0,
+    "freezable": false
+  },
+  "equipment_de": [],
+  "declared_per_serving": {
+    "kcal": 453,
+    "protein_g": 38.8,
+    "carbs_g": 47,
+    "fat_g": 10
+  },
+  "declared_diet": "omnivore",
+  "declared_allergens": ["gluten", "dairy", "lactose", "onion_garlic"],
+  "contains_pork": true,
+  "declared_pregnancy_caution": true,
+  "meta": {
+    "origin": "manual",
+    "model": null,
+    "batch_id": null,
+    "created_on": "2026-10-11",
+    "expert_reviewed": false,
+    "reviewed_by": null,
+    "reviewed_at": null,
+    "review_note": null,
+    "source_file": "alpha5-rezepte.json@1.0",
+    "import_assumptions": [],
+    "import_assumptions_confirmed_by": null,
+    "import_hash": "36455fc0b37c5ac6d156c27875e96aa2e98dbd3935e96a823c8f06b165764951"
+  }
+}

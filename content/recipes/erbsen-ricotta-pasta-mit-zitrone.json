@@ -1,0 +1,137 @@
+{
+  "id": "erbsen-ricotta-pasta-mit-zitrone",
+  "version": 1,
+  "status": "draft",
+  "title_de": "Erbsen-Ricotta-Pasta mit Zitrone",
+  "description_de": "Frühlingsfrische Vollkornpasta mit einer cremigen Sauce aus Ricotta, Quark, Erbsen und Zitrone.",
+  "section_de": "Mittagessen",
+  "categories": ["post-workout"],
+  "meal_types": ["main"],
+  "training_tags": ["nach_training"],
+  "servings": 1,
+  "ingredients": [
+    {
+      "food_id": "vollkornnudeln",
+      "amount": 90,
+      "unit": "g",
+      "optional": false,
+      "display_de": "90 g",
+      "scales": true,
+      "role": "carb"
+    },
+    {
+      "food_id": "erbsen-tk",
+      "amount": 100,
+      "unit": "g",
+      "optional": false,
+      "display_de": "100 g",
+      "scales": true,
+      "role": "vegetable"
+    },
+    {
+      "food_id": "ricotta",
+      "amount": 60,
+      "unit": "g",
+      "optional": false,
+      "display_de": "60 g",
+      "scales": true,
+      "role": "fat"
+    },
+    {
+      "food_id": "magerquark",
+      "amount": 60,
+      "unit": "g",
+      "optional": false,
+      "display_de": "60 g",
+      "scales": true,
+      "role": "protein"
+    },
+    {
+      "food_id": "parmesan",
+      "amount": 15,
+      "unit": "g",
+      "optional": false,
+      "display_de": "15 g, gerieben",
+      "scales": true,
+      "role": "protein"
+    },
+    {
+      "food_id": "babyspinat",
+      "amount": 40,
+      "unit": "g",
+      "optional": false,
+      "display_de": "1 Handvoll (40 g)",
+      "scales": true,
+      "role": "vegetable"
+    },
+    {
+      "food_id": "zitronensaft",
+      "amount": 10,
+      "unit": "g",
+      "optional": false,
+      "display_de": "1 EL (10 ml)",
+      "scales": true,
+      "role": "vegetable"
+    },
+    {
+      "food_id": "salz",
+      "amount": 1,
+      "unit": "pinch",
+      "optional": false,
+      "display_de": "nach Geschmack",
+      "scales": false,
+      "role": "seasoning"
+    },
+    {
+      "food_id": "pfeffer",
+      "amount": 1,
+      "unit": "pinch",
+      "optional": false,
+      "display_de": "nach Geschmack",
+      "scales": false,
+      "role": "seasoning"
+    }
+  ],
+  "steps_de": [
+    "Koch die Nudeln in Salzwasser nach Packungsangabe (ca. 10 Minuten) und gib die Erbsen in den letzten 3 Minuten dazu.",
+    "Verrühre Ricotta, Magerquark, Parmesan, Zitronensaft und Pfeffer in einer großen Schüssel.",
+    "Fang vor dem Abgießen 50 ml Nudelwasser auf und gieß Nudeln und Erbsen ab.",
+    "Mische Nudeln, Erbsen und Spinat sofort mit der Ricottacreme und gib so viel Nudelwasser dazu, bis die Sauce cremig ist.",
+    "Schmecke mit Salz und Pfeffer ab und serviere direkt."
+  ],
+  "tip_de": "Etwas Zitronenabrieb und frische Minze machen die Pasta noch frischer.",
+  "total_minutes": 18,
+  "prep_minutes": 18,
+  "cook_minutes": 0,
+  "no_cook": false,
+  "meal_prep": {
+    "suitable": false,
+    "fridge_days": 0,
+    "freezable": false
+  },
+  "equipment_de": [],
+  "declared_per_serving": {
+    "kcal": 596,
+    "protein_g": 36.1,
+    "carbs_g": 73.7,
+    "fat_g": 13.7
+  },
+  "declared_diet": "omnivore",
+  "declared_allergens": ["gluten", "dairy", "lactose", "legumes", "histamine"],
+  "contains_pork": false,
+  "declared_pregnancy_caution": false,
+  "meta": {
+    "origin": "manual",
+    "model": null,
+    "batch_id": null,
+    "created_on": "2026-10-11",
+    "expert_reviewed": false,
+    "reviewed_by": null,
+    "reviewed_at": null,
+    "review_note": null,
+    "source_file": "alpha5-rezepte.json@1.0",
+    "import_assumptions": [],
+    "import_assumptions_confirmed_by": null,
+    "import_hash": "e0201f8204e43433ce319c25e8be18bc85b88ffb4e9e3806da677590417aff52"
+  }
+}

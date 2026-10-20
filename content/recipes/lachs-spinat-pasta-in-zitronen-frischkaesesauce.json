@@ -1,0 +1,155 @@
+{
+  "id": "lachs-spinat-pasta-in-zitronen-frischkaesesauce",
+  "version": 1,
+  "status": "draft",
+  "title_de": "Lachs-Spinat-Pasta in Zitronen-Frischkäsesauce",
+  "description_de": "Vollkornpasta mit gebratenen Lachswürfeln und Blattspinat in einer leichten, cremigen Zitronensauce.",
+  "section_de": "Mittagessen",
+  "categories": ["post-workout"],
+  "meal_types": ["main"],
+  "training_tags": ["nach_training"],
+  "servings": 1,
+  "ingredients": [
+    {
+      "food_id": "vollkornnudeln",
+      "amount": 80,
+      "unit": "g",
+      "optional": false,
+      "display_de": "80 g",
+      "scales": true,
+      "role": "carb"
+    },
+    {
+      "food_id": "lachsfilet",
+      "amount": 120,
+      "unit": "g",
+      "optional": false,
+      "display_de": "1 Filet (120 g)",
+      "scales": true,
+      "heated": true,
+      "role": "protein"
+    },
+    {
+      "food_id": "spinat",
+      "amount": 100,
+      "unit": "g",
+      "optional": false,
+      "display_de": "2 Handvoll (100 g)",
+      "scales": true,
+      "role": "vegetable"
+    },
+    {
+      "food_id": "frischkaese-light",
+      "amount": 30,
+      "unit": "g",
+      "optional": false,
+      "display_de": "1½ EL (30 g)",
+      "scales": true,
+      "role": "protein"
+    },
+    {
+      "food_id": "knoblauch",
+      "amount": 3,
+      "unit": "g",
+      "optional": false,
+      "display_de": "1 kleine Zehe (3 g)",
+      "scales": true,
+      "role": "vegetable"
+    },
+    {
+      "food_id": "zitronensaft",
+      "amount": 10,
+      "unit": "g",
+      "optional": false,
+      "display_de": "2 TL (10 g)",
+      "scales": true,
+      "role": "vegetable"
+    },
+    {
+      "food_id": "parmesan",
+      "amount": 10,
+      "unit": "g",
+      "optional": false,
+      "display_de": "1 EL gerieben (10 g)",
+      "scales": true,
+      "role": "protein"
+    },
+    {
+      "food_id": "wasser",
+      "amount": 50,
+      "unit": "ml",
+      "optional": false,
+      "display_de": "50 ml Nudelwasser",
+      "scales": true,
+      "role": "seasoning"
+    },
+    {
+      "food_id": "salz",
+      "amount": 1,
+      "unit": "pinch",
+      "optional": false,
+      "display_de": "1 Prise",
+      "scales": true,
+      "role": "seasoning"
+    },
+    {
+      "food_id": "pfeffer",
+      "amount": 1,
+      "unit": "pinch",
+      "optional": false,
+      "display_de": "1 Prise",
+      "scales": true,
+      "role": "seasoning"
+    }
+  ],
+  "steps_de": [
+    "Koche die Nudeln in Salzwasser nach Packungsangabe bissfest (ca. 10 Minuten) und fange 50 ml Nudelwasser auf.",
+    "Schneide den Lachs in Würfel und brate ihn in einer beschichteten Pfanne ohne Öl bei mittlerer Hitze 4 Minuten, bis er gerade durch ist; aus der Pfanne nehmen.",
+    "Dünste den gehackten Knoblauch und den Spinat in derselben Pfanne 1–2 Minuten, bis der Spinat zusammenfällt.",
+    "Rühre Frischkäse, Nudelwasser und Zitronensaft ein, gib die Nudeln dazu und schwenke alles durch.",
+    "Hebe den Lachs vorsichtig unter, würze mit Salz und Pfeffer und bestreue die Pasta mit Parmesan."
+  ],
+  "tip_de": "Statt frischem Lachs kannst du TK-Lachs verwenden – über Nacht im Kühlschrank auftauen lassen.",
+  "total_minutes": 18,
+  "prep_minutes": 2,
+  "cook_minutes": 16,
+  "no_cook": false,
+  "meal_prep": {
+    "suitable": false,
+    "fridge_days": 0,
+    "freezable": false
+  },
+  "equipment_de": [],
+  "declared_per_serving": {
+    "kcal": 634,
+    "protein_g": 43.4,
+    "carbs_g": 54.2,
+    "fat_g": 24.6
+  },
+  "declared_diet": "omnivore",
+  "declared_allergens": ["gluten", "dairy", "lactose", "fish", "histamine", "onion_garlic"],
+  "contains_pork": false,
+  "declared_pregnancy_caution": true,
+  "meta": {
+    "origin": "manual",
+    "model": null,
+    "batch_id": null,
+    "created_on": "2026-10-11",
+    "expert_reviewed": false,
+    "reviewed_by": null,
+    "reviewed_at": null,
+    "review_note": null,
+    "source_file": "alpha5-rezepte.json@1.0",
+    "import_assumptions": [
+      {
+        "ingredient_index": 1,
+        "food_id": "lachsfilet",
+        "field": "heated",
+        "value": true,
+        "reason_de": "Schritt 2 gart die Zutat durch: „Schneide den Lachs in Würfel und brate ihn in einer beschichteten Pfanne ohne Öl bei mittlerer Hitze 4 Minuten, bis er gerade durch ist; aus der Pfanne nehmen.“"
+      }
+    ],
+    "import_assumptions_confirmed_by": null,
+    "import_hash": "995babaaa0fb383a6f232304fb003f42128a15833c701685e2a16447e9cc362c"
+  }
+}

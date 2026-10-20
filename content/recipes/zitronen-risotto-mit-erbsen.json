@@ -1,0 +1,129 @@
+{
+  "id": "zitronen-risotto-mit-erbsen",
+  "version": 1,
+  "status": "draft",
+  "title_de": "Zitronen-Risotto mit Erbsen",
+  "description_de": "Cremiger Risottoreis ohne Sahne und Wein ist mild, vertraut und kohlenhydratreich – ein ruhiges Abendessen vor dem großen Tag.",
+  "section_de": "Am Vorabend",
+  "categories": ["wettkampf"],
+  "meal_types": ["main"],
+  "training_tags": [],
+  "servings": 1,
+  "ingredients": [
+    {
+      "food_id": "risottoreis",
+      "amount": 140,
+      "unit": "g",
+      "optional": false,
+      "display_de": "140 g",
+      "scales": true,
+      "role": "carb"
+    },
+    {
+      "food_id": "gemuesebruehe-zubereitet",
+      "amount": 550,
+      "unit": "g",
+      "optional": false,
+      "display_de": "ca. 550 ml",
+      "scales": true,
+      "role": "seasoning"
+    },
+    {
+      "food_id": "erbsen-tk",
+      "amount": 50,
+      "unit": "g",
+      "optional": false,
+      "display_de": "50 g",
+      "scales": true,
+      "role": "vegetable"
+    },
+    {
+      "food_id": "olivenoel",
+      "amount": 8,
+      "unit": "g",
+      "optional": false,
+      "display_de": "2 TL (8 g)",
+      "scales": true,
+      "role": "fat"
+    },
+    {
+      "food_id": "hefeflocken",
+      "amount": 8,
+      "unit": "g",
+      "optional": false,
+      "display_de": "1 EL (8 g)",
+      "scales": true,
+      "role": "seasoning"
+    },
+    {
+      "food_id": "zitronensaft",
+      "amount": 10,
+      "unit": "g",
+      "optional": false,
+      "display_de": "2 TL (10 g)",
+      "scales": true,
+      "role": "vegetable"
+    },
+    {
+      "food_id": "salz",
+      "amount": 1,
+      "unit": "pinch",
+      "optional": false,
+      "display_de": "nach Geschmack",
+      "scales": false,
+      "role": "seasoning"
+    },
+    {
+      "food_id": "pfeffer",
+      "amount": 1,
+      "unit": "pinch",
+      "optional": false,
+      "display_de": "1 Prise",
+      "scales": true,
+      "role": "seasoning"
+    }
+  ],
+  "steps_de": [
+    "Erhitze die Brühe in einem Topf und halte sie warm.",
+    "Dünste den Reis im Olivenöl bei mittlerer Hitze 2 Minuten an, bis die Körner glasig sind.",
+    "Gieße nach und nach heiße Brühe an und rühre regelmäßig, bis der Reis nach etwa 18 Minuten cremig und bissfest ist.",
+    "Gib in den letzten 3 Minuten die Erbsen dazu.",
+    "Rühre Hefeflocken und Zitronensaft unter und schmecke mit Salz und Pfeffer ab."
+  ],
+  "tip_de": "Iss am Vorabend nicht zu spät, ideal sind 12–14 Stunden vor dem Start. Vertragen Erbsen sich bei dir nicht gut, lass sie einfach weg.",
+  "tags_de": ["Wettkampf"],
+  "total_minutes": 30,
+  "prep_minutes": 28,
+  "cook_minutes": 2,
+  "no_cook": false,
+  "meal_prep": {
+    "suitable": false,
+    "fridge_days": 0,
+    "freezable": false
+  },
+  "equipment_de": [],
+  "declared_per_serving": {
+    "kcal": 647,
+    "protein_g": 16.7,
+    "carbs_g": 118.7,
+    "fat_g": 9.9
+  },
+  "declared_diet": "vegan",
+  "declared_allergens": ["legumes", "celery", "onion_garlic"],
+  "contains_pork": false,
+  "declared_pregnancy_caution": false,
+  "meta": {
+    "origin": "manual",
+    "model": null,
+    "batch_id": null,
+    "created_on": "2026-10-11",
+    "expert_reviewed": false,
+    "reviewed_by": null,
+    "reviewed_at": null,
+    "review_note": null,
+    "source_file": "alpha5-rezepte.json@1.0",
+    "import_assumptions": [],
+    "import_assumptions_confirmed_by": null,
+    "import_hash": "2b3f5e3350e88691a7a311347c41967255795de647e78fb84ad99448bf0fac09"
+  }
+}

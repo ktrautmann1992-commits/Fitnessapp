@@ -1,0 +1,120 @@
+{
+  "id": "eierspaetzle-mit-erbsen-und-schnittlauchquark",
+  "version": 1,
+  "status": "draft",
+  "title_de": "Eierspätzle mit Erbsen und Schnittlauchquark",
+  "description_de": "Ein vertrautes, mildes Abendessen mit vielen Kohlenhydraten aus Spätzle und etwas Eiweiß aus Quark – wenig Fett, nicht scharf und gut bekömmlich.",
+  "section_de": "Am Vorabend",
+  "categories": ["wettkampf"],
+  "meal_types": ["main"],
+  "training_tags": [],
+  "servings": 1,
+  "ingredients": [
+    {
+      "food_id": "eierspaetzle-getrocknet",
+      "amount": 140,
+      "unit": "g",
+      "optional": false,
+      "display_de": "140 g",
+      "scales": true,
+      "heated": false,
+      "role": "carb"
+    },
+    {
+      "food_id": "erbsen-tk",
+      "amount": 50,
+      "unit": "g",
+      "optional": false,
+      "display_de": "50 g",
+      "scales": true,
+      "role": "vegetable"
+    },
+    {
+      "food_id": "rapsoel",
+      "amount": 5,
+      "unit": "g",
+      "optional": false,
+      "display_de": "1 TL (5 g)",
+      "scales": true,
+      "role": "fat"
+    },
+    {
+      "food_id": "magerquark",
+      "amount": 80,
+      "unit": "g",
+      "optional": false,
+      "display_de": "80 g",
+      "scales": true,
+      "role": "protein"
+    },
+    {
+      "food_id": "schnittlauch-frisch",
+      "amount": 5,
+      "unit": "g",
+      "optional": false,
+      "display_de": "1 EL Röllchen (5 g)",
+      "scales": true,
+      "role": "vegetable"
+    },
+    {
+      "food_id": "salz",
+      "amount": 1,
+      "unit": "pinch",
+      "optional": false,
+      "display_de": "nach Geschmack",
+      "scales": false,
+      "role": "seasoning"
+    },
+    {
+      "food_id": "pfeffer",
+      "amount": 1,
+      "unit": "pinch",
+      "optional": false,
+      "display_de": "1 Prise",
+      "scales": true,
+      "role": "seasoning"
+    }
+  ],
+  "steps_de": [
+    "Koche die Spätzle nach Packungsanweisung in Salzwasser etwa 12 Minuten; gib die Erbsen 3 Minuten vor Ende dazu.",
+    "Verrühre den Quark mit 1–2 EL Wasser, Schnittlauch, Salz und Pfeffer glatt.",
+    "Gieße Spätzle und Erbsen ab und schwenke sie im Öl in einer Pfanne 2 Minuten bei mittlerer Hitze.",
+    "Richte die Spätzle an und gib den Schnittlauchquark daneben."
+  ],
+  "tip_de": "Brate die Spätzle vor dem Rennen nur kurz und ohne viel Fett an – so bleiben sie leicht verdaulich.",
+  "tags_de": ["Wettkampf"],
+  "total_minutes": 20,
+  "prep_minutes": 5,
+  "cook_minutes": 15,
+  "no_cook": false,
+  "meal_prep": {
+    "suitable": false,
+    "fridge_days": 0,
+    "freezable": false
+  },
+  "equipment_de": [],
+  "declared_per_serving": {
+    "kcal": 643,
+    "protein_g": 30.6,
+    "carbs_g": 106.8,
+    "fat_g": 9.6
+  },
+  "declared_diet": "vegetarian",
+  "declared_allergens": ["gluten", "dairy", "lactose", "eggs", "legumes", "onion_garlic"],
+  "contains_pork": false,
+  "declared_pregnancy_caution": true,
+  "meta": {
+    "origin": "manual",
+    "model": null,
+    "batch_id": null,
+    "created_on": "2026-10-11",
+    "expert_reviewed": false,
+    "reviewed_by": null,
+    "reviewed_at": null,
+    "review_note": null,
+    "source_file": "alpha5-rezepte.json@1.0",
+    "import_assumptions": [],
+    "import_assumptions_confirmed_by": null,
+    "import_hash": "f9e991f72a30d76654d25b142284838e28dbb99b407699609b9366145fa63c44"
+  }
+}

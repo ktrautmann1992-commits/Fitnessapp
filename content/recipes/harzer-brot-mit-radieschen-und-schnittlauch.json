@@ -1,0 +1,101 @@
+{
+  "id": "harzer-brot-mit-radieschen-und-schnittlauch",
+  "version": 1,
+  "status": "draft",
+  "title_de": "Harzer-Brot mit Radieschen & Schnittlauch",
+  "description_de": "Der deutsche Fitness-Klassiker: Harzer Käse auf Vollkornbrot mit knackigen Radieschen und frischem Schnittlauch.",
+  "section_de": "Snack",
+  "categories": ["schnell"],
+  "meal_types": ["snack"],
+  "training_tags": [],
+  "servings": 1,
+  "ingredients": [
+    {
+      "food_id": "vollkornbrot",
+      "amount": 50,
+      "unit": "g",
+      "optional": false,
+      "display_de": "1 Scheibe (50 g)",
+      "scales": true,
+      "role": "carb"
+    },
+    {
+      "food_id": "harzer-kaese",
+      "amount": 60,
+      "unit": "g",
+      "optional": false,
+      "display_de": "60 g",
+      "scales": true,
+      "heated": false,
+      "role": "protein"
+    },
+    {
+      "food_id": "radieschen",
+      "amount": 50,
+      "unit": "g",
+      "optional": false,
+      "display_de": "4 Radieschen (50 g)",
+      "scales": true,
+      "role": "vegetable"
+    },
+    {
+      "food_id": "schnittlauch-frisch",
+      "amount": 5,
+      "unit": "g",
+      "optional": false,
+      "display_de": "1 EL, in Röllchen (5 g)",
+      "scales": true,
+      "role": "vegetable"
+    },
+    {
+      "food_id": "pfeffer",
+      "amount": 1,
+      "unit": "pinch",
+      "optional": false,
+      "display_de": "1 Prise",
+      "scales": true,
+      "role": "seasoning"
+    }
+  ],
+  "steps_de": [
+    "Schneide den Harzer Käse in dünne Scheiben und die Radieschen in feine Scheiben.",
+    "Beleg das Brot abwechselnd mit Käse und Radieschen.",
+    "Streu Schnittlauch und frisch gemahlenen Pfeffer darüber."
+  ],
+  "tip_de": "Wer den Geschmack milder mag, nimmt Harzer mit Kümmel oder einen Klecks Magerquark darunter.",
+  "tags_de": ["Unter 10 Minuten"],
+  "total_minutes": 5,
+  "prep_minutes": 5,
+  "cook_minutes": 0,
+  "no_cook": true,
+  "meal_prep": {
+    "suitable": false,
+    "fridge_days": 0,
+    "freezable": false
+  },
+  "equipment_de": [],
+  "declared_per_serving": {
+    "kcal": 187,
+    "protein_g": 20.6,
+    "carbs_g": 21.1,
+    "fat_g": 1.3
+  },
+  "declared_diet": "vegetarian",
+  "declared_allergens": ["gluten", "dairy", "lactose", "histamine", "onion_garlic"],
+  "contains_pork": false,
+  "declared_pregnancy_caution": true,
+  "meta": {
+    "origin": "manual",
+    "model": null,
+    "batch_id": null,
+    "created_on": "2026-10-11",
+    "expert_reviewed": false,
+    "reviewed_by": null,
+    "reviewed_at": null,
+    "review_note": null,
+    "source_file": "alpha5-rezepte.json@1.0",
+    "import_assumptions": [],
+    "import_assumptions_confirmed_by": null,
+    "import_hash": "fba38f072e6e7ccf3e17f199d30af4aca4cd75ff0dca59b3f172c3ba57e8ead9"
+  }
+}

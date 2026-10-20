@@ -1,0 +1,128 @@
+{
+  "id": "thunfisch-dip-mit-gemuesesticks",
+  "version": 1,
+  "status": "draft",
+  "title_de": "Thunfisch-Dip mit Gemüsesticks",
+  "description_de": "Cremiger Thunfisch-Quark-Dip mit Zitrone und Senf zu knackigen Möhren- und Paprikasticks.",
+  "section_de": "Snack",
+  "categories": ["schnell", "post-workout"],
+  "meal_types": ["snack"],
+  "training_tags": ["nach_training"],
+  "servings": 1,
+  "ingredients": [
+    {
+      "food_id": "thunfisch-dose-im-eigenen-saft-abgetropft",
+      "amount": 60,
+      "unit": "g",
+      "optional": false,
+      "display_de": "½ Dose, abgetropft (60 g)",
+      "scales": true,
+      "heated": false,
+      "role": "protein"
+    },
+    {
+      "food_id": "magerquark",
+      "amount": 80,
+      "unit": "g",
+      "optional": false,
+      "display_de": "80 g",
+      "scales": true,
+      "role": "protein"
+    },
+    {
+      "food_id": "senf",
+      "amount": 5,
+      "unit": "g",
+      "optional": false,
+      "display_de": "1 TL (5 g)",
+      "scales": true,
+      "role": "fat"
+    },
+    {
+      "food_id": "zitronensaft",
+      "amount": 5,
+      "unit": "g",
+      "optional": false,
+      "display_de": "1 TL (5 g)",
+      "scales": true,
+      "role": "vegetable"
+    },
+    {
+      "food_id": "moehre",
+      "amount": 100,
+      "unit": "g",
+      "optional": false,
+      "display_de": "1 große Möhre (100 g)",
+      "scales": true,
+      "role": "vegetable"
+    },
+    {
+      "food_id": "paprika-rot",
+      "amount": 100,
+      "unit": "g",
+      "optional": false,
+      "display_de": "½ Paprika (100 g)",
+      "scales": true,
+      "role": "vegetable"
+    },
+    {
+      "food_id": "salz",
+      "amount": 1,
+      "unit": "pinch",
+      "optional": false,
+      "display_de": "1 Prise",
+      "scales": true,
+      "role": "seasoning"
+    },
+    {
+      "food_id": "pfeffer",
+      "amount": 1,
+      "unit": "pinch",
+      "optional": false,
+      "display_de": "1 Prise",
+      "scales": true,
+      "role": "seasoning"
+    }
+  ],
+  "steps_de": [
+    "Zerdrücke den Thunfisch mit einer Gabel und verrühre ihn mit Magerquark, Senf und Zitronensaft.",
+    "Schmecke den Dip mit Salz und Pfeffer ab.",
+    "Schneide Möhre und Paprika in Sticks und tunke sie in den Dip."
+  ],
+  "tip_de": "Der Dip hält sich abgedeckt 2 Tage im Kühlschrank.",
+  "tags_de": ["Unter 10 Minuten"],
+  "total_minutes": 5,
+  "prep_minutes": 5,
+  "cook_minutes": 0,
+  "no_cook": true,
+  "meal_prep": {
+    "suitable": false,
+    "fridge_days": 0,
+    "freezable": false
+  },
+  "equipment_de": [],
+  "declared_per_serving": {
+    "kcal": 198,
+    "protein_g": 26.9,
+    "carbs_g": 16.9,
+    "fat_g": 1.7
+  },
+  "declared_diet": "omnivore",
+  "declared_allergens": ["dairy", "lactose", "fish", "mustard", "histamine"],
+  "contains_pork": false,
+  "declared_pregnancy_caution": true,
+  "meta": {
+    "origin": "manual",
+    "model": null,
+    "batch_id": null,
+    "created_on": "2026-10-11",
+    "expert_reviewed": false,
+    "reviewed_by": null,
+    "reviewed_at": null,
+    "review_note": null,
+    "source_file": "alpha5-rezepte.json@1.0",
+    "import_assumptions": [],
+    "import_assumptions_confirmed_by": null,
+    "import_hash": "c8e4738e67fa9b3576eb0084e8803ab3c7d1787c7f433569d1defc8395ef4faa"
+  }
+}

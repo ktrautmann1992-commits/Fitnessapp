@@ -1,0 +1,118 @@
+{
+  "id": "laugenbrezel-mit-schnittlauchquark-und-radieschen",
+  "version": 1,
+  "status": "draft",
+  "title_de": "Laugenbrezel mit Schnittlauchquark und Radieschen",
+  "description_de": "Salzige Brezeln, Eiweiß aus Magerquark und knackiges Gemüse füllen nach dem Ziel Kohlenhydrate, Eiweiß und Salz wieder auf.",
+  "section_de": "Nach dem Ziel",
+  "categories": ["schnell", "post-workout", "wettkampf"],
+  "meal_types": ["snack"],
+  "training_tags": ["nach_training"],
+  "servings": 1,
+  "ingredients": [
+    {
+      "food_id": "laugenbrezel",
+      "amount": 140,
+      "unit": "g",
+      "optional": false,
+      "display_de": "2 Laugenbrezeln (140 g)",
+      "scales": true,
+      "role": "carb"
+    },
+    {
+      "food_id": "magerquark",
+      "amount": 150,
+      "unit": "g",
+      "optional": false,
+      "display_de": "150 g",
+      "scales": true,
+      "role": "protein"
+    },
+    {
+      "food_id": "schnittlauch-frisch",
+      "amount": 5,
+      "unit": "g",
+      "optional": false,
+      "display_de": "1 EL Röllchen (5 g)",
+      "scales": true,
+      "role": "vegetable"
+    },
+    {
+      "food_id": "radieschen",
+      "amount": 50,
+      "unit": "g",
+      "optional": false,
+      "display_de": "4 Radieschen (50 g)",
+      "scales": true,
+      "role": "vegetable"
+    },
+    {
+      "food_id": "gurke",
+      "amount": 60,
+      "unit": "g",
+      "optional": false,
+      "display_de": "1 Stück Gurke (60 g)",
+      "scales": true,
+      "role": "vegetable"
+    },
+    {
+      "food_id": "salz",
+      "amount": 1,
+      "unit": "pinch",
+      "optional": false,
+      "display_de": "1 kräftige Prise",
+      "scales": true,
+      "role": "seasoning"
+    },
+    {
+      "food_id": "pfeffer",
+      "amount": 1,
+      "unit": "pinch",
+      "optional": false,
+      "display_de": "1 Prise",
+      "scales": true,
+      "role": "seasoning"
+    }
+  ],
+  "steps_de": [
+    "Verrühre den Magerquark mit 2 EL Wasser, Schnittlauch, Salz und Pfeffer cremig.",
+    "Schneide Radieschen und Gurke in Scheiben oder Sticks.",
+    "Brich die Brezeln in Stücke und dippe sie in den Quark; das Gemüse isst du dazu."
+  ],
+  "tip_de": "Pack den Quark in einer kleinen Dose in die Kühltasche im Zielbereich und kauf die Brezeln frisch vor Ort. Dazu viel trinken, gern auch eine Saftschorle.",
+  "tags_de": ["Unter 10 Minuten", "Wettkampf"],
+  "total_minutes": 5,
+  "prep_minutes": 5,
+  "cook_minutes": 0,
+  "no_cook": true,
+  "meal_prep": {
+    "suitable": false,
+    "fridge_days": 0,
+    "freezable": false
+  },
+  "equipment_de": [],
+  "declared_per_serving": {
+    "kcal": 496,
+    "protein_g": 30.9,
+    "carbs_g": 85.2,
+    "fat_g": 2.6
+  },
+  "declared_diet": "vegetarian",
+  "declared_allergens": ["gluten", "dairy", "lactose", "onion_garlic"],
+  "contains_pork": false,
+  "declared_pregnancy_caution": false,
+  "meta": {
+    "origin": "manual",
+    "model": null,
+    "batch_id": null,
+    "created_on": "2026-10-11",
+    "expert_reviewed": false,
+    "reviewed_by": null,
+    "reviewed_at": null,
+    "review_note": null,
+    "source_file": "alpha5-rezepte.json@1.0",
+    "import_assumptions": [],
+    "import_assumptions_confirmed_by": null,
+    "import_hash": "9b9abc6dc3001617405ad3cdf30f715ed22d2f6dba6c2b1498d11e15114483e2"
+  }
+}

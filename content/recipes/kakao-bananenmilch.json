@@ -1,0 +1,91 @@
+{
+  "id": "kakao-bananenmilch",
+  "version": 1,
+  "status": "draft",
+  "title_de": "Kakao-Bananenmilch",
+  "description_de": "Eine kühle Bananenmilch mit Kakao und Honig, die schnell Energie liefert und als Getränk leicht im Magen liegt.",
+  "section_de": "30 Min. vorher",
+  "categories": ["schnell", "pre-workout"],
+  "meal_types": ["snack"],
+  "training_tags": ["vor_training"],
+  "servings": 1,
+  "ingredients": [
+    {
+      "food_id": "milch-1-5",
+      "amount": 200,
+      "unit": "g",
+      "optional": false,
+      "display_de": "200 ml",
+      "scales": true,
+      "role": "carb"
+    },
+    {
+      "food_id": "banane",
+      "amount": 80,
+      "unit": "g",
+      "optional": false,
+      "display_de": "1 kleine Banane (80 g)",
+      "scales": true,
+      "role": "vegetable"
+    },
+    {
+      "food_id": "kakaopulver-stark-entoelt",
+      "amount": 5,
+      "unit": "g",
+      "optional": false,
+      "display_de": "1 TL (5 g)",
+      "scales": true,
+      "role": "seasoning"
+    },
+    {
+      "food_id": "honig",
+      "amount": 5,
+      "unit": "g",
+      "optional": false,
+      "display_de": "1 TL (5 g)",
+      "scales": true,
+      "role": "sweet"
+    }
+  ],
+  "steps_de": [
+    "Gib Milch, Banane, Kakao und Honig in einen Mixer oder hohen Becher.",
+    "Mixe alles 20 Sekunden schaumig.",
+    "Fülle die Bananenmilch in ein Glas oder eine Trinkflasche."
+  ],
+  "tip_de": "Mit laktosefreier Milch gleich zubereiten, falls normale Milch vor dem Sport drückt. In der Thermoflasche bleibt sie bis zum Gym kühl.",
+  "tags_de": ["Unter 10 Minuten"],
+  "total_minutes": 3,
+  "prep_minutes": 3,
+  "cook_minutes": 0,
+  "no_cook": false,
+  "meal_prep": {
+    "suitable": false,
+    "fridge_days": 0,
+    "freezable": false
+  },
+  "equipment_de": [],
+  "declared_per_serving": {
+    "kcal": 201,
+    "protein_g": 8.7,
+    "carbs_g": 30.2,
+    "fat_g": 3.7
+  },
+  "declared_diet": "vegetarian",
+  "declared_allergens": ["dairy", "lactose", "fructose"],
+  "contains_pork": false,
+  "declared_pregnancy_caution": false,
+  "meta": {
+    "origin": "manual",
+    "model": null,
+    "batch_id": null,
+    "created_on": "2026-10-11",
+    "expert_reviewed": false,
+    "reviewed_by": null,
+    "reviewed_at": null,
+    "review_note": null,
+    "source_file": "alpha5-rezepte.json@1.0",
+    "import_assumptions": [],
+    "import_assumptions_confirmed_by": null,
+    "import_hash": "836dd41b0a49828fd23b8e5f009484e72063253b3bed3a7b972d07fc2654c474"
+  }
+}

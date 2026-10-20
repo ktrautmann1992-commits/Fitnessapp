@@ -1,0 +1,146 @@
+{
+  "id": "teriyaki-tofu-bowl-mit-edamame",
+  "version": 1,
+  "status": "draft",
+  "title_de": "Teriyaki-Tofu-Bowl mit Edamame",
+  "description_de": "Knuspriger Tofu in süß-salziger Sauce mit Reis, Brokkoli und Edamame.",
+  "section_de": "Mittagessen",
+  "categories": ["post-workout"],
+  "meal_types": ["main"],
+  "training_tags": ["nach_training"],
+  "servings": 1,
+  "ingredients": [
+    {
+      "food_id": "tofu-natur",
+      "amount": 150,
+      "unit": "g",
+      "optional": false,
+      "display_de": "150 g",
+      "scales": true,
+      "role": "protein"
+    },
+    {
+      "food_id": "basmatireis-trocken",
+      "amount": 60,
+      "unit": "g",
+      "optional": false,
+      "display_de": "60 g",
+      "scales": true,
+      "role": "carb"
+    },
+    {
+      "food_id": "edamame-tk-geschaelt",
+      "amount": 80,
+      "unit": "g",
+      "optional": false,
+      "display_de": "80 g",
+      "scales": true,
+      "role": "protein"
+    },
+    {
+      "food_id": "brokkoli",
+      "amount": 100,
+      "unit": "g",
+      "optional": false,
+      "display_de": "100 g",
+      "scales": true,
+      "role": "vegetable"
+    },
+    {
+      "food_id": "karotten",
+      "amount": 50,
+      "unit": "g",
+      "optional": false,
+      "display_de": "1 kleine Karotte (50 g)",
+      "scales": true,
+      "role": "vegetable"
+    },
+    {
+      "food_id": "sojasauce",
+      "amount": 20,
+      "unit": "g",
+      "optional": false,
+      "display_de": "1 ½ EL (20 g)",
+      "scales": true,
+      "role": "protein"
+    },
+    {
+      "food_id": "ahornsirup",
+      "amount": 8,
+      "unit": "g",
+      "optional": false,
+      "display_de": "1 ½ TL (8 g)",
+      "scales": true,
+      "role": "sweet"
+    },
+    {
+      "food_id": "ingwer",
+      "amount": 5,
+      "unit": "g",
+      "optional": false,
+      "display_de": "1 cm (5 g)",
+      "scales": true,
+      "role": "vegetable"
+    },
+    {
+      "food_id": "sesamoel",
+      "amount": 5,
+      "unit": "g",
+      "optional": false,
+      "display_de": "1 TL (5 g)",
+      "scales": true,
+      "role": "fat"
+    },
+    {
+      "food_id": "sesam",
+      "amount": 5,
+      "unit": "g",
+      "optional": false,
+      "display_de": "1 TL (5 g)",
+      "scales": true,
+      "role": "fat"
+    }
+  ],
+  "steps_de": [
+    "Koche den Reis nach Packungsanleitung, etwa 12 Minuten.",
+    "Tupfe den Tofu trocken, schneide ihn in Würfel und brate ihn im Sesamöl bei mittlerer bis hoher Hitze 8 Minuten rundum knusprig.",
+    "Gare Brokkoliröschen und Edamame 4 Minuten in kochendem Wasser und gieße sie ab.",
+    "Verrühre Sojasauce, Ahornsirup und geriebenen Ingwer und lösche den Tofu damit ab, bis die Sauce nach 1 Minute glänzt.",
+    "Raspel die Karotte und richte alles in einer Schüssel an, bestreut mit Sesam."
+  ],
+  "tip_de": "Statt Reis passt auch Quinoa; für Meal-Prep Sauce und Bowl getrennt aufbewahren.",
+  "total_minutes": 25,
+  "prep_minutes": 1,
+  "cook_minutes": 24,
+  "no_cook": false,
+  "meal_prep": {
+    "suitable": false,
+    "fridge_days": 0,
+    "freezable": false
+  },
+  "equipment_de": [],
+  "declared_per_serving": {
+    "kcal": 665,
+    "protein_g": 40.5,
+    "carbs_g": 67.9,
+    "fat_g": 24.6
+  },
+  "declared_diet": "vegan",
+  "declared_allergens": ["gluten", "legumes", "soy", "sesame", "histamine"],
+  "contains_pork": false,
+  "declared_pregnancy_caution": false,
+  "meta": {
+    "origin": "manual",
+    "model": null,
+    "batch_id": null,
+    "created_on": "2026-10-11",
+    "expert_reviewed": false,
+    "reviewed_by": null,
+    "reviewed_at": null,
+    "review_note": null,
+    "source_file": "alpha5-rezepte.json@1.0",
+    "import_assumptions": [],
+    "import_assumptions_confirmed_by": null,
+    "import_hash": "dd02283911509d15f7001bbf8c91e916466d87dd340de5225fd6ff032896a026"
+  }
+}

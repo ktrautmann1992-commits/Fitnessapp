@@ -1,0 +1,204 @@
+{
+  "id": "unterwegs",
+  "version": 1,
+  "status": "published",
+  "title_de": "Unterwegs essen",
+  "intro_de": "Unterwegs, in der Kantine oder im Restaurant musst du nicht auf deine Ziele verzichten. Mit ein paar einfachen Faustregeln findest du fast überall eine gute Wahl, ohne zu zählen oder dich einzuschränken. Und wenn es mal das Lieblingsessen ohne Kompromiss sein soll: genieß es einfach und mach bei der nächsten Mahlzeit normal weiter.",
+  "sections": [
+    {
+      "heading_de": "Grundregeln",
+      "body_de": [
+        "Wähle zuerst die Hauptzutat mit Eiweiß (Fleisch, Fisch, Eier, Hülsenfrüchte, Milchprodukte) und baue den Rest drumherum.",
+        "Gemüse oder Salat dazu: Die Hälfte des Tellers darf ruhig grün und bunt sein.",
+        "Soßen und Dressings extra bestellen, dann bestimmst du die Menge selbst.",
+        "Getränke ohne Zucker: Wasser, ungesüßter Tee, Kaffee oder Getränke mit Süßstoff.",
+        "Lieber gegrillt, gedünstet oder gebacken als frittiert oder paniert.",
+        "Iss langsam und hör auf, wenn du angenehm satt bist – Reste einpacken ist völlig okay."
+      ]
+    }
+  ],
+  "places": [
+    {
+      "name_de": "Beim Bäcker",
+      "good_de": [
+        "Vollkornbrötchen mit Käse, Schinken, Ei oder Putenbrust",
+        "Belegtes Brötchen mit viel Salat und Gemüse",
+        "Magerquark oder Joghurt mit Obst, falls angeboten",
+        "Laugenbrezel als kleiner Snack zu einem Eiweißgetränk",
+        "Kaffee oder Cappuccino ohne Sirup"
+      ],
+      "less_often_de": [
+        "Croissants, Plunder und Blätterteig-Gebäck",
+        "Süße Teilchen wie Berliner oder Streuselkuchen",
+        "Brötchen mit dicker Butter- oder Remouladenschicht",
+        "Große Kaffee-Spezialitäten mit Sirup und Sahne"
+      ],
+      "tip_de": "Frag nach einem Brötchen mit doppeltem Belag statt zwei Brötchen – so bekommst du mehr Eiweiß bei weniger Teig."
+    },
+    {
+      "name_de": "An der Tankstelle",
+      "good_de": [
+        "Trinkjoghurt, Skyr oder Proteinpudding aus dem Kühlregal",
+        "Belegtes Vollkornbrot oder Wrap mit Hähnchen",
+        "Nüsse in kleiner Packung",
+        "Obst wie Bananen oder Äpfel, falls vorhanden",
+        "Beef Jerky oder Kabanossi als herzhafter Eiweiß-Snack"
+      ],
+      "less_often_de": [
+        "Schokoriegel und Süßigkeiten von der Kasse",
+        "Energy-Drinks und Softdrinks mit Zucker",
+        "Bockwurst mit Brötchen und viel Ketchup",
+        "Chips und Knabbergebäck"
+      ],
+      "tip_de": "Geh zuerst zum Kühlregal statt zur Kasse – dort stehen meist Optionen wie Skyr, Quark oder Joghurt, während an der Kasse die Süßigkeiten warten."
+    },
+    {
+      "name_de": "In der Kantine",
+      "good_de": [
+        "Tagesgericht mit magerem Fleisch oder Fisch und Gemüsebeilage",
+        "Salatbar mit Eiern, Hüttenkäse, Bohnen oder Hähnchen",
+        "Gemüsesuppe oder Linseneintopf",
+        "Kartoffeln, Reis oder Vollkornnudeln in normaler Portion",
+        "Obst oder Joghurt als Nachtisch"
+      ],
+      "less_often_de": [
+        "Panierte Schnitzel mit Pommes",
+        "Aufläufe und Gerichte mit viel Käse-Sahne-Soße",
+        "Süße Hauptgerichte wie Pfannkuchen oder Germknödel als Hauptmahlzeit",
+        "Pudding und Kuchen jeden Tag"
+      ],
+      "tip_de": "Schau dir vorher den Speiseplan an und entscheide dich schon am Vormittag – so greifst du in der Schlange nicht spontan zum Erstbesten."
+    },
+    {
+      "name_de": "Beim Italiener",
+      "good_de": [
+        "Gegrillter Fisch oder Fleisch (z. B. Pesce alla griglia, Tagliata) mit Gemüse",
+        "Pasta mit Tomatensoße, Meeresfrüchten oder Gemüse",
+        "Minestrone oder Carpaccio als Vorspeise",
+        "Pizza mit Schinken, Thunfisch oder Gemüse, gern geteilt mit Salat",
+        "Insalata mista mit Dressing extra"
+      ],
+      "less_often_de": [
+        "Pasta mit Sahne- oder Käsesoßen (Carbonara, Quattro Formaggi)",
+        "Mehrere Scheiben Pizzabrot mit Kräuterbutter vorab",
+        "Lasagne und überbackene Gerichte",
+        "Tiramisu und Panna Cotta als festes Ritual"
+      ],
+      "tip_de": "Bestell eine Vorspeise mit Gemüse oder Salat und teil dir Pizza oder Dessert – so probierst du alles und bleibst trotzdem leicht."
+    },
+    {
+      "name_de": "Beim Asiaten",
+      "good_de": [
+        "Gebratenes oder gedämpftes Gemüse mit Hähnchen, Rind, Garnelen oder Tofu",
+        "Sushi, Sashimi und Maki-Rollen ohne Mayonnaise",
+        "Klare Suppen wie Miso-Suppe oder Pho",
+        "Gerichte mit Reis statt gebratenen Nudeln",
+        "Sommerrollen statt Frühlingsrollen"
+      ],
+      "less_often_de": [
+        "Frittierte Gerichte wie knusprige Ente oder gebackene Banane",
+        "Süß-saure Soßen und dicke Erdnusssoßen",
+        "Gebratene Nudeln oder gebratener Reis in großer Portion",
+        "Tempura und Rollen mit Frischkäse und Mayo"
+      ],
+      "tip_de": "Frag nach „weniger Soße“ oder Soße extra und nimm Reis lieber naturbelassen statt gebraten."
+    },
+    {
+      "name_de": "Beim Döner",
+      "good_de": [
+        "Dönerteller mit Salat statt Brot, gern mit etwas Reis oder Bulgur",
+        "Dürüm oder Döner mit viel Salat und Joghurt- oder Kräutersoße",
+        "Hähnchen-Döner als magere Variante",
+        "Linsensuppe als Vorspeise",
+        "Ayran als Getränk"
+      ],
+      "less_often_de": [
+        "Döner mit Pommes als Beilage",
+        "Extra Käse und mehrere Soßen auf einmal",
+        "Softdrinks mit Zucker zum Essen",
+        "Baklava als Abschluss jedes Mal"
+      ],
+      "tip_de": "Sag „viel Salat, wenig Soße“ – dann wird der Döner frischer, saftiger und sättigt trotzdem gut."
+    },
+    {
+      "name_de": "Im Burger-Restaurant",
+      "good_de": [
+        "Klassischer Burger mit einem Patty und viel Gemüse",
+        "Chicken-Burger mit gegrilltem statt paniertem Hähnchen",
+        "Salat mit Hähnchen oder Rind als Beilage oder Hauptgericht",
+        "Kleine Pommes statt große, oder Beilagensalat",
+        "Wasser, Cola Zero oder ungesüßter Eistee"
+      ],
+      "less_often_de": [
+        "Doppel- und Triple-Burger mit Bacon und Extra-Käse",
+        "Große Menüs mit großem Softdrink",
+        "Milchshakes und Eisbecher",
+        "Frittierte Beilagen wie Onion Rings oder Nuggets zusätzlich"
+      ],
+      "tip_de": "Bestell einzeln statt im Menü – dann entscheidest du bewusst, ob Pommes und Getränk wirklich dazu sollen."
+    },
+    {
+      "name_de": "Supermarkt-Snacks für unterwegs",
+      "good_de": [
+        "Skyr, Magerquark oder Proteinpudding (Löffel nicht vergessen)",
+        "Hartgekochte Eier im Zweierpack",
+        "Fertigsalat mit Hähnchen, Thunfisch oder Hülsenfrüchten",
+        "Obst, Snack-Gemüse wie Möhren oder Mini-Paprika",
+        "Vollkorn-Wraps oder Sandwiches mit magerem Belag"
+      ],
+      "less_often_de": [
+        "Fertigsandwiches mit viel Mayonnaise",
+        "Müsliriegel mit viel Zucker als Hauptmahlzeit",
+        "Gebäck aus der Backstation",
+        "Gesüßte Smoothies und Eistees in großen Flaschen"
+      ],
+      "tip_de": "Kombiniere einen Eiweiß-Snack mit Obst oder Gemüse – so hast du in zwei Handgriffen eine kleine, ausgewogene Mahlzeit."
+    },
+    {
+      "name_de": "Im Hotel-Frühstücksbuffet",
+      "good_de": [
+        "Rührei, Spiegelei oder Omelett mit Gemüse",
+        "Naturjoghurt oder Quark mit frischem Obst und Nüssen",
+        "Vollkornbrot mit Käse, Schinken oder Lachs",
+        "Haferflocken oder ungesüßtes Müsli",
+        "Tomaten, Gurken und Paprika vom Gemüseteller"
+      ],
+      "less_often_de": [
+        "Croissants, Pancakes und süßes Gebäck in Mengen",
+        "Gezuckerte Cerealien und Fruchtjoghurts",
+        "Bacon und Würstchen in großen Portionen",
+        "Mehrere Gläser Saft"
+      ],
+      "tip_de": "Mach erst einmal eine Runde ums Buffet ohne Teller und entscheide dann, was du wirklich willst – und starte mit Eiweiß und Obst."
+    },
+    {
+      "name_de": "Auf Reisen und im Flugzeug",
+      "good_de": [
+        "Selbst mitgebrachte Snacks wie Nüsse, Obst oder Proteinriegel",
+        "Belegte Vollkornbrote oder Wraps von zu Hause",
+        "Leere Trinkflasche einpacken und nach der Sicherheitskontrolle auffüllen",
+        "Am Bahnhof oder Flughafen: Salat, Sushi oder belegtes Brot mit Ei, Käse, Fisch oder Fleisch",
+        "Wasser und ungesüßter Tee während des Fluges"
+      ],
+      "less_often_de": [
+        "Süßigkeiten und Chips aus dem Duty-free als Langeweile-Snack",
+        "Alkohol an Bord, besonders auf längeren Flügen",
+        "Mehrere zuckerhaltige Getränke aus dem Bordservice",
+        "Fast Food nur, weil es gerade am nächsten ist"
+      ],
+      "tip_de": "Pack dir einen kleinen Snack-Beutel für die Reise – wer vorbereitet ist, muss nicht nehmen, was gerade da ist."
+    }
+  ],
+  "meta": {
+    "origin": "manual",
+    "model": null,
+    "batch_id": null,
+    "created_on": "2026-10-11",
+    "expert_reviewed": false,
+    "reviewed_by": "Claude (Testphase, Gründer-Anweisung 20.10.2026)",
+    "reviewed_at": "2026-10-20",
+    "review_note": null,
+    "source_file": "alpha5-rezepte.json@1.0",
+    "import_hash": "06677e607c3bddf03cfef18e07b6fe1594aac29f28cf0c65969506cd3c16f660"
+  }
+}

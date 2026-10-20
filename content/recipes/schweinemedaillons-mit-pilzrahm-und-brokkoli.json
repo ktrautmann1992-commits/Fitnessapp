@@ -1,0 +1,138 @@
+{
+  "id": "schweinemedaillons-mit-pilzrahm-und-brokkoli",
+  "version": 1,
+  "status": "draft",
+  "title_de": "Schweinemedaillons mit Pilzrahm und Brokkoli",
+  "description_de": "Abendessen aus zarten Filetmedaillons, Champignon-Rahmsauce und viel Brokkoli.",
+  "section_de": "Abendessen",
+  "categories": [],
+  "meal_types": ["main"],
+  "training_tags": [],
+  "servings": 1,
+  "ingredients": [
+    {
+      "food_id": "schweinefilet",
+      "amount": 180,
+      "unit": "g",
+      "optional": false,
+      "display_de": "180 g",
+      "scales": true,
+      "heated": false,
+      "role": "protein"
+    },
+    {
+      "food_id": "champignons",
+      "amount": 250,
+      "unit": "g",
+      "optional": false,
+      "display_de": "250 g",
+      "scales": true,
+      "role": "vegetable"
+    },
+    {
+      "food_id": "brokkoli",
+      "amount": 300,
+      "unit": "g",
+      "optional": false,
+      "display_de": "1 kleiner Kopf (300 g)",
+      "scales": true,
+      "role": "vegetable"
+    },
+    {
+      "food_id": "zwiebel",
+      "amount": 30,
+      "unit": "g",
+      "optional": false,
+      "display_de": "¼ Zwiebel (30 g)",
+      "scales": true,
+      "role": "vegetable"
+    },
+    {
+      "food_id": "kochsahne-15",
+      "amount": 60,
+      "unit": "g",
+      "optional": false,
+      "display_de": "4 EL (60 g)",
+      "scales": true,
+      "role": "fat"
+    },
+    {
+      "food_id": "rapsoel",
+      "amount": 8,
+      "unit": "g",
+      "optional": false,
+      "display_de": "2 TL (8 g)",
+      "scales": true,
+      "role": "fat"
+    },
+    {
+      "food_id": "petersilie-frisch",
+      "amount": 3,
+      "unit": "g",
+      "optional": false,
+      "display_de": "1 TL, gehackt (3 g)",
+      "scales": true,
+      "role": "vegetable"
+    },
+    {
+      "food_id": "salz",
+      "amount": 1,
+      "unit": "pinch",
+      "optional": false,
+      "display_de": "1 Prise",
+      "scales": true,
+      "role": "seasoning"
+    },
+    {
+      "food_id": "pfeffer",
+      "amount": 1,
+      "unit": "pinch",
+      "optional": false,
+      "display_de": "1 Prise",
+      "scales": true,
+      "role": "seasoning"
+    }
+  ],
+  "steps_de": [
+    "Teile den Brokkoli in Röschen und gare ihn in Salzwasser 5–6 Minuten bissfest.",
+    "Schneide das Filet in 2 cm dicke Medaillons, würze sie mit Salz und Pfeffer und brate sie im Öl pro Seite 3 Minuten bei mittlerer bis hoher Hitze; dann herausnehmen.",
+    "Brate Zwiebelwürfel und geschnittene Champignons in derselben Pfanne 4 Minuten kräftig an.",
+    "Rühre die Kochsahne ein, lass sie 1 Minute köcheln und schmecke mit Salz und Pfeffer ab.",
+    "Lege die Medaillons kurz in die Sauce und serviere sie mit Brokkoli und Petersilie."
+  ],
+  "tip_de": "Wer mehr Kohlenhydrate braucht, isst 150 g Pellkartoffeln dazu.",
+  "total_minutes": 18,
+  "prep_minutes": 5,
+  "cook_minutes": 13,
+  "no_cook": false,
+  "meal_prep": {
+    "suitable": false,
+    "fridge_days": 0,
+    "freezable": false
+  },
+  "equipment_de": [],
+  "declared_per_serving": {
+    "kcal": 528,
+    "protein_g": 60.1,
+    "carbs_g": 13.7,
+    "fat_g": 22.1
+  },
+  "declared_diet": "omnivore",
+  "declared_allergens": ["dairy", "lactose", "mushrooms", "onion_garlic"],
+  "contains_pork": true,
+  "declared_pregnancy_caution": true,
+  "meta": {
+    "origin": "manual",
+    "model": null,
+    "batch_id": null,
+    "created_on": "2026-10-11",
+    "expert_reviewed": false,
+    "reviewed_by": null,
+    "reviewed_at": null,
+    "review_note": null,
+    "source_file": "alpha5-rezepte.json@1.0",
+    "import_assumptions": [],
+    "import_assumptions_confirmed_by": null,
+    "import_hash": "08e47eab89f779d1a775747591fbe21a33b90e93c97ad13a80e0b5de3b006be1"
+  }
+}

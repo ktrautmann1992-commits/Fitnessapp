@@ -1,0 +1,173 @@
+{
+  "id": "linsensalat-mit-raeuchertofu-und-senf-vinaigrette",
+  "version": 1,
+  "status": "draft",
+  "title_de": "Linsensalat mit Räuchertofu und Senf-Vinaigrette",
+  "description_de": "Herzhafter, kalter Linsensalat mit rauchigem Tofu, knackigem Gemüse und würziger Senf-Vinaigrette.",
+  "section_de": "Mittagessen",
+  "categories": ["meal-prep"],
+  "meal_types": ["main"],
+  "training_tags": [],
+  "servings": 1,
+  "ingredients": [
+    {
+      "food_id": "linsen-dose-abgetropft",
+      "amount": 200,
+      "unit": "g",
+      "optional": false,
+      "display_de": "200 g (ca. 1 kleine Dose)",
+      "scales": true,
+      "role": "protein"
+    },
+    {
+      "food_id": "raeuchertofu",
+      "amount": 100,
+      "unit": "g",
+      "optional": false,
+      "display_de": "100 g",
+      "scales": true,
+      "role": "protein"
+    },
+    {
+      "food_id": "paprika-rot",
+      "amount": 80,
+      "unit": "g",
+      "optional": false,
+      "display_de": "½ Paprika (80 g)",
+      "scales": true,
+      "role": "vegetable"
+    },
+    {
+      "food_id": "gurke",
+      "amount": 80,
+      "unit": "g",
+      "optional": false,
+      "display_de": "¼ Gurke (80 g)",
+      "scales": true,
+      "role": "vegetable"
+    },
+    {
+      "food_id": "rote-zwiebel",
+      "amount": 30,
+      "unit": "g",
+      "optional": false,
+      "display_de": "¼ Zwiebel (30 g)",
+      "scales": true,
+      "role": "vegetable"
+    },
+    {
+      "food_id": "petersilie-frisch",
+      "amount": 10,
+      "unit": "g",
+      "optional": false,
+      "display_de": "2 EL gehackt (10 g)",
+      "scales": true,
+      "role": "vegetable"
+    },
+    {
+      "food_id": "olivenoel",
+      "amount": 10,
+      "unit": "g",
+      "optional": false,
+      "display_de": "1 EL (10 g)",
+      "scales": true,
+      "role": "fat"
+    },
+    {
+      "food_id": "apfelessig",
+      "amount": 10,
+      "unit": "g",
+      "optional": false,
+      "display_de": "2 TL (10 g)",
+      "scales": true,
+      "role": "protein"
+    },
+    {
+      "food_id": "senf",
+      "amount": 10,
+      "unit": "g",
+      "optional": false,
+      "display_de": "2 TL (10 g)",
+      "scales": true,
+      "role": "fat"
+    },
+    {
+      "food_id": "ahornsirup",
+      "amount": 5,
+      "unit": "g",
+      "optional": false,
+      "display_de": "1 TL (5 g)",
+      "scales": true,
+      "role": "sweet"
+    },
+    {
+      "food_id": "salz",
+      "amount": 1,
+      "unit": "pinch",
+      "optional": false,
+      "display_de": "1 Prise",
+      "scales": true,
+      "role": "seasoning"
+    },
+    {
+      "food_id": "pfeffer",
+      "amount": 1,
+      "unit": "pinch",
+      "optional": false,
+      "display_de": "1 Prise",
+      "scales": true,
+      "role": "seasoning"
+    },
+    {
+      "food_id": "vollkornbrot",
+      "amount": 50,
+      "unit": "g",
+      "optional": false,
+      "display_de": "1 Scheibe (50 g)",
+      "scales": true,
+      "role": "carb"
+    }
+  ],
+  "steps_de": [
+    "Spüle die Linsen in einem Sieb kalt ab und lass sie gut abtropfen.",
+    "Schneide Räuchertofu, Paprika und Gurke in kleine Würfel und die rote Zwiebel in feine Streifen.",
+    "Verrühre Olivenöl, Apfelessig, Senf, Ahornsirup, Salz und Pfeffer zu einer Vinaigrette.",
+    "Mische Linsen, Tofu, Gemüse und Petersilie mit der Vinaigrette und lass den Salat 5 Minuten ziehen.",
+    "Serviere den Salat mit der Scheibe Vollkornbrot."
+  ],
+  "tip_de": "Hält sich 2–3 Tage im Kühlschrank und wird durchgezogen sogar noch besser – perfekt fürs Büro.",
+  "total_minutes": 12,
+  "prep_minutes": 12,
+  "cook_minutes": 0,
+  "no_cook": true,
+  "meal_prep": {
+    "suitable": true,
+    "fridge_days": 3,
+    "freezable": false
+  },
+  "equipment_de": [],
+  "declared_per_serving": {
+    "kcal": 628,
+    "protein_g": 38.3,
+    "carbs_g": 61.1,
+    "fat_g": 21.9
+  },
+  "declared_diet": "vegan",
+  "declared_allergens": ["gluten", "legumes", "soy", "mustard", "onion_garlic"],
+  "contains_pork": false,
+  "declared_pregnancy_caution": false,
+  "meta": {
+    "origin": "manual",
+    "model": null,
+    "batch_id": null,
+    "created_on": "2026-10-11",
+    "expert_reviewed": false,
+    "reviewed_by": null,
+    "reviewed_at": null,
+    "review_note": null,
+    "source_file": "alpha5-rezepte.json@1.0",
+    "import_assumptions": [],
+    "import_assumptions_confirmed_by": null,
+    "import_hash": "74db2fd1f3bac9229b9957951b1d7b79de2391268fa126cedf9230e381addcea"
+  }
+}

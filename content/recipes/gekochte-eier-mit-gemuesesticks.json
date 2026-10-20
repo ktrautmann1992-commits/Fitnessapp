@@ -1,0 +1,108 @@
+{
+  "id": "gekochte-eier-mit-gemuesesticks",
+  "version": 1,
+  "status": "draft",
+  "title_de": "Gekochte Eier mit Gemüsesticks",
+  "description_de": "Zwei hart gekochte Eier mit knackigen Paprika- und Möhrensticks – perfekt zum Mitnehmen.",
+  "section_de": "Snack",
+  "categories": ["meal-prep"],
+  "meal_types": ["snack"],
+  "training_tags": [],
+  "servings": 1,
+  "ingredients": [
+    {
+      "food_id": "huehnerei",
+      "amount": 120,
+      "unit": "g",
+      "optional": false,
+      "display_de": "2 Eier (Größe M)",
+      "scales": true,
+      "heated": true,
+      "role": "protein"
+    },
+    {
+      "food_id": "paprika-rot",
+      "amount": 100,
+      "unit": "g",
+      "optional": false,
+      "display_de": "½ Paprika (100 g)",
+      "scales": true,
+      "role": "vegetable"
+    },
+    {
+      "food_id": "moehre",
+      "amount": 80,
+      "unit": "g",
+      "optional": false,
+      "display_de": "1 Möhre (80 g)",
+      "scales": true,
+      "role": "vegetable"
+    },
+    {
+      "food_id": "salz",
+      "amount": 1,
+      "unit": "pinch",
+      "optional": false,
+      "display_de": "1 Prise",
+      "scales": true,
+      "role": "seasoning"
+    },
+    {
+      "food_id": "pfeffer",
+      "amount": 1,
+      "unit": "pinch",
+      "optional": false,
+      "display_de": "1 Prise",
+      "scales": true,
+      "role": "seasoning"
+    }
+  ],
+  "steps_de": [
+    "Koche die Eier 9 Minuten in sprudelndem Wasser hart und schrecke sie kalt ab.",
+    "Schneide Paprika und Möhre in fingerdicke Sticks.",
+    "Pelle die Eier, halbiere sie und würze sie mit Salz und Pfeffer; dazu die Gemüsesticks essen."
+  ],
+  "tip_de": "Ungeschält halten sich gekochte Eier im Kühlschrank bis zu einer Woche – gleich mehrere vorkochen.",
+  "total_minutes": 12,
+  "prep_minutes": 3,
+  "cook_minutes": 9,
+  "no_cook": false,
+  "meal_prep": {
+    "suitable": true,
+    "fridge_days": 3,
+    "freezable": false
+  },
+  "equipment_de": [],
+  "declared_per_serving": {
+    "kcal": 230,
+    "protein_g": 16.9,
+    "carbs_g": 12.8,
+    "fat_g": 11.8
+  },
+  "declared_diet": "vegetarian",
+  "declared_allergens": ["eggs"],
+  "contains_pork": false,
+  "declared_pregnancy_caution": true,
+  "meta": {
+    "origin": "manual",
+    "model": null,
+    "batch_id": null,
+    "created_on": "2026-10-11",
+    "expert_reviewed": false,
+    "reviewed_by": null,
+    "reviewed_at": null,
+    "review_note": null,
+    "source_file": "alpha5-rezepte.json@1.0",
+    "import_assumptions": [
+      {
+        "ingredient_index": 0,
+        "food_id": "huehnerei",
+        "field": "heated",
+        "value": true,
+        "reason_de": "Schritt 1 gart die Zutat durch: „Koche die Eier 9 Minuten in sprudelndem Wasser hart und schrecke sie kalt ab.“"
+      }
+    ],
+    "import_assumptions_confirmed_by": null,
+    "import_hash": "2a5aa679c16c3644fcbe0d1f711c659f5efd9354277c9031cc2185edffb83559"
+  }
+}

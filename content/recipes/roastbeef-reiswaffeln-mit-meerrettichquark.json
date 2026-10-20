@@ -1,0 +1,110 @@
+{
+  "id": "roastbeef-reiswaffeln-mit-meerrettichquark",
+  "version": 1,
+  "status": "draft",
+  "title_de": "Roastbeef-Reiswaffeln mit Meerrettichquark",
+  "description_de": "Knusprige Reiswaffeln mit scharfem Meerrettichquark, zartem Roastbeef und Gurke.",
+  "section_de": "Snack",
+  "categories": ["schnell"],
+  "meal_types": ["snack"],
+  "training_tags": [],
+  "servings": 1,
+  "ingredients": [
+    {
+      "food_id": "reiswaffeln",
+      "amount": 24,
+      "unit": "g",
+      "optional": false,
+      "display_de": "3 Reiswaffeln (24 g)",
+      "scales": true,
+      "role": "carb"
+    },
+    {
+      "food_id": "roastbeef-aufschnitt",
+      "amount": 60,
+      "unit": "g",
+      "optional": false,
+      "display_de": "4 dünne Scheiben (60 g)",
+      "scales": true,
+      "heated": false,
+      "role": "protein"
+    },
+    {
+      "food_id": "magerquark",
+      "amount": 40,
+      "unit": "g",
+      "optional": false,
+      "display_de": "2 EL (40 g)",
+      "scales": true,
+      "role": "protein"
+    },
+    {
+      "food_id": "meerrettich-glas",
+      "amount": 5,
+      "unit": "g",
+      "optional": false,
+      "display_de": "1 TL (5 g)",
+      "scales": true,
+      "role": "fat"
+    },
+    {
+      "food_id": "gurke",
+      "amount": 40,
+      "unit": "g",
+      "optional": false,
+      "display_de": "6 Scheiben (40 g)",
+      "scales": true,
+      "role": "vegetable"
+    },
+    {
+      "food_id": "salz",
+      "amount": 1,
+      "unit": "pinch",
+      "optional": false,
+      "display_de": "1 Prise",
+      "scales": true,
+      "role": "seasoning"
+    }
+  ],
+  "steps_de": [
+    "Verrühre den Magerquark mit Meerrettich und einer Prise Salz.",
+    "Bestreiche die Reiswaffeln mit dem Quark.",
+    "Belege sie mit Gurkenscheiben und Roastbeef und iss sie sofort, damit sie knusprig bleiben."
+  ],
+  "tip_de": "Statt Roastbeef schmeckt auch Räucherlachs mit Meerrettich.",
+  "tags_de": ["Unter 10 Minuten"],
+  "total_minutes": 5,
+  "prep_minutes": 5,
+  "cook_minutes": 0,
+  "no_cook": true,
+  "meal_prep": {
+    "suitable": false,
+    "fridge_days": 0,
+    "freezable": false
+  },
+  "equipment_de": [],
+  "declared_per_serving": {
+    "kcal": 204,
+    "protein_g": 20.3,
+    "carbs_g": 22.7,
+    "fat_g": 3.4
+  },
+  "declared_diet": "omnivore",
+  "declared_allergens": ["dairy", "lactose", "beef", "sulphites", "spicy"],
+  "contains_pork": false,
+  "declared_pregnancy_caution": true,
+  "meta": {
+    "origin": "manual",
+    "model": null,
+    "batch_id": null,
+    "created_on": "2026-10-11",
+    "expert_reviewed": false,
+    "reviewed_by": null,
+    "reviewed_at": null,
+    "review_note": null,
+    "source_file": "alpha5-rezepte.json@1.0",
+    "import_assumptions": [],
+    "import_assumptions_confirmed_by": null,
+    "import_hash": "cae696eda53c763ef75477285acd55b91dcfe107a724c0a53de9f8b6c1fdf860"
+  }
+}

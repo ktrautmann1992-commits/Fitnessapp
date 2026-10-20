@@ -1,0 +1,139 @@
+{
+  "id": "lachs-toast-mit-kraeuter-skyr-und-ei",
+  "version": 1,
+  "status": "draft",
+  "title_de": "Lachs-Toast mit Kräuter-Skyr und Ei",
+  "description_de": "Knuspriger Vollkorntoast mit frischem Kräuter-Skyr, Räucherlachs und einem wachsweichen Ei.",
+  "section_de": "Frühstück",
+  "categories": [],
+  "meal_types": ["breakfast"],
+  "training_tags": [],
+  "servings": 1,
+  "ingredients": [
+    {
+      "food_id": "vollkorntoast",
+      "amount": 60,
+      "unit": "g",
+      "optional": false,
+      "display_de": "2 Scheiben (60 g)",
+      "scales": true,
+      "role": "carb"
+    },
+    {
+      "food_id": "skyr-natur",
+      "amount": 100,
+      "unit": "g",
+      "optional": false,
+      "display_de": "100 g",
+      "scales": true,
+      "role": "protein"
+    },
+    {
+      "food_id": "raeucherlachs",
+      "amount": 75,
+      "unit": "g",
+      "optional": false,
+      "display_de": "75 g",
+      "scales": true,
+      "heated": false,
+      "role": "protein"
+    },
+    {
+      "food_id": "huehnerei",
+      "amount": 60,
+      "unit": "g",
+      "optional": false,
+      "display_de": "1 Ei (Größe M)",
+      "scales": true,
+      "heated": false,
+      "role": "protein"
+    },
+    {
+      "food_id": "gurke",
+      "amount": 50,
+      "unit": "g",
+      "optional": false,
+      "display_de": "50 g",
+      "scales": true,
+      "role": "vegetable"
+    },
+    {
+      "food_id": "schnittlauch-frisch",
+      "amount": 5,
+      "unit": "g",
+      "optional": false,
+      "display_de": "1 EL, in Röllchen (5 g)",
+      "scales": true,
+      "role": "vegetable"
+    },
+    {
+      "food_id": "zitronensaft",
+      "amount": 5,
+      "unit": "g",
+      "optional": false,
+      "display_de": "1 TL (5 g)",
+      "scales": true,
+      "role": "vegetable"
+    },
+    {
+      "food_id": "salz",
+      "amount": 1,
+      "unit": "pinch",
+      "optional": false,
+      "display_de": "1 Prise",
+      "scales": true,
+      "role": "seasoning"
+    },
+    {
+      "food_id": "pfeffer",
+      "amount": 1,
+      "unit": "pinch",
+      "optional": false,
+      "display_de": "1 Prise",
+      "scales": true,
+      "role": "seasoning"
+    }
+  ],
+  "steps_de": [
+    "Koche das Ei in siedendem Wasser 7 Minuten, schrecke es kalt ab und pelle es.",
+    "Verrühre den Skyr mit Schnittlauch, Zitronensaft, Salz und Pfeffer.",
+    "Toaste die Brotscheiben goldbraun.",
+    "Bestreiche den Toast mit dem Kräuter-Skyr, belege ihn mit Gurkenscheiben und Räucherlachs.",
+    "Halbiere das Ei und setze es obenauf."
+  ],
+  "tip_de": "Das Ei kannst du am Vorabend kochen – dann ist der Toast in 3 Minuten fertig.",
+  "total_minutes": 12,
+  "prep_minutes": 5,
+  "cook_minutes": 7,
+  "no_cook": false,
+  "meal_prep": {
+    "suitable": false,
+    "fridge_days": 0,
+    "freezable": false
+  },
+  "equipment_de": [],
+  "declared_per_serving": {
+    "kcal": 439,
+    "protein_g": 40.9,
+    "carbs_g": 30.7,
+    "fat_g": 15.8
+  },
+  "declared_diet": "omnivore",
+  "declared_allergens": ["gluten", "dairy", "lactose", "eggs", "fish", "histamine", "onion_garlic"],
+  "contains_pork": false,
+  "declared_pregnancy_caution": true,
+  "meta": {
+    "origin": "manual",
+    "model": null,
+    "batch_id": null,
+    "created_on": "2026-10-11",
+    "expert_reviewed": false,
+    "reviewed_by": null,
+    "reviewed_at": null,
+    "review_note": null,
+    "source_file": "alpha5-rezepte.json@1.0",
+    "import_assumptions": [],
+    "import_assumptions_confirmed_by": null,
+    "import_hash": "21180827deb09336481921f0a9a0d561efed90a745766dca6a3711ea8f85641f"
+  }
+}

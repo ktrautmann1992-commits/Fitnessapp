@@ -1,0 +1,131 @@
+{
+  "id": "ruehrei-mit-lachsschinken-auf-vollkornbrot",
+  "version": 1,
+  "status": "draft",
+  "title_de": "Rührei mit Lachsschinken auf Vollkornbrot",
+  "description_de": "Cremiges Rührei mit magerem Lachsschinken, Schnittlauch und Kirschtomaten auf kräftigem Vollkornbrot.",
+  "section_de": "Frühstück",
+  "categories": ["schnell", "post-workout"],
+  "meal_types": ["breakfast"],
+  "training_tags": ["nach_training"],
+  "servings": 1,
+  "ingredients": [
+    {
+      "food_id": "huehnerei",
+      "amount": 180,
+      "unit": "g",
+      "optional": false,
+      "display_de": "3 Eier (Größe M)",
+      "scales": true,
+      "heated": false,
+      "role": "protein"
+    },
+    {
+      "food_id": "lachsschinken",
+      "amount": 40,
+      "unit": "g",
+      "optional": false,
+      "display_de": "4 Scheiben (40 g)",
+      "scales": true,
+      "heated": false,
+      "role": "protein"
+    },
+    {
+      "food_id": "vollkornbrot",
+      "amount": 80,
+      "unit": "g",
+      "optional": false,
+      "display_de": "2 Scheiben (80 g)",
+      "scales": true,
+      "role": "carb"
+    },
+    {
+      "food_id": "kirschtomaten",
+      "amount": 100,
+      "unit": "g",
+      "optional": false,
+      "display_de": "100 g",
+      "scales": true,
+      "role": "vegetable"
+    },
+    {
+      "food_id": "rapsoel",
+      "amount": 3,
+      "unit": "g",
+      "optional": false,
+      "display_de": "½ TL (3 g)",
+      "scales": true,
+      "role": "fat"
+    },
+    {
+      "food_id": "schnittlauch-frisch",
+      "amount": 5,
+      "unit": "g",
+      "optional": false,
+      "display_de": "1 EL, in Röllchen (5 g)",
+      "scales": true,
+      "role": "vegetable"
+    },
+    {
+      "food_id": "salz",
+      "amount": 1,
+      "unit": "pinch",
+      "optional": false,
+      "display_de": "1 Prise",
+      "scales": true,
+      "role": "seasoning"
+    },
+    {
+      "food_id": "pfeffer",
+      "amount": 1,
+      "unit": "pinch",
+      "optional": false,
+      "display_de": "1 Prise",
+      "scales": true,
+      "role": "seasoning"
+    }
+  ],
+  "steps_de": [
+    "Verquirle die Eier mit Salz und Pfeffer in einer Schüssel.",
+    "Schneide den Lachsschinken in feine Streifen und halbiere die Kirschtomaten.",
+    "Erhitze das Rapsöl in einer beschichteten Pfanne auf mittlerer Stufe, gib die Eier hinein und rühre sie 2–3 Minuten langsam, bis sie gerade gestockt, aber noch cremig sind.",
+    "Hebe die Schinkenstreifen und den Schnittlauch unter und nimm die Pfanne vom Herd.",
+    "Verteile das Rührei auf den Brotscheiben und serviere die Tomaten dazu."
+  ],
+  "tip_de": "Statt Lachsschinken passt auch Kochschinken – dann etwas weniger salzen.",
+  "tags_de": ["Unter 10 Minuten"],
+  "total_minutes": 10,
+  "prep_minutes": 10,
+  "cook_minutes": 0,
+  "no_cook": false,
+  "meal_prep": {
+    "suitable": false,
+    "fridge_days": 0,
+    "freezable": false
+  },
+  "equipment_de": [],
+  "declared_per_serving": {
+    "kcal": 521,
+    "protein_g": 38.8,
+    "carbs_g": 37.3,
+    "fat_g": 22.5
+  },
+  "declared_diet": "omnivore",
+  "declared_allergens": ["gluten", "eggs", "histamine", "onion_garlic"],
+  "contains_pork": true,
+  "declared_pregnancy_caution": true,
+  "meta": {
+    "origin": "manual",
+    "model": null,
+    "batch_id": null,
+    "created_on": "2026-10-11",
+    "expert_reviewed": false,
+    "reviewed_by": null,
+    "reviewed_at": null,
+    "review_note": null,
+    "source_file": "alpha5-rezepte.json@1.0",
+    "import_assumptions": [],
+    "import_assumptions_confirmed_by": null,
+    "import_hash": "f5858e7423a16cd11e4f80a54b5a2b0ddb7d4827bc38ebcb33232f3472c88d2c"
+  }
+}

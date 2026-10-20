@@ -1,0 +1,138 @@
+{
+  "id": "raeucherforellen-brot-mit-huettenkaese-und-radieschen",
+  "version": 1,
+  "status": "draft",
+  "title_de": "Räucherforellen-Brot mit Hüttenkäse und Radieschen",
+  "description_de": "Kräftiges Vollkornbrot mit cremigem Hüttenkäse, zarter Räucherforelle und knackigen Radieschen – norddeutsch frisch und in 5 Minuten fertig.",
+  "section_de": "Frühstück",
+  "categories": ["schnell"],
+  "meal_types": ["breakfast"],
+  "training_tags": [],
+  "servings": 1,
+  "ingredients": [
+    {
+      "food_id": "vollkornbrot",
+      "amount": 80,
+      "unit": "g",
+      "optional": false,
+      "display_de": "2 Scheiben (80 g)",
+      "scales": true,
+      "role": "carb"
+    },
+    {
+      "food_id": "huettenkaese",
+      "amount": 100,
+      "unit": "g",
+      "optional": false,
+      "display_de": "½ Becher (100 g)",
+      "scales": true,
+      "role": "protein"
+    },
+    {
+      "food_id": "raeucherforellenfilet",
+      "amount": 80,
+      "unit": "g",
+      "optional": false,
+      "display_de": "1 Filet (80 g)",
+      "scales": true,
+      "heated": false,
+      "role": "protein"
+    },
+    {
+      "food_id": "radieschen",
+      "amount": 60,
+      "unit": "g",
+      "optional": false,
+      "display_de": "5 Radieschen (60 g)",
+      "scales": true,
+      "role": "vegetable"
+    },
+    {
+      "food_id": "meerrettich-glas",
+      "amount": 5,
+      "unit": "g",
+      "optional": false,
+      "display_de": "1 TL (5 g)",
+      "scales": true,
+      "role": "fat"
+    },
+    {
+      "food_id": "schnittlauch-frisch",
+      "amount": 5,
+      "unit": "g",
+      "optional": false,
+      "display_de": "1 EL Röllchen (5 g)",
+      "scales": true,
+      "role": "vegetable"
+    },
+    {
+      "food_id": "zitronensaft",
+      "amount": 5,
+      "unit": "g",
+      "optional": false,
+      "display_de": "1 TL (5 g)",
+      "scales": true,
+      "role": "vegetable"
+    },
+    {
+      "food_id": "pfeffer",
+      "amount": 1,
+      "unit": "pinch",
+      "optional": false,
+      "display_de": "1 Prise",
+      "scales": true,
+      "role": "seasoning"
+    }
+  ],
+  "steps_de": [
+    "Verrühre den Hüttenkäse mit Meerrettich, Zitronensaft, der Hälfte des Schnittlauchs und Pfeffer.",
+    "Schneide die Radieschen in feine Scheiben.",
+    "Zupfe das Forellenfilet in mundgerechte Stücke.",
+    "Bestreiche die Brotscheiben mit dem Hüttenkäse, verteile Forelle und Radieschen darauf und streue den restlichen Schnittlauch darüber."
+  ],
+  "tip_de": "Räucherforelle findest du im Kühlregal bei Fisch – alternativ passt geräucherte Makrele, die hat aber etwas mehr Fett.",
+  "tags_de": ["Unter 10 Minuten"],
+  "total_minutes": 5,
+  "prep_minutes": 5,
+  "cook_minutes": 0,
+  "no_cook": true,
+  "meal_prep": {
+    "suitable": false,
+    "fridge_days": 0,
+    "freezable": false
+  },
+  "equipment_de": [],
+  "declared_per_serving": {
+    "kcal": 411,
+    "protein_g": 37.6,
+    "carbs_g": 36.6,
+    "fat_g": 11
+  },
+  "declared_diet": "omnivore",
+  "declared_allergens": [
+    "gluten",
+    "dairy",
+    "lactose",
+    "fish",
+    "sulphites",
+    "histamine",
+    "onion_garlic",
+    "spicy"
+  ],
+  "contains_pork": false,
+  "declared_pregnancy_caution": true,
+  "meta": {
+    "origin": "manual",
+    "model": null,
+    "batch_id": null,
+    "created_on": "2026-10-11",
+    "expert_reviewed": false,
+    "reviewed_by": null,
+    "reviewed_at": null,
+    "review_note": null,
+    "source_file": "alpha5-rezepte.json@1.0",
+    "import_assumptions": [],
+    "import_assumptions_confirmed_by": null,
+    "import_hash": "76f1cd633c954457ab406dd2ecba7c9303f859abae9c66dcc46a9b81e6349802"
+  }
+}

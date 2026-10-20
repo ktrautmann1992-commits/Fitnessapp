@@ -1,0 +1,101 @@
+{
+  "id": "putenbrust-roellchen-mit-frischkaese-und-walnuessen",
+  "version": 1,
+  "status": "draft",
+  "title_de": "Putenbrust-Röllchen mit Frischkäse und Walnüssen",
+  "description_de": "Schnelle Röllchen aus Putenbrustaufschnitt mit Frischkäse, Rucola und knackigen Walnüssen.",
+  "section_de": "Snack",
+  "categories": ["schnell"],
+  "meal_types": ["snack"],
+  "training_tags": [],
+  "servings": 1,
+  "ingredients": [
+    {
+      "food_id": "putenbrustaufschnitt",
+      "amount": 80,
+      "unit": "g",
+      "optional": false,
+      "display_de": "5 Scheiben (80 g)",
+      "scales": true,
+      "heated": false,
+      "role": "protein"
+    },
+    {
+      "food_id": "frischkaese-light",
+      "amount": 25,
+      "unit": "g",
+      "optional": false,
+      "display_de": "1 gehäufter EL (25 g)",
+      "scales": true,
+      "role": "protein"
+    },
+    {
+      "food_id": "rucola",
+      "amount": 15,
+      "unit": "g",
+      "optional": false,
+      "display_de": "1 kleine Handvoll (15 g)",
+      "scales": true,
+      "role": "vegetable"
+    },
+    {
+      "food_id": "walnuesse",
+      "amount": 10,
+      "unit": "g",
+      "optional": false,
+      "display_de": "3 Hälften (10 g)",
+      "scales": true,
+      "role": "fat"
+    },
+    {
+      "food_id": "pfeffer",
+      "amount": 1,
+      "unit": "pinch",
+      "optional": false,
+      "display_de": "1 Prise",
+      "scales": true,
+      "role": "seasoning"
+    }
+  ],
+  "steps_de": [
+    "Hacke die Walnüsse grob.",
+    "Bestreiche die Putenscheiben dünn mit Frischkäse und streue Walnüsse und Pfeffer darüber.",
+    "Lege etwas Rucola darauf und rolle die Scheiben fest auf."
+  ],
+  "tip_de": "Statt Walnüssen passen auch ein paar Streifen getrocknete Tomaten.",
+  "tags_de": ["Unter 10 Minuten"],
+  "total_minutes": 5,
+  "prep_minutes": 5,
+  "cook_minutes": 0,
+  "no_cook": true,
+  "meal_prep": {
+    "suitable": false,
+    "fridge_days": 0,
+    "freezable": false
+  },
+  "equipment_de": [],
+  "declared_per_serving": {
+    "kcal": 191,
+    "protein_g": 20.7,
+    "carbs_g": 3.3,
+    "fat_g": 10.6
+  },
+  "declared_diet": "omnivore",
+  "declared_allergens": ["dairy", "lactose", "poultry", "tree_nuts"],
+  "contains_pork": false,
+  "declared_pregnancy_caution": true,
+  "meta": {
+    "origin": "manual",
+    "model": null,
+    "batch_id": null,
+    "created_on": "2026-10-11",
+    "expert_reviewed": false,
+    "reviewed_by": null,
+    "reviewed_at": null,
+    "review_note": null,
+    "source_file": "alpha5-rezepte.json@1.0",
+    "import_assumptions": [],
+    "import_assumptions_confirmed_by": null,
+    "import_hash": "5c739dd85c6dd8d3982d1003f27cee83e730b9646d7f31affb45b78a2a56c135"
+  }
+}
