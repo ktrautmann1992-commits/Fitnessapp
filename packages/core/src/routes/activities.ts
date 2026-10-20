@@ -224,3 +224,34 @@ export function enduranceTileSummary(
   const latest = activities.find((a) => a.day <= today) ?? null;
   return { weekDistanceM: week.total.distanceM, weekCount: week.total.count, latest };
 }
+
+/** Ein Balken je Wochentag (Mo–So) der Woche um `today`: Strecke und Anteil am stärksten Tag (0–1). */
+export interface EnduranceDayBar {
+  readonly day: string;
+  readonly distanceM: number;
+  /** Anteil am stärksten Tag der Woche (0–1); 0 an Tagen ohne Strecke. */
+  readonly share: number;
+}
+
+/**
+ * Mini-Balken der Kachel „Ausdauer“ (Übersicht, Design 20.10.2026): sieben Tage Mo–So der Woche um `today`, Anteil
+ * je Tag am stärksten Tag, dazu die Stelle von heute (zum Hervorheben). Aktivitäten ohne Strecke zählen nicht.
+ */
+export function enduranceWeekBars(
+  activities: readonly EnduranceActivity[],
+  today: string,
+): { days: EnduranceDayBar[]; todayIndex: number } {
+  const from = startOfIsoWeek(today);
+  const totals = Array.from({ length: 7 }, (_, i) => {
+    const day = addDays(from, i);
+    const distanceM = activities
+      .filter((a) => a.day === day)
+      .reduce((acc, a) => acc + Math.max(0, a.distanceM ?? 0), 0);
+    return { day, distanceM };
+  });
+  const max = Math.max(0, ...totals.map((d) => d.distanceM));
+  return {
+    days: totals.map((d) => ({ ...d, share: max > 0 ? d.distanceM / max : 0 })),
+    todayIndex: totals.findIndex((d) => d.day === today),
+  };
+}
