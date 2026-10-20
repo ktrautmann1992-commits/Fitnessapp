@@ -199,6 +199,13 @@ Punkt: Rahmenkontrast“).
   `displayFont()` = ExtraBold mit Sperrung −0,5 für Bildschirmtitel und große Zahlen.
 - Website (Landingpage) und Druckansichten bleiben bei **Archivo**.
 
+### Umgesetzte Bildschirme (Etappe 2)
+
+Menüleiste, Übersicht und Mehr nutzen die Bausteine (Details: `docs/PLAN-DASHBOARD.md` Abschnitt 10). Zuordnung
+Bereich → Farbe/Icon zentral in `apps/mobile/src/lib/area-style.ts`. Aktiver Menüknopf: Pille in `surface`, Icon und
+Beschriftung in `icon` der Bereichsfarbe. Kennzeilen und Abschnitts-Überschriften stehen nur per Stil
+(`textTransform: 'uppercase'`) in Großbuchstaben – Bildschirmleser lesen den normalen Text.
+
 ### Bausteine (`apps/mobile/src/components/design.tsx`)
 
 | Baustein       | Props (Auszug)                                                                                                                                                                                                                           | Barrierefreiheit                                    |
