@@ -3,7 +3,7 @@ import { fontSize, fontWeight, radius, spacing } from '@fitnessapp/ui';
 import type { ReactNode } from 'react';
 import { Pressable, StyleSheet, View } from 'react-native';
 
-import { ProgressRing } from '@/components/design';
+import { Icon, IconChip, ProgressRing, useAreaColors } from '@/components/design';
 import { Body, Card, MIN_TOUCH } from '@/components/ui';
 import { t } from '@/i18n';
 import { displayFont } from '@/lib/fonts';
@@ -46,6 +46,7 @@ export function DayOverviewCard({
   hint: string | null;
 }) {
   const theme = useThemeColors();
+  const green = useAreaColors('ernaehrung');
   const center = ringCenterText(ring, future);
   const burned = trainingKcal !== null && trainingKcal > 0 ? trainingKcal : null;
   const names = t.nutrition.macroNames;
@@ -88,6 +89,7 @@ export function DayOverviewCard({
         >
           <ProgressRing
             size={152}
+            color={green.strong}
             stroke={12}
             fraction={future ? 0 : ring.fraction}
             overFraction={future ? 0 : ring.overFraction}
@@ -161,7 +163,7 @@ export function DayOverviewCard({
                     style={[
                       styles.fill,
                       {
-                        backgroundColor: theme.primary,
+                        backgroundColor: green.strong,
                         width: `${Math.round((future ? 0 : row.macro.fraction) * 100)}%`,
                       },
                     ]}
@@ -204,6 +206,7 @@ export function MealCard({
   children?: ReactNode;
 }) {
   const theme = useThemeColors();
+  const green = useAreaColors('ernaehrung');
   const kcal = showNumbers ? mealCardKcalText(title, eatenKcal, targetKcal) : null;
   const fraction =
     showNumbers && targetKcal !== null && targetKcal > 0 ? Math.min(1, eatenKcal / targetKcal) : 0;
@@ -216,9 +219,11 @@ export function MealCard({
         {showNumbers && targetKcal !== null ? (
           // Nur Schmuck: die Zahl daneben trägt die Ansage in Worten (kein Doppel im Bildschirmleser).
           <View aria-hidden importantForAccessibility="no-hide-descendants">
-            <ProgressRing size={44} stroke={5} fraction={fraction} />
+            <ProgressRing size={44} stroke={5} fraction={fraction} color={green.strong} />
           </View>
-        ) : null}
+        ) : (
+          <IconChip area="ernaehrung" icon="utensils" size={40} />
+        )}
         <View style={styles.mealText}>
           <Text
             accessibilityRole="header"
@@ -255,9 +260,7 @@ export function MealCard({
               { backgroundColor: theme.primary, opacity: pressed ? 0.8 : 1 },
             ]}
           >
-            <Text style={[styles.addText, { color: theme.primaryText }]} aria-hidden>
-              +
-            </Text>
+            <Icon name="plus" size={22} strokeWidth={2.6} color={theme.primaryText} />
           </Pressable>
         ) : null}
       </View>
@@ -300,5 +303,4 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
   },
-  addText: { fontSize: 28, lineHeight: 30, fontWeight: fontWeight.bold },
 });

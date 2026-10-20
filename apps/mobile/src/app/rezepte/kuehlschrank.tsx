@@ -17,6 +17,7 @@ import {
   NutritionGate,
   nutritionReady,
 } from '@/components/nutrition';
+import { IconChip } from '@/components/design';
 import { Screen } from '@/components/screen';
 import {
   Body,
@@ -347,6 +348,7 @@ function FridgeCard({
       ]}
     >
       <View style={styles.cardHead}>
+        <IconChip area="ernaehrung" icon="recipe" size={40} />
         <Text style={[styles.title, { color: theme.text }]}>{card.title}</Text>
         <Text
           style={[styles.match, { color: theme.text, borderColor: theme.border }]}
@@ -387,10 +389,10 @@ const styles = StyleSheet.create({
   cardHead: {
     flexDirection: 'row',
     flexWrap: 'wrap',
-    justifyContent: 'space-between',
-    gap: spacing.xs,
+    alignItems: 'center',
+    gap: spacing.sm,
   },
-  title: { fontSize: fontSize.md, fontWeight: fontWeight.bold, flexShrink: 1 },
+  title: { fontSize: fontSize.md, fontWeight: fontWeight.bold, flex: 1, minWidth: 120 },
   match: {
     alignSelf: 'flex-start',
     fontSize: fontSize.sm,

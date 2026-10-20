@@ -16,6 +16,7 @@ import {
   NutritionGate,
   nutritionReady,
 } from '@/components/nutrition';
+import { IconChip } from '@/components/design';
 import { Screen } from '@/components/screen';
 import {
   Body,
@@ -346,21 +347,29 @@ function RecipeCard({
         },
       ]}
     >
-      <Text style={[styles.title, { color: theme.text }]}>{card.title}</Text>
-      <Text style={[styles.detail, { color: theme.textMuted }]}>{details.join(' · ')}</Text>
-      {card.outsideProfileDiet ? (
-        <Text
-          style={[styles.marker, { color: theme.text, borderColor: theme.border }]}
-          testID={`recipe-search-hit-${card.id}-outside`}
-        >
-          {texts.outsideDiet(t.nutrition.dietNames[card.outsideProfileDiet])}
-        </Text>
-      ) : null}
+      {/* Design 20.10.2026: Rezeptkarten einheitlich mit grünem Rezept-Chip. */}
+      <View style={styles.cardRow}>
+        <IconChip area="ernaehrung" icon="recipe" size={40} />
+        <View style={styles.cardText}>
+          <Text style={[styles.title, { color: theme.text }]}>{card.title}</Text>
+          <Text style={[styles.detail, { color: theme.textMuted }]}>{details.join(' · ')}</Text>
+          {card.outsideProfileDiet ? (
+            <Text
+              style={[styles.marker, { color: theme.text, borderColor: theme.border }]}
+              testID={`recipe-search-hit-${card.id}-outside`}
+            >
+              {texts.outsideDiet(t.nutrition.dietNames[card.outsideProfileDiet])}
+            </Text>
+          ) : null}
+        </View>
+      </View>
     </Pressable>
   );
 }
 
 const styles = StyleSheet.create({
+  cardRow: { flexDirection: 'row', alignItems: 'flex-start', gap: 12 },
+  cardText: { flex: 1, minWidth: 0, gap: spacing.xs },
   group: { gap: spacing.xs },
   count: { fontSize: fontSize.md },
   chips: { flexDirection: 'row', flexWrap: 'wrap', gap: spacing.sm },
