@@ -1058,6 +1058,31 @@ Abschnitt 3.
 Datenexport (Mehr → Mein Konto → Meine Daten) unter `shopping_product_links` und werden beim Widerruf der
 Einwilligung in Gesundheitsdaten gelöscht.
 
+## Teil 7p – Übersicht und Menüleiste anpassen (Etappe E2, Testmodus, 20.10.2026)
+
+Ihr müsst nichts einstellen. Vorschau-Link aus dem Pull Request im Handy-Browser öffnen, Testmodus starten,
+Onboarding bis **„Zum Plan“**, dann unten **„Übersicht“**.
+
+1. Ganz unten auf der Übersicht **„Bearbeiten“** antippen.
+2. Bei **„Körperdaten anzeigen“** den Haken entfernen → die Kachel verschwindet sofort.
+3. Bei **„Ernährung heute“** **„Nach oben“** antippen → die Kachel steht jetzt ganz oben. (Mit eingeschaltetem
+   TalkBack/VoiceOver sagt das Handy „Ernährung heute ist jetzt an Stelle 1 von 5.“)
+4. **„Fertig“** → Seite neu laden (Chrome: **⋯ → Neu laden**) → die Reihenfolge bleibt.
+5. Alle Haken entfernen → Hinweis „Alle Kacheln sind ausgeblendet“; Hinweise oben (z. B. „Im Training wartet etwas“)
+   bleiben trotzdem sichtbar. **„Bearbeiten“ → „Auf Standard zurücksetzen“** holt alles zurück.
+6. **Mehr → „Menüleiste anpassen“** (oder in „Bearbeiten“): **„Fortschritt in der Menüleiste“** anhaken → unten
+   sind jetzt 6 Knöpfe. Mit **„Nach links“/„Nach rechts“** ändert ihr die Reihenfolge. „Übersicht“ (links) und
+   „Mehr“ (rechts) bleiben immer. Bei 6 Knöpfen ist kein weiterer möglich, unter 3 auch nicht – die App sagt warum.
+7. Einen Bereich herausnehmen (z. B. „Ernährung“) → er steht unter **Mehr → „Weitere Bereiche“** und funktioniert
+   wie vorher.
+8. **„Auf Standard zurücksetzen“** → Übersicht · Training · Ernährung · Einkaufen · Mehr. Sobald der Bereich
+   **„Workouts“** dazugekommen ist (anderer Pull Request), ist der Standard Übersicht · Training · Workouts ·
+   Ernährung · Einkaufen · Mehr.
+
+**Mit Datenbank:** Die Migration `20261020130000_app_layout_settings.sql` spielt `db-migrate` beim Merge ein. Die
+Anordnung gilt dann für euer Konto auf allen Geräten, steht im Datenexport (`app_layout_settings`) und bleibt beim
+Widerruf der Gesundheits-Einwilligung (kein Gesundheitsdatum).
+
 ## Teil 7n – Live-Anpassung des Plans testen (Phase 4b, Etappe D, Testmodus, 18.10.2026)
 Die Live-Anpassung ist in der **Testphase kostenlos** (Teil 7t). Im Testmodus ist **„Live-Anpassung einschalten
 (Testmodus)“** von Anfang an **an** – die App rechnet die Regeln nach jedem gespeicherten Training auf dem Handy,

@@ -20,6 +20,7 @@ import type {
   SavePlanSession,
   SessionLogPayload,
   ShoppingProductLink,
+  StoredAppLayout,
 } from '@fitnessapp/core';
 
 import type { FavoriteChange } from './food-log-rows';
@@ -469,6 +470,11 @@ export interface Backend {
    * Nummer ersetzt, höchstens SHOPPING_SCAN.linksMax (älteste fällt weg).
    */
   saveShoppingProductLink(link: ShoppingProductLink, rows: UserRows): Promise<UserRows>;
+  /**
+   * Anordnung der Übersicht und der Menüleiste speichern (Etappe E2). Testmodus: Gerätespeicher; Supabase-Modus: sofort
+   * lokal, Senden über die Warteschlange (offline möglich). Fehler `unknown` bei ungültiger Anordnung.
+   */
+  saveAppLayout(layout: StoredAppLayout, rows: UserRows): Promise<UserRows>;
   /** Start des Meal-Prep-Kochtags (Timer) setzen bzw. mit null zurücksetzen (Etappe N5b). */
   saveCookDayStart(weekStart: string, startedAt: string | null, rows: UserRows): Promise<UserRows>;
   /** Wartende Trainings und Entwürfe (R6). */

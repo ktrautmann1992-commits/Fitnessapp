@@ -424,6 +424,9 @@ Regeln in `packages/core/src/content/glossary.ts`, Grenzen in `GLOSSARY_LIMITS`.
   `packages/core/src/nutrition/shopping-scan.ts`, gelernte Zuordnung Strichcode → Lebensmittel in
   `shopping_product_links`, sensibel wie Produkt-Favoriten); Häkchen sensibler Listen offline über die verschlüsselte
   Warteschlange
+- **Übersicht und Menüleiste anpassen (seit 20.10.2026, `docs/PLAN-DASHBOARD.md` 8):** Kacheln ein-/ausblenden und
+  umsortieren, Menüleiste mit 3–6 Knöpfen selbst zusammenstellen (Übersicht links, Mehr rechts fest; Standard mit
+  „Workouts“ und „Einkaufen“); Regeln in `packages/core/src/layout.ts`, gespeichert je Konto (`app_layout_settings`)
 - Lebensmittel tauschen (Zutaten-Austausch, Abschnitt 6.9), Barcode-Scanner (Open Food Facts; Lizenz beachten, Abschnitt 6.1)
 - Rezepte, Küche und Einkauf aus den Erweiterungen Teil 2: Abschnitte 6.5–6.13
 

@@ -156,3 +156,33 @@ Anmelden (Testmodus), Übersicht, Menüleiste und Mein Konto; Bildschirmfotos he
 - „Fortschritt“ bleibt als Reiter-Bildschirm (`/fortschritt`) und ist über die Kachel und **Mehr → Fortschritt**
   erreichbar; ist er offen, ist kein Knopf markiert. Die Übersicht-Kachel „Einkaufsliste“ und „Mehr“ führen in den
   Reiter.
+
+## 8. Übersicht und Menüleiste anpassen (20.10.2026, Etappe E2) – Umsetzungsstand
+
+- Gründer-Entscheidung EA-G2 (`docs/PLAN-EINKAUFEN-AUSDAUER.md` 4) und Gründer-Wunsch „Workouts mit eigenem Menü“
+  (20.10.2026). **Core** `packages/core/src/layout.ts` (+ `APP_LAYOUT` in `constants.ts`): Kacheln `training`,
+  `nutrition`, `body`, `progress`, `shortcuts`; Bereiche `uebersicht`, `today`, `workouts`, `ernaehrung`,
+  `einkaufsliste`, `fortschritt`, `mehr`. Regeln: „Übersicht“ immer links, „Mehr“ immer rechts, **3 bis 6 Knöpfe**,
+  jeder Bereich einmal; Hinweise oben sind keine Kacheln (nie ausblendbar); alle Kacheln aus ist erlaubt.
+  `normalizeLayout` macht jeden Speicherstand gültig (unbekannte/doppelte IDs raus, neue Kacheln an ihrer Standardstelle,
+  kaputter Speicher → Standard). Standard: alle Kacheln, Menüleiste **Übersicht · Training · Workouts · Ernährung ·
+  Einkaufen · Mehr**.
+- **Workouts:** Der Bereich (`/workouts`) entsteht in einem anderen Arbeitszweig. Die App kennt ihre vorhandenen
+  Bereiche in `apps/mobile/src/lib/app-areas.ts` (`AVAILABLE_AREAS`) – „Workouts“ fehlt dort noch, also auch im
+  Standard (5 Knöpfe), in der Auswahl und unter „Mehr“. **Beim Zusammenführen:** `'workouts'` in `AVAILABLE_AREAS`
+  ergänzen und `<Tabs.Screen name="workouts" …/>` in `src/app/(tabs)/_layout.tsx` eintragen; Symbol und Beschriftung
+  sind schon da (`tab-bar.tsx`). Wer die Menüleiste schon selbst angepasst hat, findet „Workouts“ danach unter „Mehr“
+  (neue Bereiche kommen nicht von selbst in eine eigene Leiste).
+- **App:** Übersicht → **„Bearbeiten“** (`components/dashboard-edit.tsx`): je Kachel „… anzeigen“, „Nach oben“/„Nach
+  unten“ (Ansage „Ernährung heute ist jetzt an Stelle 1 von 5.“ per Live-Region), „Menüleiste anpassen“, „Auf Standard
+  zurücksetzen“, „Fertig“. **„Menüleiste anpassen“** (`/menueleiste`, aus „Mehr“ und „Bearbeiten“): Bereiche an/aus,
+  „Nach links“/„Nach rechts“, Gründe bei Regelverstoß („Mindestens 3 Knöpfe …“, „Höchstens 6 Knöpfe …“), Vorschau,
+  Zurücksetzen. **„Mehr“** zeigt automatisch alle Bereiche ohne Knopf („Weitere Bereiche“). Bei 6 Knöpfen etwas kleinere
+  Beschriftung und Symbolfläche; geprüft bei 320 px Breite.
+- **Speicherung:** Tabelle `app_layout_settings` (Migration `20261020130000_app_layout_settings.sql`, eine Zeile je
+  Person, RLS nur eigene Zeile, Schreiben nur über `save_app_layout` mit denselben Regeln, kein Gesundheitsdatum – bleibt
+  beim Widerruf, im Export, Kaskade beim Konto-Löschen; pgTAP 55). Supabase-Modus: sofort lokal, Senden über die
+  vorhandene Warteschlange (offline möglich); Testmodus: Gerätespeicher.
+- **Tests:** `layout.test.ts` (Ränder, alle aus, 7. Knopf, ohne Mehr/Übersicht, unbekannte IDs, neue Kachel,
+  fehlender Bereich, Idempotenz), `app-layout.test.ts` (Testmodus, Regeln, Export, Widerruf), db-sync (ID-Listen und
+  Grenzen = Core), Playwright `dashboard-edit.spec.ts`.

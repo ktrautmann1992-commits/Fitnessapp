@@ -1,8 +1,11 @@
+import { areasInMore } from '@fitnessapp/core';
 import { Redirect, useRouter, type Href } from 'expo-router';
 
 import { Screen } from '@/components/screen';
 import { Body, Button, Card, Heading, LoadingState } from '@/components/ui';
+import { tabLabel } from '@/components/tab-bar';
 import { t } from '@/i18n';
+import { useAppLayout } from '@/state/use-app-layout';
 import { useApp } from '@/state/app-state';
 import { HOME_ROUTE, resolveEntryRoute } from '@/state/flow';
 
@@ -13,6 +16,7 @@ import { HOME_ROUTE, resolveEntryRoute } from '@/state/flow';
 export default function MoreScreen() {
   const router = useRouter();
   const app = useApp();
+  const { layout, available } = useAppLayout();
   if (app.status.kind === 'loading') {
     return (
       <Screen>
@@ -30,6 +34,7 @@ export default function MoreScreen() {
     return <Redirect href={route as Href} />;
   }
   const texts = t.more;
+  const hidden = areasInMore(layout, available);
   const nutrition = app.backend.supportsNutrition;
   const open = (href: string) => () => router.push(href as Href);
   return (
@@ -39,22 +44,38 @@ export default function MoreScreen() {
         <Button label={texts.account} onPress={open('/konto')} testID="more-account" />
         <Body muted>{texts.accountHint}</Body>
         <Button
+          label={texts.menuBar}
+          variant="secondary"
+          onPress={open('/menueleiste')}
+          testID="more-menu-bar"
+        />
+        <Body muted>{texts.layoutHint}</Body>
+        <Button
           label={texts.settings}
           variant="secondary"
           onPress={open('/settings')}
           testID="more-settings"
         />
       </Card>
+      {/* Etappe E2: alle Bereiche ohne Knopf in der Menüleiste (areasInMore, packages/core). */}
+      {hidden.length > 0 ? (
+        <>
+          <Heading level={2}>{texts.areasTitle}</Heading>
+          <Card>
+            {hidden.map((area) => (
+              <Button
+                key={area}
+                label={tabLabel(area)}
+                variant="secondary"
+                onPress={() => router.navigate(`/${area}` as Href)}
+                testID={`more-area-${area}`}
+              />
+            ))}
+          </Card>
+        </>
+      ) : null}
       <Heading level={2}>{texts.sections.content}</Heading>
       <Card>
-        {/* „Fortschritt“ hat seit EA-1 keinen eigenen Knopf in der Menüleiste mehr. */}
-        <Button
-          label={texts.progress}
-          variant="secondary"
-          onPress={() => router.navigate('/fortschritt' as Href)}
-          testID="more-progress"
-        />
-        <Body muted>{texts.progressHint}</Body>
         {nutrition ? (
           <Button
             label={texts.recipes}

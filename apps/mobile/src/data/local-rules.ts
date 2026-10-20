@@ -50,6 +50,9 @@ import {
   type PlanSafetyRules,
   preferenceLimitReached,
   weightGoalSchema,
+  normalizeLayout,
+  storedAppLayoutSchema,
+  toStoredLayout,
 } from '@fitnessapp/core';
 
 import type { ConsentVersions } from './mapping';
@@ -224,6 +227,15 @@ export function isValidOp(
     }
     case 'delete_weight_goal':
       return true;
+    // Anordnung (Etappe E2): Form wie storedAppLayoutSchema, Regeln wie save_app_layout (Übersicht links, Mehr rechts,
+    // nur bekannte IDs, keine Doppel) – die normalisierte Form erfüllt sie.
+    case 'save_app_layout': {
+      const stored = { dashboard_tiles: op.row.dashboard_tiles, tab_bar: op.row.tab_bar };
+      return (
+        storedAppLayoutSchema.safeParse(stored).success &&
+        JSON.stringify(toStoredLayout(normalizeLayout(stored))) === JSON.stringify(stored)
+      );
+    }
     case 'upsert_measurement_reminder':
       return (
         measurementReminderIntervalSchema.safeParse(op.row.interval_days).success &&

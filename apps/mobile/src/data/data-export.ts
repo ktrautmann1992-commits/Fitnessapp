@@ -203,6 +203,8 @@ export function localDataExport(
     shopping_product_links: [...rows.shoppingProductLinks].sort(
       (a, b) => a.updated_at.localeCompare(b.updated_at) || a.code.localeCompare(b.code),
     ),
+    // Etappe E2: Anordnung der Übersicht und der Menüleiste (Spalten wie app_layout_settings).
+    app_layout_settings: one(rows.appLayout),
     // Übungs-Präferenzen (Etappe T2) – in export_my_data() erst mit Etappe T3 (PENDING_DB_EXPORT_TABLES).
     exercise_preferences: rows.exercisePreferences,
   };

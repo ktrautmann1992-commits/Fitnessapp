@@ -44,6 +44,7 @@ import {
 import { DraftStore } from './draft-store';
 import { requestLiveAdjustment } from './live-adjust-remote';
 import { createRemoteFoodPhoto } from './food-photo-remote';
+import { appLayoutRowFromDb } from './app-layout';
 import { createRemoteFoodProduct } from './food-product-remote';
 import { applyUserFoodProductDelete, checkUserFoodProductSave } from './user-food-product-rows';
 import { readJson, STORAGE_KEYS, writeJson, type KeyValueStore } from './kv';
@@ -599,6 +600,14 @@ export async function executeWriteOp(
       return;
     case 'upsert_measurement_reminder':
       check(await client.from('measurement_reminders').upsert(op.row, { onConflict: 'user_id' }));
+      return;
+    // Etappe E2: Anordnung über save_app_layout (prüft Form und Regeln erneut).
+    case 'save_app_layout':
+      check(
+        await client.rpc('save_app_layout', {
+          p_layout: toJson({ dashboard_tiles: op.row.dashboard_tiles, tab_bar: op.row.tab_bar }),
+        }),
+      );
       return;
     // Pläne nur über die geprüften Datenbank-Funktionen (security definer, PLAN-PHASE-3 8.1).
     case 'save_training_plan':
@@ -1666,6 +1675,7 @@ export function createSupabaseBackend(options: SupabaseBackendOptions): Backend 
       dislikesResult,
       weightGoalResult,
       competitionsResult,
+      layoutResult,
     ] = await Promise.all([
       client.from('profiles').select('*').eq('user_id', userId).maybeSingle(),
       client.from('consents').select('*').eq('user_id', userId),
@@ -1699,6 +1709,12 @@ export function createSupabaseBackend(options: SupabaseBackendOptions): Backend 
       client.from('weight_goals').select('*').eq('user_id', userId).limit(1),
       // Wettkämpfe (Phase 10 WP3/WP4) – kein Gesundheitsdatum; der Plan-Bezug kommt nie in den normalen Zwischenspeicher.
       client.from('competitions').select('*').eq('user_id', userId),
+      // Anordnung der Übersicht/Menüleiste (Etappe E2) – vor `db-migrate` leer (Standard).
+      client
+        .from('app_layout_settings')
+        .select('user_id, dashboard_tiles, tab_bar')
+        .eq('user_id', userId)
+        .limit(1),
     ]);
     // Etappe N7 (Wächter N7 S1): vor `db-migrate` gibt es die Tabellen noch nicht – dann leer, Anmeldung läuft weiter.
     const ratings = emptyIfMissing(ratingsResult);
@@ -1706,6 +1722,7 @@ export function createSupabaseBackend(options: SupabaseBackendOptions): Backend 
     // Etappe Z3: vor `db-migrate` gibt es weight_goals noch nicht – dann kein Wunschgewicht.
     const weightGoal = emptyIfMissing(weightGoalResult);
     const competitions = emptyIfMissing(competitionsResult);
+    const layout = emptyIfMissing(layoutResult);
     const plan = await fetchActivePlan(userId);
     const startWeights = await client
       .from('exercise_start_weights')
@@ -1729,6 +1746,7 @@ export function createSupabaseBackend(options: SupabaseBackendOptions): Backend 
       dislikes,
       weightGoal,
       competitions,
+      layout,
     ]) {
       if (result.error) {
         throw result.error;
@@ -1760,6 +1778,7 @@ export function createSupabaseBackend(options: SupabaseBackendOptions): Backend 
       ...(await fetchNutritionRows(userId)),
       // Wettkämpfe (Phase 10 WP4): eigene Zeilen (RLS), vor `db-migrate` leer.
       competitions: (competitions.data ?? []) as CompetitionRow[],
+      appLayout: appLayoutRowFromDb((layout.data ?? [])[0]),
     };
   }
 
@@ -2410,6 +2429,16 @@ export function createSupabaseBackend(options: SupabaseBackendOptions): Backend 
         [queued],
         'user_product',
       );
+    },
+    // Etappe E2: Anordnung – sofort lokal, Senden über die Warteschlange (kein Gesundheitsdatum, offline möglich).
+    saveAppLayout: async (layout, rows) => {
+      const session = await requireSession();
+      const op: WriteOp = { kind: 'save_app_layout', row: { user_id: session.userId, ...layout } };
+      const next = applyWriteOps(rows, [op], displayContext());
+      await writeCache(session.userId, next);
+      await queue.add([op]);
+      void queue.flush();
+      return next;
     },
     // Einkaufen E1: gelernte Zuordnung über save_shopping_product_link (prüft Einwilligung, Nummer, Lebensmittel und
     // die Obergrenze erneut). Sensibel → nie in die normale Warteschlange; ohne Netz `online_only` (das Lernen ist

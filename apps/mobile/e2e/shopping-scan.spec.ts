@@ -104,7 +104,7 @@ test('Menüleiste mit „Einkaufen“, Abhaken bleibt nach dem Neuladen, alle Ha
 
   // „Fortschritt“ über „Mehr“.
   await tab(page, 'Mehr').click();
-  await page.getByTestId('more-progress').click();
+  await page.getByTestId('more-area-fortschritt').click();
   await heading(page, 'Fortschritt');
   // Kein Knopf markiert (Bereich ohne Knopf).
   await expect(tabBar(page).locator('[aria-selected="true"]')).toHaveCount(0);

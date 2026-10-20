@@ -13,6 +13,7 @@ import {
   deConsentsPage,
   deDashboard,
   deKonto,
+  deMenuBar,
   deMore,
   deProgressHub,
   deTabs,
@@ -1588,6 +1589,7 @@ export const de = {
   dashboard: deDashboard,
   progressHub: deProgressHub,
   more: deMore,
+  menuBar: deMenuBar,
   konto: deKonto,
   consentsPage: deConsentsPage,
   /**

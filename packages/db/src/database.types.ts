@@ -10,6 +10,27 @@ export type Json = string | number | boolean | null | { [key: string]: Json | un
 export type Database = {
   public: {
     Tables: {
+      app_layout_settings: {
+        Row: {
+          dashboard_tiles: Json;
+          tab_bar: Json;
+          updated_at: string;
+          user_id: string;
+        };
+        Insert: {
+          dashboard_tiles: Json;
+          tab_bar: Json;
+          updated_at?: string;
+          user_id: string;
+        };
+        Update: {
+          dashboard_tiles?: Json;
+          tab_bar?: Json;
+          updated_at?: string;
+          user_id?: string;
+        };
+        Relationships: [];
+      };
       admin_users: {
         Row: {
           created_at: string;
@@ -2970,6 +2991,7 @@ export type Database = {
       save_session_log: { Args: { p_log: Json }; Returns: Json };
       save_tracked_route: { Args: { p_route: Json }; Returns: string };
       save_training_plan: { Args: { p_plan: Json }; Returns: string };
+      save_app_layout: { Args: { p_layout: Json }; Returns: undefined };
       save_shopping_product_link: {
         Args: { p_code: string; p_food_id: string };
         Returns: undefined;

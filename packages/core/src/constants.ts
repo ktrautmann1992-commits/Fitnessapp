@@ -1827,6 +1827,14 @@ export const SHOPPING_LIST_ROUNDING = {
 } as const;
 
 /**
+ * Übersicht und Menüleiste anpassen (docs/PLAN-EINKAUFEN-AUSDAUER.md 4, `layout.ts`): „Übersicht“ links und „Mehr“
+ * rechts zählen mit; 3 bis 6 Knöpfe (Gründer-Wunsch 20.10.2026: 6 statt 5, damit „Workouts“ in den Standard passt –
+ * mehr Knöpfe würden auf schmalen Handys (320 px) unlesbar). `storedTilesMax` = Speicherschutz (sync: Migration
+ * app_layout_settings). Bedienregeln, keine Grenze zur Gesundheit. PRODUKTENTSCHEIDUNG.
+ */
+export const APP_LAYOUT = { tabsMin: 3, tabsMax: 6, storedTilesMax: 20 } as const;
+
+/**
  * Menge eigener Einträge der Einkaufsliste (Reiter „Einkaufen“, Gründer-Entscheidung 20.10.2026): höchstens so viel
  * (g, ml bzw. Stück – wie die Spalte `shopping_list_items.amount`) und so viele Zeichen Freitext. Keine Grenze zur
  * Gesundheit, nur Eingabeschutz. PRODUKTENTSCHEIDUNG.

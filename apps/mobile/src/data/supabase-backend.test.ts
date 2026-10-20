@@ -1626,6 +1626,8 @@ describe('Supabase-Modus: Tagebuch-Warteschlange', () => {
       'live_adjust_hourly_counts',
       // Einkaufen E1
       'shopping_product_links',
+      // E2
+      'app_layout_settings',
     ];
     const exported = {
       format_version: 1,

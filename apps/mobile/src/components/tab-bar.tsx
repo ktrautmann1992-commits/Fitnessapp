@@ -1,18 +1,21 @@
 import { brandColors, fontSize, fontWeight, maxContentWidth, spacing } from '@fitnessapp/ui';
+import type { NavArea } from '@fitnessapp/core';
 import { createContext, useContext } from 'react';
 import { Platform, Pressable, StyleSheet, Text, useColorScheme, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import Svg, { Circle, Path, Rect } from 'react-native-svg';
 
 import { t } from '@/i18n';
+import { useAppLayout } from '@/state/use-app-layout';
 import { useThemeColors } from '@/lib/theme';
 
 /**
- * Untere Menüleiste (docs/PLAN-DASHBOARD.md 3; seit 20.10.2026 docs/PLAN-EINKAUFEN-AUSDAUER.md EA-1):
- * Übersicht · Training · Ernährung · Einkaufen · Mehr – „Fortschritt“ steht als Kachel auf der Übersicht und unter
- * „Mehr“. Ist ein Bereich ohne Knopf geöffnet (z. B. „Fortschritt“), ist kein Knopf markiert.
- * Eigene Leiste für Expo Router Tabs – Farben aus den Design-Tokens (hell/dunkel), Tippfläche ≥ 56 px, Symbol und
- * Beschriftung, für Bildschirmleser Rolle „Tab“ mit „ausgewählt“.
+ * Untere Menüleiste (docs/PLAN-DASHBOARD.md 3; seit 20.10.2026 docs/PLAN-EINKAUFEN-AUSDAUER.md EA-1 und 4): die
+ * Knöpfe kommen aus der Anordnung der Person (`useAppLayout`, Regeln in packages/core/src/layout.ts) – Standard
+ * Übersicht · Training · Workouts · Ernährung · Einkaufen · Mehr (Workouts nur, wenn der Bereich vorhanden ist).
+ * „Fortschritt“ steht als Kachel und unter „Mehr“. Ist ein Bereich ohne Knopf geöffnet, ist kein Knopf markiert.
+ * Bei 6 Knöpfen etwas kleinere Schrift und Symbol-Fläche, damit es auch auf 320 px breiten Handys passt. Farben aus
+ * den Design-Tokens (hell/dunkel), Tippfläche ≥ 56 px, für Bildschirmleser Rolle „Tab“ mit „ausgewählt“.
  */
 
 /** true = Bildschirm liegt in einem Reiter; die Leiste übernimmt den unteren Rand (Screen ohne Abstand unten). */
@@ -22,27 +25,7 @@ export function useInTabs(): boolean {
   return useContext(InTabsContext);
 }
 
-export type TabName =
-  'uebersicht' | 'today' | 'ernaehrung' | 'einkaufsliste' | 'fortschritt' | 'mehr';
-
-/** Alle Reiter-Bildschirme (Reihenfolge der Registrierung in (tabs)/_layout.tsx). */
-export const TAB_SCREENS: readonly TabName[] = [
-  'uebersicht',
-  'today',
-  'ernaehrung',
-  'einkaufsliste',
-  'fortschritt',
-  'mehr',
-];
-
-/** Knöpfe der Menüleiste (Standard, EA-1). */
-export const TAB_ORDER: readonly TabName[] = [
-  'uebersicht',
-  'today',
-  'ernaehrung',
-  'einkaufsliste',
-  'mehr',
-];
+export type TabName = NavArea;
 
 export function tabLabel(name: TabName): string {
   switch (name) {
@@ -54,6 +37,8 @@ export function tabLabel(name: TabName): string {
       return t.tabs.nutrition;
     case 'einkaufsliste':
       return t.tabs.shopping;
+    case 'workouts':
+      return t.tabs.workouts;
     case 'fortschritt':
       return t.tabs.progress;
     case 'mehr':
@@ -76,9 +61,11 @@ export function TabBar({ state, navigation }: TabBarProps) {
   const theme = useThemeColors();
   const dark = useColorScheme() === 'dark';
   const insets = useSafeAreaInsets();
-  const routes = TAB_ORDER.map((name) => state.routes.find((route) => route.name === name)).filter(
-    (route): route is { key: string; name: TabName } => route !== undefined,
-  );
+  const { layout } = useAppLayout();
+  const routes = layout.tabs
+    .map((name) => state.routes.find((route) => route.name === name))
+    .filter((route): route is { key: string; name: TabName } => route !== undefined);
+  const compact = routes.length >= 6;
   const focusedName = state.routes[state.index]?.name;
   return (
     <View
@@ -121,6 +108,7 @@ export function TabBar({ state, navigation }: TabBarProps) {
               <View
                 style={[
                   styles.pill,
+                  compact && styles.pillCompact,
                   focused && {
                     backgroundColor: dark ? brandColors.graphitHell : brandColors.eisblau,
                   },
@@ -132,6 +120,7 @@ export function TabBar({ state, navigation }: TabBarProps) {
                 numberOfLines={1}
                 style={[
                   styles.label,
+                  compact && styles.labelCompact,
                   { color: focused ? theme.text : theme.textMuted },
                   focused && styles.labelFocused,
                 ]}
@@ -179,6 +168,11 @@ function TabIcon({ name, color }: { name: TabName; color: string }) {
         <>
           <Path d="M7 3v8M4.5 3v5a2.5 2.5 0 0 0 5 0V3M7 11v10" {...stroke} />
           <Path d="M17 21V3c-2.2 1.2-3.5 3.8-3.5 7v3H17" {...stroke} />
+        </>
+      ) : name === 'workouts' ? (
+        <>
+          <Circle cx={12} cy={12} r={8.5} {...stroke} />
+          <Path d="M10 8.5v7l5.5-3.5z" {...stroke} />
         </>
       ) : name === 'einkaufsliste' ? (
         <>
@@ -234,6 +228,12 @@ const styles = StyleSheet.create({
   label: {
     fontSize: fontSize.sm - 2,
     fontWeight: fontWeight.semibold,
+  },
+  pillCompact: {
+    width: 44,
+  },
+  labelCompact: {
+    fontSize: fontSize.sm - 3,
   },
   labelFocused: {
     fontWeight: fontWeight.bold,

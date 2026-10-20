@@ -249,6 +249,7 @@ const SERIALIZED_METHODS = [
   'saveUserFoodProduct',
   'deleteUserFoodProduct',
   'saveShoppingProductLink',
+  'saveAppLayout',
 ] as const satisfies readonly (keyof Backend)[];
 
 function serializeWrites(backend: Backend): Backend {
@@ -899,6 +900,16 @@ export function createLocalBackend(store: KeyValueStore, options: LocalBackendOp
     deleteUserFoodProduct: async (id) => {
       const { db, rows } = await requireProfile();
       const next = applyUserFoodProductDelete(rows, id);
+      await save({ ...db, rows: next });
+      return next;
+    },
+    // Etappe E2: Anordnung der Übersicht/Menüleiste – dieselben Regeln wie save_app_layout (local-rules.ts).
+    saveAppLayout: async (layout) => {
+      const { db, rows, session } = await requireProfile();
+      const next = applyChecked(rows, {
+        kind: 'save_app_layout',
+        row: { user_id: session.userId, ...layout },
+      });
       await save({ ...db, rows: next });
       return next;
     },

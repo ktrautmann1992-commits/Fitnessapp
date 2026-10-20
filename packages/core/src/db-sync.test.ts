@@ -91,7 +91,9 @@ import {
   ENDURANCE_DELOAD_VOLUME_FACTOR,
   MAX_WEEKLY_ENDURANCE_VOLUME_INCREASE_FRACTION,
   SHOPPING_SCAN,
+  APP_LAYOUT,
 } from './constants';
+import { DASHBOARD_TILES, FIXED_FIRST_TAB, FIXED_LAST_TAB, NAV_AREAS } from './layout';
 import { serverDayKcalFloor } from './nutrition/plausibility';
 import { AI_USAGE_STATUSES } from './nutrition/food-photo';
 import {
@@ -1143,11 +1145,48 @@ describe('Ernährungstagebuch in der Datenbank (Etappe E1)', () => {
     }
   });
 
-  it('export_my_data(): neueste Fassung in *_live_adjust_revoke_export.sql (4b B, davor E4a + Z3, S1, E3, WP3, E2)', () => {
+  it('export_my_data(): neueste Fassung in *_app_layout_settings.sql (E2 Dashboard, davor Einkaufen E1, 4b B, E4a + Z3, S1, E3, WP3, E2)', () => {
     const marker = 'create or replace function public.export_my_data()';
     expect(migrationFiles.filter((n) => readMigration(n).includes(marker)).at(-1)).toMatch(
-      /_shopping_product_links\.sql$/,
+      /_app_layout_settings\.sql$/,
     );
+  });
+});
+
+describe('Übersicht und Menüleiste anpassen E2 (docs/PLAN-EINKAUFEN-AUSDAUER.md 4)', () => {
+  const sql = readMigration('_app_layout_settings.sql');
+  const list = (name: string) => {
+    const match = new RegExp(`${name} constant text\\[\\] := array\\[([^\\]]*)\\]`).exec(sql);
+    if (!match) throw new Error(name);
+    return [...(match[1] as string).matchAll(/'([a-z_]+)'/g)].map((m) => m[1]);
+  };
+  const constant = (name: string) => {
+    const match = new RegExp(`\\b${name} constant integer := (\\d+);`).exec(sql);
+    if (!match) throw new Error(name);
+    return Number(match[1]);
+  };
+
+  it('ID-Listen und Grenzen = packages/core (DASHBOARD_TILES, NAV_AREAS, APP_LAYOUT)', () => {
+    expect(list('tile_ids')).toEqual([...DASHBOARD_TILES]);
+    expect(list('area_ids')).toEqual([...NAV_AREAS]);
+    expect(constant('tabs_min')).toBe(APP_LAYOUT.tabsMin);
+    expect(constant('tabs_max')).toBe(APP_LAYOUT.tabsMax);
+    expect(constant('tiles_max')).toBe(APP_LAYOUT.storedTilesMax);
+    expect(sql).toContain(
+      `jsonb_array_length(tab_bar) between ${APP_LAYOUT.tabsMin} and ${APP_LAYOUT.tabsMax}`,
+    );
+    expect(sql).toContain(`jsonb_array_length(dashboard_tiles) <= ${APP_LAYOUT.storedTilesMax}`);
+    expect(sql).toContain(`tabs ->> 0 is distinct from '${FIXED_FIRST_TAB}'`);
+    expect(sql).toContain(`is distinct from '${FIXED_LAST_TAB}'`);
+  });
+
+  it('Schreiben nur über save_app_layout; kein Gesundheitsdatum (nicht im Widerruf), im Export', () => {
+    expect(sql).toContain(
+      'revoke all on table public.app_layout_settings from public, anon, authenticated;',
+    );
+    expect(sql).not.toContain('SENSIBEL');
+    expect(sql).toContain("'app_layout_settings', (select coalesce");
+    expect(sql).not.toContain('consents_after_revoke');
   });
 });
 
@@ -1181,6 +1220,9 @@ describe('Einkaufen E1: gelernte Zuordnungen (docs/PLAN-EINKAUFEN-AUSDAUER.md 3)
       revoke.split('delete from public.shopping_product_links where user_id = new.user_id;'),
     ).toHaveLength(3);
     expect(fnBody('public.export_my_data')).toContain("'shopping_product_links', (select coalesce");
+    expect(readMigration('_app_layout_settings.sql')).toContain(
+      "'shopping_product_links', (select coalesce",
+    );
   });
 });
 
@@ -2654,10 +2696,14 @@ describe('Ziele in der Datenbank (Etappe Z3, docs/PLAN-ZIELE.md 5.1/5.2)', () =>
   });
 
   it('Widerruf und Export: neueste Fassungen sind Obermengen der Vorgänger (Zeile für Zeile, S16)', () => {
-    for (const marker of [revokeMarker, exportMarker]) {
+    for (const [marker, newestFile] of [
+      [revokeMarker, /_shopping_product_links\.sql$/],
+      [exportMarker, /_app_layout_settings\.sql$/],
+    ] as const) {
       const withFn = migrationFiles.filter((n) => readMigration(n).includes(marker));
-      // Seit 4b Etappe B in *_live_adjust_revoke_export.sql (davor Vereinigung E4a + Z3, Wächter E4a H1).
-      expect(withFn.at(-1)).toMatch(/_shopping_product_links\.sql$/);
+      // Widerruf seit Einkaufen E1 in *_shopping_product_links.sql, Export seit E2 in *_app_layout_settings.sql
+      // (davor 4b Etappe B, Vereinigung E4a + Z3, Wächter E4a H1).
+      expect(withFn.at(-1)).toMatch(newestFile);
       const bodyOf = (name: string) => {
         const sql = readMigration(name);
         const start = sql.lastIndexOf(marker);
