@@ -19,6 +19,7 @@ import {
   PLAN_SAVE_LIMITS,
   PLANNED_LOAD_LIMITS,
   SESSION_LOG_LIMITS,
+  WORKOUT_LIMITS,
   FREE_SESSION,
   SESSION_RPE_LIMITS,
   SET_RPE_LIMITS,
@@ -119,6 +120,7 @@ import {
 } from './nutrition/shopping-list-payload';
 import { RECIPE_UNITS } from './nutrition/units';
 import * as enums from './enums';
+import { WORKOUT_CATEGORIES, WORKOUT_FORMATS } from './workouts/schema';
 import { DATA_EXPORT_TABLES } from './export/data-export';
 import { BARCODE_PATTERN } from './nutrition/barcode';
 import {
@@ -326,6 +328,9 @@ describe('Enums', () => {
     // Phase 10 · S1 (20261016220000_tracked_route_enums.sql)
     ['route_difficulty', enums.ROUTE_DIFFICULTIES],
     ['tracked_route_source', enums.TRACKED_ROUTE_SOURCES],
+    // Workout-Bibliothek (20261020150000_workout_enums.sql)
+    ['workout_category', WORKOUT_CATEGORIES],
+    ['workout_format', WORKOUT_FORMATS],
   ] as const)('public.%s entspricht packages/core', (name, values) => {
     expect(enumValues(name)).toEqual([...values]);
   });
@@ -3145,5 +3150,24 @@ describe('Testphase „alles offen“ (Gründer 19.10.2026, KONZEPT 13)', () => 
     expect(body(open, 'public.beta_admin')).toContain(
       'return private.premium_open_flag_admin(p_action, p_actor);',
     );
+  });
+});
+
+describe('Workout-Bibliothek (20261020150100_workouts.sql)', () => {
+  const sql = readMigration('_workouts.sql');
+  it('Grenzen der Tabelle = WORKOUT_LIMITS', () => {
+    const L = WORKOUT_LIMITS;
+    expect(sql).toContain(`check (difficulty between ${L.stars.min} and ${L.stars.max})`);
+    expect(sql).toContain(`check (minutes between ${L.minutes.min} and ${L.minutes.max})`);
+    expect(sql).toContain(
+      `cardinality(exercise_ids) between ${L.exercises.min} and ${L.exercises.max}`,
+    );
+    expect(L.exercises.max).toBe(SESSION_LOG_LIMITS.exercisesPerSession.max);
+    expect(L.rounds.max).toBe(SESSION_LOG_LIMITS.setsPerExercise.max);
+  });
+  it('Herkunft „workout“ setzt nur mark_session_log_workout an freien Kraft-Einheiten', () => {
+    expect(sql).toContain("existing.kind <> 'strength'");
+    expect(sql).toContain('not existing.is_free');
+    expect(enums.LOG_SOURCES).toContain('workout');
   });
 });

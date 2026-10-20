@@ -60,12 +60,12 @@ test('Menüleiste mit „Einkaufen“, Abhaken bleibt nach dem Neuladen, alle Ha
 }) => {
   test.setTimeout(150_000);
   await startWithPlan(page);
-  // EA-1: Übersicht · Training · Ernährung · Einkaufen · Mehr – „Fortschritt“ unter „Mehr“.
-  for (const name of ['Übersicht', 'Training', 'Ernährung', 'Einkaufen', 'Mehr']) {
+  // EA-1 + Workouts: Übersicht · Training · Workouts · Ernährung · Einkaufen · Mehr – „Fortschritt“ unter „Mehr“.
+  for (const name of ['Übersicht', 'Training', 'Workouts', 'Ernährung', 'Einkaufen', 'Mehr']) {
     await expect(tab(page, name)).toBeVisible();
   }
   await expect(tab(page, 'Fortschritt')).toHaveCount(0);
-  await expect(tabBar(page).getByRole('tab')).toHaveCount(5);
+  await expect(tabBar(page).getByRole('tab')).toHaveCount(6);
   await openShoppingTab(page);
   await expect(tab(page, 'Einkaufen')).toHaveAttribute('aria-selected', 'true');
   // Reiter: keine „Zurück“-Leiste.

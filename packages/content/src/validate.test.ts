@@ -340,6 +340,7 @@ describe('Berichte', () => {
         substitutions: [],
         packageSizes: [],
         supplements: [],
+        workouts: [],
         issues: [],
         blocking: [],
       },

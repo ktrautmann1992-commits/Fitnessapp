@@ -23,7 +23,9 @@ describe('Anordnung im Testmodus', () => {
   it('speichern, im Export, bleibt beim Widerruf (kein Gesundheitsdatum)', async () => {
     const { backend } = seededBackend(rows());
     const layout = moveTile(defaultLayout(AVAILABLE_AREAS), 'body', 'up');
-    const added = setTabShown(layout, 'fortschritt', true, AVAILABLE_AREAS);
+    const removed = setTabShown(layout, 'workouts', false, AVAILABLE_AREAS);
+    if (!removed.ok) throw new Error(removed.reason);
+    const added = setTabShown(removed.layout, 'fortschritt', true, AVAILABLE_AREAS);
     if (!added.ok) throw new Error(added.reason);
     const stored = toStoredLayout(added.layout);
     const next = await backend.saveAppLayout(stored, rows());
@@ -49,11 +51,12 @@ describe('Anordnung im Testmodus', () => {
 });
 
 describe('Standard in dieser App-Fassung', () => {
-  it('ohne Route „Workouts“: Übersicht · Training · Ernährung · Einkaufen · Mehr', () => {
-    expect(AVAILABLE_AREAS).not.toContain('workouts');
+  it('mit Bereich „Workouts“: Übersicht · Training · Workouts · Ernährung · Einkaufen · Mehr (6)', () => {
+    expect(AVAILABLE_AREAS).toContain('workouts');
     expect(defaultLayout(AVAILABLE_AREAS).tabs).toEqual([
       'uebersicht',
       'today',
+      'workouts',
       'ernaehrung',
       'einkaufsliste',
       'mehr',

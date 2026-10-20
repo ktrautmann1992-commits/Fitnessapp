@@ -403,6 +403,16 @@ nie „Plan neu erstellen“. Präferenzen sind im Datenexport (Testmodus) entha
 nicht.
 Regeln in `packages/core/src/content/glossary.ts`, Grenzen in `GLOSSARY_LIMITS`.
 
+### 5.1 Workout-Bibliothek mit Sternen und Timer (Gratis, ohne KI)
+Eigener Reiter **„Workouts“**: fertige, vorab erstellte und geprüfte Workouts (Kategorien Ganzkörper, Bauch & Rumpf,
+Oberkörper, Beine & Po, HIIT & Cardio, Mobilität, Rücken-fit), Schwierigkeit **1–5 Sterne** (1 leicht … 5 sehr
+schwer, für Bildschirmleser als Text), 10–45 Minuten, viele ohne Geräte. Formate: Zirkel mit Runden, Intervall nach
+Zeit, Sätze × Wiederholungen mit Abhaken. **Timer-Modus** mit großem Countdown, Runde/Satz, Vorschau, Pausieren,
+Überspringen, Beenden, Ton bzw. Vibration, Bildschirm bleibt an. Nach dem Abschluss (oder vorzeitig) wird das Workout
+als **freie Einheit am heutigen Tag** gespeichert (Herkunft „workout“) – zählt in Tagebuch, Tag und Woche, nie für die
+Progression. Sicherheit: 4–5 Sterne mit Hinweis für Einsteiger bzw. bei Auffälligkeiten im Gesundheits-Check (kein
+Verbot), Aufwärm-Hinweis immer; Prüfregeln W1–W7 für die Inhalte. Details und Entscheidungen: `docs/PLAN-WORKOUTS.md`.
+
 ## 6. Ernährungs-Engine (`packages/core/nutrition`)
 - Grundumsatz: Mifflin-St Jeor (bzw. Katch-McArdle, wenn Körperfett bekannt)
 - Gesamtumsatz: Grundumsatz × Alltagsfaktor + Trainingsenergie der geplanten Einheiten (tagesgenau)
@@ -1120,6 +1130,12 @@ eigene Zeilen, in Export und Kontolöschung enthalten.
   Teil `wg=<Stand>:<Kennung des Ziels>` – Hash aus Start, Zieldatum, Zielgewicht und Eingabeart, nicht im Klartext, und
   unabhängig vom aktuellen Gewicht (Wächter Z5 H1: eine neue Gewichtsangabe plant nur neu, wenn ein Tag aus dem Planband
   fällt). Ohne Ziel bleibt er unverändert.
+
+### Abweichungen ab Workout-Bibliothek (umgesetzt, siehe `docs/PLAN-WORKOUTS.md` und `supabase/migrations/20261020150*`)
+- Tabelle `workouts` (Inhalt wie `guides`: Datei in `data`, Filter-Spalten berechnet, nur „published“ lesbar), Enums
+  `workout_category`, `workout_format`; `log_source` um `workout` ergänzt.
+- `seed_workouts(p_content, p_require_expert_review)` und `mark_session_log_workout(p_log_id)`; `save_session_log`
+  und `export_my_data` unverändert (Export enthält `source` automatisch). Eigene Spalte `workout_id` offen (W-O1).
 
 ## 13. Monetarisierung
 **Testphase (Gründer-Entscheidung 19.10.2026): alles offen, Abos ruhen.** Bis der Test vollständig abgeschlossen ist,

@@ -95,6 +95,7 @@ import {
   revertAllowed,
 } from './live-adjust';
 import { checkSessionLog, isValidOp, isValidPlanOp, isValidPreferenceOp } from './local-rules';
+import { markWorkoutSource, workoutsFromBundle } from './workout-library';
 import {
   applySessionLog,
   closeMissedSessionRows,
@@ -1059,7 +1060,7 @@ export function createLocalBackend(store: KeyValueStore, options: LocalBackendOp
                 : withId;
             }),
           };
-          const next = applySessionLog(rows, stored, {
+          const applied = applySessionLog(rows, stored, {
             userId: session.userId,
             linked: check.linked,
             keepTargets: check.keepTargets,
@@ -1070,6 +1071,8 @@ export function createLocalBackend(store: KeyValueStore, options: LocalBackendOp
             isIntroWeek: check.isIntroWeek,
             isDeload: check.isDeload,
           });
+          // Workout-Timer (docs/PLAN-WORKOUTS.md): Herkunft „workout“ wie mark_session_log_workout.
+          const next = draft.workoutId === undefined ? applied : markWorkoutSource(applied, id);
           const logCounter = check.isNew
             ? {
                 day: today,
@@ -1376,6 +1379,14 @@ export function createLocalBackend(store: KeyValueStore, options: LocalBackendOp
     // Testmodus: das ganze Tagebuch liegt auf dem Gerät – nichts nachzuladen.
     logHistoryStart: () => null,
     loadOlderLogs: async () => ({ logs: EMPTY_LOG_ROWS, nextBefore: null }),
+    // Workout-Bibliothek (docs/PLAN-WORKOUTS.md): aus dem Bündel, geprüft wie content:validate.
+    loadWorkoutLibrary: async () => {
+      const { CONTENT_BUNDLE } = await import('../generated/content-files');
+      return {
+        workouts: workoutsFromBundle(CONTENT_BUNDLE.files, CONTENT_BUNDLE.workoutFiles),
+        cached: false,
+      };
+    },
     exportMyData: async () => {
       const { db, rows, session } = await requireProfile();
       const file = buildDataExportFile(

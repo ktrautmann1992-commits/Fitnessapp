@@ -21,6 +21,7 @@ import type {
   SessionLogPayload,
   ShoppingProductLink,
   StoredAppLayout,
+  Workout,
 } from '@fitnessapp/core';
 
 import type { FavoriteChange } from './food-log-rows';
@@ -503,6 +504,21 @@ export interface Backend {
    * Nur online. Enthält Gesundheitsdaten – nie loggen, nie zwischenspeichern.
    */
   exportMyData(): Promise<DataExportFile>;
+
+  // --- Workout-Bibliothek (docs/PLAN-WORKOUTS.md) --------------------------------------------------------------
+  /**
+   * Freigegebene Workouts: Supabase aus der Tabelle `workouts` (offline aus dem Zwischenspeicher, nur Inhalte),
+   * Testmodus aus dem Bündel. Ein Eintrag aus dem Timer läuft über submitWorkout (Entwurf mit `workoutId`); die
+   * Herkunft „workout“ setzt danach das Backend (mark_session_log_workout bzw. lokal).
+   */
+  loadWorkoutLibrary(): Promise<WorkoutLibraryResult>;
+}
+
+/** Workout-Bibliothek (docs/PLAN-WORKOUTS.md): nur freigegebene, gültige Workouts. */
+export interface WorkoutLibraryResult {
+  readonly workouts: readonly Workout[];
+  /** true = offline aus dem Zwischenspeicher (Supabase-Modus). */
+  readonly cached: boolean;
 }
 
 export interface SaveContext {

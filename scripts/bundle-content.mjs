@@ -1,5 +1,5 @@
 // Bündelt die Inhaltsdateien des Repositorys (content/exercises, content/plan-templates; Ernährung: content/foods,
-// recipes, meal-prep-plans, guides, substitutions, package-sizes + Katalog-Begleitdaten) beim Bauen in ein
+// recipes, meal-prep-plans, guides, substitutions, package-sizes + Katalog-Begleitdaten; content/workouts) beim Bauen in ein
 // TypeScript-Modul. Gemeinsam genutzt von
 // - apps/web (Redaktionsbereich /admin): jede Vercel-Vorschau zeigt genau die Inhalte ihres Branches,
 // - apps/mobile (Testmodus ohne Supabase, docs/PLAN-PHASE-3.md 10.1): Plan aus den gebündelten Entwürfen; das Modul
@@ -42,6 +42,8 @@ const NUTRITION_FOLDERS = {
   ingredient_substitution: 'substitutions',
   package_size: 'package-sizes',
 };
+/** Workouts (docs/PLAN-WORKOUTS.md) – wie WORKOUT_CONTENT_FOLDERS in packages/content/src/validate.ts. */
+const WORKOUT_FOLDERS = { workout: 'workouts' };
 /** Begleitdatei in content/foods/, kein Lebensmittel. */
 const EXPECTATIONS_FILE = 'allergen-expectations.json';
 
@@ -51,10 +53,12 @@ function readText(path) {
 
 const files = [];
 const nutritionFiles = [];
+const workoutFiles = [];
 const strayFiles = [];
 const folders = [
   ...Object.entries(FOLDERS).map(([kind, folder]) => [kind, folder, files]),
   ...Object.entries(NUTRITION_FOLDERS).map(([kind, folder]) => [kind, folder, nutritionFiles]),
+  ...Object.entries(WORKOUT_FOLDERS).map(([kind, folder]) => [kind, folder, workoutFiles]),
 ];
 for (const [kind, folder, target] of emptyBundle ? [] : folders) {
   const dir = join(contentDir, folder);
@@ -110,9 +114,15 @@ if (!emptyBundle) {
   );
 }
 
-const payload = JSON.stringify({ files, strayFiles, nutritionFiles, nutritionCatalog });
+const payload = JSON.stringify({
+  files,
+  strayFiles,
+  nutritionFiles,
+  nutritionCatalog,
+  workoutFiles,
+});
 const source = `// Automatisch erzeugt von scripts/bundle-content.mjs – nicht von Hand bearbeiten.
-import type { ContentFile, NutritionContentFile } from '@fitnessapp/core';
+import type { ContentFile, NutritionContentFile, WorkoutContentFile } from '@fitnessapp/core';
 
 /** Begleitdaten des Lebensmittel-Katalogs als Texte (R17/R18, Namensnennung der Quelle). */
 export interface NutritionCatalogBundle {
@@ -128,6 +138,8 @@ export interface ContentBundle {
   /** Lebensmittel, Rezepte, Meal-Prep-Pläne, Ratgeber (Etappe N2c). */
   readonly nutritionFiles: readonly NutritionContentFile[];
   readonly nutritionCatalog: NutritionCatalogBundle;
+  /** Workouts (docs/PLAN-WORKOUTS.md). */
+  readonly workoutFiles: readonly WorkoutContentFile[];
 }
 
 export const CONTENT_BUNDLE: ContentBundle = JSON.parse(${JSON.stringify(payload)}) as ContentBundle;
@@ -143,5 +155,5 @@ console.log(
     ? 'Supabase-Werte gesetzt: leeres Inhalts-Bündel (Inhalte kommen aus der Datenbank).'
     : `Inhalte gebündelt: ${files.filter((f) => f.kind === 'exercise').length} Übungen, ${
         files.filter((f) => f.kind === 'plan_template').length
-      } Plan-Vorlagen, ${nutritionFiles.length} Ernährungs-Inhalte${strayFiles.length > 0 ? `, ${strayFiles.length} fremde Dateien` : ''}.`,
+      } Plan-Vorlagen, ${nutritionFiles.length} Ernährungs-Inhalte, ${workoutFiles.length} Workouts${strayFiles.length > 0 ? `, ${strayFiles.length} fremde Dateien` : ''}.`,
 );

@@ -90,6 +90,15 @@ export default function MoreScreen() {
           onPress={open('/uebungen')}
           testID="more-exercises"
         />
+        {/* Steht „Workouts“ nicht in der Menüleiste, zeigt ihn „Weitere Bereiche“ oben (kein Doppel). */}
+        {!hidden.includes('workouts') ? (
+          <Button
+            label={t.workouts.more}
+            variant="secondary"
+            onPress={open('/workouts')}
+            testID="more-workouts"
+          />
+        ) : null}
         {nutrition ? (
           <>
             <Button

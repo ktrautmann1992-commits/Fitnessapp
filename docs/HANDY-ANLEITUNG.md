@@ -983,7 +983,7 @@ einfügen. Plan dazu: `docs/PLAN-DASHBOARD.md`.
 1. Startbildschirm (dunkel, Alpha5): großer Knopf **„Neu hier – Los geht's“**. Statt „Anmelden“ steht ein kurzer
    Hinweis, dass Anmelden erst mit der Datenbank geht. Unten ist **keine** Menüleiste.
 2. „Neu hier – Los geht's“ → Geburtsdatum → **„Testmodus starten“** → Onboarding wie bisher → **„Zum Plan“**.
-   Es öffnet sich **„Heute“**, unten die Menüleiste **Übersicht · Training · Ernährung · Einkaufen · Mehr** (seit
+   Es öffnet sich **„Heute“**, unten die Menüleiste **Übersicht · Training · Workouts · Ernährung · Einkaufen · Mehr** (seit
    20.10.2026; „Fortschritt“ steht als Kachel auf der Übersicht und unter „Mehr“); „Training“ ist markiert.
 3. **„Übersicht“** antippen: Kacheln **Training heute** (an einem Trainingstag mit **„Training starten“**, sonst
    „Ruhetag“ und die nächste Einheit), **Ernährung heute**, **Körperdaten** (mit Einwilligung euer zuletzt
@@ -1027,7 +1027,7 @@ iPhone** (Vorschau-Link aus dem Pull Request, am besten im Inkognito-Tab). Plan:
 Abschnitt 3.
 
 1. Vorschau-Link → **„Neu hier – Los geht's“** → **„Testmodus starten“** → Onboarding mit Ernährung → **„Zum Plan“**.
-2. Unten in der Menüleiste: **Übersicht · Training · Ernährung · Einkaufen · Mehr**. **„Einkaufen“** antippen → eure
+2. Unten in der Menüleiste: **Übersicht · Training · Workouts · Ernährung · Einkaufen · Mehr**. **„Einkaufen“** antippen → eure
    Einkaufsliste der Woche (aus dem Essensplan), Überschrift **„Einkaufen“**, ohne „Zurück“-Knopf.
 3. **Abhaken:** Einen Eintrag antippen → Haken. Seite neu laden (Chrome: **⋯ → Neu laden**) → der Haken ist noch da.
 4. **Alle Haken zurücksetzen** → Rückfrage → **„Zurücksetzen“** → alle Einträge sind wieder offen.
@@ -1070,14 +1070,13 @@ Onboarding bis **„Zum Plan“**, dann unten **„Übersicht“**.
 4. **„Fertig“** → Seite neu laden (Chrome: **⋯ → Neu laden**) → die Reihenfolge bleibt.
 5. Alle Haken entfernen → Hinweis „Alle Kacheln sind ausgeblendet“; Hinweise oben (z. B. „Im Training wartet etwas“)
    bleiben trotzdem sichtbar. **„Bearbeiten“ → „Auf Standard zurücksetzen“** holt alles zurück.
-6. **Mehr → „Menüleiste anpassen“** (oder in „Bearbeiten“): **„Fortschritt in der Menüleiste“** anhaken → unten
-   sind jetzt 6 Knöpfe. Mit **„Nach links“/„Nach rechts“** ändert ihr die Reihenfolge. „Übersicht“ (links) und
+6. **Mehr → „Menüleiste anpassen“** (oder in „Bearbeiten“): Es sind schon 6 Knöpfe – **„Fortschritt in der
+   Menüleiste“** geht erst, wenn ihr z. B. **„Workouts“** herausnehmt (die App sagt „Höchstens 6 Knöpfe …“). Mit **„Nach links“/„Nach rechts“** ändert ihr die Reihenfolge. „Übersicht“ (links) und
    „Mehr“ (rechts) bleiben immer. Bei 6 Knöpfen ist kein weiterer möglich, unter 3 auch nicht – die App sagt warum.
 7. Einen Bereich herausnehmen (z. B. „Ernährung“) → er steht unter **Mehr → „Weitere Bereiche“** und funktioniert
    wie vorher.
-8. **„Auf Standard zurücksetzen“** → Übersicht · Training · Ernährung · Einkaufen · Mehr. Sobald der Bereich
-   **„Workouts“** dazugekommen ist (anderer Pull Request), ist der Standard Übersicht · Training · Workouts ·
-   Ernährung · Einkaufen · Mehr.
+8. **„Auf Standard zurücksetzen“** → Übersicht · Training · Workouts · Ernährung · Einkaufen · Mehr. Auch die Kachel
+   **„Workouts“** auf der Übersicht lässt sich unter „Bearbeiten“ aus- und umstellen.
 
 **Mit Datenbank:** Die Migration `20261020130000_app_layout_settings.sql` spielt `db-migrate` beim Merge ein. Die
 Anordnung gilt dann für euer Konto auf allen Geräten, steht im Datenexport (`app_layout_settings`) und bleibt beim
@@ -1118,6 +1117,35 @@ ist** (geschützter Speicher) – Tab schließen = Anpassungen weg, der Plan ist
 
 Die Fälle über mehrere Wochen (Schritte 4 und 5, Stillstand → Übung getauscht, abgelaufener Vorschlag) prüft der
 automatische Test `e2e/live-adjust.spec.ts` mit festem Datum – im Pull Request unter **Checks → ci** grün.
+
+## Teil 7o – Workouts mit Sternen und Timer testen (20.10.2026, Testmodus)
+Fertige Workouts (1 Stern leicht – 5 Sterne sehr schwer) mit Timer; nach dem Abschluss stehen sie als Eintrag am
+heutigen Tag. Alle 27 Workouts sind **Testphase – noch nicht fachlich geprüft** (so steht es auch in der App).
+Getestet mit **Chrome am iPhone** (Vorschau-Link aus dem Pull Request), am besten im **Inkognito-Tab**.
+
+1. Vorschau-Link öffnen → **„Los geht's“** → Geburtsdatum **15.05.1990** → **Testmodus starten** → Zustimmen →
+   beliebig weiter bis **„Zum Plan“**.
+2. Unten in der Menüleiste **„Workouts“** antippen (auch über **Mehr → Workouts**). **Prüfen:** „27 Workouts“, jede
+   Karte zeigt Titel, Sterne mit Wort (z. B. „★★☆☆☆ eher leicht“), Minuten, Ziel und Geräte.
+3. **Filter:** Stern **★★★★★** antippen → nur 2 Workouts. Wieder lösen, **★** und Ziel **„Bauch & Rumpf“** → nur
+   „Rumpf-Basis“. **„Filter zurücksetzen“** → **„Nur ohne Geräte“** → nur Workouts ohne Geräte.
+4. **„Bauch-Blitz“** öffnen → Sterne, Ablauf, Übungen mit Sekunden und Pausen, Aufwärmen, Sicherheitshinweis.
+   Bei einem Workout mit 4–5 Sternen steht für Einsteiger zusätzlich „lieber mit 1–3 Sternen beginnen“ (nur Hinweis).
+5. **„Workout starten“** → 5 Sekunden „Gleich geht's los“, dann großer Countdown je Übung, darunter **„Als
+   Nächstes“**. **Prüfen:** **Pausieren** hält die Zeit an, **Fortsetzen** läuft weiter, **Überspringen** springt
+   zur nächsten Übung, in der Pause **„Pause beenden“**. Ton und Vibration lassen sich unten abschalten (im Browser nur
+   Ton). Der Bildschirm bleibt an.
+6. Ein Workout mit **Sätzen** (z. B. „Kurzhantel-Basis“): Hier läuft keine Zeit ab – nach jedem Satz **„Satz erledigt
+   ✓“**, dann startet die Satzpause von selbst.
+7. Ende abwarten oder **„Beenden“** → Nachfrage → **„Beenden“**. Anstrengung (0–10) und Notiz sind freiwillig →
+   **„Für heute speichern“** → „Gespeichert …“. **Prüfen:** Der Knopf ist danach weg (kein zweiter Eintrag), **„Zum
+   heutigen Tag“** zeigt die Einheit, im **Kalender** steht „✓ Freie Kraft-Einheit · Workout“, im Eintrag die Notiz
+   „Workout „Bauch-Blitz“ (★★☆☆☆) · …“. Zurück in der Liste: **„Heute erledigt ✓“** auf der Karte.
+8. Offline (Flugmodus) speichern geht auch – der Eintrag wird übertragen, sobald ihr wieder online seid (mit Konto).
+
+**Mit Konto (Supabase):** Nach dem Merge legt **db-migrate** die Tabelle an; danach **Actions → content-seed → Run
+workflow** – solange in `content/einspiel-regeln.json` die Testphase eingestellt ist, kommen die Workouts mit. Vor dem
+Livegang gilt dieselbe Regel wie bei den Rezepten (Teil 7t): nur fachlich geprüfte Workouts.
 
 ## Teil 7e – Neue Rezepte per KI erzeugen (Phase 5, Etappe N8, Gemini offline)
 

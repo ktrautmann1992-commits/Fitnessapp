@@ -11,6 +11,7 @@ import { Fragment, type ReactNode, useEffect, useMemo, useState } from 'react';
 
 import { DashboardTile, ShortcutCell, ShortcutGrid, ShortcutTile } from '@/components/dashboard';
 import { DashboardEditor } from '@/components/dashboard-edit';
+import { WorkoutsTile } from '@/components/workouts';
 import { Screen } from '@/components/screen';
 import { MeasurementNotificationOffer } from '@/components/notifications';
 import { Body, Button, LoadingState, Notice } from '@/components/ui';
@@ -29,6 +30,7 @@ import { dayLabel } from '@/lib/plan-format';
 import { useToday } from '@/lib/use-today';
 import { useApp } from '@/state/app-state';
 import { useAppLayout } from '@/state/use-app-layout';
+import { useWorkoutLibrary } from '@/state/use-workouts';
 import { healthConsentStatus, HOME_ROUTE, resolveEntryRoute } from '@/state/flow';
 import { useFoodLogDay } from '@/state/use-food-log';
 import { useNutritionWeek } from '@/state/use-nutrition';
@@ -107,6 +109,8 @@ function Overview({ rows, today }: { rows: UserRows; today: string }) {
     switch (id) {
       case 'training':
         return <TrainingTile rows={rows} today={today} planNotice={planNotice} />;
+      case 'workouts':
+        return <OverviewWorkoutsTile today={today} />;
       case 'nutrition':
         return <NutritionTile today={today} />;
       case 'body':
@@ -338,6 +342,32 @@ function TrainingTile({
       ) : null}
       {toTraining}
     </DashboardTile>
+  );
+}
+
+/** Kachel „Workouts“ (Workout-Bibliothek, docs/PLAN-WORKOUTS.md): Bestand und heute erledigte Workouts. */
+function OverviewWorkoutsTile({ today }: { today: string }) {
+  const router = useRouter();
+  const app = useApp();
+  const library = useWorkoutLibrary();
+  if (library.kind !== 'ready') {
+    return (
+      <DashboardTile title={t.workouts.tile.title} testID="tile-workouts">
+        {library.kind === 'loading' ? (
+          <LoadingState />
+        ) : (
+          <Button label={t.common.retry} variant="secondary" onPress={library.retry} />
+        )}
+      </DashboardTile>
+    );
+  }
+  return (
+    <WorkoutsTile
+      workouts={library.workouts}
+      logs={app.rows?.sessionLogs ?? []}
+      today={today}
+      onOpen={() => router.navigate('/workouts' as Href)}
+    />
   );
 }
 

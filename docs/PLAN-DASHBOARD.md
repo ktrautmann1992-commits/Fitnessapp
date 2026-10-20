@@ -167,12 +167,12 @@ Anmelden (Testmodus), Übersicht, Menüleiste und Mein Konto; Bildschirmfotos he
   `normalizeLayout` macht jeden Speicherstand gültig (unbekannte/doppelte IDs raus, neue Kacheln an ihrer Standardstelle,
   kaputter Speicher → Standard). Standard: alle Kacheln, Menüleiste **Übersicht · Training · Workouts · Ernährung ·
   Einkaufen · Mehr**.
-- **Workouts:** Der Bereich (`/workouts`) entsteht in einem anderen Arbeitszweig. Die App kennt ihre vorhandenen
-  Bereiche in `apps/mobile/src/lib/app-areas.ts` (`AVAILABLE_AREAS`) – „Workouts“ fehlt dort noch, also auch im
-  Standard (5 Knöpfe), in der Auswahl und unter „Mehr“. **Beim Zusammenführen:** `'workouts'` in `AVAILABLE_AREAS`
-  ergänzen und `<Tabs.Screen name="workouts" …/>` in `src/app/(tabs)/_layout.tsx` eintragen; Symbol und Beschriftung
-  sind schon da (`tab-bar.tsx`). Wer die Menüleiste schon selbst angepasst hat, findet „Workouts“ danach unter „Mehr“
-  (neue Bereiche kommen nicht von selbst in eine eigene Leiste).
+- **Workouts (zusammengeführt mit der Workout-Bibliothek, PR #123):** Bereich `workouts` steht in
+  `apps/mobile/src/lib/app-areas.ts` (`AVAILABLE_AREAS`) und als Reiter in `src/app/(tabs)/_layout.tsx`; Standard also
+  6 Knöpfe. Die Kachel **„Workouts“** (`WorkoutsTile`) steht auf der Übersicht hinter „Training heute“ und lässt sich
+  wie jede Kachel aus- und umstellen. Ist „Workouts“ nicht in der Menüleiste, zeigt „Mehr“ ihn unter „Weitere
+  Bereiche“ (sonst wie bisher bei „Inhalte“). Ein künftiger neuer Bereich kommt in `AVAILABLE_AREAS` und
+  `(tabs)/_layout.tsx` dazu; wer die Menüleiste schon selbst angepasst hat, findet ihn unter „Mehr“.
 - **App:** Übersicht → **„Bearbeiten“** (`components/dashboard-edit.tsx`): je Kachel „… anzeigen“, „Nach oben“/„Nach
   unten“ (Ansage „Ernährung heute ist jetzt an Stelle 1 von 5.“ per Live-Region), „Menüleiste anpassen“, „Auf Standard
   zurücksetzen“, „Fertig“. **„Menüleiste anpassen“** (`/menueleiste`, aus „Mehr“ und „Bearbeiten“): Bereiche an/aus,

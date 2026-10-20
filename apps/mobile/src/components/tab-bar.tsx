@@ -33,12 +33,12 @@ export function tabLabel(name: TabName): string {
       return t.tabs.overview;
     case 'today':
       return t.tabs.training;
+    case 'workouts':
+      return t.workouts.tab;
     case 'ernaehrung':
       return t.tabs.nutrition;
     case 'einkaufsliste':
       return t.tabs.shopping;
-    case 'workouts':
-      return t.tabs.workouts;
     case 'fortschritt':
       return t.tabs.progress;
     case 'mehr':
@@ -164,15 +164,15 @@ function TabIcon({ name, color }: { name: TabName; color: string }) {
         <>
           <Path d="M6.5 7v10M17.5 7v10M3.5 9.5v5M20.5 9.5v5M6.5 12h11" {...stroke} />
         </>
+      ) : name === 'workouts' ? (
+        <>
+          <Circle cx={12} cy={13.5} r={7} {...stroke} />
+          <Path d="M12 13.5V10M10 3.5h4M12 3.5v3M18 7l1.5-1.5" {...stroke} />
+        </>
       ) : name === 'ernaehrung' ? (
         <>
           <Path d="M7 3v8M4.5 3v5a2.5 2.5 0 0 0 5 0V3M7 11v10" {...stroke} />
           <Path d="M17 21V3c-2.2 1.2-3.5 3.8-3.5 7v3H17" {...stroke} />
-        </>
-      ) : name === 'workouts' ? (
-        <>
-          <Circle cx={12} cy={12} r={8.5} {...stroke} />
-          <Path d="M10 8.5v7l5.5-3.5z" {...stroke} />
         </>
       ) : name === 'einkaufsliste' ? (
         <>

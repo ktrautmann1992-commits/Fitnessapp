@@ -22,7 +22,14 @@ import { APP_LAYOUT } from './constants';
  *   App-Fassung nicht vorhanden (z. B. „Workouts“ vor dem Zusammenführen), fehlt er auch im Standard.
  */
 
-export const DASHBOARD_TILES = ['training', 'nutrition', 'body', 'progress', 'shortcuts'] as const;
+export const DASHBOARD_TILES = [
+  'training',
+  'workouts',
+  'nutrition',
+  'body',
+  'progress',
+  'shortcuts',
+] as const;
 export type DashboardTileId = (typeof DASHBOARD_TILES)[number];
 
 export const NAV_AREAS = [

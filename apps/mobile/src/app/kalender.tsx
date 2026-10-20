@@ -499,7 +499,12 @@ export default function CalendarScreen() {
                 ) : null}
                 {dayLogs.map((l) => {
                   const extra = [
-                    l.is_free === true ? t.backfill.calendarFree : null,
+                    // Workout-Bibliothek (docs/PLAN-WORKOUTS.md): Herkunft „workout“ statt „frei“.
+                    l.source === 'workout'
+                      ? t.workouts.calendarBadge
+                      : l.is_free === true
+                        ? t.backfill.calendarFree
+                        : null,
                     isBackfilledLog(l) ? t.backfill.calendarBackfilled : null,
                   ]
                     .filter((value): value is string => value !== null)

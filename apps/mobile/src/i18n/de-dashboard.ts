@@ -114,6 +114,7 @@ export const deDashboard = {
     allHiddenHint: 'Über „Bearbeiten“ holst du sie zurück.',
     tiles: {
       training: 'Training heute',
+      workouts: 'Workouts',
       nutrition: 'Ernährung heute',
       body: 'Körperdaten',
       progress: 'Fortschritt',

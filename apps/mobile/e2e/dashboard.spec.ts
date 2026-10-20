@@ -70,7 +70,7 @@ test('Übersicht: Kacheln führen in die Bereiche, Menüleiste auf allen Hauptbe
   await expect(tab(page, 'Übersicht')).toHaveAttribute('aria-selected', 'true');
   await expect(tab(page, 'Training')).toHaveAttribute('aria-selected', 'false');
   // Seit EA-1 (20.10.2026): „Einkaufen“ statt „Fortschritt“ (der steht als Kachel und unter „Mehr“).
-  for (const name of ['Übersicht', 'Training', 'Ernährung', 'Einkaufen', 'Mehr']) {
+  for (const name of ['Übersicht', 'Training', 'Workouts', 'Ernährung', 'Einkaufen', 'Mehr']) {
     await expect(tab(page, name)).toBeVisible();
   }
   await expect(tab(page, 'Fortschritt')).toHaveCount(0);

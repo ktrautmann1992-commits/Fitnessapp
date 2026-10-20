@@ -71,13 +71,14 @@ describe('normalizeLayout', () => {
       { id: 'progress', visible: false },
       { id: 'shortcuts', visible: true },
       { id: 'training', visible: true },
+      { id: 'workouts', visible: true },
       { id: 'nutrition', visible: true },
       { id: 'body', visible: true },
     ]);
     expect(layout.tabs).toEqual(['uebersicht', 'fortschritt', 'mehr']);
   });
 
-  it('neue Kachel nach einem Update: hinter ihrem Standard-Vorgänger', () => {
+  it('neue Kachel nach einem Update (z. B. „Workouts“): hinter ihrem Standard-Vorgänger', () => {
     const layout = normalizeLayout({
       dashboard_tiles: [
         { id: 'shortcuts', visible: true },
@@ -89,6 +90,7 @@ describe('normalizeLayout', () => {
     expect(layout.tiles.map((t) => t.id)).toEqual([
       'shortcuts',
       'training',
+      'workouts',
       'nutrition',
       'body',
       'progress',
@@ -136,12 +138,12 @@ describe('Kacheln', () => {
     const layout = defaultLayout();
     expect(moveTile(layout, 'training', 'up')).toBe(layout);
     expect(moveTile(layout, 'shortcuts', 'down')).toBe(layout);
-    const moved = moveTile(layout, 'nutrition', 'up');
-    expect(moved.tiles.map((t) => t.id).slice(0, 2)).toEqual(['nutrition', 'training']);
-    expect(tilePosition(moved, 'nutrition')).toEqual({ index: 1, count: 5 });
-    expect(tilePosition(moveTile(moved, 'nutrition', 'down'), 'nutrition')).toEqual({
+    const moved = moveTile(layout, 'workouts', 'up');
+    expect(moved.tiles.map((t) => t.id).slice(0, 2)).toEqual(['workouts', 'training']);
+    expect(tilePosition(moved, 'workouts')).toEqual({ index: 1, count: 6 });
+    expect(tilePosition(moveTile(moved, 'workouts', 'down'), 'workouts')).toEqual({
       index: 2,
-      count: 5,
+      count: 6,
     });
   });
 
