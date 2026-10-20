@@ -98,7 +98,14 @@ describe('workoutsDoneOn', () => {
       title: 'Leicht kurz',
       difficulty: 1,
       format: 'circuit',
-      summary: { roundsCompleted: 1, rounds: 1, workDone: 3, workTotal: 3, complete: true, activeS: 600 },
+      summary: {
+        roundsCompleted: 1,
+        rounds: 1,
+        workDone: 3,
+        workTotal: 3,
+        complete: true,
+        activeS: 600,
+      },
       userNote: 'Gut',
     });
     const done = workoutsDoneOn(
