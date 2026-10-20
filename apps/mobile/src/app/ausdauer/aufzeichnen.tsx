@@ -4,8 +4,10 @@ import {
   durationText,
   gpsSignal,
   isoDateInTimeZone,
+  recordingElapsedS,
   recordingLimitReached,
   recordingLiveStats,
+  recordingPointCount,
   recordingSaveCheck,
   recordingSummary,
   ROUTE_DIFFICULTIES,
@@ -62,6 +64,9 @@ type Phase =
   | { kind: 'blocked'; reason: 'blocked' | 'services_off' | 'unsupported' | 'start_failed' }
   | { kind: 'live' }
   | { kind: 'save' };
+
+/** Ab so vielen Rohpunkten (ca. 1,5 h) rechnet die Live-Anzeige Distanz/Pace nur noch alle 5 s. */
+const LONG_RECORDING_POINTS = 3_000;
 
 const isSport = (value: unknown): value is TrackedRouteSport =>
   typeof value === 'string' && (TRACKED_ROUTE_SPORTS as readonly string[]).includes(value);
@@ -163,9 +168,13 @@ export default function RecordScreen() {
     'alpha5-recording',
   );
 
+  // Distanz/Pace über alle Punkte: bei langen Aufzeichnungen nur alle 5 s neu rechnen (Akku); die Zeit läuft je Sekunde.
+  const pointCount = current ? recordingPointCount(current.state) : 0;
+  const statsKey = pointCount > LONG_RECORDING_POINTS ? Math.floor(now / 5000) : now;
   const stats = useMemo(
     () => (current ? recordingLiveStats(current.state, now) : null),
-    [current, now],
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- bewusst gedrosselt über statsKey
+    [current?.state.id, current?.state.status, statsKey],
   );
 
   if (app.status.kind === 'loading') {
@@ -313,7 +322,7 @@ export default function RecordScreen() {
   const signal = gpsSignal(current.state, now);
   const speedMode = usesSpeed(sport);
   const paceText = stats ? averagePaceOrSpeedText(sport, stats.movingS, stats.distanceM) : '–';
-  const time = stats ? durationText(stats.elapsedS) : '0:00';
+  const time = durationText(recordingElapsedS(current.state, now));
   const distance = stats ? distanceText(stats.distanceM) : '0,00 km';
   return (
     <Screen title={E.live.title(E.sports[sport])} testID="record-live">
