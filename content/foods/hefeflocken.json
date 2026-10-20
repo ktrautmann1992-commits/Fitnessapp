@@ -1,0 +1,52 @@
+{
+  "id": "hefeflocken",
+  "version": 1,
+  "status": "draft",
+  "name_de": "Hefeflocken",
+  "aliases_de": [],
+  "shopping_category": "spices_baking",
+  "pantry": true,
+  "nutrients_per_100g": {
+    "kcal": 305,
+    "protein_g": 48.7,
+    "carbs_g": 6.2,
+    "sugar_g": 2.5,
+    "fat_g": 4.5,
+    "sat_fat_g": 0,
+    "fiber_g": 22.5,
+    "salt_g": 0.352,
+    "organic_acids_g": 0,
+    "alcohol_g": 0,
+    "polyols_g": null
+  },
+  "units": {},
+  "groups": [],
+  "animal": [],
+  "meat_kind": [],
+  "pregnancy_caution": false,
+  "alcohol": false,
+  "max_fridge_days": 3,
+  "freezable": true,
+  "substitutes": [],
+  "source": {
+    "db": "bls",
+    "version": "4.0",
+    "ref": "K762400",
+    "name": "Hefe Flocken/Nährhefe",
+    "category": "other",
+    "license": "CC BY 4.0",
+    "retrieved_at": "2026-10-19"
+  },
+  "meta": {
+    "origin": "claude_session",
+    "model": "claude-opus-5-5",
+    "batch_id": null,
+    "created_on": "2026-10-19",
+    "expert_reviewed": false,
+    "reviewed_by": null,
+    "reviewed_at": null,
+    "review_note": null,
+    "catalog_reviewed_by": null,
+    "catalog_reviewed_at": null
+  }
+}
