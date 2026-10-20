@@ -83,6 +83,8 @@ const ICONS = {
   plus: [{ d: 'M12 5v14M5 12h14' }],
   check: [{ d: 'm5 12 5 5L20 7' }],
   calendar: [{ x: 3, y: 5, w: 18, h: 16, rx: 2 }, { d: 'M3 10h18M8 3v4M16 3v4' }],
+  scale: [{ x: 3, y: 3, w: 18, h: 18, rx: 4 }, { d: 'M8 10a4 4 0 0 1 8 0M12 10l1.5-2.5' }],
+  user: [{ cx: 12, cy: 8, r: 4 }, { d: 'M4 21a8 8 0 0 1 16 0' }],
 } satisfies Record<string, readonly Shape[]>;
 
 export type IconName = keyof typeof ICONS;
@@ -214,7 +216,7 @@ export function SectionLabel({
       testID={testID}
       style={[styles.sectionLabel, appFont('bold'), { color: theme.textMuted }]}
     >
-      {children.toUpperCase()}
+      {children}
     </Text>
   );
 }
@@ -246,6 +248,7 @@ export function Tile({
   accessibilityHint,
   style,
   testID,
+  titleTestID,
 }: {
   area: AreaId;
   icon: IconName;
@@ -262,6 +265,8 @@ export function Tile({
   accessibilityHint?: string;
   style?: StyleProp<ViewStyle>;
   testID?: string;
+  /** testID des Titels (z. B. für Prüfungen des angezeigten Namens). */
+  titleTestID?: string;
 }) {
   const theme = useThemeColors();
   const scheme = useColorSchemeName();
@@ -269,6 +274,7 @@ export function Tile({
   const card = cardColors[scheme];
   const titleText = (
     <Text
+      testID={titleTestID}
       style={[
         variant === 'header' ? styles.tileTitleSmall : styles.tileTitle,
         appFont('bold'),
@@ -291,7 +297,7 @@ export function Tile({
         <View style={styles.tileRowText}>
           {eyebrow ? (
             <Text style={[styles.eyebrow, appFont('bold'), { color: palette.icon }]}>
-              {eyebrow.toUpperCase()}
+              {eyebrow}
             </Text>
           ) : null}
           {titleText}
@@ -367,6 +373,12 @@ export function HeroCard({
   actionIcon = 'play',
   actionRole = 'button',
   actionAccessibilityLabel,
+  actionTestID,
+  note,
+  noteTestID,
+  secondaryLabel,
+  onSecondary,
+  secondaryTestID,
   children,
   testID,
 }: {
@@ -381,6 +393,14 @@ export function HeroCard({
   actionIcon?: IconName | null;
   actionRole?: 'button' | 'link';
   actionAccessibilityLabel?: string;
+  actionTestID?: string;
+  /** Kurzer Hinweis unter dem Titel (z. B. warum „Starten“ gerade nicht geht). */
+  note?: string | null | undefined;
+  noteTestID?: string;
+  /** Zweiter, leiser Knopf (Umriss in Weiß), z. B. „Zum Training“. */
+  secondaryLabel?: string;
+  onSecondary?: () => void;
+  secondaryTestID?: string;
   children?: ReactNode;
   testID?: string;
 }) {
@@ -401,7 +421,7 @@ export function HeroCard({
             aria-level={2}
             style={[styles.eyebrow, appFont('bold'), { color: hero.accent }]}
           >
-            {eyebrow.toUpperCase()}
+            {eyebrow}
           </Text>
         </View>
         {meta ? (
@@ -416,13 +436,21 @@ export function HeroCard({
           </Text>
         ) : null}
       </View>
+      {note ? (
+        <Text
+          testID={noteTestID}
+          style={[styles.heroSubtitle, appFont('regular'), { color: hero.muted }]}
+        >
+          {note}
+        </Text>
+      ) : null}
       {children}
       {actionLabel && onAction ? (
         <Pressable
           accessibilityRole={actionRole}
           accessibilityLabel={actionAccessibilityLabel ?? actionLabel}
           onPress={onAction}
-          testID={testID ? `${testID}-action` : undefined}
+          testID={actionTestID ?? (testID ? `${testID}-action` : undefined)}
           style={({ pressed }) => [
             styles.heroButton,
             { backgroundColor: theme.primary, opacity: pressed ? 0.85 : 1 },
@@ -431,6 +459,22 @@ export function HeroCard({
           {actionIcon ? <Icon name={actionIcon} size={18} color={theme.primaryText} /> : null}
           <Text style={[styles.heroButtonText, appFont('bold'), { color: theme.primaryText }]}>
             {actionLabel}
+          </Text>
+        </Pressable>
+      ) : null}
+      {secondaryLabel && onSecondary ? (
+        <Pressable
+          accessibilityRole="button"
+          accessibilityLabel={secondaryLabel}
+          onPress={onSecondary}
+          testID={secondaryTestID}
+          style={({ pressed }) => [
+            styles.heroSecondary,
+            { borderColor: hero.muted, opacity: pressed ? 0.8 : 1 },
+          ]}
+        >
+          <Text style={[styles.heroSecondaryText, appFont('semibold'), { color: hero.text }]}>
+            {secondaryLabel}
           </Text>
         </Pressable>
       ) : null}
@@ -703,8 +747,9 @@ export function MiniBars({
 
 const styles = StyleSheet.create({
   chip: { alignItems: 'center', justifyContent: 'center', flexShrink: 0 },
-  sectionLabel: { fontSize: fontSize.xs, letterSpacing: 0.8 },
-  eyebrow: { fontSize: fontSize.xs, letterSpacing: 0.6 },
+  // Großbuchstaben nur in der Darstellung – Bildschirmleser lesen den normalen Text.
+  sectionLabel: { fontSize: fontSize.xs, letterSpacing: 0.8, textTransform: 'uppercase' },
+  eyebrow: { fontSize: fontSize.xs, letterSpacing: 0.6, textTransform: 'uppercase' },
   tile: {
     borderWidth: 1,
     borderRadius: radius.lg,
@@ -745,6 +790,15 @@ const styles = StyleSheet.create({
     paddingHorizontal: spacing.lg,
   },
   heroButtonText: { fontSize: 17 },
+  heroSecondary: {
+    minHeight: 48,
+    borderRadius: radius.pill,
+    borderWidth: 1,
+    alignItems: 'center',
+    justifyContent: 'center',
+    paddingHorizontal: spacing.lg,
+  },
+  heroSecondaryText: { fontSize: fontSize.md },
   listGroup: { borderWidth: 1, borderRadius: radius.lg, overflow: 'hidden' },
   listRow: {
     minHeight: MIN_ROW + 8,

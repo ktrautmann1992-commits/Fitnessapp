@@ -70,10 +70,10 @@ describe('IconChip', () => {
 });
 
 describe('SectionLabel', () => {
-  it('ist eine Überschrift in Großbuchstaben', () => {
+  it('ist eine Überschrift (Großbuchstaben nur per Stil)', () => {
     const view = render(<SectionLabel>Training & Sport</SectionLabel>);
     const [heading] = byRole(view, 'heading');
-    expect(heading?.textContent).toBe('TRAINING & SPORT');
+    expect(heading?.textContent).toBe('Training & Sport');
     expect(heading?.getAttribute('aria-level')).toBe('2');
   });
 });
@@ -107,7 +107,7 @@ describe('Tile', () => {
     expect(link?.getAttribute('aria-label')).toBe(
       'Mein Wettkampf, Halbmarathon Köln, noch 47 Tage',
     );
-    expect(view.textContent).toContain('MEIN WETTKAMPF');
+    expect(view.textContent).toContain('Mein Wettkampf');
     link?.click();
     expect(onPress).toHaveBeenCalledTimes(1);
   });
@@ -143,7 +143,7 @@ describe('HeroCard', () => {
         testID="hero"
       />,
     );
-    expect(byRole(view, 'heading')[0]?.textContent).toBe('TRAINING HEUTE');
+    expect(byRole(view, 'heading')[0]?.textContent).toBe('Training heute');
     const [button] = byRole(view, 'button');
     expect(button?.getAttribute('aria-label')).toBe('Training starten');
     button?.click();
