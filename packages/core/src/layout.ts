@@ -17,13 +17,16 @@ import { APP_LAYOUT } from './constants';
  *   kommen an ihrer Standardstelle dazu (sichtbar); die Regeln der Menüleiste werden erzwungen; kaputter Speicher →
  *   Standard. Neue Bereiche kommen NICHT von selbst in eine selbst zusammengestellte Menüleiste (sie stehen unter
  *   „Mehr“) – nur der Standard enthält sie.
- * - Standard (`defaultLayout`) = Stand vom 20.10.2026: alle Kacheln sichtbar in der heutigen Reihenfolge; Menüleiste
- *   Übersicht · Training · Workouts · Ernährung · Einkaufen · Mehr (EA-1 + Workouts). Ist ein Bereich in dieser
+ * - Standard (`defaultLayout`) = Stand vom 20.10.2026: alle Kacheln sichtbar in der heutigen Reihenfolge (mit
+ *   „Mein Wettkampf“ an zweiter Stelle); Menüleiste Übersicht · Training · Workouts · Ernährung · Einkaufen · Mehr
+ *   (EA-1 + Workouts). „Wettkampf“ ist wählbar, aber nicht im Standard (steht unter „Mehr“). Ist ein Bereich in dieser
  *   App-Fassung nicht vorhanden (z. B. „Workouts“ vor dem Zusammenführen), fehlt er auch im Standard.
  */
 
 export const DASHBOARD_TILES = [
   'training',
+  // „Mein Wettkampf“ (Gründer-Rückmeldung 20.10.2026: Wettkampfplan leicht finden) – weit oben.
+  'competition',
   'workouts',
   'nutrition',
   'body',
@@ -39,6 +42,8 @@ export const NAV_AREAS = [
   'workouts',
   'ernaehrung',
   'einkaufsliste',
+  // „Wettkampf“ (20.10.2026): wählbarer Knopf, NICHT im Standard – steht unter „Mehr“ als erster Bereich.
+  'wettkampf',
   'fortschritt',
   'mehr',
 ] as const;
