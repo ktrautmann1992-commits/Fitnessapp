@@ -11,7 +11,7 @@ name: sources-integrity-main
 on:
   pull_request_target:
     types: [opened, synchronize, reopened]
-  # Pull Requests von foods-import öffnet der Workflow mit dem GITHUB_TOKEN – solche Ereignisse starten KEINE
+  # Pull Requests von foods-import (und content-review Art „katalog“) öffnet der Workflow mit dem GITHUB_TOKEN – solche Ereignisse starten KEINE
   # Workflows (auch nicht pull_request_target). foods-import startet diesen Workflow deshalb per workflow_dispatch
   # auf dem Branch foods-import/<Lauf-ID>; der Check-Lauf hängt dann am Kopf-Commit des PRs (Wächter N2b, GB1).
   workflow_dispatch:
@@ -28,8 +28,12 @@ jobs:
   check:
     # Name exakt so lassen – er ist Pflicht-Check in der Regel für main (docs/SETUP.md J2).
     name: sources-integrity (Code von main)
-    # Per Hand nur für foods-import-Branches sinnvoll (sonst gibt es keinen Pull Request zu prüfen).
-    if: github.event_name == 'pull_request_target' || startsWith(github.ref, 'refs/heads/foods-import/')
+    # Per Hand nur für foods-import- und Katalog-Branches sinnvoll (sonst gibt es keinen Pull Request zu prüfen).
+    # content-review Art „katalog“ startet diesen Workflow selbst (PRs mit GITHUB_TOKEN lösen nichts aus).
+    if: >-
+      github.event_name == 'pull_request_target' ||
+      startsWith(github.ref, 'refs/heads/foods-import/') ||
+      startsWith(github.ref, 'refs/heads/content-review/katalog-')
     runs-on: ubuntu-latest
     timeout-minutes: 15
     steps:
