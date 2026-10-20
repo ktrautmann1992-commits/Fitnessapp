@@ -164,7 +164,13 @@ export default function NutritionDayScreen() {
       </View>
     ) : undefined;
   const shell = (children: ReactNode) => (
-    <Screen title={t.nutrition.title} testID="nutrition-day" footer={footer}>
+    <Screen
+      area="ernaehrung"
+      icon="utensils"
+      title={t.nutrition.title}
+      testID="nutrition-day"
+      footer={footer}
+    >
       {children}
     </Screen>
   );

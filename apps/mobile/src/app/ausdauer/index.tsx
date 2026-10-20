@@ -146,7 +146,7 @@ export default function EnduranceScreen() {
   const periodLabel = period === 'week' ? E.totals.week : E.totals.month;
 
   return (
-    <Screen title={E.title} testID="endurance">
+    <Screen area="ausdauer" icon="run" title={E.title} testID="endurance">
       <LiveRegion text={live.text} version={live.version} />
       {message ? (
         <Notice tone={message.tone} testID="endurance-message">

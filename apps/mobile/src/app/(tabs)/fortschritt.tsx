@@ -38,7 +38,13 @@ export default function ProgressScreen() {
   const active = activePlan(app.rows);
   const week = active ? weekTrainingProgress(active.sessions, today) : null;
   return (
-    <Screen title={texts.title} intro={texts.intro} testID="progress">
+    <Screen
+      area="fortschritt"
+      icon="trend"
+      title={texts.title}
+      intro={texts.intro}
+      testID="progress"
+    >
       <DashboardTile title={texts.weekTitle} area="fortschritt" icon="trend" testID="progress-week">
         <Body>
           {week

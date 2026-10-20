@@ -85,6 +85,8 @@ export default function WeekScreen() {
 
   return (
     <Screen
+      area="training"
+      icon="calendar"
       title={t.week.title}
       testID="week"
       footer={

@@ -72,7 +72,7 @@ export default function ShareStoryScreen() {
   );
   if (!card) {
     return (
-      <Screen title={S.title} footer={back} testID="story">
+      <Screen area="ausdauer" icon="run" title={S.title} footer={back} testID="story">
         <Notice tone="warning" testID="story-not-found">
           {S.notFound}
         </Notice>
@@ -98,7 +98,7 @@ export default function ShareStoryScreen() {
   }
 
   return (
-    <Screen title={S.title} footer={back} testID="story">
+    <Screen area="ausdauer" icon="run" title={S.title} footer={back} testID="story">
       <LiveRegion text={live.text} version={live.version} />
       <Body muted>{S.intro}</Body>
       {hasLine ? (

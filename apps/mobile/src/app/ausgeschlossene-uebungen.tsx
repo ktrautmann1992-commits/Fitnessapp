@@ -65,7 +65,13 @@ export default function ExclusionsScreen() {
 
   if (!app.backend.supportsExercisePreferences) {
     return (
-      <Screen title={t.exclusions.title} testID="exclusions" footer={footer}>
+      <Screen
+        area="training"
+        icon="dumbbell"
+        title={t.exclusions.title}
+        testID="exclusions"
+        footer={footer}
+      >
         <Notice tone="info">{t.exclusions.notSupported}</Notice>
       </Screen>
     );
@@ -97,6 +103,8 @@ export default function ExclusionsScreen() {
 
   return (
     <Screen
+      area="training"
+      icon="dumbbell"
       title={t.exclusions.title}
       intro={t.exclusions.intro}
       testID="exclusions"

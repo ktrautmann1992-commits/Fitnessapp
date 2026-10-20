@@ -120,7 +120,14 @@ export default function ShoppingListShareScreen() {
 
   const footer = <Button label={t.nutrition.back} variant="secondary" onPress={back} />;
   const shell = (children: ReactNode) => (
-    <Screen title={texts.title} intro={texts.intro} testID="share-screen" footer={footer}>
+    <Screen
+      area="einkaufen"
+      icon="cart"
+      title={texts.title}
+      intro={texts.intro}
+      testID="share-screen"
+      footer={footer}
+    >
       {children}
     </Screen>
   );

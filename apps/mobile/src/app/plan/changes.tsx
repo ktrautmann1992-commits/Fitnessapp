@@ -102,6 +102,8 @@ export default function AdjustmentChangesScreen() {
 
   return (
     <Screen
+      area="training"
+      icon="dumbbell"
       title={t.adjust.title}
       testID="adjust-changes"
       footer={

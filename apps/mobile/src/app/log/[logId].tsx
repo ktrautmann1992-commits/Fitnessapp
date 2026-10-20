@@ -72,7 +72,13 @@ export default function LogEntryScreen() {
 
   if (!detail) {
     return (
-      <Screen title={t.logEntry.title} testID="log-entry" footer={footer}>
+      <Screen
+        area="training"
+        icon="dumbbell"
+        title={t.logEntry.title}
+        testID="log-entry"
+        footer={footer}
+      >
         {message ? (
           <Notice tone={message.tone} testID="log-message">
             {message.text}
@@ -120,7 +126,7 @@ export default function LogEntryScreen() {
     : null;
 
   return (
-    <Screen title={log.name_de} testID="log-entry" footer={footer}>
+    <Screen area="training" icon="dumbbell" title={log.name_de} testID="log-entry" footer={footer}>
       {message ? (
         <Notice tone={message.tone} testID="log-message">
           {message.text}

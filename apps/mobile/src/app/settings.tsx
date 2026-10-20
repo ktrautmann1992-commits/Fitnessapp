@@ -158,6 +158,8 @@ export default function SettingsScreen() {
 
   return (
     <Screen
+      area="training"
+      icon="settings"
       title={t.settings.title}
       testID="settings"
       footer={

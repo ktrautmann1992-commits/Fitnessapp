@@ -44,7 +44,13 @@ export default function FewerDaysScreen() {
 
   if (!proposal || (!open && !done)) {
     return (
-      <Screen title={t.adjust.fewerTitle} testID="fewer-days" footer={footer}>
+      <Screen
+        area="training"
+        icon="calendar"
+        title={t.adjust.fewerTitle}
+        testID="fewer-days"
+        footer={footer}
+      >
         {message ? (
           <Notice tone={message.tone} testID="fewer-days-message">
             <Body>{message.text}</Body>
@@ -113,6 +119,8 @@ export default function FewerDaysScreen() {
 
   return (
     <Screen
+      area="training"
+      icon="calendar"
       title={t.adjust.fewerTitle}
       testID="fewer-days"
       footer={

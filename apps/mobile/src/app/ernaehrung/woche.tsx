@@ -102,7 +102,13 @@ export default function NutritionWeekScreen() {
     />
   );
   const shell = (children: ReactNode) => (
-    <Screen title={t.nutrition.week.title} testID="nutrition-week" footer={footer}>
+    <Screen
+      area="ernaehrung"
+      icon="calendar"
+      title={t.nutrition.week.title}
+      testID="nutrition-week"
+      footer={footer}
+    >
       {children}
     </Screen>
   );

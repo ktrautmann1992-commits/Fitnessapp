@@ -67,7 +67,13 @@ export default function MealPrepListScreen() {
     />
   );
   const shell = (children: ReactNode) => (
-    <Screen title={texts.title} testID="meal-prep-list" footer={footer}>
+    <Screen
+      area="ernaehrung"
+      icon="box"
+      title={texts.title}
+      testID="meal-prep-list"
+      footer={footer}
+    >
       {children}
     </Screen>
   );

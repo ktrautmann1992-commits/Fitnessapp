@@ -163,6 +163,8 @@ export default function WorkoutTimerScreen() {
   if (!workout || !run || run.ownerUserId !== app.session.userId || !view || !computed) {
     return (
       <Screen
+        area="workouts"
+        icon="stopwatch"
         testID="workout-timer-missing"
         footer={<Button label={t.workouts.detail.back} variant="secondary" onPress={toDetail} />}
       >
@@ -229,6 +231,8 @@ export default function WorkoutTimerScreen() {
     const done = save.kind === 'done' || run.saved;
     return (
       <Screen
+        area="workouts"
+        icon="stopwatch"
         title={summary.complete ? t.workouts.finish.title : t.workouts.finish.titleEarly}
         testID="workout-finish"
         footer={
@@ -340,6 +344,8 @@ export default function WorkoutTimerScreen() {
 
   return (
     <Screen
+      area="workouts"
+      icon="stopwatch"
       title={workout.title_de}
       testID="workout-timer"
       footer={

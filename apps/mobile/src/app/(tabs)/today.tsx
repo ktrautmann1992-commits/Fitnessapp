@@ -433,7 +433,7 @@ export default function TodayScreen() {
   // --- Kein Plan ------------------------------------------------------------------------------------------
   if (!active) {
     return (
-      <Screen title={t.today.title} testID="today" footer={footer}>
+      <Screen area="training" icon="dumbbell" title={t.today.title} testID="today" footer={footer}>
         <Body muted>{t.today.greeting}</Body>
         {header}
         <Card>
@@ -671,7 +671,7 @@ export default function TodayScreen() {
   }
 
   return (
-    <Screen title={t.today.title} testID="today" footer={footer}>
+    <Screen area="training" icon="dumbbell" title={t.today.title} testID="today" footer={footer}>
       {header}
       {/* Live-Anpassung (Phase 4b, 8.1): offener Vorschlag „Weniger Trainingstage?“ oben. */}
       <FewerDaysCard today={today} />

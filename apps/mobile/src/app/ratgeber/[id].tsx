@@ -44,7 +44,13 @@ export default function GuideScreen() {
   }
   const texts = t.nutrition.guides;
   const shell = (title: string, children: ReactNode) => (
-    <Screen title={title} testID="guide" footer={<GuideBackButton fallback="/ratgeber" />}>
+    <Screen
+      area="training"
+      icon="book"
+      title={title}
+      testID="guide"
+      footer={<GuideBackButton fallback="/ratgeber" />}
+    >
       {children}
     </Screen>
   );

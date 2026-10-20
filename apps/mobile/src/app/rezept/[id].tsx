@@ -99,7 +99,7 @@ export default function RecipeScreen() {
     />
   );
   const shell = (title: string, children: ReactNode) => (
-    <Screen title={title} testID="recipe" footer={footer}>
+    <Screen area="ernaehrung" icon="recipe" title={title} testID="recipe" footer={footer}>
       {children}
     </Screen>
   );

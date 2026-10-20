@@ -220,6 +220,8 @@ export default function FoodProductScreen() {
       : router.replace(`/ernaehrung/eintragen?tag=${date}` as Href);
   const shell = (children: ReactNode) => (
     <Screen
+      area="ernaehrung"
+      icon="box"
       title={t.foodProduct.title}
       testID="food-product"
       footer={

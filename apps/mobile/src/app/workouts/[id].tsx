@@ -59,7 +59,7 @@ export default function WorkoutDetailScreen() {
   );
   if (library.kind !== 'ready') {
     return (
-      <Screen footer={back}>
+      <Screen area="workouts" icon="stopwatch" footer={back}>
         {library.kind === 'error' ? (
           <Notice tone="danger">{t.workouts.loadFailed}</Notice>
         ) : (
@@ -71,7 +71,7 @@ export default function WorkoutDetailScreen() {
   const workout: Workout | undefined = library.workouts.find((w) => w.id === params.id);
   if (!workout) {
     return (
-      <Screen footer={back} testID="workout-detail-missing">
+      <Screen area="workouts" icon="stopwatch" footer={back} testID="workout-detail-missing">
         <Notice tone="warning">{t.workouts.detail.notFound}</Notice>
       </Screen>
     );
@@ -111,6 +111,8 @@ export default function WorkoutDetailScreen() {
 
   return (
     <Screen
+      area="workouts"
+      icon="stopwatch"
       title={workout.title_de}
       testID="workout-detail"
       footer={

@@ -90,7 +90,7 @@ export default function RecipeRatingScreen() {
   const goBack = () => (router.canGoBack() ? router.back() : router.replace(recipeHref));
   const footer = <Button label={texts.back} variant="secondary" onPress={goBack} />;
   const shell = (children: ReactNode, title: string = texts.title) => (
-    <Screen title={title} testID="rating" footer={footer}>
+    <Screen area="ernaehrung" icon="recipe" title={title} testID="rating" footer={footer}>
       {children}
     </Screen>
   );

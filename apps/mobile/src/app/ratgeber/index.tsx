@@ -46,6 +46,8 @@ export default function GuideListScreen() {
   const texts = t.nutrition.guides;
   const shell = (children: ReactNode) => (
     <Screen
+      area="training"
+      icon="book"
       title={texts.title}
       testID="guide-list"
       footer={<GuideBackButton fallback="/ernaehrung" />}

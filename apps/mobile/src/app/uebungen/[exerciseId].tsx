@@ -64,14 +64,26 @@ export default function GlossaryDetailScreen() {
 
   if (library.kind === 'idle' || library.kind === 'loading') {
     return (
-      <Screen title={t.glossary.title} testID="glossary-detail" footer={footer}>
+      <Screen
+        area="training"
+        icon="dumbbell"
+        title={t.glossary.title}
+        testID="glossary-detail"
+        footer={footer}
+      >
         <LoadingState />
       </Screen>
     );
   }
   if (!lib || !entry) {
     return (
-      <Screen title={t.glossary.title} testID="glossary-detail" footer={footer}>
+      <Screen
+        area="training"
+        icon="dumbbell"
+        title={t.glossary.title}
+        testID="glossary-detail"
+        footer={footer}
+      >
         <Notice tone={lib ? 'info' : 'warning'} testID="glossary-detail-missing">
           {lib ? t.glossary.notFound : t.glossary.libraryMissing}
         </Notice>
@@ -94,7 +106,13 @@ export default function GlossaryDetailScreen() {
   );
 
   return (
-    <Screen title={entry.name} testID="glossary-detail" footer={footer}>
+    <Screen
+      area="training"
+      icon="dumbbell"
+      title={entry.name}
+      testID="glossary-detail"
+      footer={footer}
+    >
       {entry.isDraft ? (
         <Notice tone="info" testID="glossary-test-content">
           {t.glossary.testContent}

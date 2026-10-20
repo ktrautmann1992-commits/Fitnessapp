@@ -80,7 +80,7 @@ export default function DayScreen() {
   const goBack = () => (router.canGoBack() ? router.back() : router.replace('/today'));
   const footer = <Button label={t.day.back} variant="secondary" onPress={goBack} />;
   const shell = (children: ReactNode) => (
-    <Screen title={t.day.title} testID="day" footer={footer}>
+    <Screen area="training" icon="calendar" title={t.day.title} testID="day" footer={footer}>
       {app.offline ? <Notice tone="warning">{t.plan.offline}</Notice> : null}
       {children}
     </Screen>

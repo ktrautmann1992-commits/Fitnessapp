@@ -95,6 +95,8 @@ export default function GlossaryScreen() {
 
   return (
     <Screen
+      area="training"
+      icon="dumbbell"
       title={t.glossary.title}
       intro={t.glossary.intro}
       testID="glossary"

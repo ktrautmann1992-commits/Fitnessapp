@@ -75,6 +75,8 @@ export default function HistoryScreen() {
 
   return (
     <Screen
+      area="fortschritt"
+      icon="trend"
       title={t.history.title}
       intro={logs.length > 0 ? t.history.intro : undefined}
       testID="history"

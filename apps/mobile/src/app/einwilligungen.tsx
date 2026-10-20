@@ -22,6 +22,8 @@ export default function ConsentsOverviewScreen() {
   }
   return (
     <Screen
+      area="training"
+      icon="info"
       title={t.consentsPage.title}
       testID="consents-page"
       footer={

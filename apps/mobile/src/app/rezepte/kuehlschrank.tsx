@@ -121,7 +121,7 @@ export default function FridgeSearchScreen() {
     />
   );
   const shell = (children: ReactNode) => (
-    <Screen title={texts.title} testID="fridge-search" footer={footer}>
+    <Screen area="ernaehrung" icon="box" title={texts.title} testID="fridge-search" footer={footer}>
       {children}
     </Screen>
   );

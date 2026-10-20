@@ -126,7 +126,13 @@ export default function RecipeSearchScreen() {
     />
   );
   const shell = (children: ReactNode) => (
-    <Screen title={texts.title} testID="recipe-search" footer={footer}>
+    <Screen
+      area="ernaehrung"
+      icon="recipe"
+      title={texts.title}
+      testID="recipe-search"
+      footer={footer}
+    >
       {children}
     </Screen>
   );

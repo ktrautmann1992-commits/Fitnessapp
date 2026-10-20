@@ -98,7 +98,7 @@ export default function RouteDetailScreen() {
   const back = <Button label={D.back} variant="secondary" onPress={leave} testID="route-back" />;
   if (!saved && !pending) {
     return (
-      <Screen title={D.title} footer={back} testID="route-detail">
+      <Screen area="ausdauer" icon="run" title={D.title} footer={back} testID="route-detail">
         <Notice tone="warning" testID="route-not-found">
           {D.notFound}
         </Notice>
@@ -149,7 +149,7 @@ export default function RouteDetailScreen() {
   }
 
   return (
-    <Screen title={info.name} footer={back} testID="route-detail">
+    <Screen area="ausdauer" icon="run" title={info.name} footer={back} testID="route-detail">
       <LiveRegion text={live.text} version={live.version} />
       <Body muted testID="route-detail-meta">
         {`${E.sports[info.sport]} · ${formatDateDe(day)}${info.is_favorite ? ` · ★ ${D.favorite}` : ''}${

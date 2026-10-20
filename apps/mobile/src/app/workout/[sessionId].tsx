@@ -293,7 +293,13 @@ export default function WorkoutScreen() {
       !editRequested &&
       (backfillDate !== null || startKind(rows, session, today) === null);
     return (
-      <Screen title={t.workout.title} testID="workout" footer={footerBack}>
+      <Screen
+        area="training"
+        icon="dumbbell"
+        title={t.workout.title}
+        testID="workout"
+        footer={footerBack}
+      >
         {waiting ? (
           <LoadingState label={t.workout.loading} />
         ) : !session ? (
@@ -587,6 +593,8 @@ export default function WorkoutScreen() {
 
   return (
     <Screen
+      area="training"
+      icon="dumbbell"
       title={current.nameDe}
       testID="workout"
       footer={

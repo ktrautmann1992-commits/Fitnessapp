@@ -111,7 +111,13 @@ export default function PrintPlanScreen() {
 
   if (!active) {
     return (
-      <Screen title={t.printView.title} testID="print-view" footer={footer}>
+      <Screen
+        area="training"
+        icon="dumbbell"
+        title={t.printView.title}
+        testID="print-view"
+        footer={footer}
+      >
         <Card>
           <Heading level={2}>{t.printView.noPlanTitle}</Heading>
           <Body muted>{t.printView.noPlanText}</Body>
@@ -122,7 +128,13 @@ export default function PrintPlanScreen() {
 
   if (needsHint) {
     return (
-      <Screen title={t.printView.title} testID="print-view" footer={footer}>
+      <Screen
+        area="training"
+        icon="dumbbell"
+        title={t.printView.title}
+        testID="print-view"
+        footer={footer}
+      >
         <ConfirmDialog
           visible
           title={t.printView.healthTitle}
@@ -138,7 +150,13 @@ export default function PrintPlanScreen() {
 
   if (library.kind === 'missing') {
     return (
-      <Screen title={t.printView.title} testID="print-view" footer={footer}>
+      <Screen
+        area="training"
+        icon="dumbbell"
+        title={t.printView.title}
+        testID="print-view"
+        footer={footer}
+      >
         <ErrorState message={t.printView.libraryMissing} onRetry={() => void ensureLibrary()} />
       </Screen>
     );
@@ -147,7 +165,13 @@ export default function PrintPlanScreen() {
   // Ohne wirksame Sicherheitsregeln (z. B. Angaben unvollständig) kein Dokument – nie mit lockereren Regeln drucken.
   if (!rules) {
     return (
-      <Screen title={t.printView.title} testID="print-view" footer={footer}>
+      <Screen
+        area="training"
+        icon="dumbbell"
+        title={t.printView.title}
+        testID="print-view"
+        footer={footer}
+      >
         <Notice tone="danger" testID="print-error">
           {t.printView.rulesMissing}
         </Notice>
@@ -157,7 +181,13 @@ export default function PrintPlanScreen() {
 
   if (!result) {
     return (
-      <Screen title={t.printView.title} testID="print-view" footer={footer}>
+      <Screen
+        area="training"
+        icon="dumbbell"
+        title={t.printView.title}
+        testID="print-view"
+        footer={footer}
+      >
         <LoadingState label={t.printView.loading} />
       </Screen>
     );
@@ -200,6 +230,8 @@ export default function PrintPlanScreen() {
 
   return (
     <Screen
+      area="training"
+      icon="dumbbell"
       title={t.printView.title}
       intro={t.printView.intro}
       testID="print-view"

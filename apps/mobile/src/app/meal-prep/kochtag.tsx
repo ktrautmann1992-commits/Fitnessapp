@@ -129,7 +129,7 @@ export default function CookDayScreen() {
     />
   );
   const shell = (children: ReactNode) => (
-    <Screen title={texts.title} testID="cook-day" footer={footer}>
+    <Screen area="ernaehrung" icon="box" title={texts.title} testID="cook-day" footer={footer}>
       {children}
     </Screen>
   );

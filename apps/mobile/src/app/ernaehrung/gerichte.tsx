@@ -53,6 +53,8 @@ export default function CustomMealsScreen() {
   const back = () => (router.canGoBack() ? router.back() : router.replace('/ernaehrung' as Href));
   const shell = (children: ReactNode) => (
     <Screen
+      area="ernaehrung"
+      icon="recipe"
       title={t.customMeals.title}
       testID="custom-meals"
       footer={

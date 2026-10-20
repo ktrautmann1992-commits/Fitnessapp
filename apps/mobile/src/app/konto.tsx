@@ -161,6 +161,8 @@ export default function AccountSettingsScreen() {
 
   return (
     <Screen
+      area="training"
+      icon="user"
       title={t.konto.title}
       testID="konto"
       footer={<Button label={t.konto.back} variant="secondary" onPress={goBack} />}

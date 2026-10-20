@@ -254,7 +254,7 @@ export default function RecordScreen() {
   }
   if (phase.kind === 'explain') {
     return (
-      <Screen title={E.explain.title} testID="record-explain">
+      <Screen area="ausdauer" icon="run" title={E.explain.title} testID="record-explain">
         <Body>{E.explain.text}</Body>
         <Body>{E.explain.background}</Body>
         <Notice tone="info">{E.explain.battery}</Notice>
@@ -278,7 +278,7 @@ export default function RecordScreen() {
             ? E.permission.startFailed
             : E.permission.denied;
     return (
-      <Screen title={E.permission.deniedTitle} testID="record-blocked">
+      <Screen area="ausdauer" icon="run" title={E.permission.deniedTitle} testID="record-blocked">
         <Notice tone="warning">{text}</Notice>
         {phase.reason === 'blocked' || phase.reason === 'services_off' ? (
           <Button
@@ -326,7 +326,7 @@ export default function RecordScreen() {
   const time = durationText(recordingElapsedS(current.state, now));
   const distance = stats ? distanceText(stats.distanceM) : '0,00 km';
   return (
-    <Screen title={E.live.title(E.sports[sport])} testID="record-live">
+    <Screen area="ausdauer" icon="run" title={E.live.title(E.sports[sport])} testID="record-live">
       {current.mode === 'demo' ? <Notice tone="info">{E.live.demo}</Notice> : null}
       <Text
         accessibilityRole="text"
@@ -513,7 +513,7 @@ function SaveView({
   }
 
   return (
-    <Screen title={E.save.title} testID="record-save">
+    <Screen area="ausdauer" icon="run" title={E.save.title} testID="record-save">
       {limitNotice ? <Notice tone="info">{E.live.limit}</Notice> : null}
       <Card>
         <View style={styles.summaryRow}>

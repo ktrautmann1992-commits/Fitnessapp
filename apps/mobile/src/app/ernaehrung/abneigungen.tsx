@@ -50,7 +50,13 @@ export default function FoodDislikesScreen() {
 
   if (!app.backend.supportsNutrition) {
     return (
-      <Screen title={texts.title} testID="food-dislikes" footer={footer}>
+      <Screen
+        area="ernaehrung"
+        icon="utensils"
+        title={texts.title}
+        testID="food-dislikes"
+        footer={footer}
+      >
         <Notice tone="info">{t.nutrition.unsupported}</Notice>
       </Screen>
     );
@@ -90,7 +96,14 @@ export default function FoodDislikesScreen() {
   }
 
   return (
-    <Screen title={texts.title} intro={texts.intro} testID="food-dislikes" footer={footer}>
+    <Screen
+      area="ernaehrung"
+      icon="utensils"
+      title={texts.title}
+      intro={texts.intro}
+      testID="food-dislikes"
+      footer={footer}
+    >
       {message ? (
         <Notice tone={message.tone} testID="food-dislikes-message">
           {message.text}

@@ -82,7 +82,13 @@ export default function WeekEvaluationScreen() {
   const goBack = () => (router.canGoBack() ? router.back() : router.replace('/week' as Href));
   const footer = <Button label={t.weekEval.back} variant="secondary" onPress={goBack} />;
   const shell = (children: ReactNode) => (
-    <Screen title={t.weekEval.title} testID="week-eval" footer={footer}>
+    <Screen
+      area="fortschritt"
+      icon="trend"
+      title={t.weekEval.title}
+      testID="week-eval"
+      footer={footer}
+    >
       {app.offline ? <Notice tone="warning">{t.plan.offline}</Notice> : null}
       {children}
     </Screen>

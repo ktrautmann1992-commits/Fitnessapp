@@ -161,6 +161,8 @@ export default function FoodLogEntryScreen() {
     router.canGoBack() ? router.back() : router.replace(`/ernaehrung?tag=${date}` as Href);
   const shell = (children: ReactNode) => (
     <Screen
+      area="ernaehrung"
+      icon="plus"
       title={editId ? t.foodLog.editTitle : t.foodLog.screenTitle}
       testID="food-log-entry"
       footer={

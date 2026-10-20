@@ -144,7 +144,7 @@ export default function ShoppingTabScreen() {
   const texts = t.nutrition.shopping;
   // Reiter: keine „Zurück“-Leiste (die Menüleiste führt weiter).
   const shell = (children: ReactNode) => (
-    <Screen title={texts.tabTitle} testID="shopping-list">
+    <Screen area="einkaufen" icon="cart" title={texts.tabTitle} testID="shopping-list">
       {children}
     </Screen>
   );
