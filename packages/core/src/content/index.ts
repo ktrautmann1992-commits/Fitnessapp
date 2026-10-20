@@ -1,5 +1,6 @@
 export * from './allergen-rules';
 export * from './analysis';
+export * from './catalog-review';
 export * from './checks';
 export * from './exercise-media';
 export * from './fit-check';
