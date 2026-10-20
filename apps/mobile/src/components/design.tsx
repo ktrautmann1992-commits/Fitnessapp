@@ -86,6 +86,11 @@ const ICONS = {
   calendar: [{ x: 3, y: 5, w: 18, h: 16, rx: 2 }, { d: 'M3 10h18M8 3v4M16 3v4' }],
   scale: [{ x: 3, y: 3, w: 18, h: 18, rx: 4 }, { d: 'M8 10a4 4 0 0 1 8 0M12 10l1.5-2.5' }],
   user: [{ cx: 12, cy: 8, r: 4 }, { d: 'M4 21a8 8 0 0 1 16 0' }],
+  scan: [
+    {
+      d: 'M4 7V5a1 1 0 0 1 1-1h2M17 4h2a1 1 0 0 1 1 1v2M20 17v2a1 1 0 0 1-1 1h-2M7 20H5a1 1 0 0 1-1-1v-2M8 8v8M11 8v8M14 8v8M17 8v8',
+    },
+  ],
 } satisfies Record<string, readonly Shape[]>;
 
 export type IconName = keyof typeof ICONS;

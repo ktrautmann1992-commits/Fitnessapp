@@ -12,11 +12,12 @@ import {
   shoppingRecipeOutsideProfileDiet,
   startOfIsoWeek,
 } from '@fitnessapp/core';
-import { fontSize, fontWeight, radius, spacing } from '@fitnessapp/ui';
+import { fontSize, spacing } from '@fitnessapp/ui';
 import { Redirect, useLocalSearchParams, useNavigation, useRouter, type Href } from 'expo-router';
 import { useEffect, useMemo, useState, type ReactNode } from 'react';
 import { Pressable, StyleSheet, View } from 'react-native';
 
+import { Icon, useAreaColors } from '@/components/design';
 import { ConsentBlockedNotice, DemoBanner } from '@/components/nutrition';
 import { ConfirmDialog, Screen } from '@/components/screen';
 import { ShoppingScanPanel } from '@/components/shopping-scan';
@@ -573,6 +574,7 @@ function ShoppingItemRow({
   onRemove: (() => void) | undefined;
 }) {
   const theme = useThemeColors();
+  const teal = useAreaColors('einkaufen');
   const texts = t.nutrition.shopping;
   const text = shoppingItemText(item);
   const marks = [
@@ -600,12 +602,15 @@ function ShoppingItemRow({
           style={[
             styles.box,
             {
-              borderColor: item.checked ? theme.primary : theme.textMuted,
-              backgroundColor: item.checked ? theme.primary : theme.surface,
+              // Design 20.10.2026: Häkchen in Einkaufs-Türkis (Kasten ≥ 3 : 1 zur Karte), Haken in Kartenfarbe.
+              borderColor: item.checked ? teal.icon : theme.textMuted,
+              backgroundColor: item.checked ? teal.icon : theme.surface,
             },
           ]}
         >
-          {item.checked ? <Text style={[styles.mark, { color: theme.primaryText }]}>✓</Text> : null}
+          {item.checked ? (
+            <Icon name="check" size={20} strokeWidth={3} color={theme.surface} />
+          ) : null}
         </View>
         <View style={styles.flex}>
           <Text
@@ -645,26 +650,25 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     gap: spacing.sm,
     borderWidth: 1,
-    borderRadius: radius.md,
-    paddingHorizontal: spacing.sm,
+    borderRadius: 16,
+    paddingHorizontal: spacing.sm + 4,
   },
   itemMain: {
     flex: 1,
-    minHeight: MIN_TOUCH,
+    minHeight: MIN_TOUCH + 4,
     flexDirection: 'row',
     alignItems: 'center',
     gap: spacing.sm,
     paddingVertical: spacing.xs,
   },
   box: {
-    width: 28,
-    height: 28,
+    width: 30,
+    height: 30,
     borderWidth: 2,
-    borderRadius: radius.sm,
+    borderRadius: 9,
     alignItems: 'center',
     justifyContent: 'center',
   },
-  mark: { fontSize: fontSize.md, fontWeight: fontWeight.bold },
   itemText: { fontSize: fontSize.md },
   done: { textDecorationLine: 'line-through' },
   itemMarks: { fontSize: fontSize.sm },
