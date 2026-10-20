@@ -32,3 +32,4 @@ export * from './competition-view';
 export * from './competition-rules';
 export * from './interval-timer';
 export * from './multisport';
+export * from './competition-outline';
