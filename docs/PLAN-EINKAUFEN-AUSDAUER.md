@@ -53,7 +53,7 @@ Produktabfrage), `docs/PLAN-PHASE-5.md` (N5b/N7 Einkaufsliste), Code-Stand `orig
   (Hinweis „Noch kein Plan“).
 - **Scanner** (E4b): `components/barcode-scanner(.native).tsx`, `lib/barcode-scan.ts`, Core
   `normalizeScannedBarcode`; Produktabfrage `POST /api/ernaehrung/produkt` hinter Feature-Flag `food_product_lookup`
-  (**aus bis zur Rechtsprüfung**), im Testmodus antwortet eine Attrappe. Eigene Produkte (`user_food_products`) haben
+  (**seit 20.10.2026 für die Testphase an**, Gründer; vor dem Livegang Rechtsprüfung aus `docs/PLAN-E4.md`), im Testmodus antwortet eine Attrappe. Eigene Produkte (`user_food_products`) haben
   optional einen Code. **Es gibt keine Zuordnung Produkt → Lebensmittel** (`foods.id`); `foods` haben `aliases_de`.
 - **Menüleiste/Übersicht:** feste Liste `TAB_ORDER` (5 Knöpfe) in `components/tab-bar.tsx`; Kacheln fest in
   `(tabs)/uebersicht.tsx` (Training, Ernährung, Körperdaten, Fortschritt, Schnellzugriffe; Hinweise „Im Training wartet
@@ -272,6 +272,7 @@ Texte Deutsch, `docs/` aktualisiert (Umsetzungsstand hier, `docs/HANDY-ANLEITUNG
 
 1. PR #119 (CLAUDE.md-Ausnahme Teilen) mergen – Voraussetzung für E6.
 2. Für E3/E4: SETUP Teil D (Expo-Projekt, Secret `EXPO_TOKEN`) erledigt lassen; für iPhone Teil D2 (Apple-Konto).
-3. Scanner im echten Betrieb: Produktabfrage bleibt aus, bis die Rechtsprüfung aus `docs/PLAN-E4.md` erledigt ist –
-   bis dahin funktionieren gelernte Zuordnungen, eigene Produkte und die Auswahl aus der Liste.
+3. Scanner im echten Betrieb: Produktabfrage ist für die Testphase an (20.10.2026); vor dem öffentlichen Livegang
+   Rechtsprüfung aus `docs/PLAN-E4.md`. Ohne Produktabfrage funktionieren gelernte Zuordnungen, eigene Produkte und die
+   Auswahl aus der Liste weiter.
 4. Fragen EA-1 bis EA-4 beantworten (ohne Antwort gilt die Empfehlung).
