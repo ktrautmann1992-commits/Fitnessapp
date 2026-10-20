@@ -3,6 +3,9 @@ import {
   type CompetitionCountdown,
   type CompetitionDiscipline,
   type CompetitionFeasibility,
+  type CompetitionOutlinePhase,
+  type CompetitionOutlineWeek,
+  type CompetitionPlanOutline,
   type CompetitionPlanWeek,
   type FeasibilitySuggestion,
   intervalBlocks,
@@ -259,4 +262,83 @@ export function partsFromSeconds(total: number | null): {
     minutes: String(Math.floor((total % 3600) / 60)),
     seconds: String(total % 60),
   };
+}
+
+// ---------------------------------------------------------------------------------------------------------
+// „So ist dein Plan aufgebaut“ (Gründer-Rückmeldung 20.10.2026) – Texte zur Zeitleiste aus competitionPlanOutline
+// ---------------------------------------------------------------------------------------------------------
+
+const O = C.outline;
+
+/** Satz zum Stand: „Du bist in Woche 3 von 16.“, Einstiegswoche, Rennwoche, Erholung, vorbei. */
+export function outlineStatusText(outline: CompetitionPlanOutline): string {
+  switch (outline.status) {
+    case 'before_start':
+      return O.beforeStart;
+    case 'race_week':
+      return O.raceWeekNow;
+    case 'recovery':
+      return O.recoveryNow;
+    case 'finished':
+      return O.finished;
+    case 'running':
+      return outline.currentWeekNo === 0
+        ? O.nowEntry(outline.totalWeeks)
+        : outline.currentWeekNo === null
+          ? O.beforeStart
+          : O.now(outline.currentWeekNo, outline.totalWeeks);
+  }
+}
+
+/** Überschrift einer Phase: „Aufbau · Wochen 8–11“; Erholung nach dem Rennen ohne Wochennummer. */
+export function outlinePhaseTitle(phase: CompetitionOutlinePhase): { text: string; a11y: string } {
+  const name = C.phases[phase.phase];
+  if (phase.firstWeekNo === null || phase.lastWeekNo === null) return { text: name, a11y: name };
+  // Woche 0 (Einstieg) zählt mit: „Wochen 0–7“ liest sich wie die Plan-Woche.
+  return {
+    text: `${name} · ${O.weeks(phase.firstWeekNo, phase.lastWeekNo)}`,
+    a11y: `${name}, ${O.weeksA11y(phase.firstWeekNo, phase.lastWeekNo)}`,
+  };
+}
+
+/** Zeitraum einer Phase: „05.10.2026 – 29.11.2026“ (für den Bildschirmleser „vom … bis …“). */
+export function outlinePhaseDates(phase: CompetitionOutlinePhase): { text: string; a11y: string } {
+  const from = formatDateDe(phase.from);
+  const to = formatDateDe(phase.to);
+  return { text: O.dates(from, to), a11y: O.datesA11y(from, to) };
+}
+
+/**
+ * Eine Woche in der Zeitleiste: kurze Beschriftung (zwei Zeilen) und ausführlicher Text für den Bildschirmleser.
+ * Markierungen immer mit Wort, nie nur Farbe: „jetzt“, „Erholung“, „Renntag“, Umfang in Prozent.
+ */
+export function outlineWeekLabel(week: CompetitionOutlineWeek): {
+  title: string;
+  marker: string;
+  a11y: string;
+} {
+  const title = week.weekNo === null ? O.afterRace : O.week(week.weekNo);
+  const marker = week.current
+    ? O.weekCurrent
+    : week.raceWeek
+      ? O.weekRace
+      : week.recoveryWeek
+        ? O.weekRecovery
+        : week.volumePercent !== null
+          ? O.weekPercent(week.volumePercent)
+          : '';
+  const a11y = O.weekA11y([
+    week.weekNo === null ? C.phases.recovery : O.week(week.weekNo),
+    O.datesA11y(formatDateDe(week.monday), formatDateDe(week.sunday)),
+    C.phases[week.phase],
+    week.current ? O.weekA11yCurrent : '',
+    week.raceWeek ? O.weekA11yRace : '',
+    week.recoveryWeek ? O.weekA11yRecovery : '',
+    week.recoveryWeek && week.projected ? O.weekA11yProjected : '',
+    week.volumePercent !== null ? O.weekA11yPercent(week.volumePercent) : '',
+    week.plannedMinutes !== null && week.plannedMinutes > 0
+      ? O.weekA11yMinutes(week.plannedMinutes)
+      : '',
+  ]);
+  return { title, marker, a11y };
 }

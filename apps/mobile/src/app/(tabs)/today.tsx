@@ -235,6 +235,16 @@ export default function TodayScreen() {
 
   const header = (
     <>
+      {/* Gründer-Rückmeldung 20.10.2026: Wettkampfplan deutlich oben im Training, wenn ein Wettkampf existiert. */}
+      {competition ? (
+        <Button
+          label={t.competition.trainingLink}
+          accessibilityLabel={t.competition.trainingLinkA11y(competition.stored.competition.name)}
+          accessibilityHint={t.competition.trainingLinkHint}
+          onPress={() => router.navigate('/wettkampf' as Href)}
+          testID="today-competition-plan"
+        />
+      ) : null}
       {outdated ? (
         <Notice tone="warning" title={t.steps.healthConsent.reconsentTitle} testID="plan-reconsent">
           <Body>{t.today.healthReconsent}</Body>

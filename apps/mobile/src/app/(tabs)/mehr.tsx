@@ -39,6 +39,24 @@ export default function MoreScreen() {
   const open = (href: string) => () => router.push(href as Href);
   return (
     <Screen title={texts.title} testID="more">
+      {/* Etappe E2: alle Bereiche ohne Knopf in der Menüleiste (areasInMore, packages/core) – seit 20.10.2026 ganz oben,
+          damit z. B. „Wettkampf“ sofort zu sehen ist. */}
+      {hidden.length > 0 ? (
+        <>
+          <Heading level={2}>{texts.areasTitle}</Heading>
+          <Card>
+            {hidden.map((area) => (
+              <Button
+                key={area}
+                label={tabLabel(area)}
+                variant="secondary"
+                onPress={() => router.navigate(`/${area}` as Href)}
+                testID={`more-area-${area}`}
+              />
+            ))}
+          </Card>
+        </>
+      ) : null}
       <Heading level={2}>{texts.sections.personal}</Heading>
       <Card>
         <Button label={texts.account} onPress={open('/konto')} testID="more-account" />
@@ -57,23 +75,6 @@ export default function MoreScreen() {
           testID="more-settings"
         />
       </Card>
-      {/* Etappe E2: alle Bereiche ohne Knopf in der Menüleiste (areasInMore, packages/core). */}
-      {hidden.length > 0 ? (
-        <>
-          <Heading level={2}>{texts.areasTitle}</Heading>
-          <Card>
-            {hidden.map((area) => (
-              <Button
-                key={area}
-                label={tabLabel(area)}
-                variant="secondary"
-                onPress={() => router.navigate(`/${area}` as Href)}
-                testID={`more-area-${area}`}
-              />
-            ))}
-          </Card>
-        </>
-      ) : null}
       <Heading level={2}>{texts.sections.content}</Heading>
       <Card>
         {nutrition ? (
@@ -115,12 +116,15 @@ export default function MoreScreen() {
             />
           </>
         ) : null}
-        <Button
-          label={texts.competition}
-          variant="secondary"
-          onPress={open('/wettkampf')}
-          testID="more-competition"
-        />
+        {/* Steht „Wettkampf“ nicht in der Menüleiste, zeigt ihn „Weitere Bereiche“ oben (kein Doppel). */}
+        {!hidden.includes('wettkampf') ? (
+          <Button
+            label={texts.competition}
+            variant="secondary"
+            onPress={() => router.navigate('/wettkampf' as Href)}
+            testID="more-competition"
+          />
+        ) : null}
         {/* Etappe E4: Ausdauer aufzeichnen (Laufen, Rad, Gehen). */}
         <Button
           label={t.endurance.moreEntry}
