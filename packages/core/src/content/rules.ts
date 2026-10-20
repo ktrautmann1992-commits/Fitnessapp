@@ -10,6 +10,7 @@ import type { ContentStatus } from '../enums';
  * wie Ü1/VERSION immer); R20–R22 für Meal-Prep-Pläne, Ratgeber und Kategorien (19.4); R23 für die Austausch-Tabelle
  * (19.7 N9); R24 für die Packungsgrößen (19.7 N11).
  * Phase 6 (docs/PLAN-PHASE-6.md Abschnitt 6): SK1–SK7 für Supplement-Inhalte (SK1 Schema blockiert immer, SK7H gelb).
+ * Workouts (docs/PLAN-WORKOUTS.md Abschnitt 3): W1–W7 (W1 Schema blockiert immer, W6 gelb).
  */
 export const CONTENT_RULES = {
   DATEI: { severity: 'error', title: 'Datei: gültiges JSON, Dateiname = ID, ID eindeutig' },
@@ -228,6 +229,36 @@ export const CONTENT_RULES = {
     severity: 'warning',
     title: 'Supplement: Text länger als 600 Zeichen – am Handy kürzen',
   },
+  // Workout-Bibliothek (docs/PLAN-WORKOUTS.md Abschnitt 3)
+  W1: {
+    severity: 'error',
+    title: 'Workout: Schema korrekt (Pflichtfelder, Format, Grenzen, jede Übung höchstens einmal)',
+  },
+  W2: {
+    severity: 'error',
+    title: 'Workout: jede Übung existiert; freigegebenes Workout nur mit freigegebenen Übungen',
+  },
+  W3: {
+    severity: 'error',
+    title: 'Workout: Geräte im Katalog und genau die Geräte der Übungen',
+  },
+  W4: {
+    severity: 'error',
+    title: 'Workout: Zeitübungen nach Sekunden, Übungen mit Gewicht nach Wiederholungen',
+  },
+  W5: {
+    severity: 'error',
+    title:
+      'Workout: 1–2 Sterne nur leichte Übungen (Schwierigkeit ≤ 2, ohne high_skill) mit Pausen ≥ 10 s; 1 Stern ohne Sprünge',
+  },
+  W6: {
+    severity: 'warning',
+    title: 'Workout: angegebene Dauer passt zur geschätzten (±20 %, mindestens ±2 Min.)',
+  },
+  W7: {
+    severity: 'error',
+    title: 'Workout: Textregeln (keine Heil- oder Gesundheitsversprechen, keine Marken)',
+  },
 } as const satisfies Record<string, { severity: IssueSeverity; title: string }>;
 
 export type ContentRuleId = keyof typeof CONTENT_RULES;
@@ -247,7 +278,8 @@ export type ContentKind =
   | 'guide'
   | 'ingredient_substitution'
   | 'package_size'
-  | 'supplement';
+  | 'supplement'
+  | 'workout';
 
 export interface ContentIssue {
   readonly rule: ContentRuleId;
@@ -263,7 +295,15 @@ export interface ContentIssue {
 }
 
 /** Regeln, die IMMER blockieren – auch bei Entwürfen (Plan Abschnitt 7, „Was liegen darf“). */
-const ALWAYS_BLOCKING: readonly ContentRuleId[] = ['DATEI', 'Ü1', 'VERSION', 'R1', 'R15', 'SK1'];
+const ALWAYS_BLOCKING: readonly ContentRuleId[] = [
+  'DATEI',
+  'Ü1',
+  'VERSION',
+  'R1',
+  'R15',
+  'SK1',
+  'W1',
+];
 
 /**
  * true = der Befund lässt `content:validate` (und damit ci, content-review, content-collect, content-seed)

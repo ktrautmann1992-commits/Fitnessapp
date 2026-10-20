@@ -305,9 +305,10 @@ export type ExerciseLogStatus = (typeof EXERCISE_LOG_STATUSES)[number];
 /**
  * Herkunft eines Eintrags: `manual` (eingetragen), ab Phase 10 vorbereitet `gps` (Strecke aufgezeichnet, S1) und
  * `gpx_import` (GPX-Datei, S2a) – Datenbank seit WP3 (20261016140000_competition_enums.sql), genutzt erst ab S1.
+ * `workout`: freie Einheit aus der Workout-Bibliothek (Timer, docs/PLAN-WORKOUTS.md) – nur zusammen mit is_free.
  * Später `wearable` (Phase 8).
  */
-export const LOG_SOURCES = ['manual', 'gps', 'gpx_import'] as const;
+export const LOG_SOURCES = ['manual', 'gps', 'gpx_import', 'workout'] as const;
 export type LogSource = (typeof LOG_SOURCES)[number];
 
 // ---------------------------------------------------------------------------------------------------------

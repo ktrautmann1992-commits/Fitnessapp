@@ -25,6 +25,8 @@ import { checkIngredientSubstitution, checkSubstitutionLibrary } from './substit
 import { type IngredientSubstitution, ingredientSubstitutionSchema } from './substitution-schema';
 import { checkSupplementContent } from './supplement-checks';
 import { type SupplementContent, supplementContentSchema } from './supplement-schema';
+import { checkWorkout } from '../workouts/checks';
+import { type Workout, workoutSchema } from '../workouts/schema';
 
 export { canonicalJson } from './canonical-json';
 
@@ -57,8 +59,11 @@ export function isNutritionKind(kind: AnyContentFileKind): kind is NutritionCont
 /** Supplement-Inhalte (docs/PLAN-PHASE-6.md Abschnitt 6, Etappe SU2): `content/supplements/<id>.json`, Regeln SK1–SK7. */
 export type SupplementContentFileKind = 'supplement';
 
+/** Workouts (docs/PLAN-WORKOUTS.md): `content/workouts/<id>.json`, Regeln W1–W7. */
+export type WorkoutContentFileKind = 'workout';
+
 export type AnyContentFileKind =
-  ContentFileKind | NutritionContentFileKind | SupplementContentFileKind;
+  ContentFileKind | NutritionContentFileKind | SupplementContentFileKind | WorkoutContentFileKind;
 
 export interface ContentFile {
   readonly kind: ContentFileKind;
@@ -82,6 +87,11 @@ export interface NutritionContentFile extends Omit<ContentFile, 'kind'> {
 /** Inhaltsdatei eines Supplements (`content/supplements/<id>.json`). */
 export interface SupplementContentFile extends Omit<ContentFile, 'kind'> {
   readonly kind: SupplementContentFileKind;
+}
+
+/** Inhaltsdatei eines Workouts (`content/workouts/<id>.json`). */
+export interface WorkoutContentFile extends Omit<ContentFile, 'kind'> {
+  readonly kind: WorkoutContentFileKind;
 }
 
 export interface ContentValidationOptions {
@@ -108,6 +118,8 @@ export interface ContentValidationResult {
   readonly packageSizes: readonly PackageSize[];
   /** Supplement-Inhalte mit gültigem Schema (Phase 6, SU2) – nur geprüft, eingespielt erst ab SU3. */
   readonly supplements: readonly SupplementContent[];
+  /** Workouts mit gültigem Schema (docs/PLAN-WORKOUTS.md). */
+  readonly workouts: readonly Workout[];
   /** Alle Befunde (rot und gelb). */
   readonly issues: readonly ContentIssue[];
   /** Befunde, die das Prüfskript fehlschlagen lassen (siehe isBlockingIssue). */
@@ -181,7 +193,8 @@ export function checkVersionChange(
   return [];
 }
 
-type AnyContentFile = ContentFile | NutritionContentFile | SupplementContentFile;
+type AnyContentFile =
+  ContentFile | NutritionContentFile | SupplementContentFile | WorkoutContentFile;
 
 function schemaIssues(file: AnyContentFile, error: z.ZodError): ContentIssue[] {
   const target = {
@@ -189,7 +202,14 @@ function schemaIssues(file: AnyContentFile, error: z.ZodError): ContentIssue[] {
     id: readId(file.data, file.fileName),
     status: readStatus(file.data),
   };
-  const rule = file.kind === 'supplement' ? 'SK1' : isNutritionKind(file.kind) ? 'R1' : 'Ü1';
+  const rule =
+    file.kind === 'supplement'
+      ? 'SK1'
+      : file.kind === 'workout'
+        ? 'W1'
+        : isNutritionKind(file.kind)
+          ? 'R1'
+          : 'Ü1';
   return error.issues.map((issue) =>
     makeIssue(
       rule,
@@ -247,6 +267,7 @@ const SCHEMAS = {
   ingredient_substitution: ingredientSubstitutionSchema,
   package_size: packageSizeSchema,
   supplement: supplementContentSchema,
+  workout: workoutSchema,
 } as const;
 
 /**
@@ -268,6 +289,7 @@ export function validateContent(
   const substitutions: IngredientSubstitution[] = [];
   const packageSizes: PackageSize[] = [];
   const supplements: SupplementContent[] = [];
+  const workouts: Workout[] = [];
   const seenIds = new Map<string, string>();
 
   for (const file of files) {
@@ -324,6 +346,8 @@ export function validateContent(
       packageSizes.push(content as PackageSize);
     } else if (file.kind === 'supplement') {
       supplements.push(content as SupplementContent);
+    } else if (file.kind === 'workout') {
+      workouts.push(content as Workout);
     } else {
       guides.push(content as Guide);
     }
@@ -367,6 +391,9 @@ export function validateContent(
   for (const supplement of supplements) {
     issues.push(...checkSupplementContent(supplement));
   }
+  for (const workout of workouts) {
+    issues.push(...checkWorkout(workout, library));
+  }
 
   return {
     exercises,
@@ -378,6 +405,7 @@ export function validateContent(
     substitutions,
     packageSizes,
     supplements,
+    workouts,
     issues,
     blocking: issues.filter(isBlockingIssue),
   };

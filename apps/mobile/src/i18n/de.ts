@@ -26,6 +26,7 @@ import { deMuscleMap } from './de-muscle-map';
 import { deNutrition } from './de-nutrition';
 import { deNutritionDay } from './de-nutrition-day';
 import { deWeekEval } from './de-week-eval';
+import { deWorkouts } from './de-workouts';
 
 export const de = {
   common: {
@@ -1634,6 +1635,8 @@ export const de = {
   },
   /** Live-Anpassung des Plans (Phase 4b, Etappe D). */
   adjust: deAdjust,
+  // Workout-Bibliothek (docs/PLAN-WORKOUTS.md)
+  workouts: deWorkouts,
 } as const;
 
 /** Typ, den jede Übersetzung erfüllen muss (Texte als string, Funktionen mit gleicher Signatur). */

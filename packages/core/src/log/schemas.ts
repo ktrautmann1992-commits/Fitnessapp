@@ -243,6 +243,10 @@ export const sessionLogPayloadSchema = z
     message: 'Freie Einheit ohne geplante Einheit.',
     path: ['planned_session_id'],
   })
+  .refine((s) => s.source !== 'workout' || (s.is_free === true && s.kind === 'strength'), {
+    message: 'Workout-Einträge sind freie Kraft-Einheiten.',
+    path: ['source'],
+  })
   .refine(
     (s) =>
       s.started_at === null ||

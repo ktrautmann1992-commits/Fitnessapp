@@ -132,7 +132,7 @@ export default function LogEntryScreen() {
         ) : null}
         {log.is_free === true ? (
           <Body muted testID="log-free">
-            {t.logEntry.free}
+            {log.source === 'workout' ? t.workouts.logEntry : t.logEntry.free}
           </Body>
         ) : null}
         {isBackfilledLog(log) ? (

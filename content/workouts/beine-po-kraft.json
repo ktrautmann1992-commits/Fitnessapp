@@ -1,0 +1,76 @@
+{
+  "id": "beine-po-kraft",
+  "version": 1,
+  "status": "published",
+  "title_de": "Beine & Po – Kraft",
+  "summary_de": "Anspruchsvolle Bein- und Gesäßübungen ohne Geräte: einbeinig, mit Tempo und Pausen im tiefsten Punkt.",
+  "category": "legs_glutes",
+  "difficulty": 3,
+  "minutes": 22,
+  "format": "circuit",
+  "rounds": 3,
+  "round_rest_s": 90,
+  "equipment_ids": [],
+  "warmup_de": "5 Minuten locker aufwärmen: auf der Stelle gehen, Arme kreisen, Hüfte kreisen und 10 ruhige Kniebeugen ohne Tiefe.",
+  "cooldown_de": "Zum Schluss 3–5 Minuten ruhig gehen und locker durchatmen. Beine, Hüfte und Schultern sanft ausschütteln.",
+  "exercises": [
+    {
+      "exercise_id": "kniebeuge-tempo",
+      "reps": 10,
+      "duration_s": null,
+      "sets": null,
+      "rest_s": 20,
+      "note_de": null
+    },
+    {
+      "exercise_id": "bulgarische-split-kniebeuge-stuhl",
+      "reps": 8,
+      "duration_s": null,
+      "sets": null,
+      "rest_s": 20,
+      "note_de": "Je Seite."
+    },
+    {
+      "exercise_id": "hip-thrust-sofa",
+      "reps": 12,
+      "duration_s": null,
+      "sets": null,
+      "rest_s": 20,
+      "note_de": null
+    },
+    {
+      "exercise_id": "rdl-einbeinig-koerpergewicht",
+      "reps": 8,
+      "duration_s": null,
+      "sets": null,
+      "rest_s": 20,
+      "note_de": "Je Seite."
+    },
+    {
+      "exercise_id": "glute-bridge-einbeinig",
+      "reps": 8,
+      "duration_s": null,
+      "sets": null,
+      "rest_s": 20,
+      "note_de": "Je Seite."
+    },
+    {
+      "exercise_id": "wadenheben-einbeinig",
+      "reps": 10,
+      "duration_s": null,
+      "sets": null,
+      "rest_s": 20,
+      "note_de": "Je Seite."
+    }
+  ],
+  "meta": {
+    "origin": "claude_session",
+    "model": "claude-opus-5-5",
+    "batch_id": null,
+    "created_on": "2026-10-20",
+    "expert_reviewed": false,
+    "reviewed_by": "Claude (Gründer-Auftrag 20.10.2026)",
+    "reviewed_at": "2026-10-20",
+    "review_note": "Testphase – noch nicht fachlich geprüft. Startbestand aus einer Claude-Sitzung; Gründer haben am 20.10.2026 entschieden, dass Claude zusammenstellt und freigibt. Vor dem Livegang fachlich prüfen."
+  }
+}

@@ -1,0 +1,68 @@
+{
+  "id": "express-ganzkoerper",
+  "version": 1,
+  "status": "published",
+  "title_de": "Express Ganzkörper",
+  "summary_de": "Wenig Zeit? Fünf Grundübungen nach Zeit, 40 Sekunden Arbeit und 20 Sekunden Pause – in gut zehn Minuten durch.",
+  "category": "full_body",
+  "difficulty": 2,
+  "minutes": 10,
+  "format": "interval",
+  "rounds": 2,
+  "round_rest_s": 60,
+  "equipment_ids": [],
+  "warmup_de": "5 Minuten locker aufwärmen: auf der Stelle gehen, Arme kreisen, Hüfte kreisen und 10 ruhige Kniebeugen ohne Tiefe.",
+  "cooldown_de": "Zum Schluss 3–5 Minuten ruhig gehen und locker durchatmen. Beine, Hüfte und Schultern sanft ausschütteln.",
+  "exercises": [
+    {
+      "exercise_id": "kniebeuge-koerpergewicht",
+      "reps": null,
+      "duration_s": 40,
+      "sets": null,
+      "rest_s": 20,
+      "note_de": null
+    },
+    {
+      "exercise_id": "liegestuetz-erhoeht",
+      "reps": null,
+      "duration_s": 40,
+      "sets": null,
+      "rest_s": 20,
+      "note_de": null
+    },
+    {
+      "exercise_id": "glute-bridge",
+      "reps": null,
+      "duration_s": 40,
+      "sets": null,
+      "rest_s": 20,
+      "note_de": null
+    },
+    {
+      "exercise_id": "tuerrahmen-rudern",
+      "reps": null,
+      "duration_s": 40,
+      "sets": null,
+      "rest_s": 20,
+      "note_de": "Nach der Hälfte die Seite wechseln."
+    },
+    {
+      "exercise_id": "unterarmstuetz",
+      "reps": null,
+      "duration_s": 40,
+      "sets": null,
+      "rest_s": 20,
+      "note_de": null
+    }
+  ],
+  "meta": {
+    "origin": "claude_session",
+    "model": "claude-opus-5-5",
+    "batch_id": null,
+    "created_on": "2026-10-20",
+    "expert_reviewed": false,
+    "reviewed_by": "Claude (Gründer-Auftrag 20.10.2026)",
+    "reviewed_at": "2026-10-20",
+    "review_note": "Testphase – noch nicht fachlich geprüft. Startbestand aus einer Claude-Sitzung; Gründer haben am 20.10.2026 entschieden, dass Claude zusammenstellt und freigibt. Vor dem Livegang fachlich prüfen."
+  }
+}

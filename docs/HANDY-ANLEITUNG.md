@@ -1089,6 +1089,35 @@ ist** (geschützter Speicher) – Tab schließen = Anpassungen weg, der Plan ist
 Die Fälle über mehrere Wochen (Schritte 4 und 5, Stillstand → Übung getauscht, abgelaufener Vorschlag) prüft der
 automatische Test `e2e/live-adjust.spec.ts` mit festem Datum – im Pull Request unter **Checks → ci** grün.
 
+## Teil 7o – Workouts mit Sternen und Timer testen (20.10.2026, Testmodus)
+Fertige Workouts (1 Stern leicht – 5 Sterne sehr schwer) mit Timer; nach dem Abschluss stehen sie als Eintrag am
+heutigen Tag. Alle 27 Workouts sind **Testphase – noch nicht fachlich geprüft** (so steht es auch in der App).
+Getestet mit **Chrome am iPhone** (Vorschau-Link aus dem Pull Request), am besten im **Inkognito-Tab**.
+
+1. Vorschau-Link öffnen → **„Los geht's“** → Geburtsdatum **15.05.1990** → **Testmodus starten** → Zustimmen →
+   beliebig weiter bis **„Zum Plan“**.
+2. Unten in der Menüleiste **„Workouts“** antippen (auch über **Mehr → Workouts**). **Prüfen:** „27 Workouts“, jede
+   Karte zeigt Titel, Sterne mit Wort (z. B. „★★☆☆☆ eher leicht“), Minuten, Ziel und Geräte.
+3. **Filter:** Stern **★★★★★** antippen → nur 2 Workouts. Wieder lösen, **★** und Ziel **„Bauch & Rumpf“** → nur
+   „Rumpf-Basis“. **„Filter zurücksetzen“** → **„Nur ohne Geräte“** → nur Workouts ohne Geräte.
+4. **„Bauch-Blitz“** öffnen → Sterne, Ablauf, Übungen mit Sekunden und Pausen, Aufwärmen, Sicherheitshinweis.
+   Bei einem Workout mit 4–5 Sternen steht für Einsteiger zusätzlich „lieber mit 1–3 Sternen beginnen“ (nur Hinweis).
+5. **„Workout starten“** → 5 Sekunden „Gleich geht's los“, dann großer Countdown je Übung, darunter **„Als
+   Nächstes“**. **Prüfen:** **Pausieren** hält die Zeit an, **Fortsetzen** läuft weiter, **Überspringen** springt
+   zur nächsten Übung, in der Pause **„Pause beenden“**. Ton und Vibration lassen sich unten abschalten (im Browser nur
+   Ton). Der Bildschirm bleibt an.
+6. Ein Workout mit **Sätzen** (z. B. „Kurzhantel-Basis“): Hier läuft keine Zeit ab – nach jedem Satz **„Satz erledigt
+   ✓“**, dann startet die Satzpause von selbst.
+7. Ende abwarten oder **„Beenden“** → Nachfrage → **„Beenden“**. Anstrengung (0–10) und Notiz sind freiwillig →
+   **„Für heute speichern“** → „Gespeichert …“. **Prüfen:** Der Knopf ist danach weg (kein zweiter Eintrag), **„Zum
+   heutigen Tag“** zeigt die Einheit, im **Kalender** steht „✓ Freie Kraft-Einheit · Workout“, im Eintrag die Notiz
+   „Workout „Bauch-Blitz“ (★★☆☆☆) · …“. Zurück in der Liste: **„Heute erledigt ✓“** auf der Karte.
+8. Offline (Flugmodus) speichern geht auch – der Eintrag wird übertragen, sobald ihr wieder online seid (mit Konto).
+
+**Mit Konto (Supabase):** Nach dem Merge legt **db-migrate** die Tabelle an; danach **Actions → content-seed → Run
+workflow** – solange in `content/einspiel-regeln.json` die Testphase eingestellt ist, kommen die Workouts mit. Vor dem
+Livegang gilt dieselbe Regel wie bei den Rezepten (Teil 7t): nur fachlich geprüfte Workouts.
+
 ## Teil 7e – Neue Rezepte per KI erzeugen (Phase 5, Etappe N8, Gemini offline)
 
 Die KI (Google Gemini) schreibt **nur Entwürfe** – offline über die Batch-API, nie in der App. Nutzerdaten gehen nie an

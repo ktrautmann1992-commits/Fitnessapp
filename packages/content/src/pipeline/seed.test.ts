@@ -13,6 +13,8 @@ import { validateRepository } from '../validate';
 import {
   buildNutritionSeedPackage,
   buildSeedPackage,
+  buildWorkoutSeedPackage,
+  findWorkoutMassArchive,
   fetchPublishedIds,
   fetchPublishedNutritionIds,
   findMassArchive,
@@ -65,9 +67,23 @@ function okFetch(
     body?: unknown;
     status?: number;
   } = {},
+  workouts: { published?: string[]; missing?: boolean; body?: unknown; status?: number } = {},
 ) {
   return vi.fn<SeedFetch>(async (url) => {
     const path = new URL(url).pathname;
+    if (path.endsWith('/rpc/seed_workouts')) {
+      return new Response(JSON.stringify(workouts.body ?? { workouts: 0, archived: 0 }), {
+        status: workouts.status ?? 200,
+      });
+    }
+    if (path.endsWith('/rest/v1/workouts')) {
+      if (workouts.missing === true) {
+        return new Response(JSON.stringify({ code: 'PGRST205' }), { status: 404 });
+      }
+      return new Response(JSON.stringify((workouts.published ?? []).map((id) => ({ id }))), {
+        status: 200,
+      });
+    }
     if (path.endsWith('/rpc/seed_content')) {
       return new Response(JSON.stringify(body), { status: seedStatus });
     }
@@ -821,5 +837,102 @@ describe('Bestand seitenweise lesen (Wächter N7 Teil 2 N2)', () => {
     expect(
       await fetchPublishedNutritionIds(access, pagedFetch({ exercises: [] }, 1000)),
     ).toBeNull();
+  });
+});
+
+describe('content-seed: Workouts (docs/PLAN-WORKOUTS.md)', () => {
+  const withWorkouts = () => {
+    const r = repo({ contentStatus: 'published' });
+    cpSync(join(REAL_REPO_ROOT, 'content/workouts'), join(r.root, 'content/workouts'), {
+      recursive: true,
+    });
+    return r;
+  };
+  const workoutBody = (fetchImpl: ReturnType<typeof okFetch>) => {
+    const call = fetchImpl.mock.calls.find(([url]) => url.endsWith('/rpc/seed_workouts'));
+    return call ? (JSON.parse(String(call[1].body)) as Record<string, unknown>) : null;
+  };
+
+  it('Paket: nur freigegebene; ohne Fachprüfung nur in der Testphase', () => {
+    const r = withWorkouts();
+    const { result } = validateRepository({ cwd: r.root });
+    expect(result.workouts.length).toBeGreaterThanOrEqual(20);
+    const strict = buildWorkoutSeedPackage(result);
+    expect(strict.package.workouts).toEqual([]);
+    expect(strict.waiting).toHaveLength(result.workouts.length);
+    const test = buildWorkoutSeedPackage(result, { requireExpertReview: false });
+    expect(test.package.workouts).toHaveLength(result.workouts.length);
+    expect(test.unreviewed).toHaveLength(result.workouts.length);
+    const drafts = buildWorkoutSeedPackage(
+      { workouts: result.workouts.map((w) => ({ ...w, status: 'draft' as const })) },
+      { requireExpertReview: false },
+    );
+    expect(drafts.package.workouts).toEqual([]);
+  });
+
+  it('Testphase: seed_workouts mit p_require_expert_review: false, Bericht nennt die Workouts', async () => {
+    const r = withWorkouts();
+    writeFileSync(
+      join(r.root, 'content/einspiel-regeln.json'),
+      '{ "nur_fachlich_geprueft": false }',
+    );
+    const fetchImpl = okFetch(undefined, {}, 200, {}, { body: { workouts: 27, archived: 0 } });
+    const result = await runSeed({ repoRoot: r.root, env: SUPABASE, fetchImpl });
+    expect(result.status).toBe('seeded');
+    const body = workoutBody(fetchImpl);
+    expect(body).toMatchObject({ p_require_expert_review: false });
+    expect((body?.p_content as { workouts: unknown[] }).workouts.length).toBeGreaterThanOrEqual(20);
+    expect(result.markdown).toContain('Workouts eingespielt: 27');
+    expect(result.markdown).toContain('Workouts ohne Fachprüfung');
+  });
+
+  it('Livegang-Regel: ungeprüfte Workouts warten, Aufruf ohne Testphase-Schalter', async () => {
+    const r = withWorkouts();
+    const fetchImpl = okFetch();
+    const result = await runSeed({ repoRoot: r.root, env: SUPABASE, fetchImpl });
+    expect(result.status).toBe('seeded');
+    expect(Object.keys(workoutBody(fetchImpl) ?? {})).toEqual(['p_content']);
+    expect(result.markdown).toContain('warten auf die Fachprüfung');
+  });
+
+  it('Tabelle fehlt (vor db-migrate) → übersprungen mit Hinweis', async () => {
+    const r = withWorkouts();
+    const fetchImpl = okFetch(undefined, {}, 200, {}, { missing: true });
+    const result = await runSeed({ repoRoot: r.root, env: SUPABASE, fetchImpl });
+    expect(result.status).toBe('seeded');
+    expect(workoutBody(fetchImpl)).toBeNull();
+    expect(result.markdown).toContain('Workouts übersprungen');
+  });
+
+  it('Schutz vor Massen-Archivierung gilt auch für Workouts', async () => {
+    expect(findWorkoutMassArchive(['a', 'b', 'c'], { workouts: [] })).toHaveLength(1);
+    expect(findWorkoutMassArchive([], { workouts: [] })).toEqual([]);
+    const r = withWorkouts();
+    const fetchImpl = okFetch(undefined, {}, 200, {}, { published: ['x-1', 'x-2', 'x-3'] });
+    const result = await runSeed({ repoRoot: r.root, env: SUPABASE, fetchImpl });
+    expect(result.status).toBe('mass_archive_blocked');
+    expect(result.markdown).toContain('Workouts');
+    expect(fetchImpl.mock.calls.some(([url]) => url.includes('/rpc/'))).toBe(false);
+  });
+
+  it('Fehler von seed_workouts → rot mit Meldung', async () => {
+    const r = withWorkouts();
+    writeFileSync(
+      join(r.root, 'content/einspiel-regeln.json'),
+      '{ "nur_fachlich_geprueft": false }',
+    );
+    const fetchImpl = okFetch(
+      undefined,
+      {},
+      200,
+      {},
+      {
+        status: 400,
+        body: { message: 'Workout x enthält eine nicht freigegebene Übung.' },
+      },
+    );
+    const result = await runSeed({ repoRoot: r.root, env: SUPABASE, fetchImpl });
+    expect(result.status).toBe('failed');
+    expect(result.markdown).toContain('Workouts nicht eingespielt');
   });
 });
