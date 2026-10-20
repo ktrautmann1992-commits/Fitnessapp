@@ -158,6 +158,7 @@ import {
   type WriteOp,
 } from './write-ops';
 import type { LogRejectReason, WorkoutDraft } from './workout-draft';
+import { workoutsFromDbRows } from './workout-library';
 
 /**
  * SUPABASE-MODUS: Login per 6-stelligem E-Mail-Code, Daten in der Datenbank (Frankfurt, RLS).
@@ -931,6 +932,18 @@ export function createSupabaseBackend(options: SupabaseBackendOptions): Backend 
     },
     currentUserId: () => currentUserId,
     onSaved: async (entry, response) => {
+      // Workout-Timer (docs/PLAN-WORKOUTS.md): Herkunft „workout“ nach dem Speichern setzen (save_session_log nimmt
+      // neue Einträge nur mit „manual“ an). Netz/Sitzung → werfen: Die Warteschlange versucht es später erneut (das
+      // erneute save_session_log mit derselben write_id ist idempotent). Andere Fehler: Eintrag bleibt „manual“
+      // (gespeichert ist er) – nie als abgelehnter Entwurf.
+      if (entry.draft.workoutId !== undefined && response.result === 'ok') {
+        const id = response.id ?? entry.payload.id;
+        const { error, status } = await client.rpc('mark_session_log_workout', { p_log_id: id });
+        if (error) {
+          if (classifyLogError({ ...error, status }) === 'retry') throw { ...error, status };
+          console.warn('Workout-Eintrag gespeichert, Herkunft „workout“ nicht gesetzt.');
+        }
+      }
       // N2: Lag die Fassung nur im Arbeitsspeicher (Gerätespeicher nicht beschreibbar, K9), blieb ihr Entwurf
       // stehen – nach der Übertragung entfernen, solange er seither nicht geändert wurde.
       await drafts
@@ -1587,6 +1600,13 @@ export function createSupabaseBackend(options: SupabaseBackendOptions): Backend 
     };
   }
 
+  /** Workout-Bibliothek (docs/PLAN-WORKOUTS.md): nur `data`, RLS liefert nur freigegebene. */
+  async function fetchWorkouts(): Promise<unknown[]> {
+    const { data, error } = await client.from('workouts').select('data').order('id');
+    if (error) throw error;
+    return (data ?? []).map((row) => row.data);
+  }
+
   async function fetchLibrary(): Promise<PlanLibrary> {
     const [exercises, alternatives, templates, sessions, templateExercises] = await Promise.all([
       // Archivierte Übungen nur für die Anzeige laufender Pläne (libraryFromDbRows trennt sie von der Engine).
@@ -1999,6 +2019,23 @@ export function createSupabaseBackend(options: SupabaseBackendOptions): Backend 
       await clearLocal();
       for (const key of Object.values(STORAGE_KEYS)) {
         await store.removeItem(key);
+      }
+    },
+
+    loadWorkoutLibrary: async () => {
+      try {
+        const rows = await fetchWorkouts();
+        // Nur Inhalte (keine Nutzerdaten) – für offline.
+        await writeJson(store, STORAGE_KEYS.workoutLibrary, rows);
+        return { workouts: workoutsFromDbRows(rows.map((data) => ({ data }))), cached: false };
+      } catch (error) {
+        if (classifySupabaseError(error) === 'network') {
+          const cached = await readJson<unknown[]>(store, STORAGE_KEYS.workoutLibrary);
+          if (Array.isArray(cached)) {
+            return { workouts: workoutsFromDbRows(cached.map((data) => ({ data }))), cached: true };
+          }
+        }
+        throw toBackendError(error);
       }
     },
 

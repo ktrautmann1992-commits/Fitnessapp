@@ -1,0 +1,52 @@
+{
+  "id": "apfelmus-ungesuesst",
+  "version": 1,
+  "status": "draft",
+  "name_de": "Apfelmus (ungesüßt)",
+  "aliases_de": [],
+  "shopping_category": "legumes_canned",
+  "pantry": true,
+  "nutrients_per_100g": {
+    "kcal": 51,
+    "protein_g": 0.37,
+    "carbs_g": 10.2,
+    "sugar_g": 9.146,
+    "fat_g": 0.436,
+    "sat_fat_g": 0.176,
+    "fiber_g": 1.984,
+    "salt_g": 0.005,
+    "organic_acids_g": 0.397,
+    "alcohol_g": 0.005,
+    "polyols_g": 0.5
+  },
+  "units": {},
+  "groups": ["fructose"],
+  "animal": [],
+  "meat_kind": [],
+  "pregnancy_caution": false,
+  "alcohol": false,
+  "max_fridge_days": 3,
+  "freezable": true,
+  "substitutes": [],
+  "source": {
+    "db": "bls",
+    "version": "4.0",
+    "ref": "Y864112",
+    "name": "Apfelmus ungesüßt",
+    "category": "fruit",
+    "license": "CC BY 4.0",
+    "retrieved_at": "2026-10-19"
+  },
+  "meta": {
+    "origin": "claude_session",
+    "model": "claude-opus-5-5",
+    "batch_id": null,
+    "created_on": "2026-10-19",
+    "expert_reviewed": false,
+    "reviewed_by": null,
+    "reviewed_at": null,
+    "review_note": null,
+    "catalog_reviewed_by": null,
+    "catalog_reviewed_at": null
+  }
+}

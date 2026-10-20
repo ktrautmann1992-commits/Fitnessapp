@@ -31,6 +31,16 @@ export function startOfIsoWeek(date: string): string {
   return addDays(date, 1 - isoWeekday(date));
 }
 
+/**
+ * Kalenderwoche nach ISO 8601 (Woche mit dem ersten Donnerstag des Jahres = KW 1; Montag ist Wochenbeginn) – so wie
+ * in Deutschland, Österreich und der Schweiz üblich. Beispiel: 2026-10-12 → 42, 2021-01-03 → 53 (Woche aus 2020).
+ */
+export function isoWeekNumber(date: string): number {
+  const thursday = addDays(date, 4 - isoWeekday(date));
+  const yearStart = `${thursday.slice(0, 4)}-01-01`;
+  return Math.floor(daysBetween(yearStart, thursday) / 7) + 1;
+}
+
 /** Tage von `from` bis `to` (negativ, wenn `to` davor liegt). */
 export function daysBetween(from: string, to: string): number {
   const a = Date.parse(`${isoDateSchema.parse(from)}T00:00:00Z`);

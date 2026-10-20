@@ -1,0 +1,68 @@
+{
+  "id": "ruecken-fit-studio",
+  "version": 1,
+  "status": "published",
+  "title_de": "Rücken-fit im Studio",
+  "summary_de": "Rückentraining an Kabel und Latzug: Ziehen aus verschiedenen Richtungen, dazu Hüftstrecken mit Kurzhanteln.",
+  "category": "back_fit",
+  "difficulty": 3,
+  "minutes": 24,
+  "format": "sets_reps",
+  "rounds": 1,
+  "round_rest_s": 0,
+  "equipment_ids": ["cable_station", "dumbbells", "lat_pulldown"],
+  "warmup_de": "5–8 Minuten locker auf Rad oder Crosstrainer, danach je Gerät einen leichten Aufwärmsatz mit etwa der Hälfte des Arbeitsgewichts.",
+  "cooldown_de": "Zum Schluss 3–5 Minuten ruhig gehen und locker durchatmen. Beine, Hüfte und Schultern sanft ausschütteln.",
+  "exercises": [
+    {
+      "exercise_id": "latziehen",
+      "reps": 12,
+      "duration_s": null,
+      "sets": 3,
+      "rest_s": 75,
+      "note_de": null
+    },
+    {
+      "exercise_id": "kabelrudern",
+      "reps": 12,
+      "duration_s": null,
+      "sets": 3,
+      "rest_s": 75,
+      "note_de": null
+    },
+    {
+      "exercise_id": "face-pull-kabel",
+      "reps": 15,
+      "duration_s": null,
+      "sets": 3,
+      "rest_s": 60,
+      "note_de": null
+    },
+    {
+      "exercise_id": "rumaenisches-kreuzheben-kurzhantel",
+      "reps": 10,
+      "duration_s": null,
+      "sets": 3,
+      "rest_s": 75,
+      "note_de": null
+    },
+    {
+      "exercise_id": "bird-dog",
+      "reps": 8,
+      "duration_s": null,
+      "sets": 2,
+      "rest_s": 30,
+      "note_de": "Je Seite."
+    }
+  ],
+  "meta": {
+    "origin": "claude_session",
+    "model": "claude-opus-5-5",
+    "batch_id": null,
+    "created_on": "2026-10-20",
+    "expert_reviewed": false,
+    "reviewed_by": "Claude (Gründer-Auftrag 20.10.2026)",
+    "reviewed_at": "2026-10-20",
+    "review_note": "Testphase – noch nicht fachlich geprüft. Startbestand aus einer Claude-Sitzung; Gründer haben am 20.10.2026 entschieden, dass Claude zusammenstellt und freigibt. Vor dem Livegang fachlich prüfen."
+  }
+}

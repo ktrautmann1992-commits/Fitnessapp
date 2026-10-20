@@ -20,11 +20,13 @@ export function useInTabs(): boolean {
   return useContext(InTabsContext);
 }
 
-export type TabName = 'uebersicht' | 'today' | 'ernaehrung' | 'fortschritt' | 'mehr';
+export type TabName = 'uebersicht' | 'today' | 'workouts' | 'ernaehrung' | 'fortschritt' | 'mehr';
 
 export const TAB_ORDER: readonly TabName[] = [
   'uebersicht',
   'today',
+  // Workout-Bibliothek (docs/PLAN-WORKOUTS.md, Gründer-Wunsch „eigenes Menü“ 20.10.2026).
+  'workouts',
   'ernaehrung',
   'fortschritt',
   'mehr',
@@ -36,6 +38,8 @@ export function tabLabel(name: TabName): string {
       return t.tabs.overview;
     case 'today':
       return t.tabs.training;
+    case 'workouts':
+      return t.workouts.tab;
     case 'ernaehrung':
       return t.tabs.nutrition;
     case 'fortschritt':
@@ -158,6 +162,11 @@ function TabIcon({ name, color }: { name: TabName; color: string }) {
       ) : name === 'today' ? (
         <>
           <Path d="M6.5 7v10M17.5 7v10M3.5 9.5v5M20.5 9.5v5M6.5 12h11" {...stroke} />
+        </>
+      ) : name === 'workouts' ? (
+        <>
+          <Circle cx={12} cy={13.5} r={7} {...stroke} />
+          <Path d="M12 13.5V10M10 3.5h4M12 3.5v3M18 7l1.5-1.5" {...stroke} />
         </>
       ) : name === 'ernaehrung' ? (
         <>

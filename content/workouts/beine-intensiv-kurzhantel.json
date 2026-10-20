@@ -1,0 +1,68 @@
+{
+  "id": "beine-intensiv-kurzhantel",
+  "version": 1,
+  "status": "published",
+  "title_de": "Beine intensiv mit Kurzhanteln",
+  "summary_de": "Schwere Beinsätze mit Kurzhanteln und Bank: Bulgarische Split-Kniebeuge, Goblet-Kniebeuge und Kreuzheben.",
+  "category": "legs_glutes",
+  "difficulty": 4,
+  "minutes": 37,
+  "format": "sets_reps",
+  "rounds": 1,
+  "round_rest_s": 0,
+  "equipment_ids": ["dumbbells", "flat_bench"],
+  "warmup_de": "5 Minuten aufwärmen: Arme und Hüfte kreisen, 10 Kniebeugen ohne Gewicht, dann jede Übung den ersten Satz mit leichtem Gewicht beginnen.",
+  "cooldown_de": "Zum Schluss 3–5 Minuten ruhig gehen und locker durchatmen. Beine, Hüfte und Schultern sanft ausschütteln.",
+  "exercises": [
+    {
+      "exercise_id": "bulgarische-split-kniebeuge",
+      "reps": 10,
+      "duration_s": null,
+      "sets": 4,
+      "rest_s": 90,
+      "note_de": "Je Seite."
+    },
+    {
+      "exercise_id": "goblet-kniebeuge",
+      "reps": 12,
+      "duration_s": null,
+      "sets": 4,
+      "rest_s": 90,
+      "note_de": null
+    },
+    {
+      "exercise_id": "rumaenisches-kreuzheben-kurzhantel",
+      "reps": 10,
+      "duration_s": null,
+      "sets": 4,
+      "rest_s": 90,
+      "note_de": null
+    },
+    {
+      "exercise_id": "ausfallschritt-rueckwaerts-kurzhantel",
+      "reps": 10,
+      "duration_s": null,
+      "sets": 3,
+      "rest_s": 75,
+      "note_de": "Je Seite."
+    },
+    {
+      "exercise_id": "wadenheben-kurzhantel",
+      "reps": 15,
+      "duration_s": null,
+      "sets": 3,
+      "rest_s": 45,
+      "note_de": null
+    }
+  ],
+  "meta": {
+    "origin": "claude_session",
+    "model": "claude-opus-5-5",
+    "batch_id": null,
+    "created_on": "2026-10-20",
+    "expert_reviewed": false,
+    "reviewed_by": "Claude (Gründer-Auftrag 20.10.2026)",
+    "reviewed_at": "2026-10-20",
+    "review_note": "Testphase – noch nicht fachlich geprüft. Startbestand aus einer Claude-Sitzung; Gründer haben am 20.10.2026 entschieden, dass Claude zusammenstellt und freigibt. Vor dem Livegang fachlich prüfen."
+  }
+}

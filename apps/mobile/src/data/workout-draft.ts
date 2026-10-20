@@ -155,6 +155,13 @@ export interface WorkoutDraft {
   isFree?: boolean;
   /** Nachtragen (A1b): Datum im Trainingsmodus wählbar (sonst gilt heute); fehlt = false. */
   backfill?: boolean;
+  /**
+   * Eintrag aus dem Workout-Timer (docs/PLAN-WORKOUTS.md): ID des Workouts. Nach dem Speichern setzt das Backend die
+   * Herkunft „workout“; Sätze nach Zeit ohne Wiederholungen sind erlaubt (fromWorkout). Fehlt = kein Workout.
+   */
+  workoutId?: string;
+  /** Workout-Timer: Ende des Laufs (finished_at); fehlt = Zeitpunkt des Sendens. */
+  finishedAt?: string;
   updatedAt: string;
 }
 
@@ -521,6 +528,13 @@ export function freeDraftResult(
     sessionRpe: draft.sessionRpe,
     notes: draft.notes,
     now: options.now,
+    ...(draft.workoutId === undefined
+      ? {}
+      : {
+          fromWorkout: true,
+          startedAt: draft.startedAt,
+          finishedAt: draft.finishedAt ?? options.now,
+        }),
   });
 }
 

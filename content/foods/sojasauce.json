@@ -1,0 +1,52 @@
+{
+  "id": "sojasauce",
+  "version": 1,
+  "status": "draft",
+  "name_de": "Sojasauce",
+  "aliases_de": [],
+  "shopping_category": "oils_vinegar_sauces",
+  "pantry": true,
+  "nutrients_per_100g": {
+    "kcal": 66,
+    "protein_g": 6.3,
+    "carbs_g": 5.47,
+    "sugar_g": 4.89,
+    "fat_g": 0.88,
+    "sat_fat_g": 0.34,
+    "fiber_g": 1.14,
+    "salt_g": 11.5325,
+    "organic_acids_g": 0.651,
+    "alcohol_g": 1.02,
+    "polyols_g": 0.042
+  },
+  "units": {},
+  "groups": ["gluten", "histamine", "legumes", "soy"],
+  "animal": [],
+  "meat_kind": [],
+  "pregnancy_caution": false,
+  "alcohol": false,
+  "max_fridge_days": 3,
+  "freezable": true,
+  "substitutes": [],
+  "source": {
+    "db": "bls",
+    "version": "4.0",
+    "ref": "R143000",
+    "name": "Sojasauce/Sojasoße",
+    "category": "spices_sauces",
+    "license": "CC BY 4.0",
+    "retrieved_at": "2026-10-19"
+  },
+  "meta": {
+    "origin": "claude_session",
+    "model": "claude-opus-5-5",
+    "batch_id": null,
+    "created_on": "2026-10-19",
+    "expert_reviewed": false,
+    "reviewed_by": null,
+    "reviewed_at": null,
+    "review_note": null,
+    "catalog_reviewed_by": null,
+    "catalog_reviewed_at": null
+  }
+}

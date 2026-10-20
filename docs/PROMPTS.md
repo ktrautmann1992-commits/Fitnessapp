@@ -411,6 +411,9 @@ Geschwindigkeit, Speichern mit Name, Favorit und Schwierigkeit leicht/mittel/sch
 Favoriten vergleichen, automatischer Eintrag ins Trainingstagebuch, GPX-Export. Tabelle
 tracked_routes mit RLS. Kein Teilen, keine Community, keine Ranglisten.
 ```
+**Stand 20.10.2026 (Gründer-Entscheidungen):** Einkaufen als eigener Menüknopf mit Scanner, Dashboard bearbeiten,
+Bereich „Ausdauer“ (S0-Spike mit Test-APK, dann S1 App, Auswertung Woche/Monat) und Story-Bild teilen (Ausnahme aus
+PR #119) – Etappen E1–E6 in `docs/PLAN-EINKAUFEN-AUSDAUER.md`.
 
 ## Phase 11 – Fortschritt, Partner-Modus, KI-Coach
 ```

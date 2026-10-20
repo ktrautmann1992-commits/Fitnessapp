@@ -973,6 +973,39 @@ es mit N7 Teil 2), der Trainingsteil geht in beiden Modi.
 **Bitte fachlich prüfen lassen (vor dem Livegang):** Muster-Hinweis ab 3 Tagen unter dem Mindestbedarf je Woche
 (A-G13, Konstante `WEEK_EVALUATION` in `packages/core/src/constants.ts`).
 
+## Teil 7r – Ernährung: Tagesansicht mit Kalorien-Ring testen (20.10.2026, Testmodus)
+
+Die Tagesansicht im Reiter **Ernährung** sieht jetzt so aus (eigenes Alpha5-Design, hell und dunkel):
+
+- Oben **„Heute“** und darunter Datum mit Kalenderwoche (z. B. „Montag, 12.10. · KW 42“). Anderer Tag: Wochentag und „KW …“.
+- Karte **„Übersicht“**: großer **Kalorien-Ring** – in der Mitte „… übrig“ (bzw. neutral „… zu viel“), links
+  **„Gegessen“**, rechts **„Verbrannt“** (Training des Tages, steht klein „im Ziel enthalten“ – es wird **nicht**
+  doppelt dazugezählt) oder – an Tagen ohne Training – **„Ziel“**. Darunter „Tagesziel: … kcal“ und drei
+  **Makro-Balken** Kohlenhydrate / Eiweiß / Fett („47 / 222 g“ = gegessen / Ziel).
+- Abschnitt **„Ernährung“**: je eine Karte **Frühstück, Mittagessen, Abendessen, Snacks** mit kleinem Ring,
+  „317 / 606 kcal“ (gegessen / Anteil am Tagesziel), Vorschau der Einträge und rundem **„+“** rechts. Die Gerichte aus
+  dem Essensplan stehen in der passenden Karte (antippen = Rezept, „Gegessen“, „Rezept tauschen“ wie bisher). Bei nur
+  einer Mahlzeit am Tag heißt die Karte „Hauptmahlzeit“.
+- Darunter wie bisher **„Gegessen“** mit allen Einträgen (Ändern, Löschen, Stern) und „Eigene Gerichte“.
+
+So prüft ihr es am Handy:
+
+1. Vorschau-Link → Testkonto wie in Teil 7c (4 Mahlzeiten, Mo/Mi/Fr Kraft) → **Ernährung**.
+2. **Prüfen:** Ring zeigt „… übrig“, links „Gegessen 0“, darunter „Noch nichts eingetragen.“; an einem Trainingstag
+   rechts „Verbrannt … im Ziel enthalten“, sonst „Ziel“.
+3. Bei **Frühstück** auf **„+“** tippen → der Eintrage-Dialog öffnet sich mit **Mahlzeit „Frühstück“** vorgewählt
+   (Zuletzt, Favoriten, Suche, Schnell, „Per Foto“, „Barcode“ wie gewohnt). Z. B. Suche „Banane“ → eintragen → zurück.
+   **Prüfen:** Frühstücks-Karte zeigt „… / … kcal“ und „Banane“, der große Ring „Gegessen“ ist gestiegen, „übrig“
+   entsprechend gesunken; die Makro-Balken füllen sich.
+4. Snacks **„+“** → Schnelleintrag z. B. „Auswärts gegessen, 3.000 kcal“ → **Prüfen:** In der Mitte steht neutral
+   „… zu viel“, der Ring bekommt eine zweite Runde (hell: schwarz, dunkel: weiß). Keine roten Warnungen.
+5. Mit **„Nächster Tag“** auf einen künftigen Tag → Ring zeigt nur das **Tagesziel**, keine „+“-Knöpfe.
+6. **Flugmodus an** (bzw. im Browser offline) → oben Hinweis „Du bist offline …“ – Eintragen geht weiter.
+7. **Einstellungen → Kalorienzahlen anzeigen** aus → kein Ring, keine kcal, Karten nur mit Vorschau und „+“.
+8. Mit Bildschirmleser (VoiceOver/TalkBack): Ring wird z. B. als „1.391 kcal übrig von 2.869 kcal Tagesziel“
+   vorgelesen, die Balken als „Eiweiß: 47 von 222 Gramm gegessen“, „+“ als „Frühstück für heute eintragen“.
+9. Alles einmal hell und einmal dunkel ansehen.
+
 ## Teil 7m – Startbildschirm, Anmelden, Übersicht und Menüleiste testen (18.10.2026)
 Ihr müsst nichts einstellen – keine Datenbank-Änderung. Getestet mit **Chrome am iPhone** (Vorschau-Link aus dem Pull
 Request), am besten in einem **Inkognito-Tab**: Chrome → unten rechts **⋯** → **Neuer Inkognito-Tab** → Vorschau-Link
@@ -1055,6 +1088,35 @@ ist** (geschützter Speicher) – Tab schließen = Anpassungen weg, der Plan ist
 
 Die Fälle über mehrere Wochen (Schritte 4 und 5, Stillstand → Übung getauscht, abgelaufener Vorschlag) prüft der
 automatische Test `e2e/live-adjust.spec.ts` mit festem Datum – im Pull Request unter **Checks → ci** grün.
+
+## Teil 7o – Workouts mit Sternen und Timer testen (20.10.2026, Testmodus)
+Fertige Workouts (1 Stern leicht – 5 Sterne sehr schwer) mit Timer; nach dem Abschluss stehen sie als Eintrag am
+heutigen Tag. Alle 27 Workouts sind **Testphase – noch nicht fachlich geprüft** (so steht es auch in der App).
+Getestet mit **Chrome am iPhone** (Vorschau-Link aus dem Pull Request), am besten im **Inkognito-Tab**.
+
+1. Vorschau-Link öffnen → **„Los geht's“** → Geburtsdatum **15.05.1990** → **Testmodus starten** → Zustimmen →
+   beliebig weiter bis **„Zum Plan“**.
+2. Unten in der Menüleiste **„Workouts“** antippen (auch über **Mehr → Workouts**). **Prüfen:** „27 Workouts“, jede
+   Karte zeigt Titel, Sterne mit Wort (z. B. „★★☆☆☆ eher leicht“), Minuten, Ziel und Geräte.
+3. **Filter:** Stern **★★★★★** antippen → nur 2 Workouts. Wieder lösen, **★** und Ziel **„Bauch & Rumpf“** → nur
+   „Rumpf-Basis“. **„Filter zurücksetzen“** → **„Nur ohne Geräte“** → nur Workouts ohne Geräte.
+4. **„Bauch-Blitz“** öffnen → Sterne, Ablauf, Übungen mit Sekunden und Pausen, Aufwärmen, Sicherheitshinweis.
+   Bei einem Workout mit 4–5 Sternen steht für Einsteiger zusätzlich „lieber mit 1–3 Sternen beginnen“ (nur Hinweis).
+5. **„Workout starten“** → 5 Sekunden „Gleich geht's los“, dann großer Countdown je Übung, darunter **„Als
+   Nächstes“**. **Prüfen:** **Pausieren** hält die Zeit an, **Fortsetzen** läuft weiter, **Überspringen** springt
+   zur nächsten Übung, in der Pause **„Pause beenden“**. Ton und Vibration lassen sich unten abschalten (im Browser nur
+   Ton). Der Bildschirm bleibt an.
+6. Ein Workout mit **Sätzen** (z. B. „Kurzhantel-Basis“): Hier läuft keine Zeit ab – nach jedem Satz **„Satz erledigt
+   ✓“**, dann startet die Satzpause von selbst.
+7. Ende abwarten oder **„Beenden“** → Nachfrage → **„Beenden“**. Anstrengung (0–10) und Notiz sind freiwillig →
+   **„Für heute speichern“** → „Gespeichert …“. **Prüfen:** Der Knopf ist danach weg (kein zweiter Eintrag), **„Zum
+   heutigen Tag“** zeigt die Einheit, im **Kalender** steht „✓ Freie Kraft-Einheit · Workout“, im Eintrag die Notiz
+   „Workout „Bauch-Blitz“ (★★☆☆☆) · …“. Zurück in der Liste: **„Heute erledigt ✓“** auf der Karte.
+8. Offline (Flugmodus) speichern geht auch – der Eintrag wird übertragen, sobald ihr wieder online seid (mit Konto).
+
+**Mit Konto (Supabase):** Nach dem Merge legt **db-migrate** die Tabelle an; danach **Actions → content-seed → Run
+workflow** – solange in `content/einspiel-regeln.json` die Testphase eingestellt ist, kommen die Workouts mit. Vor dem
+Livegang gilt dieselbe Regel wie bei den Rezepten (Teil 7t): nur fachlich geprüfte Workouts.
 
 ## Teil 7e – Neue Rezepte per KI erzeugen (Phase 5, Etappe N8, Gemini offline)
 
@@ -1139,6 +1201,19 @@ schaltet **db-migrate** das automatisch ein (Flag `premium_open` = an). Ihr müs
    **Fertigstellen**.
 
 Die Warnung stoppt nichts von selbst – abschalten geht sofort per beta-grant (`flag_aus`, flag `ai_food_photo`).
+
+## Teil 7o – Muskelkarte testen (20.10.2026, Testmodus)
+1. Vorschau-Link aus dem Pull Request öffnen (Testmodus) → Onboarding → **Zum Plan**.
+2. Einen Übungsnamen auf „Heute“ antippen (oder **Einstellungen → Übungen (Glossar)** → Übung wählen): Karte
+   **„Beanspruchte Muskeln“** mit Körper **Vorn** und **Hinten**. Hauptmuskeln kräftig blau, mitbeteiligte hellblau,
+   der Rest grau. Darunter in Worten: „Hauptmuskeln: …“ und „Mitbeteiligt: …“.
+3. **Training starten**: Rechts neben jedem Übungsnamen eine kleine Muskelkarte → antippen → große Karte mit Legende →
+   **Schließen**. Der Pausentimer läuft dabei weiter.
+4. Mit Bildschirmleser (VoiceOver/TalkBack): Die Karte wird vorgelesen als „Trainiert vor allem: Brust. Mitbeteiligt:
+   Trizeps, vordere Schulter.“
+5. Alles einmal hell und einmal dunkel ansehen.
+- Ein Bereich **„Ausgangsposition“** (Foto/Illustration der Übung) erscheint erst, wenn es Bilder mit geklärter Lizenz
+  gibt – offene Entscheidung, siehe `docs/PLAN-UEBUNGEN-GLOSSAR-TAUSCH.md`, Nachtrag „Muskelkarte“.
 
 ## Teil 8 – Live-Test mit Supabase (Pflicht vor „MVP fertig“, W13) – **offen, braucht euch**
 Diesen Test kann Claude in der Cloud-Sitzung nicht machen (kein echtes Konto, keine zwei Handys). Bitte einmal
