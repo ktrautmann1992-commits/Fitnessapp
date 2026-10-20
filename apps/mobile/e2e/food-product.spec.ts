@@ -226,4 +226,6 @@ test('Kalorienzahlen aus: keine kcal im DOM, kein eigenes Produkt; Lizenzen und 
   await expect(page.getByTestId('licenses-bls')).toContainText('Bundeslebensmittelschlüssel');
   await expect(page.getByTestId('licenses-software')).toContainText('zxing-cpp');
   await expect(page.getByTestId('licenses-software')).toContainText('Apache 2.0');
+  await expect(page.getByTestId('licenses-fonts')).toContainText('Plus Jakarta Sans');
+  await expect(page.getByTestId('licenses-fonts')).toContainText('Open Font License');
 });

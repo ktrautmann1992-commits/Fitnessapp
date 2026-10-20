@@ -16,6 +16,7 @@
     "screenshots": "SCREENSHOT_DIR=${SCREENSHOT_DIR:-screenshots} playwright test e2e/screenshots.spec.ts"
   },
   "dependencies": {
+    "@expo-google-fonts/plus-jakarta-sans": "0.4.2",
     "@fitnessapp/content": "workspace:*",
     "@fitnessapp/core": "workspace:*",
     "@fitnessapp/db": "workspace:*",
