@@ -767,6 +767,46 @@ export const FREE_SESSION = {
 } as const;
 
 /**
+ * Workout-Bibliothek (docs/PLAN-WORKOUTS.md, Gründer-Wunsch 20.10.2026): vorab erstellte Workouts mit Sternen,
+ * Timer und Eintrag als freie Einheit. Grenzen der Inhalte (Schema W1, Prüfregeln W2–W7) und des Timers.
+ * - `stars` 1–5 (1 = leicht … 5 = sehr schwer), `minutes` 5–60 (Startbestand 10–45): PRODUKTENTSCHEIDUNG.
+ * - `rounds` höchstens 10 und `exercises` höchstens 12: so passt jedes Workout in einen Tagebuch-Eintrag
+ *   (SESSION_LOG_LIMITS.setsPerExercise bzw. exercisesPerSession – je Übung ein Satz pro Runde).
+ * - `reps` 3–30, `sets` 1–6: wie die Plan-Vorlagen (Regel V4; Quellen dort: Schoenfeld 2017, ACSM 2009).
+ *   Halte-/Intervallzeit 10–120 s: Halteübungen wie V4 (10–120 s); Ausdauer-Übungen (z. B. Hampelmann) im selben
+ *   Rahmen – PRODUKTENTSCHEIDUNG.
+ * - Pausen: `restS` 0–180 s je Übung, `roundRestS` 0–300 s zwischen Runden; bei 1–2 Sternen mindestens
+ *   `easyMinRestS` = 10 s nach jeder Übung (Einsteiger, Regel W5) – PRODUKTENTSCHEIDUNG.
+ * - Sterne ↔ Übungen (Regel W5): 1–2 Sterne nur Übungen mit Schwierigkeit ≤ 2 und ohne „high_skill“; 1 Stern ohne
+ *   „high_impact“ (Sprünge) – Belastung passend zu Einsteigern, PRODUKTENTSCHEIDUNG.
+ * - Dauer-Schätzung (Regel W6, gelb): `secondsPerRep` 3 s je Wiederholung (einseitige Übungen doppelt), Abweichung
+ *   höchstens 20 % bzw. 2 Minuten. Grobe Annahme (übliches Tempo 2–4 s je Wiederholung) – PRODUKTENTSCHEIDUNG.
+ * - Sicherheitshinweise in der App (Hinweis, kein Verbot): ab `hardStars` (4) für Einsteiger und bei einem Gesundheits-
+ *   Check mit Auffälligkeiten „erst leichtere Workouts / ärztlich abklären“; Aufwärmen immer (CLAUDE.md, Sicherheit der
+ *   Empfehlungen). `prepareS` = 5 s „Gleich geht's los“ vor der ersten Übung.
+ * VOR LIVEGANG FACHLICH PRÜFEN.
+ */
+export const WORKOUT_LIMITS = {
+  stars: { min: 1, max: 5 },
+  minutes: { min: 5, max: 60 },
+  rounds: { min: 1, max: 10 },
+  exercises: { min: 2, max: 12 },
+  reps: { min: 3, max: 30 },
+  sets: { min: 1, max: 6 },
+  workS: { min: 10, max: 120 },
+  restS: { min: 0, max: 180 },
+  roundRestS: { min: 0, max: 300 },
+  easyMinRestS: 10,
+  easyMaxStars: 2,
+  noImpactMaxStars: 1,
+  easyMaxExerciseDifficulty: 2,
+  hardStars: 4,
+  secondsPerRep: 3,
+  durationTolerance: { share: 0.2, minMinutes: 2 },
+  prepareS: 5,
+} as const;
+
+/**
  * RPE je Satz 5–10 in 0,5er-Schritten, eingegeben als „Wiederholungen in Reserve“ (0 / 1 / 2 / 3 / 4 / 5+).
  * Quelle: Zourdos MC et al. (2016), „Novel resistance training-specific rating of perceived exertion scale
  * measuring repetitions in reserve“, J Strength Cond Res 30(1):267–275.
@@ -1824,6 +1864,39 @@ export const SHOPPING_LIST_ROUNDING = {
   pieceStep: 1,
   manualLabelMaxChars: 80,
   manualItemsMax: 100,
+} as const;
+
+/**
+ * Übersicht und Menüleiste anpassen (docs/PLAN-EINKAUFEN-AUSDAUER.md 4, `layout.ts`): „Übersicht“ links und „Mehr“
+ * rechts zählen mit; 3 bis 6 Knöpfe (Gründer-Wunsch 20.10.2026: 6 statt 5, damit „Workouts“ in den Standard passt –
+ * mehr Knöpfe würden auf schmalen Handys (320 px) unlesbar). `storedTilesMax` = Speicherschutz (sync: Migration
+ * app_layout_settings). Bedienregeln, keine Grenze zur Gesundheit. PRODUKTENTSCHEIDUNG.
+ */
+export const APP_LAYOUT = { tabsMin: 3, tabsMax: 6, storedTilesMax: 20 } as const;
+
+/**
+ * Menge eigener Einträge der Einkaufsliste (Reiter „Einkaufen“, Gründer-Entscheidung 20.10.2026): höchstens so viel
+ * (g, ml bzw. Stück – wie die Spalte `shopping_list_items.amount`) und so viele Zeichen Freitext. Keine Grenze zur
+ * Gesundheit, nur Eingabeschutz. PRODUKTENTSCHEIDUNG.
+ */
+export const SHOPPING_MANUAL_QUANTITY = { maxAmount: 1_000_000, inputMaxChars: 30 } as const;
+
+/**
+ * Strichcode im Laden mit der Einkaufsliste abgleichen (`matchScannedProduct`, docs/PLAN-EINKAUFEN-AUSDAUER.md 3):
+ * - `compoundMinChars`: Ein Wort der Liste passt auch als Teil eines zusammengesetzten Worts des Produktnamens
+ *   („Milch“ ↔ „Vollmilch“), aber erst ab dieser Länge – kurze Wörter („Ei“, „Öl“) nur als ganzes Wort.
+ * - `stemMinChars`: Endungen -en/-n/-e/-s werden nur gekappt, wenn danach so viele Zeichen bleiben („Tomaten“ ↔
+ *   „Tomate“, aber „Eis“ bleibt „eis“).
+ * - `candidatesMax`: höchstens so viele Einträge in der Auswahl „Welcher Eintrag ist es?“.
+ * - `linksMax`: höchstens so viele gelernte Zuordnungen Strichcode → Lebensmittel je Person
+ *   (`shopping_product_links`, sync: Migration).
+ * Nur Bedienhilfe bzw. Speicherschutz, keine Grenze zur Gesundheit. PRODUKTENTSCHEIDUNG.
+ */
+export const SHOPPING_SCAN = {
+  compoundMinChars: 4,
+  stemMinChars: 3,
+  candidatesMax: 5,
+  linksMax: 500,
 } as const;
 
 /**
@@ -3316,6 +3389,62 @@ export const TRACKED_ROUTE_LIMITS = {
 export const ROUTE_COMPARE = {
   distanceTolerance: 0.1,
   sameWithinS: 5,
+} as const;
+
+/**
+ * Höhenprofil einer Strecke (Etappe E4, docs/PLAN-EINKAUFEN-AUSDAUER.md 6; Spalte tracked_routes.elevation_profile):
+ * höchstens `maxPoints` Stützpunkte [Distanz in m, Höhe in dm]; Höhe geglättet wie elevationGain (ROUTE_ELEVATION),
+ * Distanz = Bewegungsdistanz (Pausen zählen nicht). Höhen außerhalb `heightDm` (= ROUTE_GPX.elevationM × 10) fallen
+ * weg. Quelle: Plan E4 (300 Stützpunkte); Höhenrahmen wie ROUTE_GPX; PRODUKTENTSCHEIDUNG.
+ */
+export const ROUTE_ELEVATION_PROFILE = {
+  maxPoints: 300,
+  heightDm: { min: ROUTE_GPX.elevationM.min * 10, max: ROUTE_GPX.elevationM.max * 10 },
+} as const;
+
+/**
+ * Privatzone des Story-Bilds (Etappe E6, EA-G4, `privacyTrim`): Entlang der Strecke werden die ersten und letzten
+ * `trimM` Meter abgeschnitten (Wohnort/Startpunkt nicht ablesbar); bleibt weniger als `minRemainingM` übrig, zeigt
+ * das Bild keine Linie. Quelle: Plan E6 (200 m, Rest unter 100 m → ohne Linie); PRODUKTENTSCHEIDUNG.
+ */
+export const ROUTE_PRIVACY_TRIM = {
+  trimM: 200,
+  minRemainingM: 100,
+} as const;
+
+/** Kurzname laut Plan E6 (`ROUTE_PRIVACY_TRIM_M = 200`). */
+export const ROUTE_PRIVACY_TRIM_M = ROUTE_PRIVACY_TRIM.trimM;
+
+/**
+ * Aufzeichnung in der App (Etappe E4, Plan S1 „App“/„Zustände“):
+ * - `checkpointIntervalS`: Rohpunkte alle 30 s verschlüsselt sichern (Plan S1 „Offline“),
+ * - `minSaveDistanceM`: unter 100 m nachfragen („zu kurz“, Plan S1); unter 1 min Dauer kein Speichern (Schema),
+ * - `gpsWeakAccuracyM`: schlechter als ROUTE_FILTER.maxAccuracyM → „GPS schwach“ (der Punkt fällt ohnehin heraus),
+ * - `gpsSearchingAfterS`: so lange ohne neuen Punkt → „Suche GPS …“,
+ * - `gpsTimeIntervalMs` / `gpsDistanceIntervalM`: Abfrage-Takt des Geräts (Akku vs. Genauigkeit),
+ * - `maxRawPoints`: Obergrenze der Rohpunkte (12 h bei 1 Punkt/s + Reserve), danach endet die Aufzeichnung,
+ * - `maxDurationS`: 12 h = CARDIO_LOG_LIMITS.durationS.max (länger kann nicht gespeichert werden).
+ * Quelle: Plan S1; Takt und Schwellen: PRODUKTENTSCHEIDUNG.
+ */
+export const ROUTE_RECORDING = {
+  checkpointIntervalS: 30,
+  minSaveDistanceM: 100,
+  gpsWeakAccuracyM: ROUTE_FILTER.maxAccuracyM,
+  gpsSearchingAfterS: 15,
+  gpsTimeIntervalMs: 2_000,
+  gpsDistanceIntervalM: 5,
+  maxRawPoints: 60_000,
+  maxDurationS: CARDIO_LOG_LIMITS.durationS.max,
+} as const;
+
+/**
+ * Story-Bild (Etappe E6, EA-G4/EA-4): 9:16 mit 1080 × 1920 Pixeln, nur Linie (keine Kartenkacheln), höchstens
+ * `maxExerciseNames` Übungsnamen bei Krafteinheiten. Quelle: Plan E6; PRODUKTENTSCHEIDUNG.
+ */
+export const STORY_CARD = {
+  widthPx: 1080,
+  heightPx: 1920,
+  maxExerciseNames: 5,
 } as const;
 
 // ---------------------------------------------------------------------------------------------------------

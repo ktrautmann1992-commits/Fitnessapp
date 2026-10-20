@@ -236,7 +236,12 @@ test('„Zur Einkaufsliste“ aus der Rezeptansicht mit Portionen; aus dem Plan 
 
   // Aus dem Plan geöffnet: steht über den Plan schon auf der Liste.
   await page.goto('/ernaehrung');
-  await page.getByTestId('nutrition-meals').getByRole('button').first().click();
+  // Erstes Plan-Gericht (nicht das „+“ der Mahlzeiten-Karte).
+  await page
+    .getByTestId('nutrition-meals')
+    .locator('[data-testid^="meal-"]:not([data-testid^="meal-card"])')
+    .first()
+    .click();
   await expect(page.getByTestId('recipe-shopping-in-plan')).toBeVisible();
   await expect(page.getByTestId('recipe-shopping-add')).toHaveCount(0);
 });
@@ -269,12 +274,14 @@ test('Meal-Prep-Woche: Plan wählen → Einkaufsliste → Kochtag mit Timer (Neu
     .toBe('demo-pasta-woche');
   await expect(page.getByTestId('meal-prep-plan')).not.toContainText('kcal');
 
-  // Plan wählen → Einkaufsliste (wird angelegt).
+  // Plan wählen → Einkaufsliste (wird angelegt). Seit EA-G1 ist sie der Reiter „Einkaufen“ – der Weg dorthin schließt
+  // die Unterseiten; zurück zum Meal-Prep-Plan über seine Adresse.
+  const mealPrepUrl = page.url();
   await page.getByTestId('meal-prep-to-shopping').click();
   await expect(page.getByTestId('shopping-list')).toBeVisible();
   const list = await listOf(page);
   expect(list.items.some((i) => i.foodId === 'spaghetti')).toBe(true);
-  await page.goBack();
+  await page.goto(mealPrepUrl);
 
   // Kochtag mit Timer.
   await page.getByTestId('meal-prep-to-cook-day').click();

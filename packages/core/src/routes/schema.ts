@@ -16,15 +16,20 @@ import {
   type TrackedRouteSport,
 } from '../enums';
 import { COMPETITION_NAME_TRIM_CLASS } from '../plan/competition-record';
+import {
+  type ElevationProfilePoint,
+  elevationProfileOfSegments,
+  elevationProfileSchema,
+} from './elevation-profile';
 import { boundingBox, decodePolyline, encodePolyline } from './polyline';
 import { simplifyTrack } from './simplify';
 import {
-  autoPause,
   elevationGain,
   filterTrackPoints,
   hasSpeedWarning,
-  kmSplits,
-  movingDistance,
+  kmSplitsFromMotion,
+  type MotionResult,
+  motionSegments,
   type TrackPoint,
 } from './track';
 
@@ -93,6 +98,11 @@ export const trackedRouteSchema = z
       .nullable(),
     session_log_id: uuid.nullable(),
     source: z.enum(TRACKED_ROUTE_SOURCES),
+    /**
+     * Höhenprofil (Etappe E4, additiv): OPTIONAL – ältere App-Fassungen senden das Feld nicht (save_tracked_route nimmt
+     * es nur an, verlangt es nie). null bzw. fehlend = kein Profil.
+     */
+    elevation_profile: elevationProfileSchema.nullable().optional(),
   })
   .superRefine((r, ctx) => {
     if (r.moving_s > r.duration_s) {
@@ -148,9 +158,14 @@ export interface TrackedRouteRow {
   note: string | null;
   session_log_id: string | null;
   source: TrackedRouteSource;
+  /** Höhenprofil [Distanz m, Höhe dm] (Etappe E4); null = keines (ältere Strecken, keine Höhen). */
+  elevation_profile: number[][] | null;
   created_at: string;
   updated_at: string;
 }
+
+/** Felder von save_tracked_route, die fehlen dürfen (additiv nach S1 Teil 1). */
+export const TRACKED_ROUTE_OPTIONAL_KEYS = ['elevation_profile'] as const;
 
 /** Eingabe von update_tracked_route: nur Name, Schwierigkeit, Favorit und Notiz sind änderbar. */
 export const updateTrackedRouteSchema = z.strictObject({
@@ -182,6 +197,8 @@ export interface TrackSummary {
   readonly kmSplits: number[];
   /** Warnung „Bitte prüfen“ (zu schnell, z. B. 70 km/h bergab) – nicht verworfen. */
   readonly speedWarning: boolean;
+  /** Höhenprofil (höchstens ROUTE_ELEVATION_PROFILE.maxPoints Stützpunkte); [] = keine Höhen. */
+  readonly elevationProfile: ElevationProfilePoint[];
   /** Vereinfachte Linie (höchstens TRACKED_ROUTE_LIMITS.maxPoints Punkte). */
   readonly polyline: string;
   readonly pointCount: number;
@@ -192,27 +209,67 @@ export interface TrackSummary {
 
 /** Rohpunkte einer Aufzeichnung zusammenfassen: filtern, rechnen, vereinfachen, kodieren. */
 export function summarizeTrack(raw: readonly TrackPoint[], sport: TrackedRouteSport): TrackSummary {
-  const { points } = filterTrackPoints(raw, sport);
-  const first = points[0];
-  const last = points.at(-1);
-  const spanS = first && last ? (last.t - first.t) / 1000 : 0;
+  return summarizeRecording([raw], sport);
+}
+
+/**
+ * Aufzeichnung aus mehreren Teilstücken zusammenfassen (Etappe E4: „Pause“ und „Fortsetzen“ beginnen ein neues
+ * Teilstück). Jedes Teilstück wird für sich gefiltert und ausgewertet – was zwischen „Pause“ und „Fortsetzen“
+ * geschah (z. B. ein Weg im Auto), zählt weder Zeit noch Distanz. Dauer = Summe der Teilstücke; Kilometerzeiten laufen
+ * über die Teilstücke weiter; die Linie verbindet die Teilstücke (nur Anzeige). Mit EINEM Teilstück gleich wie bisher
+ * (summarizeTrack).
+ */
+export function summarizeRecording(
+  segments: readonly (readonly TrackPoint[])[],
+  sport: TrackedRouteSport,
+): TrackSummary {
+  const filtered = segments.map((raw) => filterTrackPoints(raw, sport).points);
+  const points = filtered.flat();
+  let spanS = 0;
+  let movingRaw = 0;
+  let distanceRaw = 0;
+  let gain: number | null = null;
+  let speedWarning = false;
+  const motion: { moving: boolean[]; distanceM: number[]; dtS: number[] } = {
+    moving: [],
+    distanceM: [],
+    dtS: [],
+  };
+  for (const part of filtered) {
+    const first = part[0];
+    const last = part.at(-1);
+    if (first && last) spanS += (last.t - first.t) / 1000;
+    const m: MotionResult = motionSegments(part, sport);
+    m.moving.forEach((isMoving, i) => {
+      if (isMoving) {
+        movingRaw += m.dtS[i] as number;
+        distanceRaw += m.distanceM[i] as number;
+      }
+    });
+    motion.moving.push(...m.moving);
+    motion.distanceM.push(...m.distanceM);
+    motion.dtS.push(...m.dtS);
+    const g = elevationGain(part, sport).gainM;
+    if (g !== null) gain = (gain ?? 0) + g;
+    speedWarning ||= hasSpeedWarning(part, sport);
+  }
   const durationS = Math.ceil(spanS);
-  const pause = autoPause(points, sport);
-  const movingS = Math.min(Math.round(pause.movingS), durationS);
-  const distanceM = Math.floor(movingDistance(points, sport));
+  const movingS = Math.min(Math.round(movingRaw), durationS);
   const simplified = simplifyTrack(points);
   const polyline = encodePolyline(simplified);
+  const first = points[0];
   return {
     sport,
     points,
     startedAt: first ? new Date(first.t).toISOString() : null,
     durationS,
     movingS,
-    distanceM,
-    elevationGainM: elevationGain(points, sport).gainM,
+    distanceM: Math.floor(distanceRaw),
+    elevationGainM: gain,
     elevationNote: 'gps_elevation_inaccurate',
-    kmSplits: kmSplits(points, sport),
-    speedWarning: hasSpeedWarning(points, sport),
+    kmSplits: kmSplitsFromMotion(motion),
+    speedWarning,
+    elevationProfile: elevationProfileOfSegments(filtered, sport),
     polyline,
     pointCount: simplified.length,
     bbox: boundingBox(decodePolyline(polyline) ?? []),
@@ -263,6 +320,7 @@ export function toTrackedRoutePayload(
     note: details.note === null || details.note.trim() === '' ? null : details.note,
     session_log_id: details.sessionLogId,
     source: details.source,
+    elevation_profile: summary.elevationProfile.length >= 2 ? summary.elevationProfile : null,
   });
   return parsed.success ? parsed.data : null;
 }

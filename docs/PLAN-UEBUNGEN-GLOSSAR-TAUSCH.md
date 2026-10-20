@@ -1167,3 +1167,42 @@ ownerUserId; today; catchUpToday? } }` – Präferenzen und Day-Swaps gibt es nu
   `exclusionOverview` abgedeckt.
 - Zusätzlich: Im Trainingsmodus ist „Ab jetzt immer“ an einer Übung, die vor dem Training nur für heute getauscht
   wurde, deaktiviert (mit Erklärung) – die Präferenz hinge sonst an einer Tagesübung.
+
+## Nachtrag „Muskelkarte“ (Gründer-Wunsch 20.10.2026, umgesetzt)
+
+Zu jeder Übung eine anatomische Darstellung mit den beanspruchten Muskeln. Vorbild war eine bekannte Trainings-App mit
+3D-Anatomie – **nicht kopiert**: Silhouette und Muskel-Umrisse sind selbst gezeichnet (stilisiert, symmetrisch), es
+werden keine fremden Bilder genutzt.
+
+- **Core** (`packages/core/src/content/muscle-map.ts`): `MUSCLE_MAP_REGIONS` ordnet **jede** der 17 Muskelgruppen des
+  Enums `MUSCLE_GROUPS` einer oder beiden Ansichten zu; `muscleMapHighlights(exercise)` liefert je Muskel
+  `primary`/`secondary`/`none` (primär schlägt sekundär, Doppelte entfernt, leere Listen = neutral), die aktiven
+  Ansichten und die deutschen Namen. `glossaryEntry` enthält das Ergebnis als `muscles`. Tests: jede Enum-Variante
+  zugeordnet und einzeln hervorhebbar, alle Übungen des Inhaltsstands haben einen sichtbaren Hauptmuskel.
+- **App**: Umrisse in `apps/mobile/src/lib/muscle-map-paths.ts` (Test: jede Region aus dem Core ist gezeichnet, nur
+  absolute Pfadbefehle, im Raster), Baustein `components/muscle-map.tsx`. Übungsdetail: Karte „Beanspruchte Muskeln“
+  mit Legende; Trainingsmodus: kleine Karte neben dem Namen, antippbar → Dialog. Farben/Kontraste: docs/DESIGN.md.
+- **Abgedeckte Muskelgruppen** (vorn / hinten): Brust (v), Latissimus (h), oberer Rücken (h, Kapuzenmuskel auch v),
+  vordere Schulter (v), seitliche Schulter (v+h), hintere Schulter (h), Bizeps (v), Trizeps (h), Unterarme (v+h),
+  gerade Bauchmuskeln (v), schräge Bauchmuskeln (v), unterer Rücken (h), Gesäß (h), Quadrizeps (v), Beinbeuger (h),
+  Adduktoren (v+h), Waden (h+v).
+- **Platzhalter „Ausgangsposition“**: Zuordnung `content/exercise-media/<übungs-id>.json` (Schema
+  `exerciseMediaSchema`: Bildart `start_position`, Datei unter `apps/mobile/assets/exercise-media/`, Alt-Text,
+  Herkunft, **Lizenz und Quelle Pflicht**, bei KI-Bildern `reviewed_by` Pflicht). `content:validate` prüft die Dateien;
+  jedes Problem – vor allem **Bild ohne Lizenzangabe** – ist ein blockierender Fehler. Die App zeigt den Bereich nur,
+  wenn es ein Bild gibt (Registry `apps/mobile/src/data/exercise-media.ts`, ein Test hält sie deckungsgleich mit
+  `content/exercise-media`). Es sind **keine** Bilder enthalten.
+- Tests: core (Vitest), App (Vitest), E2E `apps/mobile/e2e/muscle-map.spec.ts`.
+
+### Offene Gründer-Entscheidung: Übungsbilder „Ausgangsposition“ – Quelle und Lizenz
+
+| Option                                              | Vorteile                                                                                          | Nachteile                                                                                                                                                                     |
+| --------------------------------------------------- | ------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **A – Lizenzierte 3D-Übungsbild-Bibliothek kaufen** | sofort viele, einheitliche Bilder; fachlich meist sauber                                          | laufende bzw. hohe Lizenzkosten; Lizenz muss App + Web + Store-Screenshots abdecken; Bestand passt nicht 1 : 1 zu unseren 80 Übungen (Varianten mit Band/Handtuch fehlen oft) |
+| **B – Eigene Illustrationen beauftragen**           | exakt unsere Übungen, eigener Stil passend zur Marke Alpha5, volle Nutzungsrechte per Werkvertrag | teurer und langsamer am Anfang (Briefing, Abnahme je Bild)                                                                                                                    |
+| **C – KI-generiert mit fachlicher Prüfung**         | günstig, schnell, eigene Varianten möglich                                                        | häufige anatomische/technische Fehler (Gelenkwinkel, Griff); Rechtslage der Nutzungsrechte unsicher; jedes Bild braucht Fachprüfung (`reviewed_by` Pflicht)                   |
+
+**Empfehlung: B** (eigene Illustrationen im Stil der Muskelkarte, Werkvertrag mit Übertragung der Nutzungsrechte),
+gestartet mit den ~20 Grundübungen der Pläne; für den Übergang **A nur**, wenn eine Bibliothek mit klarer App-Lizenz
+die Grundübungen abdeckt. **C** nur als Skizzen-Vorlage für B, nicht direkt in der App. Ohne Antwort gilt: keine Bilder,
+der Bereich bleibt ausgeblendet.

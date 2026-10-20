@@ -341,7 +341,15 @@ export function autoPause(
  * unter 1 km ergibt keine Kilometerzeit (0,99 km → []; 1,01 km → [Zeit des ersten km]).
  */
 export function kmSplits(points: readonly TrackPoint[], sport: TrackedRouteSport): number[] {
-  const { moving, distanceM, dtS } = motionSegments(points, sport);
+  return kmSplitsFromMotion(motionSegments(points, sport));
+}
+
+/**
+ * Kilometerzeiten aus fertigen Bewegungs-Abschnitten (auch aneinandergehängt aus mehreren Teilstücken einer
+ * Aufzeichnung mit Pause, summarizeRecording). Gleiche Regeln wie kmSplits.
+ */
+export function kmSplitsFromMotion(motion: MotionResult): number[] {
+  const { moving, distanceM, dtS } = motion;
   const splits: number[] = [];
   let dist = 0;
   let time = 0;

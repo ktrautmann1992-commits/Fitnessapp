@@ -32,6 +32,8 @@ export const PROTECTED_STORE_NAMES = [
   'nutritionCache',
   'nutritionQueue',
   'liveAdjust',
+  'routeRecording',
+  'routeQueue',
 ] as const;
 export type ProtectedStoreName = (typeof PROTECTED_STORE_NAMES)[number];
 
@@ -55,6 +57,12 @@ export const PROTECTED_STORE_KEYS: Record<
   },
   // Etappe 4b D: Anpassungen des Plans (Live-Anpassung, 8.3).
   liveAdjust: { dataKey: STORAGE_KEYS.liveAdjust, keyName: STORAGE_KEYS.liveAdjustKey },
+  // Etappe E4: laufende Aufzeichnung und Strecken-Warteschlange (Standortdaten).
+  routeRecording: {
+    dataKey: STORAGE_KEYS.routeRecording,
+    keyName: STORAGE_KEYS.routeRecordingKey,
+  },
+  routeQueue: { dataKey: STORAGE_KEYS.routeQueue, keyName: STORAGE_KEYS.routeQueueKey },
 };
 
 export type ProtectedStores = Record<ProtectedStoreName, ProtectedStore>;
@@ -71,6 +79,8 @@ export function createMemoryProtectedStores(): Record<
     nutritionCache: createMemoryProtectedStore(),
     nutritionQueue: createMemoryProtectedStore(),
     liveAdjust: createMemoryProtectedStore(),
+    routeRecording: createMemoryProtectedStore(),
+    routeQueue: createMemoryProtectedStore(),
   };
 }
 

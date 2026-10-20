@@ -17,6 +17,7 @@ import type {
   HealthScreeningAnswers,
   MealPlanRecord,
   MealPlanWeek,
+  StoredAppLayout,
   StoredShoppingList,
   NutritionSetupColumns,
   NutritionSetupStep,
@@ -220,6 +221,27 @@ export type UserFoodProductRow = UserFoodProduct & {
   updated_at: string;
 };
 
+/**
+ * Gelernte Zuordnung Strichcode → Lebensmittel (Einkaufen E1, docs/PLAN-EINKAUFEN-AUSDAUER.md 3) – Spalten wie
+ * `shopping_product_links`. SENSIBEL (Konsum): nur mit Einwilligung health_data, beim Widerruf gelöscht, nie loggen.
+ */
+export interface ShoppingProductLinkRow {
+  user_id: string;
+  code: string;
+  food_id: string;
+  updated_at: string;
+}
+
+/**
+ * Anordnung der Übersicht und der Menüleiste (Etappe E2, docs/PLAN-EINKAUFEN-AUSDAUER.md 4) – Spalten wie
+ * `app_layout_settings`. Kein Gesundheitsdatum. Angezeigt wird immer `normalizeLayout` (packages/core).
+ */
+export interface AppLayoutRow {
+  user_id: string;
+  dashboard_tiles: StoredAppLayout['dashboard_tiles'];
+  tab_bar: StoredAppLayout['tab_bar'];
+}
+
 /** Zutat eines eigenen Gerichts – Spalten wie `custom_meal_items`. */
 export type CustomMealItemRow = CustomMealItem & {
   meal_id: string;
@@ -302,6 +324,10 @@ export interface UserRows {
   customMealItems: CustomMealItemRow[];
   /** Eigene Produkte (Etappe E4a; Testmodus und Supabase-Modus). Name/Marke = Freitext, SENSIBEL. */
   userFoodProducts: UserFoodProductRow[];
+  /** Gelernte Zuordnungen Strichcode → Lebensmittel (Einkaufen E1; Testmodus und Supabase-Modus). SENSIBEL. */
+  shoppingProductLinks: ShoppingProductLinkRow[];
+  /** Anordnung der Übersicht und der Menüleiste (Etappe E2; null = Standard). */
+  appLayout: AppLayoutRow | null;
   /** Wettkämpfe (Phase 10 WP3; App und Testmodus ab WP4 – bis dahin immer leer). */
   competitions: CompetitionRow[];
 }
@@ -339,6 +365,8 @@ export function emptyUserRows(): UserRows {
     customMeals: [],
     customMealItems: [],
     userFoodProducts: [],
+    shoppingProductLinks: [],
+    appLayout: null,
     competitions: [],
   };
 }

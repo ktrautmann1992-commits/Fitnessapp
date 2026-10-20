@@ -226,7 +226,7 @@ export default function RecipeScreen() {
     <Button
       label={shoppingTexts.open}
       variant="secondary"
-      onPress={() => router.push(`/einkaufsliste?woche=${weekForList}` as Href)}
+      onPress={() => router.dismissTo(`/einkaufsliste?woche=${weekForList}` as Href)}
       testID="recipe-shopping-open"
     />
   );

@@ -973,6 +973,39 @@ es mit N7 Teil 2), der Trainingsteil geht in beiden Modi.
 **Bitte fachlich prüfen lassen (vor dem Livegang):** Muster-Hinweis ab 3 Tagen unter dem Mindestbedarf je Woche
 (A-G13, Konstante `WEEK_EVALUATION` in `packages/core/src/constants.ts`).
 
+## Teil 7r – Ernährung: Tagesansicht mit Kalorien-Ring testen (20.10.2026, Testmodus)
+
+Die Tagesansicht im Reiter **Ernährung** sieht jetzt so aus (eigenes Alpha5-Design, hell und dunkel):
+
+- Oben **„Heute“** und darunter Datum mit Kalenderwoche (z. B. „Montag, 12.10. · KW 42“). Anderer Tag: Wochentag und „KW …“.
+- Karte **„Übersicht“**: großer **Kalorien-Ring** – in der Mitte „… übrig“ (bzw. neutral „… zu viel“), links
+  **„Gegessen“**, rechts **„Verbrannt“** (Training des Tages, steht klein „im Ziel enthalten“ – es wird **nicht**
+  doppelt dazugezählt) oder – an Tagen ohne Training – **„Ziel“**. Darunter „Tagesziel: … kcal“ und drei
+  **Makro-Balken** Kohlenhydrate / Eiweiß / Fett („47 / 222 g“ = gegessen / Ziel).
+- Abschnitt **„Ernährung“**: je eine Karte **Frühstück, Mittagessen, Abendessen, Snacks** mit kleinem Ring,
+  „317 / 606 kcal“ (gegessen / Anteil am Tagesziel), Vorschau der Einträge und rundem **„+“** rechts. Die Gerichte aus
+  dem Essensplan stehen in der passenden Karte (antippen = Rezept, „Gegessen“, „Rezept tauschen“ wie bisher). Bei nur
+  einer Mahlzeit am Tag heißt die Karte „Hauptmahlzeit“.
+- Darunter wie bisher **„Gegessen“** mit allen Einträgen (Ändern, Löschen, Stern) und „Eigene Gerichte“.
+
+So prüft ihr es am Handy:
+
+1. Vorschau-Link → Testkonto wie in Teil 7c (4 Mahlzeiten, Mo/Mi/Fr Kraft) → **Ernährung**.
+2. **Prüfen:** Ring zeigt „… übrig“, links „Gegessen 0“, darunter „Noch nichts eingetragen.“; an einem Trainingstag
+   rechts „Verbrannt … im Ziel enthalten“, sonst „Ziel“.
+3. Bei **Frühstück** auf **„+“** tippen → der Eintrage-Dialog öffnet sich mit **Mahlzeit „Frühstück“** vorgewählt
+   (Zuletzt, Favoriten, Suche, Schnell, „Per Foto“, „Barcode“ wie gewohnt). Z. B. Suche „Banane“ → eintragen → zurück.
+   **Prüfen:** Frühstücks-Karte zeigt „… / … kcal“ und „Banane“, der große Ring „Gegessen“ ist gestiegen, „übrig“
+   entsprechend gesunken; die Makro-Balken füllen sich.
+4. Snacks **„+“** → Schnelleintrag z. B. „Auswärts gegessen, 3.000 kcal“ → **Prüfen:** In der Mitte steht neutral
+   „… zu viel“, der Ring bekommt eine zweite Runde (hell: schwarz, dunkel: weiß). Keine roten Warnungen.
+5. Mit **„Nächster Tag“** auf einen künftigen Tag → Ring zeigt nur das **Tagesziel**, keine „+“-Knöpfe.
+6. **Flugmodus an** (bzw. im Browser offline) → oben Hinweis „Du bist offline …“ – Eintragen geht weiter.
+7. **Einstellungen → Kalorienzahlen anzeigen** aus → kein Ring, keine kcal, Karten nur mit Vorschau und „+“.
+8. Mit Bildschirmleser (VoiceOver/TalkBack): Ring wird z. B. als „1.391 kcal übrig von 2.869 kcal Tagesziel“
+   vorgelesen, die Balken als „Eiweiß: 47 von 222 Gramm gegessen“, „+“ als „Frühstück für heute eintragen“.
+9. Alles einmal hell und einmal dunkel ansehen.
+
 ## Teil 7m – Startbildschirm, Anmelden, Übersicht und Menüleiste testen (18.10.2026)
 Ihr müsst nichts einstellen – keine Datenbank-Änderung. Getestet mit **Chrome am iPhone** (Vorschau-Link aus dem Pull
 Request), am besten in einem **Inkognito-Tab**: Chrome → unten rechts **⋯** → **Neuer Inkognito-Tab** → Vorschau-Link
@@ -983,8 +1016,8 @@ einfügen. Plan dazu: `docs/PLAN-DASHBOARD.md`.
 1. Startbildschirm (dunkel, Alpha5): großer Knopf **„Neu hier – Los geht's“**. Statt „Anmelden“ steht ein kurzer
    Hinweis, dass Anmelden erst mit der Datenbank geht. Unten ist **keine** Menüleiste.
 2. „Neu hier – Los geht's“ → Geburtsdatum → **„Testmodus starten“** → Onboarding wie bisher → **„Zum Plan“**.
-   Es öffnet sich **„Heute“**, unten die Menüleiste **Übersicht · Training · Ernährung · Fortschritt · Mehr**;
-   „Training“ ist markiert.
+   Es öffnet sich **„Heute“**, unten die Menüleiste **Übersicht · Training · Workouts · Ernährung · Einkaufen · Mehr** (seit
+   20.10.2026; „Fortschritt“ steht als Kachel auf der Übersicht und unter „Mehr“); „Training“ ist markiert.
 3. **„Übersicht“** antippen: Kacheln **Training heute** (an einem Trainingstag mit **„Training starten“**, sonst
    „Ruhetag“ und die nächste Einheit), **Ernährung heute**, **Körperdaten** (mit Einwilligung euer zuletzt
    eingetragenes Gewicht – **nie** ein Wunschgewicht oder ein Balken zum Ziel), **Fortschritt** („Diese Woche: x von
@@ -1019,6 +1052,68 @@ einfügen. Plan dazu: `docs/PLAN-DASHBOARD.md`.
 5. **Mehr → Mein Konto** zeigt eure E-Mail-Adresse. **Abmelden** → Rückfrage → zurück zum Startbildschirm; die Daten
    sind vom Gerät gelöscht (neu anmelden mit Code holt sie wieder).
 6. **E-Mail-Adresse ändern** gibt es noch nicht (vorgemerkt, `docs/PLAN-DASHBOARD.md` Abschnitt 5).
+
+## Teil 7o – Einkaufen testen (Etappe E1, Testmodus, 20.10.2026)
+
+Ihr müsst nichts einstellen. Getestet mit **Chrome am Android-Handy** (Kamera geht dort direkt) oder **Chrome am
+iPhone** (Vorschau-Link aus dem Pull Request, am besten im Inkognito-Tab). Plan: `docs/PLAN-EINKAUFEN-AUSDAUER.md`
+Abschnitt 3.
+
+1. Vorschau-Link → **„Neu hier – Los geht's“** → **„Testmodus starten“** → Onboarding mit Ernährung → **„Zum Plan“**.
+2. Unten in der Menüleiste: **Übersicht · Training · Workouts · Ernährung · Einkaufen · Mehr**. **„Einkaufen“** antippen → eure
+   Einkaufsliste der Woche (aus dem Essensplan), Überschrift **„Einkaufen“**, ohne „Zurück“-Knopf.
+3. **Abhaken:** Einen Eintrag antippen → Haken. Seite neu laden (Chrome: **⋯ → Neu laden**) → der Haken ist noch da.
+4. **Alle Haken zurücksetzen** → Rückfrage → **„Zurücksetzen“** → alle Einträge sind wieder offen.
+5. **Eigener Artikel:** Unten bei „Eigener Eintrag“ z. B. **Kaffee** und bei **„Menge (optional)“** **500 g** →
+   „Hinzufügen“ → „500 g Kaffee“ steht auf der Liste. „viel“ als Menge → verständlicher Hinweis mit Beispielen.
+   Mit **✕** löscht ihr eigene Artikel wieder.
+6. **Im Laden scannen** (Kasten oben):
+   - **„Strichcode scannen“** → Kamera erlauben → Strichcode einer Packung in den Rahmen halten. Im Testmodus kennt
+     die App nur Testnummern – nehmt **„Nummer eintippen“** und tippt eine der **Testnummern** an (oder zeigt die
+     Testnummer am zweiten Handy unter Ernährung → Eintragen → „Produkt (Barcode)“ → „Strichcodes der Testnummern
+     anzeigen“).
+   - **„Gefunden, Werte plausibel“** (Testprodukt Müsli) → **„Nicht auf deiner Liste – zusätzlich hinzufügen?“**:
+     Name ist vorbefüllt, Abteilung wählbar → **„Ja, hinzufügen“** → steht abgehakt auf der Liste.
+   - Eigenen Artikel **„Müsli“** anlegen und dieselbe Testnummer erneut → **„✓ Müsli abgehakt“** mit
+     **„Rückgängig“** (macht den Eintrag wieder offen).
+   - Zusätzlich **„Bio-Müsli“** anlegen und erneut scannen → **„Welcher Eintrag ist es?“** → den richtigen antippen.
+     Bei Einträgen aus dem Essensplan merkt sich die App eure Wahl (nur mit Einwilligung Gesundheitsdaten, nur in
+     eurem Konto) – beim nächsten Scan desselben Produkts klappt es dann ohne Auswahl, auch ohne Netz.
+   - **„Nicht gefunden“** → **„Produkt nicht erkannt“** → Eintrag aus der Liste antippen oder **„Als eigenen Artikel
+     hinzufügen“**.
+7. **Ohne Essensplan:** Wer die Ernährung noch nicht eingerichtet hat, sieht im Einkaufen den Hinweis „keinen
+   Essensplan“ – eigene Artikel, Abhaken und Scannen gehen trotzdem.
+8. **„Fortschritt“** findet ihr jetzt unter **Mehr → Fortschritt** und über die Kachel auf der Übersicht.
+
+**Mit Datenbank (nach dem Merge, Teil 8):** Die Migration `20261020120000_shopping_product_links.sql` spielt
+`db-migrate` beim Merge automatisch ein. Häkchen von Listen mit Gesundheitsbezug gehen jetzt auch **ohne Netz**
+(verschlüsselte Warteschlange auf dem Gerät) und werden bei Verbindung gesendet. Gelernte Zuordnungen stehen im
+Datenexport (Mehr → Mein Konto → Meine Daten) unter `shopping_product_links` und werden beim Widerruf der
+Einwilligung in Gesundheitsdaten gelöscht.
+
+## Teil 7p – Übersicht und Menüleiste anpassen (Etappe E2, Testmodus, 20.10.2026)
+
+Ihr müsst nichts einstellen. Vorschau-Link aus dem Pull Request im Handy-Browser öffnen, Testmodus starten,
+Onboarding bis **„Zum Plan“**, dann unten **„Übersicht“**.
+
+1. Ganz unten auf der Übersicht **„Bearbeiten“** antippen.
+2. Bei **„Körperdaten anzeigen“** den Haken entfernen → die Kachel verschwindet sofort.
+3. Bei **„Ernährung heute“** **„Nach oben“** antippen → die Kachel steht jetzt ganz oben. (Mit eingeschaltetem
+   TalkBack/VoiceOver sagt das Handy „Ernährung heute ist jetzt an Stelle 1 von 5.“)
+4. **„Fertig“** → Seite neu laden (Chrome: **⋯ → Neu laden**) → die Reihenfolge bleibt.
+5. Alle Haken entfernen → Hinweis „Alle Kacheln sind ausgeblendet“; Hinweise oben (z. B. „Im Training wartet etwas“)
+   bleiben trotzdem sichtbar. **„Bearbeiten“ → „Auf Standard zurücksetzen“** holt alles zurück.
+6. **Mehr → „Menüleiste anpassen“** (oder in „Bearbeiten“): Es sind schon 6 Knöpfe – **„Fortschritt in der
+   Menüleiste“** geht erst, wenn ihr z. B. **„Workouts“** herausnehmt (die App sagt „Höchstens 6 Knöpfe …“). Mit **„Nach links“/„Nach rechts“** ändert ihr die Reihenfolge. „Übersicht“ (links) und
+   „Mehr“ (rechts) bleiben immer. Bei 6 Knöpfen ist kein weiterer möglich, unter 3 auch nicht – die App sagt warum.
+7. Einen Bereich herausnehmen (z. B. „Ernährung“) → er steht unter **Mehr → „Weitere Bereiche“** und funktioniert
+   wie vorher.
+8. **„Auf Standard zurücksetzen“** → Übersicht · Training · Workouts · Ernährung · Einkaufen · Mehr. Auch die Kachel
+   **„Workouts“** auf der Übersicht lässt sich unter „Bearbeiten“ aus- und umstellen.
+
+**Mit Datenbank:** Die Migration `20261020130000_app_layout_settings.sql` spielt `db-migrate` beim Merge ein. Die
+Anordnung gilt dann für euer Konto auf allen Geräten, steht im Datenexport (`app_layout_settings`) und bleibt beim
+Widerruf der Gesundheits-Einwilligung (kein Gesundheitsdatum).
 
 ## Teil 7n – Live-Anpassung des Plans testen (Phase 4b, Etappe D, Testmodus, 18.10.2026)
 Die Live-Anpassung ist in der **Testphase kostenlos** (Teil 7t). Im Testmodus ist **„Live-Anpassung einschalten
@@ -1055,6 +1150,35 @@ ist** (geschützter Speicher) – Tab schließen = Anpassungen weg, der Plan ist
 
 Die Fälle über mehrere Wochen (Schritte 4 und 5, Stillstand → Übung getauscht, abgelaufener Vorschlag) prüft der
 automatische Test `e2e/live-adjust.spec.ts` mit festem Datum – im Pull Request unter **Checks → ci** grün.
+
+## Teil 7o – Workouts mit Sternen und Timer testen (20.10.2026, Testmodus)
+Fertige Workouts (1 Stern leicht – 5 Sterne sehr schwer) mit Timer; nach dem Abschluss stehen sie als Eintrag am
+heutigen Tag. Alle 27 Workouts sind **Testphase – noch nicht fachlich geprüft** (so steht es auch in der App).
+Getestet mit **Chrome am iPhone** (Vorschau-Link aus dem Pull Request), am besten im **Inkognito-Tab**.
+
+1. Vorschau-Link öffnen → **„Los geht's“** → Geburtsdatum **15.05.1990** → **Testmodus starten** → Zustimmen →
+   beliebig weiter bis **„Zum Plan“**.
+2. Unten in der Menüleiste **„Workouts“** antippen (auch über **Mehr → Workouts**). **Prüfen:** „27 Workouts“, jede
+   Karte zeigt Titel, Sterne mit Wort (z. B. „★★☆☆☆ eher leicht“), Minuten, Ziel und Geräte.
+3. **Filter:** Stern **★★★★★** antippen → nur 2 Workouts. Wieder lösen, **★** und Ziel **„Bauch & Rumpf“** → nur
+   „Rumpf-Basis“. **„Filter zurücksetzen“** → **„Nur ohne Geräte“** → nur Workouts ohne Geräte.
+4. **„Bauch-Blitz“** öffnen → Sterne, Ablauf, Übungen mit Sekunden und Pausen, Aufwärmen, Sicherheitshinweis.
+   Bei einem Workout mit 4–5 Sternen steht für Einsteiger zusätzlich „lieber mit 1–3 Sternen beginnen“ (nur Hinweis).
+5. **„Workout starten“** → 5 Sekunden „Gleich geht's los“, dann großer Countdown je Übung, darunter **„Als
+   Nächstes“**. **Prüfen:** **Pausieren** hält die Zeit an, **Fortsetzen** läuft weiter, **Überspringen** springt
+   zur nächsten Übung, in der Pause **„Pause beenden“**. Ton und Vibration lassen sich unten abschalten (im Browser nur
+   Ton). Der Bildschirm bleibt an.
+6. Ein Workout mit **Sätzen** (z. B. „Kurzhantel-Basis“): Hier läuft keine Zeit ab – nach jedem Satz **„Satz erledigt
+   ✓“**, dann startet die Satzpause von selbst.
+7. Ende abwarten oder **„Beenden“** → Nachfrage → **„Beenden“**. Anstrengung (0–10) und Notiz sind freiwillig →
+   **„Für heute speichern“** → „Gespeichert …“. **Prüfen:** Der Knopf ist danach weg (kein zweiter Eintrag), **„Zum
+   heutigen Tag“** zeigt die Einheit, im **Kalender** steht „✓ Freie Kraft-Einheit · Workout“, im Eintrag die Notiz
+   „Workout „Bauch-Blitz“ (★★☆☆☆) · …“. Zurück in der Liste: **„Heute erledigt ✓“** auf der Karte.
+8. Offline (Flugmodus) speichern geht auch – der Eintrag wird übertragen, sobald ihr wieder online seid (mit Konto).
+
+**Mit Konto (Supabase):** Nach dem Merge legt **db-migrate** die Tabelle an; danach **Actions → content-seed → Run
+workflow** – solange in `content/einspiel-regeln.json` die Testphase eingestellt ist, kommen die Workouts mit. Vor dem
+Livegang gilt dieselbe Regel wie bei den Rezepten (Teil 7t): nur fachlich geprüfte Workouts.
 
 ## Teil 7e – Neue Rezepte per KI erzeugen (Phase 5, Etappe N8, Gemini offline)
 
@@ -1139,6 +1263,19 @@ schaltet **db-migrate** das automatisch ein (Flag `premium_open` = an). Ihr müs
    **Fertigstellen**.
 
 Die Warnung stoppt nichts von selbst – abschalten geht sofort per beta-grant (`flag_aus`, flag `ai_food_photo`).
+
+## Teil 7o – Muskelkarte testen (20.10.2026, Testmodus)
+1. Vorschau-Link aus dem Pull Request öffnen (Testmodus) → Onboarding → **Zum Plan**.
+2. Einen Übungsnamen auf „Heute“ antippen (oder **Einstellungen → Übungen (Glossar)** → Übung wählen): Karte
+   **„Beanspruchte Muskeln“** mit Körper **Vorn** und **Hinten**. Hauptmuskeln kräftig blau, mitbeteiligte hellblau,
+   der Rest grau. Darunter in Worten: „Hauptmuskeln: …“ und „Mitbeteiligt: …“.
+3. **Training starten**: Rechts neben jedem Übungsnamen eine kleine Muskelkarte → antippen → große Karte mit Legende →
+   **Schließen**. Der Pausentimer läuft dabei weiter.
+4. Mit Bildschirmleser (VoiceOver/TalkBack): Die Karte wird vorgelesen als „Trainiert vor allem: Brust. Mitbeteiligt:
+   Trizeps, vordere Schulter.“
+5. Alles einmal hell und einmal dunkel ansehen.
+- Ein Bereich **„Ausgangsposition“** (Foto/Illustration der Übung) erscheint erst, wenn es Bilder mit geklärter Lizenz
+  gibt – offene Entscheidung, siehe `docs/PLAN-UEBUNGEN-GLOSSAR-TAUSCH.md`, Nachtrag „Muskelkarte“.
 
 ## Teil 8 – Live-Test mit Supabase (Pflicht vor „MVP fertig“, W13) – **offen, braucht euch**
 Diesen Test kann Claude in der Cloud-Sitzung nicht machen (kein echtes Konto, keine zwei Handys). Bitte einmal
@@ -1246,11 +1383,13 @@ nur in GitHub-Secrets bzw. auf expo.dev.
 „E: Punkt 1–9 ok, Punkt 4 iPhone Fehler: …“ – ohne Passwörter oder Codes)
 1. **Start:** App-Name **Alpha5** unter dem Symbol, Logo-Symbol (Android auch rund und als „Designtes Symbol“),
    Startbildschirm Logo auf Schwarz, App startet ohne Absturz; hell und dunkel.
-2. **Keine Berechtigungs-Abfragen:** Beim ganzen Durchklicken fragt die App **nie** nach Fotos, Standort, Face ID
-   oder Kontakten – und **nie ungefragt** nach Mitteilungen: Die Mitteilungs-Abfrage kommt erst, wenn ihr eine
-   Erinnerung mit „Ja“ annehmt bzw. in den Einstellungen einschaltet (Teil 9a), nie beim Start oder im Onboarding.
-   Android: Einstellungen → Apps → Alpha5 → Berechtigungen zeigt höchstens Kamera und Benachrichtigungen (Internet und
-   Vibration zählen nicht als Berechtigung).
+2. **Keine Berechtigungs-Abfragen:** Beim ganzen Durchklicken fragt die App **nie** nach Fotos, Face ID oder
+   Kontakten – und **nie ungefragt** nach Mitteilungen oder Standort: Die Mitteilungs-Abfrage kommt erst, wenn ihr
+   eine Erinnerung mit „Ja“ annehmt bzw. in den Einstellungen einschaltet (Teil 9a), die Standort-Abfrage erst nach
+   dem Erklär-Bildschirm beim ersten **Aufzeichnen** unter „Ausdauer“ (Teil 9b) – nie beim Start oder im Onboarding.
+   Android: Einstellungen → Apps → Alpha5 → Berechtigungen zeigt höchstens Kamera, Standort und Benachrichtigungen
+   (Internet und Vibration zählen nicht als Berechtigung). Beim Standort steht nur **„Nur während der Nutzung der
+   App zulassen“** zur Wahl – **„Immer zulassen“ gibt es nicht** (gewollt).
 3. **Testmodus und Anmeldung:** „Ohne Konto testen“ funktioniert; mit Supabase-Werten auf expo.dev (SETUP D6)
    klappt die Anmeldung per E-Mail-Code.
 4. **Pausentimer vibriert** am Ende der Pause (Etappe C2) – App offen lassen; Ton aus/Vibration an.
@@ -1302,6 +1441,65 @@ diese Änderung baut noch keine APK):
    „Pause vorbei“ kommt – einmal mit Ladekabel, einmal ohne und im Energiesparmodus. Wie viele Sekunden zu spät?
    (Android plant ohne exakte Wecker „ungefähr“, die App weist darauf hin.)
 Ergebnis bitte Claude schreiben, z. B. „E Android: 1–5 ok, Pause 4 s / 70 s zu spät“ (ohne Passwörter oder Codes).
+
+## Teil 9b – Ausdauer aufzeichnen und als Bild teilen (Etappen E3–E6, 20.10.2026)
+Neu unter **Ausdauer** (Kachel auf der **Übersicht** bzw. **Mehr → Ausdauer**): Laufen, Rad und Gehen mit GPS
+aufzeichnen, „Meine Läufe“, Auswertung je Lauf (Karte, Kilometerzeiten, Höhenprofil), Summen je Woche/Monat und ein
+Story-Bild 9:16. Standortdaten sind privat (nur ihr seht eure Strecken), das Bild entsteht nur auf dem Handy.
+
+**A – Im Handy-Browser (Vercel-Vorschau, Testmodus) – geht sofort, ohne APK**
+1. Vorschau-Link → **Ohne Konto testen** → Onboarding bis **Geschafft!** → **Zum Plan** → **Übersicht** → Kachel
+   **Ausdauer** → **Zu Ausdauer**.
+2. Oben steht „Aufzeichnen mit GPS geht in der App“. **Laufen** wählen → **Demo-Aufzeichnung starten (Testmodus)**:
+   Eine ausgedachte Runde am Rhein läuft im Zeitraffer (1 Sekunde = 40 Sekunden). Große Zahlen: Zeit, Distanz,
+   Ø-Pace (Rad: km/h). **Pause** → Zahlen stehen; **Fortsetzen** → weiter.
+3. Nach ca. 30 Sekunden (über 1 km) **Stopp** → **Ja, beenden** → Name ändern, **Als Favoriten-Strecke merken**,
+   Schwierigkeit, Notiz → **Speichern**. Darunter steht „Wird als freie Einheit ins Trainingstagebuch eingetragen“.
+4. Auswertung: Gesamt- und Bewegungszeit, Distanz, Ø-Pace, Höhenmeter mit „ca.“ und Hinweis „Höhenmeter per GPS sind
+   ungenau“, **Karte** (OpenFreeMap, unten „© OpenStreetMap-Mitwirkende“), **Kilometerzeiten** als Balken,
+   **Höhenprofil**. Lädt die Karte nicht, steht ein Hinweis – die Zahlen bleiben.
+5. **Als Bild teilen** → Vorschau (schwarz, Alpha5-Logo, Linie ohne Anfang/Ende, Zeit, Distanz, Pace, Höhenmeter –
+   **keine Uhrzeit, kein Puls, kein Gewicht**) → Schalter **Strecke zeigen** / **Datum zeigen** ausprobieren →
+   **Bild teilen** (Handy-Browser öffnet den Teilen-Dialog) bzw. **Bild herunterladen**.
+6. Zurück → **Ausdauer**: Der Lauf steht in **Meine Läufe** mit Linien-Skizze, oben die **Woche** (Umschalter
+   **Monat**, **Zurück**/**Weiter**) mit Summen und neutralem Vergleich („… km mehr als letzte Woche“).
+7. **Eintragen ohne GPS** → Ausdauer → Rad → Dauer und Distanz → Speichern → erscheint ebenfalls in „Meine Läufe“
+   (Kennzeichen „ohne GPS“), einmal gezählt.
+8. **Krafttraining als Bild:** Training → eine Einheit speichern → im Verlauf bzw. Kalender den Eintrag öffnen → **Als
+   Bild teilen**: Name, Datum, Dauer, Übungen (bis 5 Namen), Sätze, Volumen **nur aus Zusatzlast** (ohne
+   Körpergewicht).
+9. Auswertung → **Strecke löschen** → weg; der Tagebuch-Eintrag bleibt (separat löschbar). **Alle Strecken löschen**
+   unten in der Liste.
+
+**B – In der echten App (Test-APK) – braucht einen neuen Build** (neue native Module: Standort, Hintergrund-Aufgabe,
+Bild-Aufnahme, Teilen, WebView)
+1. GitHub-App → **Actions** → **eas-build** → **Run workflow** → Branch **claude/ausdauer-gps** (vor dem Merge) bzw.
+   **main** (nach dem Merge) → **android / preview / nein** → APK wie in Teil 9 B installieren (alte Version einfach
+   überschreiben).
+2. **Ausdauer** → **Laufen** → **Aufzeichnung starten** → erst kommt **unser** Erklär-Bildschirm („Wir nutzen deinen
+   Standort nur, während du aufzeichnest …“) → **Weiter zur Abfrage** → Android fragt: **„Nur während der Nutzung der
+   App“** wählen (iPhone: **„Beim Verwenden der App erlauben“**). „Immer“ wird nie gefragt und ist nicht nötig.
+3. Draußen eine kurze Runde (mind. 1 Minute und 100 m). Oben zuerst „Suche GPS …“, dann laufen die Zahlen. **Handy
+   sperren** und weitergehen: Android zeigt die Benachrichtigung **„Alpha5 – Aufzeichnung läuft“**, iPhone den blauen
+   Standort-Hinweis oben. Entsperren → Zahlen sind weitergelaufen.
+4. **Pause** → Benachrichtigung verschwindet (Standort aus) → **Fortsetzen** → wieder an. **Stopp** → speichern →
+   Auswertung mit Karte.
+5. **Absturz-Test:** Aufzeichnung starten, 1–2 Minuten gehen, App im App-Wechsler **wegwischen** → App neu öffnen →
+   **Ausdauer** zeigt „Aufzeichnung gefunden“ → **Fortsetzen** oder **Beenden und speichern**. (Gesichert wird
+   spätestens alle 30 Sekunden; die letzten Sekunden vor dem Wegwischen können fehlen.)
+6. **Funkloch/offline (mit Konto):** Flugmodus an → aufzeichnen → speichern → Liste zeigt „wird übertragen“ → Flugmodus
+   aus → App öffnen → Eintrag ist gespeichert.
+7. **Teilen:** Auswertung → **Als Bild teilen** → **Bild teilen** → System-Teilen-Dialog (z. B. WhatsApp, Instagram,
+   „Bild sichern“/„In Fotos speichern“). Die App fragt dabei **nicht** nach Zugriff auf eure Fotos.
+8. **GPX-Datei:** Auswertung → **Als GPX-Datei speichern** → Ordner wählen (wie beim Datenexport).
+9. **Berechtigung ablehnen:** Auf einem Handy bei der Abfrage **Nicht zulassen** → die App zeigt „Kein Zugriff auf den
+   Standort“ mit **Einstellungen öffnen** (dort: Apps → Alpha5 → Berechtigungen → Standort → „Nur während der Nutzung
+   der App zulassen“) → zurück → **Erneut prüfen** → Aufzeichnung startet.
+10. **Akku:** Wer mag, eine lange Runde (60 min) aufzeichnen und den Akkuverbrauch notieren. Energiesparmodus bzw.
+    „Akku optimieren“ kann die Aufzeichnung auf manchen Android-Handys stören – dann Alpha5 dort ausnehmen
+    (Einstellungen → Apps → Alpha5 → Akku → „Nicht eingeschränkt“).
+
+Ergebnis bitte Claude schreiben, z. B. „9b Android: 1–9 ok, Punkt 5: 40 s fehlten“ (ohne Passwörter oder Codes).
 
 ## Tipps
 - Eine Sitzung = eine Aufgabe. Lieber mehrere kurze Sitzungen als eine endlose.

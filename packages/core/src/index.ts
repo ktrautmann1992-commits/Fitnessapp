@@ -20,8 +20,12 @@ export * from './nutrition';
 export * from './evaluation';
 export * from './retail';
 export * from './routes';
+export * from './share';
 export * from './dashboard';
+export * from './layout';
 export * from './notifications';
+// Workout-Bibliothek (docs/PLAN-WORKOUTS.md).
+export * from './workouts';
 // Supplement-Modul (docs/PLAN-PHASE-6.md, Etappe SU1). Im Ordner `supplements/` gibt es bewusst KEIN index.ts
 // (Wächter S1): Die Dateien werden hier einzeln weitergereicht; Affiliate (SU5) wird hier nie weitergereicht.
 export * from './supplement-ids';

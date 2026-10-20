@@ -1,0 +1,68 @@
+{
+  "id": "rumpf-zirkel-40-20",
+  "version": 1,
+  "status": "published",
+  "title_de": "Rumpf-Zirkel 40/20",
+  "summary_de": "Vier Runden Rumpf nach Zeit: 40 Sekunden Arbeit, 20 Sekunden Pause. Halten, drehen, stabilisieren.",
+  "category": "core",
+  "difficulty": 3,
+  "minutes": 22,
+  "format": "interval",
+  "rounds": 4,
+  "round_rest_s": 60,
+  "equipment_ids": [],
+  "warmup_de": "5 Minuten locker aufwärmen: auf der Stelle gehen, Arme kreisen, Hüfte kreisen und 10 ruhige Kniebeugen ohne Tiefe.",
+  "cooldown_de": "Zum Schluss ruhig auf dem Rücken liegen, Knie angestellt, und eine Minute entspannt in den Bauch atmen.",
+  "exercises": [
+    {
+      "exercise_id": "unterarmstuetz",
+      "reps": null,
+      "duration_s": 40,
+      "sets": null,
+      "rest_s": 20,
+      "note_de": null
+    },
+    {
+      "exercise_id": "seitstuetz",
+      "reps": null,
+      "duration_s": 40,
+      "sets": null,
+      "rest_s": 20,
+      "note_de": "Nach der Hälfte die Seite wechseln."
+    },
+    {
+      "exercise_id": "dead-bug",
+      "reps": null,
+      "duration_s": 40,
+      "sets": null,
+      "rest_s": 20,
+      "note_de": null
+    },
+    {
+      "exercise_id": "bird-dog",
+      "reps": null,
+      "duration_s": 40,
+      "sets": null,
+      "rest_s": 20,
+      "note_de": null
+    },
+    {
+      "exercise_id": "hip-thrust-sofa",
+      "reps": null,
+      "duration_s": 40,
+      "sets": null,
+      "rest_s": 20,
+      "note_de": null
+    }
+  ],
+  "meta": {
+    "origin": "claude_session",
+    "model": "claude-opus-5-5",
+    "batch_id": null,
+    "created_on": "2026-10-20",
+    "expert_reviewed": false,
+    "reviewed_by": "Claude (Gründer-Auftrag 20.10.2026)",
+    "reviewed_at": "2026-10-20",
+    "review_note": "Testphase – noch nicht fachlich geprüft. Startbestand aus einer Claude-Sitzung; Gründer haben am 20.10.2026 entschieden, dass Claude zusammenstellt und freigibt. Vor dem Livegang fachlich prüfen."
+  }
+}

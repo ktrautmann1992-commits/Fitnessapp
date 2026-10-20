@@ -12,6 +12,8 @@ export const deTabs = {
   training: 'Training',
   nutrition: 'Ernährung',
   progress: 'Fortschritt',
+  shopping: 'Einkaufen',
+  workouts: 'Workouts',
   more: 'Mehr',
 } as const;
 
@@ -87,6 +89,39 @@ export const deDashboard = {
     open: 'Zum Fortschritt',
     noPlan: 'Sobald du einen Plan hast, siehst du hier deine Woche.',
   },
+  /** Etappe E2: Übersicht bearbeiten (docs/PLAN-EINKAUFEN-AUSDAUER.md 4). */
+  edit: {
+    open: 'Bearbeiten',
+    openHint: 'Kacheln ein- und ausblenden und die Reihenfolge ändern',
+    title: 'Übersicht bearbeiten',
+    intro:
+      'Blende Kacheln ein oder aus und ändere die Reihenfolge mit „Nach oben“ und „Nach unten“. Hinweise oben bleiben immer sichtbar.',
+    show: (title: string) => `${title} anzeigen`,
+    up: 'Nach oben',
+    down: 'Nach unten',
+    upA11y: (title: string) => `${title} nach oben`,
+    downA11y: (title: string) => `${title} nach unten`,
+    moved: (title: string, index: number, count: number) =>
+      `${title} ist jetzt an Stelle ${index} von ${count}.`,
+    shown: (title: string) => `${title} wird angezeigt.`,
+    hidden: (title: string) => `${title} ist ausgeblendet.`,
+    done: 'Fertig',
+    reset: 'Auf Standard zurücksetzen',
+    resetDone: 'Übersicht und Menüleiste sind wieder wie am Anfang.',
+    menuBar: 'Menüleiste anpassen',
+    saveFailed: 'Das hat nicht geklappt. Bitte versuche es noch einmal.',
+    allHidden: 'Alle Kacheln sind ausgeblendet.',
+    allHiddenHint: 'Über „Bearbeiten“ holst du sie zurück.',
+    tiles: {
+      training: 'Training heute',
+      workouts: 'Workouts',
+      nutrition: 'Ernährung heute',
+      body: 'Körperdaten',
+      progress: 'Fortschritt',
+      endurance: 'Ausdauer',
+      shortcuts: 'Schnell zu',
+    },
+  },
   shortcuts: {
     title: 'Schnell zu',
     recipes: 'Rezepte',
@@ -125,6 +160,10 @@ export const deMore = {
   mealPrep: 'Meal-Prep',
   competition: 'Wettkampf',
   licenses: 'Lizenzen und Quellen',
+  /** Etappe E2: Bereiche ohne Knopf in der Menüleiste. */
+  areasTitle: 'Weitere Bereiche',
+  menuBar: 'Menüleiste anpassen',
+  layoutHint: 'Welche Bereiche unten als Knöpfe erscheinen und in welcher Reihenfolge',
   sections: {
     personal: 'Persönlich',
     content: 'Inhalte',
@@ -157,4 +196,32 @@ export const deKonto = {
 export const deConsentsPage = {
   title: 'Einwilligungen',
   back: 'Zurück',
+} as const;
+
+/** Etappe E2: Menüleiste anpassen (docs/PLAN-EINKAUFEN-AUSDAUER.md 4). */
+export const deMenuBar = {
+  title: 'Menüleiste anpassen',
+  intro: (min: number, max: number) =>
+    `Wähle, welche Bereiche unten als Knöpfe erscheinen (${min} bis ${max} Knöpfe). „Übersicht“ steht immer links, „Mehr“ immer rechts. Alles ohne Knopf findest du unter „Mehr“.`,
+  inBar: (label: string) => `${label} in der Menüleiste`,
+  fixed: 'Immer dabei',
+  up: 'Nach links',
+  down: 'Nach rechts',
+  upA11y: (label: string) => `${label} nach links`,
+  downA11y: (label: string) => `${label} nach rechts`,
+  moved: (label: string, index: number, count: number) =>
+    `${label} ist jetzt Knopf ${index} von ${count}.`,
+  added: (label: string) => `${label} ist jetzt in der Menüleiste.`,
+  removed: (label: string) => `${label} ist jetzt unter „Mehr“.`,
+  reasons: {
+    max: (max: number) => `Höchstens ${max} Knöpfe – nimm erst einen heraus.`,
+    min: (min: number) => `Mindestens ${min} Knöpfe – nimm erst einen anderen dazu.`,
+    fixed: '„Übersicht“ und „Mehr“ bleiben immer in der Menüleiste.',
+    unavailable: 'Diesen Bereich gibt es in dieser Fassung der App noch nicht.',
+  },
+  preview: 'So sieht deine Menüleiste aus:',
+  reset: 'Auf Standard zurücksetzen',
+  resetDone: 'Die Menüleiste ist wieder wie am Anfang.',
+  saveFailed: 'Das hat nicht geklappt. Bitte versuche es noch einmal.',
+  back: 'Fertig',
 } as const;

@@ -132,7 +132,7 @@ export default function LogEntryScreen() {
         ) : null}
         {log.is_free === true ? (
           <Body muted testID="log-free">
-            {t.logEntry.free}
+            {log.source === 'workout' ? t.workouts.logEntry : t.logEntry.free}
           </Body>
         ) : null}
         {isBackfilledLog(log) ? (
@@ -222,6 +222,13 @@ export default function LogEntryScreen() {
       ) : null}
 
       <View style={styles.actions}>
+        {/* Etappe E6: Story-Bild dieser einzelnen Einheit (nur auf Tipp, auf dem Gerät erzeugt). */}
+        <Button
+          label={t.endurance.story.title}
+          variant="secondary"
+          onPress={() => router.push(`/teilen?log=${log.id}` as Href)}
+          testID="log-share"
+        />
         {hasDraft ? (
           <Notice tone="info">{t.logEntry.draftOpen}</Notice>
         ) : editability === 'editable' && session ? (

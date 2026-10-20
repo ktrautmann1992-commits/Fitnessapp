@@ -19,6 +19,12 @@ import type {
   SavePlanPayload,
   SavePlanSession,
   SessionLogPayload,
+  ShoppingProductLink,
+  StoredAppLayout,
+  TrackedRoutePayload,
+  TrackedRouteRow,
+  UpdateTrackedRoutePayload,
+  Workout,
 } from '@fitnessapp/core';
 
 import type { FavoriteChange } from './food-log-rows';
@@ -157,6 +163,21 @@ export interface PreferenceSwapContext {
   inSession: readonly string[];
   /** Ort der Einheit nur geraten (4.4) – Ausschlüsse beider Orte zählen. */
   ambiguousLocation: boolean;
+}
+
+/** Strecke in der Warteschlange (Etappe E4): wartet auf Verbindung bzw. wurde abgelehnt (Hinweis, nie still weg). */
+export interface PendingTrackedRoute {
+  readonly payload: TrackedRoutePayload;
+  readonly state: 'waiting' | 'rejected';
+}
+
+/** „Meine Läufe“ (Etappe E4): gespeicherte Strecken des Kontos plus wartende. */
+export interface TrackedRoutesResult {
+  /** Neueste zuerst. */
+  readonly routes: TrackedRouteRow[];
+  readonly pending: PendingTrackedRoute[];
+  /** true = Server nicht erreichbar, angezeigt wird der zuletzt geladene Stand. */
+  readonly offline: boolean;
 }
 
 /** Ernährungs-Bestand (Phase 5, Etappe N4). */
@@ -462,6 +483,17 @@ export interface Backend {
   saveUserFoodProduct(product: UserFoodProduct, rows: UserRows): Promise<UserRows>;
   /** Eigenes Produkt löschen – geht immer; eingetragene Tage behalten ihre Werte (Verweis wird leer). */
   deleteUserFoodProduct(id: string, rows: UserRows): Promise<UserRows>;
+  /**
+   * Zuordnung Strichcode → Lebensmittel lernen (Einkaufen E1, Wahl aus „Welcher Eintrag ist es?“). Nur mit gültiger
+   * Einwilligung health_data (sonst `consent_required`); Supabase-Modus braucht Verbindung (`online_only`). Gleiche
+   * Nummer ersetzt, höchstens SHOPPING_SCAN.linksMax (älteste fällt weg).
+   */
+  saveShoppingProductLink(link: ShoppingProductLink, rows: UserRows): Promise<UserRows>;
+  /**
+   * Anordnung der Übersicht und der Menüleiste speichern (Etappe E2). Testmodus: Gerätespeicher; Supabase-Modus: sofort
+   * lokal, Senden über die Warteschlange (offline möglich). Fehler `unknown` bei ungültiger Anordnung.
+   */
+  saveAppLayout(layout: StoredAppLayout, rows: UserRows): Promise<UserRows>;
   /** Start des Meal-Prep-Kochtags (Timer) setzen bzw. mit null zurücksetzen (Etappe N5b). */
   saveCookDayStart(weekStart: string, startedAt: string | null, rows: UserRows): Promise<UserRows>;
   /** Wartende Trainings und Entwürfe (R6). */
@@ -490,6 +522,49 @@ export interface Backend {
    * Nur online. Enthält Gesundheitsdaten – nie loggen, nie zwischenspeichern.
    */
   exportMyData(): Promise<DataExportFile>;
+
+  // --- Ausdauer: Strecken aufzeichnen (Phase 10 S1 App, Etappe E4) ----------------------------------------------
+  /**
+   * Eigene Strecken (tracked_routes, RLS nur eigene) und wartende. Supabase: online laden, offline der zuletzt
+   * geladene Stand aus dem geschützten Speicher. Testmodus: Gerätespeicher.
+   */
+  loadTrackedRoutes(): Promise<TrackedRoutesResult>;
+  /**
+   * Strecke speichern (save_tracked_route; Testmodus: gleiche Regeln in tracked-route-rows.ts). Supabase: erst in die
+   * verschlüsselte Warteschlange, gesendet NACH dem verknüpften Tagebuch-Eintrag – `queued` = noch nicht übertragen.
+   * Testmodus: sofort (Fehler `route_rejected` bzw. `route_limit`).
+   */
+  saveTrackedRoute(payload: TrackedRoutePayload): Promise<'saved' | 'queued'>;
+  /** Name, Schwierigkeit, Favorit, Notiz ändern (update_tracked_route). Nur online. */
+  updateTrackedRoute(payload: UpdateTrackedRoutePayload): Promise<void>;
+  /** Strecke endgültig löschen (delete_tracked_route; wartende: aus der Warteschlange). Nur online. */
+  deleteTrackedRoute(id: string): Promise<void>;
+  /** Alle eigenen Strecken löschen (delete_all_tracked_routes) samt Warteschlange → Anzahl. Nur online. */
+  deleteAllTrackedRoutes(): Promise<number>;
+  /** Abgelehnte wartende Strecke erneut senden bzw. (auf Wunsch) verwerfen. */
+  retryPendingRoute(id: string): Promise<void>;
+  discardPendingRoute(id: string): Promise<void>;
+  /**
+   * Laufende Aufzeichnung sichern/lesen/löschen (geschützter Speicher `routeRecording`, alle 30 s; Wiederaufnahme
+   * nach Absturz). Text = JSON des Aufzeichnungs-Zustands (Prüfung mit recordingStateSchema in der App).
+   */
+  readRecording(): Promise<string | null>;
+  writeRecording(text: string): Promise<void>;
+  clearRecording(): Promise<void>;
+  // --- Workout-Bibliothek (docs/PLAN-WORKOUTS.md) --------------------------------------------------------------
+  /**
+   * Freigegebene Workouts: Supabase aus der Tabelle `workouts` (offline aus dem Zwischenspeicher, nur Inhalte),
+   * Testmodus aus dem Bündel. Ein Eintrag aus dem Timer läuft über submitWorkout (Entwurf mit `workoutId`); die
+   * Herkunft „workout“ setzt danach das Backend (mark_session_log_workout bzw. lokal).
+   */
+  loadWorkoutLibrary(): Promise<WorkoutLibraryResult>;
+}
+
+/** Workout-Bibliothek (docs/PLAN-WORKOUTS.md): nur freigegebene, gültige Workouts. */
+export interface WorkoutLibraryResult {
+  readonly workouts: readonly Workout[];
+  /** true = offline aus dem Zwischenspeicher (Supabase-Modus). */
+  readonly cached: boolean;
 }
 
 export interface SaveContext {
@@ -553,6 +628,10 @@ export type BackendErrorCode =
    * vor `db-migrate`) – nie halb löschen, „bitte später erneut versuchen“.
    */
   | 'delete_unavailable'
+  /** Strecke abgelehnt (ungültig, Favorit/Eintrag passt nicht) – ohne Werte (Etappe E4). */
+  | 'route_rejected'
+  /** Höchstens 20 neue Strecken je Tag (TRACKED_ROUTE_LIMITS.maxSavesPerDay). */
+  | 'route_limit'
   | 'unknown';
 
 /**

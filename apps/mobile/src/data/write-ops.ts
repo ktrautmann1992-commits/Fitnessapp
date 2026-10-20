@@ -22,6 +22,7 @@ import {
   neutralizeHealthPlanLogRows,
 } from './log-rows';
 import type {
+  AppLayoutRow,
   BodyMeasurementsRow,
   BodyMetricsRow,
   CompetitionRow,
@@ -66,6 +67,8 @@ export type WriteOp =
   | { kind: 'upsert_body_measurements'; row: BodyMeasurementsInsert }
   | { kind: 'insert_health_screening'; row: HealthScreeningInsert }
   | { kind: 'upsert_measurement_reminder'; row: MeasurementReminderRow }
+  /** Anordnung der Übersicht und der Menüleiste (Etappe E2) – kein Gesundheitsdatum, über die Warteschlange. */
+  | { kind: 'save_app_layout'; row: AppLayoutRow }
   /**
    * Wunschgewicht anlegen bzw. ersetzen (Etappe Z3, Tabelle weight_goals). Gesundheitsdatum: nur mit Einwilligung, nie
    * in die Warteschlange. `start_date` = Tag des Speicherns (Wächter S15, setzt packages/core). Nur mit Abnehmziel
@@ -380,6 +383,8 @@ function applyOne(rows: UserRows, op: WriteOp, ctx: ApplyContext): UserRows {
       };
     case 'upsert_measurement_reminder':
       return { ...rows, reminder: op.row };
+    case 'save_app_layout':
+      return { ...rows, appLayout: op.row };
     case 'save_training_plan':
       return applySavePlan(rows, op.payload, ctx);
     case 'append_plan_block':
@@ -712,6 +717,8 @@ export function applyHealthDataRevocation(
     customMealItems: [],
     // Eigene Produkte (Etappe E4a, E4-G10): Name/Marke = Freitext – gelöscht wie eigene Gerichte.
     userFoodProducts: [],
+    // Einkaufen E1: gelernte Zuordnungen Strichcode → Lebensmittel (Konsum) – wie consents_after_revoke.
+    shoppingProductLinks: [],
     // Wettkämpfe (Phase 10): der Wettkampf bleibt (kein Gesundheitsdatum, W-G15), der Plan-Bezug wird geleert – wie
     // private.consents_after_revoke.
     competitions: rows.competitions.map(withoutPlanBasis),

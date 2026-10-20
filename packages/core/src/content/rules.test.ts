@@ -54,6 +54,12 @@ describe('Regeltabelle (Plan Abschnitt 7, Phase 5 Abschnitte 5.3, 19.4 und 19.7)
       'SK5',
       'SK6',
       'SK7',
+      'W1',
+      'W2',
+      'W3',
+      'W4',
+      'W5',
+      'W7',
     ]);
     expect(yellow).toEqual([
       'Ü5',
@@ -71,6 +77,7 @@ describe('Regeltabelle (Plan Abschnitt 7, Phase 5 Abschnitte 5.3, 19.4 und 19.7)
       'R22',
       'R23H',
       'SK7H',
+      'W6',
     ]);
   });
 });
@@ -88,6 +95,8 @@ describe('isBlockingIssue', () => {
     expect(isBlockingIssue(makeIssue('R15', at('draft'), 'x'))).toBe(true);
     expect(isBlockingIssue(makeIssue('DATEI', at(null), 'x'))).toBe(true);
     expect(isBlockingIssue(makeIssue('VERSION', at('draft'), 'x'))).toBe(true);
+    expect(isBlockingIssue(makeIssue('W1', at('draft'), 'x'))).toBe(true);
+    expect(isBlockingIssue(makeIssue('W2', at('draft'), 'x'))).toBe(false);
     expect(isBlockingIssue(makeIssue('SK1', at('draft'), 'x'))).toBe(true);
     expect(isBlockingIssue(makeIssue('SK3', at('draft'), 'x'))).toBe(false);
     expect(isBlockingIssue(makeIssue('SK3', at('published'), 'x'))).toBe(true);

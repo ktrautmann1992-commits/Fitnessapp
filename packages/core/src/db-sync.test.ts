@@ -19,6 +19,7 @@ import {
   PLAN_SAVE_LIMITS,
   PLANNED_LOAD_LIMITS,
   SESSION_LOG_LIMITS,
+  WORKOUT_LIMITS,
   FREE_SESSION,
   SESSION_RPE_LIMITS,
   SET_RPE_LIMITS,
@@ -80,6 +81,7 @@ import {
   MIFFLIN_ST_JEOR,
   MIN_INTAKE_RELATIVE_TO_BMR,
   CARDIO_PLAUSIBILITY_KMH,
+  ROUTE_ELEVATION_PROFILE,
   ROUTE_FILTER,
   TRACKED_ROUTE_LIMITS,
   TRACKED_ROUTE_LOG_MATCH,
@@ -90,7 +92,10 @@ import {
   DELOAD_SCHEDULE,
   ENDURANCE_DELOAD_VOLUME_FACTOR,
   MAX_WEEKLY_ENDURANCE_VOLUME_INCREASE_FRACTION,
+  SHOPPING_SCAN,
+  APP_LAYOUT,
 } from './constants';
+import { DASHBOARD_TILES, FIXED_FIRST_TAB, FIXED_LAST_TAB, NAV_AREAS } from './layout';
 import { serverDayKcalFloor } from './nutrition/plausibility';
 import { AI_USAGE_STATUSES } from './nutrition/food-photo';
 import {
@@ -116,6 +121,7 @@ import {
 } from './nutrition/shopping-list-payload';
 import { RECIPE_UNITS } from './nutrition/units';
 import * as enums from './enums';
+import { WORKOUT_CATEGORIES, WORKOUT_FORMATS } from './workouts/schema';
 import { DATA_EXPORT_TABLES } from './export/data-export';
 import { BARCODE_PATTERN } from './nutrition/barcode';
 import {
@@ -217,6 +223,7 @@ import { trainingSlotItemSchema } from './training-schedule';
 import {
   POLYLINE_PATTERN,
   TRACKED_ROUTE_NAME_TRIM_CLASS,
+  TRACKED_ROUTE_OPTIONAL_KEYS,
   trackedRouteSchema,
   updateTrackedRouteSchema,
 } from './routes/schema';
@@ -323,6 +330,9 @@ describe('Enums', () => {
     // Phase 10 · S1 (20261016220000_tracked_route_enums.sql)
     ['route_difficulty', enums.ROUTE_DIFFICULTIES],
     ['tracked_route_source', enums.TRACKED_ROUTE_SOURCES],
+    // Workout-Bibliothek (20261020150000_workout_enums.sql)
+    ['workout_category', WORKOUT_CATEGORIES],
+    ['workout_format', WORKOUT_FORMATS],
   ] as const)('public.%s entspricht packages/core', (name, values) => {
     expect(enumValues(name)).toEqual([...values]);
   });
@@ -948,7 +958,7 @@ describe('Ernährung in der Datenbank (Phase 5, Etappe N7)', () => {
     // Tagebuch-Einträge, E2: eigene Gerichte, WP3: Plan-Bezug der Wettkämpfe leeren, E4a: eigene Produkte und
     // Produkt-Favoriten, Z3: Wunschgewicht, 4b: Plan-Anpassungen).
     expect(migrationFiles.filter((n) => readMigration(n).includes(marker)).at(-1)).toMatch(
-      /_live_adjust_revoke_export\.sql$/,
+      /_shopping_product_links\.sql$/,
     );
   });
 
@@ -1142,10 +1152,83 @@ describe('Ernährungstagebuch in der Datenbank (Etappe E1)', () => {
     }
   });
 
-  it('export_my_data(): neueste Fassung in *_live_adjust_revoke_export.sql (4b B, davor E4a + Z3, S1, E3, WP3, E2)', () => {
+  it('export_my_data(): neueste Fassung in *_app_layout_settings.sql (E2 Dashboard, davor Einkaufen E1, 4b B, E4a + Z3, S1, E3, WP3, E2)', () => {
     const marker = 'create or replace function public.export_my_data()';
     expect(migrationFiles.filter((n) => readMigration(n).includes(marker)).at(-1)).toMatch(
-      /_live_adjust_revoke_export\.sql$/,
+      /_app_layout_settings\.sql$/,
+    );
+  });
+});
+
+describe('Übersicht und Menüleiste anpassen E2 (docs/PLAN-EINKAUFEN-AUSDAUER.md 4)', () => {
+  const sql = readMigration('_app_layout_settings.sql');
+  const list = (name: string) => {
+    const match = new RegExp(`${name} constant text\\[\\] := array\\[([^\\]]*)\\]`).exec(sql);
+    if (!match) throw new Error(name);
+    return [...(match[1] as string).matchAll(/'([a-z_]+)'/g)].map((m) => m[1]);
+  };
+  const constant = (name: string) => {
+    const match = new RegExp(`\\b${name} constant integer := (\\d+);`).exec(sql);
+    if (!match) throw new Error(name);
+    return Number(match[1]);
+  };
+
+  it('ID-Listen und Grenzen = packages/core (DASHBOARD_TILES, NAV_AREAS, APP_LAYOUT)', () => {
+    expect(list('tile_ids')).toEqual([...DASHBOARD_TILES]);
+    expect(list('area_ids')).toEqual([...NAV_AREAS]);
+    expect(constant('tabs_min')).toBe(APP_LAYOUT.tabsMin);
+    expect(constant('tabs_max')).toBe(APP_LAYOUT.tabsMax);
+    expect(constant('tiles_max')).toBe(APP_LAYOUT.storedTilesMax);
+    expect(sql).toContain(
+      `jsonb_array_length(tab_bar) between ${APP_LAYOUT.tabsMin} and ${APP_LAYOUT.tabsMax}`,
+    );
+    expect(sql).toContain(`jsonb_array_length(dashboard_tiles) <= ${APP_LAYOUT.storedTilesMax}`);
+    expect(sql).toContain(`tabs ->> 0 is distinct from '${FIXED_FIRST_TAB}'`);
+    expect(sql).toContain(`is distinct from '${FIXED_LAST_TAB}'`);
+  });
+
+  it('Schreiben nur über save_app_layout; kein Gesundheitsdatum (nicht im Widerruf), im Export', () => {
+    expect(sql).toContain(
+      'revoke all on table public.app_layout_settings from public, anon, authenticated;',
+    );
+    expect(sql).not.toContain('SENSIBEL');
+    expect(sql).toContain("'app_layout_settings', (select coalesce");
+    expect(sql).not.toContain('consents_after_revoke');
+  });
+});
+
+describe('Einkaufen E1: gelernte Zuordnungen (docs/PLAN-EINKAUFEN-AUSDAUER.md 3)', () => {
+  const sql = readMigration('_shopping_product_links.sql');
+  const fnBody = (name: string) => {
+    const start = sql.indexOf(`create or replace function ${name}(`);
+    return sql.slice(start, sql.indexOf('$$;', start));
+  };
+
+  it('links_max = SHOPPING_SCAN.linksMax; Nummer über private.barcode_ok; Lebensmittel per Fremdschlüssel', () => {
+    expect(sql).toContain(`links_max constant integer := ${SHOPPING_SCAN.linksMax};`);
+    expect(sql).toContain('code text not null check (private.barcode_ok(code))');
+    expect(sql).toContain('references public.foods (id)');
+  });
+
+  it('Schreiben nur über Funktionen; Einwilligung zuerst gesperrt, dann geprüft, dann Person (Wächter N7 S2)', () => {
+    expect(sql).toContain(
+      'revoke all on table public.shopping_product_links from public, anon, authenticated;',
+    );
+    expect(sql).toContain('grant select on table public.shopping_product_links to authenticated;');
+    const save = fnBody('public.save_shopping_product_link');
+    expect(save.indexOf('for share')).toBeLessThan(save.indexOf('has_valid_consent'));
+    expect(save.indexOf('has_valid_consent')).toBeLessThan(save.indexOf('pg_advisory_xact_lock'));
+    expect(fnBody('public.delete_shopping_product_link')).not.toContain('has_valid_consent');
+  });
+
+  it('Widerruf löscht am Anfang und am Ende; Export enthält die Tabelle', () => {
+    const revoke = fnBody('private.consents_after_revoke');
+    expect(
+      revoke.split('delete from public.shopping_product_links where user_id = new.user_id;'),
+    ).toHaveLength(3);
+    expect(fnBody('public.export_my_data')).toContain("'shopping_product_links', (select coalesce");
+    expect(readMigration('_app_layout_settings.sql')).toContain(
+      "'shopping_product_links', (select coalesce",
     );
   });
 });
@@ -2042,10 +2125,53 @@ describe('Strecken in der Datenbank (Phase 10 S1)', () => {
     if (start < 0) throw new Error(`${name} nicht gefunden`);
     return sql.slice(start, sql.indexOf('$$;', sql.indexOf('as $$', start)));
   };
-  const save = fn(rpcs, 'public.save_tracked_route');
+  // Neueste Fassung (Etappe E4: + optionales Höhenprofil); die S1-Fassung ist darin Zeile für Zeile enthalten.
+  const elevation = readMigration('_tracked_route_elevation_profile.sql');
+  const saveS1 = fn(rpcs, 'public.save_tracked_route');
+  const save = fn(elevation, 'public.save_tracked_route');
   const update = fn(rpcs, 'public.update_tracked_route');
+  /** Zeilen der älteren Fassung, die in der neueren (in Reihenfolge, ggf. mit Komma am Ende) fehlen. */
+  const missingLines = (older: string, newer: string) => {
+    const next = newer.split('\n');
+    let at = 0;
+    const missing: string[] = [];
+    for (const line of older.split('\n')) {
+      const found = next.findIndex((n, i) => i >= at && (n === line || n === `${line},`));
+      if (found < 0) missing.push(line);
+      else at = found + 1;
+    }
+    return missing;
+  };
   const block = table.slice(table.indexOf('create table public.tracked_routes ('));
   const L = TRACKED_ROUTE_LIMITS;
+
+  it('Höhenprofil (E4): neueste save_tracked_route = S1-Fassung + nur das optionale Feld; Spalte additiv', () => {
+    expect(missingLines(saveS1, save)).toEqual([
+      "  perform private.assert_json_keys(r, route_keys, 'Strecke');",
+    ]);
+    const newest = migrationFiles.filter((n) =>
+      readMigration(n).includes('create or replace function public.save_tracked_route('),
+    );
+    expect(newest.at(-1)).toMatch(/_tracked_route_elevation_profile\.sql$/);
+    expect(elevation).toContain(
+      'alter table public.tracked_routes add column elevation_profile jsonb;',
+    );
+    expect(elevation).toContain(
+      'check (elevation_profile is null or private.elevation_profile_valid(elevation_profile))',
+    );
+    expect(elevation).not.toMatch(/drop |alter column|rename /i);
+    const valid = fn(elevation, 'private.elevation_profile_valid');
+    const P = ROUTE_ELEVATION_PROFILE;
+    expect(valid).toContain(`max_points constant integer := ${P.maxPoints};`);
+    expect(valid).toContain(`max_distance_m constant integer := ${L.distanceM.max};`);
+    expect(valid).toContain(`min_height_dm constant integer := ${P.heightDm.min};`);
+    expect(valid).toContain(`max_height_dm constant integer := ${P.heightDm.max};`);
+    expect(valid).toContain('or h not between min_height_dm and max_height_dm or d < prev then');
+    // Export: ganze Zeile (to_jsonb(t)) – die Spalte ist automatisch dabei.
+    expect(readMigration('_tracked_route_rpcs.sql')).toContain(
+      "'tracked_routes', (select coalesce(jsonb_agg(to_jsonb(t) order by t.started_at, t.created_at), '[]'::jsonb)",
+    );
+  });
 
   it('Enums in eigener Datei VOR der Tabelle', () => {
     const enumsFile = migrationFiles.findIndex((n) => n.endsWith('_tracked_route_enums.sql'));
@@ -2063,11 +2189,28 @@ describe('Strecken in der Datenbank (Phase 10 S1)', () => {
     }
   });
 
-  it('route_keys = Felder von trackedRouteSchema (alle Pflicht), update_keys = updateTrackedRouteSchema', () => {
+  it('route_keys = Pflichtfelder von trackedRouteSchema, optional_keys = TRACKED_ROUTE_OPTIONAL_KEYS, update_keys = updateTrackedRouteSchema', () => {
+    const optional: readonly string[] = TRACKED_ROUTE_OPTIONAL_KEYS;
     expect(quotedListAfter(save, 'route_keys constant text[] := array[').sort()).toEqual(
-      Object.keys(trackedRouteSchema.shape).sort(),
+      Object.keys(trackedRouteSchema.shape)
+        .filter((key) => !optional.includes(key))
+        .sort(),
     );
+    expect(quotedListAfter(save, 'optional_keys constant text[] := array[').sort()).toEqual(
+      [...optional].sort(),
+    );
+    // Optionale Felder sind in Zod wirklich optional.
+    for (const key of optional) {
+      const shape = trackedRouteSchema.shape as Record<
+        string,
+        { safeParse: (v: unknown) => { success: boolean } }
+      >;
+      expect(shape[key]?.safeParse(undefined).success, key).toBe(true);
+    }
     expect(save).toContain('if not (r ?& route_keys)');
+    expect(save).toContain(
+      "perform private.assert_json_keys(r, route_keys || optional_keys, 'Strecke');",
+    );
     expect(quotedListAfter(update, 'update_keys constant text[] := array[').sort()).toEqual(
       Object.keys(updateTrackedRouteSchema.shape).sort(),
     );
@@ -2620,10 +2763,14 @@ describe('Ziele in der Datenbank (Etappe Z3, docs/PLAN-ZIELE.md 5.1/5.2)', () =>
   });
 
   it('Widerruf und Export: neueste Fassungen sind Obermengen der Vorgänger (Zeile für Zeile, S16)', () => {
-    for (const marker of [revokeMarker, exportMarker]) {
+    for (const [marker, newestFile] of [
+      [revokeMarker, /_shopping_product_links\.sql$/],
+      [exportMarker, /_app_layout_settings\.sql$/],
+    ] as const) {
       const withFn = migrationFiles.filter((n) => readMigration(n).includes(marker));
-      // Seit 4b Etappe B in *_live_adjust_revoke_export.sql (davor Vereinigung E4a + Z3, Wächter E4a H1).
-      expect(withFn.at(-1)).toMatch(/_live_adjust_revoke_export\.sql$/);
+      // Widerruf seit Einkaufen E1 in *_shopping_product_links.sql, Export seit E2 in *_app_layout_settings.sql
+      // (davor 4b Etappe B, Vereinigung E4a + Z3, Wächter E4a H1).
+      expect(withFn.at(-1)).toMatch(newestFile);
       const bodyOf = (name: string) => {
         const sql = readMigration(name);
         const start = sql.lastIndexOf(marker);
@@ -2660,6 +2807,7 @@ describe('Ziele in der Datenbank (Etappe Z3, docs/PLAN-ZIELE.md 5.1/5.2)', () =>
         'health_screening',
         'weight_goals',
         'user_food_products',
+        'shopping_product_links',
       ].sort(),
     );
     for (const name of sensitive) {
@@ -3064,5 +3212,24 @@ describe('Testphase „alles offen“ (Gründer 19.10.2026, KONZEPT 13)', () => 
     expect(body(open, 'public.beta_admin')).toContain(
       'return private.premium_open_flag_admin(p_action, p_actor);',
     );
+  });
+});
+
+describe('Workout-Bibliothek (20261020150100_workouts.sql)', () => {
+  const sql = readMigration('_workouts.sql');
+  it('Grenzen der Tabelle = WORKOUT_LIMITS', () => {
+    const L = WORKOUT_LIMITS;
+    expect(sql).toContain(`check (difficulty between ${L.stars.min} and ${L.stars.max})`);
+    expect(sql).toContain(`check (minutes between ${L.minutes.min} and ${L.minutes.max})`);
+    expect(sql).toContain(
+      `cardinality(exercise_ids) between ${L.exercises.min} and ${L.exercises.max}`,
+    );
+    expect(L.exercises.max).toBe(SESSION_LOG_LIMITS.exercisesPerSession.max);
+    expect(L.rounds.max).toBe(SESSION_LOG_LIMITS.setsPerExercise.max);
+  });
+  it('Herkunft „workout“ setzt nur mark_session_log_workout an freien Kraft-Einheiten', () => {
+    expect(sql).toContain("existing.kind <> 'strength'");
+    expect(sql).toContain('not existing.is_free');
+    expect(enums.LOG_SOURCES).toContain('workout');
   });
 });

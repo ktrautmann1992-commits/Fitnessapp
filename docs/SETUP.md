@@ -185,7 +185,11 @@ Die Landingpage verlinkt auf die Web-Version der App. Ohne Eintrag zeigt der Kno
    auf den Expo-Servern gelesen werden. Welche Umgebung ein Build nimmt, steht in `apps/mobile/eas.json`
    (`preview` → preview, `production` → production). Ohne diese Variablen startet die App im **Testmodus**.
 
-Danach geht schon die **Android-APK** (Workflow `eas-build`, Plattform android, Profil preview). Für das iPhone
+Danach geht schon die **Android-APK** (Workflow `eas-build`, Plattform android, Profil preview). Seit Etappe E3
+(Ausdauer, 20.10.2026) enthält die App die nativen Module für Standort (Vordergrund-Dienst, nur „Beim Verwenden“),
+Hintergrund-Aufgabe, Bild-Aufnahme, Teilen und WebView – **ein neuer Build** ist nötig, sonst fehlt „Aufzeichnen“.
+Dafür ist nichts zusätzlich einzurichten (kein Schlüssel, kein Development Build: die preview-APK reicht). Die Karte
+lädt in der Testphase OpenFreeMap (ohne Konto, ohne Schlüssel). Für das iPhone
 (TestFlight) und den Play Store kommt **Teil D2** dazu. Fehlt etwas, endet der Workflow `eas-build` mit einem
 Hinweis statt mit einem Fehler.
 

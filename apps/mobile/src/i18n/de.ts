@@ -13,17 +13,22 @@ import {
   deConsentsPage,
   deDashboard,
   deKonto,
+  deMenuBar,
   deMore,
   deProgressHub,
   deTabs,
 } from './de-dashboard';
 import { deDay } from './de-day';
+import { deEndurance } from './de-endurance';
 import { deFoodLog } from './de-food-log';
 import { deFoodPhoto } from './de-food-photo';
 import { deFoodProduct } from './de-food-product';
 import { deGoalChoice, deWeightGoal, deWeightGoalLife } from './de-goals';
+import { deMuscleMap } from './de-muscle-map';
 import { deNutrition } from './de-nutrition';
+import { deNutritionDay } from './de-nutrition-day';
 import { deWeekEval } from './de-week-eval';
+import { deWorkouts } from './de-workouts';
 
 export const de = {
   common: {
@@ -1390,6 +1395,7 @@ export const de = {
     cancelled: 'Drucken abgebrochen – es wurde nichts gespeichert.',
   },
   /** Übungs-Glossar (docs/PLAN-UEBUNGEN-GLOSSAR-TAUSCH.md 8.1/8.4, Etappe G1) – nur Text, Bilder folgen (G2). */
+  muscleMap: deMuscleMap,
   glossary: {
     title: 'Übungen',
     intro: 'Alle Übungen mit Anleitung, Tipps und Sicherheitshinweisen.',
@@ -1572,6 +1578,8 @@ export const de = {
     title: 'Diese Seite gibt es nicht.',
   },
   nutrition: deNutrition,
+  /** Tagesübersicht Ernährung: Kalorien-Ring, Makro-Balken, Mahlzeiten-Karten (20.10.2026). */
+  nutritionDay: deNutritionDay,
   /** Abnehm-Ziel: Einstellungen, Karten, Ernährungs-Hinweise (Etappe Z5). */
   weightGoalLife: deWeightGoalLife,
   foodLog: deFoodLog,
@@ -1588,6 +1596,7 @@ export const de = {
   dashboard: deDashboard,
   progressHub: deProgressHub,
   more: deMore,
+  menuBar: deMenuBar,
   konto: deKonto,
   consentsPage: deConsentsPage,
   /**
@@ -1629,6 +1638,10 @@ export const de = {
   },
   /** Live-Anpassung des Plans (Phase 4b, Etappe D). */
   adjust: deAdjust,
+  /** Ausdauer: Aufzeichnen, Meine Läufe, Auswertung, Story-Bild (Etappen E3–E6). */
+  endurance: deEndurance,
+  // Workout-Bibliothek (docs/PLAN-WORKOUTS.md)
+  workouts: deWorkouts,
 } as const;
 
 /** Typ, den jede Übersetzung erfüllen muss (Texte als string, Funktionen mit gleicher Signatur). */

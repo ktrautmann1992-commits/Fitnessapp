@@ -1,5 +1,6 @@
 export * from './body-data';
 export * from './competition';
+export * from './day-ring';
 export * from './day-view';
 export * from './eligibility';
 export * from './custom-meal';
@@ -39,6 +40,7 @@ export * from './shopping-list';
 export * from './shopping-list-payload';
 export * from './shopping-list-share';
 export * from './shopping-list-store';
+export * from './shopping-scan';
 export * from './stable-hash';
 export * from './substitute';
 export * from './swap-resolve';

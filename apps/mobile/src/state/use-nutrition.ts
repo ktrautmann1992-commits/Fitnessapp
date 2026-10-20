@@ -15,8 +15,10 @@ import {
   resolveShoppingList,
   setShoppingItemChecked,
   type ShoppingCategory,
+  type ShoppingUnit,
   type StoredShoppingList,
   swapMealRecipe,
+  uncheckAllShoppingItems,
   weekHidesEnergyNumbers,
   withShoppingListRange,
 } from '@fitnessapp/core';
@@ -231,9 +233,22 @@ export type ShoppingActionOutcome =
 
 export interface ShoppingListActions {
   list: StoredShoppingList;
+  /**
+   * Einkaufen ohne Essensplan (EA-2): nur Abhaken, eigene Artikel und Scanner – kein Zeitraum, keine Rezepte
+   * (`setRange`/`addRecipe`/`removeRecipe` melden dann `failed`).
+   */
+  planless: boolean;
   /** Abhaken (geht ohne Netz – Testmodus: Gerätespeicher). */
   toggle: (itemKey: string, checked: boolean) => Promise<ShoppingActionOutcome>;
-  addManual: (labelDe: string, category: ShoppingCategory) => Promise<ShoppingActionOutcome>;
+  /** Eigener Eintrag, optional mit Menge (Reiter „Einkaufen“); `checked`: schon abgehakt (Scan im Laden). */
+  addManual: (
+    labelDe: string,
+    category: ShoppingCategory,
+    quantity?: { amount: number; unit: ShoppingUnit } | null,
+    checked?: boolean,
+  ) => Promise<ShoppingActionOutcome>;
+  /** „Alle Haken zurücksetzen“ (Reiter „Einkaufen“). */
+  uncheckAll: () => Promise<ShoppingActionOutcome>;
   removeManual: (itemKey: string) => Promise<ShoppingActionOutcome>;
   setRange: (from: string, to: string) => Promise<ShoppingActionOutcome>;
   /**
@@ -257,14 +272,22 @@ export interface ShoppingListActions {
  */
 export function useShoppingListActions(
   week: NutritionWeekResult | null,
+  /** Liste ohne Plan (`planlessShoppingList`, EA-2) – gilt nur, wenn die Woche keinen Plan hat. */
+  planlessList: StoredShoppingList | null = null,
 ): ShoppingListActions | null {
   const { saveShoppingList } = useApp();
   return useMemo(() => {
-    if (week?.kind !== 'ready' || week.plan === null || week.planState === null) return null;
-    if (!week.planState.editable || week.shopping === null) return null;
-    const plan = week.plan;
-    const input = week.planState.input;
-    const list = week.shopping.list;
+    const withPlan =
+      week?.kind === 'ready' &&
+      week.plan !== null &&
+      week.planState !== null &&
+      week.shopping !== null;
+    if (withPlan && !week.planState?.editable) return null;
+    if (!withPlan && planlessList === null) return null;
+    const plan = withPlan ? week.plan : null;
+    const input = withPlan ? (week.planState?.input ?? null) : null;
+    const list =
+      withPlan && week.shopping ? week.shopping.list : (planlessList as StoredShoppingList);
     const store = async (next: StoredShoppingList): Promise<ShoppingActionOutcome> => {
       try {
         await saveShoppingList(next);
@@ -284,12 +307,26 @@ export function useShoppingListActions(
     };
     return {
       list,
+      planless: !withPlan,
       toggle: (itemKey, checked) => guarded(() => setShoppingItemChecked(list, itemKey, checked)),
-      addManual: (labelDe, category) =>
-        guarded(() => addManualShoppingItem(list, { labelDe, category })),
+      addManual: (labelDe, category, quantity, checked) =>
+        guarded(() =>
+          addManualShoppingItem(list, {
+            labelDe,
+            category,
+            amount: quantity?.amount ?? null,
+            unit: quantity?.unit ?? null,
+            checked: checked ?? false,
+          }),
+        ),
+      uncheckAll: () => guarded(() => uncheckAllShoppingItems(list)),
       removeManual: (itemKey) => guarded(() => removeManualShoppingItem(list, itemKey)),
-      setRange: (from, to) => guarded(() => withShoppingListRange(list, { from, to }, plan, input)),
+      setRange: (from, to) =>
+        plan === null || input === null
+          ? Promise.resolve({ kind: 'failed', reason: 'save_failed' })
+          : guarded(() => withShoppingListRange(list, { from, to }, plan, input)),
       addRecipe: async (recipeId, servings, diet) => {
+        if (plan === null || input === null) return { kind: 'failed', reason: 'not_found' };
         const result = addRecipeToShoppingList(
           list,
           { recipeId, servings, ...(diet ? { diet } : {}) },
@@ -300,10 +337,12 @@ export function useShoppingListActions(
         return store(result.list);
       },
       removeRecipe: (recipeId) =>
-        guarded(() => removeRecipeFromShoppingList(list, recipeId, plan, input)),
+        plan === null || input === null
+          ? Promise.resolve({ kind: 'failed', reason: 'save_failed' })
+          : guarded(() => removeRecipeFromShoppingList(list, recipeId, plan, input)),
       ensureSaved: () => store(list),
     };
-  }, [saveShoppingList, week]);
+  }, [planlessList, saveShoppingList, week]);
 }
 
 /** Erste Meldung eines Zod- bzw. Bereichsfehlers aus packages/core (deutsche Texte), sonst allgemein. */

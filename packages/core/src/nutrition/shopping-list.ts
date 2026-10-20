@@ -1,7 +1,7 @@
 import { z } from 'zod';
 
 import { isoDateSchema } from '../age';
-import { SHOPPING_LIST_ROUNDING } from '../constants';
+import { SHOPPING_LIST_ROUNDING, SHOPPING_MANUAL_QUANTITY } from '../constants';
 import {
   type FoodLookup,
   SHOPPING_CATEGORIES,
@@ -246,23 +246,51 @@ export function mergeShoppingList(
   return { ...fresh, items: sortShoppingItems(items) };
 }
 
-const manualItemSchema = z.strictObject({
-  labelDe: z
-    .string()
-    .trim()
-    .min(1, 'Bitte einen Eintrag eingeben.')
-    .max(R.manualLabelMaxChars, `Höchstens ${R.manualLabelMaxChars} Zeichen.`),
-  category: z.enum(SHOPPING_CATEGORIES).default('other'),
-});
+const manualItemSchema = z
+  .strictObject({
+    labelDe: z
+      .string()
+      .trim()
+      .min(1, 'Bitte einen Eintrag eingeben.')
+      .max(R.manualLabelMaxChars, `Höchstens ${R.manualLabelMaxChars} Zeichen.`),
+    category: z.enum(SHOPPING_CATEGORIES).default('other'),
+    /** Optionale Menge (Reiter „Einkaufen“, 20.10.2026): nur zusammen mit einer Einheit. */
+    amount: z
+      .number()
+      .finite()
+      .positive('Die Menge muss größer als 0 sein.')
+      .max(SHOPPING_MANUAL_QUANTITY.maxAmount, 'Die Menge ist zu groß.')
+      .nullable()
+      .default(null),
+    unit: z.enum(['g', 'ml', 'piece']).nullable().default(null),
+    /** Schon abgehakt hinzufügen (Scan „zusätzlich hinzufügen“ im Laden). */
+    checked: z.boolean().default(false),
+  })
+  .refine((entry) => (entry.amount === null) === (entry.unit === null), {
+    path: ['amount'],
+    message: 'Menge und Einheit gehören zusammen.',
+  });
 
-/** Eigener Eintrag (Plan 6.5): Freitext ≤ 80 Zeichen, Abteilung wählbar. Gleicher Text → kein Doppel. */
+/**
+ * Eigener Eintrag (Plan 6.5): Freitext ≤ 80 Zeichen, Abteilung wählbar, optional Menge (g/ml/Stück). Gleicher Text →
+ * kein Doppel; soll der Eintrag abgehakt hinzukommen (Scan im Laden), wird ein vorhandener gleicher eigener Eintrag
+ * stattdessen abgehakt.
+ */
 export function addManualShoppingItem<L extends ShoppingList>(
   list: L,
-  entry: { readonly labelDe: string; readonly category?: ShoppingCategory },
+  entry: {
+    readonly labelDe: string;
+    readonly category?: ShoppingCategory;
+    readonly amount?: number | null;
+    readonly unit?: ShoppingUnit | null;
+    readonly checked?: boolean;
+  },
 ): L {
-  const { labelDe, category } = manualItemSchema.parse(entry);
+  const { labelDe, category, amount, unit, checked } = manualItemSchema.parse(entry);
   const itemKey = `manual|${labelDe.toLocaleLowerCase('de')}`;
-  if (list.items.some((item) => item.itemKey === itemKey)) return list;
+  if (list.items.some((item) => item.itemKey === itemKey)) {
+    return checked ? setShoppingItemChecked(list, itemKey, true) : list;
+  }
   if (list.items.filter((item) => item.isManual).length >= R.manualItemsMax) {
     throw new RangeError(`Höchstens ${R.manualItemsMax} eigene Einträge.`);
   }
@@ -270,12 +298,12 @@ export function addManualShoppingItem<L extends ShoppingList>(
     itemKey,
     foodId: null,
     labelDe,
-    amount: null,
-    unit: null,
+    amount,
+    unit,
     category,
     isPantry: false,
     isManual: true,
-    checked: false,
+    checked,
     substituteFor: [],
     amountChanged: false,
     notInPlan: false,
@@ -300,4 +328,62 @@ export function setShoppingItemChecked<L extends ShoppingList>(
     ...list,
     items: list.items.map((item) => (item.itemKey === itemKey ? { ...item, checked } : item)),
   };
+}
+
+/**
+ * „Alle Haken zurücksetzen“ (Reiter „Einkaufen“, Gründer-Entscheidung 20.10.2026): alle Einträge wieder offen.
+ * Abgehakte „nicht mehr im Plan“-Einträge stehen nur wegen ihres Häkchens noch da – sie fallen weg (sonst stünden
+ * offene Einträge auf der Liste, die niemand mehr braucht). Eigene Einträge bleiben (offen).
+ */
+export function uncheckAllShoppingItems<L extends ShoppingList>(list: L): L {
+  return {
+    ...list,
+    items: list.items
+      .filter((item) => !item.notInPlan)
+      .map((item) => (item.checked ? { ...item, checked: false } : item)),
+  };
+}
+
+export type ShoppingQuantityParse =
+  | { readonly ok: true; readonly amount: number | null; readonly unit: ShoppingUnit | null }
+  | { readonly ok: false };
+
+const QUANTITY_UNITS: Readonly<Record<string, { unit: ShoppingUnit; factor: number }>> = {
+  g: { unit: 'g', factor: 1 },
+  gr: { unit: 'g', factor: 1 },
+  gramm: { unit: 'g', factor: 1 },
+  kg: { unit: 'g', factor: 1000 },
+  kilo: { unit: 'g', factor: 1000 },
+  kilogramm: { unit: 'g', factor: 1000 },
+  ml: { unit: 'ml', factor: 1 },
+  l: { unit: 'ml', factor: 1000 },
+  liter: { unit: 'ml', factor: 1000 },
+  '': { unit: 'piece', factor: 1 },
+  x: { unit: 'piece', factor: 1 },
+  st: { unit: 'piece', factor: 1 },
+  stk: { unit: 'piece', factor: 1 },
+  stück: { unit: 'piece', factor: 1 },
+  stueck: { unit: 'piece', factor: 1 },
+};
+
+/**
+ * Menge eines eigenen Eintrags aus Freitext („500 g“, „1,5 kg“, „1 l“, „250ml“, „3“, „3 Stück“): Kilo/Liter werden in
+ * g/ml umgerechnet, Stück nur ganz. Leer = keine Menge. Alles andere ist ungültig (die App zeigt ein Beispiel).
+ */
+export function parseShoppingQuantity(input: unknown): ShoppingQuantityParse {
+  if (typeof input !== 'string' || input.length > SHOPPING_MANUAL_QUANTITY.inputMaxChars) {
+    return { ok: false };
+  }
+  const text = input.trim().toLocaleLowerCase('de');
+  if (text === '') return { ok: true, amount: null, unit: null };
+  const match = /^(\d{1,7}(?:[.,]\d{1,2})?)\s*([a-zäöüß]*)\.?$/u.exec(text);
+  if (match === null) return { ok: false };
+  const unit = QUANTITY_UNITS[match[2] ?? ''];
+  if (unit === undefined) return { ok: false };
+  const amount = Number((match[1] ?? '').replace(',', '.')) * unit.factor;
+  if (!Number.isFinite(amount) || amount <= 0 || amount > SHOPPING_MANUAL_QUANTITY.maxAmount) {
+    return { ok: false };
+  }
+  if (unit.unit === 'piece' && !Number.isInteger(amount)) return { ok: false };
+  return { ok: true, amount: Math.round(amount * 10) / 10, unit: unit.unit };
 }

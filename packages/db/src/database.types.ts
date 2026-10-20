@@ -10,6 +10,27 @@ export type Json = string | number | boolean | null | { [key: string]: Json | un
 export type Database = {
   public: {
     Tables: {
+      app_layout_settings: {
+        Row: {
+          dashboard_tiles: Json;
+          tab_bar: Json;
+          updated_at: string;
+          user_id: string;
+        };
+        Insert: {
+          dashboard_tiles: Json;
+          tab_bar: Json;
+          updated_at?: string;
+          user_id: string;
+        };
+        Update: {
+          dashboard_tiles?: Json;
+          tab_bar?: Json;
+          updated_at?: string;
+          user_id?: string;
+        };
+        Relationships: [];
+      };
       admin_users: {
         Row: {
           created_at: string;
@@ -2304,6 +2325,35 @@ export type Database = {
           },
         ];
       };
+      shopping_product_links: {
+        Row: {
+          code: string;
+          food_id: string;
+          updated_at: string;
+          user_id: string;
+        };
+        Insert: {
+          code: string;
+          food_id: string;
+          updated_at?: string;
+          user_id: string;
+        };
+        Update: {
+          code?: string;
+          food_id?: string;
+          updated_at?: string;
+          user_id?: string;
+        };
+        Relationships: [
+          {
+            foreignKeyName: 'shopping_product_links_food_id_fkey';
+            columns: ['food_id'];
+            isOneToOne: false;
+            referencedRelation: 'foods';
+            referencedColumns: ['id'];
+          },
+        ];
+      };
       template_exercises: {
         Row: {
           day_index: number;
@@ -2411,6 +2461,7 @@ export type Database = {
           distance_m: number;
           duration_s: number;
           elevation_gain_m: number | null;
+          elevation_profile: Json | null;
           id: string;
           is_favorite: boolean;
           km_splits: Json;
@@ -2434,6 +2485,7 @@ export type Database = {
           distance_m: number;
           duration_s: number;
           elevation_gain_m?: number | null;
+          elevation_profile?: Json | null;
           id?: string;
           is_favorite?: boolean;
           km_splits?: Json;
@@ -2457,6 +2509,7 @@ export type Database = {
           distance_m?: number;
           duration_s?: number;
           elevation_gain_m?: number | null;
+          elevation_profile?: Json | null;
           id?: string;
           is_favorite?: boolean;
           km_splits?: Json;
@@ -2837,6 +2890,57 @@ export type Database = {
         };
         Relationships: [];
       };
+      workouts: {
+        Row: {
+          category: Database['public']['Enums']['workout_category'];
+          created_at: string;
+          data: Json;
+          difficulty: number;
+          equipment_ids: string[];
+          exercise_ids: string[];
+          expert_reviewed: boolean;
+          format: Database['public']['Enums']['workout_format'];
+          id: string;
+          minutes: number;
+          status: Database['public']['Enums']['content_status'];
+          title_de: string;
+          updated_at: string;
+          version: number;
+        };
+        Insert: {
+          category: Database['public']['Enums']['workout_category'];
+          created_at?: string;
+          data: Json;
+          difficulty: number;
+          equipment_ids?: string[];
+          exercise_ids: string[];
+          expert_reviewed?: never;
+          format: Database['public']['Enums']['workout_format'];
+          id: string;
+          minutes: number;
+          status: Database['public']['Enums']['content_status'];
+          title_de: string;
+          updated_at?: string;
+          version: number;
+        };
+        Update: {
+          category?: Database['public']['Enums']['workout_category'];
+          created_at?: string;
+          data?: Json;
+          difficulty?: number;
+          equipment_ids?: string[];
+          exercise_ids?: string[];
+          expert_reviewed?: never;
+          format?: Database['public']['Enums']['workout_format'];
+          id?: string;
+          minutes?: number;
+          status?: Database['public']['Enums']['content_status'];
+          title_de?: string;
+          updated_at?: string;
+          version?: number;
+        };
+        Relationships: [];
+      };
     };
     Views: {
       [_ in never]: never;
@@ -2882,6 +2986,7 @@ export type Database = {
       delete_stored_intolerances: { Args: never; Returns: undefined };
       delete_tracked_route: { Args: { p_id: string }; Returns: undefined };
       delete_user_food_product: { Args: { p_id: string }; Returns: Json };
+      delete_shopping_product_link: { Args: { p_code: string }; Returns: undefined };
       export_my_data: { Args: never; Returns: Json };
       beta_admin: {
         Args: {
@@ -2912,6 +3017,7 @@ export type Database = {
         Args: { p_error_code?: string; p_ids: number[] };
         Returns: number;
       };
+      mark_session_log_workout: { Args: { p_log_id: string }; Returns: Json };
       premium_open_active: { Args: never; Returns: boolean };
       recent_exercise_logs: { Args: { p_per_exercise?: number }; Returns: Json };
       replace_food_dislikes: { Args: { p_food_ids: Json }; Returns: undefined };
@@ -2940,9 +3046,18 @@ export type Database = {
       save_session_log: { Args: { p_log: Json }; Returns: Json };
       save_tracked_route: { Args: { p_route: Json }; Returns: string };
       save_training_plan: { Args: { p_plan: Json }; Returns: string };
+      save_app_layout: { Args: { p_layout: Json }; Returns: undefined };
+      save_shopping_product_link: {
+        Args: { p_code: string; p_food_id: string };
+        Returns: undefined;
+      };
       save_user_food_product: { Args: { p_product: Json }; Returns: Json };
       seed_content: { Args: { p_content: Json }; Returns: Json };
       seed_nutrition_content: {
+        Args: { p_content: Json; p_require_expert_review?: boolean };
+        Returns: Json;
+      };
+      seed_workouts: {
         Args: { p_content: Json; p_require_expert_review?: boolean };
         Returns: Json;
       };
@@ -3049,7 +3164,7 @@ export type Database = {
       food_preference_kind: 'like' | 'dislike' | 'intolerance';
       goal_type: 'fat_loss' | 'definition' | 'muscle_gain' | 'general_fitness' | 'endurance';
       load_type: 'weight' | 'bodyweight' | 'band' | 'time';
-      log_source: 'manual' | 'gps' | 'gpx_import';
+      log_source: 'manual' | 'gps' | 'gpx_import' | 'workout';
       mealprep_slot_mode: 'lunch' | 'lunch_dinner';
       movement_pattern:
         | 'squat'
@@ -3133,6 +3248,15 @@ export type Database = {
         | 'race_pace'
         | 'brick'
         | 'technique';
+      workout_category:
+        | 'full_body'
+        | 'core'
+        | 'upper_body'
+        | 'legs_glutes'
+        | 'hiit_cardio'
+        | 'mobility'
+        | 'back_fit';
+      workout_format: 'circuit' | 'interval' | 'sets_reps';
     };
     CompositeTypes: {
       [_ in never]: never;
@@ -3321,7 +3445,7 @@ export const Constants = {
       food_preference_kind: ['like', 'dislike', 'intolerance'],
       goal_type: ['fat_loss', 'definition', 'muscle_gain', 'general_fitness', 'endurance'],
       load_type: ['weight', 'bodyweight', 'band', 'time'],
-      log_source: ['manual', 'gps', 'gpx_import'],
+      log_source: ['manual', 'gps', 'gpx_import', 'workout'],
       mealprep_slot_mode: ['lunch', 'lunch_dinner'],
       movement_pattern: [
         'squat',
@@ -3409,6 +3533,16 @@ export const Constants = {
         'brick',
         'technique',
       ],
+      workout_category: [
+        'full_body',
+        'core',
+        'upper_body',
+        'legs_glutes',
+        'hiit_cardio',
+        'mobility',
+        'back_fit',
+      ],
+      workout_format: ['circuit', 'interval', 'sets_reps'],
     },
   },
 } as const;
