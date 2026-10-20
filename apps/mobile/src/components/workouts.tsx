@@ -6,7 +6,7 @@ import { t } from '@/i18n';
 import { useThemeColors } from '@/lib/theme';
 
 import { DashboardTile } from './dashboard';
-import { StatValue } from './design';
+import { IconChip, StatValue, useAreaColors } from './design';
 import { Body, MIN_TOUCH } from './ui';
 import { Text } from '@/components/text';
 
@@ -29,6 +29,7 @@ export function StarRating({
   testID?: string;
 }) {
   const theme = useThemeColors();
+  const violet = useAreaColors('workouts');
   const max = WORKOUT_LIMITS.stars.max;
   const filled = Math.min(max, Math.max(WORKOUT_LIMITS.stars.min, difficulty));
   return (
@@ -43,10 +44,12 @@ export function StarRating({
       <Text
         aria-hidden
         importantForAccessibility="no"
-        style={[styles.stars, size === 'lg' && styles.starsLarge, { color: theme.warning }]}
+        style={[styles.stars, size === 'lg' && styles.starsLarge, { color: violet.icon }]}
       >
+        {/* Design 20.10.2026: Sterne in Workout-Violett (Signal-Orange bleibt Warnungen vorbehalten), leere
+            Sterne in Nebentext-Grau – beide gut lesbar (≥ 4,5 : 1). */}
         {'★'.repeat(filled)}
-        <Text style={{ color: theme.border }}>{'☆'.repeat(max - filled)}</Text>
+        <Text style={{ color: theme.textMuted }}>{'☆'.repeat(max - filled)}</Text>
       </Text>
       <Text
         aria-hidden
@@ -104,7 +107,10 @@ export function WorkoutCard({
         },
       ]}
     >
-      <Text style={[styles.cardTitle, { color: theme.text }]}>{workout.title_de}</Text>
+      <View style={styles.cardHead}>
+        <IconChip area="workouts" icon="stopwatch" size={40} />
+        <Text style={[styles.cardTitle, { color: theme.text }]}>{workout.title_de}</Text>
+      </View>
       <StarRating difficulty={workout.difficulty} />
       <Text style={[styles.cardMeta, { color: theme.textMuted }]}>{meta}</Text>
       {doneToday ? (
@@ -152,6 +158,7 @@ export function WorkoutsTile({
 }
 
 const styles = StyleSheet.create({
+  cardHead: { flexDirection: 'row', alignItems: 'center', gap: 12 },
   starsRow: { flexDirection: 'row', alignItems: 'center', gap: spacing.sm, flexWrap: 'wrap' },
   stars: { fontSize: fontSize.lg, letterSpacing: 2 },
   starsLarge: { fontSize: fontSize.xl },
@@ -163,7 +170,7 @@ const styles = StyleSheet.create({
     padding: spacing.md,
     gap: spacing.xs,
   },
-  cardTitle: { fontSize: fontSize.lg, fontWeight: fontWeight.bold },
+  cardTitle: { flex: 1, minWidth: 0, fontSize: fontSize.lg, fontWeight: fontWeight.bold },
   cardMeta: { fontSize: fontSize.sm },
   cardDone: { fontSize: fontSize.sm, fontWeight: fontWeight.bold },
 });
