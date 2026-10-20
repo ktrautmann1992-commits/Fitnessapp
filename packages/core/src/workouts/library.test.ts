@@ -11,6 +11,7 @@ import {
   workoutLogNote,
   workoutSafetyHints,
   workoutStars,
+  workoutsDoneOn,
   workoutTileSummary,
 } from './library';
 import { makeWorkout, workoutItem, workoutLibraryMap } from './test-fixtures';
@@ -88,6 +89,29 @@ describe('workoutTileSummary', () => {
         '2026-10-20',
       ),
     ).toEqual({ total: 4, withoutEquipment: 3, doneToday: 1 });
+  });
+});
+
+describe('workoutsDoneOn', () => {
+  it('erkennt Workout-Einträge des Tages am Titel in der Notiz', () => {
+    const note = workoutLogNote({
+      title: 'Leicht kurz',
+      difficulty: 1,
+      format: 'circuit',
+      summary: { roundsCompleted: 1, rounds: 1, workDone: 3, workTotal: 3, complete: true, activeS: 600 },
+      userNote: 'Gut',
+    });
+    const done = workoutsDoneOn(
+      list,
+      [
+        { performed_on: '2026-10-20', source: 'workout', notes: note },
+        { performed_on: '2026-10-20', source: 'manual', notes: 'Workout „Hart lang“ (★★★★★)' },
+        { performed_on: '2026-10-19', source: 'workout', notes: 'Workout „Mit Hanteln“ (★★★☆☆)' },
+        { performed_on: '2026-10-20', source: 'workout', notes: null },
+      ],
+      '2026-10-20',
+    );
+    expect([...done]).toEqual(['a-leicht']);
   });
 });
 

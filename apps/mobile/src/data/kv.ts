@@ -117,4 +117,8 @@ export const STORAGE_KEYS = {
    */
   liveAdjust: 'fitnessapp.live-adjust.v1',
   liveAdjustKey: 'fitnessapp.live-adjust-key.v1',
+  /** Supabase-Modus: Workout-Bibliothek (nur Inhalte, keine Nutzerdaten) – für offline (docs/PLAN-WORKOUTS.md). */
+  workoutLibrary: 'fitnessapp.workout-library.v1',
+  /** Workout-Timer: „Ton und Vibration“ an/aus (nur dieses Gerät, keine Nutzerdaten). */
+  workoutSignals: 'fitnessapp.workout-signals.v1',
 } as const;

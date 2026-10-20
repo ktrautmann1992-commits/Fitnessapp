@@ -92,6 +92,33 @@ export function workoutTileSummary(
   };
 }
 
+/**
+ * Welche Workouts sind an `day` schon eingetragen? Einträge mit Herkunft „workout“, deren Notiz mit
+ * „Workout „<Titel>““ beginnt (workoutLogNote). Übergang, bis session_logs eine eigene workout_id hat
+ * (docs/PLAN-WORKOUTS.md, offener Punkt W-O1) – freie Einträge sind nicht nachträglich änderbar, die Notiz bleibt.
+ */
+export function workoutsDoneOn(
+  workouts: readonly Pick<Workout, 'id' | 'title_de'>[],
+  logs: readonly {
+    readonly performed_on: string;
+    readonly source: string;
+    readonly notes: string | null;
+  }[],
+  day: string,
+): Set<string> {
+  const notes = logs
+    .filter((l) => l.source === 'workout' && l.performed_on === day && l.notes !== null)
+    .map((l) => l.notes as string);
+  return new Set(
+    workouts
+      .filter((w) => notes.some((n) => n.startsWith(`${WORKOUT_NOTE_PREFIX}„${w.title_de}“`)))
+      .map((w) => w.id),
+  );
+}
+
+/** Anfang der Notiz eines Workout-Eintrags. */
+export const WORKOUT_NOTE_PREFIX = 'Workout ';
+
 // ---------------------------------------------------------------------------------------------------------
 // Sicherheitshinweise (Hinweis, kein Verbot)
 // ---------------------------------------------------------------------------------------------------------
@@ -216,7 +243,7 @@ export function workoutLogNote(input: {
       : `${summary.roundsCompleted}/${summary.rounds} Runden`;
   const minutes = Math.max(1, Math.round(summary.activeS / 60));
   const head = [
-    `Workout „${input.title}“ (${workoutStars(input.difficulty)})`,
+    `${WORKOUT_NOTE_PREFIX}„${input.title}“ (${workoutStars(input.difficulty)})`,
     progress,
     `${minutes} Min.`,
     ...(summary.complete ? [] : ['vorzeitig beendet']),

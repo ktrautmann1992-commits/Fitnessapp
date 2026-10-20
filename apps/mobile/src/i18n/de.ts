@@ -24,6 +24,7 @@ import { deFoodProduct } from './de-food-product';
 import { deGoalChoice, deWeightGoal, deWeightGoalLife } from './de-goals';
 import { deNutrition } from './de-nutrition';
 import { deWeekEval } from './de-week-eval';
+import { deWorkouts } from './de-workouts';
 
 export const de = {
   common: {
@@ -1629,6 +1630,8 @@ export const de = {
   },
   /** Live-Anpassung des Plans (Phase 4b, Etappe D). */
   adjust: deAdjust,
+  // Workout-Bibliothek (docs/PLAN-WORKOUTS.md)
+  workouts: deWorkouts,
 } as const;
 
 /** Typ, den jede Übersetzung erfüllen muss (Texte als string, Funktionen mit gleicher Signatur). */
