@@ -296,7 +296,10 @@ export default function ShoppingListShareScreen() {
           </View>
           <Heading level={2}>{texts.previewTitle}</Heading>
           <View
-            style={[styles.preview, { borderColor: theme.border, backgroundColor: theme.surface }]}
+            style={[
+              styles.preview,
+              { borderColor: theme.cardBorder, backgroundColor: theme.surface },
+            ]}
           >
             <Text
               selectable

@@ -209,7 +209,7 @@ export function MealCard({
     showNumbers && targetKcal !== null && targetKcal > 0 ? Math.min(1, eatenKcal / targetKcal) : 0;
   return (
     <View
-      style={[styles.mealCard, { backgroundColor: theme.surface, borderColor: theme.border }]}
+      style={[styles.mealCard, { backgroundColor: theme.surface, borderColor: theme.cardBorder }]}
       testID={`meal-card-${group}`}
     >
       <View style={styles.mealHead}>
@@ -287,7 +287,7 @@ const styles = StyleSheet.create({
   macroValue: { fontSize: fontSize.sm },
   track: { height: 8, borderRadius: radius.pill, overflow: 'hidden' },
   fill: { height: 8, borderRadius: radius.pill },
-  mealCard: { borderWidth: 1, borderRadius: radius.md, padding: spacing.md, gap: spacing.sm },
+  mealCard: { borderWidth: 1, borderRadius: radius.lg, padding: spacing.md, gap: spacing.sm },
   mealHead: { flexDirection: 'row', alignItems: 'center', gap: spacing.md },
   mealText: { flex: 1, gap: 2 },
   mealTitle: { fontSize: fontSize.md, fontWeight: fontWeight.bold },

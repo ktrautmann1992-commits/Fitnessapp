@@ -139,7 +139,7 @@ export function FeasibilityScale({
 
   return (
     <View
-      style={[styles.box, { backgroundColor: theme.surface, borderColor: theme.border }]}
+      style={[styles.box, { backgroundColor: theme.surface, borderColor: theme.cardBorder }]}
       testID="feasibility-scale"
     >
       <Text style={[styles.heading, { color: theme.text }]} accessibilityRole="header">
@@ -275,7 +275,7 @@ export function FeasibilityScale({
 }
 
 const styles = StyleSheet.create({
-  box: { borderWidth: 1, borderRadius: radius.md, padding: spacing.md, gap: spacing.sm },
+  box: { borderWidth: 1, borderRadius: 16, padding: spacing.md, gap: spacing.sm },
   heading: { fontSize: fontSize.md, fontWeight: fontWeight.semibold },
   meter: { gap: spacing.xs, paddingVertical: spacing.xs },
   track: { height: BAR_HEIGHT + 12, justifyContent: 'center' },

@@ -276,7 +276,11 @@ export function ActivityRow({
       testID={`endurance-item-${activity.key}`}
       style={({ pressed }) => [
         styles.row,
-        { borderColor: theme.border, backgroundColor: theme.surface, opacity: pressed ? 0.8 : 1 },
+        {
+          borderColor: theme.cardBorder,
+          backgroundColor: theme.surface,
+          opacity: pressed ? 0.8 : 1,
+        },
       ]}
     >
       {points && points.length > 1 ? (
@@ -324,7 +328,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     gap: spacing.md,
     borderWidth: 1,
-    borderRadius: radius.md,
+    borderRadius: 16,
     padding: spacing.sm,
     minHeight: MIN_TOUCH,
     alignItems: 'center',

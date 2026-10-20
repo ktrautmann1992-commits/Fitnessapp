@@ -341,7 +341,7 @@ function RecipeCard({
       style={({ pressed }) => [
         styles.card,
         {
-          borderColor: theme.border,
+          borderColor: theme.cardBorder,
           backgroundColor: pressed ? theme.background : theme.surface,
         },
       ]}
@@ -368,7 +368,7 @@ const styles = StyleSheet.create({
   card: {
     minHeight: MIN_TOUCH,
     borderWidth: 1,
-    borderRadius: radius.md,
+    borderRadius: radius.lg,
     padding: spacing.md,
     gap: spacing.xs,
   },

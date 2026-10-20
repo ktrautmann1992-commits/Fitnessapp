@@ -5,7 +5,7 @@ import {
   foodLogGroup,
   type PlannedMeal,
 } from '@fitnessapp/core';
-import { fontSize, fontWeight, radius, spacing } from '@fitnessapp/ui';
+import { fontSize, fontWeight, spacing } from '@fitnessapp/ui';
 import { useRouter, type Href } from 'expo-router';
 import { useState } from 'react';
 import { StyleSheet, View } from 'react-native';
@@ -276,7 +276,7 @@ export function FoodLogEntryItem({
   const entry: FoodLogEntry = entryFromRow(row);
   return (
     <View
-      style={[styles.item, { borderColor: theme.border, backgroundColor: theme.surface }]}
+      style={[styles.item, { borderColor: theme.cardBorder, backgroundColor: theme.surface }]}
       testID={`food-log-entry-${row.id}`}
     >
       <Text style={[styles.title, { color: theme.text }]}>{favorite ? `${title} ★` : title}</Text>
@@ -332,7 +332,7 @@ const styles = StyleSheet.create({
   item: {
     minHeight: MIN_TOUCH,
     borderWidth: 1,
-    borderRadius: radius.md,
+    borderRadius: 16,
     padding: spacing.md,
     gap: 4,
   },

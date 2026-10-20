@@ -1,5 +1,5 @@
 import { historyByWeek, HISTORY_PAGE_SIZE } from '@fitnessapp/core';
-import { fontSize, fontWeight, radius, spacing } from '@fitnessapp/ui';
+import { fontSize, fontWeight, spacing } from '@fitnessapp/ui';
 import { Redirect, useRouter, type Href } from 'expo-router';
 import { useState } from 'react';
 import { Pressable, StyleSheet, View } from 'react-native';
@@ -125,7 +125,7 @@ export default function HistoryScreen() {
                   styles.entry,
                   {
                     backgroundColor: theme.surface,
-                    borderColor: theme.border,
+                    borderColor: theme.cardBorder,
                     opacity: pressed ? 0.85 : 1,
                   },
                 ]}
@@ -207,7 +207,7 @@ const styles = StyleSheet.create({
   entry: {
     minHeight: MIN_TOUCH,
     borderWidth: 1,
-    borderRadius: radius.md,
+    borderRadius: 16,
     paddingHorizontal: spacing.md,
     paddingVertical: spacing.sm,
     gap: 2,

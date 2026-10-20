@@ -8,7 +8,7 @@ import {
   startOfIsoWeek,
   type UnavailableMeal,
 } from '@fitnessapp/core';
-import { fontSize, fontWeight, radius, spacing } from '@fitnessapp/ui';
+import { fontSize, fontWeight, spacing } from '@fitnessapp/ui';
 import { Redirect, useLocalSearchParams, useRouter, type Href } from 'expo-router';
 import { useState, type ReactNode } from 'react';
 import { Pressable, StyleSheet, View } from 'react-native';
@@ -364,7 +364,7 @@ function WeekDayCard({
               style={({ pressed }) => [
                 styles.meal,
                 {
-                  borderColor: theme.border,
+                  borderColor: theme.cardBorder,
                   backgroundColor: pressed ? theme.background : theme.surface,
                 },
               ]}
@@ -399,7 +399,7 @@ const styles = StyleSheet.create({
   meal: {
     minHeight: MIN_TOUCH,
     borderWidth: 1,
-    borderRadius: radius.md,
+    borderRadius: 16,
     padding: spacing.sm,
     gap: 2,
   },

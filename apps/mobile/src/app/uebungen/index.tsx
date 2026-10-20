@@ -6,7 +6,7 @@ import {
   type GlossaryGroup,
   searchExercises,
 } from '@fitnessapp/core';
-import { fontSize, fontWeight, radius, spacing } from '@fitnessapp/ui';
+import { fontSize, fontWeight, spacing } from '@fitnessapp/ui';
 import { Redirect, useRouter, type Href } from 'expo-router';
 import { useEffect, useMemo, useState } from 'react';
 import { Pressable, StyleSheet, View } from 'react-native';
@@ -231,7 +231,7 @@ export default function GlossaryScreen() {
                       styles.item,
                       {
                         backgroundColor: theme.surface,
-                        borderColor: theme.border,
+                        borderColor: theme.cardBorder,
                         opacity: pressed ? 0.85 : 1,
                       },
                     ]}
@@ -263,7 +263,7 @@ const styles = StyleSheet.create({
   item: {
     minHeight: MIN_TOUCH,
     borderWidth: 1,
-    borderRadius: radius.md,
+    borderRadius: 16,
     paddingHorizontal: spacing.md,
     paddingVertical: spacing.sm,
     gap: 2,

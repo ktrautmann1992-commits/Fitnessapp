@@ -83,7 +83,7 @@ export function FeasibilityCard({
       accessibilityLabel={C.feasibilityA11y(status.label, status.text)}
       style={[
         styles.feasibility,
-        { backgroundColor: theme.surface, borderColor: theme.border, borderLeftColor: accent },
+        { backgroundColor: theme.surface, borderColor: theme.cardBorder, borderLeftColor: accent },
       ]}
     >
       <Text style={[styles.feasibilityTitle, { color: theme.textMuted }]}>
@@ -581,7 +581,7 @@ const styles = StyleSheet.create({
   feasibility: {
     borderWidth: 1,
     borderLeftWidth: 6,
-    borderRadius: radius.md,
+    borderRadius: 16,
     padding: spacing.md,
     gap: spacing.xs,
   },

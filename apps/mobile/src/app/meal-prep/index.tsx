@@ -167,7 +167,7 @@ function PlanCard({
     // Ausgegraut, nicht antippbar, ohne Grund (19.6 Nr. 2).
     return (
       <View
-        style={[styles.card, styles.greyed, { borderColor: theme.border }]}
+        style={[styles.card, styles.greyed, { borderColor: theme.cardBorder }]}
         testID={testID}
         accessibilityState={{ disabled: true }}
       >
@@ -213,7 +213,7 @@ const styles = StyleSheet.create({
   card: {
     minHeight: MIN_TOUCH,
     borderWidth: 1,
-    borderRadius: radius.md,
+    borderRadius: radius.lg,
     padding: spacing.md,
     gap: spacing.xs,
   },

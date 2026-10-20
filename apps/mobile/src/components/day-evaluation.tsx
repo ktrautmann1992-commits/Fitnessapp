@@ -92,7 +92,7 @@ export function DayTrainingRow({
   const view = achievement ? achievementView(item.name_de, achievement, exerciseNames) : null;
   return (
     <View
-      style={[styles.item, { borderColor: theme.border, backgroundColor: theme.surface }]}
+      style={[styles.item, { borderColor: theme.cardBorder, backgroundColor: theme.surface }]}
       testID="day-training-item"
     >
       <Text style={[styles.itemTitle, { color: theme.text }]}>
@@ -150,7 +150,7 @@ const styles = StyleSheet.create({
   fill: { position: 'absolute', left: 0, top: 6, bottom: 6, borderRadius: radius.sm },
   marker: { position: 'absolute', top: 0, bottom: 0, width: 2, marginLeft: -1 },
   zoneText: { fontSize: fontSize.md, fontWeight: fontWeight.semibold },
-  item: { borderWidth: 1, borderRadius: radius.md, padding: spacing.md, gap: 4 },
+  item: { borderWidth: 1, borderRadius: 16, padding: spacing.md, gap: 4 },
   itemTitle: { fontSize: fontSize.md, fontWeight: fontWeight.bold },
   level: { fontSize: fontSize.md, fontWeight: fontWeight.semibold },
 });

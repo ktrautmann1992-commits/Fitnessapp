@@ -453,7 +453,10 @@ export function MealRow({
       testID={`meal-${meal.slot}`}
       style={({ pressed }) => [
         styles.meal,
-        { borderColor: theme.border, backgroundColor: pressed ? theme.background : theme.surface },
+        {
+          borderColor: theme.cardBorder,
+          backgroundColor: pressed ? theme.background : theme.surface,
+        },
       ]}
     >
       <Text style={[styles.slot, { color: theme.textMuted }]}>
@@ -515,7 +518,7 @@ const styles = StyleSheet.create({
   meal: {
     minHeight: MIN_TOUCH,
     borderWidth: 1,
-    borderRadius: radius.md,
+    borderRadius: radius.lg,
     padding: spacing.md,
     gap: 2,
   },

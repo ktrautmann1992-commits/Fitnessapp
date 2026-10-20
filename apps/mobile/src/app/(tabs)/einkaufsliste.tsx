@@ -583,7 +583,7 @@ function ShoppingItemRow({
   ].filter((m): m is string => m !== null);
   return (
     <View
-      style={[styles.item, { borderColor: theme.border, backgroundColor: theme.surface }]}
+      style={[styles.item, { borderColor: theme.cardBorder, backgroundColor: theme.surface }]}
       testID={`shopping-item-${item.itemKey}`}
     >
       <Pressable

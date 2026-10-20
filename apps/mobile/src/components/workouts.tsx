@@ -97,7 +97,11 @@ export function WorkoutCard({
       testID={`workout-card-${workout.id}`}
       style={({ pressed }) => [
         styles.card,
-        { backgroundColor: theme.surface, borderColor: theme.border, opacity: pressed ? 0.85 : 1 },
+        {
+          backgroundColor: theme.surface,
+          borderColor: theme.cardBorder,
+          opacity: pressed ? 0.85 : 1,
+        },
       ]}
     >
       <Text style={[styles.cardTitle, { color: theme.text }]}>{workout.title_de}</Text>
@@ -155,7 +159,7 @@ const styles = StyleSheet.create({
   card: {
     minHeight: MIN_TOUCH,
     borderWidth: 1,
-    borderRadius: radius.md,
+    borderRadius: radius.lg,
     padding: spacing.md,
     gap: spacing.xs,
   },
