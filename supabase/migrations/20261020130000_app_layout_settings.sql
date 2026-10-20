@@ -44,7 +44,7 @@ set search_path = ''
 as $$
 declare
   -- sync: DASHBOARD_TILES, NAV_AREAS, APP_LAYOUT in packages/core (db-sync.test.ts)
-  tile_ids constant text[] := array['training', 'workouts', 'nutrition', 'body', 'progress', 'shortcuts'];
+  tile_ids constant text[] := array['training', 'workouts', 'nutrition', 'body', 'progress', 'endurance', 'shortcuts'];
   area_ids constant text[] := array[
     'uebersicht', 'today', 'workouts', 'ernaehrung', 'einkaufsliste', 'fortschritt', 'mehr'
   ];

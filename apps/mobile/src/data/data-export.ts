@@ -24,6 +24,8 @@ export function localDataExport(
     productLookups?: readonly { hour_start: string; lookups: number }[];
     /** Testmodus: Anpassungen der Live-Anpassung (geschützter Speicher, Etappe 4b D; 4.7). */
     planAdjustments?: readonly unknown[];
+    /** Testmodus: eigene Strecken (Etappe E4, Spalten wie tracked_routes). */
+    trackedRoutes?: readonly { started_at: string; created_at: string }[];
   } = {},
 ): {
   format_version: number;
@@ -182,8 +184,11 @@ export function localDataExport(
     ai_usage: [...(extra.aiUsage ?? [])],
     beta_entitlements: [],
     admin_actions: [],
-    // Strecken (Phase 10 S1): in der App erst mit der Aufzeichnung (nach S0, Development Build) – im Testmodus leer.
-    tracked_routes: [],
+    // Strecken (Etappe E4) – Spalten wie tracked_routes, sortiert wie export_my_data() (Beginn, Anlage).
+    tracked_routes: [...(extra.trackedRoutes ?? [])].sort(
+      (a, b) =>
+        a.started_at.localeCompare(b.started_at) || a.created_at.localeCompare(b.created_at),
+    ),
     // Etappe E4a: eigene Produkte (Spalten wie user_food_products) und die Zähler der Produktabfrage (Stunde, Anzahl –
     // ohne Nummern, wie private.my_food_product_lookup_counts()). Der Zwischenspeicher gehört niemandem.
     user_food_products: [...rows.userFoodProducts].sort(

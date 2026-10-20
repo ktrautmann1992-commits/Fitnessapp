@@ -69,6 +69,7 @@ describe('normalizeLayout', () => {
     });
     expect(layout.tiles).toEqual([
       { id: 'progress', visible: false },
+      { id: 'endurance', visible: true },
       { id: 'shortcuts', visible: true },
       { id: 'training', visible: true },
       { id: 'workouts', visible: true },
@@ -94,6 +95,7 @@ describe('normalizeLayout', () => {
       'nutrition',
       'body',
       'progress',
+      'endurance',
     ]);
   });
 
@@ -140,10 +142,10 @@ describe('Kacheln', () => {
     expect(moveTile(layout, 'shortcuts', 'down')).toBe(layout);
     const moved = moveTile(layout, 'workouts', 'up');
     expect(moved.tiles.map((t) => t.id).slice(0, 2)).toEqual(['workouts', 'training']);
-    expect(tilePosition(moved, 'workouts')).toEqual({ index: 1, count: 6 });
+    expect(tilePosition(moved, 'workouts')).toEqual({ index: 1, count: 7 });
     expect(tilePosition(moveTile(moved, 'workouts', 'down'), 'workouts')).toEqual({
       index: 2,
-      count: 6,
+      count: 7,
     });
   });
 

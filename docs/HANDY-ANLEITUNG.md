@@ -1383,11 +1383,13 @@ nur in GitHub-Secrets bzw. auf expo.dev.
 „E: Punkt 1–9 ok, Punkt 4 iPhone Fehler: …“ – ohne Passwörter oder Codes)
 1. **Start:** App-Name **Alpha5** unter dem Symbol, Logo-Symbol (Android auch rund und als „Designtes Symbol“),
    Startbildschirm Logo auf Schwarz, App startet ohne Absturz; hell und dunkel.
-2. **Keine Berechtigungs-Abfragen:** Beim ganzen Durchklicken fragt die App **nie** nach Fotos, Standort, Face ID
-   oder Kontakten – und **nie ungefragt** nach Mitteilungen: Die Mitteilungs-Abfrage kommt erst, wenn ihr eine
-   Erinnerung mit „Ja“ annehmt bzw. in den Einstellungen einschaltet (Teil 9a), nie beim Start oder im Onboarding.
-   Android: Einstellungen → Apps → Alpha5 → Berechtigungen zeigt höchstens Kamera und Benachrichtigungen (Internet und
-   Vibration zählen nicht als Berechtigung).
+2. **Keine Berechtigungs-Abfragen:** Beim ganzen Durchklicken fragt die App **nie** nach Fotos, Face ID oder
+   Kontakten – und **nie ungefragt** nach Mitteilungen oder Standort: Die Mitteilungs-Abfrage kommt erst, wenn ihr
+   eine Erinnerung mit „Ja“ annehmt bzw. in den Einstellungen einschaltet (Teil 9a), die Standort-Abfrage erst nach
+   dem Erklär-Bildschirm beim ersten **Aufzeichnen** unter „Ausdauer“ (Teil 9b) – nie beim Start oder im Onboarding.
+   Android: Einstellungen → Apps → Alpha5 → Berechtigungen zeigt höchstens Kamera, Standort und Benachrichtigungen
+   (Internet und Vibration zählen nicht als Berechtigung). Beim Standort steht nur **„Nur während der Nutzung der
+   App zulassen“** zur Wahl – **„Immer zulassen“ gibt es nicht** (gewollt).
 3. **Testmodus und Anmeldung:** „Ohne Konto testen“ funktioniert; mit Supabase-Werten auf expo.dev (SETUP D6)
    klappt die Anmeldung per E-Mail-Code.
 4. **Pausentimer vibriert** am Ende der Pause (Etappe C2) – App offen lassen; Ton aus/Vibration an.
@@ -1439,6 +1441,65 @@ diese Änderung baut noch keine APK):
    „Pause vorbei“ kommt – einmal mit Ladekabel, einmal ohne und im Energiesparmodus. Wie viele Sekunden zu spät?
    (Android plant ohne exakte Wecker „ungefähr“, die App weist darauf hin.)
 Ergebnis bitte Claude schreiben, z. B. „E Android: 1–5 ok, Pause 4 s / 70 s zu spät“ (ohne Passwörter oder Codes).
+
+## Teil 9b – Ausdauer aufzeichnen und als Bild teilen (Etappen E3–E6, 20.10.2026)
+Neu unter **Ausdauer** (Kachel auf der **Übersicht** bzw. **Mehr → Ausdauer**): Laufen, Rad und Gehen mit GPS
+aufzeichnen, „Meine Läufe“, Auswertung je Lauf (Karte, Kilometerzeiten, Höhenprofil), Summen je Woche/Monat und ein
+Story-Bild 9:16. Standortdaten sind privat (nur ihr seht eure Strecken), das Bild entsteht nur auf dem Handy.
+
+**A – Im Handy-Browser (Vercel-Vorschau, Testmodus) – geht sofort, ohne APK**
+1. Vorschau-Link → **Ohne Konto testen** → Onboarding bis **Geschafft!** → **Zum Plan** → **Übersicht** → Kachel
+   **Ausdauer** → **Zu Ausdauer**.
+2. Oben steht „Aufzeichnen mit GPS geht in der App“. **Laufen** wählen → **Demo-Aufzeichnung starten (Testmodus)**:
+   Eine ausgedachte Runde am Rhein läuft im Zeitraffer (1 Sekunde = 40 Sekunden). Große Zahlen: Zeit, Distanz,
+   Ø-Pace (Rad: km/h). **Pause** → Zahlen stehen; **Fortsetzen** → weiter.
+3. Nach ca. 30 Sekunden (über 1 km) **Stopp** → **Ja, beenden** → Name ändern, **Als Favoriten-Strecke merken**,
+   Schwierigkeit, Notiz → **Speichern**. Darunter steht „Wird als freie Einheit ins Trainingstagebuch eingetragen“.
+4. Auswertung: Gesamt- und Bewegungszeit, Distanz, Ø-Pace, Höhenmeter mit „ca.“ und Hinweis „Höhenmeter per GPS sind
+   ungenau“, **Karte** (OpenFreeMap, unten „© OpenStreetMap-Mitwirkende“), **Kilometerzeiten** als Balken,
+   **Höhenprofil**. Lädt die Karte nicht, steht ein Hinweis – die Zahlen bleiben.
+5. **Als Bild teilen** → Vorschau (schwarz, Alpha5-Logo, Linie ohne Anfang/Ende, Zeit, Distanz, Pace, Höhenmeter –
+   **keine Uhrzeit, kein Puls, kein Gewicht**) → Schalter **Strecke zeigen** / **Datum zeigen** ausprobieren →
+   **Bild teilen** (Handy-Browser öffnet den Teilen-Dialog) bzw. **Bild herunterladen**.
+6. Zurück → **Ausdauer**: Der Lauf steht in **Meine Läufe** mit Linien-Skizze, oben die **Woche** (Umschalter
+   **Monat**, **Zurück**/**Weiter**) mit Summen und neutralem Vergleich („… km mehr als letzte Woche“).
+7. **Eintragen ohne GPS** → Ausdauer → Rad → Dauer und Distanz → Speichern → erscheint ebenfalls in „Meine Läufe“
+   (Kennzeichen „ohne GPS“), einmal gezählt.
+8. **Krafttraining als Bild:** Training → eine Einheit speichern → im Verlauf bzw. Kalender den Eintrag öffnen → **Als
+   Bild teilen**: Name, Datum, Dauer, Übungen (bis 5 Namen), Sätze, Volumen **nur aus Zusatzlast** (ohne
+   Körpergewicht).
+9. Auswertung → **Strecke löschen** → weg; der Tagebuch-Eintrag bleibt (separat löschbar). **Alle Strecken löschen**
+   unten in der Liste.
+
+**B – In der echten App (Test-APK) – braucht einen neuen Build** (neue native Module: Standort, Hintergrund-Aufgabe,
+Bild-Aufnahme, Teilen, WebView)
+1. GitHub-App → **Actions** → **eas-build** → **Run workflow** → Branch **claude/ausdauer-gps** (vor dem Merge) bzw.
+   **main** (nach dem Merge) → **android / preview / nein** → APK wie in Teil 9 B installieren (alte Version einfach
+   überschreiben).
+2. **Ausdauer** → **Laufen** → **Aufzeichnung starten** → erst kommt **unser** Erklär-Bildschirm („Wir nutzen deinen
+   Standort nur, während du aufzeichnest …“) → **Weiter zur Abfrage** → Android fragt: **„Nur während der Nutzung der
+   App“** wählen (iPhone: **„Beim Verwenden der App erlauben“**). „Immer“ wird nie gefragt und ist nicht nötig.
+3. Draußen eine kurze Runde (mind. 1 Minute und 100 m). Oben zuerst „Suche GPS …“, dann laufen die Zahlen. **Handy
+   sperren** und weitergehen: Android zeigt die Benachrichtigung **„Alpha5 – Aufzeichnung läuft“**, iPhone den blauen
+   Standort-Hinweis oben. Entsperren → Zahlen sind weitergelaufen.
+4. **Pause** → Benachrichtigung verschwindet (Standort aus) → **Fortsetzen** → wieder an. **Stopp** → speichern →
+   Auswertung mit Karte.
+5. **Absturz-Test:** Aufzeichnung starten, 1–2 Minuten gehen, App im App-Wechsler **wegwischen** → App neu öffnen →
+   **Ausdauer** zeigt „Aufzeichnung gefunden“ → **Fortsetzen** oder **Beenden und speichern**. (Gesichert wird
+   spätestens alle 30 Sekunden; die letzten Sekunden vor dem Wegwischen können fehlen.)
+6. **Funkloch/offline (mit Konto):** Flugmodus an → aufzeichnen → speichern → Liste zeigt „wird übertragen“ → Flugmodus
+   aus → App öffnen → Eintrag ist gespeichert.
+7. **Teilen:** Auswertung → **Als Bild teilen** → **Bild teilen** → System-Teilen-Dialog (z. B. WhatsApp, Instagram,
+   „Bild sichern“/„In Fotos speichern“). Die App fragt dabei **nicht** nach Zugriff auf eure Fotos.
+8. **GPX-Datei:** Auswertung → **Als GPX-Datei speichern** → Ordner wählen (wie beim Datenexport).
+9. **Berechtigung ablehnen:** Auf einem Handy bei der Abfrage **Nicht zulassen** → die App zeigt „Kein Zugriff auf den
+   Standort“ mit **Einstellungen öffnen** (dort: Apps → Alpha5 → Berechtigungen → Standort → „Nur während der Nutzung
+   der App zulassen“) → zurück → **Erneut prüfen** → Aufzeichnung startet.
+10. **Akku:** Wer mag, eine lange Runde (60 min) aufzeichnen und den Akkuverbrauch notieren. Energiesparmodus bzw.
+    „Akku optimieren“ kann die Aufzeichnung auf manchen Android-Handys stören – dann Alpha5 dort ausnehmen
+    (Einstellungen → Apps → Alpha5 → Akku → „Nicht eingeschränkt“).
+
+Ergebnis bitte Claude schreiben, z. B. „9b Android: 1–9 ok, Punkt 5: 40 s fehlten“ (ohne Passwörter oder Codes).
 
 ## Tipps
 - Eine Sitzung = eine Aufgabe. Lieber mehrere kurze Sitzungen als eine endlose.

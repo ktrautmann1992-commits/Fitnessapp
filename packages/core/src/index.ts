@@ -20,6 +20,7 @@ export * from './nutrition';
 export * from './evaluation';
 export * from './retail';
 export * from './routes';
+export * from './share';
 export * from './dashboard';
 export * from './layout';
 export * from './notifications';

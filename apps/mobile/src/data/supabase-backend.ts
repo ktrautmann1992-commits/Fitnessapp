@@ -29,6 +29,9 @@ import {
   type PlanLibrary,
   type PlanSafetyRules,
   type SessionLogPayload,
+  type TrackedRoutePayload,
+  type TrackedRouteRow,
+  updateTrackedRouteSchema,
 } from '@fitnessapp/core';
 import type { AppSupabaseClient, Json, Tables } from '@fitnessapp/db';
 
@@ -128,6 +131,7 @@ import {
   checkFoodDislikesSave,
   checkRecipeRatingSave,
 } from './rating-rows';
+import { RouteQueue, type RouteSendResult } from './route-queue';
 import { SyncQueue } from './sync-queue';
 import { effectiveSafetyRules } from './training-plan';
 import {
@@ -873,6 +877,12 @@ export interface SupabaseBackendOptions {
    * Aufruf. Der Schalter „Premium simulieren“ gehört nur zum Testmodus (Wächter K2) und hat hier kein Feld.
    */
   liveAdjustServer?: boolean;
+  /**
+   * Etappe E4: geschützte Speicher für die Strecken-Warteschlange (samt zuletzt geladener Liste) und die laufende
+   * Aufzeichnung (Standortdaten). Standard (Tests): nur Arbeitsspeicher.
+   */
+  routeQueueStore?: ProtectedStore;
+  routeRecordingStore?: ProtectedStore;
 }
 
 /** Inhalt des geschützten Tagebuch-Zwischenspeichers (4.6). */
@@ -883,12 +893,54 @@ interface LogCache {
 
 const CONSENT_TYPES_WITH_TEXT = ['terms', 'privacy', 'health_data', 'ai_food_photo'] as const;
 
+/** Höchstens so viele Strecken laden (neueste zuerst) – „Meine Läufe“ (Etappe E4). */
+export const TRACKED_ROUTES_LOAD_LIMIT = 1000;
+
+/**
+ * Antwort von save_tracked_route einordnen (Etappe E4): Netz/Anmeldung/Server vorübergehend → später erneut;
+ * Verknüpfung passt nicht (Eintrag abgelehnt oder gelöscht, Favorit weg) → ohne Verweise erneut; sonst abgelehnt.
+ * Meldungen der Datenbank enthalten keine Werte.
+ */
+export function classifyRouteError(error: unknown): RouteSendResult {
+  const e = (error ?? {}) as ErrorLike;
+  const db = e.code ?? '';
+  const code = /^5[37]/.test(db) ? 'temporary' : classifySupabaseError(error);
+  if (
+    code === 'network' ||
+    code === 'not_signed_in' ||
+    code === 'rate_limited' ||
+    code === 'temporary' ||
+    db === '40P01' ||
+    db === '40001' ||
+    (e.status !== undefined && e.status >= 500)
+  ) {
+    return 'retry';
+  }
+  if (
+    /^(Dieser Eintrag passt nicht zur Strecke|Die Favoriten-Strecke wurde nicht gefunden)/.test(
+      e.message ?? '',
+    )
+  ) {
+    return 'unlink';
+  }
+  return 'reject';
+}
+
+/** Fehler beim Ändern/Löschen einer Strecke: Netz → „nur online“, sonst „abgelehnt“. */
+function routeError(error: unknown): BackendError {
+  const code = classifySupabaseError(error);
+  if (code === 'network') return new BackendError('online_only', { cause: error });
+  if (code === 'not_signed_in') return new BackendError(code, { cause: error });
+  return new BackendError('route_rejected', { cause: error });
+}
+
 export function createSupabaseBackend(options: SupabaseBackendOptions): Backend {
   const { client, store } = options;
   const protectedStore = options.protectedStore ?? createMemoryProtectedStore();
   const logCacheStore = options.logCacheStore ?? createMemoryProtectedStore();
   const drafts = new DraftStore(options.workoutDraftStore ?? createMemoryProtectedStore());
   const nutritionCacheStore = options.nutritionCacheStore ?? createMemoryProtectedStore();
+  const recordingStore = options.routeRecordingStore ?? createMemoryProtectedStore();
   let currentUserId: string | null = null;
   /** Zuletzt geladene Einwilligungs-Versionen (für die wirksamen Sicherheitsregeln im Zwischenspeicher). */
   let versions: ConsentVersions | null = null;
@@ -987,6 +1039,40 @@ export function createSupabaseBackend(options: SupabaseBackendOptions): Backend 
       emit({ kind: 'log_rejected', reason, key: entry.key, writeId: entry.payload.write_id });
     },
   });
+
+  /**
+   * Strecken-Warteschlange (Etappe E4): verschlüsselt, gesendet NACH dem verknüpften Tagebuch-Eintrag (Plan S1).
+   * Ältere Datenbank ohne Spalte elevation_profile (App vor db-migrate): einmal ohne Höhenprofil senden.
+   */
+  const routeQueue = new RouteQueue({
+    store: options.routeQueueStore ?? createMemoryProtectedStore(),
+    send: (payload) => sendTrackedRoute(payload),
+    isLogPending: (logId) => logQueue.snapshot().some((e) => e.payload.id === logId),
+    currentUserId: () => currentUserId,
+  });
+
+  async function sendTrackedRoute(payload: TrackedRoutePayload): Promise<RouteSendResult> {
+    const call = async (body: TrackedRoutePayload) => {
+      const { error, status } = await client.rpc('save_tracked_route', { p_route: toJson(body) });
+      return error ? { ...error, status } : null;
+    };
+    try {
+      let error = await call(payload);
+      if (
+        error &&
+        payload.elevation_profile !== undefined &&
+        /Unbekanntes Feld/.test(error.message ?? '')
+      ) {
+        const older: TrackedRoutePayload = { ...payload };
+        delete older.elevation_profile;
+        error = await call(older);
+      }
+      if (!error) return 'ok';
+      return classifyRouteError(error);
+    } catch (error) {
+      return classifyRouteError(error);
+    }
+  }
 
   /**
    * Ernährungs-Warteschlange (Etappe N7 Teil 2): Tagebuch-Einträge und eigene Gerichte sind (vorsorglich)
@@ -1153,6 +1239,8 @@ export function createSupabaseBackend(options: SupabaseBackendOptions): Backend 
     if (logResult !== 'done' && logResult !== 'blocked') return false;
     // Ernährungs-Warteschlange (N7 Teil 2): Tagebuch und eigene Gerichte.
     const nutritionDone = (await nutritionQueue.flush().catch(() => 'later' as const)) === 'done';
+    // Strecken (Etappe E4): erst nach den Tagebuch-Einträgen (Verknüpfung, Plan S1).
+    await routeQueue.flush().catch(() => 'later' as const);
     try {
       const { error } = await client.rpc('close_missed_sessions');
       if (error && isTransientError(error)) return false;
@@ -2622,6 +2710,72 @@ export function createSupabaseBackend(options: SupabaseBackendOptions): Backend 
       if (!file) throw new BackendError('unknown', { sensitive: true });
       return file;
     },
+
+    // --- Ausdauer: Strecken (Etappe E4) -------------------------------------------------------------------------
+    loadTrackedRoutes: async () => {
+      const session = await requireSession();
+      const pending = await routeQueue.entries();
+      const pendingIds = new Set(pending.map((p) => p.payload.id));
+      try {
+        const { data, error } = await client
+          .from('tracked_routes')
+          .select('*')
+          .eq('user_id', session.userId)
+          .order('started_at', { ascending: false })
+          .limit(TRACKED_ROUTES_LOAD_LIMIT);
+        if (error) throw error;
+        const routes = (data ?? []) as unknown as TrackedRouteRow[];
+        await routeQueue.writeCache(routes, session.userId).catch(() => undefined);
+        return { routes: routes.filter((r) => !pendingIds.has(r.id)), pending, offline: false };
+      } catch (error) {
+        if (classifySupabaseError(error) !== 'network') throw toBackendError(error);
+        const cached = (await routeQueue.readCache()) ?? [];
+        return { routes: cached.filter((r) => !pendingIds.has(r.id)), pending, offline: true };
+      }
+    },
+    saveTrackedRoute: async (payload) => {
+      const session = await requireSession();
+      try {
+        await routeQueue.add(payload, session.userId);
+      } catch {
+        throw new BackendError('storage_unavailable');
+      }
+      await flushAll().catch(() => false);
+      const entry = (await routeQueue.entries()).find((e) => e.payload.id === payload.id);
+      if (entry?.state === 'rejected') throw new BackendError('route_rejected');
+      return entry ? 'queued' : 'saved';
+    },
+    updateTrackedRoute: async (payload) => {
+      await requireSession();
+      const parsed = updateTrackedRouteSchema.safeParse(payload);
+      if (!parsed.success) throw new BackendError('route_rejected');
+      const { error } = await client.rpc('update_tracked_route', { p_route: toJson(parsed.data) });
+      if (error) throw routeError(error);
+    },
+    deleteTrackedRoute: async (id) => {
+      await requireSession();
+      if ((await routeQueue.entries()).some((e) => e.payload.id === id)) {
+        await routeQueue.discard(id);
+        return;
+      }
+      const { error } = await client.rpc('delete_tracked_route', { p_id: id });
+      if (error) throw routeError(error);
+    },
+    deleteAllTrackedRoutes: async () => {
+      await requireSession();
+      const { data, error } = await client.rpc('delete_all_tracked_routes');
+      if (error) throw routeError(error);
+      for (const entry of await routeQueue.entries()) await routeQueue.discard(entry.payload.id);
+      return typeof data === 'number' ? data : 0;
+    },
+    retryPendingRoute: async (id) => {
+      await routeQueue.retry(id);
+      await flushAll().catch(() => false);
+    },
+    discardPendingRoute: (id) => routeQueue.discard(id),
+    readRecording: () => recordingStore.read(),
+    writeRecording: (text) => recordingStore.write(text),
+    clearRecording: () => recordingStore.clear(),
   };
 
   // --- Ernährung im Supabase-Modus (Etappe N7 Teil 2) ----------------------------------------------------------
@@ -3057,6 +3211,8 @@ export function createSupabaseBackend(options: SupabaseBackendOptions): Backend 
     await logCacheStore.clear();
     await nutritionQueue.clear();
     await nutritionCacheStore.clear();
+    await routeQueue.clear();
+    await recordingStore.clear();
   }
 
   /**

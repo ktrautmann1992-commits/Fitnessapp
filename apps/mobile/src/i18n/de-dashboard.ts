@@ -118,6 +118,7 @@ export const deDashboard = {
       nutrition: 'Ernährung heute',
       body: 'Körperdaten',
       progress: 'Fortschritt',
+      endurance: 'Ausdauer',
       shortcuts: 'Schnell zu',
     },
   },

@@ -7,6 +7,9 @@ import { Platform, View } from 'react-native';
 import { SafeAreaProvider, SafeAreaView } from 'react-native-safe-area-context';
 
 import { NotificationRouter } from '@/components/notification-router';
+// Ausdauer (Etappe E4): Hintergrund-Aufgabe der Aufzeichnung muss beim Start der App definiert sein (expo-task-manager);
+// im Browser ohne Wirkung.
+import '@/lib/location-driver';
 import { TopBanner } from '@/components/screen';
 import { useThemeColors } from '@/lib/theme';
 import { useBrandFonts } from '@/lib/use-brand-fonts';

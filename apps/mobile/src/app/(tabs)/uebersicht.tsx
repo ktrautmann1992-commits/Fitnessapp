@@ -12,6 +12,7 @@ import { Fragment, type ReactNode, useEffect, useMemo, useState } from 'react';
 import { DashboardTile, ShortcutCell, ShortcutGrid, ShortcutTile } from '@/components/dashboard';
 import { DashboardEditor } from '@/components/dashboard-edit';
 import { WorkoutsTile } from '@/components/workouts';
+import { EnduranceTile } from '@/components/endurance-tile';
 import { Screen } from '@/components/screen';
 import { MeasurementNotificationOffer } from '@/components/notifications';
 import { Body, Button, LoadingState, Notice } from '@/components/ui';
@@ -117,6 +118,9 @@ function Overview({ rows, today }: { rows: UserRows; today: string }) {
         return <BodyTile rows={rows} consent={consent} />;
       case 'progress':
         return <ProgressTile rows={rows} today={today} />;
+      // Etappe E4 (Ausdauer): letzte Aktivität, km dieser Woche.
+      case 'endurance':
+        return <EnduranceTile rows={rows} today={today} />;
       case 'shortcuts':
         return (
           <ShortcutGrid label={t.dashboard.shortcuts.title}>

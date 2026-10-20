@@ -4,6 +4,7 @@ import {
   type ConfigPlugin,
   withAndroidManifest,
   withEntitlementsPlist,
+  withInfoPlist,
 } from 'expo/config-plugins';
 
 // Name der App (Anzeige unter dem Icon, im Browser-Tab) – gemeinsam mit packages/ui/src/brand.ts ändern.
@@ -29,6 +30,37 @@ const EAS_OWNER = 'ktrautmann1992s-team';
 // Text der iOS-Kamera-Abfrage (NSCameraUsageDescription), Wortlaut aus docs/PLAN-E4.md 5.2.
 export const CAMERA_PERMISSION_TEXT =
   'Alpha5 nutzt die Kamera nur, um den Strichcode von Lebensmitteln zu lesen. Es werden keine Fotos gespeichert.';
+
+// Standort (Ausdauer aufzeichnen, Etappe E3/E4, docs/PLAN-EINKAUFEN-AUSDAUER.md 5–6, docs/PLAN-PHASE-10.md 11.2):
+// nur „Beim Verwenden der App“ und NUR während einer laufenden Aufzeichnung. Die Aufzeichnung läuft bei gesperrtem
+// Handy weiter – iOS über den Hintergrundmodus „location“ mit blauem Standort-Hinweis, Android über einen
+// Vordergrund-Dienst mit Benachrichtigung „Aufzeichnung läuft“. Beides braucht KEINE Berechtigung „Immer“
+// (ACCESS_BACKGROUND_LOCATION / NSLocationAlways…): expo-location startet den Dienst nur aus der geöffneten App
+// (W-G13, geprüft im Quelltext von expo-location 57: startLocationUpdatesAsync mit `foregroundService` verlangt nur
+// Vordergrund-Standort + FOREGROUND_SERVICE_LOCATION).
+export const LOCATION_WHEN_IN_USE_TEXT =
+  'Alpha5 nutzt deinen Standort nur, während du eine Lauf-, Rad- oder Geh-Runde aufzeichnest – auch bei gesperrtem Bildschirm. Deine Strecken siehst nur du.';
+// iOS verlangt diesen Text, sobald die Bibliothek die Abfrage „Immer“ enthält. Die App fragt „Immer“ NIE ab.
+export const LOCATION_ALWAYS_TEXT =
+  'Alpha5 braucht keinen Standort „Immer“. Der Standort wird nur während einer Aufzeichnung genutzt, die du selbst startest und beendest.';
+
+/**
+ * Hintergrundmodi iOS (UIBackgroundModes): erlaubt ist nur `location` (Aufzeichnung bei gesperrtem Bildschirm, mit
+ * blauem Hinweis). Das Plugin von expo-task-manager trägt immer `fetch` (Hintergrund-Aktualisierung) ein – die App
+ * nutzt das nicht. Deshalb wird es entfernt (Datensparsamkeit, App-Review fragt sonst nach dem Zweck).
+ */
+export const IOS_BACKGROUND_MODES = ['location'] as const;
+
+const withOnlyLocationBackgroundMode: ConfigPlugin = (cfg) =>
+  withInfoPlist(cfg, (mod) => {
+    const modes = Array.isArray(mod.modResults.UIBackgroundModes)
+      ? (mod.modResults.UIBackgroundModes as string[])
+      : [];
+    mod.modResults.UIBackgroundModes = modes.filter((mode) =>
+      (IOS_BACKGROUND_MODES as readonly string[]).includes(mode),
+    );
+    return mod;
+  });
 
 /**
  * expo-camera trägt in sein Android-Manifest `com.google.mlkit.vision.DEPENDENCIES = barcode_ui` ein. Das lässt Google
@@ -73,7 +105,9 @@ const withoutPushEntitlement: ConfigPlugin = (cfg) =>
   });
 
 export default ({ config }: ConfigContext): ExpoConfig =>
-  withoutPushEntitlement(withoutGoogleCodeScannerDownload(appConfig(config)));
+  withOnlyLocationBackgroundMode(
+    withoutPushEntitlement(withoutGoogleCodeScannerDownload(appConfig(config))),
+  );
 
 const appConfig = (config: ConfigContext['config']): ExpoConfig => ({
   ...config,
@@ -100,9 +134,12 @@ const appConfig = (config: ConfigContext['config']): ExpoConfig => ({
       // Bestätigung in der Rechts-Checkliste Phase 12.
       usesNonExemptEncryption: false,
     },
-    // Einziger NS…UsageDescription-Text: Kamera (NSCameraUsageDescription, Strichcode scannen, Etappe E4b) – gesetzt
-    // vom Plugin expo-camera unten. Sonst keine: keine Fotos, kein Mikrofon, kein Standort, kein Face ID, keine
-    // Health-Daten. Drucken (expo-print), Ordner-Auswahl (expo-file-system), Vibration (expo-haptics),
+    // NS…UsageDescription-Texte: Kamera (NSCameraUsageDescription, Strichcode scannen, Etappe E4b) – gesetzt vom
+    // Plugin expo-camera unten – und Standort (NSLocationWhenInUseUsageDescription, Ausdauer aufzeichnen, E3/E4;
+    // dazu NSLocationAlwaysAndWhenInUseUsageDescription, den iOS verlangt, obwohl die App „Immer“ nie abfragt) –
+    // gesetzt vom Plugin expo-location unten. Sonst keine: keine Fotos (das Story-Bild geht über den
+    // System-Teilen-Dialog, dort auch „Bild sichern“ – ohne Zugriff auf die Mediathek), kein Mikrofon, kein Face ID,
+    // keine Bewegungsdaten, keine Health-Daten. Drucken (expo-print), Ordner-Auswahl (expo-file-system), Vibration (expo-haptics),
     // Bildschirm-an (expo-keep-awake), Schlüsselbund (expo-secure-store) und expo-crypto brauchen keine
     // Berechtigung. Kommt später eine dazu (z. B. HealthKit, Phase 8), hier deutschen Text ergänzen.
     // Kamera ist keine „Required Reason API“ (kein Eintrag unten); Kamerabilder verlassen das Gerät nicht, sind also
@@ -146,6 +183,9 @@ const appConfig = (config: ConfigContext['config']): ExpoConfig => ({
         'NSPrivacyCollectedDataTypeHealth',
         'NSPrivacyCollectedDataTypeFitness',
         'NSPrivacyCollectedDataTypeOtherUserContent',
+        // Gespeicherte Strecken (tracked_routes, Etappe E4): vereinfachte Linie der eigenen Aufzeichnung, nur für die
+        // eigene Auswertung (kein Teilen, keine Ranglisten).
+        'NSPrivacyCollectedDataTypePreciseLocation',
       ].map((type) => ({
         NSPrivacyCollectedDataType: type,
         NSPrivacyCollectedDataTypeLinked: true,
@@ -165,6 +205,14 @@ const appConfig = (config: ConfigContext['config']): ExpoConfig => ({
     // Speicher-Berechtigung; SYSTEM_ALERT_WINDOW (Einblendung über anderen Apps) kommt nur aus der Vorlage.
     // Bleiben: INTERNET (Supabase), VIBRATE (Pausentimer, expo-haptics) und CAMERA (Strichcode scannen, expo-camera,
     // Etappe E4b). Kein RECORD_AUDIO (Plugin-Option recordAudioAndroid: false).
+    // Ausdauer aufzeichnen (E3/E4, expo-location): ACCESS_FINE_LOCATION + ACCESS_COARSE_LOCATION („Beim Verwenden“),
+    // FOREGROUND_SERVICE + FOREGROUND_SERVICE_LOCATION (Vordergrund-Dienst mit Benachrichtigung „Aufzeichnung läuft“,
+    // nur während einer Aufzeichnung). Bewusst GESPERRT: ACCESS_BACKGROUND_LOCATION („Immer erlauben“) – der
+    // Vordergrund-Dienst braucht sie nicht; so entfällt die strenge Play-Prüfung „Standort im Hintergrund“ (W-G13).
+    // expo-task-manager bringt RECEIVE_BOOT_COMPLETED mit (schon da durch expo-notifications) – die Aufzeichnung startet
+    // nach einem Neustart NICHT von selbst (die App fragt beim Öffnen „Fortsetzen oder speichern?“).
+    // Story-Bild teilen (E6): react-native-view-shot + expo-sharing brauchen keine Berechtigung (Datei im Cache,
+    // System-Teilen-Dialog); deshalb kein expo-media-library und keine Foto-/Speicher-Berechtigung.
     // Aus der Bibliothek expo-notifications (Etappe E, erst beim Bauen eingemischt): POST_NOTIFICATIONS (Android 13+,
     // die App fragt erst nach „Ja“ bzw. Einschalten) und RECEIVE_BOOT_COMPLETED (geplante Erinnerungen überstehen einen
     // Neustart). Keine Berechtigung für exakte Wecker (SCHEDULE_EXACT_ALARM/USE_EXACT_ALARM): Android plant dann
@@ -177,6 +225,7 @@ const appConfig = (config: ConfigContext['config']): ExpoConfig => ({
       'android.permission.READ_EXTERNAL_STORAGE',
       'android.permission.WRITE_EXTERNAL_STORAGE',
       'android.permission.SYSTEM_ALERT_WINDOW',
+      'android.permission.ACCESS_BACKGROUND_LOCATION',
     ],
     adaptiveIcon: {
       // Logo auf 50 % der Breite: bleibt in der Sicherheitszone, egal welche Form (Kreis, Quadrat) Android zuschneidet.
@@ -216,6 +265,23 @@ const appConfig = (config: ConfigContext['config']): ExpoConfig => ({
         icon: './assets/images/android-icon-monochrome.png',
         sounds: [],
         enableBackgroundRemoteNotifications: false,
+      },
+    ],
+    // Ausdauer aufzeichnen (E3/E4): nur „Beim Verwenden“, Vordergrund-Dienst auf Android, Hintergrundmodus `location`
+    // auf iOS (nur während der Aufzeichnung, blauer Hinweis). Kein „Immer“, keine Bewegungsdaten. Symbol der
+    // Benachrichtigung „Aufzeichnung läuft“ = weißes Logo. Neues natives Modul → neuer EAS-Build nötig.
+    [
+      'expo-location',
+      {
+        locationWhenInUsePermission: LOCATION_WHEN_IN_USE_TEXT,
+        locationAlwaysAndWhenInUsePermission: LOCATION_ALWAYS_TEXT,
+        locationAlwaysPermission: false,
+        motionUsagePermission: false,
+        isIosBackgroundLocationEnabled: true,
+        isAndroidBackgroundLocationEnabled: false,
+        isAndroidForegroundServiceEnabled: true,
+        isAndroidMotionActivityEnabled: false,
+        androidForegroundServiceIcon: './assets/images/android-icon-monochrome.png',
       },
     ],
     [

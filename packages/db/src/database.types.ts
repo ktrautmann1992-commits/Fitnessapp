@@ -2461,6 +2461,7 @@ export type Database = {
           distance_m: number;
           duration_s: number;
           elevation_gain_m: number | null;
+          elevation_profile: Json | null;
           id: string;
           is_favorite: boolean;
           km_splits: Json;
@@ -2484,6 +2485,7 @@ export type Database = {
           distance_m: number;
           duration_s: number;
           elevation_gain_m?: number | null;
+          elevation_profile?: Json | null;
           id?: string;
           is_favorite?: boolean;
           km_splits?: Json;
@@ -2507,6 +2509,7 @@ export type Database = {
           distance_m?: number;
           duration_s?: number;
           elevation_gain_m?: number | null;
+          elevation_profile?: Json | null;
           id?: string;
           is_favorite?: boolean;
           km_splits?: Json;

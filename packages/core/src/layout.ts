@@ -28,6 +28,7 @@ export const DASHBOARD_TILES = [
   'nutrition',
   'body',
   'progress',
+  'endurance',
   'shortcuts',
 ] as const;
 export type DashboardTileId = (typeof DASHBOARD_TILES)[number];

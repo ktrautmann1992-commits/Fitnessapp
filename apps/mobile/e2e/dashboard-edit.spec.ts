@@ -117,6 +117,7 @@ test('Übersicht bearbeiten: ausblenden, verschieben mit Ansage, bleibt nach dem
     'Workouts',
     'Ernährung heute',
     'Fortschritt',
+    'Ausdauer',
     'Schnell zu',
   ]) {
     await page.getByRole('checkbox', { name: `${name} anzeigen` }).click();
