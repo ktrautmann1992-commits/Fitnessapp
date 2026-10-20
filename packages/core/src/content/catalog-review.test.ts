@@ -64,9 +64,7 @@ describe('Katalog-Prüfung (R19, R2-K6)', () => {
     expect(after.meta.reviewed_by).toBe('KT');
     expect(after.meta.reviewed_at).toBe('2026-10-20');
     expect(after.meta.expert_reviewed).toBe(before.meta.expert_reviewed);
-    const { status: _s, meta: _m, ...restAfter } = after;
-    const { status: _s2, meta: _m2, ...restBefore } = before;
-    expect(restAfter).toEqual(restBefore);
+    expect({ ...after, status: before.status, meta: before.meta }).toEqual(before);
   });
 
   it('schon freigegeben: vorhandener Prüfvermerk bleibt, nur Katalog-Prüfung kommt dazu', () => {

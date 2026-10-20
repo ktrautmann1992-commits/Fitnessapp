@@ -394,7 +394,7 @@ export async function runNutritionIdRelease(
   const problems = [
     ...plan.foodIds.map(
       (id) =>
-        `\`${id}\`: Lebensmittel werden nicht über content-review freigegeben – dafür gibt es die Katalog-Prüfung (R19, docs/SETUP.md Teil J).`,
+        `\`${id}\`: Lebensmittel werden nicht über Art „ids“ freigegeben – dafür gibt es Art „katalog“ (Katalog geprüft, R19).`,
     ),
     ...plan.unknownIds.map(
       (id) =>
