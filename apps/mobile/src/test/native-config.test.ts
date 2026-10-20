@@ -138,7 +138,9 @@ describe('app.config.ts', () => {
   });
 
   it('kein Plugin, das eine Teilen-Erweiterung oder Mediathek-Zugriff einbaut (E6: Teilen nur über den System-Dialog)', () => {
-    const names = (config().plugins ?? []).map((entry) => (Array.isArray(entry) ? entry[0] : entry));
+    const names = (config().plugins ?? []).map((entry) =>
+      Array.isArray(entry) ? entry[0] : entry,
+    );
     expect(names).not.toContain('expo-sharing');
     expect(names).not.toContain('expo-media-library');
     const pkg = JSON.parse(readFileSync(join(APP_DIR, 'package.json'), 'utf8')) as {

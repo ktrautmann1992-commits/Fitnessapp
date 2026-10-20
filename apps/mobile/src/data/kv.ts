@@ -117,4 +117,14 @@ export const STORAGE_KEYS = {
    */
   liveAdjust: 'fitnessapp.live-adjust.v1',
   liveAdjustKey: 'fitnessapp.live-adjust-key.v1',
+  /**
+   * Ausdauer (Etappe E4): laufende Aufzeichnung (Rohpunkte mit Zeit und Genauigkeit, alle 30 s gesichert – für
+   * „Fortsetzen oder speichern?“ nach einem Absturz) und Warteschlange/Zwischenspeicher der Strecken. Standortdaten:
+   * NUR im eigenen geschützten Speicher (App: AES-256-GCM, Schlüssel im Keychain/Keystore; Browser: sessionStorage).
+   * Nach dem Speichern bzw. Verwerfen der Aufzeichnung gelöscht; Abmelden und Konto löschen leeren beide.
+   */
+  routeRecording: 'fitnessapp.route-recording.v1',
+  routeRecordingKey: 'fitnessapp.route-recording-key.v1',
+  routeQueue: 'fitnessapp.route-queue.v1',
+  routeQueueKey: 'fitnessapp.route-queue-key.v1',
 } as const;

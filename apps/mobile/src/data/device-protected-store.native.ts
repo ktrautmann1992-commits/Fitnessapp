@@ -65,5 +65,7 @@ export function createDeviceProtectedStores(): ProtectedStores {
     nutritionCache: createDeviceProtectedStore('nutritionCache'),
     nutritionQueue: createDeviceProtectedStore('nutritionQueue'),
     liveAdjust: createDeviceProtectedStore('liveAdjust'),
+    routeRecording: createDeviceProtectedStore('routeRecording'),
+    routeQueue: createDeviceProtectedStore('routeQueue'),
   };
 }

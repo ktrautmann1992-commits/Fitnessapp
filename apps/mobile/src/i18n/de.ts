@@ -18,6 +18,7 @@ import {
   deTabs,
 } from './de-dashboard';
 import { deDay } from './de-day';
+import { deEndurance } from './de-endurance';
 import { deFoodLog } from './de-food-log';
 import { deFoodPhoto } from './de-food-photo';
 import { deFoodProduct } from './de-food-product';
@@ -1629,6 +1630,8 @@ export const de = {
   },
   /** Live-Anpassung des Plans (Phase 4b, Etappe D). */
   adjust: deAdjust,
+  /** Ausdauer: Aufzeichnen, Meine Läufe, Auswertung, Story-Bild (Etappen E3–E6). */
+  endurance: deEndurance,
 } as const;
 
 /** Typ, den jede Übersetzung erfüllen muss (Texte als string, Funktionen mit gleicher Signatur). */

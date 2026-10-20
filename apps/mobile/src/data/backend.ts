@@ -19,6 +19,9 @@ import type {
   SavePlanPayload,
   SavePlanSession,
   SessionLogPayload,
+  TrackedRoutePayload,
+  TrackedRouteRow,
+  UpdateTrackedRoutePayload,
 } from '@fitnessapp/core';
 
 import type { FavoriteChange } from './food-log-rows';
@@ -157,6 +160,21 @@ export interface PreferenceSwapContext {
   inSession: readonly string[];
   /** Ort der Einheit nur geraten (4.4) – Ausschlüsse beider Orte zählen. */
   ambiguousLocation: boolean;
+}
+
+/** Strecke in der Warteschlange (Etappe E4): wartet auf Verbindung bzw. wurde abgelehnt (Hinweis, nie still weg). */
+export interface PendingTrackedRoute {
+  readonly payload: TrackedRoutePayload;
+  readonly state: 'waiting' | 'rejected';
+}
+
+/** „Meine Läufe“ (Etappe E4): gespeicherte Strecken des Kontos plus wartende. */
+export interface TrackedRoutesResult {
+  /** Neueste zuerst. */
+  readonly routes: TrackedRouteRow[];
+  readonly pending: PendingTrackedRoute[];
+  /** true = Server nicht erreichbar, angezeigt wird der zuletzt geladene Stand. */
+  readonly offline: boolean;
 }
 
 /** Ernährungs-Bestand (Phase 5, Etappe N4). */
@@ -490,6 +508,35 @@ export interface Backend {
    * Nur online. Enthält Gesundheitsdaten – nie loggen, nie zwischenspeichern.
    */
   exportMyData(): Promise<DataExportFile>;
+
+  // --- Ausdauer: Strecken aufzeichnen (Phase 10 S1 App, Etappe E4) ----------------------------------------------
+  /**
+   * Eigene Strecken (tracked_routes, RLS nur eigene) und wartende. Supabase: online laden, offline der zuletzt
+   * geladene Stand aus dem geschützten Speicher. Testmodus: Gerätespeicher.
+   */
+  loadTrackedRoutes(): Promise<TrackedRoutesResult>;
+  /**
+   * Strecke speichern (save_tracked_route; Testmodus: gleiche Regeln in tracked-route-rows.ts). Supabase: erst in die
+   * verschlüsselte Warteschlange, gesendet NACH dem verknüpften Tagebuch-Eintrag – `queued` = noch nicht übertragen.
+   * Testmodus: sofort (Fehler `route_rejected` bzw. `route_limit`).
+   */
+  saveTrackedRoute(payload: TrackedRoutePayload): Promise<'saved' | 'queued'>;
+  /** Name, Schwierigkeit, Favorit, Notiz ändern (update_tracked_route). Nur online. */
+  updateTrackedRoute(payload: UpdateTrackedRoutePayload): Promise<void>;
+  /** Strecke endgültig löschen (delete_tracked_route; wartende: aus der Warteschlange). Nur online. */
+  deleteTrackedRoute(id: string): Promise<void>;
+  /** Alle eigenen Strecken löschen (delete_all_tracked_routes) samt Warteschlange → Anzahl. Nur online. */
+  deleteAllTrackedRoutes(): Promise<number>;
+  /** Abgelehnte wartende Strecke erneut senden bzw. (auf Wunsch) verwerfen. */
+  retryPendingRoute(id: string): Promise<void>;
+  discardPendingRoute(id: string): Promise<void>;
+  /**
+   * Laufende Aufzeichnung sichern/lesen/löschen (geschützter Speicher `routeRecording`, alle 30 s; Wiederaufnahme
+   * nach Absturz). Text = JSON des Aufzeichnungs-Zustands (Prüfung mit recordingStateSchema in der App).
+   */
+  readRecording(): Promise<string | null>;
+  writeRecording(text: string): Promise<void>;
+  clearRecording(): Promise<void>;
 }
 
 export interface SaveContext {
@@ -553,6 +600,10 @@ export type BackendErrorCode =
    * vor `db-migrate`) – nie halb löschen, „bitte später erneut versuchen“.
    */
   | 'delete_unavailable'
+  /** Strecke abgelehnt (ungültig, Favorit/Eintrag passt nicht) – ohne Werte (Etappe E4). */
+  | 'route_rejected'
+  /** Höchstens 20 neue Strecken je Tag (TRACKED_ROUTE_LIMITS.maxSavesPerDay). */
+  | 'route_limit'
   | 'unknown';
 
 /**
