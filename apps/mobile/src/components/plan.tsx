@@ -21,6 +21,7 @@ import { keyPatternTexts, markText } from '@/lib/swap-format';
 import { useThemeColors } from '@/lib/theme';
 
 import { StepList } from './competition';
+import { HeroCard, useAreaColors } from './design';
 import { Body, Button, Card, Heading, MIN_TOUCH, Notice } from './ui';
 import { Text } from '@/components/text';
 
@@ -48,6 +49,7 @@ export function SessionCard({
   onOpenExercise,
   swap,
   paceProfile = null,
+  hero = false,
 }: {
   /** Gespeicherte Einheit (vor den aktuellen Sicherheitsregeln). */
   original: StoredSession;
@@ -70,6 +72,8 @@ export function SessionCard({
    */
   /** Wettkampfplan (WP4): Basis der Pace-Richtwerte (Referenzzeit des Wettkampfs); null = keine Pace. */
   paceProfile?: PaceProfile | null;
+  /** Design 20.10.2026: Kopf der Einheit als dunkle Hero-Karte (Training heute), Inhalt darunter als Karte. */
+  hero?: boolean;
   swap?: {
     enabled: boolean;
     /** Termin nach heute („für dieses Training getauscht“). */
@@ -84,11 +88,16 @@ export function SessionCard({
   const hiddenByPreference = shown.hiddenByPreference ?? [];
   const notices = shown.preferenceNotices ?? [];
   const keyPatterns = keyPatternTexts(shown.missingKeyPattern);
-  return (
-    <Card>
+  const head = hero ? null : (
+    <>
       <Body muted>{heading}</Body>
       <Heading level={2}>{session.name_de}</Heading>
       <Body muted>{t.plan.duration(session.estimated_minutes)}</Body>
+    </>
+  );
+  const card = (
+    <Card>
+      {head}
       {session.status === 'skipped' ? <Notice tone="info">{t.plan.skipped}</Notice> : null}
       <View style={styles.block}>
         <Text style={[styles.label, { color: theme.text }]}>{t.plan.warmup}</Text>
@@ -258,6 +267,20 @@ export function SessionCard({
       </View>
     </Card>
   );
+  if (!hero) return card;
+  return (
+    <>
+      <HeroCard
+        eyebrow={heading}
+        eyebrowIcon={session.kind === 'endurance' ? 'run' : 'dumbbell'}
+        title={session.name_de}
+        subtitle={t.plan.duration(session.estimated_minutes)}
+        titleIsHeading
+        testID="plan-session-hero"
+      />
+      {card}
+    </>
+  );
 }
 
 export function WeekOverview({
@@ -270,6 +293,7 @@ export function WeekOverview({
   onSelect: (date: string) => void;
 }) {
   const theme = useThemeColors();
+  const training = useAreaColors('training');
   return (
     <View style={styles.week} testID="plan-week">
       {days.map((day) => {
@@ -302,13 +326,23 @@ export function WeekOverview({
               styles.day,
               {
                 backgroundColor: theme.surface,
-                borderColor: isSelected || day.isToday ? theme.primary : theme.border,
+                borderColor: isSelected || day.isToday ? theme.primary : theme.cardBorder,
                 borderWidth: isSelected ? 3 : day.isToday ? 2 : 1,
                 opacity: pressed ? 0.85 : 1,
               },
             ]}
           >
-            <Text style={[styles.dayName, { color: theme.text }]}>{weekdayShort(day.date)}</Text>
+            {/* Wochentag als Chip: mit Einheit in der Trainingsfarbe, Ruhetag neutral (Wort steht daneben). */}
+            <View
+              style={[
+                styles.dayChip,
+                { backgroundColor: session ? training.surface : theme.background },
+              ]}
+            >
+              <Text style={[styles.dayName, { color: session ? training.icon : theme.textMuted }]}>
+                {weekdayShort(day.date)}
+              </Text>
+            </View>
             <View style={styles.dayText}>
               <Text
                 style={[
@@ -344,15 +378,22 @@ const styles = StyleSheet.create({
   exerciseLink: { minHeight: MIN_TOUCH, justifyContent: 'center' },
   week: { gap: spacing.xs },
   day: {
-    minHeight: MIN_TOUCH,
-    borderRadius: radius.md,
+    minHeight: MIN_TOUCH + 8,
+    borderRadius: 16,
     paddingHorizontal: spacing.md,
     paddingVertical: spacing.sm,
     flexDirection: 'row',
     alignItems: 'center',
     gap: spacing.md,
   },
-  dayName: { width: 32, fontSize: fontSize.md, fontWeight: fontWeight.bold },
+  dayChip: {
+    width: 40,
+    height: 40,
+    borderRadius: radius.md,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  dayName: { fontSize: fontSize.sm, fontWeight: fontWeight.extrabold },
   dayText: { flex: 1, gap: 2 },
   dayStatus: { fontSize: fontSize.md, lineHeight: 22 },
   dayExtra: { fontSize: fontSize.sm, lineHeight: 20 },

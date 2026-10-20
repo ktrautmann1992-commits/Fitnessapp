@@ -380,6 +380,7 @@ export function HeroCard({
   secondaryLabel,
   onSecondary,
   secondaryTestID,
+  titleIsHeading = false,
   children,
   testID,
 }: {
@@ -402,6 +403,8 @@ export function HeroCard({
   secondaryLabel?: string;
   onSecondary?: () => void;
   secondaryTestID?: string;
+  /** true: der Titel ist die Überschrift (z. B. Name der Einheit), die Kennzeile ist nur Text. */
+  titleIsHeading?: boolean;
   children?: ReactNode;
   testID?: string;
 }) {
@@ -418,8 +421,8 @@ export function HeroCard({
             <Icon name={eyebrowIcon} size={16} color={hero.accent} strokeWidth={2.2} />
           ) : null}
           <Text
-            accessibilityRole="header"
-            aria-level={2}
+            accessibilityRole={titleIsHeading ? undefined : 'header'}
+            aria-level={titleIsHeading ? undefined : 2}
             style={[styles.eyebrow, appFont('bold'), { color: hero.accent }]}
           >
             {eyebrow}
@@ -430,7 +433,13 @@ export function HeroCard({
         ) : null}
       </View>
       <View style={styles.heroText}>
-        <Text style={[styles.heroTitle, displayFont(), { color: hero.text }]}>{title}</Text>
+        <Text
+          accessibilityRole={titleIsHeading ? 'header' : undefined}
+          aria-level={titleIsHeading ? 2 : undefined}
+          style={[styles.heroTitle, displayFont(), { color: hero.text }]}
+        >
+          {title}
+        </Text>
         {subtitle ? (
           <Text style={[styles.heroSubtitle, appFont('regular'), { color: hero.muted }]}>
             {subtitle}
