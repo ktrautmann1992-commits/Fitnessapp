@@ -236,7 +236,12 @@ test('„Zur Einkaufsliste“ aus der Rezeptansicht mit Portionen; aus dem Plan 
 
   // Aus dem Plan geöffnet: steht über den Plan schon auf der Liste.
   await page.goto('/ernaehrung');
-  await page.getByTestId('nutrition-meals').getByRole('button').first().click();
+  // Erstes Plan-Gericht (nicht das „+“ der Mahlzeiten-Karte).
+  await page
+    .getByTestId('nutrition-meals')
+    .locator('[data-testid^="meal-"]:not([data-testid^="meal-card"])')
+    .first()
+    .click();
   await expect(page.getByTestId('recipe-shopping-in-plan')).toBeVisible();
   await expect(page.getByTestId('recipe-shopping-add')).toHaveCount(0);
 });
