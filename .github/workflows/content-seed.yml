@@ -15,6 +15,12 @@ name: content-seed
 #    Verweisen. Was noch wartet, steht mit Grund in der Zusammenfassung des Laufs. Der Schutz aus 3. gilt
 #    auch hier und wird für ALLE Arten vor dem ersten Einspielen geprüft. Fehlen die Ernährungs-Tabellen
 #    noch (db-migrate nicht durch), wird die Ernährung übersprungen (Hinweis, kein Fehler).
+# 5. Einspiel-Regel (Gründer-Entscheidung 19.10.2026): Die Datei content/einspiel-regeln.json entscheidet für JEDEN
+#    Lauf (Push, nach db-migrate, per Hand), ob nur fachlich geprüfte Ernährungs-Inhalte eingespielt werden:
+#    "nur_fachlich_geprueft": false = TESTPHASE (freigegebene Inhalte auch ohne Fachprüfung, in der App gekennzeichnet
+#    „Testphase – noch nicht fachlich geprüft“), true oder Datei fehlt = Livegang-Regel. Kaputte Datei = rot, nichts
+#    eingespielt. Umstellen nur per Pull Request (docs/HANDY-ANLEITUNG.md Teil 7t); der Merge startet diesen Workflow.
+#    Prüfung (1.), Schutz (3.), Katalog-Prüfung und Prüfvermerk gelten in beiden Fällen.
 # Ohne SUPABASE_URL/SUPABASE_SECRET_KEY endet der Workflow nach der Prüfung grün mit Hinweis.
 on:
   push:

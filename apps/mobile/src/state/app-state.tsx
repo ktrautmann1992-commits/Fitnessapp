@@ -760,11 +760,17 @@ export function AppStateProvider({ children }: { children: ReactNode }) {
     }
     setNutritionLibrary({ kind: 'loading' });
     try {
-      // true = aktive Wahl; "force" setzen nur die E2E-Tests (Beispiel-Rezepte trotz echtem Bündel, Wächter N4 K7).
-      const stored = await readJson<boolean | 'force'>(deviceStore, STORAGE_KEYS.nutritionDemo);
+      // true = aktive Wahl; "force" setzen nur die E2E-Tests (Beispiel-Rezepte trotz echtem Bündel, Wächter N4 K7),
+      // "force-testphase" ebenso – Beispiel-Inhalte als „freigegeben, nicht fachlich geprüft“ (Testphase 19.10.2026).
+      const stored = await readJson<boolean | 'force' | 'force-testphase'>(
+        deviceStore,
+        STORAGE_KEYS.nutritionDemo,
+      );
+      const forced = stored === 'force' || stored === 'force-testphase';
       const result = await backend.loadNutritionLibrary({
-        demo: stored === true || stored === 'force',
-        force: stored === 'force',
+        demo: stored === true || forced,
+        force: forced,
+        ...(stored === 'force-testphase' ? { testphase: true } : {}),
       });
       setNutritionLibrary(result ? { kind: 'ready', result } : { kind: 'unsupported' });
     } catch {

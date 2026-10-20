@@ -1147,6 +1147,11 @@ wurden –, bricht content-seed **rot** ab und spielt **nichts** ein. Die Summar
 wirklich gewollt: **Actions → content-seed → Run workflow** → Häkchen **allow_mass_archive** → **Run workflow**.
 Automatische Läufe (nach Merge, nach `db-migrate`) erlauben das nie.
 
+**Einspiel-Regel (Testphase, 19.10.2026):** Ob nur fachlich geprüfte Ernährungs-Inhalte eingespielt werden, steht in
+der Datei `content/einspiel-regeln.json` (`"nur_fachlich_geprueft": false` = Testphase, `true` oder Datei fehlt =
+Livegang-Regel) – **keine** Variable und kein Secret nötig. Umstellen per Pull Request: `docs/HANDY-ANLEITUNG.md` Teil 7t.
+Ratgeber mit Dosierungs-Befund (R21H) kommen auch in der Testphase nur mit Fachprüfung in die Datenbank.
+
 **Trainingsplan mit Supabase testen (ab Phase 3, Etappe C):** Die App nutzt live **nur freigegebene** Vorlagen und
 Übungen. Vor dem ersten Test mit Supabase deshalb erst Inhalte freigeben (Schritte oben, `content-seed` grün) – sonst
 zeigt „Heute“ richtigerweise „Für deine Angaben gibt es gerade keinen freigegebenen Plan“.

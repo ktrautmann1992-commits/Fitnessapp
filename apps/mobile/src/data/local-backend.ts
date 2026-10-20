@@ -1405,15 +1405,28 @@ export function nutritionLibraryFromBundle(bundle: NutritionBundle): NutritionLi
 
 let nutritionCache: Promise<NutritionLibrary> | null = null;
 let demoCache: Promise<NutritionLibrary> | null = null;
+let demoTestphaseCache: Promise<NutritionLibrary> | null = null;
 
-/** Beispiel-Rezepte mit TESTWERTEN (`@fitnessapp/core/demo-nutrition`) – dieselben Regeln wie der echte Bestand. */
-async function demoNutritionLibrary(): Promise<NutritionLibrary> {
-  demoCache ??= import('@fitnessapp/core/demo-nutrition').then(({ demoNutritionContent }) => {
-    const demo = demoNutritionContent();
-    return selectNutritionContent(validateContent(demo.files, { nutritionCatalog: demo.catalog }), {
-      allowDrafts: true,
-    });
-  });
+/**
+ * Beispiel-Rezepte mit TESTWERTEN (`@fitnessapp/core/demo-nutrition`) – dieselben Regeln wie der echte Bestand.
+ * `testphase` (nur E2E): dieselben Inhalte als „freigegeben, nicht fachlich geprüft“ (Testphase 19.10.2026).
+ */
+async function demoNutritionLibrary(testphase = false): Promise<NutritionLibrary> {
+  const load = () =>
+    import('@fitnessapp/core/demo-nutrition').then(
+      ({ demoNutritionContent, demoNutritionContentAsTestphase }) => {
+        const demo = testphase ? demoNutritionContentAsTestphase() : demoNutritionContent();
+        return selectNutritionContent(
+          validateContent(demo.files, { nutritionCatalog: demo.catalog }),
+          { allowDrafts: true },
+        );
+      },
+    );
+  if (testphase) {
+    demoTestphaseCache ??= load();
+    return demoTestphaseCache;
+  }
+  demoCache ??= load();
   return demoCache;
 }
 
@@ -1426,6 +1439,8 @@ export async function loadNutritionLibrary(options: {
   demo: boolean;
   /** Nur E2E-Tests: Beispiel-Rezepte erzwingen (Wächter N4 K7). */
   force?: boolean;
+  /** Nur E2E-Tests: Beispiel-Rezepte als „freigegeben, nicht fachlich geprüft“ (Testphase 19.10.2026). */
+  testphase?: boolean;
 }): Promise<NutritionLibraryResult> {
   nutritionCache ??= import('../generated/content-files').then(({ CONTENT_BUNDLE }) =>
     nutritionLibraryFromBundle(CONTENT_BUNDLE),
@@ -1433,7 +1448,11 @@ export async function loadNutritionLibrary(options: {
   const library = await nutritionCache;
   const demoAvailable = library.recipes.length === 0;
   if ((demoAvailable && options.demo) || options.force === true) {
-    return { library: await demoNutritionLibrary(), demo: true, demoAvailable };
+    return {
+      library: await demoNutritionLibrary(options.testphase === true),
+      demo: true,
+      demoAvailable,
+    };
   }
   return { library, demo: false, demoAvailable };
 }
