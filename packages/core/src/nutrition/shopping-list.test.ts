@@ -13,10 +13,13 @@ import type { ScaledIngredient } from './scale';
 import {
   addManualShoppingItem,
   buildShoppingList,
+  parseShoppingQuantity,
   rebuildShoppingList,
   removeManualShoppingItem,
   roundShoppingAmount,
   setShoppingItemChecked,
+  type ShoppingListItem,
+  uncheckAllShoppingItems,
 } from './shopping-list';
 import { zeroNutrients } from './recipe-nutrients';
 
@@ -247,5 +250,91 @@ describe('Häkchen, eigene Einträge, Neuerzeugung (R2-S4, W22 Core)', () => {
     expect(byKey.get('raeucherlachs|g')).toMatchObject({ checked: true, notInPlan: true });
     expect(byKey.has('banane|piece')).toBe(false);
     expect(byKey.get('manual|kaffee')).toMatchObject({ isManual: true, labelDe: 'Kaffee' });
+  });
+});
+
+describe('Reiter „Einkaufen“ (20.10.2026): Menge eigener Einträge, abgehakt hinzufügen, alle Haken zurücksetzen', () => {
+  const plan = week([[meal([ingredient('reis', 75, 'g'), ingredient('banane', 1, 'piece')])]]);
+
+  it('parseShoppingQuantity: g/kg/ml/l/Stück, Komma, leer; ungültig bei Unsinn, 0, Bruchstück, zu groß, zu lang', () => {
+    expect(parseShoppingQuantity('500 g')).toEqual({ ok: true, amount: 500, unit: 'g' });
+    expect(parseShoppingQuantity('1,5 kg')).toEqual({ ok: true, amount: 1500, unit: 'g' });
+    expect(parseShoppingQuantity('250ml')).toEqual({ ok: true, amount: 250, unit: 'ml' });
+    expect(parseShoppingQuantity('1 L')).toEqual({ ok: true, amount: 1000, unit: 'ml' });
+    expect(parseShoppingQuantity('3')).toEqual({ ok: true, amount: 3, unit: 'piece' });
+    expect(parseShoppingQuantity('3 Stück')).toEqual({ ok: true, amount: 3, unit: 'piece' });
+    expect(parseShoppingQuantity('2 Stk.')).toEqual({ ok: true, amount: 2, unit: 'piece' });
+    expect(parseShoppingQuantity('0,25 l')).toEqual({ ok: true, amount: 250, unit: 'ml' });
+    expect(parseShoppingQuantity('  ')).toEqual({ ok: true, amount: null, unit: null });
+    for (const bad of [
+      'viel',
+      '0',
+      '0 g',
+      '1,5',
+      '1,5 Stück',
+      '2 Packungen',
+      '1.000 g',
+      '1001 kg',
+      '-1 g',
+      '1'.repeat(40),
+      42,
+      null,
+    ]) {
+      expect(parseShoppingQuantity(bad), String(bad)).toEqual({ ok: false });
+    }
+    expect(parseShoppingQuantity('1000 kg')).toEqual({ ok: true, amount: 1_000_000, unit: 'g' });
+  });
+
+  it('eigener Eintrag mit Menge; Menge ohne Einheit bzw. 0 abgelehnt', () => {
+    let list = buildShoppingList(plan, N3_FOODS);
+    list = addManualShoppingItem(list, { labelDe: 'Joghurt', amount: 500, unit: 'g' });
+    expect(list.items.find((i) => i.itemKey === 'manual|joghurt')).toMatchObject({
+      amount: 500,
+      unit: 'g',
+      checked: false,
+    });
+    expect(() => addManualShoppingItem(list, { labelDe: 'Quark', amount: 5 })).toThrow();
+    expect(() => addManualShoppingItem(list, { labelDe: 'Quark', amount: 0, unit: 'g' })).toThrow();
+  });
+
+  it('abgehakt hinzufügen (Scan); gleicher Text vorhanden → der vorhandene wird abgehakt', () => {
+    let list = buildShoppingList(plan, N3_FOODS);
+    list = addManualShoppingItem(list, { labelDe: 'Müsli', checked: true });
+    expect(list.items.find((i) => i.itemKey === 'manual|müsli')?.checked).toBe(true);
+    list = addManualShoppingItem(list, { labelDe: 'Kaffee' });
+    list = addManualShoppingItem(list, { labelDe: 'kaffee', checked: true });
+    expect(list.items.filter((i) => i.isManual)).toHaveLength(2);
+    expect(list.items.find((i) => i.itemKey === 'manual|kaffee')).toMatchObject({
+      checked: true,
+      labelDe: 'Kaffee',
+    });
+  });
+
+  it('höchstens 100 eigene Einträge – auch beim Scan', () => {
+    let list = buildShoppingList(plan, N3_FOODS);
+    for (let i = 0; i < 100; i += 1) list = addManualShoppingItem(list, { labelDe: `E${i}` });
+    expect(() => addManualShoppingItem(list, { labelDe: 'Neu', checked: true })).toThrow(
+      'Höchstens 100',
+    );
+  });
+
+  it('uncheckAllShoppingItems: alles offen, „nicht mehr im Plan“ fällt weg, eigene bleiben; leere Liste', () => {
+    let list = buildShoppingList(plan, N3_FOODS);
+    list = setShoppingItemChecked(list, 'reis|g', true);
+    list = addManualShoppingItem(list, { labelDe: 'Kaffee', checked: true });
+    const stale: ShoppingListItem = {
+      ...(list.items[0] as ShoppingListItem),
+      itemKey: 'lachs|g',
+      foodId: 'lachs',
+      labelDe: 'Lachs',
+      checked: true,
+      notInPlan: true,
+    };
+    list = { ...list, items: [...list.items, stale] };
+    const reset = uncheckAllShoppingItems(list);
+    expect(reset.items.every((i) => !i.checked)).toBe(true);
+    expect(reset.items.some((i) => i.itemKey === 'lachs|g')).toBe(false);
+    expect(reset.items.some((i) => i.itemKey === 'manual|kaffee')).toBe(true);
+    expect(uncheckAllShoppingItems({ ...list, items: [] }).items).toEqual([]);
   });
 });

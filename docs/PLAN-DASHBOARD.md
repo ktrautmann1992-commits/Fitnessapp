@@ -146,3 +146,13 @@ Anmelden (Testmodus), Übersicht, Menüleiste und Mein Konto; Bildschirmfotos he
 - **N6:** „Training starten“ nur mit berechneter Vorgabe (`workoutView`), sonst Grund statt Knopf.
 - **N8:** `viewport-fit=cover` in `public/index.html`; die sicheren Ränder liest react-native-safe-area-context im
   Browser über `env(safe-area-inset-*)` – die Menüleiste bleibt über der Home-Leiste.
+
+## 7. Änderung der Menüleiste (20.10.2026, Etappe E1 „Einkaufen“)
+
+- Gründer-Entscheidung EA-G1/EA-1 (`docs/PLAN-EINKAUFEN-AUSDAUER.md`): Standard-Menüleiste **Übersicht · Training ·
+  Ernährung · Einkaufen · Mehr**. Der Reiter „Einkaufen“ ist die Einkaufsliste (`src/app/(tabs)/einkaufsliste.tsx`,
+  Adresse unverändert `/einkaufsliste`; Drucken/Weitergeben bleiben Unterseiten). Wege aus Unterseiten dorthin nutzen
+  `router.dismissTo` (wie „Ernährung“, M1).
+- „Fortschritt“ bleibt als Reiter-Bildschirm (`/fortschritt`) und ist über die Kachel und **Mehr → Fortschritt**
+  erreichbar; ist er offen, ist kein Knopf markiert. Die Übersicht-Kachel „Einkaufsliste“ und „Mehr“ führen in den
+  Reiter.

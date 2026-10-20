@@ -11,6 +11,7 @@ import {
   foodLogSaveResponseSchema,
   type MealPlanWeek,
   mealPlanRetentionStart,
+  shoppingProductLinkSchema,
   type StoredShoppingList,
   toMealPlanPayload,
   toShoppingListPayload,
@@ -115,6 +116,8 @@ import {
   type NutritionSendResult,
   readNutritionCache,
   shoppingListRowsFromDb,
+  applyShoppingProductLink,
+  shoppingProductLinkRowsFromDb,
   withPreservedPastItems,
   writeNutritionCache,
 } from './nutrition-sync';
@@ -1062,6 +1065,32 @@ export function createSupabaseBackend(options: SupabaseBackendOptions): Backend 
         if (error) return nutritionSendErrorResult({ ...error, status });
         return { kind: 'done' };
       }
+      // Häkchen einer sensiblen Einkaufsliste (offline eingereiht): über den vorhandenen Schreibweg (Spalte `checked`,
+      // RLS). Liste bzw. Eintrag verschwunden → still verworfen; endgültige Ablehnungen ebenso (ein Häkchen ist kein
+      // Datensatz, den die Person zurückholen müsste) – nur Netz/Server vorübergehend → später erneut.
+      case 'shopping_check': {
+        const found = await client
+          .from('shopping_lists')
+          .select('id')
+          .eq('week_start', op.weekStart)
+          .maybeSingle();
+        if (found.error) {
+          const result = nutritionSendErrorResult({ ...found.error, status: found.status });
+          return result.kind === 'rejected' ? { kind: 'done' } : result;
+        }
+        if (found.data === null) return { kind: 'done' };
+        const updated = await client
+          .from('shopping_list_items')
+          .update({ checked: op.checked })
+          .eq('list_id', found.data.id)
+          .eq('item_key', op.itemKey)
+          .select('item_key');
+        if (updated.error) {
+          const result = nutritionSendErrorResult({ ...updated.error, status: updated.status });
+          return result.kind === 'rejected' ? { kind: 'done' } : result;
+        }
+        return { kind: 'done' };
+      }
     }
   }
 
@@ -1505,37 +1534,45 @@ export function createSupabaseBackend(options: SupabaseBackendOptions): Backend 
    */
   async function fetchNutritionRows(userId: string): Promise<NutritionRows> {
     const cutoff = mealPlanRetentionStart(today());
-    const [plans, lists, entries, favorites, meals, userProducts] = await Promise.all([
-      client
-        .from('meal_plans')
-        .select(
-          'id, user_id, week_start, engine_version, variant, meal_prep_plan_id, inputs, uses_health_data, ' +
-            'auto_adjusted, recipes_changed, cook_day_started_at, created_at',
-        )
-        .eq('user_id', userId)
-        .gte('week_start', cutoff)
-        .then(emptyIfMissing),
-      client
-        .from('shopping_lists')
-        .select(
-          'id, user_id, week_start, from_date, to_date, plan_key, added_recipes, uses_health_data, created_at, ' +
-            'updated_at',
-        )
-        .eq('user_id', userId)
-        .gte('week_start', cutoff)
-        .then(emptyIfMissing),
-      client
-        .from('food_log_entries')
-        .select('*')
-        .eq('user_id', userId)
-        .gte('eaten_on', logWindowStart())
-        .then(emptyIfMissing),
-      client.from('food_log_favorites').select('*').eq('user_id', userId).then(emptyIfMissing),
-      client.from('custom_meals').select('*').eq('user_id', userId).then(emptyIfMissing),
-      // Eigene Produkte (Etappe E4a) – Tabelle fehlt vor db-migrate: leer.
-      client.from('user_food_products').select('*').eq('user_id', userId).then(emptyIfMissing),
-    ]);
-    for (const result of [plans, lists, entries, favorites, meals, userProducts]) {
+    const [plans, lists, entries, favorites, meals, userProducts, productLinks] = await Promise.all(
+      [
+        client
+          .from('meal_plans')
+          .select(
+            'id, user_id, week_start, engine_version, variant, meal_prep_plan_id, inputs, uses_health_data, ' +
+              'auto_adjusted, recipes_changed, cook_day_started_at, created_at',
+          )
+          .eq('user_id', userId)
+          .gte('week_start', cutoff)
+          .then(emptyIfMissing),
+        client
+          .from('shopping_lists')
+          .select(
+            'id, user_id, week_start, from_date, to_date, plan_key, added_recipes, uses_health_data, created_at, ' +
+              'updated_at',
+          )
+          .eq('user_id', userId)
+          .gte('week_start', cutoff)
+          .then(emptyIfMissing),
+        client
+          .from('food_log_entries')
+          .select('*')
+          .eq('user_id', userId)
+          .gte('eaten_on', logWindowStart())
+          .then(emptyIfMissing),
+        client.from('food_log_favorites').select('*').eq('user_id', userId).then(emptyIfMissing),
+        client.from('custom_meals').select('*').eq('user_id', userId).then(emptyIfMissing),
+        // Eigene Produkte (Etappe E4a) – Tabelle fehlt vor db-migrate: leer.
+        client.from('user_food_products').select('*').eq('user_id', userId).then(emptyIfMissing),
+        // Gelernte Zuordnungen (Einkaufen E1) – Tabelle fehlt vor db-migrate: leer.
+        client
+          .from('shopping_product_links')
+          .select('*')
+          .eq('user_id', userId)
+          .then(emptyIfMissing),
+      ],
+    );
+    for (const result of [plans, lists, entries, favorites, meals, userProducts, productLinks]) {
       if (result.error) throw result.error;
     }
     const planRows = (plans.data ?? []) as unknown as DbMealPlan[];
@@ -1583,6 +1620,9 @@ export function createSupabaseBackend(options: SupabaseBackendOptions): Backend 
       ...customMealRowsFromDb(mealRows, mealItems),
       userFoodProducts: userFoodProductRowsFromDb(
         (userProducts.data ?? []) as unknown as Record<string, unknown>[],
+      ),
+      shoppingProductLinks: shoppingProductLinkRowsFromDb(
+        (productLinks.data ?? []) as unknown as Record<string, unknown>[],
       ),
     };
   }
@@ -2371,6 +2411,32 @@ export function createSupabaseBackend(options: SupabaseBackendOptions): Backend 
         'user_product',
       );
     },
+    // Einkaufen E1: gelernte Zuordnung über save_shopping_product_link (prüft Einwilligung, Nummer, Lebensmittel und
+    // die Obergrenze erneut). Sensibel → nie in die normale Warteschlange; ohne Netz `online_only` (das Lernen ist
+    // eine Bequemlichkeit, das Abhaken klappt trotzdem).
+    saveShoppingProductLink: async (link, rows) => {
+      const session = await requireSession();
+      const parsed = shoppingProductLinkSchema.safeParse(link);
+      if (!parsed.success) throw new BackendError('unknown', { sensitive: true });
+      const { error, status } = await client.rpc('save_shopping_product_link', {
+        p_code: parsed.data.code,
+        p_food_id: parsed.data.food_id,
+      });
+      if (error) {
+        if (isConsentError(error)) throw new BackendError('consent_required', { sensitive: true });
+        const code = classifySupabaseError({ ...error, status }, true);
+        throw new BackendError(code === 'network' ? 'online_only' : code, {
+          sensitive: true,
+          cause: error,
+        });
+      }
+      const next = applyShoppingProductLink(rows, parsed.data, {
+        userId: session.userId,
+        now: options.now(),
+      });
+      await writeCache(session.userId, next);
+      return next;
+    },
     nutritionSync: async () => {
       await nutritionQueue.load();
       const owner = currentUserId;
@@ -2848,6 +2914,40 @@ export function createSupabaseBackend(options: SupabaseBackendOptions): Backend 
     const changes = stored === null ? null : checkedOnlyChanges(stored.list, check.list);
     if (stored !== null && changes !== null) {
       if (changes.length === 0) return rows;
+      // Liste mit Gesundheitsbezug: Häkchen in die verschlüsselte Ernährungs-Warteschlange (offline möglich, Lücke
+      // „online_only“ geschlossen, docs/PLAN-EINKAUFEN-AUSDAUER.md 3); sonst wie bisher über die Warteschlange.
+      if (stored.uses_health_data) {
+        const now = options.now();
+        for (const change of changes) {
+          await enqueueNutrition(
+            {
+              kind: 'shopping_check',
+              weekStart: stored.week_start,
+              itemKey: change.itemKey,
+              checked: change.checked,
+              at: now,
+            },
+            session.userId,
+          );
+        }
+        void nutritionQueue.flush().catch(() => 'later');
+        const next = applyNutritionQueue(
+          rows,
+          changes.map((change) => ({
+            key: '',
+            op: {
+              kind: 'shopping_check' as const,
+              weekStart: stored.week_start,
+              itemKey: change.itemKey,
+              checked: change.checked,
+              at: now,
+            },
+          })),
+          { userId: session.userId, now },
+        );
+        await writeCache(session.userId, next);
+        return next;
+      }
       let next = rows;
       for (const change of changes) {
         next = await applyNutritionWriteOp(

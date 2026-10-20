@@ -2304,6 +2304,35 @@ export type Database = {
           },
         ];
       };
+      shopping_product_links: {
+        Row: {
+          code: string;
+          food_id: string;
+          updated_at: string;
+          user_id: string;
+        };
+        Insert: {
+          code: string;
+          food_id: string;
+          updated_at?: string;
+          user_id: string;
+        };
+        Update: {
+          code?: string;
+          food_id?: string;
+          updated_at?: string;
+          user_id?: string;
+        };
+        Relationships: [
+          {
+            foreignKeyName: 'shopping_product_links_food_id_fkey';
+            columns: ['food_id'];
+            isOneToOne: false;
+            referencedRelation: 'foods';
+            referencedColumns: ['id'];
+          },
+        ];
+      };
       template_exercises: {
         Row: {
           day_index: number;
@@ -2882,6 +2911,7 @@ export type Database = {
       delete_stored_intolerances: { Args: never; Returns: undefined };
       delete_tracked_route: { Args: { p_id: string }; Returns: undefined };
       delete_user_food_product: { Args: { p_id: string }; Returns: Json };
+      delete_shopping_product_link: { Args: { p_code: string }; Returns: undefined };
       export_my_data: { Args: never; Returns: Json };
       beta_admin: {
         Args: {
@@ -2940,6 +2970,10 @@ export type Database = {
       save_session_log: { Args: { p_log: Json }; Returns: Json };
       save_tracked_route: { Args: { p_route: Json }; Returns: string };
       save_training_plan: { Args: { p_plan: Json }; Returns: string };
+      save_shopping_product_link: {
+        Args: { p_code: string; p_food_id: string };
+        Returns: undefined;
+      };
       save_user_food_product: { Args: { p_product: Json }; Returns: Json };
       seed_content: { Args: { p_content: Json }; Returns: Json };
       seed_nutrition_content: {

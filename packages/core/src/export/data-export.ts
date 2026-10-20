@@ -66,6 +66,9 @@ export const DATA_EXPORT_TABLES = [
   'plan_adjustments',
   'adjustment_events',
   'live_adjust_hourly_counts',
+  // Einkaufen · Etappe E1 (docs/PLAN-EINKAUFEN-AUSDAUER.md 3): gelernte Zuordnungen Strichcode → Lebensmittel (sensibel
+  // wie Produkt-Favoriten, beim Widerruf gelöscht)
+  'shopping_product_links',
 ] as const;
 
 export type DataExportTable = (typeof DATA_EXPORT_TABLES)[number];

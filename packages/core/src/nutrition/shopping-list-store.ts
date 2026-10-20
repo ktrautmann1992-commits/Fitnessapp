@@ -452,3 +452,30 @@ export function shoppingRecipeOutsideProfileDiet(
   if (entry.diet === undefined) return null;
   return dietAllows(profileDiet, entry.diet) ? null : entry.diet;
 }
+
+/** Fingerabdruck einer Liste ohne Essensplan (EA-2) – passt zu keinem Plan, ein späterer Plan baut sie neu auf. */
+export const SHOPPING_LIST_NO_PLAN_KEY = 'ohne-plan';
+
+/**
+ * Einkaufen ohne Essensplan (docs/PLAN-EINKAUFEN-AUSDAUER.md 12, EA-2): Liste der Woche ohne Plan-Einträge – eigene
+ * Artikel und Scanner gehen trotzdem. Eine gespeicherte Liste derselben Woche wird UNVERÄNDERT weiterverwendet (auch
+ * ihre Plan-Einträge: Ist der Plan nur gerade nicht berechenbar, z. B. Bestand lädt nicht, darf ein Speichern sie
+ * nicht löschen). Kommt später ein Plan dazu, baut `resolveShoppingList` die Liste neu auf (eigene Einträge und
+ * Häkchen bleiben).
+ */
+export function planlessShoppingList(
+  stored: StoredShoppingList | null,
+  weekStart: string,
+): StoredShoppingList {
+  const week = weekStartSchema.parse(weekStart);
+  if (stored !== null && stored.weekStart === week) return stored;
+  return {
+    weekStart: week,
+    from: week,
+    to: addDays(week, 6),
+    usesHealthData: false,
+    planKey: SHOPPING_LIST_NO_PLAN_KEY,
+    recipes: [],
+    items: [],
+  };
+}

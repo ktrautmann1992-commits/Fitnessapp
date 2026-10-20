@@ -19,6 +19,7 @@ import type {
   SavePlanPayload,
   SavePlanSession,
   SessionLogPayload,
+  ShoppingProductLink,
 } from '@fitnessapp/core';
 
 import type { FavoriteChange } from './food-log-rows';
@@ -462,6 +463,12 @@ export interface Backend {
   saveUserFoodProduct(product: UserFoodProduct, rows: UserRows): Promise<UserRows>;
   /** Eigenes Produkt löschen – geht immer; eingetragene Tage behalten ihre Werte (Verweis wird leer). */
   deleteUserFoodProduct(id: string, rows: UserRows): Promise<UserRows>;
+  /**
+   * Zuordnung Strichcode → Lebensmittel lernen (Einkaufen E1, Wahl aus „Welcher Eintrag ist es?“). Nur mit gültiger
+   * Einwilligung health_data (sonst `consent_required`); Supabase-Modus braucht Verbindung (`online_only`). Gleiche
+   * Nummer ersetzt, höchstens SHOPPING_SCAN.linksMax (älteste fällt weg).
+   */
+  saveShoppingProductLink(link: ShoppingProductLink, rows: UserRows): Promise<UserRows>;
   /** Start des Meal-Prep-Kochtags (Timer) setzen bzw. mit null zurücksetzen (Etappe N5b). */
   saveCookDayStart(weekStart: string, startedAt: string | null, rows: UserRows): Promise<UserRows>;
   /** Wartende Trainings und Entwürfe (R6). */

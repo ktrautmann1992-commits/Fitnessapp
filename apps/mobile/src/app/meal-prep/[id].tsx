@@ -136,7 +136,7 @@ export default function MealPrepPlanScreen() {
           return;
         }
       }
-      router.push(`/einkaufsliste?woche=${weekStart}` as Href);
+      router.dismissTo(`/einkaufsliste?woche=${weekStart}` as Href);
     } finally {
       setBusy(null);
     }

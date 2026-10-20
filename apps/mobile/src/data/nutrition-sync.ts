@@ -16,9 +16,12 @@ import {
   parseStoredMealPlanWeek,
   selectNutritionContent,
   shoppingListFromPayload,
+  type ShoppingProductLink,
+  shoppingProductLinkSchema,
   type StoredShoppingList,
   type UserFoodProduct,
   validateContent,
+  withShoppingProductLink,
 } from '@fitnessapp/core';
 
 import type { ProtectedStore } from './protected-store';
@@ -30,6 +33,7 @@ import type {
   FoodLogFavoriteRow,
   MealPlanRow,
   ShoppingListRow,
+  ShoppingProductLinkRow,
   UserFoodProductRow,
   UserRows,
 } from './types';
@@ -422,6 +426,7 @@ export const NUTRITION_ROW_KEYS = [
   'customMeals',
   'customMealItems',
   'userFoodProducts',
+  'shoppingProductLinks',
 ] as const satisfies readonly (keyof UserRows)[];
 
 export type NutritionRows = Pick<UserRows, (typeof NUTRITION_ROW_KEYS)[number]>;
@@ -435,6 +440,7 @@ export function nutritionRowsOf(rows: UserRows): NutritionRows {
     customMeals: rows.customMeals,
     customMealItems: rows.customMealItems,
     userFoodProducts: rows.userFoodProducts,
+    shoppingProductLinks: rows.shoppingProductLinks,
   };
 }
 
@@ -446,6 +452,7 @@ export const EMPTY_NUTRITION_ROWS: NutritionRows = {
   customMeals: [],
   customMealItems: [],
   userFoodProducts: [],
+  shoppingProductLinks: [],
 };
 
 interface NutritionCache {
@@ -516,7 +523,13 @@ export type NutritionQueueOp =
       writeId: string;
       baseRevision: number | null;
     }
-  | { kind: 'user_product_delete'; id: string };
+  | { kind: 'user_product_delete'; id: string }
+  /**
+   * Häkchen einer Einkaufsliste MIT Gesundheitsbezug offline (docs/PLAN-EINKAUFEN-AUSDAUER.md 3, Lücke „online_only“):
+   * nur Woche, Schlüssel, Häkchen und Zeitpunkt – verschlüsselt wie das Tagebuch. Letzter Stand je Eintrag gewinnt;
+   * ist der Eintrag beim Senden verschwunden (Liste neu erzeugt, Widerruf), wird der Vorgang still verworfen.
+   */
+  | { kind: 'shopping_check'; weekStart: string; itemKey: string; checked: boolean; at: string };
 
 export interface NutritionQueueEntry {
   key: string;
@@ -562,6 +575,8 @@ export function nutritionQueueKey(op: NutritionQueueOp): string {
       return `user_product:${op.product.id}`;
     case 'user_product_delete':
       return `user_product:${op.id}`;
+    case 'shopping_check':
+      return `shopping_check:${op.weekStart}|${op.itemKey}`;
   }
 }
 
@@ -590,6 +605,9 @@ export function enqueueNutritionOp(
   const inheritedBase = (fallback: number | null): number | null =>
     lastSave && isSave(lastSave.op) ? lastSave.op.baseRevision : fallback;
   switch (op.kind) {
+    // Letzter Stand je Eintrag gewinnt.
+    case 'shopping_check':
+      return [...others, { key, op }];
     case 'food_log_save':
     case 'custom_meal_save':
     case 'user_product_save': {
@@ -713,6 +731,24 @@ export function applyNutritionQueue(
         };
         break;
       }
+      case 'shopping_check':
+        next = {
+          ...next,
+          shoppingLists: next.shoppingLists.map((row) =>
+            row.week_start === op.weekStart
+              ? {
+                  ...row,
+                  list: {
+                    ...row.list,
+                    items: row.list.items.map((item) =>
+                      item.itemKey === op.itemKey ? { ...item, checked: op.checked } : item,
+                    ),
+                  },
+                }
+              : row,
+          ),
+        };
+        break;
       case 'user_product_delete':
         next = {
           ...next,
@@ -968,4 +1004,45 @@ export class ForeignNutritionQueueError extends Error {
     super('ForeignNutritionQueue');
     this.name = 'ForeignNutritionQueueError';
   }
+}
+
+/**
+ * Gelernte Zuordnungen aus der Datenbank (`shopping_product_links`, Einkaufen E1) – Zod an der Grenze, ungültige Zeilen
+ * fallen weg (nie loggen).
+ */
+export function shoppingProductLinkRowsFromDb(
+  rows: readonly Record<string, unknown>[],
+): ShoppingProductLinkRow[] {
+  const out: ShoppingProductLinkRow[] = [];
+  for (const row of rows) {
+    const link = shoppingProductLinkSchema.safeParse({ code: row.code, food_id: row.food_id });
+    if (!link.success || typeof row.user_id !== 'string' || typeof row.updated_at !== 'string') {
+      continue;
+    }
+    out.push({ ...link.data, user_id: row.user_id, updated_at: row.updated_at });
+  }
+  return out.sort(
+    (a, b) => a.updated_at.localeCompare(b.updated_at) || a.code.localeCompare(b.code),
+  );
+}
+
+/** Zuordnung lokal übernehmen (Testmodus bzw. nach dem Speichern): Regeln aus packages/core (withShoppingProductLink). */
+export function applyShoppingProductLink(
+  rows: UserRows,
+  link: ShoppingProductLink,
+  ctx: { userId: string; now: string },
+): UserRows {
+  const kept = withShoppingProductLink(
+    rows.shoppingProductLinks.map((l) => ({ code: l.code, food_id: l.food_id })),
+    link,
+  );
+  const previous = new Map(rows.shoppingProductLinks.map((l) => [l.code, l]));
+  return {
+    ...rows,
+    shoppingProductLinks: kept.map((l) =>
+      l.code === link.code
+        ? { ...l, user_id: ctx.userId, updated_at: ctx.now }
+        : (previous.get(l.code) as ShoppingProductLinkRow),
+    ),
+  };
 }

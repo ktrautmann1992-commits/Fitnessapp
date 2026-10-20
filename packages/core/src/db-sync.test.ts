@@ -90,6 +90,7 @@ import {
   DELOAD_SCHEDULE,
   ENDURANCE_DELOAD_VOLUME_FACTOR,
   MAX_WEEKLY_ENDURANCE_VOLUME_INCREASE_FRACTION,
+  SHOPPING_SCAN,
 } from './constants';
 import { serverDayKcalFloor } from './nutrition/plausibility';
 import { AI_USAGE_STATUSES } from './nutrition/food-photo';
@@ -948,7 +949,7 @@ describe('Ernährung in der Datenbank (Phase 5, Etappe N7)', () => {
     // Tagebuch-Einträge, E2: eigene Gerichte, WP3: Plan-Bezug der Wettkämpfe leeren, E4a: eigene Produkte und
     // Produkt-Favoriten, Z3: Wunschgewicht, 4b: Plan-Anpassungen).
     expect(migrationFiles.filter((n) => readMigration(n).includes(marker)).at(-1)).toMatch(
-      /_live_adjust_revoke_export\.sql$/,
+      /_shopping_product_links\.sql$/,
     );
   });
 
@@ -1145,8 +1146,41 @@ describe('Ernährungstagebuch in der Datenbank (Etappe E1)', () => {
   it('export_my_data(): neueste Fassung in *_live_adjust_revoke_export.sql (4b B, davor E4a + Z3, S1, E3, WP3, E2)', () => {
     const marker = 'create or replace function public.export_my_data()';
     expect(migrationFiles.filter((n) => readMigration(n).includes(marker)).at(-1)).toMatch(
-      /_live_adjust_revoke_export\.sql$/,
+      /_shopping_product_links\.sql$/,
     );
+  });
+});
+
+describe('Einkaufen E1: gelernte Zuordnungen (docs/PLAN-EINKAUFEN-AUSDAUER.md 3)', () => {
+  const sql = readMigration('_shopping_product_links.sql');
+  const fnBody = (name: string) => {
+    const start = sql.indexOf(`create or replace function ${name}(`);
+    return sql.slice(start, sql.indexOf('$$;', start));
+  };
+
+  it('links_max = SHOPPING_SCAN.linksMax; Nummer über private.barcode_ok; Lebensmittel per Fremdschlüssel', () => {
+    expect(sql).toContain(`links_max constant integer := ${SHOPPING_SCAN.linksMax};`);
+    expect(sql).toContain('code text not null check (private.barcode_ok(code))');
+    expect(sql).toContain('references public.foods (id)');
+  });
+
+  it('Schreiben nur über Funktionen; Einwilligung zuerst gesperrt, dann geprüft, dann Person (Wächter N7 S2)', () => {
+    expect(sql).toContain(
+      'revoke all on table public.shopping_product_links from public, anon, authenticated;',
+    );
+    expect(sql).toContain('grant select on table public.shopping_product_links to authenticated;');
+    const save = fnBody('public.save_shopping_product_link');
+    expect(save.indexOf('for share')).toBeLessThan(save.indexOf('has_valid_consent'));
+    expect(save.indexOf('has_valid_consent')).toBeLessThan(save.indexOf('pg_advisory_xact_lock'));
+    expect(fnBody('public.delete_shopping_product_link')).not.toContain('has_valid_consent');
+  });
+
+  it('Widerruf löscht am Anfang und am Ende; Export enthält die Tabelle', () => {
+    const revoke = fnBody('private.consents_after_revoke');
+    expect(
+      revoke.split('delete from public.shopping_product_links where user_id = new.user_id;'),
+    ).toHaveLength(3);
+    expect(fnBody('public.export_my_data')).toContain("'shopping_product_links', (select coalesce");
   });
 });
 
@@ -2623,7 +2657,7 @@ describe('Ziele in der Datenbank (Etappe Z3, docs/PLAN-ZIELE.md 5.1/5.2)', () =>
     for (const marker of [revokeMarker, exportMarker]) {
       const withFn = migrationFiles.filter((n) => readMigration(n).includes(marker));
       // Seit 4b Etappe B in *_live_adjust_revoke_export.sql (davor Vereinigung E4a + Z3, Wächter E4a H1).
-      expect(withFn.at(-1)).toMatch(/_live_adjust_revoke_export\.sql$/);
+      expect(withFn.at(-1)).toMatch(/_shopping_product_links\.sql$/);
       const bodyOf = (name: string) => {
         const sql = readMigration(name);
         const start = sql.lastIndexOf(marker);
@@ -2660,6 +2694,7 @@ describe('Ziele in der Datenbank (Etappe Z3, docs/PLAN-ZIELE.md 5.1/5.2)', () =>
         'health_screening',
         'weight_goals',
         'user_food_products',
+        'shopping_product_links',
       ].sort(),
     );
     for (const name of sensitive) {

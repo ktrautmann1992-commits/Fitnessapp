@@ -199,6 +199,10 @@ export function localDataExport(
     plan_adjustments: [...(extra.planAdjustments ?? [])],
     adjustment_events: [],
     live_adjust_hourly_counts: [],
+    // Einkaufen E1: gelernte Zuordnungen Strichcode → Lebensmittel (Spalten wie shopping_product_links).
+    shopping_product_links: [...rows.shoppingProductLinks].sort(
+      (a, b) => a.updated_at.localeCompare(b.updated_at) || a.code.localeCompare(b.code),
+    ),
     // Übungs-Präferenzen (Etappe T2) – in export_my_data() erst mit Etappe T3 (PENDING_DB_EXPORT_TABLES).
     exercise_preferences: rows.exercisePreferences,
   };

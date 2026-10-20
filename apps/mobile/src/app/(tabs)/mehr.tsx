@@ -47,6 +47,14 @@ export default function MoreScreen() {
       </Card>
       <Heading level={2}>{texts.sections.content}</Heading>
       <Card>
+        {/* „Fortschritt“ hat seit EA-1 keinen eigenen Knopf in der Menüleiste mehr. */}
+        <Button
+          label={texts.progress}
+          variant="secondary"
+          onPress={() => router.navigate('/fortschritt' as Href)}
+          testID="more-progress"
+        />
+        <Body muted>{texts.progressHint}</Body>
         {nutrition ? (
           <Button
             label={texts.recipes}
@@ -68,12 +76,6 @@ export default function MoreScreen() {
               variant="secondary"
               onPress={open('/ratgeber')}
               testID="more-guides"
-            />
-            <Button
-              label={texts.shopping}
-              variant="secondary"
-              onPress={open('/einkaufsliste')}
-              testID="more-shopping"
             />
             <Button
               label={texts.mealPrep}

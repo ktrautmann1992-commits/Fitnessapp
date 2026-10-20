@@ -8,7 +8,9 @@ import { t } from '@/i18n';
 import { useThemeColors } from '@/lib/theme';
 
 /**
- * Untere Menüleiste (docs/PLAN-DASHBOARD.md 3): Übersicht · Training · Ernährung · Fortschritt · Mehr.
+ * Untere Menüleiste (docs/PLAN-DASHBOARD.md 3; seit 20.10.2026 docs/PLAN-EINKAUFEN-AUSDAUER.md EA-1):
+ * Übersicht · Training · Ernährung · Einkaufen · Mehr – „Fortschritt“ steht als Kachel auf der Übersicht und unter
+ * „Mehr“. Ist ein Bereich ohne Knopf geöffnet (z. B. „Fortschritt“), ist kein Knopf markiert.
  * Eigene Leiste für Expo Router Tabs – Farben aus den Design-Tokens (hell/dunkel), Tippfläche ≥ 56 px, Symbol und
  * Beschriftung, für Bildschirmleser Rolle „Tab“ mit „ausgewählt“.
  */
@@ -20,13 +22,25 @@ export function useInTabs(): boolean {
   return useContext(InTabsContext);
 }
 
-export type TabName = 'uebersicht' | 'today' | 'ernaehrung' | 'fortschritt' | 'mehr';
+export type TabName =
+  'uebersicht' | 'today' | 'ernaehrung' | 'einkaufsliste' | 'fortschritt' | 'mehr';
 
+/** Alle Reiter-Bildschirme (Reihenfolge der Registrierung in (tabs)/_layout.tsx). */
+export const TAB_SCREENS: readonly TabName[] = [
+  'uebersicht',
+  'today',
+  'ernaehrung',
+  'einkaufsliste',
+  'fortschritt',
+  'mehr',
+];
+
+/** Knöpfe der Menüleiste (Standard, EA-1). */
 export const TAB_ORDER: readonly TabName[] = [
   'uebersicht',
   'today',
   'ernaehrung',
-  'fortschritt',
+  'einkaufsliste',
   'mehr',
 ];
 
@@ -38,6 +52,8 @@ export function tabLabel(name: TabName): string {
       return t.tabs.training;
     case 'ernaehrung':
       return t.tabs.nutrition;
+    case 'einkaufsliste':
+      return t.tabs.shopping;
     case 'fortschritt':
       return t.tabs.progress;
     case 'mehr':
@@ -60,8 +76,8 @@ export function TabBar({ state, navigation }: TabBarProps) {
   const theme = useThemeColors();
   const dark = useColorScheme() === 'dark';
   const insets = useSafeAreaInsets();
-  const routes = state.routes.filter((route): route is { key: string; name: TabName } =>
-    (TAB_ORDER as readonly string[]).includes(route.name),
+  const routes = TAB_ORDER.map((name) => state.routes.find((route) => route.name === name)).filter(
+    (route): route is { key: string; name: TabName } => route !== undefined,
   );
   const focusedName = state.routes[state.index]?.name;
   return (
@@ -163,6 +179,15 @@ function TabIcon({ name, color }: { name: TabName; color: string }) {
         <>
           <Path d="M7 3v8M4.5 3v5a2.5 2.5 0 0 0 5 0V3M7 11v10" {...stroke} />
           <Path d="M17 21V3c-2.2 1.2-3.5 3.8-3.5 7v3H17" {...stroke} />
+        </>
+      ) : name === 'einkaufsliste' ? (
+        <>
+          <Path
+            d="M3 4h2.5l2.2 10.5a1.5 1.5 0 0 0 1.5 1.2h8.4a1.5 1.5 0 0 0 1.5-1.2L20.5 8H6.4"
+            {...stroke}
+          />
+          <Circle cx={9.5} cy={19.5} r={1.4} fill={color} />
+          <Circle cx={17} cy={19.5} r={1.4} fill={color} />
         </>
       ) : name === 'fortschritt' ? (
         <>

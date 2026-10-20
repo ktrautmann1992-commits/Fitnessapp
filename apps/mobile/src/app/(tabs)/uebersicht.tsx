@@ -155,7 +155,7 @@ function Overview({ rows, today }: { rows: UserRows; today: string }) {
           <ShortcutCell>
             <ShortcutTile
               label={t.dashboard.shortcuts.shopping}
-              onPress={() => router.push('/einkaufsliste' as Href)}
+              onPress={() => router.navigate('/einkaufsliste' as Href)}
               testID="overview-shopping"
             />
           </ShortcutCell>

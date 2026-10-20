@@ -5,7 +5,7 @@ import { useThemeColors } from '@/lib/theme';
 
 /**
  * Hauptbereiche mit unterer Menüleiste (docs/PLAN-DASHBOARD.md 3). Die Gruppe „(tabs)“ ändert keine Adresse:
- * `/uebersicht`, `/today`, `/ernaehrung`, `/fortschritt`, `/mehr`. Alle anderen Bildschirme liegen im Stapel darüber
+ * `/uebersicht`, `/today`, `/ernaehrung`, `/einkaufsliste` (Reiter „Einkaufen“), `/fortschritt`, `/mehr`. Alle anderen Bildschirme liegen im Stapel darüber
  * (ohne Leiste, mit „Zurück“) – Onboarding, Anmelden, Training durchführen und Druckansichten bleiben vollflächig.
  */
 export default function TabsLayout() {
@@ -24,6 +24,7 @@ export default function TabsLayout() {
         <Tabs.Screen name="uebersicht" options={{ title: tabLabel('uebersicht') }} />
         <Tabs.Screen name="today" options={{ title: tabLabel('today') }} />
         <Tabs.Screen name="ernaehrung" options={{ title: tabLabel('ernaehrung') }} />
+        <Tabs.Screen name="einkaufsliste" options={{ title: tabLabel('einkaufsliste') }} />
         <Tabs.Screen name="fortschritt" options={{ title: tabLabel('fortschritt') }} />
         <Tabs.Screen name="mehr" options={{ title: tabLabel('mehr') }} />
       </Tabs>

@@ -451,7 +451,7 @@ export default function NutritionDayScreen() {
         <Button
           label={t.nutrition.shopping.open}
           variant="secondary"
-          onPress={() => router.push(`/einkaufsliste?woche=${targets.weekStart}` as Href)}
+          onPress={() => router.navigate(`/einkaufsliste?woche=${targets.weekStart}` as Href)}
           testID="nutrition-shopping"
         />
       ) : null}

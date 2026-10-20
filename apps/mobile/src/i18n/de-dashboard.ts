@@ -12,6 +12,7 @@ export const deTabs = {
   training: 'Training',
   nutrition: 'Ernährung',
   progress: 'Fortschritt',
+  shopping: 'Einkaufen',
   more: 'Mehr',
 } as const;
 
@@ -122,6 +123,8 @@ export const deMore = {
   exercises: 'Übungen',
   guides: 'Ratgeber',
   shopping: 'Einkaufsliste',
+  progress: 'Fortschritt',
+  progressHint: 'Wochenzahlen, Wochenauswertung, Verlauf, Kalender',
   mealPrep: 'Meal-Prep',
   competition: 'Wettkampf',
   licenses: 'Lizenzen und Quellen',

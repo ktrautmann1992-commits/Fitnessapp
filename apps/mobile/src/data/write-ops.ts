@@ -712,6 +712,8 @@ export function applyHealthDataRevocation(
     customMealItems: [],
     // Eigene Produkte (Etappe E4a, E4-G10): Name/Marke = Freitext – gelöscht wie eigene Gerichte.
     userFoodProducts: [],
+    // Einkaufen E1: gelernte Zuordnungen Strichcode → Lebensmittel (Konsum) – wie consents_after_revoke.
+    shoppingProductLinks: [],
     // Wettkämpfe (Phase 10): der Wettkampf bleibt (kein Gesundheitsdatum, W-G15), der Plan-Bezug wird geleert – wie
     // private.consents_after_revoke.
     competitions: rows.competitions.map(withoutPlanBasis),

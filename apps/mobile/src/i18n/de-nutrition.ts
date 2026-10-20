@@ -600,6 +600,8 @@ export const deNutrition = {
     adjusted:
       'Deine Einkaufsliste wurde an deinen geänderten Plan angepasst. Häkchen und eigene Einträge bleiben; was nicht mehr gebraucht wird und schon abgehakt war, steht als „nicht mehr im Plan“ da.',
     noPlan: 'Für diese Woche gibt es noch keinen Essensplan – deshalb auch keine Einkaufsliste.',
+    planless:
+      'Für diese Woche gibt es keinen Essensplan. Du kannst trotzdem eigene Artikel eintragen, abhaken und im Laden scannen.',
     readOnly: 'Diese Woche lässt sich nicht mehr ändern.',
     saveFailed: 'Das hat nicht geklappt. Bitte versuche es noch einmal.',
     healthNote:
@@ -609,6 +611,68 @@ export const deNutrition = {
       not_for_you: 'Dieses Rezept passt nicht zu deinen Angaben.',
       too_many: 'Es stehen schon 20 Rezepte auf der Liste. Entferne zuerst eines.',
       save_failed: 'Das hat nicht geklappt. Bitte versuche es noch einmal.',
+    },
+    /** Reiter „Einkaufen“ (Gründer-Entscheidung 20.10.2026). */
+    tabTitle: 'Einkaufen',
+    quantityLabel: 'Menge (optional)',
+    quantityHint: 'Zum Beispiel 500 g, 1 l oder 3 Stück.',
+    quantityInvalid:
+      'Diese Menge verstehen wir nicht. Schreib sie z. B. als 500 g, 1,5 kg, 1 l oder 3 Stück.',
+    uncheckAll: 'Alle Haken zurücksetzen',
+    uncheckAllTitle: 'Alle Haken zurücksetzen?',
+    uncheckAllText:
+      'Alle Einträge sind danach wieder offen. Was nur noch abgehakt da stand („nicht mehr im Plan“), fällt weg. Deine eigenen Einträge bleiben.',
+    uncheckAllConfirm: 'Zurücksetzen',
+    uncheckAllDone: 'Alle Haken sind zurückgesetzt.',
+    scan: {
+      title: 'Im Laden scannen',
+      intro:
+        'Scann den Strichcode eines Produkts: Steht es auf deiner Liste, haken wir es ab. Die Kamerabilder bleiben auf deinem Gerät.',
+      camera: 'Strichcode scannen',
+      typeCode: 'Nummer eintippen',
+      codeLabel: 'Nummer unter dem Strichcode',
+      codeHint: 'Die 8 oder 13 Ziffern unter dem Strichcode.',
+      search: 'Abgleichen',
+      cancel: 'Abbrechen',
+      searching: 'Suche Produkt …',
+      checked: (label: string) => `✓ ${label} abgehakt`,
+      undo: 'Rückgängig',
+      undoA11y: (label: string) => `Rückgängig: ${label} wieder offen`,
+      undone: (label: string) => `${label} ist wieder offen.`,
+      notRecognizedTitle: 'Produkt nicht erkannt',
+      pickFromList: 'Tipp an, was du gekauft hast:',
+      ownItem: 'Als eigenen Artikel hinzufügen',
+      noOpenItems: 'Auf deiner Liste ist gerade nichts mehr offen.',
+      addCategory: 'Abteilung',
+      learnHint:
+        'Beim nächsten Scan dieses Produkts erkennen wir den Eintrag (nur auf deinem Konto).',
+      alreadyChecked: (label: string) => `${label} ist schon abgehakt.`,
+      chooseTitle: 'Welcher Eintrag ist es?',
+      chooseText: (name: string) => `„${name}“ passt zu mehreren Einträgen. Tipp den richtigen an.`,
+      chooseNone: 'Keiner davon',
+      chooseA11y: (label: string) => `Abhaken: ${label}`,
+      notOnListTitle: 'Nicht auf deiner Liste',
+      notOnListText: (name: string) =>
+        `„${name}“ steht nicht auf deiner Liste – zusätzlich hinzufügen?`,
+      notOnListYes: 'Ja, hinzufügen',
+      notOnListNo: 'Nein',
+      added: (label: string) => `✓ ${label} hinzugefügt und abgehakt`,
+      nameLabel: 'Name auf deiner Liste',
+      nameEmpty: 'Bitte einen Namen eingeben.',
+      notFound: 'Dieses Produkt kennen wir noch nicht.',
+      offline: 'Ohne Internet können wir das Produkt nicht nachsehen.',
+      noConsent:
+        'Die Produktabfrage gibt es nur mit deiner Einwilligung in Gesundheitsdaten (wie beim Eintragen).',
+      unavailable: 'Die Produktabfrage klappt gerade nicht.',
+      rateLimited:
+        'Du hast gerade sehr viele Produkte abgefragt. Bitte versuch es später noch einmal.',
+      invalidCode: 'Die Nummer stimmt nicht – bitte noch einmal scannen oder abtippen.',
+      notFoodCode:
+        'Dieser Code gilt nur im Laden (z. B. Frischetheke) oder ist kein Lebensmittel – hak den Eintrag direkt ab.',
+      denied: 'Ohne Kamera-Erlaubnis kannst du die Nummer eintippen.',
+      cameraProblem: 'Die Kamera ließ sich nicht nutzen – tipp die Nummer ein.',
+      testCodes: 'Testmodus: Testnummern (statt einer echten Packung)',
+      testCodeA11y: (label: string) => `Testnummer scannen: ${label}`,
     },
     fromRecipe: {
       add: (servings: number) =>
