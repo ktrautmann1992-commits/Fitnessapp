@@ -785,22 +785,81 @@ describe('Supabase-Backend: Essensplan und Einkaufsliste (N7 Teil 2)', () => {
     ).toBe(true);
     expect(offline.backend.pendingChanges()).toBe(1);
     expect(offline.calls.some((c) => c.table === 'rpc:replace_shopping_list')).toBe(false);
-    // Mit Gesundheitsbezug: nie in die Warteschlange, offline → „braucht Verbindung“.
+    // Mit Gesundheitsbezug (Lücke „online_only“ geschlossen, PLAN-EINKAUFEN-AUSDAUER 3): offline in die
+    // VERSCHLÜSSELTE Ernährungs-Warteschlange – nie in den normalen Speicher.
     const healthRows: UserRows = { ...data, shoppingLists: [listRow(true)] };
-    const direct = backendWith(() => ({ error: networkError }));
-    await expect(
-      direct.backend.saveShoppingList({ ...toggled, usesHealthData: true }, healthRows),
-    ).rejects.toMatchObject({ code: 'online_only', sensitive: true });
-    expect(direct.backend.pendingChanges()).toBe(0);
-    expect(JSON.stringify(direct.store.dump())).not.toContain(first.itemKey);
-    // Online: Update genau dieser Zeile.
+    const queued = backendWith(() => ({ error: networkError }));
+    const queuedNext = await queued.backend.saveShoppingList(
+      { ...toggled, usesHealthData: true },
+      healthRows,
+    );
+    expect(
+      queuedNext.shoppingLists[0]?.list.items.find((i) => i.itemKey === first.itemKey)?.checked,
+    ).toBe(true);
+    expect(queued.backend.pendingChanges()).toBe(1);
+    expect(JSON.stringify(queued.store.dump())).not.toContain(first.itemKey);
+    expect(queued.calls.some((c) => c.table === 'rpc:replace_shopping_list')).toBe(false);
+    // Online: Liste der Woche suchen, dann Update genau dieser Zeile (vorhandener Schreibweg).
     const online = backendWith((call) =>
-      call.table === 'shopping_list_items' ? { data: [{ item_key: first.itemKey }] } : {},
+      call.table === 'shopping_lists'
+        ? { data: { id: 'list-1' } }
+        : call.table === 'shopping_list_items'
+          ? { data: [{ item_key: first.itemKey }] }
+          : {},
     );
     await online.backend.saveShoppingList({ ...toggled, usesHealthData: true }, healthRows);
+    await expect.poll(() => online.calls.some((c) => c.table === 'shopping_list_items')).toBe(true);
     const update = online.calls.find((c) => c.table === 'shopping_list_items');
-    expect(update?.chain).toEqual(['update', 'eq', 'eq', 'eq', 'select']);
+    expect(update?.chain).toEqual(['update', 'eq', 'eq', 'select']);
     expect(update?.args[0]).toEqual([{ checked: true }]);
+    await expect.poll(() => online.backend.pendingChanges()).toBe(0);
+  });
+
+  it('Häkchen-Warteschlange: letzter Stand je Eintrag gewinnt, nur Woche/Schlüssel/Häkchen/Zeit, Anzeige im Speicher-Stand', () => {
+    const op = (checked: boolean, at: string) => ({
+      kind: 'shopping_check' as const,
+      weekStart: WEEK,
+      itemKey: 'reis|g',
+      checked,
+      at,
+    });
+    let entries: NutritionQueueEntry[] = [];
+    entries = enqueueNutritionOp(entries, op(true, NOW));
+    entries = enqueueNutritionOp(entries, op(false, NOW));
+    entries = enqueueNutritionOp(entries, { ...op(true, NOW), itemKey: 'tofu|g' });
+    expect(entries.map((e) => e.key)).toEqual([
+      `shopping_check:${WEEK}|reis|g`,
+      `shopping_check:${WEEK}|tofu|g`,
+    ]);
+    expect(entries[0]?.op).toEqual(op(false, NOW));
+    const list = result.shopping?.list;
+    if (!list) throw new Error('Liste erwartet');
+    const key = list.items[0]?.itemKey ?? '';
+    const rows: UserRows = {
+      ...data,
+      shoppingLists: [
+        {
+          id: 'list-1',
+          user_id: USER_ID,
+          week_start: WEEK,
+          uses_health_data: true,
+          created_at: NOW,
+          updated_at: NOW,
+          list,
+        },
+      ],
+    };
+    const shown = applyNutritionQueue(
+      rows,
+      [
+        { key: 'x', op: { ...op(true, NOW), itemKey: key } },
+        { key: 'y', op: { ...op(true, NOW), itemKey: 'fehlt|g' } },
+      ],
+      { userId: USER_ID, now: NOW },
+    );
+    expect(shown.shoppingLists[0]?.list.items.find((i) => i.itemKey === key)?.checked).toBe(true);
+    // Verschwundener Eintrag: nichts passiert (kein neuer Eintrag).
+    expect(shown.shoppingLists[0]?.list.items).toHaveLength(list.items.length);
   });
 });
 

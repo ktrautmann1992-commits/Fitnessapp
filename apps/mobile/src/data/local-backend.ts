@@ -21,6 +21,7 @@ import {
   requiresMedicalNotice,
   selectNutritionContent,
   selectPlanContent,
+  shoppingProductLinkSchema,
   validateContent,
   type ConsentType,
   type ContentFile,
@@ -35,6 +36,7 @@ import {
 } from '@fitnessapp/core';
 
 import { healthConsentStatus } from '../state/flow';
+import { applyShoppingProductLink } from './nutrition-sync';
 import {
   BackendError,
   type Backend,
@@ -264,6 +266,8 @@ const SERIALIZED_METHODS = [
   'lookupFoodProduct',
   'saveUserFoodProduct',
   'deleteUserFoodProduct',
+  'saveShoppingProductLink',
+  'saveAppLayout',
   'saveTrackedRoute',
   'updateTrackedRoute',
   'deleteTrackedRoute',
@@ -921,6 +925,32 @@ export function createLocalBackend(store: KeyValueStore, options: LocalBackendOp
     deleteUserFoodProduct: async (id) => {
       const { db, rows } = await requireProfile();
       const next = applyUserFoodProductDelete(rows, id);
+      await save({ ...db, rows: next });
+      return next;
+    },
+    // Etappe E2: Anordnung der Übersicht/Menüleiste – dieselben Regeln wie save_app_layout (local-rules.ts).
+    saveAppLayout: async (layout) => {
+      const { db, rows, session } = await requireProfile();
+      const next = applyChecked(rows, {
+        kind: 'save_app_layout',
+        row: { user_id: session.userId, ...layout },
+      });
+      await save({ ...db, rows: next });
+      return next;
+    },
+    // Einkaufen E1: gelernte Zuordnung – dieselben Regeln wie save_shopping_product_link (Einwilligung, Nummer,
+    // Lebensmittel, höchstens SHOPPING_SCAN.linksMax). Nummer und Lebensmittel nie in Meldungen oder Logs.
+    saveShoppingProductLink: async (link) => {
+      const { db, rows, session } = await requireProfile();
+      if (healthConsentStatus(rows, LOCAL_VERSIONS) !== 'valid') {
+        throw new BackendError('consent_required', { sensitive: true });
+      }
+      const parsed = shoppingProductLinkSchema.safeParse(link);
+      if (!parsed.success) throw new BackendError('unknown', { sensitive: true });
+      const next = applyShoppingProductLink(rows, parsed.data, {
+        userId: session.userId,
+        now: options.now(),
+      });
       await save({ ...db, rows: next });
       return next;
     },

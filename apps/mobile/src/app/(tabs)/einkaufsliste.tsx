@@ -2,6 +2,8 @@ import {
   addDays,
   isoDateSchema,
   mealPlanWeekEditable,
+  parseShoppingQuantity,
+  planlessShoppingList,
   SHOPPING_CATEGORIES,
   type ShoppingCategory,
   type ShoppingListItem,
@@ -11,12 +13,13 @@ import {
   startOfIsoWeek,
 } from '@fitnessapp/core';
 import { fontSize, fontWeight, radius, spacing } from '@fitnessapp/ui';
-import { Redirect, useLocalSearchParams, useRouter, type Href } from 'expo-router';
-import { useState, type ReactNode } from 'react';
+import { Redirect, useLocalSearchParams, useNavigation, useRouter, type Href } from 'expo-router';
+import { useEffect, useMemo, useState, type ReactNode } from 'react';
 import { Pressable, StyleSheet, Text, View } from 'react-native';
 
 import { ConsentBlockedNotice, DemoBanner } from '@/components/nutrition';
-import { Screen } from '@/components/screen';
+import { ConfirmDialog, Screen } from '@/components/screen';
+import { ShoppingScanPanel } from '@/components/shopping-scan';
 import {
   Body,
   Button,
@@ -30,6 +33,7 @@ import {
   Notice,
   TextField,
 } from '@/components/ui';
+import { storedShoppingListRow } from '@/data/meal-plan-rows';
 import { t } from '@/i18n';
 import { formatDateDe } from '@/lib/format';
 import { shoppingCategoryLabel, shoppingItemText } from '@/lib/nutrition-format';
@@ -37,7 +41,7 @@ import { dayLabel } from '@/lib/plan-format';
 import { useThemeColors } from '@/lib/theme';
 import { useToday } from '@/lib/use-today';
 import { useApp } from '@/state/app-state';
-import { HOME_ROUTE, resolveEntryRoute } from '@/state/flow';
+import { healthConsentStatus, HOME_ROUTE, resolveEntryRoute } from '@/state/flow';
 import {
   type ShoppingActionOutcome,
   useNutritionWeek,
@@ -45,6 +49,11 @@ import {
 } from '@/state/use-nutrition';
 
 /**
+ * Reiter „Einkaufen“ (docs/PLAN-EINKAUFEN-AUSDAUER.md 3, Gründer-Entscheidung EA-G1 vom 20.10.2026): die Einkaufsliste
+ * als eigener Knopf in der Menüleiste – Adresse bleibt `/einkaufsliste` (Deep-Links, Vorschau-Links); Drucken und
+ * Weitergeben bleiben Unterseiten im Stapel. Neu: „Im Laden scannen“ (components/shopping-scan.tsx), eigene Artikel mit
+ * Menge, „Alle Haken zurücksetzen“ und Einkaufen ohne Essensplan (EA-2: nur eigene Artikel, `planlessShoppingList`).
+ *
  * Einkaufsliste (docs/PLAN-PHASE-5.md 6.5, 8.2 Nr. 5, Etappe N5b): Abteilungen, Häkchen (gehen ohne Netz und bleiben
  * nach dem Neuladen), „Erledigte ausblenden“, Vorrat eingeklappt, eigene Einträge, Zeitraum wählen, über „Zur
  * Einkaufsliste“ hinzugefügte Rezepte, Markierungen „Menge geändert“/„nicht mehr im Plan“ nach einer Neuplanung
@@ -52,27 +61,64 @@ import {
  * Keine kcal, keine Gründe (Unverträglichkeiten stehen nirgends). Etappe N6: „Als PDF speichern“ (PDF P5); Etappe N12:
  * „Weitergeben“ (einkaufsliste/weitergeben.tsx).
  */
-export default function ShoppingListScreen() {
+export default function ShoppingTabScreen() {
   const router = useRouter();
   const app = useApp();
   const params = useLocalSearchParams<{ woche?: string }>();
-  const [requested] = useState(() =>
+  const navigation = useNavigation();
+  const [weekChoice, setWeekChoice] = useState<string | null>(() =>
     isoDateSchema.safeParse(params.woche).success ? startOfIsoWeek(params.woche as string) : null,
   );
-  const [weekChoice, setWeekChoice] = useState<string | null>(requested);
+  // Reiter bleibt geladen: Eine Woche über die Adresse (`?woche=`, z. B. aus Rezept oder Meal-Prep) gilt sofort.
+  const wocheParam = params.woche;
+  useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect -- Adresse → angezeigte Woche (kein Folge-Render-Zyklus)
+    setWeekChoice(
+      isoDateSchema.safeParse(wocheParam).success ? startOfIsoWeek(wocheParam as string) : null,
+    );
+  }, [wocheParam]);
+  // Reiter „Einkaufen“ antippen springt auf die laufende Woche (wie „Ernährung“ auf heute).
+  useEffect(
+    () =>
+      navigation.addListener('tabPress' as never, () => {
+        setWeekChoice(null);
+        router.setParams({ woche: undefined });
+      }),
+    [navigation, router],
+  );
   const today = useToday();
   const currentWeek = startOfIsoWeek(today);
   // Nur laufende und nächste Woche (wie der Plan); nach Mitternacht ggf. automatisch die neue Woche (K5).
   const weekStart =
     weekChoice !== null && mealPlanWeekEditable(weekChoice, today) ? weekChoice : currentWeek;
   const view = useNutritionWeek(weekStart);
-  const actions = useShoppingListActions(view.week);
+  // Einkaufen ohne Essensplan (EA-2): Angaben fehlen, Ernährung nicht eingerichtet oder kein Bestand → Liste der Woche
+  // nur mit eigenen Artikeln. Eine gespeicherte Liste mit Gesundheitsbezug nur mit gültiger Einwilligung (Art. 9).
+  const noPlan =
+    view.library.kind !== 'unsupported' &&
+    (view.setupMissing ||
+      view.week?.kind === 'incomplete' ||
+      (view.week?.kind === 'ready' && view.week.plan === null));
+  const rows = app.rows;
+  const planlessList = useMemo(() => {
+    if (!noPlan || rows === null) return null;
+    const row = storedShoppingListRow(rows, weekStart);
+    const usable =
+      row !== null && (!row.uses_health_data || healthConsentStatus(rows, app.versions) === 'valid')
+        ? row.list
+        : null;
+    return planlessShoppingList(usable, weekStart);
+  }, [app.versions, noPlan, rows, weekStart]);
+  const actions = useShoppingListActions(noPlan ? null : view.week, planlessList);
   const [hideChecked, setHideChecked] = useState(false);
   const [showPantry, setShowPantry] = useState(false);
   const [rangeOpen, setRangeOpen] = useState(false);
   const [draftFrom, setDraftFrom] = useState<string | null>(null);
   const [draftTo, setDraftTo] = useState<string | null>(null);
   const [label, setLabel] = useState('');
+  const [quantity, setQuantity] = useState('');
+  const [quantityError, setQuantityError] = useState<string>();
+  const [confirmReset, setConfirmReset] = useState(false);
   const [category, setCategory] = useState<ShoppingCategory>('other');
   const [labelError, setLabelError] = useState<string>();
   const [message, setMessage] = useState<{ text: string; tone: 'danger' | 'success' } | null>(null);
@@ -95,15 +141,9 @@ export default function ShoppingListScreen() {
     return <Redirect href={route as Href} />;
   }
   const texts = t.nutrition.shopping;
-  const footer = (
-    <Button
-      label={t.nutrition.back}
-      variant="secondary"
-      onPress={() => (router.canGoBack() ? router.back() : router.replace('/ernaehrung' as Href))}
-    />
-  );
+  // Reiter: keine „Zurück“-Leiste (die Menüleiste führt weiter).
   const shell = (children: ReactNode) => (
-    <Screen title={texts.title} testID="shopping-list" footer={footer}>
+    <Screen title={texts.tabTitle} testID="shopping-list">
       {children}
     </Screen>
   );
@@ -119,32 +159,18 @@ export default function ShoppingListScreen() {
       />,
     );
   }
-  if (view.setupMissing) {
-    return shell(
-      <Card>
-        <Body>{t.nutrition.setupNeeded}</Body>
-        <Button
-          label={t.nutrition.setupButton}
-          onPress={() => router.push('/onboarding/nutrition_setup?edit=1' as Href)}
-          testID="nutrition-setup"
-        />
-      </Card>,
-    );
-  }
-  if (view.library.kind !== 'ready' || view.week === null) {
+  if (!noPlan && (view.library.kind !== 'ready' || view.week === null)) {
     return shell(<LoadingState label={t.nutrition.loading} />);
   }
-  if (view.week.kind === 'incomplete') {
-    return shell(<Notice tone="info">{t.nutrition.incomplete}</Notice>);
-  }
-  if (view.week.kind === 'blocked') {
+  if (!noPlan && view.week?.kind === 'blocked') {
     return shell(<ConsentBlockedNotice reason={view.week.reason} />);
   }
-  if (view.week.kind === 'error') {
+  if (!noPlan && view.week?.kind === 'error') {
     return shell(<Notice tone="danger">{t.nutrition.computeFailed}</Notice>);
   }
-  const { demo } = view.library.result;
-  const shopping = view.week.shopping;
+  const demo = view.library.kind === 'ready' && view.library.result.demo;
+  const resolved = !noPlan && view.week?.kind === 'ready' ? view.week : null;
+  const shopping = resolved?.shopping ?? null;
   const weekSwitch = (
     <View style={styles.row}>
       <View style={styles.flex}>
@@ -173,30 +199,21 @@ export default function ShoppingListScreen() {
       </View>
     </View>
   );
-  if (view.week.plan === null || shopping === null) {
-    return shell(
-      <>
-        {weekSwitch}
-        <Card>
-          <Body testID="shopping-no-plan">{texts.noPlan}</Body>
-          <Button
-            label={t.nutrition.title}
-            variant="secondary"
-            onPress={() => router.dismissTo('/ernaehrung' as Href)}
-          />
-        </Card>
-      </>,
-    );
+  const shownList = shopping?.list ?? planlessList;
+  if (shownList === null) {
+    return shell(<LoadingState label={t.nutrition.loading} />);
   }
-
-  const list = shopping.list;
-  const recipes = view.library.result.library.recipes;
+  const list = shownList;
+  const library = view.library.kind === 'ready' ? view.library.result.library : null;
+  const recipes = library?.recipes ?? [];
   const recipeTitle = (id: string) => recipes.find((r) => r.id === id)?.title_de ?? id;
   // Kennzeichnung für Zutaten aus Treffern der erweiterten Suche (19.6 K3/G4, Etappe N5c).
-  const profileDiet = view.week.planState?.input.profile.diet ?? null;
-  const foods = view.library.result.library.foods;
+  const profileDiet = resolved?.planState?.input.profile.diet ?? null;
+  const foods = library?.foods ?? null;
   const outsideDiet = (item: ShoppingListItem) =>
-    profileDiet !== null && shoppingItemOutsideProfileDiet(item, foods, profileDiet) !== null;
+    profileDiet !== null &&
+    foods !== null &&
+    shoppingItemOutsideProfileDiet(item, foods, profileDiet) !== null;
   const recipeOutside = (entry: ShoppingListRecipe) =>
     profileDiet === null ? null : shoppingRecipeOutsideProfileDiet(entry, profileDiet);
   const days = Array.from({ length: 7 }, (_, i) => addDays(list.weekStart, i));
@@ -237,10 +254,31 @@ export default function ShoppingListScreen() {
       return;
     }
     setLabelError(undefined);
-    const outcome = await run('add', () => actions.addManual(label, category));
-    if (outcome?.kind === 'ok') setLabel('');
+    const parsed = parseShoppingQuantity(quantity);
+    if (!parsed.ok) {
+      setQuantityError(texts.quantityInvalid);
+      return;
+    }
+    setQuantityError(undefined);
+    const amount =
+      parsed.amount !== null && parsed.unit !== null
+        ? { amount: parsed.amount, unit: parsed.unit }
+        : null;
+    const outcome = await run('add', () => actions.addManual(label, category, amount));
+    if (outcome?.kind === 'ok') {
+      setLabel('');
+      setQuantity('');
+    }
     if (outcome?.kind === 'invalid') setLabelError(outcome.message || texts.saveFailed);
   }
+
+  async function uncheckAll() {
+    if (!actions) return;
+    const outcome = await run('reset', () => actions.uncheckAll());
+    setConfirmReset(false);
+    if (outcome?.kind === 'ok') setMessage({ text: texts.uncheckAllDone, tone: 'success' });
+  }
+  const anyChecked = list.items.some((i) => i.checked);
 
   async function applyRange() {
     if (!actions) return;
@@ -282,9 +320,22 @@ export default function ShoppingListScreen() {
           {texts.range(formatDateDe(list.from), formatDateDe(list.to))}
         </Text>
       </Heading>
+      {shopping === null ? (
+        <Notice tone="info" testID="shopping-planless">
+          <Body>{texts.planless}</Body>
+          {view.setupMissing ? (
+            <Button
+              label={t.nutrition.setupButton}
+              variant="secondary"
+              onPress={() => router.push('/onboarding/nutrition_setup?edit=1' as Href)}
+              testID="nutrition-setup"
+            />
+          ) : null}
+        </Notice>
+      ) : null}
       {/* Bis „Verstanden“ beim Plan (6.6): Plan und Liste wurden im selben Schritt angepasst (W22). */}
-      {view.week.planState?.autoAdjusted === true ||
-      (shopping.action === 'rebuilt' && shopping.planChanged) ? (
+      {resolved?.planState?.autoAdjusted === true ||
+      (shopping?.action === 'rebuilt' && shopping.planChanged) ? (
         <Notice tone="info" testID="shopping-adjusted">
           {texts.adjusted}
         </Notice>
@@ -306,6 +357,10 @@ export default function ShoppingListScreen() {
       ) : null}
 
       {actions ? (
+        <ShoppingScanPanel actions={actions} foods={foods} disabled={busy !== null} />
+      ) : null}
+
+      {actions && !actions.planless ? (
         <Card>
           <Button
             label={texts.rangeTitle}
@@ -359,6 +414,25 @@ export default function ShoppingListScreen() {
         accessibilityHint={t.nutrition.printView.listHint}
         onPress={() => router.push(`/einkaufsliste/drucken?woche=${list.weekStart}` as Href)}
         testID="shopping-print"
+      />
+      {actions && anyChecked ? (
+        <Button
+          label={texts.uncheckAll}
+          variant="secondary"
+          onPress={() => setConfirmReset(true)}
+          testID="shopping-uncheck-all"
+        />
+      ) : null}
+      <ConfirmDialog
+        visible={confirmReset}
+        title={texts.uncheckAllTitle}
+        message={texts.uncheckAllText}
+        confirmLabel={texts.uncheckAllConfirm}
+        confirmVariant="primary"
+        loading={busy === 'reset'}
+        onConfirm={() => void uncheckAll()}
+        onCancel={() => setConfirmReset(false)}
+        testID="shopping-uncheck-all-dialog"
       />
       <Checkbox
         label={texts.hideChecked}
@@ -448,6 +522,16 @@ export default function ShoppingListScreen() {
             hint={texts.addHint}
             maxLength={80}
             testID="shopping-add-label"
+            onSubmitEditing={() => void addManual()}
+          />
+          <TextField
+            label={texts.quantityLabel}
+            value={quantity}
+            onChangeText={setQuantity}
+            error={quantityError}
+            hint={texts.quantityHint}
+            maxLength={30}
+            testID="shopping-add-quantity"
             onSubmitEditing={() => void addManual()}
           />
           <ChoiceList

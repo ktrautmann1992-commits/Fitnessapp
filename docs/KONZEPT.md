@@ -428,6 +428,15 @@ Verbot), Aufwärm-Hinweis immer; Prüfregeln W1–W7 für die Inhalte. Details u
 - Wettkampf: Carb-Loading-Tage, Frühstück am Wettkampftag, Gel-/Trinkplan
 - Plan-Erzeugung: Rezepte aus Datenbank filtern (Vorlieben, Ernährungsform, Kochmodus) → Optimierung auf Tagesmakros (Portionsgrößen skalieren) → Wochenplan
 - Einkaufsliste: aggregiert, nach Supermarkt-Abteilung sortiert, abhakbar, Meal-Prep-Mengen
+- **Einkaufen (seit 20.10.2026, `docs/PLAN-EINKAUFEN-AUSDAUER.md` 3):** eigener Knopf „Einkaufen“ in der Menüleiste
+  (Adresse `/einkaufsliste`); eigene Artikel mit Menge, „Alle Haken zurücksetzen“, Einkaufen auch ohne Essensplan;
+  Strichcode im Laden scannen → passendes Produkt wird abgehakt (Regeln `matchScannedProduct` in
+  `packages/core/src/nutrition/shopping-scan.ts`, gelernte Zuordnung Strichcode → Lebensmittel in
+  `shopping_product_links`, sensibel wie Produkt-Favoriten); Häkchen sensibler Listen offline über die verschlüsselte
+  Warteschlange
+- **Übersicht und Menüleiste anpassen (seit 20.10.2026, `docs/PLAN-DASHBOARD.md` 8):** Kacheln ein-/ausblenden und
+  umsortieren, Menüleiste mit 3–6 Knöpfen selbst zusammenstellen (Übersicht links, Mehr rechts fest; Standard mit
+  „Workouts“ und „Einkaufen“); Regeln in `packages/core/src/layout.ts`, gespeichert je Konto (`app_layout_settings`)
 - Lebensmittel tauschen (Zutaten-Austausch, Abschnitt 6.9), Barcode-Scanner (Open Food Facts; Lizenz beachten, Abschnitt 6.1)
 - Rezepte, Küche und Einkauf aus den Erweiterungen Teil 2: Abschnitte 6.5–6.13
 

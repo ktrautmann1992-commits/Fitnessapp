@@ -24,6 +24,8 @@ import {
   type CompetitionFeasibility,
   type SaveCompetitionPayload,
   type CustomMeal,
+  type ShoppingProductLink,
+  type StoredAppLayout,
   type UserFoodProduct,
   type FoodLogEntry,
 } from '@fitnessapp/core';
@@ -362,6 +364,10 @@ export interface AppContextValue {
   saveUserFoodProduct: (product: UserFoodProduct) => Promise<void>;
   /** Eigenes Produkt löschen (geht immer). */
   deleteUserFoodProduct: (id: string) => Promise<void>;
+  /** Etappe E2: Anordnung der Übersicht und der Menüleiste speichern (sofort lokal, offline möglich). */
+  saveAppLayout: (layout: StoredAppLayout) => Promise<void>;
+  /** Einkaufen E1: Zuordnung Strichcode → Lebensmittel lernen (nur mit Einwilligung; Fehler ohne Nummer/Namen). */
+  saveShoppingProductLink: (link: ShoppingProductLink) => Promise<void>;
 
   // --- Übungstausch (docs/PLAN-UEBUNGEN-GLOSSAR-TAUSCH.md, Etappe T2) ---
   /** „Nur heute“-Tausche vor dem Training (Gerätespeicher, nur dieses Konto; geprüft bei jeder Anzeige im Core). */
@@ -1006,6 +1012,27 @@ export function AppStateProvider({ children }: { children: ReactNode }) {
       refreshPending();
     },
     [backend, refreshPending, rows],
+  );
+
+  const saveAppLayout = useCallback(
+    async (layout: StoredAppLayout) => {
+      if (!rows) {
+        throw new BackendError('not_signed_in');
+      }
+      setRows(await backend.saveAppLayout(layout, rows));
+      refreshPending();
+    },
+    [backend, refreshPending, rows],
+  );
+
+  const saveShoppingProductLink = useCallback(
+    async (link: ShoppingProductLink) => {
+      if (!rows) {
+        throw new BackendError('not_signed_in');
+      }
+      setRows(await backend.saveShoppingProductLink(link, rows));
+    },
+    [backend, rows],
   );
 
   const revokeHealthData = useCallback(
@@ -1807,6 +1834,8 @@ export function AppStateProvider({ children }: { children: ReactNode }) {
       deleteCustomMeal,
       saveUserFoodProduct,
       deleteUserFoodProduct,
+      saveShoppingProductLink,
+      saveAppLayout,
       liveAdjust,
       setSimulatePremium,
       revertAdjustment,
@@ -1895,6 +1924,8 @@ export function AppStateProvider({ children }: { children: ReactNode }) {
       deleteCustomMeal,
       saveUserFoodProduct,
       deleteUserFoodProduct,
+      saveShoppingProductLink,
+      saveAppLayout,
       liveAdjust,
       setSimulatePremium,
       revertAdjustment,

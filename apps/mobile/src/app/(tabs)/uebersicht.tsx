@@ -1,4 +1,5 @@
 import {
+  type DashboardTileId,
   latestBodyWeight,
   nextMealOfDay,
   type PlanNotice,
@@ -6,9 +7,11 @@ import {
   weekTrainingProgress,
 } from '@fitnessapp/core';
 import { Redirect, useRouter, type Href } from 'expo-router';
-import { useEffect, useMemo } from 'react';
+import { Fragment, type ReactNode, useEffect, useMemo, useState } from 'react';
 
 import { DashboardTile, ShortcutCell, ShortcutGrid, ShortcutTile } from '@/components/dashboard';
+import { DashboardEditor } from '@/components/dashboard-edit';
+import { WorkoutsTile } from '@/components/workouts';
 import { EnduranceTile } from '@/components/endurance-tile';
 import { Screen } from '@/components/screen';
 import { MeasurementNotificationOffer } from '@/components/notifications';
@@ -27,6 +30,8 @@ import { formatKcal, roleLabel, slotLabel } from '@/lib/nutrition-format';
 import { dayLabel } from '@/lib/plan-format';
 import { useToday } from '@/lib/use-today';
 import { useApp } from '@/state/app-state';
+import { useAppLayout } from '@/state/use-app-layout';
+import { useWorkoutLibrary } from '@/state/use-workouts';
 import { healthConsentStatus, HOME_ROUTE, resolveEntryRoute } from '@/state/flow';
 import { useFoodLogDay } from '@/state/use-food-log';
 import { useNutritionWeek } from '@/state/use-nutrition';
@@ -96,8 +101,65 @@ function Overview({ rows, today }: { rows: UserRows; today: string }) {
     weightGoal,
   });
   const urgent = planNotice.kind === 'stricter' || planNotice.kind === 'ended';
+  const { layout } = useAppLayout();
+  const [editing, setEditing] = useState(false);
   const others = reasons.filter((r) => r !== 'plan_stricter' && r !== 'plan_ended');
 
+  const visibleTiles = layout.tiles.filter((x) => x.visible).map((x) => x.id);
+  const tile = (id: DashboardTileId): ReactNode => {
+    switch (id) {
+      case 'training':
+        return <TrainingTile rows={rows} today={today} planNotice={planNotice} />;
+      case 'workouts':
+        return <OverviewWorkoutsTile today={today} />;
+      case 'nutrition':
+        return <NutritionTile today={today} />;
+      case 'body':
+        return <BodyTile rows={rows} consent={consent} />;
+      case 'progress':
+        return <ProgressTile rows={rows} today={today} />;
+      // Etappe E4 (Ausdauer): letzte Aktivität, km dieser Woche.
+      case 'endurance':
+        return <EnduranceTile rows={rows} today={today} />;
+      case 'shortcuts':
+        return (
+          <ShortcutGrid label={t.dashboard.shortcuts.title}>
+            {app.backend.supportsNutrition ? (
+              <ShortcutCell>
+                <ShortcutTile
+                  label={t.dashboard.shortcuts.recipes}
+                  onPress={() => router.push('/rezepte' as Href)}
+                  testID="overview-recipes"
+                />
+              </ShortcutCell>
+            ) : null}
+            <ShortcutCell>
+              <ShortcutTile
+                label={t.dashboard.shortcuts.exercises}
+                onPress={() => router.push('/uebungen' as Href)}
+                testID="overview-exercises"
+              />
+            </ShortcutCell>
+            {app.backend.supportsNutrition ? (
+              <ShortcutCell>
+                <ShortcutTile
+                  label={t.dashboard.shortcuts.shopping}
+                  onPress={() => router.navigate('/einkaufsliste' as Href)}
+                  testID="overview-shopping"
+                />
+              </ShortcutCell>
+            ) : null}
+            <ShortcutCell>
+              <ShortcutTile
+                label={t.dashboard.shortcuts.calendar}
+                onPress={() => router.push('/kalender' as Href)}
+                testID="overview-calendar"
+              />
+            </ShortcutCell>
+          </ShortcutGrid>
+        );
+    }
+  };
   return (
     <Screen title={t.dashboard.title} testID="overview">
       <Body muted>{greeting(new Date().getHours())}</Body>
@@ -131,46 +193,25 @@ function Overview({ rows, today }: { rows: UserRows; today: string }) {
           />
         </Notice>
       ) : null}
-      <TrainingTile rows={rows} today={today} planNotice={planNotice} />
-      <NutritionTile today={today} />
-      <BodyTile rows={rows} consent={consent} />
-      <ProgressTile rows={rows} today={today} />
-      {/* Etappe E4: Kachel „Ausdauer“ (letzte Aktivität, km dieser Woche). */}
-      <EnduranceTile rows={rows} today={today} />
-      <ShortcutGrid label={t.dashboard.shortcuts.title}>
-        {app.backend.supportsNutrition ? (
-          <ShortcutCell>
-            <ShortcutTile
-              label={t.dashboard.shortcuts.recipes}
-              onPress={() => router.push('/rezepte' as Href)}
-              testID="overview-recipes"
-            />
-          </ShortcutCell>
-        ) : null}
-        <ShortcutCell>
-          <ShortcutTile
-            label={t.dashboard.shortcuts.exercises}
-            onPress={() => router.push('/uebungen' as Href)}
-            testID="overview-exercises"
-          />
-        </ShortcutCell>
-        {app.backend.supportsNutrition ? (
-          <ShortcutCell>
-            <ShortcutTile
-              label={t.dashboard.shortcuts.shopping}
-              onPress={() => router.push('/einkaufsliste' as Href)}
-              testID="overview-shopping"
-            />
-          </ShortcutCell>
-        ) : null}
-        <ShortcutCell>
-          <ShortcutTile
-            label={t.dashboard.shortcuts.calendar}
-            onPress={() => router.push('/kalender' as Href)}
-            testID="overview-calendar"
-          />
-        </ShortcutCell>
-      </ShortcutGrid>
+      {/* Etappe E2: Kacheln in der Reihenfolge der Person, ausgeblendete fehlen (Hinweise oben bleiben immer). */}
+      {editing ? <DashboardEditor onDone={() => setEditing(false)} /> : null}
+      {visibleTiles.length === 0 && !editing ? (
+        <Notice tone="info" title={t.dashboard.edit.allHidden} testID="overview-all-hidden">
+          <Body>{t.dashboard.edit.allHiddenHint}</Body>
+        </Notice>
+      ) : null}
+      {visibleTiles.map((id) => (
+        <Fragment key={id}>{tile(id)}</Fragment>
+      ))}
+      {!editing ? (
+        <Button
+          label={t.dashboard.edit.open}
+          accessibilityHint={t.dashboard.edit.openHint}
+          variant="secondary"
+          onPress={() => setEditing(true)}
+          testID="overview-edit-open"
+        />
+      ) : null}
     </Screen>
   );
 }
@@ -305,6 +346,32 @@ function TrainingTile({
       ) : null}
       {toTraining}
     </DashboardTile>
+  );
+}
+
+/** Kachel „Workouts“ (Workout-Bibliothek, docs/PLAN-WORKOUTS.md): Bestand und heute erledigte Workouts. */
+function OverviewWorkoutsTile({ today }: { today: string }) {
+  const router = useRouter();
+  const app = useApp();
+  const library = useWorkoutLibrary();
+  if (library.kind !== 'ready') {
+    return (
+      <DashboardTile title={t.workouts.tile.title} testID="tile-workouts">
+        {library.kind === 'loading' ? (
+          <LoadingState />
+        ) : (
+          <Button label={t.common.retry} variant="secondary" onPress={library.retry} />
+        )}
+      </DashboardTile>
+    );
+  }
+  return (
+    <WorkoutsTile
+      workouts={library.workouts}
+      logs={app.rows?.sessionLogs ?? []}
+      today={today}
+      onOpen={() => router.navigate('/workouts' as Href)}
+    />
   );
 }
 

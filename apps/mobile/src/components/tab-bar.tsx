@@ -1,16 +1,21 @@
 import { brandColors, fontSize, fontWeight, maxContentWidth, spacing } from '@fitnessapp/ui';
+import type { NavArea } from '@fitnessapp/core';
 import { createContext, useContext } from 'react';
 import { Platform, Pressable, StyleSheet, Text, useColorScheme, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import Svg, { Circle, Path, Rect } from 'react-native-svg';
 
 import { t } from '@/i18n';
+import { useAppLayout } from '@/state/use-app-layout';
 import { useThemeColors } from '@/lib/theme';
 
 /**
- * Untere Menüleiste (docs/PLAN-DASHBOARD.md 3): Übersicht · Training · Ernährung · Fortschritt · Mehr.
- * Eigene Leiste für Expo Router Tabs – Farben aus den Design-Tokens (hell/dunkel), Tippfläche ≥ 56 px, Symbol und
- * Beschriftung, für Bildschirmleser Rolle „Tab“ mit „ausgewählt“.
+ * Untere Menüleiste (docs/PLAN-DASHBOARD.md 3; seit 20.10.2026 docs/PLAN-EINKAUFEN-AUSDAUER.md EA-1 und 4): die
+ * Knöpfe kommen aus der Anordnung der Person (`useAppLayout`, Regeln in packages/core/src/layout.ts) – Standard
+ * Übersicht · Training · Workouts · Ernährung · Einkaufen · Mehr (Workouts nur, wenn der Bereich vorhanden ist).
+ * „Fortschritt“ steht als Kachel und unter „Mehr“. Ist ein Bereich ohne Knopf geöffnet, ist kein Knopf markiert.
+ * Bei 6 Knöpfen etwas kleinere Schrift und Symbol-Fläche, damit es auch auf 320 px breiten Handys passt. Farben aus
+ * den Design-Tokens (hell/dunkel), Tippfläche ≥ 56 px, für Bildschirmleser Rolle „Tab“ mit „ausgewählt“.
  */
 
 /** true = Bildschirm liegt in einem Reiter; die Leiste übernimmt den unteren Rand (Screen ohne Abstand unten). */
@@ -20,17 +25,7 @@ export function useInTabs(): boolean {
   return useContext(InTabsContext);
 }
 
-export type TabName = 'uebersicht' | 'today' | 'workouts' | 'ernaehrung' | 'fortschritt' | 'mehr';
-
-export const TAB_ORDER: readonly TabName[] = [
-  'uebersicht',
-  'today',
-  // Workout-Bibliothek (docs/PLAN-WORKOUTS.md, Gründer-Wunsch „eigenes Menü“ 20.10.2026).
-  'workouts',
-  'ernaehrung',
-  'fortschritt',
-  'mehr',
-];
+export type TabName = NavArea;
 
 export function tabLabel(name: TabName): string {
   switch (name) {
@@ -42,6 +37,8 @@ export function tabLabel(name: TabName): string {
       return t.workouts.tab;
     case 'ernaehrung':
       return t.tabs.nutrition;
+    case 'einkaufsliste':
+      return t.tabs.shopping;
     case 'fortschritt':
       return t.tabs.progress;
     case 'mehr':
@@ -64,9 +61,11 @@ export function TabBar({ state, navigation }: TabBarProps) {
   const theme = useThemeColors();
   const dark = useColorScheme() === 'dark';
   const insets = useSafeAreaInsets();
-  const routes = state.routes.filter((route): route is { key: string; name: TabName } =>
-    (TAB_ORDER as readonly string[]).includes(route.name),
-  );
+  const { layout } = useAppLayout();
+  const routes = layout.tabs
+    .map((name) => state.routes.find((route) => route.name === name))
+    .filter((route): route is { key: string; name: TabName } => route !== undefined);
+  const compact = routes.length >= 6;
   const focusedName = state.routes[state.index]?.name;
   return (
     <View
@@ -109,6 +108,7 @@ export function TabBar({ state, navigation }: TabBarProps) {
               <View
                 style={[
                   styles.pill,
+                  compact && styles.pillCompact,
                   focused && {
                     backgroundColor: dark ? brandColors.graphitHell : brandColors.eisblau,
                   },
@@ -120,6 +120,7 @@ export function TabBar({ state, navigation }: TabBarProps) {
                 numberOfLines={1}
                 style={[
                   styles.label,
+                  compact && styles.labelCompact,
                   { color: focused ? theme.text : theme.textMuted },
                   focused && styles.labelFocused,
                 ]}
@@ -173,6 +174,15 @@ function TabIcon({ name, color }: { name: TabName; color: string }) {
           <Path d="M7 3v8M4.5 3v5a2.5 2.5 0 0 0 5 0V3M7 11v10" {...stroke} />
           <Path d="M17 21V3c-2.2 1.2-3.5 3.8-3.5 7v3H17" {...stroke} />
         </>
+      ) : name === 'einkaufsliste' ? (
+        <>
+          <Path
+            d="M3 4h2.5l2.2 10.5a1.5 1.5 0 0 0 1.5 1.2h8.4a1.5 1.5 0 0 0 1.5-1.2L20.5 8H6.4"
+            {...stroke}
+          />
+          <Circle cx={9.5} cy={19.5} r={1.4} fill={color} />
+          <Circle cx={17} cy={19.5} r={1.4} fill={color} />
+        </>
       ) : name === 'fortschritt' ? (
         <>
           <Path d="M4 20h16" {...stroke} />
@@ -218,6 +228,12 @@ const styles = StyleSheet.create({
   label: {
     fontSize: fontSize.sm - 2,
     fontWeight: fontWeight.semibold,
+  },
+  pillCompact: {
+    width: 44,
+  },
+  labelCompact: {
+    fontSize: fontSize.sm - 3,
   },
   labelFocused: {
     fontWeight: fontWeight.bold,

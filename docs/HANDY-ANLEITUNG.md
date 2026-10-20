@@ -1016,8 +1016,8 @@ einfügen. Plan dazu: `docs/PLAN-DASHBOARD.md`.
 1. Startbildschirm (dunkel, Alpha5): großer Knopf **„Neu hier – Los geht's“**. Statt „Anmelden“ steht ein kurzer
    Hinweis, dass Anmelden erst mit der Datenbank geht. Unten ist **keine** Menüleiste.
 2. „Neu hier – Los geht's“ → Geburtsdatum → **„Testmodus starten“** → Onboarding wie bisher → **„Zum Plan“**.
-   Es öffnet sich **„Heute“**, unten die Menüleiste **Übersicht · Training · Ernährung · Fortschritt · Mehr**;
-   „Training“ ist markiert.
+   Es öffnet sich **„Heute“**, unten die Menüleiste **Übersicht · Training · Workouts · Ernährung · Einkaufen · Mehr** (seit
+   20.10.2026; „Fortschritt“ steht als Kachel auf der Übersicht und unter „Mehr“); „Training“ ist markiert.
 3. **„Übersicht“** antippen: Kacheln **Training heute** (an einem Trainingstag mit **„Training starten“**, sonst
    „Ruhetag“ und die nächste Einheit), **Ernährung heute**, **Körperdaten** (mit Einwilligung euer zuletzt
    eingetragenes Gewicht – **nie** ein Wunschgewicht oder ein Balken zum Ziel), **Fortschritt** („Diese Woche: x von
@@ -1052,6 +1052,68 @@ einfügen. Plan dazu: `docs/PLAN-DASHBOARD.md`.
 5. **Mehr → Mein Konto** zeigt eure E-Mail-Adresse. **Abmelden** → Rückfrage → zurück zum Startbildschirm; die Daten
    sind vom Gerät gelöscht (neu anmelden mit Code holt sie wieder).
 6. **E-Mail-Adresse ändern** gibt es noch nicht (vorgemerkt, `docs/PLAN-DASHBOARD.md` Abschnitt 5).
+
+## Teil 7o – Einkaufen testen (Etappe E1, Testmodus, 20.10.2026)
+
+Ihr müsst nichts einstellen. Getestet mit **Chrome am Android-Handy** (Kamera geht dort direkt) oder **Chrome am
+iPhone** (Vorschau-Link aus dem Pull Request, am besten im Inkognito-Tab). Plan: `docs/PLAN-EINKAUFEN-AUSDAUER.md`
+Abschnitt 3.
+
+1. Vorschau-Link → **„Neu hier – Los geht's“** → **„Testmodus starten“** → Onboarding mit Ernährung → **„Zum Plan“**.
+2. Unten in der Menüleiste: **Übersicht · Training · Workouts · Ernährung · Einkaufen · Mehr**. **„Einkaufen“** antippen → eure
+   Einkaufsliste der Woche (aus dem Essensplan), Überschrift **„Einkaufen“**, ohne „Zurück“-Knopf.
+3. **Abhaken:** Einen Eintrag antippen → Haken. Seite neu laden (Chrome: **⋯ → Neu laden**) → der Haken ist noch da.
+4. **Alle Haken zurücksetzen** → Rückfrage → **„Zurücksetzen“** → alle Einträge sind wieder offen.
+5. **Eigener Artikel:** Unten bei „Eigener Eintrag“ z. B. **Kaffee** und bei **„Menge (optional)“** **500 g** →
+   „Hinzufügen“ → „500 g Kaffee“ steht auf der Liste. „viel“ als Menge → verständlicher Hinweis mit Beispielen.
+   Mit **✕** löscht ihr eigene Artikel wieder.
+6. **Im Laden scannen** (Kasten oben):
+   - **„Strichcode scannen“** → Kamera erlauben → Strichcode einer Packung in den Rahmen halten. Im Testmodus kennt
+     die App nur Testnummern – nehmt **„Nummer eintippen“** und tippt eine der **Testnummern** an (oder zeigt die
+     Testnummer am zweiten Handy unter Ernährung → Eintragen → „Produkt (Barcode)“ → „Strichcodes der Testnummern
+     anzeigen“).
+   - **„Gefunden, Werte plausibel“** (Testprodukt Müsli) → **„Nicht auf deiner Liste – zusätzlich hinzufügen?“**:
+     Name ist vorbefüllt, Abteilung wählbar → **„Ja, hinzufügen“** → steht abgehakt auf der Liste.
+   - Eigenen Artikel **„Müsli“** anlegen und dieselbe Testnummer erneut → **„✓ Müsli abgehakt“** mit
+     **„Rückgängig“** (macht den Eintrag wieder offen).
+   - Zusätzlich **„Bio-Müsli“** anlegen und erneut scannen → **„Welcher Eintrag ist es?“** → den richtigen antippen.
+     Bei Einträgen aus dem Essensplan merkt sich die App eure Wahl (nur mit Einwilligung Gesundheitsdaten, nur in
+     eurem Konto) – beim nächsten Scan desselben Produkts klappt es dann ohne Auswahl, auch ohne Netz.
+   - **„Nicht gefunden“** → **„Produkt nicht erkannt“** → Eintrag aus der Liste antippen oder **„Als eigenen Artikel
+     hinzufügen“**.
+7. **Ohne Essensplan:** Wer die Ernährung noch nicht eingerichtet hat, sieht im Einkaufen den Hinweis „keinen
+   Essensplan“ – eigene Artikel, Abhaken und Scannen gehen trotzdem.
+8. **„Fortschritt“** findet ihr jetzt unter **Mehr → Fortschritt** und über die Kachel auf der Übersicht.
+
+**Mit Datenbank (nach dem Merge, Teil 8):** Die Migration `20261020120000_shopping_product_links.sql` spielt
+`db-migrate` beim Merge automatisch ein. Häkchen von Listen mit Gesundheitsbezug gehen jetzt auch **ohne Netz**
+(verschlüsselte Warteschlange auf dem Gerät) und werden bei Verbindung gesendet. Gelernte Zuordnungen stehen im
+Datenexport (Mehr → Mein Konto → Meine Daten) unter `shopping_product_links` und werden beim Widerruf der
+Einwilligung in Gesundheitsdaten gelöscht.
+
+## Teil 7p – Übersicht und Menüleiste anpassen (Etappe E2, Testmodus, 20.10.2026)
+
+Ihr müsst nichts einstellen. Vorschau-Link aus dem Pull Request im Handy-Browser öffnen, Testmodus starten,
+Onboarding bis **„Zum Plan“**, dann unten **„Übersicht“**.
+
+1. Ganz unten auf der Übersicht **„Bearbeiten“** antippen.
+2. Bei **„Körperdaten anzeigen“** den Haken entfernen → die Kachel verschwindet sofort.
+3. Bei **„Ernährung heute“** **„Nach oben“** antippen → die Kachel steht jetzt ganz oben. (Mit eingeschaltetem
+   TalkBack/VoiceOver sagt das Handy „Ernährung heute ist jetzt an Stelle 1 von 5.“)
+4. **„Fertig“** → Seite neu laden (Chrome: **⋯ → Neu laden**) → die Reihenfolge bleibt.
+5. Alle Haken entfernen → Hinweis „Alle Kacheln sind ausgeblendet“; Hinweise oben (z. B. „Im Training wartet etwas“)
+   bleiben trotzdem sichtbar. **„Bearbeiten“ → „Auf Standard zurücksetzen“** holt alles zurück.
+6. **Mehr → „Menüleiste anpassen“** (oder in „Bearbeiten“): Es sind schon 6 Knöpfe – **„Fortschritt in der
+   Menüleiste“** geht erst, wenn ihr z. B. **„Workouts“** herausnehmt (die App sagt „Höchstens 6 Knöpfe …“). Mit **„Nach links“/„Nach rechts“** ändert ihr die Reihenfolge. „Übersicht“ (links) und
+   „Mehr“ (rechts) bleiben immer. Bei 6 Knöpfen ist kein weiterer möglich, unter 3 auch nicht – die App sagt warum.
+7. Einen Bereich herausnehmen (z. B. „Ernährung“) → er steht unter **Mehr → „Weitere Bereiche“** und funktioniert
+   wie vorher.
+8. **„Auf Standard zurücksetzen“** → Übersicht · Training · Workouts · Ernährung · Einkaufen · Mehr. Auch die Kachel
+   **„Workouts“** auf der Übersicht lässt sich unter „Bearbeiten“ aus- und umstellen.
+
+**Mit Datenbank:** Die Migration `20261020130000_app_layout_settings.sql` spielt `db-migrate` beim Merge ein. Die
+Anordnung gilt dann für euer Konto auf allen Geräten, steht im Datenexport (`app_layout_settings`) und bleibt beim
+Widerruf der Gesundheits-Einwilligung (kein Gesundheitsdatum).
 
 ## Teil 7n – Live-Anpassung des Plans testen (Phase 4b, Etappe D, Testmodus, 18.10.2026)
 Die Live-Anpassung ist in der **Testphase kostenlos** (Teil 7t). Im Testmodus ist **„Live-Anpassung einschalten

@@ -1867,6 +1867,39 @@ export const SHOPPING_LIST_ROUNDING = {
 } as const;
 
 /**
+ * Übersicht und Menüleiste anpassen (docs/PLAN-EINKAUFEN-AUSDAUER.md 4, `layout.ts`): „Übersicht“ links und „Mehr“
+ * rechts zählen mit; 3 bis 6 Knöpfe (Gründer-Wunsch 20.10.2026: 6 statt 5, damit „Workouts“ in den Standard passt –
+ * mehr Knöpfe würden auf schmalen Handys (320 px) unlesbar). `storedTilesMax` = Speicherschutz (sync: Migration
+ * app_layout_settings). Bedienregeln, keine Grenze zur Gesundheit. PRODUKTENTSCHEIDUNG.
+ */
+export const APP_LAYOUT = { tabsMin: 3, tabsMax: 6, storedTilesMax: 20 } as const;
+
+/**
+ * Menge eigener Einträge der Einkaufsliste (Reiter „Einkaufen“, Gründer-Entscheidung 20.10.2026): höchstens so viel
+ * (g, ml bzw. Stück – wie die Spalte `shopping_list_items.amount`) und so viele Zeichen Freitext. Keine Grenze zur
+ * Gesundheit, nur Eingabeschutz. PRODUKTENTSCHEIDUNG.
+ */
+export const SHOPPING_MANUAL_QUANTITY = { maxAmount: 1_000_000, inputMaxChars: 30 } as const;
+
+/**
+ * Strichcode im Laden mit der Einkaufsliste abgleichen (`matchScannedProduct`, docs/PLAN-EINKAUFEN-AUSDAUER.md 3):
+ * - `compoundMinChars`: Ein Wort der Liste passt auch als Teil eines zusammengesetzten Worts des Produktnamens
+ *   („Milch“ ↔ „Vollmilch“), aber erst ab dieser Länge – kurze Wörter („Ei“, „Öl“) nur als ganzes Wort.
+ * - `stemMinChars`: Endungen -en/-n/-e/-s werden nur gekappt, wenn danach so viele Zeichen bleiben („Tomaten“ ↔
+ *   „Tomate“, aber „Eis“ bleibt „eis“).
+ * - `candidatesMax`: höchstens so viele Einträge in der Auswahl „Welcher Eintrag ist es?“.
+ * - `linksMax`: höchstens so viele gelernte Zuordnungen Strichcode → Lebensmittel je Person
+ *   (`shopping_product_links`, sync: Migration).
+ * Nur Bedienhilfe bzw. Speicherschutz, keine Grenze zur Gesundheit. PRODUKTENTSCHEIDUNG.
+ */
+export const SHOPPING_SCAN = {
+  compoundMinChars: 4,
+  stemMinChars: 3,
+  candidatesMax: 5,
+  linksMax: 500,
+} as const;
+
+/**
  * „Zur Einkaufsliste“ aus einer Rezeptansicht (Plan 19.6, Etappe N5b): höchstens so viele zusätzliche Rezepte je
  * Wochenliste (Portionen 1–12 wie `RECIPE_SERVINGS_PICKER`); höchstens so viele Einträge insgesamt im
  * Gerätespeicher. Keine Grenze zur Gesundheit, nur Speicher- und Bedienschutz. PRODUKTENTSCHEIDUNG.

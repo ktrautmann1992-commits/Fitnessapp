@@ -260,7 +260,7 @@ for (const scheme of ['light', 'dark'] as const) {
     await shot('uebersicht');
     await page.getByTestId('overview-progress').scrollIntoViewIfNeeded();
     await shot('uebersicht-unten');
-    await page.getByTestId('tab-fortschritt').click();
+    await page.getByTestId('overview-progress-open').click();
     await heading('Fortschritt');
     await shot('fortschritt');
     await page.getByTestId('tab-mehr').click();
