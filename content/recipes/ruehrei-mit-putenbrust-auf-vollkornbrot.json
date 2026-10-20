@@ -1,0 +1,131 @@
+{
+  "id": "ruehrei-mit-putenbrust-auf-vollkornbrot",
+  "version": 1,
+  "status": "draft",
+  "title_de": "Rührei mit Putenbrust auf Vollkornbrot",
+  "description_de": "Cremiges Rührei mit Putenbrust und Lauchzwiebeln auf kräftigem Vollkornbrot – der deutsche Frühstücksklassiker mit Putenbrust.",
+  "section_de": "Frühstück",
+  "categories": ["schnell", "post-workout"],
+  "meal_types": ["breakfast"],
+  "training_tags": ["nach_training"],
+  "servings": 1,
+  "ingredients": [
+    {
+      "food_id": "huehnerei",
+      "amount": 120,
+      "unit": "g",
+      "optional": false,
+      "display_de": "2 Eier (Größe M)",
+      "scales": true,
+      "heated": false,
+      "role": "protein"
+    },
+    {
+      "food_id": "putenbrust-aufschnitt",
+      "amount": 50,
+      "unit": "g",
+      "optional": false,
+      "display_de": "3 Scheiben (50 g)",
+      "scales": true,
+      "heated": false,
+      "role": "protein"
+    },
+    {
+      "food_id": "vollkornbrot",
+      "amount": 80,
+      "unit": "g",
+      "optional": false,
+      "display_de": "2 Scheiben (80 g)",
+      "scales": true,
+      "role": "carb"
+    },
+    {
+      "food_id": "lauchzwiebeln",
+      "amount": 15,
+      "unit": "g",
+      "optional": false,
+      "display_de": "1 Lauchzwiebel (15 g)",
+      "scales": true,
+      "role": "vegetable"
+    },
+    {
+      "food_id": "cherrytomaten",
+      "amount": 80,
+      "unit": "g",
+      "optional": false,
+      "display_de": "6 Cherrytomaten (80 g)",
+      "scales": true,
+      "role": "vegetable"
+    },
+    {
+      "food_id": "rapsoel",
+      "amount": 5,
+      "unit": "g",
+      "optional": false,
+      "display_de": "1 TL (5 g)",
+      "scales": true,
+      "role": "fat"
+    },
+    {
+      "food_id": "salz",
+      "amount": 1,
+      "unit": "pinch",
+      "optional": false,
+      "display_de": "1 Prise",
+      "scales": true,
+      "role": "seasoning"
+    },
+    {
+      "food_id": "pfeffer",
+      "amount": 1,
+      "unit": "pinch",
+      "optional": false,
+      "display_de": "1 Prise",
+      "scales": true,
+      "role": "seasoning"
+    }
+  ],
+  "steps_de": [
+    "Schneide die Lauchzwiebel in feine Ringe und die Putenbrust in Streifen.",
+    "Verquirle die Eier mit Salz und Pfeffer in einer Schüssel.",
+    "Erhitze das Rapsöl in einer beschichteten Pfanne bei mittlerer Hitze und brate die Putenstreifen 1 Minute an.",
+    "Gib die Eier dazu und schiebe sie mit einem Pfannenwender 2–3 Minuten langsam zusammen, bis sie gerade gestockt sind.",
+    "Streue die Lauchzwiebeln darüber und richte das Rührei auf dem Vollkornbrot an; die Cherrytomaten dazu servieren."
+  ],
+  "tip_de": "Statt Putenbrust passt auch Putenschinken – achte beim Kauf darauf, dass er zu 100 % aus Pute besteht.",
+  "tags_de": ["Unter 10 Minuten"],
+  "total_minutes": 10,
+  "prep_minutes": 10,
+  "cook_minutes": 0,
+  "no_cook": false,
+  "meal_prep": {
+    "suitable": false,
+    "fridge_days": 0,
+    "freezable": false
+  },
+  "equipment_de": [],
+  "declared_per_serving": {
+    "kcal": 461,
+    "protein_g": 32.7,
+    "carbs_g": 37.3,
+    "fat_g": 18.4
+  },
+  "declared_diet": "omnivore",
+  "declared_allergens": ["gluten", "eggs", "poultry", "histamine", "onion_garlic"],
+  "contains_pork": false,
+  "declared_pregnancy_caution": true,
+  "meta": {
+    "origin": "manual",
+    "model": null,
+    "batch_id": null,
+    "created_on": "2026-10-11",
+    "expert_reviewed": false,
+    "reviewed_by": null,
+    "reviewed_at": null,
+    "review_note": null,
+    "source_file": "alpha5-rezepte.json@1.0",
+    "import_assumptions": [],
+    "import_assumptions_confirmed_by": null,
+    "import_hash": "4dae6e38c1c9e6581b510657456b5b08f6eb6857935abcd7ad0c605e69507648"
+  }
+}

@@ -1,0 +1,129 @@
+{
+  "id": "thunfisch-reiswaffeln-mit-zitronen-skyr",
+  "version": 1,
+  "status": "draft",
+  "title_de": "Thunfisch-Reiswaffeln mit Zitronen-Skyr",
+  "description_de": "Knusprige Reiswaffeln mit Thunfisch-Skyr-Creme – herzhaft statt süß, mit viel magerem Eiweiß und leicht verdaulichen Kohlenhydraten für direkt nach dem Workout.",
+  "section_de": "Direkt danach",
+  "categories": ["schnell", "post-workout"],
+  "meal_types": ["snack"],
+  "training_tags": ["nach_training"],
+  "servings": 1,
+  "ingredients": [
+    {
+      "food_id": "reiswaffeln",
+      "amount": 32,
+      "unit": "g",
+      "optional": false,
+      "display_de": "4 Reiswaffeln (32 g)",
+      "scales": true,
+      "role": "carb"
+    },
+    {
+      "food_id": "thunfisch-dose-im-eigenen-saft-abgetropft",
+      "amount": 100,
+      "unit": "g",
+      "optional": false,
+      "display_de": "1 kleine Dose, abgetropft (100 g)",
+      "scales": true,
+      "heated": false,
+      "role": "protein"
+    },
+    {
+      "food_id": "skyr-natur",
+      "amount": 50,
+      "unit": "g",
+      "optional": false,
+      "display_de": "2 EL (50 g)",
+      "scales": true,
+      "role": "protein"
+    },
+    {
+      "food_id": "zitronensaft",
+      "amount": 5,
+      "unit": "g",
+      "optional": false,
+      "display_de": "1 TL (5 g)",
+      "scales": true,
+      "role": "vegetable"
+    },
+    {
+      "food_id": "gurke",
+      "amount": 60,
+      "unit": "g",
+      "optional": false,
+      "display_de": "6 Scheiben (60 g)",
+      "scales": true,
+      "role": "vegetable"
+    },
+    {
+      "food_id": "schnittlauch-frisch",
+      "amount": 3,
+      "unit": "g",
+      "optional": false,
+      "display_de": "1 EL Röllchen (3 g)",
+      "scales": true,
+      "role": "vegetable"
+    },
+    {
+      "food_id": "salz",
+      "amount": 1,
+      "unit": "pinch",
+      "optional": false,
+      "display_de": "1 Prise",
+      "scales": true,
+      "role": "seasoning"
+    },
+    {
+      "food_id": "pfeffer",
+      "amount": 1,
+      "unit": "pinch",
+      "optional": false,
+      "display_de": "1 Prise",
+      "scales": true,
+      "role": "seasoning"
+    }
+  ],
+  "steps_de": [
+    "Lass den Thunfisch gut abtropfen und zerpflücke ihn mit einer Gabel.",
+    "Verrühre Thunfisch, Skyr und Zitronensaft und schmecke mit Salz und Pfeffer ab.",
+    "Schneide die Gurke in dünne Scheiben.",
+    "Belege die Reiswaffeln mit Gurke, verteile die Thunfischcreme darauf und streue Schnittlauch darüber."
+  ],
+  "tip_de": "Zum Mitnehmen die Thunfischcreme in einer kleinen Dose kühl transportieren und erst kurz vor dem Essen auf die Reiswaffeln streichen, sonst werden sie weich.",
+  "tags_de": ["Unter 10 Minuten"],
+  "total_minutes": 5,
+  "prep_minutes": 5,
+  "cook_minutes": 0,
+  "no_cook": true,
+  "meal_prep": {
+    "suitable": false,
+    "fridge_days": 0,
+    "freezable": false
+  },
+  "equipment_de": [],
+  "declared_per_serving": {
+    "kcal": 275,
+    "protein_g": 33.5,
+    "carbs_g": 29.2,
+    "fat_g": 2.2
+  },
+  "declared_diet": "omnivore",
+  "declared_allergens": ["dairy", "lactose", "fish", "histamine", "onion_garlic"],
+  "contains_pork": false,
+  "declared_pregnancy_caution": true,
+  "meta": {
+    "origin": "manual",
+    "model": null,
+    "batch_id": null,
+    "created_on": "2026-10-11",
+    "expert_reviewed": false,
+    "reviewed_by": null,
+    "reviewed_at": null,
+    "review_note": null,
+    "source_file": "alpha5-rezepte.json@1.0",
+    "import_assumptions": [],
+    "import_assumptions_confirmed_by": null,
+    "import_hash": "fc41e2ab5b61838640e9546d58738d9c7714e898077023eb40458edf1bcf3fc1"
+  }
+}

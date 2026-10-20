@@ -1,0 +1,147 @@
+{
+  "id": "kaesespaetzle-light-mit-roestzwiebeln",
+  "version": 1,
+  "status": "draft",
+  "title_de": "Käsespätzle mit Hüttenkäse und Röstzwiebeln",
+  "description_de": "Der Allgäuer Klassiker mal anders: Spätzle mit einer cremigen Sauce aus Hüttenkäse und würzigem Gouda.",
+  "section_de": "Mittagessen",
+  "categories": [],
+  "meal_types": ["main"],
+  "training_tags": [],
+  "servings": 1,
+  "ingredients": [
+    {
+      "food_id": "eierspaetzle-getrocknet",
+      "amount": 90,
+      "unit": "g",
+      "optional": false,
+      "display_de": "90 g",
+      "scales": true,
+      "heated": false,
+      "role": "carb"
+    },
+    {
+      "food_id": "zwiebel",
+      "amount": 80,
+      "unit": "g",
+      "optional": false,
+      "display_de": "1 Zwiebel (80 g)",
+      "scales": true,
+      "role": "vegetable"
+    },
+    {
+      "food_id": "rapsoel",
+      "amount": 5,
+      "unit": "g",
+      "optional": false,
+      "display_de": "1 TL (5 g)",
+      "scales": true,
+      "role": "fat"
+    },
+    {
+      "food_id": "huettenkaese",
+      "amount": 100,
+      "unit": "g",
+      "optional": false,
+      "display_de": "100 g",
+      "scales": true,
+      "role": "protein"
+    },
+    {
+      "food_id": "gouda",
+      "amount": 35,
+      "unit": "g",
+      "optional": false,
+      "display_de": "35 g, gerieben",
+      "scales": true,
+      "role": "fat"
+    },
+    {
+      "food_id": "milch-1-5",
+      "amount": 50,
+      "unit": "g",
+      "optional": false,
+      "display_de": "50 ml",
+      "scales": true,
+      "role": "carb"
+    },
+    {
+      "food_id": "romanasalat",
+      "amount": 60,
+      "unit": "g",
+      "optional": false,
+      "display_de": "1 Handvoll (60 g)",
+      "scales": true,
+      "role": "vegetable"
+    },
+    {
+      "food_id": "schnittlauch-frisch",
+      "amount": 5,
+      "unit": "g",
+      "optional": false,
+      "display_de": "1 EL, in Röllchen (5 g)",
+      "scales": true,
+      "role": "vegetable"
+    },
+    {
+      "food_id": "salz",
+      "amount": 1,
+      "unit": "pinch",
+      "optional": false,
+      "display_de": "nach Geschmack",
+      "scales": false,
+      "role": "seasoning"
+    },
+    {
+      "food_id": "pfeffer",
+      "amount": 1,
+      "unit": "pinch",
+      "optional": false,
+      "display_de": "nach Geschmack",
+      "scales": false,
+      "role": "seasoning"
+    }
+  ],
+  "steps_de": [
+    "Koch die Spätzle in reichlich Salzwasser nach Packungsangabe (meist 10–12 Minuten) und gieß sie ab.",
+    "Schneide die Zwiebel in feine Ringe und brate sie im Rapsöl bei mittlerer Hitze 8–10 Minuten goldbraun und knusprig.",
+    "Erwärme Milch und Hüttenkäse im Spätzletopf bei kleiner Hitze, rühr den Gouda ein und lass ihn schmelzen.",
+    "Schwenke die Spätzle in der Käsesauce und würze mit Pfeffer.",
+    "Richte die Käsespätzle mit den Röstzwiebeln und Schnittlauch an und serviere den Romanasalat dazu."
+  ],
+  "tip_de": "Wer mag, gibt eine Prise Muskat in die Käsesauce – das ist typisch schwäbisch.",
+  "total_minutes": 25,
+  "prep_minutes": 15,
+  "cook_minutes": 10,
+  "no_cook": false,
+  "meal_prep": {
+    "suitable": false,
+    "fridge_days": 0,
+    "freezable": false
+  },
+  "equipment_de": [],
+  "declared_per_serving": {
+    "kcal": 650,
+    "protein_g": 36.3,
+    "carbs_g": 73.1,
+    "fat_g": 23
+  },
+  "declared_diet": "vegetarian",
+  "declared_allergens": ["gluten", "dairy", "lactose", "eggs", "histamine", "onion_garlic"],
+  "contains_pork": false,
+  "declared_pregnancy_caution": true,
+  "meta": {
+    "origin": "manual",
+    "model": null,
+    "batch_id": null,
+    "created_on": "2026-10-11",
+    "expert_reviewed": false,
+    "reviewed_by": null,
+    "reviewed_at": null,
+    "review_note": null,
+    "source_file": "alpha5-rezepte.json@1.0",
+    "import_assumptions": [],
+    "import_assumptions_confirmed_by": null,
+    "import_hash": "ef661af6b57276b643fd0312ecec6a3a51c67089bbf297ebce582b3f7b744198"
+  }
+}

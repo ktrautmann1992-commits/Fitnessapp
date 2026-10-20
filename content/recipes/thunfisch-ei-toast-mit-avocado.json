@@ -1,0 +1,138 @@
+{
+  "id": "thunfisch-ei-toast-mit-avocado",
+  "version": 1,
+  "status": "draft",
+  "title_de": "Thunfisch-Ei-Toast mit Avocado",
+  "description_de": "Knuspriger Vollkorntoast mit cremigem Thunfisch-Skyr-Salat, Avocado und gekochtem Ei.",
+  "section_de": "Frühstück",
+  "categories": [],
+  "meal_types": ["breakfast"],
+  "training_tags": [],
+  "servings": 1,
+  "ingredients": [
+    {
+      "food_id": "vollkorntoast",
+      "amount": 60,
+      "unit": "g",
+      "optional": false,
+      "display_de": "2 Scheiben (60 g)",
+      "scales": true,
+      "role": "carb"
+    },
+    {
+      "food_id": "thunfisch-im-eigenen-saft-abgetropft",
+      "amount": 80,
+      "unit": "g",
+      "optional": false,
+      "display_de": "½ Dose (80 g abgetropft)",
+      "scales": true,
+      "heated": false,
+      "role": "protein"
+    },
+    {
+      "food_id": "skyr-natur",
+      "amount": 30,
+      "unit": "g",
+      "optional": false,
+      "display_de": "2 EL (30 g)",
+      "scales": true,
+      "role": "protein"
+    },
+    {
+      "food_id": "huehnerei",
+      "amount": 60,
+      "unit": "g",
+      "optional": false,
+      "display_de": "1 Ei (Größe M), hart gekocht",
+      "scales": true,
+      "heated": false,
+      "role": "protein"
+    },
+    {
+      "food_id": "avocado",
+      "amount": 50,
+      "unit": "g",
+      "optional": false,
+      "display_de": "¼ Avocado (50 g)",
+      "scales": true,
+      "role": "vegetable"
+    },
+    {
+      "food_id": "rote-zwiebel",
+      "amount": 15,
+      "unit": "g",
+      "optional": false,
+      "display_de": "1 EL, fein gewürfelt (15 g)",
+      "scales": true,
+      "role": "vegetable"
+    },
+    {
+      "food_id": "zitronensaft",
+      "amount": 5,
+      "unit": "g",
+      "optional": false,
+      "display_de": "1 TL (5 g)",
+      "scales": true,
+      "role": "vegetable"
+    },
+    {
+      "food_id": "salz",
+      "amount": 1,
+      "unit": "pinch",
+      "optional": false,
+      "display_de": "1 Prise",
+      "scales": true,
+      "role": "seasoning"
+    },
+    {
+      "food_id": "pfeffer",
+      "amount": 1,
+      "unit": "pinch",
+      "optional": false,
+      "display_de": "1 Prise",
+      "scales": true,
+      "role": "seasoning"
+    }
+  ],
+  "steps_de": [
+    "Toaste das Brot goldbraun. Ein vorgekochtes Ei schälen und in Scheiben schneiden (frisch: 9 Minuten kochen).",
+    "Verrühre Thunfisch, Skyr, rote Zwiebel, Salz und Pfeffer zu einem cremigen Salat.",
+    "Zerdrücke die Avocado mit dem Zitronensaft und einer Prise Salz.",
+    "Bestreiche die Toasts mit Avocado, verteile den Thunfischsalat darauf und belege sie mit den Eischeiben."
+  ],
+  "tip_de": "Koch am Wochenende mehrere Eier vor – sie halten sich im Kühlschrank bis zu 5 Tage.",
+  "total_minutes": 12,
+  "prep_minutes": 12,
+  "cook_minutes": 0,
+  "no_cook": true,
+  "meal_prep": {
+    "suitable": false,
+    "fridge_days": 0,
+    "freezable": false
+  },
+  "equipment_de": [],
+  "declared_per_serving": {
+    "kcal": 426,
+    "protein_g": 37.9,
+    "carbs_g": 28.9,
+    "fat_g": 16.1
+  },
+  "declared_diet": "omnivore",
+  "declared_allergens": ["gluten", "dairy", "lactose", "eggs", "fish", "histamine", "onion_garlic"],
+  "contains_pork": false,
+  "declared_pregnancy_caution": true,
+  "meta": {
+    "origin": "manual",
+    "model": null,
+    "batch_id": null,
+    "created_on": "2026-10-11",
+    "expert_reviewed": false,
+    "reviewed_by": null,
+    "reviewed_at": null,
+    "review_note": null,
+    "source_file": "alpha5-rezepte.json@1.0",
+    "import_assumptions": [],
+    "import_assumptions_confirmed_by": null,
+    "import_hash": "1c0d4a7a06a2080f61dcf2291f3b05dc1d9b228acb65c31d6433c92dc23cd6ad"
+  }
+}

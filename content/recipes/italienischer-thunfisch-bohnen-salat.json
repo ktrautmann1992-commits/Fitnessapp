@@ -1,0 +1,147 @@
+{
+  "id": "italienischer-thunfisch-bohnen-salat",
+  "version": 1,
+  "status": "draft",
+  "title_de": "Italienischer Thunfisch-Bohnen-Salat",
+  "description_de": "Klassischer „Tonno e fagioli“ mit weißen Bohnen, Rucola, Tomaten und Zitronen-Olivenöl, dazu eine Scheibe Vollkornbrot.",
+  "section_de": "Abendessen",
+  "categories": ["schnell"],
+  "meal_types": ["main"],
+  "training_tags": [],
+  "servings": 1,
+  "ingredients": [
+    {
+      "food_id": "thunfisch-dose-im-eigenen-saft-abgetropft",
+      "amount": 120,
+      "unit": "g",
+      "optional": false,
+      "display_de": "1 Dose (150 g), abgetropft ca. 120 g",
+      "scales": true,
+      "heated": false,
+      "role": "protein"
+    },
+    {
+      "food_id": "weisse-bohnen-dose-abgetropft",
+      "amount": 150,
+      "unit": "g",
+      "optional": false,
+      "display_de": "½ Dose, abgetropft (150 g)",
+      "scales": true,
+      "role": "protein"
+    },
+    {
+      "food_id": "rucola",
+      "amount": 30,
+      "unit": "g",
+      "optional": false,
+      "display_de": "1 Handvoll (30 g)",
+      "scales": true,
+      "role": "vegetable"
+    },
+    {
+      "food_id": "cherrytomaten",
+      "amount": 100,
+      "unit": "g",
+      "optional": false,
+      "display_de": "ca. 7 Stück (100 g)",
+      "scales": true,
+      "role": "vegetable"
+    },
+    {
+      "food_id": "rote-zwiebel",
+      "amount": 20,
+      "unit": "g",
+      "optional": false,
+      "display_de": "¼ kleine Zwiebel (20 g)",
+      "scales": true,
+      "role": "vegetable"
+    },
+    {
+      "food_id": "olivenoel",
+      "amount": 10,
+      "unit": "g",
+      "optional": false,
+      "display_de": "1 EL (10 g)",
+      "scales": true,
+      "role": "fat"
+    },
+    {
+      "food_id": "zitronensaft",
+      "amount": 10,
+      "unit": "g",
+      "optional": false,
+      "display_de": "2 TL (10 g)",
+      "scales": true,
+      "role": "vegetable"
+    },
+    {
+      "food_id": "vollkornbrot",
+      "amount": 50,
+      "unit": "g",
+      "optional": false,
+      "display_de": "1 Scheibe (50 g)",
+      "scales": true,
+      "role": "carb"
+    },
+    {
+      "food_id": "salz",
+      "amount": 1,
+      "unit": "pinch",
+      "optional": false,
+      "display_de": "1 Prise",
+      "scales": true,
+      "role": "seasoning"
+    },
+    {
+      "food_id": "pfeffer",
+      "amount": 1,
+      "unit": "pinch",
+      "optional": false,
+      "display_de": "1 Prise",
+      "scales": true,
+      "role": "seasoning"
+    }
+  ],
+  "steps_de": [
+    "Gieß Bohnen und Thunfisch zusammen in ein Sieb, spül die Bohnen kurz ab und lass alles abtropfen.",
+    "Während es abtropft, halbierst du die Tomaten und schneidest die Zwiebel in feine Ringe.",
+    "Verrühr Olivenöl, Zitronensaft, Salz und Pfeffer direkt in der Salatschüssel.",
+    "Gib Bohnen, Tomaten, Zwiebel und Rucola dazu, zupf den Thunfisch in groben Stücken darüber und serviere mit dem Brot."
+  ],
+  "tip_de": "Die andere Bohnenhälfte hält sich abgedeckt 2 Tage im Kühlschrank – perfekt für den nächsten Salat oder eine Suppe.",
+  "tags_de": ["Unter 10 Minuten"],
+  "total_minutes": 7,
+  "prep_minutes": 7,
+  "cook_minutes": 0,
+  "no_cook": true,
+  "meal_prep": {
+    "suitable": false,
+    "fridge_days": 0,
+    "freezable": false
+  },
+  "equipment_de": [],
+  "declared_per_serving": {
+    "kcal": 523,
+    "protein_g": 46.3,
+    "carbs_g": 47.3,
+    "fat_g": 13.3
+  },
+  "declared_diet": "omnivore",
+  "declared_allergens": ["gluten", "fish", "legumes", "histamine", "onion_garlic"],
+  "contains_pork": false,
+  "declared_pregnancy_caution": true,
+  "meta": {
+    "origin": "manual",
+    "model": null,
+    "batch_id": null,
+    "created_on": "2026-10-11",
+    "expert_reviewed": false,
+    "reviewed_by": null,
+    "reviewed_at": null,
+    "review_note": null,
+    "source_file": "alpha5-rezepte.json@1.0",
+    "import_assumptions": [],
+    "import_assumptions_confirmed_by": null,
+    "import_hash": "d8bff7db101f1fe68e3aa8e2717d2378b85f6a306ee9bfb44c308ed616b7d8c4"
+  }
+}

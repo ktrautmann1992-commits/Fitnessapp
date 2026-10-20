@@ -1,0 +1,128 @@
+{
+  "id": "ingwer-reisnudeln-mit-haehnchen",
+  "version": 1,
+  "status": "draft",
+  "title_de": "Ingwer-Reisnudeln mit Hähnchen",
+  "description_de": "Kleine Portion Reisnudeln mit magerem Hähnchen und wenig Gemüse – viel Stärke, wenig Fett und Ballaststoffe für eine lange Radausfahrt am Nachmittag.",
+  "section_de": "Vor langen Einheiten",
+  "categories": ["pre-workout", "cardio"],
+  "meal_types": ["snack"],
+  "training_tags": ["vor_training"],
+  "servings": 1,
+  "ingredients": [
+    {
+      "food_id": "reisnudeln-trocken",
+      "amount": 90,
+      "unit": "g",
+      "optional": false,
+      "display_de": "90 g",
+      "scales": true,
+      "role": "carb"
+    },
+    {
+      "food_id": "haehnchenbrustfilet",
+      "amount": 60,
+      "unit": "g",
+      "optional": false,
+      "display_de": "60 g",
+      "scales": true,
+      "heated": true,
+      "role": "protein"
+    },
+    {
+      "food_id": "karotte",
+      "amount": 50,
+      "unit": "g",
+      "optional": false,
+      "display_de": "½ Karotte (50 g)",
+      "scales": true,
+      "role": "vegetable"
+    },
+    {
+      "food_id": "fruehlingszwiebel",
+      "amount": 15,
+      "unit": "g",
+      "optional": false,
+      "display_de": "1 Frühlingszwiebel (15 g)",
+      "scales": true,
+      "role": "vegetable"
+    },
+    {
+      "food_id": "ingwer",
+      "amount": 5,
+      "unit": "g",
+      "optional": false,
+      "display_de": "1 TL gerieben (5 g)",
+      "scales": true,
+      "role": "vegetable"
+    },
+    {
+      "food_id": "sojasauce",
+      "amount": 15,
+      "unit": "g",
+      "optional": false,
+      "display_de": "1 EL (15 g)",
+      "scales": true,
+      "role": "protein"
+    },
+    {
+      "food_id": "rapsoel",
+      "amount": 3,
+      "unit": "g",
+      "optional": false,
+      "display_de": "½ TL (3 g)",
+      "scales": true,
+      "role": "fat"
+    }
+  ],
+  "steps_de": [
+    "Übergieße die Reisnudeln mit kochendem Wasser und lass sie 5–8 Minuten ziehen, dann abgießen.",
+    "Schneide das Hähnchen in dünne Streifen, die Karotte in feine Stifte und die Frühlingszwiebel in Ringe.",
+    "Brate das Hähnchen im Öl bei mittlerer bis hoher Hitze 4 Minuten an, gib Karotte und Ingwer dazu und brate 2 Minuten weiter.",
+    "Mische Nudeln und Sojasauce unter, schwenke alles 1 Minute durch und bestreue es mit Frühlingszwiebel."
+  ],
+  "tip_de": "Perfekt als Mittagessen vor einer Nachmittagseinheit. Die Sojasauce bringt gleich etwas Salz mit – trink dazu 300–500 ml Wasser.",
+  "tags_de": ["Ausdauer"],
+  "total_minutes": 15,
+  "prep_minutes": 9,
+  "cook_minutes": 6,
+  "no_cook": false,
+  "meal_prep": {
+    "suitable": false,
+    "fridge_days": 0,
+    "freezable": false
+  },
+  "equipment_de": [],
+  "declared_per_serving": {
+    "kcal": 449,
+    "protein_g": 21.5,
+    "carbs_g": 78,
+    "fat_g": 4.5
+  },
+  "declared_diet": "omnivore",
+  "declared_allergens": ["gluten", "poultry", "legumes", "soy", "histamine", "onion_garlic"],
+  "contains_pork": false,
+  "declared_pregnancy_caution": true,
+  "meta": {
+    "origin": "manual",
+    "model": null,
+    "batch_id": null,
+    "created_on": "2026-10-11",
+    "expert_reviewed": false,
+    "reviewed_by": null,
+    "reviewed_at": null,
+    "review_note": null,
+    "source_file": "alpha5-rezepte.json@1.0",
+    "import_assumptions": [
+      {
+        "ingredient_index": 1,
+        "food_id": "haehnchenbrustfilet",
+        "field": "heated",
+        "value": true,
+        "reason_de": "Schritt 3 gart die Zutat durch: „Brate das Hähnchen im Öl bei mittlerer bis hoher Hitze 4 Minuten an, gib Karotte und Ingwer dazu und brate 2 Minuten weiter.“"
+      }
+    ],
+    "import_assumptions_confirmed_by": null,
+    "import_hash": "09fd0f314c32cd4669cce1115dca322d1198f2fff0cce8f3ae588e3543dcd88f"
+  }
+}

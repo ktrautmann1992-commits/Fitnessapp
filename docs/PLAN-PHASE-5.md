@@ -1979,6 +1979,24 @@ nutrition.ts` (Tests `nutrition.test.ts`), Katalog-Texte über `@fitnessapp/cont
 Sammelfreigabe jedes Rezept. Dafür fehlen aus N2b Teil 2 die Option **„Katalog geprüft“** in `content-review` (R2-K6,
 Commits über die GitHub-API wegen `sources-integrity`) und ein Weg, Lebensmittel freizugeben.
 
+**Umgesetzt 20.10.2026 (N2b Teil 2, „Katalog geprüft“, R2-K6):** `content-review` Art **`katalog`** (IDs = Lebensmittel
+oder „rezepte“ = alle Lebensmittel aus Rezept-Entwürfen plus Ersatzprodukte). Core `planCatalogReview`
+(`content/catalog-review.ts`, Tests): setzt `meta.catalog_reviewed_by` = Prüfer, `catalog_reviewed_at` = heute **und gibt
+frei** (`status` published, `reviewed_by/at`, falls leer) – das ist der fehlende „Weg, Lebensmittel freizugeben“; ohne
+Freigabe blieben Rezepte gesperrt (`foods_not_published`) und der Seed wartete. Nur Lebensmittel ohne roten Befund im
+Stand nach der Prüfung (Schleife bis stabil). Checkliste R19 jetzt in core (`CATALOG_CHECKLIST`, Wächter N2d K6), Admin
+nutzt sie. Skript `pipeline/review-catalog.ts`: Commit über die GitHub-API (verifiziert, `github-actions[bot]`) auf
+`content-review/katalog-<Lauf-ID>`, PR mit Checkliste und je Lebensmittel Quelle, Gruppen, `animal`, `meat_kind`,
+`pregnancy_caution`, Salz (⚠️ bei verarbeiteter Ware, `CATALOG_SALT_CHECK_CATEGORIES`), `max_fridge_days`, Ersatz;
+startet `ci` und `sources-integrity-main`. **CI-Sperre** in `sources-integrity` (`foods/catalog-review-guard.ts`):
+`content/foods/**` außer auf `foods-import/<id>` nur auf `content-review/katalog-<id>` mit Lauf von
+`content-review.yml` (workflow_dispatch auf main), verifizierten Bot-Commits und Änderungen **nur** an `status`
+(→ published), `meta.reviewed_by/at`, `meta.catalog_reviewed_by/at` (Vergleich mit dem Abzweig von main); keine neuen,
+gelöschten oder anderen Dateien. `foods-import` darf `catalog_reviewed_*` nur zurücksetzen. Abweichung zum Plantext: Die
+übrigen Arten von content-review nutzen weiter Branches `content/review-…` (git-Commit); nur „katalog“ nutzt
+`content-review/katalog-<Lauf-ID>`. K8 (Sperre für `import_assumptions_*`) bleibt offen. Klick-Schritte:
+HANDY-ANLEITUNG Teil 7t2.
+
 **Gründer-Entscheidungen 13./14.10.2026 zu den drei offenen Fragen (umgesetzt):**
 
 1. **Rezepte ohne Kategorie** (nach Import 41 von 242) → **einzeln per ID freigeben** (Variante b): `content-review`

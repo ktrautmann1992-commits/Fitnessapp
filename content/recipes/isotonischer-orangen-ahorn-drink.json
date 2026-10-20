@@ -1,0 +1,91 @@
+{
+  "id": "isotonischer-orangen-ahorn-drink",
+  "version": 1,
+  "status": "draft",
+  "title_de": "Isotonischer Orangen-Ahorn-Drink",
+  "description_de": "Selbstgemischtes Sportgetränk aus Orangensaft, Wasser, Ahornsirup und Salz – liefert unterwegs Kohlenhydrate, Flüssigkeit und Natrium in einem.",
+  "section_de": "Während der Einheit",
+  "categories": ["schnell", "cardio"],
+  "meal_types": ["snack"],
+  "training_tags": ["waehrend"],
+  "servings": 1,
+  "ingredients": [
+    {
+      "food_id": "orangensaft",
+      "amount": 250,
+      "unit": "g",
+      "optional": false,
+      "display_de": "250 ml",
+      "scales": true,
+      "role": "carb"
+    },
+    {
+      "food_id": "wasser",
+      "amount": 250,
+      "unit": "g",
+      "optional": false,
+      "display_de": "250 ml",
+      "scales": true,
+      "role": "seasoning"
+    },
+    {
+      "food_id": "ahornsirup",
+      "amount": 15,
+      "unit": "g",
+      "optional": false,
+      "display_de": "1 EL (15 g)",
+      "scales": true,
+      "role": "sweet"
+    },
+    {
+      "food_id": "salz",
+      "amount": 1,
+      "unit": "g",
+      "optional": false,
+      "display_de": "1 kräftige Prise (ca. 1 g)",
+      "scales": true,
+      "role": "seasoning"
+    }
+  ],
+  "steps_de": [
+    "Verrühre den Ahornsirup und das Salz mit etwas Wasser, bis sich beides gelöst hat.",
+    "Gib Orangensaft und restliches Wasser dazu und mische gründlich.",
+    "Fülle das Getränk in eine 500-ml-Trinkflasche und kühle es bis zum Start."
+  ],
+  "tip_de": "Eine Flasche (500 ml) bringt rund 33 g Kohlenhydrate und knapp 1 g Salz – das reicht für etwa eine Stunde bei 30–60 g Kohlenhydraten pro Stunde. Trink alle 15–20 Minuten ein paar Schlucke. Bis zu 90 g pro Stunde nur bei sehr langen Einheiten und wenn du es im Training geübt hast.",
+  "tags_de": ["Unter 10 Minuten", "Ausdauer", "zum Mitnehmen"],
+  "total_minutes": 3,
+  "prep_minutes": 3,
+  "cook_minutes": 0,
+  "no_cook": false,
+  "meal_prep": {
+    "suitable": false,
+    "fridge_days": 0,
+    "freezable": false
+  },
+  "equipment_de": [],
+  "declared_per_serving": {
+    "kcal": 152,
+    "protein_g": 1.8,
+    "carbs_g": 32.5,
+    "fat_g": 0.5
+  },
+  "declared_diet": "vegan",
+  "declared_allergens": ["fructose"],
+  "contains_pork": false,
+  "declared_pregnancy_caution": false,
+  "meta": {
+    "origin": "manual",
+    "model": null,
+    "batch_id": null,
+    "created_on": "2026-10-11",
+    "expert_reviewed": false,
+    "reviewed_by": null,
+    "reviewed_at": null,
+    "review_note": null,
+    "source_file": "alpha5-rezepte.json@1.0",
+    "import_assumptions": [],
+    "import_assumptions_confirmed_by": null,
+    "import_hash": "97667d790fd48dde5937d0083375979fce871e42529018ed14476ff0d89851a9"
+  }
+}

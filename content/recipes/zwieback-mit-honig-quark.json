@@ -1,0 +1,83 @@
+{
+  "id": "zwieback-mit-honig-quark",
+  "version": 1,
+  "status": "draft",
+  "title_de": "Zwieback mit Honig-Quark",
+  "description_de": "Zwieback ist besonders magenschonend, mit Honig gibt es schnelle Energie und ein Klecks Magerquark bringt etwas Eiweiß ohne Fett.",
+  "section_de": "30 Min. vorher",
+  "categories": ["schnell", "pre-workout"],
+  "meal_types": ["snack"],
+  "training_tags": ["vor_training"],
+  "servings": 1,
+  "ingredients": [
+    {
+      "food_id": "zwieback",
+      "amount": 30,
+      "unit": "g",
+      "optional": false,
+      "display_de": "3 Scheiben (30 g)",
+      "scales": true,
+      "heated": false,
+      "role": "carb"
+    },
+    {
+      "food_id": "magerquark",
+      "amount": 50,
+      "unit": "g",
+      "optional": false,
+      "display_de": "2 EL (50 g)",
+      "scales": true,
+      "role": "protein"
+    },
+    {
+      "food_id": "honig",
+      "amount": 10,
+      "unit": "g",
+      "optional": false,
+      "display_de": "1 TL (10 g)",
+      "scales": true,
+      "role": "sweet"
+    }
+  ],
+  "steps_de": [
+    "Verrühre den Magerquark mit dem Honig.",
+    "Streiche die Honig-Quark-Creme auf die Zwiebackscheiben.",
+    "Iss sie direkt, solange der Zwieback noch knusprig ist."
+  ],
+  "tip_de": "Bei nervösem Magen vor Wettkämpfen kannst du den Quark weglassen und den Zwieback nur mit Honig essen.",
+  "tags_de": ["Unter 10 Minuten"],
+  "total_minutes": 3,
+  "prep_minutes": 3,
+  "cook_minutes": 0,
+  "no_cook": true,
+  "meal_prep": {
+    "suitable": false,
+    "fridge_days": 0,
+    "freezable": false
+  },
+  "equipment_de": [],
+  "declared_per_serving": {
+    "kcal": 184,
+    "protein_g": 9,
+    "carbs_g": 32.1,
+    "fat_g": 1.6
+  },
+  "declared_diet": "vegetarian",
+  "declared_allergens": ["gluten", "dairy", "lactose", "eggs", "fructose"],
+  "contains_pork": false,
+  "declared_pregnancy_caution": true,
+  "meta": {
+    "origin": "manual",
+    "model": null,
+    "batch_id": null,
+    "created_on": "2026-10-11",
+    "expert_reviewed": false,
+    "reviewed_by": null,
+    "reviewed_at": null,
+    "review_note": null,
+    "source_file": "alpha5-rezepte.json@1.0",
+    "import_assumptions": [],
+    "import_assumptions_confirmed_by": null,
+    "import_hash": "ff3bb3518dc67d0b68849a0b94bf49eaaac947170bd6326ad4bdde136b6d391f"
+  }
+}

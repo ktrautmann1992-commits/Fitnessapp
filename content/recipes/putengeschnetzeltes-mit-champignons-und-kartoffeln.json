@@ -1,0 +1,174 @@
+{
+  "id": "putengeschnetzeltes-mit-champignons-und-kartoffeln",
+  "version": 1,
+  "status": "draft",
+  "title_de": "Putengeschnetzeltes mit Champignons und Kartoffeln",
+  "description_de": "Deutsches Wohlfühlessen in leicht: zartes Putengeschnetzeltes in cremiger Champignonsauce mit Kartoffeln und grünen Bohnen.",
+  "section_de": "Mittagessen",
+  "categories": ["post-workout"],
+  "meal_types": ["main"],
+  "training_tags": ["nach_training"],
+  "servings": 1,
+  "ingredients": [
+    {
+      "food_id": "putenbrustfilet",
+      "amount": 150,
+      "unit": "g",
+      "optional": false,
+      "display_de": "150 g",
+      "scales": true,
+      "heated": false,
+      "role": "protein"
+    },
+    {
+      "food_id": "champignons",
+      "amount": 150,
+      "unit": "g",
+      "optional": false,
+      "display_de": "150 g",
+      "scales": true,
+      "role": "vegetable"
+    },
+    {
+      "food_id": "zwiebel",
+      "amount": 50,
+      "unit": "g",
+      "optional": false,
+      "display_de": "½ Zwiebel (50 g)",
+      "scales": true,
+      "role": "vegetable"
+    },
+    {
+      "food_id": "kartoffeln",
+      "amount": 250,
+      "unit": "g",
+      "optional": false,
+      "display_de": "3 mittelgroße Kartoffeln (250 g)",
+      "scales": true,
+      "role": "vegetable"
+    },
+    {
+      "food_id": "gruene-bohnen-tk",
+      "amount": 100,
+      "unit": "g",
+      "optional": false,
+      "display_de": "100 g",
+      "scales": true,
+      "role": "vegetable"
+    },
+    {
+      "food_id": "milch-1-5",
+      "amount": 100,
+      "unit": "g",
+      "optional": false,
+      "display_de": "100 ml",
+      "scales": true,
+      "role": "carb"
+    },
+    {
+      "food_id": "frischkaese-light",
+      "amount": 30,
+      "unit": "g",
+      "optional": false,
+      "display_de": "2 EL (30 g)",
+      "scales": true,
+      "role": "protein"
+    },
+    {
+      "food_id": "gemuesebruehe-instantpulver",
+      "amount": 3,
+      "unit": "g",
+      "optional": false,
+      "display_de": "1 TL (3 g)",
+      "scales": true,
+      "role": "seasoning"
+    },
+    {
+      "food_id": "rapsoel",
+      "amount": 10,
+      "unit": "g",
+      "optional": false,
+      "display_de": "1 EL (10 g)",
+      "scales": true,
+      "role": "fat"
+    },
+    {
+      "food_id": "petersilie-frisch",
+      "amount": 5,
+      "unit": "g",
+      "optional": false,
+      "display_de": "1 EL, gehackt (5 g)",
+      "scales": true,
+      "role": "vegetable"
+    },
+    {
+      "food_id": "salz",
+      "amount": 1,
+      "unit": "pinch",
+      "optional": false,
+      "display_de": "1 Prise",
+      "scales": true,
+      "role": "seasoning"
+    },
+    {
+      "food_id": "pfeffer",
+      "amount": 1,
+      "unit": "pinch",
+      "optional": false,
+      "display_de": "1 Prise",
+      "scales": true,
+      "role": "seasoning"
+    }
+  ],
+  "steps_de": [
+    "Schäle die Kartoffeln, viertele sie und koche sie in Salzwasser 18–20 Minuten gar; die Bohnen die letzten 8 Minuten mitgaren.",
+    "Schneide die Pute in Streifen, die Champignons in Scheiben und die Zwiebel in Würfel.",
+    "Brate die Putenstreifen im Rapsöl bei hoher Hitze 3–4 Minuten an und nimm sie aus der Pfanne.",
+    "Brate Champignons und Zwiebel in derselben Pfanne 4 Minuten, lösche mit Milch ab und rühre Brühpulver und Frischkäse ein.",
+    "Lass die Sauce 2 Minuten köcheln, gib das Fleisch zurück und erwärme es 1 Minute; mit Salz und Pfeffer abschmecken.",
+    "Serviere das Geschnetzelte mit Kartoffeln und Bohnen und streue Petersilie darüber."
+  ],
+  "tip_de": "Statt Kartoffeln passen auch 70 g Vollkornreis oder Vollkornspätzle.",
+  "total_minutes": 25,
+  "prep_minutes": 1,
+  "cook_minutes": 24,
+  "no_cook": false,
+  "meal_prep": {
+    "suitable": false,
+    "fridge_days": 0,
+    "freezable": false
+  },
+  "equipment_de": [],
+  "declared_per_serving": {
+    "kcal": 601,
+    "protein_g": 54.3,
+    "carbs_g": 52.7,
+    "fat_g": 17.5
+  },
+  "declared_diet": "omnivore",
+  "declared_allergens": [
+    "dairy",
+    "lactose",
+    "poultry",
+    "legumes",
+    "celery",
+    "mushrooms",
+    "onion_garlic"
+  ],
+  "contains_pork": false,
+  "declared_pregnancy_caution": true,
+  "meta": {
+    "origin": "manual",
+    "model": null,
+    "batch_id": null,
+    "created_on": "2026-10-11",
+    "expert_reviewed": false,
+    "reviewed_by": null,
+    "reviewed_at": null,
+    "review_note": null,
+    "source_file": "alpha5-rezepte.json@1.0",
+    "import_assumptions": [],
+    "import_assumptions_confirmed_by": null,
+    "import_hash": "074e3ecb25cf7ae598ffd8df86d1d997eff511c94262097579991ab3cd67285f"
+  }
+}

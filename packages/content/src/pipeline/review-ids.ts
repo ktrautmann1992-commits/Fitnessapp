@@ -4,6 +4,8 @@
  * - Art „ids“ mit Rezepten, Meal-Prep-Plänen, Ratgebern, Austausch-Einträgen oder Packungsgrößen → `runNutritionIdRelease` (nur Freigabe, gleiche Regeln
  *   wie die Sammelfreigabe; Gründer-Entscheidungen 14.10.2026). Lebensmittel lehnt dieser Weg ab.
  * - Art „recipe“ → `runRecipeCategoryRelease` (Sammelfreigabe pro Kategorie).
+ * - Art „katalog“ → `runCatalogReview` („Katalog geprüft“ für Lebensmittel, R19/R2-K6): IDs von Lebensmitteln oder
+ *   „rezepte“ = alle Lebensmittel aus Rezept-Entwürfen. Verifizierter Commit über die GitHub-API (review-catalog.ts).
  * Gemischte Läufe (Übung und Rezept zugleich) werden abgelehnt – die Regeln und Häkchen sind verschieden.
  * - Art „ids“ mit dem Wort „alle“ → alle Übungen und Plan-Vorlagen im Status „draft“ auf einmal freigeben
  *   (nur Zielstatus published, nur Training; Gründer-Wunsch 17.10.2026 – 122 IDs am Handy nicht tippbar).
@@ -16,6 +18,7 @@ import { join } from 'node:path';
 import { FOODS_FOLDER } from '../foods/catalog-loader';
 import { CONTENT_FOLDERS, NUTRITION_CONTENT_FOLDERS } from '../validate';
 import { runReview, type ReviewDeps, reviewInputSchema, type ReviewResult } from './review';
+import { type CatalogReviewDeps, runCatalogReview } from './review-catalog';
 import {
   checkoutBaseBranch,
   runNutritionIdRelease,
@@ -33,7 +36,7 @@ export interface ReviewEnvInput {
   readonly confirmAssumptions: string;
 }
 
-export const REVIEW_KINDS = ['ids', 'recipe'] as const;
+export const REVIEW_KINDS = ['ids', 'recipe', 'katalog'] as const;
 
 /** Stichwort in „ids“: alle Übungen und Plan-Vorlagen im Entwurf freigeben. */
 export const ALL_TRAINING_KEYWORD = 'alle';
@@ -118,9 +121,26 @@ export function classifyIds(repoRoot: string, ids: readonly string[]): IdClassif
 const code = (ids: readonly string[]) => ids.map((id) => `\`${id}\``).join(', ');
 
 /** Hinweise zu Eingaben ohne Wirkung (damit niemand glaubt, ein Häkchen sei gesetzt worden). */
-export function ignoredInputNotes(input: ReviewEnvInput, target: Target | 'category'): string[] {
+export function ignoredInputNotes(
+  input: ReviewEnvInput,
+  target: Target | 'category' | 'catalog',
+): string[] {
   const notes: string[] = [];
   const category = input.category.trim();
+  if (target === 'catalog') {
+    if (category !== '' && category !== '-') {
+      notes.push(`Kategorie „${category}“ hat bei Art „katalog“ keine Wirkung.`);
+    }
+    if (input.expertReviewed === 'true') {
+      notes.push(
+        'Häkchen „fachlich geprüft“ wirkt bei Art „katalog“ nicht – die Katalog-Prüfung setzt nur „Katalog geprüft“ und die Freigabe.',
+      );
+    }
+    if (input.confirmAssumptions === 'true') {
+      notes.push('Häkchen „Import-Annahmen geprüft“ wirkt nur bei Rezepten – hier ohne Wirkung.');
+    }
+    return notes;
+  }
   if (target !== 'category' && category !== '' && category !== '-') {
     notes.push(`Kategorie „${category}“ hat bei Art „ids“ keine Wirkung.`);
   }
@@ -150,9 +170,16 @@ function withNotes(result: ReviewResult, notes: readonly string[]): ReviewResult
 
 export async function runContentReview(
   input: ReviewEnvInput,
-  deps: ReviewDeps,
+  deps: CatalogReviewDeps,
 ): Promise<ReviewResult> {
   const kind = input.kind.trim();
+  if (kind === 'katalog') {
+    const result = await runCatalogReview(
+      { ids: input.ids, status: input.status, reviewer: input.reviewer },
+      deps,
+    );
+    return withNotes(result, ignoredInputNotes(input, 'catalog'));
+  }
   if (kind === 'recipe') {
     const result = await runRecipeCategoryRelease(
       {

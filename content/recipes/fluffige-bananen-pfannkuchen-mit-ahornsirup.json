@@ -1,0 +1,129 @@
+{
+  "id": "fluffige-bananen-pfannkuchen-mit-ahornsirup",
+  "version": 1,
+  "status": "draft",
+  "title_de": "Fluffige Bananen-Pfannkuchen mit Ahornsirup",
+  "description_de": "Pfannkuchen aus hellem Dinkelmehl mit Banane und Ahornsirup sind mild, ballaststoffarm und liefern über 80 g Kohlenhydrate bei wenig Fett.",
+  "section_de": "Renntag-Frühstück (3 Std. vorher)",
+  "categories": ["pre-workout", "wettkampf"],
+  "meal_types": ["breakfast"],
+  "training_tags": ["vor_training"],
+  "servings": 1,
+  "ingredients": [
+    {
+      "food_id": "dinkelmehl-type-630",
+      "amount": 70,
+      "unit": "g",
+      "optional": false,
+      "display_de": "70 g",
+      "scales": true,
+      "role": "seasoning"
+    },
+    {
+      "food_id": "huehnerei",
+      "amount": 60,
+      "unit": "g",
+      "optional": false,
+      "display_de": "1 Ei (Größe M)",
+      "scales": true,
+      "heated": false,
+      "role": "protein"
+    },
+    {
+      "food_id": "milch-1-5",
+      "amount": 120,
+      "unit": "g",
+      "optional": false,
+      "display_de": "120 ml",
+      "scales": true,
+      "role": "carb"
+    },
+    {
+      "food_id": "backpulver",
+      "amount": 3,
+      "unit": "g",
+      "optional": false,
+      "display_de": "½ TL (3 g)",
+      "scales": true,
+      "role": "seasoning"
+    },
+    {
+      "food_id": "banane",
+      "amount": 60,
+      "unit": "g",
+      "optional": false,
+      "display_de": "½ Banane (60 g)",
+      "scales": true,
+      "role": "vegetable"
+    },
+    {
+      "food_id": "ahornsirup",
+      "amount": 20,
+      "unit": "g",
+      "optional": false,
+      "display_de": "1 EL (20 g)",
+      "scales": true,
+      "role": "sweet"
+    },
+    {
+      "food_id": "rapsoel",
+      "amount": 1,
+      "unit": "g",
+      "optional": false,
+      "display_de": "ein paar Tropfen (1 g)",
+      "scales": true,
+      "role": "fat"
+    },
+    {
+      "food_id": "salz",
+      "amount": 1,
+      "unit": "pinch",
+      "optional": false,
+      "display_de": "1 Prise",
+      "scales": true,
+      "role": "seasoning"
+    }
+  ],
+  "steps_de": [
+    "Verrühre Mehl, Backpulver und Salz, gib Ei und Milch dazu und rühre einen glatten Teig.",
+    "Reibe eine beschichtete Pfanne mit Küchenpapier und den Öltropfen aus und erhitze sie auf mittlerer Stufe.",
+    "Backe aus dem Teig 3–4 kleine Pfannkuchen je 1–2 Minuten pro Seite goldbraun.",
+    "Belege sie mit Bananenscheiben und beträufle sie mit Ahornsirup."
+  ],
+  "tip_de": "Den Teig kannst du am Vorabend anrühren und im Kühlschrank lagern. Teste die Pfannkuchen vorher vor einem langen Trainingslauf.",
+  "tags_de": ["Wettkampf"],
+  "total_minutes": 15,
+  "prep_minutes": 13,
+  "cook_minutes": 2,
+  "no_cook": false,
+  "meal_prep": {
+    "suitable": false,
+    "fridge_days": 0,
+    "freezable": false
+  },
+  "equipment_de": [],
+  "declared_per_serving": {
+    "kcal": 496,
+    "protein_g": 20,
+    "carbs_g": 81.4,
+    "fat_g": 9.6
+  },
+  "declared_diet": "vegetarian",
+  "declared_allergens": ["gluten", "dairy", "lactose", "eggs"],
+  "contains_pork": false,
+  "declared_pregnancy_caution": true,
+  "meta": {
+    "origin": "manual",
+    "model": null,
+    "batch_id": null,
+    "created_on": "2026-10-11",
+    "expert_reviewed": false,
+    "reviewed_by": null,
+    "reviewed_at": null,
+    "review_note": null,
+    "source_file": "alpha5-rezepte.json@1.0",
+    "import_assumptions": [],
+    "import_assumptions_confirmed_by": null,
+    "import_hash": "677651dfdfe7804ff6993bbaff8b578b528405281389889fb28124e0f957f203"
+  }
+}

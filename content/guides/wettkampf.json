@@ -1,0 +1,69 @@
+{
+  "id": "wettkampf",
+  "version": 1,
+  "status": "draft",
+  "title_de": "Wettkampf-Ernährung",
+  "sections": [
+    {
+      "heading_de": "Carb-Loading: wann und wie viel",
+      "body_de": [
+        "Carb-Loading lohnt sich in der Regel nur bei Belastungen über etwa 90 Minuten, also etwa beim Marathon, bei langen Triathlons oder Radrennen. Als Richtwert gelten an den 1–2 Tagen davor etwa 8–10 g Kohlenhydrate pro kg Körpergewicht pro Tag, verteilt auf mehrere Mahlzeiten und Snacks. Gleichzeitig reduzierst du das Training, damit die Speicher sich füllen können. Eine leichte Gewichtszunahme durch eingelagertes Wasser ist dabei normal."
+      ],
+      "notice_de": "Im Kaloriendefizit, unter 18 Jahren oder in der Schwangerschaft nicht ohne fachliche Absprache."
+    },
+    {
+      "heading_de": "Wenig Ballaststoffe und wenig Fett",
+      "body_de": [
+        "In den letzten 1–2 Tagen vor dem Rennen greifen viele Sportler zu hellem Brot, weißem Reis, Nudeln und geschältem Obst statt zu Vollkorn, Hülsenfrüchten und großen Rohkostportionen. Das entlastet den Darm und macht es leichter, viele Kohlenhydrate zu essen. Auch fette und sehr scharfe Speisen lässt man besser weg. Wie stark du reduzierst, hängt von deiner persönlichen Verträglichkeit ab."
+      ]
+    },
+    {
+      "heading_de": "Trinken vor und am Wettkampftag",
+      "body_de": [
+        "Trinke in den Tagen vor dem Rennen regelmäßig über den Tag verteilt, ohne große Mengen auf einmal in dich hineinzuschütten. Ein heller Urin ist ein einfacher Anhaltspunkt für eine ausreichende Versorgung. Am Renntag helfen etwa 300–500 ml in den Stunden vor dem Start, bei Hitze und langen Belastungen auch Getränke mit etwas Salz. Zu viel reines Wasser ist ebenfalls nicht sinnvoll."
+      ]
+    },
+    {
+      "heading_de": "Frühstück etwa 3 Stunden vorher",
+      "body_de": [
+        "Das letzte größere Essen liegt idealerweise rund 3 Stunden vor dem Start, damit der Magen genug Zeit zum Verdauen hat. Als Richtwert dienen etwa 1–3 g Kohlenhydrate pro kg Körpergewicht aus leicht verdaulichen Lebensmitteln wie Brötchen, Konfitüre, Grießbrei oder Banane, mit wenig Fett und wenig Ballaststoffen. Wer früh startet, stellt den Wecker entsprechend oder isst etwas kleiner. Bis kurz vor dem Start kannst du bei Bedarf noch eine Banane oder ein paar Schlucke Sportgetränk nehmen."
+      ]
+    },
+    {
+      "heading_de": "Verpflegung im Rennen",
+      "body_de": [
+        "Bei Belastungen über etwa 60–90 Minuten gelten rund 30–60 g Kohlenhydrate pro Stunde als Richtwert, aufgeteilt in kleine Portionen alle 15–20 Minuten. Bis zu 90 g pro Stunde vertragen meist nur Sportler, die ihren Darm im Training gezielt daran gewöhnt haben. Nimm zu Gels und Kau-Snacks immer etwas Wasser, und achte bei Hitze oder viel Schweiß auf Salz. Plane, wann und wo du isst, zum Beispiel an bestimmten Verpflegungsstellen."
+      ]
+    },
+    {
+      "heading_de": "Nichts Neues am Wettkampftag",
+      "body_de": [
+        "Teste jede Mahlzeit, jedes Gel und jedes Getränk vorher in langen Trainingseinheiten, idealerweise zur gleichen Uhrzeit wie am Renntag. Neue Produkte, ungewohnte Restaurantgerichte oder ein anderes Frühstück können den Magen kurz vor dem Start überraschen. Besonders die Rezepte für das Frühstück und die Verpflegung im Rennen solltest du mehrmals ausprobiert haben. Auf Reisen hilft es, Vertrautes selbst mitzunehmen."
+      ]
+    },
+    {
+      "heading_de": "Nach dem Ziel",
+      "body_de": [
+        "Nach dem Rennen helfen Kohlenhydrate, Eiweiß, Flüssigkeit und Salz beim Auffüllen, zum Beispiel eine salzige Brezel mit Quark, eine Suppe oder ein Milchgetränk. Als Richtwert gelten etwa 20–40 g Eiweiß und eine ordentliche Portion Kohlenhydrate in den ersten Stunden. Wenn der Appetit direkt nach dem Ziel fehlt, starte mit etwas Flüssigem und iss später eine normale Mahlzeit. Alkohol direkt nach dem Rennen bremst eher, als dass er hilft."
+      ]
+    },
+    {
+      "heading_de": "Richtwerte, keine Regeln",
+      "body_de": [
+        "Alle Angaben sind allgemeine Richtwerte für Freizeitsportler ohne Vorerkrankungen und ersetzen keine individuelle Beratung. Körpergewicht, Renndauer, Wetter und persönliche Verträglichkeit beeinflussen, was für dich passt. Teste deine Strategie deshalb im Training und passe sie Schritt für Schritt an. Bei Vorerkrankungen oder Magen-Darm-Problemen sprich vorab mit einer Ärztin, einem Arzt oder einer Ernährungsfachkraft."
+      ]
+    }
+  ],
+  "meta": {
+    "origin": "manual",
+    "model": null,
+    "batch_id": null,
+    "created_on": "2026-10-11",
+    "expert_reviewed": false,
+    "reviewed_by": null,
+    "reviewed_at": null,
+    "review_note": null,
+    "source_file": "alpha5-rezepte.json@1.0",
+    "import_hash": "62b7cb803b80009f20cb7a238c1e6acccda0958455f19f7495a062b553dde3cc"
+  }
+}

@@ -1,0 +1,109 @@
+{
+  "id": "caprese-spiesse-mit-balsamico",
+  "version": 1,
+  "status": "draft",
+  "title_de": "Caprese-Spieße mit Balsamico",
+  "description_de": "Mozzarella-Würfel, Cherrytomaten und Basilikum am Spieß, beträufelt mit Balsamico.",
+  "section_de": "Snack",
+  "categories": ["schnell"],
+  "meal_types": ["snack"],
+  "training_tags": [],
+  "servings": 1,
+  "ingredients": [
+    {
+      "food_id": "mozzarella-light",
+      "amount": 125,
+      "unit": "g",
+      "optional": false,
+      "display_de": "1 Kugel (125 g)",
+      "scales": true,
+      "role": "protein"
+    },
+    {
+      "food_id": "cherrytomaten",
+      "amount": 100,
+      "unit": "g",
+      "optional": false,
+      "display_de": "8 Stück (100 g)",
+      "scales": true,
+      "role": "vegetable"
+    },
+    {
+      "food_id": "basilikum",
+      "amount": 5,
+      "unit": "g",
+      "optional": false,
+      "display_de": "einige Blätter (5 g)",
+      "scales": true,
+      "role": "vegetable"
+    },
+    {
+      "food_id": "balsamico-essig",
+      "amount": 5,
+      "unit": "g",
+      "optional": false,
+      "display_de": "1 TL (5 g)",
+      "scales": true,
+      "role": "carb"
+    },
+    {
+      "food_id": "salz",
+      "amount": 1,
+      "unit": "pinch",
+      "optional": false,
+      "display_de": "1 Prise",
+      "scales": true,
+      "role": "seasoning"
+    },
+    {
+      "food_id": "pfeffer",
+      "amount": 1,
+      "unit": "pinch",
+      "optional": false,
+      "display_de": "1 Prise",
+      "scales": true,
+      "role": "seasoning"
+    }
+  ],
+  "steps_de": [
+    "Lass den Mozzarella abtropfen und schneide ihn in 8 Würfel.",
+    "Stecke abwechselnd Tomate, Basilikumblatt und Mozzarella auf kleine Spieße.",
+    "Würze die Spieße mit Salz und Pfeffer und beträufle sie mit Balsamico."
+  ],
+  "tip_de": "In einer Dose verpackt ein guter Snack fürs Büro.",
+  "tags_de": ["Unter 10 Minuten"],
+  "total_minutes": 5,
+  "prep_minutes": 5,
+  "cook_minutes": 0,
+  "no_cook": true,
+  "meal_prep": {
+    "suitable": false,
+    "fridge_days": 0,
+    "freezable": false
+  },
+  "equipment_de": [],
+  "declared_per_serving": {
+    "kcal": 231,
+    "protein_g": 24.3,
+    "carbs_g": 6.1,
+    "fat_g": 11.6
+  },
+  "declared_diet": "vegetarian",
+  "declared_allergens": ["dairy", "lactose", "sulphites", "histamine"],
+  "contains_pork": false,
+  "declared_pregnancy_caution": false,
+  "meta": {
+    "origin": "manual",
+    "model": null,
+    "batch_id": null,
+    "created_on": "2026-10-11",
+    "expert_reviewed": false,
+    "reviewed_by": null,
+    "reviewed_at": null,
+    "review_note": null,
+    "source_file": "alpha5-rezepte.json@1.0",
+    "import_assumptions": [],
+    "import_assumptions_confirmed_by": null,
+    "import_hash": "3a5b75ad0d386b5916b3200cea54f887cd8b727560a35915f38dcf1257226d43"
+  }
+}

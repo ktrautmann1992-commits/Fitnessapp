@@ -199,12 +199,13 @@ export async function dispatchWorkflow(
 export const FOODS_IMPORT_WORKFLOW_PATH = '.github/workflows/foods-import.yml';
 
 /**
- * Stammt die Lauf-ID aus `foods-import.yml`, per Hand (workflow_dispatch) auf `main` gestartet und nicht
+ * Stammt die Lauf-ID aus dem Workflow `workflowPath`, per Hand (workflow_dispatch) auf `main` gestartet und nicht
  * fehlgeschlagen? Läuft der Lauf noch (er startet `ci` selbst am Ende), zählt das als in Ordnung.
  */
-export async function importRunProvenance(
+export async function workflowRunProvenance(
   api: GitHubApi,
   runId: string,
+  workflowPath: string,
 ): Promise<{ ok: boolean; reason: string }> {
   if (!/^\d+$/.test(runId)) {
     return { ok: false, reason: 'keine gültige Lauf-ID' };
@@ -217,7 +218,7 @@ export async function importRunProvenance(
     conclusion?: string | null;
   }>('GET', `/actions/runs/${runId}`);
   const path = (run.path ?? '').replace(/@.*$/, '');
-  if (path !== FOODS_IMPORT_WORKFLOW_PATH) {
+  if (path !== workflowPath) {
     return { ok: false, reason: `Workflow „${run.path ?? 'unbekannt'}“` };
   }
   if (run.event !== 'workflow_dispatch') {
@@ -229,5 +230,13 @@ export async function importRunProvenance(
   if (run.status === 'completed' && run.conclusion !== 'success') {
     return { ok: false, reason: `Lauf beendet mit „${run.conclusion ?? 'unbekannt'}“` };
   }
-  return { ok: true, reason: 'foods-import.yml auf main' };
+  return { ok: true, reason: `${workflowPath.replace(/^.*\//, '')} auf main` };
+}
+
+/** Stammt die Lauf-ID aus `foods-import.yml` auf main (Wächter N2b S1)? */
+export function importRunProvenance(
+  api: GitHubApi,
+  runId: string,
+): Promise<{ ok: boolean; reason: string }> {
+  return workflowRunProvenance(api, runId, FOODS_IMPORT_WORKFLOW_PATH);
 }

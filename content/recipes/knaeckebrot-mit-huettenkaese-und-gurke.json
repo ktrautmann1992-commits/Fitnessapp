@@ -1,0 +1,100 @@
+{
+  "id": "knaeckebrot-mit-huettenkaese-und-gurke",
+  "version": 1,
+  "status": "draft",
+  "title_de": "Knäckebrot mit Hüttenkäse & Gurke",
+  "description_de": "Knuspriges Vollkorn-Knäcke mit Hüttenkäse, Gurke und Schnittlauch – herzhaft und leicht.",
+  "section_de": "Snack",
+  "categories": ["schnell"],
+  "meal_types": ["snack"],
+  "training_tags": [],
+  "servings": 1,
+  "ingredients": [
+    {
+      "food_id": "vollkorn-knaeckebrot",
+      "amount": 30,
+      "unit": "g",
+      "optional": false,
+      "display_de": "3 Scheiben (30 g)",
+      "scales": true,
+      "role": "carb"
+    },
+    {
+      "food_id": "huettenkaese",
+      "amount": 150,
+      "unit": "g",
+      "optional": false,
+      "display_de": "150 g",
+      "scales": true,
+      "role": "protein"
+    },
+    {
+      "food_id": "gurke",
+      "amount": 50,
+      "unit": "g",
+      "optional": false,
+      "display_de": "¼ Gurke (50 g)",
+      "scales": true,
+      "role": "vegetable"
+    },
+    {
+      "food_id": "schnittlauch-frisch",
+      "amount": 5,
+      "unit": "g",
+      "optional": false,
+      "display_de": "einige Halme (5 g)",
+      "scales": true,
+      "role": "vegetable"
+    },
+    {
+      "food_id": "pfeffer",
+      "amount": 1,
+      "unit": "pinch",
+      "optional": false,
+      "display_de": "1 Prise",
+      "scales": true,
+      "role": "seasoning"
+    }
+  ],
+  "steps_de": [
+    "Verteile den Hüttenkäse auf den Knäckebrotscheiben.",
+    "Schneide die Gurke in dünne Scheiben und lege sie darauf.",
+    "Bestreue alles mit Schnittlauchröllchen und frisch gemahlenem Pfeffer."
+  ],
+  "tip_de": "Statt Gurke passen auch Radieschen oder Tomatenscheiben.",
+  "tags_de": ["Unter 10 Minuten"],
+  "total_minutes": 5,
+  "prep_minutes": 5,
+  "cook_minutes": 0,
+  "no_cook": true,
+  "meal_prep": {
+    "suitable": false,
+    "fridge_days": 0,
+    "freezable": false
+  },
+  "equipment_de": [],
+  "declared_per_serving": {
+    "kcal": 257,
+    "protein_g": 21.9,
+    "carbs_g": 22.9,
+    "fat_g": 7.2
+  },
+  "declared_diet": "vegetarian",
+  "declared_allergens": ["gluten", "dairy", "lactose", "onion_garlic"],
+  "contains_pork": false,
+  "declared_pregnancy_caution": false,
+  "meta": {
+    "origin": "manual",
+    "model": null,
+    "batch_id": null,
+    "created_on": "2026-10-11",
+    "expert_reviewed": false,
+    "reviewed_by": null,
+    "reviewed_at": null,
+    "review_note": null,
+    "source_file": "alpha5-rezepte.json@1.0",
+    "import_assumptions": [],
+    "import_assumptions_confirmed_by": null,
+    "import_hash": "a7309cc37c15271751ec517739e591f496a72420173b9feed069c544118a4011"
+  }
+}

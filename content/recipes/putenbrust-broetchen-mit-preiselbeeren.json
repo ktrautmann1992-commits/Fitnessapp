@@ -1,0 +1,92 @@
+{
+  "id": "putenbrust-broetchen-mit-preiselbeeren",
+  "version": 1,
+  "status": "draft",
+  "title_de": "Putenbrust-Brötchen mit Preiselbeeren",
+  "description_de": "Helles Brötchen mit magerer Putenbrust und fruchtigen Preiselbeeren – schnelle Kohlenhydrate plus Eiweiß, praktisch fürs Gym-Bag.",
+  "section_de": "60–90 Min. vorher",
+  "categories": ["schnell", "pre-workout"],
+  "meal_types": ["snack"],
+  "training_tags": ["vor_training"],
+  "servings": 1,
+  "ingredients": [
+    {
+      "food_id": "weizenbroetchen",
+      "amount": 60,
+      "unit": "g",
+      "optional": false,
+      "display_de": "1 Brötchen (60 g)",
+      "scales": true,
+      "role": "carb"
+    },
+    {
+      "food_id": "putenbrust-aufschnitt",
+      "amount": 70,
+      "unit": "g",
+      "optional": false,
+      "display_de": "4 Scheiben (70 g)",
+      "scales": true,
+      "heated": false,
+      "role": "protein"
+    },
+    {
+      "food_id": "wildpreiselbeeren-glas",
+      "amount": 25,
+      "unit": "g",
+      "optional": false,
+      "display_de": "1 EL (25 g)",
+      "scales": true,
+      "role": "carb"
+    },
+    {
+      "food_id": "gurke",
+      "amount": 30,
+      "unit": "g",
+      "optional": false,
+      "display_de": "4 Scheiben (30 g)",
+      "scales": true,
+      "role": "vegetable"
+    }
+  ],
+  "steps_de": [
+    "Schneide das Brötchen auf.",
+    "Streiche die Preiselbeeren auf die untere Hälfte.",
+    "Belege es mit Putenbrust und Gurkenscheiben und klappe es zu."
+  ],
+  "tip_de": "Butter oder Frischkäse brauchst du dafür nicht. In Butterbrotpapier gewickelt hält es sich ein paar Stunden in der Sporttasche.",
+  "tags_de": ["Unter 10 Minuten", "zum Mitnehmen"],
+  "total_minutes": 4,
+  "prep_minutes": 4,
+  "cook_minutes": 0,
+  "no_cook": false,
+  "meal_prep": {
+    "suitable": false,
+    "fridge_days": 0,
+    "freezable": false
+  },
+  "equipment_de": [],
+  "declared_per_serving": {
+    "kcal": 290,
+    "protein_g": 23.7,
+    "carbs_g": 43.5,
+    "fat_g": 1.6
+  },
+  "declared_diet": "omnivore",
+  "declared_allergens": ["gluten", "poultry"],
+  "contains_pork": false,
+  "declared_pregnancy_caution": true,
+  "meta": {
+    "origin": "manual",
+    "model": null,
+    "batch_id": null,
+    "created_on": "2026-10-11",
+    "expert_reviewed": false,
+    "reviewed_by": null,
+    "reviewed_at": null,
+    "review_note": null,
+    "source_file": "alpha5-rezepte.json@1.0",
+    "import_assumptions": [],
+    "import_assumptions_confirmed_by": null,
+    "import_hash": "f347f790740e6de8783d5f9168abbe4f61ab7c0983f82dd7413f4ce5196e88f8"
+  }
+}

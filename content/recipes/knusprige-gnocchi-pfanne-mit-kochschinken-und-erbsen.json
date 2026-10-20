@@ -1,0 +1,111 @@
+{
+  "id": "knusprige-gnocchi-pfanne-mit-kochschinken-und-erbsen",
+  "version": 1,
+  "status": "draft",
+  "title_de": "Knusprige Gnocchi-Pfanne mit Kochschinken und Erbsen",
+  "description_de": "Gnocchi aus dem Kühlregal direkt in der Pfanne goldbraun gebraten, mit Schinkenstreifen, Erbsen und Parmesan.",
+  "section_de": "Mittagessen",
+  "categories": ["schnell"],
+  "meal_types": ["main"],
+  "training_tags": [],
+  "servings": 1,
+  "ingredients": [
+    {
+      "food_id": "gnocchi-kuehlregal",
+      "amount": 200,
+      "unit": "g",
+      "optional": false,
+      "display_de": "½ Packung (200 g)",
+      "scales": true,
+      "role": "carb"
+    },
+    {
+      "food_id": "kochschinken",
+      "amount": 120,
+      "unit": "g",
+      "optional": false,
+      "display_de": "120 g (ca. 4 Scheiben)",
+      "scales": true,
+      "heated": false,
+      "role": "protein"
+    },
+    {
+      "food_id": "erbsen-tk",
+      "amount": 100,
+      "unit": "g",
+      "optional": false,
+      "display_de": "100 g",
+      "scales": true,
+      "role": "vegetable"
+    },
+    {
+      "food_id": "rapsoel",
+      "amount": 8,
+      "unit": "g",
+      "optional": false,
+      "display_de": "2 TL (8 g)",
+      "scales": true,
+      "role": "fat"
+    },
+    {
+      "food_id": "parmesan",
+      "amount": 10,
+      "unit": "g",
+      "optional": false,
+      "display_de": "1 EL gerieben (10 g)",
+      "scales": true,
+      "role": "protein"
+    },
+    {
+      "food_id": "pfeffer",
+      "amount": 1,
+      "unit": "pinch",
+      "optional": false,
+      "display_de": "1 Prise",
+      "scales": true,
+      "role": "seasoning"
+    }
+  ],
+  "steps_de": [
+    "Erhitz das Öl in einer großen Pfanne bei mittlerer bis hoher Hitze und gib die Gnocchi ungekocht direkt hinein.",
+    "Brate die Gnocchi ca. 5 Minuten und wende sie zwischendurch; in dieser Zeit schneidest du den Schinken in Streifen.",
+    "Gib die gefrorenen Erbsen dazu und brate alles weitere 2 Minuten.",
+    "Rühr die Schinkenstreifen unter, schwenk alles 1 Minute durch und serviere mit Pfeffer und Parmesan."
+  ],
+  "tip_de": "Noch schneller geht es mit fertigen Kochschinken-Würfeln aus dem Kühlregal – dann entfällt das Schneiden komplett.",
+  "tags_de": ["Unter 10 Minuten"],
+  "total_minutes": 10,
+  "prep_minutes": 3,
+  "cook_minutes": 7,
+  "no_cook": false,
+  "meal_prep": {
+    "suitable": false,
+    "fridge_days": 0,
+    "freezable": false
+  },
+  "equipment_de": [],
+  "declared_per_serving": {
+    "kcal": 632,
+    "protein_g": 39.7,
+    "carbs_g": 78.2,
+    "fat_g": 15.8
+  },
+  "declared_diet": "omnivore",
+  "declared_allergens": ["gluten", "dairy", "lactose", "legumes", "histamine"],
+  "contains_pork": true,
+  "declared_pregnancy_caution": true,
+  "meta": {
+    "origin": "manual",
+    "model": null,
+    "batch_id": null,
+    "created_on": "2026-10-11",
+    "expert_reviewed": false,
+    "reviewed_by": null,
+    "reviewed_at": null,
+    "review_note": null,
+    "source_file": "alpha5-rezepte.json@1.0",
+    "import_assumptions": [],
+    "import_assumptions_confirmed_by": null,
+    "import_hash": "8f9b1ae5dc06b085fba05ba573827051acbdd3b5d674e2f21e300d828753a8ca"
+  }
+}

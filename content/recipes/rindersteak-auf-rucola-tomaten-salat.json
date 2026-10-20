@@ -1,0 +1,138 @@
+{
+  "id": "rindersteak-auf-rucola-tomaten-salat",
+  "version": 1,
+  "status": "draft",
+  "title_de": "Rindersteak auf Rucola-Tomaten-Salat",
+  "description_de": "Kurz gebratenes Hüftsteak in Streifen auf Rucola mit Cherrytomaten, Balsamico und Parmesan – leicht, mediterran und in 15 Minuten fertig.",
+  "section_de": "Abendessen",
+  "categories": ["post-workout"],
+  "meal_types": ["main"],
+  "training_tags": ["nach_training"],
+  "servings": 1,
+  "ingredients": [
+    {
+      "food_id": "rinderhueftsteak",
+      "amount": 180,
+      "unit": "g",
+      "optional": false,
+      "display_de": "1 Steak (180 g)",
+      "scales": true,
+      "heated": false,
+      "role": "protein"
+    },
+    {
+      "food_id": "rucola",
+      "amount": 60,
+      "unit": "g",
+      "optional": false,
+      "display_de": "60 g",
+      "scales": true,
+      "role": "vegetable"
+    },
+    {
+      "food_id": "cherrytomaten",
+      "amount": 150,
+      "unit": "g",
+      "optional": false,
+      "display_de": "150 g",
+      "scales": true,
+      "role": "vegetable"
+    },
+    {
+      "food_id": "parmesan",
+      "amount": 15,
+      "unit": "g",
+      "optional": false,
+      "display_de": "15 g (gehobelt)",
+      "scales": true,
+      "role": "protein"
+    },
+    {
+      "food_id": "olivenoel",
+      "amount": 15,
+      "unit": "g",
+      "optional": false,
+      "display_de": "1½ EL (15 g)",
+      "scales": true,
+      "role": "fat"
+    },
+    {
+      "food_id": "balsamico-essig",
+      "amount": 10,
+      "unit": "g",
+      "optional": false,
+      "display_de": "2 TL (10 g)",
+      "scales": true,
+      "role": "carb"
+    },
+    {
+      "food_id": "vollkornbrot",
+      "amount": 60,
+      "unit": "g",
+      "optional": false,
+      "display_de": "1 dicke Scheibe (60 g)",
+      "scales": true,
+      "role": "carb"
+    },
+    {
+      "food_id": "salz",
+      "amount": 1,
+      "unit": "pinch",
+      "optional": false,
+      "display_de": "1 Prise",
+      "scales": true,
+      "role": "seasoning"
+    },
+    {
+      "food_id": "pfeffer",
+      "amount": 1,
+      "unit": "pinch",
+      "optional": false,
+      "display_de": "1 Prise",
+      "scales": true,
+      "role": "seasoning"
+    }
+  ],
+  "steps_de": [
+    "Nimm das Steak 10 Minuten vor dem Braten aus dem Kühlschrank und tupfe es trocken.",
+    "Erhitze 1 TL Olivenöl in einer Pfanne sehr stark und brate das Steak von jeder Seite 2–3 Minuten (medium); danach salzen, pfeffern und 3 Minuten ruhen lassen.",
+    "Verrühre das restliche Olivenöl mit Balsamico, Salz und Pfeffer zu einem Dressing.",
+    "Mische Rucola und halbierte Cherrytomaten mit dem Dressing.",
+    "Schneide das Steak in dünne Streifen, lege es auf den Salat, hoble den Parmesan darüber und reiche das Brot dazu."
+  ],
+  "tip_de": "Statt Steak schmeckt auch Hähnchenbrust – dann 5–6 Minuten pro Seite braten.",
+  "total_minutes": 15,
+  "prep_minutes": 1,
+  "cook_minutes": 14,
+  "no_cook": false,
+  "meal_prep": {
+    "suitable": false,
+    "fridge_days": 0,
+    "freezable": false
+  },
+  "equipment_de": [],
+  "declared_per_serving": {
+    "kcal": 601,
+    "protein_g": 52.5,
+    "carbs_g": 33,
+    "fat_g": 27.3
+  },
+  "declared_diet": "omnivore",
+  "declared_allergens": ["gluten", "dairy", "lactose", "beef", "sulphites", "histamine"],
+  "contains_pork": false,
+  "declared_pregnancy_caution": true,
+  "meta": {
+    "origin": "manual",
+    "model": null,
+    "batch_id": null,
+    "created_on": "2026-10-11",
+    "expert_reviewed": false,
+    "reviewed_by": null,
+    "reviewed_at": null,
+    "review_note": null,
+    "source_file": "alpha5-rezepte.json@1.0",
+    "import_assumptions": [],
+    "import_assumptions_confirmed_by": null,
+    "import_hash": "75b3bcfec09bb07006d9181635b2c760af5fe77e921211afc6559ff68a485a63"
+  }
+}

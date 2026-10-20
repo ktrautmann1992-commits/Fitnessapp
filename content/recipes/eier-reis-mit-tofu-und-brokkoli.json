@@ -1,0 +1,138 @@
+{
+  "id": "eier-reis-mit-tofu-und-brokkoli",
+  "version": 1,
+  "status": "draft",
+  "title_de": "Eier-Reis mit Tofu & Brokkoli",
+  "description_de": "Asiatisch gebratener Reis mit knusprigem Tofu, Brokkoli, Paprika und Ei, abgeschmeckt mit Sojasauce und Ingwer.",
+  "section_de": "Mittagessen",
+  "categories": ["post-workout"],
+  "meal_types": ["main"],
+  "training_tags": ["nach_training"],
+  "servings": 1,
+  "ingredients": [
+    {
+      "food_id": "basmatireis-trocken",
+      "amount": 70,
+      "unit": "g",
+      "optional": false,
+      "display_de": "70 g (roh)",
+      "scales": true,
+      "role": "carb"
+    },
+    {
+      "food_id": "tofu-natur",
+      "amount": 150,
+      "unit": "g",
+      "optional": false,
+      "display_de": "150 g",
+      "scales": true,
+      "role": "protein"
+    },
+    {
+      "food_id": "brokkoli",
+      "amount": 150,
+      "unit": "g",
+      "optional": false,
+      "display_de": "150 g",
+      "scales": true,
+      "role": "vegetable"
+    },
+    {
+      "food_id": "paprika-rot",
+      "amount": 100,
+      "unit": "g",
+      "optional": false,
+      "display_de": "½ Paprika (100 g)",
+      "scales": true,
+      "role": "vegetable"
+    },
+    {
+      "food_id": "huehnerei",
+      "amount": 60,
+      "unit": "g",
+      "optional": false,
+      "display_de": "1 Ei (Größe M)",
+      "scales": true,
+      "heated": false,
+      "role": "protein"
+    },
+    {
+      "food_id": "sojasauce",
+      "amount": 15,
+      "unit": "g",
+      "optional": false,
+      "display_de": "1 EL (15 g)",
+      "scales": true,
+      "role": "protein"
+    },
+    {
+      "food_id": "rapsoel",
+      "amount": 8,
+      "unit": "g",
+      "optional": false,
+      "display_de": "2 TL (8 g)",
+      "scales": true,
+      "role": "fat"
+    },
+    {
+      "food_id": "knoblauch",
+      "amount": 5,
+      "unit": "g",
+      "optional": false,
+      "display_de": "1 Zehe (5 g)",
+      "scales": true,
+      "role": "vegetable"
+    },
+    {
+      "food_id": "ingwer",
+      "amount": 5,
+      "unit": "g",
+      "optional": false,
+      "display_de": "1 daumennagelgroßes Stück (5 g)",
+      "scales": true,
+      "role": "vegetable"
+    }
+  ],
+  "steps_de": [
+    "Koche den Reis nach Packungsangabe (ca. 12 Minuten) und lass ihn offen etwas ausdampfen – noch besser geht Reis vom Vortag.",
+    "Tupfe den Tofu trocken, schneide ihn in Würfel und brate ihn in der Hälfte des Rapsöls bei hoher Hitze 5–6 Minuten rundum knusprig; dann herausnehmen.",
+    "Brate Brokkoliröschen, Paprikastreifen, gehackten Knoblauch und geriebenen Ingwer im restlichen Öl 4 Minuten an.",
+    "Schiebe das Gemüse an den Rand, schlage das Ei in die freie Stelle und verrühre es, bis es stockt.",
+    "Gib Reis, Tofu und Sojasauce dazu und brate alles unter Rühren noch 2 Minuten."
+  ],
+  "tip_de": "Mit Frühlingszwiebeln und Chiliflocken bestreut wird es noch aromatischer.",
+  "total_minutes": 25,
+  "prep_minutes": 1,
+  "cook_minutes": 24,
+  "no_cook": false,
+  "meal_prep": {
+    "suitable": false,
+    "fridge_days": 0,
+    "freezable": false
+  },
+  "equipment_de": [],
+  "declared_per_serving": {
+    "kcal": 692,
+    "protein_g": 40.6,
+    "carbs_g": 70.6,
+    "fat_g": 26.2
+  },
+  "declared_diet": "vegetarian",
+  "declared_allergens": ["gluten", "eggs", "legumes", "soy", "histamine", "onion_garlic"],
+  "contains_pork": false,
+  "declared_pregnancy_caution": true,
+  "meta": {
+    "origin": "manual",
+    "model": null,
+    "batch_id": null,
+    "created_on": "2026-10-11",
+    "expert_reviewed": false,
+    "reviewed_by": null,
+    "reviewed_at": null,
+    "review_note": null,
+    "source_file": "alpha5-rezepte.json@1.0",
+    "import_assumptions": [],
+    "import_assumptions_confirmed_by": null,
+    "import_hash": "f5238c52f83bb4020aabe32e13bfc28168c737f7bc499aed7b9193e856d0f3be"
+  }
+}

@@ -1,0 +1,146 @@
+{
+  "id": "lachsbroetchen-mit-kraeuterquark",
+  "version": 1,
+  "status": "draft",
+  "title_de": "Lachsbrötchen mit Kräuterquark",
+  "description_de": "Knuspriges Vollkornbrötchen mit Räucherlachs, frischem Schnittlauchquark und Gurke – fertig in fünf Minuten.",
+  "section_de": "Frühstück",
+  "categories": ["schnell"],
+  "meal_types": ["breakfast"],
+  "training_tags": [],
+  "servings": 1,
+  "ingredients": [
+    {
+      "food_id": "vollkornbroetchen",
+      "amount": 70,
+      "unit": "g",
+      "optional": false,
+      "display_de": "1 Vollkornbrötchen (70 g)",
+      "scales": true,
+      "role": "carb"
+    },
+    {
+      "food_id": "magerquark",
+      "amount": 80,
+      "unit": "g",
+      "optional": false,
+      "display_de": "80 g",
+      "scales": true,
+      "role": "protein"
+    },
+    {
+      "food_id": "raeucherlachs",
+      "amount": 60,
+      "unit": "g",
+      "optional": false,
+      "display_de": "60 g",
+      "scales": true,
+      "heated": false,
+      "role": "protein"
+    },
+    {
+      "food_id": "gurke",
+      "amount": 50,
+      "unit": "g",
+      "optional": false,
+      "display_de": "¼ Gurke (50 g)",
+      "scales": true,
+      "role": "vegetable"
+    },
+    {
+      "food_id": "schnittlauch-frisch",
+      "amount": 5,
+      "unit": "g",
+      "optional": false,
+      "display_de": "1 EL, gehackt (5 g)",
+      "scales": true,
+      "role": "vegetable"
+    },
+    {
+      "food_id": "zitronensaft",
+      "amount": 5,
+      "unit": "g",
+      "optional": false,
+      "display_de": "1 TL (5 g)",
+      "scales": true,
+      "role": "vegetable"
+    },
+    {
+      "food_id": "apfel",
+      "amount": 150,
+      "unit": "g",
+      "optional": false,
+      "display_de": "1 Apfel (150 g)",
+      "scales": true,
+      "role": "vegetable"
+    },
+    {
+      "food_id": "salz",
+      "amount": 1,
+      "unit": "pinch",
+      "optional": false,
+      "display_de": "1 Prise",
+      "scales": true,
+      "role": "seasoning"
+    },
+    {
+      "food_id": "pfeffer",
+      "amount": 1,
+      "unit": "pinch",
+      "optional": false,
+      "display_de": "1 Prise",
+      "scales": true,
+      "role": "seasoning"
+    }
+  ],
+  "steps_de": [
+    "Verrühre den Magerquark mit Schnittlauch, Zitronensaft, Salz und Pfeffer.",
+    "Schneide die Gurke in dünne Scheiben.",
+    "Halbiere das Brötchen und bestreiche beide Hälften mit dem Kräuterquark.",
+    "Belege die Hälften mit Gurke und Räucherlachs und iss den Apfel dazu."
+  ],
+  "tip_de": "Das Brötchen 3 Minuten bei 180 °C aufbacken, dann wird es besonders knusprig.",
+  "tags_de": ["Unter 10 Minuten"],
+  "total_minutes": 5,
+  "prep_minutes": 5,
+  "cook_minutes": 0,
+  "no_cook": true,
+  "meal_prep": {
+    "suitable": false,
+    "fridge_days": 0,
+    "freezable": false
+  },
+  "equipment_de": [],
+  "declared_per_serving": {
+    "kcal": 423,
+    "protein_g": 30,
+    "carbs_g": 51.7,
+    "fat_g": 9.1
+  },
+  "declared_diet": "omnivore",
+  "declared_allergens": [
+    "gluten",
+    "dairy",
+    "lactose",
+    "fish",
+    "fructose",
+    "histamine",
+    "onion_garlic"
+  ],
+  "contains_pork": false,
+  "declared_pregnancy_caution": true,
+  "meta": {
+    "origin": "manual",
+    "model": null,
+    "batch_id": null,
+    "created_on": "2026-10-11",
+    "expert_reviewed": false,
+    "reviewed_by": null,
+    "reviewed_at": null,
+    "review_note": null,
+    "source_file": "alpha5-rezepte.json@1.0",
+    "import_assumptions": [],
+    "import_assumptions_confirmed_by": null,
+    "import_hash": "1eb69d2e4d2834577b6b04a0507f6b905492c97f04dce1a410c4b6fb3c1c1c92"
+  }
+}

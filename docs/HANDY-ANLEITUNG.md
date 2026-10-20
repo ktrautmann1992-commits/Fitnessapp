@@ -492,6 +492,54 @@ wird das von **einer Datei**: `content/einspiel-regeln.json` mit `"nur_fachlich_
 Zurück in die Testphase geht genauso (Wort wieder `false`). Löscht jemand die Datei, gilt automatisch „nur fachlich
 geprüft“. Ein Tippfehler in der Datei macht `ci` rot – dann wird nichts eingespielt.
 
+## Teil 7t2 – Rezepte in die App bringen (Testphase, 20.10.2026)
+
+Rezepte erscheinen erst, wenn (a) ihre Lebensmittel **katalog-geprüft** und (b) die Rezepte **freigegeben** sind und
+(c) eingespielt wurden. Alles läuft über die GitHub-App, jeder Schritt ist ein Pull Request, den **ihr** mergt – die
+Workflows genehmigen nie selbst. Voraussetzung: Der Pull Request mit den Rezept-Entwürfen ist gemergt.
+
+**(a) Lebensmittel „Katalog geprüft“**
+
+1. GitHub-App → euer Repository → **Actions** → **content-review** → **Run workflow**.
+2. Branch **main** lassen. **Art:** `katalog` · **IDs:** `rezepte` (= alle Lebensmittel aus Rezept-Entwürfen) ·
+   **Neuer Status:** `published` · **Prüfer:** euer Name. Kategorie und Häkchen nicht nötig. → **Run workflow**.
+3. Lauf öffnen → **Summary**: Link zum Pull Request „Katalog geprüft: … Lebensmittel“. Übersprungene stehen mit Grund
+   darunter (z. B. roter Befund).
+4. Pull Request öffnen und die **Checkliste** abarbeiten: je Zeile Quelle (Quell-ID „Bezeichnung“), Gruppen,
+   tierisch/Fleischart, Schwangerschaft, Salz (⚠️ = verarbeitete Ware, Salz besonders prüfen), Kühlschrank-Tage.
+   Stimmt etwas nicht: **nicht mergen**, sondern in einer Claude-Sitzung die Zuordnung korrigieren lassen.
+5. Warten, bis **ci** und **sources-integrity** grün sind (beide startet der Workflow selbst) → **Merge pull request**.
+   Geändert werden nur Status, Prüfvermerk und „Katalog geprüft“ – Nährwerte und Quelle prüft sources-integrity mit.
+
+**(b) Rezepte freigeben**
+
+1. **Actions → content-review → Run workflow** → **Art:** `recipe` · **Kategorie:** z. B. `schnell` · **Neuer
+   Status:** `published` · **Prüfer:** euer Name.
+2. Häkchen **„Import-Annahmen geprüft“** nur setzen, wenn ihr die Annahmen „durchgegart“ dieser Rezepte gegen die
+   Zubereitung geprüft habt (Website → `/admin` → **Rezepte** → Rezept → „Import-Annahmen“). Ohne Häkchen werden solche
+   Rezepte übersprungen (Grund steht im Pull Request). **„fachlich geprüft“** nur, wenn eine Fachkraft geprüft hat – für
+   die Testphase nicht nötig. → **Run workflow**.
+3. Pull Request „Sammelfreigabe Rezepte …“ öffnen → Tabellen „Freigegeben“, „Übersprungen“ und gelbe Hinweise lesen →
+   auf grünes **ci** warten → **Merge pull request**.
+4. Für die nächste Kategorie wiederholen (erst nach dem Merge starten): `schnell`, `pre-workout`, `post-workout`,
+   `cardio`, `wettkampf`, `meal-prep`, `protein-dessert`, `spar-kueche`. Rezepte in mehreren Kategorien sind danach
+   „schon freigegeben“.
+5. Rezepte **ohne Kategorie** (Liste: `/admin` → Rezepte → „Ohne Kategorie“; Stand 20.10.2026:
+   `asia-ofenlachs-mit-sesam-brokkoli, kabeljau-in-senfsauce-mit-spinat, kaesespaetzle-light-mit-roestzwiebeln,
+   lachs-toast-mit-kraeuter-skyr-und-ei, pellkartoffeln-mit-kraeuterquark, schweinemedaillons-mit-pilzrahm-und-brokkoli,
+   thunfisch-ei-toast-mit-avocado, zucchini-puffer-mit-skyr-tzatziki`): **Art:** `ids` · **IDs:** diese Liste
+   (kopieren) · Häkchen wie in Schritt 2 → **Run workflow** → Pull Request prüfen → **Merge**.
+
+**(c) Einspielen**
+
+1. Nach jedem Merge startet **content-seed** von selbst (Actions → content-seed). Startet keiner:
+   **content-seed → Run workflow → Run workflow**.
+2. Lauf öffnen → **Summary**: „Einspiel-Regel: TESTPHASE …“ und „🧪 Testphase: … ohne Fachprüfung“ mit den IDs. Das
+   Häkchen „fachlich geprüft“ braucht ihr dafür nicht – `content/einspiel-regeln.json` steht auf
+   `"nur_fachlich_geprueft": false` (Teil 7t). Vor dem Livegang dort umstellen.
+3. Vorschau-Link → **mit Konto** anmelden → **Ernährung → Rezepte suchen**: Die Rezepte erscheinen mit dem Hinweis
+   „Testphase – noch nicht fachlich geprüft“.
+
 ## Teil 7j – Datenbank für den Wettkampf prüfen (Phase 10, Etappe WP3)
 In der App ändert sich dadurch **nichts Sichtbares** (Wettkampf anlegen kam mit WP4 – testen siehe Teil 7k). Ihr müsst nichts einstellen und
 keine Schlüssel eintragen. Prüfen könnt ihr am Handy:

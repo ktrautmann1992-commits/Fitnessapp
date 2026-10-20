@@ -1,0 +1,101 @@
+{
+  "id": "lachsschinken-brot-mit-frischkaese",
+  "version": 1,
+  "status": "draft",
+  "title_de": "Lachsschinken-Brot mit Frischkäse",
+  "description_de": "Herzhafte halbe Stulle mit leichtem Frischkäse, magerem Lachsschinken und Gurke.",
+  "section_de": "Snack",
+  "categories": ["schnell", "pre-workout"],
+  "meal_types": ["snack"],
+  "training_tags": ["vor_training"],
+  "servings": 1,
+  "ingredients": [
+    {
+      "food_id": "vollkornbrot",
+      "amount": 50,
+      "unit": "g",
+      "optional": false,
+      "display_de": "1 kleine Scheibe (50 g)",
+      "scales": true,
+      "role": "carb"
+    },
+    {
+      "food_id": "frischkaese-light",
+      "amount": 20,
+      "unit": "g",
+      "optional": false,
+      "display_de": "1 EL (20 g)",
+      "scales": true,
+      "role": "protein"
+    },
+    {
+      "food_id": "lachsschinken",
+      "amount": 40,
+      "unit": "g",
+      "optional": false,
+      "display_de": "4 Scheiben (40 g)",
+      "scales": true,
+      "heated": false,
+      "role": "protein"
+    },
+    {
+      "food_id": "gurke",
+      "amount": 30,
+      "unit": "g",
+      "optional": false,
+      "display_de": "einige Scheiben (30 g)",
+      "scales": true,
+      "role": "vegetable"
+    },
+    {
+      "food_id": "pfeffer",
+      "amount": 1,
+      "unit": "pinch",
+      "optional": false,
+      "display_de": "1 Prise",
+      "scales": true,
+      "role": "seasoning"
+    }
+  ],
+  "steps_de": [
+    "Bestreiche das Brot mit Frischkäse.",
+    "Belege es mit Lachsschinken und Gurkenscheiben.",
+    "Würze mit frisch gemahlenem Pfeffer."
+  ],
+  "tip_de": "Statt Gurke passen auch ein paar Radieschen oder Kresse.",
+  "tags_de": ["Unter 10 Minuten"],
+  "total_minutes": 3,
+  "prep_minutes": 3,
+  "cook_minutes": 0,
+  "no_cook": true,
+  "meal_prep": {
+    "suitable": false,
+    "fridge_days": 0,
+    "freezable": false
+  },
+  "equipment_de": [],
+  "declared_per_serving": {
+    "kcal": 192,
+    "protein_g": 14.5,
+    "carbs_g": 21.8,
+    "fat_g": 4.2
+  },
+  "declared_diet": "omnivore",
+  "declared_allergens": ["gluten", "dairy", "lactose"],
+  "contains_pork": true,
+  "declared_pregnancy_caution": true,
+  "meta": {
+    "origin": "manual",
+    "model": null,
+    "batch_id": null,
+    "created_on": "2026-10-11",
+    "expert_reviewed": false,
+    "reviewed_by": null,
+    "reviewed_at": null,
+    "review_note": null,
+    "source_file": "alpha5-rezepte.json@1.0",
+    "import_assumptions": [],
+    "import_assumptions_confirmed_by": null,
+    "import_hash": "8584bea998f1eb50b04f091fb32f8e7fde01780030c406220f56e0015dbf992c"
+  }
+}

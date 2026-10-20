@@ -1,0 +1,127 @@
+{
+  "id": "mini-reisbowl-mit-haehnchen-und-gurke",
+  "version": 1,
+  "status": "draft",
+  "title_de": "Mini-Reisbowl mit Hähnchen und Gurke",
+  "description_de": "Eine Bowl aus Reis, Hähnchenbrust und etwas Gurke – klein portioniert und schnell gemacht.",
+  "section_de": "60–90 Min. vorher",
+  "categories": ["pre-workout", "meal-prep"],
+  "meal_types": ["snack"],
+  "training_tags": ["vor_training"],
+  "servings": 1,
+  "ingredients": [
+    {
+      "food_id": "express-reis-beutel-gegart",
+      "amount": 125,
+      "unit": "g",
+      "optional": false,
+      "display_de": "½ Beutel Express-Reis (125 g)",
+      "scales": true,
+      "role": "carb"
+    },
+    {
+      "food_id": "haehnchenbrustfilet",
+      "amount": 80,
+      "unit": "g",
+      "optional": false,
+      "display_de": "80 g",
+      "scales": true,
+      "heated": true,
+      "role": "protein"
+    },
+    {
+      "food_id": "gurke",
+      "amount": 60,
+      "unit": "g",
+      "optional": false,
+      "display_de": "60 g",
+      "scales": true,
+      "role": "vegetable"
+    },
+    {
+      "food_id": "sojasauce",
+      "amount": 10,
+      "unit": "g",
+      "optional": false,
+      "display_de": "2 TL (10 ml)",
+      "scales": true,
+      "role": "protein"
+    },
+    {
+      "food_id": "rapsoel",
+      "amount": 3,
+      "unit": "g",
+      "optional": false,
+      "display_de": "½ TL (3 g)",
+      "scales": true,
+      "role": "fat"
+    },
+    {
+      "food_id": "salz",
+      "amount": 1,
+      "unit": "pinch",
+      "optional": false,
+      "display_de": "1 Prise",
+      "scales": true,
+      "role": "seasoning"
+    },
+    {
+      "food_id": "pfeffer",
+      "amount": 1,
+      "unit": "pinch",
+      "optional": false,
+      "display_de": "1 Prise",
+      "scales": true,
+      "role": "seasoning"
+    }
+  ],
+  "steps_de": [
+    "Schneide das Hähnchen in kleine Würfel und würze es mit Salz und Pfeffer.",
+    "Erhitze das Öl in einer beschichteten Pfanne und brate das Hähnchen bei mittlerer bis hoher Hitze 6–7 Minuten rundum durch.",
+    "Gib den Reis dazu, lösche mit der Sojasauce ab und brate alles 2 Minuten weiter.",
+    "Schneide die Gurke in feine Scheiben und richte sie neben dem Reis an."
+  ],
+  "tip_de": "Als Meal-Prep kalt in der Dose mitnehmen; die Gurke erst kurz vor dem Essen dazugeben, damit sie knackig bleibt.",
+  "total_minutes": 15,
+  "prep_minutes": 6,
+  "cook_minutes": 9,
+  "no_cook": false,
+  "meal_prep": {
+    "suitable": true,
+    "fridge_days": 1,
+    "freezable": false
+  },
+  "equipment_de": [],
+  "declared_per_serving": {
+    "kcal": 278,
+    "protein_g": 24,
+    "carbs_g": 33,
+    "fat_g": 5.1
+  },
+  "declared_diet": "omnivore",
+  "declared_allergens": ["gluten", "poultry", "legumes", "soy", "histamine"],
+  "contains_pork": false,
+  "declared_pregnancy_caution": true,
+  "meta": {
+    "origin": "manual",
+    "model": null,
+    "batch_id": null,
+    "created_on": "2026-10-11",
+    "expert_reviewed": false,
+    "reviewed_by": null,
+    "reviewed_at": null,
+    "review_note": null,
+    "source_file": "alpha5-rezepte.json@1.0",
+    "import_assumptions": [
+      {
+        "ingredient_index": 1,
+        "food_id": "haehnchenbrustfilet",
+        "field": "heated",
+        "value": true,
+        "reason_de": "Schritt 2 gart die Zutat durch: „Erhitze das Öl in einer beschichteten Pfanne und brate das Hähnchen bei mittlerer bis hoher Hitze 6–7 Minuten rundum durch.“"
+      }
+    ],
+    "import_assumptions_confirmed_by": null,
+    "import_hash": "7ea4b928e282dd9e5e55866676eb9271151f0c07826bc535c77a9131e73b9dc9"
+  }
+}

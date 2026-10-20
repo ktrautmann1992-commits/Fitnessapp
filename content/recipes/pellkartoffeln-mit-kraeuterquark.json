@@ -1,0 +1,146 @@
+{
+  "id": "pellkartoffeln-mit-kraeuterquark",
+  "version": 1,
+  "status": "draft",
+  "title_de": "Pellkartoffeln mit Kräuterquark",
+  "description_de": "Der deutsche Klassiker: Pellkartoffeln mit Schnittlauch-Quark, Leinöl, Gurkensalat und einem Ei.",
+  "section_de": "Mittagessen",
+  "categories": [],
+  "meal_types": ["main"],
+  "training_tags": [],
+  "servings": 1,
+  "ingredients": [
+    {
+      "food_id": "kartoffeln",
+      "amount": 300,
+      "unit": "g",
+      "optional": false,
+      "display_de": "3–4 mittelgroße (300 g)",
+      "scales": true,
+      "role": "vegetable"
+    },
+    {
+      "food_id": "magerquark",
+      "amount": 200,
+      "unit": "g",
+      "optional": false,
+      "display_de": "200 g",
+      "scales": true,
+      "role": "protein"
+    },
+    {
+      "food_id": "milch-1-5",
+      "amount": 30,
+      "unit": "g",
+      "optional": false,
+      "display_de": "2 EL (30 ml)",
+      "scales": true,
+      "role": "carb"
+    },
+    {
+      "food_id": "huehnerei",
+      "amount": 60,
+      "unit": "g",
+      "optional": false,
+      "display_de": "1 Ei (Größe M)",
+      "scales": true,
+      "heated": true,
+      "role": "protein"
+    },
+    {
+      "food_id": "gurke",
+      "amount": 100,
+      "unit": "g",
+      "optional": false,
+      "display_de": "1/3 Gurke (100 g)",
+      "scales": true,
+      "role": "vegetable"
+    },
+    {
+      "food_id": "schnittlauch-frisch",
+      "amount": 10,
+      "unit": "g",
+      "optional": false,
+      "display_de": "½ Bund (10 g)",
+      "scales": true,
+      "role": "vegetable"
+    },
+    {
+      "food_id": "leinoel",
+      "amount": 10,
+      "unit": "g",
+      "optional": false,
+      "display_de": "2 TL (10 g)",
+      "scales": true,
+      "role": "fat"
+    },
+    {
+      "food_id": "salz",
+      "amount": 1,
+      "unit": "pinch",
+      "optional": false,
+      "display_de": "1 Prise",
+      "scales": true,
+      "role": "seasoning"
+    },
+    {
+      "food_id": "pfeffer",
+      "amount": 1,
+      "unit": "pinch",
+      "optional": false,
+      "display_de": "1 Prise",
+      "scales": true,
+      "role": "seasoning"
+    }
+  ],
+  "steps_de": [
+    "Wasche die Kartoffeln und koche sie mit Schale in Salzwasser 20–25 Minuten gar.",
+    "Koche das Ei parallel 9 Minuten hart, schrecke es kalt ab und pelle es.",
+    "Verrühre Magerquark mit Milch, dem fein geschnittenen Schnittlauch, Salz und Pfeffer zu einem cremigen Kräuterquark.",
+    "Hobel die Gurke in dünne Scheiben und würze sie mit Salz und Pfeffer.",
+    "Richte Kartoffeln, Quark, halbiertes Ei und Gurkensalat an und träufle das Leinöl über den Quark."
+  ],
+  "tip_de": "Leinöl liefert Omega-3 – im Kühlschrank lagern und nicht erhitzen.",
+  "total_minutes": 30,
+  "prep_minutes": 1,
+  "cook_minutes": 29,
+  "no_cook": false,
+  "meal_prep": {
+    "suitable": false,
+    "fridge_days": 0,
+    "freezable": false
+  },
+  "equipment_de": [],
+  "declared_per_serving": {
+    "kcal": 548,
+    "protein_g": 39.5,
+    "carbs_g": 56.3,
+    "fat_g": 17
+  },
+  "declared_diet": "vegetarian",
+  "declared_allergens": ["dairy", "lactose", "eggs", "onion_garlic"],
+  "contains_pork": false,
+  "declared_pregnancy_caution": true,
+  "meta": {
+    "origin": "manual",
+    "model": null,
+    "batch_id": null,
+    "created_on": "2026-10-11",
+    "expert_reviewed": false,
+    "reviewed_by": null,
+    "reviewed_at": null,
+    "review_note": null,
+    "source_file": "alpha5-rezepte.json@1.0",
+    "import_assumptions": [
+      {
+        "ingredient_index": 3,
+        "food_id": "huehnerei",
+        "field": "heated",
+        "value": true,
+        "reason_de": "Schritt 2 gart die Zutat durch: „Koche das Ei parallel 9 Minuten hart, schrecke es kalt ab und pelle es.“"
+      }
+    ],
+    "import_assumptions_confirmed_by": null,
+    "import_hash": "0a97bec67a7af9641abc9665482ee5f5ca5bd8f4c1afe9fa2a5137d825905d6d"
+  }
+}

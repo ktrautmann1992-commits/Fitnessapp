@@ -1,0 +1,147 @@
+{
+  "id": "zucchini-puffer-mit-skyr-tzatziki",
+  "version": 1,
+  "status": "draft",
+  "title_de": "Zucchini-Puffer mit Skyr-Tzatziki",
+  "description_de": "Goldbraune Gemüsepuffer mit Parmesan, dazu ein frisches Tzatziki aus Skyr, Gurke und Knoblauch.",
+  "section_de": "Abendessen",
+  "categories": [],
+  "meal_types": ["main"],
+  "training_tags": [],
+  "servings": 1,
+  "ingredients": [
+    {
+      "food_id": "zucchini",
+      "amount": 250,
+      "unit": "g",
+      "optional": false,
+      "display_de": "1 Zucchini (250 g)",
+      "scales": true,
+      "role": "vegetable"
+    },
+    {
+      "food_id": "huehnerei",
+      "amount": 120,
+      "unit": "g",
+      "optional": false,
+      "display_de": "2 Eier (Größe M)",
+      "scales": true,
+      "heated": false,
+      "role": "protein"
+    },
+    {
+      "food_id": "haferflocken",
+      "amount": 30,
+      "unit": "g",
+      "optional": false,
+      "display_de": "30 g, zarte",
+      "scales": true,
+      "role": "carb"
+    },
+    {
+      "food_id": "parmesan",
+      "amount": 15,
+      "unit": "g",
+      "optional": false,
+      "display_de": "15 g, gerieben",
+      "scales": true,
+      "role": "protein"
+    },
+    {
+      "food_id": "rapsoel",
+      "amount": 10,
+      "unit": "g",
+      "optional": false,
+      "display_de": "2 TL (10 g)",
+      "scales": true,
+      "role": "fat"
+    },
+    {
+      "food_id": "skyr-natur",
+      "amount": 150,
+      "unit": "g",
+      "optional": false,
+      "display_de": "150 g",
+      "scales": true,
+      "role": "protein"
+    },
+    {
+      "food_id": "gurke",
+      "amount": 50,
+      "unit": "g",
+      "optional": false,
+      "display_de": "50 g",
+      "scales": true,
+      "role": "vegetable"
+    },
+    {
+      "food_id": "knoblauch",
+      "amount": 3,
+      "unit": "g",
+      "optional": false,
+      "display_de": "1 kleine Zehe (3 g)",
+      "scales": true,
+      "role": "vegetable"
+    },
+    {
+      "food_id": "salz",
+      "amount": 1,
+      "unit": "pinch",
+      "optional": false,
+      "display_de": "nach Geschmack",
+      "scales": false,
+      "role": "seasoning"
+    },
+    {
+      "food_id": "pfeffer",
+      "amount": 1,
+      "unit": "pinch",
+      "optional": false,
+      "display_de": "nach Geschmack",
+      "scales": false,
+      "role": "seasoning"
+    }
+  ],
+  "steps_de": [
+    "Raspel die Zucchini grob, salze sie leicht, lass sie 5 Minuten ziehen und drück sie dann in einem sauberen Tuch kräftig aus.",
+    "Vermische die Zucchini mit Eiern, Haferflocken, Parmesan und Pfeffer zu einem Teig.",
+    "Erhitze das Rapsöl in einer beschichteten Pfanne bei mittlerer Hitze, setz 4–5 flache Puffer hinein und brate sie je Seite 3–4 Minuten goldbraun.",
+    "Raspel die Gurke für das Tzatziki, drück sie aus und verrühre sie mit Skyr, gepresstem Knoblauch und Salz.",
+    "Serviere die Puffer heiß mit dem Tzatziki."
+  ],
+  "tip_de": "Das Ausdrücken der Zucchini ist entscheidend – sonst werden die Puffer matschig.",
+  "total_minutes": 25,
+  "prep_minutes": 21,
+  "cook_minutes": 4,
+  "no_cook": false,
+  "meal_prep": {
+    "suitable": false,
+    "fridge_days": 0,
+    "freezable": false
+  },
+  "equipment_de": [],
+  "declared_per_serving": {
+    "kcal": 578,
+    "protein_g": 45.4,
+    "carbs_g": 31.7,
+    "fat_g": 28.9
+  },
+  "declared_diet": "omnivore",
+  "declared_allergens": ["gluten", "dairy", "lactose", "eggs", "histamine", "onion_garlic"],
+  "contains_pork": false,
+  "declared_pregnancy_caution": true,
+  "meta": {
+    "origin": "manual",
+    "model": null,
+    "batch_id": null,
+    "created_on": "2026-10-11",
+    "expert_reviewed": false,
+    "reviewed_by": null,
+    "reviewed_at": null,
+    "review_note": null,
+    "source_file": "alpha5-rezepte.json@1.0",
+    "import_assumptions": [],
+    "import_assumptions_confirmed_by": null,
+    "import_hash": "7b10feba84913e4d95dd0834109e3345b61545b4f97b2784507f532d92eac7e8"
+  }
+}

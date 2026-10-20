@@ -1,0 +1,155 @@
+{
+  "id": "rindfleisch-brokkoli-wok-mit-ingwer",
+  "version": 1,
+  "status": "draft",
+  "title_de": "Rindfleisch-Brokkoli-Wok mit Ingwer",
+  "description_de": "Zarte Rindfleischstreifen und viel Brokkoli in glänzender Soja-Ingwer-Sauce mit einer kleinen Portion Reis – der Asia-Imbiss-Klassiker, nur leichter.",
+  "section_de": "Abendessen",
+  "categories": ["post-workout"],
+  "meal_types": ["main"],
+  "training_tags": ["nach_training"],
+  "servings": 1,
+  "ingredients": [
+    {
+      "food_id": "rinderhueftsteak",
+      "amount": 170,
+      "unit": "g",
+      "optional": false,
+      "display_de": "1 Steak (170 g)",
+      "scales": true,
+      "heated": false,
+      "role": "protein"
+    },
+    {
+      "food_id": "brokkoli",
+      "amount": 250,
+      "unit": "g",
+      "optional": false,
+      "display_de": "½ Kopf (250 g)",
+      "scales": true,
+      "role": "vegetable"
+    },
+    {
+      "food_id": "basmatireis-trocken",
+      "amount": 50,
+      "unit": "g",
+      "optional": false,
+      "display_de": "50 g",
+      "scales": true,
+      "role": "carb"
+    },
+    {
+      "food_id": "sojasauce",
+      "amount": 20,
+      "unit": "g",
+      "optional": false,
+      "display_de": "1 EL + 1 TL (20 g)",
+      "scales": true,
+      "role": "protein"
+    },
+    {
+      "food_id": "speisestaerke",
+      "amount": 5,
+      "unit": "g",
+      "optional": false,
+      "display_de": "1 TL (5 g)",
+      "scales": true,
+      "role": "seasoning"
+    },
+    {
+      "food_id": "honig",
+      "amount": 5,
+      "unit": "g",
+      "optional": false,
+      "display_de": "1 TL (5 g)",
+      "scales": true,
+      "role": "sweet"
+    },
+    {
+      "food_id": "knoblauch",
+      "amount": 3,
+      "unit": "g",
+      "optional": false,
+      "display_de": "1 kleine Zehe (3 g)",
+      "scales": true,
+      "role": "vegetable"
+    },
+    {
+      "food_id": "ingwer",
+      "amount": 5,
+      "unit": "g",
+      "optional": false,
+      "display_de": "1 daumennagelgroßes Stück (5 g)",
+      "scales": true,
+      "role": "vegetable"
+    },
+    {
+      "food_id": "rapsoel",
+      "amount": 10,
+      "unit": "g",
+      "optional": false,
+      "display_de": "2 TL (10 g)",
+      "scales": true,
+      "role": "fat"
+    },
+    {
+      "food_id": "wasser",
+      "amount": 150,
+      "unit": "ml",
+      "optional": false,
+      "display_de": "100 ml + 50 ml",
+      "scales": true,
+      "role": "seasoning"
+    }
+  ],
+  "steps_de": [
+    "Koche den Reis mit 100 ml Wasser zugedeckt 12–15 Minuten bei kleiner Hitze.",
+    "Schneide das Steak quer zur Faser in dünne Streifen und teile den Brokkoli in kleine Röschen.",
+    "Verrühre Sojasauce, Honig, Speisestärke, geriebenen Ingwer, gepressten Knoblauch und 50 ml Wasser zu einer Sauce.",
+    "Brate das Rindfleisch in 1 TL Rapsöl im sehr heißen Wok 1–2 Minuten scharf an und nimm es heraus; brate dann den Brokkoli im restlichen Öl 4 Minuten unter Rühren.",
+    "Gib Fleisch und Sauce zurück in den Wok, lass alles 1 Minute aufkochen, bis die Sauce bindet, und serviere es mit dem Reis."
+  ],
+  "tip_de": "Wer abends Kohlenhydrate sparen will, lässt den Reis weg und nimmt 100 g Brokkoli mehr.",
+  "total_minutes": 20,
+  "prep_minutes": 1,
+  "cook_minutes": 19,
+  "no_cook": false,
+  "meal_prep": {
+    "suitable": false,
+    "fridge_days": 0,
+    "freezable": false
+  },
+  "equipment_de": [],
+  "declared_per_serving": {
+    "kcal": 604,
+    "protein_g": 52.6,
+    "carbs_g": 56.4,
+    "fat_g": 16.9
+  },
+  "declared_diet": "omnivore",
+  "declared_allergens": [
+    "gluten",
+    "beef",
+    "legumes",
+    "soy",
+    "fructose",
+    "histamine",
+    "onion_garlic"
+  ],
+  "contains_pork": false,
+  "declared_pregnancy_caution": true,
+  "meta": {
+    "origin": "manual",
+    "model": null,
+    "batch_id": null,
+    "created_on": "2026-10-11",
+    "expert_reviewed": false,
+    "reviewed_by": null,
+    "reviewed_at": null,
+    "review_note": null,
+    "source_file": "alpha5-rezepte.json@1.0",
+    "import_assumptions": [],
+    "import_assumptions_confirmed_by": null,
+    "import_hash": "0cef5c33a7583741f1f3d7b1a0fabe2649c4003b912a783d6690f653f5488cd4"
+  }
+}

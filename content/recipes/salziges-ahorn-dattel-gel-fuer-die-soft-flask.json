@@ -1,0 +1,101 @@
+{
+  "id": "salziges-ahorn-dattel-gel-fuer-die-soft-flask",
+  "version": 1,
+  "status": "draft",
+  "title_de": "Salziges Ahorn-Dattel-Gel für die Soft-Flask",
+  "description_de": "Selbst gemixtes Gel aus Ahornsirup und Datteln mit einer Prise Salz liefert rund 40 g schnelle Kohlenhydrate pro Portion – einfach unterwegs aus der Flasche zu drücken.",
+  "section_de": "Im Rennen",
+  "categories": ["schnell", "wettkampf"],
+  "meal_types": ["snack"],
+  "training_tags": ["waehrend"],
+  "servings": 1,
+  "ingredients": [
+    {
+      "food_id": "ahornsirup",
+      "amount": 40,
+      "unit": "g",
+      "optional": false,
+      "display_de": "2 EL (40 g)",
+      "scales": true,
+      "role": "sweet"
+    },
+    {
+      "food_id": "datteln-getrocknet-entsteint",
+      "amount": 20,
+      "unit": "g",
+      "optional": false,
+      "display_de": "2 Datteln (20 g)",
+      "scales": true,
+      "role": "sweet"
+    },
+    {
+      "food_id": "wasser",
+      "amount": 30,
+      "unit": "g",
+      "optional": false,
+      "display_de": "2 EL (30 ml), warm",
+      "scales": true,
+      "role": "seasoning"
+    },
+    {
+      "food_id": "zitronensaft",
+      "amount": 5,
+      "unit": "g",
+      "optional": false,
+      "display_de": "1 TL (5 g)",
+      "scales": true,
+      "role": "vegetable"
+    },
+    {
+      "food_id": "salz",
+      "amount": 1,
+      "unit": "pinch",
+      "optional": false,
+      "display_de": "1 kräftige Prise (ca. 0,3 g)",
+      "scales": true,
+      "role": "seasoning"
+    }
+  ],
+  "steps_de": [
+    "Weiche die Datteln 5 Minuten im warmen Wasser ein.",
+    "Püriere Datteln samt Einweichwasser, Ahornsirup, Zitronensaft und Salz mit dem Stabmixer ganz glatt.",
+    "Fülle das Gel in eine kleine Soft-Flask oder einen wiederbefüllbaren Gelbeutel.",
+    "Nimm es im Rennen in kleinen Schlucken über etwa 30–45 Minuten und trink jeweils etwas Wasser nach."
+  ],
+  "tip_de": "Eine Portion deckt etwa eine Dreiviertelstunde ab – für längere Rennen mehrere Portionen vorbereiten. Unbedingt vorher im Training testen; im Kühlschrank hält sich das Gel 3 Tage.",
+  "tags_de": ["Unter 10 Minuten", "Wettkampf", "zum Mitnehmen"],
+  "total_minutes": 5,
+  "prep_minutes": 5,
+  "cook_minutes": 0,
+  "no_cook": false,
+  "meal_prep": {
+    "suitable": false,
+    "fridge_days": 0,
+    "freezable": false
+  },
+  "equipment_de": [],
+  "declared_per_serving": {
+    "kcal": 161,
+    "protein_g": 0.5,
+    "carbs_g": 40.1,
+    "fat_g": 0.1
+  },
+  "declared_diet": "vegan",
+  "declared_allergens": ["fructose"],
+  "contains_pork": false,
+  "declared_pregnancy_caution": false,
+  "meta": {
+    "origin": "manual",
+    "model": null,
+    "batch_id": null,
+    "created_on": "2026-10-11",
+    "expert_reviewed": false,
+    "reviewed_by": null,
+    "reviewed_at": null,
+    "review_note": null,
+    "source_file": "alpha5-rezepte.json@1.0",
+    "import_assumptions": [],
+    "import_assumptions_confirmed_by": null,
+    "import_hash": "14bd783fcfeab6baaea4164369b9eb7d5321ed7541d0b4d1c8295d2f7febfe48"
+  }
+}

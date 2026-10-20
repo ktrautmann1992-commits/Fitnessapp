@@ -1,0 +1,91 @@
+{
+  "id": "weizenbroetchen-mit-erdbeerkonfituere-und-orangensaft",
+  "version": 1,
+  "status": "draft",
+  "title_de": "Weizenbrötchen mit Erdbeerkonfitüre und Orangensaft",
+  "description_de": "Der Frühstücksklassiker vieler Läufer: helle Brötchen mit Konfitüre und ein Glas Saft liefern schnell verfügbare Kohlenhydrate und belasten den Magen kaum.",
+  "section_de": "Renntag-Frühstück (3 Std. vorher)",
+  "categories": ["schnell", "pre-workout", "wettkampf"],
+  "meal_types": ["breakfast"],
+  "training_tags": ["vor_training"],
+  "servings": 1,
+  "ingredients": [
+    {
+      "food_id": "weizenbroetchen",
+      "amount": 120,
+      "unit": "g",
+      "optional": false,
+      "display_de": "2 Brötchen (120 g)",
+      "scales": true,
+      "role": "carb"
+    },
+    {
+      "food_id": "erdbeerkonfituere",
+      "amount": 40,
+      "unit": "g",
+      "optional": false,
+      "display_de": "2 EL (40 g)",
+      "scales": true,
+      "role": "sweet"
+    },
+    {
+      "food_id": "orangensaft",
+      "amount": 200,
+      "unit": "g",
+      "optional": false,
+      "display_de": "1 Glas (200 ml)",
+      "scales": true,
+      "role": "carb"
+    },
+    {
+      "food_id": "salz",
+      "amount": 1,
+      "unit": "pinch",
+      "optional": false,
+      "display_de": "1 Prise",
+      "scales": true,
+      "role": "seasoning"
+    }
+  ],
+  "steps_de": [
+    "Schneide die Brötchen auf und toaste sie bei Bedarf kurz auf.",
+    "Bestreiche die Hälften dünn mit der Konfitüre und streue nach Wunsch eine winzige Prise Salz darüber.",
+    "Trink den Orangensaft langsam zum Frühstück und danach noch ein Glas Wasser."
+  ],
+  "tip_de": "Verträgst du Saft auf nüchternen Magen nicht gut, verdünne ihn 1:1 mit Wasser. Kauf die Brötchen am Vortag, falls am Renntag noch kein Bäcker offen hat.",
+  "tags_de": ["Unter 10 Minuten", "Wettkampf"],
+  "total_minutes": 5,
+  "prep_minutes": 5,
+  "cook_minutes": 0,
+  "no_cook": false,
+  "meal_prep": {
+    "suitable": false,
+    "fridge_days": 0,
+    "freezable": false
+  },
+  "equipment_de": [],
+  "declared_per_serving": {
+    "kcal": 508,
+    "protein_g": 11.8,
+    "carbs_g": 104.4,
+    "fat_g": 2.2
+  },
+  "declared_diet": "vegan",
+  "declared_allergens": ["gluten", "fructose"],
+  "contains_pork": false,
+  "declared_pregnancy_caution": false,
+  "meta": {
+    "origin": "manual",
+    "model": null,
+    "batch_id": null,
+    "created_on": "2026-10-11",
+    "expert_reviewed": false,
+    "reviewed_by": null,
+    "reviewed_at": null,
+    "review_note": null,
+    "source_file": "alpha5-rezepte.json@1.0",
+    "import_assumptions": [],
+    "import_assumptions_confirmed_by": null,
+    "import_hash": "33102dfdfa5772e74a63802aa8fbcedb2563d1236dbd5ffed6621419ef2e61d1"
+  }
+}

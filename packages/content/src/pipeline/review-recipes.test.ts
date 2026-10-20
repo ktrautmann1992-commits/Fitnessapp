@@ -399,7 +399,7 @@ describe('content-review Art „ids“ mit Ernährungs-Inhalten (Gründer-Entsch
     );
     expect(result.exitCode).toBe(1);
     expect(result.markdown).toContain(
-      '`haferflocken`: Lebensmittel werden nicht über content-review',
+      '`haferflocken`: Lebensmittel werden nicht über Art „ids“ freigegeben – dafür gibt es Art „katalog“',
     );
     expect(tools.prBodies).toEqual([]);
   });

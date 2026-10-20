@@ -10,9 +10,11 @@
  *     Echtheit. Wer Original UND Prüfsumme im selben PR ändert, fällt hier auf.
  *  3. SHA-256 von `extract.csv` = `extract_sha256`; Kopfzeile = Kopfzeile der Original-Datei; JEDE Zeile ist eine
  *     unveränderte Zeile der Original-Datei; Anzahl = `extract_rows`.
- *  4. Pull Request/Branch: Änderungen unter `content/sources/**` nur auf `foods-import/<run-id>`; jeder Commit,
- *     der `content/sources/**` oder `content/foods/**` berührt, ist von GitHub „verified“ und von
- *     `github-actions[bot]` (gefälschter Bot-Autor per git config ist nicht verified → rot).
+ *  4. Pull Request/Branch: Änderungen unter `content/sources/**` nur auf `foods-import/<run-id>`; unter
+ *     `content/foods/**` zusätzlich auf `content-review/katalog-<run-id>` (Katalog geprüft, R2-K6) – dort nur Status,
+ *     Prüfvermerk und `catalog_reviewed_*` (catalog-review-guard.ts); foods-import darf `catalog_reviewed_*` nur
+ *     zurücksetzen. Jeder Commit, der `content/sources/**` oder `content/foods/**` berührt, ist von GitHub „verified“
+ *     und von `github-actions[bot]` (gefälschter Bot-Autor per git config ist nicht verified → rot).
  * Jede Abweichung → rot.
  */
 import { serializeCsv, serializeRecord } from './csv';
@@ -24,6 +26,11 @@ import {
   sourceManifestSchema,
   SOURCES_DIR,
 } from './extract-source';
+import {
+  CATALOG_REVIEW_BRANCH,
+  catalogReviewChangeErrors,
+  importCatalogFieldErrors,
+} from './catalog-review-guard';
 import type { SourceDefinition } from './sources';
 
 /** Pfade, deren Änderung die volle Prüfung (mit Neuladen) auslöst (Plan 5.1.1 b). */
@@ -80,6 +87,21 @@ export interface IntegrityDeps {
   readonly headIsFork: boolean;
   /** Prüft, ob die Lauf-ID ein Lauf von `.github/workflows/foods-import.yml` (workflow_dispatch, main) ist. */
   importRunProvenance(runId: string): Promise<{ ok: boolean; reason: string }>;
+  /** Prüft, ob die Lauf-ID ein Lauf von `.github/workflows/content-review.yml` (workflow_dispatch, main) ist. */
+  reviewRunProvenance(runId: string): Promise<{ ok: boolean; reason: string }>;
+  /** Datei im Vergleichsstand (main); undefined = fehlt dort. */
+  readBaseFile(path: string): Buffer | undefined;
+}
+
+async function runCheck(
+  check: (runId: string) => Promise<{ ok: boolean; reason: string }>,
+  runId: string,
+): Promise<{ ok: boolean; reason: string }> {
+  try {
+    return await check(runId);
+  } catch (error) {
+    return { ok: false, reason: `Abfrage fehlgeschlagen: ${(error as Error).message}` };
+  }
 }
 
 export interface IntegrityResult {
@@ -244,22 +266,42 @@ export async function checkSourcesIntegrity(deps: IntegrityDeps): Promise<Integr
           `Pull Request aus einem Fork ändert content/sources bzw. content/foods – nur der Workflow foods-import dieses Repositorys darf das: ${protectedChanges.join(', ')}`,
         );
       }
-      const match = deps.branch === null ? null : FOODS_IMPORT_BRANCH.exec(deps.branch);
-      const runId = match?.[1];
-      if (runId === undefined) {
-        errors.push(
-          `Änderungen unter content/sources/ bzw. content/foods/ nur über den Workflow foods-import (Branch foods-import/<Lauf-ID>), hier Branch „${deps.branch ?? 'unbekannt'}“: ${protectedChanges.join(', ')}`,
-        );
-      } else {
-        let run: { ok: boolean; reason: string };
-        try {
-          run = await deps.importRunProvenance(runId);
-        } catch (error) {
-          run = { ok: false, reason: `Abfrage fehlgeschlagen: ${(error as Error).message}` };
-        }
+      const sourcesChanges = touched(['content/sources/']);
+      const foodsChanges = touched(['content/foods/']);
+      const importRunId =
+        deps.branch === null ? undefined : FOODS_IMPORT_BRANCH.exec(deps.branch)?.[1];
+      const reviewRunId =
+        deps.branch === null ? undefined : CATALOG_REVIEW_BRANCH.exec(deps.branch)?.[1];
+      if (reviewRunId !== undefined && sourcesChanges.length === 0) {
+        // Katalog geprüft (R2-K6): Lauf von content-review auf main, nur erlaubte Felder.
+        const run = await runCheck(deps.reviewRunProvenance, reviewRunId);
         if (!run.ok) {
           errors.push(
-            `Lauf ${runId} aus dem Branch-Namen ist kein Lauf von foods-import.yml auf main (${run.reason}).`,
+            `Lauf ${reviewRunId} aus dem Branch-Namen ist kein Lauf von content-review.yml auf main (${run.reason}).`,
+          );
+        }
+        for (const path of foodsChanges) {
+          errors.push(
+            ...catalogReviewChangeErrors(path, deps.readBaseFile(path), deps.readFile(path)),
+          );
+        }
+        notes.push(
+          `Katalog-Prüfung (content-review): ${foodsChanges.length} Datei(en) – nur Status, Prüfvermerk und catalog_reviewed_* geprüft.`,
+        );
+      } else if (importRunId === undefined) {
+        errors.push(
+          `Änderungen unter content/sources/ bzw. content/foods/ nur über den Workflow foods-import (Branch foods-import/<Lauf-ID>) – Lebensmittel zusätzlich über content-review Art „katalog“ (Branch content-review/katalog-<Lauf-ID>, nur Katalog-Prüfung) –, hier Branch „${deps.branch ?? 'unbekannt'}“: ${protectedChanges.join(', ')}`,
+        );
+      } else {
+        const run = await runCheck(deps.importRunProvenance, importRunId);
+        if (!run.ok) {
+          errors.push(
+            `Lauf ${importRunId} aus dem Branch-Namen ist kein Lauf von foods-import.yml auf main (${run.reason}).`,
+          );
+        }
+        for (const path of foodsChanges) {
+          errors.push(
+            ...importCatalogFieldErrors(path, deps.readBaseFile(path), deps.readFile(path)),
           );
         }
       }
