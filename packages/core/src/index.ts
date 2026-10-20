@@ -20,6 +20,7 @@ export * from './nutrition';
 export * from './evaluation';
 export * from './retail';
 export * from './routes';
+export * from './share';
 export * from './dashboard';
 export * from './notifications';
 // Supplement-Modul (docs/PLAN-PHASE-6.md, Etappe SU1). Im Ordner `supplements/` gibt es bewusst KEIN index.ts

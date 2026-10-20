@@ -80,6 +80,7 @@ import {
   MIFFLIN_ST_JEOR,
   MIN_INTAKE_RELATIVE_TO_BMR,
   CARDIO_PLAUSIBILITY_KMH,
+  ROUTE_ELEVATION_PROFILE,
   ROUTE_FILTER,
   TRACKED_ROUTE_LIMITS,
   TRACKED_ROUTE_LOG_MATCH,
@@ -217,6 +218,7 @@ import { trainingSlotItemSchema } from './training-schedule';
 import {
   POLYLINE_PATTERN,
   TRACKED_ROUTE_NAME_TRIM_CLASS,
+  TRACKED_ROUTE_OPTIONAL_KEYS,
   trackedRouteSchema,
   updateTrackedRouteSchema,
 } from './routes/schema';
@@ -2042,10 +2044,53 @@ describe('Strecken in der Datenbank (Phase 10 S1)', () => {
     if (start < 0) throw new Error(`${name} nicht gefunden`);
     return sql.slice(start, sql.indexOf('$$;', sql.indexOf('as $$', start)));
   };
-  const save = fn(rpcs, 'public.save_tracked_route');
+  // Neueste Fassung (Etappe E4: + optionales Höhenprofil); die S1-Fassung ist darin Zeile für Zeile enthalten.
+  const elevation = readMigration('_tracked_route_elevation_profile.sql');
+  const saveS1 = fn(rpcs, 'public.save_tracked_route');
+  const save = fn(elevation, 'public.save_tracked_route');
   const update = fn(rpcs, 'public.update_tracked_route');
+  /** Zeilen der älteren Fassung, die in der neueren (in Reihenfolge, ggf. mit Komma am Ende) fehlen. */
+  const missingLines = (older: string, newer: string) => {
+    const next = newer.split('\n');
+    let at = 0;
+    const missing: string[] = [];
+    for (const line of older.split('\n')) {
+      const found = next.findIndex((n, i) => i >= at && (n === line || n === `${line},`));
+      if (found < 0) missing.push(line);
+      else at = found + 1;
+    }
+    return missing;
+  };
   const block = table.slice(table.indexOf('create table public.tracked_routes ('));
   const L = TRACKED_ROUTE_LIMITS;
+
+  it('Höhenprofil (E4): neueste save_tracked_route = S1-Fassung + nur das optionale Feld; Spalte additiv', () => {
+    expect(missingLines(saveS1, save)).toEqual([
+      "  perform private.assert_json_keys(r, route_keys, 'Strecke');",
+    ]);
+    const newest = migrationFiles.filter((n) =>
+      readMigration(n).includes('create or replace function public.save_tracked_route('),
+    );
+    expect(newest.at(-1)).toMatch(/_tracked_route_elevation_profile\.sql$/);
+    expect(elevation).toContain(
+      'alter table public.tracked_routes add column elevation_profile jsonb;',
+    );
+    expect(elevation).toContain(
+      'check (elevation_profile is null or private.elevation_profile_valid(elevation_profile))',
+    );
+    expect(elevation).not.toMatch(/drop |alter column|rename /i);
+    const valid = fn(elevation, 'private.elevation_profile_valid');
+    const P = ROUTE_ELEVATION_PROFILE;
+    expect(valid).toContain(`max_points constant integer := ${P.maxPoints};`);
+    expect(valid).toContain(`max_distance_m constant integer := ${L.distanceM.max};`);
+    expect(valid).toContain(`min_height_dm constant integer := ${P.heightDm.min};`);
+    expect(valid).toContain(`max_height_dm constant integer := ${P.heightDm.max};`);
+    expect(valid).toContain('or h not between min_height_dm and max_height_dm or d < prev then');
+    // Export: ganze Zeile (to_jsonb(t)) – die Spalte ist automatisch dabei.
+    expect(readMigration('_tracked_route_rpcs.sql')).toContain(
+      "'tracked_routes', (select coalesce(jsonb_agg(to_jsonb(t) order by t.started_at, t.created_at), '[]'::jsonb)",
+    );
+  });
 
   it('Enums in eigener Datei VOR der Tabelle', () => {
     const enumsFile = migrationFiles.findIndex((n) => n.endsWith('_tracked_route_enums.sql'));
@@ -2063,11 +2108,28 @@ describe('Strecken in der Datenbank (Phase 10 S1)', () => {
     }
   });
 
-  it('route_keys = Felder von trackedRouteSchema (alle Pflicht), update_keys = updateTrackedRouteSchema', () => {
+  it('route_keys = Pflichtfelder von trackedRouteSchema, optional_keys = TRACKED_ROUTE_OPTIONAL_KEYS, update_keys = updateTrackedRouteSchema', () => {
+    const optional: readonly string[] = TRACKED_ROUTE_OPTIONAL_KEYS;
     expect(quotedListAfter(save, 'route_keys constant text[] := array[').sort()).toEqual(
-      Object.keys(trackedRouteSchema.shape).sort(),
+      Object.keys(trackedRouteSchema.shape)
+        .filter((key) => !optional.includes(key))
+        .sort(),
     );
+    expect(quotedListAfter(save, 'optional_keys constant text[] := array[').sort()).toEqual(
+      [...optional].sort(),
+    );
+    // Optionale Felder sind in Zod wirklich optional.
+    for (const key of optional) {
+      const shape = trackedRouteSchema.shape as Record<
+        string,
+        { safeParse: (v: unknown) => { success: boolean } }
+      >;
+      expect(shape[key]?.safeParse(undefined).success, key).toBe(true);
+    }
     expect(save).toContain('if not (r ?& route_keys)');
+    expect(save).toContain(
+      "perform private.assert_json_keys(r, route_keys || optional_keys, 'Strecke');",
+    );
     expect(quotedListAfter(update, 'update_keys constant text[] := array[').sort()).toEqual(
       Object.keys(updateTrackedRouteSchema.shape).sort(),
     );
