@@ -973,6 +973,39 @@ es mit N7 Teil 2), der Trainingsteil geht in beiden Modi.
 **Bitte fachlich prüfen lassen (vor dem Livegang):** Muster-Hinweis ab 3 Tagen unter dem Mindestbedarf je Woche
 (A-G13, Konstante `WEEK_EVALUATION` in `packages/core/src/constants.ts`).
 
+## Teil 7r – Ernährung: Tagesansicht mit Kalorien-Ring testen (20.10.2026, Testmodus)
+
+Die Tagesansicht im Reiter **Ernährung** sieht jetzt so aus (eigenes Alpha5-Design, hell und dunkel):
+
+- Oben **„Heute“** und darunter Datum mit Kalenderwoche (z. B. „Montag, 12.10. · KW 42“). Anderer Tag: Wochentag und „KW …“.
+- Karte **„Übersicht“**: großer **Kalorien-Ring** – in der Mitte „… übrig“ (bzw. neutral „… zu viel“), links
+  **„Gegessen“**, rechts **„Verbrannt“** (Training des Tages, steht klein „im Ziel enthalten“ – es wird **nicht**
+  doppelt dazugezählt) oder – an Tagen ohne Training – **„Ziel“**. Darunter „Tagesziel: … kcal“ und drei
+  **Makro-Balken** Kohlenhydrate / Eiweiß / Fett („47 / 222 g“ = gegessen / Ziel).
+- Abschnitt **„Ernährung“**: je eine Karte **Frühstück, Mittagessen, Abendessen, Snacks** mit kleinem Ring,
+  „317 / 606 kcal“ (gegessen / Anteil am Tagesziel), Vorschau der Einträge und rundem **„+“** rechts. Die Gerichte aus
+  dem Essensplan stehen in der passenden Karte (antippen = Rezept, „Gegessen“, „Rezept tauschen“ wie bisher). Bei nur
+  einer Mahlzeit am Tag heißt die Karte „Hauptmahlzeit“.
+- Darunter wie bisher **„Gegessen“** mit allen Einträgen (Ändern, Löschen, Stern) und „Eigene Gerichte“.
+
+So prüft ihr es am Handy:
+
+1. Vorschau-Link → Testkonto wie in Teil 7c (4 Mahlzeiten, Mo/Mi/Fr Kraft) → **Ernährung**.
+2. **Prüfen:** Ring zeigt „… übrig“, links „Gegessen 0“, darunter „Noch nichts eingetragen.“; an einem Trainingstag
+   rechts „Verbrannt … im Ziel enthalten“, sonst „Ziel“.
+3. Bei **Frühstück** auf **„+“** tippen → der Eintrage-Dialog öffnet sich mit **Mahlzeit „Frühstück“** vorgewählt
+   (Zuletzt, Favoriten, Suche, Schnell, „Per Foto“, „Barcode“ wie gewohnt). Z. B. Suche „Banane“ → eintragen → zurück.
+   **Prüfen:** Frühstücks-Karte zeigt „… / … kcal“ und „Banane“, der große Ring „Gegessen“ ist gestiegen, „übrig“
+   entsprechend gesunken; die Makro-Balken füllen sich.
+4. Snacks **„+“** → Schnelleintrag z. B. „Auswärts gegessen, 3.000 kcal“ → **Prüfen:** In der Mitte steht neutral
+   „… zu viel“, der Ring bekommt eine zweite Runde (hell: schwarz, dunkel: weiß). Keine roten Warnungen.
+5. Mit **„Nächster Tag“** auf einen künftigen Tag → Ring zeigt nur das **Tagesziel**, keine „+“-Knöpfe.
+6. **Flugmodus an** (bzw. im Browser offline) → oben Hinweis „Du bist offline …“ – Eintragen geht weiter.
+7. **Einstellungen → Kalorienzahlen anzeigen** aus → kein Ring, keine kcal, Karten nur mit Vorschau und „+“.
+8. Mit Bildschirmleser (VoiceOver/TalkBack): Ring wird z. B. als „1.391 kcal übrig von 2.869 kcal Tagesziel“
+   vorgelesen, die Balken als „Eiweiß: 47 von 222 Gramm gegessen“, „+“ als „Frühstück für heute eintragen“.
+9. Alles einmal hell und einmal dunkel ansehen.
+
 ## Teil 7m – Startbildschirm, Anmelden, Übersicht und Menüleiste testen (18.10.2026)
 Ihr müsst nichts einstellen – keine Datenbank-Änderung. Getestet mit **Chrome am iPhone** (Vorschau-Link aus dem Pull
 Request), am besten in einem **Inkognito-Tab**: Chrome → unten rechts **⋯** → **Neuer Inkognito-Tab** → Vorschau-Link

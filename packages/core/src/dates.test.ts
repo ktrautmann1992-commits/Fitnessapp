@@ -6,6 +6,7 @@ import {
   daysBetween,
   isoDateInTimeZone,
   isoWeekday,
+  isoWeekNumber,
   startOfIsoWeek,
 } from './dates';
 
@@ -51,6 +52,19 @@ describe('ISO-Woche (Plan-Engine)', () => {
     expect(startOfIsoWeek('2027-01-01')).toBe('2026-12-28');
     // Sommerzeit-Ende (25.10.2026) ändert nichts an der Kalenderrechnung.
     expect(startOfIsoWeek('2026-10-27')).toBe('2026-10-26');
+  });
+
+  it('isoWeekNumber: Kalenderwoche nach ISO 8601, auch über den Jahreswechsel', () => {
+    expect(isoWeekNumber('2026-10-12')).toBe(42);
+    expect(isoWeekNumber('2026-10-18')).toBe(42);
+    expect(isoWeekNumber('2026-01-01')).toBe(1);
+    // 1.1.2021 (Freitag) gehört zur KW 53 von 2020.
+    expect(isoWeekNumber('2021-01-01')).toBe(53);
+    expect(isoWeekNumber('2021-01-04')).toBe(1);
+    // 31.12.2024 (Dienstag) ist schon KW 1 von 2025.
+    expect(isoWeekNumber('2024-12-31')).toBe(1);
+    expect(isoWeekNumber('2026-12-31')).toBe(53);
+    expect(() => isoWeekNumber('2026-13-01')).toThrow();
   });
 
   it('daysBetween', () => {

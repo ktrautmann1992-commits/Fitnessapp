@@ -1,5 +1,6 @@
 export * from './body-data';
 export * from './competition';
+export * from './day-ring';
 export * from './day-view';
 export * from './eligibility';
 export * from './custom-meal';

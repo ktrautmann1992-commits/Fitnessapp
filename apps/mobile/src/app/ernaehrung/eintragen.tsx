@@ -89,7 +89,8 @@ type Message = { text: string; tone: 'success' | 'danger' | 'warning' };
 /**
  * Ernährung → „Eintragen“ (Etappe E1, docs/PLAN-AUSWERTUNG.md Abschnitt 5): Reiter Zuletzt · Favoriten · Suche ·
  * Schnell, dazu Tag (heute bis 14 Tage zurück) und Mahlzeit. Mit `bearbeiten=<id>` ändert der Bildschirm einen
- * Eintrag (Menge/Portion, Mahlzeit, Tag; Schnelleintrag: Bezeichnung und kcal). Alle Werte rechnet packages/core
+ * Eintrag (Menge/Portion, Mahlzeit, Tag; Schnelleintrag: Bezeichnung und kcal). Mit `platz=` (z. B. vom „+“ einer
+ * Mahlzeiten-Karte) ist die Mahlzeit vorbelegt. Alle Werte rechnet packages/core
  * (`entryFromFood`, `entryFromRecipe`, `quickEntry`, `rebuildEntry`); ab 1.500 kcal fragt die App „Stimmt die Menge?“
  * (keine Sperre). Bei „Kalorienzahlen aus“ keine kcal und kein kcal-Feld. Ohne Einwilligung health_data kein Eintragen
  * (A-G12). Kein Essensplan nötig. Etappe E2: unter „Favoriten“ die eigenen Gerichte (Portion 0,25–3), unter „Zuletzt“
@@ -99,7 +100,13 @@ type Message = { text: string; tone: 'success' | 'danger' | 'warning' };
 export default function FoodLogEntryScreen() {
   const router = useRouter();
   const app = useApp();
-  const params = useLocalSearchParams<{ tag?: string; bearbeiten?: string; rezept?: string }>();
+  const params = useLocalSearchParams<{
+    tag?: string;
+    bearbeiten?: string;
+    rezept?: string;
+    /** Vorbelegte Mahlzeit („+“ an der Mahlzeiten-Karte der Tagesübersicht): breakfast, lunch, dinner, other. */
+    platz?: string;
+  }>();
   const today = useToday();
   const editId = typeof params.bearbeiten === 'string' ? params.bearbeiten : null;
   const editRow = editId ? (app.rows?.foodLogEntries.find((e) => e.id === editId) ?? null) : null;
@@ -110,9 +117,9 @@ export default function FoodLogEntryScreen() {
   const date = pickedDate ?? editRow?.eaten_on ?? today;
   const [slot, setSlot] = useState<FoodLogManualSlot>(() => {
     const now = new Date();
-    return editRow
-      ? manualSlotOf(editRow.slot)
-      : defaultFoodLogSlot(now.getHours() * 60 + now.getMinutes());
+    if (editRow) return manualSlotOf(editRow.slot);
+    const fromCard = FOOD_LOG_MANUAL_SLOTS.find((s) => s === params.platz);
+    return fromCard ?? defaultFoodLogSlot(now.getHours() * 60 + now.getMinutes());
   });
   const [tab, setTab] = useState<Tab>(typeof params.rezept === 'string' ? 'search' : 'recent');
   const view = useNutritionWeek(date);

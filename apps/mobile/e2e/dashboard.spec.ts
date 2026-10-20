@@ -320,13 +320,17 @@ test('Reiter „Ernährung“: anderer Tag aus der Woche ohne zweite Reiter-Inst
   // Genau eine Menüleiste im Dokument (keine zweite Reiter-Instanz über dem Stapel).
   await expect(page.getByTestId('tab-bar')).toHaveCount(1);
   await page.getByTestId('nutrition-to-today').click();
-  await expect(page.getByRole('heading', { name: /^Heute, / })).toBeVisible();
+  await expect(
+    page.getByTestId('nutrition-day-header').getByRole('heading', { name: 'Heute', exact: true }),
+  ).toBeVisible();
   await expect(page.getByTestId('nutrition-to-today')).toHaveCount(0);
 
   // Reiter „Ernährung“ antippen springt auf heute.
   await openFriday();
   await tab(page, 'Ernährung').click();
-  await expect(page.getByRole('heading', { name: /^Heute, / })).toBeVisible();
+  await expect(
+    page.getByTestId('nutrition-day-header').getByRole('heading', { name: 'Heute', exact: true }),
+  ).toBeVisible();
   await expect(page).toHaveURL(/\/ernaehrung$/);
   await expect(page.getByTestId('tab-bar')).toHaveCount(1);
 });
