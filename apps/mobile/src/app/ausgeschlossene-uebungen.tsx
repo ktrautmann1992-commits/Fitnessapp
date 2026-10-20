@@ -2,7 +2,7 @@ import { type EquipmentLocation, type ExclusionEntry, exclusionOverview } from '
 import { fontSize, fontWeight, spacing } from '@fitnessapp/ui';
 import { Redirect, useRouter, type Href } from 'expo-router';
 import { useEffect, useMemo, useState } from 'react';
-import { StyleSheet, Text, View } from 'react-native';
+import { StyleSheet, View } from 'react-native';
 
 import { ConfirmDialog, Screen } from '@/components/screen';
 import { SwapFeedback } from '@/components/swap';
@@ -14,6 +14,7 @@ import { placeText } from '@/lib/swap-format';
 import { useThemeColors } from '@/lib/theme';
 import { useApp } from '@/state/app-state';
 import { HOME_ROUTE, resolveEntryRoute } from '@/state/flow';
+import { Text } from '@/components/text';
 
 /**
  * Einstellungen → „Ausgeschlossene Übungen“ (docs/PLAN-UEBUNGEN-GLOSSAR-TAUSCH.md 8.2, Etappe T2): je Ort Übung, Grund

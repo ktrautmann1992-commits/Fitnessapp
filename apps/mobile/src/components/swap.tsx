@@ -12,7 +12,6 @@ import {
   Platform,
   ScrollView,
   StyleSheet,
-  Text,
   View,
 } from 'react-native';
 
@@ -22,6 +21,7 @@ import { placeText } from '@/lib/swap-format';
 import { useThemeColors } from '@/lib/theme';
 
 import { Body, Button, FieldError, Heading, Notice, OptionButton } from './ui';
+import { Text } from '@/components/text';
 
 /**
  * Tausch-Dialog (docs/PLAN-UEBUNGEN-GLOSSAR-TAUSCH.md 8.2/8.3, Etappe T2) auf einer Fläche: Alternative wählen, „Wie

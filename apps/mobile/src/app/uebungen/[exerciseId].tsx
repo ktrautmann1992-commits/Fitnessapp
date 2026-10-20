@@ -2,7 +2,7 @@ import { glossaryEntry } from '@fitnessapp/core';
 import { fontSize, fontWeight, spacing } from '@fitnessapp/ui';
 import { Redirect, useLocalSearchParams, useRouter, type Href } from 'expo-router';
 import { useEffect, useMemo } from 'react';
-import { StyleSheet, Text, View } from 'react-native';
+import { StyleSheet, View } from 'react-native';
 
 import { MuscleMap, StartPositionImage } from '@/components/muscle-map';
 import { Screen } from '@/components/screen';
@@ -18,6 +18,7 @@ import { placeText } from '@/lib/swap-format';
 import { useThemeColors } from '@/lib/theme';
 import { useApp } from '@/state/app-state';
 import { HOME_ROUTE, resolveEntryRoute } from '@/state/flow';
+import { Text } from '@/components/text';
 
 /**
  * Glossar-Detailseite (docs/PLAN-UEBUNGEN-GLOSSAR-TAUSCH.md 8.1, Etappe G1): Name, andere Namen, Merkmale,

@@ -11,7 +11,7 @@ import {
 import { fontSize, fontWeight, radius, spacing } from '@fitnessapp/ui';
 import { Redirect, useLocalSearchParams, useRouter, type Href } from 'expo-router';
 import { useState, type ReactNode } from 'react';
-import { Pressable, StyleSheet, Text, View } from 'react-native';
+import { Pressable, StyleSheet, View } from 'react-native';
 
 import {
   ConsentBlockedNotice,
@@ -49,6 +49,7 @@ import { useThemeColors } from '@/lib/theme';
 import { useApp } from '@/state/app-state';
 import { HOME_ROUTE, resolveEntryRoute } from '@/state/flow';
 import { useMealPlanActions, useNutritionWeek } from '@/state/use-nutrition';
+import { Text } from '@/components/text';
 
 /**
  * Ernährung – Woche (docs/PLAN-PHASE-5.md 8.2 Nr. 3, Etappe N5): Mo–So × Mahlzeiten, Tagessummen (nur mit

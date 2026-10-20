@@ -6,13 +6,14 @@ import {
   SESSION_RPE_LIMITS,
 } from '@fitnessapp/core';
 import { fontSize, fontWeight, radius, spacing } from '@fitnessapp/ui';
-import { Platform, Pressable, StyleSheet, Text, View } from 'react-native';
+import { Platform, Pressable, StyleSheet, View } from 'react-native';
 
 import { t } from '@/i18n';
 import { useThemeColors } from '@/lib/theme';
 import { restTexts } from '@/lib/workout-format';
 
 import { MIN_TOUCH } from './ui';
+import { Text } from '@/components/text';
 
 /**
  * Bausteine des Trainingsmodus (docs/PLAN-PHASE-4.md 6.1, 6.2, 6.4): große −/+-Knöpfe mit Ansage, Haken

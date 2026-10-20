@@ -1,6 +1,6 @@
 import type { DayTrainingItem, IntakeTone } from '@fitnessapp/core';
 import { fontSize, fontWeight, radius, spacing } from '@fitnessapp/ui';
-import { StyleSheet, Text, View } from 'react-native';
+import { StyleSheet, View } from 'react-native';
 
 import { Body, Button } from '@/components/ui';
 import { t } from '@/i18n';
@@ -8,6 +8,7 @@ import { achievementView, type IntakeBarView } from '@/lib/day-evaluation-format
 import { dayStatusText } from '@/lib/history-format';
 import { dayLabel } from '@/lib/plan-format';
 import { useThemeColors } from '@/lib/theme';
+import { Text } from '@/components/text';
 
 /**
  * Bausteine der Tagesauswertung „Dein Tag“ (Etappe A2, docs/PLAN-AUSWERTUNG.md Abschnitt 6): Kalorienbalken mit

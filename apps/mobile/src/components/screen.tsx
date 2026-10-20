@@ -13,7 +13,6 @@ import {
   Platform,
   ScrollView,
   StyleSheet,
-  Text,
   TextInput,
   useColorScheme,
   View,
@@ -26,6 +25,7 @@ import { useApp } from '@/state/app-state';
 
 import { useInTabs } from './tab-bar';
 import { Body, Button, FieldError, Heading, ProgressBar } from './ui';
+import { Text } from '@/components/text';
 
 /**
  * Bildschirm-Rahmen: Inhalt scrollt, Knöpfe (footer) bleiben unten sichtbar.

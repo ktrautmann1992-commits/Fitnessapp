@@ -9,7 +9,7 @@ import {
 import { fontSize, fontWeight, radius, spacing } from '@fitnessapp/ui';
 import { Redirect, useRouter, type Href } from 'expo-router';
 import { useMemo, useState, type ReactNode } from 'react';
-import { Pressable, StyleSheet, Text, View } from 'react-native';
+import { Pressable, StyleSheet, View } from 'react-native';
 
 import {
   ConsentBlockedNotice,
@@ -39,6 +39,7 @@ import { useThemeColors } from '@/lib/theme';
 import { useApp } from '@/state/app-state';
 import { HOME_ROUTE, resolveEntryRoute } from '@/state/flow';
 import { useNutritionWeek } from '@/state/use-nutrition';
+import { Text } from '@/components/text';
 
 /** Auswahl nach Abteilung gruppiert (Reihenfolge der Abteilungen kommt sortiert aus dem Core). */
 function groupByCategory(

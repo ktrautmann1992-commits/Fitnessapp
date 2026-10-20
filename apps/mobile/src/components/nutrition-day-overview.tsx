@@ -1,7 +1,7 @@
 import { type CalorieRing, type MacroProgress, type MealCardGroup } from '@fitnessapp/core';
 import { fontSize, fontWeight, radius, spacing } from '@fitnessapp/ui';
 import type { ReactNode } from 'react';
-import { Pressable, StyleSheet, Text, View } from 'react-native';
+import { Pressable, StyleSheet, View } from 'react-native';
 
 import { ProgressRing } from '@/components/design';
 import { Body, Card, MIN_TOUCH } from '@/components/ui';
@@ -10,6 +10,7 @@ import { displayFont } from '@/lib/fonts';
 import { macroText, mealCardKcalText, ringCenterText } from '@/lib/nutrition-day-format';
 import { formatKcal } from '@/lib/nutrition-format';
 import { useThemeColors } from '@/lib/theme';
+import { Text } from '@/components/text';
 
 /**
  * Tagesübersicht Ernährung (Gründer-Wunsch 20.10.2026): Karte „Übersicht“ mit Kalorien-Ring, „Gegessen“ links,

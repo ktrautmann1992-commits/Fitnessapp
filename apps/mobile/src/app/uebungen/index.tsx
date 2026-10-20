@@ -9,7 +9,7 @@ import {
 import { fontSize, fontWeight, radius, spacing } from '@fitnessapp/ui';
 import { Redirect, useRouter, type Href } from 'expo-router';
 import { useEffect, useMemo, useState } from 'react';
-import { Pressable, StyleSheet, Text, View } from 'react-native';
+import { Pressable, StyleSheet, View } from 'react-native';
 
 import { Screen } from '@/components/screen';
 import {
@@ -28,6 +28,7 @@ import { listLine } from '@/lib/glossary-format';
 import { useThemeColors } from '@/lib/theme';
 import { useApp } from '@/state/app-state';
 import { HOME_ROUTE, resolveEntryRoute } from '@/state/flow';
+import { Text } from '@/components/text';
 
 type EquipmentChoice = GlossaryEquipmentFilter | 'all';
 const DIFFICULTIES = [

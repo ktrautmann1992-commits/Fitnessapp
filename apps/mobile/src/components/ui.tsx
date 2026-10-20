@@ -4,7 +4,6 @@ import {
   ActivityIndicator,
   Pressable,
   StyleSheet,
-  Text,
   TextInput,
   View,
   type KeyboardTypeOptions,
@@ -16,6 +15,7 @@ import {
 import { t } from '@/i18n';
 import { appFont, displayFont } from '@/lib/fonts';
 import { useColorSchemeName, useThemeColors } from '@/lib/theme';
+import { Text } from '@/components/text';
 
 /**
  * Grundbausteine der Oberfläche. Farben, Abstände und Schrift kommen ausschließlich aus den Design-Tokens

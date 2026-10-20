@@ -14,7 +14,7 @@ import {
 import { fontSize, fontWeight, radius, spacing } from '@fitnessapp/ui';
 import { Redirect, useLocalSearchParams, useRouter, type Href } from 'expo-router';
 import { useEffect, useMemo, useRef, useState } from 'react';
-import { StyleSheet, Text, View } from 'react-native';
+import { StyleSheet, View } from 'react-native';
 
 import { LiveRegion } from '@/components/calendar';
 import { ConfirmDialog, Screen } from '@/components/screen';
@@ -46,6 +46,7 @@ import {
 import { useApp } from '@/state/app-state';
 import { HOME_ROUTE, resolveEntryRoute } from '@/state/flow';
 import { useActiveWorkoutRun, useWorkoutLibrary } from '@/state/use-workouts';
+import { Text } from '@/components/text';
 
 const TICK_MS = 250;
 const RPE_VALUES = Array.from(

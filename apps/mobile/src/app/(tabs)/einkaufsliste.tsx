@@ -15,7 +15,7 @@ import {
 import { fontSize, fontWeight, radius, spacing } from '@fitnessapp/ui';
 import { Redirect, useLocalSearchParams, useNavigation, useRouter, type Href } from 'expo-router';
 import { useEffect, useMemo, useState, type ReactNode } from 'react';
-import { Pressable, StyleSheet, Text, View } from 'react-native';
+import { Pressable, StyleSheet, View } from 'react-native';
 
 import { ConsentBlockedNotice, DemoBanner } from '@/components/nutrition';
 import { ConfirmDialog, Screen } from '@/components/screen';
@@ -47,6 +47,7 @@ import {
   useNutritionWeek,
   useShoppingListActions,
 } from '@/state/use-nutrition';
+import { Text } from '@/components/text';
 
 /**
  * Reiter „Einkaufen“ (docs/PLAN-EINKAUFEN-AUSDAUER.md 3, Gründer-Entscheidung EA-G1 vom 20.10.2026): die Einkaufsliste

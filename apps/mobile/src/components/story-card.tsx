@@ -1,12 +1,13 @@
 import type { StoryCard } from '@fitnessapp/core';
 import { brandColors } from '@fitnessapp/ui';
 import { forwardRef } from 'react';
-import { StyleSheet, Text, View } from 'react-native';
+import { StyleSheet, View } from 'react-native';
 import Svg, { Path } from 'react-native-svg';
 
 import { MARK_ALPHA, MARK_FIVE } from '@/components/brand';
 import { t } from '@/i18n';
 import { STORY_H, STORY_W, storyLayout } from '@/lib/story-layout';
+import { Text } from '@/components/text';
 
 /**
  * Story-Bild als Ansicht (Etappe E6): Vorschau und Vorlage für die Aufnahme (react-native-view-shot, 1080 × 1920).

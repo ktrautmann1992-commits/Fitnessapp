@@ -20,7 +20,7 @@ import {
 } from '@fitnessapp/core';
 import { fontSize, fontWeight, radius, spacing } from '@fitnessapp/ui';
 import { useEffect, useRef, useState } from 'react';
-import { Platform, Pressable, StyleSheet, Text, View } from 'react-native';
+import { Platform, Pressable, StyleSheet, View } from 'react-native';
 
 import { t } from '@/i18n';
 import {
@@ -44,6 +44,7 @@ import { useThemeColors } from '@/lib/theme';
 
 import { ConfirmDialog } from './screen';
 import { Body, Button, Card, Heading, MIN_TOUCH, Notice } from './ui';
+import { Text } from '@/components/text';
 
 /**
  * Bausteine zum Wettkampf (Etappe WP4, docs/PLAN-PHASE-10.md Abschnitt 8): Ampel, Countdown, Phasen-Band, Ablauf einer

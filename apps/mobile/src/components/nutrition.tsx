@@ -13,7 +13,7 @@ import {
 import { fontSize, fontWeight, radius, spacing } from '@fitnessapp/ui';
 import { useRouter, type Href } from 'expo-router';
 import { type ReactNode, useState } from 'react';
-import { Pressable, StyleSheet, Text, View } from 'react-native';
+import { Pressable, StyleSheet, View } from 'react-native';
 
 import { ConfirmDialog } from '@/components/screen';
 import {
@@ -50,6 +50,7 @@ import { useThemeColors } from '@/lib/theme';
 import { useApp } from '@/state/app-state';
 import { useFoodLogDay } from '@/state/use-food-log';
 import { type MealPlanActions, type NutritionView, useNutritionWeek } from '@/state/use-nutrition';
+import { Text } from '@/components/text';
 
 /**
  * Bausteine der Ernährungs-Bildschirme (docs/PLAN-PHASE-5.md 8.2–8.4, Etappe N4). Nur Anzeige – Zahlen und Codes

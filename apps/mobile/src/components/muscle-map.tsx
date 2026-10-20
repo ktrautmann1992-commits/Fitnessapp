@@ -13,7 +13,6 @@ import {
   Pressable,
   ScrollView,
   StyleSheet,
-  Text,
   useColorScheme,
   View,
 } from 'react-native';
@@ -32,6 +31,7 @@ import {
   MUSCLE_MAP_WIDTH,
 } from '@/lib/muscle-map-paths';
 import { useThemeColors } from '@/lib/theme';
+import { Text } from '@/components/text';
 
 /**
  * Muskelkarte (Nachtrag „Muskelkarte“ in docs/PLAN-UEBUNGEN-GLOSSAR-TAUSCH.md): eigene, stilisierte Silhouette vorn und

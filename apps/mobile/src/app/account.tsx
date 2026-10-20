@@ -1,6 +1,6 @@
 import { useLocalSearchParams, useRouter, type Href } from 'expo-router';
 import { useEffect, useState } from 'react';
-import { AccessibilityInfo, Platform, StyleSheet, Text, View } from 'react-native';
+import { AccessibilityInfo, Platform, StyleSheet, View } from 'react-native';
 import { z } from 'zod';
 
 import { Screen } from '@/components/screen';
@@ -10,6 +10,7 @@ import { t } from '@/i18n';
 import { errorText } from '@/lib/error-text';
 import { announceCountdown, resendSecondsLeft } from '@/lib/otp-cooldown';
 import { useApp } from '@/state/app-state';
+import { Text } from '@/components/text';
 
 const emailSchema = z.email();
 const codeSchema = z.string().regex(/^\d{6}$/);

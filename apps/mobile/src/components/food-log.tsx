@@ -8,7 +8,7 @@ import {
 import { fontSize, fontWeight, radius, spacing } from '@fitnessapp/ui';
 import { useRouter, type Href } from 'expo-router';
 import { useState } from 'react';
-import { StyleSheet, Text, View } from 'react-native';
+import { StyleSheet, View } from 'react-native';
 
 import { ConfirmDialog } from '@/components/screen';
 import { Body, Button, Card, ChoiceList, Heading, MIN_TOUCH, Notice } from '@/components/ui';
@@ -27,6 +27,7 @@ import {
 import { useThemeColors } from '@/lib/theme';
 import { useApp } from '@/state/app-state';
 import type { FoodLogActions, FoodLogDayView } from '@/state/use-food-log';
+import { Text } from '@/components/text';
 
 /**
  * Ernährungstagebuch im Tagesverlauf (Etappe E1, docs/PLAN-AUSWERTUNG.md Abschnitt 5): „Gegessen“ an der Plan-Mahlzeit

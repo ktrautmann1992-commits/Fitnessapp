@@ -12,7 +12,7 @@ import {
   type WeekDay,
 } from '@fitnessapp/core';
 import { fontSize, fontWeight, radius, spacing } from '@fitnessapp/ui';
-import { Pressable, StyleSheet, Text, View } from 'react-native';
+import { Pressable, StyleSheet, View } from 'react-native';
 
 import { t } from '@/i18n';
 import { workoutInfoLines } from '@/lib/competition-format';
@@ -22,6 +22,7 @@ import { useThemeColors } from '@/lib/theme';
 
 import { StepList } from './competition';
 import { Body, Button, Card, Heading, MIN_TOUCH, Notice } from './ui';
+import { Text } from '@/components/text';
 
 /**
  * Bausteine für „Heute“ (docs/PLAN-PHASE-3.md 10.2): Einheit, Arzt-Hinweis, Wochenübersicht. Nur Anzeige –

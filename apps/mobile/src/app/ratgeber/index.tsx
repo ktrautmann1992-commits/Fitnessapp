@@ -2,7 +2,7 @@ import { guideForDisplay, isPublishedWithoutExpertReview } from '@fitnessapp/cor
 import { fontSize, fontWeight, radius, spacing } from '@fitnessapp/ui';
 import { Redirect, useRouter, type Href } from 'expo-router';
 import type { ReactNode } from 'react';
-import { Pressable, StyleSheet, Text, View } from 'react-native';
+import { Pressable, StyleSheet, View } from 'react-native';
 
 import { GuideBackButton, GuideLibraryGate, useReadableGuides } from '@/components/guides';
 import { DemoBanner } from '@/components/nutrition';
@@ -13,6 +13,7 @@ import { useThemeColors } from '@/lib/theme';
 import { useApp } from '@/state/app-state';
 import { HOME_ROUTE, resolveEntryRoute } from '@/state/flow';
 import { useNutritionWeek } from '@/state/use-nutrition';
+import { Text } from '@/components/text';
 
 /**
  * Ratgeber-Übersicht (KONZEPT 6.8, docs/PLAN-PHASE-5.md 19.6, Etappe N5c): gratis, offline aus dem gebündelten

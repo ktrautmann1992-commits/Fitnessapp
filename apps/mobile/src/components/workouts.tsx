@@ -1,6 +1,6 @@
 import { findEquipment, WORKOUT_LIMITS, type Workout, workoutTileSummary } from '@fitnessapp/core';
 import { fontSize, fontWeight, radius, spacing } from '@fitnessapp/ui';
-import { Pressable, StyleSheet, Text, View } from 'react-native';
+import { Pressable, StyleSheet, View } from 'react-native';
 
 import { t } from '@/i18n';
 import { useThemeColors } from '@/lib/theme';
@@ -8,6 +8,7 @@ import { useThemeColors } from '@/lib/theme';
 import { DashboardTile } from './dashboard';
 import { StatValue } from './design';
 import { Body, MIN_TOUCH } from './ui';
+import { Text } from '@/components/text';
 
 /**
  * Bausteine der Workout-Bibliothek (docs/PLAN-WORKOUTS.md): Sterne, Karte, Kachel für die Übersicht. Nur Darstellung;

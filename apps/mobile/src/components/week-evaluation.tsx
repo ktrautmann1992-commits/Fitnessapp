@@ -1,6 +1,6 @@
 import type { IntakeTone, WeekTrainingItem } from '@fitnessapp/core';
 import { fontSize, fontWeight, radius, spacing } from '@fitnessapp/ui';
-import { Pressable, StyleSheet, Text, View } from 'react-native';
+import { Pressable, StyleSheet, View } from 'react-native';
 
 import { Body, Button } from '@/components/ui';
 import { t } from '@/i18n';
@@ -9,6 +9,7 @@ import { dayStatusText } from '@/lib/history-format';
 import { dayLabel } from '@/lib/plan-format';
 import { useThemeColors } from '@/lib/theme';
 import type { WeekDayView } from '@/lib/week-evaluation-format';
+import { Text } from '@/components/text';
 
 /**
  * Bausteine der Wochenauswertung (Etappe A3, docs/PLAN-AUSWERTUNG.md Abschnitt 8): je Tag ein kleiner Balken mit Farbe,

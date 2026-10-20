@@ -9,11 +9,12 @@ import {
   type AreaPalette,
 } from '@fitnessapp/ui';
 import type { ReactNode } from 'react';
-import { Pressable, StyleSheet, Text, View, type StyleProp, type ViewStyle } from 'react-native';
+import { Pressable, StyleSheet, View, type StyleProp, type ViewStyle } from 'react-native';
 import Svg, { Circle, Path, Rect } from 'react-native-svg';
 
 import { appFont, displayFont } from '@/lib/fonts';
 import { useColorSchemeName, useThemeColors } from '@/lib/theme';
+import { Text } from '@/components/text';
 
 /**
  * Bausteine des neuen Designs (Entwurf „Übersicht neu“ / „Mehr neu“, Gründer-Freigabe 20.10.2026): Strich-Icons,

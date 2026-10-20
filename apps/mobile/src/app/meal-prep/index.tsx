@@ -8,7 +8,7 @@ import {
 import { fontSize, fontWeight, radius, spacing } from '@fitnessapp/ui';
 import { Redirect, useLocalSearchParams, useRouter, type Href } from 'expo-router';
 import { useState, type ReactNode } from 'react';
-import { Pressable, StyleSheet, Text, View } from 'react-native';
+import { Pressable, StyleSheet, View } from 'react-native';
 
 import { DemoBanner, NutritionGate, nutritionReady } from '@/components/nutrition';
 import { Screen } from '@/components/screen';
@@ -21,6 +21,7 @@ import { useToday } from '@/lib/use-today';
 import { useApp } from '@/state/app-state';
 import { HOME_ROUTE, resolveEntryRoute } from '@/state/flow';
 import { useNutritionWeek } from '@/state/use-nutrition';
+import { Text } from '@/components/text';
 
 /**
  * Meal-Prep-Wochenpläne (docs/PLAN-PHASE-5.md 19.6, KONZEPT 6.7, Etappe N5b): Liste in fester Reihenfolge; ein Plan,

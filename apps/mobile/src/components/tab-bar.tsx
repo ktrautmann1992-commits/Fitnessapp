@@ -1,7 +1,7 @@
 import { areaColors, cardColors, fontSize, maxContentWidth, spacing } from '@fitnessapp/ui';
 import type { NavArea } from '@fitnessapp/core';
 import { createContext, useContext } from 'react';
-import { Platform, Pressable, StyleSheet, Text, View } from 'react-native';
+import { Platform, Pressable, StyleSheet, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import { Icon } from '@/components/design';
@@ -10,6 +10,7 @@ import { NAV_AREA_STYLE } from '@/lib/area-style';
 import { appFont } from '@/lib/fonts';
 import { useAppLayout } from '@/state/use-app-layout';
 import { useColorSchemeName, useThemeColors } from '@/lib/theme';
+import { Text } from '@/components/text';
 
 /**
  * Untere Menüleiste (docs/PLAN-DASHBOARD.md 3; seit 20.10.2026 docs/PLAN-EINKAUFEN-AUSDAUER.md EA-1 und 4): die

@@ -1,7 +1,7 @@
 import type { WeightGoalZone } from '@fitnessapp/core';
 import { fontSize, fontWeight, radius, spacing } from '@fitnessapp/ui';
 import { useEffect, useRef, useState } from 'react';
-import { AccessibilityInfo, Platform, StyleSheet, Text, View } from 'react-native';
+import { AccessibilityInfo, Platform, StyleSheet, View } from 'react-native';
 import Animated, {
   useAnimatedStyle,
   useReducedMotion,
@@ -15,6 +15,7 @@ import { useThemeColors } from '@/lib/theme';
 import type { FeasibilityView } from '@/lib/weight-goal-format';
 
 import { Body, Button } from './ui';
+import { Text } from '@/components/text';
 
 /**
  * Planbarkeits-Ampel für das konkrete Abnehmziel (docs/PLAN-ZIELE.md 3.1 und 3.4, Etappe Z4). Nur Anzeige: Stufe,

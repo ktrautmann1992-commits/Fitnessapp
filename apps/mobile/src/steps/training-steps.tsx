@@ -36,7 +36,7 @@ import {
 import { fontSize, fontWeight, radius, spacing } from '@fitnessapp/ui';
 import { useRouter } from 'expo-router';
 import { useState } from 'react';
-import { Pressable, StyleSheet, Text, View } from 'react-native';
+import { Pressable, StyleSheet, View } from 'react-native';
 
 import { DateInput, Screen, StepFooter } from '@/components/screen';
 import {
@@ -58,6 +58,7 @@ import { fieldErrorsFromIssues, type FieldErrors } from '@/lib/validation-errors
 import { healthConsentStatus } from '@/state/flow';
 
 import type { StepController } from './use-step';
+import { Text } from '@/components/text';
 
 /** Nebenziel-Auswahl: „kein zweites Ziel“ oder ein Ziel (Tabelle 4.2). */
 type SecondaryChoice = GoalType | 'none';

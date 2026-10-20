@@ -2,7 +2,7 @@ import { historyByWeek, HISTORY_PAGE_SIZE } from '@fitnessapp/core';
 import { fontSize, fontWeight, radius, spacing } from '@fitnessapp/ui';
 import { Redirect, useRouter, type Href } from 'expo-router';
 import { useState } from 'react';
-import { Pressable, StyleSheet, Text, View } from 'react-native';
+import { Pressable, StyleSheet, View } from 'react-native';
 
 import { Screen } from '@/components/screen';
 import { Body, Button, Card, Heading, LoadingState, MIN_TOUCH, Notice } from '@/components/ui';
@@ -16,6 +16,7 @@ import { dayLabel } from '@/lib/plan-format';
 import { useThemeColors } from '@/lib/theme';
 import { useApp } from '@/state/app-state';
 import { HOME_ROUTE, resolveEntryRoute } from '@/state/flow';
+import { Text } from '@/components/text';
 
 /**
  * Verlauf (docs/PLAN-PHASE-4.md 6.1 Punkt 5, Etappe D): Einheiten nach Wochen, neueste zuerst, je 20 weitere

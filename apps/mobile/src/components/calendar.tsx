@@ -2,7 +2,7 @@ import type { MoveTarget, StoredSession } from '@fitnessapp/core';
 import { fontSize, fontWeight, maxContentWidth, radius, spacing } from '@fitnessapp/ui';
 import * as Haptics from 'expo-haptics';
 import { useCallback, useEffect, useMemo, useRef, useState, type ReactNode } from 'react';
-import { Modal, Platform, Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
+import { Modal, Platform, Pressable, ScrollView, StyleSheet, View } from 'react-native';
 import { Gesture, GestureDetector } from 'react-native-gesture-handler';
 import Animated, { useAnimatedStyle, useSharedValue, withTiming } from 'react-native-reanimated';
 
@@ -14,6 +14,7 @@ import { useThemeColors } from '@/lib/theme';
 import { useWebHandleDrag } from '@/lib/use-web-drag';
 
 import { Body, Button, Heading, MIN_TOUCH } from './ui';
+import { Text } from '@/components/text';
 
 /**
  * Bausteine des Trainingskalenders (docs/PLAN-AUSWERTUNG.md 3, Etappe A1a). Drag-and-drop ohne neue Bibliothek,

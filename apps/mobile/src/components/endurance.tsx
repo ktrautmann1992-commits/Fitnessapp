@@ -9,13 +9,14 @@ import {
   splitBars,
 } from '@fitnessapp/core';
 import { fontSize, fontWeight, radius, spacing } from '@fitnessapp/ui';
-import { Pressable, StyleSheet, Text, View } from 'react-native';
+import { Pressable, StyleSheet, View } from 'react-native';
 import Svg, { Circle, Line, Path, Polyline } from 'react-native-svg';
 
 import { Body, Heading, MIN_TOUCH } from '@/components/ui';
 import { t } from '@/i18n';
 import { formatDateDe } from '@/lib/format';
 import { useThemeColors } from '@/lib/theme';
+import { Text } from '@/components/text';
 
 /**
  * Bausteine für „Ausdauer“ (Etappen E4/E5): Linien-Skizze ohne Kartenkacheln, Kilometer-Balken, Höhenprofil, Summen

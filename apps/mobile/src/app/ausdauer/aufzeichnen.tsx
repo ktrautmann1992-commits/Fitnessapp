@@ -21,7 +21,7 @@ import {
 import { fontSize, fontWeight, spacing } from '@fitnessapp/ui';
 import { Redirect, useLocalSearchParams, useRouter, type Href } from 'expo-router';
 import { useEffect, useMemo, useRef, useState } from 'react';
-import { StyleSheet, Text, View } from 'react-native';
+import { StyleSheet, View } from 'react-native';
 
 import { RouteSketch } from '@/components/endurance';
 import { ConfirmDialog, Screen } from '@/components/screen';
@@ -55,6 +55,7 @@ import { useThemeColors } from '@/lib/theme';
 import { useApp } from '@/state/app-state';
 import { HOME_ROUTE, resolveEntryRoute } from '@/state/flow';
 import { forgetTrackedRoutes } from '@/state/use-tracked-routes';
+import { Text } from '@/components/text';
 
 const E = t.endurance;
 
