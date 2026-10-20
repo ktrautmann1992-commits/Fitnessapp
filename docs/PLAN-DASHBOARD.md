@@ -181,7 +181,7 @@ Anmelden (Testmodus), Übersicht, Menüleiste und Mein Konto; Bildschirmfotos he
   Beschriftung und Symbolfläche; geprüft bei 320 px Breite.
 - **Speicherung:** Tabelle `app_layout_settings` (Migration `20261020130000_app_layout_settings.sql`, eine Zeile je
   Person, RLS nur eigene Zeile, Schreiben nur über `save_app_layout` mit denselben Regeln, kein Gesundheitsdatum – bleibt
-  beim Widerruf, im Export, Kaskade beim Konto-Löschen; pgTAP 55). Supabase-Modus: sofort lokal, Senden über die
+  beim Widerruf, im Export, Kaskade beim Konto-Löschen; pgTAP 62). Supabase-Modus: sofort lokal, Senden über die
   vorhandene Warteschlange (offline möglich); Testmodus: Gerätespeicher.
 - **Tests:** `layout.test.ts` (Ränder, alle aus, 7. Knopf, ohne Mehr/Übersicht, unbekannte IDs, neue Kachel,
   fehlender Bereich, Idempotenz), `app-layout.test.ts` (Testmodus, Regeln, Export, Widerruf), db-sync (ID-Listen und
