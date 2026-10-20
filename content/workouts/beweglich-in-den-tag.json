@@ -1,0 +1,76 @@
+{
+  "id": "beweglich-in-den-tag",
+  "version": 1,
+  "status": "published",
+  "title_de": "Beweglich in den Tag",
+  "summary_de": "Ruhige, große Bewegungen für Hüfte, Schultern und Rumpf. Kein Schwitzen nötig – langsam und mit vollem Bewegungsweg.",
+  "category": "mobility",
+  "difficulty": 1,
+  "minutes": 14,
+  "format": "circuit",
+  "rounds": 3,
+  "round_rest_s": 30,
+  "equipment_ids": [],
+  "warmup_de": "2 Minuten auf der Stelle gehen, dabei die Arme locker mitschwingen und die Schultern kreisen.",
+  "cooldown_de": "Zum Schluss eine Minute ruhig stehen, tief durchatmen und die Arme langsam über den Kopf strecken.",
+  "exercises": [
+    {
+      "exercise_id": "kniebeuge-stuhl",
+      "reps": 8,
+      "duration_s": null,
+      "sets": null,
+      "rest_s": 15,
+      "note_de": "Langsam, unten kurz halten."
+    },
+    {
+      "exercise_id": "hueftstrecken-vierfuessler",
+      "reps": 8,
+      "duration_s": null,
+      "sets": null,
+      "rest_s": 15,
+      "note_de": "Je Seite."
+    },
+    {
+      "exercise_id": "bird-dog",
+      "reps": 6,
+      "duration_s": null,
+      "sets": null,
+      "rest_s": 15,
+      "note_de": null
+    },
+    {
+      "exercise_id": "y-t-w-vorgebeugt",
+      "reps": 6,
+      "duration_s": null,
+      "sets": null,
+      "rest_s": 15,
+      "note_de": null
+    },
+    {
+      "exercise_id": "good-morning-koerpergewicht",
+      "reps": 8,
+      "duration_s": null,
+      "sets": null,
+      "rest_s": 15,
+      "note_de": "So weit, wie es angenehm zieht."
+    },
+    {
+      "exercise_id": "glute-bridge",
+      "reps": 10,
+      "duration_s": null,
+      "sets": null,
+      "rest_s": 15,
+      "note_de": null
+    }
+  ],
+  "meta": {
+    "origin": "claude_session",
+    "model": "claude-opus-5-5",
+    "batch_id": null,
+    "created_on": "2026-10-20",
+    "expert_reviewed": false,
+    "reviewed_by": "Claude (Gründer-Auftrag 20.10.2026)",
+    "reviewed_at": "2026-10-20",
+    "review_note": "Testphase – noch nicht fachlich geprüft. Startbestand aus einer Claude-Sitzung; Gründer haben am 20.10.2026 entschieden, dass Claude zusammenstellt und freigibt. Vor dem Livegang fachlich prüfen."
+  }
+}

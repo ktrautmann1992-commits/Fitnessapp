@@ -128,6 +128,7 @@ export const ISSUE_KIND_LABELS: Record<ContentIssue['kind'], string> = {
   ingredient_substitution: 'Austausch',
   package_size: 'Packungsgröße',
   supplement: 'Supplement',
+  workout: 'Workout',
 };
 
 /** Gerätename aus dem Katalog; unbekannte IDs bleiben sichtbar (Regel Ü2/V2 meldet sie). */

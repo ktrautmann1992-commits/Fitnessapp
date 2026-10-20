@@ -2,7 +2,7 @@
  * Prüfskript `content:validate`: liest alle Inhalte unter `content/` und prüft sie mit den Regeln aus
  * packages/core (Schema Ü1, Plausibilitäts-Checks Ü2–Ü6 und V1–V11, Datei- und Versionsregeln; Ernährung R1–R24
  * für Lebensmittel, Rezepte, Meal-Prep-Pläne, Ratgeber, die Austausch-Tabelle und die Packungsgrößen; Supplemente
- * SK1–SK7 seit Phase 6 SU2).
+ * SK1–SK7 seit Phase 6 SU2; Workouts W1–W7, docs/PLAN-WORKOUTS.md).
  *
  * - Ausgabe auf Deutsch, rot = Fehler, gelb = Hinweis (docs/PLAN-PHASE-2.md Abschnitt 7).
  * - Exit-Code 1 bei Schema-/Dateifehlern jeder Art und bei roten Fehlern an FREIGEGEBENEN Inhalten.
@@ -34,6 +34,8 @@ import {
   type SupplementContentFile,
   type SupplementContentFileKind,
   validateContent,
+  type WorkoutContentFile,
+  type WorkoutContentFileKind,
 } from '@fitnessapp/core';
 
 import { loadNutritionCatalog } from './foods/catalog-loader';
@@ -66,6 +68,14 @@ export const NUTRITION_CONTENT_FOLDERS: Record<
  */
 export const SUPPLEMENT_CONTENT_FOLDERS: Record<SupplementContentFileKind, string> = {
   supplement: 'supplements',
+};
+
+/**
+ * Ordner der Workouts (docs/PLAN-WORKOUTS.md, Regeln W1–W7). Gespiegelt in `WORKOUT_FOLDER` von
+ * `scripts/bundle-content.mjs` (Testmodus der App).
+ */
+export const WORKOUT_CONTENT_FOLDERS: Record<WorkoutContentFileKind, string> = {
+  workout: 'workouts',
 };
 
 /** Liest den Stand einer Datei (Pfad relativ zum Repository) im Vergleichsstand; undefined = nicht vorhanden. */
@@ -102,6 +112,14 @@ export function loadSupplementContentFiles(
   options: { repoRoot?: string; readPrevious?: PreviousReader } = {},
 ): LoadedContent<SupplementContentFile> {
   return loadFolders(contentDir, SUPPLEMENT_CONTENT_FOLDERS, options);
+}
+
+/** Liest die Workouts (Ordner `WORKOUT_CONTENT_FOLDERS`). */
+export function loadWorkoutContentFiles(
+  contentDir: string,
+  options: { repoRoot?: string; readPrevious?: PreviousReader } = {},
+): LoadedContent<WorkoutContentFile> {
+  return loadFolders(contentDir, WORKOUT_CONTENT_FOLDERS, options);
 }
 
 function loadFolders<K extends string>(
@@ -234,6 +252,7 @@ const KIND_DE = {
   ingredient_substitution: 'Austausch',
   package_size: 'Packungsgröße',
   supplement: 'Supplement',
+  workout: 'Workout',
 } as const;
 
 function countByStatus(items: readonly { status: ContentStatus }[]): string {
@@ -319,7 +338,7 @@ export function formatMarkdownSummary(input: ReportInput): string {
       : ['Keine Befunde.']),
     '',
     ...coverageMarkdown(result),
-    'Rot blockiert nur bei freigegebenen Inhalten (Schema-/Dateifehler immer). Regeln: docs/PLAN-PHASE-2.md Abschnitt 7, Supplemente (SK1–SK7): docs/PLAN-PHASE-6.md Abschnitt 6.',
+    'Rot blockiert nur bei freigegebenen Inhalten (Schema-/Dateifehler immer). Regeln: docs/PLAN-PHASE-2.md Abschnitt 7, Supplemente (SK1–SK7): docs/PLAN-PHASE-6.md Abschnitt 6, Workouts (W1–W7): docs/PLAN-WORKOUTS.md.',
     '',
   ].join('\n');
 }
@@ -338,6 +357,7 @@ function nutritionCountLines(result: ContentValidationResult): string[] {
   add('Austausch-Einträge', result.substitutions);
   add('Packungsgrößen', result.packageSizes);
   add('Supplemente', result.supplements);
+  add('Workouts', result.workouts);
   return lines;
 }
 
@@ -453,15 +473,24 @@ export function validateRepository(options: {
   const seed = loadContentSeedSettings(contentDir);
   // Supplemente (Phase 6 SU2, SK1–SK7).
   const supplementFiles = loadSupplementContentFiles(contentDir, readOptions);
+  // Workouts (docs/PLAN-WORKOUTS.md, W1–W7) – geprüft gegen die Übungsbibliothek.
+  const workoutFiles = loadWorkoutContentFiles(contentDir, readOptions);
   return {
     result: validateContent(
-      [...loaded.files, ...nutrition.files, ...nutritionFiles.files, ...supplementFiles.files],
+      [
+        ...loaded.files,
+        ...nutrition.files,
+        ...nutritionFiles.files,
+        ...supplementFiles.files,
+        ...workoutFiles.files,
+      ],
       nutrition.catalog === undefined ? {} : { nutritionCatalog: nutrition.catalog },
     ),
     strayFiles: [
       ...loaded.strayFiles,
       ...nutritionFiles.strayFiles,
       ...supplementFiles.strayFiles,
+      ...workoutFiles.strayFiles,
       ...nutrition.problems,
       ...seed.problems,
     ],
