@@ -1,6 +1,7 @@
 # Plan Phase 9 – Zyklus-Modul
 
-**Status:** Entwurf zur Freigabe (19.10.2026). Wächter-Prüfung Runde 1 „mit Auflagen“ (B1–B3, S1–S11,
+**Status:** Freigegeben von den Gründern am 21.10.2026 (alle Fragen ZY-G1–G17 wie empfohlen); ZY1–ZY4 umgesetzt
+(Abschnitt 19). Vorher: Entwurf zur Freigabe (19.10.2026). Wächter-Prüfung Runde 1 „mit Auflagen“ (B1–B3, S1–S11,
 K1–K8 eingearbeitet), **Runde 2 freigabefähig, N1–N3 eingearbeitet** (Abschnitt 0). Die Gründer-Fragen stehen in Abschnitt 17 (ZY-G1 bis ZY-G17).
 Umsetzung erst nach Freigabe, je Etappe ein Pull Request mit Wächter-Prüfung.
 
@@ -1045,3 +1046,35 @@ Format: _Worum es geht – Warum wir fragen – Empfehlung._
 8. **Store-Angaben** (mit Phase 12): App-Store-Datenschutz-Labels „Gesundheit“; Google Play → **App-Inhalte** →
    **Gesundheits-Apps** (Menstruation/Zyklus ankreuzen) und **Datensicherheit**. Store-Text mit derselben
    Zweckbestimmung wie in 3.6.
+
+---
+
+## 19. Umsetzungsstand (21.10.2026)
+
+| Etappe                        | Stand                                                     | Wo                                                                                                                                                                                                                                               |
+| ----------------------------- | --------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| ZY1 Core                      | umgesetzt                                                 | `packages/core/src/cycle/*` (Schemas, Perioden, W1–W8, Angebot, Ernährungs-Hinweise, Modul-Zustand, Export, Texte mit Wortliste, Strukturtest), `plan/day-variant.ts` (`lighterSessionVariant`, `combineDayOffers`), `CYCLE_RULES`/`LIGHTER_DAY` |
+| ZY2 Datenbank                 | umgesetzt                                                 | `20261021140000_cycle_module.sql`, `20261021140100_cycle_rpcs.sql`, pgTAP 72–74, Workflow `beta-grant` (Funktionen `cycle_module`, `cycle_warnings`)                                                                                             |
+| ZY3 App (Testmodus)           | umgesetzt                                                 | `/zyklus`, `/zyklus/verlauf`, `/zyklus/einstellungen`, „Mehr → Zyklus“, Karte „Wie geht’s dir heute?“, Playwright `e2e/cycle.spec.ts`                                                                                                            |
+| ZY4 Supabase/Offline          | umgesetzt (Live-Test mit zwei Konten offen, SETUP Teil Z) | `apps/mobile/src/data/cycle-remote.ts`, Speicher `cycleCache`/`cycleQueue`                                                                                                                                                                       |
+| ZY5 „Heute leichter“ für alle | **vorbereitet** (Core), Rest mit Phase 8b                 | Knopf an der Trainingskarte, Speicher `dayVariant`, Spalte `session_logs.day_variant`, Zählspiegel (6.4) – noch nicht gebaut, daher wird `day_variant` nie geschrieben (B1)                                                                      |
+| ZY6 Erinnerung, DSFA          | offen                                                     | Erinnerung (Standard aus) und DSFA-Ergänzung folgen                                                                                                                                                                                              |
+
+**Abweichungen vom Plantext (bewusst, zur Konfliktvermeidung mit parallelen Migrationen):**
+
+- Export: eigene Funktion `public.export_my_cycle_data()` statt eines Blocks in `export_my_data()`; die App hängt die
+  Tabellen `cycle_settings`/`cycle_entries` an die Export-Datei (spätere Fassungen von `export_my_data` können den
+  Block so nicht verlieren).
+- Widerruf: eigener Trigger `consents_after_revoke_cycle` statt Ergänzung von `private.consents_after_revoke()`.
+- Flags: eigene Tabelle `private.cycle_module_config` (Flags `cycle_module` aus, `cycle_warnings` an, Öffnung für alle
+  aus) und `private.cycle_module_grants` statt der CHECK-Liste von `private.feature_flags`; Workflow-Aufruf über
+  `public.cycle_module_admin`.
+- Datum und Einwilligungszeitpunkt gehen als Text an die Server-Funktionen (kein Cast-Fehler mit Wert im
+  PostgREST-Log, B3).
+- Verschlüsselung `pgp_sym_encrypt(…, 'cipher-algo=aes256, compress-algo=0, s2k-mode=1')`: Der Schlüssel ist schon
+  256 Bit zufällig, Iterationen bringen keinen Schutz. Messung lokal: 400 Einträge entschlüsseln ≈ 9 ms (mit
+  Standard-S2K ≈ 650 ms für Ver- und Entschlüsseln).
+- Rotations-Workflow `cycle-key-rotate`, Bildschirm-Schutz (`FLAG_SECURE`/Overlay) und Erinnerung: noch offen (ZY6
+  bzw. Development Build).
+- Regel-Vorschlag für CLAUDE.md („Zyklus-Tabellen und Vault nie per SQL oder MCP abfragen“) ist freigegeben, muss aber
+  von euch selbst in CLAUDE.md übernommen werden.

@@ -5,7 +5,8 @@ import type { ConsentDocument } from './types';
  *
  * Wörtliche Kopie aus supabase/migrations/20261003120800_seed_consent_documents.sql (terms, privacy),
  * 20261016160100_ai_food_photo.sql (ai_food_photo, Etappe E3), 20261021120100_wearables.sql (wearable_data, Phase 8)
- * und 20261021130200_supplement_user_data.sql (health_data Fassung 2, Supplement-Modul SU3) – consent-texts.test.ts
+ * 20261021130200_supplement_user_data.sql (health_data Fassung 2, Supplement-Modul SU3) und
+ * 20261021140000_cycle_module.sql (cycle_data, Phase 9) – consent-texts.test.ts
  * bricht ab, wenn sie auseinanderlaufen. In der Datenbank ist health_data Fassung 2 bis zur juristischen Prüfung ein
  * unveröffentlichter Entwurf; der Testmodus nutzt sie schon (Supplement-Check testbar, Testschalter „Einwilligung nur
  * alte Fassung“ für die Hinweis-Karte). Im Supabase-Modus kommen die Texte immer aus consent_documents.
@@ -133,5 +134,27 @@ Rechtsgrundlage: deine ausdrückliche Einwilligung nach Art. 9 Abs. 2 lit. a DSG
 Freiwillig: Ohne diese Einwilligung nutzt du die App wie bisher; Einheiten kannst du weiter selbst eintragen oder aufzeichnen.
 
 Widerruf: Du kannst die Einwilligung jederzeit in den Einstellungen widerrufen. Dann löschen wir sofort alle Pulswerte, alle Tageswerte (Ruhepuls, Schlaf, Schritte) und die Verbindung. Übernommene Trainingseinheiten bleiben als normale Einträge ohne Puls in deinem Tagebuch – du kannst sie dort löschen. Beim Trennen der Uhr fragen wir dich, ob du die übernommenen Einheiten behalten oder löschen möchtest. Die Rechtmäßigkeit der Verarbeitung bis zum Widerruf bleibt unberührt.`,
+  },
+  {
+    type: 'cycle_data',
+    version: 1,
+    title: 'Einwilligung: Zyklusdaten',
+    body: `ENTWURF – juristisch prüfen (Fassung für die Testphase, Prüfung vor dem öffentlichen Livegang)
+
+Mit dem Zyklus-Modul kannst du täglich eintragen, wie es dir geht. Weil diese Angaben besonders sensible Gesundheitsdaten sind, brauchen wir dafür diese gesonderte Einwilligung – getrennt von der Einwilligung „Gesundheitsdaten“.
+
+Was wir speichern: deine Tages-Checks (Blutung, Energie, Beschwerden, optional Schlaf), deinen Status (z. B. natürlicher Zyklus, hormonelle Verhütung, Wechseljahre, Stillzeit, Schwangerschaft), den Zeitpunkt deiner letzten Periode beim Einschalten und deine Einstellungen im Modul. Kein Freitext, keine Art oder Marke einer Verhütung.
+
+Wozu: um dir an Tagen mit wenig Energie oder starken Beschwerden ein leichteres Training anzubieten, dir Hinweise zur Ernährung zu geben und dir allgemeine Hinweise zu geben, wann eine ärztliche Abklärung sinnvoll sein kann. Keine Vorhersage, keine fruchtbaren Tage, keine Diagnose.
+
+Das Zyklus-Modul ist kein Medizinprodukt. Es ist nicht zur Verhütung oder Familienplanung geeignet und ersetzt keine ärztliche Untersuchung.
+
+Wie: Die Daten liegen in der EU (Frankfurt am Main) bei unserem Dienstleister Supabase und sind dort zusätzlich verschlüsselt. Auf deinem Handy liegen sie verschlüsselt, im Browser nur bis zum Schließen des Tabs. Sie gehen nie in den Partner-Modus, nie in das PDF, nie an KI-Dienste, Werbung, Analyse-Dienste oder Shops. Einträge älter als 24 Monate löschen wir automatisch.
+
+Rechtsgrundlage: deine ausdrückliche Einwilligung nach Art. 9 Abs. 2 lit. a DSGVO (Schweiz: revDSG).
+
+Freiwillig: Du kannst die App ohne das Zyklus-Modul uneingeschränkt nutzen.
+
+Widerruf: jederzeit unter Mehr → Zyklus → „Modul beenden“. Der Widerruf löscht sofort alle Zyklusdaten auf dem Server und auf diesem Gerät; andere Geräte löschen ihre Kopie beim nächsten Öffnen der App. Aus Sicherungskopien unseres Dienstleisters verschwinden sie nach spätestens 7 Tagen. Es bleibt: Trainings, die du als „leichter“ trainiert hast, bleiben im Tagebuch mit dieser Markierung und den verminderten Vorgaben – ohne Grund, denn den Knopf „Heute leichter“ gibt es für alle, auch ohne Zyklus-Modul. Die Rechtmäßigkeit der Verarbeitung bis zum Widerruf bleibt unberührt.`,
   },
 ];

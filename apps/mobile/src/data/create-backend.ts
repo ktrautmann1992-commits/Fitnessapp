@@ -8,6 +8,10 @@ import { Platform } from 'react-native';
 import { supabaseConfig } from '../lib/supabase';
 import { todayIso } from '../lib/format';
 import type { Backend } from './backend';
+import { attachCycle } from './cycle-backend';
+import { createCycleDeviceStores } from './cycle-device-store';
+import { createLocalCycle } from './cycle-local';
+import { createRemoteCycle } from './cycle-remote';
 import { createDeviceProtectedStores } from './device-protected-store';
 import type { KeyValueStore } from './kv';
 import { createLocalBackend } from './local-backend';
@@ -44,6 +48,8 @@ export function createBackend(): Backend {
   // Sechs eigene geschützte Speicher (Plan mit Gesundheitsbezug, Entwurf, Tagebuch-Warteschlange, -Zwischenspeicher,
   // Ernährungs-Zeilen und -Warteschlange, Etappe N7 Teil 2).
   const stores = createDeviceProtectedStores();
+  // Phase 9: eigene geschützte Speicher des Zyklus-Moduls (Browser nur sessionStorage, auch im Testmodus).
+  const cycleStores = createCycleDeviceStores();
   if (supabaseConfig.status === 'ok') {
     const client = createSupabaseClient(supabaseConfig.config, {
       auth: {
@@ -54,7 +60,7 @@ export function createBackend(): Backend {
         detectSessionInUrl: Platform.OS === 'web',
       },
     });
-    return createSupabaseBackend({
+    const backend = createSupabaseBackend({
       client,
       store: deviceStore,
       platform,
@@ -77,9 +83,10 @@ export function createBackend(): Backend {
       // Etappe E3: Gericht per Foto über apps/web (fehlt die Adresse, ist „Per Foto“ nicht verfügbar).
       webUrl: readWebUrl(process.env.EXPO_PUBLIC_WEB_URL),
     });
+    return attachCycle(backend, createRemoteCycle({ client, stores: cycleStores }));
   }
   // Testmodus: einzige Stelle, an der die Plan-Engine Entwürfe nutzen darf (allowDrafts in createLocalBackend).
-  return createLocalBackend(deviceStore, {
+  const local = createLocalBackend(deviceStore, {
     platform,
     today: () => todayIso(),
     now,
@@ -90,4 +97,5 @@ export function createBackend(): Backend {
     // Etappe E4: laufende Aufzeichnung (Standortdaten) im eigenen geschützten Speicher.
     routeRecordingStore: stores.routeRecording,
   });
+  return attachCycle(local, createLocalCycle(cycleStores));
 }

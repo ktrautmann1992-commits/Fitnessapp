@@ -14,6 +14,7 @@ import { NotificationSettings } from '@/components/notifications';
 import { LiveAdjustSettings } from '@/components/live-adjust';
 import { EatingHelpNotice } from '@/components/nutrition';
 import { ConfirmDialog, Screen } from '@/components/screen';
+import { CycleSettingsSection } from '@/components/cycle-entry';
 import { ListGroup, ListRow, SectionLabel } from '@/components/design';
 import { Body, Button, Card, Checkbox, LoadingState, Notice, TextField } from '@/components/ui';
 import { activePlan } from '@/data/training-plan';
@@ -337,7 +338,10 @@ export default function SettingsScreen() {
         />
       </ListGroup>
 
-      {/* Barrierefreiheit (docs/PLAN-FIT-IM-ALTER.md 12, Etappe FA5): nur dieses Gerät; nach Smartwatch. */}
+      {/* Phase 9: Zyklus-Modul (sichtbar, wenn angeboten oder schon eingeschaltet – auch nach Wechsel auf „männlich“). */}
+      <CycleSettingsSection onPress={() => router.push('/zyklus/einstellungen' as Href)} />
+
+      {/* Barrierefreiheit (docs/PLAN-FIT-IM-ALTER.md 12, Etappe FA5): nur dieses Gerät; nach Smartwatch und Zyklus. */}
       <SectionLabel>{t.accessibility.section}</SectionLabel>
       <Card>
         {!accessibility.settings.largeView &&

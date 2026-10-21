@@ -78,15 +78,18 @@ export function createBirthDateSchema(today: string) {
   });
 }
 
-/** Schritt „Geschlecht“ (+ Interesse am Zyklus-Modul nur bei „weiblich“). */
+/**
+ * Schritt „Geschlecht“ (+ Interesse am Zyklus-Modul bei „weiblich“, „divers“ und „keine Angabe“ – nicht bei
+ * „männlich“; Phase 9 ZY-G4, gleiche Regel wie der CHECK in 20261021140000_cycle_module.sql).
+ */
 export const sexStepSchema = z
   .strictObject({
     sex: sexSchema,
     cycleModuleInterest: z.boolean().nullable().optional(),
   })
-  .refine((value) => value.sex === 'female' || value.cycleModuleInterest == null, {
+  .refine((value) => value.sex !== 'male' || value.cycleModuleInterest == null, {
     path: ['cycleModuleInterest'],
-    message: 'Das Zyklus-Modul wird nur bei „weiblich“ angeboten.',
+    message: 'Das Zyklus-Modul wird bei „männlich“ nicht angeboten.',
   });
 
 /** Schritt „Trainingserfahrung“. */

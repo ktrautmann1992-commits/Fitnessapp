@@ -29,6 +29,9 @@ export * from './layout';
 export * from './notifications';
 // Barrierefreiheit (docs/PLAN-FIT-IM-ALTER.md 12, Etappe FA5).
 export * from './accessibility';
+// Zyklus-Modul (docs/PLAN-PHASE-9.md, ZY1) und „Heute leichter“ (gemeinsam mit Phase 8b).
+export * from './cycle';
+export * from './plan/day-variant';
 // Workout-Bibliothek (docs/PLAN-WORKOUTS.md).
 export * from './workouts';
 // Phase 8 · Wearables: Galaxy Watch über Health Connect (docs/PLAN-PHASE-8.md).

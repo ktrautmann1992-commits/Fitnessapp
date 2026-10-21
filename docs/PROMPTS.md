@@ -381,6 +381,10 @@ Arzt-Hinweis (Flag `cycle_warnings`), keine Vorhersage und keine Verhütungsfunk
 alles offen (`premium_open`), Zyklus-Modul im Supabase-Modus aber nur für per `beta-grant` freigeschaltete Konten
 (Flag `cycle_module`) bis zur Rechtsprüfung vor dem öffentlichen Livegang. Umsetzung erst nach Freigabe.
 
+**Stand 21.10.2026:** Plan freigegeben (alle Gründer-Fragen wie empfohlen). Umgesetzt: ZY1 (Core), ZY2 (Datenbank),
+ZY3 (App im Testmodus), ZY4 (Supabase-Anbindung, Offline). Offen: ZY5 (Knopf „Heute leichter“ für alle und
+`session_logs.day_variant`, gemeinsam mit Phase 8b), ZY6 (Erinnerung, DSFA). Umsetzungsstand: `docs/PLAN-PHASE-9.md` 19.
+
 ## Phase 9b – Studio und Mitgliedschaft
 ```
 Setze docs/KONZEPT.md Abschnitt 16 um: Studiosuche über OpenStreetMap mit Quellenangabe,

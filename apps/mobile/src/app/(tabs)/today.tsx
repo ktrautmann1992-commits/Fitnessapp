@@ -14,6 +14,7 @@ import { Redirect, useFocusEffect, useRouter, type Href } from 'expo-router';
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { Platform, View } from 'react-native';
 
+import { CycleTodayCard } from '@/components/cycle-entry';
 import { CountdownCard, PhaseBand } from '@/components/competition';
 import { FewerDaysCard, SessionAdjustedNotice } from '@/components/live-adjust';
 import { NutritionTodayCard } from '@/components/nutrition';
@@ -684,6 +685,8 @@ export default function TodayScreen() {
       {header}
       {/* Live-Anpassung (Phase 4b, 8.1): offener Vorschlag „Weniger Trainingstage?“ oben. */}
       <FewerDaysCard today={today} />
+      {/* Phase 9: neutraler Kurzweg zum Tages-Check (ohne Zyklus-Wort, nur bei aktivem Modul, K7). */}
+      <CycleTodayCard />
       {notice.kind !== 'none' ? (
         <Notice
           tone={notice.kind === 'offer' ? 'info' : 'danger'}
