@@ -28,7 +28,12 @@ import {
   type SeedFetch,
   type SeedPackage,
 } from './seed';
-import { createTempRepo, REAL_REPO_ROOT, type TempRepo } from './test-helpers';
+import {
+  copySupplementDrafts,
+  createTempRepo,
+  REAL_REPO_ROOT,
+  type TempRepo,
+} from './test-helpers';
 
 const repos: TempRepo[] = [];
 afterEach(() => {
@@ -253,9 +258,7 @@ describe('content-seed', () => {
 
   it('Supplemente (SU3): Entwürfe werden mitgeprüft, aber nie eingespielt', async () => {
     const r = repo();
-    cpSync(join(REAL_REPO_ROOT, 'content', 'supplements'), join(r.root, 'content', 'supplements'), {
-      recursive: true,
-    });
+    copySupplementDrafts(r.root);
     edit(r, 'content/exercises/goblet-kniebeuge.json', publish);
     const skipped = await runSeed({ repoRoot: r.root, env: {}, fetchImpl: okFetch() });
     expect(skipped.status).toBe('skipped');
@@ -951,9 +954,7 @@ describe('content-seed: Supplemente (docs/PLAN-PHASE-6.md 7.2, Etappe SU3)', () 
   /** Alle 18 Supplemente aus dem Repository, freigegeben (wie nach dem Merge des content-review-PRs). */
   const withSupplements = () => {
     const r = repo({ contentStatus: 'published' });
-    cpSync(join(REAL_REPO_ROOT, 'content/supplements'), join(r.root, 'content/supplements'), {
-      recursive: true,
-    });
+    copySupplementDrafts(r.root);
     for (const id of ['creatine', 'caffeine', 'vitamin_d', 'bcaa']) {
       edit(r, `content/supplements/${id}.json`, publish);
     }

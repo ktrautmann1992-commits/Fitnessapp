@@ -1,14 +1,14 @@
-import { cpSync, readFileSync, writeFileSync } from 'node:fs';
+import { readFileSync, writeFileSync } from 'node:fs';
 import { join } from 'node:path';
 
 import { afterEach, describe, expect, it } from 'vitest';
 
 import { runContentReview } from './review-ids';
 import { draftSupplementIds } from './review-supplements';
-import { createTempRepo, fakeTools, REAL_REPO_ROOT, type TempRepo } from './test-helpers';
+import { copySupplementDrafts, createTempRepo, fakeTools, type TempRepo } from './test-helpers';
 
 // content-review für Supplemente (docs/PLAN-PHASE-6.md 6/7, Etappe SU3) gegen ein Test-Repository mit dem echten
-// Startbestand (18 Entwürfe).
+// Startbestand, als Entwürfe kopiert (copySupplementDrafts).
 
 let repo: TempRepo | undefined;
 afterEach(() => {
@@ -18,9 +18,7 @@ afterEach(() => {
 
 function setup(): TempRepo {
   const r = createTempRepo();
-  cpSync(join(REAL_REPO_ROOT, 'content/supplements'), join(r.root, 'content/supplements'), {
-    recursive: true,
-  });
+  copySupplementDrafts(r.root);
   r.git(['add', '-A']);
   r.git(['commit', '--quiet', '-m', 'Supplemente']);
   r.git(['push', '--quiet', 'origin', 'main']);

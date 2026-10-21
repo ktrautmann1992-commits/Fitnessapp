@@ -68,7 +68,8 @@ test('Check → Kreatin passt mit Menge, Koffein nie „passt“, Detail mit Ang
   await expect(page.getByTestId('supplements-disclaimer')).toContainText(
     'Nahrungsergänzungsmittel sind kein Ersatz',
   );
-  await expect(page.getByTestId('supplements-drafts')).toBeVisible();
+  // Seit der Freigabe der 18 Supplemente (content-review) enthält das Bündel keine Entwürfe mehr → kein Entwurfs-Hinweis.
+  await expect(page.getByTestId('supplements-drafts')).toHaveCount(0);
   // Ohne Check: nur allgemeine Infos, nichts „passt“.
   await expect(page.getByTestId('supplements-general')).toBeVisible();
   await expect(page.getByTestId('supplements-group-recommended')).toHaveCount(0);
