@@ -1,0 +1,131 @@
+{
+  "id": "spinat-risotto-mit-ricotta",
+  "version": 1,
+  "status": "draft",
+  "title_de": "Spinat-Risotto mit Ricotta",
+  "description_de": "Cremiges Risotto mit frischem Spinat, Zitrone und einem Klecks Ricotta – vegetarisch und ohne Gluten.",
+  "section_de": "Abendessen",
+  "categories": [],
+  "meal_types": ["main"],
+  "training_tags": [],
+  "servings": 1,
+  "ingredients": [
+    {
+      "food_id": "olivenoel",
+      "amount": 8,
+      "unit": "g",
+      "optional": false,
+      "display_de": "2 TL (8 g)",
+      "scales": true,
+      "role": "fat"
+    },
+    {
+      "food_id": "zwiebel",
+      "amount": 40,
+      "unit": "g",
+      "optional": false,
+      "display_de": "½ kleine Zwiebel (40 g)",
+      "scales": true,
+      "role": "vegetable"
+    },
+    {
+      "food_id": "risottoreis",
+      "amount": 80,
+      "unit": "g",
+      "optional": false,
+      "display_de": "80 g",
+      "scales": true,
+      "role": "carb"
+    },
+    {
+      "food_id": "gemuesebruehe-zubereitet",
+      "amount": 250,
+      "unit": "g",
+      "optional": false,
+      "display_de": "250 ml (250 g)",
+      "scales": true,
+      "role": "seasoning"
+    },
+    {
+      "food_id": "wasser",
+      "amount": 150,
+      "unit": "ml",
+      "optional": false,
+      "display_de": "150 ml",
+      "scales": true,
+      "role": "seasoning"
+    },
+    {
+      "food_id": "babyspinat",
+      "amount": 100,
+      "unit": "g",
+      "optional": false,
+      "display_de": "2 Handvoll (100 g)",
+      "scales": true,
+      "role": "vegetable"
+    },
+    {
+      "food_id": "ricotta",
+      "amount": 80,
+      "unit": "g",
+      "optional": false,
+      "display_de": "80 g",
+      "scales": true,
+      "role": "protein"
+    },
+    {
+      "food_id": "zitronensaft",
+      "amount": 5,
+      "unit": "g",
+      "optional": false,
+      "display_de": "1 TL (5 g)",
+      "scales": true,
+      "role": "seasoning"
+    },
+    {
+      "food_id": "pfeffer",
+      "amount": 1,
+      "unit": "pinch",
+      "optional": false,
+      "display_de": "1 Prise",
+      "scales": true,
+      "role": "seasoning"
+    }
+  ],
+  "steps_de": [
+    "Dünste die fein gewürfelte Zwiebel im Öl glasig, gib den Reis dazu und rühre 1 Minute.",
+    "Gieße nach und nach heiße Brühe und Wasser an und lass den Reis unter Rühren 18–20 Minuten garen, bis er cremig und bissfest ist.",
+    "Rühre den Spinat unter, bis er zusammenfällt.",
+    "Nimm den Topf vom Herd, rühre die Hälfte des Ricottas, Zitronensaft und Pfeffer unter und setze den übrigen Ricotta obenauf."
+  ],
+  "total_minutes": 30,
+  "prep_minutes": 6,
+  "cook_minutes": 24,
+  "no_cook": false,
+  "meal_prep": {
+    "suitable": false,
+    "fridge_days": 0,
+    "freezable": false
+  },
+  "equipment_de": ["Topf"],
+  "declared_per_serving": {
+    "kcal": 525,
+    "protein_g": 16.6,
+    "carbs_g": 69.4,
+    "fat_g": 19
+  },
+  "declared_diet": "vegetarian",
+  "declared_allergens": ["dairy", "lactose", "celery", "histamine", "onion_garlic"],
+  "contains_pork": false,
+  "declared_pregnancy_caution": false,
+  "meta": {
+    "origin": "claude_session",
+    "model": "claude-opus-5-5",
+    "batch_id": null,
+    "created_on": "2026-10-21",
+    "expert_reviewed": false,
+    "reviewed_by": null,
+    "reviewed_at": null,
+    "review_note": null
+  }
+}

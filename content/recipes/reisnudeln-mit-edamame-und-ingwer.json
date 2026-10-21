@@ -1,0 +1,158 @@
+{
+  "id": "reisnudeln-mit-edamame-und-ingwer",
+  "version": 1,
+  "status": "draft",
+  "title_de": "Reisnudeln mit Edamame und Ingwer",
+  "description_de": "Reisnudeln mit Edamame, Karotte und Paprika in Ingwer-Sesam-Würze mit Zitrone und etwas Chili.",
+  "section_de": "Abendessen",
+  "categories": ["meal-prep"],
+  "meal_types": ["main"],
+  "training_tags": [],
+  "servings": 1,
+  "ingredients": [
+    {
+      "food_id": "reisnudeln-trocken",
+      "amount": 80,
+      "unit": "g",
+      "optional": false,
+      "display_de": "80 g",
+      "scales": true,
+      "role": "carb"
+    },
+    {
+      "food_id": "edamame-tk-geschaelt",
+      "amount": 100,
+      "unit": "g",
+      "optional": false,
+      "display_de": "100 g",
+      "scales": true,
+      "role": "protein"
+    },
+    {
+      "food_id": "sesamoel",
+      "amount": 8,
+      "unit": "g",
+      "optional": false,
+      "display_de": "2 TL (8 g)",
+      "scales": true,
+      "role": "fat"
+    },
+    {
+      "food_id": "karotte",
+      "amount": 80,
+      "unit": "g",
+      "optional": false,
+      "display_de": "1 kleine Karotte (80 g)",
+      "scales": true,
+      "role": "vegetable"
+    },
+    {
+      "food_id": "paprika-rot",
+      "amount": 80,
+      "unit": "g",
+      "optional": false,
+      "display_de": "½ Paprika (80 g)",
+      "scales": true,
+      "role": "vegetable"
+    },
+    {
+      "food_id": "ingwer",
+      "amount": 10,
+      "unit": "g",
+      "optional": false,
+      "display_de": "1 daumengroßes Stück (10 g)",
+      "scales": true,
+      "role": "seasoning"
+    },
+    {
+      "food_id": "knoblauch",
+      "amount": 5,
+      "unit": "g",
+      "optional": false,
+      "display_de": "1 Zehe (5 g)",
+      "scales": true,
+      "role": "vegetable"
+    },
+    {
+      "food_id": "sambal-oelek",
+      "amount": 5,
+      "unit": "g",
+      "optional": false,
+      "display_de": "1 TL (5 g)",
+      "scales": true,
+      "role": "seasoning"
+    },
+    {
+      "food_id": "zitronensaft",
+      "amount": 10,
+      "unit": "g",
+      "optional": false,
+      "display_de": "2 TL (10 g)",
+      "scales": true,
+      "role": "seasoning"
+    },
+    {
+      "food_id": "salz",
+      "amount": 1,
+      "unit": "pinch",
+      "optional": false,
+      "display_de": "1 Prise",
+      "scales": true,
+      "role": "seasoning"
+    },
+    {
+      "food_id": "fruehlingszwiebeln",
+      "amount": 20,
+      "unit": "g",
+      "optional": false,
+      "display_de": "1 Stange (20 g)",
+      "scales": true,
+      "role": "vegetable"
+    },
+    {
+      "food_id": "sesam",
+      "amount": 5,
+      "unit": "g",
+      "optional": false,
+      "display_de": "1 TL (5 g)",
+      "scales": true,
+      "role": "fat"
+    }
+  ],
+  "steps_de": [
+    "Gare die Reisnudeln nach Packungsangabe, gib die Edamame die letzten 3 Minuten mit ins Wasser und gieße alles ab.",
+    "Schneide Karotte und Paprika in feine Streifen und brate sie im Sesamöl 3 Minuten.",
+    "Gib fein gehackten Ingwer und Knoblauch sowie Sambal Oelek dazu und brate 1 Minute mit.",
+    "Mische Nudeln und Edamame unter, schmecke mit Zitronensaft und Salz ab und streue Frühlingszwiebeln und Sesam darüber."
+  ],
+  "total_minutes": 22,
+  "prep_minutes": 10,
+  "cook_minutes": 12,
+  "no_cook": false,
+  "meal_prep": {
+    "suitable": true,
+    "fridge_days": 1,
+    "freezable": false
+  },
+  "equipment_de": ["Topf", "Pfanne"],
+  "declared_per_serving": {
+    "kcal": 620,
+    "protein_g": 22.3,
+    "carbs_g": 84,
+    "fat_g": 18.4
+  },
+  "declared_diet": "vegan",
+  "declared_allergens": ["legumes", "soy", "sesame", "onion_garlic", "spicy"],
+  "contains_pork": false,
+  "declared_pregnancy_caution": false,
+  "meta": {
+    "origin": "claude_session",
+    "model": "claude-opus-5-5",
+    "batch_id": null,
+    "created_on": "2026-10-21",
+    "expert_reviewed": false,
+    "reviewed_by": null,
+    "reviewed_at": null,
+    "review_note": null
+  }
+}

@@ -1,0 +1,122 @@
+{
+  "id": "reiswaffeln-mit-avocado-und-tomate",
+  "version": 1,
+  "status": "draft",
+  "title_de": "Reiswaffeln mit Avocado und Tomate",
+  "description_de": "Cremige Avocado mit Zitrone auf Reiswaffeln, dazu Tomatenscheiben und Basilikum – in fünf Minuten fertig.",
+  "section_de": "Frühstück",
+  "categories": ["schnell"],
+  "meal_types": ["breakfast"],
+  "training_tags": [],
+  "servings": 1,
+  "ingredients": [
+    {
+      "food_id": "reiswaffeln",
+      "amount": 30,
+      "unit": "g",
+      "optional": false,
+      "display_de": "4 Stück (30 g)",
+      "scales": true,
+      "role": "carb"
+    },
+    {
+      "food_id": "avocado",
+      "amount": 80,
+      "unit": "g",
+      "optional": false,
+      "display_de": "½ Avocado (80 g)",
+      "scales": true,
+      "role": "fat"
+    },
+    {
+      "food_id": "zitronensaft",
+      "amount": 5,
+      "unit": "g",
+      "optional": false,
+      "display_de": "1 TL (5 g)",
+      "scales": true,
+      "role": "seasoning"
+    },
+    {
+      "food_id": "hefeflocken",
+      "amount": 5,
+      "unit": "g",
+      "optional": false,
+      "display_de": "1 EL (5 g)",
+      "scales": true,
+      "role": "protein"
+    },
+    {
+      "food_id": "tomate",
+      "amount": 100,
+      "unit": "g",
+      "optional": false,
+      "display_de": "1 Tomate (100 g)",
+      "scales": true,
+      "role": "vegetable"
+    },
+    {
+      "food_id": "basilikum",
+      "amount": 3,
+      "unit": "g",
+      "optional": false,
+      "display_de": "einige Blätter (3 g)",
+      "scales": true,
+      "role": "vegetable"
+    },
+    {
+      "food_id": "salz",
+      "amount": 1,
+      "unit": "pinch",
+      "optional": false,
+      "display_de": "1 Prise",
+      "scales": true,
+      "role": "seasoning"
+    },
+    {
+      "food_id": "pfeffer",
+      "amount": 1,
+      "unit": "pinch",
+      "optional": false,
+      "display_de": "1 Prise",
+      "scales": true,
+      "role": "seasoning"
+    }
+  ],
+  "steps_de": [
+    "Zerdrücke das Avocado-Fruchtfleisch mit Zitronensaft, Hefeflocken, Salz und Pfeffer.",
+    "Streiche die Creme auf die Reiswaffeln.",
+    "Belege sie mit Tomatenscheiben und Basilikum."
+  ],
+  "tip_de": "Erst kurz vor dem Essen bestreichen, sonst werden die Reiswaffeln weich.",
+  "total_minutes": 5,
+  "prep_minutes": 5,
+  "cook_minutes": 0,
+  "no_cook": true,
+  "meal_prep": {
+    "suitable": false,
+    "fridge_days": 0,
+    "freezable": false
+  },
+  "equipment_de": [],
+  "declared_per_serving": {
+    "kcal": 258,
+    "protein_g": 7.1,
+    "carbs_g": 28.2,
+    "fat_g": 11.1
+  },
+  "declared_diet": "vegan",
+  "declared_allergens": ["histamine"],
+  "contains_pork": false,
+  "declared_pregnancy_caution": false,
+  "meta": {
+    "origin": "claude_session",
+    "model": "claude-opus-5-5",
+    "batch_id": null,
+    "created_on": "2026-10-21",
+    "expert_reviewed": false,
+    "reviewed_by": null,
+    "reviewed_at": null,
+    "review_note": null
+  }
+}

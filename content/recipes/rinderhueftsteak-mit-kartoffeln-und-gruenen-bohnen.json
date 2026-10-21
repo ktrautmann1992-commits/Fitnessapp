@@ -1,0 +1,123 @@
+{
+  "id": "rinderhueftsteak-mit-kartoffeln-und-gruenen-bohnen",
+  "version": 1,
+  "status": "draft",
+  "title_de": "Rinderhüftsteak mit Kartoffeln und grünen Bohnen",
+  "description_de": "Kurz gebratenes Hüftsteak mit Salzkartoffeln und grünen Bohnen mit Zwiebeln – ein klassisches Abendessen.",
+  "section_de": "Abendessen",
+  "categories": ["post-workout"],
+  "meal_types": ["main"],
+  "training_tags": ["nach_training"],
+  "servings": 1,
+  "ingredients": [
+    {
+      "food_id": "kartoffeln",
+      "amount": 250,
+      "unit": "g",
+      "optional": false,
+      "display_de": "2–3 mittelgroße (250 g)",
+      "scales": true,
+      "role": "carb"
+    },
+    {
+      "food_id": "gruene-bohnen-tk",
+      "amount": 150,
+      "unit": "g",
+      "optional": false,
+      "display_de": "150 g",
+      "scales": true,
+      "role": "vegetable"
+    },
+    {
+      "food_id": "rinderhueftsteak",
+      "amount": 150,
+      "unit": "g",
+      "optional": false,
+      "display_de": "1 Steak (150 g)",
+      "scales": true,
+      "heated": true,
+      "role": "protein"
+    },
+    {
+      "food_id": "rapsoel",
+      "amount": 8,
+      "unit": "g",
+      "optional": false,
+      "display_de": "2 TL (8 g)",
+      "scales": true,
+      "role": "fat"
+    },
+    {
+      "food_id": "zwiebel",
+      "amount": 30,
+      "unit": "g",
+      "optional": false,
+      "display_de": "¼ Zwiebel (30 g)",
+      "scales": true,
+      "role": "vegetable"
+    },
+    {
+      "food_id": "salz",
+      "amount": 1,
+      "unit": "pinch",
+      "optional": false,
+      "display_de": "1 Prise",
+      "scales": true,
+      "role": "seasoning"
+    },
+    {
+      "food_id": "pfeffer",
+      "amount": 1,
+      "unit": "pinch",
+      "optional": false,
+      "display_de": "1 Prise",
+      "scales": true,
+      "role": "seasoning"
+    },
+    {
+      "food_id": "petersilie-frisch",
+      "amount": 5,
+      "unit": "g",
+      "optional": false,
+      "display_de": "1 EL gehackt (5 g)",
+      "scales": true,
+      "role": "vegetable"
+    }
+  ],
+  "steps_de": [
+    "Koche die geschälten Kartoffeln in Wasser 20 Minuten weich. Gare die Bohnen die letzten 8 Minuten in einem zweiten Topf.",
+    "Brate das Steak in der Hälfte des Öls je Seite 3–4 Minuten durch und lass es kurz ruhen.",
+    "Brate die Zwiebelwürfel im übrigen Öl glasig und schwenke die Bohnen darin.",
+    "Würze mit Salz und Pfeffer und serviere alles mit Petersilie."
+  ],
+  "total_minutes": 32,
+  "prep_minutes": 10,
+  "cook_minutes": 22,
+  "no_cook": false,
+  "meal_prep": {
+    "suitable": false,
+    "fridge_days": 0,
+    "freezable": false
+  },
+  "equipment_de": ["2 Töpfe", "Pfanne"],
+  "declared_per_serving": {
+    "kcal": 500,
+    "protein_g": 41.5,
+    "carbs_g": 52.4,
+    "fat_g": 12.3
+  },
+  "declared_diet": "omnivore",
+  "declared_allergens": ["beef", "legumes", "onion_garlic"],
+  "contains_pork": false,
+  "declared_pregnancy_caution": false,
+  "meta": {
+    "origin": "claude_session",
+    "model": "claude-opus-5-5",
+    "batch_id": null,
+    "created_on": "2026-10-21",
+    "expert_reviewed": false,
+    "reviewed_by": null,
+    "reviewed_at": null,
+    "review_note": null
+  }
+}

@@ -1,0 +1,131 @@
+{
+  "id": "edamame-reis-bowl-mit-avocado",
+  "version": 1,
+  "status": "draft",
+  "title_de": "Edamame-Reis-Bowl mit Avocado",
+  "description_de": "Warme Reis-Bowl mit Edamame, Avocado, Gurke und Karotte, beträufelt mit Sesamöl und Zitrone.",
+  "section_de": "Mittagessen",
+  "categories": ["post-workout"],
+  "meal_types": ["main"],
+  "training_tags": ["nach_training"],
+  "servings": 1,
+  "ingredients": [
+    {
+      "food_id": "express-reis-beutel-gegart",
+      "amount": 250,
+      "unit": "g",
+      "optional": false,
+      "display_de": "1 Beutel (250 g)",
+      "scales": true,
+      "role": "carb"
+    },
+    {
+      "food_id": "edamame-tk-geschaelt",
+      "amount": 120,
+      "unit": "g",
+      "optional": false,
+      "display_de": "120 g",
+      "scales": true,
+      "role": "protein"
+    },
+    {
+      "food_id": "avocado",
+      "amount": 70,
+      "unit": "g",
+      "optional": false,
+      "display_de": "½ kleine Avocado (70 g)",
+      "scales": true,
+      "role": "fat"
+    },
+    {
+      "food_id": "gurke",
+      "amount": 100,
+      "unit": "g",
+      "optional": false,
+      "display_de": "⅓ Gurke (100 g)",
+      "scales": true,
+      "role": "vegetable"
+    },
+    {
+      "food_id": "karotte",
+      "amount": 60,
+      "unit": "g",
+      "optional": false,
+      "display_de": "1 kleine Karotte (60 g)",
+      "scales": true,
+      "role": "vegetable"
+    },
+    {
+      "food_id": "sesamoel",
+      "amount": 5,
+      "unit": "g",
+      "optional": false,
+      "display_de": "1 TL (5 g)",
+      "scales": true,
+      "role": "fat"
+    },
+    {
+      "food_id": "zitronensaft",
+      "amount": 10,
+      "unit": "g",
+      "optional": false,
+      "display_de": "2 TL (10 g)",
+      "scales": true,
+      "role": "seasoning"
+    },
+    {
+      "food_id": "salz",
+      "amount": 1,
+      "unit": "pinch",
+      "optional": false,
+      "display_de": "1 Prise",
+      "scales": true,
+      "role": "seasoning"
+    },
+    {
+      "food_id": "sesam",
+      "amount": 5,
+      "unit": "g",
+      "optional": false,
+      "display_de": "1 TL (5 g)",
+      "scales": true,
+      "role": "fat"
+    }
+  ],
+  "steps_de": [
+    "Gare die Edamame 4 Minuten in kochendem Wasser und gieße sie ab.",
+    "Erhitze den Reis nach Packungsangabe, bis er durch und durch heiß ist.",
+    "Schneide Avocado und Gurke in Scheiben und raspele die Karotte.",
+    "Richte Reis, Edamame und Gemüse in einer Schale an, beträufle alles mit Sesamöl und Zitronensaft, salze leicht und streue Sesam darüber."
+  ],
+  "total_minutes": 14,
+  "prep_minutes": 8,
+  "cook_minutes": 6,
+  "no_cook": false,
+  "meal_prep": {
+    "suitable": false,
+    "fridge_days": 0,
+    "freezable": false
+  },
+  "equipment_de": ["Topf"],
+  "declared_per_serving": {
+    "kcal": 676,
+    "protein_g": 27.5,
+    "carbs_g": 76.5,
+    "fat_g": 25.8
+  },
+  "declared_diet": "vegan",
+  "declared_allergens": ["legumes", "soy", "sesame", "histamine"],
+  "contains_pork": false,
+  "declared_pregnancy_caution": false,
+  "meta": {
+    "origin": "claude_session",
+    "model": "claude-opus-5-5",
+    "batch_id": null,
+    "created_on": "2026-10-21",
+    "expert_reviewed": false,
+    "reviewed_by": null,
+    "reviewed_at": null,
+    "review_note": null
+  }
+}

@@ -1,0 +1,75 @@
+{
+  "id": "edamame-mit-zitrone-und-salz",
+  "version": 1,
+  "status": "draft",
+  "title_de": "Edamame mit Zitrone und Salz",
+  "description_de": "Warme Edamame mit Zitrone und einer Prise Salz – ein schneller Snack zum Knabbern nach dem Sport.",
+  "section_de": "Snack",
+  "categories": ["schnell", "post-workout"],
+  "meal_types": ["snack"],
+  "training_tags": ["nach_training"],
+  "servings": 1,
+  "ingredients": [
+    {
+      "food_id": "edamame-tk-geschaelt",
+      "amount": 150,
+      "unit": "g",
+      "optional": false,
+      "display_de": "150 g",
+      "scales": true,
+      "role": "protein"
+    },
+    {
+      "food_id": "zitronensaft",
+      "amount": 5,
+      "unit": "g",
+      "optional": false,
+      "display_de": "1 TL (5 g)",
+      "scales": true,
+      "role": "seasoning"
+    },
+    {
+      "food_id": "salz",
+      "amount": 1,
+      "unit": "pinch",
+      "optional": false,
+      "display_de": "1 Prise",
+      "scales": true,
+      "role": "seasoning"
+    }
+  ],
+  "steps_de": [
+    "Gare die Edamame 4 Minuten in kochendem Wasser und gieße sie ab.",
+    "Mische sie mit Zitronensaft und Salz und iss sie warm oder kalt."
+  ],
+  "total_minutes": 8,
+  "prep_minutes": 2,
+  "cook_minutes": 6,
+  "no_cook": false,
+  "meal_prep": {
+    "suitable": false,
+    "fridge_days": 0,
+    "freezable": false
+  },
+  "equipment_de": ["Topf"],
+  "declared_per_serving": {
+    "kcal": 221,
+    "protein_g": 19.5,
+    "carbs_g": 9.4,
+    "fat_g": 10.2
+  },
+  "declared_diet": "vegan",
+  "declared_allergens": ["legumes", "soy"],
+  "contains_pork": false,
+  "declared_pregnancy_caution": false,
+  "meta": {
+    "origin": "claude_session",
+    "model": "claude-opus-5-5",
+    "batch_id": null,
+    "created_on": "2026-10-21",
+    "expert_reviewed": false,
+    "reviewed_by": null,
+    "reviewed_at": null,
+    "review_note": null
+  }
+}

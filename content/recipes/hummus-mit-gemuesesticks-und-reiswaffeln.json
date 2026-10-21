@@ -1,0 +1,94 @@
+{
+  "id": "hummus-mit-gemuesesticks-und-reiswaffeln",
+  "version": 1,
+  "status": "draft",
+  "title_de": "Hummus mit Gemüsesticks und Reiswaffeln",
+  "description_de": "Bunte Gemüsesticks aus Karotte, Paprika und Gurke mit Hummus zum Dippen, dazu zwei Reiswaffeln.",
+  "section_de": "Snack",
+  "categories": ["schnell"],
+  "meal_types": ["snack"],
+  "training_tags": [],
+  "servings": 1,
+  "ingredients": [
+    {
+      "food_id": "hummus",
+      "amount": 50,
+      "unit": "g",
+      "optional": false,
+      "display_de": "2–3 EL (50 g)",
+      "scales": true,
+      "role": "protein"
+    },
+    {
+      "food_id": "karotte",
+      "amount": 80,
+      "unit": "g",
+      "optional": false,
+      "display_de": "1 kleine Karotte (80 g)",
+      "scales": true,
+      "role": "vegetable"
+    },
+    {
+      "food_id": "paprika-rot",
+      "amount": 80,
+      "unit": "g",
+      "optional": false,
+      "display_de": "½ Paprika (80 g)",
+      "scales": true,
+      "role": "vegetable"
+    },
+    {
+      "food_id": "gurke",
+      "amount": 80,
+      "unit": "g",
+      "optional": false,
+      "display_de": "¼ Gurke (80 g)",
+      "scales": true,
+      "role": "vegetable"
+    },
+    {
+      "food_id": "reiswaffeln",
+      "amount": 15,
+      "unit": "g",
+      "optional": false,
+      "display_de": "2 Stück (15 g)",
+      "scales": true,
+      "role": "carb"
+    }
+  ],
+  "steps_de": [
+    "Schneide Karotte, Paprika und Gurke in Sticks.",
+    "Gib den Hummus in ein Schälchen und dippe Gemüse und Reiswaffeln hinein."
+  ],
+  "tip_de": "In einer Dose mit dem Hummus unten und den Sticks darüber lässt sich der Snack gut mitnehmen.",
+  "total_minutes": 6,
+  "prep_minutes": 6,
+  "cook_minutes": 0,
+  "no_cook": true,
+  "meal_prep": {
+    "suitable": false,
+    "fridge_days": 0,
+    "freezable": false
+  },
+  "equipment_de": [],
+  "declared_per_serving": {
+    "kcal": 291,
+    "protein_g": 6.5,
+    "carbs_g": 27.3,
+    "fat_g": 15.3
+  },
+  "declared_diet": "vegan",
+  "declared_allergens": ["legumes", "sesame", "onion_garlic"],
+  "contains_pork": false,
+  "declared_pregnancy_caution": false,
+  "meta": {
+    "origin": "claude_session",
+    "model": "claude-opus-5-5",
+    "batch_id": null,
+    "created_on": "2026-10-21",
+    "expert_reviewed": false,
+    "reviewed_by": null,
+    "reviewed_at": null,
+    "review_note": null
+  }
+}

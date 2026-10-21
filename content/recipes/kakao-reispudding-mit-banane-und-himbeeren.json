@@ -1,0 +1,104 @@
+{
+  "id": "kakao-reispudding-mit-banane-und-himbeeren",
+  "version": 1,
+  "status": "draft",
+  "title_de": "Kakao-Reispudding mit Banane und Himbeeren",
+  "description_de": "Cremiger Reispudding mit Kakao, mit Wasser gekocht und mit Banane gesüßt – dazu fruchtige Himbeeren.",
+  "section_de": "Frühstück",
+  "categories": ["pre-workout", "meal-prep"],
+  "meal_types": ["breakfast"],
+  "training_tags": ["vor_training"],
+  "servings": 1,
+  "ingredients": [
+    {
+      "food_id": "risottoreis",
+      "amount": 60,
+      "unit": "g",
+      "optional": false,
+      "display_de": "60 g",
+      "scales": true,
+      "role": "carb"
+    },
+    {
+      "food_id": "wasser",
+      "amount": 300,
+      "unit": "ml",
+      "optional": false,
+      "display_de": "300 ml",
+      "scales": true,
+      "role": "seasoning"
+    },
+    {
+      "food_id": "kakaopulver-stark-entoelt",
+      "amount": 8,
+      "unit": "g",
+      "optional": false,
+      "display_de": "1 gehäufter EL (8 g)",
+      "scales": true,
+      "role": "sweet"
+    },
+    {
+      "food_id": "ahornsirup",
+      "amount": 15,
+      "unit": "g",
+      "optional": false,
+      "display_de": "1 EL (15 g)",
+      "scales": true,
+      "role": "sweet"
+    },
+    {
+      "food_id": "banane",
+      "amount": 120,
+      "unit": "g",
+      "optional": false,
+      "display_de": "1 Banane (120 g)",
+      "scales": true,
+      "role": "carb"
+    },
+    {
+      "food_id": "himbeeren-tk",
+      "amount": 80,
+      "unit": "g",
+      "optional": false,
+      "display_de": "1 Handvoll (80 g)",
+      "scales": true,
+      "role": "vegetable"
+    }
+  ],
+  "steps_de": [
+    "Bring Reis und Wasser in einem kleinen Topf zum Kochen und lass den Reis bei kleiner Hitze 20–25 Minuten quellen, dabei öfter umrühren.",
+    "Zerdrücke die halbe Banane und rühre sie mit Kakao und Ahornsirup unter den Reis.",
+    "Fülle den Pudding in eine Schale und gib die übrige Banane in Scheiben und die Himbeeren darauf."
+  ],
+  "tip_de": "Am Vorabend kochen und am nächsten Morgen kalt essen – dann wird der Pudding schön fest.",
+  "total_minutes": 30,
+  "prep_minutes": 5,
+  "cook_minutes": 25,
+  "no_cook": false,
+  "meal_prep": {
+    "suitable": true,
+    "fridge_days": 1,
+    "freezable": false
+  },
+  "equipment_de": ["Topf"],
+  "declared_per_serving": {
+    "kcal": 401,
+    "protein_g": 9.2,
+    "carbs_g": 79.5,
+    "fat_g": 2
+  },
+  "declared_diet": "vegan",
+  "declared_allergens": [],
+  "contains_pork": false,
+  "declared_pregnancy_caution": false,
+  "meta": {
+    "origin": "claude_session",
+    "model": "claude-opus-5-5",
+    "batch_id": null,
+    "created_on": "2026-10-21",
+    "expert_reviewed": false,
+    "reviewed_by": null,
+    "reviewed_at": null,
+    "review_note": null
+  }
+}

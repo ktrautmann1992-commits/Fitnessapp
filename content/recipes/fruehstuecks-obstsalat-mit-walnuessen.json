@@ -1,0 +1,104 @@
+{
+  "id": "fruehstuecks-obstsalat-mit-walnuessen",
+  "version": 1,
+  "status": "draft",
+  "title_de": "Frühstücks-Obstsalat mit Walnüssen",
+  "description_de": "Bunter Obstsalat aus Apfel, Banane und Heidelbeeren mit Zitrone, Ahornsirup und gerösteten Walnüssen.",
+  "section_de": "Frühstück",
+  "categories": ["schnell"],
+  "meal_types": ["breakfast"],
+  "training_tags": [],
+  "servings": 1,
+  "ingredients": [
+    {
+      "food_id": "apfel",
+      "amount": 150,
+      "unit": "g",
+      "optional": false,
+      "display_de": "1 Apfel (150 g)",
+      "scales": true,
+      "role": "carb"
+    },
+    {
+      "food_id": "banane",
+      "amount": 100,
+      "unit": "g",
+      "optional": false,
+      "display_de": "1 kleine Banane (100 g)",
+      "scales": true,
+      "role": "carb"
+    },
+    {
+      "food_id": "heidelbeeren",
+      "amount": 80,
+      "unit": "g",
+      "optional": false,
+      "display_de": "1 Handvoll (80 g)",
+      "scales": true,
+      "role": "vegetable"
+    },
+    {
+      "food_id": "zitronensaft",
+      "amount": 5,
+      "unit": "g",
+      "optional": false,
+      "display_de": "1 TL (5 g)",
+      "scales": true,
+      "role": "seasoning"
+    },
+    {
+      "food_id": "ahornsirup",
+      "amount": 10,
+      "unit": "g",
+      "optional": false,
+      "display_de": "2 TL (10 g)",
+      "scales": true,
+      "role": "sweet"
+    },
+    {
+      "food_id": "walnuesse",
+      "amount": 20,
+      "unit": "g",
+      "optional": false,
+      "display_de": "1 Handvoll (20 g)",
+      "scales": true,
+      "role": "fat"
+    }
+  ],
+  "steps_de": [
+    "Röste die Walnüsse ohne Fett in einer Pfanne 2–3 Minuten, bis sie duften, und hacke sie grob.",
+    "Würfle Apfel und Banane und mische sie sofort mit dem Zitronensaft.",
+    "Gib Heidelbeeren und Ahornsirup dazu und streue die Walnüsse darüber."
+  ],
+  "tip_de": "Ohne Rösten geht es noch schneller – die Nüsse schmecken dann etwas milder.",
+  "total_minutes": 10,
+  "prep_minutes": 7,
+  "cook_minutes": 3,
+  "no_cook": false,
+  "meal_prep": {
+    "suitable": false,
+    "fridge_days": 0,
+    "freezable": false
+  },
+  "equipment_de": ["Pfanne"],
+  "declared_per_serving": {
+    "kcal": 385,
+    "protein_g": 5.6,
+    "carbs_g": 47.9,
+    "fat_g": 15.8
+  },
+  "declared_diet": "vegan",
+  "declared_allergens": ["tree_nuts", "fructose"],
+  "contains_pork": false,
+  "declared_pregnancy_caution": false,
+  "meta": {
+    "origin": "claude_session",
+    "model": "claude-opus-5-5",
+    "batch_id": null,
+    "created_on": "2026-10-21",
+    "expert_reviewed": false,
+    "reviewed_by": null,
+    "reviewed_at": null,
+    "review_note": null
+  }
+}

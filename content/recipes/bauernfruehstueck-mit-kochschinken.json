@@ -1,0 +1,116 @@
+{
+  "id": "bauernfruehstueck-mit-kochschinken",
+  "version": 1,
+  "status": "draft",
+  "title_de": "Bauernfrühstück mit Kochschinken",
+  "description_de": "Bratkartoffeln mit Zwiebeln, Kochschinken und Ei aus einer Pfanne – der deftige Klassiker für einen langen Tag.",
+  "section_de": "Frühstück",
+  "categories": [],
+  "meal_types": ["breakfast"],
+  "training_tags": [],
+  "servings": 1,
+  "ingredients": [
+    {
+      "food_id": "kartoffeln",
+      "amount": 200,
+      "unit": "g",
+      "optional": false,
+      "display_de": "2 mittelgroße (200 g)",
+      "scales": true,
+      "role": "carb"
+    },
+    {
+      "food_id": "rapsoel",
+      "amount": 8,
+      "unit": "g",
+      "optional": false,
+      "display_de": "2 TL (8 g)",
+      "scales": true,
+      "role": "fat"
+    },
+    {
+      "food_id": "zwiebel",
+      "amount": 40,
+      "unit": "g",
+      "optional": false,
+      "display_de": "½ kleine Zwiebel (40 g)",
+      "scales": true,
+      "role": "vegetable"
+    },
+    {
+      "food_id": "kochschinken",
+      "amount": 50,
+      "unit": "g",
+      "optional": false,
+      "display_de": "2 Scheiben (50 g)",
+      "scales": true,
+      "heated": true,
+      "role": "protein"
+    },
+    {
+      "food_id": "huehnerei",
+      "amount": 120,
+      "unit": "g",
+      "optional": false,
+      "display_de": "2 Eier (Größe M, 120 g)",
+      "scales": true,
+      "heated": true,
+      "role": "protein"
+    },
+    {
+      "food_id": "pfeffer",
+      "amount": 1,
+      "unit": "pinch",
+      "optional": false,
+      "display_de": "1 Prise",
+      "scales": true,
+      "role": "seasoning"
+    },
+    {
+      "food_id": "schnittlauch-frisch",
+      "amount": 5,
+      "unit": "g",
+      "optional": false,
+      "display_de": "1 EL Röllchen (5 g)",
+      "scales": true,
+      "role": "vegetable"
+    }
+  ],
+  "steps_de": [
+    "Schneide die Kartoffeln in dünne Scheiben und brate sie im Öl zugedeckt 10 Minuten, dann offen 5 Minuten goldbraun.",
+    "Gib Zwiebelwürfel und Schinkenstreifen dazu und brate sie 3 Minuten mit.",
+    "Verquirle die Eier mit Pfeffer, gieß sie darüber und lass sie unter gelegentlichem Wenden vollständig stocken.",
+    "Streue den Schnittlauch darüber."
+  ],
+  "tip_de": "Der Schinken bringt genug Salz mit – nachsalzen ist meist nicht nötig.",
+  "total_minutes": 28,
+  "prep_minutes": 8,
+  "cook_minutes": 20,
+  "no_cook": false,
+  "meal_prep": {
+    "suitable": false,
+    "fridge_days": 0,
+    "freezable": false
+  },
+  "equipment_de": ["Pfanne mit Deckel"],
+  "declared_per_serving": {
+    "kcal": 482,
+    "protein_g": 31.6,
+    "carbs_g": 39.3,
+    "fat_g": 21
+  },
+  "declared_diet": "omnivore",
+  "declared_allergens": ["eggs", "onion_garlic"],
+  "contains_pork": true,
+  "declared_pregnancy_caution": false,
+  "meta": {
+    "origin": "claude_session",
+    "model": "claude-opus-5-5",
+    "batch_id": null,
+    "created_on": "2026-10-21",
+    "expert_reviewed": false,
+    "reviewed_by": null,
+    "reviewed_at": null,
+    "review_note": null
+  }
+}

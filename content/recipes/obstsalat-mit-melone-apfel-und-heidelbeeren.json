@@ -1,0 +1,93 @@
+{
+  "id": "obstsalat-mit-melone-apfel-und-heidelbeeren",
+  "version": 1,
+  "status": "draft",
+  "title_de": "Obstsalat mit Melone, Apfel und Heidelbeeren",
+  "description_de": "Frischer Obstsalat aus Honigmelone, Apfel und Heidelbeeren mit Zitrone und einem Hauch Ahornsirup.",
+  "section_de": "60–90 Min. vorher",
+  "categories": ["schnell", "pre-workout"],
+  "meal_types": ["snack"],
+  "training_tags": ["vor_training"],
+  "servings": 1,
+  "ingredients": [
+    {
+      "food_id": "honigmelone",
+      "amount": 150,
+      "unit": "g",
+      "optional": false,
+      "display_de": "1–2 Spalten (150 g)",
+      "scales": true,
+      "role": "carb"
+    },
+    {
+      "food_id": "apfel",
+      "amount": 100,
+      "unit": "g",
+      "optional": false,
+      "display_de": "1 kleiner Apfel (100 g)",
+      "scales": true,
+      "role": "carb"
+    },
+    {
+      "food_id": "heidelbeeren",
+      "amount": 80,
+      "unit": "g",
+      "optional": false,
+      "display_de": "1 Handvoll (80 g)",
+      "scales": true,
+      "role": "vegetable"
+    },
+    {
+      "food_id": "zitronensaft",
+      "amount": 5,
+      "unit": "g",
+      "optional": false,
+      "display_de": "1 TL (5 g)",
+      "scales": true,
+      "role": "seasoning"
+    },
+    {
+      "food_id": "ahornsirup",
+      "amount": 5,
+      "unit": "g",
+      "optional": false,
+      "display_de": "1 TL (5 g)",
+      "scales": true,
+      "role": "sweet"
+    }
+  ],
+  "steps_de": [
+    "Würfle Melone und Apfel.",
+    "Mische das Obst mit Heidelbeeren, Zitronensaft und Ahornsirup."
+  ],
+  "total_minutes": 6,
+  "prep_minutes": 6,
+  "cook_minutes": 0,
+  "no_cook": true,
+  "meal_prep": {
+    "suitable": false,
+    "fridge_days": 0,
+    "freezable": false
+  },
+  "equipment_de": [],
+  "declared_per_serving": {
+    "kcal": 189,
+    "protein_g": 1.6,
+    "carbs_g": 37.7,
+    "fat_g": 1.1
+  },
+  "declared_diet": "vegan",
+  "declared_allergens": ["fructose"],
+  "contains_pork": false,
+  "declared_pregnancy_caution": false,
+  "meta": {
+    "origin": "claude_session",
+    "model": "claude-opus-5-5",
+    "batch_id": null,
+    "created_on": "2026-10-21",
+    "expert_reviewed": false,
+    "reviewed_by": null,
+    "reviewed_at": null,
+    "review_note": null
+  }
+}

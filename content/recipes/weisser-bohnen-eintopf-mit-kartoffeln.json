@@ -1,0 +1,141 @@
+{
+  "id": "weisser-bohnen-eintopf-mit-kartoffeln",
+  "version": 1,
+  "status": "draft",
+  "title_de": "Weißer Bohnen-Eintopf mit Kartoffeln",
+  "description_de": "Deftiger Eintopf aus weißen Bohnen, Kartoffeln, Karotten und Tomaten – gut vorzukochen und einzufrieren.",
+  "section_de": "Mittagessen",
+  "categories": ["meal-prep", "spar-kueche"],
+  "meal_types": ["main"],
+  "training_tags": [],
+  "servings": 1,
+  "ingredients": [
+    {
+      "food_id": "olivenoel",
+      "amount": 10,
+      "unit": "g",
+      "optional": false,
+      "display_de": "1 EL (10 g)",
+      "scales": true,
+      "role": "fat"
+    },
+    {
+      "food_id": "zwiebel",
+      "amount": 50,
+      "unit": "g",
+      "optional": false,
+      "display_de": "½ Zwiebel (50 g)",
+      "scales": true,
+      "role": "vegetable"
+    },
+    {
+      "food_id": "knoblauch",
+      "amount": 5,
+      "unit": "g",
+      "optional": false,
+      "display_de": "1 Zehe (5 g)",
+      "scales": true,
+      "role": "vegetable"
+    },
+    {
+      "food_id": "karotte",
+      "amount": 80,
+      "unit": "g",
+      "optional": false,
+      "display_de": "1 kleine Karotte (80 g)",
+      "scales": true,
+      "role": "vegetable"
+    },
+    {
+      "food_id": "kartoffeln",
+      "amount": 200,
+      "unit": "g",
+      "optional": false,
+      "display_de": "2 mittelgroße (200 g)",
+      "scales": true,
+      "role": "carb"
+    },
+    {
+      "food_id": "tomate",
+      "amount": 200,
+      "unit": "g",
+      "optional": false,
+      "display_de": "2–3 Tomaten (200 g)",
+      "scales": true,
+      "role": "vegetable"
+    },
+    {
+      "food_id": "gemuesebruehe-zubereitet",
+      "amount": 150,
+      "unit": "g",
+      "optional": false,
+      "display_de": "150 ml (150 g)",
+      "scales": true,
+      "role": "seasoning"
+    },
+    {
+      "food_id": "weisse-bohnen-dose-abgetropft",
+      "amount": 150,
+      "unit": "g",
+      "optional": false,
+      "display_de": "½ Dose (150 g)",
+      "scales": true,
+      "role": "protein"
+    },
+    {
+      "food_id": "pfeffer",
+      "amount": 1,
+      "unit": "pinch",
+      "optional": false,
+      "display_de": "1 Prise",
+      "scales": true,
+      "role": "seasoning"
+    },
+    {
+      "food_id": "petersilie-frisch",
+      "amount": 10,
+      "unit": "g",
+      "optional": false,
+      "display_de": "2 EL gehackt (10 g)",
+      "scales": true,
+      "role": "vegetable"
+    }
+  ],
+  "steps_de": [
+    "Würfle Zwiebel, Knoblauch, Karotte, Kartoffeln und Tomaten.",
+    "Dünste Zwiebel und Knoblauch im Öl in einem Topf 2 Minuten an, gib Karotte und Kartoffeln dazu und brate sie 2 Minuten mit.",
+    "Gieße die Brühe an, gib die Tomaten dazu und lass alles zugedeckt 15 Minuten köcheln, bis die Kartoffeln weich sind.",
+    "Gib die abgespülten Bohnen dazu, erhitze sie 3 Minuten mit und würze mit Pfeffer. Mit Petersilie bestreuen."
+  ],
+  "tip_de": "Ein Teil der Kartoffeln mit dem Kochlöffel am Topfrand zerdrücken – so wird der Eintopf sämiger.",
+  "total_minutes": 34,
+  "prep_minutes": 12,
+  "cook_minutes": 22,
+  "no_cook": false,
+  "meal_prep": {
+    "suitable": true,
+    "fridge_days": 3,
+    "freezable": true
+  },
+  "equipment_de": ["Topf mit Deckel"],
+  "declared_per_serving": {
+    "kcal": 560,
+    "protein_g": 21.8,
+    "carbs_g": 78.4,
+    "fat_g": 11.9
+  },
+  "declared_diet": "vegan",
+  "declared_allergens": ["legumes", "celery", "histamine", "onion_garlic"],
+  "contains_pork": false,
+  "declared_pregnancy_caution": false,
+  "meta": {
+    "origin": "claude_session",
+    "model": "claude-opus-5-5",
+    "batch_id": null,
+    "created_on": "2026-10-21",
+    "expert_reviewed": false,
+    "reviewed_by": null,
+    "reviewed_at": null,
+    "review_note": null
+  }
+}
