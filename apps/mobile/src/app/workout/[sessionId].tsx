@@ -26,6 +26,7 @@ import { useEffect, useMemo, useRef, useState } from 'react';
 import { Platform, StyleSheet, View } from 'react-native';
 
 import { IntervalTimer } from '@/components/competition';
+import { AreaProgress, HeroCard, IconChip, Tile, useAreaColors } from '@/components/design';
 import { RestEndNotificationOffer } from '@/components/notifications';
 import { MuscleMapThumbnail, StartPositionImage } from '@/components/muscle-map';
 import { MedicalNotice } from '@/components/plan';
@@ -112,7 +113,8 @@ import {
 } from '@/lib/workout-format';
 import { useApp } from '@/state/app-state';
 import { HOME_ROUTE, resolveEntryRoute } from '@/state/flow';
-import { useThemeColors } from '@/lib/theme';
+import { useColorSchemeName, useThemeColors } from '@/lib/theme';
+import { cardColors } from '@fitnessapp/ui';
 
 /**
  * Trainingsmodus (docs/PLAN-PHASE-4.md 6.1 Punkte 2 und 3): Kraft (Etappe C1) Satz für Satz Gewicht und
@@ -625,7 +627,14 @@ export default function WorkoutScreen() {
         </View>
       }
     >
-      {isEndurance ? null : <Body muted>{progressText}</Body>}
+      {isEndurance || current.exercises.length === 0 ? null : (
+        <CurrentExerciseHero
+          exercises={current.exercises}
+          finishedCount={finishedCount}
+          progressText={progressText}
+          free={isFree}
+        />
+      )}
       {isFree && !isEndurance ? <Body muted>{t.backfill.freeSkipHint}</Body> : null}
       {active?.plan.medical_notice ? <MedicalNotice /> : null}
       {/* Etappe E: einmalige Frage beim ersten Start des Trainingsmodus (nur App, nur mit Pausen). */}
@@ -875,6 +884,68 @@ export default function WorkoutScreen() {
   );
 }
 
+/**
+ * Aktuelle Übung als Hero-Karte (Design-Feinschliff): erste noch offene Übung mit „Satz X von Y“ und Vorgabe
+ * (Wiederholungen/Last), darunter der Fortschritt der Einheit als Balken in Trainingsblau. Nur Anzeige – was
+ * „offen“ ist, steht im Entwurf (abgehakt bzw. „nicht gemacht“).
+ */
+function CurrentExerciseHero({
+  exercises,
+  finishedCount,
+  progressText,
+  free,
+}: {
+  exercises: readonly DraftExercise[];
+  finishedCount: number;
+  progressText: string;
+  free: boolean;
+}) {
+  const open = exercises.find((e) => !e.skipped && !e.sets.every((s) => s.done)) ?? null;
+  const total = exercises.length;
+  const progress = (
+    <AreaProgress
+      area="training"
+      current={finishedCount}
+      total={total}
+      accessibilityLabel={t.workout.progressA11y(finishedCount, total)}
+      onDark
+      testID="workout-progress"
+    />
+  );
+  if (!open) {
+    return (
+      <HeroCard
+        eyebrow={t.workout.title}
+        eyebrowIcon="check"
+        title={t.workout.allDone}
+        subtitle={t.workout.allDoneHint}
+        testID="workout-hero"
+      >
+        {progress}
+      </HeroCard>
+    );
+  }
+  const target = currentTarget(open);
+  const setIndex = open.sets.findIndex((s) => !s.done);
+  const subtitle = [
+    t.workout.setOf(Math.max(setIndex, 0) + 1, open.sets.length),
+    free ? null : targetText(target),
+  ]
+    .filter(Boolean)
+    .join(' · ');
+  return (
+    <HeroCard
+      eyebrow={progressText}
+      eyebrowIcon="dumbbell"
+      title={target.nameDe}
+      subtitle={subtitle}
+      testID="workout-hero"
+    >
+      {progress}
+    </HeroCard>
+  );
+}
+
 function ExerciseCard({
   exercise,
   index,
@@ -921,6 +992,8 @@ function ExerciseCard({
   } | null;
 }) {
   const theme = useThemeColors();
+  const training = useAreaColors('training');
+  const card = cardColors[useColorSchemeName()];
   const [guideOpen, setGuideOpen] = useState(false);
   const target = currentTarget(exercise);
   const perPiece = perPieceText(target);
@@ -938,18 +1011,12 @@ function ExerciseCard({
     <Card>
       <View testID={`workout-exercise-${index}`} style={styles.exercise}>
         <View style={styles.exerciseHead}>
+          <IconChip area="training" icon="dumbbell" />
           <View style={styles.exerciseName}>
             <Heading level={2}>
               {index + 1}. {target.nameDe}
             </Heading>
           </View>
-          {muscles ? (
-            <MuscleMapThumbnail
-              highlights={muscles}
-              exerciseName={target.nameDe}
-              testID={`workout-muscles-${index}`}
-            />
-          ) : null}
         </View>
         {exercise.alternative ? (
           <Body muted>{t.workout.alternativeOf(exercise.planned.nameDe)}</Body>
@@ -966,48 +1033,65 @@ function ExerciseCard({
             />
           </Notice>
         ) : null}
-        {guide ? (
-          // Aufklappen statt Navigieren: Pausentimer und Eingaben bleiben, wo sie sind (Plan 8.1).
-          <View style={styles.guide}>
-            <Button
-              label={t.glossary.howToShow}
-              variant="secondary"
-              expanded={guideOpen}
-              accessibilityLabel={t.glossary.howToA11y(target.nameDe)}
-              onPress={() => setGuideOpen((open) => !open)}
-              testID={`workout-howto-${index}`}
-            />
-            {guideOpen ? (
-              <View style={styles.guide} testID={`workout-howto-panel-${index}`}>
-                <StartPositionImage exerciseId={target.exerciseId} />
-                {guide.steps.map((step, stepIndex) => (
-                  <View
-                    key={`${stepIndex}-${step}`}
-                    style={styles.guideStep}
-                    accessible
-                    accessibilityLabel={t.glossary.stepA11y(
-                      stepIndex + 1,
-                      guide.steps.length,
-                      step,
-                    )}
-                  >
-                    <Body style={styles.guideNo}>{stepIndex + 1}.</Body>
-                    <Body style={styles.guideText}>{step}</Body>
-                  </View>
-                ))}
-                <Notice title={t.glossary.safetyTitle} titleAsHeader>
-                  <Body>{guide.safetyNote}</Body>
-                </Notice>
-                <Button
-                  label={t.glossary.fullGuide}
-                  variant="link"
-                  accessibilityLabel={t.glossary.guideA11y(target.nameDe)}
-                  onPress={onOpenGuide}
-                  testID={`workout-guide-${index}`}
+        {guide || muscles ? (
+          // Übungs-Info als Kachel: Muskelkarte (antippbar für groß) und „So geht's“ zum Aufklappen – Aufklappen statt
+          // Navigieren: Pausentimer und Eingaben bleiben, wo sie sind (Plan 8.1).
+          <Tile area="training" icon="info" title={t.workout.exerciseInfo}>
+            {muscles ? (
+              <View style={styles.infoRow}>
+                <MuscleMapThumbnail
+                  highlights={muscles}
+                  exerciseName={target.nameDe}
+                  testID={`workout-muscles-${index}`}
                 />
+                <Body muted style={styles.infoText}>
+                  {t.workout.exerciseInfoHint}
+                </Body>
               </View>
             ) : null}
-          </View>
+            {guide ? (
+              <View style={styles.guide}>
+                <Button
+                  label={t.glossary.howToShow}
+                  variant="secondary"
+                  expanded={guideOpen}
+                  accessibilityLabel={t.glossary.howToA11y(target.nameDe)}
+                  onPress={() => setGuideOpen((open) => !open)}
+                  testID={`workout-howto-${index}`}
+                />
+                {guideOpen ? (
+                  <View style={styles.guide} testID={`workout-howto-panel-${index}`}>
+                    <StartPositionImage exerciseId={target.exerciseId} />
+                    {guide.steps.map((step, stepIndex) => (
+                      <View
+                        key={`${stepIndex}-${step}`}
+                        style={styles.guideStep}
+                        accessible
+                        accessibilityLabel={t.glossary.stepA11y(
+                          stepIndex + 1,
+                          guide.steps.length,
+                          step,
+                        )}
+                      >
+                        <Body style={styles.guideNo}>{stepIndex + 1}.</Body>
+                        <Body style={styles.guideText}>{step}</Body>
+                      </View>
+                    ))}
+                    <Notice title={t.glossary.safetyTitle} titleAsHeader>
+                      <Body>{guide.safetyNote}</Body>
+                    </Notice>
+                    <Button
+                      label={t.glossary.fullGuide}
+                      variant="link"
+                      accessibilityLabel={t.glossary.guideA11y(target.nameDe)}
+                      onPress={onOpenGuide}
+                      testID={`workout-guide-${index}`}
+                    />
+                  </View>
+                ) : null}
+              </View>
+            ) : null}
+          </Tile>
         ) : null}
         {exercise.skipped ? (
           <Notice tone="info" testID={`workout-skipped-${index}`}>
@@ -1032,7 +1116,13 @@ function ExerciseCard({
             {exercise.sets.map((set, setIndex) => (
               <View
                 key={setIndex}
-                style={[styles.set, { borderTopColor: theme.border }]}
+                style={[
+                  styles.set,
+                  {
+                    borderColor: set.done ? training.strong : card.border,
+                    backgroundColor: set.done ? training.surface : theme.surface,
+                  },
+                ]}
                 testID={`workout-set-${index}-${setIndex}`}
               >
                 <Body style={styles.setLabel}>{t.workout.setLabel(setIndex + 1)}</Body>
@@ -1352,15 +1442,18 @@ function WeightInput({ index, onApply }: { index: number; onApply: (kg: number) 
 const styles = StyleSheet.create({
   footer: { gap: 8 },
   exercise: { gap: 8 },
-  set: { gap: 6, borderTopWidth: StyleSheet.hairlineWidth, paddingTop: 8 },
-  setLabel: { fontWeight: '600' },
+  // Satz als eigene Fläche (Radius 16); abgehakt mit Trainingsblau – der Haken sagt es zusätzlich in Worten.
+  set: { gap: 10, borderWidth: 1, borderRadius: 16, padding: 12 },
+  setLabel: { fontWeight: '700' },
   steppers: { flexDirection: 'row', flexWrap: 'wrap', gap: 12 },
   actions: { gap: 8 },
   alternatives: { gap: 8 },
   durationField: { flex: 1, minWidth: 120 },
   guide: { gap: 6 },
-  exerciseHead: { flexDirection: 'row', alignItems: 'flex-start', gap: 8 },
-  exerciseName: { flex: 1 },
+  exerciseHead: { flexDirection: 'row', alignItems: 'center', gap: 10 },
+  exerciseName: { flex: 1, minWidth: 0 },
+  infoRow: { flexDirection: 'row', alignItems: 'center', gap: 12 },
+  infoText: { flex: 1, minWidth: 0 },
   guideStep: { flexDirection: 'row', gap: 8 },
   guideNo: { fontWeight: '700', minWidth: 24 },
   guideText: { flex: 1 },
