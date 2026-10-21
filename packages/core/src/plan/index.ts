@@ -1,3 +1,4 @@
+export * from './active-aging';
 export * from './adapt';
 export * from './apply-safety';
 export * from './content-pool';

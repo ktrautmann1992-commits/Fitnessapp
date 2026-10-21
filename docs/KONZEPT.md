@@ -305,6 +305,10 @@ Datenbank noch App.
   `balance`; beim Kürzen bleiben mindestens 2 Gleichgewichts- und 1 Beweglichkeitsübung (`keepPatterns`).
 - Bis eigene Vorlagen da sind (Etappe FA2), nutzt das Ziel die nächstbeste Vorlage „Allgemeine Fitness“ (`fallback`).
   In der App ist das Ziel erst mit Etappe FA4 wählbar (`ACTIVE_AGING_GOAL_SELECTABLE`).
+- Zusatzfragen im Gesundheits-Check (Sturz, Unsicherheit, Gehhilfe, OP, künstliche Hüfte, Osteoporose, Blutverdünner;
+  `aging-screening.ts`): ab 60 bei jedem Ziel, überspringbar (= vorsichtig); nur Sturz, Unsicherheit, Gehhilfe und OP
+  machen den Plan vorsichtig, die übrigen wirken gezielt (Ausschlüsse, Halt). Gleichgewichts-Stufen und schwerere
+  Varianten nur nach Bestätigung; Selbsttests „Mein Fortschritt“ ohne Normwerte, steuern nie den Plan.
 - Der Server prüft dieselben Grenzen mit Schutz-Triggern auf `planned_exercises`/`planned_sessions` (jeder Schreibweg)
   und in `private.fast_increase_exclusion` (pgTAP `80_active_aging.test.sql`).
 

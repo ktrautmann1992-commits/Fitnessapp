@@ -1,5 +1,11 @@
 import { ageInYears } from '../age';
 import {
+  type AgingFlag,
+  agingRules,
+  type BalanceSupport,
+  DEFAULT_BALANCE_SUPPORT,
+} from '../aging-screening';
+import {
   ACTIVE_AGING_RULES,
   AGE_PLAN_RULES,
   CONSERVATIVE_PLAN_RULES,
@@ -42,6 +48,11 @@ export interface PlanSafetyRules {
    * nach 4 Wochen, Ausdauer vorsichtig, nie R1 – GETRENNT von `cautious` (Wächter N1: sonst nur Einsteiger-Vorlagen).
    */
   readonly activeAging: boolean;
+  /**
+   * Gleichgewicht (Fit im Alter, Plan 8.1 Nr. 3, 8.2, 9 Nr. 4): höchste Stufe und Halt. Nur gesetzt beim Ziel „Fit im
+   * Alter“ oder wenn die Zusatzfragen gelten – sonst fehlt das Feld (Pläne anderer Personen bleiben byte-gleich).
+   */
+  readonly balance?: { readonly maxStage: number; readonly support: BalanceSupport };
 }
 
 /** Startgruppe Ausdauer: vorsichtig (Flag, ohne Check, Schwangerschaft, unter 18, ab 65) oder Level. */
@@ -70,6 +81,11 @@ export interface SafetyInputs {
    * gelten die Regeln ohne Ziel-Profil (nur für Ziel-unabhängige Fälle wie Tausch-Untergrenzen alter Pläne).
    */
   readonly goalType?: GoalType | null | undefined;
+  /**
+   * Zusatzfragen (docs/PLAN-FIT-IM-ALTER.md 8.2): fehlt/undefined = gelten nicht für diese Person; null = gelten, aber
+   * übersprungen bzw. noch nicht beantwortet (→ vorsichtig, S10); sonst die Flags. Gilt bei JEDEM Ziel.
+   */
+  readonly agingScreening?: { readonly flags: readonly AgingFlag[] } | null | undefined;
 }
 
 function sortTags(tags: Iterable<CautionTag>): CautionTag[] {
@@ -81,8 +97,12 @@ function sortTags(tags: Iterable<CautionTag>): CautionTag[] {
 export function planSafetyRules(inputs: SafetyInputs, onDate: string): PlanSafetyRules {
   const flags = inputs.healthScreening?.flags ?? [];
   const noHealthCheck = inputs.healthScreening === null;
+  const aging =
+    inputs.agingScreening === undefined ? null : agingRules(inputs.agingScreening?.flags ?? null);
   const flagged = requiresMedicalNotice(flags);
-  const cautious = noHealthCheck || flagged;
+  // Zusatzfragen: nur Sturz, Unsicherheit, Gehhilfe, OP (bzw. übersprungen) machen den Plan vorsichtig (S4).
+  const agingCautious = aging?.conservative === true;
+  const cautious = noHealthCheck || flagged || agingCautious;
   const age = ageInYears(inputs.birthDate, onDate);
   const activeAging = inputs.goalType === 'active_aging';
 
@@ -114,6 +134,8 @@ export function planSafetyRules(inputs: SafetyInputs, onDate: string): PlanSafet
     rpeMax = Math.min(rpeMax, ACTIVE_AGING_RULES.rpeMax);
     ACTIVE_AGING_RULES.excludedCautionTags.forEach((tag) => excluded.add(tag));
   }
+  // Gezielte Ausschlüsse (künstliche Hüfte, Osteoporose) bei jedem Ziel (Plan 8.2, N2).
+  aging?.excludedCautionTags.forEach((tag) => excluded.add(tag));
   const senior = age >= AGE_PLAN_RULES.senior.fromAge;
   const minor = age < AGE_PLAN_RULES.minor.belowAge;
   const pregnancy = flags.includes('pregnancy');
@@ -132,16 +154,28 @@ export function planSafetyRules(inputs: SafetyInputs, onDate: string): PlanSafet
       inputs.experienceLevel === 'beginner' ||
       (cautious && CONSERVATIVE_PLAN_RULES.beginnerTemplatesOnly),
     cautious,
-    usesHealthData: !noHealthCheck,
-    medicalNotice: !noHealthCheck && flagged,
+    usesHealthData: !noHealthCheck || aging !== null,
+    medicalNotice: (!noHealthCheck && flagged) || aging?.medicalNotice === true,
     pregnancyNotice: pregnancy,
     noHealthCheck,
     enduranceEffortMax,
     enduranceWalkOnly:
-      flagged || senior || pregnancy || (activeAging && ACTIVE_AGING_RULES.enduranceWalkOnly),
+      flagged ||
+      agingCautious ||
+      senior ||
+      pregnancy ||
+      (activeAging && ACTIVE_AGING_RULES.enduranceWalkOnly),
     enduranceStartGroup:
       cautious || senior || minor || pregnancy || activeAging ? 'cautious' : inputs.experienceLevel,
     activeAging,
+    ...(activeAging || aging
+      ? {
+          balance: {
+            maxStage: aging?.balanceMaxStage ?? 4,
+            support: aging?.balanceSupport ?? DEFAULT_BALANCE_SUPPORT,
+          },
+        }
+      : {}),
   };
 }
 
@@ -168,7 +202,11 @@ export function isStricter(next: PlanSafetyRules, previous: PlanSafetyRules): bo
     (next.enduranceWalkOnly && !previous.enduranceWalkOnly) ||
     START_GROUP_ORDER.indexOf(next.enduranceStartGroup) <
       START_GROUP_ORDER.indexOf(previous.enduranceStartGroup) ||
-    (next.activeAging && !previous.activeAging)
+    (next.activeAging && !previous.activeAging) ||
+    (next.balance !== undefined &&
+      (previous.balance === undefined ||
+        next.balance.maxStage < previous.balance.maxStage ||
+        (next.balance.support === 'hold_on' && previous.balance.support !== 'hold_on')))
   );
 }
 
@@ -196,6 +234,17 @@ export function strictestRules(a: PlanSafetyRules, b: PlanSafetyRules): PlanSafe
         )
       ] ?? 'cautious',
     activeAging: a.activeAging || b.activeAging,
+    ...(a.balance || b.balance
+      ? {
+          balance: {
+            maxStage: Math.min(a.balance?.maxStage ?? 4, b.balance?.maxStage ?? 4),
+            support:
+              a.balance?.support === 'hold_on' || b.balance?.support === 'hold_on'
+                ? 'hold_on'
+                : DEFAULT_BALANCE_SUPPORT,
+          },
+        }
+      : {}),
   };
 }
 

@@ -66,6 +66,8 @@ export const calorieLimitContextSchema = z
     goalIsSurplus: z.boolean(),
     deficitCap: deficitCapSchema,
     surplusCap: surplusCapSchema,
+    /** Fit im Alter: strengeres Abnehm-Tempo (nie lockerer als MAX_WEEKLY_WEIGHT_LOSS_FRACTION). */
+    weeklyLossMaxFraction: z.number().positive().max(MAX_WEEKLY_WEIGHT_LOSS_FRACTION).optional(),
   })
   .refine((ctx) => ctx.limitNeeds >= ctx.needs - EPS, {
     message: 'Der Bedarf für Grenzen ist nie kleiner als der Tagesbedarf.',
@@ -84,7 +86,10 @@ export type CalorieLimitContext = z.infer<typeof calorieLimitContextSchema>;
  */
 export function dayLimitContext(input: {
   readonly energy: DayEnergy;
-  readonly eligibility: Pick<NutritionEligibility, 'mode' | 'deficitCap' | 'surplusCap'>;
+  readonly eligibility: Pick<
+    NutritionEligibility,
+    'mode' | 'deficitCap' | 'surplusCap' | 'weeklyLossMaxFraction'
+  >;
   readonly weightKg: number;
   readonly goalIsSurplus: boolean;
 }): CalorieLimitContext {
@@ -105,6 +110,9 @@ export function dayLimitContext(input: {
     goalIsSurplus: input.goalIsSurplus,
     deficitCap: eligibility.deficitCap,
     surplusCap: eligibility.surplusCap,
+    ...(eligibility.weeklyLossMaxFraction === undefined
+      ? {}
+      : { weeklyLossMaxFraction: eligibility.weeklyLossMaxFraction }),
   };
 }
 
@@ -142,7 +150,11 @@ export function dayFloorKcal(context: CalorieLimitContext): CalorieFloor {
   const bmr = bmrIntakeFloorKcal(ctx.bmrForFloor);
   const deficit = ctx.limitNeeds * (1 - effectiveDeficitCap(ctx));
   const weeklyLoss =
-    ctx.limitNeeds - (MAX_WEEKLY_WEIGHT_LOSS_FRACTION * ctx.weightKg * KCAL_PER_KG_BODY_WEIGHT) / 7;
+    ctx.limitNeeds -
+    ((ctx.weeklyLossMaxFraction ?? MAX_WEEKLY_WEIGHT_LOSS_FRACTION) *
+      ctx.weightKg *
+      KCAL_PER_KG_BODY_WEIGHT) /
+      7;
   const energyAvailability = Math.min(
     ctx.limitNeeds,
     EA_MIN_KCAL_PER_KG_FFM * ctx.ffmKg + ctx.trainingGrossKcal,

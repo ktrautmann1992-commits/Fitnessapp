@@ -3900,3 +3900,43 @@ export const ACTIVE_AGING_RULES = {
   balanceHoldS: { min: number; max: number };
   fastIncrease: boolean;
 };
+
+/**
+ * Zusatzfragen im Gesundheits-Check bei „Fit im Alter“ bzw. ab 60 (docs/PLAN-FIT-IM-ALTER.md 8.2, FA-G3/FA-G15).
+ * - `askFromAge` 60: bei jedem Ziel; mit dem Ziel „Fit im Alter“ immer (auch mit 55). PRODUKTENTSCHEIDUNG.
+ * - `questionnaireVersion` 1: Fassung der Fragen (S4); eine neue Fassung fragt Bestandsnutzer erneut.
+ * - `recentSurgeryRecheckMonths` 12: OP-Frage „in den letzten 12 Monaten“ – nach 12 Monaten erneut fragen (N5; es
+ *   wird nur Monat und Jahr der ANTWORT gespeichert, kein OP-Datum).
+ * - `balanceMaxStageWithFallRisk` 2: Gleichgewicht höchstens Stufe 2 (einhändig festhalten) bei Sturz, Unsicherheit
+ *   oder Gehhilfe (Plan 8.2, 9 Nr. 4). PRODUKTENTSCHEIDUNG – Fachprüfung.
+ * Quellen der Fragen: CDC STEADI; Rubenstein LZ et al. (2011), J Safety Res 42(6):493–499 (Stay Independent);
+ * Montero-Odasso M et al. (2022), Age Ageing 51(9):afac205. Wortlaut: Fachprüfung ausstehend.
+ */
+export const AGING_SCREENING_RULES = {
+  askFromAge: 60,
+  questionnaireVersion: 1,
+  recentSurgeryRecheckMonths: 12,
+  balanceMaxStageWithFallRisk: 2,
+} as const;
+
+/**
+ * Gleichgewicht in Stufen (docs/PLAN-FIT-IM-ALTER.md 9 Nr. 4, K3): (1) beidhändig festhalten → (2) einhändig →
+ * (3) Fingerspitzen → (4) Halt in Reichweite. Haltezeit 10 → 30 s in 5-s-Schritten; jede neue Stufe NUR nach
+ * Bestätigung, Augen schließen gibt es nicht. Otago: Campbell AJ et al. (1997), BMJ 315:1065–1069 (Steigerung über
+ * Stufen). Schrittweite: PRODUKTENTSCHEIDUNG – Fachprüfung.
+ * Schwerere Kraft-Variante (9 Nr. 3): erst nach `harderVariantAfterSessions` Einheiten in Folge am oberen Ende und nur
+ * nach Bestätigung (wie LOAD_PROGRESSION.consecutiveSessionsForStep).
+ */
+export const BALANCE_PROGRESSION = {
+  stages: 4,
+  holdStepS: 5,
+  harderVariantAfterSessions: 2,
+} as const;
+
+/**
+ * Ernährung beim Paar „Fit im Alter → Abnehmen“ (docs/PLAN-FIT-IM-ALTER.md 11, FA-G6): Abnehm-Tempo höchstens 0,5 %
+ * Körpergewicht je Woche (Ampel „grün“) statt ~1 % – Muskelerhalt im Alter. PRODUKTENTSCHEIDUNG – Fachprüfung.
+ * Orientierung: Bauer J et al. (2013), PROT-AGE, J Am Med Dir Assoc 14(8):542–559; Volkert D et al. (2019),
+ * ESPEN-Leitlinie Geriatrie, Clin Nutr 38(1):10–47.
+ */
+export const ACTIVE_AGING_NUTRITION = { weeklyLossMaxFraction: 0.005 } as const;

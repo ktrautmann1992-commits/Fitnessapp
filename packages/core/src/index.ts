@@ -6,6 +6,9 @@ export * from './consent';
 export * from './equipment';
 export * from './food-groups';
 export * from './health-screening';
+// Fit im Alter: Zusatzfragen im Gesundheits-Check (docs/PLAN-FIT-IM-ALTER.md 8.2, FA1 Teil 2).
+export * from './aging-screening';
+export * from './function-tests';
 export * from './body-measurements';
 export * from './onboarding';
 export * from './validation';

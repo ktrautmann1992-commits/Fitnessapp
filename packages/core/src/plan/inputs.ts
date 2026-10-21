@@ -1,3 +1,4 @@
+import { AGING_FLAGS } from '../aging-screening';
 import { z } from 'zod';
 
 import { isoDateSchema } from '../age';
@@ -59,6 +60,16 @@ export const planHealthScreeningSchema = z
   .nullable();
 
 /**
+ * Zusatzfragen „Fit im Alter“ (docs/PLAN-FIT-IM-ALTER.md 8.2): fehlt = gelten nicht; `null` = gelten, aber
+ * übersprungen (vorsichtig); sonst die Flags. Gesundheitsdatum – nie im Schnappschuss (planInputsSnapshot).
+ */
+export const planAgingScreeningSchema = z
+  .strictObject({
+    flags: z.array(z.enum(AGING_FLAGS)).refine(distinct, 'Jedes Flag nur einmal.'),
+  })
+  .nullable();
+
+/**
  * Angaben (Engine-Version 2, Erweiterungsplan 5.1): `schedule` (Trainingstage mit Art und Dauer, fest oder
  * „Tage egal“) ersetzt Tage pro Woche, eine Dauer und Wunsch-Tage; der Trainingsort wird daraus abgeleitet.
  */
@@ -77,6 +88,7 @@ export const planInputsSchema = z
     birthDate: isoDateSchema,
     sex: sexSchema.nullable().default(null),
     healthScreening: planHealthScreeningSchema,
+    agingScreening: planAgingScreeningSchema.optional(),
   })
   .refine((value) => isAllowedGoalPair(value.goalType, value.secondaryGoalType), {
     path: ['secondaryGoalType'],
