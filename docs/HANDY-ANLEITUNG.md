@@ -1706,6 +1706,24 @@ Ergebnis bitte Claude schreiben, z. B. „9c Android 14, Galaxy Watch 6: 1–10 
 Codes oder Gesundheitswerte). **Wichtig für den Spike:** Bitte mitteilen, ob **Ruhepuls**, **Distanz** und **kcal**
 bei euren Einheiten ankommen – das klärt, was Samsung wirklich nach Health Connect schreibt.
 
+## Teil 9c – Zyklus-Modul testen (Phase 9, 21.10.2026, Testmodus)
+
+Am besten im **Inkognito-Tab** (Chrome → ⋯ → Neuer Inkognito-Tab), für jeden Durchgang neu. Im Browser bleiben die
+Zyklusdaten nur, bis der Tab geschlossen wird.
+
+1. Vorschau-Link → „Ohne Konto testen“ → Geschlecht **weiblich** (oder divers) → Onboarding fertig, ein Trainingstag heute.
+2. **Mehr → Zyklus** → Einführung lesen (Satz „nicht zur Verhütung“) → Einwilligung ankreuzen → **Modul einschalten**.
+3. Status **Natürlicher Zyklus** → „Letzte Periode: vor weniger als 1 Monat“ → **Fertig**.
+4. Tages-Check: Blutung **Mittel**, Energie **2**, Unterleibsschmerzen **stark** → speichert sofort. Darunter erscheint
+   „Heute leichter? – passend zu deiner Tagesform“ mit der Vorschau (je Übung ein Satz weniger).
+5. **Heute** öffnen → Karte „Wie geht’s dir heute?“, aber **kein** Wort wie Periode oder Zyklus.
+6. Neuer Tab, Schritte 1–3 mit „vor mehr als 3 Monaten“ → sofort die Karte „Deine Periode ist seit drei Monaten ausgeblieben …“.
+7. **Zyklus → Einstellungen → Zyklus-Beispieldaten laden** → zurück: Eisen-Hinweis. Haken **Warnungen aus** → statt
+   der Karten erscheint „Wann ärztlich abklären?“.
+8. Einstellungen → **Status ändern** → „Hormonelle Verhütung“ → die Ausbleiben-Karte verschwindet.
+9. Einstellungen → **Modul beenden** → bestätigen → alles gelöscht, auf „Heute“ keine Karte mehr.
+10. Neuer Tab mit **männlich** → unter Mehr gibt es kein Zyklus-Modul.
+
 ## Tipps
 - Eine Sitzung = eine Aufgabe. Lieber mehrere kurze Sitzungen als eine endlose.
 - Bei Unsicherheit einfach fragen: „Erklär mir in einfachen Worten, was du gerade geändert hast.“

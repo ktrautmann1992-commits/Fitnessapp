@@ -33,7 +33,7 @@ Verbindlich ist der freigegebene Ablauf in `docs/PLAN-PHASE-1.md` Abschnitt 3 (S
   **Profil zuerst** angelegt (geprüftes Geburtsdatum = Voraussetzung für alle Einwilligungen und Daten)
 - D. Grund-Einwilligungen: Nutzungsbedingungen und Datenschutzerklärung (getrennt, nicht vorausgewählt)
 
-1. Geschlecht (männlich / weiblich / divers / keine Angabe) → bei weiblich: Interesse am Zyklusmodul ja/nein (Modul und eigene Einwilligung in Phase 9)
+1. Geschlecht (männlich / weiblich / divers / keine Angabe) → außer bei männlich: Interesse am Zyklusmodul ja/nein (Modul mit eigener Einwilligung seit Phase 9, ZY-G4)
 2. Einwilligung Gesundheitsdaten (`health_data`) – **vor** den Körperdaten; ohne Einwilligung geht es weiter, aber ohne Körperdaten und Gesundheits-Check (mit Hinweis)
 3. Körperdaten: Größe, Gewicht, optional Körperfett, Ruhepuls; danach **optional** Körperumfänge mit Mess-Anleitung (Abschnitt 11.1)
 4. Gesundheits-Check (Herz-Kreislauf, Schwangerschaft, Verletzungen/Beschwerden, Medikamente ja/nein)
@@ -760,6 +760,12 @@ Quelle: `docs/ERWEITERUNGEN-2.md` Abschnitte 1–2. Startbestand aus `alpha5-rez
 - Hormonelle Verhütung / Schwangerschaft / Wechseljahre als Status
 - Anpassung adaptiv: bei gemeldeten Beschwerden/niedriger Energie leichtere Alternative vorschlagen; keine starren Regeln nach Phase
 - Ernährungshinweise flexibel (z. B. Energiebedarf, Eisenreiche Lebensmittel)
+- **Umgesetzt (Phase 9, ZY1–ZY4, 21.10.2026, Plan `docs/PLAN-PHASE-9.md`):** eigene Einwilligung `cycle_data`, Tages-Check
+  (Blutung, Energie, Beschwerden, optional Schlaf), Status statt Phasen-Regeln, Angebot „Heute leichter?“ nur aus
+  Energie/Beschwerden (Vorschau; Knopf für alle mit Phase 8b/ZY5), Ernährungs-Hinweise **ohne neue Zahlen**
+  (Kalorienziele und Schutzgrenzen unverändert), Warnsignale W1–W8 mit Arzt-Hinweis (Flag `cycle_warnings`), keine
+  Vorhersage, kein Medizinprodukt. Abweichung zu Abschnitt 12: Tabellen `private.cycle_settings`/`cycle_entries`
+  (Inhalt nur verschlüsselt, Schlüssel im Supabase Vault, Zugriff nur über Server-Funktionen).
 
 ## 9. Wearables & Readiness
 - HealthKit (iOS), Health Connect (Android), Strava, Garmin; später Polar, Fitbit, Suunto
@@ -1162,8 +1168,10 @@ Workflow `beta-grant` → Funktion `premium_open` → `flag_aus` (danach gilt wi
 - **Premium (Abo monatlich/jährlich):** Live-Anpassung des Plans, Ernährungsplan + Einkaufsliste (laut Phase-5-Entscheidung
   in der Testphase für alle offen, endgültig mit Phase 7; Bedarf, Makros, Timing, Rezepte und PDF gratis), Gerichte
   vor/während/nach dem Training (automatische Belegung, 6.6), alle Meal-Prep-Pläne, automatische Resteplanung,
-  Paar-Modus beim Kochen, Wettkampfvorbereitung, Zyklus-Anpassung, Wearables & Readiness, Strecken-Vorschläge (Abschnitt 10),
+  Paar-Modus beim Kochen, Wettkampfvorbereitung, Wearables & Readiness, Strecken-Vorschläge (Abschnitt 10),
   Partner-Modus, **alle KI-Funktionen** (KI-Coach, Kalorien per Foto, Körperfoto-Analyse, KI-Erklärungen) – siehe Abschnitt 15
+- **Zyklus-Modul gratis** (Gründer-Entscheidung ZY-G1, 21.10.2026): Warnsignale und „leichter an schlechten Tagen“ sind
+  Sicherheitsfunktionen; besonders sensible Art-9-Daten sind kein Verkaufshebel.
 - **Affiliate:** Supplement-Shops (gekennzeichnet, neutral)
 - **Sponsoring:** optional bei Monats-Challenges (Rabattcode, als „Werbung“ gekennzeichnet, ohne Datenweitergabe)
 - **B2B Fitnessstudios (später):** Studio-Branding, Geräteliste des Studios als Equipment-Profil, Trainer-Dashboard, Lizenz pro Mitglied
@@ -1265,6 +1273,7 @@ alle offen, Server-Prüfung mit Phase 7):
 - **Limit erreicht:** klare Meldung („Dein Kontingent für … ist diesen Monat aufgebraucht, ab … wieder verfügbar“),
   keine stille Fehlfunktion. Die Grundfunktion ohne KI (z. B. manuelles Eintragen) bleibt nutzbar.
 - Alle KI-Funktionen hinter Feature-Flag; Kostenübersicht im Admin-Bereich.
+- **Zyklusdaten nie an KI** (Phase 9): weder an Gemini noch an den späteren KI-Coach, auch nicht zusammengefasst.
 - **Stand E3 (16.10.2026):** `ai_usage` (nur Metadaten, RLS: eigene Zeilen lesen, schreiben nur der Server über
   `ai_food_photo_reserve`/`ai_food_photo_finish`), Feature-Flags und Beta-Freischaltung in `private.*`
   (`private.has_entitlement_for` = die eine Stelle für `hasEntitlement()`, Phase 7 ersetzt nur deren Rumpf), Workflow
