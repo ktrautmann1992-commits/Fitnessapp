@@ -3,6 +3,7 @@ import { cardColors, fontSize, radius, spacing, type AreaId } from '@fitnessapp/
 import { Redirect, useRouter, type Href } from 'expo-router';
 import { Pressable, StyleSheet, View } from 'react-native';
 
+import { CycleMoreRow } from '@/components/cycle-entry';
 import { Icon, ListGroup, ListRow, SectionLabel, Tile, type IconName } from '@/components/design';
 import { Screen } from '@/components/screen';
 import { LoadingState } from '@/components/ui';
@@ -159,6 +160,8 @@ export default function MoreScreen() {
             onPress={open('/menueleiste')}
             testID="more-menu-bar"
           />
+          {/* Phase 9: Zyklus-Modul (nur wenn angeboten oder schon eingeschaltet). */}
+          <CycleMoreRow onPress={open('/zyklus')} />
           <ListRow
             icon="settings"
             label={texts.settings}

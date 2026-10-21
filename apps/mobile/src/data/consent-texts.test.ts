@@ -14,13 +14,14 @@ const read = (name: string) =>
   );
 /**
  * Phase 1 (terms, privacy, health_data), Etappe E3 (ai_food_photo), Phase 8 (wearable_data) und Phase 6 SU3
- * (health_data Fassung 2, Entwurf).
+ * (health_data Fassung 2, Entwurf) und Phase 9 (cycle_data).
  */
 const migration = [
   read('20261003120800_seed_consent_documents.sql'),
   read('20261016160100_ai_food_photo.sql'),
   read('20261021120100_wearables.sql'),
   read('20261021130200_supplement_user_data.sql'),
+  read('20261021140000_cycle_module.sql'),
 ].join('\n');
 
 /** Liest (Art, Version, Titel, Text) aus der Seed-Migration. */
@@ -37,7 +38,7 @@ function seedDocuments() {
 describe('Einwilligungstexte im Testmodus', () => {
   it('sind wörtlich identisch mit der jeweils höchsten Fassung aus den Seed-Migrationen', () => {
     const seed = seedDocuments();
-    expect(seed).toHaveLength(6);
+    expect(seed).toHaveLength(7);
     const latest = seed.filter(
       (doc) => !seed.some((other) => other.type === doc.type && other.version > doc.version),
     );

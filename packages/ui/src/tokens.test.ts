@@ -87,6 +87,8 @@ describe('areaColors (Bereichsfarben)', () => {
       'ausdauer',
       'wettkampf',
       'fortschritt',
+      // Phase 9: dezentes Beere/Rosé für das Zyklus-Modul (nur Chip und Akzent).
+      'zyklus',
     ]);
     for (const area of areaIds) {
       expect(Object.keys(areaColors.dark[area])).toEqual(['surface', 'icon', 'strong', 'soft']);
@@ -101,6 +103,7 @@ describe('areaColors (Bereichsfarben)', () => {
     expect(areaColors.light.einkaufen).toMatchObject({ surface: '#CFFAFE', icon: '#0E7490' });
     expect(areaColors.light.ausdauer).toMatchObject({ surface: '#FFEDD5', strong: '#EA580C' });
     expect(areaColors.light.wettkampf).toMatchObject({ surface: '#FDECD8', icon: '#C2410C' });
+    expect(areaColors.light.zyklus).toMatchObject({ surface: '#FCE7F3', icon: '#BE185D' });
   });
 
   it.each(schemes)('Icon/Akzent-Text erreicht 4,5 : 1 auf der Karte (%s)', (scheme) => {

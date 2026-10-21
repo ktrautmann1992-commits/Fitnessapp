@@ -63,9 +63,10 @@ describe('activeConsentVersion / hasValidConsent', () => {
     expect(hasValidConsent([granted('health_data', 2)], 'health_data', 2)).toBe(true);
   });
 
-  it('cycle_data ist in Phase 1 nie gültig (kein Text)', () => {
-    expect(CURRENT_CONSENT_VERSIONS.cycle_data).toBeNull();
-    expect(hasValidConsent([granted('cycle_data', 1)], 'cycle_data')).toBe(false);
+  it('cycle_data seit Phase 9: eigene Einwilligung Version 1, getrennt von health_data', () => {
+    expect(CURRENT_CONSENT_VERSIONS.cycle_data).toBe(1);
+    expect(hasValidConsent([granted('cycle_data', 1)], 'cycle_data')).toBe(true);
+    expect(hasValidConsent([granted('health_data', 1)], 'cycle_data')).toBe(false);
   });
 });
 

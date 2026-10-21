@@ -93,6 +93,10 @@
   --area-fortschritt-icon: var(--brand-blau-dunkel);
   --area-fortschritt-strong: var(--brand-blau);
   --area-fortschritt-soft: var(--brand-himmel);
+  --area-zyklus-surface: #fce7f3;
+  --area-zyklus-icon: #be185d;
+  --area-zyklus-strong: #db2777;
+  --area-zyklus-soft: #f9a8d4;
 
   /* „Hero“-Karte (Training heute): dunkel, großer blauer Pillen-Knopf */
   --hero-background: var(--brand-schwarz);
@@ -186,6 +190,10 @@
     --area-fortschritt-icon: var(--brand-himmel);
     --area-fortschritt-strong: #4d7dff;
     --area-fortschritt-soft: #2e4a8f;
+    --area-zyklus-surface: #3a1530;
+    --area-zyklus-icon: #f9a8d4;
+    --area-zyklus-strong: #ec4899;
+    --area-zyklus-soft: #831843;
     --hero-background: var(--brand-graphit);
     --hero-text: var(--brand-weiss);
     --hero-muted: var(--brand-grau-dunkel);
@@ -238,6 +246,10 @@
   --area-fortschritt-icon: var(--brand-himmel);
   --area-fortschritt-strong: #4d7dff;
   --area-fortschritt-soft: #2e4a8f;
+  --area-zyklus-surface: #3a1530;
+  --area-zyklus-icon: #f9a8d4;
+  --area-zyklus-strong: #ec4899;
+  --area-zyklus-soft: #831843;
   --hero-background: var(--brand-graphit);
   --hero-text: var(--brand-weiss);
   --hero-muted: var(--brand-grau-dunkel);

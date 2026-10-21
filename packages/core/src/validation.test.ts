@@ -57,11 +57,13 @@ describe('Geschlecht', () => {
     fail(sexStepSchema.safeParse({ sex: 'other' }));
   });
 
-  it('Zyklus-Interesse nur bei „weiblich“', () => {
+  it('Zyklus-Interesse bei „weiblich“, „divers“, „keine Angabe“ – nicht bei „männlich“ (ZY-G4)', () => {
     ok(sexStepSchema.safeParse({ sex: 'female', cycleModuleInterest: true }));
     ok(sexStepSchema.safeParse({ sex: 'female', cycleModuleInterest: false }));
     fail(sexStepSchema.safeParse({ sex: 'male', cycleModuleInterest: true }));
-    fail(sexStepSchema.safeParse({ sex: 'diverse', cycleModuleInterest: false }));
+    fail(sexStepSchema.safeParse({ sex: 'male', cycleModuleInterest: false }));
+    ok(sexStepSchema.safeParse({ sex: 'diverse', cycleModuleInterest: false }));
+    ok(sexStepSchema.safeParse({ sex: 'unspecified', cycleModuleInterest: true }));
     ok(sexStepSchema.safeParse({ sex: 'male', cycleModuleInterest: null }));
   });
 });

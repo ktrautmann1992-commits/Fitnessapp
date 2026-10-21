@@ -3247,6 +3247,31 @@ export type Database = {
         Returns: number;
       };
       export_my_data: { Args: never; Returns: Json };
+      // Phase 9 · Zyklus-Modul (20261021140100_cycle_rpcs.sql) – Inhalt nur verschlüsselt in private.cycle_*.
+      cycle_module_access: { Args: never; Returns: Json };
+      cycle_module_admin: {
+        Args: {
+          p_action: string;
+          p_actor: string;
+          p_days?: number;
+          p_email?: string;
+          p_flag?: string;
+        };
+        Returns: Json;
+      };
+      delete_all_cycle_entries: { Args: never; Returns: number };
+      delete_cycle_entry: { Args: { p_date: string }; Returns: boolean };
+      export_my_cycle_data: { Args: never; Returns: Json };
+      get_cycle_entries: { Args: { p_from: string; p_to: string }; Returns: Json };
+      get_cycle_settings: { Args: never; Returns: Json };
+      save_cycle_entry: {
+        Args: { p_consent_granted_at: string; p_date: string; p_payload: Json };
+        Returns: Json;
+      };
+      save_cycle_settings: {
+        Args: { p_consent_granted_at: string; p_payload: Json };
+        Returns: Json;
+      };
       beta_admin: {
         Args: {
           p_action: string;

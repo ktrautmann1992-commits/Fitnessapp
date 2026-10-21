@@ -5,6 +5,10 @@ name: beta-grant
 # gratis, nur flag_an/flag_aus/status – keine Freischaltung je Person).
 # Testphase (Gründer 19.10.2026, Migration 20261019120000_premium_open.sql): Flag premium_open – AN = jedes angemeldete
 # Konto hat Premium (Abos ruhen). Ende der Testphase: flag_aus mit Funktion premium_open. Nur flag_an/flag_aus/status.
+# Phase 9 (Migration 20261021140100_cycle_rpcs.sql): Funktion cycle_module – Zyklus-Modul bis zur Rechtsprüfung nur für
+# freigeschaltete Konten (flag_an/flag_aus/status/freischalten/entziehen, Tage 1–180, keine Limits); Funktion
+# cycle_warnings – persönliche Warnsignale an/aus (aus → statischer Ratgeber; nur flag_an/flag_aus/status). Beide
+# rufen public.cycle_module_admin(...) statt beta_admin auf.
 # Nur per Hand: GitHub-App → Actions → beta-grant → „Run workflow“. Nur wer Schreibrechte am Repository hat, kann ihn
 # starten; GitHub merkt sich, wer. Ruft public.beta_admin(...) (Migration 20261016160100_ai_food_photo.sql) mit den
 # GitHub-Secrets SUPABASE_URL und SUPABASE_SECRET_KEY auf. Ohne Secrets endet der Workflow grün mit Hinweis.
@@ -53,6 +57,8 @@ on:
           - ai_food_photo
           - food_product_lookup
           - premium_open
+          - cycle_module
+          - cycle_warnings
 
 permissions:
   contents: read
@@ -101,6 +107,14 @@ jobs:
                 exit 1
               fi
               ;;
+            cycle_module) ;;
+            cycle_warnings)
+              # Phase 9: gilt für alle freigeschalteten Konten – nur flag_an/flag_aus/status.
+              if [ "$action" = grant ] || [ "$action" = revoke ]; then
+                echo "::error::cycle_warnings gilt für alle – nur flag_an, flag_aus oder status."
+                exit 1
+              fi
+              ;;
             *) echo "::error::Unbekannte Funktion."; exit 1 ;;
           esac
           if [ "$action" = grant ] || [ "$action" = revoke ]; then
@@ -146,7 +160,14 @@ jobs:
             echo "::notice title=beta-grant übersprungen::Es fehlen die GitHub-Secrets SUPABASE_URL und/oder SUPABASE_SECRET_KEY. Siehe docs/SETUP.md Teil B."
             exit 0
           fi
-          if [ "$ACTION" = grant ]; then
+          rpc=beta_admin
+          case "$FLAG" in cycle_module|cycle_warnings) rpc=cycle_module_admin ;; esac
+          if [ "$rpc" = cycle_module_admin ] && [ "$ACTION" = grant ]; then
+            # Phase 9: Freischaltung Zyklus-Modul – nur Tage, keine Foto-Limits.
+            echo "::add-mask::$EMAIL"
+            body=$(jq -n --arg a "$ACTION" --arg actor "$ACTOR" --arg e "$EMAIL" --argjson d "$TAGE" --arg f "$FLAG" \
+              '{p_action: $a, p_actor: $actor, p_email: $e, p_days: $d, p_flag: $f}')
+          elif [ "$ACTION" = grant ]; then
             echo "::add-mask::$EMAIL"
             # Tage und Limits sind im Schritt vorher geprüft; leere Limits = null (Standard).
             body=$(jq -n --arg a "$ACTION" --arg actor "$ACTOR" --arg e "$EMAIL" --argjson d "$TAGE" --arg f "$FLAG" \
@@ -171,7 +192,7 @@ jobs:
             case "$SUPABASE_SECRET_KEY" in eyJ*) echo "Authorization: Bearer $SUPABASE_SECRET_KEY" ;; esac
           } > "$headers"
           status=$(curl -sS -o "$RUNNER_TEMP/antwort.json" -w '%{http_code}' -X POST \
-            -H @"$headers" --data "$body" "${SUPABASE_URL%/}/rest/v1/rpc/beta_admin")
+            -H @"$headers" --data "$body" "${SUPABASE_URL%/}/rest/v1/rpc/$rpc")
           rm -f "$headers"
           if [ "$status" != "200" ]; then
             echo "::error title=beta-grant fehlgeschlagen::HTTP $status – ist die Migration eingespielt (db-migrate)?"
@@ -189,6 +210,8 @@ jobs:
             status)
               if [ "$FLAG" = premium_open ]; then
                 text=$(jq -r '"Testphase alles offen (premium_open): \(if .flag_enabled then "an – alle angemeldeten Konten haben Premium" else "aus – nur Beta-Freischaltungen" end) · Konten: \(.accounts) · aktive Beta-Freischaltungen: \(.active_grants) · KI-Aufrufe diesen Monat: \(.ai_calls_this_month) · KI-Kosten diesen Monat: \(.ai_cost_eur_this_month) € · Obergrenze Fotos (alle Konten): \(.photo_calls_cap) Aufrufe bzw. \(.photo_cost_eur_cap) €"' "$RUNNER_TEMP/antwort.json")
+              elif [ "$FLAG" = cycle_module ] || [ "$FLAG" = cycle_warnings ]; then
+                text=$(jq -r '"Funktion \(.flag): \(if .flag_enabled then "an" else "aus" end) · für alle geöffnet: \(if .open_for_all then "ja" else "nein" end) · aktive Freischaltungen Zyklus-Modul: \(.active_grants)"' "$RUNNER_TEMP/antwort.json")
               elif [ "$FLAG" = food_product_lookup ]; then
                 text=$(jq -r '"Funktion \(.flag): \(if .flag_enabled then "an" else "aus" end) · Produkte im Speicher: \(.cached_products) · Abfragen heute: \(.lookups_today) · Open Food Facts gerade gesperrt (Pause): \(if .off_blocked then "ja" else "nein" end)"' "$RUNNER_TEMP/antwort.json")
               else

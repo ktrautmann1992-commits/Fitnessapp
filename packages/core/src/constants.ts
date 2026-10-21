@@ -911,6 +911,101 @@ export const WEIGHT_CONFIRM_LIMITS = {
  */
 export const RETURN_AFTER_PAUSE = { pauseDays: 28, loadFactor: 0.9, rpeReduction: 1 } as const;
 
+// ---------------------------------------------------------------------------------------------------------
+// Phase 9 · Zyklus-Modul (docs/PLAN-PHASE-9.md Abschnitte 3 und 5). Symptombasiert statt Phasen-Regeln:
+// McNulty KL et al. (2020), Sports Med 50(10):1813–1827, doi:10.1007/s40279-020-01319-3 (Leistung je Phase höchstens
+// trivial verschieden, individueller Ansatz); Colenso-Semple LM et al. (2023), Front Sports Act Living 5:1054542,
+// doi:10.3389/fspor.2023.1054542 (kein klarer Phaseneinfluss auf Kraft); Kissow J et al. (2022), Sports Med
+// 52(12):2813–2819, doi:10.1007/s40279-022-01679-y (leichter Vorteil Follikelphase, schwache Evidenz); Elliott-Sale KJ
+// et al. (2021), Sports Med 51(5):843–861, doi:10.1007/s40279-021-01435-8 (Methodik). DOIs vor Übernahme prüfen.
+// Alle Werte ohne eigene Quelle: PRODUKTENTSCHEIDUNG – VOR DEM ÖFFENTLICHEN LIVEGANG FACHLICH PRÜFEN (ZY-G13).
+// ---------------------------------------------------------------------------------------------------------
+
+/**
+ * Regeln des Zyklus-Moduls (Plan 3.2–3.4, 7.5). Nur Ableitungen und Hinweise – nichts davon ändert Kalorien,
+ * Makros, Wochenumfänge oder Erholungswochen.
+ * - periodStartMinDryDays: Periodenbeginn = erster Tag mit Blutung „leicht“ oder stärker nach mindestens 5 Tagen
+ *   ohne Blutung (Schmierblutung zählt als „ohne“). PRODUKTENTSCHEIDUNG.
+ * - periodGapBridgeDays: eine Lücke von höchstens 1 Tag innerhalb der Periode wird überbrückt. PRODUKTENTSCHEIDUNG.
+ * - completenessMinShare: Zykluslänge/Ausbleiben zählen nur bei Einträgen an ≥ 50 % der Tage (sonst schweigt die
+ *   App statt falsch zu warnen). PRODUKTENTSCHEIDUNG.
+ * - longGapQuestionDays: nach 45 Tagen ohne erfasste Blutung (Status natürlich) eine Rückfrage. PRODUKTENTSCHEIDUNG.
+ * - cycleLength: auffällige Länge < 24 bzw. > 38 Tage (Munro MG et al. (2018), Int J Gynaecol Obstet 143(3):393–408,
+ *   doi:10.1002/ijgo.12666, FIGO); unter 18 Jahren < 21 bzw. > 45 Tage (ACOG Committee Opinion 651, 2015).
+ *   Warnung, wenn 2 der letzten 3 vollständigen Zyklen außerhalb liegen. PRODUKTENTSCHEIDUNG (Anzahl).
+ * - amenorrheaDays: ≥ 90 Tage ohne Periode (Definition sekundäre Amenorrhö; Mountjoy M et al. (2023), Br J Sports Med
+ *   57(17):1073–1097, doi:10.1136/bjsports-2023-106994, IOC-Konsens REDs).
+ * - lowEnergy: Energie ≤ 2 an ≥ 7 von 14 Tagen (W1b/W1c, Mountjoy 2023). Schwelle: PRODUKTENTSCHEIDUNG.
+ * - manySessionsPerWeek: ≥ 5 Einheiten je Woche gelten als „viel Training“ (W1b/W1c). PRODUKTENTSCHEIDUNG.
+ * - longPeriodDays: Periode länger als 8 Tage (FIGO 2018, Munro 2018). Bei hormoneller Verhütung derselbe Wert mit
+ *   eigenem Text (Fachprüfung Implantat/Hormonspirale).
+ * - heavyDaysPerCycle: Blutung „stark“ an ≥ 3 Tagen eines Zyklus oder in 2 Zyklen nacheinander (Bruinvels G et al.
+ *   (2016), PLoS One 11(2):e0149881, doi:10.1371/journal.pone.0149881). Schwellen: PRODUKTENTSCHEIDUNG.
+ * - crampsStrongDaysPerCycle: starke Unterleibsschmerzen an ≥ 2 Tagen in 2 Zyklen nacheinander. PRODUKTENTSCHEIDUNG.
+ * - consecutiveCycles: „2 Zyklen nacheinander“ (W4, W5, W8). PRODUKTENTSCHEIDUNG.
+ * - lowMood: „Stimmung gedrückt – stark“ an ≥ 3 von 7 Tagen → seelischer Teil von W7 als Karte. PRODUKTENTSCHEIDUNG.
+ * - postmenopauseBleedingWindowDays: Blutung nach den Wechseljahren in den letzten 90 Tagen → W6. PRODUKTENTSCHEIDUNG.
+ * - warningRepeatDays: weggetippte Warnung erscheint bei Fortbestehen nach 30 Tagen erneut. PRODUKTENTSCHEIDUNG.
+ * - recentPeriodDays: W3/W4/W5/W8 werten nur Perioden aus, die in den letzten 120 Tagen begannen. PRODUKTENTSCHEIDUNG.
+ * - backfillDays: Nachtragen bis 60 Tage zurück, nie in die Zukunft. PRODUKTENTSCHEIDUNG.
+ * - lighterOffer: „Heute leichter?“ anbieten bei Energie ≤ 2, einer starken Beschwerde oder Blutung „stark“ mit
+ *   Energie ≤ 3. PRODUKTENTSCHEIDUNG.
+ * - lighterCluster: an ≥ 4 von 14 Tagen ein Angebot → einmaliger Arzt-Hinweis. PRODUKTENTSCHEIDUNG.
+ * - retentionMonths: Einträge älter als 24 Monate löscht die Datenbank täglich (ZY-G8, Gründer 21.10.2026).
+ * - cacheDays: Einträge der letzten 120 Tage liegen für die Anzeige offline im geschützten Speicher.
+ * - maxRangeDays: get_cycle_entries liefert höchstens 400 Tage je Abruf.
+ * - writesPerDay: höchstens 200 Schreibvorgänge je Konto und Tag (Ratenbegrenzung, PRODUKTENTSCHEIDUNG).
+ * - analysisWindowDays: Auswertungen (Perioden, Warnungen) lesen höchstens 400 Tage zurück.
+ * sync: supabase/migrations/20261021140100_cycle_rpcs.sql (db-sync.test.ts).
+ */
+export const CYCLE_RULES = {
+  periodStartMinDryDays: 5,
+  periodGapBridgeDays: 1,
+  completenessMinShare: 0.5,
+  longGapQuestionDays: 45,
+  cycleLength: {
+    adult: { min: 24, max: 38 },
+    under18: { min: 21, max: 45 },
+    adultFromAge: 18,
+    windowCycles: 3,
+    minOutOfRange: 2,
+  },
+  amenorrheaDays: 90,
+  lowEnergy: { maxEnergy: 2, minDays: 7, windowDays: 14 },
+  manySessionsPerWeek: 5,
+  longPeriodDays: 8,
+  heavyDaysPerCycle: 3,
+  crampsStrongDaysPerCycle: 2,
+  consecutiveCycles: 2,
+  lowMood: { minDays: 3, windowDays: 7 },
+  postmenopauseBleedingWindowDays: 90,
+  warningRepeatDays: 30,
+  recentPeriodDays: 120,
+  backfillDays: 60,
+  lighterOffer: { maxEnergy: 2, heavyBleedingMaxEnergy: 3 },
+  lighterCluster: { minDays: 4, windowDays: 14 },
+  retentionMonths: 24,
+  cacheDays: 120,
+  maxRangeDays: 400,
+  writesPerDay: 200,
+  analysisWindowDays: 400,
+} as const;
+
+/**
+ * „Heute leichter“ (Plan 3.3, gemeinsam mit Phase 8): Kraft je Übung 1 Satz weniger (mindestens 1) und RPE −1
+ * (mindestens 5, gleiche Gewichte); Ausdauer Dauer × 0,8 (mindestens 10 min), harte Einheiten werden locker
+ * (Anstrengung höchstens ENDURANCE_EFFORT.easyMax). Nie mehr als geplant. PRODUKTENTSCHEIDUNG – VOR LIVEGANG FACHLICH
+ * PRÜFEN.
+ */
+export const LIGHTER_DAY = {
+  setsReduction: 1,
+  minSets: 1,
+  rpeReduction: 1,
+  minRpe: 5,
+  durationFactor: 0.8,
+  minEnduranceMinutes: 10,
+} as const;
+
 /**
  * Trainingsplan als PDF (docs/PLAN-PDF-EXPORT.md §5, Wächter B9): A4 hochkant ist schmal – höchstens 4
  * Mitschreib-Spalten; mehr (bis 8, „mehr Wochen“) nur auf Einheiten-Seiten im Querformat. Standard: 4 hochkant

@@ -1558,6 +1558,24 @@ nur in GitHub-Secrets bzw. auf expo.dev.
     Vorschau in der App – das Dokument erscheint direkt im Druckdialog. **Noch nicht geprüft** (Claude kann keinen
     EAS-Build starten): bitte einmal Android (A + B oben) und Ergebnis schreiben, z. B. „N6 Android ok“.
 
+## Teil 9z – Zyklus-Modul testen (Phase 9, 21.10.2026, Testmodus)
+
+Am besten im **Inkognito-Tab** (Chrome → ⋯ → Neuer Inkognito-Tab), für jeden Durchgang neu. Im Browser bleiben die
+Zyklusdaten nur, bis der Tab geschlossen wird.
+
+1. Vorschau-Link → „Ohne Konto testen“ → Geschlecht **weiblich** (oder divers) → Onboarding fertig, ein Trainingstag heute.
+2. **Mehr → Zyklus** → Einführung lesen (Satz „nicht zur Verhütung“) → Einwilligung ankreuzen → **Modul einschalten**.
+3. Status **Natürlicher Zyklus** → „Letzte Periode: vor weniger als 1 Monat“ → **Fertig**.
+4. Tages-Check: Blutung **Mittel**, Energie **2**, Unterleibsschmerzen **stark** → speichert sofort. Darunter erscheint
+   „Heute leichter? – passend zu deiner Tagesform“ mit der Vorschau (je Übung ein Satz weniger).
+5. **Heute** öffnen → Karte „Wie geht’s dir heute?“, aber **kein** Wort wie Periode oder Zyklus.
+6. Neuer Tab, Schritte 1–3 mit „vor mehr als 3 Monaten“ → sofort die Karte „Deine Periode ist seit drei Monaten ausgeblieben …“.
+7. **Zyklus → Einstellungen → Zyklus-Beispieldaten laden** → zurück: Eisen-Hinweis. Haken **Warnungen aus** → statt
+   der Karten erscheint „Wann ärztlich abklären?“.
+8. Einstellungen → **Status ändern** → „Hormonelle Verhütung“ → die Ausbleiben-Karte verschwindet.
+9. Einstellungen → **Modul beenden** → bestätigen → alles gelöscht, auf „Heute“ keine Karte mehr.
+10. Neuer Tab mit **männlich** → unter Mehr gibt es kein Zyklus-Modul.
+
 ## Teil 9a – Benachrichtigungen testen (Phase 4b, Etappe E)
 Mess-Erinnerung und Pausenende sind **lokale** Benachrichtigungen: nur auf dem Handy geplant, ohne Server, ohne Werte
 im Text, standardmäßig aus.
