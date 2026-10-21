@@ -337,29 +337,7 @@ export default function SettingsScreen() {
         />
       </ListGroup>
 
-      {/* Mein Konto (docs/PLAN-DASHBOARD.md 2.3): Abmelden, Datenexport, Konto löschen. */}
-      <SectionLabel>{t.settings.account}</SectionLabel>
-      <ListGroup>
-        <ListRow
-          icon="user"
-          label={t.konto.settingsLink}
-          description={t.konto.settingsLinkText}
-          onPress={() => router.push('/konto' as Href)}
-          testID="settings-account"
-        />
-        {/* Etappe E4a: Namensnennung der Nährwert-Quellen (BLS, Open Food Facts). */}
-        <ListRow
-          icon="info"
-          label={t.foodProduct.licenses.open}
-          onPress={() => router.push('/lizenzen' as Href)}
-          testID="settings-licenses"
-          last
-        />
-      </ListGroup>
-
-      <ConsentSettings rows={rows} />
-
-      {/* Barrierefreiheit (docs/PLAN-FIT-IM-ALTER.md 12, Etappe FA5): nur dieses Gerät. */}
+      {/* Barrierefreiheit (docs/PLAN-FIT-IM-ALTER.md 12, Etappe FA5): nur dieses Gerät; nach Smartwatch. */}
       <SectionLabel>{t.accessibility.section}</SectionLabel>
       <Card>
         {!accessibility.settings.largeView &&
@@ -395,6 +373,28 @@ export default function SettingsScreen() {
           </>
         ) : null}
       </Card>
+
+      {/* Mein Konto (docs/PLAN-DASHBOARD.md 2.3): Abmelden, Datenexport, Konto löschen. */}
+      <SectionLabel>{t.settings.account}</SectionLabel>
+      <ListGroup>
+        <ListRow
+          icon="user"
+          label={t.konto.settingsLink}
+          description={t.konto.settingsLinkText}
+          onPress={() => router.push('/konto' as Href)}
+          testID="settings-account"
+        />
+        {/* Etappe E4a: Namensnennung der Nährwert-Quellen (BLS, Open Food Facts). */}
+        <ListRow
+          icon="info"
+          label={t.foodProduct.licenses.open}
+          onPress={() => router.push('/lizenzen' as Href)}
+          testID="settings-licenses"
+          last
+        />
+      </ListGroup>
+
+      <ConsentSettings rows={rows} />
 
       <SectionLabel>{t.settings.screen}</SectionLabel>
       <Card>
