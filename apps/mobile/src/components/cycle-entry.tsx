@@ -3,7 +3,7 @@ import { useFocusEffect, useRouter, type Href } from 'expo-router';
 import { useCallback, useState } from 'react';
 import { View } from 'react-native';
 
-import { ListRow, SectionLabel } from './design';
+import { ListGroup, ListRow, SectionLabel } from './design';
 import { Body, Button, Card } from './ui';
 import {
   cycleBackendFor,
@@ -59,6 +59,27 @@ export function CycleMoreRow({ onPress }: { onPress: () => void }) {
       onPress={onPress}
       testID="more-cycle"
     />
+  );
+}
+
+/** Abschnitt unter Einstellungen (Plan 7.2: „Einstellungen → Zyklus“). */
+export function CycleSettingsSection({ onPress }: { onPress: () => void }) {
+  const visible = useCycleVisible();
+  if (!visible) return null;
+  return (
+    <>
+      <SectionLabel>{C.title}</SectionLabel>
+      <ListGroup>
+        <ListRow
+          icon="calendar"
+          label={C.settings.title}
+          description={C.moreDescriptionManage}
+          onPress={onPress}
+          testID="settings-cycle"
+          last
+        />
+      </ListGroup>
+    </>
   );
 }
 

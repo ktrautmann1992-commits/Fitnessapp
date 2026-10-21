@@ -1558,7 +1558,7 @@ nur in GitHub-Secrets bzw. auf expo.dev.
     Vorschau in der App – das Dokument erscheint direkt im Druckdialog. **Noch nicht geprüft** (Claude kann keinen
     EAS-Build starten): bitte einmal Android (A + B oben) und Ergebnis schreiben, z. B. „N6 Android ok“.
 
-## Teil 9c – Zyklus-Modul testen (Phase 9, 21.10.2026, Testmodus)
+## Teil 9z – Zyklus-Modul testen (Phase 9, 21.10.2026, Testmodus)
 
 Am besten im **Inkognito-Tab** (Chrome → ⋯ → Neuer Inkognito-Tab), für jeden Durchgang neu. Im Browser bleiben die
 Zyklusdaten nur, bis der Tab geschlossen wird.
