@@ -1,11 +1,9 @@
 {
   "id": "nasi-goreng-mit-garnelen",
   "version": 1,
-  "status": "draft",
+  "status": "published",
   "title_de": "Nasi Goreng mit Garnelen",
   "description_de": "Indonesischer gebratener Reis mit Garnelen, Gemüse und Spiegelei – leicht scharf und ideal für Reis vom Vortag.",
-  "section_de": "Mittagessen",
-  "categories": ["meal-prep"],
   "meal_types": ["main"],
   "training_tags": [],
   "servings": 1,
@@ -111,6 +109,8 @@
     "Brate das Ei im restlichen Öl als Spiegelei und serviere es mit den Lauchzwiebelringen auf dem Reis."
   ],
   "tip_de": "Statt Garnelen schmeckt Nasi Goreng auch mit Hähnchenbruststreifen – dann 2 Minuten länger braten.",
+  "section_de": "Mittagessen",
+  "categories": ["meal-prep"],
   "total_minutes": 25,
   "prep_minutes": 2,
   "cook_minutes": 23,
@@ -147,10 +147,11 @@
     "batch_id": null,
     "created_on": "2026-10-11",
     "expert_reviewed": false,
-    "reviewed_by": null,
-    "reviewed_at": null,
+    "reviewed_by": "Karsten (Auftrag an Claude)",
+    "reviewed_at": "2026-10-21",
     "review_note": null,
     "source_file": "alpha5-rezepte.json@1.0",
+    "import_hash": "2455b2f44dfbbab4a3a5975ff045d8630d56fc2820bc8f5759eaa375f020eddb",
     "import_assumptions": [
       {
         "ingredient_index": 1,
@@ -160,7 +161,7 @@
         "reason_de": "Schritt 3 gart die Zutat durch: „Erhitze 1 TL Rapsöl im Wok oder in einer großen Pfanne und brate Garnelen, Knoblauch und Asia-Gemüse 4–5 Minuten bei hoher Hitze.“"
       }
     ],
-    "import_assumptions_confirmed_by": null,
-    "import_hash": "2455b2f44dfbbab4a3a5975ff045d8630d56fc2820bc8f5759eaa375f020eddb"
+    "import_assumptions_confirmed_by": "Karsten (Auftrag an Claude)",
+    "import_assumptions_fingerprint": "8b7ba14f300d524f"
   }
 }

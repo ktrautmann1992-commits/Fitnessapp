@@ -1,11 +1,9 @@
 {
   "id": "haehnchen-nudelsuppe-zum-auffuellen",
   "version": 1,
-  "status": "draft",
+  "status": "published",
   "title_de": "Hähnchen-Nudelsuppe zum Auffüllen",
   "description_de": "Salzige Brühe mit Nudeln, Hähnchen und Gemüse – bringt Flüssigkeit, Salz, Kohlenhydrate und reichlich Eiweiß nach einer langen, schweißtreibenden Einheit zurück.",
-  "section_de": "Nach der Einheit",
-  "categories": ["post-workout", "cardio", "meal-prep"],
   "meal_types": ["snack"],
   "training_tags": ["nach_training"],
   "servings": 1,
@@ -83,6 +81,8 @@
   ],
   "tip_de": "Die Brühe gleicht Salzverluste über den Schweiß aus. Gleich die doppelte Menge kochen: Die Suppe hält im Kühlschrank 2 Tage und ist nach dem Training in 3 Minuten aufgewärmt.",
   "tags_de": ["Ausdauer"],
+  "section_de": "Nach der Einheit",
+  "categories": ["post-workout", "cardio", "meal-prep"],
   "total_minutes": 20,
   "prep_minutes": 6,
   "cook_minutes": 14,
@@ -102,17 +102,18 @@
   "declared_diet": "omnivore",
   "declared_allergens": ["gluten", "poultry", "legumes", "celery", "onion_garlic"],
   "contains_pork": false,
-  "declared_pregnancy_caution": true,
+  "declared_pregnancy_caution": false,
   "meta": {
     "origin": "manual",
     "model": null,
     "batch_id": null,
     "created_on": "2026-10-11",
     "expert_reviewed": false,
-    "reviewed_by": null,
-    "reviewed_at": null,
+    "reviewed_by": "Karsten (Auftrag an Claude)",
+    "reviewed_at": "2026-10-21",
     "review_note": null,
     "source_file": "alpha5-rezepte.json@1.0",
+    "import_hash": "b75370b57537ca66c60622b26296bb9fd07fa9717f0ae2265c6e54935183019d",
     "import_assumptions": [
       {
         "ingredient_index": 2,
@@ -122,7 +123,7 @@
         "reason_de": "Schritt 2 gart die Zutat durch: „Schneide das Hähnchen in kleine Würfel und die Karotte in Scheiben, gib beides in die Brühe und lass es 6 Minuten köcheln.“"
       }
     ],
-    "import_assumptions_confirmed_by": null,
-    "import_hash": "b75370b57537ca66c60622b26296bb9fd07fa9717f0ae2265c6e54935183019d"
+    "import_assumptions_confirmed_by": "Karsten (Auftrag an Claude)",
+    "import_assumptions_fingerprint": "2a6b1a5668dcc650"
   }
 }
