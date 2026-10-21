@@ -106,3 +106,47 @@ export function matchExisting(
   if (ask) return { kind: 'ask', logId: ask.id };
   return { kind: 'new' };
 }
+
+/** Minimal benötigte Spalten aus session_logs bzw. cardio_logs. */
+export interface CandidateLogRow {
+  readonly id: string;
+  readonly kind: PlannedSessionKind;
+  readonly performed_on: string;
+  readonly started_at: string | null;
+  readonly finished_at: string | null;
+  readonly source: string;
+}
+export interface CandidateCardioRow {
+  readonly session_log_id: string;
+  readonly modality: EnduranceModality;
+  readonly duration_s: number;
+}
+
+/**
+ * Tagebuch-Einträge auf dem Gerät → Vergleichskandidaten. Selbst übernommene Einträge (Herkunft health_connect) und
+ * schon mit einer Uhr-Einheit verknüpfte (`linkedLogIds`) sind keine Kandidaten. Dauer: Ausdauer aus cardio_logs, sonst
+ * aus Beginn/Ende (falls vorhanden).
+ */
+export function candidatesFromLogRows(
+  logs: readonly CandidateLogRow[],
+  cardio: readonly CandidateCardioRow[],
+  linkedLogIds: ReadonlySet<string>,
+): DuplicateCandidate[] {
+  const cardioOf = new Map(cardio.map((c) => [c.session_log_id, c] as const));
+  return logs.map((log) => {
+    const c = cardioOf.get(log.id) ?? null;
+    const timed =
+      log.started_at !== null && log.finished_at !== null
+        ? Math.round((Date.parse(log.finished_at) - Date.parse(log.started_at)) / 1000)
+        : null;
+    return {
+      id: log.id,
+      group: logGroup(log.kind, c?.modality ?? null),
+      performedOn: log.performed_on,
+      startedAt: log.started_at,
+      finishedAt: log.finished_at,
+      durationS: c ? c.duration_s : timed !== null && Number.isFinite(timed) ? timed : null,
+      linked: log.source === 'health_connect' || linkedLogIds.has(log.id),
+    };
+  });
+}

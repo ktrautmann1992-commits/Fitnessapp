@@ -4,7 +4,8 @@ import type { ConsentDocument } from './types';
  * Einwilligungstexte Version 1 für den TESTMODUS (ohne Supabase).
  *
  * Wörtliche Kopie aus supabase/migrations/20261003120800_seed_consent_documents.sql (terms, privacy, health_data) und
- * 20261016160100_ai_food_photo.sql (ai_food_photo, Etappe E3) – consent-texts.test.ts
+ * 20261016160100_ai_food_photo.sql (ai_food_photo, Etappe E3) sowie 20261021120100_wearables.sql (wearable_data,
+ * Phase 8) – consent-texts.test.ts
  * bricht ab, wenn beide auseinanderlaufen. Im Supabase-Modus kommen die Texte immer aus consent_documents.
  * ENTWURF – juristisch prüfen (Entscheidung zu Frage 6).
  */
@@ -104,5 +105,29 @@ Rechtsgrundlage: deine ausdrückliche Einwilligung nach Art. 9 Abs. 2 lit. a DSG
 Freiwillig: Ohne diese Einwilligung kannst du dein Essen weiterhin per Hand eintragen.
 
 Widerruf: Du kannst die Einwilligung jederzeit in den Einstellungen widerrufen. Danach werten wir keine Fotos mehr aus. Was du schon eingetragen hast, bleibt in deinem Ernährungstagebuch (dafür gilt die Einwilligung Gesundheitsdaten). Die Rechtmäßigkeit der Verarbeitung bis zum Widerruf bleibt unberührt.`,
+  },
+  {
+    type: 'wearable_data',
+    version: 1,
+    title: 'Einwilligung: Daten deiner Smartwatch übernehmen',
+    body: `ENTWURF – juristisch prüfen
+
+Mit „Smartwatch verbinden“ übernimmt Alpha5 Daten deiner Smartwatch (z. B. Galaxy Watch) aus Health Connect auf deinem Android-Handy. Health Connect ist die Datensammelstelle von Android; die App deiner Uhr (z. B. Samsung Health) schreibt dort hinein. Alpha5 liest nur – wir schreiben nichts zurück und sprechen nie direkt mit deiner Uhr.
+
+Welche Daten: nur die Arten, die du im Health-Connect-Dialog erlaubst:
+- Trainingseinheiten (Art, Beginn, Ende, Distanz, verbrauchte kcal),
+- Puls während deiner Einheiten – gespeichert wird nur eine Zusammenfassung je Einheit (Durchschnitt, Maximum, Minuten je Pulszone), keine Pulskurve,
+- Ruhepuls je Tag, Schlafdauer je Nacht (ohne Schlafphasen) und Schritte je Tag.
+Strecken (GPS) deiner Uhr übernehmen wir nicht.
+
+Wofür: ausschließlich für dein Trainingstagebuch und deine eigenen Auswertungen (z. B. Puls und Pulszonen einer Einheit, Tageswerte). Keine Weitergabe an Analyse-, Werbe- oder Affiliate-Partner, nicht im Partner-Modus und nie auf geteilten Bildern.
+
+Speicherort und Dauer: auf Servern in der EU (Frankfurt am Main), solange dein Konto besteht oder bis du die Verbindung trennst bzw. diese Einwilligung widerrufst.
+
+Rechtsgrundlage: deine ausdrückliche Einwilligung nach Art. 9 Abs. 2 lit. a DSGVO (Schweiz: revDSG). Voraussetzung ist zusätzlich deine Einwilligung in die Verarbeitung von Gesundheitsdaten.
+
+Freiwillig: Ohne diese Einwilligung nutzt du die App wie bisher; Einheiten kannst du weiter selbst eintragen oder aufzeichnen.
+
+Widerruf: Du kannst die Einwilligung jederzeit in den Einstellungen widerrufen. Dann löschen wir sofort alle Pulswerte, alle Tageswerte (Ruhepuls, Schlaf, Schritte) und die Verbindung. Übernommene Trainingseinheiten bleiben als normale Einträge ohne Puls in deinem Tagebuch – du kannst sie dort löschen. Beim Trennen der Uhr fragen wir dich, ob du die übernommenen Einheiten behalten oder löschen möchtest. Die Rechtmäßigkeit der Verarbeitung bis zum Widerruf bleibt unberührt.`,
   },
 ];

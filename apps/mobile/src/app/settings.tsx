@@ -296,6 +296,18 @@ export default function SettingsScreen() {
         ) : null}
       </Card>
 
+      {/* Phase 8: Smartwatch (Galaxy Watch über Health Connect). */}
+      <Heading level={2}>{t.wearables.settingsTitle}</Heading>
+      <Card>
+        <Body muted>{t.wearables.settingsText}</Body>
+        <Button
+          label={t.wearables.settingsLink}
+          variant="secondary"
+          onPress={() => router.push('/smartwatch' as Href)}
+          testID="settings-smartwatch"
+        />
+      </Card>
+
       {/* Etappe E4a: Namensnennung der Nährwert-Quellen (BLS, Open Food Facts). */}
       <Card>
         <Button

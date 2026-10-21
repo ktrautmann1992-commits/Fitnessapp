@@ -605,8 +605,8 @@ describe('Supabase-Modus: Speichern', () => {
     const store = createMemoryStore();
     const backend = createSupabaseBackend(options(client, store));
     const docs = await backend.loadConsentDocuments();
-    // terms, privacy, health_data und (Etappe E3) ai_food_photo.
-    expect(docs).toHaveLength(4);
+    // terms, privacy, health_data, (Etappe E3) ai_food_photo und (Phase 8) wearable_data.
+    expect(docs).toHaveLength(5);
     // N7: ohne current_consent_version (für anon gesperrt) – höchste veröffentlichte Version direkt aus der Tabelle.
     expect(calls.some((c) => c.table.startsWith('rpc:'))).toBe(false);
     const query = calls.find((c) => c.table === 'consent_documents');
@@ -1675,6 +1675,11 @@ describe('Supabase-Modus: Tagebuch-Warteschlange', () => {
       'shopping_product_links',
       // E2
       'app_layout_settings',
+      // Phase 8
+      'wearable_connections',
+      'wearable_sessions',
+      'heart_rate_summaries',
+      'daily_metrics',
     ];
     const exported = {
       format_version: 1,

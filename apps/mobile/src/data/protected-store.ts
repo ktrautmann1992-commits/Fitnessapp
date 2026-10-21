@@ -34,6 +34,7 @@ export const PROTECTED_STORE_NAMES = [
   'liveAdjust',
   'routeRecording',
   'routeQueue',
+  'wearableQueue',
 ] as const;
 export type ProtectedStoreName = (typeof PROTECTED_STORE_NAMES)[number];
 
@@ -63,6 +64,8 @@ export const PROTECTED_STORE_KEYS: Record<
     keyName: STORAGE_KEYS.routeRecordingKey,
   },
   routeQueue: { dataKey: STORAGE_KEYS.routeQueue, keyName: STORAGE_KEYS.routeQueueKey },
+  // Phase 8: Smartwatch-Abgleiche (Gesundheitsdaten).
+  wearableQueue: { dataKey: STORAGE_KEYS.wearableQueue, keyName: STORAGE_KEYS.wearableQueueKey },
 };
 
 export type ProtectedStores = Record<ProtectedStoreName, ProtectedStore>;
@@ -81,6 +84,7 @@ export function createMemoryProtectedStores(): Record<
     liveAdjust: createMemoryProtectedStore(),
     routeRecording: createMemoryProtectedStore(),
     routeQueue: createMemoryProtectedStore(),
+    wearableQueue: createMemoryProtectedStore(),
   };
 }
 

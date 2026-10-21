@@ -14,6 +14,7 @@ import { TopBanner } from '@/components/screen';
 import { useThemeColors } from '@/lib/theme';
 import { useBrandFonts } from '@/lib/use-brand-fonts';
 import { AppStateProvider } from '@/state/app-state';
+import { WearableAutoSync } from '@/state/use-wearables';
 
 // iPhone/Android: Startbildschirm stehen lassen, bis die Markenschrift geladen ist (Web unverändert).
 if (Platform.OS !== 'web') {
@@ -42,6 +43,8 @@ export default function RootLayout() {
     <SafeAreaProvider>
       <AppStateProvider>
         <NotificationRouter />
+        {/* Phase 8: Smartwatch-Abgleich beim Start und bei Rückkehr in die App (nur Android, höchstens alle 15 min). */}
+        <WearableAutoSync />
         <StatusBar style={onDark ? 'light' : 'auto'} />
         <SafeAreaView
           edges={['top']}

@@ -33,6 +33,8 @@ import {
   type PlanLibrary,
   type PreferenceChange,
   type TrackedRouteRow,
+  hasValidConsent,
+  type WearableImportResult,
 } from '@fitnessapp/core';
 
 import { healthConsentStatus } from '../state/flow';
@@ -122,7 +124,17 @@ import {
 import { createMemoryProtectedStore, type ProtectedStore } from './protected-store';
 import { readJson, STORAGE_KEYS, writeJson, type KeyValueStore } from './kv';
 import { upgradeStoredRows } from './legacy-rows';
-import { type ConsentVersions, versionsFromDocuments } from './mapping';
+import { consentRecordsFromRows, type ConsentVersions, versionsFromDocuments } from './mapping';
+import {
+  applyWearableConnect,
+  applyWearableDisconnect,
+  applyWearableImport,
+  applyWearableResolve,
+  applyWearableRevoke,
+  EMPTY_LOCAL_WEARABLES,
+  type LocalWearableStore,
+  wearableRowsFor,
+} from './wearable-rows';
 import { planSave } from './plan-save';
 import { activePlan, effectiveSafetyRules, planSnapshot, profilesFor } from './training-plan';
 import { emptyUserRows, type AuthSession, type ConsentPlatform, type UserRows } from './types';
@@ -189,6 +201,11 @@ interface LocalDb {
    */
   trackedRoutes?: TrackedRouteRow[];
   routeCounter?: { userId: string } & RouteCounter;
+  /**
+   * Smartwatch (Phase 8, Testmodus): Zeilen wie wearable_connections/-sessions, heart_rate_summaries, daily_metrics
+   * (alle Konten dieses Geräts, gefiltert nach user_id) – dokumentierte Ausnahme des Testmodus wie alle Daten hier.
+   */
+  wearables?: LocalWearableStore;
 }
 
 /** Testphase „alles offen“ (Gründer 19.10.2026): Standard AN – nur ein ausdrücklich ausgeschalteter Schalter ist aus. */
@@ -302,6 +319,15 @@ function serializeWrites(backend: Backend): Backend {
       decide: (id: string, accept: boolean) => serial(() => live.decide(id, accept)),
     } satisfies NonNullable<Backend['liveAdjust']>;
   }
+  // Smartwatch (Phase 8): lesen und schreiben localDb – ebenfalls nacheinander.
+  const wear = backend.wearables;
+  wrapped.wearables = {
+    load: () => serial(() => wear.load()),
+    connect: (types) => serial(() => wear.connect(types)),
+    importBatches: (batches) => serial(() => wear.importBatches(batches)),
+    resolveDuplicate: (id, merge) => serial(() => wear.resolveDuplicate(id, merge)),
+    disconnect: (deleteImported) => serial(() => wear.disconnect(deleteImported)),
+  } satisfies Backend['wearables'];
   return wrapped as unknown as Backend;
 }
 
@@ -501,9 +527,27 @@ export function createLocalBackend(store: KeyValueStore, options: LocalBackendOp
     };
     // Ein Widerruf darf nie scheitern (Wächter N4 K3): ungültige Alt-Einträge verwirft die Umwandlung in core.
     const next = applyHealthDataRevocation(revoked, { deleteLogs, dislikeGroups });
-    await save({ ...db, rows: next });
+    // Phase 8: Widerruf health_data löscht auch Puls, Tageswerte und Smartwatch-Verbindung (consents_after_revoke).
+    const session = db.session;
+    await save({
+      ...db,
+      rows: next,
+      wearables:
+        db.wearables && session ? applyWearableRevoke(db.wearables, session.userId) : db.wearables,
+    });
     // Live-Anpassung (8.3, 4.7): Anpassungen sind (mittelbar) Gesundheitsdaten – der geschützte Speicher wird geleert.
     await liveStore.clear();
+  }
+
+  /** Wie private.wearable_consents_locked: Einwilligungen wearable_data UND health_data gültig, sonst Ablehnung. */
+  function requireWearableConsents(rows: UserRows): void {
+    const records = consentRecordsFromRows(rows.consents);
+    if (
+      !hasValidConsent(records, 'wearable_data', LOCAL_VERSIONS.wearable_data) ||
+      !hasValidConsent(records, 'health_data', LOCAL_VERSIONS.health_data)
+    ) {
+      throw new BackendError('consent_required', { sensitive: true });
+    }
   }
 
   /** Prüft einen Vorgang wie die RLS-Policies/Trigger der Datenbank und wendet ihn an. */
@@ -794,7 +838,7 @@ export function createLocalBackend(store: KeyValueStore, options: LocalBackendOp
         await revokeHealth(false, false);
         return;
       }
-      const { db, rows } = await requireProfile();
+      const { db, rows, session } = await requireProfile();
       const now = options.now();
       const next: UserRows = {
         ...rows,
@@ -802,7 +846,15 @@ export function createLocalBackend(store: KeyValueStore, options: LocalBackendOp
           c.consent_type === type && c.revoked_at === null ? { ...c, revoked_at: now } : c,
         ),
       };
-      await save({ ...db, rows: next });
+      await save({
+        ...db,
+        rows: next,
+        // Phase 8: Widerruf wearable_data löscht Puls, Tageswerte und Verbindung (Einheiten bleiben).
+        wearables:
+          type === 'wearable_data' && db.wearables
+            ? applyWearableRevoke(db.wearables, session.userId)
+            : db.wearables,
+      });
     },
 
     saveStep: async (stepSave, context) => {
@@ -1427,6 +1479,7 @@ export function createLocalBackend(store: KeyValueStore, options: LocalBackendOp
           productLookups: (db.productLookups ?? []).filter((c) => c.user_id === session.userId),
           planAdjustments: await liveStore.load(session.userId),
           trackedRoutes: (db.trackedRoutes ?? []).filter((r) => r.user_id === session.userId),
+          wearables: wearableRowsFor(db.wearables ?? EMPTY_LOCAL_WEARABLES, rows, session.userId),
         }),
         {
           email: session.email,
@@ -1494,6 +1547,92 @@ export function createLocalBackend(store: KeyValueStore, options: LocalBackendOp
     readRecording: () => recordingStore.read(),
     writeRecording: (text) => recordingStore.write(text),
     clearRecording: () => recordingStore.clear(),
+
+    // --- Smartwatch (Phase 8) – dieselben Regeln wie connect_wearable/import_wearable_batch/… -------------------
+    wearables: {
+      load: async () => {
+        const { db, session } = await requireUser();
+        return {
+          rows: wearableRowsFor(
+            db.wearables ?? EMPTY_LOCAL_WEARABLES,
+            db.rows ?? { sessionLogs: [] },
+            session.userId,
+          ),
+          pending: 0,
+          offline: false,
+        };
+      },
+      connect: async (types) => {
+        const { db, rows, session } = await requireProfile();
+        requireWearableConsents(rows);
+        await save({
+          ...db,
+          wearables: applyWearableConnect(db.wearables ?? EMPTY_LOCAL_WEARABLES, types, {
+            userId: session.userId,
+            now: options.now(),
+          }),
+        });
+      },
+      importBatches: async (batches) => {
+        const { db, rows, session } = await requireProfile();
+        requireWearableConsents(rows);
+        let store = db.wearables ?? EMPTY_LOCAL_WEARABLES;
+        let next = rows;
+        const total: WearableImportResult = {
+          created: 0,
+          updated: 0,
+          merged: 0,
+          skipped: 0,
+          days: 0,
+        };
+        for (const batch of batches) {
+          const applied = applyWearableImport(store, next, batch, {
+            userId: session.userId,
+            now: options.now(),
+            today: options.today(),
+            newId: options.newId,
+          });
+          store = applied.store;
+          next = applied.rows;
+          total.created += applied.result.created;
+          total.updated += applied.result.updated;
+          total.merged += applied.result.merged;
+          total.skipped += applied.result.skipped;
+          total.days += applied.result.days;
+        }
+        await save({ ...db, rows: next, wearables: store });
+        return { kind: 'imported', result: total };
+      },
+      resolveDuplicate: async (id, merge) => {
+        const { db, rows, session } = await requireProfile();
+        if (merge) requireWearableConsents(rows);
+        const result = applyWearableResolve(
+          db.wearables ?? EMPTY_LOCAL_WEARABLES,
+          rows,
+          id,
+          merge,
+          {
+            userId: session.userId,
+            now: options.now(),
+          },
+        );
+        if (result === 'not_found' || result === 'invalid') {
+          throw new BackendError('wearable_rejected', { sensitive: true });
+        }
+        await save({ ...db, rows: result.rows, wearables: result.store });
+      },
+      disconnect: async (deleteImported) => {
+        const { db, rows, session } = await requireProfile();
+        const result = applyWearableDisconnect(
+          db.wearables ?? EMPTY_LOCAL_WEARABLES,
+          rows,
+          deleteImported,
+          session.userId,
+        );
+        await save({ ...db, rows: result.rows, wearables: result.store });
+        return result.deleted;
+      },
+    },
   };
   return serializeWrites(withPlanOverlay(backend, overlaid));
 }

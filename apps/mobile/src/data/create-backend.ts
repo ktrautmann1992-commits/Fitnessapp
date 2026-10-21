@@ -72,6 +72,8 @@ export function createBackend(): Backend {
       // Etappe E4: Strecken-Warteschlange und laufende Aufzeichnung (Standortdaten) – ebenso geschützt.
       routeQueueStore: stores.routeQueue,
       routeRecordingStore: stores.routeRecording,
+      // Phase 8: Smartwatch-Abgleiche (Gesundheitsdaten) – ebenso geschützt.
+      wearableQueueStore: stores.wearableQueue,
       // Etappe E3: Gericht per Foto über apps/web (fehlt die Adresse, ist „Per Foto“ nicht verfügbar).
       webUrl: readWebUrl(process.env.EXPO_PUBLIC_WEB_URL),
     });

@@ -67,5 +67,6 @@ export function createDeviceProtectedStores(): ProtectedStores {
     liveAdjust: createDeviceProtectedStore('liveAdjust'),
     routeRecording: createDeviceProtectedStore('routeRecording'),
     routeQueue: createDeviceProtectedStore('routeQueue'),
+    wearableQueue: createDeviceProtectedStore('wearableQueue'),
   };
 }

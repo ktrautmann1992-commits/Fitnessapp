@@ -4,9 +4,12 @@ import { type DuplicateCandidate, matchExisting } from './duplicates';
 import { mapExerciseType } from './exercise-types';
 import { type HeartRateSample, hrZones, summarizeHeartRate } from './heart-rate';
 import {
+  type DailyMetricImport,
   groupModality,
   originFromPackage,
   secondsBetween,
+  type WearableDataType,
+  type WearableImportBatch,
   type WearableSessionImport,
 } from './schema';
 
@@ -140,4 +143,33 @@ export function assignDuplicates(
         ? { ...s, merge_into: match.logId, possible_duplicate_of: null }
         : { ...s, merge_into: null, possible_duplicate_of: match.logId };
     });
+}
+
+/**
+ * Einen Abgleich in Aufrufe von import_wearable_batch aufteilen (höchstens 500 Einheiten bzw. 62 Tage je Aufruf).
+ * Leerer Abgleich → genau ein Aufruf (meldet die freigegebenen Datentypen und den Zeitpunkt).
+ */
+export function chunkImportBatches(
+  grantedTypes: readonly WearableDataType[],
+  sessions: readonly WearableSessionImport[],
+  days: readonly DailyMetricImport[],
+): WearableImportBatch[] {
+  const batches: WearableImportBatch[] = [];
+  const count = Math.max(
+    1,
+    Math.ceil(sessions.length / WEARABLE_SYNC.maxSessionsPerBatch),
+    Math.ceil(days.length / WEARABLE_SYNC.maxDaysPerBatch),
+  );
+  for (let i = 0; i < count; i += 1) {
+    batches.push({
+      provider: 'health_connect',
+      granted_types: [...grantedTypes],
+      sessions: sessions.slice(
+        i * WEARABLE_SYNC.maxSessionsPerBatch,
+        (i + 1) * WEARABLE_SYNC.maxSessionsPerBatch,
+      ),
+      days: days.slice(i * WEARABLE_SYNC.maxDaysPerBatch, (i + 1) * WEARABLE_SYNC.maxDaysPerBatch),
+    });
+  }
+  return batches;
 }

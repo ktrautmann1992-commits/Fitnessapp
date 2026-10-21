@@ -1,7 +1,13 @@
 import { describe, expect, it } from 'vitest';
 
 import { WEARABLE_DUPLICATE } from '../constants';
-import { type DuplicateCandidate, logGroup, matchExisting, overlapShare } from './duplicates';
+import {
+  candidatesFromLogRows,
+  type DuplicateCandidate,
+  logGroup,
+  matchExisting,
+  overlapShare,
+} from './duplicates';
 
 const t = (min: number) => new Date(Date.UTC(2026, 9, 20, 6, min)).toISOString();
 
@@ -124,5 +130,52 @@ describe('matchExisting (W8-9)', () => {
 
   it('keine Einträge → neu', () => {
     expect(matchExisting(subject, [])).toEqual({ kind: 'new' });
+  });
+});
+
+describe('candidatesFromLogRows', () => {
+  it('Gruppe, Dauer und verknüpfte/übernommene Einträge', () => {
+    const logs = [
+      {
+        id: 'a',
+        kind: 'endurance' as const,
+        performed_on: '2026-10-20',
+        started_at: t(0),
+        finished_at: t(40),
+        source: 'gps',
+      },
+      {
+        id: 'b',
+        kind: 'strength' as const,
+        performed_on: '2026-10-20',
+        started_at: t(0),
+        finished_at: t(30),
+        source: 'manual',
+      },
+      {
+        id: 'c',
+        kind: 'strength' as const,
+        performed_on: '2026-10-20',
+        started_at: null,
+        finished_at: null,
+        source: 'manual',
+      },
+      {
+        id: 'd',
+        kind: 'endurance' as const,
+        performed_on: '2026-10-20',
+        started_at: null,
+        finished_at: null,
+        source: 'health_connect',
+      },
+    ];
+    const cardio = [{ session_log_id: 'a', modality: 'run' as const, duration_s: 2300 }];
+    const out = candidatesFromLogRows(logs, cardio, new Set(['b']));
+    expect(out.map((c) => [c.id, c.group, c.durationS, c.linked])).toEqual([
+      ['a', 'run', 2300, false],
+      ['b', 'strength', 1800, true],
+      ['c', 'strength', null, false],
+      ['d', 'strength', null, true],
+    ]);
   });
 });

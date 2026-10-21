@@ -9,7 +9,7 @@ import {
   wearableSessionImportSchema,
   type WearableSessionImport,
 } from './schema';
-import { assignDuplicates, sessionFromHc } from './sessions';
+import { assignDuplicates, chunkImportBatches, sessionFromHc } from './sessions';
 
 const record = (over: Partial<Parameters<typeof sessionFromHc>[0]> = {}) => ({
   id: 'hc-1',
@@ -259,5 +259,29 @@ describe('assignDuplicates', () => {
     const id = '00000000-0000-4000-8000-000000000001';
     expect(parse({ merge_into: id, possible_duplicate_of: id })).toBe(false);
     expect(parse({ merge_into: 'kein-uuid' })).toBe(false);
+  });
+});
+
+describe('chunkImportBatches', () => {
+  it('leer → ein Aufruf; > 500 Einheiten bzw. > 62 Tage → mehrere', () => {
+    expect(chunkImportBatches(['steps'], [], [])).toEqual([
+      { provider: 'health_connect', granted_types: ['steps'], sessions: [], days: [] },
+    ]);
+    const r = sessionFromHc(record(), {}, { hfMax: null });
+    if (r.kind !== 'ok') throw new Error('skip');
+    const one = { ...r.session, merge_into: null, possible_duplicate_of: null };
+    const sessions = Array.from({ length: 1001 }, (_, i) => ({ ...one, external_id: `x${i}` }));
+    const days = Array.from({ length: 70 }, (_, i) => ({
+      day: `2026-08-${String((i % 28) + 1).padStart(2, '0')}`,
+      resting_hr_bpm: null,
+      sleep_min: null,
+      steps: i,
+    }));
+    const batches = chunkImportBatches(['exercise'], sessions, days);
+    expect(batches.map((b) => [b.sessions.length, b.days.length])).toEqual([
+      [500, 62],
+      [500, 8],
+      [1, 0],
+    ]);
   });
 });

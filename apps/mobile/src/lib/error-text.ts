@@ -63,6 +63,8 @@ export function errorText(error: unknown): string {
       return t.endurance.errors.rejected;
     case 'route_limit':
       return t.endurance.errors.limit;
+    case 'wearable_rejected':
+      return t.wearables.errors.rejected;
     case 'competition_rejected':
       return t.competition.errors[error.competitionReason ?? 'invalid'];
     case 'unknown':

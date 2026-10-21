@@ -10,8 +10,13 @@ import { fileURLToPath } from 'node:url';
 import type { ExpoConfig } from 'expo/config';
 import { beforeAll, describe, expect, it } from 'vitest';
 
+import { WEARABLE_DATA_TYPES } from '@fitnessapp/core';
+
 import appConfig, {
+  ANDROID_MIN_SDK,
   CAMERA_PERMISSION_TEXT,
+  HEALTH_CONNECT_BLOCKED_PERMISSIONS,
+  HEALTH_CONNECT_READ_PERMISSIONS,
   IOS_BACKGROUND_MODES,
   LOCATION_ALWAYS_TEXT,
   LOCATION_WHEN_IN_USE_TEXT,
@@ -34,6 +39,14 @@ const ALLOWED_ANDROID_PERMISSIONS = [
   'android.permission.ACCESS_FINE_LOCATION',
   'android.permission.FOREGROUND_SERVICE',
   'android.permission.FOREGROUND_SERVICE_LOCATION',
+  // Smartwatch (Phase 8): nur Leserechte von Health Connect.
+  'android.permission.health.READ_EXERCISE',
+  'android.permission.health.READ_DISTANCE',
+  'android.permission.health.READ_TOTAL_CALORIES_BURNED',
+  'android.permission.health.READ_HEART_RATE',
+  'android.permission.health.READ_RESTING_HEART_RATE',
+  'android.permission.health.READ_SLEEP',
+  'android.permission.health.READ_STEPS',
 ];
 const BLOCKED_ANDROID_PERMISSIONS = [
   'android.permission.READ_EXTERNAL_STORAGE',
@@ -41,6 +54,18 @@ const BLOCKED_ANDROID_PERMISSIONS = [
   'android.permission.SYSTEM_ALERT_WINDOW',
   // Kein „Immer erlauben“ (W-G13): Der Vordergrund-Dienst braucht es nicht.
   'android.permission.ACCESS_BACKGROUND_LOCATION',
+  // Phase 8: kein Hintergrund-Lesen, keine älteren Daten, keine Uhr-Strecken, kein Schreiben.
+  'android.permission.health.READ_HEALTH_DATA_IN_BACKGROUND',
+  'android.permission.health.READ_HEALTH_DATA_HISTORY',
+  'android.permission.health.READ_EXERCISE_ROUTES',
+  'android.permission.health.WRITE_EXERCISE',
+  'android.permission.health.WRITE_EXERCISE_ROUTE',
+  'android.permission.health.WRITE_DISTANCE',
+  'android.permission.health.WRITE_TOTAL_CALORIES_BURNED',
+  'android.permission.health.WRITE_HEART_RATE',
+  'android.permission.health.WRITE_RESTING_HEART_RATE',
+  'android.permission.health.WRITE_SLEEP',
+  'android.permission.health.WRITE_STEPS',
 ];
 
 function config(): ExpoConfig {
@@ -167,7 +192,26 @@ describe('app.config.ts', () => {
     expect([...(android?.blockedPermissions ?? [])].sort()).toEqual(
       [...BLOCKED_ANDROID_PERMISSIONS].sort(),
     );
-    expect(android?.permissions ?? []).toEqual([]);
+    expect(android?.permissions ?? []).toEqual([...HEALTH_CONNECT_READ_PERMISSIONS]);
+  });
+
+  it('Health Connect (Phase 8): je Datentyp genau eine Leseberechtigung, Plugin und minSdk 26', () => {
+    expect(HEALTH_CONNECT_READ_PERMISSIONS).toHaveLength(WEARABLE_DATA_TYPES.length);
+    for (const permission of HEALTH_CONNECT_READ_PERMISSIONS) {
+      expect(permission).toMatch(/^android\.permission\.health\.READ_[A-Z_]+$/);
+      expect(HEALTH_CONNECT_BLOCKED_PERMISSIONS as readonly string[]).not.toContain(permission);
+    }
+    for (const blocked of [
+      'android.permission.health.READ_HEALTH_DATA_IN_BACKGROUND',
+      'android.permission.health.READ_HEALTH_DATA_HISTORY',
+      'android.permission.health.READ_EXERCISE_ROUTES',
+    ]) {
+      expect(HEALTH_CONNECT_BLOCKED_PERMISSIONS as readonly string[]).toContain(blocked);
+    }
+    const plugins = config().plugins ?? [];
+    expect(plugins).toContain('react-native-health-connect');
+    expect(plugins).toContainEqual(['expo-build-properties', { android: { minSdkVersion: 26 } }]);
+    expect(ANDROID_MIN_SDK).toBe(26);
   });
 
   it('Datenschutz-Manifest: kein Tracking, nur Zweck App-Funktion', () => {
@@ -312,6 +356,39 @@ describe('expo config --type introspect (nach allen Config-Plugins, offline)', (
     expect(result._internal.modResults.ios.infoPlist.UIBackgroundModes).toEqual([
       ...IOS_BACKGROUND_MODES,
     ]);
+  });
+
+  it('AndroidManifest: Health-Connect-Erklärung (Datenschutz-Link im Systemdialog) für Android ≤ 13 und 14+', () => {
+    const manifest = result._internal.modResults.android.manifest.manifest as unknown as {
+      application: {
+        activity?: {
+          $: Record<string, string>;
+          'intent-filter'?: { action?: { $: Record<string, string> }[] }[];
+        }[];
+        'activity-alias'?: {
+          $: Record<string, string>;
+          'intent-filter'?: {
+            action?: { $: Record<string, string> }[];
+            category?: { $: Record<string, string> }[];
+          }[];
+        }[];
+      }[];
+    };
+    const app = manifest.application[0];
+    const actions = (app?.activity ?? []).flatMap((a) =>
+      (a['intent-filter'] ?? []).flatMap((f) => (f.action ?? []).map((x) => x.$['android:name'])),
+    );
+    expect(actions).toContain('androidx.health.ACTION_SHOW_PERMISSIONS_RATIONALE');
+    const alias = (app?.['activity-alias'] ?? []).find(
+      (a) => a.$['android:name'] === 'ViewPermissionUsageActivity',
+    );
+    expect(alias?.$['android:permission']).toBe('android.permission.START_VIEW_PERMISSION_USAGE');
+    expect(alias?.['intent-filter']?.[0]?.action?.[0]?.$['android:name']).toBe(
+      'android.intent.action.VIEW_PERMISSION_USAGE',
+    );
+    expect(alias?.['intent-filter']?.[0]?.category?.[0]?.$['android:name']).toBe(
+      'android.intent.category.HEALTH_PERMISSIONS',
+    );
   });
 
   it('AndroidManifest: Symbol der Benachrichtigung „Aufzeichnung läuft“ (E3)', () => {

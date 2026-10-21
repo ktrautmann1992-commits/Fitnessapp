@@ -3,6 +3,7 @@ import {
   type DataExportTable,
   type MealPlanWeek,
   type PendingDbExportTable,
+  type WearableRows,
 } from '@fitnessapp/core';
 
 import type { MealPlanRow, UserRows } from './types';
@@ -26,6 +27,8 @@ export function localDataExport(
     planAdjustments?: readonly unknown[];
     /** Testmodus: eigene Strecken (Etappe E4, Spalten wie tracked_routes). */
     trackedRoutes?: readonly { started_at: string; created_at: string }[];
+    /** Testmodus: Smartwatch-Daten (Phase 8, Spalten wie die vier Tabellen). */
+    wearables?: WearableRows;
   } = {},
 ): {
   format_version: number;
@@ -210,6 +213,19 @@ export function localDataExport(
     ),
     // Etappe E2: Anordnung der Übersicht und der Menüleiste (Spalten wie app_layout_settings).
     app_layout_settings: one(rows.appLayout),
+    // Smartwatch (Phase 8) – Spalten und Sortierung wie export_my_data().
+    wearable_connections: one(extra.wearables?.connection ?? null),
+    wearable_sessions: [...(extra.wearables?.sessions ?? [])].sort(
+      (a, b) =>
+        a.started_at.localeCompare(b.started_at) ||
+        a.session_log_id.localeCompare(b.session_log_id),
+    ),
+    heart_rate_summaries: [...(extra.wearables?.heartRates ?? [])].sort((a, b) =>
+      a.session_log_id.localeCompare(b.session_log_id),
+    ),
+    daily_metrics: [...(extra.wearables?.dailyMetrics ?? [])].sort((a, b) =>
+      a.day.localeCompare(b.day),
+    ),
     // Übungs-Präferenzen (Etappe T2) – in export_my_data() erst mit Etappe T3 (PENDING_DB_EXPORT_TABLES).
     exercise_preferences: rows.exercisePreferences,
   };

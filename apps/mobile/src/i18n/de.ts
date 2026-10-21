@@ -28,6 +28,7 @@ import { deMuscleMap } from './de-muscle-map';
 import { deNutrition } from './de-nutrition';
 import { deNutritionDay } from './de-nutrition-day';
 import { deWeekEval } from './de-week-eval';
+import { deWearables } from './de-wearables';
 import { deWorkouts } from './de-workouts';
 
 export const de = {
@@ -192,6 +193,7 @@ export const de = {
     health_data: 'Gesundheitsdaten',
     cycle_data: 'Zyklusdaten',
     ai_food_photo: 'Gerichte per Foto auswerten',
+    wearable_data: 'Smartwatch-Daten',
   },
   steps: {
     sex: {
@@ -1642,6 +1644,8 @@ export const de = {
   endurance: deEndurance,
   // Workout-Bibliothek (docs/PLAN-WORKOUTS.md)
   workouts: deWorkouts,
+  /** Smartwatch über Health Connect (Phase 8). */
+  wearables: deWearables,
 } as const;
 
 /** Typ, den jede Übersetzung erfüllen muss (Texte als string, Funktionen mit gleicher Signatur). */

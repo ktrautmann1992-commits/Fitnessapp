@@ -2,6 +2,7 @@ import { describe, expect, it } from 'vitest';
 
 import { HEART_RATE_LIMITS, HR_MAX_FORMULA, HR_ZONE_PERCENTS } from '../constants';
 import { hrZones, maxHeartRate, summarizeHeartRate, zoneIndex } from './heart-rate';
+import { zoneShares } from './rows';
 import { heartRateSummarySchema } from './schema';
 
 const at = (s: number) => new Date(Date.UTC(2026, 9, 20, 7, 0, s)).toISOString();
@@ -116,5 +117,12 @@ describe('summarizeHeartRate', () => {
     const total = (s?.zone_s ?? []).reduce((a, b) => a + b, 0);
     expect(total).toBeLessThanOrEqual(seconds);
     expect(heartRateSummarySchema.safeParse(s).success).toBe(true);
+  });
+});
+
+describe('zoneShares', () => {
+  it('Anteile je Zone, ohne Zeit alles 0', () => {
+    expect(zoneShares([0, 0, 0, 0, 0])).toEqual([0, 0, 0, 0, 0]);
+    expect(zoneShares([10, 30, 0, 60, 0])).toEqual([0.1, 0.3, 0, 0.6, 0]);
   });
 });

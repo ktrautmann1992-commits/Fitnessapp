@@ -577,6 +577,7 @@ export function versionsFromDocuments(
     health_data: null,
     cycle_data: null,
     ai_food_photo: null,
+    wearable_data: null,
   };
   for (const doc of documents) {
     const current = versions[doc.type];

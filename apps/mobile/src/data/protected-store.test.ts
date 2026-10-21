@@ -152,8 +152,8 @@ describe('Sechs eigene geschützte Speicher (PLAN-PHASE-4 4.1, Ernährung seit N
       ]),
     );
     for (const [name, store] of Object.entries(stores)) await store.write(`Inhalt ${name}`);
-    // Sieben bisherige + Etappe E4: laufende Aufzeichnung und Strecken-Warteschlange.
-    expect(keys.map.size).toBe(9);
+    // Sieben bisherige + Etappe E4: laufende Aufzeichnung und Strecken-Warteschlange + Phase 8: Smartwatch.
+    expect(keys.map.size).toBe(10);
     // Geheimtext – kein Klartext im AsyncStorage.
     expect(JSON.stringify(data.dump())).not.toContain('Inhalt');
     // Widerruf/Planwechsel leeren nur den Plan-Cache – das Tagebuch bleibt lesbar.
@@ -167,6 +167,7 @@ describe('Sechs eigene geschützte Speicher (PLAN-PHASE-4 4.1, Ernährung seit N
     expect(await stores.liveAdjust?.read()).toBe('Inhalt liveAdjust');
     expect(await stores.routeRecording?.read()).toBe('Inhalt routeRecording');
     expect(await stores.routeQueue?.read()).toBe('Inhalt routeQueue');
+    expect(await stores.wearableQueue?.read()).toBe('Inhalt wearableQueue');
     expect(keys.map.has(STORAGE_KEYS.healthPlanKey)).toBe(false);
     expect(keys.map.has(STORAGE_KEYS.logQueueKey)).toBe(true);
   });
