@@ -496,8 +496,11 @@ export function Notice({
   children,
   testID,
   silent = false,
+  icon,
 }: {
   tone?: 'info' | 'warning' | 'danger' | 'success';
+  /** Strich-Icon links (Deko in der Farbe des Randes), z. B. „alert“ bei Allergen-Hinweisen. */
+  icon?: IconName;
   title?: string;
   /** Titel als Überschrift auszeichnen (Überschriften-Navigation), z. B. „Sicherheitshinweis“. */
   titleAsHeader?: boolean;
@@ -515,15 +518,8 @@ export function Notice({
         : tone === 'success'
           ? theme.success
           : theme.primary;
-  return (
-    <View
-      testID={testID}
-      accessibilityRole={!silent && (tone === 'danger' || tone === 'warning') ? 'alert' : undefined}
-      style={[
-        styles.notice,
-        { backgroundColor: theme.surface, borderColor: theme.border, borderLeftColor: accent },
-      ]}
-    >
+  const noticeContent = (
+    <>
       {title ? (
         <Text
           accessibilityRole={titleAsHeader ? 'header' : undefined}
@@ -533,6 +529,25 @@ export function Notice({
         </Text>
       ) : null}
       {typeof children === 'string' ? <Body>{children}</Body> : children}
+    </>
+  );
+  return (
+    <View
+      testID={testID}
+      accessibilityRole={!silent && (tone === 'danger' || tone === 'warning') ? 'alert' : undefined}
+      style={[
+        styles.notice,
+        { backgroundColor: theme.surface, borderColor: theme.border, borderLeftColor: accent },
+      ]}
+    >
+      {icon ? (
+        <View style={styles.noticeRow}>
+          <Icon name={icon} size={22} color={theme.text} />
+          <View style={styles.noticeBody}>{noticeContent}</View>
+        </View>
+      ) : (
+        noticeContent
+      )}
     </View>
   );
 }
@@ -703,6 +718,8 @@ const styles = StyleSheet.create({
     gap: spacing.xs,
   },
   noticeTitle: { fontSize: fontSize.md, fontWeight: fontWeight.bold },
+  noticeRow: { flexDirection: 'row', alignItems: 'flex-start', gap: spacing.sm },
+  noticeBody: { flex: 1, minWidth: 0, gap: spacing.xs },
   card: { borderWidth: 1, borderRadius: radius.lg, padding: spacing.md, gap: spacing.sm },
   badge: {
     alignSelf: 'flex-start',

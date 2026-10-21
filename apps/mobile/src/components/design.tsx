@@ -84,6 +84,19 @@ const ICONS = {
   plus: [{ d: 'M12 5v14M5 12h14' }],
   check: [{ d: 'm5 12 5 5L20 7' }],
   calendar: [{ x: 3, y: 5, w: 18, h: 16, rx: 2 }, { d: 'M3 10h18M8 3v4M16 3v4' }],
+  pause: [
+    { x: 6, y: 4, w: 4, h: 16, rx: 1 },
+    { x: 14, y: 4, w: 4, h: 16, rx: 1 },
+  ],
+  stop: [{ x: 5, y: 5, w: 14, h: 14, rx: 2 }],
+  trash: [{ d: 'M3 6h18M8 6V4h8v2M6 6l1 14h10l1-14M10 11v5M14 11v5' }],
+  download: [{ d: 'M12 3v12M7 10l5 5 5-5M4 21h16' }],
+  shield: [{ d: 'M12 3 4 6v6c0 4.5 3.4 8.2 8 9 4.6-.8 8-4.5 8-9V6Z' }],
+  logout: [{ d: 'M15 4h3a2 2 0 0 1 2 2v12a2 2 0 0 1-2 2h-3M10 17l-5-5 5-5M5 12h11' }],
+  swap: [{ d: 'M7 4 3 8l4 4M3 8h14M17 20l4-4-4-4M21 16H7' }],
+  alert: [{ d: 'M12 3 2 20h20Z' }, { d: 'M12 10v4M12 17h.01' }],
+  bell: [{ d: 'M6 16V11a6 6 0 0 1 12 0v5l2 2H4ZM10 21h4' }],
+  map: [{ d: 'M3 6l6-3 6 3 6-3v15l-6 3-6-3-6 3Z' }, { d: 'M9 3v15M15 6v15' }],
   scale: [{ x: 3, y: 3, w: 18, h: 18, rx: 4 }, { d: 'M8 10a4 4 0 0 1 8 0M12 10l1.5-2.5' }],
   user: [{ cx: 12, cy: 8, r: 4 }, { d: 'M4 21a8 8 0 0 1 16 0' }],
   scan: [
@@ -97,7 +110,7 @@ export type IconName = keyof typeof ICONS;
 export const ICON_NAMES = Object.keys(ICONS) as IconName[];
 
 /** Gefüllte statt umrissene Formen (wie im Entwurf: „Mehr“-Punkte und Play-Dreieck). */
-const FILLED: ReadonlySet<IconName> = new Set(['dots', 'play']);
+const FILLED: ReadonlySet<IconName> = new Set(['dots', 'play', 'pause', 'stop']);
 
 export function Icon({
   name,
@@ -514,45 +527,53 @@ export function ListGroup({ children, testID }: { children: ReactNode; testID?: 
   );
 }
 
-/** Zeile mit Icon, Text, optional Beschreibung und Pfeil; mindestens 44 px hoch, ganze Zeile antippbar. */
+/**
+ * Zeile mit Icon, Text, optional Beschreibung und Pfeil; mindestens 44 px hoch.
+ * - Mit `onPress`: ganze Zeile antippbar (Rolle `link` bzw. `button`), Pfeil rechts.
+ * - Ohne `onPress`: reine Anzeige (z. B. Zutat), ohne Pfeil; rechts darf ein eigener Knopf (`trailing`) stehen.
+ * - `tone="danger"`: destruktive Aktion (z. B. „Konto löschen“) – Text und Icon in der Fehlerfarbe, nie nur Farbe:
+ *   der Text sagt, was passiert, und es folgt immer eine Rückfrage.
+ */
 export function ListRow({
   icon,
   label,
   description,
   onPress,
   role = 'link',
+  tone = 'default',
+  trailing,
   last = false,
   accessibilityHint,
   testID,
+  labelTestID,
 }: {
   icon?: IconName | undefined;
   label: string;
   description?: string | undefined;
-  onPress: () => void;
+  onPress?: (() => void) | undefined;
   role?: 'button' | 'link';
+  tone?: 'default' | 'danger';
+  /** Nur für Zeilen ohne `onPress`: eigener Knopf rechts (keine verschachtelten Tippflächen). */
+  trailing?: ReactNode;
   /** Letzte Zeile der Gruppe: ohne Trennlinie. */
   last?: boolean;
   accessibilityHint?: string;
   testID?: string;
+  /** testID des Textes (z. B. für Prüfungen des angezeigten Inhalts). */
+  labelTestID?: string;
 }) {
   const theme = useThemeColors();
   const card = cardColors[useColorSchemeName()];
-  return (
-    <Pressable
-      testID={testID}
-      accessibilityRole={role}
-      accessibilityLabel={description ? `${label}, ${description}` : label}
-      accessibilityHint={accessibilityHint}
-      onPress={onPress}
-      style={({ pressed }) => [
-        styles.listRow,
-        !last && { borderBottomWidth: 1, borderBottomColor: card.divider },
-        { opacity: pressed ? 0.7 : 1 },
-      ]}
-    >
-      {icon ? <Icon name={icon} size={22} color={theme.textMuted} /> : null}
+  const danger = tone === 'danger';
+  const textColor = danger ? theme.danger : theme.text;
+  const content = (
+    <>
+      {icon ? <Icon name={icon} size={22} color={danger ? theme.danger : theme.textMuted} /> : null}
       <View style={styles.listRowText}>
-        <Text style={[styles.listRowLabel, appFont('semibold'), { color: theme.text }]}>
+        <Text
+          testID={labelTestID}
+          style={[styles.listRowLabel, appFont(danger ? 'bold' : 'semibold'), { color: textColor }]}
+        >
           {label}
         </Text>
         {description ? (
@@ -561,7 +582,28 @@ export function ListRow({
           </Text>
         ) : null}
       </View>
-      <Icon name="chevron" size={18} color={theme.textMuted} />
+    </>
+  );
+  const divider = !last && { borderBottomWidth: 1, borderBottomColor: card.divider };
+  if (!onPress) {
+    return (
+      <View testID={testID} style={[styles.listRow, divider]}>
+        {content}
+        {trailing}
+      </View>
+    );
+  }
+  return (
+    <Pressable
+      testID={testID}
+      accessibilityRole={role}
+      accessibilityLabel={description ? `${label}, ${description}` : label}
+      accessibilityHint={accessibilityHint}
+      onPress={onPress}
+      style={({ pressed }) => [styles.listRow, divider, { opacity: pressed ? 0.7 : 1 }]}
+    >
+      {content}
+      <Icon name="chevron" size={18} color={danger ? theme.danger : theme.textMuted} />
     </Pressable>
   );
 }
@@ -760,6 +802,137 @@ export function MiniBars({
   );
 }
 
+// ---------------------------------------------------------------------------------------------------------
+// Fortschritt, große Knöpfe, Nummern
+// ---------------------------------------------------------------------------------------------------------
+/**
+ * Fortschrittsbalken in der Bereichsfarbe (z. B. Trainingsblau: erledigte Übungen der Einheit). Rolle
+ * „Fortschrittsanzeige“ mit Wert und Ansage in Worten; `onDark` für die dunkle Hero-Karte.
+ */
+export function AreaProgress({
+  area,
+  current,
+  total,
+  accessibilityLabel,
+  onDark = false,
+  testID,
+}: {
+  area: AreaId;
+  current: number;
+  total: number;
+  /** Ansage in Worten, z. B. „Übung 2 von 5“. */
+  accessibilityLabel: string;
+  onDark?: boolean;
+  testID?: string;
+}) {
+  const palette = useAreaColors(area);
+  const card = cardColors[useColorSchemeName()];
+  const hero = heroColors[useColorSchemeName()];
+  const fraction = total > 0 ? Math.min(Math.max(current / total, 0), 1) : 0;
+  return (
+    <View
+      testID={testID}
+      accessible
+      accessibilityRole="progressbar"
+      accessibilityLabel={accessibilityLabel}
+      accessibilityValue={{ min: 0, max: total, now: current, text: accessibilityLabel }}
+      aria-valuemin={0}
+      aria-valuemax={total}
+      aria-valuenow={current}
+      style={[
+        styles.progressTrack,
+        // Spur auf Dunkel: zartes Weiß (Deko); die Füllung in Himmelblau hebt sich ≥ 3 : 1 ab.
+        { backgroundColor: onDark ? 'rgba(255, 255, 255, 0.2)' : card.border },
+      ]}
+    >
+      <View
+        style={[
+          styles.progressFill,
+          {
+            width: `${Math.round(fraction * 100)}%`,
+            backgroundColor: onDark ? hero.accent : palette.strong,
+          },
+        ]}
+      />
+    </View>
+  );
+}
+
+/**
+ * Großer Pillen-Knopf in der Bereichsfarbe (z. B. Ausdauer-Orange für Start/Pause/Stopp). `filled`: Fläche in der
+ * Akzentfarbe (hell: Weiß auf `icon` ≥ 4,5 : 1, dunkel: Schwarz auf `icon`); `outline`: Rand und Text in `icon`.
+ * Mindestens 64 px hoch (große Tippfläche unterwegs).
+ */
+export function AreaButton({
+  area,
+  label,
+  onPress,
+  icon,
+  variant = 'filled',
+  accessibilityLabel,
+  disabled = false,
+  testID,
+}: {
+  area: AreaId;
+  label: string;
+  onPress: () => void;
+  icon?: IconName;
+  variant?: 'filled' | 'outline';
+  accessibilityLabel?: string;
+  disabled?: boolean;
+  testID?: string;
+}) {
+  const theme = useThemeColors();
+  const scheme = useColorSchemeName();
+  const palette = areaColors[scheme][area];
+  const filled = variant === 'filled';
+  const textColor = filled
+    ? scheme === 'dark'
+      ? heroColors.light.background
+      : '#FFFFFF'
+    : palette.icon;
+  return (
+    <Pressable
+      testID={testID}
+      accessibilityRole="button"
+      accessibilityLabel={accessibilityLabel ?? label}
+      accessibilityState={{ disabled }}
+      disabled={disabled}
+      onPress={onPress}
+      style={({ pressed }) => [
+        styles.areaButton,
+        filled
+          ? { backgroundColor: palette.icon }
+          : { backgroundColor: theme.surface, borderColor: palette.icon, borderWidth: 2 },
+        { opacity: disabled ? 0.6 : pressed ? 0.85 : 1 },
+      ]}
+    >
+      {icon ? <Icon name={icon} size={22} color={textColor} /> : null}
+      <Text style={[styles.areaButtonText, appFont('extrabold'), { color: textColor }]}>
+        {label}
+      </Text>
+    </Pressable>
+  );
+}
+
+/** Runde Nummer in der Bereichsfarbe (z. B. Schritt 1, 2, 3 im Rezept). Deko – die Zahl steht im Namen der Zeile. */
+export function NumberChip({ area, value }: { area: AreaId; value: number }) {
+  const palette = useAreaColors(area);
+  const theme = useThemeColors();
+  return (
+    <View
+      aria-hidden
+      accessibilityElementsHidden
+      importantForAccessibility="no-hide-descendants"
+      style={[styles.numberChip, { backgroundColor: palette.surface }]}
+    >
+      <Text style={[styles.numberChipText, appFont('extrabold'), { color: theme.text }]}>
+        {String(value)}
+      </Text>
+    </View>
+  );
+}
+
 const styles = StyleSheet.create({
   chip: { alignItems: 'center', justifyContent: 'center', flexShrink: 0 },
   // Großbuchstaben nur in der Darstellung – Bildschirmleser lesen den normalen Text.
@@ -847,5 +1020,26 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
   },
   bars: { flexDirection: 'row', alignItems: 'flex-end', gap: 4 },
+  progressTrack: { height: 8, borderRadius: 4, overflow: 'hidden' },
+  progressFill: { height: 8, borderRadius: 4 },
+  areaButton: {
+    minHeight: 64,
+    borderRadius: radius.pill,
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    gap: spacing.sm,
+    paddingHorizontal: spacing.lg,
+  },
+  areaButtonText: { fontSize: 19 },
+  numberChip: {
+    width: 32,
+    height: 32,
+    borderRadius: 16,
+    alignItems: 'center',
+    justifyContent: 'center',
+    flexShrink: 0,
+  },
+  numberChipText: { fontSize: fontSize.md },
   bar: { flex: 1, borderRadius: 3 },
 });
