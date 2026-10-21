@@ -145,6 +145,12 @@ export const areaColors = {
       strong: '#1F5BFF',
       soft: '#8DB0FF',
     },
+    zyklus: {
+      surface: '#FCE7F3',
+      icon: '#BE185D',
+      strong: '#DB2777',
+      soft: '#F9A8D4',
+    },
   },
   dark: {
     training: {
@@ -188,6 +194,12 @@ export const areaColors = {
       icon: '#8DB0FF',
       strong: '#4D7DFF',
       soft: '#2E4A8F',
+    },
+    zyklus: {
+      surface: '#3A1530',
+      icon: '#F9A8D4',
+      strong: '#EC4899',
+      soft: '#831843',
     },
   },
 } as const;

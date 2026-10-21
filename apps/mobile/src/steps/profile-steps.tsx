@@ -1,4 +1,5 @@
 import {
+  cycleModuleOffered,
   EXPERIENCE_LEVELS,
   experienceStepSchema,
   SEX_OPTIONS,
@@ -26,7 +27,7 @@ export function SexStep({ ctl }: { ctl: StepController }) {
   function next() {
     const parsed = sexStepSchema.safeParse({
       sex,
-      cycleModuleInterest: sex === 'female' ? cycle : null,
+      cycleModuleInterest: cycleModuleOffered(sex) ? cycle : null,
     });
     if (!parsed.success) {
       setFieldError(t.steps.sex.required);
@@ -55,7 +56,7 @@ export function SexStep({ ctl }: { ctl: StepController }) {
         onChange={setSex}
         error={fieldError}
       />
-      {sex === 'female' ? (
+      {cycleModuleOffered(sex) ? (
         <Card>
           <ChoiceList
             label={t.steps.sex.cycleQuestion}

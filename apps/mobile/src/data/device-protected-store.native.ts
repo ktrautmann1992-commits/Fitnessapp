@@ -27,7 +27,8 @@ const SECURE_OPTIONS: SecureStore.SecureStoreOptions = {
   keychainAccessible: SecureStore.WHEN_UNLOCKED_THIS_DEVICE_ONLY,
 };
 
-const cipher: AeadCipher = {
+/** Auch für die Zyklus-Speicher (cycle-device-store.native.ts). */
+export const cipher: AeadCipher = {
   generateKey: async () => (await AESEncryptionKey.generate(AESKeySize.AES256)).encoded('base64'),
   seal: async (keyBase64, plaintextBase64) => {
     const key = await AESEncryptionKey.import(keyBase64, 'base64');

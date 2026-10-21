@@ -24,10 +24,12 @@ const serverSchema = z.object({
  * Antwort von export_my_cycle_data() → Block. Ungültige Einzelzeilen bleiben trotzdem im Export (nie Daten
  * verlieren): Die Rohform wird dann unverändert übernommen.
  */
-export function parseCycleExport(data: unknown): {
-  settings: unknown;
-  entries: readonly unknown[];
-} | null {
+export interface CycleExportRows {
+  readonly settings: Record<string, unknown> | null;
+  readonly entries: readonly Record<string, unknown>[];
+}
+
+export function parseCycleExport(data: unknown): CycleExportRows | null {
   const parsed = serverSchema.safeParse(data);
   if (!parsed.success) return null;
   return {
@@ -36,23 +38,22 @@ export function parseCycleExport(data: unknown): {
         ? null
         : {
             ...(cycleSettingsSchema.safeParse(parsed.data.settings.payload).data ??
-              (parsed.data.settings.payload as object)),
+              (parsed.data.settings.payload as Record<string, unknown>)),
             updated_at: parsed.data.settings.updated_at,
           },
     entries: parsed.data.entries.map((row) => ({
       entry_date: row.entry_date,
-      ...(cycleEntryPayloadSchema.safeParse(row.payload).data ?? (row.payload as object)),
+      ...(cycleEntryPayloadSchema.safeParse(row.payload).data ?? (row.payload as Record<string, unknown>)),
       updated_at: row.updated_at,
     })),
   };
 }
 
 /** Tabellen für die Export-Datei (leere Listen fallen weg, damit „keine Zyklusdaten“ eindeutig ist). */
-export function cycleExportTables(block: {
-  settings: unknown;
-  entries: readonly unknown[];
-}): Partial<Record<CycleExportTable, unknown[]>> {
-  const tables: Partial<Record<CycleExportTable, unknown[]>> = {};
+export function cycleExportTables(
+  block: CycleExportRows,
+): Partial<Record<CycleExportTable, Record<string, unknown>[]>> {
+  const tables: Partial<Record<CycleExportTable, Record<string, unknown>[]>> = {};
   if (block.settings !== null) tables.cycle_settings = [block.settings];
   if (block.entries.length > 0) tables.cycle_entries = [...block.entries];
   return tables;

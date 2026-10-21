@@ -209,7 +209,7 @@ export const de = {
       },
       cycleQuestion: 'Interesse am Zyklus-Modul später?',
       cycleHint:
-        'Das Zyklus-Modul kommt in einer späteren Version. Wir speichern nur dein Interesse (ja/nein), keine Zyklusdaten.',
+        'Das Zyklus-Modul schaltest du später selbst unter Mehr → Zyklus ein – mit eigener Einwilligung. Hier speichern wir nur dein Interesse (ja/nein), keine Zyklusdaten.',
     },
     healthConsent: {
       title: 'Einwilligung Gesundheitsdaten',

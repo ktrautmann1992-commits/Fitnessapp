@@ -87,8 +87,8 @@ export function isValidOp(
           : context.profile.cycle_module_interest;
       return (
         (patch.sex == null || sexSchema.safeParse(patch.sex).success) &&
-        // Zyklus-Modul nur bei „weiblich“ (CHECK in profiles).
-        (cycle == null || sex === 'female') &&
+        // Zyklus-Interesse nicht bei „männlich“ und nicht ohne Geschlecht (CHECK in profiles, Phase 9 ZY-G4).
+        (cycle == null || (sex != null && sex !== 'male')) &&
         (patch.experience_level == null ||
           experienceLevelSchema.safeParse(patch.experience_level).success) &&
         (patch.onboarding_step == null ||
