@@ -1,10 +1,11 @@
 # Plan „Fit im Alter“ – leichte Übungen für Rentnerinnen und Rentner
 
-**Status:** Entwurf zur Entscheidung (19.10.2026). Wächter-Prüfung **Runde 1 „mit Auflagen“, eingearbeitet**; **Wächter Runde 2
-freigabefähig, N1–N5 eingearbeitet** – alle Befunde (B1–B4, S1–S14, K1–K9, N1–N5) stehen in Abschnitt 0. Die Gründer überlegen noch, ob sie die Kategorie wollen; dieser
-Plan soll die Entscheidung erleichtern. Die Gründer-Fragen stehen in Abschnitt 20 (FA-G1 bis FA-G16), die
-Grundsatzfrage „Lohnt sich das jetzt?“ ist FA-G1. Umsetzung erst nach Freigabe, je Etappe ein Pull Request mit
-Wächter-Prüfung.
+**Status:** **Freigegeben (Gründer-Entscheidung 21.10.2026: „1-7 machst du“, alle Fragen FA-G1 bis FA-G16 wie
+empfohlen, Abschnitt 20).** Wächter-Prüfung Runde 1 „mit Auflagen“, eingearbeitet; Wächter Runde 2 freigabefähig,
+N1–N5 eingearbeitet – alle Befunde (B1–B4, S1–S14, K1–K9, N1–N5) stehen in Abschnitt 0. Umsetzung je Etappe mit
+Wächter-Prüfung; Stand der Umsetzung in Abschnitt 22. Die **Fachprüfung** (Physiotherapie/Sportmedizin) steht noch
+aus – nichts in diesem Plan oder im Code gilt als fachlich geprüft; alle neuen Inhalte bleiben Entwurf
+(`reviewed_by` leer) bzw. sind als „Testphase – noch nicht fachlich geprüft“ gekennzeichnet.
 
 **Gründer-Entscheidung 19.10.2026 (eingearbeitet):** Bis zum Ende der Testphase gibt es **keine Abos** und keine
 Rechtsberatungs-Schritte. Alles ist für alle Tester kostenlos und uneingeschränkt (Flag `premium_open`). Rechts-,
@@ -676,7 +677,8 @@ Chrome am Handy, Vorschau-Link aus dem Pull Request, **Inkognito-Tab** (Chrome �
 
 ## 20. Was wir von euch brauchen (Gründer-Entscheidungen)
 
-Format: _Worum es geht – Warum wir fragen – Empfehlung._
+Format: _Worum es geht – Warum wir fragen – Empfehlung._ Alle Fragen sind am 21.10.2026 entschieden („1-7 machst du“,
+jeweils wie empfohlen).
 
 - **FA-G1 Lohnt sich das jetzt – und in welcher Reihenfolge?** – _Aufwand:_ etwa 13–16 Pull Requests, dazu Bilder
   (G2, 2–3 PRs), Inhalts-PRs und eine Fachprüfung. _Nutzen:_ eine große Gruppe, die von Fitness-Apps kaum angesprochen
@@ -696,42 +698,57 @@ Format: _Worum es geht – Warum wir fragen – Empfehlung._
 
   Wenn euch Phase 8/9 wichtiger sind: Plan liegen lassen, nichts geht verloren – dann FA-G10 trotzdem vor SU3
   entscheiden oder später eine v3 in Kauf nehmen.
+  **Gründer-Entscheidung 21.10.2026: wie empfohlen „ja, umsetzen“.**
 
 - **FA-G2 Altersgrenze.** – Eine Sperre kostet Aufwand ohne Sicherheitsgewinn. – **Empfehlung:** für alle wählbar,
   **aktiver Vorschlag ab 60**; Altersregeln ab 65 bleiben für alle Ziele.
+  **Gründer-Entscheidung 21.10.2026: wie empfohlen.**
 - **FA-G3 Zusatzfragen im Gesundheits-Check.** Sieben Fragen (8.2), gestellt bei diesem Ziel oder **ab 60 bei jedem
   Ziel**. – Ohne sie können wir Stürze und Knochen nicht berücksichtigen; mit ihnen ändern sich auch Pläne anderer
   Ziele ab 60. – **Empfehlung:** ja; nur Sturz, Unsicherheit, Gehhilfe und OP < 12 Monate machen den Plan vorsichtig,
   die anderen wirken gezielt; überspringbar; Karte für Bestandsnutzer; Wortlaut durch die Fachprüfung.
+  **Gründer-Entscheidung 21.10.2026: wie empfohlen.**
 - **FA-G4 Gleichgewicht an 3 Tagen.** Neue Einheit-Art oder nicht? – Eine neue Art berührt viele Datenbank-Stellen
   (7.3). – **Empfehlung:** **Variante B** (Kraft-Einheit mit Fokus `balance` + Gleichgewicht vor jeder Geh-Einheit),
   keine neue Einheit-Art; Variante C (nur 3-Tage-Vorlagen) als Sparvariante.
+  **Gründer-Entscheidung 21.10.2026: wie empfohlen.**
 - **FA-G5 Orte.** – Studio-Vorlagen kosten ein Drittel der Inhalte. – **Empfehlung:** ohne Geräte und Zuhause zuerst
   (8 Vorlagen), Studio später.
+  **Gründer-Entscheidung 21.10.2026: wie empfohlen.**
 - **FA-G6 Nebenziele.** – Abnehmen kann bei Älteren Muskeln kosten. – **Empfehlung:** nur **Abnehmen als
   Nebenziel** mit −10 % Energie, Eiweiß 1,2–1,5 g/kg, Tempo höchstens 0,5 %/Woche, Ziel-BMI ≥ 22 ab 70.
+  **Gründer-Entscheidung 21.10.2026: wie empfohlen.**
 - **FA-G7 Anstrengung.** – Die App-RPE misst Wiederholungen in Reserve, ACSM eine andere Skala. – **Empfehlung:**
   RPE 6 („noch etwa 4 Mal“) als Produktentscheidung; die Regel ab 65 (7) für andere Ziele unverändert; keine neue
   Skala.
+  **Gründer-Entscheidung 21.10.2026: wie empfohlen.**
 - **FA-G8 Bodenübungen.** – Hinlegen und Aufstehen ist für viele schwer. – **Empfehlung:** keine Bodenübungen in „Fit
   im Alter“; „Aufstehen nach einem Sturz“ erst später als Ratgeber-Text nach Fachprüfung. Für andere Ziele ab 65
   siehe FA-G16.
+  **Gründer-Entscheidung 21.10.2026: wie empfohlen.**
 - **FA-G9 Vorlesen.** – Hilft beim Training ohne Blick aufs Handy. – **Empfehlung:** ja, in FA5, nur Gerätestimmen
   (im Web `localService`), nur Anleitungen.
+  **Gründer-Entscheidung 21.10.2026: wie empfohlen.**
 - **FA-G10 Einwilligung.** – Zwei Zustimmungs-Karten hintereinander nerven. – **Empfehlung:** Datenarten in
   `health_data` v2 aufnehmen; dafür **vor Phase 6 SU3** entscheiden. Juristische Prüfung vor dem öffentlichen
   Livegang.
+  **Gründer-Entscheidung 21.10.2026: wie empfohlen.**
 - **FA-G11 Gratis oder Premium (nach der Testphase).** – Bis dahin ohnehin alles offen. – **Empfehlung:** dauerhaft
   gratis; Barrierefreiheit nie hinter der Bezahlschranke.
+  **Gründer-Entscheidung 21.10.2026: wie empfohlen.**
 - **FA-G12 Selbsttests.** – Fortschritt motiviert; Normwerte oder Planänderungen wären eine Bewertung (MDR). –
   **Empfehlung:** Aufstehen (nicht bis zur Erschöpfung), Stand-Stufen, Einbeinstand mit Halt; alle 4 Wochen
   vorgeschlagen; keine Normwerte; steuern nie den Plan.
+  **Gründer-Entscheidung 21.10.2026: wie empfohlen.**
 - **FA-G13 Test mit echten Nutzern.** – Gründer sind nicht die Zielgruppe. – **Empfehlung:** 2–3 Rentnerinnen und
   Rentner aus dem Umfeld, **nach der Fachprüfung** von Übungen und Regeln; Beobachtungen als Liste im Pull Request.
+  **Gründer-Entscheidung 21.10.2026: wie empfohlen.**
 - **FA-G14 Bilder als Bedingung.** – Text allein reicht für viele Ältere nicht. – **Empfehlung:** öffentlicher Start
   nur mit Bildern; für Tester geht es ohne.
+  **Gründer-Entscheidung 21.10.2026: wie empfohlen.**
 - **FA-G15 Frage nach Gehhilfe.** – Wer mit Stock oder Rollator geht, braucht strengere Gleichgewichts-Grenzen. –
   **Empfehlung:** ja, als siebte Zusatzfrage (Flag `walking_aid`).
+  **Gründer-Entscheidung 21.10.2026: wie empfohlen.**
 - **FA-G16 Bodenübungen ab 65 in allen Zielen ersetzen – wann?** – Heute sind alle Rumpfübungen der
   Körpergewicht-Einsteiger-Vorlagen Bodenübungen; ohne Ersatz würden sie still verschwinden. – **Empfehlung:** erst
   nach Veröffentlichung der Ersatzübungen (nach FA2/FA6), mit neuer Engine-Version, ab dem nächsten Block, „sonst
@@ -739,12 +756,29 @@ Format: _Worum es geht – Warum wir fragen – Empfehlung._
 
 ---
 
+**Gründer-Entscheidung 21.10.2026: wie empfohlen.**
+
 ## 21. Was ihr selbst tun müsst
 
-1. **FA-G1 bis FA-G16 entscheiden** (Kommentar im Pull Request: „FA-G1 wie empfohlen“ …), **FA-G10 vor Phase 6 SU3**.
+1. ~~FA-G1 bis FA-G16 entscheiden~~ – **erledigt 21.10.2026** (alle wie empfohlen). FA-G10 an Phase 6 SU3 melden
+   (neue Datenarten in `health_data` v2).
 2. **Fachprüfung anfragen:** Physiotherapie oder Sportmedizin mit Erfahrung bei Älteren. Prüft Übungsliste (7.1),
    Sicherheitsregeln (8), Zusatzfragen (8.2), Progression (9), Selbsttests (10), Ernährungswerte (11). **Nötig, bevor
    ältere Testpersonen trainieren** – nicht für eure eigenen Tests.
 3. **Vor dem öffentlichen Livegang** (nicht vorher): Haftung und Nutzungsbedingungen, MDR-Abgrenzung, Werbeaussagen,
    Einwilligungstext, BFSG/EN 301 549 prüfen lassen.
 4. **Testpersonen finden** (FA-G13).
+
+---
+
+## 22. Umsetzungsstand
+
+| Etappe  | Stand (21.10.2026)                                                                                                                                                                             |
+| ------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **FA0** | Erledigt: Gründer-Entscheidungen eingetragen (Abschnitt 20), Zweckbestimmung in `docs/KONZEPT.md` 14 (K7), PROMPTS-Stand. Offen (Gründer): Fachprüfung anfragen, FA-G10 an Phase 6 SU3 melden. |
+| FA5     | offen                                                                                                                                                                                          |
+| FA1     | offen                                                                                                                                                                                          |
+| FA2     | offen                                                                                                                                                                                          |
+| FA3     | offen                                                                                                                                                                                          |
+| FA4     | offen                                                                                                                                                                                          |
+| FA6     | offen                                                                                                                                                                                          |

@@ -1216,6 +1216,10 @@ alle offen, Server-Prüfung mit Phase 7):
   „erreicht“/„Zeitraum vorbei“ ohne Zahlen), fester Hilfe-Hinweis, keine Abzeichen. Restrisiko: Das
   Wunschgewicht steht im Klartext in der Datenbank (wie `body_metrics`) – vor Livegang mit der DSFA bewerten.
 - Abgrenzung zum Medizinprodukt (MDR): keine Diagnosen, keine Therapieaussagen
+- **Zweckbestimmung „Fit im Alter“ (Ziel `active_aging`, docs/PLAN-FIT-IM-ALTER.md 3.3, K7):** „‚Fit im Alter‘ ist ein
+  Trainingsplan für einen aktiven Alltag. Die App bewertet weder Sturzrisiko noch Gesundheitszustand.“ Keine
+  Sturzrisiko-Werte, keine Normtabellen, Selbsttests steuern nie den Plan, keine Wirkungsaussage zu Stürzen. MDR-Abgrenzung,
+  Haftung und Werbeaussagen vor dem öffentlichen Livegang prüfen lassen.
 - Health-Claims-Verordnung, Kennzeichnung Werbung/Affiliate (UWG)
 - App-Store-Richtlinien: In-App-Kauf für digitale Abos, HealthKit-Daten nicht für Werbung
 - Impressum, AGB, Widerrufsbelehrung, Haftungsausschluss
