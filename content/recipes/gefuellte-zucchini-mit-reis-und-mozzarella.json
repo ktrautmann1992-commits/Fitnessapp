@@ -1,0 +1,140 @@
+{
+  "id": "gefuellte-zucchini-mit-reis-und-mozzarella",
+  "version": 1,
+  "status": "draft",
+  "title_de": "Gefüllte Zucchini mit Reis und Mozzarella",
+  "description_de": "Zucchini-Schiffchen mit einer Füllung aus Reis, Tomaten und Basilikum, mit Mozzarella überbacken.",
+  "section_de": "Abendessen",
+  "categories": ["meal-prep"],
+  "meal_types": ["main"],
+  "training_tags": [],
+  "servings": 1,
+  "ingredients": [
+    {
+      "food_id": "zucchini",
+      "amount": 300,
+      "unit": "g",
+      "optional": false,
+      "display_de": "1 große Zucchini (300 g)",
+      "scales": true,
+      "role": "vegetable"
+    },
+    {
+      "food_id": "olivenoel",
+      "amount": 8,
+      "unit": "g",
+      "optional": false,
+      "display_de": "2 TL (8 g)",
+      "scales": true,
+      "role": "fat"
+    },
+    {
+      "food_id": "zwiebel",
+      "amount": 30,
+      "unit": "g",
+      "optional": false,
+      "display_de": "¼ Zwiebel (30 g)",
+      "scales": true,
+      "role": "vegetable"
+    },
+    {
+      "food_id": "knoblauch",
+      "amount": 3,
+      "unit": "g",
+      "optional": false,
+      "display_de": "1 kleine Zehe (3 g)",
+      "scales": true,
+      "role": "vegetable"
+    },
+    {
+      "food_id": "express-reis-beutel-gegart",
+      "amount": 150,
+      "unit": "g",
+      "optional": false,
+      "display_de": "⅗ Beutel (150 g)",
+      "scales": true,
+      "role": "carb"
+    },
+    {
+      "food_id": "tomate",
+      "amount": 100,
+      "unit": "g",
+      "optional": false,
+      "display_de": "1 Tomate (100 g)",
+      "scales": true,
+      "role": "vegetable"
+    },
+    {
+      "food_id": "basilikum",
+      "amount": 3,
+      "unit": "g",
+      "optional": false,
+      "display_de": "einige Blätter (3 g)",
+      "scales": true,
+      "role": "vegetable"
+    },
+    {
+      "food_id": "salz",
+      "amount": 1,
+      "unit": "pinch",
+      "optional": false,
+      "display_de": "1 Prise",
+      "scales": true,
+      "role": "seasoning"
+    },
+    {
+      "food_id": "pfeffer",
+      "amount": 1,
+      "unit": "pinch",
+      "optional": false,
+      "display_de": "1 Prise",
+      "scales": true,
+      "role": "seasoning"
+    },
+    {
+      "food_id": "mozzarella-light",
+      "amount": 60,
+      "unit": "g",
+      "optional": false,
+      "display_de": "60 g (20 % Fett i. Tr.)",
+      "scales": true,
+      "role": "protein"
+    }
+  ],
+  "steps_de": [
+    "Heize den Ofen auf 200 °C (Umluft 180 °C) vor. Halbiere die Zucchini längs und höhle sie mit einem Löffel aus.",
+    "Hacke das Fruchtfleisch und dünste es mit Zwiebel und Knoblauch im Öl 4 Minuten an.",
+    "Mische Reis, gewürfelte Tomate und gezupftes Basilikum unter und würze mit Salz und Pfeffer.",
+    "Fülle die Zucchinihälften, belege sie mit Mozzarella und backe sie in einer Auflaufform 25 Minuten."
+  ],
+  "total_minutes": 42,
+  "prep_minutes": 12,
+  "cook_minutes": 30,
+  "no_cook": false,
+  "meal_prep": {
+    "suitable": true,
+    "fridge_days": 1,
+    "freezable": false
+  },
+  "equipment_de": ["Backofen", "Auflaufform", "Pfanne"],
+  "declared_per_serving": {
+    "kcal": 446,
+    "protein_g": 22.4,
+    "carbs_g": 51.6,
+    "fat_g": 14.7
+  },
+  "declared_diet": "vegetarian",
+  "declared_allergens": ["dairy", "lactose", "histamine", "onion_garlic"],
+  "contains_pork": false,
+  "declared_pregnancy_caution": false,
+  "meta": {
+    "origin": "claude_session",
+    "model": "claude-opus-5-5",
+    "batch_id": null,
+    "created_on": "2026-10-21",
+    "expert_reviewed": false,
+    "reviewed_by": null,
+    "reviewed_at": null,
+    "review_note": null
+  }
+}

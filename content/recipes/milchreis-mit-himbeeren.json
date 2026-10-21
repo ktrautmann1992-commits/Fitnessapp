@@ -1,0 +1,86 @@
+{
+  "id": "milchreis-mit-himbeeren",
+  "version": 1,
+  "status": "draft",
+  "title_de": "Milchreis mit Himbeeren",
+  "description_de": "Klassischer Milchreis, mit Honig gesüßt und mit Himbeeren serviert – warm oder kalt ein Genuss.",
+  "section_de": "Frühstück",
+  "categories": ["pre-workout", "meal-prep"],
+  "meal_types": ["breakfast"],
+  "training_tags": ["vor_training"],
+  "servings": 1,
+  "ingredients": [
+    {
+      "food_id": "risottoreis",
+      "amount": 60,
+      "unit": "g",
+      "optional": false,
+      "display_de": "60 g",
+      "scales": true,
+      "role": "carb"
+    },
+    {
+      "food_id": "milch-1-5",
+      "amount": 300,
+      "unit": "g",
+      "optional": false,
+      "display_de": "300 g",
+      "scales": true,
+      "role": "protein"
+    },
+    {
+      "food_id": "honig",
+      "amount": 10,
+      "unit": "g",
+      "optional": false,
+      "display_de": "2 TL (10 g)",
+      "scales": true,
+      "role": "sweet"
+    },
+    {
+      "food_id": "himbeeren-tk",
+      "amount": 100,
+      "unit": "g",
+      "optional": false,
+      "display_de": "1 Handvoll (100 g)",
+      "scales": true,
+      "role": "vegetable"
+    }
+  ],
+  "steps_de": [
+    "Bring Reis und Milch in einem Topf unter Rühren zum Kochen.",
+    "Lass den Reis bei kleinster Hitze 25 Minuten zugedeckt quellen und rühre zwischendurch um, damit nichts ansetzt.",
+    "Rühre den Honig unter und serviere den Milchreis mit den Himbeeren."
+  ],
+  "tip_de": "Risottoreis wird genauso cremig wie Milchreis-Reis. Am Vorabend gekocht schmeckt er am Morgen auch kalt.",
+  "total_minutes": 31,
+  "prep_minutes": 3,
+  "cook_minutes": 28,
+  "no_cook": false,
+  "meal_prep": {
+    "suitable": true,
+    "fridge_days": 1,
+    "freezable": false
+  },
+  "equipment_de": ["Topf"],
+  "declared_per_serving": {
+    "kcal": 416,
+    "protein_g": 16.3,
+    "carbs_g": 70.4,
+    "fat_g": 5.3
+  },
+  "declared_diet": "vegetarian",
+  "declared_allergens": ["dairy", "lactose", "fructose"],
+  "contains_pork": false,
+  "declared_pregnancy_caution": false,
+  "meta": {
+    "origin": "claude_session",
+    "model": "claude-opus-5-5",
+    "batch_id": null,
+    "created_on": "2026-10-21",
+    "expert_reviewed": false,
+    "reviewed_by": null,
+    "reviewed_at": null,
+    "review_note": null
+  }
+}

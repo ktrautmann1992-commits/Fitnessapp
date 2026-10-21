@@ -1,0 +1,140 @@
+{
+  "id": "tofu-gemuese-reispfanne-mit-ingwer",
+  "version": 1,
+  "status": "draft",
+  "title_de": "Tofu-Gemüse-Reispfanne mit Ingwer",
+  "description_de": "Knusprig gebratener Tofu mit Brokkoli, Paprika und Reis, gewürzt mit Ingwer, Knoblauch und etwas Chili – ohne Sojasauce.",
+  "section_de": "Abendessen",
+  "categories": ["post-workout", "meal-prep"],
+  "meal_types": ["main"],
+  "training_tags": ["nach_training"],
+  "servings": 1,
+  "ingredients": [
+    {
+      "food_id": "tofu-natur",
+      "amount": 150,
+      "unit": "g",
+      "optional": false,
+      "display_de": "150 g",
+      "scales": true,
+      "role": "protein"
+    },
+    {
+      "food_id": "rapsoel",
+      "amount": 10,
+      "unit": "g",
+      "optional": false,
+      "display_de": "1 EL (10 g)",
+      "scales": true,
+      "role": "fat"
+    },
+    {
+      "food_id": "brokkoli",
+      "amount": 150,
+      "unit": "g",
+      "optional": false,
+      "display_de": "½ kleiner Kopf (150 g)",
+      "scales": true,
+      "role": "vegetable"
+    },
+    {
+      "food_id": "paprika-rot",
+      "amount": 100,
+      "unit": "g",
+      "optional": false,
+      "display_de": "½ Paprika (100 g)",
+      "scales": true,
+      "role": "vegetable"
+    },
+    {
+      "food_id": "ingwer",
+      "amount": 10,
+      "unit": "g",
+      "optional": false,
+      "display_de": "1 daumengroßes Stück (10 g)",
+      "scales": true,
+      "role": "seasoning"
+    },
+    {
+      "food_id": "knoblauch",
+      "amount": 5,
+      "unit": "g",
+      "optional": false,
+      "display_de": "1 Zehe (5 g)",
+      "scales": true,
+      "role": "vegetable"
+    },
+    {
+      "food_id": "sambal-oelek",
+      "amount": 5,
+      "unit": "g",
+      "optional": false,
+      "display_de": "1 TL (5 g)",
+      "scales": true,
+      "role": "seasoning"
+    },
+    {
+      "food_id": "express-reis-beutel-gegart",
+      "amount": 250,
+      "unit": "g",
+      "optional": false,
+      "display_de": "1 Beutel (250 g)",
+      "scales": true,
+      "role": "carb"
+    },
+    {
+      "food_id": "zitronensaft",
+      "amount": 10,
+      "unit": "g",
+      "optional": false,
+      "display_de": "2 TL (10 g)",
+      "scales": true,
+      "role": "seasoning"
+    },
+    {
+      "food_id": "salz",
+      "amount": 1,
+      "unit": "pinch",
+      "optional": false,
+      "display_de": "1 Prise",
+      "scales": true,
+      "role": "seasoning"
+    }
+  ],
+  "steps_de": [
+    "Tupfe den Tofu trocken, schneide ihn in Würfel und brate ihn im Öl 6–8 Minuten rundum knusprig.",
+    "Gib Brokkoliröschen und Paprikastreifen dazu und brate sie 4 Minuten mit.",
+    "Rühre fein gehackten Ingwer und Knoblauch sowie Sambal Oelek unter und brate alles 1 Minute.",
+    "Gib den Reis dazu und brate ihn 3 Minuten, bis er durch und durch heiß ist. Mit Zitronensaft und Salz abschmecken."
+  ],
+  "total_minutes": 26,
+  "prep_minutes": 10,
+  "cook_minutes": 16,
+  "no_cook": false,
+  "meal_prep": {
+    "suitable": true,
+    "fridge_days": 1,
+    "freezable": false
+  },
+  "equipment_de": ["Pfanne"],
+  "declared_per_serving": {
+    "kcal": 659,
+    "protein_g": 38.6,
+    "carbs_g": 73.1,
+    "fat_g": 20.6
+  },
+  "declared_diet": "vegan",
+  "declared_allergens": ["legumes", "soy", "onion_garlic", "spicy"],
+  "contains_pork": false,
+  "declared_pregnancy_caution": false,
+  "meta": {
+    "origin": "claude_session",
+    "model": "claude-opus-5-5",
+    "batch_id": null,
+    "created_on": "2026-10-21",
+    "expert_reviewed": false,
+    "reviewed_by": null,
+    "reviewed_at": null,
+    "review_note": null
+  }
+}

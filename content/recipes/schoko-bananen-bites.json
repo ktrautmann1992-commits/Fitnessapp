@@ -1,0 +1,69 @@
+{
+  "id": "schoko-bananen-bites",
+  "version": 1,
+  "status": "draft",
+  "title_de": "Schoko-Bananen-Bites",
+  "description_de": "Bananenscheiben, zur Hälfte in Zartbitterschokolade getaucht und gefroren – ein süßer Snack für zwischendurch.",
+  "section_de": "Snack",
+  "categories": ["meal-prep"],
+  "meal_types": ["snack"],
+  "training_tags": [],
+  "servings": 1,
+  "ingredients": [
+    {
+      "food_id": "banane",
+      "amount": 120,
+      "unit": "g",
+      "optional": false,
+      "display_de": "1 Banane (120 g)",
+      "scales": true,
+      "role": "carb"
+    },
+    {
+      "food_id": "zartbitterschokolade-70",
+      "amount": 15,
+      "unit": "g",
+      "optional": false,
+      "display_de": "3 Stückchen (15 g)",
+      "scales": true,
+      "role": "sweet"
+    }
+  ],
+  "steps_de": [
+    "Schneide die Banane in 1 cm dicke Scheiben und lege sie auf ein Brett mit Backpapier.",
+    "Schmilz die Schokolade über einem heißen Wasserbad.",
+    "Tauche die Bananenscheiben zur Hälfte ein und lege sie zurück aufs Papier.",
+    "Friere die Bites mindestens 1 Stunde ein und lass sie vor dem Essen 5 Minuten antauen."
+  ],
+  "tip_de": "Gefroren halten sich die Bites gut verpackt mehrere Wochen.",
+  "total_minutes": 11,
+  "prep_minutes": 8,
+  "cook_minutes": 3,
+  "no_cook": false,
+  "meal_prep": {
+    "suitable": true,
+    "fridge_days": 1,
+    "freezable": true
+  },
+  "equipment_de": ["Topf", "Schüssel für das Wasserbad", "Backpapier"],
+  "declared_per_serving": {
+    "kcal": 179,
+    "protein_g": 2.9,
+    "carbs_g": 24.1,
+    "fat_g": 6.7
+  },
+  "declared_diet": "vegan",
+  "declared_allergens": [],
+  "contains_pork": false,
+  "declared_pregnancy_caution": false,
+  "meta": {
+    "origin": "claude_session",
+    "model": "claude-opus-5-5",
+    "batch_id": null,
+    "created_on": "2026-10-21",
+    "expert_reviewed": false,
+    "reviewed_by": null,
+    "reviewed_at": null,
+    "review_note": null
+  }
+}

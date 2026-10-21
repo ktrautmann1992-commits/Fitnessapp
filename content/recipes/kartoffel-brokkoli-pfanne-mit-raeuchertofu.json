@@ -1,0 +1,121 @@
+{
+  "id": "kartoffel-brokkoli-pfanne-mit-raeuchertofu",
+  "version": 1,
+  "status": "draft",
+  "title_de": "Kartoffel-Brokkoli-Pfanne mit Räuchertofu",
+  "description_de": "Gebratene Kartoffeln mit Brokkoli, Zwiebeln und rauchigem Tofu – eine Pfanne, wenig Abwasch.",
+  "section_de": "Abendessen",
+  "categories": ["meal-prep"],
+  "meal_types": ["main"],
+  "training_tags": [],
+  "servings": 1,
+  "ingredients": [
+    {
+      "food_id": "kartoffeln",
+      "amount": 300,
+      "unit": "g",
+      "optional": false,
+      "display_de": "3 mittelgroße (300 g)",
+      "scales": true,
+      "role": "carb"
+    },
+    {
+      "food_id": "rapsoel",
+      "amount": 12,
+      "unit": "g",
+      "optional": false,
+      "display_de": "1 gehäufter EL (12 g)",
+      "scales": true,
+      "role": "fat"
+    },
+    {
+      "food_id": "zwiebel",
+      "amount": 40,
+      "unit": "g",
+      "optional": false,
+      "display_de": "½ kleine Zwiebel (40 g)",
+      "scales": true,
+      "role": "vegetable"
+    },
+    {
+      "food_id": "brokkoli",
+      "amount": 150,
+      "unit": "g",
+      "optional": false,
+      "display_de": "½ kleiner Kopf (150 g)",
+      "scales": true,
+      "role": "vegetable"
+    },
+    {
+      "food_id": "raeuchertofu",
+      "amount": 120,
+      "unit": "g",
+      "optional": false,
+      "display_de": "120 g",
+      "scales": true,
+      "role": "protein"
+    },
+    {
+      "food_id": "salz",
+      "amount": 1,
+      "unit": "pinch",
+      "optional": false,
+      "display_de": "1 Prise",
+      "scales": true,
+      "role": "seasoning"
+    },
+    {
+      "food_id": "pfeffer",
+      "amount": 1,
+      "unit": "pinch",
+      "optional": false,
+      "display_de": "1 Prise",
+      "scales": true,
+      "role": "seasoning"
+    },
+    {
+      "food_id": "schnittlauch-frisch",
+      "amount": 5,
+      "unit": "g",
+      "optional": false,
+      "display_de": "1 EL Röllchen (5 g)",
+      "scales": true,
+      "role": "vegetable"
+    }
+  ],
+  "steps_de": [
+    "Würfle die Kartoffeln und brate sie im Öl zugedeckt 12 Minuten, dabei öfter wenden.",
+    "Gib Zwiebelstreifen, kleine Brokkoliröschen und gewürfelten Räuchertofu dazu und brate alles offen 6–8 Minuten, bis der Brokkoli bissfest ist.",
+    "Würze mit Salz und Pfeffer und streue den Schnittlauch darüber."
+  ],
+  "total_minutes": 30,
+  "prep_minutes": 10,
+  "cook_minutes": 20,
+  "no_cook": false,
+  "meal_prep": {
+    "suitable": true,
+    "fridge_days": 2,
+    "freezable": false
+  },
+  "equipment_de": ["Pfanne mit Deckel"],
+  "declared_per_serving": {
+    "kcal": 564,
+    "protein_g": 30.5,
+    "carbs_g": 59.9,
+    "fat_g": 20.1
+  },
+  "declared_diet": "vegan",
+  "declared_allergens": ["legumes", "soy", "onion_garlic"],
+  "contains_pork": false,
+  "declared_pregnancy_caution": false,
+  "meta": {
+    "origin": "claude_session",
+    "model": "claude-opus-5-5",
+    "batch_id": null,
+    "created_on": "2026-10-21",
+    "expert_reviewed": false,
+    "reviewed_by": null,
+    "reviewed_at": null,
+    "review_note": null
+  }
+}

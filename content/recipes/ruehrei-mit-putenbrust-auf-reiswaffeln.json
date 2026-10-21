@@ -1,0 +1,123 @@
+{
+  "id": "ruehrei-mit-putenbrust-auf-reiswaffeln",
+  "version": 1,
+  "status": "draft",
+  "title_de": "Rührei mit Putenbrust auf Reiswaffeln",
+  "description_de": "Cremiges Rührei mit angebratener Putenbrust und Kirschtomaten, serviert auf Reiswaffeln – ohne Brot.",
+  "section_de": "Frühstück",
+  "categories": ["schnell", "post-workout"],
+  "meal_types": ["breakfast"],
+  "training_tags": ["nach_training"],
+  "servings": 1,
+  "ingredients": [
+    {
+      "food_id": "rapsoel",
+      "amount": 5,
+      "unit": "g",
+      "optional": false,
+      "display_de": "1 TL (5 g)",
+      "scales": true,
+      "role": "fat"
+    },
+    {
+      "food_id": "putenbrust-aufschnitt",
+      "amount": 50,
+      "unit": "g",
+      "optional": false,
+      "display_de": "3 Scheiben (50 g)",
+      "scales": true,
+      "heated": true,
+      "role": "protein"
+    },
+    {
+      "food_id": "huehnerei",
+      "amount": 120,
+      "unit": "g",
+      "optional": false,
+      "display_de": "2 Eier (Größe M, 120 g)",
+      "scales": true,
+      "heated": true,
+      "role": "protein"
+    },
+    {
+      "food_id": "salz",
+      "amount": 1,
+      "unit": "pinch",
+      "optional": false,
+      "display_de": "1 Prise",
+      "scales": true,
+      "role": "seasoning"
+    },
+    {
+      "food_id": "pfeffer",
+      "amount": 1,
+      "unit": "pinch",
+      "optional": false,
+      "display_de": "1 Prise",
+      "scales": true,
+      "role": "seasoning"
+    },
+    {
+      "food_id": "cherrytomaten",
+      "amount": 100,
+      "unit": "g",
+      "optional": false,
+      "display_de": "6–8 Stück (100 g)",
+      "scales": true,
+      "role": "vegetable"
+    },
+    {
+      "food_id": "schnittlauch-frisch",
+      "amount": 5,
+      "unit": "g",
+      "optional": false,
+      "display_de": "1 EL Röllchen (5 g)",
+      "scales": true,
+      "role": "vegetable"
+    },
+    {
+      "food_id": "reiswaffeln",
+      "amount": 25,
+      "unit": "g",
+      "optional": false,
+      "display_de": "3 Stück (25 g)",
+      "scales": true,
+      "role": "carb"
+    }
+  ],
+  "steps_de": [
+    "Schneide die Putenbrust in Streifen und brate sie im Öl 1–2 Minuten heiß an.",
+    "Verquirle die Eier mit Salz und Pfeffer, gieß sie in die Pfanne und rühre bei mittlerer Hitze, bis das Ei vollständig gestockt ist.",
+    "Gib das Rührei mit halbierten Tomaten und Schnittlauch auf die Reiswaffeln."
+  ],
+  "total_minutes": 10,
+  "prep_minutes": 5,
+  "cook_minutes": 5,
+  "no_cook": false,
+  "meal_prep": {
+    "suitable": false,
+    "fridge_days": 0,
+    "freezable": false
+  },
+  "equipment_de": ["Pfanne"],
+  "declared_per_serving": {
+    "kcal": 377,
+    "protein_g": 31.3,
+    "carbs_g": 23.3,
+    "fat_g": 16.9
+  },
+  "declared_diet": "omnivore",
+  "declared_allergens": ["eggs", "poultry", "histamine", "onion_garlic"],
+  "contains_pork": false,
+  "declared_pregnancy_caution": false,
+  "meta": {
+    "origin": "claude_session",
+    "model": "claude-opus-5-5",
+    "batch_id": null,
+    "created_on": "2026-10-21",
+    "expert_reviewed": false,
+    "reviewed_by": null,
+    "reviewed_at": null,
+    "review_note": null
+  }
+}

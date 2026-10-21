@@ -1,0 +1,104 @@
+{
+  "id": "beeren-bananen-smoothie-bowl-mit-tofu",
+  "version": 1,
+  "status": "draft",
+  "title_de": "Beeren-Bananen-Smoothie-Bowl mit Tofu",
+  "description_de": "Dicke Smoothie-Bowl aus Beeren, Banane und Orangensaft, mit Tofu cremig gemixt und mit Heidelbeeren und Reiswaffel-Crunch.",
+  "section_de": "Frühstück",
+  "categories": ["schnell"],
+  "meal_types": ["breakfast"],
+  "training_tags": [],
+  "servings": 1,
+  "ingredients": [
+    {
+      "food_id": "beerenmischung-tk",
+      "amount": 150,
+      "unit": "g",
+      "optional": false,
+      "display_de": "150 g",
+      "scales": true,
+      "role": "vegetable"
+    },
+    {
+      "food_id": "banane",
+      "amount": 120,
+      "unit": "g",
+      "optional": false,
+      "display_de": "1 Banane (120 g)",
+      "scales": true,
+      "role": "carb"
+    },
+    {
+      "food_id": "tofu-natur",
+      "amount": 100,
+      "unit": "g",
+      "optional": false,
+      "display_de": "100 g",
+      "scales": true,
+      "role": "protein"
+    },
+    {
+      "food_id": "orangensaft",
+      "amount": 100,
+      "unit": "g",
+      "optional": false,
+      "display_de": "100 g",
+      "scales": true,
+      "role": "sweet"
+    },
+    {
+      "food_id": "heidelbeeren",
+      "amount": 40,
+      "unit": "g",
+      "optional": false,
+      "display_de": "1 kleine Handvoll (40 g)",
+      "scales": true,
+      "role": "vegetable"
+    },
+    {
+      "food_id": "reiswaffeln",
+      "amount": 10,
+      "unit": "g",
+      "optional": false,
+      "display_de": "1 Stück (10 g)",
+      "scales": true,
+      "role": "carb"
+    }
+  ],
+  "steps_de": [
+    "Gib die gefrorenen Beeren, die Banane, den Tofu und den Orangensaft in einen Mixer und püriere alles sehr fein.",
+    "Fülle die Masse in eine Schale.",
+    "Zerbrösle die Reiswaffel darüber und verteile die Heidelbeeren darauf."
+  ],
+  "tip_de": "Je weniger Saft, desto dicker die Bowl – gib ihn nach und nach dazu.",
+  "total_minutes": 7,
+  "prep_minutes": 7,
+  "cook_minutes": 0,
+  "no_cook": true,
+  "meal_prep": {
+    "suitable": false,
+    "fridge_days": 0,
+    "freezable": false
+  },
+  "equipment_de": ["Standmixer"],
+  "declared_per_serving": {
+    "kcal": 387,
+    "protein_g": 20.5,
+    "carbs_g": 51,
+    "fat_g": 7
+  },
+  "declared_diet": "vegan",
+  "declared_allergens": ["legumes", "soy", "fructose"],
+  "contains_pork": false,
+  "declared_pregnancy_caution": false,
+  "meta": {
+    "origin": "claude_session",
+    "model": "claude-opus-5-5",
+    "batch_id": null,
+    "created_on": "2026-10-21",
+    "expert_reviewed": false,
+    "reviewed_by": null,
+    "reviewed_at": null,
+    "review_note": null
+  }
+}

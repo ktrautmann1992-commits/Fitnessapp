@@ -1,0 +1,132 @@
+{
+  "id": "kartoffel-spinat-auflauf-mit-mozzarella",
+  "version": 1,
+  "status": "draft",
+  "title_de": "Kartoffel-Spinat-Auflauf mit Mozzarella",
+  "description_de": "Kartoffelscheiben und Spinat in Eiermilch, mit Mozzarella überbacken – ein Auflauf ohne Mehl und ohne Gluten.",
+  "section_de": "Abendessen",
+  "categories": ["meal-prep"],
+  "meal_types": ["main"],
+  "training_tags": [],
+  "servings": 1,
+  "ingredients": [
+    {
+      "food_id": "kartoffeln",
+      "amount": 300,
+      "unit": "g",
+      "optional": false,
+      "display_de": "3 mittelgroße (300 g)",
+      "scales": true,
+      "role": "carb"
+    },
+    {
+      "food_id": "olivenoel",
+      "amount": 5,
+      "unit": "g",
+      "optional": false,
+      "display_de": "1 TL (5 g)",
+      "scales": true,
+      "role": "fat"
+    },
+    {
+      "food_id": "knoblauch",
+      "amount": 3,
+      "unit": "g",
+      "optional": false,
+      "display_de": "1 kleine Zehe (3 g)",
+      "scales": true,
+      "role": "vegetable"
+    },
+    {
+      "food_id": "babyspinat",
+      "amount": 100,
+      "unit": "g",
+      "optional": false,
+      "display_de": "2 Handvoll (100 g)",
+      "scales": true,
+      "role": "vegetable"
+    },
+    {
+      "food_id": "huehnerei",
+      "amount": 60,
+      "unit": "g",
+      "optional": false,
+      "display_de": "1 Ei (Größe M, 60 g)",
+      "scales": true,
+      "heated": true,
+      "role": "protein"
+    },
+    {
+      "food_id": "milch-1-5",
+      "amount": 100,
+      "unit": "g",
+      "optional": false,
+      "display_de": "100 g",
+      "scales": true,
+      "role": "protein"
+    },
+    {
+      "food_id": "salz",
+      "amount": 1,
+      "unit": "pinch",
+      "optional": false,
+      "display_de": "1 Prise",
+      "scales": true,
+      "role": "seasoning"
+    },
+    {
+      "food_id": "pfeffer",
+      "amount": 1,
+      "unit": "pinch",
+      "optional": false,
+      "display_de": "1 Prise",
+      "scales": true,
+      "role": "seasoning"
+    },
+    {
+      "food_id": "mozzarella-light",
+      "amount": 80,
+      "unit": "g",
+      "optional": false,
+      "display_de": "80 g (20 % Fett i. Tr.)",
+      "scales": true,
+      "role": "protein"
+    }
+  ],
+  "steps_de": [
+    "Heize den Ofen auf 200 °C (Umluft 180 °C) vor. Koche die Kartoffeln in Scheiben 8 Minuten in Wasser vor und gieße sie ab.",
+    "Lass den Spinat mit dem gehackten Knoblauch im Öl in einer Pfanne zusammenfallen.",
+    "Schichte Kartoffeln und Spinat in eine Auflaufform. Verquirle Ei, Milch, Salz und Pfeffer und gieße die Mischung darüber.",
+    "Belege den Auflauf mit Mozzarellascheiben und backe ihn 25 Minuten, bis die Eiermilch ganz gestockt und der Käse goldbraun ist."
+  ],
+  "total_minutes": 47,
+  "prep_minutes": 12,
+  "cook_minutes": 35,
+  "no_cook": false,
+  "meal_prep": {
+    "suitable": true,
+    "fridge_days": 2,
+    "freezable": false
+  },
+  "equipment_de": ["Backofen", "Auflaufform", "Topf", "Pfanne"],
+  "declared_per_serving": {
+    "kcal": 568,
+    "protein_g": 35.4,
+    "carbs_g": 59,
+    "fat_g": 19.4
+  },
+  "declared_diet": "vegetarian",
+  "declared_allergens": ["dairy", "lactose", "eggs", "histamine", "onion_garlic"],
+  "contains_pork": false,
+  "declared_pregnancy_caution": false,
+  "meta": {
+    "origin": "claude_session",
+    "model": "claude-opus-5-5",
+    "batch_id": null,
+    "created_on": "2026-10-21",
+    "expert_reviewed": false,
+    "reviewed_by": null,
+    "reviewed_at": null,
+    "review_note": null
+  }
+}

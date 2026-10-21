@@ -1,0 +1,94 @@
+{
+  "id": "quark-bowl-mit-heidelbeeren-und-banane",
+  "version": 1,
+  "status": "draft",
+  "title_de": "Quark-Bowl mit Heidelbeeren und Banane",
+  "description_de": "Cremig gerührter Magerquark mit Heidelbeeren, Banane und etwas Honig – schnell gemacht und gut sättigend.",
+  "section_de": "Frühstück",
+  "categories": ["schnell", "post-workout"],
+  "meal_types": ["breakfast"],
+  "training_tags": ["nach_training"],
+  "servings": 1,
+  "ingredients": [
+    {
+      "food_id": "magerquark",
+      "amount": 250,
+      "unit": "g",
+      "optional": false,
+      "display_de": "1 Becher (250 g)",
+      "scales": true,
+      "role": "protein"
+    },
+    {
+      "food_id": "milch-1-5",
+      "amount": 30,
+      "unit": "g",
+      "optional": false,
+      "display_de": "2 EL (30 g)",
+      "scales": true,
+      "role": "protein"
+    },
+    {
+      "food_id": "honig",
+      "amount": 10,
+      "unit": "g",
+      "optional": false,
+      "display_de": "2 TL (10 g)",
+      "scales": true,
+      "role": "sweet"
+    },
+    {
+      "food_id": "banane",
+      "amount": 100,
+      "unit": "g",
+      "optional": false,
+      "display_de": "1 kleine Banane (100 g)",
+      "scales": true,
+      "role": "carb"
+    },
+    {
+      "food_id": "heidelbeeren",
+      "amount": 100,
+      "unit": "g",
+      "optional": false,
+      "display_de": "1 Schale (100 g)",
+      "scales": true,
+      "role": "vegetable"
+    }
+  ],
+  "steps_de": [
+    "Rühre den Quark mit Milch und Honig glatt.",
+    "Schneide die Banane in Scheiben.",
+    "Verteile Banane und Heidelbeeren auf dem Quark."
+  ],
+  "total_minutes": 5,
+  "prep_minutes": 5,
+  "cook_minutes": 0,
+  "no_cook": true,
+  "meal_prep": {
+    "suitable": false,
+    "fridge_days": 0,
+    "freezable": false
+  },
+  "equipment_de": [],
+  "declared_per_serving": {
+    "kcal": 349,
+    "protein_g": 32.5,
+    "carbs_g": 43.4,
+    "fat_g": 1.9
+  },
+  "declared_diet": "vegetarian",
+  "declared_allergens": ["dairy", "lactose", "fructose"],
+  "contains_pork": false,
+  "declared_pregnancy_caution": false,
+  "meta": {
+    "origin": "claude_session",
+    "model": "claude-opus-5-5",
+    "batch_id": null,
+    "created_on": "2026-10-21",
+    "expert_reviewed": false,
+    "reviewed_by": null,
+    "reviewed_at": null,
+    "review_note": null
+  }
+}
