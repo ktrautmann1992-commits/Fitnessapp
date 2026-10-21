@@ -1,11 +1,9 @@
 {
   "id": "spinat-omelett-mit-eiklar-und-vollkornbrot",
   "version": 1,
-  "status": "draft",
+  "status": "published",
   "title_de": "Spinat-Omelett mit Eiklar und Vollkornbrot",
   "description_de": "Lockeres Omelett aus Ei und Eiklar mit Spinat und Tomate, dazu kräftiges Vollkornbrot – hochwertiges Eiweiß für die Muskeln und genug Kohlenhydrate für die Regeneration.",
-  "section_de": "Bis 2 Stunden danach",
-  "categories": ["post-workout"],
   "meal_types": ["snack"],
   "training_tags": ["nach_training"],
   "servings": 1,
@@ -93,6 +91,8 @@
     "Klappe das Omelett zusammen und serviere es mit Brot und Tomate."
   ],
   "tip_de": "Eiklar aus dem Tetrapak (Kühlregal) spart Zeit und Eigelb-Reste. Wer abends trainiert, hat damit ein schnelles, leichtes Abendessen.",
+  "section_de": "Bis 2 Stunden danach",
+  "categories": ["post-workout"],
   "total_minutes": 12,
   "prep_minutes": 12,
   "cook_minutes": 0,
@@ -119,12 +119,12 @@
     "batch_id": null,
     "created_on": "2026-10-11",
     "expert_reviewed": false,
-    "reviewed_by": null,
-    "reviewed_at": null,
+    "reviewed_by": "Karsten (Auftrag an Claude)",
+    "reviewed_at": "2026-10-21",
     "review_note": null,
     "source_file": "alpha5-rezepte.json@1.0",
+    "import_hash": "6e5bd7300d4d414821c9fe2ae10cc3b2f88e07bf50fcd2b5febdb6e55cb0692f",
     "import_assumptions": [],
-    "import_assumptions_confirmed_by": null,
-    "import_hash": "6e5bd7300d4d414821c9fe2ae10cc3b2f88e07bf50fcd2b5febdb6e55cb0692f"
+    "import_assumptions_confirmed_by": null
   }
 }

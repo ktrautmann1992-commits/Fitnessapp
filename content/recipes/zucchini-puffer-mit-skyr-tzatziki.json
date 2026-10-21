@@ -1,11 +1,9 @@
 {
   "id": "zucchini-puffer-mit-skyr-tzatziki",
   "version": 1,
-  "status": "draft",
+  "status": "published",
   "title_de": "Zucchini-Puffer mit Skyr-Tzatziki",
   "description_de": "Goldbraune Gemüsepuffer mit Parmesan, dazu ein frisches Tzatziki aus Skyr, Gurke und Knoblauch.",
-  "section_de": "Abendessen",
-  "categories": [],
   "meal_types": ["main"],
   "training_tags": [],
   "servings": 1,
@@ -110,6 +108,8 @@
     "Serviere die Puffer heiß mit dem Tzatziki."
   ],
   "tip_de": "Das Ausdrücken der Zucchini ist entscheidend – sonst werden die Puffer matschig.",
+  "section_de": "Abendessen",
+  "categories": [],
   "total_minutes": 25,
   "prep_minutes": 21,
   "cook_minutes": 4,
@@ -136,12 +136,12 @@
     "batch_id": null,
     "created_on": "2026-10-11",
     "expert_reviewed": false,
-    "reviewed_by": null,
-    "reviewed_at": null,
+    "reviewed_by": "Karsten (Auftrag an Claude)",
+    "reviewed_at": "2026-10-21",
     "review_note": null,
     "source_file": "alpha5-rezepte.json@1.0",
+    "import_hash": "7b10feba84913e4d95dd0834109e3345b61545b4f97b2784507f532d92eac7e8",
     "import_assumptions": [],
-    "import_assumptions_confirmed_by": null,
-    "import_hash": "7b10feba84913e4d95dd0834109e3345b61545b4f97b2784507f532d92eac7e8"
+    "import_assumptions_confirmed_by": null
   }
 }

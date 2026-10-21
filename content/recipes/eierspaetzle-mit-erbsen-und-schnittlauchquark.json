@@ -1,11 +1,9 @@
 {
   "id": "eierspaetzle-mit-erbsen-und-schnittlauchquark",
   "version": 1,
-  "status": "draft",
+  "status": "published",
   "title_de": "Eierspätzle mit Erbsen und Schnittlauchquark",
   "description_de": "Ein vertrautes, mildes Abendessen mit vielen Kohlenhydraten aus Spätzle und etwas Eiweiß aus Quark – wenig Fett, nicht scharf und gut bekömmlich.",
-  "section_de": "Am Vorabend",
-  "categories": ["wettkampf"],
   "meal_types": ["main"],
   "training_tags": [],
   "servings": 1,
@@ -83,6 +81,8 @@
   ],
   "tip_de": "Brate die Spätzle vor dem Rennen nur kurz und ohne viel Fett an – so bleiben sie leicht verdaulich.",
   "tags_de": ["Wettkampf"],
+  "section_de": "Am Vorabend",
+  "categories": ["wettkampf"],
   "total_minutes": 20,
   "prep_minutes": 5,
   "cook_minutes": 15,
@@ -109,12 +109,12 @@
     "batch_id": null,
     "created_on": "2026-10-11",
     "expert_reviewed": false,
-    "reviewed_by": null,
-    "reviewed_at": null,
+    "reviewed_by": "Karsten (Auftrag an Claude)",
+    "reviewed_at": "2026-10-21",
     "review_note": null,
     "source_file": "alpha5-rezepte.json@1.0",
+    "import_hash": "f9e991f72a30d76654d25b142284838e28dbb99b407699609b9366145fa63c44",
     "import_assumptions": [],
-    "import_assumptions_confirmed_by": null,
-    "import_hash": "f9e991f72a30d76654d25b142284838e28dbb99b407699609b9366145fa63c44"
+    "import_assumptions_confirmed_by": null
   }
 }

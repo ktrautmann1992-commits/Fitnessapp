@@ -1,11 +1,9 @@
 {
   "id": "teriyaki-tofu-bowl-mit-edamame-vegetarisch",
   "version": 1,
-  "status": "draft",
+  "status": "published",
   "title_de": "Teriyaki-Tofu-Bowl mit Edamame",
   "description_de": "Knusprig gebratener Tofu in glänzender Teriyaki-Glasur auf Reis, mit Edamame, Möhre und Sesam.",
-  "section_de": "Mittagessen",
-  "categories": ["post-workout", "meal-prep"],
   "meal_types": ["main"],
   "training_tags": ["nach_training"],
   "servings": 1,
@@ -109,6 +107,8 @@
     "Richte Reis, Edamame, Möhre und Tofu in einer Schüssel an und bestreue alles mit Sesam und Frühlingszwiebel."
   ],
   "tip_de": "Für Meal-Prep Reis und Tofu getrennt lagern – hält 3 Tage im Kühlschrank.",
+  "section_de": "Mittagessen",
+  "categories": ["post-workout", "meal-prep"],
   "total_minutes": 25,
   "prep_minutes": 17,
   "cook_minutes": 8,
@@ -143,12 +143,12 @@
     "batch_id": null,
     "created_on": "2026-10-11",
     "expert_reviewed": false,
-    "reviewed_by": null,
-    "reviewed_at": null,
+    "reviewed_by": "Karsten (Auftrag an Claude)",
+    "reviewed_at": "2026-10-21",
     "review_note": null,
     "source_file": "alpha5-rezepte.json@1.0",
+    "import_hash": "8b8efd3ef53b6ef7c75019e66a12190e8d71d6b8812bda38d5d0a8b794ae8f86",
     "import_assumptions": [],
-    "import_assumptions_confirmed_by": null,
-    "import_hash": "8b8efd3ef53b6ef7c75019e66a12190e8d71d6b8812bda38d5d0a8b794ae8f86"
+    "import_assumptions_confirmed_by": null
   }
 }

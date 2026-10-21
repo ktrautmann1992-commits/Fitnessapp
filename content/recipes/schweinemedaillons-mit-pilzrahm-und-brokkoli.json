@@ -1,11 +1,9 @@
 {
   "id": "schweinemedaillons-mit-pilzrahm-und-brokkoli",
   "version": 1,
-  "status": "draft",
+  "status": "published",
   "title_de": "Schweinemedaillons mit Pilzrahm und Brokkoli",
   "description_de": "Abendessen aus zarten Filetmedaillons, Champignon-Rahmsauce und viel Brokkoli.",
-  "section_de": "Abendessen",
-  "categories": [],
   "meal_types": ["main"],
   "training_tags": [],
   "servings": 1,
@@ -101,6 +99,8 @@
     "Lege die Medaillons kurz in die Sauce und serviere sie mit Brokkoli und Petersilie."
   ],
   "tip_de": "Wer mehr Kohlenhydrate braucht, isst 150 g Pellkartoffeln dazu.",
+  "section_de": "Abendessen",
+  "categories": [],
   "total_minutes": 18,
   "prep_minutes": 5,
   "cook_minutes": 13,
@@ -127,12 +127,12 @@
     "batch_id": null,
     "created_on": "2026-10-11",
     "expert_reviewed": false,
-    "reviewed_by": null,
-    "reviewed_at": null,
+    "reviewed_by": "Karsten (Auftrag an Claude)",
+    "reviewed_at": "2026-10-21",
     "review_note": null,
     "source_file": "alpha5-rezepte.json@1.0",
+    "import_hash": "08e47eab89f779d1a775747591fbe21a33b90e93c97ad13a80e0b5de3b006be1",
     "import_assumptions": [],
-    "import_assumptions_confirmed_by": null,
-    "import_hash": "08e47eab89f779d1a775747591fbe21a33b90e93c97ad13a80e0b5de3b006be1"
+    "import_assumptions_confirmed_by": null
   }
 }
