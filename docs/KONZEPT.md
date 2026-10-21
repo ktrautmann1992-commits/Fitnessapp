@@ -849,7 +849,7 @@ Quelle: `docs/ERWEITERUNGEN-2.md` Abschnitte 1–2. Startbestand aus `alpha5-rez
 - `cardio_logs` (session_log_id, distance_m, duration_s, elevation_m, avg_hr, source)
 - `foods`, `recipes`, `recipe_ingredients`, `meal_plans`, `meal_plan_items`, `shopping_lists`, `shopping_list_items` –
   **umgesetzt in Phase 5, Etappe N7 (Teil 1), siehe Abweichungen ab Phase 5**
-- `supplements`, `supplement_contraindications`, `affiliate_links`, `user_supplement_plans`
+- `supplements`, `supplement_contraindications`, `affiliate_links`, `user_supplement_plans` – **geändert in Phase 6 SU3**: `supplements` (Inhalte), `supplement_screening` und `user_supplements` (statt `user_supplement_plans`); keine Tabelle `supplement_contraindications` (Regeln nur im Core); `affiliate_*` erst mit SU5 (docs/PLAN-PHASE-6.md 7)
 - `cycle_entries` – sensibel, verschlüsselt
 - `wearable_connections`, `daily_metrics`
 - `routes` (geometry, distance_m, elevation_m, discipline, source, license)

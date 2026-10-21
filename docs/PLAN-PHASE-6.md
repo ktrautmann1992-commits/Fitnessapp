@@ -7,6 +7,9 @@ empfohlen“**. Wächter-Prüfung Runde 1: „mit Auflagen“ – alle Befunde (
 laufen parallel, Abschnitt 18). SU1 (Core: Regeln, Dosis, Zeitplan, Texte) umgesetzt, keine Migration, keine
 sichtbare App-Änderung (Abschnitt 5, Umsetzungsstand SU1). SU2 (Inhalte: Schema, Prüfregeln SK1–SK7, Pipeline-Art,
 Startbestand 5 + 13 Entwürfe) umgesetzt, noch nicht eingespielt (Abschnitt 6, Umsetzungsstand SU2).
+**Stand 21.10.2026:** SU3 (Datenbank ohne Affiliate-Tabellen, Seed, Freigabe per content-review) und SU4 (App,
+Testmodus + Supabase) umgesetzt (Abschnitte 7 und 8, Umsetzungsstand). Einwilligung `health_data` Fassung 2 liegt als
+**Entwurf** in der Datenbank (Veröffentlichung nach der Rechtsprüfung). SU5 (Affiliate) und SU6 (Zeitplan) offen.
 
 **Grundlage:** `CLAUDE.md` (Supplements, Affiliate & Werbung, Gesundheitsdaten, KI-Grenze), `docs/KONZEPT.md`
 (3, 6, 6.13, 7, 12, 13, 14, 15), `docs/PROMPTS.md` Phase 6, `docs/ERWEITERUNGEN.md` (Sponsor bei Challenges),
@@ -689,8 +692,8 @@ _DoD:_ Schema, Prüfregeln mit Tests, Pipeline-Art mit Probelauf ohne Schlüssel
   (Ende-zu-Ende-Test).
 - **Seed:** `content-seed` prüft die Supplemente mit (ein Schemafehler blockiert wie überall), spielt sie aber **nicht**
   ein – auch freigegebene nicht – und nennt im Bericht nur die Anzahl. Einspielen kommt mit SU3.
-- **content-review:** kennt die Supplemente noch nicht (eine Supplement-ID meldet „nicht gefunden“, nichts wird
-  geändert). Freigabe per Workflow folgt mit SU3, wenn es die Tabelle gibt.
+- **content-review:** kannte die Supplemente in SU2 noch nicht – seit SU3 Art „ids“ mit Supplement-IDs bzw. dem
+  Stichwort `supplemente` (Umsetzungsstand SU3).
 - **Startbestand** `content/supplements/` (18 Dateien, alle `draft`, `origin: claude_session`, `expert_reviewed:
 false`, in der App „KI-Entwurf – fachlich prüfen“): Startliste `creatine`, `protein_powder`, `vitamin_d`, `omega3`,
   `caffeine`; „Nicht empfohlen“ `bcaa`, `glutamine`, `l_carnitine`, `cla`, `fat_burner`, `testo_booster`,
@@ -802,6 +805,56 @@ was die Person selbst gewählt hat).
 _DoD:_ Migrationen additiv, RLS auf jeder Tabelle, Seed `health_data` v2, pgTAP grün (`db-test`), Typen generiert
 (`db-types`).
 
+### Umsetzungsstand SU3 (21.10.2026)
+
+**Was gilt:**
+
+- **Migrationen (nur additiv):** `20261021120000_supplement_enums.sql` (`supplement_id`, `supplement_evidence`,
+  `supplement_category`, `supplement_flag`, `user_supplement_status`), `20261021120100_supplements.sql` (Tabelle
+  `supplements` + `seed_supplements`), `20261021120200_supplement_user_data.sql` (Einwilligung v2, Supplement-Check,
+  „Meine Supplements“, Widerruf, Export).
+- **`supplements`:** nur `published`/`archived` (CHECK), `data` = Datei mit neutralisierten Prüfer-Namen, `name_de`,
+  `evidence_level` (Koffein `NULL`, CHECK), `category` (`safety_info` nur Koffein), `expert_reviewed` berechnet. RLS:
+  Angemeldete lesen nur `published`, anon nichts; schreiben nur `seed_supplements` (`service_role`): eine Transaktion,
+  idempotent, nur bekannte IDs (`SUPPLEMENT_CONTENT_IDS`, keine Probelauf-Einträge), Versionen sinken nie, archivieren
+  statt löschen, Testphase-Schalter `p_require_expert_review` wie bei Workouts.
+- **Einwilligung `health_data` Fassung 2** (Text 11.1, wörtlich gleich `consent-texts.ts`): als **Entwurf**
+  (`published_at NULL`). Damit verliert niemand eine Einwilligung, bis die juristische Prüfung durch ist; die
+  Veröffentlichung ist eine eigene kleine Migration (HANDY-ANLEITUNG Teil 7u). `CURRENT_CONSENT_VERSIONS.health_data`
+  = 2 (höchste Fassung im Seed; Testmodus nutzt Fassung 2). Die pgTAP-Tests, die selbst eine Fassung 2 anlegen
+  (02, 13, 18, 43), veröffentlichen sie jetzt per Upsert.
+- **`supplement_screening`** (eine Zeile je Person, SENSIBEL): Antworten strikt, Stillzeit nicht bei „männlich“,
+  Flags berechnet der Trigger (= `evaluateSupplementScreening`), Fassung der Fragen. **`user_supplements`**
+  (SENSIBEL): `taking`/`not_for_me`, nie Koffein (CHECK). Lesen nur eigene Zeilen; Schreiben nur über
+  `save_supplement_screening` bzw. `set_user_supplement` – beide über `private.require_supplement_consent()` (eigene
+  Einwilligung FOR SHARE, gültig UND aktuelle Fassung ≥ 2). `set_user_supplement(…, NULL)` und
+  `delete_my_supplement_data()` gehen immer (Recht auf Löschung).
+- **Widerruf und Export:** `consents_after_revoke` löscht beide Tabellen (am Anfang und in der Wiederholung),
+  `export_my_data` enthält beide (Obermengen der neuesten Fassungen; `DATA_EXPORT_TABLES` ergänzt). Konto löschen:
+  Kaskade.
+- **Seed:** `content-seed` spielt freigegebene Supplemente mit derselben Einspiel-Regel und demselben Schutz vor
+  Massen-Archivierung wie Workouts ein; fehlt die Tabelle, mit Hinweis übersprungen.
+- **Freigabe:** `content-review` Art `ids` erkennt Supplement-IDs (Unterstrich) bzw. das Stichwort `supplemente` (alle
+  Entwürfe) → `planSupplementRelease` (Core): nur Entwürfe ohne roten Befund im Stand danach, Prüfer und Datum, Häkchen
+  „fachlich geprüft“; gemischte Läufe (Supplemente + andere Inhalte) werden abgelehnt.
+
+**Bewusst noch nicht (Präzisierungen):**
+
+1. **Keine Affiliate-Tabellen** (`affiliate_shops`, `affiliate_links`, Klick-Zähler, Flag `affiliate_enabled`) –
+   Gründer-Auftrag 21.10.2026: Supplemente ohne Shops. Sie kommen vollständig mit SU5.
+2. Aufzählungen `supplement_timing` und `dose_unit` fehlen (nur der Core rechnet Zeitpunkte; Mengen je Produkt erst
+   mit SU5).
+3. `supplements.id` ist `text` mit Format-CHECK und bekannter ID-Liste im Seed (Präzisierung SU2 Nr. 1), die Auswahl
+   „Meine Supplements“ nutzt die Aufzählung `supplement_id` (nur eingeordnete Supplemente).
+4. `delete_my_supplement_data()` (nicht im Plan): Löschen ohne Widerruf der ganzen Einwilligung.
+
+**Tests:** pgTAP `70_supplements.test.sql` (34: Tabelle, CHECKs, RLS, Seed mit allen Regeln) und
+`71_supplement_user_data.test.sql` (48: Fassung 2 Entwurf/veröffentlicht, Schreiben mit nur v1 scheitert, v1-Daten
+bleiben lesbar und nach erneuter Zustimmung schreibbar, Trigger-Flags, Stillzeit/männlich, RLS, Koffein, Export,
+Löschen ohne Einwilligung, Widerruf). `db-sync.test.ts` (Aufzählungen, IDs, Fragen, Fassungen, Sperre, RLS, neueste
+Widerruf-/Export-Fassung, SENSIBEL-Test). Core: `supplement-release.test.ts`, `profile-inputs.test.ts`,
+`overview.test.ts`. Content: `review-supplements.test.ts`, Seed-Tests für Supplemente.
+
 ---
 
 ## 8. Etappe SU4 – App (Testmodus zuerst, dann Supabase)
@@ -845,6 +898,43 @@ Schrift. Keine Farben als einziges Signal („Nicht für dich“ mit Symbol und 
 
 _DoD:_ Playwright im Testmodus (Re-Consent v1 → v2 ohne Datenverlust, Übersicht, Check, Sperre bei Schwangerschaft,
 unter 18, Abend-Training, Koffein ohne „passt“), Unit-Tests der App-Helfer, Supabase-Modus mit RPCs.
+
+### Umsetzungsstand SU4 (21.10.2026)
+
+**Was gilt:**
+
+- **Core:** `buildSupplementInputs` (`supplements/profile-inputs.ts`) entscheidet, welche Angaben in die Einordnung
+  dürfen – Gesundheits-Check, Supplement-Check, Gewicht, Eiweiß-Lücke (Tagebuch der letzten 7 Tage, nur vollständige
+  Tage, vor der Selbsteinschätzung) und Unverträglichkeiten nur mit gültiger Einwilligung Fassung ≥ 2; „Fisch mag ich
+  nicht“ immer; Check älterer Fragen-Fassung zählt nicht; Stillzeit-Antwort nicht bei „männlich“.
+  `supplementOverview`/`supplementDetail` (`supplements/overview.ts`): Gruppen, Menge nur wo der Core eine liefert,
+  Anwendung nur mit Menge, Angaben nur mit Pflichthinweis und nur, wenn Inhalt UND Einordnung sie nennen, Pflichtsätze,
+  „Nehme ich“ nur bei persönlicher Einordnung und „passt“ (bzw. Vitamin D als Info), veraltete Auswahl wird gemeldet.
+  `user-data.ts`: Schemas für Check und Auswahl.
+- **App:** `/supplemente` (Übersicht), `/supplemente/check`, `/supplemente/[id]`; Einstieg über **Mehr → Essen →
+  Supplemente**, **Ernährung** (Knopf unten) und **Einstellungen** („Meine Supplements“, „Supplement-Check ändern“).
+  Bereichsfarbe Ernährung (grün), neues Icon `pill` in `design.tsx`, `SupplementRow`, `StatusPill` (Symbol + Text) und
+  `ClaimBlock` in `components/supplements.tsx`, Texte in `i18n/de-supplements.ts` (Textregeln-Test).
+- **Zustände:** Laden, Fehler mit „Erneut versuchen“, leer („Kommt bald“), offline (Inhalte aus dem Zwischenspeicher;
+  Check und Auswahl brauchen Verbindung – sie werden im Supabase-Modus nie auf dem Gerät gespeichert), keine
+  Einwilligung, alte Fassung (Karte „Einwilligung ergänzt“ → `/health-consent`), Fassung 2 noch nicht veröffentlicht
+  (Hinweis, Info-Modus), Gesundheits-Check fehlt, Check fehlt, unter 18, Testphase-Kennzeichen je Eintrag.
+- **Testmodus:** Inhalte aus dem Bündel (Entwürfe ohne roten Befund, gelber Hinweis „Entwürfe“), Check und Auswahl im
+  Gerätespeicher mit denselben Regeln (`supplement-local.ts`), Widerruf löscht, Export enthält beides, Testschalter
+  „Einwilligung nur alte Fassung“.
+- **Supabase-Modus:** Tabelle `supplements` (Zwischenspeicher nur Inhalte), RPCs aus SU3; Fehler „Einwilligung fehlt“
+  → klarer Hinweis.
+- **Widerrufs-Dialog** nennt „den Supplement-Check und „Meine Supplements““.
+
+**Bewusst noch nicht:** kein Bereich „Wo kaufen“ (SU5), keine Zeile auf „Heute“ (SU6), keine Hinweis-Karte auf
+„Heute“ (Re-Consent nur im Supplement-Bereich und wie bisher in Einstellungen/Einwilligungen), „Supplemente“ ist kein
+eigener Menüleisten-Knopf (nur Kachel unter „Mehr“; ein Knopf bräuchte eine Änderung an `save_app_layout`).
+
+**Tests:** App-Vitest `supplements.test.ts` (Bündel, Datenbank-Zeilen, Abbildung der Zeilen inkl. Einwilligung
+v1/v2/keine, Testmodus-Regeln, Export, Widerruf, Testschalter), `de-supplements.test.ts` (Textregeln für alle Texte),
+`consent-texts.test.ts` (Fassung 2 = Seed). Playwright `supplements.spec.ts` (Check → Kreatin passt, Koffein abends,
+Detail mit Angabe + Pflichthinweis, Quellen, „Nehme ich“, „Nicht empfohlen“; Re-Consent ohne Datenverlust;
+Medikamente → „Nicht für dich“; unter 18; ohne Einwilligung).
 
 ---
 
