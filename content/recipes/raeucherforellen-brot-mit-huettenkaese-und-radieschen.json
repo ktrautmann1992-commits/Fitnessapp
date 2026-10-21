@@ -1,11 +1,9 @@
 {
   "id": "raeucherforellen-brot-mit-huettenkaese-und-radieschen",
   "version": 1,
-  "status": "draft",
+  "status": "published",
   "title_de": "Räucherforellen-Brot mit Hüttenkäse und Radieschen",
   "description_de": "Kräftiges Vollkornbrot mit cremigem Hüttenkäse, zarter Räucherforelle und knackigen Radieschen – norddeutsch frisch und in 5 Minuten fertig.",
-  "section_de": "Frühstück",
-  "categories": ["schnell"],
   "meal_types": ["breakfast"],
   "training_tags": [],
   "servings": 1,
@@ -92,6 +90,8 @@
   ],
   "tip_de": "Räucherforelle findest du im Kühlregal bei Fisch – alternativ passt geräucherte Makrele, die hat aber etwas mehr Fett.",
   "tags_de": ["Unter 10 Minuten"],
+  "section_de": "Frühstück",
+  "categories": ["schnell"],
   "total_minutes": 5,
   "prep_minutes": 5,
   "cook_minutes": 0,
@@ -127,12 +127,12 @@
     "batch_id": null,
     "created_on": "2026-10-11",
     "expert_reviewed": false,
-    "reviewed_by": null,
-    "reviewed_at": null,
+    "reviewed_by": "Karsten",
+    "reviewed_at": "2026-10-21",
     "review_note": null,
     "source_file": "alpha5-rezepte.json@1.0",
+    "import_hash": "76f1cd633c954457ab406dd2ecba7c9303f859abae9c66dcc46a9b81e6349802",
     "import_assumptions": [],
-    "import_assumptions_confirmed_by": null,
-    "import_hash": "76f1cd633c954457ab406dd2ecba7c9303f859abae9c66dcc46a9b81e6349802"
+    "import_assumptions_confirmed_by": null
   }
 }

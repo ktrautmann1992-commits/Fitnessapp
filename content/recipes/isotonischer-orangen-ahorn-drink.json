@@ -1,11 +1,9 @@
 {
   "id": "isotonischer-orangen-ahorn-drink",
   "version": 1,
-  "status": "draft",
+  "status": "published",
   "title_de": "Isotonischer Orangen-Ahorn-Drink",
   "description_de": "Selbstgemischtes Sportgetränk aus Orangensaft, Wasser, Ahornsirup und Salz – liefert unterwegs Kohlenhydrate, Flüssigkeit und Natrium in einem.",
-  "section_de": "Während der Einheit",
-  "categories": ["schnell", "cardio"],
   "meal_types": ["snack"],
   "training_tags": ["waehrend"],
   "servings": 1,
@@ -54,6 +52,8 @@
   ],
   "tip_de": "Eine Flasche (500 ml) bringt rund 33 g Kohlenhydrate und knapp 1 g Salz – das reicht für etwa eine Stunde bei 30–60 g Kohlenhydraten pro Stunde. Trink alle 15–20 Minuten ein paar Schlucke. Bis zu 90 g pro Stunde nur bei sehr langen Einheiten und wenn du es im Training geübt hast.",
   "tags_de": ["Unter 10 Minuten", "Ausdauer", "zum Mitnehmen"],
+  "section_de": "Während der Einheit",
+  "categories": ["schnell", "cardio"],
   "total_minutes": 3,
   "prep_minutes": 3,
   "cook_minutes": 0,
@@ -80,12 +80,12 @@
     "batch_id": null,
     "created_on": "2026-10-11",
     "expert_reviewed": false,
-    "reviewed_by": null,
-    "reviewed_at": null,
+    "reviewed_by": "Karsten",
+    "reviewed_at": "2026-10-21",
     "review_note": null,
     "source_file": "alpha5-rezepte.json@1.0",
+    "import_hash": "97667d790fd48dde5937d0083375979fce871e42529018ed14476ff0d89851a9",
     "import_assumptions": [],
-    "import_assumptions_confirmed_by": null,
-    "import_hash": "97667d790fd48dde5937d0083375979fce871e42529018ed14476ff0d89851a9"
+    "import_assumptions_confirmed_by": null
   }
 }

@@ -1,11 +1,9 @@
 {
   "id": "reiswaffeln-mit-erdbeerkonfituere-und-banane",
   "version": 1,
-  "status": "draft",
+  "status": "published",
   "title_de": "Reiswaffeln mit Erdbeerkonfitüre und Banane",
   "description_de": "Knusprige Reiswaffeln mit Konfitüre und Banane – fast nur schnelle Kohlenhydrate, kaum Fett, ideal kurz vor dem Start.",
-  "section_de": "30 Min. vorher",
-  "categories": ["schnell", "pre-workout"],
   "meal_types": ["snack"],
   "training_tags": ["vor_training"],
   "servings": 1,
@@ -45,6 +43,8 @@
   ],
   "tip_de": "Erst kurz vor dem Essen bestreichen, sonst werden die Waffeln weich. Zum Mitnehmen Waffeln und Banane getrennt einpacken.",
   "tags_de": ["Unter 10 Minuten"],
+  "section_de": "30 Min. vorher",
+  "categories": ["schnell", "pre-workout"],
   "total_minutes": 3,
   "prep_minutes": 3,
   "cook_minutes": 0,
@@ -71,12 +71,12 @@
     "batch_id": null,
     "created_on": "2026-10-11",
     "expert_reviewed": false,
-    "reviewed_by": null,
-    "reviewed_at": null,
+    "reviewed_by": "Karsten",
+    "reviewed_at": "2026-10-21",
     "review_note": null,
     "source_file": "alpha5-rezepte.json@1.0",
+    "import_hash": "79fc079201114f725593c818349c18bf3f327787ca943396ca2c78c7a71dd0bd",
     "import_assumptions": [],
-    "import_assumptions_confirmed_by": null,
-    "import_hash": "79fc079201114f725593c818349c18bf3f327787ca943396ca2c78c7a71dd0bd"
+    "import_assumptions_confirmed_by": null
   }
 }

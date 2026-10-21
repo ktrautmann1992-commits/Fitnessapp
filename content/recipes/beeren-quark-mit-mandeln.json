@@ -1,11 +1,9 @@
 {
   "id": "beeren-quark-mit-mandeln",
   "version": 1,
-  "status": "draft",
+  "status": "published",
   "title_de": "Beeren-Quark mit Mandeln",
   "description_de": "Cremiger Magerquark mit Beeren und einem Hauch Honig – der schnelle Eiweiß-Snack.",
-  "section_de": "Snack",
-  "categories": ["schnell", "post-workout"],
   "meal_types": ["snack"],
   "training_tags": ["nach_training"],
   "servings": 1,
@@ -54,6 +52,8 @@
   ],
   "tip_de": "Aufgetaute Beeren färben den Quark schön rosa – einfach unterrühren.",
   "tags_de": ["Unter 10 Minuten"],
+  "section_de": "Snack",
+  "categories": ["schnell", "post-workout"],
   "total_minutes": 3,
   "prep_minutes": 3,
   "cook_minutes": 0,
@@ -80,12 +80,12 @@
     "batch_id": null,
     "created_on": "2026-10-11",
     "expert_reviewed": false,
-    "reviewed_by": null,
-    "reviewed_at": null,
+    "reviewed_by": "Karsten",
+    "reviewed_at": "2026-10-21",
     "review_note": null,
     "source_file": "alpha5-rezepte.json@1.0",
+    "import_hash": "b6465b5cb2a43ec1ca6b128ab388111327fae4032871f653d5bf2c45c0cde3cd",
     "import_assumptions": [],
-    "import_assumptions_confirmed_by": null,
-    "import_hash": "b6465b5cb2a43ec1ca6b128ab388111327fae4032871f653d5bf2c45c0cde3cd"
+    "import_assumptions_confirmed_by": null
   }
 }

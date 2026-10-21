@@ -1,11 +1,9 @@
 {
   "id": "kakao-bananenmilch",
   "version": 1,
-  "status": "draft",
+  "status": "published",
   "title_de": "Kakao-Bananenmilch",
   "description_de": "Eine kühle Bananenmilch mit Kakao und Honig, die schnell Energie liefert und als Getränk leicht im Magen liegt.",
-  "section_de": "30 Min. vorher",
-  "categories": ["schnell", "pre-workout"],
   "meal_types": ["snack"],
   "training_tags": ["vor_training"],
   "servings": 1,
@@ -54,6 +52,8 @@
   ],
   "tip_de": "Mit laktosefreier Milch gleich zubereiten, falls normale Milch vor dem Sport drückt. In der Thermoflasche bleibt sie bis zum Gym kühl.",
   "tags_de": ["Unter 10 Minuten"],
+  "section_de": "30 Min. vorher",
+  "categories": ["schnell", "pre-workout"],
   "total_minutes": 3,
   "prep_minutes": 3,
   "cook_minutes": 0,
@@ -80,12 +80,12 @@
     "batch_id": null,
     "created_on": "2026-10-11",
     "expert_reviewed": false,
-    "reviewed_by": null,
-    "reviewed_at": null,
+    "reviewed_by": "Karsten",
+    "reviewed_at": "2026-10-21",
     "review_note": null,
     "source_file": "alpha5-rezepte.json@1.0",
+    "import_hash": "836dd41b0a49828fd23b8e5f009484e72063253b3bed3a7b972d07fc2654c474",
     "import_assumptions": [],
-    "import_assumptions_confirmed_by": null,
-    "import_hash": "836dd41b0a49828fd23b8e5f009484e72063253b3bed3a7b972d07fc2654c474"
+    "import_assumptions_confirmed_by": null
   }
 }

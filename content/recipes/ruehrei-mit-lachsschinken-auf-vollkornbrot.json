@@ -1,11 +1,9 @@
 {
   "id": "ruehrei-mit-lachsschinken-auf-vollkornbrot",
   "version": 1,
-  "status": "draft",
+  "status": "published",
   "title_de": "Rührei mit Lachsschinken auf Vollkornbrot",
   "description_de": "Cremiges Rührei mit magerem Lachsschinken, Schnittlauch und Kirschtomaten auf kräftigem Vollkornbrot.",
-  "section_de": "Frühstück",
-  "categories": ["schnell", "post-workout"],
   "meal_types": ["breakfast"],
   "training_tags": ["nach_training"],
   "servings": 1,
@@ -94,6 +92,8 @@
   ],
   "tip_de": "Statt Lachsschinken passt auch Kochschinken – dann etwas weniger salzen.",
   "tags_de": ["Unter 10 Minuten"],
+  "section_de": "Frühstück",
+  "categories": ["schnell", "post-workout"],
   "total_minutes": 10,
   "prep_minutes": 10,
   "cook_minutes": 0,
@@ -120,12 +120,12 @@
     "batch_id": null,
     "created_on": "2026-10-11",
     "expert_reviewed": false,
-    "reviewed_by": null,
-    "reviewed_at": null,
+    "reviewed_by": "Karsten",
+    "reviewed_at": "2026-10-21",
     "review_note": null,
     "source_file": "alpha5-rezepte.json@1.0",
+    "import_hash": "f5858e7423a16cd11e4f80a54b5a2b0ddb7d4827bc38ebcb33232f3472c88d2c",
     "import_assumptions": [],
-    "import_assumptions_confirmed_by": null,
-    "import_hash": "f5858e7423a16cd11e4f80a54b5a2b0ddb7d4827bc38ebcb33232f3472c88d2c"
+    "import_assumptions_confirmed_by": null
   }
 }

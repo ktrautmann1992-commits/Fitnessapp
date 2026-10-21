@@ -1,11 +1,9 @@
 {
   "id": "kochschinken-huettenkaese-brote-mit-radieschen",
   "version": 1,
-  "status": "draft",
+  "status": "published",
   "title_de": "Kochschinken-Hüttenkäse-Brote mit Radieschen",
   "description_de": "Schnelles, kaltes Eiweißfrühstück mit körnigem Frischkäse, Kochschinken und knackigem Gemüse.",
-  "section_de": "Frühstück",
-  "categories": ["schnell"],
   "meal_types": ["breakfast"],
   "training_tags": [],
   "servings": 1,
@@ -83,6 +81,8 @@
   ],
   "tip_de": "Für unterwegs die Brote zusammenklappen und in Butterbrotpapier wickeln.",
   "tags_de": ["Unter 10 Minuten"],
+  "section_de": "Frühstück",
+  "categories": ["schnell"],
   "total_minutes": 5,
   "prep_minutes": 5,
   "cook_minutes": 0,
@@ -109,12 +109,12 @@
     "batch_id": null,
     "created_on": "2026-10-11",
     "expert_reviewed": false,
-    "reviewed_by": null,
-    "reviewed_at": null,
+    "reviewed_by": "Karsten",
+    "reviewed_at": "2026-10-21",
     "review_note": null,
     "source_file": "alpha5-rezepte.json@1.0",
+    "import_hash": "36455fc0b37c5ac6d156c27875e96aa2e98dbd3935e96a823c8f06b165764951",
     "import_assumptions": [],
-    "import_assumptions_confirmed_by": null,
-    "import_hash": "36455fc0b37c5ac6d156c27875e96aa2e98dbd3935e96a823c8f06b165764951"
+    "import_assumptions_confirmed_by": null
   }
 }

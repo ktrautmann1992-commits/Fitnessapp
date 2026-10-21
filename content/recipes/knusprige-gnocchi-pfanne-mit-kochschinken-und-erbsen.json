@@ -1,11 +1,9 @@
 {
   "id": "knusprige-gnocchi-pfanne-mit-kochschinken-und-erbsen",
   "version": 1,
-  "status": "draft",
+  "status": "published",
   "title_de": "Knusprige Gnocchi-Pfanne mit Kochschinken und Erbsen",
   "description_de": "Gnocchi aus dem Kühlregal direkt in der Pfanne goldbraun gebraten, mit Schinkenstreifen, Erbsen und Parmesan.",
-  "section_de": "Mittagessen",
-  "categories": ["schnell"],
   "meal_types": ["main"],
   "training_tags": [],
   "servings": 1,
@@ -74,6 +72,8 @@
   ],
   "tip_de": "Noch schneller geht es mit fertigen Kochschinken-Würfeln aus dem Kühlregal – dann entfällt das Schneiden komplett.",
   "tags_de": ["Unter 10 Minuten"],
+  "section_de": "Mittagessen",
+  "categories": ["schnell"],
   "total_minutes": 10,
   "prep_minutes": 3,
   "cook_minutes": 7,
@@ -100,12 +100,12 @@
     "batch_id": null,
     "created_on": "2026-10-11",
     "expert_reviewed": false,
-    "reviewed_by": null,
-    "reviewed_at": null,
+    "reviewed_by": "Karsten",
+    "reviewed_at": "2026-10-21",
     "review_note": null,
     "source_file": "alpha5-rezepte.json@1.0",
+    "import_hash": "8f9b1ae5dc06b085fba05ba573827051acbdd3b5d674e2f21e300d828753a8ca",
     "import_assumptions": [],
-    "import_assumptions_confirmed_by": null,
-    "import_hash": "8f9b1ae5dc06b085fba05ba573827051acbdd3b5d674e2f21e300d828753a8ca"
+    "import_assumptions_confirmed_by": null
   }
 }

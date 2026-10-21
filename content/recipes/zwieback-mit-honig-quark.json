@@ -1,11 +1,9 @@
 {
   "id": "zwieback-mit-honig-quark",
   "version": 1,
-  "status": "draft",
+  "status": "published",
   "title_de": "Zwieback mit Honig-Quark",
   "description_de": "Zwieback ist besonders magenschonend, mit Honig gibt es schnelle Energie und ein Klecks Magerquark bringt etwas Eiweiß ohne Fett.",
-  "section_de": "30 Min. vorher",
-  "categories": ["schnell", "pre-workout"],
   "meal_types": ["snack"],
   "training_tags": ["vor_training"],
   "servings": 1,
@@ -46,6 +44,8 @@
   ],
   "tip_de": "Bei nervösem Magen vor Wettkämpfen kannst du den Quark weglassen und den Zwieback nur mit Honig essen.",
   "tags_de": ["Unter 10 Minuten"],
+  "section_de": "30 Min. vorher",
+  "categories": ["schnell", "pre-workout"],
   "total_minutes": 3,
   "prep_minutes": 3,
   "cook_minutes": 0,
@@ -72,12 +72,12 @@
     "batch_id": null,
     "created_on": "2026-10-11",
     "expert_reviewed": false,
-    "reviewed_by": null,
-    "reviewed_at": null,
+    "reviewed_by": "Karsten",
+    "reviewed_at": "2026-10-21",
     "review_note": null,
     "source_file": "alpha5-rezepte.json@1.0",
+    "import_hash": "ff3bb3518dc67d0b68849a0b94bf49eaaac947170bd6326ad4bdde136b6d391f",
     "import_assumptions": [],
-    "import_assumptions_confirmed_by": null,
-    "import_hash": "ff3bb3518dc67d0b68849a0b94bf49eaaac947170bd6326ad4bdde136b6d391f"
+    "import_assumptions_confirmed_by": null
   }
 }

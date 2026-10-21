@@ -374,6 +374,12 @@ Werte in daily_metrics. Implementiere den Readiness-Score in packages/core mit T
 Setze docs/KONZEPT.md Abschnitt 8 um, opt-in, verschlüsselte Speicherung, eigene Einwilligung.
 Schnelle tägliche Erfassung. Adaptive Anpassung über Symptome/Energie, keine starren Phasenregeln.
 ```
+**Stand 19.10.2026:** Plan: `docs/PLAN-PHASE-9.md`, Entwurf zur Freigabe (Etappen ZY0–ZY6, Gründer-Fragen ZY-G1 bis
+ZY-G17; Wächter Runde 2 freigabefähig, N1–N3 eingearbeitet). Kernpunkte: eigene Einwilligung `cycle_data`, Verschlüsselung in
+der Datenbank (Schlüssel im Supabase Vault), „Heute leichter“ nach Tagesform plus Knopf für alle, Warnsignale mit
+Arzt-Hinweis (Flag `cycle_warnings`), keine Vorhersage und keine Verhütungsfunktion (kein Medizinprodukt). Testphase
+alles offen (`premium_open`), Zyklus-Modul im Supabase-Modus aber nur für per `beta-grant` freigeschaltete Konten
+(Flag `cycle_module`) bis zur Rechtsprüfung vor dem öffentlichen Livegang. Umsetzung erst nach Freigabe.
 
 ## Phase 9b – Studio und Mitgliedschaft
 ```
@@ -446,6 +452,17 @@ Logs/Analytics, Datenexport und Kontolöschung, Barrierefreiheit, Ladezeiten. Er
 Store-Texte, Datenschutz-Angaben für App Store/Play Store und eine Checkliste für die
 rechtliche Prüfung nach docs/KONZEPT.md Abschnitt 14.
 ```
+
+## Zusatz – Fit im Alter (Entwurf zur Entscheidung)
+```
+Setze docs/PLAN-FIT-IM-ALTER.md um, Etappe für Etappe (FA0–FA6): Ziel active_aging mit eigenen
+Vorlagen (Gleichgewicht, Kraft, Beweglichkeit, Gehen), Sicherheitsprofil (RPE ≤ 6, immer mit Halt,
+keine Sprünge/Bodenübungen), Zusatzfragen im Gesundheits-Check, Selbsttests ohne Normwerte,
+Barrierefreiheit (Große Ansicht, Vorlesen). Erst nach Freigabe der Gründer-Fragen FA-G1 bis FA-G16.
+```
+**Stand 19.10.2026:** Plan `docs/PLAN-FIT-IM-ALTER.md`, Entwurf zur Entscheidung (Gründer-Fragen FA-G1 bis FA-G16;
+Wächter Runde 1 „mit Auflagen“ eingearbeitet, Runde 2 freigabefähig, N1–N5 eingearbeitet). Empfehlung: FA-G1/FA-G10 vor Phase 6 SU3 entscheiden, FA5 jederzeit
+(vor FA4), FA1–FA4 nach Phase 6 SU3/SU4 und vor Phase 8.
 
 ## Später – Fitnessstudios (B2B)
 ```
