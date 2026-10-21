@@ -1,11 +1,9 @@
 {
   "id": "eiermuffins-mit-paprika-und-gouda",
   "version": 1,
-  "status": "draft",
+  "status": "published",
   "title_de": "Eiermuffins mit Paprika & Gouda",
   "description_de": "Herzhafte Ofen-Muffins aus Ei, Hüttenkäse und Gemüse – perfekt zum Vorbereiten, dazu eine Scheibe Vollkornbrot.",
-  "section_de": "Frühstück",
-  "categories": ["meal-prep"],
   "meal_types": ["breakfast"],
   "training_tags": [],
   "servings": 1,
@@ -92,6 +90,8 @@
     "Lass sie 2 Minuten abkühlen, löse sie aus der Form und iss sie mit dem Vollkornbrot."
   ],
   "tip_de": "Im Kühlschrank halten die Muffins 3 Tage – gleich die doppelte oder dreifache Menge backen.",
+  "section_de": "Frühstück",
+  "categories": ["meal-prep"],
   "total_minutes": 30,
   "prep_minutes": 10,
   "cook_minutes": 20,
@@ -118,12 +118,12 @@
     "batch_id": null,
     "created_on": "2026-10-11",
     "expert_reviewed": false,
-    "reviewed_by": null,
-    "reviewed_at": null,
+    "reviewed_by": "Karsten (Auftrag an Claude)",
+    "reviewed_at": "2026-10-21",
     "review_note": null,
     "source_file": "alpha5-rezepte.json@1.0",
+    "import_hash": "58844bf8c25bd97ea755438320acc4ec44106b86a88cf542296bbfc4c3e25623",
     "import_assumptions": [],
-    "import_assumptions_confirmed_by": null,
-    "import_hash": "58844bf8c25bd97ea755438320acc4ec44106b86a88cf542296bbfc4c3e25623"
+    "import_assumptions_confirmed_by": null
   }
 }

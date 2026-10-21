@@ -1,11 +1,9 @@
 {
   "id": "raeuchertofu-reispfanne-mit-edamame-und-paprika",
   "version": 1,
-  "status": "draft",
+  "status": "published",
   "title_de": "Räuchertofu-Reispfanne mit Edamame und Paprika",
   "description_de": "Schnelle Pfanne mit Express-Reis, Räuchertofu und Edamame – pflanzliches Eiweiß aus zwei Quellen plus Reis-Kohlenhydrate, warm und trotzdem nicht zu schwer.",
-  "section_de": "Bis 2 Stunden danach",
-  "categories": ["post-workout", "meal-prep"],
   "meal_types": ["snack"],
   "training_tags": ["nach_training"],
   "servings": 1,
@@ -82,6 +80,8 @@
     "Lösche mit Sojasauce ab und bestreue alles mit Frühlingszwiebeln."
   ],
   "tip_de": "Gelingt auch in doppelter Menge: Eine Portion kalt in der Box mitnehmen und nach dem Training kurz in der Mikrowelle erwärmen – hält gekühlt 2–3 Tage.",
+  "section_de": "Bis 2 Stunden danach",
+  "categories": ["post-workout", "meal-prep"],
   "total_minutes": 12,
   "prep_minutes": 2,
   "cook_minutes": 10,
@@ -108,12 +108,12 @@
     "batch_id": null,
     "created_on": "2026-10-11",
     "expert_reviewed": false,
-    "reviewed_by": null,
-    "reviewed_at": null,
+    "reviewed_by": "Karsten (Auftrag an Claude)",
+    "reviewed_at": "2026-10-21",
     "review_note": null,
     "source_file": "alpha5-rezepte.json@1.0",
+    "import_hash": "641bdd2d74d74bda910843f99047802ea800db64a1ef9f1ed47ed75924275b29",
     "import_assumptions": [],
-    "import_assumptions_confirmed_by": null,
-    "import_hash": "641bdd2d74d74bda910843f99047802ea800db64a1ef9f1ed47ed75924275b29"
+    "import_assumptions_confirmed_by": null
   }
 }
