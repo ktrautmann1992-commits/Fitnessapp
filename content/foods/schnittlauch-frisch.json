@@ -1,7 +1,7 @@
 {
   "id": "schnittlauch-frisch",
   "version": 1,
-  "status": "draft",
+  "status": "published",
   "name_de": "Schnittlauch (frisch)",
   "aliases_de": [],
   "shopping_category": "fruit_vegetables",
@@ -43,10 +43,10 @@
     "batch_id": null,
     "created_on": "2026-10-19",
     "expert_reviewed": false,
-    "reviewed_by": null,
-    "reviewed_at": null,
+    "reviewed_by": "Karsten",
+    "reviewed_at": "2026-10-21",
     "review_note": null,
-    "catalog_reviewed_by": null,
-    "catalog_reviewed_at": null
+    "catalog_reviewed_by": "Karsten",
+    "catalog_reviewed_at": "2026-10-21"
   }
 }
