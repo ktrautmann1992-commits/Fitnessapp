@@ -1191,10 +1191,10 @@ werden keine fremden Bilder genutzt.
   Herkunft, **Lizenz und Quelle Pflicht**, bei KI-Bildern `reviewed_by` Pflicht). `content:validate` prüft die Dateien;
   jedes Problem – vor allem **Bild ohne Lizenzangabe** – ist ein blockierender Fehler. Die App zeigt den Bereich nur,
   wenn es ein Bild gibt (Registry `apps/mobile/src/data/exercise-media.ts`, ein Test hält sie deckungsgleich mit
-  `content/exercise-media`). Es sind **keine** Bilder enthalten.
+  `content/exercise-media`). Seit 21.10.2026 hat jede Übung eine eigene Illustration (Entscheidung B, unten).
 - Tests: core (Vitest), App (Vitest), E2E `apps/mobile/e2e/muscle-map.spec.ts`.
 
-### Offene Gründer-Entscheidung: Übungsbilder „Ausgangsposition“ – Quelle und Lizenz
+### Gründer-Entscheidung: Übungsbilder „Ausgangsposition“ – Quelle und Lizenz (entschieden 21.10.2026: B)
 
 | Option                                              | Vorteile                                                                                          | Nachteile                                                                                                                                                                     |
 | --------------------------------------------------- | ------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
@@ -1206,3 +1206,13 @@ werden keine fremden Bilder genutzt.
 gestartet mit den ~20 Grundübungen der Pläne; für den Übergang **A nur**, wenn eine Bibliothek mit klarer App-Lizenz
 die Grundübungen abdeckt. **C** nur als Skizzen-Vorlage für B, nicht direkt in der App. Ohne Antwort gilt: keine Bilder,
 der Bereich bleibt ausgeblendet.
+
+**Entscheidung 21.10.2026: B – eigene Illustrationen (umgesetzt).** Statt Einzelaufträgen erzeugt ein Generator
+(`packages/content/src/illustrations`, Figuren-Rig + Gelenkwinkel je Übung in `poses.ts`) für **alle 80 Übungen**
+eine einheitliche Strich-Illustration der Ausgangsposition als SVG – Stil, Farben und Ablauf in docs/DESIGN.md
+„Übungs-Illustrationen“. Zuordnungen `content/exercise-media/<id>.json` mit Herkunft `own_work` und Lizenz
+„eigene Illustration Alpha5“; das Schema erlaubt dafür `.svg`. Die App zeigt die Karte „Ausgangsposition“ im
+Übungsdetail über der Muskelkarte (hell/dunkel in Theme-Farben, Alt-Text „Ausgangsposition: …“). Bei Halteübungen
+(Unterarmstütz, Seitstütz) zeigt das Bild die gehaltene Position. Eine fachliche Sichtprüfung der Haltungen durch die
+Gründer steht noch aus (`reviewed_by` ist `null`); ein zweites Bild „Endposition“ ist mit demselben Generator möglich,
+aber noch nicht umgesetzt.

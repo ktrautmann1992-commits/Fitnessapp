@@ -1342,8 +1342,10 @@ Die Warnung stoppt nichts von selbst – abschalten geht sofort per beta-grant (
 4. Mit Bildschirmleser (VoiceOver/TalkBack): Die Karte wird vorgelesen als „Trainiert vor allem: Brust. Mitbeteiligt:
    Trizeps, vordere Schulter.“
 5. Alles einmal hell und einmal dunkel ansehen.
-- Ein Bereich **„Ausgangsposition“** (Foto/Illustration der Übung) erscheint erst, wenn es Bilder mit geklärter Lizenz
-  gibt – offene Entscheidung, siehe `docs/PLAN-UEBUNGEN-GLOSSAR-TAUSCH.md`, Nachtrag „Muskelkarte“.
+6. **Ausgangsposition** (seit 21.10.2026): Im Übungsdetail steht über der Muskelkarte die Karte **„Ausgangsposition“**
+   mit einer eigenen Strich-Illustration der Übung. Prüfen: Passt die Haltung zur Übung? Hell und dunkel gut
+   erkennbar? Fehler bitte mit Übungsname an Claude („Übungsbild Kreuzheben: Knie zu stark gebeugt“) – die Bilder
+   werden aus Gelenkwinkeln erzeugt und lassen sich schnell korrigieren.
 
 ## Teil 8 – Live-Test mit Supabase (Pflicht vor „MVP fertig“, W13) – **offen, braucht euch**
 Diesen Test kann Claude in der Cloud-Sitzung nicht machen (kein echtes Konto, keine zwei Handys). Bitte einmal
