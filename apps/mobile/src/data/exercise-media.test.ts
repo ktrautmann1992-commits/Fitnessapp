@@ -4,7 +4,12 @@ import { fileURLToPath } from 'node:url';
 import { exerciseMediaSchema } from '@fitnessapp/core';
 import { describe, expect, it } from 'vitest';
 
-import { EXERCISE_MEDIA, type ExerciseMediaEntry, exerciseMediaFor } from './exercise-media';
+import {
+  EXERCISE_MEDIA,
+  type ExerciseMediaEntry,
+  exerciseMediaFor,
+  illustrationXml,
+} from './exercise-media';
 
 /** Übungsbilder: Registry der App passt zu content/exercise-media; Anzeige nur, wenn ein Bild da ist. */
 
@@ -29,6 +34,41 @@ describe('EXERCISE_MEDIA', () => {
   });
 });
 
+const exercisesDir = fileURLToPath(new URL('../../../../content/exercises/', import.meta.url));
+
+describe('eigene Illustrationen (Entscheidung B)', () => {
+  const exerciseIds = readdirSync(exercisesDir)
+    .filter((name) => name.endsWith('.json'))
+    .map((name) => name.replace(/\.json$/, ''));
+
+  it('jede Übung hat eine Ausgangsposition mit deutschem Alt-Text und Lizenz', () => {
+    expect(exerciseIds.length).toBeGreaterThanOrEqual(80);
+    for (const id of exerciseIds) {
+      const found = exerciseMediaFor(id, 'start_position');
+      expect(found, id).not.toBeNull();
+      expect(found!.image.alt_de).toMatch(/^Ausgangsposition: /);
+      expect(found!.image.origin).toBe('own_work');
+      expect(found!.image.license.name).toBe('eigene Illustration Alpha5');
+      expect(found!.source.kind).toBe('svg');
+    }
+  });
+
+  it('illustrationXml setzt hell und dunkel alle Farbmarken ein, ohne externe Verweise', () => {
+    const source = exerciseMediaFor('liegestuetz', 'start_position')!.source;
+    if (source.kind !== 'svg') throw new Error('SVG erwartet');
+    const light = illustrationXml(source.template, 'light');
+    const dark = illustrationXml(source.template, 'dark');
+    for (const xml of [light, dark]) {
+      expect(xml).toMatch(/^<svg xmlns="http:\/\/www\.w3\.org\/2000\/svg" viewBox="0 0 240 180"/);
+      expect(xml).not.toMatch(/\{\w+\}/);
+      expect(xml).not.toMatch(/href|https?:\/\/(?!www\.w3\.org\/2000\/svg)/);
+    }
+    expect(light).toContain('#262c3a');
+    expect(dark).toContain('#e3ebff');
+    expect(dark).not.toBe(light);
+  });
+});
+
 describe('exerciseMediaFor', () => {
   const registry: Record<string, ExerciseMediaEntry> = {
     'kniebeuge-langhantel': {
@@ -46,7 +86,7 @@ describe('exerciseMediaFor', () => {
           },
         ],
       }),
-      sources: { start_position: 1 },
+      sources: { start_position: { kind: 'raster', source: 1 } },
     },
   };
 
@@ -56,7 +96,8 @@ describe('exerciseMediaFor', () => {
     );
     expect(exerciseMediaFor('liegestuetz', 'start_position', registry)).toBeNull();
     expect(exerciseMediaFor('toString', 'start_position', registry)).toBeNull();
-    expect(exerciseMediaFor('kniebeuge-langhantel', 'start_position')).toBeNull();
+    // Standard-Registry: eigene Illustration als SVG-Vorlage.
+    expect(exerciseMediaFor('kniebeuge-langhantel', 'start_position')?.source.kind).toBe('svg');
   });
 
   it('Zuordnung ohne geladene Bildquelle → null', () => {

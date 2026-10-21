@@ -157,6 +157,9 @@ export default function GlossaryDetailScreen() {
         </Notice>
       ) : null}
 
+      {/* Ausgangsposition: eigene Illustration (Gründer-Entscheidung B), über der Muskelkarte. */}
+      <StartPositionImage exerciseId={entry.id} />
+
       {/* Muskelkarte (Nachtrag „Muskelkarte“): Hauptmuskeln und mitbeteiligte in Farbe UND Worten. */}
       <Card>
         <Heading level={2}>{t.muscleMap.title}</Heading>
@@ -167,9 +170,6 @@ export default function GlossaryDetailScreen() {
         <Heading level={2}>{t.glossary.descriptionTitle}</Heading>
         <Body testID="glossary-description">{entry.description}</Body>
       </Card>
-
-      {/* Ausgangsposition: nur, wenn es ein Bild mit geklärter Lizenz gibt. */}
-      <StartPositionImage exerciseId={entry.id} />
 
       <Card>
         <Heading level={2}>{t.glossary.stepsTitle}</Heading>

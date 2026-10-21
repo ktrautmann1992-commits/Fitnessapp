@@ -1,0 +1,20 @@
+{
+  "exercise_id": "rudern-band",
+  "images": [
+    {
+      "kind": "start_position",
+      "file": "rudern-band-start.svg",
+      "alt_de": "Ausgangsposition: aufrecht stehen, Arme auf Brusthöhe nach vorn gestreckt, Widerstandsband an einem Türanker vor dir befestigt.",
+      "origin": "own_work",
+      "license": {
+        "name": "eigene Illustration Alpha5",
+        "attribution_de": null
+      },
+      "source": {
+        "creator": "Alpha5",
+        "obtained_on": "2026-10-21"
+      },
+      "reviewed_by": null
+    }
+  ]
+}

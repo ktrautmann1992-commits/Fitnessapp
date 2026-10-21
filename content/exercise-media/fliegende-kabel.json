@@ -1,0 +1,20 @@
+{
+  "exercise_id": "fliegende-kabel",
+  "images": [
+    {
+      "kind": "start_position",
+      "file": "fliegende-kabel-start.svg",
+      "alt_de": "Ausgangsposition: von vorn – zwischen zwei Kabelzügen stehen, Rollen auf Schulterhöhe, Arme leicht gebeugt seitlich geöffnet, Griffe in den Händen.",
+      "origin": "own_work",
+      "license": {
+        "name": "eigene Illustration Alpha5",
+        "attribution_de": null
+      },
+      "source": {
+        "creator": "Alpha5",
+        "obtained_on": "2026-10-21"
+      },
+      "reviewed_by": null
+    }
+  ]
+}

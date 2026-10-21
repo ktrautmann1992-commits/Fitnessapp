@@ -1,5 +1,5 @@
 /**
- * Texte der Muskelkarte und des Platzhalters „Ausgangsposition“ (Nachtrag „Muskelkarte“ in
+ * Texte der Muskelkarte und des Bildes „Ausgangsposition“ (Nachtrag „Muskelkarte“ in
  * docs/PLAN-UEBUNGEN-GLOSSAR-TAUSCH.md). Farbe nie allein: Legende und Screenreader-Text nennen die Muskeln in Worten.
  */
 export const deMuscleMap = {
@@ -18,4 +18,5 @@ export const deMuscleMap = {
   note: 'Vereinfachte Darstellung der Muskelgruppen.',
   startPositionTitle: 'Ausgangsposition',
   imageCredit: (creator: string, license: string) => `Bild: ${creator} · ${license}`,
+  ownIllustration: 'Eigene Illustration von Alpha5, vereinfachte Darstellung.',
 };

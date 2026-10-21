@@ -1,0 +1,20 @@
+{
+  "exercise_id": "kurzhantelrudern-einarmig",
+  "images": [
+    {
+      "kind": "start_position",
+      "file": "kurzhantelrudern-einarmig-start.svg",
+      "alt_de": "Ausgangsposition: eine Hand und ein Knie auf der Flachbank, der andere Fuß am Boden, Rücken gerade, Kurzhantel hängt am gestreckten Arm unter der Schulter.",
+      "origin": "own_work",
+      "license": {
+        "name": "eigene Illustration Alpha5",
+        "attribution_de": null
+      },
+      "source": {
+        "creator": "Alpha5",
+        "obtained_on": "2026-10-21"
+      },
+      "reviewed_by": null
+    }
+  ]
+}

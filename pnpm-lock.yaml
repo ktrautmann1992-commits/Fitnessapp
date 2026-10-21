@@ -220,6 +220,9 @@ importers:
       '@fitnessapp/core':
         specifier: workspace:*
         version: link:../core
+      '@fitnessapp/ui':
+        specifier: workspace:*
+        version: link:../ui
       '@google/genai':
         specifier: 2.27.0
         version: 2.27.0

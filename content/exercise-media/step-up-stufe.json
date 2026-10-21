@@ -1,0 +1,20 @@
+{
+  "exercise_id": "step-up-stufe",
+  "images": [
+    {
+      "kind": "start_position",
+      "file": "step-up-stufe-start.svg",
+      "alt_de": "Ausgangsposition: vor der untersten Treppenstufe stehen, ein Fuß komplett auf der Stufe, eine Hand am Geländer.",
+      "origin": "own_work",
+      "license": {
+        "name": "eigene Illustration Alpha5",
+        "attribution_de": null
+      },
+      "source": {
+        "creator": "Alpha5",
+        "obtained_on": "2026-10-21"
+      },
+      "reviewed_by": null
+    }
+  ]
+}

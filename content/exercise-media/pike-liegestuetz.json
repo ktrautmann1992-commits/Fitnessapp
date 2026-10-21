@@ -1,0 +1,20 @@
+{
+  "exercise_id": "pike-liegestuetz",
+  "images": [
+    {
+      "kind": "start_position",
+      "file": "pike-liegestuetz-start.svg",
+      "alt_de": "Ausgangsposition: umgedrehtes V – Hände schulterbreit am Boden, Arme gestreckt, Hüfte hoch, Beine gestreckt, Kopf zwischen den Armen.",
+      "origin": "own_work",
+      "license": {
+        "name": "eigene Illustration Alpha5",
+        "attribution_de": null
+      },
+      "source": {
+        "creator": "Alpha5",
+        "obtained_on": "2026-10-21"
+      },
+      "reviewed_by": null
+    }
+  ]
+}

@@ -1,0 +1,20 @@
+{
+  "exercise_id": "good-morning-band",
+  "images": [
+    {
+      "kind": "start_position",
+      "file": "good-morning-band-start.svg",
+      "alt_de": "Ausgangsposition: hüftbreit auf dem Widerstandsband stehen, Schlaufe hinter dem Nacken auf den Schultern, Hände halten das Band vor der Brust, Knie leicht gebeugt.",
+      "origin": "own_work",
+      "license": {
+        "name": "eigene Illustration Alpha5",
+        "attribution_de": null
+      },
+      "source": {
+        "creator": "Alpha5",
+        "obtained_on": "2026-10-21"
+      },
+      "reviewed_by": null
+    }
+  ]
+}

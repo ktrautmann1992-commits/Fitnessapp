@@ -1,0 +1,20 @@
+{
+  "exercise_id": "wadenheben-einbeinig",
+  "images": [
+    {
+      "kind": "start_position",
+      "file": "wadenheben-einbeinig-start.svg",
+      "alt_de": "Ausgangsposition: auf einem Bein mit dem Fußballen auf einer Stufe stehen, das andere Bein angewinkelt, eine Hand an der Wand.",
+      "origin": "own_work",
+      "license": {
+        "name": "eigene Illustration Alpha5",
+        "attribution_de": null
+      },
+      "source": {
+        "creator": "Alpha5",
+        "obtained_on": "2026-10-21"
+      },
+      "reviewed_by": null
+    }
+  ]
+}

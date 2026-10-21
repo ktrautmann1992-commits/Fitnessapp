@@ -1,0 +1,20 @@
+{
+  "exercise_id": "schraegbankdruecken-kurzhantel",
+  "images": [
+    {
+      "kind": "start_position",
+      "file": "schraegbankdruecken-kurzhantel-start.svg",
+      "alt_de": "Ausgangsposition: auf der Schrägbank (etwa 30 Grad) liegen, Füße am Boden, je eine Kurzhantel seitlich der oberen Brust.",
+      "origin": "own_work",
+      "license": {
+        "name": "eigene Illustration Alpha5",
+        "attribution_de": null
+      },
+      "source": {
+        "creator": "Alpha5",
+        "obtained_on": "2026-10-21"
+      },
+      "reviewed_by": null
+    }
+  ]
+}

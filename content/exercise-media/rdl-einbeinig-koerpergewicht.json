@@ -1,0 +1,20 @@
+{
+  "exercise_id": "rdl-einbeinig-koerpergewicht",
+  "images": [
+    {
+      "kind": "start_position",
+      "file": "rdl-einbeinig-koerpergewicht-start.svg",
+      "alt_de": "Ausgangsposition: auf einem Bein stehen, Knie leicht gebeugt, das freie Bein knapp über dem Boden, eine Hand an der Wand neben dir.",
+      "origin": "own_work",
+      "license": {
+        "name": "eigene Illustration Alpha5",
+        "attribution_de": null
+      },
+      "source": {
+        "creator": "Alpha5",
+        "obtained_on": "2026-10-21"
+      },
+      "reviewed_by": null
+    }
+  ]
+}

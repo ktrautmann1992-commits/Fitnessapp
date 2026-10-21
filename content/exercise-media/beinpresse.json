@@ -1,0 +1,20 @@
+{
+  "exercise_id": "beinpresse",
+  "images": [
+    {
+      "kind": "start_position",
+      "file": "beinpresse-start.svg",
+      "alt_de": "Ausgangsposition: in der Beinpresse liegen, Rücken und Gesäß am Polster, Füße hüftbreit auf der Plattform, Beine fast gestreckt.",
+      "origin": "own_work",
+      "license": {
+        "name": "eigene Illustration Alpha5",
+        "attribution_de": null
+      },
+      "source": {
+        "creator": "Alpha5",
+        "obtained_on": "2026-10-21"
+      },
+      "reviewed_by": null
+    }
+  ]
+}

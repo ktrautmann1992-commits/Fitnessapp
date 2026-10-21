@@ -92,6 +92,40 @@ symmetrisch), Baustein: `apps/mobile/src/components/muscle-map.tsx`, Zuordnung M
 - **Groß** im Übungsdetail (zwei Ansichten, je 260 px hoch), **klein** im Trainingsmodus rechts neben dem Namen
   (64 px, Tippfläche ≥ 48 px) – antippen öffnet einen Dialog mit der großen Karte.
 
+### Übungs-Illustrationen „Ausgangsposition“ (21.10.2026, Gründer-Entscheidung B)
+
+Eigene, einheitliche Strich-Illustrationen für **alle Übungen** – keine fremden Bilder, keine KI-Bilder. Sie werden nicht
+von Hand gezeichnet, sondern von einem **Generator** aus Gelenkwinkeln erzeugt; dadurch sehen alle Bilder gleich aus und
+lassen sich jederzeit ändern.
+
+- **Figur:** stilisiert und geschlechtsneutral (Kopf als Kreis, Rumpf als Fläche, Glieder als runde Striche), immer
+  gleiche Proportionen und Strichstärken (`packages/content/src/illustrations/rig.ts`). Dem Betrachter zugewandte Arme
+  und Beine in voller Figurfarbe mit schmalem Rand in Kartenfarbe, abgewandte heller. Seitenansicht als Standard,
+  Vorderansicht wo die Bewegung seitlich läuft (Hampelmann, Step-Jacks, Seitheben, Fliegende, Pallof Press, Seitstütz).
+- **Ansichtsbox** 240 × 180, Bodenlinie bei y = 170, Inhalt waagerecht mittig. Geräte angedeutet: Hanteln, Bänder,
+  Kabel in Markenblau, Möbel/Maschinen in Grau.
+- **Daten:** Gelenkwinkel, Geräte und deutscher Alt-Text je Übung in `packages/content/src/illustrations/poses.ts`
+  (Winkel absolut, 0° = nach vorn, 90° = nach oben; für Hände/Füße auf Griff, Bank oder Boden gibt es Zielpunkte).
+- **Neu erzeugen:** `pnpm illustrations` (in der Claude-Code-Sitzung: „Erzeuge die Übungsbilder neu.“). Ausgabe:
+  `apps/mobile/assets/exercise-media/<id>-start.svg` (helle Farben, zum Ansehen), `content/exercise-media/<id>.json`
+  (Alt-Text, Herkunft `own_work`, Lizenz „eigene Illustration Alpha5“) und
+  `apps/mobile/src/data/exercise-illustrations.generated.ts` (Vorlagen mit Farbmarken für die App). Ein Test schlägt
+  fehl, wenn die eingecheckten Dateien nicht zum Generator passen, eine Übung kein Bild hat oder ein Bild über den Rand
+  ragt.
+- **In der App:** Übungsdetail, Karte „Ausgangsposition“ über der Muskelkarte, Screenreader liest den Alt-Text
+  („Ausgangsposition: …“). Bilder sind im Bundle, kein Netzaufruf.
+
+| Rolle                        | Hell                   | Dunkel            |
+| ---------------------------- | ---------------------- | ----------------- |
+| Figur (vorn)                 | graphit-hell `#262c3a` | eisblau `#e3ebff` |
+| Figur (abgewandte Seite)     | `#8a93a6`              | `#7d869a`         |
+| Geräte (Hantel, Band, Kabel) | blau `#1f5bff`         | `#4d7dff`         |
+| Gerät hell (Handtuch, Matte) | himmel `#8db0ff`       | `#3b5bab`         |
+| Möbel-Fläche                 | `#d5dbe5`              | `#2c3342`         |
+| Möbel-Linie, Bank, Maschine  | `#9aa4b8`              | `#4f5a70`         |
+| Bodenlinie                   | grau-dunkel `#b4bdd0`  | `#3a4254`         |
+| Rand um vordere Glieder      | weiß `#ffffff` (Karte) | graphit `#151922` |
+
 ### Icons und Favicons
 
 Alle Icons werden aus dem Logo erzeugt – nie von Hand zeichnen:
