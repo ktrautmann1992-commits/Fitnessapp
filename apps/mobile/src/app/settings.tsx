@@ -11,6 +11,7 @@ import { NotificationSettings } from '@/components/notifications';
 import { LiveAdjustSettings } from '@/components/live-adjust';
 import { EatingHelpNotice } from '@/components/nutrition';
 import { ConfirmDialog, Screen } from '@/components/screen';
+import { CycleSettingsSection } from '@/components/cycle-entry';
 import { ListGroup, ListRow, SectionLabel } from '@/components/design';
 import { Body, Button, Card, Checkbox, LoadingState, Notice, TextField } from '@/components/ui';
 import { activePlan } from '@/data/training-plan';
@@ -326,6 +327,9 @@ export default function SettingsScreen() {
           last
         />
       </ListGroup>
+
+      {/* Phase 9: Zyklus-Modul (sichtbar, wenn angeboten oder schon eingeschaltet – auch nach Wechsel auf „männlich“). */}
+      <CycleSettingsSection onPress={() => router.push('/zyklus/einstellungen' as Href)} />
 
       {/* Mein Konto (docs/PLAN-DASHBOARD.md 2.3): Abmelden, Datenexport, Konto löschen. */}
       <SectionLabel>{t.settings.account}</SectionLabel>

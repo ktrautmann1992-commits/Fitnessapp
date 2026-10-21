@@ -85,7 +85,7 @@ export function applyStepToAnswers(answers: OnboardingAnswers, save: StepSave): 
       return {
         ...answers,
         sex: save.sex,
-        cycleModuleInterest: save.sex === 'female' ? save.cycleModuleInterest : null,
+        cycleModuleInterest: save.sex !== 'male' ? save.cycleModuleInterest : null,
       };
     case 'health_consent':
       return answers;
@@ -293,7 +293,7 @@ export function planStepWrites(save: StepSave, ctx: PlanContext): WriteOp[] {
           kind: 'update_profile',
           patch: {
             sex: save.sex,
-            cycle_module_interest: save.sex === 'female' ? save.cycleModuleInterest : null,
+            cycle_module_interest: save.sex !== 'male' ? save.cycleModuleInterest : null,
             ...progressPatch(save.step, ctx.nextStep, ctx.now),
           },
         },

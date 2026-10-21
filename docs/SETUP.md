@@ -1002,6 +1002,44 @@ App-Store-Datenschutzangaben und Play-Store-„Datensicherheit“ an (docs/PLAN-
 
 ---
 
+## Teil Z – Zyklus-Modul (Phase 9): Vault, Freischaltung, Log-Prüfliste
+
+**1. Vault und pgcrypto prüfen** (vor dem Einspielen der Migration, sonst bricht sie mit klarer Meldung ab):
+
+1. Im Handy-Browser **supabase.com** öffnen → Projekt → Menü (☰) → **Database** → **Extensions**.
+2. Suche **vault** → „supabase_vault“ muss **an** sein. Suche **pgcrypto** → muss **an** sein (sonst Schalter → **Enable**).
+3. Es gibt **keinen Schlüssel zum Eintragen** – er entsteht in der Datenbank (`cycle_data_key_v1`). Bitte nie Auszüge
+   aus dem Vault in den Chat kopieren.
+
+**2. Testkonten freischalten** (bis zur Rechtsprüfung ist das Modul im Supabase-Modus nur für freigeschaltete Konten offen):
+
+1. GitHub-App → **Actions** → **beta-grant** → **Run workflow**.
+2. Aktion **flag_an**, Funktion **cycle_module** → **Run workflow** (einmalig).
+3. Je Testkonto: Aktion **freischalten**, Funktion **cycle_module**, E-Mail, Tage (1–180) → **Run workflow**.
+4. Persönliche Warnsignale ausschalten (nur falls die Rechtsprüfung das verlangt): Aktion **flag_aus**, Funktion
+   **cycle_warnings** → die App zeigt dann den allgemeinen Ratgeber.
+
+**3. Log-Prüfliste (B3) – Ergebnis hier eintragen:**
+
+| Punkt                                                                                  | Stand                                                         |
+| -------------------------------------------------------------------------------------- | ------------------------------------------------------------- |
+| `log_parameter_max_length` / `…_on_error` = 0 oder keine Statement-Logs mit Parametern | offen – im Supabase-Dashboard (Database → Settings) prüfen    |
+| `log_min_duration_statement`, `log_statement` ohne Parameter-Logs                      | offen – wie oben                                              |
+| `pgaudit`/`auto_explain` aus oder `authenticated` ausgenommen                          | offen – Database → Extensions                                 |
+| RPC nur per POST                                                                       | erledigt (supabase-js `rpc` ohne `get`, Test `cycle.test.ts`) |
+| Fehlertexte ohne Eingabewert                                                           | erledigt (feste Codes, pgTAP 74)                              |
+| kein `console.*` mit Zyklusdaten                                                       | erledigt (Strukturtest `cycle/structure.test.ts`)             |
+| Supabase-API-Logs: nur Pfad/Status                                                     | vor dem öffentlichen Livegang bestätigen                      |
+
+**4. Sicherungsfrist:** Der Einwilligungstext nennt 7 Tage für Sicherungskopien – mit dem gebuchten Supabase-Tarif
+abgleichen (Settings → Database → Backups) und bei Abweichung Text v2 per Migration.
+
+**5. Aufbewahrung:** Einträge älter als 24 Monate löscht ein täglicher `pg_cron`-Lauf (`cycle-retention`, 03:17 Uhr).
+
+**6. Live-Test (ZY4, zwei Konten):** Konto A trägt ein → Konto B sieht nichts. Konto A → Mein Konto → „Meine Daten
+exportieren“ → Datei enthält `cycle_settings`/`cycle_entries`. Konto A beendet das Modul am Handy → im Browser beim
+nächsten Öffnen keine Zyklusdaten mehr.
+
 ## Inhalte erzeugen und freigeben am Handy
 
 Alle Inhalte (Übungen, Plan-Vorlagen) liegen als Dateien im Repository. Der Weg ist immer:

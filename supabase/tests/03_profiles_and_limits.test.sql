@@ -54,7 +54,7 @@ select is((select locale::text from public.profiles), 'de-DE', 'Sprache standard
 -- Profil-Felder
 select throws_ok(
   $$ update public.profiles set sex = 'male', cycle_module_interest = true $$,
-  '23514', null, 'Zyklus-Interesse nur bei „weiblich“'
+  '23514', null, 'Zyklus-Interesse nicht bei „männlich“ (Phase 9: auch divers/keine Angabe erlaubt)'
 );
 select throws_ok(
   $$ update public.profiles set sex = null, cycle_module_interest = true $$,
