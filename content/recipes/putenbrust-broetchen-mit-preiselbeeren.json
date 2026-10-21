@@ -1,11 +1,9 @@
 {
   "id": "putenbrust-broetchen-mit-preiselbeeren",
   "version": 1,
-  "status": "draft",
+  "status": "published",
   "title_de": "Putenbrust-Brötchen mit Preiselbeeren",
   "description_de": "Helles Brötchen mit magerer Putenbrust und fruchtigen Preiselbeeren – schnelle Kohlenhydrate plus Eiweiß, praktisch fürs Gym-Bag.",
-  "section_de": "60–90 Min. vorher",
-  "categories": ["schnell", "pre-workout"],
   "meal_types": ["snack"],
   "training_tags": ["vor_training"],
   "servings": 1,
@@ -55,6 +53,8 @@
   ],
   "tip_de": "Butter oder Frischkäse brauchst du dafür nicht. In Butterbrotpapier gewickelt hält es sich ein paar Stunden in der Sporttasche.",
   "tags_de": ["Unter 10 Minuten", "zum Mitnehmen"],
+  "section_de": "60–90 Min. vorher",
+  "categories": ["schnell", "pre-workout"],
   "total_minutes": 4,
   "prep_minutes": 4,
   "cook_minutes": 0,
@@ -81,12 +81,12 @@
     "batch_id": null,
     "created_on": "2026-10-11",
     "expert_reviewed": false,
-    "reviewed_by": null,
-    "reviewed_at": null,
+    "reviewed_by": "Karsten",
+    "reviewed_at": "2026-10-21",
     "review_note": null,
     "source_file": "alpha5-rezepte.json@1.0",
+    "import_hash": "f347f790740e6de8783d5f9168abbe4f61ab7c0983f82dd7413f4ce5196e88f8",
     "import_assumptions": [],
-    "import_assumptions_confirmed_by": null,
-    "import_hash": "f347f790740e6de8783d5f9168abbe4f61ab7c0983f82dd7413f4ce5196e88f8"
+    "import_assumptions_confirmed_by": null
   }
 }

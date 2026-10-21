@@ -1,11 +1,9 @@
 {
   "id": "italienischer-thunfisch-bohnen-salat",
   "version": 1,
-  "status": "draft",
+  "status": "published",
   "title_de": "Italienischer Thunfisch-Bohnen-Salat",
   "description_de": "Klassischer „Tonno e fagioli“ mit weißen Bohnen, Rucola, Tomaten und Zitronen-Olivenöl, dazu eine Scheibe Vollkornbrot.",
-  "section_de": "Abendessen",
-  "categories": ["schnell"],
   "meal_types": ["main"],
   "training_tags": [],
   "servings": 1,
@@ -110,6 +108,8 @@
   ],
   "tip_de": "Die andere Bohnenhälfte hält sich abgedeckt 2 Tage im Kühlschrank – perfekt für den nächsten Salat oder eine Suppe.",
   "tags_de": ["Unter 10 Minuten"],
+  "section_de": "Abendessen",
+  "categories": ["schnell"],
   "total_minutes": 7,
   "prep_minutes": 7,
   "cook_minutes": 0,
@@ -136,12 +136,12 @@
     "batch_id": null,
     "created_on": "2026-10-11",
     "expert_reviewed": false,
-    "reviewed_by": null,
-    "reviewed_at": null,
+    "reviewed_by": "Karsten",
+    "reviewed_at": "2026-10-21",
     "review_note": null,
     "source_file": "alpha5-rezepte.json@1.0",
+    "import_hash": "d8bff7db101f1fe68e3aa8e2717d2378b85f6a306ee9bfb44c308ed616b7d8c4",
     "import_assumptions": [],
-    "import_assumptions_confirmed_by": null,
-    "import_hash": "d8bff7db101f1fe68e3aa8e2717d2378b85f6a306ee9bfb44c308ed616b7d8c4"
+    "import_assumptions_confirmed_by": null
   }
 }

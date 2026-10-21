@@ -1,11 +1,9 @@
 {
   "id": "roastbeef-reiswaffeln-mit-meerrettichquark",
   "version": 1,
-  "status": "draft",
+  "status": "published",
   "title_de": "Roastbeef-Reiswaffeln mit Meerrettichquark",
   "description_de": "Knusprige Reiswaffeln mit scharfem Meerrettichquark, zartem Roastbeef und Gurke.",
-  "section_de": "Snack",
-  "categories": ["schnell"],
   "meal_types": ["snack"],
   "training_tags": [],
   "servings": 1,
@@ -73,6 +71,8 @@
   ],
   "tip_de": "Statt Roastbeef schmeckt auch Räucherlachs mit Meerrettich.",
   "tags_de": ["Unter 10 Minuten"],
+  "section_de": "Snack",
+  "categories": ["schnell"],
   "total_minutes": 5,
   "prep_minutes": 5,
   "cook_minutes": 0,
@@ -99,12 +99,12 @@
     "batch_id": null,
     "created_on": "2026-10-11",
     "expert_reviewed": false,
-    "reviewed_by": null,
-    "reviewed_at": null,
+    "reviewed_by": "Karsten",
+    "reviewed_at": "2026-10-21",
     "review_note": null,
     "source_file": "alpha5-rezepte.json@1.0",
+    "import_hash": "cae696eda53c763ef75477285acd55b91dcfe107a724c0a53de9f8b6c1fdf860",
     "import_assumptions": [],
-    "import_assumptions_confirmed_by": null,
-    "import_hash": "cae696eda53c763ef75477285acd55b91dcfe107a724c0a53de9f8b6c1fdf860"
+    "import_assumptions_confirmed_by": null
   }
 }

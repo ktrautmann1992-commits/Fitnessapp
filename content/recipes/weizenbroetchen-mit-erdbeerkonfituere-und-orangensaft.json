@@ -1,11 +1,9 @@
 {
   "id": "weizenbroetchen-mit-erdbeerkonfituere-und-orangensaft",
   "version": 1,
-  "status": "draft",
+  "status": "published",
   "title_de": "Weizenbrötchen mit Erdbeerkonfitüre und Orangensaft",
   "description_de": "Der Frühstücksklassiker vieler Läufer: helle Brötchen mit Konfitüre und ein Glas Saft liefern schnell verfügbare Kohlenhydrate und belasten den Magen kaum.",
-  "section_de": "Renntag-Frühstück (3 Std. vorher)",
-  "categories": ["schnell", "pre-workout", "wettkampf"],
   "meal_types": ["breakfast"],
   "training_tags": ["vor_training"],
   "servings": 1,
@@ -54,6 +52,8 @@
   ],
   "tip_de": "Verträgst du Saft auf nüchternen Magen nicht gut, verdünne ihn 1:1 mit Wasser. Kauf die Brötchen am Vortag, falls am Renntag noch kein Bäcker offen hat.",
   "tags_de": ["Unter 10 Minuten", "Wettkampf"],
+  "section_de": "Renntag-Frühstück (3 Std. vorher)",
+  "categories": ["schnell", "pre-workout", "wettkampf"],
   "total_minutes": 5,
   "prep_minutes": 5,
   "cook_minutes": 0,
@@ -80,12 +80,12 @@
     "batch_id": null,
     "created_on": "2026-10-11",
     "expert_reviewed": false,
-    "reviewed_by": null,
-    "reviewed_at": null,
+    "reviewed_by": "Karsten",
+    "reviewed_at": "2026-10-21",
     "review_note": null,
     "source_file": "alpha5-rezepte.json@1.0",
+    "import_hash": "33102dfdfa5772e74a63802aa8fbcedb2563d1236dbd5ffed6621419ef2e61d1",
     "import_assumptions": [],
-    "import_assumptions_confirmed_by": null,
-    "import_hash": "33102dfdfa5772e74a63802aa8fbcedb2563d1236dbd5ffed6621419ef2e61d1"
+    "import_assumptions_confirmed_by": null
   }
 }

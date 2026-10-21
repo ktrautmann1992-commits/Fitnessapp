@@ -1,11 +1,9 @@
 {
   "id": "ruehrei-brot-mit-huettenkaese",
   "version": 1,
-  "status": "draft",
+  "status": "published",
   "title_de": "Rührei-Brot mit Hüttenkäse",
   "description_de": "Klassisches deutsches Frühstück: cremiges Rührei und Hüttenkäse auf Vollkornbrot mit frischer Tomate.",
-  "section_de": "Frühstück",
-  "categories": ["schnell", "post-workout"],
   "meal_types": ["breakfast"],
   "training_tags": ["nach_training"],
   "servings": 1,
@@ -93,6 +91,8 @@
   ],
   "tip_de": "Eine Handvoll Babyspinat kurz im Rührei mitgaren – mehr Gemüse ohne Mehraufwand.",
   "tags_de": ["Unter 10 Minuten"],
+  "section_de": "Frühstück",
+  "categories": ["schnell", "post-workout"],
   "total_minutes": 10,
   "prep_minutes": 10,
   "cook_minutes": 0,
@@ -119,12 +119,12 @@
     "batch_id": null,
     "created_on": "2026-10-11",
     "expert_reviewed": false,
-    "reviewed_by": null,
-    "reviewed_at": null,
+    "reviewed_by": "Karsten",
+    "reviewed_at": "2026-10-21",
     "review_note": null,
     "source_file": "alpha5-rezepte.json@1.0",
+    "import_hash": "baa2770787a8c78c9984d609628440510f0af08300d6914cad251e0e88be2074",
     "import_assumptions": [],
-    "import_assumptions_confirmed_by": null,
-    "import_hash": "baa2770787a8c78c9984d609628440510f0af08300d6914cad251e0e88be2074"
+    "import_assumptions_confirmed_by": null
   }
 }

@@ -1,11 +1,9 @@
 {
   "id": "caprese-spiesse-mit-balsamico",
   "version": 1,
-  "status": "draft",
+  "status": "published",
   "title_de": "Caprese-Spieße mit Balsamico",
   "description_de": "Mozzarella-Würfel, Cherrytomaten und Basilikum am Spieß, beträufelt mit Balsamico.",
-  "section_de": "Snack",
-  "categories": ["schnell"],
   "meal_types": ["snack"],
   "training_tags": [],
   "servings": 1,
@@ -72,6 +70,8 @@
   ],
   "tip_de": "In einer Dose verpackt ein guter Snack fürs Büro.",
   "tags_de": ["Unter 10 Minuten"],
+  "section_de": "Snack",
+  "categories": ["schnell"],
   "total_minutes": 5,
   "prep_minutes": 5,
   "cook_minutes": 0,
@@ -98,12 +98,12 @@
     "batch_id": null,
     "created_on": "2026-10-11",
     "expert_reviewed": false,
-    "reviewed_by": null,
-    "reviewed_at": null,
+    "reviewed_by": "Karsten",
+    "reviewed_at": "2026-10-21",
     "review_note": null,
     "source_file": "alpha5-rezepte.json@1.0",
+    "import_hash": "3a5b75ad0d386b5916b3200cea54f887cd8b727560a35915f38dcf1257226d43",
     "import_assumptions": [],
-    "import_assumptions_confirmed_by": null,
-    "import_hash": "3a5b75ad0d386b5916b3200cea54f887cd8b727560a35915f38dcf1257226d43"
+    "import_assumptions_confirmed_by": null
   }
 }
