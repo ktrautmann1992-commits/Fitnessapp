@@ -1,0 +1,20 @@
+{
+  "exercise_id": "archer-liegestuetz",
+  "images": [
+    {
+      "kind": "start_position",
+      "file": "archer-liegestuetz-start.svg",
+      "alt_de": "Ausgangsposition: hoher Liegestütz von der Seite, Arme gestreckt, Hände deutlich weiter als schulterbreit, Körper vom Kopf bis zu den Fersen gerade.",
+      "origin": "own_work",
+      "license": {
+        "name": "eigene Illustration Alpha5",
+        "attribution_de": null
+      },
+      "source": {
+        "creator": "Alpha5",
+        "obtained_on": "2026-10-21"
+      },
+      "reviewed_by": null
+    }
+  ]
+}

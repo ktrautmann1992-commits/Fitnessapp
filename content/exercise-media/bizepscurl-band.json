@@ -1,0 +1,20 @@
+{
+  "exercise_id": "bizepscurl-band",
+  "images": [
+    {
+      "kind": "start_position",
+      "file": "bizepscurl-band-start.svg",
+      "alt_de": "Ausgangsposition: mit beiden Füßen auf dem Widerstandsband stehen, die Enden mit gestreckten Armen greifen.",
+      "origin": "own_work",
+      "license": {
+        "name": "eigene Illustration Alpha5",
+        "attribution_de": null
+      },
+      "source": {
+        "creator": "Alpha5",
+        "obtained_on": "2026-10-21"
+      },
+      "reviewed_by": null
+    }
+  ]
+}

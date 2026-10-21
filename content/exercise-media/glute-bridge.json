@@ -1,0 +1,20 @@
+{
+  "exercise_id": "glute-bridge",
+  "images": [
+    {
+      "kind": "start_position",
+      "file": "glute-bridge-start.svg",
+      "alt_de": "Ausgangsposition: Rückenlage, Knie gebeugt, Füße hüftbreit nah am Gesäß, Arme seitlich am Körper abgelegt.",
+      "origin": "own_work",
+      "license": {
+        "name": "eigene Illustration Alpha5",
+        "attribution_de": null
+      },
+      "source": {
+        "creator": "Alpha5",
+        "obtained_on": "2026-10-21"
+      },
+      "reviewed_by": null
+    }
+  ]
+}

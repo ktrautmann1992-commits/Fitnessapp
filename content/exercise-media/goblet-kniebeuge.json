@@ -1,0 +1,20 @@
+{
+  "exercise_id": "goblet-kniebeuge",
+  "images": [
+    {
+      "kind": "start_position",
+      "file": "goblet-kniebeuge-start.svg",
+      "alt_de": "Ausgangsposition: aufrecht stehen, eine Kurzhantel senkrecht dicht vor der Brust halten, Ellbogen zeigen nach unten, Füße etwas weiter als hüftbreit.",
+      "origin": "own_work",
+      "license": {
+        "name": "eigene Illustration Alpha5",
+        "attribution_de": null
+      },
+      "source": {
+        "creator": "Alpha5",
+        "obtained_on": "2026-10-21"
+      },
+      "reviewed_by": null
+    }
+  ]
+}

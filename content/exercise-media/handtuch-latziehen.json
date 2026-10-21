@@ -1,0 +1,20 @@
+{
+  "exercise_id": "handtuch-latziehen",
+  "images": [
+    {
+      "kind": "start_position",
+      "file": "handtuch-latziehen-start.svg",
+      "alt_de": "Ausgangsposition: aufrecht knien, ein Handtuch an den Enden greifen, Hände deutlich weiter als schulterbreit, Arme schräg nach oben vor dem Kopf.",
+      "origin": "own_work",
+      "license": {
+        "name": "eigene Illustration Alpha5",
+        "attribution_de": null
+      },
+      "source": {
+        "creator": "Alpha5",
+        "obtained_on": "2026-10-21"
+      },
+      "reviewed_by": null
+    }
+  ]
+}

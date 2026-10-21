@@ -1,0 +1,20 @@
+{
+  "exercise_id": "liegestuetz-erhoeht",
+  "images": [
+    {
+      "kind": "start_position",
+      "file": "liegestuetz-erhoeht-start.svg",
+      "alt_de": "Ausgangsposition: Hände auf einer Tischkante, Arme gestreckt, Füße hinten am Boden, Körper bildet eine gerade, schräge Linie.",
+      "origin": "own_work",
+      "license": {
+        "name": "eigene Illustration Alpha5",
+        "attribution_de": null
+      },
+      "source": {
+        "creator": "Alpha5",
+        "obtained_on": "2026-10-21"
+      },
+      "reviewed_by": null
+    }
+  ]
+}

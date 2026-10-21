@@ -1,0 +1,20 @@
+{
+  "exercise_id": "glute-bridge-einbeinig",
+  "images": [
+    {
+      "kind": "start_position",
+      "file": "glute-bridge-einbeinig-start.svg",
+      "alt_de": "Ausgangsposition: Rückenlage, ein Fuß nah am Gesäß aufgestellt, das andere Bein gestreckt angehoben, Arme seitlich abgelegt.",
+      "origin": "own_work",
+      "license": {
+        "name": "eigene Illustration Alpha5",
+        "attribution_de": null
+      },
+      "source": {
+        "creator": "Alpha5",
+        "obtained_on": "2026-10-21"
+      },
+      "reviewed_by": null
+    }
+  ]
+}

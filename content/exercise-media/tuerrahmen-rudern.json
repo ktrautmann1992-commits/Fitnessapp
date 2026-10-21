@@ -1,0 +1,20 @@
+{
+  "exercise_id": "tuerrahmen-rudern",
+  "images": [
+    {
+      "kind": "start_position",
+      "file": "tuerrahmen-rudern-start.svg",
+      "alt_de": "Ausgangsposition: Füße dicht am Türrahmen, eine Hand greift den Rahmen auf Brusthöhe, Arm gestreckt, Körper gerade nach hinten gelehnt.",
+      "origin": "own_work",
+      "license": {
+        "name": "eigene Illustration Alpha5",
+        "attribution_de": null
+      },
+      "source": {
+        "creator": "Alpha5",
+        "obtained_on": "2026-10-21"
+      },
+      "reviewed_by": null
+    }
+  ]
+}

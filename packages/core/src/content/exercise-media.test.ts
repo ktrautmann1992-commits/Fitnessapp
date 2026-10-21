@@ -90,6 +90,17 @@ describe('exerciseMediaSchema', () => {
       ).success,
     ).toBe(false);
   });
+
+  it('eigene Illustration als SVG (Entscheidung B) ist gültig', () => {
+    const own = image({
+      file: 'kniebeuge-langhantel-start.svg',
+      origin: 'own_work',
+      license: { name: 'eigene Illustration Alpha5', attribution_de: null },
+      source: { creator: 'Alpha5', obtained_on: '2026-10-21' },
+    });
+    expect(exerciseMediaSchema.safeParse(media([own])).success).toBe(true);
+    expect(exerciseMediaSchema.safeParse(media([image({ file: 'bild.SVG' })])).success).toBe(false);
+  });
 });
 
 describe('checkExerciseMediaFiles', () => {

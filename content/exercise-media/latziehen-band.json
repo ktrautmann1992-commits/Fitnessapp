@@ -1,0 +1,20 @@
+{
+  "exercise_id": "latziehen-band",
+  "images": [
+    {
+      "kind": "start_position",
+      "file": "latziehen-band-start.svg",
+      "alt_de": "Ausgangsposition: aufrecht knien, die Enden des oben befestigten Widerstandsbands mit gestreckten Armen über dem Kopf greifen.",
+      "origin": "own_work",
+      "license": {
+        "name": "eigene Illustration Alpha5",
+        "attribution_de": null
+      },
+      "source": {
+        "creator": "Alpha5",
+        "obtained_on": "2026-10-21"
+      },
+      "reviewed_by": null
+    }
+  ]
+}

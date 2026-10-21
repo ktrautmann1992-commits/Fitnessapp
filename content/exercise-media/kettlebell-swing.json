@@ -1,0 +1,20 @@
+{
+  "exercise_id": "kettlebell-swing",
+  "images": [
+    {
+      "kind": "start_position",
+      "file": "kettlebell-swing-start.svg",
+      "alt_de": "Ausgangsposition: Hüfte nach hinten geschoben, Rücken gerade, beide Hände greifen die Kettlebell, die etwa 30 cm vor den Füßen am Boden steht.",
+      "origin": "own_work",
+      "license": {
+        "name": "eigene Illustration Alpha5",
+        "attribution_de": null
+      },
+      "source": {
+        "creator": "Alpha5",
+        "obtained_on": "2026-10-21"
+      },
+      "reviewed_by": null
+    }
+  ]
+}

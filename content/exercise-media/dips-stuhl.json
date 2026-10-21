@@ -1,0 +1,20 @@
+{
+  "exercise_id": "dips-stuhl",
+  "images": [
+    {
+      "kind": "start_position",
+      "file": "dips-stuhl-start.svg",
+      "alt_de": "Ausgangsposition: Hände auf der vorderen Sitzkante eines Stuhls an der Wand, Arme gestreckt, Gesäß vor dem Stuhl, Knie gebeugt, Füße am Boden.",
+      "origin": "own_work",
+      "license": {
+        "name": "eigene Illustration Alpha5",
+        "attribution_de": null
+      },
+      "source": {
+        "creator": "Alpha5",
+        "obtained_on": "2026-10-21"
+      },
+      "reviewed_by": null
+    }
+  ]
+}

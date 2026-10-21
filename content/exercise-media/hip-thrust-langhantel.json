@@ -1,0 +1,20 @@
+{
+  "exercise_id": "hip-thrust-langhantel",
+  "images": [
+    {
+      "kind": "start_position",
+      "file": "hip-thrust-langhantel-start.svg",
+      "alt_de": "Ausgangsposition: mit dem Rücken vor einer Flachbank sitzen, Schulterblätter an der Bankkante, Langhantel über der Hüfte, Füße hüftbreit aufgestellt.",
+      "origin": "own_work",
+      "license": {
+        "name": "eigene Illustration Alpha5",
+        "attribution_de": null
+      },
+      "source": {
+        "creator": "Alpha5",
+        "obtained_on": "2026-10-21"
+      },
+      "reviewed_by": null
+    }
+  ]
+}
