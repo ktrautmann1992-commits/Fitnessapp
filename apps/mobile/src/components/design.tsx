@@ -648,6 +648,7 @@ export function StatValue({
   size = 'md',
   accessibilityLabel,
   testID,
+  valueTestID,
 }: {
   value: string;
   label: string;
@@ -656,6 +657,8 @@ export function StatValue({
   /** Ausgeschriebene Fassung, z. B. „18,4 Kilometer diese Woche“. */
   accessibilityLabel?: string;
   testID?: string;
+  /** testID nur der Zahl (z. B. für Prüfungen des angezeigten Werts ohne Beschriftung). */
+  valueTestID?: string;
 }) {
   const theme = useThemeColors();
   return (
@@ -666,6 +669,7 @@ export function StatValue({
       style={styles.stat}
     >
       <Text
+        testID={valueTestID}
         style={[
           size === 'lg' ? styles.statValueLarge : styles.statValue,
           appFont('extrabold'),

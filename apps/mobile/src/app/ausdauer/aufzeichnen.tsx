@@ -18,11 +18,20 @@ import {
   type TrackedRouteSport,
   usesSpeed,
 } from '@fitnessapp/core';
-import { fontSize, fontWeight, spacing } from '@fitnessapp/ui';
+import {
+  areaColors,
+  brandColors,
+  fontSize,
+  fontWeight,
+  heroColors,
+  radius,
+  spacing,
+} from '@fitnessapp/ui';
 import { Redirect, useLocalSearchParams, useRouter, type Href } from 'expo-router';
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { StyleSheet, View } from 'react-native';
 
+import { AreaButton, Icon } from '@/components/design';
 import { RouteSketch } from '@/components/endurance';
 import { ConfirmDialog, Screen } from '@/components/screen';
 import {
@@ -51,7 +60,8 @@ import {
   stopActiveRecording,
 } from '@/lib/recording-controller';
 import { recordingSession, useRecordingSession } from '@/lib/recording-session';
-import { useThemeColors } from '@/lib/theme';
+import { appFont, displayFont } from '@/lib/fonts';
+import { useColorSchemeName } from '@/lib/theme';
 import { useApp } from '@/state/app-state';
 import { HOME_ROUTE, resolveEntryRoute } from '@/state/flow';
 import { forgetTrackedRoutes } from '@/state/use-tracked-routes';
@@ -87,7 +97,10 @@ export default function RecordScreen() {
   }>();
   const router = useRouter();
   const app = useApp();
-  const theme = useThemeColors();
+  const scheme = useColorSchemeName();
+  const hero = heroColors[scheme];
+  // Ausdauer-Orange auf der dunklen Fläche: Dunkel-Fassung von `icon` (≥ 8 : 1), nie Signal-Orange.
+  const orangeOnDark = areaColors.dark.ausdauer.icon;
   const current = useRecordingSession();
   const userId = app.session?.userId ?? null;
   const [rawPhase, setPhase] = useState<Phase>({ kind: 'checking' });
@@ -328,42 +341,61 @@ export default function RecordScreen() {
   return (
     <Screen area="ausdauer" icon="run" title={E.live.title(E.sports[sport])} testID="record-live">
       {current.mode === 'demo' ? <Notice tone="info">{E.live.demo}</Notice> : null}
-      <Text
-        accessibilityRole="text"
-        accessibilityLiveRegion="polite"
-        style={[styles.status, { color: status === 'paused' ? theme.warning : theme.success }]}
-        testID="record-status"
-      >
-        {status === 'paused' ? E.live.paused : E.live.running}
-      </Text>
       {status === 'recording' && signal !== 'ok' ? (
         <Notice tone="warning" testID={`record-gps-${signal}`}>
           {signal === 'searching' ? E.live.searching : E.live.weak}
         </Notice>
       ) : null}
-      <View
-        style={styles.big}
-        accessible
-        accessibilityLabel={E.live.a11yStats(time, distance, paceText)}
-      >
-        <BigValue label={E.live.time} value={time} testID="record-time" />
-        <BigValue label={E.live.distance} value={distance} testID="record-distance" />
-        <BigValue
-          label={speedMode ? E.live.speed : E.live.pace}
-          value={paceText}
-          testID="record-pace"
-        />
+      {/* Große Zahlen im Hero-Stil: dunkle Fläche, Zeit am größten, darunter Distanz und Pace. */}
+      <View style={[styles.panel, { backgroundColor: hero.background, borderColor: hero.border }]}>
+        <View style={styles.statusRow}>
+          <Icon
+            name={status === 'paused' ? 'pause' : 'run'}
+            size={16}
+            color={status === 'paused' ? brandColors.signal : orangeOnDark}
+          />
+          <Text
+            accessibilityRole="text"
+            accessibilityLiveRegion="polite"
+            style={[
+              styles.status,
+              appFont('bold'),
+              { color: status === 'paused' ? brandColors.signal : orangeOnDark },
+            ]}
+            testID="record-status"
+          >
+            {status === 'paused' ? E.live.paused : E.live.running}
+          </Text>
+        </View>
+        <View
+          style={styles.big}
+          accessible
+          accessibilityLabel={E.live.a11yStats(time, distance, paceText)}
+        >
+          <BigValue label={E.live.time} value={time} testID="record-time" size="xl" />
+          <View style={styles.bigRow}>
+            <BigValue label={E.live.distance} value={distance} testID="record-distance" />
+            <BigValue
+              label={speedMode ? E.live.speed : E.live.pace}
+              value={paceText}
+              testID="record-pace"
+            />
+          </View>
+        </View>
       </View>
       <FieldError message={error} />
       {status === 'recording' ? (
-        <Button
+        <AreaButton
+          area="ausdauer"
+          icon="pause"
           label={E.live.pause}
-          variant="secondary"
           onPress={() => void pauseActiveRecording()}
           testID="record-pause"
         />
       ) : (
-        <Button
+        <AreaButton
+          area="ausdauer"
+          icon="play"
           label={E.live.resume}
           onPress={() =>
             void resumeActiveRecording().catch(() => setError(E.permission.startFailed))
@@ -371,9 +403,11 @@ export default function RecordScreen() {
           testID="record-resume"
         />
       )}
-      <Button
+      <AreaButton
+        area="ausdauer"
+        icon="stop"
+        variant="outline"
         label={E.live.stop}
-        variant="danger"
         onPress={() => setConfirmStop(true)}
         testID="record-stop"
       />
@@ -394,12 +428,30 @@ export default function RecordScreen() {
   );
 }
 
-function BigValue({ label, value, testID }: { label: string; value: string; testID: string }) {
-  const theme = useThemeColors();
+function BigValue({
+  label,
+  value,
+  testID,
+  size = 'lg',
+}: {
+  label: string;
+  value: string;
+  testID: string;
+  /** xl = Zeit (größte Zahl), lg = Distanz und Pace. */
+  size?: 'xl' | 'lg';
+}) {
+  const hero = heroColors[useColorSchemeName()];
   return (
-    <View style={styles.bigItem}>
-      <Text style={[styles.bigLabel, { color: theme.textMuted }]}>{label}</Text>
-      <Text style={[styles.bigValue, { color: theme.text }]} testID={testID}>
+    <View style={[styles.bigItem, size === 'lg' && styles.bigHalf]}>
+      <Text style={[styles.bigLabel, appFont('semibold'), { color: hero.muted }]}>{label}</Text>
+      <Text
+        style={[
+          size === 'xl' ? styles.bigValueXl : styles.bigValue,
+          displayFont(),
+          { color: hero.text },
+        ]}
+        testID={testID}
+      >
         {value}
       </Text>
     </View>
@@ -637,11 +689,26 @@ function SaveView({
 }
 
 const styles = StyleSheet.create({
+  panel: { borderRadius: radius.lg, borderWidth: 1, padding: 20, gap: spacing.md },
+  statusRow: { flexDirection: 'row', alignItems: 'center', gap: 6 },
   status: { fontSize: fontSize.md, fontWeight: fontWeight.bold },
   big: { gap: spacing.md },
-  bigItem: { gap: 2 },
-  bigLabel: { fontSize: fontSize.md },
-  bigValue: { fontSize: 48, fontWeight: fontWeight.bold, fontVariant: ['tabular-nums'] },
+  bigRow: { flexDirection: 'row', flexWrap: 'wrap', gap: spacing.md },
+  bigItem: { gap: 2, minWidth: 0 },
+  bigHalf: { flexGrow: 1, flexBasis: 120 },
+  bigLabel: { fontSize: fontSize.sm },
+  bigValueXl: {
+    fontSize: 56,
+    lineHeight: 64,
+    fontWeight: fontWeight.bold,
+    fontVariant: ['tabular-nums'],
+  },
+  bigValue: {
+    fontSize: 32,
+    lineHeight: 40,
+    fontWeight: fontWeight.bold,
+    fontVariant: ['tabular-nums'],
+  },
   summaryRow: { flexDirection: 'row', gap: spacing.md, alignItems: 'center' },
   summaryText: { flex: 1, gap: 2 },
 });

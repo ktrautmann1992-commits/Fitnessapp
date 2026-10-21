@@ -10,6 +10,7 @@ import { Redirect, useRouter, type Href } from 'expo-router';
 import { useEffect, useMemo, useState } from 'react';
 import { Platform, StyleSheet, View } from 'react-native';
 
+import { AreaButton } from '@/components/design';
 import { LiveRegion } from '@/components/calendar';
 import { ActivityRow, TotalsView } from '@/components/endurance';
 import { ConfirmDialog, Screen } from '@/components/screen';
@@ -200,7 +201,9 @@ export default function EnduranceScreen() {
               />
             ) : null}
             {!isWeb ? (
-              <Button
+              <AreaButton
+                area="ausdauer"
+                icon="play"
                 label={E.record.start}
                 accessibilityLabel={E.record.startA11y(E.sports[sport])}
                 onPress={() => router.push(`/ausdauer/aufzeichnen?sport=${sport}` as Href)}
@@ -208,7 +211,9 @@ export default function EnduranceScreen() {
               />
             ) : testMode ? (
               <>
-                <Button
+                <AreaButton
+                  area="ausdauer"
+                  icon="play"
                   label={E.record.demoStart}
                   onPress={() => router.push(`/ausdauer/aufzeichnen?sport=${sport}&demo=1` as Href)}
                   testID="endurance-demo"

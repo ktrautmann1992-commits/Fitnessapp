@@ -302,6 +302,13 @@ describe('StatValue', () => {
   });
 });
 
+describe('StatValue (Zahl einzeln prüfbar)', () => {
+  it('trägt die testID der Zahl ohne Beschriftung', () => {
+    const view = render(<StatValue value="5,02 km" label="Distanz" valueTestID="wert" />);
+    expect(view.querySelector('[data-testid="wert"]')?.textContent).toBe('5,02 km');
+  });
+});
+
 describe('ProgressRing', () => {
   it('ist derselbe Baustein wie in der Ernährung (keine Kopie)', () => {
     expect(NutritionRing).toBe(ProgressRing);
