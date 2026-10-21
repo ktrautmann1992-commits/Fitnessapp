@@ -1,11 +1,9 @@
 {
   "id": "spinat-risotto-mit-ricotta",
   "version": 1,
-  "status": "draft",
+  "status": "published",
   "title_de": "Spinat-Risotto mit Ricotta",
   "description_de": "Cremiges Risotto mit frischem Spinat, Zitrone und einem Klecks Ricotta – vegetarisch und ohne Gluten.",
-  "section_de": "Abendessen",
-  "categories": [],
   "meal_types": ["main"],
   "training_tags": [],
   "servings": 1,
@@ -98,6 +96,8 @@
     "Rühre den Spinat unter, bis er zusammenfällt.",
     "Nimm den Topf vom Herd, rühre die Hälfte des Ricottas, Zitronensaft und Pfeffer unter und setze den übrigen Ricotta obenauf."
   ],
+  "section_de": "Abendessen",
+  "categories": [],
   "total_minutes": 30,
   "prep_minutes": 6,
   "cook_minutes": 24,
@@ -124,8 +124,8 @@
     "batch_id": null,
     "created_on": "2026-10-21",
     "expert_reviewed": false,
-    "reviewed_by": null,
-    "reviewed_at": null,
+    "reviewed_by": "Karsten (Auftrag an Claude)",
+    "reviewed_at": "2026-10-21",
     "review_note": null
   }
 }

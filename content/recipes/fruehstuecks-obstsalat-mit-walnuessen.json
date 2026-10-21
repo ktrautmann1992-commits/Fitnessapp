@@ -1,11 +1,9 @@
 {
   "id": "fruehstuecks-obstsalat-mit-walnuessen",
   "version": 1,
-  "status": "draft",
+  "status": "published",
   "title_de": "Frühstücks-Obstsalat mit Walnüssen",
   "description_de": "Bunter Obstsalat aus Apfel, Banane und Heidelbeeren mit Zitrone, Ahornsirup und gerösteten Walnüssen.",
-  "section_de": "Frühstück",
-  "categories": ["schnell"],
   "meal_types": ["breakfast"],
   "training_tags": [],
   "servings": 1,
@@ -71,6 +69,8 @@
     "Gib Heidelbeeren und Ahornsirup dazu und streue die Walnüsse darüber."
   ],
   "tip_de": "Ohne Rösten geht es noch schneller – die Nüsse schmecken dann etwas milder.",
+  "section_de": "Frühstück",
+  "categories": ["schnell"],
   "total_minutes": 10,
   "prep_minutes": 7,
   "cook_minutes": 3,
@@ -97,8 +97,8 @@
     "batch_id": null,
     "created_on": "2026-10-21",
     "expert_reviewed": false,
-    "reviewed_by": null,
-    "reviewed_at": null,
+    "reviewed_by": "Karsten (Auftrag an Claude)",
+    "reviewed_at": "2026-10-21",
     "review_note": null
   }
 }

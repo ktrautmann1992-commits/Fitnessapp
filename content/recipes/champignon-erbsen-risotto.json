@@ -1,11 +1,9 @@
 {
   "id": "champignon-erbsen-risotto",
   "version": 1,
-  "status": "draft",
+  "status": "published",
   "title_de": "Champignon-Erbsen-Risotto",
   "description_de": "Cremiges Risotto mit gebratenen Champignons, Erbsen und Zitrone – mit Hefeflocken statt Käse, ganz pflanzlich.",
-  "section_de": "Abendessen",
-  "categories": ["meal-prep"],
   "meal_types": ["main"],
   "training_tags": [],
   "servings": 1,
@@ -125,6 +123,8 @@
     "Gieße nach und nach heiße Brühe und Wasser an und lass den Reis unter Rühren 18–20 Minuten garen, bis er cremig und bissfest ist.",
     "Gib Erbsen und Champignons die letzten 4 Minuten dazu. Rühre Hefeflocken, Zitronensaft und Pfeffer unter und streue Petersilie darüber."
   ],
+  "section_de": "Abendessen",
+  "categories": ["meal-prep"],
   "total_minutes": 34,
   "prep_minutes": 8,
   "cook_minutes": 26,
@@ -151,8 +151,8 @@
     "batch_id": null,
     "created_on": "2026-10-21",
     "expert_reviewed": false,
-    "reviewed_by": null,
-    "reviewed_at": null,
+    "reviewed_by": "Karsten (Auftrag an Claude)",
+    "reviewed_at": "2026-10-21",
     "review_note": null
   }
 }

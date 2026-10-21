@@ -1,11 +1,9 @@
 {
   "id": "reisnudeln-mit-edamame-und-ingwer",
   "version": 1,
-  "status": "draft",
+  "status": "published",
   "title_de": "Reisnudeln mit Edamame und Ingwer",
   "description_de": "Reisnudeln mit Edamame, Karotte und Paprika in Ingwer-Sesam-Würze mit Zitrone und etwas Chili.",
-  "section_de": "Abendessen",
-  "categories": ["meal-prep"],
   "meal_types": ["main"],
   "training_tags": [],
   "servings": 1,
@@ -125,6 +123,8 @@
     "Gib fein gehackten Ingwer und Knoblauch sowie Sambal Oelek dazu und brate 1 Minute mit.",
     "Mische Nudeln und Edamame unter, schmecke mit Zitronensaft und Salz ab und streue Frühlingszwiebeln und Sesam darüber."
   ],
+  "section_de": "Abendessen",
+  "categories": ["meal-prep"],
   "total_minutes": 22,
   "prep_minutes": 10,
   "cook_minutes": 12,
@@ -151,8 +151,8 @@
     "batch_id": null,
     "created_on": "2026-10-21",
     "expert_reviewed": false,
-    "reviewed_by": null,
-    "reviewed_at": null,
+    "reviewed_by": "Karsten (Auftrag an Claude)",
+    "reviewed_at": "2026-10-21",
     "review_note": null
   }
 }

@@ -1,11 +1,9 @@
 {
   "id": "kartoffel-brokkoli-pfanne-mit-raeuchertofu",
   "version": 1,
-  "status": "draft",
+  "status": "published",
   "title_de": "Kartoffel-Brokkoli-Pfanne mit Räuchertofu",
   "description_de": "Gebratene Kartoffeln mit Brokkoli, Zwiebeln und rauchigem Tofu – eine Pfanne, wenig Abwasch.",
-  "section_de": "Abendessen",
-  "categories": ["meal-prep"],
   "meal_types": ["main"],
   "training_tags": [],
   "servings": 1,
@@ -88,6 +86,8 @@
     "Gib Zwiebelstreifen, kleine Brokkoliröschen und gewürfelten Räuchertofu dazu und brate alles offen 6–8 Minuten, bis der Brokkoli bissfest ist.",
     "Würze mit Salz und Pfeffer und streue den Schnittlauch darüber."
   ],
+  "section_de": "Abendessen",
+  "categories": ["meal-prep"],
   "total_minutes": 30,
   "prep_minutes": 10,
   "cook_minutes": 20,
@@ -114,8 +114,8 @@
     "batch_id": null,
     "created_on": "2026-10-21",
     "expert_reviewed": false,
-    "reviewed_by": null,
-    "reviewed_at": null,
+    "reviewed_by": "Karsten (Auftrag an Claude)",
+    "reviewed_at": "2026-10-21",
     "review_note": null
   }
 }

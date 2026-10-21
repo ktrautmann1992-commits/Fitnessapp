@@ -1,11 +1,9 @@
 {
   "id": "milchreis-mit-himbeeren",
   "version": 1,
-  "status": "draft",
+  "status": "published",
   "title_de": "Milchreis mit Himbeeren",
   "description_de": "Klassischer Milchreis, mit Honig gesüßt und mit Himbeeren serviert – warm oder kalt ein Genuss.",
-  "section_de": "Frühstück",
-  "categories": ["pre-workout", "meal-prep"],
   "meal_types": ["breakfast"],
   "training_tags": ["vor_training"],
   "servings": 1,
@@ -53,6 +51,8 @@
     "Rühre den Honig unter und serviere den Milchreis mit den Himbeeren."
   ],
   "tip_de": "Risottoreis wird genauso cremig wie Milchreis-Reis. Am Vorabend gekocht schmeckt er am Morgen auch kalt.",
+  "section_de": "Frühstück",
+  "categories": ["pre-workout", "meal-prep"],
   "total_minutes": 31,
   "prep_minutes": 3,
   "cook_minutes": 28,
@@ -79,8 +79,8 @@
     "batch_id": null,
     "created_on": "2026-10-21",
     "expert_reviewed": false,
-    "reviewed_by": null,
-    "reviewed_at": null,
+    "reviewed_by": "Karsten (Auftrag an Claude)",
+    "reviewed_at": "2026-10-21",
     "review_note": null
   }
 }

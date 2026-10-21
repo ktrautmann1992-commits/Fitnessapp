@@ -1,11 +1,9 @@
 {
   "id": "tofu-gemuese-reispfanne-mit-ingwer",
   "version": 1,
-  "status": "draft",
+  "status": "published",
   "title_de": "Tofu-Gemüse-Reispfanne mit Ingwer",
   "description_de": "Knusprig gebratener Tofu mit Brokkoli, Paprika und Reis, gewürzt mit Ingwer, Knoblauch und etwas Chili – ohne Sojasauce.",
-  "section_de": "Abendessen",
-  "categories": ["post-workout", "meal-prep"],
   "meal_types": ["main"],
   "training_tags": ["nach_training"],
   "servings": 1,
@@ -107,6 +105,8 @@
     "Rühre fein gehackten Ingwer und Knoblauch sowie Sambal Oelek unter und brate alles 1 Minute.",
     "Gib den Reis dazu und brate ihn 3 Minuten, bis er durch und durch heiß ist. Mit Zitronensaft und Salz abschmecken."
   ],
+  "section_de": "Abendessen",
+  "categories": ["post-workout", "meal-prep"],
   "total_minutes": 26,
   "prep_minutes": 10,
   "cook_minutes": 16,
@@ -133,8 +133,8 @@
     "batch_id": null,
     "created_on": "2026-10-21",
     "expert_reviewed": false,
-    "reviewed_by": null,
-    "reviewed_at": null,
+    "reviewed_by": "Karsten (Auftrag an Claude)",
+    "reviewed_at": "2026-10-21",
     "review_note": null
   }
 }

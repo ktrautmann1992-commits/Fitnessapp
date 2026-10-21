@@ -1,11 +1,9 @@
 {
   "id": "linsen-gemuese-pfanne-mit-reis",
   "version": 1,
-  "status": "draft",
+  "status": "published",
   "title_de": "Linsen-Gemüse-Pfanne mit Reis",
   "description_de": "Linsen mit Karotte, Zucchini und Tomaten aus der Pfanne, dazu Basmatireis – sättigend, günstig und ganz pflanzlich.",
-  "section_de": "Mittagessen",
-  "categories": ["meal-prep", "spar-kueche"],
   "meal_types": ["main"],
   "training_tags": [],
   "servings": 1,
@@ -118,6 +116,8 @@
     "Serviere die Pfanne mit dem Reis und streue Petersilie darüber."
   ],
   "tip_de": "Für Meal-Prep Reis und Gemüse getrennt aufbewahren und spätestens am nächsten Tag gut durcherhitzt essen.",
+  "section_de": "Mittagessen",
+  "categories": ["meal-prep", "spar-kueche"],
   "total_minutes": 30,
   "prep_minutes": 10,
   "cook_minutes": 20,
@@ -144,8 +144,8 @@
     "batch_id": null,
     "created_on": "2026-10-21",
     "expert_reviewed": false,
-    "reviewed_by": null,
-    "reviewed_at": null,
+    "reviewed_by": "Karsten (Auftrag an Claude)",
+    "reviewed_at": "2026-10-21",
     "review_note": null
   }
 }

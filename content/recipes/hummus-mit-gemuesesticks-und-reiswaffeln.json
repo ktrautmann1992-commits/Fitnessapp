@@ -1,11 +1,9 @@
 {
   "id": "hummus-mit-gemuesesticks-und-reiswaffeln",
   "version": 1,
-  "status": "draft",
+  "status": "published",
   "title_de": "Hummus mit Gemüsesticks und Reiswaffeln",
   "description_de": "Bunte Gemüsesticks aus Karotte, Paprika und Gurke mit Hummus zum Dippen, dazu zwei Reiswaffeln.",
-  "section_de": "Snack",
-  "categories": ["schnell"],
   "meal_types": ["snack"],
   "training_tags": [],
   "servings": 1,
@@ -61,6 +59,8 @@
     "Gib den Hummus in ein Schälchen und dippe Gemüse und Reiswaffeln hinein."
   ],
   "tip_de": "In einer Dose mit dem Hummus unten und den Sticks darüber lässt sich der Snack gut mitnehmen.",
+  "section_de": "Snack",
+  "categories": ["schnell"],
   "total_minutes": 6,
   "prep_minutes": 6,
   "cook_minutes": 0,
@@ -87,8 +87,8 @@
     "batch_id": null,
     "created_on": "2026-10-21",
     "expert_reviewed": false,
-    "reviewed_by": null,
-    "reviewed_at": null,
+    "reviewed_by": "Karsten (Auftrag an Claude)",
+    "reviewed_at": "2026-10-21",
     "review_note": null
   }
 }

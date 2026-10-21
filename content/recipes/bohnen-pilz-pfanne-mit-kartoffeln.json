@@ -1,11 +1,9 @@
 {
   "id": "bohnen-pilz-pfanne-mit-kartoffeln",
   "version": 1,
-  "status": "draft",
+  "status": "published",
   "title_de": "Bohnen-Pilz-Pfanne mit Kartoffeln",
   "description_de": "Herzhaftes Pfannenfrühstück mit weißen Bohnen, Champignons, Tomaten und gebratenen Kartoffelwürfeln.",
-  "section_de": "Frühstück",
-  "categories": ["meal-prep"],
   "meal_types": ["breakfast"],
   "training_tags": [],
   "servings": 1,
@@ -98,6 +96,8 @@
     "Spüle die Bohnen ab, würfle die Tomaten und gib beides in die Pfanne. Lass alles 4–5 Minuten köcheln, bis die Tomaten sämig sind.",
     "Würze mit Salz und Pfeffer und streue die Petersilie darüber."
   ],
+  "section_de": "Frühstück",
+  "categories": ["meal-prep"],
   "total_minutes": 28,
   "prep_minutes": 10,
   "cook_minutes": 18,
@@ -124,8 +124,8 @@
     "batch_id": null,
     "created_on": "2026-10-21",
     "expert_reviewed": false,
-    "reviewed_by": null,
-    "reviewed_at": null,
+    "reviewed_by": "Karsten (Auftrag an Claude)",
+    "reviewed_at": "2026-10-21",
     "review_note": null
   }
 }

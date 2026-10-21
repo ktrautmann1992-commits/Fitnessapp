@@ -1,11 +1,9 @@
 {
   "id": "beeren-bananen-smoothie-bowl-mit-tofu",
   "version": 1,
-  "status": "draft",
+  "status": "published",
   "title_de": "Beeren-Bananen-Smoothie-Bowl mit Tofu",
   "description_de": "Dicke Smoothie-Bowl aus Beeren, Banane und Orangensaft, mit Tofu cremig gemixt und mit Heidelbeeren und Reiswaffel-Crunch.",
-  "section_de": "Frühstück",
-  "categories": ["schnell"],
   "meal_types": ["breakfast"],
   "training_tags": [],
   "servings": 1,
@@ -71,6 +69,8 @@
     "Zerbrösle die Reiswaffel darüber und verteile die Heidelbeeren darauf."
   ],
   "tip_de": "Je weniger Saft, desto dicker die Bowl – gib ihn nach und nach dazu.",
+  "section_de": "Frühstück",
+  "categories": ["schnell"],
   "total_minutes": 7,
   "prep_minutes": 7,
   "cook_minutes": 0,
@@ -97,8 +97,8 @@
     "batch_id": null,
     "created_on": "2026-10-21",
     "expert_reviewed": false,
-    "reviewed_by": null,
-    "reviewed_at": null,
+    "reviewed_by": "Karsten (Auftrag an Claude)",
+    "reviewed_at": "2026-10-21",
     "review_note": null
   }
 }

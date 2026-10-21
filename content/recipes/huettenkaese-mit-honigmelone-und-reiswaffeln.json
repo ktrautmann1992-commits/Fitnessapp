@@ -1,11 +1,9 @@
 {
   "id": "huettenkaese-mit-honigmelone-und-reiswaffeln",
   "version": 1,
-  "status": "draft",
+  "status": "published",
   "title_de": "Hüttenkäse mit Honigmelone und Reiswaffeln",
   "description_de": "Frischer Hüttenkäse mit saftiger Honigmelone, einem Hauch Honig und Reiswaffeln zum Dazubeißen.",
-  "section_de": "Frühstück",
-  "categories": ["schnell"],
   "meal_types": ["breakfast"],
   "training_tags": [],
   "servings": 1,
@@ -52,6 +50,8 @@
     "Gib den Hüttenkäse in eine Schale, verteile die Melone darauf und träufle den Honig darüber.",
     "Iss die Reiswaffeln dazu."
   ],
+  "section_de": "Frühstück",
+  "categories": ["schnell"],
   "total_minutes": 5,
   "prep_minutes": 5,
   "cook_minutes": 0,
@@ -78,8 +78,8 @@
     "batch_id": null,
     "created_on": "2026-10-21",
     "expert_reviewed": false,
-    "reviewed_by": null,
-    "reviewed_at": null,
+    "reviewed_by": "Karsten (Auftrag an Claude)",
+    "reviewed_at": "2026-10-21",
     "review_note": null
   }
 }

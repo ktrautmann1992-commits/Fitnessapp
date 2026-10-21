@@ -1,11 +1,9 @@
 {
   "id": "gefuellte-paprika-mit-reis-und-linsen",
   "version": 1,
-  "status": "draft",
+  "status": "published",
   "title_de": "Gefüllte Paprika mit Reis und Linsen",
   "description_de": "Ofen-Paprika gefüllt mit Reis, Linsen und Tomaten, abgeschmeckt mit Hefeflocken und Petersilie.",
-  "section_de": "Abendessen",
-  "categories": ["meal-prep"],
   "meal_types": ["main"],
   "training_tags": [],
   "servings": 1,
@@ -116,6 +114,8 @@
     "Fülle die Masse in die Paprikahälften, setze sie in eine Auflaufform und beträufle sie mit dem übrigen Öl.",
     "Backe die Paprika 25 Minuten, bis sie weich sind, und bestreue sie mit Petersilie."
   ],
+  "section_de": "Abendessen",
+  "categories": ["meal-prep"],
   "total_minutes": 40,
   "prep_minutes": 12,
   "cook_minutes": 28,
@@ -142,8 +142,8 @@
     "batch_id": null,
     "created_on": "2026-10-21",
     "expert_reviewed": false,
-    "reviewed_by": null,
-    "reviewed_at": null,
+    "reviewed_by": "Karsten (Auftrag an Claude)",
+    "reviewed_at": "2026-10-21",
     "review_note": null
   }
 }

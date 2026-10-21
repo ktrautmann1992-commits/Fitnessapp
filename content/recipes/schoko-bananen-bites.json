@@ -1,11 +1,9 @@
 {
   "id": "schoko-bananen-bites",
   "version": 1,
-  "status": "draft",
+  "status": "published",
   "title_de": "Schoko-Bananen-Bites",
   "description_de": "Bananenscheiben, zur Hälfte in Zartbitterschokolade getaucht und gefroren – ein süßer Snack für zwischendurch.",
-  "section_de": "Snack",
-  "categories": ["meal-prep"],
   "meal_types": ["snack"],
   "training_tags": [],
   "servings": 1,
@@ -36,6 +34,8 @@
     "Friere die Bites mindestens 1 Stunde ein und lass sie vor dem Essen 5 Minuten antauen."
   ],
   "tip_de": "Gefroren halten sich die Bites gut verpackt mehrere Wochen.",
+  "section_de": "Snack",
+  "categories": ["meal-prep"],
   "total_minutes": 11,
   "prep_minutes": 8,
   "cook_minutes": 3,
@@ -62,8 +62,8 @@
     "batch_id": null,
     "created_on": "2026-10-21",
     "expert_reviewed": false,
-    "reviewed_by": null,
-    "reviewed_at": null,
+    "reviewed_by": "Karsten (Auftrag an Claude)",
+    "reviewed_at": "2026-10-21",
     "review_note": null
   }
 }

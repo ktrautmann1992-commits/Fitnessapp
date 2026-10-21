@@ -1,11 +1,9 @@
 {
   "id": "edamame-reis-bowl-mit-avocado",
   "version": 1,
-  "status": "draft",
+  "status": "published",
   "title_de": "Edamame-Reis-Bowl mit Avocado",
   "description_de": "Warme Reis-Bowl mit Edamame, Avocado, Gurke und Karotte, beträufelt mit Sesamöl und Zitrone.",
-  "section_de": "Mittagessen",
-  "categories": ["post-workout"],
   "meal_types": ["main"],
   "training_tags": ["nach_training"],
   "servings": 1,
@@ -98,6 +96,8 @@
     "Schneide Avocado und Gurke in Scheiben und raspele die Karotte.",
     "Richte Reis, Edamame und Gemüse in einer Schale an, beträufle alles mit Sesamöl und Zitronensaft, salze leicht und streue Sesam darüber."
   ],
+  "section_de": "Mittagessen",
+  "categories": ["post-workout"],
   "total_minutes": 14,
   "prep_minutes": 8,
   "cook_minutes": 6,
@@ -124,8 +124,8 @@
     "batch_id": null,
     "created_on": "2026-10-21",
     "expert_reviewed": false,
-    "reviewed_by": null,
-    "reviewed_at": null,
+    "reviewed_by": "Karsten (Auftrag an Claude)",
+    "reviewed_at": "2026-10-21",
     "review_note": null
   }
 }
