@@ -1,0 +1,20 @@
+{
+  "exercise_id": "tisch-rudern",
+  "images": [
+    {
+      "kind": "start_position",
+      "file": "tisch-rudern-start.svg",
+      "alt_de": "Ausgangsposition: rücklings unter einem stabilen Tisch liegen, Hände greifen die Tischkante über der Brust, Arme gestreckt, Knie gebeugt, Körper von Schultern bis Knie gerade.",
+      "origin": "own_work",
+      "license": {
+        "name": "eigene Illustration Alpha5",
+        "attribution_de": null
+      },
+      "source": {
+        "creator": "Alpha5",
+        "obtained_on": "2026-10-21"
+      },
+      "reviewed_by": null
+    }
+  ]
+}

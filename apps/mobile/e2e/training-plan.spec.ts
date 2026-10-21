@@ -129,7 +129,7 @@ test('Studio 3 Tage: Plan auf „Heute“, Wochenübersicht, Verschieben und Str
 
   // Angaben ändern (Einstellungen → Training) → „Plan neu erstellen?“ → neuer Plan.
   await page.getByRole('button', { name: 'Einstellungen' }).click();
-  await page.getByRole('button', { name: 'Angaben ändern' }).click();
+  await page.getByRole('link', { name: 'Angaben ändern' }).click();
   await heading(page, 'Deine Trainingserfahrung');
   await next(page);
   await heading(page, 'Dein Ziel');
@@ -283,7 +283,7 @@ test('Ziel Marathon: Trainingstage mit Ausdauer vorbelegt → „Ausdauer-Grundl
   ).toBeVisible();
 
   // Angaben ändern: gespeicherte Trainingstage werden nie durch den Vorschlag überschrieben (Wächter 8a).
-  await page.getByRole('button', { name: 'Angaben ändern' }).click();
+  await page.getByRole('link', { name: 'Angaben ändern' }).click();
   await heading(page, 'Deine Trainingserfahrung');
   await next(page);
   await heading(page, 'Dein Ziel');
@@ -295,7 +295,7 @@ test('Ziel Marathon: Trainingstage mit Ausdauer vorbelegt → „Ausdauer-Grundl
   await next(page);
   await heading(page, 'Heute');
   await page.getByRole('button', { name: 'Einstellungen' }).click();
-  await page.getByRole('button', { name: 'Angaben ändern' }).click();
+  await page.getByRole('link', { name: 'Angaben ändern' }).click();
   await heading(page, 'Deine Trainingserfahrung');
   await next(page);
   await heading(page, 'Dein Ziel');

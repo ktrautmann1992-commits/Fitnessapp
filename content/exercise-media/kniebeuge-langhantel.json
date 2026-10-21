@@ -1,0 +1,20 @@
+{
+  "exercise_id": "kniebeuge-langhantel",
+  "images": [
+    {
+      "kind": "start_position",
+      "file": "kniebeuge-langhantel-start.svg",
+      "alt_de": "Ausgangsposition: aufrecht stehen, Langhantel liegt auf dem oberen Rücken, Hände greifen die Stange, Füße schulterbreit; dahinter das Rack.",
+      "origin": "own_work",
+      "license": {
+        "name": "eigene Illustration Alpha5",
+        "attribution_de": null
+      },
+      "source": {
+        "creator": "Alpha5",
+        "obtained_on": "2026-10-21"
+      },
+      "reviewed_by": null
+    }
+  ]
+}

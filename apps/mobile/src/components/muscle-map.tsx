@@ -16,11 +16,11 @@ import {
   useColorScheme,
   View,
 } from 'react-native';
-import Svg, { G, Path } from 'react-native-svg';
+import Svg, { G, Path, SvgXml } from 'react-native-svg';
 
 import { Body, Button, Card, Heading } from '@/components/ui';
 import { focusTestId, focusView } from '@/components/swap';
-import { exerciseMediaFor } from '@/data/exercise-media';
+import { exerciseMediaFor, illustrationXml } from '@/data/exercise-media';
 import { t } from '@/i18n';
 import { muscleMapA11yLabel, muscleMapLegend, shapePaths } from '@/lib/muscle-map-format';
 import {
@@ -267,28 +267,45 @@ export function MuscleMapThumbnail({
 }
 
 /**
- * Platzhalter „Ausgangsposition“: zeigt ein Übungsbild nur, wenn es eins mit geklärter Lizenz gibt
- * (data/exercise-media.ts); sonst nichts. Unter dem Bild stehen Urheber und Lizenz.
+ * Bild „Ausgangsposition“ (Gründer-Entscheidung B: eigene Illustrationen, data/exercise-media.ts). SVG-Vorlagen werden
+ * mit den Farben des aktuellen Modus (hell/dunkel) gezeichnet – gleich auf Web und Handy, ohne externe Aufrufe.
+ * Ohne Bild zeigt die Übung nichts an. Unter dem Bild steht die Herkunft.
  */
 export function StartPositionImage({ exerciseId }: { exerciseId: string }) {
+  const scheme = useColorScheme() === 'dark' ? 'dark' : 'light';
   const found = exerciseMediaFor(exerciseId, 'start_position');
   if (!found) return null;
   const { image, source } = found;
+  const credit =
+    image.license.attribution_de ??
+    (image.origin === 'own_work'
+      ? t.muscleMap.ownIllustration
+      : t.muscleMap.imageCredit(image.source.creator, image.license.name));
   return (
     <Card>
       <View style={styles.map} testID="exercise-start-position">
         <Heading level={2}>{t.muscleMap.startPositionTitle}</Heading>
-        <Image
-          source={source}
+        <View
           accessible
           accessibilityRole="image"
           accessibilityLabel={image.alt_de}
-          resizeMode="contain"
           style={styles.startImage}
-        />
-        <Body muted>
-          {image.license.attribution_de ??
-            t.muscleMap.imageCredit(image.source.creator, image.license.name)}
+          testID="exercise-start-position-image"
+        >
+          {source.kind === 'svg' ? (
+            <SvgXml
+              xml={illustrationXml(source.template, scheme)}
+              width="100%"
+              height="100%"
+              accessible={false}
+              aria-hidden
+            />
+          ) : (
+            <Image source={source.source} resizeMode="contain" style={styles.fill} />
+          )}
+        </View>
+        <Body muted style={styles.note}>
+          {credit}
         </Body>
       </View>
     </Card>
@@ -331,5 +348,6 @@ const styles = StyleSheet.create({
     borderWidth: 1,
   },
   dialogContent: { padding: spacing.lg, gap: spacing.md },
-  startImage: { width: '100%', aspectRatio: 4 / 3 },
+  startImage: { width: '100%', maxWidth: 400, aspectRatio: 4 / 3, alignSelf: 'center' },
+  fill: { width: '100%', height: '100%' },
 });

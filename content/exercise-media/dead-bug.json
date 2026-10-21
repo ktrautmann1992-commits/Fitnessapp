@@ -1,0 +1,20 @@
+{
+  "exercise_id": "dead-bug",
+  "images": [
+    {
+      "kind": "start_position",
+      "file": "dead-bug-start.svg",
+      "alt_de": "Ausgangsposition: Rückenlage, Arme senkrecht nach oben, Hüfte und Knie im rechten Winkel, Unterschenkel waagerecht.",
+      "origin": "own_work",
+      "license": {
+        "name": "eigene Illustration Alpha5",
+        "attribution_de": null
+      },
+      "source": {
+        "creator": "Alpha5",
+        "obtained_on": "2026-10-21"
+      },
+      "reviewed_by": null
+    }
+  ]
+}

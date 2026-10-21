@@ -1,0 +1,20 @@
+{
+  "exercise_id": "brustpresse",
+  "images": [
+    {
+      "kind": "start_position",
+      "file": "brustpresse-start.svg",
+      "alt_de": "Ausgangsposition: an der Brustpresse sitzen, Rücken an der Lehne, Griffe auf Höhe der Brustmitte fassen.",
+      "origin": "own_work",
+      "license": {
+        "name": "eigene Illustration Alpha5",
+        "attribution_de": null
+      },
+      "source": {
+        "creator": "Alpha5",
+        "obtained_on": "2026-10-21"
+      },
+      "reviewed_by": null
+    }
+  ]
+}

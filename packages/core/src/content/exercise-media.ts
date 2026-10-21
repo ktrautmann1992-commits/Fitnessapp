@@ -4,7 +4,8 @@ import { isoDateSchema } from '../age';
 import { contentIdSchema } from './schemas';
 
 /**
- * Übungsbilder (Platzhalter „Ausgangsposition“, docs/PLAN-UEBUNGEN-GLOSSAR-TAUSCH.md Nachtrag „Muskelkarte“).
+ * Übungsbilder „Ausgangsposition“ (docs/PLAN-UEBUNGEN-GLOSSAR-TAUSCH.md Nachtrag „Muskelkarte“; Gründer-Entscheidung B
+ * vom 21.10.2026: eigene Illustrationen, erzeugt von packages/content/src/illustrations, docs/DESIGN.md).
  * Je Übung höchstens eine Zuordnungsdatei `content/exercise-media/<übungs-id>.json`; die Bilddatei selbst liegt unter
  * `apps/mobile/assets/exercise-media/`. Ohne Datei zeigt die App nichts (kein leerer Rahmen).
  *
@@ -21,7 +22,7 @@ export const EXERCISE_MEDIA_ASSET_DIR = 'apps/mobile/assets/exercise-media';
 export const EXERCISE_MEDIA_KINDS = ['start_position'] as const;
 export type ExerciseMediaKind = (typeof EXERCISE_MEDIA_KINDS)[number];
 
-/** Herkunft eines Bildes (offene Gründer-Entscheidung, siehe Plan). */
+/** Herkunft eines Bildes. Gründer-Entscheidung 21.10.2026: B – eigene Illustrationen (`own_work`). */
 export const EXERCISE_MEDIA_ORIGINS = [
   'licensed_library',
   'commissioned',
@@ -30,8 +31,11 @@ export const EXERCISE_MEDIA_ORIGINS = [
 ] as const;
 export type ExerciseMediaOrigin = (typeof EXERCISE_MEDIA_ORIGINS)[number];
 
-/** Dateiname des Bildes: Kleinbuchstaben, Ziffern, Bindestriche; nur Web-taugliche Rasterformate. */
-export const EXERCISE_MEDIA_FILE_PATTERN = /^[a-z0-9]+(?:-[a-z0-9]+)*\.(?:webp|png|jpg)$/;
+/**
+ * Dateiname des Bildes: Kleinbuchstaben, Ziffern, Bindestriche; SVG (eigene Illustrationen, Generator in
+ * packages/content/src/illustrations) oder Web-taugliche Rasterformate.
+ */
+export const EXERCISE_MEDIA_FILE_PATTERN = /^[a-z0-9]+(?:-[a-z0-9]+)*\.(?:svg|webp|png|jpg)$/;
 
 const httpsUrl = z
   .string()
@@ -72,7 +76,7 @@ export const exerciseMediaImageSchema = z
       .string()
       .regex(
         EXERCISE_MEDIA_FILE_PATTERN,
-        'Dateiname: Kleinbuchstaben, Ziffern, Bindestriche und Endung .webp, .png oder .jpg.',
+        'Dateiname: Kleinbuchstaben, Ziffern, Bindestriche und Endung .svg, .webp, .png oder .jpg.',
       ),
     /** Bildbeschreibung für Screenreader (was zu sehen ist). */
     alt_de: text(10, 300),

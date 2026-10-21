@@ -11,16 +11,8 @@ import { NotificationSettings } from '@/components/notifications';
 import { LiveAdjustSettings } from '@/components/live-adjust';
 import { EatingHelpNotice } from '@/components/nutrition';
 import { ConfirmDialog, Screen } from '@/components/screen';
-import {
-  Body,
-  Button,
-  Card,
-  Checkbox,
-  Heading,
-  LoadingState,
-  Notice,
-  TextField,
-} from '@/components/ui';
+import { ListGroup, ListRow, SectionLabel } from '@/components/design';
+import { Body, Button, Card, Checkbox, LoadingState, Notice, TextField } from '@/components/ui';
 import { activePlan } from '@/data/training-plan';
 import { t } from '@/i18n';
 import { createPlanErrorText, errorText } from '@/lib/error-text';
@@ -172,167 +164,171 @@ export default function SettingsScreen() {
     >
       {message ? <Notice tone="success">{message}</Notice> : null}
 
-      <Heading level={2}>{t.settings.training}</Heading>
-      <Card>
-        {currentPlan ? <Body>{planTitleText(currentPlan)}</Body> : null}
-        <Body muted>{t.settings.trainingText}</Body>
+      <SectionLabel>{t.settings.training}</SectionLabel>
+      {currentPlan ? <Body>{planTitleText(currentPlan)}</Body> : null}
+      <Body muted>{t.settings.trainingText}</Body>
+      <ListGroup>
         {/* Öffnet die vorhandenen Onboarding-Schritte und kehrt danach zu „Heute“ zurück (Plan neu erstellen?). */}
-        <Button
+        <ListRow
+          icon="edit"
           label={t.settings.editInputs}
-          variant="secondary"
           onPress={() => router.push('/onboarding/experience?edit=1')}
         />
         {healthStatus === 'valid' ? (
-          <Button
+          <ListRow
+            icon="shield"
             label={t.settings.repeatScreening}
-            variant="secondary"
             onPress={() => router.push('/onboarding/health_screening?edit=1')}
           />
-        ) : (
-          <Body muted>{t.settings.repeatScreeningNeedsConsent}</Body>
-        )}
-        <Button
+        ) : null}
+        <ListRow
+          icon="dumbbell"
           label={t.settings.recreatePlan}
-          variant="secondary"
+          role="button"
           onPress={() => {
             setDialogError(undefined);
             setDialog('recreate');
           }}
         />
         {/* Phase 10 WP4: Wettkampf mit Ampel, Countdown und Wettkampfplan. */}
-        <Button
+        <ListRow
+          icon="trophy"
           label={t.competition.settingsLink}
-          variant="secondary"
           accessibilityHint={t.competition.settingsLinkHint}
           onPress={() => router.push('/wettkampf' as Href)}
           testID="settings-competition"
+          last
         />
-      </Card>
+      </ListGroup>
+      {healthStatus === 'valid' ? null : (
+        <Body muted>{t.settings.repeatScreeningNeedsConsent}</Body>
+      )}
 
       {/* Etappe Z5: Abnehm-Ziel nur hier sichtbar (docs/PLAN-ZIELE.md F13) – nur bei Abnehmen als Haupt- oder Nebenziel. */}
       {rows.goals &&
       (rows.goals.goal_type === 'fat_loss' || rows.goals.secondary_goal_type === 'fat_loss') ? (
         <>
-          <Heading level={2}>{t.weightGoalLife.settings.title}</Heading>
-          <Card>
-            <Body muted>{t.weightGoalLife.settings.entryText}</Body>
-            <Button
+          <SectionLabel>{t.weightGoalLife.settings.title}</SectionLabel>
+          <ListGroup>
+            <ListRow
+              icon="scale"
               label={t.weightGoalLife.settings.open}
-              variant="secondary"
+              description={t.weightGoalLife.settings.entryText}
               onPress={() => router.push('/abnehmziel' as Href)}
               testID="settings-weight-goal"
+              last
             />
-          </Card>
+          </ListGroup>
         </>
       ) : null}
 
       {supportsNutrition ? (
         <>
-          <Heading level={2}>{t.nutrition.settings.title}</Heading>
-          <Card>
-            <Body muted>{t.nutrition.settings.text}</Body>
-            <Button
+          <SectionLabel>{t.nutrition.settings.title}</SectionLabel>
+          <Body muted>{t.nutrition.settings.text}</Body>
+          <ListGroup>
+            <ListRow
+              icon="utensils"
               label={t.nutrition.settings.open}
-              variant="secondary"
               onPress={() => router.dismissTo('/ernaehrung' as Href)}
               testID="settings-nutrition-open"
             />
-            <Button
+            <ListRow
+              icon="edit"
               label={t.nutrition.settings.edit}
-              variant="secondary"
               onPress={() => router.push('/onboarding/nutrition?edit=1' as Href)}
               testID="settings-nutrition-edit"
             />
-            <Button
+            <ListRow
+              icon="settings"
               label={t.nutrition.settings.setup}
-              variant="secondary"
               onPress={() => router.push('/onboarding/nutrition_setup?edit=1' as Href)}
               testID="settings-nutrition-setup"
             />
-            <Body muted>{t.nutrition.foodDislikes.settingsText}</Body>
-            <Button
+            <ListRow
+              icon="recipe"
               label={t.nutrition.foodDislikes.open}
-              variant="secondary"
+              description={t.nutrition.foodDislikes.settingsText}
               onPress={() => router.push('/ernaehrung/abneigungen' as Href)}
               testID="settings-food-dislikes"
+              last
             />
-            {setup ? (
-              <>
-                <Checkbox
-                  label={t.nutrition.settings.showNumbers}
-                  checked={setup.showEnergyNumbers}
-                  onChange={(value) => void setShowNumbers(value)}
-                  testID="settings-show-numbers"
-                />
-                <Body muted>{t.nutrition.setup.showNumbersHint}</Body>
-                {numbersSaving ? <LoadingState /> : null}
-                {numbersMessage ? <Body muted>{numbersMessage}</Body> : null}
-              </>
-            ) : null}
-          </Card>
+          </ListGroup>
+          {setup ? (
+            <Card>
+              <Checkbox
+                label={t.nutrition.settings.showNumbers}
+                checked={setup.showEnergyNumbers}
+                onChange={(value) => void setShowNumbers(value)}
+                testID="settings-show-numbers"
+              />
+              <Body muted>{t.nutrition.setup.showNumbersHint}</Body>
+              {numbersSaving ? <LoadingState /> : null}
+              {numbersMessage ? <Body muted>{numbersMessage}</Body> : null}
+            </Card>
+          ) : null}
           <EatingHelpNotice />
         </>
       ) : null}
 
-      <Heading level={2}>{t.glossary.settingsTitle}</Heading>
-      <Card>
-        <Body muted>{t.glossary.settingsText}</Body>
-        <Button
+      <SectionLabel>{t.glossary.settingsTitle}</SectionLabel>
+      <ListGroup>
+        <ListRow
+          icon="book"
           label={t.glossary.allExercises}
-          variant="secondary"
+          description={t.glossary.settingsText}
           onPress={() => router.push('/uebungen' as Href)}
           testID="settings-glossary"
+          last={!app.backend.supportsExercisePreferences}
         />
         {app.backend.supportsExercisePreferences ? (
-          <>
-            <Body muted>{t.exclusions.settingsText}</Body>
-            <Button
-              label={t.exclusions.title}
-              variant="secondary"
-              onPress={() => router.push('/ausgeschlossene-uebungen' as Href)}
-              testID="settings-exclusions"
-            />
-          </>
+          <ListRow
+            icon="dumbbell"
+            label={t.exclusions.title}
+            description={t.exclusions.settingsText}
+            onPress={() => router.push('/ausgeschlossene-uebungen' as Href)}
+            testID="settings-exclusions"
+            last
+          />
         ) : null}
-      </Card>
+      </ListGroup>
 
       {/* Phase 8: Smartwatch (Galaxy Watch über Health Connect). */}
-      <Heading level={2}>{t.wearables.settingsTitle}</Heading>
-      <Card>
-        <Body muted>{t.wearables.settingsText}</Body>
-        <Button
+      <SectionLabel>{t.wearables.settingsTitle}</SectionLabel>
+      <ListGroup>
+        <ListRow
+          icon="stopwatch"
           label={t.wearables.settingsLink}
-          variant="secondary"
+          description={t.wearables.settingsText}
           onPress={() => router.push('/smartwatch' as Href)}
           testID="settings-smartwatch"
+          last
         />
-      </Card>
-
-      {/* Etappe E4a: Namensnennung der Nährwert-Quellen (BLS, Open Food Facts). */}
-      <Card>
-        <Button
-          label={t.foodProduct.licenses.open}
-          variant="secondary"
-          onPress={() => router.push('/lizenzen' as Href)}
-          testID="settings-licenses"
-        />
-      </Card>
+      </ListGroup>
 
       {/* Mein Konto (docs/PLAN-DASHBOARD.md 2.3): Abmelden, Datenexport, Konto löschen. */}
-      <Heading level={2}>{t.settings.account}</Heading>
-      <Card>
-        <Body muted>{t.konto.settingsLinkText}</Body>
-        <Button
+      <SectionLabel>{t.settings.account}</SectionLabel>
+      <ListGroup>
+        <ListRow
+          icon="user"
           label={t.konto.settingsLink}
-          variant="secondary"
+          description={t.konto.settingsLinkText}
           onPress={() => router.push('/konto' as Href)}
           testID="settings-account"
         />
-      </Card>
+        {/* Etappe E4a: Namensnennung der Nährwert-Quellen (BLS, Open Food Facts). */}
+        <ListRow
+          icon="info"
+          label={t.foodProduct.licenses.open}
+          onPress={() => router.push('/lizenzen' as Href)}
+          testID="settings-licenses"
+          last
+        />
+      </ListGroup>
 
       <ConsentSettings rows={rows} />
 
-      <Heading level={2}>{t.settings.screen}</Heading>
+      <SectionLabel>{t.settings.screen}</SectionLabel>
       <Card>
         <Checkbox
           label={t.settings.keepAwake}
@@ -343,7 +339,7 @@ export default function SettingsScreen() {
         <Body muted>{t.settings.keepAwakeHint}</Body>
       </Card>
 
-      <Heading level={2}>{t.settings.reminder}</Heading>
+      <SectionLabel>{t.settings.reminder}</SectionLabel>
       <Card>
         <Checkbox
           label={t.settings.reminderEnabled}
@@ -388,7 +384,7 @@ export default function SettingsScreen() {
 
       {app.backend.mode === 'local' ? (
         <>
-          <Heading level={2}>{t.settings.testMode}</Heading>
+          <SectionLabel>{t.settings.testMode}</SectionLabel>
           <Card>
             <Body muted>{t.settings.testModeText}</Body>
             {nutritionLib && (nutritionLib.demoAvailable || nutritionLib.demo) ? (
@@ -402,15 +398,21 @@ export default function SettingsScreen() {
                 />
               </>
             ) : null}
-            <Button
+          </Card>
+          {/* Destruktiv: rot und abgesetzt in eigener Gruppe, immer mit Rückfrage. */}
+          <ListGroup>
+            <ListRow
+              icon="trash"
               label={t.settings.clearTestData}
-              variant="danger"
+              role="button"
+              tone="danger"
               onPress={() => {
                 setDialogError(undefined);
                 setDialog('clear');
               }}
+              last
             />
-          </Card>
+          </ListGroup>
         </>
       ) : null}
 

@@ -1,0 +1,20 @@
+{
+  "exercise_id": "hip-thrust-sofa",
+  "images": [
+    {
+      "kind": "start_position",
+      "file": "hip-thrust-sofa-start.svg",
+      "alt_de": "Ausgangsposition: mit dem Rücken vor einem Sofa sitzen, Schulterblätter an der Sitzkante, Knie gebeugt, Füße hüftbreit aufgestellt.",
+      "origin": "own_work",
+      "license": {
+        "name": "eigene Illustration Alpha5",
+        "attribution_de": null
+      },
+      "source": {
+        "creator": "Alpha5",
+        "obtained_on": "2026-10-21"
+      },
+      "reviewed_by": null
+    }
+  ]
+}

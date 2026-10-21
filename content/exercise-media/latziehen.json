@@ -1,0 +1,20 @@
+{
+  "exercise_id": "latziehen",
+  "images": [
+    {
+      "kind": "start_position",
+      "file": "latziehen-start.svg",
+      "alt_de": "Ausgangsposition: am Latzug sitzen, Oberschenkel unter dem Polster, Stange mit gestreckten Armen über dem Kopf, Oberkörper leicht nach hinten geneigt.",
+      "origin": "own_work",
+      "license": {
+        "name": "eigene Illustration Alpha5",
+        "attribution_de": null
+      },
+      "source": {
+        "creator": "Alpha5",
+        "obtained_on": "2026-10-21"
+      },
+      "reviewed_by": null
+    }
+  ]
+}

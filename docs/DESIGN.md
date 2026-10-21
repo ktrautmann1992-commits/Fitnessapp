@@ -92,6 +92,40 @@ symmetrisch), Baustein: `apps/mobile/src/components/muscle-map.tsx`, Zuordnung M
 - **Groß** im Übungsdetail (zwei Ansichten, je 260 px hoch), **klein** im Trainingsmodus rechts neben dem Namen
   (64 px, Tippfläche ≥ 48 px) – antippen öffnet einen Dialog mit der großen Karte.
 
+### Übungs-Illustrationen „Ausgangsposition“ (21.10.2026, Gründer-Entscheidung B)
+
+Eigene, einheitliche Strich-Illustrationen für **alle Übungen** – keine fremden Bilder, keine KI-Bilder. Sie werden nicht
+von Hand gezeichnet, sondern von einem **Generator** aus Gelenkwinkeln erzeugt; dadurch sehen alle Bilder gleich aus und
+lassen sich jederzeit ändern.
+
+- **Figur:** stilisiert und geschlechtsneutral (Kopf als Kreis, Rumpf als Fläche, Glieder als runde Striche), immer
+  gleiche Proportionen und Strichstärken (`packages/content/src/illustrations/rig.ts`). Dem Betrachter zugewandte Arme
+  und Beine in voller Figurfarbe mit schmalem Rand in Kartenfarbe, abgewandte heller. Seitenansicht als Standard,
+  Vorderansicht wo die Bewegung seitlich läuft (Hampelmann, Step-Jacks, Seitheben, Fliegende, Pallof Press, Seitstütz).
+- **Ansichtsbox** 240 × 180, Bodenlinie bei y = 170, Inhalt waagerecht mittig. Geräte angedeutet: Hanteln, Bänder,
+  Kabel in Markenblau, Möbel/Maschinen in Grau.
+- **Daten:** Gelenkwinkel, Geräte und deutscher Alt-Text je Übung in `packages/content/src/illustrations/poses.ts`
+  (Winkel absolut, 0° = nach vorn, 90° = nach oben; für Hände/Füße auf Griff, Bank oder Boden gibt es Zielpunkte).
+- **Neu erzeugen:** `pnpm illustrations` (in der Claude-Code-Sitzung: „Erzeuge die Übungsbilder neu.“). Ausgabe:
+  `apps/mobile/assets/exercise-media/<id>-start.svg` (helle Farben, zum Ansehen), `content/exercise-media/<id>.json`
+  (Alt-Text, Herkunft `own_work`, Lizenz „eigene Illustration Alpha5“) und
+  `apps/mobile/src/data/exercise-illustrations.generated.ts` (Vorlagen mit Farbmarken für die App). Ein Test schlägt
+  fehl, wenn die eingecheckten Dateien nicht zum Generator passen, eine Übung kein Bild hat oder ein Bild über den Rand
+  ragt.
+- **In der App:** Übungsdetail, Karte „Ausgangsposition“ über der Muskelkarte, Screenreader liest den Alt-Text
+  („Ausgangsposition: …“). Bilder sind im Bundle, kein Netzaufruf.
+
+| Rolle                        | Hell                   | Dunkel            |
+| ---------------------------- | ---------------------- | ----------------- |
+| Figur (vorn)                 | graphit-hell `#262c3a` | eisblau `#e3ebff` |
+| Figur (abgewandte Seite)     | `#8a93a6`              | `#7d869a`         |
+| Geräte (Hantel, Band, Kabel) | blau `#1f5bff`         | `#4d7dff`         |
+| Gerät hell (Handtuch, Matte) | himmel `#8db0ff`       | `#3b5bab`         |
+| Möbel-Fläche                 | `#d5dbe5`              | `#2c3342`         |
+| Möbel-Linie, Bank, Maschine  | `#9aa4b8`              | `#4f5a70`         |
+| Bodenlinie                   | grau-dunkel `#b4bdd0`  | `#3a4254`         |
+| Rand um vordere Glieder      | weiß `#ffffff` (Karte) | graphit `#151922` |
+
 ### Icons und Favicons
 
 Alle Icons werden aus dem Logo erzeugt – nie von Hand zeichnen:
@@ -230,25 +264,47 @@ Beschriftung in `icon` der Bereichsfarbe. Kennzeilen und Abschnitts-Überschrift
 - **Ausdauer/Wettkampf:** Strecken-Skizze, Kilometer-Balken, Höhenprofil, Summen, Phasen-Band, Wochen-Chips und
   Intervall-Schritte in Orange (`strong`, Text `icon`). Die Karte (OpenStreetMap) zeichnet die Strecke weiter blau.
 
+### Feinschliff der Bildschirme (Etappe 4, 21.10.2026)
+
+- **Training durchführen** (`/workout/[sessionId]`): oben die **aktuelle Übung als Hero-Karte** (Kennzeile „Übung X von
+  Y“, Name, „Satz X von Y · Vorgabe“), darin der Fortschritt der Einheit als Balken (`AreaProgress`, Trainingsblau,
+  Rolle „Fortschrittsanzeige“). Jeder Satz als eigene Fläche (Radius 16), abgehakt in Trainingsblau plus „✓ Satz
+  geschafft“; −/+ 56 px rund, Wert 28 px extra fett. Pausen-Timer unten als dunkle Fläche mit Restzeit 44 px.
+  Muskelkarte und „So geht's“ in der Kachel „Übungs-Info“.
+- **Rezept** (`/rezept/[id]`): Kopf-Chips (Zeit, kcal je Portion nur bei sichtbaren Zahlen, Portionen), Nährwerte als
+  grüner Ring mit kcal plus `StatValue` für Eiweiß/Kohlenhydrate/Fett (der Ring ist Rahmen, kein Ziel), Zutaten als
+  `ListGroup`/`ListRow` (Anzeige-Zeilen, „Austauschen“ rechts), Schritte nummeriert in Karten (`NumberChip`), Hinweise
+  (Testphase, Allergene, „Enthält“, Haftung) als `Notice` mit Icon.
+- **Ausdauer**: Aufzeichnen mit dunkler Fläche (Zeit 56 px, Distanz/Pace 32 px, Status in Orange bzw. „Pausiert“ in
+  Signal), Start/Pause/Fortsetzen/Stopp als große Knöpfe (`AreaButton`, 64 px) in Ausdauer-Orange (Stopp als Umriss,
+  immer mit Rückfrage). Auswertung: Werte-Raster in zwei Spalten, Karte, Kilometerzeiten und Höhenprofil je in einer
+  Karte, „Löschen“ abgesetzt am Ende.
+- **Einstellungen / Mein Konto**: Abschnitte mit `SectionLabel`, Navigation als `ListRow` (Rolle Link), Aktionen mit
+  Rückfrage als `ListRow role="button"`. Destruktive Aktionen (Konto löschen, Testdaten löschen) als `ListRow
+tone="danger"` – rot, fett, Papierkorb-Icon, in eigener Gruppe am Ende.
+
 ### Bausteine (`apps/mobile/src/components/design.tsx`)
 
-| Baustein       | Props (Auszug)                                                                                                                                                                                                                           | Barrierefreiheit                                    |
-| -------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | --------------------------------------------------- |
-| `Icon`         | `name` (`IconName`: dumbbell, stopwatch, utensils, cart, run, trophy, trend, grid, dots, book, recipe, box, settings, info, edit, chevron, play, bar-menu, plus, check, calendar), `size`, `color`, `strokeWidth`, `accessibilityLabel?` | Deko (ausgeblendet); mit Label Rolle „Bild“         |
-| `IconChip`     | `area`, `icon`, `size` 36/40/52                                                                                                                                                                                                          | Deko                                                |
-| `SectionLabel` | `children` (Text), `level` 2/3                                                                                                                                                                                                           | Überschrift                                         |
-| `Tile`         | `area`, `icon`, `title`, `subtitle?`, `eyebrow?`, `variant` header/stacked/row, `onPress?`, `role` button/link, `children`                                                                                                               | ganz antippbar; Name = Kennzeile, Titel, Untertitel |
-| `HeroCard`     | `eyebrow`, `eyebrowIcon?`, `meta?`, `title`, `subtitle?`, `actionLabel?`, `onAction?`, `actionIcon`, `actionRole`, `children`                                                                                                            | Kennzeile = Überschrift; Knopf 52 px                |
-| `ListGroup`    | `children`                                                                                                                                                                                                                               | –                                                   |
-| `ListRow`      | `icon?`, `label`, `description?`, `onPress`, `role` (Standard link), `last`                                                                                                                                                              | ≥ 44 px (52), Name = Text + Beschreibung            |
-| `IconButton`   | `icon`, `accessibilityLabel` (Pflicht), `onPress`                                                                                                                                                                                        | 44 × 44 px                                          |
-| `StatValue`    | `value`, `label`, `size` md (20 px)/lg (22 px), `accessibilityLabel?`                                                                                                                                                                    | Zahl und Beschriftung zusammen                      |
-| `ProgressRing` | `size`, `stroke`, `fraction`, `overFraction?`, `color?`, `trackColor?`, `children`                                                                                                                                                       | Grafik ausgeblendet, Ansage setzt der Rahmen        |
-| `MiniBars`     | `values` (0–1), `area`, `highlightIndex?`, `height`, `accessibilityLabel` (Pflicht)                                                                                                                                                      | Rolle „Bild“ mit Ansage                             |
+| Baustein       | Props (Auszug)                                                                                                                                                                                                                                                                                                   | Barrierefreiheit                                    |
+| -------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | --------------------------------------------------- |
+| `Icon`         | `name` (`IconName`: dumbbell, stopwatch, utensils, cart, run, trophy, trend, grid, dots, book, recipe, box, settings, info, edit, chevron, play, bar-menu, plus, check, calendar, pause, stop, trash, download, shield, logout, swap, alert, bell, map …), `size`, `color`, `strokeWidth`, `accessibilityLabel?` | Deko (ausgeblendet); mit Label Rolle „Bild“         |
+| `IconChip`     | `area`, `icon`, `size` 36/40/52                                                                                                                                                                                                                                                                                  | Deko                                                |
+| `SectionLabel` | `children` (Text), `level` 2/3                                                                                                                                                                                                                                                                                   | Überschrift                                         |
+| `Tile`         | `area`, `icon`, `title`, `subtitle?`, `eyebrow?`, `variant` header/stacked/row, `onPress?`, `role` button/link, `children`                                                                                                                                                                                       | ganz antippbar; Name = Kennzeile, Titel, Untertitel |
+| `HeroCard`     | `eyebrow`, `eyebrowIcon?`, `meta?`, `title`, `subtitle?`, `actionLabel?`, `onAction?`, `actionIcon`, `actionRole`, `children`                                                                                                                                                                                    | Kennzeile = Überschrift; Knopf 52 px                |
+| `ListGroup`    | `children`                                                                                                                                                                                                                                                                                                       | –                                                   |
+| `ListRow`      | `icon?`, `label`, `description?`, `onPress?` (ohne: Anzeige-Zeile), `role` (Standard link), `tone` default/danger, `trailing?`, `disabled`, `last`                                                                                                                                                               | ≥ 44 px (52), Name = Text + Beschreibung            |
+| `IconButton`   | `icon`, `accessibilityLabel` (Pflicht), `onPress`                                                                                                                                                                                                                                                                | 44 × 44 px                                          |
+| `StatValue`    | `value`, `label`, `size` md (20 px)/lg (22 px), `accessibilityLabel?`, `valueTestID?`                                                                                                                                                                                                                            | Zahl und Beschriftung zusammen                      |
+| `ProgressRing` | `size`, `stroke`, `fraction`, `overFraction?`, `color?`, `trackColor?`, `children`                                                                                                                                                                                                                               | Grafik ausgeblendet, Ansage setzt der Rahmen        |
+| `MiniBars`     | `values` (0–1), `area`, `highlightIndex?`, `height`, `accessibilityLabel` (Pflicht)                                                                                                                                                                                                                              | Rolle „Bild“ mit Ansage                             |
+| `AreaProgress` | `area`, `current`, `total`, `accessibilityLabel` (Pflicht), `onDark`                                                                                                                                                                                                                                             | Rolle „Fortschrittsanzeige“ mit Wert                |
+| `AreaButton`   | `area`, `label`, `onPress`, `icon?`, `variant` filled/outline                                                                                                                                                                                                                                                    | Knopf 64 px; hell Weiß auf `icon`, dunkel Schwarz   |
+| `NumberChip`   | `area`, `value`                                                                                                                                                                                                                                                                                                  | Deko (Zahl steht im Namen der Zeile)                |
 
 - `ProgressRing` ist derselbe Baustein wie im Kalorien-Ring (aus `nutrition-day-overview.tsx` hierher verschoben,
   dort weiter exportiert). Werte (Anteile, Kilometer) rechnet immer der Aufrufer bzw. `packages/core`.
-- `ui.tsx` (gleiche API): `Heading` 1 = 26/800, `Heading` 2 = 20/700, alle Texte in Jakarta; `Card` Radius 20 mit
+- `ui.tsx` (gleiche API, `Notice` zusätzlich mit `icon?`): `Heading` 1 = 26/800, `Heading` 2 = 20/700, alle Texte in Jakarta; `Card` Radius 20 mit
   `--card-border`; `Button` 52 px hoch, Schrift 17/700.
 - Tests: `design.test.tsx`, `ui.test.tsx` (Vitest-Gruppe „components“: react-native-web in happy-dom, Helfer
   `src/test/render.tsx`).

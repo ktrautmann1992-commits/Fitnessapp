@@ -5,11 +5,12 @@ import {
   rpeFromReserve,
   SESSION_RPE_LIMITS,
 } from '@fitnessapp/core';
-import { fontSize, fontWeight, radius, spacing } from '@fitnessapp/ui';
+import { fontSize, fontWeight, heroColors, radius, spacing } from '@fitnessapp/ui';
 import { Platform, Pressable, StyleSheet, View } from 'react-native';
 
 import { t } from '@/i18n';
-import { useThemeColors } from '@/lib/theme';
+import { displayFont } from '@/lib/fonts';
+import { useColorSchemeName, useThemeColors } from '@/lib/theme';
 import { restTexts } from '@/lib/workout-format';
 
 import { MIN_TOUCH } from './ui';
@@ -63,7 +64,7 @@ export function Stepper({
       <View style={styles.stepRow}>
         {button('−', t.workout.decrease, onDecrease)}
         <Text
-          style={[styles.stepValue, { color: theme.text }]}
+          style={[styles.stepValue, displayFont(), { color: theme.text }]}
           accessibilityLabel={`${label}: ${valueA11y}`}
           testID={testID ? `${testID}-value` : undefined}
         >
@@ -301,6 +302,8 @@ export function RestTimerBar({
   onStop: () => void;
 }) {
   const theme = useThemeColors();
+  // Pause prominent wie die Hero-Karte: dunkle Fläche, große Restzeit; am Ende Rand in Himmelblau plus Text.
+  const hero = heroColors[useColorSchemeName()];
   const time = restTexts(remaining);
   const small = (label: string, a11y: string, onPress: () => void, testID: string) => (
     <Pressable
@@ -319,17 +322,20 @@ export function RestTimerBar({
   return (
     <View
       testID="rest-timer"
-      style={[styles.restBar, { borderColor: over ? theme.primary : theme.border }]}
+      style={[
+        styles.restBar,
+        { backgroundColor: hero.background, borderColor: over ? hero.accent : hero.border },
+      ]}
     >
       {over ? (
-        <Text style={[styles.restOver, { color: theme.text }]} testID="rest-timer-over">
+        <Text style={[styles.restOver, { color: hero.text }]} testID="rest-timer-over">
           {`✓ ${t.workout.rest.over}`}
         </Text>
       ) : (
         <View style={styles.restRow}>
-          <Text style={[styles.restLabel, { color: theme.textMuted }]}>{t.workout.rest.label}</Text>
+          <Text style={[styles.restLabel, { color: hero.accent }]}>{t.workout.rest.label}</Text>
           <Text
-            style={[styles.restTime, { color: theme.text }]}
+            style={[styles.restTime, displayFont(), { color: hero.text }]}
             accessibilityLabel={time.a11y}
             testID="rest-timer-time"
           >
@@ -373,7 +379,7 @@ const styles = StyleSheet.create({
     overflow: 'hidden',
     opacity: 0,
   },
-  restBar: { borderWidth: 2, borderRadius: radius.md, padding: spacing.sm, gap: spacing.xs },
+  restBar: { borderWidth: 2, borderRadius: radius.lg, padding: spacing.md, gap: spacing.sm },
   restRow: {
     flexDirection: 'row',
     flexWrap: 'wrap',
@@ -382,7 +388,12 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
   },
   restLabel: { fontSize: fontSize.md, fontWeight: fontWeight.semibold },
-  restTime: { fontSize: fontSize.xxl, fontWeight: fontWeight.bold },
+  restTime: {
+    fontSize: 44,
+    lineHeight: 50,
+    fontWeight: fontWeight.extrabold,
+    fontVariant: ['tabular-nums'],
+  },
   restOver: { fontSize: fontSize.lg, fontWeight: fontWeight.bold },
   restButton: {
     flexGrow: 1,
@@ -402,7 +413,7 @@ const styles = StyleSheet.create({
     width: BIG_TOUCH,
     height: BIG_TOUCH,
     borderWidth: 1,
-    borderRadius: radius.md,
+    borderRadius: radius.pill,
     alignItems: 'center',
     justifyContent: 'center',
   },
@@ -411,8 +422,10 @@ const styles = StyleSheet.create({
     flex: 1,
     minWidth: 64,
     textAlign: 'center',
-    fontSize: fontSize.xl,
-    fontWeight: fontWeight.bold,
+    fontSize: 28,
+    lineHeight: 34,
+    fontWeight: fontWeight.extrabold,
+    fontVariant: ['tabular-nums'],
   },
   doneButton: {
     minHeight: BIG_TOUCH + 8,

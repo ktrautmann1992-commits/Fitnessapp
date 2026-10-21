@@ -1,0 +1,20 @@
+{
+  "exercise_id": "schulterdruecken-band",
+  "images": [
+    {
+      "kind": "start_position",
+      "file": "schulterdruecken-band-start.svg",
+      "alt_de": "Ausgangsposition: hüftbreit auf dem Widerstandsband stehen, die Enden auf Schulterhöhe halten.",
+      "origin": "own_work",
+      "license": {
+        "name": "eigene Illustration Alpha5",
+        "attribution_de": null
+      },
+      "source": {
+        "creator": "Alpha5",
+        "obtained_on": "2026-10-21"
+      },
+      "reviewed_by": null
+    }
+  ]
+}

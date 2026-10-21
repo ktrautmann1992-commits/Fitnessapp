@@ -1,0 +1,20 @@
+{
+  "exercise_id": "beinbeuger-band",
+  "images": [
+    {
+      "kind": "start_position",
+      "file": "beinbeuger-band-start.svg",
+      "alt_de": "Ausgangsposition: Bauchlage, Beine gestreckt, Kopf auf den Unterarmen, Widerstandsband um ein Fußgelenk, am Tischbein hinter den Füßen befestigt.",
+      "origin": "own_work",
+      "license": {
+        "name": "eigene Illustration Alpha5",
+        "attribution_de": null
+      },
+      "source": {
+        "creator": "Alpha5",
+        "obtained_on": "2026-10-21"
+      },
+      "reviewed_by": null
+    }
+  ]
+}

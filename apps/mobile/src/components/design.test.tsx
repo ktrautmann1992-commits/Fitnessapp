@@ -1,8 +1,11 @@
+import { act } from 'react';
 import { afterEach, describe, expect, it, vi } from 'vitest';
 
 import { byRole, cleanup, render } from '@/test/render';
 
 import {
+  AreaButton,
+  AreaProgress,
   HeroCard,
   Icon,
   ICON_NAMES,
@@ -12,6 +15,7 @@ import {
   ListRow,
   MIN_ROW,
   MiniBars,
+  NumberChip,
   ProgressRing,
   SectionLabel,
   StatValue,
@@ -179,6 +183,89 @@ describe('ListRow / ListGroup', () => {
   });
 });
 
+describe('ListRow (Anzeige, Knopf rechts, destruktiv)', () => {
+  it('ist ohne onPress nur Anzeige – ohne Rolle, ohne Pfeil, mit eigenem Knopf rechts', () => {
+    const view = render(
+      <ListGroup>
+        <ListRow
+          label="150 g Haferflocken"
+          labelTestID="zutat"
+          trailing={
+            <IconButton icon="swap" accessibilityLabel="Tauschen" onPress={() => undefined} />
+          }
+          last
+        />
+      </ListGroup>,
+    );
+    expect(byRole(view, 'link')).toHaveLength(0);
+    expect(byRole(view, 'button').map((b) => b.getAttribute('aria-label'))).toEqual(['Tauschen']);
+    expect(view.querySelector('[data-testid="zutat"]')?.textContent).toBe('150 g Haferflocken');
+  });
+
+  it('kennzeichnet destruktive Aktionen als Knopf mit Wort', () => {
+    const view = render(
+      <ListRow
+        icon="trash"
+        label="Konto löschen"
+        role="button"
+        tone="danger"
+        onPress={() => undefined}
+        last
+      />,
+    );
+    expect(byRole(view, 'button')[0]?.getAttribute('aria-label')).toBe('Konto löschen');
+  });
+});
+
+describe('AreaProgress', () => {
+  it('ist eine Fortschrittsanzeige mit Wert und Ansage', () => {
+    const view = render(
+      <AreaProgress area="training" current={2} total={5} accessibilityLabel="Übung 3 von 5" />,
+    );
+    const [bar] = byRole(view, 'progressbar');
+    expect(bar?.getAttribute('aria-label')).toBe('Übung 3 von 5');
+    expect(bar?.getAttribute('aria-valuenow')).toBe('2');
+    expect(bar?.getAttribute('aria-valuemax')).toBe('5');
+  });
+
+  it('bleibt bei 0 Übungen bei 0 % (kein Fehler)', () => {
+    const view = render(
+      <AreaProgress area="training" current={0} total={0} accessibilityLabel="leer" onDark />,
+    );
+    expect(byRole(view, 'progressbar')).toHaveLength(1);
+  });
+});
+
+describe('AreaButton', () => {
+  it('ist ein großer Knopf mit Namen (gefüllt und Umriss)', () => {
+    const pressed: string[] = [];
+    const view = render(
+      <>
+        <AreaButton area="ausdauer" icon="pause" label="Pause" onPress={() => pressed.push('p')} />
+        <AreaButton
+          area="ausdauer"
+          icon="stop"
+          label="Stopp"
+          variant="outline"
+          onPress={() => undefined}
+        />
+      </>,
+    );
+    const buttons = byRole(view, 'button');
+    expect(buttons.map((b) => b.getAttribute('aria-label'))).toEqual(['Pause', 'Stopp']);
+    act(() => buttons[0]?.click());
+    expect(pressed).toEqual(['p']);
+  });
+});
+
+describe('NumberChip', () => {
+  it('zeigt die Zahl und ist für Bildschirmleser ausgeblendet', () => {
+    const view = render(<NumberChip area="ernaehrung" value={3} />);
+    expect(view.textContent).toBe('3');
+    expect(view.querySelector('[aria-hidden="true"]')).not.toBeNull();
+  });
+});
+
 describe('IconButton', () => {
   it('braucht einen Namen', () => {
     const view = render(
@@ -212,6 +299,13 @@ describe('StatValue', () => {
     expect(view.querySelector('[data-testid="s"]')?.getAttribute('aria-label')).toBe(
       '18,4 Kilometer',
     );
+  });
+});
+
+describe('StatValue (Zahl einzeln prüfbar)', () => {
+  it('trägt die testID der Zahl ohne Beschriftung', () => {
+    const view = render(<StatValue value="5,02 km" label="Distanz" valueTestID="wert" />);
+    expect(view.querySelector('[data-testid="wert"]')?.textContent).toBe('5,02 km');
   });
 });
 

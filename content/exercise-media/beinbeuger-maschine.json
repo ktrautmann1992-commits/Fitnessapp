@@ -1,0 +1,20 @@
+{
+  "exercise_id": "beinbeuger-maschine",
+  "images": [
+    {
+      "kind": "start_position",
+      "file": "beinbeuger-maschine-start.svg",
+      "alt_de": "Ausgangsposition: an der Beinbeuger-Maschine sitzen, Beine gestreckt, Polster über den Oberschenkeln und hinter den Fersen, Hände an den Griffen.",
+      "origin": "own_work",
+      "license": {
+        "name": "eigene Illustration Alpha5",
+        "attribution_de": null
+      },
+      "source": {
+        "creator": "Alpha5",
+        "obtained_on": "2026-10-21"
+      },
+      "reviewed_by": null
+    }
+  ]
+}

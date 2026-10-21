@@ -17,12 +17,15 @@
     "foods:import": "tsx src/foods-import-cli.ts",
     "sources:integrity": "tsx src/sources-integrity-cli.ts",
     "import-alpha5": "tsx src/import-alpha5-cli.ts",
+    "illustrations": "tsx src/illustrations-cli.ts",
+    "illustrations:check": "tsx src/illustrations-cli.ts --check",
     "lint": "eslint .",
     "typecheck": "tsc --noEmit",
     "test": "vitest run --passWithNoTests"
   },
   "dependencies": {
     "@fitnessapp/core": "workspace:*",
+    "@fitnessapp/ui": "workspace:*",
     "@google/genai": "2.27.0",
     "prettier": "^3.9.9",
     "zod": "^4.6.5"

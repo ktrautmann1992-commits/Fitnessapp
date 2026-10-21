@@ -2,7 +2,7 @@ import { afterEach, describe, expect, it, vi } from 'vitest';
 
 import { byRole, cleanup, render } from '@/test/render';
 
-import { BUTTON_HEIGHT, Button, Card, Heading, MIN_TOUCH } from './ui';
+import { BUTTON_HEIGHT, Button, Card, Heading, MIN_TOUCH, Notice } from './ui';
 
 afterEach(cleanup);
 
@@ -32,5 +32,17 @@ describe('ui.tsx im neuen Aussehen (API unverändert)', () => {
   it('Card zeigt den Inhalt', () => {
     const view = render(<Card>Hallo</Card>);
     expect(view.textContent).toBe('Hallo');
+  });
+
+  it('Notice mit Icon: gleicher Text, Icon nur Deko, Warnung bleibt Alarm', () => {
+    const view = render(
+      <Notice tone="warning" icon="alert" testID="n">
+        Allergene noch nicht fachlich geprüft.
+      </Notice>,
+    );
+    const box = view.querySelector('[data-testid="n"]');
+    expect(box?.textContent).toBe('Allergene noch nicht fachlich geprüft.');
+    expect(box?.getAttribute('role')).toBe('alert');
+    expect(box?.querySelector('[aria-hidden="true"] svg')).not.toBeNull();
   });
 });

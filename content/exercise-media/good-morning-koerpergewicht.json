@@ -1,0 +1,20 @@
+{
+  "exercise_id": "good-morning-koerpergewicht",
+  "images": [
+    {
+      "kind": "start_position",
+      "file": "good-morning-koerpergewicht-start.svg",
+      "alt_de": "Ausgangsposition: hüftbreit stehen, Knie leicht gebeugt, Hände vor der Brust gekreuzt, Rücken gerade.",
+      "origin": "own_work",
+      "license": {
+        "name": "eigene Illustration Alpha5",
+        "attribution_de": null
+      },
+      "source": {
+        "creator": "Alpha5",
+        "obtained_on": "2026-10-21"
+      },
+      "reviewed_by": null
+    }
+  ]
+}

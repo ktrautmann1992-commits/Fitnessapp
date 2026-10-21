@@ -1,0 +1,20 @@
+{
+  "exercise_id": "schulterdruecken-langhantel",
+  "images": [
+    {
+      "kind": "start_position",
+      "file": "schulterdruecken-langhantel-start.svg",
+      "alt_de": "Ausgangsposition: aufrecht stehen, Langhantel liegt auf den vorderen Schultern, schulterbreiter Griff, Füße hüftbreit; dahinter das Rack.",
+      "origin": "own_work",
+      "license": {
+        "name": "eigene Illustration Alpha5",
+        "attribution_de": null
+      },
+      "source": {
+        "creator": "Alpha5",
+        "obtained_on": "2026-10-21"
+      },
+      "reviewed_by": null
+    }
+  ]
+}
