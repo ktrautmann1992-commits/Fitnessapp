@@ -1220,6 +1220,10 @@ alle offen, Server-Prüfung mit Phase 7):
   Trainingsplan für einen aktiven Alltag. Die App bewertet weder Sturzrisiko noch Gesundheitszustand.“ Keine
   Sturzrisiko-Werte, keine Normtabellen, Selbsttests steuern nie den Plan, keine Wirkungsaussage zu Stürzen. MDR-Abgrenzung,
   Haftung und Werbeaussagen vor dem öffentlichen Livegang prüfen lassen.
+- **Vorlesen (Fit im Alter FA5):** Datenschutzerklärung ergänzen: „Anleitungen vorlesen“ nutzt die Sprachausgabe des
+  Geräts (im Browser nur Stimmen, die auf dem Gerät laufen – `localService`); vorgelesen werden nur Übungsanleitungen,
+  nie Gesundheitsdaten. BFSG/EN 301 549 (Barrierefreiheit) vor dem öffentlichen Livegang prüfen (BITV nur öffentliche
+  Stellen).
 - Health-Claims-Verordnung, Kennzeichnung Werbung/Affiliate (UWG)
 - App-Store-Richtlinien: In-App-Kauf für digitale Abos, HealthKit-Daten nicht für Werbung
 - Impressum, AGB, Widerrufsbelehrung, Haftungsausschluss

@@ -61,6 +61,7 @@ import {
 } from '@/state/app-state';
 import { healthConsentStatus, isReminderDue, HOME_ROUTE, resolveEntryRoute } from '@/state/flow';
 import { MeasurementNotificationOffer } from '@/components/notifications';
+import { useLargeView } from '@/lib/accessibility';
 
 /**
  * „Heute“ (docs/PLAN-PHASE-3.md 10.2/10.3): heutige Einheit mit Arzt-Hinweis, Wochenübersicht, Verschieben,
@@ -80,6 +81,8 @@ export default function TodayScreen() {
   const [declineDialog, setDeclineDialog] = useState(false);
   const [discardDraftKey, setDiscardDraftKey] = useState<string | null>(null);
   const [foreignDialog, setForeignDialog] = useState(false);
+  const largeView = useLargeView();
+  const [showMore, setShowMore] = useState(false);
   /** Offener Tausch-Dialog (Etappe T2) und Rückmeldung mit „Rückgängig“ (ohne Zeitlimit, Wächter K4). */
   const [swapTarget, setSwapTarget] = useState<{ target: SwapTarget; index: number } | null>(null);
   const [swapBusy, setSwapBusy] = useState(false);
@@ -885,47 +888,62 @@ export default function TodayScreen() {
       />
       {/* Ernährung (Phase 5, Etappe N4): Karte „Essen heute“. */}
       <NutritionTodayCard nowMinutes={nowMinutes} />
-      {/* Tagesauswertung (Etappe A2): Essen und Training heute. */}
-      <Button
-        label={t.day.openToday}
-        accessibilityLabel={t.day.openA11y(t.day.today)}
-        variant="secondary"
-        onPress={() => router.push(`/tag/${today}` as Href)}
-        testID="today-day"
-      />
-      {/* Woche und Verlauf (Etappe D). */}
-      <View style={{ flexDirection: 'row', gap: 8 }}>
-        <View style={{ flex: 1 }}>
+      {/* Große Ansicht (FA5, Plan 12 Nr. 2): weniger Elemente – die Wege zu Tag, Woche, Verlauf, Kalender und
+          Übungen liegen hinter „Mehr anzeigen“. */}
+      {largeView ? (
+        <Button
+          label={showMore ? t.accessibility.todayLess : t.accessibility.todayMore}
+          variant="link"
+          expanded={showMore}
+          onPress={() => setShowMore((v) => !v)}
+          testID="today-more"
+        />
+      ) : null}
+      {!largeView || showMore ? (
+        <>
+          {/* Tagesauswertung (Etappe A2): Essen und Training heute. */}
           <Button
-            label={t.today.openWeek}
+            label={t.day.openToday}
+            accessibilityLabel={t.day.openA11y(t.day.today)}
             variant="secondary"
-            onPress={() => router.push('/week' as Href)}
-            testID="today-week"
+            onPress={() => router.push(`/tag/${today}` as Href)}
+            testID="today-day"
           />
-        </View>
-        <View style={{ flex: 1 }}>
+          {/* Woche und Verlauf (Etappe D). */}
+          <View style={{ flexDirection: 'row', gap: 8 }}>
+            <View style={{ flex: 1 }}>
+              <Button
+                label={t.today.openWeek}
+                variant="secondary"
+                onPress={() => router.push('/week' as Href)}
+                testID="today-week"
+              />
+            </View>
+            <View style={{ flex: 1 }}>
+              <Button
+                label={t.today.openHistory}
+                variant="secondary"
+                onPress={() => router.push('/history' as Href)}
+                testID="today-history"
+              />
+            </View>
+          </View>
+          {/* Trainingskalender: Einheiten auf einen gewählten Tag ziehen (Etappe A1a). */}
           <Button
-            label={t.today.openHistory}
+            label={t.calendar.open}
+            accessibilityLabel={t.calendar.openA11y}
             variant="secondary"
-            onPress={() => router.push('/history' as Href)}
-            testID="today-history"
+            onPress={() => router.push('/kalender' as Href)}
+            testID="today-calendar"
           />
-        </View>
-      </View>
-      {/* Trainingskalender: Einheiten auf einen gewählten Tag ziehen (Etappe A1a). */}
-      <Button
-        label={t.calendar.open}
-        accessibilityLabel={t.calendar.openA11y}
-        variant="secondary"
-        onPress={() => router.push('/kalender' as Href)}
-        testID="today-calendar"
-      />
-      <Button
-        label={t.glossary.allExercises}
-        variant="secondary"
-        onPress={() => router.push('/uebungen' as Href)}
-        testID="today-glossary"
-      />
+          <Button
+            label={t.glossary.allExercises}
+            variant="secondary"
+            onPress={() => router.push('/uebungen' as Href)}
+            testID="today-glossary"
+          />
+        </>
+      ) : null}
 
       <Card>
         {planNameLine(plan) ? <Body testID="plan-name">{planNameLine(plan)}</Body> : null}

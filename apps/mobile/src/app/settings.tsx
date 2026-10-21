@@ -1,12 +1,15 @@
 import {
+  ageInYears,
   MEASUREMENT_REMINDER_INTERVAL_DAYS,
   measurementReminderIntervalSchema,
   nextMeasurementDue,
+  suggestLargeView,
 } from '@fitnessapp/core';
 import { Redirect, useRouter, type Href } from 'expo-router';
 import { useEffect, useState } from 'react';
 
 import { ConsentSettings } from '@/components/consent-settings';
+import { useReadAloudVoice } from '@/components/read-aloud';
 import { NotificationSettings } from '@/components/notifications';
 import { LiveAdjustSettings } from '@/components/live-adjust';
 import { EatingHelpNotice } from '@/components/nutrition';
@@ -17,7 +20,9 @@ import { activePlan } from '@/data/training-plan';
 import { t } from '@/i18n';
 import { createPlanErrorText, errorText } from '@/lib/error-text';
 import { formatDateDe } from '@/lib/format';
+import { useAccessibility } from '@/lib/accessibility';
 import { useKeepAwakeSetting } from '@/lib/keep-awake';
+import { useToday } from '@/lib/use-today';
 import { planTitleText } from '@/lib/plan-title';
 import { useApp } from '@/state/app-state';
 import { healthConsentStatus, lastMeasurementDate } from '@/state/flow';
@@ -36,6 +41,9 @@ export default function SettingsScreen() {
   const [dialogError, setDialogError] = useState<string>();
   const [message, setMessage] = useState<string>();
   const keepAwake = useKeepAwakeSetting();
+  const accessibility = useAccessibility();
+  const readAloudVoice = useReadAloudVoice();
+  const today = useToday();
   const [reminderEnabled, setReminderEnabled] = useState(app.rows?.reminder?.enabled ?? true);
   const [interval, setIntervalText] = useState(
     String(app.rows?.reminder?.interval_days ?? MEASUREMENT_REMINDER_INTERVAL_DAYS.default),
@@ -63,6 +71,8 @@ export default function SettingsScreen() {
     return <Redirect href="/" />;
   }
   const rows = app.rows;
+  const birthDate = rows.profile?.birth_date ?? null;
+  const ageYears = birthDate && birthDate <= today ? ageInYears(birthDate, today) : null;
   const healthStatus = healthConsentStatus(rows, app.versions);
   const currentPlan = activePlan(rows)?.plan ?? null;
   const setup = app.answers.nutritionSetup;
@@ -348,6 +358,43 @@ export default function SettingsScreen() {
       </ListGroup>
 
       <ConsentSettings rows={rows} />
+
+      {/* Barrierefreiheit (docs/PLAN-FIT-IM-ALTER.md 12, Etappe FA5): nur dieses Gerät. */}
+      <SectionLabel>{t.accessibility.section}</SectionLabel>
+      <Card>
+        {!accessibility.settings.largeView &&
+        suggestLargeView({ ageYears, goalType: rows.goals?.goal_type ?? null }) ? (
+          <Notice tone="info" testID="settings-large-view-suggestion">
+            {t.accessibility.largeViewSuggestion}
+          </Notice>
+        ) : null}
+        <Checkbox
+          label={t.accessibility.largeView}
+          checked={accessibility.settings.largeView}
+          onChange={(value) =>
+            void accessibility.update({ largeView: value }).catch(() => undefined)
+          }
+          testID="settings-large-view"
+        />
+        <Body muted>{t.accessibility.largeViewHint}</Body>
+        {readAloudVoice === null ? (
+          <Body muted testID="settings-read-aloud-unavailable">
+            {t.accessibility.readAloudUnavailable}
+          </Body>
+        ) : readAloudVoice ? (
+          <>
+            <Checkbox
+              label={t.accessibility.readAloud}
+              checked={accessibility.settings.readAloud}
+              onChange={(value) =>
+                void accessibility.update({ readAloud: value }).catch(() => undefined)
+              }
+              testID="settings-read-aloud"
+            />
+            <Body muted>{t.accessibility.readAloudHint}</Body>
+          </>
+        ) : null}
+      </Card>
 
       <SectionLabel>{t.settings.screen}</SectionLabel>
       <Card>

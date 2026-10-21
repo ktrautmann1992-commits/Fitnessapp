@@ -5,6 +5,7 @@ import { useEffect, useMemo } from 'react';
 import { StyleSheet, View } from 'react-native';
 
 import { MuscleMap, StartPositionImage } from '@/components/muscle-map';
+import { ReadAloudButton } from '@/components/read-aloud';
 import { Screen } from '@/components/screen';
 import { Body, Button, Card, Heading, LoadingState, Notice } from '@/components/ui';
 import { preferencesFromRows } from '@/data/exercise-swap';
@@ -156,6 +157,17 @@ export default function GlossaryDetailScreen() {
           />
         </Notice>
       ) : null}
+
+      {/* Vorlesen (FA5): nur wenn in den Einstellungen an und eine lokale Stimme da ist. */}
+      <ReadAloudButton
+        exercise={{
+          name: entry.name,
+          description: entry.description,
+          steps: entry.steps,
+          tips: entry.tips,
+          safetyNote: entry.safetyNote,
+        }}
+      />
 
       {/* Ausgangsposition: eigene Illustration (Gründer-Entscheidung B), über der Muskelkarte. */}
       <StartPositionImage exerciseId={entry.id} />

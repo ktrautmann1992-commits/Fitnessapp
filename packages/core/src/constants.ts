@@ -3788,3 +3788,35 @@ export const WEARABLE_DUPLICATE = {
   askShare: 0.2,
   durationTolerance: 0.2,
 } as const;
+
+// ---------------------------------------------------------------------------------------------------------
+// Fit im Alter · Etappe FA5 · Barrierefreiheit (docs/PLAN-FIT-IM-ALTER.md Abschnitt 12) – gilt app-weit
+// ---------------------------------------------------------------------------------------------------------
+
+/**
+ * „Große Ansicht“ (Einstellungen, nur dieses Gerät).
+ * - `baseFontPx` 20 statt `defaultBaseFontPx` 16 → alle Schriftgrößen ×1,25 (Plan 12 Nr. 2). PRODUKTENTSCHEIDUNG.
+ * - `minTouchPx` 56: Tippflächen mindestens 56 px wie heute im Trainingsmodus; WCAG 2.2 SC 2.5.8 verlangt nur 24 px,
+ *   SC 2.5.5 (AAA) 44 px – W3C (2023), Web Content Accessibility Guidelines 2.2. Wert: PRODUKTENTSCHEIDUNG.
+ * - `minContrast` 7: Text 7 : 1 (WCAG 2.2 SC 1.4.6, AAA) – Token-Prüfung in packages/ui/src/tokens.test.ts.
+ * - `suggestFromAge` 60: Vorschlag in den Einstellungen ab 60 (FA-G2, Gründer-Entscheidung 21.10.2026) und beim
+ *   Ziel „Fit im Alter“. PRODUKTENTSCHEIDUNG.
+ */
+export const LARGE_VIEW = {
+  defaultBaseFontPx: 16,
+  baseFontPx: 20,
+  minTouchPx: 56,
+  defaultMinTouchPx: 48,
+  minContrast: 7,
+  suggestFromAge: 60,
+} as const;
+
+/**
+ * Vorlesen über die Sprachausgabe des Geräts (Plan 12 Nr. 5, Wächter S11, FA-G9):
+ * - `language`: Sprache der Anleitungen (de-DE gilt auch für AT/CH).
+ * - `rate`: Sprechtempo (1 = normal). Etwas langsamer für ältere Hörerinnen und Hörer – PRODUKTENTSCHEIDUNG.
+ * - `maxChars`: Obergrenze eines Vorlese-Texts (Schutz vor sehr langen Texten). PRODUKTENTSCHEIDUNG.
+ * Im Browser nur Stimmen mit `localService = true` (Sprachausgabe auf dem Gerät, keine Übertragung an einen Dienst –
+ * W3C Web Speech API, SpeechSynthesisVoice.localService); gibt es keine, wird der Knopf ausgeblendet.
+ */
+export const READ_ALOUD = { language: 'de-DE', rate: 0.9, maxChars: 4000 } as const;

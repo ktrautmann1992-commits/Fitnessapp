@@ -13,6 +13,7 @@ export {
   fontSize,
   fontWeight,
   heroColors,
+  largeViewColors,
   maxContentWidth,
   radius,
   spacing,

@@ -34,12 +34,15 @@ export interface PrintFormState {
   readonly name: string;
   /** Leere Mitschreib-Spalten; > 4 nur quer (B9). */
   readonly logColumns: number;
+  /** Großdruck: Schrift ×1,4 (FA5, docs/PLAN-FIT-IM-ALTER.md 12 Nr. 7). */
+  readonly largePrint: boolean;
 }
 
 export const DEFAULT_PRINT_FORM: PrintFormState = {
   includeName: false,
   name: '',
   logColumns: PRINT_EXPORT.defaultLogColumns,
+  largePrint: false,
 };
 
 export interface LogColumnChoice {
@@ -172,7 +175,7 @@ export function buildPlanPrint(input: PlanPrintInput): PlanPrintResult {
   const translated = translatePrintDocument(result.document);
   return {
     ok: true,
-    html: renderPrintHtml(translated),
+    html: renderPrintHtml(translated, { largePrint: form.largePrint }),
     title: translated.title,
     landscape: form.logColumns > PRINT_EXPORT.maxLogColumnsPortrait,
   };

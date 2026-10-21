@@ -374,7 +374,27 @@ export function splitPages(blocks: readonly TranslatedBlock[]): Page[] {
 }
 
 /** Erzeugt das vollständige, eigenständige Druck-HTML. */
-export function renderPrintHtml(doc: TranslatedDocument): string {
+/**
+ * Großdruck (docs/PLAN-FIT-IM-ALTER.md 12 Nr. 7, Etappe FA5): alle Schriftgrößen ×1,4 – die kleinste Schrift (10 pt)
+ * wird 14 pt. Seiten wachsen nach unten mit (min-height), der Plan braucht dann mehr Seiten.
+ */
+export const LARGE_PRINT_FONT_SCALE = 1.4;
+
+export interface RenderPrintOptions {
+  readonly largePrint?: boolean;
+}
+
+/** Schriftgrößen (pt) im Stil skalieren, auf 0,5 pt gerundet. */
+export function scalePrintFontSizes(css: string, factor: number): string {
+  if (factor === 1) return css;
+  return css.replace(/font-size:\s*([\d.]+)pt/g, (_, size: string) => {
+    const scaled = Math.round(Number(size) * factor * 2) / 2;
+    return `font-size: ${scaled}pt`;
+  });
+}
+
+export function renderPrintHtml(doc: TranslatedDocument, options: RenderPrintOptions = {}): string {
+  const scale = options.largePrint ? LARGE_PRINT_FONT_SCALE : 1;
   const footer = `<footer class="page-footer"><span>${escapeHtml(doc.footer)}</span>${logo('')}</footer>`;
   const pages = splitPages(doc.blocks)
     .map((page, index) => {
@@ -394,7 +414,7 @@ export function renderPrintHtml(doc: TranslatedDocument): string {
 <meta name="referrer" content="no-referrer">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>${escapeHtml(doc.title)}</title>
-<style>${globalStyles()}${documentStyles()}</style>
+<style>${globalStyles()}${scalePrintFontSizes(documentStyles(), scale)}</style>
 </head>
 <body>
 <main>
@@ -452,6 +472,13 @@ function scopeCss(css: string, scope: string): string {
  * Druck-CSS für die Druckansicht im Browser (Wächter P3/P4 S2): Schrift und `@page` global, alle übrigen Regeln
  * nur innerhalb der angegebenen Bereiche (z. B. Vorschau und Druck-Kopie) – die App-Oberfläche bleibt unberührt.
  */
-export function scopedPrintStyles(scopes: readonly string[]): string {
-  return [globalStyles(), ...scopes.map((scope) => scopeCss(documentStyles(), scope))].join('\n');
+export function scopedPrintStyles(
+  scopes: readonly string[],
+  options: RenderPrintOptions = {},
+): string {
+  const doc = scalePrintFontSizes(
+    documentStyles(),
+    options.largePrint ? LARGE_PRINT_FONT_SCALE : 1,
+  );
+  return [globalStyles(), ...scopes.map((scope) => scopeCss(doc, scope))].join('\n');
 }

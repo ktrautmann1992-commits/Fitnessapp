@@ -24,6 +24,8 @@ export * from './share';
 export * from './dashboard';
 export * from './layout';
 export * from './notifications';
+// Barrierefreiheit (docs/PLAN-FIT-IM-ALTER.md 12, Etappe FA5).
+export * from './accessibility';
 // Workout-Bibliothek (docs/PLAN-WORKOUTS.md).
 export * from './workouts';
 // Phase 8 · Wearables: Galaxy Watch über Health Connect (docs/PLAN-PHASE-8.md).

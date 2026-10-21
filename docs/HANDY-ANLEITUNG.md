@@ -1706,6 +1706,29 @@ Ergebnis bitte Claude schreiben, z. B. „9c Android 14, Galaxy Watch 6: 1–10 
 Codes oder Gesundheitswerte). **Wichtig für den Spike:** Bitte mitteilen, ob **Ruhepuls**, **Distanz** und **kcal**
 bei euren Einheiten ankommen – das klärt, was Samsung wirklich nach Health Connect schreibt.
 
+## Teil 7fa5 – Große Ansicht und Vorlesen testen (Fit im Alter, Etappe FA5, Testmodus)
+
+Chrome am Handy, Vorschau-Link aus dem Pull Request, **Inkognito-Tab**.
+
+1. „Ohne Konto testen“ → Onboarding wie immer (Geburtsdatum z. B. **1955**, dann seid ihr über 60).
+2. **Heute** → oben rechts **Einstellungen** → Abschnitt **„Lesen und Hören“**: Ab 60 steht dort der Tipp „Die große
+   Ansicht ist besser lesbar“. **Große Ansicht** antippen.
+3. Schrift und Knöpfe werden größer, grauer Text dunkler. **Zurück zu Heute** → nur das Wichtigste; Kalender, Woche,
+   Verlauf und Übungen liegen hinter **„Mehr anzeigen“**.
+4. **Vorlesen:** Unter „Lesen und Hören“ steht entweder **„Anleitungen vorlesen“** (antippen) oder der Hinweis, dass es
+   auf diesem Gerät keine deutsche Sprachausgabe ohne Internet gibt (dann geht Vorlesen dort nicht – gewollt). Mit
+   Schalter: **Heute → Mehr anzeigen → Alle Übungen** → eine Übung → **„Anleitung vorlesen“** → das Handy liest die
+   Anleitung vor; **„Vorlesen stoppen“** hält an.
+5. **Großdruck:** **Heute → Plan als PDF** → Häkchen **„Großdruck“** → Vorschau mit größerer Schrift.
+6. **Bildschirm-Zoom:** In Chrome ⋯ → **Einstellungen → Bedienungshilfen → Textskalierung** auf 200 % → die Seiten
+   bleiben ohne Wischen zur Seite lesbar.
+
+**Checkliste am EAS-Build (App, nicht Browser):** Systemschrift auf die größte Stufe stellen (iPhone: Einstellungen →
+Bedienungshilfen → Anzeige & Textgröße → Größerer Text; Android: Einstellungen → Display → Schriftgröße) und
+nacheinander **Onboarding, Heute, Training, Übung, Einstellungen** öffnen: Nichts abgeschnitten, Knöpfe erreichbar,
+kein Text überlappt. Zusätzlich mit „Große Ansicht“ an. Ergebnis bitte Claude schreiben, z. B. „FA5 Android: 1–6 ok,
+Training: Pausen-Timer abgeschnitten“.
+
 ## Tipps
 - Eine Sitzung = eine Aufgabe. Lieber mehrere kurze Sitzungen als eine endlose.
 - Bei Unsicherheit einfach fragen: „Erklär mir in einfachen Worten, was du gerade geändert hast.“

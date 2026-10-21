@@ -555,7 +555,12 @@ Claude ergänzt den Pull Request, `ci` wird grün, die Vorschau-Links zeigen die
 - Parser: `packages/ui/scripts/theme-parser.mjs` (ohne Abhängigkeiten, getestet in `theme-parser.test.mjs`).
 - Website: `apps/web/src/app/layout.tsx` importiert `@fitnessapp/ui/theme.css`; Seiten nutzen nur `var(--…)`.
 - App: nutzt `colors`, `spacing`, `radius`, `fontSize`, `fontWeight`, `maxContentWidth` aus `@fitnessapp/ui`, dazu
-  `areaColors` (Typ `AreaId`, `AreaPalette`), `heroColors`, `cardColors`, `fontFamily`.
+  `areaColors` (Typ `AreaId`, `AreaPalette`), `heroColors`, `cardColors`, `largeViewColors`, `fontFamily`.
+- **„Große Ansicht“** (docs/PLAN-FIT-IM-ALTER.md 12, Etappe FA5): `--large-text`, `--large-text-muted`, `--large-link`
+  (→ `largeViewColors`) ersetzen in der App `text`, `textMuted` und `link`, sobald die große Ansicht an ist. Pflicht:
+  mindestens **7 : 1** (WCAG AAA) auf `--color-background` und `--color-surface`, hell und dunkel –
+  `packages/ui/src/tokens.test.ts` prüft das. Schrift ×1,25 (Grundschrift 20 px), Tippflächen mindestens 56 px
+  (Werte in `packages/core/src/constants.ts`, `LARGE_VIEW`).
 - In der App landen die Pflicht-Variablen (`colors`, …) und die Markenfarben `--brand-…` (`brandColors`).
   Weitere Variablen kann nur die Website nutzen.
 - `pnpm --filter @fitnessapp/ui icons` erzeugt alle Icons aus `packages/ui/brand/alpha5-mark.svg` (siehe oben).
