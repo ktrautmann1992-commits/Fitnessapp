@@ -1,0 +1,859 @@
+{
+ "eintraege": [
+  {
+   "id": "eier",
+   "name": "Eier",
+   "kategorie": "Eiweiß-Basics",
+   "kurz": "Eier sind eine günstige, vielseitige Eiweißquelle mit sehr hochwertigem Protein und vielen Vitaminen im Eigelb.",
+   "bezug": "roh, ganzes Ei ohne Schale",
+   "naehrwerte_100g": {
+    "kcal": 143,
+    "eiweiss_g": 12.6,
+    "kohlenhydrate_g": 0.7,
+    "fett_g": 9.5,
+    "ballaststoffe_g": 0.0
+   },
+   "portion": "2 Eier (je ca. 60 g ohne Schale) als Mahlzeit",
+   "naehrstoffe": [
+    "Vitamin B12",
+    "Vitamin D",
+    "Vitamin A",
+    "Cholin",
+    "Selen"
+   ],
+   "eiweissqualitaet": "Ei-Eiweiß gilt als Referenzprotein und hat definitionsgemäß eine biologische Wertigkeit von 100; es enthält alle unentbehrlichen Aminosäuren in günstigem Verhältnis. Die Kombination mit Kartoffeln gilt als klassisches Beispiel für eine besonders hochwertige Mischung.",
+   "staerken": [
+    "Sehr hochwertiges, gut verwertbares Eiweiß",
+    "Günstig, schnell zubereitet und vielseitig",
+    "Liefert Vitamin B12 und Vitamin D, das nur in wenigen Lebensmitteln nennenswert vorkommt",
+    "Sättigt gut bei wenig Kohlenhydraten"
+   ],
+   "gut_fuer": [
+    "Muskelaufbau als Eiweißquelle zum Frühstück oder nach dem Training",
+    "Vegetarische Ernährung als vollwertige Eiweißquelle",
+    "Fettverlust, weil Eier gut sättigen",
+    "Schnelle Mahlzeiten ohne viel Vorbereitung"
+   ],
+   "weniger_geeignet": [
+    "Bei Hühnerei-Allergie, weil schon Spuren Reaktionen auslösen können",
+    "Für vegane Ernährung, da tierisches Produkt",
+    "Bei ärztlich festgestellten Fettstoffwechselstörungen die Menge mit Arzt oder Ernährungsfachkraft abstimmen, weil das Eigelb Cholesterin enthält"
+   ],
+   "tipps": [
+    "Für mehr Eiweiß bei weniger Fett ein ganzes Ei mit zusätzlichem Eiklar kombinieren",
+    "Hartgekochte Eier eignen sich gut für Meal-Prep und halten gekühlt einige Tage",
+    "Die DGE nennt in ihren Empfehlungen von 2024 als Orientierung bis zu 1 Ei pro Woche (zusätzlich zu Ei in verarbeiteten Lebensmitteln wie Nudeln oder Gebäck) – wenn du mehr Eier isst, plane sie bewusst als Teil deiner tierischen Eiweißquellen ein"
+   ],
+   "lagerung": "Im Kühlschrank lagern und bis zum Mindesthaltbarkeitsdatum verbrauchen; Eier mit beschädigter Schale zügig und nur durcherhitzt verwenden.",
+   "hinweis": "Rohe Eier können Salmonellen enthalten: Speisen mit rohem Ei kühlen und rasch verzehren; Schwangere, Kleinkinder, ältere und immungeschwächte Menschen sollten Eier nur durchgegart essen.",
+   "alpha5": "Gut fürs Frühstück oder als schnelle Post-Workout-Mahlzeit, hartgekocht auch als Meal-Prep-Snack; im Wochenplan mit anderen Eiweißquellen abwechseln."
+  },
+  {
+   "id": "magerquark",
+   "name": "Magerquark",
+   "kategorie": "Eiweiß-Basics",
+   "kurz": "Magerquark liefert sehr viel Eiweiß bei kaum Fett und ist eine der günstigsten Eiweißquellen im Kühlregal.",
+   "bezug": "Magerstufe (unter 10 % Fett i. Tr.)",
+   "naehrwerte_100g": {
+    "kcal": 67,
+    "eiweiss_g": 12.0,
+    "kohlenhydrate_g": 4.0,
+    "fett_g": 0.3,
+    "ballaststoffe_g": 0.0
+   },
+   "portion": "250 g (halbe Packung) als Mahlzeit oder 125 g als Snack",
+   "naehrstoffe": [
+    "Calcium",
+    "Vitamin B2",
+    "Vitamin B12",
+    "Phosphor"
+   ],
+   "eiweissqualitaet": "Das Eiweiß besteht überwiegend aus Kasein, ist vollständig und hochwertig und wird langsamer verdaut als Molkeneiweiß. Zusammen mit Kartoffeln oder Getreide ergibt sich eine sehr gute Ergänzung.",
+   "staerken": [
+    "Sehr hoher Eiweißanteil bei wenig Kalorien",
+    "Kasein wird langsam verdaut und gibt Aminosäuren über mehrere Stunden ab",
+    "Günstig und vielseitig, süß wie herzhaft",
+    "Guter Calciumlieferant"
+   ],
+   "gut_fuer": [
+    "Muskelaufbau, besonders als Abendmahlzeit",
+    "Fettverlust, weil er viel Eiweiß bei wenig Energie liefert und gut sättigt",
+    "Vegetarische Ernährung als Eiweißbasis",
+    "Meal-Prep für Dips, Aufstriche und Desserts"
+   ],
+   "weniger_geeignet": [
+    "Bei Milcheiweißallergie, weil Quark aus Milcheiweiß besteht",
+    "Für vegane Ernährung, da Milchprodukt",
+    "Bei ausgeprägter Laktoseintoleranz in größeren Mengen, weil er etwas Laktose enthält – laktosefreie Varianten sind eine Alternative"
+   ],
+   "tipps": [
+    "Mit einem Schuss Mineralwasser oder Milch glatt rühren, dann wird er cremiger",
+    "Mit Leinöl, Kräutern und Pellkartoffeln als klassische, eiweißreiche Mahlzeit",
+    "Mit Beeren und etwas Haferflocken als schnelles Dessert"
+   ],
+   "lagerung": "Gekühlt lagern; nach dem Öffnen abgedeckt im Kühlschrank aufbewahren und innerhalb von 2–3 Tagen verbrauchen.",
+   "hinweis": "",
+   "alpha5": "Klassiker für den Abend oder als Post-Workout-Snack, gut für Meal-Prep in Dosen portionierbar."
+  },
+  {
+   "id": "skyr",
+   "name": "Skyr",
+   "kategorie": "Eiweiß-Basics",
+   "kurz": "Skyr ist ein isländisches Sauermilchprodukt mit quarkähnlichem Eiweißgehalt, aber joghurtartig cremiger Konsistenz.",
+   "bezug": "natur, ungesüßt",
+   "naehrwerte_100g": {
+    "kcal": 63,
+    "eiweiss_g": 11.0,
+    "kohlenhydrate_g": 4.0,
+    "fett_g": 0.2,
+    "ballaststoffe_g": 0.0
+   },
+   "portion": "150–200 g als Frühstück oder Snack",
+   "naehrstoffe": [
+    "Calcium",
+    "Vitamin B2",
+    "Vitamin B12",
+    "Phosphor"
+   ],
+   "eiweissqualitaet": "Wie Quark liefert Skyr vor allem Kasein und damit vollständiges, hochwertiges Milcheiweiß. Mit Haferflocken oder Vollkorngetreide kombiniert ergänzen sich die Aminosäuren gut.",
+   "staerken": [
+    "Viel Eiweiß bei kaum Fett",
+    "Milder, leicht säuerlicher Geschmack, cremig ohne Anrühren",
+    "Direkt löffelfertig für unterwegs",
+    "Gute Calciumquelle"
+   ],
+   "gut_fuer": [
+    "Muskelaufbau als eiweißreiches Frühstück oder Snack",
+    "Fettverlust wegen hoher Sättigung bei wenig Kalorien",
+    "Snack nach dem Training",
+    "Alle, denen Quark zu trocken ist"
+   ],
+   "weniger_geeignet": [
+    "Bei Milcheiweißallergie, weil es aus Milcheiweiß besteht",
+    "Für vegane Ernährung, da Milchprodukt",
+    "Gesüßte Fruchtvarianten bei Fettverlust-Zielen, weil sie oft deutlich mehr Zucker enthalten – lieber Natur mit frischem Obst"
+   ],
+   "tipps": [
+    "Natur kaufen und selbst mit Obst, Zimt oder etwas Honig verfeinern",
+    "Als Basis für Overnight Oats statt Joghurt verwenden",
+    "Herzhaft mit Kräutern und Knoblauch als Dip"
+   ],
+   "lagerung": "Gekühlt lagern; nach dem Öffnen innerhalb von 2–3 Tagen verbrauchen.",
+   "hinweis": "",
+   "alpha5": "Schneller Eiweiß-Snack nach dem Training oder zum Frühstück, in Kombination mit Haferflocken auch vor längeren Einheiten."
+  },
+  {
+   "id": "huettenkaese",
+   "name": "Hüttenkäse",
+   "kategorie": "Eiweiß-Basics",
+   "kurz": "Hüttenkäse (körniger Frischkäse) ist ein milder, kalorienarmer Frischkäse mit viel Eiweiß.",
+   "bezug": "Halbfettstufe (ca. 20 % Fett i. Tr.)",
+   "naehrwerte_100g": {
+    "kcal": 98,
+    "eiweiss_g": 12.6,
+    "kohlenhydrate_g": 2.6,
+    "fett_g": 4.3,
+    "ballaststoffe_g": 0.0
+   },
+   "portion": "200 g (ein Becher) als Mahlzeit oder 100 g als Brotbelag",
+   "naehrstoffe": [
+    "Calcium",
+    "Vitamin B12",
+    "Vitamin B2",
+    "Phosphor",
+    "Natrium"
+   ],
+   "eiweissqualitaet": "Überwiegend Kasein und damit vollständiges, hochwertiges Milcheiweiß. Auf Vollkornbrot oder mit Kartoffeln entsteht eine sehr gute Eiweißkombination.",
+   "staerken": [
+    "Viel Eiweiß bei moderatem Fettgehalt",
+    "Mild und vielseitig, süß oder herzhaft",
+    "Fertig zum Essen, ideal als Brotbelag",
+    "Sättigt gut"
+   ],
+   "gut_fuer": [
+    "Muskelaufbau als Abendmahlzeit oder Snack",
+    "Fettverlust als kalorienarmer Brotbelag statt Käse oder Wurst",
+    "Vegetarische Ernährung",
+    "Schnelle Mahlzeiten ohne Kochen"
+   ],
+   "weniger_geeignet": [
+    "Bei Milcheiweißallergie, weil er aus Milcheiweiß besteht",
+    "Für vegane Ernährung, da Milchprodukt",
+    "Bei ärztlich verordneter salzarmer Ernährung in größeren Mengen, weil er mehr Salz enthält als Quark oder Skyr – mit Arzt oder Ernährungsfachkraft abstimmen"
+   ],
+   "tipps": [
+    "Auf Vollkornbrot mit Tomate, Gurke und Pfeffer",
+    "Mit Obst und Nüssen als süßer Snack",
+    "In Pfannkuchen- oder Omelettteig für mehr Eiweiß"
+   ],
+   "lagerung": "Gekühlt lagern; nach dem Öffnen innerhalb von 2–3 Tagen verbrauchen.",
+   "hinweis": "",
+   "alpha5": "Gut für die Abendmahlzeit oder als Brotbelag nach dem Training, praktisch für Meal-Prep-Boxen."
+  },
+  {
+   "id": "milch-und-joghurt",
+   "name": "Milch und Joghurt",
+   "kategorie": "Eiweiß-Basics",
+   "kurz": "Milch und Naturjoghurt liefern hochwertiges Eiweiß, Kohlenhydrate in Form von Milchzucker sowie Calcium und Jod.",
+   "bezug": "Milch 1,5 % Fett (Naturjoghurt 1,5 % hat sehr ähnliche Werte)",
+   "naehrwerte_100g": {
+    "kcal": 47,
+    "eiweiss_g": 3.4,
+    "kohlenhydrate_g": 4.8,
+    "fett_g": 1.5,
+    "ballaststoffe_g": 0.0
+   },
+   "portion": "200–250 ml Milch als Glas oder 150 g Joghurt",
+   "naehrstoffe": [
+    "Calcium",
+    "Jod",
+    "Vitamin B2",
+    "Vitamin B12",
+    "Kalium"
+   ],
+   "eiweissqualitaet": "Milcheiweiß besteht aus etwa 80 % Kasein und 20 % Molkeneiweiß, ist vollständig und sehr hochwertig; Molkeneiweiß ist besonders reich an Leucin. Milch mit Getreide (z. B. Müsli) ergänzt sich gut.",
+   "staerken": [
+    "Kombiniert Eiweiß, Kohlenhydrate und Flüssigkeit",
+    "Wichtige Quelle für Calcium und Jod",
+    "Joghurt enthält Milchsäurebakterien und wird bei Laktoseintoleranz oft besser vertragen als Milch, weil ein Teil der Laktose bereits abgebaut ist",
+    "Günstig und überall verfügbar"
+   ],
+   "gut_fuer": [
+    "Regeneration nach dem Training, weil Milch Eiweiß und Kohlenhydrate liefert",
+    "Kinder, Jugendliche und Sportler zur Calciumversorgung",
+    "Muskelaufbau als Basis für Shakes und Müsli",
+    "Vegetarische Ernährung"
+   ],
+   "weniger_geeignet": [
+    "Bei Laktoseintoleranz, weil Milch Milchzucker enthält – Joghurt und laktosefreie Produkte werden oft besser vertragen",
+    "Bei Milcheiweißallergie, weil sie Milcheiweiß enthalten",
+    "Für vegane Ernährung, da tierisches Produkt – angereicherte Pflanzendrinks auf Sojabasis sind eine Alternative",
+    "Gesüßte Fruchtjoghurts bei Fettverlust-Zielen, weil sie oft viel Zucker enthalten"
+   ],
+   "tipps": [
+    "Naturjoghurt kaufen und selbst mit Obst süßen",
+    "Milch, Banane und Haferflocken ergeben einen einfachen Regenerations-Shake",
+    "Die DGE empfiehlt täglich 2 Portionen Milch und Milchprodukte, z. B. 250 g Milch, 150 g Joghurt oder 30 g Käse je Portion – bevorzugt fettarm und ohne Zuckerzusatz"
+   ],
+   "lagerung": "Gekühlt lagern; geöffnete Milch innerhalb weniger Tage verbrauchen, Joghurt nach dem Öffnen innerhalb von 2–3 Tagen.",
+   "hinweis": "Rohmilch (ab Hof) kann Krankheitserreger wie Campylobacter oder EHEC enthalten und sollte vor dem Verzehr abgekocht werden; im Handel übliche pasteurisierte oder ultrahocherhitzte Milch ist davon nicht betroffen.",
+   "alpha5": "Als Shake oder mit Müsli nach dem Training, Joghurt als Snack oder Basis für Overnight Oats."
+  },
+  {
+   "id": "haehnchen-und-putenbrust",
+   "name": "Hähnchen- und Putenbrust",
+   "kategorie": "Eiweiß-Basics",
+   "kurz": "Hähnchen- und Putenbrust sind sehr magere Fleischsorten mit besonders hohem Eiweißanteil.",
+   "bezug": "roh, ohne Haut",
+   "naehrwerte_100g": {
+    "kcal": 105,
+    "eiweiss_g": 23.5,
+    "kohlenhydrate_g": 0.0,
+    "fett_g": 1.2,
+    "ballaststoffe_g": 0.0
+   },
+   "portion": "150 g roh als Hauptmahlzeit",
+   "naehrstoffe": [
+    "Niacin (Vitamin B3)",
+    "Vitamin B6",
+    "Selen",
+    "Phosphor",
+    "Kalium"
+   ],
+   "eiweissqualitaet": "Vollständiges, hochwertiges Eiweiß mit allen unentbehrlichen Aminosäuren und viel Leucin. Mit Reis, Kartoffeln oder Hülsenfrüchten kombiniert entsteht eine ausgewogene Mahlzeit.",
+   "staerken": [
+    "Sehr viel Eiweiß bei sehr wenig Fett",
+    "Neutraler Geschmack, passt zu vielen Gerichten",
+    "Gut vorzubereiten und portionierbar",
+    "Leicht verdaulich"
+   ],
+   "gut_fuer": [
+    "Muskelaufbau als magere Eiweißquelle",
+    "Fettverlust, weil viel Eiweiß bei wenig Kalorien",
+    "Meal-Prep für mehrere Tage",
+    "Ernährung ohne Schweinefleisch als gleichwertige Fleischalternative"
+   ],
+   "weniger_geeignet": [
+    "Für vegetarische und vegane Ernährung",
+    "Bei Gicht oder erhöhter Harnsäure in größeren Mengen, weil Fleisch Purine enthält – mit Arzt abstimmen",
+    "Bei ärztlich verordneter eiweißarmer Ernährung (z. B. bei Nierenerkrankungen) – Menge mit Arzt oder Ernährungsfachkraft abstimmen"
+   ],
+   "tipps": [
+    "Rohes Geflügel nicht abwaschen, weil Spritzwasser Keime in der Küche verteilt – stattdessen trockentupfen",
+    "Vor dem Braten kurz marinieren oder in Scheiben schneiden, dann bleibt es saftig",
+    "Die DGE empfiehlt insgesamt höchstens 300 g Fleisch und Wurst pro Woche; magere Sorten wie Geflügel passen gut in diesen Rahmen"
+   ],
+   "lagerung": "Roh im kältesten Teil des Kühlschranks lagern und innerhalb von 1–2 Tagen verarbeiten oder einfrieren; gegart gekühlt 3 Tage haltbar.",
+   "hinweis": "Geflügel kann Salmonellen und Campylobacter enthalten: immer vollständig durchgaren (im Kern mindestens 70 °C für 2 Minuten, Fleischsaft klar, kein rosa Kern) und für rohes Fleisch separate Brettchen und Messer verwenden.",
+   "alpha5": "Klassische Eiweißkomponente für Post-Workout-Mahlzeiten und Meal-Prep-Boxen mit Reis und Gemüse."
+  },
+  {
+   "id": "mageres-rindfleisch",
+   "name": "Mageres Rindfleisch",
+   "kategorie": "Eiweiß-Basics",
+   "kurz": "Magere Rindfleischstücke wie Hüfte oder Oberschale liefern viel Eiweiß sowie gut verfügbares Eisen und Zink.",
+   "bezug": "roh, magere Teilstücke (z. B. Hüfte, Oberschale)",
+   "naehrwerte_100g": {
+    "kcal": 115,
+    "eiweiss_g": 22.0,
+    "kohlenhydrate_g": 0.0,
+    "fett_g": 3.0,
+    "ballaststoffe_g": 0.0
+   },
+   "portion": "125–150 g roh als Hauptmahlzeit",
+   "naehrstoffe": [
+    "Eisen (Häm-Eisen)",
+    "Zink",
+    "Vitamin B12",
+    "Selen",
+    "Kreatin"
+   ],
+   "eiweissqualitaet": "Vollständiges, hochwertiges Eiweiß mit allen unentbehrlichen Aminosäuren und viel Leucin. Mit Kartoffeln, Reis oder Gemüse kombiniert entsteht eine ausgewogene Mahlzeit.",
+   "staerken": [
+    "Viel Eiweiß bei wenig Fett (magere Stücke)",
+    "Gut verfügbares Eisen und Zink",
+    "Natürliche Quelle für Vitamin B12 und Kreatin",
+    "Sättigt gut"
+   ],
+   "gut_fuer": [
+    "Muskelaufbau und Krafttraining",
+    "Ausdauersportler und Menstruierende mit erhöhtem Eisenbedarf",
+    "Ernährung ohne Schweinefleisch als gleichwertige Fleischalternative",
+    "Fettverlust bei Wahl magerer Stücke"
+   ],
+   "weniger_geeignet": [
+    "Für vegetarische und vegane Ernährung",
+    "In großen Mengen bei Gicht oder erhöhter Harnsäure, weil Fleisch Purine enthält – mit Arzt abstimmen",
+    "Als tägliche Hauptquelle, weil ein hoher Verzehr von rotem und vor allem verarbeitetem Fleisch mit einem erhöhten Darmkrebsrisiko in Verbindung gebracht wird – Abwechslung mit Geflügel, Fisch und pflanzlichen Quellen ist sinnvoll"
+   ],
+   "tipps": [
+    "Die DGE empfiehlt insgesamt höchstens 300 g Fleisch und Wurst pro Woche – mageres Rindfleisch lässt sich gut in diesen Rahmen einplanen",
+    "Vor dem Braten trockentupfen, damit es gut bräunt, und nach dem Garen quer zur Faser schneiden",
+    "Vitamin-C-reiches Gemüse dazu essen, das unterstützt die Eisenaufnahme aus pflanzlichen Beilagen"
+   ],
+   "lagerung": "Roh im kältesten Teil des Kühlschranks lagern und innerhalb von 2–3 Tagen verarbeiten oder einfrieren; Hackfleisch noch am Kauftag verarbeiten.",
+   "hinweis": "Rohes Hackfleisch und rohe Zubereitungen (z. B. Tatar) sollten Kinder unter 5 Jahren, Schwangere, ältere und immungeschwächte Menschen meiden; Hackfleisch immer vollständig durchgaren (im Kern mindestens 70 °C für 2 Minuten).",
+   "alpha5": "Gut als Hauptmahlzeit nach dem Krafttraining, als Hackfleisch-Pfanne auch für Meal-Prep."
+  },
+  {
+   "id": "mageres-schweinefleisch",
+   "name": "Mageres Schweinefleisch (Filet, Schnitzel)",
+   "kategorie": "Eiweiß-Basics",
+   "kurz": "Magere Schweinefleischstücke wie Filet oder Schnitzel liefern viel Eiweiß und sind eine besonders gute Quelle für Vitamin B1.",
+   "bezug": "roh, mageres Teilstück (Filet oder Schnitzel)",
+   "naehrwerte_100g": {
+    "kcal": 105,
+    "eiweiss_g": 21.5,
+    "kohlenhydrate_g": 0.0,
+    "fett_g": 2.0,
+    "ballaststoffe_g": 0.0
+   },
+   "portion": "125–150 g roh als Hauptmahlzeit",
+   "naehrstoffe": [
+    "Vitamin B1 (Thiamin)",
+    "Vitamin B12",
+    "Zink",
+    "Selen",
+    "Niacin (Vitamin B3)"
+   ],
+   "eiweissqualitaet": "Vollständiges, hochwertiges Eiweiß mit allen unentbehrlichen Aminosäuren und viel Leucin, vergleichbar mit Rind und Geflügel. Mit Kartoffeln, Reis oder Gemüse kombiniert entsteht eine ausgewogene Mahlzeit.",
+   "staerken": [
+    "Viel Eiweiß bei wenig Fett (Filet, Schnitzel)",
+    "Sehr gute Quelle für Vitamin B1",
+    "Liefert Zink und Vitamin B12",
+    "Kurz gebraten schnell zubereitet"
+   ],
+   "gut_fuer": [
+    "Muskelaufbau als magere Eiweißquelle",
+    "Fettverlust bei Wahl magerer Stücke",
+    "Schnelle Pfannengerichte und Meal-Prep",
+    "Abwechslung im Fleischanteil der Ernährung"
+   ],
+   "weniger_geeignet": [
+    "Für vegetarische und vegane Ernährung",
+    "Für die Ernährungsform ohne Schweinefleisch – Rind, Geflügel oder Fisch sind gleichwertige Alternativen mit ähnlichem Eiweißgehalt",
+    "In großen Mengen bei Gicht oder erhöhter Harnsäure, weil Fleisch Purine enthält – mit Arzt abstimmen"
+   ],
+   "tipps": [
+    "Die DGE empfiehlt insgesamt höchstens 300 g Fleisch und Wurst pro Woche – magere Stücke passen gut in diesen Rahmen",
+    "Schnitzel dünn klopfen und nur kurz braten, dann bleibt es saftig",
+    "Fettärmer als paniert: natur braten und mit Gemüse und Kartoffeln servieren"
+   ],
+   "lagerung": "Roh im kältesten Teil des Kühlschranks lagern und innerhalb von 2–3 Tagen verarbeiten oder einfrieren; Hackfleisch noch am Kauftag verarbeiten.",
+   "hinweis": "Schweinefleisch nicht roh verzehren und Hackfleisch immer vollständig durchgaren (im Kern mindestens 70 °C für 2 Minuten); rohes Mett sollten Kinder unter 5 Jahren, Schwangere, ältere und immungeschwächte Menschen meiden.",
+   "alpha5": "Mageres Filet oder Schnitzel eignet sich als Hauptmahlzeit nach dem Training; bei der Ernährungsform ohne Schweinefleisch einfach durch Hähnchen, Rind oder Fisch ersetzen."
+  },
+  {
+   "id": "lachs",
+   "name": "Lachs",
+   "kategorie": "Eiweiß-Basics",
+   "kurz": "Lachs ist ein fettreicher Seefisch mit hochwertigem Eiweiß und viel langkettigen Omega-3-Fettsäuren.",
+   "bezug": "roh, Filet (Zuchtlachs; Wildlachs ist meist magerer)",
+   "naehrwerte_100g": {
+    "kcal": 200,
+    "eiweiss_g": 20.0,
+    "kohlenhydrate_g": 0.0,
+    "fett_g": 13.0,
+    "ballaststoffe_g": 0.0
+   },
+   "portion": "125–150 g roh als Hauptmahlzeit",
+   "naehrstoffe": [
+    "Omega-3-Fettsäuren EPA und DHA",
+    "Vitamin D",
+    "Vitamin B12",
+    "Selen",
+    "Jod"
+   ],
+   "eiweissqualitaet": "Fischeiweiß ist vollständig, hochwertig und gut verdaulich. Mit Kartoffeln, Reis oder Vollkornnudeln ergibt sich eine ausgewogene Mahlzeit.",
+   "staerken": [
+    "Eine der besten Quellen für EPA und DHA",
+    "Natürliche Vitamin-D-Quelle",
+    "Hochwertiges, gut verdauliches Eiweiß",
+    "Unkompliziert im Ofen oder in der Pfanne"
+   ],
+   "gut_fuer": [
+    "Muskelaufbau und Regeneration",
+    "Alle, die wenig Seefisch essen, zur Versorgung mit Omega-3-Fettsäuren",
+    "Ernährung ohne Schweinefleisch als gleichwertige Eiweißquelle",
+    "Abendmahlzeit mit Gemüse"
+   ],
+   "weniger_geeignet": [
+    "Bei Fischallergie",
+    "Für vegetarische und vegane Ernährung",
+    "Bei sehr knappem Kalorienbudget als tägliche Eiweißquelle, weil Lachs deutlich mehr Fett und Energie liefert als magerer Fisch",
+    "In großen Mengen bei Gicht, weil Fisch Purine enthält – mit Arzt abstimmen"
+   ],
+   "tipps": [
+    "Die DGE empfiehlt 1–2 Portionen Fisch pro Woche (je ca. 120 g), davon eine gern als fettreicher Fisch wie Lachs, Hering oder Makrele",
+    "Im Ofen bei ca. 180 °C etwa 12–15 Minuten garen, dann bleibt er saftig",
+    "Tiefgekühlter Lachs ist eine günstige Alternative und gut für Meal-Prep"
+   ],
+   "lagerung": "Frisch im kältesten Teil des Kühlschranks lagern und innerhalb von 1–2 Tagen verbrauchen; tiefgekühlt mehrere Monate haltbar.",
+   "hinweis": "Roher, geräucherter oder gebeizter Lachs (z. B. Graved Lachs) kann Listerien enthalten – Schwangeren, älteren und immungeschwächten Menschen sowie Kleinkindern wird davon abgeraten; durchgegart werden Listerien abgetötet.",
+   "alpha5": "Gut als Abendmahlzeit oder Post-Workout-Mahlzeit mit Kartoffeln oder Reis, 1–2× pro Woche einplanen."
+  },
+  {
+   "id": "thunfisch-dose",
+   "name": "Thunfisch (Dose)",
+   "kategorie": "Eiweiß-Basics",
+   "kurz": "Thunfisch aus der Dose ist eine haltbare, sehr eiweißreiche und sofort verzehrfertige Eiweißquelle.",
+   "bezug": "im eigenen Saft, abgetropft",
+   "naehrwerte_100g": {
+    "kcal": 110,
+    "eiweiss_g": 25.0,
+    "kohlenhydrate_g": 0.0,
+    "fett_g": 0.8,
+    "ballaststoffe_g": 0.0
+   },
+   "portion": "1 kleine Dose (ca. 120–140 g abgetropft)",
+   "naehrstoffe": [
+    "Vitamin B12",
+    "Selen",
+    "Niacin (Vitamin B3)",
+    "Phosphor",
+    "Jod"
+   ],
+   "eiweissqualitaet": "Vollständiges, hochwertiges Fischeiweiß mit allen unentbehrlichen Aminosäuren. Mit Vollkornnudeln, Reis oder Brot ergibt sich schnell eine ausgewogene Mahlzeit.",
+   "staerken": [
+    "Sehr viel Eiweiß bei kaum Fett (im eigenen Saft)",
+    "Lange haltbar und sofort verzehrfertig",
+    "Günstig und überall erhältlich",
+    "Ideal für schnelle Salate und Bowls"
+   ],
+   "gut_fuer": [
+    "Fettverlust, weil sehr viel Eiweiß bei wenig Kalorien",
+    "Muskelaufbau als schnelle Eiweißquelle",
+    "Unterwegs, im Büro oder auf Reisen",
+    "Ernährung ohne Schweinefleisch"
+   ],
+   "weniger_geeignet": [
+    "Bei Fischallergie",
+    "Für vegetarische und vegane Ernährung",
+    "Als tägliche Hauptquelle, weil Thunfisch als großer Raubfisch mehr Methylquecksilber enthalten kann – bei häufigem Verzehr kann laut BfR der gesundheitliche Richtwert überschritten werden, daher mit anderen Fischen und Eiweißquellen abwechseln",
+    "In Schwangerschaft und Stillzeit, weil das BfR empfiehlt, Fischarten mit hohen Methylquecksilbergehalten wie Thunfisch zu meiden bzw. den Verzehr einzuschränken – besser auf Lachs, Hering, Seelachs oder Forelle ausweichen"
+   ],
+   "tipps": [
+    "Im eigenen Saft statt in Öl wählen, wenn Fett und Kalorien gespart werden sollen",
+    "Mit Bohnen, Mais, Paprika und Reis als schnelle Bowl",
+    "Dosenthunfisch liefert deutlich weniger Omega-3-Fettsäuren als frischer fettreicher Fisch wie Lachs oder Hering"
+   ],
+   "lagerung": "Ungeöffnet trocken und kühl lange haltbar; Reste nach dem Öffnen in ein verschließbares Gefäß umfüllen, kühlen und innerhalb von 1–2 Tagen verbrauchen.",
+   "hinweis": "Thunfisch kann deutlich mehr Methylquecksilber enthalten als kleinere Fische: auf Abwechslung bei den Fischsorten achten; Schwangeren und Stillenden rät das BfR, Thunfisch zu meiden bzw. nur selten zu essen, für Kleinkinder ist Fisch mit geringer Belastung die bessere Wahl.",
+   "alpha5": "Schnelle Eiweißkomponente für Lunch-Bowls und Meal-Prep, gut nach dem Training mit Reis oder Nudeln."
+  },
+  {
+   "id": "tofu",
+   "name": "Tofu",
+   "kategorie": "Eiweiß-Basics",
+   "kurz": "Tofu wird aus Sojabohnen hergestellt und ist eine vielseitige pflanzliche Eiweißquelle mit neutralem Geschmack.",
+   "bezug": "natur, fest",
+   "naehrwerte_100g": {
+    "kcal": 123,
+    "eiweiss_g": 14.0,
+    "kohlenhydrate_g": 1.0,
+    "fett_g": 7.0,
+    "ballaststoffe_g": 1.0
+   },
+   "portion": "150–200 g als Hauptmahlzeit",
+   "naehrstoffe": [
+    "Calcium (je nach Gerinnungsmittel)",
+    "Eisen",
+    "Magnesium",
+    "Isoflavone",
+    "Folat"
+   ],
+   "eiweissqualitaet": "Sojaeiweiß gehört zu den hochwertigsten pflanzlichen Proteinen und enthält alle unentbehrlichen Aminosäuren; Methionin ist leicht begrenzend. Mit Getreide wie Reis oder Vollkornnudeln ergänzt es sich sehr gut.",
+   "staerken": [
+    "Hochwertiges pflanzliches Eiweiß",
+    "Neutraler Geschmack, nimmt Marinaden gut an",
+    "Günstig und vielseitig (braten, backen, zerbröseln)",
+    "Wenig gesättigte Fettsäuren"
+   ],
+   "gut_fuer": [
+    "Vegane und vegetarische Ernährung als Haupt-Eiweißquelle",
+    "Muskelaufbau auf pflanzlicher Basis",
+    "Meal-Prep für Bowls und Pfannengerichte",
+    "Ernährung ohne Schweinefleisch"
+   ],
+   "weniger_geeignet": [
+    "Bei Sojaallergie",
+    "Wenn du Schilddrüsenhormone einnimmst und deutlich mehr Soja essen willst: vorher mit Arzt abstimmen und Blutwerte kontrollieren lassen, weil Soja Aufnahme und Wirkung beeinflussen kann; die Tablette mit 30–60 Minuten Abstand zum Essen einnehmen",
+    "Direkt vor intensivem Training in großen Mengen, weil die Kombination aus Eiweiß und Fett länger im Magen bleibt"
+   ],
+   "tipps": [
+    "Vor dem Braten auspressen (z. B. zwischen Küchenpapier beschweren), dann wird er knuspriger",
+    "Mindestens 30 Minuten marinieren, z. B. in Sojasauce, Knoblauch und Ingwer",
+    "Zerbröselt als Rührei-Ersatz mit Kurkuma und Gemüse"
+   ],
+   "lagerung": "Ungeöffnet gekühlt bis zum Mindesthaltbarkeitsdatum; nach dem Öffnen in frischem Wasser im Kühlschrank lagern, Wasser täglich wechseln und innerhalb von 3–4 Tagen verbrauchen.",
+   "hinweis": "1–2 Portionen Sojalebensmittel täglich (1 Portion ≈ 100 g Tofu oder 250 ml Sojadrink) gelten bei ausreichender Jodversorgung als unbedenklich; hochdosierte Präparate mit isolierten Isoflavonen sind davon zu unterscheiden.",
+   "alpha5": "Pflanzliche Eiweißbasis für Post-Workout-Bowls und Meal-Prep, gut auch abends in der Gemüsepfanne."
+  },
+  {
+   "id": "tempeh",
+   "name": "Tempeh",
+   "kategorie": "Eiweiß-Basics",
+   "kurz": "Tempeh besteht aus fermentierten ganzen Sojabohnen und hat einen nussigen Geschmack und eine feste Struktur.",
+   "bezug": "natur, roh (pasteurisiert)",
+   "naehrwerte_100g": {
+    "kcal": 190,
+    "eiweiss_g": 19.0,
+    "kohlenhydrate_g": 6.5,
+    "fett_g": 10.5,
+    "ballaststoffe_g": 4.0
+   },
+   "portion": "100–150 g als Hauptmahlzeit",
+   "naehrstoffe": [
+    "Eisen",
+    "Magnesium",
+    "Mangan",
+    "Phosphor",
+    "Ballaststoffe"
+   ],
+   "eiweissqualitaet": "Wie Tofu liefert Tempeh vollständiges, hochwertiges Sojaeiweiß, Methionin ist leicht begrenzend. Kombiniert mit Reis, Hirse oder Vollkornbrot entsteht eine sehr gute Ergänzung.",
+   "staerken": [
+    "Mehr Eiweiß und Ballaststoffe als Tofu, weil die ganze Bohne verwendet wird",
+    "Fermentiert, mit nussigem, kräftigem Aroma",
+    "Fester Biss, gut als Fleischersatz in Pfannengerichten",
+    "Sättigt lange"
+   ],
+   "gut_fuer": [
+    "Vegane und vegetarische Ernährung als Eiweißquelle",
+    "Muskelaufbau auf pflanzlicher Basis",
+    "Fettverlust, weil Eiweiß und Ballaststoffe gut sättigen",
+    "Ernährung ohne Schweinefleisch"
+   ],
+   "weniger_geeignet": [
+    "Bei Sojaallergie",
+    "Direkt vor dem Training, weil Ballaststoffe und Fett länger im Magen bleiben",
+    "Wenn du Schilddrüsenhormone einnimmst und deutlich mehr Soja essen willst: vorher mit Arzt abstimmen, weil Soja Aufnahme und Wirkung beeinflussen kann"
+   ],
+   "tipps": [
+    "Vor dem Anbraten 10 Minuten dämpfen oder kochen, das mildert leichte Bitternoten",
+    "In dünne Scheiben schneiden, marinieren und knusprig anbraten",
+    "Zerbröselt als Hack-Ersatz in Bolognese oder Chili"
+   ],
+   "lagerung": "Gekühlt bis zum Mindesthaltbarkeitsdatum lagern; nach dem Öffnen gut verpackt innerhalb von 3–4 Tagen verbrauchen oder einfrieren.",
+   "hinweis": "Tempeh vor dem Verzehr durcherhitzen (braten, dämpfen oder backen); nicht pasteurisierte Ware unbedingt vollständig garen.",
+   "alpha5": "Pflanzliche Eiweißquelle für Mittag- oder Abendessen und Meal-Prep, eher nicht unmittelbar vor dem Training."
+  },
+  {
+   "id": "seitan",
+   "name": "Seitan",
+   "kategorie": "Eiweiß-Basics",
+   "kurz": "Seitan wird aus Weizengluten hergestellt und ist eine sehr eiweißreiche pflanzliche Alternative mit fleischähnlicher Textur.",
+   "bezug": "verzehrfertig, natur (Werte schwanken je nach Herstellung)",
+   "naehrwerte_100g": {
+    "kcal": 140,
+    "eiweiss_g": 25.0,
+    "kohlenhydrate_g": 4.0,
+    "fett_g": 2.0,
+    "ballaststoffe_g": 0.5
+   },
+   "portion": "100–150 g als Hauptmahlzeit",
+   "naehrstoffe": [
+    "Eisen",
+    "Selen",
+    "Phosphor",
+    "Natrium (bei Fertigprodukten oft hoch)"
+   ],
+   "eiweissqualitaet": "Weizeneiweiß ist arm an Lysin und daher allein weniger hochwertig als Soja oder tierisches Eiweiß. In Kombination mit Hülsenfrüchten (z. B. Linsen, Bohnen) oder Soja wird der Lysinmangel gut ausgeglichen.",
+   "staerken": [
+    "Sehr viel Eiweiß bei wenig Fett",
+    "Fleischähnliche, faserige Textur",
+    "Vielseitig: braten, schmoren, grillen",
+    "Selbst herstellbar aus Glutenpulver"
+   ],
+   "gut_fuer": [
+    "Vegane und vegetarische Ernährung als eiweißreiche Fleischalternative",
+    "Muskelaufbau, kombiniert mit Hülsenfrüchten",
+    "Fettverlust, weil viel Eiweiß bei wenig Fett",
+    "Ernährung ohne Schweinefleisch"
+   ],
+   "weniger_geeignet": [
+    "Bei Zöliakie, weil Seitan fast vollständig aus Gluten besteht",
+    "Bei Weizenallergie (auch der durch Anstrengung ausgelösten Form) oder Nicht-Zöliakie-Gluten-/Weizensensitivität, weil Seitan aus Weizeneiweiß besteht",
+    "Bei ärztlich verordneter salzarmer Ernährung, weil Fertigprodukte oft stark gesalzen sind – Salzgehalt prüfen"
+   ],
+   "tipps": [
+    "Mit Linsen, Bohnen oder Tofu kombinieren, um das Eiweißprofil zu ergänzen",
+    "In würziger Brühe garen, dann wird er aromatischer",
+    "Selbstgemacht aus Glutenpulver lässt sich der Salzgehalt steuern"
+   ],
+   "lagerung": "Gekühlt bis zum Mindesthaltbarkeitsdatum lagern; nach dem Öffnen innerhalb von 3–4 Tagen verbrauchen oder einfrieren.",
+   "hinweis": "Seitan besteht nahezu vollständig aus Weizengluten und ist für Menschen mit Zöliakie oder Weizenallergie ungeeignet.",
+   "alpha5": "Eiweißreiche vegane Komponente für Hauptmahlzeiten nach dem Training, am besten zusammen mit Hülsenfrüchten."
+  },
+  {
+   "id": "olivenoel",
+   "name": "Olivenöl",
+   "kategorie": "Öle & Fette",
+   "kurz": "Olivenöl ist reich an einfach ungesättigten Fettsäuren und Grundlage der mediterranen Küche.",
+   "bezug": "nativ extra",
+   "naehrwerte_100g": {
+    "kcal": 884,
+    "eiweiss_g": 0.0,
+    "kohlenhydrate_g": 0.0,
+    "fett_g": 100.0,
+    "ballaststoffe_g": 0.0
+   },
+   "portion": "1 EL (ca. 10 g) pro Mahlzeit",
+   "naehrstoffe": [
+    "Einfach ungesättigte Fettsäuren (Ölsäure)",
+    "Vitamin E",
+    "Polyphenole (nativ extra)"
+   ],
+   "eiweissqualitaet": "Öle liefern praktisch kein Eiweiß, die Eiweißqualität spielt hier keine Rolle.",
+   "staerken": [
+    "Hoher Anteil einfach ungesättigter Fettsäuren",
+    "Aromatisch, besonders für Salate und Gemüse",
+    "Nativ extra enthält sekundäre Pflanzenstoffe",
+    "Für Dünsten und Braten bei mittlerer Hitze geeignet"
+   ],
+   "gut_fuer": [
+    "Ausgewogene, mediterran geprägte Ernährung",
+    "Fettlösliche Vitamine aus Gemüse besser aufnehmen",
+    "Salatdressings und kalte Küche",
+    "Ersatz für gesättigte Fette wie Butter beim Kochen"
+   ],
+   "weniger_geeignet": [
+    "Bei Fettverlust-Zielen in großen Mengen, weil 1 EL schon rund 90 kcal liefert – lieber abmessen statt frei Hand gießen",
+    "Zum sehr starken Anbraten bei höchster Hitze, weil natives Öl dabei an Aroma verliert – dafür eignet sich raffiniertes Rapsöl besser",
+    "Direkt vor dem Training in größeren Mengen, weil Fett die Magenentleerung verlangsamt"
+   ],
+   "tipps": [
+    "Ölmenge mit dem Esslöffel abmessen, um die Kalorien im Blick zu behalten",
+    "Hochwertiges Öl für kalte Gerichte, einfaches Olivenöl zum Kochen nutzen",
+    "Der Ersatz gesättigter Fettsäuren durch einfach und/oder mehrfach ungesättigte Fettsäuren in der Ernährung trägt zur Aufrechterhaltung eines normalen Cholesterinspiegels im Blut bei – z. B. Olivenöl statt Butter zum Dünsten"
+   ],
+   "lagerung": "Kühl, dunkel und gut verschlossen lagern (nicht im Kühlschrank); nach dem Öffnen innerhalb weniger Monate verbrauchen.",
+   "hinweis": "",
+   "alpha5": "Standardöl für Salate, Gemüse und Bowls; bei Fettverlust bewusst dosieren, vor dem Training sparsam einsetzen."
+  },
+  {
+   "id": "rapsoel",
+   "name": "Rapsöl",
+   "kategorie": "Öle & Fette",
+   "kurz": "Rapsöl hat unter den gängigen Speiseölen besonders wenig gesättigte Fettsäuren und ein günstiges Verhältnis von Omega-6- zu Omega-3-Fettsäuren.",
+   "bezug": "raffiniert oder kaltgepresst",
+   "naehrwerte_100g": {
+    "kcal": 884,
+    "eiweiss_g": 0.0,
+    "kohlenhydrate_g": 0.0,
+    "fett_g": 100.0,
+    "ballaststoffe_g": 0.0
+   },
+   "portion": "1 EL (ca. 10 g) pro Mahlzeit",
+   "naehrstoffe": [
+    "Alpha-Linolensäure (Omega-3)",
+    "Einfach ungesättigte Fettsäuren",
+    "Vitamin E"
+   ],
+   "eiweissqualitaet": "Öle liefern praktisch kein Eiweiß, die Eiweißqualität spielt hier keine Rolle.",
+   "staerken": [
+    "Wenig gesättigte Fettsäuren",
+    "Liefert pflanzliche Omega-3-Fettsäure (ALA)",
+    "Raffiniert hitzestabil und geschmacksneutral",
+    "Günstig und überall verfügbar"
+   ],
+   "gut_fuer": [
+    "Alltagsöl zum Braten, Backen und Kochen",
+    "Vegane und vegetarische Ernährung als Omega-3-Quelle (ALA)",
+    "Ersatz für Butter und Kokosöl in der warmen Küche",
+    "Dressings (kaltgepresst mit nussigem Aroma)"
+   ],
+   "weniger_geeignet": [
+    "Bei Fettverlust-Zielen in großen Mengen, weil 1 EL schon rund 90 kcal liefert",
+    "Kaltgepresstes Rapsöl zum starken Anbraten, weil es weniger hitzestabil ist – dafür raffiniertes Rapsöl verwenden",
+    "Direkt vor dem Training in größeren Mengen, weil Fett die Magenentleerung verlangsamt"
+   ],
+   "tipps": [
+    "Raffiniertes Rapsöl zum Braten, kaltgepresstes für Salate verwenden",
+    "Die DGE empfiehlt, pflanzliche Öle wie Rapsöl zu bevorzugen – als Orientierung etwa 1 EL hochwertiges Pflanzenöl pro Tag",
+    "Ölmenge abmessen, um die Kalorien im Blick zu behalten"
+   ],
+   "lagerung": "Kühl, dunkel und gut verschlossen lagern; raffiniert mehrere Monate haltbar, kaltgepresst nach dem Öffnen innerhalb von 2–3 Monaten verbrauchen.",
+   "hinweis": "",
+   "alpha5": "Universalöl für Pfannengerichte und Meal-Prep; bei Fettverlust bewusst dosieren."
+  },
+  {
+   "id": "leinoel",
+   "name": "Leinöl",
+   "kategorie": "Öle & Fette",
+   "kurz": "Leinöl ist unter den gängigen Speiseölen das mit dem höchsten Gehalt an pflanzlicher Omega-3-Fettsäure (Alpha-Linolensäure).",
+   "bezug": "kaltgepresst",
+   "naehrwerte_100g": {
+    "kcal": 884,
+    "eiweiss_g": 0.0,
+    "kohlenhydrate_g": 0.0,
+    "fett_g": 100.0,
+    "ballaststoffe_g": 0.0
+   },
+   "portion": "1 TL bis 1 EL (5–10 g) täglich",
+   "naehrstoffe": [
+    "Alpha-Linolensäure (Omega-3)",
+    "Mehrfach ungesättigte Fettsäuren",
+    "Vitamin E"
+   ],
+   "eiweissqualitaet": "Öle liefern praktisch kein Eiweiß, die Eiweißqualität spielt hier keine Rolle.",
+   "staerken": [
+    "Sehr reich an Alpha-Linolensäure",
+    "Kleine Mengen genügen zur ALA-Versorgung",
+    "Nussig-herber Geschmack, typisch zu Quark und Kartoffeln",
+    "Gute Ergänzung bei wenig Fischverzehr"
+   ],
+   "gut_fuer": [
+    "Vegane und vegetarische Ernährung zur Versorgung mit Omega-3 (ALA)",
+    "Alle, die selten fettreichen Fisch essen",
+    "Kalte Gerichte wie Quark, Müsli, Salate und Smoothies",
+    "Ausgewogene Fettsäurezufuhr neben omega-6-reichen Ölen"
+   ],
+   "weniger_geeignet": [
+    "Zum Braten, Backen oder Erhitzen, weil die empfindlichen Fettsäuren dabei schnell oxidieren",
+    "Bei Fettverlust-Zielen in großen Mengen, weil auch Leinöl rund 90 kcal pro EL liefert",
+    "Als alleiniger Ersatz für Fisch-Omega-3, weil der Körper ALA nur zu einem kleinen Teil in EPA und DHA umwandelt"
+   ],
+   "tipps": [
+    "Nur kalt verwenden, z. B. über fertige Gerichte geben",
+    "Klassiker: Quark mit Leinöl und Pellkartoffeln",
+    "Kleine Flaschen kaufen und zügig aufbrauchen, damit es nicht ranzig wird"
+   ],
+   "lagerung": "Kühl und dunkel lagern, nach dem Öffnen im Kühlschrank aufbewahren und innerhalb von 4–6 Wochen verbrauchen; ranzig oder stark bitter schmeckendes Öl entsorgen.",
+   "hinweis": "",
+   "alpha5": "Kalt über Quark, Müsli oder Bowls geben – besonders sinnvoll bei veganer Ernährung oder wenig Fisch."
+  },
+  {
+   "id": "kokosoel",
+   "name": "Kokosöl",
+   "kategorie": "Öle & Fette",
+   "kurz": "Kokosöl ist ein bei Raumtemperatur festes Pflanzenfett mit sehr hohem Anteil an gesättigten Fettsäuren.",
+   "bezug": "nativ oder raffiniert",
+   "naehrwerte_100g": {
+    "kcal": 892,
+    "eiweiss_g": 0.0,
+    "kohlenhydrate_g": 0.0,
+    "fett_g": 99.1,
+    "ballaststoffe_g": 0.0
+   },
+   "portion": "1 TL bis 1 EL (5–10 g) zum Braten",
+   "naehrstoffe": [
+    "Gesättigte Fettsäuren (rund 90 %)",
+    "Laurinsäure",
+    "Myristinsäure",
+    "Mittelkettige Fettsäuren (Capryl- und Caprinsäure)"
+   ],
+   "eiweissqualitaet": "Öle liefern praktisch kein Eiweiß, die Eiweißqualität spielt hier keine Rolle.",
+   "staerken": [
+    "Relativ hitzestabil, raffiniert auch zum Braten bei höherer Temperatur geeignet",
+    "Fest bei Raumtemperatur – nützlich für vegane Back- und Süßspeisen",
+    "Exotisches Aroma (nativ) für asiatische Küche",
+    "Lange haltbar"
+   ],
+   "gut_fuer": [
+    "Gelegentliches Braten und asiatische Gerichte",
+    "Vegane Rezepte als Butterersatz beim Backen",
+    "Raffiniert, wenn ein neutrales, hitzestabiles Fett gebraucht wird"
+   ],
+   "weniger_geeignet": [
+    "Als tägliches Hauptfett, weil der hohe Anteil gesättigter Fettsäuren den LDL-Cholesterinspiegel erhöhen kann – die DGE empfiehlt, pflanzliche Öle wie Rapsöl zu bevorzugen",
+    "Bei ärztlich festgestellten erhöhten Blutfettwerten – mit Arzt oder Ernährungsfachkraft abstimmen",
+    "Bei Fettverlust-Zielen in großen Mengen, weil es rund 90 kcal pro EL liefert"
+   ],
+   "tipps": [
+    "Für den Alltag eher Raps- oder Olivenöl nutzen, Kokosöl gezielt für bestimmte Gerichte",
+    "Raffiniertes Kokosöl verwenden, wenn kein Kokosgeschmack gewünscht ist",
+    "Zum Abmessen kurz anwärmen, dann wird es flüssig"
+   ],
+   "lagerung": "Bei Raumtemperatur dunkel und gut verschlossen lagern; lange haltbar.",
+   "hinweis": "Werbeaussagen zu besonderen Gesundheitsvorteilen von Kokosöl sind wissenschaftlich nicht belegt; Raps-, Walnuss- oder Olivenöl liefern ein günstigeres Fettsäuremuster.",
+   "alpha5": "Gelegentlich für asiatische Pfannengerichte oder vegane Backrezepte, nicht als Standardfett im Plan."
+  },
+  {
+   "id": "butter",
+   "name": "Butter",
+   "kategorie": "Öle & Fette",
+   "kurz": "Butter ist ein Milchfett mit typischem Aroma, das vor allem gesättigte Fettsäuren und Vitamin A liefert.",
+   "bezug": "Süßrahm- oder Sauerrahmbutter",
+   "naehrwerte_100g": {
+    "kcal": 741,
+    "eiweiss_g": 0.7,
+    "kohlenhydrate_g": 0.6,
+    "fett_g": 83.2,
+    "ballaststoffe_g": 0.0
+   },
+   "portion": "10 g (dünn auf einer Scheibe Brot) oder 1 TL zum Kochen",
+   "naehrstoffe": [
+    "Vitamin A",
+    "Vitamin D",
+    "Vitamin E",
+    "Gesättigte Fettsäuren"
+   ],
+   "eiweissqualitaet": "Butter enthält nur Spuren von Milcheiweiß und spielt als Eiweißquelle keine Rolle.",
+   "staerken": [
+    "Typischer Geschmack, der Gerichte abrundet",
+    "Liefert Vitamin A",
+    "Gut zum Backen und für Saucen",
+    "Einfach zusammengesetzt: im Wesentlichen Milchfett und Wasser"
+   ],
+   "gut_fuer": [
+    "Genuss in kleinen Mengen auf Brot oder zum Verfeinern",
+    "Backen und klassische Küche",
+    "Vegetarische Ernährung"
+   ],
+   "weniger_geeignet": [
+    "Als Hauptfett in großen Mengen, weil der hohe Anteil gesättigter Fettsäuren den LDL-Cholesterinspiegel erhöhen kann – pflanzliche Öle sind für den Alltag die bessere Basis",
+    "Bei ärztlich festgestellten erhöhten Blutfettwerten – Menge mit Arzt oder Ernährungsfachkraft abstimmen",
+    "Für vegane Ernährung, da Milchprodukt",
+    "Zum scharfen Anbraten, weil das Milcheiweiß verbrennt – dafür Butterschmalz oder raffiniertes Rapsöl verwenden"
+   ],
+   "tipps": [
+    "Dünn streichen oder bei Fettverlust auf Brot mit Belag ganz weglassen",
+    "Für Aroma beim Kochen: mit Rapsöl braten und am Ende ein kleines Stück Butter zugeben",
+    "Butter ist praktisch laktosefrei und wird bei Laktoseintoleranz in üblichen Mengen meist vertragen"
+   ],
+   "lagerung": "Im Kühlschrank lagern und verpackt vor Licht und Fremdgerüchen schützen; lässt sich gut einfrieren.",
+   "hinweis": "",
+   "alpha5": "Sparsam zum Verfeinern oder als Brotaufstrich einsetzen; im Plan sind pflanzliche Öle die Standardfette."
+  }
+ ]
+}

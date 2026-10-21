@@ -1,0 +1,451 @@
+{
+  "leitfaden": [
+    {
+      "titel": "Kurz vorheizen",
+      "text": "Heize die Heißluftfritteuse 3–5 Minuten auf die angegebene Temperatur vor, wenn das Rezept es vorsieht. Panierte Stücke, Tofu und Gemüse werden dann von Anfang an gleichmäßig heiß und knusprig statt weich. Teige wie Muffins oder Baked Oats gelingen dagegen auch ohne Vorheizen."
+    },
+    {
+      "titel": "Eine Lage – und zwischendurch schütteln oder wenden",
+      "text": "Die heiße Luft muss jedes Stück umströmen können. Verteile das Gargut deshalb nur in einer Lage mit etwas Abstand und gare größere Mengen lieber in zwei Durchgängen. Kleine Stücke wie Kichererbsen, Gemüsewürfel oder Kartoffelspalten schüttelst du nach etwa der Hälfte der Zeit durch, Fleisch, Fisch und Panade wendest du einmal vorsichtig mit einer Zange."
+    },
+    {
+      "titel": "Wenig Öl, gut verteilt",
+      "text": "Für knusprige Ergebnisse reichen meist 1–2 Teelöffel Öl pro Portion. Vermische Gemüse in einer Schüssel mit dem Öl oder reibe Fleisch und Fisch damit ein, statt Öl in den Korb zu gießen. Für Panaden eignet sich eine Sprühflasche mit Pflanzenöl: dünn einsprühen sorgt für Farbe und Biss bei wenigen Kalorien."
+    },
+    {
+      "titel": "Panade, die knusprig bleibt",
+      "text": "Ziehe Fisch, Fleisch oder Gemüse zuerst durch eine Bindung aus verquirltem Ei oder Skyr mit etwas Senf und wälze es dann in Panko oder zerdrückten ungezuckerten Cornflakes. Drücke die Panade gut an, sprühe sie leicht mit Öl ein und wende die Stücke einmal. Ein Teig aus Kichererbsenmehl und Wasser ist eine gute eifreie Alternative."
+    },
+    {
+      "titel": "Backpapier und Formen sicher verwenden",
+      "text": "Lege Backpapier oder Dauerbackfolie nur in den Korb, wenn Lebensmittel darauf liegen und es beschweren – nie allein beim Vorheizen, denn der Luftstrom kann es an das Heizelement wirbeln. Das Papier sollte kleiner als der Korbboden sein, damit die Luft zirkulieren kann. Für Muffins und Baked Oats eignen sich hitzefeste Silikonförmchen oder kleine Auflaufformen, die in den Korb passen."
+    },
+    {
+      "titel": "Durchgaren sicher prüfen",
+      "text": "Geflügel muss vollständig durchgegart sein: Die Kerntemperatur an der dicksten Stelle sollte mindestens 74 °C erreichen, der Fleischsaft klar sein und das Fleisch innen nicht mehr rosa. Fisch ist bei etwa 60–63 °C Kerntemperatur gar, wenn er sich leicht zerpflücken lässt. Ein einfaches Einstichthermometer nimmt das Rätselraten ab."
+    },
+    {
+      "titel": "Zeiten anpassen und das Gerät sauber halten",
+      "text": "Alle Zeiten sind Richtwerte für einen Korb mittlerer Größe. Geräte unterscheiden sich in Leistung und Korbgröße, beachte deshalb die Anleitung deines eigenen Geräts und prüfe gegen Ende lieber einmal mehr. Lass Korb und Einsatz nach dem Garen abkühlen, weiche festgebackene Reste kurz in warmem Spülwasser ein und reinige beschichtete Teile nur mit einem weichen Schwamm."
+    }
+  ],
+  "ingredients": {
+    "Lachsfilet": {"kcal": 200, "p": 20.0, "c": 0.0, "f": 13.4, "abteilung": "Fleisch & Fisch"},
+    "Panko": {"kcal": 370, "p": 11.0, "c": 76.0, "f": 2.5, "abteilung": "Brot & Backwaren"},
+    "Senf mittelscharf": {"kcal": 90, "p": 5.5, "c": 6.0, "f": 4.5, "abteilung": "Gewürze, Öle & Saucen"},
+    "Petersilie (frisch)": {"kcal": 36, "p": 3.0, "c": 6.0, "f": 0.8, "abteilung": "Obst & Gemüse"},
+    "Zitronensaft": {"kcal": 22, "p": 0.4, "c": 2.4, "f": 0.1, "abteilung": "Obst & Gemüse"},
+    "Couscous (trocken)": {"kcal": 355, "p": 12.0, "c": 72.0, "f": 1.5, "abteilung": "Getreide, Nudeln & Hülsenfrüchte"},
+    "Zucchini": {"kcal": 19, "p": 1.5, "c": 2.5, "f": 0.4, "abteilung": "Obst & Gemüse"},
+    "Paprika rot": {"kcal": 31, "p": 1.0, "c": 6.0, "f": 0.3, "abteilung": "Obst & Gemüse"},
+    "Paprika gelb": {"kcal": 27, "p": 1.0, "c": 5.0, "f": 0.3, "abteilung": "Obst & Gemüse"},
+    "Olivenöl": {"kcal": 884, "p": 0.0, "c": 0.0, "f": 100.0, "abteilung": "Gewürze, Öle & Saucen"},
+    "Rapsöl": {"kcal": 884, "p": 0.0, "c": 0.0, "f": 100.0, "abteilung": "Gewürze, Öle & Saucen"},
+    "Sesamöl": {"kcal": 884, "p": 0.0, "c": 0.0, "f": 100.0, "abteilung": "Gewürze, Öle & Saucen"},
+    "Skyr natur": {"kcal": 63, "p": 11.0, "c": 4.0, "f": 0.2, "abteilung": "Kühlregal & Molkerei"},
+    "Dill (frisch)": {"kcal": 40, "p": 3.5, "c": 5.0, "f": 0.8, "abteilung": "Obst & Gemüse"},
+    "Salz": {"kcal": 0, "p": 0.0, "c": 0.0, "f": 0.0, "abteilung": "Gewürze, Öle & Saucen"},
+    "Pfeffer": {"kcal": 0, "p": 0.0, "c": 0.0, "f": 0.0, "abteilung": "Gewürze, Öle & Saucen"},
+    "Wasser": {"kcal": 0, "p": 0.0, "c": 0.0, "f": 0.0, "abteilung": "Sonstiges"},
+    "Hähnchenschenkelfilet (ohne Haut)": {"kcal": 120, "p": 19.5, "c": 0.0, "f": 4.6, "abteilung": "Fleisch & Fisch"},
+    "Kartoffeln": {"kcal": 72, "p": 2.0, "c": 15.6, "f": 0.1, "abteilung": "Obst & Gemüse"},
+    "Rote Zwiebel": {"kcal": 40, "p": 1.2, "c": 8.0, "f": 0.2, "abteilung": "Obst & Gemüse"},
+    "Paprikapulver edelsüß": {"kcal": 0, "p": 0.0, "c": 0.0, "f": 0.0, "abteilung": "Gewürze, Öle & Saucen"},
+    "Paprikapulver geräuchert": {"kcal": 0, "p": 0.0, "c": 0.0, "f": 0.0, "abteilung": "Gewürze, Öle & Saucen"},
+    "Knoblauch": {"kcal": 140, "p": 6.0, "c": 28.0, "f": 0.1, "abteilung": "Obst & Gemüse"},
+    "Oregano (getrocknet)": {"kcal": 0, "p": 0.0, "c": 0.0, "f": 0.0, "abteilung": "Gewürze, Öle & Saucen"},
+    "Rosmarin (getrocknet)": {"kcal": 0, "p": 0.0, "c": 0.0, "f": 0.0, "abteilung": "Gewürze, Öle & Saucen"},
+    "Magerquark": {"kcal": 67, "p": 12.0, "c": 4.0, "f": 0.3, "abteilung": "Kühlregal & Molkerei"},
+    "Schnittlauch (frisch)": {"kcal": 30, "p": 3.0, "c": 2.0, "f": 0.7, "abteilung": "Obst & Gemüse"},
+    "Tofu natur": {"kcal": 125, "p": 13.0, "c": 1.5, "f": 7.5, "abteilung": "Pflanzliche Alternativen"},
+    "Speisestärke": {"kcal": 350, "p": 0.3, "c": 86.0, "f": 0.1, "abteilung": "Sonstiges"},
+    "Sojasauce": {"kcal": 60, "p": 8.0, "c": 6.0, "f": 0.1, "abteilung": "Gewürze, Öle & Saucen"},
+    "Brokkoli": {"kcal": 34, "p": 3.8, "c": 2.7, "f": 0.4, "abteilung": "Obst & Gemüse"},
+    "Basmatireis (trocken)": {"kcal": 350, "p": 7.5, "c": 78.0, "f": 0.6, "abteilung": "Getreide, Nudeln & Hülsenfrüchte"},
+    "Sesam": {"kcal": 580, "p": 18.0, "c": 12.0, "f": 50.0, "abteilung": "Nüsse, Samen & Trockenfrüchte"},
+    "Ahornsirup": {"kcal": 260, "p": 0.0, "c": 67.0, "f": 0.1, "abteilung": "Sonstiges"},
+    "Ingwer": {"kcal": 80, "p": 1.8, "c": 15.0, "f": 0.8, "abteilung": "Obst & Gemüse"},
+    "Edamame (TK, geschält)": {"kcal": 130, "p": 12.0, "c": 6.0, "f": 6.0, "abteilung": "Tiefkühl"},
+    "Seelachsfilet (TK)": {"kcal": 80, "p": 18.3, "c": 0.0, "f": 0.9, "abteilung": "Tiefkühl"},
+    "Ei": {"kcal": 137, "p": 12.6, "c": 0.5, "f": 9.3, "abteilung": "Kühlregal & Molkerei"},
+    "Dinkelmehl Type 630": {"kcal": 340, "p": 11.0, "c": 70.0, "f": 1.5, "abteilung": "Getreide, Nudeln & Hülsenfrüchte"},
+    "Gewürzgurken (Glas)": {"kcal": 20, "p": 0.5, "c": 3.5, "f": 0.1, "abteilung": "Konserven & Gläser"},
+    "Erbsen (TK)": {"kcal": 80, "p": 5.4, "c": 11.0, "f": 0.4, "abteilung": "Tiefkühl"},
+    "Putenbrustfilet": {"kcal": 105, "p": 24.0, "c": 0.0, "f": 1.0, "abteilung": "Fleisch & Fisch"},
+    "Joghurt 1,5 %": {"kcal": 47, "p": 3.4, "c": 4.5, "f": 1.5, "abteilung": "Kühlregal & Molkerei"},
+    "Currypulver": {"kcal": 0, "p": 0.0, "c": 0.0, "f": 0.0, "abteilung": "Gewürze, Öle & Saucen"},
+    "Kreuzkümmel (gemahlen)": {"kcal": 0, "p": 0.0, "c": 0.0, "f": 0.0, "abteilung": "Gewürze, Öle & Saucen"},
+    "Minze (frisch)": {"kcal": 45, "p": 3.5, "c": 5.0, "f": 0.7, "abteilung": "Obst & Gemüse"},
+    "Gurke": {"kcal": 12, "p": 0.6, "c": 1.8, "f": 0.2, "abteilung": "Obst & Gemüse"},
+    "Halloumi": {"kcal": 320, "p": 22.0, "c": 2.0, "f": 25.0, "abteilung": "Kühlregal & Molkerei"},
+    "Champignons": {"kcal": 22, "p": 3.1, "c": 0.6, "f": 0.3, "abteilung": "Obst & Gemüse"},
+    "Rosenkohl": {"kcal": 36, "p": 4.5, "c": 3.3, "f": 0.3, "abteilung": "Obst & Gemüse"},
+    "Parmesan": {"kcal": 390, "p": 35.0, "c": 0.0, "f": 28.0, "abteilung": "Kühlregal & Molkerei"},
+    "Blumenkohl": {"kcal": 25, "p": 2.0, "c": 2.3, "f": 0.3, "abteilung": "Obst & Gemüse"},
+    "Kichererbsenmehl": {"kcal": 370, "p": 22.0, "c": 47.0, "f": 6.5, "abteilung": "Getreide, Nudeln & Hülsenfrüchte"},
+    "Sojajoghurt natur": {"kcal": 50, "p": 4.0, "c": 0.5, "f": 2.3, "abteilung": "Pflanzliche Alternativen"},
+    "Tahin": {"kcal": 640, "p": 19.0, "c": 9.0, "f": 58.0, "abteilung": "Konserven & Gläser"},
+    "Kichererbsen (Dose, abgetropft)": {"kcal": 120, "p": 7.0, "c": 16.0, "f": 2.5, "abteilung": "Konserven & Gläser"},
+    "Sojaskyr natur": {"kcal": 68, "p": 8.5, "c": 3.0, "f": 2.2, "abteilung": "Pflanzliche Alternativen"},
+    "Vollkorn-Wrap": {"kcal": 300, "p": 9.0, "c": 48.0, "f": 7.0, "abteilung": "Brot & Backwaren"},
+    "Apfel": {"kcal": 54, "p": 0.3, "c": 12.0, "f": 0.2, "abteilung": "Obst & Gemüse"},
+    "Zimt": {"kcal": 0, "p": 0.0, "c": 0.0, "f": 0.0, "abteilung": "Gewürze, Öle & Saucen"},
+    "Honig": {"kcal": 304, "p": 0.3, "c": 80.0, "f": 0.0, "abteilung": "Gewürze, Öle & Saucen"},
+    "Milch 1,5 %": {"kcal": 47, "p": 3.4, "c": 4.9, "f": 1.5, "abteilung": "Kühlregal & Molkerei"},
+    "Haferflocken": {"kcal": 372, "p": 13.5, "c": 58.7, "f": 7.0, "abteilung": "Getreide, Nudeln & Hülsenfrüchte"},
+    "Veganes Proteinpulver (Schoko)": {"kcal": 375, "p": 70.0, "c": 9.0, "f": 7.0, "abteilung": "Sonstiges"},
+    "Sojadrink ungesüßt": {"kcal": 33, "p": 3.3, "c": 0.6, "f": 1.8, "abteilung": "Pflanzliche Alternativen"},
+    "Banane": {"kcal": 93, "p": 1.2, "c": 20.0, "f": 0.2, "abteilung": "Obst & Gemüse"},
+    "Backpulver": {"kcal": 100, "p": 0.0, "c": 25.0, "f": 0.0, "abteilung": "Sonstiges"},
+    "Himbeeren (TK)": {"kcal": 36, "p": 1.3, "c": 4.8, "f": 0.3, "abteilung": "Tiefkühl"},
+    "Möhre": {"kcal": 36, "p": 1.0, "c": 7.0, "f": 0.2, "abteilung": "Obst & Gemüse"},
+    "Walnüsse": {"kcal": 654, "p": 15.0, "c": 7.0, "f": 65.0, "abteilung": "Nüsse, Samen & Trockenfrüchte"},
+    "Whey-Proteinpulver (Vanille)": {"kcal": 385, "p": 77.0, "c": 7.0, "f": 6.0, "abteilung": "Sonstiges"},
+    "Erythrit": {"kcal": 0, "p": 0.0, "c": 0.0, "f": 0.0, "abteilung": "Sonstiges"}
+  },
+  "recipes": [
+    {
+      "mahlzeit": "Hauptgerichte",
+      "name": "Lachs mit Kräuter-Panko-Kruste, Ofengemüse und Couscous",
+      "beschreibung": "Saftiger Lachs unter einer knusprigen Senf-Kräuter-Kruste, dazu geröstete Zucchini und Paprika – die Kruste wird in der Heißluft goldbraun, ohne dass du extra Fett brauchst.",
+      "zeit_min": 25,
+      "tags": ["Heißluftfritteuse"],
+      "passt_fuer": ["fleisch", "ohne-schwein"],
+      "zutaten": [
+        {"name": "Lachsfilet", "menge_g": 130, "anzeige": "1 Lachsfilet ohne Haut (130 g)"},
+        {"name": "Senf mittelscharf", "menge_g": 5, "anzeige": "1 TL (5 g)"},
+        {"name": "Panko", "menge_g": 12, "anzeige": "2 EL (12 g)"},
+        {"name": "Petersilie (frisch)", "menge_g": 5, "anzeige": "1 EL gehackt (5 g)"},
+        {"name": "Zitronensaft", "menge_g": 10, "anzeige": "2 TL (10 ml)"},
+        {"name": "Zucchini", "menge_g": 150, "anzeige": "½ Zucchini (150 g)"},
+        {"name": "Paprika rot", "menge_g": 100, "anzeige": "½ rote Paprika (100 g)"},
+        {"name": "Olivenöl", "menge_g": 5, "anzeige": "1 TL (5 g)"},
+        {"name": "Couscous (trocken)", "menge_g": 50, "anzeige": "50 g"},
+        {"name": "Wasser", "menge_g": 0, "anzeige": "70 ml kochendes Wasser"},
+        {"name": "Skyr natur", "menge_g": 80, "anzeige": "80 g"},
+        {"name": "Dill (frisch)", "menge_g": 3, "anzeige": "1 TL gehackt (3 g)"},
+        {"name": "Salz", "menge_g": 0, "anzeige": "1 Prise"},
+        {"name": "Pfeffer", "menge_g": 0, "anzeige": "1 Prise"}
+      ],
+      "zubereitung": [
+        "Heize die Heißluftfritteuse 3 Minuten auf 200 °C vor.",
+        "Schneide Zucchini und Paprika in 2 cm große Stücke, mische sie mit dem Olivenöl, Salz und Pfeffer und gare sie 8 Minuten bei 200 °C in einer Lage; nach 4 Minuten einmal schütteln.",
+        "Bestreiche den Lachs oben mit Senf, vermische Panko, Petersilie und 1 TL Zitronensaft und drücke die Mischung fest auf die Senfschicht.",
+        "Schiebe das Gemüse an den Rand, lege den Lachs mit der Kruste nach oben in die Mitte und gare alles bei 180 °C weitere 8–10 Minuten, ohne den Lachs zu wenden. Er ist fertig, wenn er sich leicht zerpflücken lässt (Kerntemperatur ca. 60–63 °C).",
+        "Übergieße in der Zwischenzeit den Couscous mit 70 ml kochendem Wasser, decke ihn 5 Minuten ab und lockere ihn mit einer Gabel auf.",
+        "Verrühre Skyr mit Dill, restlichem Zitronensaft, Salz und Pfeffer und serviere den Dip zu Lachs, Gemüse und Couscous."
+      ],
+      "tipp": "Wenn die Kruste zu schnell bräunt, lege für die letzten Minuten ein kleines Stück Alufolie locker darüber. Statt Couscous passt auch Express-Reis."
+    },
+    {
+      "mahlzeit": "Hauptgerichte",
+      "name": "Paprika-Hähnchenschenkel mit Kartoffelspalten und Schnittlauchquark",
+      "beschreibung": "Würzig marinierte Hähnchenschenkel und knusprige Kartoffelspalten garen nacheinander im selben Korb – saftig, rauchig und mit wenig Abwasch.",
+      "zeit_min": 40,
+      "tags": ["Heißluftfritteuse"],
+      "passt_fuer": ["fleisch", "ohne-schwein"],
+      "zutaten": [
+        {"name": "Hähnchenschenkelfilet (ohne Haut)", "menge_g": 180, "anzeige": "2 Hähnchenschenkelfilets ohne Haut (180 g)"},
+        {"name": "Kartoffeln", "menge_g": 250, "anzeige": "2 mittelgroße Kartoffeln (250 g)"},
+        {"name": "Paprika rot", "menge_g": 100, "anzeige": "½ rote Paprika (100 g)"},
+        {"name": "Rote Zwiebel", "menge_g": 50, "anzeige": "½ rote Zwiebel (50 g)"},
+        {"name": "Olivenöl", "menge_g": 8, "anzeige": "2 TL (8 g)"},
+        {"name": "Paprikapulver edelsüß", "menge_g": 0, "anzeige": "1 TL"},
+        {"name": "Paprikapulver geräuchert", "menge_g": 0, "anzeige": "½ TL"},
+        {"name": "Knoblauch", "menge_g": 3, "anzeige": "1 Zehe (3 g), gepresst"},
+        {"name": "Rosmarin (getrocknet)", "menge_g": 0, "anzeige": "½ TL"},
+        {"name": "Magerquark", "menge_g": 100, "anzeige": "100 g"},
+        {"name": "Schnittlauch (frisch)", "menge_g": 5, "anzeige": "1 EL Röllchen (5 g)"},
+        {"name": "Salz", "menge_g": 0, "anzeige": "2 Prisen"},
+        {"name": "Pfeffer", "menge_g": 0, "anzeige": "1 Prise"}
+      ],
+      "zubereitung": [
+        "Verrühre 1 TL Olivenöl mit beiden Paprikapulvern, Knoblauch, Salz und Pfeffer und reibe die Hähnchenschenkel damit ein.",
+        "Heize die Heißluftfritteuse 3 Minuten auf 200 °C vor. Schneide die Kartoffeln mit Schale in Spalten, tupfe sie trocken und mische sie mit dem restlichen Öl, Rosmarin und Salz.",
+        "Gare die Kartoffelspalten 12 Minuten bei 200 °C in einer Lage und schüttle sie nach 6 Minuten.",
+        "Gib Paprika- und Zwiebelstücke dazu, lege die Hähnchenschenkel obenauf und gare alles bei 190 °C weitere 14–16 Minuten. Wende das Fleisch nach 8 Minuten und schüttle dabei das Gemüse kurz durch.",
+        "Prüfe, ob das Hähnchen vollständig durchgegart ist: Kerntemperatur an der dicksten Stelle mindestens 74 °C, Fleischsaft klar. Sonst 2–3 Minuten weitergaren.",
+        "Verrühre Magerquark mit 2–3 EL Wasser, Schnittlauch, Salz und Pfeffer und serviere ihn dazu."
+      ],
+      "tipp": "Hähnchenschenkel bleiben saftiger als Brust; mit Hähnchenbrust verkürzt sich die Garzeit um 2–3 Minuten, Kerntemperatur trotzdem prüfen."
+    },
+    {
+      "mahlzeit": "Hauptgerichte",
+      "name": "Knuspriger Sesam-Tofu mit Brokkoli, Edamame und Reis",
+      "beschreibung": "Tofuwürfel mit hauchdünner Stärkehülle werden in der Heißluft außen kross und innen zart – dazu Brokkoli mit Röstaromen und eine schnelle Ingwer-Soja-Glasur.",
+      "zeit_min": 30,
+      "tags": ["Heißluftfritteuse", "Meal-Prep"],
+      "passt_fuer": ["vegan", "vegetarisch", "fleisch", "ohne-schwein"],
+      "zutaten": [
+        {"name": "Tofu natur", "menge_g": 180, "anzeige": "180 g"},
+        {"name": "Speisestärke", "menge_g": 10, "anzeige": "1 EL (10 g)"},
+        {"name": "Sojasauce", "menge_g": 15, "anzeige": "1 EL (15 ml)"},
+        {"name": "Sesamöl", "menge_g": 4, "anzeige": "1 TL (4 g)"},
+        {"name": "Brokkoli", "menge_g": 200, "anzeige": "200 g Röschen"},
+        {"name": "Edamame (TK, geschält)", "menge_g": 50, "anzeige": "50 g"},
+        {"name": "Basmatireis (trocken)", "menge_g": 55, "anzeige": "55 g"},
+        {"name": "Ahornsirup", "menge_g": 5, "anzeige": "1 TL (5 g)"},
+        {"name": "Ingwer", "menge_g": 5, "anzeige": "1 TL gerieben (5 g)"},
+        {"name": "Knoblauch", "menge_g": 3, "anzeige": "1 Zehe (3 g), gepresst"},
+        {"name": "Sesam", "menge_g": 5, "anzeige": "1 TL (5 g)"},
+        {"name": "Salz", "menge_g": 0, "anzeige": "1 Prise"}
+      ],
+      "zubereitung": [
+        "Koche den Reis nach Packungsanleitung in Salzwasser (ca. 12 Minuten).",
+        "Drücke den Tofu zwischen Küchenpapier gut aus, schneide ihn in 2 cm große Würfel, beträufle ihn mit 1 TL Sojasauce und ½ TL Sesamöl und wende ihn in der Speisestärke.",
+        "Heize die Heißluftfritteuse 3 Minuten auf 200 °C vor und gare die Tofuwürfel in einer Lage 8 Minuten; nach 4 Minuten schütteln.",
+        "Mische Brokkoli und gefrorene Edamame mit dem restlichen Sesamöl und einer Prise Salz, gib sie zum Tofu und gare alles weitere 7–8 Minuten bei 200 °C; nach 4 Minuten erneut schütteln.",
+        "Verrühre restliche Sojasauce, Ahornsirup, Ingwer und Knoblauch, schwenke Tofu und Gemüse in einer Schüssel darin und bestreue alles mit Sesam. Mit dem Reis servieren."
+      ],
+      "tipp": "Für Meal-Prep Tofu und Gemüse getrennt vom Reis lagern und die Glasur erst vor dem Essen untermischen, dann bleibt der Tofu länger knusprig – zum Aufknuspern 3 Minuten bei 180 °C in die Heißluftfritteuse."
+    },
+    {
+      "mahlzeit": "Hauptgerichte",
+      "name": "Selbstgemachte Seelachs-Fischstäbchen mit Rosmarinkartoffeln und Skyr-Remoulade",
+      "beschreibung": "Knusprige Fischstäbchen aus echtem Seelachsfilet in Panko-Panade, dazu Kartoffelwürfel und eine leichte Remoulade aus Skyr – der Kindheitsklassiker mit über 50 g Eiweiß.",
+      "zeit_min": 35,
+      "tags": ["Heißluftfritteuse"],
+      "passt_fuer": ["fleisch", "ohne-schwein"],
+      "zutaten": [
+        {"name": "Seelachsfilet (TK)", "menge_g": 200, "anzeige": "200 g, aufgetaut"},
+        {"name": "Dinkelmehl Type 630", "menge_g": 10, "anzeige": "1 EL (10 g)"},
+        {"name": "Ei", "menge_g": 60, "anzeige": "1 Ei (Größe M)"},
+        {"name": "Panko", "menge_g": 30, "anzeige": "5 EL (30 g)"},
+        {"name": "Kartoffeln", "menge_g": 220, "anzeige": "2 kleine Kartoffeln (220 g)"},
+        {"name": "Rapsöl", "menge_g": 6, "anzeige": "1½ TL (6 g), davon etwas zum Einsprühen"},
+        {"name": "Rosmarin (getrocknet)", "menge_g": 0, "anzeige": "½ TL"},
+        {"name": "Skyr natur", "menge_g": 80, "anzeige": "80 g"},
+        {"name": "Gewürzgurken (Glas)", "menge_g": 30, "anzeige": "1 Gewürzgurke (30 g)"},
+        {"name": "Senf mittelscharf", "menge_g": 5, "anzeige": "1 TL (5 g)"},
+        {"name": "Dill (frisch)", "menge_g": 3, "anzeige": "1 TL gehackt (3 g)"},
+        {"name": "Zitronensaft", "menge_g": 5, "anzeige": "1 TL (5 ml)"},
+        {"name": "Salz", "menge_g": 0, "anzeige": "2 Prisen"},
+        {"name": "Pfeffer", "menge_g": 0, "anzeige": "1 Prise"}
+      ],
+      "zubereitung": [
+        "Heize die Heißluftfritteuse 3 Minuten auf 200 °C vor. Schneide die Kartoffeln in 1,5 cm große Würfel, mische sie mit 1 TL Öl, Rosmarin und Salz und gare sie 15 Minuten bei 200 °C; nach 7 Minuten schütteln. Herausnehmen und warm stellen.",
+        "Tupfe den aufgetauten Seelachs trocken und schneide ihn in 5–6 fingerdicke Stäbchen. Salze und pfeffere sie leicht.",
+        "Wende die Stäbchen nacheinander in Mehl, verquirltem Ei und Panko und drücke die Panade gut an. Sprühe sie dünn mit dem restlichen Öl ein.",
+        "Lege die Fischstäbchen in einer Lage mit etwas Abstand in den Korb (bei Bedarf auf ein beschwertes Stück Backpapier) und gare sie 8–10 Minuten bei 200 °C. Wende sie nach 5 Minuten vorsichtig mit einer Zange; der Fisch ist gar, wenn er innen weiß ist und sich leicht teilen lässt (ca. 60–63 °C).",
+        "Gib die Kartoffeln für die letzten 2 Minuten wieder dazu, damit sie heiß werden.",
+        "Hacke die Gewürzgurke fein und verrühre sie mit Skyr, Senf, Dill, Zitronensaft, Salz und Pfeffer zur Remoulade."
+      ],
+      "tipp": "Kabeljau funktioniert genauso. Statt Panko kannst du ungezuckerte Cornflakes zerdrücken – das gibt eine besonders grobe, knusprige Kruste."
+    },
+    {
+      "mahlzeit": "Hauptgerichte",
+      "name": "Tandoori-Putenbrust mit Paprika-Zwiebel-Gemüse und Minz-Joghurt",
+      "beschreibung": "In Joghurt und Currygewürzen marinierte Putenstreifen bekommen in der Heißluft leichte Röstspuren und bleiben dabei zart – orientalisch, mager und schnell gemacht.",
+      "zeit_min": 30,
+      "tags": ["Heißluftfritteuse"],
+      "passt_fuer": ["fleisch", "ohne-schwein"],
+      "zutaten": [
+        {"name": "Putenbrustfilet", "menge_g": 170, "anzeige": "170 g"},
+        {"name": "Joghurt 1,5 %", "menge_g": 130, "anzeige": "130 g (50 g für die Marinade, 80 g für den Dip)"},
+        {"name": "Currypulver", "menge_g": 0, "anzeige": "2 TL"},
+        {"name": "Paprikapulver edelsüß", "menge_g": 0, "anzeige": "1 TL"},
+        {"name": "Kreuzkümmel (gemahlen)", "menge_g": 0, "anzeige": "½ TL"},
+        {"name": "Knoblauch", "menge_g": 3, "anzeige": "1 Zehe (3 g), gepresst"},
+        {"name": "Ingwer", "menge_g": 5, "anzeige": "1 TL gerieben (5 g)"},
+        {"name": "Zitronensaft", "menge_g": 10, "anzeige": "2 TL (10 ml)"},
+        {"name": "Paprika gelb", "menge_g": 150, "anzeige": "1 kleine gelbe Paprika (150 g)"},
+        {"name": "Rote Zwiebel", "menge_g": 60, "anzeige": "½ rote Zwiebel (60 g)"},
+        {"name": "Rapsöl", "menge_g": 7, "anzeige": "2 TL (7 g)"},
+        {"name": "Basmatireis (trocken)", "menge_g": 65, "anzeige": "65 g"},
+        {"name": "Minze (frisch)", "menge_g": 3, "anzeige": "einige Blätter (3 g)"},
+        {"name": "Gurke", "menge_g": 50, "anzeige": "50 g"},
+        {"name": "Salz", "menge_g": 0, "anzeige": "2 Prisen"}
+      ],
+      "zubereitung": [
+        "Schneide die Putenbrust in 2 cm breite Streifen. Verrühre 50 g Joghurt mit Currypulver, Paprikapulver, Kreuzkümmel, Knoblauch, Ingwer, 1 TL Zitronensaft, 1 TL Öl und Salz und mariniere das Fleisch darin mindestens 10 Minuten (gern auch über Nacht im Kühlschrank).",
+        "Koche den Basmatireis nach Packungsanleitung (ca. 12 Minuten).",
+        "Heize die Heißluftfritteuse 3 Minuten auf 200 °C vor. Mische Paprika- und Zwiebelstücke mit dem restlichen Öl und etwas Salz und gare sie 5 Minuten bei 200 °C.",
+        "Streife überschüssige Marinade ab, lege die Putenstreifen in einer Lage auf das Gemüse und gare alles weitere 10–12 Minuten bei 200 °C. Wende das Fleisch nach 6 Minuten und schüttle das Gemüse kurz durch.",
+        "Prüfe, ob die Pute vollständig durchgegart ist (Kerntemperatur mindestens 74 °C, innen nicht mehr rosa).",
+        "Verrühre 80 g Joghurt mit fein gehackter Minze, geraspelter Gurke, restlichem Zitronensaft und Salz und serviere den Dip zu Fleisch, Gemüse und Reis."
+      ],
+      "tipp": "Die Marinade funktioniert auch mit Hähnchenbrust. Leicht dunkle Röststellen gehören zum Tandoori-Stil – wird es zu dunkel, die Temperatur auf 190 °C senken."
+    },
+    {
+      "mahlzeit": "Beilagen & Gemüse",
+      "name": "Halloumi mit Champignons, Paprika und Oregano",
+      "beschreibung": "Goldbraun gegrillter Halloumi mit Röstgemüse – als Beilage zu Reis oder Brot oder als leichtes Abendessen mit Salat.",
+      "zeit_min": 20,
+      "tags": ["Heißluftfritteuse"],
+      "passt_fuer": ["vegetarisch", "fleisch", "ohne-schwein"],
+      "zutaten": [
+        {"name": "Halloumi", "menge_g": 50, "anzeige": "50 g"},
+        {"name": "Champignons", "menge_g": 150, "anzeige": "150 g"},
+        {"name": "Paprika rot", "menge_g": 100, "anzeige": "½ rote Paprika (100 g)"},
+        {"name": "Rote Zwiebel", "menge_g": 40, "anzeige": "½ kleine rote Zwiebel (40 g)"},
+        {"name": "Olivenöl", "menge_g": 3, "anzeige": "1 TL knapp (3 g)"},
+        {"name": "Oregano (getrocknet)", "menge_g": 0, "anzeige": "1 TL"},
+        {"name": "Zitronensaft", "menge_g": 5, "anzeige": "1 TL (5 ml)"},
+        {"name": "Pfeffer", "menge_g": 0, "anzeige": "1 Prise"}
+      ],
+      "zubereitung": [
+        "Heize die Heißluftfritteuse 3 Minuten auf 200 °C vor.",
+        "Halbiere die Champignons, schneide Paprika und Zwiebel in Stücke und mische alles mit Olivenöl, Oregano und Pfeffer. Salz brauchst du nicht, der Halloumi ist salzig genug.",
+        "Gare das Gemüse 6 Minuten bei 200 °C in einer Lage und schüttle es nach 3 Minuten.",
+        "Schneide den Halloumi in 1 cm dicke Scheiben, lege sie auf das Gemüse und gare alles weitere 6–7 Minuten bei 200 °C. Wende den Halloumi nach 4 Minuten, bis er auf beiden Seiten goldbraun ist.",
+        "Beträufle alles mit Zitronensaft und serviere es sofort, solange der Halloumi warm und weich ist."
+      ],
+      "tipp": "Als Hauptgericht mit 60 g Couscous und einem Skyr-Dip ergänzen. Halloumi wird beim Abkühlen gummiartig – am besten frisch essen."
+    },
+    {
+      "mahlzeit": "Beilagen & Gemüse",
+      "name": "Rosenkohl mit Parmesan und Zitronen-Skyr",
+      "beschreibung": "Halbierter Rosenkohl wird in der Heißluft an den Schnittflächen karamellisiert und nussig – mit Parmesan und frischem Zitronen-Skyr selbst für Rosenkohl-Skeptiker.",
+      "zeit_min": 20,
+      "tags": ["Heißluftfritteuse"],
+      "passt_fuer": ["vegetarisch", "fleisch", "ohne-schwein"],
+      "zutaten": [
+        {"name": "Rosenkohl", "menge_g": 250, "anzeige": "250 g"},
+        {"name": "Olivenöl", "menge_g": 5, "anzeige": "1 TL (5 g)"},
+        {"name": "Knoblauch", "menge_g": 3, "anzeige": "1 Zehe (3 g), gepresst"},
+        {"name": "Parmesan", "menge_g": 15, "anzeige": "2 EL gerieben (15 g)"},
+        {"name": "Skyr natur", "menge_g": 60, "anzeige": "60 g"},
+        {"name": "Zitronensaft", "menge_g": 5, "anzeige": "1 TL (5 ml)"},
+        {"name": "Salz", "menge_g": 0, "anzeige": "1 Prise"},
+        {"name": "Pfeffer", "menge_g": 0, "anzeige": "1 Prise"}
+      ],
+      "zubereitung": [
+        "Heize die Heißluftfritteuse 3 Minuten auf 190 °C vor.",
+        "Putze den Rosenkohl, entferne welke Außenblätter und halbiere die Röschen. Mische sie mit Olivenöl, Knoblauch, Salz und Pfeffer.",
+        "Gare den Rosenkohl 12–14 Minuten bei 190 °C in einer Lage und schüttle ihn nach 6 Minuten. Er ist fertig, wenn die Schnittflächen braun sind und sich die Röschen mit einem Messer leicht einstechen lassen.",
+        "Streue den Parmesan darüber und gare alles noch 1–2 Minuten, bis der Käse geschmolzen ist.",
+        "Verrühre Skyr mit Zitronensaft und einer Prise Salz und serviere ihn als Dip dazu."
+      ],
+      "tipp": "Lose Außenblätter, die beim Putzen abfallen, einfach mitgaren – sie werden zu knusprigen Chips. Passt hervorragend zu Pute oder Fisch."
+    },
+    {
+      "mahlzeit": "Beilagen & Gemüse",
+      "name": "Curry-Blumenkohl-Bites mit Tahin-Sojajoghurt-Dip",
+      "beschreibung": "Blumenkohlröschen im würzigen Kichererbsenmehl-Mantel werden knusprig wie frittiert, brauchen aber nur einen Teelöffel Öl – mit cremigem Sesam-Dip.",
+      "zeit_min": 25,
+      "tags": ["Heißluftfritteuse"],
+      "passt_fuer": ["vegan", "vegetarisch", "fleisch", "ohne-schwein"],
+      "zutaten": [
+        {"name": "Blumenkohl", "menge_g": 250, "anzeige": "¼ Blumenkohl (250 g Röschen)"},
+        {"name": "Kichererbsenmehl", "menge_g": 30, "anzeige": "3 EL (30 g)"},
+        {"name": "Wasser", "menge_g": 0, "anzeige": "40 ml"},
+        {"name": "Currypulver", "menge_g": 0, "anzeige": "1 TL"},
+        {"name": "Paprikapulver geräuchert", "menge_g": 0, "anzeige": "½ TL"},
+        {"name": "Rapsöl", "menge_g": 4, "anzeige": "1 TL (4 g)"},
+        {"name": "Sojajoghurt natur", "menge_g": 100, "anzeige": "100 g"},
+        {"name": "Tahin", "menge_g": 8, "anzeige": "1 TL gehäuft (8 g)"},
+        {"name": "Zitronensaft", "menge_g": 5, "anzeige": "1 TL (5 ml)"},
+        {"name": "Salz", "menge_g": 0, "anzeige": "2 Prisen"}
+      ],
+      "zubereitung": [
+        "Heize die Heißluftfritteuse 3 Minuten auf 200 °C vor.",
+        "Verrühre Kichererbsenmehl, Wasser, Currypulver, Paprikapulver, Öl und Salz zu einem dickflüssigen Teig.",
+        "Teile den Blumenkohl in kleine, etwa gleich große Röschen und wende sie im Teig, bis sie rundum dünn überzogen sind. Lass überschüssigen Teig abtropfen.",
+        "Lege die Röschen in einer Lage auf ein passend zugeschnittenes Stück Backpapier in den Korb und gare sie 14–16 Minuten bei 200 °C. Wende sie nach 8 Minuten; dann kannst du das Backpapier entfernen, damit die Unterseite knusprig wird.",
+        "Verrühre Sojajoghurt mit Tahin, Zitronensaft und einer Prise Salz und serviere den Dip zu den heißen Bites."
+      ],
+      "tipp": "Die Röschen nicht zu groß lassen, sonst sind sie außen braun und innen noch hart. Wer es schärfer mag, gibt eine Prise Chiliflocken in den Teig."
+    },
+    {
+      "mahlzeit": "Snacks & Süßes",
+      "name": "Curry-Knusper-Kichererbsen mit Kräuter-Sojaskyr-Dip",
+      "beschreibung": "Kichererbsen aus der Dose werden in der Heißluft in 15 Minuten zu einem würzig-knusprigen Knabbersnack – dazu ein eiweißreicher Kräuter-Dip.",
+      "zeit_min": 20,
+      "tags": ["Heißluftfritteuse", "zum Mitnehmen"],
+      "passt_fuer": ["vegan", "vegetarisch", "fleisch", "ohne-schwein"],
+      "zutaten": [
+        {"name": "Kichererbsen (Dose, abgetropft)", "menge_g": 120, "anzeige": "120 g"},
+        {"name": "Rapsöl", "menge_g": 3, "anzeige": "1 TL knapp (3 g)"},
+        {"name": "Currypulver", "menge_g": 0, "anzeige": "1 TL"},
+        {"name": "Kreuzkümmel (gemahlen)", "menge_g": 0, "anzeige": "¼ TL"},
+        {"name": "Salz", "menge_g": 0, "anzeige": "2 Prisen"},
+        {"name": "Sojaskyr natur", "menge_g": 100, "anzeige": "100 g"},
+        {"name": "Schnittlauch (frisch)", "menge_g": 5, "anzeige": "1 EL Röllchen (5 g)"},
+        {"name": "Knoblauch", "menge_g": 2, "anzeige": "½ Zehe (2 g), gepresst"}
+      ],
+      "zubereitung": [
+        "Spüle die Kichererbsen ab und tupfe sie mit Küchenpapier sehr gründlich trocken; lose Häutchen kannst du entfernen.",
+        "Heize die Heißluftfritteuse 3 Minuten auf 200 °C vor.",
+        "Gare die Kichererbsen ohne Öl 8 Minuten bei 200 °C und schüttle sie nach 4 Minuten.",
+        "Mische sie in einer Schüssel mit Öl, Currypulver, Kreuzkümmel und Salz und gare sie weitere 6–8 Minuten bei 200 °C, bis sie knusprig sind; dabei alle 3 Minuten schütteln.",
+        "Verrühre Sojaskyr mit Schnittlauch, Knoblauch und einer Prise Salz. Lass die Kichererbsen kurz abkühlen – dabei werden sie noch knuspriger."
+      ],
+      "tipp": "Am knusprigsten sind die Kichererbsen am selben Tag. Zum Mitnehmen in einer offenen Dose abkühlen lassen und erst dann verschließen; den Dip separat einpacken."
+    },
+    {
+      "mahlzeit": "Snacks & Süßes",
+      "name": "Apfel-Zimt-Taschen mit Quarkfüllung",
+      "beschreibung": "Knusprig gebackene Vollkorn-Wrap-Taschen mit warmer Apfel-Zimt-Quark-Füllung – schmeckt wie Apfeltasche vom Bäcker, aber mit fast 20 g Eiweiß.",
+      "zeit_min": 15,
+      "tags": ["Heißluftfritteuse"],
+      "passt_fuer": ["vegetarisch", "fleisch", "ohne-schwein"],
+      "zutaten": [
+        {"name": "Vollkorn-Wrap", "menge_g": 60, "anzeige": "1 Vollkorn-Wrap (60 g)"},
+        {"name": "Magerquark", "menge_g": 100, "anzeige": "100 g"},
+        {"name": "Apfel", "menge_g": 80, "anzeige": "½ Apfel (80 g)"},
+        {"name": "Honig", "menge_g": 5, "anzeige": "1 TL (5 g)"},
+        {"name": "Zimt", "menge_g": 0, "anzeige": "½ TL"},
+        {"name": "Milch 1,5 %", "menge_g": 5, "anzeige": "1 TL zum Bestreichen (5 ml)"}
+      ],
+      "zubereitung": [
+        "Heize die Heißluftfritteuse 3 Minuten auf 180 °C vor.",
+        "Schneide den Apfel in kleine Würfel und verrühre ihn mit Magerquark, Honig und Zimt.",
+        "Halbiere den Wrap, gib je die Hälfte der Füllung auf eine Seite jeder Hälfte, klappe die andere Seite zu einem Dreieck darüber und drücke die Ränder mit einer Gabel fest. Bestreiche die Oberseite dünn mit Milch.",
+        "Lege die Taschen nebeneinander in den Korb und backe sie 6–8 Minuten bei 180 °C, bis sie goldbraun und knusprig sind. Wende sie nach 4 Minuten, damit beide Seiten Farbe bekommen.",
+        "Lass die Taschen 2 Minuten abkühlen, die Füllung ist sehr heiß. Nach Wunsch mit etwas Zimt bestäuben."
+      ],
+      "tipp": "Lässt sich die Tasche schlecht verschließen, den Rand mit etwas Milch befeuchten. Statt Apfel schmecken auch TK-Himbeeren oder Birne."
+    },
+    {
+      "mahlzeit": "Snacks & Süßes",
+      "name": "Schoko-Himbeer-Baked-Oats aus dem Förmchen",
+      "beschreibung": "Saftig-schokoladiger Haferkuchen mit Himbeeren für eine Person, der in der Heißluftfritteuse in 15 Minuten fertig ist – ideal als warmer Snack nach dem Training.",
+      "zeit_min": 20,
+      "tags": ["Heißluftfritteuse"],
+      "passt_fuer": ["vegan", "vegetarisch", "fleisch", "ohne-schwein"],
+      "zutaten": [
+        {"name": "Haferflocken", "menge_g": 40, "anzeige": "4 EL (40 g)"},
+        {"name": "Veganes Proteinpulver (Schoko)", "menge_g": 15, "anzeige": "½ Messlöffel (15 g)"},
+        {"name": "Backpulver", "menge_g": 2, "anzeige": "½ TL (2 g)"},
+        {"name": "Banane", "menge_g": 40, "anzeige": "⅓ Banane (40 g)"},
+        {"name": "Sojadrink ungesüßt", "menge_g": 100, "anzeige": "100 ml"},
+        {"name": "Himbeeren (TK)", "menge_g": 50, "anzeige": "50 g"}
+      ],
+      "zubereitung": [
+        "Zerdrücke die Banane in einem ofenfesten Förmchen (ca. 10–12 cm, passend für den Korb) mit einer Gabel.",
+        "Rühre Haferflocken, Proteinpulver, Backpulver und Sojadrink unter und lass die Masse 5 Minuten quellen.",
+        "Drücke die gefrorenen Himbeeren in die Oberfläche. Vorheizen ist nicht nötig.",
+        "Stelle das Förmchen in den Korb und backe die Oats 12–15 Minuten bei 170 °C. Wenden oder Schütteln entfällt; prüfe nach 12 Minuten mit einem Holzstäbchen, ob die Mitte gestockt ist.",
+        "Lass die Oats 3 Minuten abkühlen und iss sie direkt aus dem Förmchen."
+      ],
+      "tipp": "Ohne Proteinpulver: 10 g Haferflocken mehr und 1 TL Backkakao verwenden und 100 g Sojaskyr dazu essen. Bräunt die Oberfläche zu schnell, auf 160 °C reduzieren und 2 Minuten länger backen."
+    },
+    {
+      "mahlzeit": "Snacks & Süßes",
+      "name": "Rüblikuchen-Protein-Muffins mit Walnüssen",
+      "beschreibung": "Zwei saftige Karotten-Muffins mit Zimt und Walnusskernen, die in Silikonförmchen in der Heißluftfritteuse backen – kein großer Ofen nötig, perfekt zum Mitnehmen.",
+      "zeit_min": 25,
+      "tags": ["Heißluftfritteuse", "zum Mitnehmen"],
+      "passt_fuer": ["vegetarisch", "fleisch", "ohne-schwein"],
+      "zutaten": [
+        {"name": "Möhre", "menge_g": 50, "anzeige": "½ Möhre (50 g), fein gerieben"},
+        {"name": "Ei", "menge_g": 60, "anzeige": "1 Ei (Größe M)"},
+        {"name": "Magerquark", "menge_g": 60, "anzeige": "60 g"},
+        {"name": "Dinkelmehl Type 630", "menge_g": 20, "anzeige": "2 EL (20 g)"},
+        {"name": "Whey-Proteinpulver (Vanille)", "menge_g": 15, "anzeige": "½ Messlöffel (15 g)"},
+        {"name": "Backpulver", "menge_g": 2, "anzeige": "½ TL (2 g)"},
+        {"name": "Erythrit", "menge_g": 10, "anzeige": "1 EL (10 g)"},
+        {"name": "Zimt", "menge_g": 0, "anzeige": "½ TL"},
+        {"name": "Walnüsse", "menge_g": 5, "anzeige": "2 Walnusshälften (5 g), gehackt"}
+      ],
+      "zubereitung": [
+        "Verrühre Ei, Magerquark und Erythrit glatt. Mische Mehl, Proteinpulver, Backpulver und Zimt und rühre die Mischung kurz unter.",
+        "Hebe die geriebene Möhre unter und verteile den Teig auf 2 Silikon-Muffinförmchen. Streue die gehackten Walnüsse darüber.",
+        "Stelle die Förmchen in den Korb, ohne vorzuheizen, und backe die Muffins 12–14 Minuten bei 160 °C. Wenden ist nicht nötig.",
+        "Mache die Stäbchenprobe: Bleibt kein Teig mehr kleben, sind die Muffins fertig; sonst 2 Minuten weiterbacken. Werden sie oben zu dunkel, lege ein Stück Alufolie locker darüber.",
+        "Lass die Muffins 5 Minuten in den Förmchen abkühlen, bevor du sie herauslöst."
+      ],
+      "tipp": "Ohne Proteinpulver: 15 g Mehl mehr und 40 g Magerquark zusätzlich – dann etwa 8 g weniger Eiweiß. Die Muffins halten gut verpackt 2 Tage im Kühlschrank."
+    }
+  ]
+}

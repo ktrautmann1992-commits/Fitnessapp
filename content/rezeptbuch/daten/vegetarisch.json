@@ -1,0 +1,1750 @@
+{
+ "ingredients": {
+  "Haferflocken": {
+   "kcal": 372,
+   "p": 13.5,
+   "c": 58.7,
+   "f": 7.0,
+   "abteilung": "Getreide, Nudeln & Hülsenfrüchte"
+  },
+  "Vollkornnudeln": {
+   "kcal": 350,
+   "p": 13.0,
+   "c": 64.0,
+   "f": 2.5,
+   "abteilung": "Getreide, Nudeln & Hülsenfrüchte"
+  },
+  "Basmatireis": {
+   "kcal": 350,
+   "p": 7.0,
+   "c": 78.0,
+   "f": 0.6,
+   "abteilung": "Getreide, Nudeln & Hülsenfrüchte"
+  },
+  "Couscous": {
+   "kcal": 356,
+   "p": 12.0,
+   "c": 72.0,
+   "f": 1.6,
+   "abteilung": "Getreide, Nudeln & Hülsenfrüchte"
+  },
+  "Mie-Nudeln": {
+   "kcal": 365,
+   "p": 13.0,
+   "c": 70.0,
+   "f": 3.0,
+   "abteilung": "Getreide, Nudeln & Hülsenfrüchte"
+  },
+  "Rote Linsen": {
+   "kcal": 340,
+   "p": 24.0,
+   "c": 50.0,
+   "f": 1.5,
+   "abteilung": "Getreide, Nudeln & Hülsenfrüchte"
+  },
+  "Kichererbsen (Dose, abgetropft)": {
+   "kcal": 125,
+   "p": 7.0,
+   "c": 16.0,
+   "f": 2.7,
+   "abteilung": "Konserven & Gläser"
+  },
+  "Kidneybohnen (Dose, abgetropft)": {
+   "kcal": 105,
+   "p": 7.5,
+   "c": 14.0,
+   "f": 0.5,
+   "abteilung": "Konserven & Gläser"
+  },
+  "Mais (Dose, abgetropft)": {
+   "kcal": 80,
+   "p": 2.8,
+   "c": 14.0,
+   "f": 1.2,
+   "abteilung": "Konserven & Gläser"
+  },
+  "Gehackte Tomaten (Dose)": {
+   "kcal": 22,
+   "p": 1.2,
+   "c": 3.5,
+   "f": 0.2,
+   "abteilung": "Konserven & Gläser"
+  },
+  "Passierte Tomaten": {
+   "kcal": 25,
+   "p": 1.3,
+   "c": 4.0,
+   "f": 0.2,
+   "abteilung": "Konserven & Gläser"
+  },
+  "Kokosmilch": {
+   "kcal": 180,
+   "p": 1.8,
+   "c": 3.0,
+   "f": 18.0,
+   "abteilung": "Konserven & Gläser"
+  },
+  "Vollkornbrot": {
+   "kcal": 210,
+   "p": 7.0,
+   "c": 38.0,
+   "f": 1.2,
+   "abteilung": "Brot & Backwaren"
+  },
+  "Vollkorn-Knäckebrot": {
+   "kcal": 340,
+   "p": 10.0,
+   "c": 60.0,
+   "f": 2.0,
+   "abteilung": "Brot & Backwaren"
+  },
+  "Vollkorn-Tortilla": {
+   "kcal": 300,
+   "p": 9.0,
+   "c": 48.0,
+   "f": 7.0,
+   "abteilung": "Brot & Backwaren"
+  },
+  "Magerquark": {
+   "kcal": 67,
+   "p": 12.0,
+   "c": 4.0,
+   "f": 0.2,
+   "abteilung": "Kühlregal & Molkerei"
+  },
+  "Skyr natur": {
+   "kcal": 63,
+   "p": 11.0,
+   "c": 4.0,
+   "f": 0.2,
+   "abteilung": "Kühlregal & Molkerei"
+  },
+  "Hüttenkäse": {
+   "kcal": 98,
+   "p": 12.3,
+   "c": 2.6,
+   "f": 4.3,
+   "abteilung": "Kühlregal & Molkerei"
+  },
+  "Milch 1,5 %": {
+   "kcal": 47,
+   "p": 3.4,
+   "c": 4.9,
+   "f": 1.5,
+   "abteilung": "Kühlregal & Molkerei"
+  },
+  "Ei": {
+   "kcal": 137,
+   "p": 12.6,
+   "c": 0.7,
+   "f": 9.3,
+   "abteilung": "Kühlregal & Molkerei"
+  },
+  "Feta": {
+   "kcal": 264,
+   "p": 16.0,
+   "c": 0.5,
+   "f": 22.0,
+   "abteilung": "Kühlregal & Molkerei"
+  },
+  "Halloumi": {
+   "kcal": 320,
+   "p": 22.0,
+   "c": 2.0,
+   "f": 25.0,
+   "abteilung": "Kühlregal & Molkerei"
+  },
+  "Mozzarella light": {
+   "kcal": 160,
+   "p": 18.5,
+   "c": 1.0,
+   "f": 9.0,
+   "abteilung": "Kühlregal & Molkerei"
+  },
+  "Parmesan": {
+   "kcal": 392,
+   "p": 35.0,
+   "c": 0.0,
+   "f": 28.0,
+   "abteilung": "Kühlregal & Molkerei"
+  },
+  "Tofu natur": {
+   "kcal": 125,
+   "p": 13.5,
+   "c": 1.5,
+   "f": 7.2,
+   "abteilung": "Pflanzliche Alternativen"
+  },
+  "Beeren-Mischung (TK)": {
+   "kcal": 45,
+   "p": 1.0,
+   "c": 8.0,
+   "f": 0.4,
+   "abteilung": "Tiefkühl"
+  },
+  "Banane": {
+   "kcal": 93,
+   "p": 1.1,
+   "c": 21.0,
+   "f": 0.2,
+   "abteilung": "Obst & Gemüse"
+  },
+  "Apfel": {
+   "kcal": 54,
+   "p": 0.3,
+   "c": 12.0,
+   "f": 0.2,
+   "abteilung": "Obst & Gemüse"
+  },
+  "Avocado": {
+   "kcal": 160,
+   "p": 2.0,
+   "c": 3.6,
+   "f": 15.0,
+   "abteilung": "Obst & Gemüse"
+  },
+  "Babyspinat": {
+   "kcal": 23,
+   "p": 2.9,
+   "c": 1.6,
+   "f": 0.4,
+   "abteilung": "Obst & Gemüse"
+  },
+  "Tomate": {
+   "kcal": 18,
+   "p": 0.9,
+   "c": 3.0,
+   "f": 0.2,
+   "abteilung": "Obst & Gemüse"
+  },
+  "Cherrytomaten": {
+   "kcal": 22,
+   "p": 1.0,
+   "c": 3.5,
+   "f": 0.2,
+   "abteilung": "Obst & Gemüse"
+  },
+  "Gurke": {
+   "kcal": 13,
+   "p": 0.6,
+   "c": 2.0,
+   "f": 0.1,
+   "abteilung": "Obst & Gemüse"
+  },
+  "Paprika rot": {
+   "kcal": 32,
+   "p": 1.0,
+   "c": 5.5,
+   "f": 0.3,
+   "abteilung": "Obst & Gemüse"
+  },
+  "Zwiebel": {
+   "kcal": 33,
+   "p": 1.2,
+   "c": 6.0,
+   "f": 0.2,
+   "abteilung": "Obst & Gemüse"
+  },
+  "Frühlingszwiebel": {
+   "kcal": 32,
+   "p": 1.8,
+   "c": 5.0,
+   "f": 0.2,
+   "abteilung": "Obst & Gemüse"
+  },
+  "Knoblauch": {
+   "kcal": 140,
+   "p": 6.0,
+   "c": 28.0,
+   "f": 0.1,
+   "abteilung": "Obst & Gemüse"
+  },
+  "Ingwer": {
+   "kcal": 80,
+   "p": 1.8,
+   "c": 15.8,
+   "f": 0.8,
+   "abteilung": "Obst & Gemüse"
+  },
+  "Zucchini": {
+   "kcal": 19,
+   "p": 1.6,
+   "c": 2.0,
+   "f": 0.4,
+   "abteilung": "Obst & Gemüse"
+  },
+  "Brokkoli": {
+   "kcal": 34,
+   "p": 3.6,
+   "c": 3.0,
+   "f": 0.4,
+   "abteilung": "Obst & Gemüse"
+  },
+  "Champignons": {
+   "kcal": 22,
+   "p": 3.1,
+   "c": 0.6,
+   "f": 0.3,
+   "abteilung": "Obst & Gemüse"
+  },
+  "Möhre": {
+   "kcal": 36,
+   "p": 1.0,
+   "c": 7.0,
+   "f": 0.2,
+   "abteilung": "Obst & Gemüse"
+  },
+  "Kartoffeln": {
+   "kcal": 72,
+   "p": 2.0,
+   "c": 15.0,
+   "f": 0.1,
+   "abteilung": "Obst & Gemüse"
+  },
+  "Süßkartoffel": {
+   "kcal": 86,
+   "p": 1.6,
+   "c": 20.0,
+   "f": 0.1,
+   "abteilung": "Obst & Gemüse"
+  },
+  "Romanasalat": {
+   "kcal": 17,
+   "p": 1.2,
+   "c": 1.8,
+   "f": 0.3,
+   "abteilung": "Obst & Gemüse"
+  },
+  "Petersilie": {
+   "kcal": 50,
+   "p": 4.4,
+   "c": 7.0,
+   "f": 0.4,
+   "abteilung": "Obst & Gemüse"
+  },
+  "Schnittlauch": {
+   "kcal": 27,
+   "p": 3.0,
+   "c": 1.7,
+   "f": 0.7,
+   "abteilung": "Obst & Gemüse"
+  },
+  "Basilikum": {
+   "kcal": 23,
+   "p": 3.2,
+   "c": 1.0,
+   "f": 0.6,
+   "abteilung": "Obst & Gemüse"
+  },
+  "Mandeln": {
+   "kcal": 600,
+   "p": 21.0,
+   "c": 7.0,
+   "f": 52.0,
+   "abteilung": "Nüsse, Samen & Trockenfrüchte"
+  },
+  "Walnüsse": {
+   "kcal": 660,
+   "p": 15.0,
+   "c": 7.0,
+   "f": 65.0,
+   "abteilung": "Nüsse, Samen & Trockenfrüchte"
+  },
+  "Chiasamen": {
+   "kcal": 490,
+   "p": 17.0,
+   "c": 8.0,
+   "f": 31.0,
+   "abteilung": "Nüsse, Samen & Trockenfrüchte"
+  },
+  "Erdnussmus": {
+   "kcal": 610,
+   "p": 25.0,
+   "c": 13.0,
+   "f": 50.0,
+   "abteilung": "Nüsse, Samen & Trockenfrüchte"
+  },
+  "Olivenöl": {
+   "kcal": 884,
+   "p": 0.0,
+   "c": 0.0,
+   "f": 100.0,
+   "abteilung": "Gewürze, Öle & Saucen"
+  },
+  "Rapsöl": {
+   "kcal": 884,
+   "p": 0.0,
+   "c": 0.0,
+   "f": 100.0,
+   "abteilung": "Gewürze, Öle & Saucen"
+  },
+  "Leinöl": {
+   "kcal": 884,
+   "p": 0.0,
+   "c": 0.0,
+   "f": 100.0,
+   "abteilung": "Gewürze, Öle & Saucen"
+  },
+  "Sojasauce": {
+   "kcal": 60,
+   "p": 8.0,
+   "c": 5.5,
+   "f": 0.1,
+   "abteilung": "Gewürze, Öle & Saucen"
+  },
+  "Honig": {
+   "kcal": 304,
+   "p": 0.4,
+   "c": 76.0,
+   "f": 0.0,
+   "abteilung": "Gewürze, Öle & Saucen"
+  },
+  "Zitronensaft": {
+   "kcal": 22,
+   "p": 0.4,
+   "c": 2.4,
+   "f": 0.2,
+   "abteilung": "Gewürze, Öle & Saucen"
+  },
+  "Balsamico-Essig": {
+   "kcal": 88,
+   "p": 0.5,
+   "c": 17.0,
+   "f": 0.0,
+   "abteilung": "Gewürze, Öle & Saucen"
+  },
+  "Gemüsebrühe (zubereitet)": {
+   "kcal": 5,
+   "p": 0.3,
+   "c": 0.6,
+   "f": 0.2,
+   "abteilung": "Gewürze, Öle & Saucen"
+  },
+  "Salz": {
+   "kcal": 0,
+   "p": 0.0,
+   "c": 0.0,
+   "f": 0.0,
+   "abteilung": "Gewürze, Öle & Saucen"
+  },
+  "Pfeffer": {
+   "kcal": 0,
+   "p": 0.0,
+   "c": 0.0,
+   "f": 0.0,
+   "abteilung": "Gewürze, Öle & Saucen"
+  },
+  "Zimt": {
+   "kcal": 0,
+   "p": 0.0,
+   "c": 0.0,
+   "f": 0.0,
+   "abteilung": "Gewürze, Öle & Saucen"
+  },
+  "Paprikapulver edelsüß": {
+   "kcal": 0,
+   "p": 0.0,
+   "c": 0.0,
+   "f": 0.0,
+   "abteilung": "Gewürze, Öle & Saucen"
+  },
+  "Kreuzkümmel": {
+   "kcal": 0,
+   "p": 0.0,
+   "c": 0.0,
+   "f": 0.0,
+   "abteilung": "Gewürze, Öle & Saucen"
+  },
+  "Currypulver": {
+   "kcal": 0,
+   "p": 0.0,
+   "c": 0.0,
+   "f": 0.0,
+   "abteilung": "Gewürze, Öle & Saucen"
+  },
+  "Oregano getrocknet": {
+   "kcal": 0,
+   "p": 0.0,
+   "c": 0.0,
+   "f": 0.0,
+   "abteilung": "Gewürze, Öle & Saucen"
+  },
+  "Chiliflocken": {
+   "kcal": 0,
+   "p": 0.0,
+   "c": 0.0,
+   "f": 0.0,
+   "abteilung": "Gewürze, Öle & Saucen"
+  },
+  "Wasser": {
+   "kcal": 0,
+   "p": 0.0,
+   "c": 0.0,
+   "f": 0.0,
+   "abteilung": "Sonstiges"
+  },
+  "Whey-Proteinpulver (Vanille)": {
+   "kcal": 380,
+   "p": 75.0,
+   "c": 7.0,
+   "f": 5.0,
+   "abteilung": "Sonstiges"
+  }
+ },
+ "recipes": [
+  {
+   "mahlzeit": "Frühstück",
+   "name": "Quark-Porridge mit Beeren",
+   "beschreibung": "Cremiger Haferbrei, in den zum Schluss Magerquark gerührt wird – warm, sättigend und richtig eiweißreich.",
+   "zeit_min": 10,
+   "tags": [
+    "vor dem Training"
+   ],
+   "zutaten": [
+    {
+     "name": "Haferflocken",
+     "menge_g": 60,
+     "anzeige": "60 g"
+    },
+    {
+     "name": "Milch 1,5 %",
+     "menge_g": 200,
+     "anzeige": "200 ml"
+    },
+    {
+     "name": "Magerquark",
+     "menge_g": 150,
+     "anzeige": "150 g"
+    },
+    {
+     "name": "Beeren-Mischung (TK)",
+     "menge_g": 100,
+     "anzeige": "100 g"
+    },
+    {
+     "name": "Mandeln",
+     "menge_g": 10,
+     "anzeige": "1 EL, gehackt (10 g)"
+    },
+    {
+     "name": "Zimt",
+     "menge_g": 0,
+     "anzeige": "1 Prise"
+    }
+   ],
+   "zubereitung": [
+    "Gib Haferflocken und Milch in einen kleinen Topf und bring alles bei mittlerer Hitze unter Rühren zum Köcheln.",
+    "Lass den Brei 3–4 Minuten leise köcheln, bis er schön sämig ist, und nimm den Topf dann vom Herd.",
+    "Rühre den Magerquark und den Zimt unter, damit das Porridge cremig und eiweißreich wird.",
+    "Erwärme die TK-Beeren kurz in der Mikrowelle (ca. 1 Minute) oder lass sie antauen.",
+    "Fülle das Porridge in eine Schüssel und toppe es mit den Beeren und den gehackten Mandeln."
+   ],
+   "tipp": "Den Quark erst nach dem Kochen einrühren – so flockt er nicht aus."
+  },
+  {
+   "mahlzeit": "Frühstück",
+   "name": "Shakshuka mit Feta",
+   "beschreibung": "Pochierte Eier in würziger Tomaten-Paprika-Sauce mit zerbröseltem Feta – orientalisches Frühstück aus einer Pfanne.",
+   "zeit_min": 20,
+   "tags": [],
+   "zutaten": [
+    {
+     "name": "Ei",
+     "menge_g": 180,
+     "anzeige": "3 Eier (Größe M)"
+    },
+    {
+     "name": "Gehackte Tomaten (Dose)",
+     "menge_g": 200,
+     "anzeige": "½ Dose (200 g)"
+    },
+    {
+     "name": "Paprika rot",
+     "menge_g": 100,
+     "anzeige": "½ Paprika (100 g)"
+    },
+    {
+     "name": "Zwiebel",
+     "menge_g": 40,
+     "anzeige": "½ kleine Zwiebel (40 g)"
+    },
+    {
+     "name": "Feta",
+     "menge_g": 25,
+     "anzeige": "25 g"
+    },
+    {
+     "name": "Olivenöl",
+     "menge_g": 5,
+     "anzeige": "1 TL (5 g)"
+    },
+    {
+     "name": "Vollkornbrot",
+     "menge_g": 45,
+     "anzeige": "1 Scheibe (45 g)"
+    },
+    {
+     "name": "Kreuzkümmel",
+     "menge_g": 0,
+     "anzeige": "½ TL"
+    },
+    {
+     "name": "Paprikapulver edelsüß",
+     "menge_g": 0,
+     "anzeige": "½ TL"
+    },
+    {
+     "name": "Salz",
+     "menge_g": 0,
+     "anzeige": "1 Prise"
+    },
+    {
+     "name": "Pfeffer",
+     "menge_g": 0,
+     "anzeige": "1 Prise"
+    }
+   ],
+   "zubereitung": [
+    "Würfle Zwiebel und Paprika klein und brate sie im Olivenöl in einer kleinen Pfanne bei mittlerer Hitze 4 Minuten an.",
+    "Gib Kreuzkümmel und Paprikapulver dazu, röste sie 30 Sekunden mit und lösche mit den gehackten Tomaten ab.",
+    "Lass die Sauce 5 Minuten köcheln und schmecke sie mit Salz und Pfeffer ab.",
+    "Drücke mit einem Löffel drei Mulden in die Sauce, schlage die Eier hinein und lege einen Deckel auf.",
+    "Lass die Eier bei niedriger Hitze 5–7 Minuten stocken, bis das Eiweiß fest und das Eigelb noch weich ist.",
+    "Zerbrösle den Feta darüber und iss die Shakshuka direkt aus der Pfanne mit dem Vollkornbrot."
+   ],
+   "tipp": "Mit einer Prise Chiliflocken wird es feuriger."
+  },
+  {
+   "mahlzeit": "Frühstück",
+   "name": "Skyr-Bowl mit Apfel & Walnuss",
+   "beschreibung": "Kühle Skyr-Schüssel mit knackigem Apfel, Haferflocken und Walnüssen – fertig in fünf Minuten.",
+   "zeit_min": 5,
+   "tags": [
+    "ohne Kochen"
+   ],
+   "zutaten": [
+    {
+     "name": "Skyr natur",
+     "menge_g": 250,
+     "anzeige": "250 g"
+    },
+    {
+     "name": "Haferflocken",
+     "menge_g": 40,
+     "anzeige": "40 g"
+    },
+    {
+     "name": "Apfel",
+     "menge_g": 120,
+     "anzeige": "1 kleiner Apfel (120 g)"
+    },
+    {
+     "name": "Walnüsse",
+     "menge_g": 15,
+     "anzeige": "15 g"
+    },
+    {
+     "name": "Honig",
+     "menge_g": 10,
+     "anzeige": "1 TL (10 g)"
+    },
+    {
+     "name": "Zimt",
+     "menge_g": 0,
+     "anzeige": "1 Prise"
+    }
+   ],
+   "zubereitung": [
+    "Gib den Skyr in eine Schüssel und rühre ihn mit Honig und Zimt glatt.",
+    "Wasche den Apfel, entferne das Kerngehäuse und schneide ihn in kleine Würfel.",
+    "Hacke die Walnüsse grob.",
+    "Streue Haferflocken, Apfelwürfel und Walnüsse über den Skyr und iss die Bowl sofort."
+   ],
+   "tipp": "Statt Apfel passt auch eine Birne oder eine Handvoll Beeren."
+  },
+  {
+   "mahlzeit": "Frühstück",
+   "name": "Rührei-Brot mit Hüttenkäse",
+   "beschreibung": "Klassisches deutsches Frühstück: cremiges Rührei und Hüttenkäse auf Vollkornbrot mit frischer Tomate.",
+   "zeit_min": 10,
+   "tags": [
+    "nach dem Training"
+   ],
+   "zutaten": [
+    {
+     "name": "Ei",
+     "menge_g": 120,
+     "anzeige": "2 Eier (Größe M)"
+    },
+    {
+     "name": "Vollkornbrot",
+     "menge_g": 100,
+     "anzeige": "2 Scheiben (100 g)"
+    },
+    {
+     "name": "Hüttenkäse",
+     "menge_g": 100,
+     "anzeige": "100 g"
+    },
+    {
+     "name": "Tomate",
+     "menge_g": 100,
+     "anzeige": "1 Tomate (100 g)"
+    },
+    {
+     "name": "Schnittlauch",
+     "menge_g": 5,
+     "anzeige": "einige Halme (5 g)"
+    },
+    {
+     "name": "Rapsöl",
+     "menge_g": 5,
+     "anzeige": "1 TL (5 g)"
+    },
+    {
+     "name": "Salz",
+     "menge_g": 0,
+     "anzeige": "1 Prise"
+    },
+    {
+     "name": "Pfeffer",
+     "menge_g": 0,
+     "anzeige": "1 Prise"
+    }
+   ],
+   "zubereitung": [
+    "Verquirle die Eier mit Salz und Pfeffer in einer Tasse.",
+    "Erhitze das Rapsöl in einer beschichteten Pfanne bei mittlerer Hitze und gib die Eier hinein.",
+    "Schiebe die Eimasse mit einem Pfannenwender 2–3 Minuten langsam zusammen, bis sie gerade gestockt, aber noch saftig ist.",
+    "Bestreiche die Brotscheiben mit Hüttenkäse und belege sie mit Tomatenscheiben.",
+    "Verteile das Rührei darauf und bestreue alles mit geschnittenem Schnittlauch."
+   ],
+   "tipp": "Eine Handvoll Babyspinat kurz im Rührei mitgaren – mehr Gemüse ohne Mehraufwand."
+  },
+  {
+   "mahlzeit": "Frühstück",
+   "name": "Overnight Oats Banane-Erdnuss",
+   "beschreibung": "Über Nacht durchgezogene Haferflocken mit Skyr, Chia und Banane – morgens nur noch aus dem Kühlschrank nehmen.",
+   "zeit_min": 5,
+   "tags": [
+    "Meal-Prep",
+    "ohne Kochen"
+   ],
+   "zutaten": [
+    {
+     "name": "Haferflocken",
+     "menge_g": 50,
+     "anzeige": "50 g"
+    },
+    {
+     "name": "Skyr natur",
+     "menge_g": 150,
+     "anzeige": "150 g"
+    },
+    {
+     "name": "Milch 1,5 %",
+     "menge_g": 100,
+     "anzeige": "100 ml"
+    },
+    {
+     "name": "Chiasamen",
+     "menge_g": 10,
+     "anzeige": "1 EL (10 g)"
+    },
+    {
+     "name": "Banane",
+     "menge_g": 100,
+     "anzeige": "1 kleine Banane (100 g)"
+    },
+    {
+     "name": "Erdnussmus",
+     "menge_g": 10,
+     "anzeige": "2 TL (10 g)"
+    },
+    {
+     "name": "Zimt",
+     "menge_g": 0,
+     "anzeige": "1 Prise"
+    }
+   ],
+   "zubereitung": [
+    "Verrühre Haferflocken, Chiasamen, Skyr, Milch und Zimt in einem Schraubglas oder einer Dose.",
+    "Zerdrücke die Hälfte der Banane mit einer Gabel und rühre sie unter.",
+    "Verschließe das Glas und stelle es über Nacht (mindestens 6 Stunden) in den Kühlschrank.",
+    "Schneide morgens die restliche Banane in Scheiben, lege sie auf die Oats und gib das Erdnussmus darüber."
+   ],
+   "tipp": "Hält sich gut 2 Tage im Kühlschrank – gleich zwei Gläser vorbereiten."
+  },
+  {
+   "mahlzeit": "Mittagessen",
+   "name": "Linsen-Bolognese mit Parmesan",
+   "beschreibung": "Herzhafte Bolognese aus roten Linsen und Gemüse zu Vollkornnudeln, mit frisch geriebenem Parmesan.",
+   "zeit_min": 30,
+   "tags": [
+    "Meal-Prep",
+    "nach dem Training"
+   ],
+   "zutaten": [
+    {
+     "name": "Vollkornnudeln",
+     "menge_g": 80,
+     "anzeige": "80 g"
+    },
+    {
+     "name": "Rote Linsen",
+     "menge_g": 50,
+     "anzeige": "50 g"
+    },
+    {
+     "name": "Passierte Tomaten",
+     "menge_g": 200,
+     "anzeige": "200 g"
+    },
+    {
+     "name": "Zwiebel",
+     "menge_g": 50,
+     "anzeige": "½ Zwiebel (50 g)"
+    },
+    {
+     "name": "Möhre",
+     "menge_g": 60,
+     "anzeige": "1 kleine Möhre (60 g)"
+    },
+    {
+     "name": "Knoblauch",
+     "menge_g": 5,
+     "anzeige": "1 Zehe (5 g)"
+    },
+    {
+     "name": "Olivenöl",
+     "menge_g": 8,
+     "anzeige": "2 TL (8 g)"
+    },
+    {
+     "name": "Parmesan",
+     "menge_g": 15,
+     "anzeige": "15 g, gerieben"
+    },
+    {
+     "name": "Wasser",
+     "menge_g": 0,
+     "anzeige": "150 ml"
+    },
+    {
+     "name": "Oregano getrocknet",
+     "menge_g": 0,
+     "anzeige": "1 TL"
+    },
+    {
+     "name": "Salz",
+     "menge_g": 0,
+     "anzeige": "1 Prise"
+    },
+    {
+     "name": "Pfeffer",
+     "menge_g": 0,
+     "anzeige": "1 Prise"
+    }
+   ],
+   "zubereitung": [
+    "Würfle Zwiebel, Möhre und Knoblauch fein und dünste sie im Olivenöl bei mittlerer Hitze 5 Minuten an.",
+    "Gib Linsen, passierte Tomaten, 150 ml Wasser und Oregano dazu und lass alles zugedeckt 15 Minuten köcheln, bis die Linsen weich sind.",
+    "Koche in der Zwischenzeit die Nudeln in Salzwasser nach Packungsangabe (ca. 10 Minuten) bissfest.",
+    "Schmecke die Sauce mit Salz und Pfeffer ab; ist sie zu dick, gib einen Schuss Nudelwasser dazu.",
+    "Richte die Nudeln mit der Linsen-Bolognese an und streue den Parmesan darüber."
+   ],
+   "tipp": "Die Sauce lässt sich in mehrfacher Menge kochen und portionsweise einfrieren."
+  },
+  {
+   "mahlzeit": "Mittagessen",
+   "name": "Halloumi-Couscous-Salat",
+   "beschreibung": "Goldbraun gebratener Halloumi auf Couscous mit Kichererbsen, Gurke, Tomaten und viel Petersilie.",
+   "zeit_min": 15,
+   "tags": [
+    "Meal-Prep"
+   ],
+   "zutaten": [
+    {
+     "name": "Couscous",
+     "menge_g": 60,
+     "anzeige": "60 g"
+    },
+    {
+     "name": "Halloumi",
+     "menge_g": 80,
+     "anzeige": "80 g"
+    },
+    {
+     "name": "Kichererbsen (Dose, abgetropft)",
+     "menge_g": 80,
+     "anzeige": "80 g"
+    },
+    {
+     "name": "Gurke",
+     "menge_g": 100,
+     "anzeige": "⅓ Gurke (100 g)"
+    },
+    {
+     "name": "Cherrytomaten",
+     "menge_g": 100,
+     "anzeige": "8 Stück (100 g)"
+    },
+    {
+     "name": "Petersilie",
+     "menge_g": 10,
+     "anzeige": "½ Bund (10 g)"
+    },
+    {
+     "name": "Zitronensaft",
+     "menge_g": 15,
+     "anzeige": "1 EL (15 g)"
+    },
+    {
+     "name": "Olivenöl",
+     "menge_g": 5,
+     "anzeige": "1 TL (5 g)"
+    },
+    {
+     "name": "Wasser",
+     "menge_g": 0,
+     "anzeige": "80 ml, kochend"
+    },
+    {
+     "name": "Kreuzkümmel",
+     "menge_g": 0,
+     "anzeige": "½ TL"
+    },
+    {
+     "name": "Salz",
+     "menge_g": 0,
+     "anzeige": "1 Prise"
+    },
+    {
+     "name": "Pfeffer",
+     "menge_g": 0,
+     "anzeige": "1 Prise"
+    }
+   ],
+   "zubereitung": [
+    "Übergieße den Couscous mit 80 ml kochendem Wasser und einer Prise Salz, decke ihn ab und lass ihn 5 Minuten quellen.",
+    "Würfle Gurke, halbiere die Tomaten, hacke die Petersilie und spüle die Kichererbsen ab.",
+    "Schneide den Halloumi in Scheiben und brate ihn in einer beschichteten Pfanne ohne Fett bei mittlerer bis hoher Hitze je Seite 2 Minuten goldbraun.",
+    "Lockere den Couscous mit einer Gabel auf und vermische ihn mit Gemüse, Kichererbsen, Petersilie, Zitronensaft, Olivenöl, Kreuzkümmel und Pfeffer.",
+    "Lege den warmen Halloumi auf den Salat."
+   ],
+   "tipp": "Für Meal-Prep den Halloumi getrennt aufbewahren und kurz vor dem Essen in der Pfanne aufwärmen."
+  },
+  {
+   "mahlzeit": "Mittagessen",
+   "name": "Eier-Reis mit Tofu & Brokkoli",
+   "beschreibung": "Asiatisch gebratener Reis mit knusprigem Tofu, Brokkoli, Paprika und Ei, abgeschmeckt mit Sojasauce und Ingwer.",
+   "zeit_min": 25,
+   "tags": [
+    "nach dem Training"
+   ],
+   "zutaten": [
+    {
+     "name": "Basmatireis",
+     "menge_g": 70,
+     "anzeige": "70 g (roh)"
+    },
+    {
+     "name": "Tofu natur",
+     "menge_g": 150,
+     "anzeige": "150 g"
+    },
+    {
+     "name": "Brokkoli",
+     "menge_g": 150,
+     "anzeige": "150 g"
+    },
+    {
+     "name": "Paprika rot",
+     "menge_g": 100,
+     "anzeige": "½ Paprika (100 g)"
+    },
+    {
+     "name": "Ei",
+     "menge_g": 60,
+     "anzeige": "1 Ei (Größe M)"
+    },
+    {
+     "name": "Sojasauce",
+     "menge_g": 15,
+     "anzeige": "1 EL (15 g)"
+    },
+    {
+     "name": "Rapsöl",
+     "menge_g": 8,
+     "anzeige": "2 TL (8 g)"
+    },
+    {
+     "name": "Knoblauch",
+     "menge_g": 5,
+     "anzeige": "1 Zehe (5 g)"
+    },
+    {
+     "name": "Ingwer",
+     "menge_g": 5,
+     "anzeige": "1 daumennagelgroßes Stück (5 g)"
+    }
+   ],
+   "zubereitung": [
+    "Koche den Reis nach Packungsangabe (ca. 12 Minuten) und lass ihn offen etwas ausdampfen – noch besser geht Reis vom Vortag.",
+    "Tupfe den Tofu trocken, schneide ihn in Würfel und brate ihn in der Hälfte des Rapsöls bei hoher Hitze 5–6 Minuten rundum knusprig; dann herausnehmen.",
+    "Brate Brokkoliröschen, Paprikastreifen, gehackten Knoblauch und geriebenen Ingwer im restlichen Öl 4 Minuten an.",
+    "Schiebe das Gemüse an den Rand, schlage das Ei in die freie Stelle und verrühre es, bis es stockt.",
+    "Gib Reis, Tofu und Sojasauce dazu und brate alles unter Rühren noch 2 Minuten."
+   ],
+   "tipp": "Mit Frühlingszwiebeln und Chiliflocken bestreut wird es noch aromatischer."
+  },
+  {
+   "mahlzeit": "Mittagessen",
+   "name": "Bohnen-Quesadilla mit Skyr-Dip",
+   "beschreibung": "Knusprig gebratene Tortilla gefüllt mit Kidneybohnen, Mais, Paprika und Mozzarella, dazu ein frischer Skyr-Dip.",
+   "zeit_min": 15,
+   "tags": [],
+   "zutaten": [
+    {
+     "name": "Vollkorn-Tortilla",
+     "menge_g": 65,
+     "anzeige": "1 große Tortilla (65 g)"
+    },
+    {
+     "name": "Kidneybohnen (Dose, abgetropft)",
+     "menge_g": 120,
+     "anzeige": "120 g"
+    },
+    {
+     "name": "Mais (Dose, abgetropft)",
+     "menge_g": 50,
+     "anzeige": "50 g"
+    },
+    {
+     "name": "Paprika rot",
+     "menge_g": 80,
+     "anzeige": "½ kleine Paprika (80 g)"
+    },
+    {
+     "name": "Mozzarella light",
+     "menge_g": 50,
+     "anzeige": "50 g"
+    },
+    {
+     "name": "Avocado",
+     "menge_g": 40,
+     "anzeige": "¼ Avocado (40 g)"
+    },
+    {
+     "name": "Skyr natur",
+     "menge_g": 80,
+     "anzeige": "80 g"
+    },
+    {
+     "name": "Romanasalat",
+     "menge_g": 30,
+     "anzeige": "einige Blätter (30 g)"
+    },
+    {
+     "name": "Zitronensaft",
+     "menge_g": 5,
+     "anzeige": "1 TL (5 g)"
+    },
+    {
+     "name": "Kreuzkümmel",
+     "menge_g": 0,
+     "anzeige": "½ TL"
+    },
+    {
+     "name": "Paprikapulver edelsüß",
+     "menge_g": 0,
+     "anzeige": "½ TL"
+    },
+    {
+     "name": "Salz",
+     "menge_g": 0,
+     "anzeige": "1 Prise"
+    },
+    {
+     "name": "Pfeffer",
+     "menge_g": 0,
+     "anzeige": "1 Prise"
+    }
+   ],
+   "zubereitung": [
+    "Zerdrücke die Kidneybohnen grob mit einer Gabel und mische sie mit Mais, fein gewürfelter Paprika, Kreuzkümmel, Paprikapulver und Salz.",
+    "Verteile die Füllung auf einer Hälfte der Tortilla, reiße den Mozzarella darüber und klappe die Tortilla zu.",
+    "Brate die Quesadilla in einer Pfanne ohne Fett bei mittlerer Hitze je Seite 3 Minuten, bis sie knusprig ist und der Käse schmilzt.",
+    "Zerdrücke die Avocado mit Zitronensaft, Salz und Pfeffer und rühre sie unter den Skyr.",
+    "Schneide die Quesadilla in Ecken und serviere sie mit dem Dip und dem Salat."
+   ],
+   "tipp": "Statt Kidneybohnen gehen auch schwarze Bohnen aus der Dose."
+  },
+  {
+   "mahlzeit": "Mittagessen",
+   "name": "Pellkartoffeln mit Kräuterquark",
+   "beschreibung": "Der deutsche Klassiker: Pellkartoffeln mit Schnittlauch-Quark, Leinöl, Gurkensalat und einem Ei.",
+   "zeit_min": 30,
+   "tags": [],
+   "zutaten": [
+    {
+     "name": "Kartoffeln",
+     "menge_g": 300,
+     "anzeige": "3–4 mittelgroße (300 g)"
+    },
+    {
+     "name": "Magerquark",
+     "menge_g": 200,
+     "anzeige": "200 g"
+    },
+    {
+     "name": "Milch 1,5 %",
+     "menge_g": 30,
+     "anzeige": "2 EL (30 ml)"
+    },
+    {
+     "name": "Ei",
+     "menge_g": 60,
+     "anzeige": "1 Ei (Größe M)"
+    },
+    {
+     "name": "Gurke",
+     "menge_g": 100,
+     "anzeige": "⅓ Gurke (100 g)"
+    },
+    {
+     "name": "Schnittlauch",
+     "menge_g": 10,
+     "anzeige": "½ Bund (10 g)"
+    },
+    {
+     "name": "Leinöl",
+     "menge_g": 10,
+     "anzeige": "2 TL (10 g)"
+    },
+    {
+     "name": "Salz",
+     "menge_g": 0,
+     "anzeige": "1 Prise"
+    },
+    {
+     "name": "Pfeffer",
+     "menge_g": 0,
+     "anzeige": "1 Prise"
+    }
+   ],
+   "zubereitung": [
+    "Wasche die Kartoffeln und koche sie mit Schale in Salzwasser 20–25 Minuten gar.",
+    "Koche das Ei parallel 9 Minuten hart, schrecke es kalt ab und pelle es.",
+    "Verrühre Magerquark mit Milch, dem fein geschnittenen Schnittlauch, Salz und Pfeffer zu einem cremigen Kräuterquark.",
+    "Hobel die Gurke in dünne Scheiben und würze sie mit Salz und Pfeffer.",
+    "Richte Kartoffeln, Quark, halbiertes Ei und Gurkensalat an und träufle das Leinöl über den Quark."
+   ],
+   "tipp": "Leinöl liefert Omega-3 – im Kühlschrank lagern und nicht erhitzen."
+  },
+  {
+   "mahlzeit": "Abendessen",
+   "name": "Gemüse-Frittata mit Feta",
+   "beschreibung": "Saftiges Ofen-Omelett mit Zucchini, Paprika, Kartoffel und Feta – mediterran und gemüsereich.",
+   "zeit_min": 25,
+   "tags": [
+    "Meal-Prep"
+   ],
+   "zutaten": [
+    {
+     "name": "Ei",
+     "menge_g": 180,
+     "anzeige": "3 Eier (Größe M)"
+    },
+    {
+     "name": "Zucchini",
+     "menge_g": 150,
+     "anzeige": "½ Zucchini (150 g)"
+    },
+    {
+     "name": "Paprika rot",
+     "menge_g": 100,
+     "anzeige": "½ Paprika (100 g)"
+    },
+    {
+     "name": "Zwiebel",
+     "menge_g": 40,
+     "anzeige": "½ kleine Zwiebel (40 g)"
+    },
+    {
+     "name": "Kartoffeln",
+     "menge_g": 150,
+     "anzeige": "1–2 Kartoffeln (150 g)"
+    },
+    {
+     "name": "Feta",
+     "menge_g": 40,
+     "anzeige": "40 g"
+    },
+    {
+     "name": "Olivenöl",
+     "menge_g": 5,
+     "anzeige": "1 TL (5 g)"
+    },
+    {
+     "name": "Oregano getrocknet",
+     "menge_g": 0,
+     "anzeige": "½ TL"
+    },
+    {
+     "name": "Salz",
+     "menge_g": 0,
+     "anzeige": "1 Prise"
+    },
+    {
+     "name": "Pfeffer",
+     "menge_g": 0,
+     "anzeige": "1 Prise"
+    }
+   ],
+   "zubereitung": [
+    "Heize den Backofen auf 200 °C Ober-/Unterhitze vor.",
+    "Schneide die Kartoffel in dünne Scheiben, Zucchini, Paprika und Zwiebel in kleine Würfel.",
+    "Brate Kartoffelscheiben im Olivenöl in einer ofenfesten Pfanne 5 Minuten an, gib das restliche Gemüse dazu und brate es 3 Minuten mit.",
+    "Verquirle die Eier mit Oregano, Salz und Pfeffer, gieße sie über das Gemüse und zerbrösle den Feta darüber.",
+    "Lass die Frittata 1 Minute auf dem Herd anstocken und backe sie dann 10–12 Minuten im Ofen, bis sie in der Mitte fest ist."
+   ],
+   "tipp": "Schmeckt am nächsten Tag auch kalt – ideal für die Lunchbox."
+  },
+  {
+   "mahlzeit": "Abendessen",
+   "name": "Rote-Linsen-Dal mit Spinat",
+   "beschreibung": "Wärmendes Curry aus roten Linsen, Tomaten und Spinat, getoppt mit einem Klecks kühlem Skyr.",
+   "zeit_min": 30,
+   "tags": [
+    "Meal-Prep"
+   ],
+   "zutaten": [
+    {
+     "name": "Rote Linsen",
+     "menge_g": 80,
+     "anzeige": "80 g"
+    },
+    {
+     "name": "Kokosmilch",
+     "menge_g": 50,
+     "anzeige": "50 ml"
+    },
+    {
+     "name": "Gehackte Tomaten (Dose)",
+     "menge_g": 150,
+     "anzeige": "150 g"
+    },
+    {
+     "name": "Babyspinat",
+     "menge_g": 100,
+     "anzeige": "2 Handvoll (100 g)"
+    },
+    {
+     "name": "Zwiebel",
+     "menge_g": 50,
+     "anzeige": "½ Zwiebel (50 g)"
+    },
+    {
+     "name": "Knoblauch",
+     "menge_g": 5,
+     "anzeige": "1 Zehe (5 g)"
+    },
+    {
+     "name": "Ingwer",
+     "menge_g": 5,
+     "anzeige": "1 daumennagelgroßes Stück (5 g)"
+    },
+    {
+     "name": "Rapsöl",
+     "menge_g": 5,
+     "anzeige": "1 TL (5 g)"
+    },
+    {
+     "name": "Skyr natur",
+     "menge_g": 100,
+     "anzeige": "100 g"
+    },
+    {
+     "name": "Wasser",
+     "menge_g": 0,
+     "anzeige": "250 ml"
+    },
+    {
+     "name": "Currypulver",
+     "menge_g": 0,
+     "anzeige": "2 TL"
+    },
+    {
+     "name": "Salz",
+     "menge_g": 0,
+     "anzeige": "1 Prise"
+    }
+   ],
+   "zubereitung": [
+    "Würfle Zwiebel, Knoblauch und Ingwer fein und dünste sie im Rapsöl bei mittlerer Hitze 3 Minuten glasig.",
+    "Gib das Currypulver dazu und röste es 30 Sekunden unter Rühren mit.",
+    "Füge Linsen, gehackte Tomaten, Kokosmilch und 250 ml Wasser hinzu und lass alles 15–18 Minuten köcheln, bis die Linsen zerfallen.",
+    "Rühre den Spinat unter, lass ihn 1 Minute zusammenfallen und schmecke das Dal mit Salz ab.",
+    "Fülle das Dal in eine Schüssel und gib den Skyr als Klecks obendrauf."
+   ],
+   "tipp": "Hält sich 3 Tage im Kühlschrank und lässt sich gut einfrieren."
+  },
+  {
+   "mahlzeit": "Abendessen",
+   "name": "Ofengemüse mit Kichererbsen & Quark-Dip",
+   "beschreibung": "Bunt geröstetes Blechgemüse mit Süßkartoffel und knusprigen Kichererbsen, dazu ein Knoblauch-Kräuterquark.",
+   "zeit_min": 35,
+   "tags": [
+    "Meal-Prep"
+   ],
+   "zutaten": [
+    {
+     "name": "Kichererbsen (Dose, abgetropft)",
+     "menge_g": 150,
+     "anzeige": "150 g"
+    },
+    {
+     "name": "Süßkartoffel",
+     "menge_g": 150,
+     "anzeige": "1 kleine Süßkartoffel (150 g)"
+    },
+    {
+     "name": "Paprika rot",
+     "menge_g": 100,
+     "anzeige": "½ Paprika (100 g)"
+    },
+    {
+     "name": "Zucchini",
+     "menge_g": 100,
+     "anzeige": "⅓ Zucchini (100 g)"
+    },
+    {
+     "name": "Zwiebel",
+     "menge_g": 50,
+     "anzeige": "½ rote Zwiebel (50 g)"
+    },
+    {
+     "name": "Olivenöl",
+     "menge_g": 10,
+     "anzeige": "2 TL (10 g)"
+    },
+    {
+     "name": "Magerquark",
+     "menge_g": 150,
+     "anzeige": "150 g"
+    },
+    {
+     "name": "Knoblauch",
+     "menge_g": 3,
+     "anzeige": "½ Zehe (3 g)"
+    },
+    {
+     "name": "Petersilie",
+     "menge_g": 5,
+     "anzeige": "einige Stängel (5 g)"
+    },
+    {
+     "name": "Paprikapulver edelsüß",
+     "menge_g": 0,
+     "anzeige": "1 TL"
+    },
+    {
+     "name": "Kreuzkümmel",
+     "menge_g": 0,
+     "anzeige": "½ TL"
+    },
+    {
+     "name": "Salz",
+     "menge_g": 0,
+     "anzeige": "1 Prise"
+    },
+    {
+     "name": "Pfeffer",
+     "menge_g": 0,
+     "anzeige": "1 Prise"
+    }
+   ],
+   "zubereitung": [
+    "Heize den Backofen auf 220 °C Ober-/Unterhitze vor und lege ein Blech mit Backpapier aus.",
+    "Schneide Süßkartoffel in 2 cm große Würfel, Paprika und Zucchini in Stücke und die Zwiebel in Spalten.",
+    "Vermische Gemüse und trocken getupfte Kichererbsen mit Olivenöl, Paprikapulver, Kreuzkümmel und Salz und verteile alles auf dem Blech.",
+    "Röste das Gemüse 25 Minuten, nach der Hälfte der Zeit einmal wenden.",
+    "Verrühre währenddessen den Quark mit gepresstem Knoblauch, gehackter Petersilie, Salz, Pfeffer und 1–2 EL Wasser.",
+    "Serviere das Ofengemüse mit dem Quark-Dip."
+   ],
+   "tipp": "Ein Spritzer Zitronensaft über dem fertigen Gemüse macht es frischer."
+  },
+  {
+   "mahlzeit": "Abendessen",
+   "name": "Asia-Nudelsuppe mit Tofu & Ei",
+   "beschreibung": "Würzige Brühe mit Mie-Nudeln, Tofu, Pilzen, Spinat und einem wachsweichen Ei – leicht und wärmend.",
+   "zeit_min": 18,
+   "tags": [],
+   "zutaten": [
+    {
+     "name": "Tofu natur",
+     "menge_g": 150,
+     "anzeige": "150 g"
+    },
+    {
+     "name": "Ei",
+     "menge_g": 60,
+     "anzeige": "1 Ei (Größe M)"
+    },
+    {
+     "name": "Mie-Nudeln",
+     "menge_g": 50,
+     "anzeige": "1 Nest (50 g)"
+    },
+    {
+     "name": "Champignons",
+     "menge_g": 100,
+     "anzeige": "100 g"
+    },
+    {
+     "name": "Möhre",
+     "menge_g": 60,
+     "anzeige": "1 kleine Möhre (60 g)"
+    },
+    {
+     "name": "Babyspinat",
+     "menge_g": 50,
+     "anzeige": "1 Handvoll (50 g)"
+    },
+    {
+     "name": "Frühlingszwiebel",
+     "menge_g": 20,
+     "anzeige": "1 Stange (20 g)"
+    },
+    {
+     "name": "Gemüsebrühe (zubereitet)",
+     "menge_g": 400,
+     "anzeige": "400 ml"
+    },
+    {
+     "name": "Sojasauce",
+     "menge_g": 15,
+     "anzeige": "1 EL (15 g)"
+    },
+    {
+     "name": "Ingwer",
+     "menge_g": 5,
+     "anzeige": "1 daumennagelgroßes Stück (5 g)"
+    },
+    {
+     "name": "Knoblauch",
+     "menge_g": 5,
+     "anzeige": "1 Zehe (5 g)"
+    },
+    {
+     "name": "Rapsöl",
+     "menge_g": 5,
+     "anzeige": "1 TL (5 g)"
+    },
+    {
+     "name": "Chiliflocken",
+     "menge_g": 0,
+     "anzeige": "1 Prise"
+    }
+   ],
+   "zubereitung": [
+    "Koche das Ei 6,5 Minuten in sprudelndem Wasser, schrecke es kalt ab und pelle es.",
+    "Schneide den Tofu in Würfel und brate ihn im Rapsöl in einem Topf bei hoher Hitze 4 Minuten an.",
+    "Gib geriebenen Ingwer, gehackten Knoblauch, Champignonscheiben und Möhrenstifte dazu und brate alles 2 Minuten mit.",
+    "Gieße mit der Gemüsebrühe und Sojasauce auf, bring sie zum Kochen und gare die Mie-Nudeln darin 4 Minuten.",
+    "Rühre den Spinat unter, fülle die Suppe in eine Schale und lege das halbierte Ei, Frühlingszwiebelringe und Chiliflocken obendrauf."
+   ],
+   "tipp": "Statt Mie-Nudeln passen auch Reisnudeln."
+  },
+  {
+   "mahlzeit": "Abendessen",
+   "name": "Mexikanische Bohnenpfanne mit Spiegelei",
+   "beschreibung": "Schnelle Pfanne aus Kidneybohnen, Mais, Paprika und Tomaten mit zwei Spiegeleiern und Avocado.",
+   "zeit_min": 15,
+   "tags": [],
+   "zutaten": [
+    {
+     "name": "Kidneybohnen (Dose, abgetropft)",
+     "menge_g": 150,
+     "anzeige": "150 g"
+    },
+    {
+     "name": "Ei",
+     "menge_g": 120,
+     "anzeige": "2 Eier (Größe M)"
+    },
+    {
+     "name": "Paprika rot",
+     "menge_g": 100,
+     "anzeige": "½ Paprika (100 g)"
+    },
+    {
+     "name": "Zwiebel",
+     "menge_g": 50,
+     "anzeige": "½ Zwiebel (50 g)"
+    },
+    {
+     "name": "Mais (Dose, abgetropft)",
+     "menge_g": 50,
+     "anzeige": "50 g"
+    },
+    {
+     "name": "Gehackte Tomaten (Dose)",
+     "menge_g": 150,
+     "anzeige": "150 g"
+    },
+    {
+     "name": "Avocado",
+     "menge_g": 30,
+     "anzeige": "¼ kleine Avocado (30 g)"
+    },
+    {
+     "name": "Rapsöl",
+     "menge_g": 5,
+     "anzeige": "1 TL (5 g)"
+    },
+    {
+     "name": "Kreuzkümmel",
+     "menge_g": 0,
+     "anzeige": "½ TL"
+    },
+    {
+     "name": "Paprikapulver edelsüß",
+     "menge_g": 0,
+     "anzeige": "1 TL"
+    },
+    {
+     "name": "Chiliflocken",
+     "menge_g": 0,
+     "anzeige": "1 Prise"
+    },
+    {
+     "name": "Salz",
+     "menge_g": 0,
+     "anzeige": "1 Prise"
+    },
+    {
+     "name": "Pfeffer",
+     "menge_g": 0,
+     "anzeige": "1 Prise"
+    }
+   ],
+   "zubereitung": [
+    "Würfle Zwiebel und Paprika und brate sie im Rapsöl bei mittlerer Hitze 3 Minuten an.",
+    "Gib Kreuzkümmel, Paprikapulver und Chiliflocken dazu und röste sie kurz mit.",
+    "Füge Bohnen, Mais und gehackte Tomaten hinzu und lass alles 5 Minuten köcheln; mit Salz und Pfeffer abschmecken.",
+    "Drücke zwei Mulden in die Pfanne, schlage die Eier hinein und lass sie mit Deckel bei niedriger Hitze 4–5 Minuten stocken.",
+    "Belege die Pfanne mit Avocadoscheiben und iss direkt."
+   ],
+   "tipp": "Ein Klecks Skyr obendrauf ersetzt saure Sahne und bringt extra Eiweiß."
+  },
+  {
+   "mahlzeit": "Snack",
+   "name": "Beeren-Quark mit Mandeln",
+   "beschreibung": "Cremiger Magerquark mit Beeren und einem Hauch Honig – der schnelle Eiweiß-Snack.",
+   "zeit_min": 3,
+   "tags": [
+    "ohne Kochen",
+    "nach dem Training"
+   ],
+   "zutaten": [
+    {
+     "name": "Magerquark",
+     "menge_g": 150,
+     "anzeige": "150 g"
+    },
+    {
+     "name": "Beeren-Mischung (TK)",
+     "menge_g": 100,
+     "anzeige": "100 g, aufgetaut"
+    },
+    {
+     "name": "Honig",
+     "menge_g": 5,
+     "anzeige": "1 TL (5 g)"
+    },
+    {
+     "name": "Mandeln",
+     "menge_g": 10,
+     "anzeige": "1 EL, gehackt (10 g)"
+    }
+   ],
+   "zubereitung": [
+    "Taue die Beeren kurz in der Mikrowelle (ca. 1 Minute) oder über Nacht im Kühlschrank auf.",
+    "Rühre den Magerquark mit dem Honig und einem Schuss Wasser cremig.",
+    "Gib die Beeren mitsamt Saft darüber und streue die gehackten Mandeln darauf."
+   ],
+   "tipp": "Aufgetaute Beeren färben den Quark schön rosa – einfach unterrühren."
+  },
+  {
+   "mahlzeit": "Snack",
+   "name": "Knäckebrot mit Hüttenkäse & Gurke",
+   "beschreibung": "Knuspriges Vollkorn-Knäcke mit Hüttenkäse, Gurke und Schnittlauch – herzhaft und leicht.",
+   "zeit_min": 5,
+   "tags": [
+    "ohne Kochen"
+   ],
+   "zutaten": [
+    {
+     "name": "Vollkorn-Knäckebrot",
+     "menge_g": 30,
+     "anzeige": "3 Scheiben (30 g)"
+    },
+    {
+     "name": "Hüttenkäse",
+     "menge_g": 150,
+     "anzeige": "150 g"
+    },
+    {
+     "name": "Gurke",
+     "menge_g": 50,
+     "anzeige": "¼ Gurke (50 g)"
+    },
+    {
+     "name": "Schnittlauch",
+     "menge_g": 5,
+     "anzeige": "einige Halme (5 g)"
+    },
+    {
+     "name": "Pfeffer",
+     "menge_g": 0,
+     "anzeige": "1 Prise"
+    }
+   ],
+   "zubereitung": [
+    "Verteile den Hüttenkäse auf den Knäckebrotscheiben.",
+    "Schneide die Gurke in dünne Scheiben und lege sie darauf.",
+    "Bestreue alles mit Schnittlauchröllchen und frisch gemahlenem Pfeffer."
+   ],
+   "tipp": "Statt Gurke passen auch Radieschen oder Tomatenscheiben."
+  },
+  {
+   "mahlzeit": "Snack",
+   "name": "Gekochte Eier mit Gemüsesticks",
+   "beschreibung": "Zwei hart gekochte Eier mit knackigen Paprika- und Möhrensticks – perfekt zum Mitnehmen.",
+   "zeit_min": 12,
+   "tags": [
+    "Meal-Prep"
+   ],
+   "zutaten": [
+    {
+     "name": "Ei",
+     "menge_g": 120,
+     "anzeige": "2 Eier (Größe M)"
+    },
+    {
+     "name": "Paprika rot",
+     "menge_g": 100,
+     "anzeige": "½ Paprika (100 g)"
+    },
+    {
+     "name": "Möhre",
+     "menge_g": 80,
+     "anzeige": "1 Möhre (80 g)"
+    },
+    {
+     "name": "Salz",
+     "menge_g": 0,
+     "anzeige": "1 Prise"
+    },
+    {
+     "name": "Pfeffer",
+     "menge_g": 0,
+     "anzeige": "1 Prise"
+    }
+   ],
+   "zubereitung": [
+    "Koche die Eier 9 Minuten in sprudelndem Wasser hart und schrecke sie kalt ab.",
+    "Schneide Paprika und Möhre in fingerdicke Sticks.",
+    "Pelle die Eier, halbiere sie und würze sie mit Salz und Pfeffer; dazu die Gemüsesticks essen."
+   ],
+   "tipp": "Ungeschält halten sich gekochte Eier im Kühlschrank bis zu einer Woche – gleich mehrere vorkochen."
+  },
+  {
+   "mahlzeit": "Snack",
+   "name": "Bananen-Proteinshake",
+   "beschreibung": "Cremiger Shake aus Milch, Banane und Molkenprotein – schnell getrunken nach dem Training.",
+   "zeit_min": 3,
+   "tags": [
+    "nach dem Training",
+    "ohne Kochen"
+   ],
+   "zutaten": [
+    {
+     "name": "Milch 1,5 %",
+     "menge_g": 250,
+     "anzeige": "250 ml"
+    },
+    {
+     "name": "Whey-Proteinpulver (Vanille)",
+     "menge_g": 20,
+     "anzeige": "1 kleiner Messlöffel (20 g)"
+    },
+    {
+     "name": "Banane",
+     "menge_g": 60,
+     "anzeige": "½ Banane (60 g)"
+    },
+    {
+     "name": "Zimt",
+     "menge_g": 0,
+     "anzeige": "1 Prise"
+    }
+   ],
+   "zubereitung": [
+    "Schäle die Banane und brich sie in Stücke.",
+    "Gib Milch, Proteinpulver, Banane und Zimt in einen Mixer oder Shaker-Becher mit Mixball.",
+    "Mixe alles 20–30 Sekunden, bis der Shake schaumig ist, und trink ihn direkt."
+   ],
+   "tipp": "Mit einer gefrorenen Banane wird der Shake besonders kalt und cremig."
+  },
+  {
+   "mahlzeit": "Snack",
+   "name": "Caprese-Spieße mit Balsamico",
+   "beschreibung": "Mozzarella-Würfel, Cherrytomaten und Basilikum am Spieß, beträufelt mit Balsamico.",
+   "zeit_min": 5,
+   "tags": [
+    "ohne Kochen"
+   ],
+   "zutaten": [
+    {
+     "name": "Mozzarella light",
+     "menge_g": 125,
+     "anzeige": "1 Kugel (125 g)"
+    },
+    {
+     "name": "Cherrytomaten",
+     "menge_g": 100,
+     "anzeige": "8 Stück (100 g)"
+    },
+    {
+     "name": "Basilikum",
+     "menge_g": 5,
+     "anzeige": "einige Blätter (5 g)"
+    },
+    {
+     "name": "Balsamico-Essig",
+     "menge_g": 5,
+     "anzeige": "1 TL (5 g)"
+    },
+    {
+     "name": "Salz",
+     "menge_g": 0,
+     "anzeige": "1 Prise"
+    },
+    {
+     "name": "Pfeffer",
+     "menge_g": 0,
+     "anzeige": "1 Prise"
+    }
+   ],
+   "zubereitung": [
+    "Lass den Mozzarella abtropfen und schneide ihn in 8 Würfel.",
+    "Stecke abwechselnd Tomate, Basilikumblatt und Mozzarella auf kleine Spieße.",
+    "Würze die Spieße mit Salz und Pfeffer und beträufle sie mit Balsamico."
+   ],
+   "tipp": "In einer Dose verpackt ein guter Snack fürs Büro."
+  }
+ ]
+}

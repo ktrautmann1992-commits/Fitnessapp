@@ -1,0 +1,597 @@
+{
+  "ingredients": {
+    "Ei": {"kcal": 137, "p": 12.6, "c": 0.5, "f": 9.3, "abteilung": "Kühlregal & Molkerei"},
+    "Lachsschinken": {"kcal": 120, "p": 22.5, "c": 1.0, "f": 3.0, "abteilung": "Fleisch & Fisch"},
+    "Kochschinken": {"kcal": 110, "p": 19.5, "c": 1.0, "f": 3.0, "abteilung": "Fleisch & Fisch"},
+    "Schweinefilet": {"kcal": 108, "p": 21.5, "c": 0.0, "f": 2.0, "abteilung": "Fleisch & Fisch"},
+    "Schweineschnitzel": {"kcal": 106, "p": 22.0, "c": 0.0, "f": 1.9, "abteilung": "Fleisch & Fisch"},
+    "Hackfleisch vom Schwein": {"kcal": 230, "p": 19.5, "c": 0.0, "f": 17.0, "abteilung": "Fleisch & Fisch"},
+    "Hähnchenbrustfilet": {"kcal": 105, "p": 23.5, "c": 0.0, "f": 1.2, "abteilung": "Fleisch & Fisch"},
+    "Putenbrustfilet": {"kcal": 105, "p": 24.0, "c": 0.0, "f": 1.0, "abteilung": "Fleisch & Fisch"},
+    "Putenbrustaufschnitt": {"kcal": 105, "p": 21.0, "c": 1.5, "f": 1.5, "abteilung": "Fleisch & Fisch"},
+    "Lachsfilet": {"kcal": 200, "p": 20.0, "c": 0.0, "f": 13.4, "abteilung": "Fleisch & Fisch"},
+    "Räucherlachs": {"kcal": 180, "p": 22.0, "c": 0.0, "f": 10.0, "abteilung": "Fleisch & Fisch"},
+    "Thunfisch im eigenen Saft (abgetropft)": {"kcal": 110, "p": 25.5, "c": 0.0, "f": 0.8, "abteilung": "Konserven & Gläser"},
+    "Skyr natur": {"kcal": 63, "p": 11.0, "c": 4.0, "f": 0.2, "abteilung": "Kühlregal & Molkerei"},
+    "Hüttenkäse": {"kcal": 98, "p": 12.5, "c": 2.7, "f": 4.3, "abteilung": "Kühlregal & Molkerei"},
+    "Frischkäse light": {"kcal": 150, "p": 8.0, "c": 4.5, "f": 11.0, "abteilung": "Kühlregal & Molkerei"},
+    "Kochsahne 15 %": {"kcal": 160, "p": 3.0, "c": 4.0, "f": 15.0, "abteilung": "Kühlregal & Molkerei"},
+    "Mozzarella light": {"kcal": 160, "p": 19.0, "c": 1.0, "f": 9.0, "abteilung": "Kühlregal & Molkerei"},
+    "Feta": {"kcal": 260, "p": 17.0, "c": 0.5, "f": 21.0, "abteilung": "Kühlregal & Molkerei"},
+    "Parmesan": {"kcal": 390, "p": 35.0, "c": 0.0, "f": 28.0, "abteilung": "Kühlregal & Molkerei"},
+    "Vollkornbrot": {"kcal": 215, "p": 7.5, "c": 38.0, "f": 1.5, "abteilung": "Brot & Backwaren"},
+    "Vollkorntoast": {"kcal": 250, "p": 9.0, "c": 42.0, "f": 4.0, "abteilung": "Brot & Backwaren"},
+    "Vollkorn-Wrap": {"kcal": 300, "p": 9.0, "c": 48.0, "f": 7.0, "abteilung": "Brot & Backwaren"},
+    "Reiswaffeln": {"kcal": 385, "p": 8.0, "c": 81.0, "f": 3.0, "abteilung": "Brot & Backwaren"},
+    "Basmatireis": {"kcal": 350, "p": 7.5, "c": 77.0, "f": 0.6, "abteilung": "Getreide, Nudeln & Hülsenfrüchte"},
+    "Vollkornnudeln": {"kcal": 350, "p": 13.0, "c": 64.0, "f": 2.5, "abteilung": "Getreide, Nudeln & Hülsenfrüchte"},
+    "Speisestärke": {"kcal": 350, "p": 0.3, "c": 86.0, "f": 0.1, "abteilung": "Sonstiges"},
+    "Kartoffeln": {"kcal": 72, "p": 2.0, "c": 15.6, "f": 0.1, "abteilung": "Obst & Gemüse"},
+    "Kidneybohnen (Dose, abgetropft)": {"kcal": 100, "p": 7.0, "c": 15.0, "f": 0.5, "abteilung": "Konserven & Gläser"},
+    "Mais (Dose, abgetropft)": {"kcal": 80, "p": 2.7, "c": 15.0, "f": 1.2, "abteilung": "Konserven & Gläser"},
+    "Gehackte Tomaten (Dose)": {"kcal": 21, "p": 1.1, "c": 3.5, "f": 0.2, "abteilung": "Konserven & Gläser"},
+    "Passierte Tomaten": {"kcal": 32, "p": 1.4, "c": 5.5, "f": 0.2, "abteilung": "Konserven & Gläser"},
+    "Tomatenmark": {"kcal": 85, "p": 4.5, "c": 13.0, "f": 0.5, "abteilung": "Konserven & Gläser"},
+    "Ananas (Dose, abgetropft)": {"kcal": 60, "p": 0.4, "c": 14.0, "f": 0.1, "abteilung": "Konserven & Gläser"},
+    "Oliven schwarz": {"kcal": 145, "p": 1.0, "c": 3.0, "f": 14.0, "abteilung": "Konserven & Gläser"},
+    "Tomatensalsa (Glas)": {"kcal": 40, "p": 1.5, "c": 7.0, "f": 0.3, "abteilung": "Konserven & Gläser"},
+    "Paprika rot": {"kcal": 31, "p": 1.0, "c": 6.0, "f": 0.3, "abteilung": "Obst & Gemüse"},
+    "Zucchini": {"kcal": 19, "p": 1.5, "c": 2.5, "f": 0.4, "abteilung": "Obst & Gemüse"},
+    "Brokkoli": {"kcal": 34, "p": 3.8, "c": 2.7, "f": 0.4, "abteilung": "Obst & Gemüse"},
+    "Champignons": {"kcal": 22, "p": 3.1, "c": 0.6, "f": 0.3, "abteilung": "Obst & Gemüse"},
+    "Zwiebel": {"kcal": 40, "p": 1.2, "c": 8.0, "f": 0.2, "abteilung": "Obst & Gemüse"},
+    "Rote Zwiebel": {"kcal": 40, "p": 1.2, "c": 8.0, "f": 0.2, "abteilung": "Obst & Gemüse"},
+    "Knoblauch": {"kcal": 140, "p": 6.0, "c": 28.0, "f": 0.1, "abteilung": "Obst & Gemüse"},
+    "Ingwer": {"kcal": 80, "p": 1.8, "c": 15.0, "f": 0.8, "abteilung": "Obst & Gemüse"},
+    "Tomaten": {"kcal": 18, "p": 0.9, "c": 3.0, "f": 0.2, "abteilung": "Obst & Gemüse"},
+    "Kirschtomaten": {"kcal": 22, "p": 1.0, "c": 3.5, "f": 0.3, "abteilung": "Obst & Gemüse"},
+    "Gurke": {"kcal": 12, "p": 0.6, "c": 1.8, "f": 0.2, "abteilung": "Obst & Gemüse"},
+    "Radieschen": {"kcal": 16, "p": 1.0, "c": 2.1, "f": 0.1, "abteilung": "Obst & Gemüse"},
+    "Karotte": {"kcal": 37, "p": 0.9, "c": 7.5, "f": 0.2, "abteilung": "Obst & Gemüse"},
+    "Babyspinat": {"kcal": 23, "p": 2.9, "c": 1.1, "f": 0.4, "abteilung": "Obst & Gemüse"},
+    "Rucola": {"kcal": 25, "p": 2.6, "c": 2.1, "f": 0.7, "abteilung": "Obst & Gemüse"},
+    "Salatmix": {"kcal": 15, "p": 1.3, "c": 1.5, "f": 0.2, "abteilung": "Obst & Gemüse"},
+    "Frühlingszwiebeln": {"kcal": 32, "p": 1.8, "c": 5.5, "f": 0.2, "abteilung": "Obst & Gemüse"},
+    "Schnittlauch (frisch)": {"kcal": 30, "p": 3.0, "c": 2.0, "f": 0.7, "abteilung": "Obst & Gemüse"},
+    "Petersilie (frisch)": {"kcal": 36, "p": 3.0, "c": 6.0, "f": 0.8, "abteilung": "Obst & Gemüse"},
+    "Salbei (frisch)": {"kcal": 0, "p": 0.0, "c": 0.0, "f": 0.0, "abteilung": "Obst & Gemüse"},
+    "Grüne Bohnen (TK)": {"kcal": 30, "p": 1.8, "c": 5.0, "f": 0.2, "abteilung": "Tiefkühl"},
+    "Sesam": {"kcal": 580, "p": 18.0, "c": 12.0, "f": 50.0, "abteilung": "Nüsse, Samen & Trockenfrüchte"},
+    "Walnüsse": {"kcal": 654, "p": 15.0, "c": 7.0, "f": 65.0, "abteilung": "Nüsse, Samen & Trockenfrüchte"},
+    "Olivenöl": {"kcal": 884, "p": 0.0, "c": 0.0, "f": 100.0, "abteilung": "Gewürze, Öle & Saucen"},
+    "Rapsöl": {"kcal": 884, "p": 0.0, "c": 0.0, "f": 100.0, "abteilung": "Gewürze, Öle & Saucen"},
+    "Sojasauce": {"kcal": 60, "p": 8.0, "c": 6.0, "f": 0.1, "abteilung": "Gewürze, Öle & Saucen"},
+    "Senf mittelscharf": {"kcal": 90, "p": 5.5, "c": 6.0, "f": 4.5, "abteilung": "Gewürze, Öle & Saucen"},
+    "Honig": {"kcal": 304, "p": 0.3, "c": 80.0, "f": 0.0, "abteilung": "Gewürze, Öle & Saucen"},
+    "Reisessig": {"kcal": 20, "p": 0.0, "c": 0.5, "f": 0.0, "abteilung": "Gewürze, Öle & Saucen"},
+    "Zitronensaft": {"kcal": 22, "p": 0.4, "c": 2.4, "f": 0.1, "abteilung": "Obst & Gemüse"},
+    "Salz": {"kcal": 0, "p": 0.0, "c": 0.0, "f": 0.0, "abteilung": "Gewürze, Öle & Saucen"},
+    "Pfeffer": {"kcal": 0, "p": 0.0, "c": 0.0, "f": 0.0, "abteilung": "Gewürze, Öle & Saucen"},
+    "Paprikapulver edelsüß": {"kcal": 0, "p": 0.0, "c": 0.0, "f": 0.0, "abteilung": "Gewürze, Öle & Saucen"},
+    "Kreuzkümmel": {"kcal": 0, "p": 0.0, "c": 0.0, "f": 0.0, "abteilung": "Gewürze, Öle & Saucen"},
+    "Chilipulver": {"kcal": 0, "p": 0.0, "c": 0.0, "f": 0.0, "abteilung": "Gewürze, Öle & Saucen"},
+    "Oregano getrocknet": {"kcal": 0, "p": 0.0, "c": 0.0, "f": 0.0, "abteilung": "Gewürze, Öle & Saucen"},
+    "Gyrosgewürz": {"kcal": 0, "p": 0.0, "c": 0.0, "f": 0.0, "abteilung": "Gewürze, Öle & Saucen"},
+    "Muskatnuss gerieben": {"kcal": 0, "p": 0.0, "c": 0.0, "f": 0.0, "abteilung": "Gewürze, Öle & Saucen"},
+    "Wasser": {"kcal": 0, "p": 0.0, "c": 0.0, "f": 0.0, "abteilung": "Sonstiges"}
+  },
+  "recipes": [
+    {
+      "mahlzeit": "Frühstück",
+      "name": "Rührei mit Lachsschinken auf Vollkornbrot",
+      "beschreibung": "Cremiges Rührei mit magerem Lachsschinken, Schnittlauch und Kirschtomaten auf kräftigem Vollkornbrot.",
+      "zeit_min": 10,
+      "tags": ["nach dem Training"],
+      "zutaten": [
+        {"name": "Ei", "menge_g": 180, "anzeige": "3 Eier (Größe M)"},
+        {"name": "Lachsschinken", "menge_g": 40, "anzeige": "4 Scheiben (40 g)"},
+        {"name": "Vollkornbrot", "menge_g": 80, "anzeige": "2 Scheiben (80 g)"},
+        {"name": "Kirschtomaten", "menge_g": 100, "anzeige": "100 g"},
+        {"name": "Rapsöl", "menge_g": 3, "anzeige": "½ TL (3 g)"},
+        {"name": "Schnittlauch (frisch)", "menge_g": 5, "anzeige": "1 EL, in Röllchen (5 g)"},
+        {"name": "Salz", "menge_g": 0, "anzeige": "1 Prise"},
+        {"name": "Pfeffer", "menge_g": 0, "anzeige": "1 Prise"}
+      ],
+      "zubereitung": [
+        "Verquirle die Eier mit Salz und Pfeffer in einer Schüssel.",
+        "Schneide den Lachsschinken in feine Streifen und halbiere die Kirschtomaten.",
+        "Erhitze das Rapsöl in einer beschichteten Pfanne auf mittlerer Stufe, gib die Eier hinein und rühre sie 2–3 Minuten langsam, bis sie gerade gestockt, aber noch cremig sind.",
+        "Hebe die Schinkenstreifen und den Schnittlauch unter und nimm die Pfanne vom Herd.",
+        "Verteile das Rührei auf den Brotscheiben und serviere die Tomaten dazu."
+      ],
+      "tipp": "Statt Lachsschinken passt auch Kochschinken – dann etwas weniger salzen."
+    },
+    {
+      "mahlzeit": "Frühstück",
+      "name": "Kochschinken-Hüttenkäse-Brote mit Radieschen",
+      "beschreibung": "Schnelles, kaltes Eiweißfrühstück mit körnigem Frischkäse, Kochschinken und knackigem Gemüse.",
+      "zeit_min": 5,
+      "tags": ["ohne Kochen"],
+      "zutaten": [
+        {"name": "Vollkornbrot", "menge_g": 100, "anzeige": "2 große Scheiben (100 g)"},
+        {"name": "Hüttenkäse", "menge_g": 150, "anzeige": "150 g"},
+        {"name": "Kochschinken", "menge_g": 60, "anzeige": "3 Scheiben (60 g)"},
+        {"name": "Gurke", "menge_g": 80, "anzeige": "¼ Gurke (80 g)"},
+        {"name": "Radieschen", "menge_g": 50, "anzeige": "4 Radieschen (50 g)"},
+        {"name": "Schnittlauch (frisch)", "menge_g": 5, "anzeige": "1 EL, in Röllchen (5 g)"},
+        {"name": "Pfeffer", "menge_g": 0, "anzeige": "1 Prise"}
+      ],
+      "zubereitung": [
+        "Bestreiche die Brotscheiben dick mit Hüttenkäse.",
+        "Lege je anderthalb Scheiben Kochschinken darauf.",
+        "Schneide Gurke und Radieschen in dünne Scheiben und verteile sie auf den Broten.",
+        "Bestreue alles mit Schnittlauch und Pfeffer."
+      ],
+      "tipp": "Für unterwegs die Brote zusammenklappen und in Butterbrotpapier wickeln."
+    },
+    {
+      "mahlzeit": "Frühstück",
+      "name": "Frühstücks-Wrap mit Ei, Schinken und Spinat",
+      "beschreibung": "Warmer Wrap im Mexiko-Stil mit Rührei, Kochschinken, Spinat, Mozzarella und Salsa.",
+      "zeit_min": 12,
+      "tags": ["nach dem Training"],
+      "zutaten": [
+        {"name": "Vollkorn-Wrap", "menge_g": 60, "anzeige": "1 Wrap (60 g)"},
+        {"name": "Ei", "menge_g": 120, "anzeige": "2 Eier (Größe M)"},
+        {"name": "Kochschinken", "menge_g": 40, "anzeige": "2 Scheiben (40 g)"},
+        {"name": "Babyspinat", "menge_g": 40, "anzeige": "1 Handvoll (40 g)"},
+        {"name": "Mozzarella light", "menge_g": 30, "anzeige": "30 g, gewürfelt"},
+        {"name": "Tomatensalsa (Glas)", "menge_g": 30, "anzeige": "2 EL (30 g)"},
+        {"name": "Rapsöl", "menge_g": 3, "anzeige": "½ TL (3 g)"},
+        {"name": "Salz", "menge_g": 0, "anzeige": "1 Prise"},
+        {"name": "Pfeffer", "menge_g": 0, "anzeige": "1 Prise"}
+      ],
+      "zubereitung": [
+        "Verquirle die Eier mit Salz und Pfeffer und schneide den Kochschinken in Streifen.",
+        "Erhitze das Öl in einer Pfanne auf mittlerer Stufe, lass den Spinat darin 1 Minute zusammenfallen.",
+        "Gib Eier und Schinken dazu und lass alles unter Rühren 2–3 Minuten stocken.",
+        "Erwärme den Wrap 30 Sekunden ohne Fett in einer zweiten Pfanne.",
+        "Verteile die Eimasse, den Mozzarella und die Salsa auf dem Wrap, schlag die Seiten ein und roll ihn fest auf."
+      ],
+      "tipp": "Wer es scharf mag, gibt ein paar Jalapeño-Ringe aus dem Glas dazu."
+    },
+    {
+      "mahlzeit": "Frühstück",
+      "name": "Lachs-Toast mit Kräuter-Skyr und Ei",
+      "beschreibung": "Knuspriger Vollkorntoast mit frischem Kräuter-Skyr, Räucherlachs und einem wachsweichen Ei.",
+      "zeit_min": 12,
+      "tags": [],
+      "zutaten": [
+        {"name": "Vollkorntoast", "menge_g": 60, "anzeige": "2 Scheiben (60 g)"},
+        {"name": "Skyr natur", "menge_g": 100, "anzeige": "100 g"},
+        {"name": "Räucherlachs", "menge_g": 75, "anzeige": "75 g"},
+        {"name": "Ei", "menge_g": 60, "anzeige": "1 Ei (Größe M)"},
+        {"name": "Gurke", "menge_g": 50, "anzeige": "50 g"},
+        {"name": "Schnittlauch (frisch)", "menge_g": 5, "anzeige": "1 EL, in Röllchen (5 g)"},
+        {"name": "Zitronensaft", "menge_g": 5, "anzeige": "1 TL (5 g)"},
+        {"name": "Salz", "menge_g": 0, "anzeige": "1 Prise"},
+        {"name": "Pfeffer", "menge_g": 0, "anzeige": "1 Prise"}
+      ],
+      "zubereitung": [
+        "Koche das Ei in siedendem Wasser 7 Minuten, schrecke es kalt ab und pelle es.",
+        "Verrühre den Skyr mit Schnittlauch, Zitronensaft, Salz und Pfeffer.",
+        "Toaste die Brotscheiben goldbraun.",
+        "Bestreiche den Toast mit dem Kräuter-Skyr, belege ihn mit Gurkenscheiben und Räucherlachs.",
+        "Halbiere das Ei und setze es obenauf."
+      ],
+      "tipp": "Das Ei kannst du am Vorabend kochen – dann ist der Toast in 3 Minuten fertig."
+    },
+    {
+      "mahlzeit": "Frühstück",
+      "name": "Shakshuka mit Putenbrust",
+      "beschreibung": "Orientalisch gewürzte Tomaten-Paprika-Pfanne mit pochierten Eiern und angebratener Putenbrust.",
+      "zeit_min": 25,
+      "tags": [],
+      "zutaten": [
+        {"name": "Ei", "menge_g": 120, "anzeige": "2 Eier (Größe M)"},
+        {"name": "Putenbrustfilet", "menge_g": 80, "anzeige": "80 g"},
+        {"name": "Gehackte Tomaten (Dose)", "menge_g": 200, "anzeige": "½ Dose (200 g)"},
+        {"name": "Paprika rot", "menge_g": 100, "anzeige": "½ Paprika (100 g)"},
+        {"name": "Zwiebel", "menge_g": 40, "anzeige": "½ kleine Zwiebel (40 g)"},
+        {"name": "Olivenöl", "menge_g": 5, "anzeige": "1 TL (5 g)"},
+        {"name": "Vollkornbrot", "menge_g": 60, "anzeige": "1 Scheibe (60 g)"},
+        {"name": "Kreuzkümmel", "menge_g": 0, "anzeige": "½ TL"},
+        {"name": "Paprikapulver edelsüß", "menge_g": 0, "anzeige": "1 TL"},
+        {"name": "Petersilie (frisch)", "menge_g": 3, "anzeige": "1 TL, gehackt (3 g)"},
+        {"name": "Salz", "menge_g": 0, "anzeige": "1 Prise"},
+        {"name": "Pfeffer", "menge_g": 0, "anzeige": "1 Prise"}
+      ],
+      "zubereitung": [
+        "Schneide Zwiebel, Paprika und Putenbrust in kleine Würfel.",
+        "Erhitze das Olivenöl in einer kleinen Pfanne und brate die Putenwürfel 3 Minuten bei mittlerer bis hoher Hitze an.",
+        "Gib Zwiebel und Paprika dazu und brate sie 3 Minuten mit, dann Kreuzkümmel und Paprikapulver kurz anrösten.",
+        "Gieß die Tomaten an, würze mit Salz und Pfeffer und lass alles 5 Minuten einköcheln.",
+        "Drücke zwei Mulden in die Sauce, schlag die Eier hinein und lass sie mit Deckel bei kleiner Hitze 6–8 Minuten stocken.",
+        "Bestreue die Shakshuka mit Petersilie und iss das Brot dazu."
+      ],
+      "tipp": "Am Wochenende ideal als Brunch – die Sauce lässt sich auch am Vortag vorkochen."
+    },
+    {
+      "mahlzeit": "Mittagessen",
+      "name": "Schweinefilet mit Senfkartoffeln und Bohnen",
+      "beschreibung": "Saftig gebratenes Schweinefilet mit Ofenkartoffeln, grünen Bohnen und einer leichten Senfsauce.",
+      "zeit_min": 35,
+      "tags": ["Meal-Prep"],
+      "zutaten": [
+        {"name": "Schweinefilet", "menge_g": 170, "anzeige": "170 g"},
+        {"name": "Kartoffeln", "menge_g": 300, "anzeige": "3 mittelgroße (300 g)"},
+        {"name": "Grüne Bohnen (TK)", "menge_g": 200, "anzeige": "200 g"},
+        {"name": "Rapsöl", "menge_g": 10, "anzeige": "1 EL (10 g)"},
+        {"name": "Kochsahne 15 %", "menge_g": 30, "anzeige": "2 EL (30 g)"},
+        {"name": "Senf mittelscharf", "menge_g": 10, "anzeige": "2 TL (10 g)"},
+        {"name": "Wasser", "menge_g": 0, "anzeige": "50 ml"},
+        {"name": "Paprikapulver edelsüß", "menge_g": 0, "anzeige": "½ TL"},
+        {"name": "Salz", "menge_g": 0, "anzeige": "1 Prise"},
+        {"name": "Pfeffer", "menge_g": 0, "anzeige": "1 Prise"}
+      ],
+      "zubereitung": [
+        "Heize den Ofen auf 200 °C Umluft vor. Viertele die Kartoffeln, mische sie mit der Hälfte des Öls, Paprikapulver und Salz und backe sie 25–30 Minuten auf einem Blech.",
+        "Gare die Bohnen in Salzwasser 8 Minuten und gieß sie ab.",
+        "Schneide das Filet in 3 cm dicke Medaillons, würze sie mit Salz und Pfeffer und brate sie im restlichen Öl pro Seite 3–4 Minuten bei mittlerer Hitze.",
+        "Nimm das Fleisch heraus, lösche die Pfanne mit dem Wasser ab, rühre Senf und Kochsahne ein und lass die Sauce 1 Minute köcheln.",
+        "Richte Fleisch, Kartoffeln und Bohnen an und gieß die Senfsauce darüber."
+      ],
+      "tipp": "Für Meal-Prep die doppelte Menge machen – Fleisch und Sauce halten sich 3 Tage im Kühlschrank."
+    },
+    {
+      "mahlzeit": "Mittagessen",
+      "name": "Süß-saure Schweinepfanne mit Reis",
+      "beschreibung": "Asiatische Wokpfanne mit zarten Schweineschnitzel-Streifen, Paprika, Ananas und Basmatireis.",
+      "zeit_min": 25,
+      "tags": ["nach dem Training"],
+      "zutaten": [
+        {"name": "Schweineschnitzel", "menge_g": 160, "anzeige": "160 g (aus der Oberschale)"},
+        {"name": "Basmatireis", "menge_g": 70, "anzeige": "70 g (trocken)"},
+        {"name": "Paprika rot", "menge_g": 100, "anzeige": "½ Paprika (100 g)"},
+        {"name": "Ananas (Dose, abgetropft)", "menge_g": 80, "anzeige": "2 Ringe (80 g)"},
+        {"name": "Frühlingszwiebeln", "menge_g": 30, "anzeige": "2 Stangen (30 g)"},
+        {"name": "Ingwer", "menge_g": 5, "anzeige": "1 TL, gerieben (5 g)"},
+        {"name": "Sojasauce", "menge_g": 15, "anzeige": "1 EL (15 g)"},
+        {"name": "Reisessig", "menge_g": 10, "anzeige": "2 TL (10 g)"},
+        {"name": "Tomatenmark", "menge_g": 10, "anzeige": "2 TL (10 g)"},
+        {"name": "Speisestärke", "menge_g": 5, "anzeige": "1 TL (5 g)"},
+        {"name": "Rapsöl", "menge_g": 10, "anzeige": "1 EL (10 g)"},
+        {"name": "Wasser", "menge_g": 0, "anzeige": "60 ml"}
+      ],
+      "zubereitung": [
+        "Koche den Reis nach Packungsanleitung (ca. 12 Minuten).",
+        "Schneide das Fleisch in dünne Streifen, die Paprika und Ananas in Stücke und die Frühlingszwiebeln in Ringe.",
+        "Verrühre Sojasauce, Reisessig, Tomatenmark, Speisestärke und Wasser zu einer Sauce.",
+        "Erhitze das Öl im Wok oder einer großen Pfanne stark und brate das Fleisch 2–3 Minuten scharf an, dann herausnehmen.",
+        "Brate Paprika und Ingwer 3 Minuten, gib Ananas, Fleisch und Sauce dazu und lass alles 1 Minute andicken.",
+        "Serviere die Pfanne mit dem Reis und bestreue sie mit Frühlingszwiebeln."
+      ],
+      "tipp": "Mit Hähnchenbrustfilet funktioniert das Rezept genauso."
+    },
+    {
+      "mahlzeit": "Mittagessen",
+      "name": "Chili con Carne mit Reis",
+      "beschreibung": "Würziges Chili mit Schweinehack, Kidneybohnen und Mais – perfekt zum Vorkochen.",
+      "zeit_min": 40,
+      "tags": ["Meal-Prep"],
+      "zutaten": [
+        {"name": "Hackfleisch vom Schwein", "menge_g": 120, "anzeige": "120 g (mager)"},
+        {"name": "Kidneybohnen (Dose, abgetropft)", "menge_g": 100, "anzeige": "100 g"},
+        {"name": "Mais (Dose, abgetropft)", "menge_g": 50, "anzeige": "50 g"},
+        {"name": "Gehackte Tomaten (Dose)", "menge_g": 200, "anzeige": "½ Dose (200 g)"},
+        {"name": "Paprika rot", "menge_g": 80, "anzeige": "½ kleine Paprika (80 g)"},
+        {"name": "Zwiebel", "menge_g": 50, "anzeige": "½ Zwiebel (50 g)"},
+        {"name": "Knoblauch", "menge_g": 3, "anzeige": "1 Zehe (3 g)"},
+        {"name": "Tomatenmark", "menge_g": 15, "anzeige": "1 EL (15 g)"},
+        {"name": "Basmatireis", "menge_g": 50, "anzeige": "50 g (trocken)"},
+        {"name": "Kreuzkümmel", "menge_g": 0, "anzeige": "½ TL"},
+        {"name": "Chilipulver", "menge_g": 0, "anzeige": "½ TL"},
+        {"name": "Paprikapulver edelsüß", "menge_g": 0, "anzeige": "1 TL"},
+        {"name": "Salz", "menge_g": 0, "anzeige": "1 Prise"}
+      ],
+      "zubereitung": [
+        "Würfle Zwiebel, Knoblauch und Paprika.",
+        "Brate das Hackfleisch ohne zusätzliches Fett in einem Topf bei hoher Hitze 5 Minuten krümelig an.",
+        "Gib Zwiebel, Knoblauch und Paprika dazu, brate sie 3 Minuten mit und röste dann Tomatenmark und Gewürze 1 Minute an.",
+        "Gieß die Tomaten an, gib Bohnen und Mais dazu und lass das Chili 20 Minuten bei kleiner Hitze köcheln.",
+        "Koche währenddessen den Reis nach Packungsanleitung und serviere ihn zum Chili."
+      ],
+      "tipp": "Das Chili schmeckt am zweiten Tag noch besser und lässt sich portionsweise einfrieren."
+    },
+    {
+      "mahlzeit": "Mittagessen",
+      "name": "Puten-Gyros-Wrap mit Tzatziki",
+      "beschreibung": "Griechisch gewürzte Putenstreifen mit Skyr-Tzatziki, Tomate und Gurke im Vollkorn-Wrap.",
+      "zeit_min": 15,
+      "tags": ["nach dem Training"],
+      "zutaten": [
+        {"name": "Putenbrustfilet", "menge_g": 150, "anzeige": "150 g"},
+        {"name": "Vollkorn-Wrap", "menge_g": 120, "anzeige": "2 Wraps (120 g)"},
+        {"name": "Skyr natur", "menge_g": 80, "anzeige": "80 g"},
+        {"name": "Gurke", "menge_g": 60, "anzeige": "60 g"},
+        {"name": "Tomaten", "menge_g": 80, "anzeige": "1 Tomate (80 g)"},
+        {"name": "Rote Zwiebel", "menge_g": 20, "anzeige": "¼ Zwiebel (20 g)"},
+        {"name": "Knoblauch", "menge_g": 3, "anzeige": "1 Zehe (3 g)"},
+        {"name": "Rapsöl", "menge_g": 8, "anzeige": "2 TL (8 g)"},
+        {"name": "Gyrosgewürz", "menge_g": 0, "anzeige": "2 TL"},
+        {"name": "Salz", "menge_g": 0, "anzeige": "1 Prise"}
+      ],
+      "zubereitung": [
+        "Schneide die Putenbrust in dünne Streifen und mische sie mit Gyrosgewürz und 1 TL Öl.",
+        "Raspel die Hälfte der Gurke grob, drücke sie aus und verrühre sie mit Skyr, gepresstem Knoblauch und Salz zum Tzatziki.",
+        "Brate die Putenstreifen im restlichen Öl bei hoher Hitze 5–6 Minuten rundum knusprig.",
+        "Schneide Tomate, restliche Gurke und Zwiebel in feine Streifen.",
+        "Erwärme die Wraps kurz in der Pfanne, bestreiche sie mit Tzatziki, belege sie mit Fleisch und Gemüse und rolle sie auf."
+      ],
+      "tipp": "Fleisch und Tzatziki getrennt verpacken – so wird der Wrap im Büro nicht matschig."
+    },
+    {
+      "mahlzeit": "Mittagessen",
+      "name": "Tomaten-Thunfisch-Pasta mit Rucola",
+      "beschreibung": "Mediterrane Vollkornpasta mit schneller Tomatensauce, Thunfisch, Rucola und Parmesan.",
+      "zeit_min": 15,
+      "tags": [],
+      "zutaten": [
+        {"name": "Vollkornnudeln", "menge_g": 90, "anzeige": "90 g (trocken)"},
+        {"name": "Thunfisch im eigenen Saft (abgetropft)", "menge_g": 120, "anzeige": "1 Dose (120 g abgetropft)"},
+        {"name": "Passierte Tomaten", "menge_g": 150, "anzeige": "150 g"},
+        {"name": "Zwiebel", "menge_g": 40, "anzeige": "½ kleine Zwiebel (40 g)"},
+        {"name": "Knoblauch", "menge_g": 3, "anzeige": "1 Zehe (3 g)"},
+        {"name": "Olivenöl", "menge_g": 8, "anzeige": "2 TL (8 g)"},
+        {"name": "Parmesan", "menge_g": 10, "anzeige": "1 EL, gerieben (10 g)"},
+        {"name": "Rucola", "menge_g": 20, "anzeige": "1 Handvoll (20 g)"},
+        {"name": "Oregano getrocknet", "menge_g": 0, "anzeige": "½ TL"},
+        {"name": "Salz", "menge_g": 0, "anzeige": "1 Prise"},
+        {"name": "Pfeffer", "menge_g": 0, "anzeige": "1 Prise"}
+      ],
+      "zubereitung": [
+        "Koche die Nudeln in reichlich Salzwasser nach Packungsanleitung bissfest (ca. 10 Minuten).",
+        "Würfle Zwiebel und Knoblauch und dünste sie im Olivenöl 2 Minuten glasig.",
+        "Gib passierte Tomaten und Oregano dazu und lass die Sauce 5 Minuten köcheln.",
+        "Zupfe den Thunfisch grob, rühre ihn unter und würze mit Salz und Pfeffer.",
+        "Mische die abgegossenen Nudeln mit der Sauce und serviere sie mit Rucola und Parmesan."
+      ],
+      "tipp": "Ein Spritzer Zitronensaft und ein paar Kapern machen die Sauce noch frischer."
+    },
+    {
+      "mahlzeit": "Abendessen",
+      "name": "Schweinemedaillons mit Pilzrahm und Brokkoli",
+      "beschreibung": "Low-Carb-Abendessen aus zarten Filetmedaillons, Champignon-Rahmsauce und viel Brokkoli.",
+      "zeit_min": 18,
+      "tags": [],
+      "zutaten": [
+        {"name": "Schweinefilet", "menge_g": 180, "anzeige": "180 g"},
+        {"name": "Champignons", "menge_g": 250, "anzeige": "250 g"},
+        {"name": "Brokkoli", "menge_g": 300, "anzeige": "1 kleiner Kopf (300 g)"},
+        {"name": "Zwiebel", "menge_g": 30, "anzeige": "¼ Zwiebel (30 g)"},
+        {"name": "Kochsahne 15 %", "menge_g": 60, "anzeige": "4 EL (60 g)"},
+        {"name": "Rapsöl", "menge_g": 8, "anzeige": "2 TL (8 g)"},
+        {"name": "Petersilie (frisch)", "menge_g": 3, "anzeige": "1 TL, gehackt (3 g)"},
+        {"name": "Salz", "menge_g": 0, "anzeige": "1 Prise"},
+        {"name": "Pfeffer", "menge_g": 0, "anzeige": "1 Prise"}
+      ],
+      "zubereitung": [
+        "Teile den Brokkoli in Röschen und gare ihn in Salzwasser 5–6 Minuten bissfest.",
+        "Schneide das Filet in 2 cm dicke Medaillons, würze sie mit Salz und Pfeffer und brate sie im Öl pro Seite 3 Minuten bei mittlerer bis hoher Hitze; dann herausnehmen.",
+        "Brate Zwiebelwürfel und geschnittene Champignons in derselben Pfanne 4 Minuten kräftig an.",
+        "Rühre die Kochsahne ein, lass sie 1 Minute köcheln und schmecke mit Salz und Pfeffer ab.",
+        "Lege die Medaillons kurz in die Sauce und serviere sie mit Brokkoli und Petersilie."
+      ],
+      "tipp": "Wer mehr Kohlenhydrate braucht, isst 150 g Pellkartoffeln dazu."
+    },
+    {
+      "mahlzeit": "Abendessen",
+      "name": "Gefüllte Paprika mit Hackfleisch",
+      "beschreibung": "Klassiker aus dem Ofen: Paprikaschoten mit Hack-Reis-Füllung in Tomatensauce, mit Mozzarella überbacken.",
+      "zeit_min": 45,
+      "tags": ["Meal-Prep"],
+      "zutaten": [
+        {"name": "Hackfleisch vom Schwein", "menge_g": 120, "anzeige": "120 g (mager)"},
+        {"name": "Paprika rot", "menge_g": 300, "anzeige": "2 Paprika (300 g)"},
+        {"name": "Basmatireis", "menge_g": 30, "anzeige": "30 g (trocken)"},
+        {"name": "Passierte Tomaten", "menge_g": 200, "anzeige": "200 g"},
+        {"name": "Zwiebel", "menge_g": 40, "anzeige": "½ kleine Zwiebel (40 g)"},
+        {"name": "Mozzarella light", "menge_g": 40, "anzeige": "40 g"},
+        {"name": "Paprikapulver edelsüß", "menge_g": 0, "anzeige": "1 TL"},
+        {"name": "Oregano getrocknet", "menge_g": 0, "anzeige": "½ TL"},
+        {"name": "Salz", "menge_g": 0, "anzeige": "1 Prise"},
+        {"name": "Pfeffer", "menge_g": 0, "anzeige": "1 Prise"}
+      ],
+      "zubereitung": [
+        "Heize den Ofen auf 180 °C Umluft vor und koche den Reis 8 Minuten vor.",
+        "Schneide von den Paprika einen Deckel ab und entferne die Kerne.",
+        "Vermenge Hackfleisch, Reis, gewürfelte Zwiebel, Paprikapulver, Salz und Pfeffer.",
+        "Fülle die Paprika damit, stelle sie in eine kleine Auflaufform und gieß die mit Oregano gewürzten passierten Tomaten außen herum.",
+        "Backe die Paprika 25 Minuten, belege sie dann mit Mozzarella und backe sie weitere 5 Minuten."
+      ],
+      "tipp": "Statt Schweinehack geht auch gemischtes Hack oder Putenhack."
+    },
+    {
+      "mahlzeit": "Abendessen",
+      "name": "Saltimbocca mit Zucchini-Tomaten-Gemüse",
+      "beschreibung": "Italienisch inspiriert: dünne Schweineschnitzel mit Lachsschinken und Salbei, dazu Zucchini, Kirschtomaten und Kartoffeln.",
+      "zeit_min": 25,
+      "tags": [],
+      "zutaten": [
+        {"name": "Schweineschnitzel", "menge_g": 170, "anzeige": "2 dünne Schnitzel (170 g)"},
+        {"name": "Lachsschinken", "menge_g": 20, "anzeige": "2 Scheiben (20 g)"},
+        {"name": "Salbei (frisch)", "menge_g": 0, "anzeige": "2 Blätter"},
+        {"name": "Zucchini", "menge_g": 200, "anzeige": "1 kleine Zucchini (200 g)"},
+        {"name": "Kirschtomaten", "menge_g": 150, "anzeige": "150 g"},
+        {"name": "Kartoffeln", "menge_g": 250, "anzeige": "2–3 kleine (250 g)"},
+        {"name": "Olivenöl", "menge_g": 10, "anzeige": "1 EL (10 g)"},
+        {"name": "Knoblauch", "menge_g": 3, "anzeige": "1 Zehe (3 g)"},
+        {"name": "Salz", "menge_g": 0, "anzeige": "1 Prise"},
+        {"name": "Pfeffer", "menge_g": 0, "anzeige": "1 Prise"}
+      ],
+      "zubereitung": [
+        "Koche die Kartoffeln in Salzwasser 20 Minuten gar.",
+        "Klopfe die Schnitzel flach, pfeffere sie und belege jedes mit einer Scheibe Lachsschinken und einem Salbeiblatt; mit einem Zahnstocher feststecken.",
+        "Brate die Schnitzel in der Hälfte des Öls zuerst auf der Schinkenseite 2 Minuten, dann auf der anderen Seite 2 Minuten bei mittlerer bis hoher Hitze.",
+        "Brate Zucchinischeiben, halbierte Kirschtomaten und Knoblauch im restlichen Öl 5 Minuten und würze mit Salz und Pfeffer.",
+        "Richte die Saltimbocca mit Gemüse und Kartoffeln an."
+      ],
+      "tipp": "Ein Schuss Gemüsebrühe in die Bratpfanne ergibt eine schnelle, leichte Sauce."
+    },
+    {
+      "mahlzeit": "Abendessen",
+      "name": "Asia-Ofenlachs mit Sesam-Brokkoli",
+      "beschreibung": "Lachs mit Soja-Honig-Ingwer-Glasur aus dem Ofen, dazu Sesam-Brokkoli und etwas Reis.",
+      "zeit_min": 25,
+      "tags": [],
+      "zutaten": [
+        {"name": "Lachsfilet", "menge_g": 130, "anzeige": "1 Filet (130 g)"},
+        {"name": "Brokkoli", "menge_g": 200, "anzeige": "200 g"},
+        {"name": "Basmatireis", "menge_g": 50, "anzeige": "50 g (trocken)"},
+        {"name": "Sojasauce", "menge_g": 15, "anzeige": "1 EL (15 g)"},
+        {"name": "Honig", "menge_g": 5, "anzeige": "1 TL (5 g)"},
+        {"name": "Ingwer", "menge_g": 5, "anzeige": "1 TL, gerieben (5 g)"},
+        {"name": "Sesam", "menge_g": 5, "anzeige": "1 TL (5 g)"},
+        {"name": "Frühlingszwiebeln", "menge_g": 15, "anzeige": "1 Stange (15 g)"}
+      ],
+      "zubereitung": [
+        "Heize den Ofen auf 200 °C Ober-/Unterhitze vor und koche den Reis nach Packungsanleitung.",
+        "Verrühre Sojasauce, Honig und Ingwer und bestreiche den Lachs damit.",
+        "Lege Lachs und Brokkoliröschen auf ein Blech mit Backpapier und gare beides 12–15 Minuten im Ofen.",
+        "Röste den Sesam in einer Pfanne ohne Fett 2 Minuten goldbraun.",
+        "Bestreue Brokkoli und Lachs mit Sesam und Frühlingszwiebelringen und serviere den Reis dazu."
+      ],
+      "tipp": "TK-Lachs vorher über Nacht im Kühlschrank auftauen lassen."
+    },
+    {
+      "mahlzeit": "Abendessen",
+      "name": "Griechischer Salat mit Hähnchen",
+      "beschreibung": "Bunter Bauernsalat mit gebratener Hähnchenbrust, Feta und Oliven, dazu eine Scheibe Vollkornbrot.",
+      "zeit_min": 15,
+      "tags": [],
+      "zutaten": [
+        {"name": "Hähnchenbrustfilet", "menge_g": 150, "anzeige": "150 g"},
+        {"name": "Salatmix", "menge_g": 80, "anzeige": "2 Handvoll (80 g)"},
+        {"name": "Gurke", "menge_g": 100, "anzeige": "⅓ Gurke (100 g)"},
+        {"name": "Tomaten", "menge_g": 150, "anzeige": "2 Tomaten (150 g)"},
+        {"name": "Paprika rot", "menge_g": 80, "anzeige": "½ kleine Paprika (80 g)"},
+        {"name": "Rote Zwiebel", "menge_g": 20, "anzeige": "¼ Zwiebel (20 g)"},
+        {"name": "Feta", "menge_g": 40, "anzeige": "40 g"},
+        {"name": "Oliven schwarz", "menge_g": 20, "anzeige": "5 Oliven (20 g)"},
+        {"name": "Olivenöl", "menge_g": 10, "anzeige": "1 EL (10 g)"},
+        {"name": "Zitronensaft", "menge_g": 10, "anzeige": "2 TL (10 g)"},
+        {"name": "Vollkornbrot", "menge_g": 60, "anzeige": "1 Scheibe (60 g)"},
+        {"name": "Oregano getrocknet", "menge_g": 0, "anzeige": "½ TL"},
+        {"name": "Salz", "menge_g": 0, "anzeige": "1 Prise"},
+        {"name": "Pfeffer", "menge_g": 0, "anzeige": "1 Prise"}
+      ],
+      "zubereitung": [
+        "Würze die Hähnchenbrust mit Salz, Pfeffer und Oregano und brate sie in 1 TL Olivenöl pro Seite 5–6 Minuten bei mittlerer Hitze durch.",
+        "Schneide Gurke, Tomaten und Paprika in Stücke und die Zwiebel in feine Ringe.",
+        "Verrühre das restliche Olivenöl mit Zitronensaft, Salz und Pfeffer zum Dressing.",
+        "Mische Salatmix und Gemüse mit dem Dressing und zerbrösele den Feta darüber.",
+        "Schneide das Hähnchen in Scheiben, lege es mit den Oliven auf den Salat und iss das Brot dazu."
+      ],
+      "tipp": "Mit Hähnchen vom Vortag ist der Salat in 5 Minuten fertig."
+    },
+    {
+      "mahlzeit": "Snack",
+      "name": "Schinken-Hüttenkäse-Röllchen",
+      "beschreibung": "Kochschinkenscheiben gefüllt mit Hüttenkäse und Paprika, dazu eine Reiswaffel.",
+      "zeit_min": 5,
+      "tags": ["ohne Kochen"],
+      "zutaten": [
+        {"name": "Kochschinken", "menge_g": 75, "anzeige": "4 Scheiben (75 g)"},
+        {"name": "Hüttenkäse", "menge_g": 80, "anzeige": "80 g"},
+        {"name": "Paprika rot", "menge_g": 60, "anzeige": "¼ Paprika (60 g)"},
+        {"name": "Reiswaffeln", "menge_g": 8, "anzeige": "1 Reiswaffel (8 g)"},
+        {"name": "Schnittlauch (frisch)", "menge_g": 3, "anzeige": "1 TL, in Röllchen (3 g)"},
+        {"name": "Pfeffer", "menge_g": 0, "anzeige": "1 Prise"}
+      ],
+      "zubereitung": [
+        "Schneide die Paprika in dünne Streifen.",
+        "Verrühre den Hüttenkäse mit Schnittlauch und Pfeffer.",
+        "Bestreiche jede Schinkenscheibe mit etwas Hüttenkäse, lege Paprikastreifen darauf und rolle sie auf.",
+        "Iss die Reiswaffel dazu."
+      ],
+      "tipp": "Die Röllchen halten sich in einer Dose bis zum nächsten Tag."
+    },
+    {
+      "mahlzeit": "Snack",
+      "name": "Lachsschinken-Brot mit Frischkäse",
+      "beschreibung": "Herzhafte halbe Stulle mit leichtem Frischkäse, magerem Lachsschinken und Gurke.",
+      "zeit_min": 3,
+      "tags": ["ohne Kochen", "vor dem Training"],
+      "zutaten": [
+        {"name": "Vollkornbrot", "menge_g": 50, "anzeige": "1 kleine Scheibe (50 g)"},
+        {"name": "Frischkäse light", "menge_g": 20, "anzeige": "1 EL (20 g)"},
+        {"name": "Lachsschinken", "menge_g": 40, "anzeige": "4 Scheiben (40 g)"},
+        {"name": "Gurke", "menge_g": 30, "anzeige": "einige Scheiben (30 g)"},
+        {"name": "Pfeffer", "menge_g": 0, "anzeige": "1 Prise"}
+      ],
+      "zubereitung": [
+        "Bestreiche das Brot mit Frischkäse.",
+        "Belege es mit Lachsschinken und Gurkenscheiben.",
+        "Würze mit frisch gemahlenem Pfeffer."
+      ],
+      "tipp": "Statt Gurke passen auch ein paar Radieschen oder Kresse."
+    },
+    {
+      "mahlzeit": "Snack",
+      "name": "Eiweiß-Muffins mit Schinken und Spinat",
+      "beschreibung": "Herzhafte Ei-Muffins aus dem Ofen mit Kochschinken, Paprika und Spinat – ideal zum Mitnehmen.",
+      "zeit_min": 25,
+      "tags": ["Meal-Prep"],
+      "zutaten": [
+        {"name": "Ei", "menge_g": 120, "anzeige": "2 Eier (Größe M)"},
+        {"name": "Kochschinken", "menge_g": 30, "anzeige": "1½ Scheiben (30 g)"},
+        {"name": "Paprika rot", "menge_g": 40, "anzeige": "40 g"},
+        {"name": "Babyspinat", "menge_g": 20, "anzeige": "1 kleine Handvoll (20 g)"},
+        {"name": "Muskatnuss gerieben", "menge_g": 0, "anzeige": "1 Prise"},
+        {"name": "Salz", "menge_g": 0, "anzeige": "1 Prise"},
+        {"name": "Pfeffer", "menge_g": 0, "anzeige": "1 Prise"}
+      ],
+      "zubereitung": [
+        "Heize den Ofen auf 180 °C Ober-/Unterhitze vor und fette 2 Mulden eines Muffinblechs leicht ein oder setze Silikonförmchen ein.",
+        "Würfle Schinken und Paprika, hacke den Spinat grob.",
+        "Verquirle die Eier mit Salz, Pfeffer und Muskat und rühre Schinken und Gemüse unter.",
+        "Fülle die Masse in die Förmchen und backe die Muffins 18–20 Minuten, bis sie gestockt sind."
+      ],
+      "tipp": "Gleich ein ganzes Blech backen – die Muffins halten sich 4 Tage im Kühlschrank."
+    },
+    {
+      "mahlzeit": "Snack",
+      "name": "Thunfisch-Skyr-Dip mit Gemüsesticks",
+      "beschreibung": "Cremiger, eiweißreicher Dip aus Thunfisch und Skyr mit knackigen Rohkoststicks.",
+      "zeit_min": 7,
+      "tags": ["ohne Kochen"],
+      "zutaten": [
+        {"name": "Thunfisch im eigenen Saft (abgetropft)", "menge_g": 60, "anzeige": "½ Dose (60 g abgetropft)"},
+        {"name": "Skyr natur", "menge_g": 50, "anzeige": "50 g"},
+        {"name": "Zitronensaft", "menge_g": 5, "anzeige": "1 TL (5 g)"},
+        {"name": "Karotte", "menge_g": 100, "anzeige": "1 Karotte (100 g)"},
+        {"name": "Paprika rot", "menge_g": 80, "anzeige": "½ kleine Paprika (80 g)"},
+        {"name": "Gurke", "menge_g": 80, "anzeige": "80 g"},
+        {"name": "Paprikapulver edelsüß", "menge_g": 0, "anzeige": "1 Prise"},
+        {"name": "Salz", "menge_g": 0, "anzeige": "1 Prise"},
+        {"name": "Pfeffer", "menge_g": 0, "anzeige": "1 Prise"}
+      ],
+      "zubereitung": [
+        "Zerdrücke den Thunfisch mit einer Gabel und verrühre ihn mit Skyr, Zitronensaft, Paprikapulver, Salz und Pfeffer.",
+        "Schneide Karotte, Paprika und Gurke in fingerlange Sticks.",
+        "Serviere die Sticks mit dem Dip."
+      ],
+      "tipp": "Der Dip schmeckt auch als Brotaufstrich auf einer Reiswaffel."
+    },
+    {
+      "mahlzeit": "Snack",
+      "name": "Putenbrust-Röllchen mit Frischkäse und Walnüssen",
+      "beschreibung": "Schnelle Röllchen aus Putenbrustaufschnitt mit Frischkäse, Rucola und knackigen Walnüssen.",
+      "zeit_min": 5,
+      "tags": ["ohne Kochen"],
+      "zutaten": [
+        {"name": "Putenbrustaufschnitt", "menge_g": 80, "anzeige": "5 Scheiben (80 g)"},
+        {"name": "Frischkäse light", "menge_g": 25, "anzeige": "1 gehäufter EL (25 g)"},
+        {"name": "Rucola", "menge_g": 15, "anzeige": "1 kleine Handvoll (15 g)"},
+        {"name": "Walnüsse", "menge_g": 10, "anzeige": "3 Hälften (10 g)"},
+        {"name": "Pfeffer", "menge_g": 0, "anzeige": "1 Prise"}
+      ],
+      "zubereitung": [
+        "Hacke die Walnüsse grob.",
+        "Bestreiche die Putenscheiben dünn mit Frischkäse und streue Walnüsse und Pfeffer darüber.",
+        "Lege etwas Rucola darauf und rolle die Scheiben fest auf."
+      ],
+      "tipp": "Statt Walnüssen passen auch ein paar Streifen getrocknete Tomaten."
+    }
+  ]
+}

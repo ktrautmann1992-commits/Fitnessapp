@@ -1,0 +1,995 @@
+{
+ "ingredients": {
+  "Mandeldrink ungesüßt": {
+   "kcal": 13,
+   "p": 0.4,
+   "c": 0.1,
+   "f": 1.1,
+   "abteilung": "Pflanzliche Alternativen"
+  },
+  "Geschmackspulver (zuckerfrei)": {
+   "kcal": 330,
+   "p": 3.0,
+   "c": 75.0,
+   "f": 2.0,
+   "abteilung": "Sonstiges"
+  },
+  "Instant-Puddingpulver (zuckerfrei)": {
+   "kcal": 340,
+   "p": 0.5,
+   "c": 83.0,
+   "f": 0.5,
+   "abteilung": "Sonstiges"
+  },
+  "Johannisbrotkernmehl": {
+   "kcal": 180,
+   "p": 4.5,
+   "c": 3.0,
+   "f": 0.6,
+   "abteilung": "Sonstiges"
+  },
+  "Clear-Whey-Isolat (Fruchtgeschmack)": {
+   "kcal": 360,
+   "p": 85.0,
+   "c": 2.0,
+   "f": 0.3,
+   "abteilung": "Sonstiges"
+  },
+  "Whey-Proteinpulver (Vanille)": {
+   "kcal": 385,
+   "p": 77.0,
+   "c": 7.0,
+   "f": 6.0,
+   "abteilung": "Sonstiges"
+  },
+  "Veganes Proteinpulver (Vanille)": {
+   "kcal": 380,
+   "p": 72.0,
+   "c": 8.0,
+   "f": 6.0,
+   "abteilung": "Sonstiges"
+  },
+  "Veganes Proteinpulver (Schoko)": {
+   "kcal": 375,
+   "p": 70.0,
+   "c": 9.0,
+   "f": 7.0,
+   "abteilung": "Sonstiges"
+  },
+  "Veganes Proteinpulver (Erbse/Reis, neutral)": {
+   "kcal": 380,
+   "p": 75.0,
+   "c": 8.0,
+   "f": 6.0,
+   "abteilung": "Sonstiges"
+  },
+  "Erythrit": {
+   "kcal": 0,
+   "p": 0.0,
+   "c": 0.0,
+   "f": 0.0,
+   "abteilung": "Sonstiges"
+  },
+  "Kakaopulver (stark entölt)": {
+   "kcal": 350,
+   "p": 20.0,
+   "c": 11.0,
+   "f": 11.0,
+   "abteilung": "Sonstiges"
+  },
+  "Zartbitterschokolade (70 %)": {
+   "kcal": 580,
+   "p": 9.0,
+   "c": 34.0,
+   "f": 42.0,
+   "abteilung": "Sonstiges"
+  },
+  "Espresso (zubereitet)": {
+   "kcal": 2,
+   "p": 0.1,
+   "c": 0.0,
+   "f": 0.2,
+   "abteilung": "Sonstiges"
+  },
+  "Wasser": {
+   "kcal": 0,
+   "p": 0.0,
+   "c": 0.0,
+   "f": 0.0,
+   "abteilung": "Sonstiges"
+  },
+  "Salz": {
+   "kcal": 0,
+   "p": 0.0,
+   "c": 0.0,
+   "f": 0.0,
+   "abteilung": "Gewürze, Öle & Saucen"
+  },
+  "Skyr natur": {
+   "kcal": 63,
+   "p": 11.0,
+   "c": 4.0,
+   "f": 0.2,
+   "abteilung": "Kühlregal & Molkerei"
+  },
+  "Magerquark": {
+   "kcal": 67,
+   "p": 12.0,
+   "c": 4.0,
+   "f": 0.3,
+   "abteilung": "Kühlregal & Molkerei"
+  },
+  "Frischkäse light": {
+   "kcal": 150,
+   "p": 8.0,
+   "c": 4.5,
+   "f": 11.0,
+   "abteilung": "Kühlregal & Molkerei"
+  },
+  "Milch 1,5 %": {
+   "kcal": 47,
+   "p": 3.4,
+   "c": 4.9,
+   "f": 1.5,
+   "abteilung": "Kühlregal & Molkerei"
+  },
+  "Sojaskyr natur": {
+   "kcal": 68,
+   "p": 8.5,
+   "c": 3.0,
+   "f": 2.2,
+   "abteilung": "Pflanzliche Alternativen"
+  },
+  "Seidentofu": {
+   "kcal": 55,
+   "p": 5.5,
+   "c": 1.2,
+   "f": 3.0,
+   "abteilung": "Pflanzliche Alternativen"
+  },
+  "Pistazienkerne (ungesalzen)": {
+   "kcal": 590,
+   "p": 20.0,
+   "c": 18.0,
+   "f": 46.0,
+   "abteilung": "Nüsse, Samen & Trockenfrüchte"
+  },
+  "Kokosraspeln": {
+   "kcal": 660,
+   "p": 6.5,
+   "c": 6.5,
+   "f": 62.0,
+   "abteilung": "Nüsse, Samen & Trockenfrüchte"
+  },
+  "Butterkekse": {
+   "kcal": 440,
+   "p": 7.5,
+   "c": 72.0,
+   "f": 13.0,
+   "abteilung": "Brot & Backwaren"
+  },
+  "Süßkirschen (TK, entsteint)": {
+   "kcal": 63,
+   "p": 1.0,
+   "c": 14.0,
+   "f": 0.3,
+   "abteilung": "Tiefkühl"
+  },
+  "Ananas (Dose, abgetropft)": {
+   "kcal": 60,
+   "p": 0.4,
+   "c": 14.0,
+   "f": 0.1,
+   "abteilung": "Konserven & Gläser"
+  },
+  "Mango (TK)": {
+   "kcal": 60,
+   "p": 0.8,
+   "c": 14.0,
+   "f": 0.4,
+   "abteilung": "Tiefkühl"
+  },
+  "Maracuja": {
+   "kcal": 97,
+   "p": 2.4,
+   "c": 13.0,
+   "f": 0.4,
+   "abteilung": "Obst & Gemüse"
+  },
+  "Aprikosen": {
+   "kcal": 43,
+   "p": 0.9,
+   "c": 8.5,
+   "f": 0.1,
+   "abteilung": "Obst & Gemüse"
+  },
+  "Pfirsich": {
+   "kcal": 41,
+   "p": 0.8,
+   "c": 9.0,
+   "f": 0.1,
+   "abteilung": "Obst & Gemüse"
+  },
+  "Wassermelone": {
+   "kcal": 30,
+   "p": 0.6,
+   "c": 7.6,
+   "f": 0.2,
+   "abteilung": "Obst & Gemüse"
+  },
+  "Erdbeeren": {
+   "kcal": 32,
+   "p": 0.7,
+   "c": 5.5,
+   "f": 0.4,
+   "abteilung": "Obst & Gemüse"
+  },
+  "Heidelbeeren": {
+   "kcal": 45,
+   "p": 0.6,
+   "c": 7.4,
+   "f": 0.6,
+   "abteilung": "Obst & Gemüse"
+  },
+  "Himbeeren (TK)": {
+   "kcal": 36,
+   "p": 1.3,
+   "c": 4.8,
+   "f": 0.3,
+   "abteilung": "Tiefkühl"
+  },
+  "Basilikum": {
+   "kcal": 23,
+   "p": 3.2,
+   "c": 1.0,
+   "f": 0.6,
+   "abteilung": "Obst & Gemüse"
+  },
+  "Minze (frisch)": {
+   "kcal": 45,
+   "p": 3.5,
+   "c": 5.0,
+   "f": 0.7,
+   "abteilung": "Obst & Gemüse"
+  },
+  "Zitronensaft": {
+   "kcal": 22,
+   "p": 0.4,
+   "c": 2.4,
+   "f": 0.1,
+   "abteilung": "Obst & Gemüse"
+  },
+  "Limettensaft": {
+   "kcal": 25,
+   "p": 0.4,
+   "c": 2.5,
+   "f": 0.1,
+   "abteilung": "Obst & Gemüse"
+  },
+  "Zitronenschale (Bio, abgerieben)": {
+   "kcal": 47,
+   "p": 1.5,
+   "c": 5.4,
+   "f": 0.3,
+   "abteilung": "Obst & Gemüse"
+  },
+  "Schwarzer Tee (aufgebrüht)": {
+   "kcal": 1,
+   "p": 0.0,
+   "c": 0.2,
+   "f": 0.0,
+   "abteilung": "Sonstiges"
+  }
+ },
+ "recipes": [
+  {
+   "mahlzeit": "Protein-Eis mit Mandeldrink",
+   "name": "Pistazien-Protein-Eis mit Pistazienkernen",
+   "beschreibung": "Nussig-cremiges Pistazieneis auf Mandeldrink-Basis mit knackigen Kernen – sommerlich wie aus der Eisdiele, aber mit über 30 g Eiweiß.",
+   "zeit_min": 5,
+   "tags": [
+    "Sommer-Eis",
+    "ohne Kochen"
+   ],
+   "passt_fuer": [
+    "vegetarisch",
+    "fleisch",
+    "ohne-schwein"
+   ],
+   "zutaten": [
+    {
+     "name": "Mandeldrink ungesüßt",
+     "menge_g": 330,
+     "anzeige": "330 ml"
+    },
+    {
+     "name": "Whey-Proteinpulver (Vanille)",
+     "menge_g": 35,
+     "anzeige": "1 Messlöffel (35 g)"
+    },
+    {
+     "name": "Geschmackspulver (zuckerfrei)",
+     "menge_g": 8,
+     "anzeige": "2 TL (8 g), Sorte Pistazie"
+    },
+    {
+     "name": "Instant-Puddingpulver (zuckerfrei)",
+     "menge_g": 8,
+     "anzeige": "1 EL (8 g), Sorte Vanille"
+    },
+    {
+     "name": "Erythrit",
+     "menge_g": 10,
+     "anzeige": "1 EL (10 g)"
+    },
+    {
+     "name": "Pistazienkerne (ungesalzen)",
+     "menge_g": 10,
+     "anzeige": "1 EL (10 g), grob gehackt"
+    }
+   ],
+   "zubereitung": [
+    "Mixe Mandeldrink, Proteinpulver, Geschmackspulver, Puddingpulver und Erythrit 30 Sekunden im Mixer, bis keine Klümpchen mehr zu sehen sind.",
+    "Gieß die Masse in den Gefrierbecher. Fülle höchstens bis zur Max-Linie.",
+    "Verschließe den Becher und friere ihn mindestens 24 Stunden waagerecht ein.",
+    "Setze den gefrorenen Becher in die Eismaschine mit Gefrierbecher ein und verarbeite ihn mit dem Programm für leichtes Eis.",
+    "Ist die Masse noch bröselig, gib 1–2 EL Mandeldrink dazu und lass sie einmal nachdrehen, bis sie cremig ist.",
+    "Drück mit einem Löffel eine Mulde in die Mitte, gib die gehackten Pistazien hinein und verteile sie mit der Mix-in-Funktion."
+   ],
+   "tipp": "Für eine intensivere Farbe und mehr Aroma einen Teil der Pistazien vor dem Einfrieren fein gemahlen mitmixen; die Kerne für das Mix-in dann auf 5 g reduzieren."
+  },
+  {
+   "mahlzeit": "Protein-Eis mit Mandeldrink",
+   "name": "Kirsch-Schoko-Eis mit Zartbitterstückchen",
+   "beschreibung": "Dunkles Schokoeis mit saftigen Kirschen und Schokostückchen – vegan, schön fruchtig und ideal als kühler Abschluss eines heißen Tages.",
+   "zeit_min": 7,
+   "tags": [
+    "Sommer-Eis",
+    "ohne Kochen"
+   ],
+   "passt_fuer": [
+    "vegan",
+    "vegetarisch",
+    "fleisch",
+    "ohne-schwein"
+   ],
+   "zutaten": [
+    {
+     "name": "Mandeldrink ungesüßt",
+     "menge_g": 300,
+     "anzeige": "300 ml"
+    },
+    {
+     "name": "Veganes Proteinpulver (Schoko)",
+     "menge_g": 35,
+     "anzeige": "1 Messlöffel (35 g)"
+    },
+    {
+     "name": "Kakaopulver (stark entölt)",
+     "menge_g": 5,
+     "anzeige": "1 TL (5 g)"
+    },
+    {
+     "name": "Erythrit",
+     "menge_g": 15,
+     "anzeige": "1½ EL (15 g)"
+    },
+    {
+     "name": "Johannisbrotkernmehl",
+     "menge_g": 1,
+     "anzeige": "1 Prise (1 g)"
+    },
+    {
+     "name": "Süßkirschen (TK, entsteint)",
+     "menge_g": 40,
+     "anzeige": "40 g, angetaut und halbiert"
+    },
+    {
+     "name": "Zartbitterschokolade (70 %)",
+     "menge_g": 8,
+     "anzeige": "1½ Stück (8 g), gehackt"
+    }
+   ],
+   "zubereitung": [
+    "Mixe Mandeldrink, Proteinpulver, Kakao, Erythrit und Johannisbrotkernmehl gründlich, bis die Masse glatt ist.",
+    "Gieß die Schokomasse in den Gefrierbecher. Fülle höchstens bis zur Max-Linie.",
+    "Verschließe den Becher und friere ihn mindestens 24 Stunden waagerecht ein.",
+    "Setze den gefrorenen Becher in die Eismaschine mit Gefrierbecher ein und verarbeite ihn mit dem Programm für leichtes Eis.",
+    "Ist die Masse noch bröselig, gib 1–2 EL Mandeldrink dazu und lass sie einmal nachdrehen, bis sie cremig ist.",
+    "Gib Kirschen und Schokolade in eine Mulde in der Mitte und arbeite sie mit der Mix-in-Funktion unter."
+   ],
+   "tipp": "Statt Süßkirschen passen abgetropfte Sauerkirschen aus dem Glas – das Eis wird dann etwas säuerlicher. Zartbitterschokolade auf die Zutatenliste prüfen, wenn es streng vegan sein soll."
+  },
+  {
+   "mahlzeit": "Protein-Eis mit Mandeldrink",
+   "name": "Espresso-Eiskaffee-Protein-Eis",
+   "beschreibung": "Eiskaffee zum Löffeln: kräftiger Espresso, Vanille und ein Hauch Karamell – erfrischend am Sommernachmittag und mit wenig Fett.",
+   "zeit_min": 5,
+   "tags": [
+    "Sommer-Eis",
+    "Unter 10 Minuten"
+   ],
+   "passt_fuer": [
+    "vegetarisch",
+    "fleisch",
+    "ohne-schwein"
+   ],
+   "zutaten": [
+    {
+     "name": "Mandeldrink ungesüßt",
+     "menge_g": 250,
+     "anzeige": "250 ml"
+    },
+    {
+     "name": "Espresso (zubereitet)",
+     "menge_g": 60,
+     "anzeige": "2 Espresso (60 ml), abgekühlt"
+    },
+    {
+     "name": "Whey-Proteinpulver (Vanille)",
+     "menge_g": 35,
+     "anzeige": "1 Messlöffel (35 g)"
+    },
+    {
+     "name": "Geschmackspulver (zuckerfrei)",
+     "menge_g": 6,
+     "anzeige": "1½ TL (6 g), Sorte Karamell"
+    },
+    {
+     "name": "Instant-Puddingpulver (zuckerfrei)",
+     "menge_g": 8,
+     "anzeige": "1 EL (8 g), Sorte Vanille"
+    },
+    {
+     "name": "Erythrit",
+     "menge_g": 10,
+     "anzeige": "1 EL (10 g)"
+    }
+   ],
+   "zubereitung": [
+    "Lass den Espresso vollständig abkühlen und mixe ihn mit Mandeldrink, Proteinpulver, Geschmackspulver, Puddingpulver und Erythrit klümpchenfrei.",
+    "Gieß die Masse in den Gefrierbecher. Fülle höchstens bis zur Max-Linie.",
+    "Verschließe den Becher und friere ihn mindestens 24 Stunden waagerecht ein.",
+    "Setze den gefrorenen Becher in die Eismaschine mit Gefrierbecher ein und verarbeite ihn mit dem Programm für leichtes Eis.",
+    "Ist die Masse noch bröselig, gib 1–2 EL kalten Espresso oder Mandeldrink dazu und lass sie einmal nachdrehen, bis sie cremig ist."
+   ],
+   "tipp": "Für Eiskaffee-Feeling eine Kugel in ein Glas kalten Espresso mit Mandeldrink geben. Wer kein Koffein möchte, nimmt entkoffeinierten Espresso."
+  },
+  {
+   "mahlzeit": "Protein-Eis mit Mandeldrink",
+   "name": "Kokos-Ananas-Eis im Piña-Colada-Stil",
+   "beschreibung": "Tropisch-frisches Eis mit Ananas und Kokos, das nach Strandurlaub schmeckt – vegan und alkoholfrei.",
+   "zeit_min": 7,
+   "tags": [
+    "Sommer-Eis",
+    "ohne Kochen"
+   ],
+   "passt_fuer": [
+    "vegan",
+    "vegetarisch",
+    "fleisch",
+    "ohne-schwein"
+   ],
+   "zutaten": [
+    {
+     "name": "Mandeldrink ungesüßt",
+     "menge_g": 250,
+     "anzeige": "250 ml"
+    },
+    {
+     "name": "Veganes Proteinpulver (Vanille)",
+     "menge_g": 35,
+     "anzeige": "1 Messlöffel (35 g)"
+    },
+    {
+     "name": "Ananas (Dose, abgetropft)",
+     "menge_g": 80,
+     "anzeige": "80 g"
+    },
+    {
+     "name": "Geschmackspulver (zuckerfrei)",
+     "menge_g": 6,
+     "anzeige": "1½ TL (6 g), Sorte Kokos"
+    },
+    {
+     "name": "Erythrit",
+     "menge_g": 5,
+     "anzeige": "1 TL (5 g)"
+    },
+    {
+     "name": "Kokosraspeln",
+     "menge_g": 5,
+     "anzeige": "1 EL (5 g), leicht geröstet"
+    }
+   ],
+   "zubereitung": [
+    "Püriere Mandeldrink, Ananas, Proteinpulver, Geschmackspulver und Erythrit im Mixer, bis die Masse ganz glatt ist.",
+    "Gieß die Masse in den Gefrierbecher. Fülle höchstens bis zur Max-Linie.",
+    "Verschließe den Becher und friere ihn mindestens 24 Stunden waagerecht ein.",
+    "Setze den gefrorenen Becher in die Eismaschine mit Gefrierbecher ein und verarbeite ihn mit dem Programm für leichtes Eis.",
+    "Ist die Masse noch bröselig, gib 1–2 EL Mandeldrink dazu und lass sie einmal nachdrehen, bis sie cremig ist.",
+    "Streu die Kokosraspeln in eine Mulde in der Mitte und verteile sie mit der Mix-in-Funktion."
+   ],
+   "tipp": "Ein paar Ananasstückchen zurückbehalten und als Mix-in verwenden – das sorgt für fruchtige Stückchen im Eis. Statt Mandeldrink geht auch Kokosdrink."
+  },
+  {
+   "mahlzeit": "Protein-Eis mit Mandeldrink",
+   "name": "Aprikose-Vanille-Protein-Eis",
+   "beschreibung": "Sanftes Vanilleeis mit reifen Aprikosen – mild, sommerlich-fruchtig und rein pflanzlich.",
+   "zeit_min": 8,
+   "tags": [
+    "Sommer-Eis",
+    "ohne Kochen"
+   ],
+   "passt_fuer": [
+    "vegan",
+    "vegetarisch",
+    "fleisch",
+    "ohne-schwein"
+   ],
+   "zutaten": [
+    {
+     "name": "Mandeldrink ungesüßt",
+     "menge_g": 250,
+     "anzeige": "250 ml"
+    },
+    {
+     "name": "Veganes Proteinpulver (Vanille)",
+     "menge_g": 35,
+     "anzeige": "1 Messlöffel (35 g)"
+    },
+    {
+     "name": "Aprikosen",
+     "menge_g": 100,
+     "anzeige": "2–3 Aprikosen (100 g), entsteint"
+    },
+    {
+     "name": "Instant-Puddingpulver (zuckerfrei)",
+     "menge_g": 8,
+     "anzeige": "1 EL (8 g), Sorte Vanille"
+    },
+    {
+     "name": "Erythrit",
+     "menge_g": 10,
+     "anzeige": "1 EL (10 g)"
+    }
+   ],
+   "zubereitung": [
+    "Entsteine die Aprikosen und püriere sie mit Mandeldrink, Proteinpulver, Puddingpulver und Erythrit fein.",
+    "Gieß die Masse in den Gefrierbecher. Fülle höchstens bis zur Max-Linie.",
+    "Verschließe den Becher und friere ihn mindestens 24 Stunden waagerecht ein.",
+    "Setze den gefrorenen Becher in die Eismaschine mit Gefrierbecher ein und verarbeite ihn mit dem Programm für leichtes Eis.",
+    "Ist die Masse noch bröselig, gib 1–2 EL Mandeldrink dazu und lass sie einmal nachdrehen, bis sie cremig ist."
+   ],
+   "tipp": "Außerhalb der Saison abgetropfte Aprikosen aus der Dose nehmen. Für mehr Frische einen Spritzer Zitronensaft mitpürieren."
+  },
+  {
+   "mahlzeit": "Frozen Joghurt",
+   "name": "Heidelbeer-Cheesecake-Frozen-Joghurt",
+   "beschreibung": "Cremiger Skyr-Frischkäse-Frozen-Joghurt mit Heidelbeeren und Keksbröseln – schmeckt wie Käsekuchen, nur eiskalt.",
+   "zeit_min": 8,
+   "tags": [
+    "Sommer-Eis",
+    "ohne Kochen"
+   ],
+   "passt_fuer": [
+    "vegetarisch",
+    "fleisch",
+    "ohne-schwein"
+   ],
+   "zutaten": [
+    {
+     "name": "Skyr natur",
+     "menge_g": 250,
+     "anzeige": "250 g"
+    },
+    {
+     "name": "Frischkäse light",
+     "menge_g": 30,
+     "anzeige": "2 EL (30 g)"
+    },
+    {
+     "name": "Milch 1,5 %",
+     "menge_g": 100,
+     "anzeige": "100 ml"
+    },
+    {
+     "name": "Geschmackspulver (zuckerfrei)",
+     "menge_g": 8,
+     "anzeige": "2 TL (8 g), Sorte Käsekuchen"
+    },
+    {
+     "name": "Erythrit",
+     "menge_g": 10,
+     "anzeige": "1 EL (10 g)"
+    },
+    {
+     "name": "Heidelbeeren",
+     "menge_g": 40,
+     "anzeige": "40 g"
+    },
+    {
+     "name": "Butterkekse",
+     "menge_g": 10,
+     "anzeige": "2 Kekse (10 g), zerbröselt"
+    }
+   ],
+   "zubereitung": [
+    "Verrühre Skyr, Frischkäse, Milch, Geschmackspulver und Erythrit mit dem Schneebesen oder Mixer ganz glatt.",
+    "Füll die Masse in den Gefrierbecher und streich sie glatt. Fülle höchstens bis zur Max-Linie.",
+    "Verschließe den Becher und friere ihn mindestens 24 Stunden waagerecht ein.",
+    "Setze den gefrorenen Becher in die Eismaschine mit Gefrierbecher ein und verarbeite ihn mit dem Programm für leichtes Eis.",
+    "Ist die Masse noch bröselig, gib 1–2 EL Milch dazu und lass sie einmal nachdrehen, bis sie cremig ist.",
+    "Gib Heidelbeeren und Keksbrösel in eine Mulde in der Mitte und arbeite sie mit der Mix-in-Funktion unter."
+   ],
+   "tipp": "Mit TK-Heidelbeeren funktioniert es genauso. Wer es fruchtiger mag, rührt die Hälfte der Beeren schon vor dem Einfrieren püriert unter."
+  },
+  {
+   "mahlzeit": "Frozen Joghurt",
+   "name": "Erdbeer-Basilikum-Frozen-Joghurt",
+   "beschreibung": "Frische Erdbeeren treffen auf einen Hauch Basilikum – ein überraschend erfrischender Frozen Joghurt für heiße Tage.",
+   "zeit_min": 7,
+   "tags": [
+    "Sommer-Eis",
+    "ohne Kochen"
+   ],
+   "passt_fuer": [
+    "vegetarisch",
+    "fleisch",
+    "ohne-schwein"
+   ],
+   "zutaten": [
+    {
+     "name": "Skyr natur",
+     "menge_g": 250,
+     "anzeige": "250 g"
+    },
+    {
+     "name": "Erdbeeren",
+     "menge_g": 150,
+     "anzeige": "150 g"
+    },
+    {
+     "name": "Basilikum",
+     "menge_g": 3,
+     "anzeige": "4–5 Blätter (3 g)"
+    },
+    {
+     "name": "Zitronensaft",
+     "menge_g": 10,
+     "anzeige": "1 EL (10 ml)"
+    },
+    {
+     "name": "Geschmackspulver (zuckerfrei)",
+     "menge_g": 6,
+     "anzeige": "1½ TL (6 g), Sorte Erdbeere"
+    },
+    {
+     "name": "Erythrit",
+     "menge_g": 10,
+     "anzeige": "1 EL (10 g)"
+    }
+   ],
+   "zubereitung": [
+    "Püriere Erdbeeren, Basilikum, Zitronensaft, Geschmackspulver und Erythrit fein und rühre das Püree unter den Skyr.",
+    "Füll die Masse in den Gefrierbecher. Fülle höchstens bis zur Max-Linie.",
+    "Verschließe den Becher und friere ihn mindestens 24 Stunden waagerecht ein.",
+    "Setze den gefrorenen Becher in die Eismaschine mit Gefrierbecher ein und verarbeite ihn mit dem Programm für leichtes Eis.",
+    "Ist die Masse noch bröselig, gib 1–2 EL Milch oder Wasser dazu und lass sie einmal nachdrehen, bis sie cremig ist."
+   ],
+   "tipp": "Basilikum vorsichtig dosieren und vorher probieren – alternativ Minze nehmen. Mit TK-Erdbeeren (angetaut) gelingt es das ganze Jahr."
+  },
+  {
+   "mahlzeit": "Frozen Joghurt",
+   "name": "Himbeer-Minze-Frozen-Joghurt",
+   "beschreibung": "Fruchtig-säuerlicher Sojaskyr-Frozen-Joghurt mit Himbeeren und frischer Minze – vegan und angenehm kühlend.",
+   "zeit_min": 5,
+   "tags": [
+    "Sommer-Eis",
+    "Unter 10 Minuten"
+   ],
+   "passt_fuer": [
+    "vegan",
+    "vegetarisch",
+    "fleisch",
+    "ohne-schwein"
+   ],
+   "zutaten": [
+    {
+     "name": "Sojaskyr natur",
+     "menge_g": 300,
+     "anzeige": "300 g"
+    },
+    {
+     "name": "Himbeeren (TK)",
+     "menge_g": 100,
+     "anzeige": "100 g, angetaut"
+    },
+    {
+     "name": "Minze (frisch)",
+     "menge_g": 3,
+     "anzeige": "6–8 Blätter (3 g)"
+    },
+    {
+     "name": "Geschmackspulver (zuckerfrei)",
+     "menge_g": 5,
+     "anzeige": "1 TL (5 g), Sorte Himbeere"
+    },
+    {
+     "name": "Erythrit",
+     "menge_g": 10,
+     "anzeige": "1 EL (10 g)"
+    }
+   ],
+   "zubereitung": [
+    "Püriere Himbeeren, Minze, Geschmackspulver und Erythrit und verrühre alles gründlich mit dem Sojaskyr.",
+    "Füll die Masse in den Gefrierbecher. Fülle höchstens bis zur Max-Linie.",
+    "Verschließe den Becher und friere ihn mindestens 24 Stunden waagerecht ein.",
+    "Setze den gefrorenen Becher in die Eismaschine mit Gefrierbecher ein und verarbeite ihn mit dem Programm für leichtes Eis.",
+    "Ist die Masse noch bröselig, gib 1–2 EL Sojadrink oder Wasser dazu und lass sie einmal nachdrehen, bis sie cremig ist."
+   ],
+   "tipp": "Wer keine Kerne mag, streicht das Himbeerpüree vorher durch ein Sieb. Für Stückchen 30 g Himbeeren zurückhalten und am Ende mit der Mix-in-Funktion untermischen."
+  },
+  {
+   "mahlzeit": "Frozen Joghurt",
+   "name": "Zitronenkuchen-Frozen-Joghurt",
+   "beschreibung": "Spritzig-cremiger Frozen Joghurt mit Zitronenabrieb und Keksstückchen – erinnert an saftigen Zitronenkuchen und erfrischt trotzdem.",
+   "zeit_min": 8,
+   "tags": [
+    "Sommer-Eis",
+    "ohne Kochen"
+   ],
+   "passt_fuer": [
+    "vegetarisch",
+    "fleisch",
+    "ohne-schwein"
+   ],
+   "zutaten": [
+    {
+     "name": "Skyr natur",
+     "menge_g": 150,
+     "anzeige": "150 g"
+    },
+    {
+     "name": "Magerquark",
+     "menge_g": 100,
+     "anzeige": "100 g"
+    },
+    {
+     "name": "Milch 1,5 %",
+     "menge_g": 100,
+     "anzeige": "100 ml"
+    },
+    {
+     "name": "Zitronensaft",
+     "menge_g": 20,
+     "anzeige": "2 EL (20 ml)"
+    },
+    {
+     "name": "Zitronenschale (Bio, abgerieben)",
+     "menge_g": 2,
+     "anzeige": "½ TL Abrieb (2 g)"
+    },
+    {
+     "name": "Geschmackspulver (zuckerfrei)",
+     "menge_g": 8,
+     "anzeige": "2 TL (8 g), Sorte Zitronenkuchen"
+    },
+    {
+     "name": "Erythrit",
+     "menge_g": 10,
+     "anzeige": "1 EL (10 g)"
+    },
+    {
+     "name": "Butterkekse",
+     "menge_g": 10,
+     "anzeige": "2 Kekse (10 g), grob zerbröselt"
+    }
+   ],
+   "zubereitung": [
+    "Verrühre Skyr, Magerquark, Milch, Zitronensaft, Zitronenabrieb, Geschmackspulver und Erythrit, bis die Masse ganz glatt ist.",
+    "Füll die Masse in den Gefrierbecher. Fülle höchstens bis zur Max-Linie.",
+    "Verschließe den Becher und friere ihn mindestens 24 Stunden waagerecht ein.",
+    "Setze den gefrorenen Becher in die Eismaschine mit Gefrierbecher ein und verarbeite ihn mit dem Programm für leichtes Eis.",
+    "Ist die Masse noch bröselig, gib 1–2 EL Milch dazu und lass sie einmal nachdrehen, bis sie cremig ist.",
+    "Gib die Keksbrösel in eine Mulde in der Mitte und verteile sie mit der Mix-in-Funktion."
+   ],
+   "tipp": "Nur unbehandelte Zitronen abreiben. Mit 1 EL zuckerfreiem Instant-Puddingpulver (Vanille) wird die Konsistenz noch cremiger."
+  },
+  {
+   "mahlzeit": "Sorbet & Erfrischung",
+   "name": "Wassermelone-Limette-Sorbet",
+   "beschreibung": "Hellrotes, superleichtes Sorbet aus Wassermelone und Limette mit klarem Fruchtprotein – pure Abkühlung bei Hitze.",
+   "zeit_min": 5,
+   "tags": [
+    "Sommer-Eis",
+    "Unter 10 Minuten"
+   ],
+   "passt_fuer": [
+    "vegetarisch",
+    "fleisch",
+    "ohne-schwein"
+   ],
+   "zutaten": [
+    {
+     "name": "Wassermelone",
+     "menge_g": 300,
+     "anzeige": "300 g Fruchtfleisch, ohne Kerne"
+    },
+    {
+     "name": "Limettensaft",
+     "menge_g": 20,
+     "anzeige": "Saft von ½ Limette (20 ml)"
+    },
+    {
+     "name": "Clear-Whey-Isolat (Fruchtgeschmack)",
+     "menge_g": 30,
+     "anzeige": "1 Messlöffel (30 g), z. B. Wassermelone oder Limette"
+    },
+    {
+     "name": "Erythrit",
+     "menge_g": 10,
+     "anzeige": "1 EL (10 g)"
+    },
+    {
+     "name": "Wasser",
+     "menge_g": 60,
+     "anzeige": "60 ml"
+    },
+    {
+     "name": "Salz",
+     "menge_g": 0,
+     "anzeige": "1 Prise"
+    }
+   ],
+   "zubereitung": [
+    "Püriere Wassermelone, Limettensaft, Erythrit, Wasser und Salz und mixe das Clear-Whey-Isolat kurz und bei niedriger Stufe unter, damit es nicht zu stark schäumt.",
+    "Lass den Schaum kurz zusammenfallen und gieß die Masse in den Gefrierbecher. Fülle höchstens bis zur Max-Linie.",
+    "Verschließe den Becher und friere ihn mindestens 24 Stunden waagerecht ein.",
+    "Setze den gefrorenen Becher in die Eismaschine mit Gefrierbecher ein und verarbeite ihn mit dem Programm für leichtes Eis.",
+    "Ist die Masse noch bröselig, gib 1–2 EL Wasser oder Limettensaft dazu und lass sie einmal nachdrehen, bis sie cremig ist."
+   ],
+   "tipp": "Ein paar Minzblätter mitpürieren für extra Frische. Schäumt die Masse stark, 5 Minuten stehen lassen oder den Schaum abschöpfen – so wird das Sorbet gleichmäßiger."
+  },
+  {
+   "mahlzeit": "Sorbet & Erfrischung",
+   "name": "Pfirsich-Eistee-Sorbet",
+   "beschreibung": "Eistee zum Löffeln: schwarzer Tee, saftige Pfirsiche und Zitrone ergeben ein leichtes, fruchtiges Sorbet.",
+   "zeit_min": 10,
+   "tags": [
+    "Sommer-Eis"
+   ],
+   "passt_fuer": [
+    "vegetarisch",
+    "fleisch",
+    "ohne-schwein"
+   ],
+   "zutaten": [
+    {
+     "name": "Schwarzer Tee (aufgebrüht)",
+     "menge_g": 150,
+     "anzeige": "150 ml, kräftig aufgebrüht und abgekühlt"
+    },
+    {
+     "name": "Pfirsich",
+     "menge_g": 200,
+     "anzeige": "2 Pfirsiche (200 g), entsteint"
+    },
+    {
+     "name": "Clear-Whey-Isolat (Fruchtgeschmack)",
+     "menge_g": 30,
+     "anzeige": "1 Messlöffel (30 g), z. B. Pfirsich-Eistee"
+    },
+    {
+     "name": "Zitronensaft",
+     "menge_g": 10,
+     "anzeige": "1 EL (10 ml)"
+    },
+    {
+     "name": "Erythrit",
+     "menge_g": 15,
+     "anzeige": "1½ EL (15 g)"
+    }
+   ],
+   "zubereitung": [
+    "Brüh den Tee kräftig auf, lass ihn vollständig abkühlen und püriere ihn mit Pfirsichen, Zitronensaft und Erythrit; das Clear-Whey-Isolat zum Schluss kurz untermixen.",
+    "Gieß die Masse in den Gefrierbecher. Fülle höchstens bis zur Max-Linie.",
+    "Verschließe den Becher und friere ihn mindestens 24 Stunden waagerecht ein.",
+    "Setze den gefrorenen Becher in die Eismaschine mit Gefrierbecher ein und verarbeite ihn mit dem Programm für leichtes Eis.",
+    "Ist die Masse noch bröselig, gib 1–2 EL kalten Tee dazu und lass sie einmal nachdrehen, bis sie cremig ist."
+   ],
+   "tipp": "Mit grünem Tee wird es milder, mit Pfirsichen aus der Dose (abgetropft) gelingt es auch außerhalb der Saison. Tee ruhig abends aufbrühen und über Nacht im Kühlschrank abkühlen lassen."
+  },
+  {
+   "mahlzeit": "Sorbet & Erfrischung",
+   "name": "Mango-Maracuja-Sorbet mit Seidentofu",
+   "beschreibung": "Leuchtend gelbes, exotisch-frisches Sorbet aus Mango und Maracuja, das durch Seidentofu cremig wird – vegan und fettarm.",
+   "zeit_min": 7,
+   "tags": [
+    "Sommer-Eis",
+    "ohne Kochen"
+   ],
+   "passt_fuer": [
+    "vegan",
+    "vegetarisch",
+    "fleisch",
+    "ohne-schwein"
+   ],
+   "zutaten": [
+    {
+     "name": "Mango (TK)",
+     "menge_g": 150,
+     "anzeige": "150 g, angetaut"
+    },
+    {
+     "name": "Maracuja",
+     "menge_g": 30,
+     "anzeige": "1 Maracuja, ausgelöffelt (30 g)"
+    },
+    {
+     "name": "Seidentofu",
+     "menge_g": 200,
+     "anzeige": "200 g"
+    },
+    {
+     "name": "Veganes Proteinpulver (Erbse/Reis, neutral)",
+     "menge_g": 20,
+     "anzeige": "⅔ Messlöffel (20 g)"
+    },
+    {
+     "name": "Limettensaft",
+     "menge_g": 10,
+     "anzeige": "1 EL (10 ml)"
+    },
+    {
+     "name": "Erythrit",
+     "menge_g": 10,
+     "anzeige": "1 EL (10 g)"
+    },
+    {
+     "name": "Wasser",
+     "menge_g": 30,
+     "anzeige": "30 ml"
+    }
+   ],
+   "zubereitung": [
+    "Püriere Mango, Seidentofu, Proteinpulver, Limettensaft, Erythrit und Wasser sehr fein und rühre das Maracuja-Fruchtfleisch mit den Kernen unter.",
+    "Füll die Masse in den Gefrierbecher. Fülle höchstens bis zur Max-Linie.",
+    "Verschließe den Becher und friere ihn mindestens 24 Stunden waagerecht ein.",
+    "Setze den gefrorenen Becher in die Eismaschine mit Gefrierbecher ein und verarbeite ihn mit dem Programm für leichtes Eis.",
+    "Ist die Masse noch bröselig, gib 1–2 EL Wasser oder Limettensaft dazu und lass sie einmal nachdrehen, bis sie cremig ist."
+   ],
+   "tipp": "Wer die Kerne nicht mag, streicht die Maracuja durch ein Sieb. Mit frischer, sehr reifer Mango wird das Sorbet noch aromatischer."
+  }
+ ],
+ "leitfaden": [
+  {
+   "titel": "Gut mixen",
+   "text": "Proteinpulver, Geschmackspulver und Puddingpulver klumpen leicht. Mixe die Masse deshalb im Mixer oder mit dem Pürierstab, bis sie ganz glatt ist – Klümpchen bleiben sonst auch im fertigen Eis spürbar. Bei Clear-Whey-Isolat nur kurz und auf niedriger Stufe mixen und den Schaum kurz zusammenfallen lassen."
+  },
+  {
+   "titel": "Max-Linie beachten und waagerecht einfrieren",
+   "text": "Fülle den Gefrierbecher höchstens bis zur Max-Linie, denn die Masse dehnt sich beim Gefrieren aus. Friere ihn mit Deckel mindestens 24 Stunden auf einer ebenen Fläche waagerecht ein, damit die Oberfläche gerade wird und die Maschine gleichmäßig arbeiten kann."
+  },
+  {
+   "titel": "Das passende Programm wählen",
+   "text": "Eis mit wenig Fett und Zucker ist im gefrorenen Zustand sehr fest. Wähle dafür das Programm für leichtes Eis bzw. das Programm, das dein Gerät für fett- und zuckerarme Massen vorsieht. Beachte immer die Anleitung deines eigenen Geräts."
+  },
+  {
+   "titel": "Bröselig ist normal – einfach nachdrehen",
+   "text": "Gerade beim ersten Durchgang sieht Protein-Eis oft pulvrig oder bröselig aus. Gib 1–2 EL Flüssigkeit (z. B. Mandeldrink, Milch oder Wasser) in eine Mulde in der Mitte und lass das Eis noch einmal nachdrehen. Das kannst du bei Bedarf wiederholen, bis es cremig ist."
+  },
+  {
+   "titel": "Mix-ins erst zum Schluss",
+   "text": "Nüsse, Schokolade, Kekse oder Beeren kommen erst ins fertig verarbeitete Eis: Drück mit einem Löffel eine Mulde in die Mitte, gib die Stückchen hinein und nutze die Mix-in-Funktion. Kleine Mengen genügen – sie sind in den Nährwerten bereits eingerechnet."
+  },
+  {
+   "titel": "Sehr harter Kern? Kurz antauen lassen",
+   "text": "Ist die Masse extrem hart gefroren, lass den Becher vor dem Verarbeiten 5–10 Minuten bei Zimmertemperatur stehen. So wird das Eis gleichmäßiger und die Maschine muss weniger kämpfen."
+  },
+  {
+   "titel": "Reste und Hygiene",
+   "text": "Streich übrig gebliebenes Eis glatt, verschließe den Becher und friere ihn wieder ein; vor dem nächsten Essen erneut verarbeiten. Stell Reste dafür direkt nach dem Portionieren zurück ins Gefrierfach; Eis, das länger angetaut herumstand, lieber nicht erneut einfrieren. Becher, Deckel und Messer nach jedem Gebrauch gründlich spülen und vollständig trocknen lassen."
+  }
+ ]
+}

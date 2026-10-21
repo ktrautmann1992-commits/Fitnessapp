@@ -1,0 +1,328 @@
+{
+  "ingredients": {
+    "Basmatireis (trocken)": {"kcal": 350, "p": 7.5, "c": 78.0, "f": 0.6, "abteilung": "Getreide, Nudeln & Hülsenfrüchte"},
+    "Tofu natur": {"kcal": 125, "p": 13.0, "c": 1.5, "f": 7.5, "abteilung": "Pflanzliche Alternativen"},
+    "Ananas (Dose, abgetropft)": {"kcal": 60, "p": 0.4, "c": 14.0, "f": 0.1, "abteilung": "Konserven & Gläser"},
+    "Paprika rot": {"kcal": 31, "p": 1.0, "c": 6.0, "f": 0.3, "abteilung": "Obst & Gemüse"},
+    "Sojasauce": {"kcal": 60, "p": 8.0, "c": 6.0, "f": 0.1, "abteilung": "Gewürze, Öle & Saucen"},
+    "Speisestärke": {"kcal": 350, "p": 0.3, "c": 86.0, "f": 0.1, "abteilung": "Sonstiges"},
+    "Reisessig": {"kcal": 20, "p": 0.0, "c": 0.5, "f": 0.0, "abteilung": "Gewürze, Öle & Saucen"},
+    "Rapsöl": {"kcal": 884, "p": 0.0, "c": 0.0, "f": 100.0, "abteilung": "Gewürze, Öle & Saucen"},
+    "Spaghetti (trocken)": {"kcal": 355, "p": 12.0, "c": 71.0, "f": 1.5, "abteilung": "Getreide, Nudeln & Hülsenfrüchte"},
+    "Passierte Tomaten": {"kcal": 32, "p": 1.4, "c": 5.5, "f": 0.2, "abteilung": "Konserven & Gläser"},
+    "Parmesan": {"kcal": 390, "p": 35.0, "c": 0.0, "f": 28.0, "abteilung": "Kühlregal & Molkerei"},
+    "Olivenöl": {"kcal": 884, "p": 0.0, "c": 0.0, "f": 100.0, "abteilung": "Gewürze, Öle & Saucen"},
+    "Basilikum": {"kcal": 23, "p": 3.2, "c": 1.0, "f": 0.6, "abteilung": "Obst & Gemüse"},
+    "Oregano (getrocknet)": {"kcal": 0, "p": 0.0, "c": 0.0, "f": 0.0, "abteilung": "Gewürze, Öle & Saucen"},
+    "Zucker": {"kcal": 400, "p": 0.0, "c": 100.0, "f": 0.0, "abteilung": "Sonstiges"},
+    "Putenbrustfilet": {"kcal": 105, "p": 24.0, "c": 0.0, "f": 1.0, "abteilung": "Fleisch & Fisch"},
+    "Karotten": {"kcal": 39, "p": 0.9, "c": 7.5, "f": 0.2, "abteilung": "Obst & Gemüse"},
+    "Honig": {"kcal": 304, "p": 0.3, "c": 80.0, "f": 0.0, "abteilung": "Gewürze, Öle & Saucen"},
+    "Risottoreis": {"kcal": 350, "p": 7.0, "c": 78.0, "f": 0.6, "abteilung": "Getreide, Nudeln & Hülsenfrüchte"},
+    "Gemüsebrühe (zubereitet)": {"kcal": 3, "p": 0.1, "c": 0.4, "f": 0.1, "abteilung": "Gewürze, Öle & Saucen"},
+    "Erbsen (TK)": {"kcal": 80, "p": 5.4, "c": 11.0, "f": 0.4, "abteilung": "Tiefkühl"},
+    "Hefeflocken": {"kcal": 340, "p": 45.0, "c": 20.0, "f": 4.0, "abteilung": "Sonstiges"},
+    "Zitronensaft": {"kcal": 22, "p": 0.4, "c": 2.4, "f": 0.1, "abteilung": "Obst & Gemüse"},
+    "Eierspätzle (getrocknet)": {"kcal": 360, "p": 13.0, "c": 70.0, "f": 3.0, "abteilung": "Getreide, Nudeln & Hülsenfrüchte"},
+    "Magerquark": {"kcal": 67, "p": 12.0, "c": 4.0, "f": 0.3, "abteilung": "Kühlregal & Molkerei"},
+    "Schnittlauch": {"kcal": 27, "p": 3.0, "c": 1.7, "f": 0.7, "abteilung": "Obst & Gemüse"},
+    "Weichweizengrieß": {"kcal": 330, "p": 10.0, "c": 69.0, "f": 0.8, "abteilung": "Getreide, Nudeln & Hülsenfrüchte"},
+    "Sojadrink ungesüßt": {"kcal": 33, "p": 3.3, "c": 0.6, "f": 1.8, "abteilung": "Pflanzliche Alternativen"},
+    "Banane": {"kcal": 93, "p": 1.2, "c": 20.0, "f": 0.2, "abteilung": "Obst & Gemüse"},
+    "Ahornsirup": {"kcal": 260, "p": 0.0, "c": 67.0, "f": 0.1, "abteilung": "Sonstiges"},
+    "Zimt": {"kcal": 0, "p": 0.0, "c": 0.0, "f": 0.0, "abteilung": "Gewürze, Öle & Saucen"},
+    "Weizenbrötchen": {"kcal": 265, "p": 8.5, "c": 52.0, "f": 1.5, "abteilung": "Brot & Backwaren"},
+    "Erdbeerkonfitüre": {"kcal": 250, "p": 0.4, "c": 60.0, "f": 0.1, "abteilung": "Konserven & Gläser"},
+    "Orangensaft": {"kcal": 45, "p": 0.7, "c": 9.0, "f": 0.2, "abteilung": "Sonstiges"},
+    "Dinkelmehl Type 630": {"kcal": 340, "p": 11.0, "c": 70.0, "f": 1.5, "abteilung": "Getreide, Nudeln & Hülsenfrüchte"},
+    "Ei": {"kcal": 137, "p": 12.6, "c": 0.5, "f": 9.3, "abteilung": "Kühlregal & Molkerei"},
+    "Milch 1,5 %": {"kcal": 47, "p": 3.4, "c": 4.9, "f": 1.5, "abteilung": "Kühlregal & Molkerei"},
+    "Backpulver": {"kcal": 100, "p": 0.0, "c": 25.0, "f": 0.0, "abteilung": "Sonstiges"},
+    "Datteln (getrocknet, entsteint)": {"kcal": 280, "p": 2.5, "c": 66.0, "f": 0.4, "abteilung": "Nüsse, Samen & Trockenfrüchte"},
+    "Wasser": {"kcal": 0, "p": 0.0, "c": 0.0, "f": 0.0, "abteilung": "Sonstiges"},
+    "Salz": {"kcal": 0, "p": 0.0, "c": 0.0, "f": 0.0, "abteilung": "Gewürze, Öle & Saucen"},
+    "Pfeffer": {"kcal": 0, "p": 0.0, "c": 0.0, "f": 0.0, "abteilung": "Gewürze, Öle & Saucen"},
+    "Laugenbrezel": {"kcal": 270, "p": 8.5, "c": 55.0, "f": 1.5, "abteilung": "Brot & Backwaren"},
+    "Radieschen": {"kcal": 16, "p": 1.0, "c": 2.1, "f": 0.1, "abteilung": "Obst & Gemüse"},
+    "Gurke": {"kcal": 12, "p": 0.6, "c": 1.8, "f": 0.2, "abteilung": "Obst & Gemüse"}
+  },
+  "leitfaden": [
+    {
+      "titel": "Carb-Loading: wann und wie viel",
+      "text": "Carb-Loading lohnt sich in der Regel nur bei Belastungen über etwa 90 Minuten, also etwa beim Marathon, bei langen Triathlons oder Radrennen. Als Richtwert gelten an den 1–2 Tagen davor etwa 8–10 g Kohlenhydrate pro kg Körpergewicht pro Tag, verteilt auf mehrere Mahlzeiten und Snacks. Gleichzeitig reduzierst du das Training, damit die Speicher sich füllen können. Eine leichte Gewichtszunahme durch eingelagertes Wasser ist dabei normal."
+    },
+    {
+      "titel": "Ballaststoff- und fettarm essen",
+      "text": "In den letzten 1–2 Tagen vor dem Rennen greifen viele Sportler zu hellem Brot, weißem Reis, Nudeln und geschältem Obst statt zu Vollkorn, Hülsenfrüchten und großen Rohkostportionen. Das entlastet den Darm und macht es leichter, viele Kohlenhydrate zu essen. Auch fette und sehr scharfe Speisen lässt man besser weg. Wie stark du reduzierst, hängt von deiner persönlichen Verträglichkeit ab."
+    },
+    {
+      "titel": "Trinken vor und am Wettkampftag",
+      "text": "Trinke in den Tagen vor dem Rennen regelmäßig über den Tag verteilt, ohne große Mengen auf einmal in dich hineinzuschütten. Ein heller Urin ist ein einfacher Anhaltspunkt für eine ausreichende Versorgung. Am Renntag helfen etwa 300–500 ml in den Stunden vor dem Start, bei Hitze und langen Belastungen auch Getränke mit etwas Salz. Zu viel reines Wasser ist ebenfalls nicht sinnvoll."
+    },
+    {
+      "titel": "Frühstück etwa 3 Stunden vorher",
+      "text": "Das letzte größere Essen liegt idealerweise rund 3 Stunden vor dem Start, damit der Magen genug Zeit zum Verdauen hat. Als Richtwert dienen etwa 1–3 g Kohlenhydrate pro kg Körpergewicht aus leicht verdaulichen Lebensmitteln wie Brötchen, Konfitüre, Grießbrei oder Banane, mit wenig Fett und wenig Ballaststoffen. Wer früh startet, stellt den Wecker entsprechend oder isst etwas kleiner. Bis kurz vor dem Start kannst du bei Bedarf noch eine Banane oder ein paar Schlucke Sportgetränk nehmen."
+    },
+    {
+      "titel": "Verpflegung im Rennen",
+      "text": "Bei Belastungen über etwa 60–90 Minuten gelten rund 30–60 g Kohlenhydrate pro Stunde als Richtwert, aufgeteilt in kleine Portionen alle 15–20 Minuten. Bis zu 90 g pro Stunde vertragen meist nur Sportler, die ihren Darm im Training gezielt daran gewöhnt haben. Nimm zu Gels und Kau-Snacks immer etwas Wasser, und achte bei Hitze oder viel Schweiß auf Salz. Plane, wann und wo du isst, zum Beispiel an bestimmten Verpflegungsstellen."
+    },
+    {
+      "titel": "Nichts Neues am Wettkampftag",
+      "text": "Teste jede Mahlzeit, jedes Gel und jedes Getränk vorher in langen Trainingseinheiten, idealerweise zur gleichen Uhrzeit wie am Renntag. Neue Produkte, ungewohnte Restaurantgerichte oder ein anderes Frühstück können den Magen kurz vor dem Start überraschen. Besonders die Rezepte für das Frühstück und die Verpflegung im Rennen solltest du mehrmals ausprobiert haben. Auf Reisen hilft es, Vertrautes selbst mitzunehmen."
+    },
+    {
+      "titel": "Nach dem Ziel",
+      "text": "Nach dem Rennen helfen Kohlenhydrate, Eiweiß, Flüssigkeit und Salz beim Auffüllen, zum Beispiel eine salzige Brezel mit Quark, eine Suppe oder ein Milchgetränk. Als Richtwert gelten etwa 20–40 g Eiweiß und eine ordentliche Portion Kohlenhydrate in den ersten Stunden. Wenn der Appetit direkt nach dem Ziel fehlt, starte mit etwas Flüssigem und iss später eine normale Mahlzeit. Alkohol direkt nach dem Rennen bremst eher, als dass er hilft."
+    },
+    {
+      "titel": "Richtwerte, keine Regeln",
+      "text": "Alle Angaben sind allgemeine Richtwerte für gesunde Freizeitsportler und ersetzen keine individuelle Beratung. Körpergewicht, Renndauer, Wetter und persönliche Verträglichkeit beeinflussen, was für dich passt. Teste deine Strategie deshalb im Training und passe sie Schritt für Schritt an. Bei Vorerkrankungen oder Magen-Darm-Problemen sprich vorab mit einer Ärztin, einem Arzt oder einer Ernährungsfachkraft."
+    }
+  ],
+  "recipes": [
+    {
+      "mahlzeit": "Carb-Loading (2 Tage vorher)",
+      "name": "Süß-saurer Ananas-Tofu mit Basmatireis",
+      "beschreibung": "Viel weißer Reis, fruchtige Ananas und nur wenig Öl liefern reichlich Kohlenhydrate bei wenig Fett und Ballaststoffen – ideal zum Auffüllen der Speicher.",
+      "zeit_min": 25,
+      "tags": ["Wettkampf", "Meal-Prep"],
+      "passt_fuer": ["vegan", "vegetarisch", "fleisch", "ohne-schwein"],
+      "zutaten": [
+        {"name": "Basmatireis (trocken)", "menge_g": 130, "anzeige": "130 g"},
+        {"name": "Tofu natur", "menge_g": 100, "anzeige": "100 g"},
+        {"name": "Ananas (Dose, abgetropft)", "menge_g": 120, "anzeige": "120 g (abgetropft)"},
+        {"name": "Paprika rot", "menge_g": 80, "anzeige": "½ Paprika (80 g)"},
+        {"name": "Sojasauce", "menge_g": 15, "anzeige": "1 EL (15 g)"},
+        {"name": "Reisessig", "menge_g": 10, "anzeige": "2 TL (10 g)"},
+        {"name": "Zucker", "menge_g": 10, "anzeige": "2 TL (10 g)"},
+        {"name": "Speisestärke", "menge_g": 6, "anzeige": "1 TL (6 g)"},
+        {"name": "Rapsöl", "menge_g": 4, "anzeige": "1 TL (4 g)"},
+        {"name": "Wasser", "menge_g": 0, "anzeige": "80 ml"}
+      ],
+      "zubereitung": [
+        "Koche den Reis nach Packungsanweisung in leicht gesalzenem Wasser in etwa 12 Minuten gar.",
+        "Schneide den Tofu in Würfel und die Paprika in feine Streifen; die Ananas halbierst du in kleine Stücke.",
+        "Brate den Tofu im Öl bei mittlerer bis hoher Hitze 5 Minuten goldbraun, gib Paprika und Ananas dazu und brate alles 2 Minuten weiter.",
+        "Verrühre Sojasauce, Reisessig, Zucker, Stärke und 80 ml Wasser, gieße die Mischung in die Pfanne und lass sie 1 Minute andicken.",
+        "Richte die süß-saure Pfanne auf dem Reis an."
+      ],
+      "tipp": "Lässt sich gut am Vorabend für den nächsten Carb-Loading-Tag vorkochen. Verträgst du Paprika schlecht, lass sie weg und nimm etwas mehr Ananas."
+    },
+    {
+      "mahlzeit": "Carb-Loading (2 Tage vorher)",
+      "name": "Spaghetti Pomodoro mit Parmesan",
+      "beschreibung": "Eine große Portion helle Pasta mit schlichter Tomatensauce bringt über 100 g Kohlenhydrate bei wenig Fett und ist für die meisten Sportler gut verträglich.",
+      "zeit_min": 20,
+      "tags": ["Wettkampf"],
+      "passt_fuer": ["vegetarisch", "fleisch", "ohne-schwein"],
+      "zutaten": [
+        {"name": "Spaghetti (trocken)", "menge_g": 150, "anzeige": "150 g"},
+        {"name": "Passierte Tomaten", "menge_g": 200, "anzeige": "200 g"},
+        {"name": "Olivenöl", "menge_g": 5, "anzeige": "1 TL (5 g)"},
+        {"name": "Parmesan", "menge_g": 12, "anzeige": "1 EL gerieben (12 g)"},
+        {"name": "Oregano (getrocknet)", "menge_g": 0, "anzeige": "½ TL"},
+        {"name": "Basilikum", "menge_g": 3, "anzeige": "ein paar Blätter (3 g)"},
+        {"name": "Zucker", "menge_g": 2, "anzeige": "1 Prise (2 g)"},
+        {"name": "Salz", "menge_g": 0, "anzeige": "nach Geschmack"},
+        {"name": "Pfeffer", "menge_g": 0, "anzeige": "1 Prise"}
+      ],
+      "zubereitung": [
+        "Koche die Spaghetti in reichlich Salzwasser nach Packungsanweisung bissfest, etwa 9–10 Minuten.",
+        "Erhitze das Olivenöl in einem kleinen Topf, gib die passierten Tomaten, Oregano und eine Prise Zucker dazu.",
+        "Lass die Sauce bei kleiner Hitze 8 Minuten köcheln und schmecke sie mit Salz und Pfeffer ab.",
+        "Gieße die Nudeln ab, vermische sie mit der Sauce und bestreue sie mit Parmesan und Basilikum."
+      ],
+      "tipp": "Verzichte vor dem Rennen auf Zwiebeln und Knoblauch in der Sauce, wenn sie dir schwer im Magen liegen. Für eine vegane Variante lässt du den Parmesan weg."
+    },
+    {
+      "mahlzeit": "Carb-Loading (2 Tage vorher)",
+      "name": "Honig-Puten-Reis mit glasierten Karotten",
+      "beschreibung": "Mageres Putenfleisch, weißer Reis und weich gegarte Honig-Karotten liefern viele Kohlenhydrate und etwas Eiweiß bei sehr wenig Fett.",
+      "zeit_min": 25,
+      "tags": ["Wettkampf", "Meal-Prep"],
+      "passt_fuer": ["fleisch", "ohne-schwein"],
+      "zutaten": [
+        {"name": "Basmatireis (trocken)", "menge_g": 120, "anzeige": "120 g"},
+        {"name": "Putenbrustfilet", "menge_g": 110, "anzeige": "110 g"},
+        {"name": "Karotten", "menge_g": 120, "anzeige": "1–2 Karotten (120 g)"},
+        {"name": "Honig", "menge_g": 20, "anzeige": "1 EL (20 g)"},
+        {"name": "Sojasauce", "menge_g": 10, "anzeige": "2 TL (10 g)"},
+        {"name": "Rapsöl", "menge_g": 5, "anzeige": "1 TL (5 g)"},
+        {"name": "Salz", "menge_g": 0, "anzeige": "1 Prise"},
+        {"name": "Wasser", "menge_g": 0, "anzeige": "4 EL"}
+      ],
+      "zubereitung": [
+        "Koche den Reis nach Packungsanweisung in leicht gesalzenem Wasser etwa 12 Minuten.",
+        "Schäle die Karotten, schneide sie in dünne Scheiben und gare sie mit 4 EL Wasser zugedeckt 6–8 Minuten weich.",
+        "Schneide die Putenbrust in Streifen und brate sie im Öl bei mittlerer Hitze 4–5 Minuten durch.",
+        "Gib Karotten, Honig und Sojasauce dazu und lass alles 1 Minute glasieren.",
+        "Serviere die Putenstreifen mit den Karotten auf dem Reis."
+      ],
+      "tipp": "Gekochte Karotten sind deutlich bekömmlicher als rohe. Für eine vegetarische Variante ersetzt du die Pute durch Tofu natur."
+    },
+    {
+      "mahlzeit": "Am Vorabend",
+      "name": "Zitronen-Risotto mit Erbsen",
+      "beschreibung": "Cremiger Risottoreis ohne Sahne und Wein ist mild, vertraut und kohlenhydratreich – ein ruhiges Abendessen vor dem großen Tag.",
+      "zeit_min": 30,
+      "tags": ["Wettkampf"],
+      "passt_fuer": ["vegan", "vegetarisch", "fleisch", "ohne-schwein"],
+      "zutaten": [
+        {"name": "Risottoreis", "menge_g": 140, "anzeige": "140 g"},
+        {"name": "Gemüsebrühe (zubereitet)", "menge_g": 550, "anzeige": "ca. 550 ml"},
+        {"name": "Erbsen (TK)", "menge_g": 50, "anzeige": "50 g"},
+        {"name": "Olivenöl", "menge_g": 8, "anzeige": "2 TL (8 g)"},
+        {"name": "Hefeflocken", "menge_g": 8, "anzeige": "1 EL (8 g)"},
+        {"name": "Zitronensaft", "menge_g": 10, "anzeige": "2 TL (10 g)"},
+        {"name": "Salz", "menge_g": 0, "anzeige": "nach Geschmack"},
+        {"name": "Pfeffer", "menge_g": 0, "anzeige": "1 Prise"}
+      ],
+      "zubereitung": [
+        "Erhitze die Brühe in einem Topf und halte sie warm.",
+        "Dünste den Reis im Olivenöl bei mittlerer Hitze 2 Minuten an, bis die Körner glasig sind.",
+        "Gieße nach und nach heiße Brühe an und rühre regelmäßig, bis der Reis nach etwa 18 Minuten cremig und bissfest ist.",
+        "Gib in den letzten 3 Minuten die Erbsen dazu.",
+        "Rühre Hefeflocken und Zitronensaft unter und schmecke mit Salz und Pfeffer ab."
+      ],
+      "tipp": "Iss am Vorabend nicht zu spät, ideal sind 12–14 Stunden vor dem Start. Vertragen Erbsen sich bei dir nicht gut, lass sie einfach weg."
+    },
+    {
+      "mahlzeit": "Am Vorabend",
+      "name": "Eierspätzle mit Erbsen und Schnittlauchquark",
+      "beschreibung": "Ein vertrautes, mildes Abendessen mit vielen Kohlenhydraten aus Spätzle und etwas Eiweiß aus Quark – wenig Fett, nicht scharf und gut bekömmlich.",
+      "zeit_min": 20,
+      "tags": ["Wettkampf"],
+      "passt_fuer": ["vegetarisch", "fleisch", "ohne-schwein"],
+      "zutaten": [
+        {"name": "Eierspätzle (getrocknet)", "menge_g": 140, "anzeige": "140 g"},
+        {"name": "Erbsen (TK)", "menge_g": 50, "anzeige": "50 g"},
+        {"name": "Rapsöl", "menge_g": 5, "anzeige": "1 TL (5 g)"},
+        {"name": "Magerquark", "menge_g": 80, "anzeige": "80 g"},
+        {"name": "Schnittlauch", "menge_g": 5, "anzeige": "1 EL Röllchen (5 g)"},
+        {"name": "Salz", "menge_g": 0, "anzeige": "nach Geschmack"},
+        {"name": "Pfeffer", "menge_g": 0, "anzeige": "1 Prise"}
+      ],
+      "zubereitung": [
+        "Koche die Spätzle nach Packungsanweisung in Salzwasser etwa 12 Minuten; gib die Erbsen 3 Minuten vor Ende dazu.",
+        "Verrühre den Quark mit 1–2 EL Wasser, Schnittlauch, Salz und Pfeffer glatt.",
+        "Gieße Spätzle und Erbsen ab und schwenke sie im Öl in einer Pfanne 2 Minuten bei mittlerer Hitze.",
+        "Richte die Spätzle an und gib den Schnittlauchquark daneben."
+      ],
+      "tipp": "Brate die Spätzle vor dem Rennen nur kurz und ohne viel Fett an – so bleiben sie leicht verdaulich."
+    },
+    {
+      "mahlzeit": "Renntag-Frühstück (3 Std. vorher)",
+      "name": "Zimt-Grießbrei mit Banane und Ahornsirup",
+      "beschreibung": "Warmer Grießbrei ist weich, ballaststoffarm und schnell verdaulich und bringt zusammen mit Banane und Ahornsirup viele Kohlenhydrate für den Start.",
+      "zeit_min": 10,
+      "tags": ["Wettkampf", "Unter 10 Minuten"],
+      "passt_fuer": ["vegan", "vegetarisch", "fleisch", "ohne-schwein"],
+      "zutaten": [
+        {"name": "Weichweizengrieß", "menge_g": 70, "anzeige": "70 g"},
+        {"name": "Sojadrink ungesüßt", "menge_g": 250, "anzeige": "250 ml"},
+        {"name": "Banane", "menge_g": 100, "anzeige": "1 kleine Banane (100 g)"},
+        {"name": "Ahornsirup", "menge_g": 20, "anzeige": "1 EL (20 g)"},
+        {"name": "Zimt", "menge_g": 0, "anzeige": "1 Prise"},
+        {"name": "Salz", "menge_g": 0, "anzeige": "1 Prise"}
+      ],
+      "zubereitung": [
+        "Bring den Sojadrink mit einer Prise Salz in einem Topf langsam zum Kochen.",
+        "Rühre den Grieß mit dem Schneebesen ein und lass ihn bei kleiner Hitze 3–4 Minuten unter Rühren quellen.",
+        "Nimm den Topf vom Herd und rühre den Ahornsirup unter.",
+        "Gib die Banane in Scheiben darauf und bestäube alles mit etwas Zimt."
+      ],
+      "tipp": "Iss den Brei etwa 3 Stunden vor dem Start. Unterwegs im Hotel klappt er auch mit Instant-Grieß und heißem Wasser aus dem Wasserkocher."
+    },
+    {
+      "mahlzeit": "Renntag-Frühstück (3 Std. vorher)",
+      "name": "Weizenbrötchen mit Erdbeerkonfitüre und Orangensaft",
+      "beschreibung": "Der Frühstücksklassiker vieler Läufer: helle Brötchen mit Konfitüre und ein Glas Saft liefern schnell verfügbare Kohlenhydrate und belasten den Magen kaum.",
+      "zeit_min": 5,
+      "tags": ["Wettkampf", "Unter 10 Minuten"],
+      "passt_fuer": ["vegan", "vegetarisch", "fleisch", "ohne-schwein"],
+      "zutaten": [
+        {"name": "Weizenbrötchen", "menge_g": 120, "anzeige": "2 Brötchen (120 g)"},
+        {"name": "Erdbeerkonfitüre", "menge_g": 40, "anzeige": "2 EL (40 g)"},
+        {"name": "Orangensaft", "menge_g": 200, "anzeige": "1 Glas (200 ml)"},
+        {"name": "Salz", "menge_g": 0, "anzeige": "1 Prise"}
+      ],
+      "zubereitung": [
+        "Schneide die Brötchen auf und toaste sie bei Bedarf kurz auf.",
+        "Bestreiche die Hälften dünn mit der Konfitüre und streue nach Wunsch eine winzige Prise Salz darüber.",
+        "Trink den Orangensaft langsam zum Frühstück und danach noch ein Glas Wasser."
+      ],
+      "tipp": "Verträgst du Saft auf nüchternen Magen nicht gut, verdünne ihn 1:1 mit Wasser. Kauf die Brötchen am Vortag, falls am Renntag noch kein Bäcker offen hat."
+    },
+    {
+      "mahlzeit": "Renntag-Frühstück (3 Std. vorher)",
+      "name": "Fluffige Bananen-Pfannkuchen mit Ahornsirup",
+      "beschreibung": "Pfannkuchen aus hellem Dinkelmehl mit Banane und Ahornsirup sind mild, ballaststoffarm und liefern über 80 g Kohlenhydrate bei wenig Fett.",
+      "zeit_min": 15,
+      "tags": ["Wettkampf"],
+      "passt_fuer": ["vegetarisch", "fleisch", "ohne-schwein"],
+      "zutaten": [
+        {"name": "Dinkelmehl Type 630", "menge_g": 70, "anzeige": "70 g"},
+        {"name": "Ei", "menge_g": 60, "anzeige": "1 Ei (Größe M)"},
+        {"name": "Milch 1,5 %", "menge_g": 120, "anzeige": "120 ml"},
+        {"name": "Backpulver", "menge_g": 3, "anzeige": "½ TL (3 g)"},
+        {"name": "Banane", "menge_g": 60, "anzeige": "½ Banane (60 g)"},
+        {"name": "Ahornsirup", "menge_g": 20, "anzeige": "1 EL (20 g)"},
+        {"name": "Rapsöl", "menge_g": 1, "anzeige": "ein paar Tropfen (1 g)"},
+        {"name": "Salz", "menge_g": 0, "anzeige": "1 Prise"}
+      ],
+      "zubereitung": [
+        "Verrühre Mehl, Backpulver und Salz, gib Ei und Milch dazu und rühre einen glatten Teig.",
+        "Reibe eine beschichtete Pfanne mit Küchenpapier und den Öltropfen aus und erhitze sie auf mittlerer Stufe.",
+        "Backe aus dem Teig 3–4 kleine Pfannkuchen je 1–2 Minuten pro Seite goldbraun.",
+        "Belege sie mit Bananenscheiben und beträufle sie mit Ahornsirup."
+      ],
+      "tipp": "Den Teig kannst du am Vorabend anrühren und im Kühlschrank lagern. Teste die Pfannkuchen vorher vor einem langen Trainingslauf."
+    },
+    {
+      "mahlzeit": "Im Rennen",
+      "name": "Salziges Ahorn-Dattel-Gel für die Soft-Flask",
+      "beschreibung": "Selbst gemixtes Gel aus Ahornsirup und Datteln mit einer Prise Salz liefert rund 40 g schnelle Kohlenhydrate pro Portion – einfach unterwegs aus der Flasche zu drücken.",
+      "zeit_min": 5,
+      "tags": ["Wettkampf", "zum Mitnehmen"],
+      "passt_fuer": ["vegan", "vegetarisch", "fleisch", "ohne-schwein"],
+      "zutaten": [
+        {"name": "Ahornsirup", "menge_g": 40, "anzeige": "2 EL (40 g)"},
+        {"name": "Datteln (getrocknet, entsteint)", "menge_g": 20, "anzeige": "2 Datteln (20 g)"},
+        {"name": "Wasser", "menge_g": 30, "anzeige": "2 EL (30 ml), warm"},
+        {"name": "Zitronensaft", "menge_g": 5, "anzeige": "1 TL (5 g)"},
+        {"name": "Salz", "menge_g": 0, "anzeige": "1 kräftige Prise (ca. 0,3 g)"}
+      ],
+      "zubereitung": [
+        "Weiche die Datteln 5 Minuten im warmen Wasser ein.",
+        "Püriere Datteln samt Einweichwasser, Ahornsirup, Zitronensaft und Salz mit dem Stabmixer ganz glatt.",
+        "Fülle das Gel in eine kleine Soft-Flask oder einen wiederbefüllbaren Gelbeutel.",
+        "Nimm es im Rennen in kleinen Schlucken über etwa 30–45 Minuten und trink jeweils etwas Wasser nach."
+      ],
+      "tipp": "Eine Portion deckt etwa eine Dreiviertelstunde ab – für längere Rennen mehrere Portionen vorbereiten. Unbedingt vorher im Training testen; im Kühlschrank hält sich das Gel 3 Tage."
+    },
+    {
+      "mahlzeit": "Nach dem Ziel",
+      "name": "Laugenbrezel mit Schnittlauchquark und Radieschen",
+      "beschreibung": "Salzige Brezeln, Eiweiß aus Magerquark und knackiges Gemüse füllen nach dem Ziel Kohlenhydrate, Eiweiß und Salz wieder auf.",
+      "zeit_min": 5,
+      "tags": ["Wettkampf", "ohne Kochen"],
+      "passt_fuer": ["vegetarisch", "fleisch", "ohne-schwein"],
+      "zutaten": [
+        {"name": "Laugenbrezel", "menge_g": 140, "anzeige": "2 Laugenbrezeln (140 g)"},
+        {"name": "Magerquark", "menge_g": 150, "anzeige": "150 g"},
+        {"name": "Schnittlauch", "menge_g": 5, "anzeige": "1 EL Röllchen (5 g)"},
+        {"name": "Radieschen", "menge_g": 50, "anzeige": "4 Radieschen (50 g)"},
+        {"name": "Gurke", "menge_g": 60, "anzeige": "1 Stück Gurke (60 g)"},
+        {"name": "Salz", "menge_g": 0, "anzeige": "1 kräftige Prise"},
+        {"name": "Pfeffer", "menge_g": 0, "anzeige": "1 Prise"}
+      ],
+      "zubereitung": [
+        "Verrühre den Magerquark mit 2 EL Wasser, Schnittlauch, Salz und Pfeffer cremig.",
+        "Schneide Radieschen und Gurke in Scheiben oder Sticks.",
+        "Brich die Brezeln in Stücke und dippe sie in den Quark; das Gemüse isst du dazu."
+      ],
+      "tipp": "Pack den Quark in einer kleinen Dose in die Kühltasche im Zielbereich und kauf die Brezeln frisch vor Ort. Dazu viel trinken, gern auch eine Saftschorle."
+    }
+  ]
+}

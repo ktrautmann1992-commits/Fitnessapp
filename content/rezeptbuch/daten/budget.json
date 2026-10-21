@@ -1,0 +1,963 @@
+{
+  "ingredients": {
+    "Haferflocken": {
+      "kcal": 372,
+      "p": 13.5,
+      "c": 58.7,
+      "f": 7.0,
+      "abteilung": "Getreide, Nudeln & Hülsenfrüchte",
+      "preis_eur_kg": 1.2
+    },
+    "Sojadrink ungesüßt": {
+      "kcal": 33,
+      "p": 3.3,
+      "c": 0.6,
+      "f": 1.8,
+      "abteilung": "Pflanzliche Alternativen",
+      "preis_eur_kg": 1.4
+    },
+    "Veganes Proteinpulver (Vanille)": {
+      "kcal": 380,
+      "p": 72.0,
+      "c": 8.0,
+      "f": 6.0,
+      "abteilung": "Sonstiges",
+      "preis_eur_kg": 28.0
+    },
+    "Banane": {
+      "kcal": 93,
+      "p": 1.2,
+      "c": 20.0,
+      "f": 0.2,
+      "abteilung": "Obst & Gemüse",
+      "preis_eur_kg": 1.8
+    },
+    "Zimt": {
+      "kcal": 0,
+      "p": 0.0,
+      "c": 0.0,
+      "f": 0.0,
+      "abteilung": "Gewürze, Öle & Saucen",
+      "preis_eur_kg": 0
+    },
+    "Magerquark": {
+      "kcal": 67,
+      "p": 12.0,
+      "c": 4.0,
+      "f": 0.3,
+      "abteilung": "Kühlregal & Molkerei",
+      "preis_eur_kg": 2.8
+    },
+    "Ei": {
+      "kcal": 137,
+      "p": 12.6,
+      "c": 0.5,
+      "f": 9.3,
+      "abteilung": "Kühlregal & Molkerei",
+      "preis_eur_kg": 5.0
+    },
+    "Apfelmus (ungesüßt)": {
+      "kcal": 50,
+      "p": 0.2,
+      "c": 11.0,
+      "f": 0.1,
+      "abteilung": "Konserven & Gläser",
+      "preis_eur_kg": 2.2
+    },
+    "Rapsöl": {
+      "kcal": 884,
+      "p": 0.0,
+      "c": 0.0,
+      "f": 100.0,
+      "abteilung": "Gewürze, Öle & Saucen",
+      "preis_eur_kg": 2.8
+    },
+    "Weiße Bohnen (Dose, abgetropft)": {
+      "kcal": 100,
+      "p": 7.0,
+      "c": 14.0,
+      "f": 0.5,
+      "abteilung": "Konserven & Gläser",
+      "preis_eur_kg": 3.5
+    },
+    "Tofu natur": {
+      "kcal": 125,
+      "p": 13.0,
+      "c": 1.5,
+      "f": 7.5,
+      "abteilung": "Pflanzliche Alternativen",
+      "preis_eur_kg": 7.5
+    },
+    "Passierte Tomaten": {
+      "kcal": 32,
+      "p": 1.4,
+      "c": 5.5,
+      "f": 0.2,
+      "abteilung": "Konserven & Gläser",
+      "preis_eur_kg": 1.4
+    },
+    "Vollkorntoast": {
+      "kcal": 250,
+      "p": 9.0,
+      "c": 42.0,
+      "f": 4.0,
+      "abteilung": "Brot & Backwaren",
+      "preis_eur_kg": 2.6
+    },
+    "Zwiebel": {
+      "kcal": 40,
+      "p": 1.2,
+      "c": 8.0,
+      "f": 0.2,
+      "abteilung": "Obst & Gemüse",
+      "preis_eur_kg": 1.6
+    },
+    "Paprikapulver edelsüß": {
+      "kcal": 0,
+      "p": 0.0,
+      "c": 0.0,
+      "f": 0.0,
+      "abteilung": "Gewürze, Öle & Saucen",
+      "preis_eur_kg": 0
+    },
+    "Salz": {
+      "kcal": 0,
+      "p": 0.0,
+      "c": 0.0,
+      "f": 0.0,
+      "abteilung": "Gewürze, Öle & Saucen",
+      "preis_eur_kg": 0
+    },
+    "Pfeffer": {
+      "kcal": 0,
+      "p": 0.0,
+      "c": 0.0,
+      "f": 0.0,
+      "abteilung": "Gewürze, Öle & Saucen",
+      "preis_eur_kg": 0
+    },
+    "Rote Linsen (trocken)": {
+      "kcal": 340,
+      "p": 24.0,
+      "c": 50.0,
+      "f": 1.5,
+      "abteilung": "Getreide, Nudeln & Hülsenfrüchte",
+      "preis_eur_kg": 3.8
+    },
+    "Kartoffeln": {
+      "kcal": 72,
+      "p": 2.0,
+      "c": 15.6,
+      "f": 0.1,
+      "abteilung": "Obst & Gemüse",
+      "preis_eur_kg": 1.4
+    },
+    "Möhre": {
+      "kcal": 36,
+      "p": 1.0,
+      "c": 7.0,
+      "f": 0.2,
+      "abteilung": "Obst & Gemüse",
+      "preis_eur_kg": 1.3
+    },
+    "Gemüsebrühe (Pulver)": {
+      "kcal": 220,
+      "p": 8.0,
+      "c": 30.0,
+      "f": 8.0,
+      "abteilung": "Gewürze, Öle & Saucen",
+      "preis_eur_kg": 10.0
+    },
+    "Majoran (getrocknet)": {
+      "kcal": 0,
+      "p": 0.0,
+      "c": 0.0,
+      "f": 0.0,
+      "abteilung": "Gewürze, Öle & Saucen",
+      "preis_eur_kg": 0
+    },
+    "Apfelessig": {
+      "kcal": 20,
+      "p": 0.0,
+      "c": 0.9,
+      "f": 0.0,
+      "abteilung": "Gewürze, Öle & Saucen",
+      "preis_eur_kg": 1.5
+    },
+    "Kichererbsen (Dose, abgetropft)": {
+      "kcal": 120,
+      "p": 7.0,
+      "c": 16.0,
+      "f": 2.5,
+      "abteilung": "Konserven & Gläser",
+      "preis_eur_kg": 3.5
+    },
+    "Blattspinat (TK)": {
+      "kcal": 22,
+      "p": 2.5,
+      "c": 1.0,
+      "f": 0.3,
+      "abteilung": "Tiefkühl",
+      "preis_eur_kg": 2.2
+    },
+    "Currypulver": {
+      "kcal": 0,
+      "p": 0.0,
+      "c": 0.0,
+      "f": 0.0,
+      "abteilung": "Gewürze, Öle & Saucen",
+      "preis_eur_kg": 0
+    },
+    "Vollkornnudeln": {
+      "kcal": 350,
+      "p": 13.0,
+      "c": 64.0,
+      "f": 2.5,
+      "abteilung": "Getreide, Nudeln & Hülsenfrüchte",
+      "preis_eur_kg": 2.2
+    },
+    "Hüttenkäse": {
+      "kcal": 98,
+      "p": 12.5,
+      "c": 2.7,
+      "f": 4.3,
+      "abteilung": "Kühlregal & Molkerei",
+      "preis_eur_kg": 4.8
+    },
+    "Weißkohl": {
+      "kcal": 25,
+      "p": 1.2,
+      "c": 4.2,
+      "f": 0.2,
+      "abteilung": "Obst & Gemüse",
+      "preis_eur_kg": 1.2
+    },
+    "Kümmel": {
+      "kcal": 0,
+      "p": 0.0,
+      "c": 0.0,
+      "f": 0.0,
+      "abteilung": "Gewürze, Öle & Saucen",
+      "preis_eur_kg": 0
+    },
+    "Schweinehackfleisch mager": {
+      "kcal": 150,
+      "p": 20.5,
+      "c": 0.0,
+      "f": 7.5,
+      "abteilung": "Fleisch & Fisch",
+      "preis_eur_kg": 9.0
+    },
+    "Oregano getrocknet": {
+      "kcal": 0,
+      "p": 0.0,
+      "c": 0.0,
+      "f": 0.0,
+      "abteilung": "Gewürze, Öle & Saucen",
+      "preis_eur_kg": 0
+    },
+    "Hähnchenschenkelfilet (ohne Haut)": {
+      "kcal": 120,
+      "p": 19.5,
+      "c": 0.0,
+      "f": 4.6,
+      "abteilung": "Fleisch & Fisch",
+      "preis_eur_kg": 10.0
+    },
+    "Langkornreis (trocken)": {
+      "kcal": 350,
+      "p": 7.0,
+      "c": 78.0,
+      "f": 0.6,
+      "abteilung": "Getreide, Nudeln & Hülsenfrüchte",
+      "preis_eur_kg": 1.8
+    },
+    "Erbsen (TK)": {
+      "kcal": 80,
+      "p": 5.4,
+      "c": 11.0,
+      "f": 0.4,
+      "abteilung": "Tiefkühl",
+      "preis_eur_kg": 2.4
+    },
+    "Sojasauce": {
+      "kcal": 60,
+      "p": 8.0,
+      "c": 6.0,
+      "f": 0.1,
+      "abteilung": "Gewürze, Öle & Saucen",
+      "preis_eur_kg": 4.5
+    },
+    "Apfel": {
+      "kcal": 54,
+      "p": 0.3,
+      "c": 12.0,
+      "f": 0.2,
+      "abteilung": "Obst & Gemüse",
+      "preis_eur_kg": 2.5
+    },
+    "Thunfisch (Dose, im eigenen Saft, abgetropft)": {
+      "kcal": 110,
+      "p": 25.0,
+      "c": 0.0,
+      "f": 1.0,
+      "abteilung": "Konserven & Gläser",
+      "preis_eur_kg": 11.0
+    },
+    "Gurke": {
+      "kcal": 12,
+      "p": 0.6,
+      "c": 1.8,
+      "f": 0.2,
+      "abteilung": "Obst & Gemüse",
+      "preis_eur_kg": 2.2
+    },
+    "Senf (mittelscharf)": {
+      "kcal": 70,
+      "p": 5.0,
+      "c": 5.0,
+      "f": 4.0,
+      "abteilung": "Gewürze, Öle & Saucen",
+      "preis_eur_kg": 2.5
+    },
+    "Vollkorn-Knäckebrot": {
+      "kcal": 330,
+      "p": 10.0,
+      "c": 60.0,
+      "f": 1.5,
+      "abteilung": "Brot & Backwaren",
+      "preis_eur_kg": 3.0
+    }
+  },
+  "recipes": [
+    {
+      "mahlzeit": "Frühstück",
+      "passt_fuer": [
+        "vegan",
+        "vegetarisch",
+        "fleisch",
+        "ohne-schwein"
+      ],
+      "name": "Bananen-Vanille-Porridge mit Sojadrink",
+      "beschreibung": "Cremiger Haferbrei aus Eigenmarken-Haferflocken, der mit Sojadrink und einem Messlöffel Proteinpulver lange satt macht und kaum mehr als einen Euro kostet.",
+      "zeit_min": 8,
+      "kosten_eur": 1.17,
+      "tags": [
+        "Spar-Küche",
+        "Unter 10 Minuten"
+      ],
+      "zutaten": [
+        {
+          "name": "Haferflocken",
+          "menge_g": 70,
+          "anzeige": "70 g"
+        },
+        {
+          "name": "Sojadrink ungesüßt",
+          "menge_g": 250,
+          "anzeige": "250 ml"
+        },
+        {
+          "name": "Veganes Proteinpulver (Vanille)",
+          "menge_g": 20,
+          "anzeige": "1 Messlöffel (20 g)"
+        },
+        {
+          "name": "Banane",
+          "menge_g": 100,
+          "anzeige": "1 kleine Banane (100 g)"
+        },
+        {
+          "name": "Zimt",
+          "menge_g": 0,
+          "anzeige": "1 Prise"
+        }
+      ],
+      "zubereitung": [
+        "Bring die Haferflocken mit 200 ml Sojadrink in einem kleinen Topf bei mittlerer Hitze unter Rühren zum Köcheln.",
+        "Lass den Brei 3–4 Minuten sanft quellen, bis er cremig ist, und nimm ihn dann vom Herd.",
+        "Verrühre das Proteinpulver mit dem restlichen Sojadrink glatt und rühre es unter den etwas abgekühlten Brei.",
+        "Schneide die Banane in Scheiben, gib sie auf das Porridge und bestreue alles mit Zimt."
+      ],
+      "tipp": "Ohne Pulver: Rühr 2 EL Erdnussmus und 150 g Sojaskyr natur unter – etwas teurer, aber ähnlich eiweißreich. Überreife Bananen gibt es oft reduziert, die sind hier ideal."
+    },
+    {
+      "mahlzeit": "Frühstück",
+      "passt_fuer": [
+        "vegetarisch",
+        "fleisch",
+        "ohne-schwein"
+      ],
+      "name": "Quark-Hafer-Pfannkuchen mit Apfelmus",
+      "beschreibung": "Fluffige Pfannkuchen aus Haferflocken, Magerquark und Eiern, die ohne Mehl und Pulver auf über 35 g Eiweiß kommen.",
+      "zeit_min": 15,
+      "kosten_eur": 1.27,
+      "tags": [
+        "Spar-Küche"
+      ],
+      "zutaten": [
+        {
+          "name": "Haferflocken",
+          "menge_g": 50,
+          "anzeige": "50 g"
+        },
+        {
+          "name": "Magerquark",
+          "menge_g": 150,
+          "anzeige": "150 g"
+        },
+        {
+          "name": "Ei",
+          "menge_g": 120,
+          "anzeige": "2 Eier (Größe M)"
+        },
+        {
+          "name": "Rapsöl",
+          "menge_g": 5,
+          "anzeige": "1 TL (5 g)"
+        },
+        {
+          "name": "Apfelmus (ungesüßt)",
+          "menge_g": 80,
+          "anzeige": "80 g"
+        },
+        {
+          "name": "Zimt",
+          "menge_g": 0,
+          "anzeige": "1 Prise"
+        }
+      ],
+      "zubereitung": [
+        "Püriere oder verrühre Haferflocken, Magerquark, Eier und Zimt zu einem dickflüssigen Teig und lass ihn 3 Minuten quellen.",
+        "Erhitze das Rapsöl in einer beschichteten Pfanne bei mittlerer Hitze.",
+        "Gib je 2 EL Teig pro Pfannkuchen in die Pfanne und brate sie 2–3 Minuten pro Seite goldbraun.",
+        "Richte die Pfannkuchen mit dem Apfelmus an."
+      ],
+      "tipp": "Statt Apfelmus passt ein geriebener Apfel mit Zimt. Die Pfannkuchen lassen sich am Vorabend backen und kalt mitnehmen."
+    },
+    {
+      "mahlzeit": "Frühstück",
+      "passt_fuer": [
+        "vegan",
+        "vegetarisch",
+        "fleisch",
+        "ohne-schwein"
+      ],
+      "name": "Englische Bohnen-Tofu-Pfanne auf Toast",
+      "beschreibung": "Herzhaftes Frühstück nach britischem Vorbild mit weißen Bohnen in Tomatensauce und gebratenem Tofu, das günstig und rein pflanzlich viel Eiweiß liefert.",
+      "zeit_min": 15,
+      "kosten_eur": 1.8,
+      "tags": [
+        "Spar-Küche"
+      ],
+      "zutaten": [
+        {
+          "name": "Weiße Bohnen (Dose, abgetropft)",
+          "menge_g": 200,
+          "anzeige": "200 g (ca. ¾ Dose)"
+        },
+        {
+          "name": "Tofu natur",
+          "menge_g": 100,
+          "anzeige": "½ Packung (100 g)"
+        },
+        {
+          "name": "Passierte Tomaten",
+          "menge_g": 100,
+          "anzeige": "100 g"
+        },
+        {
+          "name": "Zwiebel",
+          "menge_g": 40,
+          "anzeige": "½ kleine Zwiebel (40 g)"
+        },
+        {
+          "name": "Rapsöl",
+          "menge_g": 5,
+          "anzeige": "1 TL (5 g)"
+        },
+        {
+          "name": "Vollkorntoast",
+          "menge_g": 50,
+          "anzeige": "2 Scheiben (50 g)"
+        },
+        {
+          "name": "Paprikapulver edelsüß",
+          "menge_g": 0,
+          "anzeige": "½ TL"
+        },
+        {
+          "name": "Salz",
+          "menge_g": 0,
+          "anzeige": "1 Prise"
+        },
+        {
+          "name": "Pfeffer",
+          "menge_g": 0,
+          "anzeige": "1 Prise"
+        }
+      ],
+      "zubereitung": [
+        "Würfle die Zwiebel fein und zerbröckle den Tofu mit einer Gabel.",
+        "Brate beides im Rapsöl bei mittlerer bis hoher Hitze 4–5 Minuten an, bis der Tofu leicht gebräunt ist, und würze mit Paprikapulver.",
+        "Gib Bohnen und passierte Tomaten dazu und lass alles 4 Minuten köcheln, bis die Sauce eindickt; mit Salz und Pfeffer abschmecken.",
+        "Toaste das Brot und verteile die Bohnen-Tofu-Pfanne darauf."
+      ],
+      "tipp": "Den Rest Bohnen und Tofu am nächsten Tag in einen Salat oder eine Suppe geben – so wird nichts weggeworfen."
+    },
+    {
+      "mahlzeit": "Hauptgericht",
+      "passt_fuer": [
+        "vegan",
+        "vegetarisch",
+        "fleisch",
+        "ohne-schwein"
+      ],
+      "name": "Linsen-Kartoffel-Eintopf mit Möhren und Majoran",
+      "beschreibung": "Deftiger Eintopf aus roten Linsen, Kartoffeln und Möhren, der für rund einen Euro pro Portion satt macht und sich hervorragend vorkochen lässt.",
+      "zeit_min": 30,
+      "kosten_eur": 1.1,
+      "tags": [
+        "Spar-Küche",
+        "Meal-Prep"
+      ],
+      "zutaten": [
+        {
+          "name": "Rote Linsen (trocken)",
+          "menge_g": 100,
+          "anzeige": "100 g"
+        },
+        {
+          "name": "Kartoffeln",
+          "menge_g": 250,
+          "anzeige": "2–3 mittelgroße (250 g)"
+        },
+        {
+          "name": "Möhre",
+          "menge_g": 150,
+          "anzeige": "2 Möhren (150 g)"
+        },
+        {
+          "name": "Zwiebel",
+          "menge_g": 60,
+          "anzeige": "1 kleine Zwiebel (60 g)"
+        },
+        {
+          "name": "Rapsöl",
+          "menge_g": 5,
+          "anzeige": "1 TL (5 g)"
+        },
+        {
+          "name": "Gemüsebrühe (Pulver)",
+          "menge_g": 5,
+          "anzeige": "1 TL (5 g) in 500 ml Wasser"
+        },
+        {
+          "name": "Majoran (getrocknet)",
+          "menge_g": 0,
+          "anzeige": "1 TL"
+        },
+        {
+          "name": "Apfelessig",
+          "menge_g": 10,
+          "anzeige": "1 EL (10 ml)"
+        },
+        {
+          "name": "Pfeffer",
+          "menge_g": 0,
+          "anzeige": "1 Prise"
+        }
+      ],
+      "zubereitung": [
+        "Schäle Kartoffeln und Möhren und schneide sie in 1–2 cm große Würfel; würfle die Zwiebel.",
+        "Dünste die Zwiebel im Rapsöl in einem Topf 2 Minuten an, gib Kartoffeln und Möhren dazu und brate sie 2 Minuten mit.",
+        "Spüle die Linsen ab, gib sie mit 500 ml Wasser und dem Brühpulver dazu und lass alles zugedeckt 20 Minuten köcheln.",
+        "Rühre Majoran und Apfelessig unter, würze mit Pfeffer und lass den Eintopf noch 2 Minuten ziehen."
+      ],
+      "tipp": "Gleich die vierfache Menge kochen: Der Eintopf hält im Kühlschrank 4 Tage und lässt sich gut portionsweise einfrieren."
+    },
+    {
+      "mahlzeit": "Hauptgericht",
+      "passt_fuer": [
+        "vegan",
+        "vegetarisch",
+        "fleisch",
+        "ohne-schwein"
+      ],
+      "name": "Kichererbsen-Kartoffel-Curry mit Spinat",
+      "beschreibung": "Würziges Curry aus Dosen-Kichererbsen, Kartoffeln und TK-Spinat, das mit einer Handvoll Linsen auf über 30 g pflanzliches Eiweiß kommt.",
+      "zeit_min": 25,
+      "kosten_eur": 1.73,
+      "tags": [
+        "Spar-Küche",
+        "Meal-Prep"
+      ],
+      "zutaten": [
+        {
+          "name": "Kichererbsen (Dose, abgetropft)",
+          "menge_g": 200,
+          "anzeige": "200 g (ca. ¾ Dose)"
+        },
+        {
+          "name": "Kartoffeln",
+          "menge_g": 200,
+          "anzeige": "2 mittelgroße (200 g)"
+        },
+        {
+          "name": "Blattspinat (TK)",
+          "menge_g": 150,
+          "anzeige": "150 g"
+        },
+        {
+          "name": "Passierte Tomaten",
+          "menge_g": 150,
+          "anzeige": "150 g"
+        },
+        {
+          "name": "Rote Linsen (trocken)",
+          "menge_g": 30,
+          "anzeige": "30 g"
+        },
+        {
+          "name": "Zwiebel",
+          "menge_g": 50,
+          "anzeige": "½ Zwiebel (50 g)"
+        },
+        {
+          "name": "Rapsöl",
+          "menge_g": 5,
+          "anzeige": "1 TL (5 g)"
+        },
+        {
+          "name": "Currypulver",
+          "menge_g": 0,
+          "anzeige": "2 TL"
+        },
+        {
+          "name": "Salz",
+          "menge_g": 0,
+          "anzeige": "1 Prise"
+        }
+      ],
+      "zubereitung": [
+        "Schäle die Kartoffeln und schneide sie in kleine Würfel; würfle die Zwiebel.",
+        "Brate Zwiebel und Currypulver im Rapsöl 1–2 Minuten an, bis es duftet.",
+        "Gib Kartoffeln, Linsen, passierte Tomaten und 150 ml Wasser dazu und lass alles zugedeckt 15 Minuten köcheln.",
+        "Rühre Kichererbsen und den gefrorenen Spinat unter und lass das Curry weitere 5 Minuten köcheln, bis alles heiß ist; mit Salz abschmecken."
+      ],
+      "tipp": "Wer mehr Hunger hat, serviert 50 g gekochten Reis dazu – kostet nur ein paar Cent extra."
+    },
+    {
+      "mahlzeit": "Hauptgericht",
+      "passt_fuer": [
+        "vegetarisch",
+        "fleisch",
+        "ohne-schwein"
+      ],
+      "name": "Krautnudeln mit Ei und Hüttenkäse",
+      "beschreibung": "Österreichisch inspirierte Pfanne aus gebratenem Weißkohl und Vollkornnudeln, die mit Ei und Hüttenkäse zum günstigen Eiweißgericht wird.",
+      "zeit_min": 25,
+      "kosten_eur": 1.6,
+      "tags": [
+        "Spar-Küche"
+      ],
+      "zutaten": [
+        {
+          "name": "Vollkornnudeln",
+          "menge_g": 80,
+          "anzeige": "80 g"
+        },
+        {
+          "name": "Weißkohl",
+          "menge_g": 200,
+          "anzeige": "200 g"
+        },
+        {
+          "name": "Zwiebel",
+          "menge_g": 50,
+          "anzeige": "½ Zwiebel (50 g)"
+        },
+        {
+          "name": "Rapsöl",
+          "menge_g": 8,
+          "anzeige": "2 TL (8 g)"
+        },
+        {
+          "name": "Ei",
+          "menge_g": 120,
+          "anzeige": "2 Eier (Größe M)"
+        },
+        {
+          "name": "Hüttenkäse",
+          "menge_g": 100,
+          "anzeige": "½ Becher (100 g)"
+        },
+        {
+          "name": "Kümmel",
+          "menge_g": 0,
+          "anzeige": "½ TL"
+        },
+        {
+          "name": "Salz",
+          "menge_g": 0,
+          "anzeige": "1 Prise"
+        },
+        {
+          "name": "Pfeffer",
+          "menge_g": 0,
+          "anzeige": "1 Prise"
+        }
+      ],
+      "zubereitung": [
+        "Koche die Nudeln in Salzwasser nach Packungsangabe bissfest (ca. 10 Minuten) und gieße sie ab.",
+        "Schneide den Weißkohl in feine Streifen und die Zwiebel in Würfel.",
+        "Brate Kohl und Zwiebel im Rapsöl bei mittlerer Hitze 8–10 Minuten, bis der Kohl weich und leicht gebräunt ist; würze mit Kümmel, Salz und Pfeffer.",
+        "Gib die Nudeln dazu, schlage die Eier darüber und rühre 2 Minuten, bis sie gestockt sind.",
+        "Richte die Krautnudeln an und setze den Hüttenkäse obendrauf."
+      ],
+      "tipp": "Ein Weißkohl reicht für mehrere Gerichte – der Rest hält im Kühlschrank locker zwei Wochen."
+    },
+    {
+      "mahlzeit": "Hauptgericht",
+      "passt_fuer": [
+        "fleisch"
+      ],
+      "name": "Hackbällchen in Tomatensauce mit Vollkornnudeln",
+      "beschreibung": "Saftige Bällchen aus magerem Schweinehack mit Haferflocken als Bindung, in einer einfachen Tomatensauce – Familienklassiker zum kleinen Preis.",
+      "zeit_min": 25,
+      "kosten_eur": 1.54,
+      "tags": [
+        "Spar-Küche",
+        "Meal-Prep"
+      ],
+      "zutaten": [
+        {
+          "name": "Schweinehackfleisch mager",
+          "menge_g": 110,
+          "anzeige": "110 g"
+        },
+        {
+          "name": "Haferflocken",
+          "menge_g": 15,
+          "anzeige": "1½ EL (15 g)"
+        },
+        {
+          "name": "Zwiebel",
+          "menge_g": 40,
+          "anzeige": "½ kleine Zwiebel (40 g)"
+        },
+        {
+          "name": "Rapsöl",
+          "menge_g": 5,
+          "anzeige": "1 TL (5 g)"
+        },
+        {
+          "name": "Passierte Tomaten",
+          "menge_g": 200,
+          "anzeige": "200 g"
+        },
+        {
+          "name": "Vollkornnudeln",
+          "menge_g": 80,
+          "anzeige": "80 g"
+        },
+        {
+          "name": "Oregano getrocknet",
+          "menge_g": 0,
+          "anzeige": "1 TL"
+        },
+        {
+          "name": "Salz",
+          "menge_g": 0,
+          "anzeige": "1 Prise"
+        },
+        {
+          "name": "Pfeffer",
+          "menge_g": 0,
+          "anzeige": "1 Prise"
+        }
+      ],
+      "zubereitung": [
+        "Würfle die Zwiebel sehr fein und verknete die Hälfte davon mit Hackfleisch, Haferflocken, Salz und Pfeffer; forme 6 kleine Bällchen.",
+        "Koche die Nudeln in Salzwasser nach Packungsangabe bissfest (ca. 10 Minuten).",
+        "Brate die Bällchen im Rapsöl bei mittlerer Hitze rundherum 5 Minuten an, gib die restliche Zwiebel dazu und dünste sie 1 Minute mit.",
+        "Gieße die passierten Tomaten an, würze mit Oregano und lass alles zugedeckt 8 Minuten köcheln, bis die Bällchen durchgegart sind.",
+        "Serviere die Hackbällchen mit Sauce über den Nudeln."
+      ],
+      "tipp": "Schweinehack gibt es oft im 1-kg-Pack günstiger: Bällchen auf Vorrat formen und roh einfrieren."
+    },
+    {
+      "mahlzeit": "Hauptgericht",
+      "passt_fuer": [
+        "fleisch",
+        "ohne-schwein"
+      ],
+      "name": "Hähnchenschenkel-Reispfanne mit Erbsen und Möhren",
+      "beschreibung": "Würzige Reispfanne mit saftigem Hähnchenschenkelfleisch, das deutlich günstiger als Brustfilet ist, plus TK-Erbsen und Möhren.",
+      "zeit_min": 25,
+      "kosten_eur": 1.79,
+      "tags": [
+        "Spar-Küche",
+        "Meal-Prep"
+      ],
+      "zutaten": [
+        {
+          "name": "Hähnchenschenkelfilet (ohne Haut)",
+          "menge_g": 120,
+          "anzeige": "120 g"
+        },
+        {
+          "name": "Langkornreis (trocken)",
+          "menge_g": 70,
+          "anzeige": "70 g"
+        },
+        {
+          "name": "Erbsen (TK)",
+          "menge_g": 100,
+          "anzeige": "100 g"
+        },
+        {
+          "name": "Möhre",
+          "menge_g": 100,
+          "anzeige": "1 große Möhre (100 g)"
+        },
+        {
+          "name": "Rapsöl",
+          "menge_g": 8,
+          "anzeige": "2 TL (8 g)"
+        },
+        {
+          "name": "Sojasauce",
+          "menge_g": 15,
+          "anzeige": "1 EL (15 ml)"
+        },
+        {
+          "name": "Paprikapulver edelsüß",
+          "menge_g": 0,
+          "anzeige": "1 TL"
+        },
+        {
+          "name": "Pfeffer",
+          "menge_g": 0,
+          "anzeige": "1 Prise"
+        }
+      ],
+      "zubereitung": [
+        "Koche den Reis in der doppelten Menge Salzwasser zugedeckt 15 Minuten bei kleiner Hitze.",
+        "Schneide das Hähnchenfleisch in mundgerechte Stücke und die Möhre in dünne Scheiben.",
+        "Brate das Hähnchen im Rapsöl bei hoher Hitze 5–6 Minuten rundherum an, bis es durchgegart ist, und würze mit Paprikapulver und Pfeffer.",
+        "Gib Möhren und Erbsen dazu und brate sie 3 Minuten mit.",
+        "Rühre den Reis und die Sojasauce unter und brate alles noch 2 Minuten."
+      ],
+      "tipp": "Ganze Hähnchenschenkel sind noch günstiger: selbst auslösen und die Knochen für Brühe auskochen."
+    },
+    {
+      "mahlzeit": "Snack",
+      "passt_fuer": [
+        "vegetarisch",
+        "fleisch",
+        "ohne-schwein"
+      ],
+      "name": "Apfel-Zimt-Quark mit Haferflocken",
+      "beschreibung": "Frischer Quark-Snack mit geriebenem Apfel und Haferflocken, der für unter 1 € rund 20 g Eiweiß liefert.",
+      "zeit_min": 5,
+      "kosten_eur": 0.69,
+      "tags": [
+        "Spar-Küche",
+        "ohne Kochen"
+      ],
+      "zutaten": [
+        {
+          "name": "Magerquark",
+          "menge_g": 150,
+          "anzeige": "150 g"
+        },
+        {
+          "name": "Apfel",
+          "menge_g": 100,
+          "anzeige": "1 kleiner Apfel (100 g)"
+        },
+        {
+          "name": "Haferflocken",
+          "menge_g": 15,
+          "anzeige": "1½ EL (15 g)"
+        },
+        {
+          "name": "Zimt",
+          "menge_g": 0,
+          "anzeige": "1 Prise"
+        }
+      ],
+      "zubereitung": [
+        "Reibe den Apfel mit Schale grob.",
+        "Verrühre den Magerquark mit 1–2 EL Wasser cremig.",
+        "Hebe den Apfel unter, bestreue alles mit Haferflocken und Zimt."
+      ],
+      "tipp": "Saisonale Äpfel aus der Region sind im Herbst am günstigsten – leicht schrumpelige taugen hier bestens."
+    },
+    {
+      "mahlzeit": "Snack",
+      "passt_fuer": [
+        "fleisch",
+        "ohne-schwein"
+      ],
+      "name": "Thunfisch-Eiersalat mit Gurke auf Knäckebrot",
+      "beschreibung": "Herzhafter Salat aus Dosen-Thunfisch, gekochtem Ei und Gurke mit Senf-Quark-Dressing, der viel Eiweiß bei wenig Kalorien liefert.",
+      "zeit_min": 12,
+      "kosten_eur": 1.39,
+      "tags": [
+        "Spar-Küche",
+        "zum Mitnehmen"
+      ],
+      "zutaten": [
+        {
+          "name": "Thunfisch (Dose, im eigenen Saft, abgetropft)",
+          "menge_g": 65,
+          "anzeige": "½ Dose (65 g abgetropft)"
+        },
+        {
+          "name": "Ei",
+          "menge_g": 60,
+          "anzeige": "1 Ei (Größe M)"
+        },
+        {
+          "name": "Gurke",
+          "menge_g": 100,
+          "anzeige": "¼ Gurke (100 g)"
+        },
+        {
+          "name": "Magerquark",
+          "menge_g": 30,
+          "anzeige": "2 EL (30 g)"
+        },
+        {
+          "name": "Senf (mittelscharf)",
+          "menge_g": 5,
+          "anzeige": "1 TL (5 g)"
+        },
+        {
+          "name": "Vollkorn-Knäckebrot",
+          "menge_g": 20,
+          "anzeige": "2 Scheiben (20 g)"
+        },
+        {
+          "name": "Salz",
+          "menge_g": 0,
+          "anzeige": "1 Prise"
+        },
+        {
+          "name": "Pfeffer",
+          "menge_g": 0,
+          "anzeige": "1 Prise"
+        }
+      ],
+      "zubereitung": [
+        "Koche das Ei 9 Minuten hart, schrecke es kalt ab und pelle es.",
+        "Verrühre Magerquark und Senf und würze mit Salz und Pfeffer.",
+        "Würfle Ei und Gurke und vermische sie mit dem zerpflückten Thunfisch und dem Dressing.",
+        "Verteile den Salat auf dem Knäckebrot oder iss ihn dazu."
+      ],
+      "tipp": "Die zweite Dosenhälfte luftdicht im Kühlschrank aufbewahren und am nächsten Tag verwenden. Knäckebrot zum Mitnehmen separat einpacken, damit es knusprig bleibt."
+    }
+  ]
+}

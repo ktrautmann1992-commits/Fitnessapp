@@ -1,0 +1,809 @@
+{
+  "ingredients": {
+    "Toastbrot": {
+      "kcal": 265,
+      "p": 8.0,
+      "c": 48.0,
+      "f": 3.5,
+      "abteilung": "Brot & Backwaren"
+    },
+    "Magerquark": {
+      "kcal": 67,
+      "p": 12.0,
+      "c": 4.0,
+      "f": 0.3,
+      "abteilung": "Kühlregal & Molkerei"
+    },
+    "Banane": {
+      "kcal": 93,
+      "p": 1.2,
+      "c": 20.0,
+      "f": 0.2,
+      "abteilung": "Obst & Gemüse"
+    },
+    "Honig": {
+      "kcal": 304,
+      "p": 0.3,
+      "c": 80.0,
+      "f": 0.0,
+      "abteilung": "Gewürze, Öle & Saucen"
+    },
+    "Zimt": {
+      "kcal": 0,
+      "p": 0.0,
+      "c": 0.0,
+      "f": 0.0,
+      "abteilung": "Gewürze, Öle & Saucen"
+    },
+    "Salz": {
+      "kcal": 0,
+      "p": 0.0,
+      "c": 0.0,
+      "f": 0.0,
+      "abteilung": "Gewürze, Öle & Saucen"
+    },
+    "Reisnudeln (trocken)": {
+      "kcal": 360,
+      "p": 6.0,
+      "c": 80.0,
+      "f": 0.6,
+      "abteilung": "Getreide, Nudeln & Hülsenfrüchte"
+    },
+    "Hähnchenbrustfilet": {
+      "kcal": 105,
+      "p": 23.5,
+      "c": 0.0,
+      "f": 1.2,
+      "abteilung": "Fleisch & Fisch"
+    },
+    "Karotte": {
+      "kcal": 37,
+      "p": 0.9,
+      "c": 7.5,
+      "f": 0.2,
+      "abteilung": "Obst & Gemüse"
+    },
+    "Sojasauce": {
+      "kcal": 60,
+      "p": 8.0,
+      "c": 6.0,
+      "f": 0.1,
+      "abteilung": "Gewürze, Öle & Saucen"
+    },
+    "Rapsöl": {
+      "kcal": 884,
+      "p": 0.0,
+      "c": 0.0,
+      "f": 100.0,
+      "abteilung": "Gewürze, Öle & Saucen"
+    },
+    "Ingwer": {
+      "kcal": 80,
+      "p": 1.8,
+      "c": 15.0,
+      "f": 0.8,
+      "abteilung": "Obst & Gemüse"
+    },
+    "Frühlingszwiebel": {
+      "kcal": 32,
+      "p": 1.8,
+      "c": 5.0,
+      "f": 0.2,
+      "abteilung": "Obst & Gemüse"
+    },
+    "Couscous (trocken)": {
+      "kcal": 355,
+      "p": 12.0,
+      "c": 72.0,
+      "f": 1.5,
+      "abteilung": "Getreide, Nudeln & Hülsenfrüchte"
+    },
+    "Sojadrink ungesüßt": {
+      "kcal": 33,
+      "p": 3.3,
+      "c": 0.6,
+      "f": 1.8,
+      "abteilung": "Pflanzliche Alternativen"
+    },
+    "Apfel": {
+      "kcal": 54,
+      "p": 0.3,
+      "c": 12.0,
+      "f": 0.2,
+      "abteilung": "Obst & Gemüse"
+    },
+    "Rosinen": {
+      "kcal": 300,
+      "p": 2.5,
+      "c": 68.0,
+      "f": 0.5,
+      "abteilung": "Nüsse, Samen & Trockenfrüchte"
+    },
+    "Gnocchi (Kühlregal)": {
+      "kcal": 155,
+      "p": 3.7,
+      "c": 33.0,
+      "f": 0.5,
+      "abteilung": "Kühlregal & Molkerei"
+    },
+    "Passierte Tomaten": {
+      "kcal": 32,
+      "p": 1.4,
+      "c": 5.5,
+      "f": 0.2,
+      "abteilung": "Konserven & Gläser"
+    },
+    "Olivenöl": {
+      "kcal": 884,
+      "p": 0.0,
+      "c": 0.0,
+      "f": 100.0,
+      "abteilung": "Gewürze, Öle & Saucen"
+    },
+    "Parmesan": {
+      "kcal": 390,
+      "p": 35.0,
+      "c": 0.0,
+      "f": 28.0,
+      "abteilung": "Kühlregal & Molkerei"
+    },
+    "Basilikum": {
+      "kcal": 23,
+      "p": 3.2,
+      "c": 1.0,
+      "f": 0.6,
+      "abteilung": "Obst & Gemüse"
+    },
+    "Oregano (getrocknet)": {
+      "kcal": 0,
+      "p": 0.0,
+      "c": 0.0,
+      "f": 0.0,
+      "abteilung": "Gewürze, Öle & Saucen"
+    },
+    "Pfeffer": {
+      "kcal": 0,
+      "p": 0.0,
+      "c": 0.0,
+      "f": 0.0,
+      "abteilung": "Gewürze, Öle & Saucen"
+    },
+    "Orangensaft": {
+      "kcal": 45,
+      "p": 0.7,
+      "c": 9.0,
+      "f": 0.2,
+      "abteilung": "Sonstiges"
+    },
+    "Wasser": {
+      "kcal": 0,
+      "p": 0.0,
+      "c": 0.0,
+      "f": 0.0,
+      "abteilung": "Sonstiges"
+    },
+    "Ahornsirup": {
+      "kcal": 260,
+      "p": 0.0,
+      "c": 67.0,
+      "f": 0.1,
+      "abteilung": "Sonstiges"
+    },
+    "Milchreis (Rundkornreis)": {
+      "kcal": 350,
+      "p": 7.0,
+      "c": 78.0,
+      "f": 0.6,
+      "abteilung": "Getreide, Nudeln & Hülsenfrüchte"
+    },
+    "Kartoffeln": {
+      "kcal": 72,
+      "p": 2.0,
+      "c": 15.6,
+      "f": 0.1,
+      "abteilung": "Obst & Gemüse"
+    },
+    "Rosmarin (getrocknet)": {
+      "kcal": 0,
+      "p": 0.0,
+      "c": 0.0,
+      "f": 0.0,
+      "abteilung": "Gewürze, Öle & Saucen"
+    },
+    "Milch 1,5 %": {
+      "kcal": 47,
+      "p": 3.4,
+      "c": 4.9,
+      "f": 1.5,
+      "abteilung": "Kühlregal & Molkerei"
+    },
+    "Sauerkirschen (Glas, abgetropft)": {
+      "kcal": 65,
+      "p": 0.8,
+      "c": 15.0,
+      "f": 0.1,
+      "abteilung": "Konserven & Gläser"
+    },
+    "Gemüsebrühe (zubereitet)": {
+      "kcal": 3,
+      "p": 0.1,
+      "c": 0.4,
+      "f": 0.1,
+      "abteilung": "Gewürze, Öle & Saucen"
+    },
+    "Suppennudeln (Hartweizen)": {
+      "kcal": 355,
+      "p": 12.5,
+      "c": 70.0,
+      "f": 1.5,
+      "abteilung": "Getreide, Nudeln & Hülsenfrüchte"
+    },
+    "Erbsen (TK)": {
+      "kcal": 80,
+      "p": 5.4,
+      "c": 11.0,
+      "f": 0.4,
+      "abteilung": "Tiefkühl"
+    },
+    "Petersilie (frisch)": {
+      "kcal": 36,
+      "p": 3.0,
+      "c": 6.0,
+      "f": 0.8,
+      "abteilung": "Obst & Gemüse"
+    },
+    "Veganes Proteinpulver (Vanille)": {
+      "kcal": 380,
+      "p": 72.0,
+      "c": 8.0,
+      "f": 6.0,
+      "abteilung": "Sonstiges"
+    },
+    "Haferflocken": {
+      "kcal": 372,
+      "p": 13.5,
+      "c": 58.7,
+      "f": 7.0,
+      "abteilung": "Getreide, Nudeln & Hülsenfrüchte"
+    },
+    "Mango (TK)": {
+      "kcal": 60,
+      "p": 0.8,
+      "c": 14.0,
+      "f": 0.4,
+      "abteilung": "Tiefkühl"
+    }
+  },
+  "recipes": [
+    {
+      "mahlzeit": "Vor langen Einheiten",
+      "name": "Langlauf-Toast mit Banane, Honig und Quark",
+      "beschreibung": "Helles Toastbrot, Banane und Honig liefern viele leicht verdauliche Kohlenhydrate, der Quark etwas Eiweiß – ideal 2–3 Stunden vor dem langen Lauf.",
+      "zeit_min": 5,
+      "tags": [
+        "Ausdauer",
+        "Unter 10 Minuten"
+      ],
+      "passt_fuer": [
+        "vegetarisch",
+        "fleisch",
+        "ohne-schwein"
+      ],
+      "zutaten": [
+        {
+          "name": "Toastbrot",
+          "menge_g": 75,
+          "anzeige": "3 Scheiben Toastbrot (75 g)"
+        },
+        {
+          "name": "Magerquark",
+          "menge_g": 100,
+          "anzeige": "100 g"
+        },
+        {
+          "name": "Banane",
+          "menge_g": 120,
+          "anzeige": "1 Banane (120 g)"
+        },
+        {
+          "name": "Honig",
+          "menge_g": 20,
+          "anzeige": "1 EL (20 g)"
+        },
+        {
+          "name": "Zimt",
+          "menge_g": 0,
+          "anzeige": "1 Prise"
+        },
+        {
+          "name": "Salz",
+          "menge_g": 0,
+          "anzeige": "1 Prise"
+        }
+      ],
+      "zubereitung": [
+        "Toaste die Brotscheiben goldbraun.",
+        "Verrühre den Magerquark mit einer Prise Salz und Zimt glatt.",
+        "Bestreiche die Toasts mit dem Quark und belege sie mit Bananenscheiben.",
+        "Träufle den Honig darüber und iss in Ruhe – trink dazu ein großes Glas Wasser."
+      ],
+      "tipp": "Iss den Toast 2–3 Stunden vor dem Start. Ist dein Magen empfindlich, nimm statt Quark nur eine dünne Schicht – das Fett bleibt so ohnehin minimal."
+    },
+    {
+      "mahlzeit": "Vor langen Einheiten",
+      "name": "Ingwer-Reisnudeln mit Hähnchen",
+      "beschreibung": "Kleine Portion Reisnudeln mit magerem Hähnchen und wenig Gemüse – viel Stärke, wenig Fett und Ballaststoffe für eine lange Radausfahrt am Nachmittag.",
+      "zeit_min": 15,
+      "tags": [
+        "Ausdauer"
+      ],
+      "passt_fuer": [
+        "fleisch",
+        "ohne-schwein"
+      ],
+      "zutaten": [
+        {
+          "name": "Reisnudeln (trocken)",
+          "menge_g": 90,
+          "anzeige": "90 g"
+        },
+        {
+          "name": "Hähnchenbrustfilet",
+          "menge_g": 60,
+          "anzeige": "60 g"
+        },
+        {
+          "name": "Karotte",
+          "menge_g": 50,
+          "anzeige": "½ Karotte (50 g)"
+        },
+        {
+          "name": "Frühlingszwiebel",
+          "menge_g": 15,
+          "anzeige": "1 Frühlingszwiebel (15 g)"
+        },
+        {
+          "name": "Ingwer",
+          "menge_g": 5,
+          "anzeige": "1 TL gerieben (5 g)"
+        },
+        {
+          "name": "Sojasauce",
+          "menge_g": 15,
+          "anzeige": "1 EL (15 g)"
+        },
+        {
+          "name": "Rapsöl",
+          "menge_g": 3,
+          "anzeige": "½ TL (3 g)"
+        }
+      ],
+      "zubereitung": [
+        "Übergieße die Reisnudeln mit kochendem Wasser und lass sie 5–8 Minuten ziehen, dann abgießen.",
+        "Schneide das Hähnchen in dünne Streifen, die Karotte in feine Stifte und die Frühlingszwiebel in Ringe.",
+        "Brate das Hähnchen im Öl bei mittlerer bis hoher Hitze 4 Minuten an, gib Karotte und Ingwer dazu und brate 2 Minuten weiter.",
+        "Mische Nudeln und Sojasauce unter, schwenke alles 1 Minute durch und bestreue es mit Frühlingszwiebel."
+      ],
+      "tipp": "Perfekt als Mittagessen vor einer Nachmittagseinheit. Die Sojasauce bringt gleich etwas Salz mit – trink dazu 300–500 ml Wasser."
+    },
+    {
+      "mahlzeit": "Vor langen Einheiten",
+      "name": "Süßer Zimt-Couscous mit Apfel und Rosinen",
+      "beschreibung": "Warmer Frühstücks-Couscous mit Sojadrink, Apfel und Rosinen – schnell verfügbare Kohlenhydrate, kaum Fett und sanft für den Magen vor dem Halbmarathon.",
+      "zeit_min": 10,
+      "tags": [
+        "Ausdauer",
+        "Unter 10 Minuten"
+      ],
+      "passt_fuer": [
+        "vegan",
+        "vegetarisch",
+        "fleisch",
+        "ohne-schwein"
+      ],
+      "zutaten": [
+        {
+          "name": "Couscous (trocken)",
+          "menge_g": 80,
+          "anzeige": "80 g"
+        },
+        {
+          "name": "Sojadrink ungesüßt",
+          "menge_g": 200,
+          "anzeige": "200 ml"
+        },
+        {
+          "name": "Apfel",
+          "menge_g": 100,
+          "anzeige": "½ Apfel (100 g)"
+        },
+        {
+          "name": "Rosinen",
+          "menge_g": 20,
+          "anzeige": "1 EL (20 g)"
+        },
+        {
+          "name": "Zimt",
+          "menge_g": 0,
+          "anzeige": "½ TL"
+        },
+        {
+          "name": "Salz",
+          "menge_g": 0,
+          "anzeige": "1 Prise"
+        }
+      ],
+      "zubereitung": [
+        "Erhitze den Sojadrink mit Zimt und einer Prise Salz in einem kleinen Topf, bis er kurz aufkocht.",
+        "Nimm den Topf vom Herd, rühre Couscous und Rosinen ein und lass alles abgedeckt 5 Minuten quellen.",
+        "Schäle den Apfel, reibe ihn grob und hebe ihn unter.",
+        "Lockere den Couscous mit einer Gabel auf und iss ihn warm."
+      ],
+      "tipp": "Geschälter Apfel ist bekömmlicher als ungeschälter. Iss die Portion 2–3 Stunden vor dem Start und trink in der Zeit bis zum Start noch etwa 500 ml in kleinen Schlucken."
+    },
+    {
+      "mahlzeit": "Vor langen Einheiten",
+      "name": "Gnocchi in Tomatensauce mit Parmesan",
+      "beschreibung": "Kartoffel-Gnocchi in schlanker Tomatensauce – viel leicht verdauliche Stärke und nur wenig Fett, ein klassisches Carbo-Essen vor dem langen Sonntagslauf.",
+      "zeit_min": 12,
+      "tags": [
+        "Ausdauer"
+      ],
+      "passt_fuer": [
+        "vegetarisch",
+        "fleisch",
+        "ohne-schwein"
+      ],
+      "zutaten": [
+        {
+          "name": "Gnocchi (Kühlregal)",
+          "menge_g": 250,
+          "anzeige": "250 g"
+        },
+        {
+          "name": "Passierte Tomaten",
+          "menge_g": 150,
+          "anzeige": "150 g"
+        },
+        {
+          "name": "Olivenöl",
+          "menge_g": 3,
+          "anzeige": "½ TL (3 g)"
+        },
+        {
+          "name": "Parmesan",
+          "menge_g": 10,
+          "anzeige": "1 EL gerieben (10 g)"
+        },
+        {
+          "name": "Basilikum",
+          "menge_g": 3,
+          "anzeige": "ein paar Blätter"
+        },
+        {
+          "name": "Oregano (getrocknet)",
+          "menge_g": 0,
+          "anzeige": "½ TL"
+        },
+        {
+          "name": "Salz",
+          "menge_g": 0,
+          "anzeige": "1 kräftige Prise"
+        },
+        {
+          "name": "Pfeffer",
+          "menge_g": 0,
+          "anzeige": "1 Prise"
+        }
+      ],
+      "zubereitung": [
+        "Bringe reichlich Salzwasser zum Kochen und gare die Gnocchi darin 2–3 Minuten, bis sie oben schwimmen.",
+        "Erhitze parallel Olivenöl in einer Pfanne, gib die passierten Tomaten mit Oregano, Salz und Pfeffer dazu und lass sie 5 Minuten köcheln.",
+        "Hebe die Gnocchi mit einer Schaumkelle direkt in die Sauce und schwenke sie kurz durch.",
+        "Bestreue alles mit Parmesan und Basilikum."
+      ],
+      "tipp": "Am Vorabend oder 3 Stunden vor dem Lauf essen. Die Sauce darf ruhig gut gesalzen sein – das hilft, Flüssigkeit zu halten."
+    },
+    {
+      "mahlzeit": "Während der Einheit",
+      "name": "Isotonischer Orangen-Ahorn-Drink",
+      "beschreibung": "Selbstgemischtes Sportgetränk aus Orangensaft, Wasser, Ahornsirup und Salz – liefert unterwegs Kohlenhydrate, Flüssigkeit und Natrium in einem.",
+      "zeit_min": 3,
+      "tags": [
+        "Ausdauer",
+        "zum Mitnehmen"
+      ],
+      "passt_fuer": [
+        "vegan",
+        "vegetarisch",
+        "fleisch",
+        "ohne-schwein"
+      ],
+      "zutaten": [
+        {
+          "name": "Orangensaft",
+          "menge_g": 250,
+          "anzeige": "250 ml"
+        },
+        {
+          "name": "Wasser",
+          "menge_g": 250,
+          "anzeige": "250 ml"
+        },
+        {
+          "name": "Ahornsirup",
+          "menge_g": 15,
+          "anzeige": "1 EL (15 g)"
+        },
+        {
+          "name": "Salz",
+          "menge_g": 1,
+          "anzeige": "1 kräftige Prise (ca. 1 g)"
+        }
+      ],
+      "zubereitung": [
+        "Verrühre den Ahornsirup und das Salz mit etwas Wasser, bis sich beides gelöst hat.",
+        "Gib Orangensaft und restliches Wasser dazu und mische gründlich.",
+        "Fülle das Getränk in eine 500-ml-Trinkflasche und kühle es bis zum Start."
+      ],
+      "tipp": "Eine Flasche (500 ml) bringt rund 33 g Kohlenhydrate und knapp 1 g Salz – das reicht für etwa eine Stunde bei 30–60 g Kohlenhydraten pro Stunde. Trink alle 15–20 Minuten ein paar Schlucke. Bis zu 90 g pro Stunde nur bei sehr langen Einheiten und wenn du es im Training geübt hast."
+    },
+    {
+      "mahlzeit": "Während der Einheit",
+      "name": "Ahorn-Reiskuchen für die Trikottasche",
+      "beschreibung": "Kompakte, leicht salzige Reiskuchen aus Milchreis und Ahornsirup – weich, gut kaubar und fast ohne Fett, ideal für lange Radtouren.",
+      "zeit_min": 35,
+      "tags": [
+        "Ausdauer",
+        "Meal-Prep"
+      ],
+      "passt_fuer": [
+        "vegan",
+        "vegetarisch",
+        "fleisch",
+        "ohne-schwein"
+      ],
+      "zutaten": [
+        {
+          "name": "Milchreis (Rundkornreis)",
+          "menge_g": 55,
+          "anzeige": "55 g"
+        },
+        {
+          "name": "Wasser",
+          "menge_g": 0,
+          "anzeige": "130 ml"
+        },
+        {
+          "name": "Ahornsirup",
+          "menge_g": 10,
+          "anzeige": "2 TL (10 g)"
+        },
+        {
+          "name": "Zimt",
+          "menge_g": 0,
+          "anzeige": "1 Prise"
+        },
+        {
+          "name": "Salz",
+          "menge_g": 0.5,
+          "anzeige": "1 Prise (ca. 0,5 g)"
+        }
+      ],
+      "zubereitung": [
+        "Bringe Reis, Wasser und Salz in einem kleinen Topf zum Kochen und lass ihn abgedeckt bei kleiner Hitze 20 Minuten quellen, bis das Wasser aufgenommen ist.",
+        "Rühre Ahornsirup und Zimt unter, sodass ein klebriger Reis entsteht.",
+        "Drücke den Reis auf Backpapier etwa 2 cm dick zu einem Rechteck und lass ihn 10 Minuten abkühlen.",
+        "Schneide ihn in 2 Riegel und wickle jeden einzeln in Backpapier oder Alufolie."
+      ],
+      "tipp": "Eine Portion (2 Riegel) liefert rund 50 g Kohlenhydrate – gut für eine Stunde bei 30–60 g Kohlenhydraten pro Stunde, am besten aufgeteilt alle 30 Minuten einen Riegel. Mehrere Portionen am Vorabend vorbereiten; im Kühlschrank halten sie 2 Tage."
+    },
+    {
+      "mahlzeit": "Während der Einheit",
+      "name": "Gesalzene Rosmarin-Kartoffelhäppchen",
+      "beschreibung": "Kleine Pellkartoffeln mit Salz und Rosmarin – herzhafte Abwechslung zu Süßem, liefern Stärke und Natrium für lange Läufe und Radtouren.",
+      "zeit_min": 25,
+      "tags": [
+        "Ausdauer",
+        "zum Mitnehmen"
+      ],
+      "passt_fuer": [
+        "vegan",
+        "vegetarisch",
+        "fleisch",
+        "ohne-schwein"
+      ],
+      "zutaten": [
+        {
+          "name": "Kartoffeln",
+          "menge_g": 220,
+          "anzeige": "4–5 kleine Kartoffeln (220 g)"
+        },
+        {
+          "name": "Salz",
+          "menge_g": 1.5,
+          "anzeige": "¼ TL (ca. 1,5 g)"
+        },
+        {
+          "name": "Rosmarin (getrocknet)",
+          "menge_g": 0,
+          "anzeige": "1 Prise"
+        }
+      ],
+      "zubereitung": [
+        "Koche die Kartoffeln mit Schale in Salzwasser 15–20 Minuten, bis sie weich sind.",
+        "Lass sie kurz ausdampfen, pelle sie und schneide größere Kartoffeln in mundgerechte Stücke.",
+        "Wälze die noch warmen Stücke in Salz und Rosmarin.",
+        "Lass sie vollständig abkühlen und verpacke sie in einem kleinen Gefrierbeutel."
+      ],
+      "tipp": "Die Portion liefert rund 34 g Kohlenhydrate – kombiniert mit einem Sportgetränk kommst du gut auf 30–60 g pro Stunde. Am besten auf dem Rad oder bei ruhigen Abschnitten essen; bei sehr langen Einheiten bis 90 g pro Stunde nur, wenn du es im Training geübt hast."
+    },
+    {
+      "mahlzeit": "Nach der Einheit",
+      "name": "Recovery-Milchreis mit Sauerkirschen",
+      "beschreibung": "Cremiger Milchreis mit untergerührtem Magerquark und Sauerkirschen – füllt die Kohlenhydratspeicher auf und liefert über 20 g Eiweiß für die Regeneration.",
+      "zeit_min": 30,
+      "tags": [
+        "Ausdauer",
+        "Meal-Prep"
+      ],
+      "passt_fuer": [
+        "vegetarisch",
+        "fleisch",
+        "ohne-schwein"
+      ],
+      "zutaten": [
+        {
+          "name": "Milchreis (Rundkornreis)",
+          "menge_g": 55,
+          "anzeige": "55 g"
+        },
+        {
+          "name": "Milch 1,5 %",
+          "menge_g": 250,
+          "anzeige": "250 ml"
+        },
+        {
+          "name": "Magerquark",
+          "menge_g": 80,
+          "anzeige": "80 g"
+        },
+        {
+          "name": "Sauerkirschen (Glas, abgetropft)",
+          "menge_g": 80,
+          "anzeige": "80 g"
+        },
+        {
+          "name": "Zimt",
+          "menge_g": 0,
+          "anzeige": "½ TL"
+        },
+        {
+          "name": "Salz",
+          "menge_g": 0,
+          "anzeige": "1 Prise"
+        }
+      ],
+      "zubereitung": [
+        "Bringe die Milch mit einer Prise Salz in einem Topf langsam zum Kochen.",
+        "Rühre den Reis ein und lass ihn bei kleinster Hitze 25 Minuten quellen; rühre dabei gelegentlich um.",
+        "Nimm den Topf vom Herd und rühre den Magerquark unter.",
+        "Gib Sauerkirschen und Zimt darüber und iss den Milchreis warm oder kalt."
+      ],
+      "tipp": "Am Vortag kochen und kalt aus dem Kühlschrank essen – so steht die Mahlzeit direkt nach dem Training bereit. Trink dazu ein großes Glas Wasser oder Saftschorle."
+    },
+    {
+      "mahlzeit": "Nach der Einheit",
+      "name": "Hähnchen-Nudelsuppe zum Auffüllen",
+      "beschreibung": "Salzige Brühe mit Nudeln, Hähnchen und Gemüse – bringt Flüssigkeit, Salz, Kohlenhydrate und reichlich Eiweiß nach einer langen, schweißtreibenden Einheit zurück.",
+      "zeit_min": 20,
+      "tags": [
+        "Ausdauer",
+        "Meal-Prep"
+      ],
+      "passt_fuer": [
+        "fleisch",
+        "ohne-schwein"
+      ],
+      "zutaten": [
+        {
+          "name": "Gemüsebrühe (zubereitet)",
+          "menge_g": 400,
+          "anzeige": "400 ml"
+        },
+        {
+          "name": "Suppennudeln (Hartweizen)",
+          "menge_g": 75,
+          "anzeige": "75 g"
+        },
+        {
+          "name": "Hähnchenbrustfilet",
+          "menge_g": 80,
+          "anzeige": "80 g"
+        },
+        {
+          "name": "Karotte",
+          "menge_g": 60,
+          "anzeige": "1 kleine Karotte (60 g)"
+        },
+        {
+          "name": "Erbsen (TK)",
+          "menge_g": 50,
+          "anzeige": "50 g"
+        },
+        {
+          "name": "Petersilie (frisch)",
+          "menge_g": 5,
+          "anzeige": "1 EL gehackt (5 g)"
+        },
+        {
+          "name": "Pfeffer",
+          "menge_g": 0,
+          "anzeige": "1 Prise"
+        }
+      ],
+      "zubereitung": [
+        "Bringe die Gemüsebrühe in einem Topf zum Kochen.",
+        "Schneide das Hähnchen in kleine Würfel und die Karotte in Scheiben, gib beides in die Brühe und lass es 6 Minuten köcheln.",
+        "Gib Nudeln und Erbsen dazu und gare alles weitere 6–8 Minuten, bis die Nudeln weich sind.",
+        "Schmecke mit Pfeffer ab und streue die Petersilie darüber."
+      ],
+      "tipp": "Die Brühe gleicht Salzverluste über den Schweiß aus. Gleich die doppelte Menge kochen: Die Suppe hält im Kühlschrank 2 Tage und ist nach dem Training in 3 Minuten aufgewärmt."
+    },
+    {
+      "mahlzeit": "Nach der Einheit",
+      "name": "Mango-Hafer-Recovery-Smoothie",
+      "beschreibung": "Fruchtiger Smoothie aus Banane, Mango, Hafer und Sojadrink mit pflanzlichem Protein – schnell getrunken, füllt Speicher und Flüssigkeit nach dem Ausdauertraining auf.",
+      "zeit_min": 5,
+      "tags": [
+        "Ausdauer",
+        "Unter 10 Minuten"
+      ],
+      "passt_fuer": [
+        "vegan",
+        "vegetarisch",
+        "fleisch",
+        "ohne-schwein"
+      ],
+      "zutaten": [
+        {
+          "name": "Sojadrink ungesüßt",
+          "menge_g": 300,
+          "anzeige": "300 ml"
+        },
+        {
+          "name": "Banane",
+          "menge_g": 120,
+          "anzeige": "1 Banane (120 g)"
+        },
+        {
+          "name": "Mango (TK)",
+          "menge_g": 80,
+          "anzeige": "80 g"
+        },
+        {
+          "name": "Haferflocken",
+          "menge_g": 30,
+          "anzeige": "3 EL (30 g)"
+        },
+        {
+          "name": "Veganes Proteinpulver (Vanille)",
+          "menge_g": 25,
+          "anzeige": "1 Messlöffel (25 g)"
+        },
+        {
+          "name": "Salz",
+          "menge_g": 0,
+          "anzeige": "1 kleine Prise"
+        }
+      ],
+      "zubereitung": [
+        "Gib Sojadrink, Haferflocken und Proteinpulver in den Mixer.",
+        "Füge Banane, gefrorene Mango und eine kleine Prise Salz hinzu.",
+        "Mixe alles 30–45 Sekunden auf höchster Stufe, bis der Smoothie cremig ist.",
+        "Trink ihn innerhalb der ersten Stunde nach der Einheit."
+      ],
+      "tipp": "Ohne Pulver: Ersetze es durch 200 g Sojaskyr natur und reduziere den Sojadrink auf 150 ml. In einer gut verschlossenen Thermoflasche bleibt der Smoothie bis zum Ende der Einheit kühl."
+    }
+  ]
+}

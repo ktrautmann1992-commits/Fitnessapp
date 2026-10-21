@@ -1,0 +1,1488 @@
+{
+  "ingredients": {
+    "Ahornsirup": {
+      "kcal": 260,
+      "p": 0.0,
+      "c": 67.0,
+      "f": 0.1,
+      "abteilung": "Sonstiges"
+    },
+    "Apfel": {
+      "kcal": 54,
+      "p": 0.3,
+      "c": 12.0,
+      "f": 0.2,
+      "abteilung": "Obst & Gemüse"
+    },
+    "Aubergine": {
+      "kcal": 24,
+      "p": 1.2,
+      "c": 2.5,
+      "f": 0.2,
+      "abteilung": "Obst & Gemüse"
+    },
+    "Backpulver": {
+      "kcal": 100,
+      "p": 0.0,
+      "c": 25.0,
+      "f": 0.0,
+      "abteilung": "Sonstiges"
+    },
+    "Basmatireis (trocken)": {
+      "kcal": 350,
+      "p": 7.5,
+      "c": 78.0,
+      "f": 0.6,
+      "abteilung": "Getreide, Nudeln & Hülsenfrüchte"
+    },
+    "Blattspinat (TK)": {
+      "kcal": 22,
+      "p": 2.5,
+      "c": 1.0,
+      "f": 0.3,
+      "abteilung": "Tiefkühl"
+    },
+    "Bulgur (trocken)": {
+      "kcal": 350,
+      "p": 12.0,
+      "c": 69.0,
+      "f": 1.5,
+      "abteilung": "Getreide, Nudeln & Hülsenfrüchte"
+    },
+    "Cherrytomaten": {
+      "kcal": 20,
+      "p": 1.0,
+      "c": 3.0,
+      "f": 0.2,
+      "abteilung": "Obst & Gemüse"
+    },
+    "Chiliflocken": {
+      "kcal": 0,
+      "p": 0.0,
+      "c": 0.0,
+      "f": 0.0,
+      "abteilung": "Gewürze, Öle & Saucen"
+    },
+    "Dinkelmehl Type 630": {
+      "kcal": 340,
+      "p": 11.0,
+      "c": 70.0,
+      "f": 1.5,
+      "abteilung": "Getreide, Nudeln & Hülsenfrüchte"
+    },
+    "Ei": {
+      "kcal": 137,
+      "p": 12.6,
+      "c": 0.5,
+      "f": 9.3,
+      "abteilung": "Kühlregal & Molkerei"
+    },
+    "Eiklar": {
+      "kcal": 48,
+      "p": 10.9,
+      "c": 0.7,
+      "f": 0.2,
+      "abteilung": "Kühlregal & Molkerei"
+    },
+    "Erbsen (TK)": {
+      "kcal": 80,
+      "p": 5.4,
+      "c": 11.0,
+      "f": 0.4,
+      "abteilung": "Tiefkühl"
+    },
+    "Erdnussmus": {
+      "kcal": 610,
+      "p": 25.0,
+      "c": 12.0,
+      "f": 50.0,
+      "abteilung": "Nüsse, Samen & Trockenfrüchte"
+    },
+    "Erythrit": {
+      "kcal": 0,
+      "p": 0.0,
+      "c": 0.0,
+      "f": 0.0,
+      "abteilung": "Sonstiges"
+    },
+    "Feta": {
+      "kcal": 260,
+      "p": 17.0,
+      "c": 0.5,
+      "f": 21.0,
+      "abteilung": "Kühlregal & Molkerei"
+    },
+    "Frühlingszwiebeln": {
+      "kcal": 32,
+      "p": 1.8,
+      "c": 5.5,
+      "f": 0.2,
+      "abteilung": "Obst & Gemüse"
+    },
+    "Garnelen (TK, roh, geschält)": {
+      "kcal": 70,
+      "p": 16.0,
+      "c": 0.0,
+      "f": 0.8,
+      "abteilung": "Tiefkühl"
+    },
+    "Grüne Bohnen (TK)": {
+      "kcal": 30,
+      "p": 1.8,
+      "c": 5.0,
+      "f": 0.2,
+      "abteilung": "Tiefkühl"
+    },
+    "Gurke": {
+      "kcal": 12,
+      "p": 0.6,
+      "c": 1.8,
+      "f": 0.2,
+      "abteilung": "Obst & Gemüse"
+    },
+    "Himbeeren (TK)": {
+      "kcal": 36,
+      "p": 1.3,
+      "c": 4.8,
+      "f": 0.3,
+      "abteilung": "Tiefkühl"
+    },
+    "Honig": {
+      "kcal": 304,
+      "p": 0.3,
+      "c": 80.0,
+      "f": 0.0,
+      "abteilung": "Gewürze, Öle & Saucen"
+    },
+    "Hähnchenbrustfilet": {
+      "kcal": 105,
+      "p": 23.5,
+      "c": 0.0,
+      "f": 1.2,
+      "abteilung": "Fleisch & Fisch"
+    },
+    "Hüttenkäse": {
+      "kcal": 98,
+      "p": 12.5,
+      "c": 2.7,
+      "f": 4.3,
+      "abteilung": "Kühlregal & Molkerei"
+    },
+    "Ingwer": {
+      "kcal": 80,
+      "p": 1.8,
+      "c": 15.0,
+      "f": 0.8,
+      "abteilung": "Obst & Gemüse"
+    },
+    "Kartoffeln": {
+      "kcal": 72,
+      "p": 2.0,
+      "c": 15.6,
+      "f": 0.1,
+      "abteilung": "Obst & Gemüse"
+    },
+    "Knoblauch": {
+      "kcal": 140,
+      "p": 6.0,
+      "c": 28.0,
+      "f": 0.1,
+      "abteilung": "Obst & Gemüse"
+    },
+    "Kokosraspeln": {
+      "kcal": 660,
+      "p": 6.5,
+      "c": 6.5,
+      "f": 62.0,
+      "abteilung": "Nüsse, Samen & Trockenfrüchte"
+    },
+    "Kreuzkümmel (gemahlen)": {
+      "kcal": 0,
+      "p": 0.0,
+      "c": 0.0,
+      "f": 0.0,
+      "abteilung": "Gewürze, Öle & Saucen"
+    },
+    "Kürbiskerne": {
+      "kcal": 580,
+      "p": 32.0,
+      "c": 6.0,
+      "f": 47.0,
+      "abteilung": "Nüsse, Samen & Trockenfrüchte"
+    },
+    "Lachsfilet": {
+      "kcal": 200,
+      "p": 20.0,
+      "c": 0.0,
+      "f": 13.4,
+      "abteilung": "Fleisch & Fisch"
+    },
+    "Lachsschinken": {
+      "kcal": 120,
+      "p": 22.5,
+      "c": 1.0,
+      "f": 3.0,
+      "abteilung": "Fleisch & Fisch"
+    },
+    "Limettensaft": {
+      "kcal": 25,
+      "p": 0.4,
+      "c": 2.5,
+      "f": 0.1,
+      "abteilung": "Obst & Gemüse"
+    },
+    "Magerquark": {
+      "kcal": 67,
+      "p": 12.0,
+      "c": 4.0,
+      "f": 0.3,
+      "abteilung": "Kühlregal & Molkerei"
+    },
+    "Mandeln": {
+      "kcal": 600,
+      "p": 24.0,
+      "c": 5.7,
+      "f": 53.0,
+      "abteilung": "Nüsse, Samen & Trockenfrüchte"
+    },
+    "Mango (TK)": {
+      "kcal": 60,
+      "p": 0.8,
+      "c": 14.0,
+      "f": 0.4,
+      "abteilung": "Tiefkühl"
+    },
+    "Milch 1,5 %": {
+      "kcal": 47,
+      "p": 3.4,
+      "c": 4.9,
+      "f": 1.5,
+      "abteilung": "Kühlregal & Molkerei"
+    },
+    "Minze (frisch)": {
+      "kcal": 45,
+      "p": 3.5,
+      "c": 5.0,
+      "f": 0.7,
+      "abteilung": "Obst & Gemüse"
+    },
+    "Mozzarella light": {
+      "kcal": 160,
+      "p": 19.0,
+      "c": 1.0,
+      "f": 9.0,
+      "abteilung": "Kühlregal & Molkerei"
+    },
+    "Muskatnuss gerieben": {
+      "kcal": 0,
+      "p": 0.0,
+      "c": 0.0,
+      "f": 0.0,
+      "abteilung": "Gewürze, Öle & Saucen"
+    },
+    "Möhre": {
+      "kcal": 36,
+      "p": 1.0,
+      "c": 7.0,
+      "f": 0.2,
+      "abteilung": "Obst & Gemüse"
+    },
+    "Olivenöl": {
+      "kcal": 884,
+      "p": 0.0,
+      "c": 0.0,
+      "f": 100.0,
+      "abteilung": "Gewürze, Öle & Saucen"
+    },
+    "Panko": {
+      "kcal": 370,
+      "p": 11.0,
+      "c": 76.0,
+      "f": 2.5,
+      "abteilung": "Brot & Backwaren"
+    },
+    "Paprika gelb": {
+      "kcal": 27,
+      "p": 1.0,
+      "c": 5.0,
+      "f": 0.3,
+      "abteilung": "Obst & Gemüse"
+    },
+    "Paprika rot": {
+      "kcal": 31,
+      "p": 1.0,
+      "c": 6.0,
+      "f": 0.3,
+      "abteilung": "Obst & Gemüse"
+    },
+    "Paprikapulver edelsüß": {
+      "kcal": 0,
+      "p": 0.0,
+      "c": 0.0,
+      "f": 0.0,
+      "abteilung": "Gewürze, Öle & Saucen"
+    },
+    "Paprikapulver geräuchert": {
+      "kcal": 0,
+      "p": 0.0,
+      "c": 0.0,
+      "f": 0.0,
+      "abteilung": "Gewürze, Öle & Saucen"
+    },
+    "Parmesan": {
+      "kcal": 390,
+      "p": 35.0,
+      "c": 0.0,
+      "f": 28.0,
+      "abteilung": "Kühlregal & Molkerei"
+    },
+    "Pastinake": {
+      "kcal": 59,
+      "p": 1.3,
+      "c": 12.0,
+      "f": 0.4,
+      "abteilung": "Obst & Gemüse"
+    },
+    "Petersilie (frisch)": {
+      "kcal": 36,
+      "p": 3.0,
+      "c": 6.0,
+      "f": 0.8,
+      "abteilung": "Obst & Gemüse"
+    },
+    "Pfeffer": {
+      "kcal": 0,
+      "p": 0.0,
+      "c": 0.0,
+      "f": 0.0,
+      "abteilung": "Gewürze, Öle & Saucen"
+    },
+    "Rapsöl": {
+      "kcal": 884,
+      "p": 0.0,
+      "c": 0.0,
+      "f": 100.0,
+      "abteilung": "Gewürze, Öle & Saucen"
+    },
+    "Reisessig": {
+      "kcal": 20,
+      "p": 0.0,
+      "c": 0.5,
+      "f": 0.0,
+      "abteilung": "Gewürze, Öle & Saucen"
+    },
+    "Rosmarin (getrocknet)": {
+      "kcal": 0,
+      "p": 0.0,
+      "c": 0.0,
+      "f": 0.0,
+      "abteilung": "Gewürze, Öle & Saucen"
+    },
+    "Rote Zwiebel": {
+      "kcal": 40,
+      "p": 1.2,
+      "c": 8.0,
+      "f": 0.2,
+      "abteilung": "Obst & Gemüse"
+    },
+    "Salz": {
+      "kcal": 0,
+      "p": 0.0,
+      "c": 0.0,
+      "f": 0.0,
+      "abteilung": "Gewürze, Öle & Saucen"
+    },
+    "Schnittlauch (frisch)": {
+      "kcal": 30,
+      "p": 3.0,
+      "c": 2.0,
+      "f": 0.7,
+      "abteilung": "Obst & Gemüse"
+    },
+    "Schweinefilet": {
+      "kcal": 108,
+      "p": 21.5,
+      "c": 0.0,
+      "f": 2.0,
+      "abteilung": "Fleisch & Fisch"
+    },
+    "Sesam": {
+      "kcal": 580,
+      "p": 18.0,
+      "c": 12.0,
+      "f": 50.0,
+      "abteilung": "Nüsse, Samen & Trockenfrüchte"
+    },
+    "Skyr natur": {
+      "kcal": 63,
+      "p": 11.0,
+      "c": 4.0,
+      "f": 0.2,
+      "abteilung": "Kühlregal & Molkerei"
+    },
+    "Sojasauce": {
+      "kcal": 60,
+      "p": 8.0,
+      "c": 6.0,
+      "f": 0.1,
+      "abteilung": "Gewürze, Öle & Saucen"
+    },
+    "Sojaskyr natur": {
+      "kcal": 68,
+      "p": 8.5,
+      "c": 3.0,
+      "f": 2.2,
+      "abteilung": "Pflanzliche Alternativen"
+    },
+    "Speisestärke": {
+      "kcal": 350,
+      "p": 0.3,
+      "c": 86.0,
+      "f": 0.1,
+      "abteilung": "Sonstiges"
+    },
+    "Süßkartoffel": {
+      "kcal": 86,
+      "p": 1.6,
+      "c": 20.0,
+      "f": 0.1,
+      "abteilung": "Obst & Gemüse"
+    },
+    "Tempeh": {
+      "kcal": 192,
+      "p": 19.0,
+      "c": 9.4,
+      "f": 10.8,
+      "abteilung": "Pflanzliche Alternativen"
+    },
+    "Vollkornbrot": {
+      "kcal": 215,
+      "p": 7.5,
+      "c": 38.0,
+      "f": 1.5,
+      "abteilung": "Brot & Backwaren"
+    },
+    "Vollkorntoast": {
+      "kcal": 250,
+      "p": 9.0,
+      "c": 42.0,
+      "f": 4.0,
+      "abteilung": "Brot & Backwaren"
+    },
+    "Wasser": {
+      "kcal": 0,
+      "p": 0.0,
+      "c": 0.0,
+      "f": 0.0,
+      "abteilung": "Sonstiges"
+    },
+    "Zimt": {
+      "kcal": 0,
+      "p": 0.0,
+      "c": 0.0,
+      "f": 0.0,
+      "abteilung": "Gewürze, Öle & Saucen"
+    },
+    "Zitronensaft": {
+      "kcal": 22,
+      "p": 0.4,
+      "c": 2.4,
+      "f": 0.1,
+      "abteilung": "Obst & Gemüse"
+    },
+    "Zucchini": {
+      "kcal": 19,
+      "p": 1.5,
+      "c": 2.5,
+      "f": 0.4,
+      "abteilung": "Obst & Gemüse"
+    },
+    "Zuckerschoten": {
+      "kcal": 42,
+      "p": 2.8,
+      "c": 7.0,
+      "f": 0.2,
+      "abteilung": "Obst & Gemüse"
+    }
+  },
+  "recipes": [
+    {
+      "mahlzeit": "Hauptgerichte",
+      "name": "Teriyaki-Lachs mit Zuckerschoten und Basmatireis",
+      "beschreibung": "Lachs in einer selbst angerührten Teriyaki-Glasur aus Sojasauce, Honig und Ingwer, die in der Heißluft leicht karamellisiert – dazu knackige Zuckerschoten und Paprika.",
+      "zeit_min": 25,
+      "tags": [
+        "Heißluftfritteuse"
+      ],
+      "passt_fuer": [
+        "fleisch",
+        "ohne-schwein"
+      ],
+      "zutaten": [
+        {
+          "name": "Lachsfilet",
+          "menge_g": 140,
+          "anzeige": "1 Lachsfilet ohne Haut (140 g)"
+        },
+        {
+          "name": "Sojasauce",
+          "menge_g": 15,
+          "anzeige": "1 EL (15 ml)"
+        },
+        {
+          "name": "Honig",
+          "menge_g": 8,
+          "anzeige": "1 TL (8 g)"
+        },
+        {
+          "name": "Ingwer",
+          "menge_g": 3,
+          "anzeige": "1 TL gerieben (3 g)"
+        },
+        {
+          "name": "Knoblauch",
+          "menge_g": 3,
+          "anzeige": "1 Zehe (3 g)"
+        },
+        {
+          "name": "Speisestärke",
+          "menge_g": 2,
+          "anzeige": "½ TL (2 g)"
+        },
+        {
+          "name": "Wasser",
+          "menge_g": 0,
+          "anzeige": "2 EL"
+        },
+        {
+          "name": "Zuckerschoten",
+          "menge_g": 100,
+          "anzeige": "100 g"
+        },
+        {
+          "name": "Paprika rot",
+          "menge_g": 80,
+          "anzeige": "½ kleine rote Paprika (80 g)"
+        },
+        {
+          "name": "Rapsöl",
+          "menge_g": 3,
+          "anzeige": "½ TL (3 g)"
+        },
+        {
+          "name": "Basmatireis (trocken)",
+          "menge_g": 60,
+          "anzeige": "60 g"
+        },
+        {
+          "name": "Sesam",
+          "menge_g": 3,
+          "anzeige": "1 TL (3 g)"
+        }
+      ],
+      "zubereitung": [
+        "Koche den Reis nach Packungsanweisung (ca. 12 Minuten).",
+        "Verrühre Sojasauce, Honig, Ingwer, gepressten Knoblauch, Speisestärke und 2 EL Wasser in einem kleinen Topf und lass die Glasur unter Rühren 1 Minute aufkochen, bis sie andickt.",
+        "Heize die Heißluftfritteuse 3 Minuten auf 200 °C vor. Mische Zuckerschoten und Paprikastreifen mit dem Rapsöl und gare sie 4 Minuten in einer Lage.",
+        "Schüttel das Gemüse, schiebe es an den Rand, lege den Lachs in die Mitte und bestreiche ihn mit der Hälfte der Glasur. Gare alles bei 180 °C 8–10 Minuten, ohne den Lachs zu wenden; nach 5 Minuten die restliche Glasur auftragen. Er ist fertig, wenn er sich leicht zerpflücken lässt (Kerntemperatur ca. 60–63 °C).",
+        "Richte Lachs und Gemüse auf dem Reis an und streue den Sesam darüber."
+      ],
+      "tipp": "Die Glasur verbrennt schnell: Trag sie erst im Korb auf und behalte den Lachs in den letzten Minuten im Blick. Statt Lachs funktioniert auch Hähnchenbrust (dann Kerntemperatur mindestens 74 °C)."
+    },
+    {
+      "mahlzeit": "Hauptgerichte",
+      "name": "Hähnchen-Gemüse-Spieße mit Zitronen-Bulgur und Kräuter-Skyr",
+      "beschreibung": "Würzig marinierte Hähnchenwürfel mit Zucchini, Paprika und roter Zwiebel am Spieß, dazu frischer Zitronen-Bulgur – Grillgeschmack ohne Grill.",
+      "zeit_min": 30,
+      "tags": [
+        "Heißluftfritteuse",
+        "Meal-Prep"
+      ],
+      "passt_fuer": [
+        "fleisch",
+        "ohne-schwein"
+      ],
+      "zutaten": [
+        {
+          "name": "Hähnchenbrustfilet",
+          "menge_g": 160,
+          "anzeige": "160 g"
+        },
+        {
+          "name": "Zucchini",
+          "menge_g": 100,
+          "anzeige": "⅓ Zucchini (100 g)"
+        },
+        {
+          "name": "Paprika gelb",
+          "menge_g": 80,
+          "anzeige": "½ gelbe Paprika (80 g)"
+        },
+        {
+          "name": "Rote Zwiebel",
+          "menge_g": 50,
+          "anzeige": "½ rote Zwiebel (50 g)"
+        },
+        {
+          "name": "Olivenöl",
+          "menge_g": 8,
+          "anzeige": "2 TL (8 g)"
+        },
+        {
+          "name": "Paprikapulver edelsüß",
+          "menge_g": 0,
+          "anzeige": "1 TL"
+        },
+        {
+          "name": "Kreuzkümmel (gemahlen)",
+          "menge_g": 0,
+          "anzeige": "½ TL"
+        },
+        {
+          "name": "Knoblauch",
+          "menge_g": 3,
+          "anzeige": "1 Zehe (3 g)"
+        },
+        {
+          "name": "Bulgur (trocken)",
+          "menge_g": 50,
+          "anzeige": "50 g"
+        },
+        {
+          "name": "Wasser",
+          "menge_g": 0,
+          "anzeige": "100 ml"
+        },
+        {
+          "name": "Zitronensaft",
+          "menge_g": 10,
+          "anzeige": "2 TL (10 ml)"
+        },
+        {
+          "name": "Petersilie (frisch)",
+          "menge_g": 5,
+          "anzeige": "1 EL gehackt (5 g)"
+        },
+        {
+          "name": "Skyr natur",
+          "menge_g": 80,
+          "anzeige": "80 g"
+        },
+        {
+          "name": "Salz",
+          "menge_g": 0,
+          "anzeige": "1 Prise"
+        },
+        {
+          "name": "Pfeffer",
+          "menge_g": 0,
+          "anzeige": "1 Prise"
+        }
+      ],
+      "zubereitung": [
+        "Schneide Hähnchen und Gemüse in 2–3 cm große Stücke, mische sie mit 1 TL Olivenöl, Paprikapulver, Kreuzkümmel, gepresstem Knoblauch, Salz und Pfeffer und stecke alles abwechselnd auf 3–4 kurze Spieße (Holzspieße vorher 10 Minuten wässern).",
+        "Heize die Heißluftfritteuse 3 Minuten auf 200 °C vor.",
+        "Lege die Spieße nebeneinander in den Korb und gare sie 12–14 Minuten bei 200 °C; nach 7 Minuten einmal wenden. Das Hähnchen ist durch, wenn es innen nicht mehr rosa ist (Kerntemperatur mindestens 74 °C).",
+        "Gib in der Zwischenzeit den Bulgur mit 100 ml Wasser und etwas Salz in einen Topf, lass ihn 1 Minute aufkochen und dann zugedeckt 10 Minuten quellen. Mische ihn mit restlichem Olivenöl, der Hälfte des Zitronensafts und der Hälfte der Petersilie.",
+        "Verrühre Skyr mit restlichem Zitronensaft, restlicher Petersilie, Salz und Pfeffer und serviere den Dip zu Spießen und Bulgur."
+      ],
+      "tipp": "Passt der Spieß nicht in den Korb, gare Hähnchen und Gemüse einfach lose in einer Lage und schüttel nach der Hälfte der Zeit. Bulgur und Spieße halten sich gekühlt 2 Tage."
+    },
+    {
+      "mahlzeit": "Hauptgerichte",
+      "name": "Kräuter-Schweinefilet-Medaillons mit Knoblauch-Kartoffeln und Honig-Möhren",
+      "beschreibung": "Mageres Schweinefilet mit Rosmarin-Kruste, außen gebräunt und innen saftig, dazu knusprige Kartoffelwürfel, glasierte Möhren und Schnittlauchquark – ein Sonntagsessen aus einem Korb.",
+      "zeit_min": 35,
+      "tags": [
+        "Heißluftfritteuse"
+      ],
+      "passt_fuer": [
+        "fleisch"
+      ],
+      "zutaten": [
+        {
+          "name": "Schweinefilet",
+          "menge_g": 150,
+          "anzeige": "150 g (3 Medaillons)"
+        },
+        {
+          "name": "Kartoffeln",
+          "menge_g": 250,
+          "anzeige": "3 mittelgroße Kartoffeln (250 g)"
+        },
+        {
+          "name": "Möhre",
+          "menge_g": 150,
+          "anzeige": "2 Möhren (150 g)"
+        },
+        {
+          "name": "Olivenöl",
+          "menge_g": 8,
+          "anzeige": "2 TL (8 g)"
+        },
+        {
+          "name": "Honig",
+          "menge_g": 5,
+          "anzeige": "1 TL (5 g)"
+        },
+        {
+          "name": "Knoblauch",
+          "menge_g": 5,
+          "anzeige": "1 große Zehe (5 g)"
+        },
+        {
+          "name": "Rosmarin (getrocknet)",
+          "menge_g": 0,
+          "anzeige": "1 TL"
+        },
+        {
+          "name": "Petersilie (frisch)",
+          "menge_g": 5,
+          "anzeige": "1 EL gehackt (5 g)"
+        },
+        {
+          "name": "Magerquark",
+          "menge_g": 80,
+          "anzeige": "80 g"
+        },
+        {
+          "name": "Schnittlauch (frisch)",
+          "menge_g": 5,
+          "anzeige": "1 EL Röllchen (5 g)"
+        },
+        {
+          "name": "Salz",
+          "menge_g": 0,
+          "anzeige": "1 Prise"
+        },
+        {
+          "name": "Pfeffer",
+          "menge_g": 0,
+          "anzeige": "1 Prise"
+        }
+      ],
+      "zubereitung": [
+        "Heize die Heißluftfritteuse 3 Minuten auf 200 °C vor. Schneide die Kartoffeln ungeschält in 2 cm große Würfel, mische sie mit 1 TL Olivenöl, gepresstem Knoblauch, Salz und gare sie 10 Minuten bei 200 °C; nach 5 Minuten schütteln.",
+        "Schneide die Möhren in Stifte, mische sie mit Honig und einer Prise Salz, gib sie zu den Kartoffeln und gare beides weitere 6 Minuten; einmal schütteln.",
+        "Schneide das Filet in 3 Medaillons (3 cm dick), reibe sie mit restlichem Olivenöl, Rosmarin, Salz und Pfeffer ein und lege sie auf das Gemüse.",
+        "Gare alles bei 190 °C 8–10 Minuten und wende die Medaillons nach 5 Minuten. Das Fleisch ist fertig, wenn es innen nur noch zart rosa ist (Kerntemperatur mindestens 63 °C); lass es danach 2 Minuten ruhen.",
+        "Verrühre Magerquark mit Schnittlauch, etwas Wasser, Salz und Pfeffer und serviere ihn mit Petersilie bestreut zu Fleisch und Gemüse."
+      ],
+      "tipp": "Ein Fleischthermometer nimmt das Raten ab: Medaillons gleich dick schneiden, dann garen sie gleichmäßig. Statt Schweinefilet passen auch Putenbrust-Medaillons (dann Kerntemperatur mindestens 74 °C)."
+    },
+    {
+      "mahlzeit": "Hauptgerichte",
+      "name": "Zucchini-Schiffchen mit Spinat-Hüttenkäse-Füllung und Mozzarella",
+      "beschreibung": "Ausgehöhlte Zucchinihälften mit einer cremigen Füllung aus Spinat, Hüttenkäse, Ei und Parmesan, unter goldbraun überbackenem Mozzarella – viel Eiweiß, wenig Fett.",
+      "zeit_min": 30,
+      "tags": [
+        "Heißluftfritteuse"
+      ],
+      "passt_fuer": [
+        "vegetarisch",
+        "fleisch",
+        "ohne-schwein"
+      ],
+      "zutaten": [
+        {
+          "name": "Zucchini",
+          "menge_g": 300,
+          "anzeige": "1 große Zucchini (300 g)"
+        },
+        {
+          "name": "Blattspinat (TK)",
+          "menge_g": 100,
+          "anzeige": "100 g, aufgetaut und ausgedrückt"
+        },
+        {
+          "name": "Hüttenkäse",
+          "menge_g": 150,
+          "anzeige": "150 g"
+        },
+        {
+          "name": "Ei",
+          "menge_g": 60,
+          "anzeige": "1 Ei (Größe M)"
+        },
+        {
+          "name": "Parmesan",
+          "menge_g": 15,
+          "anzeige": "1 EL gerieben (15 g)"
+        },
+        {
+          "name": "Knoblauch",
+          "menge_g": 3,
+          "anzeige": "1 Zehe (3 g)"
+        },
+        {
+          "name": "Muskatnuss gerieben",
+          "menge_g": 0,
+          "anzeige": "1 Prise"
+        },
+        {
+          "name": "Mozzarella light",
+          "menge_g": 40,
+          "anzeige": "40 g"
+        },
+        {
+          "name": "Olivenöl",
+          "menge_g": 3,
+          "anzeige": "½ TL (3 g)"
+        },
+        {
+          "name": "Cherrytomaten",
+          "menge_g": 80,
+          "anzeige": "6 Cherrytomaten (80 g)"
+        },
+        {
+          "name": "Vollkornbrot",
+          "menge_g": 60,
+          "anzeige": "1 Scheibe (60 g)"
+        },
+        {
+          "name": "Salz",
+          "menge_g": 0,
+          "anzeige": "1 Prise"
+        },
+        {
+          "name": "Pfeffer",
+          "menge_g": 0,
+          "anzeige": "1 Prise"
+        }
+      ],
+      "zubereitung": [
+        "Halbiere die Zucchini längs, löse das Innere mit einem Teelöffel heraus (1 cm Rand stehen lassen) und hacke das Fruchtfleisch klein.",
+        "Vermische gehacktes Zucchinifleisch, ausgedrückten Spinat, Hüttenkäse, Ei, Parmesan, gepressten Knoblauch, Muskat, Salz und Pfeffer.",
+        "Heize die Heißluftfritteuse 3 Minuten auf 180 °C vor. Bepinsle die Zucchini außen mit dem Olivenöl, fülle sie und lege sie mit den Cherrytomaten in den Korb.",
+        "Gare die Schiffchen 12 Minuten bei 180 °C, ohne sie zu wenden. Lege dann den zerzupften Mozzarella darauf und backe alles weitere 4–5 Minuten, bis der Käse goldbraun ist und die Füllung fest geworden ist.",
+        "Hebe die Schiffchen vorsichtig mit einem Pfannenwender heraus und iss das Vollkornbrot dazu."
+      ],
+      "tipp": "Die Füllung wird fester, wenn du den Spinat gründlich ausdrückst. Statt Vollkornbrot passen 150 g Kartoffeln, die du vorher 10 Minuten im Korb garst."
+    },
+    {
+      "mahlzeit": "Hauptgerichte",
+      "name": "Erdnuss-Tempeh mit Paprika, Basmatireis und Gurkensalat",
+      "beschreibung": "Tempeh-Scheiben in einer Erdnuss-Limetten-Marinade werden in der Heißluft rundum knusprig – dazu Reis und ein frischer, säuerlicher Gurkensalat.",
+      "zeit_min": 30,
+      "tags": [
+        "Heißluftfritteuse",
+        "Meal-Prep"
+      ],
+      "passt_fuer": [
+        "vegan",
+        "vegetarisch",
+        "fleisch",
+        "ohne-schwein"
+      ],
+      "zutaten": [
+        {
+          "name": "Tempeh",
+          "menge_g": 150,
+          "anzeige": "150 g"
+        },
+        {
+          "name": "Erdnussmus",
+          "menge_g": 12,
+          "anzeige": "2 TL (12 g)"
+        },
+        {
+          "name": "Sojasauce",
+          "menge_g": 15,
+          "anzeige": "1 EL (15 ml)"
+        },
+        {
+          "name": "Limettensaft",
+          "menge_g": 10,
+          "anzeige": "2 TL (10 ml)"
+        },
+        {
+          "name": "Ahornsirup",
+          "menge_g": 5,
+          "anzeige": "1 TL (5 g)"
+        },
+        {
+          "name": "Knoblauch",
+          "menge_g": 3,
+          "anzeige": "1 Zehe (3 g)"
+        },
+        {
+          "name": "Ingwer",
+          "menge_g": 3,
+          "anzeige": "1 TL gerieben (3 g)"
+        },
+        {
+          "name": "Paprika rot",
+          "menge_g": 120,
+          "anzeige": "1 kleine rote Paprika (120 g)"
+        },
+        {
+          "name": "Basmatireis (trocken)",
+          "menge_g": 50,
+          "anzeige": "50 g"
+        },
+        {
+          "name": "Gurke",
+          "menge_g": 120,
+          "anzeige": "⅓ Gurke (120 g)"
+        },
+        {
+          "name": "Reisessig",
+          "menge_g": 5,
+          "anzeige": "1 TL (5 ml)"
+        },
+        {
+          "name": "Sesam",
+          "menge_g": 3,
+          "anzeige": "1 TL (3 g)"
+        },
+        {
+          "name": "Chiliflocken",
+          "menge_g": 0,
+          "anzeige": "1 Prise"
+        }
+      ],
+      "zubereitung": [
+        "Verrühre Erdnussmus, Sojasauce, die Hälfte des Limettensafts, Ahornsirup, gepressten Knoblauch und Ingwer mit 1 EL Wasser. Schneide den Tempeh in 1 cm dicke Scheiben und wende ihn darin; 10 Minuten ziehen lassen.",
+        "Koche währenddessen den Reis nach Packungsanweisung (ca. 12 Minuten). Hobel die Gurke in dünne Scheiben und mische sie mit Reisessig, restlichem Limettensaft, Sesam, Chiliflocken und einer Prise Salz.",
+        "Heize die Heißluftfritteuse 3 Minuten auf 190 °C vor. Lege Tempeh und Paprikastreifen in einer Lage in den Korb (Restmarinade aufheben).",
+        "Gare alles 10–12 Minuten bei 190 °C; nach 6 Minuten den Tempeh wenden, mit der restlichen Marinade bestreichen und die Paprika schütteln.",
+        "Serviere Tempeh und Paprika auf dem Reis mit dem Gurkensalat."
+      ],
+      "tipp": "Tempeh nimmt Marinade besser auf, wenn du ihn vorher 5 Minuten in Wasser dämpfst oder kurz überbrühst. Tempeh und Reis halten sich gekühlt 3 Tage; den Gurkensalat frisch machen."
+    },
+    {
+      "mahlzeit": "Beilagen & Gemüse",
+      "name": "Grüne-Bohnen-Bündel im Lachsschinken-Mantel mit Kräuterquark",
+      "beschreibung": "Kleine Bohnenbündel, umwickelt mit magerem Lachsschinken, der in der Heißluft knusprig wird – eine eiweißreiche Gemüsebeilage zu Kartoffeln, Fisch oder Fleisch.",
+      "zeit_min": 20,
+      "tags": [
+        "Heißluftfritteuse"
+      ],
+      "passt_fuer": [
+        "fleisch"
+      ],
+      "zutaten": [
+        {
+          "name": "Grüne Bohnen (TK)",
+          "menge_g": 200,
+          "anzeige": "200 g, aufgetaut"
+        },
+        {
+          "name": "Lachsschinken",
+          "menge_g": 40,
+          "anzeige": "4 Scheiben (40 g)"
+        },
+        {
+          "name": "Olivenöl",
+          "menge_g": 3,
+          "anzeige": "½ TL (3 g)"
+        },
+        {
+          "name": "Pfeffer",
+          "menge_g": 0,
+          "anzeige": "1 Prise"
+        },
+        {
+          "name": "Magerquark",
+          "menge_g": 80,
+          "anzeige": "80 g"
+        },
+        {
+          "name": "Schnittlauch (frisch)",
+          "menge_g": 5,
+          "anzeige": "1 EL Röllchen (5 g)"
+        },
+        {
+          "name": "Knoblauch",
+          "menge_g": 2,
+          "anzeige": "½ Zehe (2 g)"
+        },
+        {
+          "name": "Salz",
+          "menge_g": 0,
+          "anzeige": "1 Prise"
+        }
+      ],
+      "zubereitung": [
+        "Tupfe die aufgetauten Bohnen trocken, teile sie in 4 Bündel und wickle um jedes Bündel eine Scheibe Lachsschinken. Bestreiche die Bündel dünn mit Olivenöl und pfeffere sie.",
+        "Heize die Heißluftfritteuse 3 Minuten auf 190 °C vor.",
+        "Lege die Bündel mit der Schinken-Naht nach unten nebeneinander in den Korb und gare sie 8–10 Minuten bei 190 °C; nach 5 Minuten vorsichtig mit einer Zange wenden.",
+        "Verrühre Magerquark mit Schnittlauch, fein geriebenem Knoblauch, 1–2 EL Wasser, Salz und Pfeffer und serviere den Kräuterquark dazu."
+      ],
+      "tipp": "Mit frischen Bohnen die Bündel vorher 4 Minuten in Salzwasser blanchieren. Lachsschinken ist schon salzig – die Bohnen deshalb nicht zusätzlich salzen."
+    },
+    {
+      "mahlzeit": "Beilagen & Gemüse",
+      "name": "Süßkartoffel-Würfel mit Feta und Limetten-Skyr",
+      "beschreibung": "Rauchig gewürzte Süßkartoffelwürfel, außen gebräunt und innen weich, mit zerbröseltem Feta, Frühlingszwiebeln und einem frischen Limetten-Skyr.",
+      "zeit_min": 25,
+      "tags": [
+        "Heißluftfritteuse"
+      ],
+      "passt_fuer": [
+        "vegetarisch",
+        "fleisch",
+        "ohne-schwein"
+      ],
+      "zutaten": [
+        {
+          "name": "Süßkartoffel",
+          "menge_g": 180,
+          "anzeige": "1 kleine Süßkartoffel (180 g)"
+        },
+        {
+          "name": "Rapsöl",
+          "menge_g": 5,
+          "anzeige": "1 TL (5 g)"
+        },
+        {
+          "name": "Paprikapulver geräuchert",
+          "menge_g": 0,
+          "anzeige": "½ TL"
+        },
+        {
+          "name": "Salz",
+          "menge_g": 0,
+          "anzeige": "1 Prise"
+        },
+        {
+          "name": "Feta",
+          "menge_g": 30,
+          "anzeige": "30 g"
+        },
+        {
+          "name": "Frühlingszwiebeln",
+          "menge_g": 15,
+          "anzeige": "1 Frühlingszwiebel (15 g)"
+        },
+        {
+          "name": "Skyr natur",
+          "menge_g": 60,
+          "anzeige": "60 g"
+        },
+        {
+          "name": "Limettensaft",
+          "menge_g": 5,
+          "anzeige": "1 TL (5 ml)"
+        },
+        {
+          "name": "Pfeffer",
+          "menge_g": 0,
+          "anzeige": "1 Prise"
+        }
+      ],
+      "zubereitung": [
+        "Heize die Heißluftfritteuse 3 Minuten auf 200 °C vor.",
+        "Schäle die Süßkartoffel, schneide sie in 2 cm große Würfel und mische sie mit Rapsöl, geräuchertem Paprikapulver und Salz.",
+        "Gare die Würfel in einer Lage 14–16 Minuten bei 200 °C und schüttel den Korb alle 5 Minuten, damit sie rundum bräunen. Sie sind fertig, wenn sie sich mit einem Messer leicht einstechen lassen.",
+        "Verrühre Skyr mit Limettensaft, Salz und Pfeffer. Gib die heißen Würfel in eine Schale, zerbrösele den Feta darüber, streue die Frühlingszwiebelringe darauf und serviere den Limetten-Skyr dazu."
+      ],
+      "tipp": "Gleich große Würfel garen gleichmäßig – kleine Ecken verbrennen sonst schneller. Als Hauptgericht mit 100 g Hähnchenbrust oder einem Spiegelei ergänzen."
+    },
+    {
+      "mahlzeit": "Beilagen & Gemüse",
+      "name": "Würzige Auberginen-Scheiben mit Knoblauch-Sojaskyr und Kürbiskernen",
+      "beschreibung": "Mit Rauchpaprika und Kreuzkümmel gewürzte Auberginenscheiben werden in der Heißluft cremig-weich mit gebräunten Rändern – dazu ein kühler Knoblauch-Minz-Dip.",
+      "zeit_min": 25,
+      "tags": [
+        "Heißluftfritteuse"
+      ],
+      "passt_fuer": [
+        "vegan",
+        "vegetarisch",
+        "fleisch",
+        "ohne-schwein"
+      ],
+      "zutaten": [
+        {
+          "name": "Aubergine",
+          "menge_g": 250,
+          "anzeige": "1 Aubergine (250 g)"
+        },
+        {
+          "name": "Olivenöl",
+          "menge_g": 8,
+          "anzeige": "2 TL (8 g)"
+        },
+        {
+          "name": "Paprikapulver geräuchert",
+          "menge_g": 0,
+          "anzeige": "½ TL"
+        },
+        {
+          "name": "Kreuzkümmel (gemahlen)",
+          "menge_g": 0,
+          "anzeige": "½ TL"
+        },
+        {
+          "name": "Salz",
+          "menge_g": 0,
+          "anzeige": "1 Prise"
+        },
+        {
+          "name": "Sojaskyr natur",
+          "menge_g": 120,
+          "anzeige": "120 g"
+        },
+        {
+          "name": "Knoblauch",
+          "menge_g": 3,
+          "anzeige": "1 Zehe (3 g)"
+        },
+        {
+          "name": "Zitronensaft",
+          "menge_g": 5,
+          "anzeige": "1 TL (5 ml)"
+        },
+        {
+          "name": "Minze (frisch)",
+          "menge_g": 3,
+          "anzeige": "ein paar Blätter (3 g)"
+        },
+        {
+          "name": "Kürbiskerne",
+          "menge_g": 8,
+          "anzeige": "1 EL (8 g)"
+        }
+      ],
+      "zubereitung": [
+        "Schneide die Aubergine in 1,5 cm dicke Scheiben, salze sie leicht und lass sie 5 Minuten ziehen; dann trocken tupfen.",
+        "Heize die Heißluftfritteuse 3 Minuten auf 200 °C vor. Verrühre Olivenöl mit Rauchpaprika und Kreuzkümmel und bestreiche die Scheiben damit von beiden Seiten.",
+        "Lege die Scheiben in einer Lage in den Korb (bei Bedarf in 2 Durchgängen) und gare sie 12–14 Minuten bei 200 °C; nach 7 Minuten wenden. Sie sind fertig, wenn sie innen weich und an den Rändern gebräunt sind.",
+        "Röste die Kürbiskerne in den letzten 2 Minuten mit im Korb (in einer kleinen ofenfesten Schale), damit sie nicht wegfliegen.",
+        "Verrühre Sojaskyr mit gepresstem Knoblauch, Zitronensaft, gehackter Minze und Salz, gib ihn auf die Auberginen und streue die Kürbiskerne darüber."
+      ],
+      "tipp": "Aubergine saugt Öl auf wie ein Schwamm – deshalb bestreichen statt übergießen. Passt warm oder kalt zu Couscous, Bulgur oder Fladenbrot."
+    },
+    {
+      "mahlzeit": "Beilagen & Gemüse",
+      "name": "Möhren-Pastinaken-Sticks mit Ahorn-Glasur und Erbsen-Minz-Dip",
+      "beschreibung": "Süßliche Wurzelgemüse-Sticks mit leichter Ahornsirup-Glasur, dazu ein knallgrüner Dip aus Erbsen und Sojaskyr, der die Beilage eiweißreich macht.",
+      "zeit_min": 25,
+      "tags": [
+        "Heißluftfritteuse"
+      ],
+      "passt_fuer": [
+        "vegan",
+        "vegetarisch",
+        "fleisch",
+        "ohne-schwein"
+      ],
+      "zutaten": [
+        {
+          "name": "Möhre",
+          "menge_g": 150,
+          "anzeige": "2 Möhren (150 g)"
+        },
+        {
+          "name": "Pastinake",
+          "menge_g": 150,
+          "anzeige": "1 Pastinake (150 g)"
+        },
+        {
+          "name": "Olivenöl",
+          "menge_g": 5,
+          "anzeige": "1 TL (5 g)"
+        },
+        {
+          "name": "Ahornsirup",
+          "menge_g": 5,
+          "anzeige": "1 TL (5 g)"
+        },
+        {
+          "name": "Rosmarin (getrocknet)",
+          "menge_g": 0,
+          "anzeige": "½ TL"
+        },
+        {
+          "name": "Salz",
+          "menge_g": 0,
+          "anzeige": "1 Prise"
+        },
+        {
+          "name": "Erbsen (TK)",
+          "menge_g": 80,
+          "anzeige": "80 g, aufgetaut"
+        },
+        {
+          "name": "Sojaskyr natur",
+          "menge_g": 80,
+          "anzeige": "80 g"
+        },
+        {
+          "name": "Zitronensaft",
+          "menge_g": 5,
+          "anzeige": "1 TL (5 ml)"
+        },
+        {
+          "name": "Minze (frisch)",
+          "menge_g": 3,
+          "anzeige": "ein paar Blätter (3 g)"
+        },
+        {
+          "name": "Pfeffer",
+          "menge_g": 0,
+          "anzeige": "1 Prise"
+        }
+      ],
+      "zubereitung": [
+        "Heize die Heißluftfritteuse 3 Minuten auf 200 °C vor.",
+        "Schäle Möhren und Pastinake und schneide sie in fingerdicke Sticks. Mische sie mit Olivenöl, Rosmarin und Salz.",
+        "Gare die Sticks in einer Lage 14–16 Minuten bei 200 °C und schüttel den Korb nach 7 Minuten. Beträufle sie in den letzten 3 Minuten mit dem Ahornsirup und schüttel noch einmal.",
+        "Püriere in der Zwischenzeit die aufgetauten Erbsen mit Sojaskyr, Zitronensaft, Minze, Salz und Pfeffer zu einem cremigen Dip.",
+        "Serviere die heißen Sticks mit dem Dip."
+      ],
+      "tipp": "Den Ahornsirup erst am Ende zugeben, sonst wird er bitter. Der Erbsen-Dip hält sich gekühlt 2 Tage und passt auch aufs Brot."
+    },
+    {
+      "mahlzeit": "Snacks & Süßes",
+      "name": "Protein-French-Toast mit Zimt und Himbeer-Skyr",
+      "beschreibung": "Vollkorntoast in Zimt-Eiermilch getränkt und in der Heißluft goldbraun gebacken, mit Himbeer-Skyr – ein warmes Frühstück oder ein süßer Snack mit viel Eiweiß.",
+      "zeit_min": 15,
+      "tags": [
+        "Heißluftfritteuse"
+      ],
+      "passt_fuer": [
+        "vegetarisch",
+        "fleisch",
+        "ohne-schwein"
+      ],
+      "zutaten": [
+        {
+          "name": "Vollkorntoast",
+          "menge_g": 56,
+          "anzeige": "2 Scheiben (56 g)"
+        },
+        {
+          "name": "Ei",
+          "menge_g": 60,
+          "anzeige": "1 Ei (Größe M)"
+        },
+        {
+          "name": "Milch 1,5 %",
+          "menge_g": 40,
+          "anzeige": "40 ml"
+        },
+        {
+          "name": "Zimt",
+          "menge_g": 0,
+          "anzeige": "½ TL"
+        },
+        {
+          "name": "Rapsöl",
+          "menge_g": 2,
+          "anzeige": "ein paar Sprühstöße (2 g)"
+        },
+        {
+          "name": "Skyr natur",
+          "menge_g": 80,
+          "anzeige": "80 g"
+        },
+        {
+          "name": "Himbeeren (TK)",
+          "menge_g": 50,
+          "anzeige": "50 g, aufgetaut"
+        }
+      ],
+      "zubereitung": [
+        "Verquirle Ei, Milch und Zimt in einem tiefen Teller und lege die Toastscheiben je 30 Sekunden pro Seite hinein, bis sie die Mischung aufgesogen haben.",
+        "Heize die Heißluftfritteuse 2 Minuten auf 180 °C vor und sprühe den Korb dünn mit Rapsöl ein.",
+        "Lege die Scheiben nebeneinander in den Korb und backe sie 7–8 Minuten bei 180 °C; nach 4 Minuten wenden. Sie sind fertig, wenn sie außen goldbraun und in der Mitte nicht mehr flüssig sind.",
+        "Zerdrücke die Himbeeren mit einer Gabel, verrühre sie mit dem Skyr und gib die Mischung auf den warmen French Toast."
+      ],
+      "tipp": "Ohne Backpapier wird die Unterseite knuspriger. Wer es süßer mag, süßt den Skyr mit etwas Erythrit oder 1 TL Honig."
+    },
+    {
+      "mahlzeit": "Snacks & Süßes",
+      "name": "Zimtschnecken mit Quark-Öl-Teig und Skyr-Guss",
+      "beschreibung": "Drei kleine, fluffige Zimtschnecken aus schnellem Quark-Öl-Teig ohne Hefe, mit einem cremigen Skyr-Guss statt Zuckerglasur.",
+      "zeit_min": 25,
+      "tags": [
+        "Heißluftfritteuse",
+        "zum Mitnehmen"
+      ],
+      "passt_fuer": [
+        "vegetarisch",
+        "fleisch",
+        "ohne-schwein"
+      ],
+      "zutaten": [
+        {
+          "name": "Magerquark",
+          "menge_g": 50,
+          "anzeige": "50 g"
+        },
+        {
+          "name": "Milch 1,5 %",
+          "menge_g": 15,
+          "anzeige": "1 EL (15 ml)"
+        },
+        {
+          "name": "Rapsöl",
+          "menge_g": 8,
+          "anzeige": "2 TL (8 g)"
+        },
+        {
+          "name": "Erythrit",
+          "menge_g": 12,
+          "anzeige": "1 EL (12 g)"
+        },
+        {
+          "name": "Dinkelmehl Type 630",
+          "menge_g": 50,
+          "anzeige": "50 g"
+        },
+        {
+          "name": "Backpulver",
+          "menge_g": 3,
+          "anzeige": "1 TL (3 g)"
+        },
+        {
+          "name": "Zimt",
+          "menge_g": 0,
+          "anzeige": "1 TL"
+        },
+        {
+          "name": "Skyr natur",
+          "menge_g": 40,
+          "anzeige": "40 g"
+        }
+      ],
+      "zubereitung": [
+        "Verrühre Magerquark, Milch, 1 TL Rapsöl und die Hälfte des Erythrits, gib Mehl und Backpulver dazu und knete alles zu einem glatten Teig.",
+        "Rolle den Teig auf etwas Mehl zu einem Rechteck von etwa 15 × 20 cm aus, bestreiche ihn mit dem restlichen Öl und bestreue ihn mit Zimt und dem übrigen Erythrit (1 TL zurückbehalten).",
+        "Rolle den Teig von der langen Seite auf, schneide die Rolle in 3 Stücke und setze sie mit der Schnittfläche nach oben in Silikonförmchen.",
+        "Heize die Heißluftfritteuse 3 Minuten auf 170 °C vor und backe die Schnecken 10–12 Minuten bei 170 °C, ohne sie zu wenden. Werden sie oben zu dunkel, nach 8 Minuten locker mit Alufolie abdecken; sie sind fertig, wenn ein Holzstäbchen trocken herauskommt.",
+        "Verrühre Skyr mit dem restlichen Erythrit und gib den Guss auf die lauwarmen Schnecken."
+      ],
+      "tipp": "Die Schnecken lassen sich ohne Guss gut mitnehmen; den Skyr dann in einem kleinen Glas extra einpacken. Wer mehr Eiweiß will, rührt 10 g Whey-Proteinpulver (Vanille) in den Guss."
+    },
+    {
+      "mahlzeit": "Snacks & Süßes",
+      "name": "Knusprige Zimt-Apfelringe mit Sojaskyr und Mandeln",
+      "beschreibung": "Dünne Apfelringe mit Zimt werden in der Heißluft weich mit leicht karamellisierten Rändern – mit Sojaskyr und gerösteten Mandeln ein veganer, eiweißreicher Nachtisch.",
+      "zeit_min": 20,
+      "tags": [
+        "Heißluftfritteuse"
+      ],
+      "passt_fuer": [
+        "vegan",
+        "vegetarisch",
+        "fleisch",
+        "ohne-schwein"
+      ],
+      "zutaten": [
+        {
+          "name": "Apfel",
+          "menge_g": 150,
+          "anzeige": "1 Apfel (150 g)"
+        },
+        {
+          "name": "Zitronensaft",
+          "menge_g": 5,
+          "anzeige": "1 TL (5 ml)"
+        },
+        {
+          "name": "Zimt",
+          "menge_g": 0,
+          "anzeige": "1 TL"
+        },
+        {
+          "name": "Sojaskyr natur",
+          "menge_g": 150,
+          "anzeige": "150 g"
+        },
+        {
+          "name": "Ahornsirup",
+          "menge_g": 5,
+          "anzeige": "1 TL (5 g)"
+        },
+        {
+          "name": "Mandeln",
+          "menge_g": 8,
+          "anzeige": "6 Mandeln (8 g)"
+        }
+      ],
+      "zubereitung": [
+        "Entkerne den Apfel mit einem Apfelausstecher und schneide ihn in 5 mm dicke Ringe. Beträufle sie mit Zitronensaft und bestreue sie von beiden Seiten mit Zimt.",
+        "Heize die Heißluftfritteuse 3 Minuten auf 180 °C vor.",
+        "Lege die Ringe in einer Lage in den Korb und gare sie 8–10 Minuten bei 180 °C; nach 5 Minuten wenden. Hacke die Mandeln grob und röste sie in den letzten 2 Minuten in einer kleinen ofenfesten Schale mit.",
+        "Verrühre Sojaskyr mit Ahornsirup und einer Prise Zimt, richte die warmen Apfelringe darauf an und streue die Mandeln darüber."
+      ],
+      "tipp": "Feste, säuerliche Äpfel (z. B. Boskoop oder Elstar) behalten ihre Form am besten. Für knusprige Apfelchips die Ringe 2 mm dünn schneiden und 20 Minuten bei 140 °C trocknen."
+    },
+    {
+      "mahlzeit": "Snacks & Süßes",
+      "name": "Kokos-Garnelen mit Mango-Limetten-Skyr",
+      "beschreibung": "Garnelen in einer knusprigen Kokos-Panko-Hülle mit fruchtigem Mango-Dip – ein eiweißreicher Snack, der nach Urlaub schmeckt.",
+      "zeit_min": 20,
+      "tags": [
+        "Heißluftfritteuse"
+      ],
+      "passt_fuer": [
+        "fleisch",
+        "ohne-schwein"
+      ],
+      "zutaten": [
+        {
+          "name": "Garnelen (TK, roh, geschält)",
+          "menge_g": 150,
+          "anzeige": "150 g, aufgetaut"
+        },
+        {
+          "name": "Eiklar",
+          "menge_g": 30,
+          "anzeige": "1 Eiklar (30 g)"
+        },
+        {
+          "name": "Kokosraspeln",
+          "menge_g": 10,
+          "anzeige": "1 EL (10 g)"
+        },
+        {
+          "name": "Panko",
+          "menge_g": 10,
+          "anzeige": "2 EL (10 g)"
+        },
+        {
+          "name": "Salz",
+          "menge_g": 0,
+          "anzeige": "1 Prise"
+        },
+        {
+          "name": "Rapsöl",
+          "menge_g": 2,
+          "anzeige": "ein paar Sprühstöße (2 g)"
+        },
+        {
+          "name": "Skyr natur",
+          "menge_g": 60,
+          "anzeige": "60 g"
+        },
+        {
+          "name": "Mango (TK)",
+          "menge_g": 40,
+          "anzeige": "40 g, aufgetaut"
+        },
+        {
+          "name": "Limettensaft",
+          "menge_g": 5,
+          "anzeige": "1 TL (5 ml)"
+        },
+        {
+          "name": "Chiliflocken",
+          "menge_g": 0,
+          "anzeige": "1 Prise"
+        }
+      ],
+      "zubereitung": [
+        "Tupfe die aufgetauten Garnelen gründlich trocken. Verquirle das Eiklar mit einer Prise Salz und mische Kokosraspeln und Panko auf einem Teller.",
+        "Ziehe jede Garnele durch das Eiklar und dann durch die Kokos-Panko-Mischung; leicht andrücken.",
+        "Heize die Heißluftfritteuse 3 Minuten auf 200 °C vor. Lege die Garnelen in einer Lage in den Korb und besprühe sie dünn mit Rapsöl.",
+        "Gare sie 6–8 Minuten bei 200 °C und wende sie nach 4 Minuten. Sie sind fertig, wenn sie rundum rosa und innen nicht mehr glasig sind (Kerntemperatur ca. 63 °C).",
+        "Püriere oder zerdrücke die Mango mit Skyr, Limettensaft und Chiliflocken und serviere den Dip zu den heißen Garnelen."
+      ],
+      "tipp": "Kokosraspeln bräunen schnell – ab Minute 5 lieber einmal nachsehen. Statt Garnelen klappt es auch mit Hähnchenbrust-Streifen (10–12 Minuten, Kerntemperatur mindestens 74 °C)."
+    }
+  ]
+}

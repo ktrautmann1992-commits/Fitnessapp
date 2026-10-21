@@ -1,0 +1,247 @@
+{
+  "ingredients": {
+    "Express-Reis (Beutel, gegart)": {"kcal": 150, "p": 3.2, "c": 31.0, "f": 1.4, "abteilung": "Getreide, Nudeln & Hülsenfrüchte"},
+    "Sojadrink ungesüßt": {"kcal": 33, "p": 3.3, "c": 0.6, "f": 1.8, "abteilung": "Pflanzliche Alternativen"},
+    "Veganes Proteinpulver (Vanille)": {"kcal": 380, "p": 72.0, "c": 8.0, "f": 6.0, "abteilung": "Sonstiges"},
+    "Mango (TK)": {"kcal": 60, "p": 0.8, "c": 14.0, "f": 0.4, "abteilung": "Tiefkühl"},
+    "Zimt": {"kcal": 0, "p": 0.0, "c": 0.0, "f": 0.0, "abteilung": "Gewürze, Öle & Saucen"},
+    "Toastbrot (Weizen)": {"kcal": 265, "p": 8.0, "c": 48.0, "f": 3.5, "abteilung": "Brot & Backwaren"},
+    "Magerquark": {"kcal": 67, "p": 12.0, "c": 4.0, "f": 0.3, "abteilung": "Kühlregal & Molkerei"},
+    "Honig": {"kcal": 304, "p": 0.3, "c": 80.0, "f": 0.0, "abteilung": "Gewürze, Öle & Saucen"},
+    "Banane": {"kcal": 93, "p": 1.2, "c": 20.0, "f": 0.2, "abteilung": "Obst & Gemüse"},
+    "Hähnchenbrustfilet": {"kcal": 105, "p": 23.5, "c": 0.0, "f": 1.2, "abteilung": "Fleisch & Fisch"},
+    "Gurke": {"kcal": 12, "p": 0.6, "c": 1.8, "f": 0.2, "abteilung": "Obst & Gemüse"},
+    "Sojasauce": {"kcal": 60, "p": 8.0, "c": 6.0, "f": 0.1, "abteilung": "Gewürze, Öle & Saucen"},
+    "Rapsöl": {"kcal": 884, "p": 0.0, "c": 0.0, "f": 100.0, "abteilung": "Gewürze, Öle & Saucen"},
+    "Salz": {"kcal": 0, "p": 0.0, "c": 0.0, "f": 0.0, "abteilung": "Gewürze, Öle & Saucen"},
+    "Pfeffer": {"kcal": 0, "p": 0.0, "c": 0.0, "f": 0.0, "abteilung": "Gewürze, Öle & Saucen"},
+    "Gnocchi (Kühlregal)": {"kcal": 155, "p": 3.7, "c": 33.0, "f": 0.5, "abteilung": "Kühlregal & Molkerei"},
+    "Passierte Tomaten": {"kcal": 32, "p": 1.4, "c": 5.5, "f": 0.2, "abteilung": "Konserven & Gläser"},
+    "Räuchertofu": {"kcal": 160, "p": 17.0, "c": 2.0, "f": 9.0, "abteilung": "Pflanzliche Alternativen"},
+    "Oregano getrocknet": {"kcal": 0, "p": 0.0, "c": 0.0, "f": 0.0, "abteilung": "Gewürze, Öle & Saucen"},
+    "Weizenbrötchen": {"kcal": 265, "p": 8.5, "c": 52.0, "f": 1.5, "abteilung": "Brot & Backwaren"},
+    "Putenbrust-Aufschnitt": {"kcal": 105, "p": 21.0, "c": 1.5, "f": 1.5, "abteilung": "Fleisch & Fisch"},
+    "Wildpreiselbeeren (Glas)": {"kcal": 180, "p": 0.3, "c": 43.0, "f": 0.3, "abteilung": "Konserven & Gläser"},
+    "Reiswaffeln": {"kcal": 385, "p": 8.0, "c": 81.0, "f": 3.0, "abteilung": "Brot & Backwaren"},
+    "Erdbeerkonfitüre": {"kcal": 250, "p": 0.4, "c": 60.0, "f": 0.1, "abteilung": "Konserven & Gläser"},
+    "Orangensaft": {"kcal": 45, "p": 0.7, "c": 9.0, "f": 0.2, "abteilung": "Sonstiges"},
+    "Eiswürfel": {"kcal": 0, "p": 0.0, "c": 0.0, "f": 0.0, "abteilung": "Sonstiges"},
+    "Wasser": {"kcal": 0, "p": 0.0, "c": 0.0, "f": 0.0, "abteilung": "Sonstiges"},
+    "Datteln (getrocknet, entsteint)": {"kcal": 280, "p": 2.5, "c": 66.0, "f": 0.4, "abteilung": "Nüsse, Samen & Trockenfrüchte"},
+    "Kakaopulver (stark entölt)": {"kcal": 350, "p": 20.0, "c": 11.0, "f": 11.0, "abteilung": "Sonstiges"},
+    "Zwieback": {"kcal": 400, "p": 10.0, "c": 75.0, "f": 5.0, "abteilung": "Brot & Backwaren"},
+    "Milch 1,5 %": {"kcal": 47, "p": 3.4, "c": 4.9, "f": 1.5, "abteilung": "Kühlregal & Molkerei"}
+  },
+  "recipes": [
+    {
+      "mahlzeit": "60–90 Min. vorher",
+      "passt_fuer": ["vegan", "vegetarisch", "fleisch", "ohne-schwein"],
+      "name": "Mango-Reispudding mit Vanille-Protein",
+      "beschreibung": "Cremiger Reispudding aus Express-Reis, der mit leicht verdaulicher Stärke und Mango die Speicher füllt und dabei kaum Fett und Ballaststoffe mitbringt.",
+      "zeit_min": 6,
+      "tags": ["Vor dem Training", "Unter 10 Minuten"],
+      "zutaten": [
+        {"name": "Express-Reis (Beutel, gegart)", "menge_g": 125, "anzeige": "½ Beutel Express-Reis (125 g)"},
+        {"name": "Sojadrink ungesüßt", "menge_g": 150, "anzeige": "150 ml"},
+        {"name": "Veganes Proteinpulver (Vanille)", "menge_g": 20, "anzeige": "1 Messlöffel (20 g)"},
+        {"name": "Mango (TK)", "menge_g": 80, "anzeige": "80 g"},
+        {"name": "Zimt", "menge_g": 0, "anzeige": "1 Prise"}
+      ],
+      "zubereitung": [
+        "Gib den Reis mit 120 ml Sojadrink in einen kleinen Topf und lass ihn bei mittlerer Hitze unter Rühren 3 Minuten cremig köcheln.",
+        "Nimm den Topf vom Herd und lass den Reis 1 Minute abkühlen.",
+        "Verrühre das Proteinpulver mit dem restlichen Sojadrink glatt und rühre es unter den Reis.",
+        "Taue die Mango kurz in der Mikrowelle an (ca. 1 Minute bei 600 Watt), gib sie auf den Pudding und bestreue alles mit Zimt."
+      ],
+      "tipp": "Ohne Pulver: Nimm 150 g Sojaskyr natur statt Proteinpulver und lass dafür den Sojadrink zur Hälfte weg. Lauwarm oder kalt aus der Dose mitgenommen gut verträglich."
+    },
+    {
+      "mahlzeit": "60–90 Min. vorher",
+      "passt_fuer": ["vegetarisch", "fleisch", "ohne-schwein"],
+      "name": "Quark-Honig-Toast mit Bananenscheiben",
+      "beschreibung": "Heller Toast mit Honig und Banane liefert schnell verfügbare Kohlenhydrate, der Magerquark sorgt fettarm für Eiweiß, ohne den Magen zu belasten.",
+      "zeit_min": 5,
+      "tags": ["Vor dem Training", "Unter 10 Minuten"],
+      "zutaten": [
+        {"name": "Toastbrot (Weizen)", "menge_g": 50, "anzeige": "2 Scheiben (50 g)"},
+        {"name": "Magerquark", "menge_g": 125, "anzeige": "125 g"},
+        {"name": "Honig", "menge_g": 15, "anzeige": "1 EL (15 g)"},
+        {"name": "Banane", "menge_g": 60, "anzeige": "½ Banane (60 g)"},
+        {"name": "Zimt", "menge_g": 0, "anzeige": "1 Prise"}
+      ],
+      "zubereitung": [
+        "Röste die Toastscheiben goldbraun.",
+        "Verrühre den Magerquark mit der Hälfte des Honigs und dem Zimt.",
+        "Streiche die Quarkcreme auf die Toasts und belege sie mit Bananenscheiben.",
+        "Träufle den restlichen Honig darüber."
+      ],
+      "tipp": "Wer empfindlich reagiert, nimmt lieber 100 g Quark und isst das Ganze eher 90 als 60 Minuten vor dem Training."
+    },
+    {
+      "mahlzeit": "60–90 Min. vorher",
+      "passt_fuer": ["fleisch", "ohne-schwein"],
+      "name": "Mini-Reisbowl mit Hähnchen und Gurke",
+      "beschreibung": "Eine kleine, fettarme Bowl aus Reis und magerem Hähnchen, die Energie liefert und mit wenig Gemüse leicht im Magen liegt.",
+      "zeit_min": 15,
+      "tags": ["Vor dem Training", "Meal-Prep"],
+      "zutaten": [
+        {"name": "Express-Reis (Beutel, gegart)", "menge_g": 125, "anzeige": "½ Beutel Express-Reis (125 g)"},
+        {"name": "Hähnchenbrustfilet", "menge_g": 80, "anzeige": "80 g"},
+        {"name": "Gurke", "menge_g": 60, "anzeige": "60 g"},
+        {"name": "Sojasauce", "menge_g": 10, "anzeige": "2 TL (10 ml)"},
+        {"name": "Rapsöl", "menge_g": 3, "anzeige": "½ TL (3 g)"},
+        {"name": "Salz", "menge_g": 0, "anzeige": "1 Prise"},
+        {"name": "Pfeffer", "menge_g": 0, "anzeige": "1 Prise"}
+      ],
+      "zubereitung": [
+        "Schneide das Hähnchen in kleine Würfel und würze es mit Salz und Pfeffer.",
+        "Erhitze das Öl in einer beschichteten Pfanne und brate das Hähnchen bei mittlerer bis hoher Hitze 6–7 Minuten rundum durch.",
+        "Gib den Reis dazu, lösche mit der Sojasauce ab und brate alles 2 Minuten weiter.",
+        "Schneide die Gurke in feine Scheiben und richte sie neben dem Reis an."
+      ],
+      "tipp": "Als Meal-Prep kalt in der Dose mitnehmen; die Gurke erst kurz vor dem Essen dazugeben, damit sie knackig bleibt."
+    },
+    {
+      "mahlzeit": "60–90 Min. vorher",
+      "passt_fuer": ["vegan", "vegetarisch", "fleisch", "ohne-schwein"],
+      "name": "Tomaten-Gnocchi mit Räuchertofu-Würfeln",
+      "beschreibung": "Weiche Gnocchi in schlanker Tomatensauce bringen viel leicht verdauliche Stärke, kleine Räuchertofu-Würfel ergänzen pflanzliches Eiweiß.",
+      "zeit_min": 12,
+      "tags": ["Vor dem Training"],
+      "zutaten": [
+        {"name": "Gnocchi (Kühlregal)", "menge_g": 170, "anzeige": "170 g"},
+        {"name": "Passierte Tomaten", "menge_g": 100, "anzeige": "100 g"},
+        {"name": "Räuchertofu", "menge_g": 50, "anzeige": "50 g"},
+        {"name": "Oregano getrocknet", "menge_g": 0, "anzeige": "½ TL"},
+        {"name": "Salz", "menge_g": 0, "anzeige": "1 Prise"},
+        {"name": "Pfeffer", "menge_g": 0, "anzeige": "1 Prise"}
+      ],
+      "zubereitung": [
+        "Bring reichlich Salzwasser zum Kochen und gare die Gnocchi darin, bis sie an die Oberfläche steigen (ca. 2–3 Minuten).",
+        "Schneide den Räuchertofu in kleine Würfel und röste ihn in einer beschichteten Pfanne ohne Öl 3 Minuten an.",
+        "Gib die passierten Tomaten und den Oregano dazu und lass die Sauce 3 Minuten köcheln; mit Salz und Pfeffer abschmecken.",
+        "Gieße die Gnocchi ab und schwenke sie in der Sauce."
+      ],
+      "tipp": "Ohne Öl angebraten bleibt das Gericht fettarm und gut verträglich. Wer vor dem Training wenig Appetit hat, nimmt 130 g Gnocchi."
+    },
+    {
+      "mahlzeit": "60–90 Min. vorher",
+      "passt_fuer": ["fleisch", "ohne-schwein"],
+      "name": "Putenbrust-Brötchen mit Preiselbeeren",
+      "beschreibung": "Helles Brötchen mit magerer Putenbrust und fruchtigen Preiselbeeren – schnelle Kohlenhydrate plus Eiweiß, praktisch fürs Gym-Bag.",
+      "zeit_min": 4,
+      "tags": ["Vor dem Training", "zum Mitnehmen"],
+      "zutaten": [
+        {"name": "Weizenbrötchen", "menge_g": 60, "anzeige": "1 Brötchen (60 g)"},
+        {"name": "Putenbrust-Aufschnitt", "menge_g": 70, "anzeige": "4 Scheiben (70 g)"},
+        {"name": "Wildpreiselbeeren (Glas)", "menge_g": 25, "anzeige": "1 EL (25 g)"},
+        {"name": "Gurke", "menge_g": 30, "anzeige": "4 Scheiben (30 g)"}
+      ],
+      "zubereitung": [
+        "Schneide das Brötchen auf.",
+        "Streiche die Preiselbeeren auf die untere Hälfte.",
+        "Belege es mit Putenbrust und Gurkenscheiben und klappe es zu."
+      ],
+      "tipp": "Ohne Butter oder Frischkäse bleibt das Brötchen fettarm. In Butterbrotpapier gewickelt hält es sich ein paar Stunden in der Sporttasche."
+    },
+    {
+      "mahlzeit": "30 Min. vorher",
+      "passt_fuer": ["vegan", "vegetarisch", "fleisch", "ohne-schwein"],
+      "name": "Reiswaffeln mit Erdbeerkonfitüre und Banane",
+      "beschreibung": "Knusprige Reiswaffeln mit Konfitüre und Banane – fast nur schnelle Kohlenhydrate, kaum Fett, ideal kurz vor dem Start.",
+      "zeit_min": 3,
+      "tags": ["Vor dem Training", "ohne Kochen"],
+      "zutaten": [
+        {"name": "Reiswaffeln", "menge_g": 24, "anzeige": "3 Reiswaffeln (24 g)"},
+        {"name": "Erdbeerkonfitüre", "menge_g": 20, "anzeige": "1 gehäufter TL (20 g)"},
+        {"name": "Banane", "menge_g": 60, "anzeige": "½ Banane (60 g)"}
+      ],
+      "zubereitung": [
+        "Bestreiche die Reiswaffeln dünn mit der Konfitüre.",
+        "Schneide die Banane in dünne Scheiben.",
+        "Verteile die Bananenscheiben auf den Reiswaffeln und iss sie direkt."
+      ],
+      "tipp": "Erst kurz vor dem Essen bestreichen, sonst werden die Waffeln weich. Zum Mitnehmen Waffeln und Banane getrennt einpacken."
+    },
+    {
+      "mahlzeit": "30 Min. vorher",
+      "passt_fuer": ["vegan", "vegetarisch", "fleisch", "ohne-schwein"],
+      "name": "Orangen-Bananen-Shake mit Vanille-Protein",
+      "beschreibung": "Ein flüssiger Snack aus Saft und Banane, der schnell im Blut ankommt und den Magen kaum belastet – mit etwas Eiweiß obendrauf.",
+      "zeit_min": 3,
+      "tags": ["Vor dem Training", "Unter 10 Minuten"],
+      "zutaten": [
+        {"name": "Orangensaft", "menge_g": 200, "anzeige": "200 ml"},
+        {"name": "Banane", "menge_g": 60, "anzeige": "½ Banane (60 g)"},
+        {"name": "Veganes Proteinpulver (Vanille)", "menge_g": 15, "anzeige": "1 kleiner Messlöffel (15 g)"},
+        {"name": "Eiswürfel", "menge_g": 0, "anzeige": "2–3 Eiswürfel"}
+      ],
+      "zubereitung": [
+        "Gib Orangensaft, Banane und Proteinpulver in einen Mixer.",
+        "Füge die Eiswürfel hinzu.",
+        "Mixe alles 20–30 Sekunden cremig und trinke den Shake gleich."
+      ],
+      "tipp": "Ohne Pulver: einfach weglassen und dafür die ganze Banane nehmen. Wer auf Säure empfindlich reagiert, ersetzt die Hälfte des Safts durch Wasser."
+    },
+    {
+      "mahlzeit": "30 Min. vorher",
+      "passt_fuer": ["vegan", "vegetarisch", "fleisch", "ohne-schwein"],
+      "name": "Dattel-Kakao-Kugeln mit Reiswaffel-Crunch",
+      "beschreibung": "Süße Mini-Kugeln aus Datteln und zerbröselten Reiswaffeln liefern konzentrierte Kohlenhydrate im Taschenformat, fast ohne Fett.",
+      "zeit_min": 10,
+      "tags": ["Vor dem Training", "Meal-Prep"],
+      "zutaten": [
+        {"name": "Datteln (getrocknet, entsteint)", "menge_g": 35, "anzeige": "4 Datteln (35 g)"},
+        {"name": "Reiswaffeln", "menge_g": 15, "anzeige": "2 Reiswaffeln (15 g)"},
+        {"name": "Kakaopulver (stark entölt)", "menge_g": 4, "anzeige": "1 TL (4 g)"},
+        {"name": "Wasser", "menge_g": 0, "anzeige": "1–2 TL"}
+      ],
+      "zubereitung": [
+        "Weiche die Datteln 5 Minuten in heißem Wasser ein und gieße sie ab.",
+        "Zerbrösele die Reiswaffeln mit den Händen in eine Schüssel.",
+        "Püriere die Datteln mit dem Kakao und 1–2 TL Wasser zu einer klebrigen Masse.",
+        "Knete die Reiswaffelbrösel unter und forme 4 kleine Kugeln."
+      ],
+      "tipp": "Gut für den Vorrat: Die Kugeln halten in einer Dose im Kühlschrank 5 Tage – einfach die benötigte Menge mitnehmen."
+    },
+    {
+      "mahlzeit": "30 Min. vorher",
+      "passt_fuer": ["vegetarisch", "fleisch", "ohne-schwein"],
+      "name": "Zwieback mit Honig-Quark",
+      "beschreibung": "Zwieback ist besonders magenschonend, mit Honig gibt es schnelle Energie und ein Klecks Magerquark bringt etwas Eiweiß ohne Fett.",
+      "zeit_min": 3,
+      "tags": ["Vor dem Training", "ohne Kochen"],
+      "zutaten": [
+        {"name": "Zwieback", "menge_g": 30, "anzeige": "3 Scheiben (30 g)"},
+        {"name": "Magerquark", "menge_g": 50, "anzeige": "2 EL (50 g)"},
+        {"name": "Honig", "menge_g": 10, "anzeige": "1 TL (10 g)"}
+      ],
+      "zubereitung": [
+        "Verrühre den Magerquark mit dem Honig.",
+        "Streiche die Honig-Quark-Creme auf die Zwiebackscheiben.",
+        "Iss sie direkt, solange der Zwieback noch knusprig ist."
+      ],
+      "tipp": "Bei nervösem Magen vor Wettkämpfen kannst du den Quark weglassen und den Zwieback nur mit Honig essen."
+    },
+    {
+      "mahlzeit": "30 Min. vorher",
+      "passt_fuer": ["vegetarisch", "fleisch", "ohne-schwein"],
+      "name": "Kakao-Bananenmilch",
+      "beschreibung": "Eine kühle Bananenmilch mit Kakao und Honig, die schnell Energie liefert und als Getränk leicht im Magen liegt.",
+      "zeit_min": 3,
+      "tags": ["Vor dem Training", "Unter 10 Minuten"],
+      "zutaten": [
+        {"name": "Milch 1,5 %", "menge_g": 200, "anzeige": "200 ml"},
+        {"name": "Banane", "menge_g": 80, "anzeige": "1 kleine Banane (80 g)"},
+        {"name": "Kakaopulver (stark entölt)", "menge_g": 5, "anzeige": "1 TL (5 g)"},
+        {"name": "Honig", "menge_g": 5, "anzeige": "1 TL (5 g)"}
+      ],
+      "zubereitung": [
+        "Gib Milch, Banane, Kakao und Honig in einen Mixer oder hohen Becher.",
+        "Mixe alles 20 Sekunden schaumig.",
+        "Fülle die Bananenmilch in ein Glas oder eine Trinkflasche."
+      ],
+      "tipp": "Mit laktosefreier Milch gleich zubereiten, falls normale Milch vor dem Sport drückt. In der Thermoflasche bleibt sie bis zum Gym kühl."
+    }
+  ]
+}

@@ -1,0 +1,897 @@
+{
+ "eintraege": [
+  {
+   "id": "kartoffel",
+   "name": "Kartoffel",
+   "kategorie": "Kartoffeln & Knollen",
+   "kurz": "Vielseitige Stärkebeilage mit wenig Kalorien pro Gramm, viel Kalium und überraschend gutem Eiweiß.",
+   "bezug": "roh, geschält",
+   "naehrwerte_100g": {
+    "kcal": 72,
+    "eiweiss_g": 2.0,
+    "kohlenhydrate_g": 15.6,
+    "fett_g": 0.1,
+    "ballaststoffe_g": 2.1
+   },
+   "portion": "250 g roh als Beilage (ca. 3–4 mittelgroße Kartoffeln)",
+   "naehrstoffe": [
+    "Kalium",
+    "Vitamin C",
+    "Vitamin B6"
+   ],
+   "eiweissqualitaet": "Wenig Eiweiß, aber von hoher Qualität; die Kombination Kartoffel mit Ei gilt in der Fachliteratur als klassisches Beispiel für eine sehr hohe biologische Wertigkeit. Auch mit Milchprodukten, Quark oder Hülsenfrüchten ergänzt sie sich gut.",
+   "staerken": [
+    "Geringe Energiedichte bei hohem Volumen – sättigt gut",
+    "Reich an Kalium",
+    "Liefert Vitamin C, wenn schonend gegart",
+    "Fettarm und glutenfrei"
+   ],
+   "gut_fuer": [
+    "Fettverlust, weil sie viel Volumen für wenige Kalorien bietet",
+    "Glykogenauffüllung nach dem Training",
+    "Glutenfreie Ernährung",
+    "Vegane Küche in Kombination mit Hülsenfrüchten"
+   ],
+   "weniger_geeignet": [
+    "Bei ärztlich verordneter kaliumarmer Ernährung (z. B. Nierenerkrankung) nur nach Absprache mit Arzt/Ernährungsfachkraft, weil sie viel Kalium enthält",
+    "Als Pommes oder Chips beim Kaloriensparen, weil die Frittierfett-Aufnahme die Energiedichte vervielfacht",
+    "In großen Mengen direkt vor intensiven Einheiten, weil das Volumen den Magen belasten kann"
+   ],
+   "tipps": [
+    "Mit Schale garen (Pellkartoffel) – so gehen weniger Vitamine und Mineralstoffe ins Kochwasser verloren",
+    "Gekocht und abgekühlt (z. B. als Kartoffelsalat) entsteht mehr resistente Stärke",
+    "Beim Braten und Backen goldgelb statt dunkelbraun garen, um die Acrylamidbildung gering zu halten"
+   ],
+   "lagerung": "Kühl, dunkel und trocken lagern, aber möglichst nicht unter ca. 8 °C (also nicht im Kühlschrank), weil sich sonst Zucker bildet und beim Braten mehr Acrylamid entsteht; nicht neben Äpfeln lagern – so halten sie mehrere Wochen.",
+   "hinweis": "Grüne Stellen, Keime und Augen großzügig entfernen und stark grüne, stark gekeimte oder schrumpelige Knollen verwerfen, weil sie erhöhte Mengen an Glykoalkaloiden (Solanin) enthalten können; bitter schmeckende Kartoffelgerichte nicht essen, Kochwasser nicht weiterverwenden und kleinen Kindern nur geschälte Kartoffeln geben.",
+   "alpha5": "Ideal als Hauptkohlenhydrat beim Mittag- oder Abendessen und in Post-Workout-Mahlzeiten, gut vorkochbar fürs Meal-Prep."
+  },
+  {
+   "id": "suesskartoffel",
+   "name": "Süßkartoffel",
+   "kategorie": "Kartoffeln & Knollen",
+   "kurz": "Süßlich-aromatische Knolle mit viel Beta-Carotin und etwas mehr Ballaststoffen als die Kartoffel.",
+   "bezug": "roh, geschält",
+   "naehrwerte_100g": {
+    "kcal": 86,
+    "eiweiss_g": 1.6,
+    "kohlenhydrate_g": 17.5,
+    "fett_g": 0.1,
+    "ballaststoffe_g": 3.0
+   },
+   "portion": "200–250 g roh als Beilage",
+   "naehrstoffe": [
+    "Beta-Carotin (Provitamin A)",
+    "Kalium",
+    "Vitamin C",
+    "Mangan",
+    "Ballaststoffe"
+   ],
+   "eiweissqualitaet": "Geringer Eiweißgehalt mit mittlerer Qualität; für eine vollständige Mahlzeit mit Hülsenfrüchten, Ei, Milchprodukten, Fisch oder Fleisch kombinieren.",
+   "staerken": [
+    "Sehr reich an Beta-Carotin",
+    "Natürliche Süße – passt in herzhafte und süße Gerichte",
+    "Liefert Ballaststoffe und Kalium",
+    "Glutenfrei"
+   ],
+   "gut_fuer": [
+    "Ausdauersportler als abwechslungsreiche Kohlenhydratquelle",
+    "Post-Workout-Mahlzeiten zur Glykogenauffüllung",
+    "Glutenfreie Ernährung",
+    "Meal-Prep (Ofengemüse, Bowls)"
+   ],
+   "weniger_geeignet": [
+    "Bei ärztlich verordneter kaliumarmer Ernährung, weil sie reich an Kalium ist – mit Arzt/Ernährungsfachkraft abstimmen",
+    "Bei Neigung zu Oxalat-Nierensteinen in großen Mengen, weil sie Oxalat enthält – mit Arzt abstimmen",
+    "Direkt vor intensiven Einheiten in großen Portionen, weil Ballaststoffe den Magen belasten können"
+   ],
+   "tipps": [
+    "Mit etwas Fett (z. B. Olivenöl) zubereiten – das verbessert die Aufnahme von Beta-Carotin",
+    "Gut abgeschrubbt kann die Schale mitgegessen werden",
+    "Im Ofen als Spalten oder als Püree – gart schneller als die Kartoffel"
+   ],
+   "lagerung": "Kühl, trocken und dunkel bei ca. 12–15 °C lagern, nicht im Kühlschrank (wird dort schnell fleckig); hält so 1–3 Wochen.",
+   "hinweis": "",
+   "alpha5": "Gute Abwechslung zur Kartoffel in Post-Workout-Mahlzeiten und beim Meal-Prep, z. B. als Ofen-Süßkartoffel mit Eiweißbeilage."
+  },
+  {
+   "id": "weisser-reis-basmati",
+   "name": "Weißer Reis / Basmati",
+   "kategorie": "Reis",
+   "kurz": "Leicht verdauliche, ballaststoffarme Kohlenhydratquelle – der Klassiker vor und nach dem Training.",
+   "bezug": "trocken (ungekocht)",
+   "naehrwerte_100g": {
+    "kcal": 350,
+    "eiweiss_g": 7.5,
+    "kohlenhydrate_g": 78.0,
+    "fett_g": 0.6,
+    "ballaststoffe_g": 1.0
+   },
+   "portion": "60–80 g trocken als Beilage (ergibt ca. 180–240 g gekocht)",
+   "naehrstoffe": [
+    "Mangan",
+    "Phosphor",
+    "Vitamin B1 (gering, da Schale entfernt)",
+    "Selen (je nach Herkunft)"
+   ],
+   "eiweissqualitaet": "Eiweiß mit begrenzender Aminosäure Lysin; mit Hülsenfrüchten (z. B. Reis mit Linsen- oder Bohnen-Curry), Tofu, Ei, Fisch oder Fleisch ergänzt es sich sehr gut.",
+   "staerken": [
+    "Sehr gut bekömmlich, da ballaststoff- und fettarm",
+    "Schnell verfügbare Energie",
+    "Glutenfrei",
+    "Basmati hat meist einen etwas niedrigeren glykämischen Index als Klebreis"
+   ],
+   "gut_fuer": [
+    "Pre-Workout-Mahlzeit 2–3 Stunden vor dem Training",
+    "Post-Workout zur schnellen Glykogenauffüllung",
+    "Ausdauersport und Carboloading",
+    "Glutenfreie Ernährung"
+   ],
+   "weniger_geeignet": [
+    "Beim Fettverlust als Hauptbestandteil, weil er wenig sättigt im Verhältnis zur Energie",
+    "Als einzige Getreidequelle im Alltag, weil Vollkornalternativen mehr Ballaststoffe und Mikronährstoffe liefern",
+    "Bei Diabetes in großen Portionen, weil er den Blutzucker zügig anhebt – mit Arzt/Ernährungsfachkraft abstimmen"
+   ],
+   "tipps": [
+    "Vor dem Kochen gründlich waschen (möglichst kurz vor dem Garen)",
+    "Gekocht und abgekühlt (z. B. Reissalat) steigt der Anteil resistenter Stärke",
+    "Mit reichlich Wasser kochen und das Kochwasser abgießen, um den Arsengehalt zu senken"
+   ],
+   "lagerung": "Trocken, kühl und luftdicht verschlossen ist ungekochter Reis lange (12+ Monate) haltbar.",
+   "hinweis": "Reis kann anorganisches Arsen enthalten: abwechslungsreich essen und Getreidearten variieren, gründlich waschen, in reichlich Wasser kochen und überschüssiges Kochwasser abgießen. Gekochten Reis nicht lange bei Zimmertemperatur stehen lassen (Bacillus cereus): rasch abkühlen, im Kühlschrank lagern, möglichst innerhalb eines Tages verzehren und beim Aufwärmen durcherhitzen.",
+   "alpha5": "Standardkohlenhydrat für Pre- und Post-Workout-Mahlzeiten und beim Carboloading vor langen Ausdauereinheiten."
+  },
+  {
+   "id": "vollkornreis",
+   "name": "Vollkornreis",
+   "kategorie": "Reis",
+   "kurz": "Reis mit Silberhäutchen und Keim – mehr Ballaststoffe, B-Vitamine und Mineralstoffe als weißer Reis.",
+   "bezug": "trocken (ungekocht)",
+   "naehrwerte_100g": {
+    "kcal": 350,
+    "eiweiss_g": 7.5,
+    "kohlenhydrate_g": 74.0,
+    "fett_g": 2.5,
+    "ballaststoffe_g": 2.2
+   },
+   "portion": "60–80 g trocken als Beilage",
+   "naehrstoffe": [
+    "Magnesium",
+    "Vitamin B1",
+    "Niacin",
+    "Mangan",
+    "Ballaststoffe"
+   ],
+   "eiweissqualitaet": "Eiweiß mit begrenzender Aminosäure Lysin; mit Hülsenfrüchten, Tofu, Ei, Milchprodukten, Fisch oder Fleisch kombinieren.",
+   "staerken": [
+    "Mehr Ballaststoffe und Mineralstoffe als weißer Reis",
+    "Sättigt länger",
+    "Nussiger Geschmack, bissfest",
+    "Glutenfrei"
+   ],
+   "gut_fuer": [
+    "Fettverlust, weil er besser sättigt als weißer Reis",
+    "Alltagsmahlzeiten mit gleichmäßiger Energieversorgung",
+    "Meal-Prep-Bowls",
+    "Glutenfreie Ernährung"
+   ],
+   "weniger_geeignet": [
+    "Direkt vor intensiven Einheiten, weil die Ballaststoffe den Magen belasten können",
+    "Bei empfindlicher Verdauung in großen Portionen, weil die Ballaststoffe anfangs ungewohnt sein können",
+    "Als täglicher Alleinlieferant, weil Vollkornreis meist mehr Arsen enthält als weißer Reis (Arsen reichert sich in den Randschichten an)"
+   ],
+   "tipps": [
+    "Vor dem Kochen gründlich waschen und eventuell einige Stunden einweichen – das verkürzt die Garzeit",
+    "Kochzeit ca. 30–40 Minuten einplanen; gut fürs Vorkochen auf Vorrat",
+    "Im Wasserüberschuss kochen und abgießen, um den Arsengehalt zu senken"
+   ],
+   "lagerung": "Wegen des Fettgehalts im Keim kühl, dunkel und luftdicht lagern und innerhalb von ca. 6–12 Monaten verbrauchen.",
+   "hinweis": "Vollkornreis enthält in der Regel mehr anorganisches Arsen als weißer Reis, weil es sich in den Randschichten anreichert: abwechslungsreich essen, waschen, in reichlich Wasser kochen und abgießen. Gekochten Reis rasch abkühlen, im Kühlschrank lagern, möglichst innerhalb eines Tages verzehren und beim Aufwärmen durcherhitzen (Bacillus cereus).",
+   "alpha5": "Gute Alltagsbeilage für Hauptmahlzeiten mit Abstand zum Training und fürs Meal-Prep."
+  },
+  {
+   "id": "reiswaffeln",
+   "name": "Reiswaffeln",
+   "kategorie": "Reis",
+   "kurz": "Leichter, trockener Snack aus gepufftem Reis – schnelle Kohlenhydrate mit wenig Volumen im Magen.",
+   "bezug": "verzehrfertig (Vollkorn, natur)",
+   "naehrwerte_100g": {
+    "kcal": 385,
+    "eiweiss_g": 8.0,
+    "kohlenhydrate_g": 80.0,
+    "fett_g": 3.0,
+    "ballaststoffe_g": 4.0
+   },
+   "portion": "2–3 Waffeln (ca. 15–25 g)",
+   "naehrstoffe": [
+    "Mangan",
+    "Magnesium",
+    "Phosphor"
+   ],
+   "eiweissqualitaet": "Wenig Eiweiß mit begrenzender Aminosäure Lysin; mit Quark, Hüttenkäse, Erdnussmus, Hummus oder Ei als Belag deutlich aufgewertet.",
+   "staerken": [
+    "Schnell verfügbare Kohlenhydrate",
+    "Leicht und gut transportierbar",
+    "Fettarm (in der Naturvariante)",
+    "Glutenfrei (auf Kennzeichnung achten)"
+   ],
+   "gut_fuer": [
+    "Snack 30–60 Minuten vor dem Training",
+    "Kohlenhydratzufuhr bei Wettkämpfen oder Turnieren",
+    "Unterlage für eiweißreiche Beläge"
+   ],
+   "weniger_geeignet": [
+    "Beim Fettverlust als Sattmacher, weil sie pur energiedicht sind und wenig sättigen",
+    "Für Kleinkinder als häufiger Snack, weil Reiswaffeln vergleichsweise viel anorganisches Arsen enthalten können – mit reisfreien Snacks abwechseln",
+    "Gesüßte oder schokolierte Varianten als Alltagssnack, weil sie viel Zucker und Fett liefern"
+   ],
+   "tipps": [
+    "Mit Eiweiß belegen (Quark, Hüttenkäse, Ei, Hummus), damit der Snack länger sättigt",
+    "Pre-Workout mit etwas Honig oder Banane kombinieren",
+    "Naturvarianten ohne Zucker- und Salzzusatz wählen"
+   ],
+   "lagerung": "Trocken und gut verschlossen lagern; nach dem Öffnen innerhalb einiger Tage verbrauchen, damit sie knusprig bleiben.",
+   "hinweis": "Reiswaffeln können teils deutlich mehr anorganisches Arsen enthalten als gekochter weißer Reis; in Maßen essen und mit Snacks aus anderen Getreiden (z. B. Mais, Weizen) abwechseln – besonders bei Kindern.",
+   "alpha5": "Praktischer Pre-Workout-Snack, z. B. mit Banane oder Honig, wenn wenig Zeit bis zum Training bleibt."
+  },
+  {
+   "id": "haferflocken",
+   "name": "Haferflocken",
+   "kategorie": "Getreide",
+   "kurz": "Vollkorngetreide mit vergleichsweise viel Eiweiß, Ballaststoffen (Beta-Glucan) und Mineralstoffen.",
+   "bezug": "trocken",
+   "naehrwerte_100g": {
+    "kcal": 370,
+    "eiweiss_g": 13.5,
+    "kohlenhydrate_g": 58.7,
+    "fett_g": 7.0,
+    "ballaststoffe_g": 10.0
+   },
+   "portion": "40–60 g trocken (z. B. als Porridge oder Müsli)",
+   "naehrstoffe": [
+    "Beta-Glucan (Ballaststoff)",
+    "Magnesium",
+    "Zink",
+    "Eisen",
+    "Vitamin B1"
+   ],
+   "eiweissqualitaet": "Für ein Getreide relativ eiweißreich, begrenzende Aminosäure ist Lysin; mit Milch, Joghurt, Skyr, Sojadrink oder Nüssen ergänzt sich das Eiweiß gut.",
+   "staerken": [
+    "Reich an Ballaststoffen, v. a. Beta-Glucan – Hafer-Beta-Glucan trägt bei einer täglichen Aufnahme von 3 g zur Aufrechterhaltung eines normalen Cholesterinspiegels bei",
+    "Mehr Eiweiß und Fett als die meisten Getreide",
+    "Sättigt lange",
+    "Günstig und vielseitig"
+   ],
+   "gut_fuer": [
+    "Frühstück mit gleichmäßiger Energieversorgung",
+    "Fettverlust dank hoher Sättigung",
+    "Muskelaufbau in Kombination mit Milchprodukten oder Proteinpulver",
+    "Vegane Ernährung (mit Sojadrink)"
+   ],
+   "weniger_geeignet": [
+    "Direkt vor intensiven Einheiten in großer Menge, weil Ballaststoffe den Magen belasten können",
+    "Bei Zöliakie nur als ausdrücklich glutenfrei gekennzeichneter Hafer und nach Absprache mit Arzt/Ernährungsfachkraft, weil normaler Hafer oft mit Weizen verunreinigt ist und Avenin von einigen Betroffenen nicht vertragen wird"
+   ],
+   "tipps": [
+    "Über Nacht einweichen (Overnight Oats) – spart morgens Zeit und wird von vielen als gut bekömmlich empfunden",
+    "Zarte Flocken quellen schneller und sind cremiger, kernige haben mehr Biss",
+    "Mit Obst süßen statt mit Zucker"
+   ],
+   "lagerung": "Trocken, kühl und luftdicht lagern; geöffnete Packungen innerhalb einiger Monate verbrauchen, da das Fett ranzig werden kann.",
+   "hinweis": "",
+   "alpha5": "Basis für Frühstück und Pre-Workout-Mahlzeiten 2–3 Stunden vor dem Training, als Overnight Oats ideal fürs Meal-Prep."
+  },
+  {
+   "id": "weizen",
+   "name": "Weizen (Vollkorn vs. Weißmehl)",
+   "kategorie": "Getreide",
+   "kurz": "Wichtigstes Brot- und Backgetreide – Vollkornmehl liefert deutlich mehr Ballaststoffe und Mikronährstoffe als Weißmehl (Type 405).",
+   "bezug": "Vollkornmehl, trocken (Weißmehl Type 405 zum Vergleich: ca. 340 kcal, 10 g Eiweiß, 72 g KH, 1 g Fett, 4 g Ballaststoffe)",
+   "naehrwerte_100g": {
+    "kcal": 320,
+    "eiweiss_g": 12.0,
+    "kohlenhydrate_g": 60.0,
+    "fett_g": 2.2,
+    "ballaststoffe_g": 10.0
+   },
+   "portion": "Ca. 2 Scheiben Vollkornbrot (ca. 100 g) oder 60–80 g Mehl in Rezepten",
+   "naehrstoffe": [
+    "Ballaststoffe (v. a. bei Vollkorn)",
+    "Magnesium",
+    "Eisen",
+    "Vitamin B1",
+    "Zink"
+   ],
+   "eiweissqualitaet": "Eiweiß mittlerer Qualität mit Lysin als begrenzender Aminosäure; die Kombination mit Hülsenfrüchten (z. B. Brot mit Hummus) oder Milchprodukten ergänzt es gut.",
+   "staerken": [
+    "Vollkorn: viele Ballaststoffe, B-Vitamine und Mineralstoffe",
+    "Weißmehl: leicht verdaulich und schnell verfügbar",
+    "Sehr vielseitig (Brot, Backwaren, Teige)",
+    "Liefert nennenswert Eiweiß"
+   ],
+   "gut_fuer": [
+    "Vollkorn: Alltag, Fettverlust und Sättigung",
+    "Weißmehlprodukte: Pre-Workout, wenn schnell verdauliche Energie gebraucht wird",
+    "Ausdauersport (z. B. Brötchen mit Honig vor langen Einheiten)",
+    "Vegane Ernährung in Kombination mit Hülsenfrüchten"
+   ],
+   "weniger_geeignet": [
+    "Bei Zöliakie oder Weizenallergie, weil Weizen Gluten und Weizenproteine enthält – ärztlich abklären",
+    "Bei Reizdarm/FODMAP-Empfindlichkeit in größeren Mengen, weil Weizen Fruktane enthält",
+    "Weißmehlprodukte als Hauptgetreide im Alltag, weil sie wenig sättigen und kaum Ballaststoffe liefern",
+    "Vollkorn direkt vor intensiven Einheiten, weil Ballaststoffe den Magen belasten können"
+   ],
+   "tipps": [
+    "Beim Brotkauf auf „Vollkorn“ achten – dunkle Farbe allein sagt nichts aus",
+    "Lange Teigführung oder Sauerteig kann Weizenbrot für manche bekömmlicher machen",
+    "Beim Backen einen Teil Weißmehl schrittweise durch Vollkornmehl ersetzen und etwas mehr Flüssigkeit zugeben"
+   ],
+   "lagerung": "Weißmehl trocken und luftdicht über Monate lagerbar; Vollkornmehl wegen des Keimfetts kühl lagern und innerhalb von ca. 2–3 Monaten verbrauchen.",
+   "hinweis": "",
+   "alpha5": "Vollkornbrot fürs Frühstück oder Abendbrot; helle Brötchen mit Honig oder Marmelade als schneller Pre-Workout-Snack."
+  },
+  {
+   "id": "dinkel",
+   "name": "Dinkel",
+   "kategorie": "Getreide",
+   "kurz": "Alte Weizenart mit nussigem Geschmack, ähnlichem Nährwertprofil wie Weizen und guten Backeigenschaften.",
+   "bezug": "Vollkornmehl, trocken",
+   "naehrwerte_100g": {
+    "kcal": 340,
+    "eiweiss_g": 13.0,
+    "kohlenhydrate_g": 63.0,
+    "fett_g": 2.5,
+    "ballaststoffe_g": 9.0
+   },
+   "portion": "Ca. 2 Scheiben Dinkelvollkornbrot (ca. 100 g) oder 60–80 g Körner/Mehl",
+   "naehrstoffe": [
+    "Ballaststoffe",
+    "Magnesium",
+    "Eisen",
+    "Zink",
+    "Vitamin B1"
+   ],
+   "eiweissqualitaet": "Etwas eiweißreicher als viele andere Getreide, begrenzende Aminosäure ist wie bei Weizen Lysin; mit Hülsenfrüchten oder Milchprodukten gut ergänzt.",
+   "staerken": [
+    "Vollkorn liefert viele Ballaststoffe und Mineralstoffe",
+    "Nussiges Aroma",
+    "Vielseitig als Mehl, Flocken oder ganzes Korn (Dinkelreis)",
+    "Gut zum Backen"
+   ],
+   "gut_fuer": [
+    "Alltag und Fettverlust (als Vollkorn sättigend)",
+    "Abwechslung zu Weizen in Brot und Müsli",
+    "Vegane Ernährung in Kombination mit Hülsenfrüchten"
+   ],
+   "weniger_geeignet": [
+    "Bei Zöliakie und Weizenallergie, weil Dinkel eine Weizenart ist und Gluten enthält",
+    "Bei Reizdarm/FODMAP-Empfindlichkeit in größeren Mengen, weil auch Dinkel Fruktane enthält (Sauerteigbrot wird oft besser vertragen)",
+    "Vollkorn direkt vor intensiven Einheiten, weil Ballaststoffe den Magen belasten können"
+   ],
+   "tipps": [
+    "Dinkelteig nicht zu lange kneten, er ist empfindlicher als Weizenteig",
+    "Ganze Körner vor dem Kochen einweichen – verkürzt die Garzeit",
+    "Dinkelflocken als Alternative zu Haferflocken im Müsli"
+   ],
+   "lagerung": "Mehl kühl und luftdicht lagern und Vollkornmehl innerhalb von ca. 2–3 Monaten verbrauchen; ganze Körner halten deutlich länger.",
+   "hinweis": "",
+   "alpha5": "Als Vollkornbrot oder Dinkelreis in Hauptmahlzeiten mit Abstand zum Training und fürs Meal-Prep."
+  },
+  {
+   "id": "roggen",
+   "name": "Roggen",
+   "kategorie": "Getreide",
+   "kurz": "Kräftiges Brotgetreide mit besonders vielen Ballaststoffen – typisch für Vollkorn- und Sauerteigbrot.",
+   "bezug": "Vollkornmehl, trocken",
+   "naehrwerte_100g": {
+    "kcal": 300,
+    "eiweiss_g": 9.5,
+    "kohlenhydrate_g": 59.0,
+    "fett_g": 1.7,
+    "ballaststoffe_g": 13.5
+   },
+   "portion": "Ca. 2 Scheiben Roggenvollkornbrot (ca. 100 g)",
+   "naehrstoffe": [
+    "Ballaststoffe",
+    "Magnesium",
+    "Kalium",
+    "Eisen",
+    "Vitamin B1"
+   ],
+   "eiweissqualitaet": "Moderater Eiweißgehalt, Lysin ist begrenzend, Roggen enthält davon aber etwas mehr als Weizen; mit Käse, Quark, Ei oder Hummus belegt ergänzt es sich gut.",
+   "staerken": [
+    "Sehr reich an Ballaststoffen",
+    "Hohe Sättigung",
+    "Kräftiger Geschmack, lange frisch bleibendes Brot",
+    "Roggenballaststoffe tragen zu einer normalen Darmfunktion bei (bei ballaststoffreichen Roggenprodukten)"
+   ],
+   "gut_fuer": [
+    "Fettverlust dank hoher Sättigung",
+    "Alltagsmahlzeiten (Frühstück, Abendbrot)",
+    "Gleichmäßige Energieversorgung über den Tag"
+   ],
+   "weniger_geeignet": [
+    "Bei Zöliakie, weil Roggen Gluten (Secalin) enthält",
+    "Bei Reizdarm/FODMAP-Empfindlichkeit, weil Roggen viele Fruktane enthält",
+    "Direkt vor dem Training, weil die vielen Ballaststoffe den Magen belasten können"
+   ],
+   "tipps": [
+    "Roggenteig braucht Sauerteig (Säuerung), sonst gelingt die Krume nicht – beim Selberbacken einplanen",
+    "Beim Brotkauf auf hohen Vollkornanteil achten",
+    "Mit ausreichend Flüssigkeit kombinieren, damit die Ballaststoffe gut wirken"
+   ],
+   "lagerung": "Roggenbrot bleibt in Brottopf oder Leinenbeutel mehrere Tage frisch; Mehl kühl lagern und Vollkornmehl innerhalb von ca. 2–3 Monaten verbrauchen.",
+   "hinweis": "",
+   "alpha5": "Klassisches Frühstücks- oder Abendbrot mit eiweißreichem Belag, eher mit Abstand zum Training."
+  },
+  {
+   "id": "gerste-graupen",
+   "name": "Gerste/Graupen",
+   "kategorie": "Getreide",
+   "kurz": "Gerste kommt meist als Graupen (geschliffene Körner) auf den Tisch – sättigend und reich an Beta-Glucan.",
+   "bezug": "Perlgraupen, trocken",
+   "naehrwerte_100g": {
+    "kcal": 345,
+    "eiweiss_g": 10.0,
+    "kohlenhydrate_g": 70.0,
+    "fett_g": 1.2,
+    "ballaststoffe_g": 9.0
+   },
+   "portion": "60–80 g trocken als Beilage oder in Eintopf",
+   "naehrstoffe": [
+    "Beta-Glucan (Ballaststoff)",
+    "Magnesium",
+    "Selen (je nach Herkunft)",
+    "Niacin",
+    "Mangan"
+   ],
+   "eiweissqualitaet": "Eiweiß mittlerer Qualität mit Lysin als begrenzender Aminosäure; in Eintöpfen mit Hülsenfrüchten, Fleisch oder Fisch gut ergänzt.",
+   "staerken": [
+    "Enthält Beta-Glucan; Gersten-Beta-Glucan trägt bei einer täglichen Aufnahme von 3 g zur Aufrechterhaltung eines normalen Cholesterinspiegels bei",
+    "Sättigt lange",
+    "Günstige, regionale Alternative zu Reis",
+    "Gut für Eintöpfe und Risotto (Graupotto)"
+   ],
+   "gut_fuer": [
+    "Fettverlust dank hoher Sättigung",
+    "Meal-Prep (Eintöpfe, Salate)",
+    "Alltagsmahlzeiten mit gleichmäßiger Energieversorgung"
+   ],
+   "weniger_geeignet": [
+    "Bei Zöliakie, weil Gerste Gluten (Hordein) enthält",
+    "Direkt vor intensiven Einheiten, weil Ballaststoffe den Magen belasten können",
+    "Bei Reizdarm/FODMAP-Empfindlichkeit in größeren Mengen, weil Gerste Fruktane enthält"
+   ],
+   "tipps": [
+    "Graupen vor dem Kochen abspülen; Garzeit ca. 25–40 Minuten je nach Größe",
+    "Als „Graupotto“ wie Risotto zubereiten",
+    "Gekocht im Kühlschrank 3–4 Tage haltbar – ideal zum Vorkochen"
+   ],
+   "lagerung": "Trocken, kühl und luftdicht über viele Monate lagerbar.",
+   "hinweis": "",
+   "alpha5": "Sättigende Beilage für Hauptmahlzeiten und Eintöpfe im Meal-Prep, eher abends oder mit Abstand zum Training."
+  },
+  {
+   "id": "hirse",
+   "name": "Hirse",
+   "kategorie": "Getreide",
+   "kurz": "Glutenfreies Getreide mit mildem Geschmack, kurzer Garzeit und vergleichsweise viel Magnesium.",
+   "bezug": "trocken",
+   "naehrwerte_100g": {
+    "kcal": 355,
+    "eiweiss_g": 10.6,
+    "kohlenhydrate_g": 69.0,
+    "fett_g": 3.9,
+    "ballaststoffe_g": 3.8
+   },
+   "portion": "60–80 g trocken als Beilage oder Frühstücksbrei",
+   "naehrstoffe": [
+    "Magnesium",
+    "Eisen",
+    "Phosphor",
+    "Vitamin B6"
+   ],
+   "eiweissqualitaet": "Eiweiß mittlerer Qualität, Lysin ist begrenzend; mit Hülsenfrüchten, Milchprodukten, Ei oder Tofu gut ergänzt.",
+   "staerken": [
+    "Glutenfrei",
+    "Kurze Garzeit (ca. 10–15 Minuten)",
+    "Mild und vielseitig – süß wie herzhaft",
+    "Gut bekömmlich"
+   ],
+   "gut_fuer": [
+    "Glutenfreie Ernährung",
+    "Frühstücksbrei als Alternative zu Haferflocken",
+    "Beilage für schnelle Alltagsgerichte"
+   ],
+   "weniger_geeignet": [
+    "Direkt vor sehr intensiven Einheiten in großer Menge, weil eine große Portion den Magen belasten kann",
+    "Bei Zöliakie nur mit Kennzeichnung „glutenfrei“, weil Verunreinigungen mit glutenhaltigem Getreide möglich sind"
+   ],
+   "tipps": [
+    "Vor dem Kochen heiß abspülen, um Bitterstoffe zu reduzieren",
+    "Im Verhältnis ca. 1:2 bis 1:2,5 mit Wasser garen und nachquellen lassen",
+    "Als süßer Brei mit Obst und Zimt oder herzhaft wie Couscous"
+   ],
+   "lagerung": "Trocken, kühl und luftdicht lagern; wegen des Fettgehalts innerhalb von ca. 6–12 Monaten verbrauchen.",
+   "hinweis": "",
+   "alpha5": "Glutenfreie Beilage für Haupt- und Post-Workout-Mahlzeiten oder als warmer Frühstücksbrei."
+  },
+  {
+   "id": "mais-polenta",
+   "name": "Mais/Polenta",
+   "kategorie": "Getreide",
+   "kurz": "Glutenfreies Getreide, das als Polenta (Maisgrieß) eine schnelle, leicht verdauliche Beilage liefert.",
+   "bezug": "Maisgrieß (Polenta), trocken",
+   "naehrwerte_100g": {
+    "kcal": 350,
+    "eiweiss_g": 8.5,
+    "kohlenhydrate_g": 74.0,
+    "fett_g": 1.2,
+    "ballaststoffe_g": 5.0
+   },
+   "portion": "60–80 g trocken als Beilage",
+   "naehrstoffe": [
+    "Carotinoide (Lutein, Zeaxanthin)",
+    "Magnesium",
+    "Phosphor",
+    "Vitamin B1"
+   ],
+   "eiweissqualitaet": "Eiweiß vergleichsweise geringer Qualität, da Lysin und Tryptophan begrenzend sind; die Kombination mit Bohnen (klassisch in Mittelamerika), Käse oder Ei gleicht das gut aus.",
+   "staerken": [
+    "Glutenfrei",
+    "Polenta ist schnell zubereitet und gut verdaulich",
+    "Vielseitig: cremig oder als gebratene Schnitten",
+    "Günstig"
+   ],
+   "gut_fuer": [
+    "Glutenfreie Ernährung",
+    "Pre-Workout-Mahlzeit, weil Polenta vergleichsweise ballaststoffarm und gut bekömmlich ist",
+    "Ausdauersport als Kohlenhydratquelle"
+   ],
+   "weniger_geeignet": [
+    "Als Hauptsattmacher beim Fettverlust, weil Polenta weniger sättigt als Vollkorngetreide",
+    "Bei Zöliakie nur mit Kennzeichnung „glutenfrei“, weil Verunreinigungen möglich sind",
+    "Mit viel Butter und Käse zubereitet beim Kaloriensparen, weil die Energiedichte stark steigt"
+   ],
+   "tipps": [
+    "Instant-Polenta gart in ca. 5 Minuten, klassische braucht 30–45 Minuten",
+    "Ausgekühlte Polenta in Scheiben schneiden und braten oder grillen – gut fürs Meal-Prep",
+    "Mit Gemüsebrühe statt Wasser kochen für mehr Geschmack"
+   ],
+   "lagerung": "Trocken, kühl und luftdicht lagern; innerhalb von ca. 6–12 Monaten verbrauchen.",
+   "hinweis": "",
+   "alpha5": "Leicht verdauliche Beilage für Pre-Workout-Mahlzeiten oder als Polentaschnitten im Meal-Prep."
+  },
+  {
+   "id": "couscous",
+   "name": "Couscous",
+   "kategorie": "Getreide",
+   "kurz": "Vorgegarter Hartweizengrieß, der in wenigen Minuten nur durch Quellen fertig ist.",
+   "bezug": "trocken",
+   "naehrwerte_100g": {
+    "kcal": 360,
+    "eiweiss_g": 12.5,
+    "kohlenhydrate_g": 72.0,
+    "fett_g": 0.7,
+    "ballaststoffe_g": 5.0
+   },
+   "portion": "60–80 g trocken als Beilage",
+   "naehrstoffe": [
+    "Selen (je nach Herkunft)",
+    "Niacin",
+    "Mangan",
+    "Folat"
+   ],
+   "eiweissqualitaet": "Eiweiß mittlerer Qualität mit Lysin als begrenzender Aminosäure; mit Kichererbsen (klassisch), Linsen, Huhn, Fisch oder Joghurt gut ergänzt.",
+   "staerken": [
+    "Extrem schnell zubereitet (5 Minuten quellen)",
+    "Leicht verdaulich in der hellen Variante",
+    "Gut für Salate und Bowls",
+    "Auch als Vollkorn-Couscous erhältlich"
+   ],
+   "gut_fuer": [
+    "Pre- und Post-Workout, wenn es schnell gehen muss",
+    "Meal-Prep-Salate",
+    "Vegane Gerichte mit Kichererbsen"
+   ],
+   "weniger_geeignet": [
+    "Bei Zöliakie oder Weizenallergie, weil Couscous aus Weizen besteht und Gluten enthält",
+    "Beim Fettverlust in großen Portionen, weil die helle Variante wenig sättigt",
+    "Bei Reizdarm/FODMAP-Empfindlichkeit, weil Weizen Fruktane enthält"
+   ],
+   "tipps": [
+    "Mit kochender Brühe übergießen (Verhältnis ca. 1:1), abdecken, 5 Minuten quellen lassen und auflockern",
+    "Vollkorn-Couscous wählen für mehr Ballaststoffe",
+    "Mit Gemüse, Kräutern und Kichererbsen als Salat vorbereiten"
+   ],
+   "lagerung": "Trocken und luftdicht über viele Monate lagerbar; zubereitet im Kühlschrank 2–3 Tage haltbar.",
+   "hinweis": "",
+   "alpha5": "Schnelle Kohlenhydratbeilage für Post-Workout-Mahlzeiten und Meal-Prep-Salate."
+  },
+  {
+   "id": "bulgur",
+   "name": "Bulgur",
+   "kategorie": "Getreide",
+   "kurz": "Vorgegarter, geschroteter Weizen mit Vollkorncharakter – mehr Ballaststoffe als Couscous.",
+   "bezug": "trocken",
+   "naehrwerte_100g": {
+    "kcal": 345,
+    "eiweiss_g": 12.3,
+    "kohlenhydrate_g": 64.0,
+    "fett_g": 1.5,
+    "ballaststoffe_g": 12.5
+   },
+   "portion": "60–80 g trocken als Beilage",
+   "naehrstoffe": [
+    "Ballaststoffe",
+    "Magnesium",
+    "Mangan",
+    "Eisen",
+    "Niacin"
+   ],
+   "eiweissqualitaet": "Eiweiß mittlerer Qualität mit Lysin als begrenzender Aminosäure; mit Linsen (z. B. als Linsen-Bulgur-Gericht), Kichererbsen, Joghurt oder Fleisch gut ergänzt.",
+   "staerken": [
+    "Vollkorncharakter mit vielen Ballaststoffen",
+    "Kurze Garzeit (ca. 10–15 Minuten)",
+    "Bissfest, gut für Salate (z. B. Tabouleh)",
+    "Sättigt gut"
+   ],
+   "gut_fuer": [
+    "Fettverlust dank hoher Sättigung",
+    "Meal-Prep-Salate und Bowls",
+    "Vegane Ernährung in Kombination mit Hülsenfrüchten"
+   ],
+   "weniger_geeignet": [
+    "Bei Zöliakie oder Weizenallergie, weil Bulgur aus Weizen besteht und Gluten enthält",
+    "Direkt vor intensiven Einheiten, weil die Ballaststoffe den Magen belasten können",
+    "Bei Reizdarm/FODMAP-Empfindlichkeit, weil Weizen Fruktane enthält"
+   ],
+   "tipps": [
+    "Feinen Bulgur nur mit heißem Wasser quellen lassen, groben ca. 10–15 Minuten köcheln",
+    "Abgekühlt als Tabouleh mit viel Petersilie, Tomate und Zitrone",
+    "Gut im Voraus kochbar und gekühlt 2–3 Tage haltbar"
+   ],
+   "lagerung": "Trocken, kühl und luftdicht über viele Monate lagerbar.",
+   "hinweis": "",
+   "alpha5": "Sättigende Beilage für Hauptmahlzeiten und Meal-Prep, eher mit Abstand zum Training."
+  },
+  {
+   "id": "nudeln-hartweizen",
+   "name": "Nudeln aus Hartweizen",
+   "kategorie": "Getreide",
+   "kurz": "Klassische Pasta aus Hartweizengrieß – bewährte, gut verträgliche Kohlenhydratquelle für Sportler.",
+   "bezug": "trocken (ungekocht)",
+   "naehrwerte_100g": {
+    "kcal": 355,
+    "eiweiss_g": 12.5,
+    "kohlenhydrate_g": 71.0,
+    "fett_g": 1.5,
+    "ballaststoffe_g": 3.0
+   },
+   "portion": "80–100 g trocken als Hauptgericht (ca. 200–250 g gekocht)",
+   "naehrstoffe": [
+    "Selen (je nach Herkunft)",
+    "Niacin",
+    "Vitamin B1",
+    "Mangan"
+   ],
+   "eiweissqualitaet": "Eiweiß mittlerer Qualität mit Lysin als begrenzender Aminosäure; mit Linsen-Bolognese, Thunfisch, Käse, Hackfleisch oder Tofu gut ergänzt.",
+   "staerken": [
+    "Gut verträglich und vielseitig",
+    "Bissfest gegart vergleichsweise moderater Blutzuckeranstieg",
+    "Günstig und lange haltbar",
+    "Schnell zubereitet"
+   ],
+   "gut_fuer": [
+    "Carboloading vor Wettkämpfen und langen Ausdauereinheiten",
+    "Pre-Workout-Mahlzeit 2–3 Stunden vor dem Training",
+    "Post-Workout zur Glykogenauffüllung",
+    "Muskelaufbau mit eiweißreicher Soße"
+   ],
+   "weniger_geeignet": [
+    "Bei Zöliakie oder Weizenallergie, weil Hartweizen Gluten enthält",
+    "Beim Fettverlust in großen Portionen, weil man von Nudeln leicht mehr isst als geplant – Portion vorher abwiegen",
+    "Bei Reizdarm/FODMAP-Empfindlichkeit in größeren Mengen, weil Weizen Fruktane enthält"
+   ],
+   "tipps": [
+    "Al dente kochen – bissfeste Nudeln lassen den Blutzucker meist langsamer ansteigen als weich gekochte",
+    "Portion vor dem Kochen abwiegen (80–100 g trocken)",
+    "Gekochte und abgekühlte Nudeln enthalten mehr resistente Stärke (Nudelsalat)"
+   ],
+   "lagerung": "Trocken und luftdicht über viele Monate bis über ein Jahr haltbar; gekocht 2–3 Tage im Kühlschrank.",
+   "hinweis": "",
+   "alpha5": "Klassiker fürs Carboloading und für Pre-/Post-Workout-Mahlzeiten, kombiniert mit einer eiweißreichen Soße."
+  },
+  {
+   "id": "vollkornnudeln",
+   "name": "Vollkornnudeln",
+   "kategorie": "Getreide",
+   "kurz": "Pasta aus Vollkornmehl – mehr Ballaststoffe, Eiweiß und Mineralstoffe als klassische Nudeln.",
+   "bezug": "trocken (ungekocht)",
+   "naehrwerte_100g": {
+    "kcal": 340,
+    "eiweiss_g": 14.0,
+    "kohlenhydrate_g": 63.0,
+    "fett_g": 2.5,
+    "ballaststoffe_g": 8.0
+   },
+   "portion": "80–100 g trocken als Hauptgericht",
+   "naehrstoffe": [
+    "Ballaststoffe",
+    "Magnesium",
+    "Eisen",
+    "Zink",
+    "Vitamin B1"
+   ],
+   "eiweissqualitaet": "Eiweiß mittlerer Qualität mit Lysin als begrenzender Aminosäure; mit Hülsenfrüchten, Käse, Fisch, Fleisch oder Tofu gut ergänzt.",
+   "staerken": [
+    "Deutlich mehr Ballaststoffe als helle Nudeln",
+    "Sättigt länger",
+    "Mehr Mineralstoffe und B-Vitamine",
+    "Nussiger, kräftiger Geschmack"
+   ],
+   "gut_fuer": [
+    "Fettverlust dank besserer Sättigung",
+    "Alltagsmahlzeiten mit gleichmäßiger Energieversorgung",
+    "Meal-Prep",
+    "Vegane Ernährung mit Linsen- oder Bohnensoßen"
+   ],
+   "weniger_geeignet": [
+    "Bei Zöliakie oder Weizenallergie, weil Vollkornnudeln (meist aus Weizen) Gluten enthalten",
+    "Direkt vor intensiven Einheiten oder als Carboloading, weil die Ballaststoffe den Magen belasten können",
+    "Bei Reizdarm/FODMAP-Empfindlichkeit, weil Weizen Fruktane enthält"
+   ],
+   "tipps": [
+    "Zum Einstieg halb Vollkorn-, halb helle Nudeln mischen",
+    "Mit kräftigen Soßen kombinieren (Tomate, Pesto, Gemüse)",
+    "Nicht zu weich kochen – Vollkornnudeln werden schnell matschig"
+   ],
+   "lagerung": "Trocken und luftdicht lagern; wegen des höheren Fettanteils innerhalb von ca. 12 Monaten verbrauchen.",
+   "hinweis": "",
+   "alpha5": "Alltagsbeilage für Hauptmahlzeiten mit Abstand zum Training, besonders in Phasen mit Fokus auf Sättigung und Fettverlust."
+  },
+  {
+   "id": "quinoa",
+   "name": "Quinoa",
+   "kategorie": "Pseudogetreide",
+   "kurz": "Glutenfreies Pseudogetreide mit vergleichsweise viel und hochwertigem Eiweiß.",
+   "bezug": "trocken",
+   "naehrwerte_100g": {
+    "kcal": 365,
+    "eiweiss_g": 14.0,
+    "kohlenhydrate_g": 58.0,
+    "fett_g": 6.0,
+    "ballaststoffe_g": 7.0
+   },
+   "portion": "60–80 g trocken als Beilage",
+   "naehrstoffe": [
+    "Magnesium",
+    "Eisen",
+    "Mangan",
+    "Folat",
+    "Ballaststoffe"
+   ],
+   "eiweissqualitaet": "Enthält alle unentbehrlichen Aminosäuren in einem günstigeren Verhältnis als Getreide, insbesondere mehr Lysin; für Veganer eine gute Ergänzung, mit Hülsenfrüchten noch besser.",
+   "staerken": [
+    "Glutenfrei",
+    "Vergleichsweise hochwertiges pflanzliches Eiweiß",
+    "Reich an Magnesium und Eisen",
+    "Kurze Garzeit (ca. 15 Minuten)"
+   ],
+   "gut_fuer": [
+    "Vegane und vegetarische Ernährung als Eiweißergänzung",
+    "Glutenfreie Ernährung",
+    "Meal-Prep-Bowls und Salate",
+    "Post-Workout-Mahlzeiten"
+   ],
+   "weniger_geeignet": [
+    "Direkt vor intensiven Einheiten in großer Menge, weil Ballaststoffe den Magen belasten können",
+    "Bei sehr knappem Budget, weil Quinoa deutlich teurer ist als Hirse oder Reis",
+    "Bei Zöliakie nur mit Kennzeichnung „glutenfrei“, weil Verunreinigungen möglich sind"
+   ],
+   "tipps": [
+    "Vor dem Kochen gründlich in einem Sieb abspülen, um bittere Saponine zu entfernen",
+    "Im Verhältnis ca. 1:2 mit Wasser garen und kurz nachquellen lassen",
+    "Vorher in der Pfanne anrösten für nussigeres Aroma"
+   ],
+   "lagerung": "Trocken, kühl und luftdicht über viele Monate lagerbar; gekocht 3–4 Tage im Kühlschrank.",
+   "hinweis": "Die Samenschale enthält Saponine; die meisten Handelsprodukte sind bereits vorbehandelt, gründliches Abspülen verbessert trotzdem Geschmack und Verträglichkeit.",
+   "alpha5": "Eiweißreichere Kohlenhydratbeilage für Post-Workout-Mahlzeiten und vegane Meal-Prep-Bowls."
+  },
+  {
+   "id": "amaranth",
+   "name": "Amaranth",
+   "kategorie": "Pseudogetreide",
+   "kurz": "Winziges, glutenfreies Pseudogetreide mit viel Eiweiß, Magnesium und Eisen – auch gepufft erhältlich.",
+   "bezug": "trocken",
+   "naehrwerte_100g": {
+    "kcal": 370,
+    "eiweiss_g": 13.6,
+    "kohlenhydrate_g": 58.0,
+    "fett_g": 7.0,
+    "ballaststoffe_g": 7.0
+   },
+   "portion": "50–60 g trocken als Beilage oder 20–30 g gepufft im Müsli",
+   "naehrstoffe": [
+    "Magnesium",
+    "Eisen",
+    "Calcium",
+    "Mangan",
+    "Phosphor"
+   ],
+   "eiweissqualitaet": "Für ein Pflanzenlebensmittel hochwertiges Eiweiß mit vergleichsweise viel Lysin; ergänzt sich deshalb besonders gut mit lysinärmerem Getreide wie Weizen oder Hafer.",
+   "staerken": [
+    "Glutenfrei",
+    "Hochwertiges pflanzliches Eiweiß",
+    "Reich an Magnesium, Eisen und Calcium",
+    "Gepufft ein knuspriges Müsli-Topping"
+   ],
+   "gut_fuer": [
+    "Vegane und vegetarische Ernährung",
+    "Glutenfreie Ernährung",
+    "Aufwertung von Müsli und Frühstück",
+    "Abwechslung im Speiseplan"
+   ],
+   "weniger_geeignet": [
+    "Direkt vor intensiven Einheiten in großer Menge, weil Ballaststoffe den Magen belasten können",
+    "Bei Zöliakie nur mit Kennzeichnung „glutenfrei“, weil Verunreinigungen möglich sind"
+   ],
+   "tipps": [
+    "Gepufften Amaranth über Joghurt, Skyr oder Müsli streuen",
+    "Gekocht (ca. 20–25 Minuten, Verhältnis ca. 1:2,5) wird er leicht breiig – gut für Brei oder als Bindung in Bratlingen",
+    "Mit Haferflocken mischen, um das Eiweiß aufzuwerten"
+   ],
+   "lagerung": "Trocken, kühl und luftdicht lagern; wegen des Fettgehalts innerhalb von ca. 6–12 Monaten verbrauchen.",
+   "hinweis": "",
+   "alpha5": "Als gepufftes Topping im Frühstück oder als glutenfreie Beilage, um vegane Mahlzeiten eiweißseitig aufzuwerten."
+  },
+  {
+   "id": "buchweizen",
+   "name": "Buchweizen",
+   "kategorie": "Pseudogetreide",
+   "kurz": "Glutenfreies Knöterichgewächs (kein Weizen) mit nussigem Geschmack, Rutin und Mineralstoffen wie Magnesium und Mangan.",
+   "bezug": "trocken, geschält",
+   "naehrwerte_100g": {
+    "kcal": 346,
+    "eiweiss_g": 9.8,
+    "kohlenhydrate_g": 71.0,
+    "fett_g": 1.7,
+    "ballaststoffe_g": 3.7
+   },
+   "portion": "60–80 g trocken als Beilage oder Grütze",
+   "naehrstoffe": [
+    "Magnesium",
+    "Mangan",
+    "Kupfer",
+    "Rutin",
+    "Zink"
+   ],
+   "eiweissqualitaet": "Eiweiß mit günstigem Aminosäuremuster und vergleichsweise viel Lysin; ergänzt sich gut mit Getreide, Milchprodukten oder Hülsenfrüchten.",
+   "staerken": [
+    "Glutenfrei trotz des Namens",
+    "Liefert Magnesium, Mangan und Kupfer",
+    "Kurze Garzeit (ca. 15 Minuten)",
+    "Vielseitig: Grütze, Pfannkuchen (Galettes), Soba-Nudeln"
+   ],
+   "gut_fuer": [
+    "Glutenfreie Ernährung",
+    "Abwechslung zu Reis und Nudeln in Hauptmahlzeiten",
+    "Vegane Ernährung als Eiweißergänzung",
+    "Herzhafte Frühstücksalternative (Buchweizengrütze)"
+   ],
+   "weniger_geeignet": [
+    "Bei bekannter Buchweizenallergie, weil Buchweizen selten, aber teils heftige allergische Reaktionen auslösen kann",
+    "Direkt vor intensiven Einheiten in großer Menge, weil eine große Portion den Magen belasten kann",
+    "Bei Zöliakie nur mit Kennzeichnung „glutenfrei“ (auch bei Soba-Nudeln, die oft Weizen enthalten)"
+   ],
+   "tipps": [
+    "Vor dem Kochen abspülen und ggf. trocken anrösten für intensiveres Aroma",
+    "Im Verhältnis ca. 1:2 ca. 15 Minuten garen und nachquellen lassen",
+    "Buchweizenmehl für Pfannkuchen oder glutenfreies Backen nutzen (bindet allein schwach)"
+   ],
+   "lagerung": "Trocken, kühl und luftdicht lagern; innerhalb von ca. 6–12 Monaten verbrauchen.",
+   "hinweis": "",
+   "alpha5": "Glutenfreie Beilage für Hauptmahlzeiten mit Abstand zum Training oder als herzhaftes Frühstück (Buchweizengrütze)."
+  }
+ ]
+}

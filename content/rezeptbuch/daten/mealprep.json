@@ -1,0 +1,1829 @@
+{
+  "plaene": [
+    {
+      "plan": "vegan",
+      "titel": "Vegane Power-Woche",
+      "beschreibung": "Baked Oats, ein cremiges Tofu-Linsen-Curry und grüner Edamame-Hummus: rein pflanzlich und mit genug Eiweiß für deine Ziele. In knapp 2 Stunden ist alles für Montag bis Freitag vorbereitet.",
+      "kochtag": [
+        {
+          "min": 0,
+          "schritt": "Ofen auf 180 °C vorheizen, Reiswasser aufsetzen, Tofu zum Abtropfen zwischen Küchenpapier pressen."
+        },
+        {
+          "min": 5,
+          "schritt": "Baked-Oats-Teig anrühren und 5 Minuten quellen lassen, währenddessen Äpfel würfeln."
+        },
+        {
+          "min": 15,
+          "schritt": "Baked Oats in den Ofen schieben (30–35 Min.) und den Reis aufsetzen."
+        },
+        {
+          "min": 20,
+          "schritt": "Zwiebeln, Knoblauch, Ingwer und Süßkartoffel schneiden; Tofu würfeln."
+        },
+        {
+          "min": 30,
+          "schritt": "Tofu im großen Topf goldbraun braten, gleichzeitig Wasser für die Edamame aufkochen."
+        },
+        {
+          "min": 40,
+          "schritt": "Gegarten Reis zum Abkühlen auf einem Blech ausbreiten; Curry-Basis andünsten und alles für das Curry zugeben (20 Min. köcheln)."
+        },
+        {
+          "min": 45,
+          "schritt": "Edamame 4 Minuten garen, kalt abschrecken; Baked Oats aus dem Ofen holen und abkühlen lassen."
+        },
+        {
+          "min": 50,
+          "schritt": "Hummus pürieren und in 5 Gläser füllen."
+        },
+        {
+          "min": 60,
+          "schritt": "Karotten, Paprika und Gurke in Sticks schneiden und mit feuchtem Küchenpapier in Dosen packen."
+        },
+        {
+          "min": 70,
+          "schritt": "Spinat, Tofu und Sojasauce ins Curry rühren, abschmecken und vom Herd nehmen."
+        },
+        {
+          "min": 80,
+          "schritt": "Baked Oats in 5 Stücke schneiden und mit Sojaskyr-Bechern portionieren."
+        },
+        {
+          "min": 90,
+          "schritt": "Curry und Reis auf 5 Dosen verteilen; Dosen für Donnerstag und Freitag beschriften und einfrieren."
+        },
+        {
+          "min": 100,
+          "schritt": "Alles andere in den Kühlschrank stellen, Küche aufräumen – fertig."
+        }
+      ],
+      "aufbewahrung": [
+        "Nutze 5 auslaufsichere Glas- oder Kunststoffdosen fürs Curry, 5 kleine Gläser für den Hummus und Dosen für Oats und Sticks.",
+        "Alles muss innerhalb von 2 Stunden nach dem Kochen abgekühlt im Kühlschrank (max. 5 °C) stehen; Curry mit Reis hält dort höchstens 3–4 Tage.",
+        "Friere die Curry-Portionen für Donnerstag und Freitag direkt ein und lege sie jeweils am Vorabend zum Auftauen in den Kühlschrank."
+      ],
+      "abendessen_hinweis": "Abends kochst du frisch – zum Beispiel ein veganes Gericht aus dem Kapitel „Fertig in 10 Minuten“."
+    },
+    {
+      "plan": "vegetarisch",
+      "titel": "Veggie-Wohlfühl-Woche",
+      "beschreibung": "Ofen-Kaiserschmarrn, eine eiweißreiche Linsen-Lasagne und fluffige Ofen-Quarkbällchen: vegetarischer Genuss, der satt macht. Der Ofen läuft fast durchgehend, du schnippelst parallel.",
+      "kochtag": [
+        {
+          "min": 0,
+          "schritt": "Ofen auf 180 °C Ober-/Unterhitze vorheizen; Zwiebel, Karotte, Zucchini und Knoblauch für die Lasagne fein würfeln."
+        },
+        {
+          "min": 10,
+          "schritt": "Gemüse andünsten, Linsen, Tomaten und Wasser zugeben und 12 Minuten köcheln lassen."
+        },
+        {
+          "min": 12,
+          "schritt": "Quarkbällchen-Teig anrühren, 20 Bällchen aufs Blech setzen und 15–18 Minuten backen."
+        },
+        {
+          "min": 22,
+          "schritt": "Hüttenkäse mit Ei und gehacktem Spinat verrühren, Mozzarella in Scheiben schneiden."
+        },
+        {
+          "min": 30,
+          "schritt": "Quarkbällchen herausnehmen und in Zimt wälzen; Ofen auf 180 °C Umluft umstellen."
+        },
+        {
+          "min": 32,
+          "schritt": "Lasagne schichten und 40 Minuten backen."
+        },
+        {
+          "min": 45,
+          "schritt": "Eier für den Kaiserschmarrn trennen, Eiweiß steif schlagen und den Teig anrühren."
+        },
+        {
+          "min": 60,
+          "schritt": "Apfelmus und Skyr in je 5 kleine Becher portionieren, Quarkbällchen in Dosen packen."
+        },
+        {
+          "min": 72,
+          "schritt": "Lasagne herausnehmen und ruhen lassen; Ofen auf 200 °C hochdrehen und den Kaiserschmarrn-Teig aufs Blech streichen."
+        },
+        {
+          "min": 77,
+          "schritt": "Kaiserschmarrn 15–18 Minuten backen, inzwischen die Küche aufräumen."
+        },
+        {
+          "min": 95,
+          "schritt": "Lasagne in 5 Stücke schneiden und in Dosen füllen; Kaiserschmarrn zerreißen und abkühlen lassen."
+        },
+        {
+          "min": 105,
+          "schritt": "Kaiserschmarrn portionieren, Freitagsportionen von Lasagne, Schmarrn und Quarkbällchen einfrieren, Rest in den Kühlschrank."
+        }
+      ],
+      "aufbewahrung": [
+        "Lasagne und Kaiserschmarrn in flache Dosen füllen, damit sie schnell abkühlen; Quarkbällchen in eine gut schließende Dose.",
+        "Im Kühlschrank halten Lasagne, Kaiserschmarrn und Quarkbällchen 4 Tage.",
+        "Je eine Portion für Freitag einfrieren und am Donnerstagabend in den Kühlschrank legen."
+      ],
+      "abendessen_hinweis": "Abends kochst du frisch – zum Beispiel ein vegetarisches Gericht aus dem Kapitel „Fertig in 10 Minuten“."
+    },
+    {
+      "plan": "fleisch",
+      "titel": "Deftige Protein-Woche",
+      "beschreibung": "Blech-Omelett mit Schinken, ein mageres Schweinefilet-Gulasch und Mini-Frikadellen: herzhaft, deftig und richtig eiweißreich. Ofen und Herd arbeiten parallel, damit du nach rund 2 Stunden fertig bist.",
+      "kochtag": [
+        {
+          "min": 0,
+          "schritt": "Ofen auf 180 °C Umluft vorheizen, Kartoffeln schälen und halbieren."
+        },
+        {
+          "min": 10,
+          "schritt": "Paprika und Schinken fürs Omelett würfeln, Frühlingszwiebeln schneiden, Eier verquirlen."
+        },
+        {
+          "min": 20,
+          "schritt": "Blech-Omelett in den Ofen schieben (20–25 Min.)."
+        },
+        {
+          "min": 22,
+          "schritt": "Schweinefilet würfeln, Zwiebeln und Paprika für das Gulasch schneiden."
+        },
+        {
+          "min": 35,
+          "schritt": "Fleisch im Schmortopf portionsweise scharf anbraten und herausnehmen."
+        },
+        {
+          "min": 45,
+          "schritt": "Omelett herausnehmen und abkühlen lassen, Ofen auf 200 °C hochdrehen; Zwiebeln, Tomatenmark und Paprika anrösten, Tomaten und Brühe zugeben (20 Min. köcheln)."
+        },
+        {
+          "min": 50,
+          "schritt": "Kartoffeln in Salzwasser aufsetzen (20 Min.); Frikadellenmasse verkneten und 20 Bällchen formen."
+        },
+        {
+          "min": 62,
+          "schritt": "Frikadellen 15–18 Minuten backen; Bohnen zu den Kartoffeln geben."
+        },
+        {
+          "min": 70,
+          "schritt": "Fleisch und Sahne ins Gulasch geben, 5 Minuten ziehen lassen; Kartoffeln und Bohnen abgießen."
+        },
+        {
+          "min": 75,
+          "schritt": "Honig-Senf-Skyr-Dip anrühren und Gurkensticks schneiden."
+        },
+        {
+          "min": 82,
+          "schritt": "Frikadellen herausnehmen; Omelett in 10 Stücke schneiden."
+        },
+        {
+          "min": 90,
+          "schritt": "Alles in Dosen portionieren, sobald es lauwarm ist."
+        },
+        {
+          "min": 105,
+          "schritt": "Gulasch-, Omelett- und Frikadellenportionen für Donnerstag und Freitag beschriften und einfrieren, den Rest kühlen."
+        }
+      ],
+      "aufbewahrung": [
+        "Verwende 5 Dosen fürs Gulasch, 5 fürs Frühstück und 5 kleine Snackdosen mit separatem Dip-Becher.",
+        "Gegartes Fleisch und Eier halten im Kühlschrank (max. 5 °C) nur 3–4 Tage, deshalb ist das Einfrieren hier wichtig.",
+        "Lege die eingefrorenen Portionen jeweils am Vorabend in den Kühlschrank und wärme Gulasch und Frikadellen durchgehend heiß auf."
+      ],
+      "abendessen_hinweis": "Abends kochst du frisch – zum Beispiel ein Gericht aus dem Kapitel „Fertig in 10 Minuten“."
+    },
+    {
+      "plan": "ohne-schwein",
+      "titel": "Leichte Hähnchen-Woche",
+      "beschreibung": "Protein-Bananenbrot, ein mildes Hähnchen-Curry und Schoko-Haferriegel: ganz ohne Schweinefleisch und gut vorzubereiten. Das Bananenbrot backt, während du das Curry kochst.",
+      "kochtag": [
+        {
+          "min": 0,
+          "schritt": "Ofen auf 175 °C vorheizen, Kastenform auslegen, Reiswasser aufsetzen."
+        },
+        {
+          "min": 5,
+          "schritt": "Haferflocken mahlen, Bananenbrot-Teig anrühren und in die Form füllen."
+        },
+        {
+          "min": 15,
+          "schritt": "Bananenbrot in den Ofen schieben (50–55 Min.) und den Reis aufsetzen."
+        },
+        {
+          "min": 18,
+          "schritt": "Hähnchen in Stücke schneiden, Zwiebel, Knoblauch und Ingwer hacken."
+        },
+        {
+          "min": 30,
+          "schritt": "Gegarten Reis auf einem Blech ausbreiten; Hähnchen anbraten und herausnehmen."
+        },
+        {
+          "min": 38,
+          "schritt": "Curry-Basis andünsten, Gewürze rösten, Tomaten, Hähnchen und Kichererbsen zugeben (10 Min. köcheln)."
+        },
+        {
+          "min": 42,
+          "schritt": "Datteln und Mandeln hacken und die Riegelmasse verkneten."
+        },
+        {
+          "min": 50,
+          "schritt": "Riegelmasse in die Form drücken und in den Kühlschrank stellen."
+        },
+        {
+          "min": 52,
+          "schritt": "Joghurt mit Stärke unter das Curry rühren, Spinat zugeben, vom Herd nehmen und abkühlen lassen."
+        },
+        {
+          "min": 65,
+          "schritt": "Bananenbrot mit der Stäbchenprobe prüfen und herausnehmen, auf dem Gitter auskühlen lassen."
+        },
+        {
+          "min": 70,
+          "schritt": "Curry und Reis auf 5 Dosen verteilen; Skyr und Heidelbeeren in 5 Becher füllen."
+        },
+        {
+          "min": 85,
+          "schritt": "Curry-Dosen für Donnerstag und Freitag beschriften und einfrieren."
+        },
+        {
+          "min": 110,
+          "schritt": "Riegel in 5 Stücke schneiden und einpacken; abgekühltes Bananenbrot in 10 Scheiben schneiden und portionieren."
+        }
+      ],
+      "aufbewahrung": [
+        "Packe Curry und Reis in 5 mikrowellengeeignete Dosen, Bananenbrot und Riegel in Backpapier oder kleine Dosen.",
+        "Hähnchen-Curry mit Reis hält im Kühlschrank höchstens 3–4 Tage, Bananenbrot und Riegel 5 Tage.",
+        "Friere die Curry-Portionen für Donnerstag und Freitag direkt ein und lege sie am Vorabend in den Kühlschrank."
+      ],
+      "abendessen_hinweis": "Abends kochst du frisch – zum Beispiel ein Gericht ohne Schweinefleisch aus dem Kapitel „Fertig in 10 Minuten“."
+    }
+  ],
+  "ingredients": {
+    "Apfel": {
+      "kcal": 54,
+      "p": 0.3,
+      "c": 12.0,
+      "f": 0.2,
+      "abteilung": "Obst & Gemüse"
+    },
+    "Apfelmus (ungesüßt)": {
+      "kcal": 50,
+      "p": 0.2,
+      "c": 11.0,
+      "f": 0.1,
+      "abteilung": "Konserven & Gläser"
+    },
+    "Babyspinat": {
+      "kcal": 23,
+      "p": 2.9,
+      "c": 1.1,
+      "f": 0.4,
+      "abteilung": "Obst & Gemüse"
+    },
+    "Backkakao": {
+      "kcal": 360,
+      "p": 20.0,
+      "c": 11.0,
+      "f": 21.0,
+      "abteilung": "Sonstiges"
+    },
+    "Backpulver": {
+      "kcal": 100,
+      "p": 0.0,
+      "c": 25.0,
+      "f": 0.0,
+      "abteilung": "Sonstiges"
+    },
+    "Banane": {
+      "kcal": 93,
+      "p": 1.2,
+      "c": 20.0,
+      "f": 0.2,
+      "abteilung": "Obst & Gemüse"
+    },
+    "Basmatireis (trocken)": {
+      "kcal": 350,
+      "p": 7.5,
+      "c": 78.0,
+      "f": 0.6,
+      "abteilung": "Getreide, Nudeln & Hülsenfrüchte"
+    },
+    "Currypulver": {
+      "kcal": 0,
+      "p": 0.0,
+      "c": 0.0,
+      "f": 0.0,
+      "abteilung": "Gewürze, Öle & Saucen"
+    },
+    "Datteln (getrocknet, entsteint)": {
+      "kcal": 280,
+      "p": 2.5,
+      "c": 66.0,
+      "f": 0.4,
+      "abteilung": "Nüsse, Samen & Trockenfrüchte"
+    },
+    "Dinkelmehl Type 630": {
+      "kcal": 340,
+      "p": 11.0,
+      "c": 70.0,
+      "f": 1.5,
+      "abteilung": "Getreide, Nudeln & Hülsenfrüchte"
+    },
+    "Edamame (TK, geschält)": {
+      "kcal": 130,
+      "p": 12.0,
+      "c": 6.0,
+      "f": 6.0,
+      "abteilung": "Tiefkühl"
+    },
+    "Ei": {
+      "kcal": 137,
+      "p": 12.6,
+      "c": 0.5,
+      "f": 9.3,
+      "abteilung": "Kühlregal & Molkerei"
+    },
+    "Eiklar": {
+      "kcal": 48,
+      "p": 10.9,
+      "c": 0.7,
+      "f": 0.2,
+      "abteilung": "Kühlregal & Molkerei"
+    },
+    "Erdnussmus": {
+      "kcal": 610,
+      "p": 25.0,
+      "c": 12.0,
+      "f": 50.0,
+      "abteilung": "Nüsse, Samen & Trockenfrüchte"
+    },
+    "Frühlingszwiebeln": {
+      "kcal": 32,
+      "p": 1.8,
+      "c": 5.5,
+      "f": 0.2,
+      "abteilung": "Obst & Gemüse"
+    },
+    "Gehackte Tomaten (Dose)": {
+      "kcal": 21,
+      "p": 1.1,
+      "c": 3.5,
+      "f": 0.2,
+      "abteilung": "Konserven & Gläser"
+    },
+    "Gemüsebrühe (zubereitet)": {
+      "kcal": 3,
+      "p": 0.1,
+      "c": 0.4,
+      "f": 0.1,
+      "abteilung": "Gewürze, Öle & Saucen"
+    },
+    "Gouda light (gerieben)": {
+      "kcal": 270,
+      "p": 30.0,
+      "c": 0.0,
+      "f": 17.0,
+      "abteilung": "Kühlregal & Molkerei"
+    },
+    "Grüne Bohnen (TK)": {
+      "kcal": 30,
+      "p": 1.8,
+      "c": 5.0,
+      "f": 0.2,
+      "abteilung": "Tiefkühl"
+    },
+    "Gurke": {
+      "kcal": 12,
+      "p": 0.6,
+      "c": 1.8,
+      "f": 0.2,
+      "abteilung": "Obst & Gemüse"
+    },
+    "Haferflocken": {
+      "kcal": 372,
+      "p": 13.5,
+      "c": 58.7,
+      "f": 7.0,
+      "abteilung": "Getreide, Nudeln & Hülsenfrüchte"
+    },
+    "Heidelbeeren": {
+      "kcal": 45,
+      "p": 0.6,
+      "c": 7.4,
+      "f": 0.6,
+      "abteilung": "Obst & Gemüse"
+    },
+    "Honig": {
+      "kcal": 304,
+      "p": 0.3,
+      "c": 80.0,
+      "f": 0.0,
+      "abteilung": "Gewürze, Öle & Saucen"
+    },
+    "Hähnchenbrustfilet": {
+      "kcal": 105,
+      "p": 23.5,
+      "c": 0.0,
+      "f": 1.2,
+      "abteilung": "Fleisch & Fisch"
+    },
+    "Hüttenkäse": {
+      "kcal": 98,
+      "p": 12.5,
+      "c": 2.7,
+      "f": 4.3,
+      "abteilung": "Kühlregal & Molkerei"
+    },
+    "Ingwer": {
+      "kcal": 80,
+      "p": 1.8,
+      "c": 15.0,
+      "f": 0.8,
+      "abteilung": "Obst & Gemüse"
+    },
+    "Joghurt 1,5 %": {
+      "kcal": 47,
+      "p": 3.4,
+      "c": 4.5,
+      "f": 1.5,
+      "abteilung": "Kühlregal & Molkerei"
+    },
+    "Karotte": {
+      "kcal": 37,
+      "p": 0.9,
+      "c": 7.5,
+      "f": 0.2,
+      "abteilung": "Obst & Gemüse"
+    },
+    "Kartoffeln": {
+      "kcal": 72,
+      "p": 2.0,
+      "c": 15.6,
+      "f": 0.1,
+      "abteilung": "Obst & Gemüse"
+    },
+    "Kichererbsen (Dose, abgetropft)": {
+      "kcal": 120,
+      "p": 7.0,
+      "c": 16.0,
+      "f": 2.5,
+      "abteilung": "Konserven & Gläser"
+    },
+    "Knoblauch": {
+      "kcal": 140,
+      "p": 6.0,
+      "c": 28.0,
+      "f": 0.1,
+      "abteilung": "Obst & Gemüse"
+    },
+    "Kochsahne 15 %": {
+      "kcal": 160,
+      "p": 3.0,
+      "c": 4.0,
+      "f": 15.0,
+      "abteilung": "Kühlregal & Molkerei"
+    },
+    "Kochschinken": {
+      "kcal": 110,
+      "p": 19.5,
+      "c": 1.0,
+      "f": 3.0,
+      "abteilung": "Fleisch & Fisch"
+    },
+    "Kokosmilch (fettreduziert)": {
+      "kcal": 90,
+      "p": 1.0,
+      "c": 2.5,
+      "f": 8.0,
+      "abteilung": "Konserven & Gläser"
+    },
+    "Kreuzkümmel (gemahlen)": {
+      "kcal": 0,
+      "p": 0.0,
+      "c": 0.0,
+      "f": 0.0,
+      "abteilung": "Gewürze, Öle & Saucen"
+    },
+    "Kurkuma": {
+      "kcal": 0,
+      "p": 0.0,
+      "c": 0.0,
+      "f": 0.0,
+      "abteilung": "Gewürze, Öle & Saucen"
+    },
+    "Kümmel": {
+      "kcal": 0,
+      "p": 0.0,
+      "c": 0.0,
+      "f": 0.0,
+      "abteilung": "Gewürze, Öle & Saucen"
+    },
+    "Lasagneplatten": {
+      "kcal": 350,
+      "p": 12.0,
+      "c": 70.0,
+      "f": 1.5,
+      "abteilung": "Getreide, Nudeln & Hülsenfrüchte"
+    },
+    "Leinsamen geschrotet": {
+      "kcal": 534,
+      "p": 18.3,
+      "c": 1.6,
+      "f": 42.2,
+      "abteilung": "Nüsse, Samen & Trockenfrüchte"
+    },
+    "Magerquark": {
+      "kcal": 67,
+      "p": 12.0,
+      "c": 4.0,
+      "f": 0.3,
+      "abteilung": "Kühlregal & Molkerei"
+    },
+    "Mandeln": {
+      "kcal": 600,
+      "p": 24.0,
+      "c": 5.7,
+      "f": 53.0,
+      "abteilung": "Nüsse, Samen & Trockenfrüchte"
+    },
+    "Milch 1,5 %": {
+      "kcal": 47,
+      "p": 3.4,
+      "c": 4.9,
+      "f": 1.5,
+      "abteilung": "Kühlregal & Molkerei"
+    },
+    "Mozzarella light": {
+      "kcal": 160,
+      "p": 19.0,
+      "c": 1.0,
+      "f": 9.0,
+      "abteilung": "Kühlregal & Molkerei"
+    },
+    "Olivenöl": {
+      "kcal": 884,
+      "p": 0.0,
+      "c": 0.0,
+      "f": 100.0,
+      "abteilung": "Gewürze, Öle & Saucen"
+    },
+    "Oregano (getrocknet)": {
+      "kcal": 0,
+      "p": 0.0,
+      "c": 0.0,
+      "f": 0.0,
+      "abteilung": "Gewürze, Öle & Saucen"
+    },
+    "Paprika gelb": {
+      "kcal": 27,
+      "p": 1.0,
+      "c": 5.0,
+      "f": 0.3,
+      "abteilung": "Obst & Gemüse"
+    },
+    "Paprika rot": {
+      "kcal": 31,
+      "p": 1.0,
+      "c": 6.0,
+      "f": 0.3,
+      "abteilung": "Obst & Gemüse"
+    },
+    "Paprikapulver edelsüß": {
+      "kcal": 0,
+      "p": 0.0,
+      "c": 0.0,
+      "f": 0.0,
+      "abteilung": "Gewürze, Öle & Saucen"
+    },
+    "Paprikapulver geräuchert": {
+      "kcal": 0,
+      "p": 0.0,
+      "c": 0.0,
+      "f": 0.0,
+      "abteilung": "Gewürze, Öle & Saucen"
+    },
+    "Passierte Tomaten": {
+      "kcal": 32,
+      "p": 1.4,
+      "c": 5.5,
+      "f": 0.2,
+      "abteilung": "Konserven & Gläser"
+    },
+    "Pfeffer": {
+      "kcal": 0,
+      "p": 0.0,
+      "c": 0.0,
+      "f": 0.0,
+      "abteilung": "Gewürze, Öle & Saucen"
+    },
+    "Rapsöl": {
+      "kcal": 884,
+      "p": 0.0,
+      "c": 0.0,
+      "f": 100.0,
+      "abteilung": "Gewürze, Öle & Saucen"
+    },
+    "Rosinen": {
+      "kcal": 300,
+      "p": 2.5,
+      "c": 68.0,
+      "f": 0.5,
+      "abteilung": "Nüsse, Samen & Trockenfrüchte"
+    },
+    "Rote Linsen (trocken)": {
+      "kcal": 340,
+      "p": 24.0,
+      "c": 50.0,
+      "f": 1.5,
+      "abteilung": "Getreide, Nudeln & Hülsenfrüchte"
+    },
+    "Salz": {
+      "kcal": 0,
+      "p": 0.0,
+      "c": 0.0,
+      "f": 0.0,
+      "abteilung": "Gewürze, Öle & Saucen"
+    },
+    "Schweinefilet": {
+      "kcal": 108,
+      "p": 21.5,
+      "c": 0.0,
+      "f": 2.0,
+      "abteilung": "Fleisch & Fisch"
+    },
+    "Schweinehackfleisch mager": {
+      "kcal": 150,
+      "p": 20.5,
+      "c": 0.0,
+      "f": 7.5,
+      "abteilung": "Fleisch & Fisch"
+    },
+    "Senf mittelscharf": {
+      "kcal": 90,
+      "p": 5.5,
+      "c": 6.0,
+      "f": 4.5,
+      "abteilung": "Gewürze, Öle & Saucen"
+    },
+    "Skyr natur": {
+      "kcal": 63,
+      "p": 11.0,
+      "c": 4.0,
+      "f": 0.2,
+      "abteilung": "Kühlregal & Molkerei"
+    },
+    "Sojadrink ungesüßt": {
+      "kcal": 33,
+      "p": 3.3,
+      "c": 0.6,
+      "f": 1.8,
+      "abteilung": "Pflanzliche Alternativen"
+    },
+    "Sojajoghurt natur": {
+      "kcal": 50,
+      "p": 4.0,
+      "c": 0.5,
+      "f": 2.3,
+      "abteilung": "Pflanzliche Alternativen"
+    },
+    "Sojasauce": {
+      "kcal": 60,
+      "p": 8.0,
+      "c": 6.0,
+      "f": 0.1,
+      "abteilung": "Gewürze, Öle & Saucen"
+    },
+    "Sojaskyr natur": {
+      "kcal": 68,
+      "p": 8.5,
+      "c": 3.0,
+      "f": 2.2,
+      "abteilung": "Pflanzliche Alternativen"
+    },
+    "Speisestärke": {
+      "kcal": 350,
+      "p": 0.3,
+      "c": 86.0,
+      "f": 0.1,
+      "abteilung": "Sonstiges"
+    },
+    "Süßkartoffel": {
+      "kcal": 86,
+      "p": 1.6,
+      "c": 20.0,
+      "f": 0.1,
+      "abteilung": "Obst & Gemüse"
+    },
+    "Tahin": {
+      "kcal": 640,
+      "p": 19.0,
+      "c": 9.0,
+      "f": 58.0,
+      "abteilung": "Konserven & Gläser"
+    },
+    "Tofu natur": {
+      "kcal": 125,
+      "p": 13.0,
+      "c": 1.5,
+      "f": 7.5,
+      "abteilung": "Pflanzliche Alternativen"
+    },
+    "Tomatenmark": {
+      "kcal": 85,
+      "p": 4.5,
+      "c": 13.0,
+      "f": 0.5,
+      "abteilung": "Konserven & Gläser"
+    },
+    "Veganes Proteinpulver (Vanille)": {
+      "kcal": 380,
+      "p": 72.0,
+      "c": 8.0,
+      "f": 6.0,
+      "abteilung": "Sonstiges"
+    },
+    "Vollkornbrot": {
+      "kcal": 215,
+      "p": 7.5,
+      "c": 38.0,
+      "f": 1.5,
+      "abteilung": "Brot & Backwaren"
+    },
+    "Walnüsse": {
+      "kcal": 654,
+      "p": 15.0,
+      "c": 7.0,
+      "f": 65.0,
+      "abteilung": "Nüsse, Samen & Trockenfrüchte"
+    },
+    "Wasser": {
+      "kcal": 0,
+      "p": 0.0,
+      "c": 0.0,
+      "f": 0.0,
+      "abteilung": "Sonstiges"
+    },
+    "Whey-Proteinpulver (Schoko)": {
+      "kcal": 380,
+      "p": 75.0,
+      "c": 8.0,
+      "f": 6.0,
+      "abteilung": "Sonstiges"
+    },
+    "Zimt": {
+      "kcal": 0,
+      "p": 0.0,
+      "c": 0.0,
+      "f": 0.0,
+      "abteilung": "Gewürze, Öle & Saucen"
+    },
+    "Zitronensaft": {
+      "kcal": 22,
+      "p": 0.4,
+      "c": 2.4,
+      "f": 0.1,
+      "abteilung": "Obst & Gemüse"
+    },
+    "Zucchini": {
+      "kcal": 19,
+      "p": 1.5,
+      "c": 2.5,
+      "f": 0.4,
+      "abteilung": "Obst & Gemüse"
+    },
+    "Zwiebel": {
+      "kcal": 40,
+      "p": 1.2,
+      "c": 8.0,
+      "f": 0.2,
+      "abteilung": "Obst & Gemüse"
+    }
+  },
+  "recipes": [
+    {
+      "mahlzeit": "Frühstück",
+      "name": "Apfel-Zimt-Baked-Oats mit Sojaskyr",
+      "beschreibung": "Saftiger Haferauflauf aus der Form mit Apfelstücken und Leinsamen – einmal gebacken, fünf Frühstücke fertig.",
+      "zeit_min": 15,
+      "portionen": 5,
+      "plan": "vegan",
+      "tags": [
+        "Meal-Prep",
+        "zum Mitnehmen"
+      ],
+      "passt_fuer": [
+        "vegan",
+        "vegetarisch",
+        "fleisch",
+        "ohne-schwein"
+      ],
+      "zutaten": [
+        {
+          "name": "Haferflocken",
+          "menge_g": 300,
+          "anzeige": "300 g"
+        },
+        {
+          "name": "Sojaskyr natur",
+          "menge_g": 750,
+          "anzeige": "750 g (ca. 1½ Becher)"
+        },
+        {
+          "name": "Sojadrink ungesüßt",
+          "menge_g": 400,
+          "anzeige": "400 ml"
+        },
+        {
+          "name": "Veganes Proteinpulver (Vanille)",
+          "menge_g": 75,
+          "anzeige": "2½ Messlöffel (75 g)"
+        },
+        {
+          "name": "Apfel",
+          "menge_g": 400,
+          "anzeige": "3 Äpfel (400 g)"
+        },
+        {
+          "name": "Leinsamen geschrotet",
+          "menge_g": 40,
+          "anzeige": "4 EL (40 g)"
+        },
+        {
+          "name": "Backpulver",
+          "menge_g": 10,
+          "anzeige": "2 TL (10 g)"
+        },
+        {
+          "name": "Zimt",
+          "menge_g": 0,
+          "anzeige": "2 TL"
+        }
+      ],
+      "zubereitung": [
+        "Heize den Ofen auf 180 °C Ober-/Unterhitze vor und fette eine Auflaufform (ca. 20 × 30 cm) leicht ein.",
+        "Verrühre Haferflocken, Proteinpulver, Leinsamen, Backpulver und Zimt in einer großen Schüssel.",
+        "Rühre Sojadrink und 250 g Sojaskyr unter und lass die Masse 5 Minuten quellen.",
+        "Entkerne die Äpfel, schneide sie in kleine Würfel und hebe zwei Drittel davon unter; den Rest streust du obenauf.",
+        "Backe die Oats 30–35 Minuten, bis die Oberfläche goldbraun und fest ist, und lass sie vollständig abkühlen.",
+        "Schneide den Auflauf in 5 Stücke und verteile sie mit je 100 g Sojaskyr auf 5 Dosen."
+      ],
+      "tipp": "Hält im Kühlschrank 4–5 Tage; den Sojaskyr am besten separat im kleinen Becher mitnehmen. Kalt essen oder 1 Minute bei 600 Watt aufwärmen. Lässt sich ohne Skyr gut einfrieren (bis 2 Monate). Ohne Pulver: 75 g zusätzliche Haferflocken und 250 g mehr Sojaskyr verwenden – dann etwa 5 g weniger Eiweiß pro Portion."
+    },
+    {
+      "mahlzeit": "Mittagessen",
+      "name": "Süßkartoffel-Erdnuss-Curry mit Tofu, Linsen und Reis",
+      "beschreibung": "Cremiges, mildes Curry mit roten Linsen, Tofu und Spinat, das am zweiten Tag noch besser schmeckt.",
+      "zeit_min": 35,
+      "portionen": 5,
+      "plan": "vegan",
+      "tags": [
+        "Meal-Prep"
+      ],
+      "passt_fuer": [
+        "vegan",
+        "vegetarisch",
+        "fleisch",
+        "ohne-schwein"
+      ],
+      "zutaten": [
+        {
+          "name": "Tofu natur",
+          "menge_g": 800,
+          "anzeige": "4 Packungen à 200 g"
+        },
+        {
+          "name": "Rote Linsen (trocken)",
+          "menge_g": 150,
+          "anzeige": "150 g"
+        },
+        {
+          "name": "Basmatireis (trocken)",
+          "menge_g": 200,
+          "anzeige": "200 g"
+        },
+        {
+          "name": "Süßkartoffel",
+          "menge_g": 450,
+          "anzeige": "1 große Süßkartoffel (450 g)"
+        },
+        {
+          "name": "Babyspinat",
+          "menge_g": 200,
+          "anzeige": "200 g"
+        },
+        {
+          "name": "Kokosmilch (fettreduziert)",
+          "menge_g": 250,
+          "anzeige": "250 ml"
+        },
+        {
+          "name": "Erdnussmus",
+          "menge_g": 40,
+          "anzeige": "2 EL (40 g)"
+        },
+        {
+          "name": "Gehackte Tomaten (Dose)",
+          "menge_g": 400,
+          "anzeige": "1 Dose (400 g)"
+        },
+        {
+          "name": "Zwiebel",
+          "menge_g": 150,
+          "anzeige": "2 Zwiebeln (150 g)"
+        },
+        {
+          "name": "Knoblauch",
+          "menge_g": 12,
+          "anzeige": "3 Zehen (12 g)"
+        },
+        {
+          "name": "Ingwer",
+          "menge_g": 20,
+          "anzeige": "1 daumengroßes Stück (20 g)"
+        },
+        {
+          "name": "Sojasauce",
+          "menge_g": 30,
+          "anzeige": "2 EL (30 ml)"
+        },
+        {
+          "name": "Rapsöl",
+          "menge_g": 15,
+          "anzeige": "1½ EL (15 g)"
+        },
+        {
+          "name": "Currypulver",
+          "menge_g": 0,
+          "anzeige": "2 EL"
+        },
+        {
+          "name": "Wasser",
+          "menge_g": 0,
+          "anzeige": "600 ml"
+        },
+        {
+          "name": "Salz",
+          "menge_g": 0,
+          "anzeige": "nach Geschmack"
+        }
+      ],
+      "zubereitung": [
+        "Koche den Reis nach Packungsanleitung, breite ihn auf einem Blech aus und lass ihn schnell abkühlen.",
+        "Drücke den Tofu mit Küchenpapier gut aus, schneide ihn in 2-cm-Würfel und brate ihn in 1 EL Öl in einem großen Topf 8 Minuten rundum goldbraun; herausnehmen.",
+        "Dünste Zwiebel, Knoblauch und Ingwer im restlichen Öl 3 Minuten an, gib Currypulver dazu und röste es 1 Minute mit.",
+        "Gib die geschälten Süßkartoffelwürfel, Linsen, Tomaten, Kokosmilch, Erdnussmus und 600 ml Wasser dazu und lass alles zugedeckt 20 Minuten köcheln.",
+        "Rühre Spinat, Tofu und Sojasauce unter, schmecke mit Salz ab und lass das Curry abkühlen.",
+        "Verteile Reis und Curry auf 5 Dosen und stelle sie innerhalb von 2 Stunden in den Kühlschrank."
+      ],
+      "tipp": "Gegarter Reis hält im Kühlschrank höchstens 3–4 Tage: Friere die Portionen für Donnerstag und Freitag direkt ein und lege sie jeweils am Vorabend in den Kühlschrank. Zugedeckt in der Mikrowelle 3–4 Minuten bei 600 Watt aufwärmen, einmal umrühren, bis alles durchgehend dampft; bei Bedarf einen Schuss Wasser zugeben."
+    },
+    {
+      "mahlzeit": "Snack",
+      "name": "Edamame-Hummus mit Gemüsesticks",
+      "beschreibung": "Grüner, extra eiweißreicher Hummus aus Edamame und Kichererbsen mit knackigen Sticks für die ganze Woche.",
+      "zeit_min": 20,
+      "portionen": 5,
+      "plan": "vegan",
+      "tags": [
+        "Meal-Prep",
+        "zum Mitnehmen"
+      ],
+      "passt_fuer": [
+        "vegan",
+        "vegetarisch",
+        "fleisch",
+        "ohne-schwein"
+      ],
+      "zutaten": [
+        {
+          "name": "Edamame (TK, geschält)",
+          "menge_g": 300,
+          "anzeige": "300 g"
+        },
+        {
+          "name": "Kichererbsen (Dose, abgetropft)",
+          "menge_g": 240,
+          "anzeige": "1 Dose (240 g abgetropft)"
+        },
+        {
+          "name": "Tahin",
+          "menge_g": 30,
+          "anzeige": "2 EL (30 g)"
+        },
+        {
+          "name": "Sojajoghurt natur",
+          "menge_g": 100,
+          "anzeige": "100 g"
+        },
+        {
+          "name": "Zitronensaft",
+          "menge_g": 40,
+          "anzeige": "1 Zitrone (40 ml)"
+        },
+        {
+          "name": "Knoblauch",
+          "menge_g": 4,
+          "anzeige": "1 Zehe (4 g)"
+        },
+        {
+          "name": "Kreuzkümmel (gemahlen)",
+          "menge_g": 0,
+          "anzeige": "1 TL"
+        },
+        {
+          "name": "Salz",
+          "menge_g": 0,
+          "anzeige": "1 TL"
+        },
+        {
+          "name": "Karotte",
+          "menge_g": 400,
+          "anzeige": "4 Karotten (400 g)"
+        },
+        {
+          "name": "Paprika rot",
+          "menge_g": 400,
+          "anzeige": "2 Paprika (400 g)"
+        },
+        {
+          "name": "Gurke",
+          "menge_g": 400,
+          "anzeige": "1 Gurke (400 g)"
+        }
+      ],
+      "zubereitung": [
+        "Gare die Edamame 4 Minuten in kochendem Salzwasser und schrecke sie kalt ab.",
+        "Püriere Edamame, Kichererbsen, Tahin, Sojajoghurt, Zitronensaft, Knoblauch, Kreuzkümmel und Salz mit dem Stabmixer cremig; bei Bedarf 2–3 EL kaltes Wasser zugeben.",
+        "Schneide Karotten, Paprika und Gurke in fingerlange Sticks.",
+        "Fülle den Hummus in 5 kleine Gläser und die Sticks in 5 Dosen; lege auf die Sticks ein feuchtes Küchenpapier."
+      ],
+      "tipp": "Der Hummus hält gut verschlossen 5 Tage im Kühlschrank, die Sticks bleiben mit feuchtem Küchenpapier 4–5 Tage knackig (Gurke am besten erst ab Mittwoch frisch schneiden). Hummus lässt sich portionsweise einfrieren und über Nacht im Kühlschrank auftauen."
+    },
+    {
+      "mahlzeit": "Frühstück",
+      "name": "Ofen-Kaiserschmarrn vom Blech mit Apfelmus und Skyr",
+      "beschreibung": "Fluffiger Protein-Kaiserschmarrn aus dem Ofen statt aus der Pfanne – mit Quark im Teig und Skyr dazu.",
+      "zeit_min": 15,
+      "portionen": 5,
+      "plan": "vegetarisch",
+      "tags": [
+        "Meal-Prep"
+      ],
+      "passt_fuer": [
+        "vegetarisch",
+        "fleisch",
+        "ohne-schwein"
+      ],
+      "zutaten": [
+        {
+          "name": "Ei",
+          "menge_g": 360,
+          "anzeige": "6 Eier (Größe M)"
+        },
+        {
+          "name": "Magerquark",
+          "menge_g": 500,
+          "anzeige": "2 Packungen à 250 g"
+        },
+        {
+          "name": "Dinkelmehl Type 630",
+          "menge_g": 150,
+          "anzeige": "150 g"
+        },
+        {
+          "name": "Haferflocken",
+          "menge_g": 100,
+          "anzeige": "100 g"
+        },
+        {
+          "name": "Milch 1,5 %",
+          "menge_g": 300,
+          "anzeige": "300 ml"
+        },
+        {
+          "name": "Backpulver",
+          "menge_g": 10,
+          "anzeige": "2 TL (10 g)"
+        },
+        {
+          "name": "Rosinen",
+          "menge_g": 40,
+          "anzeige": "40 g"
+        },
+        {
+          "name": "Rapsöl",
+          "menge_g": 10,
+          "anzeige": "1 EL (10 g)"
+        },
+        {
+          "name": "Apfelmus (ungesüßt)",
+          "menge_g": 500,
+          "anzeige": "1 Glas (500 g)"
+        },
+        {
+          "name": "Skyr natur",
+          "menge_g": 500,
+          "anzeige": "1 Becher (500 g)"
+        },
+        {
+          "name": "Zimt",
+          "menge_g": 0,
+          "anzeige": "1 TL"
+        },
+        {
+          "name": "Salz",
+          "menge_g": 0,
+          "anzeige": "1 Prise"
+        }
+      ],
+      "zubereitung": [
+        "Heize den Ofen auf 200 °C Ober-/Unterhitze vor und lege ein Backblech mit Backpapier aus; pinsle es mit dem Öl ein.",
+        "Trenne die Eier und schlage das Eiweiß mit der Prise Salz steif.",
+        "Verrühre Eigelb, Quark, Milch, Mehl, Haferflocken, Backpulver und Zimt zu einem glatten Teig und hebe den Eischnee vorsichtig unter.",
+        "Streiche den Teig auf das Blech, streue die Rosinen darüber und backe ihn 15–18 Minuten, bis er goldbraun ist.",
+        "Zerreiße den Schmarrn mit zwei Gabeln in Stücke, lass ihn abkühlen und verteile ihn auf 5 Dosen.",
+        "Fülle Apfelmus und Skyr (je 100 g pro Portion) in kleine separate Becher."
+      ],
+      "tipp": "Hält im Kühlschrank 4 Tage; die Freitagsportion einfrieren und am Donnerstagabend in den Kühlschrank legen. Morgens 1–2 Minuten in der Mikrowelle bei 600 Watt oder kurz in der Pfanne aufwärmen – oder kalt mit Apfelmus und Skyr essen."
+    },
+    {
+      "mahlzeit": "Mittagessen",
+      "name": "Linsen-Spinat-Lasagne mit Hüttenkäse",
+      "beschreibung": "Herzhafte Gemüselasagne mit Linsen-Tomatensauce und einer leichten Hüttenkäse-Schicht statt Béchamel.",
+      "zeit_min": 35,
+      "portionen": 5,
+      "plan": "vegetarisch",
+      "tags": [
+        "Meal-Prep"
+      ],
+      "passt_fuer": [
+        "vegetarisch",
+        "fleisch",
+        "ohne-schwein"
+      ],
+      "zutaten": [
+        {
+          "name": "Lasagneplatten",
+          "menge_g": 250,
+          "anzeige": "ca. 12 Platten (250 g)"
+        },
+        {
+          "name": "Rote Linsen (trocken)",
+          "menge_g": 200,
+          "anzeige": "200 g"
+        },
+        {
+          "name": "Passierte Tomaten",
+          "menge_g": 700,
+          "anzeige": "700 ml"
+        },
+        {
+          "name": "Zwiebel",
+          "menge_g": 150,
+          "anzeige": "2 Zwiebeln (150 g)"
+        },
+        {
+          "name": "Karotte",
+          "menge_g": 200,
+          "anzeige": "2 Karotten (200 g)"
+        },
+        {
+          "name": "Zucchini",
+          "menge_g": 300,
+          "anzeige": "1 Zucchini (300 g)"
+        },
+        {
+          "name": "Babyspinat",
+          "menge_g": 300,
+          "anzeige": "300 g"
+        },
+        {
+          "name": "Hüttenkäse",
+          "menge_g": 600,
+          "anzeige": "3 Becher à 200 g"
+        },
+        {
+          "name": "Ei",
+          "menge_g": 60,
+          "anzeige": "1 Ei (Größe M)"
+        },
+        {
+          "name": "Mozzarella light",
+          "menge_g": 250,
+          "anzeige": "2 Kugeln (250 g)"
+        },
+        {
+          "name": "Olivenöl",
+          "menge_g": 10,
+          "anzeige": "1 EL (10 g)"
+        },
+        {
+          "name": "Knoblauch",
+          "menge_g": 8,
+          "anzeige": "2 Zehen (8 g)"
+        },
+        {
+          "name": "Oregano (getrocknet)",
+          "menge_g": 0,
+          "anzeige": "2 TL"
+        },
+        {
+          "name": "Wasser",
+          "menge_g": 0,
+          "anzeige": "300 ml"
+        },
+        {
+          "name": "Salz",
+          "menge_g": 0,
+          "anzeige": "nach Geschmack"
+        },
+        {
+          "name": "Pfeffer",
+          "menge_g": 0,
+          "anzeige": "nach Geschmack"
+        }
+      ],
+      "zubereitung": [
+        "Heize den Ofen auf 180 °C Umluft vor.",
+        "Würfle Zwiebel, Karotte und Zucchini fein und dünste sie mit Knoblauch im Olivenöl 5 Minuten an.",
+        "Gib Linsen, passierte Tomaten, 300 ml Wasser und Oregano dazu und lass die Sauce 12 Minuten köcheln; mit Salz und Pfeffer würzen.",
+        "Verrühre Hüttenkäse mit Ei, Spinat (grob gehackt), Salz und Pfeffer.",
+        "Schichte in eine große Auflaufform abwechselnd Sauce, Lasagneplatten und Hüttenkäse-Spinat; schließe mit Sauce ab und belege sie mit Mozzarellascheiben.",
+        "Backe die Lasagne 40 Minuten, lass sie 15 Minuten ruhen und schneide sie in 5 Stücke."
+      ],
+      "tipp": "Hält abgekühlt in Dosen 4 Tage im Kühlschrank; Portion 5 sofort einfrieren und am Vorabend in den Kühlschrank legen. In der Mikrowelle zugedeckt 3–4 Minuten bei 600 Watt aufwärmen, bis sie in der Mitte heiß ist. Eingefroren hält sie bis zu 3 Monate."
+    },
+    {
+      "mahlzeit": "Snack",
+      "name": "Ofen-Quarkbällchen mit Zimt",
+      "beschreibung": "Fluffige Quarkbällchen wie vom Bäcker, nur im Ofen gebacken statt frittiert – eiweißreich und perfekt für die Snackdose.",
+      "zeit_min": 20,
+      "portionen": 5,
+      "plan": "vegetarisch",
+      "tags": [
+        "Meal-Prep",
+        "zum Mitnehmen"
+      ],
+      "passt_fuer": [
+        "vegetarisch",
+        "fleisch",
+        "ohne-schwein"
+      ],
+      "zutaten": [
+        {
+          "name": "Magerquark",
+          "menge_g": 250,
+          "anzeige": "1 Packung (250 g)"
+        },
+        {
+          "name": "Ei",
+          "menge_g": 120,
+          "anzeige": "2 Eier (Größe M)"
+        },
+        {
+          "name": "Dinkelmehl Type 630",
+          "menge_g": 150,
+          "anzeige": "150 g"
+        },
+        {
+          "name": "Backpulver",
+          "menge_g": 10,
+          "anzeige": "2 TL (10 g)"
+        },
+        {
+          "name": "Honig",
+          "menge_g": 30,
+          "anzeige": "1½ EL (30 g)"
+        },
+        {
+          "name": "Zitronensaft",
+          "menge_g": 10,
+          "anzeige": "2 TL (10 ml)"
+        },
+        {
+          "name": "Zimt",
+          "menge_g": 0,
+          "anzeige": "1 TL"
+        },
+        {
+          "name": "Salz",
+          "menge_g": 0,
+          "anzeige": "1 Prise"
+        }
+      ],
+      "zubereitung": [
+        "Heize den Ofen auf 180 °C Ober-/Unterhitze vor und lege ein Blech mit Backpapier aus.",
+        "Verrühre Quark, Eier, Honig, Zitronensaft und Salz glatt.",
+        "Mische Mehl, Backpulver und die Hälfte des Zimts und rühre sie kurz unter, bis ein klebriger Teig entsteht.",
+        "Forme mit zwei feuchten Teelöffeln 20 Bällchen, setze sie mit Abstand aufs Blech und backe sie 15–18 Minuten goldbraun.",
+        "Wälze die noch warmen Bällchen im restlichen Zimt, lass sie abkühlen und packe je 4 Stück in eine Dose."
+      ],
+      "tipp": "Halten in einer gut schließenden Dose 4 Tage im Kühlschrank; die Freitagsportion einfrieren und am Vorabend herausnehmen. Kurz 10 Sekunden in der Mikrowelle oder 3 Minuten im Ofen bei 160 °C aufgebacken werden sie wieder fluffig. Dazu passt ein Klecks Skyr."
+    },
+    {
+      "mahlzeit": "Frühstück",
+      "name": "Blech-Omelett mit Kochschinken, Paprika und Vollkornbrot",
+      "beschreibung": "Ein ganzes Blech herzhaftes Ofen-Omelett, das sich in Stücke schneiden und kalt oder warm aufs Brot legen lässt.",
+      "zeit_min": 15,
+      "portionen": 5,
+      "plan": "fleisch",
+      "tags": [
+        "Meal-Prep",
+        "zum Mitnehmen"
+      ],
+      "passt_fuer": [
+        "fleisch"
+      ],
+      "zutaten": [
+        {
+          "name": "Ei",
+          "menge_g": 600,
+          "anzeige": "10 Eier (Größe M)"
+        },
+        {
+          "name": "Eiklar",
+          "menge_g": 200,
+          "anzeige": "200 g (aus dem Tetrapak)"
+        },
+        {
+          "name": "Kochschinken",
+          "menge_g": 250,
+          "anzeige": "250 g"
+        },
+        {
+          "name": "Paprika rot",
+          "menge_g": 300,
+          "anzeige": "2 Paprika (300 g)"
+        },
+        {
+          "name": "Frühlingszwiebeln",
+          "menge_g": 80,
+          "anzeige": "1 Bund (80 g)"
+        },
+        {
+          "name": "Gouda light (gerieben)",
+          "menge_g": 75,
+          "anzeige": "75 g"
+        },
+        {
+          "name": "Milch 1,5 %",
+          "menge_g": 100,
+          "anzeige": "100 ml"
+        },
+        {
+          "name": "Vollkornbrot",
+          "menge_g": 500,
+          "anzeige": "10 Scheiben (500 g)"
+        },
+        {
+          "name": "Salz",
+          "menge_g": 0,
+          "anzeige": "1 TL"
+        },
+        {
+          "name": "Pfeffer",
+          "menge_g": 0,
+          "anzeige": "nach Geschmack"
+        },
+        {
+          "name": "Paprikapulver edelsüß",
+          "menge_g": 0,
+          "anzeige": "1 TL"
+        }
+      ],
+      "zubereitung": [
+        "Heize den Ofen auf 180 °C Umluft vor und lege ein tiefes Backblech oder eine große Auflaufform mit Backpapier aus.",
+        "Würfle Paprika und Schinken, schneide die Frühlingszwiebeln in Ringe und verteile alles auf dem Blech.",
+        "Verquirle Eier, Eiklar, Milch, Salz, Pfeffer und Paprikapulver und gieße die Masse darüber; streue den Gouda obenauf.",
+        "Backe das Omelett 20–25 Minuten, bis es in der Mitte fest ist, und lass es abkühlen.",
+        "Schneide es in 10 Stücke und packe je 2 Stücke mit 2 Scheiben Vollkornbrot in eine Dose."
+      ],
+      "tipp": "Gegarte Eier mit Schinken halten im Kühlschrank 3–4 Tage: Friere die Portionen für Donnerstag und Freitag ein und lege sie am Vorabend in den Kühlschrank. Kalt essen oder 1 Minute bei 600 Watt aufwärmen. Das Brot separat lagern oder einfrieren und morgens toasten, damit es nicht durchweicht."
+    },
+    {
+      "mahlzeit": "Mittagessen",
+      "name": "Paprika-Gulasch vom Schweinefilet mit Kartoffeln und Bohnen",
+      "beschreibung": "Mageres, kräftig gewürztes Gulasch nach ungarischer Art, das durchgezogen am besten schmeckt.",
+      "zeit_min": 35,
+      "portionen": 5,
+      "plan": "fleisch",
+      "tags": [
+        "Meal-Prep"
+      ],
+      "passt_fuer": [
+        "fleisch"
+      ],
+      "zutaten": [
+        {
+          "name": "Schweinefilet",
+          "menge_g": 800,
+          "anzeige": "2 Filets (800 g)"
+        },
+        {
+          "name": "Zwiebel",
+          "menge_g": 300,
+          "anzeige": "4 Zwiebeln (300 g)"
+        },
+        {
+          "name": "Paprika rot",
+          "menge_g": 400,
+          "anzeige": "2 Paprika (400 g)"
+        },
+        {
+          "name": "Paprika gelb",
+          "menge_g": 200,
+          "anzeige": "1 Paprika (200 g)"
+        },
+        {
+          "name": "Tomatenmark",
+          "menge_g": 50,
+          "anzeige": "2 EL (50 g)"
+        },
+        {
+          "name": "Passierte Tomaten",
+          "menge_g": 400,
+          "anzeige": "400 ml"
+        },
+        {
+          "name": "Gemüsebrühe (zubereitet)",
+          "menge_g": 300,
+          "anzeige": "300 ml"
+        },
+        {
+          "name": "Kochsahne 15 %",
+          "menge_g": 100,
+          "anzeige": "100 ml"
+        },
+        {
+          "name": "Rapsöl",
+          "menge_g": 25,
+          "anzeige": "2½ EL (25 g)"
+        },
+        {
+          "name": "Kartoffeln",
+          "menge_g": 1250,
+          "anzeige": "1,25 kg festkochend"
+        },
+        {
+          "name": "Grüne Bohnen (TK)",
+          "menge_g": 400,
+          "anzeige": "400 g"
+        },
+        {
+          "name": "Paprikapulver edelsüß",
+          "menge_g": 0,
+          "anzeige": "2 EL"
+        },
+        {
+          "name": "Paprikapulver geräuchert",
+          "menge_g": 0,
+          "anzeige": "1 TL"
+        },
+        {
+          "name": "Kümmel",
+          "menge_g": 0,
+          "anzeige": "½ TL"
+        },
+        {
+          "name": "Salz",
+          "menge_g": 0,
+          "anzeige": "nach Geschmack"
+        },
+        {
+          "name": "Pfeffer",
+          "menge_g": 0,
+          "anzeige": "nach Geschmack"
+        }
+      ],
+      "zubereitung": [
+        "Schneide das Schweinefilet in 2-cm-Würfel und brate es portionsweise in 1 EL Öl in einem Schmortopf 3 Minuten scharf an; herausnehmen.",
+        "Dünste die gewürfelten Zwiebeln im restlichen Öl 5 Minuten goldgelb, rühre Tomatenmark und Paprikapulver ein und röste beides 1 Minute.",
+        "Gib die Paprikastreifen, passierte Tomaten, Brühe und Kümmel dazu und lass alles zugedeckt 20 Minuten köcheln.",
+        "Koche inzwischen die geschälten, halbierten Kartoffeln 20 Minuten in Salzwasser und gare die Bohnen in den letzten 6 Minuten mit.",
+        "Gib das Fleisch mit der Sahne zurück in den Topf und lass es noch 5 Minuten ziehen, ohne dass es sprudelnd kocht; mit Salz und Pfeffer abschmecken.",
+        "Lass alles abkühlen und verteile Gulasch, Kartoffeln und Bohnen auf 5 Dosen."
+      ],
+      "tipp": "Gegartes Fleisch hält im Kühlschrank höchstens 3–4 Tage: Friere die Portionen für Donnerstag und Freitag gleich ein (Kartoffeln vorher etwas zerdrücken, dann bleiben sie besser) und lege sie am Vorabend in den Kühlschrank. Zugedeckt 3–4 Minuten bei 600 Watt aufwärmen, bis alles durchgehend heiß ist."
+    },
+    {
+      "mahlzeit": "Snack",
+      "name": "Mini-Frikadellen mit Honig-Senf-Skyr-Dip",
+      "beschreibung": "Kleine, magere Frikadellen aus dem Ofen mit cremigem Dip und Gurkensticks – der herzhafte Snack für die Bürodose.",
+      "zeit_min": 20,
+      "portionen": 5,
+      "plan": "fleisch",
+      "tags": [
+        "Meal-Prep",
+        "zum Mitnehmen"
+      ],
+      "passt_fuer": [
+        "fleisch"
+      ],
+      "zutaten": [
+        {
+          "name": "Schweinehackfleisch mager",
+          "menge_g": 400,
+          "anzeige": "400 g"
+        },
+        {
+          "name": "Ei",
+          "menge_g": 60,
+          "anzeige": "1 Ei (Größe M)"
+        },
+        {
+          "name": "Haferflocken",
+          "menge_g": 40,
+          "anzeige": "4 EL (40 g)"
+        },
+        {
+          "name": "Zwiebel",
+          "menge_g": 60,
+          "anzeige": "1 kleine Zwiebel (60 g)"
+        },
+        {
+          "name": "Senf mittelscharf",
+          "menge_g": 40,
+          "anzeige": "2 EL (40 g)"
+        },
+        {
+          "name": "Skyr natur",
+          "menge_g": 250,
+          "anzeige": "250 g"
+        },
+        {
+          "name": "Honig",
+          "menge_g": 10,
+          "anzeige": "2 TL (10 g)"
+        },
+        {
+          "name": "Gurke",
+          "menge_g": 300,
+          "anzeige": "¾ Gurke (300 g)"
+        },
+        {
+          "name": "Paprikapulver edelsüß",
+          "menge_g": 0,
+          "anzeige": "1 TL"
+        },
+        {
+          "name": "Salz",
+          "menge_g": 0,
+          "anzeige": "½ TL"
+        },
+        {
+          "name": "Pfeffer",
+          "menge_g": 0,
+          "anzeige": "nach Geschmack"
+        }
+      ],
+      "zubereitung": [
+        "Heize den Ofen auf 200 °C Umluft vor und lege ein Blech mit Backpapier aus.",
+        "Verknete Hackfleisch, Ei, Haferflocken, fein gewürfelte Zwiebel, 1 EL Senf, Paprikapulver, Salz und Pfeffer.",
+        "Forme mit feuchten Händen 20 walnussgroße Bällchen und backe sie 15–18 Minuten, bis sie durchgegart sind (innen nicht mehr rosa).",
+        "Verrühre Skyr mit dem restlichen Senf und dem Honig und fülle den Dip in 5 kleine Becher.",
+        "Schneide die Gurke in Sticks und packe je 4 Frikadellen mit Gurke und Dip in eine Dose."
+      ],
+      "tipp": "Gegartes Hackfleisch hält im Kühlschrank 3 Tage: Friere 8 Frikadellen für Donnerstag und Freitag ein und lege sie am Vorabend in den Kühlschrank. Schmecken kalt oder 1 Minute bei 600 Watt aufgewärmt; Dip und Gurke bleiben getrennt frisch."
+    },
+    {
+      "mahlzeit": "Frühstück",
+      "name": "Protein-Bananenbrot mit Skyr und Heidelbeeren",
+      "beschreibung": "Saftiges Bananenbrot aus Haferflocken und Quark ohne Zuckerzusatz, dazu Skyr mit Beeren.",
+      "zeit_min": 15,
+      "portionen": 5,
+      "plan": "ohne-schwein",
+      "tags": [
+        "Meal-Prep",
+        "zum Mitnehmen"
+      ],
+      "passt_fuer": [
+        "vegetarisch",
+        "fleisch",
+        "ohne-schwein"
+      ],
+      "zutaten": [
+        {
+          "name": "Banane",
+          "menge_g": 360,
+          "anzeige": "3 reife Bananen (360 g)"
+        },
+        {
+          "name": "Haferflocken",
+          "menge_g": 200,
+          "anzeige": "200 g"
+        },
+        {
+          "name": "Ei",
+          "menge_g": 240,
+          "anzeige": "4 Eier (Größe M)"
+        },
+        {
+          "name": "Magerquark",
+          "menge_g": 400,
+          "anzeige": "400 g"
+        },
+        {
+          "name": "Walnüsse",
+          "menge_g": 30,
+          "anzeige": "1 Handvoll (30 g)"
+        },
+        {
+          "name": "Backpulver",
+          "menge_g": 10,
+          "anzeige": "2 TL (10 g)"
+        },
+        {
+          "name": "Zimt",
+          "menge_g": 0,
+          "anzeige": "1 TL"
+        },
+        {
+          "name": "Salz",
+          "menge_g": 0,
+          "anzeige": "1 Prise"
+        },
+        {
+          "name": "Skyr natur",
+          "menge_g": 750,
+          "anzeige": "1½ Becher (750 g)"
+        },
+        {
+          "name": "Heidelbeeren",
+          "menge_g": 250,
+          "anzeige": "250 g"
+        }
+      ],
+      "zubereitung": [
+        "Heize den Ofen auf 175 °C Ober-/Unterhitze vor und lege eine Kastenform (25 cm) mit Backpapier aus.",
+        "Mahle die Haferflocken im Mixer zu feinem Mehl und vermische sie mit Backpulver, Zimt und Salz.",
+        "Zerdrücke die Bananen mit einer Gabel und verrühre sie mit Eiern und Quark; hebe die Hafermischung und die gehackten Walnüsse unter.",
+        "Fülle den Teig in die Form und backe das Brot 50–55 Minuten (Stäbchenprobe); bei zu starker Bräunung nach 30 Minuten mit Alufolie abdecken.",
+        "Lass das Brot vollständig abkühlen, schneide es in 10 Scheiben und packe je 2 Scheiben in eine Dose.",
+        "Verteile Skyr und Heidelbeeren (150 g und 50 g pro Portion) auf 5 kleine Becher."
+      ],
+      "tipp": "Das Bananenbrot hält gut verpackt 4–5 Tage im Kühlschrank und lässt sich scheibenweise einfrieren (bis 2 Monate); einzelne Scheiben kannst du direkt toasten. Skyr mit Beeren hält bis zum Mindesthaltbarkeitsdatum des Skyrs."
+    },
+    {
+      "mahlzeit": "Mittagessen",
+      "name": "Mildes Hähnchen-Joghurt-Curry mit Kichererbsen und Reis",
+      "beschreibung": "Zartes Hähnchen in einer milden Tomaten-Joghurt-Currysauce mit Kichererbsen und Spinat – Wohlfühlessen für die Mittagspause.",
+      "zeit_min": 30,
+      "portionen": 5,
+      "plan": "ohne-schwein",
+      "tags": [
+        "Meal-Prep"
+      ],
+      "passt_fuer": [
+        "fleisch",
+        "ohne-schwein"
+      ],
+      "zutaten": [
+        {
+          "name": "Hähnchenbrustfilet",
+          "menge_g": 750,
+          "anzeige": "750 g"
+        },
+        {
+          "name": "Kichererbsen (Dose, abgetropft)",
+          "menge_g": 240,
+          "anzeige": "1 Dose (240 g abgetropft)"
+        },
+        {
+          "name": "Basmatireis (trocken)",
+          "menge_g": 300,
+          "anzeige": "300 g"
+        },
+        {
+          "name": "Zwiebel",
+          "menge_g": 200,
+          "anzeige": "2 große Zwiebeln (200 g)"
+        },
+        {
+          "name": "Passierte Tomaten",
+          "menge_g": 400,
+          "anzeige": "400 ml"
+        },
+        {
+          "name": "Joghurt 1,5 %",
+          "menge_g": 250,
+          "anzeige": "250 g"
+        },
+        {
+          "name": "Babyspinat",
+          "menge_g": 200,
+          "anzeige": "200 g"
+        },
+        {
+          "name": "Rapsöl",
+          "menge_g": 20,
+          "anzeige": "2 EL (20 g)"
+        },
+        {
+          "name": "Knoblauch",
+          "menge_g": 12,
+          "anzeige": "3 Zehen (12 g)"
+        },
+        {
+          "name": "Ingwer",
+          "menge_g": 15,
+          "anzeige": "1 Stück (15 g)"
+        },
+        {
+          "name": "Speisestärke",
+          "menge_g": 10,
+          "anzeige": "1 EL (10 g)"
+        },
+        {
+          "name": "Currypulver",
+          "menge_g": 0,
+          "anzeige": "2 EL"
+        },
+        {
+          "name": "Kurkuma",
+          "menge_g": 0,
+          "anzeige": "1 TL"
+        },
+        {
+          "name": "Salz",
+          "menge_g": 0,
+          "anzeige": "nach Geschmack"
+        }
+      ],
+      "zubereitung": [
+        "Koche den Reis nach Packungsanleitung, breite ihn zum schnellen Abkühlen auf einem Blech aus.",
+        "Schneide das Hähnchen in mundgerechte Stücke und brate es in 1 EL Öl 5 Minuten rundum an; herausnehmen.",
+        "Dünste Zwiebel, Knoblauch und Ingwer im restlichen Öl 4 Minuten an, röste Currypulver und Kurkuma 1 Minute mit und lösche mit den passierten Tomaten ab.",
+        "Gib Hähnchen und Kichererbsen dazu und lass alles 10 Minuten köcheln, bis das Fleisch durchgegart ist.",
+        "Verrühre Joghurt mit der Stärke, rühre ihn bei kleiner Hitze unter (nicht mehr kochen lassen) und lass den Spinat darin zusammenfallen; mit Salz abschmecken.",
+        "Lass das Curry abkühlen und verteile es mit dem Reis auf 5 Dosen."
+      ],
+      "tipp": "Gegarter Reis und Hähnchen halten im Kühlschrank höchstens 3–4 Tage: Friere die Portionen für Donnerstag und Freitag sofort ein und lege sie am Vorabend in den Kühlschrank. Zugedeckt 3–4 Minuten bei 600 Watt aufwärmen und umrühren, bis alles dampft. Die Stärke verhindert, dass der Joghurt beim Aufwärmen ausflockt."
+    },
+    {
+      "mahlzeit": "Snack",
+      "name": "Schoko-Haferriegel mit Mandeln und Whey",
+      "beschreibung": "Saftige No-Bake-Riegel aus Hafer, Erdnussmus und Schoko-Protein, die im Kühlschrank fest werden.",
+      "zeit_min": 15,
+      "portionen": 5,
+      "plan": "ohne-schwein",
+      "tags": [
+        "Meal-Prep",
+        "ohne Kochen"
+      ],
+      "passt_fuer": [
+        "vegetarisch",
+        "fleisch",
+        "ohne-schwein"
+      ],
+      "zutaten": [
+        {
+          "name": "Haferflocken",
+          "menge_g": 120,
+          "anzeige": "120 g"
+        },
+        {
+          "name": "Whey-Proteinpulver (Schoko)",
+          "menge_g": 90,
+          "anzeige": "3 Messlöffel (90 g)"
+        },
+        {
+          "name": "Erdnussmus",
+          "menge_g": 50,
+          "anzeige": "2½ EL (50 g)"
+        },
+        {
+          "name": "Datteln (getrocknet, entsteint)",
+          "menge_g": 60,
+          "anzeige": "ca. 6 Datteln (60 g)"
+        },
+        {
+          "name": "Mandeln",
+          "menge_g": 20,
+          "anzeige": "1 Handvoll (20 g)"
+        },
+        {
+          "name": "Milch 1,5 %",
+          "menge_g": 120,
+          "anzeige": "120 ml"
+        },
+        {
+          "name": "Backkakao",
+          "menge_g": 10,
+          "anzeige": "1 EL (10 g)"
+        },
+        {
+          "name": "Salz",
+          "menge_g": 0,
+          "anzeige": "1 Prise"
+        }
+      ],
+      "zubereitung": [
+        "Hacke Datteln und Mandeln fein (am einfachsten im Zerkleinerer).",
+        "Verknete Haferflocken, Proteinpulver, Kakao, Salz, Erdnussmus, Datteln und Mandeln mit der Milch zu einer formbaren Masse; ist sie zu trocken, gib esslöffelweise Milch dazu.",
+        "Drücke die Masse in eine mit Backpapier ausgelegte kleine Form (ca. 15 × 20 cm) fest.",
+        "Stelle die Form mindestens 1 Stunde in den Kühlschrank und schneide die Masse dann in 5 Riegel.",
+        "Wickle jeden Riegel einzeln in Backpapier oder lege ihn in eine kleine Dose."
+      ],
+      "tipp": "Halten im Kühlschrank 5–6 Tage und lassen sich einzeln einfrieren (bis 2 Monate, 15 Minuten antauen lassen). Ohne Pulver: Whey durch 60 g Haferflocken und 80 g Magerquark ersetzen und die Riegel nur 3 Tage aufbewahren – dann etwa 7 g weniger Eiweiß pro Riegel."
+    }
+  ]
+}

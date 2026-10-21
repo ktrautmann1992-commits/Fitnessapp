@@ -1,0 +1,20 @@
+## Kapitel SOMMER-EIS → Datei eis.json
+Lies BRIEFING.md, dann BRIEFING-TRAINING.md (Feld "passt_fuer" mit Logik, Proteinpulver-Namen, Namenskonsistenz mit vorhandenen *.json-Dateien). Dieses Teil hat Vorrang; die Mischungsregel aus BRIEFING-TRAINING gilt NICHT.
+
+Kontext: Die Nutzer haben eine Haushalts-Eismaschine, bei der man die Masse in einem Gefrierbecher (ca. 470 ml, „Pint“) 24 Stunden einfriert und danach von der Maschine zu cremigem Eis verarbeiten lässt (Programm für leichtes Eis, Nachdrehen mit einem Schuss Flüssigkeit, Mix-in-Funktion für Stückchen). Sie machen Protein-Eis mit Mandeldrink und Geschmacks-Proteinpulver und Frozen Joghurt mit zuckerfreiem Geschmackspulver.
+
+WICHTIG: Keine Marken- oder Produktnamen, nirgends (weder Maschine noch Pulver noch Lebensmittel). Allgemeine Begriffe verwenden: „Eismaschine mit Gefrierbecher“, „Gefrierbecher“, „Programm für leichtes Eis“, „Nachdrehen“, „Mix-in-Funktion“, „Geschmackspulver (zuckerfrei)“, „Mandeldrink ungesüßt“, „Instant-Puddingpulver (zuckerfrei)“, „Clear-Whey-Isolat (Fruchtgeschmack)“ usw.
+
+Genau 12 Rezepte, Thema heiße Sommertage, frisch und fruchtig, Tag "Sommer-Eis" als erstes Tag.
+- 1 Rezept = 1 voller Gefrierbecher = "portionen": 1 (Mengen für einen Becher, Füllmenge ca. 400–450 ml, nie über die Max-Linie). Ziel pro Becher: 180–400 kcal, ≥ 25 g Eiweiß, Fett ≤ 12 g.
+- Zeitpunkte ("mahlzeit", genaue Schreibweise): 5 × "Protein-Eis mit Mandeldrink", 4 × "Frozen Joghurt", 3 × "Sorbet & Erfrischung" (fruchtig-leicht, z. B. mit Clear-Whey-Isolat, Wassermelone, Zitrone, Mango, Beeren).
+- Sommerliche Sorten, z. B. Erdbeer-Basilikum, Zitronenkuchen, Mango-Maracuja, Pfirsich-Eistee, Kokos-Ananas, Wassermelone-Limette, Pistazie, Kirsch-Schoko, Joghurt-Heidelbeer-Cheesecake, Espresso-Eiskaffee, Himbeer-Minze, Aprikose-Vanille. Klar unterschiedliche Rezepte, keine Wiederholung von Rezepten aus vorhandenen *.json-Dateien.
+- Ernährungsformen: mindestens 5 vegan (veganes Proteinpulver, Sojaskyr/Sojajoghurt, Kokos- oder Mandeldrink), Rest vegetarisch. Bei Mandeldrink-Rezepten mit Whey ist das Rezept vegetarisch.
+- Geschmackspulver: Zutat "Geschmackspulver (zuckerfrei)" mit realistischen Werten (ca. 300–350 kcal/100 g, typisch 5–10 g pro Becher, Abteilung "Sonstiges"); in "anzeige" die Sorte nennen, z. B. "2 TL (8 g), Sorte Keks". Für Cremigkeit optional "Instant-Puddingpulver (zuckerfrei)" (1 EL) oder "Johannisbrotkernmehl" (Prise); Süße mit "Erythrit" oder Obst. Mix-ins (z. B. Nüsse, Zartbitterschokolade, Kekskrümel, Beeren) sparsam und in die Nährwerte einrechnen.
+- "zeit_min" = aktive Zeit (meist 5–10). Gefrierzeit (24 Std.) gehört in die Zubereitung und in die Beschreibung NICHT als Hauptsatz, sondern so: Schritt mit „mindestens 24 Stunden waagerecht einfrieren“.
+- "zubereitung" 4–6 Schritte, immer in dieser Logik: Zutaten mixen/verrühren → in den Gefrierbecher bis höchstens zur Max-Linie → 24 Std. einfrieren → mit dem Programm für leichtes Eis verarbeiten → bei bröseliger Konsistenz 1–2 EL Flüssigkeit zugeben und nachdrehen → optional Mix-ins mit der Mix-in-Funktion.
+- "tipp": Variante, Austausch oder Konsistenz-Trick.
+
+Zusätzlich Top-Level-Feld "leitfaden": 6–7 Einträge {"titel","text"} für die Seite „So gelingt Protein-Eis aus der Eismaschine“: Masse gut mixen (Pulver klumpt sonst), waagerecht und 24 Std. einfrieren, Max-Linie beachten, Programm für leichtes Eis bei wenig Fett und Zucker, bröselig ist normal → Nachdrehen mit Flüssigkeit, Mix-ins erst am Ende, Becher vorher 5–10 Min. antauen lassen bei sehr hartem Kern, Reste glatt streichen und wieder einfrieren (vor dem Essen erneut verarbeiten), Hygiene. Allgemein formulieren, nichts versprechen, was nur ein bestimmtes Gerät kann; Hinweis, die Anleitung des eigenen Geräts zu beachten.
+
+Prüfe per Python wie im BRIEFING.md (Schema, Zutaten, Zielwerte, passt_fuer, keine Dubletten) und zusätzlich: kein Text enthält Markennamen (prüfe mindestens auf: ninja, creami, more nutrition, chunky, esn, alpro, oatly, rügenwalder, ehrmann, müller, isoclear, flavdrops). Gib eine kurze Tabelle zurück (Name, Zeitpunkt, Ernährungsform, kcal, Eiweiß).

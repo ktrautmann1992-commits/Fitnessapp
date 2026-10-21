@@ -1,0 +1,13 @@
+## Kapitel HEISSLUFTFRITTEUSE → Datei airfryer.json
+Lies BRIEFING.md, dann BRIEFING-TRAINING.md (Feld "passt_fuer" mit Logik, Proteinpulver-Namen, Namenskonsistenz mit vorhandenen *.json-Dateien). Dieses Teil hat Vorrang; die Mischungsregel aus BRIEFING-TRAINING gilt NICHT.
+
+Idee: Fitness-Rezepte, die in der Heißluftfritteuse besonders gut gelingen – knusprig mit wenig Öl, schnell, wenig Abwasch. Keine Marken- oder Gerätenamen („Heißluftfritteuse“ ist der allgemeine Begriff).
+Genau 12 Rezepte, 1 Portion, Tag "Heißluftfritteuse" als erstes Tag. In jeder Zubereitung Temperatur (°C) und Zeit, ob vorgeheizt wird und wann gewendet/geschüttelt wird. Zeiten als Richtwerte für einen Korb mittlerer Größe. Geflügel: im Text auf vollständiges Durchgaren achten (Kerntemperatur mindestens 74 °C, bei Fisch ca. 60–63 °C).
+Abschnitte ("mahlzeit", genaue Schreibweise) und Zielwerte:
+- "Hauptgerichte" (5): 450–700 kcal, ≥ 30 g Eiweiß. Z. B. Lachs mit Kräuterkruste und Ofengemüse, Hähnchenschenkel/Brust mit Paprika-Marinade und Kartoffelspalten, knuspriger Tofu mit Brokkoli und Reis, Falafel-Bowl, Putenröllchen/Saltimbocca-Art (ohne Schwein), Gefüllte Zucchini/Paprika, Fisch-Stäbchen selbstgemacht (Kabeljau/Seelachs in Panade).
+- "Beilagen & Gemüse" (3): 150–350 kcal, ≥ 8 g Eiweiß (Beilage mit Eiweiß-Dip o. Ä. zulässig). Z. B. Halloumi-Gemüse, Rosenkohl mit Parmesan, Blumenkohl-Bites mit Joghurt-Dip, Kartoffel-Wedges mit Kräuterquark.
+- "Snacks & Süßes" (4): 150–350 kcal, ≥ 12 g Eiweiß. Z. B. Knusper-Kichererbsen mit Protein-Dip, Eiweiß-Muffins, Apfel-Zimt-Taschen mit Quarkfüllung, Baked Oats, Protein-Donuts/Bällchen mit Proteinpulver.
+Ernährungsformen: 4 vegan, 4 vegetarisch, 4 mit Fleisch/Fisch ohne Schwein (kein Schweinefleisch).
+NICHT verwenden (andere Kapitel haben das schon): Pommes, Süßkartoffel-Pommes, Chili-Cheese-Fries, Chicken Wings, Nuggets, Burger, Pizza, Chicken-Burger, Döner. Keine Wiederholung vorhandener Rezepte.
+Zusätzlich Top-Level-Feld "leitfaden": 6–7 Einträge {"titel","text"} für die Seite „So gelingt Fitness-Essen aus der Heißluftfritteuse“: Vorheizen, Korb nicht überfüllen (eine Lage), schütteln/wenden, wenig Öl (Sprühflasche, Öl einreiben statt gießen), Panade gelingt knusprig (Ei/Skyr + Panko/Cornflakes), Backpapier nur beschwert und nie beim Vorheizen allein im Korb, Geflügel durchgaren (74 °C), Zeiten unterscheiden sich je nach Gerät – Anleitung des eigenen Geräts beachten, Reinigung. Allgemein und sachlich.
+Prüfe per Python wie im BRIEFING.md (Schema, Zutaten, Zielwerte, passt_fuer gegen Zutaten, keine Dubletten, keine Marken: philips, tefal, cosori, ninja, airfryer-Markennamen). Gib eine kurze Tabelle zurück.

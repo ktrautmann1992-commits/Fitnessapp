@@ -1,0 +1,5 @@
+## Kapitel CARDIO / AUSDAUER → Datei cardio.json, Tag "Ausdauer"
+Ziel: Läufer, Radfahrer, Schwimmer, Triathleten bei längeren Einheiten (ab ca. 60–90 Min.). Kohlenhydrate stehen im Vordergrund, dazu Flüssigkeit und Salz.
+- 4 Rezepte mit "mahlzeit": "Vor langen Einheiten" (2–3 Std. vorher, z. B. Frühstück vor dem langen Lauf, Reis-/Nudelgericht klein): 350–550 kcal, 60–100 g Kohlenhydrate, wenig Fett (höchstens 12 g) und Ballaststoffe, 10–25 g Eiweiß.
+- 3 Rezepte mit "mahlzeit": "Während der Einheit" (selbstgemacht, mitnehmbar: z. B. isotonisches Getränk mit Saft und Salz, Reiskuchen/Rice Cakes, Dattel-Energieriegel, Kartoffel-Häppchen): pro Portion 100–250 kcal, 25–60 g Kohlenhydrate, fast kein Fett und Eiweiß. Im Tipp angeben, wie viel pro Stunde sinnvoll ist (Richtwert 30–60 g Kohlenhydrate pro Stunde, bei sehr langen Einheiten bis 90 g, nur wenn im Training geübt). Salz bei den Getränken angeben.
+- 3 Rezepte mit "mahlzeit": "Nach der Einheit" (Auffüllen und Regeneration, auch etwas Salz/Flüssigkeit, z. B. Milchreis mit Protein, Kartoffel-Quark, Recovery-Smoothie, Brühe-Nudeln): 300–500 kcal, 50–80 g Kohlenhydrate, mindestens 20 g Eiweiß.

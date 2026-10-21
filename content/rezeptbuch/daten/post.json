@@ -1,0 +1,978 @@
+{
+  "ingredients": {
+    "Sojadrink ungesüßt": {
+      "kcal": 33,
+      "p": 3.3,
+      "c": 0.6,
+      "f": 1.8,
+      "abteilung": "Pflanzliche Alternativen"
+    },
+    "Veganes Proteinpulver (Vanille)": {
+      "kcal": 380,
+      "p": 72.0,
+      "c": 8.0,
+      "f": 6.0,
+      "abteilung": "Sonstiges"
+    },
+    "Beerenmischung (TK)": {
+      "kcal": 45,
+      "p": 1.0,
+      "c": 7.0,
+      "f": 0.4,
+      "abteilung": "Tiefkühl"
+    },
+    "Haferflocken": {
+      "kcal": 372,
+      "p": 13.5,
+      "c": 58.7,
+      "f": 7.0,
+      "abteilung": "Getreide, Nudeln & Hülsenfrüchte"
+    },
+    "Zimt": {
+      "kcal": 0,
+      "p": 0.0,
+      "c": 0.0,
+      "f": 0.0,
+      "abteilung": "Gewürze, Öle & Saucen"
+    },
+    "Skyr natur": {
+      "kcal": 63,
+      "p": 11.0,
+      "c": 4.0,
+      "f": 0.2,
+      "abteilung": "Kühlregal & Molkerei"
+    },
+    "Sauerkirschen (Glas, abgetropft)": {
+      "kcal": 65,
+      "p": 0.8,
+      "c": 15.0,
+      "f": 0.1,
+      "abteilung": "Konserven & Gläser"
+    },
+    "Honig": {
+      "kcal": 304,
+      "p": 0.3,
+      "c": 80.0,
+      "f": 0.0,
+      "abteilung": "Gewürze, Öle & Saucen"
+    },
+    "Sojaskyr natur": {
+      "kcal": 68,
+      "p": 8.5,
+      "c": 3.0,
+      "f": 2.2,
+      "abteilung": "Pflanzliche Alternativen"
+    },
+    "Mango (TK)": {
+      "kcal": 60,
+      "p": 0.8,
+      "c": 14.0,
+      "f": 0.4,
+      "abteilung": "Tiefkühl"
+    },
+    "Kürbiskerne": {
+      "kcal": 580,
+      "p": 32.0,
+      "c": 6.0,
+      "f": 47.0,
+      "abteilung": "Nüsse, Samen & Trockenfrüchte"
+    },
+    "Ahornsirup": {
+      "kcal": 260,
+      "p": 0.0,
+      "c": 67.0,
+      "f": 0.1,
+      "abteilung": "Sonstiges"
+    },
+    "Joghurt 1,5 %": {
+      "kcal": 47,
+      "p": 3.4,
+      "c": 4.5,
+      "f": 1.5,
+      "abteilung": "Kühlregal & Molkerei"
+    },
+    "Milch 1,5 %": {
+      "kcal": 47,
+      "p": 3.4,
+      "c": 4.9,
+      "f": 1.5,
+      "abteilung": "Kühlregal & Molkerei"
+    },
+    "Whey-Proteinpulver (Vanille)": {
+      "kcal": 385,
+      "p": 77.0,
+      "c": 7.0,
+      "f": 6.0,
+      "abteilung": "Sonstiges"
+    },
+    "Reiswaffeln": {
+      "kcal": 385,
+      "p": 8.0,
+      "c": 81.0,
+      "f": 3.0,
+      "abteilung": "Brot & Backwaren"
+    },
+    "Thunfisch (Dose, im eigenen Saft, abgetropft)": {
+      "kcal": 110,
+      "p": 25.0,
+      "c": 0.0,
+      "f": 1.0,
+      "abteilung": "Konserven & Gläser"
+    },
+    "Gurke": {
+      "kcal": 12,
+      "p": 0.6,
+      "c": 1.8,
+      "f": 0.2,
+      "abteilung": "Obst & Gemüse"
+    },
+    "Zitronensaft": {
+      "kcal": 22,
+      "p": 0.4,
+      "c": 2.4,
+      "f": 0.1,
+      "abteilung": "Obst & Gemüse"
+    },
+    "Schnittlauch": {
+      "kcal": 27,
+      "p": 3.0,
+      "c": 1.7,
+      "f": 0.7,
+      "abteilung": "Obst & Gemüse"
+    },
+    "Salz": {
+      "kcal": 0,
+      "p": 0.0,
+      "c": 0.0,
+      "f": 0.0,
+      "abteilung": "Gewürze, Öle & Saucen"
+    },
+    "Pfeffer": {
+      "kcal": 0,
+      "p": 0.0,
+      "c": 0.0,
+      "f": 0.0,
+      "abteilung": "Gewürze, Öle & Saucen"
+    },
+    "Vollkorn-Wrap": {
+      "kcal": 300,
+      "p": 9.0,
+      "c": 48.0,
+      "f": 7.0,
+      "abteilung": "Brot & Backwaren"
+    },
+    "Seitan": {
+      "kcal": 135,
+      "p": 24.0,
+      "c": 5.0,
+      "f": 2.0,
+      "abteilung": "Pflanzliche Alternativen"
+    },
+    "Olivenöl": {
+      "kcal": 884,
+      "p": 0.0,
+      "c": 0.0,
+      "f": 100.0,
+      "abteilung": "Gewürze, Öle & Saucen"
+    },
+    "Gyrosgewürz": {
+      "kcal": 0,
+      "p": 0.0,
+      "c": 0.0,
+      "f": 0.0,
+      "abteilung": "Gewürze, Öle & Saucen"
+    },
+    "Sojajoghurt natur": {
+      "kcal": 50,
+      "p": 4.0,
+      "c": 0.5,
+      "f": 2.3,
+      "abteilung": "Pflanzliche Alternativen"
+    },
+    "Knoblauch": {
+      "kcal": 140,
+      "p": 6.0,
+      "c": 28.0,
+      "f": 0.1,
+      "abteilung": "Obst & Gemüse"
+    },
+    "Rotkohl": {
+      "kcal": 29,
+      "p": 1.5,
+      "c": 3.5,
+      "f": 0.2,
+      "abteilung": "Obst & Gemüse"
+    },
+    "Tomate": {
+      "kcal": 18,
+      "p": 0.9,
+      "c": 3.0,
+      "f": 0.2,
+      "abteilung": "Obst & Gemüse"
+    },
+    "Räuchertofu": {
+      "kcal": 160,
+      "p": 17.0,
+      "c": 2.0,
+      "f": 9.0,
+      "abteilung": "Pflanzliche Alternativen"
+    },
+    "Express-Reis (Beutel, gegart)": {
+      "kcal": 150,
+      "p": 3.2,
+      "c": 31.0,
+      "f": 1.4,
+      "abteilung": "Getreide, Nudeln & Hülsenfrüchte"
+    },
+    "Edamame (TK, geschält)": {
+      "kcal": 130,
+      "p": 12.0,
+      "c": 6.0,
+      "f": 6.0,
+      "abteilung": "Tiefkühl"
+    },
+    "Paprika rot": {
+      "kcal": 31,
+      "p": 1.0,
+      "c": 6.0,
+      "f": 0.3,
+      "abteilung": "Obst & Gemüse"
+    },
+    "Frühlingszwiebeln": {
+      "kcal": 32,
+      "p": 1.8,
+      "c": 5.5,
+      "f": 0.2,
+      "abteilung": "Obst & Gemüse"
+    },
+    "Sojasauce": {
+      "kcal": 60,
+      "p": 8.0,
+      "c": 6.0,
+      "f": 0.1,
+      "abteilung": "Gewürze, Öle & Saucen"
+    },
+    "Rapsöl": {
+      "kcal": 884,
+      "p": 0.0,
+      "c": 0.0,
+      "f": 100.0,
+      "abteilung": "Gewürze, Öle & Saucen"
+    },
+    "Ingwer": {
+      "kcal": 80,
+      "p": 1.8,
+      "c": 15.0,
+      "f": 0.8,
+      "abteilung": "Obst & Gemüse"
+    },
+    "Ei": {
+      "kcal": 137,
+      "p": 12.6,
+      "c": 0.5,
+      "f": 9.3,
+      "abteilung": "Kühlregal & Molkerei"
+    },
+    "Eiklar": {
+      "kcal": 48,
+      "p": 10.9,
+      "c": 0.7,
+      "f": 0.2,
+      "abteilung": "Kühlregal & Molkerei"
+    },
+    "Babyspinat": {
+      "kcal": 23,
+      "p": 2.9,
+      "c": 1.1,
+      "f": 0.4,
+      "abteilung": "Obst & Gemüse"
+    },
+    "Vollkornbrot": {
+      "kcal": 215,
+      "p": 7.5,
+      "c": 38.0,
+      "f": 1.5,
+      "abteilung": "Brot & Backwaren"
+    },
+    "Vollkornnudeln": {
+      "kcal": 350,
+      "p": 13.0,
+      "c": 64.0,
+      "f": 2.5,
+      "abteilung": "Getreide, Nudeln & Hülsenfrüchte"
+    },
+    "Hüttenkäse": {
+      "kcal": 98,
+      "p": 12.5,
+      "c": 2.7,
+      "f": 4.3,
+      "abteilung": "Kühlregal & Molkerei"
+    },
+    "Erbsen (TK)": {
+      "kcal": 80,
+      "p": 5.4,
+      "c": 11.0,
+      "f": 0.4,
+      "abteilung": "Tiefkühl"
+    },
+    "Radieschen": {
+      "kcal": 16,
+      "p": 1.0,
+      "c": 2.1,
+      "f": 0.1,
+      "abteilung": "Obst & Gemüse"
+    },
+    "Senf mittelscharf": {
+      "kcal": 90,
+      "p": 5.5,
+      "c": 6.0,
+      "f": 4.5,
+      "abteilung": "Gewürze, Öle & Saucen"
+    },
+    "Putenbrustfilet": {
+      "kcal": 105,
+      "p": 24.0,
+      "c": 0.0,
+      "f": 1.0,
+      "abteilung": "Fleisch & Fisch"
+    },
+    "Süßkartoffel": {
+      "kcal": 86,
+      "p": 1.6,
+      "c": 20.0,
+      "f": 0.1,
+      "abteilung": "Obst & Gemüse"
+    },
+    "Brokkoli": {
+      "kcal": 34,
+      "p": 3.8,
+      "c": 2.7,
+      "f": 0.4,
+      "abteilung": "Obst & Gemüse"
+    },
+    "Paprikapulver edelsüß": {
+      "kcal": 0,
+      "p": 0.0,
+      "c": 0.0,
+      "f": 0.0,
+      "abteilung": "Gewürze, Öle & Saucen"
+    },
+    "Kreuzkümmel": {
+      "kcal": 0,
+      "p": 0.0,
+      "c": 0.0,
+      "f": 0.0,
+      "abteilung": "Gewürze, Öle & Saucen"
+    },
+    "Wasser": {
+      "kcal": 0,
+      "p": 0.0,
+      "c": 0.0,
+      "f": 0.0,
+      "abteilung": "Sonstiges"
+    }
+  },
+  "recipes": [
+    {
+      "mahlzeit": "Direkt danach",
+      "name": "Beeren-Hafer-Recovery-Shake",
+      "beschreibung": "Cremiger Sojadrink-Shake mit veganem Protein, Beeren und Hafer – liefert direkt nach dem Training schnell verfügbares Eiweiß und Kohlenhydrate zum Auffüllen.",
+      "zeit_min": 5,
+      "tags": [
+        "Nach dem Training",
+        "Unter 10 Minuten"
+      ],
+      "passt_fuer": [
+        "vegan",
+        "vegetarisch",
+        "fleisch",
+        "ohne-schwein"
+      ],
+      "zutaten": [
+        {
+          "name": "Sojadrink ungesüßt",
+          "menge_g": 250,
+          "anzeige": "250 ml"
+        },
+        {
+          "name": "Veganes Proteinpulver (Vanille)",
+          "menge_g": 30,
+          "anzeige": "1 Messlöffel (30 g)"
+        },
+        {
+          "name": "Beerenmischung (TK)",
+          "menge_g": 100,
+          "anzeige": "100 g"
+        },
+        {
+          "name": "Haferflocken",
+          "menge_g": 30,
+          "anzeige": "3 EL (30 g)"
+        },
+        {
+          "name": "Zimt",
+          "menge_g": 0,
+          "anzeige": "1 Prise"
+        }
+      ],
+      "zubereitung": [
+        "Gib den Sojadrink und die gefrorenen Beeren in einen Mixer.",
+        "Füge Proteinpulver, Haferflocken und Zimt hinzu.",
+        "Mixe alles etwa 30 Sekunden auf höchster Stufe, bis der Shake cremig ist.",
+        "Gieße den Shake in ein Glas und trink ihn möglichst zeitnah nach dem Training."
+      ],
+      "tipp": "Für unterwegs Haferflocken und Pulver vorab in den Shaker füllen und im Gym nur noch Sojadrink zugeben – dann die Beeren weglassen und eine Banane dazu essen. Ohne Pulver: 250 g Sojaskyr natur statt Pulver und 150 ml Sojadrink verwenden."
+    },
+    {
+      "mahlzeit": "Direkt danach",
+      "name": "Kirsch-Skyr-Becher mit Hafer-Crunch",
+      "beschreibung": "Viel Eiweiß aus Skyr plus Sauerkirschen, Hafer und Honig – schnell gegessen, leicht verdaulich und ideal, um die Speicher nach dem Training wieder aufzufüllen.",
+      "zeit_min": 5,
+      "tags": [
+        "Nach dem Training",
+        "ohne Kochen"
+      ],
+      "passt_fuer": [
+        "vegetarisch",
+        "fleisch",
+        "ohne-schwein"
+      ],
+      "zutaten": [
+        {
+          "name": "Skyr natur",
+          "menge_g": 300,
+          "anzeige": "300 g"
+        },
+        {
+          "name": "Sauerkirschen (Glas, abgetropft)",
+          "menge_g": 100,
+          "anzeige": "100 g"
+        },
+        {
+          "name": "Haferflocken",
+          "menge_g": 20,
+          "anzeige": "2 EL (20 g)"
+        },
+        {
+          "name": "Honig",
+          "menge_g": 10,
+          "anzeige": "1 TL (10 g)"
+        },
+        {
+          "name": "Zimt",
+          "menge_g": 0,
+          "anzeige": "1 Prise"
+        }
+      ],
+      "zubereitung": [
+        "Röste die Haferflocken in einer trockenen Pfanne bei mittlerer Hitze 2–3 Minuten goldbraun, bis sie duften.",
+        "Rühre den Skyr mit Zimt glatt und gib ihn in eine Schale oder ein Glas.",
+        "Verteile die abgetropften Sauerkirschen darauf.",
+        "Streue den Hafer-Crunch darüber und beträufle alles mit Honig."
+      ],
+      "tipp": "Zum Mitnehmen den Skyr mit Kirschen im Schraubglas vorbereiten und den gerösteten Hafer separat in einer kleinen Dose mitnehmen, damit er knusprig bleibt."
+    },
+    {
+      "mahlzeit": "Direkt danach",
+      "name": "Mango-Sojaskyr mit Ahorn-Kürbiskernen",
+      "beschreibung": "Pflanzlicher Skyr mit fruchtiger Mango liefert reichlich Eiweiß und schnelle Kohlenhydrate, ist kühl und angenehm leicht für den Magen nach dem Training.",
+      "zeit_min": 5,
+      "tags": [
+        "Nach dem Training",
+        "ohne Kochen"
+      ],
+      "passt_fuer": [
+        "vegan",
+        "vegetarisch",
+        "fleisch",
+        "ohne-schwein"
+      ],
+      "zutaten": [
+        {
+          "name": "Sojaskyr natur",
+          "menge_g": 300,
+          "anzeige": "300 g"
+        },
+        {
+          "name": "Mango (TK)",
+          "menge_g": 120,
+          "anzeige": "120 g"
+        },
+        {
+          "name": "Kürbiskerne",
+          "menge_g": 10,
+          "anzeige": "1 EL (10 g)"
+        },
+        {
+          "name": "Ahornsirup",
+          "menge_g": 10,
+          "anzeige": "1 TL (10 g)"
+        }
+      ],
+      "zubereitung": [
+        "Lass die Mangowürfel kurz antauen (oder über Nacht im Kühlschrank auftauen).",
+        "Zerdrücke die Hälfte der Mango mit einer Gabel und rühre sie unter den Sojaskyr.",
+        "Gib den Rest der Mangowürfel obenauf.",
+        "Mische die Kürbiskerne mit dem Ahornsirup und streue sie darüber."
+      ],
+      "tipp": "Die TK-Mango morgens in einer Dose mitnehmen – nach dem Training ist sie perfekt aufgetaut und noch schön kühl."
+    },
+    {
+      "mahlzeit": "Direkt danach",
+      "name": "Vanille-Mango-Lassi mit Whey",
+      "beschreibung": "Indisch inspirierter Joghurt-Drink mit Mango und Whey – flüssig, schnell aufgenommen und mit einer guten Mischung aus Eiweiß und Kohlenhydraten für die Regeneration.",
+      "zeit_min": 5,
+      "tags": [
+        "Nach dem Training",
+        "Unter 10 Minuten"
+      ],
+      "passt_fuer": [
+        "vegetarisch",
+        "fleisch",
+        "ohne-schwein"
+      ],
+      "zutaten": [
+        {
+          "name": "Joghurt 1,5 %",
+          "menge_g": 200,
+          "anzeige": "200 g"
+        },
+        {
+          "name": "Milch 1,5 %",
+          "menge_g": 100,
+          "anzeige": "100 ml"
+        },
+        {
+          "name": "Mango (TK)",
+          "menge_g": 120,
+          "anzeige": "120 g"
+        },
+        {
+          "name": "Whey-Proteinpulver (Vanille)",
+          "menge_g": 30,
+          "anzeige": "1 Messlöffel (30 g)"
+        },
+        {
+          "name": "Zimt",
+          "menge_g": 0,
+          "anzeige": "1 Prise"
+        }
+      ],
+      "zubereitung": [
+        "Gib Joghurt, Milch und die gefrorene Mango in den Mixer.",
+        "Füge das Whey-Proteinpulver und eine Prise Zimt hinzu.",
+        "Mixe alles etwa 30 Sekunden, bis ein cremiger, kalter Drink entsteht.",
+        "Fülle den Lassi in ein großes Glas und trink ihn direkt."
+      ],
+      "tipp": "Ohne Pulver: 200 g Skyr natur statt Joghurt und Whey verwenden und 1 TL Honig zugeben. Wer nach hartem Training wenig Appetit hat, verträgt den flüssigen Lassi meist besser als feste Nahrung."
+    },
+    {
+      "mahlzeit": "Direkt danach",
+      "name": "Thunfisch-Reiswaffeln mit Zitronen-Skyr",
+      "beschreibung": "Knusprige Reiswaffeln mit Thunfisch-Skyr-Creme – herzhaft statt süß, mit viel magerem Eiweiß und leicht verdaulichen Kohlenhydraten für direkt nach dem Workout.",
+      "zeit_min": 5,
+      "tags": [
+        "Nach dem Training",
+        "ohne Kochen"
+      ],
+      "passt_fuer": [
+        "fleisch",
+        "ohne-schwein"
+      ],
+      "zutaten": [
+        {
+          "name": "Reiswaffeln",
+          "menge_g": 32,
+          "anzeige": "4 Reiswaffeln (32 g)"
+        },
+        {
+          "name": "Thunfisch (Dose, im eigenen Saft, abgetropft)",
+          "menge_g": 100,
+          "anzeige": "1 kleine Dose, abgetropft (100 g)"
+        },
+        {
+          "name": "Skyr natur",
+          "menge_g": 50,
+          "anzeige": "2 EL (50 g)"
+        },
+        {
+          "name": "Zitronensaft",
+          "menge_g": 5,
+          "anzeige": "1 TL (5 g)"
+        },
+        {
+          "name": "Gurke",
+          "menge_g": 60,
+          "anzeige": "6 Scheiben (60 g)"
+        },
+        {
+          "name": "Schnittlauch",
+          "menge_g": 3,
+          "anzeige": "1 EL Röllchen (3 g)"
+        },
+        {
+          "name": "Salz",
+          "menge_g": 0,
+          "anzeige": "1 Prise"
+        },
+        {
+          "name": "Pfeffer",
+          "menge_g": 0,
+          "anzeige": "1 Prise"
+        }
+      ],
+      "zubereitung": [
+        "Lass den Thunfisch gut abtropfen und zerpflücke ihn mit einer Gabel.",
+        "Verrühre Thunfisch, Skyr und Zitronensaft und schmecke mit Salz und Pfeffer ab.",
+        "Schneide die Gurke in dünne Scheiben.",
+        "Belege die Reiswaffeln mit Gurke, verteile die Thunfischcreme darauf und streue Schnittlauch darüber."
+      ],
+      "tipp": "Zum Mitnehmen die Thunfischcreme in einer kleinen Dose kühl transportieren und erst kurz vor dem Essen auf die Reiswaffeln streichen, sonst werden sie weich."
+    },
+    {
+      "mahlzeit": "Bis 2 Stunden danach",
+      "name": "Seitan-Döner-Wrap mit Knoblauch-Soja-Joghurt",
+      "beschreibung": "Würzig gebratener Seitan im Vollkorn-Wrap mit knackigem Gemüse – eine kleine, sättigende Mahlzeit mit viel pflanzlichem Eiweiß und Kohlenhydraten zum Auffüllen der Speicher.",
+      "zeit_min": 15,
+      "tags": [
+        "Nach dem Training",
+        "zum Mitnehmen"
+      ],
+      "passt_fuer": [
+        "vegan",
+        "vegetarisch",
+        "fleisch",
+        "ohne-schwein"
+      ],
+      "zutaten": [
+        {
+          "name": "Vollkorn-Wrap",
+          "menge_g": 60,
+          "anzeige": "1 Wrap (60 g)"
+        },
+        {
+          "name": "Seitan",
+          "menge_g": 120,
+          "anzeige": "120 g"
+        },
+        {
+          "name": "Olivenöl",
+          "menge_g": 5,
+          "anzeige": "1 TL (5 g)"
+        },
+        {
+          "name": "Gyrosgewürz",
+          "menge_g": 0,
+          "anzeige": "1 TL"
+        },
+        {
+          "name": "Sojajoghurt natur",
+          "menge_g": 60,
+          "anzeige": "3 EL (60 g)"
+        },
+        {
+          "name": "Knoblauch",
+          "menge_g": 3,
+          "anzeige": "1 kleine Zehe (3 g)"
+        },
+        {
+          "name": "Rotkohl",
+          "menge_g": 40,
+          "anzeige": "1 Handvoll, fein gehobelt (40 g)"
+        },
+        {
+          "name": "Tomate",
+          "menge_g": 60,
+          "anzeige": "½ Tomate (60 g)"
+        },
+        {
+          "name": "Gurke",
+          "menge_g": 40,
+          "anzeige": "40 g"
+        },
+        {
+          "name": "Salz",
+          "menge_g": 0,
+          "anzeige": "1 Prise"
+        }
+      ],
+      "zubereitung": [
+        "Schneide den Seitan in dünne Streifen und brate ihn im Olivenöl bei hoher Hitze 4–5 Minuten knusprig an; zum Schluss mit Gyrosgewürz würzen.",
+        "Presse den Knoblauch in den Sojajoghurt, salze leicht und verrühre alles.",
+        "Hobel den Rotkohl fein und schneide Tomate und Gurke in Stücke.",
+        "Erwärme den Wrap 20 Sekunden in der trockenen Pfanne.",
+        "Bestreiche den Wrap mit der Sauce, belege ihn mit Gemüse und Seitan und rolle ihn fest ein."
+      ],
+      "tipp": "Fest in Alufolie oder Butterbrotpapier gewickelt hält der Wrap gekühlt bis zu 4 Stunden – ideal, wenn du nach dem Training noch unterwegs bist."
+    },
+    {
+      "mahlzeit": "Bis 2 Stunden danach",
+      "name": "Räuchertofu-Reispfanne mit Edamame und Paprika",
+      "beschreibung": "Schnelle Pfanne mit Express-Reis, Räuchertofu und Edamame – pflanzliches Eiweiß aus zwei Quellen plus Reis-Kohlenhydrate, warm und trotzdem nicht zu schwer.",
+      "zeit_min": 12,
+      "tags": [
+        "Nach dem Training",
+        "Meal-Prep"
+      ],
+      "passt_fuer": [
+        "vegan",
+        "vegetarisch",
+        "fleisch",
+        "ohne-schwein"
+      ],
+      "zutaten": [
+        {
+          "name": "Räuchertofu",
+          "menge_g": 110,
+          "anzeige": "110 g"
+        },
+        {
+          "name": "Express-Reis (Beutel, gegart)",
+          "menge_g": 125,
+          "anzeige": "½ Beutel (125 g)"
+        },
+        {
+          "name": "Edamame (TK, geschält)",
+          "menge_g": 60,
+          "anzeige": "60 g"
+        },
+        {
+          "name": "Paprika rot",
+          "menge_g": 80,
+          "anzeige": "½ Paprika (80 g)"
+        },
+        {
+          "name": "Frühlingszwiebeln",
+          "menge_g": 20,
+          "anzeige": "1 Frühlingszwiebel (20 g)"
+        },
+        {
+          "name": "Ingwer",
+          "menge_g": 5,
+          "anzeige": "1 TL, gerieben (5 g)"
+        },
+        {
+          "name": "Sojasauce",
+          "menge_g": 15,
+          "anzeige": "1 EL (15 g)"
+        }
+      ],
+      "zubereitung": [
+        "Würfle Räuchertofu und Paprika, schneide die Frühlingszwiebel in Ringe.",
+        "Erhitze eine beschichtete Pfanne ohne Öl und brate den Tofu bei mittlerer bis hoher Hitze 3–4 Minuten an – Räuchertofu bringt genug eigenes Fett mit.",
+        "Gib Paprika, Edamame und Ingwer dazu und brate alles weitere 3 Minuten.",
+        "Füge den Express-Reis hinzu, lockere ihn auf und brate ihn 2–3 Minuten mit.",
+        "Lösche mit Sojasauce ab und bestreue alles mit Frühlingszwiebeln."
+      ],
+      "tipp": "Gelingt auch in doppelter Menge: Eine Portion kalt in der Box mitnehmen und nach dem Training kurz in der Mikrowelle erwärmen – hält gekühlt 2–3 Tage."
+    },
+    {
+      "mahlzeit": "Bis 2 Stunden danach",
+      "name": "Spinat-Omelett mit Eiklar und Vollkornbrot",
+      "beschreibung": "Lockeres Omelett aus Ei und Eiklar mit Spinat und Tomate, dazu kräftiges Vollkornbrot – hochwertiges Eiweiß für die Muskeln und genug Kohlenhydrate für die Regeneration.",
+      "zeit_min": 12,
+      "tags": [
+        "Nach dem Training"
+      ],
+      "passt_fuer": [
+        "vegetarisch",
+        "fleisch",
+        "ohne-schwein"
+      ],
+      "zutaten": [
+        {
+          "name": "Ei",
+          "menge_g": 120,
+          "anzeige": "2 Eier (Größe M)"
+        },
+        {
+          "name": "Eiklar",
+          "menge_g": 100,
+          "anzeige": "100 g (ca. 3 Eiweiß)"
+        },
+        {
+          "name": "Babyspinat",
+          "menge_g": 50,
+          "anzeige": "2 Handvoll (50 g)"
+        },
+        {
+          "name": "Tomate",
+          "menge_g": 100,
+          "anzeige": "1 Tomate (100 g)"
+        },
+        {
+          "name": "Rapsöl",
+          "menge_g": 3,
+          "anzeige": "1 TL (3 g)"
+        },
+        {
+          "name": "Vollkornbrot",
+          "menge_g": 100,
+          "anzeige": "2 Scheiben (100 g)"
+        },
+        {
+          "name": "Salz",
+          "menge_g": 0,
+          "anzeige": "1 Prise"
+        },
+        {
+          "name": "Pfeffer",
+          "menge_g": 0,
+          "anzeige": "1 Prise"
+        }
+      ],
+      "zubereitung": [
+        "Verquirle Eier und Eiklar mit Salz und Pfeffer.",
+        "Erhitze das Öl in einer beschichteten Pfanne und lass den Spinat darin bei mittlerer Hitze 1 Minute zusammenfallen.",
+        "Gieße die Eimasse darüber und lass sie bei niedriger bis mittlerer Hitze mit Deckel 4–5 Minuten stocken.",
+        "Schneide die Tomate in Scheiben und röste das Brot nach Wunsch.",
+        "Klappe das Omelett zusammen und serviere es mit Brot und Tomate."
+      ],
+      "tipp": "Eiklar aus dem Tetrapak (Kühlregal) spart Zeit und Eigelb-Reste. Wer abends trainiert, hat damit ein schnelles, leichtes Abendessen."
+    },
+    {
+      "mahlzeit": "Bis 2 Stunden danach",
+      "name": "Protein-Nudelsalat mit Hüttenkäse und Erbsen",
+      "beschreibung": "Kalter Vollkorn-Nudelsalat mit cremigem Hüttenkäse-Skyr-Dressing – liefert Eiweiß und Kohlenhydrate in einer Box, die du schon vor dem Training fertig machen kannst.",
+      "zeit_min": 15,
+      "tags": [
+        "Nach dem Training",
+        "Meal-Prep"
+      ],
+      "passt_fuer": [
+        "vegetarisch",
+        "fleisch",
+        "ohne-schwein"
+      ],
+      "zutaten": [
+        {
+          "name": "Vollkornnudeln",
+          "menge_g": 60,
+          "anzeige": "60 g (trocken)"
+        },
+        {
+          "name": "Hüttenkäse",
+          "menge_g": 150,
+          "anzeige": "150 g"
+        },
+        {
+          "name": "Skyr natur",
+          "menge_g": 50,
+          "anzeige": "2 EL (50 g)"
+        },
+        {
+          "name": "Erbsen (TK)",
+          "menge_g": 60,
+          "anzeige": "60 g"
+        },
+        {
+          "name": "Gurke",
+          "menge_g": 80,
+          "anzeige": "80 g"
+        },
+        {
+          "name": "Radieschen",
+          "menge_g": 40,
+          "anzeige": "3 Radieschen (40 g)"
+        },
+        {
+          "name": "Senf mittelscharf",
+          "menge_g": 5,
+          "anzeige": "1 TL (5 g)"
+        },
+        {
+          "name": "Schnittlauch",
+          "menge_g": 3,
+          "anzeige": "1 EL Röllchen (3 g)"
+        },
+        {
+          "name": "Salz",
+          "menge_g": 0,
+          "anzeige": "1 Prise"
+        },
+        {
+          "name": "Pfeffer",
+          "menge_g": 0,
+          "anzeige": "1 Prise"
+        }
+      ],
+      "zubereitung": [
+        "Koche die Nudeln nach Packungsangabe in Salzwasser bissfest (ca. 10 Minuten); gib die Erbsen in den letzten 2 Minuten dazu.",
+        "Gieße Nudeln und Erbsen ab und schrecke sie kalt ab.",
+        "Verrühre Hüttenkäse, Skyr und Senf und schmecke mit Salz und Pfeffer ab.",
+        "Würfle Gurke und Radieschen.",
+        "Mische alles mit dem Dressing und bestreue den Salat mit Schnittlauch."
+      ],
+      "tipp": "Am Vorabend zubereiten und gekühlt in der Sporttasche mitnehmen (Kühlakku) – nach dem Training ist der Salat sofort essbereit."
+    },
+    {
+      "mahlzeit": "Bis 2 Stunden danach",
+      "name": "Putenbrust-Süßkartoffel-Pfanne mit Brokkoli",
+      "beschreibung": "Mageres Putenfleisch mit Süßkartoffel und Brokkoli aus einer Pfanne – eine warme, ausgewogene Mahlzeit mit viel Eiweiß und Kohlenhydraten für die Regeneration.",
+      "zeit_min": 20,
+      "tags": [
+        "Nach dem Training",
+        "Meal-Prep"
+      ],
+      "passt_fuer": [
+        "fleisch",
+        "ohne-schwein"
+      ],
+      "zutaten": [
+        {
+          "name": "Putenbrustfilet",
+          "menge_g": 130,
+          "anzeige": "130 g"
+        },
+        {
+          "name": "Süßkartoffel",
+          "menge_g": 200,
+          "anzeige": "1 kleine Süßkartoffel (200 g)"
+        },
+        {
+          "name": "Brokkoli",
+          "menge_g": 100,
+          "anzeige": "100 g"
+        },
+        {
+          "name": "Rapsöl",
+          "menge_g": 7,
+          "anzeige": "2 TL (7 g)"
+        },
+        {
+          "name": "Paprikapulver edelsüß",
+          "menge_g": 0,
+          "anzeige": "1 TL"
+        },
+        {
+          "name": "Kreuzkümmel",
+          "menge_g": 0,
+          "anzeige": "½ TL"
+        },
+        {
+          "name": "Wasser",
+          "menge_g": 0,
+          "anzeige": "3 EL"
+        },
+        {
+          "name": "Salz",
+          "menge_g": 0,
+          "anzeige": "1 Prise"
+        },
+        {
+          "name": "Pfeffer",
+          "menge_g": 0,
+          "anzeige": "1 Prise"
+        }
+      ],
+      "zubereitung": [
+        "Schäle die Süßkartoffel, schneide sie in 1–2 cm große Würfel und teile den Brokkoli in kleine Röschen.",
+        "Brate die Süßkartoffelwürfel in 1 TL Öl bei mittlerer Hitze 5 Minuten an, gib 3 EL Wasser dazu und gare sie mit Deckel weitere 5 Minuten.",
+        "Füge den Brokkoli hinzu und lass alles mit Deckel 3–4 Minuten weitergaren.",
+        "Schneide die Putenbrust in Streifen und brate sie in einer zweiten Pfanne im restlichen Öl bei hoher Hitze 4–5 Minuten durch.",
+        "Mische alles, würze mit Paprikapulver, Kreuzkümmel, Salz und Pfeffer."
+      ],
+      "tipp": "Lässt sich gut für 2–3 Tage vorkochen. Wer direkt nach dem Training schon einen Shake hatte, isst diese Pfanne gut 1–2 Stunden später als richtige Mahlzeit."
+    }
+  ]
+}

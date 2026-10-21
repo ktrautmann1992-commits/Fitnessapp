@@ -1,0 +1,285 @@
+{
+  "ingredients": {
+    "Vollkorntoast": {"kcal": 250, "p": 9.0, "c": 42.0, "f": 4.0, "abteilung": "Brot & Backwaren"},
+    "Erdnussmus": {"kcal": 610, "p": 25.0, "c": 12.0, "f": 50.0, "abteilung": "Nüsse, Samen & Trockenfrüchte"},
+    "Banane": {"kcal": 93, "p": 1.2, "c": 20.0, "f": 0.2, "abteilung": "Obst & Gemüse"},
+    "Sojaskyr natur": {"kcal": 68, "p": 8.5, "c": 3.0, "f": 2.2, "abteilung": "Pflanzliche Alternativen"},
+    "Zimt": {"kcal": 0, "p": 0.0, "c": 0.0, "f": 0.0, "abteilung": "Gewürze, Öle & Saucen"},
+    "Ei": {"kcal": 137, "p": 12.6, "c": 0.5, "f": 9.3, "abteilung": "Kühlregal & Molkerei"},
+    "Gouda light (gerieben)": {"kcal": 270, "p": 30.0, "c": 0.0, "f": 17.0, "abteilung": "Kühlregal & Molkerei"},
+    "Babyspinat": {"kcal": 23, "p": 2.9, "c": 1.1, "f": 0.4, "abteilung": "Obst & Gemüse"},
+    "Rapsöl": {"kcal": 884, "p": 0.0, "c": 0.0, "f": 100.0, "abteilung": "Gewürze, Öle & Saucen"},
+    "Salz": {"kcal": 0, "p": 0.0, "c": 0.0, "f": 0.0, "abteilung": "Gewürze, Öle & Saucen"},
+    "Pfeffer": {"kcal": 0, "p": 0.0, "c": 0.0, "f": 0.0, "abteilung": "Gewürze, Öle & Saucen"},
+    "Milch 1,5 %": {"kcal": 47, "p": 3.4, "c": 4.9, "f": 1.5, "abteilung": "Kühlregal & Molkerei"},
+    "Whey-Proteinpulver (Vanille)": {"kcal": 385, "p": 77.0, "c": 7.0, "f": 6.0, "abteilung": "Sonstiges"},
+    "Whey-Proteinpulver (Schoko)": {"kcal": 380, "p": 75.0, "c": 8.0, "f": 6.0, "abteilung": "Sonstiges"},
+    "Haferflocken": {"kcal": 372, "p": 13.5, "c": 58.7, "f": 7.0, "abteilung": "Getreide, Nudeln & Hülsenfrüchte"},
+    "Instantkaffee": {"kcal": 353, "p": 12.2, "c": 75.0, "f": 0.5, "abteilung": "Sonstiges"},
+    "Eiswürfel": {"kcal": 0, "p": 0.0, "c": 0.0, "f": 0.0, "abteilung": "Sonstiges"},
+    "Gnocchi (Kühlregal)": {"kcal": 155, "p": 3.7, "c": 33.0, "f": 0.5, "abteilung": "Kühlregal & Molkerei"},
+    "Kochschinken": {"kcal": 110, "p": 19.5, "c": 1.0, "f": 3.0, "abteilung": "Fleisch & Fisch"},
+    "Erbsen (TK)": {"kcal": 80, "p": 5.4, "c": 11.0, "f": 0.4, "abteilung": "Tiefkühl"},
+    "Parmesan": {"kcal": 390, "p": 35.0, "c": 0.0, "f": 28.0, "abteilung": "Kühlregal & Molkerei"},
+    "Seitan": {"kcal": 135, "p": 24.0, "c": 5.0, "f": 2.0, "abteilung": "Pflanzliche Alternativen"},
+    "Express-Reis (Beutel, gegart)": {"kcal": 150, "p": 3.2, "c": 31.0, "f": 1.4, "abteilung": "Getreide, Nudeln & Hülsenfrüchte"},
+    "Paprika rot": {"kcal": 31, "p": 1.0, "c": 6.0, "f": 0.3, "abteilung": "Obst & Gemüse"},
+    "Passierte Tomaten": {"kcal": 32, "p": 1.4, "c": 5.5, "f": 0.2, "abteilung": "Konserven & Gläser"},
+    "Olivenöl": {"kcal": 884, "p": 0.0, "c": 0.0, "f": 100.0, "abteilung": "Gewürze, Öle & Saucen"},
+    "Paprikapulver edelsüß": {"kcal": 0, "p": 0.0, "c": 0.0, "f": 0.0, "abteilung": "Gewürze, Öle & Saucen"},
+    "Thunfisch (Dose, im eigenen Saft, abgetropft)": {"kcal": 110, "p": 25.0, "c": 0.0, "f": 1.0, "abteilung": "Konserven & Gläser"},
+    "Weiße Bohnen (Dose, abgetropft)": {"kcal": 100, "p": 7.0, "c": 14.0, "f": 0.5, "abteilung": "Konserven & Gläser"},
+    "Rucola": {"kcal": 25, "p": 2.6, "c": 2.1, "f": 0.7, "abteilung": "Obst & Gemüse"},
+    "Cherrytomaten": {"kcal": 20, "p": 1.0, "c": 3.0, "f": 0.2, "abteilung": "Obst & Gemüse"},
+    "Rote Zwiebel": {"kcal": 40, "p": 1.2, "c": 8.0, "f": 0.2, "abteilung": "Obst & Gemüse"},
+    "Zitronensaft": {"kcal": 22, "p": 0.4, "c": 2.4, "f": 0.1, "abteilung": "Obst & Gemüse"},
+    "Vollkornbrot": {"kcal": 215, "p": 7.5, "c": 38.0, "f": 1.5, "abteilung": "Brot & Backwaren"},
+    "Edamame (TK, geschält)": {"kcal": 130, "p": 12.0, "c": 6.0, "f": 6.0, "abteilung": "Tiefkühl"},
+    "Räuchertofu": {"kcal": 160, "p": 17.0, "c": 2.0, "f": 9.0, "abteilung": "Pflanzliche Alternativen"},
+    "Gurke": {"kcal": 12, "p": 0.6, "c": 1.8, "f": 0.2, "abteilung": "Obst & Gemüse"},
+    "Sojasauce": {"kcal": 60, "p": 8.0, "c": 6.0, "f": 0.1, "abteilung": "Gewürze, Öle & Saucen"},
+    "Sesamöl": {"kcal": 884, "p": 0.0, "c": 0.0, "f": 100.0, "abteilung": "Gewürze, Öle & Saucen"},
+    "Reisessig": {"kcal": 20, "p": 0.0, "c": 0.5, "f": 0.0, "abteilung": "Gewürze, Öle & Saucen"},
+    "Sesam": {"kcal": 580, "p": 18.0, "c": 12.0, "f": 50.0, "abteilung": "Nüsse, Samen & Trockenfrüchte"},
+    "Frühlingszwiebel": {"kcal": 32, "p": 1.8, "c": 5.0, "f": 0.2, "abteilung": "Obst & Gemüse"},
+    "Lachsschinken": {"kcal": 120, "p": 22.5, "c": 1.0, "f": 3.0, "abteilung": "Fleisch & Fisch"},
+    "Honigmelone": {"kcal": 40, "p": 0.6, "c": 9.0, "f": 0.1, "abteilung": "Obst & Gemüse"},
+    "Hüttenkäse": {"kcal": 98, "p": 12.5, "c": 2.7, "f": 4.3, "abteilung": "Kühlregal & Molkerei"},
+    "Vollkorn-Wrap": {"kcal": 300, "p": 9.0, "c": 48.0, "f": 7.0, "abteilung": "Brot & Backwaren"},
+    "Hähnchenbrust-Aufschnitt": {"kcal": 100, "p": 21.0, "c": 1.0, "f": 1.5, "abteilung": "Fleisch & Fisch"},
+    "Hummus": {"kcal": 270, "p": 7.5, "c": 12.0, "f": 21.0, "abteilung": "Kühlregal & Molkerei"},
+    "Kakaopulver (stark entölt)": {"kcal": 350, "p": 20.0, "c": 11.0, "f": 11.0, "abteilung": "Sonstiges"}
+  },
+  "recipes": [
+    {
+      "mahlzeit": "Frühstück",
+      "name": "Erdnuss-Bananen-Toast mit Zimt-Sojaskyr",
+      "beschreibung": "Knuspriger Vollkorntoast mit Erdnussmus und Banane, dazu ein cremiger Zimt-Sojaskyr als Eiweißquelle.",
+      "zeit_min": 5,
+      "passt_fuer": ["vegan", "vegetarisch", "fleisch", "ohne-schwein"],
+      "tags": ["Unter 10 Minuten", "vor dem Training"],
+      "zutaten": [
+        {"name": "Vollkorntoast", "menge_g": 60, "anzeige": "2 Scheiben (60 g)"},
+        {"name": "Erdnussmus", "menge_g": 15, "anzeige": "1 EL (15 g)"},
+        {"name": "Banane", "menge_g": 80, "anzeige": "½ große Banane (80 g)"},
+        {"name": "Sojaskyr natur", "menge_g": 200, "anzeige": "200 g"},
+        {"name": "Zimt", "menge_g": 0, "anzeige": "1 Prise"}
+      ],
+      "zubereitung": [
+        "Steck die Toastscheiben direkt in den Toaster (ca. 3 Minuten).",
+        "Während der Toast bräunt, rührst du Sojaskyr und Zimt in einer Schale glatt und schneidest die Banane in Scheiben.",
+        "Bestreich den heißen Toast mit Erdnussmus und leg die Bananenscheiben darauf.",
+        "Iss den Zimt-Sojaskyr dazu – oder gib ihn als Dip neben den Toast."
+      ],
+      "tipp": "Statt Banane passen auch TK-Himbeeren: kurz zwischen den Fingern zerdrücken, sie tauen auf dem warmen Toast in einer Minute an."
+    },
+    {
+      "mahlzeit": "Frühstück",
+      "name": "One-Pan-Eiertoast mit Käse und Spinat",
+      "beschreibung": "Toast und Omelett in einer Pfanne zusammen gebraten und zum herzhaften Sandwich zusammengeklappt.",
+      "zeit_min": 8,
+      "passt_fuer": ["vegetarisch", "fleisch", "ohne-schwein"],
+      "tags": ["Unter 10 Minuten"],
+      "zutaten": [
+        {"name": "Ei", "menge_g": 120, "anzeige": "2 Eier (Größe M)"},
+        {"name": "Vollkorntoast", "menge_g": 60, "anzeige": "2 Scheiben (60 g)"},
+        {"name": "Gouda light (gerieben)", "menge_g": 25, "anzeige": "1 kleine Handvoll (25 g)"},
+        {"name": "Babyspinat", "menge_g": 20, "anzeige": "1 Handvoll (20 g)"},
+        {"name": "Rapsöl", "menge_g": 5, "anzeige": "1 TL (5 g)"},
+        {"name": "Salz", "menge_g": 0, "anzeige": "1 Prise"},
+        {"name": "Pfeffer", "menge_g": 0, "anzeige": "1 Prise"}
+      ],
+      "zubereitung": [
+        "Erhitz das Öl in einer beschichteten Pfanne bei mittlerer Hitze; währenddessen verquirlst du die Eier mit Salz und Pfeffer.",
+        "Gieß die Eier in die Pfanne, leg sofort beide Toastscheiben nebeneinander hinein und dreh sie einmal, damit sie auf beiden Seiten Ei aufsaugen.",
+        "Nach ca. 2 Minuten wendest du das ganze Omelett samt Toast mit einem breiten Pfannenwender.",
+        "Streu Käse und Spinat auf eine Toasthälfte, klapp die überstehenden Omelettränder ein und den Toast zusammen und brate ihn noch 1–2 Minuten, bis der Käse schmilzt."
+      ],
+      "tipp": "Kauf vorgewaschenen Babyspinat in der Tüte – der kommt ungeschnitten und ohne Waschen direkt in die Pfanne. Statt Spinat passen auch ein paar Tomatenscheiben."
+    },
+    {
+      "mahlzeit": "Frühstück",
+      "name": "Iced-Coffee-Proteinshake mit Hafer",
+      "beschreibung": "Kalter Kaffee-Shake mit Haferflocken, Banane und Vanille-Whey – Frühstück und Wachmacher in einem Glas.",
+      "zeit_min": 4,
+      "passt_fuer": ["vegetarisch", "fleisch", "ohne-schwein"],
+      "tags": ["Unter 10 Minuten", "nach dem Training"],
+      "zutaten": [
+        {"name": "Milch 1,5 %", "menge_g": 300, "anzeige": "300 ml"},
+        {"name": "Whey-Proteinpulver (Vanille)", "menge_g": 30, "anzeige": "1 Messlöffel (30 g)"},
+        {"name": "Haferflocken", "menge_g": 40, "anzeige": "4 EL (40 g)"},
+        {"name": "Banane", "menge_g": 60, "anzeige": "½ kleine Banane (60 g)"},
+        {"name": "Instantkaffee", "menge_g": 2, "anzeige": "1 TL (2 g)"},
+        {"name": "Eiswürfel", "menge_g": 0, "anzeige": "3–4 Eiswürfel"}
+      ],
+      "zubereitung": [
+        "Gib Milch, Haferflocken, Instantkaffee und die Banane in Stücken in den Mixer.",
+        "Mix alles ca. 30 Sekunden auf höchster Stufe, bis die Haferflocken fein sind.",
+        "Gib Proteinpulver und Eiswürfel dazu und mix nur noch kurz (10 Sekunden), damit der Shake nicht zu schaumig wird.",
+        "Gieß den Shake in ein großes Glas oder einen To-go-Becher."
+      ],
+      "tipp": "Zeitsparer: Banane in Stücken einfrieren – dann brauchst du keine Eiswürfel und der Shake wird extra cremig."
+    },
+    {
+      "mahlzeit": "Mittagessen",
+      "name": "Knusprige Gnocchi-Pfanne mit Kochschinken und Erbsen",
+      "beschreibung": "Gnocchi aus dem Kühlregal direkt in der Pfanne goldbraun gebraten, mit Schinkenstreifen, Erbsen und Parmesan.",
+      "zeit_min": 10,
+      "passt_fuer": ["fleisch"],
+      "tags": ["Unter 10 Minuten"],
+      "zutaten": [
+        {"name": "Gnocchi (Kühlregal)", "menge_g": 200, "anzeige": "½ Packung (200 g)"},
+        {"name": "Kochschinken", "menge_g": 120, "anzeige": "120 g (ca. 4 Scheiben)"},
+        {"name": "Erbsen (TK)", "menge_g": 100, "anzeige": "100 g"},
+        {"name": "Rapsöl", "menge_g": 8, "anzeige": "2 TL (8 g)"},
+        {"name": "Parmesan", "menge_g": 10, "anzeige": "1 EL gerieben (10 g)"},
+        {"name": "Pfeffer", "menge_g": 0, "anzeige": "1 Prise"}
+      ],
+      "zubereitung": [
+        "Erhitz das Öl in einer großen Pfanne bei mittlerer bis hoher Hitze und gib die Gnocchi ungekocht direkt hinein.",
+        "Brate die Gnocchi ca. 5 Minuten und wende sie zwischendurch; in dieser Zeit schneidest du den Schinken in Streifen.",
+        "Gib die gefrorenen Erbsen dazu und brate alles weitere 2 Minuten.",
+        "Rühr die Schinkenstreifen unter, schwenk alles 1 Minute durch und serviere mit Pfeffer und Parmesan."
+      ],
+      "tipp": "Noch schneller geht es mit fertigen Kochschinken-Würfeln aus dem Kühlregal – dann entfällt das Schneiden komplett."
+    },
+    {
+      "mahlzeit": "Mittagessen",
+      "name": "Schnelles Seitan-Paprika-Gulasch mit Express-Reis",
+      "beschreibung": "Ungarisch gewürzte Seitan-Streifen mit Paprika in Tomatensauce, dazu Reis aus dem Express-Beutel.",
+      "zeit_min": 10,
+      "passt_fuer": ["vegan", "vegetarisch", "fleisch", "ohne-schwein"],
+      "tags": ["Unter 10 Minuten", "Meal-Prep"],
+      "zutaten": [
+        {"name": "Seitan", "menge_g": 150, "anzeige": "150 g"},
+        {"name": "Express-Reis (Beutel, gegart)", "menge_g": 125, "anzeige": "½ Beutel (125 g)"},
+        {"name": "Paprika rot", "menge_g": 150, "anzeige": "1 Paprika (150 g)"},
+        {"name": "Passierte Tomaten", "menge_g": 120, "anzeige": "120 g"},
+        {"name": "Olivenöl", "menge_g": 8, "anzeige": "2 TL (8 g)"},
+        {"name": "Paprikapulver edelsüß", "menge_g": 0, "anzeige": "1 TL"},
+        {"name": "Salz", "menge_g": 0, "anzeige": "1 Prise"},
+        {"name": "Pfeffer", "menge_g": 0, "anzeige": "1 Prise"}
+      ],
+      "zubereitung": [
+        "Stell die Pfanne mit dem Öl auf hohe Hitze; während sie heiß wird, schneidest du Paprika und Seitan in Streifen.",
+        "Brate Seitan und Paprika 4 Minuten kräftig an und bestäube sie mit Paprikapulver.",
+        "Gieß die passierten Tomaten an, würz mit Salz und Pfeffer und lass alles 2 Minuten köcheln.",
+        "Erwärm in der Zwischenzeit den Express-Reis nach Packungsangabe in der Mikrowelle (ca. 1–2 Minuten) und serviere ihn zum Gulasch."
+      ],
+      "tipp": "Gleich die doppelte Menge machen: Das Gulasch hält sich 2 Tage im Kühlschrank und schmeckt aufgewärmt sogar besser."
+    },
+    {
+      "mahlzeit": "Abendessen",
+      "name": "Italienischer Thunfisch-Bohnen-Salat",
+      "beschreibung": "Klassischer „Tonno e fagioli“ mit weißen Bohnen, Rucola, Tomaten und Zitronen-Olivenöl, dazu eine Scheibe Vollkornbrot.",
+      "zeit_min": 7,
+      "passt_fuer": ["fleisch", "ohne-schwein"],
+      "tags": ["Unter 10 Minuten", "ohne Kochen"],
+      "zutaten": [
+        {"name": "Thunfisch (Dose, im eigenen Saft, abgetropft)", "menge_g": 120, "anzeige": "1 Dose (150 g), abgetropft ca. 120 g"},
+        {"name": "Weiße Bohnen (Dose, abgetropft)", "menge_g": 150, "anzeige": "½ Dose, abgetropft (150 g)"},
+        {"name": "Rucola", "menge_g": 30, "anzeige": "1 Handvoll (30 g)"},
+        {"name": "Cherrytomaten", "menge_g": 100, "anzeige": "ca. 7 Stück (100 g)"},
+        {"name": "Rote Zwiebel", "menge_g": 20, "anzeige": "¼ kleine Zwiebel (20 g)"},
+        {"name": "Olivenöl", "menge_g": 10, "anzeige": "1 EL (10 g)"},
+        {"name": "Zitronensaft", "menge_g": 10, "anzeige": "2 TL (10 g)"},
+        {"name": "Vollkornbrot", "menge_g": 50, "anzeige": "1 Scheibe (50 g)"},
+        {"name": "Salz", "menge_g": 0, "anzeige": "1 Prise"},
+        {"name": "Pfeffer", "menge_g": 0, "anzeige": "1 Prise"}
+      ],
+      "zubereitung": [
+        "Gieß Bohnen und Thunfisch zusammen in ein Sieb, spül die Bohnen kurz ab und lass alles abtropfen.",
+        "Während es abtropft, halbierst du die Tomaten und schneidest die Zwiebel in feine Ringe.",
+        "Verrühr Olivenöl, Zitronensaft, Salz und Pfeffer direkt in der Salatschüssel.",
+        "Gib Bohnen, Tomaten, Zwiebel und Rucola dazu, zupf den Thunfisch in groben Stücken darüber und serviere mit dem Brot."
+      ],
+      "tipp": "Die andere Bohnenhälfte hält sich abgedeckt 2 Tage im Kühlschrank – perfekt für den nächsten Salat oder eine Suppe."
+    },
+    {
+      "mahlzeit": "Abendessen",
+      "name": "Edamame-Gurken-Salat mit Räuchertofu und Sesam",
+      "beschreibung": "Frischer, asiatisch angemachter Salat aus Edamame, Gurke und Räuchertofu mit etwas Reis – leicht und trotzdem eiweißreich.",
+      "zeit_min": 8,
+      "passt_fuer": ["vegan", "vegetarisch", "fleisch", "ohne-schwein"],
+      "tags": ["Unter 10 Minuten"],
+      "zutaten": [
+        {"name": "Edamame (TK, geschält)", "menge_g": 150, "anzeige": "150 g"},
+        {"name": "Räuchertofu", "menge_g": 100, "anzeige": "½ Packung (100 g)"},
+        {"name": "Gurke", "menge_g": 150, "anzeige": "½ Gurke (150 g)"},
+        {"name": "Express-Reis (Beutel, gegart)", "menge_g": 100, "anzeige": "100 g"},
+        {"name": "Frühlingszwiebel", "menge_g": 15, "anzeige": "1 Frühlingszwiebel (15 g)"},
+        {"name": "Sojasauce", "menge_g": 15, "anzeige": "1 EL (15 g)"},
+        {"name": "Reisessig", "menge_g": 10, "anzeige": "2 TL (10 g)"},
+        {"name": "Sesamöl", "menge_g": 5, "anzeige": "1 TL (5 g)"},
+        {"name": "Sesam", "menge_g": 5, "anzeige": "1 TL (5 g)"}
+      ],
+      "zubereitung": [
+        "Schalt den Wasserkocher ein, gib die Edamame in eine Schüssel, übergieß sie mit dem kochenden Wasser und lass sie 3 Minuten ziehen.",
+        "Währenddessen schneidest du Gurke und Räuchertofu in Würfel und die Frühlingszwiebel in Ringe und verrührst Sojasauce, Reisessig und Sesamöl.",
+        "Gieß die Edamame ab und schreck sie kurz kalt ab; erwärm parallel den Reis 1 Minute in der Mikrowelle.",
+        "Misch alles mit dem Dressing und streu den Sesam darüber."
+      ],
+      "tipp": "Den restlichen Reis und Tofu im Kühlschrank aufheben – am nächsten Tag reichen sie für eine zweite Portion."
+    },
+    {
+      "mahlzeit": "Snack",
+      "name": "Lachsschinken mit Honigmelone und Hüttenkäse",
+      "beschreibung": "Süß-salziger Klassiker: saftige Melonenspalten mit Lachsschinken umwickelt, dazu ein Klecks Hüttenkäse.",
+      "zeit_min": 4,
+      "passt_fuer": ["fleisch"],
+      "tags": ["Unter 10 Minuten", "ohne Kochen"],
+      "zutaten": [
+        {"name": "Lachsschinken", "menge_g": 50, "anzeige": "ca. 5 Scheiben (50 g)"},
+        {"name": "Honigmelone", "menge_g": 150, "anzeige": "1 Spalte ohne Schale (150 g)"},
+        {"name": "Hüttenkäse", "menge_g": 100, "anzeige": "½ Becher (100 g)"},
+        {"name": "Pfeffer", "menge_g": 0, "anzeige": "1 Prise"}
+      ],
+      "zubereitung": [
+        "Schneid die Melonenspalte von der Schale und in 5 fingerdicke Stücke.",
+        "Wickel jedes Stück in eine Scheibe Lachsschinken.",
+        "Gib den Hüttenkäse daneben und mahl etwas Pfeffer über alles."
+      ],
+      "tipp": "Zeitsparer: Fertig geschnittene Melone aus der Obsttheke kaufen – dann bist du in 2 Minuten fertig."
+    },
+    {
+      "mahlzeit": "Snack",
+      "name": "Hähnchen-Hummus-Wrap-Röllchen",
+      "beschreibung": "Ein Vollkorn-Wrap mit Hummus, Hähnchenbrust-Aufschnitt und Gurke, eng gerollt und in mundgerechte Röllchen geschnitten.",
+      "zeit_min": 4,
+      "passt_fuer": ["fleisch", "ohne-schwein"],
+      "tags": ["Unter 10 Minuten", "ohne Kochen"],
+      "zutaten": [
+        {"name": "Vollkorn-Wrap", "menge_g": 60, "anzeige": "1 Wrap (60 g)"},
+        {"name": "Hummus", "menge_g": 15, "anzeige": "1 EL (15 g)"},
+        {"name": "Hähnchenbrust-Aufschnitt", "menge_g": 60, "anzeige": "3 Scheiben (60 g)"},
+        {"name": "Gurke", "menge_g": 40, "anzeige": "1 Stück (40 g)"},
+        {"name": "Babyspinat", "menge_g": 10, "anzeige": "1 kleine Handvoll (10 g)"}
+      ],
+      "zubereitung": [
+        "Bestreich den Wrap dünn mit Hummus und leg den Aufschnitt flach darauf.",
+        "Hobel oder schneid die Gurke in dünne Längsstreifen und verteil sie mit dem Spinat auf dem unteren Drittel.",
+        "Roll den Wrap von dort aus fest auf und schneid ihn in 6 Röllchen."
+      ],
+      "tipp": "Fest in Frischhaltefolie gewickelt hält der ungeschnittene Wrap bis zum Nachmittag – ideal für Büro oder Sporttasche."
+    },
+    {
+      "mahlzeit": "Snack",
+      "name": "Heißer Protein-Kakao",
+      "beschreibung": "Cremiger heißer Kakao aus der Mikrowelle mit Schoko-Whey – schmeckt wie Trinkschokolade, liefert aber reichlich Eiweiß.",
+      "zeit_min": 4,
+      "passt_fuer": ["vegetarisch", "fleisch", "ohne-schwein"],
+      "tags": ["Unter 10 Minuten", "nach dem Training"],
+      "zutaten": [
+        {"name": "Milch 1,5 %", "menge_g": 250, "anzeige": "250 ml"},
+        {"name": "Whey-Proteinpulver (Schoko)", "menge_g": 20, "anzeige": "⅔ Messlöffel (20 g)"},
+        {"name": "Kakaopulver (stark entölt)", "menge_g": 5, "anzeige": "1 TL (5 g)"}
+      ],
+      "zubereitung": [
+        "Verrühr Proteinpulver und Kakao in einer kleinen Schale mit 2 EL der kalten Milch zu einer glatten Paste.",
+        "Erwärm die restliche Milch in einer großen Tasse ca. 2 Minuten bei 800 Watt in der Mikrowelle – heiß, aber nicht kochend.",
+        "Rühr die Paste mit einem Schneebesen oder Milchaufschäumer in die heiße Milch, bis keine Klümpchen mehr da sind."
+      ],
+      "tipp": "Die Milch nicht kochen lassen: Whey flockt bei zu großer Hitze aus. Mit einem Milchaufschäumer wird der Kakao in 20 Sekunden schaumig."
+    }
+  ]
+}

@@ -1,0 +1,610 @@
+{
+  "ingredients": {
+    "Haferflocken": {"kcal": 372, "p": 13.5, "c": 58.7, "f": 7.0, "abteilung": "Getreide, Nudeln & Hülsenfrüchte"},
+    "Sojaskyr natur": {"kcal": 68, "p": 8.5, "c": 3.0, "f": 2.2, "abteilung": "Pflanzliche Alternativen"},
+    "Sojajoghurt natur": {"kcal": 50, "p": 4.0, "c": 0.5, "f": 2.3, "abteilung": "Pflanzliche Alternativen"},
+    "Sojadrink ungesüßt": {"kcal": 33, "p": 3.3, "c": 0.6, "f": 1.8, "abteilung": "Pflanzliche Alternativen"},
+    "Soja-Cuisine": {"kcal": 176, "p": 2.6, "c": 1.6, "f": 17.5, "abteilung": "Pflanzliche Alternativen"},
+    "Tofu natur": {"kcal": 125, "p": 13.0, "c": 1.5, "f": 7.5, "abteilung": "Pflanzliche Alternativen"},
+    "Räuchertofu": {"kcal": 160, "p": 17.0, "c": 2.0, "f": 9.0, "abteilung": "Pflanzliche Alternativen"},
+    "Seidentofu": {"kcal": 55, "p": 5.5, "c": 1.2, "f": 3.0, "abteilung": "Pflanzliche Alternativen"},
+    "Tempeh": {"kcal": 192, "p": 19.0, "c": 9.4, "f": 10.8, "abteilung": "Pflanzliche Alternativen"},
+    "Seitan": {"kcal": 135, "p": 24.0, "c": 5.0, "f": 2.0, "abteilung": "Pflanzliche Alternativen"},
+    "Sojaschnetzel (trocken)": {"kcal": 340, "p": 50.0, "c": 15.0, "f": 1.5, "abteilung": "Pflanzliche Alternativen"},
+    "Veganes Proteinpulver": {"kcal": 380, "p": 75.0, "c": 8.0, "f": 6.0, "abteilung": "Sonstiges"},
+    "Chiasamen": {"kcal": 490, "p": 17.0, "c": 7.7, "f": 31.0, "abteilung": "Nüsse, Samen & Trockenfrüchte"},
+    "Kürbiskerne": {"kcal": 580, "p": 32.0, "c": 6.0, "f": 47.0, "abteilung": "Nüsse, Samen & Trockenfrüchte"},
+    "Cashewkerne": {"kcal": 580, "p": 18.0, "c": 30.0, "f": 44.0, "abteilung": "Nüsse, Samen & Trockenfrüchte"},
+    "Sesam": {"kcal": 600, "p": 18.0, "c": 10.0, "f": 55.0, "abteilung": "Nüsse, Samen & Trockenfrüchte"},
+    "Erdnussmus": {"kcal": 610, "p": 26.0, "c": 12.0, "f": 50.0, "abteilung": "Nüsse, Samen & Trockenfrüchte"},
+    "Tahin": {"kcal": 640, "p": 19.0, "c": 9.0, "f": 58.0, "abteilung": "Konserven & Gläser"},
+    "Beerenmischung (TK)": {"kcal": 45, "p": 1.0, "c": 8.0, "f": 0.4, "abteilung": "Tiefkühl"},
+    "Erbsen (TK)": {"kcal": 80, "p": 5.4, "c": 11.0, "f": 0.4, "abteilung": "Tiefkühl"},
+    "Edamame (TK, geschält)": {"kcal": 130, "p": 12.0, "c": 6.0, "f": 6.0, "abteilung": "Tiefkühl"},
+    "Banane": {"kcal": 93, "p": 1.1, "c": 20.0, "f": 0.2, "abteilung": "Obst & Gemüse"},
+    "Avocado": {"kcal": 160, "p": 2.0, "c": 1.9, "f": 14.7, "abteilung": "Obst & Gemüse"},
+    "Tomaten": {"kcal": 18, "p": 0.9, "c": 2.9, "f": 0.2, "abteilung": "Obst & Gemüse"},
+    "Cherrytomaten": {"kcal": 25, "p": 1.0, "c": 4.0, "f": 0.3, "abteilung": "Obst & Gemüse"},
+    "Paprika rot": {"kcal": 37, "p": 1.0, "c": 6.4, "f": 0.5, "abteilung": "Obst & Gemüse"},
+    "Babyspinat": {"kcal": 23, "p": 2.9, "c": 1.0, "f": 0.4, "abteilung": "Obst & Gemüse"},
+    "Zwiebel": {"kcal": 30, "p": 1.2, "c": 4.9, "f": 0.3, "abteilung": "Obst & Gemüse"},
+    "Rote Zwiebel": {"kcal": 40, "p": 1.2, "c": 7.0, "f": 0.2, "abteilung": "Obst & Gemüse"},
+    "Frühlingszwiebeln": {"kcal": 32, "p": 1.8, "c": 4.7, "f": 0.2, "abteilung": "Obst & Gemüse"},
+    "Knoblauch": {"kcal": 140, "p": 6.0, "c": 28.0, "f": 0.1, "abteilung": "Obst & Gemüse"},
+    "Ingwer": {"kcal": 80, "p": 1.8, "c": 15.0, "f": 0.8, "abteilung": "Obst & Gemüse"},
+    "Brokkoli": {"kcal": 34, "p": 3.8, "c": 2.7, "f": 0.2, "abteilung": "Obst & Gemüse"},
+    "Blumenkohl": {"kcal": 25, "p": 2.0, "c": 2.3, "f": 0.3, "abteilung": "Obst & Gemüse"},
+    "Zucchini": {"kcal": 20, "p": 1.6, "c": 2.2, "f": 0.4, "abteilung": "Obst & Gemüse"},
+    "Karotten": {"kcal": 39, "p": 0.9, "c": 7.5, "f": 0.2, "abteilung": "Obst & Gemüse"},
+    "Gurke": {"kcal": 13, "p": 0.6, "c": 1.8, "f": 0.2, "abteilung": "Obst & Gemüse"},
+    "Rotkohl": {"kcal": 29, "p": 1.5, "c": 3.5, "f": 0.2, "abteilung": "Obst & Gemüse"},
+    "Champignons": {"kcal": 22, "p": 3.1, "c": 0.6, "f": 0.3, "abteilung": "Obst & Gemüse"},
+    "Blattsalat": {"kcal": 15, "p": 1.3, "c": 1.5, "f": 0.2, "abteilung": "Obst & Gemüse"},
+    "Kartoffeln": {"kcal": 71, "p": 2.0, "c": 14.8, "f": 0.1, "abteilung": "Obst & Gemüse"},
+    "Süßkartoffel": {"kcal": 86, "p": 1.6, "c": 20.0, "f": 0.1, "abteilung": "Obst & Gemüse"},
+    "Petersilie (frisch)": {"kcal": 36, "p": 3.0, "c": 6.3, "f": 0.8, "abteilung": "Obst & Gemüse"},
+    "Zitronensaft": {"kcal": 25, "p": 0.4, "c": 2.4, "f": 0.1, "abteilung": "Obst & Gemüse"},
+    "Limettensaft": {"kcal": 25, "p": 0.4, "c": 2.5, "f": 0.1, "abteilung": "Obst & Gemüse"},
+    "Vollkornbrot": {"kcal": 220, "p": 7.5, "c": 40.0, "f": 1.5, "abteilung": "Brot & Backwaren"},
+    "Vollkorn-Wrap": {"kcal": 300, "p": 9.0, "c": 49.0, "f": 7.0, "abteilung": "Brot & Backwaren"},
+    "Basmatireis (trocken)": {"kcal": 350, "p": 7.5, "c": 78.0, "f": 0.6, "abteilung": "Getreide, Nudeln & Hülsenfrüchte"},
+    "Couscous (trocken)": {"kcal": 355, "p": 12.0, "c": 72.0, "f": 1.5, "abteilung": "Getreide, Nudeln & Hülsenfrüchte"},
+    "Rote Linsen (trocken)": {"kcal": 340, "p": 24.0, "c": 50.0, "f": 1.5, "abteilung": "Getreide, Nudeln & Hülsenfrüchte"},
+    "Kichererbsen (Dose, abgetropft)": {"kcal": 120, "p": 7.0, "c": 16.0, "f": 2.5, "abteilung": "Konserven & Gläser"},
+    "Kidneybohnen (Dose, abgetropft)": {"kcal": 105, "p": 8.0, "c": 14.0, "f": 0.5, "abteilung": "Konserven & Gläser"},
+    "Schwarze Bohnen (Dose, abgetropft)": {"kcal": 110, "p": 7.5, "c": 16.0, "f": 0.5, "abteilung": "Konserven & Gläser"},
+    "Weiße Bohnen (Dose, abgetropft)": {"kcal": 100, "p": 7.0, "c": 14.0, "f": 0.5, "abteilung": "Konserven & Gläser"},
+    "Mais (Dose, abgetropft)": {"kcal": 85, "p": 2.9, "c": 15.0, "f": 1.2, "abteilung": "Konserven & Gläser"},
+    "Gehackte Tomaten (Dose)": {"kcal": 22, "p": 1.2, "c": 3.5, "f": 0.2, "abteilung": "Konserven & Gläser"},
+    "Kokosmilch (fettreduziert)": {"kcal": 80, "p": 0.8, "c": 2.0, "f": 7.5, "abteilung": "Konserven & Gläser"},
+    "Tomatenmark": {"kcal": 85, "p": 4.5, "c": 13.0, "f": 0.5, "abteilung": "Konserven & Gläser"},
+    "Gemüsebrühe (zubereitet)": {"kcal": 3, "p": 0.1, "c": 0.4, "f": 0.1, "abteilung": "Gewürze, Öle & Saucen"},
+    "Olivenöl": {"kcal": 884, "p": 0.0, "c": 0.0, "f": 100.0, "abteilung": "Gewürze, Öle & Saucen"},
+    "Rapsöl": {"kcal": 884, "p": 0.0, "c": 0.0, "f": 100.0, "abteilung": "Gewürze, Öle & Saucen"},
+    "Sesamöl": {"kcal": 884, "p": 0.0, "c": 0.0, "f": 100.0, "abteilung": "Gewürze, Öle & Saucen"},
+    "Sojasauce": {"kcal": 53, "p": 8.1, "c": 4.9, "f": 0.6, "abteilung": "Gewürze, Öle & Saucen"},
+    "Senf": {"kcal": 85, "p": 6.0, "c": 4.0, "f": 4.5, "abteilung": "Gewürze, Öle & Saucen"},
+    "Ahornsirup": {"kcal": 260, "p": 0.0, "c": 67.0, "f": 0.1, "abteilung": "Sonstiges"},
+    "Backkakao": {"kcal": 350, "p": 20.0, "c": 11.0, "f": 21.0, "abteilung": "Sonstiges"},
+    "Backpulver": {"kcal": 95, "p": 0.0, "c": 23.0, "f": 0.0, "abteilung": "Sonstiges"},
+    "Hefeflocken": {"kcal": 340, "p": 45.0, "c": 20.0, "f": 4.0, "abteilung": "Sonstiges"},
+    "Salz": {"kcal": 0, "p": 0.0, "c": 0.0, "f": 0.0, "abteilung": "Gewürze, Öle & Saucen"},
+    "Pfeffer": {"kcal": 0, "p": 0.0, "c": 0.0, "f": 0.0, "abteilung": "Gewürze, Öle & Saucen"},
+    "Zimt": {"kcal": 0, "p": 0.0, "c": 0.0, "f": 0.0, "abteilung": "Gewürze, Öle & Saucen"},
+    "Chiliflocken": {"kcal": 0, "p": 0.0, "c": 0.0, "f": 0.0, "abteilung": "Gewürze, Öle & Saucen"},
+    "Kreuzkümmel": {"kcal": 0, "p": 0.0, "c": 0.0, "f": 0.0, "abteilung": "Gewürze, Öle & Saucen"},
+    "Paprikapulver edelsüß": {"kcal": 0, "p": 0.0, "c": 0.0, "f": 0.0, "abteilung": "Gewürze, Öle & Saucen"},
+    "Kurkuma": {"kcal": 0, "p": 0.0, "c": 0.0, "f": 0.0, "abteilung": "Gewürze, Öle & Saucen"},
+    "Currypulver": {"kcal": 0, "p": 0.0, "c": 0.0, "f": 0.0, "abteilung": "Gewürze, Öle & Saucen"},
+    "Oregano (getrocknet)": {"kcal": 0, "p": 0.0, "c": 0.0, "f": 0.0, "abteilung": "Gewürze, Öle & Saucen"},
+    "Wasser": {"kcal": 0, "p": 0.0, "c": 0.0, "f": 0.0, "abteilung": "Sonstiges"}
+  },
+  "recipes": [
+    {
+      "mahlzeit": "Frühstück",
+      "name": "Overnight Oats mit Sojaskyr und Beeren",
+      "beschreibung": "Cremige Haferflocken mit Sojaskyr und Chia, die über Nacht ziehen und morgens fertig im Kühlschrank warten.",
+      "zeit_min": 5,
+      "tags": ["ohne Kochen", "Meal-Prep"],
+      "zutaten": [
+        {"name": "Haferflocken", "menge_g": 60, "anzeige": "60 g"},
+        {"name": "Sojaskyr natur", "menge_g": 200, "anzeige": "200 g"},
+        {"name": "Sojadrink ungesüßt", "menge_g": 100, "anzeige": "100 ml"},
+        {"name": "Chiasamen", "menge_g": 10, "anzeige": "1 EL (10 g)"},
+        {"name": "Beerenmischung (TK)", "menge_g": 100, "anzeige": "100 g"},
+        {"name": "Ahornsirup", "menge_g": 5, "anzeige": "1 TL (5 g)"},
+        {"name": "Zimt", "menge_g": 0, "anzeige": "1 Prise"}
+      ],
+      "zubereitung": [
+        "Gib Haferflocken, Chiasamen und Zimt in ein Glas mit Deckel.",
+        "Rühre Sojaskyr, Sojadrink und Ahornsirup unter, bis keine trockenen Stellen mehr da sind.",
+        "Gib die gefrorenen Beeren obendrauf und verschließe das Glas.",
+        "Stell die Oats mindestens 4 Stunden, am besten über Nacht, in den Kühlschrank.",
+        "Rühre morgens einmal durch und gib bei Bedarf noch einen Schuss Sojadrink dazu."
+      ],
+      "tipp": "Im verschlossenen Glas hält sich das Frühstück 2 Tage im Kühlschrank – ideal, um gleich mehrere vorzubereiten."
+    },
+    {
+      "mahlzeit": "Frühstück",
+      "name": "Seidentofu-Pancakes mit Beeren",
+      "beschreibung": "Fluffige Hafer-Pancakes ohne Ei, getoppt mit Sojaskyr und warmen Beeren.",
+      "zeit_min": 25,
+      "tags": [],
+      "zutaten": [
+        {"name": "Haferflocken", "menge_g": 50, "anzeige": "50 g"},
+        {"name": "Seidentofu", "menge_g": 150, "anzeige": "150 g"},
+        {"name": "Sojadrink ungesüßt", "menge_g": 80, "anzeige": "80 ml"},
+        {"name": "Banane", "menge_g": 50, "anzeige": "½ kleine Banane (50 g)"},
+        {"name": "Backpulver", "menge_g": 3, "anzeige": "1 TL (3 g)"},
+        {"name": "Rapsöl", "menge_g": 5, "anzeige": "1 TL (5 g)"},
+        {"name": "Sojaskyr natur", "menge_g": 100, "anzeige": "100 g"},
+        {"name": "Beerenmischung (TK)", "menge_g": 80, "anzeige": "80 g"},
+        {"name": "Zimt", "menge_g": 0, "anzeige": "1 Prise"}
+      ],
+      "zubereitung": [
+        "Püriere Haferflocken, Seidentofu, Sojadrink, Banane, Backpulver und Zimt mit dem Stabmixer zu einem glatten Teig.",
+        "Lass den Teig 5 Minuten quellen.",
+        "Erhitze das Rapsöl in einer beschichteten Pfanne auf mittlerer Stufe und gib je 2 EL Teig pro Pancake hinein.",
+        "Brate die Pancakes 2–3 Minuten, bis sich Bläschen bilden, wende sie und brate sie weitere 2 Minuten.",
+        "Erwärme die Beeren kurz in einem kleinen Topf oder in der Mikrowelle.",
+        "Serviere die Pancakes mit Sojaskyr und den warmen Beeren."
+      ],
+      "tipp": "Die Pancakes lassen sich gut einfrieren und im Toaster aufbacken."
+    },
+    {
+      "mahlzeit": "Frühstück",
+      "name": "Schoko-Erdnuss-Porridge",
+      "beschreibung": "Warmer Proteinbrei mit Kakao, Banane und Erdnussmus – schmeckt wie Nachtisch.",
+      "zeit_min": 10,
+      "tags": ["vor dem Training"],
+      "zutaten": [
+        {"name": "Haferflocken", "menge_g": 60, "anzeige": "60 g"},
+        {"name": "Sojadrink ungesüßt", "menge_g": 250, "anzeige": "250 ml"},
+        {"name": "Veganes Proteinpulver", "menge_g": 20, "anzeige": "1 Messlöffel (20 g)"},
+        {"name": "Backkakao", "menge_g": 5, "anzeige": "1 TL (5 g)"},
+        {"name": "Banane", "menge_g": 60, "anzeige": "½ Banane (60 g)"},
+        {"name": "Erdnussmus", "menge_g": 10, "anzeige": "1 TL (10 g)"},
+        {"name": "Salz", "menge_g": 0, "anzeige": "1 Prise"}
+      ],
+      "zubereitung": [
+        "Bring Haferflocken, Sojadrink, Kakao und eine Prise Salz in einem Topf unter Rühren zum Kochen.",
+        "Lass den Brei bei kleiner Hitze 3–4 Minuten köcheln, bis er cremig ist.",
+        "Nimm den Topf vom Herd und rühre das Proteinpulver klümpchenfrei unter.",
+        "Schneide die Banane in Scheiben und verteile sie mit dem Erdnussmus auf dem Porridge."
+      ],
+      "tipp": "Proteinpulver erst nach dem Kochen einrühren, sonst wird es klumpig."
+    },
+    {
+      "mahlzeit": "Frühstück",
+      "name": "Kichererbsen-Avocado-Stulle mit Räuchertofu",
+      "beschreibung": "Herzhaftes Vollkornbrot mit zerdrückten Kichererbsen, Avocado und knusprigem Räuchertofu.",
+      "zeit_min": 10,
+      "tags": [],
+      "zutaten": [
+        {"name": "Vollkornbrot", "menge_g": 80, "anzeige": "2 Scheiben (80 g)"},
+        {"name": "Kichererbsen (Dose, abgetropft)", "menge_g": 100, "anzeige": "100 g"},
+        {"name": "Avocado", "menge_g": 50, "anzeige": "⅓ Avocado (50 g)"},
+        {"name": "Räuchertofu", "menge_g": 80, "anzeige": "80 g"},
+        {"name": "Zitronensaft", "menge_g": 5, "anzeige": "1 TL (5 g)"},
+        {"name": "Tomaten", "menge_g": 60, "anzeige": "1 kleine Tomate (60 g)"},
+        {"name": "Salz", "menge_g": 0, "anzeige": "1 Prise"},
+        {"name": "Pfeffer", "menge_g": 0, "anzeige": "1 Prise"},
+        {"name": "Chiliflocken", "menge_g": 0, "anzeige": "1 Prise"}
+      ],
+      "zubereitung": [
+        "Zerdrücke Kichererbsen und Avocado mit einer Gabel und schmecke mit Zitronensaft, Salz und Pfeffer ab.",
+        "Schneide den Räuchertofu in dünne Scheiben und brate ihn in einer Pfanne ohne Öl 2 Minuten pro Seite knusprig.",
+        "Toaste das Brot nach Belieben.",
+        "Bestreiche das Brot mit der Kichererbsen-Avocado-Creme und belege es mit Tofu und Tomatenscheiben.",
+        "Würze mit Chiliflocken."
+      ],
+      "tipp": "Die Kichererbsencreme hält sich mit etwas mehr Zitronensaft 2 Tage im Kühlschrank."
+    },
+    {
+      "mahlzeit": "Frühstück",
+      "name": "Frühstücks-Burrito mit Tofu und Bohnen",
+      "beschreibung": "Würziger Tofu-Scramble mit schwarzen Bohnen und Paprika im Vollkorn-Wrap.",
+      "zeit_min": 15,
+      "tags": ["Meal-Prep"],
+      "zutaten": [
+        {"name": "Vollkorn-Wrap", "menge_g": 65, "anzeige": "1 Wrap (65 g)"},
+        {"name": "Tofu natur", "menge_g": 150, "anzeige": "150 g"},
+        {"name": "Schwarze Bohnen (Dose, abgetropft)", "menge_g": 60, "anzeige": "60 g"},
+        {"name": "Paprika rot", "menge_g": 50, "anzeige": "⅓ Paprika (50 g)"},
+        {"name": "Olivenöl", "menge_g": 5, "anzeige": "1 TL (5 g)"},
+        {"name": "Kurkuma", "menge_g": 0, "anzeige": "½ TL"},
+        {"name": "Kreuzkümmel", "menge_g": 0, "anzeige": "½ TL"},
+        {"name": "Paprikapulver edelsüß", "menge_g": 0, "anzeige": "½ TL"},
+        {"name": "Salz", "menge_g": 0, "anzeige": "1 Prise"}
+      ],
+      "zubereitung": [
+        "Würfle die Paprika klein und brate sie im Olivenöl bei mittlerer Hitze 3 Minuten an.",
+        "Zerbrösel den Tofu mit den Händen in die Pfanne und würze mit Kurkuma, Kreuzkümmel, Paprikapulver und Salz.",
+        "Gib die Bohnen dazu und brate alles weitere 4 Minuten, bis es heiß ist.",
+        "Erwärme den Wrap 30 Sekunden in einer trockenen Pfanne.",
+        "Fülle den Wrap mit der Tofu-Bohnen-Mischung, schlag die Seiten ein und roll ihn fest auf."
+      ],
+      "tipp": "In Alufolie gewickelt hält sich der Burrito 3 Tage im Kühlschrank – zum Aufwärmen 10 Minuten bei 180 °C in den Ofen."
+    },
+    {
+      "mahlzeit": "Mittagessen",
+      "name": "Rotes Linsen-Dal mit Spinat und Reis",
+      "beschreibung": "Cremiges indisches Linsencurry mit Kokosmilch, Erbsen und Spinat.",
+      "zeit_min": 30,
+      "tags": ["Meal-Prep"],
+      "zutaten": [
+        {"name": "Rote Linsen (trocken)", "menge_g": 80, "anzeige": "80 g"},
+        {"name": "Basmatireis (trocken)", "menge_g": 50, "anzeige": "50 g"},
+        {"name": "Kokosmilch (fettreduziert)", "menge_g": 80, "anzeige": "80 ml"},
+        {"name": "Gehackte Tomaten (Dose)", "menge_g": 150, "anzeige": "150 g"},
+        {"name": "Erbsen (TK)", "menge_g": 60, "anzeige": "60 g"},
+        {"name": "Babyspinat", "menge_g": 50, "anzeige": "1 Handvoll (50 g)"},
+        {"name": "Zwiebel", "menge_g": 50, "anzeige": "½ Zwiebel (50 g)"},
+        {"name": "Knoblauch", "menge_g": 5, "anzeige": "1 Zehe (5 g)"},
+        {"name": "Ingwer", "menge_g": 5, "anzeige": "1 cm (5 g)"},
+        {"name": "Rapsöl", "menge_g": 5, "anzeige": "1 TL (5 g)"},
+        {"name": "Currypulver", "menge_g": 0, "anzeige": "1 TL"},
+        {"name": "Kurkuma", "menge_g": 0, "anzeige": "½ TL"},
+        {"name": "Wasser", "menge_g": 0, "anzeige": "200 ml"},
+        {"name": "Salz", "menge_g": 0, "anzeige": "1 Prise"}
+      ],
+      "zubereitung": [
+        "Koche den Reis nach Packungsanleitung, etwa 12 Minuten.",
+        "Würfle Zwiebel, Knoblauch und Ingwer fein und dünste alles im Rapsöl 3 Minuten an.",
+        "Gib Currypulver und Kurkuma dazu und röste sie 30 Sekunden mit.",
+        "Füge Linsen, Tomaten, Kokosmilch und 200 ml Wasser hinzu und lass alles 15 Minuten köcheln, bis die Linsen zerfallen.",
+        "Rühre Erbsen und Spinat unter und lass sie 2 Minuten mitziehen.",
+        "Schmecke mit Salz ab und serviere das Dal mit dem Reis."
+      ],
+      "tipp": "Dal schmeckt aufgewärmt noch besser und hält sich 4 Tage im Kühlschrank."
+    },
+    {
+      "mahlzeit": "Mittagessen",
+      "name": "Chili sin Carne mit Reis",
+      "beschreibung": "Herzhaftes mexikanisches Chili mit Sojaschnetzeln, Kidneybohnen und Mais.",
+      "zeit_min": 35,
+      "tags": ["Meal-Prep", "nach dem Training"],
+      "zutaten": [
+        {"name": "Sojaschnetzel (trocken)", "menge_g": 40, "anzeige": "40 g (fein)"},
+        {"name": "Gemüsebrühe (zubereitet)", "menge_g": 150, "anzeige": "150 ml"},
+        {"name": "Kidneybohnen (Dose, abgetropft)", "menge_g": 120, "anzeige": "120 g"},
+        {"name": "Mais (Dose, abgetropft)", "menge_g": 50, "anzeige": "50 g"},
+        {"name": "Gehackte Tomaten (Dose)", "menge_g": 200, "anzeige": "200 g"},
+        {"name": "Paprika rot", "menge_g": 80, "anzeige": "½ Paprika (80 g)"},
+        {"name": "Zwiebel", "menge_g": 60, "anzeige": "½ Zwiebel (60 g)"},
+        {"name": "Knoblauch", "menge_g": 5, "anzeige": "1 Zehe (5 g)"},
+        {"name": "Tomatenmark", "menge_g": 15, "anzeige": "1 EL (15 g)"},
+        {"name": "Olivenöl", "menge_g": 8, "anzeige": "2 TL (8 g)"},
+        {"name": "Basmatireis (trocken)", "menge_g": 50, "anzeige": "50 g"},
+        {"name": "Kreuzkümmel", "menge_g": 0, "anzeige": "1 TL"},
+        {"name": "Paprikapulver edelsüß", "menge_g": 0, "anzeige": "1 TL"},
+        {"name": "Chiliflocken", "menge_g": 0, "anzeige": "½ TL"},
+        {"name": "Salz", "menge_g": 0, "anzeige": "1 Prise"}
+      ],
+      "zubereitung": [
+        "Übergieße die Sojaschnetzel mit der heißen Gemüsebrühe und lass sie 10 Minuten quellen, dann gut ausdrücken.",
+        "Koche den Reis nach Packungsanleitung, etwa 12 Minuten.",
+        "Würfle Zwiebel, Knoblauch und Paprika und brate sie im Olivenöl 3 Minuten an.",
+        "Gib die Sojaschnetzel dazu und brate sie 4 Minuten kräftig an, dann Tomatenmark und Gewürze 1 Minute mitrösten.",
+        "Füge Tomaten, Kidneybohnen und Mais hinzu und lass das Chili 15 Minuten köcheln.",
+        "Schmecke mit Salz ab und serviere es mit dem Reis."
+      ],
+      "tipp": "Gleich die vierfache Menge kochen und portionsweise einfrieren."
+    },
+    {
+      "mahlzeit": "Mittagessen",
+      "name": "Teriyaki-Tofu-Bowl mit Edamame",
+      "beschreibung": "Knuspriger Tofu in süß-salziger Sauce mit Reis, Brokkoli und Edamame.",
+      "zeit_min": 25,
+      "tags": ["nach dem Training"],
+      "zutaten": [
+        {"name": "Tofu natur", "menge_g": 150, "anzeige": "150 g"},
+        {"name": "Basmatireis (trocken)", "menge_g": 60, "anzeige": "60 g"},
+        {"name": "Edamame (TK, geschält)", "menge_g": 80, "anzeige": "80 g"},
+        {"name": "Brokkoli", "menge_g": 100, "anzeige": "100 g"},
+        {"name": "Karotten", "menge_g": 50, "anzeige": "1 kleine Karotte (50 g)"},
+        {"name": "Sojasauce", "menge_g": 20, "anzeige": "1 ½ EL (20 g)"},
+        {"name": "Ahornsirup", "menge_g": 8, "anzeige": "1 ½ TL (8 g)"},
+        {"name": "Ingwer", "menge_g": 5, "anzeige": "1 cm (5 g)"},
+        {"name": "Sesamöl", "menge_g": 5, "anzeige": "1 TL (5 g)"},
+        {"name": "Sesam", "menge_g": 5, "anzeige": "1 TL (5 g)"}
+      ],
+      "zubereitung": [
+        "Koche den Reis nach Packungsanleitung, etwa 12 Minuten.",
+        "Tupfe den Tofu trocken, schneide ihn in Würfel und brate ihn im Sesamöl bei mittlerer bis hoher Hitze 8 Minuten rundum knusprig.",
+        "Gare Brokkoliröschen und Edamame 4 Minuten in kochendem Wasser und gieße sie ab.",
+        "Verrühre Sojasauce, Ahornsirup und geriebenen Ingwer und lösche den Tofu damit ab, bis die Sauce nach 1 Minute glänzt.",
+        "Raspel die Karotte und richte alles in einer Schüssel an, bestreut mit Sesam."
+      ],
+      "tipp": "Statt Reis passt auch Quinoa; für Meal-Prep Sauce und Bowl getrennt aufbewahren."
+    },
+    {
+      "mahlzeit": "Mittagessen",
+      "name": "Orientalischer Couscous-Salat mit Kichererbsen",
+      "beschreibung": "Frischer Couscous-Salat mit Kichererbsen, Räuchertofu, Gurke und viel Petersilie.",
+      "zeit_min": 15,
+      "tags": ["Meal-Prep"],
+      "zutaten": [
+        {"name": "Couscous (trocken)", "menge_g": 60, "anzeige": "60 g"},
+        {"name": "Gemüsebrühe (zubereitet)", "menge_g": 80, "anzeige": "80 ml (heiß)"},
+        {"name": "Kichererbsen (Dose, abgetropft)", "menge_g": 150, "anzeige": "150 g"},
+        {"name": "Räuchertofu", "menge_g": 80, "anzeige": "80 g"},
+        {"name": "Gurke", "menge_g": 100, "anzeige": "⅓ Gurke (100 g)"},
+        {"name": "Cherrytomaten", "menge_g": 100, "anzeige": "6 Stück (100 g)"},
+        {"name": "Rote Zwiebel", "menge_g": 20, "anzeige": "¼ Zwiebel (20 g)"},
+        {"name": "Petersilie (frisch)", "menge_g": 10, "anzeige": "½ Bund (10 g)"},
+        {"name": "Olivenöl", "menge_g": 8, "anzeige": "2 TL (8 g)"},
+        {"name": "Zitronensaft", "menge_g": 15, "anzeige": "1 EL (15 g)"},
+        {"name": "Kreuzkümmel", "menge_g": 0, "anzeige": "½ TL"},
+        {"name": "Salz", "menge_g": 0, "anzeige": "1 Prise"},
+        {"name": "Pfeffer", "menge_g": 0, "anzeige": "1 Prise"}
+      ],
+      "zubereitung": [
+        "Übergieße den Couscous mit der heißen Brühe, decke ihn ab und lass ihn 5 Minuten quellen.",
+        "Würfle Gurke, Räuchertofu und Zwiebel, halbiere die Tomaten und hacke die Petersilie.",
+        "Lockere den Couscous mit einer Gabel auf.",
+        "Verrühre Olivenöl, Zitronensaft, Kreuzkümmel, Salz und Pfeffer zu einem Dressing.",
+        "Vermische Couscous, Kichererbsen, Gemüse, Tofu und Dressing gründlich."
+      ],
+      "tipp": "Hält sich 3 Tage im Kühlschrank und ist ideal für die Lunchbox."
+    },
+    {
+      "mahlzeit": "Mittagessen",
+      "name": "Tempeh-Gyros-Wrap mit Soja-Tzatziki",
+      "beschreibung": "Würzig gebratener Tempeh im Gyros-Stil mit Rotkohl, Tomate und knoblauchigem Tzatziki.",
+      "zeit_min": 15,
+      "tags": [],
+      "zutaten": [
+        {"name": "Vollkorn-Wrap", "menge_g": 65, "anzeige": "1 Wrap (65 g)"},
+        {"name": "Tempeh", "menge_g": 120, "anzeige": "120 g"},
+        {"name": "Sojajoghurt natur", "menge_g": 100, "anzeige": "100 g"},
+        {"name": "Gurke", "menge_g": 50, "anzeige": "50 g"},
+        {"name": "Knoblauch", "menge_g": 3, "anzeige": "½ Zehe (3 g)"},
+        {"name": "Tomaten", "menge_g": 60, "anzeige": "1 kleine Tomate (60 g)"},
+        {"name": "Rotkohl", "menge_g": 40, "anzeige": "40 g (fein gehobelt)"},
+        {"name": "Olivenöl", "menge_g": 5, "anzeige": "1 TL (5 g)"},
+        {"name": "Paprikapulver edelsüß", "menge_g": 0, "anzeige": "1 TL"},
+        {"name": "Oregano (getrocknet)", "menge_g": 0, "anzeige": "1 TL"},
+        {"name": "Kreuzkümmel", "menge_g": 0, "anzeige": "½ TL"},
+        {"name": "Salz", "menge_g": 0, "anzeige": "1 Prise"}
+      ],
+      "zubereitung": [
+        "Schneide den Tempeh in dünne Streifen und brate ihn im Olivenöl 5 Minuten bei mittlerer Hitze goldbraun.",
+        "Würze ihn in der Pfanne mit Paprikapulver, Oregano, Kreuzkümmel und Salz.",
+        "Rasple die Gurke, drücke sie aus und verrühre sie mit Sojajoghurt, gepresstem Knoblauch und Salz zu Tzatziki.",
+        "Erwärme den Wrap kurz in der trockenen Pfanne.",
+        "Bestreiche den Wrap mit Tzatziki, belege ihn mit Tempeh, Rotkohl und Tomatenwürfeln und roll ihn auf."
+      ],
+      "tipp": "Statt Tempeh funktioniert auch Seitan in Streifen."
+    },
+    {
+      "mahlzeit": "Abendessen",
+      "name": "Ofengemüse mit Tofu und Tahin-Zitronen-Sauce",
+      "beschreibung": "Buntes Blechgemüse mit Süßkartoffel, Kichererbsen und knusprigem Tofu, beträufelt mit Sesamsauce.",
+      "zeit_min": 40,
+      "tags": ["Meal-Prep"],
+      "zutaten": [
+        {"name": "Tofu natur", "menge_g": 150, "anzeige": "150 g"},
+        {"name": "Süßkartoffel", "menge_g": 150, "anzeige": "1 kleine Süßkartoffel (150 g)"},
+        {"name": "Brokkoli", "menge_g": 150, "anzeige": "150 g"},
+        {"name": "Paprika rot", "menge_g": 100, "anzeige": "⅔ Paprika (100 g)"},
+        {"name": "Kichererbsen (Dose, abgetropft)", "menge_g": 100, "anzeige": "100 g"},
+        {"name": "Olivenöl", "menge_g": 8, "anzeige": "2 TL (8 g)"},
+        {"name": "Tahin", "menge_g": 10, "anzeige": "2 TL (10 g)"},
+        {"name": "Zitronensaft", "menge_g": 10, "anzeige": "2 TL (10 g)"},
+        {"name": "Paprikapulver edelsüß", "menge_g": 0, "anzeige": "1 TL"},
+        {"name": "Kreuzkümmel", "menge_g": 0, "anzeige": "½ TL"},
+        {"name": "Wasser", "menge_g": 0, "anzeige": "1–2 EL"},
+        {"name": "Salz", "menge_g": 0, "anzeige": "1 Prise"}
+      ],
+      "zubereitung": [
+        "Heize den Backofen auf 200 °C Ober-/Unterhitze vor.",
+        "Schneide Süßkartoffel und Tofu in Würfel, Paprika in Streifen und teile den Brokkoli in Röschen.",
+        "Vermische alles mit den Kichererbsen, Olivenöl, Paprikapulver, Kreuzkümmel und Salz auf einem Backblech.",
+        "Backe das Blech 25–30 Minuten, nach der Hälfte der Zeit einmal wenden.",
+        "Verrühre Tahin, Zitronensaft und 1–2 EL Wasser zu einer glatten Sauce und träufle sie über das Gemüse."
+      ],
+      "tipp": "Gleich zwei Bleche backen – das Gemüse schmeckt am nächsten Tag auch kalt als Salat."
+    },
+    {
+      "mahlzeit": "Abendessen",
+      "name": "Blumenkohl-Tofu-Curry",
+      "beschreibung": "Leichtes Kokos-Curry mit Blumenkohl, Zucchini, Edamame und Tofu auf wenig Reis.",
+      "zeit_min": 25,
+      "tags": ["Meal-Prep"],
+      "zutaten": [
+        {"name": "Tofu natur", "menge_g": 180, "anzeige": "180 g"},
+        {"name": "Blumenkohl", "menge_g": 150, "anzeige": "150 g"},
+        {"name": "Zucchini", "menge_g": 100, "anzeige": "½ Zucchini (100 g)"},
+        {"name": "Edamame (TK, geschält)", "menge_g": 60, "anzeige": "60 g"},
+        {"name": "Babyspinat", "menge_g": 50, "anzeige": "1 Handvoll (50 g)"},
+        {"name": "Kokosmilch (fettreduziert)", "menge_g": 100, "anzeige": "100 ml"},
+        {"name": "Basmatireis (trocken)", "menge_g": 40, "anzeige": "40 g"},
+        {"name": "Zwiebel", "menge_g": 40, "anzeige": "⅓ Zwiebel (40 g)"},
+        {"name": "Ingwer", "menge_g": 5, "anzeige": "1 cm (5 g)"},
+        {"name": "Rapsöl", "menge_g": 5, "anzeige": "1 TL (5 g)"},
+        {"name": "Currypulver", "menge_g": 0, "anzeige": "2 TL"},
+        {"name": "Wasser", "menge_g": 0, "anzeige": "100 ml"},
+        {"name": "Salz", "menge_g": 0, "anzeige": "1 Prise"}
+      ],
+      "zubereitung": [
+        "Koche den Reis nach Packungsanleitung, etwa 12 Minuten.",
+        "Würfle Tofu, Zwiebel und Zucchini, schneide den Blumenkohl in kleine Röschen und reibe den Ingwer.",
+        "Brate den Tofu im Rapsöl 5 Minuten goldbraun und nimm ihn aus der Pfanne.",
+        "Dünste Zwiebel und Ingwer 2 Minuten an, gib Currypulver, Blumenkohl, Kokosmilch und 100 ml Wasser dazu und lass alles 8 Minuten köcheln.",
+        "Füge Zucchini, Edamame und Tofu hinzu und koche 4 Minuten weiter, dann den Spinat unterheben.",
+        "Schmecke mit Salz ab und serviere das Curry mit dem Reis."
+      ],
+      "tipp": "Für eine noch leichtere Variante den Reis durch geraspelten Blumenkohl ersetzen."
+    },
+    {
+      "mahlzeit": "Abendessen",
+      "name": "Seitan-Geschnetzeltes mit Champignons und Kartoffeln",
+      "beschreibung": "Deutscher Klassiker in vegan: Seitanstreifen in cremiger Pilz-Senf-Sauce mit Pellkartoffeln.",
+      "zeit_min": 25,
+      "tags": ["nach dem Training"],
+      "zutaten": [
+        {"name": "Seitan", "menge_g": 150, "anzeige": "150 g"},
+        {"name": "Champignons", "menge_g": 200, "anzeige": "200 g"},
+        {"name": "Kartoffeln", "menge_g": 250, "anzeige": "3 mittelgroße Kartoffeln (250 g)"},
+        {"name": "Zwiebel", "menge_g": 50, "anzeige": "½ Zwiebel (50 g)"},
+        {"name": "Soja-Cuisine", "menge_g": 30, "anzeige": "2 EL (30 g)"},
+        {"name": "Gemüsebrühe (zubereitet)", "menge_g": 100, "anzeige": "100 ml"},
+        {"name": "Senf", "menge_g": 5, "anzeige": "1 TL (5 g)"},
+        {"name": "Rapsöl", "menge_g": 5, "anzeige": "1 TL (5 g)"},
+        {"name": "Petersilie (frisch)", "menge_g": 5, "anzeige": "1 EL gehackt (5 g)"},
+        {"name": "Paprikapulver edelsüß", "menge_g": 0, "anzeige": "½ TL"},
+        {"name": "Salz", "menge_g": 0, "anzeige": "1 Prise"},
+        {"name": "Pfeffer", "menge_g": 0, "anzeige": "1 Prise"}
+      ],
+      "zubereitung": [
+        "Koche die Kartoffeln in Salzwasser 20 Minuten gar.",
+        "Schneide den Seitan in Streifen, die Champignons in Scheiben und würfle die Zwiebel.",
+        "Brate den Seitan im Rapsöl bei hoher Hitze 4 Minuten an, würze mit Paprikapulver und nimm ihn heraus.",
+        "Brate Champignons und Zwiebel 5 Minuten in derselben Pfanne, bis die Pilze Farbe haben.",
+        "Lösche mit Gemüsebrühe ab, rühre Soja-Cuisine und Senf ein und lass die Sauce 3 Minuten einkochen.",
+        "Gib den Seitan zurück, schmecke mit Salz und Pfeffer ab und serviere alles mit Kartoffeln und Petersilie."
+      ],
+      "tipp": "Dazu passt ein großer grüner Salat, der das Abendessen noch gemüsereicher macht."
+    },
+    {
+      "mahlzeit": "Abendessen",
+      "name": "Tempeh-Gemüsepfanne mit Cashews",
+      "beschreibung": "Schnelle Asia-Pfanne mit Tempeh, knackigem Gemüse, Ingwer und gerösteten Cashews.",
+      "zeit_min": 15,
+      "tags": [],
+      "zutaten": [
+        {"name": "Tempeh", "menge_g": 150, "anzeige": "150 g"},
+        {"name": "Brokkoli", "menge_g": 150, "anzeige": "150 g"},
+        {"name": "Paprika rot", "menge_g": 100, "anzeige": "⅔ Paprika (100 g)"},
+        {"name": "Karotten", "menge_g": 50, "anzeige": "1 kleine Karotte (50 g)"},
+        {"name": "Frühlingszwiebeln", "menge_g": 30, "anzeige": "2 Stangen (30 g)"},
+        {"name": "Cashewkerne", "menge_g": 15, "anzeige": "1 EL (15 g)"},
+        {"name": "Sojasauce", "menge_g": 15, "anzeige": "1 EL (15 g)"},
+        {"name": "Sesamöl", "menge_g": 5, "anzeige": "1 TL (5 g)"},
+        {"name": "Ingwer", "menge_g": 5, "anzeige": "1 cm (5 g)"},
+        {"name": "Knoblauch", "menge_g": 3, "anzeige": "½ Zehe (3 g)"},
+        {"name": "Chiliflocken", "menge_g": 0, "anzeige": "1 Prise"}
+      ],
+      "zubereitung": [
+        "Röste die Cashews in einer trockenen Pfanne 2 Minuten und stell sie beiseite.",
+        "Schneide Tempeh in Würfel, Paprika und Karotte in dünne Streifen, Brokkoli in kleine Röschen und Frühlingszwiebeln in Ringe.",
+        "Brate den Tempeh im Sesamöl bei hoher Hitze 4 Minuten rundum an.",
+        "Gib Brokkoli, Karotte und Paprika dazu und brate alles 5 Minuten unter Rühren bissfest.",
+        "Rühre Ingwer, Knoblauch und Sojasauce unter, brate 1 Minute weiter und streue Frühlingszwiebeln, Cashews und Chili darüber."
+      ],
+      "tipp": "Wer mehr Kohlenhydrate braucht, serviert die Pfanne mit 50 g Reis."
+    },
+    {
+      "mahlzeit": "Abendessen",
+      "name": "Mexikanischer Bohnensalat mit Avocado",
+      "beschreibung": "Bunter Salat mit schwarzen Bohnen, Edamame, Mais und Avocado in Limetten-Dressing.",
+      "zeit_min": 15,
+      "tags": ["ohne Kochen"],
+      "zutaten": [
+        {"name": "Schwarze Bohnen (Dose, abgetropft)", "menge_g": 200, "anzeige": "200 g"},
+        {"name": "Edamame (TK, geschält)", "menge_g": 80, "anzeige": "80 g (aufgetaut)"},
+        {"name": "Mais (Dose, abgetropft)", "menge_g": 60, "anzeige": "60 g"},
+        {"name": "Paprika rot", "menge_g": 100, "anzeige": "⅔ Paprika (100 g)"},
+        {"name": "Tomaten", "menge_g": 100, "anzeige": "1 Tomate (100 g)"},
+        {"name": "Blattsalat", "menge_g": 60, "anzeige": "2 Handvoll (60 g)"},
+        {"name": "Avocado", "menge_g": 50, "anzeige": "⅓ Avocado (50 g)"},
+        {"name": "Limettensaft", "menge_g": 15, "anzeige": "1 EL (15 g)"},
+        {"name": "Olivenöl", "menge_g": 5, "anzeige": "1 TL (5 g)"},
+        {"name": "Kreuzkümmel", "menge_g": 0, "anzeige": "½ TL"},
+        {"name": "Chiliflocken", "menge_g": 0, "anzeige": "1 Prise"},
+        {"name": "Salz", "menge_g": 0, "anzeige": "1 Prise"}
+      ],
+      "zubereitung": [
+        "Taue die Edamame in einem Sieb unter warmem Wasser auf und lass sie abtropfen.",
+        "Spüle Bohnen und Mais ab und lass sie gut abtropfen.",
+        "Würfle Paprika, Tomate und Avocado und zupfe den Salat klein.",
+        "Verrühre Limettensaft, Olivenöl, Kreuzkümmel, Chili und Salz zu einem Dressing.",
+        "Vermische alle Zutaten mit dem Dressing und lass den Salat 5 Minuten durchziehen."
+      ],
+      "tipp": "Für Meal-Prep die Avocado erst kurz vor dem Essen dazugeben."
+    },
+    {
+      "mahlzeit": "Snack",
+      "name": "Sesam-Edamame",
+      "beschreibung": "Warme Edamame mit einem Spritzer Sojasauce und geröstetem Sesam.",
+      "zeit_min": 8,
+      "tags": ["nach dem Training"],
+      "zutaten": [
+        {"name": "Edamame (TK, geschält)", "menge_g": 130, "anzeige": "130 g"},
+        {"name": "Sojasauce", "menge_g": 5, "anzeige": "1 TL (5 g)"},
+        {"name": "Sesam", "menge_g": 3, "anzeige": "1 TL (3 g)"},
+        {"name": "Chiliflocken", "menge_g": 0, "anzeige": "1 Prise"}
+      ],
+      "zubereitung": [
+        "Gare die Edamame 4 Minuten in kochendem Wasser und gieße sie ab.",
+        "Röste den Sesam 1–2 Minuten in einer trockenen Pfanne, bis er duftet.",
+        "Vermische die Edamame mit Sojasauce, Sesam und Chiliflocken."
+      ],
+      "tipp": "Schmeckt auch kalt aus der Dose als Snack fürs Büro."
+    },
+    {
+      "mahlzeit": "Snack",
+      "name": "Sojaskyr mit Beeren und Kürbiskernen",
+      "beschreibung": "Schneller Eiweiß-Snack aus Sojaskyr, fruchtigen Beeren und knackigen Kernen.",
+      "zeit_min": 3,
+      "tags": ["ohne Kochen"],
+      "zutaten": [
+        {"name": "Sojaskyr natur", "menge_g": 200, "anzeige": "200 g"},
+        {"name": "Beerenmischung (TK)", "menge_g": 80, "anzeige": "80 g (aufgetaut)"},
+        {"name": "Kürbiskerne", "menge_g": 10, "anzeige": "1 EL (10 g)"}
+      ],
+      "zubereitung": [
+        "Taue die Beeren am Vorabend im Kühlschrank oder 1 Minute in der Mikrowelle auf.",
+        "Gib den Sojaskyr in eine Schale und verteile die Beeren darauf.",
+        "Streue die Kürbiskerne darüber."
+      ],
+      "tipp": "Mit Zimt oder etwas Vanille wird der Snack ohne Zucker süßer."
+    },
+    {
+      "mahlzeit": "Snack",
+      "name": "Knusprige Paprika-Kichererbsen",
+      "beschreibung": "Im Ofen geröstete Kichererbsen mit Paprika – die herzhafte Alternative zu Chips.",
+      "zeit_min": 35,
+      "tags": ["Meal-Prep"],
+      "zutaten": [
+        {"name": "Kichererbsen (Dose, abgetropft)", "menge_g": 160, "anzeige": "160 g"},
+        {"name": "Olivenöl", "menge_g": 5, "anzeige": "1 TL (5 g)"},
+        {"name": "Paprikapulver edelsüß", "menge_g": 0, "anzeige": "1 TL"},
+        {"name": "Kreuzkümmel", "menge_g": 0, "anzeige": "½ TL"},
+        {"name": "Salz", "menge_g": 0, "anzeige": "1 Prise"}
+      ],
+      "zubereitung": [
+        "Heize den Backofen auf 200 °C Umluft vor.",
+        "Spüle die Kichererbsen ab und tupfe sie mit einem Küchentuch sehr gründlich trocken.",
+        "Vermische sie mit Olivenöl, Paprikapulver, Kreuzkümmel und Salz.",
+        "Verteile sie auf einem Backblech mit Backpapier und röste sie 25–30 Minuten, dabei einmal schütteln.",
+        "Lass die Kichererbsen auf dem Blech abkühlen, damit sie knusprig werden."
+      ],
+      "tipp": "In einem offenen Glas bleiben sie 2–3 Tage knusprig."
+    },
+    {
+      "mahlzeit": "Snack",
+      "name": "Schoko-Bananen-Proteinshake",
+      "beschreibung": "Cremiger Shake mit Sojadrink, Banane und veganem Proteinpulver für die schnelle Regeneration.",
+      "zeit_min": 3,
+      "tags": ["nach dem Training", "ohne Kochen"],
+      "zutaten": [
+        {"name": "Veganes Proteinpulver", "menge_g": 25, "anzeige": "1 Messlöffel (25 g)"},
+        {"name": "Sojadrink ungesüßt", "menge_g": 250, "anzeige": "250 ml"},
+        {"name": "Banane", "menge_g": 60, "anzeige": "½ Banane (60 g)"},
+        {"name": "Backkakao", "menge_g": 3, "anzeige": "1 TL (3 g)"}
+      ],
+      "zubereitung": [
+        "Gib alle Zutaten in einen Mixer oder hohen Becher.",
+        "Mixe alles 30 Sekunden cremig.",
+        "Gieße den Shake in ein Glas und trink ihn direkt."
+      ],
+      "tipp": "Mit einer gefrorenen Banane wird der Shake besonders kalt und dick."
+    },
+    {
+      "mahlzeit": "Snack",
+      "name": "Gemüsesticks mit weißem Bohnen-Dip",
+      "beschreibung": "Cremiger Dip aus weißen Bohnen, Tahin und Zitrone mit knackigen Karotten- und Gurkensticks.",
+      "zeit_min": 10,
+      "tags": ["ohne Kochen"],
+      "zutaten": [
+        {"name": "Weiße Bohnen (Dose, abgetropft)", "menge_g": 120, "anzeige": "120 g"},
+        {"name": "Tahin", "menge_g": 5, "anzeige": "1 TL (5 g)"},
+        {"name": "Hefeflocken", "menge_g": 5, "anzeige": "1 EL (5 g)"},
+        {"name": "Zitronensaft", "menge_g": 5, "anzeige": "1 TL (5 g)"},
+        {"name": "Knoblauch", "menge_g": 2, "anzeige": "½ kleine Zehe (2 g)"},
+        {"name": "Karotten", "menge_g": 80, "anzeige": "1 Karotte (80 g)"},
+        {"name": "Gurke", "menge_g": 80, "anzeige": "¼ Gurke (80 g)"},
+        {"name": "Salz", "menge_g": 0, "anzeige": "1 Prise"},
+        {"name": "Paprikapulver edelsüß", "menge_g": 0, "anzeige": "1 Prise"}
+      ],
+      "zubereitung": [
+        "Püriere Bohnen, Tahin, Hefeflocken, Zitronensaft, Knoblauch und Salz mit dem Stabmixer cremig; bei Bedarf 1–2 EL Wasser zugeben.",
+        "Streue etwas Paprikapulver über den Dip.",
+        "Schneide Karotte und Gurke in Sticks und serviere sie zum Dip."
+      ],
+      "tipp": "Der Dip hält sich 3 Tage im Kühlschrank – gleich die doppelte Menge machen."
+    }
+  ]
+}

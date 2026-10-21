@@ -1,0 +1,286 @@
+{
+  "ingredients": {
+    "Magerquark": {"kcal": 67, "p": 12.0, "c": 4.0, "f": 0.3, "abteilung": "Kühlregal & Molkerei"},
+    "Frischkäse light": {"kcal": 150, "p": 8.0, "c": 4.5, "f": 11.0, "abteilung": "Kühlregal & Molkerei"},
+    "Erythrit": {"kcal": 0, "p": 0.0, "c": 0.0, "f": 0.0, "abteilung": "Sonstiges"},
+    "Zitronensaft": {"kcal": 22, "p": 0.4, "c": 2.4, "f": 0.1, "abteilung": "Obst & Gemüse"},
+    "Erdbeeren": {"kcal": 32, "p": 0.7, "c": 5.5, "f": 0.4, "abteilung": "Obst & Gemüse"},
+    "Haferflocken": {"kcal": 372, "p": 13.5, "c": 58.7, "f": 7.0, "abteilung": "Getreide, Nudeln & Hülsenfrüchte"},
+    "Datteln (getrocknet, entsteint)": {"kcal": 280, "p": 2.5, "c": 66.0, "f": 0.4, "abteilung": "Nüsse, Samen & Trockenfrüchte"},
+    "Zimt": {"kcal": 0, "p": 0.0, "c": 0.0, "f": 0.0, "abteilung": "Gewürze, Öle & Saucen"},
+    "Seidentofu": {"kcal": 55, "p": 5.5, "c": 1.2, "f": 3.0, "abteilung": "Pflanzliche Alternativen"},
+    "Veganes Proteinpulver (Schoko)": {"kcal": 375, "p": 70.0, "c": 9.0, "f": 7.0, "abteilung": "Sonstiges"},
+    "Veganes Proteinpulver (Vanille)": {"kcal": 380, "p": 72.0, "c": 8.0, "f": 6.0, "abteilung": "Sonstiges"},
+    "Whey-Proteinpulver (Vanille)": {"kcal": 385, "p": 77.0, "c": 7.0, "f": 6.0, "abteilung": "Sonstiges"},
+    "Kakaopulver (stark entölt)": {"kcal": 350, "p": 20.0, "c": 11.0, "f": 11.0, "abteilung": "Sonstiges"},
+    "Himbeeren (TK)": {"kcal": 36, "p": 1.3, "c": 4.8, "f": 0.3, "abteilung": "Tiefkühl"},
+    "Heidelbeeren": {"kcal": 45, "p": 0.6, "c": 7.4, "f": 0.6, "abteilung": "Obst & Gemüse"},
+    "Ahornsirup": {"kcal": 260, "p": 0.0, "c": 67.0, "f": 0.1, "abteilung": "Sonstiges"},
+    "Honig": {"kcal": 304, "p": 0.3, "c": 80.0, "f": 0.0, "abteilung": "Gewürze, Öle & Saucen"},
+    "Skyr natur": {"kcal": 63, "p": 11.0, "c": 4.0, "f": 0.2, "abteilung": "Kühlregal & Molkerei"},
+    "Löffelbiskuits": {"kcal": 385, "p": 8.0, "c": 78.0, "f": 4.0, "abteilung": "Brot & Backwaren"},
+    "Espresso (zubereitet)": {"kcal": 2, "p": 0.1, "c": 0.0, "f": 0.2, "abteilung": "Sonstiges"},
+    "Milch 1,5 %": {"kcal": 47, "p": 3.4, "c": 4.9, "f": 1.5, "abteilung": "Kühlregal & Molkerei"},
+    "Sojaskyr natur": {"kcal": 68, "p": 8.5, "c": 3.0, "f": 2.2, "abteilung": "Pflanzliche Alternativen"},
+    "Sojadrink ungesüßt": {"kcal": 33, "p": 3.3, "c": 0.6, "f": 1.8, "abteilung": "Pflanzliche Alternativen"},
+    "Chiasamen": {"kcal": 490, "p": 17.0, "c": 7.7, "f": 31.0, "abteilung": "Nüsse, Samen & Trockenfrüchte"},
+    "Mango (TK)": {"kcal": 60, "p": 0.8, "c": 14.0, "f": 0.4, "abteilung": "Tiefkühl"},
+    "Schwarze Bohnen (Dose, abgetropft)": {"kcal": 110, "p": 7.5, "c": 14.0, "f": 0.5, "abteilung": "Konserven & Gläser"},
+    "Backpulver": {"kcal": 100, "p": 0.0, "c": 25.0, "f": 0.0, "abteilung": "Sonstiges"},
+    "Salz": {"kcal": 0, "p": 0.0, "c": 0.0, "f": 0.0, "abteilung": "Gewürze, Öle & Saucen"},
+    "Apfel": {"kcal": 54, "p": 0.3, "c": 12.0, "f": 0.2, "abteilung": "Obst & Gemüse"},
+    "Mandeln": {"kcal": 600, "p": 24.0, "c": 5.7, "f": 53.0, "abteilung": "Nüsse, Samen & Trockenfrüchte"},
+    "Rapsöl": {"kcal": 884, "p": 0.0, "c": 0.0, "f": 100.0, "abteilung": "Gewürze, Öle & Saucen"},
+    "Banane": {"kcal": 93, "p": 1.2, "c": 20.0, "f": 0.2, "abteilung": "Obst & Gemüse"},
+    "Ei": {"kcal": 137, "p": 12.6, "c": 0.5, "f": 9.3, "abteilung": "Kühlregal & Molkerei"},
+    "Eiklar": {"kcal": 48, "p": 10.9, "c": 0.7, "f": 0.2, "abteilung": "Kühlregal & Molkerei"},
+    "Erdnussmus": {"kcal": 610, "p": 25.0, "c": 12.0, "f": 50.0, "abteilung": "Nüsse, Samen & Trockenfrüchte"},
+    "Zartbitterschokolade (70 %)": {"kcal": 580, "p": 9.0, "c": 34.0, "f": 42.0, "abteilung": "Sonstiges"}
+  },
+  "recipes": [
+    {
+      "mahlzeit": "Ohne Backen",
+      "name": "Erdbeer-Cheesecake im Glas",
+      "beschreibung": "Cremige Quark-Frischkäse-Schicht auf Dattel-Hafer-Boden mit frischen Erdbeeren – schmeckt wie Käsekuchen, liefert aber reichlich Eiweiß.",
+      "zeit_min": 10,
+      "tags": ["Dessert", "ohne Kochen"],
+      "passt_fuer": ["vegetarisch", "fleisch", "ohne-schwein"],
+      "zutaten": [
+        {"name": "Haferflocken", "menge_g": 20, "anzeige": "2 EL (20 g)"},
+        {"name": "Datteln (getrocknet, entsteint)", "menge_g": 15, "anzeige": "2 Datteln (15 g)"},
+        {"name": "Zimt", "menge_g": 0, "anzeige": "1 Prise"},
+        {"name": "Magerquark", "menge_g": 150, "anzeige": "150 g"},
+        {"name": "Frischkäse light", "menge_g": 30, "anzeige": "1 EL (30 g)"},
+        {"name": "Erythrit", "menge_g": 10, "anzeige": "1 EL (10 g)"},
+        {"name": "Zitronensaft", "menge_g": 5, "anzeige": "1 TL (5 ml)"},
+        {"name": "Erdbeeren", "menge_g": 100, "anzeige": "100 g (ca. 6 Stück)"}
+      ],
+      "zubereitung": [
+        "Hacke die Datteln sehr fein und knete sie mit den Haferflocken und dem Zimt zu krümeligem Teig.",
+        "Drück die Masse als Boden in ein Glas.",
+        "Rühre Magerquark, Frischkäse, Erythrit und Zitronensaft glatt.",
+        "Schneide die Erdbeeren klein und zerdrück ein Drittel davon mit einer Gabel zu Soße.",
+        "Schichte die Creme auf den Boden, gib Erdbeersoße und Erdbeerstücke darüber und genieß das Dessert sofort oder nach 15 Minuten im Kühlschrank."
+      ],
+      "tipp": "Außerhalb der Erdbeersaison funktionieren aufgetaute TK-Himbeeren genauso gut. Abgedeckt hält sich das Glas einen Tag im Kühlschrank."
+    },
+    {
+      "mahlzeit": "Ohne Backen",
+      "name": "Seidentofu-Schokomousse mit Himbeeren",
+      "beschreibung": "Luftig-cremige vegane Mousse aus Seidentofu, Kakao und Datteln mit fruchtigen Himbeeren – Schokogenuss mit über 20 g Eiweiß.",
+      "zeit_min": 10,
+      "tags": ["Dessert", "ohne Kochen"],
+      "passt_fuer": ["vegan", "vegetarisch", "fleisch", "ohne-schwein"],
+      "zutaten": [
+        {"name": "Seidentofu", "menge_g": 200, "anzeige": "200 g"},
+        {"name": "Veganes Proteinpulver (Schoko)", "menge_g": 15, "anzeige": "½ Messlöffel (15 g)"},
+        {"name": "Kakaopulver (stark entölt)", "menge_g": 8, "anzeige": "1 EL (8 g)"},
+        {"name": "Datteln (getrocknet, entsteint)", "menge_g": 20, "anzeige": "3 Datteln (20 g)"},
+        {"name": "Ahornsirup", "menge_g": 5, "anzeige": "1 TL (5 g)"},
+        {"name": "Himbeeren (TK)", "menge_g": 60, "anzeige": "60 g (aufgetaut)"},
+        {"name": "Salz", "menge_g": 0, "anzeige": "1 Prise"}
+      ],
+      "zubereitung": [
+        "Lass den Seidentofu gut abtropfen und weiche die Datteln 5 Minuten in heißem Wasser ein, dann abgießen.",
+        "Püriere Seidentofu, Datteln, Proteinpulver, Kakao, Ahornsirup und Salz mit dem Stabmixer etwa 1 Minute, bis die Masse ganz glatt ist.",
+        "Gib die Hälfte der Himbeeren in ein Glas und fülle die Mousse darüber.",
+        "Stell die Mousse mindestens 30 Minuten kalt, damit sie fester wird, und garniere sie mit den restlichen Himbeeren."
+      ],
+      "tipp": "Ohne Pulver: 1 weiteren EL Kakao und 50 g Sojaskyr natur unterrühren – das Eiweiß sinkt auf etwa 17 g. Je kälter die Mousse, desto fester wird sie."
+    },
+    {
+      "mahlzeit": "Ohne Backen",
+      "name": "Tiramisu-Creme im Glas",
+      "beschreibung": "Italienischer Klassiker in leicht: Espresso-getränkte Löffelbiskuits unter einer Quark-Skyr-Creme mit Kakao – ganz ohne Mascarpone und Alkohol.",
+      "zeit_min": 10,
+      "tags": ["Dessert", "ohne Kochen"],
+      "passt_fuer": ["vegetarisch", "fleisch", "ohne-schwein"],
+      "zutaten": [
+        {"name": "Löffelbiskuits", "menge_g": 15, "anzeige": "2 Löffelbiskuits (15 g)"},
+        {"name": "Espresso (zubereitet)", "menge_g": 40, "anzeige": "1 Espresso (40 ml), abgekühlt"},
+        {"name": "Magerquark", "menge_g": 125, "anzeige": "125 g"},
+        {"name": "Skyr natur", "menge_g": 75, "anzeige": "75 g"},
+        {"name": "Milch 1,5 %", "menge_g": 20, "anzeige": "2 EL (20 ml)"},
+        {"name": "Erythrit", "menge_g": 10, "anzeige": "1 EL (10 g)"},
+        {"name": "Kakaopulver (stark entölt)", "menge_g": 3, "anzeige": "1 TL (3 g) zum Bestäuben"}
+      ],
+      "zubereitung": [
+        "Brich die Löffelbiskuits in Stücke, leg sie in ein Glas und träufle den abgekühlten Espresso darüber.",
+        "Rühre Magerquark, Skyr, Milch und Erythrit zu einer glatten, cremigen Masse.",
+        "Verteile die Creme über den getränkten Biskuits.",
+        "Bestäube alles durch ein kleines Sieb mit Kakao und stell das Glas 15 Minuten kalt, damit die Biskuits durchziehen."
+      ],
+      "tipp": "Am besten am Vorabend schichten – über Nacht wird das Tiramisu noch saftiger. Abends lieber entkoffeinierten Espresso nehmen."
+    },
+    {
+      "mahlzeit": "Ohne Backen",
+      "name": "Vanille-Chia-Pudding mit Mango-Spiegel",
+      "beschreibung": "Veganer Chia-Pudding mit Sojaskyr und Vanille-Protein unter einer fruchtigen Mangoschicht – sättigt lange und lässt sich prima vorbereiten.",
+      "zeit_min": 35,
+      "tags": ["Dessert", "Meal-Prep"],
+      "passt_fuer": ["vegan", "vegetarisch", "fleisch", "ohne-schwein"],
+      "zutaten": [
+        {"name": "Chiasamen", "menge_g": 15, "anzeige": "1½ EL (15 g)"},
+        {"name": "Sojadrink ungesüßt", "menge_g": 80, "anzeige": "80 ml"},
+        {"name": "Veganes Proteinpulver (Vanille)", "menge_g": 10, "anzeige": "⅓ Messlöffel (10 g)"},
+        {"name": "Sojaskyr natur", "menge_g": 150, "anzeige": "150 g"},
+        {"name": "Mango (TK)", "menge_g": 80, "anzeige": "80 g (aufgetaut)"},
+        {"name": "Ahornsirup", "menge_g": 5, "anzeige": "1 TL (5 g)"}
+      ],
+      "zubereitung": [
+        "Verrühre Sojadrink und Proteinpulver klümpchenfrei und rühre die Chiasamen ein.",
+        "Lass die Mischung 5 Minuten stehen, rühre noch einmal kräftig um und lass sie dann mindestens 30 Minuten im Kühlschrank quellen.",
+        "Rühre den Sojaskyr unter den gequollenen Chia-Pudding und füll ihn in ein Glas.",
+        "Püriere die aufgetaute Mango mit dem Ahornsirup und gieße das Püree als Spiegel über den Pudding."
+      ],
+      "tipp": "Über Nacht quellen lassen und morgens nur noch Skyr und Mango ergänzen. Ohne Pulver: 50 g mehr Sojaskyr nehmen und mit etwas Vanille aromatisieren (ca. 20 g Eiweiß)."
+    },
+    {
+      "mahlzeit": "Aus dem Ofen oder der Mikrowelle",
+      "name": "Fudgy Bohnen-Brownie für eine Person",
+      "beschreibung": "Saftiger, schokoladiger Mini-Brownie aus schwarzen Bohnen, Kakao und Datteln – vegan, ballaststoffreich und ohne Mehl.",
+      "zeit_min": 30,
+      "tags": ["Dessert"],
+      "passt_fuer": ["vegan", "vegetarisch", "fleisch", "ohne-schwein"],
+      "zutaten": [
+        {"name": "Schwarze Bohnen (Dose, abgetropft)", "menge_g": 120, "anzeige": "120 g (gut abgespült)"},
+        {"name": "Kakaopulver (stark entölt)", "menge_g": 12, "anzeige": "1½ EL (12 g)"},
+        {"name": "Veganes Proteinpulver (Schoko)", "menge_g": 15, "anzeige": "½ Messlöffel (15 g)"},
+        {"name": "Datteln (getrocknet, entsteint)", "menge_g": 20, "anzeige": "3 Datteln (20 g)"},
+        {"name": "Haferflocken", "menge_g": 10, "anzeige": "1 EL (10 g)"},
+        {"name": "Erythrit", "menge_g": 10, "anzeige": "1 EL (10 g)"},
+        {"name": "Sojadrink ungesüßt", "menge_g": 30, "anzeige": "2 EL (30 ml)"},
+        {"name": "Backpulver", "menge_g": 2, "anzeige": "½ TL (2 g)"},
+        {"name": "Salz", "menge_g": 0, "anzeige": "1 Prise"}
+      ],
+      "zubereitung": [
+        "Heize den Backofen auf 180 °C Ober-/Unterhitze vor und lege eine kleine ofenfeste Form (ca. 10 × 10 cm) mit Backpapier aus.",
+        "Weiche die Datteln 5 Minuten in heißem Wasser ein und gieße sie ab.",
+        "Püriere Bohnen, Datteln, Kakao, Proteinpulver, Haferflocken, Erythrit, Sojadrink, Backpulver und Salz zu einem dicken, glatten Teig.",
+        "Streich den Teig in die Form und backe den Brownie 18–20 Minuten, bis die Oberfläche fest, das Innere aber noch leicht weich ist.",
+        "Lass ihn 10 Minuten abkühlen, bevor du ihn aus der Form hebst – warm ist er sehr zart."
+      ],
+      "tipp": "Ohne Pulver: 1 EL Erdnussmus in den Teig und 100 g Sojaskyr natur als Topping dazu (ca. 19 g Eiweiß). Die doppelte Menge hält abgedeckt 3 Tage im Kühlschrank."
+    },
+    {
+      "mahlzeit": "Aus dem Ofen oder der Mikrowelle",
+      "name": "Apfel-Zimt-Crumble mit Skyr-Haube",
+      "beschreibung": "Warme Zimtäpfel unter knusprigen Hafer-Mandel-Streuseln, serviert mit kühlem Skyr – Herbstdessert mit viel Eiweiß.",
+      "zeit_min": 30,
+      "tags": ["Dessert"],
+      "passt_fuer": ["vegetarisch", "fleisch", "ohne-schwein"],
+      "zutaten": [
+        {"name": "Apfel", "menge_g": 130, "anzeige": "1 kleiner Apfel (130 g)"},
+        {"name": "Zitronensaft", "menge_g": 5, "anzeige": "1 TL (5 ml)"},
+        {"name": "Zimt", "menge_g": 0, "anzeige": "½ TL"},
+        {"name": "Haferflocken", "menge_g": 20, "anzeige": "2 EL (20 g)"},
+        {"name": "Mandeln", "menge_g": 8, "anzeige": "1 EL gehackt (8 g)"},
+        {"name": "Rapsöl", "menge_g": 4, "anzeige": "1 TL (4 g)"},
+        {"name": "Ahornsirup", "menge_g": 6, "anzeige": "1 TL (6 g)"},
+        {"name": "Skyr natur", "menge_g": 150, "anzeige": "150 g"}
+      ],
+      "zubereitung": [
+        "Heize den Backofen auf 200 °C Ober-/Unterhitze vor.",
+        "Schneide den Apfel in kleine Würfel, mische ihn mit Zitronensaft und der Hälfte des Zimts und gib ihn in eine kleine Auflaufform.",
+        "Verknete Haferflocken, gehackte Mandeln, Rapsöl, Ahornsirup und restlichen Zimt mit den Fingern zu Streuseln und verteile sie über den Äpfeln.",
+        "Backe den Crumble 18–20 Minuten, bis die Streusel goldbraun sind und die Äpfel weich.",
+        "Lass ihn kurz abkühlen und serviere ihn mit dem kalten Skyr."
+      ],
+      "tipp": "Schneller geht es in der Mikrowelle: Äpfel 3 Minuten bei 800 Watt garen und die Streusel in einer Pfanne ohne Fett 3 Minuten rösten."
+    },
+    {
+      "mahlzeit": "Aus dem Ofen oder der Mikrowelle",
+      "name": "Bananen-Pancake-Bites mit Heidelbeer-Skyr",
+      "beschreibung": "Kleine, fluffige Pancake-Happen aus Banane, Ei und Hafer aus der Mini-Muffinform – zum Dippen in Heidelbeer-Skyr.",
+      "zeit_min": 25,
+      "tags": ["Dessert", "zum Mitnehmen"],
+      "passt_fuer": ["vegetarisch", "fleisch", "ohne-schwein"],
+      "zutaten": [
+        {"name": "Banane", "menge_g": 60, "anzeige": "½ reife Banane (60 g)"},
+        {"name": "Ei", "menge_g": 60, "anzeige": "1 Ei (Größe M)"},
+        {"name": "Eiklar", "menge_g": 60, "anzeige": "60 g (ca. 2 Eiweiß)"},
+        {"name": "Haferflocken", "menge_g": 25, "anzeige": "2½ EL (25 g)"},
+        {"name": "Backpulver", "menge_g": 2, "anzeige": "½ TL (2 g)"},
+        {"name": "Zimt", "menge_g": 0, "anzeige": "1 Prise"},
+        {"name": "Skyr natur", "menge_g": 80, "anzeige": "80 g"},
+        {"name": "Heidelbeeren", "menge_g": 40, "anzeige": "40 g"}
+      ],
+      "zubereitung": [
+        "Heize den Backofen auf 180 °C Umluft vor und fette eine Mini-Muffinform leicht ein oder leg Silikonförmchen bereit.",
+        "Püriere Banane, Ei, Eiklar, Haferflocken, Backpulver und Zimt zu einem glatten Teig.",
+        "Füll den Teig in 8–10 Mulden zu etwa zwei Dritteln und backe die Bites 12–14 Minuten, bis sie goldbraun und aufgegangen sind.",
+        "Zerdrück die Hälfte der Heidelbeeren mit einer Gabel, rühre sie unter den Skyr und gib die übrigen Beeren darüber.",
+        "Lass die Bites 5 Minuten abkühlen und dippe sie in den Heidelbeer-Skyr."
+      ],
+      "tipp": "Die Bites lassen sich gut auf Vorrat backen und einfrieren; kurz in der Mikrowelle oder im Toaster aufwärmen. Für unterwegs Dip und Bites getrennt einpacken."
+    },
+    {
+      "mahlzeit": "Gefroren",
+      "name": "Erdnuss-Bananen-Nicecream",
+      "beschreibung": "Softeis-cremige Nicecream aus gefrorener Banane, Sojaskyr und Erdnussmus – vegan, ohne Eismaschine und mit Vanille-Protein; die Bananen brauchen vorher mindestens 4 Stunden im Gefrierfach.",
+      "zeit_min": 5,
+      "tags": ["Dessert", "Unter 10 Minuten"],
+      "passt_fuer": ["vegan", "vegetarisch", "fleisch", "ohne-schwein"],
+      "zutaten": [
+        {"name": "Banane", "menge_g": 120, "anzeige": "1 Banane (120 g), in Scheiben gefroren"},
+        {"name": "Sojaskyr natur", "menge_g": 100, "anzeige": "100 g"},
+        {"name": "Veganes Proteinpulver (Vanille)", "menge_g": 15, "anzeige": "½ Messlöffel (15 g)"},
+        {"name": "Erdnussmus", "menge_g": 10, "anzeige": "2 TL (10 g)"},
+        {"name": "Salz", "menge_g": 0, "anzeige": "1 Prise"}
+      ],
+      "zubereitung": [
+        "Schneide die Banane in Scheiben und friere sie in einem Gefrierbeutel mindestens 4 Stunden (am besten über Nacht) ein.",
+        "Lass die gefrorenen Scheiben 2–3 Minuten antauen und gib sie mit Sojaskyr, Proteinpulver und Salz in einen leistungsstarken Mixer oder Zerkleinerer.",
+        "Mixe alles in kurzen Intervallen, schiebe die Masse zwischendurch mit einem Löffel nach unten, bis sie cremig wie Softeis ist.",
+        "Füll die Nicecream in eine Schale, ziehe das Erdnussmus in Schlieren darüber und iss sie sofort."
+      ],
+      "tipp": "Gefrierzeit: Bananen mindestens 4 Stunden vorher einfrieren – am besten immer einen Beutel Bananenscheiben auf Vorrat haben. Für festeres Eis 20 Minuten nachfrieren. Ohne Pulver: 100 g mehr Sojaskyr nehmen (ca. 19 g Eiweiß)."
+    },
+    {
+      "mahlzeit": "Gefroren",
+      "name": "Beeren-Frozen-Joghurt-Bark",
+      "beschreibung": "Knackige Skyr-Tafel mit Himbeeren, Heidelbeeren, Mandeln und Schokostückchen, die etwa 3 Stunden im Gefrierfach fest wird und dann in Stücke gebrochen wird.",
+      "zeit_min": 10,
+      "tags": ["Dessert", "Meal-Prep"],
+      "passt_fuer": ["vegetarisch", "fleisch", "ohne-schwein"],
+      "zutaten": [
+        {"name": "Skyr natur", "menge_g": 200, "anzeige": "200 g"},
+        {"name": "Honig", "menge_g": 10, "anzeige": "2 TL (10 g)"},
+        {"name": "Himbeeren (TK)", "menge_g": 50, "anzeige": "50 g"},
+        {"name": "Heidelbeeren", "menge_g": 30, "anzeige": "30 g"},
+        {"name": "Mandeln", "menge_g": 10, "anzeige": "1 EL gehackt (10 g)"},
+        {"name": "Zartbitterschokolade (70 %)", "menge_g": 5, "anzeige": "1 Stück (5 g), gehackt"}
+      ],
+      "zubereitung": [
+        "Leg ein kleines Blech oder einen flachen Teller, der ins Gefrierfach passt, mit Backpapier aus.",
+        "Verrühre Skyr und Honig und streiche die Masse etwa 1 cm dick auf das Backpapier.",
+        "Verteile Himbeeren, Heidelbeeren, gehackte Mandeln und Schokolade darauf und drück sie leicht an.",
+        "Friere die Platte mindestens 3 Stunden ein, bis sie durchgefroren ist.",
+        "Lass sie vor dem Servieren 5 Minuten antauen und brich sie in Stücke."
+      ],
+      "tipp": "Gefrierzeit: mindestens 3 Stunden. Die Bruchstücke halten in einer Gefrierdose bis zu 2 Wochen – so hast du immer eine Portion parat."
+    },
+    {
+      "mahlzeit": "Gefroren",
+      "name": "Stracciatella-Proteineis",
+      "beschreibung": "Cremiges Vanille-Quarkeis mit feinen Zartbitter-Raspeln, das in etwa 3 Stunden im Gefrierfach ohne Eismaschine fest wird – über 30 g Eiweiß bei wenig Kalorien.",
+      "zeit_min": 10,
+      "tags": ["Dessert", "Meal-Prep"],
+      "passt_fuer": ["vegetarisch", "fleisch", "ohne-schwein"],
+      "zutaten": [
+        {"name": "Magerquark", "menge_g": 150, "anzeige": "150 g"},
+        {"name": "Milch 1,5 %", "menge_g": 60, "anzeige": "60 ml"},
+        {"name": "Whey-Proteinpulver (Vanille)", "menge_g": 15, "anzeige": "½ Messlöffel (15 g)"},
+        {"name": "Erythrit", "menge_g": 10, "anzeige": "1 EL (10 g)"},
+        {"name": "Zartbitterschokolade (70 %)", "menge_g": 10, "anzeige": "2 Stück (10 g), fein geraspelt"}
+      ],
+      "zubereitung": [
+        "Rühre Magerquark, Milch, Proteinpulver und Erythrit mit dem Schneebesen glatt und cremig.",
+        "Hebe die geraspelte Schokolade unter und füll die Masse in eine kleine Gefrierdose.",
+        "Stell die Dose ins Gefrierfach und rühre in der ersten Stunde alle 30 Minuten kräftig durch, damit sich keine großen Eiskristalle bilden.",
+        "Lass das Eis insgesamt etwa 3 Stunden frieren und vor dem Servieren 10 Minuten antauen, dann lässt es sich gut portionieren."
+      ],
+      "tipp": "Gefrierzeit: etwa 3 Stunden; wird es über Nacht steinhart, 15–20 Minuten antauen lassen. Alternativ in Eis-am-Stiel-Formen füllen. Ohne Pulver: 50 g Skyr natur zusätzlich und etwas Vanille statt Whey (ca. 25 g Eiweiß)."
+    }
+  ]
+}
