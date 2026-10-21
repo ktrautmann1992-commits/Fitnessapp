@@ -324,6 +324,7 @@ describe('R1 fast_increase', () => {
     ).toBe('cautious_plan');
     expect(FAST_INCREASE_EXCLUSIONS).toEqual([
       'cautious_plan',
+      'active_aging',
       'minor',
       'senior',
       'beginner_first_block',

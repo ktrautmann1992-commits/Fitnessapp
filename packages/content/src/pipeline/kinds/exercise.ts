@@ -298,6 +298,12 @@ function dryRunFixtures() {
   ];
 }
 
+/**
+ * Muster der Standard-Matrix. `balance` (Fit im Alter, FA1) bekommt mit Etappe FA2 einen eigenen Matrix-Eintrag mit
+ * eigenem Prompt (Halt, Stufen, `support`) – bis dahin nicht in der allgemeinen Übungs-Matrix.
+ */
+const MATRIX_PATTERNS = MOVEMENT_PATTERNS.filter((pattern) => pattern !== 'balance');
+
 export const exerciseKind: ContentKindDefinition = {
   kind: 'exercise',
   inputName: 'exercises',
@@ -312,7 +318,7 @@ export const exerciseKind: ContentKindDefinition = {
     {
       key: 'movement_pattern',
       labelDe: 'Bewegungsmuster',
-      values: MOVEMENT_PATTERNS.map((value) => ({ value, aliases: [] })),
+      values: MATRIX_PATTERNS.map((value) => ({ value, aliases: [] })),
     },
     {
       key: 'focus',
@@ -320,7 +326,7 @@ export const exerciseKind: ContentKindDefinition = {
       values: FOCUS_KEYS.map((value) => ({ value, aliases: EXERCISE_FOCI[value].aliases })),
     },
   ],
-  cells: () => MOVEMENT_PATTERNS.flatMap((pattern) => FOCUS_KEYS.map((f) => cellFor(pattern, f))),
+  cells: () => MATRIX_PATTERNS.flatMap((pattern) => FOCUS_KEYS.map((f) => cellFor(pattern, f))),
   // Übungen werden nie übersprungen: Pro Zelle kann es mehrere sinnvolle Übungen geben.
   isPresent: () => false,
   systemPrompt,

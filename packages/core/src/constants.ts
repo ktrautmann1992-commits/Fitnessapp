@@ -1158,6 +1158,8 @@ export const GOAL_ENERGY_ADJUSTMENT = {
   muscle_gain: { beginner: 0.1, advanced: 0.05, competitive: 0.05 },
   general_fitness: 0,
   endurance: 0,
+  // Fit im Alter (FA1, docs/PLAN-FIT-IM-ALTER.md 4.1/11): Erhalt; Abnehmen nur als Nebenziel (GOAL_PAIR_RULES).
+  active_aging: 0,
 } as const;
 
 /**
@@ -1285,6 +1287,9 @@ export const PROTEIN_G_PER_KG = {
     muscle_gain: 1.8,
     general_fitness: 1.4,
     endurance: 1.4,
+    // Fit im Alter (FA1): 1,2 g/kg – PROT-AGE „≥ 1,2 g/kg bei Training“ (Bauer J et al. 2013, J Am Med Dir Assoc
+    // 14(8):542–559; Deutz NE et al. 2014, Clin Nutr 33(6):929–936). Gilt so auch für 60–64-Jährige mit dem Ziel.
+    active_aging: 1.2,
   },
   max: 2.2,
   cautiousMax: 1.6,
@@ -2227,6 +2232,16 @@ export const GOAL_PAIR_RULES = [
     energyAdjustment: 0,
     proteinGPerKg: 1.8,
     enduranceCarbs: true,
+  },
+  // Fit im Alter → Abnehmen (FA-G6, docs/PLAN-FIT-IM-ALTER.md 11, Wächter S14): kleines Defizit −10 % (die 15-%-Grenze
+  // ab 65 greift zusätzlich), Eiweiß 1,5 g/kg (Spanne 1,2–1,5, PROT-AGE) – Muskelerhalt vor Gewicht.
+  // PRODUKTENTSCHEIDUNG – VOR LIVEGANG FACHLICH PRÜFEN. Tempo-Deckel 0,5 %/Woche folgt mit der Ernährungs-Etappe.
+  {
+    primary: 'active_aging',
+    secondary: 'fat_loss',
+    energyAdjustment: -0.1,
+    proteinGPerKg: 1.5,
+    enduranceCarbs: false,
   },
 ] as const satisfies readonly {
   readonly primary: GoalType;
@@ -3820,3 +3835,68 @@ export const LARGE_VIEW = {
  * W3C Web Speech API, SpeechSynthesisVoice.localService); gibt es keine, wird der Knopf ausgeblendet.
  */
 export const READ_ALOUD = { language: 'de-DE', rate: 0.9, maxChars: 4000 } as const;
+
+// ---------------------------------------------------------------------------------------------------------
+// Fit im Alter · Etappe FA1 · Sicherheitsprofil des Ziels `active_aging` (docs/PLAN-FIT-IM-ALTER.md 7, 8.1, 9)
+// Gilt IMMER bei diesem Ziel – unabhängig vom Alter; die Altersregeln ab 65 (AGE_PLAN_RULES) gelten zusätzlich.
+// Fachprüfung (Physiotherapie/Sportmedizin) steht aus: alle Werte VOR LIVEGANG FACHLICH PRÜFEN.
+// ---------------------------------------------------------------------------------------------------------
+
+/**
+ * Sicherheitsprofil „Fit im Alter“ (strengste Regel gewinnt).
+ * - `rpeMax` 6 auf der App-Skala mit Wiederholungen in Reserve („noch etwa 4 Mal“). PRODUKTENTSCHEIDUNG in Anlehnung an
+ *   Chodzko-Zajko WJ et al. (2009), ACSM Position Stand „Exercise and physical activity for older adults“, Med Sci
+ *   Sports Exerc 41(7):1510–1530 (Anstrengung 5–6 „moderat“ auf einer 0–10-Skala – andere Skala, Wächter S1).
+ *   Erholungswoche: max(5, 6 − 2) = 5 (TEMPLATE_DOSAGE_LIMITS.rpe.min) – bewusst nur einen Punkt darunter (S7).
+ * - `excludedCautionTags`: keine Sprünge, Technik-Übungen, Wirbelsäulen-Last, Über-Kopf (erst nach Fachprüfung), lange
+ *   Rückenlage, Boden, Rumpfbeugen bis zum Ende, Drehen bis zum Anschlag – nur neutraler Rücken (Plan 8.1 Nr. 2).
+ *   Osteoporose: Giangregorio LM et al. (2014), „Too Fit To Fracture“, Osteoporos Int 25(3):821–835.
+ * - `enduranceStartGroup` 'cautious' und `deloadLoadWeeks` = DELOAD_SCHEDULE.cautious (Erholung nach 4 Wochen) –
+ *   GETRENNT vom Flag `cautious` (Wächter N1): `beginnerTemplatesOnly` bleibt aus, „aktiv“-Vorlagen bleiben wählbar.
+ * - `maxSessionsPerWeek` 5 (= WEEKLY_SESSION_LIMITS.cautiousMaxSessions, mindestens 2 Ruhetage).
+ * - `enduranceWalkOnly`: Ausdauer als zügiges Gehen (Plan 7, Modalität `walk`); Anstrengung höchstens
+ *   ENDURANCE_EFFORT.cautiousMax (3, Gesprächstest).
+ * - `keepOnShorten`: Beim Kürzen bleiben mindestens 2 Gleichgewichts- und 1 Beweglichkeitsübung (Wächter S8);
+ *   zuerst fallen Kraft-Isolationsübungen. PRODUKTENTSCHEIDUNG.
+ * - `strengthHoldMaxS` 30 / `strengthHoldMaxSCautious` 20: isometrische KRAFT-Halteübungen (Pressatmung vermeiden;
+ *   Pelliccia A et al. (2021), ESC-Leitlinie Sportkardiologie, Eur Heart J 42(1):17–96). `balanceHoldS` 10–30 s:
+ *   Gleichgewichts-Stand (kein Pressen; Otago: Campbell AJ et al. (1997), BMJ 315:1065–1069). Getrennt (K3).
+ *   PRODUKTENTSCHEIDUNG.
+ * - `fastIncrease` false: Live-Anpassung R1 „schneller steigern“ nie (Core und Server, Plan 8.1 Nr. 8).
+ */
+export const ACTIVE_AGING_RULES = {
+  rpeMax: 6,
+  excludedCautionTags: [
+    'high_impact',
+    'spinal_loading',
+    'overhead',
+    'long_supine',
+    'high_skill',
+    'floor_transfer',
+    'spinal_flexion',
+    'trunk_rotation',
+  ],
+  enduranceStartGroup: 'cautious',
+  deloadLoadWeeks: DELOAD_SCHEDULE.cautious,
+  maxSessionsPerWeek: WEEKLY_SESSION_LIMITS.cautiousMaxSessions,
+  enduranceWalkOnly: true,
+  enduranceEffortMax: ENDURANCE_EFFORT.cautiousMax,
+  keepOnShorten: { balance: 2, mobility: 1 },
+  strengthHoldMaxS: 30,
+  strengthHoldMaxSCautious: 20,
+  balanceHoldS: { min: 10, max: 30 },
+  fastIncrease: false,
+} as const satisfies {
+  rpeMax: number;
+  excludedCautionTags: readonly CautionTag[];
+  enduranceStartGroup: 'cautious';
+  deloadLoadWeeks: number;
+  maxSessionsPerWeek: number;
+  enduranceWalkOnly: boolean;
+  enduranceEffortMax: number;
+  keepOnShorten: { balance: number; mobility: number };
+  strengthHoldMaxS: number;
+  strengthHoldMaxSCautious: number;
+  balanceHoldS: { min: number; max: number };
+  fastIncrease: boolean;
+};

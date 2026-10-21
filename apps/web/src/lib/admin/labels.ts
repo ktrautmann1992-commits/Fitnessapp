@@ -59,6 +59,7 @@ export const MOVEMENT_PATTERN_LABELS: Record<MovementPattern, string> = {
   carry: 'Tragen',
   conditioning: 'Kondition',
   mobility: 'Beweglichkeit',
+  balance: 'Gleichgewicht',
 };
 
 export const GOAL_LABELS: Record<TemplateGoalType, string> = {
@@ -95,6 +96,12 @@ export const CAUTION_TAG_LABELS: Record<CautionTag, string> = {
   overhead: 'Über Kopf',
   long_supine: 'Lange Rückenlage',
   high_skill: 'Hohe Technik',
+  floor_transfer: 'Am Boden (Hinlegen/Aufstehen)',
+  spinal_flexion: 'Rumpfbeugen bis zum Ende',
+  loaded_flexion: 'Rumpfbeugen mit Last',
+  trunk_rotation: 'Drehen bis zum Anschlag',
+  deep_hip_flexion: 'Tiefe Hüftbeugung (über 90°)',
+  hip_cross_midline: 'Bein über die Körpermitte',
 };
 
 export const ALTERNATIVE_REASON_LABELS: Record<AlternativeReason, string> = {
@@ -108,6 +115,7 @@ export const FOCUS_LABELS: Record<SessionFocus, string> = {
   full_body: 'Ganzkörper',
   upper: 'Oberkörper',
   lower: 'Unterkörper',
+  balance: 'Gleichgewicht',
 };
 
 export const ORIGIN_LABELS: Record<ContentOrigin, string> = {

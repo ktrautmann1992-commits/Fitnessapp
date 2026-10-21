@@ -14,6 +14,8 @@ export const deGoalChoice = {
     muscle_gain: 'Muskeln und Kraft aufbauen.',
     general_fitness: 'Fitter und gesünder werden, ohne besonderen Schwerpunkt.',
     endurance: 'Ausdauer verbessern – Laufen, Rad, Schwimmen oder Triathlon.',
+    // Fit im Alter (docs/PLAN-FIT-IM-ALTER.md 5): Untertitel aus dem Plan, keine Wirkungsaussage zu Stürzen (4.2).
+    active_aging: 'Kraft, Gleichgewicht und Beweglichkeit für einen selbstständigen Alltag.',
   },
   secondaryLabel: 'Zweites Ziel (optional)',
   secondaryIntro:
@@ -46,6 +48,9 @@ export const deGoalChoice = {
     'endurance>fat_loss': 'Ausdauer steht vorn, dazu planen wir ein kleines Kaloriendefizit ein.',
     'endurance>definition':
       'Ausdauer steht vorn, dazu ein kleines Kaloriendefizit und viel Eiweiß für den Muskelerhalt.',
+    // Fit im Alter → Abnehmen (FA-G6): fester Satz aus dem Plan (11).
+    'active_aging>fat_loss':
+      'Fit im Alter steht vorn, dazu ein kleines Kaloriendefizit. Im Alter ist Muskelerhalt wichtiger als die Zahl auf der Waage.',
     'endurance>muscle_gain':
       'Ausdauer steht vorn, dazu Krafttraining für Muskelaufbau – ohne Kaloriendefizit.',
   } as Record<string, string>,

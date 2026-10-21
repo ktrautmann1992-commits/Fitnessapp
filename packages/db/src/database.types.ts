@@ -3400,7 +3400,18 @@ export type Database = {
       admin_role: 'content_admin';
       alternative_reason: 'other_equipment' | 'easier' | 'harder' | 'home';
       app_locale: 'de-DE' | 'de-AT' | 'de-CH';
-      caution_tag: 'high_impact' | 'spinal_loading' | 'overhead' | 'long_supine' | 'high_skill';
+      caution_tag:
+        | 'high_impact'
+        | 'spinal_loading'
+        | 'overhead'
+        | 'long_supine'
+        | 'high_skill'
+        | 'floor_transfer'
+        | 'spinal_flexion'
+        | 'loaded_flexion'
+        | 'trunk_rotation'
+        | 'deep_hip_flexion'
+        | 'hip_cross_midline';
       competition_discipline:
         | '5k'
         | '10k'
@@ -3437,7 +3448,13 @@ export type Database = {
       exercise_mechanics: 'compound' | 'isolation';
       experience_level: 'beginner' | 'advanced' | 'competitive';
       food_preference_kind: 'like' | 'dislike' | 'intolerance';
-      goal_type: 'fat_loss' | 'definition' | 'muscle_gain' | 'general_fitness' | 'endurance';
+      goal_type:
+        | 'fat_loss'
+        | 'definition'
+        | 'muscle_gain'
+        | 'general_fitness'
+        | 'endurance'
+        | 'active_aging';
       load_type: 'weight' | 'bodyweight' | 'band' | 'time';
       log_source: 'manual' | 'gps' | 'gpx_import' | 'workout' | 'health_connect';
       mealprep_slot_mode: 'lunch' | 'lunch_dinner';
@@ -3461,7 +3478,8 @@ export type Database = {
         | 'core_flexion'
         | 'carry'
         | 'conditioning'
-        | 'mobility';
+        | 'mobility'
+        | 'balance';
       muscle_group:
         | 'chest'
         | 'lats'
@@ -3504,7 +3522,7 @@ export type Database = {
       planned_session_kind: 'strength' | 'endurance';
       planned_session_status: 'planned' | 'skipped' | 'completed';
       route_difficulty: 'easy' | 'medium' | 'hard';
-      session_focus: 'full_body' | 'upper' | 'lower';
+      session_focus: 'full_body' | 'upper' | 'lower' | 'balance';
       session_log_status: 'completed' | 'partial';
       sex: 'male' | 'female' | 'diverse' | 'unspecified';
       supplement_category: 'sport' | 'food' | 'diet_season' | 'safety_info';
@@ -3680,7 +3698,19 @@ export const Constants = {
       admin_role: ['content_admin'],
       alternative_reason: ['other_equipment', 'easier', 'harder', 'home'],
       app_locale: ['de-DE', 'de-AT', 'de-CH'],
-      caution_tag: ['high_impact', 'spinal_loading', 'overhead', 'long_supine', 'high_skill'],
+      caution_tag: [
+        'high_impact',
+        'spinal_loading',
+        'overhead',
+        'long_supine',
+        'high_skill',
+        'floor_transfer',
+        'spinal_flexion',
+        'loaded_flexion',
+        'trunk_rotation',
+        'deep_hip_flexion',
+        'hip_cross_midline',
+      ],
       competition_discipline: [
         '5k',
         '10k',
@@ -3732,7 +3762,14 @@ export const Constants = {
       exercise_mechanics: ['compound', 'isolation'],
       experience_level: ['beginner', 'advanced', 'competitive'],
       food_preference_kind: ['like', 'dislike', 'intolerance'],
-      goal_type: ['fat_loss', 'definition', 'muscle_gain', 'general_fitness', 'endurance'],
+      goal_type: [
+        'fat_loss',
+        'definition',
+        'muscle_gain',
+        'general_fitness',
+        'endurance',
+        'active_aging',
+      ],
       load_type: ['weight', 'bodyweight', 'band', 'time'],
       log_source: ['manual', 'gps', 'gpx_import', 'workout', 'health_connect'],
       mealprep_slot_mode: ['lunch', 'lunch_dinner'],
@@ -3757,6 +3794,7 @@ export const Constants = {
         'carry',
         'conditioning',
         'mobility',
+        'balance',
       ],
       muscle_group: [
         'chest',
@@ -3801,7 +3839,7 @@ export const Constants = {
       plan_status: ['active', 'replaced'],
       planned_session_kind: ['strength', 'endurance'],
       planned_session_status: ['planned', 'skipped', 'completed'],
-      session_focus: ['full_body', 'upper', 'lower'],
+      session_focus: ['full_body', 'upper', 'lower', 'balance'],
       route_difficulty: ['easy', 'medium', 'hard'],
       session_log_status: ['completed', 'partial'],
       sex: ['male', 'female', 'diverse', 'unspecified'],

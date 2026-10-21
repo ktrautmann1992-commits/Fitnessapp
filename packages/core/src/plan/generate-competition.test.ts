@@ -219,6 +219,11 @@ describe('Wächter-Befunde WP1 am fertigen Plan', () => {
   });
 });
 
+/** JSON ohne `activeAging: false` (neues Feld der Sicherheitsregeln, Fit im Alter FA1). */
+function withoutActiveAgingFalse(key: string, value: unknown): unknown {
+  return key === 'activeAging' && value === false ? undefined : value;
+}
+
 describe('Regression: ohne Wettkampf byte-gleich (Plan 5)', () => {
   it('reine Ausdauer-Pläne + Folgeblock: Prüfsumme wie vor WP1 (origin/main 6e6b4ff)', () => {
     // Raster ist eine Teilmenge des manuell gegen origin/main geprüften Rasters (Umsetzungsstand WP1). Nur Ausdauer,
@@ -264,7 +269,9 @@ describe('Regression: ohne Wettkampf byte-gleich (Plan 5)', () => {
                   homeEquipment: [...FULL_HOME],
                 });
                 const r = generateTrainingPlan(inputs, library, today);
-                hash.update(JSON.stringify(r));
+                // Fit im Alter (FA1): neues Feld safety_rules.activeAging (hier immer false) – ohne dieses Feld muss
+                // der Plan byte-gleich bleiben.
+                hash.update(JSON.stringify(r, withoutActiveAgingFalse));
                 count += 1;
                 if (!r.ok) continue;
                 const rules = planSafetyRules(

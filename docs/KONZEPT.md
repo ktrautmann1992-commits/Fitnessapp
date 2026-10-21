@@ -294,6 +294,20 @@ Datenbank noch App.
 - **Erklärungen** aus festen Bausteinen (`ADJUST_EXPLAIN_DE`/`ADJUST_HINTS_DE` in `packages/core/src/adjust/texts-de.ts`), nur Zahlen, Daten und Übungsnamen, keine Aussagen über
   Körper oder Gesundheit. **Kalorien** (`calorie_adjust`) bleiben reserviert; Schutzgrenzen nur in `clampCalorieTarget`.
 
+### 4.2 Ziel „Fit im Alter“ (`active_aging`, docs/PLAN-FIT-IM-ALTER.md, Etappe FA1)
+- Eigenes Hauptziel mit Sicherheitsprofil `ACTIVE_AGING_RULES` (immer, unabhängig vom Alter; die Altersregeln ab 65
+  gelten zusätzlich): RPE höchstens 6, keine Übungen mit `high_impact`, `high_skill`, `spinal_loading`, `overhead`,
+  `long_supine`, `floor_transfer`, `spinal_flexion`, `trunk_rotation`; Halteübungen höchstens 30 s; Ausdauer als
+  zügiges Gehen (Startgruppe „vorsichtig“, Anstrengung ≤ 3); Erholungswoche nach 4 Belastungswochen; R1 „schneller
+  steigern“ nie. Getrennt vom Flag `cautious` (`PlanSafetyRules.activeAging`, `cautiousProgression()`), damit
+  „aktiv“-Vorlagen wählbar bleiben (Wächter N1).
+- Gleichgewicht ist **keine neue Einheit-Art** (Variante B): Kraft-Einheit mit Fokus `balance`, Bewegungsmuster
+  `balance`; beim Kürzen bleiben mindestens 2 Gleichgewichts- und 1 Beweglichkeitsübung (`keepPatterns`).
+- Bis eigene Vorlagen da sind (Etappe FA2), nutzt das Ziel die nächstbeste Vorlage „Allgemeine Fitness“ (`fallback`).
+  In der App ist das Ziel erst mit Etappe FA4 wählbar (`ACTIVE_AGING_GOAL_SELECTABLE`).
+- Der Server prüft dieselben Grenzen mit Schutz-Triggern auf `planned_exercises`/`planned_sessions` (jeder Schreibweg)
+  und in `private.fast_increase_exclusion` (pgTAP `80_active_aging.test.sql`).
+
 ## 5. Tagesansicht & Trainingstagebuch
 
 **App-Aufbau seit 18.10.2026 (`docs/PLAN-DASHBOARD.md`):** Ohne Sitzung zeigt die App den **Startbildschirm** mit zwei

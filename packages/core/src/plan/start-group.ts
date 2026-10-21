@@ -1,7 +1,7 @@
 import { ageInYears } from '../age';
 import { AGE_PLAN_RULES, ENDURANCE_EFFORT } from '../constants';
 import { isoDateInTimeZone } from '../dates';
-import { CAUTION_TAGS } from '../enums';
+import { CAUTION_TAGS, GOAL_TYPES, type GoalType } from '../enums';
 import { experienceLevelSchema } from '../validation';
 import {
   type EnduranceStartGroup,
@@ -9,6 +9,13 @@ import {
   type PlanSafetyRules,
   strictestRules,
 } from './safety';
+
+/** Hauptziel aus `user_plans.inputs` (unlesbar → null). */
+function planGoalOf(inputs: unknown): GoalType | null {
+  if (typeof inputs !== 'object' || inputs === null) return null;
+  const goal = (inputs as { goalType?: unknown }).goalType;
+  return (GOAL_TYPES as readonly unknown[]).includes(goal) ? (goal as GoalType) : null;
+}
 
 /** Felder eines gespeicherten Plans (user_plans), aus denen die Startgruppe bestimmt wird. */
 export interface PlanStartGroupSource {
@@ -51,6 +58,10 @@ export function planStartGroup(plan: PlanStartGroupSource, birthDate: string): E
     return 'cautious';
   }
   const inputs = plan.inputs;
+  // Fit im Alter (FA1): Ausdauer immer in der vorsichtigen Startgruppe (ACTIVE_AGING_RULES).
+  if (planGoalOf(inputs) === 'active_aging') {
+    return 'cautious';
+  }
   const level =
     typeof inputs === 'object' && inputs !== null
       ? experienceLevelSchema.safeParse((inputs as { experienceLevel?: unknown }).experienceLevel)
@@ -124,6 +135,8 @@ export function planFloorRules(plan: PlanStartGroupSource, birthDate: string): P
     {
       experienceLevel: level?.success ? level.data : 'beginner',
       birthDate,
+      // Fit im Alter (FA1): Sicherheitsprofil des Ziels gehört zu den Mindest-Regeln des Plans.
+      goalType: planGoalOf(inputs),
       // Ohne Check → null (vorsichtig + overhead); Arzt-Hinweis → Flags, die `overhead` und `long_supine`
       // auslösen (vorsichtige Annahme, siehe oben); sonst Check ohne Flag.
       healthScreening: !plan.uses_health_data

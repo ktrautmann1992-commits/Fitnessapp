@@ -462,7 +462,8 @@ Barrierefreiheit (Große Ansicht, Vorlesen). Gründer-Fragen FA-G1 bis FA-G16 si
 ```
 **Stand 21.10.2026:** Plan `docs/PLAN-FIT-IM-ALTER.md` **freigegeben** („1-7 machst du“, FA-G1 bis FA-G16 wie
 empfohlen). Reihenfolge: FA0 → FA5 → FA1 → FA2 → FA3 → FA4, FA6 mit G2. Umsetzungsstand im Plan, Abschnitt 22.
-Fachprüfung (Physiotherapie/Sportmedizin) steht aus – bevor ältere Testpersonen trainieren.
+Fachprüfung (Physiotherapie/Sportmedizin) steht aus – bevor ältere Testpersonen trainieren. Erledigt: FA0, FA5 (Teil 1),
+FA1 Teil 1 (Core + Server-Prüfungen); nächste Etappe: FA1 Teil 2, dann FA2.
 
 ## Später – Fitnessstudios (B2B)
 ```

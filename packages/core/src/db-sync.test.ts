@@ -52,6 +52,7 @@ import {
   BODY_METRIC_LIMITS,
   WEIGHT_GOAL_LIMITS,
   WEIGHT_GOAL_START_DATE_MIN,
+  ACTIVE_AGING_RULES,
   AGE_PLAN_RULES,
   COMPETITION_CYCLING,
   COMPETITION_DISTANCE_M,
@@ -631,10 +632,11 @@ describe('Eingabe der Plan-Funktionen (save_training_plan / append_plan_block)',
     expect(lastFile).toMatch(/_plan_inputs_secondary_goal\.sql$/);
   });
 
-  it('private.goal_pair_allowed = GOAL_COMBINATIONS (Paarliste aus der Migration gelesen)', () => {
-    const body = goalsSql.slice(
-      goalsSql.indexOf('create or replace function private.goal_pair_allowed('),
-    );
+  it('private.goal_pair_allowed = GOAL_COMBINATIONS (Paarliste aus der NEUESTEN Fassung, seit FA1 *_active_aging_rules.sql)', () => {
+    const marker = 'create or replace function private.goal_pair_allowed(';
+    const lastFile = migrationFiles.filter((name) => readMigration(name).includes(marker)).at(-1);
+    expect(lastFile).toMatch(/_active_aging_rules\.sql$/);
+    const body = allSql.slice(allSql.lastIndexOf(marker));
     const list = body.slice(body.indexOf(' in ('), body.indexOf('$$;'));
     const pairs = [...list.matchAll(/\('([a-z_]+)', '([a-z_]+)'\)/g)].map(
       (match) => `${match[1]}>${match[2]}`,
@@ -642,7 +644,7 @@ describe('Eingabe der Plan-Funktionen (save_training_plan / append_plan_block)',
     expect(pairs.sort()).toEqual(
       GOAL_COMBINATIONS.map(([primary, secondary]) => `${primary}>${secondary}`).sort(),
     );
-    expect(pairs).toHaveLength(10);
+    expect(pairs).toHaveLength(11);
   });
 
   it('plan_keys der neuesten save_training_plan-Fassung unverändert', () => {
@@ -3050,7 +3052,12 @@ describe('Live-Anpassung in der Datenbank (Phase 4b Etappe B, docs/PLAN-PHASE-4B
     expect(constant(fn, 'competition_deload_percent')).toBe(
       Math.round(COMPETITION_DELOAD_MAX_FACTOR * 100),
     );
-    const loadWeeks = body(invariants, 'private.plan_load_weeks');
+    // Neueste Fassung seit Fit im Alter FA1 (Ziel `active_aging` → vorsichtiger Erholungs-Rhythmus, Wächter N1).
+    const loadWeeks = body(readMigration('_active_aging_rules.sql'), 'private.plan_load_weeks');
+    expect(missingLines(body(invariants, 'private.plan_load_weeks'), loadWeeks)).toEqual([]);
+    expect(loadWeeks).toContain(
+      `when p.inputs ->> 'goalType' = 'active_aging' then ${ACTIVE_AGING_RULES.deloadLoadWeeks}`,
+    );
     expect(loadWeeks).toContain(
       `when not p.uses_health_data or p.medical_notice then ${DELOAD_SCHEDULE.cautious}`,
     );
@@ -3062,7 +3069,15 @@ describe('Live-Anpassung in der Datenbank (Phase 4b Etappe B, docs/PLAN-PHASE-4B
 
   it('R1-Ausschlüsse (Nachtrag): Server-Liste = FAST_INCREASE_EXCLUSIONS, Grenzen = AGE_PLAN_RULES, Aufruf abgelehnt', () => {
     const r1 = readMigration('_live_adjust_r1_exclusions.sql');
-    const helper = body(r1, 'private.fast_increase_exclusion');
+    // Neueste Fassung des Helfers seit Fit im Alter FA1 (Grund 'active_aging'): Obermenge der Fassung aus dem Nachtrag.
+    const helper = body(
+      readMigration('_active_aging_rules.sql'),
+      'private.fast_increase_exclusion',
+    );
+    expect(missingLines(body(r1, 'private.fast_increase_exclusion'), helper)).toEqual(
+      // nur die Auswahl-Zeile bekommt ein Komma und die neue Spalte goalType
+      ["  select p.uses_health_data, p.medical_notice, p.inputs ->> 'experienceLevel' as level"],
+    );
     // Gründe in derselben Reihenfolge wie Core (erster zutreffender gewinnt), keine weiteren.
     const reasons = [...helper.matchAll(/return '([a-z_]+)';/g)].map((m) => m[1]);
     expect([...new Set(reasons)]).toEqual([...FAST_INCREASE_EXCLUSIONS]);
@@ -3518,5 +3533,76 @@ describe('Supplement-Modul in der Datenbank (Phase 6, Etappe SU3, docs/PLAN-PHAS
       expect(userSql).toContain(`grant select on table public.${table} to authenticated;`);
     }
     expect(userSql).toContain("check (supplement_id <> 'caffeine')");
+  });
+});
+
+describe('Fit im Alter FA1 in der Datenbank (docs/PLAN-FIT-IM-ALTER.md 8.3)', () => {
+  const sql = readMigration('_active_aging_rules.sql');
+  const fn = (name: string) => {
+    const start = sql.lastIndexOf(`create or replace function ${name}(`);
+    if (start < 0) throw new Error(`${name} nicht gefunden`);
+    return sql.slice(start, sql.indexOf('$$;', sql.indexOf('as $$', start)));
+  };
+  const constant = (body: string, name: string) => {
+    const match = new RegExp(`\\b${name} constant [a-z]+ := ([0-9.]+);`).exec(body);
+    if (!match) throw new Error(`${name} nicht gefunden`);
+    return Number(match[1]);
+  };
+
+  it('Enum-Werte stehen in einer EIGENEN Migration vor den Regeln', () => {
+    const enumsFile = migrationFiles.find((name) => name.endsWith('_active_aging_enums.sql'));
+    const rulesFile = migrationFiles.find((name) => name.endsWith('_active_aging_rules.sql'));
+    expect(enumsFile).toBeDefined();
+    expect(rulesFile).toBeDefined();
+    expect((enumsFile as string) < (rulesFile as string)).toBe(true);
+    const enumsSql = readMigration('_active_aging_enums.sql');
+    expect(enumsSql).not.toMatch(/create (or replace )?(function|trigger|table)/);
+  });
+
+  it('Übungs-Schutz = ACTIVE_AGING_RULES (RPE, Haltezeit, ausgeschlossene Merkmale)', () => {
+    const guard = fn('private.planned_exercise_active_aging_guard');
+    expect(constant(guard, 'active_aging_rpe_max')).toBe(ACTIVE_AGING_RULES.rpeMax);
+    expect(constant(guard, 'active_aging_hold_max_s')).toBe(ACTIVE_AGING_RULES.strengthHoldMaxS);
+    const tags =
+      /active_aging_excluded_tags constant public\.caution_tag\[\] := array\[([^\]]*)\]/.exec(
+        guard,
+      )?.[1];
+    expect([...(tags ?? '').matchAll(/'([a-z_]+)'/g)].map((m) => m[1])).toEqual([
+      ...ACTIVE_AGING_RULES.excludedCautionTags,
+    ]);
+    expect(sql).toContain(
+      'before insert or update of exercise_id, rpe_target, duration_s, session_id on public.planned_exercises',
+    );
+  });
+
+  it('Einheiten-Schutz = ACTIVE_AGING_RULES.enduranceEffortMax, kein Laufen, kein Wettkampf', () => {
+    const guard = fn('private.planned_session_active_aging_guard');
+    expect(constant(guard, 'active_aging_effort_max')).toBe(ACTIVE_AGING_RULES.enduranceEffortMax);
+    expect(guard).toContain("new.endurance_modality = 'run'");
+    expect(guard).toContain('new.workout_type is not null');
+  });
+
+  it('Schutz-Funktionen: security definer, search_path leer, kein Recht für anon/authenticated', () => {
+    for (const name of [
+      'private.is_active_aging_plan',
+      'private.planned_exercise_active_aging_guard',
+      'private.planned_session_active_aging_guard',
+    ]) {
+      const body = fn(name);
+      expect(body, name).toContain('security definer');
+      expect(body, name).toContain("set search_path = ''");
+      expect(sql, name).toMatch(
+        new RegExp(
+          `revoke all on function ${name.replace('.', '\\.')}\\([^)]*\\) from public, anon, authenticated;`,
+        ),
+      );
+    }
+  });
+
+  it('R1-Ausschluss prüft Ziel des Plans UND aktuelles Hauptziel', () => {
+    const helper = fn('private.fast_increase_exclusion');
+    expect(helper).toContain("p.inputs ->> 'goalType' as goal");
+    expect(helper).toContain("if v_plan.goal = 'active_aging'");
+    expect(helper).toContain("g.goal_type = 'active_aging'");
   });
 });

@@ -38,6 +38,7 @@ import {
   dropPastSessions,
   planInputsSchema,
   planInputsSnapshot,
+  cautiousProgression,
 } from '@fitnessapp/core';
 
 import { healthConsentStatus } from '../state/flow';
@@ -139,6 +140,8 @@ export function effectiveSafetyRules(
       experienceLevel: level.data,
       birthDate: rows.profile.birth_date,
       healthScreening: healthScreeningForPlan(rows, versions),
+      // Fit im Alter (FA1): das Ziel verschärft die Regeln (ACTIVE_AGING_RULES).
+      goalType: rows.goals?.goal_type ?? null,
     },
     today,
   );
@@ -254,7 +257,7 @@ export function nextBlockFromRows(
   const base = live ? restoreTemporaryChanges(active.sessions, adjustments) : active.sessions;
   const sessions = nextPlanBlock(base, {
     schedule: snapshot.schedule,
-    loadWeeks: loadWeeksBeforeDeload(snapshot.experienceLevel, rules.cautious),
+    loadWeeks: loadWeeksBeforeDeload(snapshot.experienceLevel, cautiousProgression(rules)),
     rules,
     library: library.exercises,
     profiles: profilesFor(snapshot),

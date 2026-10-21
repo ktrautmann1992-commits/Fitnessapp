@@ -1,12 +1,13 @@
 import { ageInYears } from '../age';
 import {
+  ACTIVE_AGING_RULES,
   AGE_PLAN_RULES,
   CONSERVATIVE_PLAN_RULES,
   ENDURANCE_EFFORT,
   PREGNANCY_EXCLUDED_CAUTION_TAGS,
   TEMPLATE_DOSAGE_LIMITS,
 } from '../constants';
-import { CAUTION_TAGS, type CautionTag, type ExperienceLevel } from '../enums';
+import { CAUTION_TAGS, type CautionTag, type ExperienceLevel, type GoalType } from '../enums';
 import { type HealthFlag, requiresMedicalNotice } from '../health-screening';
 
 /**
@@ -36,6 +37,11 @@ export interface PlanSafetyRules {
   readonly enduranceWalkOnly: boolean;
   /** Startgruppe für Umfang und Deckel der Ausdauer (ENDURANCE_START_RULES). */
   readonly enduranceStartGroup: EnduranceStartGroup;
+  /**
+   * Ziel „Fit im Alter“ (ACTIVE_AGING_RULES, docs/PLAN-FIT-IM-ALTER.md 8.1): RPE ≤ 6, eigene Ausschlüsse, Erholung
+   * nach 4 Wochen, Ausdauer vorsichtig, nie R1 – GETRENNT von `cautious` (Wächter N1: sonst nur Einsteiger-Vorlagen).
+   */
+  readonly activeAging: boolean;
 }
 
 /** Startgruppe Ausdauer: vorsichtig (Flag, ohne Check, Schwangerschaft, unter 18, ab 65) oder Level. */
@@ -59,6 +65,11 @@ export interface SafetyInputs {
   readonly birthDate: string;
   /** null = kein Gesundheits-Check vorhanden. */
   readonly healthScreening: { readonly flags: readonly HealthFlag[] } | null;
+  /**
+   * Hauptziel. Pflicht für alle Aufrufer mit bekanntem Ziel – „Fit im Alter“ verschärft die Regeln (FA1). Fehlt es,
+   * gelten die Regeln ohne Ziel-Profil (nur für Ziel-unabhängige Fälle wie Tausch-Untergrenzen alter Pläne).
+   */
+  readonly goalType?: GoalType | null | undefined;
 }
 
 function sortTags(tags: Iterable<CautionTag>): CautionTag[] {
@@ -73,6 +84,7 @@ export function planSafetyRules(inputs: SafetyInputs, onDate: string): PlanSafet
   const flagged = requiresMedicalNotice(flags);
   const cautious = noHealthCheck || flagged;
   const age = ageInYears(inputs.birthDate, onDate);
+  const activeAging = inputs.goalType === 'active_aging';
 
   let rpeMax: number = TEMPLATE_DOSAGE_LIMITS.rpe.max;
   const excluded = new Set<CautionTag>();
@@ -98,6 +110,10 @@ export function planSafetyRules(inputs: SafetyInputs, onDate: string): PlanSafet
     rpeMax = Math.min(rpeMax, AGE_PLAN_RULES.senior.rpeMax);
     AGE_PLAN_RULES.senior.excludedCautionTags.forEach((tag) => excluded.add(tag));
   }
+  if (activeAging) {
+    rpeMax = Math.min(rpeMax, ACTIVE_AGING_RULES.rpeMax);
+    ACTIVE_AGING_RULES.excludedCautionTags.forEach((tag) => excluded.add(tag));
+  }
   const senior = age >= AGE_PLAN_RULES.senior.fromAge;
   const minor = age < AGE_PLAN_RULES.minor.belowAge;
   const pregnancy = flags.includes('pregnancy');
@@ -105,6 +121,9 @@ export function planSafetyRules(inputs: SafetyInputs, onDate: string): PlanSafet
   if (minor) enduranceEffortMax = Math.min(enduranceEffortMax, ENDURANCE_EFFORT.minorMax);
   if (cautious || senior || pregnancy) {
     enduranceEffortMax = Math.min(enduranceEffortMax, ENDURANCE_EFFORT.cautiousMax);
+  }
+  if (activeAging) {
+    enduranceEffortMax = Math.min(enduranceEffortMax, ACTIVE_AGING_RULES.enduranceEffortMax);
   }
   return {
     rpeMax: Math.max(rpeMax, TEMPLATE_DOSAGE_LIMITS.rpe.min),
@@ -118,9 +137,11 @@ export function planSafetyRules(inputs: SafetyInputs, onDate: string): PlanSafet
     pregnancyNotice: pregnancy,
     noHealthCheck,
     enduranceEffortMax,
-    enduranceWalkOnly: flagged || senior || pregnancy,
+    enduranceWalkOnly:
+      flagged || senior || pregnancy || (activeAging && ACTIVE_AGING_RULES.enduranceWalkOnly),
     enduranceStartGroup:
-      cautious || senior || minor || pregnancy ? 'cautious' : inputs.experienceLevel,
+      cautious || senior || minor || pregnancy || activeAging ? 'cautious' : inputs.experienceLevel,
+    activeAging,
   };
 }
 
@@ -146,7 +167,8 @@ export function isStricter(next: PlanSafetyRules, previous: PlanSafetyRules): bo
     next.enduranceEffortMax < previous.enduranceEffortMax ||
     (next.enduranceWalkOnly && !previous.enduranceWalkOnly) ||
     START_GROUP_ORDER.indexOf(next.enduranceStartGroup) <
-      START_GROUP_ORDER.indexOf(previous.enduranceStartGroup)
+      START_GROUP_ORDER.indexOf(previous.enduranceStartGroup) ||
+    (next.activeAging && !previous.activeAging)
   );
 }
 
@@ -173,5 +195,17 @@ export function strictestRules(a: PlanSafetyRules, b: PlanSafetyRules): PlanSafe
           START_GROUP_ORDER.indexOf(b.enduranceStartGroup),
         )
       ] ?? 'cautious',
+    activeAging: a.activeAging || b.activeAging,
   };
+}
+
+/**
+ * Vorsichtige Steigerung: vorsichtiger Plan ODER Ziel „Fit im Alter“ (Wächter N1). Gilt für den Erholungs-Rhythmus
+ * (DELOAD_SCHEDULE.cautious), R1 „schneller steigern“ (nie), Tausch (leichtere Alternativen zuerst) und Stagnation –
+ * aber NICHT für `beginnerTemplatesOnly` (das bleibt am Flag `cautious`).
+ */
+export function cautiousProgression(
+  rules: Pick<PlanSafetyRules, 'cautious' | 'activeAging'>,
+): boolean {
+  return rules.cautious || rules.activeAging;
 }

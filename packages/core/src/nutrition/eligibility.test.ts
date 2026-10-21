@@ -253,7 +253,7 @@ describe('Eigenschaftsraster Sonderfälle (W14): strengste Regel gewinnt immer',
         }
       }
     }
-    expect(count).toBe(7 * 6 * 7 * 5 * 5 * 2);
+    expect(count).toBe(7 * 6 * 7 * GOAL_TYPES.length * 5 * 2);
   });
 
   it('W26: Erwachsener mit fat_loss ohne Sonderfall → 0,10; unter 18 bzw. ohne Check → 0,05', () => {

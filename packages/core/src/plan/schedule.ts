@@ -1,4 +1,5 @@
 import {
+  ACTIVE_AGING_RULES,
   COMPETITION_LONG_RUN,
   COMPETITION_STRENGTH,
   DEFAULT_TRAINING_DAYS,
@@ -398,7 +399,10 @@ export interface BlockContext {
   /** null = keine Kraft-Tage (reiner Ausdauer-Plan). */
   readonly strength: StrengthVersions | null;
   readonly endurance: EnduranceContext;
-  readonly rules: Pick<PlanSafetyRules, 'rpeMax' | 'enduranceEffortMax' | 'enduranceStartGroup'>;
+  readonly rules: Pick<
+    PlanSafetyRules,
+    'rpeMax' | 'enduranceEffortMax' | 'enduranceStartGroup' | 'activeAging'
+  >;
   /** Summe der Wunsch-Minuten der Ausdauer-Tage einer vollen Woche. */
   readonly enduranceWishWeekly: number;
   /** Folgeblock: Bezug aus der letzten Belastungswoche des bisherigen Plans. */
@@ -660,6 +664,8 @@ function placeWeeks(
       if (!fit) {
         fit = fitSessionToMinutes(base.exercises, day.minutes, ctx.strength.library, {
           protectLastCore: ctx.strength.protectLastCore ?? false,
+          // Fit im Alter (FA1, Wächter S8): Gleichgewicht und Beweglichkeit bleiben beim Kürzen.
+          ...(rules.activeAging ? { keepPatterns: ACTIVE_AGING_RULES.keepOnShorten } : {}),
         });
         fitted.set(key, fit);
       }
@@ -1063,6 +1069,7 @@ export interface NextPlanBlockOptions {
     | 'enduranceStartGroup'
     | 'pregnancyNotice'
     | 'noHealthCheck'
+    | 'activeAging'
   >;
   readonly library: ReadonlyMap<string, Exercise>;
   /** Geräte-Profile je Ort (für den Tausch in der Fassung des Tages). */

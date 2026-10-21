@@ -289,6 +289,7 @@ export const de = {
         muscle_gain: 'Muskelaufbau',
         general_fitness: 'Fitness & Gesundheit',
         endurance: 'Ausdauer',
+        active_aging: 'Fit im Alter',
       },
       discipline: 'Disziplin (optional)',
       disciplines: {
