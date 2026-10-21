@@ -809,9 +809,9 @@ _DoD:_ Migrationen additiv, RLS auf jeder Tabelle, Seed `health_data` v2, pgTAP 
 
 **Was gilt:**
 
-- **Migrationen (nur additiv):** `20261021120000_supplement_enums.sql` (`supplement_id`, `supplement_evidence`,
-  `supplement_category`, `supplement_flag`, `user_supplement_status`), `20261021120100_supplements.sql` (Tabelle
-  `supplements` + `seed_supplements`), `20261021120200_supplement_user_data.sql` (Einwilligung v2, Supplement-Check,
+- **Migrationen (nur additiv):** `20261021130000_supplement_enums.sql` (`supplement_id`, `supplement_evidence`,
+  `supplement_category`, `supplement_flag`, `user_supplement_status`), `20261021130100_supplements.sql` (Tabelle
+  `supplements` + `seed_supplements`), `20261021130200_supplement_user_data.sql` (Einwilligung v2, Supplement-Check,
   „Meine Supplements“, Widerruf, Export).
 - **`supplements`:** nur `published`/`archived` (CHECK), `data` = Datei mit neutralisierten Prüfer-Namen, `name_de`,
   `evidence_level` (Koffein `NULL`, CHECK), `category` (`safety_info` nur Koffein), `expert_reviewed` berechnet. RLS:
@@ -830,7 +830,7 @@ _DoD:_ Migrationen additiv, RLS auf jeder Tabelle, Seed `health_data` v2, pgTAP 
   Einwilligung FOR SHARE, gültig UND aktuelle Fassung ≥ 2). `set_user_supplement(…, NULL)` und
   `delete_my_supplement_data()` gehen immer (Recht auf Löschung).
 - **Widerruf und Export:** `consents_after_revoke` löscht beide Tabellen (am Anfang und in der Wiederholung),
-  `export_my_data` enthält beide (Obermengen der neuesten Fassungen; `DATA_EXPORT_TABLES` ergänzt). Konto löschen:
+  `export_my_data` enthält beide (Obermengen der neuesten Fassungen aus Phase 8 Smartwatch, `20261021120200_wearable_revoke_export.sql`; `DATA_EXPORT_TABLES` ergänzt). Konto löschen:
   Kaskade.
 - **Seed:** `content-seed` spielt freigegebene Supplemente mit derselben Einspiel-Regel und demselben Schutz vor
   Massen-Archivierung wie Workouts ein; fehlt die Tabelle, mit Hinweis übersprungen.
