@@ -3690,3 +3690,100 @@ export const SUPPLEMENT_CONTENT_LIMITS = {
   maxSources: 12,
   maxClaims: 6,
 } as const;
+
+// ---------------------------------------------------------------------------------------------------------
+// Phase 8 · Wearables: Galaxy Watch über Health Connect (docs/PLAN-PHASE-8.md 5, Gründer-Freigabe W8-1…W8-13)
+// ---------------------------------------------------------------------------------------------------------
+
+/**
+ * Geschätzter Maximalpuls (HFmax, W8-10): Tanaka H, Monahan KD, Seals DR (2001), „Age-predicted maximal heart rate
+ * revisited“, J Am Coll Cardiol 37(1):153–156: HFmax = 208 − 0,7 × Alter (Meta-Analyse, 351 Studien, ~18.700
+ * Personen; genauer als „220 − Alter“, vor allem im höheren Alter). Ergebnis auf ganze Schläge gerundet.
+ */
+export const HR_MAX_FORMULA = { intercept: 208, ageFactor: 0.7 } as const;
+
+/**
+ * Pulswerte aus Health Connect (docs/PLAN-PHASE-8.md 5.3):
+ * - `sampleBpm` 30–230 /min: Werte außerhalb sind Messfehler (Sensor verrutscht, Bewegung) und werden verworfen.
+ *   Unter 30 /min kommt bei Gesunden in Bewegung nicht vor; über 230 /min liegt über jedem gemessenen HFmax
+ *   (Tanaka 2001: Streuung ±10 /min um höchstens ~200 bei 16 Jahren). PRODUKTENTSCHEIDUNG.
+ * - `maxOverrideBpm` 120–230 /min: erlaubter Bereich für den eigenen HFmax (z. B. aus einem Leistungstest) – unter
+ *   120 wären die Zonen für Training kaum nutzbar; Obergrenze wie `sampleBpm`. PRODUKTENTSCHEIDUNG.
+ * - `gapMaxS` 30 s: Lücken zwischen zwei Messwerten über 30 s (Uhr abgelegt, Aufzeichnung pausiert) zählen in keiner
+ *   Zone. Samsung misst während Trainings etwa jede Sekunde bis alle 10 s. PRODUKTENTSCHEIDUNG.
+ */
+export const HEART_RATE_LIMITS = {
+  sampleBpm: { min: 30, max: 230 },
+  maxOverrideBpm: { min: 120, max: 230 },
+  gapMaxS: 30,
+} as const;
+
+/**
+ * Fünf Pulszonen nach % HFmax (W8-10): Zone 1 = 50–60 %, 2 = 60–70 %, 3 = 70–80 %, 4 = 80–90 %, 5 = 90–100 %.
+ * Verbreitete Einteilung, u. a. ACSM's Guidelines for Exercise Testing and Prescription, 11. Aufl. (2021),
+ * Intensitätsstufen nach % HFmax (sehr leicht < 57 %, leicht 57–63 %, moderat 64–76 %, intensiv 77–95 %); die
+ * gleichmäßigen 10-%-Schritte sind die übliche Darstellung von Sportuhren (u. a. Samsung Health) – PRODUKTENTSCHEIDUNG,
+ * damit Uhr und App dieselben Zonen zeigen. Werte unter 50 % zählen in keiner Zone, Werte über 100 % (HFmax ist nur
+ * geschätzt) in Zone 5.
+ */
+export const HR_ZONE_PERCENTS = [50, 60, 70, 80, 90, 100] as const;
+
+/**
+ * Tageswerte aus Health Connect (Tabelle daily_metrics, docs/PLAN-PHASE-8.md 6) – gleiche Grenzen wie die CHECKs:
+ * - Ruhepuls 30–120 /min = BODY_METRIC_LIMITS.restingHeartRateBpm (Onboarding/Körperdaten),
+ * - Schlaf 0–1.440 min (ein Tag), Schritte 0–100.000 je Tag (darüber Messfehler; Ultra-Läufe ausgenommen –
+ *   PRODUKTENTSCHEIDUNG).
+ */
+export const DAILY_METRIC_LIMITS = {
+  restingHrBpm: BODY_METRIC_LIMITS.restingHeartRateBpm,
+  sleepMin: { min: 0, max: 1440 },
+  steps: { min: 0, max: 100_000 },
+} as const;
+
+/**
+ * Abgleich mit Health Connect (W8-7, W8-8, docs/PLAN-PHASE-8.md 7.1):
+ * - `firstSyncDays` 30: erster Abgleich = letzte 30 Tage – so weit liest Health Connect ohne die Zusatzberechtigung
+ *   READ_HEALTH_DATA_HISTORY (Android-Doku „Health Connect data access“: 30 Tage vor der ersten Berechtigung).
+ * - `overlapHours` 48: danach ab dem letzten Abgleich minus 48 h, weil Samsung Health teils verzögert schreibt;
+ *   Doppel verhindert external_id. PRODUKTENTSCHEIDUNG.
+ * - `autoMinIntervalMin` 15: automatischer Abgleich (App-Start, Rückkehr in den Vordergrund) höchstens alle 15 min
+ *   (Akku, Health-Connect-Kontingent). Der Knopf „Jetzt abgleichen“ geht immer. PRODUKTENTSCHEIDUNG.
+ * - `maxSessionsPerBatch` 500 / `maxDaysPerBatch` 62: höchstens so viele Einheiten bzw. Tage je Aufruf von
+ *   import_wearable_batch (Schutz vor übergroßen Anfragen; 30 Tage passen sicher hinein). PRODUKTENTSCHEIDUNG.
+ * - `importMaxAgeDays` 60: Einheiten/Tage höchstens so alt (Daten können offline in der Warteschlange warten).
+ * - `clockSkewS` 300: Beginn/Ende höchstens 5 min in der Zukunft (Uhr des Geräts), wie TRACKED_ROUTE_LIMITS.
+ * - `kcal` 0–10.000 je Einheit (über 12 h Ultra-Ausdauer liegt darunter). PRODUKTENTSCHEIDUNG.
+ * - `externalIdMaxLength` 200: Health-Connect-IDs sind UUIDs (36 Zeichen); Puffer für andere Anbieter.
+ * - `nameMaxLength` 60: Titel der Einheit (aus der Trainingsart, nie Freitext der Uhr).
+ * - `payloadMaxBytes` 1.000.000: Größe eines Abgleichs (500 Einheiten à ~700 Byte passen sicher). PRODUKTENTSCHEIDUNG.
+ */
+export const WEARABLE_SYNC = {
+  firstSyncDays: 30,
+  overlapHours: 48,
+  autoMinIntervalMin: 15,
+  maxSessionsPerBatch: 500,
+  maxDaysPerBatch: 62,
+  importMaxAgeDays: 60,
+  clockSkewS: 300,
+  durationS: CARDIO_LOG_LIMITS.durationS,
+  distanceM: CARDIO_LOG_LIMITS.distanceM,
+  kcal: { min: 0, max: 10_000 },
+  externalIdMaxLength: 200,
+  nameMaxLength: 60,
+  payloadMaxBytes: 1_000_000,
+} as const;
+
+/**
+ * Doppelte Einheit (App-Aufzeichnung + Uhr, W8-9, docs/PLAN-PHASE-8.md 5.2): Überlappung der Zeitfenster als Anteil
+ * der KÜRZEREN Einheit.
+ * - ab `autoMergeShare` 50 % und gleiche Sportart-Gruppe → automatisch zusammenführen (App-Eintrag bleibt führend),
+ * - ab `askShare` 20 % (oder ≥ 50 % bei anderer Gruppe) → „Möglicher Doppel-Eintrag“, die Person entscheidet,
+ * - Eintrag ohne Uhrzeit (nachgetragen): gleiche Gruppe, gleicher Tag und Dauer höchstens `durationTolerance` 20 %
+ *   daneben → nur nachfragen, nie automatisch.
+ * Alle Schwellen: PRODUKTENTSCHEIDUNG (Plan W8-9, freigegeben 21.10.2026).
+ */
+export const WEARABLE_DUPLICATE = {
+  autoMergeShare: 0.5,
+  askShare: 0.2,
+  durationTolerance: 0.2,
+} as const;

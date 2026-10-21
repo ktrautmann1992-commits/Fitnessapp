@@ -27,6 +27,7 @@ export const CURRENT_CONSENT_VERSIONS: Readonly<Record<ConsentType, number | nul
   health_data: 1,
   cycle_data: null,
   ai_food_photo: 1,
+  wearable_data: 1,
 };
 
 /** Ohne diese Einwilligungen ist keine Nutzung möglich (Onboarding-Schritt „Grund-Einwilligungen“). */
