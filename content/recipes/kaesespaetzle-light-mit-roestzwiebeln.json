@@ -1,11 +1,9 @@
 {
   "id": "kaesespaetzle-light-mit-roestzwiebeln",
   "version": 1,
-  "status": "draft",
+  "status": "published",
   "title_de": "Käsespätzle mit Hüttenkäse und Röstzwiebeln",
   "description_de": "Der Allgäuer Klassiker mal anders: Spätzle mit einer cremigen Sauce aus Hüttenkäse und würzigem Gouda.",
-  "section_de": "Mittagessen",
-  "categories": [],
   "meal_types": ["main"],
   "training_tags": [],
   "servings": 1,
@@ -110,6 +108,8 @@
     "Richte die Käsespätzle mit den Röstzwiebeln und Schnittlauch an und serviere den Romanasalat dazu."
   ],
   "tip_de": "Wer mag, gibt eine Prise Muskat in die Käsesauce – das ist typisch schwäbisch.",
+  "section_de": "Mittagessen",
+  "categories": [],
   "total_minutes": 25,
   "prep_minutes": 15,
   "cook_minutes": 10,
@@ -136,12 +136,12 @@
     "batch_id": null,
     "created_on": "2026-10-11",
     "expert_reviewed": false,
-    "reviewed_by": null,
-    "reviewed_at": null,
+    "reviewed_by": "Karsten (Auftrag an Claude)",
+    "reviewed_at": "2026-10-21",
     "review_note": null,
     "source_file": "alpha5-rezepte.json@1.0",
+    "import_hash": "ef661af6b57276b643fd0312ecec6a3a51c67089bbf297ebce582b3f7b744198",
     "import_assumptions": [],
-    "import_assumptions_confirmed_by": null,
-    "import_hash": "ef661af6b57276b643fd0312ecec6a3a51c67089bbf297ebce582b3f7b744198"
+    "import_assumptions_confirmed_by": null
   }
 }

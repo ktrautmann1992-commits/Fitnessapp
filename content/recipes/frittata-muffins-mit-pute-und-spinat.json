@@ -1,11 +1,9 @@
 {
   "id": "frittata-muffins-mit-pute-und-spinat",
   "version": 1,
-  "status": "draft",
+  "status": "published",
   "title_de": "Frittata-Muffins mit Pute und Spinat",
   "description_de": "Herzhafte Ei-Muffins mit Putenbrust, Spinat, Paprika und Gouda aus dem Ofen – warm oder kalt ein idealer Vorrats-Snack.",
-  "section_de": "Snack",
-  "categories": ["meal-prep"],
   "meal_types": ["snack"],
   "training_tags": [],
   "servings": 1,
@@ -83,6 +81,8 @@
     "Streue den Gouda darauf und backe die Muffins 18–20 Minuten, bis sie fest und goldbraun sind."
   ],
   "tip_de": "Gleich ein ganzes Blech backen: Die Muffins halten 4 Tage im Kühlschrank und lassen sich auch einfrieren.",
+  "section_de": "Snack",
+  "categories": ["meal-prep"],
   "total_minutes": 25,
   "prep_minutes": 5,
   "cook_minutes": 20,
@@ -109,12 +109,12 @@
     "batch_id": null,
     "created_on": "2026-10-11",
     "expert_reviewed": false,
-    "reviewed_by": null,
-    "reviewed_at": null,
+    "reviewed_by": "Karsten (Auftrag an Claude)",
+    "reviewed_at": "2026-10-21",
     "review_note": null,
     "source_file": "alpha5-rezepte.json@1.0",
+    "import_hash": "90f7a1459ea52d8e54e82d57594ec9e2683add084e643fa92bda8196d6ac6ca7",
     "import_assumptions": [],
-    "import_assumptions_confirmed_by": null,
-    "import_hash": "90f7a1459ea52d8e54e82d57594ec9e2683add084e643fa92bda8196d6ac6ca7"
+    "import_assumptions_confirmed_by": null
   }
 }

@@ -1,11 +1,9 @@
 {
   "id": "eier-reis-mit-tofu-und-brokkoli",
   "version": 1,
-  "status": "draft",
+  "status": "published",
   "title_de": "Eier-Reis mit Tofu & Brokkoli",
   "description_de": "Asiatisch gebratener Reis mit knusprigem Tofu, Brokkoli, Paprika und Ei, abgeschmeckt mit Sojasauce und Ingwer.",
-  "section_de": "Mittagessen",
-  "categories": ["post-workout"],
   "meal_types": ["main"],
   "training_tags": ["nach_training"],
   "servings": 1,
@@ -101,6 +99,8 @@
     "Gib Reis, Tofu und Sojasauce dazu und brate alles unter Rühren noch 2 Minuten."
   ],
   "tip_de": "Mit Frühlingszwiebeln und Chiliflocken bestreut wird es noch aromatischer.",
+  "section_de": "Mittagessen",
+  "categories": ["post-workout"],
   "total_minutes": 25,
   "prep_minutes": 1,
   "cook_minutes": 24,
@@ -127,12 +127,12 @@
     "batch_id": null,
     "created_on": "2026-10-11",
     "expert_reviewed": false,
-    "reviewed_by": null,
-    "reviewed_at": null,
+    "reviewed_by": "Karsten (Auftrag an Claude)",
+    "reviewed_at": "2026-10-21",
     "review_note": null,
     "source_file": "alpha5-rezepte.json@1.0",
+    "import_hash": "f5238c52f83bb4020aabe32e13bfc28168c737f7bc499aed7b9193e856d0f3be",
     "import_assumptions": [],
-    "import_assumptions_confirmed_by": null,
-    "import_hash": "f5238c52f83bb4020aabe32e13bfc28168c737f7bc499aed7b9193e856d0f3be"
+    "import_assumptions_confirmed_by": null
   }
 }

@@ -1,11 +1,9 @@
 {
   "id": "thunfisch-ei-toast-mit-avocado",
   "version": 1,
-  "status": "draft",
+  "status": "published",
   "title_de": "Thunfisch-Ei-Toast mit Avocado",
   "description_de": "Knuspriger Vollkorntoast mit cremigem Thunfisch-Skyr-Salat, Avocado und gekochtem Ei.",
-  "section_de": "Frühstück",
-  "categories": [],
   "meal_types": ["breakfast"],
   "training_tags": [],
   "servings": 1,
@@ -101,6 +99,8 @@
     "Bestreiche die Toasts mit Avocado, verteile den Thunfischsalat darauf und belege sie mit den Eischeiben."
   ],
   "tip_de": "Koch am Wochenende mehrere Eier vor – sie halten sich im Kühlschrank bis zu 5 Tage.",
+  "section_de": "Frühstück",
+  "categories": [],
   "total_minutes": 12,
   "prep_minutes": 12,
   "cook_minutes": 0,
@@ -127,12 +127,12 @@
     "batch_id": null,
     "created_on": "2026-10-11",
     "expert_reviewed": false,
-    "reviewed_by": null,
-    "reviewed_at": null,
+    "reviewed_by": "Karsten (Auftrag an Claude)",
+    "reviewed_at": "2026-10-21",
     "review_note": null,
     "source_file": "alpha5-rezepte.json@1.0",
+    "import_hash": "1c0d4a7a06a2080f61dcf2291f3b05dc1d9b228acb65c31d6433c92dc23cd6ad",
     "import_assumptions": [],
-    "import_assumptions_confirmed_by": null,
-    "import_hash": "1c0d4a7a06a2080f61dcf2291f3b05dc1d9b228acb65c31d6433c92dc23cd6ad"
+    "import_assumptions_confirmed_by": null
   }
 }

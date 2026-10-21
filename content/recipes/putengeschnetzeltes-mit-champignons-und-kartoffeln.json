@@ -1,11 +1,9 @@
 {
   "id": "putengeschnetzeltes-mit-champignons-und-kartoffeln",
   "version": 1,
-  "status": "draft",
+  "status": "published",
   "title_de": "Putengeschnetzeltes mit Champignons und Kartoffeln",
   "description_de": "Deutsches Wohlfühlessen in leicht: zartes Putengeschnetzeltes in cremiger Champignonsauce mit Kartoffeln und grünen Bohnen.",
-  "section_de": "Mittagessen",
-  "categories": ["post-workout"],
   "meal_types": ["main"],
   "training_tags": ["nach_training"],
   "servings": 1,
@@ -129,6 +127,8 @@
     "Serviere das Geschnetzelte mit Kartoffeln und Bohnen und streue Petersilie darüber."
   ],
   "tip_de": "Statt Kartoffeln passen auch 70 g Vollkornreis oder Vollkornspätzle.",
+  "section_de": "Mittagessen",
+  "categories": ["post-workout"],
   "total_minutes": 25,
   "prep_minutes": 1,
   "cook_minutes": 24,
@@ -163,12 +163,12 @@
     "batch_id": null,
     "created_on": "2026-10-11",
     "expert_reviewed": false,
-    "reviewed_by": null,
-    "reviewed_at": null,
+    "reviewed_by": "Karsten (Auftrag an Claude)",
+    "reviewed_at": "2026-10-21",
     "review_note": null,
     "source_file": "alpha5-rezepte.json@1.0",
+    "import_hash": "074e3ecb25cf7ae598ffd8df86d1d997eff511c94262097579991ab3cd67285f",
     "import_assumptions": [],
-    "import_assumptions_confirmed_by": null,
-    "import_hash": "074e3ecb25cf7ae598ffd8df86d1d997eff511c94262097579991ab3cd67285f"
+    "import_assumptions_confirmed_by": null
   }
 }

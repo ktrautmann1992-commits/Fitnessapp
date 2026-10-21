@@ -1,11 +1,9 @@
 {
   "id": "zitronen-risotto-mit-erbsen",
   "version": 1,
-  "status": "draft",
+  "status": "published",
   "title_de": "Zitronen-Risotto mit Erbsen",
   "description_de": "Cremiger Risottoreis ohne Sahne und Wein ist mild, vertraut und kohlenhydratreich – ein ruhiges Abendessen vor dem großen Tag.",
-  "section_de": "Am Vorabend",
-  "categories": ["wettkampf"],
   "meal_types": ["main"],
   "training_tags": [],
   "servings": 1,
@@ -92,6 +90,8 @@
   ],
   "tip_de": "Iss am Vorabend nicht zu spät, ideal sind 12–14 Stunden vor dem Start. Vertragen Erbsen sich bei dir nicht gut, lass sie einfach weg.",
   "tags_de": ["Wettkampf"],
+  "section_de": "Am Vorabend",
+  "categories": ["wettkampf"],
   "total_minutes": 30,
   "prep_minutes": 28,
   "cook_minutes": 2,
@@ -118,12 +118,12 @@
     "batch_id": null,
     "created_on": "2026-10-11",
     "expert_reviewed": false,
-    "reviewed_by": null,
-    "reviewed_at": null,
+    "reviewed_by": "Karsten (Auftrag an Claude)",
+    "reviewed_at": "2026-10-21",
     "review_note": null,
     "source_file": "alpha5-rezepte.json@1.0",
+    "import_hash": "2b3f5e3350e88691a7a311347c41967255795de647e78fb84ad99448bf0fac09",
     "import_assumptions": [],
-    "import_assumptions_confirmed_by": null,
-    "import_hash": "2b3f5e3350e88691a7a311347c41967255795de647e78fb84ad99448bf0fac09"
+    "import_assumptions_confirmed_by": null
   }
 }
