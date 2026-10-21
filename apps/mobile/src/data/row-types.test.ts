@@ -64,4 +64,21 @@ describe('Zeilen-Typen: packages/core = Datenbank', () => {
     expectTypeOf<CustomMealRow>().toExtend<Tables<'custom_meals'>>();
     expectTypeOf<CustomMealItemRow>().toExtend<Tables<'custom_meal_items'>>();
   });
+
+  it('Smartwatch (Phase 8): gleiche Spalten wie die Datenbank, Werte-Listen enger', () => {
+    expectTypeOf<keyof core.WearableConnectionRow>().toEqualTypeOf<
+      keyof Tables<'wearable_connections'>
+    >();
+    expectTypeOf<core.WearableConnectionRow>().toExtend<Tables<'wearable_connections'>>();
+    expectTypeOf<keyof core.WearableSessionRow>().toEqualTypeOf<
+      keyof Tables<'wearable_sessions'>
+    >();
+    expectTypeOf<core.WearableSessionRow>().toExtend<Tables<'wearable_sessions'>>();
+    expectTypeOf<keyof core.HeartRateSummaryRow>().toEqualTypeOf<
+      keyof Tables<'heart_rate_summaries'>
+    >();
+    expectTypeOf<core.HeartRateSummaryRow>().toExtend<Tables<'heart_rate_summaries'>>();
+    expectTypeOf<keyof core.DailyMetricRow>().toEqualTypeOf<keyof Tables<'daily_metrics'>>();
+    expectTypeOf<core.DailyMetricRow>().toExtend<Tables<'daily_metrics'>>();
+  });
 });

@@ -24,6 +24,10 @@ import type {
   TrackedRoutePayload,
   TrackedRouteRow,
   UpdateTrackedRoutePayload,
+  WearableDataType,
+  WearableImportBatch,
+  WearableImportResult,
+  WearableRows,
   Workout,
 } from '@fitnessapp/core';
 
@@ -245,8 +249,45 @@ export interface LiveAdjustTestMode {
   decide(id: string, accept: boolean): Promise<'confirmed' | 'declined' | 'expired'>;
 }
 
+/** Smartwatch-Daten des Kontos (Phase 8, docs/PLAN-PHASE-8.md 7). */
+export interface WearableLoadResult {
+  readonly rows: WearableRows;
+  /** Noch nicht übertragene Abgleiche (Supabase: verschlüsselte Warteschlange; Testmodus: immer 0). */
+  readonly pending: number;
+  /** true = Server nicht erreichbar, angezeigt wird der zuletzt geladene Stand. */
+  readonly offline: boolean;
+}
+
+/** Ergebnis eines Abgleichs: übertragen (Summen ohne Werte) bzw. offline in der Warteschlange. */
+export type WearableImportOutcome =
+  | { readonly kind: 'imported'; readonly result: WearableImportResult }
+  | { readonly kind: 'queued' };
+
+/**
+ * Smartwatch über Health Connect (Phase 8, Etappe H3): Verbindung, Abgleich, Doppel-Hinweis, Trennen. Die Regeln
+ * prüft der Server (import_wearable_batch …) bzw. im Testmodus dieselben Regeln auf dem Gerät (wearable-rows.ts).
+ * Gesundheitsdaten (Art. 9): nie loggen; Fehler nur mit Code.
+ */
+export interface WearableBackend {
+  /** Verbindung, übernommene Einheiten, Puls-Zusammenfassungen, Tageswerte (RLS: nur eigene). */
+  load(): Promise<WearableLoadResult>;
+  /** Nach dem Systemdialog: Verbindung mit den freigegebenen Datentypen (leer = „Zugriff fehlt“). Nur online. */
+  connect(grantedTypes: readonly WearableDataType[]): Promise<void>;
+  /**
+   * Abgleich übertragen (je ≤ 500 Einheiten/62 Tage). Supabase: erst in die verschlüsselte Warteschlange, dann senden;
+   * offline → `queued`. Fehler `consent_required` (Einwilligung fehlt – die Warteschlange wird verworfen).
+   */
+  importBatches(batches: readonly WearableImportBatch[]): Promise<WearableImportOutcome>;
+  /** Möglicher Doppel-Eintrag: zusammenführen (true) bzw. beide behalten (false). Nur online. */
+  resolveDuplicate(sessionLogId: string, merge: boolean): Promise<void>;
+  /** Trennen (W8-12): Puls und Tageswerte immer weg; `deleteImported` löscht die Uhr-Einträge. Anzahl gelöschter. */
+  disconnect(deleteImported: boolean): Promise<number>;
+}
+
 export interface Backend {
   readonly mode: BackendMode;
+  /** Smartwatch über Health Connect (Phase 8). */
+  readonly wearables: WearableBackend;
   /** Nur Testmodus (Wächter K2): Live-Anpassung mit „Premium simulieren“. Supabase-Modus: fehlt. */
   readonly liveAdjust?: LiveAdjustTestMode;
   /**
@@ -632,6 +673,8 @@ export type BackendErrorCode =
   | 'route_rejected'
   /** Höchstens 20 neue Strecken je Tag (TRACKED_ROUTE_LIMITS.maxSavesPerDay). */
   | 'route_limit'
+  /** Smartwatch-Abgleich abgelehnt (Aufbau ungültig, Doppel nicht zusammenführbar) – ohne Werte (Phase 8). */
+  | 'wearable_rejected'
   | 'unknown';
 
 /**

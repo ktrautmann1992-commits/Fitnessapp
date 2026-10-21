@@ -695,6 +695,16 @@ echten App). Ihr müsst nichts einstellen und keine Schlüssel eintragen. Prüfe
 6. Optional in der Vorschau (Testmodus): **Einstellungen → Meine Daten exportieren** → **Datei herunterladen** → in
    der Datei steht der neue, leere Bereich `tracked_routes`.
 
+## Teil 7s2 – Datenbank für die Smartwatch prüfen (Phase 8, Etappe H2)
+1. GitHub-App → Pull Request → **Checks**: **db-test** und **ci** grün.
+2. **Nach dem Merge:** **Actions → db-migrate** → Lauf grün (vorhandene Daten bleiben unverändert).
+3. Supabase im Handy-Browser → **Table Editor**: neue, leere Tabellen **`wearable_connections`**,
+   **`wearable_sessions`**, **`heart_rate_summaries`**, **`daily_metrics`**. Leer ist richtig.
+4. Supabase → **Authentication → Policies**: je Tabelle genau **eine** Regel „Nutzer sehen eigene …“ (nur Lesen).
+5. Optional **Advisors → Security Advisor → Refresh**: erwartet sind Hinweise zu `connect_wearable`,
+   `import_wearable_batch`, `resolve_wearable_duplicate` und `disconnect_wearable` („security definer“) – sie prüfen
+   Login, Einwilligung und alle Werte selbst. Andere neue Meldungen bitte Claude schicken.
+
 ## Teil 7z – Datenbank für zwei Ziele und Wunschgewicht prüfen (Ziele, Etappe Z3)
 In der App ändert sich dadurch **nichts Sichtbares** (Nebenziel und Wunschgewicht wählt ihr erst mit Etappe Z4). Ihr
 müsst nichts einstellen und keine Schlüssel eintragen. Prüfen könnt ihr am Handy:
@@ -1570,6 +1580,68 @@ Bild-Aufnahme, Teilen, WebView)
     (Einstellungen → Apps → Alpha5 → Akku → „Nicht eingeschränkt“).
 
 Ergebnis bitte Claude schreiben, z. B. „9b Android: 1–9 ok, Punkt 5: 40 s fehlten“ (ohne Passwörter oder Codes).
+
+## Teil 9c – Galaxy Watch verbinden (Phase 8, Health Connect, 21.10.2026)
+Neu unter **Einstellungen → Smartwatch → Smartwatch verbinden**: Trainingseinheiten, Puls während der Einheit (nur
+Ø, Max und Minuten je Pulszone), Ruhepuls, Schlafdauer und Schritte eurer Galaxy Watch landen automatisch in Alpha5.
+Der Weg: Uhr → **Samsung Health** (Handy) → **Health Connect** (Android) → Alpha5. Alpha5 **liest nur**, schreibt
+nichts zurück, übernimmt keine Strecken der Uhr und gleicht **nicht im Hintergrund** ab (nur beim Öffnen der App,
+höchstens alle 15 Minuten, und mit **Jetzt abgleichen**). Nur in der **Android-App** – im Browser und auf dem iPhone
+steht ein Hinweis.
+
+**A – Im Handy-Browser (Vercel-Vorschau, Testmodus) – geht sofort, ohne APK (Beispiel-Uhr mit ausgedachten Daten)**
+1. Vorschau-Link → **Ohne Konto testen** → Onboarding **mit** Einwilligung Gesundheitsdaten bis **Geschafft!** →
+   **Zum Plan**.
+2. **Mehr → Einstellungen** → bis **Smartwatch** wischen → **Smartwatch verbinden**. Ihr seht „Was übernommen wird“
+   und „Was nicht passiert“.
+3. **Zustimmen und verbinden** (eigene Einwilligung „Smartwatch-Daten“, Text über **Einwilligungstext lesen**) →
+   **Beispiel-Uhr verbinden (Testmodus)** → Meldung „Abgleich fertig – 5 neu“. Darunter: verbunden seit, letzter
+   Abgleich, freigegebene Daten (✓), Tageswerte der letzten 7 Tage (Schritte, Schlaf, Ruhepuls).
+4. **Jetzt abgleichen** → „keine neuen Einheiten“ (nichts doppelt).
+5. **Verlauf** (Training → Verlauf): Einträge mit **⌚ Smartwatch**. Einen **Lauf** öffnen → „⌚ aus Samsung Health ·
+   … kcal (laut Uhr)“, **Puls (laut Uhr)** mit Ø/Max und **Zeit je Pulszone** (Balken mit Minuten) und dem Hinweis
+   „Pulszonen sind Schätzwerte … Betablocker …“.
+6. Im Lauf **Als Bild teilen** → im Bild steht **kein Puls, keine Zonen, keine kcal**.
+7. **Ausdauer** → „Meine Läufe“: die Uhr-Läufe mit „⌚ aus Samsung Health“.
+8. **Einstellungen → Einwilligungen → Smartwatch-Daten → Widerrufen** → Pulswerte und Tageswerte sind weg, die
+   Einheiten bleiben im Tagebuch (ohne Puls).
+9. Alternativ **Smartwatch → Trennen** → **Einheiten löschen** (alles von der Uhr weg) bzw. **Einheiten behalten**
+   (bleiben als normale Einträge). Puls und Tageswerte werden in beiden Fällen gelöscht.
+
+**B – Mit der echten Galaxy Watch (Test-APK) – braucht einen neuen Build** (neues natives Modul Health Connect,
+Android 8 oder neuer)
+1. Uhr ist in der App **Galaxy Wearable** gekoppelt, Daten erscheinen in **Samsung Health**.
+2. **Samsung Health** öffnen → unten **Menü** (bzw. ⋮ oben rechts) → **Einstellungen** → **Health Connect** →
+   Samsung Health darf **alle Datentypen schreiben** (Schalter an). Je nach Version heißt der Punkt auch
+   „Health Connect-Berechtigungen“.
+3. **Android 13 oder älter:** im **Play Store** „Health Connect“ installieren bzw. aktualisieren. Ab Android 14 ist es
+   eingebaut (Einstellungen → Sicherheit & Datenschutz → Health Connect). Android-Version: Einstellungen →
+   Telefoninfo → Softwareinformationen.
+4. GitHub-App → **Actions** → **eas-build** → **Run workflow** → Branch des Pull Requests (vor dem Merge) bzw.
+   **main** (nach dem Merge) → **android / preview** → nach dem Bau Link im Lauf öffnen → APK installieren (alte
+   Alpha5-Version wird ersetzt).
+5. Alpha5 → **Mehr → Einstellungen → Smartwatch verbinden** → Erklärung lesen → **Zustimmen und verbinden** →
+   **Weiter zu Health Connect** → Android zeigt den Health-Connect-Dialog mit **nur Lese**-Rechten (Trainings,
+   Distanz, verbrannte Kalorien, Herzfrequenz, Ruhepuls, Schlaf, Schritte) → **Alle zulassen** (oder einzelne
+   abwählen – Alpha5 arbeitet mit dem Rest) → **Zulassen**.
+6. Ergebnis: „Abgleich fertig – … neu“ (bis zu 30 Tage zurück). Kommt „Noch keine Daten von der Uhr“: Punkt 2 prüfen;
+   Samsung Health überträgt manchmal erst nach einigen Minuten.
+7. Mit der Uhr einen kurzen Lauf/Spaziergang aufzeichnen → warten, bis er in Samsung Health steht → Alpha5 öffnen (der
+   Abgleich läuft beim Öffnen, höchstens alle 15 Minuten) oder **Jetzt abgleichen** → Eintrag mit „⌚“ im Verlauf, Puls
+   und Zonen in der Auswertung.
+8. **Doppelt aufgezeichnet:** gleichzeitig mit der App (Ausdauer → Aufzeichnen) **und** der Uhr laufen → nach dem
+   Abgleich gibt es **nur einen** Eintrag: die App-Aufzeichnung (mit Linie) bekommt Puls und kcal der Uhr. Überlappen
+   sich die Zeiten nur teilweise, steht beim Uhr-Eintrag **„Möglicher Doppel-Eintrag“** mit **Zusammenführen** bzw.
+   **Beide behalten**.
+9. **Zugriff entziehen:** Android-Einstellungen → Sicherheit & Datenschutz → **Health Connect** → **App-
+   Berechtigungen** → **Alpha5** → alles aus → Alpha5 → Smartwatch zeigt **„Zugriff fehlt“** mit **Berechtigungen
+   öffnen**. Danach **Trennen** → **Einheiten löschen** testen.
+10. **Ohne Netz:** Flugmodus an → **Jetzt abgleichen** → „wird gesendet, sobald du wieder online bist“ → Flugmodus aus
+    → App neu öffnen → Einträge sind da.
+
+Ergebnis bitte Claude schreiben, z. B. „9c Android 14, Galaxy Watch 6: 1–10 ok, Ruhepuls fehlt“ (ohne Passwörter,
+Codes oder Gesundheitswerte). **Wichtig für den Spike:** Bitte mitteilen, ob **Ruhepuls**, **Distanz** und **kcal**
+bei euren Einheiten ankommen – das klärt, was Samsung wirklich nach Health Connect schreibt.
 
 ## Tipps
 - Eine Sitzung = eine Aufgabe. Lieber mehrere kurze Sitzungen als eine endlose.

@@ -127,6 +127,14 @@ export const STORAGE_KEYS = {
   routeRecordingKey: 'fitnessapp.route-recording-key.v1',
   routeQueue: 'fitnessapp.route-queue.v1',
   routeQueueKey: 'fitnessapp.route-queue-key.v1',
+  /**
+   * Smartwatch (Phase 8): Warteschlange der Abgleiche und zuletzt geladener Stand (Gesundheitsdaten) – NUR im eigenen
+   * geschützten Speicher. Abmelden, Konto löschen, Trennen und Widerruf leeren ihn.
+   */
+  wearableQueue: 'fitnessapp.wearable-queue.v1',
+  wearableQueueKey: 'fitnessapp.wearable-queue-key.v1',
+  /** Smartwatch: Zeitpunkt des letzten Abgleich-VERSUCHS (nur Zeitstempel, keine Werte) – „höchstens alle 15 min“. */
+  wearableSyncAttempt: 'fitnessapp.wearable-sync-attempt.v1',
   /** Supabase-Modus: Workout-Bibliothek (nur Inhalte, keine Nutzerdaten) – für offline (docs/PLAN-WORKOUTS.md). */
   workoutLibrary: 'fitnessapp.workout-library.v1',
   /** Workout-Timer: „Ton und Vibration“ an/aus (nur dieses Gerät, keine Nutzerdaten). */

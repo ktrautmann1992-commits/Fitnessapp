@@ -32,6 +32,13 @@ import {
   type TrackedRoutePayload,
   type TrackedRouteRow,
   updateTrackedRouteSchema,
+  type DailyMetricRow,
+  type HeartRateSummaryRow,
+  type WearableConnectionRow,
+  type WearableImportBatch,
+  wearableImportResultSchema,
+  type WearableRows,
+  type WearableSessionRow,
 } from '@fitnessapp/core';
 import type { AppSupabaseClient, Json, Tables } from '@fitnessapp/db';
 
@@ -78,6 +85,7 @@ import {
   type SaveLogResponse,
 } from './log-queue';
 import { createMemoryProtectedStore, type ProtectedStore } from './protected-store';
+import { WearableQueue, type WearableSendResult } from './wearable-queue';
 import { healthConsentStatus } from '../state/flow';
 import { applyFavoriteChange, applyFoodLogDelete, checkFoodLogSave } from './food-log-rows';
 import { applyCustomMealDelete, checkCustomMealSave } from './custom-meal-rows';
@@ -883,6 +891,26 @@ export interface SupabaseBackendOptions {
    */
   routeQueueStore?: ProtectedStore;
   routeRecordingStore?: ProtectedStore;
+  /** Phase 8: geschützter Speicher der Smartwatch-Abgleiche (samt zuletzt geladenem Stand). Standard: Arbeitsspeicher. */
+  wearableQueueStore?: ProtectedStore;
+}
+
+/**
+ * Antwort von import_wearable_batch einordnen (Phase 8): Netz/Anmeldung/Server vorübergehend → später erneut;
+ * Einwilligung fehlt → verwerfen; sonst (Aufbau ungültig) verwerfen. Meldungen der Datenbank enthalten keine Werte.
+ */
+export function classifyWearableError(error: unknown): 'retry' | 'consent' | 'reject' {
+  if (isConsentError(error)) return 'consent';
+  return classifyRouteError(error) === 'retry' ? 'retry' : 'reject';
+}
+
+/** Fehler der übrigen Smartwatch-Aufrufe: Netz → „nur online“, Einwilligung, sonst „abgelehnt“. */
+function wearableError(error: unknown): BackendError {
+  if (isConsentError(error)) return new BackendError('consent_required', { sensitive: true });
+  const code = classifySupabaseError(error, true);
+  if (code === 'network') return new BackendError('online_only', { sensitive: true, cause: error });
+  if (code === 'not_signed_in') return new BackendError(code, { cause: error });
+  return new BackendError('wearable_rejected', { sensitive: true, cause: error });
 }
 
 /** Inhalt des geschützten Tagebuch-Zwischenspeichers (4.6). */
@@ -891,7 +919,13 @@ interface LogCache {
   logs: LogRows;
 }
 
-const CONSENT_TYPES_WITH_TEXT = ['terms', 'privacy', 'health_data', 'ai_food_photo'] as const;
+const CONSENT_TYPES_WITH_TEXT = [
+  'terms',
+  'privacy',
+  'health_data',
+  'ai_food_photo',
+  'wearable_data',
+] as const;
 
 /** Höchstens so viele Strecken laden (neueste zuerst) – „Meine Läufe“ (Etappe E4). */
 export const TRACKED_ROUTES_LOAD_LIMIT = 1000;
@@ -1050,6 +1084,33 @@ export function createSupabaseBackend(options: SupabaseBackendOptions): Backend 
     isLogPending: (logId) => logQueue.snapshot().some((e) => e.payload.id === logId),
     currentUserId: () => currentUserId,
   });
+
+  /**
+   * Smartwatch-Warteschlange (Phase 8): verschlüsselt, gesendet NACH den Tagebuch-Einträgen, auf die ein Abgleich
+   * verweist (Zusammenführen/Doppel-Hinweis).
+   */
+  const wearableQueue = new WearableQueue({
+    store: options.wearableQueueStore ?? createMemoryProtectedStore(),
+    send: (batch) => sendWearableBatch(batch),
+    isLogPending: (logId) => logQueue.snapshot().some((e) => e.payload.id === logId),
+    currentUserId: () => currentUserId,
+  });
+
+  async function sendWearableBatch(batch: WearableImportBatch): Promise<WearableSendResult> {
+    try {
+      const { data, error, status } = await client.rpc('import_wearable_batch', {
+        p_batch: toJson(batch),
+      });
+      if (error) {
+        const kind = classifyWearableError({ ...error, status });
+        return { kind };
+      }
+      const parsed = wearableImportResultSchema.safeParse(data);
+      return parsed.success ? { kind: 'ok', result: parsed.data } : { kind: 'reject' };
+    } catch (error) {
+      return { kind: classifyWearableError(error) };
+    }
+  }
 
   async function sendTrackedRoute(payload: TrackedRoutePayload): Promise<RouteSendResult> {
     const call = async (body: TrackedRoutePayload) => {
@@ -1241,6 +1302,8 @@ export function createSupabaseBackend(options: SupabaseBackendOptions): Backend 
     const nutritionDone = (await nutritionQueue.flush().catch(() => 'later' as const)) === 'done';
     // Strecken (Etappe E4): erst nach den Tagebuch-Einträgen (Verknüpfung, Plan S1).
     await routeQueue.flush().catch(() => 'later' as const);
+    // Smartwatch (Phase 8): ebenfalls nach den Tagebuch-Einträgen (Zusammenführen verweist auf sie).
+    await wearableQueue.flush().catch(() => undefined);
     try {
       const { error } = await client.rpc('close_missed_sessions');
       if (error && isTransientError(error)) return false;
@@ -2088,6 +2151,8 @@ export function createSupabaseBackend(options: SupabaseBackendOptions): Backend 
       if (error) {
         throw toBackendError(error);
       }
+      // Phase 8: Widerruf wearable_data – wartende Abgleiche und der Zwischenstand (Gesundheitsdaten) weg.
+      if (type === 'wearable_data') await wearableQueue.discardAll();
     },
 
     saveStep: async (stepSave, context) => {
@@ -2776,6 +2841,97 @@ export function createSupabaseBackend(options: SupabaseBackendOptions): Backend 
     readRecording: () => recordingStore.read(),
     writeRecording: (text) => recordingStore.write(text),
     clearRecording: () => recordingStore.clear(),
+
+    // --- Smartwatch (Phase 8) ---------------------------------------------------------------------------------
+    wearables: {
+      load: async () => {
+        const session = await requireSession();
+        const pending = await wearableQueue.size();
+        try {
+          const [connections, sessions, heartRates, dailyMetrics] = await Promise.all([
+            client.from('wearable_connections').select('*').eq('user_id', session.userId),
+            client.from('wearable_sessions').select('*').eq('user_id', session.userId),
+            client.from('heart_rate_summaries').select('*').eq('user_id', session.userId),
+            client
+              .from('daily_metrics')
+              .select('*')
+              .eq('user_id', session.userId)
+              .order('day', { ascending: false })
+              .limit(62),
+          ]);
+          // Vor db-migrate gibt es die Tabellen noch nicht: leer statt Fehler.
+          const list = <T>(r: { data: unknown; error: unknown }): T[] => {
+            if (r.error) {
+              if (isMissingRelation(r.error)) return [];
+              throw r.error;
+            }
+            return (r.data ?? []) as T[];
+          };
+          const rows: WearableRows = {
+            connection: list<WearableConnectionRow>(connections)[0] ?? null,
+            sessions: list<WearableSessionRow>(sessions),
+            heartRates: list<HeartRateSummaryRow>(heartRates),
+            dailyMetrics: list<DailyMetricRow>(dailyMetrics).sort((a, b) =>
+              a.day.localeCompare(b.day),
+            ),
+          };
+          await wearableQueue.writeCache(rows, session.userId).catch(() => undefined);
+          return { rows, pending, offline: false };
+        } catch (error) {
+          if (classifySupabaseError(error) !== 'network') throw toBackendError(error, true);
+          const cached = await wearableQueue.readCache();
+          return {
+            rows: cached ?? { connection: null, sessions: [], heartRates: [], dailyMetrics: [] },
+            pending,
+            offline: true,
+          };
+        }
+      },
+      connect: async (types) => {
+        await requireSession();
+        const { error } = await client.rpc('connect_wearable', {
+          p_provider: 'health_connect',
+          p_granted_types: toJson([...types]),
+        });
+        if (error) throw wearableError(error);
+      },
+      importBatches: async (batches) => {
+        const session = await requireSession();
+        try {
+          await wearableQueue.add(batches, session.userId);
+        } catch {
+          throw new BackendError('storage_unavailable', { sensitive: true });
+        }
+        // Erst wartende Tagebuch-Einträge (Verweise), dann die Smartwatch-Warteschlange.
+        await logQueue.flush().catch(() => undefined);
+        const flushed = await wearableQueue.flush();
+        if (flushed.state === 'consent')
+          throw new BackendError('consent_required', { sensitive: true });
+        if (flushed.state === 'rejected')
+          throw new BackendError('wearable_rejected', { sensitive: true });
+        if (flushed.state === 'later') return { kind: 'queued' };
+        return { kind: 'imported', result: flushed.result };
+      },
+      resolveDuplicate: async (id, merge) => {
+        await requireSession();
+        const { error } = await client.rpc('resolve_wearable_duplicate', {
+          p_session_log_id: id,
+          p_merge: merge,
+        });
+        if (error) throw wearableError(error);
+      },
+      disconnect: async (deleteImported) => {
+        await requireSession();
+        const { data, error } = await client.rpc('disconnect_wearable', {
+          p_provider: 'health_connect',
+          p_delete_imported: deleteImported,
+        });
+        if (error) throw wearableError(error);
+        // Wartende Abgleiche würden sonst nach dem Trennen wieder übernommen.
+        await wearableQueue.discardAll();
+        return typeof data === 'number' ? data : 0;
+      },
+    },
   };
 
   // --- Ernährung im Supabase-Modus (Etappe N7 Teil 2) ----------------------------------------------------------
@@ -3213,6 +3369,7 @@ export function createSupabaseBackend(options: SupabaseBackendOptions): Backend 
     await nutritionCacheStore.clear();
     await routeQueue.clear();
     await recordingStore.clear();
+    await wearableQueue.clear();
   }
 
   /**
@@ -3267,6 +3424,8 @@ export function createSupabaseBackend(options: SupabaseBackendOptions): Backend 
     conversion: IntoleranceConversion | null,
   ): Promise<void> {
     const session = await requireSession();
+    // Phase 8: Smartwatch-Abgleiche sind Gesundheitsdaten – vor dem Widerruf verwerfen (nie danach senden).
+    await wearableQueue.discardAll();
     // 7.4 Schritt 1 (R2-K4): Gruppen der Unverträglichkeiten NUR bei Zustimmung einlesen – nur IDs, nur im
     // Arbeitsspeicher. Ohne Zustimmung wird nichts gelesen und nichts behalten.
     const dislikeGroups = conversion

@@ -1,6 +1,7 @@
 # Plan Phase 8 – Wearables: Galaxy Watch über Health Connect (Etappe 1)
 
-**Status:** Entwurf zur Freigabe (20.10.2026) · Branch `claude/plan-wearables` · **nur Plan, kein Code.**
+**Status:** freigegeben (W8-1…W8-13 wie empfohlen) · **H1–H4 umgesetzt** (21.10.2026, Branch `claude/wearables-h1`,
+Umsetzungsstand in Abschnitt 13) · H0 nur offline geprüft (echter Bau/Test mit Galaxy Watch offen).
 **Grundlage:** `CLAUDE.md`, `docs/KONZEPT.md` (4.1, 6, 9, 13), `docs/PROMPTS.md` Phase 8, `docs/PLAN-PHASE-10.md`
 (Strecken, `tracked_routes`), `docs/PLAN-EINKAUFEN-AUSDAUER.md` (E3–E6, `enduranceActivities`, `enduranceTotals`,
 Story-Bild). Gründer-Wunsch: „Die Daten meiner Galaxy Watch sollen automatisch in der App landen.“
@@ -23,21 +24,21 @@ Story-Bild). Gründer-Wunsch: „Die Daten meiner Galaxy Watch sollen automatisc
 
 ## 1. Gründer-Entscheidungen (Übersicht)
 
-| Nr.   | Frage                         | Empfehlung                                                                                     | Gründer entscheidet |
-| ----- | ----------------------------- | ---------------------------------------------------------------------------------------------- | ------------------- |
-| W8-1  | Weg zur Uhr                   | Health Connect (über Samsung Health), keine Samsung-eigene Schnittstelle                       |                     |
-| W8-2  | Datenumfang Etappe 1          | Einheiten, Puls in Einheiten (Ø/Max/Zonen), Ruhepuls, Schlafdauer, Schritte; HRV/VO2max später |                     |
-| W8-3  | Nur lesen oder auch schreiben | Nur lesen (Schreiben von App-Läufen nach Health Connect frühestens Etappe 2)                   |                     |
-| W8-4  | Strecken (GPS) der Uhr        | In Etappe 1 **nicht** importieren; Linie kommt weiter aus der App-Aufzeichnung                 |                     |
-| W8-5  | Einwilligung                  | Neue, getrennte Einwilligungsart `wearable_data` (Version 1)                                   |                     |
-| W8-6  | Speichertiefe Puls            | Nur Zusammenfassung je Einheit (Ø, Max, Sekunden je Zone), keine Rohreihen                     |                     |
-| W8-7  | Abgleich-Zeitpunkt            | App-Start/Vordergrund + Knopf; kein Hintergrund-Abgleich in Etappe 1                           |                     |
-| W8-8  | Erster Abgleich               | Letzte 30 Tage (= Standardgrenze von Health Connect, keine Zusatzberechtigung)                 |                     |
-| W8-9  | Doppelte Einheit (App + Uhr)  | Zusammenführen: App-Eintrag bleibt führend, Uhr ergänzt Puls/kcal; Rückfrage nur bei Zweifel   |                     |
-| W8-10 | Pulszonen                     | 5 Zonen nach % HFmax; HFmax geschätzt (Tanaka) oder eigener Wert                               |                     |
-| W8-11 | Readiness-Score               | Etappe 2 (nach Datensammlung, mit fachlicher Prüfung)                                          |                     |
-| W8-12 | Trennen                       | Fragt: „Importierte Daten behalten oder löschen?“ – Pulsdaten werden immer gelöscht            |                     |
-| W8-13 | Gratis/Premium                | Gratis (keine KI, keine laufenden Kosten)                                                      |                     |
+| Nr.   | Frage                         | Empfehlung                                                                                     | Gründer entscheidet    |
+| ----- | ----------------------------- | ---------------------------------------------------------------------------------------------- | ---------------------- |
+| W8-1  | Weg zur Uhr                   | Health Connect (über Samsung Health), keine Samsung-eigene Schnittstelle                       | wie empfohlen (21.10.) |
+| W8-2  | Datenumfang Etappe 1          | Einheiten, Puls in Einheiten (Ø/Max/Zonen), Ruhepuls, Schlafdauer, Schritte; HRV/VO2max später | wie empfohlen (21.10.) |
+| W8-3  | Nur lesen oder auch schreiben | Nur lesen (Schreiben von App-Läufen nach Health Connect frühestens Etappe 2)                   | wie empfohlen (21.10.) |
+| W8-4  | Strecken (GPS) der Uhr        | In Etappe 1 **nicht** importieren; Linie kommt weiter aus der App-Aufzeichnung                 | wie empfohlen (21.10.) |
+| W8-5  | Einwilligung                  | Neue, getrennte Einwilligungsart `wearable_data` (Version 1)                                   | wie empfohlen (21.10.) |
+| W8-6  | Speichertiefe Puls            | Nur Zusammenfassung je Einheit (Ø, Max, Sekunden je Zone), keine Rohreihen                     | wie empfohlen (21.10.) |
+| W8-7  | Abgleich-Zeitpunkt            | App-Start/Vordergrund + Knopf; kein Hintergrund-Abgleich in Etappe 1                           | wie empfohlen (21.10.) |
+| W8-8  | Erster Abgleich               | Letzte 30 Tage (= Standardgrenze von Health Connect, keine Zusatzberechtigung)                 | wie empfohlen (21.10.) |
+| W8-9  | Doppelte Einheit (App + Uhr)  | Zusammenführen: App-Eintrag bleibt führend, Uhr ergänzt Puls/kcal; Rückfrage nur bei Zweifel   | wie empfohlen (21.10.) |
+| W8-10 | Pulszonen                     | 5 Zonen nach % HFmax; HFmax geschätzt (Tanaka) oder eigener Wert                               | wie empfohlen (21.10.) |
+| W8-11 | Readiness-Score               | Etappe 2 (nach Datensammlung, mit fachlicher Prüfung)                                          | wie empfohlen (21.10.) |
+| W8-12 | Trennen                       | Fragt: „Importierte Daten behalten oder löschen?“ – Pulsdaten werden immer gelöscht            | wie empfohlen (21.10.) |
+| W8-13 | Gratis/Premium                | Gratis (keine KI, keine laufenden Kosten)                                                      | wie empfohlen (21.10.) |
 
 ## 2. Technischer Weg (W8-1)
 
@@ -255,10 +256,69 @@ Browser/iPhone: Vercel-Vorschau zeigt nur den Hinweis und importierte Daten (Tes
 
 ## 11. Offene Gründer-Entscheidungen
 
-W8-1 bis W8-13 siehe Tabelle Abschnitt 1. Bitte jeweils „wie empfohlen“ oder Abweichung eintragen; danach startet H0.
+Keine – W8-1 bis W8-13 sind „wie empfohlen“ freigegeben (Tabelle Abschnitt 1). Neue Fragen aus der Umsetzung stehen
+in Abschnitt 13.4.
 
 ## 12. Definition of Done (je Etappe)
 
 Typen + Zod, Migration mit RLS + pgTAP, Core mit Tests (Grenzfälle), UI mobil + Web-Hinweis, Leer-/Fehler-/
 Ladezustände, Texte Deutsch, `docs/` (dieser Plan, KONZEPT 9, HANDY-ANLEITUNG) aktualisiert; PR mit „So testest du
 es am Handy“.
+
+## 13. Umsetzungsstand (21.10.2026, Branch `claude/wearables-h1`)
+
+### 13.1 Was gebaut ist
+
+| Etappe        | Stand                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                              | Wo                                                                                                              |
+| ------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------- |
+| H0 Spike      | **offline geprüft:** `react-native-health-connect` 4.1.3 + eingebautes Config-Plugin, `expo-build-properties` ~57.0.22 (`minSdkVersion 26`), `expo install --check` (offline) ok, Autolinking (TurboModule + Expo-Modul `react-native-health-connect-expo`) ok, `expo prebuild --platform android` ok (Manifest siehe 13.2). **Offen:** echter EAS-Build, Test mit Galaxy Watch (welche Typen Samsung wirklich schreibt)                                                                                                                                                           | `apps/mobile/app.config.ts`, `native-config.test.ts`                                                            |
+| H1 Core       | Zuordnung Trainingsart → Tagebuch (`mapExerciseType`), Import-Schemas (Zod), `sessionFromHc`, Doppel-Erkennung (`matchExisting`, `assignDuplicates`, `candidatesFromLogRows`), Pulszonen (`maxHeartRate` Tanaka, eigener Wert Vorrang, `hrZones`, `summarizeHeartRate`), Tageswerte (`aggregateDailyMetrics`), Abgleich-Zeitraum (`syncWindow`, `shouldAutoSync`), Aufteilen in Aufrufe (`chunkImportBatches`); Konstanten mit Quellen in `constants.ts` (`HR_MAX_FORMULA`, `HEART_RATE_LIMITS`, `HR_ZONE_PERCENTS`, `DAILY_METRIC_LIMITS`, `WEARABLE_SYNC`, `WEARABLE_DUPLICATE`) | `packages/core/src/wearables/`                                                                                  |
+| H2 Datenbank  | Enums (`wearable_data`, `health_connect`, `wearable_provider`, `wearable_connection_status`), Einwilligungstext v1, Tabellen `wearable_connections`, `wearable_sessions`, `heart_rate_summaries`, `daily_metrics` (RLS nur eigene Zeilen lesen, Schreiben nur über Funktionen), `connect_wearable`, `import_wearable_batch`, `resolve_wearable_duplicate`, `disconnect_wearable`; Widerruf (wearable_data **oder** health_data) löscht Puls, Tageswerte, Verbindung; Export; Konto löschen per Kaskade                                                                             | `supabase/migrations/20261021120000…120200`, pgTAP `64_wearables.test.sql`, `db-sync.test.ts`                   |
+| H3 App        | Einstellungen → **Smartwatch verbinden** (Erklärung, eigene Einwilligung, dann Systemdialog nur mit Leserechten), Stand/letzter Abgleich/freigegebene Daten/Tageswerte, **Jetzt abgleichen**, **Trennen** (behalten/löschen, Puls immer weg), Widerruf in den Einwilligungen; Abgleich beim App-Start und bei Rückkehr in den Vordergrund (nur Android, höchstens alle 15 min); offline-first (verschlüsselte Warteschlange `wearableQueue`, Teilerfolge bleiben); Web/iPhone: „Nur in der Android-App“; Testmodus: Beispiel-Uhr                                                   | `apps/mobile/src/app/smartwatch.tsx`, `data/wearable-*.ts`, `lib/health-connect-*.ts`, `state/use-wearables.ts` |
+| H4 Auswertung | Tagebuch-Eintrag mit „⌚ aus Samsung Health“ und kcal, **Puls (Ø/Max) und Zeit je Zone**, „Möglicher Doppel-Eintrag“ (Zusammenführen/Beide behalten); Verlauf und „Meine Läufe“ mit Uhr-Kennzeichen; zusammengeführte App-Aufzeichnung zeigt den Uhr-Puls; Story-Bild nie mit Puls (Tests core/statisch/E2E)                                                                                                                                                                                                                                                                       | `components/wearables.tsx`, `app/log/[logId].tsx`, `app/ausdauer/*`                                             |
+
+### 13.2 Android-Manifest nach `expo prebuild` (geprüft 21.10.2026)
+
+- **Neu, nur lesen:** `android.permission.health.READ_EXERCISE`, `READ_DISTANCE`, `READ_TOTAL_CALORIES_BURNED`,
+  `READ_HEART_RATE`, `READ_RESTING_HEART_RATE`, `READ_SLEEP`, `READ_STEPS` (je Datentyp genau eine).
+- **Entfernt (`tools:node="remove"`):** `READ_HEALTH_DATA_IN_BACKGROUND`, `READ_HEALTH_DATA_HISTORY`,
+  `READ_EXERCISE_ROUTES` und alle `WRITE_*` dieser Typen inkl. `WRITE_EXERCISE_ROUTE`.
+- **Health-Connect-Erklärung:** Intent-Filter `androidx.health.ACTION_SHOW_PERMISSIONS_RATIONALE` an der
+  `MainActivity` (Android ≤ 13) und `activity-alias` `ViewPermissionUsageActivity` (Aktion `VIEW_PERMISSION_USAGE`,
+  Kategorie `HEALTH_PERMISSIONS`, geschützt durch `START_VIEW_PERMISSION_USAGE`, Android 14+) – vom Plugin der
+  Bibliothek. Die Bibliothek selbst ergänzt nur `<queries>` für `com.google.android.apps.healthdata`.
+- `android.minSdkVersion=26`; `compileSdk`/`targetSdk` bleiben bei den Werten von Expo SDK 57 (36).
+
+### 13.3 Abweichungen vom Plan (begründet)
+
+- **kcal und `external_id` in eigener Tabelle `wearable_sessions`** statt `cardio_logs.kcal` und
+  `session_logs.external_id`: `save_session_log` (unangetastet, wie W-E6) löscht und schreibt `cardio_logs` beim Ändern
+  neu – kcal ginge verloren; so bleibt jede Änderung in der App verlustfrei. Die Tabelle trägt auch Herkunft,
+  „zusammengeführt“ und den Doppel-Hinweis. Eindeutig ist `(user_id, provider, external_id)` statt `(user_id, source,
+external_id)`, weil ein zusammengeführter Eintrag seine Herkunft (z. B. `gps`) behält.
+- **Kein eigenes `upsert_daily_metrics`:** Tageswerte gehen im selben Aufruf `import_wearable_batch` mit (eine
+  Einwilligungs-Sperre, eine Warteschlange). Dazu `connect_wearable` (Stand nach dem Systemdialog, „Zugriff fehlt“).
+- **Ungültige Einheiten/Tage** lehnen nicht den ganzen Abgleich ab, sondern werden übersprungen und gezählt – sonst
+  bliebe die Warteschlange hängen. Ein falscher Aufbau (Felder, > 500 Einheiten, > 62 Tage, > 1 MB) wird abgelehnt.
+- **„Sonstige“ (Yoga, Tennis …)** und Kraft werden freie Einheiten der Art Kraft ohne Übungen (Titel aus der
+  Trainingsart, nie Freitext der Uhr). Ausdauer-Namen = feste Namen der freien Einheit („Lauf“ …).
+- **Widerruf `health_data`** löscht ebenfalls Puls und Tageswerte (wearable_data setzt health_data voraus).
+- **pgTAP-Nummer 64** (63 war belegt).
+
+### 13.4 Offen / Risiken
+
+1. **H0 am echten Gerät:** EAS-Build mit dem neuen Modul und Test mit Galaxy Watch (HANDY-ANLEITUNG Teil 9c B) –
+   insbesondere ob Samsung **Ruhepuls**, **Distanz** und **kcal** nach Health Connect schreibt (sonst bleiben Felder
+   leer) und ob der Systemdialog bei einer APK ohne Play-Eintrag normal erscheint.
+2. **Rationale-Bildschirm:** Tippt jemand im Health-Connect-Dialog auf „Datenschutzerklärung“, öffnet sich Alpha5 auf
+   der Startseite. Vor der Play-Einreichung (Abschnitt 8) sollte dieser Aufruf direkt den Einwilligungstext bzw. die
+   Datenschutzerklärung zeigen (kleiner Folge-PR, im Gerätetest prüfen).
+3. **Eigener Maximalpuls:** Core unterstützt ihn (Vorrang, 120–230), die App hat noch kein Eingabefeld/keine
+   Speicherung – bis dahin immer Schätzung nach Tanaka (Hinweis in der Auswertung).
+4. **Kachel „Tageswerte“ auf der Übersicht** (7.2) noch nicht gebaut (neue Kachel-ID braucht eine Migration von
+   `save_app_layout`); Tageswerte stehen vorerst auf der Smartwatch-Seite.
+5. **Ändern übernommener Einheiten:** Löschen geht immer; Ändern folgt den Regeln freier Einheiten (nur 14 Tage zurück,
+   feste Namen) – „Sonstige“ wie „Yoga“ lassen sich deshalb nicht umbenennen.
+6. **Schritte je Tag** werden in der Zeitzone des Handys abgefragt (DACH = Europe/Berlin); Einheiten/Schlaf nutzen
+   Europe/Berlin wie das übrige Tagebuch.
+7. **Play-Formular** Health-Connect-Berechtigungen und Datenschutzerklärung (Abschnitt 8) – vor der Store-Einreichung.

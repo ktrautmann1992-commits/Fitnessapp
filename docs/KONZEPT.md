@@ -766,6 +766,11 @@ Quelle: `docs/ERWEITERUNGEN-2.md` Abschnitte 1–2. Startbestand aus `alpha5-rez
 - Import: Workouts, Herzfrequenz, Ruhepuls, HRV, Schlaf, Schritte
 - Readiness-Score aus Schlaf, Ruhepuls, HRV, letzter Belastung → Vorschlag „Einheit wie geplant / leichter / Ruhetag“
 - Neue Wearable-Daten sind Auslöser der Live-Anpassung (Abschnitt 4.1) und liefern Fortschritt für Challenges (Abschnitt 11.3)
+- **Stand Etappe 1 (Phase 8, 21.10.2026, docs/PLAN-PHASE-8.md):** Galaxy Watch über Health Connect (nur Android-App,
+  nur lesen, kein Hintergrund-Abgleich): Einheiten ins Tagebuch (Doppel mit App-Aufzeichnung werden zusammengeführt),
+  Puls je Einheit nur als Zusammenfassung (Ø, Max, Zeit je Zone, HFmax nach Tanaka), Ruhepuls/Schlaf/Schritte als
+  Tageswerte; eigene Einwilligung `wearable_data`, Widerruf löscht Puls und Tageswerte. Readiness, HRV, Apple Health,
+  Strava und Garmin folgen in späteren Etappen.
 
 ## 10. Strecken
 - Vorschläge im Umkreis des Standorts nach Disziplin, Distanz, Höhenmetern, Untergrund

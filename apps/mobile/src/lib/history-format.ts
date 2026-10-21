@@ -118,12 +118,18 @@ export function weekRangeText(weekStart: string, weekEnd: string): string {
 
 /** Kennzeichen eines Eintrags im Verlauf (Etappe A1b): „freie Einheit“, „nachgetragen“ (isBackfilledLog). */
 export function logMarkers(
-  log: Pick<SummaryLog, 'is_free' | 'created_at' | 'performed_on'>,
+  log: Pick<SummaryLog, 'is_free' | 'created_at' | 'performed_on' | 'source'>,
 ): string[] {
   return [
+    // Phase 8: von der Smartwatch übernommen.
+    log.source === 'health_connect' ? t.wearables.historyMarker : null,
     log.is_free === true ? t.history.free : null,
     log.created_at !== undefined &&
-    isBackfilledLog({ performed_on: log.performed_on, created_at: log.created_at })
+    isBackfilledLog({
+      performed_on: log.performed_on,
+      created_at: log.created_at,
+      ...(log.source !== undefined ? { source: log.source } : {}),
+    })
       ? t.history.backfilled
       : null,
   ].filter((value): value is string => value !== null);

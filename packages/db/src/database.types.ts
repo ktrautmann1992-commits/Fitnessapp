@@ -454,6 +454,36 @@ export type Database = {
         };
         Relationships: [];
       };
+      daily_metrics: {
+        Row: {
+          day: string;
+          provider: Database['public']['Enums']['wearable_provider'];
+          resting_hr_bpm: number | null;
+          sleep_min: number | null;
+          steps: number | null;
+          updated_at: string;
+          user_id: string;
+        };
+        Insert: {
+          day: string;
+          provider: Database['public']['Enums']['wearable_provider'];
+          resting_hr_bpm?: number | null;
+          sleep_min?: number | null;
+          steps?: number | null;
+          updated_at?: string;
+          user_id: string;
+        };
+        Update: {
+          day?: string;
+          provider?: Database['public']['Enums']['wearable_provider'];
+          resting_hr_bpm?: number | null;
+          sleep_min?: number | null;
+          steps?: number | null;
+          updated_at?: string;
+          user_id?: string;
+        };
+        Relationships: [];
+      };
       equipment: {
         Row: {
           category: Database['public']['Enums']['equipment_category'];
@@ -1234,6 +1264,44 @@ export type Database = {
           user_id?: string;
         };
         Relationships: [];
+      };
+      heart_rate_summaries: {
+        Row: {
+          avg_bpm: number;
+          hf_max_used: number;
+          max_bpm: number;
+          session_log_id: string;
+          updated_at: string;
+          user_id: string;
+          zone_s: number[];
+        };
+        Insert: {
+          avg_bpm: number;
+          hf_max_used: number;
+          max_bpm: number;
+          session_log_id: string;
+          updated_at?: string;
+          user_id: string;
+          zone_s: number[];
+        };
+        Update: {
+          avg_bpm?: number;
+          hf_max_used?: number;
+          max_bpm?: number;
+          session_log_id?: string;
+          updated_at?: string;
+          user_id?: string;
+          zone_s?: number[];
+        };
+        Relationships: [
+          {
+            foreignKeyName: 'heart_rate_summaries_session_log_id_user_id_fkey';
+            columns: ['session_log_id', 'user_id'];
+            isOneToOne: false;
+            referencedRelation: 'session_logs';
+            referencedColumns: ['id', 'user_id'];
+          },
+        ];
       };
       ingredient_substitutions: {
         Row: {
@@ -2857,6 +2925,99 @@ export type Database = {
           },
         ];
       };
+      wearable_connections: {
+        Row: {
+          connected_at: string;
+          granted_types: string[];
+          last_sync_at: string | null;
+          last_sync_count: number | null;
+          provider: Database['public']['Enums']['wearable_provider'];
+          status: Database['public']['Enums']['wearable_connection_status'];
+          updated_at: string;
+          user_id: string;
+        };
+        Insert: {
+          connected_at?: string;
+          granted_types?: string[];
+          last_sync_at?: string | null;
+          last_sync_count?: number | null;
+          provider: Database['public']['Enums']['wearable_provider'];
+          status: Database['public']['Enums']['wearable_connection_status'];
+          updated_at?: string;
+          user_id: string;
+        };
+        Update: {
+          connected_at?: string;
+          granted_types?: string[];
+          last_sync_at?: string | null;
+          last_sync_count?: number | null;
+          provider?: Database['public']['Enums']['wearable_provider'];
+          status?: Database['public']['Enums']['wearable_connection_status'];
+          updated_at?: string;
+          user_id?: string;
+        };
+        Relationships: [];
+      };
+      wearable_sessions: {
+        Row: {
+          duplicate_of: string | null;
+          external_id: string;
+          finished_at: string;
+          imported_at: string;
+          kcal: number | null;
+          merged: boolean;
+          origin: string;
+          provider: Database['public']['Enums']['wearable_provider'];
+          session_log_id: string;
+          started_at: string;
+          updated_at: string;
+          user_id: string;
+        };
+        Insert: {
+          duplicate_of?: string | null;
+          external_id: string;
+          finished_at: string;
+          imported_at?: string;
+          kcal?: number | null;
+          merged?: boolean;
+          origin: string;
+          provider: Database['public']['Enums']['wearable_provider'];
+          session_log_id: string;
+          started_at: string;
+          updated_at?: string;
+          user_id: string;
+        };
+        Update: {
+          duplicate_of?: string | null;
+          external_id?: string;
+          finished_at?: string;
+          imported_at?: string;
+          kcal?: number | null;
+          merged?: boolean;
+          origin?: string;
+          provider?: Database['public']['Enums']['wearable_provider'];
+          session_log_id?: string;
+          started_at?: string;
+          updated_at?: string;
+          user_id?: string;
+        };
+        Relationships: [
+          {
+            foreignKeyName: 'wearable_sessions_duplicate_of_user_id_fkey';
+            columns: ['duplicate_of', 'user_id'];
+            isOneToOne: false;
+            referencedRelation: 'session_logs';
+            referencedColumns: ['id', 'user_id'];
+          },
+          {
+            foreignKeyName: 'wearable_sessions_session_log_id_user_id_fkey';
+            columns: ['session_log_id', 'user_id'];
+            isOneToOne: false;
+            referencedRelation: 'session_logs';
+            referencedColumns: ['id', 'user_id'];
+          },
+        ];
+      };
       weight_goals: {
         Row: {
           amount_mode: string;
@@ -2973,6 +3134,13 @@ export type Database = {
         Args: { p_id: string; p_session_log_id: string | null };
         Returns: undefined;
       };
+      connect_wearable: {
+        Args: {
+          p_granted_types: Json;
+          p_provider: Database['public']['Enums']['wearable_provider'];
+        };
+        Returns: undefined;
+      };
       current_consent_version: {
         Args: { p_type: Database['public']['Enums']['consent_type'] };
         Returns: number;
@@ -2987,6 +3155,13 @@ export type Database = {
       delete_tracked_route: { Args: { p_id: string }; Returns: undefined };
       delete_user_food_product: { Args: { p_id: string }; Returns: Json };
       delete_shopping_product_link: { Args: { p_code: string }; Returns: undefined };
+      disconnect_wearable: {
+        Args: {
+          p_delete_imported: boolean;
+          p_provider: Database['public']['Enums']['wearable_provider'];
+        };
+        Returns: number;
+      };
       export_my_data: { Args: never; Returns: Json };
       beta_admin: {
         Args: {
@@ -3008,6 +3183,7 @@ export type Database = {
         Args: { p_type: Database['public']['Enums']['consent_type'] };
         Returns: boolean;
       };
+      import_wearable_batch: { Args: { p_batch: Json }; Returns: Json };
       lead_magnet_confirm: {
         Args: { p_token_hash: string; p_unsubscribe_token_hash: string };
         Returns: Json;
@@ -3032,6 +3208,10 @@ export type Database = {
           p_items: Json;
           p_location: Database['public']['Enums']['equipment_location'];
         };
+        Returns: undefined;
+      };
+      resolve_wearable_duplicate: {
+        Args: { p_merge: boolean; p_session_log_id: string };
         Returns: undefined;
       };
       revert_plan_adjustment: { Args: { p_id: string }; Returns: Json };
@@ -3138,7 +3318,8 @@ export type Database = {
       competition_goal: 'finish' | 'time';
       competition_status: 'planned' | 'done' | 'cancelled';
       consent_platform: 'ios' | 'android' | 'web';
-      consent_type: 'terms' | 'privacy' | 'health_data' | 'cycle_data' | 'ai_food_photo';
+      consent_type:
+        'terms' | 'privacy' | 'health_data' | 'cycle_data' | 'ai_food_photo' | 'wearable_data';
       content_status: 'draft' | 'published' | 'archived';
       cooking_mode: 'daily' | 'meal_prep';
       diet_type: 'omnivore' | 'vegetarian' | 'vegan';
@@ -3164,7 +3345,7 @@ export type Database = {
       food_preference_kind: 'like' | 'dislike' | 'intolerance';
       goal_type: 'fat_loss' | 'definition' | 'muscle_gain' | 'general_fitness' | 'endurance';
       load_type: 'weight' | 'bodyweight' | 'band' | 'time';
-      log_source: 'manual' | 'gps' | 'gpx_import' | 'workout';
+      log_source: 'manual' | 'gps' | 'gpx_import' | 'workout' | 'health_connect';
       mealprep_slot_mode: 'lunch' | 'lunch_dinner';
       movement_pattern:
         | 'squat'
@@ -3256,6 +3437,8 @@ export type Database = {
         | 'hiit_cardio'
         | 'mobility'
         | 'back_fit';
+      wearable_connection_status: 'connected' | 'permission_missing';
+      wearable_provider: 'health_connect';
       workout_format: 'circuit' | 'interval' | 'sets_reps';
     };
     CompositeTypes: {
@@ -3411,7 +3594,14 @@ export const Constants = {
       competition_goal: ['finish', 'time'],
       competition_status: ['planned', 'done', 'cancelled'],
       consent_platform: ['ios', 'android', 'web'],
-      consent_type: ['terms', 'privacy', 'health_data', 'cycle_data', 'ai_food_photo'],
+      consent_type: [
+        'terms',
+        'privacy',
+        'health_data',
+        'cycle_data',
+        'ai_food_photo',
+        'wearable_data',
+      ],
       content_status: ['draft', 'published', 'archived'],
       cooking_mode: ['daily', 'meal_prep'],
       diet_type: ['omnivore', 'vegetarian', 'vegan'],
@@ -3445,7 +3635,7 @@ export const Constants = {
       food_preference_kind: ['like', 'dislike', 'intolerance'],
       goal_type: ['fat_loss', 'definition', 'muscle_gain', 'general_fitness', 'endurance'],
       load_type: ['weight', 'bodyweight', 'band', 'time'],
-      log_source: ['manual', 'gps', 'gpx_import', 'workout'],
+      log_source: ['manual', 'gps', 'gpx_import', 'workout', 'health_connect'],
       mealprep_slot_mode: ['lunch', 'lunch_dinner'],
       movement_pattern: [
         'squat',
@@ -3542,6 +3732,8 @@ export const Constants = {
         'mobility',
         'back_fit',
       ],
+      wearable_connection_status: ['connected', 'permission_missing'],
+      wearable_provider: ['health_connect'],
       workout_format: ['circuit', 'interval', 'sets_reps'],
     },
   },

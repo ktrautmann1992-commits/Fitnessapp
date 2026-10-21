@@ -474,6 +474,13 @@ describe('Tabellenzeilen → Antworten (Fortsetzen)', () => {
         { type: 'terms', version: 2 },
         { type: 'health_data', version: 1 },
       ]),
-    ).toEqual({ terms: 2, privacy: null, health_data: 1, cycle_data: null, ai_food_photo: null });
+    ).toEqual({
+      terms: 2,
+      privacy: null,
+      health_data: 1,
+      cycle_data: null,
+      ai_food_photo: null,
+      wearable_data: null,
+    });
   });
 });

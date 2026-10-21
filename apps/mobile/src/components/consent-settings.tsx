@@ -13,6 +13,7 @@ import { errorText } from '@/lib/error-text';
 import { formatTimestampDe } from '@/lib/format';
 import { useApp } from '@/state/app-state';
 import { healthConsentStatus } from '@/state/flow';
+import { forgetWearables } from '@/state/use-wearables';
 
 /**
  * Einwilligungen ansehen, erteilen und widerrufen – in den Einstellungen und unter „Mein Konto“ → „Einwilligungen“
@@ -51,7 +52,7 @@ export function ConsentSettings({
 }) {
   const router = useRouter();
   const app = useApp();
-  const [dialog, setDialog] = useState<'revoke' | 'revoke_photo' | null>(null);
+  const [dialog, setDialog] = useState<'revoke' | 'revoke_photo' | 'revoke_wearable' | null>(null);
   const [busy, setBusy] = useState(false);
   const [dialogError, setDialogError] = useState<string>();
   const [message, setMessage] = useState<string>();
@@ -68,7 +69,13 @@ export function ConsentSettings({
     setBusy(true);
     setDialogError(undefined);
     try {
-      if (dialog === 'revoke_photo') {
+      if (dialog === 'revoke_wearable') {
+        // Phase 8: Puls, Tageswerte und Verbindung werden gelöscht; übernommene Einheiten bleiben.
+        await app.revokeConsent('wearable_data');
+        forgetWearables();
+        setMessage(t.wearables.revokeDone);
+        setDialog(null);
+      } else if (dialog === 'revoke_photo') {
         // Etappe E3: nur die Foto-Einwilligung; Tagebuch-Einträge bleiben (gehören zu health_data).
         await app.revokeConsent('ai_food_photo');
         setMessage(t.foodPhoto.revokeDone);
@@ -175,14 +182,52 @@ export function ConsentSettings({
           <Body muted>{t.foodPhoto.settingsNote}</Body>
         )}
       </Card>
+      {/* Phase 8: eigene, getrennte Einwilligung „Smartwatch-Daten“ (Widerruf jederzeit). */}
+      {activeConsentVersion(records, 'wearable_data') !== null ||
+      rows.consents.some((c) => c.consent_type === 'wearable_data') ? (
+        <Card>
+          <Body>{t.consentTypes.wearable_data}</Body>
+          <Body muted testID="settings-wearable-consent">
+            {consentLine(rows.consents, 'wearable_data')}
+          </Body>
+          {activeConsentVersion(records, 'wearable_data') !== null ? (
+            <Button
+              label={t.settings.revoke}
+              variant="danger"
+              accessibilityLabel={`${t.consentTypes.wearable_data}: ${t.settings.revoke}`}
+              onPress={() => {
+                setDialogError(undefined);
+                setDialog('revoke_wearable');
+              }}
+              testID="settings-wearable-revoke"
+            />
+          ) : null}
+        </Card>
+      ) : null}
       <Body muted>{t.settings.baseConsentNote}</Body>
 
       <ConfirmDialog
         visible={dialog !== null}
-        title={dialog === 'revoke_photo' ? t.foodPhoto.revokeTitle : t.settings.revokeTitle}
-        message={dialog === 'revoke_photo' ? t.foodPhoto.revokeText : t.settings.revokeText}
+        title={
+          dialog === 'revoke_wearable'
+            ? t.wearables.revokeTitle
+            : dialog === 'revoke_photo'
+              ? t.foodPhoto.revokeTitle
+              : t.settings.revokeTitle
+        }
+        message={
+          dialog === 'revoke_wearable'
+            ? t.wearables.revokeText
+            : dialog === 'revoke_photo'
+              ? t.foodPhoto.revokeText
+              : t.settings.revokeText
+        }
         confirmLabel={
-          dialog === 'revoke_photo' ? t.foodPhoto.revokeConfirm : t.settings.revokeKeepLogs
+          dialog === 'revoke_wearable'
+            ? t.wearables.revokeConfirm
+            : dialog === 'revoke_photo'
+              ? t.foodPhoto.revokeConfirm
+              : t.settings.revokeKeepLogs
         }
         onConfirm={() => void confirm()}
         onCancel={() => setDialog(null)}

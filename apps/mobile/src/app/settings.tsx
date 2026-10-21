@@ -293,6 +293,19 @@ export default function SettingsScreen() {
         ) : null}
       </ListGroup>
 
+      {/* Phase 8: Smartwatch (Galaxy Watch über Health Connect). */}
+      <SectionLabel>{t.wearables.settingsTitle}</SectionLabel>
+      <ListGroup>
+        <ListRow
+          icon="stopwatch"
+          label={t.wearables.settingsLink}
+          description={t.wearables.settingsText}
+          onPress={() => router.push('/smartwatch' as Href)}
+          testID="settings-smartwatch"
+          last
+        />
+      </ListGroup>
+
       {/* Mein Konto (docs/PLAN-DASHBOARD.md 2.3): Abmelden, Datenexport, Konto löschen. */}
       <SectionLabel>{t.settings.account}</SectionLabel>
       <ListGroup>

@@ -11,6 +11,7 @@ import { useEffect, useState } from 'react';
 import { StyleSheet, View } from 'react-native';
 
 import { ConfirmDialog, Screen } from '@/components/screen';
+import { WearableLogInfo } from '@/components/wearables';
 import { Body, Button, Card, Heading, LoadingState, Notice } from '@/components/ui';
 import { EMPTY_LOG_ROWS, logRowsOf, mergeLogRows } from '@/data/log-rows';
 import { logDetail } from '@/data/log-summary';
@@ -153,6 +154,9 @@ export default function LogEntryScreen() {
         {log.session_rpe !== null ? <Body>{effortText(log.session_rpe)}</Body> : null}
         {waiting ? <Body muted>{t.today.pendingUpload}</Body> : null}
       </Card>
+
+      {/* Phase 8: Herkunft Smartwatch, kcal, möglicher Doppel-Eintrag und Puls (nie auf dem Story-Bild). */}
+      <WearableLogInfo logId={log.id} />
 
       {detail.cardio ? (
         <Card>

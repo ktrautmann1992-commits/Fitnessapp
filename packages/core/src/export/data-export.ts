@@ -71,6 +71,12 @@ export const DATA_EXPORT_TABLES = [
   'shopping_product_links',
   // Etappe E2 (docs/PLAN-EINKAUFEN-AUSDAUER.md 4): Anordnung der Übersicht und der Menüleiste (kein Gesundheitsdatum)
   'app_layout_settings',
+  // Phase 8 (docs/PLAN-PHASE-8.md 4): Smartwatch-Verbindung, übernommene Einheiten, Puls-Zusammenfassungen (Art. 9),
+  // Tageswerte (Art. 9)
+  'wearable_connections',
+  'wearable_sessions',
+  'heart_rate_summaries',
+  'daily_metrics',
 ] as const;
 
 export type DataExportTable = (typeof DATA_EXPORT_TABLES)[number];

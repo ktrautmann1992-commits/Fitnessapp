@@ -45,6 +45,43 @@ export const LOCATION_ALWAYS_TEXT =
   'Alpha5 braucht keinen Standort „Immer“. Der Standort wird nur während einer Aufzeichnung genutzt, die du selbst startest und beendest.';
 
 /**
+ * Smartwatch über Health Connect (Phase 8, docs/PLAN-PHASE-8.md 2–3; W8-2 Datenumfang, W8-3 nur lesen, W8-4 keine
+ * Strecken, W8-7 kein Hintergrund-Abgleich): je genutztem Datentyp GENAU eine Leseberechtigung (= WEARABLE_DATA_TYPES
+ * in packages/core bzw. HC_RECORD_TYPES in lib/health-connect-driver.native.ts). Health Connect zeigt sie im
+ * Systemdialog einzeln an; die Person kann jede abwählen.
+ */
+export const HEALTH_CONNECT_READ_PERMISSIONS = [
+  'android.permission.health.READ_EXERCISE',
+  'android.permission.health.READ_DISTANCE',
+  'android.permission.health.READ_TOTAL_CALORIES_BURNED',
+  'android.permission.health.READ_HEART_RATE',
+  'android.permission.health.READ_RESTING_HEART_RATE',
+  'android.permission.health.READ_SLEEP',
+  'android.permission.health.READ_STEPS',
+] as const;
+
+/**
+ * Bewusst GESPERRT (tools:node="remove", falls eine Bibliothek sie mitbringt): Schreiben (W8-3), Lesen im Hintergrund
+ * (W8-7), Daten älter als 30 Tage (W8-8, Standardgrenze reicht) und Strecken der Uhr (W8-4).
+ */
+export const HEALTH_CONNECT_BLOCKED_PERMISSIONS = [
+  'android.permission.health.READ_HEALTH_DATA_IN_BACKGROUND',
+  'android.permission.health.READ_HEALTH_DATA_HISTORY',
+  'android.permission.health.READ_EXERCISE_ROUTES',
+  'android.permission.health.WRITE_EXERCISE',
+  'android.permission.health.WRITE_EXERCISE_ROUTE',
+  'android.permission.health.WRITE_DISTANCE',
+  'android.permission.health.WRITE_TOTAL_CALORIES_BURNED',
+  'android.permission.health.WRITE_HEART_RATE',
+  'android.permission.health.WRITE_RESTING_HEART_RATE',
+  'android.permission.health.WRITE_SLEEP',
+  'android.permission.health.WRITE_STEPS',
+] as const;
+
+/** Health Connect verlangt mindestens Android 8 (API 26); Expo SDK 57 baut sonst ab API 24. */
+export const ANDROID_MIN_SDK = 26;
+
+/**
  * Hintergrundmodi iOS (UIBackgroundModes): erlaubt ist nur `location` (Aufzeichnung bei gesperrtem Bildschirm, mit
  * blauem Hinweis). Das Plugin von expo-task-manager trägt immer `fetch` (Hintergrund-Aktualisierung) ein – die App
  * nutzt das nicht. Deshalb wird es entfernt (Datensparsamkeit, App-Review fragt sonst nach dem Zweck).
@@ -221,11 +258,15 @@ const appConfig = (config: ConfigContext['config']): ExpoConfig => ({
     // Berechtigungen mit. Ohne google-services.json wird Firebase nie gestartet, es gibt kein Push-Token. Bewusst KEIN
     // Plugin, das den Dienst aus dem Manifest entfernt (ohne echten Build nicht prüfbar). Vor der ersten Play-Einreichung
     // die fertige APK mit `aapt dump permissions` prüfen (docs/PLAN-PHASE-4B.md Umsetzungsstand E).
+    // Smartwatch (Phase 8): nur die Leserechte aus HEALTH_CONNECT_READ_PERMISSIONS (Health Connect, keine Strecken,
+    // kein Hintergrund, kein Schreiben – die gesperrten stehen in HEALTH_CONNECT_BLOCKED_PERMISSIONS).
+    permissions: [...HEALTH_CONNECT_READ_PERMISSIONS],
     blockedPermissions: [
       'android.permission.READ_EXTERNAL_STORAGE',
       'android.permission.WRITE_EXTERNAL_STORAGE',
       'android.permission.SYSTEM_ALERT_WINDOW',
       'android.permission.ACCESS_BACKGROUND_LOCATION',
+      ...HEALTH_CONNECT_BLOCKED_PERMISSIONS,
     ],
     adaptiveIcon: {
       // Logo auf 50 % der Breite: bleibt in der Sicherheitszone, egal welche Form (Kreis, Quadrat) Android zuschneidet.
@@ -284,6 +325,14 @@ const appConfig = (config: ConfigContext['config']): ExpoConfig => ({
         androidForegroundServiceIcon: './assets/images/android-icon-monochrome.png',
       },
     ],
+    // Smartwatch über Health Connect (Phase 8): react-native-health-connect 4.1.3 bringt sein Config-Plugin selbst mit
+    // (app.plugin.js): Android ≤ 13 – Intent-Filter ACTION_SHOW_PERMISSIONS_RATIONALE an der MainActivity, Android 14+
+    // – activity-alias ViewPermissionUsageActivity (VIEW_PERMISSION_USAGE, Kategorie HEALTH_PERMISSIONS, geschützt durch
+    // START_VIEW_PERMISSION_USAGE). Beides öffnet die App, wenn jemand im Health-Connect-Dialog „Datenschutzerklärung“
+    // antippt. Nur Android; neues natives Modul → neuer EAS-Build nötig.
+    'react-native-health-connect',
+    // minSdk 26 (Android 8) – Voraussetzung von Health Connect. Sonst bleiben alle Build-Werte von Expo SDK 57.
+    ['expo-build-properties', { android: { minSdkVersion: ANDROID_MIN_SDK } }],
     [
       'expo-splash-screen',
       // SDK 57: Startbildschirm nur noch über dieses Plugin (das alte Feld `splash` gibt es nicht mehr).

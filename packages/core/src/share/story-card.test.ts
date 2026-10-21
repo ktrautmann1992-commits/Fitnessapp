@@ -51,6 +51,25 @@ describe('Story-Bild Ausdauer', () => {
     points: route,
   };
 
+  it('Phase 8: Einheit mit Puls-Zusammenfassung der Uhr – kein Puls, keine Zonen, keine kcal im Bild', () => {
+    const watch = {
+      avg_bpm: 163,
+      max_bpm: 187,
+      zone_s: [61, 302, 903, 404, 45],
+      hf_max_used: 186,
+      kcal: 777,
+      heart_rate: { avg_bpm: 163, max_bpm: 187 },
+      origin: 'samsung_health',
+    };
+    const card = enduranceStoryCard({ ...input, ...watch } as typeof input, on);
+    const allowed = new Set<string>([...STORY_CARD_FIELDS, 'key', 'value', 'lat', 'lng']);
+    for (const key of deepKeys(card)) expect(allowed.has(key), key).toBe(true);
+    const json = JSON.stringify({ ...card, line: null });
+    for (const secret of ['163', '187', '186', '903', '777', 'samsung', 'bpm', 'zone']) {
+      expect(json).not.toContain(secret);
+    }
+  });
+
   it('Positivliste: nur erlaubte Felder, keine Uhrzeit, keine fremden Werte', () => {
     const card = enduranceStoryCard({ ...input, ...SECRET } as typeof input, on);
     const allowed = new Set<string>([...STORY_CARD_FIELDS, 'key', 'value', 'lat', 'lng']);

@@ -263,11 +263,14 @@ export function ActivityRow({
   activity,
   points,
   badge,
+  note,
   onPress,
 }: {
   activity: EnduranceActivity;
   points: readonly { lat: number; lng: number }[] | null;
   badge?: string | null;
+  /** Neutraler Zusatz, z. B. „⌚ aus Samsung Health“ (Phase 8). */
+  note?: string | null;
   onPress: () => void;
 }) {
   const theme = useThemeColors();
@@ -304,6 +307,7 @@ export function ActivityRow({
         <Text style={{ color: theme.text }}>
           {`${distance} · ${durationText(activity.durationS)}`}
         </Text>
+        {note ? <Text style={{ color: theme.textMuted }}>{note}</Text> : null}
         {badge ? <Text style={{ color: theme.warning }}>{badge}</Text> : null}
       </View>
     </Pressable>

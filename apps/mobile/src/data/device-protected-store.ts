@@ -22,7 +22,8 @@ export function createDeviceProtectedStore(
       name === 'logQueue' ||
       name === 'nutritionQueue' ||
       name === 'routeRecording' ||
-      name === 'routeQueue',
+      name === 'routeQueue' ||
+      name === 'wearableQueue',
   });
 }
 
@@ -37,6 +38,7 @@ export function createDeviceProtectedStores(): ProtectedStores {
     liveAdjust: createDeviceProtectedStore('liveAdjust'),
     routeRecording: createDeviceProtectedStore('routeRecording'),
     routeQueue: createDeviceProtectedStore('routeQueue'),
+    wearableQueue: createDeviceProtectedStore('wearableQueue'),
   };
 }
 

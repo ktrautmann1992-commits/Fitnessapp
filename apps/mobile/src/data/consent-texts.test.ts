@@ -12,10 +12,11 @@ const read = (name: string) =>
     fileURLToPath(new URL(`../../../../supabase/migrations/${name}`, import.meta.url)),
     'utf8',
   );
-/** Phase 1 (terms, privacy, health_data) und Etappe E3 (ai_food_photo). */
+/** Phase 1 (terms, privacy, health_data), Etappe E3 (ai_food_photo) und Phase 8 (wearable_data). */
 const migration = [
   read('20261003120800_seed_consent_documents.sql'),
   read('20261016160100_ai_food_photo.sql'),
+  read('20261021120100_wearables.sql'),
 ].join('\n');
 
 /** Liest (Art, Version, Titel, Text) aus der Seed-Migration. */
@@ -32,7 +33,7 @@ function seedDocuments() {
 describe('Einwilligungstexte im Testmodus', () => {
   it('sind wörtlich identisch mit den Seed-Migrationen (Version 1)', () => {
     const seed = seedDocuments();
-    expect(seed).toHaveLength(4);
+    expect(seed).toHaveLength(5);
     expect(LOCAL_CONSENT_DOCUMENTS).toEqual(seed);
   });
 

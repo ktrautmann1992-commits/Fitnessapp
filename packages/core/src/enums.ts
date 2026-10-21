@@ -20,6 +20,8 @@ export const DEFAULT_LOCALE: AppLocale = 'de-DE';
 /**
  * Einwilligungsarten (getrennt, versioniert). `ai_food_photo` seit Etappe E3 (Gericht per Foto, Art. 9 +
  * Übermittlung an Google als Auftragsverarbeiter – eigene, getrennte Einwilligung, docs/PLAN-AUSWERTUNG.md 2.7).
+ * `wearable_data` seit Phase 8 (Smartwatch-Daten über Health Connect, W8-5, docs/PLAN-PHASE-8.md 4) – getrennt von
+ * `health_data`, setzt diese aber zusätzlich voraus.
  */
 export const CONSENT_TYPES = [
   'terms',
@@ -27,6 +29,7 @@ export const CONSENT_TYPES = [
   'health_data',
   'cycle_data',
   'ai_food_photo',
+  'wearable_data',
 ] as const;
 export type ConsentType = (typeof CONSENT_TYPES)[number];
 
@@ -306,9 +309,9 @@ export type ExerciseLogStatus = (typeof EXERCISE_LOG_STATUSES)[number];
  * Herkunft eines Eintrags: `manual` (eingetragen), ab Phase 10 vorbereitet `gps` (Strecke aufgezeichnet, S1) und
  * `gpx_import` (GPX-Datei, S2a) – Datenbank seit WP3 (20261016140000_competition_enums.sql), genutzt erst ab S1.
  * `workout`: freie Einheit aus der Workout-Bibliothek (Timer, docs/PLAN-WORKOUTS.md) – nur zusammen mit is_free.
- * Später `wearable` (Phase 8).
+ * `health_connect`: Einheit aus Health Connect übernommen (Phase 8, Smartwatch) – setzt nur import_wearable_batch.
  */
-export const LOG_SOURCES = ['manual', 'gps', 'gpx_import', 'workout'] as const;
+export const LOG_SOURCES = ['manual', 'gps', 'gpx_import', 'workout', 'health_connect'] as const;
 export type LogSource = (typeof LOG_SOURCES)[number];
 
 // ---------------------------------------------------------------------------------------------------------
@@ -352,3 +355,18 @@ export type TrainingTime = (typeof TRAINING_TIMES)[number];
 /** Was beim Meal-Prep vorgekocht wird (Plan 6.4, `mealprep_slots`): Mittag (Standard) oder Mittag + Abend. */
 export const MEALPREP_SLOT_MODES = ['lunch', 'lunch_dinner'] as const;
 export type MealprepSlotMode = (typeof MEALPREP_SLOT_MODES)[number];
+
+// ---------------------------------------------------------------------------------------------------------
+// Phase 8 · Wearables (docs/PLAN-PHASE-8.md 6, 20261021120000_wearable_enums.sql)
+// ---------------------------------------------------------------------------------------------------------
+
+/** Datenquelle einer Smartwatch-Verbindung. Etappe 1 nur Health Connect (Android); später u. a. Apple Health. */
+export const WEARABLE_PROVIDERS = ['health_connect'] as const;
+export type WearableProvider = (typeof WEARABLE_PROVIDERS)[number];
+
+/**
+ * Stand einer Verbindung: `connected` (mindestens ein Datentyp freigegeben) bzw. `permission_missing` (in Health
+ * Connect alle Rechte entzogen – „Zugriff fehlt“, kein Abgleich).
+ */
+export const WEARABLE_CONNECTION_STATUSES = ['connected', 'permission_missing'] as const;
+export type WearableConnectionStatus = (typeof WEARABLE_CONNECTION_STATUSES)[number];
