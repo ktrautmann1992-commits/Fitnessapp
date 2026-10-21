@@ -1,7 +1,7 @@
 {
   "id": "glutamine",
   "version": 1,
-  "status": "draft",
+  "status": "published",
   "name_de": "Glutamin",
   "evidence_level": "c",
   "category": "sport",
@@ -16,8 +16,8 @@
     "batch_id": null,
     "created_on": "2026-10-19",
     "expert_reviewed": false,
-    "reviewed_by": null,
-    "reviewed_at": null,
+    "reviewed_by": "Karsten (Auftrag an Claude)",
+    "reviewed_at": "2026-10-21",
     "review_note": null
   }
 }

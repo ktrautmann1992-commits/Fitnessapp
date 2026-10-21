@@ -43,17 +43,21 @@ describe('Startbestand Supplemente (content/supplements)', () => {
     expect(result.issues.map((issue) => `${issue.rule} ${issue.id}: ${issue.message}`)).toEqual([]);
   });
 
-  it('alle als Entwurf aus der Claude-Sitzung, nicht fachlich geprüft, ohne Prüfvermerk', () => {
+  it('aus der Claude-Sitzung, nicht fachlich geprüft; Entwurf ohne Prüfvermerk oder freigegeben mit Prüfvermerk', () => {
     for (const entry of result.supplements) {
-      expect(entry.status, entry.id).toBe('draft');
+      expect(['draft', 'published'], entry.id).toContain(entry.status);
       expect(entry.version, entry.id).toBe(1);
       expect(entry.meta).toMatchObject({
         origin: 'claude_session',
         expert_reviewed: false,
-        reviewed_by: null,
-        reviewed_at: null,
         batch_id: null,
       });
+      if (entry.status === 'draft') {
+        expect(entry.meta, entry.id).toMatchObject({ reviewed_by: null, reviewed_at: null });
+      } else {
+        expect(entry.meta.reviewed_by, entry.id).toEqual(expect.any(String));
+        expect(entry.meta.reviewed_at, entry.id).toEqual(expect.any(String));
+      }
     }
   });
 

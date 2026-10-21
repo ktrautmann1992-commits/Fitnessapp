@@ -65,6 +65,21 @@ export function setContentStatus(text: string, status: 'draft' | 'published'): s
   return result;
 }
 
+/**
+ * Kopiert den Supplement-Startbestand aus dem Repository als Entwürfe (Status `draft`, ohne Prüfvermerk) – die Tests
+ * prüfen Freigabe und Einspielen damit unabhängig davon, ob die Supplemente im echten Repository schon freigegeben sind.
+ */
+export function copySupplementDrafts(targetRoot: string): void {
+  const source = join(REAL_REPO_ROOT, 'content', 'supplements');
+  const target = join(targetRoot, 'content', 'supplements');
+  cpSync(source, target, { recursive: true });
+  for (const name of readdirSync(target)) {
+    if (!name.endsWith('.json')) continue;
+    const file = join(target, name);
+    writeFileSync(file, setContentStatus(readFileSync(file, 'utf8'), 'draft'));
+  }
+}
+
 /** Legt ein Repository mit dem echten Startbestand an; main ist nach origin gepusht. */
 export function createTempRepo(
   options: { withContent?: boolean; contentStatus?: TempRepoContentStatus } = {},

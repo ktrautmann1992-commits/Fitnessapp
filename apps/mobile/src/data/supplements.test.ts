@@ -30,10 +30,12 @@ import type { UserRows } from './types';
 const NO = { kidney: false, breastfeeding: false, heart_rhythm: false, caffeine_sensitive: false };
 
 describe('Inhalte', () => {
-  it('Testmodus: alle 18 Entwürfe aus dem Bündel (ohne roten Befund), Supabase: nur freigegebene, gültige', () => {
+  it('Testmodus: alle 18 aus dem Bündel (Entwurf oder freigegeben, ohne roten Befund), Supabase: nur freigegebene, gültige', () => {
     const entries = supplementsFromBundle(CONTENT_BUNDLE.supplementFiles);
     expect(entries).toHaveLength(18);
-    expect(entries.every((entry) => entry.status === 'draft')).toBe(true);
+    expect(entries.every((entry) => entry.status === 'draft' || entry.status === 'published')).toBe(
+      true,
+    );
     const broken = { ...CONTENT_BUNDLE.supplementFiles[0]!, data: { id: 'kaputt' } };
     const archived = {
       ...CONTENT_BUNDLE.supplementFiles[1]!,
@@ -49,7 +51,7 @@ describe('Inhalte', () => {
       supplementsFromDbRows([
         ...published.map((data) => ({ data })),
         { data: { id: 'x' } },
-        { data: entries[0] },
+        { data: { ...entries[0]!, status: 'draft' as const } },
       ]),
     ).toHaveLength(18);
   });
