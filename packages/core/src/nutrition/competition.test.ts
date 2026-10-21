@@ -625,84 +625,89 @@ describe('nutritionTargetsForWeek mit Wettkampf', () => {
     }
   });
 
-  it('Eigenschaft: Carb-Loading-Tag ≥ Untergrenze und ≤ Obergrenze, Fett ≥ 20 %, Eiweiß ≥ Minimum (wie ohne Verschiebung)', () => {
-    const random = seededRandom(1910);
-    const goals = [
-      'fat_loss',
-      'definition',
-      'muscle_gain',
-      'general_fitness',
-      'endurance',
-    ] as const;
-    const levels = ['beginner', 'advanced', 'competitive'] as const;
-    const disciplines = ['5k', '10k', 'half_marathon', 'marathon'] as const;
-    let checked = 0;
-    for (let i = 0; i < 300; i += 1) {
-      const pick = <T>(list: readonly T[]) => list[Math.floor(random() * list.length)] as T;
-      const weightKg = Math.round(40 + random() * 160);
-      const heightCm = Math.round(150 + random() * 50);
-      const birthYear = 1940 + Math.floor(random() * 70); // 16 bis 86 Jahre
-      const flags = random() < 0.2 ? (['medication'] as const) : ([] as const);
-      const person: NutritionInputsInput = inputs({
-        birthDate: `${birthYear}-03-15`,
-        sex: pick(['male', 'female', 'diverse'] as const),
-        goalType: pick(goals),
-        experienceLevel: pick(levels),
-        activityLevel: pick(['sedentary', 'light', 'active', 'very_active'] as const),
-        bodyMetricsRows: [{ measuredOn: '2026-10-01', heightCm, weightKg }],
-        healthFlags: { flags: [...flags] },
-        competitions: [
-          competition({
-            discipline: pick(disciplines),
-            raceDate: addDays(MONDAY, Math.floor(random() * 9)),
-          }),
-        ],
-        sessions: random() < 0.5 ? [run('2026-10-14', 30 + Math.floor(random() * 60))] : [],
-      });
-      const targets = week(person);
-      for (const day of targets.days) {
-        if (day.competition?.carbsShifted !== true) continue;
-        checked += 1;
-        expect(day.targetKcal!).toBeGreaterThanOrEqual(day.floorKcal!);
-        expect(day.targetKcal!).toBeLessThanOrEqual(day.ceilingKcal!);
-        const limits = independentLimits(person, day.date);
-        if (limits !== null && day.sessions.length === 0) {
-          expect(day.targetKcal!).toBeGreaterThanOrEqual(limits.lower);
-          expect(day.targetKcal!).toBeLessThanOrEqual(limits.upper);
+  // 300 Zufallsfälle: unter CI-Last (viele parallele Läufe) über 5 s – eigener Zeitrahmen statt Standard.
+  it(
+    'Eigenschaft: Carb-Loading-Tag ≥ Untergrenze und ≤ Obergrenze, Fett ≥ 20 %, Eiweiß ≥ Minimum (wie ohne Verschiebung)',
+    { timeout: 30_000 },
+    () => {
+      const random = seededRandom(1910);
+      const goals = [
+        'fat_loss',
+        'definition',
+        'muscle_gain',
+        'general_fitness',
+        'endurance',
+      ] as const;
+      const levels = ['beginner', 'advanced', 'competitive'] as const;
+      const disciplines = ['5k', '10k', 'half_marathon', 'marathon'] as const;
+      let checked = 0;
+      for (let i = 0; i < 300; i += 1) {
+        const pick = <T>(list: readonly T[]) => list[Math.floor(random() * list.length)] as T;
+        const weightKg = Math.round(40 + random() * 160);
+        const heightCm = Math.round(150 + random() * 50);
+        const birthYear = 1940 + Math.floor(random() * 70); // 16 bis 86 Jahre
+        const flags = random() < 0.2 ? (['medication'] as const) : ([] as const);
+        const person: NutritionInputsInput = inputs({
+          birthDate: `${birthYear}-03-15`,
+          sex: pick(['male', 'female', 'diverse'] as const),
+          goalType: pick(goals),
+          experienceLevel: pick(levels),
+          activityLevel: pick(['sedentary', 'light', 'active', 'very_active'] as const),
+          bodyMetricsRows: [{ measuredOn: '2026-10-01', heightCm, weightKg }],
+          healthFlags: { flags: [...flags] },
+          competitions: [
+            competition({
+              discipline: pick(disciplines),
+              raceDate: addDays(MONDAY, Math.floor(random() * 9)),
+            }),
+          ],
+          sessions: random() < 0.5 ? [run('2026-10-14', 30 + Math.floor(random() * 60))] : [],
+        });
+        const targets = week(person);
+        for (const day of targets.days) {
+          if (day.competition?.carbsShifted !== true) continue;
+          checked += 1;
+          expect(day.targetKcal!).toBeGreaterThanOrEqual(day.floorKcal!);
+          expect(day.targetKcal!).toBeLessThanOrEqual(day.ceilingKcal!);
+          const limits = independentLimits(person, day.date);
+          if (limits !== null && day.sessions.length === 0) {
+            expect(day.targetKcal!).toBeGreaterThanOrEqual(limits.lower);
+            expect(day.targetKcal!).toBeLessThanOrEqual(limits.upper);
+          }
+          expect(9 * day.fatG!).toBeGreaterThanOrEqual(0.2 * day.targetKcal! - 1e-9);
+          expect(
+            Math.abs(4 * day.proteinG! + 4 * day.carbsG! + 9 * day.fatG! - day.targetKcal!),
+          ).toBeLessThanOrEqual(10);
+          // Eiweiß wie ohne Verschiebung (also ≥ Minimum aus 4.7), Kohlenhydrate nie weniger, Fett nie mehr.
+          const ref = proteinReferenceWeight(weightKg, heightCm);
+          const eligibility = nutritionEligibility({
+            ageYears: day.ageYears,
+            sex: person.sex ?? null,
+            goalType: person.goalType,
+            secondaryGoalType: null,
+            healthDataConsent: true,
+            body: { weightKg, heightCm },
+            healthFlags: [...flags],
+          });
+          const without = nutritionMacros({
+            targetKcal: day.targetKcal!,
+            goalType: person.goalType,
+            weightKg,
+            heightCm,
+            proteinMin: eligibility.proteinMin,
+            proteinCap: eligibility.proteinCap,
+            trainingMinutes: day.sessions.reduce((sum, s) => sum + s.minutes, 0),
+          });
+          expect(day.proteinG).toBe(without.proteinG);
+          expect(day.proteinG!).toBeGreaterThanOrEqual(eligibility.proteinMin * ref - 1e-9);
+          expect(day.carbsG!).toBeGreaterThanOrEqual(without.carbsG);
+          expect(day.fatG!).toBeLessThanOrEqual(without.fatG);
+          expect(day.goalAdjustment!).toBeGreaterThanOrEqual(0);
         }
-        expect(9 * day.fatG!).toBeGreaterThanOrEqual(0.2 * day.targetKcal! - 1e-9);
-        expect(
-          Math.abs(4 * day.proteinG! + 4 * day.carbsG! + 9 * day.fatG! - day.targetKcal!),
-        ).toBeLessThanOrEqual(10);
-        // Eiweiß wie ohne Verschiebung (also ≥ Minimum aus 4.7), Kohlenhydrate nie weniger, Fett nie mehr.
-        const ref = proteinReferenceWeight(weightKg, heightCm);
-        const eligibility = nutritionEligibility({
-          ageYears: day.ageYears,
-          sex: person.sex ?? null,
-          goalType: person.goalType,
-          secondaryGoalType: null,
-          healthDataConsent: true,
-          body: { weightKg, heightCm },
-          healthFlags: [...flags],
-        });
-        const without = nutritionMacros({
-          targetKcal: day.targetKcal!,
-          goalType: person.goalType,
-          weightKg,
-          heightCm,
-          proteinMin: eligibility.proteinMin,
-          proteinCap: eligibility.proteinCap,
-          trainingMinutes: day.sessions.reduce((sum, s) => sum + s.minutes, 0),
-        });
-        expect(day.proteinG).toBe(without.proteinG);
-        expect(day.proteinG!).toBeGreaterThanOrEqual(eligibility.proteinMin * ref - 1e-9);
-        expect(day.carbsG!).toBeGreaterThanOrEqual(without.carbsG);
-        expect(day.fatG!).toBeLessThanOrEqual(without.fatG);
-        expect(day.goalAdjustment!).toBeGreaterThanOrEqual(0);
       }
-    }
-    expect(checked).toBeGreaterThan(100);
-  });
+      expect(checked).toBeGreaterThan(100);
+    },
+  );
 
   it('Makros: Verschiebung ändert Eiweiß nie, senkt Fett höchstens auf 20 % und hebt Kohlenhydrate', () => {
     for (const targetKcal of [1200, 1800, 2600, 3800]) {
