@@ -23,6 +23,7 @@ import { deEndurance } from './de-endurance';
 import { deFoodLog } from './de-food-log';
 import { deFoodPhoto } from './de-food-photo';
 import { deFoodProduct } from './de-food-product';
+import { deAccessibility } from './de-accessibility';
 import { deGoalChoice, deWeightGoal, deWeightGoalLife } from './de-goals';
 import { deMuscleMap } from './de-muscle-map';
 import { deNutrition } from './de-nutrition';
@@ -288,6 +289,7 @@ export const de = {
         muscle_gain: 'Muskelaufbau',
         general_fitness: 'Fitness & Gesundheit',
         endurance: 'Ausdauer',
+        active_aging: 'Fit im Alter',
       },
       discipline: 'Disziplin (optional)',
       disciplines: {
@@ -1656,6 +1658,8 @@ export const de = {
   wearables: deWearables,
   // Supplement-Modul (docs/PLAN-PHASE-6.md, Etappe SU4)
   supplements: deSupplements,
+  // Barrierefreiheit (docs/PLAN-FIT-IM-ALTER.md 12, Etappe FA5)
+  accessibility: deAccessibility,
 } as const;
 
 /** Typ, den jede Übersetzung erfüllen muss (Texte als string, Funktionen mit gleicher Signatur). */

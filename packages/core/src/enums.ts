@@ -37,13 +37,17 @@ export type ConsentType = (typeof CONSENT_TYPES)[number];
 export const CONSENT_PLATFORMS = ['ios', 'android', 'web'] as const;
 export type ConsentPlatform = (typeof CONSENT_PLATFORMS)[number];
 
-/** Trainingsziel. */
+/**
+ * Trainingsziel. `active_aging` = „Fit im Alter“ (docs/PLAN-FIT-IM-ALTER.md, Etappe FA1; Datenbank per
+ * `alter type … add value` in 20261021150000_active_aging_enums.sql).
+ */
 export const GOAL_TYPES = [
   'fat_loss',
   'definition',
   'muscle_gain',
   'general_fitness',
   'endurance',
+  'active_aging',
 ] as const;
 export type GoalType = (typeof GOAL_TYPES)[number];
 
@@ -140,6 +144,8 @@ export const MOVEMENT_PATTERNS = [
   'carry',
   'conditioning',
   'mobility',
+  // Fit im Alter (FA1, docs/PLAN-FIT-IM-ALTER.md 13.1): Gleichgewicht – per `alter type … add value`.
+  'balance',
 ] as const;
 export type MovementPattern = (typeof MOVEMENT_PATTERNS)[number];
 
@@ -176,6 +182,14 @@ export type LoadType = (typeof LOAD_TYPES)[number];
 /**
  * Merkmale einer Übung für vorsichtigere Pläne (Flag `conservative_plan`, Phase 3) – Eigenschaften der Übung,
  * KEINE Diagnosen: Sprünge, schwere Last auf der Wirbelsäule, über Kopf, lange Rückenlage, hohe Technik.
+ * Fit im Alter (FA1, docs/PLAN-FIT-IM-ALTER.md 13.1, per `alter type … add value`):
+ * - `floor_transfer`: beginnt oder endet am Boden (Liegen, Knien, Vierfüßler, Stütz am Boden) – nicht an Wand/Tisch,
+ * - `spinal_flexion`: Rumpfbeugung bis zum Bewegungsende (mit oder ohne Last),
+ * - `loaded_flexion`: Rumpfbeugen unter Last (Teilmenge von spinal_flexion, für klare Texte),
+ * - `trunk_rotation`: Drehen bis zum Anschlag oder schnelles Drehen,
+ * - `deep_hip_flexion`: Hüftbeugung über 90° (tiefer Stuhl, tiefe Kniebeuge),
+ * - `hip_cross_midline`: Bein über die Körpermitte oder Einwärtsdrehen der Hüfte.
+ * Welche bestehenden Übungen die neuen Merkmale bekommen, regelt Etappe FA2 (Plan 13.4).
  */
 export const CAUTION_TAGS = [
   'high_impact',
@@ -183,6 +197,12 @@ export const CAUTION_TAGS = [
   'overhead',
   'long_supine',
   'high_skill',
+  'floor_transfer',
+  'spinal_flexion',
+  'loaded_flexion',
+  'trunk_rotation',
+  'deep_hip_flexion',
+  'hip_cross_midline',
 ] as const;
 export type CautionTag = (typeof CAUTION_TAGS)[number];
 
@@ -190,8 +210,12 @@ export type CautionTag = (typeof CAUTION_TAGS)[number];
 export const ALTERNATIVE_REASONS = ['other_equipment', 'easier', 'harder', 'home'] as const;
 export type AlternativeReason = (typeof ALTERNATIVE_REASONS)[number];
 
-/** Schwerpunkt einer Einheit in einer Plan-Vorlage. */
-export const SESSION_FOCUSES = ['full_body', 'upper', 'lower'] as const;
+/**
+ * Schwerpunkt einer Einheit in einer Plan-Vorlage. `balance` (Fit im Alter, Variante B aus docs/PLAN-FIT-IM-ALTER.md
+ * 7.3): leichte Kraft-Einheit mit Schwerpunkt Gleichgewicht (`kind = 'strength'`, keine neue Einheit-Art) – per
+ * `alter type … add value` in einer eigenen Migrationsdatei.
+ */
+export const SESSION_FOCUSES = ['full_body', 'upper', 'lower', 'balance'] as const;
 export type SessionFocus = (typeof SESSION_FOCUSES)[number];
 
 /** Rolle im Redaktionsbereich (Tabelle admin_users). */
@@ -272,7 +296,7 @@ export type EnduranceModality = (typeof ENDURANCE_MODALITIES)[number];
 
 /**
  * Ziel → Ziel der Vorlagen (PLAN-PHASE-2 Frage 1): Definition nutzt Muskelaufbau (beschlossen, gilt als
- * passend); Ausdauer nutzt bis Phase 10 Allgemeine Fitness (nächstbeste Vorlage).
+ * passend); Ausdauer nutzt bis Phase 10 Allgemeine Fitness (nächstbeste Vorlage); Fit im Alter bis Etappe FA2 ebenso.
  */
 export const GOAL_TEMPLATE_MAPPING = {
   muscle_gain: { goal: 'muscle_gain', kind: 'same' },
@@ -280,6 +304,9 @@ export const GOAL_TEMPLATE_MAPPING = {
   general_fitness: { goal: 'general_fitness', kind: 'same' },
   definition: { goal: 'muscle_gain', kind: 'mapped' },
   endurance: { goal: 'general_fitness', kind: 'fallback' },
+  // Fit im Alter (FA1): eigene Vorlagen kommen mit Etappe FA2 (Matrix-Eintrag, CHECK plan_templates.goal_type). Bis
+  // dahin die nächstbeste Vorlage „Allgemeine Fitness“ – das Sicherheitsprofil ACTIVE_AGING_RULES gilt trotzdem.
+  active_aging: { goal: 'general_fitness', kind: 'fallback' },
 } as const satisfies Record<
   GoalType,
   { goal: TemplateGoalType; kind: 'same' | 'mapped' | 'fallback' }

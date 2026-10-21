@@ -55,7 +55,7 @@ import {
 import { matchTemplate } from './match';
 import { workoutModalityFits } from './multisport';
 import type { MacroCycle } from './periodization';
-import { type PlanSafetyRules, planSafetyRules } from './safety';
+import { cautiousProgression, type PlanSafetyRules, planSafetyRules } from './safety';
 import {
   buildPlanBlock,
   type GeneratedSession,
@@ -490,7 +490,7 @@ function generatePlan(
   if (inputs.goalType === 'endurance' || inputs.secondaryGoalType === 'endurance') {
     notes.add(enduranceDays.length > 0 ? 'endurance_basic_only' : 'goal_endurance_not_yet');
   }
-  const loadWeeks = loadWeeksBeforeDeload(inputs.experienceLevel, rules.cautious);
+  const loadWeeks = loadWeeksBeforeDeload(inputs.experienceLevel, cautiousProgression(rules));
   const block = buildPlanBlock({
     days,
     today,

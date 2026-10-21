@@ -261,6 +261,14 @@ export default function PrintPlanScreen() {
           value={form.logColumns}
           onChange={(logColumns) => setForm((f) => ({ ...f, logColumns }))}
         />
+        {/* Großdruck (FA5, docs/PLAN-FIT-IM-ALTER.md 12 Nr. 7). */}
+        <Checkbox
+          label={t.accessibility.largePrint}
+          checked={form.largePrint}
+          onChange={(largePrint) => setForm((f) => ({ ...f, largePrint }))}
+          testID="print-large"
+        />
+        <Body muted>{t.accessibility.largePrintHint}</Body>
       </Card>
 
       {blockingError ? (
@@ -284,7 +292,7 @@ export default function PrintPlanScreen() {
       {result.ok && PRINT_TARGET === 'web' ? (
         <>
           <Heading level={2}>{t.printView.previewTitle}</Heading>
-          <PrintPreview html={result.html} title={result.title} />
+          <PrintPreview html={result.html} title={result.title} largePrint={docForm.largePrint} />
         </>
       ) : null}
     </Screen>

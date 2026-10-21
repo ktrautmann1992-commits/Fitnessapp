@@ -74,12 +74,14 @@ export const OPTIONAL_VARS = new Set(['--font-size-xs', '--font-weight-extrabold
  * - `--area-<bereich>-<rolle>` → `areaColors[modus][bereich][rolle]` (Bereichsfarben, z. B. --area-training-icon)
  * - `--hero-<rolle>` → `heroColors[modus][rolle]` (dunkle „Hero“-Karte)
  * - `--card-<rolle>` → `cardColors[modus][rolle]` (Kartenrand, Trennlinien)
+ * - `--large-<rolle>` → `largeViewColors[modus][rolle]` (Text der „Großen Ansicht“, mindestens 7 : 1)
  * Namen nur aus Kleinbuchstaben, Ziffern und Bindestrichen; Rollen werden camelCase (accent-soft → accentSoft).
  */
 export const MODE_COLOR_GROUPS = /** @type {const} */ ({
   areaColors: { prefix: '--area-', nested: true },
   heroColors: { prefix: '--hero-', nested: false },
   cardColors: { prefix: '--card-', nested: false },
+  largeViewColors: { prefix: '--large-', nested: false },
 });
 
 /** Schriftfamilien: `--font-family-<name>` → `fontFamily[name]` (nur die erste Schrift der Liste). */
@@ -523,6 +525,7 @@ function resolveVar(value, lookup, name) {
  *   areaColors: { light: Record<string, Record<string, string>>, dark: Record<string, Record<string, string>> },
  *   heroColors: { light: Record<string, string>, dark: Record<string, string> },
  *   cardColors: { light: Record<string, string>, dark: Record<string, string> },
+ *   largeViewColors: { light: Record<string, string>, dark: Record<string, string> },
  *   fontFamily: Record<string, string>,
  * }} ThemeTokens
  */
@@ -751,6 +754,7 @@ export function buildTokens(css) {
     areaColors: modeColorGroup(MODE_COLOR_GROUPS.areaColors.prefix, true),
     heroColors: modeColorGroup(MODE_COLOR_GROUPS.heroColors.prefix, false),
     cardColors: modeColorGroup(MODE_COLOR_GROUPS.cardColors.prefix, false),
+    largeViewColors: modeColorGroup(MODE_COLOR_GROUPS.largeViewColors.prefix, false),
     fontFamily,
   };
 
@@ -856,6 +860,9 @@ ${modeGroup('heroColors', tokens.heroColors)}
 
 /** Karten (--card-…): Rand und Trennlinien, hell und dunkel. */
 ${modeGroup('cardColors', tokens.cardColors)}
+
+/** „Große Ansicht“ (--large-…): Textfarben mit mindestens 7 : 1 (WCAG AAA), hell und dunkel. */
+${modeGroup('largeViewColors', tokens.largeViewColors)}
 
 /** Schriftfamilien (--font-family-…, nur der erste Name; Ersatzschrift ist die Systemschrift). */
 export const fontFamily = {

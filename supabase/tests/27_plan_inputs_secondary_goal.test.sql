@@ -51,7 +51,7 @@ $$;
 grant execute on all functions in schema pg_temp to authenticated;
 
 -- ---------------------------------------------------------------------------------------------------------
--- 1. private.goal_pair_allowed: genau die 10 Paare aus GOAL_PAIR_RULES
+-- 1. private.goal_pair_allowed: genau die Paare aus GOAL_PAIR_RULES (10, seit Fit im Alter FA1 11)
 -- ---------------------------------------------------------------------------------------------------------
 select has_function('private', 'goal_pair_allowed', array['goal_type', 'goal_type'], 'goal_pair_allowed vorhanden');
 select results_eq(
@@ -59,10 +59,10 @@ select results_eq(
      from unnest(enum_range(null::public.goal_type)) p, unnest(enum_range(null::public.goal_type)) s
      where private.goal_pair_allowed(p, s)
      order by 1 $$,
-  $$ values ('definition>endurance'), ('endurance>definition'), ('endurance>fat_loss'), ('endurance>muscle_gain'),
-            ('fat_loss>endurance'), ('fat_loss>muscle_gain'), ('general_fitness>endurance'),
+  $$ values ('active_aging>fat_loss'), ('definition>endurance'), ('endurance>definition'), ('endurance>fat_loss'),
+            ('endurance>muscle_gain'), ('fat_loss>endurance'), ('fat_loss>muscle_gain'), ('general_fitness>endurance'),
             ('general_fitness>fat_loss'), ('muscle_gain>endurance'), ('muscle_gain>fat_loss') $$,
-  'genau die 10 erlaubten Paare'
+  'genau die 11 erlaubten Paare (seit Fit im Alter FA1: active_aging > fat_loss)'
 );
 select is(
   (select count(*)::int from unnest(enum_range(null::public.goal_type)) g where private.goal_pair_allowed(g, g)),

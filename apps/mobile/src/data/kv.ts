@@ -141,4 +141,9 @@ export const STORAGE_KEYS = {
   workoutLibrary: 'fitnessapp.workout-library.v1',
   /** Workout-Timer: „Ton und Vibration“ an/aus (nur dieses Gerät, keine Nutzerdaten). */
   workoutSignals: 'fitnessapp.workout-signals.v1',
+  /**
+   * Barrierefreiheit (docs/PLAN-FIT-IM-ALTER.md 12, Etappe FA5): „Große Ansicht“ und „Anleitungen vorlesen“ an/aus –
+   * nur dieses Gerät, keine Nutzerdaten (kein Alter, kein Grund).
+   */
+  accessibility: 'fitnessapp.accessibility.v1',
 } as const;

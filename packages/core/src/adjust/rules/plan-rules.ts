@@ -2,6 +2,7 @@ import { LIVE_ADJUSTMENT } from '../../constants';
 import { addDays, daysBetween, startOfIsoWeek } from '../../dates';
 import { loadWeeksBeforeDeload } from '../../plan/deload';
 import { isEnduranceOverload } from '../../plan/intensity';
+import { cautiousProgression } from '../../plan/safety';
 import type { StoredSession } from '../../plan/view';
 import { inputFingerprint } from '../fingerprint';
 import type { LiveAdjustmentEnvironment, LiveAdjustmentInputs, LiveSessionLog } from '../inputs';
@@ -55,7 +56,10 @@ export function planContext(inputs: LiveAdjustmentInputs): PlanContext {
     ),
     k,
     n,
-    maxLoadWeeks: loadWeeksBeforeDeload(inputs.plan.experienceLevel, inputs.rules.cautious),
+    maxLoadWeeks: loadWeeksBeforeDeload(
+      inputs.plan.experienceLevel,
+      cautiousProgression(inputs.rules),
+    ),
     competition: isCompetitionPlan(sessions),
   };
 }

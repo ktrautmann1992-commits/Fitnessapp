@@ -457,16 +457,17 @@ Store-Texte, Datenschutz-Angaben für App Store/Play Store und eine Checkliste f
 rechtliche Prüfung nach docs/KONZEPT.md Abschnitt 14.
 ```
 
-## Zusatz – Fit im Alter (Entwurf zur Entscheidung)
+## Zusatz – Fit im Alter (freigegeben 21.10.2026)
 ```
 Setze docs/PLAN-FIT-IM-ALTER.md um, Etappe für Etappe (FA0–FA6): Ziel active_aging mit eigenen
 Vorlagen (Gleichgewicht, Kraft, Beweglichkeit, Gehen), Sicherheitsprofil (RPE ≤ 6, immer mit Halt,
 keine Sprünge/Bodenübungen), Zusatzfragen im Gesundheits-Check, Selbsttests ohne Normwerte,
-Barrierefreiheit (Große Ansicht, Vorlesen). Erst nach Freigabe der Gründer-Fragen FA-G1 bis FA-G16.
+Barrierefreiheit (Große Ansicht, Vorlesen). Gründer-Fragen FA-G1 bis FA-G16 sind entschieden (wie empfohlen).
 ```
-**Stand 19.10.2026:** Plan `docs/PLAN-FIT-IM-ALTER.md`, Entwurf zur Entscheidung (Gründer-Fragen FA-G1 bis FA-G16;
-Wächter Runde 1 „mit Auflagen“ eingearbeitet, Runde 2 freigabefähig, N1–N5 eingearbeitet). Empfehlung: FA-G1/FA-G10 vor Phase 6 SU3 entscheiden, FA5 jederzeit
-(vor FA4), FA1–FA4 nach Phase 6 SU3/SU4 und vor Phase 8.
+**Stand 21.10.2026:** Plan `docs/PLAN-FIT-IM-ALTER.md` **freigegeben** („1-7 machst du“, FA-G1 bis FA-G16 wie
+empfohlen). Reihenfolge: FA0 → FA5 → FA1 → FA2 → FA3 → FA4, FA6 mit G2. Umsetzungsstand im Plan, Abschnitt 22.
+Fachprüfung (Physiotherapie/Sportmedizin) steht aus – bevor ältere Testpersonen trainieren. Erledigt: FA0, FA5 (Teil 1),
+FA1 Teil 1 (Core + Server-Prüfungen), FA1 Teil 2 (Zusatzfragen, Stufen, Selbsttests – nur Core); nächste Etappe: FA2.
 
 ## Später – Fitnessstudios (B2B)
 ```

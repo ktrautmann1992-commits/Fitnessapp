@@ -9,6 +9,7 @@ import {
   fontSize,
   fontWeight,
   heroColors,
+  largeViewColors,
   maxContentWidth,
   radius,
   spacing,
@@ -197,4 +198,23 @@ describe('Größen', () => {
     expect(radius.lg).toBe(20);
     expect(radius.md).toBe(12);
   });
+});
+
+describe('largeViewColors („Große Ansicht“, docs/PLAN-FIT-IM-ALTER.md 12 Nr. 3)', () => {
+  it('hat hell und dunkel dieselben Rollen', () => {
+    expect(Object.keys(largeViewColors.dark).sort()).toEqual(
+      Object.keys(largeViewColors.light).sort(),
+    );
+  });
+
+  it.each(schemes)(
+    'erreicht im Modus %s mindestens 7 : 1 (AAA) auf Hintergrund und Fläche',
+    (scheme) => {
+      for (const [role, value] of Object.entries(largeViewColors[scheme])) {
+        for (const base of [colors[scheme].background, colors[scheme].surface]) {
+          expect({ role, ratio: contrast(value, base) >= 7 }).toEqual({ role, ratio: true });
+        }
+      }
+    },
+  );
 });

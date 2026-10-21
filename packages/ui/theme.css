@@ -109,6 +109,14 @@
   --card-border: #e3e7ef;
   --card-divider: #eef1f6;
 
+  /*
+   * „Große Ansicht“ (Einstellungen, docs/PLAN-FIT-IM-ALTER.md 12 Nr. 3): Text mindestens 7 : 1 (WCAG AAA 1.4.6) auf
+   * --color-background UND --color-surface, hell und dunkel – geprüft in src/tokens.test.ts.
+   */
+  --large-text: var(--brand-schwarz);
+  --large-text-muted: #404859; /* 8,5 : 1 auf Hell, 9,2 : 1 auf Weiß */
+  --large-link: #123a9e; /* 9,1 : 1 auf Hell */
+
   /* Abstände (4er-Raster) */
   --space-xs: 4px;
   --space-sm: 8px;
@@ -201,6 +209,9 @@
     --hero-border: var(--brand-graphit-hell);
     --card-border: var(--brand-graphit-hell);
     --card-divider: #1f2430;
+    --large-text: var(--brand-hell);
+    --large-text-muted: var(--brand-grau-dunkel);
+    --large-link: var(--brand-himmel);
   }
 }
 
@@ -257,4 +268,7 @@
   --hero-border: var(--brand-graphit-hell);
   --card-border: var(--brand-graphit-hell);
   --card-divider: #1f2430;
+  --large-text: var(--brand-hell);
+  --large-text-muted: var(--brand-grau-dunkel);
+  --large-link: var(--brand-himmel);
 }

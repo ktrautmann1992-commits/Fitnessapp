@@ -13,7 +13,7 @@ import {
   EQUIPMENT_LIMITS,
   HOME_SELECTABLE_EQUIPMENT,
   equipmentItemSchema,
-  GOAL_TYPES,
+  SELECTABLE_GOAL_TYPES,
   MINUTE_PRESETS,
   OTHER_EQUIPMENT_ID,
   scheduleHints,
@@ -141,7 +141,7 @@ export function GoalStep({ ctl }: { ctl: StepController }) {
     >
       <ChoiceList
         label={g.primaryLabel}
-        options={GOAL_TYPES.map((value) => ({
+        options={SELECTABLE_GOAL_TYPES.map((value) => ({
           value,
           label: g.options[value],
           description: g.descriptions[value],
@@ -157,7 +157,7 @@ export function GoalStep({ ctl }: { ctl: StepController }) {
             horizontal
             options={[
               { value: 'none', label: g.noSecondary },
-              ...GOAL_TYPES.filter((value) => value !== goalType).map((value) => {
+              ...SELECTABLE_GOAL_TYPES.filter((value) => value !== goalType).map((value) => {
                 const reason = goalPairBlockReason(goalType, value);
                 const name = g.options[value];
                 return {

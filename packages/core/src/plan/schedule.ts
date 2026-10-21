@@ -1,4 +1,5 @@
 import {
+  ACTIVE_AGING_RULES,
   COMPETITION_LONG_RUN,
   COMPETITION_STRENGTH,
   DEFAULT_TRAINING_DAYS,
@@ -20,6 +21,7 @@ import type {
   TrainingSlotKind,
 } from '../enums';
 import type { TrainingSchedule } from '../training-schedule';
+import { withBalancePrelude } from './active-aging';
 import {
   adaptedSessionMinutes,
   type AdaptedSession,
@@ -398,7 +400,10 @@ export interface BlockContext {
   /** null = keine Kraft-Tage (reiner Ausdauer-Plan). */
   readonly strength: StrengthVersions | null;
   readonly endurance: EnduranceContext;
-  readonly rules: Pick<PlanSafetyRules, 'rpeMax' | 'enduranceEffortMax' | 'enduranceStartGroup'>;
+  readonly rules: Pick<
+    PlanSafetyRules,
+    'rpeMax' | 'enduranceEffortMax' | 'enduranceStartGroup' | 'activeAging' | 'balance'
+  >;
   /** Summe der Wunsch-Minuten der Ausdauer-Tage einer vollen Woche. */
   readonly enduranceWishWeekly: number;
   /** Folgeblock: Bezug aus der letzten Belastungswoche des bisherigen Plans. */
@@ -643,7 +648,11 @@ function placeWeeks(
           endurance_modality: ENDURANCE_VARIANT_MODALITY[variant],
           effort_target: enduranceEffort(rules, easyWeek),
           estimated_minutes: minutes,
-          warmup_de: ENDURANCE_TEXTS_DE.warmup[variant],
+          // Fit im Alter (N3): Gleichgewichts-Vorspann als fester Text (nicht protokolliert).
+          warmup_de:
+            rules.activeAging && rules.balance
+              ? withBalancePrelude(ENDURANCE_TEXTS_DE.warmup[variant], rules.balance.support)
+              : ENDURANCE_TEXTS_DE.warmup[variant],
           cooldown_de: ENDURANCE_TEXTS_DE.cooldown[variant],
           exercises: [],
         });
@@ -660,6 +669,8 @@ function placeWeeks(
       if (!fit) {
         fit = fitSessionToMinutes(base.exercises, day.minutes, ctx.strength.library, {
           protectLastCore: ctx.strength.protectLastCore ?? false,
+          // Fit im Alter (FA1, Wächter S8): Gleichgewicht und Beweglichkeit bleiben beim Kürzen.
+          ...(rules.activeAging ? { keepPatterns: ACTIVE_AGING_RULES.keepOnShorten } : {}),
         });
         fitted.set(key, fit);
       }
@@ -1063,6 +1074,8 @@ export interface NextPlanBlockOptions {
     | 'enduranceStartGroup'
     | 'pregnancyNotice'
     | 'noHealthCheck'
+    | 'activeAging'
+    | 'balance'
   >;
   readonly library: ReadonlyMap<string, Exercise>;
   /** Geräte-Profile je Ort (für den Tausch in der Fassung des Tages). */

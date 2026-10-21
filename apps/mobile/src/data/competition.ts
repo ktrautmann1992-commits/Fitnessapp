@@ -43,6 +43,7 @@ import {
   storedCompetitionFromRow,
   toAppendBlockPayload,
   toSaveCompetitionPayload,
+  cautiousProgression,
 } from '@fitnessapp/core';
 
 import { competitionDisplayLevel } from './competition-level';
@@ -392,7 +393,7 @@ export function competitionFollowUpFromRows(
   ).size;
   const sessions = nextPlanBlock(active.sessions, {
     schedule: snapshot.schedule,
-    loadWeeks: loadWeeksBeforeDeload(snapshot.experienceLevel, rules.cautious),
+    loadWeeks: loadWeeksBeforeDeload(snapshot.experienceLevel, cautiousProgression(rules)),
     rules,
     library: library.exercises,
     profiles: profilesFor(snapshot),

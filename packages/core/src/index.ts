@@ -6,6 +6,9 @@ export * from './consent';
 export * from './equipment';
 export * from './food-groups';
 export * from './health-screening';
+// Fit im Alter: Zusatzfragen im Gesundheits-Check (docs/PLAN-FIT-IM-ALTER.md 8.2, FA1 Teil 2).
+export * from './aging-screening';
+export * from './function-tests';
 export * from './body-measurements';
 export * from './onboarding';
 export * from './validation';
@@ -24,6 +27,8 @@ export * from './share';
 export * from './dashboard';
 export * from './layout';
 export * from './notifications';
+// Barrierefreiheit (docs/PLAN-FIT-IM-ALTER.md 12, Etappe FA5).
+export * from './accessibility';
 // Zyklus-Modul (docs/PLAN-PHASE-9.md, ZY1) und „Heute leichter“ (gemeinsam mit Phase 8b).
 export * from './cycle';
 export * from './plan/day-variant';

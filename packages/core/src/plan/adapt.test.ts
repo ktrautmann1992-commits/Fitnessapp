@@ -368,7 +368,7 @@ describe('adaptTemplate mit kleinen festen Testdaten', () => {
     const result = adaptTemplate(t, {
       library: libraryMap([overhead, squat]),
       profile: equipmentProfile('gym', []),
-      rules: { rpeMax: 7, excludedCautionTags: ['overhead'], cautious: true },
+      rules: { rpeMax: 7, excludedCautionTags: ['overhead'], cautious: true, activeAging: false },
       minutesPerSession: 60,
     });
     expect(

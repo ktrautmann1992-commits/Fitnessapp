@@ -237,3 +237,23 @@ describe('Plan als PDF – Zusammenstecken (P3/P4)', () => {
     if (!result.ok) expect(planPrintErrorText(result)).toBe(t.printView.noSessions);
   });
 });
+
+describe('Großdruck (FA5, docs/PLAN-FIT-IM-ALTER.md 12 Nr. 7)', () => {
+  it('ist standardmäßig aus und vergrößert eingeschaltet die Schrift im Druck-HTML', async () => {
+    expect(DEFAULT_PRINT_FORM.largePrint).toBe(false);
+    const plan = await savedPlan();
+    const normal = buildPlanPrint({ ...plan, today: TODAY, form: form(), target: 'web' });
+    const large = buildPlanPrint({
+      ...plan,
+      today: TODAY,
+      form: form({ largePrint: true }),
+      target: 'web',
+    });
+    expect(normal.ok && large.ok).toBe(true);
+    if (!normal.ok || !large.ok) return;
+    const min = (html: string) =>
+      Math.min(...[...html.matchAll(/font-size:\s*([\d.]+)pt/g)].map((m) => Number(m[1])));
+    expect(min(normal.html)).toBe(10);
+    expect(min(large.html)).toBe(14);
+  });
+});

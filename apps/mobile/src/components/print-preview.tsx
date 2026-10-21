@@ -67,32 +67,35 @@ function prefixIds(root: Element, prefix: string) {
 }
 
 /** Druck-CSS (nur in Vorschau und Druck-Kopie) und Ergänzungen – solange die Druckansicht offen ist. */
-function usePrintStyles() {
+function usePrintStyles(largePrint: boolean) {
   useEffect(() => {
     const style = document.createElement('style');
     style.id = STYLE_ID;
-    style.textContent = `${scopedPrintStyles(['.a5-print-preview', `#${PRINT_ROOT_ID}`])}\n${SUPPLEMENT}`;
+    style.textContent = `${scopedPrintStyles(['.a5-print-preview', `#${PRINT_ROOT_ID}`], { largePrint })}\n${SUPPLEMENT}`;
     document.head.appendChild(style);
     document.documentElement.classList.add(HTML_CLASS);
     return () => {
       style.remove();
       document.documentElement.classList.remove(HTML_CLASS);
     };
-  }, []);
+  }, [largePrint]);
 }
 
 export function PrintPreview({
   html,
   title,
   label = t.printView.previewLabel,
+  largePrint = false,
 }: {
   html: string;
   title: string;
+  /** Großdruck (FA5): Schrift ×1,4 auch in Vorschau und Browser-Druck. */
+  largePrint?: boolean;
   /** Screenreader-Name der Vorschau (Standard: Trainingsplan). */
   label?: string;
 }) {
   const hostRef = useRef<View>(null);
-  usePrintStyles();
+  usePrintStyles(largePrint);
 
   useEffect(() => {
     const parsed = new DOMParser().parseFromString(html, 'text/html');

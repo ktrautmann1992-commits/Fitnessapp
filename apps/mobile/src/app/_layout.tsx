@@ -11,6 +11,7 @@ import { NotificationRouter } from '@/components/notification-router';
 // im Browser ohne Wirkung.
 import '@/lib/location-driver';
 import { TopBanner } from '@/components/screen';
+import { AccessibilityProvider } from '@/lib/accessibility';
 import { useThemeColors } from '@/lib/theme';
 import { useBrandFonts } from '@/lib/use-brand-fonts';
 import { AppStateProvider } from '@/state/app-state';
@@ -25,7 +26,16 @@ if (Platform.OS !== 'web') {
 /** Bildschirme, die immer dunkel sind (Markenfläche wie Startbildschirm und Landingpage-Hero). */
 const DARK_ROUTES = new Set(['/welcome']);
 
+/** Wurzel: Einstellungen zur Barrierefreiheit (Große Ansicht, Vorlesen) gelten für alle Bildschirme (FA5). */
 export default function RootLayout() {
+  return (
+    <AccessibilityProvider>
+      <RootContent />
+    </AccessibilityProvider>
+  );
+}
+
+function RootContent() {
   const theme = useThemeColors();
   const pathname = usePathname();
   const fontsReady = useBrandFonts();

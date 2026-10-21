@@ -64,11 +64,13 @@ function proposal(
 }
 
 /**
- * Gründe, aus denen R1 nie greift (Frage 5): vorsichtiger Plan, unter 18, ab 65, Einsteiger im ersten Block. Der Server
+ * Gründe, aus denen R1 nie greift (Frage 5): vorsichtiger Plan, Ziel „Fit im Alter“ (FA1), unter 18, ab 65, Einsteiger
+ * im ersten Block. Der Server
  * prüft dieselbe Liste in `private.fast_increase_exclusion` (Nachtrag R1-Ausschlüsse; db-sync.test.ts gleicht ab).
  */
 export const FAST_INCREASE_EXCLUSIONS = [
   'cautious_plan',
+  'active_aging',
   'minor',
   'senior',
   'beginner_first_block',
@@ -79,6 +81,8 @@ export type FastIncreaseExclusion = (typeof FAST_INCREASE_EXCLUSIONS)[number];
 export function fastIncreaseExclusion(inputs: LiveAdjustmentInputs): FastIncreaseExclusion | null {
   const age = ageInYears(inputs.person.birthDate, inputs.today);
   if (inputs.rules.cautious) return 'cautious_plan';
+  // Fit im Alter (FA1, Plan 8.1 Nr. 8): R1 nie – auch der Server lehnt ab (private.fast_increase_exclusion).
+  if (inputs.rules.activeAging) return 'active_aging';
   if (age < AGE_PLAN_RULES.minor.belowAge) return 'minor';
   if (age >= AGE_PLAN_RULES.senior.fromAge) return 'senior';
   if (inputs.plan.experienceLevel === 'beginner') {

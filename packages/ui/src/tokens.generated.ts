@@ -237,6 +237,20 @@ export const cardColors = {
   },
 } as const;
 
+/** „Große Ansicht“ (--large-…): Textfarben mit mindestens 7 : 1 (WCAG AAA), hell und dunkel. */
+export const largeViewColors = {
+  light: {
+    text: '#0A0C10',
+    textMuted: '#404859',
+    link: '#123A9E',
+  },
+  dark: {
+    text: '#F4F6FA',
+    textMuted: '#B4BDD0',
+    link: '#8DB0FF',
+  },
+} as const;
+
 /** Schriftfamilien (--font-family-…, nur der erste Name; Ersatzschrift ist die Systemschrift). */
 export const fontFamily = {
   base: 'Plus Jakarta Sans',

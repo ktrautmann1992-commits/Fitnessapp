@@ -294,6 +294,24 @@ Datenbank noch App.
 - **Erklärungen** aus festen Bausteinen (`ADJUST_EXPLAIN_DE`/`ADJUST_HINTS_DE` in `packages/core/src/adjust/texts-de.ts`), nur Zahlen, Daten und Übungsnamen, keine Aussagen über
   Körper oder Gesundheit. **Kalorien** (`calorie_adjust`) bleiben reserviert; Schutzgrenzen nur in `clampCalorieTarget`.
 
+### 4.2 Ziel „Fit im Alter“ (`active_aging`, docs/PLAN-FIT-IM-ALTER.md, Etappe FA1)
+- Eigenes Hauptziel mit Sicherheitsprofil `ACTIVE_AGING_RULES` (immer, unabhängig vom Alter; die Altersregeln ab 65
+  gelten zusätzlich): RPE höchstens 6, keine Übungen mit `high_impact`, `high_skill`, `spinal_loading`, `overhead`,
+  `long_supine`, `floor_transfer`, `spinal_flexion`, `trunk_rotation`; Halteübungen höchstens 30 s; Ausdauer als
+  zügiges Gehen (Startgruppe „vorsichtig“, Anstrengung ≤ 3); Erholungswoche nach 4 Belastungswochen; R1 „schneller
+  steigern“ nie. Getrennt vom Flag `cautious` (`PlanSafetyRules.activeAging`, `cautiousProgression()`), damit
+  „aktiv“-Vorlagen wählbar bleiben (Wächter N1).
+- Gleichgewicht ist **keine neue Einheit-Art** (Variante B): Kraft-Einheit mit Fokus `balance`, Bewegungsmuster
+  `balance`; beim Kürzen bleiben mindestens 2 Gleichgewichts- und 1 Beweglichkeitsübung (`keepPatterns`).
+- Bis eigene Vorlagen da sind (Etappe FA2), nutzt das Ziel die nächstbeste Vorlage „Allgemeine Fitness“ (`fallback`).
+  In der App ist das Ziel erst mit Etappe FA4 wählbar (`ACTIVE_AGING_GOAL_SELECTABLE`).
+- Zusatzfragen im Gesundheits-Check (Sturz, Unsicherheit, Gehhilfe, OP, künstliche Hüfte, Osteoporose, Blutverdünner;
+  `aging-screening.ts`): ab 60 bei jedem Ziel, überspringbar (= vorsichtig); nur Sturz, Unsicherheit, Gehhilfe und OP
+  machen den Plan vorsichtig, die übrigen wirken gezielt (Ausschlüsse, Halt). Gleichgewichts-Stufen und schwerere
+  Varianten nur nach Bestätigung; Selbsttests „Mein Fortschritt“ ohne Normwerte, steuern nie den Plan.
+- Der Server prüft dieselben Grenzen mit Schutz-Triggern auf `planned_exercises`/`planned_sessions` (jeder Schreibweg)
+  und in `private.fast_increase_exclusion` (pgTAP `80_active_aging.test.sql`).
+
 ## 5. Tagesansicht & Trainingstagebuch
 
 **App-Aufbau seit 18.10.2026 (`docs/PLAN-DASHBOARD.md`):** Ohne Sitzung zeigt die App den **Startbildschirm** mit zwei
@@ -1224,6 +1242,14 @@ alle offen, Server-Prüfung mit Phase 7):
   „erreicht“/„Zeitraum vorbei“ ohne Zahlen), fester Hilfe-Hinweis, keine Abzeichen. Restrisiko: Das
   Wunschgewicht steht im Klartext in der Datenbank (wie `body_metrics`) – vor Livegang mit der DSFA bewerten.
 - Abgrenzung zum Medizinprodukt (MDR): keine Diagnosen, keine Therapieaussagen
+- **Zweckbestimmung „Fit im Alter“ (Ziel `active_aging`, docs/PLAN-FIT-IM-ALTER.md 3.3, K7):** „‚Fit im Alter‘ ist ein
+  Trainingsplan für einen aktiven Alltag. Die App bewertet weder Sturzrisiko noch Gesundheitszustand.“ Keine
+  Sturzrisiko-Werte, keine Normtabellen, Selbsttests steuern nie den Plan, keine Wirkungsaussage zu Stürzen. MDR-Abgrenzung,
+  Haftung und Werbeaussagen vor dem öffentlichen Livegang prüfen lassen.
+- **Vorlesen (Fit im Alter FA5):** Datenschutzerklärung ergänzen: „Anleitungen vorlesen“ nutzt die Sprachausgabe des
+  Geräts (im Browser nur Stimmen, die auf dem Gerät laufen – `localService`); vorgelesen werden nur Übungsanleitungen,
+  nie Gesundheitsdaten. BFSG/EN 301 549 (Barrierefreiheit) vor dem öffentlichen Livegang prüfen (BITV nur öffentliche
+  Stellen).
 - Health-Claims-Verordnung, Kennzeichnung Werbung/Affiliate (UWG)
 - App-Store-Richtlinien: In-App-Kauf für digitale Abos, HealthKit-Daten nicht für Werbung
 - Impressum, AGB, Widerrufsbelehrung, Haftungsausschluss

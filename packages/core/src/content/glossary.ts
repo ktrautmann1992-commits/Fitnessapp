@@ -53,7 +53,8 @@ export const GLOSSARY_GROUPS: Readonly<Record<GlossaryGroup, readonly MovementPa
   shoulders: ['shoulder_isolation'],
   core: ['core_anti_extension', 'core_anti_rotation', 'core_flexion'],
   calves: ['calf_raise'],
-  conditioning: ['conditioning', 'mobility', 'carry'],
+  // `balance` (Fit im Alter, FA1): bis es Gleichgewichtsübungen gibt (FA2), hier – eigener Bereich ggf. mit FA2.
+  conditioning: ['conditioning', 'mobility', 'carry', 'balance'],
 };
 
 const GROUP_OF = new Map<MovementPattern, GlossaryGroup>(

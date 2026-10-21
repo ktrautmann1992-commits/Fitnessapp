@@ -1253,6 +1253,8 @@ export const GOAL_ENERGY_ADJUSTMENT = {
   muscle_gain: { beginner: 0.1, advanced: 0.05, competitive: 0.05 },
   general_fitness: 0,
   endurance: 0,
+  // Fit im Alter (FA1, docs/PLAN-FIT-IM-ALTER.md 4.1/11): Erhalt; Abnehmen nur als Nebenziel (GOAL_PAIR_RULES).
+  active_aging: 0,
 } as const;
 
 /**
@@ -1380,6 +1382,9 @@ export const PROTEIN_G_PER_KG = {
     muscle_gain: 1.8,
     general_fitness: 1.4,
     endurance: 1.4,
+    // Fit im Alter (FA1): 1,2 g/kg – PROT-AGE „≥ 1,2 g/kg bei Training“ (Bauer J et al. 2013, J Am Med Dir Assoc
+    // 14(8):542–559; Deutz NE et al. 2014, Clin Nutr 33(6):929–936). Gilt so auch für 60–64-Jährige mit dem Ziel.
+    active_aging: 1.2,
   },
   max: 2.2,
   cautiousMax: 1.6,
@@ -2322,6 +2327,16 @@ export const GOAL_PAIR_RULES = [
     energyAdjustment: 0,
     proteinGPerKg: 1.8,
     enduranceCarbs: true,
+  },
+  // Fit im Alter → Abnehmen (FA-G6, docs/PLAN-FIT-IM-ALTER.md 11, Wächter S14): kleines Defizit −10 % (die 15-%-Grenze
+  // ab 65 greift zusätzlich), Eiweiß 1,5 g/kg (Spanne 1,2–1,5, PROT-AGE) – Muskelerhalt vor Gewicht.
+  // PRODUKTENTSCHEIDUNG – VOR LIVEGANG FACHLICH PRÜFEN. Tempo-Deckel 0,5 %/Woche folgt mit der Ernährungs-Etappe.
+  {
+    primary: 'active_aging',
+    secondary: 'fat_loss',
+    energyAdjustment: -0.1,
+    proteinGPerKg: 1.5,
+    enduranceCarbs: false,
   },
 ] as const satisfies readonly {
   readonly primary: GoalType;
@@ -3883,3 +3898,140 @@ export const WEARABLE_DUPLICATE = {
   askShare: 0.2,
   durationTolerance: 0.2,
 } as const;
+
+// ---------------------------------------------------------------------------------------------------------
+// Fit im Alter · Etappe FA5 · Barrierefreiheit (docs/PLAN-FIT-IM-ALTER.md Abschnitt 12) – gilt app-weit
+// ---------------------------------------------------------------------------------------------------------
+
+/**
+ * „Große Ansicht“ (Einstellungen, nur dieses Gerät).
+ * - `baseFontPx` 20 statt `defaultBaseFontPx` 16 → alle Schriftgrößen ×1,25 (Plan 12 Nr. 2). PRODUKTENTSCHEIDUNG.
+ * - `minTouchPx` 56: Tippflächen mindestens 56 px wie heute im Trainingsmodus; WCAG 2.2 SC 2.5.8 verlangt nur 24 px,
+ *   SC 2.5.5 (AAA) 44 px – W3C (2023), Web Content Accessibility Guidelines 2.2. Wert: PRODUKTENTSCHEIDUNG.
+ * - `minContrast` 7: Text 7 : 1 (WCAG 2.2 SC 1.4.6, AAA) – Token-Prüfung in packages/ui/src/tokens.test.ts.
+ * - `suggestFromAge` 60: Vorschlag in den Einstellungen ab 60 (FA-G2, Gründer-Entscheidung 21.10.2026) und beim
+ *   Ziel „Fit im Alter“. PRODUKTENTSCHEIDUNG.
+ */
+export const LARGE_VIEW = {
+  defaultBaseFontPx: 16,
+  baseFontPx: 20,
+  minTouchPx: 56,
+  defaultMinTouchPx: 48,
+  minContrast: 7,
+  suggestFromAge: 60,
+} as const;
+
+/**
+ * Vorlesen über die Sprachausgabe des Geräts (Plan 12 Nr. 5, Wächter S11, FA-G9):
+ * - `language`: Sprache der Anleitungen (de-DE gilt auch für AT/CH).
+ * - `rate`: Sprechtempo (1 = normal). Etwas langsamer für ältere Hörerinnen und Hörer – PRODUKTENTSCHEIDUNG.
+ * - `maxChars`: Obergrenze eines Vorlese-Texts (Schutz vor sehr langen Texten). PRODUKTENTSCHEIDUNG.
+ * Im Browser nur Stimmen mit `localService = true` (Sprachausgabe auf dem Gerät, keine Übertragung an einen Dienst –
+ * W3C Web Speech API, SpeechSynthesisVoice.localService); gibt es keine, wird der Knopf ausgeblendet.
+ */
+export const READ_ALOUD = { language: 'de-DE', rate: 0.9, maxChars: 4000 } as const;
+
+// ---------------------------------------------------------------------------------------------------------
+// Fit im Alter · Etappe FA1 · Sicherheitsprofil des Ziels `active_aging` (docs/PLAN-FIT-IM-ALTER.md 7, 8.1, 9)
+// Gilt IMMER bei diesem Ziel – unabhängig vom Alter; die Altersregeln ab 65 (AGE_PLAN_RULES) gelten zusätzlich.
+// Fachprüfung (Physiotherapie/Sportmedizin) steht aus: alle Werte VOR LIVEGANG FACHLICH PRÜFEN.
+// ---------------------------------------------------------------------------------------------------------
+
+/**
+ * Sicherheitsprofil „Fit im Alter“ (strengste Regel gewinnt).
+ * - `rpeMax` 6 auf der App-Skala mit Wiederholungen in Reserve („noch etwa 4 Mal“). PRODUKTENTSCHEIDUNG in Anlehnung an
+ *   Chodzko-Zajko WJ et al. (2009), ACSM Position Stand „Exercise and physical activity for older adults“, Med Sci
+ *   Sports Exerc 41(7):1510–1530 (Anstrengung 5–6 „moderat“ auf einer 0–10-Skala – andere Skala, Wächter S1).
+ *   Erholungswoche: max(5, 6 − 2) = 5 (TEMPLATE_DOSAGE_LIMITS.rpe.min) – bewusst nur einen Punkt darunter (S7).
+ * - `excludedCautionTags`: keine Sprünge, Technik-Übungen, Wirbelsäulen-Last, Über-Kopf (erst nach Fachprüfung), lange
+ *   Rückenlage, Boden, Rumpfbeugen bis zum Ende, Drehen bis zum Anschlag – nur neutraler Rücken (Plan 8.1 Nr. 2).
+ *   Osteoporose: Giangregorio LM et al. (2014), „Too Fit To Fracture“, Osteoporos Int 25(3):821–835.
+ * - `enduranceStartGroup` 'cautious' und `deloadLoadWeeks` = DELOAD_SCHEDULE.cautious (Erholung nach 4 Wochen) –
+ *   GETRENNT vom Flag `cautious` (Wächter N1): `beginnerTemplatesOnly` bleibt aus, „aktiv“-Vorlagen bleiben wählbar.
+ * - `maxSessionsPerWeek` 5 (= WEEKLY_SESSION_LIMITS.cautiousMaxSessions, mindestens 2 Ruhetage).
+ * - `enduranceWalkOnly`: Ausdauer als zügiges Gehen (Plan 7, Modalität `walk`); Anstrengung höchstens
+ *   ENDURANCE_EFFORT.cautiousMax (3, Gesprächstest).
+ * - `keepOnShorten`: Beim Kürzen bleiben mindestens 2 Gleichgewichts- und 1 Beweglichkeitsübung (Wächter S8);
+ *   zuerst fallen Kraft-Isolationsübungen. PRODUKTENTSCHEIDUNG.
+ * - `strengthHoldMaxS` 30 / `strengthHoldMaxSCautious` 20: isometrische KRAFT-Halteübungen (Pressatmung vermeiden;
+ *   Pelliccia A et al. (2021), ESC-Leitlinie Sportkardiologie, Eur Heart J 42(1):17–96). `balanceHoldS` 10–30 s:
+ *   Gleichgewichts-Stand (kein Pressen; Otago: Campbell AJ et al. (1997), BMJ 315:1065–1069). Getrennt (K3).
+ *   PRODUKTENTSCHEIDUNG.
+ * - `fastIncrease` false: Live-Anpassung R1 „schneller steigern“ nie (Core und Server, Plan 8.1 Nr. 8).
+ */
+export const ACTIVE_AGING_RULES = {
+  rpeMax: 6,
+  excludedCautionTags: [
+    'high_impact',
+    'spinal_loading',
+    'overhead',
+    'long_supine',
+    'high_skill',
+    'floor_transfer',
+    'spinal_flexion',
+    'trunk_rotation',
+  ],
+  enduranceStartGroup: 'cautious',
+  deloadLoadWeeks: DELOAD_SCHEDULE.cautious,
+  maxSessionsPerWeek: WEEKLY_SESSION_LIMITS.cautiousMaxSessions,
+  enduranceWalkOnly: true,
+  enduranceEffortMax: ENDURANCE_EFFORT.cautiousMax,
+  keepOnShorten: { balance: 2, mobility: 1 },
+  strengthHoldMaxS: 30,
+  strengthHoldMaxSCautious: 20,
+  balanceHoldS: { min: 10, max: 30 },
+  fastIncrease: false,
+} as const satisfies {
+  rpeMax: number;
+  excludedCautionTags: readonly CautionTag[];
+  enduranceStartGroup: 'cautious';
+  deloadLoadWeeks: number;
+  maxSessionsPerWeek: number;
+  enduranceWalkOnly: boolean;
+  enduranceEffortMax: number;
+  keepOnShorten: { balance: number; mobility: number };
+  strengthHoldMaxS: number;
+  strengthHoldMaxSCautious: number;
+  balanceHoldS: { min: number; max: number };
+  fastIncrease: boolean;
+};
+
+/**
+ * Zusatzfragen im Gesundheits-Check bei „Fit im Alter“ bzw. ab 60 (docs/PLAN-FIT-IM-ALTER.md 8.2, FA-G3/FA-G15).
+ * - `askFromAge` 60: bei jedem Ziel; mit dem Ziel „Fit im Alter“ immer (auch mit 55). PRODUKTENTSCHEIDUNG.
+ * - `questionnaireVersion` 1: Fassung der Fragen (S4); eine neue Fassung fragt Bestandsnutzer erneut.
+ * - `recentSurgeryRecheckMonths` 12: OP-Frage „in den letzten 12 Monaten“ – nach 12 Monaten erneut fragen (N5; es
+ *   wird nur Monat und Jahr der ANTWORT gespeichert, kein OP-Datum).
+ * - `balanceMaxStageWithFallRisk` 2: Gleichgewicht höchstens Stufe 2 (einhändig festhalten) bei Sturz, Unsicherheit
+ *   oder Gehhilfe (Plan 8.2, 9 Nr. 4). PRODUKTENTSCHEIDUNG – Fachprüfung.
+ * Quellen der Fragen: CDC STEADI; Rubenstein LZ et al. (2011), J Safety Res 42(6):493–499 (Stay Independent);
+ * Montero-Odasso M et al. (2022), Age Ageing 51(9):afac205. Wortlaut: Fachprüfung ausstehend.
+ */
+export const AGING_SCREENING_RULES = {
+  askFromAge: 60,
+  questionnaireVersion: 1,
+  recentSurgeryRecheckMonths: 12,
+  balanceMaxStageWithFallRisk: 2,
+} as const;
+
+/**
+ * Gleichgewicht in Stufen (docs/PLAN-FIT-IM-ALTER.md 9 Nr. 4, K3): (1) beidhändig festhalten → (2) einhändig →
+ * (3) Fingerspitzen → (4) Halt in Reichweite. Haltezeit 10 → 30 s in 5-s-Schritten; jede neue Stufe NUR nach
+ * Bestätigung, Augen schließen gibt es nicht. Otago: Campbell AJ et al. (1997), BMJ 315:1065–1069 (Steigerung über
+ * Stufen). Schrittweite: PRODUKTENTSCHEIDUNG – Fachprüfung.
+ * Schwerere Kraft-Variante (9 Nr. 3): erst nach `harderVariantAfterSessions` Einheiten in Folge am oberen Ende und nur
+ * nach Bestätigung (wie LOAD_PROGRESSION.consecutiveSessionsForStep).
+ */
+export const BALANCE_PROGRESSION = {
+  stages: 4,
+  holdStepS: 5,
+  harderVariantAfterSessions: 2,
+} as const;
+
+/**
+ * Ernährung beim Paar „Fit im Alter → Abnehmen“ (docs/PLAN-FIT-IM-ALTER.md 11, FA-G6): Abnehm-Tempo höchstens 0,5 %
+ * Körpergewicht je Woche (Ampel „grün“) statt ~1 % – Muskelerhalt im Alter. PRODUKTENTSCHEIDUNG – Fachprüfung.
+ * Orientierung: Bauer J et al. (2013), PROT-AGE, J Am Med Dir Assoc 14(8):542–559; Volkert D et al. (2019),
+ * ESPEN-Leitlinie Geriatrie, Clin Nutr 38(1):10–47.
+ */
+export const ACTIVE_AGING_NUTRITION = { weeklyLossMaxFraction: 0.005 } as const;

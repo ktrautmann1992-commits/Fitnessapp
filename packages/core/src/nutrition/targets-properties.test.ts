@@ -47,6 +47,8 @@ const SELECTIONS: readonly (readonly [GoalType, GoalType | null])[] = [
   ['endurance', 'fat_loss'],
   ['endurance', 'definition'],
   ['endurance', 'muscle_gain'],
+  // Fit im Alter (docs/PLAN-FIT-IM-ALTER.md 11, FA-G6): −10 %.
+  ['active_aging', 'fat_loss'],
 ];
 const DEFICIT_SELECTIONS = new Set([
   'fat_loss>',
@@ -58,6 +60,7 @@ const DEFICIT_SELECTIONS = new Set([
   'general_fitness>fat_loss',
   'endurance>fat_loss',
   'endurance>definition',
+  'active_aging>fat_loss',
 ]);
 const SURPLUS_SELECTIONS = new Set(['muscle_gain>', 'muscle_gain>endurance']);
 
@@ -325,7 +328,7 @@ describe('Eigenschaftstest: kein Eingabewert lockert eine Grenze (12.1, W17, W27
         }
       }
     }
-    expect(checked).toBe(4 * 3 * 3 * 3 * 5 * 2 * 2 * 7);
+    expect(checked).toBe(4 * 3 * 3 * 3 * GOAL_TYPES.length * 2 * 2 * 7);
   }, 60_000);
 
   it('gezielt: BMI 18,5–20 (≤ 10 %), Untergewicht (kein Defizit), muscle_gain-Obergrenze, divers', () => {

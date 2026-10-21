@@ -1,6 +1,7 @@
 import { z } from 'zod';
 
 import {
+  ACTIVE_AGING_NUTRITION,
   BMI_LIMITS,
   BODY_METRIC_LIMITS,
   NUTRITION_MAX_AGE_YEARS,
@@ -56,6 +57,11 @@ export interface NutritionEligibility {
   readonly bmi: number | null;
   /** Flags, Körperdaten oder ein Check gehen ein → Gesundheitsdatum (7.1). */
   readonly usesHealthData: boolean;
+  /**
+   * Fit im Alter (docs/PLAN-FIT-IM-ALTER.md 11): Abnehm-Tempo höchstens 0,5 % Körpergewicht je Woche statt ~1 %
+   * (ACTIVE_AGING_NUTRITION). Fehlt → allgemeine Grenze MAX_WEEKLY_WEIGHT_LOSS_FRACTION.
+   */
+  readonly weeklyLossMaxFraction?: number;
 }
 
 const eligibilityInputsSchema = z
@@ -193,5 +199,8 @@ export function nutritionEligibility(rawInput: EligibilityInputs): NutritionElig
     notices: sortNotices(notices),
     bmi,
     usesHealthData: true,
+    ...(input.goalType === 'active_aging'
+      ? { weeklyLossMaxFraction: ACTIVE_AGING_NUTRITION.weeklyLossMaxFraction }
+      : {}),
   };
 }

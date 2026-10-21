@@ -18,6 +18,18 @@ import {
  * `clampCalorieTarget`.
  */
 
+/**
+ * Ziel „Fit im Alter“ in der Ziel-Auswahl der App anbieten? Engine und Server kennen das Ziel ab Etappe FA1; die
+ * Auswahl (mit Vorschlag ab 60, Zusatzfragen, Stopp-Karte, Halt-Hinweis) kommt mit Etappe FA4
+ * (docs/PLAN-FIT-IM-ALTER.md 17). Bis dahin aus – so trainiert niemand ohne die Sicherheits-Bildschirme.
+ */
+export const ACTIVE_AGING_GOAL_SELECTABLE: boolean = false;
+
+/** Ziele, die die App zur Auswahl anbietet (Haupt- und Nebenziel). */
+export const SELECTABLE_GOAL_TYPES: readonly GoalType[] = GOAL_TYPES.filter(
+  (goal) => goal !== 'active_aging' || ACTIVE_AGING_GOAL_SELECTABLE,
+);
+
 /** Erlaubte Paare [Hauptziel, Nebenziel] (= GOAL_PAIR_RULES, gespiegelt in private.goal_pair_allowed). */
 export const GOAL_COMBINATIONS: readonly (readonly [GoalType, GoalType])[] = GOAL_PAIR_RULES.map(
   (rule) => [rule.primary, rule.secondary] as const,

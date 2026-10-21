@@ -6,6 +6,8 @@ import { normalizeLogo, renderAssetsModule } from '../../scripts/generate-print-
 import { ALPHA5_LOGO_SVG, ARCHIVO_WOFF2_BASE64 } from './assets.generated';
 import {
   escapeHtml,
+  LARGE_PRINT_FONT_SCALE,
+  scalePrintFontSizes,
   PRINT_CSP,
   renderPrintHtml,
   scopedPrintStyles,
@@ -340,5 +342,31 @@ describe('scopedPrintStyles – Druckansicht im Browser (Wächter P3/P4 S2)', ()
     const standalone = renderPrintHtml(doc('x'));
     expect(standalone).toContain('* { box-sizing: border-box; }');
     expect(standalone).toContain('@page { size: A4 portrait; margin: 0; }');
+  });
+});
+
+describe('renderPrintHtml – Großdruck (FA5, docs/PLAN-FIT-IM-ALTER.md 12 Nr. 7)', () => {
+  const sizes = (html: string) =>
+    [...html.matchAll(/font-size:\s*([\d.]+)pt/g)].map((m) => Number(m[1]));
+
+  it('vergrößert alle Schriften um den Faktor 1,4 – kleinste Schrift mindestens 14 pt', () => {
+    const normal = sizes(renderPrintHtml(SAMPLE));
+    const large = sizes(renderPrintHtml(SAMPLE, { largePrint: true }));
+    expect(large).toHaveLength(normal.length);
+    expect(Math.min(...large)).toBeGreaterThanOrEqual(14);
+    large.forEach((size, i) =>
+      expect(size).toBeCloseTo((normal[i] ?? 0) * LARGE_PRINT_FONT_SCALE, 0),
+    );
+  });
+
+  it('ohne Großdruck bleibt das HTML gleich', () => {
+    expect(renderPrintHtml(SAMPLE, { largePrint: false })).toBe(renderPrintHtml(SAMPLE));
+  });
+
+  it('rundet auf halbe Punkte und lässt andere Einheiten in Ruhe', () => {
+    expect(scalePrintFontSizes('a{font-size: 11pt; width: 10mm}', 1.4)).toBe(
+      'a{font-size: 15.5pt; width: 10mm}',
+    );
+    expect(scalePrintFontSizes('a{font-size: 11pt}', 1)).toBe('a{font-size: 11pt}');
   });
 });

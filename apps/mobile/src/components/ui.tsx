@@ -14,13 +14,15 @@ import {
 
 import { t } from '@/i18n';
 import { Icon, type IconName } from '@/components/design';
+import { useMinTouch } from '@/lib/accessibility';
 import { appFont, displayFont } from '@/lib/fonts';
 import { useColorSchemeName, useThemeColors } from '@/lib/theme';
 import { Text } from '@/components/text';
 
 /**
  * Grundbausteine der Oberfläche. Farben, Abstände und Schrift kommen ausschließlich aus den Design-Tokens
- * (@fitnessapp/ui, Quelle packages/ui/theme.css). Alle Tippflächen sind mindestens 48 px hoch.
+ * (@fitnessapp/ui, Quelle packages/ui/theme.css). Alle Tippflächen sind mindestens 48 px hoch, in der „Großen Ansicht“
+ * (Einstellungen, docs/PLAN-FIT-IM-ALTER.md 12) mindestens 56 px (Knöpfe, Auswahl, Häkchen).
  * Aussehen nach dem Entwurf „Übersicht neu“ (20.10.2026): Plus Jakarta Sans, Karten Radius 20 mit zartem Rand,
  * Pillen-Knöpfe. Weitere Bausteine (Icon, Kacheln, Hero-Karte …): components/design.tsx.
  */
@@ -139,6 +141,7 @@ export function Button({
   testID?: string;
 }) {
   const theme = useThemeColors();
+  const minTouch = useMinTouch();
   const inactive = disabled || loading;
   const container: ViewStyle =
     variant === 'primary'
@@ -175,6 +178,10 @@ export function Button({
       style={({ pressed }) => [
         styles.button,
         variant === 'link' && styles.linkButton,
+        // Große Ansicht (FA5): Tippflächen mindestens 56 px.
+        minTouch > MIN_TOUCH && {
+          minHeight: Math.max(minTouch, variant === 'link' ? 0 : BUTTON_HEIGHT),
+        },
         container,
         { opacity: inactive ? 0.6 : pressed ? 0.8 : 1 },
       ]}
@@ -372,6 +379,7 @@ export function OptionButton({
   testID?: string | undefined;
 }) {
   const theme = useThemeColors();
+  const minTouch = useMinTouch();
   const solid = filled && selected;
   return (
     <Pressable
@@ -385,6 +393,7 @@ export function OptionButton({
       testID={testID}
       style={({ pressed }) => [
         compact ? styles.chip : styles.option,
+        minTouch > MIN_TOUCH && { minHeight: minTouch, minWidth: compact ? minTouch : undefined },
         {
           // Ausgewählt: kräftiger Rahmen in der Hauptfarbe; Text bleibt in Textfarbe (Kontrast, WCAG AA).
           backgroundColor: solid ? theme.primary : theme.surface,
@@ -452,6 +461,7 @@ export function Checkbox({
   testID?: string;
 }) {
   const theme = useThemeColors();
+  const minTouch = useMinTouch();
   return (
     <View style={styles.field}>
       <Pressable
@@ -461,7 +471,7 @@ export function Checkbox({
         aria-checked={checked}
         onPress={() => onChange(!checked)}
         testID={testID}
-        style={styles.checkboxRow}
+        style={[styles.checkboxRow, minTouch > MIN_TOUCH && { minHeight: minTouch }]}
       >
         <View
           style={[

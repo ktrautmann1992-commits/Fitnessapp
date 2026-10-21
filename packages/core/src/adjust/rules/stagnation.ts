@@ -5,7 +5,7 @@ import type { EquipmentLocation } from '../../enums';
 import { progressFromLogs } from '../../log/progression';
 import type { ExerciseProgress, ProgressionContext } from '../../log/types';
 import { isExerciseFeasible } from '../../plan/equipment-profile';
-import { isExerciseAllowed } from '../../plan/safety';
+import { cautiousProgression, isExerciseAllowed } from '../../plan/safety';
 import type { StoredSession } from '../../plan/view';
 import { inputFingerprint } from '../fingerprint';
 import type { LiveAdjustmentEnvironment, LiveAdjustmentInputs } from '../inputs';
@@ -97,7 +97,7 @@ export function stagnationAlternative(
   }
   const inSessions = new Set(sessions.flatMap((s) => s.exercises.map((e) => e.exercise_id)));
   const sorted = [...original.alternatives].sort((a, b) => {
-    if (inputs.rules.cautious) {
+    if (cautiousProgression(inputs.rules)) {
       const ea = a.reason === 'easier' ? 0 : 1;
       const eb = b.reason === 'easier' ? 0 : 1;
       if (ea !== eb) return ea - eb;

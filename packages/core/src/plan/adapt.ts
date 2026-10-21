@@ -1,4 +1,5 @@
 import {
+  ACTIVE_AGING_RULES,
   LARGE_MUSCLE_GROUPS,
   REST_RANGES_S,
   SESSION_FIT,
@@ -43,7 +44,10 @@ export interface AdaptResult {
 export interface AdaptContext {
   readonly library: ReadonlyMap<string, Exercise>;
   readonly profile: Pick<EquipmentProfile, 'available'>;
-  readonly rules: Pick<PlanSafetyRules, 'excludedCautionTags' | 'cautious' | 'rpeMax'>;
+  readonly rules: Pick<
+    PlanSafetyRules,
+    'excludedCautionTags' | 'cautious' | 'rpeMax' | 'activeAging'
+  >;
   /**
    * Zeitbudget je Einheit. Seit Engine-Version 2 meist weggelassen: Gekürzt wird erst beim Platzieren je Termin
    * (schedule.ts, Erweiterungsplan 5.3), weil derselbe Vorlagen-Tag an verschiedenen Tagen verschieden lang ist.
@@ -122,6 +126,11 @@ function adaptSessionExercises(
         ? Math.min(restRange.max, Math.max(restRange.min, item.rest_s))
         : item.rest_s,
       rpe_target: clampRpe(item.rpe_target, ctx.rules.rpeMax),
+      // Fit im Alter (FA1, Plan 8.1 Nr. 5, V21): Halteübungen höchstens 30 s.
+      duration_s:
+        ctx.rules.activeAging && item.duration_s !== null
+          ? Math.min(item.duration_s, ACTIVE_AGING_RULES.strengthHoldMaxS)
+          : item.duration_s,
       target_weight_kg: null,
     });
   }
@@ -143,11 +152,21 @@ export interface FitResult {
  * fallen wie bisher); in Schritt (3) fällt bis hinunter zu 4 Übungen die letzte Nicht-Rumpf-Übung, darunter wie
  * bisher die letzte. Ohne die Option ist das Ergebnis identisch zur Engine-Version 2.
  */
+export interface FitOptions {
+  readonly protectLastCore?: boolean;
+  /**
+   * Fit im Alter (FA1, Wächter S8, ACTIVE_AGING_RULES.keepOnShorten): so viele Übungen mit Muster `balance` bzw.
+   * `mobility` bleiben beim Kürzen immer stehen (sofern die Einheit so viele hat). Zuerst fallen
+   * Kraft-Isolationsübungen, dann Sätze, dann übrige Übungen vom Ende. Weggelassen → unverändert.
+   */
+  readonly keepPatterns?: { readonly balance: number; readonly mobility: number };
+}
+
 export function fitSessionToMinutes(
   exercises: readonly PlannedExerciseDraft[],
   minutes: number,
   library: ReadonlyMap<string, Exercise>,
-  options: { readonly protectLastCore?: boolean } = {},
+  options: FitOptions = {},
 ): FitResult {
   let current = normalize(exercises);
   const fits = () => estimateSessionMinutes({ exercises: current }) <= minutes;
@@ -161,10 +180,22 @@ export function fitSessionToMinutes(
     const pattern = library.get(e.exercise_id)?.movement_pattern;
     return pattern !== undefined && corePatterns.includes(pattern);
   };
+  // Fit im Alter: geschützte Muster (Gleichgewicht, Beweglichkeit) – eine Übung ist geschützt, solange ihr Muster
+  // nicht mehr Übungen hat als die Mindestzahl.
+  const keep = options.keepPatterns;
+  const patternOf = (e: PlannedExerciseDraft) => library.get(e.exercise_id)?.movement_pattern;
+  const isProtected = (e: PlannedExerciseDraft) => {
+    if (!keep) return false;
+    const pattern = patternOf(e);
+    if (pattern !== 'balance' && pattern !== 'mobility') return false;
+    return current.filter((x) => patternOf(x) === pattern).length <= keep[pattern];
+  };
   // (1) Isolationsübungen vom Ende (Körpergewicht-Vorlage: die letzte Rumpf-Übung bleibt)
   while (!fits() && current.length > SESSION_FIT.minExercises) {
     const lastCore = options.protectLastCore === true && current.filter(isCore).length === 1;
-    const index = current.map((e) => isIsolation(e) && !(lastCore && isCore(e))).lastIndexOf(true);
+    const index = current
+      .map((e) => isIsolation(e) && !(lastCore && isCore(e)) && !isProtected(e))
+      .lastIndexOf(true);
     if (index < 0) break;
     current = normalize(current.filter((_, i) => i !== index));
   }
@@ -185,6 +216,13 @@ export function fitSessionToMinutes(
   // fällt die letzte NICHT-Rumpf-Übung (3 Grundübungen + Rumpf bleiben); darunter wie bisher vom Ende, damit die
   // drei ersten Grundübungen (Bein, Drücken bzw. Hüftbeugen, Rudern) bleiben.
   while (!fits() && current.length > SESSION_FIT.minExercises) {
+    if (keep) {
+      // Fit im Alter: die letzte NICHT geschützte Übung fällt; sind nur noch geschützte übrig, bleibt es dabei.
+      const index = current.map((e) => !isProtected(e)).lastIndexOf(true);
+      if (index < 0) break;
+      current = normalize(current.filter((_, i) => i !== index));
+      continue;
+    }
     const keepCore =
       options.protectLastCore === true && current.length > SESSION_FIT.minExercises + 1;
     const index = keepCore ? current.map((e) => !isCore(e)).lastIndexOf(true) : -1;

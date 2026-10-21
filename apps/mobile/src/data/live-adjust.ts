@@ -21,6 +21,7 @@ import {
   storedAdjustmentSchema,
   type StoredSession,
   weeklySetRange,
+  cautiousProgression,
 } from '@fitnessapp/core';
 import { z } from 'zod';
 
@@ -402,7 +403,9 @@ export function revertAllowed(
     today: ctx.today,
     adjustments: adjustments.filter((a) => a.planId === adjustment.planId),
     ...(snapshot && rules
-      ? { maxLoadWeeks: loadWeeksBeforeDeload(snapshot.experienceLevel, rules.cautious) }
+      ? {
+          maxLoadWeeks: loadWeeksBeforeDeload(snapshot.experienceLevel, cautiousProgression(rules)),
+        }
       : {}),
     planStart: active.plan.start_date,
   });
