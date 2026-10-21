@@ -21,7 +21,7 @@ async function start(page: Page) {
 
 async function openWeightGoal(page: Page) {
   await page.getByRole('button', { name: 'Einstellungen' }).click();
-  await page.getByRole('button', { name: 'Dein Abnehm-Ziel' }).click();
+  await page.getByRole('link', { name: 'Dein Abnehm-Ziel' }).click();
   await expect(page.getByTestId('weight-goal-settings')).toBeVisible();
 }
 

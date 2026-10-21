@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { Linking, Platform } from 'react-native';
 
+import { SectionLabel } from '@/components/design';
 import { Body, Button, Card, Checkbox, Heading, Notice } from '@/components/ui';
 import type { UserRows } from '@/data/types';
 import { t } from '@/i18n';
@@ -180,7 +181,7 @@ export function NotificationSettings({ rows }: { rows: UserRows }) {
   if (!notifications.supported) {
     return (
       <>
-        <Heading level={2}>{t.notifications.settingsTitle}</Heading>
+        <SectionLabel>{t.notifications.settingsTitle}</SectionLabel>
         <Card>
           <Notice tone="info" testID="notifications-web">
             {t.notifications.web}
@@ -208,7 +209,7 @@ export function NotificationSettings({ rows }: { rows: UserRows }) {
 
   return (
     <>
-      <Heading level={2}>{t.notifications.settingsTitle}</Heading>
+      <SectionLabel>{t.notifications.settingsTitle}</SectionLabel>
       <Card>
         <Body muted>{t.notifications.settingsText}</Body>
         <Body muted>{t.notifications.why}</Body>

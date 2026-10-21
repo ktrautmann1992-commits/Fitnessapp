@@ -1,10 +1,11 @@
 import { dataExportFileName, dataExportJson } from '@fitnessapp/core';
 import { Redirect, useRouter, type Href } from 'expo-router';
 import { useMemo, useState } from 'react';
-import { View } from 'react-native';
+import { StyleSheet, View } from 'react-native';
 
 import { ConfirmDialog, Screen } from '@/components/screen';
-import { Body, Button, Card, Heading, LoadingState, Notice } from '@/components/ui';
+import { ListGroup, ListRow, SectionLabel } from '@/components/design';
+import { Body, Button, Card, LoadingState, Notice } from '@/components/ui';
 import { BackendError } from '@/data/backend';
 import { t } from '@/i18n';
 import { errorText } from '@/lib/error-text';
@@ -172,75 +173,88 @@ export default function AccountSettingsScreen() {
         {testMode ? (
           <Body testID="konto-test-mode">{t.konto.testMode}</Body>
         ) : (
-          <View style={{ gap: 2 }}>
+          <View style={styles.email}>
             <Body muted>{t.konto.signedInAs}</Body>
             <Body testID="konto-email">{session.email ?? t.konto.noEmail}</Body>
           </View>
         )}
-        <Button
+      </Card>
+      <ListGroup>
+        <ListRow
+          icon="logout"
           label={t.konto.signOut}
-          variant="secondary"
+          role="button"
           onPress={() => {
             setDialogError(undefined);
             setDialog('signout_confirm');
           }}
           disabled={busy}
           testID="konto-signout"
+          last
         />
-      </Card>
+      </ListGroup>
 
-      <Heading level={2}>{t.konto.privacy}</Heading>
-      <Card>
-        <Button
+      <SectionLabel>{t.konto.privacy}</SectionLabel>
+      <ListGroup>
+        <ListRow
+          icon="shield"
           label={t.konto.consents}
           accessibilityHint={t.konto.consentsHint}
-          variant="secondary"
           onPress={() => router.push('/einwilligungen' as Href)}
           testID="konto-consents"
         />
-        <Button
+        <ListRow
+          icon="info"
           label={t.konto.licenses}
-          variant="secondary"
           onPress={() => router.push('/lizenzen' as Href)}
           testID="konto-licenses"
+          last
         />
-      </Card>
+      </ListGroup>
 
-      <Heading level={2}>{t.settings.exportTitle}</Heading>
-      <Card>
-        <Body muted>{t.settings.exportText}</Body>
-        {testMode ? <Body muted>{t.settings.exportTestMode}</Body> : null}
-        <Body muted>{t.settings.exportDeviceOnly}</Body>
-        {app.offline ? <Body muted>{t.errors.onlineOnly}</Body> : null}
-        {exportMessage ? (
-          <Notice tone={exportMessage.tone} testID="settings-export-message">
-            {exportMessage.text}
-          </Notice>
-        ) : null}
-        <Button
+      <SectionLabel>{t.settings.exportTitle}</SectionLabel>
+      <Body muted>{t.settings.exportText}</Body>
+      {testMode ? <Body muted>{t.settings.exportTestMode}</Body> : null}
+      <Body muted>{t.settings.exportDeviceOnly}</Body>
+      {app.offline ? <Body muted>{t.errors.onlineOnly}</Body> : null}
+      {exportMessage ? (
+        <Notice tone={exportMessage.tone} testID="settings-export-message">
+          {exportMessage.text}
+        </Notice>
+      ) : null}
+      <ListGroup>
+        <ListRow
+          icon="download"
           label={t.settings.exportButton}
-          variant="secondary"
+          role="button"
           onPress={() => {
             setDialogError(undefined);
             setExportMessage(undefined);
             setDialog('export');
           }}
           testID="settings-export"
+          last
         />
-      </Card>
+      </ListGroup>
 
-      <Heading level={2}>{t.settings.deleteAccount}</Heading>
-      <Card>
-        <Button
-          label={t.settings.deleteAccount}
-          variant="danger"
-          onPress={() => {
-            setDialogError(undefined);
-            setDialog('delete');
-          }}
-          testID="konto-delete"
-        />
-      </Card>
+      {/* Destruktiv: rot, abgesetzt am Ende und immer mit Rückfrage. */}
+      <View style={styles.danger}>
+        <SectionLabel>{t.settings.deleteAccount}</SectionLabel>
+        <ListGroup>
+          <ListRow
+            icon="trash"
+            label={t.settings.deleteAccount}
+            role="button"
+            tone="danger"
+            onPress={() => {
+              setDialogError(undefined);
+              setDialog('delete');
+            }}
+            testID="konto-delete"
+            last
+          />
+        </ListGroup>
+      </View>
 
       <ConfirmDialog
         visible={dialog !== null}
@@ -290,3 +304,8 @@ export default function AccountSettingsScreen() {
     </Screen>
   );
 }
+
+const styles = StyleSheet.create({
+  email: { gap: 2 },
+  danger: { marginTop: 16, gap: 12 },
+});

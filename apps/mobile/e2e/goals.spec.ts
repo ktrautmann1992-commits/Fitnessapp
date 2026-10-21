@@ -251,7 +251,7 @@ test('„Angaben ändern“ führt über das Wunschgewicht; Rückfrage bei ausge
     },
   }));
   await page.getByRole('button', { name: 'Einstellungen' }).click();
-  await page.getByRole('button', { name: 'Angaben ändern' }).click();
+  await page.getByRole('link', { name: 'Angaben ändern' }).click();
   await heading(page, 'Deine Trainingserfahrung');
   await next(page);
   await heading(page, 'Dein Ziel');
@@ -294,7 +294,7 @@ test('„Angaben ändern“ führt über das Wunschgewicht; Rückfrage bei ausge
 
   // Gespeichert: erneut „Angaben ändern“ → konkretes Ziel steht im Formular (ohne Rückfrage).
   await page.getByRole('button', { name: 'Einstellungen' }).click();
-  await page.getByRole('button', { name: 'Angaben ändern' }).click();
+  await page.getByRole('link', { name: 'Angaben ändern' }).click();
   await heading(page, 'Deine Trainingserfahrung');
   await next(page);
   await heading(page, 'Dein Ziel');

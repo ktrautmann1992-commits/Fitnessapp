@@ -543,6 +543,7 @@ export function ListRow({
   tone = 'default',
   trailing,
   last = false,
+  disabled = false,
   accessibilityHint,
   testID,
   labelTestID,
@@ -557,6 +558,8 @@ export function ListRow({
   trailing?: ReactNode;
   /** Letzte Zeile der Gruppe: ohne Trennlinie. */
   last?: boolean;
+  /** Gesperrt (z. B. während einer Aktion läuft) – bleibt sichtbar, ist aber nicht antippbar. */
+  disabled?: boolean;
   accessibilityHint?: string;
   testID?: string;
   /** testID des Textes (z. B. für Prüfungen des angezeigten Inhalts). */
@@ -599,8 +602,14 @@ export function ListRow({
       accessibilityRole={role}
       accessibilityLabel={description ? `${label}, ${description}` : label}
       accessibilityHint={accessibilityHint}
+      accessibilityState={{ disabled }}
+      disabled={disabled}
       onPress={onPress}
-      style={({ pressed }) => [styles.listRow, divider, { opacity: pressed ? 0.7 : 1 }]}
+      style={({ pressed }) => [
+        styles.listRow,
+        divider,
+        { opacity: disabled ? 0.6 : pressed ? 0.7 : 1 },
+      ]}
     >
       {content}
       <Icon name="chevron" size={18} color={danger ? theme.danger : theme.textMuted} />
