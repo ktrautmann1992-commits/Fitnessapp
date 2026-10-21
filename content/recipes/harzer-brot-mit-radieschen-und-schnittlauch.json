@@ -1,11 +1,9 @@
 {
   "id": "harzer-brot-mit-radieschen-und-schnittlauch",
   "version": 1,
-  "status": "draft",
+  "status": "published",
   "title_de": "Harzer-Brot mit Radieschen & Schnittlauch",
   "description_de": "Der deutsche Fitness-Klassiker: Harzer Käse auf Vollkornbrot mit knackigen Radieschen und frischem Schnittlauch.",
-  "section_de": "Snack",
-  "categories": ["schnell"],
   "meal_types": ["snack"],
   "training_tags": [],
   "servings": 1,
@@ -64,6 +62,8 @@
   ],
   "tip_de": "Wer den Geschmack milder mag, nimmt Harzer mit Kümmel oder einen Klecks Magerquark darunter.",
   "tags_de": ["Unter 10 Minuten"],
+  "section_de": "Snack",
+  "categories": ["schnell"],
   "total_minutes": 5,
   "prep_minutes": 5,
   "cook_minutes": 0,
@@ -90,12 +90,12 @@
     "batch_id": null,
     "created_on": "2026-10-11",
     "expert_reviewed": false,
-    "reviewed_by": null,
-    "reviewed_at": null,
+    "reviewed_by": "Karsten",
+    "reviewed_at": "2026-10-21",
     "review_note": null,
     "source_file": "alpha5-rezepte.json@1.0",
+    "import_hash": "fba38f072e6e7ccf3e17f199d30af4aca4cd75ff0dca59b3f172c3ba57e8ead9",
     "import_assumptions": [],
-    "import_assumptions_confirmed_by": null,
-    "import_hash": "fba38f072e6e7ccf3e17f199d30af4aca4cd75ff0dca59b3f172c3ba57e8ead9"
+    "import_assumptions_confirmed_by": null
   }
 }

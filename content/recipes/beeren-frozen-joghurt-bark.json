@@ -1,11 +1,9 @@
 {
   "id": "beeren-frozen-joghurt-bark",
   "version": 1,
-  "status": "draft",
+  "status": "published",
   "title_de": "Beeren-Frozen-Joghurt-Bark",
   "description_de": "Knackige Skyr-Tafel mit Himbeeren, Heidelbeeren, Mandeln und Schokostückchen, die etwa 3 Stunden im Gefrierfach fest wird und dann in Stücke gebrochen wird.",
-  "section_de": "Gefroren",
-  "categories": ["schnell", "meal-prep", "protein-dessert"],
   "meal_types": ["snack"],
   "training_tags": [],
   "servings": 1,
@@ -74,6 +72,8 @@
   ],
   "tip_de": "Gefrierzeit: mindestens 3 Stunden. Die Bruchstücke halten in einer Gefrierdose bis zu 2 Wochen – so hast du immer eine Portion parat.",
   "tags_de": ["Unter 10 Minuten", "Dessert"],
+  "section_de": "Gefroren",
+  "categories": ["schnell", "meal-prep", "protein-dessert"],
   "total_minutes": 10,
   "prep_minutes": 10,
   "cook_minutes": 0,
@@ -100,12 +100,12 @@
     "batch_id": null,
     "created_on": "2026-10-11",
     "expert_reviewed": false,
-    "reviewed_by": null,
-    "reviewed_at": null,
+    "reviewed_by": "Karsten",
+    "reviewed_at": "2026-10-21",
     "review_note": null,
     "source_file": "alpha5-rezepte.json@1.0",
+    "import_hash": "28b497e61148282104501920f8b36209b067827595baeecdc45ccf153606566f",
     "import_assumptions": [],
-    "import_assumptions_confirmed_by": null,
-    "import_hash": "28b497e61148282104501920f8b36209b067827595baeecdc45ccf153606566f"
+    "import_assumptions_confirmed_by": null
   }
 }

@@ -1,11 +1,9 @@
 {
   "id": "one-pan-eiertoast-mit-kaese-und-spinat",
   "version": 1,
-  "status": "draft",
+  "status": "published",
   "title_de": "One-Pan-Eiertoast mit Käse und Spinat",
   "description_de": "Toast und Omelett in einer Pfanne zusammen gebraten und zum herzhaften Sandwich zusammengeklappt.",
-  "section_de": "Frühstück",
-  "categories": ["schnell"],
   "meal_types": ["breakfast"],
   "training_tags": [],
   "servings": 1,
@@ -83,6 +81,8 @@
   ],
   "tip_de": "Kauf vorgewaschenen Babyspinat in der Tüte – der kommt ungeschnitten und ohne Waschen direkt in die Pfanne. Statt Spinat passen auch ein paar Tomatenscheiben.",
   "tags_de": ["Unter 10 Minuten"],
+  "section_de": "Frühstück",
+  "categories": ["schnell"],
   "total_minutes": 8,
   "prep_minutes": 6,
   "cook_minutes": 2,
@@ -109,12 +109,12 @@
     "batch_id": null,
     "created_on": "2026-10-11",
     "expert_reviewed": false,
-    "reviewed_by": null,
-    "reviewed_at": null,
+    "reviewed_by": "Karsten",
+    "reviewed_at": "2026-10-21",
     "review_note": null,
     "source_file": "alpha5-rezepte.json@1.0",
+    "import_hash": "4d655d97fbe2b416eb89a98184a9c2b0f10a0393ac5cec40062b6b5e01603c73",
     "import_assumptions": [],
-    "import_assumptions_confirmed_by": null,
-    "import_hash": "4d655d97fbe2b416eb89a98184a9c2b0f10a0393ac5cec40062b6b5e01603c73"
+    "import_assumptions_confirmed_by": null
   }
 }

@@ -1,11 +1,9 @@
 {
   "id": "putenroellchen-mit-frischkaese",
   "version": 1,
-  "status": "draft",
+  "status": "published",
   "title_de": "Putenröllchen mit Frischkäse",
   "description_de": "Putenbrustscheiben mit Frischkäse und knackigen Gurkenstiften gerollt, dazu Reiswaffeln – der schnelle Snack fürs Büro.",
-  "section_de": "Snack",
-  "categories": ["schnell"],
   "meal_types": ["snack"],
   "training_tags": [],
   "servings": 1,
@@ -74,6 +72,8 @@
   ],
   "tip_de": "Mit Zahnstochern fixiert halten die Röllchen in der Box bis zum Nachmittag.",
   "tags_de": ["Unter 10 Minuten"],
+  "section_de": "Snack",
+  "categories": ["schnell"],
   "total_minutes": 5,
   "prep_minutes": 5,
   "cook_minutes": 0,
@@ -100,12 +100,12 @@
     "batch_id": null,
     "created_on": "2026-10-11",
     "expert_reviewed": false,
-    "reviewed_by": null,
-    "reviewed_at": null,
+    "reviewed_by": "Karsten",
+    "reviewed_at": "2026-10-21",
     "review_note": null,
     "source_file": "alpha5-rezepte.json@1.0",
+    "import_hash": "846dc190b1556e48f64568ab2eb200999e4ff4a3497d71dbe0c554c69e2068d4",
     "import_assumptions": [],
-    "import_assumptions_confirmed_by": null,
-    "import_hash": "846dc190b1556e48f64568ab2eb200999e4ff4a3497d71dbe0c554c69e2068d4"
+    "import_assumptions_confirmed_by": null
   }
 }

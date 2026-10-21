@@ -1,11 +1,9 @@
 {
   "id": "dattel-kakao-kugeln-mit-reiswaffel-crunch",
   "version": 1,
-  "status": "draft",
+  "status": "published",
   "title_de": "Dattel-Kakao-Kugeln mit Reiswaffel-Crunch",
   "description_de": "Süße Mini-Kugeln aus Datteln und zerbröselten Reiswaffeln liefern konzentrierte Kohlenhydrate im Taschenformat, fast ohne Fett.",
-  "section_de": "30 Min. vorher",
-  "categories": ["schnell", "pre-workout", "meal-prep"],
   "meal_types": ["snack"],
   "training_tags": ["vor_training"],
   "servings": 1,
@@ -55,6 +53,8 @@
   ],
   "tip_de": "Gut für den Vorrat: Die Kugeln halten in einer Dose im Kühlschrank 5 Tage – einfach die benötigte Menge mitnehmen.",
   "tags_de": ["Unter 10 Minuten"],
+  "section_de": "30 Min. vorher",
+  "categories": ["schnell", "pre-workout", "meal-prep"],
   "total_minutes": 10,
   "prep_minutes": 10,
   "cook_minutes": 0,
@@ -81,12 +81,12 @@
     "batch_id": null,
     "created_on": "2026-10-11",
     "expert_reviewed": false,
-    "reviewed_by": null,
-    "reviewed_at": null,
+    "reviewed_by": "Karsten",
+    "reviewed_at": "2026-10-21",
     "review_note": null,
     "source_file": "alpha5-rezepte.json@1.0",
+    "import_hash": "2d5b39b773f94bc6c86cf1f5ebbd22164f5aa637284a970bc2aaa86f4c9b3fbc",
     "import_assumptions": [],
-    "import_assumptions_confirmed_by": null,
-    "import_hash": "2d5b39b773f94bc6c86cf1f5ebbd22164f5aa637284a970bc2aaa86f4c9b3fbc"
+    "import_assumptions_confirmed_by": null
   }
 }

@@ -1,11 +1,9 @@
 {
   "id": "schinken-huettenkaese-roellchen",
   "version": 1,
-  "status": "draft",
+  "status": "published",
   "title_de": "Schinken-Hüttenkäse-Röllchen",
   "description_de": "Kochschinkenscheiben gefüllt mit Hüttenkäse und Paprika, dazu eine Reiswaffel.",
-  "section_de": "Snack",
-  "categories": ["schnell"],
   "meal_types": ["snack"],
   "training_tags": [],
   "servings": 1,
@@ -74,6 +72,8 @@
   ],
   "tip_de": "Die Röllchen halten sich in einer Dose bis zum nächsten Tag.",
   "tags_de": ["Unter 10 Minuten"],
+  "section_de": "Snack",
+  "categories": ["schnell"],
   "total_minutes": 5,
   "prep_minutes": 5,
   "cook_minutes": 0,
@@ -100,12 +100,12 @@
     "batch_id": null,
     "created_on": "2026-10-11",
     "expert_reviewed": false,
-    "reviewed_by": null,
-    "reviewed_at": null,
+    "reviewed_by": "Karsten",
+    "reviewed_at": "2026-10-21",
     "review_note": null,
     "source_file": "alpha5-rezepte.json@1.0",
+    "import_hash": "29ee43908c5170d18d0f58b9a262ff623197bee9af9eac3b0ff4530fd0e59ed4",
     "import_assumptions": [],
-    "import_assumptions_confirmed_by": null,
-    "import_hash": "29ee43908c5170d18d0f58b9a262ff623197bee9af9eac3b0ff4530fd0e59ed4"
+    "import_assumptions_confirmed_by": null
   }
 }
