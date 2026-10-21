@@ -27,6 +27,8 @@ import {
 import { useApp } from '@/state/app-state';
 import { HOME_ROUTE, resolveEntryRoute } from '@/state/flow';
 import { forgetTrackedRoutes, useTrackedRoutes } from '@/state/use-tracked-routes';
+import { wearableBadgeText } from '@/components/wearables';
+import { useWearables } from '@/state/use-wearables';
 
 const E = t.endurance;
 
@@ -40,6 +42,9 @@ export default function EnduranceScreen() {
   const app = useApp();
   const active = useRecordingSession();
   const { state, reload } = useTrackedRoutes();
+  // Phase 8: Uhr-Einheiten mit „⌚ aus …“ kennzeichnen.
+  const { state: wearableState } = useWearables();
+  const wearableRows = wearableState.kind === 'ready' ? wearableState.result.rows : null;
   const [sport, setSport] = useState<TrackedRouteSport>('run');
   const [period, setPeriod] = useState<EndurancePeriod>('week');
   const [anchor, setAnchor] = useState(() => berlinTodayIso());
@@ -285,6 +290,7 @@ export default function EnduranceScreen() {
                 badge={
                   pending ? (pending.state === 'rejected' ? E.list.rejected : E.list.pending) : null
                 }
+                note={activity.logId ? wearableBadgeText(wearableRows, activity.logId) : null}
                 onPress={() =>
                   router.push(
                     (activity.routeId

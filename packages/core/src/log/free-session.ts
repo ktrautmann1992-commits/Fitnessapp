@@ -54,7 +54,10 @@ export function freeSessionDates(today: string): string[] {
 export function isBackfilledLog(log: {
   readonly performed_on: string;
   readonly created_at: string;
+  /** Phase 8: von der Smartwatch übernommene Einheiten sind nie „nachgetragen“ (Abgleich kommt immer später). */
+  readonly source?: string;
 }): boolean {
+  if (log.source === 'health_connect') return false;
   try {
     return isoDateInTimeZone(log.created_at) > log.performed_on;
   } catch {

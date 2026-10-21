@@ -22,6 +22,7 @@ import { LiveRegion } from '@/components/calendar';
 import { ElevationChart, SplitBars, Stat } from '@/components/endurance';
 import { RouteMap } from '@/components/route-map';
 import { ConfirmDialog, Screen } from '@/components/screen';
+import { WearableLogInfo } from '@/components/wearables';
 import {
   Body,
   Button,
@@ -187,6 +188,9 @@ export default function RouteDetailScreen() {
         </View>
         <Body muted>{D.elevationNote}</Body>
       </Card>
+
+      {/* Phase 8: Puls der Uhr, wenn die Aufzeichnung mit einer Uhr-Einheit zusammengeführt wurde. */}
+      {info.session_log_id ? <WearableLogInfo logId={info.session_log_id} /> : null}
 
       {comparison ? (
         <Notice tone="info" title={D.compare} testID="route-compare">

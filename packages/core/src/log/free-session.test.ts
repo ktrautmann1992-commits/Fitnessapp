@@ -112,6 +112,15 @@ describe('„nachgetragen“ aus created_at und performed_on', () => {
       false,
     );
   });
+  it('von der Smartwatch übernommen (Phase 8): nie nachgetragen', () => {
+    expect(
+      isBackfilledLog({
+        performed_on: '2026-10-01',
+        created_at: '2026-10-15T08:00:00Z',
+        source: 'health_connect',
+      }),
+    ).toBe(false);
+  });
   it('am nächsten Tag angelegt: nachgetragen', () => {
     expect(
       isBackfilledLog({ performed_on: '2026-10-14', created_at: '2026-10-15T08:00:00Z' }),

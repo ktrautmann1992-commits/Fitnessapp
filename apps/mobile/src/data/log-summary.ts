@@ -58,6 +58,8 @@ export function summaryLogs(rows: LogRows): SummaryLog[] {
     // Etappe A1b: freie Einheit und „nachgetragen“ (aus created_at, isBackfilledLog).
     is_free: l.is_free === true,
     created_at: l.created_at,
+    // Phase 8: Herkunft (Uhr-Symbol, nie „nachgetragen“).
+    source: l.source,
   }));
 }
 

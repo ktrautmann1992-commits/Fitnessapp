@@ -1,6 +1,7 @@
 import { SESSION_LOG_LIMITS } from '../constants';
 import { addDays, startOfIsoWeek } from '../dates';
 import type {
+  LogSource,
   PlannedSessionKind,
   PlannedSessionStatus,
   SessionFocus,
@@ -89,6 +90,8 @@ export interface SummaryLog {
   readonly is_free?: boolean;
   /** Angelegt am (für „nachgetragen“, isBackfilledLog); fehlt = nicht nachgetragen. */
   readonly created_at?: string;
+  /** Herkunft (Phase 8: health_connect = von der Smartwatch übernommen); fehlt = manuell. */
+  readonly source?: LogSource;
 }
 
 export type DayStatus = 'done' | 'partial' | 'missed' | 'skipped' | 'planned' | 'dropped' | 'rest';
@@ -186,7 +189,11 @@ export function weekLogSummary(
       free: log.is_free === true,
       backfilled:
         log.created_at !== undefined &&
-        isBackfilledLog({ performed_on: log.performed_on, created_at: log.created_at }),
+        isBackfilledLog({
+          performed_on: log.performed_on,
+          created_at: log.created_at,
+          ...(log.source !== undefined ? { source: log.source } : {}),
+        }),
       ...(outside ? { performedOn: log.performed_on } : {}),
     });
   }
