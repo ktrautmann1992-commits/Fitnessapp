@@ -27,11 +27,13 @@ export function consent(
   type: 'terms' | 'privacy' | 'health_data',
   patch: Partial<UserRows['consents'][number]> = {},
 ): UserRows['consents'][number] {
+  // Standard: aktuelle Fassung (health_data seit SU3 Fassung 2).
+  const version = patch.version ?? CURRENT_CONSENT_VERSIONS[type] ?? 1;
   return {
-    id: `c-${type}-${patch.version ?? 1}`,
+    id: `c-${type}-${version}`,
     user_id: USER_ID,
     consent_type: type,
-    version: 1,
+    version,
     granted_at: NOW,
     revoked_at: null,
     platform: 'web',
@@ -83,7 +85,7 @@ export function planPersonRows(options: PlanPersonOptions = {}): UserRows {
   const consentMode = options.consent ?? 'valid';
   const consents = [consent('terms'), consent('privacy')];
   if (consentMode !== 'none') {
-    consents.push(consent('health_data', { version: consentMode === 'outdated' ? 0 : 1 }));
+    consents.push(consent('health_data', consentMode === 'outdated' ? { version: 0 } : {}));
   }
   const flags = options.flags === undefined ? [] : options.flags;
   return rowsWith({

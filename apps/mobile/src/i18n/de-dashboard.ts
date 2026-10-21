@@ -192,6 +192,7 @@ export const deMore = {
   guides: 'Ratgeber',
   shopping: 'Einkaufsliste',
   mealPrep: 'Meal-Prep',
+  supplements: 'Supplemente',
   competition: 'Wettkampf',
   licenses: 'Lizenzen und Quellen',
   /** Etappe E2: Bereiche ohne Knopf in der Menüleiste. */
@@ -221,6 +222,7 @@ export const deMore = {
     einkaufsliste: 'Liste und Scan',
     recipes: 'passend zum Plan',
     mealPrep: 'vorkochen',
+    supplements: 'gute Studienlage',
   },
 } as const;
 

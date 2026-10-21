@@ -39,6 +39,10 @@ import {
   wearableImportResultSchema,
   type WearableRows,
   type WearableSessionRow,
+  EMPTY_SUPPLEMENT_USER_DATA,
+  storedSupplementScreeningSchema,
+  type SupplementUserData,
+  userSupplementChoiceSchema,
 } from '@fitnessapp/core';
 import type { AppSupabaseClient, Json, Tables } from '@fitnessapp/db';
 
@@ -175,6 +179,7 @@ import {
 } from './write-ops';
 import type { LogRejectReason, WorkoutDraft } from './workout-draft';
 import { workoutsFromDbRows } from './workout-library';
+import { supplementsFromDbRows } from './supplement-library';
 
 /**
  * SUPABASE-MODUS: Login per 6-stelligem E-Mail-Code, Daten in der Datenbank (Frankfurt, RLS).
@@ -1801,6 +1806,43 @@ export function createSupabaseBackend(options: SupabaseBackendOptions): Backend 
   }
 
   /** Workout-Bibliothek (docs/PLAN-WORKOUTS.md): nur `data`, RLS liefert nur freigegebene. */
+  /**
+   * Supplement-Check und „Meine Supplements“ (Gesundheitsdaten): nur online, nie zwischengespeichert. Ungültige Zeilen
+   * (z. B. von einer neueren App) werden übergangen – dann fragt die App den Check neu ab.
+   */
+  async function loadSupplementUserData(): Promise<SupplementUserData> {
+    const session = await requireSession();
+    const [screening, choices] = await Promise.all([
+      client
+        .from('supplement_screening')
+        .select('answers, flags, version, updated_at')
+        .eq('user_id', session.userId)
+        .maybeSingle(),
+      client.from('user_supplements').select('supplement_id, status').eq('user_id', session.userId),
+    ]);
+    if (screening.error) throw toBackendError(screening.error, true);
+    if (choices.error) throw toBackendError(choices.error, true);
+    const parsed =
+      screening.data === null
+        ? null
+        : storedSupplementScreeningSchema.safeParse({
+            answers: screening.data.answers,
+            flags: screening.data.flags,
+            version: screening.data.version,
+            updatedAt: screening.data.updated_at,
+          });
+    return {
+      screening: parsed?.success ? parsed.data : null,
+      choices: (choices.data ?? []).flatMap((row) => {
+        const choice = userSupplementChoiceSchema.safeParse({
+          supplementId: row.supplement_id,
+          status: row.status,
+        });
+        return choice.success ? [choice.data] : [];
+      }),
+    };
+  }
+
   async function fetchWorkouts(): Promise<unknown[]> {
     const { data, error } = await client.from('workouts').select('data').order('id');
     if (error) throw error;
@@ -2249,6 +2291,58 @@ export function createSupabaseBackend(options: SupabaseBackendOptions): Backend 
         }
         throw toBackendError(error);
       }
+    },
+
+    // --- Supplemente (Phase 6 SU3/SU4) -----------------------------------------------------------------------
+    loadSupplementLibrary: async () => {
+      try {
+        const { data, error } = await client.from('supplements').select('data').order('id');
+        if (error) throw error;
+        const rows = (data ?? []).map((row) => row.data);
+        // Nur Inhalte (keine Nutzerdaten) – für offline.
+        await writeJson(store, STORAGE_KEYS.supplementLibrary, rows);
+        return {
+          entries: supplementsFromDbRows(rows.map((item) => ({ data: item }))),
+          cached: false,
+          drafts: false,
+        };
+      } catch (error) {
+        if (classifySupabaseError(error) === 'network') {
+          const cached = await readJson<unknown[]>(store, STORAGE_KEYS.supplementLibrary);
+          if (Array.isArray(cached)) {
+            return {
+              entries: supplementsFromDbRows(cached.map((item) => ({ data: item }))),
+              cached: true,
+              drafts: false,
+            };
+          }
+        }
+        throw toBackendError(error);
+      }
+    },
+    loadSupplementUserData: async () => loadSupplementUserData(),
+    saveSupplementScreening: async (answers) => {
+      await requireSession();
+      const { error } = await client.rpc('save_supplement_screening', {
+        p_answers: answers as unknown as Json,
+      });
+      if (error) throw toBackendError(error, true);
+      return loadSupplementUserData();
+    },
+    setUserSupplement: async (id, status) => {
+      await requireSession();
+      const { error } = await client.rpc('set_user_supplement', {
+        p_supplement_id: id,
+        p_status: status,
+      });
+      if (error) throw toBackendError(error, true);
+      return loadSupplementUserData();
+    },
+    deleteSupplementData: async () => {
+      await requireSession();
+      const { error } = await client.rpc('delete_my_supplement_data');
+      if (error) throw toBackendError(error, true);
+      return EMPTY_SUPPLEMENT_USER_DATA;
     },
 
     loadPlanLibrary: async ({ allowCached }) => {

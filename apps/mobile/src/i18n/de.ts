@@ -29,6 +29,7 @@ import { deNutrition } from './de-nutrition';
 import { deNutritionDay } from './de-nutrition-day';
 import { deWeekEval } from './de-week-eval';
 import { deWearables } from './de-wearables';
+import { deSupplements } from './de-supplements';
 import { deWorkouts } from './de-workouts';
 
 export const de = {
@@ -1171,7 +1172,7 @@ export const de = {
     reconsent: 'Neu einwilligen',
     revokeTitle: 'Einwilligung widerrufen?',
     revokeText:
-      'Der Widerruf löscht alle Körper- und Gesundheitsdaten: Körperdaten, Körperumfänge, alle Gesundheits-Checks, Unverträglichkeiten, alle Trainingspläne, die auf dem Gesundheits-Check beruhen, und dein Ernährungstagebuch samt Schnelleintrag-Favoriten, eigenen Gerichten, eigenen Produkten und Produkt-Favoriten (Favoriten aus Lebensmitteln und Rezepten bleiben). Deine übrigen Angaben bleiben erhalten.',
+      'Der Widerruf löscht alle Körper- und Gesundheitsdaten: Körperdaten, Körperumfänge, alle Gesundheits-Checks, Unverträglichkeiten, alle Trainingspläne, die auf dem Gesundheits-Check beruhen, und dein Ernährungstagebuch samt Schnelleintrag-Favoriten, eigenen Gerichten, eigenen Produkten und Produkt-Favoriten (Favoriten aus Lebensmitteln und Rezepten bleiben) sowie den Supplement-Check und „Meine Supplements“. Deine übrigen Angaben bleiben erhalten.',
     revokeDone: 'Einwilligung widerrufen. Deine Gesundheitsdaten wurden gelöscht.',
     revokeLogs:
       'Dein Tagebuch bleibt; Vorgaben aus dem Gesundheits-Check werden daraus entfernt. Du kannst die Einträge aus Plänen mit Gesundheits-Check aber auch löschen.',
@@ -1653,6 +1654,8 @@ export const de = {
   workouts: deWorkouts,
   /** Smartwatch über Health Connect (Phase 8). */
   wearables: deWearables,
+  // Supplement-Modul (docs/PLAN-PHASE-6.md, Etappe SU4)
+  supplements: deSupplements,
 } as const;
 
 /** Typ, den jede Übersetzung erfüllen muss (Texte als string, Funktionen mit gleicher Signatur). */

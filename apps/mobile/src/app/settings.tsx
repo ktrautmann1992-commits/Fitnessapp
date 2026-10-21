@@ -271,6 +271,27 @@ export default function SettingsScreen() {
         </>
       ) : null}
 
+      {/* Phase 6 SU4: Supplemente – „Meine Supplements“ und Supplement-Check ändern. */}
+      <SectionLabel>{t.supplements.title}</SectionLabel>
+      <ListGroup>
+        <ListRow
+          icon="pill"
+          label={t.supplements.mine.title}
+          onPress={() => router.push('/supplemente' as Href)}
+          testID="settings-supplements"
+          last={healthStatus !== 'valid'}
+        />
+        {healthStatus === 'valid' ? (
+          <ListRow
+            icon="edit"
+            label={t.supplements.check.redo}
+            onPress={() => router.push('/supplemente/check' as Href)}
+            testID="settings-supplement-check"
+            last
+          />
+        ) : null}
+      </ListGroup>
+
       <SectionLabel>{t.glossary.settingsTitle}</SectionLabel>
       <ListGroup>
         <ListRow

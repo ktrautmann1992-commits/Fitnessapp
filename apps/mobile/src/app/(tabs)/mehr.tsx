@@ -125,6 +125,17 @@ export default function MoreScreen() {
     );
   }
 
+  // Phase 6 SU4: Supplemente (Testmodus und Supabase-Modus, allgemeine Infos auch ohne Einwilligung).
+  food.push({
+    key: 'supplements',
+    label: texts.supplements,
+    detail: details.supplements ?? '',
+    area: 'ernaehrung',
+    icon: 'pill',
+    onPress: open('/supplemente'),
+    testID: 'more-supplements',
+  });
+
   return (
     <Screen title={texts.title} testID="more">
       <AccountRow email={app.session?.email ?? null} onPress={open('/konto')} />

@@ -232,7 +232,7 @@ describe('Mess-Erinnerung planen, stornieren, neu planen', () => {
     await expect(
       n.syncMeasurement({
         rows: rows(),
-        versions: { ...VERSIONS, health_data: 2 },
+        versions: { ...VERSIONS, health_data: (VERSIONS.health_data ?? 1) + 1 },
         nowMs,
         timeZone: TZ,
       }),
