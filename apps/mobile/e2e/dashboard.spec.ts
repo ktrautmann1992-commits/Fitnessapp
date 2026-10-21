@@ -248,7 +248,7 @@ test('Plan-Hinweise auf der Übersicht: geänderte Angaben, strengere Regeln ohn
 
   // Einstellungen → Angaben ändern → Trainingstage ändern → „Heute“ bietet „Plan neu erstellen?“ an …
   await page.getByRole('button', { name: 'Einstellungen' }).click();
-  await page.getByRole('button', { name: 'Angaben ändern' }).click();
+  await page.getByRole('link', { name: 'Angaben ändern' }).click();
   await heading(page, 'Deine Trainingserfahrung');
   await page.getByRole('button', { name: 'Weiter', exact: true }).click();
   await heading(page, 'Dein Ziel');
@@ -272,7 +272,7 @@ test('Plan-Hinweise auf der Übersicht: geänderte Angaben, strengere Regeln ohn
   // Eine Stunde später, damit der neue Check nach dem Plan liegt (feste Uhr).
   await page.clock.setFixedTime(new Date('2026-10-07T10:00:00+02:00'));
   await page.goto('/settings');
-  await page.getByRole('button', { name: 'Gesundheits-Check wiederholen' }).click();
+  await page.getByRole('link', { name: 'Gesundheits-Check wiederholen' }).click();
   await heading(page, 'Gesundheits-Check');
   const groups = page.getByRole('radiogroup');
   const count = await groups.count();

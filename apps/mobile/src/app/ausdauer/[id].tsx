@@ -19,7 +19,8 @@ import { useState } from 'react';
 import { Platform, StyleSheet, View } from 'react-native';
 
 import { LiveRegion } from '@/components/calendar';
-import { ElevationChart, SplitBars, Stat } from '@/components/endurance';
+import { SectionLabel, StatValue } from '@/components/design';
+import { ElevationChart, SplitBars } from '@/components/endurance';
 import { RouteMap } from '@/components/route-map';
 import { ConfirmDialog, Screen } from '@/components/screen';
 import {
@@ -29,7 +30,6 @@ import {
   Checkbox,
   ChoiceList,
   FieldError,
-  Heading,
   LoadingState,
   Notice,
   TextField,
@@ -167,22 +167,50 @@ export default function RouteDetailScreen() {
         </Notice>
       ) : null}
 
+      {/* Zahlen als Raster großer Werte (zwei Spalten, ab 320 px). */}
       <Card>
-        <View style={styles.stats}>
-          <Stat label={D.total} value={durationText(info.duration_s)} testID="route-total" />
-          <Stat label={D.moving} value={durationText(info.moving_s)} testID="route-moving" />
-          <Stat label={D.distance} value={distanceText(info.distance_m)} testID="route-distance" />
-          <Stat
-            label={speed ? D.speed : D.pace}
-            value={averagePaceOrSpeedText(info.sport, info.moving_s, info.distance_m)}
-            testID="route-pace"
-          />
-          {info.elevation_gain_m !== null ? (
-            <Stat
-              label={D.elevation}
-              value={D.elevationValue(info.elevation_gain_m)}
-              testID="route-elevation"
+        <View style={styles.stats} testID="route-stats">
+          <View style={styles.statCell}>
+            <StatValue
+              size="lg"
+              label={D.distance}
+              value={distanceText(info.distance_m)}
+              valueTestID="route-distance"
             />
+          </View>
+          <View style={styles.statCell}>
+            <StatValue
+              size="lg"
+              label={speed ? D.speed : D.pace}
+              value={averagePaceOrSpeedText(info.sport, info.moving_s, info.distance_m)}
+              valueTestID="route-pace"
+            />
+          </View>
+          <View style={styles.statCell}>
+            <StatValue
+              size="lg"
+              label={D.total}
+              value={durationText(info.duration_s)}
+              valueTestID="route-total"
+            />
+          </View>
+          <View style={styles.statCell}>
+            <StatValue
+              size="lg"
+              label={D.moving}
+              value={durationText(info.moving_s)}
+              valueTestID="route-moving"
+            />
+          </View>
+          {info.elevation_gain_m !== null ? (
+            <View style={styles.statCell}>
+              <StatValue
+                size="lg"
+                label={D.elevation}
+                value={D.elevationValue(info.elevation_gain_m)}
+                valueTestID="route-elevation"
+              />
+            </View>
           ) : null}
         </View>
         <Body muted>{D.elevationNote}</Body>
@@ -194,18 +222,24 @@ export default function RouteDetailScreen() {
         </Notice>
       ) : null}
 
-      <Heading level={2}>{D.map}</Heading>
-      <RouteMap points={points} />
+      <Card>
+        <SectionLabel>{D.map}</SectionLabel>
+        <RouteMap points={points} />
+      </Card>
 
-      <Heading level={2}>{D.splits}</Heading>
-      <SplitBars splits={kmSplits} />
+      <Card>
+        <SectionLabel>{D.splits}</SectionLabel>
+        <SplitBars splits={kmSplits} />
+      </Card>
 
-      <Heading level={2}>{D.profile}</Heading>
-      <ElevationChart profile={profile} />
+      <Card>
+        <SectionLabel>{D.profile}</SectionLabel>
+        <ElevationChart profile={profile} />
+      </Card>
 
       {note ? (
         <Card>
-          <Heading level={2}>{D.note}</Heading>
+          <SectionLabel>{D.note}</SectionLabel>
           <Body>{note}</Body>
         </Card>
       ) : null}
@@ -263,6 +297,9 @@ export default function RouteDetailScreen() {
             onPress={() => router.push(`/log/${info.session_log_id}` as Href)}
           />
         ) : null}
+      </View>
+      {/* Löschen abgesetzt am Ende (mit Rückfrage). */}
+      <View style={styles.danger}>
         <Button
           label={D.delete}
           variant="danger"
@@ -375,6 +412,8 @@ function EditRoute({
 }
 
 const styles = StyleSheet.create({
-  stats: { flexDirection: 'row', flexWrap: 'wrap', gap: spacing.md },
+  stats: { flexDirection: 'row', flexWrap: 'wrap', rowGap: spacing.md },
+  statCell: { width: '50%', paddingRight: spacing.sm },
   actions: { gap: spacing.sm },
+  danger: { marginTop: spacing.md },
 });

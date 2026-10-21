@@ -4,7 +4,8 @@ import { useMemo, useState } from 'react';
 import { View } from 'react-native';
 
 import { TestPhaseBadge } from '@/components/test-phase';
-import { Body, Button, Card, Checkbox, Heading, Notice } from '@/components/ui';
+import { SectionLabel } from '@/components/design';
+import { Body, Button, Card, Checkbox, Notice } from '@/components/ui';
 import { adjustmentsForSession, openProposal } from '@/data/live-adjust';
 import type { UserRows } from '@/data/types';
 import { t } from '@/i18n';
@@ -124,7 +125,7 @@ export function LiveAdjustSettings() {
   }
   return (
     <>
-      <Heading level={2}>{t.adjust.settingsTitle}</Heading>
+      <SectionLabel>{t.adjust.settingsTitle}</SectionLabel>
       <Card>
         <TestPhaseBadge testID="settings-adjust-test-phase" />
         <Body muted>{t.adjust.settingsText}</Body>

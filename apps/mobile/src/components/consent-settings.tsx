@@ -4,7 +4,8 @@ import { useState } from 'react';
 import { View } from 'react-native';
 
 import { ConfirmDialog } from '@/components/screen';
-import { Body, Button, Card, Checkbox, Heading, Notice } from '@/components/ui';
+import { SectionLabel } from '@/components/design';
+import { Body, Button, Card, Checkbox, Notice } from '@/components/ui';
 import { consentRecordsFromRows } from '@/data/mapping';
 import type { ConsentRow, UserRows } from '@/data/types';
 import { t } from '@/i18n';
@@ -111,7 +112,7 @@ export function ConsentSettings({
 
   return (
     <>
-      {showHeading ? <Heading level={2}>{t.settings.consents}</Heading> : null}
+      {showHeading ? <SectionLabel>{t.settings.consents}</SectionLabel> : null}
       {message ? <Notice tone="success">{message}</Notice> : null}
       {LISTED_CONSENTS.map((type) => (
         <Card key={type}>

@@ -654,6 +654,13 @@ export const de = {
     title: 'Training',
     exerciseOf: (current: number, total: number) => `Übung ${current} von ${total}`,
     allDone: 'Alle Übungen erledigt',
+    /** Hero-Karte „aktuelle Übung“ (Design-Feinschliff 21.10.2026). */
+    setOf: (current: number, total: number) => `Satz ${current} von ${total}`,
+    progressA11y: (done: number, total: number) =>
+      `${done} von ${total} ${total === 1 ? 'Übung' : 'Übungen'} erledigt`,
+    allDoneHint: 'Trag noch ein, wie anstrengend es war, und speichere dein Training.',
+    exerciseInfo: 'Übungs-Info',
+    exerciseInfoHint: 'Muskelkarte antippen für groß',
     tabHint: 'Lass diesen Tab offen, bis dein Training übertragen ist.',
     leaveWarning: 'Dein Training ist noch nicht übertragen. Wirklich verlassen?',
     loading: 'Dein Training wird vorbereitet …',

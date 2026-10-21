@@ -402,6 +402,13 @@ export const deNutrition = {
         : `Hält gekocht ${days} Tage im Kühlschrank.`,
     mealPrepFreezable: 'Lässt sich einfrieren.',
     equipment: (list: string) => `Du brauchst: ${list}`,
+    /** Kopf-Chips (Design-Feinschliff 21.10.2026). */
+    kcalChip: (kcal: string) => `${kcal} kcal je Portion`,
+    kcalUnit: 'kcal',
+    gramsValue: (grams: string) => `${grams} g`,
+    macroA11y: (label: string, grams: string) => `${label}: ${grams} Gramm je Portion`,
+    kcalA11y: (kcal: string) => `${kcal} Kilokalorien je Portion`,
+    notes: 'Hinweise',
   },
 
   // --- Zutaten-Austausch (KONZEPT 6.9, Etappe N9) ------------------------------------------------------------------
