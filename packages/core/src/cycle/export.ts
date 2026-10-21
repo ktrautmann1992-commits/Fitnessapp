@@ -43,7 +43,8 @@ export function parseCycleExport(data: unknown): CycleExportRows | null {
           },
     entries: parsed.data.entries.map((row) => ({
       entry_date: row.entry_date,
-      ...(cycleEntryPayloadSchema.safeParse(row.payload).data ?? (row.payload as Record<string, unknown>)),
+      ...(cycleEntryPayloadSchema.safeParse(row.payload).data ??
+        (row.payload as Record<string, unknown>)),
       updated_at: row.updated_at,
     })),
   };
