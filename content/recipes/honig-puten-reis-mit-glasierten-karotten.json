@@ -1,11 +1,9 @@
 {
   "id": "honig-puten-reis-mit-glasierten-karotten",
   "version": 1,
-  "status": "draft",
+  "status": "published",
   "title_de": "Honig-Puten-Reis mit glasierten Karotten",
   "description_de": "Mageres Putenfleisch, weißer Reis und weich gegarte Honig-Karotten liefern viele Kohlenhydrate und etwas Eiweiß bei sehr wenig Fett.",
-  "section_de": "Carb-Loading (2 Tage vorher)",
-  "categories": ["wettkampf", "meal-prep"],
   "meal_types": ["main"],
   "training_tags": [],
   "servings": 1,
@@ -93,6 +91,8 @@
   ],
   "tip_de": "Gekochte Karotten sind deutlich bekömmlicher als rohe. Für eine vegetarische Variante ersetzt du die Pute durch Tofu natur.",
   "tags_de": ["Wettkampf"],
+  "section_de": "Carb-Loading (2 Tage vorher)",
+  "categories": ["wettkampf", "meal-prep"],
   "total_minutes": 25,
   "prep_minutes": 1,
   "cook_minutes": 24,
@@ -112,17 +112,18 @@
   "declared_diet": "omnivore",
   "declared_allergens": ["gluten", "poultry", "legumes", "soy", "fructose", "histamine"],
   "contains_pork": false,
-  "declared_pregnancy_caution": true,
+  "declared_pregnancy_caution": false,
   "meta": {
     "origin": "manual",
     "model": null,
     "batch_id": null,
     "created_on": "2026-10-11",
     "expert_reviewed": false,
-    "reviewed_by": null,
-    "reviewed_at": null,
+    "reviewed_by": "Karsten (Auftrag an Claude)",
+    "reviewed_at": "2026-10-21",
     "review_note": null,
     "source_file": "alpha5-rezepte.json@1.0",
+    "import_hash": "529eec3346b27cd98c9ab845f44b65157b4da3d0520414dbf28b8bcc5f7f8c9f",
     "import_assumptions": [
       {
         "ingredient_index": 1,
@@ -132,7 +133,7 @@
         "reason_de": "Schritt 3 gart die Zutat durch: „Schneide die Putenbrust in Streifen und brate sie im Öl bei mittlerer Hitze 4–5 Minuten durch.“"
       }
     ],
-    "import_assumptions_confirmed_by": null,
-    "import_hash": "529eec3346b27cd98c9ab845f44b65157b4da3d0520414dbf28b8bcc5f7f8c9f"
+    "import_assumptions_confirmed_by": "Karsten (Auftrag an Claude)",
+    "import_assumptions_fingerprint": "93834939fe278192"
   }
 }

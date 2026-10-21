@@ -1,11 +1,9 @@
 {
   "id": "gekochte-eier-mit-gemuesesticks",
   "version": 1,
-  "status": "draft",
+  "status": "published",
   "title_de": "Gekochte Eier mit Gemüsesticks",
   "description_de": "Zwei hart gekochte Eier mit knackigen Paprika- und Möhrensticks – perfekt zum Mitnehmen.",
-  "section_de": "Snack",
-  "categories": ["meal-prep"],
   "meal_types": ["snack"],
   "training_tags": [],
   "servings": 1,
@@ -63,6 +61,8 @@
     "Pelle die Eier, halbiere sie und würze sie mit Salz und Pfeffer; dazu die Gemüsesticks essen."
   ],
   "tip_de": "Ungeschält halten sich gekochte Eier im Kühlschrank bis zu einer Woche – gleich mehrere vorkochen.",
+  "section_de": "Snack",
+  "categories": ["meal-prep"],
   "total_minutes": 12,
   "prep_minutes": 3,
   "cook_minutes": 9,
@@ -82,17 +82,18 @@
   "declared_diet": "vegetarian",
   "declared_allergens": ["eggs"],
   "contains_pork": false,
-  "declared_pregnancy_caution": true,
+  "declared_pregnancy_caution": false,
   "meta": {
     "origin": "manual",
     "model": null,
     "batch_id": null,
     "created_on": "2026-10-11",
     "expert_reviewed": false,
-    "reviewed_by": null,
-    "reviewed_at": null,
+    "reviewed_by": "Karsten (Auftrag an Claude)",
+    "reviewed_at": "2026-10-21",
     "review_note": null,
     "source_file": "alpha5-rezepte.json@1.0",
+    "import_hash": "2a5aa679c16c3644fcbe0d1f711c659f5efd9354277c9031cc2185edffb83559",
     "import_assumptions": [
       {
         "ingredient_index": 0,
@@ -102,7 +103,7 @@
         "reason_de": "Schritt 1 gart die Zutat durch: „Koche die Eier 9 Minuten in sprudelndem Wasser hart und schrecke sie kalt ab.“"
       }
     ],
-    "import_assumptions_confirmed_by": null,
-    "import_hash": "2a5aa679c16c3644fcbe0d1f711c659f5efd9354277c9031cc2185edffb83559"
+    "import_assumptions_confirmed_by": "Karsten (Auftrag an Claude)",
+    "import_assumptions_fingerprint": "de411794a35025de"
   }
 }

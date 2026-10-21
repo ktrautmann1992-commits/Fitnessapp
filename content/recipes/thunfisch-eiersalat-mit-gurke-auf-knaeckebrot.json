@@ -1,11 +1,9 @@
 {
   "id": "thunfisch-eiersalat-mit-gurke-auf-knaeckebrot",
   "version": 1,
-  "status": "draft",
+  "status": "published",
   "title_de": "Thunfisch-Eiersalat mit Gurke auf Knäckebrot",
   "description_de": "Herzhafter Salat aus Dosen-Thunfisch, gekochtem Ei und Gurke mit Senf-Quark-Dressing, der viel Eiweiß bei wenig Kalorien liefert.",
-  "section_de": "Snack",
-  "categories": ["spar-kueche"],
   "meal_types": ["snack"],
   "training_tags": [],
   "servings": 1,
@@ -93,6 +91,8 @@
   ],
   "tip_de": "Die zweite Dosenhälfte luftdicht im Kühlschrank aufbewahren und am nächsten Tag verwenden. Knäckebrot zum Mitnehmen separat einpacken, damit es knusprig bleibt.",
   "tags_de": ["Spar-Küche", "zum Mitnehmen"],
+  "section_de": "Snack",
+  "categories": ["spar-kueche"],
   "total_minutes": 12,
   "prep_minutes": 3,
   "cook_minutes": 9,
@@ -124,10 +124,11 @@
     "batch_id": null,
     "created_on": "2026-10-11",
     "expert_reviewed": false,
-    "reviewed_by": null,
-    "reviewed_at": null,
+    "reviewed_by": "Karsten (Auftrag an Claude)",
+    "reviewed_at": "2026-10-21",
     "review_note": null,
     "source_file": "alpha5-rezepte.json@1.0",
+    "import_hash": "0acdbc344a5c96e038eb64e83fab2b304136b1422f0e37fbcc0127e838343827",
     "import_assumptions": [
       {
         "ingredient_index": 1,
@@ -137,7 +138,7 @@
         "reason_de": "Schritt 1 gart die Zutat durch: „Koche das Ei 9 Minuten hart, schrecke es kalt ab und pelle es.“"
       }
     ],
-    "import_assumptions_confirmed_by": null,
-    "import_hash": "0acdbc344a5c96e038eb64e83fab2b304136b1422f0e37fbcc0127e838343827"
+    "import_assumptions_confirmed_by": "Karsten (Auftrag an Claude)",
+    "import_assumptions_fingerprint": "b6336700c7a8d3b4"
   }
 }

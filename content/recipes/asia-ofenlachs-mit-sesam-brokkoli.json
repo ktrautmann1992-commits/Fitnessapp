@@ -1,11 +1,9 @@
 {
   "id": "asia-ofenlachs-mit-sesam-brokkoli",
   "version": 1,
-  "status": "draft",
+  "status": "published",
   "title_de": "Asia-Ofenlachs mit Sesam-Brokkoli",
   "description_de": "Lachs mit Soja-Honig-Ingwer-Glasur aus dem Ofen, dazu Sesam-Brokkoli und etwas Reis.",
-  "section_de": "Abendessen",
-  "categories": [],
   "meal_types": ["main"],
   "training_tags": [],
   "servings": 1,
@@ -92,6 +90,8 @@
     "Bestreue Brokkoli und Lachs mit Sesam und Frühlingszwiebelringen und serviere den Reis dazu."
   ],
   "tip_de": "TK-Lachs vorher über Nacht im Kühlschrank auftauen lassen.",
+  "section_de": "Abendessen",
+  "categories": [],
   "total_minutes": 25,
   "prep_minutes": 10,
   "cook_minutes": 15,
@@ -120,17 +120,18 @@
     "onion_garlic"
   ],
   "contains_pork": false,
-  "declared_pregnancy_caution": true,
+  "declared_pregnancy_caution": false,
   "meta": {
     "origin": "manual",
     "model": null,
     "batch_id": null,
     "created_on": "2026-10-11",
     "expert_reviewed": false,
-    "reviewed_by": null,
-    "reviewed_at": null,
+    "reviewed_by": "Karsten (Auftrag an Claude)",
+    "reviewed_at": "2026-10-21",
     "review_note": null,
     "source_file": "alpha5-rezepte.json@1.0",
+    "import_hash": "87bc91deb867eef9d283b1716e97cf72c6bbff4d7dc6ea437d5862b1b34f8cbc",
     "import_assumptions": [
       {
         "ingredient_index": 0,
@@ -140,7 +141,7 @@
         "reason_de": "Schritt 3 gart die Zutat durch: „Lege Lachs und Brokkoliröschen auf ein Blech mit Backpapier und gare beides 12–15 Minuten im Ofen.“"
       }
     ],
-    "import_assumptions_confirmed_by": null,
-    "import_hash": "87bc91deb867eef9d283b1716e97cf72c6bbff4d7dc6ea437d5862b1b34f8cbc"
+    "import_assumptions_confirmed_by": "Karsten (Auftrag an Claude)",
+    "import_assumptions_fingerprint": "d0a0b1cc84c4040f"
   }
 }
