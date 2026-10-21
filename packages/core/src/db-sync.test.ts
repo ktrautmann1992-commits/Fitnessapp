@@ -94,7 +94,20 @@ import {
   MAX_WEEKLY_ENDURANCE_VOLUME_INCREASE_FRACTION,
   SHOPPING_SCAN,
   APP_LAYOUT,
+  DAILY_METRIC_LIMITS,
+  HEART_RATE_LIMITS,
+  WEARABLE_SYNC,
 } from './constants';
+import {
+  WEARABLE_DATA_TYPES,
+  WEARABLE_NAME_PATTERN,
+  WEARABLE_ORIGINS,
+  WEARABLE_SESSION_GROUPS,
+  wearableSessionImportSchema,
+  heartRateSummarySchema,
+  dailyMetricImportSchema,
+  wearableImportBatchSchema,
+} from './wearables/schema';
 import { DASHBOARD_TILES, FIXED_FIRST_TAB, FIXED_LAST_TAB, NAV_AREAS } from './layout';
 import { serverDayKcalFloor } from './nutrition/plausibility';
 import { AI_USAGE_STATUSES } from './nutrition/food-photo';
@@ -333,6 +346,9 @@ describe('Enums', () => {
     // Workout-Bibliothek (20261020150000_workout_enums.sql)
     ['workout_category', WORKOUT_CATEGORIES],
     ['workout_format', WORKOUT_FORMATS],
+    // Phase 8 · Wearables (20261021120000_wearable_enums.sql)
+    ['wearable_provider', enums.WEARABLE_PROVIDERS],
+    ['wearable_connection_status', enums.WEARABLE_CONNECTION_STATUSES],
   ] as const)('public.%s entspricht packages/core', (name, values) => {
     expect(enumValues(name)).toEqual([...values]);
   });
@@ -954,11 +970,11 @@ describe('Ernährung in der Datenbank (Phase 5, Etappe N7)', () => {
     expect(body.slice(0, end)).toContain(
       'delete from public.shopping_lists where user_id = new.user_id and uses_health_data;',
     );
-    // Neueste Fassung seit 4b Etappe B in *_live_adjust_revoke_export.sql (davor Zusammenführung E4a + Z3; E1:
-    // Tagebuch-Einträge, E2: eigene Gerichte, WP3: Plan-Bezug der Wettkämpfe leeren, E4a: eigene Produkte und
-    // Produkt-Favoriten, Z3: Wunschgewicht, 4b: Plan-Anpassungen).
+    // Neueste Fassung seit Phase 8 in *_wearable_revoke_export.sql (davor Einkaufen E1, 4b Etappe B, Zusammenführung
+    // E4a + Z3; E1: Tagebuch-Einträge, E2: eigene Gerichte, WP3: Plan-Bezug der Wettkämpfe leeren, E4a: eigene
+    // Produkte und Produkt-Favoriten, Z3: Wunschgewicht, 4b: Plan-Anpassungen, Phase 8: Smartwatch-Daten).
     expect(migrationFiles.filter((n) => readMigration(n).includes(marker)).at(-1)).toMatch(
-      /_shopping_product_links\.sql$/,
+      /_wearable_revoke_export\.sql$/,
     );
   });
 
@@ -1152,10 +1168,10 @@ describe('Ernährungstagebuch in der Datenbank (Etappe E1)', () => {
     }
   });
 
-  it('export_my_data(): neueste Fassung in *_app_layout_settings.sql (E2 Dashboard, davor Einkaufen E1, 4b B, E4a + Z3, S1, E3, WP3, E2)', () => {
+  it('export_my_data(): neueste Fassung in *_wearable_revoke_export.sql (Phase 8, davor E2 Dashboard, Einkaufen E1, 4b B, E4a + Z3, S1, E3, WP3, E2)', () => {
     const marker = 'create or replace function public.export_my_data()';
     expect(migrationFiles.filter((n) => readMigration(n).includes(marker)).at(-1)).toMatch(
-      /_app_layout_settings\.sql$/,
+      /_wearable_revoke_export\.sql$/,
     );
   });
 });
@@ -2782,12 +2798,12 @@ describe('Ziele in der Datenbank (Etappe Z3, docs/PLAN-ZIELE.md 5.1/5.2)', () =>
 
   it('Widerruf und Export: neueste Fassungen sind Obermengen der Vorgänger (Zeile für Zeile, S16)', () => {
     for (const [marker, newestFile] of [
-      [revokeMarker, /_shopping_product_links\.sql$/],
-      [exportMarker, /_app_layout_settings\.sql$/],
+      [revokeMarker, /_wearable_revoke_export\.sql$/],
+      [exportMarker, /_wearable_revoke_export\.sql$/],
     ] as const) {
       const withFn = migrationFiles.filter((n) => readMigration(n).includes(marker));
-      // Widerruf seit Einkaufen E1 in *_shopping_product_links.sql, Export seit E2 in *_app_layout_settings.sql
-      // (davor 4b Etappe B, Vereinigung E4a + Z3, Wächter E4a H1).
+      // Widerruf und Export seit Phase 8 in *_wearable_revoke_export.sql (davor Einkaufen E1 bzw. E2, 4b Etappe B,
+      // Vereinigung E4a + Z3, Wächter E4a H1).
       expect(withFn.at(-1)).toMatch(newestFile);
       const bodyOf = (name: string) => {
         const sql = readMigration(name);
@@ -2826,6 +2842,9 @@ describe('Ziele in der Datenbank (Etappe Z3, docs/PLAN-ZIELE.md 5.1/5.2)', () =>
         'weight_goals',
         'user_food_products',
         'shopping_product_links',
+        // Phase 8: Puls-Zusammenfassungen und Tageswerte der Smartwatch.
+        'heart_rate_summaries',
+        'daily_metrics',
       ].sort(),
     );
     for (const name of sensitive) {
@@ -3249,5 +3268,172 @@ describe('Workout-Bibliothek (20261020150100_workouts.sql)', () => {
     expect(sql).toContain("existing.kind <> 'strength'");
     expect(sql).toContain('not existing.is_free');
     expect(enums.LOG_SOURCES).toContain('workout');
+  });
+});
+
+describe('Smartwatch über Health Connect (Phase 8 Etappe H2, docs/PLAN-PHASE-8.md 4–6)', () => {
+  const enumsSql = readMigration('_wearable_enums.sql');
+  const sql = readMigration('_wearables.sql');
+  const revokeExport = readMigration('_wearable_revoke_export.sql');
+  const fnBody = (name: string) => {
+    const start = sql.indexOf(`create or replace function ${name}(`);
+    expect(start, name).toBeGreaterThanOrEqual(0);
+    return sql.slice(start, sql.indexOf('$$;', start));
+  };
+  const importFn = fnBody('public.import_wearable_batch');
+  const quoted = (text: string) => [...text.matchAll(/'([^']+)'/g)].map((m) => m[1]);
+  const keysOf = (name: string) => {
+    const match = new RegExp(`${name} constant text\\[\\] := array\\[([^\\]]*)\\]`).exec(importFn);
+    if (!match) throw new Error(name);
+    return quoted(match[1] as string);
+  };
+
+  it('Enum-Werte in eigener Datei VOR ihrer Verwendung', () => {
+    expect(enumsSql).toContain("alter type public.consent_type add value 'wearable_data';");
+    expect(enumsSql).toContain("alter type public.log_source add value 'health_connect';");
+    const names = migrationFiles;
+    const enumsIdx = names.findIndex((n) => n.endsWith('_wearable_enums.sql'));
+    expect(enumsIdx).toBeGreaterThan(-1);
+    expect(names.findIndex((n) => n.endsWith('_wearables.sql'))).toBe(enumsIdx + 1);
+    expect(names.findIndex((n) => n.endsWith('_wearable_revoke_export.sql'))).toBe(enumsIdx + 2);
+    // Vor der Enum-Datei nutzt keine Migration die neuen Werte (adjustment_trigger 'wearable_data' ist ein anderes Enum).
+    const before = names
+      .slice(0, enumsIdx)
+      .map((n) => readMigration(n))
+      .join('\n');
+    expect(before).not.toContain("'health_connect'");
+    expect(before).not.toMatch(/consent_type[^;]*'wearable_data'/);
+  });
+
+  it('Feldlisten = Zod-Schemas (Batch, Einheit, Puls, Tag)', () => {
+    expect(keysOf('batch_keys')).toEqual(Object.keys(wearableImportBatchSchema.shape));
+    expect(keysOf('session_keys')).toEqual(Object.keys(wearableSessionImportSchema.shape));
+    expect(keysOf('heart_rate_keys')).toEqual(Object.keys(heartRateSummarySchema.shape));
+    expect(keysOf('day_keys')).toEqual(Object.keys(dailyMetricImportSchema.shape));
+  });
+
+  it('Listen = packages/core (Datentypen, Herkunft, Gruppen, Titel-Regel, feste Namen)', () => {
+    const typesList = `array[${WEARABLE_DATA_TYPES.map((t) => `'${t}'`).join(', ')}]::text[]`;
+    expect(sql).toContain(typesList);
+    expect(sql).toContain(`not in (${WEARABLE_DATA_TYPES.map((t) => `'${t}'`).join(', ')})`);
+    expect(sql).toContain(`cardinality(granted_types) <= ${WEARABLE_DATA_TYPES.length}`);
+    expect(sql).toContain(`jsonb_array_length(p_types) <= ${WEARABLE_DATA_TYPES.length}`);
+    const origins = WEARABLE_ORIGINS.map((o) => `'${o}'`).join(', ');
+    expect(sql).toContain(`check (origin in (${origins}))`);
+    expect(importFn).toContain(`origins constant text[] := array[${origins}];`);
+    expect(importFn).toContain(
+      `not in (${WEARABLE_SESSION_GROUPS.map((g) => `'${g}'`).join(', ')})`,
+    );
+    expect(importFn).toContain(`name_pattern constant text := '${WEARABLE_NAME_PATTERN}';`);
+    const names = JSON.parse(
+      /group_names constant jsonb := '([^']*)'/.exec(importFn)?.[1] ?? '{}',
+    ) as Record<string, string>;
+    expect(names).toEqual({
+      ...FREE_SESSION.names.endurance,
+      strength: FREE_SESSION.names.strength,
+    });
+  });
+
+  it('Grenzen = WEARABLE_SYNC, HEART_RATE_LIMITS, DAILY_METRIC_LIMITS', () => {
+    const S = WEARABLE_SYNC;
+    for (const expected of [
+      `max_sessions constant integer := ${S.maxSessionsPerBatch};`,
+      `max_days constant integer := ${S.maxDaysPerBatch};`,
+      `import_max_age_days constant integer := ${S.importMaxAgeDays};`,
+      `clock_skew_s constant integer := ${S.clockSkewS};`,
+      `payload_max_bytes constant integer := ${S.payloadMaxBytes};`,
+      `char_length(s ->> 'external_id') not between 1 and ${S.externalIdMaxLength}`,
+      `jsonb_number_between(s -> 'duration_s', ${S.durationS.min}, ${S.durationS.max}, 0)`,
+      `jsonb_number_between(s -> 'distance_m', ${S.distanceM.min}, ${S.distanceM.max}, 0)`,
+      `jsonb_number_between(s -> 'kcal', ${S.kcal.min}, ${S.kcal.max}, 0)`,
+      `jsonb_number_between(hr -> 'avg_bpm', ${HEART_RATE_LIMITS.sampleBpm.min}, ${HEART_RATE_LIMITS.sampleBpm.max}, 0)`,
+      `jsonb_number_between(hr -> 'max_bpm', ${HEART_RATE_LIMITS.sampleBpm.min}, ${HEART_RATE_LIMITS.sampleBpm.max}, 0)`,
+      `jsonb_number_between(hr -> 'hf_max_used', ${HEART_RATE_LIMITS.maxOverrideBpm.min}, ${HEART_RATE_LIMITS.maxOverrideBpm.max}, 0)`,
+      `jsonb_number_between(z, 0, ${S.durationS.max}, 0)`,
+      `jsonb_number_between(d -> 'resting_hr_bpm', ${DAILY_METRIC_LIMITS.restingHrBpm.min}, ${DAILY_METRIC_LIMITS.restingHrBpm.max}, 0)`,
+      `jsonb_number_between(d -> 'sleep_min', ${DAILY_METRIC_LIMITS.sleepMin.min}, ${DAILY_METRIC_LIMITS.sleepMin.max}, 0)`,
+      `jsonb_number_between(d -> 'steps', ${DAILY_METRIC_LIMITS.steps.min}, ${DAILY_METRIC_LIMITS.steps.max}, 0)`,
+    ]) {
+      expect(importFn, expected).toContain(expected);
+    }
+    for (const expected of [
+      `check (resting_hr_bpm between ${DAILY_METRIC_LIMITS.restingHrBpm.min} and ${DAILY_METRIC_LIMITS.restingHrBpm.max})`,
+      `check (sleep_min between ${DAILY_METRIC_LIMITS.sleepMin.min} and ${DAILY_METRIC_LIMITS.sleepMin.max})`,
+      `check (steps between ${DAILY_METRIC_LIMITS.steps.min} and ${DAILY_METRIC_LIMITS.steps.max})`,
+      `check (avg_bpm between ${HEART_RATE_LIMITS.sampleBpm.min} and ${HEART_RATE_LIMITS.sampleBpm.max})`,
+      `check (hf_max_used between ${HEART_RATE_LIMITS.maxOverrideBpm.min} and ${HEART_RATE_LIMITS.maxOverrideBpm.max})`,
+      `check (kcal between ${S.kcal.min} and ${S.kcal.max})`,
+      `check (char_length(external_id) between 1 and ${S.externalIdMaxLength})`,
+      `last_sync_count integer check (last_sync_count between 0 and ${S.maxSessionsPerBatch})`,
+    ]) {
+      expect(sql, expected).toContain(expected);
+    }
+    // Ruhepuls wie die Körperdaten (Onboarding).
+    expect(DAILY_METRIC_LIMITS.restingHrBpm).toEqual(BODY_METRIC_LIMITS.restingHeartRateBpm);
+  });
+
+  it('RLS: nur eigene Zeilen lesen, kein Schreib-Recht, je Tabelle genau eine Policy', () => {
+    for (const table of [
+      'wearable_connections',
+      'wearable_sessions',
+      'heart_rate_summaries',
+      'daily_metrics',
+    ]) {
+      expect(sql).toContain(`alter table public.${table} enable row level security;`);
+      expect(sql).toContain(
+        `revoke all on table public.${table} from public, anon, authenticated;`,
+      );
+      expect(sql).toContain(`grant select on table public.${table} to authenticated;`);
+      expect(sql.split(`on public.${table} for select to authenticated`)).toHaveLength(2);
+      expect(allSql).not.toMatch(
+        new RegExp(`grant (insert|update|delete|all) on table public\\.${table} to authenticated`),
+      );
+    }
+    expect(sql.match(/using \(user_id = \(select auth\.uid\(\)\)\)/g)).toHaveLength(4);
+  });
+
+  it('Einwilligung zuerst gesperrt, dann geprüft, dann Person (Wächter N7 S2); beide Einwilligungen nötig', () => {
+    const locked = fnBody('private.wearable_consents_locked');
+    expect(locked.indexOf('for share')).toBeLessThan(locked.indexOf('has_valid_consent'));
+    expect(locked).toContain(
+      "public.has_valid_consent('wearable_data') and public.has_valid_consent('health_data')",
+    );
+    for (const name of ['public.import_wearable_batch', 'public.connect_wearable']) {
+      const body = fnBody(name);
+      expect(body.indexOf('wearable_consents_locked'), name).toBeGreaterThan(0);
+      expect(body.indexOf('wearable_consents_locked'), name).toBeLessThan(
+        body.indexOf('pg_advisory_xact_lock'),
+      );
+    }
+    // Trennen geht immer (Recht auf Löschung) – ohne Einwilligung.
+    expect(fnBody('public.disconnect_wearable')).not.toContain('wearable_consents_locked');
+  });
+
+  it('Widerruf (wearable_data oder health_data) löscht Puls, Tageswerte, Verbindung; Einheiten bleiben', () => {
+    const start = revokeExport.indexOf(
+      'create or replace function private.consents_after_revoke()',
+    );
+    const body = revokeExport.slice(start, revokeExport.indexOf('$$;', start));
+    const block = body.slice(
+      body.indexOf("if new.consent_type in ('health_data', 'wearable_data') then"),
+    );
+    for (const table of ['heart_rate_summaries', 'daily_metrics', 'wearable_connections']) {
+      expect(block).toContain(`delete from public.${table} where user_id = new.user_id;`);
+    }
+    expect(body).not.toContain('delete from public.wearable_sessions');
+  });
+
+  it('Trennen löscht Puls IMMER (W8-12), Einträge nur auf Wunsch und nie zusammengeführte App-Einträge', () => {
+    const body = fnBody('public.disconnect_wearable');
+    const always = body.slice(0, body.indexOf('if p_delete_imported then'));
+    expect(always).toContain('delete from public.heart_rate_summaries');
+    expect(always).toContain('delete from public.daily_metrics');
+    expect(body).toContain('and not ws.merged');
+  });
+
+  it('save_session_log bleibt unangetastet (neue Herkunft nur über import_wearable_batch)', () => {
+    expect(sql).not.toContain('function public.save_session_log(');
+    expect(revokeExport).not.toContain('function public.save_session_log(');
+    expect(importFn).toContain("'health_connect', now()");
   });
 });
