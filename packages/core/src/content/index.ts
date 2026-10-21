@@ -25,6 +25,7 @@ export * from './seed-settings';
 export * from './substitution-checks';
 export * from './substitution-schema';
 export * from './supplement-checks';
+export * from './supplement-release';
 export * from './supplement-schema';
 export * from './text-rules';
 export * from './validate';

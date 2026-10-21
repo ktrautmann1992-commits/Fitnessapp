@@ -730,7 +730,9 @@ select results_eq(
 -- Abgelehnte Neu-Einwilligung (H-c): B – neue Textfassung health_data ohne Zustimmung
 -- ---------------------------------------------------------------------------------------------------------
 insert into public.consent_documents (consent_type, version, title_de, body_de, published_at)
-values ('health_data', 2, 'Einwilligung Gesundheitsdaten', 'Version 2', now());
+values ('health_data', 2, 'Einwilligung Gesundheitsdaten', 'Version 2', now())
+-- SU3: Fassung 2 liegt als unveröffentlichter Entwurf vor (20261021120200) – hier nur veröffentlichen.
+on conflict (consent_type, version) do update set published_at = excluded.published_at;
 set local role authenticated;
 set local request.jwt.claims = '{"sub":"22222222-2222-4222-8222-222222222222","role":"authenticated"}';
 select is(

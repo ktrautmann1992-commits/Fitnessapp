@@ -1258,6 +1258,69 @@ Getestet mit **Chrome am iPhone** (Vorschau-Link aus dem Pull Request), am beste
 workflow** – solange in `content/einspiel-regeln.json` die Testphase eingestellt ist, kommen die Workouts mit. Vor dem
 Livegang gilt dieselbe Regel wie bei den Rezepten (Teil 7t): nur fachlich geprüfte Workouts.
 
+## Teil 7u – Supplemente testen und freigeben (Phase 6, Etappen SU3/SU4, 21.10.2026)
+
+Die App zeigt Nahrungsergänzungen mit guter Studienlage und ordnet sie nach festen Regeln ein: **„Passt zu dir“**,
+**„Zur Info“**, **„Ab 18 Jahren“**, **„Nicht für dich – bitte ärztlich abklären“**, dazu **Koffein** nur als
+Sicherheits-Info und die Liste **„Nicht empfohlen“**. **Keine Shops, keine Links, keine Werbung** (das kommt frühestens
+mit SU5 und bleibt bis zur Rechtsprüfung aus). Alle 18 Texte sind KI-Entwürfe – in der App steht **„Testphase – noch
+nicht fachlich geprüft“**. Getestet mit **Chrome am iPhone** (Vorschau-Link aus dem Pull Request), am besten im
+**Inkognito-Tab** (Chrome → unten rechts **⋯** → **Neuer Inkognito-Tab**; für jeden Durchgang einen neuen).
+
+**(a) Im Testmodus ansehen** (Vorschau-Link, ohne Konto)
+
+1. **„Los geht's“** → Geburtsdatum z. B. **15.05.1990** → **Testmodus starten** → Zustimmen → Geschlecht wählen →
+   **Einwilligung Gesundheitsdaten zustimmen** (neuer Text mit „Supplement-Check“ und „Meine Supplements“) →
+   Gesundheits-Check alles **„Nein“** → Ziel **Muskelaufbau** → weiter bis **„Zum Plan“**.
+2. **Mehr → Essen → „Supplemente“** (oder **Ernährung** → ganz unten **„Supplemente“**). **Prüfen:** oben der Hinweis
+   „Bitte lesen“ mit den Pflichtsätzen, gelber Hinweis „Testmodus: Die Texte sind Entwürfe …“, alles nur „Zur Info“.
+3. **„Check machen“** → Fragen beantworten (bei „männlich“ ohne Stillzeit-Frage), freiwillig „Eher nicht“ beim
+   Eiweiß → **„Antworten speichern“**. **Prüfen:** Kreatin steht unter **„Passt zu dir“** mit „Menge: 3 g am Tag“ und
+   „Täglich zu einer Mahlzeit“, Proteinpulver nur bei „Eher nicht“, Vitamin D unter **„Zur Info“** mit Richtwert,
+   Koffein in eigener Gruppe – nie „Passt zu dir“.
+4. **Kreatin** antippen → Angabe „Kreatin erhöht die körperliche Leistung …“ **direkt mit** dem Pflichthinweis
+   „… täglichen Aufnahme von 3 g Kreatin …“, Hinweis zu 1–2 kg Wasser, „Bitte beachten“ mit den Pflichtsätzen,
+   „Quellen anzeigen“ klappt die Quellen auf. **„Nehme ich“** → zurück → Karte **„Meine Supplements“**.
+5. **Koffein** antippen: Bei Training **„Abends“** steht „Du trainierst abends: Nimm vor dem Training kein Koffein.“,
+   bei „Nachmittags“ bzw. „Unterschiedlich“ der Satz mit „vor 16 Uhr“.
+6. **Sperre:** Einstellungen → **Gesundheits-Check wiederholen** → Medikamente bzw. (weiblich) Schwangerschaft „Ja“ →
+   zurück zu Supplemente → Kreatin unter **„Nicht für dich“**, ohne Menge, ohne „Nehme ich“.
+7. **Unter 18:** neuer Inkognito-Tab, Geburtsdatum vor weniger als 18 Jahren → Kreatin unter **„Ab 18 Jahren“**,
+   ohne Menge.
+8. **Neue Einwilligung (Re-Consent):** In Supplemente unten **„Test: Einwilligung nur alte Fassung“** → Karte „Wir haben
+   die Einwilligung zu Gesundheitsdaten ergänzt“ erscheint, alles nur „Zur Info“ → **„Neuen Text lesen und
+   zustimmen“** → zustimmen → zurück: Der Check ist noch da (**„Supplement-Check ändern“**), Kreatin passt wieder.
+9. Löschen: **„Supplement-Check ändern“** → ganz unten **„Supplement-Check und „Meine Supplements“ löschen“**. Der
+   Widerruf der Einwilligung Gesundheitsdaten löscht beides ebenfalls; **Mein Konto → Daten exportieren** enthält beides.
+
+**(b) Texte freigeben (nach dem Merge dieses Pull Requests)**
+
+1. GitHub-App → Repository → **Actions** → **content-review** → **Run workflow**, Branch **main**.
+2. **Art:** `ids` · **IDs:** `supplemente` (= alle Supplemente im Entwurf) – oder einzeln, z. B.
+   `creatine, protein_powder, vitamin_d, omega3, caffeine, bcaa, glutamine, l_carnitine, cla, fat_burner,
+   testo_booster, pre_workout, hmb, ashwagandha, collagen, multivitamin, iron, melatonin` · **Neuer Status:**
+   `published` · **Prüfer:** euer Name · **fachlich geprüft:** nur ankreuzen, wenn eine Fachkraft (Ernährung/
+   Sportmedizin) geprüft hat – für die Testphase nicht nötig. Kategorie und „Import-Annahmen“ haben hier keine Wirkung.
+   → **Run workflow**.
+3. Lauf öffnen → **Summary** → Pull Request „Freigabe Supplemente: …“ → Tabelle „Freigegeben“ (Stufe, Angaben,
+   Anzahl Quellen) lesen → auf grünes **ci** warten → **Merge pull request**. Supplemente nicht mit Übungen oder Rezepten
+   in einem Lauf mischen.
+
+**(c) Einspielen und mit Konto ansehen**
+
+1. Nach dem Merge laufen **db-migrate** (legt die Tabellen an) und **content-seed** von selbst. Startet keiner:
+   **Actions → content-seed → Run workflow**. Die Summary nennt „Supplemente eingespielt: 18“ und „🧪 Testphase: 18
+   Supplemente ohne Fachprüfung“ (Regel aus `content/einspiel-regeln.json`, Teil 7t).
+2. **Mit Konto** zeigt die App die Texte sofort – aber zunächst **nur „Zur Info“** mit dem Hinweis „Die persönliche
+   Einordnung kommt, sobald die ergänzte Einwilligung Gesundheitsdaten freigegeben ist“. Grund: Die neue Fassung 2 der
+   Einwilligung liegt in der Datenbank als **Entwurf** und wird erst nach der **juristischen Prüfung** veröffentlicht
+   (Plan 6, Abschnitte 11.1 und 18). Niemand verliert dadurch eine Einwilligung oder Daten.
+3. **Fassung 2 veröffentlichen** (erst nach der Rechtsprüfung): In einer Claude-Sitzung schreiben „Einwilligung
+   health_data Fassung 2 veröffentlichen“ – das wird eine kleine Migration
+   (`update consent_documents set published_at = now() where consent_type = 'health_data' and version = 2`) als Pull
+   Request. Nach dem Merge sehen alle mit Konto einmal die Karte „Einwilligung ergänzt“; bis zur Zustimmung können sie
+   keine Gesundheitsdaten ergänzen (bestehende bleiben sichtbar).
+
 ## Teil 7e – Neue Rezepte per KI erzeugen (Phase 5, Etappe N8, Gemini offline)
 
 Die KI (Google Gemini) schreibt **nur Entwürfe** – offline über die Batch-API, nie in der App. Nutzerdaten gehen nie an

@@ -9,6 +9,18 @@ import { describe, expect, it } from 'vitest';
 import { MEASUREMENT_SITES } from './body-measurements';
 import { CURRENT_CONSENT_VERSIONS } from './consent';
 import {
+  SUPPLEMENT_CONTENT_CATEGORIES,
+  SUPPLEMENT_CONTENT_IDS,
+  SUPPLEMENT_EVIDENCE_LEVELS,
+} from './content/supplement-schema';
+import { SUPPLEMENT_IDS } from './supplement-ids';
+import {
+  PROTEIN_SELF_CHECK_ANSWERS,
+  SUPPLEMENT_FLAGS,
+  SUPPLEMENT_SCREENING_QUESTIONS,
+} from './supplements/screening';
+import { USER_SUPPLEMENT_STATUSES } from './supplements/user-data';
+import {
   CARDIO_LOG_LIMITS,
   ENDURANCE_SESSION_LIMITS,
   EQUIPMENT_WEIGHT_DECIMALS,
@@ -26,6 +38,8 @@ import {
   TEMPLATE_DOSAGE_LIMITS,
   BODY_MEASUREMENT_LIMITS,
   CONTENT_SCHEMA_LIMITS,
+  SUPPLEMENT_HEALTH_CONSENT_MIN_VERSION,
+  SUPPLEMENT_SCREENING_VERSION,
   FOOD_LOG_LIMITS,
   FOOD_PRODUCT_CHECK,
   FOOD_PRODUCT_LOOKUP_LIMITS,
@@ -970,11 +984,11 @@ describe('Ernährung in der Datenbank (Phase 5, Etappe N7)', () => {
     expect(body.slice(0, end)).toContain(
       'delete from public.shopping_lists where user_id = new.user_id and uses_health_data;',
     );
-    // Neueste Fassung seit Phase 8 in *_wearable_revoke_export.sql (davor Einkaufen E1, 4b Etappe B, Zusammenführung
-    // E4a + Z3; E1: Tagebuch-Einträge, E2: eigene Gerichte, WP3: Plan-Bezug der Wettkämpfe leeren, E4a: eigene
-    // Produkte und Produkt-Favoriten, Z3: Wunschgewicht, 4b: Plan-Anpassungen, Phase 8: Smartwatch-Daten).
+    // Neueste Fassung seit Phase 6 SU3 in *_supplement_user_data.sql (davor Phase 8 Smartwatch, Einkaufen E1, 4b
+    // Etappe B, Zusammenführung E4a + Z3; E1: Tagebuch-Einträge, E2: eigene Gerichte, WP3: Plan-Bezug der Wettkämpfe
+    // leeren, E4a: eigene Produkte und Produkt-Favoriten, Z3: Wunschgewicht, 4b: Plan-Anpassungen).
     expect(migrationFiles.filter((n) => readMigration(n).includes(marker)).at(-1)).toMatch(
-      /_wearable_revoke_export\.sql$/,
+      /_supplement_user_data\.sql$/,
     );
   });
 
@@ -1168,10 +1182,10 @@ describe('Ernährungstagebuch in der Datenbank (Etappe E1)', () => {
     }
   });
 
-  it('export_my_data(): neueste Fassung in *_wearable_revoke_export.sql (Phase 8, davor E2 Dashboard, Einkaufen E1, 4b B, E4a + Z3, S1, E3, WP3, E2)', () => {
+  it('export_my_data(): neueste Fassung in *_supplement_user_data.sql (Phase 6 SU3, davor Phase 8, E2 Dashboard, Einkaufen E1, 4b B, E4a + Z3, S1, E3, WP3, E2)', () => {
     const marker = 'create or replace function public.export_my_data()';
     expect(migrationFiles.filter((n) => readMigration(n).includes(marker)).at(-1)).toMatch(
-      /_wearable_revoke_export\.sql$/,
+      /_supplement_user_data\.sql$/,
     );
   });
 });
@@ -2798,11 +2812,11 @@ describe('Ziele in der Datenbank (Etappe Z3, docs/PLAN-ZIELE.md 5.1/5.2)', () =>
 
   it('Widerruf und Export: neueste Fassungen sind Obermengen der Vorgänger (Zeile für Zeile, S16)', () => {
     for (const [marker, newestFile] of [
-      [revokeMarker, /_wearable_revoke_export\.sql$/],
-      [exportMarker, /_wearable_revoke_export\.sql$/],
+      [revokeMarker, /_supplement_user_data\.sql$/],
+      [exportMarker, /_supplement_user_data\.sql$/],
     ] as const) {
       const withFn = migrationFiles.filter((n) => readMigration(n).includes(marker));
-      // Widerruf und Export seit Phase 8 in *_wearable_revoke_export.sql (davor Einkaufen E1 bzw. E2, 4b Etappe B,
+      // Widerruf und Export seit Phase 6 SU3 in *_supplement_user_data.sql (davor Phase 8, Einkaufen E1, E2, 4b Etappe B,
       // Vereinigung E4a + Z3, Wächter E4a H1).
       expect(withFn.at(-1)).toMatch(newestFile);
       const bodyOf = (name: string) => {
@@ -2845,6 +2859,9 @@ describe('Ziele in der Datenbank (Etappe Z3, docs/PLAN-ZIELE.md 5.1/5.2)', () =>
         // Phase 8: Puls-Zusammenfassungen und Tageswerte der Smartwatch.
         'heart_rate_summaries',
         'daily_metrics',
+        // Phase 6 SU3: Supplement-Check und „Meine Supplements“.
+        'supplement_screening',
+        'user_supplements',
       ].sort(),
     );
     for (const name of sensitive) {
@@ -3435,5 +3452,71 @@ describe('Smartwatch über Health Connect (Phase 8 Etappe H2, docs/PLAN-PHASE-8.
     expect(sql).not.toContain('function public.save_session_log(');
     expect(revokeExport).not.toContain('function public.save_session_log(');
     expect(importFn).toContain("'health_connect', now()");
+  });
+});
+
+describe('Supplement-Modul in der Datenbank (Phase 6, Etappe SU3, docs/PLAN-PHASE-6.md 7)', () => {
+  const enumsSql = readMigration('_supplement_enums.sql');
+  const contentSql = readMigration('_supplements.sql');
+  const userSql = readMigration('_supplement_user_data.sql');
+  const enumValues = (name: string) =>
+    quotedListAfter(enumsSql, `create type public.${name} as enum (`);
+
+  it('Aufzählungen = Listen im Core', () => {
+    expect(enumValues('supplement_id')).toEqual([...SUPPLEMENT_IDS]);
+    expect(enumValues('supplement_evidence')).toEqual([...SUPPLEMENT_EVIDENCE_LEVELS]);
+    expect(enumValues('supplement_category')).toEqual([...SUPPLEMENT_CONTENT_CATEGORIES]);
+    expect(enumValues('supplement_flag')).toEqual([...SUPPLEMENT_FLAGS]);
+    expect(enumValues('user_supplement_status')).toEqual([...USER_SUPPLEMENT_STATUSES]);
+  });
+
+  it('seed_supplements kennt genau SUPPLEMENT_CONTENT_IDS; Grenzen wie das Schema', () => {
+    expect(quotedListAfter(contentSql, 'known_ids constant text[] := array[')).toEqual([
+      ...SUPPLEMENT_CONTENT_IDS,
+    ]);
+    const { min, max } = CONTENT_SCHEMA_LIMITS.version;
+    expect(contentSql).toContain(
+      `version integer not null check (version between ${min} and ${max})`,
+    );
+    expect(contentSql).toContain("check (status <> 'draft')");
+    expect(contentSql).toContain('private.content_without_reviewer_names(x)');
+  });
+
+  it('Trigger des Supplement-Checks = evaluateSupplementScreening (Fragen, Reihenfolge, Eiweiß-Antworten)', () => {
+    expect(quotedListAfter(userSql, 'flag_questions constant text[] := array[')).toEqual([
+      ...SUPPLEMENT_SCREENING_QUESTIONS.map((q) => q.id),
+    ]);
+    expect(SUPPLEMENT_SCREENING_QUESTIONS.map((q) => q.flag)).toEqual([...SUPPLEMENT_FLAGS]);
+    expect(quotedListAfter(userSql, 'protein_answers constant text[] := array[')).toEqual([
+      ...PROTEIN_SELF_CHECK_ANSWERS,
+    ]);
+    expect(userSql).toContain(
+      `screening_version constant smallint := ${SUPPLEMENT_SCREENING_VERSION};`,
+    );
+    expect(userSql).toContain(
+      `min_version constant integer := ${SUPPLEMENT_HEALTH_CONSENT_MIN_VERSION};`,
+    );
+    // Stillzeit-Frage nicht bei „männlich“ (createSupplementScreeningAnswersSchema).
+    expect(userSql).toContain("person_sex = 'male' and new.answers ? 'breastfeeding'");
+  });
+
+  it('Einwilligung health_data Fassung 2 als Entwurf (published_at NULL); Schreiben nur über RPCs mit Sperre', () => {
+    const seed = userSql.slice(
+      userSql.indexOf('insert into public.consent_documents'),
+      userSql.indexOf('on conflict (consent_type, version) do nothing;'),
+    );
+    expect(seed).toContain("'health_data',\n  2,");
+    expect(seed.trimEnd().endsWith('null\n)')).toBe(true);
+    const lock = userSql.indexOf('for share');
+    expect(lock).toBeGreaterThan(0);
+    expect(lock).toBeLessThan(userSql.indexOf("not public.has_valid_consent('health_data')"));
+    for (const table of ['supplement_screening', 'user_supplements']) {
+      expect(userSql).toContain(`alter table public.${table} enable row level security;`);
+      expect(userSql).toContain(
+        `revoke all on table public.${table} from public, anon, authenticated;`,
+      );
+      expect(userSql).toContain(`grant select on table public.${table} to authenticated;`);
+    }
+    expect(userSql).toContain("check (supplement_id <> 'caffeine')");
   });
 });

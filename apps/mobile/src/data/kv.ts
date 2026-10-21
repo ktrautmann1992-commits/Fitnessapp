@@ -136,6 +136,8 @@ export const STORAGE_KEYS = {
   /** Smartwatch: Zeitpunkt des letzten Abgleich-VERSUCHS (nur Zeitstempel, keine Werte) – „höchstens alle 15 min“. */
   wearableSyncAttempt: 'fitnessapp.wearable-sync-attempt.v1',
   /** Supabase-Modus: Workout-Bibliothek (nur Inhalte, keine Nutzerdaten) – für offline (docs/PLAN-WORKOUTS.md). */
+  /** Supabase-Modus: Supplement-Inhalte (nur Inhalte, keine Nutzerdaten) – für offline (Phase 6 SU4). */
+  supplementLibrary: 'fitnessapp.supplement-library.v1',
   workoutLibrary: 'fitnessapp.workout-library.v1',
   /** Workout-Timer: „Ton und Vibration“ an/aus (nur dieses Gerät, keine Nutzerdaten). */
   workoutSignals: 'fitnessapp.workout-signals.v1',

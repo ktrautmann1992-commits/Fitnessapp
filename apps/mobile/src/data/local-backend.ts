@@ -54,6 +54,16 @@ import {
 } from './food-photo-local';
 import { localDataExport } from './data-export';
 import {
+  applySupplementScreening,
+  applyUserSupplement,
+  localSupplementExport,
+  localSupplementUserData,
+  rowsWithOldHealthConsent,
+  withoutSupplementData,
+  type LocalSupplementRecord,
+} from './supplement-local';
+import { supplementsFromBundle } from './supplement-library';
+import {
   applySaveCompetition,
   cancelInRows,
   checkSaveInRows,
@@ -206,6 +216,11 @@ interface LocalDb {
    * (alle Konten dieses Geräts, gefiltert nach user_id) – dokumentierte Ausnahme des Testmodus wie alle Daten hier.
    */
   wearables?: LocalWearableStore;
+  /**
+   * Supplement-Check und „Meine Supplements“ (Phase 6 SU4, Testmodus) je Konto – Gesundheitsdaten wie alle anderen
+   * Testmodus-Daten nur auf diesem Gerät (dokumentierte Ausnahme), beim Widerruf health_data gelöscht.
+   */
+  supplements?: LocalSupplementRecord[];
 }
 
 /** Testphase „alles offen“ (Gründer 19.10.2026): Standard AN – nur ein ausdrücklich ausgeschalteter Schalter ist aus. */
@@ -289,6 +304,10 @@ const SERIALIZED_METHODS = [
   'updateTrackedRoute',
   'deleteTrackedRoute',
   'deleteAllTrackedRoutes',
+  'saveSupplementScreening',
+  'setUserSupplement',
+  'deleteSupplementData',
+  'simulateOldHealthConsent',
 ] as const satisfies readonly (keyof Backend)[];
 
 function serializeWrites(backend: Backend): Backend {
@@ -528,12 +547,15 @@ export function createLocalBackend(store: KeyValueStore, options: LocalBackendOp
     // Ein Widerruf darf nie scheitern (Wächter N4 K3): ungültige Alt-Einträge verwirft die Umwandlung in core.
     const next = applyHealthDataRevocation(revoked, { deleteLogs, dislikeGroups });
     // Phase 8: Widerruf health_data löscht auch Puls, Tageswerte und Smartwatch-Verbindung (consents_after_revoke).
+    // Phase 6 SU3 (Plan 7.3): Supplement-Check und „Meine Supplements“ ganz gelöscht.
     const session = db.session;
+    const owner = rows.profile?.user_id;
     await save({
       ...db,
       rows: next,
       wearables:
         db.wearables && session ? applyWearableRevoke(db.wearables, session.userId) : db.wearables,
+      supplements: owner ? withoutSupplementData(db.supplements ?? [], owner) : db.supplements,
     });
     // Live-Anpassung (8.3, 4.7): Anpassungen sind (mittelbar) Gesundheitsdaten – der geschützte Speicher wird geleert.
     await liveStore.clear();
@@ -1471,6 +1493,55 @@ export function createLocalBackend(store: KeyValueStore, options: LocalBackendOp
         cached: false,
       };
     },
+    // --- Supplemente (Phase 6 SU4): Inhalte aus dem Bündel, Nutzerdaten im Gerätespeicher (supplement-local.ts) ---
+    loadSupplementLibrary: async () => {
+      const { CONTENT_BUNDLE } = await import('../generated/content-files');
+      const entries = supplementsFromBundle(CONTENT_BUNDLE.supplementFiles ?? []);
+      return {
+        entries,
+        cached: false,
+        drafts: entries.some((entry) => entry.status === 'draft'),
+      };
+    },
+    loadSupplementUserData: async () => {
+      const { db, session } = await requireUser();
+      return localSupplementUserData(db.supplements ?? [], session.userId);
+    },
+    saveSupplementScreening: async (answers) => {
+      const { db, rows, session } = await requireProfile();
+      const supplements = applySupplementScreening(db.supplements ?? [], {
+        rows,
+        versions: LOCAL_VERSIONS,
+        userId: session.userId,
+        answers,
+        now: options.now(),
+      });
+      await save({ ...db, supplements });
+      return localSupplementUserData(supplements, session.userId);
+    },
+    setUserSupplement: async (id, status) => {
+      const { db, rows, session } = await requireProfile();
+      const supplements = applyUserSupplement(db.supplements ?? [], {
+        rows,
+        versions: LOCAL_VERSIONS,
+        userId: session.userId,
+        id,
+        status,
+        now: options.now(),
+      });
+      await save({ ...db, supplements });
+      return localSupplementUserData(supplements, session.userId);
+    },
+    deleteSupplementData: async () => {
+      const { db, session } = await requireUser();
+      const supplements = withoutSupplementData(db.supplements ?? [], session.userId);
+      await save({ ...db, supplements });
+      return localSupplementUserData(supplements, session.userId);
+    },
+    simulateOldHealthConsent: async () => {
+      const { db, rows } = await requireProfile();
+      await save({ ...db, rows: rowsWithOldHealthConsent(rows) });
+    },
     exportMyData: async () => {
       const { db, rows, session } = await requireProfile();
       const file = buildDataExportFile(
@@ -1480,6 +1551,7 @@ export function createLocalBackend(store: KeyValueStore, options: LocalBackendOp
           planAdjustments: await liveStore.load(session.userId),
           trackedRoutes: (db.trackedRoutes ?? []).filter((r) => r.user_id === session.userId),
           wearables: wearableRowsFor(db.wearables ?? EMPTY_LOCAL_WEARABLES, rows, session.userId),
+          ...localSupplementExport(db.supplements ?? [], session.userId),
         }),
         {
           email: session.email,

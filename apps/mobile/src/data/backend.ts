@@ -29,6 +29,11 @@ import type {
   WearableImportResult,
   WearableRows,
   Workout,
+  RatedSupplementId,
+  SupplementContent,
+  SupplementScreeningAnswers,
+  SupplementUserData,
+  UserSupplementStatus,
 } from '@fitnessapp/core';
 
 import type { FavoriteChange } from './food-log-rows';
@@ -599,6 +604,47 @@ export interface Backend {
    * Herkunft „workout“ setzt danach das Backend (mark_session_log_workout bzw. lokal).
    */
   loadWorkoutLibrary(): Promise<WorkoutLibraryResult>;
+
+  // --- Supplemente (docs/PLAN-PHASE-6.md, Etappen SU3/SU4) -------------------------------------------------------
+  /**
+   * Supplement-Inhalte: Supabase aus der Tabelle `supplements` (nur freigegebene; offline aus dem Zwischenspeicher, nur
+   * Inhalte), Testmodus aus dem Bündel (Entwürfe ohne roten Befund, gekennzeichnet).
+   */
+  loadSupplementLibrary(): Promise<SupplementLibraryResult>;
+  /**
+   * Supplement-Check und „Meine Supplements“ (Gesundheitsdaten, Art. 9). Supabase: nur online, nie auf dem Gerät
+   * zwischengespeichert – offline Fehler `network` (die App zeigt dann nur allgemeine Infos). Testmodus: Gerätespeicher.
+   */
+  loadSupplementUserData(): Promise<SupplementUserData>;
+  /**
+   * Supplement-Check speichern (ersetzt den alten; Flags berechnet der Speicherort selbst). Nur mit Einwilligung
+   * health_data Fassung 2 (sonst `consent_required`); Supabase nur online. Liefert den neuen Stand.
+   */
+  saveSupplementScreening(answers: SupplementScreeningAnswers): Promise<SupplementUserData>;
+  /**
+   * „Nehme ich“ / „Nicht für mich“ setzen; `null` entfernt die Auswahl (geht immer, Recht auf Löschung). Setzen nur mit
+   * Einwilligung Fassung 2. Supabase nur online.
+   */
+  setUserSupplement(
+    id: RatedSupplementId,
+    status: UserSupplementStatus | null,
+  ): Promise<SupplementUserData>;
+  /** Supplement-Check und „Meine Supplements“ löschen (geht immer, auch ohne Einwilligung). */
+  deleteSupplementData(): Promise<SupplementUserData>;
+  /**
+   * Nur Testmodus (docs/PLAN-PHASE-6.md 8.3): Einwilligung health_data des Kontos auf Fassung 1 setzen, um die
+   * Hinweis-Karte „Einwilligung ergänzt“ zu prüfen. Nichts wird gelöscht. Supabase-Modus: fehlt.
+   */
+  readonly simulateOldHealthConsent?: () => Promise<void>;
+}
+
+/** Supplement-Inhalte (docs/PLAN-PHASE-6.md 7.2/8). */
+export interface SupplementLibraryResult {
+  readonly entries: readonly SupplementContent[];
+  /** true = offline aus dem Zwischenspeicher (Supabase-Modus). */
+  readonly cached: boolean;
+  /** true = Testmodus: Entwürfe aus dem Repository (noch nicht freigegeben). */
+  readonly drafts: boolean;
 }
 
 /** Workout-Bibliothek (docs/PLAN-WORKOUTS.md): nur freigegebene, gültige Workouts. */

@@ -16,8 +16,10 @@
  *    `seed_nutrition_content` wird mit `p_require_expert_review = false` aufgerufen. Fehlt die Datei: Livegang-Regel.
  *    Derselbe Schutz vor Massen-Archivierung je Inhaltsart, dann `seed_nutrition_content(p_content)` (eigene Transaktion). Gibt es die
  *    Tabellen noch nicht (vor `db-migrate`), wird die Ernährung mit Hinweis übersprungen.
- * 6. Supplemente (docs/PLAN-PHASE-6.md Abschnitt 6, Etappe SU2): werden in Schritt 1 mitgeprüft (SK1–SK7), aber NOCH
- *    NICHT eingespielt – die Tabelle `supplements` kommt erst mit SU3. Der Bericht nennt nur ihre Anzahl.
+ * 6. Supplemente (docs/PLAN-PHASE-6.md Abschnitte 6 und 7, Etappe SU3): freigegebene Supplement-Inhalte – mit derselben
+ *    Einspiel-Regel wie die Ernährung (Testphase: auch ohne Fachprüfung, sonst nur fachlich geprüft), gleicher Schutz vor
+ *    Massen-Archivierung, dann `seed_supplements(p_content)` (eigene Transaktion). Fehlt die Tabelle (vor `db-migrate`),
+ *    mit Hinweis übersprungen.
  * 7. Workouts (docs/PLAN-WORKOUTS.md): freigegebene Workouts – mit derselben Einspiel-Regel wie die Ernährung
  *    (Testphase: auch ohne Fachprüfung, sonst nur fachlich geprüft), gleicher Schutz vor Massen-Archivierung, dann
  *    `seed_workouts(p_content)` (eigene Transaktion). Fehlt die Tabelle (vor `db-migrate`), mit Hinweis übersprungen.
@@ -38,6 +40,7 @@ import {
   type PlanTemplate,
   type Recipe,
   STRICT_CONTENT_SEED_SETTINGS,
+  type SupplementContent,
   type Workout,
 } from '@fitnessapp/core';
 
@@ -240,6 +243,75 @@ export function buildWorkoutSeedPackage(
   };
 }
 
+/** Paket für `seed_supplements` (docs/PLAN-PHASE-6.md 7.2) – Inhalte = Dateien unverändert. */
+export interface SupplementSeedPackage {
+  readonly supplements: SupplementContent[];
+}
+
+/**
+ * Supplement-Paket: nur `published`; ohne „fachlich geprüft“ nur in der Testphase (`requireExpertReview: false`) –
+ * sonst stehen sie in `waiting`. `unreviewed` = in der Testphase ohne Fachprüfung eingespielt (Bericht). Gleiche Regel
+ * wie `seed_supplements` auf dem Server (der lehnt sonst das GANZE Paket ab).
+ */
+export function buildSupplementSeedPackage(
+  result: Pick<ContentValidationResult, 'supplements'>,
+  options: { readonly requireExpertReview: boolean } = { requireExpertReview: true },
+): { package: SupplementSeedPackage; waiting: string[]; unreviewed: string[] } {
+  const published = result.supplements.filter((entry) => entry.status === 'published');
+  const ok = (entry: SupplementContent) =>
+    !options.requireExpertReview || entry.meta.expert_reviewed;
+  return {
+    package: { supplements: published.filter(ok) },
+    waiting: published
+      .filter((entry) => !ok(entry))
+      .map((entry) => entry.id)
+      .sort(),
+    unreviewed: published
+      .filter((entry) => ok(entry) && !entry.meta.expert_reviewed)
+      .map((entry) => entry.id)
+      .sort(),
+  };
+}
+
+/** Wie `findMassArchive`, für die Supplemente (gleiche 50-%-Grenze). */
+export function findSupplementMassArchive(
+  current: readonly string[],
+  pkg: SupplementSeedPackage,
+): MassArchiveFinding[] {
+  const next = new Set(pkg.supplements.map((entry) => entry.id));
+  const published = [...new Set(current)];
+  const wouldArchive = published.filter((id) => !next.has(id)).sort();
+  return published.length > 0 && wouldArchive.length / published.length > MASS_ARCHIVE_MAX_SHARE
+    ? [{ table: 'supplements', published: published.length, wouldArchive }]
+    : [];
+}
+
+/** Bericht zu den Supplementen (nur Anzahl und höchstens 20 IDs). */
+function supplementMarkdown(
+  settings: ContentSeedSettings,
+  supplements: { waiting: readonly string[]; unreviewed: readonly string[] },
+): string[] {
+  const ids = (list: readonly string[]) =>
+    `${list
+      .slice(0, 20)
+      .map((id) => `\`${id}\``)
+      .join(', ')}${list.length > 20 ? ` … (+${list.length - 20})` : ''}`;
+  return [
+    ...(!settings.nur_fachlich_geprueft && supplements.unreviewed.length > 0
+      ? [
+          '',
+          `**🧪 Testphase:** ${supplements.unreviewed.length} Supplemente ohne Fachprüfung – in der App gekennzeichnet „Testphase – noch nicht fachlich geprüft“: ${ids(supplements.unreviewed)}`,
+        ]
+      : []),
+    ...(supplements.waiting.length > 0
+      ? [
+          '',
+          `**Supplemente: ${supplements.waiting.length} freigegebene warten auf die Fachprüfung** (nicht eingespielt): ${ids(supplements.waiting)}`,
+        ]
+      : []),
+  ];
+}
+
 /** Wie `findMassArchive`, für die Workouts (gleiche 50-%-Grenze). */
 export function findWorkoutMassArchive(
   current: readonly string[],
@@ -319,7 +391,7 @@ export const NUTRITION_SEED_TABLES: Record<NutritionSeedKind, string> = {
 };
 
 export interface MassArchiveFinding {
-  readonly table: keyof PublishedIds | NutritionSeedKind | 'workouts';
+  readonly table: keyof PublishedIds | NutritionSeedKind | 'workouts' | 'supplements';
   readonly published: number;
   readonly wouldArchive: readonly string[];
 }
@@ -378,24 +450,18 @@ export interface SeedResult {
   readonly seedSettings?: ContentSeedSettings;
   /** Workout-Paket (docs/PLAN-WORKOUTS.md) mit wartenden bzw. ungeprüft eingespielten IDs. */
   readonly workouts?: { package: WorkoutSeedPackage; waiting: string[]; unreviewed: string[] };
+  /** Supplement-Paket (docs/PLAN-PHASE-6.md 7.2) mit wartenden bzw. ungeprüft eingespielten IDs. */
+  readonly supplements?: {
+    package: SupplementSeedPackage;
+    waiting: string[];
+    unreviewed: string[];
+  };
 }
 
 function nutritionCountText(pkg: NutritionSeedPackage): string {
   return (Object.keys(NUTRITION_SEED_TABLES) as NutritionSeedKind[])
     .map((kind) => `${pkg[kind].length} ${TABLE_DE[kind]}`)
     .join(', ');
-}
-
-/**
- * Hinweis zu den Supplementen (SU2): geprüft, aber noch nicht eingespielt (Datenbank erst mit SU3). Leer ohne Einträge.
- */
-export function supplementSeedNote(result: Pick<ContentValidationResult, 'supplements'>): string[] {
-  if (result.supplements.length === 0) return [];
-  const published = result.supplements.filter((entry) => entry.status === 'published').length;
-  return [
-    '',
-    `Supplemente: ${result.supplements.length} geprüft (davon ${published} freigegeben) – werden noch nicht eingespielt (Datenbank folgt mit Etappe SU3, docs/PLAN-PHASE-6.md).`,
-  ];
 }
 
 /** Legacy-Schlüssel (`service_role`) sind JWTs; neue Secret Keys (`sb_secret_…`) nur im `apikey`-Header. */
@@ -511,7 +577,10 @@ export async function fetchPublishedNutritionIds(
   return out as PublishedNutritionIds;
 }
 
-const TABLE_DE: Record<keyof PublishedIds | NutritionSeedKind | 'workouts', string> = {
+const TABLE_DE: Record<
+  keyof PublishedIds | NutritionSeedKind | 'workouts' | 'supplements',
+  string
+> = {
   exercises: 'Übungen',
   plan_templates: 'Plan-Vorlagen',
   foods: 'Lebensmittel',
@@ -521,6 +590,7 @@ const TABLE_DE: Record<keyof PublishedIds | NutritionSeedKind | 'workouts', stri
   meal_prep_plans: 'Meal-Prep-Pläne',
   guides: 'Ratgeber',
   workouts: 'Workouts',
+  supplements: 'Supplemente',
 };
 
 const WAIT_REASON_DE: Record<NutritionWaitReason, string> = {
@@ -641,10 +711,29 @@ export async function callSeedWorkouts(
   );
 }
 
+/**
+ * Ruft `public.seed_supplements` auf (eigene Transaktion, idempotent); Testphase wie Workouts und Ernährung mit
+ * `p_require_expert_review: false`.
+ */
+export async function callSeedSupplements(
+  env: SupabaseAccess,
+  pkg: SupplementSeedPackage,
+  fetchImpl: SeedFetch,
+  settings: ContentSeedSettings = STRICT_CONTENT_SEED_SETTINGS,
+): Promise<unknown> {
+  return callSeedFunction(
+    env,
+    'seed_supplements',
+    pkg,
+    fetchImpl,
+    settings.nur_fachlich_geprueft ? {} : { p_require_expert_review: false },
+  );
+}
+
 async function callSeedFunction(
   env: SupabaseAccess,
-  name: 'seed_content' | 'seed_nutrition_content' | 'seed_workouts',
-  pkg: SeedPackage | NutritionSeedPackage | WorkoutSeedPackage,
+  name: 'seed_content' | 'seed_nutrition_content' | 'seed_workouts' | 'seed_supplements',
+  pkg: SeedPackage | NutritionSeedPackage | WorkoutSeedPackage | SupplementSeedPackage,
   fetchImpl: SeedFetch,
   extraArgs: Record<string, unknown> = {},
 ): Promise<unknown> {
@@ -696,6 +785,9 @@ export async function runSeed(options: {
   const workouts = buildWorkoutSeedPackage(report.result, {
     requireExpertReview: seedSettings.nur_fachlich_geprueft,
   });
+  const supplements = buildSupplementSeedPackage(report.result, {
+    requireExpertReview: seedSettings.nur_fachlich_geprueft,
+  });
   const ruleLine = `Einspiel-Regel: ${seedSettingsText(seedSettings)}.`;
   const counts = `${pkg.exercises.length} Übungen, ${pkg.plan_templates.length} Plan-Vorlagen (nur „published“)`;
   const nutritionCounts = nutritionCountText(nutrition.package);
@@ -708,17 +800,18 @@ export async function runSeed(options: {
       package: pkg,
       nutrition,
       workouts,
+      supplements,
       seedSettings,
       markdown: [
         '### ⏭️ content-seed übersprungen – Supabase fehlt',
         '',
-        `Inhalte geprüft ✅ · Einspiel-Paket: ${counts}; Ernährung: ${nutritionCounts}; ${workouts.package.workouts.length} Workouts.`,
+        `Inhalte geprüft ✅ · Einspiel-Paket: ${counts}; Ernährung: ${nutritionCounts}; ${workouts.package.workouts.length} Workouts; ${supplements.package.supplements.length} Supplemente.`,
         ruleLine,
         'Es fehlen die GitHub-Secrets SUPABASE_URL und/oder SUPABASE_SECRET_KEY (docs/SETUP.md Teile A und B).',
         ...unreviewedMarkdown(seedSettings, nutrition.unreviewed),
         ...waitingMarkdown(nutrition.waiting),
         ...workoutMarkdown(seedSettings, workouts),
-        ...supplementSeedNote(report.result),
+        ...supplementMarkdown(seedSettings, supplements),
         '',
       ].join('\n'),
     };
@@ -731,6 +824,8 @@ export async function runSeed(options: {
     const currentNutrition = await fetchPublishedNutritionIds(access, fetchImpl);
     // Workouts: Tabelle erst nach db-migrate (docs/PLAN-WORKOUTS.md) – sonst übersprungen.
     const currentWorkouts = await readPublishedIds(access, fetchImpl, 'workouts', true);
+    // Supplemente: Tabelle erst nach db-migrate (docs/PLAN-PHASE-6.md 7.2) – sonst übersprungen.
+    const currentSupplements = await readPublishedIds(access, fetchImpl, 'supplements', true);
     // Schutz vor Massen-Archivierung für ALLE Inhaltsarten, bevor irgendetwas eingespielt wird.
     const findings = [
       ...findMassArchive(current, pkg),
@@ -740,6 +835,9 @@ export async function runSeed(options: {
       ...(currentWorkouts === null
         ? []
         : findWorkoutMassArchive(currentWorkouts, workouts.package)),
+      ...(currentSupplements === null
+        ? []
+        : findSupplementMassArchive(currentSupplements, supplements.package)),
     ];
     if (findings.length > 0) {
       if (options.env.allowMassArchive !== true) {
@@ -749,6 +847,7 @@ export async function runSeed(options: {
           package: pkg,
           nutrition,
           workouts,
+          supplements,
           seedSettings,
           markdown: massArchiveMarkdown(findings),
         };
@@ -839,19 +938,56 @@ export async function runSeed(options: {
         };
       }
     }
+    if (currentSupplements === null) {
+      lines.push(
+        '',
+        'Supplemente übersprungen: Die Tabelle gibt es in der Datenbank noch nicht (erst nach `db-migrate`).',
+      );
+    } else {
+      try {
+        const sr = ((await callSeedSupplements(
+          access,
+          supplements.package,
+          fetchImpl,
+          seedSettings,
+        )) ?? {}) as Record<string, unknown>;
+        lines.push(
+          `Supplemente eingespielt: ${String(sr.supplements ?? supplements.package.supplements.length)}; zurückgezogen (archived): ${String(sr.archived ?? 0)}.`,
+        );
+      } catch (error) {
+        return {
+          exitCode: 1,
+          status: 'failed',
+          package: pkg,
+          nutrition,
+          workouts,
+          supplements,
+          seedSettings,
+          markdown: [
+            ...lines,
+            '',
+            '### ❌ Supplemente nicht eingespielt (eine Transaktion, nichts geändert)',
+            '',
+            (error as Error).message,
+            '',
+          ].join('\n'),
+        };
+      }
+    }
     return {
       exitCode: 0,
       status: 'seeded',
       package: pkg,
       nutrition,
       workouts,
+      supplements,
       seedSettings,
       markdown: [
         ...lines,
         ...unreviewedMarkdown(seedSettings, nutrition.unreviewed),
         ...waitingMarkdown(nutrition.waiting),
         ...workoutMarkdown(seedSettings, workouts),
-        ...supplementSeedNote(report.result),
+        ...supplementMarkdown(seedSettings, supplements),
         '',
       ].join('\n'),
     };

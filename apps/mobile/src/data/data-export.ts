@@ -29,6 +29,9 @@ export function localDataExport(
     trackedRoutes?: readonly { started_at: string; created_at: string }[];
     /** Testmodus: Smartwatch-Daten (Phase 8, Spalten wie die vier Tabellen). */
     wearables?: WearableRows;
+    /** Testmodus: Supplement-Check und „Meine Supplements“ (Phase 6 SU3/SU4, Spalten wie die Tabellen). */
+    supplementScreening?: readonly unknown[];
+    userSupplements?: readonly unknown[];
   } = {},
 ): {
   format_version: number;
@@ -226,6 +229,9 @@ export function localDataExport(
     daily_metrics: [...(extra.wearables?.dailyMetrics ?? [])].sort((a, b) =>
       a.day.localeCompare(b.day),
     ),
+    // Phase 6 SU3/SU4: Supplement-Check und „Meine Supplements“ (Gesundheitsdaten, Testmodus aus dem Gerätespeicher).
+    supplement_screening: [...(extra.supplementScreening ?? [])],
+    user_supplements: [...(extra.userSupplements ?? [])],
     // Übungs-Präferenzen (Etappe T2) – in export_my_data() erst mit Etappe T3 (PENDING_DB_EXPORT_TABLES).
     exercise_preferences: rows.exercisePreferences,
   };

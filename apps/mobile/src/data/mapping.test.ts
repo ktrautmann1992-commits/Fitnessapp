@@ -76,7 +76,7 @@ describe('Onboarding → Tabellenzeilen', () => {
     expect(ops[0]).toEqual({
       kind: 'grant_consent',
       consentType: 'health_data',
-      version: 1,
+      version: 2,
       platform: 'web',
     });
     expect(ops.at(-1)).toEqual({

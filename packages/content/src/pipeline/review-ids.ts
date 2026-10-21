@@ -10,13 +10,20 @@
  * - Art „ids“ mit dem Wort „alle“ → alle Übungen und Plan-Vorlagen im Status „draft“ auf einmal freigeben
  *   (nur Zielstatus published, nur Training; Gründer-Wunsch 17.10.2026 – 122 IDs am Handy nicht tippbar).
  *   Freigabe bleibt der Merge durch einen Menschen.
+ * - Art „ids“ mit Supplement-IDs (z. B. „creatine, protein_powder“) oder dem Stichwort „supplemente“ (alle Supplemente
+ *   im Entwurf) → `runSupplementIdRelease` (docs/PLAN-PHASE-6.md, Etappe SU3; nur Freigabe, Häkchen „fachlich geprüft“).
+ *   Supplemente nicht mit anderen Inhalten mischen.
  * Eingaben ohne Wirkung werden in der Zusammenfassung genannt (Wächter N2d K4).
  */
 import { existsSync, readdirSync, readFileSync } from 'node:fs';
 import { join } from 'node:path';
 
 import { FOODS_FOLDER } from '../foods/catalog-loader';
-import { CONTENT_FOLDERS, NUTRITION_CONTENT_FOLDERS } from '../validate';
+import {
+  CONTENT_FOLDERS,
+  NUTRITION_CONTENT_FOLDERS,
+  SUPPLEMENT_CONTENT_FOLDERS,
+} from '../validate';
 import { runReview, type ReviewDeps, reviewInputSchema, type ReviewResult } from './review';
 import { type CatalogReviewDeps, runCatalogReview } from './review-catalog';
 import {
@@ -24,6 +31,7 @@ import {
   runNutritionIdRelease,
   runRecipeCategoryRelease,
 } from './review-recipes';
+import { ALL_SUPPLEMENTS_KEYWORD, runSupplementIdRelease } from './review-supplements';
 
 /** Rohe Workflow-Eingaben (Texte aus den Umgebungsvariablen). */
 export interface ReviewEnvInput {
@@ -123,10 +131,19 @@ const code = (ids: readonly string[]) => ids.map((id) => `\`${id}\``).join(', ')
 /** Hinweise zu Eingaben ohne Wirkung (damit niemand glaubt, ein Häkchen sei gesetzt worden). */
 export function ignoredInputNotes(
   input: ReviewEnvInput,
-  target: Target | 'category' | 'catalog',
+  target: Target | 'category' | 'catalog' | 'supplement',
 ): string[] {
   const notes: string[] = [];
   const category = input.category.trim();
+  if (target === 'supplement') {
+    if (category !== '' && category !== '-') {
+      notes.push(`Kategorie „${category}“ hat bei Supplementen keine Wirkung.`);
+    }
+    if (input.confirmAssumptions === 'true') {
+      notes.push('Häkchen „Import-Annahmen geprüft“ wirkt nur bei Rezepten – hier ohne Wirkung.');
+    }
+    return notes;
+  }
   if (target === 'catalog') {
     if (category !== '' && category !== '-') {
       notes.push(`Kategorie „${category}“ hat bei Art „katalog“ keine Wirkung.`);
@@ -199,6 +216,47 @@ export async function runContentReview(
       markdown: `### ❌ content-review\n\nArt „${kind}“ unbekannt – erlaubt: ${REVIEW_KINDS.join(', ')}.\n`,
     };
   }
+  // Supplemente (SU3): eigene IDs mit Unterstrich – vor der allgemeinen ID-Prüfung erkennen.
+  const rawIds = [
+    ...new Set(
+      input.ids
+        .split(/[\s,;]+/)
+        .map((id) => id.trim())
+        .filter((id) => id.length > 0),
+    ),
+  ];
+  if (input.ids.trim().toLowerCase() === ALL_SUPPLEMENTS_KEYWORD) {
+    return withNotes(
+      await runSupplementIdRelease(input, deps),
+      ignoredInputNotes(input, 'supplement'),
+    );
+  }
+  if (rawIds.length > 0 && /^[a-z0-9_\s,;-]+$/.test(input.ids.trim())) {
+    checkoutBaseBranch(deps);
+    const supplementIds = rawIds.filter((id) =>
+      exists(deps.repoRoot, SUPPLEMENT_CONTENT_FOLDERS.supplement, id),
+    );
+    if (supplementIds.length === rawIds.length) {
+      return withNotes(
+        await runSupplementIdRelease(input, deps),
+        ignoredInputNotes(input, 'supplement'),
+      );
+    }
+    if (supplementIds.length > 0) {
+      return {
+        exitCode: 1,
+        markdown: [
+          '### ❌ content-review',
+          '',
+          'Nichts geändert: Die IDs mischen Supplemente mit anderen Inhalten – bitte getrennt starten, die Regeln sind verschieden.',
+          '',
+          `- Supplemente: ${code(supplementIds)}`,
+          `- Andere: ${code(rawIds.filter((id) => !supplementIds.includes(id)))}`,
+          '',
+        ].join('\n'),
+      };
+    }
+  }
   if (input.ids.trim().toLowerCase() === ALL_TRAINING_KEYWORD) {
     return withNotes(
       await runAllTrainingRelease(input, deps),
@@ -217,7 +275,7 @@ export async function runContentReview(
         '',
         `Nichts geändert: Auf \`main\` nicht gefunden: ${code(classes.unknown)}.`,
         '',
-        'Gesucht in Übungen, Plan-Vorlagen, Rezepten, Meal-Prep-Plänen, Ratgebern, Austausch-Einträgen, Packungsgrößen und Lebensmitteln. Tippfehler? Die ID steht im Redaktionsbereich (Rezept → Steckbrief → ID). Neue Inhalte sind erst nach dem Merge ihres Pull Requests freigebbar.',
+        'Gesucht in Übungen, Plan-Vorlagen, Rezepten, Meal-Prep-Plänen, Ratgebern, Austausch-Einträgen, Packungsgrößen, Lebensmitteln und Supplementen. Tippfehler? Die ID steht im Redaktionsbereich (Rezept → Steckbrief → ID). Neue Inhalte sind erst nach dem Merge ihres Pull Requests freigebbar.',
         '',
       ].join('\n'),
     };

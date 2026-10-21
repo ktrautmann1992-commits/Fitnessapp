@@ -271,7 +271,9 @@ select ok(
 -- Neue Textversion → alte Einwilligung reicht nicht: Ändern abgelehnt, Löschen erlaubt (Recht auf Löschung).
 reset role;
 insert into public.consent_documents (consent_type, version, title_de, body_de, published_at)
-values ('health_data', 2, 'Einwilligung Gesundheitsdaten', 'Version 2', now());
+values ('health_data', 2, 'Einwilligung Gesundheitsdaten', 'Version 2', now())
+-- SU3: Fassung 2 liegt als unveröffentlichter Entwurf vor (20261021120200) – hier nur veröffentlichen.
+on conflict (consent_type, version) do update set published_at = excluded.published_at;
 set local role authenticated;
 select throws_ok(
   $$ update public.weight_goals set target_weight_kg = 79 $$,

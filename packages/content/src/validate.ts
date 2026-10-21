@@ -67,8 +67,8 @@ export const NUTRITION_CONTENT_FOLDERS: Record<
 };
 
 /**
- * Ordner der Supplement-Inhalte (docs/PLAN-PHASE-6.md Abschnitt 6, Etappe SU2). Nur geprüft – eingespielt werden sie
- * erst mit der Datenbank (SU3), gebündelt für die App erst mit SU4.
+ * Ordner der Supplement-Inhalte (docs/PLAN-PHASE-6.md Abschnitt 6, Etappe SU2). Eingespielt seit SU3 (seed_supplements),
+ * gebündelt für den Testmodus der App seit SU4 (scripts/bundle-content.mjs).
  */
 export const SUPPLEMENT_CONTENT_FOLDERS: Record<SupplementContentFileKind, string> = {
   supplement: 'supplements',

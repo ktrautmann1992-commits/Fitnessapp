@@ -781,7 +781,10 @@ describe('Supabase-Modus: Trainingsplan', () => {
         case 'profiles':
           return { data: { ...rowsWith().profile, experience_level: 'beginner' } };
         case 'consents':
-          return { data: [consent('terms'), consent('privacy'), consent('health_data')] };
+          // Datenbank: gültig ist Fassung 1 (Fassung 2 ist bis zur Rechtsprüfung ein Entwurf).
+          return {
+            data: [consent('terms'), consent('privacy'), consent('health_data', { version: 1 })],
+          };
         case 'health_screening':
           return {
             data: [
@@ -1680,6 +1683,9 @@ describe('Supabase-Modus: Tagebuch-Warteschlange', () => {
       'wearable_sessions',
       'heart_rate_summaries',
       'daily_metrics',
+      // Phase 6 SU3
+      'supplement_screening',
+      'user_supplements',
     ];
     const exported = {
       format_version: 1,

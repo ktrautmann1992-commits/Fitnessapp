@@ -560,6 +560,13 @@ export default function NutritionDayScreen() {
         />
       ) : null}
 
+      <Button
+        label={t.supplements.open}
+        variant="secondary"
+        onPress={() => router.push('/supplemente' as Href)}
+        testID="nutrition-supplements"
+      />
+
       <EatingHelpNotice />
       <Body muted>{t.nutrition.hfiCoeliac}</Body>
       <Body muted>{t.nutrition.disclaimer}</Body>

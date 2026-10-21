@@ -110,7 +110,7 @@ describe('Einwilligung health_data', () => {
     expect(
       healthConsentStatus(rowsWith({ consents: [consent('health_data')] }), {
         ...VERSIONS,
-        health_data: 2,
+        health_data: (VERSIONS.health_data ?? 1) + 1,
       }),
     ).toBe('outdated');
     expect(healthConsentStatus(rowsWith(), VERSIONS)).toBe('none');

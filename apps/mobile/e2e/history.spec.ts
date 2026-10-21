@@ -254,8 +254,9 @@ test('Export: Hinweis vor dem Herunterladen, Datei mit Tagebuch, Konto und Einwi
   // admin_actions (Etappe E3) + tracked_routes (Phase 10 S1) + user_food_products, food_product_lookup_counts
   // (Etappe E4a) + weight_goals (Ziele Z3) + plan_adjustments (Live-Anpassung, Phase 4b Etappe D; in export_my_data ab B)
   // + adjustment_events, live_adjust_hourly_counts (Phase 4b Etappe B; im Testmodus leer) + shopping_product_links (Einkaufen E1) + app_layout_settings (E2)
-  // + wearable_connections, wearable_sessions, heart_rate_summaries, daily_metrics (Phase 8 Smartwatch).
-  expect(Object.keys(file.data)).toHaveLength(48);
+  // + wearable_connections, wearable_sessions, heart_rate_summaries, daily_metrics (Phase 8 Smartwatch)
+  // + supplement_screening, user_supplements (Phase 6 SU3/SU4).
+  expect(Object.keys(file.data)).toHaveLength(50);
   expect(Object.keys(file.data)).toEqual(
     expect.arrayContaining([
       'user_food_products',

@@ -1,6 +1,6 @@
 /**
  * Aufruf: `pnpm --filter @fitnessapp/content review` (Workflow content-review).
- * Eingaben: REVIEW_KIND (`ids` = Inhalte per ID: Übungen/Vorlagen oder Rezepte/Meal-Prep-Pläne/Ratgeber,
+ * Eingaben: REVIEW_KIND (`ids` = Inhalte per ID: Übungen/Vorlagen, Rezepte/Meal-Prep-Pläne/Ratgeber oder Supplemente,
  * `recipe` = Sammelfreigabe Rezepte pro Kategorie, `katalog` = „Katalog geprüft“ für Lebensmittel), REVIEW_IDS, REVIEW_STATUS (published|archived|draft),
  * REVIEW_REVIEWER, REVIEW_CATEGORY, REVIEW_EXPERT_REVIEWED und REVIEW_CONFIRM_ASSUMPTIONS (`true`/`false`).
  * Verteilung und Hinweise zu Eingaben ohne Wirkung: pipeline/review-ids.ts. Art `katalog` braucht zusätzlich
