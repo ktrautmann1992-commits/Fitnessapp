@@ -1,11 +1,9 @@
 {
   "id": "rinderhueftsteak-mit-kartoffeln-und-gruenen-bohnen",
   "version": 1,
-  "status": "draft",
+  "status": "published",
   "title_de": "Rinderhüftsteak mit Kartoffeln und grünen Bohnen",
   "description_de": "Kurz gebratenes Hüftsteak mit Salzkartoffeln und grünen Bohnen mit Zwiebeln – ein klassisches Abendessen.",
-  "section_de": "Abendessen",
-  "categories": ["post-workout"],
   "meal_types": ["main"],
   "training_tags": ["nach_training"],
   "servings": 1,
@@ -90,6 +88,8 @@
     "Brate die Zwiebelwürfel im übrigen Öl glasig und schwenke die Bohnen darin.",
     "Würze mit Salz und Pfeffer und serviere alles mit Petersilie."
   ],
+  "section_de": "Abendessen",
+  "categories": ["post-workout"],
   "total_minutes": 32,
   "prep_minutes": 10,
   "cook_minutes": 22,
@@ -116,8 +116,8 @@
     "batch_id": null,
     "created_on": "2026-10-21",
     "expert_reviewed": false,
-    "reviewed_by": null,
-    "reviewed_at": null,
+    "reviewed_by": "Karsten (Auftrag an Claude)",
+    "reviewed_at": "2026-10-21",
     "review_note": null
   }
 }

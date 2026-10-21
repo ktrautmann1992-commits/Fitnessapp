@@ -1,11 +1,9 @@
 {
   "id": "bauernfruehstueck-mit-kochschinken",
   "version": 1,
-  "status": "draft",
+  "status": "published",
   "title_de": "Bauernfrühstück mit Kochschinken",
   "description_de": "Bratkartoffeln mit Zwiebeln, Kochschinken und Ei aus einer Pfanne – der deftige Klassiker für einen langen Tag.",
-  "section_de": "Frühstück",
-  "categories": [],
   "meal_types": ["breakfast"],
   "training_tags": [],
   "servings": 1,
@@ -83,6 +81,8 @@
     "Streue den Schnittlauch darüber."
   ],
   "tip_de": "Der Schinken bringt genug Salz mit – nachsalzen ist meist nicht nötig.",
+  "section_de": "Frühstück",
+  "categories": [],
   "total_minutes": 28,
   "prep_minutes": 8,
   "cook_minutes": 20,
@@ -109,8 +109,8 @@
     "batch_id": null,
     "created_on": "2026-10-21",
     "expert_reviewed": false,
-    "reviewed_by": null,
-    "reviewed_at": null,
+    "reviewed_by": "Karsten (Auftrag an Claude)",
+    "reviewed_at": "2026-10-21",
     "review_note": null
   }
 }

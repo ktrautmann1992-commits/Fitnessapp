@@ -1,11 +1,9 @@
 {
   "id": "quark-bowl-mit-heidelbeeren-und-banane",
   "version": 1,
-  "status": "draft",
+  "status": "published",
   "title_de": "Quark-Bowl mit Heidelbeeren und Banane",
   "description_de": "Cremig gerührter Magerquark mit Heidelbeeren, Banane und etwas Honig – schnell gemacht und gut sättigend.",
-  "section_de": "Frühstück",
-  "categories": ["schnell", "post-workout"],
   "meal_types": ["breakfast"],
   "training_tags": ["nach_training"],
   "servings": 1,
@@ -61,6 +59,8 @@
     "Schneide die Banane in Scheiben.",
     "Verteile Banane und Heidelbeeren auf dem Quark."
   ],
+  "section_de": "Frühstück",
+  "categories": ["schnell", "post-workout"],
   "total_minutes": 5,
   "prep_minutes": 5,
   "cook_minutes": 0,
@@ -87,8 +87,8 @@
     "batch_id": null,
     "created_on": "2026-10-21",
     "expert_reviewed": false,
-    "reviewed_by": null,
-    "reviewed_at": null,
+    "reviewed_by": "Karsten (Auftrag an Claude)",
+    "reviewed_at": "2026-10-21",
     "review_note": null
   }
 }

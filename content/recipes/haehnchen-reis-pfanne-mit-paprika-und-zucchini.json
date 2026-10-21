@@ -1,11 +1,9 @@
 {
   "id": "haehnchen-reis-pfanne-mit-paprika-und-zucchini",
   "version": 1,
-  "status": "draft",
+  "status": "published",
   "title_de": "Hähnchen-Reis-Pfanne mit Paprika und Zucchini",
   "description_de": "Gebratenes Hähnchen mit Paprika, Zucchini und Basmatireis aus einer Pfanne – einfach vorzubereiten.",
-  "section_de": "Mittagessen",
-  "categories": ["post-workout", "meal-prep"],
   "meal_types": ["main"],
   "training_tags": ["nach_training"],
   "servings": 1,
@@ -109,6 +107,8 @@
     "Mische den Reis unter, würze mit Salz und Pfeffer und streue die Petersilie darüber."
   ],
   "tip_de": "Für Meal-Prep schnell abkühlen lassen, im Kühlschrank lagern und am nächsten Tag gut durcherhitzt essen.",
+  "section_de": "Mittagessen",
+  "categories": ["post-workout", "meal-prep"],
   "total_minutes": 30,
   "prep_minutes": 10,
   "cook_minutes": 20,
@@ -135,8 +135,8 @@
     "batch_id": null,
     "created_on": "2026-10-21",
     "expert_reviewed": false,
-    "reviewed_by": null,
-    "reviewed_at": null,
+    "reviewed_by": "Karsten (Auftrag an Claude)",
+    "reviewed_at": "2026-10-21",
     "review_note": null
   }
 }

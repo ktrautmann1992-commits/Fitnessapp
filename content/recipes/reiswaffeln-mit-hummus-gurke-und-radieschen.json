@@ -1,11 +1,9 @@
 {
   "id": "reiswaffeln-mit-hummus-gurke-und-radieschen",
   "version": 1,
-  "status": "draft",
+  "status": "published",
   "title_de": "Reiswaffeln mit Hummus, Gurke und Radieschen",
   "description_de": "Knusprige Reiswaffeln mit Hummus, frischer Gurke und Radieschen – ein schnelles, herzhaftes Frühstück ohne Kochen.",
-  "section_de": "Frühstück",
-  "categories": ["schnell"],
   "meal_types": ["breakfast"],
   "training_tags": [],
   "servings": 1,
@@ -70,6 +68,8 @@
     "Schneide Gurke und Radieschen in dünne Scheiben und lege sie darauf.",
     "Bestreue alles mit Petersilie und Pfeffer."
   ],
+  "section_de": "Frühstück",
+  "categories": ["schnell"],
   "total_minutes": 5,
   "prep_minutes": 5,
   "cook_minutes": 0,
@@ -96,8 +96,8 @@
     "batch_id": null,
     "created_on": "2026-10-21",
     "expert_reviewed": false,
-    "reviewed_by": null,
-    "reviewed_at": null,
+    "reviewed_by": "Karsten (Auftrag an Claude)",
+    "reviewed_at": "2026-10-21",
     "review_note": null
   }
 }

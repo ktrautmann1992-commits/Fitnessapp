@@ -1,11 +1,9 @@
 {
   "id": "kakao-reispudding-mit-banane-und-himbeeren",
   "version": 1,
-  "status": "draft",
+  "status": "published",
   "title_de": "Kakao-Reispudding mit Banane und Himbeeren",
   "description_de": "Cremiger Reispudding mit Kakao, mit Wasser gekocht und mit Banane gesüßt – dazu fruchtige Himbeeren.",
-  "section_de": "Frühstück",
-  "categories": ["pre-workout", "meal-prep"],
   "meal_types": ["breakfast"],
   "training_tags": ["vor_training"],
   "servings": 1,
@@ -71,6 +69,8 @@
     "Fülle den Pudding in eine Schale und gib die übrige Banane in Scheiben und die Himbeeren darauf."
   ],
   "tip_de": "Am Vorabend kochen und am nächsten Morgen kalt essen – dann wird der Pudding schön fest.",
+  "section_de": "Frühstück",
+  "categories": ["pre-workout", "meal-prep"],
   "total_minutes": 30,
   "prep_minutes": 5,
   "cook_minutes": 25,
@@ -97,8 +97,8 @@
     "batch_id": null,
     "created_on": "2026-10-21",
     "expert_reviewed": false,
-    "reviewed_by": null,
-    "reviewed_at": null,
+    "reviewed_by": "Karsten (Auftrag an Claude)",
+    "reviewed_at": "2026-10-21",
     "review_note": null
   }
 }

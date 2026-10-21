@@ -1,11 +1,9 @@
 {
   "id": "gefuellte-zucchini-mit-reis-und-mozzarella",
   "version": 1,
-  "status": "draft",
+  "status": "published",
   "title_de": "Gefüllte Zucchini mit Reis und Mozzarella",
   "description_de": "Zucchini-Schiffchen mit einer Füllung aus Reis, Tomaten und Basilikum, mit Mozzarella überbacken.",
-  "section_de": "Abendessen",
-  "categories": ["meal-prep"],
   "meal_types": ["main"],
   "training_tags": [],
   "servings": 1,
@@ -107,6 +105,8 @@
     "Mische Reis, gewürfelte Tomate und gezupftes Basilikum unter und würze mit Salz und Pfeffer.",
     "Fülle die Zucchinihälften, belege sie mit Mozzarella und backe sie in einer Auflaufform 25 Minuten."
   ],
+  "section_de": "Abendessen",
+  "categories": ["meal-prep"],
   "total_minutes": 42,
   "prep_minutes": 12,
   "cook_minutes": 30,
@@ -133,8 +133,8 @@
     "batch_id": null,
     "created_on": "2026-10-21",
     "expert_reviewed": false,
-    "reviewed_by": null,
-    "reviewed_at": null,
+    "reviewed_by": "Karsten (Auftrag an Claude)",
+    "reviewed_at": "2026-10-21",
     "review_note": null
   }
 }

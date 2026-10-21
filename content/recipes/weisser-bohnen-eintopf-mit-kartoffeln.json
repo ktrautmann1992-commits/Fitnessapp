@@ -1,11 +1,9 @@
 {
   "id": "weisser-bohnen-eintopf-mit-kartoffeln",
   "version": 1,
-  "status": "draft",
+  "status": "published",
   "title_de": "Weißer Bohnen-Eintopf mit Kartoffeln",
   "description_de": "Deftiger Eintopf aus weißen Bohnen, Kartoffeln, Karotten und Tomaten – gut vorzukochen und einzufrieren.",
-  "section_de": "Mittagessen",
-  "categories": ["meal-prep", "spar-kueche"],
   "meal_types": ["main"],
   "training_tags": [],
   "servings": 1,
@@ -108,6 +106,8 @@
     "Gib die abgespülten Bohnen dazu, erhitze sie 3 Minuten mit und würze mit Pfeffer. Mit Petersilie bestreuen."
   ],
   "tip_de": "Ein Teil der Kartoffeln mit dem Kochlöffel am Topfrand zerdrücken – so wird der Eintopf sämiger.",
+  "section_de": "Mittagessen",
+  "categories": ["meal-prep", "spar-kueche"],
   "total_minutes": 34,
   "prep_minutes": 12,
   "cook_minutes": 22,
@@ -134,8 +134,8 @@
     "batch_id": null,
     "created_on": "2026-10-21",
     "expert_reviewed": false,
-    "reviewed_by": null,
-    "reviewed_at": null,
+    "reviewed_by": "Karsten (Auftrag an Claude)",
+    "reviewed_at": "2026-10-21",
     "review_note": null
   }
 }

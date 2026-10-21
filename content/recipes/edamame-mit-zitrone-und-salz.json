@@ -1,11 +1,9 @@
 {
   "id": "edamame-mit-zitrone-und-salz",
   "version": 1,
-  "status": "draft",
+  "status": "published",
   "title_de": "Edamame mit Zitrone und Salz",
   "description_de": "Warme Edamame mit Zitrone und einer Prise Salz – ein schneller Snack zum Knabbern nach dem Sport.",
-  "section_de": "Snack",
-  "categories": ["schnell", "post-workout"],
   "meal_types": ["snack"],
   "training_tags": ["nach_training"],
   "servings": 1,
@@ -42,6 +40,8 @@
     "Gare die Edamame 4 Minuten in kochendem Wasser und gieße sie ab.",
     "Mische sie mit Zitronensaft und Salz und iss sie warm oder kalt."
   ],
+  "section_de": "Snack",
+  "categories": ["schnell", "post-workout"],
   "total_minutes": 8,
   "prep_minutes": 2,
   "cook_minutes": 6,
@@ -68,8 +68,8 @@
     "batch_id": null,
     "created_on": "2026-10-21",
     "expert_reviewed": false,
-    "reviewed_by": null,
-    "reviewed_at": null,
+    "reviewed_by": "Karsten (Auftrag an Claude)",
+    "reviewed_at": "2026-10-21",
     "review_note": null
   }
 }

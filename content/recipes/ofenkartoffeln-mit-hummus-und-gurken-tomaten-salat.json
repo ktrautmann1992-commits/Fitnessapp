@@ -1,11 +1,9 @@
 {
   "id": "ofenkartoffeln-mit-hummus-und-gurken-tomaten-salat",
   "version": 1,
-  "status": "draft",
+  "status": "published",
   "title_de": "Ofenkartoffeln mit Hummus und Gurken-Tomaten-Salat",
   "description_de": "Knusprige Kartoffelspalten aus dem Ofen mit Hummus zum Dippen und einem frischen Gurken-Tomaten-Salat.",
-  "section_de": "Abendessen",
-  "categories": [],
   "meal_types": ["main"],
   "training_tags": [],
   "servings": 1,
@@ -98,6 +96,8 @@
     "Würfle Gurke und Tomate, schneide die Zwiebel fein und mische alles mit Zitronensaft und Petersilie.",
     "Serviere die Kartoffeln mit Hummus und Salat."
   ],
+  "section_de": "Abendessen",
+  "categories": [],
   "total_minutes": 45,
   "prep_minutes": 10,
   "cook_minutes": 35,
@@ -124,8 +124,8 @@
     "batch_id": null,
     "created_on": "2026-10-21",
     "expert_reviewed": false,
-    "reviewed_by": null,
-    "reviewed_at": null,
+    "reviewed_by": "Karsten (Auftrag an Claude)",
+    "reviewed_at": "2026-10-21",
     "review_note": null
   }
 }

@@ -1,11 +1,9 @@
 {
   "id": "gemuese-omelett-mit-bratkartoffeln",
   "version": 1,
-  "status": "draft",
+  "status": "published",
   "title_de": "Gemüse-Omelett mit Bratkartoffeln",
   "description_de": "Fluffiges Omelett mit Zucchini, Paprika und etwas Gouda, dazu knusprige Bratkartoffeln.",
-  "section_de": "Frühstück",
-  "categories": [],
   "meal_types": ["breakfast"],
   "training_tags": [],
   "servings": 1,
@@ -99,6 +97,8 @@
     "Verquirle die Eier mit Salz und Pfeffer, gieß sie über das Gemüse, streue den Käse darauf und lass das Omelett zugedeckt bei kleiner Hitze 4–5 Minuten stocken, bis es ganz durch ist.",
     "Bestreue alles mit Schnittlauch und serviere das Omelett mit den Bratkartoffeln."
   ],
+  "section_de": "Frühstück",
+  "categories": [],
   "total_minutes": 30,
   "prep_minutes": 10,
   "cook_minutes": 20,
@@ -125,8 +125,8 @@
     "batch_id": null,
     "created_on": "2026-10-21",
     "expert_reviewed": false,
-    "reviewed_by": null,
-    "reviewed_at": null,
+    "reviewed_by": "Karsten (Auftrag an Claude)",
+    "reviewed_at": "2026-10-21",
     "review_note": null
   }
 }

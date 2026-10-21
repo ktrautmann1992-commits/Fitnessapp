@@ -1,11 +1,9 @@
 {
   "id": "lachs-mit-ofenkartoffeln-und-brokkoli",
   "version": 1,
-  "status": "draft",
+  "status": "published",
   "title_de": "Lachs mit Ofenkartoffeln und Brokkoli",
   "description_de": "Saftiges Lachsfilet mit Zitrone, knusprigen Ofenkartoffeln und Brokkoli – alles auf einem Blech.",
-  "section_de": "Abendessen",
-  "categories": [],
   "meal_types": ["main"],
   "training_tags": [],
   "servings": 1,
@@ -90,6 +88,8 @@
     "Backe alles weitere 15 Minuten, bis der Lachs innen nicht mehr glasig ist.",
     "Beträufle Lachs und Gemüse mit Zitronensaft und streue Petersilie darüber."
   ],
+  "section_de": "Abendessen",
+  "categories": [],
   "total_minutes": 40,
   "prep_minutes": 10,
   "cook_minutes": 30,
@@ -116,8 +116,8 @@
     "batch_id": null,
     "created_on": "2026-10-21",
     "expert_reviewed": false,
-    "reviewed_by": null,
-    "reviewed_at": null,
+    "reviewed_by": "Karsten (Auftrag an Claude)",
+    "reviewed_at": "2026-10-21",
     "review_note": null
   }
 }
