@@ -118,7 +118,7 @@ test('Zeitraum vorbei: Karte, Verlängern nur ausdrücklich; „Angaben ändern�
 
   // „Angaben ändern“: Hinweis, Feld leer, „Weiter“ behält das Ziel genau so (kein neues Startdatum).
   await page.getByRole('button', { name: 'Einstellungen' }).click();
-  await page.getByRole('button', { name: 'Angaben ändern' }).click();
+  await page.getByRole('link', { name: 'Angaben ändern' }).click();
   await heading(page, 'Deine Trainingserfahrung');
   await next(page);
   await heading(page, 'Dein Ziel');
@@ -205,7 +205,7 @@ test('Wunschgewicht erreicht: Karte bleibt bis zur Wahl, „Weiter“ blockiert 
   // „Angaben ändern“ blockiert nicht (aktuelles Gewicht unter dem Ziel).
   await page.goto('/today');
   await page.getByRole('button', { name: 'Einstellungen' }).click();
-  await page.getByRole('button', { name: 'Angaben ändern' }).click();
+  await page.getByRole('link', { name: 'Angaben ändern' }).click();
   await next(page);
   await heading(page, 'Dein Ziel');
   await next(page);
@@ -257,7 +257,7 @@ test('Nebenziel geändert → „Plan neu erstellen?“; Planname mit beiden Zie
   await expect(page.getByTestId('plan-offer')).toHaveCount(0);
 
   await page.getByRole('button', { name: 'Einstellungen' }).click();
-  await page.getByRole('button', { name: 'Angaben ändern' }).click();
+  await page.getByRole('link', { name: 'Angaben ändern' }).click();
   await next(page);
   await heading(page, 'Dein Ziel');
   await page
