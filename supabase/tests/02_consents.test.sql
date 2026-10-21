@@ -48,7 +48,7 @@ select is(public.has_valid_consent('health_data'), false, 'AGB/Datenschutz erset
 -- ---------------------------------------------------------------------------------------------------------
 select throws_ok(
   $$ insert into public.consents (consent_type, version, platform) values ('health_data', 2, 'web') $$,
-  '42501', null, 'Einwilligung in eine nicht existierende Version wird abgelehnt'
+  '42501', null, 'Einwilligung in eine nicht veröffentlichte Version wird abgelehnt (Fassung 2 ist seit SU3 ein Entwurf)'
 );
 select throws_ok(
   $$ insert into public.consents (consent_type, version, platform) values ('cycle_data', 1, 'web') $$,
@@ -158,7 +158,9 @@ select lives_ok(
 );
 reset role;
 insert into public.consent_documents (consent_type, version, title_de, body_de, published_at)
-values ('health_data', 2, 'Einwilligung Gesundheitsdaten', 'ENTWURF Version 2', null);
+values ('health_data', 2, 'Einwilligung Gesundheitsdaten', 'ENTWURF Version 2', null)
+-- SU3: Fassung 2 liegt als unveröffentlichter Entwurf vor (20261021120200) – hier nur veröffentlichen.
+on conflict (consent_type, version) do update set published_at = excluded.published_at;
 set local role authenticated;
 select is(public.current_consent_version('health_data'), 1, 'unveröffentlichte Version 2 zählt noch nicht');
 select throws_ok(

@@ -457,7 +457,9 @@ values ('{"heart_condition": false, "chest_pain_exercise": false, "chest_pain_re
 
 reset role;
 insert into public.consent_documents (consent_type, version, title_de, body_de, published_at)
-values ('health_data', 2, 'Einwilligung Gesundheitsdaten', 'ENTWURF Version 2', now());
+values ('health_data', 2, 'Einwilligung Gesundheitsdaten', 'ENTWURF Version 2', now())
+-- SU3: Fassung 2 liegt als unveröffentlichter Entwurf vor (20261021120200) – hier nur veröffentlichen.
+on conflict (consent_type, version) do update set published_at = excluded.published_at;
 set local role authenticated;
 set local request.jwt.claims = '{"sub":"44444444-4444-4444-8444-444444444444","role":"authenticated"}';
 select throws_ok(

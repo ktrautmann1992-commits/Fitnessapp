@@ -77,6 +77,10 @@ export const DATA_EXPORT_TABLES = [
   'wearable_sessions',
   'heart_rate_summaries',
   'daily_metrics',
+  // Phase 6 · Etappe SU3 (docs/PLAN-PHASE-6.md 7.3): Supplement-Check und „Meine Supplements“ (Gesundheitsdaten, beim
+  // Widerruf gelöscht)
+  'supplement_screening',
+  'user_supplements',
 ] as const;
 
 export type DataExportTable = (typeof DATA_EXPORT_TABLES)[number];

@@ -17,14 +17,19 @@ export const consentTypeSchema = z.enum(CONSENT_TYPES);
 export const consentPlatformSchema = z.enum(CONSENT_PLATFORMS);
 
 /**
- * Aktuelle Textversion je Einwilligungsart (= höchste veröffentlichte Version in consent_documents).
+ * Aktuelle Textversion je Einwilligungsart (= höchste Version im Seed von consent_documents).
  * null = es gibt noch keinen Text (cycle_data kommt mit dem Zyklus-Modul in Phase 9).
  * Bei einem neuen Text: neue Version per Migration einfügen UND hier hochzählen (db-sync.test.ts prüft das).
+ *
+ * Gilt für den TESTMODUS (Texte aus apps/mobile/src/data/consent-texts.ts) und die Tests. Der Supabase-Modus liest die
+ * gültige Fassung immer aus der Datenbank (nur veröffentlichte Texte). `health_data` Fassung 2 (Supplement-Modul,
+ * docs/PLAN-PHASE-6.md 11.1) liegt dort seit SU3 als ENTWURF (published_at NULL) und wird erst nach der
+ * juristischen Prüfung veröffentlicht – bis dahin gilt in der Datenbank Fassung 1.
  */
 export const CURRENT_CONSENT_VERSIONS: Readonly<Record<ConsentType, number | null>> = {
   terms: 1,
   privacy: 1,
-  health_data: 1,
+  health_data: 2,
   cycle_data: null,
   ai_food_photo: 1,
   wearable_data: 1,

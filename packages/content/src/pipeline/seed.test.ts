@@ -13,7 +13,9 @@ import { validateRepository } from '../validate';
 import {
   buildNutritionSeedPackage,
   buildSeedPackage,
+  buildSupplementSeedPackage,
   buildWorkoutSeedPackage,
+  findSupplementMassArchive,
   findWorkoutMassArchive,
   fetchPublishedIds,
   fetchPublishedNutritionIds,
@@ -68,9 +70,23 @@ function okFetch(
     status?: number;
   } = {},
   workouts: { published?: string[]; missing?: boolean; body?: unknown; status?: number } = {},
+  supplements: { published?: string[]; missing?: boolean; body?: unknown; status?: number } = {},
 ) {
   return vi.fn<SeedFetch>(async (url) => {
     const path = new URL(url).pathname;
+    if (path.endsWith('/rpc/seed_supplements')) {
+      return new Response(JSON.stringify(supplements.body ?? { supplements: 0, archived: 0 }), {
+        status: supplements.status ?? 200,
+      });
+    }
+    if (path.endsWith('/rest/v1/supplements')) {
+      if (supplements.missing === true) {
+        return new Response(JSON.stringify({ code: 'PGRST205' }), { status: 404 });
+      }
+      return new Response(JSON.stringify((supplements.published ?? []).map((id) => ({ id }))), {
+        status: 200,
+      });
+    }
     if (path.endsWith('/rpc/seed_workouts')) {
       return new Response(JSON.stringify(workouts.body ?? { workouts: 0, archived: 0 }), {
         status: workouts.status ?? 200,
@@ -235,26 +251,20 @@ describe('content-seed', () => {
     expect(body.p_content.exercises.map((exercise) => exercise.id)).toEqual(['goblet-kniebeuge']);
   });
 
-  it('Supplemente (SU2): werden mitgeprüft, aber NICHT eingespielt – auch freigegebene nicht', async () => {
+  it('Supplemente (SU3): Entwürfe werden mitgeprüft, aber nie eingespielt', async () => {
     const r = repo();
     cpSync(join(REAL_REPO_ROOT, 'content', 'supplements'), join(r.root, 'content', 'supplements'), {
       recursive: true,
     });
-    edit(r, 'content/supplements/creatine.json', publish);
     edit(r, 'content/exercises/goblet-kniebeuge.json', publish);
     const skipped = await runSeed({ repoRoot: r.root, env: {}, fetchImpl: okFetch() });
     expect(skipped.status).toBe('skipped');
-    expect(skipped.markdown).toContain(
-      'Supplemente: 18 geprüft (davon 1 freigegeben) – werden noch nicht eingespielt',
-    );
+    expect(skipped.markdown).toContain('0 Supplemente.');
     const fetchImpl = okFetch({ exercises: 1, plan_templates: 0 });
     const seeded = await runSeed({ repoRoot: r.root, env: SUPABASE, fetchImpl });
     expect(seeded.status).toBe('seeded');
-    expect(seeded.markdown).toContain('Supplemente: 18 geprüft');
-    for (const [url, init] of fetchImpl.mock.calls) {
-      expect(String(url)).not.toContain('supplement');
-      expect(String(init.body ?? '')).not.toContain('creatine');
-    }
+    const call = fetchImpl.mock.calls.find(([url]) => url.endsWith('/rpc/seed_supplements'));
+    expect(JSON.parse(String(call?.[1].body))).toEqual({ p_content: { supplements: [] } });
     // Ein Schemafehler an einem Supplement-Entwurf blockiert das Einspielen wie bei allen Inhalten (SK1).
     edit(r, 'content/supplements/bcaa.json', (data) => {
       data.dose_g = 5;
@@ -934,5 +944,119 @@ describe('content-seed: Workouts (docs/PLAN-WORKOUTS.md)', () => {
     const result = await runSeed({ repoRoot: r.root, env: SUPABASE, fetchImpl });
     expect(result.status).toBe('failed');
     expect(result.markdown).toContain('Workouts nicht eingespielt');
+  });
+});
+
+describe('content-seed: Supplemente (docs/PLAN-PHASE-6.md 7.2, Etappe SU3)', () => {
+  /** Alle 18 Supplemente aus dem Repository, freigegeben (wie nach dem Merge des content-review-PRs). */
+  const withSupplements = () => {
+    const r = repo({ contentStatus: 'published' });
+    cpSync(join(REAL_REPO_ROOT, 'content/supplements'), join(r.root, 'content/supplements'), {
+      recursive: true,
+    });
+    for (const id of ['creatine', 'caffeine', 'vitamin_d', 'bcaa']) {
+      edit(r, `content/supplements/${id}.json`, publish);
+    }
+    return r;
+  };
+  const supplementBody = (fetchImpl: ReturnType<typeof okFetch>) => {
+    const call = fetchImpl.mock.calls.find(([url]) => url.endsWith('/rpc/seed_supplements'));
+    return call ? (JSON.parse(String(call[1].body)) as Record<string, unknown>) : null;
+  };
+  const testphase = (r: TempRepo) =>
+    writeFileSync(
+      join(r.root, 'content/einspiel-regeln.json'),
+      '{ "nur_fachlich_geprueft": false }',
+    );
+
+  it('Paket: nur freigegebene; ohne Fachprüfung nur in der Testphase', () => {
+    const r = withSupplements();
+    const { result } = validateRepository({ cwd: r.root });
+    expect(result.supplements).toHaveLength(18);
+    const strict = buildSupplementSeedPackage(result);
+    expect(strict.package.supplements).toEqual([]);
+    expect(strict.waiting).toEqual(['bcaa', 'caffeine', 'creatine', 'vitamin_d']);
+    const test = buildSupplementSeedPackage(result, { requireExpertReview: false });
+    expect(test.package.supplements.map((x) => x.id).sort()).toEqual([
+      'bcaa',
+      'caffeine',
+      'creatine',
+      'vitamin_d',
+    ]);
+    expect(test.unreviewed).toHaveLength(4);
+    const reviewed = buildSupplementSeedPackage({
+      supplements: result.supplements.map((x) => ({
+        ...x,
+        meta: { ...x.meta, expert_reviewed: true },
+      })),
+    });
+    expect(reviewed.package.supplements).toHaveLength(4);
+    expect(reviewed.unreviewed).toEqual([]);
+  });
+
+  it('Testphase: seed_supplements mit p_require_expert_review: false, Bericht nennt die Supplemente', async () => {
+    const r = withSupplements();
+    testphase(r);
+    const fetchImpl = okFetch(
+      undefined,
+      {},
+      200,
+      {},
+      {},
+      { body: { supplements: 4, archived: 0 } },
+    );
+    const result = await runSeed({ repoRoot: r.root, env: SUPABASE, fetchImpl });
+    expect(result.status).toBe('seeded');
+    const body = supplementBody(fetchImpl);
+    expect(body).toMatchObject({ p_require_expert_review: false });
+    expect((body?.p_content as { supplements: { id: string }[] }).supplements).toHaveLength(4);
+    expect(result.markdown).toContain('Supplemente eingespielt: 4');
+    expect(result.markdown).toContain('4 Supplemente ohne Fachprüfung');
+  });
+
+  it('Livegang-Regel: ungeprüfte Supplemente warten, Aufruf ohne Testphase-Schalter', async () => {
+    const r = withSupplements();
+    const fetchImpl = okFetch();
+    const result = await runSeed({ repoRoot: r.root, env: SUPABASE, fetchImpl });
+    expect(result.status).toBe('seeded');
+    expect(Object.keys(supplementBody(fetchImpl) ?? {})).toEqual(['p_content']);
+    expect(result.markdown).toContain('Supplemente: 4 freigegebene warten auf die Fachprüfung');
+  });
+
+  it('Tabelle fehlt (vor db-migrate) → übersprungen mit Hinweis', async () => {
+    const r = withSupplements();
+    const fetchImpl = okFetch(undefined, {}, 200, {}, {}, { missing: true });
+    const result = await runSeed({ repoRoot: r.root, env: SUPABASE, fetchImpl });
+    expect(result.status).toBe('seeded');
+    expect(supplementBody(fetchImpl)).toBeNull();
+    expect(result.markdown).toContain('Supplemente übersprungen');
+  });
+
+  it('Schutz vor Massen-Archivierung gilt auch für Supplemente', async () => {
+    expect(findSupplementMassArchive(['a', 'b', 'c'], { supplements: [] })).toHaveLength(1);
+    expect(findSupplementMassArchive([], { supplements: [] })).toEqual([]);
+    const r = withSupplements();
+    const fetchImpl = okFetch(undefined, {}, 200, {}, {}, { published: ['omega3', 'iron', 'hmb'] });
+    const result = await runSeed({ repoRoot: r.root, env: SUPABASE, fetchImpl });
+    expect(result.status).toBe('mass_archive_blocked');
+    expect(result.markdown).toContain('Supplemente');
+    expect(fetchImpl.mock.calls.some(([url]) => url.includes('/rpc/'))).toBe(false);
+  });
+
+  it('Fehler von seed_supplements → rot mit Meldung', async () => {
+    const r = withSupplements();
+    testphase(r);
+    const fetchImpl = okFetch(
+      undefined,
+      {},
+      200,
+      {},
+      {},
+      { status: 400, body: { message: 'Unbekanntes Supplement: x' } },
+    );
+    const result = await runSeed({ repoRoot: r.root, env: SUPABASE, fetchImpl });
+    expect(result.status).toBe('failed');
+    expect(result.markdown).toContain('Supplemente nicht eingespielt');
+    expect(result.markdown).toContain('Unbekanntes Supplement: x');
   });
 });

@@ -3558,8 +3558,9 @@ export const SUPPLEMENT_SCREENING_VERSION = 1;
 
 /**
  * Mindestfassung der Einwilligung `health_data` für den Supplement-Check und persönliche Supplement-Hinweise (Plan
- * 11.1, Wächter B1): v1 nennt die neuen Datenarten und den Zweck „Shop-Links ausblenden“ nicht. Der Seed von v2 kommt
- * mit SU3; bis dahin bleibt `CURRENT_CONSENT_VERSIONS.health_data` bei 1 und das Modul im Info-Modus.
+ * 11.1, Wächter B1): v1 nennt die neuen Datenarten und den Zweck „Shop-Links ausblenden“ nicht. Seit SU3 liegt v2 im
+ * Seed (Datenbank: Entwurf bis zur juristischen Prüfung, Testmodus: gültig); solange die Datenbank nur v1 kennt, bleibt
+ * das Modul im Supabase-Modus im Info-Modus. Gleicher Wert in private.require_supplement_consent (db-sync.test.ts).
  * Quelle: Art. 9 Abs. 2 lit. a i. V. m. Art. 4 Nr. 11 DSGVO (bestimmte, informierte Einwilligung).
  */
 export const SUPPLEMENT_HEALTH_CONSENT_MIN_VERSION = 2;

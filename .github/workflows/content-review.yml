@@ -15,6 +15,10 @@ name: content-review
 # Regeln und Häkchen (Meal-Prep-Plan nur, wenn alle seine Rezepte danach freigegeben sind; Ratgeber nur ohne roten
 # Befund). Lebensmittel nie über Art „ids“.
 #
+# Art „ids“ mit Supplement-IDs (docs/PLAN-PHASE-6.md, Etappe SU3), z. B. „creatine, protein_powder“, oder dem Stichwort
+# „supplemente“ (alle Supplemente im Entwurf) = Freigabe nur ohne roten Befund (SK1–SK7), Häkchen „fachlich geprüft“
+# wirkt. Supplemente nicht mit anderen Inhalten mischen. Danach spielt content-seed sie ein (Testphase-Regel).
+#
 # Art „katalog“ = Option „Katalog geprüft“ (docs/PLAN-PHASE-5.md 5.1.1 d, R19, R2-K6): IDs = Lebensmittel-IDs oder
 # „rezepte“ (alle Lebensmittel aus Rezept-Entwürfen, plus Ersatzprodukte). Setzt meta.catalog_reviewed_by = Prüfer,
 # catalog_reviewed_at = heute und gibt das Lebensmittel frei (Status published, Prüfvermerk) – nur ohne roten Befund.
@@ -24,7 +28,7 @@ on:
   workflow_dispatch:
     inputs:
       art:
-        description: 'Art: „ids“ = einzelne Inhalte per ID (Übungen/Vorlagen oder Rezepte/Meal-Prep-Pläne/Ratgeber), „recipe“ = Sammelfreigabe Rezepte pro Kategorie, „katalog“ = Lebensmittel „Katalog geprüft“'
+        description: 'Art: „ids“ = einzelne Inhalte per ID (Übungen/Vorlagen, Rezepte/Meal-Prep-Pläne/Ratgeber oder Supplemente), „recipe“ = Sammelfreigabe Rezepte pro Kategorie, „katalog“ = Lebensmittel „Katalog geprüft“'
         type: choice
         options:
           - ids
@@ -32,7 +36,7 @@ on:
           - katalog
         default: ids
       ids:
-        description: 'Art „ids“: IDs (mit Komma oder Leerzeichen getrennt), z. B. „goblet-kniebeuge, liegestuetz“ oder „ruehrei, pasta-woche“ – Training und Ernährung nicht mischen; „alle“ = alle Übungen und Plan-Vorlagen im Entwurf. Art „katalog“: Lebensmittel-IDs oder „rezepte“'
+        description: 'Art „ids“: IDs (mit Komma oder Leerzeichen getrennt), z. B. „goblet-kniebeuge, liegestuetz“, „ruehrei, pasta-woche“ oder „creatine, protein_powder“ – Training, Ernährung und Supplemente nicht mischen; „alle“ = alle Übungen und Plan-Vorlagen im Entwurf; „supplemente“ = alle Supplemente im Entwurf. Art „katalog“: Lebensmittel-IDs oder „rezepte“'
         type: string
         required: false
       status:
@@ -62,7 +66,7 @@ on:
           - spar-kueche
         default: '-'
       fachlich_geprueft:
-        description: 'Nur Ernährung (Art „recipe“ oder Rezepte/Pläne/Ratgeber per ID): fachlich geprüft (Fachperson hat geprüft)'
+        description: 'Nur Ernährung und Supplemente (Art „recipe“ oder Rezepte/Pläne/Ratgeber/Supplemente per ID): fachlich geprüft (Fachperson hat geprüft)'
         type: boolean
         default: false
       annahmen_geprueft:

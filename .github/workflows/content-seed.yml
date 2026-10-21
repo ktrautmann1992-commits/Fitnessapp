@@ -21,6 +21,9 @@ name: content-seed
 #    „Testphase – noch nicht fachlich geprüft“), true oder Datei fehlt = Livegang-Regel. Kaputte Datei = rot, nichts
 #    eingespielt. Umstellen nur per Pull Request (docs/HANDY-ANLEITUNG.md Teil 7t); der Merge startet diesen Workflow.
 #    Prüfung (1.), Schutz (3.), Katalog-Prüfung und Prüfvermerk gelten in beiden Fällen.
+# 6. Workouts und Supplemente (docs/PLAN-WORKOUTS.md, docs/PLAN-PHASE-6.md 7.2): danach seed_workouts bzw.
+#    seed_supplements – nur freigegebene, mit derselben Einspiel-Regel (5.) und demselben Schutz (3.). Fehlt die Tabelle
+#    noch (db-migrate nicht durch), wird die Art mit Hinweis übersprungen.
 # Ohne SUPABASE_URL/SUPABASE_SECRET_KEY endet der Workflow nach der Prüfung grün mit Hinweis.
 on:
   push:

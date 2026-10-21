@@ -51,9 +51,18 @@ export interface ScheduleDayResult {
  * steht deshalb auch als „Zur Info“ im Zeitplan, wenn die Person es gewählt hat (allgemeiner Richtwert, täglich zu einer
  * Mahlzeit). „ab 18“ und „Nicht für dich“ nie.
  */
-function scheduleAllowed(item: RatedSupplementResult): boolean {
+export function supplementScheduleAllowed(item: RatedSupplementResult): boolean {
   if (item.status === 'recommended') return true;
   return item.id === 'vitamin_d' && item.status === 'info_only';
+}
+
+/**
+ * Allgemeiner Zeitpunkt je Supplement (Plan 3.5): Kreatin (Uhrzeit egal, täglich), Vitamin D (mit einer fetthaltigen
+ * Mahlzeit) und Omega-3 täglich zu einer Mahlzeit; Proteinpulver nach dem Training (an Ruhetagen deckt das Essen den
+ * Bedarf). Koffein bekommt nie einen Zeitpunkt (B2.3).
+ */
+export function supplementTiming(id: RatedSupplementId): SupplementTiming {
+  return id === 'protein_powder' ? 'after_training' : 'daily_with_meal';
 }
 
 /**
@@ -72,15 +81,16 @@ export function supplementSchedule(
   const days = trainingWeekSchema.parse(trainingWeek);
   const picked = new Set(chosenSchema.parse(chosen));
   const active = recommendation.items.filter(
-    (item) => picked.has(item.id) && scheduleAllowed(item),
+    (item) => picked.has(item.id) && supplementScheduleAllowed(item),
   );
   return days.map((day) => ({
     date: day.date,
     entries: active.flatMap((item): ScheduleEntry[] => {
-      if (item.id === 'protein_powder') {
-        return day.hasTraining ? [{ supplementId: item.id, timing: 'after_training' }] : [];
+      const timing = supplementTiming(item.id);
+      if (timing === 'after_training') {
+        return day.hasTraining ? [{ supplementId: item.id, timing }] : [];
       }
-      return [{ supplementId: item.id, timing: 'daily_with_meal' }];
+      return [{ supplementId: item.id, timing }];
     }),
   }));
 }

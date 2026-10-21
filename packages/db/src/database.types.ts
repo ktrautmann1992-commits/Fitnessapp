@@ -2640,6 +2640,69 @@ export type Database = {
         };
         Relationships: [];
       };
+      supplement_screening: {
+        Row: {
+          answers: Json;
+          flags: Database['public']['Enums']['supplement_flag'][];
+          updated_at: string;
+          user_id: string;
+          version: number;
+        };
+        Insert: {
+          answers: Json;
+          flags?: Database['public']['Enums']['supplement_flag'][];
+          updated_at?: string;
+          user_id: string;
+          version: number;
+        };
+        Update: {
+          answers?: Json;
+          flags?: Database['public']['Enums']['supplement_flag'][];
+          updated_at?: string;
+          user_id?: string;
+          version?: number;
+        };
+        Relationships: [];
+      };
+      supplements: {
+        Row: {
+          category: Database['public']['Enums']['supplement_category'];
+          created_at: string;
+          data: Json;
+          evidence_level: Database['public']['Enums']['supplement_evidence'] | null;
+          expert_reviewed: boolean;
+          id: string;
+          name_de: string;
+          status: Database['public']['Enums']['content_status'];
+          updated_at: string;
+          version: number;
+        };
+        Insert: {
+          category: Database['public']['Enums']['supplement_category'];
+          created_at?: string;
+          data: Json;
+          evidence_level?: Database['public']['Enums']['supplement_evidence'] | null;
+          expert_reviewed?: never;
+          id: string;
+          name_de: string;
+          status: Database['public']['Enums']['content_status'];
+          updated_at?: string;
+          version: number;
+        };
+        Update: {
+          category?: Database['public']['Enums']['supplement_category'];
+          created_at?: string;
+          data?: Json;
+          evidence_level?: Database['public']['Enums']['supplement_evidence'] | null;
+          expert_reviewed?: never;
+          id?: string;
+          name_de?: string;
+          status?: Database['public']['Enums']['content_status'];
+          updated_at?: string;
+          version?: number;
+        };
+        Relationships: [];
+      };
       user_equipment: {
         Row: {
           bar_kg: number | null;
@@ -2680,6 +2743,27 @@ export type Database = {
             referencedColumns: ['id'];
           },
         ];
+      };
+      user_supplements: {
+        Row: {
+          status: Database['public']['Enums']['user_supplement_status'];
+          supplement_id: Database['public']['Enums']['supplement_id'];
+          updated_at: string;
+          user_id: string;
+        };
+        Insert: {
+          status: Database['public']['Enums']['user_supplement_status'];
+          supplement_id: Database['public']['Enums']['supplement_id'];
+          updated_at?: string;
+          user_id: string;
+        };
+        Update: {
+          status?: Database['public']['Enums']['user_supplement_status'];
+          supplement_id?: Database['public']['Enums']['supplement_id'];
+          updated_at?: string;
+          user_id?: string;
+        };
+        Relationships: [];
       };
       user_food_products: {
         Row: {
@@ -3237,6 +3321,16 @@ export type Database = {
         Args: { p_content: Json; p_require_expert_review?: boolean };
         Returns: Json;
       };
+      seed_supplements: {
+        Args: { p_content: Json; p_require_expert_review?: boolean };
+        Returns: Json;
+      };
+      save_supplement_screening: { Args: { p_answers: Json }; Returns: Json };
+      set_user_supplement: {
+        Args: { p_status: string | null; p_supplement_id: string };
+        Returns: undefined;
+      };
+      delete_my_supplement_data: { Args: never; Returns: undefined };
       seed_workouts: {
         Args: { p_content: Json; p_require_expert_review?: boolean };
         Returns: Json;
@@ -3413,6 +3507,11 @@ export type Database = {
       session_focus: 'full_body' | 'upper' | 'lower';
       session_log_status: 'completed' | 'partial';
       sex: 'male' | 'female' | 'diverse' | 'unspecified';
+      supplement_category: 'sport' | 'food' | 'diet_season' | 'safety_info';
+      supplement_evidence: 'a' | 'b' | 'c';
+      supplement_flag: 'kidney' | 'breastfeeding' | 'heart_rhythm' | 'caffeine_sensitive';
+      supplement_id: 'creatine' | 'caffeine' | 'protein_powder' | 'vitamin_d' | 'omega3';
+      user_supplement_status: 'taking' | 'not_for_me';
       training_location: 'gym' | 'home' | 'both';
       training_phase: 'base' | 'build' | 'peak' | 'taper' | 'race_week' | 'recovery';
       training_slot_kind: 'strength_gym' | 'strength_home' | 'endurance';
@@ -3706,6 +3805,11 @@ export const Constants = {
       route_difficulty: ['easy', 'medium', 'hard'],
       session_log_status: ['completed', 'partial'],
       sex: ['male', 'female', 'diverse', 'unspecified'],
+      supplement_category: ['sport', 'food', 'diet_season', 'safety_info'],
+      supplement_evidence: ['a', 'b', 'c'],
+      supplement_flag: ['kidney', 'breastfeeding', 'heart_rhythm', 'caffeine_sensitive'],
+      supplement_id: ['creatine', 'caffeine', 'protein_powder', 'vitamin_d', 'omega3'],
+      user_supplement_status: ['taking', 'not_for_me'],
       training_location: ['gym', 'home', 'both'],
       training_phase: ['base', 'build', 'peak', 'taper', 'race_week', 'recovery'],
       training_slot_kind: ['strength_gym', 'strength_home', 'endurance'],
