@@ -1,5 +1,6 @@
 """Alpha5 – sportliches Layout (überschreibt die Darstellung von build_pdf / build_lexikon)."""
-import os, re, glob, unicodedata
+import os, re, glob, unicodedata, tempfile
+from PIL import Image as PILImage
 import build_pdf as b
 from build_pdf import *  # noqa
 from reportlab.platypus import Flowable
@@ -71,10 +72,24 @@ def foto_id(key, r):
     s = slug(r['name'])
     return f'{key}-{s}' if _names.get(s, 0) > 1 else s
 
+# Fürs PDF reichen 1240 px Breite (~150 dpi auf A4); die Originale in fotos/ bleiben unverändert.
+PDF_FOTO_BREITE = 1240
+PDF_FOTO_CACHE = os.path.join(tempfile.gettempdir(), 'alpha5-pdf-fotos')
+
+def pdf_foto(p):
+    os.makedirs(PDF_FOTO_CACHE, exist_ok=True)
+    dst = os.path.join(PDF_FOTO_CACHE, f'{os.path.splitext(os.path.basename(p))[0]}-{int(os.path.getmtime(p))}.jpg')
+    if not os.path.exists(dst):
+        img = PILImage.open(p).convert('RGB')
+        if img.width > PDF_FOTO_BREITE:
+            img = img.resize((PDF_FOTO_BREITE, round(img.height * PDF_FOTO_BREITE / img.width)), PILImage.LANCZOS)
+        img.save(dst, 'JPEG', quality=80, optimize=True, progressive=True)
+    return dst
+
 def find_foto(fid):
     for ext in ('jpg', 'jpeg', 'png', 'webp'):
         p = f'{FOTO_DIR}/{fid}.{ext}'
-        if os.path.exists(p): return p
+        if os.path.exists(p): return pdf_foto(p)
     return None
 
 # ---------- Flowables ----------
