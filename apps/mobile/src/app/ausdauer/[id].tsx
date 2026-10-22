@@ -35,6 +35,7 @@ import {
   SplitInsightBars,
 } from '@/components/run-insights';
 import { ConfirmDialog, Screen } from '@/components/screen';
+import { SessionKcalStat } from '@/components/session-kcal';
 import { WearableLogInfo } from '@/components/wearables';
 import {
   Body,
@@ -219,6 +220,16 @@ export default function RouteDetailScreen() {
               valueTestID="route-pauses"
             />
           </View>
+          {/* kcal (Uhr bzw. Schätzung aus Bewegungszeit) – eigene Zelle, nie auf dem Story-Bild. */}
+          <SessionKcalStat
+            input={{
+              kind: 'endurance',
+              enduranceModality: info.sport,
+              effortTarget: null,
+              durationS: info.moving_s,
+            }}
+            logId={info.session_log_id}
+          />
         </View>
       </Card>
 

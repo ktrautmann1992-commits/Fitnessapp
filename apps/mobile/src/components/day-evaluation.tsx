@@ -1,5 +1,6 @@
 import type { DayTrainingItem, IntakeTone } from '@fitnessapp/core';
 import { fontSize, fontWeight, radius, spacing } from '@fitnessapp/ui';
+import type { ReactNode } from 'react';
 import { StyleSheet, View } from 'react-native';
 
 import { Body, Button } from '@/components/ui';
@@ -79,10 +80,13 @@ export function DayTrainingRow({
   entry,
   exerciseNames,
   onOpenLog,
+  kcal = null,
 }: {
   entry: DayTrainingItem;
   exerciseNames: readonly string[];
   onOpenLog: (logId: string) => void;
+  /** kcal der Einheit („ca. 320 kcal“ bzw. Hinweis), siehe session-kcal.tsx. */
+  kcal?: ReactNode;
 }) {
   const theme = useThemeColors();
   const { item, achievement } = entry;
@@ -124,6 +128,7 @@ export function DayTrainingRow({
           {hint}
         </Body>
       ))}
+      {kcal}
       {item.logId !== null ? (
         <Button
           label={t.day.openLog}

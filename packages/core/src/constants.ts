@@ -1239,6 +1239,27 @@ export const TRAINING_MET = {
 export const TRAINING_KCAL_DAY_MAX = 3000;
 
 /**
+ * kcal je Einheit („kcal verbrannt“ an jeder Einheit, Gründer-Wunsch 22.10.2026; docs/KONZEPT.md Abschnitt 5, „kcal je Einheit“):
+ * - Angezeigt wird der BRUTTO-Wert MET × kg × Stunden (Ruheumsatz während der Einheit eingeschlossen) – so ist die
+ *   Schätzung mit dem Wert der Uhr vergleichbar: Health Connect liefert `TotalCaloriesBurned` im Zeitraum der Einheit,
+ *   ebenfalls inklusive Ruheumsatz (developer.android.com, Health Connect „TotalCaloriesBurnedRecord“). Der Kalorienring
+ *   der Ernährung rechnet dagegen NETTO ((MET − 1) × kg × h), weil der Ruheumsatz dort schon im Grundbedarf steckt.
+ *   MET-Werte: TRAINING_MET (Ainsworth 2011 / Herrmann 2024) – nicht doppelt gepflegt.
+ * - `roundToKcal`: Anzeige auf 5 kcal gerundet (Schätzung, keine Scheingenauigkeit) – PRODUKTENTSCHEIDUNG.
+ * - `minDurationS`: unter 1 Minute keine Angabe – PRODUKTENTSCHEIDUNG.
+ * - `maxDurationS`: über 8 Stunden gilt die Dauer als unplausibel (z. B. Training nicht beendet) → keine Angabe –
+ *   PRODUKTENTSCHEIDUNG.
+ * - `maxKcal`: Plausibilitätsdeckel je Einheit, höher wird nie angezeigt (Beispiel: 200 kg × 4 h Laufen mit MET 7 wären
+ *   5.600 kcal) – PRODUKTENTSCHEIDUNG, VOR LIVEGANG FACHLICH PRÜFEN.
+ */
+export const SESSION_KCAL = {
+  roundToKcal: 5,
+  minDurationS: 60,
+  maxDurationS: 8 * 60 * 60,
+  maxKcal: 6000,
+} as const;
+
+/**
  * Zielanpassung vom Grundbedarf OHNE Trainingsenergie (Plan 4.5, S2): Vorschlag = Grundbedarf × (1 + Anpassung)
  * + Trainingsenergie + 4b-Versatz. Startwerte, PRODUKTENTSCHEIDUNG – fachlich zu prüfen.
  * Quellen/Orientierung: Fettverlust/Definition: Helms ER et al. (2014), J Int Soc Sports Nutr 11:20 (moderate
