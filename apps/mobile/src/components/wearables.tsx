@@ -21,7 +21,7 @@ import { useApp } from '@/state/app-state';
 import { forgetWearables, useWearables } from '@/state/use-wearables';
 
 /**
- * Smartwatch im Tagebuch und in der Auswertung (Phase 8 Etappe H4): Uhr-Symbol mit Herkunft, kcal der Uhr, Puls
+ * Smartwatch im Tagebuch und in der Auswertung (Phase 8 Etappe H4): Uhr-Symbol mit Herkunft, Puls
  * (Ø/Max, Zeit je Zone) und „Möglicher Doppel-Eintrag“. Werte stehen immer auch als Text da. Der Puls erscheint NIE
  * auf dem Story-Bild (STORY_CARD_FIELDS ist eine Positivliste ohne Puls).
  */
@@ -125,12 +125,8 @@ export function WearableLogInfo({ logId }: { logId: string }) {
     <View style={styles.wrap} testID="wearable-log-info">
       {session ? (
         <Body muted testID="wearable-badge">
-          {[
-            W.badge(originLabel(session.origin)),
-            session.kcal !== null ? W.kcal(session.kcal) : null,
-          ]
-            .filter(Boolean)
-            .join(' · ')}
+          {/* kcal der Uhr stehen als „ca. … kcal laut Uhr“ an der Einheit (session-kcal.tsx, mit „Zahlen aus“). */}
+          {W.badge(originLabel(session.origin))}
         </Body>
       ) : null}
       {message ? <Notice tone={message.tone}>{message.text}</Notice> : null}
