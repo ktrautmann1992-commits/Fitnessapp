@@ -4,10 +4,11 @@ import {
   GLOSSARY_LIMITS,
   type GlossaryEquipmentFilter,
   type GlossaryGroup,
+  parseMuscleTileId,
   searchExercises,
 } from '@fitnessapp/core';
 import { fontSize, fontWeight, spacing } from '@fitnessapp/ui';
-import { Redirect, useRouter, type Href } from 'expo-router';
+import { Redirect, useLocalSearchParams, useRouter, type Href } from 'expo-router';
 import { useEffect, useMemo, useState } from 'react';
 import { Pressable, StyleSheet, View } from 'react-native';
 
@@ -45,6 +46,9 @@ const DIFFICULTIES = [
 export default function GlossaryScreen() {
   const router = useRouter();
   const app = useApp();
+  // Muskelgruppe aus der Kachel-Übersicht (/uebungen?muskel=brust); unbekannte Werte werden ignoriert.
+  const params = useLocalSearchParams<{ muskel?: string | string[] }>();
+  const muscleTile = parseMuscleTileId(params.muskel);
   const theme = useThemeColors();
   const [query, setQuery] = useState('');
   const [groups, setGroups] = useState<GlossaryGroup[]>([]);
@@ -61,10 +65,16 @@ export default function GlossaryScreen() {
     () =>
       searchExercises(
         lib,
-        { query, groups, equipment: equipment === 'all' ? null : equipment, difficulty },
+        {
+          query,
+          groups,
+          equipment: equipment === 'all' ? null : equipment,
+          difficulty,
+          muscleTile,
+        },
         context.homeProfile ? { homeProfile: context.homeProfile } : {},
       ),
-    [context.homeProfile, difficulty, equipment, groups, lib, query],
+    [context.homeProfile, difficulty, equipment, groups, lib, muscleTile, query],
   );
 
   if (app.status.kind === 'loading') {
@@ -108,6 +118,24 @@ export default function GlossaryScreen() {
         />
       }
     >
+      <Button
+        label={t.glossary.byMuscle}
+        accessibilityHint={t.glossary.byMuscleHint}
+        variant="secondary"
+        onPress={() => router.push('/uebungen/muskelgruppen' as Href)}
+        testID="glossary-by-muscle"
+      />
+      {muscleTile ? (
+        <Notice tone="info" testID="glossary-muscle-filter">
+          <Body>{t.glossary.muscleFilter(t.glossary.muscleTiles[muscleTile])}</Body>
+          <Button
+            label={t.glossary.muscleFilterClear}
+            variant="link"
+            onPress={() => router.setParams({ muskel: undefined })}
+            testID="glossary-muscle-clear"
+          />
+        </Notice>
+      ) : null}
       <TextField
         label={t.glossary.searchLabel}
         hint={t.glossary.searchHint}
@@ -208,9 +236,10 @@ export default function GlossaryScreen() {
             </Notice>
           ) : (
             <View style={styles.list}>
-              {hits.map(({ exercise }) => {
+              {hits.map(({ exercise, muscleRole }) => {
                 const draft = exercise.status === 'draft';
                 const line = listLine(exercise);
+                const secondary = muscleRole === 'secondary';
                 return (
                   <Pressable
                     key={exercise.id}
@@ -218,6 +247,7 @@ export default function GlossaryScreen() {
                     accessibilityLabel={[
                       exercise.name_de,
                       line,
+                      secondary ? t.glossary.muscleSecondary : null,
                       draft ? t.glossary.testContent : null,
                     ]
                       .filter(Boolean)
@@ -238,6 +268,11 @@ export default function GlossaryScreen() {
                   >
                     <Text style={[styles.itemName, { color: theme.link }]}>{exercise.name_de}</Text>
                     <Text style={[styles.itemLine, { color: theme.textMuted }]}>{line}</Text>
+                    {secondary ? (
+                      <Text style={[styles.itemLine, { color: theme.textMuted }]}>
+                        {t.glossary.muscleSecondary}
+                      </Text>
+                    ) : null}
                     {draft ? (
                       <Text style={[styles.itemLine, { color: theme.textMuted }]}>
                         {t.glossary.testContent}

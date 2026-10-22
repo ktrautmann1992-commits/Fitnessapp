@@ -1216,3 +1216,21 @@ eine einheitliche Strich-Illustration der Ausgangsposition als SVG – Stil, Far
 (Unterarmstütz, Seitstütz) zeigt das Bild die gehaltene Position. Eine fachliche Sichtprüfung der Haltungen durch die
 Gründer steht noch aus (`reviewed_by` ist `null`); ein zweites Bild „Endposition“ ist mit demselben Generator möglich,
 aber noch nicht umgesetzt.
+
+## Nachtrag: Muskelgruppen-Kacheln (22.10.2026)
+
+Gründer-Wunsch: Im Glossar gibt es eine Übersicht mit einer Kachel pro Muskelgruppe. Jede Kachel zeigt ein anatomisches Bild, auf dem der Muskel rot hervorgehoben ist. Tippt man auf eine Kachel, öffnet sich die Übungsliste für genau diese Muskelgruppe.
+
+- **Einstieg:** Im Glossar oben die Schaltfläche „Nach Muskelgruppe wählen“. Sie führt zu `/uebungen/muskelgruppen`.
+- **Kacheln:** 15 Stück, definiert in `MUSCLE_TILE_IDS` bzw. `MUSCLE_TILES` (`packages/core/src/content/muscle-tiles.ts`).
+  - Jede Kachel umfasst eine oder mehrere Muskelgruppen aus `MUSCLE_GROUPS`. Jede Muskelgruppe ist mindestens einer Kachel zugeordnet (Test).
+  - „Nacken“ und „Oberer Rücken“ teilen sich `upper_back` (Trapezmuskel).
+- **Filter:**
+  - `searchExercises(…, { muscleTile })` zeigt alle Übungen, die den Bereich als Haupt- oder Nebenmuskel trainieren.
+  - Übungen mit dem Bereich als Hauptmuskel stehen zuerst. Danach folgen die Übungen mit Kennzeichen „unterstützend beteiligt“.
+  - Der Filter lässt sich mit Suche, Bereich, Ausrüstung und Schwierigkeit kombinieren.
+- **Link:** `/uebungen?muskel=<kachel-id>`. Unbekannte Werte werden ignoriert (`parseMuscleTileId`). In der Liste stehen ein Hinweis „Muskelgruppe: …“ und der Link „Muskelgruppe entfernen“.
+- **Bilder:** liegen in `apps/mobile/assets/muscle-groups/`. Herkunft und Aufbereitung beschreibt `content/muscle-groups/README.md`: KI-generiert durch die Gründer, freigestellt, 720 × 540 px WebP.
+  - Die Kacheln sind in beiden Modi dunkel (Graphit), weil die hellgrauen Figuren einen dunklen Grund brauchen.
+  - Die Bilder sind Schmuck. Bildschirmleser lesen nur den Namen vor.
+- **Offen:** Eine Ganzkörper-Kachel fehlt noch, weil noch kein brauchbares Bild vorliegt.
