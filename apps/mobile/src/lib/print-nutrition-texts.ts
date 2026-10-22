@@ -102,8 +102,8 @@ export const NUTRITION_PRINT_TEXTS: Translators = {
       .join(' '),
   'shopping.category': ({ category }) => shoppingCategoryLabel(category),
   'shopping.pantry': () => t.nutrition.shopping.pantry,
-  'shopping.item': ({ amount, unit, label, manual }) =>
-    shoppingItemText({ amount, unit, labelDe: label, isManual: manual }),
+  'shopping.item': ({ amount, unit, label, manual, foodId }) =>
+    shoppingItemText({ amount, unit, labelDe: label, isManual: manual, foodId: foodId ?? null }),
   'shopping.recipes': ({ recipes }) =>
     p.addedRecipes(
       recipes.map((x) => t.nutrition.shopping.recipeLine(x.title, x.servings)).join(', '),

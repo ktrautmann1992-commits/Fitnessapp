@@ -133,6 +133,15 @@ Speicherfehler (Häkchen bleibt lokal, Hinweis), Liste leer/alles erledigt.
 Grenzen, Widerruf, Export); `db-sync` (Grenzen, Export-Liste); Playwright `shopping-scan.spec.ts` (Treffer abhaken,
 Rückgängig, Auswahl, zusätzlich hinzufügen, offline abhaken → Sync, Menüknopf „Einkaufen“).
 
+### 3.x Einkaufs-Einheiten (Gründer-Wunsch 22.10.2026)
+
+Frisches Obst, Gemüse und Kräuter stehen in der Liste so, wie man sie im Laden kauft: „5 Zwiebeln (450 g)“,
+„1 Bund Petersilie (40 g)“, „1 Knolle Knoblauch (60 g)“, „4 Zucchini (900 g)“. Die Grammzahl bleibt dahinter
+sichtbar und maßgeblich; gerechnet wird weiter in Gramm (Summe über alle Rezepte, aufgerundet). Die typischen
+Gewichte je Einheit stehen zentral in `SHOPPING_BUY_UNITS` (`packages/core/src/constants.ts`), die Umrechnung in
+`shoppingBuyHint` (`packages/core/src/nutrition/shopping-buy-units.ts`). Gilt in der App, beim Weitergeben und im
+Druck. Lebensmittel ohne Eintrag (Haferflocken, Reis, Milch …) bleiben in g/ml.
+
 ## 4. Etappe E2 – Dashboard bearbeiten (Kacheln + Menüleiste)
 
 **Core (`packages/core/src/layout.ts`, Konstanten `APP_LAYOUT`):**

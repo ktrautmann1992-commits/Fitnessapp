@@ -10,6 +10,7 @@ import {
   SHOPPING_CATEGORY_LABELS_DE,
   type ShoppingCategory,
   type ShoppingListItem,
+  shoppingBuyHint,
   type SourceDatabase,
   unitLabelDe,
 } from '@fitnessapp/core';
@@ -101,10 +102,17 @@ export function noticeText(code: NutritionNoticeCode, showNumbers: boolean): str
 /**
  * Eintrag der Einkaufsliste als Text (Etappe N5b): „500 g Haferflocken“, „3 Bananen“, „Salz – nach Geschmack“, eigene
  * Einträge ohne Menge nur mit Text. Mengen sind Einkaufsmengen (keine kcal) – auch bei „Zahlen aus“ sichtbar.
+ * Frisches mit Einkaufs-Einheit (`shoppingBuyHint`): „3 Zwiebeln (300 g)“, „1 Bund Petersilie (40 g)“.
  */
 export function shoppingItemText(
-  item: Pick<ShoppingListItem, 'amount' | 'unit' | 'labelDe' | 'isManual'>,
+  item: Pick<ShoppingListItem, 'amount' | 'unit' | 'labelDe' | 'isManual'> & {
+    readonly foodId?: string | null;
+  },
 ): string {
+  const buy = shoppingBuyHint(item.foodId, item.amount, item.unit);
+  if (buy !== null && item.amount !== null && item.unit !== null) {
+    return `${buy.count} ${buy.label} (${formatAmount(item.amount, item.unit)})`;
+  }
   if (item.amount !== null && item.unit !== null) {
     return `${formatAmount(item.amount, item.unit)} ${item.labelDe}`;
   }
